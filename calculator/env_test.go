@@ -11,7 +11,7 @@ import (
 )
 
 func TestEmptyEnv(t *testing.T) {
-	file, _ := os.ReadFile("./testdata/builds/Fireball.xml")
+	file, err := os.ReadFile("../testdata/builds/Fireball.xml")
 	build, err := builds.ParseBuild(file)
 	testza.AssertNoError(t, err)
 
