@@ -1,6 +1,8 @@
 package calculator
 
-import "go-pob/pob"
+import (
+	"go-pob/pob"
+)
 
 type Calculator struct {
 	PoB *pob.PathOfBuilding
@@ -61,10 +63,24 @@ type Environment struct {
 type Actor struct {
 	ModDB           *ModDB
 	Level           int
-	Enemy           *Actor
+	Enemy           *Actor                 `json:"-"`
 	ItemList        map[string]interface{} // TODO Implement
-	ActiveSkillList map[string]ActiveSkill
-	Output          map[Out]float64 // TODO Implement
+	ActiveSkillList []*ActiveSkill
+	Output          map[string]float64
+	OutputTable     map[OutTable]map[string]float64
+	MainSkill       *ActiveSkill           // TODO Implement
+	Breakdown       interface{}            // TODO Implement
+	WeaponData1     map[string]interface{} // TODO Implement. Might be SomeSource?
+	WeaponData2     map[string]interface{} // TODO Implement. Might be SomeSource?
+}
+
+// TODO Fix Name
+type SomeSource struct {
+	Type        string
+	CritChance  float64
+	PhysicalMin *float64
+	PhysicalMax *float64
+	AttackRate  *float64
 }
 
 type Out string
@@ -75,21 +91,40 @@ const (
 	OutBonechillEffect    = Out("BonechillEffect")
 )
 
+type OutTable string
+
+const (
+	OutTableMainHand = OutTable("MainHand")
+	OutTableOffHand  = OutTable("OffHand")
+)
+
 type ActiveSkill struct {
 	SkillFlags   map[SkillFlag]bool
-	SkillModList ModList
+	SkillModList *ModList
 	SkillCfg     *ListCfg
 	SkillTypes   map[SkillType]bool
-	SkillData    SkillData
-	ActiveEffect ActiveEffect
+	SkillData    map[string]interface{} // TODO Implement. Might be SkillData?
+	ActiveEffect *ActiveEffect
+	Weapon1Cfg   *ListCfg
+	Weapon2Cfg   *ListCfg
+	SupportList  []interface{}
+	Actor        *Actor `json:"-"`
+	SocketGroup  interface{}
+	SummonSkill  interface{}
 }
 
 type SkillFlag string
 
 const (
-	SkillFlagBrand = SkillFlag("brand")
-	SkillFlagHex   = SkillFlag("hex")
-	SkillFlagCurse = SkillFlag("curse")
+	SkillFlagBrand         = SkillFlag("brand")
+	SkillFlagHex           = SkillFlag("hex")
+	SkillFlagCurse         = SkillFlag("curse")
+	SkillFlagAttack        = SkillFlag("attack")
+	SkillFlagWeapon1Attack = SkillFlag("weapon1Attack")
+	SkillFlagWeapon2Attack = SkillFlag("weapon2Attack")
+	SkillFlagSelfCast      = SkillFlag("selfCast")
+	SkillFlagNotAverage    = SkillFlag("notAverage")
+	SkillFlagShowAverage   = SkillFlag("showAverage")
 )
 
 type SkillType int
@@ -218,13 +253,22 @@ const (
 )
 
 type SkillData struct {
-	SupportBonechill   bool
-	Cooldown           float64
-	Triggered          bool
-	TriggeredByBrand   bool
-	TriggeredOnDeath   bool
-	TriggerTime        float64
-	TriggeredBySaviour bool
+	SupportBonechill      bool
+	Cooldown              float64
+	Triggered             bool
+	TriggeredByBrand      bool
+	TriggeredOnDeath      bool
+	TriggerTime           *float64
+	TriggeredBySaviour    bool
+	CritChance            *float64
+	SetOffHandPhysicalMin *float64
+	SetOffHandPhysicalMax *float64
+	AttackTime            *float64
+	CastTimeOverride      *float64
+	TimeOverride          *float64
+	FixedCastTime         bool
+	TriggerRate           *float64
+	ShowAverage           bool
 }
 
 type ActiveEffect struct {
@@ -232,5 +276,23 @@ type ActiveEffect struct {
 }
 
 type GrantedEffect struct {
-	Name string
+	Name     string
+	CastTime *float64
+}
+
+/*
+
+	label = "Main Hand",
+	source = source,
+	cfg = activeSkill.weapon1Cfg,
+	output = output.MainHand,
+	breakdown = breakdown and breakdown.MainHand,
+*/
+
+type DamagePass struct {
+	Label     string
+	Source    map[string]interface{}
+	Config    *ListCfg
+	Output    map[string]float64
+	Breakdown interface{} // TODO Implement
 }

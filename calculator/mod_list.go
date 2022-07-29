@@ -165,3 +165,33 @@ func (m *ModList) Flag(cfg *ListCfg, names ...string) bool {
 
 	return false
 }
+
+func (m *ModList) Override(cfg *ListCfg, names ...string) interface{} {
+	mappedNames := make(map[string]bool, 0)
+	for _, name := range names {
+		mappedNames[name] = true
+	}
+
+	for _, mo := range m.mods {
+		if _, ok := mappedNames[mo.Name()]; !ok {
+			continue
+		}
+
+		if mo.Type() == mod.TypeOverride &&
+			(cfg == nil || cfg.Flags == nil || (*cfg.Flags)&mo.Flags() == mo.Flags()) &&
+			(cfg == nil || cfg.KeywordFlags == nil || mod.MatchKeywordFlags(*cfg.KeywordFlags, mo.KeywordFlags())) &&
+			(cfg == nil || cfg.Source == nil || *cfg.Source == mo.GetSource()) {
+
+			value := m.EvalMod(mo, cfg)
+			if value != nil {
+				return value
+			}
+		}
+	}
+
+	if m.Parent != nil {
+		// TODO Parent
+	}
+
+	return nil
+}

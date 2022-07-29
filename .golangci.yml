@@ -1,7 +1,7 @@
 linters:
   disable-all: true
   enable:
-    - deadcode
+#    - deadcode
     - errcheck
     - gosimple
     - govet
@@ -9,8 +9,8 @@ linters:
     - staticcheck
     - structcheck
     - typecheck
-    - unused
-    - varcheck
+#    - unused
+#    - varcheck
     - bidichk
     - contextcheck
     - durationcheck

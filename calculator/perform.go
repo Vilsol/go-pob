@@ -4,6 +4,7 @@ import (
 	"math"
 
 	"go-pob/calculator/mod"
+	"go-pob/data"
 	"go-pob/utils"
 )
 
@@ -148,18 +149,18 @@ func PerformCalc(env *Environment) {
 			}
 			doomEffect := activeSkill.SkillModList.More(nil, "DoomEffect")
 			// Update the max doom limit
-			env.Player.Output[OutHexDoomLimit] = utils.Max(maxDoom, env.Player.Output[OutHexDoomLimit])
+			env.Player.Output["HexDoomLimit"] = utils.Max(maxDoom, env.Player.Output["HexDoomLimit"])
 			// Update the Hex Doom to apply
 			activeSkill.SkillModList.AddMod(mod.NewFloat("CurseEffect", mod.TypeIncrease, utils.Min(hexDoom, maxDoom)*doomEffect).Source("Doom"))
-			env.ModDB.Multipliers["HexDoom"] = utils.Min(utils.Max(hexDoom, env.ModDB.Multipliers["HexDoom"]), env.Player.Output[OutHexDoomLimit])
+			env.ModDB.Multipliers["HexDoom"] = utils.Min(utils.Max(hexDoom, env.ModDB.Multipliers["HexDoom"]), env.Player.Output["HexDoomLimit"])
 		}
 
-		if activeSkill.SkillData.SupportBonechill {
+		if utils.HasTrue(activeSkill.SkillData, "SupportBonechill") {
 			if activeSkill.SkillTypes[SkillTypeChillingArea] || ((activeSkill.SkillTypes[SkillTypeNonHitChill] && !activeSkill.SkillModList.Flag(nil, "CannotChill")) &&
 				!(activeSkill.ActiveEffect.GrantedEffect.Name == "Summon Skitterbots" && activeSkill.SkillModList.Flag(nil, "SkitterbotsCannotChill"))) {
-				env.Player.Output[OutBonechillDotEffect] = math.Floor(*nonDamagingAilments[NDAChill].Default * (1 + activeSkill.SkillModList.Sum(mod.TypeIncrease, nil, "EnemyChillEffect")/100))
+				env.Player.Output["BonechillDotEffect"] = math.Floor(*data.NonDamagingAilments[data.AilmentChill].Default * (1 + activeSkill.SkillModList.Sum(mod.TypeIncrease, nil, "EnemyChillEffect")/100))
 			}
-			env.Player.Output[OutBonechillEffect] = utils.Max(env.Player.Output[OutBonechillEffect], env.EnemyModDB.Sum(mod.TypeBase, nil, "BonechillEffect"), env.Player.Output[OutBonechillDotEffect])
+			env.Player.Output["BonechillEffect"] = utils.Max(env.Player.Output["BonechillEffect"], env.EnemyModDB.Sum(mod.TypeBase, nil, "BonechillEffect"), env.Player.Output["BonechillDotEffect"])
 		}
 
 		/*
@@ -2141,8 +2142,9 @@ func PerformCalc(env *Environment) {
 	/*
 		TODO -- Defence/offence calculations
 		calcs.defence(env, env.player)
-		calcs.offence(env, env.player, env.player.mainSkill)
 	*/
+
+	CalculateOffence(env, env.Player, env.Player.MainSkill)
 
 	/*
 		TODO Minion Defence/offence calculations

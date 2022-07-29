@@ -3,6 +3,7 @@ package mod
 var _ Tag = (*MultiplierThresholdTag)(nil)
 
 type MultiplierThresholdTag struct {
+	TagType           Type
 	Variable          string
 	TagThreshold      *float64
 	ThresholdVariable *string
@@ -11,28 +12,26 @@ type MultiplierThresholdTag struct {
 
 func MultiplierThreshold(variable string) *MultiplierThresholdTag {
 	return &MultiplierThresholdTag{
+		TagType:  TypeMultiplierThreshold,
 		Variable: variable,
 	}
 }
 
-func (*MultiplierThresholdTag) Type() Type {
-	return TypeMultiplierThreshold
+func (m *MultiplierThresholdTag) Type() Type {
+	return m.TagType
 }
 
 func (m *MultiplierThresholdTag) Threshold(threshold float64) *MultiplierThresholdTag {
-	out := *m
-	out.TagThreshold = &threshold
-	return &out
+	m.TagThreshold = &threshold
+	return m
 }
 
 func (m *MultiplierThresholdTag) ThresholdVar(thresholdVar string) *MultiplierThresholdTag {
-	out := *m
-	out.ThresholdVariable = &thresholdVar
-	return &out
+	m.ThresholdVariable = &thresholdVar
+	return m
 }
 
 func (m *MultiplierThresholdTag) Upper(upper bool) *MultiplierThresholdTag {
-	out := *m
-	out.TagUpper = upper
-	return &out
+	m.TagUpper = upper
+	return m
 }

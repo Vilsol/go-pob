@@ -3,6 +3,8 @@ package mod
 var _ Mod = (*BaseMod)(nil)
 
 type BaseMod struct {
+	parent Mod
+
 	ModName         string
 	ModType         Type
 	ModSource       Source
@@ -40,25 +42,21 @@ func (m *BaseMod) Type() Type {
 }
 
 func (m *BaseMod) Source(source Source) Mod {
-	out := *m
-	out.ModSource = source
-	return &out
+	m.ModSource = source
+	return m.parent
 }
 
 func (m *BaseMod) Flag(flag MFlag) Mod {
-	out := *m
-	out.ModFlags |= flag
-	return &out
+	m.ModFlags |= flag
+	return m.parent
 }
 
 func (m *BaseMod) KeywordFlag(keywordFlag KeywordFlag) Mod {
-	out := *m
-	out.ModKeywordFlags |= keywordFlag
-	return &out
+	m.ModKeywordFlags |= keywordFlag
+	return m.parent
 }
 
 func (m *BaseMod) Tag(tag Tag) Mod {
-	out := *m
-	out.ModTags = append(out.ModTags, tag)
-	return &out
+	m.ModTags = append(m.ModTags, tag)
+	return m.parent
 }

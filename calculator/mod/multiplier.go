@@ -3,6 +3,7 @@ package mod
 var _ Tag = (*MultiplierTag)(nil)
 
 type MultiplierTag struct {
+	TagType          Type
 	Variable         string
 	Base             float64
 	Division         float64
@@ -13,24 +14,23 @@ type MultiplierTag struct {
 
 func Multiplier(variable string, base float64) *MultiplierTag {
 	return &MultiplierTag{
+		TagType:  TypeMultiplier,
 		Variable: variable,
 		Base:     base,
 		Division: 1,
 	}
 }
 
-func (*MultiplierTag) Type() Type {
-	return TypeMultiplier
+func (m *MultiplierTag) Type() Type {
+	return m.TagType
 }
 
 func (m *MultiplierTag) Div(div float64) *MultiplierTag {
-	out := *m
-	out.Division = div
-	return &out
+	m.Division = div
+	return m
 }
 
 func (m *MultiplierTag) Limit(limit float64) *MultiplierTag {
-	out := *m
-	out.TagLimit = &limit
-	return &out
+	m.TagLimit = &limit
+	return m
 }

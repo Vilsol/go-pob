@@ -17,3 +17,7 @@ func CopyMap[K comparable, V any](s map[K]V) map[K]V {
 func Ptr[T any](a T) *T {
 	return &a
 }
+
+func Interface(data any) interface{} {
+	return data
+}

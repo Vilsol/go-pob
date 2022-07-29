@@ -3,6 +3,7 @@ package mod
 var _ Tag = (*ActorConditionTag)(nil)
 
 type ActorConditionTag struct {
+	TagType  Type
 	Actor    *string
 	Variable string
 	Negative bool
@@ -10,17 +11,17 @@ type ActorConditionTag struct {
 
 func ActorCondition(actor string, variable string) *ActorConditionTag {
 	return &ActorConditionTag{
+		TagType:  TypeActorCondition,
 		Actor:    &actor,
 		Variable: variable,
 	}
 }
 
-func (*ActorConditionTag) Type() Type {
-	return TypeActorCondition
+func (m *ActorConditionTag) Type() Type {
+	return m.TagType
 }
 
 func (m *ActorConditionTag) Neg(negative bool) *ActorConditionTag {
-	out := *m
-	out.Negative = negative
-	return &out
+	m.Negative = negative
+	return m
 }

@@ -24,7 +24,7 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, *ModDB, 
 	env.Player = &Actor{
 		ModDB:           env.ModDB,
 		Level:           build.Build.Level,
-		ActiveSkillList: make(map[string]ActiveSkill),
+		ActiveSkillList: make([]*ActiveSkill, 0),
 	}
 
 	env.Enemy = &Actor{
@@ -59,7 +59,7 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, *ModDB, 
 
 	switch buffMode {
 	case BuffModeEffective:
-		env.ModeBuffs = true
+		env.ModeEffective = true
 		fallthrough
 	case BuffModeCombat:
 		env.ModeCombat = true
@@ -126,27 +126,22 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, *ModDB, 
 	env.ModDB.AddMod(mod.NewFloat("Multiplier:AllocatedNotable", mod.TypeBase, float64(env.Spec.AllocatedNotableCount)))
 	env.ModDB.AddMod(mod.NewFloat("Multiplier:AllocatedMastery", mod.TypeBase, float64(env.Spec.AllocatedMasteryCount)))
 
-	/*
-		TODO bandit mods
-		-- Add bandit mods
-		if env.configInput.bandit == "Alira" then
-			modDB:NewMod("ManaRegen", "BASE", 5, "Bandit")
-			modDB:NewMod("CritMultiplier", "BASE", 20, "Bandit")
-			modDB:NewMod("ElementalResist", "BASE", 15, "Bandit")
-		elseif env.configInput.bandit == "Kraityn" then
-			modDB:NewMod("Speed", "INC", 6, "Bandit")
-			for _, ailment in ipairs(env.data.elementalAilmentTypeList) do
-				modDB:NewMod("Avoid"..ailment, "BASE", 10, "Bandit")
-			end
-			modDB:NewMod("MovementSpeed", "INC", 6, "Bandit")
-		elseif env.configInput.bandit == "Oak" then
-			modDB:NewMod("LifeRegenPercent", "BASE", 1, "Bandit")
-			modDB:NewMod("PhysicalDamageReduction", "BASE", 2, "Bandit")
-			modDB:NewMod("PhysicalDamage", "INC", 20, "Bandit")
-		else
-			modDB:NewMod("ExtraPoints", "BASE", 2, "Bandit")
-		end
-	*/
+	// Bandit mods
+	switch build.Build.Bandit {
+	case "Alira":
+		env.ModDB.AddMod(mod.NewFloat("ManaRegen", mod.TypeBase, 5).Source("Bandit"))
+		env.ModDB.AddMod(mod.NewFloat("CritMultiplier", mod.TypeBase, 20).Source("Bandit"))
+		env.ModDB.AddMod(mod.NewFloat("ElementalResist", mod.TypeBase, 15).Source("Bandit"))
+	case "Kraityn":
+		env.ModDB.AddMod(mod.NewFloat("Speed", mod.TypeIncrease, 6).Source("Bandit"))
+		env.ModDB.AddMod(mod.NewFloat("MovementSpeed", mod.TypeIncrease, 6).Source("Bandit"))
+		for _, ailment := range data.Ailment("").Values() {
+			env.ModDB.AddMod(mod.NewFloat("Avoid"+string(ailment), mod.TypeBase, 10).Source("Bandit"))
+		}
+	case "Oak":
+	default:
+		env.ModDB.AddMod(mod.NewFloat("ExtraPoints", mod.TypeBase, 2).Source("Bandit"))
+	}
 
 	/*
 		TODO Implement pantheon mods
@@ -166,12 +161,9 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, *ModDB, 
 
 	initModDB(env, env.EnemyModDB)
 
-	/*
-		TODO Enemy Mods
-		env.EnemyModDB.AddMod(mod.NewFloat("Accuracy", mod.ModTypeBase, env.data.monsterAccuracyTable[env.enemyLevel]).Source("Base"))
-		env.EnemyModDB.AddMod(mod.NewFloat("Evasion", mod.ModTypeBase, env.data.monsterEvasionTable[env.enemyLevel]).Source("Base"))
-		env.EnemyModDB.AddMod(mod.NewFloat("Armour", mod.ModTypeBase, env.data.monsterArmourTable[env.enemyLevel]).Source("Base"))
-	*/
+	env.EnemyModDB.AddMod(mod.NewFloat("Accuracy", mod.TypeBase, data.MonsterAccuracyTable[env.EnemyLevel]).Source("Base"))
+	env.EnemyModDB.AddMod(mod.NewFloat("Evasion", mod.TypeBase, data.MonsterEvasionTable[env.EnemyLevel]).Source("Base"))
+	env.EnemyModDB.AddMod(mod.NewFloat("Armour", mod.TypeBase, data.MonsterArmourTable[env.EnemyLevel]).Source("Base"))
 
 	/*
 		TODO Custom Mods
@@ -184,278 +176,273 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, *ModDB, 
 	cachedMinionDB := env.Minion.Clone()
 
 	/*
-		TODO Passive Nodes
-		if not accelerate.nodeAlloc then
-			-- Build list of passive nodes
-			local nodes
-			if override.addNodes or override.removeNodes then
-				nodes = { }
-				if override.addNodes then
-					for node in pairs(override.addNodes) do
-						nodes[node.id] = node
-					end
+		TODO -- Build list of passive nodes
+		local nodes
+		if override.addNodes or override.removeNodes then
+			nodes = { }
+			if override.addNodes then
+				for node in pairs(override.addNodes) do
+					nodes[node.id] = node
 				end
-				for _, node in pairs(env.spec.allocNodes) do
-					if not override.removeNodes or not override.removeNodes[node] then
-						nodes[node.id] = node
-					end
-				end
-			else
-				nodes = copyTable(env.spec.allocNodes, true)
 			end
-			env.allocNodes = nodes
+			for _, node in pairs(env.spec.allocNodes) do
+				if not override.removeNodes or not override.removeNodes[node] then
+					nodes[node.id] = node
+				end
+			end
+		else
+			nodes = copyTable(env.spec.allocNodes, true)
 		end
+		env.allocNodes = nodes
 	*/
 
 	/*
 		TODO -- Build and merge item modifiers, and create list of radius jewels
-		if not accelerate.requirementsItems then
-			for _, slot in pairs(build.itemsTab.orderedSlots) do
-				local slotName = slot.slotName
-				local item
-				if slotName == override.repSlotName then
-					item = override.repItem
-				elseif override.repItem and override.repSlotName:match("^Weapon 1") and slotName:match("^Weapon 2") and
-				(override.repItem.base.type == "Staff" or override.repItem.base.type == "Two Handed Sword" or override.repItem.base.type == "Two Handed Axe" or override.repItem.base.type == "Two Handed Mace"
-				or (override.repItem.base.type == "Bow" and item and item.base.type ~= "Quiver")) then
+		for _, slot in pairs(build.itemsTab.orderedSlots) do
+			local slotName = slot.slotName
+			local item
+			if slotName == override.repSlotName then
+				item = override.repItem
+			elseif override.repItem and override.repSlotName:match("^Weapon 1") and slotName:match("^Weapon 2") and
+			(override.repItem.base.type == "Staff" or override.repItem.base.type == "Two Handed Sword" or override.repItem.base.type == "Two Handed Axe" or override.repItem.base.type == "Two Handed Mace"
+			or (override.repItem.base.type == "Bow" and item and item.base.type ~= "Quiver")) then
+				item = nil
+			elseif slot.nodeId and override.spec then
+				item = build.itemsTab.items[env.spec.jewels[slot.nodeId]]
+			else
+				item = build.itemsTab.items[slot.selItemId]
+			end
+			if item then
+				-- Find skills granted by this item
+				for _, skill in ipairs(item.grantedSkills) do
+					local grantedSkill = copyTable(skill)
+					grantedSkill.sourceItem = item
+					grantedSkill.slotName = slotName
+					t_insert(env.grantedSkillsItems, grantedSkill)
+				end
+			end
+			if slot.weaponSet and slot.weaponSet ~= (build.itemsTab.activeItemSet.useSecondWeaponSet and 2 or 1) then
+				item = nil
+			end
+			if slot.weaponSet == 2 and build.itemsTab.activeItemSet.useSecondWeaponSet then
+				slotName = slotName:gsub(" Swap","")
+			end
+			if slot.nodeId then
+				-- Slot is a jewel socket, check if socket is allocated
+				if not env.allocNodes[slot.nodeId] then
 					item = nil
-				elseif slot.nodeId and override.spec then
-					item = build.itemsTab.items[env.spec.jewels[slot.nodeId]]
-				else
-					item = build.itemsTab.items[slot.selItemId]
-				end
-				if item then
-					-- Find skills granted by this item
-					for _, skill in ipairs(item.grantedSkills) do
-						local grantedSkill = copyTable(skill)
-						grantedSkill.sourceItem = item
-						grantedSkill.slotName = slotName
-						t_insert(env.grantedSkillsItems, grantedSkill)
-					end
-				end
-				if slot.weaponSet and slot.weaponSet ~= (build.itemsTab.activeItemSet.useSecondWeaponSet and 2 or 1) then
-					item = nil
-				end
-				if slot.weaponSet == 2 and build.itemsTab.activeItemSet.useSecondWeaponSet then
-					slotName = slotName:gsub(" Swap","")
-				end
-				if slot.nodeId then
-					-- Slot is a jewel socket, check if socket is allocated
-					if not env.allocNodes[slot.nodeId] then
-						item = nil
-					elseif item and item.jewelRadiusIndex then
-						-- Jewel has a radius, add it to the list
-						local funcList = item.jewelData.funcList or { { type = "Self", func = function(node, out, data)
-							-- Default function just tallies all stats in radius
-							if node then
-								for _, stat in pairs({"Str","Dex","Int"}) do
-									data[stat] = (data[stat] or 0) + out:Sum("BASE", nil, stat)
-								end
-							end
-						end } }
-						for _, func in ipairs(funcList) do
-							local node = env.spec.nodes[slot.nodeId]
-							t_insert(env.radiusJewelList, {
-								nodes = node.nodesInRadius and node.nodesInRadius[item.jewelRadiusIndex] or { },
-								func = func.func,
-								type = func.type,
-								item = item,
-								nodeId = slot.nodeId,
-								attributes = node.attributesInRadius and node.attributesInRadius[item.jewelRadiusIndex] or { },
-								data = { }
-							})
-							if func.type ~= "Self" and node.nodesInRadius then
-								-- Add nearby unallocated nodes to the extra node list
-								for nodeId, node in pairs(node.nodesInRadius[item.jewelRadiusIndex]) do
-									if not env.allocNodes[nodeId] then
-										env.extraRadiusNodeList[nodeId] = env.spec.nodes[nodeId]
-									end
-								end
+				elseif item and item.jewelRadiusIndex then
+					-- Jewel has a radius, add it to the list
+					local funcList = item.jewelData.funcList or { { type = "Self", func = function(node, out, data)
+						-- Default function just tallies all stats in radius
+						if node then
+							for _, stat in pairs({"Str","Dex","Int"}) do
+								data[stat] = (data[stat] or 0) + out:Sum("BASE", nil, stat)
 							end
 						end
-					end
-				end
-				if item and item.type == "Flask" then
-					if slot.active then
-						env.flasks[item] = true
-					end
-					if item.base.subType == "Life" then
-						local highestLifeRecovery = env.itemModDB.multipliers["LifeFlaskRecovery"] or 0
-						if item.flaskData.lifeTotal > highestLifeRecovery then
-							env.itemModDB.multipliers["LifeFlaskRecovery"] = item.flaskData.lifeTotal
-						end
-					end
-					item = nil
-				end
-				local scale = 1
-				if item and item.type == "Jewel" and item.base.subType == "Abyss" and slot.parentSlot then
-					-- Check if the item in the parent slot has enough Abyssal Sockets
-					local parentItem = env.player.itemList[slot.parentSlot.slotName]
-					if not parentItem or parentItem.abyssalSocketCount < slot.slotNum then
-						item = nil
-					else
-						scale = parentItem.socketedJewelEffectModifier
-					end
-				end
-				if slot.nodeId and item and item.type == "Jewel" and item.jewelData and item.jewelData.jewelIncEffectFromClassStart then
-					local node = env.spec.nodes[slot.nodeId]
-					if node and node.distanceToClassStart then
-						scale = scale + node.distanceToClassStart * (item.jewelData.jewelIncEffectFromClassStart / 100)
-					end
-				end
-				if item then
-					env.player.itemList[slotName] = item
-					-- Merge mods for this item
-					local srcList = item.modList or item.slotModList[slot.slotNum]
-					if item.requirements and not accelerate.requirementsItems then
-						t_insert(env.requirementsTableItems, {
-							source = "Item",
-							sourceItem = item,
-							sourceSlot = slotName,
-							Str = item.requirements.strMod,
-							Dex = item.requirements.dexMod,
-							Int = item.requirements.intMod,
+					end } }
+					for _, func in ipairs(funcList) do
+						local node = env.spec.nodes[slot.nodeId]
+						t_insert(env.radiusJewelList, {
+							nodes = node.nodesInRadius and node.nodesInRadius[item.jewelRadiusIndex] or { },
+							func = func.func,
+							type = func.type,
+							item = item,
+							nodeId = slot.nodeId,
+							attributes = node.attributesInRadius and node.attributesInRadius[item.jewelRadiusIndex] or { },
+							data = { }
 						})
-					end
-					if item.type == "Jewel" and item.base.subType == "Abyss" then
-						-- Update Abyss Jewel conditions/multipliers
-						local cond = "Have"..item.baseName:gsub(" ","")
-						if not env.itemModDB.conditions[cond] then
-							env.itemModDB.conditions[cond] = true
-							env.itemModDB.multipliers["AbyssJewelType"] = (env.itemModDB.multipliers["AbyssJewelType"] or 0) + 1
-						end
-						if slot.parentSlot then
-							env.itemModDB.conditions[cond.."In"..slot.parentSlot.slotName] = true
-						end
-						env.itemModDB.multipliers["AbyssJewel"] = (env.itemModDB.multipliers["AbyssJewel"] or 0) + 1
-						env.itemModDB.multipliers[item.baseName:gsub(" ","")] = (env.itemModDB.multipliers[item.baseName:gsub(" ","")] or 0) + 1
-					end
-					if item.type == "Shield" and env.allocNodes[45175] and env.allocNodes[45175].dn == "Necromantic Aegis" then
-						-- Special handling for Necromantic Aegis
-						env.aegisModList = new("ModList")
-						for _, mod in ipairs(srcList) do
-							-- Filter out mods that apply to socketed gems, or which add supports
-							local add = true
-							for _, tag in ipairs(mod) do
-								if tag.type == "SocketedIn" then
-									add = false
-									break
+						if func.type ~= "Self" and node.nodesInRadius then
+							-- Add nearby unallocated nodes to the extra node list
+							for nodeId, node in pairs(node.nodesInRadius[item.jewelRadiusIndex]) do
+								if not env.allocNodes[nodeId] then
+									env.extraRadiusNodeList[nodeId] = env.spec.nodes[nodeId]
 								end
 							end
-							if add then
-								env.aegisModList:ScaleAddMod(mod, scale)
-							else
-								env.itemModDB:ScaleAddMod(mod, scale)
+						end
+					end
+				end
+			end
+			if item and item.type == "Flask" then
+				if slot.active then
+					env.flasks[item] = true
+				end
+				if item.base.subType == "Life" then
+					local highestLifeRecovery = env.itemModDB.multipliers["LifeFlaskRecovery"] or 0
+					if item.flaskData.lifeTotal > highestLifeRecovery then
+						env.itemModDB.multipliers["LifeFlaskRecovery"] = item.flaskData.lifeTotal
+					end
+				end
+				item = nil
+			end
+			local scale = 1
+			if item and item.type == "Jewel" and item.base.subType == "Abyss" and slot.parentSlot then
+				-- Check if the item in the parent slot has enough Abyssal Sockets
+				local parentItem = env.player.itemList[slot.parentSlot.slotName]
+				if not parentItem or parentItem.abyssalSocketCount < slot.slotNum then
+					item = nil
+				else
+					scale = parentItem.socketedJewelEffectModifier
+				end
+			end
+			if slot.nodeId and item and item.type == "Jewel" and item.jewelData and item.jewelData.jewelIncEffectFromClassStart then
+				local node = env.spec.nodes[slot.nodeId]
+				if node and node.distanceToClassStart then
+					scale = scale + node.distanceToClassStart * (item.jewelData.jewelIncEffectFromClassStart / 100)
+				end
+			end
+			if item then
+				env.player.itemList[slotName] = item
+				-- Merge mods for this item
+				local srcList = item.modList or item.slotModList[slot.slotNum]
+				if item.requirements and not accelerate.requirementsItems then
+					t_insert(env.requirementsTableItems, {
+						source = "Item",
+						sourceItem = item,
+						sourceSlot = slotName,
+						Str = item.requirements.strMod,
+						Dex = item.requirements.dexMod,
+						Int = item.requirements.intMod,
+					})
+				end
+				if item.type == "Jewel" and item.base.subType == "Abyss" then
+					-- Update Abyss Jewel conditions/multipliers
+					local cond = "Have"..item.baseName:gsub(" ","")
+					if not env.itemModDB.conditions[cond] then
+						env.itemModDB.conditions[cond] = true
+						env.itemModDB.multipliers["AbyssJewelType"] = (env.itemModDB.multipliers["AbyssJewelType"] or 0) + 1
+					end
+					if slot.parentSlot then
+						env.itemModDB.conditions[cond.."In"..slot.parentSlot.slotName] = true
+					end
+					env.itemModDB.multipliers["AbyssJewel"] = (env.itemModDB.multipliers["AbyssJewel"] or 0) + 1
+					env.itemModDB.multipliers[item.baseName:gsub(" ","")] = (env.itemModDB.multipliers[item.baseName:gsub(" ","")] or 0) + 1
+				end
+				if item.type == "Shield" and env.allocNodes[45175] and env.allocNodes[45175].dn == "Necromantic Aegis" then
+					-- Special handling for Necromantic Aegis
+					env.aegisModList = new("ModList")
+					for _, mod in ipairs(srcList) do
+						-- Filter out mods that apply to socketed gems, or which add supports
+						local add = true
+						for _, tag in ipairs(mod) do
+							if tag.type == "SocketedIn" then
+								add = false
+								break
 							end
 						end
-					elseif (slotName == "Weapon 1" or slotName == "Weapon 2") and modDB:Flag(nil, "Condition:EnergyBladeActive") then
-						local type = env.player.itemList[slotName] and env.player.itemList[slotName].weaponData and env.player.itemList[slotName].weaponData[1].type
-						local info = env.data.weaponTypeInfo[type]
-						if info and type ~= "Bow" then
-							local name = info.oneHand and "Energy Blade One Handed" or "Energy Blade Two Handed"
-							local item = new("Item")
-							item.name = name
-							item.base = data.itemBases[name]
-							item.baseName = name
-							item.classRequirementModLines = { }
-							item.buffModLines = { }
-							item.enchantModLines = { }
-							item.scourgeModLines = { }
-							item.implicitModLines = { }
-							item.explicitModLines = { }
-							item.quality = 0
-							item.rarity = "NORMAL"
-							if item.baseName.implicit then
-								local implicitIndex = 1
-								for line in item.baseName.implicit:gmatch("[^\n]+") do
-									local modList, extra = modLib.parseMod(line)
-									t_insert(item.implicitModLines, { line = line, extra = extra, modList = modList or { }, modTags = item.baseName.implicitModTypes and item.baseName.implicitModTypes[implicitIndex] or { } })
-									implicitIndex = implicitIndex + 1
-								end
-							end
-							item:NormaliseQuality()
-							item:BuildAndParseRaw()
-							env.player.itemList[slotName] = item
+						if add then
+							env.aegisModList:ScaleAddMod(mod, scale)
 						else
-							env.itemModDB:ScaleAddList(srcList, scale)
-						end
-					elseif slotName == "Weapon 1" and item.name == "The Iron Mass, Gladius" then
-						-- Special handling for The Iron Mass
-						env.theIronMass = new("ModList")
-						for _, mod in ipairs(srcList) do
-							-- Filter out mods that apply to socketed gems, or which add supports
-							local add = true
-							for _, tag in ipairs(mod) do
-								if tag.type == "SocketedIn" then
-									add = false
-									break
-								end
-							end
-							if add then
-								env.theIronMass:ScaleAddMod(mod, scale)
-							end
-							-- Add all the stats to player as well
 							env.itemModDB:ScaleAddMod(mod, scale)
 						end
-					elseif slotName == "Weapon 1" and item.grantedSkills[1] and item.grantedSkills[1].skillId == "UniqueAnimateWeapon" then
-						-- Special handling for The Dancing Dervish
-						env.weaponModList1 = new("ModList")
-						for _, mod in ipairs(srcList) do
-							-- Filter out mods that apply to socketed gems, or which add supports
-							local add = true
-							for _, tag in ipairs(mod) do
-								if tag.type == "SocketedIn" then
-									add = false
-									break
-								end
-							end
-							if add then
-								env.weaponModList1:ScaleAddMod(mod, scale)
-							else
-								env.itemModDB:ScaleAddMod(mod, scale)
+					end
+				elseif (slotName == "Weapon 1" or slotName == "Weapon 2") and modDB:Flag(nil, "Condition:EnergyBladeActive") then
+					local type = env.player.itemList[slotName] and env.player.itemList[slotName].weaponData and env.player.itemList[slotName].weaponData[1].type
+					local info = env.data.weaponTypeInfo[type]
+					if info and type ~= "Bow" then
+						local name = info.oneHand and "Energy Blade One Handed" or "Energy Blade Two Handed"
+						local item = new("Item")
+						item.name = name
+						item.base = data.itemBases[name]
+						item.baseName = name
+						item.classRequirementModLines = { }
+						item.buffModLines = { }
+						item.enchantModLines = { }
+						item.scourgeModLines = { }
+						item.implicitModLines = { }
+						item.explicitModLines = { }
+						item.quality = 0
+						item.rarity = "NORMAL"
+						if item.baseName.implicit then
+							local implicitIndex = 1
+							for line in item.baseName.implicit:gmatch("[^\n]+") do
+								local modList, extra = modLib.parseMod(line)
+								t_insert(item.implicitModLines, { line = line, extra = extra, modList = modList or { }, modTags = item.baseName.implicitModTypes and item.baseName.implicitModTypes[implicitIndex] or { } })
+								implicitIndex = implicitIndex + 1
 							end
 						end
+						item:NormaliseQuality()
+						item:BuildAndParseRaw()
+						env.player.itemList[slotName] = item
 					else
 						env.itemModDB:ScaleAddList(srcList, scale)
 					end
-					-- set conditions on restricted items
-					if item.classRestriction then
-						env.itemModDB.conditions[item.title:gsub(" ", "")] = item.classRestriction
+				elseif slotName == "Weapon 1" and item.name == "The Iron Mass, Gladius" then
+					-- Special handling for The Iron Mass
+					env.theIronMass = new("ModList")
+					for _, mod in ipairs(srcList) do
+						-- Filter out mods that apply to socketed gems, or which add supports
+						local add = true
+						for _, tag in ipairs(mod) do
+							if tag.type == "SocketedIn" then
+								add = false
+								break
+							end
+						end
+						if add then
+							env.theIronMass:ScaleAddMod(mod, scale)
+						end
+						-- Add all the stats to player as well
+						env.itemModDB:ScaleAddMod(mod, scale)
 					end
-					if item.type ~= "Jewel" and item.type ~= "Flask" then
-						-- Update item counts
-						local key
-						if item.rarity == "UNIQUE" or item.rarity == "RELIC" then
-							key = "UniqueItem"
-						elseif item.rarity == "RARE" then
-							key = "RareItem"
-						elseif item.rarity == "MAGIC" then
-							key = "MagicItem"
+				elseif slotName == "Weapon 1" and item.grantedSkills[1] and item.grantedSkills[1].skillId == "UniqueAnimateWeapon" then
+					-- Special handling for The Dancing Dervish
+					env.weaponModList1 = new("ModList")
+					for _, mod in ipairs(srcList) do
+						-- Filter out mods that apply to socketed gems, or which add supports
+						local add = true
+						for _, tag in ipairs(mod) do
+							if tag.type == "SocketedIn" then
+								add = false
+								break
+							end
+						end
+						if add then
+							env.weaponModList1:ScaleAddMod(mod, scale)
 						else
-							key = "NormalItem"
+							env.itemModDB:ScaleAddMod(mod, scale)
 						end
-						env.itemModDB.multipliers[key] = (env.itemModDB.multipliers[key] or 0) + 1
-						env.itemModDB.conditions[key .. "In" .. slotName] = true
-						if item.corrupted then
-							env.itemModDB.multipliers.CorruptedItem = (env.itemModDB.multipliers.CorruptedItem or 0) + 1
-						else
-							env.itemModDB.multipliers.NonCorruptedItem = (env.itemModDB.multipliers.NonCorruptedItem or 0) + 1
-						end
-						if item.shaper then
-							env.itemModDB.multipliers.ShaperItem = (env.itemModDB.multipliers.ShaperItem or 0) + 1
-							env.itemModDB.conditions["ShaperItemIn"..slotName] = true
-						else
-							env.itemModDB.multipliers.NonShaperItem = (env.itemModDB.multipliers.NonShaperItem or 0) + 1
-						end
-						if item.elder then
-							env.itemModDB.multipliers.ElderItem = (env.itemModDB.multipliers.ElderItem or 0) + 1
-							env.itemModDB.conditions["ElderItemIn"..slotName] = true
-						else
-							env.itemModDB.multipliers.NonElderItem = (env.itemModDB.multipliers.NonElderItem or 0) + 1
-						end
-						if item.shaper or item.elder then
-							env.itemModDB.multipliers.ShaperOrElderItem = (env.itemModDB.multipliers.ShaperOrElderItem or 0) + 1
-						end
+					end
+				else
+					env.itemModDB:ScaleAddList(srcList, scale)
+				end
+				-- set conditions on restricted items
+				if item.classRestriction then
+					env.itemModDB.conditions[item.title:gsub(" ", "")] = item.classRestriction
+				end
+				if item.type ~= "Jewel" and item.type ~= "Flask" then
+					-- Update item counts
+					local key
+					if item.rarity == "UNIQUE" or item.rarity == "RELIC" then
+						key = "UniqueItem"
+					elseif item.rarity == "RARE" then
+						key = "RareItem"
+					elseif item.rarity == "MAGIC" then
+						key = "MagicItem"
+					else
+						key = "NormalItem"
+					end
+					env.itemModDB.multipliers[key] = (env.itemModDB.multipliers[key] or 0) + 1
+					env.itemModDB.conditions[key .. "In" .. slotName] = true
+					if item.corrupted then
+						env.itemModDB.multipliers.CorruptedItem = (env.itemModDB.multipliers.CorruptedItem or 0) + 1
+					else
+						env.itemModDB.multipliers.NonCorruptedItem = (env.itemModDB.multipliers.NonCorruptedItem or 0) + 1
+					end
+					if item.shaper then
+						env.itemModDB.multipliers.ShaperItem = (env.itemModDB.multipliers.ShaperItem or 0) + 1
+						env.itemModDB.conditions["ShaperItemIn"..slotName] = true
+					else
+						env.itemModDB.multipliers.NonShaperItem = (env.itemModDB.multipliers.NonShaperItem or 0) + 1
+					end
+					if item.elder then
+						env.itemModDB.multipliers.ElderItem = (env.itemModDB.multipliers.ElderItem or 0) + 1
+						env.itemModDB.conditions["ElderItemIn"..slotName] = true
+					else
+						env.itemModDB.multipliers.NonElderItem = (env.itemModDB.multipliers.NonElderItem or 0) + 1
+					end
+					if item.shaper or item.elder then
+						env.itemModDB.multipliers.ShaperOrElderItem = (env.itemModDB.multipliers.ShaperOrElderItem or 0) + 1
 					end
 				end
 			end
@@ -480,13 +467,11 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, *ModDB, 
 
 	/*
 		TODO -- Add granted passives (e.g., amulet anoints)
-		if not accelerate.nodeAlloc then
-			for _, passive in pairs(env.modDB:List(nil, "GrantedPassive")) do
-				local node = env.spec.tree.notableMap[passive]
-				if node and (not override.removeNodes or not override.removeNodes[node.id]) then
-					env.allocNodes[node.id] = node
-					env.grantedPassives[node.id] = true
-				end
+		for _, passive in pairs(env.modDB:List(nil, "GrantedPassive")) do
+			local node = env.spec.tree.notableMap[passive]
+			if node and (not override.removeNodes or not override.removeNodes[node.id]) then
+				env.allocNodes[node.id] = node
+				env.grantedPassives[node.id] = true
 			end
 		end
 	*/
@@ -518,13 +503,11 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, *ModDB, 
 
 	/*
 		TODO -- Find skills granted by tree nodes
-		if not accelerate.nodeAlloc then
-			for _, node in pairs(env.allocNodes) do
-				for _, skill in ipairs(node.grantedSkills) do
-					local grantedSkill = copyTable(skill)
-					grantedSkill.sourceNode = node
-					t_insert(env.grantedSkillsNodes, grantedSkill)
-				end
+		for _, node in pairs(env.allocNodes) do
+			for _, skill in ipairs(node.grantedSkills) do
+				local grantedSkill = copyTable(skill)
+				grantedSkill.sourceNode = node
+				t_insert(env.grantedSkillsNodes, grantedSkill)
 			end
 		end
 	*/
@@ -536,346 +519,357 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, *ModDB, 
 
 	/*
 		TODO Skills
-		if not accelerate.skills then
-			if env.mode == "MAIN" then
-				-- Process extra skills granted by items or tree nodes
-				local markList = wipeTable(tempTable1)
-				for _, grantedSkill in ipairs(env.grantedSkills) do
-					-- Check if a matching group already exists
-					local group
-					for index, socketGroup in pairs(build.skillsTab.socketGroupList) do
-						if socketGroup.source == grantedSkill.source and socketGroup.slot == grantedSkill.slotName then
-							if socketGroup.gemList[1] and socketGroup.gemList[1].skillId == grantedSkill.skillId and socketGroup.gemList[1].level == grantedSkill.level then
-								group = socketGroup
-								markList[socketGroup] = true
-								break
+		if env.mode == "MAIN" then
+			-- Process extra skills granted by items or tree nodes
+			local markList = wipeTable(tempTable1)
+			for _, grantedSkill in ipairs(env.grantedSkills) do
+				-- Check if a matching group already exists
+				local group
+				for index, socketGroup in pairs(build.skillsTab.socketGroupList) do
+					if socketGroup.source == grantedSkill.source and socketGroup.slot == grantedSkill.slotName then
+						if socketGroup.gemList[1] and socketGroup.gemList[1].skillId == grantedSkill.skillId and socketGroup.gemList[1].level == grantedSkill.level then
+							group = socketGroup
+							markList[socketGroup] = true
+							break
+						end
+					end
+				end
+				if not group then
+					-- Create a new group for this skill
+					group = { label = "", enabled = true, gemList = { }, source = grantedSkill.source, slot = grantedSkill.slotName }
+					t_insert(build.skillsTab.socketGroupList, group)
+					markList[group] = true
+				end
+
+				-- Update the group
+				group.sourceItem = grantedSkill.sourceItem
+				group.sourcacceleeNode = grantedSkill.sourceNode
+				local activeGemInstance = group.gemList[1] or {
+					skillId = grantedSkill.skillId,
+					quality = 0,
+					enabled = true,
+				}
+				activeGemInstance.gemId = nil
+				activeGemInstance.level = grantedSkill.level
+				activeGemInstance.enableGlobal1 = true
+				if grantedSkill.triggered then
+					activeGemInstance.triggered = grantedSkill.triggered
+				end
+				wipeTable(group.gemList)
+				t_insert(group.gemList, activeGemInstance)
+				if grantedSkill.noSupports then
+					group.noSupports = true
+				else
+					for _, socketGroup in pairs(build.skillsTab.socketGroupList) do
+						-- Look for other groups that are socketed in the item
+						if socketGroup.slot == grantedSkill.slotName and not socketGroup.source then
+							-- Add all support gems to the skill's group
+							for _, gemInstance in ipairs(socketGroup.gemList) do
+								if gemInstance.gemData and gemInstance.gemData.grantedEffect.support then
+									t_insert(group.gemList, gemInstance)
+								end
 							end
 						end
 					end
-					if not group then
-						-- Create a new group for this skill
-						group = { label = "", enabled = true, gemList = { }, source = grantedSkill.source, slot = grantedSkill.slotName }
-						t_insert(build.skillsTab.socketGroupList, group)
-						markList[group] = true
-					end
+				end
+				build.skillsTab:ProcessSocketGroup(group)
+			end
 
-					-- Update the group
-					group.sourceItem = grantedSkill.sourceItem
-					group.sourceNode = grantedSkill.sourceNode
-					local activeGemInstance = group.gemList[1] or {
-						skillId = grantedSkill.skillId,
-						quality = 0,
-						enabled = true,
-					}
-					activeGemInstance.gemId = nil
-					activeGemInstance.level = grantedSkill.level
-					activeGemInstance.enableGlobal1 = true
-					if grantedSkill.triggered then
-						activeGemInstance.triggered = grantedSkill.triggered
+			-- Remove any socket groups that no longer have a matching item
+			local i = 1
+			while build.skillsTab.socketGroupList[i] do
+				local socketGroup = build.skillsTab.socketGroupList[i]
+				if socketGroup.source and not markList[socketGroup] then
+					t_remove(build.skillsTab.socketGroupList, i)
+					if build.skillsTab.displayGroup == socketGroup then
+						build.skillsTab.displayGroup = nil
 					end
-					wipeTable(group.gemList)
-					t_insert(group.gemList, activeGemInstance)
-					if grantedSkill.noSupports then
-						group.noSupports = true
-					else
-						for _, socketGroup in pairs(build.skillsTab.socketGroupList) do
-							-- Look for other groups that are socketed in the item
-							if socketGroup.slot == grantedSkill.slotName and not socketGroup.source then
-								-- Add all support gems to the skill's group
-								for _, gemInstance in ipairs(socketGroup.gemList) do
-									if gemInstance.gemData and gemInstance.gemData.grantedEffect.support then
-										t_insert(group.gemList, gemInstance)
+				else
+					i = i + 1
+				end
+			end
+		end
+	*/
+
+	env.Player.WeaponData1 = utils.CopyMap(data.UnarmedWeaponData[data.ClassIDs[env.Spec.ClassName]])
+	if _, ok := env.Player.ItemList["Weapon 1"]; ok {
+		// TODO Weapon 1 Data
+		// env.player.itemList["Weapon 1"].weaponData and env.player.itemList["Weapon 1"].weaponData[1]
+	}
+
+	/*
+		TODO -- Get the weapon data tables for the equipped weapons
+		if env.player.weaponData1.countsAsDualWielding then
+			env.player.weaponData2 = env.player.itemList["Weapon 1"].weaponData[2]
+		else
+			env.player.weaponData2 = env.player.itemList["Weapon 2"] and env.player.itemList["Weapon 2"].weaponData and env.player.itemList["Weapon 2"].weaponData[2] or { }
+		end
+	*/
+	/*
+		TODO -- Determine main skill group
+		if env.mode == "CALCS" then
+			env.calcsInput.skill_number = m_min(m_max(#build.skillsTab.socketGroupList, 1), env.calcsInput.skill_number or 1)
+			env.mainSocketGroup = env.calcsInput.skill_number
+		else
+			build.mainSocketGroup = m_min(m_max(#build.skillsTab.socketGroupList, 1), build.mainSocketGroup or 1)
+			env.mainSocketGroup = build.mainSocketGroup
+		end
+	*/
+	/*
+		TODO -- Build list of active skills
+		local groupCfg = wipeTable(tempTable1)
+
+		-- Below we re-order the socket group list in order to support modifiers introduced in 3.16
+		-- which allow a Shield (Weapon 2) to link to a Main Hand and an Amulet to link to a Body Armour
+		-- as we need their support gems and effects to be processed before we cross-link them to those slots
+		local indexOrder = { }
+		for index, socketGroup in pairs(build.skillsTab.socketGroupList) do
+			if socketGroup.slot == "Amulet" or socketGroup.slot == "Weapon 2" then
+				t_insert(indexOrder, 1, index)
+			else
+				t_insert(indexOrder, index)
+			end
+		end
+		local crossLinkedSupportList = { }
+		for _, index in ipairs(indexOrder) do
+			socketGroup = build.skillsTab.socketGroupList[index]
+			local socketGroupSkillList = { }
+			local slot = socketGroup.slot and build.itemsTab.slots[socketGroup.slot]
+			socketGroup.slotEnabled = not slot or not slot.weaponSet or slot.weaponSet == (build.itemsTab.activeItemSet.useSecondWeaponSet and 2 or 1)
+			if index == env.mainSocketGroup or (socketGroup.enabled and socketGroup.slotEnabled) then
+				groupCfg.slotName = socketGroup.slot and socketGroup.slot:gsub(" Swap","")
+				local propertyModList = env.modDB:List(groupCfg, "GemProperty")
+
+				-- Build list of supports for this socket group
+				local supportList = { }
+				if not socketGroup.source then
+					-- Add extra supports from the item this group is socketed in
+					for _, value in ipairs(env.modDB:List(groupCfg, "ExtraSupport")) do
+						local grantedEffect = env.data.skills[value.skillId]
+						-- Some skill gems share the same name as support gems, e.g. Barrage.
+						-- Since a support gem is expected here, if the first lookup returns a skill, then
+						-- prepending "Support" to the skillId will find the support version of the gem.
+						if grantedEffect and not grantedEffect.support then
+							grantedEffect = env.data.skills["Support"..value.skillId]
+						end
+						if grantedEffect then
+							t_insert(supportList, {
+								grantedEffect = grantedEffect,
+								level = value.level,
+								quality = 0,
+								enabled = true,
+							})
+						end
+					end
+				end
+				if crossLinkedSupportList[socketGroup.slot] then
+					for _, supportItem in ipairs(crossLinkedSupportList[socketGroup.slot]) do
+						t_insert(supportList, supportItem)
+					end
+				end
+				for _, gemInstance in ipairs(socketGroup.gemList) do
+					-- Add support gems from this group
+					if env.mode == "MAIN" then
+						gemInstance.displayEffect = nil
+						gemInstance.supportEffect = nil
+					end
+					if gemInstance.enabled then
+						local function processGrantedEffect(grantedEffect)
+							if not grantedEffect or not grantedEffect.support then
+								return
+							end
+							local supportEffect = {
+								grantedEffect = grantedEffect,
+								level = gemInstance.level,
+								quality = gemInstance.quality,
+								qualityId = gemInstance.qualityId,
+								srcInstance = gemInstance,
+								gemData = gemInstance.gemData,
+								superseded = false,
+								isSupporting = { },
+							}
+							if env.mode == "MAIN" then
+								gemInstance.displayEffect = supportEffect
+								gemInstance.supportEffect = supportEffect
+							end
+							if gemInstance.gemData then
+								for _, value in ipairs(propertyModList) do
+
+
+									local match = true
+									if value.keywordList then
+										for _, keyword in ipairs(value.keywordList) do
+											if not calcLib.gemIsType(supportEffect.gemData, keyword) then
+												match = false
+												break
+											end
+										end
+									elseif not calcLib.gemIsType(supportEffect.gemData, value.keyword) then
+										match = false
+									end
+									if match then
+										supportEffect[value.key] = (supportEffect[value.key] or 0) + value.value
 									end
 								end
 							end
-						end
-					end
-					build.skillsTab:ProcessSocketGroup(group)
-				end
-
-				-- Remove any socket groups that no longer have a matching item
-				local i = 1
-				while build.skillsTab.socketGroupList[i] do
-					local socketGroup = build.skillsTab.socketGroupList[i]
-					if socketGroup.source and not markList[socketGroup] then
-						t_remove(build.skillsTab.socketGroupList, i)
-						if build.skillsTab.displayGroup == socketGroup then
-							build.skillsTab.displayGroup = nil
-						end
-					else
-						i = i + 1
-					end
-				end
-			end
-
-			-- Get the weapon data tables for the equipped weapons
-			env.player.weaponData1 = env.player.itemList["Weapon 1"] and env.player.itemList["Weapon 1"].weaponData and env.player.itemList["Weapon 1"].weaponData[1] or copyTable(env.data.unarmedWeaponData[env.classId])
-			if env.player.weaponData1.countsAsDualWielding then
-				env.player.weaponData2 = env.player.itemList["Weapon 1"].weaponData[2]
-			else
-				env.player.weaponData2 = env.player.itemList["Weapon 2"] and env.player.itemList["Weapon 2"].weaponData and env.player.itemList["Weapon 2"].weaponData[2] or { }
-			end
-
-			-- Determine main skill group
-			if env.mode == "CALCS" then
-				env.calcsInput.skill_number = m_min(m_max(#build.skillsTab.socketGroupList, 1), env.calcsInput.skill_number or 1)
-				env.mainSocketGroup = env.calcsInput.skill_number
-			else
-				build.mainSocketGroup = m_min(m_max(#build.skillsTab.socketGroupList, 1), build.mainSocketGroup or 1)
-				env.mainSocketGroup = build.mainSocketGroup
-			end
-
-			-- Build list of active skills
-			local groupCfg = wipeTable(tempTable1)
-
-			-- Below we re-order the socket group list in order to support modifiers introduced in 3.16
-			-- which allow a Shield (Weapon 2) to link to a Main Hand and an Amulet to link to a Body Armour
-			-- as we need their support gems and effects to be processed before we cross-link them to those slots
-			local indexOrder = { }
-			for index, socketGroup in pairs(build.skillsTab.socketGroupList) do
-				if socketGroup.slot == "Amulet" or socketGroup.slot == "Weapon 2" then
-					t_insert(indexOrder, 1, index)
-				else
-					t_insert(indexOrder, index)
-				end
-			end
-			local crossLinkedSupportList = { }
-			for _, index in ipairs(indexOrder) do
-				socketGroup = build.skillsTab.socketGroupList[index]
-				local socketGroupSkillList = { }
-				local slot = socketGroup.slot and build.itemsTab.slots[socketGroup.slot]
-				socketGroup.slotEnabled = not slot or not slot.weaponSet or slot.weaponSet == (build.itemsTab.activeItemSet.useSecondWeaponSet and 2 or 1)
-				if index == env.mainSocketGroup or (socketGroup.enabled and socketGroup.slotEnabled) then
-					groupCfg.slotName = socketGroup.slot and socketGroup.slot:gsub(" Swap","")
-					local propertyModList = env.modDB:List(groupCfg, "GemProperty")
-
-					-- Build list of supports for this socket group
-					local supportList = { }
-					if not socketGroup.source then
-						-- Add extra supports from the item this group is socketed in
-						for _, value in ipairs(env.modDB:List(groupCfg, "ExtraSupport")) do
-							local grantedEffect = env.data.skills[value.skillId]
-							-- Some skill gems share the same name as support gems, e.g. Barrage.
-							-- Since a support gem is expected here, if the first lookup returns a skill, then
-							-- prepending "Support" to the skillId will find the support version of the gem.
-							if grantedEffect and not grantedEffect.support then
-								grantedEffect = env.data.skills["Support"..value.skillId]
-							end
-							if grantedEffect then
-								t_insert(supportList, {
-									grantedEffect = grantedEffect,
-									level = value.level,
-									quality = 0,
-									enabled = true,
-								})
-							end
-						end
-					end
-					if crossLinkedSupportList[socketGroup.slot] then
-						for _, supportItem in ipairs(crossLinkedSupportList[socketGroup.slot]) do
-							t_insert(supportList, supportItem)
-						end
-					end
-					for _, gemInstance in ipairs(socketGroup.gemList) do
-						-- Add support gems from this group
-						if env.mode == "MAIN" then
-							gemInstance.displayEffect = nil
-							gemInstance.supportEffect = nil
-						end
-						if gemInstance.enabled then
-							local function processGrantedEffect(grantedEffect)
-								if not grantedEffect or not grantedEffect.support then
-									return
+							-- Validate support gem level in case there is no active skill (and no full calculation)
+							calcLib.validateGemLevel(supportEffect)
+							local add = true
+							for index, otherSupport in ipairs(supportList) do
+								-- Check if there's another support with the same name already present
+								if grantedEffect == otherSupport.grantedEffect then
+									add = false
+									if supportEffect.level > otherSupport.level or (supportEffect.level == otherSupport.level and supportEffect.quality > otherSupport.quality) then
+										if env.mode == "MAIN" then
+											otherSupport.superseded = true
+										end
+										supportList[index] = supportEffect
+									else
+										supportEffect.superseded = true
+									end
+									break
+								elseif grantedEffect.plusVersionOf == otherSupport.grantedEffect.id then
+									add = false
+									if env.mode == "MAIN" then
+										otherSupport.superseded = true
+									end
+									supportList[index] = supportEffect
+								elseif otherSupport.grantedEffect.plusVersionOf == grantedEffect.id then
+									add = false
+									supportEffect.superseded = true
 								end
-								local supportEffect = {
+							end
+							if add then
+								t_insert(supportList, supportEffect)
+							end
+						end
+						if gemInstance.gemData then
+							processGrantedEffect(gemInstance.gemData.grantedEffect)
+							processGrantedEffect(gemInstance.gemData.secondaryGrantedEffect)
+						else
+							processGrantedEffect(gemInstance.grantedEffect)
+						end
+						-- Store extra supports for other items that are linked
+						for _, value in ipairs(env.modDB:List(groupCfg, "LinkedSupport")) do
+							crossLinkedSupportList[value.targetSlotName] = { }
+							for _, supportItem in ipairs(supportList) do
+								t_insert(crossLinkedSupportList[value.targetSlotName], supportItem)
+							end
+						end
+					end
+				end
+
+				-- Create active skills
+				for _, gemInstance in ipairs(socketGroup.gemList) do
+					if gemInstance.enabled and (gemInstance.gemData or gemInstance.grantedEffect) then
+						local grantedEffectList = gemInstance.gemData and gemInstance.gemData.grantedEffectList or { gemInstance.grantedEffect }
+						for index, grantedEffect in ipairs(grantedEffectList) do
+							if not grantedEffect.support and not grantedEffect.unsupported and (not grantedEffect.hasGlobalEffect or gemInstance["enableGlobal"..index]) then
+								local activeEffect = {
 									grantedEffect = grantedEffect,
 									level = gemInstance.level,
 									quality = gemInstance.quality,
 									qualityId = gemInstance.qualityId,
 									srcInstance = gemInstance,
 									gemData = gemInstance.gemData,
-									superseded = false,
-									isSupporting = { },
 								}
-								if env.mode == "MAIN" then
-									gemInstance.displayEffect = supportEffect
-									gemInstance.supportEffect = supportEffect
-								end
 								if gemInstance.gemData then
 									for _, value in ipairs(propertyModList) do
-										local match = true
+										local match = false
 										if value.keywordList then
+											match = true
 											for _, keyword in ipairs(value.keywordList) do
-												if not calcLib.gemIsType(supportEffect.gemData, keyword) then
+												if not calcLib.gemIsType(activeEffect.gemData, keyword) then
 													match = false
 													break
 												end
 											end
-										elseif not calcLib.gemIsType(supportEffect.gemData, value.keyword) then
-											match = false
+										else
+											match = calcLib.gemIsType(activeEffect.gemData, value.keyword)
 										end
 										if match then
-											supportEffect[value.key] = (supportEffect[value.key] or 0) + value.value
+											activeEffect[value.key] = (activeEffect[value.key] or 0) + value.value
 										end
 									end
 								end
-								-- Validate support gem level in case there is no active skill (and no full calculation)
-								calcLib.validateGemLevel(supportEffect)
-								local add = true
-								for index, otherSupport in ipairs(supportList) do
-									-- Check if there's another support with the same name already present
-									if grantedEffect == otherSupport.grantedEffect then
-										add = false
-										if supportEffect.level > otherSupport.level or (supportEffect.level == otherSupport.level and supportEffect.quality > otherSupport.quality) then
-											if env.mode == "MAIN" then
-												otherSupport.superseded = true
-											end
-											supportList[index] = supportEffect
-										else
-											supportEffect.superseded = true
-										end
-										break
-									elseif grantedEffect.plusVersionOf == otherSupport.grantedEffect.id then
-										add = false
-										if env.mode == "MAIN" then
-											otherSupport.superseded = true
-										end
-										supportList[index] = supportEffect
-									elseif otherSupport.grantedEffect.plusVersionOf == grantedEffect.id then
-										add = false
-										supportEffect.superseded = true
-									end
+								if env.mode == "MAIN" then
+									gemInstance.displayEffect = activeEffect
 								end
-								if add then
-									t_insert(supportList, supportEffect)
+								local activeSkill = calcs.createActiveSkill(activeEffect, supportList, env.player, socketGroup)
+								if gemInstance.gemData then
+									activeSkill.slotName = groupCfg.slotName
 								end
-							end
-							if gemInstance.gemData then
-								processGrantedEffect(gemInstance.gemData.grantedEffect)
-								processGrantedEffect(gemInstance.gemData.secondaryGrantedEffect)
-							else
-								processGrantedEffect(gemInstance.grantedEffect)
-							end
-							-- Store extra supports for other items that are linked
-							for _, value in ipairs(env.modDB:List(groupCfg, "LinkedSupport")) do
-								crossLinkedSupportList[value.targetSlotName] = { }
-								for _, supportItem in ipairs(supportList) do
-									t_insert(crossLinkedSupportList[value.targetSlotName], supportItem)
-								end
+								t_insert(socketGroupSkillList, activeSkill)
+								t_insert(env.player.activeSkillList, activeSkill)
 							end
 						end
-					end
-
-					-- Create active skills
-					for _, gemInstance in ipairs(socketGroup.gemList) do
-						if gemInstance.enabled and (gemInstance.gemData or gemInstance.grantedEffect) then
-							local grantedEffectList = gemInstance.gemData and gemInstance.gemData.grantedEffectList or { gemInstance.grantedEffect }
-							for index, grantedEffect in ipairs(grantedEffectList) do
-								if not grantedEffect.support and not grantedEffect.unsupported and (not grantedEffect.hasGlobalEffect or gemInstance["enableGlobal"..index]) then
-									local activeEffect = {
-										grantedEffect = grantedEffect,
-										level = gemInstance.level,
-										quality = gemInstance.quality,
-										qualityId = gemInstance.qualityId,
-										srcInstance = gemInstance,
-										gemData = gemInstance.gemData,
-									}
-									if gemInstance.gemData then
-										for _, value in ipairs(propertyModList) do
-											local match = false
-											if value.keywordList then
-												match = true
-												for _, keyword in ipairs(value.keywordList) do
-													if not calcLib.gemIsType(activeEffect.gemData, keyword) then
-														match = false
-														break
-													end
-												end
-											else
-												match = calcLib.gemIsType(activeEffect.gemData, value.keyword)
-											end
-											if match then
-												activeEffect[value.key] = (activeEffect[value.key] or 0) + value.value
-											end
-										end
-									end
-									if env.mode == "MAIN" then
-										gemInstance.displayEffect = activeEffect
-									end
-									local activeSkill = calcs.createActiveSkill(activeEffect, supportList, env.player, socketGroup)
-									if gemInstance.gemData then
-										activeSkill.slotName = groupCfg.slotName
-									end
-									t_insert(socketGroupSkillList, activeSkill)
-									t_insert(env.player.activeSkillList, activeSkill)
-								end
-							end
-							if gemInstance.gemData and not accelerate.requirementsGems then
-								t_insert(env.requirementsTableGems, {
-									source = "Gem",
-									sourceGem = gemInstance,
-									Str = gemInstance.reqStr,
-									Dex = gemInstance.reqDex,
-									Int = gemInstance.reqInt,
-								})
-							end
+						if gemInstance.gemData and not accelerate.requirementsGems then
+							t_insert(env.requirementsTableGems, {
+								source = "Gem",
+								sourceGem = gemInstance,
+								Str = gemInstance.reqStr,
+								Dex = gemInstance.reqDex,
+								Int = gemInstance.reqInt,
+							})
 						end
-					end
-
-					if index == env.mainSocketGroup and #socketGroupSkillList > 0 then
-						-- Select the main skill from this socket group
-						local activeSkillIndex
-						if env.mode == "CALCS" then
-							socketGroup.mainActiveSkillCalcs = m_min(#socketGroupSkillList, socketGroup.mainActiveSkillCalcs or 1)
-							activeSkillIndex = socketGroup.mainActiveSkillCalcs
-						else
-							activeSkillIndex = m_min(#socketGroupSkillList, socketGroup.mainActiveSkill or 1)
-							if env.mode == "MAIN" then
-								socketGroup.mainActiveSkill = activeSkillIndex
-							end
-						end
-						env.player.mainSkill = socketGroupSkillList[activeSkillIndex]
 					end
 				end
 
-				if env.mode == "MAIN" then
-					-- Create display label for the socket group if the user didn't specify one
-					if socketGroup.label and socketGroup.label:match("%S") then
-						socketGroup.displayLabel = socketGroup.label
+				if index == env.mainSocketGroup and #socketGroupSkillList > 0 then
+					-- Select the main skill from this socket group
+					local activeSkillIndex
+					if env.mode == "CALCS" then
+						socketGroup.mainActiveSkillCalcs = m_min(#socketGroupSkillList, socketGroup.mainActiveSkillCalcs or 1)
+						activeSkillIndex = socketGroup.mainActiveSkillCalcs
 					else
-						socketGroup.displayLabel = nil
-						for _, gemInstance in ipairs(socketGroup.gemList) do
-							local grantedEffect = gemInstance.gemData and gemInstance.gemData.grantedEffect or gemInstance.grantedEffect
-							if grantedEffect and not grantedEffect.support and gemInstance.enabled then
-								socketGroup.displayLabel = (socketGroup.displayLabel and socketGroup.displayLabel..", " or "") .. grantedEffect.name
-							end
+						activeSkillIndex = m_min(#socketGroupSkillList, socketGroup.mainActiveSkill or 1)
+						if env.mode == "MAIN" then
+							socketGroup.mainActiveSkill = activeSkillIndex
 						end
-						socketGroup.displayLabel = socketGroup.displayLabel or "<No active skills>"
 					end
-
-					-- Save the active skill list for display in the socket group tooltip
-					socketGroup.displaySkillList = socketGroupSkillList
-				elseif env.mode == "CALCS" then
-					socketGroup.displaySkillListCalcs = socketGroupSkillList
+					env.player.mainSkill = socketGroupSkillList[activeSkillIndex]
 				end
 			end
 
-			if not env.player.mainSkill then
-				-- Add a default main skill if none are specified
-				local defaultEffect = {
-					grantedEffect = env.data.skills.Melee,
-					level = 1,
-					quality = 0,
-					enabled = true,
-				}
-				env.player.mainSkill = calcs.createActiveSkill(defaultEffect, { }, env.player)
-				t_insert(env.player.activeSkillList, env.player.mainSkill)
-			end
+			if env.mode == "MAIN" then
+				-- Create display label for the socket group if the user didn't specify one
+				if socketGroup.label and socketGroup.label:match("%S") then
+					socketGroup.displayLabel = socketGroup.label
+				else
+					socketGroup.displayLabel = nil
+					for _, gemInstance in ipairs(socketGroup.gemList) do
+						local grantedEffect = gemInstance.gemData and gemInstance.gemData.grantedEffect or gemInstance.grantedEffect
+						if grantedEffect and not grantedEffect.support and gemInstance.enabled then
+							socketGroup.displayLabel = (socketGroup.displayLabel and socketGroup.displayLabel..", " or "") .. grantedEffect.name
+						end
+					end
+					socketGroup.displayLabel = socketGroup.displayLabel or "<No active skills>"
+				end
 
-			-- Build skill modifier lists
-			for _, activeSkill in pairs(env.player.activeSkillList) do
-				calcs.buildActiveSkillModList(env, activeSkill)
+				-- Save the active skill list for display in the socket group tooltip
+				socketGroup.displaySkillList = socketGroupSkillList
+			elseif env.mode == "CALCS" then
+				socketGroup.displaySkillListCalcs = socketGroupSkillList
 			end
+		end
+	*/
+
+	if env.Player.MainSkill == nil {
+		// Add a default main skill if none are specified
+		defaultEffect := &ActiveEffect{
+			GrantedEffect: GrantedEffect{
+				Name:     data.Gems["PlayerMelee"].ActiveSkill.DisplayName,
+				CastTime: utils.Ptr(float64(*data.Gems["PlayerMelee"].CastTime)),
+			},
+		}
+		env.Player.MainSkill = CreateActiveSkill(defaultEffect, []interface{}{}, env.Player, nil, nil)
+		env.Player.ActiveSkillList = append(env.Player.ActiveSkillList, env.Player.MainSkill)
+	}
+
+	/*
+		TODO -- Build skill modifier lists
+		for _, activeSkill in pairs(env.player.activeSkillList) do
+			calcs.buildActiveSkillModList(env, activeSkill)
 		end
 	*/
 

@@ -1,18 +1,24 @@
 package mod
 
 type FlagMod struct {
-	BaseMod
+	*BaseMod
 	ModValue bool
 }
 
 func NewFlag(name string, value bool) *FlagMod {
-	return &FlagMod{
-		ModValue: value,
-		BaseMod: BaseMod{
-			ModName: name,
-			ModType: TypeFlag,
-		},
+	base := &BaseMod{
+		ModName: name,
+		ModType: TypeFlag,
 	}
+
+	self := &FlagMod{
+		ModValue: value,
+		BaseMod:  base,
+	}
+
+	base.parent = self
+
+	return self
 }
 
 func (m *FlagMod) Value() interface{} {

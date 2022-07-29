@@ -3,18 +3,24 @@ package mod
 var _ Mod = (*FloatMod)(nil)
 
 type FloatMod struct {
-	BaseMod
+	*BaseMod
 	ModValue float64
 }
 
 func NewFloat(name string, modType Type, value float64) *FloatMod {
-	return &FloatMod{
-		ModValue: value,
-		BaseMod: BaseMod{
-			ModName: name,
-			ModType: modType,
-		},
+	base := &BaseMod{
+		ModName: name,
+		ModType: modType,
 	}
+
+	self := &FloatMod{
+		ModValue: value,
+		BaseMod:  base,
+	}
+
+	base.parent = self
+
+	return self
 }
 
 func (m *FloatMod) Value() interface{} {

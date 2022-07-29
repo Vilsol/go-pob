@@ -3,6 +3,7 @@ package mod
 var _ Tag = (*PerStatTag)(nil)
 
 type PerStatTag struct {
+	TagType          Type
 	Stat             string
 	Divide           float64
 	TagLimit         *float64
@@ -13,11 +14,12 @@ type PerStatTag struct {
 
 func PerStat(stat string, divide float64) *PerStatTag {
 	return &PerStatTag{
-		Stat:   stat,
-		Divide: divide,
+		TagType: TypePerStat,
+		Stat:    stat,
+		Divide:  divide,
 	}
 }
 
-func (PerStatTag) Type() Type {
-	return TypePerStat
+func (t PerStatTag) Type() Type {
+	return t.TagType
 }

@@ -17,7 +17,7 @@ type ListCfg struct {
 
 type ModStore struct {
 	Parent      *ModStore
-	Actor       *Actor
+	Actor       *Actor `json:"-"`
 	Multipliers map[string]float64
 	Conditions  map[string]bool
 }
@@ -575,7 +575,7 @@ func (s *ModStore) GetStat(stat string, cfg *ListCfg) float64 {
 		end
 	*/
 
-	if v, ok := s.Actor.Output[Out(stat)]; ok {
+	if v, ok := s.Actor.Output[stat]; ok {
 		return v
 	}
 
