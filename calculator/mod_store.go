@@ -4,18 +4,29 @@ import (
 	"math"
 
 	"go-pob/calculator/mod"
+	"go-pob/data"
 	"go-pob/utils"
 )
 
 type ListCfg struct {
-	Flags        *mod.MFlag
+	Flags        *data.ModFlag
 	KeywordFlags *mod.KeywordFlag
 	Source       *mod.Source
 	SkillStats   map[string]float64
 	SkillCond    map[string]bool
 }
 
+type ModStoreFuncs interface {
+	List(cfg *ListCfg, names ...string) []interface{}
+	Sum(modType mod.Type, cfg *ListCfg, names ...string) float64
+	More(cfg *ListCfg, names ...string) float64
+	Flag(cfg *ListCfg, names ...string) bool
+	Override(cfg *ListCfg, names ...string) interface{}
+}
+
 type ModStore struct {
+	ModStoreFuncs
+
 	Parent      *ModStore
 	Actor       *Actor `json:"-"`
 	Multipliers map[string]float64

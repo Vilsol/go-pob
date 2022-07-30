@@ -8,23 +8,42 @@ import (
 	"go-pob/utils"
 )
 
+// PerformCalc
+//
+// Finalises the environment and performs the stat calculations:
+// 1. Merges keystone modifiers
+// 2. Initialises minion skills
+// 3. Initialises the main skill's minion, if present
+// 4. Merges flask effects
+// 5. Sets conditions and calculates attributes and life/mana pools (doActorAttribsPoolsConditions)
+// 6. Calculates reservations
+// 7. Sets life/mana reservation (doActorLifeManaReservation)
+// 8. Processes buffs and debuffs
+// 9. Processes charges and misc buffs (doActorMisc)
+// 10. Calculates defence and offence stats (calcs.defence, calcs.offence)
 func PerformCalc(env *Environment) {
 	// Merge keystone modifiers
 	env.KeystonesAdded = make(map[string]interface{}, 0)
 	mergeKeystones(env)
 
-	/*
-		TODO -- Build minion skills
-		for _, activeSkill in ipairs(env.player.activeSkillList) do
-			activeSkill.skillModList = new("ModList", activeSkill.baseSkillModList)
-			if activeSkill.minion then
+	for _, activeSkill := range env.Player.ActiveSkillList {
+		activeSkill.SkillModList = NewModList()
+		if activeSkill.Minion != nil {
+			/*
+				TODO -- Build minion skills
 				activeSkill.minion.modDB = new("ModDB")
 				activeSkill.minion.modDB.actor = activeSkill.minion
 				calcs.createMinionSkills(env, activeSkill)
 				activeSkill.skillPartName = activeSkill.minion.mainSkill.activeEffect.grantedEffect.name
-			end
-		end
-	*/
+			*/
+		}
+	}
+
+	env.Player.Output = make(map[string]float64)
+	env.Player.OutputTable = make(map[OutTable]map[string]float64)
+
+	env.Enemy.Output = make(map[string]float64)
+	env.Enemy.OutputTable = make(map[OutTable]map[string]float64)
 
 	/*
 		TODO Minions
@@ -141,7 +160,7 @@ func PerformCalc(env *Environment) {
 
 		// The actual hexes as opposed to hex related skills all have the curse flag. TotemCastsWhenNotDetached is to remove blasphemy
 		// Note that this doesn't work for triggers yet, insufficient support
-		if activeSkill.SkillFlags[SkillFlagHex] && activeSkill.SkillFlags[SkillFlagCurse] && !activeSkill.SkillTypes[SkillTypeTotemCastsWhenNotDetached] {
+		if activeSkill.SkillFlags[SkillFlagHex] && activeSkill.SkillFlags[SkillFlagCurse] && !activeSkill.SkillTypes[data.SkillTypeTotemCastsWhenNotDetached] {
 			hexDoom := env.ModDB.Sum(mod.TypeBase, nil, "Multiplier:HexDoomStack")
 			maxDoom := activeSkill.SkillModList.Sum(mod.TypeBase, nil, "MaxDoom")
 			if maxDoom == 0 {
@@ -156,7 +175,7 @@ func PerformCalc(env *Environment) {
 		}
 
 		if utils.HasTrue(activeSkill.SkillData, "SupportBonechill") {
-			if activeSkill.SkillTypes[SkillTypeChillingArea] || ((activeSkill.SkillTypes[SkillTypeNonHitChill] && !activeSkill.SkillModList.Flag(nil, "CannotChill")) &&
+			if activeSkill.SkillTypes[data.SkillTypeChillingArea] || ((activeSkill.SkillTypes[data.SkillTypeNonHitChill] && !activeSkill.SkillModList.Flag(nil, "CannotChill")) &&
 				!(activeSkill.ActiveEffect.GrantedEffect.Name == "Summon Skitterbots" && activeSkill.SkillModList.Flag(nil, "SkitterbotsCannotChill"))) {
 				env.Player.Output["BonechillDotEffect"] = math.Floor(*data.NonDamagingAilments[data.AilmentChill].Default * (1 + activeSkill.SkillModList.Sum(mod.TypeIncrease, nil, "EnemyChillEffect")/100))
 			}
@@ -476,9 +495,11 @@ func PerformCalc(env *Environment) {
 	// Merge keystones again to catch any that were added by flasks
 	mergeKeystones(env)
 
+	// Calculate attributes and life/mana pools
+	doActorAttribsPoolsConditions(env, env.Player)
+
 	/*
-		TODO -- Calculate attributes and life/mana pools
-		doActorAttribsPoolsConditions(env, env.player)
+		TODO Calculate minion attributes and life/mana pools
 		if env.minion then
 			for _, value in ipairs(env.player.mainSkill.skillModList:List(env.player.mainSkill.skillCfg, "MinionModifier")) do
 				if not value.type or env.minion.type == value.type then
@@ -2160,6 +2181,327 @@ func PerformCalc(env *Environment) {
 		if not env.dontCache then
 			cacheData(uuid, env)
 		end
+	*/
+}
+
+func doActorAttribsPoolsConditions(env *Environment, player *Actor) {
+	/*
+		local modDB = actor.modDB
+		local output = actor.output
+		local breakdown = actor.breakdown
+		local condList = modDB.conditions
+	*/
+	/*
+		TODO -- Set conditions
+		if (actor.itemList["Weapon 2"] and actor.itemList["Weapon 2"].type == "Shield") or (actor == env.player and env.aegisModList) then
+			condList["UsingShield"] = true
+		end
+		if not actor.itemList["Weapon 2"] then
+			condList["OffHandIsEmpty"] = true
+		end
+		if actor.weaponData1.type == "None" then
+			condList["Unarmed"] = true
+			if not actor.itemList["Weapon 2"] and not actor.itemList["Gloves"] then
+				condList["Unencumbered"] = true
+			end
+		else
+			local info = env.data.weaponTypeInfo[actor.weaponData1.type]
+			condList["Using"..info.flag] = true
+			if actor.weaponData1.countsAsAll1H then
+				condList["UsingAxe"] = true
+				condList["UsingSword"] = true
+				condList["UsingDagger"] = true
+				condList["UsingMace"] = true
+				condList["UsingClaw"] = true
+				-- GGG stated that a single Varunastra satisfied requirement for wielding two different weapons
+				condList["WieldingDifferentWeaponTypes"] = true
+			end
+			if info.melee then
+				condList["UsingMeleeWeapon"] = true
+			end
+			if info.oneHand then
+				condList["UsingOneHandedWeapon"] = true
+			else
+				condList["UsingTwoHandedWeapon"] = true
+			end
+		end
+		if actor.weaponData2.type then
+			local info = env.data.weaponTypeInfo[actor.weaponData2.type]
+			condList["Using"..info.flag] = true
+			if actor.weaponData2.countsAsAll1H then
+				condList["UsingAxe"] = true
+				condList["UsingSword"] = true
+				condList["UsingDagger"] = true
+				condList["UsingMace"] = true
+				condList["UsingClaw"] = true
+				-- GGG stated that a single Varunastra satisfied requirement for wielding two different weapons
+				condList["WieldingDifferentWeaponTypes"] = true
+			end
+			if info.melee then
+				condList["UsingMeleeWeapon"] = true
+			end
+			if info.oneHand then
+				condList["UsingOneHandedWeapon"] = true
+			else
+				condList["UsingTwoHandedWeapon"] = true
+			end
+		end
+		if actor.weaponData1.type and actor.weaponData2.type then
+			condList["DualWielding"] = true
+			if (actor.weaponData1.type == "Claw" or actor.weaponData1.countsAsAll1H) and (actor.weaponData2.type == "Claw" or actor.weaponData2.countsAsAll1H) then
+				condList["DualWieldingClaws"] = true
+			end
+			if (actor.weaponData1.type == "Dagger" or actor.weaponData1.countsAsAll1H) and (actor.weaponData2.type == "Dagger" or actor.weaponData2.countsAsAll1H) then
+				condList["DualWieldingDaggers"] = true
+			end
+			if (env.data.weaponTypeInfo[actor.weaponData1.type].label or actor.weaponData1.type) ~= (env.data.weaponTypeInfo[actor.weaponData2.type].label or actor.weaponData2.type) then
+				local info1 = env.data.weaponTypeInfo[actor.weaponData1.type]
+				local info2 = env.data.weaponTypeInfo[actor.weaponData2.type]
+				if info1.oneHand and info2.oneHand then
+					condList["WieldingDifferentWeaponTypes"] = true
+				end
+			end
+		end
+		if env.mode_combat then
+			if not modDB:Flag(nil, "NeverCrit") then
+				condList["CritInPast8Sec"] = true
+			end
+			if not actor.mainSkill.skillData.triggered and not actor.mainSkill.skillFlags.trap and not actor.mainSkill.skillFlags.mine and not actor.mainSkill.skillFlags.totem then
+				if actor.mainSkill.skillFlags.attack then
+					condList["AttackedRecently"] = true
+				elseif actor.mainSkill.skillFlags.spell then
+					condList["CastSpellRecently"] = true
+				end
+				if actor.mainSkill.skillTypes[SkillType.Movement] then
+					condList["UsedMovementSkillRecently"] = true
+				end
+				if actor.mainSkill.skillFlags.minion then
+					condList["UsedMinionSkillRecently"] = true
+				end
+				if actor.mainSkill.skillTypes[SkillType.Vaal] then
+					condList["UsedVaalSkillRecently"] = true
+				end
+				if actor.mainSkill.skillTypes[SkillType.Channel] then
+					condList["Channelling"] = true
+				end
+			end
+			if actor.mainSkill.skillFlags.hit and not actor.mainSkill.skillFlags.trap and not actor.mainSkill.skillFlags.mine and not actor.mainSkill.skillFlags.totem then
+				condList["HitRecently"] = true
+			end
+			if actor.mainSkill.skillFlags.totem then
+				condList["HaveTotem"] = true
+				condList["SummonedTotemRecently"] = true
+			end
+			if actor.mainSkill.skillFlags.mine then
+				condList["DetonatedMinesRecently"] = true
+			end
+			if modDB:Sum("BASE", nil, "EnemyScorchChance") > 0 or modDB:Flag(nil, "CritAlwaysAltAilments") and not modDB:Flag(nil, "NeverCrit") then
+				condList["CanInflictScorch"] = true
+			end
+			if modDB:Sum("BASE", nil, "EnemyBrittleChance") > 0 or modDB:Flag(nil, "CritAlwaysAltAilments") and not modDB:Flag(nil, "NeverCrit") then
+				condList["CanInflictBrittle"] = true
+			end
+			if modDB:Sum("BASE", nil, "EnemySapChance") > 0 or modDB:Flag(nil, "CritAlwaysAltAilments") and not modDB:Flag(nil, "NeverCrit") then
+				condList["CanInflictSap"] = true
+			end
+		end
+		if env.mode_effective then
+			if env.player.mainSkill.skillModList:Sum("BASE", env.player.mainSkill.skillCfg, "FireExposureChance") > 0 or modDB:Sum("BASE", nil, "FireExposureChance") > 0 then
+				condList["CanApplyFireExposure"] = true
+			end
+			if env.player.mainSkill.skillModList:Sum("BASE", env.player.mainSkill.skillCfg, "ColdExposureChance") > 0 or modDB:Sum("BASE", nil, "ColdExposureChance") > 0 then
+				condList["CanApplyColdExposure"] = true
+			end
+			if env.player.mainSkill.skillModList:Sum("BASE", env.player.mainSkill.skillCfg, "LightningExposureChance") > 0 or modDB:Sum("BASE", nil, "LightningExposureChance") > 0 then
+				condList["CanApplyLightningExposure"] = true
+			end
+		end
+	*/
+	/*
+		TODO -- Calculate attributes
+		local calculateAttributes = function()
+			for pass = 1, 2 do -- Calculate twice because of circular dependency (X attribute higher than Y attribute)
+				for _, stat in pairs({"Str","Dex","Int"}) do
+					output[stat] = m_max(round(calcLib.val(modDB, stat)), 0)
+					if breakdown then
+						breakdown[stat] = breakdown.simple(nil, nil, output[stat], stat)
+					end
+				end
+
+		  local stats = { output.Str, output.Dex, output.Int }
+		  table.sort(stats)
+		  output.LowestAttribute = stats[1]
+		  condList["TwoHighestAttributesEqual"] = stats[2] == stats[3]
+
+				condList["DexHigherThanInt"] = output.Dex > output.Int
+				condList["StrHigherThanDex"] = output.Str > output.Dex
+				condList["IntHigherThanStr"] = output.Int > output.Str
+				condList["StrHigherThanInt"] = output.Str > output.Int
+			end
+		end
+	*/
+	/*
+		TODO calculateOmniscience
+		local calculateOmniscience = function (convert)
+			local classStats = env.spec.tree.characterData and env.spec.tree.characterData[env.classId] or env.spec.tree.classes[env.classId]
+
+			for pass = 1, 2 do -- Calculate twice because of circular dependency (X attribute higher than Y attribute)
+				if pass ~= 1 then
+					for _, stat in pairs({"Str","Dex","Int"}) do
+						local base = classStats["base_"..stat:lower()]
+						output[stat] = m_min(round(calcLib.val(modDB, stat)), base)
+						if breakdown then
+							breakdown[stat] = breakdown.simple(nil, nil, output[stat], stat)
+						end
+
+						modDB:NewMod("Omni", "BASE", (modDB:Sum("BASE", nil, stat) - base), stat.." conversion Omniscience")
+						modDB:NewMod("Omni", "INC", modDB:Sum("INC", nil, stat), "Omniscience")
+						modDB:NewMod("Omni", "MORE", modDB:Sum("MORE", nil, stat), "Omniscience")
+					end
+				end
+
+				if pass ~= 2 then
+					-- Subtract out double and triple dips
+					local conversion = { }
+					local reduction = { }
+					for _, type in pairs({"BASE", "INC", "MORE"}) do
+						conversion[type] = { }
+						for _, stat in pairs({"StrDex", "StrInt", "DexInt", "All"}) do
+							conversion[type][stat] = modDB:Sum(type, nil, stat) or 0
+						end
+						reduction[type] = conversion[type].StrDex + conversion[type].StrInt + conversion[type].DexInt + 2*conversion[type].All
+					end
+					modDB:NewMod("Omni", "BASE", -reduction["BASE"], "Reduction from Double/Triple Dipped attributes to Omniscience")
+					modDB:NewMod("Omni", "INC", -reduction["INC"], "Reduction from Double/Triple Dipped attributes to Omniscience")
+					modDB:NewMod("Omni", "MORE", -reduction["MORE"], "Reduction from Double/Triple Dipped attributes to Omniscience")
+				end
+
+				for _, stat in pairs({"Str","Dex","Int"}) do
+					local base = classStats["base_"..stat:lower()]
+					output[stat] = base
+				end
+
+				output["Omni"] = m_max(round(calcLib.val(modDB, "Omni")), 0)
+				if breakdown then
+					breakdown["Omni"] = breakdown.simple(nil, nil, output["Omni"], "Omni")
+				end
+
+		  local stats = { output.Str, output.Dex, output.Int }
+		  table.sort(stats)
+		  output.LowestAttribute = stats[1]
+		  condList["TwoHighestAttributesEqual"] = stats[2] == stats[3]
+
+				output.LowestAttribute = m_min(output.Str, output.Dex, output.Int)
+				condList["DexHigherThanInt"] = output.Dex > output.Int
+				condList["StrHigherThanDex"] = output.Str > output.Dex
+				condList["IntHigherThanStr"] = output.Int > output.Str
+				condList["StrHigherThanInt"] = output.Str > output.Int
+			end
+		end
+
+		if modDB:Flag(nil, "Omniscience") then
+			calculateOmniscience()
+		else
+			calculateAttributes()
+		end
+	*/
+	/*
+		TODO -- Calculate total attributes
+		output.TotalAttr = output.Str + output.Dex + output.Int
+	*/
+	/*
+		TODO -- Special case for Devotion
+		output.Devotion = modDB:Sum("BASE", nil, "Devotion")
+	*/
+	/*
+		TODO -- Add attribute bonuses
+		if not modDB:Flag(nil, "NoAttributeBonuses") then
+			if not modDB:Flag(nil, "NoStrengthAttributeBonuses") then
+				if not modDB:Flag(nil, "NoStrBonusToLife") then
+					modDB:NewMod("Life", "BASE", m_floor(output.Str / 2), "Strength")
+				end
+				local strDmgBonusRatioOverride = modDB:Sum("BASE", nil, "StrDmgBonusRatioOverride")
+				if strDmgBonusRatioOverride > 0 then
+					actor.strDmgBonus = m_floor((output.Str + modDB:Sum("BASE", nil, "DexIntToMeleeBonus")) * strDmgBonusRatioOverride)
+				else
+					actor.strDmgBonus = m_floor((output.Str + modDB:Sum("BASE", nil, "DexIntToMeleeBonus")) / 5)
+				end
+				modDB:NewMod("PhysicalDamage", "INC", actor.strDmgBonus, "Strength", ModFlag.Melee)
+			end
+			if not modDB:Flag(nil, "NoDexterityAttributeBonuses") then
+				modDB:NewMod("Accuracy", "BASE", output.Dex * (modDB:Override(nil, "DexAccBonusOverride") or data.misc.AccuracyPerDexBase), "Dexterity")
+				if not modDB:Flag(nil, "NoDexBonusToEvasion") then
+					modDB:NewMod("Evasion", "INC", m_floor(output.Dex / 5), "Dexterity")
+				end
+			end
+			if not modDB:Flag(nil, "NoIntelligenceAttributeBonuses") then
+				if not modDB:Flag(nil, "NoIntBonusToMana") then
+					modDB:NewMod("Mana", "BASE", m_floor(output.Int / 2), "Intelligence")
+				end
+				if not modDB:Flag(nil, "NoIntBonusToES") then
+					modDB:NewMod("EnergyShield", "INC", m_floor(output.Int / 5), "Intelligence")
+				end
+			end
+		end
+	*/
+	/*
+		TODO -- Check shrine buffs, must be done before life pool calculated for massive shrine
+		for _, value in ipairs(modDB:List(nil, "ShrineBuff")) do
+			modDB:ScaleAddList({ value.mod }, calcLib.mod(modDB, nil, "BuffEffectOnSelf", "ShrineBuffEffect"))
+		end
+
+		output.ChaosInoculation = modDB:Flag(nil, "ChaosInoculation")
+	*/
+	/*
+		TODO -- Life/mana pools
+		if output.ChaosInoculation then
+			output.Life = 1
+			condList["FullLife"] = true
+		else
+			local base = modDB:Sum("BASE", nil, "Life")
+			local inc = modDB:Sum("INC", nil, "Life")
+			local more = modDB:More(nil, "Life")
+			local conv = modDB:Sum("BASE", nil, "LifeConvertToEnergyShield")
+			output.Life = m_max(round(base * (1 + inc/100) * more * (1 - conv/100)), 1)
+			if breakdown then
+				if inc ~= 0 or more ~= 1 or conv ~= 0 then
+					breakdown.Life = { }
+					breakdown.Life[1] = s_format("%g ^8(base)", base)
+					if inc ~= 0 then
+						t_insert(breakdown.Life, s_format("x %.2f ^8(increased/reduced)", 1 + inc/100))
+					end
+					if more ~= 1 then
+						t_insert(breakdown.Life, s_format("x %.2f ^8(more/less)", more))
+					end
+					if conv ~= 0 then
+						t_insert(breakdown.Life, s_format("x %.2f ^8(converted to Energy Shield)", 1 - conv/100))
+					end
+					t_insert(breakdown.Life, s_format("= %g", output.Life))
+				end
+			end
+		end
+		local manaConv = modDB:Sum("BASE", nil, "ManaConvertToArmour")
+		output.Mana = round(calcLib.val(modDB, "Mana") * (1 - manaConv / 100))
+		local base = modDB:Sum("BASE", nil, "Mana")
+		local inc = modDB:Sum("INC", nil, "Mana")
+		local more = modDB:More(nil, "Mana")
+		if breakdown then
+			if inc ~= 0 or more ~= 1 or manaConv ~= 0 then
+				breakdown.Mana = { }
+				breakdown.Mana[1] = s_format("%g ^8(base)", base)
+				if inc ~= 0 then
+					t_insert(breakdown.Mana, s_format("x %.2f ^8(increased/reduced)", 1 + inc/100))
+				end
+				if more ~= 1 then
+					t_insert(breakdown.Mana, s_format("x %.2f ^8(more/less)", more))
+				end
+				if manaConv ~= 0 then
+					t_insert(breakdown.Mana, s_format("x %.2f ^8(converted to Armour)", 1 - manaConv/100))
+				end
+				t_insert(breakdown.Mana, s_format("= %g", output.Mana))
+			end
+		end
+		output.LowestOfMaximumLifeAndMaximumMana = m_min(output.Life, output.Mana)
 	*/
 }
 

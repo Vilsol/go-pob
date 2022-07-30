@@ -9,7 +9,9 @@ import (
 )
 
 func TestParseBuild(t *testing.T) {
-	file, _ := os.ReadFile("../testdata/builds/Fireball.xml")
+	file, err := os.ReadFile("../testdata/builds/Fireball.xml")
+	testza.AssertNoError(t, err)
+
 	build, err := ParseBuild(file)
 	testza.AssertNoError(t, err)
 

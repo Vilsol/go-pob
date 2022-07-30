@@ -99,8 +99,8 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, *ModDB, 
 	env.ModDB.AddMod(mod.NewFloat("PhysicalDamageReduction", mod.TypeBase, 4).Source("Base").Tag(mod.Multiplier("EnduranceCharge", 0)))
 	env.ModDB.AddMod(mod.NewFloat("ElementalResist", mod.TypeBase, 4).Source("Base").Tag(mod.Multiplier("EnduranceCharge", 0)))
 	env.ModDB.AddMod(mod.NewFloat("Multiplier:RageEffect", mod.TypeBase, 1).Source("Base"))
-	env.ModDB.AddMod(mod.NewFloat("Damage", mod.TypeIncrease, 1).Source("Base").Flag(mod.FlagAttack).Tag(mod.Multiplier("Rage", 0)).Tag(mod.Multiplier("RageEffect", 0)))
-	env.ModDB.AddMod(mod.NewFloat("Speed", mod.TypeIncrease, 1).Source("Base").Flag(mod.FlagAttack).Tag(mod.Multiplier("Rage", 0).Div(2)).Tag(mod.Multiplier("RageEffect", 0)))
+	env.ModDB.AddMod(mod.NewFloat("Damage", mod.TypeIncrease, 1).Source("Base").Flag(data.ModFlagAttack).Tag(mod.Multiplier("Rage", 0)).Tag(mod.Multiplier("RageEffect", 0)))
+	env.ModDB.AddMod(mod.NewFloat("Speed", mod.TypeIncrease, 1).Source("Base").Flag(data.ModFlagAttack).Tag(mod.Multiplier("Rage", 0).Div(2)).Tag(mod.Multiplier("RageEffect", 0)))
 	env.ModDB.AddMod(mod.NewFloat("MovementSpeed", mod.TypeIncrease, 1).Source("Base").Tag(mod.Multiplier("Rage", 0).Div(5)).Tag(mod.Multiplier("RageEffect", 0)))
 	env.ModDB.AddMod(mod.NewFloat("MaximumRage", mod.TypeBase, 50).Source("Base"))
 	env.ModDB.AddMod(mod.NewFloat("Multiplier:GaleForce", mod.TypeBase, 0).Source("Base"))
@@ -115,7 +115,7 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, *ModDB, 
 	env.ModDB.AddMod(mod.NewFloat("EnemyCurseLimit", mod.TypeBase, 1).Source("Base"))
 	env.ModDB.AddMod(mod.NewFloat("SocketedCursesHexLimitValue", mod.TypeBase, 1).Source("Base"))
 	env.ModDB.AddMod(mod.NewFloat("ProjectileCount", mod.TypeBase, 1).Source("Base"))
-	env.ModDB.AddMod(mod.NewFloat("Speed", mod.TypeMore, 10).Source("Base").Flag(mod.FlagAttack).Tag(mod.Condition("DualWielding")))
+	env.ModDB.AddMod(mod.NewFloat("Speed", mod.TypeMore, 10).Source("Base").Flag(data.ModFlagAttack).Tag(mod.Condition("DualWielding")))
 	env.ModDB.AddMod(mod.NewFloat("BlockChance", mod.TypeBase, 15).Source("Base").Tag(mod.Condition("DualWielding")).Tag(mod.Condition("NoInherentBlock").Neg(true)))
 	env.ModDB.AddMod(mod.NewFloat("Damage", mod.TypeMore, 200).Source("Base").KeywordFlag(mod.KeywordFlagBleed).Tag(mod.ActorCondition("enemy", "Moving")).Tag(mod.Condition("NoExtraBleedDamageToMovingEnemy").Neg(true)))
 	env.ModDB.AddMod(mod.NewFlag("Condition:BloodStance", true).Source("Base").Tag(mod.Condition("SandStance").Neg(true)))
@@ -592,10 +592,10 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, *ModDB, 
 	*/
 
 	env.Player.WeaponData1 = utils.CopyMap(data.UnarmedWeaponData[data.ClassIDs[env.Spec.ClassName]])
-	if _, ok := env.Player.ItemList["Weapon 1"]; ok {
-		// TODO Weapon 1 Data
-		// env.player.itemList["Weapon 1"].weaponData and env.player.itemList["Weapon 1"].weaponData[1]
-	}
+	//if _, ok := env.Player.ItemList["Weapon 1"]; ok {
+	// TODO Weapon 1 Data
+	// env.player.itemList["Weapon 1"].weaponData and env.player.itemList["Weapon 1"].weaponData[1]
+	//}
 
 	/*
 		TODO -- Get the weapon data tables for the equipped weapons
@@ -856,14 +856,69 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, *ModDB, 
 
 	if env.Player.MainSkill == nil {
 		// Add a default main skill if none are specified
+		playerMelee := data.Gems["PlayerMelee"]
+		types := playerMelee.ActiveSkill.Types
+		skillTypes := make(map[data.SkillType]bool, 0)
+		baseFlags := make(map[SkillFlag]bool)
+		for _, skillType := range types {
+			skillTypes[skillType] = true
+
+			switch skillType {
+			case data.SkillTypeBrand:
+				baseFlags[SkillFlagBrand] = true
+			case data.SkillTypeHex:
+				baseFlags[SkillFlagHex] = true
+				baseFlags[SkillFlagCurse] = true
+			case data.SkillTypeAppliesCurse:
+				baseFlags[SkillFlagCurse] = true
+			case data.SkillTypeAttack:
+				baseFlags[SkillFlagAttack] = true
+				// TODO SkillFlagHit
+				// case data.SkillType...:
+				//	baseFlags[SkillFlagHit] = true
+			case data.SkillTypeProjectile:
+				baseFlags[SkillFlagProjectile] = true
+			case data.SkillTypeTrapped:
+				baseFlags[SkillFlagTrap] = true
+			case data.SkillTypeTrappable:
+				baseFlags[SkillFlagTrap] = true
+			case data.SkillTypeRemoteMined:
+				baseFlags[SkillFlagMine] = true
+			case data.SkillTypeSummonsTotem:
+				baseFlags[SkillFlagTotem] = true
+			case data.SkillTypeSpell:
+				baseFlags[SkillFlagSpell] = true
+			case data.SkillTypeAreaSpell:
+				baseFlags[SkillFlagSpell] = true
+				baseFlags[SkillFlagArea] = true
+			case data.SkillTypeMelee:
+				baseFlags[SkillFlagMelee] = true
+			case data.SkillTypeMeleeSingleTarget:
+				baseFlags[SkillFlagMelee] = true
+			case data.SkillTypeChains:
+				baseFlags[SkillFlagChaining] = true
+			case data.SkillTypeArea:
+				baseFlags[SkillFlagArea] = true
+				// TODO SkillFlagCast
+				//case data.SkillType...:
+				//	baseFlags[SkillFlagCast] = true
+			}
+		}
 		defaultEffect := &ActiveEffect{
 			GrantedEffect: GrantedEffect{
-				Name:     data.Gems["PlayerMelee"].ActiveSkill.DisplayName,
-				CastTime: utils.Ptr(float64(*data.Gems["PlayerMelee"].CastTime)),
+				Name:       playerMelee.ActiveSkill.DisplayName,
+				CastTime:   utils.Ptr(float64(*playerMelee.CastTime)),
+				Parts:      nil, // TODO Parts
+				SkillTypes: skillTypes,
+				BaseFlags:  baseFlags,
 			},
 		}
 		env.Player.MainSkill = CreateActiveSkill(defaultEffect, []interface{}{}, env.Player, nil, nil)
 		env.Player.ActiveSkillList = append(env.Player.ActiveSkillList, env.Player.MainSkill)
+	}
+
+	for _, activeSkill := range env.Player.ActiveSkillList {
+		CalcBuildActiveSkillModList(env, activeSkill)
 	}
 
 	/*
@@ -922,7 +977,7 @@ func initModDB(env *Environment, modDB *ModDB) {
 	modDB.AddMod(mod.NewFloat("ActiveTotemLimit", mod.TypeBase, 1).Source("Base"))
 
 	modDB.AddMod(mod.NewFloat("MovementSpeed", mod.TypeIncrease, -30).Source("Base").Tag(mod.Condition("Maimed")))
-	modDB.AddMod(mod.NewFloat("DamageTaken", mod.TypeIncrease, 10).Source("Base").Flag(mod.FlagAttack).Tag(mod.Condition("Intimidated")))
+	modDB.AddMod(mod.NewFloat("DamageTaken", mod.TypeIncrease, 10).Source("Base").Flag(data.ModFlagAttack).Tag(mod.Condition("Intimidated")))
 
 	modDB.AddMod(mod.NewFlag("Condition:Burning", true).Source("Base").Tag(mod.IgnoreCond()).Tag(mod.Condition("Ignited")))
 	modDB.AddMod(mod.NewFlag("Condition:Chilled", true).Source("Base").Tag(mod.IgnoreCond()).Tag(mod.Condition("Frozen")))

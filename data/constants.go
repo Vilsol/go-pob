@@ -5,10 +5,45 @@ import "go-pob/utils"
 type DamageType string
 
 const (
-	DamageTypeCold      = DamageType("Cold")
+	DamageTypePhysical  = DamageType("Physical")
 	DamageTypeLightning = DamageType("Lightning")
+	DamageTypeCold      = DamageType("Cold")
 	DamageTypeFire      = DamageType("Fire")
+	DamageTypeElemental = DamageType("Elemental")
+	DamageTypeChaos     = DamageType("Chaos")
 )
+
+func (DamageType) Values() []DamageType {
+	return []DamageType{
+		DamageTypePhysical,
+		DamageTypeLightning,
+		DamageTypeCold,
+		DamageTypeFire,
+		DamageTypeElemental,
+		DamageTypeChaos,
+	}
+}
+
+func (t DamageType) IsElemental() bool {
+	switch t {
+	case DamageTypeFire:
+		return true
+	case DamageTypeLightning:
+		return true
+	case DamageTypeCold:
+		return true
+	}
+	return false
+}
+
+var DamageTypeFlags = map[DamageType]int{
+	DamageTypePhysical:  0x01,
+	DamageTypeLightning: 0x02,
+	DamageTypeCold:      0x04,
+	DamageTypeFire:      0x08,
+	DamageTypeElemental: 0x0E,
+	DamageTypeChaos:     0x10,
+}
 
 type Ailment string
 
@@ -170,3 +205,171 @@ var UnarmedWeaponData = map[int]map[string]interface{}{
 	5: {"type": "None", "AttackRate": 1.2, "CritChance": 0, "PhysicalMin": 2, "PhysicalMax": 6}, // Templar
 	6: {"type": "None", "AttackRate": 1.2, "CritChance": 0, "PhysicalMin": 2, "PhysicalMax": 5}, // Shadow
 }
+
+type ModFlag int
+
+const (
+	// Damage modes
+
+	ModFlagAttack = ModFlag(0x00000001)
+	ModFlagSpell  = ModFlag(0x00000002)
+	ModFlagHit    = ModFlag(0x00000004)
+	ModFlagDot    = ModFlag(0x00000008)
+	ModFlagCast   = ModFlag(0x00000010)
+
+	// Damage sources
+
+	ModFlagMelee      = ModFlag(0x00000100)
+	ModFlagArea       = ModFlag(0x00000200)
+	ModFlagProjectile = ModFlag(0x00000400)
+	ModFlagSourceMask = ModFlag(0x00000600)
+	ModFlagAilment    = ModFlag(0x00000800)
+	ModFlagMeleeHit   = ModFlag(0x00001000)
+	ModFlagWeapon     = ModFlag(0x00002000)
+
+	// Weapon types
+
+	ModFlagAxe     = ModFlag(0x00010000)
+	ModFlagBow     = ModFlag(0x00020000)
+	ModFlagClaw    = ModFlag(0x00040000)
+	ModFlagDagger  = ModFlag(0x00080000)
+	ModFlagMace    = ModFlag(0x00100000)
+	ModFlagStaff   = ModFlag(0x00200000)
+	ModFlagSword   = ModFlag(0x00400000)
+	ModFlagWand    = ModFlag(0x00800000)
+	ModFlagUnarmed = ModFlag(0x01000000)
+	ModFlagFishing = ModFlag(0x02000000)
+
+	// Weapon classes
+
+	ModFlagWeaponMelee  = ModFlag(0x02000000)
+	ModFlagWeaponRanged = ModFlag(0x04000000)
+	ModFlagWeapon1H     = ModFlag(0x08000000)
+	ModFlagWeapon2H     = ModFlag(0x10000000)
+	ModFlagWeaponMask   = ModFlag(0x1FFF0000)
+)
+
+type SkillType string
+
+const (
+	SkillTypeAttack                         = SkillType("TypeAttack")
+	SkillTypeSpell                          = SkillType("TypeSpell")
+	SkillTypeProjectile                     = SkillType("TypeProjectile")    // Specifically skills which fire projectiles
+	SkillTypeDualWieldOnly                  = SkillType("TypeDualWieldOnly") // Attack requires dual wielding only used on Dual Strike
+	SkillTypeBuff                           = SkillType("TypeBuff")
+	SkillTypeRemoved6                       = SkillType("TypeRemoved6")     // Now removed was CanDualWield: Attack can be used while dual wielding
+	SkillTypeMainHandOnly                   = SkillType("TypeMainHandOnly") // Attack only uses the main hand; removed in 3.5 but still needed for 2.6
+	SkillTypeRemoved8                       = SkillType("TypeRemoved8")     // Now removed was only used on Cleave
+	SkillTypeMinion                         = SkillType("TypeMinion")
+	SkillTypeDamage                         = SkillType("TypeDamage") // Skill hits (not used on attacks because all of them hit)
+	SkillTypeArea                           = SkillType("TypeArea")
+	SkillTypeDuration                       = SkillType("TypeDuration")
+	SkillTypeRequiresShield                 = SkillType("TypeRequiresShield")
+	SkillTypeProjectileSpeed                = SkillType("TypeProjectileSpeed")
+	SkillTypeHasReservation                 = SkillType("TypeHasReservation")
+	SkillTypeReservationBecomesCost         = SkillType("TypeReservationBecomesCost")
+	SkillTypeTrappable                      = SkillType("TypeTrappable")       // Skill can be turned into a trap
+	SkillTypeTotemable                      = SkillType("TypeTotemable")       // Skill can be turned into a totem
+	SkillTypeMineable                       = SkillType("TypeMineable")        // Skill can be turned into a mine
+	SkillTypeElementalStatus                = SkillType("TypeElementalStatus") // Causes elemental status effects but doesn't hit (used on Herald of Ash to allow Elemental Proliferation to apply)
+	SkillTypeMinionsCanExplode              = SkillType("TypeMinionsCanExplode")
+	SkillTypeRemoved22                      = SkillType("TypeRemoved22") // Now removed was AttackCanTotem
+	SkillTypeChains                         = SkillType("TypeChains")
+	SkillTypeMelee                          = SkillType("TypeMelee")
+	SkillTypeMeleeSingleTarget              = SkillType("TypeMeleeSingleTarget")
+	SkillTypeMulticastable                  = SkillType("TypeMulticastable") // Spell can repeat via Spell Echo
+	SkillTypeTotemCastsAlone                = SkillType("TypeTotemCastsAlone")
+	SkillTypeMultistrikeable                = SkillType("TypeMultistrikeable") // Attack can repeat via Multistrike
+	SkillTypeCausesBurning                  = SkillType("TypeCausesBurning")   // Deals burning damage
+	SkillTypeSummonsTotem                   = SkillType("TypeSummonsTotem")
+	SkillTypeTotemCastsWhenNotDetached      = SkillType("TypeTotemCastsWhenNotDetached")
+	SkillTypeFire                           = SkillType("TypeFire")
+	SkillTypeCold                           = SkillType("TypeCold")
+	SkillTypeLightning                      = SkillType("TypeLightning")
+	SkillTypeTriggerable                    = SkillType("TypeTriggerable")
+	SkillTypeTrapped                        = SkillType("TypeTrapped")
+	SkillTypeMovement                       = SkillType("TypeMovement")
+	SkillTypeRemoved39                      = SkillType("TypeRemoved39") // Now removed was Cast
+	SkillTypeDamageOverTime                 = SkillType("TypeDamageOverTime")
+	SkillTypeRemoteMined                    = SkillType("TypeRemoteMined")
+	SkillTypeTriggered                      = SkillType("TypeTriggered")
+	SkillTypeVaal                           = SkillType("TypeVaal")
+	SkillTypeAura                           = SkillType("TypeAura")
+	SkillTypeRemoved45                      = SkillType("TypeRemoved45")               // Now removed was LightningSpell
+	SkillTypeCanTargetUnusableCorpse        = SkillType("TypeCanTargetUnusableCorpse") // Doesn't appear to be used at all
+	SkillTypeRemoved47                      = SkillType("TypeRemoved47")               // Now removed was TriggeredAttack
+	SkillTypeRangedAttack                   = SkillType("TypeRangedAttack")
+	SkillTypeRemoved49                      = SkillType("TypeRemoved49") // Now removed was MinionSpell
+	SkillTypeChaos                          = SkillType("TypeChaos")
+	SkillTypeFixedSpeedProjectile           = SkillType("TypeFixedSpeedProjectile") // Not used by any skill
+	SkillTypeRemoved52                      = SkillType("TypeRemoved52")
+	SkillTypeThresholdJewelArea             = SkillType("TypeThresholdJewelArea") // Allows Burning Arrow and Vigilant Strike to be supported by Inc AoE and Conc Effect
+	SkillTypeThresholdJewelProjectile       = SkillType("TypeThresholdJewelProjectile")
+	SkillTypeThresholdJewelDuration         = SkillType("TypeThresholdJewelDuration") // Allows Burning Arrow to be supported by Inc/Less Duration and Rapid Decay
+	SkillTypeThresholdJewelRangedAttack     = SkillType("TypeThresholdJewelRangedAttack")
+	SkillTypeRemoved57                      = SkillType("TypeRemoved57")
+	SkillTypeChannel                        = SkillType("TypeChannel")
+	SkillTypeDegenOnlySpellDamage           = SkillType("TypeDegenOnlySpellDamage") // Allows Contagion Blight and Scorching Ray to be supported by Controlled Destruction
+	SkillTypeRemoved60                      = SkillType("TypeRemoved60")            // Now removed was ColdSpell
+	SkillTypeInbuiltTrigger                 = SkillType("TypeInbuiltTrigger")       // Skill granted by item that is automatically triggered prevents trigger gems and trap/mine/totem from applying
+	SkillTypeGolem                          = SkillType("TypeGolem")
+	SkillTypeHerald                         = SkillType("TypeHerald")
+	SkillTypeAuraAffectsEnemies             = SkillType("TypeAuraAffectsEnemies") // Used by Death Aura added by Blasphemy
+	SkillTypeNoRuthless                     = SkillType("TypeNoRuthless")
+	SkillTypeThresholdJewelSpellDamage      = SkillType("TypeThresholdJewelSpellDamage")
+	SkillTypeCascadable                     = SkillType("TypeCascadable")                     // Spell can cascade via Spell Cascade
+	SkillTypeProjectilesFromUser            = SkillType("TypeProjectilesFromUser")            // Skill can be supported by Volley
+	SkillTypeMirageArcherCanUse             = SkillType("TypeMirageArcherCanUse")             // Skill can be supported by Mirage Archer
+	SkillTypeProjectileSpiral               = SkillType("TypeProjectileSpiral")               // Excludes Volley from Vaal Fireball and Vaal Spark
+	SkillTypeSingleMainProjectile           = SkillType("TypeSingleMainProjectile")           // Excludes Volley from Spectral Shield Throw
+	SkillTypeMinionsPersistWhenSkillRemoved = SkillType("TypeMinionsPersistWhenSkillRemoved") // Excludes Summon Phantasm on Kill from Manifest Dancing Dervish
+	SkillTypeProjectileNumber               = SkillType("TypeProjectileNumber")               // Allows LMP/GMP on Rain of Arrows and Toxic Rain
+	SkillTypeWarcry                         = SkillType("TypeWarcry")                         // Warcry
+	SkillTypeInstant                        = SkillType("TypeInstant")                        // Instant cast skill
+	SkillTypeBrand                          = SkillType("TypeBrand")
+	SkillTypeDestroysCorpse                 = SkillType("TypeDestroysCorpse") // Consumes corpses on use
+	SkillTypeNonHitChill                    = SkillType("TypeNonHitChill")
+	SkillTypeChillingArea                   = SkillType("TypeChillingArea")
+	SkillTypeAppliesCurse                   = SkillType("TypeAppliesCurse")
+	SkillTypeCanRapidFire                   = SkillType("TypeCanRapidFire")
+	SkillTypeAuraDuration                   = SkillType("TypeAuraDuration")
+	SkillTypeAreaSpell                      = SkillType("TypeAreaSpell")
+	SkillTypeOR                             = SkillType("TypeOR")
+	SkillTypeAND                            = SkillType("TypeAND")
+	SkillTypeNOT                            = SkillType("TypeNOT")
+	SkillTypePhysical                       = SkillType("TypePhysical")
+	SkillTypeAppliesMaim                    = SkillType("TypeAppliesMaim")
+	SkillTypeCreatesMinion                  = SkillType("TypeCreatesMinion")
+	SkillTypeGuard                          = SkillType("TypeGuard")
+	SkillTypeTravel                         = SkillType("TypeTravel")
+	SkillTypeBlink                          = SkillType("TypeBlink")
+	SkillTypeCanHaveBlessing                = SkillType("TypeCanHaveBlessing")
+	SkillTypeProjectilesNotFromUser         = SkillType("TypeProjectilesNotFromUser")
+	SkillTypeAttackInPlaceIsDefault         = SkillType("TypeAttackInPlaceIsDefault")
+	SkillTypeNova                           = SkillType("TypeNova")
+	SkillTypeInstantNoRepeatWhenHeld        = SkillType("TypeInstantNoRepeatWhenHeld")
+	SkillTypeInstantShiftAttackForLeftMouse = SkillType("TypeInstantShiftAttackForLeftMouse")
+	SkillTypeAuraNotOnCaster                = SkillType("TypeAuraNotOnCaster")
+	SkillTypeBanner                         = SkillType("TypeBanner")
+	SkillTypeRain                           = SkillType("TypeRain")
+	SkillTypeCooldown                       = SkillType("TypeCooldown")
+	SkillTypeThresholdJewelChaining         = SkillType("TypeThresholdJewelChaining")
+	SkillTypeSlam                           = SkillType("TypeSlam")
+	SkillTypeStance                         = SkillType("TypeStance")
+	SkillTypeNonRepeatable                  = SkillType("TypeNonRepeatable") // Blood and Sand + Flesh and Stone
+	SkillTypeOtherThingUsesSkill            = SkillType("TypeOtherThingUsesSkill")
+	SkillTypeSteel                          = SkillType("TypeSteel")
+	SkillTypeHex                            = SkillType("TypeHex")
+	SkillTypeMark                           = SkillType("TypeMark")
+	SkillTypeAegis                          = SkillType("TypeAegis")
+	SkillTypeOrb                            = SkillType("TypeOrb")
+	SkillTypeKillNoDamageModifiers          = SkillType("TypeKillNoDamageModifiers")
+	SkillTypeRandomElement                  = SkillType("TypeRandomElement") // means elements cannot repeat
+	SkillTypeLateConsumeCooldown            = SkillType("TypeLateConsumeCooldown")
+	SkillTypeArcane                         = SkillType("TypeArcane") // means it is reliant on amount of mana spent
+	SkillTypeFixedCastTime                  = SkillType("TypeFixedCastTime")
+	SkillTypeRequiresOffHandNotWeapon       = SkillType("TypeRequiresOffHandNotWeapon")
+	SkillTypeLink                           = SkillType("TypeLink")
+	SkillTypeBlessing                       = SkillType("TypeBlessing")
+	SkillTypeZeroReservation                = SkillType("TypeZeroReservation")
+)

@@ -52,38 +52,6 @@ const (
 	SourceFeedingFrenzy = Source("Feeding Frenzy")
 )
 
-type MFlag int
-
-const (
-	FlagAttack       = MFlag(0x00000001)
-	FlagSpell        = MFlag(0x00000002)
-	FlagHit          = MFlag(0x00000004)
-	FlagDot          = MFlag(0x00000008)
-	FlagCast         = MFlag(0x00000010)
-	FlagMelee        = MFlag(0x00000100)
-	FlagArea         = MFlag(0x00000200)
-	FlagProjectile   = MFlag(0x00000400)
-	FlagSourceMask   = MFlag(0x00000600)
-	FlagAilment      = MFlag(0x00000800)
-	FlagMeleeHit     = MFlag(0x00001000)
-	FlagWeapon       = MFlag(0x00002000)
-	FlagAxe          = MFlag(0x00010000)
-	FlagBow          = MFlag(0x00020000)
-	FlagClaw         = MFlag(0x00040000)
-	FlagDagger       = MFlag(0x00080000)
-	FlagMace         = MFlag(0x00100000)
-	FlagStaff        = MFlag(0x00200000)
-	FlagSword        = MFlag(0x00400000)
-	FlagWand         = MFlag(0x00800000)
-	FlagUnarmed      = MFlag(0x01000000)
-	FlagFishing      = MFlag(0x02000000)
-	FlagWeaponMelee  = MFlag(0x02000000)
-	FlagWeaponRanged = MFlag(0x04000000)
-	FlagWeapon1H     = MFlag(0x08000000)
-	FlagWeapon2H     = MFlag(0x10000000)
-	FlagWeaponMask   = MFlag(0x1FFF0000)
-)
-
 type KeywordFlag int
 
 const (

@@ -1,5 +1,7 @@
 package mod
 
+import "go-pob/data"
+
 var _ Mod = (*BaseMod)(nil)
 
 type BaseMod struct {
@@ -8,12 +10,12 @@ type BaseMod struct {
 	ModName         string
 	ModType         Type
 	ModSource       Source
-	ModFlags        MFlag
+	ModFlags        data.ModFlag
 	ModKeywordFlags KeywordFlag
 	ModTags         []Tag
 }
 
-func (m *BaseMod) Flags() MFlag {
+func (m *BaseMod) Flags() data.ModFlag {
 	return m.ModFlags
 }
 
@@ -46,7 +48,7 @@ func (m *BaseMod) Source(source Source) Mod {
 	return m.parent
 }
 
-func (m *BaseMod) Flag(flag MFlag) Mod {
+func (m *BaseMod) Flag(flag data.ModFlag) Mod {
 	m.ModFlags |= flag
 	return m.parent
 }

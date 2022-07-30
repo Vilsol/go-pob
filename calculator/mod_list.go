@@ -105,7 +105,7 @@ func (m *ModList) Sum(modType mod.Type, cfg *ListCfg, names ...string) float64 {
 }
 
 func (m *ModList) More(cfg *ListCfg, names ...string) float64 {
-	result := float64(0)
+	result := float64(1)
 
 	mappedNames := make(map[string]bool, 0)
 	for _, name := range names {

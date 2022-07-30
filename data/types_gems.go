@@ -20,7 +20,7 @@ type ActiveSkillClass struct {
 	IsManuallyCasted         bool                `json:"is_manually_casted"`
 	IsSkillTotem             bool                `json:"is_skill_totem"`
 	StatConversions          map[string]string   `json:"stat_conversions"`
-	Types                    []string            `json:"types"`
+	Types                    []SkillType         `json:"types"`
 	WeaponRestrictions       []WeaponRestriction `json:"weapon_restrictions"`
 	SkillTotemLifeMultiplier *float64            `json:"skill_totem_life_multiplier,omitempty"`
 	MinionTypes              []string            `json:"minion_types,omitempty"`

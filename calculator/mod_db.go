@@ -94,3 +94,51 @@ func (m *ModDB) Sum(modType mod.Type, cfg *ListCfg, names ...string) float64 {
 
 	return result
 }
+
+func (m *ModDB) Flag(cfg *ListCfg, names ...string) bool {
+	for _, name := range names {
+		for _, mo := range m.Mods[name] {
+			if mo.Type() == mod.TypeFlag &&
+				(cfg == nil || cfg.Flags == nil || (*cfg.Flags)&mo.Flags() == mo.Flags()) &&
+				(cfg == nil || cfg.KeywordFlags == nil || mod.MatchKeywordFlags(*cfg.KeywordFlags, mo.KeywordFlags())) &&
+				(cfg == nil || cfg.Source == nil || *cfg.Source == mo.GetSource()) {
+
+				value := m.EvalMod(mo, cfg)
+				if value != nil && value.(bool) {
+					return true
+				}
+			}
+		}
+	}
+
+	if m.Parent != nil {
+		// TODO Parent
+	}
+
+	return false
+}
+
+func (m *ModDB) More(cfg *ListCfg, names ...string) float64 {
+	result := float64(1)
+
+	for _, name := range names {
+		for _, mo := range m.Mods[name] {
+			if mo.Type() == mod.TypeMore &&
+				(cfg == nil || cfg.Flags == nil || (*cfg.Flags)&mo.Flags() == mo.Flags()) &&
+				(cfg == nil || cfg.KeywordFlags == nil || mod.MatchKeywordFlags(*cfg.KeywordFlags, mo.KeywordFlags())) &&
+				(cfg == nil || cfg.Source == nil || *cfg.Source == mo.GetSource()) {
+
+				value := m.EvalMod(mo, cfg)
+				if value != nil {
+					result = result * (1 + value.(float64)/100)
+				}
+			}
+		}
+	}
+
+	if m.Parent != nil {
+		// TODO Parent
+	}
+
+	return result
+}

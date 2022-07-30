@@ -10,22 +10,15 @@ import (
 	"go-pob/builds"
 )
 
-func TestEmptyEnv(t *testing.T) {
+func TestOutput(t *testing.T) {
 	file, err := os.ReadFile("../testdata/builds/Fireball.xml")
 	testza.AssertNoError(t, err)
 
 	build, err := builds.ParseBuild(file)
 	testza.AssertNoError(t, err)
 
-	env, cachedPlayerDB, cachedEnemyDB, cachedMinionDB := InitEnv(build, OutputModeMain)
-
-	testza.AssertEqual(t, 101, len(cachedPlayerDB.Mods))
-	testza.AssertEqual(t, 60, len(cachedEnemyDB.Mods))
-	testza.AssertNil(t, cachedMinionDB)
-
-	_ = cachedPlayerDB
-	_ = cachedEnemyDB
-	_ = cachedMinionDB
+	calculator := &Calculator{PoB: build}
+	env := calculator.BuildOutput(OutputModeMain)
 
 	marshal, err := json.MarshalIndent(env, "", "  ")
 	testza.AssertNoError(t, err)
