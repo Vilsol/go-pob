@@ -120,6 +120,7 @@ type SupportGem struct {
 type WeaponRestriction string
 
 const (
+	None                  WeaponRestriction = "None"
 	Bow                   WeaponRestriction = "Bow"
 	Claw                  WeaponRestriction = "Claw"
 	Dagger                WeaponRestriction = "Dagger"

@@ -73,6 +73,7 @@ type Actor struct {
 	Breakdown       interface{}            // TODO Implement
 	WeaponData1     map[string]interface{} // TODO Implement. Might be SomeSource?
 	WeaponData2     map[string]interface{} // TODO Implement. Might be SomeSource?
+	StrDmgBonus     float64
 }
 
 // TODO Fix Name
@@ -100,22 +101,25 @@ const (
 )
 
 type ActiveSkill struct {
-	SkillFlags      map[SkillFlag]bool
-	SkillModList    *ModList
-	SkillCfg        *ListCfg
-	SkillTypes      map[data.SkillType]bool
-	SkillData       map[string]interface{} // TODO Implement. Might be SkillData?
-	ActiveEffect    *ActiveEffect
-	Weapon1Cfg      *ListCfg
-	Weapon2Cfg      *ListCfg
-	SupportList     []interface{}
-	Actor           *Actor `json:"-"`
-	SocketGroup     interface{}
-	SummonSkill     interface{}
-	ConversionTable map[data.DamageType]ConversionTable
-	Minion          interface{}
-	Weapon1Flags    data.ModFlag
-	Weapon2Flags    data.ModFlag
+	SkillFlags       map[SkillFlag]bool
+	SkillModList     *ModList
+	SkillCfg         *ListCfg
+	SkillTypes       map[data.SkillType]bool
+	SkillData        map[string]interface{} // TODO Implement. Might be SkillData?
+	ActiveEffect     *ActiveEffect
+	Weapon1Cfg       *ListCfg
+	Weapon2Cfg       *ListCfg
+	SupportList      []interface{}
+	Actor            *Actor `json:"-"`
+	SocketGroup      interface{}
+	SummonSkill      interface{}
+	ConversionTable  map[data.DamageType]ConversionTable
+	Minion           interface{}
+	Weapon1Flags     data.ModFlag
+	Weapon2Flags     data.ModFlag
+	EffectList       []*ActiveEffect
+	DisableReason    string
+	BaseSkillModList *ModList
 }
 
 type ConversionTable struct {
@@ -149,6 +153,9 @@ const (
 	SkillFlagChaining         = SkillFlag("chaining")
 	SkillFlagArea             = SkillFlag("area")
 	SkillFlagCast             = SkillFlag("cast")
+	SkillFlagShieldAttack     = SkillFlag("shieldAttack")
+	SkillFlagForceMainHand    = SkillFlag("forceMainHand")
+	SkillFlagDisable          = SkillFlag("disable")
 )
 
 type SkillData struct {
@@ -175,26 +182,21 @@ type ActiveEffect struct {
 }
 
 type GrantedEffect struct {
-	Name       string
-	CastTime   *float64
-	Parts      []interface{}
-	SkillTypes map[data.SkillType]bool
-	BaseFlags  map[SkillFlag]bool
+	Name                string
+	CastTime            *float64
+	Parts               []interface{}
+	SkillTypes          map[data.SkillType]bool
+	BaseFlags           map[SkillFlag]bool
+	WeaponTypes         []data.WeaponRestriction
+	Support             bool
+	BaseMultiplier      *float64
+	DamageEffectiveness *float64
 }
-
-/*
-
-	label = "Main Hand",
-	source = source,
-	cfg = activeSkill.weapon1Cfg,
-	output = output.MainHand,
-	breakdown = breakdown and breakdown.MainHand,
-*/
 
 type DamagePass struct {
 	Label     string
 	Source    map[string]interface{}
 	Config    *ListCfg
 	Output    map[string]float64
-	Breakdown interface{} // TODO Implement
+	Breakdown interface{} // TODO Implement Breakdown
 }

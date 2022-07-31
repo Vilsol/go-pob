@@ -46,7 +46,7 @@ func MissingOrFalse[K comparable, V any](m map[K]V, key K) bool {
 	}
 
 	if boolVal, ok := getBool(val); ok {
-		return boolVal
+		return !boolVal
 	}
 
 	log.Warn().

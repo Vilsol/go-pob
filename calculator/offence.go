@@ -80,7 +80,7 @@ func calcDamage(activeSkill *ActiveSkill, output map[string]float64, cfg *ListCf
 		math.Round(((baseMax * inc * more) + addMax) * moreMaxDamage)
 }
 
-func CalculateOffence(environment *Environment, actor *Actor, activeSkill *ActiveSkill) {
+func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) {
 	/*
 		TODO ...
 		local modDB = actor.modDB
@@ -1113,51 +1113,77 @@ func CalculateOffence(environment *Environment, actor *Actor, activeSkill *Activ
 		canDeal[damageType] = !activeSkill.SkillModList.Flag(activeSkill.SkillCfg, "DealNo"+string(damageType))
 	}
 
-	/*
-		TODO -- Calculate damage conversion percentages
-		activeSkill.conversionTable = wipeTable(activeSkill.conversionTable)
-		for damageTypeIndex = 1, 4 do
-			local damageType = dmgTypeList[damageTypeIndex]
-			local globalConv = wipeTable(tempTable1)
-			local skillConv = wipeTable(tempTable2)
-			local add = wipeTable(tempTable3)
-			local globalTotal, skillTotal = 0, 0
-			for otherTypeIndex = damageTypeIndex + 1, 5 do
-				-- For all possible destination types, check for global and skill conversions
-				otherType = dmgTypeList[otherTypeIndex]
-				globalConv[otherType] = skillModList:Sum("BASE", skillCfg, damageType.."DamageConvertTo"..otherType, isElemental[damageType] and "ElementalDamageConvertTo"..otherType or nil, damageType ~= "Chaos" and "NonChaosDamageConvertTo"..otherType or nil)
-				globalTotal = globalTotal + globalConv[otherType]
-				skillConv[otherType] = skillModList:Sum("BASE", skillCfg, "Skill"..damageType.."DamageConvertTo"..otherType)
-				skillTotal = skillTotal + skillConv[otherType]
-				add[otherType] = skillModList:Sum("BASE", skillCfg, damageType.."DamageGainAs"..otherType, isElemental[damageType] and "ElementalDamageGainAs"..otherType or nil, damageType ~= "Chaos" and "NonChaosDamageGainAs"..otherType or nil)
-			end
-			if skillTotal > 100 then
-				-- Skill conversion exceeds 100%, scale it down and remove non-skill conversions
-				local factor = 100 / skillTotal
-				for type, val in pairs(skillConv) do
-					-- Overconversion is fixed in 3.0, so I finally get to uncomment this line!
-					skillConv[type] = val * factor
-				end
-				for type, val in pairs(globalConv) do
-					globalConv[type] = 0
-				end
-			elseif globalTotal + skillTotal > 100 then
-				-- Conversion exceeds 100%, scale down non-skill conversions
-				local factor = (100 - skillTotal) / globalTotal
-				for type, val in pairs(globalConv) do
-					globalConv[type] = val * factor
-				end
-				globalTotal = globalTotal * factor
-			end
-			local dmgTable = { }
-			for type, val in pairs(globalConv) do
-				dmgTable[type] = (globalConv[type] + skillConv[type] + add[type]) / 100
-			end
-			dmgTable.mult = 1 - m_min((globalTotal + skillTotal) / 100, 1)
-			activeSkill.conversionTable[damageType] = dmgTable
-		end
-		activeSkill.conversionTable["Chaos"] = { mult = 1 }
-	*/
+	// Calculate damage conversion percentages
+	activeSkill.ConversionTable = make(map[data.DamageType]ConversionTable)
+	totalDamageTypes := len(data.DamageType("").Values())
+	for damageTypeIndex := 0; damageTypeIndex < totalDamageTypes; damageTypeIndex++ {
+		damageType := data.DamageType("").Values()[damageTypeIndex]
+		globalConv := make(map[data.DamageType]float64)
+		skillConv := make(map[data.DamageType]float64)
+		add := make(map[data.DamageType]float64)
+		globalTotal := float64(0)
+		skillTotal := float64(0)
+
+		for otherTypeIndex := damageTypeIndex + 1; otherTypeIndex < totalDamageTypes; otherTypeIndex++ {
+			// For all possible destination types, check for global and skill conversions
+			otherType := data.DamageType("").Values()[otherTypeIndex]
+
+			globalNames := []string{string(damageType) + "DamageConvertTo" + string(otherType)}
+			if damageType.IsElemental() {
+				globalNames = append(globalNames, "ElementalDamageConvertTo"+string(otherType))
+			}
+			if damageType != data.DamageTypeChaos {
+				globalNames = append(globalNames, "NonChaosDamageConvertTo"+string(otherType))
+			}
+			globalConv[otherType] = activeSkill.SkillModList.Sum(mod.TypeBase, activeSkill.SkillCfg, globalNames...)
+			globalTotal += globalConv[otherType]
+
+			skillConv[otherType] = activeSkill.SkillModList.Sum(mod.TypeBase, activeSkill.SkillCfg, "Skill"+string(damageType)+"DamageConvertTo"+string(otherType))
+			skillTotal += skillConv[otherType]
+
+			addNames := []string{string(damageType) + "DamageGainAs" + string(otherType)}
+			if damageType.IsElemental() {
+				addNames = append(addNames, "ElementalDamageGainAs"+string(otherType))
+			}
+			if damageType != data.DamageTypeChaos {
+				addNames = append(addNames, "NonChaosDamageGainAs"+string(otherType))
+			}
+			add[otherType] = activeSkill.SkillModList.Sum(mod.TypeBase, activeSkill.SkillCfg, addNames...)
+		}
+
+		if skillTotal > 100 {
+			// Skill conversion exceeds 100%, scale it down and remove non-skill conversions
+			factor := 100 / skillTotal
+			for convType, val := range skillConv {
+				// Overconversion is fixed in 3.0, so I finally get to uncomment this line!
+				skillConv[convType] = val * factor
+			}
+			for convType := range globalConv {
+				globalConv[convType] = 0
+			}
+		} else if globalTotal+skillTotal > 100 {
+			// Conversion exceeds 100%, scale down non-skill conversions
+			factor := (100 - skillTotal) / globalTotal
+			for convType, val := range globalConv {
+				globalConv[convType] = val * factor
+			}
+			globalTotal = globalTotal * factor
+		}
+
+		dmgTable := ConversionTable{
+			Targets: make(map[data.DamageType]float64),
+		}
+		for convType, val := range globalConv {
+			dmgTable.Targets[convType] = (val + skillConv[convType] + add[convType]) / 100
+		}
+
+		dmgTable.Mult = 1 - math.Min((globalTotal+skillTotal)/100, 1)
+		activeSkill.ConversionTable[damageType] = dmgTable
+	}
+
+	activeSkill.ConversionTable[data.DamageTypeChaos] = ConversionTable{
+		Mult: 1,
+	}
 
 	// Configure damage passes
 	passList := make([]*DamagePass, 0)
@@ -1190,7 +1216,7 @@ func CalculateOffence(environment *Environment, actor *Actor, activeSkill *Activ
 				// breakdown.OffHand = LoadModule(calcs.breakdownModule, skillModList, output.OffHand)
 			}
 			activeSkill.Weapon2Cfg.SkillStats = actor.OutputTable[OutTableOffHand]
-			source := actor.WeaponData2 // TODO Copy
+			source := utils.CopyMap(actor.WeaponData2) // TODO Copy
 			if critOverride != nil && source != nil && source["Type"] != "None" {
 				source["CritChance"] = critOverride.(float64)
 			}
@@ -1366,7 +1392,7 @@ func CalculateOffence(environment *Environment, actor *Actor, activeSkill *Activ
 		if utils.MissingOrFalse(activeSkill.SkillFlags, SkillFlagAttack) ||
 			activeSkill.SkillModList.Flag(pass.Config, "CannotBeEvaded") ||
 			utils.HasTrue(activeSkill.SkillData, "CannotBeEvaded") ||
-			(environment.ModeEffective && actor.Enemy.ModDB.Flag(nil, "CannotEvade")) {
+			(env.ModeEffective && actor.Enemy.ModDB.Flag(nil, "CannotEvade")) {
 			pass.Output["HitChance"] = 100
 		} else {
 			enemyEvasion := math.Max(math.Round(CalcVal(actor.Enemy.ModDB, "Evasion", nil)), 0)
@@ -1589,16 +1615,18 @@ func CalculateOffence(environment *Environment, actor *Actor, activeSkill *Activ
 			TODO Passes
 			globalOutput, globalBreakdown = output, breakdown
 			local source, output, cfg, breakdown = pass.source, pass.output, pass.cfg, pass.breakdown
+		*/
 
-			-- Exerted Attack members
+		// Exerted Attack members
+		actor.Output["OffensiveWarcryEffect"] = 1
+		actor.Output["MaxOffensiveWarcryEffect"] = 1
+		actor.Output["TheoreticalOffensiveWarcryEffect"] = 1
+		actor.Output["TheoreticalMaxOffensiveWarcryEffect"] = 1
+		actor.Output["RallyingHitEffect"] = 1
+		actor.Output["AilmentWarcryEffect"] = 1
+
+		/*
 			local exertedDoubleDamage = env.modDB:Sum("BASE", cfg, "ExertDoubleDamageChance")
-			globalOutput.OffensiveWarcryEffect = 1
-			globalOutput.MaxOffensiveWarcryEffect = 1
-			globalOutput.TheoreticalOffensiveWarcryEffect = 1
-			globalOutput.TheoreticalMaxOffensiveWarcryEffect = 1
-			globalOutput.RallyingHitEffect = 1
-			globalOutput.AilmentWarcryEffect = 1
-
 			if env.mode_buffs then
 				-- Iterative over all the active skills to account for exerted attacks provided by warcries
 				if (activeSkill.activeEffect.grantedEffect.name == "Vaal Ground Slam" or not activeSkill.skillTypes[SkillType.Vaal]) and not activeSkill.skillTypes[SkillType.Channel] and not activeSkill.skillModList:Flag(cfg, "SupportedByMultistrike") then
@@ -1864,12 +1892,14 @@ func CalculateOffence(environment *Environment, actor *Actor, activeSkill *Activ
 				end
 			end
 		*/
+
+		pass.Output["RuthlessBlowHitEffect"] = 1
+		pass.Output["RuthlessBlowBleedEffect"] = 1
+		pass.Output["FistOfWarHitEffect"] = 1
+		pass.Output["FistOfWarAilmentEffect"] = 1
+
 		/*
 			TODO --
-			output.RuthlessBlowHitEffect = 1
-			output.RuthlessBlowBleedEffect = 1
-			output.FistOfWarHitEffect = 1
-			output.FistOfWarAilmentEffect = 1
 			if env.mode_combat then
 				-- Calculate Ruthless Blow chance/multipliers + Fist of War multipliers
 				output.RuthlessBlowMaxCount = skillModList:Sum("BASE", cfg, "RuthlessBlowMaxCount")
@@ -1923,44 +1953,70 @@ func CalculateOffence(environment *Environment, actor *Actor, activeSkill *Activ
 				end
 			end
 		*/
-		/*
-			TODO -- Calculate crit chance, crit multiplier, and their combined effect
-			if skillModList:Flag(nil, "NeverCrit") then
-				output.PreEffectiveCritChance = 0
-				output.CritChance = 0
-				output.CritMultiplier = 0
-				output.BonusCritDotMultiplier = 0
-				output.CritEffect = 1
-			else
-				local critOverride = skillModList:Override(cfg, "CritChance")
-				local baseCrit = critOverride or source.CritChance or 0
-				if baseCrit == 100 then
-					output.PreEffectiveCritChance = 100
-					output.CritChance = 100
-				else
-					local base = 0
-					local inc = 0
-					local more = 1
-					if not critOverride then
-						base = skillModList:Sum("BASE", cfg, "CritChance") + (env.mode_effective and enemyDB:Sum("BASE", nil, "SelfCritChance") or 0)
-						inc = skillModList:Sum("INC", cfg, "CritChance") + (env.mode_effective and enemyDB:Sum("INC", nil, "SelfCritChance") or 0)
-						more = skillModList:More(cfg, "CritChance")
-					end
-					output.CritChance = (baseCrit + base) * (1 + inc / 100) * more
-					local preCapCritChance = output.CritChance
-					output.CritChance = m_min(output.CritChance, 100)
-					if (baseCrit + base) > 0 then
-						output.CritChance = m_max(output.CritChance, 0)
-					end
-					output.PreEffectiveCritChance = output.CritChance
-					local preLuckyCritChance = output.CritChance
-					if env.mode_effective and skillModList:Flag(cfg, "CritChanceLucky") then
-						output.CritChance = (1 - (1 - output.CritChance / 100) ^ 2) * 100
-					end
-					local preHitCheckCritChance = output.CritChance
-					if env.mode_effective then
-						output.CritChance = output.CritChance * output.HitChance / 100
-					end
+
+		// Calculate crit chance, crit multiplier, and their combined effect
+		if activeSkill.SkillModList.Flag(nil, "NeverCrit") {
+			pass.Output["PreEffectiveCritChance"] = 0
+			pass.Output["CritChance"] = 0
+			pass.Output["CritMultiplier"] = 0
+			pass.Output["BonusCritDotMultiplier"] = 0
+			pass.Output["CritEffect"] = 1
+		} else {
+			baseCrit := float64(0)
+
+			if pass.Source["CritChance"] != nil {
+				baseCrit = pass.Source["CritChance"].(float64)
+			}
+
+			critOverride := activeSkill.SkillModList.Override(pass.Config, "CritChance")
+			if critOverride != nil {
+				baseCrit = critOverride.(float64)
+			}
+
+			if baseCrit == 100 {
+				pass.Output["PreEffectiveCritChance"] = 100
+				pass.Output["CritChance"] = 100
+			} else {
+				base := float64(0)
+				inc := float64(0)
+				more := float64(0)
+				if critOverride == nil {
+					base = activeSkill.SkillModList.Sum(mod.TypeBase, pass.Config, "CritChance")
+					inc = activeSkill.SkillModList.Sum(mod.TypeIncrease, pass.Config, "CritChance")
+					more = activeSkill.SkillModList.More(pass.Config, "CritChance")
+
+					if env.ModeEffective {
+						base += actor.Enemy.ModDB.Sum(mod.TypeBase, nil, "SelfCritChance")
+						inc += actor.Enemy.ModDB.Sum(mod.TypeIncrease, nil, "SelfCritChance")
+					}
+				}
+
+				pass.Output["CritChance"] = (baseCrit + base) * (1 + inc/100) * more
+
+				// For Breakdown
+				// preCapCritChance := pass.Output["CritChance"]
+				pass.Output["CritChance"] = math.Min(pass.Output["CritChance"], 100)
+
+				if baseCrit+base > 0 {
+					pass.Output["CritChance"] = math.Max(pass.Output["CritChance"], 0)
+				}
+
+				pass.Output["PreEffectiveCritChance"] = pass.Output["CritChance"]
+				// For Breakdown
+				// preLuckyCritChance := pass.Output["CritChance"]
+
+				if env.ModeEffective && activeSkill.SkillModList.Flag(pass.Config, "CritChanceLucky") {
+					pass.Output["CritChance"] = (1 - math.Pow(1-pass.Output["CritChance"]/100, 2)) * 100
+				}
+
+				// For Breakdown
+				// preHitCheckCritChance := pass.Output["CritChance"]
+				if env.ModeEffective {
+					pass.Output["CritChance"] = pass.Output["CritChance"] * pass.Output["HitChance"] / 100
+				}
+
+				/*
+					TODO Breakdown
 					if breakdown and output.CritChance ~= baseCrit then
 						breakdown.CritChance = { }
 						if base ~= 0 then
@@ -1991,16 +2047,21 @@ func CalculateOffence(environment *Environment, actor *Actor, activeSkill *Activ
 							t_insert(breakdown.CritChance, s_format("= %.2f%%", output.CritChance))
 						end
 					end
-				end
-				if skillModList:Flag(cfg, "NoCritMultiplier") then
-					output.CritMultiplier = 1
-				else
-					local extraDamage = skillModList:Sum("BASE", cfg, "CritMultiplier") / 100
-					local multiOverride = skillModList:Override(skillCfg, "CritMultiplier")
-					if multiOverride then
-						extraDamage = (multiOverride - 100) / 100
-					end
-					if env.mode_effective then
+				*/
+			}
+
+			if activeSkill.SkillModList.Flag(pass.Config, "NoCritMultiplier") {
+				pass.Output["CritMultiplier"] = 1
+			} else {
+				extraDamage := activeSkill.SkillModList.Sum(mod.TypeBase, pass.Config, "CritMultiplier") / 100
+				multiOverride := activeSkill.SkillModList.Override(activeSkill.SkillCfg, "CritMultiplier")
+				if multiOverride != nil {
+					extraDamage = (multiOverride.(float64) - 100) / 100
+				}
+
+				if env.ModeEffective {
+					/*
+						TODO Breakdown
 						local enemyInc = 1 + enemyDB:Sum("INC", nil, "SelfCritMultiplier") / 100
 						extraDamage = extraDamage + enemyDB:Sum("BASE", nil, "SelfCritMultiplier") / 100
 						extraDamage = round(extraDamage * enemyInc, 2)
@@ -2011,12 +2072,18 @@ func CalculateOffence(environment *Environment, actor *Actor, activeSkill *Activ
 								s_format("= %d%% ^8(extra crit damage)", extraDamage * 100),
 							}
 						end
-					end
-					output.CritMultiplier = 1 + m_max(0, extraDamage)
-				end
-				local critChancePercentage = output.CritChance / 100
-				output.CritEffect = 1 - critChancePercentage + critChancePercentage * output.CritMultiplier
-				output.BonusCritDotMultiplier = (skillModList:Sum("BASE", cfg, "CritMultiplier") - 50) * skillModList:Sum("BASE", cfg, "CritMultiplierAppliesToDegen") / 10000
+					*/
+				}
+
+				pass.Output["CritMultiplier"] = 1 + math.Max(0, extraDamage)
+			}
+
+			critChancePercentage := pass.Output["CritChance"] / 100
+			pass.Output["CritEffect"] = 1 - critChancePercentage + critChancePercentage*pass.Output["CritMultiplier"]
+			pass.Output["CritEffect"] = (activeSkill.SkillModList.Sum(mod.TypeBase, pass.Config, "CritMultiplier") - 50) * activeSkill.SkillModList.Sum(mod.TypeBase, pass.Config, "CritMultiplierAppliesToDegen") / 1000
+
+			/*
+				TODO Breakdown
 				if breakdown and output.CritEffect ~= 1 then
 					breakdown.CritEffect = {
 						s_format("(1 - %.4f) ^8(portion of damage from non-crits)", critChancePercentage),
@@ -2024,10 +2091,11 @@ func CalculateOffence(environment *Environment, actor *Actor, activeSkill *Activ
 						s_format("= %.3f", output.CritEffect),
 					}
 				end
-			end
+			*/
+		}
 
-			output.ScaledDamageEffect = 1
-		*/
+		pass.Output["ScaledDamageEffect"] = 1
+
 		/*
 			TODO -- Calculate chance and multiplier for dealing triple damage on Normal and Crit
 			output.TripleDamageChanceOnCrit = m_min(skillModList:Sum("BASE", cfg, "TripleDamageChanceOnCrit"), 100)
@@ -2065,20 +2133,43 @@ func CalculateOffence(environment *Environment, actor *Actor, activeSkill *Activ
 			globalOutput.CullPercent = maxCullPercent
 			globalOutput.CullMultiplier = 100 / (100 - globalOutput.CullPercent)
 		*/
-		/*
-			TODO -- Calculate base hit damage
-			for _, damageType in ipairs(dmgTypeList) do
-				local damageTypeMin = damageType.."Min"
-				local damageTypeMax = damageType.."Max"
-				local baseMultiplier = activeSkill.activeEffect.grantedEffectLevel.baseMultiplier or skillData.baseMultiplier or 1
-				local damageEffectiveness = activeSkill.activeEffect.grantedEffectLevel.damageEffectiveness or skillData.damageEffectiveness or 1
-				local addedMin = skillModList:Sum("BASE", cfg, damageTypeMin) + enemyDB:Sum("BASE", cfg, "Self"..damageTypeMin)
-				local addedMax = skillModList:Sum("BASE", cfg, damageTypeMax) + enemyDB:Sum("BASE", cfg, "Self"..damageTypeMax)
-				local addedMult = calcLib.mod(skillModList, cfg, "Added"..damageType.."Damage", "AddedDamage")
-				local baseMin = ((source[damageTypeMin] or 0) + (source[damageType.."BonusMin"] or 0)) * baseMultiplier + addedMin * damageEffectiveness * addedMult
-				local baseMax = ((source[damageTypeMax] or 0) + (source[damageType.."BonusMax"] or 0)) * baseMultiplier + addedMax * damageEffectiveness * addedMult
-				output[damageTypeMin.."Base"] = baseMin
-				output[damageTypeMax.."Base"] = baseMax
+
+		// Calculate base hit damage
+		for _, damageType := range data.DamageType("").Values() {
+			damageTypeMin := string(damageType) + "Min"
+			damageTypeMax := string(damageType) + "Max"
+
+			baseMultiplier := float64(1)
+			if activeSkill.ActiveEffect.GrantedEffect.BaseMultiplier != nil {
+				baseMultiplier = *activeSkill.ActiveEffect.GrantedEffect.BaseMultiplier
+			} else if activeSkill.SkillData["BaseMultiplier"] != nil {
+				baseMultiplier = activeSkill.SkillData["BaseMultiplier"].(float64)
+			}
+
+			damageEffectiveness := float64(1)
+			if activeSkill.ActiveEffect.GrantedEffect.DamageEffectiveness != nil {
+				damageEffectiveness = *activeSkill.ActiveEffect.GrantedEffect.DamageEffectiveness
+			} else if activeSkill.SkillData["DamageEffectiveness"] != nil {
+				damageEffectiveness = activeSkill.SkillData["DamageEffectiveness"].(float64)
+			}
+
+			addedMin := activeSkill.SkillModList.Sum(mod.TypeBase, pass.Config, damageTypeMin) + actor.Enemy.ModDB.Sum(mod.TypeBase, pass.Config, "Self"+damageTypeMin)
+			addedMax := activeSkill.SkillModList.Sum(mod.TypeBase, pass.Config, damageTypeMax) + actor.Enemy.ModDB.Sum(mod.TypeBase, pass.Config, "Self"+damageTypeMax)
+			addedMult := CalcMod(activeSkill.SkillModList, pass.Config, "Added"+string(damageType)+"Damage", "AddedDamage")
+
+			baseMin := (utils.GetOr(pass.Source, damageTypeMin, utils.Interface(float64(0))).(float64)+
+				utils.GetOr(pass.Source, string(damageType)+"BonusMin", utils.Interface(float64(0))).(float64))*
+				baseMultiplier + addedMin*damageEffectiveness*addedMult
+
+			baseMax := (utils.GetOr(pass.Source, damageTypeMax, utils.Interface(float64(0))).(float64)+
+				utils.GetOr(pass.Source, string(damageType)+"BonusMax", utils.Interface(float64(0))).(float64))*
+				baseMultiplier + addedMax*damageEffectiveness*addedMult
+
+			pass.Output[damageTypeMin+"Base"] = baseMin
+			pass.Output[damageTypeMax+"Base"] = baseMax
+
+			/*
+				TODO Breakdown
 				if breakdown then
 					breakdown[damageType] = { damageTypes = { } }
 					if baseMin ~= 0 and baseMax ~= 0 then
@@ -2103,8 +2194,8 @@ func CalculateOffence(environment *Environment, actor *Actor, activeSkill *Activ
 						t_insert(breakdown[damageType], s_format("= %.1f to %.1f", baseMin, baseMax))
 					end
 				end
-			end
-		*/
+			*/
+		}
 
 		totalHitMin := float64(0)
 		totalHitMax := float64(0)
@@ -2179,9 +2270,9 @@ func CalculateOffence(environment *Environment, actor *Actor, activeSkill *Activ
 					*/
 
 					if activeSkill.SkillModList.Flag(nil, "Condition:WarcryMaxHit") {
-						pass.Output["AllMult"] = convMult * pass.Output["ScaledDamageEffect"] * pass.Output["RuthlessBlowHitEffect"] * pass.Output["FistOfWarHitEffect"] * pass.Output["MaxOffensiveWarcryEffect"]
+						pass.Output["AllMult"] = convMult * pass.Output["ScaledDamageEffect"] * pass.Output["RuthlessBlowHitEffect"] * pass.Output["FistOfWarHitEffect"] * actor.Output["MaxOffensiveWarcryEffect"]
 					} else {
-						pass.Output["AllMult"] = convMult * pass.Output["ScaledDamageEffect"] * pass.Output["RuthlessBlowHitEffect"] * pass.Output["FistOfWarHitEffect"] * pass.Output["OffensiveWarcryEffect"]
+						pass.Output["AllMult"] = convMult * pass.Output["ScaledDamageEffect"] * pass.Output["RuthlessBlowHitEffect"] * pass.Output["FistOfWarHitEffect"] * actor.Output["OffensiveWarcryEffect"]
 					}
 
 					allMult := pass.Output["AllMult"]
@@ -2206,7 +2297,7 @@ func CalculateOffence(environment *Environment, actor *Actor, activeSkill *Activ
 					damageTypeHitAvgLucky = damageTypeHitMin/3 + 2*damageTypeHitMax/3
 					damageTypeHitAvg = damageTypeHitAvgNotLucky*(1-damageTypeLuckyChance) + damageTypeHitAvgLucky*damageTypeLuckyChance
 
-					if (damageTypeHitMin != 0 || damageTypeHitMax != 0) && environment.ModeEffective {
+					if (damageTypeHitMin != 0 || damageTypeHitMax != 0) && env.ModeEffective {
 						// Apply enemy resistances and damage taken modifiers
 						resist := float64(0)
 						pen := float64(0)
@@ -2272,8 +2363,8 @@ func CalculateOffence(environment *Environment, actor *Actor, activeSkill *Activ
 								// sourceRes = elementUsed
 							} else if damageType.IsElemental() {
 								resist = actor.Enemy.ModDB.Sum(mod.TypeBase, nil, string(damageType)+"Resist")
-								if environment.ModDB.Flag(nil, "Enemy"+string(damageType)+"ResistEqualToYours") {
-									resist = environment.Player.Output[string(damageType)+"Resist"]
+								if env.ModDB.Flag(nil, "Enemy"+string(damageType)+"ResistEqualToYours") {
+									resist = env.Player.Output[string(damageType)+"Resist"]
 								} else {
 									base := resist + actor.Enemy.ModDB.Sum(mod.TypeBase, nil, "ElementalResist")
 									resist = base * CalcMod(actor.Enemy.ModDB, nil, string(damageType)+"Resist")
@@ -2313,7 +2404,7 @@ func CalculateOffence(environment *Environment, actor *Actor, activeSkill *Activ
 						damageTypeHitMax = damageTypeHitMax * effMult
 						damageTypeHitAvg = damageTypeHitAvg * effMult
 
-						if environment.Mode == OutputModeCalcs {
+						if env.Mode == OutputModeCalcs {
 							pass.Output[string(damageType)+"EffMult"] = effMult
 						}
 						/*
@@ -2402,7 +2493,7 @@ func CalculateOffence(environment *Environment, actor *Actor, activeSkill *Activ
 					totalCritMin = totalCritMin + damageTypeHitMin
 					totalCritMax = totalCritMax + damageTypeHitMax
 				} else {
-					if environment.Mode == "CALCS" {
+					if env.Mode == "CALCS" {
 						pass.Output[string(damageType)+"Min"] = damageTypeHitMin
 						pass.Output[string(damageType)+"Max"] = damageTypeHitMax
 					}
@@ -2523,11 +2614,13 @@ func CalculateOffence(environment *Environment, actor *Actor, activeSkill *Activ
 		pass.Output["AverageDamage"] = pass.Output["AverageHit"] * pass.Output["HitChance"] / 100
 
 		selectedSpeed, gotSpeed := actor.Output["HitSpeed"]
-		if !gotSpeed {
+		if !gotSpeed || selectedSpeed == 0 {
 			selectedSpeed = actor.Output["Speed"]
 		}
 
-		pass.Output["TotalDPS"] = pass.Output["AverageDamage"] * selectedSpeed * utils.GetOr(activeSkill.SkillData, "DpsMultiplier", utils.Interface(float64(1))).(float64) * quantityMultiplier
+		AAA := pass.Output["AverageDamage"]
+		BBB := utils.GetOr(activeSkill.SkillData, "DpsMultiplier", utils.Interface(float64(1))).(float64)
+		pass.Output["TotalDPS"] = AAA * selectedSpeed * BBB * quantityMultiplier
 		/*
 			TODO Breakdown
 			if breakdown then

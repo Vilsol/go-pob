@@ -5,6 +5,8 @@ import (
 	"go-pob/utils"
 )
 
+var _ ModStoreFuncs = (*ModDB)(nil)
+
 type ModDB struct {
 	*ModStore
 
@@ -18,7 +20,7 @@ func NewModDB() *ModDB {
 	}
 }
 
-func (m *ModDB) Clone() *ModDB {
+func (m *ModDB) Clone() ModStoreFuncs {
 	if m == nil {
 		return nil
 	}
@@ -64,7 +66,7 @@ func (m *ModDB) List(cfg *ListCfg, names ...string) []interface{} {
 	}
 
 	if m.Parent != nil {
-		// TODO Parent
+		result = append(result, m.Parent.List(cfg, names...)...)
 	}
 
 	return result
@@ -89,7 +91,7 @@ func (m *ModDB) Sum(modType mod.Type, cfg *ListCfg, names ...string) float64 {
 	}
 
 	if m.Parent != nil {
-		// TODO Parent
+		result += m.Parent.Sum(modType, cfg, names...)
 	}
 
 	return result
@@ -112,7 +114,9 @@ func (m *ModDB) Flag(cfg *ListCfg, names ...string) bool {
 	}
 
 	if m.Parent != nil {
-		// TODO Parent
+		if m.Parent.Flag(cfg, names...) {
+			return true
+		}
 	}
 
 	return false
@@ -137,8 +141,39 @@ func (m *ModDB) More(cfg *ListCfg, names ...string) float64 {
 	}
 
 	if m.Parent != nil {
-		// TODO Parent
+		result *= m.Parent.More(cfg, names...)
 	}
 
 	return result
+}
+
+func (m *ModDB) Override(cfg *ListCfg, names ...string) interface{} {
+	mappedNames := make(map[string]bool, 0)
+	for _, name := range names {
+		mappedNames[name] = true
+	}
+
+	for _, name := range names {
+		for _, mo := range m.Mods[name] {
+			if mo.Type() == mod.TypeOverride &&
+				(cfg == nil || cfg.Flags == nil || (*cfg.Flags)&mo.Flags() == mo.Flags()) &&
+				(cfg == nil || cfg.KeywordFlags == nil || mod.MatchKeywordFlags(*cfg.KeywordFlags, mo.KeywordFlags())) &&
+				(cfg == nil || cfg.Source == nil || *cfg.Source == mo.GetSource()) {
+
+				value := m.EvalMod(mo, cfg)
+				if value != nil {
+					return value
+				}
+			}
+		}
+	}
+
+	if m.Parent != nil {
+		p := m.Parent.Override(cfg, names...)
+		if p != nil {
+			return p
+		}
+	}
+
+	return nil
 }

@@ -5,6 +5,8 @@ import (
 	"go-pob/utils"
 )
 
+var _ ModStoreFuncs = (*ModList)(nil)
+
 type ModList struct {
 	*ModStore
 
@@ -18,7 +20,7 @@ func NewModList() *ModList {
 	}
 }
 
-func (m *ModList) Clone() *ModList {
+func (m *ModList) Clone() ModStoreFuncs {
 	if m == nil {
 		return nil
 	}
@@ -66,7 +68,7 @@ func (m *ModList) List(cfg *ListCfg, names ...string) []interface{} {
 	}
 
 	if m.Parent != nil {
-		// TODO Parent
+		result = append(result, m.Parent.List(cfg, names...)...)
 	}
 
 	return result
@@ -98,7 +100,7 @@ func (m *ModList) Sum(modType mod.Type, cfg *ListCfg, names ...string) float64 {
 	}
 
 	if m.Parent != nil {
-		// TODO Parent
+		result += m.Parent.Sum(modType, cfg, names...)
 	}
 
 	return result
@@ -130,7 +132,7 @@ func (m *ModList) More(cfg *ListCfg, names ...string) float64 {
 	}
 
 	if m.Parent != nil {
-		// TODO Parent
+		result *= m.Parent.More(cfg, names...)
 	}
 
 	return result
@@ -160,7 +162,9 @@ func (m *ModList) Flag(cfg *ListCfg, names ...string) bool {
 	}
 
 	if m.Parent != nil {
-		// TODO Parent
+		if m.Parent.Flag(cfg, names...) {
+			return true
+		}
 	}
 
 	return false
@@ -190,7 +194,10 @@ func (m *ModList) Override(cfg *ListCfg, names ...string) interface{} {
 	}
 
 	if m.Parent != nil {
-		// TODO Parent
+		p := m.Parent.Override(cfg, names...)
+		if p != nil {
+			return p
+		}
 	}
 
 	return nil

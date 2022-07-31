@@ -19,8 +19,8 @@ func TestEmptyEnv(t *testing.T) {
 
 	env, cachedPlayerDB, cachedEnemyDB, cachedMinionDB := InitEnv(build, OutputModeMain)
 
-	testza.AssertEqual(t, 101, len(cachedPlayerDB.Mods))
-	testza.AssertEqual(t, 60, len(cachedEnemyDB.Mods))
+	testza.AssertEqual(t, 101, len(cachedPlayerDB.(*ModDB).Mods))
+	testza.AssertEqual(t, 60, len(cachedEnemyDB.(*ModDB).Mods))
 	testza.AssertNil(t, cachedMinionDB)
 
 	_ = cachedPlayerDB

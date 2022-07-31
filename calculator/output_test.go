@@ -20,6 +20,12 @@ func TestOutput(t *testing.T) {
 	calculator := &Calculator{PoB: build}
 	env := calculator.BuildOutput(OutputModeMain)
 
+	testza.AssertEqual(t, 0.9523809523809523, env.Player.OutputTable[OutTableMainHand]["TotalMin"])
+	testza.AssertEqual(t, 2.8571428571428568, env.Player.OutputTable[OutTableMainHand]["TotalMax"])
+	testza.AssertEqual(t, 1.9047619047619047, env.Player.OutputTable[OutTableMainHand]["AverageHit"])
+	testza.AssertEqual(t, 1.8857142857142855, env.Player.OutputTable[OutTableMainHand]["AverageDamage"])
+	testza.AssertEqual(t, 2.2628571428571425, env.Player.OutputTable[OutTableMainHand]["TotalDPS"])
+
 	marshal, err := json.MarshalIndent(env, "", "  ")
 	testza.AssertNoError(t, err)
 

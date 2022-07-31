@@ -2,6 +2,7 @@ package calculator
 
 import (
 	"math"
+	"sort"
 
 	"go-pob/calculator/mod"
 	"go-pob/data"
@@ -28,6 +29,7 @@ func PerformCalc(env *Environment) {
 
 	for _, activeSkill := range env.Player.ActiveSkillList {
 		activeSkill.SkillModList = NewModList()
+		activeSkill.SkillModList.Parent = activeSkill.BaseSkillModList
 		if activeSkill.Minion != nil {
 			/*
 				TODO -- Build minion skills
@@ -2160,11 +2162,8 @@ func PerformCalc(env *Environment) {
 		end
 	*/
 
-	/*
-		TODO -- Defence/offence calculations
-		calcs.defence(env, env.player)
-	*/
-
+	// Defence/offence calculations
+	CalculateDefence(env, env.Player)
 	CalculateOffence(env, env.Player, env.Player.MainSkill)
 
 	/*
@@ -2184,7 +2183,7 @@ func PerformCalc(env *Environment) {
 	*/
 }
 
-func doActorAttribsPoolsConditions(env *Environment, player *Actor) {
+func doActorAttribsPoolsConditions(env *Environment, actor *Actor) {
 	/*
 		local modDB = actor.modDB
 		local output = actor.output
@@ -2317,29 +2316,30 @@ func doActorAttribsPoolsConditions(env *Environment, player *Actor) {
 			end
 		end
 	*/
-	/*
-		TODO -- Calculate attributes
-		local calculateAttributes = function()
-			for pass = 1, 2 do -- Calculate twice because of circular dependency (X attribute higher than Y attribute)
-				for _, stat in pairs({"Str","Dex","Int"}) do
-					output[stat] = m_max(round(calcLib.val(modDB, stat)), 0)
+
+	calculateAttributes := func() {
+		for p := 1; p <= 2; p++ {
+			for _, stat := range []string{"Str", "Dex", "Int"} {
+				actor.Output[stat] = math.Max(math.Round(CalcVal(actor.ModDB, stat, nil)), 0)
+				/*
+					TODO Breakdown
 					if breakdown then
 						breakdown[stat] = breakdown.simple(nil, nil, output[stat], stat)
 					end
-				end
+				*/
+			}
 
-		  local stats = { output.Str, output.Dex, output.Int }
-		  table.sort(stats)
-		  output.LowestAttribute = stats[1]
-		  condList["TwoHighestAttributesEqual"] = stats[2] == stats[3]
+			stats := []float64{actor.Output["Str"], actor.Output["Dex"], actor.Output["Int"]}
+			sort.Float64s(stats)
+			actor.Output["LowestAttribute"] = stats[0]
+			actor.ModDB.Conditions["TwoHighestAttributesEqual"] = stats[1] == stats[2]
 
-				condList["DexHigherThanInt"] = output.Dex > output.Int
-				condList["StrHigherThanDex"] = output.Str > output.Dex
-				condList["IntHigherThanStr"] = output.Int > output.Str
-				condList["StrHigherThanInt"] = output.Str > output.Int
-			end
-		end
-	*/
+			actor.ModDB.Conditions["DexHigherThanInt"] = actor.Output["Dex"] > actor.Output["Int"]
+			actor.ModDB.Conditions["StrHigherThanDex"] = actor.Output["Str"] > actor.Output["Dex"]
+			actor.ModDB.Conditions["IntHigherThanStr"] = actor.Output["Int"] > actor.Output["Str"]
+			actor.ModDB.Conditions["StrHigherThanInt"] = actor.Output["Str"] > actor.Output["Int"]
+		}
+	}
 	/*
 		TODO calculateOmniscience
 		local calculateOmniscience = function (convert)
@@ -2398,13 +2398,15 @@ func doActorAttribsPoolsConditions(env *Environment, player *Actor) {
 				condList["StrHigherThanInt"] = output.Str > output.Int
 			end
 		end
-
-		if modDB:Flag(nil, "Omniscience") then
-			calculateOmniscience()
-		else
-			calculateAttributes()
-		end
 	*/
+
+	if actor.ModDB.Flag(nil, "Omniscience") {
+		// TODO calculateOmniscience
+		// calculateOmniscience()
+	} else {
+		calculateAttributes()
+	}
+
 	/*
 		TODO -- Calculate total attributes
 		output.TotalAttr = output.Str + output.Dex + output.Int
@@ -2413,37 +2415,46 @@ func doActorAttribsPoolsConditions(env *Environment, player *Actor) {
 		TODO -- Special case for Devotion
 		output.Devotion = modDB:Sum("BASE", nil, "Devotion")
 	*/
-	/*
-		TODO -- Add attribute bonuses
-		if not modDB:Flag(nil, "NoAttributeBonuses") then
-			if not modDB:Flag(nil, "NoStrengthAttributeBonuses") then
-				if not modDB:Flag(nil, "NoStrBonusToLife") then
-					modDB:NewMod("Life", "BASE", m_floor(output.Str / 2), "Strength")
-				end
-				local strDmgBonusRatioOverride = modDB:Sum("BASE", nil, "StrDmgBonusRatioOverride")
-				if strDmgBonusRatioOverride > 0 then
-					actor.strDmgBonus = m_floor((output.Str + modDB:Sum("BASE", nil, "DexIntToMeleeBonus")) * strDmgBonusRatioOverride)
-				else
-					actor.strDmgBonus = m_floor((output.Str + modDB:Sum("BASE", nil, "DexIntToMeleeBonus")) / 5)
-				end
-				modDB:NewMod("PhysicalDamage", "INC", actor.strDmgBonus, "Strength", ModFlag.Melee)
-			end
-			if not modDB:Flag(nil, "NoDexterityAttributeBonuses") then
-				modDB:NewMod("Accuracy", "BASE", output.Dex * (modDB:Override(nil, "DexAccBonusOverride") or data.misc.AccuracyPerDexBase), "Dexterity")
-				if not modDB:Flag(nil, "NoDexBonusToEvasion") then
-					modDB:NewMod("Evasion", "INC", m_floor(output.Dex / 5), "Dexterity")
-				end
-			end
-			if not modDB:Flag(nil, "NoIntelligenceAttributeBonuses") then
-				if not modDB:Flag(nil, "NoIntBonusToMana") then
-					modDB:NewMod("Mana", "BASE", m_floor(output.Int / 2), "Intelligence")
-				end
-				if not modDB:Flag(nil, "NoIntBonusToES") then
-					modDB:NewMod("EnergyShield", "INC", m_floor(output.Int / 5), "Intelligence")
-				end
-			end
-		end
-	*/
+
+	// Add attribute bonuses
+	if !env.ModDB.Flag(nil, "NoAttributeBonuses") {
+		if !env.ModDB.Flag(nil, "NoStrengthAttributeBonuses") {
+			if !env.ModDB.Flag(nil, "NoStrBonusToLife") {
+				env.ModDB.AddMod(mod.NewFloat("Life", mod.TypeBase, math.Floor(actor.Output["Str"]/2)).Source("Strength"))
+			}
+			strDmgBonusRatioOverride := env.ModDB.Sum(mod.TypeBase, nil, "StrDmgBonusRatioOverride")
+			if strDmgBonusRatioOverride > 0 {
+				actor.StrDmgBonus = math.Floor((actor.Output["Str"] + env.ModDB.Sum(mod.TypeBase, nil, "DexIntToMeleeBonus")) * strDmgBonusRatioOverride)
+			} else {
+				actor.StrDmgBonus = math.Floor((actor.Output["Str"] + env.ModDB.Sum(mod.TypeBase, nil, "DexIntToMeleeBonus")) / 5)
+			}
+			env.ModDB.AddMod(mod.NewFloat("PhysicalDamage", mod.TypeIncrease, actor.StrDmgBonus).Source("Strength").Flag(data.ModFlagMelee))
+		}
+
+		if !env.ModDB.Flag(nil, "NoDexterityAttributeBonuses") {
+			accuracyMult := data.AccuracyPerDexBase
+			DexAccBonusOverride := env.ModDB.Override(nil, "DexAccBonusOverride")
+			if DexAccBonusOverride != nil {
+				accuracyMult = DexAccBonusOverride.(float64)
+			}
+
+			env.ModDB.AddMod(mod.NewFloat("Accuracy", mod.TypeBase, actor.Output["Dex"]*accuracyMult).Source("Dexterity"))
+			if !env.ModDB.Flag(nil, "NoDexBonusToEvasion") {
+				env.ModDB.AddMod(mod.NewFloat("Evasion", mod.TypeIncrease, math.Floor(actor.Output["Dex"]/5)).Source("Dexterity"))
+			}
+		}
+
+		if !env.ModDB.Flag(nil, "NoIntelligenceAttributeBonuses") {
+			if !env.ModDB.Flag(nil, "NoIntBonusToMana") {
+				env.ModDB.AddMod(mod.NewFloat("Mana", mod.TypeBase, math.Floor(actor.Output["Int"]/2)).Source("Intelligence"))
+			}
+
+			if !env.ModDB.Flag(nil, "NoIntBonusToES") {
+				env.ModDB.AddMod(mod.NewFloat("EnergyShield", mod.TypeIncrease, math.Floor(actor.Output["Int"]/5)).Source("Intelligence"))
+			}
+		}
+	}
+
 	/*
 		TODO -- Check shrine buffs, must be done before life pool calculated for massive shrine
 		for _, value in ipairs(modDB:List(nil, "ShrineBuff")) do
@@ -2517,4 +2528,12 @@ func mergeKeystones(env *Environment) {
 			end
 		end
 	*/
+}
+
+func CalcActionSpeedMod(actor *Actor) float64 {
+	actionSpeedMod := 1 + (math.Max(-data.TemporalChainsEffectCap, actor.ModDB.Sum(mod.TypeIncrease, nil, "TemporalChainsActionSpeed"))+actor.ModDB.Sum(mod.TypeIncrease, nil, "ActionSpeed"))/100
+	if actor.ModDB.Flag(nil, "ActionSpeedCannotBeBelowBase") {
+		actionSpeedMod = math.Max(1, actionSpeedMod)
+	}
+	return actionSpeedMod
 }

@@ -7,7 +7,7 @@ import (
 	"go-pob/utils"
 )
 
-func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, *ModDB, *ModDB, *ModDB) {
+func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStoreFuncs, ModStoreFuncs, ModStoreFuncs) {
 	env := &Environment{}
 
 	env.Build = build
@@ -597,6 +597,15 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, *ModDB, 
 	// env.player.itemList["Weapon 1"].weaponData and env.player.itemList["Weapon 1"].weaponData[1]
 	//}
 
+	if utils.HasTrue(env.Player.WeaponData1, "countsAsDualWielding") {
+		// TODO
+		// env.player.weaponData2 = env.player.itemList["Weapon 1"].weaponData[2]
+	} else {
+		// TODO
+		// env.player.weaponData2 = env.player.itemList["Weapon 2"] and env.player.itemList["Weapon 2"].weaponData and env.player.itemList["Weapon 2"].weaponData[2] or { }
+		env.Player.WeaponData2 = make(map[string]interface{})
+	}
+
 	/*
 		TODO -- Get the weapon data tables for the equipped weapons
 		if env.player.weaponData1.countsAsDualWielding then
@@ -873,11 +882,10 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, *ModDB, 
 				baseFlags[SkillFlagCurse] = true
 			case data.SkillTypeAttack:
 				baseFlags[SkillFlagAttack] = true
-				// TODO SkillFlagHit
-				// case data.SkillType...:
-				//	baseFlags[SkillFlagHit] = true
+				baseFlags[SkillFlagHit] = true
 			case data.SkillTypeProjectile:
 				baseFlags[SkillFlagProjectile] = true
+				baseFlags[SkillFlagHit] = true
 			case data.SkillTypeTrapped:
 				baseFlags[SkillFlagTrap] = true
 			case data.SkillTypeTrappable:
@@ -899,6 +907,8 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, *ModDB, 
 				baseFlags[SkillFlagChaining] = true
 			case data.SkillTypeArea:
 				baseFlags[SkillFlagArea] = true
+			case data.SkillTypeDamage:
+				baseFlags[SkillFlagHit] = true
 				// TODO SkillFlagCast
 				//case data.SkillType...:
 				//	baseFlags[SkillFlagCast] = true
@@ -906,11 +916,12 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, *ModDB, 
 		}
 		defaultEffect := &ActiveEffect{
 			GrantedEffect: GrantedEffect{
-				Name:       playerMelee.ActiveSkill.DisplayName,
-				CastTime:   utils.Ptr(float64(*playerMelee.CastTime)),
-				Parts:      nil, // TODO Parts
-				SkillTypes: skillTypes,
-				BaseFlags:  baseFlags,
+				Name:        playerMelee.ActiveSkill.DisplayName,
+				CastTime:    utils.Ptr(float64(*playerMelee.CastTime)),
+				Parts:       nil, // TODO Parts
+				SkillTypes:  skillTypes,
+				BaseFlags:   baseFlags,
+				WeaponTypes: playerMelee.ActiveSkill.WeaponRestrictions,
 			},
 		}
 		env.Player.MainSkill = CreateActiveSkill(defaultEffect, []interface{}{}, env.Player, nil, nil)
@@ -920,13 +931,6 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, *ModDB, 
 	for _, activeSkill := range env.Player.ActiveSkillList {
 		CalcBuildActiveSkillModList(env, activeSkill)
 	}
-
-	/*
-		TODO -- Build skill modifier lists
-		for _, activeSkill in pairs(env.player.activeSkillList) do
-			calcs.buildActiveSkillModList(env, activeSkill)
-		end
-	*/
 
 	/*
 		TODO -- Merge Requirements Tables

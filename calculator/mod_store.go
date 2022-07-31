@@ -22,18 +22,19 @@ type ModStoreFuncs interface {
 	More(cfg *ListCfg, names ...string) float64
 	Flag(cfg *ListCfg, names ...string) bool
 	Override(cfg *ListCfg, names ...string) interface{}
+	GetMultiplier(variable string, cfg *ListCfg, noMod bool) float64
+	GetCondition(variable string, cfg *ListCfg, noMod bool) (bool, bool)
+	Clone() ModStoreFuncs
 }
 
 type ModStore struct {
-	ModStoreFuncs
-
-	Parent      *ModStore
+	Parent      ModStoreFuncs
 	Actor       *Actor `json:"-"`
 	Multipliers map[string]float64
 	Conditions  map[string]bool
 }
 
-func NewModStore(parent *ModStore) *ModStore {
+func NewModStore(parent ModStoreFuncs) *ModStore {
 	return &ModStore{
 		Parent:      parent,
 		Multipliers: make(map[string]float64),
@@ -46,7 +47,12 @@ func (s *ModStore) Clone() *ModStore {
 		return nil
 	}
 
-	out := NewModStore(s.Parent.Clone())
+	var parent ModStoreFuncs = nil
+	if s.Parent != nil {
+		parent = s.Parent.Clone()
+	}
+
+	out := NewModStore(parent)
 	out.Actor = s.Actor
 	out.Multipliers = utils.CopyMap(out.Multipliers)
 	out.Conditions = utils.CopyMap(out.Conditions)
@@ -144,8 +150,6 @@ func (s *ModStore) EvalMod(m mod.Mod, cfg *ListCfg) interface{} {
 					end
 				*/
 			}
-
-			println(tag.Variable)
 		case *mod.MultiplierThresholdTag:
 			target := s
 			/*
