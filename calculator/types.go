@@ -58,7 +58,8 @@ type Environment struct {
 	ModeCombat    bool
 	ModeEffective bool
 
-	KeystonesAdded map[string]interface{}
+	KeystonesAdded  map[string]interface{}
+	MainSocketGroup int
 }
 
 type Actor struct {

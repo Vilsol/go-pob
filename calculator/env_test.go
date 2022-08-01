@@ -1,7 +1,6 @@
 package calculator
 
 import (
-	"encoding/json"
 	"os"
 	"testing"
 
@@ -17,19 +16,9 @@ func TestEmptyEnv(t *testing.T) {
 	build, err := builds.ParseBuild(file)
 	testza.AssertNoError(t, err)
 
-	env, cachedPlayerDB, cachedEnemyDB, cachedMinionDB := InitEnv(build, OutputModeMain)
+	_, cachedPlayerDB, cachedEnemyDB, cachedMinionDB := InitEnv(build, OutputModeMain)
 
 	testza.AssertEqual(t, 101, len(cachedPlayerDB.(*ModDB).Mods))
 	testza.AssertEqual(t, 60, len(cachedEnemyDB.(*ModDB).Mods))
 	testza.AssertNil(t, cachedMinionDB)
-
-	_ = cachedPlayerDB
-	_ = cachedEnemyDB
-	_ = cachedMinionDB
-
-	marshal, err := json.MarshalIndent(env, "", "  ")
-	testza.AssertNoError(t, err)
-
-	err = os.WriteFile("out.json", marshal, 0777)
-	testza.AssertNoError(t, err)
 }

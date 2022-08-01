@@ -14,6 +14,7 @@ type ListCfg struct {
 	Source       *mod.Source
 	SkillStats   map[string]float64
 	SkillCond    map[string]bool
+	SlotName     string
 }
 
 type ModStoreFuncs interface {

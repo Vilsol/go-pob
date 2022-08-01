@@ -128,6 +128,10 @@ type Skill struct {
 	IncludeInFullDPS     *bool  `xml:"includeInFullDPS,attr,omitempty"`
 
 	Gems []Gem `xml:"Gem"`
+
+	Slot        string // TODO Slot
+	SlotEnabled bool
+	Source      interface{} // TODO Source
 }
 
 type Gem struct {
@@ -145,6 +149,9 @@ type Gem struct {
 	SkillID            string `xml:"skillId,attr"`
 	SkillMinionItemSet int    `xml:"skillMinionItemSet,attr"`
 	SkillMinion        string `xml:"skillMinion,attr"`
+
+	DisplayEffect interface{}
+	SupportEffect interface{}
 }
 
 type Spec struct {

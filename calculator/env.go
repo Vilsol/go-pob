@@ -1,6 +1,8 @@
 package calculator
 
 import (
+	"strings"
+
 	"go-pob/calculator/mod"
 	"go-pob/data"
 	"go-pob/pob"
@@ -614,6 +616,14 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 			env.player.weaponData2 = env.player.itemList["Weapon 2"] and env.player.itemList["Weapon 2"].weaponData and env.player.itemList["Weapon 2"].weaponData[2] or { }
 		end
 	*/
+
+	if env.Mode == OutputModeCalcs {
+
+	} else {
+		build.Build.MainSocketGroup = utils.Min(utils.Max(len(build.Skills.SkillSets), 1), build.Build.MainSocketGroup)
+		env.MainSocketGroup = build.Build.MainSocketGroup
+	}
+
 	/*
 		TODO -- Determine main skill group
 		if env.mode == "CALCS" then
@@ -624,36 +634,53 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 			env.mainSocketGroup = build.mainSocketGroup
 		end
 	*/
-	/*
-		TODO -- Build list of active skills
-		local groupCfg = wipeTable(tempTable1)
 
-		-- Below we re-order the socket group list in order to support modifiers introduced in 3.16
-		-- which allow a Shield (Weapon 2) to link to a Main Hand and an Amulet to link to a Body Armour
-		-- as we need their support gems and effects to be processed before we cross-link them to those slots
-		local indexOrder = { }
-		for index, socketGroup in pairs(build.skillsTab.socketGroupList) do
-			if socketGroup.slot == "Amulet" or socketGroup.slot == "Weapon 2" then
-				t_insert(indexOrder, 1, index)
-			else
-				t_insert(indexOrder, index)
-			end
-		end
-		local crossLinkedSupportList = { }
-		for _, index in ipairs(indexOrder) do
-			socketGroup = build.skillsTab.socketGroupList[index]
-			local socketGroupSkillList = { }
-			local slot = socketGroup.slot and build.itemsTab.slots[socketGroup.slot]
-			socketGroup.slotEnabled = not slot or not slot.weaponSet or slot.weaponSet == (build.itemsTab.activeItemSet.useSecondWeaponSet and 2 or 1)
-			if index == env.mainSocketGroup or (socketGroup.enabled and socketGroup.slotEnabled) then
-				groupCfg.slotName = socketGroup.slot and socketGroup.slot:gsub(" Swap","")
-				local propertyModList = env.modDB:List(groupCfg, "GemProperty")
+	// Build list of active skills
+	groupCfg := &ListCfg{}
 
-				-- Build list of supports for this socket group
-				local supportList = { }
-				if not socketGroup.source then
-					-- Add extra supports from the item this group is socketed in
-					for _, value in ipairs(env.modDB:List(groupCfg, "ExtraSupport")) do
+	// Below we re-order the socket group list in order to support modifiers introduced in 3.16
+	// which allow a Shield (Weapon 2) to link to a Main Hand and an Amulet to link to a Body Armour
+	// as we need their support gems and effects to be processed before we cross-link them to those slots
+	indexOrder := make([]int, len(build.Skills.SkillSets[build.Skills.ActiveSkillSet-1].Skills))
+	for i, socketGroup := range build.Skills.SkillSets[build.Skills.ActiveSkillSet-1].Skills {
+		if socketGroup.Slot == "Amulet" || socketGroup.Slot == "Weapon 2" {
+			indexOrder = append([]int{i}, indexOrder...)
+		} else {
+			indexOrder = append(indexOrder, i)
+		}
+	}
+
+	crossLinkedSupportList := make(map[string]interface{})
+	for _, index := range indexOrder {
+		socketGroup := build.Skills.SkillSets[build.Skills.ActiveSkillSet-1].Skills[index]
+		socketGroupSkillList := make(map[string]interface{})
+		_ = socketGroupSkillList // TODO Remove
+		var slot interface{} = nil
+		if socketGroup.Slot != "" {
+			// TODO
+			// slot = build.itemsTab.slots[socketGroup.slot]
+		}
+
+		socketGroup.SlotEnabled = slot == nil
+		// TODO
+		// socketGroup.slotEnabled = not slot or not slot.weaponSet or slot.weaponSet == (build.itemsTab.activeItemSet.useSecondWeaponSet and 2 or 1)
+		if index == env.MainSocketGroup || (socketGroup.Enabled && socketGroup.SlotEnabled) {
+			if socketGroup.Slot != "" {
+				groupCfg.SlotName = strings.Replace(socketGroup.Slot, " Swap", "", -1)
+			}
+
+			propertyModList := env.ModDB.List(groupCfg, "GemProperty")
+			_ = propertyModList // TODO Remove
+
+			// Build list of supports for this socket group
+			supportList := make([]interface{}, 0)
+			_ = supportList // TODO Remove
+			if socketGroup.Source == nil {
+				// Add extra supports from the item this group is socketed in
+				for _, value := range env.ModDB.List(groupCfg, "ExtraSupport") {
+					_ = value
+					/*
+						TODO
 						local grantedEffect = env.data.skills[value.skillId]
 						-- Some skill gems share the same name as support gems, e.g. Barrage.
 						-- Since a support gem is expected here, if the first lookup returns a skill, then
@@ -669,21 +696,30 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 								enabled = true,
 							})
 						end
-					end
-				end
-				if crossLinkedSupportList[socketGroup.slot] then
+					*/
+				}
+			}
+
+			if _, ok := crossLinkedSupportList[socketGroup.Slot]; ok {
+				/*
+					TODO
 					for _, supportItem in ipairs(crossLinkedSupportList[socketGroup.slot]) do
 						t_insert(supportList, supportItem)
 					end
-				end
-				for _, gemInstance in ipairs(socketGroup.gemList) do
-					-- Add support gems from this group
-					if env.mode == "MAIN" then
-						gemInstance.displayEffect = nil
-						gemInstance.supportEffect = nil
-					end
-					if gemInstance.enabled then
-						local function processGrantedEffect(grantedEffect)
+				*/
+			}
+
+			for _, gemInstance := range socketGroup.Gems {
+				// Add support gems from this group
+				if env.Mode == OutputModeMain {
+					gemInstance.DisplayEffect = nil
+					gemInstance.SupportEffect = nil
+				}
+
+				if gemInstance.Enabled {
+					processGrantedEffect := func(grantedEffect *GrantedEffect) {
+						/*
+							TODO
 							if not grantedEffect or not grantedEffect.support then
 								return
 							end
@@ -751,7 +787,13 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 							if add then
 								t_insert(supportList, supportEffect)
 							end
-						end
+						*/
+					}
+
+					_ = processGrantedEffect // TODO Remove
+
+					/*
+						TODO
 						if gemInstance.gemData then
 							processGrantedEffect(gemInstance.gemData.grantedEffect)
 							processGrantedEffect(gemInstance.gemData.secondaryGrantedEffect)
@@ -765,11 +807,19 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 								t_insert(crossLinkedSupportList[value.targetSlotName], supportItem)
 							end
 						end
-					end
-				end
+					*/
+				}
+			}
 
-				-- Create active skills
-				for _, gemInstance in ipairs(socketGroup.gemList) do
+			// Create active skills
+			for _, gemInstance := range socketGroup.Gems {
+				gemData := data.Gems[gemInstance.SkillID]
+
+				// TODO if gemInstance.enabled and (gemInstance.gemData or gemInstance.grantedEffect) then
+				if gemInstance.Enabled && gemData != nil {
+				}
+				/*
+					TODO
 					if gemInstance.enabled and (gemInstance.gemData or gemInstance.grantedEffect) then
 						local grantedEffectList = gemInstance.gemData and gemInstance.gemData.grantedEffectList or { gemInstance.grantedEffect }
 						for index, grantedEffect in ipairs(grantedEffectList) do
@@ -822,8 +872,11 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 							})
 						end
 					end
-				end
+				*/
+			}
 
+			/*
+				TODO
 				if index == env.mainSocketGroup and #socketGroupSkillList > 0 then
 					-- Select the main skill from this socket group
 					local activeSkillIndex
@@ -838,8 +891,11 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 					end
 					env.player.mainSkill = socketGroupSkillList[activeSkillIndex]
 				end
-			end
+			*/
+		}
 
+		/*
+			TODO
 			if env.mode == "MAIN" then
 				-- Create display label for the socket group if the user didn't specify one
 				if socketGroup.label and socketGroup.label:match("%S") then
@@ -860,8 +916,8 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 			elseif env.mode == "CALCS" then
 				socketGroup.displaySkillListCalcs = socketGroupSkillList
 			end
-		end
-	*/
+		*/
+	}
 
 	if env.Player.MainSkill == nil {
 		// Add a default main skill if none are specified

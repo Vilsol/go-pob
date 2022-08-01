@@ -1,7 +1,6 @@
 package calculator
 
 import (
-	"encoding/json"
 	"os"
 	"testing"
 
@@ -10,7 +9,7 @@ import (
 	"go-pob/builds"
 )
 
-func TestOutput(t *testing.T) {
+func TestEmptyBuild(t *testing.T) {
 	file, err := os.ReadFile("../testdata/builds/Fireball.xml")
 	testza.AssertNoError(t, err)
 
@@ -25,10 +24,29 @@ func TestOutput(t *testing.T) {
 	testza.AssertEqual(t, 1.9047619047619047, env.Player.OutputTable[OutTableMainHand]["AverageHit"])
 	testza.AssertEqual(t, 1.8857142857142855, env.Player.OutputTable[OutTableMainHand]["AverageDamage"])
 	testza.AssertEqual(t, 2.2628571428571425, env.Player.OutputTable[OutTableMainHand]["TotalDPS"])
-
-	marshal, err := json.MarshalIndent(env, "", "  ")
-	testza.AssertNoError(t, err)
-
-	err = os.WriteFile("out.json", marshal, 0777)
-	testza.AssertNoError(t, err)
 }
+
+//func TestFireballLevel1(t *testing.T) {
+//	file, err := os.ReadFile("../testdata/builds/Fireball.xml")
+//	testza.AssertNoError(t, err)
+//
+//	build, err := builds.ParseBuild(file)
+//	testza.AssertNoError(t, err)
+//
+//	build.WithMainSocketGroup(2)
+//
+//	calculator := &Calculator{PoB: build}
+//	env := calculator.BuildOutput(OutputModeMain)
+//
+//	testza.AssertEqual(t, float64(9), env.Player.OutputTable[OutTableMainHand]["TotalMin"])
+//	testza.AssertEqual(t, float64(14), env.Player.OutputTable[OutTableMainHand]["TotalMax"])
+//	testza.AssertEqual(t, 11.845, env.Player.OutputTable[OutTableMainHand]["AverageHit"])
+//	testza.AssertEqual(t, 11.845, env.Player.OutputTable[OutTableMainHand]["AverageDamage"])
+//	testza.AssertEqual(t, 15.793333333333, env.Player.OutputTable[OutTableMainHand]["TotalDPS"])
+//
+//	marshal, err := json.MarshalIndent(env, "", "  ")
+//	testza.AssertNoError(t, err)
+//
+//	err = os.WriteFile("out.json", marshal, 0777)
+//	testza.AssertNoError(t, err)
+//}
