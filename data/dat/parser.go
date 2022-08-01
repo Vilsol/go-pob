@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/oriath-net/pogo/dat"
+	"github.com/pkg/errors"
 )
 
 var parser *dat.DataParser
@@ -21,9 +22,9 @@ type schemaFS struct {
 }
 
 func (s *schemaFS) Open(name string) (fs.File, error) {
-	data, err := json.Marshal(tableMap[strings.Split(name, ".")[0]].ToJsonFormat())
+	data, err := json.Marshal(tableMap[strings.Split(name, ".")[0]].ToJSONFormat())
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "failed to marshal data")
 	}
 	return &schemaFSFile{Data: data}, nil
 }
@@ -55,5 +56,6 @@ func (s *schemaFSFile) Close() error {
 }
 
 func ParseDat(data io.Reader, filename string) ([]interface{}, error) {
-	return parser.Parse(data, filename)
+	parse, err := parser.Parse(data, filename)
+	return parse, errors.Wrap(err, "failed to parse dat file")
 }

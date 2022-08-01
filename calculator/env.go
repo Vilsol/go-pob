@@ -701,6 +701,7 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 			}
 
 			if _, ok := crossLinkedSupportList[socketGroup.Slot]; ok {
+				_ = ok
 				/*
 					TODO
 					for _, supportItem in ipairs(crossLinkedSupportList[socketGroup.slot]) do

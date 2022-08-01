@@ -43,7 +43,7 @@ type Table struct {
 	Columns []Column `json:"columns"`
 }
 
-func (t Table) ToJsonFormat() dat.JsonFormat {
+func (t Table) ToJSONFormat() dat.JsonFormat {
 	out := dat.JsonFormat{
 		File:   t.Name,
 		Fields: make([]dat.JsonField, len(t.Columns)),
