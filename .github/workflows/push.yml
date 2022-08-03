@@ -6,7 +6,7 @@ on: [push, pull_request]
 
 env:
   GO_VERSION: "1.19.0"
-  NODE_VERSION: "18"
+  NODE_VERSION: "18.4.0"
 
 jobs:
   lint-backend:
