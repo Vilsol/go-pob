@@ -1,8 +1,10 @@
 package calculator
 
 import (
-	"go-pob/data"
-	"go-pob/pob"
+	"github.com/Vilsol/go-pob/data"
+	"github.com/Vilsol/go-pob/data/raw"
+	"github.com/Vilsol/go-pob/mod"
+	"github.com/Vilsol/go-pob/pob"
 )
 
 type Calculator struct {
@@ -40,8 +42,8 @@ type Environment struct {
 	Player *Actor
 	Enemy  *Actor
 
-	RequirementsTableItems map[string]interface{} // TODO Implement
-	RequirementsTableGems  map[string]interface{} // TODO Implement
+	RequirementsTableItems map[string]interface{}   // TODO Implement
+	RequirementsTableGems  []*RequirementsTableGems // TODO Implement
 
 	RadiusJewelList     map[string]interface{} // TODO Implement
 	ExtraRadiusNodeList map[string]interface{} // TODO Implement
@@ -116,11 +118,12 @@ type ActiveSkill struct {
 	SummonSkill      interface{}
 	ConversionTable  map[data.DamageType]ConversionTable
 	Minion           interface{}
-	Weapon1Flags     data.ModFlag
-	Weapon2Flags     data.ModFlag
+	Weapon1Flags     mod.MFlag
+	Weapon2Flags     mod.MFlag
 	EffectList       []*ActiveEffect
 	DisableReason    string
 	BaseSkillModList *ModList
+	SlotName         string
 }
 
 type ConversionTable struct {
@@ -179,19 +182,46 @@ type SkillData struct {
 }
 
 type ActiveEffect struct {
-	GrantedEffect GrantedEffect
+	GrantedEffect      *GrantedEffect
+	Level              int
+	Quality            int
+	QualityID          string
+	SrcInstance        *pob.Gem
+	GemData            *raw.SkillGem
+	GrantedEffectLevel *raw.CalculatedLevel
 }
 
 type GrantedEffect struct {
-	Name                string
-	CastTime            *float64
-	Parts               []interface{}
-	SkillTypes          map[data.SkillType]bool
-	BaseFlags           map[SkillFlag]bool
-	WeaponTypes         []data.WeaponRestriction
-	Support             bool
-	BaseMultiplier      *float64
-	DamageEffectiveness *float64
+	//Name                string
+	//CastTime            *float64
+	//WeaponTypes         []data.ItemClassName
+	//BaseMultiplier      *float64
+	//DamageEffectiveness *float64
+
+	Raw        *raw.GrantedEffect
+	Parts      []interface{}
+	SkillTypes map[data.SkillType]bool
+	BaseFlags  map[SkillFlag]bool
+}
+
+func (g *GrantedEffect) WeaponTypes() []data.ItemClassName {
+	out := make([]data.ItemClassName, len(g.Raw.WeaponRestrictions))
+	for i, restriction := range g.Raw.WeaponRestrictions {
+		out[i] = data.ItemClassName(raw.ItemClassesMap[restriction].Name)
+	}
+	return out
+}
+
+func (g *GrantedEffect) BaseMultiplier() float64 {
+	return 0 // TODO BaseMultiplier
+}
+
+func (g *GrantedEffect) DamageEffectiveness() float64 {
+	return 0 // TODO DamageEffectiveness
+}
+
+func (g *GrantedEffect) CastTime() float64 {
+	return float64(g.Raw.CastTime) / 1000
 }
 
 type DamagePass struct {
@@ -200,4 +230,12 @@ type DamagePass struct {
 	Config    *ListCfg
 	Output    map[string]float64
 	Breakdown interface{} // TODO Implement Breakdown
+}
+
+type RequirementsTableGems struct {
+	Source    string
+	SourceGem pob.Gem
+	Str       int
+	Dex       int
+	Int       int
 }

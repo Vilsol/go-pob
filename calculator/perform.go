@@ -4,9 +4,9 @@ import (
 	"math"
 	"sort"
 
-	"go-pob/calculator/mod"
-	"go-pob/data"
-	"go-pob/utils"
+	"github.com/Vilsol/go-pob/data"
+	"github.com/Vilsol/go-pob/mod"
+	"github.com/Vilsol/go-pob/utils"
 )
 
 // PerformCalc
@@ -178,7 +178,7 @@ func PerformCalc(env *Environment) {
 
 		if utils.HasTrue(activeSkill.SkillData, "SupportBonechill") {
 			if activeSkill.SkillTypes[data.SkillTypeChillingArea] || ((activeSkill.SkillTypes[data.SkillTypeNonHitChill] && !activeSkill.SkillModList.Flag(nil, "CannotChill")) &&
-				!(activeSkill.ActiveEffect.GrantedEffect.Name == "Summon Skitterbots" && activeSkill.SkillModList.Flag(nil, "SkitterbotsCannotChill"))) {
+				!(activeSkill.ActiveEffect.GrantedEffect.Raw.GetActiveSkill().DisplayedName == "Summon Skitterbots" && activeSkill.SkillModList.Flag(nil, "SkitterbotsCannotChill"))) {
 				env.Player.Output["BonechillDotEffect"] = math.Floor(*data.NonDamagingAilments[data.AilmentChill].Default * (1 + activeSkill.SkillModList.Sum(mod.TypeIncrease, nil, "EnemyChillEffect")/100))
 			}
 			env.Player.Output["BonechillEffect"] = utils.Max(env.Player.Output["BonechillEffect"], env.EnemyModDB.Sum(mod.TypeBase, nil, "BonechillEffect"), env.Player.Output["BonechillDotEffect"])
@@ -2428,7 +2428,7 @@ func doActorAttribsPoolsConditions(env *Environment, actor *Actor) {
 			} else {
 				actor.StrDmgBonus = math.Floor((actor.Output["Str"] + env.ModDB.Sum(mod.TypeBase, nil, "DexIntToMeleeBonus")) / 5)
 			}
-			env.ModDB.AddMod(mod.NewFloat("PhysicalDamage", mod.TypeIncrease, actor.StrDmgBonus).Source("Strength").Flag(data.ModFlagMelee))
+			env.ModDB.AddMod(mod.NewFloat("PhysicalDamage", mod.TypeIncrease, actor.StrDmgBonus).Source("Strength").Flag(mod.MFlagMelee))
 		}
 
 		if !env.ModDB.Flag(nil, "NoDexterityAttributeBonuses") {

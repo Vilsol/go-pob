@@ -21,3 +21,10 @@ func Ptr[T any](a T) *T {
 func Interface(data any) interface{} {
 	return data
 }
+
+func UnwrapOrF(f *float64, or float64) float64 {
+	if f == nil {
+		return or
+	}
+	return *f
+}

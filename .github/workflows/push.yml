@@ -5,7 +5,7 @@ permissions: read-all
 on: [push, pull_request]
 
 env:
-  GO_VERSION: "1.19.0-rc1"
+  GO_VERSION: "1.19.0"
 
 jobs:
   lint-backend:
@@ -16,7 +16,6 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: ${{ env.GO_VERSION }}
-          stable: false
 
       - name: Check out code
         uses: actions/checkout@v2
@@ -27,18 +26,36 @@ jobs:
           skip-pkg-cache: true
           skip-build-cache: true
           args: --timeout 5m
-  test:
-    name: Test
+
+  test-x86:
+    name: Test (x86)
     runs-on: ubuntu-latest
     steps:
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
           go-version: ${{ env.GO_VERSION }}
-          stable: false
 
       - name: Check out code
         uses: actions/checkout@v2
 
       - name: Test
         run: go test -v ./...
+
+  test-wasm:
+    name: Test (wasm)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Test
+        run: ./.github/wasm_test.sh
+        env:
+          GOOS: js
+          GOARCH: wasm

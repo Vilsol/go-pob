@@ -1,21 +1,32 @@
 package mod
 
-import "go-pob/data"
-
 var _ Mod = (*BaseMod)(nil)
 
 type BaseMod struct {
 	parent Mod
+	child  Mod
 
 	ModName         string
 	ModType         Type
 	ModSource       Source
-	ModFlags        data.ModFlag
+	ModFlags        MFlag
 	ModKeywordFlags KeywordFlag
 	ModTags         []Tag
 }
 
-func (m *BaseMod) Flags() data.ModFlag {
+func (m *BaseMod) Clone() Mod {
+	return &BaseMod{
+		parent:          m.parent,
+		ModName:         m.ModName,
+		ModType:         m.ModType,
+		ModSource:       m.ModSource,
+		ModFlags:        m.ModFlags,
+		ModKeywordFlags: m.ModKeywordFlags,
+		ModTags:         m.ModTags,
+	}
+}
+
+func (m *BaseMod) Flags() MFlag {
 	return m.ModFlags
 }
 
@@ -45,20 +56,20 @@ func (m *BaseMod) Type() Type {
 
 func (m *BaseMod) Source(source Source) Mod {
 	m.ModSource = source
-	return m.parent
+	return m.child
 }
 
-func (m *BaseMod) Flag(flag data.ModFlag) Mod {
+func (m *BaseMod) Flag(flag MFlag) Mod {
 	m.ModFlags |= flag
-	return m.parent
+	return m.child
 }
 
 func (m *BaseMod) KeywordFlag(keywordFlag KeywordFlag) Mod {
 	m.ModKeywordFlags |= keywordFlag
-	return m.parent
+	return m.child
 }
 
 func (m *BaseMod) Tag(tag Tag) Mod {
 	m.ModTags = append(m.ModTags, tag)
-	return m.parent
+	return m.child
 }

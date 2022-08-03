@@ -1,6 +1,9 @@
 package data
 
-import "go-pob/utils"
+import (
+	"github.com/Vilsol/go-pob/mod"
+	"github.com/Vilsol/go-pob/utils"
+)
 
 type DamageType string
 
@@ -207,49 +210,6 @@ var UnarmedWeaponData = map[int]map[string]interface{}{
 	6: {"type": "None", "AttackRate": 1.2, "CritChance": float64(0), "PhysicalMin": float64(2), "PhysicalMax": float64(5)}, // Shadow
 }
 
-type ModFlag int
-
-const (
-	// Damage modes
-
-	ModFlagAttack = ModFlag(0x00000001)
-	ModFlagSpell  = ModFlag(0x00000002)
-	ModFlagHit    = ModFlag(0x00000004)
-	ModFlagDot    = ModFlag(0x00000008)
-	ModFlagCast   = ModFlag(0x00000010)
-
-	// Damage sources
-
-	ModFlagMelee      = ModFlag(0x00000100)
-	ModFlagArea       = ModFlag(0x00000200)
-	ModFlagProjectile = ModFlag(0x00000400)
-	ModFlagSourceMask = ModFlag(0x00000600)
-	ModFlagAilment    = ModFlag(0x00000800)
-	ModFlagMeleeHit   = ModFlag(0x00001000)
-	ModFlagWeapon     = ModFlag(0x00002000)
-
-	// Weapon types
-
-	ModFlagAxe     = ModFlag(0x00010000)
-	ModFlagBow     = ModFlag(0x00020000)
-	ModFlagClaw    = ModFlag(0x00040000)
-	ModFlagDagger  = ModFlag(0x00080000)
-	ModFlagMace    = ModFlag(0x00100000)
-	ModFlagStaff   = ModFlag(0x00200000)
-	ModFlagSword   = ModFlag(0x00400000)
-	ModFlagWand    = ModFlag(0x00800000)
-	ModFlagUnarmed = ModFlag(0x01000000)
-	ModFlagFishing = ModFlag(0x02000000)
-
-	// Weapon classes
-
-	ModFlagWeaponMelee  = ModFlag(0x02000000)
-	ModFlagWeaponRanged = ModFlag(0x04000000)
-	ModFlagWeapon1H     = ModFlag(0x08000000)
-	ModFlagWeapon2H     = ModFlag(0x10000000)
-	ModFlagWeaponMask   = ModFlag(0x1FFF0000)
-)
-
 type SkillType string
 
 const (
@@ -380,23 +340,47 @@ type WeaponTypeInfo struct {
 	Melee   bool
 	Flag    string
 	Label   string
-	ModFlag ModFlag
+	ModFlag mod.MFlag
 }
 
-var WeaponTypes = map[WeaponRestriction]*WeaponTypeInfo{
-	None:                  {OneHand: true, Melee: true, Flag: "Unarmed", ModFlag: ModFlagUnarmed},
-	Bow:                   {OneHand: false, Melee: false, Flag: "Bow", ModFlag: ModFlagBow},
-	Claw:                  {OneHand: true, Melee: true, Flag: "Claw", ModFlag: ModFlagClaw},
-	Dagger:                {OneHand: true, Melee: true, Flag: "Dagger", ModFlag: ModFlagDagger},
-	Staff:                 {OneHand: false, Melee: true, Flag: "Staff", ModFlag: ModFlagStaff},
-	Wand:                  {OneHand: true, Melee: false, Flag: "Wand", ModFlag: ModFlagWand},
-	OneHandAxe:            {OneHand: true, Melee: true, Flag: "Axe", ModFlag: ModFlagAxe},
-	OneHandMace:           {OneHand: true, Melee: true, Flag: "Mace", ModFlag: ModFlagMace},
-	OneHandSword:          {OneHand: true, Melee: true, Flag: "Sword", ModFlag: ModFlagSword},
-	Sceptre:               {OneHand: true, Melee: true, Flag: "Mace", Label: "One Handed Mace", ModFlag: ModFlagMace},
-	ThrustingOneHandSword: {OneHand: true, Melee: true, Flag: "Sword", Label: "One Handed Sword", ModFlag: ModFlagSword},
-	FishingRod:            {OneHand: false, Melee: true, Flag: "Fishing", ModFlag: ModFlagFishing},
-	TwoHandAxe:            {OneHand: false, Melee: true, Flag: "Axe", ModFlag: ModFlagAxe},
-	TwoHandMace:           {OneHand: false, Melee: true, Flag: "Mace", ModFlag: ModFlagMace},
-	TwoHandSword:          {OneHand: false, Melee: true, Flag: "Sword", ModFlag: ModFlagSword},
+var WeaponTypes = map[ItemClassName]*WeaponTypeInfo{
+	None:                  {OneHand: true, Melee: true, Flag: "Unarmed", ModFlag: mod.MFlagUnarmed},
+	Bow:                   {OneHand: false, Melee: false, Flag: "Bow", ModFlag: mod.MFlagBow},
+	Claw:                  {OneHand: true, Melee: true, Flag: "Claw", ModFlag: mod.MFlagClaw},
+	Dagger:                {OneHand: true, Melee: true, Flag: "Dagger", ModFlag: mod.MFlagDagger},
+	Staff:                 {OneHand: false, Melee: true, Flag: "Staff", ModFlag: mod.MFlagStaff},
+	Wand:                  {OneHand: true, Melee: false, Flag: "Wand", ModFlag: mod.MFlagWand},
+	OneHandAxe:            {OneHand: true, Melee: true, Flag: "Axe", ModFlag: mod.MFlagAxe},
+	OneHandMace:           {OneHand: true, Melee: true, Flag: "Mace", ModFlag: mod.MFlagMace},
+	OneHandSword:          {OneHand: true, Melee: true, Flag: "Sword", ModFlag: mod.MFlagSword},
+	Sceptre:               {OneHand: true, Melee: true, Flag: "Mace", Label: "One Handed Mace", ModFlag: mod.MFlagMace},
+	ThrustingOneHandSword: {OneHand: true, Melee: true, Flag: "Sword", Label: "One Handed Sword", ModFlag: mod.MFlagSword},
+	FishingRod:            {OneHand: false, Melee: true, Flag: "Fishing", ModFlag: mod.MFlagFishing},
+	TwoHandAxe:            {OneHand: false, Melee: true, Flag: "Axe", ModFlag: mod.MFlagAxe},
+	TwoHandMace:           {OneHand: false, Melee: true, Flag: "Mace", ModFlag: mod.MFlagMace},
+	TwoHandSword:          {OneHand: false, Melee: true, Flag: "Sword", ModFlag: mod.MFlagSword},
 }
+
+type ItemClassName string
+
+const (
+	None                  ItemClassName = "None"
+	Bow                   ItemClassName = "Bow"
+	Claw                  ItemClassName = "Claw"
+	Dagger                ItemClassName = "Dagger"
+	FishingRod            ItemClassName = "FishingRod"
+	OneHandAxe            ItemClassName = "One Hand Axe"
+	OneHandMace           ItemClassName = "One Hand Mace"
+	OneHandSword          ItemClassName = "One Hand Sword"
+	RuneDagger            ItemClassName = "Rune Dagger"
+	Sceptre               ItemClassName = "Sceptre"
+	Shield                ItemClassName = "Shield"
+	Staff                 ItemClassName = "Staff"
+	ThrustingOneHandSword ItemClassName = "Thrusting One Hand Sword"
+	TwoHandAxe            ItemClassName = "Two Hand Axe"
+	TwoHandMace           ItemClassName = "Two Hand Mace"
+	TwoHandSword          ItemClassName = "Two Hand Sword"
+	Unarmed               ItemClassName = "Unarmed"
+	Wand                  ItemClassName = "Wand"
+	Warstaff              ItemClassName = "Warstaff"
+)

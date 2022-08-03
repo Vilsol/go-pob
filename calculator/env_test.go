@@ -6,10 +6,14 @@ import (
 
 	"github.com/MarvinJWendt/testza"
 
-	"go-pob/builds"
+	"github.com/Vilsol/go-pob/builds"
+	"github.com/Vilsol/go-pob/data/raw"
 )
 
 func TestEmptyEnv(t *testing.T) {
+	err := raw.InitializeAll(raw.LatestVersion)
+	testza.AssertNoError(t, err)
+
 	file, err := os.ReadFile("../testdata/builds/Fireball.xml")
 	testza.AssertNoError(t, err)
 

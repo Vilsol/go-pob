@@ -1,8 +1,8 @@
 package calculator
 
 import (
-	"go-pob/data"
-	"go-pob/pob"
+	"github.com/Vilsol/go-pob/data"
+	"github.com/Vilsol/go-pob/pob"
 )
 
 type PassiveSpec struct {

@@ -3,8 +3,8 @@ package calculator
 import (
 	"math"
 
-	"go-pob/calculator/mod"
-	"go-pob/data"
+	"github.com/Vilsol/go-pob/data"
+	"github.com/Vilsol/go-pob/mod"
 )
 
 func CalcArmourReductionF(armour float64, raw float64) float64 {

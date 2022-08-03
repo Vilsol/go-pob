@@ -1,6 +1,8 @@
 package pob
 
-import "go-pob/data"
+import (
+	"github.com/Vilsol/go-pob/data"
+)
 
 type PathOfBuilding struct {
 	Build    Build    `xml:"Build"`
@@ -129,9 +131,12 @@ type Skill struct {
 
 	Gems []Gem `xml:"Gem"`
 
-	Slot        string // TODO Slot
-	SlotEnabled bool
-	Source      interface{} // TODO Source
+	Slot                  string // TODO Slot
+	SlotEnabled           bool
+	Source                interface{} // TODO Source
+	DisplayLabel          string
+	DisplaySkillList      interface{}
+	DisplaySkillListCalcs interface{}
 }
 
 type Gem struct {

@@ -3,13 +3,12 @@ package calculator
 import (
 	"math"
 
-	"go-pob/calculator/mod"
-	"go-pob/data"
-	"go-pob/utils"
+	"github.com/Vilsol/go-pob/mod"
+	"github.com/Vilsol/go-pob/utils"
 )
 
 type ListCfg struct {
-	Flags        *data.ModFlag
+	Flags        *mod.MFlag
 	KeywordFlags *mod.KeywordFlag
 	Source       *mod.Source
 	SkillStats   map[string]float64

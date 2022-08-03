@@ -3,10 +3,11 @@ package calculator
 import (
 	"strings"
 
-	"go-pob/calculator/mod"
-	"go-pob/data"
-	"go-pob/pob"
-	"go-pob/utils"
+	"github.com/Vilsol/go-pob/data"
+	"github.com/Vilsol/go-pob/data/raw"
+	"github.com/Vilsol/go-pob/mod"
+	"github.com/Vilsol/go-pob/pob"
+	"github.com/Vilsol/go-pob/utils"
 )
 
 func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStoreFuncs, ModStoreFuncs, ModStoreFuncs) {
@@ -41,7 +42,7 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 	env.Enemy.Enemy = env.Player
 
 	env.RequirementsTableItems = make(map[string]interface{})
-	env.RequirementsTableGems = make(map[string]interface{})
+	env.RequirementsTableGems = make([]*RequirementsTableGems, 0)
 
 	env.RadiusJewelList = make(map[string]interface{})
 	env.ExtraRadiusNodeList = make(map[string]interface{})
@@ -101,8 +102,8 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 	env.ModDB.AddMod(mod.NewFloat("PhysicalDamageReduction", mod.TypeBase, 4).Source("Base").Tag(mod.Multiplier("EnduranceCharge", 0)))
 	env.ModDB.AddMod(mod.NewFloat("ElementalResist", mod.TypeBase, 4).Source("Base").Tag(mod.Multiplier("EnduranceCharge", 0)))
 	env.ModDB.AddMod(mod.NewFloat("Multiplier:RageEffect", mod.TypeBase, 1).Source("Base"))
-	env.ModDB.AddMod(mod.NewFloat("Damage", mod.TypeIncrease, 1).Source("Base").Flag(data.ModFlagAttack).Tag(mod.Multiplier("Rage", 0)).Tag(mod.Multiplier("RageEffect", 0)))
-	env.ModDB.AddMod(mod.NewFloat("Speed", mod.TypeIncrease, 1).Source("Base").Flag(data.ModFlagAttack).Tag(mod.Multiplier("Rage", 0).Div(2)).Tag(mod.Multiplier("RageEffect", 0)))
+	env.ModDB.AddMod(mod.NewFloat("Damage", mod.TypeIncrease, 1).Source("Base").Flag(mod.MFlagAttack).Tag(mod.Multiplier("Rage", 0)).Tag(mod.Multiplier("RageEffect", 0)))
+	env.ModDB.AddMod(mod.NewFloat("Speed", mod.TypeIncrease, 1).Source("Base").Flag(mod.MFlagAttack).Tag(mod.Multiplier("Rage", 0).Div(2)).Tag(mod.Multiplier("RageEffect", 0)))
 	env.ModDB.AddMod(mod.NewFloat("MovementSpeed", mod.TypeIncrease, 1).Source("Base").Tag(mod.Multiplier("Rage", 0).Div(5)).Tag(mod.Multiplier("RageEffect", 0)))
 	env.ModDB.AddMod(mod.NewFloat("MaximumRage", mod.TypeBase, 50).Source("Base"))
 	env.ModDB.AddMod(mod.NewFloat("Multiplier:GaleForce", mod.TypeBase, 0).Source("Base"))
@@ -117,7 +118,7 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 	env.ModDB.AddMod(mod.NewFloat("EnemyCurseLimit", mod.TypeBase, 1).Source("Base"))
 	env.ModDB.AddMod(mod.NewFloat("SocketedCursesHexLimitValue", mod.TypeBase, 1).Source("Base"))
 	env.ModDB.AddMod(mod.NewFloat("ProjectileCount", mod.TypeBase, 1).Source("Base"))
-	env.ModDB.AddMod(mod.NewFloat("Speed", mod.TypeMore, 10).Source("Base").Flag(data.ModFlagAttack).Tag(mod.Condition("DualWielding")))
+	env.ModDB.AddMod(mod.NewFloat("Speed", mod.TypeMore, 10).Source("Base").Flag(mod.MFlagAttack).Tag(mod.Condition("DualWielding")))
 	env.ModDB.AddMod(mod.NewFloat("BlockChance", mod.TypeBase, 15).Source("Base").Tag(mod.Condition("DualWielding")).Tag(mod.Condition("NoInherentBlock").Neg(true)))
 	env.ModDB.AddMod(mod.NewFloat("Damage", mod.TypeMore, 200).Source("Base").KeywordFlag(mod.KeywordFlagBleed).Tag(mod.ActorCondition("enemy", "Moving")).Tag(mod.Condition("NoExtraBleedDamageToMovingEnemy").Neg(true)))
 	env.ModDB.AddMod(mod.NewFlag("Condition:BloodStance", true).Source("Base").Tag(mod.Condition("SandStance").Neg(true)))
@@ -641,20 +642,24 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 	// Below we re-order the socket group list in order to support modifiers introduced in 3.16
 	// which allow a Shield (Weapon 2) to link to a Main Hand and an Amulet to link to a Body Armour
 	// as we need their support gems and effects to be processed before we cross-link them to those slots
-	indexOrder := make([]int, len(build.Skills.SkillSets[build.Skills.ActiveSkillSet-1].Skills))
-	for i, socketGroup := range build.Skills.SkillSets[build.Skills.ActiveSkillSet-1].Skills {
-		if socketGroup.Slot == "Amulet" || socketGroup.Slot == "Weapon 2" {
-			indexOrder = append([]int{i}, indexOrder...)
-		} else {
-			indexOrder = append(indexOrder, i)
+	selectedSkillSet := build.Skills.ActiveSkillSet - 1
+
+	var indexOrder []int
+	if selectedSkillSet < len(build.Skills.SkillSets) {
+		indexOrder = make([]int, len(build.Skills.SkillSets[selectedSkillSet].Skills))
+		for i, socketGroup := range build.Skills.SkillSets[selectedSkillSet].Skills {
+			if socketGroup.Slot == "Amulet" || socketGroup.Slot == "Weapon 2" {
+				indexOrder = append([]int{i}, indexOrder...)
+			} else {
+				indexOrder = append(indexOrder, i)
+			}
 		}
 	}
 
 	crossLinkedSupportList := make(map[string]interface{})
 	for _, index := range indexOrder {
-		socketGroup := build.Skills.SkillSets[build.Skills.ActiveSkillSet-1].Skills[index]
-		socketGroupSkillList := make(map[string]interface{})
-		_ = socketGroupSkillList // TODO Remove
+		socketGroup := build.Skills.SkillSets[selectedSkillSet].Skills[index]
+		socketGroupSkillList := make([]*ActiveSkill, 0)
 		var slot interface{} = nil
 		if socketGroup.Slot != "" {
 			// TODO
@@ -669,12 +674,10 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 				groupCfg.SlotName = strings.Replace(socketGroup.Slot, " Swap", "", -1)
 			}
 
-			propertyModList := env.ModDB.List(groupCfg, "GemProperty")
-			_ = propertyModList // TODO Remove
+			propertyModList := utils.CastSlice[mod.GemProperty](env.ModDB.List(groupCfg, "GemProperty"))
 
 			// Build list of supports for this socket group
 			supportList := make([]interface{}, 0)
-			_ = supportList // TODO Remove
 			if socketGroup.Source == nil {
 				// Add extra supports from the item this group is socketed in
 				for _, value := range env.ModDB.List(groupCfg, "ExtraSupport") {
@@ -719,11 +722,11 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 
 				if gemInstance.Enabled {
 					processGrantedEffect := func(grantedEffect *GrantedEffect) {
+						if grantedEffect == nil || grantedEffect.Raw.IsSupport {
+							return
+						}
 						/*
 							TODO
-							if not grantedEffect or not grantedEffect.support then
-								return
-							end
 							local supportEffect = {
 								grantedEffect = grantedEffect,
 								level = gemInstance.level,
@@ -814,177 +817,146 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 
 			// Create active skills
 			for _, gemInstance := range socketGroup.Gems {
-				gemData := data.Gems[gemInstance.SkillID]
+				baseItem := raw.BaseItemTypeByIDMap[gemInstance.GemID]
+				gemData := baseItem.SkillGem()
+				grantedEffectList := gemData.GetGrantedEffects()
 
-				// TODO if gemInstance.enabled and (gemInstance.gemData or gemInstance.grantedEffect) then
-				if gemInstance.Enabled && gemData != nil {
-				}
-				/*
-					TODO
-					if gemInstance.enabled and (gemInstance.gemData or gemInstance.grantedEffect) then
-						local grantedEffectList = gemInstance.gemData and gemInstance.gemData.grantedEffectList or { gemInstance.grantedEffect }
-						for index, grantedEffect in ipairs(grantedEffectList) do
-							if not grantedEffect.support and not grantedEffect.unsupported and (not grantedEffect.hasGlobalEffect or gemInstance["enableGlobal"..index]) then
-								local activeEffect = {
-									grantedEffect = grantedEffect,
-									level = gemInstance.level,
-									quality = gemInstance.quality,
-									qualityId = gemInstance.qualityId,
-									srcInstance = gemInstance,
-									gemData = gemInstance.gemData,
+				if gemInstance.Enabled && grantedEffectList != nil && len(grantedEffectList) > 0 {
+					for index, grantedEffect := range grantedEffectList {
+						globalEnable := gemInstance.EnableGlobal1
+						if index == 2 {
+							globalEnable = gemInstance.EnableGlobal2
+						}
+
+						if !grantedEffect.IsSupport && (!grantedEffect.HasGlobalEffect() || globalEnable) {
+							baseFlags, skillTypes := TypesToFlagsAndTypes(grantedEffect.GetActiveSkill().GetActiveSkillTypes())
+
+							activeEffect := &ActiveEffect{
+								GrantedEffect: &GrantedEffect{
+									Raw:        grantedEffect,
+									Parts:      nil, // TODO Parts
+									SkillTypes: skillTypes,
+									BaseFlags:  baseFlags,
+								},
+								Level:       gemInstance.Level,
+								Quality:     gemInstance.Quality,
+								QualityID:   gemInstance.QualityID,
+								SrcInstance: &gemInstance,
+								GemData:     gemData,
+							}
+
+							if gemData != nil {
+								for _, value := range propertyModList {
+									match := false
+									if value.KeywordList != nil {
+										match = true
+										for _, keyword := range value.KeywordList {
+											if !CalcGemIsType(activeEffect.GemData, keyword) {
+												match = false
+												break
+											}
+										}
+									} else {
+										match = CalcGemIsType(activeEffect.GemData, *value.Keyword)
+									}
+
+									if match {
+										_ = match
+										// TODO
+										// activeEffect[value.key] = (activeEffect[value.key] or 0) + value.value
+									}
 								}
-								if gemInstance.gemData then
-									for _, value in ipairs(propertyModList) do
-										local match = false
-										if value.keywordList then
-											match = true
-											for _, keyword in ipairs(value.keywordList) do
-												if not calcLib.gemIsType(activeEffect.gemData, keyword) then
-													match = false
-													break
-												end
-											end
-										else
-											match = calcLib.gemIsType(activeEffect.gemData, value.keyword)
-										end
-										if match then
-											activeEffect[value.key] = (activeEffect[value.key] or 0) + value.value
-										end
-									end
-								end
-								if env.mode == "MAIN" then
-									gemInstance.displayEffect = activeEffect
-								end
-								local activeSkill = calcs.createActiveSkill(activeEffect, supportList, env.player, socketGroup)
-								if gemInstance.gemData then
-									activeSkill.slotName = groupCfg.slotName
-								end
-								t_insert(socketGroupSkillList, activeSkill)
-								t_insert(env.player.activeSkillList, activeSkill)
-							end
-						end
-						if gemInstance.gemData and not accelerate.requirementsGems then
-							t_insert(env.requirementsTableGems, {
-								source = "Gem",
-								sourceGem = gemInstance,
-								Str = gemInstance.reqStr,
-								Dex = gemInstance.reqDex,
-								Int = gemInstance.reqInt,
-							})
-						end
-					end
-				*/
+							}
+
+							if env.Mode == OutputModeMain {
+								gemInstance.DisplayEffect = activeEffect
+							}
+
+							activeSkill := CreateActiveSkill(activeEffect, supportList, env.Player, socketGroup, nil)
+							if gemData != nil {
+								activeSkill.SlotName = groupCfg.SlotName
+							}
+
+							socketGroupSkillList = append(socketGroupSkillList, activeSkill)
+							env.Player.ActiveSkillList = append(env.Player.ActiveSkillList, activeSkill)
+						}
+					}
+
+					if gemData != nil {
+						env.RequirementsTableGems = append(env.RequirementsTableGems, &RequirementsTableGems{
+							Source:    "Gem",
+							SourceGem: gemInstance,
+							Str:       gemData.Str,
+							Dex:       gemData.Dex,
+							Int:       gemData.Int,
+						})
+					}
+				}
 			}
 
-			/*
-				TODO
-				if index == env.mainSocketGroup and #socketGroupSkillList > 0 then
-					-- Select the main skill from this socket group
-					local activeSkillIndex
-					if env.mode == "CALCS" then
-						socketGroup.mainActiveSkillCalcs = m_min(#socketGroupSkillList, socketGroup.mainActiveSkillCalcs or 1)
-						activeSkillIndex = socketGroup.mainActiveSkillCalcs
-					else
-						activeSkillIndex = m_min(#socketGroupSkillList, socketGroup.mainActiveSkill or 1)
-						if env.mode == "MAIN" then
-							socketGroup.mainActiveSkill = activeSkillIndex
-						end
-					end
-					env.player.mainSkill = socketGroupSkillList[activeSkillIndex]
-				end
-			*/
+			if index == env.MainSocketGroup && len(socketGroupSkillList) > 0 {
+				// Select the main skill from this socket group
+				activeSkillIndex := 0
+				if env.Mode == OutputModeCalcs {
+					socketGroup.MainActiveSkillCalcs = utils.Min(len(socketGroupSkillList)-1, socketGroup.MainActiveSkillCalcs)
+					activeSkillIndex = socketGroup.MainActiveSkillCalcs
+				} else {
+					activeSkillIndex = utils.Min(len(socketGroupSkillList)-1, socketGroup.MainActiveSkill)
+					if env.Mode == OutputModeMain {
+						socketGroup.MainActiveSkill = activeSkillIndex
+					}
+				}
+				env.Player.MainSkill = socketGroupSkillList[activeSkillIndex]
+			}
 		}
 
-		/*
-			TODO
-			if env.mode == "MAIN" then
-				-- Create display label for the socket group if the user didn't specify one
-				if socketGroup.label and socketGroup.label:match("%S") then
-					socketGroup.displayLabel = socketGroup.label
-				else
-					socketGroup.displayLabel = nil
-					for _, gemInstance in ipairs(socketGroup.gemList) do
-						local grantedEffect = gemInstance.gemData and gemInstance.gemData.grantedEffect or gemInstance.grantedEffect
-						if grantedEffect and not grantedEffect.support and gemInstance.enabled then
-							socketGroup.displayLabel = (socketGroup.displayLabel and socketGroup.displayLabel..", " or "") .. grantedEffect.name
-						end
-					end
-					socketGroup.displayLabel = socketGroup.displayLabel or "<No active skills>"
-				end
+		if env.Mode == OutputModeMain {
+			// Create display label for the socket group if the user didn't specify one
+			if socketGroup.Label != "" {
+				socketGroup.DisplayLabel = socketGroup.Label
+			} else {
+				DisplayLabel := ""
+				for _, gemInstance := range socketGroup.Gems {
+					baseItem := raw.BaseItemTypeByIDMap[gemInstance.GemID]
+					gemData := baseItem.SkillGem()
+					grantedEffect := gemData.GetGrantedEffect()
+					if grantedEffect != nil && !grantedEffect.IsSupport && gemInstance.Enabled {
+						if DisplayLabel != "" {
+							DisplayLabel += ", "
+						}
+						DisplayLabel += grantedEffect.GetActiveSkill().DisplayedName
+					}
+				}
+				if DisplayLabel == "" {
+					DisplayLabel = "<No active skills>"
+				}
+				socketGroup.DisplayLabel = DisplayLabel
+			}
 
-				-- Save the active skill list for display in the socket group tooltip
-				socketGroup.displaySkillList = socketGroupSkillList
-			elseif env.mode == "CALCS" then
-				socketGroup.displaySkillListCalcs = socketGroupSkillList
-			end
-		*/
+			// Save the active skill list for display in the socket group tooltip
+			socketGroup.DisplaySkillList = socketGroupSkillList
+		} else if env.Mode == OutputModeCalcs {
+			socketGroup.DisplaySkillListCalcs = socketGroupSkillList
+		}
 	}
 
 	if env.Player.MainSkill == nil {
 		// Add a default main skill if none are specified
-		playerMelee := data.Gems["PlayerMelee"]
-		types := playerMelee.ActiveSkill.Types
-		skillTypes := make(map[data.SkillType]bool, 0)
-		baseFlags := make(map[SkillFlag]bool)
-		for _, skillType := range types {
-			skillTypes[skillType] = true
-
-			switch skillType {
-			case data.SkillTypeBrand:
-				baseFlags[SkillFlagBrand] = true
-			case data.SkillTypeHex:
-				baseFlags[SkillFlagHex] = true
-				baseFlags[SkillFlagCurse] = true
-			case data.SkillTypeAppliesCurse:
-				baseFlags[SkillFlagCurse] = true
-			case data.SkillTypeAttack:
-				baseFlags[SkillFlagAttack] = true
-				baseFlags[SkillFlagHit] = true
-			case data.SkillTypeProjectile:
-				baseFlags[SkillFlagProjectile] = true
-				baseFlags[SkillFlagHit] = true
-			case data.SkillTypeTrapped:
-				baseFlags[SkillFlagTrap] = true
-			case data.SkillTypeTrappable:
-				baseFlags[SkillFlagTrap] = true
-			case data.SkillTypeRemoteMined:
-				baseFlags[SkillFlagMine] = true
-			case data.SkillTypeSummonsTotem:
-				baseFlags[SkillFlagTotem] = true
-			case data.SkillTypeSpell:
-				baseFlags[SkillFlagSpell] = true
-			case data.SkillTypeAreaSpell:
-				baseFlags[SkillFlagSpell] = true
-				baseFlags[SkillFlagArea] = true
-			case data.SkillTypeMelee:
-				baseFlags[SkillFlagMelee] = true
-			case data.SkillTypeMeleeSingleTarget:
-				baseFlags[SkillFlagMelee] = true
-			case data.SkillTypeChains:
-				baseFlags[SkillFlagChaining] = true
-			case data.SkillTypeArea:
-				baseFlags[SkillFlagArea] = true
-			case data.SkillTypeDamage:
-				baseFlags[SkillFlagHit] = true
-				// TODO SkillFlagCast
-				//case data.SkillType...:
-				//	baseFlags[SkillFlagCast] = true
-			}
-		}
+		playerMelee := raw.GrantedEffectByID("PlayerMelee")
+		baseFlags, skillTypes := TypesToFlagsAndTypes(playerMelee.GetActiveSkill().GetActiveSkillTypes())
 		defaultEffect := &ActiveEffect{
-			GrantedEffect: GrantedEffect{
-				Name:        playerMelee.ActiveSkill.DisplayName,
-				CastTime:    utils.Ptr(float64(*playerMelee.CastTime)),
-				Parts:       nil, // TODO Parts
-				SkillTypes:  skillTypes,
-				BaseFlags:   baseFlags,
-				WeaponTypes: playerMelee.ActiveSkill.WeaponRestrictions,
+			GrantedEffect: &GrantedEffect{
+				Raw:        playerMelee,
+				Parts:      nil, // TODO Parts
+				SkillTypes: skillTypes,
+				BaseFlags:  baseFlags,
 			},
 		}
 		env.Player.MainSkill = CreateActiveSkill(defaultEffect, []interface{}{}, env.Player, nil, nil)
 		env.Player.ActiveSkillList = append(env.Player.ActiveSkillList, env.Player.MainSkill)
 	}
 
+	// Build skill modifier lists
 	for _, activeSkill := range env.Player.ActiveSkillList {
 		CalcBuildActiveSkillModList(env, activeSkill)
 	}
@@ -1038,7 +1010,7 @@ func initModDB(env *Environment, modDB *ModDB) {
 	modDB.AddMod(mod.NewFloat("ActiveTotemLimit", mod.TypeBase, 1).Source("Base"))
 
 	modDB.AddMod(mod.NewFloat("MovementSpeed", mod.TypeIncrease, -30).Source("Base").Tag(mod.Condition("Maimed")))
-	modDB.AddMod(mod.NewFloat("DamageTaken", mod.TypeIncrease, 10).Source("Base").Flag(data.ModFlagAttack).Tag(mod.Condition("Intimidated")))
+	modDB.AddMod(mod.NewFloat("DamageTaken", mod.TypeIncrease, 10).Source("Base").Flag(mod.MFlagAttack).Tag(mod.Condition("Intimidated")))
 
 	modDB.AddMod(mod.NewFlag("Condition:Burning", true).Source("Base").Tag(mod.IgnoreCond()).Tag(mod.Condition("Ignited")))
 	modDB.AddMod(mod.NewFlag("Condition:Chilled", true).Source("Base").Tag(mod.IgnoreCond()).Tag(mod.Condition("Frozen")))

@@ -1,8 +1,8 @@
 package calculator
 
 import (
-	"go-pob/calculator/mod"
-	"go-pob/utils"
+	"github.com/Vilsol/go-pob/mod"
+	"github.com/Vilsol/go-pob/utils"
 )
 
 var _ ModStoreFuncs = (*ModList)(nil)

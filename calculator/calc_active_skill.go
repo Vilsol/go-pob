@@ -1,9 +1,9 @@
 package calculator
 
 import (
-	"go-pob/calculator/mod"
-	"go-pob/data"
-	"go-pob/utils"
+	"github.com/Vilsol/go-pob/data"
+	"github.com/Vilsol/go-pob/mod"
+	"github.com/Vilsol/go-pob/utils"
 )
 
 // CreateActiveSkill Create an active skill using the given active gem and list of support gems
@@ -62,26 +62,88 @@ func CreateActiveSkill(activeEffect *ActiveEffect, supportList []interface{}, ac
 	return activeSkill
 }
 
-func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
+func CalcMergeSkillInstanceMods(env *Environment, modList *ModList, skillEffect *ActiveEffect, extraStats []interface{}) {
+	CalcValidateGemLevel(skillEffect)
+
+	grantedEffect := skillEffect.GrantedEffect
+	stats := CalcBuildSkillInstanceStats(skillEffect, grantedEffect)
+
 	/*
-		local skillTypes = activeSkill.skillTypes
-		local skillFlags = activeSkill.skillFlags
-		local activeEffect = activeSkill.activeEffect
-		local activeGrantedEffect = activeEffect.grantedEffect
+		TODO extraStats
+		if extraStats and extraStats[1] then
+			for _, stat in pairs(extraStats) do
+				stats[stat.key] = (stats[stat.key] or 0) + stat.value
+			end
+		end
 	*/
 
+	for stat, statValue := range stats {
+		statMap := grantedEffect.Raw.GetCalculatedStatMap().Get(stat)
+		if statMap != nil {
+			for _, m := range statMap.Mods {
+				mergeLevelMod(modList, m, utils.UnwrapOrF(statMap.Value, statValue)*utils.UnwrapOrF(statMap.Mult, 1)/utils.UnwrapOrF(statMap.Div, 1)+utils.UnwrapOrF(statMap.Base, 0))
+			}
+		}
+	}
+
+	// TODO modList:AddList(grantedEffect.baseMods)
+}
+
+// mergeLevelMod Merges level modifier with given mod list
+func mergeLevelMod(modList *ModList, m mod.Mod, value float64) {
+	if value == 0 {
+		modList.AddMod(m)
+		return
+	}
+
+	newMod := m.Clone()
+
+	switch cast := newMod.(type) {
+	case *mod.FloatMod:
+		cast.ModValue = value
+	case *mod.ListMod:
+		switch inner := cast.Value().(type) {
+		case *mod.SkillData:
+			inner.Value = value
+		}
+	}
+
+	/*
+		TODO mergeLevelMod
+		if type(newMod.value) == "table" then
+			newMod.value = copyTable(newMod.value, true)
+			if newMod.value.mod then
+				newMod.value.mod = copyTable(newMod.value.mod, true)
+				newMod.value.mod.value = value
+			else
+				newMod.value.value = value
+			end
+		else
+			newMod.value = value
+		end
+	*/
+
+	modList.AddMod(newMod)
+}
+
+func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
+	skillTypes := activeSkill.SkillTypes
+	skillFlags := activeSkill.SkillFlags
+	activeEffect := activeSkill.ActiveEffect
+	activeGrantedEffect := activeEffect.GrantedEffect
+
 	if env.ModeBuffs {
-		activeSkill.SkillFlags[SkillFlagBuffs] = true
+		skillFlags[SkillFlagBuffs] = true
 	}
 	if env.ModeCombat {
-		activeSkill.SkillFlags[SkillFlagCombat] = true
+		skillFlags[SkillFlagCombat] = true
 	}
 	if env.ModeEffective {
-		activeSkill.SkillFlags[SkillFlagEffective] = true
+		skillFlags[SkillFlagEffective] = true
 	}
 
 	// Handle multipart skills
-	activeGemParts := activeSkill.ActiveEffect.GrantedEffect.Parts
+	activeGemParts := activeGrantedEffect.Parts
 	if activeGemParts != nil {
 		/*
 			TODO Handle multipart skills
@@ -113,17 +175,17 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 		end
 	*/
 
-	if activeSkill.SkillFlags[SkillFlagShieldAttack] {
+	if skillFlags[SkillFlagShieldAttack] {
 		// Special handling for Spectral Shield Throw
-		activeSkill.SkillFlags[SkillFlagWeapon2Attack] = true
+		skillFlags[SkillFlagWeapon2Attack] = true
 		activeSkill.Weapon2Flags = 0
 	} else {
 		// Set weapon flags
 
-		weaponTypes := [][]data.WeaponRestriction{activeSkill.ActiveEffect.GrantedEffect.WeaponTypes}
+		weaponTypes := [][]data.ItemClassName{activeGrantedEffect.WeaponTypes()}
 		for _, skillEffect := range activeSkill.EffectList {
-			if skillEffect.GrantedEffect.Support && skillEffect.GrantedEffect.WeaponTypes != nil {
-				weaponTypes = append(weaponTypes, skillEffect.GrantedEffect.WeaponTypes)
+			if skillEffect.GrantedEffect.Raw.IsSupport && skillEffect.GrantedEffect.WeaponTypes() != nil {
+				weaponTypes = append(weaponTypes, skillEffect.GrantedEffect.WeaponTypes())
 			}
 		}
 
@@ -135,138 +197,138 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 		}
 
 		if weapon1Flags != 0 {
-			if activeSkill.SkillFlags[SkillFlagAttack] {
+			if skillFlags[SkillFlagAttack] {
 				activeSkill.Weapon1Flags = weapon1Flags
-				activeSkill.SkillFlags[SkillFlagWeapon1Attack] = true
-				if weapon1Info.Melee && activeSkill.SkillFlags[SkillFlagMelee] {
-					delete(activeSkill.SkillFlags, SkillFlagProjectile)
-				} else if !weapon1Info.Melee && activeSkill.SkillFlags[SkillFlagProjectile] {
-					delete(activeSkill.SkillFlags, SkillFlagMelee)
+				skillFlags[SkillFlagWeapon1Attack] = true
+				if weapon1Info.Melee && skillFlags[SkillFlagMelee] {
+					delete(skillFlags, SkillFlagProjectile)
+				} else if !weapon1Info.Melee && skillFlags[SkillFlagProjectile] {
+					delete(skillFlags, SkillFlagMelee)
 				}
 			}
-		} else if activeSkill.SkillTypes[data.SkillTypeDualWieldOnly] || activeSkill.SkillTypes[data.SkillTypeMainHandOnly] || activeSkill.SkillFlags[SkillFlagForceMainHand] || weapon1Info != nil {
+		} else if skillTypes[data.SkillTypeDualWieldOnly] || skillTypes[data.SkillTypeMainHandOnly] || skillFlags[SkillFlagForceMainHand] || weapon1Info != nil {
 			// Skill requires a compatible main hand weapon
-			activeSkill.SkillFlags[SkillFlagDisable] = true
+			skillFlags[SkillFlagDisable] = true
 			activeSkill.DisableReason = "Main Hand weapon is not usable with this skill"
 		}
 
-		if utils.MissingOrFalse(activeSkill.SkillTypes, data.SkillTypeMainHandOnly) && utils.MissingOrFalse(activeSkill.SkillFlags, SkillFlagForceMainHand) {
+		if utils.MissingOrFalse(skillTypes, data.SkillTypeMainHandOnly) && utils.MissingOrFalse(skillFlags, SkillFlagForceMainHand) {
 			weapon2Flags, weapon2Info := getWeaponFlags(env, activeSkill.Actor.WeaponData2, weaponTypes)
 			if weapon2Flags != 0 {
-				if activeSkill.SkillFlags[SkillFlagAttack] {
+				if skillFlags[SkillFlagAttack] {
 					activeSkill.Weapon2Flags = weapon2Flags
-					activeSkill.SkillFlags[SkillFlagWeapon2Attack] = true
+					skillFlags[SkillFlagWeapon2Attack] = true
 				}
-			} else if activeSkill.SkillTypes[data.SkillTypeDualWieldOnly] || weapon2Info != nil {
+			} else if skillTypes[data.SkillTypeDualWieldOnly] || weapon2Info != nil {
 				// Skill requires a compatible off hand weapon
-				activeSkill.SkillFlags[SkillFlagDisable] = true
+				skillFlags[SkillFlagDisable] = true
 				if activeSkill.DisableReason != "" {
 					activeSkill.DisableReason = "Off Hand weapon is not usable with this skill"
 				}
-			} else if activeSkill.SkillFlags[SkillFlagDisable] {
+			} else if skillFlags[SkillFlagDisable] {
 				// Neither weapon is compatible
 				activeSkill.DisableReason = "No usable weapon equipped"
 			}
 		}
 
-		if activeSkill.SkillFlags[SkillFlagAttack] {
-			activeSkill.SkillFlags[SkillFlagBothWeaponAttack] = activeSkill.SkillFlags[SkillFlagWeapon1Attack] && activeSkill.SkillFlags[SkillFlagWeapon2Attack]
+		if skillFlags[SkillFlagAttack] {
+			skillFlags[SkillFlagBothWeaponAttack] = skillFlags[SkillFlagWeapon1Attack] && skillFlags[SkillFlagWeapon2Attack]
 		}
 	}
 
 	// Build skill mod flag set
-	skillModFlags := data.ModFlag(0)
+	skillModFlags := mod.MFlag(0)
 
-	if utils.HasTrue(activeSkill.SkillFlags, SkillFlagHit) {
-		skillModFlags |= data.ModFlagHit
+	if utils.HasTrue(skillFlags, SkillFlagHit) {
+		skillModFlags |= mod.MFlagHit
 	}
 
-	if utils.HasTrue(activeSkill.SkillFlags, SkillFlagAttack) {
-		skillModFlags |= data.ModFlagAttack
+	if utils.HasTrue(skillFlags, SkillFlagAttack) {
+		skillModFlags |= mod.MFlagAttack
 	} else {
-		skillModFlags |= data.ModFlagCast
-		if utils.HasTrue(activeSkill.SkillFlags, SkillFlagSpell) {
-			skillModFlags |= data.ModFlagSpell
+		skillModFlags |= mod.MFlagCast
+		if utils.HasTrue(skillFlags, SkillFlagSpell) {
+			skillModFlags |= mod.MFlagSpell
 		}
 	}
 
-	if utils.HasTrue(activeSkill.SkillFlags, SkillFlagMelee) {
-		skillModFlags |= data.ModFlagMelee
-	} else if utils.HasTrue(activeSkill.SkillFlags, SkillFlagProjectile) {
-		skillModFlags |= data.ModFlagProjectile
-		activeSkill.SkillFlags[SkillFlagChaining] = true
+	if utils.HasTrue(skillFlags, SkillFlagMelee) {
+		skillModFlags |= mod.MFlagMelee
+	} else if utils.HasTrue(skillFlags, SkillFlagProjectile) {
+		skillModFlags |= mod.MFlagProjectile
+		skillFlags[SkillFlagChaining] = true
 	}
 
-	if utils.HasTrue(activeSkill.SkillFlags, SkillFlagArea) {
-		skillModFlags |= data.ModFlagArea
+	if utils.HasTrue(skillFlags, SkillFlagArea) {
+		skillModFlags |= mod.MFlagArea
 	}
 
 	// Build skill keyword flag set
 	skillKeywordFlags := mod.KeywordFlag(0)
 
-	if activeSkill.SkillFlags[SkillFlagHit] {
+	if skillFlags[SkillFlagHit] {
 		skillKeywordFlags |= mod.KeywordFlagHit
 	}
 
-	if activeSkill.SkillTypes[data.SkillTypeAura] {
+	if skillTypes[data.SkillTypeAura] {
 		skillKeywordFlags |= mod.KeywordFlagAura
 	}
 
-	if activeSkill.SkillTypes[data.SkillTypeHex] || activeSkill.SkillTypes[data.SkillTypeMark] {
+	if skillTypes[data.SkillTypeHex] || skillTypes[data.SkillTypeMark] {
 		skillKeywordFlags |= mod.KeywordFlagCurse
 	}
 
-	if activeSkill.SkillTypes[data.SkillTypeWarcry] {
+	if skillTypes[data.SkillTypeWarcry] {
 		skillKeywordFlags |= mod.KeywordFlagWarcry
 	}
 
-	if activeSkill.SkillTypes[data.SkillTypeMovement] {
+	if skillTypes[data.SkillTypeMovement] {
 		skillKeywordFlags |= mod.KeywordFlagMovement
 	}
 
-	if activeSkill.SkillTypes[data.SkillTypeVaal] {
+	if skillTypes[data.SkillTypeVaal] {
 		skillKeywordFlags |= mod.KeywordFlagVaal
 	}
 
-	if activeSkill.SkillTypes[data.SkillTypeLightning] {
+	if skillTypes[data.SkillTypeLightning] {
 		skillKeywordFlags |= mod.KeywordFlagLightning
 	}
 
-	if activeSkill.SkillTypes[data.SkillTypeCold] {
+	if skillTypes[data.SkillTypeCold] {
 		skillKeywordFlags |= mod.KeywordFlagCold
 	}
 
-	if activeSkill.SkillTypes[data.SkillTypeFire] {
+	if skillTypes[data.SkillTypeFire] {
 		skillKeywordFlags |= mod.KeywordFlagFire
 	}
 
-	if activeSkill.SkillTypes[data.SkillTypeChaos] {
+	if skillTypes[data.SkillTypeChaos] {
 		skillKeywordFlags |= mod.KeywordFlagChaos
 	}
 
-	if activeSkill.SkillFlags[SkillFlagWeapon1Attack] && activeSkill.Weapon1Flags&data.ModFlagBow != 0 {
+	if skillFlags[SkillFlagWeapon1Attack] && activeSkill.Weapon1Flags&mod.MFlagBow != 0 {
 		skillKeywordFlags |= mod.KeywordFlagBow
 	}
 
-	if activeSkill.SkillFlags[SkillFlagBrand] {
+	if skillFlags[SkillFlagBrand] {
 		skillKeywordFlags |= mod.KeywordFlagBrand
 	}
 
-	if activeSkill.SkillFlags[SkillFlagTotem] {
+	if skillFlags[SkillFlagTotem] {
 		skillKeywordFlags |= mod.KeywordFlagTotem
-	} else if activeSkill.SkillFlags[SkillFlagTrap] {
+	} else if skillFlags[SkillFlagTrap] {
 		skillKeywordFlags |= mod.KeywordFlagTrap
-	} else if activeSkill.SkillFlags[SkillFlagMine] {
+	} else if skillFlags[SkillFlagMine] {
 		skillKeywordFlags |= mod.KeywordFlagMine
 	} else {
-		activeSkill.SkillFlags[SkillFlagSelfCast] = true
+		skillFlags[SkillFlagSelfCast] = true
 	}
 
-	if activeSkill.SkillTypes[data.SkillTypeAttack] {
+	if skillTypes[data.SkillTypeAttack] {
 		skillKeywordFlags |= mod.KeywordFlagAttack
 	}
 
-	if activeSkill.SkillTypes[data.SkillTypeSpell] && !activeSkill.SkillFlags[SkillFlagCast] {
+	if skillTypes[data.SkillTypeSpell] && !skillFlags[SkillFlagCast] {
 		skillKeywordFlags |= mod.KeywordFlagSpell
 	}
 	/*
@@ -312,7 +374,7 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 	}
 
 	// Build config structure for modifier searches
-	if activeSkill.SkillFlags[SkillFlagWeapon1Attack] {
+	if skillFlags[SkillFlagWeapon1Attack] {
 		cond := utils.CopyMap(activeSkill.SkillCfg.SkillCond)
 		cond["MainHandAttack"] = true
 		activeSkill.Weapon1Cfg = &ListCfg{
@@ -324,7 +386,7 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 		}
 	}
 
-	if activeSkill.SkillFlags[SkillFlagWeapon2Attack] {
+	if skillFlags[SkillFlagWeapon2Attack] {
 		cond := utils.CopyMap(activeSkill.SkillCfg.SkillCond)
 		cond["OffHandAttack"] = true
 		activeSkill.Weapon1Cfg = &ListCfg{
@@ -383,29 +445,40 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 			end
 		end
 	*/
+
+	// Add active gem modifiers
+
+	// TODO Minions
+	// activeEffect.actorLevel = activeSkill.actor.minionData and activeSkill.actor.level
+	CalcMergeSkillInstanceMods(env, skillModList, activeEffect, skillModList.List(activeSkill.SkillCfg, "ExtraSkillStat"))
+	activeEffect.GrantedEffectLevel = activeGrantedEffect.Raw.GetCalculatedLevels()[activeEffect.Level]
+
+	// Add extra modifiers from granted effect level
+	level := activeEffect.GrantedEffectLevel
+	if level.CritChance != nil {
+		activeSkill.SkillData["CritChance"] = *level.CritChance
+	}
+
 	/*
-		TODO -- Add active gem modifiers
-		activeEffect.actorLevel = activeSkill.actor.minionData and activeSkill.actor.level
-		calcs.mergeSkillInstanceMods(env, skillModList, activeEffect, skillModList:List(activeSkill.skillCfg, "ExtraSkillStat"))
-		activeEffect.grantedEffectLevel = activeGrantedEffect.levels[activeEffect.level]
-	*/
-	/*
-		TODO -- Add extra modifiers from granted effect level
-		local level = activeEffect.grantedEffectLevel
-		activeSkill.skillData.CritChance = level.critChance
+		TODO damageMultiplier
 		if level.damageMultiplier then
 			skillModList:NewMod("Damage", "MORE", level.damageMultiplier, activeEffect.grantedEffect.modSource, ModFlag.Attack)
 		end
-		if level.attackTime then
-			activeSkill.skillData.attackTime = level.attackTime
-		end
-		if level.attackSpeedMultiplier then
-			skillModList:NewMod("Speed", "MORE", level.attackSpeedMultiplier, activeEffect.grantedEffect.modSource, ModFlag.Attack)
-		end
-		if level.cooldown then
-			activeSkill.skillData.cooldown = level.cooldown
-		end
 	*/
+
+	if level.AttackTime != nil {
+		activeSkill.SkillData["AttackTime"] = *level.AttackTime
+	}
+
+	if level.AttackSpeedMultiplier != nil {
+		// TODO activeEffect.grantedEffect.modSource
+		skillModList.AddMod(mod.NewFloat("Speed", mod.TypeMore, *level.AttackSpeedMultiplier).Flag(mod.MFlagAttack))
+	}
+
+	if level.Cooldown != nil {
+		activeSkill.SkillData["Cooldown"] = *level.Cooldown
+	}
+
 	/*
 		TODO -- Add extra modifiers from other sources
 		activeSkill.extraSkillModList = { }
@@ -443,15 +516,15 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 			end
 		end
 	*/
-	/*
-		TODO -- Extract skill data
-		for _, value in ipairs(env.modDB:List(activeSkill.skillCfg, "SkillData")) do
-			activeSkill.skillData[value.key] = value.value
-		end
-		for _, value in ipairs(skillModList:List(activeSkill.skillCfg, "SkillData")) do
-			activeSkill.skillData[value.key] = value.value
-		end
-	*/
+
+	// Extract skill data
+	for _, value := range utils.CastSlice[*mod.SkillData](env.ModDB.List(activeSkill.SkillCfg, "SkillData")) {
+		activeSkill.SkillData[value.Key] = value.Value
+	}
+	for _, value := range utils.CastSlice[*mod.SkillData](skillModList.List(activeSkill.SkillCfg, "SkillData")) {
+		activeSkill.SkillData[value.Key] = value.Value
+	}
+
 	/*
 		TODO -- Create minion
 		local minionList, isSpectre
@@ -629,12 +702,12 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 	*/
 }
 
-func getWeaponFlags(env *Environment, weaponData map[string]interface{}, weaponTypes [][]data.WeaponRestriction) (data.ModFlag, *data.WeaponTypeInfo) {
+func getWeaponFlags(env *Environment, weaponData map[string]interface{}, weaponTypes [][]data.ItemClassName) (mod.MFlag, *data.WeaponTypeInfo) {
 	if _, ok := weaponData["type"]; !ok {
 		return 0, nil
 	}
 
-	info := data.WeaponTypes[data.WeaponRestriction(weaponData["type"].(string))]
+	info := data.WeaponTypes[data.ItemClassName(weaponData["type"].(string))]
 
 	if info == nil {
 		return 0, nil
@@ -653,21 +726,21 @@ func getWeaponFlags(env *Environment, weaponData map[string]interface{}, weaponT
 
 	flags := info.ModFlag
 	if utils.HasTrue(weaponData, "CountsAsAll1H") {
-		flags = data.ModFlagAxe | data.ModFlagClaw | data.ModFlagDagger | data.ModFlagMace | data.ModFlagSword
+		flags = mod.MFlagAxe | mod.MFlagClaw | mod.MFlagDagger | mod.MFlagMace | mod.MFlagSword
 	}
 
 	if weaponData["type"] != "None" {
-		flags |= data.ModFlagWeapon
+		flags |= mod.MFlagWeapon
 		if info.OneHand {
-			flags |= data.ModFlagWeapon1H
+			flags |= mod.MFlagWeapon1H
 		} else {
-			flags |= data.ModFlagWeapon2H
+			flags |= mod.MFlagWeapon2H
 		}
 
 		if info.Melee {
-			flags |= data.ModFlagWeaponMelee
+			flags |= mod.MFlagWeaponMelee
 		} else {
-			flags |= data.ModFlagWeaponRanged
+			flags |= mod.MFlagWeaponRanged
 		}
 	}
 

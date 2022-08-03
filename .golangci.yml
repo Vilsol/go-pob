@@ -1,3 +1,8 @@
+linters-settings:
+  wrapcheck:
+    ignorePackageGlobs:
+      - github.com/Vilsol/go-pob/*
+
 linters:
   disable-all: true
   enable:

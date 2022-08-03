@@ -6,7 +6,7 @@ import (
 
 	"github.com/pkg/errors"
 
-	"go-pob/pob"
+	"github.com/Vilsol/go-pob/pob"
 )
 
 var nilCleanupRegex = regexp.MustCompile(`\w+?="nil"`)
