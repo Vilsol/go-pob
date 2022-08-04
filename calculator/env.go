@@ -621,7 +621,12 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 	if env.Mode == OutputModeCalcs {
 
 	} else {
-		build.Build.MainSocketGroup = utils.Min(utils.Max(len(build.Skills.SkillSets), 1), build.Build.MainSocketGroup)
+		selectedSkillSet := build.Skills.ActiveSkillSet - 1
+		skillCount := 0
+		if len(build.Skills.SkillSets) > selectedSkillSet {
+			skillCount = len(build.Skills.SkillSets[selectedSkillSet].Skills)
+		}
+		build.Build.MainSocketGroup = utils.Min(utils.Max(skillCount, 0), build.Build.MainSocketGroup)
 		env.MainSocketGroup = build.Build.MainSocketGroup
 	}
 
@@ -677,7 +682,7 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 			propertyModList := utils.CastSlice[mod.GemProperty](env.ModDB.List(groupCfg, "GemProperty"))
 
 			// Build list of supports for this socket group
-			supportList := make([]interface{}, 0)
+			supportList := make([]*GemEffect, 0)
 			if socketGroup.Source == nil {
 				// Add extra supports from the item this group is socketed in
 				for _, value := range env.ModDB.List(groupCfg, "ExtraSupport") {
@@ -721,97 +726,107 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 				}
 
 				if gemInstance.Enabled {
-					processGrantedEffect := func(grantedEffect *GrantedEffect) {
-						if grantedEffect == nil || grantedEffect.Raw.IsSupport {
+					gemData := raw.BaseItemTypeByIDMap[gemInstance.GemID].SkillGem()
+
+					processGrantedEffect := func(grantedEffect *raw.GrantedEffect) {
+						if grantedEffect == nil || !grantedEffect.IsSupport {
 							return
 						}
-						/*
-							TODO
-							local supportEffect = {
-								grantedEffect = grantedEffect,
-								level = gemInstance.level,
-								quality = gemInstance.quality,
-								qualityId = gemInstance.qualityId,
-								srcInstance = gemInstance,
-								gemData = gemInstance.gemData,
-								superseded = false,
-								isSupporting = { },
+
+						supportEffect := &GemEffect{
+							GrantedEffect: &GrantedEffect{
+								Raw: grantedEffect,
+							},
+							Level:        gemInstance.Level,
+							Quality:      gemInstance.Quality,
+							QualityID:    gemInstance.QualityID,
+							SrcInstance:  &gemInstance,
+							GemData:      gemData,
+							Superseded:   false,
+							IsSupporting: make(map[*pob.Gem]bool),
+							Values:       make(map[string]float64),
+						}
+
+						if env.Mode == OutputModeMain {
+							gemInstance.DisplayEffect = supportEffect
+							gemInstance.SupportEffect = supportEffect
+						}
+
+						if gemData != nil {
+							for _, value := range propertyModList {
+								match := true
+
+								if value.KeywordList != nil && len(value.KeywordList) > 0 {
+									for _, keyword := range value.KeywordList {
+										if !CalcGemIsType(supportEffect.GemData, keyword) {
+											match = false
+											break
+										}
+									}
+								} else if !CalcGemIsType(supportEffect.GemData, *value.Keyword) {
+									match = false
+								}
+
+								if match {
+									supportEffect.Values[value.Key] = supportEffect.Values[value.Key] + value.Value
+								}
 							}
-							if env.mode == "MAIN" then
-								gemInstance.displayEffect = supportEffect
-								gemInstance.supportEffect = supportEffect
-							end
-							if gemInstance.gemData then
-								for _, value in ipairs(propertyModList) do
+						}
 
+						// Validate support gem level in case there is no active skill (and no full calculation)
+						CalcValidateGemLevel(supportEffect)
 
-									local match = true
-									if value.keywordList then
-										for _, keyword in ipairs(value.keywordList) do
-											if not calcLib.gemIsType(supportEffect.gemData, keyword) then
-												match = false
-												break
-											end
-										end
-									elseif not calcLib.gemIsType(supportEffect.gemData, value.keyword) then
-										match = false
-									end
-									if match then
-										supportEffect[value.key] = (supportEffect[value.key] or 0) + value.value
-									end
-								end
-							end
-							-- Validate support gem level in case there is no active skill (and no full calculation)
-							calcLib.validateGemLevel(supportEffect)
-							local add = true
-							for index, otherSupport in ipairs(supportList) do
-								-- Check if there's another support with the same name already present
-								if grantedEffect == otherSupport.grantedEffect then
-									add = false
-									if supportEffect.level > otherSupport.level or (supportEffect.level == otherSupport.level and supportEffect.quality > otherSupport.quality) then
-										if env.mode == "MAIN" then
-											otherSupport.superseded = true
-										end
-										supportList[index] = supportEffect
-									else
-										supportEffect.superseded = true
-									end
-									break
-								elseif grantedEffect.plusVersionOf == otherSupport.grantedEffect.id then
-									add = false
-									if env.mode == "MAIN" then
-										otherSupport.superseded = true
-									end
+						add := true
+						for index, otherSupport := range supportList {
+							// Check if there's another support with the same name already present
+							if grantedEffect == otherSupport.GrantedEffect.Raw {
+								add = false
+								if supportEffect.Level > otherSupport.Level || (supportEffect.Level == otherSupport.Level && supportEffect.Quality > otherSupport.Quality) {
+									if env.Mode == OutputModeMain {
+										otherSupport.Superseded = true
+									}
 									supportList[index] = supportEffect
-								elseif otherSupport.grantedEffect.plusVersionOf == grantedEffect.id then
-									add = false
-									supportEffect.superseded = true
-								end
-							end
-							if add then
-								t_insert(supportList, supportEffect)
-							end
-						*/
+								} else {
+									supportEffect.Superseded = true
+								}
+								break
+							} else if grantedEffect.PlusVersionOf != nil && otherSupport.GrantedEffect.Raw.PlusVersionOf != nil && *grantedEffect.PlusVersionOf == *otherSupport.GrantedEffect.Raw.PlusVersionOf {
+								add = false
+								if env.Mode == OutputModeMain {
+									otherSupport.Superseded = true
+								}
+								supportList[index] = supportEffect
+							} else if otherSupport.GrantedEffect.Raw.PlusVersionOf != nil && *otherSupport.GrantedEffect.Raw.PlusVersionOf == grantedEffect.Key {
+								add = false
+								supportEffect.Superseded = true
+							}
+						}
+
+						if add {
+							supportList = append(supportList, supportEffect)
+						}
 					}
 
 					_ = processGrantedEffect // TODO Remove
 
-					/*
-						TODO
-						if gemInstance.gemData then
-							processGrantedEffect(gemInstance.gemData.grantedEffect)
-							processGrantedEffect(gemInstance.gemData.secondaryGrantedEffect)
-						else
-							processGrantedEffect(gemInstance.grantedEffect)
-						end
-						-- Store extra supports for other items that are linked
-						for _, value in ipairs(env.modDB:List(groupCfg, "LinkedSupport")) do
+					if gemData != nil {
+						processGrantedEffect(gemData.GetGrantedEffect())
+						processGrantedEffect(gemData.GetSecondaryGrantedEffect())
+					} else {
+						// TODO processGrantedEffect(gemInstance.grantedEffect)
+					}
+
+					// Store extra supports for other items that are linked
+					for _, value := range env.ModDB.List(groupCfg, "LinkedSupport") {
+						_ = value
+						/*
+							// TODO LinkedSupport
 							crossLinkedSupportList[value.targetSlotName] = { }
 							for _, supportItem in ipairs(supportList) do
 								t_insert(crossLinkedSupportList[value.targetSlotName], supportItem)
 							end
-						end
-					*/
+						*/
+					}
 				}
 			}
 
@@ -831,7 +846,7 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 						if !grantedEffect.IsSupport && (!grantedEffect.HasGlobalEffect() || globalEnable) {
 							baseFlags, skillTypes := TypesToFlagsAndTypes(grantedEffect.GetActiveSkill().GetActiveSkillTypes())
 
-							activeEffect := &ActiveEffect{
+							activeEffect := &GemEffect{
 								GrantedEffect: &GrantedEffect{
 									Raw:        grantedEffect,
 									Parts:      nil, // TODO Parts
@@ -944,7 +959,7 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 		// Add a default main skill if none are specified
 		playerMelee := raw.GrantedEffectByID("PlayerMelee")
 		baseFlags, skillTypes := TypesToFlagsAndTypes(playerMelee.GetActiveSkill().GetActiveSkillTypes())
-		defaultEffect := &ActiveEffect{
+		defaultEffect := &GemEffect{
 			GrantedEffect: &GrantedEffect{
 				Raw:        playerMelee,
 				Parts:      nil, // TODO Parts
@@ -952,7 +967,7 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 				BaseFlags:  baseFlags,
 			},
 		}
-		env.Player.MainSkill = CreateActiveSkill(defaultEffect, []interface{}{}, env.Player, nil, nil)
+		env.Player.MainSkill = CreateActiveSkill(defaultEffect, []*GemEffect{}, env.Player, nil, nil)
 		env.Player.ActiveSkillList = append(env.Player.ActiveSkillList, env.Player.MainSkill)
 	}
 

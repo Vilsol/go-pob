@@ -108,7 +108,7 @@ func TypesToFlagsAndTypes(in []*raw.ActiveSkillType) (map[SkillFlag]bool, map[da
 }
 
 // CalcValidateGemLevel Validates the level of the given gem
-func CalcValidateGemLevel(gemInstance *ActiveEffect) {
+func CalcValidateGemLevel(gemInstance *GemEffect) {
 	// TODO
 	// local grantedEffect = gemInstance.grantedEffect or gemInstance.gemData.grantedEffect
 	grantedEffect := gemInstance.GrantedEffect
@@ -137,7 +137,7 @@ func CalcValidateGemLevel(gemInstance *ActiveEffect) {
 	}
 }
 
-func CalcBuildSkillInstanceStats(skillInstance *ActiveEffect, grantedEffect *GrantedEffect) map[string]float64 {
+func CalcBuildSkillInstanceStats(skillInstance *GemEffect, grantedEffect *GrantedEffect) map[string]float64 {
 	stats := make(map[string]float64)
 	allQualities := grantedEffect.Raw.GetEffectQualityStats()
 
@@ -218,4 +218,57 @@ func CalcBuildSkillInstanceStats(skillInstance *ActiveEffect, grantedEffect *Gra
 	}
 
 	return stats
+}
+
+func CalcCanGrantedEffectSupportActiveSkill(grantedEffect *GrantedEffect, activeSkill *ActiveSkill) bool {
+	// TODO grantedEffect.unsupported doesn't actually exist?
+	if activeSkill.ActiveEffect.GrantedEffect.Raw.CannotBeSupported {
+		return false
+	}
+
+	if grantedEffect.Raw.SupportsGemsOnly && activeSkill.ActiveEffect.GemData == nil {
+		return false
+	}
+
+	if activeSkill.SummonSkill != nil {
+		return CalcCanGrantedEffectSupportActiveSkill(grantedEffect, activeSkill.SummonSkill)
+	}
+
+	if len(grantedEffect.Raw.ExcludeTypes) > 0 && CalcDoesTypeExpressionMatch(data.RawToSkillTypes(grantedEffect.Raw.GetExcludeTypes()), activeSkill.SkillTypes, nil) {
+		return false
+	}
+
+	var minionTypes map[data.SkillType]bool = nil
+	if !grantedEffect.Raw.IgnoreMinionTypes {
+		minionTypes = activeSkill.MinionSkillTypes
+	}
+
+	return CalcDoesTypeExpressionMatch(data.RawToSkillTypes(grantedEffect.Raw.GetSupportTypes()), activeSkill.SkillTypes, minionTypes)
+}
+
+func CalcDoesTypeExpressionMatch(checkTypes map[data.SkillType]bool, skillTypes map[data.SkillType]bool, minionTypes map[data.SkillType]bool) bool {
+	stack := make([]bool, 0)
+	for skillType := range checkTypes {
+		if skillType == data.SkillTypeOR {
+			other := stack[len(stack)-1]
+			stack = stack[:len(stack)-1]
+			stack[len(stack)-1] = stack[len(stack)-1] || other
+		} else if skillType == data.SkillTypeAND {
+			other := stack[len(stack)-1]
+			stack = stack[:len(stack)-1]
+			stack[len(stack)-1] = stack[len(stack)-1] && other
+		} else if skillType == data.SkillTypeNOT {
+			stack[len(stack)-1] = !stack[len(stack)-1]
+		} else {
+			stack = append(stack, skillTypes[skillType] || (minionTypes != nil && minionTypes[skillType]))
+		}
+	}
+
+	for _, val := range stack {
+		if val {
+			return true
+		}
+	}
+
+	return false
 }

@@ -109,21 +109,22 @@ type ActiveSkill struct {
 	SkillCfg         *ListCfg
 	SkillTypes       map[data.SkillType]bool
 	SkillData        map[string]interface{} // TODO Implement. Might be SkillData?
-	ActiveEffect     *ActiveEffect
+	ActiveEffect     *GemEffect
 	Weapon1Cfg       *ListCfg
 	Weapon2Cfg       *ListCfg
-	SupportList      []interface{}
+	SupportList      []*GemEffect
 	Actor            *Actor `json:"-"`
 	SocketGroup      interface{}
-	SummonSkill      interface{}
+	SummonSkill      *ActiveSkill
 	ConversionTable  map[data.DamageType]ConversionTable
 	Minion           interface{}
 	Weapon1Flags     mod.MFlag
 	Weapon2Flags     mod.MFlag
-	EffectList       []*ActiveEffect
+	EffectList       []*GemEffect
 	DisableReason    string
 	BaseSkillModList *ModList
 	SlotName         string
+	MinionSkillTypes map[data.SkillType]bool
 }
 
 type ConversionTable struct {
@@ -181,23 +182,7 @@ type SkillData struct {
 	ShowAverage           bool
 }
 
-type ActiveEffect struct {
-	GrantedEffect      *GrantedEffect
-	Level              int
-	Quality            int
-	QualityID          string
-	SrcInstance        *pob.Gem
-	GemData            *raw.SkillGem
-	GrantedEffectLevel *raw.CalculatedLevel
-}
-
 type GrantedEffect struct {
-	//Name                string
-	//CastTime            *float64
-	//WeaponTypes         []data.ItemClassName
-	//BaseMultiplier      *float64
-	//DamageEffectiveness *float64
-
 	Raw        *raw.GrantedEffect
 	Parts      []interface{}
 	SkillTypes map[data.SkillType]bool
@@ -238,4 +223,21 @@ type RequirementsTableGems struct {
 	Str       int
 	Dex       int
 	Int       int
+}
+
+type GemEffect struct {
+	GrantedEffect *GrantedEffect
+	Level         int
+	Quality       int
+	QualityID     string
+	SrcInstance   *pob.Gem
+	GemData       *raw.SkillGem
+
+	// For Active Gems
+	GrantedEffectLevel *raw.CalculatedLevel
+
+	// For Support Gems
+	Superseded   bool
+	IsSupporting map[*pob.Gem]bool
+	Values       map[string]float64
 }

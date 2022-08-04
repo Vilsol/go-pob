@@ -1,6 +1,7 @@
 package data
 
 import (
+	"github.com/Vilsol/go-pob/data/raw"
 	"github.com/Vilsol/go-pob/mod"
 	"github.com/Vilsol/go-pob/utils"
 )
@@ -334,6 +335,14 @@ const (
 	SkillTypeBlessing                       = SkillType("Blessing")
 	SkillTypeZeroReservation                = SkillType("ZeroReservation")
 )
+
+func RawToSkillTypes(types []*raw.ActiveSkillType) map[SkillType]bool {
+	out := make(map[SkillType]bool)
+	for _, skillType := range types {
+		out[SkillType(skillType.ID)] = true
+	}
+	return out
+}
 
 type WeaponTypeInfo struct {
 	OneHand bool

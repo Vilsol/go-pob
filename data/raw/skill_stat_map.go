@@ -683,12 +683,14 @@ var SkillStatMap = map[string]*StatMap{
 		["maximum_added_cold_damage_vs_chilled_enemies"] = {
 			mod("ColdMax", "BASE", nil, 0, 0, { type = "ActorCondition", actor = "enemy", var = "Chilled" }),
 		},
-		["global_minimum_added_cold_damage"] = {
-			mod("ColdMin", "BASE", nil),
-		},
-		["global_maximum_added_cold_damage"] = {
-			mod("ColdMax", "BASE", nil),
-		},
+	*/
+	"global_minimum_added_cold_damage": {
+		Mods: []mod.Mod{mod.NewFloat("ColdMin", mod.TypeBase, 0)},
+	},
+	"global_maximum_added_cold_damage": {
+		Mods: []mod.Mod{mod.NewFloat("ColdMax", mod.TypeBase, 0)},
+	},
+	/*
 		["global_minimum_added_lightning_damage"] = {
 			mod("LightningMin", "BASE", nil),
 		},

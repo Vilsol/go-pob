@@ -2,13 +2,14 @@ package calculator
 
 import (
 	"github.com/Vilsol/go-pob/data"
+	"github.com/Vilsol/go-pob/data/raw"
 	"github.com/Vilsol/go-pob/mod"
 	"github.com/Vilsol/go-pob/utils"
 )
 
 // CreateActiveSkill Create an active skill using the given active gem and list of support gems
 // It will determine the base flag set, and check which of the support gems can support this skill
-func CreateActiveSkill(activeEffect *ActiveEffect, supportList []interface{}, actor *Actor, socketGroup interface{}, summonSkill interface{}) *ActiveSkill {
+func CreateActiveSkill(activeEffect *GemEffect, supportList []*GemEffect, actor *Actor, socketGroup interface{}, summonSkill *ActiveSkill) *ActiveSkill {
 	activeSkill := &ActiveSkill{
 		ActiveEffect: activeEffect,
 		SupportList:  supportList,
@@ -30,39 +31,41 @@ func CreateActiveSkill(activeEffect *ActiveEffect, supportList []interface{}, ac
 	activeSkill.SkillFlags = utils.CopyMap(activeEffect.GrantedEffect.BaseFlags)
 	activeSkill.SkillFlags[SkillFlagHit] = activeSkill.SkillFlags[SkillFlagHit] || activeSkill.SkillTypes[data.SkillTypeAttack] || activeSkill.SkillTypes[data.SkillTypeDamage] || activeSkill.SkillTypes[data.SkillTypeProjectile]
 
-	activeSkill.EffectList = make([]*ActiveEffect, 1)
+	activeSkill.EffectList = make([]*GemEffect, 1)
 	activeSkill.EffectList[0] = activeEffect
-	/*
-		TODO -- Process support skills
-		for _, supportEffect in ipairs(supportList) do
-			-- Pass 1: Add skill types from compatible supports
-			if calcLib.canGrantedEffectSupportActiveSkill(supportEffect.grantedEffect, activeSkill) then
-				for _, skillType in pairs(supportEffect.grantedEffect.addSkillTypes) do
-					activeSkill.skillTypes[skillType] = true
-				end
-			end
-		end
-		for _, supportEffect in ipairs(supportList) do
-			-- Pass 2: Add all compatible supports
-			if calcLib.canGrantedEffectSupportActiveSkill(supportEffect.grantedEffect, activeSkill) then
-				t_insert(activeSkill.effectList, supportEffect)
-				if supportEffect.isSupporting and activeEffect.srcInstance then
-					supportEffect.isSupporting[activeEffect.srcInstance] = true
-				end
+
+	for _, supportEffect := range supportList {
+		// Pass 1: Add skill types from compatible supports
+		if CalcCanGrantedEffectSupportActiveSkill(supportEffect.GrantedEffect, activeSkill) {
+			for _, skillType := range supportEffect.GrantedEffect.Raw.AddTypes {
+				activeSkill.SkillTypes[data.SkillType(raw.ActiveSkillTypesMap[skillType].ID)] = true
+			}
+		}
+	}
+
+	for _, supportEffect := range supportList {
+		// Pass 2: Add all compatible supports
+		if CalcCanGrantedEffectSupportActiveSkill(supportEffect.GrantedEffect, activeSkill) {
+			activeSkill.EffectList = append(activeSkill.EffectList, supportEffect)
+			if supportEffect.IsSupporting != nil && activeEffect.SrcInstance != nil {
+				supportEffect.IsSupporting[activeEffect.SrcInstance] = true
+			}
+			/*
+				TODO Manually added support flags
 				if supportEffect.grantedEffect.addFlags and not summonSkill then
 					-- Support skill adds flags to supported skills (eg. Remote Mine adds 'mine')
 					for k in pairs(supportEffect.grantedEffect.addFlags) do
 						skillFlags[k] = true
 					end
 				end
-			end
-		end
-	*/
+			*/
+		}
+	}
 
 	return activeSkill
 }
 
-func CalcMergeSkillInstanceMods(env *Environment, modList *ModList, skillEffect *ActiveEffect, extraStats []interface{}) {
+func CalcMergeSkillInstanceMods(env *Environment, modList *ModList, skillEffect *GemEffect, extraStats []interface{}) {
 	CalcValidateGemLevel(skillEffect)
 
 	grantedEffect := skillEffect.GrantedEffect
@@ -419,24 +422,25 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 			return
 		end
 	*/
-	/*
-		TODO -- Add support gem modifiers to skill mod list
-		for _, skillEffect in pairs(activeSkill.effectList) do
-			if skillEffect.grantedEffect.support then
-				calcs.mergeSkillInstanceMods(env, skillModList, skillEffect)
-				local level = skillEffect.grantedEffect.levels[skillEffect.level]
-				if level.manaMultiplier then
-					skillModList:NewMod("SupportManaMultiplier", "MORE", level.manaMultiplier, skillEffect.grantedEffect.modSource)
-				end
-				if level.manaReservationPercent then
-					activeSkill.skillData.manaReservationPercent = level.manaReservationPercent
-				end
-				if level.cooldown then
-					activeSkill.skillData.cooldown = level.cooldown
-				end
-			end
-		end
-	*/
+
+	// Add support gem modifiers to skill mod list
+	for _, skillEffect := range activeSkill.EffectList {
+		if skillEffect.GrantedEffect.Raw.IsSupport {
+			CalcMergeSkillInstanceMods(env, skillModList, skillEffect, nil)
+			level := skillEffect.GrantedEffect.Raw.GetCalculatedLevels()[skillEffect.Level]
+			if level.ManaMultiplier != nil {
+				// TODO skillEffect.grantedEffect.modSource
+				skillModList.AddMod(mod.NewFloat("SupportManaMultiplier", mod.TypeBase, *level.ManaMultiplier))
+			}
+			if level.ManaReservationPercent != nil {
+				activeSkill.SkillData["ManaReservationPercent"] = *level.ManaReservationPercent
+			}
+			if level.Cooldown != nil {
+				activeSkill.SkillData["Cooldown"] = *level.Cooldown
+			}
+		}
+	}
+
 	/*
 		TODO -- Apply gem/quality modifiers from support gems
 		for _, value in ipairs(skillModList:List(activeSkill.skillCfg, "SupportedGemProperty")) do

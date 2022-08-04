@@ -138,6 +138,28 @@ func (g *GrantedEffect) GetGrantedEffectStatSet() *GrantedEffectStatSet {
 	return GrantedEffectStatSetsMap[g.GrantedEffectStatSets]
 }
 
+func (g *GrantedEffect) GetSupportTypes() []*ActiveSkillType {
+	if g.SupportTypes == nil {
+		return nil
+	}
+	out := make([]*ActiveSkillType, len(g.SupportTypes))
+	for i, supportType := range g.SupportTypes {
+		out[i] = ActiveSkillTypesMap[supportType]
+	}
+	return out
+}
+
+func (g *GrantedEffect) GetExcludeTypes() []*ActiveSkillType {
+	if g.ExcludeTypes == nil {
+		return nil
+	}
+	out := make([]*ActiveSkillType, len(g.ExcludeTypes))
+	for i, supportType := range g.ExcludeTypes {
+		out[i] = ActiveSkillTypesMap[supportType]
+	}
+	return out
+}
+
 func (g *GrantedEffect) Calculate() {
 	if g.calculatedStats != nil || g.calculatedLevels != nil {
 		return
@@ -289,7 +311,7 @@ func (g *GrantedEffect) Calculate() {
 }
 
 func processMod(grantedEffect *GrantedEffect, m mod.Mod) mod.Mod {
-	out := m.Source(mod.Source("Skill:" + grantedEffect.GetActiveSkill().ID))
+	out := m.Source(mod.Source("Skill:" + grantedEffect.ID))
 
 	/*
 		TODO processMod

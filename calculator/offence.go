@@ -2142,15 +2142,15 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 			damageTypeMax := string(damageType) + "Max"
 
 			baseMultiplier := float64(1)
-			if activeSkill.ActiveEffect.GrantedEffect.BaseMultiplier() != 0 {
-				baseMultiplier = activeSkill.ActiveEffect.GrantedEffect.BaseMultiplier()
+			if activeSkill.ActiveEffect.GrantedEffectLevel.BaseMultiplier != nil {
+				baseMultiplier = *activeSkill.ActiveEffect.GrantedEffectLevel.BaseMultiplier
 			} else if skillData["BaseMultiplier"] != nil {
 				baseMultiplier = skillData["BaseMultiplier"].(float64)
 			}
 
 			damageEffectiveness := float64(1)
-			if activeSkill.ActiveEffect.GrantedEffect.DamageEffectiveness() != 0 {
-				damageEffectiveness = activeSkill.ActiveEffect.GrantedEffect.DamageEffectiveness()
+			if activeSkill.ActiveEffect.GrantedEffectLevel.DamageEffectiveness != nil {
+				damageEffectiveness = *activeSkill.ActiveEffect.GrantedEffectLevel.DamageEffectiveness
 			} else if skillData["DamageEffectiveness"] != nil {
 				damageEffectiveness = skillData["DamageEffectiveness"].(float64)
 			}

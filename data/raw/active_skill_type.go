@@ -9,8 +9,6 @@ type ActiveSkillType struct {
 var ActiveSkillTypes []*ActiveSkillType
 var ActiveSkillTypesMap map[int]*ActiveSkillType
 
-var activeSkillTypesByIDMap map[string]*ActiveSkillType
-
 func InitializeActiveSkillTypes(version string) error {
 	if err := InitHelper(version, "ActiveSkillType", &ActiveSkillTypes); err != nil {
 		return err
@@ -21,14 +19,5 @@ func InitializeActiveSkillTypes(version string) error {
 		ActiveSkillTypesMap[i.Key] = i
 	}
 
-	activeSkillTypesByIDMap = make(map[string]*ActiveSkillType)
-	for _, i := range ActiveSkillTypes {
-		activeSkillTypesByIDMap[i.ID] = i
-	}
-
 	return nil
-}
-
-func ActiveSkillTypeByID(id string) *ActiveSkillType {
-	return activeSkillTypesByIDMap[id]
 }
