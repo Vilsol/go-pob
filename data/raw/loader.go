@@ -14,13 +14,13 @@ import (
 	"github.com/Vilsol/go-pob/cache"
 )
 
-const jsonCDNBase = "https://cdn.jsdelivr.net/gh/Vilsol/go-pob-data@%s/data/%s.json.gz"
+const cdnBase = "https://go-pob-data.pages.dev/data/%s/%s.json.gz"
 
 // LoadRaw loads a raw gzipped json dump from remote source
 //
 // Returns data from cache if found
 func LoadRaw[T any](version string, name string) (*T, error) {
-	url := fmt.Sprintf(jsonCDNBase, version, name)
+	url := fmt.Sprintf(cdnBase, version, name)
 
 	var b []byte
 	if cache.Disk().Exists(url) {

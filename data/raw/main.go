@@ -9,7 +9,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-const LatestVersion = "3.18-3"
+const LatestVersion = "3.18"
 
 type InitFunction func(version string) error
 
