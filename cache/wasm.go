@@ -2,7 +2,7 @@
 
 package cache
 
-// TODO Implement wasm cache
+import "github.com/rs/zerolog/log"
 
 var cache *wasmCache
 
