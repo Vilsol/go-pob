@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="/go-pob/favicon.png" />
+    <meta name="viewport" content="width=device-width" />
+    <meta http-equiv="content-security-policy" content="">
+	<link rel="modulepreload" href="/go-pob/_app/immutable/start-d617f29d.js">
+	<link rel="modulepreload" href="/go-pob/_app/immutable/chunks/index-79bb94f6.js">
+	<link rel="modulepreload" href="/go-pob/_app/immutable/chunks/paths-da3bbfdf.js">
+  </head>
+  <body>
+    
+		<script type="module" data-sveltekit-hydrate="45h">
+		import { set_public_env, start } from "/go-pob/_app/immutable/start-d617f29d.js";
+
+		set_public_env({});
+
+		start({
+			target: document.querySelector('[data-sveltekit-hydrate="45h"]').parentNode,
+			paths: {"base":"/go-pob","assets":"/go-pob"},
+			session: {},
+			route: true,
+			spa: true,
+			trailing_slash: "never",
+			hydrate: null
+		});
+	</script>
+  </body>
+</html>
