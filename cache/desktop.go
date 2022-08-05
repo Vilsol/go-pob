@@ -87,3 +87,7 @@ func (d desktopCache) Set(key string, value []byte) error {
 func (d desktopCache) Exists(key string) bool {
 	return cache.Exists(key)
 }
+
+func InitializeDiskCache(_ func(key string) []byte, _ func(key string, value []byte), _ func(key string) bool) {
+	// Only used in WASM
+}

@@ -887,7 +887,7 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 								gemInstance.DisplayEffect = activeEffect
 							}
 
-							activeSkill := CreateActiveSkill(activeEffect, supportList, env.Player, socketGroup, nil)
+							activeSkill := CreateActiveSkill(activeEffect, supportList, env.Player, &socketGroup, nil)
 							if gemData != nil {
 								activeSkill.SlotName = groupCfg.SlotName
 							}

@@ -4,7 +4,8 @@ go 1.19
 
 require (
 	github.com/MarvinJWendt/testza v0.4.2
-	github.com/davecgh/go-spew v1.1.1
+	github.com/Vilsol/crystalline v0.0.3
+	github.com/andybalholm/brotli v1.0.4
 	github.com/goccy/go-json v0.9.10
 	github.com/pkg/errors v0.9.1
 	github.com/rs/zerolog v1.27.0
@@ -14,6 +15,7 @@ require (
 
 require (
 	github.com/atomicgo/cursor v0.0.1 // indirect
+	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/gookit/color v1.5.0 // indirect
 	github.com/klauspost/cpuid/v2 v2.0.12 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect

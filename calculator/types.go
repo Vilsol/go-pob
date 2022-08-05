@@ -11,6 +11,12 @@ type Calculator struct {
 	PoB *pob.PathOfBuilding
 }
 
+func NewCalculator(build *pob.PathOfBuilding) *Calculator {
+	return &Calculator{
+		PoB: build,
+	}
+}
+
 type OutputMode string
 
 const (

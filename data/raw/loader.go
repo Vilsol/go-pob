@@ -2,7 +2,6 @@ package raw
 
 import (
 	"bytes"
-	"compress/gzip"
 	"fmt"
 	"io"
 	"net/http"
@@ -11,12 +10,14 @@ import (
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 
+	"github.com/andybalholm/brotli"
+
 	"github.com/Vilsol/go-pob/cache"
 )
 
-const cdnBase = "https://go-pob-data.pages.dev/data/%s/%s.json.gz"
+const cdnBase = "https://go-pob-data.pages.dev/data/%s/%s.json.br"
 
-// LoadRaw loads a raw gzipped json dump from remote source
+// LoadRaw loads a raw brotli-compressed json dump from remote source
 //
 // Returns data from cache if found
 func LoadRaw[T any](version string, name string) (*T, error) {
@@ -47,12 +48,7 @@ func LoadRaw[T any](version string, name string) (*T, error) {
 		}()
 	}
 
-	unzipStream, err := gzip.NewReader(bytes.NewReader(b))
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to un-gzip file")
-	}
-	defer unzipStream.Close()
-
+	unzipStream := brotli.NewReader(bytes.NewReader(b))
 	unzipped, err := io.ReadAll(unzipStream)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to read unzipped data")

@@ -7,6 +7,7 @@ on: [push, pull_request]
 env:
   GO_VERSION: "1.19.0"
   NODE_VERSION: "18.4.0"
+  PNPM_VERSION: "7.5.0"
 
 jobs:
   lint-backend:
@@ -28,9 +29,78 @@ jobs:
           skip-build-cache: true
           args: --timeout 5m
 
+  lint-frontend:
+    name: Lint Frontend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup nodejs
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2.2.1
+        with:
+          version: ${{ env.PNPM_VERSION }}
+          run_install: |
+            - cwd: frontend
+
+      - name: Lint
+        working-directory: ./frontend
+        run: pnpm run lint
+
+  build-backend:
+    name: Build Backend
+    runs-on: ubuntu-latest
+    needs:
+      - lint-backend
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Check out
+        uses: actions/checkout@v2
+
+      - name: Build wasm
+        run: go build -ldflags="-s -w" -v -o build.wasm ./wasm
+        env:
+          GOOS: js
+          GOARCH: wasm
+
+  build-frontend:
+    name: Build Frontend
+    runs-on: ubuntu-latest
+    needs:
+      - lint-frontend
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Check out
+        uses: actions/checkout@v2
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2.2.1
+        with:
+          version: ${{ env.PNPM_VERSION }}
+          run_install: |
+            - cwd: frontend
+
+      - name: Build frontend
+        working-directory: frontend
+        run: pnpm run build
+
   test-x86:
     name: Test (x86)
     runs-on: ubuntu-latest
+    needs:
+      - build-backend
     steps:
       - name: Set up Go
         uses: actions/setup-go@v2
@@ -46,6 +116,8 @@ jobs:
   test-wasm:
     name: Test (wasm)
     runs-on: ubuntu-latest
+    needs:
+      - build-backend
     steps:
       - name: Set up Go
         uses: actions/setup-go@v2

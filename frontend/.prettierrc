@@ -1,0 +1,13 @@
+{
+  "bracketSameLine": true,
+  "bracketSpacing": true,
+  "endOfLine": "lf",
+  "printWidth": 120,
+  "quoteProps": "as-needed",
+  "singleQuote": true,
+  "svelteAllowShorthand": true,
+  "svelteIndentScriptAndStyle": true,
+  "svelteStrictMode": false,
+  "trailingComma": "none",
+  "useTabs": false
+}

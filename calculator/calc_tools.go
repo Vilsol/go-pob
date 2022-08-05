@@ -246,6 +246,7 @@ func CalcCanGrantedEffectSupportActiveSkill(grantedEffect *GrantedEffect, active
 	return CalcDoesTypeExpressionMatch(data.RawToSkillTypes(grantedEffect.Raw.GetSupportTypes()), activeSkill.SkillTypes, minionTypes)
 }
 
+// CalcDoesTypeExpressionMatch Evaluates a skill type postfix expression
 func CalcDoesTypeExpressionMatch(checkTypes map[data.SkillType]bool, skillTypes map[data.SkillType]bool, minionTypes map[data.SkillType]bool) bool {
 	stack := make([]bool, 0)
 	for skillType := range checkTypes {

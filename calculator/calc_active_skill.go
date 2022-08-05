@@ -4,12 +4,13 @@ import (
 	"github.com/Vilsol/go-pob/data"
 	"github.com/Vilsol/go-pob/data/raw"
 	"github.com/Vilsol/go-pob/mod"
+	"github.com/Vilsol/go-pob/pob"
 	"github.com/Vilsol/go-pob/utils"
 )
 
 // CreateActiveSkill Create an active skill using the given active gem and list of support gems
 // It will determine the base flag set, and check which of the support gems can support this skill
-func CreateActiveSkill(activeEffect *GemEffect, supportList []*GemEffect, actor *Actor, socketGroup interface{}, summonSkill *ActiveSkill) *ActiveSkill {
+func CreateActiveSkill(activeEffect *GemEffect, supportList []*GemEffect, actor *Actor, socketGroup *pob.Skill, summonSkill *ActiveSkill) *ActiveSkill {
 	activeSkill := &ActiveSkill{
 		ActiveEffect: activeEffect,
 		SupportList:  supportList,
