@@ -27,7 +27,7 @@ const obj = {
           async (key: string, value: Uint8Array | undefined) => {
             await localforage.setItem(key, value);
           },
-          async (key: string) => (await localforage.getItem(key)) !== undefined
+          async (key: string) => (await localforage.getItem(key)) instanceof Uint8Array
         );
 
         resolve(undefined);
