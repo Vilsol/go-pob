@@ -35,7 +35,10 @@ const obj = {
     });
   },
   async loadData() {
-    await raw.InitializeAll('3.18');
+    const err = await raw.InitializeAll('3.18');
+    if (err) {
+      console.error(err);
+    }
   }
 } as const;
 
