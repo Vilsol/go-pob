@@ -23,6 +23,8 @@ const cdnBase = "https://go-pob-data.pages.dev/data/%s/%s.json.br"
 func LoadRaw[T any](version string, name string) (*T, error) {
 	url := fmt.Sprintf(cdnBase, version, name)
 
+	log.Debug().Str("version", version).Str("name", name).Msg("loading raw asset")
+
 	var b []byte
 	if cache.Disk().Exists(url) {
 		get, err := cache.Disk().Get(url)

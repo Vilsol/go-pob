@@ -31,10 +31,12 @@ func Disk() DiskCache {
 }
 
 func (d *wasmCache) Get(key string) ([]byte, error) {
+	log.Trace().Str("key", key).Msg("loading from cache")
 	return d.get(key), nil
 }
 
 func (d *wasmCache) Set(key string, value []byte) error {
+	log.Trace().Str("key", key).Int("len", len(value)).Msg("storing in cache")
 	d.set(key, value)
 	return nil
 }
