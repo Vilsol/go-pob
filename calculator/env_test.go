@@ -7,8 +7,13 @@ import (
 	"github.com/MarvinJWendt/testza"
 
 	"github.com/Vilsol/go-pob/builds"
+	"github.com/Vilsol/go-pob/config"
 	"github.com/Vilsol/go-pob/data/raw"
 )
+
+func init() {
+	config.InitLogging()
+}
 
 func TestEmptyEnv(t *testing.T) {
 	err := raw.InitializeAll(raw.LatestVersion)

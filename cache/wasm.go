@@ -13,6 +13,20 @@ type wasmCache struct {
 }
 
 func Disk() DiskCache {
+	// This gets invoked by tests
+	if cache == nil {
+		return &wasmCache{
+			get: func(key string) []byte {
+				return nil
+			},
+			set: func(key string, value []byte) {
+			},
+			exists: func(key string) bool {
+				return false
+			},
+		}
+	}
+
 	return cache
 }
 

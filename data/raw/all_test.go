@@ -5,8 +5,13 @@ import (
 
 	"github.com/MarvinJWendt/testza"
 
+	"github.com/Vilsol/go-pob/config"
 	"github.com/Vilsol/go-pob/utils"
 )
+
+func init() {
+	config.InitLogging()
+}
 
 func TestAll(t *testing.T) {
 	err := InitializeAll(LatestVersion)
