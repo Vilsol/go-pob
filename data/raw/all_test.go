@@ -10,7 +10,7 @@ import (
 )
 
 func init() {
-	config.InitLogging()
+	config.InitLogging(false)
 }
 
 func TestAll(t *testing.T) {

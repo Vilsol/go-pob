@@ -3,16 +3,14 @@
   import Header from '../lib/components/Header.svelte';
   import Sidebar from '../lib/components/Sidebar.svelte';
 
-  import '../wasm_exec.js';
   import { assets } from '$app/paths';
   import { browser } from '$app/env';
   import { syncWrap } from '../lib/go/worker';
-  // import { initializeCrystalline } from "../lib/types";
+  import { proxy } from 'comlink';
+  import type { Outputs } from "../lib/custom_types";
+  import { outputs } from "../lib/global";
 
   let wasmLoading = true;
-
-  // eslint-disable-next-line no-undef
-  // const go = new Go();
 
   let loadingMessage = 'Initializing...';
 
@@ -20,13 +18,9 @@
     fetch(assets + '/go-pob.wasm')
       .then((data) => data.arrayBuffer())
       .then((data) => {
-        // WebAssembly.instantiate(data, go.importObject).then((result) => {
-        //   go.run(result.instance);
-        //   wasmLoading = false;
-        //   initializeCrystalline();
-        // });
-
-        syncWrap.boot(data).then(async () => {
+        syncWrap.boot(data, proxy((out: Outputs) => {
+          outputs.set(out);
+        })).then(async () => {
           console.log('worker booted');
 
           loadingMessage = 'Loading data...';

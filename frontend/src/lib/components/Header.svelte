@@ -26,7 +26,7 @@
 
   <!-- Right Side -->
   <div class="flex flex-row p-2 flex-1 items-center gap-3">
-    <NumberInput prefix="Level:" min="1" max="100" value={1} />
+    <NumberInput prefix="Level:" min={1} max={100} value={1} />
 
     <div class="container select-wrapper">
       <select class="input">

@@ -11,6 +11,10 @@ import (
 
 var nilCleanupRegex = regexp.MustCompile(`\w+?="nil"`)
 
+func ParseBuildStr(rawXML string) (*pob.PathOfBuilding, error) {
+	return ParseBuild([]byte(rawXML))
+}
+
 func ParseBuild(rawXML []byte) (*pob.PathOfBuilding, error) {
 	clean := nilCleanupRegex.ReplaceAllLiteral(rawXML, []byte{})
 	var build pob.PathOfBuilding

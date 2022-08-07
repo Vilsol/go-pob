@@ -1,10 +1,17 @@
-import { expose } from 'comlink';
-import '../../wasm_exec.js';
-import { initializeCrystalline, cache, raw, config } from '../types';
-import localforage from 'localforage';
+import { expose } from "comlink";
+import "../../wasm_exec.js";
+import { initializeCrystalline, cache, raw, config, pob, builds, calculator } from "../types";
+import type { Outputs } from "../custom_types";
+import localforage from "localforage";
 
-const obj = {
-  boot(wasm: ArrayBuffer) {
+class PoBWorker {
+
+  currentBuild?: pob.PathOfBuilding;
+  callback?: (out: Outputs) => void;
+
+  boot(wasm: ArrayBuffer, callback: (out: Outputs) => void) {
+    this.callback = callback;
+
     return new Promise((resolve) => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
@@ -14,7 +21,7 @@ const obj = {
 
         initializeCrystalline();
 
-        config.InitLogging();
+        config.InitLogging(false);
 
         await cache.InitializeDiskCache(
           async (key: string) => {
@@ -33,15 +40,54 @@ const obj = {
         resolve(undefined);
       });
     });
-  },
+  }
+
   async loadData() {
-    const err = await raw.InitializeAll('3.18');
+    const err = await raw.InitializeAll("3.18");
     if (err) {
       console.error(err);
     }
   }
-} as const;
 
-expose(obj);
+  async ImportCode(code: string) {
+    const [xml, decodeError] = pob.DecodeDecompress(code);
+    if (decodeError) {
+      throw decodeError;
+    }
 
-export type WorkerType = typeof obj;
+    const [build, parseError] = builds.ParseBuildStr(xml);
+    if (parseError) {
+      throw parseError;
+    }
+
+    this.currentBuild = build;
+  }
+
+  async Tick() {
+    if (!this.currentBuild) {
+      return;
+    }
+
+    const calc = calculator.NewCalculator(this.currentBuild);
+    if (!calc) {
+      return;
+    }
+
+    const out = calc.BuildOutput("MAIN");
+    if (!out || !out.Player || !out.Player.MainSkill) {
+      return;
+    }
+
+    if (this.callback) {
+      this.callback({
+        Output: out.Player.Output,
+        OutputTable: out.Player.OutputTable,
+        SkillFlags: out.Player.MainSkill.SkillFlags
+      });
+    }
+  }
+}
+
+expose(new PoBWorker());
+
+export type WorkerType = PoBWorker;

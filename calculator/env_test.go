@@ -12,7 +12,7 @@ import (
 )
 
 func init() {
-	config.InitLogging()
+	config.InitLogging(false)
 }
 
 func TestEmptyEnv(t *testing.T) {

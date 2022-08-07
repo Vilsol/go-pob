@@ -13,7 +13,7 @@ import (
 )
 
 func init() {
-	config.InitLogging()
+	config.InitLogging(false)
 
 	if err := raw.InitializeAll(raw.LatestVersion); err != nil {
 		panic(err)

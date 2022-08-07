@@ -65,10 +65,10 @@
           </div>
 
           <span>Default gem level:</span>
-          <NumberInput min="1" max="21" />
+          <NumberInput min={1} max={21} />
 
           <span>Default gem quality:</span>
-          <NumberInput min="1" max="21" />
+          <NumberInput min={1} max={21} />
 
           <span>Show support gems:</span>
           <div class="flex flex-row gap-2">
@@ -131,7 +131,7 @@
           </select>
         </div>
 
-        <NumberInput min="1" max="21" value={1} />
+        <NumberInput min={1} max={21} value={1} />
 
         <div class="container select-wrapper">
           <select class="input">
@@ -139,11 +139,11 @@
           </select>
         </div>
 
-        <NumberInput min="1" max="21" />
+        <NumberInput min={1} max={21} value={1} />
 
         <input type="checkbox" class="text-2xl" />
 
-        <NumberInput min="1" max="99" value={1} />
+        <NumberInput min={1} max={99} value={1} />
       </div>
     </div>
   </div>

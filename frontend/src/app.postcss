@@ -31,8 +31,12 @@ button.container:disabled {
   @apply border w-fit border-neutral-400 bg-black;
   @apply cursor-text;
 
-  &:hover {
+  &:not(.disabled):hover {
     @apply bg-neutral-800;
+  }
+
+  &.disabled {
+    @apply border-neutral-600;
   }
 }
 
@@ -49,7 +53,8 @@ button.container:disabled {
     -moz-appearance: textfield;
   }
 
-  &:not(:disabled) {
+  &:disabled {
+    @apply placeholder:text-neutral-600;
   }
 }
 
@@ -60,27 +65,39 @@ select.input {
   padding-right: 35px;
   cursor: pointer;
 
-  &:hover {
+  &:not(:disabled):hover {
     @apply bg-neutral-600;
   }
 
-  &:active {
+  &:not(:disabled):active {
     @apply bg-black;
+  }
+
+  &:disabled {
+    @apply text-neutral-500;
   }
 }
 
 .select-wrapper {
   @apply relative p-0;
   position: relative;
-}
 
-.select-wrapper::after {
-  @apply ml-2;
-  content: '▼';
-  right: 10px;
-  top: 2px;
-  position: absolute;
-  pointer-events: none;
+  &::after {
+    @apply ml-2;
+    content: '▼';
+    right: 10px;
+    top: 2px;
+    position: absolute;
+    pointer-events: none;
+  }
+
+  &.disabled {
+    @apply border-neutral-600;
+
+    &::after {
+      @apply text-neutral-600;
+    }
+  }
 }
 
 .full-page {

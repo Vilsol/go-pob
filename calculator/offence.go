@@ -91,20 +91,18 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 	skillFlags := activeSkill.SkillFlags
 	skillCfg := activeSkill.SkillCfg
 
-	/*
-		TODO Flags
-		if skillData.showAverage then
-			skillFlags.showAverage = true
-		else
-			skillFlags.notAverage = true
-		end
+	if utils.HasTrue(skillData, "ShowAverage") {
+		skillFlags[SkillFlagShowAverage] = true
+	} else {
+		skillFlags[SkillFlagNotAverage] = true
+	}
 
-		if skillFlags.disable then
-			-- Skill is disabled
-			output.CombinedDPS = 0
-			return
-		end
-	*/
+	if skillFlags[SkillFlagDisable] {
+		// Skill is disabled
+		output["CombinedDPS"] = 0
+		return
+	}
+
 	/*
 		TODO calcAreaOfEffect
 		local function calcAreaOfEffect(skillModList, skillCfg, skillData, skillFlags, output, breakdown)

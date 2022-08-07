@@ -11,9 +11,9 @@ type Calculator struct {
 	PoB *pob.PathOfBuilding
 }
 
-func NewCalculator(build *pob.PathOfBuilding) *Calculator {
+func NewCalculator(build pob.PathOfBuilding) *Calculator {
 	return &Calculator{
-		PoB: build,
+		PoB: &build,
 	}
 }
 

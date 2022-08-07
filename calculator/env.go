@@ -626,7 +626,7 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 		if len(build.Skills.SkillSets) > selectedSkillSet {
 			skillCount = len(build.Skills.SkillSets[selectedSkillSet].Skills)
 		}
-		build.Build.MainSocketGroup = utils.Min(utils.Max(skillCount, 0), build.Build.MainSocketGroup)
+		build.Build.MainSocketGroup = utils.Min(utils.Max(skillCount, 1), build.Build.MainSocketGroup) - 1
 		env.MainSocketGroup = build.Build.MainSocketGroup
 	}
 
