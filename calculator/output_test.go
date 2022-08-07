@@ -49,7 +49,7 @@ func TestFireballLevel1(t *testing.T) {
 	build, err := builds.ParseBuild(file)
 	testza.AssertNoError(t, err)
 
-	build = build.WithMainSocketGroup(1)
+	build = build.WithMainSocketGroup(2)
 
 	calculator := &Calculator{PoB: build}
 	env := calculator.BuildOutput(OutputModeMain)
@@ -68,7 +68,7 @@ func TestFireballLevel20(t *testing.T) {
 	build, err := builds.ParseBuild(file)
 	testza.AssertNoError(t, err)
 
-	build = build.WithMainSocketGroup(2)
+	build = build.WithMainSocketGroup(3)
 
 	calculator := &Calculator{PoB: build}
 	env := calculator.BuildOutput(OutputModeMain)
@@ -87,7 +87,7 @@ func TestFireballLevel1AddedColdLevel1(t *testing.T) {
 	build, err := builds.ParseBuild(file)
 	testza.AssertNoError(t, err)
 
-	build = build.WithMainSocketGroup(3)
+	build = build.WithMainSocketGroup(4)
 
 	calculator := &Calculator{PoB: build}
 	env := calculator.BuildOutput(OutputModeMain)
@@ -106,7 +106,7 @@ func TestFireballLevel20AddedColdLevel1(t *testing.T) {
 	build, err := builds.ParseBuild(file)
 	testza.AssertNoError(t, err)
 
-	build = build.WithMainSocketGroup(4)
+	build = build.WithMainSocketGroup(5)
 
 	calculator := &Calculator{PoB: build}
 	env := calculator.BuildOutput(OutputModeMain)
@@ -125,7 +125,7 @@ func TestFireballLevel20AddedColdLevel20(t *testing.T) {
 	build, err := builds.ParseBuild(file)
 	testza.AssertNoError(t, err)
 
-	build = build.WithMainSocketGroup(5)
+	build = build.WithMainSocketGroup(6)
 
 	calculator := &Calculator{PoB: build}
 	env := calculator.BuildOutput(OutputModeMain)

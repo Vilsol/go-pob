@@ -1,10 +1,10 @@
 <script lang="ts">
-  import type { Outputs } from "../custom_types";
-  import { outputs } from "../global";
-  import { displayStats } from "../display/stats";
-  import type { Stat } from "../display/stats";
-  import { printf } from "fast-printf";
-  import { colorCodes } from "../display/colors";
+  import type { Outputs } from '../custom_types';
+  import { outputs } from '../global';
+  import { displayStats } from '../display/stats';
+  import type { Stat } from '../display/stats';
+  import { printf } from 'fast-printf';
+  import { colorCodes } from '../display/colors';
 
   interface Line {
     label: string;
@@ -16,6 +16,7 @@
   // TODO Warnings
 
   // Formats "1234.56" -> "1,234.5"
+  // eslint-disable-next-line
   const formatNumSep = (str: string): string => {
     /*
       TODO formatNumSep
@@ -45,18 +46,16 @@
     const val = statVal * (((statData.pc || statData.mod) && 100) || 1) - ((statData.mod && 100) || 0);
     let color = colorCodes.NEGATIVE;
     if (statVal >= 0) {
-      color = "#ffffff";
+      color = '#ffffff';
     }
 
-    let valStr = printf("%" + (statData.fmt || "d"), val);
+    let valStr = printf('%' + (statData.fmt || 'd'), val);
     valStr = formatNumSep(valStr);
 
-    /*
-      TODO overCapStatVal
-      if overCapStatVal and overCapStatVal > 0 then
-        valStr = valStr .. "^x808080" .. " (+" .. s_format("%d", overCapStatVal) .. "%)"
-      end
-     */
+    if (overCapStatVal && overCapStatVal > 0) {
+      // TODO overCapStatVal
+      // valStr = valStr .. "^x808080" .. " (+" .. s_format("%d", overCapStatVal) .. "%)"
+    }
 
     return [valStr, color];
   };
@@ -67,10 +66,10 @@
     }
 
     const lines: Line[][] = [];
-    displayStats.forEach(statGroup => {
+    displayStats.forEach((statGroup) => {
       const group: Line[] = [];
 
-      statGroup.forEach(stat => {
+      statGroup.forEach((stat) => {
         // TODO Handle labelStat
         const statName = stat.stat;
         if (!(statName in out.Output)) {
@@ -79,12 +78,12 @@
 
         const value = out.Output[statName];
         if (stat.condFunc) {
-          if (!stat.condFunc(value, out.Output)) {
+          if (!stat.condFunc(value)) {
             return;
           }
         }
 
-        if (statName === "SkillDPS") {
+        if (statName === 'SkillDPS') {
           /*
             TODO Special SkillDPS handling
 						labelColor = colorCodes.CUSTOM
@@ -134,7 +133,7 @@
         const formatted = formatStat(stat, value, stat.overCapStat ? out.Output[stat.overCapStat] : undefined);
         group.push({
           label: stat.label,
-          labelColor: stat.color || "#ffffff",
+          labelColor: stat.color || '#ffffff',
           value: formatted[0],
           valueColor: formatted[1]
         });
@@ -200,7 +199,7 @@
 </div>
 
 <style lang="postcss">
-    .sidebar-stat-wrapper {
-        max-height: calc(100% - 84px);
-    }
+  .sidebar-stat-wrapper {
+    max-height: calc(100% - 84px);
+  }
 </style>

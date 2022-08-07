@@ -1,11 +1,10 @@
-import { expose } from "comlink";
-import "../../wasm_exec.js";
-import { initializeCrystalline, cache, raw, config, pob, builds, calculator } from "../types";
-import type { Outputs } from "../custom_types";
-import localforage from "localforage";
+import { expose } from 'comlink';
+import '../../wasm_exec.js';
+import { initializeCrystalline, cache, raw, config, pob, builds, calculator } from '../types';
+import type { Outputs } from '../custom_types';
+import localforage from 'localforage';
 
 class PoBWorker {
-
   currentBuild?: pob.PathOfBuilding;
   callback?: (out: Outputs) => void;
 
@@ -43,7 +42,7 @@ class PoBWorker {
   }
 
   async loadData() {
-    const err = await raw.InitializeAll("3.18");
+    const err = await raw.InitializeAll('3.18');
     if (err) {
       console.error(err);
     }
@@ -73,7 +72,7 @@ class PoBWorker {
       return;
     }
 
-    const out = calc.BuildOutput("MAIN");
+    const out = calc.BuildOutput('MAIN');
     if (!out || !out.Player || !out.Player.MainSkill) {
       return;
     }

@@ -7,8 +7,8 @@
   import { browser } from '$app/env';
   import { syncWrap } from '../lib/go/worker';
   import { proxy } from 'comlink';
-  import type { Outputs } from "../lib/custom_types";
-  import { outputs } from "../lib/global";
+  import type { Outputs } from '../lib/custom_types';
+  import { outputs } from '../lib/global';
 
   let wasmLoading = true;
 
@@ -18,16 +18,21 @@
     fetch(assets + '/go-pob.wasm')
       .then((data) => data.arrayBuffer())
       .then((data) => {
-        syncWrap.boot(data, proxy((out: Outputs) => {
-          outputs.set(out);
-        })).then(async () => {
-          console.log('worker booted');
+        syncWrap
+          .boot(
+            data,
+            proxy((out: Outputs) => {
+              outputs.set(out);
+            })
+          )
+          .then(async () => {
+            console.log('worker booted');
 
-          loadingMessage = 'Loading data...';
-          await syncWrap.loadData();
+            loadingMessage = 'Loading data...';
+            await syncWrap.loadData();
 
-          wasmLoading = false;
-        });
+            wasmLoading = false;
+          });
       });
   }
 </script>
