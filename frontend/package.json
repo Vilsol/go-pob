@@ -6,8 +6,8 @@
     "build": "vite build",
     "package": "svelte-kit package",
     "preview": "vite preview",
-    "check": "svelte-check --tsconfig ./tsconfig.json",
-    "check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
+    "check": "svelte-check ./src",
+    "check:watch": "svelte-check --watch ./src",
     "lint": "prettier --check --plugin-search-dir=. . && eslint .",
     "format": "prettier --write --plugin-search-dir=. ."
   },

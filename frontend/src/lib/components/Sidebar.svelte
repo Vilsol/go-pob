@@ -61,26 +61,26 @@
     return [valStr, color];
   };
 
-  const prepareOutput = (out: Outputs): Line[][] => {
-    if (!out) {
+  const prepareOutput = (out?: Outputs): Line[][] => {
+    if (!out || !out.Output) {
       return [];
     }
 
     const lines: Line[][] = [];
-    displayStats.forEach((statGroup) => {
-      const group: Line[] = [];
 
-      statGroup.forEach((stat) => {
+    for (const statGroup of displayStats) {
+      const group: Line[] = [];
+      for (const stat of statGroup) {
         // TODO Handle labelStat
         const statName = stat.stat;
-        if (!(statName in out.Output)) {
-          return;
+        if (!statName || !(statName in out.Output)) {
+          continue;
         }
 
         const value = out.Output[statName];
         if (stat.condFunc) {
           if (!stat.condFunc(value, out.Output)) {
-            return;
+            continue;
           }
         }
 
@@ -121,9 +121,9 @@
            */
         }
 
-        if (stat.flag) {
+        if (stat.flag && out.SkillFlags) {
           if (out.SkillFlags[stat.flag] !== true) {
-            return;
+            continue;
           }
         }
 
@@ -138,12 +138,12 @@
           value: formatted[0],
           valueColor: formatted[1]
         });
-      });
+      }
 
       if (group.length > 0) {
         lines.push(group);
       }
-    });
+    }
 
     return lines;
   };
