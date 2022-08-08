@@ -126,7 +126,7 @@ select.input {
 
 .side-by-side-max-content {
   @apply grid gap-x-1 gap-y-1 items-center;
-  grid-template-columns: max-content min-content;
+  grid-template-columns: max-content minmax(auto, max-content);
 
   & div {
     @apply leading-snug;

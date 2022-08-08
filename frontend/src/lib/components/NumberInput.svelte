@@ -4,6 +4,7 @@
   export let max: number | undefined = undefined;
   export let value: number | undefined = undefined;
   export let placeholder = '';
+  export let fullWidth = false;
 
   let inputElement: HTMLInputElement;
 
@@ -19,8 +20,8 @@
   $: minusDisabled = (typeof value === 'undefined' || (min && value <= min)) as boolean;
 </script>
 
-<div class="flex flex-row">
-  <div class="input-wrapper flex flex-row items-center" on:click={() => inputElement.focus()}>
+<div class="flex flex-row" class:min-w-full={fullWidth}>
+  <div class="input-wrapper flex flex-row items-center flex-1" on:click={() => inputElement.focus()}>
     {#if prefix}
       <span class="mx-1 select-none">{prefix}</span>
     {/if}

@@ -61,7 +61,7 @@
     <div class="flex flex-row h-full full-page">
       <Sidebar />
 
-      <div>
+      <div class='h-full w-full'>
         <slot />
       </div>
     </div>

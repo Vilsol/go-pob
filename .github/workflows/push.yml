@@ -98,7 +98,10 @@ jobs:
 
   test-x86:
     name: Test (x86)
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
     needs:
       - build-backend
     steps:
@@ -115,7 +118,10 @@ jobs:
 
   test-wasm:
     name: Test (wasm)
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
     needs:
       - build-backend
     steps:
