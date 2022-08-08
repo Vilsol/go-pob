@@ -1,4 +1,4 @@
-<script lang='ts'>
+<script lang="ts">
   import '../app.postcss';
   import Header from '../lib/components/Header.svelte';
   import Sidebar from '../lib/components/Sidebar.svelte';
@@ -48,17 +48,17 @@
   }
 </script>
 
-<div class='w-screen h-screen max-w-screen max-h-screen overflow-hidden flex flex-col'>
+<div class="w-screen h-screen max-w-screen max-h-screen overflow-hidden flex flex-col">
   {#if wasmLoading}
-    <div class='flex flex-row justify-center h-full'>
-      <div class='flex flex-col justify-center text-5xl'>
+    <div class="flex flex-row justify-center h-full">
+      <div class="flex flex-col justify-center text-5xl">
         {loadingMessage}
       </div>
     </div>
   {:else}
     <Header />
 
-    <div class='flex flex-row h-full full-page'>
+    <div class="flex flex-row h-full full-page">
       <Sidebar />
 
       <div>

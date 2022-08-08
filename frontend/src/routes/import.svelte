@@ -1,4 +1,4 @@
-<script lang='ts'>
+<script lang="ts">
   import Input from '../lib/components/Input.svelte';
   import { syncWrap } from '../lib/go/worker';
 
@@ -21,18 +21,18 @@
   };
 </script>
 
-<div class='p-2 px-4 min-w-[650px]'>
-  <fieldset class='border border-white bg-neutral-900 p-2'>
-    <legend class='container'>Character Import</legend>
-    <div class='flex flex-col gap-3'>
+<div class="p-2 px-4 min-w-[650px]">
+  <fieldset class="border border-white bg-neutral-900 p-2">
+    <legend class="container">Character Import</legend>
+    <div class="flex flex-col gap-3">
       <span>Character import status: Idle</span>
 
-      <div class='flex flex-col gap-1'>
+      <div class="flex flex-col gap-1">
         <span>To start importing a character, enter the character's account name:</span>
 
-        <div class='flex flex-row gap-1'>
-          <div class='container select-wrapper'>
-            <select class='input'>
+        <div class="flex flex-row gap-1">
+          <div class="container select-wrapper">
+            <select class="input">
               <option>PC</option>
               <option>Xbox</option>
               <option>PS4</option>
@@ -43,11 +43,11 @@
 
           <Input />
 
-          <button class='container'>Start</button>
+          <button class="container">Start</button>
 
-          <div class='flex flex-row gap-2 flex-1'>
-            <div class='container select-wrapper min-w-full'>
-              <select class='input' />
+          <div class="flex flex-row gap-2 flex-1">
+            <div class="container select-wrapper min-w-full">
+              <select class="input" />
             </div>
           </div>
         </div>
@@ -55,47 +55,47 @@
     </div>
   </fieldset>
 
-  <fieldset class='border border-white bg-neutral-900 p-2 mt-4'>
-    <legend class='container'>Build Sharing</legend>
-    <div class='flex flex-col gap-3'>
-      <div class='flex flex-col gap-1'>
-        <div class='flex flex-row gap-2 items-center'>
+  <fieldset class="border border-white bg-neutral-900 p-2 mt-4">
+    <legend class="container">Build Sharing</legend>
+    <div class="flex flex-col gap-3">
+      <div class="flex flex-col gap-1">
+        <div class="flex flex-row gap-2 items-center">
           <span>Generate a code to share this build with other Path of Building users:</span>
-          <button class='container'>Generate</button>
+          <button class="container">Generate</button>
         </div>
 
-        <div class='flex flex-row gap-2 items-center'>
-          <Input placeholder='Code' disabled={true} />
+        <div class="flex flex-row gap-2 items-center">
+          <Input placeholder="Code" disabled={true} />
 
-          <button class='container' disabled>Copy</button>
+          <button class="container" disabled>Copy</button>
 
-          <div class='container select-wrapper disabled'>
-            <select class='input' disabled>
+          <div class="container select-wrapper disabled">
+            <select class="input" disabled>
               <option>Pastebin.com</option>
               <option>PoeNinja</option>
               <option>pobb.in</option>
             </select>
           </div>
 
-          <button class='container' disabled>Share</button>
+          <button class="container" disabled>Share</button>
         </div>
 
         <span>Note: this code can be very long; you can 'Share' to shrink it.</span>
       </div>
 
-      <div class='flex flex-col gap-1'>
+      <div class="flex flex-col gap-1">
         <span>To import a build, enter URL or code here:</span>
 
         <Input fullWidth={true} bind:value={importCode} />
 
-        <div class='flex flex-row gap-1'>
-          <div class='container select-wrapper disabled'>
-            <select class='input' disabled>
+        <div class="flex flex-row gap-1">
+          <div class="container select-wrapper disabled">
+            <select class="input" disabled>
               <option>Import to a new build</option>
             </select>
           </div>
 
-          <button class='container' disabled={importCode === ''} on:click={importBuildFromCode}>Import</button>
+          <button class="container" disabled={importCode === ''} on:click={importBuildFromCode}>Import</button>
         </div>
       </div>
     </div>
