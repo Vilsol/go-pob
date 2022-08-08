@@ -6,7 +6,8 @@ const config = {
   // Consult https://github.com/sveltejs/svelte-preprocess
   // for more information about preprocessors
   preprocess: preprocess({
-    postcss: true
+    postcss: true,
+    sourceMap: true
   }),
 
   kit: {
@@ -22,6 +23,10 @@ const config = {
       default: true,
       enabled: true
     }
+  },
+
+  compilerOptions: {
+    enableSourcemap: true
   }
 };
 
