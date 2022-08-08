@@ -16,7 +16,7 @@ func init() {
 }
 
 func TestEmptyEnv(t *testing.T) {
-	err := raw.InitializeAll(raw.LatestVersion)
+	err := raw.InitializeAll(raw.LatestVersion, nil)
 	testza.AssertNoError(t, err)
 
 	file, err := os.ReadFile("../testdata/builds/Fireball.xml")

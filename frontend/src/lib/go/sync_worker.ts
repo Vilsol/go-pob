@@ -44,9 +44,9 @@ class PoBWorker {
     });
   }
 
-  async loadData() {
+  async loadData(updates: (data: string) => Promise<void>) {
     const start = Date.now();
-    const err = await raw.InitializeAll('3.18');
+    const err = await raw.InitializeAll('3.18', updates);
     console.log('Initialization took', Date.now() - start, 'ms');
     if (err) {
       console.error(err);

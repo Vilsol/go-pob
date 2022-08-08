@@ -15,14 +15,12 @@ import (
 func init() {
 	config.InitLogging(false)
 
-	if err := raw.InitializeAll(raw.LatestVersion); err != nil {
+	if err := raw.InitializeAll(raw.LatestVersion, nil); err != nil {
 		panic(err)
 	}
 }
 
 func TestEmptyBuild(t *testing.T) {
-	testza.AssertNoError(t, raw.InitializeAll(raw.LatestVersion))
-
 	file, err := os.ReadFile("../testdata/builds/Fireball.xml")
 	testza.AssertNoError(t, err)
 

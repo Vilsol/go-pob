@@ -853,6 +853,6 @@ export declare namespace raw {
     Name: string;
     Key: number;
   }
-  function InitializeAll(version: string): Promise<Error>;
+  function InitializeAll(version: string, updateFunc: (arg1: string) => Promise<void>): Promise<Error>;
 }
 export const initializeCrystalline: () => void;

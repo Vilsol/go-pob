@@ -14,7 +14,7 @@ func init() {
 }
 
 func TestAll(t *testing.T) {
-	err := InitializeAll(LatestVersion)
+	err := InitializeAll(LatestVersion, nil)
 	testza.AssertNoError(t, err)
 
 	effect := GrantedEffectByID("PlayerMelee")

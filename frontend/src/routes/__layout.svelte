@@ -13,6 +13,7 @@
   let wasmLoading = true;
 
   let loadingMessage = 'Initializing...';
+  let loadingStage = '';
 
   if (browser) {
     if (!syncWrap || syncWrap === null) {
@@ -38,7 +39,12 @@
                 console.log('worker booted');
 
                 loadingMessage = 'Loading data...';
-                await syncWrap?.loadData();
+                await syncWrap?.loadData(
+                  proxy(async (stage: string) => {
+                    loadingMessage = 'Loading data:';
+                    loadingStage = stage;
+                  })
+                );
 
                 wasmLoading = false;
               });
@@ -51,8 +57,12 @@
 <div class="w-screen h-screen max-w-screen max-h-screen overflow-hidden flex flex-col">
   {#if wasmLoading}
     <div class="flex flex-row justify-center h-full">
-      <div class="flex flex-col justify-center text-5xl">
+      <div class="flex flex-col justify-center text-5xl text-center">
         {loadingMessage}
+        {#if loadingStage !== ''}
+          <br />
+          {loadingStage}
+        {/if}
       </div>
     </div>
   {:else}

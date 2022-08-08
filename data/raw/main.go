@@ -1,6 +1,7 @@
 package raw
 
 import (
+	"runtime"
 	"time"
 
 	"github.com/pkg/errors"
@@ -17,7 +18,21 @@ type initBlock struct {
 	Name string
 }
 
+func (i initBlock) Load(version string) error {
+	log.Trace().Str("func", i.Name).Msg("running initialization")
+	start := time.Now()
+	if err := i.Func(version); err != nil {
+		return errors.Wrap(err, "failed to initialize: "+i.Name)
+	}
+	log.Trace().Str("func", i.Name).Dur("took", time.Since(start)).Msg("completed initialization")
+	return nil
+}
+
 var initFunctions = []initBlock{
+	{
+		Func: InitializeActiveSkillTypes,
+		Name: "ActiveSkillTypes",
+	},
 	{
 		Func: InitializeActiveSkills,
 		Name: "ActiveSkills",
@@ -71,6 +86,10 @@ var initFunctions = []initBlock{
 		Name: "GrantedEffectQualityStats",
 	},
 	{
+		Func: InitializeGrantedEffectStatSets,
+		Name: "GrantedEffectStatSets",
+	},
+	{
 		Func: InitializeGrantedEffectStatSetsPerLevels,
 		Name: "GrantedEffectStatSetsPerLevels",
 	},
@@ -81,6 +100,10 @@ var initFunctions = []initBlock{
 	{
 		Func: InitializeGrantedEffectsPerLevels,
 		Name: "GrantedEffectsPerLevels",
+	},
+	{
+		Func: InitializeItemClasses,
+		Name: "ItemClasses",
 	},
 	{
 		Func: InitializeItemExperiencePerLevels,
@@ -146,44 +169,39 @@ var initFunctions = []initBlock{
 		Func: InitializeWeaponTypes,
 		Name: "WeaponTypes",
 	},
-	{
-		Func: InitializeActiveSkillTypes,
-		Name: "ActiveSkillTypes",
-	},
-	{
-		Func: InitializeItemClasses,
-		Name: "ItemClasses",
-	},
-	{
-		Func: InitializeGrantedEffectStatSets,
-		Name: "GrantedEffectStatSets",
-	},
 }
+
+type UpdateFunc func(data string)
 
 var alreadyInitialized = false
 
-func InitializeAll(version string) error {
+func InitializeAll(version string, updateFunc UpdateFunc) error {
 	if alreadyInitialized {
 		return nil
 	}
 	alreadyInitialized = true
 
-	g := new(errgroup.Group)
-	for _, function := range initFunctions {
-		fn := function
-		g.Go(func() error {
-			log.Trace().Str("func", fn.Name).Msg("running initialization")
-			start := time.Now()
-			if err := fn.Func(version); err != nil {
-				return errors.Wrap(err, "failed to initialize: "+fn.Name)
+	if runtime.GOMAXPROCS(0) == 1 {
+		for _, function := range initFunctions {
+			if updateFunc != nil {
+				updateFunc(function.Name)
 			}
-			log.Trace().Str("func", fn.Name).Dur("took", time.Since(start)).Msg("completed initialization")
-			return nil
-		})
-	}
+			if err := function.Load(version); err != nil {
+				return err
+			}
+		}
+	} else {
+		g := new(errgroup.Group)
+		for _, function := range initFunctions {
+			fn := function
+			g.Go(func() error {
+				return fn.Load(version)
+			})
+		}
 
-	if err := g.Wait(); err != nil {
-		return err
+		if err := g.Wait(); err != nil {
+			return err
+		}
 	}
 
 	return nil
