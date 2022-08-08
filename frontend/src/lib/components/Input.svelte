@@ -1,9 +1,9 @@
 <script lang="ts">
-  export let prefix: string | undefined;
-  export let value: number;
+  export let prefix: string | undefined = undefined;
+  export let value = '';
   export let fullWidth = false;
-  export let max: number | undefined;
-  export let placeholder: string | undefined;
+  export let max: number | undefined = undefined;
+  export let placeholder: string | undefined = undefined;
   export let disabled = false;
 
   let inputElement: HTMLInputElement;

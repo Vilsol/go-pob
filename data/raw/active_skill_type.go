@@ -7,17 +7,7 @@ type ActiveSkillType struct {
 }
 
 var ActiveSkillTypes []*ActiveSkillType
-var ActiveSkillTypesMap map[int]*ActiveSkillType
 
 func InitializeActiveSkillTypes(version string) error {
-	if err := InitHelper(version, "ActiveSkillType", &ActiveSkillTypes); err != nil {
-		return err
-	}
-
-	ActiveSkillTypesMap = make(map[int]*ActiveSkillType)
-	for _, i := range ActiveSkillTypes {
-		ActiveSkillTypesMap[i.Key] = i
-	}
-
-	return nil
+	return InitHelper(version, "ActiveSkillType", &ActiveSkillTypes)
 }

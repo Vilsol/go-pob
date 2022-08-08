@@ -15,17 +15,7 @@ type Flask struct {
 }
 
 var Flasks []*Flask
-var FlasksMap map[int]*Flask
 
 func InitializeFlasks(version string) error {
-	if err := InitHelper(version, "Flasks", &Flasks); err != nil {
-		return err
-	}
-
-	FlasksMap = make(map[int]*Flask)
-	for _, i := range Flasks {
-		FlasksMap[i.Key] = i
-	}
-
-	return nil
+	return InitHelper(version, "Flasks", &Flasks)
 }

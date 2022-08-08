@@ -11,19 +11,9 @@ type GrantedEffectStatSet struct {
 }
 
 var GrantedEffectStatSets []*GrantedEffectStatSet
-var GrantedEffectStatSetsMap map[int]*GrantedEffectStatSet
 
 func InitializeGrantedEffectStatSets(version string) error {
-	if err := InitHelper(version, "GrantedEffectStatSets", &GrantedEffectStatSets); err != nil {
-		return err
-	}
-
-	GrantedEffectStatSetsMap = make(map[int]*GrantedEffectStatSet)
-	for _, i := range GrantedEffectStatSets {
-		GrantedEffectStatSetsMap[i.Key] = i
-	}
-
-	return nil
+	return InitHelper(version, "GrantedEffectStatSets", &GrantedEffectStatSets)
 }
 
 func (g *GrantedEffectStatSet) GetImplicitStats() []*Stat {
@@ -33,7 +23,7 @@ func (g *GrantedEffectStatSet) GetImplicitStats() []*Stat {
 
 	out := make([]*Stat, len(g.ImplicitStats))
 	for i, stat := range g.ImplicitStats {
-		out[i] = StatsMap[stat]
+		out[i] = Stats[stat]
 	}
 	return out
 }
@@ -45,7 +35,7 @@ func (g *GrantedEffectStatSet) GetConstantStats() []*Stat {
 
 	out := make([]*Stat, len(g.ConstantStats))
 	for i, stat := range g.ConstantStats {
-		out[i] = StatsMap[stat]
+		out[i] = Stats[stat]
 	}
 	return out
 }

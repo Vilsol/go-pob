@@ -39,7 +39,7 @@ func CreateActiveSkill(activeEffect *GemEffect, supportList []*GemEffect, actor 
 		// Pass 1: Add skill types from compatible supports
 		if CalcCanGrantedEffectSupportActiveSkill(supportEffect.GrantedEffect, activeSkill) {
 			for _, skillType := range supportEffect.GrantedEffect.Raw.AddTypes {
-				activeSkill.SkillTypes[data.SkillType(raw.ActiveSkillTypesMap[skillType].ID)] = true
+				activeSkill.SkillTypes[data.SkillType(raw.ActiveSkillTypes[skillType].ID)] = true
 			}
 		}
 	}

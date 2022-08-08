@@ -9,17 +9,7 @@ type PassiveTreeExpansionSkill struct {
 }
 
 var PassiveTreeExpansionSkills []*PassiveTreeExpansionSkill
-var PassiveTreeExpansionSkillsMap map[int]*PassiveTreeExpansionSkill
 
 func InitializePassiveTreeExpansionSkills(version string) error {
-	if err := InitHelper(version, "PassiveTreeExpansionSkills", &PassiveTreeExpansionSkills); err != nil {
-		return err
-	}
-
-	PassiveTreeExpansionSkillsMap = make(map[int]*PassiveTreeExpansionSkill)
-	for _, i := range PassiveTreeExpansionSkills {
-		PassiveTreeExpansionSkillsMap[i.Key] = i
-	}
-
-	return nil
+	return InitHelper(version, "PassiveTreeExpansionSkills", &PassiveTreeExpansionSkills)
 }

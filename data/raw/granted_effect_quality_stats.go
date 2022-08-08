@@ -10,18 +10,12 @@ type GrantedEffectQualityStat struct {
 }
 
 var GrantedEffectQualityStats []*GrantedEffectQualityStat
-var GrantedEffectQualityStatsMap map[int]*GrantedEffectQualityStat
 
 var grantedEffectQualityStatsByIDMap map[int]map[int]*GrantedEffectQualityStat
 
 func InitializeGrantedEffectQualityStats(version string) error {
 	if err := InitHelper(version, "GrantedEffectQualityStats", &GrantedEffectQualityStats); err != nil {
 		return err
-	}
-
-	GrantedEffectQualityStatsMap = make(map[int]*GrantedEffectQualityStat)
-	for _, i := range GrantedEffectQualityStats {
-		GrantedEffectQualityStatsMap[i.Key] = i
 	}
 
 	grantedEffectQualityStatsByIDMap = make(map[int]map[int]*GrantedEffectQualityStat)
@@ -43,7 +37,7 @@ func (s *GrantedEffectQualityStat) GetStats() []*Stat {
 
 	out := make([]*Stat, len(s.StatsKeys))
 	for i, key := range s.StatsKeys {
-		out[i] = StatsMap[key]
+		out[i] = Stats[key]
 	}
 	return out
 }

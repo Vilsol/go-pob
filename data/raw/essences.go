@@ -55,17 +55,7 @@ type Essence struct {
 }
 
 var Essences []*Essence
-var EssencesMap map[int]*Essence
 
 func InitializeEssences(version string) error {
-	if err := InitHelper(version, "Essences", &Essences); err != nil {
-		return err
-	}
-
-	EssencesMap = make(map[int]*Essence)
-	for _, i := range Essences {
-		EssencesMap[i.Key] = i
-	}
-
-	return nil
+	return InitHelper(version, "Essences", &Essences)
 }

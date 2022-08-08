@@ -58,17 +58,7 @@ type Mod struct {
 }
 
 var Mods []*Mod
-var ModsMap map[int]*Mod
 
 func InitializeMods(version string) error {
-	if err := InitHelper(version, "Mods", &Mods); err != nil {
-		return err
-	}
-
-	ModsMap = make(map[int]*Mod)
-	for _, i := range Mods {
-		ModsMap[i.Key] = i
-	}
-
-	return nil
+	return InitHelper(version, "Mods", &Mods)
 }

@@ -15,25 +15,32 @@
   let loadingMessage = 'Initializing...';
 
   if (browser) {
-    fetch(assets + '/go-pob.wasm')
-      .then((data) => data.arrayBuffer())
-      .then((data) => {
-        syncWrap
-          .boot(
-            data,
-            proxy((out: Outputs) => {
-              outputs.set(out);
-            })
-          )
-          .then(async () => {
-            console.log('worker booted');
+    syncWrap.booted.then((booted) => {
+      if (booted) {
+        wasmLoading = false;
+        return;
+      }
 
-            loadingMessage = 'Loading data...';
-            await syncWrap.loadData();
+      fetch(assets + '/go-pob.wasm')
+        .then((data) => data.arrayBuffer())
+        .then((data) => {
+          syncWrap
+            .boot(
+              data,
+              proxy((out: Outputs) => {
+                outputs.set(out);
+              })
+            )
+            .then(async () => {
+              console.log('worker booted');
 
-            wasmLoading = false;
-          });
-      });
+              loadingMessage = 'Loading data...';
+              await syncWrap.loadData();
+
+              wasmLoading = false;
+            });
+        });
+    });
   }
 </script>
 

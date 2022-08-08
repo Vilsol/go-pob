@@ -18,17 +18,7 @@ type Stat struct {
 }
 
 var Stats []*Stat
-var StatsMap map[int]*Stat
 
 func InitializeStats(version string) error {
-	if err := InitHelper(version, "Stats", &Stats); err != nil {
-		return err
-	}
-
-	StatsMap = make(map[int]*Stat)
-	for _, i := range Stats {
-		StatsMap[i.Key] = i
-	}
-
-	return nil
+	return InitHelper(version, "Stats", &Stats)
 }

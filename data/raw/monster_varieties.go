@@ -84,17 +84,7 @@ const (
 )
 
 var MonsterVarieties []*MonsterVariety
-var MonsterVarietiesMap map[int]*MonsterVariety
 
 func InitializeMonsterVarieties(version string) error {
-	if err := InitHelper(version, "MonsterVarieties", &MonsterVarieties); err != nil {
-		return err
-	}
-
-	MonsterVarietiesMap = make(map[int]*MonsterVariety)
-	for _, i := range MonsterVarieties {
-		MonsterVarietiesMap[i.Key] = i
-	}
-
-	return nil
+	return InitHelper(version, "MonsterVarieties", &MonsterVarieties)
 }

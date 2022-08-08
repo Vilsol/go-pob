@@ -5,6 +5,7 @@
   import type { Stat } from '../display/stats';
   import { printf } from 'fast-printf';
   import { colorCodes } from '../display/colors';
+  import { base } from '$app/paths';
 
   interface Line {
     label: string;
@@ -78,7 +79,7 @@
 
         const value = out.Output[statName];
         if (stat.condFunc) {
-          if (!stat.condFunc(value)) {
+          if (!stat.condFunc(value, out.Output)) {
             return;
           }
         }
@@ -146,60 +147,88 @@
 
     return lines;
   };
+
+  let collapsed = false;
 </script>
 
-<div class="w-[25vw] min-w-[370px] max-w-[400px] h-full border-r-2 border-white flex flex-col bg-neutral-900 full-page">
-  <div class="flex flex-col gap-3 border-b-2 border-white flex-1 p-2 sidebar-stat-wrapper">
-    <div class="flex flex-col gap-2">
-      <div class="flex flex-row gap-1">
-        <button class="container min-w-fit flex-1">Import/Export Build</button>
-        <button class="container min-w-fit flex-1">Notes</button>
-        <button class="container min-w-fit flex-1">Configuration</button>
-      </div>
-      <div class="flex flex-row gap-1">
-        <button class="container min-w-fit flex-1">Tree</button>
-        <button class="container min-w-fit flex-1">Skills</button>
-        <button class="container min-w-fit flex-1">Items</button>
-        <button class="container min-w-fit flex-1">Calcs</button>
-      </div>
-    </div>
-
-    <div class="flex flex-col gap-1">
-      <div>Main Skill:</div>
-      <div class="container select-wrapper min-w-full">
-        <!-- TODO Placeholder -->
-        <select class="input w-full">
-          <option>&lt;No skills added yet&gt;</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="container min-w-full overflow-y-auto flex-1 flex flex-col gap-2.5 overflow-y-scroll">
-      {#each prepareOutput($outputs) as outputGroup}
-        <div class="side-by-side-3">
-          {#each outputGroup as stat}
-            <div style="color: {stat.labelColor}">{stat.label}:</div>
-            <div style="color: {stat.valueColor}">{stat.value}</div>
-          {/each}
+{#if collapsed}
+  <div class="h-full flex flex-col full-page relative">
+    <div class="absolute -right-3 top-1/2 cursor-pointer font-bold" on:click={() => (collapsed = false)}>&gt;</div>
+  </div>
+{:else}
+  <div
+    class="w-[25vw] min-w-[370px] max-w-[400px] h-full border-r-2 border-white flex flex-col bg-neutral-900 full-page relative">
+    <div class="flex flex-col gap-3 border-b-2 border-white flex-1 p-2 sidebar-stat-wrapper">
+      <div class="flex flex-col gap-2">
+        <div class="flex flex-row gap-1">
+          <a href="{base}/import" class="container min-w-fit flex-1 text-center">Import/Export Build</a>
+          <a href="{base}/notes" class="container min-w-fit flex-1 text-center">Notes</a>
+          <a href="{base}/configuration" class="container min-w-fit flex-1 text-center">Configuration</a>
         </div>
-      {/each}
-    </div>
-  </div>
+        <div class="flex flex-row gap-1">
+          <a href="{base}/tree" class="container min-w-fit flex-1 text-center">Tree</a>
+          <a href="{base}/skills" class="container min-w-fit flex-1 text-center">Skills</a>
+          <a href="{base}/items" class="container min-w-fit flex-1 text-center">Items</a>
+          <a href="{base}/calcs" class="container min-w-fit flex-1 text-center">Calcs</a>
+        </div>
+      </div>
 
-  <div class="flex flex-row p-2 h-[84px]">
-    <div class="flex flex-col flex-1 gap-2">
-      <button class="container min-w-full flex-1">Options</button>
-      <button class="container min-w-full flex-1">About</button>
+      <div class="flex flex-col gap-1">
+        <div>Main Skill:</div>
+        <div class="container select-wrapper min-w-full">
+          <!-- TODO Placeholder -->
+          <select class="input w-full">
+            <option>&lt;No skills added yet&gt;</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="container min-w-full overflow-y-auto flex-1 flex flex-col gap-2.5 overflow-y-scroll">
+        {#each prepareOutput($outputs) as outputGroup}
+          <div class="side-by-side-sidebar">
+            {#each outputGroup as stat}
+              <div style="color: {stat.labelColor}">{stat.label}:</div>
+              <div style="color: {stat.valueColor}">{stat.value}</div>
+            {/each}
+          </div>
+        {/each}
+      </div>
     </div>
-    <div class="flex flex-col flex-1 items-center">
-      <span class="flex-1">go-pob</span>
-      <span class="flex-1">Version: 0.0.1</span>
+
+    <div class="flex flex-row p-2 h-[84px]">
+      <div class="flex flex-col flex-1 gap-2">
+        <button class="container min-w-full flex-1">Options</button>
+        <button class="container min-w-full flex-1">About</button>
+      </div>
+      <div class="flex flex-col flex-1 items-center">
+        <span class="flex-1">go-pob</span>
+        <span class="flex-1">Version: 0.0.1</span>
+      </div>
     </div>
+
+    <div class="absolute -right-3.5 top-1/2 cursor-pointer font-bold" on:click={() => (collapsed = true)}>&lt;</div>
   </div>
-</div>
+{/if}
 
 <style lang="postcss">
   .sidebar-stat-wrapper {
     max-height: calc(100% - 84px);
+  }
+
+  .side-by-side-sidebar {
+    @apply grid gap-x-1 gap-y-0 items-center;
+    grid-template-columns: 65% 35%;
+
+    & div {
+      @apply leading-snug;
+    }
+
+    & > *:nth-child(odd) {
+      @apply text-right;
+    }
+
+    & > *:nth-child(even) {
+      @apply text-left justify-self-start self-center;
+    }
   }
 </style>

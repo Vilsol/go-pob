@@ -22,17 +22,7 @@ type ItemClass struct {
 }
 
 var ItemClasses []*ItemClass
-var ItemClassesMap map[int]*ItemClass
 
 func InitializeItemClasses(version string) error {
-	if err := InitHelper(version, "ItemClasses", &ItemClasses); err != nil {
-		return err
-	}
-
-	ItemClassesMap = make(map[int]*ItemClass)
-	for _, i := range ItemClasses {
-		ItemClassesMap[i.Key] = i
-	}
-
-	return nil
+	return InitHelper(version, "ItemClasses", &ItemClasses)
 }

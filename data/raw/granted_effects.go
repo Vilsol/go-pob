@@ -79,18 +79,12 @@ func (s *StatMap) Clone() *StatMap {
 }
 
 var GrantedEffects []*GrantedEffect
-var GrantedEffectsMap map[int]*GrantedEffect
 
 var grantedEffectsByIDMap map[string]*GrantedEffect
 
 func InitializeGrantedEffects(version string) error {
 	if err := InitHelper(version, "GrantedEffects", &GrantedEffects); err != nil {
 		return err
-	}
-
-	GrantedEffectsMap = make(map[int]*GrantedEffect)
-	for _, i := range GrantedEffects {
-		GrantedEffectsMap[i.Key] = i
 	}
 
 	grantedEffectsByIDMap = make(map[string]*GrantedEffect)
@@ -110,7 +104,7 @@ func (g *GrantedEffect) GetActiveSkill() *ActiveSkill {
 		return nil
 	}
 
-	return ActiveSkillsMap[*g.ActiveSkill]
+	return ActiveSkills[*g.ActiveSkill]
 }
 
 func (g *GrantedEffect) GetEffectsPerLevel() map[int]*GrantedEffectsPerLevel {
@@ -135,7 +129,7 @@ func (g *GrantedEffect) Levels() map[int]*GrantedEffectsPerLevel {
 }
 
 func (g *GrantedEffect) GetGrantedEffectStatSet() *GrantedEffectStatSet {
-	return GrantedEffectStatSetsMap[g.GrantedEffectStatSets]
+	return GrantedEffectStatSets[g.GrantedEffectStatSets]
 }
 
 func (g *GrantedEffect) GetSupportTypes() []*ActiveSkillType {
@@ -144,7 +138,7 @@ func (g *GrantedEffect) GetSupportTypes() []*ActiveSkillType {
 	}
 	out := make([]*ActiveSkillType, len(g.SupportTypes))
 	for i, supportType := range g.SupportTypes {
-		out[i] = ActiveSkillTypesMap[supportType]
+		out[i] = ActiveSkillTypes[supportType]
 	}
 	return out
 }
@@ -155,7 +149,7 @@ func (g *GrantedEffect) GetExcludeTypes() []*ActiveSkillType {
 	}
 	out := make([]*ActiveSkillType, len(g.ExcludeTypes))
 	for i, supportType := range g.ExcludeTypes {
-		out[i] = ActiveSkillTypesMap[supportType]
+		out[i] = ActiveSkillTypes[supportType]
 	}
 	return out
 }

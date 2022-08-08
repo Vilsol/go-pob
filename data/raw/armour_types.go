@@ -15,17 +15,7 @@ type ArmourType struct {
 }
 
 var ArmourTypes []*ArmourType
-var ArmourTypesMap map[int]*ArmourType
 
 func InitializeArmourTypes(version string) error {
-	if err := InitHelper(version, "ArmourTypes", &ArmourTypes); err != nil {
-		return err
-	}
-
-	ArmourTypesMap = make(map[int]*ArmourType)
-	for _, i := range ArmourTypes {
-		ArmourTypesMap[i.Key] = i
-	}
-
-	return nil
+	return InitHelper(version, "ArmourTypes", &ArmourTypes)
 }

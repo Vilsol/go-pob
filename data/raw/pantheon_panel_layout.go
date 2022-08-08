@@ -29,17 +29,7 @@ type PantheonPanelLayout struct {
 }
 
 var PantheonPanelLayouts []*PantheonPanelLayout
-var PantheonPanelLayoutsMap map[int]*PantheonPanelLayout
 
 func InitializePantheonPanelLayouts(version string) error {
-	if err := InitHelper(version, "PantheonPanelLayout", &PantheonPanelLayouts); err != nil {
-		return err
-	}
-
-	PantheonPanelLayoutsMap = make(map[int]*PantheonPanelLayout)
-	for _, i := range PantheonPanelLayouts {
-		PantheonPanelLayoutsMap[i.Key] = i
-	}
-
-	return nil
+	return InitHelper(version, "PantheonPanelLayout", &PantheonPanelLayouts)
 }

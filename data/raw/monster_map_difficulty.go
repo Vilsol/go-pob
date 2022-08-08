@@ -14,17 +14,7 @@ type MonsterMapDifficulty struct {
 }
 
 var MonsterMapDifficulties []*MonsterMapDifficulty
-var MonsterMapDifficultiesMap map[int]*MonsterMapDifficulty
 
 func InitializeMonsterMapDifficulties(version string) error {
-	if err := InitHelper(version, "MonsterMapDifficulty", &MonsterMapDifficulties); err != nil {
-		return err
-	}
-
-	MonsterMapDifficultiesMap = make(map[int]*MonsterMapDifficulty)
-	for _, i := range MonsterMapDifficulties {
-		MonsterMapDifficultiesMap[i.Key] = i
-	}
-
-	return nil
+	return InitHelper(version, "MonsterMapDifficulty", &MonsterMapDifficulties)
 }

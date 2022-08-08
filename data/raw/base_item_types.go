@@ -28,18 +28,12 @@ type BaseItemType struct {
 }
 
 var BaseItemTypes []*BaseItemType
-var BaseItemTypesMap map[int]*BaseItemType
 
 var BaseItemTypeByIDMap map[string]*BaseItemType
 
 func InitializeBaseItemTypes(version string) error {
 	if err := InitHelper(version, "BaseItemTypes", &BaseItemTypes); err != nil {
 		return err
-	}
-
-	BaseItemTypesMap = make(map[int]*BaseItemType)
-	for _, i := range BaseItemTypes {
-		BaseItemTypesMap[i.Key] = i
 	}
 
 	BaseItemTypeByIDMap = make(map[string]*BaseItemType)

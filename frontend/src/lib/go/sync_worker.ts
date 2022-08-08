@@ -5,11 +5,14 @@ import type { Outputs } from '../custom_types';
 import localforage from 'localforage';
 
 class PoBWorker {
+  booted = false;
+
   currentBuild?: pob.PathOfBuilding;
   callback?: (out: Outputs) => void;
 
   boot(wasm: ArrayBuffer, callback: (out: Outputs) => void) {
     this.callback = callback;
+    this.booted = true;
 
     return new Promise((resolve) => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -42,7 +45,9 @@ class PoBWorker {
   }
 
   async loadData() {
+    const start = Date.now();
     const err = await raw.InitializeAll('3.18');
+    console.log('Initialization took', Date.now() - start, 'ms');
     if (err) {
       console.error(err);
     }

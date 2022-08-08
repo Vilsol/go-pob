@@ -15,17 +15,7 @@ type DefaultMonsterStat struct {
 }
 
 var DefaultMonsterStats []*DefaultMonsterStat
-var DefaultMonsterStatsMap map[int]*DefaultMonsterStat
 
 func InitializeDefaultMonsterStats(version string) error {
-	if err := InitHelper(version, "DefaultMonsterStats", &DefaultMonsterStats); err != nil {
-		return err
-	}
-
-	DefaultMonsterStatsMap = make(map[int]*DefaultMonsterStat)
-	for _, i := range DefaultMonsterStats {
-		DefaultMonsterStatsMap[i.Key] = i
-	}
-
-	return nil
+	return InitHelper(version, "DefaultMonsterStats", &DefaultMonsterStats)
 }

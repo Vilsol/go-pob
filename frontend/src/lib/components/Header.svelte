@@ -4,7 +4,7 @@
 
 <div class="flex flex-row w-screen border-b-2 border-white bg-neutral-800 min-h-[50px]">
   <!-- Left Side -->
-  <div class="flex flex-row justify-between border-r-2 border-white p-2 flex-1">
+  <div class="flex flex-row justify-between border-r-2 border-white p-2 flex-1 items-center">
     <div class="flex flex-row gap-3 items-center">
       <button class="container">&lt;&lt; Back</button>
       <div class="flex flex-row items-center">
@@ -16,7 +16,7 @@
       <button class="container">Save As</button>
     </div>
 
-    <div class="container">
+    <div class="container h-fit">
       <!-- TODO Placeholder -->
       <!-- TODO Tooltip -->
       <span>0 / 123</span>

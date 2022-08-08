@@ -15,17 +15,7 @@ type PassiveTreeExpansionJewel struct {
 }
 
 var PassiveTreeExpansionJewels []*PassiveTreeExpansionJewel
-var PassiveTreeExpansionJewelsMap map[int]*PassiveTreeExpansionJewel
 
 func InitializePassiveTreeExpansionJewels(version string) error {
-	if err := InitHelper(version, "PassiveTreeExpansionJewels", &PassiveTreeExpansionJewels); err != nil {
-		return err
-	}
-
-	PassiveTreeExpansionJewelsMap = make(map[int]*PassiveTreeExpansionJewel)
-	for _, i := range PassiveTreeExpansionJewels {
-		PassiveTreeExpansionJewelsMap[i.Key] = i
-	}
-
-	return nil
+	return InitHelper(version, "PassiveTreeExpansionJewels", &PassiveTreeExpansionJewels)
 }

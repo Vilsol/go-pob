@@ -24,18 +24,12 @@ type GrantedEffectsPerLevel struct {
 }
 
 var GrantedEffectsPerLevels []*GrantedEffectsPerLevel
-var GrantedEffectsPerLevelsMap map[int]*GrantedEffectsPerLevel
 
 var grantedEffectsPerLevelsByIDMap map[int]map[int]*GrantedEffectsPerLevel
 
 func InitializeGrantedEffectsPerLevels(version string) error {
 	if err := InitHelper(version, "GrantedEffectsPerLevel", &GrantedEffectsPerLevels); err != nil {
 		return err
-	}
-
-	GrantedEffectsPerLevelsMap = make(map[int]*GrantedEffectsPerLevel)
-	for _, i := range GrantedEffectsPerLevels {
-		GrantedEffectsPerLevelsMap[i.Key] = i
 	}
 
 	grantedEffectsPerLevelsByIDMap = make(map[int]map[int]*GrantedEffectsPerLevel)
@@ -57,7 +51,7 @@ func (l *GrantedEffectsPerLevel) GetCostTypes() []*CostType {
 
 	out := make([]*CostType, len(l.CostTypes))
 	for i, costType := range l.CostTypes {
-		out[i] = CostTypesMap[costType]
+		out[i] = CostTypes[costType]
 	}
 	return out
 }

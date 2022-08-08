@@ -198,7 +198,7 @@ type GrantedEffect struct {
 func (g *GrantedEffect) WeaponTypes() []data.ItemClassName {
 	out := make([]data.ItemClassName, len(g.Raw.WeaponRestrictions))
 	for i, restriction := range g.Raw.WeaponRestrictions {
-		out[i] = data.ItemClassName(raw.ItemClassesMap[restriction].Name)
+		out[i] = data.ItemClassName(raw.ItemClasses[restriction].Name)
 	}
 	return out
 }

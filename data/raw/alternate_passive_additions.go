@@ -12,17 +12,7 @@ type AlternatePassiveAddition struct {
 }
 
 var AlternatePassiveAdditions []*AlternatePassiveAddition
-var AlternatePassiveAdditionsMap map[int]*AlternatePassiveAddition
 
 func InitializeAlternatePassiveAdditions(version string) error {
-	if err := InitHelper(version, "AlternatePassiveAdditions", &AlternatePassiveAdditions); err != nil {
-		return err
-	}
-
-	AlternatePassiveAdditionsMap = make(map[int]*AlternatePassiveAddition)
-	for _, i := range AlternatePassiveAdditions {
-		AlternatePassiveAdditionsMap[i.Key] = i
-	}
-
-	return nil
+	return InitHelper(version, "AlternatePassiveAdditions", &AlternatePassiveAdditions)
 }

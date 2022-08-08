@@ -29,17 +29,7 @@ type CraftingBenchOption struct {
 }
 
 var CraftingBenchOptions []*CraftingBenchOption
-var CraftingBenchOptionsMap map[int]*CraftingBenchOption
 
 func InitializeCraftingBenchOptions(version string) error {
-	if err := InitHelper(version, "CraftingBenchOptions", &CraftingBenchOptions); err != nil {
-		return err
-	}
-
-	CraftingBenchOptionsMap = make(map[int]*CraftingBenchOption)
-	for _, i := range CraftingBenchOptions {
-		CraftingBenchOptionsMap[i.Key] = i
-	}
-
-	return nil
+	return InitHelper(version, "CraftingBenchOptions", &CraftingBenchOptions)
 }

@@ -1,8 +1,9 @@
 <script lang="ts">
-  export let prefix: string | undefined;
-  export let min: number | undefined;
-  export let max: number | undefined;
-  export let value: number;
+  export let prefix: string | undefined = undefined;
+  export let min: number | undefined = undefined;
+  export let max: number | undefined = undefined;
+  export let value: number | undefined = undefined;
+  export let placeholder = '';
 
   let inputElement: HTMLInputElement;
 </script>
@@ -12,7 +13,7 @@
     {#if prefix}
       <span class="mx-1 select-none">{prefix}</span>
     {/if}
-    <input bind:this={inputElement} type="number" {min} {max} bind:value class="input" />
+    <input bind:this={inputElement} type="number" {min} {max} bind:value class="input" {placeholder} />
   </div>
   <button class="container font-bold" on:click={() => (value = value + 1 || min || 0)} disabled={value >= max}>
     &plus;

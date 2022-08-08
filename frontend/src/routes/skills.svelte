@@ -41,7 +41,7 @@
 
       <fieldset class="border border-white bg-neutral-900 p-2">
         <legend class="container">Gem Options</legend>
-        <div class="side-by-side">
+        <div class="side-by-side-max-content">
           <span>Sort gems by DPS:</span>
           <div class="flex flex-row gap-2">
             <input type="checkbox" class="text-2xl" />

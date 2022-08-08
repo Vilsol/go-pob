@@ -21,19 +21,9 @@ type ActiveSkill struct {
 }
 
 var ActiveSkills []*ActiveSkill
-var ActiveSkillsMap map[int]*ActiveSkill
 
 func InitializeActiveSkills(version string) error {
-	if err := InitHelper(version, "ActiveSkills", &ActiveSkills); err != nil {
-		return err
-	}
-
-	ActiveSkillsMap = make(map[int]*ActiveSkill)
-	for _, i := range ActiveSkills {
-		ActiveSkillsMap[i.Key] = i
-	}
-
-	return nil
+	return InitHelper(version, "ActiveSkills", &ActiveSkills)
 }
 
 func (g *ActiveSkill) GetActiveSkillTypes() []*ActiveSkillType {
@@ -43,7 +33,7 @@ func (g *ActiveSkill) GetActiveSkillTypes() []*ActiveSkillType {
 
 	out := make([]*ActiveSkillType, len(g.ActiveSkillTypes))
 	for i, skillType := range g.ActiveSkillTypes {
-		out[i] = ActiveSkillTypesMap[skillType]
+		out[i] = ActiveSkillTypes[skillType]
 	}
 
 	return out
@@ -56,7 +46,7 @@ func (g *ActiveSkill) GetWeaponRestrictions() []*ItemClass {
 
 	out := make([]*ItemClass, len(g.WeaponRestrictionItemClassesKeys))
 	for i, skillType := range g.WeaponRestrictionItemClassesKeys {
-		out[i] = ItemClassesMap[skillType]
+		out[i] = ItemClasses[skillType]
 	}
 
 	return out

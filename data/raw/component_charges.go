@@ -10,17 +10,7 @@ type ComponentCharge struct {
 }
 
 var ComponentCharges []*ComponentCharge
-var ComponentChargesMap map[int]*ComponentCharge
 
 func InitializeComponentCharges(version string) error {
-	if err := InitHelper(version, "ComponentCharges", &ComponentCharges); err != nil {
-		return err
-	}
-
-	ComponentChargesMap = make(map[int]*ComponentCharge)
-	for _, i := range ComponentCharges {
-		ComponentChargesMap[i.Key] = i
-	}
-
-	return nil
+	return InitHelper(version, "ComponentCharges", &ComponentCharges)
 }

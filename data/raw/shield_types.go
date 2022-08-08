@@ -7,17 +7,7 @@ type ShieldType struct {
 }
 
 var ShieldTypes []*ShieldType
-var ShieldTypesMap map[int]*ShieldType
 
 func InitializeShieldTypes(version string) error {
-	if err := InitHelper(version, "ShieldTypes", &ShieldTypes); err != nil {
-		return err
-	}
-
-	ShieldTypesMap = make(map[int]*ShieldType)
-	for _, i := range ShieldTypes {
-		ShieldTypesMap[i.Key] = i
-	}
-
-	return nil
+	return InitHelper(version, "ShieldTypes", &ShieldTypes)
 }

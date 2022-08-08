@@ -15,14 +15,17 @@ body {
   @apply bg-black p-0.5 px-2 border w-fit border-neutral-400;
 }
 
-button.container:hover:not(:disabled) {
+button.container:hover:not(:disabled),
+a.container:hover:not(:disabled) {
   @apply bg-neutral-600 border-white;
 }
 
+button.container:active:not(:disabled),
 button.container:active:not(:disabled) {
   @apply bg-neutral-500 border-white;
 }
 
+button.container:disabled,
 button.container:disabled {
   @apply text-neutral-600 border-neutral-600;
 }
@@ -120,26 +123,23 @@ select.input {
   }
 }
 
-.side-by-side {
-  @apply grid grid-cols-2 gap-x-1 gap-y-1 items-center;
-}
+.side-by-side-max-content {
+  @apply grid gap-x-1 gap-y-1 items-center;
+  grid-template-columns: max-content min-content;
 
-.side-by-side div {
-  @apply leading-snug;
-}
+  & div {
+    @apply leading-snug;
+  }
 
-.side-by-side > *:nth-child(odd) {
-  @apply text-right;
-}
+  & > *:nth-child(odd) {
+    @apply text-right;
+  }
 
-.side-by-side-3 {
-  @apply grid grid-cols-3 gap-x-1 gap-y-0 items-center;
-}
+  & > *:nth-child(even) {
+    @apply text-left justify-self-start self-center;
+  }
 
-.side-by-side-3 div {
-  @apply leading-snug;
-}
-
-.side-by-side-3 > *:nth-child(odd) {
-  @apply text-right col-span-2;
+  & select {
+    min-width: 120px;
+  }
 }

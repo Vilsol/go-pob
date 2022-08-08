@@ -8,17 +8,7 @@ type CostType struct {
 }
 
 var CostTypes []*CostType
-var CostTypesMap map[int]*CostType
 
 func InitializeCostTypes(version string) error {
-	if err := InitHelper(version, "CostTypes", &CostTypes); err != nil {
-		return err
-	}
-
-	CostTypesMap = make(map[int]*CostType)
-	for _, i := range CostTypes {
-		CostTypesMap[i.Key] = i
-	}
-
-	return nil
+	return InitHelper(version, "CostTypes", &CostTypes)
 }

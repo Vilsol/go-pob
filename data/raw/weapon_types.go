@@ -12,17 +12,7 @@ type WeaponType struct {
 }
 
 var WeaponTypes []*WeaponType
-var WeaponTypesMap map[int]*WeaponType
 
 func InitializeWeaponTypes(version string) error {
-	if err := InitHelper(version, "WeaponTypes", &WeaponTypes); err != nil {
-		return err
-	}
-
-	WeaponTypesMap = make(map[int]*WeaponType)
-	for _, i := range WeaponTypes {
-		WeaponTypesMap[i.Key] = i
-	}
-
-	return nil
+	return InitHelper(version, "WeaponTypes", &WeaponTypes)
 }

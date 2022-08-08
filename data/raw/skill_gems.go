@@ -20,18 +20,12 @@ type SkillGem struct {
 }
 
 var SkillGems []*SkillGem
-var SkillGemsMap map[int]*SkillGem
 
 var skillGemsByBaseItemTypeMap map[int]*SkillGem
 
 func InitializeSkillGems(version string) error {
 	if err := InitHelper(version, "SkillGems", &SkillGems); err != nil {
 		return err
-	}
-
-	SkillGemsMap = make(map[int]*SkillGem)
-	for _, gem := range SkillGems {
-		SkillGemsMap[gem.Key] = gem
 	}
 
 	skillGemsByBaseItemTypeMap = make(map[int]*SkillGem)
@@ -43,7 +37,7 @@ func InitializeSkillGems(version string) error {
 }
 
 func (s *SkillGem) GetGrantedEffect() *GrantedEffect {
-	return GrantedEffectsMap[s.GrantedEffect]
+	return GrantedEffects[s.GrantedEffect]
 }
 
 func (s *SkillGem) GetSecondaryGrantedEffect() *GrantedEffect {
@@ -51,7 +45,7 @@ func (s *SkillGem) GetSecondaryGrantedEffect() *GrantedEffect {
 		return nil
 	}
 
-	return GrantedEffectsMap[*s.SecondaryGrantedEffect]
+	return GrantedEffects[*s.SecondaryGrantedEffect]
 }
 
 func (s *SkillGem) GetGrantedEffects() []*GrantedEffect {
@@ -69,7 +63,7 @@ func (s *SkillGem) GetGrantedEffects() []*GrantedEffect {
 func (s *SkillGem) GetTags() map[TagName]*Tag {
 	out := make(map[TagName]*Tag, len(s.Tags))
 	for _, tag := range s.Tags {
-		t := TagsMap[tag]
+		t := Tags[tag]
 		out[t.Name] = t
 	}
 	return out

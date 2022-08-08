@@ -8,17 +8,7 @@ type ItemExperiencePerLevel struct {
 }
 
 var ItemExperiencePerLevels []*ItemExperiencePerLevel
-var ItemExperiencePerLevelsMap map[int]*ItemExperiencePerLevel
 
 func InitializeItemExperiencePerLevels(version string) error {
-	if err := InitHelper(version, "ItemExperiencePerLevel", &ItemExperiencePerLevels); err != nil {
-		return err
-	}
-
-	ItemExperiencePerLevelsMap = make(map[int]*ItemExperiencePerLevel)
-	for _, i := range ItemExperiencePerLevels {
-		ItemExperiencePerLevelsMap[i.Key] = i
-	}
-
-	return nil
+	return InitHelper(version, "ItemExperiencePerLevel", &ItemExperiencePerLevels)
 }

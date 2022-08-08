@@ -34,17 +34,7 @@ const (
 )
 
 var Tags []*Tag
-var TagsMap map[int]*Tag
 
 func InitializeTags(version string) error {
-	if err := InitHelper(version, "Tags", &Tags); err != nil {
-		return err
-	}
-
-	TagsMap = make(map[int]*Tag)
-	for _, i := range Tags {
-		TagsMap[i.Key] = i
-	}
-
-	return nil
+	return InitHelper(version, "Tags", &Tags)
 }

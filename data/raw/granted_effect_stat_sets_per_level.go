@@ -21,18 +21,12 @@ type GrantedEffectStatSetsPerLevel struct {
 }
 
 var GrantedEffectStatSetsPerLevels []*GrantedEffectStatSetsPerLevel
-var GrantedEffectStatSetsPerLevelsMap map[int]*GrantedEffectStatSetsPerLevel
 
 var grantedEffectStatSetsPerLevelsByIDMap map[int]map[int]*GrantedEffectStatSetsPerLevel
 
 func InitializeGrantedEffectStatSetsPerLevels(version string) error {
 	if err := InitHelper(version, "GrantedEffectStatSetsPerLevel", &GrantedEffectStatSetsPerLevels); err != nil {
 		return err
-	}
-
-	GrantedEffectStatSetsPerLevelsMap = make(map[int]*GrantedEffectStatSetsPerLevel)
-	for _, i := range GrantedEffectStatSetsPerLevels {
-		GrantedEffectStatSetsPerLevelsMap[i.Key] = i
 	}
 
 	grantedEffectStatSetsPerLevelsByIDMap = make(map[int]map[int]*GrantedEffectStatSetsPerLevel)
@@ -56,7 +50,7 @@ func (g *GrantedEffectStatSetsPerLevel) GetFloatStats() []*Stat {
 
 	out := make([]*Stat, len(g.FloatStats))
 	for i, stat := range g.FloatStats {
-		out[i] = StatsMap[stat]
+		out[i] = Stats[stat]
 	}
 	return out
 }
@@ -68,7 +62,7 @@ func (g *GrantedEffectStatSetsPerLevel) GetAdditionalStats() []*Stat {
 
 	out := make([]*Stat, len(g.AdditionalStats))
 	for i, stat := range g.AdditionalStats {
-		out[i] = StatsMap[stat]
+		out[i] = Stats[stat]
 	}
 	return out
 }
@@ -80,7 +74,7 @@ func (g *GrantedEffectStatSetsPerLevel) GetAdditionalBooleanStats() []*Stat {
 
 	out := make([]*Stat, len(g.AdditionalBooleanStats))
 	for i, stat := range g.AdditionalBooleanStats {
-		out[i] = StatsMap[stat]
+		out[i] = Stats[stat]
 	}
 	return out
 }

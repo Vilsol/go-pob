@@ -20,17 +20,7 @@ type AlternatePassiveSkill struct {
 }
 
 var AlternatePassiveSkills []*AlternatePassiveSkill
-var AlternatePassiveSkillsMap map[int]*AlternatePassiveSkill
 
 func InitializeAlternatePassiveSkills(version string) error {
-	if err := InitHelper(version, "AlternatePassiveSkills", &AlternatePassiveSkills); err != nil {
-		return err
-	}
-
-	AlternatePassiveSkillsMap = make(map[int]*AlternatePassiveSkill)
-	for _, i := range AlternatePassiveSkills {
-		AlternatePassiveSkillsMap[i.Key] = i
-	}
-
-	return nil
+	return InitHelper(version, "AlternatePassiveSkills", &AlternatePassiveSkills)
 }
