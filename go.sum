@@ -6,8 +6,8 @@ github.com/MarvinJWendt/testza v0.2.12/go.mod h1:JOIegYyV7rX+7VZ9r77L/eH6CfJHHzX
 github.com/MarvinJWendt/testza v0.3.0/go.mod h1:eFcL4I0idjtIx8P9C6KkAuLgATNKpX4/2oUqKc6bF2c=
 github.com/MarvinJWendt/testza v0.4.2 h1:Vbw9GkSB5erJI2BPnBL9SVGV9myE+XmUSFahBGUhW2Q=
 github.com/MarvinJWendt/testza v0.4.2/go.mod h1:mSdhXiKH8sg/gQehJ63bINcCKp7RtYewEjXsvsVUPbE=
-github.com/Vilsol/crystalline v0.0.4 h1:9O6kv23WY/B4B2f5VWyR5QZiuqmiQxx42ZcyaMn+JYM=
-github.com/Vilsol/crystalline v0.0.4/go.mod h1:D8vyamuL1tgMoztGKW0qIcWki6PdR7adqi66d2N3tVY=
+github.com/Vilsol/crystalline v0.0.5 h1:i9hwGlyULCGpoA/T1Z8D6wReZe0D+rHyk0AC7DOtaok=
+github.com/Vilsol/crystalline v0.0.5/go.mod h1:D8vyamuL1tgMoztGKW0qIcWki6PdR7adqi66d2N3tVY=
 github.com/andybalholm/brotli v1.0.4 h1:V7DdXeJtZscaqfNuAdSRuRFzuiKlHSC/Zh3zl9qY3JY=
 github.com/andybalholm/brotli v1.0.4/go.mod h1:fO7iG3H7G2nSZ7m0zPUDn85XEX2GTukHGRSepvi9Eig=
 github.com/atomicgo/cursor v0.0.1 h1:xdogsqa6YYlLfM+GyClC/Lchf7aiMerFiZQn7soTOoU=

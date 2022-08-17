@@ -556,6 +556,8 @@ export declare namespace pob {
     Skills: pob.Skills;
     TreeView: pob.TreeView;
     Config: pob.Config;
+    RemoveConfigOption(name: string): void;
+    SetConfigOption(value: pob.Input): void;
     WithMainSocketGroup(mainSocketGroup: number): pob.PathOfBuilding | undefined;
   }
   interface PlayerStat {

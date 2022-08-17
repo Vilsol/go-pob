@@ -22,9 +22,7 @@ func CompressEncode(xml string) (string, error) {
 	writer.Close()
 	encoder.Close()
 
-	println(buf.Len())
 	code := buf.String()
-
 	code = strings.ReplaceAll(code, "+", "-")
 	code = strings.ReplaceAll(code, "/", "_")
 

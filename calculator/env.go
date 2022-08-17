@@ -130,7 +130,7 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 	env.ModDB.AddMod(mod.NewFloat("Multiplier:AllocatedMastery", mod.TypeBase, float64(env.Spec.AllocatedMasteryCount)))
 
 	// Bandit mods
-	switch build.Build.Bandit {
+	switch build.GetStringOption("bandit") {
 	case "Alira":
 		env.ModDB.AddMod(mod.NewFloat("ManaRegen", mod.TypeBase, 5).Source("Bandit"))
 		env.ModDB.AddMod(mod.NewFloat("CritMultiplier", mod.TypeBase, 20).Source("Bandit"))
@@ -142,6 +142,9 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 			env.ModDB.AddMod(mod.NewFloat("Avoid"+string(ailment), mod.TypeBase, 10).Source("Bandit"))
 		}
 	case "Oak":
+		env.ModDB.AddMod(mod.NewFloat("LifeRegenPercent", mod.TypeBase, 1).Source("Bandit"))
+		env.ModDB.AddMod(mod.NewFloat("PhysicalDamageReduction", mod.TypeBase, 2).Source("Bandit"))
+		env.ModDB.AddMod(mod.NewFloat("PhysicalDamage", mod.TypeIncrease, 20).Source("Bandit"))
 	default:
 		env.ModDB.AddMod(mod.NewFloat("ExtraPoints", mod.TypeBase, 2).Source("Bandit"))
 	}

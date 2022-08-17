@@ -126,7 +126,12 @@ select.input {
 
 .side-by-side-max-content {
   @apply grid gap-x-1 gap-y-1 items-center;
-  grid-template-columns: max-content minmax(auto, max-content);
+  grid-template-columns: minmax(auto, max-content) auto;
+
+  /*
+    TODO Alternative?
+    grid-template-columns: auto auto;
+  */
 
   & div {
     @apply leading-snug;
@@ -142,5 +147,28 @@ select.input {
 
   & select {
     min-width: 120px;
+  }
+}
+
+.themed {
+  --background: #000000;
+  --itemActiveBackground: #000000;
+  --listBackground: #000000;
+  --itemHoverBG: #3e2f1d;
+  --itemIsActiveBG: #3e2f1d;
+  --padding: 0;
+  --selectedItemPadding: 0.15rem 0.5rem;
+  --height: 28px;
+  --borderRadius: 0;
+  --indicatorTop: 0.15rem;
+  --itemFirstBorderRadius: 0;
+  --listBorderRadius: 0;
+  --border: 1px solid #a3a3a3;
+  --listBorder: 1px solid #a3a3a3;
+  --inputColor: #ffffff;
+  --inputPadding: 0.15rem 0.5rem;
+
+  & .selectContainer:hover {
+    background: #262626 !important;
   }
 }

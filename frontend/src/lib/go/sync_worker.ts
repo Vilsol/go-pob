@@ -1,18 +1,40 @@
-import { expose } from 'comlink';
+import { expose, proxy } from 'comlink';
 import '../../wasm_exec.js';
 import { initializeCrystalline, cache, raw, config, pob, builds, calculator } from '../types';
 import type { Outputs } from '../custom_types';
 import localforage from 'localforage';
+import type { currentBuild } from '../global';
+import type { DeepPromise } from '../type_utils';
+import { reverseConfigOptions } from '../display/configurations';
 
 class PoBWorker {
+  private _currentBuild?: pob.PathOfBuilding;
+
+  get currentBuild(): pob.PathOfBuilding | undefined {
+    return this._currentBuild;
+  }
+
+  set currentBuild(value: pob.PathOfBuilding | undefined) {
+    this._currentBuild = value;
+    this.updateStore();
+  }
+
   booted = false;
 
-  currentBuild?: pob.PathOfBuilding;
   callback?: (out: Outputs) => void;
+  currentBuildStore?: typeof currentBuild;
 
-  boot(wasm: ArrayBuffer, callback: (out: Outputs) => void) {
+  private updateStore() {
+    if (this.currentBuildStore) {
+      // Re-cast so we can force the correct type
+      this.currentBuildStore.set(proxy(this._currentBuild) as unknown as DeepPromise<pob.PathOfBuilding>);
+    }
+  }
+
+  boot(wasm: ArrayBuffer, callback: (out: Outputs) => void, currentBuildStore: typeof currentBuild) {
     this.callback = callback;
     this.booted = true;
+    this.currentBuildStore = currentBuildStore;
 
     return new Promise((resolve) => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -77,6 +99,7 @@ class PoBWorker {
       return;
     }
 
+    console.log('TICK');
     const out = calc.BuildOutput('MAIN');
     if (!out || !out.Player || !out.Player.MainSkill) {
       return;
@@ -89,6 +112,82 @@ class PoBWorker {
         SkillFlags: out.Player.MainSkill.SkillFlags
       });
     }
+  }
+
+  async SetConfigOption(key: string, value: boolean | number | string) {
+    if (!this.currentBuild || !this.currentBuild.Config.Inputs) {
+      return;
+    }
+
+    let remove;
+    const v = reverseConfigOptions[key];
+    switch (v.type) {
+      case 'list':
+        remove = value === v.list[0].value;
+        break;
+      case 'check':
+        if (v.defaultState !== undefined) {
+          remove = value === v.defaultState;
+        } else {
+          remove = value === false;
+        }
+        break;
+      default:
+        remove = value === null;
+        break;
+    }
+
+    if (remove) {
+      this.currentBuild.RemoveConfigOption(key);
+      this.updateStore();
+      this.Tick();
+      return;
+    }
+
+    const newValue: pob.Input = {
+      Name: key
+    };
+
+    switch (typeof value) {
+      case 'boolean':
+        newValue.Boolean = value;
+        break;
+      case 'string':
+        newValue.String = value;
+        break;
+      case 'number':
+        newValue.Number = value;
+        break;
+    }
+
+    this.currentBuild.SetConfigOption(newValue);
+    this.updateStore();
+    this.Tick();
+  }
+
+  GetConfigOption(name: string): boolean | number | string | undefined {
+    if (!this.currentBuild || !this.currentBuild.Config.Inputs) {
+      return undefined;
+    }
+
+    const input = this.currentBuild.Config.Inputs.find((i) => i.Name === name);
+    if (!input) {
+      return undefined;
+    }
+
+    if (input.String !== undefined) {
+      return input.String;
+    }
+
+    if (input.Number !== undefined) {
+      return input.Number;
+    }
+
+    if (input.Boolean !== undefined) {
+      return input.Boolean;
+    }
+
+    return undefined;
   }
 }
 

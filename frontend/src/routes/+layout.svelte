@@ -8,7 +8,7 @@
   import { syncWrap } from '../lib/go/worker';
   import { proxy } from 'comlink';
   import type { Outputs } from '../lib/custom_types';
-  import { outputs } from '../lib/global';
+  import { outputs, currentBuild } from '../lib/global';
 
   let wasmLoading = true;
 
@@ -33,7 +33,8 @@
                 data,
                 proxy((out: Outputs) => {
                   outputs.set(out);
-                })
+                }),
+                proxy(currentBuild)
               )
               .then(async () => {
                 console.log('worker booted');

@@ -1,6 +1,6 @@
 <script lang="ts">
-  import NumberInput from '../lib/components/NumberInput.svelte';
-  import Input from '../lib/components/Input.svelte';
+  import NumberInput from '../../lib/components/NumberInput.svelte';
+  import Input from '../../lib/components/Input.svelte';
 </script>
 
 <div class="p-2 px-4">

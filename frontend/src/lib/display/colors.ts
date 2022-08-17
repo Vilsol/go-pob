@@ -67,3 +67,12 @@ export const colorCodes = {
   RAGE: withStatsColorCodes.WARNING,
   PHYS: withStatsColorCodes.NORMAL
 };
+
+const colorRegex = new RegExp(/\^#([0-9A-F]{6})?/g);
+
+export const formatColors = (s: string): string =>
+  '<span>' +
+  s.replaceAll(colorRegex, (_: string, match?: string) =>
+    match !== undefined ? `</span><span style='color: #${match}'>` : '</span><span>'
+  ) +
+  '</span>';

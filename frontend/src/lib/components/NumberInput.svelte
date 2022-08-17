@@ -5,6 +5,7 @@
   export let value: number | undefined = undefined;
   export let placeholder = '';
   export let fullWidth = false;
+  export let id: string | null = null;
 
   let inputElement: HTMLInputElement;
 
@@ -13,11 +14,11 @@
       return;
     }
 
-    value = value + n || min || 0;
+    value = (typeof value === 'string' ? parseInt(value) || 0 : value) + (n || min || 0);
   };
 
-  $: plusDisabled = (typeof value === 'undefined' || (max && value >= max)) as boolean;
-  $: minusDisabled = (typeof value === 'undefined' || (min && value <= min)) as boolean;
+  $: plusDisabled = (typeof value !== 'number' || (max && value >= max)) as boolean;
+  $: minusDisabled = (typeof value !== 'number' || (min && value <= min)) as boolean;
 </script>
 
 <div class="flex flex-row" class:min-w-full={fullWidth}>
@@ -25,8 +26,8 @@
     {#if prefix}
       <span class="mx-1 select-none">{prefix}</span>
     {/if}
-    <input bind:this={inputElement} type="number" {min} {max} bind:value class="input" {placeholder} />
+    <input bind:this={inputElement} type="number" {min} {max} bind:value class="input w-full" {placeholder} {id} />
   </div>
-  <button class="container font-bold" on:click={() => change(1)} disabled={plusDisabled}> &plus; </button>
-  <button class="container font-bold" on:click={() => change(-1)} disabled={minusDisabled}> &minus; </button>
+  <button class="container font-bold" on:click={() => change(1)} disabled={plusDisabled}>&plus;</button>
+  <button class="container font-bold" on:click={() => change(-1)} disabled={minusDisabled}>&minus;</button>
 </div>
