@@ -10,15 +10,20 @@
   let inputElement: HTMLInputElement;
 
   const change = (n: number) => {
-    if (!value) {
+    if (value === undefined) {
       return;
     }
 
     value = (typeof value === 'string' ? parseInt(value) || 0 : value) + (n || min || 0);
+    if (max !== undefined && value > max) {
+      value = max;
+    } else if (min !== undefined && value < min) {
+      value = min;
+    }
   };
 
-  $: plusDisabled = (typeof value !== 'number' || (max && value >= max)) as boolean;
-  $: minusDisabled = (typeof value !== 'number' || (min && value <= min)) as boolean;
+  $: plusDisabled = (typeof value !== 'number' || (max !== undefined && value >= max)) as boolean;
+  $: minusDisabled = (typeof value !== 'number' || (min !== undefined && value <= min)) as boolean;
 </script>
 
 <div class="flex flex-row" class:min-w-full={fullWidth}>

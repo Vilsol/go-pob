@@ -1,6 +1,6 @@
 import { expose, proxy } from 'comlink';
 import '../../wasm_exec.js';
-import { initializeCrystalline, cache, raw, config, pob, builds, calculator } from '../types';
+import { initializeCrystalline, cache, raw, config, pob, builds, calculator, exposition } from '../types';
 import type { Outputs } from '../custom_types';
 import localforage from 'localforage';
 import type { currentBuild } from '../global';
@@ -188,6 +188,15 @@ class PoBWorker {
     }
 
     return undefined;
+  }
+
+  SetMainSocketGroup(mainSocketGroup: number) {
+    this.currentBuild?.SetMainSocketGroup(mainSocketGroup);
+    this.Tick();
+  }
+
+  GetSkillGems(): DeepPromise<exposition.SkillGem[]> {
+    return proxy(exposition.GetSkillGems()) as unknown as DeepPromise<exposition.SkillGem[]>;
   }
 }
 

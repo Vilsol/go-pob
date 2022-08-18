@@ -122,6 +122,7 @@ export declare namespace calculator {
     ModStore?: calculator.ModStore;
     Mods?: Record<string, Array<unknown | undefined> | undefined>;
     AddDB(db?: calculator.ModDB): void;
+    AddList(list?: calculator.ModList): void;
     AddMod(newMod?: unknown): void;
     Clone(): unknown | undefined;
     EvalMod(arg1?: unknown, arg2?: calculator.ListCfg): unknown | undefined;
@@ -152,6 +153,7 @@ export declare namespace calculator {
   }
   interface ModStore {
     Parent?: unknown;
+    Child?: unknown;
     Actor?: calculator.Actor;
     Multipliers?: Record<string, number>;
     Conditions?: Record<string, boolean>;
@@ -492,6 +494,21 @@ export declare namespace data {
     Points?: data.Points;
   }
 }
+export declare namespace exposition {
+  interface GemPart {
+    Name: string;
+    Description: string;
+  }
+  interface SkillGem {
+    MaxLevel: number;
+    ID: string;
+    GemType: string;
+    Base: exposition.GemPart;
+    Vaal: exposition.GemPart;
+    CalculateStuff(): void;
+  }
+  function GetSkillGems(): Array<exposition.SkillGem> | undefined;
+}
 export declare namespace pob {
   interface Build {
     PantheonMinorGod: string;
@@ -528,8 +545,6 @@ export declare namespace pob {
     SkillID: string;
     SkillMinionItemSet: number;
     SkillMinion: string;
-    DisplayEffect?: unknown;
-    SupportEffect?: unknown;
   }
   interface Input {
     Name: string;
@@ -556,8 +571,12 @@ export declare namespace pob {
     Skills: pob.Skills;
     TreeView: pob.TreeView;
     Config: pob.Config;
+    GetStringOption(name: string): string;
     RemoveConfigOption(name: string): void;
     SetConfigOption(value: pob.Input): void;
+    SetMainSocketGroup(mainSocketGroup: number): void;
+    SetSkillGroupName(skillSet: number, socketGroup: number, label: string): void;
+    SetSocketGroupGems(skillSet: number, socketGroup: number, gems?: Array<pob.Gem>): void;
     WithMainSocketGroup(mainSocketGroup: number): pob.PathOfBuilding | undefined;
   }
   interface PlayerStat {
@@ -652,6 +671,33 @@ export declare namespace raw {
     ID: string;
     Key: number;
   }
+  interface BaseItemType {
+    DropLevel: number;
+    EquipAchievementItemsKey?: number;
+    FlavourTextKey?: number;
+    FragmentBaseItemTypesKey?: number;
+    Hash: number;
+    Height: number;
+    ID: string;
+    IdentifyMagicAchievementItems?: Array<unknown | undefined>;
+    IdentifyAchievementItems?: Array<unknown | undefined>;
+    ImplicitModsKeys?: Array<number>;
+    Inflection: string;
+    InheritsFrom: string;
+    IsCorrupted: boolean;
+    ItemClassesKey: number;
+    ItemVisualIdentity: number;
+    ModDomain: number;
+    Name: string;
+    SiteVisibility: number;
+    SizeOnGround: number;
+    SoundEffect?: number;
+    TagsKeys?: Array<number>;
+    VendorRecipeAchievementItems?: Array<number>;
+    Width: number;
+    Key: number;
+    SkillGem(): raw.SkillGem | undefined;
+  }
   interface CalculatedLevel {
     Level: number;
     Values?: Array<number>;
@@ -713,6 +759,7 @@ export declare namespace raw {
     GetEffectsPerLevel(): Record<number, raw.GrantedEffectsPerLevel | undefined> | undefined;
     GetExcludeTypes(): Array<raw.ActiveSkillType | undefined> | undefined;
     GetGrantedEffectStatSet(): raw.GrantedEffectStatSet | undefined;
+    GetSkillGem(): raw.SkillGem | undefined;
     GetSupportTypes(): Array<raw.ActiveSkillType | undefined> | undefined;
     HasGlobalEffect(): boolean;
     Levels(): Record<number, raw.GrantedEffectsPerLevel | undefined> | undefined;
@@ -820,8 +867,10 @@ export declare namespace raw {
     RegularVariant?: number;
     Key: number;
     DefaultLevel(): number;
+    GetBaseItemType(): raw.BaseItemType | undefined;
     GetGrantedEffect(): raw.GrantedEffect | undefined;
     GetGrantedEffects(): Array<raw.GrantedEffect | undefined> | undefined;
+    GetNonVaal(): raw.SkillGem | undefined;
     GetSecondaryGrantedEffect(): raw.GrantedEffect | undefined;
     GetTags(): Record<string, raw.Tag | undefined> | undefined;
   }

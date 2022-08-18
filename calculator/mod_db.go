@@ -14,10 +14,12 @@ type ModDB struct {
 }
 
 func NewModDB() *ModDB {
-	return &ModDB{
+	m := &ModDB{
 		ModStore: NewModStore(nil),
 		Mods:     make(map[string][]mod.Mod),
 	}
+	m.ModStore.Child = m
+	return m
 }
 
 func (m *ModDB) Clone() ModStoreFuncs {
@@ -28,6 +30,7 @@ func (m *ModDB) Clone() ModStoreFuncs {
 	out := NewModDB()
 	out.AddDB(m)
 	out.ModStore = m.ModStore.Clone()
+	out.ModStore.Child = out
 	return out
 }
 
@@ -176,4 +179,10 @@ func (m *ModDB) Override(cfg *ListCfg, names ...string) interface{} {
 	}
 
 	return nil
+}
+
+func (m *ModDB) AddList(list *ModList) {
+	for _, newMod := range list.mods {
+		m.AddMod(newMod)
+	}
 }

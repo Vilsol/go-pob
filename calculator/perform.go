@@ -2104,14 +2104,12 @@ func PerformCalc(env *Environment) {
 		end
 	*/
 
-	/*
-		TODO -- Process misc buffs/modifiers
-		doActorMisc(env, env.player)
-		if env.minion then
-			doActorMisc(env, env.minion)
-		end
-		doActorMisc(env, env.enemy)
-	*/
+	// Process misc buffs/modifiers
+	DoActorMisc(env, env.Player)
+	if env.Minion != nil {
+		// TODO doActorMisc(env, env.minion)
+	}
+	DoActorMisc(env, env.Enemy)
 
 	/*
 		TODO Totems
@@ -2536,4 +2534,316 @@ func CalcActionSpeedMod(actor *Actor) float64 {
 		actionSpeedMod = math.Max(1, actionSpeedMod)
 	}
 	return actionSpeedMod
+}
+
+func DoActorMisc(env *Environment, actor *Actor) {
+	modDB := actor.ModDB
+
+	/*
+		TODO -- Calculate current and maximum charges
+		output.PowerChargesMin = modDB:Sum("BASE", nil, "PowerChargesMin")
+		output.PowerChargesMax = modDB:Sum("BASE", nil, "PowerChargesMax")
+		output.FrenzyChargesMin = modDB:Sum("BASE", nil, "FrenzyChargesMin")
+		output.FrenzyChargesMax = modDB:Flag(nil, "MaximumFrenzyChargesIsMaximumPowerCharges") and output.PowerChargesMax or modDB:Sum("BASE", nil, "FrenzyChargesMax")
+		output.EnduranceChargesMin = modDB:Sum("BASE", nil, "EnduranceChargesMin")
+		output.EnduranceChargesMax = modDB:Flag(nil, "MaximumEnduranceChargesIsMaximumFrenzyCharges") and output.FrenzyChargesMax or modDB:Sum("BASE", nil, "EnduranceChargesMax")
+		output.SiphoningChargesMax = modDB:Sum("BASE", nil, "SiphoningChargesMax")
+		output.ChallengerChargesMax = modDB:Sum("BASE", nil, "ChallengerChargesMax")
+		output.BlitzChargesMax = modDB:Sum("BASE", nil, "BlitzChargesMax")
+		output.InspirationChargesMax = modDB:Sum("BASE", nil, "InspirationChargesMax")
+		output.CrabBarriersMax = modDB:Sum("BASE", nil, "CrabBarriersMax")
+		output.BrutalChargesMin = modDB:Flag(nil, "MinimumEnduranceChargesEqualsMinimumBrutalCharges") and output.EnduranceChargesMin or 0
+		output.BrutalChargesMax = modDB:Flag(nil, "MaximumEnduranceChargesEqualsMaximumBrutalCharges") and output.EnduranceChargesMax or 0
+		output.AbsorptionChargesMin = modDB:Flag(nil, "MinimumPowerChargesEqualsMinimumAbsorptionCharges") and output.PowerChargesMin or 0
+		output.AbsorptionChargesMax = modDB:Flag(nil, "MaximumPowerChargesEqualsMaximumAbsorptionCharges") and output.PowerChargesMax or 0
+		output.AfflictionChargesMin = modDB:Flag(nil, "MinimumFrenzyChargesEqualsMinimumAfflictionCharges") and output.FrenzyChargesMin or 0
+		output.AfflictionChargesMax = modDB:Flag(nil, "MaximumFrenzyChargesEqualsMaximumAfflictionCharges") and output.FrenzyChargesMax or 0
+		output.BloodChargesMax = modDB:Sum("BASE", nil, "BloodChargesMax")
+	*/
+	/*
+		TODO -- Initialize Charges
+		output.PowerCharges = 0
+		output.FrenzyCharges = 0
+		output.EnduranceCharges = 0
+		output.SiphoningCharges = 0
+		output.ChallengerCharges = 0
+		output.BlitzCharges = 0
+		output.InspirationCharges = 0
+		output.GhostShrouds = 0
+		output.BrutalCharges = 0
+		output.AbsorptionCharges = 0
+		output.AfflictionCharges = 0
+		output.BloodCharges = 0
+	*/
+	/*
+		TODO -- Conditionally over-write Charge values
+		if modDB:Flag(nil, "UsePowerCharges") then
+			output.PowerCharges = modDB:Override(nil, "PowerCharges") or output.PowerChargesMax
+		end
+		if modDB:Flag(nil, "PowerChargesConvertToAbsorptionCharges") then
+			-- we max with possible Power Charge Override from Config since Absorption Charges won't have their own config entry
+			-- and are converted from Power Charges
+			output.AbsorptionCharges = m_max(output.PowerCharges, m_min(output.AbsorptionChargesMax, output.AbsorptionChargesMin))
+			output.PowerCharges = 0
+		else
+			output.PowerCharges = m_max(output.PowerCharges, m_min(output.PowerChargesMax, output.PowerChargesMin))
+		end
+		output.RemovablePowerCharges = m_max(output.PowerCharges - output.PowerChargesMin, 0)
+		if modDB:Flag(nil, "UseFrenzyCharges") then
+			output.FrenzyCharges = modDB:Override(nil, "FrenzyCharges") or output.FrenzyChargesMax
+		end
+		if modDB:Flag(nil, "FrenzyChargesConvertToAfflictionCharges") then
+			-- we max with possible Power Charge Override from Config since Absorption Charges won't have their own config entry
+			-- and are converted from Power Charges
+			output.AfflictionCharges = m_max(output.FrenzyCharges, m_min(output.AfflictionChargesMax, output.AfflictionChargesMin))
+			output.FrenzyCharges = 0
+		else
+			output.FrenzyCharges = m_max(output.FrenzyCharges, m_min(output.FrenzyChargesMax, output.FrenzyChargesMin))
+		end
+		output.RemovableFrenzyCharges = m_max(output.FrenzyCharges - output.FrenzyChargesMin, 0)
+		if modDB:Flag(nil, "UseEnduranceCharges") then
+			output.EnduranceCharges = modDB:Override(nil, "EnduranceCharges") or output.EnduranceChargesMax
+		end
+		if modDB:Flag(nil, "EnduranceChargesConvertToBrutalCharges") then
+			-- we max with possible Endurance Charge Override from Config since Brutal Charges won't have their own config entry
+			-- and are converted from Endurance Charges
+			output.BrutalCharges = m_max(output.EnduranceCharges, m_min(output.BrutalChargesMax, output.BrutalChargesMin))
+			output.EnduranceCharges = 0
+		else
+			output.EnduranceCharges = m_max(output.EnduranceCharges, m_min(output.EnduranceChargesMax, output.EnduranceChargesMin))
+		end
+		output.RemovableEnduranceCharges = m_max(output.EnduranceCharges - output.EnduranceChargesMin, 0)
+		if modDB:Flag(nil, "UseSiphoningCharges") then
+			output.SiphoningCharges = modDB:Override(nil, "SiphoningCharges") or output.SiphoningChargesMax
+		end
+		if modDB:Flag(nil, "UseChallengerCharges") then
+			output.ChallengerCharges = modDB:Override(nil, "ChallengerCharges") or output.ChallengerChargesMax
+		end
+		if modDB:Flag(nil, "UseBlitzCharges") then
+			output.BlitzCharges = modDB:Override(nil, "BlitzCharges") or output.BlitzChargesMax
+		end
+		if not env.player.mainSkill.minion then
+			output.InspirationCharges = modDB:Override(nil, "InspirationCharges") or output.InspirationChargesMax
+		end
+		if modDB:Flag(nil, "UseGhostShrouds") then
+			output.GhostShrouds = modDB:Override(nil, "GhostShrouds") or 3
+		end
+		if modDB:Flag(nil, "CryWolfMinimumPower") and modDB:Sum("BASE", nil, "WarcryPower") < 10 then
+			modDB:NewMod("WarcryPower", "OVERRIDE", 10, "Minimum Warcry Power from CryWolf")
+		end
+		if modDB:Flag(nil, "WarcryInfinitePower") then
+			modDB:NewMod("WarcryPower", "OVERRIDE", 999999, "Warcries have infinite power")
+		end
+		output.BloodCharges = m_min(modDB:Override(nil, "BloodCharges") or output.BloodChargesMax, output.BloodChargesMax)
+
+		output.WarcryPower = modDB:Override(nil, "WarcryPower") or modDB:Sum("BASE", nil, "WarcryPower") or 0
+		output.CrabBarriers = m_min(modDB:Override(nil, "CrabBarriers") or output.CrabBarriersMax, output.CrabBarriersMax)
+		output.TotalCharges = output.PowerCharges + output.FrenzyCharges + output.EnduranceCharges
+		modDB.multipliers["WarcryPower"] = output.WarcryPower
+		modDB.multipliers["PowerCharge"] = output.PowerCharges
+		modDB.multipliers["PowerChargeMax"] = output.PowerChargesMax
+		modDB.multipliers["RemovablePowerCharge"] = output.RemovablePowerCharges
+		modDB.multipliers["FrenzyCharge"] = output.FrenzyCharges
+		modDB.multipliers["RemovableFrenzyCharge"] = output.RemovableFrenzyCharges
+		modDB.multipliers["EnduranceCharge"] = output.EnduranceCharges
+		modDB.multipliers["RemovableEnduranceCharge"] = output.RemovableEnduranceCharges
+		modDB.multipliers["TotalCharges"] = output.TotalCharges
+		modDB.multipliers["SiphoningCharge"] = output.SiphoningCharges
+		modDB.multipliers["ChallengerCharge"] = output.ChallengerCharges
+		modDB.multipliers["BlitzCharge"] = output.BlitzCharges
+		modDB.multipliers["InspirationCharge"] = output.InspirationCharges
+		modDB.multipliers["GhostShroud"] = output.GhostShrouds
+		modDB.multipliers["CrabBarrier"] = output.CrabBarriers
+		modDB.multipliers["BrutalCharge"] = output.BrutalCharges
+		modDB.multipliers["AbsorptionCharge"] = output.AbsorptionCharges
+		modDB.multipliers["AfflictionCharge"] = output.AfflictionCharges
+		modDB.multipliers["BloodCharge"] = output.BloodCharges
+	*/
+	/*
+		TODO -- Process enemy modifiers
+		for _, value in ipairs(modDB:List(nil, "EnemyModifier")) do
+			enemyDB:AddMod(value.mod)
+		end
+	*/
+
+	// Add misc buffs/debuffs
+	if env.ModeCombat {
+		/*
+			TODO Add misc buffs/debuffs
+			if env.player.mainSkill.baseSkillModList:Flag(nil, "Cruelty") then
+				modDB.multipliers["Cruelty"] = modDB:Override(nil, "Cruelty") or 40
+			end
+			-- Fortify from a mod, or minions getting stacks from Kingmaker
+			if modDB:Flag(nil, "Fortified") or modDB:Sum("BASE", nil, "Multiplier:Fortification") > 0 then
+				local maxStacks = modDB:Override(nil, "MaximumFortification") or modDB:Sum("BASE", skillCfg, "MaximumFortification")
+				local stacks = modDB:Override(nil, "FortificationStacks") or maxStacks
+				output.FortificationStacks = stacks
+				if not modDB:Flag(nil,"Condition:NoFortificationMitigation") then
+					local effectScale = 1 + modDB:Sum("INC", nil, "BuffEffectOnSelf") / 100
+					local effect = m_floor(effectScale * stacks)
+					modDB:NewMod("DamageTakenWhenHit", "MORE", -effect, "Fortification")
+				end
+				if stacks >= maxStacks then
+					modDB:NewMod("Condition:HaveMaximumFortification", "FLAG", true, "")
+				end
+				modDB.multipliers["BuffOnSelf"] = (modDB.multipliers["BuffOnSelf"] or 0) + 1
+			end
+		*/
+
+		if modDB.Flag(nil, "Onslaught") {
+			effect := math.Floor(20 * (1 + modDB.Sum(mod.TypeIncrease, nil, "OnslaughtEffect", "BuffEffectOnSelf")/100))
+			modDB.AddMod(mod.NewFloat("Speed", mod.TypeIncrease, effect).Source("Onslaught"))
+			modDB.AddMod(mod.NewFloat("MovementSpeed", mod.TypeIncrease, effect).Source("Onslaught"))
+		}
+
+		/*
+			if modDB:Flag(nil, "Fanaticism") and actor.mainSkill and actor.mainSkill.skillFlags.selfCast then
+				local effect = m_floor(75 * (1 + modDB:Sum("INC", nil, "BuffEffectOnSelf") / 100))
+				modDB:NewMod("Speed", "MORE", effect, "Fanaticism", ModFlag.Cast)
+				modDB:NewMod("Cost", "INC", -effect, "Fanaticism", ModFlag.Cast)
+				modDB:NewMod("AreaOfEffect", "INC", effect, "Fanaticism", ModFlag.Cast)
+			end
+			if modDB:Flag(nil, "UnholyMight") then
+				local effect = m_floor(30 * (1 + modDB:Sum("INC", nil, "BuffEffectOnSelf") / 100))
+				modDB:NewMod("PhysicalDamageGainAsChaos", "BASE", effect, "Unholy Might")
+			end
+			if modDB:Flag(nil, "Tailwind") then
+				local effect = m_floor(8 * (1 + modDB:Sum("INC", nil, "TailwindEffectOnSelf", "BuffEffectOnSelf") / 100))
+				modDB:NewMod("ActionSpeed", "INC", effect, "Tailwind")
+			end
+			if modDB:Flag(nil, "Adrenaline") then
+				local effectMod = 1 + modDB:Sum("INC", nil, "BuffEffectOnSelf") / 100
+				modDB:NewMod("Damage", "INC", m_floor(100 * effectMod), "Adrenaline")
+				modDB:NewMod("Speed", "INC", m_floor(25 * effectMod), "Adrenaline")
+				modDB:NewMod("MovementSpeed", "INC", m_floor(25 * effectMod), "Adrenaline")
+				modDB:NewMod("PhysicalDamageReduction", "BASE", m_floor(10 * effectMod), "Adrenaline")
+			end
+			if modDB:Flag(nil, "Convergence") then
+				local effect = m_floor(30 * (1 + modDB:Sum("INC", nil, "BuffEffectOnSelf") / 100))
+				modDB:NewMod("ElementalDamage", "MORE", effect, "Convergence")
+			end
+			if modDB:Flag(nil, "HerEmbrace") then
+				condList["HerEmbrace"] = true
+				modDB:NewMod("AvoidStun", "BASE", 100, "Her Embrace")
+				modDB:NewMod("PhysicalDamageGainAsFire", "BASE", 123, "Her Embrace", ModFlag.Sword)
+				modDB:NewMod("AvoidFreeze", "BASE", 100, "Her Embrace")
+				modDB:NewMod("AvoidChill", "BASE", 100, "Her Embrace")
+				modDB:NewMod("AvoidIgnite", "BASE", 100, "Her Embrace")
+				modDB:NewMod("Speed", "INC", 20, "Her Embrace")
+				modDB:NewMod("MovementSpeed", "INC", 20, "Her Embrace")
+			end
+			if modDB:Flag(nil, "Condition:PhantasmalMight") then
+				modDB.multipliers["BuffOnSelf"] = (modDB.multipliers["BuffOnSelf"] or 0) + (output.ActivePhantasmLimit or 1) - 1 -- slight hack to not double count the initial buff
+			end
+			if modDB:Flag(nil, "Elusive") then
+				local maxSkillInc = modDB:Max({ source = "Skill" }, "ElusiveEffect") or 0
+				local inc = modDB:Sum("INC", nil, "ElusiveEffect", "BuffEffectOnSelf")
+				if actor.mainSkill.skillModList:Flag(nil, "SupportedByNightblade") then
+					inc = inc + modDB:Sum("INC", nil, "NightbladeSupportedElusiveEffect")
+				end
+				inc = inc + maxSkillInc
+				output.ElusiveEffectMod = (1 + inc / 100) * modDB:More(nil, "ElusiveEffect", "BuffEffectOnSelf") * 100
+				-- if we want the max skill to not be noted as its own breakdown table entry, comment out below
+				modDB:NewMod("ElusiveEffect", "INC", maxSkillInc, "Max Skill Effect")
+				-- Override elusive effect if set.
+				if modDB:Override(nil, "ElusiveEffect") then
+					output.ElusiveEffectMod = m_min(modDB:Override(nil, "ElusiveEffect"), output.ElusiveEffectMod)
+				end
+				local effect = output.ElusiveEffectMod / 100
+				condList["Elusive"] = true
+				modDB:NewMod("AvoidPhysicalDamageChance", "BASE", m_floor(15 * effect), "Elusive")
+				modDB:NewMod("AvoidLightningDamageChance", "BASE", m_floor(15 * effect), "Elusive")
+				modDB:NewMod("AvoidColdDamageChance", "BASE", m_floor(15 * effect), "Elusive")
+				modDB:NewMod("AvoidFireDamageChance", "BASE", m_floor(15 * effect), "Elusive")
+				modDB:NewMod("AvoidChaosDamageChance", "BASE", m_floor(15 * effect), "Elusive")
+				modDB:NewMod("MovementSpeed", "INC", m_floor(30 * effect), "Elusive")
+			end
+			if modDB:Max(nil, "WitherEffectStack") then
+				modDB:NewMod("Condition:CanWither", "FLAG", true, "Config")
+				local effect = modDB:Max(nil, "WitherEffectStack")
+				enemyDB:NewMod("ChaosDamageTaken", "INC", effect, "Withered", { type = "Multiplier", var = "WitheredStack", limit = 15 } )
+			end
+			if modDB:Flag(nil, "Blind") then
+				if not modDB:Flag(nil, "IgnoreBlindHitChance") then
+					local effect = 1 + modDB:Sum("INC", nil, "BlindEffect", "BuffEffectOnSelf") / 100
+					-- Override Blind effect if set.
+					if modDB:Override(nil, "BlindEffect") then
+						effect = m_min(modDB:Override(nil, "BlindEffect") / 100, effect)
+					end
+					modDB:NewMod("Accuracy", "MORE", m_floor(-20 * effect), "Blind")
+					modDB:NewMod("Evasion", "MORE", m_floor(-20 * effect), "Blind")
+				end
+			end
+			if modDB:Flag(nil, "Chill") then
+				local ailmentData = data.nonDamagingAilment
+				local chillValue = modDB:Override(nil, "ChillVal") or ailmentData.Chill.default
+
+				local chillSelf = (modDB:Flag(nil, "Condition:ChilledSelf") and modDB:Sum("INC", nil, "EnemyChillEffect") / 100) or 0
+				local totalChillSelfEffect = calcLib.mod(modDB, nil, "SelfChillEffect") + chillSelf
+
+				local effect = m_min(m_max(m_floor(chillValue *  totalChillSelfEffect), 0), modDB:Override(nil, "ChillMax") or ailmentData.Chill.max)
+
+				modDB:NewMod("ActionSpeed", "INC", effect * (modDB:Flag(nil, "SelfChillEffectIsReversed") and 1 or -1), "Chill")
+			end
+			if modDB:Flag(nil, "Freeze") then
+				local effect = m_max(m_floor(70 * calcLib.mod(modDB, nil, "SelfChillEffect")), 0)
+				modDB:NewMod("ActionSpeed", "INC", -effect, "Freeze")
+			end
+			if modDB:Flag(nil, "CanLeechLifeOnFullLife") then
+				condList["Leeching"] = true
+				condList["LeechingLife"] = true
+				env.configInput.conditionLeeching = true
+			end
+			if modDB:Flag(nil, "CanLeechLifeOnFullEnergyShield") then
+				condList["Leeching"] = true
+				condList["LeechingEnergyShield"] = true
+				env.configInput.conditionLeeching = true
+			end
+			if modDB:Flag(nil, "Condition:InfusionActive") then
+				local effect = 1 + modDB:Sum("INC", nil, "InfusionEffect", "BuffEffectOnSelf") / 100
+				if modDB:Flag(nil, "Condition:HavePhysicalInfusion") then
+					condList["PhysicalInfusion"] = true
+					condList["Infusion"] = true
+					modDB:NewMod("PhysicalDamage", "MORE", 10 * effect, "Infusion")
+				end
+				if modDB:Flag(nil, "Condition:HaveFireInfusion") then
+					condList["FireInfusion"] = true
+					condList["Infusion"] = true
+					modDB:NewMod("FireDamage", "MORE", 10 * effect, "Infusion")
+				end
+				if modDB:Flag(nil, "Condition:HaveColdInfusion") then
+					condList["ColdInfusion"] = true
+					condList["Infusion"] = true
+					modDB:NewMod("ColdDamage", "MORE", 10 * effect, "Infusion")
+				end
+				if modDB:Flag(nil, "Condition:HaveLightningInfusion") then
+					condList["LightningInfusion"] = true
+					condList["Infusion"] = true
+					modDB:NewMod("LightningDamage", "MORE", 10 * effect, "Infusion")
+				end
+				if modDB:Flag(nil, "Condition:HaveChaosInfusion") then
+					condList["ChaosInfusion"] = true
+					condList["Infusion"] = true
+					modDB:NewMod("ChaosDamage", "MORE", 10 * effect, "Infusion")
+				end
+			end
+			if modDB:Flag(nil, "Condition:CanGainRage") or modDB:Sum("BASE", nil, "RageRegen") > 0 then
+				output.MaximumRage = modDB:Sum("BASE", skillCfg, "MaximumRage")
+				modDB.multipliers["MaxRageVortexSacrifice"] = output.MaximumRage / 4
+				modDB:NewMod("Multiplier:Rage", "BASE", 1, "Base", { type = "Multiplier", var = "RageStack", limit = output.MaximumRage })
+			end
+			if modDB:Sum("BASE", nil, "CoveredInAshEffect") > 0 then
+				local effect = modDB:Sum("BASE", nil, "CoveredInAshEffect")
+				enemyDB:NewMod("FireDamageTaken", "INC", m_min(effect, 20), "Covered in Ash")
+			end
+			if modDB:Sum("BASE", nil, "CoveredInFrostEffect") > 0 then
+				local effect = modDB:Sum("BASE", nil, "CoveredInFrostEffect")
+				enemyDB:NewMod("ColdDamageTaken", "INC", m_min(effect, 20), "Covered in Frost")
+			end
+			if modDB:Flag(nil, "HasMalediction") then
+				modDB:NewMod("DamageTaken", "INC", 10, "Malediction")
+				modDB:NewMod("Damage", "INC", -10, "Malediction")
+			end
+		*/
+	}
 }

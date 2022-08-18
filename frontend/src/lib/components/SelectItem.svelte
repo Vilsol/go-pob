@@ -51,7 +51,7 @@
   }
 
   .item.hover {
-    background: #7f694d;
+    background: #342c21;
     color: #ffffff;
   }
 </style>

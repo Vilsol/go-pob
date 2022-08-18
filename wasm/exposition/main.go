@@ -25,5 +25,7 @@ func Expose() *crystalline.Exposer {
 	e.ExposeFuncOrPanic(cache.InitializeDiskCache)
 	e.ExposeFuncOrPanic(config.InitLogging)
 
+	e.ExposeFuncOrPanic(GetSkillGems)
+
 	return e
 }

@@ -155,8 +155,9 @@ type Gem struct {
 	SkillMinionItemSet int    `xml:"skillMinionItemSet,attr"`
 	SkillMinion        string `xml:"skillMinion,attr"`
 
-	DisplayEffect interface{}
-	SupportEffect interface{}
+	// TODO
+	//DisplayEffect interface{}
+	//SupportEffect interface{}
 }
 
 type Spec struct {

@@ -22,6 +22,8 @@ type SkillGem struct {
 var SkillGems []*SkillGem
 
 var skillGemsByBaseItemTypeMap map[int]*SkillGem
+var skillGemVaalBase map[int]*SkillGem
+var skillGemsByGrantedEffect map[int]*SkillGem
 
 func InitializeSkillGems(version string) error {
 	if err := InitHelper(version, "SkillGems", &SkillGems); err != nil {
@@ -29,8 +31,14 @@ func InitializeSkillGems(version string) error {
 	}
 
 	skillGemsByBaseItemTypeMap = make(map[int]*SkillGem)
+	skillGemVaalBase = make(map[int]*SkillGem)
+	skillGemsByGrantedEffect = make(map[int]*SkillGem)
 	for _, gem := range SkillGems {
 		skillGemsByBaseItemTypeMap[gem.BaseItemType] = gem
+		skillGemsByGrantedEffect[gem.GrantedEffect] = gem
+		if gem.VaalGem != nil {
+			skillGemVaalBase[*gem.VaalGem] = gem
+		}
 	}
 
 	return nil
@@ -76,4 +84,12 @@ func (s *SkillGem) DefaultLevel() int {
 	}
 	// TODO Awakened gem default level?
 	return 1
+}
+
+func (s *SkillGem) GetBaseItemType() *BaseItemType {
+	return BaseItemTypes[s.BaseItemType]
+}
+
+func (s *SkillGem) GetNonVaal() *SkillGem {
+	return skillGemVaalBase[s.BaseItemType]
 }

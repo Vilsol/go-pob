@@ -14,10 +14,12 @@ type ModList struct {
 }
 
 func NewModList() *ModList {
-	return &ModList{
+	m := &ModList{
 		ModStore: NewModStore(nil),
 		mods:     make([]mod.Mod, 0),
 	}
+	m.ModStore.Child = m
+	return m
 }
 
 func (m *ModList) Clone() ModStoreFuncs {
@@ -28,6 +30,7 @@ func (m *ModList) Clone() ModStoreFuncs {
 	out := NewModList()
 	out.AddDB(m)
 	out.ModStore = m.ModStore.Clone()
+	out.ModStore.Child = out
 	return out
 }
 

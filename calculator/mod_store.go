@@ -29,6 +29,7 @@ type ModStoreFuncs interface {
 
 type ModStore struct {
 	Parent      ModStoreFuncs
+	Child       ModStoreFuncs
 	Actor       *Actor `json:"-"`
 	Multipliers map[string]float64
 	Conditions  map[string]bool
@@ -619,8 +620,9 @@ func (s *ModStore) GetCondition(variable string, cfg *ListCfg, noMod bool) (bool
 	}
 
 	if !noMod {
-		// TODO ???
-		// TODO self:Flag(cfg, conditionName[var])
+		if s.Child.Flag(cfg, "Condition:"+variable) {
+			return true, true
+		}
 	}
 
 	return out, false

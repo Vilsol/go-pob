@@ -119,6 +119,10 @@ func (g *GrantedEffect) GetEffectQualityStats() map[int]*GrantedEffectQualitySta
 	return grantedEffectQualityStatsByIDMap[g.Key]
 }
 
+func (g *GrantedEffect) GetSkillGem() *SkillGem {
+	return skillGemsByGrantedEffect[g.Key]
+}
+
 func (g *GrantedEffect) HasGlobalEffect() bool {
 	// TODO HasGlobalEffect
 	return false

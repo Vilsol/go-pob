@@ -165,17 +165,30 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 		end
 	*/
 
+	// Initialise enemy modifier database
 	initModDB(env, env.EnemyModDB)
-
 	env.EnemyModDB.AddMod(mod.NewFloat("Accuracy", mod.TypeBase, data.MonsterAccuracyTable[env.EnemyLevel]).Source("Base"))
 	env.EnemyModDB.AddMod(mod.NewFloat("Evasion", mod.TypeBase, data.MonsterEvasionTable[env.EnemyLevel]).Source("Base"))
 	env.EnemyModDB.AddMod(mod.NewFloat("Armour", mod.TypeBase, data.MonsterArmourTable[env.EnemyLevel]).Source("Base"))
 
-	/*
-		TODO Custom Mods
-		env.ModDB.AddList(build.configTab.modList)
-		env.EnemyModDB.AddList(build.configTab.enemyModList)
-	*/
+	// Add mods from the config tab
+	confModList := NewModList()
+	confEnemyModList := NewModList()
+	for _, input := range build.Config.Inputs {
+		if config, ok := configurations[input.Name]; ok {
+			var value interface{}
+			if input.String != nil {
+				value = *input.String
+			} else if input.Boolean != nil {
+				value = *input.Boolean
+			} else if input.Number != nil {
+				value = *input.Number
+			}
+			config(value, confModList, confEnemyModList)
+		}
+	}
+	env.ModDB.AddList(confModList)
+	env.EnemyModDB.AddList(confEnemyModList)
 
 	cachedPlayerDB := env.ModDB.Clone()
 	cachedEnemyDB := env.EnemyModDB.Clone()
@@ -724,8 +737,9 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 			for _, gemInstance := range socketGroup.Gems {
 				// Add support gems from this group
 				if env.Mode == OutputModeMain {
-					gemInstance.DisplayEffect = nil
-					gemInstance.SupportEffect = nil
+					// TODO
+					//gemInstance.DisplayEffect = nil
+					//gemInstance.SupportEffect = nil
 				}
 
 				if gemInstance.Enabled {
@@ -751,8 +765,9 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 						}
 
 						if env.Mode == OutputModeMain {
-							gemInstance.DisplayEffect = supportEffect
-							gemInstance.SupportEffect = supportEffect
+							// TODO
+							//gemInstance.DisplayEffect = supportEffect
+							//gemInstance.SupportEffect = supportEffect
 						}
 
 						if gemData != nil {
@@ -887,7 +902,8 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 							}
 
 							if env.Mode == OutputModeMain {
-								gemInstance.DisplayEffect = activeEffect
+								// TODO
+								//gemInstance.DisplayEffect = activeEffect
 							}
 
 							activeSkill := CreateActiveSkill(activeEffect, supportList, env.Player, &socketGroup, nil)

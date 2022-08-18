@@ -154,8 +154,6 @@ select.input {
   --background: #000000;
   --itemActiveBackground: #000000;
   --listBackground: #000000;
-  --itemHoverBG: #3e2f1d;
-  --itemIsActiveBG: #3e2f1d;
   --padding: 0;
   --selectedItemPadding: 0.15rem 0.5rem;
   --height: 28px;
@@ -167,6 +165,15 @@ select.input {
   --listBorder: 1px solid #a3a3a3;
   --inputColor: #ffffff;
   --inputPadding: 0.15rem 0.5rem;
+
+  & .selectContainer {
+    min-height: 36px;
+    padding-right: 30px !important;
+  }
+
+  & .selectedItem {
+    min-height: 100%;
+  }
 
   & .selectContainer:hover {
     background: #262626 !important;

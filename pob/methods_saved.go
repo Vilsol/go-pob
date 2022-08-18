@@ -6,6 +6,18 @@ func (b *PathOfBuilding) WithMainSocketGroup(mainSocketGroup int) *PathOfBuildin
 	return &out
 }
 
+func (b *PathOfBuilding) SetMainSocketGroup(mainSocketGroup int) {
+	b.Build.MainSocketGroup = mainSocketGroup
+}
+
+func (b *PathOfBuilding) SetSkillGroupName(skillSet int, socketGroup int, label string) {
+	b.Skills.SkillSets[skillSet].Skills[socketGroup].Label = label
+}
+
+func (b *PathOfBuilding) SetSocketGroupGems(skillSet int, socketGroup int, gems []Gem) {
+	b.Skills.SkillSets[skillSet].Skills[socketGroup].Gems = gems
+}
+
 func (b *PathOfBuilding) SetConfigOption(value Input) {
 	for i, input := range b.Config.Inputs {
 		if input.Name == value.Name {

@@ -3,6 +3,7 @@ export let builds;
 export let cache;
 export let calculator;
 export let config;
+export let exposition;
 export let pob;
 export let raw;
 
@@ -19,6 +20,9 @@ export const initializeCrystalline = () => {
   };
   config = {
     InitLogging: globalThis['go']['go-pob']['config']['InitLogging']
+  };
+  exposition = {
+    GetSkillGems: globalThis['go']['go-pob']['exposition']['GetSkillGems']
   };
   pob = {
     CompressEncode: globalThis['go']['go-pob']['pob']['CompressEncode'],

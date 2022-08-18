@@ -39,6 +39,7 @@ module.exports = {
     'brace-style': 'error',
     'no-shadow': 'error',
     'no-use-before-define': 'error',
-    'dot-notation': 'error'
+    'dot-notation': 'error',
+    'no-async-promise-executor': 'off'
   }
 };
