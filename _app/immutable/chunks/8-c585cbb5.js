@@ -1,0 +1,1 @@
+import{default as f}from"../components/pages/skills/_page.svelte-797380c7.js";import"./index-01750e21.js";import"./colors-a54dc437.js";import"./index-c9f83d02.js";import"./Input-5725bf41.js";import"./worker-068970f9.js";import"./SelectSelection-0a6bf987.js";export{f as component};
