@@ -93,7 +93,6 @@
 		<Input string="None" name="bandit"/>
 		<Input string="None" name="pantheonMajorGod"/>
 		<Input string="None" name="pantheonMinorGod"/>
-		<Input boolean="true" name="buffOnslaught"/>
 		<Placeholder number="5" name="enemyCritChance"/>
 		<Placeholder number="30" name="enemyCritDamage"/>
 		<Placeholder number="700" name="enemySpeed"/>
