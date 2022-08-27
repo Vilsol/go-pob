@@ -286,10 +286,10 @@
 </script>
 
 {#if $currentBuild}
-  <div class="p-2 px-4">
+  <div class="p-2 px-4 w-full h-full overflow-y-auto">
     <div class="flex flex-row gap-4 flex-wrap">
       <!-- Left Side -->
-      <div class="flex flex-col w-[450px] gap-2">
+      <div class="flex flex-col w-[28em] gap-2">
         <div class="flex flex-row items-center gap-2">
           <span>Skill set:</span>
 
@@ -310,7 +310,7 @@
           <button class="container" disabled={visualSocketGroup < 0 || socketGroupList.length <= 1} on:click={deleteSelectedSocketGroup}>Delete</button>
         </div>
 
-        <select bind:value={visualSocketGroup} class="bg-black border w-full border-neutral-400 flex-1 select-many max-h-[300px]" size="18">
+        <select bind:value={visualSocketGroup} class="bg-black border w-full border-neutral-400 flex-1 select-many max-h-[19em]" size="18">
           {#each socketGroupList as group, i}
             <option value={i} on:contextmenu={(event) => onRightClickSocketGroup(i, event)}>
               {group.label}
@@ -381,7 +381,7 @@
 
       <!-- Right Side -->
       {#if $currentGemGroup}
-        <div class="flex flex-col min-w-[500px] gap-2">
+        <div class="flex flex-col min-w-[30em] gap-2">
           <Input prefix="Label:" fullWidth={true} bind:value={$socketGroupLabel} />
 
           <div class="flex flex-row w-full justify-between">

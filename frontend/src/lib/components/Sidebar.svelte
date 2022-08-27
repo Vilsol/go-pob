@@ -219,7 +219,7 @@
     <div class="absolute -right-3 top-1/2 cursor-pointer font-bold" on:click={() => (collapsed = false)}>&gt;</div>
   </div>
 {:else}
-  <div class="w-[25vw] min-w-[370px] max-w-[400px] h-full border-r-2 border-white flex flex-col bg-neutral-900 full-page relative">
+  <div class="w-[25vw] min-w-[17em] max-w-[25em] h-full border-r-2 border-white flex flex-col bg-neutral-900 full-page relative">
     <div class="flex flex-col gap-3 border-b-2 border-white flex-1 p-2 sidebar-stat-wrapper">
       <div class="flex flex-col gap-2">
         <div class="flex flex-row gap-1">
@@ -264,7 +264,7 @@
       </div>
     </div>
 
-    <div class="flex flex-row p-2 h-[84px]">
+    <div class="flex flex-row p-2">
       <div class="flex flex-col flex-1 gap-2">
         <button class="container min-w-full flex-1" on:click={openOptions}>Options</button>
         <button class="container min-w-full flex-1">About</button>
@@ -281,7 +281,7 @@
 
 <style lang="postcss">
   .sidebar-stat-wrapper {
-    max-height: calc(100% - 84px);
+    max-height: calc(100% - 4.75em);
   }
 
   .side-by-side-sidebar {

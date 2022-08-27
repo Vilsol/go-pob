@@ -57,8 +57,6 @@
   }
 </script>
 
-<svelte:window style="font-size: 20px" />
-
 <div class="w-screen h-screen max-w-screen max-h-screen overflow-hidden flex flex-col" style="font-size: {$fontScaling}pt">
   {#if wasmLoading}
     <div class="flex flex-row justify-center h-full">

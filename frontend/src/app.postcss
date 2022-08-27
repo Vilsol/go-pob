@@ -66,7 +66,7 @@ select.input {
   @apply p-0.5 px-2 w-full;
   -webkit-appearance: none;
   appearance: none;
-  padding-right: 35px;
+  padding-right: 2.2em;
   cursor: pointer;
 
   &:not(:disabled):hover {
@@ -89,8 +89,8 @@ select.input {
   &::after {
     @apply ml-2;
     content: '▼';
-    right: 10px;
-    top: 2px;
+    right: 0.6em;
+    top: 0.1em;
     position: absolute;
     pointer-events: none;
   }
@@ -146,7 +146,7 @@ select.input {
   }
 
   & select {
-    min-width: 120px;
+    min-width: 7.5em;
   }
 }
 
@@ -158,7 +158,6 @@ select.input {
   --selectedItemPadding: 0.15em 0.5em;
   --height: 1.7em;
   --borderRadius: 0;
-  --indicatorTop: 0.15em;
   --itemFirstBorderRadius: 0;
   --listBorderRadius: 0;
   --border: 1px solid #a3a3a3;
@@ -167,9 +166,13 @@ select.input {
   --inputPadding: 0.15em 0.5em;
   --inputFontSize: 1em;
 
+  --indicatorTop: 0;
+  --indicatorWidth: 1.5em;
+  --indicatorHeight: 1.5em;
+
   & .selectContainer {
     min-height: 1.8em;
-    padding-right: 30px !important;
+    padding-right: 2.2em !important;
 
     & .selectedItem {
       min-height: 100%;
@@ -192,7 +195,7 @@ select.input {
   opacity: 0.7;
   -webkit-transition: 0.2s;
   transition: opacity 0.2s;
-  padding: 0.1em 0.05em;
+  padding: 0.15em 0.1em;
 }
 
 .slider:hover {
@@ -202,8 +205,8 @@ select.input {
 .slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 1.3em;
-  height: 1.3em;
+  width: 1.2em;
+  height: 1.2em;
   background: #666666;
   cursor: pointer;
 }
@@ -213,8 +216,8 @@ select.input {
 }
 
 .slider::-moz-range-thumb {
-  width: 1.3em;
-  height: 1.3em;
+  width: 1.2em;
+  height: 1.2em;
   background: #666666;
   cursor: pointer;
 }

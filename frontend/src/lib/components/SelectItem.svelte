@@ -34,7 +34,7 @@
 <style lang="postcss">
   .item {
     cursor: default;
-    padding: 0.25rem 0.5rem;
+    padding: 0.25em 0.5em;
     color: #929292;
     text-overflow: ellipsis;
     overflow: hidden;

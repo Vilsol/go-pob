@@ -12,7 +12,7 @@
   export let color = colorCodes.WHITE;
 </script>
 
-<div class="grid grid-flow-row min-w-[300px] max-w-[25vw] w-fit h-fit border-2" style="border-color: {color}">
+<div class="grid grid-flow-row min-w-[19em] max-w-[25vw] w-fit h-fit border-2" style="border-color: {color}">
   {#each sections as section}
     <div
       class="grid grid-flow-row section p-1.5 text-center"

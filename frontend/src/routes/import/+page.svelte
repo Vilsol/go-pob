@@ -21,7 +21,7 @@
   };
 </script>
 
-<div class="p-2 px-4 min-w-[650px]">
+<div class="p-2 px-4 h-full flex flex-col flex-wrap gap-4 w-full overflow-x-auto min-w-[40em]">
   <fieldset class="border border-white bg-neutral-900 p-2">
     <legend class="container">Character Import</legend>
     <div class="flex flex-col gap-3">
