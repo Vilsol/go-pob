@@ -2,7 +2,37 @@ import { writable } from 'svelte/store';
 import type { Outputs } from './custom_types';
 import type { pob } from './types';
 import type { DeepPromise } from './type_utils';
+import { syncWrap } from './go/worker';
 
 export const outputs = writable<Outputs | undefined>();
 
 export const currentBuild = writable<DeepPromise<pob.PathOfBuilding> | undefined>();
+
+let uiTickLock = false;
+let uiTickAfter = false;
+let uiTickAfterSource = '';
+export const UITick = (source: string) => {
+  if (!syncWrap) {
+    return;
+  }
+
+  if (uiTickLock) {
+    uiTickAfter = true;
+    uiTickAfterSource = source;
+    return;
+  }
+  uiTickLock = true;
+
+  syncWrap
+    .Tick(source)
+    .catch((err) => {
+      console.error(err);
+    })
+    .then(() => {
+      uiTickLock = false;
+      if (uiTickAfter) {
+        uiTickAfter = false;
+        UITick(uiTickAfterSource);
+      }
+    });
+};

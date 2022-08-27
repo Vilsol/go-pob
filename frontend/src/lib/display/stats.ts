@@ -90,12 +90,7 @@ export const displayStats: Stat[][] = [
       fmt: '.1f',
       compPercent: true,
       flag: 'notAverage',
-      condFunc: (v, o) =>
-        v != o.TotalDPS &&
-        (o.PoisonDPS || 0) == 0 &&
-        (o.IgniteDPS || 0) == 0 &&
-        (o.ImpaleDPS || 0) == 0 &&
-        (o.BleedDPS || 0) == 0
+      condFunc: (v, o) => v != o.TotalDPS && (o.PoisonDPS || 0) == 0 && (o.IgniteDPS || 0) == 0 && (o.ImpaleDPS || 0) == 0 && (o.BleedDPS || 0) == 0
     },
     { stat: 'BleedDPS', label: 'Bleed DPS', fmt: '.1f', compPercent: true },
     { stat: 'BleedDamage', label: 'Total Damage per Bleed', fmt: '.1f', compPercent: true, flag: 'showAverage' },
@@ -105,12 +100,7 @@ export const displayStats: Stat[][] = [
       fmt: '.1f',
       compPercent: true,
       flag: 'notAverage',
-      condFunc: (v, o) =>
-        v != o.TotalDPS &&
-        (o.TotalDot || 0) == 0 &&
-        (o.PoisonDPS || 0) == 0 &&
-        (o.ImpaleDPS || 0) == 0 &&
-        (o.IgniteDPS || 0) == 0
+      condFunc: (v, o) => v != o.TotalDPS && (o.TotalDot || 0) == 0 && (o.PoisonDPS || 0) == 0 && (o.ImpaleDPS || 0) == 0 && (o.IgniteDPS || 0) == 0
     },
     { stat: 'IgniteDPS', label: 'Ignite DPS', fmt: '.1f', compPercent: true },
     { stat: 'IgniteDamage', label: 'Total Damage per Ignite', fmt: '.1f', compPercent: true, flag: 'showAverage' },
@@ -120,12 +110,7 @@ export const displayStats: Stat[][] = [
       fmt: '.1f',
       compPercent: true,
       flag: 'notAverage',
-      condFunc: (v, o) =>
-        v != o.TotalDPS &&
-        (o.TotalDot || 0) == 0 &&
-        (o.PoisonDPS || 0) == 0 &&
-        (o.ImpaleDPS || 0) == 0 &&
-        (o.BleedDPS || 0) == 0
+      condFunc: (v, o) => v != o.TotalDPS && (o.TotalDot || 0) == 0 && (o.PoisonDPS || 0) == 0 && (o.ImpaleDPS || 0) == 0 && (o.BleedDPS || 0) == 0
     },
     { stat: 'WithIgniteAverageDamage', label: 'Average Dmg. inc. Ignite', fmt: '.1f', compPercent: true },
     { stat: 'PoisonDPS', label: 'Poison DPS', fmt: '.1f', compPercent: true },
@@ -136,12 +121,7 @@ export const displayStats: Stat[][] = [
       fmt: '.1f',
       compPercent: true,
       flag: 'notAverage',
-      condFunc: (v, o) =>
-        v != o.TotalDPS &&
-        (o.TotalDot || 0) == 0 &&
-        (o.IgniteDPS || 0) == 0 &&
-        (o.ImpaleDPS || 0) == 0 &&
-        (o.BleedDPS || 0) == 0
+      condFunc: (v, o) => v != o.TotalDPS && (o.TotalDot || 0) == 0 && (o.IgniteDPS || 0) == 0 && (o.ImpaleDPS || 0) == 0 && (o.BleedDPS || 0) == 0
     },
     { stat: 'DecayDPS', label: 'Decay DPS', fmt: '.1f', compPercent: true },
     {
@@ -149,12 +129,7 @@ export const displayStats: Stat[][] = [
       label: 'Total DoT DPS',
       fmt: '.1f',
       compPercent: true,
-      condFunc: (v, o) =>
-        v != o.TotalDot &&
-        v != o.ImpaleDPS &&
-        v != o.TotalPoisonDPS &&
-        v != (o.TotalIgniteDPS || o.IgniteDPS) &&
-        v != o.BleedDPS
+      condFunc: (v, o) => v != o.TotalDot && v != o.ImpaleDPS && v != o.TotalPoisonDPS && v != (o.TotalIgniteDPS || o.IgniteDPS) && v != o.BleedDPS
     },
     { stat: 'ImpaleDPS', label: 'Impale Damage', fmt: '.1f', compPercent: true, flag: 'showAverage' },
     {
@@ -163,12 +138,7 @@ export const displayStats: Stat[][] = [
       fmt: '.1f',
       compPercent: true,
       flag: 'showAverage',
-      condFunc: (v, o) =>
-        v != o.TotalDPS &&
-        (o.TotalDot || 0) == 0 &&
-        (o.IgniteDPS || 0) == 0 &&
-        (o.PoisonDPS || 0) == 0 &&
-        (o.BleedDPS || 0) == 0
+      condFunc: (v, o) => v != o.TotalDPS && (o.TotalDot || 0) == 0 && (o.IgniteDPS || 0) == 0 && (o.PoisonDPS || 0) == 0 && (o.BleedDPS || 0) == 0
     },
     { stat: 'ImpaleDPS', label: 'Impale DPS', fmt: '.1f', compPercent: true, flag: 'notAverage' },
     {
@@ -177,12 +147,7 @@ export const displayStats: Stat[][] = [
       fmt: '.1f',
       compPercent: true,
       flag: 'notAverage',
-      condFunc: (v, o) =>
-        v != o.TotalDPS &&
-        (o.TotalDot || 0) == 0 &&
-        (o.IgniteDPS || 0) == 0 &&
-        (o.PoisonDPS || 0) == 0 &&
-        (o.BleedDPS || 0) == 0
+      condFunc: (v, o) => v != o.TotalDPS && (o.TotalDot || 0) == 0 && (o.IgniteDPS || 0) == 0 && (o.PoisonDPS || 0) == 0 && (o.BleedDPS || 0) == 0
     },
     { stat: 'MirageDPS', label: 'Total Mirage DPS', fmt: '.1f', compPercent: true, condFunc: (v) => v > 0 },
     {
@@ -199,11 +164,7 @@ export const displayStats: Stat[][] = [
       compPercent: true,
       flag: 'notAverage',
       condFunc: (v, o) =>
-        v != (o.TotalDPS || 0) + (o.TotalDot || 0) &&
-        v != o.WithImpaleDPS &&
-        v != o.WithPoisonDPS &&
-        v != o.WithIgniteDPS &&
-        v != o.WithBleedDPS
+        v != (o.TotalDPS || 0) + (o.TotalDot || 0) && v != o.WithImpaleDPS && v != o.WithPoisonDPS && v != o.WithIgniteDPS && v != o.WithBleedDPS
     },
     {
       stat: 'CombinedAvg',
@@ -211,10 +172,7 @@ export const displayStats: Stat[][] = [
       fmt: '.1f',
       compPercent: true,
       flag: 'showAverage',
-      condFunc: (v, o) =>
-        v != o.AverageDamage &&
-        (o.TotalDot || 0) == 0 &&
-        (v != o.WithPoisonDPS || v != o.WithIgniteDPS || v != o.WithBleedDPS)
+      condFunc: (v, o) => v != o.AverageDamage && (o.TotalDot || 0) == 0 && (v != o.WithPoisonDPS || v != o.WithIgniteDPS || v != o.WithBleedDPS)
     },
     { stat: 'Cooldown', label: 'Skill Cooldown', fmt: '.3fs', lowerIsBetter: true },
     { stat: 'SealCooldown', label: 'Seal Gain Frequency', fmt: '.2fs', lowerIsBetter: true },
@@ -384,8 +342,7 @@ export const displayStats: Stat[][] = [
       fmt: '.0f',
       color: colorCodes.LIGHTNING,
       compPercent: true,
-      condFunc: (v, o) =>
-        o.LightningMaximumHitTaken == o.ColdMaximumHitTaken && o.LightningMaximumHitTaken == o.FireMaximumHitTaken
+      condFunc: (v, o) => o.LightningMaximumHitTaken == o.ColdMaximumHitTaken && o.LightningMaximumHitTaken == o.FireMaximumHitTaken
     },
     {
       stat: 'FireMaximumHitTaken',
@@ -393,8 +350,7 @@ export const displayStats: Stat[][] = [
       fmt: '.0f',
       color: colorCodes.FIRE,
       compPercent: true,
-      condFunc: (v, o) =>
-        o.LightningMaximumHitTaken != o.ColdMaximumHitTaken || o.LightningMaximumHitTaken != o.FireMaximumHitTaken
+      condFunc: (v, o) => o.LightningMaximumHitTaken != o.ColdMaximumHitTaken || o.LightningMaximumHitTaken != o.FireMaximumHitTaken
     },
     {
       stat: 'ColdMaximumHitTaken',
@@ -402,8 +358,7 @@ export const displayStats: Stat[][] = [
       fmt: '.0f',
       color: colorCodes.COLD,
       compPercent: true,
-      condFunc: (v, o) =>
-        o.LightningMaximumHitTaken != o.ColdMaximumHitTaken || o.LightningMaximumHitTaken != o.FireMaximumHitTaken
+      condFunc: (v, o) => o.LightningMaximumHitTaken != o.ColdMaximumHitTaken || o.LightningMaximumHitTaken != o.FireMaximumHitTaken
     },
     {
       stat: 'LightningMaximumHitTaken',
@@ -411,8 +366,7 @@ export const displayStats: Stat[][] = [
       fmt: '.0f',
       color: colorCodes.LIGHTNING,
       compPercent: true,
-      condFunc: (v, o) =>
-        o.LightningMaximumHitTaken != o.ColdMaximumHitTaken || o.LightningMaximumHitTaken != o.FireMaximumHitTaken
+      condFunc: (v, o) => o.LightningMaximumHitTaken != o.ColdMaximumHitTaken || o.LightningMaximumHitTaken != o.FireMaximumHitTaken
     },
     { stat: 'ChaosMaximumHitTaken', label: 'Chaos Max Hit', fmt: '.0f', color: colorCodes.CHAOS, compPercent: true }
   ],

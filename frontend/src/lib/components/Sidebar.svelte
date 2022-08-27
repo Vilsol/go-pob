@@ -6,6 +6,12 @@
   import { printf } from 'fast-printf';
   import { colorCodes } from '../display/colors';
   import { base } from '$app/paths';
+  import { currentBuild } from '../../lib/global';
+  import { onMount } from 'svelte';
+  import { GetSkillGems } from '../cache';
+  import { exposition } from '../types';
+  import { writable } from 'svelte/store';
+  import { syncWrap } from '../go/worker';
 
   interface Line {
     label: string;
@@ -148,6 +154,55 @@
     return lines;
   };
 
+  const skillGemMapping: Record<string, exposition.SkillGem> = {};
+  onMount(() => {
+    GetSkillGems().then((all) => {
+      all.forEach((g) => {
+        skillGemMapping[g.ID] = g;
+      });
+    });
+  });
+
+  let activeSkillSet = 1;
+  $: $currentBuild?.Skills?.ActiveSkillSet?.then((v) => (activeSkillSet = v));
+
+  let socketGroupList: string[] = [];
+  $: $currentBuild?.Skills?.SkillSets?.[activeSkillSet - 1]?.Skills?.then(async (skills: unknown[]) => {
+    const finalList = [];
+    for (let i = 0; i < skills.length; i++) {
+      let label: string | undefined = await $currentBuild?.Skills?.SkillSets?.[activeSkillSet - 1]?.Skills?.[i].Label;
+      if (label === '') {
+        const allGems = $currentBuild?.Skills?.SkillSets?.[activeSkillSet - 1]?.Skills?.[i].Gems;
+        if (await allGems) {
+          for (let j = 0; j < (await allGems.length); j++) {
+            const gem = skillGemMapping[await allGems[j].GemID];
+            if (!gem || gem.Support) {
+              continue;
+            }
+
+            if (label !== '') {
+              label += ', ';
+            }
+
+            label += gem.Base.Name;
+          }
+        } else {
+          label = '<No active skills>';
+        }
+      }
+
+      finalList.push(label);
+    }
+    socketGroupList = finalList;
+  });
+
+  const mainSocketGroup = writable(-1);
+  $: $currentBuild?.Build?.MainSocketGroup?.then((v) => mainSocketGroup.set(v - 1));
+  mainSocketGroup.subscribe((value) => {
+    value >= 0 && syncWrap?.SetMainSocketGroup(value + 1);
+    currentBuild.set($currentBuild);
+  });
+
   let collapsed = false;
 </script>
 
@@ -156,8 +211,7 @@
     <div class="absolute -right-3 top-1/2 cursor-pointer font-bold" on:click={() => (collapsed = false)}>&gt;</div>
   </div>
 {:else}
-  <div
-    class="w-[25vw] min-w-[370px] max-w-[400px] h-full border-r-2 border-white flex flex-col bg-neutral-900 full-page relative">
+  <div class="w-[25vw] min-w-[370px] max-w-[400px] h-full border-r-2 border-white flex flex-col bg-neutral-900 full-page relative">
     <div class="flex flex-col gap-3 border-b-2 border-white flex-1 p-2 sidebar-stat-wrapper">
       <div class="flex flex-col gap-2">
         <div class="flex flex-row gap-1">
@@ -176,12 +230,19 @@
       <div class="flex flex-col gap-1">
         <div>Main Skill:</div>
         <div class="container select-wrapper min-w-full">
-          <!-- TODO Placeholder -->
-          <select class="input w-full">
-            <option>&lt;No skills added yet&gt;</option>
+          <select class="input w-full" bind:value={$mainSocketGroup}>
+            {#if socketGroupList.length === 0}
+              <option>&lt;No skills added yet&gt;</option>
+            {:else}
+              {#each socketGroupList as group, i}
+                <option value={i}>{group}</option>
+              {/each}
+            {/if}
           </select>
         </div>
       </div>
+
+      <!-- TODO Skill Parts -->
 
       <div class="container min-w-full overflow-y-auto flex-1 flex flex-col gap-2.5 overflow-y-scroll">
         {#each prepareOutput($outputs) as outputGroup}

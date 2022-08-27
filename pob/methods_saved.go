@@ -18,6 +18,34 @@ func (b *PathOfBuilding) SetSocketGroupGems(skillSet int, socketGroup int, gems 
 	b.Skills.SkillSets[skillSet].Skills[socketGroup].Gems = gems
 }
 
+func (b *PathOfBuilding) SetSortGemsByDPS(enabled bool) {
+	b.Skills.SortGemsByDPS = enabled
+}
+
+func (b *PathOfBuilding) SetSortGemsByDPSField(field string) {
+	b.Skills.SortGemsByDPSField = field
+}
+
+func (b *PathOfBuilding) SetMatchGemLevelToCharacterLevel(enabled bool) {
+	b.Skills.MatchGemLevelToCharacterLevel = enabled
+}
+
+func (b *PathOfBuilding) SetDefaultGemLevel(gemLevel int) {
+	b.Skills.DefaultGemLevel = &gemLevel
+}
+
+func (b *PathOfBuilding) SetDefaultGemQuality(gemQuality int) {
+	b.Skills.DefaultGemQuality = &gemQuality
+}
+
+func (b *PathOfBuilding) SetShowSupportGemTypes(gemTypes string) {
+	b.Skills.ShowSupportGemTypes = gemTypes
+}
+
+func (b *PathOfBuilding) SetShowAltQualityGems(enabled bool) {
+	b.Skills.ShowAltQualityGems = enabled
+}
+
 func (b *PathOfBuilding) SetConfigOption(value Input) {
 	for i, input := range b.Config.Inputs {
 		if input.Name == value.Name {
@@ -52,4 +80,18 @@ func (b *PathOfBuilding) GetStringOption(name string) string {
 		}
 	}
 	return ""
+}
+
+func (b *PathOfBuilding) AddNewSocketGroup() {
+	b.Skills.SkillSets[b.Skills.ActiveSkillSet-1].Skills = append(b.Skills.SkillSets[b.Skills.ActiveSkillSet-1].Skills, Skill{
+		Enabled: true,
+	})
+}
+
+func (b *PathOfBuilding) DeleteSocketGroup(index int) {
+	b.Skills.SkillSets[b.Skills.ActiveSkillSet-1].Skills = append(b.Skills.SkillSets[b.Skills.ActiveSkillSet-1].Skills[:index], b.Skills.SkillSets[b.Skills.ActiveSkillSet-1].Skills[index+1:]...)
+}
+
+func (b *PathOfBuilding) DeleteAllSocketGroups() {
+	b.Skills.SkillSets[b.Skills.ActiveSkillSet-1].Skills = make([]Skill, 0)
 }

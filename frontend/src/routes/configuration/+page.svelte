@@ -23,11 +23,7 @@
           if (varData.ifOption !== undefined) {
             // TODO self.input[varData.ifOption]
             return false;
-          } else if (
-            varData.ifCond !== undefined ||
-            varData.ifMinionCond !== undefined ||
-            varData.ifEnemyCond !== undefined
-          ) {
+          } else if (varData.ifCond !== undefined || varData.ifMinionCond !== undefined || varData.ifEnemyCond !== undefined) {
             /*
           TODO ifCond, ifMinionCond, ifEnemyCond
 					local mainEnv = self.build.calcsTab.mainEnv
@@ -198,11 +194,7 @@
       <div class="side-by-side-max-content">
         {#each section.variables as v}
           <div><label for={v.var}>{@html formatColors(v.label)}</label></div>
-          <div
-            class="w-full"
-            on:mouseover={() => (hoveredItem = v)}
-            on:focus={() => (hoveredItem = v)}
-            on:mouseleave={() => (hoveredItem = undefined)}>
+          <div class="w-full" on:mouseover={() => (hoveredItem = v)} on:focus={() => (hoveredItem = v)} on:mouseleave={() => (hoveredItem = undefined)}>
             {#if v.type === 'list'}
               <div class="themed min-w-full">
                 <Select
@@ -217,11 +209,7 @@
                   id={v.var} />
               </div>
             {:else if v.type === 'count' || v.type === 'integer' || v.type === 'countAllowZero'}
-              <NumberInput
-                min={v.type === 'countAllowZero' ? 0 : 1}
-                fullWidth={true}
-                id={v.var}
-                bind:value={valueWatchers[v.var]} />
+              <NumberInput min={v.type === 'countAllowZero' ? 0 : 1} fullWidth={true} id={v.var} bind:value={valueWatchers[v.var]} />
             {:else if v.type === 'check'}
               <input type="checkbox" class="text-2xl" id={v.var} bind:checked={valueWatchers[v.var]} />
             {/if}
@@ -232,10 +220,7 @@
   {/each}
 </div>
 
-<div
-  class="absolute pointer-events-none border-amber-800 border-4 p-2 bg-black"
-  style={tooltipStyle}
-  bind:this={tooltipElement}>
+<div class="absolute pointer-events-none border-amber-800 border-4 p-2 bg-black" style={tooltipStyle} bind:this={tooltipElement}>
   {#if hoveredItem !== undefined && hoveredItem.tooltip !== undefined}
     {@html formatColors(hoveredItem.tooltip.trim().replaceAll('\n', '<br/>'))}
   {/if}

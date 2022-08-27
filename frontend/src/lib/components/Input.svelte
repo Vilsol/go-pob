@@ -9,20 +9,9 @@
   let inputElement: HTMLInputElement;
 </script>
 
-<div
-  class="input-wrapper flex flex-row items-center"
-  class:disabled
-  class:min-w-full={fullWidth}
-  on:click={() => inputElement.focus()}>
+<div class="input-wrapper flex flex-row items-center" class:disabled class:min-w-full={fullWidth} on:click={() => inputElement.focus()}>
   {#if prefix}
     <span class="mx-1 select-none">{prefix}</span>
   {/if}
-  <input
-    bind:this={inputElement}
-    type="text"
-    bind:value
-    class="input flex-1"
-    maxlength={max}
-    {placeholder}
-    {disabled} />
+  <input bind:this={inputElement} type="text" bind:value class="input flex-1" maxlength={max} {placeholder} {disabled} />
 </div>

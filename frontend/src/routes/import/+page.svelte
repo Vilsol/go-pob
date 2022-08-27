@@ -16,7 +16,7 @@
         console.error(err);
       })
       .then(() => {
-        syncWrap?.Tick();
+        syncWrap?.Tick('importBuildFromCode');
       });
   };
 </script>

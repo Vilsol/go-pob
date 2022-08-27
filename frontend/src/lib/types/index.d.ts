@@ -1,19 +1,15 @@
 /* eslint-disable */
 export declare namespace builds {
-  function ParseBuild(rawXML?: Uint8Array): [pob.PathOfBuilding | undefined, Error];
-  function ParseBuildStr(rawXML: string): [pob.PathOfBuilding | undefined, Error];
+  function ParseBuild(rawXML?: Uint8Array): [(pob.PathOfBuilding | undefined), Error];
+  function ParseBuildStr(rawXML: string): [(pob.PathOfBuilding | undefined), Error];
 }
 export declare namespace cache {
   interface ComputationCache {
-    Calculate: (arg1: string) => raw.StatMap | undefined;
+    Calculate: (arg1: string) => (raw.StatMap | undefined);
     Data?: Record<string, raw.StatMap | undefined>;
-    Get(arg1: string): raw.StatMap | undefined;
+    Get(arg1: string): (raw.StatMap | undefined);
   }
-  function InitializeDiskCache(
-    arg1: (arg1: string) => Promise<Uint8Array | undefined>,
-    arg2: (arg1: string, arg2?: Uint8Array) => Promise<void>,
-    arg3: (arg1: string) => Promise<boolean>
-  ): Promise<void>;
+  function InitializeDiskCache(arg1: (arg1: string) => Promise<(Uint8Array | undefined)>, arg2: (arg1: string, arg2?: Uint8Array) => Promise<void>, arg3: (arg1: string) => Promise<boolean>): Promise<void>;
 }
 export declare namespace calculator {
   interface ActiveSkill {
@@ -55,7 +51,7 @@ export declare namespace calculator {
   }
   interface Calculator {
     PoB?: pob.PathOfBuilding;
-    BuildOutput(mode: string): calculator.Environment | undefined;
+    BuildOutput(mode: string): (calculator.Environment | undefined);
   }
   interface ConversionTable {
     Targets?: Record<string, number>;
@@ -108,7 +104,7 @@ export declare namespace calculator {
     BaseMultiplier(): number;
     CastTime(): number;
     DamageEffectiveness(): number;
-    WeaponTypes(): Array<string> | undefined;
+    WeaponTypes(): (Array<string> | undefined);
   }
   interface ListCfg {
     Flags?: number;
@@ -124,15 +120,15 @@ export declare namespace calculator {
     AddDB(db?: calculator.ModDB): void;
     AddList(list?: calculator.ModList): void;
     AddMod(newMod?: unknown): void;
-    Clone(): unknown | undefined;
-    EvalMod(arg1?: unknown, arg2?: calculator.ListCfg): unknown | undefined;
+    Clone(): (unknown | undefined);
+    EvalMod(arg1?: unknown, arg2?: calculator.ListCfg): (unknown | undefined);
     Flag(cfg?: calculator.ListCfg, names?: Array<string>): boolean;
     GetCondition(arg1: string, arg2?: calculator.ListCfg, arg3: boolean): [boolean, boolean];
     GetMultiplier(arg1: string, arg2?: calculator.ListCfg, arg3: boolean): number;
     GetStat(arg1: string, arg2?: calculator.ListCfg): number;
-    List(cfg?: calculator.ListCfg, names?: Array<string>): Array<unknown | undefined> | undefined;
+    List(cfg?: calculator.ListCfg, names?: Array<string>): (Array<unknown | undefined> | undefined);
     More(cfg?: calculator.ListCfg, names?: Array<string>): number;
-    Override(cfg?: calculator.ListCfg, names?: Array<string>): unknown | undefined;
+    Override(cfg?: calculator.ListCfg, names?: Array<string>): (unknown | undefined);
     Sum(modType: string, cfg?: calculator.ListCfg, names?: Array<string>): number;
   }
   interface ModList {
@@ -140,15 +136,15 @@ export declare namespace calculator {
     mods?: Array<unknown | undefined>;
     AddDB(db?: calculator.ModList): void;
     AddMod(newMod?: unknown): void;
-    Clone(): unknown | undefined;
-    EvalMod(arg1?: unknown, arg2?: calculator.ListCfg): unknown | undefined;
+    Clone(): (unknown | undefined);
+    EvalMod(arg1?: unknown, arg2?: calculator.ListCfg): (unknown | undefined);
     Flag(cfg?: calculator.ListCfg, names?: Array<string>): boolean;
     GetCondition(arg1: string, arg2?: calculator.ListCfg, arg3: boolean): [boolean, boolean];
     GetMultiplier(arg1: string, arg2?: calculator.ListCfg, arg3: boolean): number;
     GetStat(arg1: string, arg2?: calculator.ListCfg): number;
-    List(cfg?: calculator.ListCfg, names?: Array<string>): Array<unknown | undefined> | undefined;
+    List(cfg?: calculator.ListCfg, names?: Array<string>): (Array<unknown | undefined> | undefined);
     More(cfg?: calculator.ListCfg, names?: Array<string>): number;
-    Override(cfg?: calculator.ListCfg, names?: Array<string>): unknown | undefined;
+    Override(cfg?: calculator.ListCfg, names?: Array<string>): (unknown | undefined);
     Sum(modType: string, cfg?: calculator.ListCfg, names?: Array<string>): number;
   }
   interface ModStore {
@@ -157,8 +153,8 @@ export declare namespace calculator {
     Actor?: calculator.Actor;
     Multipliers?: Record<string, number>;
     Conditions?: Record<string, boolean>;
-    Clone(): calculator.ModStore | undefined;
-    EvalMod(m?: unknown, cfg?: calculator.ListCfg): unknown | undefined;
+    Clone(): (calculator.ModStore | undefined);
+    EvalMod(m?: unknown, cfg?: calculator.ListCfg): (unknown | undefined);
     GetCondition(variable: string, cfg?: calculator.ListCfg, noMod: boolean): [boolean, boolean];
     GetMultiplier(variable: string, cfg?: calculator.ListCfg, noMod: boolean): number;
     GetStat(stat: string, cfg?: calculator.ListCfg): number;
@@ -180,7 +176,7 @@ export declare namespace calculator {
     Class(): data.Class;
     SelectAscendancyClass(ascendancyName: string): void;
     SelectClass(className: string): void;
-    Tree(): data.Tree | undefined;
+    Tree(): (data.Tree | undefined);
   }
   interface RequirementsTableGems {
     Source: string;
@@ -189,7 +185,7 @@ export declare namespace calculator {
     Dex: number;
     Int: number;
   }
-  function NewCalculator(build: pob.PathOfBuilding): calculator.Calculator | undefined;
+  function NewCalculator(build: pob.PathOfBuilding): (calculator.Calculator | undefined);
 }
 export declare namespace config {
   function InitLogging(withTime: boolean): void;
@@ -505,9 +501,10 @@ export declare namespace exposition {
     GemType: string;
     Base: exposition.GemPart;
     Vaal: exposition.GemPart;
+    Support: boolean;
     CalculateStuff(): void;
   }
-  function GetSkillGems(): Array<exposition.SkillGem> | undefined;
+  function GetSkillGems(): (Array<exposition.SkillGem> | undefined);
 }
 export declare namespace pob {
   interface Build {
@@ -571,13 +568,23 @@ export declare namespace pob {
     Skills: pob.Skills;
     TreeView: pob.TreeView;
     Config: pob.Config;
+    AddNewSocketGroup(): void;
+    DeleteAllSocketGroups(): void;
+    DeleteSocketGroup(index: number): void;
     GetStringOption(name: string): string;
     RemoveConfigOption(name: string): void;
     SetConfigOption(value: pob.Input): void;
+    SetDefaultGemLevel(gemLevel: number): void;
+    SetDefaultGemQuality(gemQuality: number): void;
     SetMainSocketGroup(mainSocketGroup: number): void;
+    SetMatchGemLevelToCharacterLevel(enabled: boolean): void;
+    SetShowAltQualityGems(enabled: boolean): void;
+    SetShowSupportGemTypes(gemTypes: string): void;
     SetSkillGroupName(skillSet: number, socketGroup: number, label: string): void;
     SetSocketGroupGems(skillSet: number, socketGroup: number, gems?: Array<pob.Gem>): void;
-    WithMainSocketGroup(mainSocketGroup: number): pob.PathOfBuilding | undefined;
+    SetSortGemsByDPS(enabled: boolean): void;
+    SetSortGemsByDPSField(field: string): void;
+    WithMainSocketGroup(mainSocketGroup: number): (pob.PathOfBuilding | undefined);
   }
   interface PlayerStat {
     Value: number;
@@ -663,8 +670,8 @@ export declare namespace raw {
     WebsiteDescription: string;
     WebsiteImage: string;
     Key: number;
-    GetActiveSkillTypes(): Array<raw.ActiveSkillType | undefined> | undefined;
-    GetWeaponRestrictions(): Array<raw.ItemClass | undefined> | undefined;
+    GetActiveSkillTypes(): (Array<raw.ActiveSkillType | undefined> | undefined);
+    GetWeaponRestrictions(): (Array<raw.ItemClass | undefined> | undefined);
   }
   interface ActiveSkillType {
     FlagStat?: number;
@@ -696,7 +703,7 @@ export declare namespace raw {
     VendorRecipeAchievementItems?: Array<number>;
     Width: number;
     Key: number;
-    SkillGem(): raw.SkillGem | undefined;
+    SkillGem(): (raw.SkillGem | undefined);
   }
   interface CalculatedLevel {
     Level: number;
@@ -749,20 +756,20 @@ export declare namespace raw {
     calculatedConstantStats?: Record<string, number>;
     calculatedStatMap?: cache.ComputationCache;
     Calculate(): void;
-    GetActiveSkill(): raw.ActiveSkill | undefined;
-    GetCalculatedConstantStats(): Record<string, number> | undefined;
-    GetCalculatedLevels(): Record<number, raw.CalculatedLevel | undefined> | undefined;
-    GetCalculatedStatMap(): cache.ComputationCache | undefined;
-    GetCalculatedStats(): Array<string> | undefined;
-    GetEffectQualityStats(): Record<number, raw.GrantedEffectQualityStat | undefined> | undefined;
-    GetEffectStatSetsPerLevel(): Record<number, raw.GrantedEffectStatSetsPerLevel | undefined> | undefined;
-    GetEffectsPerLevel(): Record<number, raw.GrantedEffectsPerLevel | undefined> | undefined;
-    GetExcludeTypes(): Array<raw.ActiveSkillType | undefined> | undefined;
-    GetGrantedEffectStatSet(): raw.GrantedEffectStatSet | undefined;
-    GetSkillGem(): raw.SkillGem | undefined;
-    GetSupportTypes(): Array<raw.ActiveSkillType | undefined> | undefined;
+    GetActiveSkill(): (raw.ActiveSkill | undefined);
+    GetCalculatedConstantStats(): (Record<string, number> | undefined);
+    GetCalculatedLevels(): (Record<number, raw.CalculatedLevel | undefined> | undefined);
+    GetCalculatedStatMap(): (cache.ComputationCache | undefined);
+    GetCalculatedStats(): (Array<string> | undefined);
+    GetEffectQualityStats(): (Record<number, raw.GrantedEffectQualityStat | undefined> | undefined);
+    GetEffectStatSetsPerLevel(): (Record<number, raw.GrantedEffectStatSetsPerLevel | undefined> | undefined);
+    GetEffectsPerLevel(): (Record<number, raw.GrantedEffectsPerLevel | undefined> | undefined);
+    GetExcludeTypes(): (Array<raw.ActiveSkillType | undefined> | undefined);
+    GetGrantedEffectStatSet(): (raw.GrantedEffectStatSet | undefined);
+    GetSkillGem(): (raw.SkillGem | undefined);
+    GetSupportTypes(): (Array<raw.ActiveSkillType | undefined> | undefined);
     HasGlobalEffect(): boolean;
-    Levels(): Record<number, raw.GrantedEffectsPerLevel | undefined> | undefined;
+    Levels(): (Record<number, raw.GrantedEffectsPerLevel | undefined> | undefined);
   }
   interface GrantedEffectQualityStat {
     GrantedEffectsKey: number;
@@ -771,7 +778,7 @@ export declare namespace raw {
     StatsValuesPermille?: Array<number>;
     Weight: number;
     Key: number;
-    GetStats(): Array<raw.Stat | undefined> | undefined;
+    GetStats(): (Array<raw.Stat | undefined> | undefined);
   }
   interface GrantedEffectStatSet {
     Key: number;
@@ -781,8 +788,8 @@ export declare namespace raw {
     ConstantStatsValues?: Array<number>;
     BaseEffectiveness: number;
     IncrementalEffectiveness: number;
-    GetConstantStats(): Array<raw.Stat | undefined> | undefined;
-    GetImplicitStats(): Array<raw.Stat | undefined> | undefined;
+    GetConstantStats(): (Array<raw.Stat | undefined> | undefined);
+    GetImplicitStats(): (Array<raw.Stat | undefined> | undefined);
   }
   interface GrantedEffectStatSetsPerLevel {
     AdditionalBooleanStats?: Array<number>;
@@ -802,9 +809,9 @@ export declare namespace raw {
     StatInterpolations?: Array<number>;
     StatSet: number;
     Key: number;
-    GetAdditionalBooleanStats(): Array<raw.Stat | undefined> | undefined;
-    GetAdditionalStats(): Array<raw.Stat | undefined> | undefined;
-    GetFloatStats(): Array<raw.Stat | undefined> | undefined;
+    GetAdditionalBooleanStats(): (Array<raw.Stat | undefined> | undefined);
+    GetAdditionalStats(): (Array<raw.Stat | undefined> | undefined);
+    GetFloatStats(): (Array<raw.Stat | undefined> | undefined);
   }
   interface GrantedEffectsPerLevel {
     AttackSpeedMultiplier: number;
@@ -827,7 +834,7 @@ export declare namespace raw {
     VaalSouls: number;
     VaalStoredUses: number;
     Key: number;
-    GetCostTypes(): Array<raw.CostType | undefined> | undefined;
+    GetCostTypes(): (Array<raw.CostType | undefined> | undefined);
   }
   interface ItemClass {
     AllocateToMapOwner: boolean;
@@ -867,12 +874,12 @@ export declare namespace raw {
     RegularVariant?: number;
     Key: number;
     DefaultLevel(): number;
-    GetBaseItemType(): raw.BaseItemType | undefined;
-    GetGrantedEffect(): raw.GrantedEffect | undefined;
-    GetGrantedEffects(): Array<raw.GrantedEffect | undefined> | undefined;
-    GetNonVaal(): raw.SkillGem | undefined;
-    GetSecondaryGrantedEffect(): raw.GrantedEffect | undefined;
-    GetTags(): Record<string, raw.Tag | undefined> | undefined;
+    GetBaseItemType(): (raw.BaseItemType | undefined);
+    GetGrantedEffect(): (raw.GrantedEffect | undefined);
+    GetGrantedEffects(): (Array<raw.GrantedEffect | undefined> | undefined);
+    GetNonVaal(): (raw.SkillGem | undefined);
+    GetSecondaryGrantedEffect(): (raw.GrantedEffect | undefined);
+    GetTags(): (Record<string, raw.Tag | undefined> | undefined);
   }
   interface Stat {
     BelongsStatsKey?: Array<string>;
@@ -896,7 +903,7 @@ export declare namespace raw {
     Mult?: number;
     Div?: number;
     Base?: number;
-    Clone(): raw.StatMap | undefined;
+    Clone(): (raw.StatMap | undefined);
   }
   interface Tag {
     DisplayString: string;

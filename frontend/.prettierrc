@@ -2,7 +2,7 @@
   "bracketSameLine": true,
   "bracketSpacing": true,
   "endOfLine": "lf",
-  "printWidth": 120,
+  "printWidth": 160,
   "quoteProps": "as-needed",
   "singleQuote": true,
   "svelteAllowShorthand": true,

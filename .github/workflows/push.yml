@@ -50,7 +50,7 @@ jobs:
 
       - name: Lint
         working-directory: ./frontend
-        run: pnpm run lint && pnpm run check
+        run: pnpm run lint
 
   build-backend:
     name: Build Backend

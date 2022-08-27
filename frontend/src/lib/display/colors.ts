@@ -47,7 +47,9 @@ const baseColorCodes = {
   SCORCHBG: '#270b00',
   BRITTLEBG: '#00122b',
   SAPBG: '#261500',
-  SCOURGE: '#FF6E25'
+  SCOURGE: '#FF6E25',
+  GRAY: '#9F9F9F',
+  WHITE: '#FFFFFF'
 };
 
 const withStatsColorCodes = {
@@ -70,9 +72,31 @@ export const colorCodes = {
 
 const colorRegex = new RegExp(/\^#([0-9A-F]{6})?/g);
 
-export const formatColors = (s: string): string =>
-  '<span>' +
-  s.replaceAll(colorRegex, (_: string, match?: string) =>
-    match !== undefined ? `</span><span style='color: #${match}'>` : '</span><span>'
-  ) +
-  '</span>';
+export const formatColors = (s: string): string => {
+  let result = '';
+
+  let openCount = 0;
+  let lastIndex = 0;
+  const matches = s.matchAll(colorRegex);
+  for (const match of matches) {
+    result += s.substring(lastIndex, match.index);
+
+    if (match[1]) {
+      openCount++;
+      result += `<span style='color: #${match[1]}'>`;
+    } else {
+      if (openCount > 0) {
+        openCount--;
+        result += '</span>';
+      }
+    }
+
+    lastIndex = (match.index || 0) + match[0].length;
+  }
+
+  result += s.substring(lastIndex, s.length);
+
+  result += '</span>'.repeat(openCount);
+
+  return '<span>' + result + '</span>';
+};

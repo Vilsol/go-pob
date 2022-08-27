@@ -89,7 +89,7 @@ class PoBWorker {
     this.currentBuild = build;
   }
 
-  async Tick() {
+  async Tick(source: string) {
     if (!this.currentBuild) {
       return;
     }
@@ -99,7 +99,7 @@ class PoBWorker {
       return;
     }
 
-    console.log('TICK');
+    console.log('TICK from', source);
     const out = calc.BuildOutput('MAIN');
     if (!out || !out.Player || !out.Player.MainSkill) {
       return;
@@ -140,7 +140,7 @@ class PoBWorker {
     if (remove) {
       this.currentBuild.RemoveConfigOption(key);
       this.updateStore();
-      this.Tick();
+      this.Tick('SetConfigOption: remove');
       return;
     }
 
@@ -162,7 +162,7 @@ class PoBWorker {
 
     this.currentBuild.SetConfigOption(newValue);
     this.updateStore();
-    this.Tick();
+    this.Tick('SetConfigOption: change');
   }
 
   GetConfigOption(name: string): boolean | number | string | undefined {
@@ -192,7 +192,7 @@ class PoBWorker {
 
   SetMainSocketGroup(mainSocketGroup: number) {
     this.currentBuild?.SetMainSocketGroup(mainSocketGroup);
-    this.Tick();
+    this.Tick('SetMainSocketGroup');
   }
 
   GetSkillGems(): DeepPromise<exposition.SkillGem[]> {

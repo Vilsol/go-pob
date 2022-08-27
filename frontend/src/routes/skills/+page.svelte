@@ -1,7 +1,7 @@
 <script lang="ts">
   import NumberInput from '../../lib/components/NumberInput.svelte';
   import Input from '../../lib/components/Input.svelte';
-  import { currentBuild } from '../../lib/global';
+  import { currentBuild, UITick } from '../../lib/global';
   import { writable } from 'svelte/store';
   import { syncWrap } from '../../lib/go/worker';
   import SelectItem from '../../lib/components/SelectItem.svelte';
@@ -11,24 +11,25 @@
   import { onMount } from 'svelte';
   import { colorCodes } from '../../lib/display/colors';
   import type { SkillGroupUpdate } from '../../lib/custom_types';
-  import type { pob } from '../../lib/types';
+  import type { pob, exposition } from '../../lib/types';
 
   let skillSetCount = 1;
-  $: $currentBuild?.Skills.SkillSets.then((v) => (skillSetCount = v.length));
+  $: $currentBuild?.Skills?.SkillSets?.then((v) => (skillSetCount = v?.length || 0));
 
   let activeSkillSet = 1;
-  $: $currentBuild?.Skills.ActiveSkillSet.then((v) => (activeSkillSet = v));
+  $: $currentBuild?.Skills?.ActiveSkillSet?.then((v) => (activeSkillSet = v));
 
   let visualSocketGroup = 0;
   const mainSocketGroup = writable(-1);
-  $: $currentBuild?.Build.MainSocketGroup.then((v) => mainSocketGroup.set(v - 1));
+  $: $currentBuild?.Build?.MainSocketGroup?.then((v) => mainSocketGroup.set(v - 1));
   mainSocketGroup.subscribe((value) => {
-    value >= 0 && syncWrap.SetMainSocketGroup(value + 1);
+    value >= 0 && syncWrap?.SetMainSocketGroup(value + 1);
+    currentBuild.set($currentBuild);
   });
 
   let updatingLabel = true;
   const socketGroupLabel = writable('');
-  $: $currentBuild?.Skills.SkillSets[activeSkillSet - 1].Skills[visualSocketGroup]?.Label.then((v) => {
+  $: $currentBuild?.Skills?.SkillSets?.[activeSkillSet - 1].Skills?.[visualSocketGroup]?.Label.then((v: string) => {
     updatingLabel = true;
     socketGroupLabel.set(v);
     updatingLabel = false;
@@ -37,8 +38,7 @@
     if (updatingLabel || !$currentBuild) {
       return;
     }
-    $currentBuild.Skills.SkillSets[activeSkillSet - 1].Skills[visualSocketGroup].Label =
-      data as unknown as Promise<string>;
+    $currentBuild.Skills.SkillSets[activeSkillSet - 1].Skills[visualSocketGroup].Label = data as Promise<string> & string;
   });
 
   const onRightClickSocketGroup = (i: number, event: MouseEvent) => {
@@ -47,9 +47,10 @@
     mainSocketGroup.set(i);
   };
 
-  let skillGemList = [];
+  let skillGemList: { label: string; value: string }[] = [];
+  const skillGemMapping: Record<string, exposition.SkillGem> = {};
 
-  const gemColorMap = {
+  const gemColorMap: Record<string, string> = {
     STR: colorCodes.STRENGTH,
     DEX: colorCodes.DEXTERITY,
     INT: colorCodes.INTELLIGENCE,
@@ -64,6 +65,10 @@
         value: g.ID,
         data: g
       }));
+
+      all.forEach((g) => {
+        skillGemMapping[g.ID] = g;
+      });
     });
   });
 
@@ -71,7 +76,7 @@
   const currentGemGroup = writable<SkillGroupUpdate | undefined>();
   $: skillGemList.length > 0 &&
     new Promise(async () => {
-      const skillGroup = $currentBuild?.Skills.SkillSets[activeSkillSet - 1].Skills[visualSocketGroup];
+      const skillGroup = $currentBuild?.Skills?.SkillSets?.[activeSkillSet - 1]?.Skills?.[visualSocketGroup];
       if (!skillGroup) {
         currentGemGroup.set(undefined);
         return;
@@ -112,19 +117,34 @@
       updatingCurrentGemGroup = false;
     });
 
+  let lastGroup = '';
   currentGemGroup.subscribe(async (group) => {
-    if (updatingCurrentGemGroup) {
+    if (
+      updatingCurrentGemGroup ||
+      !group ||
+      !$currentBuild ||
+      !$currentBuild.Skills ||
+      !$currentBuild.Skills.SkillSets ||
+      !$currentBuild.Skills.SkillSets[activeSkillSet - 1] ||
+      !$currentBuild.Skills.SkillSets[activeSkillSet - 1].Skills ||
+      !$currentBuild.Skills.SkillSets[activeSkillSet - 1].Skills[visualSocketGroup]
+    ) {
       return;
     }
 
-    $currentBuild.Skills.SkillSets[activeSkillSet - 1].Skills[visualSocketGroup].Slot = group.Slot as Promise<string>;
-    $currentBuild.Skills.SkillSets[activeSkillSet - 1].Skills[visualSocketGroup].Enabled =
-      group.Enabled as Promise<boolean>;
-    $currentBuild.Skills.SkillSets[activeSkillSet - 1].Skills[visualSocketGroup].IncludeInFullDPS =
-      group.IncludeInFullDPS as Promise<boolean>;
+    // Prevent re-execution
+    const newGroup = JSON.stringify(group);
+    if (lastGroup === newGroup) {
+      return;
+    }
+    lastGroup = newGroup;
+
+    $currentBuild.Skills.SkillSets[activeSkillSet - 1].Skills[visualSocketGroup].Slot = group.Slot as Promise<string> & string;
+    $currentBuild.Skills.SkillSets[activeSkillSet - 1].Skills[visualSocketGroup].Enabled = group.Enabled as Promise<boolean> & boolean;
+    $currentBuild.Skills.SkillSets[activeSkillSet - 1].Skills[visualSocketGroup].IncludeInFullDPS = group.IncludeInFullDPS as Promise<boolean> & boolean;
 
     if (group.Gems) {
-      await $currentBuild.SetSocketGroupGems(
+      await $currentBuild?.SetSocketGroupGems?.(
         activeSkillSet - 1,
         visualSocketGroup,
         group.Gems.map((g) => ({
@@ -134,26 +154,55 @@
       );
     }
 
-    syncWrap.Tick();
+    UITick('currentGemGroup');
   });
 
-  let socketGroupList: string[] = [];
-  $: $currentBuild?.Skills.SkillSets[activeSkillSet - 1].Skills.then(async (skills) => {
+  let socketGroupList: {
+    label: string;
+    enabled: boolean;
+    fullDPS: boolean;
+  }[] = [];
+  $: $currentBuild?.Skills?.SkillSets?.[activeSkillSet - 1]?.Skills?.then(async (skills: unknown[]) => {
     const finalList = [];
     for (let i = 0; i < skills.length; i++) {
-      finalList.push(await $currentBuild.Skills.SkillSets[activeSkillSet - 1].Skills[i].Label);
+      let label: string | undefined = await $currentBuild?.Skills?.SkillSets?.[activeSkillSet - 1]?.Skills?.[i].Label;
+      if (label === '') {
+        const allGems = $currentBuild?.Skills?.SkillSets?.[activeSkillSet - 1]?.Skills?.[i].Gems;
+        if (await allGems) {
+          for (let j = 0; j < (await allGems.length); j++) {
+            const gem = skillGemMapping[await allGems[j].GemID];
+            if (!gem || gem.Support) {
+              continue;
+            }
+
+            if (label !== '') {
+              label += ', ';
+            }
+
+            label += gem.Base.Name;
+          }
+        } else {
+          label = '<No active skills>';
+        }
+      }
+
+      finalList.push({
+        label,
+        enabled: await $currentBuild?.Skills?.SkillSets?.[activeSkillSet - 1]?.Skills?.[i].Enabled,
+        fullDPS: await $currentBuild?.Skills?.SkillSets?.[activeSkillSet - 1]?.Skills?.[i].IncludeInFullDPS
+      });
     }
     socketGroupList = finalList;
   });
 
   const removeGem = (i: number) => {
-    $currentGemGroup.Gems.splice(i, 1);
+    $currentGemGroup?.Gems?.splice(i, 1);
     currentGemGroup.set($currentGemGroup);
   };
 
   const addGem = () => {
     const firstGem = skillGemList[0];
-    $currentGemGroup.Gems.push({
+    $currentGemGroup?.Gems?.push({
       GemListValue: firstGem,
       Quality: 0,
       SkillPart: 1,
@@ -171,6 +220,68 @@
       SkillMinion: 'SummonedPhantasm'
     } as unknown as pob.Gem);
     currentGemGroup.set($currentGemGroup);
+  };
+
+  const registerProperty = (obj: object, publicKey: string, onUpdate: (value: unknown) => void) => {
+    const privateKey = '_' + publicKey;
+    Object.defineProperty(obj, publicKey, {
+      get() {
+        return this[privateKey];
+      },
+      set(value) {
+        if (this[privateKey] !== value && $currentBuild) {
+          onUpdate(value);
+          this[privateKey] = value;
+        }
+      }
+    });
+  };
+
+  const gemOptions = {
+    _sortGemsByDPS: true,
+    _sortGemsByDPSField: 'FullDPS',
+    _matchGemLevelToCharacterLevel: false,
+    _defaultGemLevel: 20,
+    _defaultGemQuality: 0,
+    _showSupportGemTypes: 'ALL',
+    _showAltQualityGems: false
+  };
+
+  registerProperty(gemOptions, 'sortGemsByDPS', (value) => $currentBuild.SetSortGemsByDPS(value.toString() === 'true'));
+  registerProperty(gemOptions, 'sortGemsByDPSField', (value) => $currentBuild.SetSortGemsByDPSField(value as string));
+  registerProperty(gemOptions, 'matchGemLevelToCharacterLevel', (value) => $currentBuild.SetMatchGemLevelToCharacterLevel(value.toString() === 'true'));
+  registerProperty(gemOptions, 'defaultGemLevel', (value) => $currentBuild.SetDefaultGemLevel(parseInt(value.toString())));
+  registerProperty(gemOptions, 'defaultGemQuality', (value) => $currentBuild.SetDefaultGemQuality(parseInt(value.toString())));
+  registerProperty(gemOptions, 'showSupportGemTypes', (value) => $currentBuild.SetShowSupportGemTypes(value as string));
+  registerProperty(gemOptions, 'showAltQualityGems', (value) => $currentBuild.SetShowAltQualityGems(value.toString() === 'true'));
+
+  $: $currentBuild?.Skills?.then((skillData) => {
+    gemOptions._sortGemsByDPS = skillData.SortGemsByDPS;
+    gemOptions._sortGemsByDPSField = skillData.SortGemsByDPSField;
+    gemOptions._matchGemLevelToCharacterLevel = skillData.MatchGemLevelToCharacterLevel;
+    gemOptions._defaultGemLevel = skillData.DefaultGemLevel;
+    gemOptions._defaultGemQuality = skillData.DefaultGemQuality;
+    gemOptions._showSupportGemTypes = skillData.ShowSupportGemTypes;
+    gemOptions._showAltQualityGems = skillData.ShowAltQualityGems;
+  });
+
+  const addNewSocketGroup = () => {
+    $currentBuild?.AddNewSocketGroup();
+    currentBuild.set($currentBuild);
+  };
+
+  const deleteSelectedSocketGroup = () => {
+    $currentBuild?.DeleteSocketGroup(visualSocketGroup);
+    visualSocketGroup = 0;
+    currentBuild.set($currentBuild);
+  };
+
+  const deleteAllSocketGroups = () => {
+    $currentBuild?.DeleteAllSocketGroups();
+    $currentBuild?.AddNewSocketGroup();
+    visualSocketGroup = 0;
+    mainSocketGroup.set(0);
+    currentBuild.set($currentBuild);
   };
 </script>
 
@@ -194,18 +305,18 @@
         <div class="flex flex-row items-center gap-2">
           <span class="flex-1">Socket Groups:</span>
 
-          <button class="container">New</button>
-          <button class="container">Delete All</button>
-          <button class="container" disabled>Delete</button>
+          <button class="container" on:click={addNewSocketGroup}>New</button>
+          <button class="container" disabled={socketGroupList.length <= 1} on:click={deleteAllSocketGroups}>Delete All</button>
+          <button class="container" disabled={visualSocketGroup < 0 || socketGroupList.length <= 1} on:click={deleteSelectedSocketGroup}>Delete</button>
         </div>
 
-        <select
-          bind:value={visualSocketGroup}
-          class="bg-black border w-full border-neutral-400 flex-1 select-many max-h-[300px]"
-          size="18">
-          {#each socketGroupList as label, i}
+        <select bind:value={visualSocketGroup} class="bg-black border w-full border-neutral-400 flex-1 select-many max-h-[300px]" size="18">
+          {#each socketGroupList as group, i}
             <option value={i} on:contextmenu={(event) => onRightClickSocketGroup(i, event)}>
-              {label}{$mainSocketGroup === i ? ' (Active)' : ''}
+              {group.label}
+              {!group.enabled ? ' (Disabled)' : ''}
+              {$mainSocketGroup === i ? ' (Active)' : ''}
+              {group.fullDPS ? ' (FullDPS)' : ''}
             </option>
           {/each}
         </select>
@@ -223,46 +334,46 @@
           <div class="side-by-side-max-content">
             <span>Sort gems by DPS:</span>
             <div class="flex flex-row gap-2">
-              <input type="checkbox" class="text-2xl" />
+              <input type="checkbox" class="text-2xl" bind:checked={gemOptions.sortGemsByDPS} />
               <div class="container select-wrapper">
-                <select class="input">
-                  <option>Full DPS</option>
-                  <option>Combined DPS</option>
-                  <option>Total DPS</option>
-                  <option>Average Hit</option>
-                  <option>DoT DPS</option>
-                  <option>Bleed DPS</option>
-                  <option>Ignite DPS</option>
-                  <option>Poison DPS</option>
+                <select class="input" bind:value={gemOptions.sortGemsByDPSField}>
+                  <option value="FullDPS">Full DPS</option>
+                  <option value="CombinedDPS">Combined DPS</option>
+                  <option value="TotalDPS">Total DPS</option>
+                  <option value="AverageDamage">Average Hit</option>
+                  <option value="TotalDot">DoT DPS</option>
+                  <option value="BleedDPS">Bleed DPS</option>
+                  <option value="IgniteDPS">Ignite DPS</option>
+                  <option value="TotalPoisonDPS">Poison DPS</option>
                 </select>
               </div>
             </div>
 
             <span>Match gems character level:</span>
             <div class="flex flex-row gap-2">
-              <input type="checkbox" class="text-2xl" />
+              <input type="checkbox" class="text-2xl" bind:checked={gemOptions.matchGemLevelToCharacterLevel} />
             </div>
 
             <span>Default gem level:</span>
-            <NumberInput min={1} max={21} />
+            <NumberInput min={1} max={40} bind:value={gemOptions.defaultGemLevel} />
 
             <span>Default gem quality:</span>
-            <NumberInput min={1} max={21} />
+            <NumberInput min={0} max={30} bind:value={gemOptions.defaultGemQuality} />
 
             <span>Show support gems:</span>
             <div class="flex flex-row gap-2">
               <div class="container select-wrapper">
-                <select class="input">
-                  <option>All</option>
-                  <option>Non-Awakened</option>
-                  <option>Awakened</option>
+                <select class="input" bind:value={gemOptions.showSupportGemTypes}>
+                  <option value="ALL">All</option>
+                  <option value="NORMAL">Non-Awakened</option>
+                  <option value="AWAKENED">Awakened</option>
                 </select>
               </div>
             </div>
 
             <span>Show gem quality variants:</span>
             <div class="flex flex-row gap-2">
-              <input type="checkbox" class="text-2xl" />
+              <input type="checkbox" class="text-2xl" bind:checked={gemOptions.showAltQualityGems} />
             </div>
           </div>
         </fieldset>
@@ -326,7 +437,7 @@
                 </select>
               </div>
 
-              <NumberInput min={0} max={21} bind:value={gemGroup.Quality} />
+              <NumberInput min={0} max={30} bind:value={gemGroup.Quality} />
 
               <input type="checkbox" class="text-2xl" bind:checked={gemGroup.Enabled} />
 

@@ -24,6 +24,7 @@ type SkillGem struct {
 	GemType  GemType
 	Base     GemPart
 	Vaal     GemPart
+	Support  bool
 }
 
 func (g SkillGem) CalculateStuff() {
@@ -42,14 +43,16 @@ func GetSkillGems() []SkillGem {
 			}
 
 			description := gem.Description
+			grantedEffect := gem.GetGrantedEffect()
 			if description == "" {
-				description = gem.GetGrantedEffect().GetActiveSkill().Description
+				description = grantedEffect.GetActiveSkill().Description
 			}
 
 			outGem := SkillGem{
-				MaxLevel: len(gem.GetGrantedEffect().Levels()),
+				MaxLevel: len(grantedEffect.Levels()),
 				ID:       baseType.ID,
 				GemType:  GemTypeNone,
+				Support:  grantedEffect.IsSupport,
 				Base: GemPart{
 					Name:        baseType.Name,
 					Description: description,

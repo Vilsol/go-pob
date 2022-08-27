@@ -302,16 +302,7 @@ export const configurations: ConfigSection[] = [
         var: 'warcryMode',
         type: 'list',
         label: 'Warcry calculation mode:',
-        ifSkillList: [
-          'Infernal Cry',
-          'Ancestral Cry',
-          'Enduring Cry',
-          "General's Cry",
-          'Intimidating Cry',
-          'Rallying Cry',
-          'Seismic Cry',
-          "Battlemage's Cry"
-        ],
+        ifSkillList: ['Infernal Cry', 'Ancestral Cry', 'Enduring Cry', "General's Cry", 'Intimidating Cry', 'Rallying Cry', 'Seismic Cry', "Battlemage's Cry"],
         tooltip:
           'Controls how exerted attacks from Warcries are calculated:\nAverage: Averages out Warcry usage with cast time, attack speed and warcry cooldown.\nMax Hit: Shows maximum hit for lining up all warcries.',
         list: [
@@ -490,8 +481,7 @@ export const configurations: ConfigSection[] = [
         type: 'count',
         label: 'Damage % (if not maximum):',
         ifSkill: 'Cruelty',
-        tooltip:
-          'Cruelty is a buff provided by Cruelty Support which grants\nup to 40% more damage over time to the skills it supports.'
+        tooltip: 'Cruelty is a buff provided by Cruelty Support which grants\nup to 40% more damage over time to the skills it supports.'
       }
     ]
   },
@@ -580,8 +570,7 @@ export const configurations: ConfigSection[] = [
         type: 'check',
         label: 'Is Feeding Frenzy active?',
         ifSkill: 'Feeding Frenzy',
-        tooltip:
-          'Feeding Frenzy grants:\n\t10% more Minion Damage\n\t10% increased Minion Movement Speed\n\t10% increased Minion Attack and Cast Speed'
+        tooltip: 'Feeding Frenzy grants:\n\t10% more Minion Damage\n\t10% increased Minion Movement Speed\n\t10% increased Minion Attack and Cast Speed'
       }
     ]
   },
@@ -708,8 +697,7 @@ export const configurations: ConfigSection[] = [
         var: 'perforateSpikeOverlap',
         type: 'count',
         label: '# of Overlapping Spikes:',
-        tooltip:
-          'Affects the DPS of Perforate in Blood Stance.\nMaximum is limited by the number of Spikes of Perforate.',
+        tooltip: 'Affects the DPS of Perforate in Blood Stance.\nMaximum is limited by the number of Spikes of Perforate.',
         ifSkill: 'Perforate'
       }
     ]
@@ -800,8 +788,7 @@ export const configurations: ConfigSection[] = [
         type: 'check',
         label: 'Are you animating Lingering Blades?',
         ifSkill: 'Animate Weapon',
-        tooltip:
-          'Enables additional damage given to Lingering Blades\nThe exact weapon is unknown but should be similar to Glass Shank'
+        tooltip: 'Enables additional damage given to Lingering Blades\nThe exact weapon is unknown but should be similar to Glass Shank'
       }
     ]
   },
@@ -986,16 +973,7 @@ export const configurations: ConfigSection[] = [
         var: 'multiplierWarcryPower',
         type: 'count',
         label: 'Warcry Power:',
-        ifSkillList: [
-          'Infernal Cry',
-          'Ancestral Cry',
-          'Enduring Cry',
-          "General's Cry",
-          'Intimidating Cry',
-          'Rallying Cry',
-          'Seismic Cry',
-          "Battlemage's Cry"
-        ],
+        ifSkillList: ['Infernal Cry', 'Ancestral Cry', 'Enduring Cry', "General's Cry", 'Intimidating Cry', 'Rallying Cry', 'Seismic Cry', "Battlemage's Cry"],
         tooltip:
           'Power determines how strong your Warcry buffs will be, and is based on the total strength of nearby enemies.\nPower is assumed to be 20 if your target is a Boss, but you can override it here if necessary.\n\tEach Normal enemy grants 1 Power\n\tEach Magic enemy grants 2 Power\n\tEach Rare enemy grants 10 Power\n\tEach Unique enemy grants 20 Power'
       }
@@ -1040,8 +1018,7 @@ export const configurations: ConfigSection[] = [
         var: 'VaalMoltenShellDamageMitigated',
         type: 'count',
         label: 'Damage mitigated:',
-        tooltip:
-          'Vaal Molten Shell reflects damage to the enemy,\nbased on the amount of damage it has mitigated in the last second.',
+        tooltip: 'Vaal Molten Shell reflects damage to the enemy,\nbased on the amount of damage it has mitigated in the last second.',
         ifSkill: 'Vaal Molten Shell'
       }
     ]
@@ -1507,8 +1484,7 @@ export const configurations: ConfigSection[] = [
         type: 'check',
         label: "Do you have Alchemist's Genius?",
         ifFlag: 'Condition:CanHaveAlchemistGenius',
-        tooltip:
-          "This will enable the Alchemist's Genius buff:\n20% increased Flask Charges gained\n10% increased effect of Flasks"
+        tooltip: "This will enable the Alchemist's Genius buff:\n20% increased Flask Charges gained\n10% increased effect of Flasks"
       },
       {
         var: 'buffVaalArcLuckyHits',
@@ -1530,16 +1506,14 @@ export const configurations: ConfigSection[] = [
         type: 'count',
         label: 'Effect of Elusive (if not maximum):',
         ifOption: 'buffElusive',
-        tooltip:
-          'If you have a guaranteed source of Elusive, the strongest one will apply. \nYou can change this to see decaying buff values'
+        tooltip: 'If you have a guaranteed source of Elusive, the strongest one will apply. \nYou can change this to see decaying buff values'
       },
       {
         var: 'buffDivinity',
         type: 'check',
         label: 'Do you have Divinity?',
         ifCond: 'Divinity',
-        tooltip:
-          'This will enable the Divinity buff, which grants:\n\t50% more Elemental Damage\n\t20% less Elemental Damage taken'
+        tooltip: 'This will enable the Divinity buff, which grants:\n\t50% more Elemental Damage\n\t20% less Elemental Damage taken'
       },
       { var: 'multiplierDefiance', type: 'count', label: 'Defiance:', ifMult: 'Defiance' },
       {
@@ -1583,16 +1557,14 @@ export const configurations: ConfigSection[] = [
         type: 'check',
         label: 'Do you have a Flask active?',
         ifCond: 'UsingFlask',
-        tooltip:
-          'This is automatically enabled if you have a flask active,\nbut you can use this option to force it if necessary.'
+        tooltip: 'This is automatically enabled if you have a flask active,\nbut you can use this option to force it if necessary.'
       },
       {
         var: 'conditionHaveTotem',
         type: 'check',
         label: 'Do you have a Totem summoned?',
         ifCond: 'HaveTotem',
-        tooltip:
-          'You will automatically be considered to have a Totem if your main skill is a Totem,\nbut you can use this option to force it if necessary.'
+        tooltip: 'You will automatically be considered to have a Totem if your main skill is a Totem,\nbut you can use this option to force it if necessary.'
       },
       {
         var: 'conditionSummonedTotemRecently',
@@ -1618,8 +1590,7 @@ export const configurations: ConfigSection[] = [
           'Vaal Ancestral Warchief',
           'Earthbreaker'
         ],
-        tooltip:
-          "This also implies that you have a Totem summoned.\nThis will affect all 'per Summoned Totem' modifiers, even for non-Totem skills."
+        tooltip: "This also implies that you have a Totem summoned.\nThis will affect all 'per Summoned Totem' modifiers, even for non-Totem skills."
       },
       {
         var: 'conditionSummonedGolemInPast8Sec',
@@ -2292,8 +2263,7 @@ export const configurations: ConfigSection[] = [
         label: '# of Warcries Used Recently:',
         ifMult: 'WarcryUsedRecently',
         implyCondList: ['UsedWarcryRecently', 'UsedWarcryInPast8Seconds', 'UsedSkillRecently'],
-        tooltip:
-          "This also implies you have 'Used a Warcry Recently', 'Used a Warcry in the past 8 seconds', and 'Used a Skill Recently'"
+        tooltip: "This also implies you have 'Used a Warcry Recently', 'Used a Warcry in the past 8 seconds', and 'Used a Skill Recently'"
       },
       {
         var: 'conditionTauntedEnemyRecently',
@@ -2343,8 +2313,7 @@ export const configurations: ConfigSection[] = [
         type: 'count',
         label: '# of Bleeds on enemy (if not maximum):',
         ifFlag: 'Condition:HaveCrimsonDance',
-        tooltip:
-          'Sets current number of Bleeds on the enemy if using the Crimson Dance keystone.\nThis also implies that the enemy is Bleeding.'
+        tooltip: 'Sets current number of Bleeds on the enemy if using the Crimson Dance keystone.\nThis also implies that the enemy is Bleeding.'
       },
       {
         var: 'multiplierFragileRegrowth',
@@ -2660,8 +2629,7 @@ export const configurations: ConfigSection[] = [
         type: 'check',
         label: 'Is the enemy on Profane Ground?',
         ifFlag: 'Condition:CreateProfaneGround',
-        tooltip:
-          'Enemies on Profane Ground receive the following modifiers:\n\t-10% to all Resistances\n\t+1% chance to be Critically Hit'
+        tooltip: 'Enemies on Profane Ground receive the following modifiers:\n\t-10% to all Resistances\n\t+1% chance to be Critically Hit'
       },
       {
         var: 'multiplierEnemyAffectedByGraspingVines',
@@ -2729,8 +2697,7 @@ export const configurations: ConfigSection[] = [
         type: 'check',
         label: 'Is the enemy Rare or Unique?',
         ifEnemyCond: 'EnemyRareOrUnique',
-        tooltip:
-          'The enemy will automatically be considered to be Unique if they are a Boss,\nbut you can use this option to force it if necessary.'
+        tooltip: 'The enemy will automatically be considered to be Unique if they are a Boss,\nbut you can use this option to force it if necessary.'
       },
       {
         var: 'enemyIsBoss',
