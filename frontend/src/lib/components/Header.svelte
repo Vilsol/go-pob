@@ -2,7 +2,7 @@
   import NumberInput from './NumberInput.svelte';
 </script>
 
-<div class="flex flex-row w-screen border-b-2 border-white bg-neutral-800 min-h-[50px]">
+<div class="flex flex-row w-screen border-b-2 border-white bg-neutral-800 min-h-[3em]">
   <!-- Left Side -->
   <div class="flex flex-row justify-between border-r-2 border-white p-2 flex-1 items-center">
     <div class="flex flex-row gap-3 items-center">

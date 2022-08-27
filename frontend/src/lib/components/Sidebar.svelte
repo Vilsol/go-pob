@@ -1,17 +1,18 @@
 <script lang="ts">
   import type { Outputs } from '../custom_types';
-  import { outputs } from '../global';
+  import { outputs, currentBuild } from '../global';
   import { displayStats } from '../display/stats';
   import type { Stat } from '../display/stats';
   import { printf } from 'fast-printf';
   import { colorCodes } from '../display/colors';
   import { base } from '$app/paths';
-  import { currentBuild } from '../../lib/global';
   import { onMount } from 'svelte';
   import { GetSkillGems } from '../cache';
   import { exposition } from '../types';
   import { writable } from 'svelte/store';
   import { syncWrap } from '../go/worker';
+  import { openOverlay } from '../overlay';
+  import Options from './overlays/Options.svelte';
 
   interface Line {
     label: string;
@@ -203,6 +204,13 @@
     currentBuild.set($currentBuild);
   });
 
+  const openOptions = () => {
+    openOverlay({
+      component: Options,
+      props: {}
+    });
+  };
+
   let collapsed = false;
 </script>
 
@@ -258,7 +266,7 @@
 
     <div class="flex flex-row p-2 h-[84px]">
       <div class="flex flex-col flex-1 gap-2">
-        <button class="container min-w-full flex-1">Options</button>
+        <button class="container min-w-full flex-1" on:click={openOptions}>Options</button>
         <button class="container min-w-full flex-1">About</button>
       </div>
       <div class="flex flex-col flex-1 items-center">

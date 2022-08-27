@@ -9,6 +9,8 @@
   import { proxy } from 'comlink';
   import type { Outputs } from '../lib/custom_types';
   import { outputs, currentBuild } from '../lib/global';
+  import OverlayController from '$lib/components/overlays/OverlayController.svelte';
+  import { fontScaling } from '$lib/global.js';
 
   let wasmLoading = true;
 
@@ -55,7 +57,9 @@
   }
 </script>
 
-<div class="w-screen h-screen max-w-screen max-h-screen overflow-hidden flex flex-col">
+<svelte:window style="font-size: 20px" />
+
+<div class="w-screen h-screen max-w-screen max-h-screen overflow-hidden flex flex-col" style="font-size: {$fontScaling}pt">
   {#if wasmLoading}
     <div class="flex flex-row justify-center h-full">
       <div class="flex flex-col justify-center text-5xl text-center">
@@ -76,5 +80,7 @@
         <slot />
       </div>
     </div>
+
+    <OverlayController />
   {/if}
 </div>

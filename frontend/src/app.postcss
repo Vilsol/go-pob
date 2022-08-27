@@ -6,7 +6,6 @@ html,
 body {
   @apply bg-black text-white;
   font-family: 'Roboto Flex', sans-serif;
-  font-size: 12pt;
 }
 
 :root {
@@ -106,7 +105,7 @@ select.input {
 }
 
 .full-page {
-  max-height: calc(100vh - 50px);
+  max-height: calc(100vh - 3em);
 }
 
 .select-many {
@@ -156,27 +155,70 @@ select.input {
   --itemActiveBackground: #000000;
   --listBackground: #000000;
   --padding: 0;
-  --selectedItemPadding: 0.15rem 0.5rem;
-  --height: 20px;
+  --selectedItemPadding: 0.15em 0.5em;
+  --height: 1.7em;
   --borderRadius: 0;
-  --indicatorTop: 0.15rem;
+  --indicatorTop: 0.15em;
   --itemFirstBorderRadius: 0;
   --listBorderRadius: 0;
   --border: 1px solid #a3a3a3;
   --listBorder: 1px solid #a3a3a3;
   --inputColor: #ffffff;
-  --inputPadding: 0.15rem 0.5rem;
+  --inputPadding: 0.15em 0.5em;
+  --inputFontSize: 1em;
 
   & .selectContainer {
-    min-height: 29px;
+    min-height: 1.8em;
     padding-right: 30px !important;
-  }
 
-  & .selectedItem {
-    min-height: 100%;
+    & .selectedItem {
+      min-height: 100%;
+      line-height: 1.4em !important;
+    }
   }
 
   & .selectContainer:hover {
     background: #262626 !important;
   }
+}
+
+.slider {
+  border: 1px solid #a3a3a3;
+  -webkit-appearance: none;
+  width: 100%;
+  height: 1.5em;
+  background: #000000;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: 0.2s;
+  transition: opacity 0.2s;
+  padding: 0.1em 0.05em;
+}
+
+.slider:hover {
+  border-color: white;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 1.3em;
+  height: 1.3em;
+  background: #666666;
+  cursor: pointer;
+}
+
+.slider::-webkit-slider-thumb:hover {
+  background: white;
+}
+
+.slider::-moz-range-thumb {
+  width: 1.3em;
+  height: 1.3em;
+  background: #666666;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb:hover {
+  background: white;
 }
