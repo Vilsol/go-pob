@@ -166,7 +166,7 @@ func CalcBuildSkillInstanceStats(skillInstance *GemEffect, grantedEffect *Grante
 	levels := grantedEffect.Raw.GetCalculatedLevels()
 	level := levels[skillInstance.Level]
 
-	var availableEffectiveness *float64 = nil
+	var availableEffectiveness *float64
 
 	// TODO local actorLevel = skillInstance.actorLevel or level.levelRequirement
 	actorLevel := float64(level.LevelRequirement)
@@ -238,7 +238,7 @@ func CalcCanGrantedEffectSupportActiveSkill(grantedEffect *GrantedEffect, active
 		return false
 	}
 
-	var minionTypes map[data.SkillType]bool = nil
+	var minionTypes map[data.SkillType]bool
 	if !grantedEffect.Raw.IgnoreMinionTypes {
 		minionTypes = activeSkill.MinionSkillTypes
 	}

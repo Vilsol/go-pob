@@ -1364,7 +1364,7 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 	}
 
 	// TODO storedMainHandAccuracy
-	var storedMainHandAccuracy *float64 = nil
+	var storedMainHandAccuracy *float64
 	for _, pass := range passList {
 		// Calculate hit chance
 		pass.Output["Accuracy"] = math.Max(0, CalcVal(skillModList, "Accuracy", pass.Config))

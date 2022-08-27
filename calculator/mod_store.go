@@ -48,7 +48,7 @@ func (s *ModStore) Clone() *ModStore {
 		return nil
 	}
 
-	var parent ModStoreFuncs = nil
+	var parent ModStoreFuncs
 	if s.Parent != nil {
 		parent = s.Parent.Clone()
 	}

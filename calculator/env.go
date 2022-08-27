@@ -681,7 +681,7 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 	for _, index := range indexOrder {
 		socketGroup := build.Skills.SkillSets[selectedSkillSet].Skills[index]
 		socketGroupSkillList := make([]*ActiveSkill, 0)
-		var slot interface{} = nil
+		var slot interface{}
 		if socketGroup.Slot != "" {
 			// TODO
 			// slot = build.itemsTab.slots[socketGroup.slot]
