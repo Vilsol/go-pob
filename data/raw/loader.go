@@ -15,7 +15,7 @@ import (
 	"github.com/Vilsol/go-pob/cache"
 )
 
-const cdnBase = "https://go-pob-data.pages.dev/data/%s/%s.json.br"
+const cdnBase = "https://go-pob-data.pages.dev/data/%s/raw/%s.json.br"
 
 // LoadRaw loads a raw brotli-compressed json dump from remote source
 //
