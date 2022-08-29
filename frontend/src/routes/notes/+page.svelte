@@ -26,11 +26,8 @@
     }, 50);
   };
 
-  let editorComponent;
-
   onMount(() => {
     resized();
-    console.log(editorComponent);
   });
 
   let value = '';
@@ -40,6 +37,6 @@
 
 <div class="w-full h-full" bind:this={parentElement}>
   {#key config.height}
-    <Editor scriptSrc="tinymce/tinymce.min.js" conf={config} bind:this={editorComponent} bind:value />
+    <Editor scriptSrc="tinymce/tinymce.min.js" conf={config} bind:value />
   {/key}
 </div>
