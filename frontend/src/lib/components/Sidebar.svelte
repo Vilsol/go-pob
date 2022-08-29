@@ -225,7 +225,7 @@
         <div class="flex flex-row gap-1">
           <a href="{base}/import" class="container min-w-fit flex-1 text-center">Import/Export Build</a>
           <a href="{base}/notes" class="container min-w-fit flex-1 text-center">Notes</a>
-          <a href="{base}/configuration" class="container min-w-fit flex-1 text-center">Configuration</a>
+          <a href="{base}/configuration" class="container min-w-fit flex-1 text-center">Config</a>
         </div>
         <div class="flex flex-row gap-1">
           <a href="{base}/tree" class="container min-w-fit flex-1 text-center">Tree</a>
