@@ -1,6 +1,6 @@
 {
   "node_modules/.pnpm/@sveltejs+kit@1.0.0-next.443_svelte@3.49.0+vite@3.0.9/node_modules/@sveltejs/kit/src/runtime/client/start.js": {
-    "file": "_app/immutable/start-25bd79f1.js",
+    "file": "_app/immutable/start-a8604e5e.js",
     "src": "node_modules/.pnpm/@sveltejs+kit@1.0.0-next.443_svelte@3.49.0+vite@3.0.9/node_modules/@sveltejs/kit/src/runtime/client/start.js",
     "isEntry": true,
     "imports": [
@@ -292,6 +292,10 @@
       "_index-561d0633.js"
     ]
   },
+  "src/routes/skills/+page.css": {
+    "file": "_app/immutable/assets/+page-a1ebfc6f.css",
+    "src": "src/routes/skills/+page.css"
+  },
   "src/routes/+layout.css": {
     "file": "_app/immutable/assets/+layout-b76e5589.css",
     "src": "src/routes/+layout.css"
@@ -299,10 +303,6 @@
   "src/routes/calcs/+page.css": {
     "file": "_app/immutable/assets/+page-20077df8.css",
     "src": "src/routes/calcs/+page.css"
-  },
-  "src/routes/skills/+page.css": {
-    "file": "_app/immutable/assets/+page-a1ebfc6f.css",
-    "src": "src/routes/skills/+page.css"
   },
   "SelectSelection.css": {
     "file": "_app/immutable/assets/SelectSelection-5f47e494.css",
