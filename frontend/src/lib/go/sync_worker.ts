@@ -100,18 +100,18 @@ class PoBWorker {
     }
 
     console.log('TICK from', source);
-    // const out = calc.BuildOutput('MAIN');
-    // if (!out || !out.Player || !out.Player.MainSkill) {
-    //   return;
-    // }
-    //
-    // if (this.callback) {
-    //   this.callback({
-    //     Output: out.Player.Output,
-    //     OutputTable: out.Player.OutputTable,
-    //     SkillFlags: out.Player.MainSkill.SkillFlags
-    //   });
-    // }
+    const out = await calc.BuildOutput('MAIN');
+    if (!out || !out.Player || !out.Player.MainSkill) {
+      return;
+    }
+
+    if (this.callback) {
+      this.callback({
+        Output: out.Player.Output,
+        OutputTable: out.Player.OutputTable,
+        SkillFlags: out.Player.MainSkill.SkillFlags
+      });
+    }
   }
 
   async SetConfigOption(key: string, value: boolean | number | string) {

@@ -51,7 +51,7 @@ export declare namespace calculator {
   }
   interface Calculator {
     PoB?: pob.PathOfBuilding;
-    BuildOutput(mode: string): (calculator.Environment | undefined);
+    BuildOutput(mode: string): Promise<(calculator.Environment | undefined)>;
   }
   interface ConversionTable {
     Targets?: Record<string, number>;
@@ -306,26 +306,26 @@ export declare namespace data {
     Coords?: Record<string, data.Coord>;
   }
   interface Sprites {
-    Background?: Record<number, data.Sprite>;
-    NormalActive?: Record<number, data.Sprite>;
-    NotableActive?: Record<number, data.Sprite>;
-    KeystoneActive?: Record<number, data.Sprite>;
-    NormalInactive?: Record<number, data.Sprite>;
-    NotableInactive?: Record<number, data.Sprite>;
-    KeystoneInactive?: Record<number, data.Sprite>;
-    Mastery?: Record<number, data.Sprite>;
-    MasteryConnected?: Record<number, data.Sprite>;
-    MasteryActiveSelected?: Record<number, data.Sprite>;
-    MasteryInactive?: Record<number, data.Sprite>;
-    MasteryActiveEffect?: Record<number, data.Sprite>;
-    AscendancyBackground?: Record<number, data.Sprite>;
-    Ascendancy?: Record<number, data.Sprite>;
-    StartNode?: Record<number, data.Sprite>;
-    GroupBackground?: Record<number, data.Sprite>;
-    Frame?: Record<number, data.Sprite>;
-    Jewel?: Record<number, data.Sprite>;
-    Line?: Record<number, data.Sprite>;
-    JewelRadius?: Record<number, data.Sprite>;
+    Background?: Record<string, data.Sprite>;
+    NormalActive?: Record<string, data.Sprite>;
+    NotableActive?: Record<string, data.Sprite>;
+    KeystoneActive?: Record<string, data.Sprite>;
+    NormalInactive?: Record<string, data.Sprite>;
+    NotableInactive?: Record<string, data.Sprite>;
+    KeystoneInactive?: Record<string, data.Sprite>;
+    Mastery?: Record<string, data.Sprite>;
+    MasteryConnected?: Record<string, data.Sprite>;
+    MasteryActiveSelected?: Record<string, data.Sprite>;
+    MasteryInactive?: Record<string, data.Sprite>;
+    MasteryActiveEffect?: Record<string, data.Sprite>;
+    AscendancyBackground?: Record<string, data.Sprite>;
+    Ascendancy?: Record<string, data.Sprite>;
+    StartNode?: Record<string, data.Sprite>;
+    GroupBackground?: Record<string, data.Sprite>;
+    Frame?: Record<string, data.Sprite>;
+    Jewel?: Record<string, data.Sprite>;
+    Line?: Record<string, data.Sprite>;
+    JewelRadius?: Record<string, data.Sprite>;
   }
   interface Tree {
     Tree: string;

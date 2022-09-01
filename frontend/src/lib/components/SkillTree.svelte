@@ -1,21 +1,23 @@
 <script lang="ts">
-  import { Canvas, Layer, t } from 'svelte-canvas';
-  import type { Coord, Node } from '../skill_tree/types';
+  import { Canvas, Layer } from 'svelte-canvas';
+  import type { Coord, Group, Node, Sprite } from '../skill_tree/types';
   import {
-    baseJewelRadius,
     calculateNodePos,
     distance,
     drawnGroups,
     drawnNodes,
-    getAsset,
-    inverseSprites,
+    inverseSpritesInactive,
     inverseSpritesActive,
     orbitAngleAt,
     skillTree,
-    toCanvasCoords
+    toCanvasCoords,
+    inverseSpritesOther,
+    skillTreeVersion,
+    ascendancyGroups,
+    ascendancyStartGroups,
+    classStartGroups
   } from '../skill_tree';
   import type { Point } from '../skill_tree';
-  import { derived } from 'svelte/store';
   import { onMount } from 'svelte';
 
   interface RenderParams {
@@ -26,22 +28,7 @@
 
   type RenderFunc = (params: RenderParams) => void;
 
-  export let clickNode: (node: Node) => void;
-  export let circledNode: number | undefined;
-
-  export let highlighted: number[] = [];
-  export let disabled: number[] = [];
-  export let highlightJewels = false;
-
-  const slowTime = derived(t, (values) => {
-    if ((!highlighted || !highlighted.length) && !highlightJewels) {
-      return 0;
-    }
-
-    return Math.round(values / 40);
-  });
-
-  const startGroups = [427, 320, 226, 227, 323, 422, 329];
+  export let clickNode: (node: Node) => void = console.log;
 
   const titleFont = '25px Roboto Mono';
   const statsFont = '17px Roboto Mono';
@@ -51,53 +38,25 @@
   let offsetX = 0;
   let offsetY = 0;
 
-  $: jewelRadius = baseJewelRadius / scaling;
-
   const drawScaling = 2.6;
-  const drawScaledCenter = (context: CanvasRenderingContext2D, asset: HTMLImageElement, pos: Point) => {
-    const newWidth = (asset.width / scaling) * drawScaling;
-    const newHeight = (asset.height / scaling) * drawScaling;
 
-    const topLeftX = pos.x - newWidth / 2;
-    const topLeftY = pos.y - newHeight / 2;
-
-    context.drawImage(asset, topLeftX, topLeftY, newWidth, newHeight);
-  };
-
-  const drawMirror = (context: CanvasRenderingContext2D, asset: HTMLImageElement, pos: Point) => {
-    const newWidth = (asset.width / scaling) * drawScaling;
-    const newHeight = (asset.height / scaling) * drawScaling;
-
-    const topLeftX = pos.x - newWidth / 2;
-    const topLeftY = pos.y - newHeight / 2;
-
-    const finalY = topLeftY - newHeight / 2;
-
-    context.drawImage(asset, topLeftX, finalY, newWidth, newHeight);
-    context.save();
-
-    context.translate(topLeftX, topLeftY);
-    context.rotate(Math.PI);
-
-    context.drawImage(asset, -newWidth, -(newHeight / 2), newWidth, -newHeight);
-
-    context.restore();
-  };
+  $: cdnTreeBase = `https://go-pob-data.pages.dev/data/${$skillTreeVersion.replace('_', '.')}/tree/assets/`;
 
   const spriteCache: Record<string, HTMLImageElement> = {};
-  const spriteCacheActive: Record<string, HTMLImageElement> = {};
-  const drawSprite = (context: CanvasRenderingContext2D, path: string, pos: Point, active = false) => {
-    let sprite = active ? inverseSpritesActive[path] : inverseSprites[path];
-
-    if (!sprite && active) {
-      sprite = inverseSprites[path];
+  const drawSprite = (context: CanvasRenderingContext2D, path: string, pos: Point, source: Record<string, Sprite>, mirror = false) => {
+    const sprite = source[path];
+    if (!sprite) {
+      return;
     }
 
     const spriteSheetUrl = sprite.filename;
+    const urlPath = new URL(spriteSheetUrl).pathname;
+    const base = urlPath.substring(urlPath.lastIndexOf('/') + 1);
+    const finalUrl = cdnTreeBase + base;
 
-    if (!(spriteSheetUrl in (active ? spriteCacheActive : spriteCache))) {
-      (active ? spriteCacheActive : spriteCache)[spriteSheetUrl] = new Image();
-      (active ? spriteCacheActive : spriteCache)[spriteSheetUrl].src = spriteSheetUrl;
+    if (!(finalUrl in spriteCache)) {
+      spriteCache[finalUrl] = new Image();
+      spriteCache[finalUrl].src = finalUrl;
     }
 
     const self: Coord = sprite.coords[path];
@@ -108,7 +67,23 @@
     const topLeftX = pos.x - newWidth / 2;
     const topLeftY = pos.y - newHeight / 2;
 
-    context.drawImage((active ? spriteCacheActive : spriteCache)[spriteSheetUrl], self.x, self.y, self.w, self.h, topLeftX, topLeftY, newWidth, newHeight);
+    let finalY = topLeftY;
+    if (mirror) {
+      finalY = topLeftY - newHeight / 2;
+    }
+
+    context.drawImage(spriteCache[finalUrl], self.x, self.y, self.w, self.h, topLeftX, finalY, newWidth, newHeight);
+
+    if (mirror) {
+      context.save();
+
+      context.translate(topLeftX, topLeftY);
+      context.rotate(Math.PI);
+
+      context.drawImage(spriteCache[finalUrl], self.x, self.y, self.w, self.h, -newWidth, -(newHeight / 2), newWidth, -newHeight);
+
+      context.restore();
+    }
   };
 
   const wrapText = (text: string, context: CanvasRenderingContext2D, width: number): string[] => {
@@ -123,7 +98,6 @@
         currentWord = word;
       }
     });
-    61834;
 
     if (currentWord.length > 0) {
       result.push(currentWord.trim());
@@ -139,19 +113,6 @@
 
   let cursor = 'unset';
 
-  const PSGroupBackground1 = getAsset('PSGroupBackground1');
-  const PSGroupBackground2 = getAsset('PSGroupBackground2');
-  const PSGroupBackground3 = getAsset('PSGroupBackground3');
-  const KeystoneFrameAllocated = getAsset('KeystoneFrameAllocated');
-  const KeystoneFrameUnallocated = getAsset('KeystoneFrameUnallocated');
-  const NotableFrameAllocated = getAsset('NotableFrameAllocated');
-  const NotableFrameUnallocated = getAsset('NotableFrameUnallocated');
-  const JewelSocketAltNormal = getAsset('JewelSocketAltNormal');
-  const JewelFrameAllocated = getAsset('JewelFrameAllocated');
-  const JewelFrameUnallocated = getAsset('JewelFrameUnallocated');
-  const PSSkillFrameActive = getAsset('PSSkillFrameActive');
-  const PSSkillFrame = getAsset('PSSkillFrame');
-
   let hoveredNode: Node | undefined;
   $: render = (({ context, width, height }) => {
     const start = window.performance.now();
@@ -163,18 +124,23 @@
 
     const connected = {};
     Object.keys(drawnGroups).forEach((groupId) => {
-      const group = drawnGroups[groupId];
+      const group: Group = drawnGroups[groupId];
       const groupPos = toCanvasCoords(group.x, group.y, offsetX, offsetY, scaling);
 
       const maxOrbit = Math.max(...group.orbits);
-      if (startGroups.indexOf(parseInt(groupId)) >= 0) {
-        // Do not draw starter nodes
+      const nGroupId = parseInt(groupId);
+      if (nGroupId in classStartGroups) {
+        drawSprite(context, 'center' + $skillTree.classes[classStartGroups[nGroupId]].name.toLowerCase(), groupPos, inverseSpritesOther);
+      } else if (nGroupId in ascendancyGroups) {
+        if (ascendancyStartGroups.has(nGroupId)) {
+          drawSprite(context, 'Classes' + ascendancyGroups[nGroupId], groupPos, inverseSpritesOther);
+        }
       } else if (maxOrbit == 1) {
-        drawScaledCenter(context, $PSGroupBackground1, groupPos);
+        drawSprite(context, 'PSGroupBackground1', groupPos, inverseSpritesOther);
       } else if (maxOrbit == 2) {
-        drawScaledCenter(context, $PSGroupBackground2, groupPos);
+        drawSprite(context, 'PSGroupBackground2', groupPos, inverseSpritesOther);
       } else if (maxOrbit == 3 || group.orbits.length > 1) {
-        drawMirror(context, $PSGroupBackground3, groupPos);
+        drawSprite(context, 'PSGroupBackground3', groupPos, inverseSpritesOther, true);
       }
     });
 
@@ -182,6 +148,11 @@
       const node: Node = drawnNodes[nodeId];
       const angle = orbitAngleAt(node.orbit, node.orbitIndex);
       const rotatedPos = calculateNodePos(node, offsetX, offsetY, scaling);
+
+      // Do not draw connections out of class starting nodes
+      if (node.classStartIndex !== undefined) {
+        return;
+      }
 
       node.out?.forEach((o) => {
         if (!drawnNodes[parseInt(o)]) {
@@ -204,6 +175,16 @@
 
         // Do not draw connections to mastery nodes
         if (targetNode.isMastery) {
+          return;
+        }
+
+        // Do not draw connections to ascendancy trees from main tree
+        if (node.ascendancyName !== targetNode.ascendancyName) {
+          return;
+        }
+
+        // Do not draw connections to class starting nodes
+        if (targetNode.classStartIndex !== undefined) {
           return;
         }
 
@@ -238,79 +219,56 @@
       });
     });
 
-    let circledNodePos: Point;
-    if (circledNode) {
-      circledNodePos = calculateNodePos(drawnNodes[circledNode], offsetX, offsetY, scaling);
-      context.strokeStyle = '#ad2b2b';
-    }
-
     // let hoveredNodeActive = false;
     let newHoverNode: Node | undefined;
     Object.keys(drawnNodes).forEach((nodeId) => {
-      const node = drawnNodes[nodeId];
+      const node: Node = drawnNodes[nodeId];
       const rotatedPos = calculateNodePos(node, offsetX, offsetY, scaling);
       let touchDistance = 0;
 
-      let active = false;
-      if (circledNode) {
-        if (distance(rotatedPos, circledNodePos) < jewelRadius) {
-          active = true;
-        }
-      }
+      const active = false; // TODO Actually check if node is active
 
-      if (disabled.indexOf(node.skill) >= 0) {
-        active = false;
-      }
-
-      if (node.isKeystone) {
+      if (node.classStartIndex !== undefined) {
+        // Do not draw class start index node
+      } else if (node.isAscendancyStart) {
+        drawSprite(context, 'AscendancyMiddle', rotatedPos, inverseSpritesOther);
+      } else if (node.isKeystone) {
         touchDistance = 110;
-        drawSprite(context, node.icon, rotatedPos, active);
+        drawSprite(context, node.icon, rotatedPos, active ? inverseSpritesActive : inverseSpritesInactive);
         if (active) {
-          drawScaledCenter(context, $KeystoneFrameAllocated, rotatedPos);
+          drawSprite(context, 'KeystoneFrameAllocated', rotatedPos, inverseSpritesOther);
         } else {
-          drawScaledCenter(context, $KeystoneFrameUnallocated, rotatedPos);
+          drawSprite(context, 'KeystoneFrameUnallocated', rotatedPos, inverseSpritesOther);
         }
       } else if (node.isNotable) {
         touchDistance = 70;
-        drawSprite(context, node.icon, rotatedPos, active);
+        drawSprite(context, node.icon, rotatedPos, active ? inverseSpritesActive : inverseSpritesInactive);
         if (active) {
-          drawScaledCenter(context, $NotableFrameAllocated, rotatedPos);
+          drawSprite(context, 'NotableFrameAllocated', rotatedPos, inverseSpritesOther);
         } else {
-          drawScaledCenter(context, $NotableFrameUnallocated, rotatedPos);
+          drawSprite(context, 'NotableFrameUnallocated', rotatedPos, inverseSpritesOther);
         }
       } else if (node.isJewelSocket) {
         touchDistance = 70;
         if (node.expansionJewel) {
-          if (active) {
-            drawScaledCenter(context, $JewelSocketAltNormal, rotatedPos);
-          } else {
-            drawScaledCenter(context, $JewelSocketAltNormal, rotatedPos);
-          }
+          drawSprite(context, 'JewelSocketAltNormal', rotatedPos, inverseSpritesOther);
         } else {
           if (active) {
-            drawScaledCenter(context, $JewelFrameAllocated, rotatedPos);
+            drawSprite(context, 'JewelFrameAllocated', rotatedPos, inverseSpritesOther);
           } else {
-            drawScaledCenter(context, $JewelFrameUnallocated, rotatedPos);
+            drawSprite(context, 'JewelFrameUnallocated', rotatedPos, inverseSpritesOther);
           }
         }
       } else if (node.isMastery) {
-        drawSprite(context, node.inactiveIcon, rotatedPos, active);
+        drawSprite(context, node.inactiveIcon, rotatedPos, active ? inverseSpritesActive : inverseSpritesInactive);
       } else {
         touchDistance = 50;
-        drawSprite(context, node.icon, rotatedPos, active);
+        drawSprite(context, node.icon, rotatedPos, active ? inverseSpritesActive : inverseSpritesInactive);
         if (active) {
-          drawScaledCenter(context, $PSSkillFrameActive, rotatedPos);
+          drawSprite(context, 'PSSkillFrameActive', rotatedPos, inverseSpritesOther);
         } else {
-          drawScaledCenter(context, $PSSkillFrame, rotatedPos);
+          drawSprite(context, 'PSSkillFrame', rotatedPos, inverseSpritesOther);
         }
-      }
-
-      if (highlighted.indexOf(node.skill) >= 0 || (highlightJewels && node.isJewelSocket)) {
-        context.strokeStyle = `hsl(${$slowTime}, 100%, 50%)`;
-        context.lineWidth = 3;
-        context.beginPath();
-        context.arc(rotatedPos.x, rotatedPos.y, (touchDistance + 30) / scaling, 0, Math.PI * 2);
-        context.stroke();
       }
 
       if (distance(rotatedPos, mousePos) < touchDistance / scaling) {
@@ -320,14 +278,6 @@
     });
 
     hoveredNode = newHoverNode;
-
-    if (circledNode) {
-      context.strokeStyle = '#ad2b2b';
-      context.lineWidth = 1;
-      context.beginPath();
-      context.arc(circledNodePos.x, circledNodePos.y, jewelRadius, 0, Math.PI * 2);
-      context.stroke();
-    }
 
     if (hoveredNode) {
       const nodeName = hoveredNode.name;
@@ -411,7 +361,7 @@
       });
     }
 
-    if (hoveredNode && hoveredNode.isJewelSocket) {
+    if (hoveredNode) {
       cursor = 'pointer';
     } else {
       cursor = 'unset';

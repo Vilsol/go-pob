@@ -9,7 +9,7 @@ export interface Sprite {
   filename: string;
   w: number;
   h: number;
-  coords: Coord;
+  coords: Record<string, Coord>;
 }
 
 export interface Sprites {
