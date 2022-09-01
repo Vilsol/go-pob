@@ -26,6 +26,8 @@ func Expose() *crystalline.Exposer {
 	e.ExposeFuncOrPanic(config.InitLogging)
 
 	e.ExposeFuncOrPanic(GetSkillGems)
+	e.ExposeFuncOrPanicPromise(GetRawTree)
+	e.ExposeFuncOrPanic(GetStatByIndex)
 
 	return e
 }

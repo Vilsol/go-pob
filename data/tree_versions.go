@@ -1,5 +1,19 @@
 package data
 
+import (
+	"bytes"
+	"fmt"
+	"io"
+	"net/http"
+
+	"github.com/andybalholm/brotli"
+	"github.com/goccy/go-json"
+	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
+
+	"github.com/Vilsol/go-pob/cache"
+)
+
 type TreeVersion string
 
 const (
@@ -18,10 +32,67 @@ const LatestTreeVersion = TreeVersion3_18
 const DefaultTreeVersion = TreeVersion3_10
 
 type TreeVersionData struct {
-	Display string
-	Num     float64
-	URL     string
-	Tree    *Tree
+	Display    string
+	Num        float64
+	URL        string
+	cachedTree *Tree
+	rawTree    []byte
 }
 
-var TreeVersions = make(map[TreeVersion]TreeVersionData)
+const cdnTreeBase = "https://go-pob-data.pages.dev/data/%s/tree/data.json.br"
+
+func (v *TreeVersionData) Tree() *Tree {
+	if v.cachedTree != nil {
+		return v.cachedTree
+	}
+
+	if err := json.Unmarshal(v.RawTree(), v.cachedTree); err != nil {
+		panic(errors.Wrap(err, "failed to decode file"))
+	}
+
+	return v.cachedTree
+}
+
+func (v *TreeVersionData) RawTree() []byte {
+	if v.rawTree != nil {
+		return v.rawTree
+	}
+
+	treeURL := fmt.Sprintf(cdnTreeBase, v.Display)
+	var compressedTree []byte
+	if cache.Disk().Exists(treeURL) {
+		var err error
+		compressedTree, err = cache.Disk().Get(treeURL)
+		if err != nil {
+			panic(err)
+		}
+	} else {
+		log.Debug().Str("url", treeURL).Msg("fetching")
+		response, err := http.DefaultClient.Get(treeURL)
+		if err != nil {
+			panic(errors.Wrap(err, "failed to fetch url: "+treeURL))
+		}
+		defer response.Body.Close()
+
+		compressedTree, err = io.ReadAll(response.Body)
+		if err != nil {
+			panic(errors.Wrap(err, "failed to read response body"))
+		}
+
+		defer func() {
+			_ = cache.Disk().Set(treeURL, v.rawTree)
+		}()
+	}
+
+	unzipStream := brotli.NewReader(bytes.NewReader(compressedTree))
+
+	var err error
+	v.rawTree, err = io.ReadAll(unzipStream)
+	if err != nil {
+		panic(errors.Wrap(err, "failed to read unzipped data"))
+	}
+
+	return v.rawTree
+}
+
+var TreeVersions = make(map[TreeVersion]*TreeVersionData)

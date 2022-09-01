@@ -100,18 +100,18 @@ class PoBWorker {
     }
 
     console.log('TICK from', source);
-    const out = calc.BuildOutput('MAIN');
-    if (!out || !out.Player || !out.Player.MainSkill) {
-      return;
-    }
-
-    if (this.callback) {
-      this.callback({
-        Output: out.Player.Output,
-        OutputTable: out.Player.OutputTable,
-        SkillFlags: out.Player.MainSkill.SkillFlags
-      });
-    }
+    // const out = calc.BuildOutput('MAIN');
+    // if (!out || !out.Player || !out.Player.MainSkill) {
+    //   return;
+    // }
+    //
+    // if (this.callback) {
+    //   this.callback({
+    //     Output: out.Player.Output,
+    //     OutputTable: out.Player.OutputTable,
+    //     SkillFlags: out.Player.MainSkill.SkillFlags
+    //   });
+    // }
   }
 
   async SetConfigOption(key: string, value: boolean | number | string) {
@@ -197,6 +197,18 @@ class PoBWorker {
 
   GetSkillGems(): DeepPromise<exposition.SkillGem[]> {
     return proxy(exposition.GetSkillGems()) as unknown as DeepPromise<exposition.SkillGem[]>;
+  }
+
+  async GetTree(version: string): Promise<string> {
+    const rawData = await exposition.GetRawTree(version);
+    if (!rawData) {
+      throw new Error('Failed loading tree');
+    }
+    return new TextDecoder().decode(rawData);
+  }
+
+  GetStatByIndex(id: number) {
+    return exposition.GetStatByIndex(id);
   }
 }
 

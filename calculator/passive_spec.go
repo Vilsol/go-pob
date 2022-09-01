@@ -38,7 +38,7 @@ func NewPassiveSpec(build *pob.PathOfBuilding, treeVersion data.TreeVersion) *Pa
 }
 
 func (p *PassiveSpec) Tree() *data.Tree {
-	return data.TreeVersions[p.TreeVersion].Tree
+	return data.TreeVersions[p.TreeVersion].Tree()
 }
 
 func (p *PassiveSpec) Class() data.Class {

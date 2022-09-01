@@ -191,162 +191,12 @@ export declare namespace config {
   function InitLogging(withTime: boolean): void;
 }
 export declare namespace data {
-  interface Active {
-    Filename: string;
-    Coords?: Record<string, data.Coord>;
-  }
   interface Ascendancy {
     ID: string;
     Name: string;
     FlavourText?: string;
     FlavourTextColour?: string;
     FlavourTextRect?: data.FlavourTextRect;
-  }
-  interface Assets {
-    PSSkillFrame: data.ScaledAsset;
-    PSSkillFrameHighlighted: data.ScaledAsset;
-    PSSkillFrameActive: data.ScaledAsset;
-    KeystoneFrameUnallocated: data.ScaledAsset;
-    KeystoneFrameCanAllocate: data.ScaledAsset;
-    KeystoneFrameAllocated: data.ScaledAsset;
-    PSGroupBackground1: data.ScaledAsset;
-    PSGroupBackground2: data.ScaledAsset;
-    PSGroupBackground3: data.ScaledAsset;
-    GroupBackgroundSmallAlt: data.ScaledAsset;
-    GroupBackgroundMediumAlt: data.ScaledAsset;
-    GroupBackgroundLargeHalfAlt: data.ScaledAsset;
-    Orbit1Normal: data.ScaledAsset;
-    Orbit1Intermediate: data.ScaledAsset;
-    Orbit1Active: data.ScaledAsset;
-    Orbit2Normal: data.ScaledAsset;
-    Orbit2Intermediate: data.ScaledAsset;
-    Orbit2Active: data.ScaledAsset;
-    Orbit3Normal: data.ScaledAsset;
-    Orbit3Intermediate: data.ScaledAsset;
-    Orbit3Active: data.ScaledAsset;
-    Orbit4Normal: data.ScaledAsset;
-    Orbit4Intermediate: data.ScaledAsset;
-    Orbit4Active: data.ScaledAsset;
-    LineConnectorNormal: data.ScaledAsset;
-    LineConnectorIntermediate: data.ScaledAsset;
-    LineConnectorActive: data.ScaledAsset;
-    PSLineDeco: data.ScaledAsset;
-    PSLineDecoHighlighted: data.ScaledAsset;
-    PSStartNodeBackgroundInactive: data.ScaledAsset;
-    Centerduelist: data.ScaledAsset;
-    Centermarauder: data.ScaledAsset;
-    Centerranger: data.ScaledAsset;
-    Centershadow: data.ScaledAsset;
-    Centertemplar: data.ScaledAsset;
-    Centerwitch: data.ScaledAsset;
-    Centerscion: data.ScaledAsset;
-    PSPointsFrame: data.BasicAsset;
-    NotableFrameUnallocated: data.ScaledAsset;
-    NotableFrameCanAllocate: data.ScaledAsset;
-    NotableFrameAllocated: data.ScaledAsset;
-    BlightedNotableFrameUnallocated: data.ScaledAsset;
-    BlightedNotableFrameCanAllocate: data.ScaledAsset;
-    BlightedNotableFrameAllocated: data.ScaledAsset;
-    JewelFrameUnallocated: data.ScaledAsset;
-    JewelFrameCanAllocate: data.ScaledAsset;
-    JewelFrameAllocated: data.ScaledAsset;
-    JewelSocketActiveBlue: data.ScaledAsset;
-    JewelSocketActiveGreen: data.ScaledAsset;
-    JewelSocketActiveRed: data.ScaledAsset;
-    JewelSocketActivePrismatic: data.ScaledAsset;
-    JewelSocketActiveAbyss: data.ScaledAsset;
-    JewelCircle1: data.BasicAsset;
-    JewelCircle1Inverse: data.BasicAsset;
-    VaalJewelCircle1: data.BasicAsset;
-    VaalJewelCircle2: data.BasicAsset;
-    KaruiJewelCircle1: data.BasicAsset;
-    KaruiJewelCircle2: data.BasicAsset;
-    MarakethJewelCircle1: data.BasicAsset;
-    MarakethJewelCircle2: data.BasicAsset;
-    TemplarJewelCircle1: data.BasicAsset;
-    TemplarJewelCircle2: data.BasicAsset;
-    EternalEmpireJewelCircle1: data.BasicAsset;
-    EternalEmpireJewelCircle2: data.BasicAsset;
-    JewelSocketAltNormal: data.ScaledAsset;
-    JewelSocketAltCanAllocate: data.ScaledAsset;
-    JewelSocketAltActive: data.ScaledAsset;
-    JewelSocketActiveBlueAlt: data.ScaledAsset;
-    JewelSocketActiveGreenAlt: data.ScaledAsset;
-    JewelSocketActiveRedAlt: data.ScaledAsset;
-    JewelSocketActivePrismaticAlt: data.ScaledAsset;
-    JewelSocketActiveAbyssAlt: data.ScaledAsset;
-    JewelSocketClusterAltNormal1Small: data.ScaledAsset;
-    JewelSocketClusterAltCanAllocate1Small: data.ScaledAsset;
-    JewelSocketClusterAltNormal1Medium: data.ScaledAsset;
-    JewelSocketClusterAltCanAllocate1Medium: data.ScaledAsset;
-    JewelSocketClusterAltNormal1Large: data.ScaledAsset;
-    JewelSocketClusterAltCanAllocate1Large: data.ScaledAsset;
-    AscendancyButton: data.ScaledAsset;
-    AscendancyButtonHighlight: data.ScaledAsset;
-    AscendancyButtonPressed: data.ScaledAsset;
-    AscendancyFrameLargeAllocated: data.ScaledAsset;
-    AscendancyFrameLargeCanAllocate: data.ScaledAsset;
-    AscendancyFrameLargeNormal: data.ScaledAsset;
-    AscendancyFrameSmallAllocated: data.ScaledAsset;
-    AscendancyFrameSmallCanAllocate: data.ScaledAsset;
-    AscendancyFrameSmallNormal: data.ScaledAsset;
-    AscendancyMiddle: data.ScaledAsset;
-    ClassesAscendant: data.ScaledAsset;
-    ClassesJuggernaut: data.ScaledAsset;
-    ClassesBerserker: data.ScaledAsset;
-    ClassesChieftain: data.ScaledAsset;
-    ClassesRaider: data.ScaledAsset;
-    ClassesDeadeye: data.ScaledAsset;
-    ClassesPathfinder: data.ScaledAsset;
-    ClassesOccultist: data.ScaledAsset;
-    ClassesElementalist: data.ScaledAsset;
-    ClassesNecromancer: data.ScaledAsset;
-    ClassesSlayer: data.ScaledAsset;
-    ClassesGladiator: data.ScaledAsset;
-    ClassesChampion: data.ScaledAsset;
-    ClassesInquisitor: data.ScaledAsset;
-    ClassesHierophant: data.ScaledAsset;
-    ClassesGuardian: data.ScaledAsset;
-    ClassesAssassin: data.ScaledAsset;
-    ClassesTrickster: data.ScaledAsset;
-    ClassesSaboteur: data.ScaledAsset;
-    Background1?: data.ScaledAsset;
-    BackgroundDex: data.ScaledAsset;
-    BackgroundDexInt: data.ScaledAsset;
-    BackgroundInt: data.ScaledAsset;
-    BackgroundStr: data.ScaledAsset;
-    BackgroundStrDex: data.ScaledAsset;
-    BackgroundStrInt: data.ScaledAsset;
-    ImgPSFadeCorner: data.BasicAsset;
-    ImgPSFadeSide: data.BasicAsset;
-    ClearOil?: data.BasicAsset;
-    SepiaOil?: data.BasicAsset;
-    AmberOil?: data.BasicAsset;
-    VerdantOil?: data.BasicAsset;
-    TealOil?: data.BasicAsset;
-    AzureOil?: data.BasicAsset;
-    VioletOil?: data.BasicAsset;
-    CrimsonOil?: data.BasicAsset;
-    BlackOil?: data.BasicAsset;
-    OpalescentOil?: data.BasicAsset;
-    SilverOil?: data.BasicAsset;
-    GoldenOil?: data.BasicAsset;
-    JewelSocketActiveLegion?: data.ScaledAsset;
-    JewelSocketActiveLegionAlt?: data.ScaledAsset;
-    JewelSocketActiveAltRed?: data.ScaledAsset;
-    JewelSocketActiveAltBlue?: data.ScaledAsset;
-    JewelSocketActiveAltPurple?: data.ScaledAsset;
-    Orbit5Normal?: data.ScaledAsset;
-    Orbit5Intermediate?: data.ScaledAsset;
-    Orbit5Active?: data.ScaledAsset;
-    Orbit6Normal?: data.ScaledAsset;
-    Orbit6Intermediate?: data.ScaledAsset;
-    Orbit6Active?: data.ScaledAsset;
-    Background2?: data.ScaledAsset;
-    PassiveMasteryConnectedButton?: data.ScaledAsset;
-  }
-  interface BasicAsset {
-    The1: string;
   }
   interface CharacterAttributes {
     Strength: number;
@@ -406,88 +256,92 @@ export declare namespace data {
     Nodes?: Array<string>;
     IsProxy?: boolean;
   }
-  interface Mastery {
-    Filename: string;
-    Coords?: Record<string, data.Coord>;
-  }
   interface MasteryEffect {
     Effect: number;
     Stats?: Array<string>;
     ReminderText?: Array<string>;
   }
   interface Node {
+    Skill?: number;
+    Name?: string;
+    Icon?: string;
+    IsNotable?: boolean;
+    Recipe?: Array<string>;
+    Stats?: Array<string>;
     Group?: number;
     Orbit?: number;
     OrbitIndex?: number;
     Out?: Array<string>;
     In?: Array<string>;
-    Skill?: number;
-    Name?: string;
-    Icon?: string;
-    Stats?: Array<string>;
     ReminderText?: Array<string>;
-    IsNotable?: boolean;
-    Recipe?: Array<string>;
-    GrantedDexterity?: number;
-    GrantedIntelligence?: number;
     IsMastery?: boolean;
-    IsKeystone?: boolean;
-    FlavourText?: Array<string>;
-    AscendancyName?: string;
-    IsAscendancyStart?: boolean;
-    GrantedStrength?: number;
-    ClassStartIndex?: number;
-    IsJewelSocket?: boolean;
-    ExpansionJewel?: data.ExpansionJewel;
-    IsBlighted?: boolean;
     InactiveIcon?: string;
     ActiveIcon?: string;
     ActiveEffectImage?: string;
     MasteryEffects?: Array<data.MasteryEffect>;
-    IsMultipleChoiceOption?: boolean;
-    GrantedPassivePoints?: number;
+    GrantedStrength?: number;
+    AscendancyName?: string;
+    GrantedDexterity?: number;
+    IsAscendancyStart?: boolean;
     IsMultipleChoice?: boolean;
+    GrantedIntelligence?: number;
+    IsJewelSocket?: boolean;
+    ExpansionJewel?: data.ExpansionJewel;
+    GrantedPassivePoints?: number;
+    IsKeystone?: boolean;
+    FlavourText?: Array<string>;
     IsProxy?: boolean;
+    IsMultipleChoiceOption?: boolean;
+    IsBlighted?: boolean;
+    ClassStartIndex?: number;
   }
   interface Points {
     TotalPoints: number;
     AscendancyPoints: number;
   }
-  interface ScaledAsset {
-    The01246: string;
-    The02109: string;
-    The02972: string;
-    The03835: string;
+  interface Sprite {
+    Filename: string;
+    W: number;
+    H: number;
+    Coords?: Record<string, data.Coord>;
   }
-  interface SkillSprites {
-    NormalActive?: Array<data.Active>;
-    NotableActive?: Array<data.Active>;
-    KeystoneActive?: Array<data.Active>;
-    NormalInactive?: Array<data.Active>;
-    NotableInactive?: Array<data.Active>;
-    KeystoneInactive?: Array<data.Active>;
-    Mastery?: Array<data.Mastery>;
-    MasteryConnected?: Array<data.Mastery>;
-    MasteryActiveSelected?: Array<data.Mastery>;
-    MasteryInactive?: Array<data.Mastery>;
-    MasteryActiveEffect?: Array<data.Mastery>;
+  interface Sprites {
+    Background?: Record<number, data.Sprite>;
+    NormalActive?: Record<number, data.Sprite>;
+    NotableActive?: Record<number, data.Sprite>;
+    KeystoneActive?: Record<number, data.Sprite>;
+    NormalInactive?: Record<number, data.Sprite>;
+    NotableInactive?: Record<number, data.Sprite>;
+    KeystoneInactive?: Record<number, data.Sprite>;
+    Mastery?: Record<number, data.Sprite>;
+    MasteryConnected?: Record<number, data.Sprite>;
+    MasteryActiveSelected?: Record<number, data.Sprite>;
+    MasteryInactive?: Record<number, data.Sprite>;
+    MasteryActiveEffect?: Record<number, data.Sprite>;
+    AscendancyBackground?: Record<number, data.Sprite>;
+    Ascendancy?: Record<number, data.Sprite>;
+    StartNode?: Record<number, data.Sprite>;
+    GroupBackground?: Record<number, data.Sprite>;
+    Frame?: Record<number, data.Sprite>;
+    Jewel?: Record<number, data.Sprite>;
+    Line?: Record<number, data.Sprite>;
+    JewelRadius?: Record<number, data.Sprite>;
   }
   interface Tree {
+    Tree: string;
     Classes?: Array<data.Class>;
     Groups?: Record<string, data.Group>;
     Nodes?: Record<string, data.Node>;
     ExtraImages?: Record<string, data.ExtraImage>;
+    JewelSlots?: Array<number>;
     MinX: number;
     MinY: number;
     MaxX: number;
     MaxY: number;
-    Assets: data.Assets;
     Constants: data.Constants;
-    SkillSprites: data.SkillSprites;
+    Sprites: data.Sprites;
     ImageZoomLevels?: Array<number>;
-    JewelSlots?: Array<number>;
-    Tree?: string;
-    Points?: data.Points;
+    Points: data.Points;
   }
 }
 export declare namespace exposition {
@@ -504,7 +358,9 @@ export declare namespace exposition {
     Support: boolean;
     CalculateStuff(): void;
   }
+  function GetRawTree(version: string): Promise<(Uint8Array | undefined)>;
   function GetSkillGems(): (Array<exposition.SkillGem> | undefined);
+  function GetStatByIndex(id: number): (raw.Stat | undefined);
 }
 export declare namespace pob {
   interface Build {
