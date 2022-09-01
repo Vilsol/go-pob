@@ -46,9 +46,11 @@ func (v *TreeVersionData) Tree() *Tree {
 		return v.cachedTree
 	}
 
-	if err := json.Unmarshal(v.RawTree(), v.cachedTree); err != nil {
+	var outTree Tree
+	if err := json.Unmarshal(v.RawTree(), &outTree); err != nil {
 		panic(errors.Wrap(err, "failed to decode file"))
 	}
+	v.cachedTree = &outTree
 
 	return v.cachedTree
 }
@@ -80,7 +82,7 @@ func (v *TreeVersionData) RawTree() []byte {
 		}
 
 		defer func() {
-			_ = cache.Disk().Set(treeURL, v.rawTree)
+			_ = cache.Disk().Set(treeURL, compressedTree)
 		}()
 	}
 

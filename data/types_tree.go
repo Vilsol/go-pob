@@ -132,26 +132,26 @@ type Points struct {
 }
 
 type Sprites struct {
-	Background            map[float64]Sprite `json:"background"`
-	NormalActive          map[float64]Sprite `json:"normalActive"`
-	NotableActive         map[float64]Sprite `json:"notableActive"`
-	KeystoneActive        map[float64]Sprite `json:"keystoneActive"`
-	NormalInactive        map[float64]Sprite `json:"normalInactive"`
-	NotableInactive       map[float64]Sprite `json:"notableInactive"`
-	KeystoneInactive      map[float64]Sprite `json:"keystoneInactive"`
-	Mastery               map[float64]Sprite `json:"mastery"`
-	MasteryConnected      map[float64]Sprite `json:"masteryConnected"`
-	MasteryActiveSelected map[float64]Sprite `json:"masteryActiveSelected"`
-	MasteryInactive       map[float64]Sprite `json:"masteryInactive"`
-	MasteryActiveEffect   map[float64]Sprite `json:"masteryActiveEffect"`
-	AscendancyBackground  map[float64]Sprite `json:"ascendancyBackground"`
-	Ascendancy            map[float64]Sprite `json:"ascendancy"`
-	StartNode             map[float64]Sprite `json:"startNode"`
-	GroupBackground       map[float64]Sprite `json:"groupBackground"`
-	Frame                 map[float64]Sprite `json:"frame"`
-	Jewel                 map[float64]Sprite `json:"jewel"`
-	Line                  map[float64]Sprite `json:"line"`
-	JewelRadius           map[float64]Sprite `json:"jewelRadius"`
+	Background            map[string]Sprite `json:"background"`
+	NormalActive          map[string]Sprite `json:"normalActive"`
+	NotableActive         map[string]Sprite `json:"notableActive"`
+	KeystoneActive        map[string]Sprite `json:"keystoneActive"`
+	NormalInactive        map[string]Sprite `json:"normalInactive"`
+	NotableInactive       map[string]Sprite `json:"notableInactive"`
+	KeystoneInactive      map[string]Sprite `json:"keystoneInactive"`
+	Mastery               map[string]Sprite `json:"mastery"`
+	MasteryConnected      map[string]Sprite `json:"masteryConnected"`
+	MasteryActiveSelected map[string]Sprite `json:"masteryActiveSelected"`
+	MasteryInactive       map[string]Sprite `json:"masteryInactive"`
+	MasteryActiveEffect   map[string]Sprite `json:"masteryActiveEffect"`
+	AscendancyBackground  map[string]Sprite `json:"ascendancyBackground"`
+	Ascendancy            map[string]Sprite `json:"ascendancy"`
+	StartNode             map[string]Sprite `json:"startNode"`
+	GroupBackground       map[string]Sprite `json:"groupBackground"`
+	Frame                 map[string]Sprite `json:"frame"`
+	Jewel                 map[string]Sprite `json:"jewel"`
+	Line                  map[string]Sprite `json:"line"`
+	JewelRadius           map[string]Sprite `json:"jewelRadius"`
 }
 
 type Coord struct {
