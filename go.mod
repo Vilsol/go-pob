@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/MarvinJWendt/testza v0.4.3
-	github.com/Vilsol/crystalline v0.0.5
+	github.com/Vilsol/crystalline v0.0.6
 	github.com/andybalholm/brotli v1.0.4
 	github.com/goccy/go-json v0.9.11
 	github.com/pkg/errors v0.9.1
