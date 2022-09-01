@@ -43,7 +43,8 @@
   $: cdnTreeBase = `https://go-pob-data.pages.dev/data/${$skillTreeVersion.replace('_', '.')}/tree/assets/`;
 
   const spriteCache: Record<string, HTMLImageElement> = {};
-  const drawSprite = (context: CanvasRenderingContext2D, path: string, pos: Point, source: Record<string, Sprite>, mirror = false) => {
+  const cropCache: Record<string, HTMLCanvasElement> = {};
+  const drawSprite = (context: CanvasRenderingContext2D, path: string, pos: Point, source: Record<string, Sprite>, mirror = false, cropCircle = false) => {
     const sprite = source[path];
     if (!sprite) {
       return;
@@ -72,7 +73,30 @@
       finalY = topLeftY - newHeight / 2;
     }
 
-    context.drawImage(spriteCache[finalUrl], self.x, self.y, self.w, self.h, topLeftX, finalY, newWidth, newHeight);
+    if (cropCircle && spriteCache[finalUrl].complete) {
+      const cacheKey = finalUrl + ':' + path;
+      if (!(cacheKey in cropCache)) {
+        const tempCanvas = document.createElement('canvas');
+        const tempCtx = tempCanvas.getContext('2d');
+        tempCanvas.width = self.w;
+        tempCanvas.height = self.h;
+
+        tempCtx.save();
+
+        tempCtx.beginPath();
+        tempCtx.arc(self.w / 2, self.h / 2, self.w / 2, 0, Math.PI * 2, true);
+        tempCtx.closePath();
+        tempCtx.clip();
+
+        tempCtx.drawImage(spriteCache[finalUrl], self.x, self.y, self.w, self.h, 0, 0, self.w, self.h);
+
+        cropCache[cacheKey] = tempCanvas;
+      }
+
+      context.drawImage(cropCache[cacheKey], 0, 0, self.w, self.h, topLeftX, finalY, newWidth, newHeight);
+    } else {
+      context.drawImage(spriteCache[finalUrl], self.x, self.y, self.w, self.h, topLeftX, finalY, newWidth, newHeight);
+    }
 
     if (mirror) {
       context.save();
@@ -133,7 +157,7 @@
         drawSprite(context, 'center' + $skillTree.classes[classStartGroups[nGroupId]].name.toLowerCase(), groupPos, inverseSpritesOther);
       } else if (nGroupId in ascendancyGroups) {
         if (ascendancyStartGroups.has(nGroupId)) {
-          drawSprite(context, 'Classes' + ascendancyGroups[nGroupId], groupPos, inverseSpritesOther);
+          drawSprite(context, 'Classes' + ascendancyGroups[nGroupId], groupPos, inverseSpritesOther, false, true);
         }
       } else if (maxOrbit == 1) {
         drawSprite(context, 'PSGroupBackground1', groupPos, inverseSpritesOther);
