@@ -429,9 +429,12 @@ export declare namespace pob {
     DeleteSocketGroup(index: number): void;
     GetStringOption(name: string): string;
     RemoveConfigOption(name: string): void;
+    SetAscendancy(ascendancy: string): void;
+    SetClass(clazz: string): void;
     SetConfigOption(value: pob.Input): void;
     SetDefaultGemLevel(gemLevel: number): void;
     SetDefaultGemQuality(gemQuality: number): void;
+    SetLevel(level: number): void;
     SetMainSocketGroup(mainSocketGroup: number): void;
     SetMatchGemLevelToCharacterLevel(enabled: boolean): void;
     SetShowAltQualityGems(enabled: boolean): void;

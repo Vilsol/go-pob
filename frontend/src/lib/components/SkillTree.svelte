@@ -15,10 +15,18 @@
     skillTreeVersion,
     ascendancyGroups,
     ascendancyStartGroups,
-    classStartGroups
+    classStartGroups,
+    ascendancyGroupPositionOffsets
   } from '../skill_tree';
   import type { Point } from '../skill_tree';
   import { onMount } from 'svelte';
+  import { currentBuild } from '../global';
+
+  let currentClass: string | undefined;
+  $: $currentBuild?.Build.ClassName.then((newClass) => (currentClass = newClass));
+
+  let currentAscendancy: string | undefined;
+  $: $currentBuild?.Build.AscendClassName.then((newAscendancy) => (currentAscendancy = newAscendancy));
 
   interface RenderParams {
     context: CanvasRenderingContext2D;
@@ -30,8 +38,8 @@
 
   export let clickNode: (node: Node) => void = console.log;
 
-  const titleFont = '25px Roboto Mono';
-  const statsFont = '17px Roboto Mono';
+  const titleFont = '25px Roboto Flex';
+  const statsFont = '17px Roboto Flex';
 
   let scaling = 10;
 
@@ -43,8 +51,16 @@
   $: cdnTreeBase = `https://go-pob-data.pages.dev/data/${$skillTreeVersion.replace('_', '.')}/tree/assets/`;
 
   const spriteCache: Record<string, HTMLImageElement> = {};
-  const cropCache: Record<string, HTMLCanvasElement> = {};
-  const drawSprite = (context: CanvasRenderingContext2D, path: string, pos: Point, source: Record<string, Sprite>, mirror = false, cropCircle = false) => {
+  const cropCache: Record<string, Record<boolean, HTMLCanvasElement>> = {};
+  const drawSprite = (
+    context: CanvasRenderingContext2D,
+    path: string,
+    pos: Point,
+    source: Record<string, Sprite>,
+    mirror = false,
+    cropCircle = false,
+    active = false
+  ) => {
     const sprite = source[path];
     if (!sprite) {
       return;
@@ -75,7 +91,7 @@
 
     if (cropCircle && spriteCache[finalUrl].complete) {
       const cacheKey = finalUrl + ':' + path;
-      if (!(cacheKey in cropCache)) {
+      if (!(cacheKey in cropCache) || !(active in cropCache[cacheKey])) {
         const tempCanvas = document.createElement('canvas');
         const tempCtx = tempCanvas.getContext('2d');
         tempCanvas.width = self.w;
@@ -88,12 +104,20 @@
         tempCtx.closePath();
         tempCtx.clip();
 
+        if (!active) {
+          tempCtx.filter = 'brightness(50%) opacity(50%)';
+        }
+
         tempCtx.drawImage(spriteCache[finalUrl], self.x, self.y, self.w, self.h, 0, 0, self.w, self.h);
 
-        cropCache[cacheKey] = tempCanvas;
+        if (!(cacheKey in cropCache)) {
+          cropCache[cacheKey] = {};
+        }
+
+        cropCache[cacheKey][active] = tempCanvas;
       }
 
-      context.drawImage(cropCache[cacheKey], 0, 0, self.w, self.h, topLeftX, finalY, newWidth, newHeight);
+      context.drawImage(cropCache[cacheKey][active], 0, 0, self.w, self.h, topLeftX, finalY, newWidth, newHeight);
     } else {
       context.drawImage(spriteCache[finalUrl], self.x, self.y, self.w, self.h, topLeftX, finalY, newWidth, newHeight);
     }
@@ -148,16 +172,31 @@
 
     const connected = {};
     Object.keys(drawnGroups).forEach((groupId) => {
+      const nGroupId = parseInt(groupId);
+
       const group: Group = drawnGroups[groupId];
-      const groupPos = toCanvasCoords(group.x, group.y, offsetX, offsetY, scaling);
+      const posX = ((nGroupId in ascendancyGroups && ascendancyGroupPositionOffsets[ascendancyGroups[nGroupId]]?.x) || 0) + group.x;
+      const posY = ((nGroupId in ascendancyGroups && ascendancyGroupPositionOffsets[ascendancyGroups[nGroupId]]?.y) || 0) + group.y;
+      const groupPos = toCanvasCoords(posX, posY, offsetX, offsetY, scaling);
 
       const maxOrbit = Math.max(...group.orbits);
-      const nGroupId = parseInt(groupId);
       if (nGroupId in classStartGroups) {
-        drawSprite(context, 'center' + $skillTree.classes[classStartGroups[nGroupId]].name.toLowerCase(), groupPos, inverseSpritesOther);
+        if (currentClass === $skillTree.classes[classStartGroups[nGroupId]].name) {
+          drawSprite(context, 'center' + $skillTree.classes[classStartGroups[nGroupId]].name.toLowerCase(), groupPos, inverseSpritesOther);
+        } else {
+          drawSprite(context, 'PSStartNodeBackgroundInactive', groupPos, inverseSpritesOther, false, true);
+        }
       } else if (nGroupId in ascendancyGroups) {
         if (ascendancyStartGroups.has(nGroupId)) {
-          drawSprite(context, 'Classes' + ascendancyGroups[nGroupId], groupPos, inverseSpritesOther, false, true);
+          drawSprite(
+            context,
+            'Classes' + ascendancyGroups[nGroupId],
+            groupPos,
+            inverseSpritesOther,
+            false,
+            true,
+            currentAscendancy === ascendancyGroups[nGroupId]
+          );
         }
       } else if (maxOrbit == 1) {
         drawSprite(context, 'PSGroupBackground1', groupPos, inverseSpritesOther);
@@ -233,7 +272,9 @@
           const finalB = diff > Math.PI ? Math.min(a, b) : Math.max(a, b);
 
           const group = drawnGroups[node.group];
-          const groupPos = toCanvasCoords(group.x, group.y, offsetX, offsetY, scaling);
+          const posX = ((node.ascendancyName && ascendancyGroupPositionOffsets[node.ascendancyName]?.x) || 0) + group.x;
+          const posY = ((node.ascendancyName && ascendancyGroupPositionOffsets[node.ascendancyName]?.y) || 0) + group.y;
+          const groupPos = toCanvasCoords(posX, posY, offsetX, offsetY, scaling);
           context.arc(groupPos.x, groupPos.y, $skillTree.constants.orbitRadii[node.orbit] / scaling + 1, finalA, finalB);
         }
 
@@ -267,10 +308,19 @@
       } else if (node.isNotable) {
         touchDistance = 70;
         drawSprite(context, node.icon, rotatedPos, active ? inverseSpritesActive : inverseSpritesInactive);
-        if (active) {
-          drawSprite(context, 'NotableFrameAllocated', rotatedPos, inverseSpritesOther);
+
+        if (node.ascendancyName) {
+          if (active) {
+            drawSprite(context, 'AscendancyFrameLargeAllocated', rotatedPos, inverseSpritesOther);
+          } else {
+            drawSprite(context, 'AscendancyFrameLargeNormal', rotatedPos, inverseSpritesOther);
+          }
         } else {
-          drawSprite(context, 'NotableFrameUnallocated', rotatedPos, inverseSpritesOther);
+          if (active) {
+            drawSprite(context, 'NotableFrameAllocated', rotatedPos, inverseSpritesOther);
+          } else {
+            drawSprite(context, 'NotableFrameUnallocated', rotatedPos, inverseSpritesOther);
+          }
         }
       } else if (node.isJewelSocket) {
         touchDistance = 70;
@@ -288,10 +338,19 @@
       } else {
         touchDistance = 50;
         drawSprite(context, node.icon, rotatedPos, active ? inverseSpritesActive : inverseSpritesInactive);
-        if (active) {
-          drawSprite(context, 'PSSkillFrameActive', rotatedPos, inverseSpritesOther);
+
+        if (node.ascendancyName) {
+          if (active) {
+            drawSprite(context, 'AscendancyFrameSmallAllocated', rotatedPos, inverseSpritesOther);
+          } else {
+            drawSprite(context, 'AscendancyFrameSmallNormal', rotatedPos, inverseSpritesOther);
+          }
         } else {
-          drawSprite(context, 'PSSkillFrame', rotatedPos, inverseSpritesOther);
+          if (active) {
+            drawSprite(context, 'PSSkillFrameActive', rotatedPos, inverseSpritesOther);
+          } else {
+            drawSprite(context, 'PSSkillFrame', rotatedPos, inverseSpritesOther);
+          }
         }
       }
 

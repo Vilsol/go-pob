@@ -207,8 +207,19 @@ class PoBWorker {
     return new TextDecoder().decode(rawData);
   }
 
-  GetStatByIndex(id: number) {
-    return exposition.GetStatByIndex(id);
+  SetClass(value: string) {
+    this.currentBuild?.SetClass(value);
+    this.Tick('SetClass');
+  }
+
+  SetAscendancy(value: string) {
+    this.currentBuild?.SetAscendancy(value);
+    this.Tick('SetAscendancy');
+  }
+
+  SetLevel(value: number) {
+    this.currentBuild?.SetLevel(value);
+    this.Tick('SetLevel');
   }
 }
 

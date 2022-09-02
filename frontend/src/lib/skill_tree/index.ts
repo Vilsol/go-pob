@@ -20,6 +20,30 @@ export const inverseSpritesOther: Record<string, Sprite> = {};
 
 let zoomLevel = 0.3835;
 
+const expectedAscendancyStartingPositions: Record<string, { x: number; y: number }> = {
+  Juggernaut: { x: -10400, y: 5200 },
+  Berserker: { x: -10400, y: 3700 },
+  Chieftain: { x: -10400, y: 2200 },
+  Raider: { x: 10200, y: 5200 },
+  Deadeye: { x: 10200, y: 2200 },
+  Pathfinder: { x: 10200, y: 3700 },
+  Occultist: { x: -1500, y: -9850 },
+  Elementalist: { x: 0, y: -9850 },
+  Necromancer: { x: 1500, y: -9850 },
+  Slayer: { x: 1500, y: 9800 },
+  Gladiator: { x: -1500, y: 9800 },
+  Champion: { x: 0, y: 9800 },
+  Inquisitor: { x: -10400, y: -2200 },
+  Hierophant: { x: -10400, y: -3700 },
+  Guardian: { x: -10400, y: -5200 },
+  Assassin: { x: 10200, y: -5200 },
+  Trickster: { x: 10200, y: -3700 },
+  Saboteur: { x: 10200, y: -2200 },
+  Ascendant: { x: -7800, y: 7200 }
+};
+
+export const ascendancyGroupPositionOffsets: Record<string, { x: number; y: number }> = {};
+
 export const loadSkillTree = async (version: string) => {
   if (!syncWrap) {
     return;
@@ -51,6 +75,13 @@ export const loadSkillTree = async (version: string) => {
 
       if (node.isAscendancyStart) {
         ascendancyStartGroups.add(nGroupId);
+
+        if (node.ascendancyName) {
+          ascendancyGroupPositionOffsets[node.ascendancyName] = {
+            x: expectedAscendancyStartingPositions[node.ascendancyName].x - group.x,
+            y: expectedAscendancyStartingPositions[node.ascendancyName].y - group.y
+          };
+        }
       }
     });
   });
@@ -140,10 +171,14 @@ export const calculateNodePos = (node: Node, offsetX: number, offsetY: number, s
   }
 
   const targetGroup = loadedSkillTree.groups[node.group];
+
+  const posX = ((node.ascendancyName && ascendancyGroupPositionOffsets[node.ascendancyName]?.x) || 0) + targetGroup.x;
+  const posY = ((node.ascendancyName && ascendancyGroupPositionOffsets[node.ascendancyName]?.y) || 0) + targetGroup.y;
+
   const targetAngle = orbitAngleAt(node.orbit, node.orbitIndex);
 
-  const targetGroupPos = toCanvasCoords(targetGroup.x, targetGroup.y, offsetX, offsetY, scaling);
-  const targetNodePos = toCanvasCoords(targetGroup.x, targetGroup.y - loadedSkillTree.constants.orbitRadii[node.orbit], offsetX, offsetY, scaling);
+  const targetGroupPos = toCanvasCoords(posX, posY, offsetX, offsetY, scaling);
+  const targetNodePos = toCanvasCoords(posX, posY - loadedSkillTree.constants.orbitRadii[node.orbit], offsetX, offsetY, scaling);
   return rotateAroundPoint(targetGroupPos, targetNodePos, targetAngle);
 };
 

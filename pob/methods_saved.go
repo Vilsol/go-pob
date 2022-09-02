@@ -95,3 +95,15 @@ func (b *PathOfBuilding) DeleteSocketGroup(index int) {
 func (b *PathOfBuilding) DeleteAllSocketGroups() {
 	b.Skills.SkillSets[b.Skills.ActiveSkillSet-1].Skills = make([]Skill, 0)
 }
+
+func (b *PathOfBuilding) SetClass(clazz string) {
+	b.Build.ClassName = clazz
+}
+
+func (b *PathOfBuilding) SetAscendancy(ascendancy string) {
+	b.Build.AscendClassName = ascendancy
+}
+
+func (b *PathOfBuilding) SetLevel(level int) {
+	b.Build.Level = level
+}
