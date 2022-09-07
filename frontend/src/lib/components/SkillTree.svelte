@@ -48,7 +48,7 @@
 
   const drawScaling = 2.6;
 
-  $: cdnTreeBase = `https://go-pob-data.pages.dev/data/${$skillTreeVersion.replace('_', '.')}/tree/assets/`;
+  $: cdnTreeBase = `https://go-pob-data.pages.dev/data/${($skillTreeVersion || '3_18').replace('_', '.')}/tree/assets/`;
 
   const spriteCache: Record<string, HTMLImageElement> = {};
   const cropCache: Record<string, Record<boolean, HTMLCanvasElement>> = {};

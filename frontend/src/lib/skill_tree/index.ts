@@ -159,27 +159,31 @@ export const orbitAngleAt = (orbit: number, index: number): number => {
   }
 };
 
+const nodePosCache: Record<number, Point> = {};
 export const calculateNodePos = (node: Node, offsetX: number, offsetY: number, scaling: number): Point => {
   if (
     node.group === undefined ||
     node.orbit === undefined ||
     node.orbitIndex === undefined ||
+    node.skill === undefined ||
     !loadedSkillTree.groups ||
     !loadedSkillTree.constants.orbitRadii
   ) {
     return { x: 0, y: 0 };
   }
 
-  const targetGroup = loadedSkillTree.groups[node.group];
+  if (!(node.skill in nodePosCache)) {
+    const targetGroup = loadedSkillTree.groups[node.group];
 
-  const posX = ((node.ascendancyName && ascendancyGroupPositionOffsets[node.ascendancyName]?.x) || 0) + targetGroup.x;
-  const posY = ((node.ascendancyName && ascendancyGroupPositionOffsets[node.ascendancyName]?.y) || 0) + targetGroup.y;
+    const posX = ((node.ascendancyName && ascendancyGroupPositionOffsets[node.ascendancyName]?.x) || 0) + targetGroup.x;
+    const posY = ((node.ascendancyName && ascendancyGroupPositionOffsets[node.ascendancyName]?.y) || 0) + targetGroup.y;
 
-  const targetAngle = orbitAngleAt(node.orbit, node.orbitIndex);
+    const targetAngle = orbitAngleAt(node.orbit, node.orbitIndex);
 
-  const targetGroupPos = toCanvasCoords(posX, posY, offsetX, offsetY, scaling);
-  const targetNodePos = toCanvasCoords(posX, posY - loadedSkillTree.constants.orbitRadii[node.orbit], offsetX, offsetY, scaling);
-  return rotateAroundPoint(targetGroupPos, targetNodePos, targetAngle);
+    nodePosCache[node.skill] = rotateAroundPoint({ x: posX, y: posY }, { x: posX, y: posY - loadedSkillTree.constants.orbitRadii[node.orbit] }, targetAngle);
+  }
+
+  return toCanvasCoords(nodePosCache[node.skill].x, nodePosCache[node.skill].y, offsetX, offsetY, scaling);
 };
 
 export const distance = (p1: Point, p2: Point): number => Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));

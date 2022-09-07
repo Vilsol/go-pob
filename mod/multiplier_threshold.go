@@ -8,6 +8,7 @@ type MultiplierThresholdTag struct {
 	TagThreshold      *float64
 	ThresholdVariable *string
 	TagUpper          bool
+	TagActor          string
 }
 
 func MultiplierThreshold(variable string) *MultiplierThresholdTag {
@@ -33,5 +34,10 @@ func (m *MultiplierThresholdTag) ThresholdVar(thresholdVar string) *MultiplierTh
 
 func (m *MultiplierThresholdTag) Upper(upper bool) *MultiplierThresholdTag {
 	m.TagUpper = upper
+	return m
+}
+
+func (m *MultiplierThresholdTag) Actor(actor string) *MultiplierThresholdTag {
+	m.TagActor = actor
 	return m
 }

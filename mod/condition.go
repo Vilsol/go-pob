@@ -4,14 +4,14 @@ var _ Tag = (*ConditionTag)(nil)
 
 type ConditionTag struct {
 	TagType  Type
-	Variable string
 	Negative bool
+	VarList  []string
 }
 
-func Condition(variable string) *ConditionTag {
+func Condition(varList ...string) *ConditionTag {
 	return &ConditionTag{
-		TagType:  TypeCondition,
-		Variable: variable,
+		TagType: TypeCondition,
+		VarList: varList,
 	}
 }
 

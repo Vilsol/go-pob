@@ -7,6 +7,8 @@ import (
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 	"golang.org/x/sync/errgroup"
+
+	"github.com/Vilsol/go-pob/utils"
 )
 
 const LatestVersion = "3.18"
@@ -202,6 +204,10 @@ func InitializeAll(version string, updateFunc UpdateFunc) error {
 		if err := g.Wait(); err != nil {
 			return err
 		}
+	}
+
+	for _, hook := range utils.RegisteredHooks {
+		hook()
 	}
 
 	return nil

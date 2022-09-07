@@ -69,7 +69,15 @@ func (m *BaseMod) KeywordFlag(keywordFlag KeywordFlag) Mod {
 	return m.child
 }
 
-func (m *BaseMod) Tag(tag Tag) Mod {
-	m.ModTags = append(m.ModTags, tag)
+func (m *BaseMod) Tag(tag ...Tag) Mod {
+	if tag == nil {
+		return m.child
+	}
+
+	m.ModTags = append(m.ModTags, tag...)
 	return m.child
+}
+
+func (m *BaseMod) ClearTags() {
+	m.ModTags = nil
 }

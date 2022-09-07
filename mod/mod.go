@@ -6,13 +6,14 @@ type Mod interface {
 	Source(source Source) Mod
 	Flag(flag MFlag) Mod
 	KeywordFlag(keywordFlags KeywordFlag) Mod
-	Tag(tag Tag) Mod
+	Tag(tag ...Tag) Mod
 	Flags() MFlag
 	KeywordFlags() KeywordFlag
 	GetSource() Source
 	Tags() []Tag
 	Value() interface{}
 	Clone() Mod
+	ClearTags()
 }
 
 type MFlag int

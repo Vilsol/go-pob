@@ -3,17 +3,17 @@ package mod
 var _ Tag = (*ActorConditionTag)(nil)
 
 type ActorConditionTag struct {
-	TagType  Type
-	Actor    *string
-	Variable string
-	Negative bool
+	TagType      Type
+	Actor        *string
+	VariableList []string
+	Negative     bool
 }
 
-func ActorCondition(actor string, variable string) *ActorConditionTag {
+func ActorCondition(actor string, variables ...string) *ActorConditionTag {
 	return &ActorConditionTag{
-		TagType:  TypeActorCondition,
-		Actor:    &actor,
-		Variable: variable,
+		TagType:      TypeActorCondition,
+		Actor:        &actor,
+		VariableList: variables,
 	}
 }
 

@@ -10,6 +10,6 @@
   });
 </script>
 
-{#if $skillTree && $skillTreeVersion}
+{#if $skillTree && $skillTreeVersion && Object.keys(drawnGroups).length > 0}
   <SkillTree />
 {/if}

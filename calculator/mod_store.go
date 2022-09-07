@@ -99,17 +99,10 @@ func (s *ModStore) EvalMod(m mod.Mod, cfg *ListCfg) interface{} {
 				end
 			*/
 
-			base := target.GetMultiplier(tag.Variable, cfg, false)
-			/*
-				TODO VarList
-				if tag.varList then
-					for _, var in pairs(tag.varList) do
-						base = base + target:GetMultiplier(var, cfg)
-					end
-				else
-					base = target:GetMultiplier(tag.var, cfg)
-				end
-			*/
+			base := 0.0
+			for _, v := range tag.VariableList {
+				base += target.GetMultiplier(v, cfg, false)
+			}
 
 			mult := math.Floor(base/tag.Division + 0.0001)
 			var limitTotal *float64
@@ -121,7 +114,7 @@ func (s *ModStore) EvalMod(m mod.Mod, cfg *ListCfg) interface{} {
 					limit = limitTarget.GetMultiplier(*tag.TagLimitVariable, cfg, false)
 				}
 
-				if tag.LimitTotal {
+				if tag.TagLimitTotal {
 					limitTotal = &limit
 				} else {
 					mult = utils.Min(mult, limit)
@@ -129,7 +122,7 @@ func (s *ModStore) EvalMod(m mod.Mod, cfg *ListCfg) interface{} {
 			}
 
 			if v, ok := value.(float64); ok {
-				out := v*mult + tag.Base
+				out := v*mult + tag.TagBase
 				if limitTotal != nil {
 					out = utils.Min(out, *limitTotal)
 				}
@@ -200,18 +193,9 @@ func (s *ModStore) EvalMod(m mod.Mod, cfg *ListCfg) interface{} {
 				end
 			*/
 
-			base = target.GetStat(tag.Stat, cfg)
-			/*
-				TODO Stat List
-				if tag.statList then
-					base = 0
-					for _, stat in ipairs(tag.statList) do
-						base = base + target:GetStat(stat, cfg)
-					end
-				else
-					base = target:GetStat(tag.stat, cfg)
-				end
-			*/
+			for _, stat := range tag.StatList {
+				base += target.GetStat(stat, cfg)
+			}
 
 			mult := math.Floor(base/tag.Divide + 0.0001)
 			var limitTotal *float64
@@ -354,25 +338,21 @@ func (s *ModStore) EvalMod(m mod.Mod, cfg *ListCfg) interface{} {
 					value = m_min(value, tag.limit or self:GetMultiplier(tag.limitVar, cfg))
 			*/
 		case *mod.ConditionTag:
-			match, ok := s.GetCondition(tag.Variable, cfg, false)
+			match := false
+			for _, v := range tag.VarList {
+				var ok bool
+				match, ok = s.GetCondition(v, cfg, false)
+				if ok && match {
+					break
+				}
 
-			if !ok && cfg != nil && cfg.SkillCond != nil {
-				if c, ok := cfg.SkillCond[tag.Variable]; ok {
-					match = c
+				if !ok && cfg != nil && cfg.SkillCond != nil {
+					if c, ok := cfg.SkillCond[v]; ok && c {
+						match = true
+						break
+					}
 				}
 			}
-
-			/*
-				TODO VarList
-				if tag.varList then
-					for _, var in pairs(tag.varList) do
-						if self:GetCondition(var, cfg) or (cfg and cfg.skillCond and cfg.skillCond[var]) then
-							match = true
-							break
-						end
-					end
-				end
-			*/
 
 			if tag.Negative {
 				match = !match
@@ -389,25 +369,21 @@ func (s *ModStore) EvalMod(m mod.Mod, cfg *ListCfg) interface{} {
 				// target = self.actor[tag.actor] and self.actor[tag.actor].modDB
 			}
 
-			match, ok := target.GetCondition(tag.Variable, cfg, false)
+			match := false
+			for _, v := range tag.VariableList {
+				var ok bool
+				match, ok = target.GetCondition(v, cfg, false)
+				if ok && match {
+					break
+				}
 
-			if !ok && cfg != nil && cfg.SkillCond != nil {
-				if c, ok := cfg.SkillCond[tag.Variable]; ok {
-					match = c
+				if !ok && cfg != nil && cfg.SkillCond != nil {
+					if c, ok := cfg.SkillCond[v]; ok && c {
+						match = true
+						break
+					}
 				}
 			}
-
-			/*
-				TODO VarList
-				if tag.varList then
-					for _, var in pairs(tag.varList) do
-						if self:GetCondition(var, cfg) or (cfg and cfg.skillCond and cfg.skillCond[var]) then
-							match = true
-							break
-						end
-					end
-				end
-			*/
 
 			if tag.Negative {
 				match = !match
