@@ -16,11 +16,14 @@
     ascendancyGroups,
     ascendancyStartGroups,
     classStartGroups,
-    ascendancyGroupPositionOffsets
+    ascendancyGroupPositionOffsets,
+    classStartNodes
   } from '../skill_tree';
   import type { Point } from '../skill_tree';
   import { onMount } from 'svelte';
   import { currentBuild } from '../global';
+  import { syncWrap } from '../go/worker';
+  import { writable } from 'svelte/store';
 
   let currentClass: string | undefined;
   $: $currentBuild?.Build.ClassName.then((newClass) => (currentClass = newClass));
@@ -48,7 +51,8 @@
 
   const drawScaling = 2.6;
 
-  $: cdnTreeBase = `https://go-pob-data.pages.dev/data/${($skillTreeVersion || '3_18').replace('_', '.')}/tree/assets/`;
+  $: cdnBase = `https://go-pob-data.pages.dev/data/${($skillTreeVersion || '3_18').replace('_', '.')}`;
+  $: cdnTreeBase = cdnBase + `/tree/assets/`;
 
   const spriteCache: Record<string, HTMLImageElement> = {};
   const cropCache: Record<string, Record<boolean, HTMLCanvasElement>> = {};
@@ -161,6 +165,9 @@
 
   let cursor = 'unset';
 
+  const hoverPath = writable<number[]>([]);
+  const extraCache: Record<string, HTMLImageElement> = {};
+
   let hoveredNode: Node | undefined;
   $: render = (({ context, width, height }) => {
     const start = window.performance.now();
@@ -169,6 +176,27 @@
 
     context.fillStyle = '#080c11';
     context.fillRect(0, 0, width, height);
+
+    if (currentClass) {
+      const classIndex = $skillTree.classes.findIndex((c) => c.name === currentClass);
+      if (classIndex in $skillTree.extraImages) {
+        const img = $skillTree.extraImages[classIndex];
+
+        if (!(img.image in extraCache)) {
+          extraCache[img.image] = new Image();
+          extraCache[img.image].src = cdnBase + '/raw/' + img.image;
+        }
+
+        if (extraCache[img.image].complete) {
+          const newWidth = (extraCache[img.image].width / scaling) * drawScaling * 0.5;
+          const newHeight = (extraCache[img.image].height / scaling) * drawScaling * 0.5;
+
+          const imgPos = toCanvasCoords(img.x, img.y, offsetX, offsetY, scaling);
+
+          context.drawImage(extraCache[img.image], 0, 0, extraCache[img.image].width, extraCache[img.image].height, imgPos.x, imgPos.y, newWidth, newHeight);
+        }
+      }
+    }
 
     const connected = {};
     Object.keys(drawnGroups).forEach((groupId) => {
@@ -216,6 +244,8 @@
       if (node.classStartIndex !== undefined) {
         return;
       }
+
+      const sourceActive = $hoverPath.indexOf(node.skill) >= 0;
 
       node.out?.forEach((o) => {
         if (!drawnNodes[parseInt(o)]) {
@@ -278,8 +308,13 @@
           context.arc(groupPos.x, groupPos.y, $skillTree.constants.orbitRadii[node.orbit] / scaling + 1, finalA, finalB);
         }
 
+        if (sourceActive && $hoverPath.indexOf(targetNode.skill) >= 0) {
+          context.strokeStyle = `#c89c01`;
+        } else {
+          context.strokeStyle = `#524518`;
+        }
+
         context.lineWidth = 6 / scaling;
-        context.strokeStyle = `#524518`;
         context.stroke();
       });
     });
@@ -291,76 +326,109 @@
       const rotatedPos = calculateNodePos(node, offsetX, offsetY, scaling);
       let touchDistance = 0;
 
-      const active = false; // TODO Actually check if node is active
-
       if (node.classStartIndex !== undefined) {
-        // Do not draw class start index node
+        // No touch distance for class start
       } else if (node.isAscendancyStart) {
-        drawSprite(context, 'AscendancyMiddle', rotatedPos, inverseSpritesOther);
+        // No touch distance for ascendancy start
       } else if (node.isKeystone) {
         touchDistance = 110;
-        drawSprite(context, node.icon, rotatedPos, active ? inverseSpritesActive : inverseSpritesInactive);
-        if (active) {
-          drawSprite(context, 'KeystoneFrameAllocated', rotatedPos, inverseSpritesOther);
-        } else {
-          drawSprite(context, 'KeystoneFrameUnallocated', rotatedPos, inverseSpritesOther);
-        }
       } else if (node.isNotable) {
         touchDistance = 70;
-        drawSprite(context, node.icon, rotatedPos, active ? inverseSpritesActive : inverseSpritesInactive);
-
-        if (node.ascendancyName) {
-          if (active) {
-            drawSprite(context, 'AscendancyFrameLargeAllocated', rotatedPos, inverseSpritesOther);
-          } else {
-            drawSprite(context, 'AscendancyFrameLargeNormal', rotatedPos, inverseSpritesOther);
-          }
-        } else {
-          if (active) {
-            drawSprite(context, 'NotableFrameAllocated', rotatedPos, inverseSpritesOther);
-          } else {
-            drawSprite(context, 'NotableFrameUnallocated', rotatedPos, inverseSpritesOther);
-          }
-        }
       } else if (node.isJewelSocket) {
         touchDistance = 70;
-        if (node.expansionJewel) {
-          drawSprite(context, 'JewelSocketAltNormal', rotatedPos, inverseSpritesOther);
-        } else {
-          if (active) {
-            drawSprite(context, 'JewelFrameAllocated', rotatedPos, inverseSpritesOther);
-          } else {
-            drawSprite(context, 'JewelFrameUnallocated', rotatedPos, inverseSpritesOther);
-          }
-        }
       } else if (node.isMastery) {
-        drawSprite(context, node.inactiveIcon, rotatedPos, active ? inverseSpritesActive : inverseSpritesInactive);
+        touchDistance = 85;
       } else {
         touchDistance = 50;
-        drawSprite(context, node.icon, rotatedPos, active ? inverseSpritesActive : inverseSpritesInactive);
-
-        if (node.ascendancyName) {
-          if (active) {
-            drawSprite(context, 'AscendancyFrameSmallAllocated', rotatedPos, inverseSpritesOther);
-          } else {
-            drawSprite(context, 'AscendancyFrameSmallNormal', rotatedPos, inverseSpritesOther);
-          }
-        } else {
-          if (active) {
-            drawSprite(context, 'PSSkillFrameActive', rotatedPos, inverseSpritesOther);
-          } else {
-            drawSprite(context, 'PSSkillFrame', rotatedPos, inverseSpritesOther);
-          }
-        }
       }
 
       if (distance(rotatedPos, mousePos) < touchDistance / scaling) {
         newHoverNode = node;
         // hoveredNodeActive = active;
       }
+
+      const active = false; // TODO Actually check if node is active
+      const highlighted = $hoverPath.indexOf(node.skill) >= 0 || newHoverNode === node;
+
+      if (node.classStartIndex !== undefined) {
+        // Do not draw class start index node
+      } else if (node.isAscendancyStart) {
+        drawSprite(context, 'AscendancyMiddle', rotatedPos, inverseSpritesOther);
+      } else if (node.isKeystone) {
+        drawSprite(context, node.icon, rotatedPos, active ? inverseSpritesActive : inverseSpritesInactive);
+        if (active || highlighted) {
+          drawSprite(context, 'KeystoneFrameAllocated', rotatedPos, inverseSpritesOther);
+        } else {
+          drawSprite(context, 'KeystoneFrameUnallocated', rotatedPos, inverseSpritesOther);
+        }
+      } else if (node.isNotable) {
+        drawSprite(context, node.icon, rotatedPos, active ? inverseSpritesActive : inverseSpritesInactive);
+
+        if (node.ascendancyName) {
+          if (active || highlighted) {
+            drawSprite(context, 'AscendancyFrameLargeAllocated', rotatedPos, inverseSpritesOther);
+          } else {
+            drawSprite(context, 'AscendancyFrameLargeNormal', rotatedPos, inverseSpritesOther);
+          }
+        } else {
+          if (active || highlighted) {
+            drawSprite(context, 'NotableFrameAllocated', rotatedPos, inverseSpritesOther);
+          } else {
+            drawSprite(context, 'NotableFrameUnallocated', rotatedPos, inverseSpritesOther);
+          }
+        }
+      } else if (node.isJewelSocket) {
+        if (node.expansionJewel) {
+          if (active || highlighted) {
+            drawSprite(context, 'JewelSocketAltActive', rotatedPos, inverseSpritesOther);
+          } else {
+            drawSprite(context, 'JewelSocketAltNormal', rotatedPos, inverseSpritesOther);
+          }
+        } else {
+          if (active || highlighted) {
+            drawSprite(context, 'JewelFrameAllocated', rotatedPos, inverseSpritesOther);
+          } else {
+            drawSprite(context, 'JewelFrameUnallocated', rotatedPos, inverseSpritesOther);
+          }
+        }
+      } else if (node.isMastery) {
+        if (active || highlighted) {
+          drawSprite(context, node.activeIcon, rotatedPos, inverseSpritesActive);
+        } else {
+          drawSprite(context, node.inactiveIcon, rotatedPos, inverseSpritesInactive);
+        }
+      } else {
+        drawSprite(context, node.icon, rotatedPos, active ? inverseSpritesActive : inverseSpritesInactive);
+
+        if (node.ascendancyName) {
+          if (active || highlighted) {
+            drawSprite(context, 'AscendancyFrameSmallAllocated', rotatedPos, inverseSpritesOther);
+          } else {
+            drawSprite(context, 'AscendancyFrameSmallNormal', rotatedPos, inverseSpritesOther);
+          }
+        } else {
+          if (active || highlighted) {
+            drawSprite(context, 'PSSkillFrameActive', rotatedPos, inverseSpritesOther);
+          } else {
+            drawSprite(context, 'PSSkillFrame', rotatedPos, inverseSpritesOther);
+          }
+        }
+      }
     });
 
-    hoveredNode = newHoverNode;
+    if (hoveredNode != newHoverNode) {
+      hoveredNode = newHoverNode;
+      if (hoveredNode !== undefined && currentClass) {
+        console.log('CURRENT:', currentClass);
+        const rootNodes = classStartNodes[$skillTree.classes.findIndex((c) => c.name === currentClass)];
+        const target = hoveredNode.skill;
+        syncWrap.CalculateTreePath($skillTreeVersion || '3_18', rootNodes, target).then((data) => {
+          hoverPath.set(data);
+        });
+      } else {
+        hoverPath.set([]);
+      }
+    }
 
     if (hoveredNode) {
       const nodeName = hoveredNode.name;

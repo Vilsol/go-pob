@@ -13,6 +13,7 @@ export const drawnNodes: Record<number, Node> = {};
 export const ascendancyGroups: Record<number, string> = {};
 export const ascendancyStartGroups = new Set<number>();
 export const classStartGroups: Record<number, number> = {};
+export const classStartNodes: Record<number, number[]> = {};
 
 export const inverseSpritesInactive: Record<string, Sprite> = {};
 export const inverseSpritesActive: Record<string, Sprite> = {};
@@ -67,6 +68,17 @@ export const loadSkillTree = async (version: string) => {
 
       if (node.classStartIndex !== undefined) {
         classStartGroups[nGroupId] = node.classStartIndex;
+
+        for (const n of [...(node.out || []), ...(node.in || [])]) {
+          const target = loadedSkillTree.nodes[n];
+          if (!target.skill) {
+            continue;
+          }
+
+          if (target.ascendancyName === undefined) {
+            classStartNodes[node.classStartIndex] = [...(classStartNodes[node.classStartIndex] || []), target.skill];
+          }
+        }
       }
 
       if (node.ascendancyName !== undefined) {

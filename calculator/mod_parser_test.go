@@ -118,6 +118,14 @@ func TestParser(t *testing.T) {
 			line: "Socketed Gems have 30% increased Reservation Efficiency",
 			mods: []mod.Mod{mod.NewList("ExtraSkillMod", mod.ExtraSkillMod{Mod: mod.NewFloat("ReservationEfficiency", mod.TypeIncrease, 30)}).Tag(mod.SocketedIn("{SlotName}"))},
 		},
+		{
+			line: "You have Onslaught while on Low Life",
+			mods: []mod.Mod{mod.NewFlag("Condition:Onslaught", true).Tag(mod.Condition("LowLife"))},
+		},
+		{
+			line: "Enemies you Curse are Unnerved",
+			mods: []mod.Mod{mod.NewList("EnemyModifier", mod.EnemyModifier{Mod: mod.NewFlag("Condition:Unnerved", true).Tag(mod.Condition("Cursed"))})},
+		},
 	}
 	for _, test := range tests {
 		t.Run(test.line, func(t *testing.T) {

@@ -133,7 +133,6 @@ export declare namespace calculator {
   }
   interface ModList {
     ModStore?: calculator.ModStore;
-    mods?: Array<unknown | undefined>;
     AddDB(db?: calculator.ModList): void;
     AddMod(newMod?: unknown): void;
     Clone(): (unknown | undefined);
@@ -358,6 +357,7 @@ export declare namespace exposition {
     Support: boolean;
     CalculateStuff(): void;
   }
+  function CalculateTreePath(version: string, activeNodes?: Array<number>, target: number): (Array<number> | undefined);
   function GetRawTree(version: string): Promise<(Uint8Array | undefined)>;
   function GetSkillGems(): (Array<exposition.SkillGem> | undefined);
   function GetStatByIndex(id: number): (raw.Stat | undefined);
@@ -610,10 +610,6 @@ export declare namespace raw {
     PlusVersionOf?: number;
     GrantedEffectStatSets: number;
     Key: number;
-    calculatedStats?: Array<string>;
-    calculatedLevels?: Record<number, raw.CalculatedLevel | undefined>;
-    calculatedConstantStats?: Record<string, number>;
-    calculatedStatMap?: cache.ComputationCache;
     Calculate(): void;
     GetActiveSkill(): (raw.ActiveSkill | undefined);
     GetCalculatedConstantStats(): (Record<string, number> | undefined);

@@ -221,6 +221,10 @@ class PoBWorker {
     this.currentBuild?.SetLevel(value);
     this.Tick('SetLevel');
   }
+
+  async CalculateTreePath(version: string, activeNodes: number[], target: number) {
+    return exposition.CalculateTreePath(version, activeNodes, target);
+  }
 }
 
 expose(new PoBWorker());

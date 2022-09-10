@@ -207,7 +207,7 @@ func (s *ModStore) EvalMod(m mod.Mod, cfg *ListCfg) interface{} {
 					limit = s.GetMultiplier(*tag.TagLimitVariable, cfg, false)
 				}
 
-				if tag.LimitTotal {
+				if tag.TagLimitTotal {
 					limitTotal = &limit
 				} else {
 					mult = utils.Min(mult, limit)
