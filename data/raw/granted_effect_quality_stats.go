@@ -1,12 +1,9 @@
 package raw
 
+import raw2 "github.com/Vilsol/go-pob-data/raw"
+
 type GrantedEffectQualityStat struct {
-	GrantedEffectsKey   int   `json:"GrantedEffectsKey"`
-	SetID               int   `json:"SetId"`
-	StatsKeys           []int `json:"StatsKeys"`
-	StatsValuesPermille []int `json:"StatsValuesPermille"`
-	Weight              int   `json:"Weight"`
-	Key                 int   `json:"_key"`
+	raw2.GrantedEffectQualityStat
 }
 
 var GrantedEffectQualityStats []*GrantedEffectQualityStat
@@ -14,20 +11,15 @@ var GrantedEffectQualityStats []*GrantedEffectQualityStat
 var grantedEffectQualityStatsByIDMap map[int]map[int]*GrantedEffectQualityStat
 
 func InitializeGrantedEffectQualityStats(version string) error {
-	if err := InitHelper(version, "GrantedEffectQualityStats", &GrantedEffectQualityStats); err != nil {
-		return err
-	}
-
-	grantedEffectQualityStatsByIDMap = make(map[int]map[int]*GrantedEffectQualityStat)
-	for _, i := range GrantedEffectQualityStats {
-		if _, ok := grantedEffectQualityStatsByIDMap[i.GrantedEffectsKey]; !ok {
-			grantedEffectQualityStatsByIDMap[i.GrantedEffectsKey] = make(map[int]*GrantedEffectQualityStat)
+	return InitHelper(version, "GrantedEffectQualityStats", &GrantedEffectQualityStats, func(count int64) {
+		grantedEffectQualityStatsByIDMap = make(map[int]map[int]*GrantedEffectQualityStat, count)
+	}, func(obj *GrantedEffectQualityStat) {
+		if _, ok := grantedEffectQualityStatsByIDMap[obj.GrantedEffectsKey]; !ok {
+			grantedEffectQualityStatsByIDMap[obj.GrantedEffectsKey] = make(map[int]*GrantedEffectQualityStat)
 		}
 
-		grantedEffectQualityStatsByIDMap[i.GrantedEffectsKey][i.SetID] = i
-	}
-
-	return nil
+		grantedEffectQualityStatsByIDMap[obj.GrantedEffectsKey][obj.SetID] = obj
+	})
 }
 
 func (s *GrantedEffectQualityStat) GetStats() []*Stat {

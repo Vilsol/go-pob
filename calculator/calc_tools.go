@@ -3,6 +3,8 @@ package calculator
 import (
 	"math"
 
+	raw2 "github.com/Vilsol/go-pob-data/raw"
+
 	"github.com/Vilsol/go-pob/data"
 	"github.com/Vilsol/go-pob/data/raw"
 	"github.com/Vilsol/go-pob/mod"
@@ -27,7 +29,7 @@ func CalcGemIsType(gem *raw.SkillGem, t string) bool {
 	}
 
 	tags := gem.GetTags()
-	if t == "elemental" && (utils.Has(tags, raw.TagFire) || utils.Has(tags, raw.TagCold) || utils.Has(tags, raw.TagLightning)) {
+	if t == "elemental" && (utils.Has(tags, raw2.TagFire) || utils.Has(tags, raw2.TagCold) || utils.Has(tags, raw2.TagLightning)) {
 		return true
 	}
 
@@ -51,7 +53,7 @@ func CalcGemIsType(gem *raw.SkillGem, t string) bool {
 	//	return true
 	//}
 
-	_, ok := tags[raw.TagName(t)]
+	_, ok := tags[raw2.TagName(t)]
 	return ok
 }
 

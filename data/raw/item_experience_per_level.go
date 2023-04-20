@@ -1,14 +1,13 @@
 package raw
 
+import raw2 "github.com/Vilsol/go-pob-data/raw"
+
 type ItemExperiencePerLevel struct {
-	BaseItemTypesKey int `json:"BaseItemTypesKey"`
-	Experience       int `json:"Experience"`
-	ItemCurrentLevel int `json:"ItemCurrentLevel"`
-	Key              int `json:"_key"`
+	raw2.ItemExperiencePerLevel
 }
 
 var ItemExperiencePerLevels []*ItemExperiencePerLevel
 
 func InitializeItemExperiencePerLevels(version string) error {
-	return InitHelper(version, "ItemExperiencePerLevel", &ItemExperiencePerLevels)
+	return InitHelper(version, "ItemExperiencePerLevel", &ItemExperiencePerLevels, nil)
 }

@@ -1,13 +1,13 @@
 package raw
 
+import raw2 "github.com/Vilsol/go-pob-data/raw"
+
 type PassiveTreeExpansionSpecialSkill struct {
-	PassiveSkillsKey int `json:"PassiveSkillsKey"`
-	StatsKey         int `json:"StatsKey"`
-	Key              int `json:"_key"`
+	raw2.PassiveTreeExpansionSpecialSkill
 }
 
 var PassiveTreeExpansionSpecialSkills []*PassiveTreeExpansionSpecialSkill
 
 func InitializePassiveTreeExpansionSpecialSkills(version string) error {
-	return InitHelper(version, "PassiveTreeExpansionSpecialSkills", &PassiveTreeExpansionSpecialSkills)
+	return InitHelper(version, "PassiveTreeExpansionSpecialSkills", &PassiveTreeExpansionSpecialSkills, nil)
 }

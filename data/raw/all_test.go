@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/MarvinJWendt/testza"
+	"github.com/rs/zerolog"
 
 	"github.com/Vilsol/go-pob/config"
 	"github.com/Vilsol/go-pob/utils"
@@ -30,4 +31,13 @@ func TestAll(t *testing.T) {
 
 	types := skill.GetActiveSkillTypes()
 	testza.AssertEqual(t, 8, len(types))
+}
+
+func BenchmarkAll(b *testing.B) {
+	zerolog.SetGlobalLevel(zerolog.Disabled)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		alreadyInitialized = false
+		_ = InitializeAll(LatestVersion, nil)
+	}
 }

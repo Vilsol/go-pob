@@ -1,23 +1,9 @@
 package raw
 
+import raw2 "github.com/Vilsol/go-pob-data/raw"
+
 type GrantedEffectStatSetsPerLevel struct {
-	AdditionalBooleanStats []int     `json:"AdditionalFlags"`
-	AdditionalStats        []int     `json:"AdditionalStats"`
-	AdditionalStatsValues  []int     `json:"AdditionalStatsValues"`
-	AttackCritChance       int       `json:"SpellCritChance"`
-	BaseMultiplier         int       `json:"BaseMultiplier"`
-	BaseResolvedValues     []int     `json:"BaseResolvedValues"`
-	DamageEffectiveness    int       `json:"DamageEffectiveness"`
-	FloatStats             []int     `json:"FloatStats"`
-	FloatStatsValues       []float64 `json:"FloatStatsValues"`
-	GemLevel               int       `json:"GemLevel"`
-	GrantedEffects         []int     `json:"GrantedEffects"`
-	InterpolationBases     []int     `json:"InterpolationBases"`
-	PlayerLevelReq         int       `json:"PlayerLevelReq"`
-	OffhandCritChance      int       `json:"AttackCritChance"`
-	StatInterpolations     []int     `json:"StatInterpolations"`
-	StatSet                int       `json:"StatSet"`
-	Key                    int       `json:"_key"`
+	raw2.GrantedEffectStatSetsPerLevel
 }
 
 var GrantedEffectStatSetsPerLevels []*GrantedEffectStatSetsPerLevel
@@ -25,22 +11,17 @@ var GrantedEffectStatSetsPerLevels []*GrantedEffectStatSetsPerLevel
 var grantedEffectStatSetsPerLevelsByIDMap map[int]map[int]*GrantedEffectStatSetsPerLevel
 
 func InitializeGrantedEffectStatSetsPerLevels(version string) error {
-	if err := InitHelper(version, "GrantedEffectStatSetsPerLevel", &GrantedEffectStatSetsPerLevels); err != nil {
-		return err
-	}
-
-	grantedEffectStatSetsPerLevelsByIDMap = make(map[int]map[int]*GrantedEffectStatSetsPerLevel)
-	for _, i := range GrantedEffectStatSetsPerLevels {
-		for _, effect := range i.GrantedEffects {
+	return InitHelper(version, "GrantedEffectStatSetsPerLevel", &GrantedEffectStatSetsPerLevels, func(count int64) {
+		grantedEffectStatSetsPerLevelsByIDMap = make(map[int]map[int]*GrantedEffectStatSetsPerLevel, count)
+	}, func(obj *GrantedEffectStatSetsPerLevel) {
+		for _, effect := range obj.GrantedEffects {
 			if _, ok := grantedEffectStatSetsPerLevelsByIDMap[effect]; !ok {
 				grantedEffectStatSetsPerLevelsByIDMap[effect] = make(map[int]*GrantedEffectStatSetsPerLevel)
 			}
 
-			grantedEffectStatSetsPerLevelsByIDMap[effect][i.GemLevel] = i
+			grantedEffectStatSetsPerLevelsByIDMap[effect][obj.GemLevel] = obj
 		}
-	}
-
-	return nil
+	})
 }
 
 func (g *GrantedEffectStatSetsPerLevel) GetFloatStats() []*Stat {

@@ -1,30 +1,15 @@
 package raw
 
 import (
+	raw2 "github.com/Vilsol/go-pob-data/raw"
+
 	"github.com/Vilsol/go-pob/cache"
 	"github.com/Vilsol/go-pob/mod"
 	"github.com/Vilsol/go-pob/utils"
 )
 
 type GrantedEffect struct {
-	ID                    string `json:"Id"`
-	IsSupport             bool   `json:"IsSupport"`
-	SupportTypes          []int  `json:"AllowedActiveSkillTypes"`
-	SupportGemLetter      string `json:"SupportGemLetter"`
-	Attribute             int    `json:"Attribute"`
-	AddTypes              []int  `json:"AddedActiveSkillTypes"`
-	ExcludeTypes          []int  `json:"ExcludedActiveSkillTypes"`
-	SupportsGemsOnly      bool   `json:"SupportsGemsOnly"`
-	CannotBeSupported     bool   `json:"CannotBeSupported"`
-	CastTime              int    `json:"CastTime"`
-	ActiveSkill           *int   `json:"ActiveSkill"`
-	IgnoreMinionTypes     bool   `json:"IgnoreMinionTypes"`
-	AddMinionTypes        []int  `json:"AddedMinionActiveSkillTypes"`
-	Animation             *int   `json:"Animation"`
-	WeaponRestrictions    []int  `json:"SupportWeaponRestrictions"`
-	PlusVersionOf         *int   `json:"RegularVariant"`
-	GrantedEffectStatSets int    `json:"StatSet"`
-	Key                   int    `json:"_key"`
+	raw2.GrantedEffect
 
 	calculatedStats         []string
 	calculatedLevels        map[int]*CalculatedLevel
@@ -83,16 +68,11 @@ var GrantedEffects []*GrantedEffect
 var grantedEffectsByIDMap map[string]*GrantedEffect
 
 func InitializeGrantedEffects(version string) error {
-	if err := InitHelper(version, "GrantedEffects", &GrantedEffects); err != nil {
-		return err
-	}
-
-	grantedEffectsByIDMap = make(map[string]*GrantedEffect)
-	for _, i := range GrantedEffects {
-		grantedEffectsByIDMap[i.ID] = i
-	}
-
-	return nil
+	return InitHelper(version, "GrantedEffects", &GrantedEffects, func(count int64) {
+		grantedEffectsByIDMap = make(map[string]*GrantedEffect, count)
+	}, func(obj *GrantedEffect) {
+		grantedEffectsByIDMap[obj.ID] = obj
+	})
 }
 
 func GrantedEffectByID(id string) *GrantedEffect {

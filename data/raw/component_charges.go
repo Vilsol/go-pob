@@ -1,16 +1,13 @@
 package raw
 
+import raw2 "github.com/Vilsol/go-pob-data/raw"
+
 type ComponentCharge struct {
-	BaseItemTypesKey string `json:"BaseItemTypesKey"`
-	MaxCharges       int    `json:"MaxCharges"`
-	MaxCharges2      int    `json:"MaxCharges2"`
-	PerCharge        int    `json:"PerCharge"`
-	PerCharge2       int    `json:"PerCharge2"`
-	Key              int    `json:"_key"`
+	raw2.ComponentCharge
 }
 
 var ComponentCharges []*ComponentCharge
 
 func InitializeComponentCharges(version string) error {
-	return InitHelper(version, "ComponentCharges", &ComponentCharges)
+	return InitHelper(version, "ComponentCharges", &ComponentCharges, nil)
 }

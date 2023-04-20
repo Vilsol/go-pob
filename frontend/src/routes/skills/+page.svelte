@@ -237,6 +237,7 @@
     });
   };
 
+  // Populated with defaults
   const gemOptions = {
     _sortGemsByDPS: true,
     _sortGemsByDPSField: 'FullDPS',
@@ -247,13 +248,13 @@
     _showAltQualityGems: false
   };
 
-  registerProperty(gemOptions, 'sortGemsByDPS', (value) => $currentBuild.SetSortGemsByDPS(value.toString() === 'true'));
-  registerProperty(gemOptions, 'sortGemsByDPSField', (value) => $currentBuild.SetSortGemsByDPSField(value as string));
-  registerProperty(gemOptions, 'matchGemLevelToCharacterLevel', (value) => $currentBuild.SetMatchGemLevelToCharacterLevel(value.toString() === 'true'));
-  registerProperty(gemOptions, 'defaultGemLevel', (value) => $currentBuild.SetDefaultGemLevel(parseInt(value.toString())));
-  registerProperty(gemOptions, 'defaultGemQuality', (value) => $currentBuild.SetDefaultGemQuality(parseInt(value.toString())));
-  registerProperty(gemOptions, 'showSupportGemTypes', (value) => $currentBuild.SetShowSupportGemTypes(value as string));
-  registerProperty(gemOptions, 'showAltQualityGems', (value) => $currentBuild.SetShowAltQualityGems(value.toString() === 'true'));
+  registerProperty(gemOptions, 'sortGemsByDPS', (value) => $currentBuild?.SetSortGemsByDPS(value.toString() === 'true'));
+  registerProperty(gemOptions, 'sortGemsByDPSField', (value) => $currentBuild?.SetSortGemsByDPSField(value as string));
+  registerProperty(gemOptions, 'matchGemLevelToCharacterLevel', (value) => $currentBuild?.SetMatchGemLevelToCharacterLevel(value.toString() === 'true'));
+  registerProperty(gemOptions, 'defaultGemLevel', (value) => $currentBuild?.SetDefaultGemLevel(parseInt(value.toString())));
+  registerProperty(gemOptions, 'defaultGemQuality', (value) => $currentBuild?.SetDefaultGemQuality(parseInt(value.toString())));
+  registerProperty(gemOptions, 'showSupportGemTypes', (value) => $currentBuild?.SetShowSupportGemTypes(value as string));
+  registerProperty(gemOptions, 'showAltQualityGems', (value) => $currentBuild?.SetShowAltQualityGems(value.toString() === 'true'));
 
   $: $currentBuild?.Skills?.then((skillData) => {
     gemOptions._sortGemsByDPS = skillData.SortGemsByDPS;

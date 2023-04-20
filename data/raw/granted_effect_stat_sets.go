@@ -1,19 +1,15 @@
 package raw
 
+import raw2 "github.com/Vilsol/go-pob-data/raw"
+
 type GrantedEffectStatSet struct {
-	Key                      int     `json:"_key"`
-	ID                       string  `json:"Id"`
-	ImplicitStats            []int   `json:"ImplicitStats"`
-	ConstantStats            []int   `json:"ConstantStats"`
-	ConstantStatsValues      []int   `json:"ConstantStatsValues"`
-	BaseEffectiveness        float64 `json:"BaseEffectiveness"`
-	IncrementalEffectiveness float64 `json:"IncrementalEffectiveness"`
+	raw2.GrantedEffectStatSet
 }
 
 var GrantedEffectStatSets []*GrantedEffectStatSet
 
 func InitializeGrantedEffectStatSets(version string) error {
-	return InitHelper(version, "GrantedEffectStatSets", &GrantedEffectStatSets)
+	return InitHelper(version, "GrantedEffectStatSets", &GrantedEffectStatSets, nil)
 }
 
 func (g *GrantedEffectStatSet) GetImplicitStats() []*Stat {

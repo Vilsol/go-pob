@@ -4,11 +4,11 @@
   import Sidebar from '../lib/components/Sidebar.svelte';
 
   import { assets } from '$app/paths';
-  import { browser } from '$app/env';
+  import { browser } from '$app/environment';
   import { syncWrap } from '../lib/go/worker';
   import { proxy } from 'comlink';
   import type { Outputs } from '../lib/custom_types';
-  import { outputs, currentBuild } from '../lib/global';
+  import { outputs, currentBuild, sampleBuildCode } from '../lib/global';
   import OverlayController from '$lib/components/overlays/OverlayController.svelte';
   import { fontScaling } from '$lib/global.js';
 
@@ -50,6 +50,11 @@
                 );
 
                 wasmLoading = false;
+
+                // TODO Remove from Prod
+                syncWrap?.ImportCode(sampleBuildCode).then(() => {
+                  syncWrap?.Tick('importBuildFromCode');
+                });
               });
           });
       });

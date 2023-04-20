@@ -1,14 +1,13 @@
 package raw
 
+import raw2 "github.com/Vilsol/go-pob-data/raw"
+
 type CostType struct {
-	FormatText string `json:"FormatText"`
-	ID         string `json:"Id"`
-	StatsKey   int    `json:"StatsKey"`
-	Key        int    `json:"_key"`
+	raw2.CostType
 }
 
 var CostTypes []*CostType
 
 func InitializeCostTypes(version string) error {
-	return InitHelper(version, "CostTypes", &CostTypes)
+	return InitHelper(version, "CostTypes", &CostTypes, nil)
 }

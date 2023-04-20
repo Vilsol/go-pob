@@ -6,10 +6,11 @@ import (
 	"testing"
 
 	"github.com/MarvinJWendt/testza"
+	raw2 "github.com/Vilsol/go-pob-data/raw"
 )
 
 func TestRawLoader(t *testing.T) {
-	d, err := LoadRaw[[]*GrantedEffectStatSet](LatestVersion, "GrantedEffectStatSets")
+	d, err := LoadRaw[*raw2.GrantedEffectStatSet](LatestVersion, "GrantedEffectStatSets", nil)
 	testza.AssertNoError(t, err)
 
 	marshal, _ := json.Marshal(d)

@@ -419,7 +419,6 @@
     if (hoveredNode != newHoverNode) {
       hoveredNode = newHoverNode;
       if (hoveredNode !== undefined && currentClass) {
-        console.log('CURRENT:', currentClass);
         const rootNodes = classStartNodes[$skillTree.classes.findIndex((c) => c.name === currentClass)];
         const target = hoveredNode.skill;
         syncWrap.CalculateTreePath($skillTreeVersion || '3_18', rootNodes, target).then((data) => {

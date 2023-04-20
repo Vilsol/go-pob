@@ -5,22 +5,23 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"reflect"
 
-	"github.com/goccy/go-json"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
+	"github.com/tinylib/msgp/msgp"
 
 	"github.com/andybalholm/brotli"
 
 	"github.com/Vilsol/go-pob/cache"
 )
 
-const cdnBase = "https://go-pob-data.pages.dev/data/%s/raw/%s.json.br"
+const cdnBase = "https://go-pob-data.pages.dev/data/%s/raw/%s.msgpack.br"
 
 // LoadRaw loads a raw brotli-compressed json dump from remote source
 //
 // Returns data from cache if found
-func LoadRaw[T any](version string, name string) (*T, error) {
+func LoadRaw[T msgp.Decodable](version string, name string, onInit func(count int64), hooks ...func(obj T)) ([]T, error) {
 	url := fmt.Sprintf(cdnBase, version, name)
 
 	log.Debug().Str("version", version).Str("name", name).Msg("loading raw asset")
@@ -51,26 +52,37 @@ func LoadRaw[T any](version string, name string) (*T, error) {
 	}
 
 	unzipStream := brotli.NewReader(bytes.NewReader(b))
-	unzipped, err := io.ReadAll(unzipStream)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to read unzipped data")
+
+	r := msgp.NewReader(unzipStream)
+	elementCount, _ := r.ReadInt64()
+	if onInit != nil {
+		onInit(elementCount)
 	}
 
-	out := new(T)
-	if err := json.Unmarshal(unzipped, out); err != nil {
-		return nil, errors.Wrap(err, "failed to decode file")
+	out := make([]T, elementCount)
+	if elementCount > 0 {
+		elemType := reflect.ValueOf(out[0]).Type().Elem()
+		for i := int64(0); i < elementCount; i++ {
+			out[i] = reflect.New(elemType).Interface().(T)
+			if err := out[i].DecodeMsg(r); err != nil {
+				return nil, errors.Wrap(err, "failed to read message")
+			}
+			for _, hook := range hooks {
+				hook(out[i])
+			}
+		}
 	}
 
 	return out, nil
 }
 
-func InitHelper[T any](version string, name string, target *T) error {
-	loadedRaw, err := LoadRaw[T](version, name)
+func InitHelper[T msgp.Decodable](version string, name string, target *[]T, onInit func(count int64), hooks ...func(obj T)) error {
+	loadedRaw, err := LoadRaw[T](version, name, onInit, hooks...)
 	if err != nil {
 		return err
 	}
 
-	*target = *loadedRaw
+	*target = loadedRaw
 
 	return nil
 }

@@ -1,21 +1,13 @@
 package raw
 
+import raw2 "github.com/Vilsol/go-pob-data/raw"
+
 type DefaultMonsterStat struct {
-	Accuracy     int     `json:"Accuracy"`
-	AllyLife     int     `json:"AllyLife"`
-	Armour       int     `json:"Armour"`
-	Damage       float64 `json:"Damage"`
-	Damage2      float64 `json:"Damage2"`
-	Difficulty   int     `json:"Difficulty"`
-	DisplayLevel string  `json:"DisplayLevel"`
-	Evasion      int     `json:"Evasion"`
-	Experience   int     `json:"Experience"`
-	Life         int     `json:"Life"`
-	Key          int     `json:"_key"`
+	raw2.DefaultMonsterStat
 }
 
 var DefaultMonsterStats []*DefaultMonsterStat
 
 func InitializeDefaultMonsterStats(version string) error {
-	return InitHelper(version, "DefaultMonsterStats", &DefaultMonsterStats)
+	return InitHelper(version, "DefaultMonsterStats", &DefaultMonsterStats, nil)
 }

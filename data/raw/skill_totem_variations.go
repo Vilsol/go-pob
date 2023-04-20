@@ -1,14 +1,13 @@
 package raw
 
+import raw2 "github.com/Vilsol/go-pob-data/raw"
+
 type SkillTotemVariation struct {
-	MonsterVarietiesKey int `json:"MonsterVarietiesKey"`
-	SkillTotemsKey      int `json:"SkillTotemsKey"`
-	TotemSkinID         int `json:"TotemSkinId"`
-	Key                 int `json:"_key"`
+	raw2.SkillTotemVariation
 }
 
 var SkillTotemVariations []*SkillTotemVariation
 
 func InitializeSkillTotemVariations(version string) error {
-	return InitHelper(version, "SkillTotemVariations", &SkillTotemVariations)
+	return InitHelper(version, "SkillTotemVariations", &SkillTotemVariations, nil)
 }

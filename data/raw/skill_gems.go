@@ -1,22 +1,9 @@
 package raw
 
+import raw2 "github.com/Vilsol/go-pob-data/raw"
+
 type SkillGem struct {
-	BaseItemType           int    `json:"BaseItemTypesKey"`
-	GrantedEffect          int    `json:"GrantedEffectsKey"`
-	Str                    int    `json:"Str"`
-	Dex                    int    `json:"Dex"`
-	Int                    int    `json:"Int"`
-	Tags                   []int  `json:"GemTagsKeys"`
-	VaalGem                *int   `json:"VaalVariant_BaseItemTypesKey"`
-	IsVaalGem              bool   `json:"IsVaalVariant"`
-	Description            string `json:"Description"`
-	HungryLoopMod          *int   `json:"Consumed_ModsKey"`
-	SecondaryGrantedEffect *int   `json:"GrantedEffectsKey2"`
-	GlobalGemLevelStat     *int   `json:"MinionGlobalSkillLevelStat"`
-	SecondarySupportName   string `json:"SupportSkillName"`
-	AwakenedVariant        *int   `json:"AwakenedVariant"`
-	RegularVariant         *int   `json:"RegularVariant"`
-	Key                    int    `json:"_key"`
+	raw2.SkillGem
 }
 
 var SkillGems []*SkillGem
@@ -26,22 +13,17 @@ var skillGemVaalBase map[int]*SkillGem
 var skillGemsByGrantedEffect map[int]*SkillGem
 
 func InitializeSkillGems(version string) error {
-	if err := InitHelper(version, "SkillGems", &SkillGems); err != nil {
-		return err
-	}
-
-	skillGemsByBaseItemTypeMap = make(map[int]*SkillGem)
-	skillGemVaalBase = make(map[int]*SkillGem)
-	skillGemsByGrantedEffect = make(map[int]*SkillGem)
-	for _, gem := range SkillGems {
-		skillGemsByBaseItemTypeMap[gem.BaseItemType] = gem
-		skillGemsByGrantedEffect[gem.GrantedEffect] = gem
-		if gem.VaalGem != nil {
-			skillGemVaalBase[*gem.VaalGem] = gem
+	return InitHelper(version, "SkillGems", &SkillGems, func(count int64) {
+		skillGemsByBaseItemTypeMap = make(map[int]*SkillGem, count)
+		skillGemVaalBase = make(map[int]*SkillGem, count)
+		skillGemsByGrantedEffect = make(map[int]*SkillGem, count)
+	}, func(obj *SkillGem) {
+		skillGemsByBaseItemTypeMap[obj.BaseItemType] = obj
+		skillGemsByGrantedEffect[obj.GrantedEffect] = obj
+		if obj.VaalGem != nil {
+			skillGemVaalBase[*obj.VaalGem] = obj
 		}
-	}
-
-	return nil
+	})
 }
 
 func (s *SkillGem) GetGrantedEffect() *GrantedEffect {
@@ -68,8 +50,8 @@ func (s *SkillGem) GetGrantedEffects() []*GrantedEffect {
 	return out
 }
 
-func (s *SkillGem) GetTags() map[TagName]*Tag {
-	out := make(map[TagName]*Tag, len(s.Tags))
+func (s *SkillGem) GetTags() map[raw2.TagName]*Tag {
+	out := make(map[raw2.TagName]*Tag, len(s.Tags))
 	for _, tag := range s.Tags {
 		t := Tags[tag]
 		out[t.Name] = t

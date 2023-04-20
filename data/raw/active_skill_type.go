@@ -1,13 +1,15 @@
 package raw
 
+import (
+	raw2 "github.com/Vilsol/go-pob-data/raw"
+)
+
 type ActiveSkillType struct {
-	FlagStat *int   `json:"FlagStat"`
-	ID       string `json:"Id"`
-	Key      int    `json:"_key"`
+	raw2.ActiveSkillType
 }
 
 var ActiveSkillTypes []*ActiveSkillType
 
 func InitializeActiveSkillTypes(version string) error {
-	return InitHelper(version, "ActiveSkillType", &ActiveSkillTypes)
+	return InitHelper(version, "ActiveSkillType", &ActiveSkillTypes, nil)
 }

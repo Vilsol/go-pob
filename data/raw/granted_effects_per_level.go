@@ -1,26 +1,9 @@
 package raw
 
+import raw2 "github.com/Vilsol/go-pob-data/raw"
+
 type GrantedEffectsPerLevel struct {
-	AttackSpeedMultiplier      int   `json:"AttackSpeedMultiplier"`
-	AttackTime                 int   `json:"AttackTime"`
-	Cooldown                   int   `json:"Cooldown"`
-	CooldownBypassType         int   `json:"CooldownBypassType"`
-	CooldownGroup              int   `json:"CooldownGroup"`
-	CostAmounts                []int `json:"CostAmounts"`
-	CostMultiplier             int   `json:"CostMultiplier"`
-	CostTypes                  []int `json:"CostTypes"`
-	GrantedEffect              int   `json:"GrantedEffect"`
-	Level                      int   `json:"Level"`
-	LifeReservationFlat        int   `json:"LifeReservationFlat"`
-	LifeReservationPercent     int   `json:"LifeReservationPercent"`
-	ManaReservationFlat        int   `json:"ManaReservationFlat"`
-	ManaReservationPercent     int   `json:"ManaReservationPercent"`
-	PlayerLevelReq             int   `json:"PlayerLevelReq"`
-	SoulGainPreventionDuration int   `json:"SoulGainPreventionDuration"`
-	StoredUses                 int   `json:"StoredUses"`
-	VaalSouls                  int   `json:"VaalSouls"`
-	VaalStoredUses             int   `json:"VaalStoredUses"`
-	Key                        int   `json:"_key"`
+	raw2.GrantedEffectsPerLevel
 }
 
 var GrantedEffectsPerLevels []*GrantedEffectsPerLevel
@@ -28,20 +11,15 @@ var GrantedEffectsPerLevels []*GrantedEffectsPerLevel
 var grantedEffectsPerLevelsByIDMap map[int]map[int]*GrantedEffectsPerLevel
 
 func InitializeGrantedEffectsPerLevels(version string) error {
-	if err := InitHelper(version, "GrantedEffectsPerLevel", &GrantedEffectsPerLevels); err != nil {
-		return err
-	}
-
-	grantedEffectsPerLevelsByIDMap = make(map[int]map[int]*GrantedEffectsPerLevel)
-	for _, i := range GrantedEffectsPerLevels {
-		if _, ok := grantedEffectsPerLevelsByIDMap[i.GrantedEffect]; !ok {
-			grantedEffectsPerLevelsByIDMap[i.GrantedEffect] = make(map[int]*GrantedEffectsPerLevel)
+	return InitHelper(version, "GrantedEffectsPerLevel", &GrantedEffectsPerLevels, func(count int64) {
+		grantedEffectsPerLevelsByIDMap = make(map[int]map[int]*GrantedEffectsPerLevel, count)
+	}, func(obj *GrantedEffectsPerLevel) {
+		if _, ok := grantedEffectsPerLevelsByIDMap[obj.GrantedEffect]; !ok {
+			grantedEffectsPerLevelsByIDMap[obj.GrantedEffect] = make(map[int]*GrantedEffectsPerLevel)
 		}
 
-		grantedEffectsPerLevelsByIDMap[i.GrantedEffect][i.Level] = i
-	}
-
-	return nil
+		grantedEffectsPerLevelsByIDMap[obj.GrantedEffect][obj.Level] = obj
+	})
 }
 
 func (l *GrantedEffectsPerLevel) GetCostTypes() []*CostType {

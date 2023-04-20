@@ -14,6 +14,8 @@ import (
 func Expose() *crystalline.Exposer {
 	e := crystalline.NewExposer("go-pob")
 
+	crystalline.MarkPromise("calculator.Calculator", "BuildOutput")
+
 	e.ExposeFuncOrPanic(pob.DecodeDecompress)
 	e.ExposeFuncOrPanic(pob.CompressEncode)
 

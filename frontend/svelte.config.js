@@ -18,10 +18,6 @@ const config = {
     }),
     paths: {
       base: '/go-pob'
-    },
-    prerender: {
-      default: true,
-      enabled: true
     }
   },
 
