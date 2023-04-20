@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/MarvinJWendt/testza v0.4.3
-	github.com/Vilsol/crystalline v0.0.7
+	github.com/Vilsol/crystalline v0.0.8
 	github.com/Vilsol/go-pob-data v0.0.0-20220913040649-7ea94d406fa3
 	github.com/andybalholm/brotli v1.0.4
 	github.com/dominikbraun/graph v0.10.0
@@ -37,5 +37,3 @@ require (
 )
 
 replace github.com/oriath-net/pogo v0.0.0-20220205020622-67c41a643bc3 => github.com/Vilsol/pogo v0.0.0-20220801020621-2b75683607ae
-
-replace github.com/Vilsol/crystalline v0.0.7 => ../crystalline
