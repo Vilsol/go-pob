@@ -3,8 +3,8 @@ module github.com/Vilsol/go-pob
 go 1.20
 
 require (
-	github.com/MarvinJWendt/testza v0.5.2
-	github.com/Vilsol/crystalline v0.0.8
+	github.com/MarvinJWendt/testza v0.5.0
+	github.com/Vilsol/crystalline v0.0.9
 	github.com/Vilsol/go-pob-data v0.0.0-20220913040649-7ea94d406fa3
 	github.com/andybalholm/brotli v1.0.4
 	github.com/dominikbraun/graph v0.10.0
@@ -18,25 +18,20 @@ require (
 )
 
 require (
-	atomicgo.dev/assert v0.0.2 // indirect
-	atomicgo.dev/cursor v0.1.1 // indirect
-	atomicgo.dev/keyboard v0.2.8 // indirect
-	github.com/containerd/console v1.0.3 // indirect
+	github.com/atomicgo/cursor v0.0.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/gookit/color v1.5.2 // indirect
-	github.com/klauspost/cpuid/v2 v2.2.3 // indirect
-	github.com/lithammer/fuzzysearch v1.1.5 // indirect
+	github.com/gookit/color v1.5.0 // indirect
+	github.com/klauspost/cpuid/v2 v2.1.1 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
-	github.com/mattn/go-runewidth v0.0.14 // indirect
+	github.com/mattn/go-runewidth v0.0.13 // indirect
 	github.com/philhofer/fwd v1.1.1 // indirect
-	github.com/pterm/pterm v0.12.53 // indirect
+	github.com/pterm/pterm v0.12.40 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/sergi/go-diff v1.2.0 // indirect
 	github.com/xo/terminfo v0.0.0-20210125001918-ca9a967f8778 // indirect
 	golang.org/x/sys v0.0.0-20220909162455-aba9fc2a8ff2 // indirect
 	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211 // indirect
-	golang.org/x/text v0.6.0 // indirect
 	gopkg.in/djherbis/atime.v1 v1.0.0 // indirect
 	gopkg.in/djherbis/stream.v1 v1.3.1 // indirect
 )
