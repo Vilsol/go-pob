@@ -3,6 +3,10 @@ linters-settings:
     ignorePackageGlobs:
       - github.com/Vilsol/go-pob/*
       - golang.org/x/sync/errgroup*
+  revive:
+    rules:
+      - name: unused-parameter
+        disabled: true
 
 linters:
   disable-all: true
