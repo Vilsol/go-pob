@@ -57,7 +57,7 @@ git clone -b dev https://github.com/Vilsol/go-pob.git
 
 ### Backend (Go)
 
-We require you to use Go version 1.19 or above.
+We require you to use Go version 1.21 or above.
 
 To build the WASM binary, you can use the following command:
 
@@ -122,3 +122,13 @@ The backend is linted using [`golangci-lint`](https://golangci-lint.run/usage/in
 ### Frontend (Svelte)
 
 The frontend is linted using `prettier`, `eslint` and `svelte-check`. You can execute those by using `pnpm run lint` and `pnpm run check`
+
+## Writing code
+
+In general, follow Go's best practices.
+
+If you are using regex, make sure that you precompile it instead of creating a new one every time. (as Go's regex implementation runs in [linear](https://github.com/golang/go/blob/1176052bb40378272cfbe83d873b65fcc2ed8502/src/regexp/regexp.go#L15-L19) time)
+
+### Converting Code from PoB
+
+[CONVERSION_EXAMPLES.md](CONVERSION_EXAMPLES.md)

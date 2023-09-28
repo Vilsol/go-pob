@@ -88,11 +88,13 @@ const (
 )
 
 func MatchKeywordFlags(keywordFlags KeywordFlag, modKeywordFlags KeywordFlag) bool {
-	matchAll := modKeywordFlags&KeywordFlagMatchAll != 0
 	modKeywordFlags = modKeywordFlags & MatchAllMask
 	keywordFlags = keywordFlags & MatchAllMask
+
+	matchAll := modKeywordFlags&KeywordFlagMatchAll != 0
 	if matchAll {
 		return keywordFlags&modKeywordFlags == modKeywordFlags
 	}
+
 	return modKeywordFlags == 0 || keywordFlags&modKeywordFlags != 0
 }

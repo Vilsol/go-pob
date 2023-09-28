@@ -1,11 +1,14 @@
 package calculator
 
 import (
+	utils2 "github.com/Vilsol/go-pob-data/utils"
+	"golang.org/x/exp/slices"
 	"regexp"
 	"strings"
 
+	"github.com/Vilsol/go-pob-data/poe"
+
 	"github.com/Vilsol/go-pob/data"
-	"github.com/Vilsol/go-pob/data/raw"
 	"github.com/Vilsol/go-pob/mod"
 	"github.com/Vilsol/go-pob/utils"
 )
@@ -4112,7 +4115,7 @@ func initializeSkillNameList() {
 	}
 
 	preSkillNameListCompiled = make(map[string]CompiledList[modNameListType])
-	for _, gemData := range raw.SkillGems {
+	for _, gemData := range poe.SkillGems {
 		grantedEffect := gemData.GetGrantedEffect()
 		// TODO grantedEffect.hidden
 		if grantedEffect != nil && !grantedEffect.IsSupport {
@@ -4154,10 +4157,29 @@ func initializeSkillNameList() {
 					preSkillNameList["^"..skillName:lower().." totem deals "] = { tag = { type = "SkillName", skillName = skillName } }
 					preSkillNameList["^"..skillName:lower().." totem grants "] = { addToSkill = { type = "SkillName", skillName = skillName }, tag = { type = "GlobalEffect", effectType = "Buff" } }
 				end
-				if grantedEffect.skillTypes[SkillType.Buff] or grantedEffect.baseFlags.buff then
-					preSkillNameList["^"..skillName:lower().." grants "] = { addToSkill = { type = "SkillName", skillName = skillName }, tag = { type = "GlobalEffect", effectType = "Buff" } }
-					preSkillNameList["^"..skillName:lower().." grants a?n? ?additional "] = { addToSkill = { type = "SkillName", skillName = skillName }, tag = { type = "GlobalEffect", effectType = "Buff" } }
-				end
+			*/
+
+			baseFlags, _ := grantedEffect.GetActiveSkill().GetActiveSkillBaseFlagsAndTypes()
+			if slices.Contains(grantedEffect.GetActiveSkill().ActiveSkillTypes, poe.ActiveSkillTypesByID["Buff"].Key) || baseFlags[poe.SkillFlagBuffs] {
+				preSkillNameListCompiled["^"+skillNameLower+" grants "] = CompiledList[modNameListType]{
+					Regex: regexp.MustCompile("^" + skillNameLower + " grants "),
+					Value: modNameListType{
+						addToSkill: mod.SkillName(skillName),
+						tag:        mod.GlobalEffect("Buff"),
+					},
+				}
+
+				preSkillNameListCompiled["^"+skillNameLower+" grants a?n? ?additional "] = CompiledList[modNameListType]{
+					Regex: regexp.MustCompile("^" + skillNameLower + " grants a?n? ?additional "),
+					Value: modNameListType{
+						addToSkill: mod.SkillName(skillName),
+						tag:        mod.GlobalEffect("Buff"),
+					},
+				}
+			}
+
+			/*
+					TODO
 				if gemData.tags.aura or gemData.tags.herald then
 					skillNameList["while affected by "..skillName:lower()] = { tag = { type = "Condition", var = "AffectedBy"..skillName:gsub(" ","") } }
 					skillNameList["while using "..skillName:lower()] = { tag = { type = "Condition", var = "AffectedBy"..skillName:gsub(" ","") } }
@@ -5020,5 +5042,5 @@ func init() {
 		}
 	}
 
-	utils.RegisterPostInitHook(initializeSkillNameList)
+	utils2.RegisterPostInitHook(initializeSkillNameList)
 }

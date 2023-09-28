@@ -3,34 +3,66 @@ linters-settings:
     ignorePackageGlobs:
       - github.com/Vilsol/go-pob/*
       - golang.org/x/sync/errgroup*
+    ignoreSigs:
+      - .Errorf(
   revive:
     rules:
       - name: unused-parameter
         disabled: true
+  exhaustive:
+    default-signifies-exhaustive: true
+  gosec:
+    excludes:
+      - G602
+  goconst:
+    min-len: 5
 
 linters:
   disable-all: true
   enable:
-#    - deadcode
+    - asasalint
+    - asciicheck
+    - bidichk
+    - containedctx
+    - contextcheck
+    - decorder
+    - dupl
+    - durationcheck
     - errcheck
+    - errname
+    - errorlint
+    # While getting implemented, a lot of stuff is unused
+    # TODO Turn on when reaching 1.0.0
+    # - exhaustive
+    - exportloopref
+    - gocheckcompilerdirectives
+    - goconst
+    - gofmt
+    - goimports
+    - gosec
     - gosimple
+    - gosmopolitan
     - govet
     - ineffassign
-    - staticcheck
-    - structcheck
-    - typecheck
-#    - unused
-#    - varcheck
-    - bidichk
-    - contextcheck
-    - durationcheck
-    - errorlint
-#    - goconst
-    - goimports
-    - revive
-    - ifshort
+    - mirror
     - misspell
+    - musttag
+    - nilerr
+    - nilnil
+    - noctx
+    - nonamedreturns
     - prealloc
+    - predeclared
+    - reassign
+    - revive
+    - staticcheck
+    - typecheck
+    - unconvert
+    # While getting implemented, a lot of stuff is unused
+    # TODO Turn on when reaching 1.0.0
+    # - unparam
+    # - unused
+    - usestdlibvars
     - whitespace
     - wrapcheck
 

@@ -4,10 +4,9 @@ import (
 	"bytes"
 	"compress/zlib"
 	"encoding/base64"
+	"fmt"
 	"io"
 	"strings"
-
-	"github.com/pkg/errors"
 )
 
 func CompressEncode(xml string) (string, error) {
@@ -16,7 +15,7 @@ func CompressEncode(xml string) (string, error) {
 
 	writer := zlib.NewWriter(encoder)
 	if _, err := writer.Write([]byte(xml)); err != nil {
-		return "", errors.Wrap(err, "failed to write to base64 encoder")
+		return "", fmt.Errorf("failed to write to base64 encoder: %w", err)
 	}
 
 	writer.Close()
@@ -36,14 +35,14 @@ func DecodeDecompress(code string) (string, error) {
 	decoder := base64.NewDecoder(base64.StdEncoding, strings.NewReader(code))
 	reader, err := zlib.NewReader(decoder)
 	if err != nil {
-		return "", errors.Wrap(err, "failed to create a zlib reader")
+		return "", fmt.Errorf("failed to create a zlib reader: %w", err)
 	}
 
 	defer reader.Close()
 
 	xml, err := io.ReadAll(reader)
 	if err != nil {
-		return "", errors.Wrap(err, "failed to read from zlib reader")
+		return "", fmt.Errorf("failed to read from zlib reader: %w", err)
 	}
 
 	return string(xml), nil

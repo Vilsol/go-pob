@@ -1,9 +1,8 @@
 package utils
 
 import (
+	"log/slog"
 	"strconv"
-
-	"github.com/rs/zerolog/log"
 )
 
 func CopySlice[T any](s []T) []T {
@@ -38,7 +37,11 @@ func UnwrapOrF(f *float64, or float64) float64 {
 func Float(s string) float64 {
 	n, err := strconv.ParseFloat(s, 64)
 	if err != nil {
-		log.Err(err).Str("str", s).Msg("failed to parse as float64")
+		slog.Error(
+			"failed to parse as float64",
+			slog.String("error", err.Error()),
+			slog.String("str", s),
+		)
 	}
 	return n
 }

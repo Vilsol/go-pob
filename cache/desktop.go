@@ -3,13 +3,15 @@
 package cache
 
 import (
+	"context"
+	"fmt"
+	"github.com/Vilsol/go-pob/utils"
 	"io"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"time"
 
-	"github.com/pkg/errors"
-	"github.com/rs/zerolog/log"
 	"gopkg.in/djherbis/fscache.v0"
 )
 
@@ -42,11 +44,16 @@ func Disk() DiskCache {
 }
 
 func (d desktopCache) Get(key string) ([]byte, error) {
-	log.Trace().Str("key", key).Msg("loading from cache")
+	slog.Log(
+		context.Background(),
+		utils.LevelTrace,
+		"loading from cache",
+		slog.String("key", key),
+	)
 
 	r, _, err := cache.Get(key)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to get key from cache: "+key)
+		return nil, fmt.Errorf("failed to get key from cache: %s: %w", key, err)
 	}
 
 	if r == nil {
@@ -55,30 +62,36 @@ func (d desktopCache) Get(key string) ([]byte, error) {
 
 	b, err := io.ReadAll(r)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to read from cache")
+		return nil, fmt.Errorf("failed to read from cache: %w", err)
 	}
 
 	return b, nil
 }
 
 func (d desktopCache) Set(key string, value []byte) error {
-	log.Trace().Str("key", key).Int("len", len(value)).Msg("storing in cache")
+	slog.Log(
+		context.Background(),
+		utils.LevelTrace,
+		"storing in cache",
+		slog.String("key", key),
+		slog.Int("len", len(value)),
+	)
 
 	_ = cache.Remove(key)
 
 	_, w, err := cache.Get(key)
 	if err != nil {
-		return errors.Wrap(err, "failed to set key on cache: "+key)
+		return fmt.Errorf("failed to set key on cache: %s: %w", key, err)
 	}
 
 	if w == nil {
-		return errors.New("could not write to cache")
+		return fmt.Errorf("could not write to cache")
 	}
 
 	defer w.Close()
 
 	if _, err := w.Write(value); err != nil {
-		return errors.Wrap(err, "failed to write to cache")
+		return fmt.Errorf("failed to write to cache: %w", err)
 	}
 
 	return nil

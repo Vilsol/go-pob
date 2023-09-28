@@ -1,6 +1,7 @@
 package calculator
 
 import (
+	"github.com/Vilsol/go-pob-data/poe"
 	"github.com/Vilsol/go-pob/data"
 	"github.com/Vilsol/go-pob/data/raw"
 	"github.com/Vilsol/go-pob/mod"
@@ -189,7 +190,7 @@ type SkillData struct {
 }
 
 type GrantedEffect struct {
-	Raw        *raw.GrantedEffect
+	Raw        *poe.GrantedEffect
 	Parts      []interface{}
 	SkillTypes map[data.SkillType]bool
 	BaseFlags  map[SkillFlag]bool
@@ -198,7 +199,7 @@ type GrantedEffect struct {
 func (g *GrantedEffect) WeaponTypes() []data.ItemClassName {
 	out := make([]data.ItemClassName, len(g.Raw.WeaponRestrictions))
 	for i, restriction := range g.Raw.WeaponRestrictions {
-		out[i] = data.ItemClassName(raw.ItemClasses[restriction].Name)
+		out[i] = data.ItemClassName(poe.ItemClasses[restriction].Name)
 	}
 	return out
 }
@@ -237,7 +238,7 @@ type GemEffect struct {
 	Quality       int
 	QualityID     string
 	SrcInstance   *pob.Gem
-	GemData       *raw.SkillGem
+	GemData       *poe.SkillGem
 
 	// For Active Gems
 	GrantedEffectLevel *raw.CalculatedLevel

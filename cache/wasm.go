@@ -2,7 +2,11 @@
 
 package cache
 
-import "github.com/rs/zerolog/log"
+import (
+	"context"
+	"github.com/Vilsol/go-pob/utils"
+	"log/slog"
+)
 
 var cache *wasmCache
 
@@ -31,12 +35,23 @@ func Disk() DiskCache {
 }
 
 func (d *wasmCache) Get(key string) ([]byte, error) {
-	log.Trace().Str("key", key).Msg("loading from cache")
+	slog.Log(
+		context.Background(),
+		utils.LevelTrace,
+		"loading from cache",
+		slog.String("key", key),
+	)
 	return d.get(key), nil
 }
 
 func (d *wasmCache) Set(key string, value []byte) error {
-	log.Trace().Str("key", key).Int("len", len(value)).Msg("storing in cache")
+	slog.Log(
+		context.Background(),
+		utils.LevelTrace,
+		"storing in cache",
+		slog.String("key", key),
+		slog.Int("len", len(value)),
+	)
 	d.set(key, value)
 	return nil
 }

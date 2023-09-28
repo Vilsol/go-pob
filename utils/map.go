@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"github.com/rs/zerolog/log"
+	"golang.org/x/exp/slog"
 )
 
 func Has[K comparable, V any](m map[K]V, key K) bool {
@@ -19,10 +19,11 @@ func HasTrue[K comparable, V any](m map[K]V, key K) bool {
 		return boolVal
 	}
 
-	log.Warn().
-		Interface("key", key).
-		Interface("value", val).
-		Msg("failed to cast to bool")
+	slog.Warn(
+		"failed to cast to bool",
+		slog.Any("key", key),
+		slog.Any("value", val),
+	)
 
 	return false
 }
@@ -49,10 +50,11 @@ func MissingOrFalse[K comparable, V any](m map[K]V, key K) bool {
 		return !boolVal
 	}
 
-	log.Warn().
-		Interface("key", key).
-		Interface("value", val).
-		Msg("failed to cast to bool")
+	slog.Warn(
+		"failed to cast to bool",
+		slog.Any("key", key),
+		slog.Any("value", val),
+	)
 
 	return false
 }

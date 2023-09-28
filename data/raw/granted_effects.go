@@ -1,20 +1,32 @@
 package raw
 
 import (
-	raw2 "github.com/Vilsol/go-pob-data/raw"
+	"github.com/Vilsol/go-pob-data/loader"
+	"github.com/Vilsol/go-pob-data/poe"
 
-	"github.com/Vilsol/go-pob/cache"
 	"github.com/Vilsol/go-pob/mod"
 	"github.com/Vilsol/go-pob/utils"
 )
 
-type GrantedEffect struct {
-	raw2.GrantedEffect
+type CalculatedGrantedEffect struct {
+	*poe.GrantedEffect
 
 	calculatedStats         []string
 	calculatedLevels        map[int]*CalculatedLevel
 	calculatedConstantStats map[string]float64
-	calculatedStatMap       *cache.ComputationCache[string, *StatMap]
+	calculatedStatMap       *loader.ComputationCache[string, *StatMap]
+}
+
+var grantedEffectCache = make(map[string]*CalculatedGrantedEffect)
+
+func GetCalculatedGrantedEffect(grantedEffect *poe.GrantedEffect) *CalculatedGrantedEffect {
+	if cached, ok := grantedEffectCache[grantedEffect.ID]; ok {
+		return cached
+	}
+
+	return &CalculatedGrantedEffect{
+		GrantedEffect: grantedEffect,
+	}
 }
 
 type CalculatedLevel struct {
@@ -63,82 +75,7 @@ func (s *StatMap) Clone() *StatMap {
 	}
 }
 
-var GrantedEffects []*GrantedEffect
-
-var grantedEffectsByIDMap map[string]*GrantedEffect
-
-func InitializeGrantedEffects(version string) error {
-	return InitHelper(version, "GrantedEffects", &GrantedEffects, func(count int64) {
-		grantedEffectsByIDMap = make(map[string]*GrantedEffect, count)
-	}, func(obj *GrantedEffect) {
-		grantedEffectsByIDMap[obj.ID] = obj
-	})
-}
-
-func GrantedEffectByID(id string) *GrantedEffect {
-	return grantedEffectsByIDMap[id]
-}
-
-func (g *GrantedEffect) GetActiveSkill() *ActiveSkill {
-	if g.ActiveSkill == nil {
-		return nil
-	}
-
-	return ActiveSkills[*g.ActiveSkill]
-}
-
-func (g *GrantedEffect) GetEffectsPerLevel() map[int]*GrantedEffectsPerLevel {
-	return grantedEffectsPerLevelsByIDMap[g.Key]
-}
-
-func (g *GrantedEffect) GetEffectStatSetsPerLevel() map[int]*GrantedEffectStatSetsPerLevel {
-	return grantedEffectStatSetsPerLevelsByIDMap[g.Key]
-}
-
-func (g *GrantedEffect) GetEffectQualityStats() map[int]*GrantedEffectQualityStat {
-	return grantedEffectQualityStatsByIDMap[g.Key]
-}
-
-func (g *GrantedEffect) GetSkillGem() *SkillGem {
-	return skillGemsByGrantedEffect[g.Key]
-}
-
-func (g *GrantedEffect) HasGlobalEffect() bool {
-	// TODO HasGlobalEffect
-	return false
-}
-
-func (g *GrantedEffect) Levels() map[int]*GrantedEffectsPerLevel {
-	return grantedEffectsPerLevelsByIDMap[g.Key]
-}
-
-func (g *GrantedEffect) GetGrantedEffectStatSet() *GrantedEffectStatSet {
-	return GrantedEffectStatSets[g.GrantedEffectStatSets]
-}
-
-func (g *GrantedEffect) GetSupportTypes() []*ActiveSkillType {
-	if g.SupportTypes == nil {
-		return nil
-	}
-	out := make([]*ActiveSkillType, len(g.SupportTypes))
-	for i, supportType := range g.SupportTypes {
-		out[i] = ActiveSkillTypes[supportType]
-	}
-	return out
-}
-
-func (g *GrantedEffect) GetExcludeTypes() []*ActiveSkillType {
-	if g.ExcludeTypes == nil {
-		return nil
-	}
-	out := make([]*ActiveSkillType, len(g.ExcludeTypes))
-	for i, supportType := range g.ExcludeTypes {
-		out[i] = ActiveSkillTypes[supportType]
-	}
-	return out
-}
-
-func (g *GrantedEffect) Calculate() {
+func (g *CalculatedGrantedEffect) calculate() {
 	if g.calculatedStats != nil || g.calculatedLevels != nil {
 		return
 	}
@@ -275,7 +212,7 @@ func (g *GrantedEffect) Calculate() {
 	}
 
 	// TODO Pull manually defined stat additions
-	g.calculatedStatMap = cache.NewComputationCache[string, *StatMap](func(key string) *StatMap {
+	g.calculatedStatMap = loader.NewComputationCache[string, *StatMap](func(key string) *StatMap {
 		oldMap := SkillStatMap[key]
 		if oldMap != nil {
 			newMap := oldMap.Clone()
@@ -288,7 +225,7 @@ func (g *GrantedEffect) Calculate() {
 	})
 }
 
-func processMod(grantedEffect *GrantedEffect, m mod.Mod) mod.Mod {
+func processMod(grantedEffect *CalculatedGrantedEffect, m mod.Mod) mod.Mod {
 	out := m.Source(mod.Source("Skill:" + grantedEffect.ID))
 
 	/*
@@ -307,22 +244,22 @@ func processMod(grantedEffect *GrantedEffect, m mod.Mod) mod.Mod {
 	return out
 }
 
-func (g *GrantedEffect) GetCalculatedStats() []string {
-	g.Calculate()
+func (g *CalculatedGrantedEffect) GetCalculatedStats() []string {
+	g.calculate()
 	return g.calculatedStats
 }
 
-func (g *GrantedEffect) GetCalculatedLevels() map[int]*CalculatedLevel {
-	g.Calculate()
+func (g *CalculatedGrantedEffect) GetCalculatedLevels() map[int]*CalculatedLevel {
+	g.calculate()
 	return g.calculatedLevels
 }
 
-func (g *GrantedEffect) GetCalculatedConstantStats() map[string]float64 {
-	g.Calculate()
+func (g *CalculatedGrantedEffect) GetCalculatedConstantStats() map[string]float64 {
+	g.calculate()
 	return g.calculatedConstantStats
 }
 
-func (g *GrantedEffect) GetCalculatedStatMap() *cache.ComputationCache[string, *StatMap] {
-	g.Calculate()
+func (g *CalculatedGrantedEffect) GetCalculatedStatMap() *loader.ComputationCache[string, *StatMap] {
+	g.calculate()
 	return g.calculatedStatMap
 }

@@ -1,8 +1,9 @@
 package calculator
 
 import (
+	"github.com/Vilsol/go-pob-data/poe"
 	"github.com/Vilsol/go-pob/data"
-	"github.com/Vilsol/go-pob/data/raw"
+	raw2 "github.com/Vilsol/go-pob/data/raw"
 	"github.com/Vilsol/go-pob/mod"
 	"github.com/Vilsol/go-pob/pob"
 	"github.com/Vilsol/go-pob/utils"
@@ -39,7 +40,7 @@ func CreateActiveSkill(activeEffect *GemEffect, supportList []*GemEffect, actor 
 		// Pass 1: Add skill types from compatible supports
 		if CalcCanGrantedEffectSupportActiveSkill(supportEffect.GrantedEffect, activeSkill) {
 			for _, skillType := range supportEffect.GrantedEffect.Raw.AddTypes {
-				activeSkill.SkillTypes[data.SkillType(raw.ActiveSkillTypes[skillType].ID)] = true
+				activeSkill.SkillTypes[data.SkillType(poe.ActiveSkillTypes[skillType].ID)] = true
 			}
 		}
 	}
@@ -82,7 +83,7 @@ func CalcMergeSkillInstanceMods(env *Environment, modList *ModList, skillEffect 
 	*/
 
 	for stat, statValue := range stats {
-		statMap := grantedEffect.Raw.GetCalculatedStatMap().Get(stat)
+		statMap := raw2.GetCalculatedGrantedEffect(grantedEffect.Raw).GetCalculatedStatMap().Get(stat)
 		if statMap != nil {
 			for _, m := range statMap.Mods {
 				mergeLevelMod(modList, m, utils.UnwrapOrF(statMap.Value, statValue)*utils.UnwrapOrF(statMap.Mult, 1)/utils.UnwrapOrF(statMap.Div, 1)+utils.UnwrapOrF(statMap.Base, 0))
@@ -428,7 +429,7 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 	for _, skillEffect := range activeSkill.EffectList {
 		if skillEffect.GrantedEffect.Raw.IsSupport {
 			CalcMergeSkillInstanceMods(env, skillModList, skillEffect, nil)
-			level := skillEffect.GrantedEffect.Raw.GetCalculatedLevels()[skillEffect.Level]
+			level := raw2.GetCalculatedGrantedEffect(skillEffect.GrantedEffect.Raw).GetCalculatedLevels()[skillEffect.Level]
 			if level.ManaMultiplier != nil {
 				// TODO skillEffect.grantedEffect.modSource
 				skillModList.AddMod(mod.NewFloat("SupportManaMultiplier", mod.TypeBase, *level.ManaMultiplier))
@@ -456,7 +457,7 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 	// TODO Minions
 	// activeEffect.actorLevel = activeSkill.actor.minionData and activeSkill.actor.level
 	CalcMergeSkillInstanceMods(env, skillModList, activeEffect, skillModList.List(activeSkill.SkillCfg, "ExtraSkillStat"))
-	activeEffect.GrantedEffectLevel = activeGrantedEffect.Raw.GetCalculatedLevels()[activeEffect.Level]
+	activeEffect.GrantedEffectLevel = raw2.GetCalculatedGrantedEffect(activeGrantedEffect.Raw).GetCalculatedLevels()[activeEffect.Level]
 
 	// Add extra modifiers from granted effect level
 	level := activeEffect.GrantedEffectLevel

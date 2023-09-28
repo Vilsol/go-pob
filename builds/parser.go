@@ -2,9 +2,8 @@ package builds
 
 import (
 	"encoding/xml"
+	"fmt"
 	"regexp"
-
-	"github.com/pkg/errors"
 
 	"github.com/Vilsol/go-pob/pob"
 )
@@ -20,7 +19,7 @@ func ParseBuild(rawXML []byte) (*pob.PathOfBuilding, error) {
 	var build pob.PathOfBuilding
 	err := xml.Unmarshal(clean, &build)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to parse build as xml")
+		return nil, fmt.Errorf("failed to parse build as xml: %w", err)
 	}
 	return &build, nil
 }

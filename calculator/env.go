@@ -3,8 +3,9 @@ package calculator
 import (
 	"strings"
 
+	"github.com/Vilsol/go-pob-data/poe"
+
 	"github.com/Vilsol/go-pob/data"
-	"github.com/Vilsol/go-pob/data/raw"
 	"github.com/Vilsol/go-pob/mod"
 	"github.com/Vilsol/go-pob/pob"
 	"github.com/Vilsol/go-pob/utils"
@@ -743,13 +744,14 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 				}
 
 				if gemInstance.Enabled {
-					gemData := raw.BaseItemTypeByIDMap[gemInstance.GemID].SkillGem()
+					gemData := poe.BaseItemTypeByIDMap[gemInstance.GemID].SkillGem()
 
-					processGrantedEffect := func(grantedEffect *raw.GrantedEffect) {
+					processGrantedEffect := func(grantedEffect *poe.GrantedEffect) {
 						if grantedEffect == nil || !grantedEffect.IsSupport {
 							return
 						}
 
+						var temp = gemInstance
 						supportEffect := &GemEffect{
 							GrantedEffect: &GrantedEffect{
 								Raw: grantedEffect,
@@ -757,7 +759,7 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 							Level:        gemInstance.Level,
 							Quality:      gemInstance.Quality,
 							QualityID:    gemInstance.QualityID,
-							SrcInstance:  &gemInstance,
+							SrcInstance:  &temp,
 							GemData:      gemData,
 							Superseded:   false,
 							IsSupporting: make(map[*pob.Gem]bool),
@@ -850,7 +852,7 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 
 			// Create active skills
 			for _, gemInstance := range socketGroup.Gems {
-				baseItem := raw.BaseItemTypeByIDMap[gemInstance.GemID]
+				baseItem := poe.BaseItemTypeByIDMap[gemInstance.GemID]
 				gemData := baseItem.SkillGem()
 				grantedEffectList := gemData.GetGrantedEffects()
 
@@ -864,6 +866,7 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 						if !grantedEffect.IsSupport && (!grantedEffect.HasGlobalEffect() || globalEnable) {
 							baseFlags, skillTypes := TypesToFlagsAndTypes(grantedEffect.GetActiveSkill().GetActiveSkillTypes())
 
+							temp := gemInstance
 							activeEffect := &GemEffect{
 								GrantedEffect: &GrantedEffect{
 									Raw:        grantedEffect,
@@ -874,7 +877,7 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 								Level:       gemInstance.Level,
 								Quality:     gemInstance.Quality,
 								QualityID:   gemInstance.QualityID,
-								SrcInstance: &gemInstance,
+								SrcInstance: &temp,
 								GemData:     gemData,
 							}
 
@@ -951,7 +954,7 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 			} else {
 				DisplayLabel := ""
 				for _, gemInstance := range socketGroup.Gems {
-					baseItem := raw.BaseItemTypeByIDMap[gemInstance.GemID]
+					baseItem := poe.BaseItemTypeByIDMap[gemInstance.GemID]
 					gemData := baseItem.SkillGem()
 					grantedEffect := gemData.GetGrantedEffect()
 					if grantedEffect != nil && !grantedEffect.IsSupport && gemInstance.Enabled {
@@ -976,7 +979,7 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 
 	if env.Player.MainSkill == nil {
 		// Add a default main skill if none are specified
-		playerMelee := raw.GrantedEffectByID("PlayerMelee")
+		playerMelee := poe.GrantedEffectByID("PlayerMelee")
 		baseFlags, skillTypes := TypesToFlagsAndTypes(playerMelee.GetActiveSkill().GetActiveSkillTypes())
 		defaultEffect := &GemEffect{
 			GrantedEffect: &GrantedEffect{

@@ -3,10 +3,12 @@ package calculator
 import (
 	"math"
 
-	raw2 "github.com/Vilsol/go-pob-data/raw"
+	"github.com/Vilsol/go-pob-data/poe"
+	raw2 "github.com/Vilsol/go-pob/data/raw"
+
+	"github.com/Vilsol/go-pob-data/raw"
 
 	"github.com/Vilsol/go-pob/data"
-	"github.com/Vilsol/go-pob/data/raw"
 	"github.com/Vilsol/go-pob/mod"
 	"github.com/Vilsol/go-pob/utils"
 )
@@ -23,13 +25,13 @@ func CalcVal(modStore ModStoreFuncs, name string, cfg *ListCfg) float64 {
 	return 0
 }
 
-func CalcGemIsType(gem *raw.SkillGem, t string) bool {
+func CalcGemIsType(gem *poe.SkillGem, t string) bool {
 	if t == "all" {
 		return true
 	}
 
 	tags := gem.GetTags()
-	if t == "elemental" && (utils.Has(tags, raw2.TagFire) || utils.Has(tags, raw2.TagCold) || utils.Has(tags, raw2.TagLightning)) {
+	if t == "elemental" && (utils.Has(tags, raw.TagFire) || utils.Has(tags, raw.TagCold) || utils.Has(tags, raw.TagLightning)) {
 		return true
 	}
 
@@ -53,11 +55,11 @@ func CalcGemIsType(gem *raw.SkillGem, t string) bool {
 	//	return true
 	//}
 
-	_, ok := tags[raw2.TagName(t)]
+	_, ok := tags[raw.TagName(t)]
 	return ok
 }
 
-func TypesToFlagsAndTypes(in []*raw.ActiveSkillType) (map[SkillFlag]bool, map[data.SkillType]bool) {
+func TypesToFlagsAndTypes(in []*poe.ActiveSkillType) (map[SkillFlag]bool, map[data.SkillType]bool) {
 	flags := make(map[SkillFlag]bool)
 	types := make(map[data.SkillType]bool)
 	for _, skillTypeRaw := range in {
@@ -165,7 +167,8 @@ func CalcBuildSkillInstanceStats(skillInstance *GemEffect, grantedEffect *Grante
 		}
 	}
 
-	levels := grantedEffect.Raw.GetCalculatedLevels()
+	calculatedGrantedEffect := raw2.GetCalculatedGrantedEffect(grantedEffect.Raw)
+	levels := calculatedGrantedEffect.GetCalculatedLevels()
 	level := levels[skillInstance.Level]
 
 	var availableEffectiveness *float64
@@ -173,7 +176,7 @@ func CalcBuildSkillInstanceStats(skillInstance *GemEffect, grantedEffect *Grante
 	// TODO local actorLevel = skillInstance.actorLevel or level.levelRequirement
 	actorLevel := float64(level.LevelRequirement)
 
-	for index, stat := range grantedEffect.Raw.GetCalculatedStats() {
+	for index, stat := range calculatedGrantedEffect.GetCalculatedStats() {
 		// Static value used as default (assumes statInterpolation == 1)
 
 		statValue := float64(1)
@@ -215,7 +218,7 @@ func CalcBuildSkillInstanceStats(skillInstance *GemEffect, grantedEffect *Grante
 		stats[stat] = stats[stat] + statValue
 	}
 
-	for id, stat := range grantedEffect.Raw.GetCalculatedConstantStats() {
+	for id, stat := range calculatedGrantedEffect.GetCalculatedConstantStats() {
 		stats[id] = stats[id] + stat
 	}
 

@@ -1,8 +1,6 @@
 package exposition
 
-import (
-	"github.com/Vilsol/go-pob/data/raw"
-)
+import "github.com/Vilsol/go-pob-data/poe"
 
 type GemPart struct {
 	Name        string
@@ -36,7 +34,7 @@ var skillGemCache []SkillGem
 func GetSkillGems() []SkillGem {
 	if skillGemCache == nil {
 		skillGemCache = make([]SkillGem, 0)
-		for _, gem := range raw.SkillGems {
+		for _, gem := range poe.SkillGems {
 			baseType := gem.GetBaseItemType()
 			if baseType.SiteVisibility < 1 {
 				continue

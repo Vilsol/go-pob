@@ -1,6 +1,9 @@
 package calculator
 
 import (
+	"context"
+	"github.com/Vilsol/go-pob-data/poe"
+	"github.com/Vilsol/go-pob/cache"
 	"os"
 	"testing"
 
@@ -16,7 +19,7 @@ import (
 func init() {
 	config.InitLogging(false)
 
-	if err := raw.InitializeAll(raw.LatestVersion, nil); err != nil {
+	if err := poe.InitializeAll(context.Background(), raw.LatestVersion, cache.Disk(), nil); err != nil {
 		panic(err)
 	}
 }

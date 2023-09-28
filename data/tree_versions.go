@@ -2,18 +2,17 @@ package data
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"strconv"
 
+	"github.com/Vilsol/go-pob/cache"
 	"github.com/andybalholm/brotli"
 	"github.com/dominikbraun/graph"
 	"github.com/goccy/go-json"
-	"github.com/pkg/errors"
-	"github.com/rs/zerolog/log"
-
-	"github.com/Vilsol/go-pob/cache"
 )
 
 type TreeVersion string
@@ -52,7 +51,7 @@ func (v *TreeVersionData) Tree() *Tree {
 
 	var outTree Tree
 	if err := json.Unmarshal(v.RawTree(), &outTree); err != nil {
-		panic(errors.Wrap(err, "failed to decode file"))
+		panic(fmt.Errorf("failed to decode file: %w", err))
 	}
 	v.cachedTree = &outTree
 
@@ -73,16 +72,18 @@ func (v *TreeVersionData) RawTree() []byte {
 			panic(err)
 		}
 	} else {
-		log.Debug().Str("url", treeURL).Msg("fetching")
-		response, err := http.DefaultClient.Get(treeURL)
+		slog.Debug("fetching", slog.String("url", treeURL))
+		req, _ := http.NewRequest(http.MethodGet, treeURL, nil)
+		req = req.WithContext(context.Background())
+		response, err := http.DefaultClient.Do(req)
 		if err != nil {
-			panic(errors.Wrap(err, "failed to fetch url: "+treeURL))
+			panic(fmt.Errorf("failed to fetch url: %s: %w", treeURL, err))
 		}
 		defer response.Body.Close()
 
 		compressedTree, err = io.ReadAll(response.Body)
 		if err != nil {
-			panic(errors.Wrap(err, "failed to read response body"))
+			panic(fmt.Errorf("failed to read response body: %w", err))
 		}
 
 		defer func() {
@@ -95,7 +96,7 @@ func (v *TreeVersionData) RawTree() []byte {
 	var err error
 	v.rawTree, err = io.ReadAll(unzipStream)
 	if err != nil {
-		panic(errors.Wrap(err, "failed to read unzipped data"))
+		panic(fmt.Errorf("failed to read unzipped data: %w", err))
 	}
 
 	return v.rawTree
@@ -176,11 +177,11 @@ func BFS[K comparable, T any](g graph.Graph[K, T], adjacencyMap map[K]map[K]grap
 		return nil, fmt.Errorf("could not find start vertex with hash %v", start)
 	}
 
-	queue := make([]K, 0)
+	queue := make([]K, 1)
 	visited := make(map[K]K)
 
 	visited[start] = start
-	queue = append(queue, start)
+	queue[0] = start
 
 	found := false
 	currentHash := start

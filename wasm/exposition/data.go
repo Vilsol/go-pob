@@ -1,7 +1,9 @@
 package exposition
 
-import "github.com/Vilsol/go-pob/data/raw"
+import (
+	"github.com/Vilsol/go-pob-data/poe"
+)
 
-func GetStatByIndex(id int) *raw.Stat {
-	return raw.Stats[id]
+func GetStatByIndex(id int) *poe.Stat {
+	return poe.Stats[id]
 }

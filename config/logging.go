@@ -1,25 +1,38 @@
 package config
 
 import (
+	"github.com/Vilsol/go-pob/utils"
+	"github.com/lmittmann/tint"
+	"log/slog"
 	"os"
-
-	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
+	"time"
 )
 
 func InitLogging(withTime bool) {
-	zerolog.SetGlobalLevel(zerolog.TraceLevel)
-
-	var timeFormatter func(i interface{}) string
-	if !withTime {
-		timeFormatter = func(i interface{}) string {
-			return ""
-		}
+	timeFormat := time.TimeOnly
+	if withTime {
+		timeFormat = "2006-01-02T15:04:05.000Z07:00"
 	}
 
-	log.Logger = log.Output(zerolog.ConsoleWriter{
-		Out:             os.Stderr,
-		TimeFormat:      "2006-01-02T15:04:05.000Z07:00",
-		FormatTimestamp: timeFormatter,
-	})
+	slog.SetDefault(slog.New(
+		tint.NewHandler(os.Stderr, &tint.Options{
+			Level:      utils.LevelTrace,
+			AddSource:  true,
+			TimeFormat: timeFormat,
+			ReplaceAttr: func(groups []string, attr slog.Attr) slog.Attr {
+				if attr.Key == slog.LevelKey {
+					level := attr.Value.Any().(slog.Level)
+					var levelLabel string
+					switch level {
+					case utils.LevelTrace:
+						levelLabel = "TRACE"
+					default:
+						levelLabel = level.String()
+					}
+					attr.Value = slog.StringValue(levelLabel)
+				}
+				return attr
+			},
+		}),
+	))
 }
