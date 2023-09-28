@@ -17,7 +17,6 @@ require (
 )
 
 require (
-	atomicgo.dev/assert v0.0.2 // indirect
 	atomicgo.dev/cursor v0.2.0 // indirect
 	atomicgo.dev/keyboard v0.2.9 // indirect
 	atomicgo.dev/schedule v0.1.0 // indirect
@@ -44,3 +43,5 @@ require (
 )
 
 replace github.com/oriath-net/pogo v0.0.0-20220205020622-67c41a643bc3 => github.com/Vilsol/pogo v0.0.0-20230819000347-369f6b8b106d
+
+replace github.com/MarvinJWendt/testza v0.5.2 => github.com/MarvinJWendt/testza v0.5.0

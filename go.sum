@@ -1,5 +1,3 @@
-atomicgo.dev/assert v0.0.2 h1:FiKeMiZSgRrZsPo9qn/7vmr7mCsh5SZyXY4YGYiYwrg=
-atomicgo.dev/assert v0.0.2/go.mod h1:ut4NcI3QDdJtlmAxQULOmA13Gz6e2DWbSAS8RUOmNYQ=
 atomicgo.dev/cursor v0.2.0 h1:H6XN5alUJ52FZZUkI7AlJbUc1aW38GWZalpYRPpoPOw=
 atomicgo.dev/cursor v0.2.0/go.mod h1:Lr4ZJB3U7DfPPOkbH7/6TOtJ4vFGHlgj1nc+n900IpU=
 atomicgo.dev/keyboard v0.2.9 h1:tOsIid3nlPLZ3lwgG8KZMp/SFmr7P0ssEN5JUsm78K8=
@@ -13,8 +11,8 @@ github.com/MarvinJWendt/testza v0.2.10/go.mod h1:pd+VWsoGUiFtq+hRKSU1Bktnn+DMCSr
 github.com/MarvinJWendt/testza v0.2.12/go.mod h1:JOIegYyV7rX+7VZ9r77L/eH6CfJHHzXjB69adAhzZkI=
 github.com/MarvinJWendt/testza v0.3.0/go.mod h1:eFcL4I0idjtIx8P9C6KkAuLgATNKpX4/2oUqKc6bF2c=
 github.com/MarvinJWendt/testza v0.4.2/go.mod h1:mSdhXiKH8sg/gQehJ63bINcCKp7RtYewEjXsvsVUPbE=
-github.com/MarvinJWendt/testza v0.5.2 h1:53KDo64C1z/h/d/stCYCPY69bt/OSwjq5KpFNwi+zB4=
-github.com/MarvinJWendt/testza v0.5.2/go.mod h1:xu53QFE5sCdjtMCKk8YMQ2MnymimEctc4n3EjyIYvEY=
+github.com/MarvinJWendt/testza v0.5.0 h1:BjWCdO0bFykjsmEscH2IUWAZLpemlWtuZhPCTKxgF0g=
+github.com/MarvinJWendt/testza v0.5.0/go.mod h1:EwpWuhDUZVygn/5wRMB67jnp0UmTwQvWJc+2a2ZUMcY=
 github.com/Vilsol/crystalline v0.0.10 h1:vmzAJznAnaA6KZ5kq9dvDm+ItXrCPKRLTCYMfADYWEI=
 github.com/Vilsol/crystalline v0.0.10/go.mod h1:CMCtotOX0LhhidNys1K3R/bYNw5qZVeDrVIm59OAzQE=
 github.com/Vilsol/go-pob-data v0.0.0-20230928064540-17d3227fc060 h1:zsFk0mCxw8Shv29jPlVqkr/g4oxsUH+QpZQbR5k+QNk=
