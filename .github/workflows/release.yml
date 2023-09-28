@@ -10,8 +10,8 @@ on: [push, pull_request]
 
 env:
   GO_VERSION: "1.21.1"
-  NODE_VERSION: "18.4.0"
-  PNPM_VERSION: "7.5.0"
+  NODE_VERSION: "18.17.1"
+  PNPM_VERSION: "8.5.1"
 
 jobs:
   release:

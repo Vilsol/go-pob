@@ -18,7 +18,8 @@ for d in $unique_dirs; do
   echo $d
   pushd $d
   go test -c -o test.bin ./
-  node "$(go env GOROOT)/misc/wasm/wasm_exec_node.js" test.bin -test.v || (rm -rf test.bin && exit 1)
+  NODE_BIN=$(which node)
+  env --ignore-environment $NODE_BIN "$(go env GOROOT)/misc/wasm/wasm_exec_node.js" test.bin -test.v || (rm -rf test.bin && exit 1)
   rm -rf test.bin
   popd
 done
