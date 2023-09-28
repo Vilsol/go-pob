@@ -1,11 +1,12 @@
 package config
 
 import (
-	"github.com/Vilsol/go-pob/utils"
-	"github.com/lmittmann/tint"
 	"log/slog"
 	"os"
 	"time"
+
+	"github.com/Vilsol/go-pob/utils"
+	"github.com/lmittmann/tint"
 )
 
 func InitLogging(withTime bool) {

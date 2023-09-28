@@ -2,9 +2,10 @@ package data
 
 import (
 	"context"
+	"testing"
+
 	"github.com/Vilsol/go-pob-data/poe"
 	"github.com/Vilsol/go-pob/cache"
-	"testing"
 
 	"github.com/Vilsol/go-pob/config"
 	"github.com/Vilsol/go-pob/data/raw"

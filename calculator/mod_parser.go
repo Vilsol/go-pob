@@ -1,10 +1,11 @@
 package calculator
 
 import (
-	utils2 "github.com/Vilsol/go-pob-data/utils"
-	"golang.org/x/exp/slices"
 	"regexp"
 	"strings"
+
+	utils2 "github.com/Vilsol/go-pob-data/utils"
+	"golang.org/x/exp/slices"
 
 	"github.com/Vilsol/go-pob-data/poe"
 

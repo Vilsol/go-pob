@@ -2,10 +2,11 @@ package calculator
 
 import (
 	"context"
-	"github.com/Vilsol/go-pob-data/poe"
-	"github.com/Vilsol/go-pob/cache"
 	"os"
 	"testing"
+
+	"github.com/Vilsol/go-pob-data/poe"
+	"github.com/Vilsol/go-pob/cache"
 
 	"github.com/MarvinJWendt/testza"
 
