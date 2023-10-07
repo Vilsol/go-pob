@@ -1,10 +1,11 @@
 package calculator
 
 import (
-	"github.com/MarvinJWendt/testza"
 	"os"
 	"strings"
 	"testing"
+
+	"github.com/MarvinJWendt/testza"
 
 	"github.com/Vilsol/go-pob/mod"
 )

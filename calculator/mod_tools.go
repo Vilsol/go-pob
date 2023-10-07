@@ -14,11 +14,11 @@ func MOD(modName string, modType mod.Type, modVal any) mod.Mod {
 	case mod.TypeFlag:
 		realMod = mod.NewFlag(modName, modVal.(bool))
 	default:
-		switch modVal.(type) {
+		switch modVal := modVal.(type) {
 		case int:
-			realMod = mod.NewFloat(modName, modType, float64(modVal.(int)))
+			realMod = mod.NewFloat(modName, modType, float64(modVal))
 		case *float64:
-			realMod = mod.NewFloat(modName, modType, *modVal.(*float64))
+			realMod = mod.NewFloat(modName, modType, *modVal)
 		default:
 			realMod = mod.NewFloat(modName, modType, modVal.(float64))
 		}
