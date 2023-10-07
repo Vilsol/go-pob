@@ -3,6 +3,7 @@ package data
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"log/slog"
@@ -12,7 +13,6 @@ import (
 	"github.com/Vilsol/go-pob/cache"
 	"github.com/andybalholm/brotli"
 	"github.com/dominikbraun/graph"
-	"github.com/goccy/go-json"
 )
 
 type TreeVersion string

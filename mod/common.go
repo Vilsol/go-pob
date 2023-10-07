@@ -36,6 +36,7 @@ const (
 	TypeGlobalEffect        = Type("GlobalEffect")
 	TypeMeleeProximity      = Type("MeleeProximity")
 	TypeIgnoreCond          = Type("IgnoreCond")
+	TypeSkillPart           = Type("SkillPart")
 )
 
 type Source string

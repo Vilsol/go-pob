@@ -71,13 +71,13 @@
     }
 
     const spriteSheetUrl = sprite.filename;
-    const urlPath = new URL(spriteSheetUrl).pathname;
-    const base = urlPath.substring(urlPath.lastIndexOf('/') + 1);
-    const finalUrl = cdnTreeBase + base;
+    if (!(spriteSheetUrl in spriteCache)) {
+      const urlPath = new URL(spriteSheetUrl).pathname;
+      const base = urlPath.substring(urlPath.lastIndexOf('/') + 1);
+      const finalUrl = cdnTreeBase + base;
 
-    if (!(finalUrl in spriteCache)) {
-      spriteCache[finalUrl] = new Image();
-      spriteCache[finalUrl].src = finalUrl;
+      spriteCache[spriteSheetUrl] = new Image();
+      spriteCache[spriteSheetUrl].src = finalUrl;
     }
 
     const self: Coord = sprite.coords[path];
@@ -93,8 +93,8 @@
       finalY = topLeftY - newHeight / 2;
     }
 
-    if (cropCircle && spriteCache[finalUrl].complete) {
-      const cacheKey = finalUrl + ':' + path;
+    if (cropCircle && spriteCache[spriteSheetUrl].complete) {
+      const cacheKey = spriteSheetUrl + ':' + path;
       if (!(cacheKey in cropCache) || !(active in cropCache[cacheKey])) {
         const tempCanvas = document.createElement('canvas');
         const tempCtx = tempCanvas.getContext('2d');
@@ -112,7 +112,7 @@
           tempCtx.filter = 'brightness(50%) opacity(50%)';
         }
 
-        tempCtx.drawImage(spriteCache[finalUrl], self.x, self.y, self.w, self.h, 0, 0, self.w, self.h);
+        tempCtx.drawImage(spriteCache[spriteSheetUrl], self.x, self.y, self.w, self.h, 0, 0, self.w, self.h);
 
         if (!(cacheKey in cropCache)) {
           cropCache[cacheKey] = {};
@@ -123,7 +123,7 @@
 
       context.drawImage(cropCache[cacheKey][active], 0, 0, self.w, self.h, topLeftX, finalY, newWidth, newHeight);
     } else {
-      context.drawImage(spriteCache[finalUrl], self.x, self.y, self.w, self.h, topLeftX, finalY, newWidth, newHeight);
+      context.drawImage(spriteCache[spriteSheetUrl], self.x, self.y, self.w, self.h, topLeftX, finalY, newWidth, newHeight);
     }
 
     if (mirror) {
@@ -132,7 +132,7 @@
       context.translate(topLeftX, topLeftY);
       context.rotate(Math.PI);
 
-      context.drawImage(spriteCache[finalUrl], self.x, self.y, self.w, self.h, -newWidth, -(newHeight / 2), newWidth, -newHeight);
+      context.drawImage(spriteCache[spriteSheetUrl], self.x, self.y, self.w, self.h, -newWidth, -(newHeight / 2), newWidth, -newHeight);
 
       context.restore();
     }
@@ -262,9 +262,6 @@
         connected[joined] = true;
 
         const targetNode = drawnNodes[parseInt(o)];
-        if (!targetNode) {
-          return;
-        }
 
         // Do not draw connections to mastery nodes
         if (targetNode.isMastery) {

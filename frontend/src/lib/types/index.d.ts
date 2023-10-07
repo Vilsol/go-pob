@@ -4,11 +4,6 @@ export declare namespace builds {
   function ParseBuildStr(rawXML: string): [(pob.PathOfBuilding | undefined), Error];
 }
 export declare namespace cache {
-  interface ComputationCache {
-    Calculate: (arg1: string) => (raw.StatMap | undefined);
-    Data?: Record<string, raw.StatMap | undefined>;
-    Get(arg1: string): (raw.StatMap | undefined);
-  }
   function InitializeDiskCache(arg1: (arg1: string) => Promise<(Uint8Array | undefined)>, arg2: (arg1: string, arg2?: Uint8Array) => Promise<void>, arg3: (arg1: string) => Promise<boolean>): Promise<void>;
 }
 export declare namespace calculator {
@@ -90,14 +85,14 @@ export declare namespace calculator {
     Quality: number;
     QualityID: string;
     SrcInstance?: pob.Gem;
-    GemData?: raw.SkillGem;
+    GemData?: poe.SkillGem;
     GrantedEffectLevel?: raw.CalculatedLevel;
     Superseded: boolean;
     IsSupporting?: Record<pob.Gem | undefined, boolean>;
     Values?: Record<string, number>;
   }
   interface GrantedEffect {
-    Raw?: raw.GrantedEffect;
+    Raw?: poe.GrantedEffect;
     Parts?: Array<unknown | undefined>;
     SkillTypes?: Record<string, boolean>;
     BaseFlags?: Record<string, boolean>;
@@ -360,7 +355,101 @@ export declare namespace exposition {
   function CalculateTreePath(version: string, activeNodes?: Array<number>, target: number): (Array<number> | undefined);
   function GetRawTree(version: string): Promise<(Uint8Array | undefined)>;
   function GetSkillGems(): (Array<exposition.SkillGem> | undefined);
-  function GetStatByIndex(id: number): (raw.Stat | undefined);
+  function GetStatByIndex(id: number): (poe.Stat | undefined);
+}
+export declare namespace fwd {
+  interface Reader {
+    BufferSize(): number;
+    Buffered(): number;
+    Next(n: number): [(Uint8Array | undefined), Error];
+    Peek(n: number): [(Uint8Array | undefined), Error];
+    Read(b?: Uint8Array): [number, Error];
+    ReadByte(): [number, Error];
+    ReadFull(b?: Uint8Array): [number, Error];
+    Reset(rd?: unknown): void;
+    Skip(n: number): [number, Error];
+    WriteTo(w?: unknown): [number, Error];
+  }
+}
+export declare namespace msgp {
+  interface Reader {
+    R?: fwd.Reader;
+    BufferSize(): number;
+    Buffered(): number;
+    CopyNext(w?: unknown): [number, Error];
+    IsNil(): boolean;
+    NextType(): [number, Error];
+    Read(p?: Uint8Array): [number, Error];
+    ReadArrayHeader(): [number, Error];
+    ReadBool(): [boolean, Error];
+    ReadByte(): [number, Error];
+    ReadBytes(scratch?: Uint8Array): [(Uint8Array | undefined), Error];
+    ReadBytesHeader(): [number, Error];
+    ReadDuration(): [number, Error];
+    ReadExactBytes(into?: Uint8Array): Error;
+    ReadExtension(e?: unknown): Error;
+    ReadFloat32(): [number, Error];
+    ReadFloat64(): [number, Error];
+    ReadFull(p?: Uint8Array): [number, Error];
+    ReadInt(): [number, Error];
+    ReadInt16(): [number, Error];
+    ReadInt32(): [number, Error];
+    ReadInt64(): [number, Error];
+    ReadInt8(): [number, Error];
+    ReadIntf(): [(unknown | undefined), Error];
+    ReadMapHeader(): [number, Error];
+    ReadMapKey(scratch?: Uint8Array): [(Uint8Array | undefined), Error];
+    ReadMapKeyPtr(): [(Uint8Array | undefined), Error];
+    ReadMapStrIntf(mp?: Record<string, unknown | undefined>): Error;
+    ReadNil(): Error;
+    ReadString(): [string, Error];
+    ReadStringAsBytes(scratch?: Uint8Array): [(Uint8Array | undefined), Error];
+    ReadStringHeader(): [number, Error];
+    ReadTime(): [time.Time, Error];
+    ReadUint(): [number, Error];
+    ReadUint16(): [number, Error];
+    ReadUint32(): [number, Error];
+    ReadUint64(): [number, Error];
+    ReadUint8(): [number, Error];
+    Reset(r?: unknown): void;
+    Skip(): Error;
+    WriteToJSON(w?: unknown): [number, Error];
+  }
+  interface Writer {
+    Append(b?: Uint8Array): Error;
+    Buffered(): number;
+    Flush(): Error;
+    Reset(w?: unknown): void;
+    Write(p?: Uint8Array): [number, Error];
+    WriteArrayHeader(sz: number): Error;
+    WriteBool(b: boolean): Error;
+    WriteByte(u: number): Error;
+    WriteBytes(b?: Uint8Array): Error;
+    WriteBytesHeader(sz: number): Error;
+    WriteDuration(d: number): Error;
+    WriteExtension(e?: unknown): Error;
+    WriteFloat32(f: number): Error;
+    WriteFloat64(f: number): Error;
+    WriteInt(i: number): Error;
+    WriteInt16(i: number): Error;
+    WriteInt32(i: number): Error;
+    WriteInt64(i: number): Error;
+    WriteInt8(i: number): Error;
+    WriteIntf(v?: unknown): Error;
+    WriteMapHeader(sz: number): Error;
+    WriteMapStrIntf(mp?: Record<string, unknown | undefined>): Error;
+    WriteMapStrStr(mp?: Record<string, string>): Error;
+    WriteNil(): Error;
+    WriteString(s: string): Error;
+    WriteStringFromBytes(str?: Uint8Array): Error;
+    WriteStringHeader(sz: number): Error;
+    WriteTime(t: time.Time): Error;
+    WriteUint(u: number): Error;
+    WriteUint16(u: number): Error;
+    WriteUint32(u: number): Error;
+    WriteUint64(u: number): Error;
+    WriteUint8(u: number): Error;
+  }
 }
 export declare namespace pob {
   interface Build {
@@ -510,59 +599,205 @@ export declare namespace pob {
   function CompressEncode(xml: string): [string, Error];
   function DecodeDecompress(code: string): [string, Error];
 }
+export declare namespace poe {
+  interface ActiveSkill {
+    ActiveSkill: raw.ActiveSkill;
+    DecodeMsg(arg1?: msgp.Reader): Error;
+    EncodeMsg(arg1?: msgp.Writer): Error;
+    GetActiveSkillBaseFlagsAndTypes(): [(Record<string, boolean> | undefined), (Record<string, boolean> | undefined)];
+    GetActiveSkillTypes(): (Array<poe.ActiveSkillType | undefined> | undefined);
+    GetWeaponRestrictions(): (Array<poe.ItemClass | undefined> | undefined);
+    MarshalMsg(arg1?: Uint8Array): [(Uint8Array | undefined), Error];
+    Msgsize(): number;
+    UnmarshalMsg(arg1?: Uint8Array): [(Uint8Array | undefined), Error];
+  }
+  interface ActiveSkillType {
+    ActiveSkillType: raw.ActiveSkillType;
+    DecodeMsg(arg1?: msgp.Reader): Error;
+    EncodeMsg(arg1?: msgp.Writer): Error;
+    MarshalMsg(arg1?: Uint8Array): [(Uint8Array | undefined), Error];
+    Msgsize(): number;
+    UnmarshalMsg(arg1?: Uint8Array): [(Uint8Array | undefined), Error];
+  }
+  interface BaseItemType {
+    BaseItemType: raw.BaseItemType;
+    DecodeMsg(arg1?: msgp.Reader): Error;
+    EncodeMsg(arg1?: msgp.Writer): Error;
+    MarshalMsg(arg1?: Uint8Array): [(Uint8Array | undefined), Error];
+    Msgsize(): number;
+    SkillGem(): (poe.SkillGem | undefined);
+    UnmarshalMsg(arg1?: Uint8Array): [(Uint8Array | undefined), Error];
+  }
+  interface CostType {
+    CostType: raw.CostType;
+    DecodeMsg(arg1?: msgp.Reader): Error;
+    EncodeMsg(arg1?: msgp.Writer): Error;
+    MarshalMsg(arg1?: Uint8Array): [(Uint8Array | undefined), Error];
+    Msgsize(): number;
+    UnmarshalMsg(arg1?: Uint8Array): [(Uint8Array | undefined), Error];
+  }
+  interface GrantedEffect {
+    GrantedEffect: raw.GrantedEffect;
+    DecodeMsg(arg1?: msgp.Reader): Error;
+    EncodeMsg(arg1?: msgp.Writer): Error;
+    GetActiveSkill(): (poe.ActiveSkill | undefined);
+    GetEffectQualityStats(): (Record<number, poe.GrantedEffectQualityStat | undefined> | undefined);
+    GetEffectStatSetsPerLevel(): (Record<number, poe.GrantedEffectStatSetsPerLevel | undefined> | undefined);
+    GetEffectsPerLevel(): (Record<number, poe.GrantedEffectsPerLevel | undefined> | undefined);
+    GetExcludeTypes(): (Array<poe.ActiveSkillType | undefined> | undefined);
+    GetGrantedEffectStatSet(): (poe.GrantedEffectStatSet | undefined);
+    GetSkillGem(): (poe.SkillGem | undefined);
+    GetSupportTypes(): (Array<poe.ActiveSkillType | undefined> | undefined);
+    HasGlobalEffect(): boolean;
+    Levels(): (Record<number, poe.GrantedEffectsPerLevel | undefined> | undefined);
+    MarshalMsg(arg1?: Uint8Array): [(Uint8Array | undefined), Error];
+    Msgsize(): number;
+    UnmarshalMsg(arg1?: Uint8Array): [(Uint8Array | undefined), Error];
+  }
+  interface GrantedEffectQualityStat {
+    GrantedEffectQualityStat: raw.GrantedEffectQualityStat;
+    DecodeMsg(arg1?: msgp.Reader): Error;
+    EncodeMsg(arg1?: msgp.Writer): Error;
+    GetStats(): (Array<poe.Stat | undefined> | undefined);
+    MarshalMsg(arg1?: Uint8Array): [(Uint8Array | undefined), Error];
+    Msgsize(): number;
+    UnmarshalMsg(arg1?: Uint8Array): [(Uint8Array | undefined), Error];
+  }
+  interface GrantedEffectStatSet {
+    GrantedEffectStatSet: raw.GrantedEffectStatSet;
+    DecodeMsg(arg1?: msgp.Reader): Error;
+    EncodeMsg(arg1?: msgp.Writer): Error;
+    GetConstantStats(): (Array<poe.Stat | undefined> | undefined);
+    GetImplicitStats(): (Array<poe.Stat | undefined> | undefined);
+    MarshalMsg(arg1?: Uint8Array): [(Uint8Array | undefined), Error];
+    Msgsize(): number;
+    UnmarshalMsg(arg1?: Uint8Array): [(Uint8Array | undefined), Error];
+  }
+  interface GrantedEffectStatSetsPerLevel {
+    GrantedEffectStatSetsPerLevel: raw.GrantedEffectStatSetsPerLevel;
+    DecodeMsg(arg1?: msgp.Reader): Error;
+    EncodeMsg(arg1?: msgp.Writer): Error;
+    GetAdditionalBooleanStats(): (Array<poe.Stat | undefined> | undefined);
+    GetAdditionalStats(): (Array<poe.Stat | undefined> | undefined);
+    GetFloatStats(): (Array<poe.Stat | undefined> | undefined);
+    MarshalMsg(arg1?: Uint8Array): [(Uint8Array | undefined), Error];
+    Msgsize(): number;
+    UnmarshalMsg(arg1?: Uint8Array): [(Uint8Array | undefined), Error];
+  }
+  interface GrantedEffectsPerLevel {
+    GrantedEffectsPerLevel: raw.GrantedEffectsPerLevel;
+    DecodeMsg(arg1?: msgp.Reader): Error;
+    EncodeMsg(arg1?: msgp.Writer): Error;
+    GetCostTypes(): (Array<poe.CostType | undefined> | undefined);
+    MarshalMsg(arg1?: Uint8Array): [(Uint8Array | undefined), Error];
+    Msgsize(): number;
+    UnmarshalMsg(arg1?: Uint8Array): [(Uint8Array | undefined), Error];
+  }
+  interface ItemClass {
+    ItemClass: raw.ItemClass;
+    DecodeMsg(arg1?: msgp.Reader): Error;
+    EncodeMsg(arg1?: msgp.Writer): Error;
+    MarshalMsg(arg1?: Uint8Array): [(Uint8Array | undefined), Error];
+    Msgsize(): number;
+    UnmarshalMsg(arg1?: Uint8Array): [(Uint8Array | undefined), Error];
+  }
+  interface SkillGem {
+    SkillGem: raw.SkillGem;
+    DecodeMsg(arg1?: msgp.Reader): Error;
+    DefaultLevel(): number;
+    EncodeMsg(arg1?: msgp.Writer): Error;
+    GetBaseItemType(): (poe.BaseItemType | undefined);
+    GetGrantedEffect(): (poe.GrantedEffect | undefined);
+    GetGrantedEffects(): (Array<poe.GrantedEffect | undefined> | undefined);
+    GetNonVaal(): (poe.SkillGem | undefined);
+    GetSecondaryGrantedEffect(): (poe.GrantedEffect | undefined);
+    GetTags(): (Record<string, poe.Tag | undefined> | undefined);
+    MarshalMsg(arg1?: Uint8Array): [(Uint8Array | undefined), Error];
+    Msgsize(): number;
+    UnmarshalMsg(arg1?: Uint8Array): [(Uint8Array | undefined), Error];
+  }
+  interface Stat {
+    Stat: raw.Stat;
+    DecodeMsg(arg1?: msgp.Reader): Error;
+    EncodeMsg(arg1?: msgp.Writer): Error;
+    MarshalMsg(arg1?: Uint8Array): [(Uint8Array | undefined), Error];
+    Msgsize(): number;
+    UnmarshalMsg(arg1?: Uint8Array): [(Uint8Array | undefined), Error];
+  }
+  interface Tag {
+    Tag: raw.Tag;
+    DecodeMsg(arg1?: msgp.Reader): Error;
+    EncodeMsg(arg1?: msgp.Writer): Error;
+    MarshalMsg(arg1?: Uint8Array): [(Uint8Array | undefined), Error];
+    Msgsize(): number;
+    UnmarshalMsg(arg1?: Uint8Array): [(Uint8Array | undefined), Error];
+  }
+}
 export declare namespace raw {
   interface ActiveSkill {
-    AIFile: string;
-    ActiveSkillTargetTypes?: Array<number>;
-    ActiveSkillTypes?: Array<number>;
     AlternateSkillTargetingBehavioursKey?: number;
+    AIFile: string;
+    WebsiteImage: string;
     Description: string;
     DisplayedName: string;
     IconDDSFile: string;
     ID: string;
-    InputStatKeys?: Array<number>;
-    IsManuallyCasted: boolean;
+    WebsiteDescription: string;
+    WeaponRestrictionItemClassesKeys?: Array<number>;
     MinionActiveSkillTypes?: Array<number>;
     OutputStatKeys?: Array<number>;
+    InputStatKeys?: Array<number>;
+    ActiveSkillTypes?: Array<number>;
+    ActiveSkillTargetTypes?: Array<number>;
     SkillTotemID: number;
-    WeaponRestrictionItemClassesKeys?: Array<number>;
-    WebsiteDescription: string;
-    WebsiteImage: string;
     Key: number;
-    GetActiveSkillTypes(): (Array<raw.ActiveSkillType | undefined> | undefined);
-    GetWeaponRestrictions(): (Array<raw.ItemClass | undefined> | undefined);
+    IsManuallyCasted: boolean;
+    DecodeMsg(dc?: msgp.Reader): Error;
+    EncodeMsg(en?: msgp.Writer): Error;
+    MarshalMsg(b?: Uint8Array): [(Uint8Array | undefined), Error];
+    Msgsize(): number;
+    UnmarshalMsg(bts?: Uint8Array): [(Uint8Array | undefined), Error];
   }
   interface ActiveSkillType {
     FlagStat?: number;
     ID: string;
     Key: number;
+    DecodeMsg(dc?: msgp.Reader): Error;
+    EncodeMsg(en?: msgp.Writer): Error;
+    MarshalMsg(b?: Uint8Array): [(Uint8Array | undefined), Error];
+    Msgsize(): number;
+    UnmarshalMsg(bts?: Uint8Array): [(Uint8Array | undefined), Error];
   }
   interface BaseItemType {
-    DropLevel: number;
+    SoundEffect?: number;
     EquipAchievementItemsKey?: number;
     FlavourTextKey?: number;
     FragmentBaseItemTypesKey?: number;
-    Hash: number;
-    Height: number;
     ID: string;
+    Name: string;
+    Inflection: string;
+    InheritsFrom: string;
+    TagsKeys?: Array<number>;
     IdentifyMagicAchievementItems?: Array<unknown | undefined>;
     IdentifyAchievementItems?: Array<unknown | undefined>;
     ImplicitModsKeys?: Array<number>;
-    Inflection: string;
-    InheritsFrom: string;
-    IsCorrupted: boolean;
-    ItemClassesKey: number;
+    VendorRecipeAchievementItems?: Array<number>;
+    SizeOnGround: number;
     ItemVisualIdentity: number;
     ModDomain: number;
-    Name: string;
+    ItemClassesKey: number;
     SiteVisibility: number;
-    SizeOnGround: number;
-    SoundEffect?: number;
-    TagsKeys?: Array<number>;
-    VendorRecipeAchievementItems?: Array<number>;
+    DropLevel: number;
+    Height: number;
+    Hash: number;
     Width: number;
     Key: number;
-    SkillGem(): (raw.SkillGem | undefined);
+    IsCorrupted: boolean;
+    DecodeMsg(dc?: msgp.Reader): Error;
+    EncodeMsg(en?: msgp.Writer): Error;
+    MarshalMsg(b?: Uint8Array): [(Uint8Array | undefined), Error];
+    Msgsize(): number;
+    UnmarshalMsg(bts?: Uint8Array): [(Uint8Array | undefined), Error];
   }
   interface CalculatedLevel {
     Level: number;
@@ -590,97 +825,101 @@ export declare namespace raw {
     ID: string;
     StatsKey: number;
     Key: number;
+    DecodeMsg(dc?: msgp.Reader): Error;
+    EncodeMsg(en?: msgp.Writer): Error;
+    MarshalMsg(b?: Uint8Array): [(Uint8Array | undefined), Error];
+    Msgsize(): number;
+    UnmarshalMsg(bts?: Uint8Array): [(Uint8Array | undefined), Error];
   }
   interface GrantedEffect {
-    ID: string;
-    IsSupport: boolean;
-    SupportTypes?: Array<number>;
+    ActiveSkill?: number;
+    PlusVersionOf?: number;
+    Animation?: number;
     SupportGemLetter: string;
-    Attribute: number;
+    ID: string;
+    SupportTypes?: Array<number>;
     AddTypes?: Array<number>;
     ExcludeTypes?: Array<number>;
-    SupportsGemsOnly: boolean;
-    CannotBeSupported: boolean;
-    CastTime: number;
-    ActiveSkill?: number;
-    IgnoreMinionTypes: boolean;
-    AddMinionTypes?: Array<number>;
-    Animation?: number;
     WeaponRestrictions?: Array<number>;
-    PlusVersionOf?: number;
+    AddMinionTypes?: Array<number>;
+    Attribute: number;
+    CastTime: number;
     GrantedEffectStatSets: number;
     Key: number;
-    Calculate(): void;
-    GetActiveSkill(): (raw.ActiveSkill | undefined);
-    GetCalculatedConstantStats(): (Record<string, number> | undefined);
-    GetCalculatedLevels(): (Record<number, raw.CalculatedLevel | undefined> | undefined);
-    GetCalculatedStatMap(): (cache.ComputationCache | undefined);
-    GetCalculatedStats(): (Array<string> | undefined);
-    GetEffectQualityStats(): (Record<number, raw.GrantedEffectQualityStat | undefined> | undefined);
-    GetEffectStatSetsPerLevel(): (Record<number, raw.GrantedEffectStatSetsPerLevel | undefined> | undefined);
-    GetEffectsPerLevel(): (Record<number, raw.GrantedEffectsPerLevel | undefined> | undefined);
-    GetExcludeTypes(): (Array<raw.ActiveSkillType | undefined> | undefined);
-    GetGrantedEffectStatSet(): (raw.GrantedEffectStatSet | undefined);
-    GetSkillGem(): (raw.SkillGem | undefined);
-    GetSupportTypes(): (Array<raw.ActiveSkillType | undefined> | undefined);
-    HasGlobalEffect(): boolean;
-    Levels(): (Record<number, raw.GrantedEffectsPerLevel | undefined> | undefined);
+    IgnoreMinionTypes: boolean;
+    CannotBeSupported: boolean;
+    SupportsGemsOnly: boolean;
+    IsSupport: boolean;
+    DecodeMsg(dc?: msgp.Reader): Error;
+    EncodeMsg(en?: msgp.Writer): Error;
+    MarshalMsg(b?: Uint8Array): [(Uint8Array | undefined), Error];
+    Msgsize(): number;
+    UnmarshalMsg(bts?: Uint8Array): [(Uint8Array | undefined), Error];
   }
   interface GrantedEffectQualityStat {
-    GrantedEffectsKey: number;
-    SetID: number;
     StatsKeys?: Array<number>;
     StatsValuesPermille?: Array<number>;
+    GrantedEffectsKey: number;
+    SetID: number;
     Weight: number;
     Key: number;
-    GetStats(): (Array<raw.Stat | undefined> | undefined);
+    DecodeMsg(dc?: msgp.Reader): Error;
+    EncodeMsg(en?: msgp.Writer): Error;
+    MarshalMsg(b?: Uint8Array): [(Uint8Array | undefined), Error];
+    Msgsize(): number;
+    UnmarshalMsg(bts?: Uint8Array): [(Uint8Array | undefined), Error];
   }
   interface GrantedEffectStatSet {
-    Key: number;
     ID: string;
     ImplicitStats?: Array<number>;
     ConstantStats?: Array<number>;
     ConstantStatsValues?: Array<number>;
+    Key: number;
     BaseEffectiveness: number;
     IncrementalEffectiveness: number;
-    GetConstantStats(): (Array<raw.Stat | undefined> | undefined);
-    GetImplicitStats(): (Array<raw.Stat | undefined> | undefined);
+    DecodeMsg(dc?: msgp.Reader): Error;
+    EncodeMsg(en?: msgp.Writer): Error;
+    MarshalMsg(b?: Uint8Array): [(Uint8Array | undefined), Error];
+    Msgsize(): number;
+    UnmarshalMsg(bts?: Uint8Array): [(Uint8Array | undefined), Error];
   }
   interface GrantedEffectStatSetsPerLevel {
-    AdditionalBooleanStats?: Array<number>;
+    GrantedEffects?: Array<number>;
     AdditionalStats?: Array<number>;
     AdditionalStatsValues?: Array<number>;
-    AttackCritChance: number;
-    BaseMultiplier: number;
+    StatInterpolations?: Array<number>;
+    AdditionalBooleanStats?: Array<number>;
     BaseResolvedValues?: Array<number>;
-    DamageEffectiveness: number;
+    InterpolationBases?: Array<number>;
     FloatStats?: Array<number>;
     FloatStatsValues?: Array<number>;
+    BaseMultiplier: number;
     GemLevel: number;
-    GrantedEffects?: Array<number>;
-    InterpolationBases?: Array<number>;
+    DamageEffectiveness: number;
     PlayerLevelReq: number;
     OffhandCritChance: number;
-    StatInterpolations?: Array<number>;
+    AttackCritChance: number;
     StatSet: number;
     Key: number;
-    GetAdditionalBooleanStats(): (Array<raw.Stat | undefined> | undefined);
-    GetAdditionalStats(): (Array<raw.Stat | undefined> | undefined);
-    GetFloatStats(): (Array<raw.Stat | undefined> | undefined);
+    DecodeMsg(dc?: msgp.Reader): Error;
+    EncodeMsg(en?: msgp.Writer): Error;
+    MarshalMsg(b?: Uint8Array): [(Uint8Array | undefined), Error];
+    Msgsize(): number;
+    UnmarshalMsg(bts?: Uint8Array): [(Uint8Array | undefined), Error];
   }
   interface GrantedEffectsPerLevel {
-    AttackSpeedMultiplier: number;
-    AttackTime: number;
-    Cooldown: number;
-    CooldownBypassType: number;
-    CooldownGroup: number;
     CostAmounts?: Array<number>;
-    CostMultiplier: number;
     CostTypes?: Array<number>;
-    GrantedEffect: number;
-    Level: number;
     LifeReservationFlat: number;
     LifeReservationPercent: number;
+    CooldownGroup: number;
+    Cooldown: number;
+    CostMultiplier: number;
+    AttackTime: number;
+    GrantedEffect: number;
+    Level: number;
+    AttackSpeedMultiplier: number;
+    CooldownBypassType: number;
     ManaReservationFlat: number;
     ManaReservationPercent: number;
     PlayerLevelReq: number;
@@ -689,83 +928,144 @@ export declare namespace raw {
     VaalSouls: number;
     VaalStoredUses: number;
     Key: number;
-    GetCostTypes(): (Array<raw.CostType | undefined> | undefined);
+    DecodeMsg(dc?: msgp.Reader): Error;
+    EncodeMsg(en?: msgp.Writer): Error;
+    MarshalMsg(b?: Uint8Array): [(Uint8Array | undefined), Error];
+    Msgsize(): number;
+    UnmarshalMsg(bts?: Uint8Array): [(Uint8Array | undefined), Error];
   }
   interface ItemClass {
-    AllocateToMapOwner: boolean;
-    AlwaysAllocate: boolean;
-    AlwaysShow: boolean;
-    CanBeCorrupted: boolean;
+    ItemStance?: number;
+    ItemClassCategory?: number;
+    Name: string;
+    ID: string;
+    Flags?: Array<number>;
+    Key: number;
     CanBeDoubleCorrupted: boolean;
-    CanHaveAspects: boolean;
-    CanHaveIncubators: boolean;
     CanHaveInfluence: boolean;
     CanHaveVeiledMods: boolean;
     CanScourge: boolean;
     CanTransferSkin: boolean;
-    Flags?: Array<number>;
-    ID: string;
-    ItemClassCategory?: number;
-    ItemStance?: number;
-    Name: string;
+    CanHaveIncubators: boolean;
+    CanHaveAspects: boolean;
+    AllocateToMapOwner: boolean;
+    CanBeCorrupted: boolean;
+    AlwaysShow: boolean;
     RemovedIfLeavesArea: boolean;
-    Key: number;
+    AlwaysAllocate: boolean;
+    DecodeMsg(dc?: msgp.Reader): Error;
+    EncodeMsg(en?: msgp.Writer): Error;
+    MarshalMsg(b?: Uint8Array): [(Uint8Array | undefined), Error];
+    Msgsize(): number;
+    UnmarshalMsg(bts?: Uint8Array): [(Uint8Array | undefined), Error];
   }
   interface SkillGem {
-    BaseItemType: number;
-    GrantedEffect: number;
-    Str: number;
-    Dex: number;
-    Int: number;
-    Tags?: Array<number>;
     VaalGem?: number;
-    IsVaalGem: boolean;
-    Description: string;
-    HungryLoopMod?: number;
-    SecondaryGrantedEffect?: number;
-    GlobalGemLevelStat?: number;
-    SecondarySupportName: string;
-    AwakenedVariant?: number;
     RegularVariant?: number;
+    AwakenedVariant?: number;
+    GlobalGemLevelStat?: number;
+    SecondaryGrantedEffect?: number;
+    HungryLoopMod?: number;
+    SecondarySupportName: string;
+    Description: string;
+    Tags?: Array<number>;
+    Int: number;
+    Dex: number;
+    BaseItemType: number;
+    Str: number;
+    GrantedEffect: number;
     Key: number;
-    DefaultLevel(): number;
-    GetBaseItemType(): (raw.BaseItemType | undefined);
-    GetGrantedEffect(): (raw.GrantedEffect | undefined);
-    GetGrantedEffects(): (Array<raw.GrantedEffect | undefined> | undefined);
-    GetNonVaal(): (raw.SkillGem | undefined);
-    GetSecondaryGrantedEffect(): (raw.GrantedEffect | undefined);
-    GetTags(): (Record<string, raw.Tag | undefined> | undefined);
+    IsVaalGem: boolean;
+    DecodeMsg(dc?: msgp.Reader): Error;
+    EncodeMsg(en?: msgp.Writer): Error;
+    MarshalMsg(b?: Uint8Array): [(Uint8Array | undefined), Error];
+    Msgsize(): number;
+    UnmarshalMsg(bts?: Uint8Array): [(Uint8Array | undefined), Error];
   }
   interface Stat {
-    BelongsStatsKey?: Array<string>;
-    Category?: number;
-    ContextFlags?: Array<number>;
-    Hash32: number;
-    ID: string;
-    IsLocal: boolean;
-    IsScalable: boolean;
-    IsVirtual: boolean;
-    IsWeaponLocal: boolean;
     MainHandAliasStatsKey?: number;
+    Category?: number;
     OffHandAliasStatsKey?: number;
-    Semantics: number;
+    ID: string;
     Text: string;
+    ContextFlags?: Array<number>;
+    BelongsStatsKey?: Array<string>;
+    Hash32: number;
+    Semantics: number;
     Key: number;
-  }
-  interface StatMap {
-    Mods?: Array<unknown | undefined>;
-    Value?: number;
-    Mult?: number;
-    Div?: number;
-    Base?: number;
-    Clone(): (raw.StatMap | undefined);
+    IsWeaponLocal: boolean;
+    IsVirtual: boolean;
+    IsScalable: boolean;
+    IsLocal: boolean;
+    DecodeMsg(dc?: msgp.Reader): Error;
+    EncodeMsg(en?: msgp.Writer): Error;
+    MarshalMsg(b?: Uint8Array): [(Uint8Array | undefined), Error];
+    Msgsize(): number;
+    UnmarshalMsg(bts?: Uint8Array): [(Uint8Array | undefined), Error];
   }
   interface Tag {
     DisplayString: string;
     ID: string;
     Name: string;
     Key: number;
+    DecodeMsg(dc?: msgp.Reader): Error;
+    EncodeMsg(en?: msgp.Writer): Error;
+    MarshalMsg(b?: Uint8Array): [(Uint8Array | undefined), Error];
+    Msgsize(): number;
+    UnmarshalMsg(bts?: Uint8Array): [(Uint8Array | undefined), Error];
   }
   function InitializeAll(version: string, updateFunc: (arg1: string) => Promise<void>): Promise<Error>;
+}
+export declare namespace time {
+  interface Location {
+    String(): string;
+  }
+  interface Time {
+    Add(d: number): time.Time;
+    AddDate(years: number, months: number, days: number): time.Time;
+    After(u: time.Time): boolean;
+    AppendFormat(b?: Uint8Array, layout: string): (Uint8Array | undefined);
+    Before(u: time.Time): boolean;
+    Clock(): [number, number, number];
+    Compare(u: time.Time): number;
+    Date(): [number, number, number];
+    Day(): number;
+    Equal(u: time.Time): boolean;
+    Format(layout: string): string;
+    GoString(): string;
+    GobDecode(data?: Uint8Array): Error;
+    GobEncode(): [(Uint8Array | undefined), Error];
+    Hour(): number;
+    ISOWeek(): [number, number];
+    In(loc?: time.Location): time.Time;
+    IsDST(): boolean;
+    IsZero(): boolean;
+    Local(): time.Time;
+    Location(): (time.Location | undefined);
+    MarshalBinary(): [(Uint8Array | undefined), Error];
+    MarshalJSON(): [(Uint8Array | undefined), Error];
+    MarshalText(): [(Uint8Array | undefined), Error];
+    Minute(): number;
+    Month(): number;
+    Nanosecond(): number;
+    Round(d: number): time.Time;
+    Second(): number;
+    String(): string;
+    Sub(u: time.Time): number;
+    Truncate(d: number): time.Time;
+    UTC(): time.Time;
+    Unix(): number;
+    UnixMicro(): number;
+    UnixMilli(): number;
+    UnixNano(): number;
+    UnmarshalBinary(data?: Uint8Array): Error;
+    UnmarshalJSON(data?: Uint8Array): Error;
+    UnmarshalText(data?: Uint8Array): Error;
+    Weekday(): number;
+    Year(): number;
+    YearDay(): number;
+    Zone(): [string, number];
+    ZoneBounds(): [time.Time, time.Time];
+  }
 }
 export const initializeCrystalline: () => void;

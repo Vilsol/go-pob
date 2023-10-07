@@ -3,14 +3,16 @@ package mod
 var _ Tag = (*MultiplierTag)(nil)
 
 type MultiplierTag struct {
-	TagType          Type
-	VariableList     []string
-	TagBase          float64
-	Division         float64
-	TagLimit         *float64
-	TagLimitVariable *string
-	TagLimitTotal    bool
-	TagActor         string
+	TagType           Type
+	VariableList      []string
+	TagBase           float64
+	Division          float64
+	TagLimit          *float64
+	TagLimitVariable  *string
+	TagLimitTotal     bool
+	TagActor          string
+	TagGlobalLimit    *float64
+	TagGlobalLimitKey *string
 }
 
 func Multiplier(vars ...string) *MultiplierTag {
@@ -47,5 +49,15 @@ func (m *MultiplierTag) Base(base float64) *MultiplierTag {
 
 func (m *MultiplierTag) Actor(actor string) *MultiplierTag {
 	m.TagActor = actor
+	return m
+}
+
+func (m *MultiplierTag) GlobalLimit(globalLimit float64) *MultiplierTag {
+	m.TagGlobalLimit = &globalLimit
+	return m
+}
+
+func (m *MultiplierTag) GlobalLimitKey(globalLimitKey string) *MultiplierTag {
+	m.TagGlobalLimitKey = &globalLimitKey
 	return m
 }

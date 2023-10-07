@@ -45,3 +45,15 @@ func Float(s string) float64 {
 	}
 	return n
 }
+
+func Int(s string) int {
+	n, err := strconv.ParseInt(s, 10, 64)
+	if err != nil {
+		slog.Error(
+			"failed to parse as float64",
+			slog.String("error", err.Error()),
+			slog.String("str", s),
+		)
+	}
+	return int(n)
+}

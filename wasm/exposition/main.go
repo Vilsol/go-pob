@@ -16,6 +16,12 @@ func Expose() *crystalline.Exposer {
 
 	crystalline.MarkPromise("calculator.Calculator", "BuildOutput")
 
+	crystalline.MarkIgnored("msgp.Reader", "ReadComplex64")
+	crystalline.MarkIgnored("msgp.Reader", "ReadComplex128")
+
+	crystalline.MarkIgnored("msgp.Writer", "WriteComplex64")
+	crystalline.MarkIgnored("msgp.Writer", "WriteComplex128")
+
 	e.ExposeFuncOrPanic(pob.DecodeDecompress)
 	e.ExposeFuncOrPanic(pob.CompressEncode)
 

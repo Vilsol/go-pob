@@ -18,6 +18,14 @@ func StatThreshold(stat string, threshold float64) *StatThresholdTag {
 	}
 }
 
+func StatThresholdStat(stat string, thresholdStat string) *StatThresholdTag {
+	return &StatThresholdTag{
+		TagType:          TypeStatThreshold,
+		Stat:             stat,
+		TagThresholdStat: thresholdStat,
+	}
+}
+
 func (t StatThresholdTag) Type() Type {
 	return t.TagType
 }
