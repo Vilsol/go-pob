@@ -17,20 +17,12 @@ require (
 
 require (
 	atomicgo.dev/assert v0.0.2 // indirect
-	atomicgo.dev/cursor v0.2.0 // indirect
-	atomicgo.dev/keyboard v0.2.9 // indirect
-	atomicgo.dev/schedule v0.1.0 // indirect
 	github.com/Vilsol/slox v0.0.1 // indirect
 	github.com/atomicgo/cursor v0.0.1 // indirect
-	github.com/containerd/console v1.0.3 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/gookit/color v1.5.4 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.5 // indirect
-	github.com/lithammer/fuzzysearch v1.1.8 // indirect
 	github.com/mattn/go-runewidth v0.0.15 // indirect
-	github.com/mcuadros/go-version v0.0.0-20190830083331-035f6764e8d2 // indirect
-	github.com/oriath-net/gooz v1.0.1 // indirect
-	github.com/oriath-net/pogo v0.0.0-20230425190806-78985d9ea758 // indirect
 	github.com/philhofer/fwd v1.1.2 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pterm/pterm v0.12.69 // indirect
@@ -41,12 +33,10 @@ require (
 	golang.org/x/sync v0.1.0 // indirect
 	golang.org/x/sys v0.13.0 // indirect
 	golang.org/x/term v0.13.0 // indirect
-	golang.org/x/text v0.13.0 // indirect
 	gopkg.in/djherbis/atime.v1 v1.0.0 // indirect
 	gopkg.in/djherbis/stream.v1 v1.3.1 // indirect
-	gopkg.in/gographics/imagick.v3 v3.5.0 // indirect
 )
 
 replace github.com/oriath-net/pogo v0.0.0-20220205020622-67c41a643bc3 => github.com/Vilsol/pogo v0.0.0-20230819000347-369f6b8b106d
 
-replace github.com/pterm/pterm v0.12.67 => github.com/pterm/pterm v0.12.40
+replace github.com/pterm/pterm v0.12.69 => github.com/pterm/pterm v0.12.40
