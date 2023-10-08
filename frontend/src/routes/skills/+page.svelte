@@ -288,9 +288,9 @@
 
 {#if $currentBuild}
   <div class="p-2 px-4 w-full h-full overflow-y-auto">
-    <div class="flex flex-row gap-4 flex-wrap">
+    <div class="flex flex-row gap-4 max-xl:flex-wrap">
       <!-- Left Side -->
-      <div class="flex flex-col w-[28em] gap-2">
+      <div class="flex flex-col flex-auto min-w-[24em] gap-2">
         <div class="flex flex-row items-center gap-2">
           <span>Skill set:</span>
 

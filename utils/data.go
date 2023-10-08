@@ -37,7 +37,7 @@ func UnwrapOrF(f *float64, or float64) float64 {
 func Float(s string) float64 {
 	n, err := strconv.ParseFloat(s, 64)
 	if err != nil {
-		slog.Error(
+		slog.Warn(
 			"failed to parse as float64",
 			slog.String("error", err.Error()),
 			slog.String("str", s),
@@ -49,7 +49,7 @@ func Float(s string) float64 {
 func Int(s string) int {
 	n, err := strconv.ParseInt(s, 10, 64)
 	if err != nil {
-		slog.Error(
+		slog.Warn(
 			"failed to parse as float64",
 			slog.String("error", err.Error()),
 			slog.String("str", s),
