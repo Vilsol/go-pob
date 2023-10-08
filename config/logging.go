@@ -23,14 +23,10 @@ func InitLogging(withTime bool) {
 			ReplaceAttr: func(groups []string, attr slog.Attr) slog.Attr {
 				if attr.Key == slog.LevelKey {
 					level := attr.Value.Any().(slog.Level)
-					var levelLabel string
 					switch level {
 					case utils.LevelTrace:
-						levelLabel = "TRACE"
-					default:
-						levelLabel = level.String()
+						attr.Value = slog.StringValue("TRC")
 					}
-					attr.Value = slog.StringValue(levelLabel)
 				}
 				return attr
 			},

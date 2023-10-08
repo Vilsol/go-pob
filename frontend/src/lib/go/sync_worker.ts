@@ -1,4 +1,5 @@
 import { expose, proxy } from 'comlink';
+import '$lib/console_hook';
 import '../../wasm_exec.js';
 import { initializeCrystalline, cache, raw, config, pob, builds, calculator, exposition } from '../types';
 import type { Outputs } from '../custom_types';
