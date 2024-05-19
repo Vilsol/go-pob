@@ -9,7 +9,7 @@
   import Select from 'svelte-select';
   import { GetSkillGems } from '../../lib/cache';
   import { onMount } from 'svelte';
-  import { colorCodes, formatColors } from '../../lib/display/colors';
+  import { colorCodes } from '../../lib/display/colors';
   import type { SkillGroupUpdate } from '../../lib/custom_types';
   import type { pob, exposition } from '../../lib/types';
 

@@ -3,11 +3,12 @@ package config
 import (
 	"context"
 	"fmt"
-	"github.com/Vilsol/go-pob/utils"
-	"github.com/lmittmann/tint"
 	"log/slog"
 	"os"
 	"time"
+
+	"github.com/Vilsol/go-pob/utils"
+	"github.com/lmittmann/tint"
 )
 
 const (
@@ -60,7 +61,7 @@ func (t TimeStripper) Handle(ctx context.Context, record slog.Record) error {
 		record.Time = time.Time{}
 	}
 
-	return t.Upstream.Handle(ctx, record)
+	return t.Upstream.Handle(ctx, record) //nolint:wrapcheck
 }
 
 func (t TimeStripper) WithAttrs(attrs []slog.Attr) slog.Handler {

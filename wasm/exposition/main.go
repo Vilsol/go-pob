@@ -3,13 +3,14 @@ package exposition
 import (
 	"github.com/Vilsol/crystalline"
 
+	"runtime/debug"
+
 	"github.com/Vilsol/go-pob/builds"
 	"github.com/Vilsol/go-pob/cache"
 	"github.com/Vilsol/go-pob/calculator"
 	"github.com/Vilsol/go-pob/config"
 	"github.com/Vilsol/go-pob/data/raw"
 	"github.com/Vilsol/go-pob/pob"
-	"runtime/debug"
 )
 
 func Expose() *crystalline.Exposer {

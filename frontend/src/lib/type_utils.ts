@@ -20,7 +20,7 @@ export const dump = (obj: any) => {
     if (typeof val === 'object') {
       val = dump(val);
     } else if (typeof val === 'function' || typeof val === 'symbol') {
-      continue
+      continue;
     }
     out[name] = val;
   }

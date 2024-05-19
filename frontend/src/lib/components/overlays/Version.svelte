@@ -1,6 +1,5 @@
 <script lang="ts">
-  import { createEventDispatcher, onMount } from 'svelte';
-  import { dump } from '$lib/type_utils';
+  import { createEventDispatcher } from 'svelte';
   import { syncWrap } from '$lib/go/worker';
 
   const dispatch = createEventDispatcher();
