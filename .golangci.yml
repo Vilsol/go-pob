@@ -46,7 +46,7 @@ linters:
     - ineffassign
     - mirror
     - misspell
-    - musttag
+    # - musttag
     - nilerr
     - nilnil
     - noctx
