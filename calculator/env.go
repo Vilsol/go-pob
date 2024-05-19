@@ -139,7 +139,7 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 	case "Kraityn":
 		env.ModDB.AddMod(mod.NewFloat("Speed", mod.TypeIncrease, 6).Source("Bandit"))
 		env.ModDB.AddMod(mod.NewFloat("MovementSpeed", mod.TypeIncrease, 6).Source("Bandit"))
-		for _, ailment := range data.Ailment("").Values() {
+		for _, ailment := range data.ElementalAilment("").Values() {
 			env.ModDB.AddMod(mod.NewFloat("Avoid"+string(ailment), mod.TypeBase, 10).Source("Bandit"))
 		}
 	case "Oak":
@@ -537,13 +537,13 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 		env.grantedSkills = tableConcat(env.grantedSkillsNodes, env.grantedSkillsItems)
 	*/
 
-	/*
-		TODO Skills
-		if env.mode == "MAIN" then
-			-- Process extra skills granted by items or tree nodes
+	// Skills
+	if env.Mode == OutputModeMain {
+		/*
+			TODO -- Process extra skills granted by items or tree nodes
 			local markList = wipeTable(tempTable1)
 			for _, grantedSkill in ipairs(env.grantedSkills) do
-				-- Check if a matching group already exists
+				TODO -- Check if a matching group already exists
 				local group
 				for index, socketGroup in pairs(build.skillsTab.socketGroupList) do
 					if socketGroup.source == grantedSkill.source and socketGroup.slot == grantedSkill.slotName then
@@ -555,13 +555,13 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 					end
 				end
 				if not group then
-					-- Create a new group for this skill
+					TODO -- Create a new group for this skill
 					group = { label = "", enabled = true, gemList = { }, source = grantedSkill.source, slot = grantedSkill.slotName }
 					t_insert(build.skillsTab.socketGroupList, group)
 					markList[group] = true
 				end
 
-				-- Update the group
+				TODO -- Update the group
 				group.sourceItem = grantedSkill.sourceItem
 				group.sourcacceleeNode = grantedSkill.sourceNode
 				local activeGemInstance = group.gemList[1] or {
@@ -581,9 +581,9 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 					group.noSupports = true
 				else
 					for _, socketGroup in pairs(build.skillsTab.socketGroupList) do
-						-- Look for other groups that are socketed in the item
+						TODO -- Look for other groups that are socketed in the item
 						if socketGroup.slot == grantedSkill.slotName and not socketGroup.source then
-							-- Add all support gems to the skill's group
+							TODO -- Add all support gems to the skill's group
 							for _, gemInstance in ipairs(socketGroup.gemList) do
 								if gemInstance.gemData and gemInstance.gemData.grantedEffect.support then
 									t_insert(group.gemList, gemInstance)
@@ -595,7 +595,7 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 				build.skillsTab:ProcessSocketGroup(group)
 			end
 
-			-- Remove any socket groups that no longer have a matching item
+			TODO -- Remove any socket groups that no longer have a matching item
 			local i = 1
 			while build.skillsTab.socketGroupList[i] do
 				local socketGroup = build.skillsTab.socketGroupList[i]
@@ -608,8 +608,8 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 					i = i + 1
 				end
 			end
-		end
-	*/
+		*/
+	}
 
 	env.Player.WeaponData1 = utils.CopyMap(data.UnarmedWeaponData[data.ClassIDs[env.Spec.ClassName]])
 	//if _, ok := env.Player.ItemList["Weapon 1"]; ok {
@@ -639,6 +639,10 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 
 	} else {
 		selectedSkillSet := build.Skills.ActiveSkillSet - 1
+		if selectedSkillSet < 0 {
+			selectedSkillSet = 0
+		}
+
 		skillCount := 0
 		if len(build.Skills.SkillSets) > selectedSkillSet {
 			skillCount = len(build.Skills.SkillSets[selectedSkillSet].Skills)
@@ -665,6 +669,9 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 	// which allow a Shield (Weapon 2) to link to a Main Hand and an Amulet to link to a Body Armour
 	// as we need their support gems and effects to be processed before we cross-link them to those slots
 	selectedSkillSet := build.Skills.ActiveSkillSet - 1
+	if selectedSkillSet < 0 {
+		selectedSkillSet = 0
+	}
 
 	var indexOrder []int
 	if selectedSkillSet < len(build.Skills.SkillSets) {
@@ -744,7 +751,12 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 				}
 
 				if gemInstance.Enabled {
-					gemData := poe.BaseItemTypeByIDMap[gemInstance.GemID].SkillGem()
+					baseItemType := poe.BaseItemTypeByIDMap[gemInstance.GemID]
+					if baseItemType == nil {
+						continue
+					}
+
+					gemData := baseItemType.SkillGem()
 
 					processGrantedEffect := func(grantedEffect *poe.GrantedEffect) {
 						if grantedEffect == nil || !grantedEffect.IsSupport {
@@ -853,6 +865,9 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 			// Create active skills
 			for _, gemInstance := range socketGroup.Gems {
 				baseItem := poe.BaseItemTypeByIDMap[gemInstance.GemID]
+				if baseItem == nil {
+					continue
+				}
 				gemData := baseItem.SkillGem()
 				grantedEffectList := gemData.GetGrantedEffects()
 
@@ -955,6 +970,9 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 				DisplayLabel := ""
 				for _, gemInstance := range socketGroup.Gems {
 					baseItem := poe.BaseItemTypeByIDMap[gemInstance.GemID]
+					if baseItem == nil {
+						continue
+					}
 					gemData := baseItem.SkillGem()
 					grantedEffect := gemData.GetGrantedEffect()
 					if grantedEffect != nil && !grantedEffect.IsSupport && gemInstance.Enabled {

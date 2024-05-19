@@ -9,6 +9,7 @@ import (
 	"github.com/Vilsol/go-pob/config"
 	"github.com/Vilsol/go-pob/data/raw"
 	"github.com/Vilsol/go-pob/pob"
+	"runtime/debug"
 )
 
 func Expose() *crystalline.Exposer {
@@ -37,6 +38,9 @@ func Expose() *crystalline.Exposer {
 	e.ExposeFuncOrPanicPromise(GetRawTree)
 	e.ExposeFuncOrPanic(GetStatByIndex)
 	e.ExposeFuncOrPanic(CalculateTreePath)
+
+	info, _ := debug.ReadBuildInfo()
+	e.ExposeOrPanic(info, "pob", "BuildInfo")
 
 	return e
 }

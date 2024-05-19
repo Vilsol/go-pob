@@ -200,13 +200,18 @@
                 <Select
                   items={v.list}
                   bind:value={valueWatchers[v.var]}
-                  isClearable={false}
+                  clearable={false}
                   placeholder=""
-                  showIndicator={true}
-                  Item={SelectItem}
-                  Selection={SelectSelection}
+                  showChevron={true}
                   listOffset={0}
-                  id={v.var} />
+                  id={v.var}>
+                  <div slot="selection" let:selection>
+                    <SelectSelection item={selection}/>
+                  </div>
+                  <div slot="item" let:item>
+                    <SelectItem {item}/>
+                  </div>
+                </Select>
               </div>
             {:else if v.type === 'count' || v.type === 'integer' || v.type === 'countAllowZero'}
               <NumberInput min={v.type === 'countAllowZero' ? 0 : 1} fullWidth={true} id={v.var} bind:value={valueWatchers[v.var]} />

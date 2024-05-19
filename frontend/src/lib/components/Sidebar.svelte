@@ -13,6 +13,7 @@
   import { syncWrap } from '../go/worker';
   import { openOverlay } from '../overlay';
   import Options from './overlays/Options.svelte';
+  import Version from '$lib/components/overlays/Version.svelte';
 
   interface Line {
     label: string;
@@ -165,7 +166,17 @@
   });
 
   let activeSkillSet = 1;
-  $: $currentBuild?.Skills?.ActiveSkillSet?.then((v) => (activeSkillSet = v));
+  $: $currentBuild?.Skills?.ActiveSkillSet?.then((v) => {
+    if (v < 1) {
+      activeSkillSet = 1;
+      return;
+    }
+    activeSkillSet = v;
+  });
+  $: console.log('ACTIVE:', activeSkillSet);
+  $: console.log($currentBuild?.Skills?.then((wat) => {
+    console.log('WAT', wat);
+  }));
 
   let socketGroupList: string[] = [];
   $: $currentBuild?.Skills?.SkillSets?.[activeSkillSet - 1]?.Skills?.then(async (skills: unknown[]) => {
@@ -207,6 +218,13 @@
   const openOptions = () => {
     openOverlay({
       component: Options,
+      props: {}
+    });
+  };
+
+  const openVersion = () => {
+    openOverlay({
+      component: Version,
       props: {}
     });
   };
@@ -270,8 +288,12 @@
         <button class="container min-w-full flex-1">About</button>
       </div>
       <div class="flex flex-col flex-1 items-center">
-        <span class="flex-1">go-pob</span>
-        <span class="flex-1">Version: 0.0.1</span>
+        <span class="flex-1 flex place-items-center">go-pob</span>
+        <button class="flex-1 flex place-items-center cursor-pointer" on:click={openVersion}>
+          {#await syncWrap?.BuildInfo() then buildInfo}
+            Version: {buildInfo?.Main?.Version}
+          {/await}
+        </button>
       </div>
     </div>
 

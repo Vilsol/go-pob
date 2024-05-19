@@ -23,6 +23,14 @@ import (
 // 9. Processes charges and misc buffs (doActorMisc)
 // 10. Calculates defence and offence stats (calcs.defence, calcs.offence)
 func PerformCalc(env *Environment) {
+	/*
+		Kept for reference
+
+		local avoidCache = avoidCache or false
+		local modDB = env.modDB
+		local enemyDB = env.enemyDB
+	*/
+
 	// Merge keystone modifiers
 	env.KeystonesAdded = make(map[string]interface{}, 0)
 	mergeKeystones(env)
@@ -46,6 +54,10 @@ func PerformCalc(env *Environment) {
 
 	env.Enemy.Output = make(map[string]float64)
 	env.Enemy.OutputTable = make(map[OutTable]map[string]float64)
+
+	// Kept for reference
+	//
+	// local output = env.player.output
 
 	/*
 		TODO Minions
@@ -2111,17 +2123,20 @@ func PerformCalc(env *Environment) {
 	}
 	DoActorMisc(env, env.Enemy)
 
-	/*
-		TODO Totems
-		for _, activeSkill in ipairs(env.player.activeSkillList) do
-			if activeSkill.skillFlags.totem then
-				local limit = env.player.mainSkill.skillModList:Sum("BASE", env.player.mainSkill.skillCfg, "ActiveTotemLimit", "ActiveBallistaLimit" )
-				output.ActiveTotemLimit = m_max(limit, output.ActiveTotemLimit or 0)
-				output.TotemsSummoned = modDB:Override(nil, "TotemsSummoned") or output.ActiveTotemLimit
-				enemyDB.multipliers["TotemsSummoned"] = m_max(output.TotemsSummoned or 0, enemyDB.multipliers["TotemsSummoned"] or 0)
-			end
-		end
-	*/
+	// Totems
+	for _, activeSkill := range env.Player.ActiveSkillList {
+		if activeSkill.SkillFlags[SkillFlagTotem] {
+			limit := env.Player.MainSkill.SkillModList.Sum(mod.TypeBase, env.Player.MainSkill.SkillCfg, "ActiveTotemLimit", "ActiveBallistaLimit")
+			env.Player.Output["ActiveTotemLimit"] = max(limit, env.Player.Output["ActiveTotemLimit"])
+			TotemsSummoned := env.ModDB.Override(nil, "TotemsSummoned")
+			if TotemsSummoned != nil {
+				env.Player.Output["TotemsSummoned"] = TotemsSummoned.(float64)
+			} else {
+				env.Player.Output["TotemsSummoned"] = 0
+			}
+			env.EnemyModDB.Multipliers["TotemsSummoned"] = max(env.Player.Output["TotemsSummoned"], env.EnemyModDB.Multipliers["TotemsSummoned"])
+		}
+	}
 
 	/*
 		TODO -- Apply exposures

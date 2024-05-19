@@ -122,3 +122,9 @@ type ExtraSkillStat struct {
 	Key   string
 	Value any
 }
+
+type SupportedGemProperty struct {
+	Keyword string
+	Key     string
+	Value   int
+}

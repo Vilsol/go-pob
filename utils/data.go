@@ -57,3 +57,11 @@ func Int(s string) int {
 	}
 	return int(n)
 }
+
+func Ternary[T any](cond bool, ifTrue T, ifFalse T) T {
+	if cond {
+		return ifTrue
+	}
+
+	return ifFalse
+}

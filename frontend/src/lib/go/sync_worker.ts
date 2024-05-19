@@ -5,7 +5,7 @@ import { initializeCrystalline, cache, raw, config, pob, builds, calculator, exp
 import type { Outputs } from '../custom_types';
 import localforage from 'localforage';
 import type { currentBuild } from '../global';
-import type { DeepPromise } from '../type_utils';
+import { type DeepPromise, dump } from '../type_utils';
 import { reverseConfigOptions } from '../display/configurations';
 
 class PoBWorker {
@@ -28,6 +28,7 @@ class PoBWorker {
   private updateStore() {
     if (this.currentBuildStore) {
       // Re-cast so we can force the correct type
+      console.log('SKILLS:', this._currentBuild?.Skills);
       this.currentBuildStore.set(proxy(this._currentBuild) as unknown as DeepPromise<pob.PathOfBuilding>);
     }
   }
@@ -225,6 +226,10 @@ class PoBWorker {
 
   async CalculateTreePath(version: string, activeNodes: number[], target: number) {
     return exposition.CalculateTreePath(version, activeNodes, target);
+  }
+
+  BuildInfo() {
+    return dump(pob.BuildInfo);
   }
 }
 

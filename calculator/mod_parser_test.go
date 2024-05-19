@@ -241,7 +241,7 @@ func TestParser(t *testing.T) {
 	}
 }
 
-func TestMany(t *testing.T) {
+func TestManyMods(t *testing.T) {
 	file, err := os.ReadFile("../testdata/many-mods.txt")
 	if err != nil {
 		panic(err)

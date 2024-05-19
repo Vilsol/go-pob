@@ -1,0 +1,11 @@
+{
+  "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.10.7/.schema/devbox.schema.json",
+  "packages": [
+    "go@1.22.2",
+    "golangci-lint@1.58.1",
+    "nodejs@20.12.2"
+  ],
+  "env": {
+    "DEVBOX_COREPACK_ENABLED": "1"
+  }
+}

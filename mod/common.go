@@ -55,6 +55,13 @@ const (
 
 type KeywordFlag int
 
+func (f *KeywordFlag) Get() KeywordFlag {
+	if f != nil {
+		return *f
+	}
+	return 0
+}
+
 const (
 	KeywordFlagAura         = KeywordFlag(0x00000001)
 	KeywordFlagCurse        = KeywordFlag(0x00000002)

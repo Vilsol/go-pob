@@ -132,6 +132,8 @@ type ActiveSkill struct {
 	BaseSkillModList *ModList
 	SlotName         string
 	MinionSkillTypes map[data.SkillType]bool
+	BleedCfg         *ListCfg
+	OHBleedCfg       *ListCfg
 }
 
 type ConversionTable struct {
@@ -168,6 +170,9 @@ const (
 	SkillFlagShieldAttack     = SkillFlag("shieldAttack")
 	SkillFlagForceMainHand    = SkillFlag("forceMainHand")
 	SkillFlagDisable          = SkillFlag("disable")
+	SkillFlagBleed            = SkillFlag("bleed")
+	SkillFlagDuration         = SkillFlag("duration")
+	SkillFlagIgniteCanStack   = SkillFlag("igniteCanStack")
 )
 
 type SkillData struct {

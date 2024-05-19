@@ -65,14 +65,14 @@ type Items struct {
 }
 
 type Skills struct {
-	SortGemsByDPSField            string `xml:"sortGemsByDPSField,attr"`  // TODO Enum
-	ShowSupportGemTypes           string `xml:"showSupportGemTypes,attr"` // TODO Enum
-	DefaultGemLevel               *int   `xml:"defaultGemLevel,attr,omitempty"`
-	MatchGemLevelToCharacterLevel bool   `xml:"matchGemLevelToCharacterLevel,attr"`
-	ShowAltQualityGems            bool   `xml:"showAltQualityGems,attr"`
-	DefaultGemQuality             *int   `xml:"defaultGemQuality,attr,omitempty"`
-	ActiveSkillSet                int    `xml:"activeSkillSet,attr"`
-	SortGemsByDPS                 bool   `xml:"sortGemsByDPS,attr"`
+	SortGemsByDPSField            string  `xml:"sortGemsByDPSField,attr"`  // TODO Enum
+	ShowSupportGemTypes           string  `xml:"showSupportGemTypes,attr"` // TODO Enum
+	DefaultGemLevel               *string `xml:"defaultGemLevel,attr,omitempty"`
+	MatchGemLevelToCharacterLevel bool    `xml:"matchGemLevelToCharacterLevel,attr"`
+	ShowAltQualityGems            bool    `xml:"showAltQualityGems,attr"`
+	DefaultGemQuality             *int    `xml:"defaultGemQuality,attr,omitempty"`
+	ActiveSkillSet                int     `xml:"activeSkillSet,attr"`
+	SortGemsByDPS                 bool    `xml:"sortGemsByDPS,attr"`
 
 	SkillSets []SkillSet `xml:"SkillSet"`
 }
@@ -92,10 +92,10 @@ type Config struct {
 }
 
 type Input struct {
-	Name    string  `xml:"name,attr"`
-	Boolean *bool   `xml:"boolean,attr"`
-	Number  *int    `xml:"number,attr"`
-	String  *string `xml:"string,attr"`
+	Name    string   `xml:"name,attr"`
+	Boolean *bool    `xml:"boolean,attr"`
+	Number  *float64 `xml:"number,attr"`
+	String  *string  `xml:"string,attr"`
 }
 
 type Section struct {

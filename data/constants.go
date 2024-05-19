@@ -52,6 +52,8 @@ var DamageTypeFlags = map[DamageType]int{
 type Ailment string
 
 const (
+	AilmentBleed   = Ailment("Bleed")
+	AilmentPoison  = Ailment("Poison")
 	AilmentIgnite  = Ailment("Ignite")
 	AilmentChill   = Ailment("Chill")
 	AilmentFreeze  = Ailment("Freeze")
@@ -62,6 +64,25 @@ const (
 )
 
 func (Ailment) Values() []Ailment {
+	return []Ailment{
+		AilmentIgnite,
+		AilmentChill,
+		AilmentFreeze,
+		AilmentShock,
+		AilmentScorch,
+		AilmentBrittle,
+		AilmentSap,
+	}
+}
+
+func (a Ailment) IsNonDamaging() bool {
+	_, ok := NonDamagingAilments[a]
+	return ok
+}
+
+type ElementalAilment string
+
+func (ElementalAilment) Values() []Ailment {
 	return []Ailment{
 		AilmentIgnite,
 		AilmentChill,
@@ -337,10 +358,10 @@ const (
 	SkillTypeZeroReservation                = SkillType("ZeroReservation")
 )
 
-func RawToSkillTypes(types []*poe.ActiveSkillType) map[SkillType]bool {
-	out := make(map[SkillType]bool)
-	for _, skillType := range types {
-		out[SkillType(skillType.ID)] = true
+func RawToSkillTypes(types []*poe.ActiveSkillType) []SkillType {
+	out := make([]SkillType, len(types))
+	for i, skillType := range types {
+		out[i] = SkillType(skillType.ID)
 	}
 	return out
 }

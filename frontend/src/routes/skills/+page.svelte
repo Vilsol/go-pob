@@ -9,7 +9,7 @@
   import Select from 'svelte-select';
   import { GetSkillGems } from '../../lib/cache';
   import { onMount } from 'svelte';
-  import { colorCodes } from '../../lib/display/colors';
+  import { colorCodes, formatColors } from '../../lib/display/colors';
   import type { SkillGroupUpdate } from '../../lib/custom_types';
   import type { pob, exposition } from '../../lib/types';
 
@@ -290,7 +290,7 @@
   <div class="p-2 px-4 w-full h-full overflow-y-auto">
     <div class="flex flex-row gap-4 max-xl:flex-wrap">
       <!-- Left Side -->
-      <div class="flex flex-col flex-auto min-w-[24em] gap-2">
+      <div class="flex flex-col min-w-[24em] gap-2">
         <div class="flex flex-row items-center gap-2">
           <span>Skill set:</span>
 
@@ -422,12 +422,17 @@
                 <Select
                   bind:value={gemGroup.GemListValue}
                   items={skillGemList}
-                  isClearable={false}
+                  clearable={false}
                   placeholder=""
-                  showIndicator={true}
-                  Item={SelectItem}
-                  Selection={SelectSelection}
-                  listOffset={0} />
+                  showChevron={true}
+                  listOffset={0}>
+                  <div slot="selection" let:selection>
+                    <SelectSelection item={selection}/>
+                  </div>
+                  <div slot="item" let:item>
+                    <SelectItem {item}/>
+                  </div>
+                </Select>
               </div>
 
               <NumberInput min={1} max={gemGroup.GemListValue.data.MaxLevel} bind:value={gemGroup.Level} />

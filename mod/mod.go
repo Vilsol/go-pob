@@ -18,6 +18,13 @@ type Mod interface {
 
 type MFlag int
 
+func (f *MFlag) Get() MFlag {
+	if f != nil {
+		return *f
+	}
+	return 0
+}
+
 const (
 	// Damage modes
 

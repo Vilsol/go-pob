@@ -27,7 +27,7 @@
   }
 </script>
 
-<div class="item {itemClasses}">
+<div class="item formatted {itemClasses}">
   {@html formatColors(item.label)}
 </div>
 
@@ -45,13 +45,13 @@
     color: #ffffff;
   }
 
-  .item.active {
+  .item:active {
     background: #000000;
     color: #ffffff;
   }
 
-  .item.hover {
-    background: #342c21;
-    color: #ffffff;
+  :global(.formatted span) {
+      position: relative;
+      top: -0.12em;
   }
 </style>

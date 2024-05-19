@@ -1,13 +1,13 @@
 module github.com/Vilsol/go-pob
 
-go 1.21
+go 1.22
 
-toolchain go1.21.1
+toolchain go1.22.2
 
 require (
 	github.com/MarvinJWendt/testza v0.5.2
 	github.com/Vilsol/crystalline v0.0.12
-	github.com/Vilsol/go-pob-data v0.0.0-20231007141342-42c897b1621b
+	github.com/Vilsol/go-pob-data v0.0.0-20240421222320-20086d91eef3
 	github.com/andybalholm/brotli v1.0.5
 	github.com/dominikbraun/graph v0.23.0
 	github.com/lmittmann/tint v1.0.2
@@ -36,7 +36,5 @@ require (
 	gopkg.in/djherbis/atime.v1 v1.0.0 // indirect
 	gopkg.in/djherbis/stream.v1 v1.3.1 // indirect
 )
-
-replace github.com/oriath-net/pogo v0.0.0-20220205020622-67c41a643bc3 => github.com/Vilsol/pogo v0.0.0-20230819000347-369f6b8b106d
 
 replace github.com/pterm/pterm v0.12.69 => github.com/pterm/pterm v0.12.40

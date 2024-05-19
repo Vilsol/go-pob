@@ -107,7 +107,7 @@ Simply executing `go test ./...` from the project root directory should run all 
 
 ### Running WASM Tests
 
-First ensure that you have the appropriate NodeJS version installed. (currently `18.4.0`, easiest managed with `nvm` or equivalent)
+First ensure that you have the appropriate NodeJS version installed. (current version can be seen in [devbox.json](devbox.json))
 
 Then you should be able to execute all tests using `./.github/wasm_test.sh` script.
 
@@ -122,6 +122,34 @@ The backend is linted using [`golangci-lint`](https://golangci-lint.run/usage/in
 ### Frontend (Svelte)
 
 The frontend is linted using `prettier`, `eslint` and `svelte-check`. You can execute those by using `pnpm run lint` and `pnpm run check`
+
+## Setting up a PoB environment
+
+You want to clone the `dev` branch of this repo https://github.com/Vilsol/PathOfBuilding (important, as it's pinned to specific commit)
+
+After that, simply running `devbox run install` will setup emmylua and then `devbox run launch` will run PoB with a debugger.
+
+Then add the following config in your local clone under `.vscode/launch.js` and run the debugger via VSCode UI:
+```json
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "emmylua_new",
+            "request": "launch",
+            "name": "Debug",
+            "host": "localhost",
+            "port": 9966,
+            "ext": [
+                ".lua",
+                ".lua.txt",
+                ".lua.bytes"
+            ],
+            "ideConnectDebugger": true
+        }
+    ]
+}
+```
 
 ## Writing code
 

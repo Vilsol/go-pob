@@ -12,5 +12,5 @@ pnpm-lock.yaml
 package-lock.json
 yarn.lock
 src/lib/types/index.d.ts
-src/lib/types/index.d.js
+src/lib/types/index.js
 static/tinymce/

@@ -150,6 +150,7 @@ select.input {
   }
 }
 
+/* Styles for svelte-select */
 .themed {
   --background: #000000;
   --item-active-background: #000000;
@@ -168,9 +169,14 @@ select.input {
   --input-fontSize: 1em;
   --item-transition: all 0s;
 
-  --indicator-top: 0;
-  --indicator-width: 1.5em;
-  --indicator-height: 1.5em;
+  --chevron-top: 0;
+  --chevron-width: 1.5em;
+  --chevron-height: 1.5em;
+
+  --item-padding: 0 0.1em;
+  --value-container-padding: 0;
+
+  --font-size: 1em;
 
   & .selectContainer {
     min-height: 1.8em;
@@ -182,7 +188,7 @@ select.input {
     }
   }
 
-  & .selectContainer:hover {
+  & .svelte-select:hover {
     background: #262626 !important;
   }
 }

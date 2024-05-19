@@ -338,6 +338,26 @@ export declare namespace data {
     Points: data.Points;
   }
 }
+export declare namespace debug {
+  interface BuildInfo {
+    GoVersion: string;
+    Path: string;
+    Main: debug.Module;
+    Deps?: Array<debug.Module | undefined>;
+    Settings?: Array<debug.BuildSetting>;
+    String(): string;
+  }
+  interface BuildSetting {
+    Key: string;
+    Value: string;
+  }
+  interface Module {
+    Path: string;
+    Version: string;
+    Sum: string;
+    Replace?: debug.Module;
+  }
+}
 export declare namespace exposition {
   interface GemPart {
     Name: string;
@@ -596,6 +616,7 @@ export declare namespace pob {
     ShowHeatMap?: boolean;
     ShowStatDifferences: boolean;
   }
+  const BuildInfo: debug.BuildInfo | undefined;
   function CompressEncode(xml: string): [string, Error];
   function DecodeDecompress(code: string): [string, Error];
 }
@@ -743,6 +764,7 @@ export declare namespace raw {
     IconDDSFile: string;
     ID: string;
     WebsiteDescription: string;
+    SkillID: string;
     WeaponRestrictionItemClassesKeys?: Array<number>;
     MinionActiveSkillTypes?: Array<number>;
     OutputStatKeys?: Array<number>;

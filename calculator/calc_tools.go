@@ -1,6 +1,7 @@
 package calculator
 
 import (
+	"log/slog"
 	"math"
 
 	"github.com/Vilsol/go-pob-data/poe"
@@ -135,6 +136,12 @@ func CalcValidateGemLevel(gemInstance *GemEffect) {
 	if _, ok := levels[gemInstance.Level]; !ok {
 		// That failed, so just grab any level
 		for l := range levels {
+			slog.Warn(
+				"failed to find level",
+				slog.String("grantedEffect", grantedEffect.Raw.ID),
+				slog.Int("gemLevel", gemInstance.Level),
+				slog.Int("default", l),
+			)
 			gemInstance.Level = l
 			break
 		}
@@ -252,9 +259,9 @@ func CalcCanGrantedEffectSupportActiveSkill(grantedEffect *GrantedEffect, active
 }
 
 // CalcDoesTypeExpressionMatch Evaluates a skill type postfix expression
-func CalcDoesTypeExpressionMatch(checkTypes map[data.SkillType]bool, skillTypes map[data.SkillType]bool, minionTypes map[data.SkillType]bool) bool {
+func CalcDoesTypeExpressionMatch(checkTypes []data.SkillType, skillTypes map[data.SkillType]bool, minionTypes map[data.SkillType]bool) bool {
 	stack := make([]bool, 0)
-	for skillType := range checkTypes {
+	for _, skillType := range checkTypes {
 		if skillType == data.SkillTypeOR {
 			other := stack[len(stack)-1]
 			stack = stack[:len(stack)-1]

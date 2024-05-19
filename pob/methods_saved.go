@@ -1,5 +1,7 @@
 package pob
 
+import "strconv"
+
 func (b *PathOfBuilding) WithMainSocketGroup(mainSocketGroup int) *PathOfBuilding {
 	out := *b
 	out.Build.MainSocketGroup = mainSocketGroup
@@ -31,7 +33,8 @@ func (b *PathOfBuilding) SetMatchGemLevelToCharacterLevel(enabled bool) {
 }
 
 func (b *PathOfBuilding) SetDefaultGemLevel(gemLevel int) {
-	b.Skills.DefaultGemLevel = &gemLevel
+	level := strconv.Itoa(gemLevel)
+	b.Skills.DefaultGemLevel = &level
 }
 
 func (b *PathOfBuilding) SetDefaultGemQuality(gemQuality int) {

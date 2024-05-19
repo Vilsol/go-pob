@@ -28,6 +28,7 @@ export const initializeCrystalline = () => {
     GetStatByIndex: globalThis['go']['go-pob']['exposition']['GetStatByIndex']
   };
   pob = {
+    BuildInfo: globalThis['go']['go-pob']['pob']['BuildInfo'],
     CompressEncode: globalThis['go']['go-pob']['pob']['CompressEncode'],
     DecodeDecompress: globalThis['go']['go-pob']['pob']['DecodeDecompress']
   };
