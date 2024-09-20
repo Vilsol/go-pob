@@ -234,7 +234,7 @@
 
 {#if collapsed}
   <div class="h-full flex flex-col full-page relative">
-    <div class="absolute -right-3 top-1/2 cursor-pointer font-bold" on:click={() => (collapsed = false)}>&gt;</div>
+    <div class="absolute -right-3 top-1/2 cursor-pointer font-bold" role="button" tabindex="0" on:click={() => (collapsed = false)} on:keyup={() => (collapsed = false)}>&gt;</div>
   </div>
 {:else}
   <div class="w-[25vw] min-w-[17em] max-w-[25em] h-full border-r-2 border-white flex flex-col bg-neutral-900 full-page relative">
@@ -297,7 +297,7 @@
       </div>
     </div>
 
-    <div class="absolute -right-3.5 top-1/2 cursor-pointer font-bold" on:click={() => (collapsed = true)}>&lt;</div>
+    <div class="absolute -right-3.5 top-1/2 cursor-pointer font-bold" role="button" tabindex="0" on:click={() => (collapsed = true)} on:keyup={() => (collapsed = true)}>&lt;</div>
   </div>
 {/if}
 

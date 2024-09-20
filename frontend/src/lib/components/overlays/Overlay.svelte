@@ -13,6 +13,6 @@
   };
 </script>
 
-<div class="absolute top-0 left-0 w-screen h-screen z-50 bg-black/75 flex items-center justify-center" bind:this={backdrop} on:click={close}>
+<div class="absolute top-0 left-0 w-screen h-screen z-50 bg-black/75 flex items-center justify-center" role="button" tabindex="0" bind:this={backdrop} on:click={close} on:keyup={close}>
   <svelte:component this={config.component} on:close={closeOverlay} {...config.props} />
 </div>

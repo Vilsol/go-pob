@@ -194,7 +194,7 @@
       <div class="side-by-side-max-content">
         {#each section.variables as v}
           <div><label for={v.var}>{@html formatColors(v.label)}</label></div>
-          <div class="w-full" on:mouseover={() => (hoveredItem = v)} on:focus={() => (hoveredItem = v)} on:mouseleave={() => (hoveredItem = undefined)}>
+          <div class="w-full" role="button" tabindex="0" on:mouseover={() => (hoveredItem = v)} on:focus={() => (hoveredItem = v)} on:mouseleave={() => (hoveredItem = undefined)}>
             {#if v.type === 'list'}
               <div class="themed min-w-full">
                 <Select
