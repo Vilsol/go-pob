@@ -29,6 +29,8 @@ export declare namespace calculator {
     BaseSkillModList?: calculator.ModList;
     SlotName: string;
     MinionSkillTypes?: Record<string, boolean>;
+    BleedCfg?: calculator.ListCfg;
+    OHBleedCfg?: calculator.ListCfg;
   }
   interface Actor {
     ModDB?: calculator.ModDB;
@@ -584,7 +586,7 @@ export declare namespace pob {
   interface Skills {
     SortGemsByDPSField: string;
     ShowSupportGemTypes: string;
-    DefaultGemLevel?: number;
+    DefaultGemLevel?: string;
     MatchGemLevelToCharacterLevel: boolean;
     ShowAltQualityGems: boolean;
     DefaultGemQuality?: number;

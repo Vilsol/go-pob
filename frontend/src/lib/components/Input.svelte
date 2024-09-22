@@ -9,7 +9,7 @@
   let inputElement: HTMLInputElement;
 </script>
 
-<div class="input-wrapper flex flex-row items-center" class:disabled class:min-w-full={fullWidth} on:click={() => inputElement.focus()}>
+<div class="input-wrapper flex flex-row items-center" class:disabled class:min-w-full={fullWidth} role="button" tabindex="0" on:click={() => inputElement.focus()} on:keyup={() => inputElement.focus()}>
   {#if prefix}
     <span class="mx-1 select-none">{prefix}</span>
   {/if}

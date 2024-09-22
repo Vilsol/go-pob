@@ -27,12 +27,12 @@
 </script>
 
 <div class="flex flex-row" class:min-w-full={fullWidth}>
-  <div class="input-wrapper flex flex-row items-center flex-1" on:click={() => inputElement.focus()}>
+  <div class="input-wrapper flex flex-row items-center flex-1" role="button" tabindex="0" on:click={() => inputElement.focus()} on:keyup={() => inputElement.focus()}>
     {#if prefix}
       <span class="mx-1 select-none">{prefix}</span>
     {/if}
     <input bind:this={inputElement} type="number" {min} {max} bind:value class="input w-full" {placeholder} {id} />
   </div>
-  <button class="container font-bold" on:click={() => change(1)} disabled={plusDisabled}>&plus;</button>
-  <button class="container font-bold" on:click={() => change(-1)} disabled={minusDisabled}>&minus;</button>
+  <button class="container font-bold" on:click={() => change(1)} on:keyup={() => change(1)} disabled={plusDisabled}>&plus;</button>
+  <button class="container font-bold" on:click={() => change(-1)} on:keyup={() => change(-1)} disabled={minusDisabled}>&minus;</button>
 </div>
