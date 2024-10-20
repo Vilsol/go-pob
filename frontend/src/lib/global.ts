@@ -1,13 +1,13 @@
 import { writable } from 'svelte/store';
 import type { Outputs } from './custom_types';
 import type { pob } from './types';
-import type { DeepPromise } from './type_utils';
 import { syncWrap } from './go/worker';
 import { browser } from '$app/environment';
+import type { Remote } from 'comlink';
 
 export const outputs = writable<Outputs | undefined>();
 
-export const currentBuild = writable<DeepPromise<pob.PathOfBuilding> | undefined>();
+export const currentBuild = writable<Remote<pob.PathOfBuilding> | undefined>();
 
 let uiTickLock = false;
 let uiTickAfter = false;
