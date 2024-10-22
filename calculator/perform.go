@@ -165,11 +165,11 @@ func PerformCalc(env *Environment) {
 			attachLimit := activeSkill.SkillModList.Sum(mod.TypeBase, activeSkill.SkillCfg, "BrandsAttachedLimit")
 			attached := env.ModDB.Sum(mod.TypeBase, nil, "Multiplier:ConfigBrandsAttachedToEnemy")
 			activeBrands := env.ModDB.Sum(mod.TypeBase, nil, "Multiplier:ConfigActiveBrands")
-			actual := utils.Min(attachLimit, attached)
+			actual := min(attachLimit, attached)
 			// Cap the number of active brands by the limit, which is 3 by default
-			env.ModDB.Multipliers["ActiveBrand"] = utils.Min(activeBrands, env.ModDB.Sum(mod.TypeBase, nil, "ActiveBrandLimit"))
-			env.ModDB.Multipliers["BrandsAttachedToEnemy"] = utils.Max(actual, env.ModDB.Multipliers["BrandsAttachedToEnemy"])
-			env.EnemyModDB.Multipliers["BrandsAttached"] = utils.Max(actual, env.EnemyModDB.Multipliers["BrandsAttached"])
+			env.ModDB.Multipliers["ActiveBrand"] = min(activeBrands, env.ModDB.Sum(mod.TypeBase, nil, "ActiveBrandLimit"))
+			env.ModDB.Multipliers["BrandsAttachedToEnemy"] = max(actual, env.ModDB.Multipliers["BrandsAttachedToEnemy"])
+			env.EnemyModDB.Multipliers["BrandsAttached"] = max(actual, env.EnemyModDB.Multipliers["BrandsAttached"])
 		}
 
 		// The actual hexes as opposed to hex related skills all have the curse flag. TotemCastsWhenNotDetached is to remove blasphemy
@@ -182,10 +182,10 @@ func PerformCalc(env *Environment) {
 			}
 			doomEffect := activeSkill.SkillModList.More(nil, "DoomEffect")
 			// Update the max doom limit
-			env.Player.Output["HexDoomLimit"] = utils.Max(maxDoom, env.Player.Output["HexDoomLimit"])
+			env.Player.Output["HexDoomLimit"] = max(maxDoom, env.Player.Output["HexDoomLimit"])
 			// Update the Hex Doom to apply
-			activeSkill.SkillModList.AddMod(mod.NewFloat("CurseEffect", mod.TypeIncrease, utils.Min(hexDoom, maxDoom)*doomEffect).Source("Doom"))
-			env.ModDB.Multipliers["HexDoom"] = utils.Min(utils.Max(hexDoom, env.ModDB.Multipliers["HexDoom"]), env.Player.Output["HexDoomLimit"])
+			activeSkill.SkillModList.AddMod(mod.NewFloat("CurseEffect", mod.TypeIncrease, min(hexDoom, maxDoom)*doomEffect).Source("Doom"))
+			env.ModDB.Multipliers["HexDoom"] = min(max(hexDoom, env.ModDB.Multipliers["HexDoom"]), env.Player.Output["HexDoomLimit"])
 		}
 
 		if utils.HasTrue(activeSkill.SkillData, "SupportBonechill") {
@@ -193,7 +193,7 @@ func PerformCalc(env *Environment) {
 				!(activeSkill.ActiveEffect.GrantedEffect.Raw.GetActiveSkill().DisplayedName == "Summon Skitterbots" && activeSkill.SkillModList.Flag(nil, "SkitterbotsCannotChill"))) {
 				env.Player.Output["BonechillDotEffect"] = math.Floor(*data.NonDamagingAilments[data.AilmentChill].Default * (1 + activeSkill.SkillModList.Sum(mod.TypeIncrease, nil, "EnemyChillEffect")/100))
 			}
-			env.Player.Output["BonechillEffect"] = utils.Max(env.Player.Output["BonechillEffect"], env.EnemyModDB.Sum(mod.TypeBase, nil, "BonechillEffect"), env.Player.Output["BonechillDotEffect"])
+			env.Player.Output["BonechillEffect"] = max(env.Player.Output["BonechillEffect"], env.EnemyModDB.Sum(mod.TypeBase, nil, "BonechillEffect"), env.Player.Output["BonechillDotEffect"])
 		}
 
 		/*

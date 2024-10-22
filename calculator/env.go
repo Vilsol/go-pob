@@ -78,7 +78,7 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 	env.ModDB.AddMod(mod.NewFloat("Dex", mod.TypeBase, float64(classStats.BaseDex)).Source("Base"))
 	env.ModDB.AddMod(mod.NewFloat("Int", mod.TypeBase, float64(classStats.BaseInt)).Source("Base"))
 
-	env.ModDB.Multipliers["Level"] = utils.Max[float64](1, utils.Min[float64](100, float64(build.Build.Level)))
+	env.ModDB.Multipliers["Level"] = max(1, min(100, float64(build.Build.Level)))
 	initModDB(env, env.ModDB)
 
 	env.ModDB.AddMod(mod.NewFloat("Life", mod.TypeBase, 12).Source("Base").Tag(mod.Multiplier("Level").Base(38)))
@@ -647,7 +647,7 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 		if len(build.Skills.SkillSets) > selectedSkillSet {
 			skillCount = len(build.Skills.SkillSets[selectedSkillSet].Skills)
 		}
-		build.Build.MainSocketGroup = utils.Min(utils.Max(skillCount, 1), build.Build.MainSocketGroup) - 1
+		build.Build.MainSocketGroup = min(max(skillCount, 1), build.Build.MainSocketGroup) - 1
 		env.MainSocketGroup = build.Build.MainSocketGroup
 	}
 
@@ -788,7 +788,7 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 							for _, value := range propertyModList {
 								match := true
 
-								if value.KeywordList != nil && len(value.KeywordList) > 0 {
+								if len(value.KeywordList) > 0 {
 									for _, keyword := range value.KeywordList {
 										if !CalcGemIsType(supportEffect.GemData, keyword) {
 											match = false
@@ -950,10 +950,10 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 				// Select the main skill from this socket group
 				activeSkillIndex := 0
 				if env.Mode == OutputModeCalcs {
-					socketGroup.MainActiveSkillCalcs = utils.Min(len(socketGroupSkillList)-1, socketGroup.MainActiveSkillCalcs)
+					socketGroup.MainActiveSkillCalcs = min(len(socketGroupSkillList)-1, socketGroup.MainActiveSkillCalcs)
 					activeSkillIndex = socketGroup.MainActiveSkillCalcs
 				} else {
-					activeSkillIndex = utils.Min(len(socketGroupSkillList)-1, socketGroup.MainActiveSkill)
+					activeSkillIndex = min(len(socketGroupSkillList)-1, socketGroup.MainActiveSkill)
 					if env.Mode == OutputModeMain {
 						socketGroup.MainActiveSkill = activeSkillIndex
 					}

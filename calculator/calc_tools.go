@@ -5,6 +5,7 @@ import (
 	"math"
 
 	"github.com/Vilsol/go-pob-data/poe"
+
 	raw2 "github.com/Vilsol/go-pob/data/raw"
 
 	"github.com/Vilsol/go-pob-data/raw"
@@ -121,9 +122,9 @@ func CalcValidateGemLevel(gemInstance *GemEffect) {
 	levels := grantedEffect.Raw.Levels()
 	if _, ok := levels[gemInstance.Level]; !ok {
 		// Try limiting to the level range of the skill
-		gemInstance.Level = utils.Max(1, gemInstance.Level)
+		gemInstance.Level = max(1, gemInstance.Level)
 		if len(levels) > 0 {
-			gemInstance.Level = utils.Min(len(levels)-1, gemInstance.Level)
+			gemInstance.Level = min(len(levels)-1, gemInstance.Level)
 		}
 	}
 
@@ -213,7 +214,7 @@ func CalcBuildSkillInstanceStats(skillInstance *GemEffect, grantedEffect *Grante
 				statValue = math.Round(*availableEffectiveness * level.Values[index])
 			} else if statInterpolation == 2 {
 				// Linear interpolation; I'm actually just guessing how this works
-				nextLevel := utils.Min(skillInstance.Level+1, len(levels)-1)
+				nextLevel := min(skillInstance.Level+1, len(levels)-1)
 				nextReq := float64(levels[nextLevel].LevelRequirement)
 				prevReq := float64(levels[nextLevel-1].LevelRequirement)
 				nextStat := levels[nextLevel].Values[index]
