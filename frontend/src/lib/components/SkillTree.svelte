@@ -24,12 +24,17 @@
   import { currentBuild } from '../global';
   import { syncWrap } from '../go/worker';
   import { writable } from 'svelte/store';
+  import { logError } from '$lib/utils';
 
-  let currentClass: string | undefined;
-  $: $currentBuild?.Build.ClassName.then((newClass) => (currentClass = newClass));
+  let currentClass: string | undefined = $state();
+  $effect(() => {
+    $currentBuild?.Build.ClassName.then((newClass) => (currentClass = newClass)).catch(logError);
+  });
 
-  let currentAscendancy: string | undefined;
-  $: $currentBuild?.Build.AscendClassName.then((newAscendancy) => (currentAscendancy = newAscendancy));
+  let currentAscendancy: string | undefined = $state();
+  $effect(() => {
+    $currentBuild?.Build.AscendClassName.then((newAscendancy) => (currentAscendancy = newAscendancy)).catch(logError);
+  });
 
   interface RenderParams {
     context: CanvasRenderingContext2D;
@@ -39,23 +44,28 @@
 
   type RenderFunc = (params: RenderParams) => void;
 
-  export let clickNode: (node: Node) => void = console.log;
+  interface Props {
+    clickNode?: (node: Node) => void;
+    children?: import('svelte').Snippet;
+  }
+
+  let { clickNode = console.log, children }: Props = $props();
 
   const titleFont = '25px Roboto Flex';
   const statsFont = '17px Roboto Flex';
 
-  let scaling = 10;
+  let scaling = $state(10);
 
-  let offsetX = 0;
-  let offsetY = 0;
+  let offsetX = $state(0);
+  let offsetY = $state(0);
 
   const drawScaling = 2.6;
 
-  $: cdnBase = `https://go-pob-data.pages.dev/data/${($skillTreeVersion || '3_18').replace('_', '.')}`;
-  $: cdnTreeBase = cdnBase + `/tree/assets/`;
+  let cdnBase = $derived(`https://go-pob-data.pages.dev/data/${($skillTreeVersion || '3_18').replace('_', '.')}`);
+  let cdnTreeBase = $derived(cdnBase + `/tree/assets/`);
 
   const spriteCache: Record<string, HTMLImageElement> = {};
-  const cropCache: Record<string, Record<boolean, HTMLCanvasElement>> = {};
+  const cropCache: Record<string, HTMLCanvasElement> = {};
   const drawSprite = (
     context: CanvasRenderingContext2D,
     path: string,
@@ -94,10 +104,10 @@
     }
 
     if (cropCircle && spriteCache[spriteSheetUrl].complete) {
-      const cacheKey = spriteSheetUrl + ':' + path;
-      if (!(cacheKey in cropCache) || !(active in cropCache[cacheKey])) {
+      const cacheKey = spriteSheetUrl + ':' + path + ';' + (active ? 'active' : '');
+      if (!(cacheKey in cropCache)) {
         const tempCanvas = document.createElement('canvas');
-        const tempCtx = tempCanvas.getContext('2d');
+        const tempCtx = tempCanvas.getContext('2d')!;
         tempCanvas.width = self.w;
         tempCanvas.height = self.h;
 
@@ -114,14 +124,10 @@
 
         tempCtx.drawImage(spriteCache[spriteSheetUrl], self.x, self.y, self.w, self.h, 0, 0, self.w, self.h);
 
-        if (!(cacheKey in cropCache)) {
-          cropCache[cacheKey] = {};
-        }
-
-        cropCache[cacheKey][active] = tempCanvas;
+        cropCache[cacheKey] = tempCanvas;
       }
 
-      context.drawImage(cropCache[cacheKey][active], 0, 0, self.w, self.h, topLeftX, finalY, newWidth, newHeight);
+      context.drawImage(cropCache[cacheKey], 0, 0, self.w, self.h, topLeftX, finalY, newWidth, newHeight);
     } else {
       context.drawImage(spriteCache[spriteSheetUrl], self.x, self.y, self.w, self.h, topLeftX, finalY, newWidth, newHeight);
     }
@@ -158,19 +164,23 @@
     return result;
   };
 
-  let mousePos: Point = {
+  let mousePos = $state<Point>({
     x: Number.MIN_VALUE,
     y: Number.MIN_VALUE
-  };
+  });
 
-  let cursor = 'unset';
+  let cursor = $state('unset');
 
   const hoverPath = writable<number[]>([]);
-  const extraCache: Record<string, HTMLImageElement> = {};
+  const extraCache = $state<Record<string, HTMLImageElement>>({});
 
-  let hoveredNode: Node | undefined;
-  $: render = (({ context, width, height }) => {
+  let hoveredNode: Node | undefined = $state();
+  let render = $derived((({ context, width, height }) => {
     const start = window.performance.now();
+
+    if (!$skillTree) {
+      return;
+    }
 
     context.clearRect(0, 0, width, height);
 
@@ -198,11 +208,11 @@
       }
     }
 
-    const connected = {};
+    const connected: Record<string, boolean> = {};
     Object.keys(drawnGroups).forEach((groupId) => {
       const nGroupId = parseInt(groupId);
 
-      const group: Group = drawnGroups[groupId];
+      const group: Group = drawnGroups[nGroupId];
       const posX = ((nGroupId in ascendancyGroups && ascendancyGroupPositionOffsets[ascendancyGroups[nGroupId]]?.x) || 0) + group.x;
       const posY = ((nGroupId in ascendancyGroups && ascendancyGroupPositionOffsets[ascendancyGroups[nGroupId]]?.y) || 0) + group.y;
       const groupPos = toCanvasCoords(posX, posY, offsetX, offsetY, scaling);
@@ -236,8 +246,10 @@
     });
 
     Object.keys(drawnNodes).forEach((nodeId) => {
-      const node: Node = drawnNodes[nodeId];
-      const angle = orbitAngleAt(node.orbit, node.orbitIndex);
+      const nNodeId = parseInt(nodeId);
+
+      const node: Node = drawnNodes[nNodeId];
+      const angle = orbitAngleAt(node.orbit!, node.orbitIndex!);
       const rotatedPos = calculateNodePos(node, offsetX, offsetY, scaling);
 
       // Do not draw connections out of class starting nodes
@@ -245,7 +257,7 @@
         return;
       }
 
-      const sourceActive = $hoverPath.indexOf(node.skill) >= 0;
+      const sourceActive = $hoverPath.indexOf(node.skill!) >= 0;
 
       node.out?.forEach((o) => {
         if (!drawnNodes[parseInt(o)]) {
@@ -278,7 +290,7 @@
           return;
         }
 
-        const targetAngle = orbitAngleAt(targetNode.orbit, targetNode.orbitIndex);
+        const targetAngle = orbitAngleAt(targetNode.orbit!, targetNode.orbitIndex!);
         const targetRotatedPos = calculateNodePos(targetNode, offsetX, offsetY, scaling);
 
         context.beginPath();
@@ -298,14 +310,14 @@
           const finalA = diff > Math.PI ? Math.max(a, b) : Math.min(a, b);
           const finalB = diff > Math.PI ? Math.min(a, b) : Math.max(a, b);
 
-          const group = drawnGroups[node.group];
+          const group = drawnGroups[node.group!];
           const posX = ((node.ascendancyName && ascendancyGroupPositionOffsets[node.ascendancyName]?.x) || 0) + group.x;
           const posY = ((node.ascendancyName && ascendancyGroupPositionOffsets[node.ascendancyName]?.y) || 0) + group.y;
           const groupPos = toCanvasCoords(posX, posY, offsetX, offsetY, scaling);
-          context.arc(groupPos.x, groupPos.y, $skillTree.constants.orbitRadii[node.orbit] / scaling + 1, finalA, finalB);
+          context.arc(groupPos.x, groupPos.y, $skillTree.constants.orbitRadii[node.orbit!] / scaling + 1, finalA, finalB);
         }
 
-        if (sourceActive && $hoverPath.indexOf(targetNode.skill) >= 0) {
+        if (sourceActive && $hoverPath.indexOf(targetNode.skill!) >= 0) {
           context.strokeStyle = `#c89c01`;
         } else {
           context.strokeStyle = `#524518`;
@@ -319,7 +331,9 @@
     // let hoveredNodeActive = false;
     let newHoverNode: Node | undefined;
     Object.keys(drawnNodes).forEach((nodeId) => {
-      const node: Node = drawnNodes[nodeId];
+      const nNodeId = parseInt(nodeId);
+
+      const node: Node = drawnNodes[nNodeId];
       const rotatedPos = calculateNodePos(node, offsetX, offsetY, scaling);
       let touchDistance = 0;
 
@@ -345,21 +359,21 @@
       }
 
       const active = false; // TODO Actually check if node is active
-      const highlighted = $hoverPath.indexOf(node.skill) >= 0 || newHoverNode === node;
+      const highlighted = $hoverPath.indexOf(node.skill!) >= 0 || newHoverNode === node;
 
       if (node.classStartIndex !== undefined) {
         // Do not draw class start index node
       } else if (node.isAscendancyStart) {
         drawSprite(context, 'AscendancyMiddle', rotatedPos, inverseSpritesOther);
       } else if (node.isKeystone) {
-        drawSprite(context, node.icon, rotatedPos, active ? inverseSpritesActive : inverseSpritesInactive);
+        drawSprite(context, node.icon!, rotatedPos, active ? inverseSpritesActive : inverseSpritesInactive);
         if (active || highlighted) {
           drawSprite(context, 'KeystoneFrameAllocated', rotatedPos, inverseSpritesOther);
         } else {
           drawSprite(context, 'KeystoneFrameUnallocated', rotatedPos, inverseSpritesOther);
         }
       } else if (node.isNotable) {
-        drawSprite(context, node.icon, rotatedPos, active ? inverseSpritesActive : inverseSpritesInactive);
+        drawSprite(context, node.icon!, rotatedPos, active ? inverseSpritesActive : inverseSpritesInactive);
 
         if (node.ascendancyName) {
           if (active || highlighted) {
@@ -390,12 +404,12 @@
         }
       } else if (node.isMastery) {
         if (active || highlighted) {
-          drawSprite(context, node.activeIcon, rotatedPos, inverseSpritesActive);
+          drawSprite(context, node.activeIcon!, rotatedPos, inverseSpritesActive);
         } else {
-          drawSprite(context, node.inactiveIcon, rotatedPos, inverseSpritesInactive);
+          drawSprite(context, node.inactiveIcon!, rotatedPos, inverseSpritesInactive);
         }
       } else {
-        drawSprite(context, node.icon, rotatedPos, active ? inverseSpritesActive : inverseSpritesInactive);
+        drawSprite(context, node.icon!, rotatedPos, active ? inverseSpritesActive : inverseSpritesInactive);
 
         if (node.ascendancyName) {
           if (active || highlighted) {
@@ -417,17 +431,22 @@
       hoveredNode = newHoverNode;
       if (hoveredNode !== undefined && currentClass) {
         const rootNodes = classStartNodes[$skillTree.classes.findIndex((c) => c.name === currentClass)];
-        const target = hoveredNode.skill;
-        syncWrap.CalculateTreePath($skillTreeVersion || '3_18', rootNodes, target).then((data) => {
-          hoverPath.set(data);
-        });
+        const target = hoveredNode.skill!;
+        syncWrap
+          .CalculateTreePath($skillTreeVersion || '3_18', rootNodes, target)
+          .then((data) => {
+            if (data) {
+              hoverPath.set(data);
+            }
+          })
+          .catch(logError);
       } else {
         hoverPath.set([]);
       }
     }
 
     if (hoveredNode) {
-      const nodeName = hoveredNode.name;
+      const nodeName = hoveredNode.name || 'N/A';
       const nodeStats: { text: string; special: boolean }[] = (hoveredNode.stats || []).map((s) => ({
         text: s,
         special: false
@@ -521,7 +540,7 @@
     const end = window.performance.now();
 
     context.fillText(`${(end - start).toFixed(1)}ms`, width - 5, 17);
-  }) as RenderFunc;
+  }) as RenderFunc);
 
   let downX = 0;
   let downY = 0;
@@ -590,10 +609,10 @@
     event.stopImmediatePropagation();
   };
 
-  let parentContainer: HTMLElement;
+  let parentContainer = $state<HTMLElement>();
 
-  let width = 0;
-  let height = 0;
+  let width = $state(0);
+  let height = $state(0);
   const resize = () => {
     if (parentContainer) {
       width = parentContainer.offsetWidth;
@@ -601,23 +620,23 @@
     }
   };
 
-  let initialized = false;
-  $: {
+  let initialized = $state(false);
+  $effect(() => {
     if (!initialized && $skillTree) {
       initialized = true;
       offsetX = $skillTree.min_x + (window.innerWidth / 2) * scaling;
       offsetY = $skillTree.min_y + (window.innerHeight / 2) * scaling;
     }
     resize();
-  }
+  });
 
   onMount(() => {
-    new ResizeObserver(resize).observe(parentContainer);
+    new ResizeObserver(resize).observe(parentContainer!);
     resize();
   });
 </script>
 
-<svelte:window on:pointerup={mouseUp} on:pointermove={mouseMove} on:resize={resize} />
+<svelte:window onpointerup={mouseUp} onpointermove={mouseMove} onresize={resize} />
 
 <div class="w-full h-full max-w-full max-h-full overflow-hidden" bind:this={parentContainer}>
   {#if width && height}
@@ -625,7 +644,7 @@
       <Canvas {width} {height} on:pointerdown={mouseDown} on:wheel={onScroll}>
         <Layer {render} />
       </Canvas>
-      <slot />
+      {@render children?.()}
     </div>
   {/if}
 </div>

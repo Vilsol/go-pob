@@ -1,6 +1,10 @@
 <script lang="ts">
-  export let errors: unknown;
-  export let data: unknown;
+  interface Props {
+    errors: unknown;
+    data: unknown;
+  }
+
+  let { errors, data }: Props = $props();
 
   console.error(errors, data);
 </script>

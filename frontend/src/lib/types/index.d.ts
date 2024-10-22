@@ -29,6 +29,8 @@ export declare namespace calculator {
     BaseSkillModList?: calculator.ModList;
     SlotName: string;
     MinionSkillTypes?: Record<string, boolean>;
+    BleedCfg?: calculator.ListCfg;
+    OHBleedCfg?: calculator.ListCfg;
   }
   interface Actor {
     ModDB?: calculator.ModDB;
@@ -381,8 +383,10 @@ export declare namespace fwd {
   interface Reader {
     BufferSize(): number;
     Buffered(): number;
+    InputOffset(): number;
     Next(n: number): [(Uint8Array | undefined), Error];
     Peek(n: number): [(Uint8Array | undefined), Error];
+    PeekByte(): [number, Error];
     Read(b?: Uint8Array): [number, Error];
     ReadByte(): [number, Error];
     ReadFull(b?: Uint8Array): [number, Error];
@@ -408,6 +412,7 @@ export declare namespace msgp {
     ReadDuration(): [number, Error];
     ReadExactBytes(into?: Uint8Array): Error;
     ReadExtension(e?: unknown): Error;
+    ReadExtensionRaw(): [number, (Uint8Array | undefined), Error];
     ReadFloat32(): [number, Error];
     ReadFloat64(): [number, Error];
     ReadFull(p?: Uint8Array): [number, Error];
@@ -417,6 +422,7 @@ export declare namespace msgp {
     ReadInt64(): [number, Error];
     ReadInt8(): [number, Error];
     ReadIntf(): [(unknown | undefined), Error];
+    ReadJSONNumber(): [string, Error];
     ReadMapHeader(): [number, Error];
     ReadMapKey(scratch?: Uint8Array): [(Uint8Array | undefined), Error];
     ReadMapKeyPtr(): [(Uint8Array | undefined), Error];
@@ -448,6 +454,8 @@ export declare namespace msgp {
     WriteBytesHeader(sz: number): Error;
     WriteDuration(d: number): Error;
     WriteExtension(e?: unknown): Error;
+    WriteExtensionRaw(extType: number, payload?: Uint8Array): Error;
+    WriteFloat(f: number): Error;
     WriteFloat32(f: number): Error;
     WriteFloat64(f: number): Error;
     WriteInt(i: number): Error;
@@ -456,6 +464,7 @@ export declare namespace msgp {
     WriteInt64(i: number): Error;
     WriteInt8(i: number): Error;
     WriteIntf(v?: unknown): Error;
+    WriteJSONNumber(n: string): Error;
     WriteMapHeader(sz: number): Error;
     WriteMapStrIntf(mp?: Record<string, unknown | undefined>): Error;
     WriteMapStrStr(mp?: Record<string, string>): Error;
@@ -482,15 +491,15 @@ export declare namespace pob {
     Level: number;
     MainSocketGroup: number;
     TargetVersion: string;
-    PlayerStats?: Array<pob.PlayerStat>;
+    PlayerStats: Array<pob.PlayerStat>;
   }
   interface Calcs {
-    Inputs?: Array<pob.Input>;
-    Sections?: Array<pob.Section>;
+    Inputs: Array<pob.Input>;
+    Sections: Array<pob.Section>;
   }
   interface Config {
-    Inputs?: Array<pob.Input>;
-    Placeholders?: Array<pob.Input>;
+    Inputs: Array<pob.Input>;
+    Placeholders: Array<pob.Input>;
   }
   interface Gem {
     Quality: number;
@@ -522,7 +531,7 @@ export declare namespace pob {
   interface Items {
     ActiveItemSet: number;
     UseSecondWeaponSet?: boolean;
-    ItemSets?: Array<pob.ItemSet>;
+    ItemSets: Array<pob.ItemSet>;
   }
   interface PathOfBuilding {
     Build: pob.Build;
@@ -569,7 +578,7 @@ export declare namespace pob {
     Label: string;
     Enabled: boolean;
     IncludeInFullDPS?: boolean;
-    Gems?: Array<pob.Gem>;
+    Gems: Array<pob.Gem>;
     Slot: string;
     SlotEnabled: boolean;
     Source?: unknown;
@@ -579,18 +588,18 @@ export declare namespace pob {
   }
   interface SkillSet {
     ID: number;
-    Skills?: Array<pob.Skill>;
+    Skills: Array<pob.Skill>;
   }
   interface Skills {
     SortGemsByDPSField: string;
     ShowSupportGemTypes: string;
-    DefaultGemLevel?: number;
+    DefaultGemLevel?: string;
     MatchGemLevelToCharacterLevel: boolean;
     ShowAltQualityGems: boolean;
     DefaultGemQuality?: number;
     ActiveSkillSet: number;
     SortGemsByDPS: boolean;
-    SkillSets?: Array<pob.SkillSet>;
+    SkillSets: Array<pob.SkillSet>;
   }
   interface Slot {
     ItemID: number;
@@ -606,7 +615,7 @@ export declare namespace pob {
   }
   interface Tree {
     ActiveSpec: number;
-    Specs?: Array<pob.Spec>;
+    Specs: Array<pob.Spec>;
   }
   interface TreeView {
     ZoomLevel: number;

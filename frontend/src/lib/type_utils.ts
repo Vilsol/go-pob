@@ -1,28 +1,46 @@
-/* eslint-disable */
-export type DeepPromise<T> = T extends Array<infer U>
-  ? Array<DeepPromise<U>> & Promise<Array<DeepPromise<U>>>
-  : T extends ReadonlyArray<infer U>
-  ? ReadonlyArray<DeepPromise<U>> & Promise<ReadonlyArray<DeepPromise<U>>>
-  : T extends Record<never, never>
-  ? { [K in keyof T]?: T[K] extends Function ? T[K] : DeepPromise<T[K]> } & Promise<{
-      [K in keyof T]?: T[K] extends Function ? T[K] : DeepPromise<T[K]>;
-    }>
-  : Promise<T>;
+import type { ProxyMarked, Remote } from 'comlink';
 
-export const dump = (obj: any) => {
+type Promisify<T> = T extends Promise<unknown> ? T : Promise<T>;
+
+// eslint-disable-next-line no-use-before-define
+type ProxiedRemoteProp<T> = T extends object | ProxyMarked ? ProxiedRemote<T> : Promisify<T>;
+
+type ProxiedRemoteObject<T> = Remote<T> & {
+  [P in keyof T]: ProxiedRemoteProp<T[P]>;
+};
+
+type ProxiedRemoteArray<T extends ArrayLike<unknown>> = Remote<Omit<T, 'length'>> & {
+  [P in keyof Omit<T, 'length'>]: ProxiedRemoteProp<T[P]>;
+} & {
+  length: Promise<number>;
+};
+
+export type ProxiedRemote<T> = T extends ArrayLike<unknown> ? ProxiedRemoteArray<T> : ProxiedRemoteObject<T>;
+
+export const dump = <T>(obj: T): T => {
   if (typeof obj !== 'object' || obj === null) {
     return obj;
   }
 
-  const out = {} as any;
-  for (const name of Object.getOwnPropertyNames(obj)) {
-    let val = (obj as any)[name];
+  const out = structuredClone(obj);
+
+  for (const prop of Object.getOwnPropertyNames(obj)) {
+    // @ts-expect-error TS7053
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    let val = obj[prop];
+
     if (typeof val === 'object') {
-      val = dump(val);
+      val = dump(val as object);
     } else if (typeof val === 'function' || typeof val === 'symbol') {
       continue;
     }
-    out[name] = val;
+
+    // @ts-expect-error TS7053
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    out[prop] = val;
   }
+
   return out;
 };
+
+export const send = <T>(value: T): Promisify<T> => value as Promisify<T>;

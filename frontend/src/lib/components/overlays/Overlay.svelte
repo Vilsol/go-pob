@@ -1,18 +1,29 @@
 <script lang="ts">
   import type { OverlayConfig } from '$lib/overlay';
 
-  export let config: OverlayConfig;
-  export let closeOverlay: () => void;
+  let {
+    config,
+    closeOverlay
+  }: {
+    config: OverlayConfig;
+    closeOverlay: () => void;
+  } = $props();
 
-  let backdrop: HTMLElement;
+  let backdrop = $state<HTMLElement>();
 
-  const close = (event: MouseEvent) => {
+  const close = (event: Event) => {
     if (config.backdropClose && event.target === backdrop) {
       closeOverlay();
     }
   };
 </script>
 
-<div class="absolute top-0 left-0 w-screen h-screen z-50 bg-black/75 flex items-center justify-center" bind:this={backdrop} on:click={close}>
-  <svelte:component this={config.component} on:close={closeOverlay} {...config.props} />
-</div>
+<button class="overlay" bind:this={backdrop} onclick={close} onkeyup={close}>
+  <config.component onclose={closeOverlay} {...config.props} />
+</button>
+
+<style lang="postcss">
+  .overlay {
+    @apply absolute top-0 left-0 w-screen h-screen z-50 bg-black/75 flex items-center justify-center;
+  }
+</style>

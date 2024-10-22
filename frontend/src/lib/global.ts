@@ -3,11 +3,12 @@ import type { Outputs } from './custom_types';
 import type { pob } from './types';
 import { syncWrap } from './go/worker';
 import { browser } from '$app/environment';
-import type { Remote } from 'comlink';
+import type { ProxiedRemote } from '$lib/type_utils';
+import { logError } from '$lib/utils';
 
 export const outputs = writable<Outputs | undefined>();
 
-export const currentBuild = writable<Remote<pob.PathOfBuilding> | undefined>();
+export const currentBuild = writable<ProxiedRemote<pob.PathOfBuilding> | undefined>();
 
 let uiTickLock = false;
 let uiTickAfter = false;
@@ -26,16 +27,15 @@ export const UITick = (source: string) => {
 
   syncWrap
     .Tick(source)
-    .catch((err) => {
-      console.error(err);
-    })
+    .catch(logError)
     .then(() => {
       uiTickLock = false;
       if (uiTickAfter) {
         uiTickAfter = false;
         UITick(uiTickAfterSource);
       }
-    });
+    })
+    .catch(logError);
 };
 
 // Options

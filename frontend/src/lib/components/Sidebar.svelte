@@ -14,6 +14,7 @@
   import { openOverlay } from '../overlay';
   import Options from './overlays/Options.svelte';
   import Version from '$lib/components/overlays/Version.svelte';
+  import { logError } from '$lib/utils';
 
   interface Line {
     label: string;
@@ -156,62 +157,73 @@
     return lines;
   };
 
-  const skillGemMapping: Record<string, exposition.SkillGem> = {};
+  const skillGemMapping = $state<Record<string, exposition.SkillGem>>({});
   onMount(() => {
-    GetSkillGems().then((all) => {
-      all.forEach((g) => {
-        skillGemMapping[g.ID] = g;
-      });
-    });
+    GetSkillGems()
+      .then((all) => {
+        all.forEach((g) => {
+          skillGemMapping[g.ID] = g;
+        });
+      })
+      .catch(logError);
   });
 
-  let activeSkillSet = 1;
-  $: $currentBuild?.Skills?.ActiveSkillSet?.then((v) => {
-    if (v < 1) {
-      activeSkillSet = 1;
-      return;
-    }
-    activeSkillSet = v;
+  let activeSkillSet = $state(1);
+  $effect(() => {
+    $currentBuild?.Skills?.ActiveSkillSet?.then((v) => {
+      if (v < 1) {
+        activeSkillSet = 1;
+        return;
+      }
+      activeSkillSet = v;
+    }).catch(logError);
   });
-  $: console.log('ACTIVE:', activeSkillSet);
-  $: console.log($currentBuild?.Skills?.then((wat) => {
-    console.log('WAT', wat);
-  }));
+  $effect(() => {
+    console.log('ACTIVE:', activeSkillSet);
+  });
 
-  let socketGroupList: string[] = [];
-  $: $currentBuild?.Skills?.SkillSets?.[activeSkillSet - 1]?.Skills?.then(async (skills: unknown[]) => {
-    const finalList = [];
-    for (let i = 0; i < skills.length; i++) {
-      let label: string | undefined = await $currentBuild?.Skills?.SkillSets?.[activeSkillSet - 1]?.Skills?.[i].Label;
-      if (label === '') {
-        const allGems = $currentBuild?.Skills?.SkillSets?.[activeSkillSet - 1]?.Skills?.[i].Gems;
-        if (await allGems) {
-          for (let j = 0; j < (await allGems.length); j++) {
-            const gem = skillGemMapping[await allGems[j].GemID];
-            if (!gem || gem.Support) {
-              continue;
+  let socketGroupList = $state<string[]>([]);
+  $effect(() => {
+    $currentBuild?.Skills?.SkillSets?.[activeSkillSet - 1]?.Skills?.then(async (skills: unknown[]) => {
+      const finalList: string[] = [];
+      for (let i = 0; i < skills.length; i++) {
+        let label: string | undefined = await $currentBuild?.Skills?.SkillSets?.[activeSkillSet - 1]?.Skills?.[i].Label;
+        if (label === '') {
+          const allGems = $currentBuild?.Skills?.SkillSets?.[activeSkillSet - 1]?.Skills?.[i].Gems;
+          if (await allGems) {
+            for (let j = 0; j < (await allGems.length); j++) {
+              const gem = skillGemMapping[await allGems[j].GemID];
+              if (!gem || gem.Support) {
+                continue;
+              }
+
+              if (label !== '') {
+                label += ', ';
+              }
+
+              label += gem.Base.Name;
             }
-
-            if (label !== '') {
-              label += ', ';
-            }
-
-            label += gem.Base.Name;
+          } else {
+            label = '<No active skills>';
           }
-        } else {
-          label = '<No active skills>';
+        }
+
+        if (label) {
+          finalList.push(label);
         }
       }
-
-      finalList.push(label);
-    }
-    socketGroupList = finalList;
+      socketGroupList = finalList;
+    }).catch(logError);
   });
 
   const mainSocketGroup = writable(-1);
-  $: $currentBuild?.Build?.MainSocketGroup?.then((v) => mainSocketGroup.set(v - 1));
+  $effect(() => {
+    $currentBuild?.Build?.MainSocketGroup?.then((v) => mainSocketGroup.set(v - 1)).catch(logError);
+  });
   mainSocketGroup.subscribe((value) => {
-    value >= 0 && syncWrap?.SetMainSocketGroup(value + 1);
+    if (value >= 0) {
+      syncWrap?.SetMainSocketGroup(value + 1).catch(logError);
+    }
     currentBuild.set($currentBuild);
   });
 
@@ -229,12 +241,12 @@
     });
   };
 
-  let collapsed = false;
+  let collapsed = $state(false);
 </script>
 
 {#if collapsed}
   <div class="h-full flex flex-col full-page relative">
-    <div class="absolute -right-3 top-1/2 cursor-pointer font-bold" on:click={() => (collapsed = false)}>&gt;</div>
+    <button class="absolute -right-3 top-1/2 cursor-pointer font-bold" onclick={() => (collapsed = false)}>&gt;</button>
   </div>
 {:else}
   <div class="w-[25vw] min-w-[17em] max-w-[25em] h-full border-r-2 border-white flex flex-col bg-neutral-900 full-page relative">
@@ -284,12 +296,12 @@
 
     <div class="flex flex-row p-2">
       <div class="flex flex-col flex-1 gap-2">
-        <button class="container min-w-full flex-1" on:click={openOptions}>Options</button>
+        <button class="container min-w-full flex-1" onclick={openOptions}>Options</button>
         <button class="container min-w-full flex-1">About</button>
       </div>
       <div class="flex flex-col flex-1 items-center">
         <span class="flex-1 flex place-items-center">go-pob</span>
-        <button class="flex-1 flex place-items-center cursor-pointer" on:click={openVersion}>
+        <button class="flex-1 flex place-items-center cursor-pointer" onclick={openVersion}>
           {#await syncWrap?.BuildInfo() then buildInfo}
             Version: {buildInfo?.Main?.Version}
           {/await}
@@ -297,7 +309,7 @@
       </div>
     </div>
 
-    <div class="absolute -right-3.5 top-1/2 cursor-pointer font-bold" on:click={() => (collapsed = true)}>&lt;</div>
+    <button class="absolute -right-3.5 top-1/2 cursor-pointer font-bold" onclick={() => (collapsed = true)}>&lt;</button>
   </div>
 {/if}
 

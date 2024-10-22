@@ -1,8 +1,8 @@
 import { get, writable } from 'svelte/store';
-import type { SvelteComponent } from 'svelte';
+import type { Component } from 'svelte';
 
 export interface OverlayConfig {
-  component: SvelteComponent;
+  component: Component<{ onclose: () => void }>;
   props?: Record<string, unknown>;
   backdropClose?: boolean;
 }

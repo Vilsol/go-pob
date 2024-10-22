@@ -3,51 +3,63 @@
   import { currentBuild } from '$lib/global';
   import { writable } from 'svelte/store';
   import { syncWrap } from '../go/worker';
+  import { logError } from '$lib/utils';
 
-  let updatingCurrentClass = true;
-  const currentClass = new writable<string | undefined>();
-  $: $currentBuild?.Build?.ClassName.then((value) => {
-    updatingCurrentClass = true;
-    currentClass.set(value);
-    updatingCurrentClass = false;
-  });
-  currentClass.subscribe((value) => {
+  let updatingCurrentClass = $state(true);
+  let updatingCurrentAscendancy = $state(true);
+  let updatingCurrentLevel = $state(true);
+
+  const currentClass = writable<string | undefined>();
+  const currentAscendancy = writable<string | undefined>();
+  const currentLevel = writable<number>(1);
+
+  currentClass.subscribe(async (value) => {
     if (updatingCurrentClass || !value) {
       return;
     }
-    syncWrap?.SetClass(value);
-    syncWrap?.SetAscendancy('None');
+    await syncWrap?.SetClass(value);
+    await syncWrap?.SetAscendancy('None');
     currentBuild.set($currentBuild);
   });
 
-  let updatingCurrentAscendancy = true;
-  const currentAscendancy = new writable<string | undefined>();
-  $: $currentBuild?.Build?.AscendClassName.then((value) => {
-    updatingCurrentAscendancy = true;
-    currentAscendancy.set(value);
-    updatingCurrentAscendancy = false;
-  });
-  currentAscendancy.subscribe((value) => {
+  currentAscendancy.subscribe(async (value) => {
     if (updatingCurrentAscendancy || !value) {
       return;
     }
-    syncWrap?.SetAscendancy(value);
+    await syncWrap?.SetAscendancy(value);
     currentBuild.set($currentBuild);
   });
 
-  let updatingCurrentLevel = true;
-  const currentLevel = new writable<number>(1);
-  $: $currentBuild?.Build?.Level.then((value) => {
-    updatingCurrentLevel = true;
-    currentLevel.set(value);
-    updatingCurrentLevel = false;
-  });
-  currentLevel.subscribe((value) => {
+  currentLevel.subscribe(async (value) => {
     if (updatingCurrentLevel) {
       return;
     }
-    syncWrap?.SetLevel(value);
+    await syncWrap?.SetLevel(value);
     currentBuild.set($currentBuild);
+  });
+
+  $effect(() => {
+    $currentBuild?.Build?.ClassName?.then((value) => {
+      updatingCurrentClass = true;
+      currentClass.set(value);
+      updatingCurrentClass = false;
+    }).catch(logError);
+  });
+
+  $effect(() => {
+    $currentBuild?.Build?.AscendClassName.then((value) => {
+      updatingCurrentAscendancy = true;
+      currentAscendancy.set(value);
+      updatingCurrentAscendancy = false;
+    }).catch(logError);
+  });
+
+  $effect(() => {
+    $currentBuild?.Build?.Level.then((value) => {
+      updatingCurrentLevel = true;
+      currentLevel.set(value);
+      updatingCurrentLevel = false;
+    }).catch(logError);
   });
 </script>
 

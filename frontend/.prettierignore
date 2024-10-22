@@ -10,7 +10,7 @@ node_modules
 # Ignore files for PNPM, NPM and YARN
 pnpm-lock.yaml
 package-lock.json
-yarn.lock
 src/lib/types/index.d.ts
 src/lib/types/index.js
 static/tinymce/
+src/wasm_exec.js

@@ -1,12 +1,11 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
   import { fontScaling } from '$lib/global';
 
-  const dispatch = createEventDispatcher();
-
-  const close = () => {
-    dispatch('close');
-  };
+  let {
+    onclose
+  }: {
+    onclose: () => void;
+  } = $props();
 </script>
 
 <div class="flex flex-col gap-4">
@@ -22,6 +21,6 @@
   </fieldset>
 
   <div class="flex flex-row items-center justify-center">
-    <button class="container" on:click={close}>Close</button>
+    <button class="container" onclick={onclose}>Close</button>
   </div>
 </div>

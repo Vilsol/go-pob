@@ -1,21 +1,22 @@
 <script lang="ts">
-  import NumberInput from '../../lib/components/NumberInput.svelte';
-  import { formatColors } from '../../lib/display/colors';
+  import NumberInput from '$lib/components/NumberInput.svelte';
   import Select from 'svelte-select';
-  import SelectItem from '../../lib/components/SelectItem.svelte';
-  import SelectSelection from '../../lib/components/SelectSelection.svelte';
-  import type { ConfigSection } from '../../lib/display/configurations';
-  import { configurations } from '../../lib/display/configurations';
-  import { currentBuild } from '../../lib/global';
-  import type { DeepPromise } from '../../lib/type_utils';
-  import type { pob } from '../../lib/types';
-  import { syncWrap } from '../../lib/go/worker';
+  import SelectItem from '$lib/components/SelectItem.svelte';
+  import SelectSelection from '$lib/components/SelectSelection.svelte';
+  import type { ConfigSection } from '$lib/display/configurations';
+  import { configurations } from '$lib/display/configurations';
+  import { currentBuild } from '$lib/global';
+  import type { pob } from '$lib/types';
+  import { syncWrap } from '$lib/go/worker';
+  import type { Remote } from 'comlink';
+  import ColoredText from '$lib/components/common/ColoredText.svelte';
+  import { logError } from '$lib/utils';
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const valueWatchers: Record<string, any> = {};
 
   // eslint-disable-next-line
-  const filterSections = (list: ConfigSection[], _: DeepPromise<pob.PathOfBuilding>): ConfigSection[] =>
+  const filterSections = (list: ConfigSection[], _: Remote<pob.PathOfBuilding>): ConfigSection[] =>
     list
       .map((s) => ({
         ...s,
@@ -119,37 +120,48 @@
 
             const privateName = '_' + varData.var;
             valueWatchers[privateName] = defaultState;
+
+            // TODO Clean up this mess
             Object.defineProperty(valueWatchers, varData.var, {
               get() {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-return,@typescript-eslint/no-unsafe-member-access
                 return this[privateName];
               },
               set(value) {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
                 if (this[privateName] === value) {
                   return;
                 }
 
                 if (varData.type === 'list') {
+                  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
                   if (this[privateName] === undefined || this[privateName].value !== value.value) {
-                    syncWrap?.SetConfigOption(varData.var, value.value);
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
+                    syncWrap?.SetConfigOption(varData.var, value.value).catch(logError);
                   }
                 } else {
-                  syncWrap?.SetConfigOption(varData.var, value);
+                  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+                  syncWrap?.SetConfigOption(varData.var, value).catch(logError);
                 }
 
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
                 this[privateName] = value;
               }
             });
 
-            syncWrap?.GetConfigOption(varData.var).then((val) => {
-              if (varData.type === 'list') {
-                const elem = varData.list.find((l) => l.value === val);
-                if (elem !== undefined) {
-                  valueWatchers[varData.var] = elem;
+            syncWrap
+              ?.GetConfigOption(varData.var)
+              .then((val) => {
+                if (varData.type === 'list') {
+                  const elem = varData.list.find((l) => l.value === val);
+                  if (elem !== undefined) {
+                    valueWatchers[varData.var] = elem;
+                  }
+                } else {
+                  valueWatchers[varData.var] = val;
                 }
-              } else {
-                valueWatchers[varData.var] = val;
-              }
-            });
+              })
+              .catch(logError);
           }
 
           return true;
@@ -157,23 +169,23 @@
       }))
       .filter((s) => s.variables.length > 0);
 
-  let hoveredItem: ConfigSection['variables'][number] | undefined = undefined;
+  let hoveredItem: ConfigSection['variables'][number] | undefined = $state(undefined);
 
-  let tooltipStyle = '';
-  let tooltipElement: HTMLElement;
+  let tooltipStyle = $state('');
+  let tooltipElement = $state<HTMLElement>();
 
   const moveEvent = (event: MouseEvent) => {
     if (hoveredItem && hoveredItem.tooltip !== undefined) {
       let left = event.x;
       if (event.x > window.innerWidth / 2) {
-        left -= (tooltipElement.clientWidth || 200) + 15;
+        left -= (tooltipElement?.clientWidth || 200) + 15;
       } else {
         left += 15;
       }
 
       let top = event.y;
       if (event.y > window.innerHeight / 2) {
-        top -= (tooltipElement.clientHeight || 100) + 15;
+        top -= (tooltipElement?.clientHeight || 100) + 15;
       }
 
       tooltipStyle = `top: ${top}px; left: ${left}px`;
@@ -182,10 +194,10 @@
     }
   };
 
-  $: sections = $currentBuild ? filterSections(configurations, $currentBuild) : [];
+  const sections = $derived($currentBuild ? filterSections(configurations, $currentBuild) : []);
 </script>
 
-<svelte:window on:mousemove={moveEvent} />
+<svelte:window onmousemove={moveEvent} />
 
 <div class="p-2 px-4 h-full flex flex-col flex-wrap gap-4 w-full overflow-x-auto">
   {#each sections as section}
@@ -193,23 +205,22 @@
       <legend class="container">{section.name}</legend>
       <div class="side-by-side-max-content">
         {#each section.variables as v}
-          <div><label for={v.var}>{@html formatColors(v.label)}</label></div>
-          <div class="w-full" on:mouseover={() => (hoveredItem = v)} on:focus={() => (hoveredItem = v)} on:mouseleave={() => (hoveredItem = undefined)}>
+          <div><label for={v.var}><ColoredText text={v.label} /></label></div>
+          <div
+            class="w-full"
+            onmouseover={() => (hoveredItem = v)}
+            onfocus={() => (hoveredItem = v)}
+            onmouseleave={() => (hoveredItem = undefined)}
+            role="contentinfo">
             {#if v.type === 'list'}
               <div class="themed min-w-full">
-                <Select
-                  items={v.list}
-                  bind:value={valueWatchers[v.var]}
-                  clearable={false}
-                  placeholder=""
-                  showChevron={true}
-                  listOffset={0}
-                  id={v.var}>
+                <Select items={v.list} bind:value={valueWatchers[v.var]} clearable={false} placeholder="" showChevron={true} listOffset={0} id={v.var}>
+                  <!-- TODO CONVERT TO SVELTE 5 -->
                   <div slot="selection" let:selection>
-                    <SelectSelection item={selection}/>
+                    <SelectSelection item={selection} />
                   </div>
                   <div slot="item" let:item>
-                    <SelectItem {item}/>
+                    <SelectItem {item} />
                   </div>
                 </Select>
               </div>
@@ -227,6 +238,6 @@
 
 <div class="absolute pointer-events-none border-amber-800 border-4 p-2 bg-black" style={tooltipStyle} bind:this={tooltipElement}>
   {#if hoveredItem !== undefined && hoveredItem.tooltip !== undefined}
-    {@html formatColors(hoveredItem.tooltip.trim().replaceAll('\n', '<br/>'))}
+    <ColoredText text={hoveredItem.tooltip.trim().replaceAll('\n', '<br/>')} />
   {/if}
 </div>

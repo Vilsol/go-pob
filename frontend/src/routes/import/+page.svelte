@@ -1,10 +1,11 @@
 <script lang="ts">
-  import Input from '../../lib/components/Input.svelte';
-  import { syncWrap } from '../../lib/go/worker';
-  import { sampleBuildCode } from '../../lib/global';
+  import Input from '$lib/components/Input.svelte';
+  import { syncWrap } from '$lib/go/worker';
+  import { sampleBuildCode } from '$lib/global';
+  import { logError } from '$lib/utils';
 
   // TODO Set to empty in prod
-  let importCode = sampleBuildCode;
+  let importCode = $state(sampleBuildCode);
 
   const importBuildFromCode = () => {
     syncWrap
@@ -13,9 +14,8 @@
         // TODO Error notification
         console.error(err);
       })
-      .then(() => {
-        syncWrap?.Tick('importBuildFromCode');
-      });
+      .then(() => syncWrap?.Tick('importBuildFromCode'))
+      .catch(logError);
   };
 </script>
 
@@ -45,7 +45,7 @@
 
           <div class="flex flex-row gap-2 flex-1">
             <div class="container select-wrapper min-w-full">
-              <select class="input" />
+              <select class="input"></select>
             </div>
           </div>
         </div>
@@ -93,7 +93,7 @@
             </select>
           </div>
 
-          <button class="container" disabled={importCode === ''} on:click={importBuildFromCode}>Import</button>
+          <button class="container" disabled={importCode === ''} onclick={importBuildFromCode}>Import</button>
         </div>
       </div>
     </div>

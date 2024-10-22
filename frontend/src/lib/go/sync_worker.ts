@@ -5,7 +5,7 @@ import { initializeCrystalline, cache, raw, config, pob, builds, calculator, exp
 import type { Outputs } from '../custom_types';
 import localforage from 'localforage';
 import type { currentBuild } from '../global';
-import { type DeepPromise, dump } from '../type_utils';
+import { dump, type ProxiedRemote } from '../type_utils';
 import { reverseConfigOptions } from '../display/configurations';
 
 class PoBWorker {
@@ -26,10 +26,10 @@ class PoBWorker {
   currentBuildStore?: typeof currentBuild;
 
   private updateStore() {
-    if (this.currentBuildStore) {
+    if (this.currentBuildStore && this._currentBuild) {
       // Re-cast so we can force the correct type
       console.log('SKILLS:', this._currentBuild?.Skills);
-      this.currentBuildStore.set(proxy(this._currentBuild) as unknown as DeepPromise<pob.PathOfBuilding>);
+      this.currentBuildStore.set(proxy(this._currentBuild) as unknown as ProxiedRemote<pob.PathOfBuilding>);
     }
   }
 
@@ -39,11 +39,9 @@ class PoBWorker {
     this.currentBuildStore = currentBuildStore;
 
     return new Promise((resolve) => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
       const go = new Go();
-      WebAssembly.instantiate(wasm, go.importObject).then(async (result) => {
-        go.run(result.instance);
+      void WebAssembly.instantiate(wasm, go.importObject).then(async (result) => {
+        void go.run(result.instance);
 
         initializeCrystalline();
 
@@ -77,7 +75,7 @@ class PoBWorker {
     }
   }
 
-  async ImportCode(code: string) {
+  ImportCode(code: string) {
     const [xml, decodeError] = pob.DecodeDecompress(code);
     if (decodeError) {
       throw decodeError;
@@ -116,7 +114,7 @@ class PoBWorker {
     }
   }
 
-  async SetConfigOption(key: string, value: boolean | number | string) {
+  SetConfigOption(key: string, value: boolean | number | string) {
     if (!this.currentBuild || !this.currentBuild.Config.Inputs) {
       return;
     }
@@ -142,7 +140,7 @@ class PoBWorker {
     if (remove) {
       this.currentBuild.RemoveConfigOption(key);
       this.updateStore();
-      this.Tick('SetConfigOption: remove');
+      void this.Tick('SetConfigOption: remove');
       return;
     }
 
@@ -164,7 +162,7 @@ class PoBWorker {
 
     this.currentBuild.SetConfigOption(newValue);
     this.updateStore();
-    this.Tick('SetConfigOption: change');
+    void this.Tick('SetConfigOption: change');
   }
 
   GetConfigOption(name: string): boolean | number | string | undefined {
@@ -194,11 +192,11 @@ class PoBWorker {
 
   SetMainSocketGroup(mainSocketGroup: number) {
     this.currentBuild?.SetMainSocketGroup(mainSocketGroup);
-    this.Tick('SetMainSocketGroup');
+    void this.Tick('SetMainSocketGroup');
   }
 
-  GetSkillGems(): DeepPromise<exposition.SkillGem[]> {
-    return proxy(exposition.GetSkillGems()) as unknown as DeepPromise<exposition.SkillGem[]>;
+  GetSkillGems(): ProxiedRemote<exposition.SkillGem[]> {
+    return proxy(exposition.GetSkillGems()!) as unknown as ProxiedRemote<exposition.SkillGem[]>;
   }
 
   async GetTree(version: string): Promise<string> {
@@ -211,20 +209,20 @@ class PoBWorker {
 
   SetClass(value: string) {
     this.currentBuild?.SetClass(value);
-    this.Tick('SetClass');
+    void this.Tick('SetClass');
   }
 
   SetAscendancy(value: string) {
     this.currentBuild?.SetAscendancy(value);
-    this.Tick('SetAscendancy');
+    void this.Tick('SetAscendancy');
   }
 
   SetLevel(value: number) {
     this.currentBuild?.SetLevel(value);
-    this.Tick('SetLevel');
+    void this.Tick('SetLevel');
   }
 
-  async CalculateTreePath(version: string, activeNodes: number[], target: number) {
+  CalculateTreePath(version: string, activeNodes: number[], target: number) {
     return exposition.CalculateTreePath(version, activeNodes, target);
   }
 

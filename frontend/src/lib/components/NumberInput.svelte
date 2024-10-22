@@ -1,13 +1,23 @@
 <script lang="ts">
-  export let prefix: string | undefined = undefined;
-  export let min: number | undefined = undefined;
-  export let max: number | undefined = undefined;
-  export let value: number | undefined = undefined;
-  export let placeholder = '';
-  export let fullWidth = false;
-  export let id: string | null = null;
+  let {
+    prefix = undefined,
+    min = undefined,
+    max = undefined,
+    value = $bindable(undefined),
+    placeholder = '',
+    fullWidth = false,
+    id = null
+  }: {
+    prefix?: string | undefined;
+    min?: number | undefined;
+    max?: number | undefined;
+    value?: number | undefined;
+    placeholder?: string;
+    fullWidth?: boolean;
+    id?: string | null;
+  } = $props();
 
-  let inputElement: HTMLInputElement;
+  let inputElement = $state<HTMLInputElement>();
 
   const change = (n: number) => {
     if (value === undefined) {
@@ -22,17 +32,17 @@
     }
   };
 
-  $: plusDisabled = (typeof value !== 'number' || (max !== undefined && value >= max)) as boolean;
-  $: minusDisabled = (typeof value !== 'number' || (min !== undefined && value <= min)) as boolean;
+  let plusDisabled = $derived(typeof value !== 'number' || (max !== undefined && value >= max));
+  let minusDisabled = $derived(typeof value !== 'number' || (min !== undefined && value <= min));
 </script>
 
 <div class="flex flex-row" class:min-w-full={fullWidth}>
-  <div class="input-wrapper flex flex-row items-center flex-1" on:click={() => inputElement.focus()}>
+  <button class="input-wrapper flex flex-row items-center flex-1" onclick={() => inputElement?.focus()}>
     {#if prefix}
       <span class="mx-1 select-none">{prefix}</span>
     {/if}
     <input bind:this={inputElement} type="number" {min} {max} bind:value class="input w-full" {placeholder} {id} />
-  </div>
-  <button class="container font-bold" on:click={() => change(1)} disabled={plusDisabled}>&plus;</button>
-  <button class="container font-bold" on:click={() => change(-1)} disabled={minusDisabled}>&minus;</button>
+  </button>
+  <button class="container font-bold" onclick={() => change(1)} disabled={plusDisabled}>&plus;</button>
+  <button class="container font-bold" onclick={() => change(-1)} disabled={minusDisabled}>&minus;</button>
 </div>
