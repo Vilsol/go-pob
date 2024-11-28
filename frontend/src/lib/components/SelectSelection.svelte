@@ -1,16 +1,18 @@
 <script lang="ts">
-  import { formatColors } from '../display/colors';
+  import ColoredText from '$lib/components/common/ColoredText.svelte';
 
-  export const getSelectionLabel: unknown = undefined;
-
-  // TODO Tooltip
-  export let item: {
-    label: string;
-  };
+  let {
+    item
+  }: {
+    // TODO Tooltip
+    item: {
+      label: string;
+    };
+  } = $props();
 </script>
 
 <div class="selection">
-  {@html formatColors(item.label)}
+  <ColoredText text={item.label} />
 </div>
 
 <style>

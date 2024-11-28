@@ -51,7 +51,7 @@ export const loadSkillTree = async (version: string) => {
   }
 
   const treeData = await syncWrap.GetTree(version);
-  loadedSkillTree = JSON.parse(treeData);
+  loadedSkillTree = JSON.parse(treeData) as Tree;
   console.log('Loaded skill tree', loadedSkillTree);
 
   if (loadedSkillTree.imageZoomLevels) {

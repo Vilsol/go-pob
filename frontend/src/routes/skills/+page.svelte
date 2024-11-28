@@ -1,38 +1,49 @@
 <script lang="ts">
-  import NumberInput from '../../lib/components/NumberInput.svelte';
-  import Input from '../../lib/components/Input.svelte';
-  import { currentBuild, UITick } from '../../lib/global';
+  import NumberInput from '$lib/components/NumberInput.svelte';
+  import Input from '$lib/components/Input.svelte';
+  import { currentBuild, UITick } from '$lib/global';
   import { writable } from 'svelte/store';
-  import { syncWrap } from '../../lib/go/worker';
-  import SelectItem from '../../lib/components/SelectItem.svelte';
-  import SelectSelection from '../../lib/components/SelectSelection.svelte';
+  import { syncWrap } from '$lib/go/worker';
+  import SelectItem from '$lib/components/SelectItem.svelte';
+  import SelectSelection from '$lib/components/SelectSelection.svelte';
   import Select from 'svelte-select';
-  import { GetSkillGems } from '../../lib/cache';
+  import { GetSkillGems, type SkillGemCacheItem } from '$lib/cache';
   import { onMount } from 'svelte';
-  import { colorCodes } from '../../lib/display/colors';
-  import type { SkillGroupUpdate } from '../../lib/custom_types';
-  import type { pob, exposition } from '../../lib/types';
+  import { colorCodes } from '$lib/display/colors';
+  import type { GemListValue, SkillGroupUpdate } from '$lib/custom_types';
+  import { logError } from '$lib/utils';
+  import { send } from '$lib/type_utils';
 
-  let skillSetCount = 1;
-  $: $currentBuild?.Skills?.SkillSets?.then((v) => (skillSetCount = v?.length || 0));
+  let skillSetCount = $state(1);
+  $effect(() => {
+    $currentBuild?.Skills?.SkillSets?.then((v) => (skillSetCount = v?.length || 0)).catch(logError);
+  });
 
-  let activeSkillSet = 1;
-  $: $currentBuild?.Skills?.ActiveSkillSet?.then((v) => (activeSkillSet = v));
+  let activeSkillSet = $state(1);
+  $effect(() => {
+    $currentBuild?.Skills?.ActiveSkillSet?.then((v) => (activeSkillSet = v)).catch(logError);
+  });
 
-  let visualSocketGroup = 0;
+  let visualSocketGroup = $state(0);
   const mainSocketGroup = writable(-1);
-  $: $currentBuild?.Build?.MainSocketGroup?.then((v) => mainSocketGroup.set(v - 1));
+  $effect(() => {
+    $currentBuild?.Build?.MainSocketGroup?.then((v) => mainSocketGroup.set(v - 1)).catch(logError);
+  });
   mainSocketGroup.subscribe((value) => {
-    value >= 0 && syncWrap?.SetMainSocketGroup(value + 1);
+    if (value >= 0) {
+      syncWrap?.SetMainSocketGroup(value + 1).catch(logError);
+    }
     currentBuild.set($currentBuild);
   });
 
-  let updatingLabel = true;
+  let updatingLabel = $state(true);
   const socketGroupLabel = writable('');
-  $: $currentBuild?.Skills?.SkillSets?.[activeSkillSet - 1].Skills?.[visualSocketGroup]?.Label.then((v: string) => {
-    updatingLabel = true;
-    socketGroupLabel.set(v);
-    updatingLabel = false;
+  $effect(() => {
+    $currentBuild?.Skills?.SkillSets?.[activeSkillSet - 1].Skills?.[visualSocketGroup]?.Label.then((v: string) => {
+      updatingLabel = true;
+      socketGroupLabel.set(v);
+      updatingLabel = false;
+    }).catch(logError);
   });
   socketGroupLabel.subscribe((data) => {
     if (updatingLabel || !$currentBuild) {
@@ -47,8 +58,8 @@
     mainSocketGroup.set(i);
   };
 
-  let skillGemList: { label: string; value: string }[] = [];
-  const skillGemMapping: Record<string, exposition.SkillGem> = {};
+  let skillGemList = $state<GemListValue[]>([]);
+  const skillGemMapping = $state<Record<string, SkillGemCacheItem>>({});
 
   const gemColorMap: Record<string, string> = {
     STR: colorCodes.STRENGTH,
@@ -59,36 +70,43 @@
 
   onMount(() => {
     // TODO Sort gems
-    GetSkillGems().then((all) => {
-      skillGemList = all.map((g) => ({
-        label: '^' + gemColorMap[g.GemType] + g.Base.Name,
-        value: g.ID,
-        data: g
-      }));
+    GetSkillGems()
+      .then((all) => {
+        skillGemList = all.map((g) => ({
+          label: '^' + gemColorMap[g.GemType] + g.Base.Name,
+          value: g.ID,
+          data: g
+        }));
 
-      all.forEach((g) => {
-        skillGemMapping[g.ID] = g;
-      });
-    });
+        all.forEach((g) => {
+          skillGemMapping[g.ID] = g;
+        });
+      })
+      .catch(logError);
   });
 
-  let updatingCurrentGemGroup = true;
+  let updatingCurrentGemGroup = $state(true);
   const currentGemGroup = writable<SkillGroupUpdate | undefined>();
-  $: skillGemList.length > 0 &&
+  $effect(() => {
+    if (skillGemList.length <= 0) {
+      return;
+    }
+
     new Promise(async () => {
       const skillGroup = $currentBuild?.Skills?.SkillSets?.[activeSkillSet - 1]?.Skills?.[visualSocketGroup];
       if (!skillGroup) {
         currentGemGroup.set(undefined);
         return;
       }
-      const gems = [];
+      const gems: SkillGroupUpdate['Gems'] = [];
+
       if (skillGroup.Gems && (await skillGroup.Gems)) {
         const len = await skillGroup.Gems.length;
         for (let i = 0; i < len; i++) {
           const gem = skillGroup.Gems[i];
           const gemID = await gem.GemID;
           gems.push({
-            GemListValue: skillGemList.find((g) => g.value === gemID),
+            GemListValue: skillGemList.find((g) => g.value === gemID)!,
             GemID: gemID,
             Quality: await gem.Quality,
             Enabled: await gem.Enabled,
@@ -115,7 +133,8 @@
         Slot: await skillGroup.Slot
       });
       updatingCurrentGemGroup = false;
-    });
+    }).catch(logError);
+  });
 
   let lastGroup = '';
   currentGemGroup.subscribe(async (group) => {
@@ -123,11 +142,11 @@
       updatingCurrentGemGroup ||
       !group ||
       !$currentBuild ||
-      !$currentBuild.Skills ||
-      !$currentBuild.Skills.SkillSets ||
-      !$currentBuild.Skills.SkillSets[activeSkillSet - 1] ||
-      !$currentBuild.Skills.SkillSets[activeSkillSet - 1].Skills ||
-      !$currentBuild.Skills.SkillSets[activeSkillSet - 1].Skills[visualSocketGroup]
+      !(await $currentBuild.Skills) ||
+      !(await $currentBuild.Skills.SkillSets) ||
+      !(await $currentBuild.Skills.SkillSets[activeSkillSet - 1]) ||
+      !(await $currentBuild.Skills.SkillSets[activeSkillSet - 1].Skills) ||
+      !(await $currentBuild.Skills.SkillSets[activeSkillSet - 1].Skills[visualSocketGroup])
     ) {
       return;
     }
@@ -139,60 +158,72 @@
     }
     lastGroup = newGroup;
 
-    $currentBuild.Skills.SkillSets[activeSkillSet - 1].Skills[visualSocketGroup].Slot = group.Slot as Promise<string> & string;
-    $currentBuild.Skills.SkillSets[activeSkillSet - 1].Skills[visualSocketGroup].Enabled = group.Enabled as Promise<boolean> & boolean;
-    $currentBuild.Skills.SkillSets[activeSkillSet - 1].Skills[visualSocketGroup].IncludeInFullDPS = group.IncludeInFullDPS as Promise<boolean> & boolean;
+    $currentBuild.Skills.SkillSets[activeSkillSet - 1].Skills[visualSocketGroup].Slot = send(group.Slot);
+    $currentBuild.Skills.SkillSets[activeSkillSet - 1].Skills[visualSocketGroup].Enabled = send(group.Enabled);
+    $currentBuild.Skills.SkillSets[activeSkillSet - 1].Skills[visualSocketGroup].IncludeInFullDPS = send(group.IncludeInFullDPS);
 
     if (group.Gems) {
       await $currentBuild?.SetSocketGroupGems?.(
         activeSkillSet - 1,
         visualSocketGroup,
-        group.Gems.map((g) => ({
-          ...g,
-          GemID: (g as unknown).GemListValue.value
-        }))
+        $state.snapshot(
+          group.Gems.map((g) => ({
+            ...g,
+            GemID: g.GemListValue.value
+          }))
+        )
       );
     }
 
     UITick('currentGemGroup');
   });
 
-  let socketGroupList: {
-    label: string;
-    enabled: boolean;
-    fullDPS: boolean;
-  }[] = [];
-  $: $currentBuild?.Skills?.SkillSets?.[activeSkillSet - 1]?.Skills?.then(async (skills: unknown[]) => {
-    const finalList = [];
-    for (let i = 0; i < skills.length; i++) {
-      let label: string | undefined = await $currentBuild?.Skills?.SkillSets?.[activeSkillSet - 1]?.Skills?.[i].Label;
-      if (label === '') {
-        const allGems = $currentBuild?.Skills?.SkillSets?.[activeSkillSet - 1]?.Skills?.[i].Gems;
-        if (await allGems) {
-          for (let j = 0; j < (await allGems.length); j++) {
-            const gem = skillGemMapping[await allGems[j].GemID];
-            if (!gem || gem.Support) {
-              continue;
-            }
+  let socketGroupList = $state<
+    {
+      label: string;
+      enabled: boolean;
+      fullDPS: boolean;
+    }[]
+  >([]);
+  $effect(() => {
+    $currentBuild?.Skills?.SkillSets?.[activeSkillSet - 1]?.Skills?.then(async (skills: unknown[]) => {
+      const finalList: {
+        label: string;
+        enabled: boolean;
+        fullDPS: boolean;
+      }[] = [];
+      for (let i = 0; i < skills.length; i++) {
+        let label: string | undefined = await $currentBuild?.Skills?.SkillSets?.[activeSkillSet - 1]?.Skills?.[i].Label;
+        if (label === '') {
+          const allGems = $currentBuild?.Skills?.SkillSets?.[activeSkillSet - 1]?.Skills?.[i].Gems;
+          if (await allGems) {
+            for (let j = 0; j < (await allGems.length); j++) {
+              const gem = skillGemMapping[await allGems[j].GemID];
+              if (!gem || gem.Support) {
+                continue;
+              }
 
-            if (label !== '') {
-              label += ', ';
-            }
+              if (label !== '') {
+                label += ', ';
+              }
 
-            label += gem.Base.Name;
+              label += gem.Base.Name;
+            }
+          } else {
+            label = '<No active skills>';
           }
-        } else {
-          label = '<No active skills>';
+        }
+
+        if (label) {
+          finalList.push({
+            label,
+            enabled: await $currentBuild?.Skills?.SkillSets?.[activeSkillSet - 1]?.Skills?.[i].Enabled,
+            fullDPS: (await $currentBuild?.Skills?.SkillSets?.[activeSkillSet - 1]?.Skills?.[i].IncludeInFullDPS) || false
+          });
         }
       }
-
-      finalList.push({
-        label,
-        enabled: await $currentBuild?.Skills?.SkillSets?.[activeSkillSet - 1]?.Skills?.[i].Enabled,
-        fullDPS: await $currentBuild?.Skills?.SkillSets?.[activeSkillSet - 1]?.Skills?.[i].IncludeInFullDPS
-      });
-    }
-    socketGroupList = finalList;
+      socketGroupList = finalList;
+    }).catch(logError);
   });
 
   const removeGem = (i: number) => {
@@ -218,68 +249,75 @@
       SkillID: firstGem.value,
       SkillMinionItemSet: 1,
       SkillMinion: 'SummonedPhantasm'
-    } as unknown as pob.Gem);
+    });
     currentGemGroup.set($currentGemGroup);
   };
 
-  const registerProperty = (obj: object, publicKey: string, onUpdate: (value: unknown) => void) => {
-    const privateKey = '_' + publicKey;
-    Object.defineProperty(obj, publicKey, {
-      get() {
-        return this[privateKey];
-      },
-      set(value) {
-        if (this[privateKey] !== value && $currentBuild) {
-          onUpdate(value);
-          this[privateKey] = value;
-        }
-      }
-    });
-  };
-
   // Populated with defaults
-  const gemOptions = {
-    _sortGemsByDPS: true,
-    _sortGemsByDPSField: 'FullDPS',
-    _matchGemLevelToCharacterLevel: false,
-    _defaultGemLevel: 20,
-    _defaultGemQuality: 0,
-    _showSupportGemTypes: 'ALL',
-    _showAltQualityGems: false
-  };
-
-  registerProperty(gemOptions, 'sortGemsByDPS', (value) => $currentBuild?.SetSortGemsByDPS(value.toString() === 'true'));
-  registerProperty(gemOptions, 'sortGemsByDPSField', (value) => $currentBuild?.SetSortGemsByDPSField(value as string));
-  registerProperty(gemOptions, 'matchGemLevelToCharacterLevel', (value) => $currentBuild?.SetMatchGemLevelToCharacterLevel(value.toString() === 'true'));
-  registerProperty(gemOptions, 'defaultGemLevel', (value) => $currentBuild?.SetDefaultGemLevel(parseInt(value.toString())));
-  registerProperty(gemOptions, 'defaultGemQuality', (value) => $currentBuild?.SetDefaultGemQuality(parseInt(value.toString())));
-  registerProperty(gemOptions, 'showSupportGemTypes', (value) => $currentBuild?.SetShowSupportGemTypes(value as string));
-  registerProperty(gemOptions, 'showAltQualityGems', (value) => $currentBuild?.SetShowAltQualityGems(value.toString() === 'true'));
-
-  $: $currentBuild?.Skills?.then((skillData) => {
-    gemOptions._sortGemsByDPS = skillData.SortGemsByDPS;
-    gemOptions._sortGemsByDPSField = skillData.SortGemsByDPSField;
-    gemOptions._matchGemLevelToCharacterLevel = skillData.MatchGemLevelToCharacterLevel;
-    gemOptions._defaultGemLevel = skillData.DefaultGemLevel;
-    gemOptions._defaultGemQuality = skillData.DefaultGemQuality;
-    gemOptions._showSupportGemTypes = skillData.ShowSupportGemTypes;
-    gemOptions._showAltQualityGems = skillData.ShowAltQualityGems;
+  const gemOptions = $state({
+    sortGemsByDPS: true,
+    sortGemsByDPSField: 'FullDPS',
+    matchGemLevelToCharacterLevel: false,
+    defaultGemLevel: 20,
+    defaultGemQuality: 0,
+    showSupportGemTypes: 'ALL',
+    showAltQualityGems: false
   });
 
-  const addNewSocketGroup = () => {
-    $currentBuild?.AddNewSocketGroup();
+  $effect(() => {
+    $currentBuild?.SetSortGemsByDPS(gemOptions.sortGemsByDPS).catch(logError);
+  });
+
+  $effect(() => {
+    $currentBuild?.SetSortGemsByDPSField(gemOptions.sortGemsByDPSField).catch(logError);
+  });
+
+  $effect(() => {
+    $currentBuild?.SetMatchGemLevelToCharacterLevel(gemOptions.matchGemLevelToCharacterLevel).catch(logError);
+  });
+
+  $effect(() => {
+    $currentBuild?.SetDefaultGemLevel(gemOptions.defaultGemLevel).catch(logError);
+  });
+
+  $effect(() => {
+    $currentBuild?.SetDefaultGemQuality(gemOptions.defaultGemQuality).catch(logError);
+  });
+
+  $effect(() => {
+    $currentBuild?.SetShowSupportGemTypes(gemOptions.showSupportGemTypes).catch(logError);
+  });
+
+  $effect(() => {
+    $currentBuild?.SetShowAltQualityGems(gemOptions.showAltQualityGems).catch(logError);
+  });
+
+  $effect(() => {
+    $currentBuild?.Skills?.then((skillData) => {
+      gemOptions.sortGemsByDPS = skillData.SortGemsByDPS;
+      gemOptions.sortGemsByDPSField = skillData.SortGemsByDPSField;
+      gemOptions.matchGemLevelToCharacterLevel = skillData.MatchGemLevelToCharacterLevel;
+      gemOptions.defaultGemLevel = parseInt(skillData.DefaultGemLevel || gemOptions.defaultGemLevel.toString());
+      gemOptions.defaultGemQuality = skillData.DefaultGemQuality || gemOptions.defaultGemQuality;
+      gemOptions.showSupportGemTypes = skillData.ShowSupportGemTypes;
+      gemOptions.showAltQualityGems = skillData.ShowAltQualityGems;
+    }).catch(logError);
+  });
+
+  const addNewSocketGroup = async () => {
+    await $currentBuild?.AddNewSocketGroup();
     currentBuild.set($currentBuild);
   };
 
-  const deleteSelectedSocketGroup = () => {
-    $currentBuild?.DeleteSocketGroup(visualSocketGroup);
+  const deleteSelectedSocketGroup = async () => {
+    await $currentBuild?.DeleteSocketGroup(visualSocketGroup);
     visualSocketGroup = 0;
     currentBuild.set($currentBuild);
   };
 
-  const deleteAllSocketGroups = () => {
-    $currentBuild?.DeleteAllSocketGroups();
-    $currentBuild?.AddNewSocketGroup();
+  const deleteAllSocketGroups = async () => {
+    await $currentBuild?.DeleteAllSocketGroups();
+    await $currentBuild?.AddNewSocketGroup();
     visualSocketGroup = 0;
     mainSocketGroup.set(0);
     currentBuild.set($currentBuild);
@@ -306,14 +344,14 @@
         <div class="flex flex-row items-center gap-2">
           <span class="flex-1">Socket Groups:</span>
 
-          <button class="container" on:click={addNewSocketGroup}>New</button>
-          <button class="container" disabled={socketGroupList.length <= 1} on:click={deleteAllSocketGroups}>Delete All</button>
-          <button class="container" disabled={visualSocketGroup < 0 || socketGroupList.length <= 1} on:click={deleteSelectedSocketGroup}>Delete</button>
+          <button class="container" onclick={addNewSocketGroup}>New</button>
+          <button class="container" disabled={socketGroupList.length <= 1} onclick={deleteAllSocketGroups}>Delete All</button>
+          <button class="container" disabled={visualSocketGroup < 0 || socketGroupList.length <= 1} onclick={deleteSelectedSocketGroup}>Delete</button>
         </div>
 
         <select bind:value={visualSocketGroup} class="bg-black border w-full border-neutral-400 flex-1 select-many max-h-[19em]" size="18">
           {#each socketGroupList as group, i}
-            <option value={i} on:contextmenu={(event) => onRightClickSocketGroup(i, event)}>
+            <option value={i} oncontextmenu={(event) => onRightClickSocketGroup(i, event)}>
               {group.label}
               {!group.enabled ? ' (Disabled)' : ''}
               {$mainSocketGroup === i ? ' (Active)' : ''}
@@ -407,7 +445,7 @@
           </div>
 
           <div class="grid gem-grid gap-1 w-full">
-            <div />
+            <div></div>
             <div>Gem Name</div>
             <div>Level</div>
             <div>Variant</div>
@@ -416,21 +454,16 @@
             <div>Count</div>
 
             {#each $currentGemGroup.Gems as gemGroup, i}
-              <button class="container font-bold" on:click={() => removeGem(i)}>X</button>
+              <button class="container font-bold" onclick={() => removeGem(i)}>X</button>
 
               <div class="min-w-full themed">
-                <Select
-                  bind:value={gemGroup.GemListValue}
-                  items={skillGemList}
-                  clearable={false}
-                  placeholder=""
-                  showChevron={true}
-                  listOffset={0}>
+                <Select bind:value={gemGroup.GemListValue} items={skillGemList} clearable={false} placeholder="" showChevron={true} listOffset={0}>
+                  <!-- TODO CONVERT TO SVELTE 5 -->
                   <div slot="selection" let:selection>
-                    <SelectSelection item={selection}/>
+                    <SelectSelection item={selection} />
                   </div>
                   <div slot="item" let:item>
-                    <SelectItem {item}/>
+                    <SelectItem {item} />
                   </div>
                 </Select>
               </div>
@@ -451,7 +484,7 @@
             {/each}
 
             <div class="col-span-7 w-full mt-2">
-              <button class="container font-bold min-w-full" on:click={() => addGem()}>Add Skill Gem</button>
+              <button class="container font-bold min-w-full" onclick={() => addGem()}>Add Skill Gem</button>
             </div>
           </div>
         </div>

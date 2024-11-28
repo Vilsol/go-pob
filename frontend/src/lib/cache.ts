@@ -1,9 +1,10 @@
 import { syncWrap } from './go/worker';
 import type { exposition } from './types';
 
-let skillGemCache: exposition.SkillGem[];
-let skillGemPromise: Promise<exposition.SkillGem[]>;
-export const GetSkillGems = async (): Promise<exposition.SkillGem[]> => {
+export type SkillGemCacheItem = Omit<exposition.SkillGem, 'CalculateStuff'>;
+let skillGemCache: SkillGemCacheItem[];
+let skillGemPromise: Promise<typeof skillGemCache>;
+export const GetSkillGems = async (): Promise<typeof skillGemCache> => {
   if (!syncWrap) {
     return [];
   }
@@ -22,11 +23,11 @@ export const GetSkillGems = async (): Promise<exposition.SkillGem[]> => {
       const gems = await syncWrap.GetSkillGems();
       const len = await gems.length;
 
-      const allGems = [];
+      const allGems: Promise<SkillGemCacheItem>[] = [];
       for (let i = 0; i < len; i++) {
         allGems.push(
           new Promise(async (innerResolve) => {
-            const gem = gems[i] as unknown as exposition.SkillGem;
+            const gem = gems[i];
             innerResolve({
               Vaal: await gem.Vaal,
               Base: await gem.Base,
@@ -39,7 +40,7 @@ export const GetSkillGems = async (): Promise<exposition.SkillGem[]> => {
         );
       }
 
-      skillGemCache = (await Promise.all(allGems)) as exposition.SkillGem[];
+      skillGemCache = await Promise.all(allGems);
       resolve(skillGemCache);
     });
   }

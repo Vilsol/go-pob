@@ -36,8 +36,8 @@ const cssMap: Record<string, string> = {
 const oldLog = console.log;
 console.log = (...args) => {
   if (args.length == 1 && typeof args[0] === 'string') {
-    const allAnsiCodes = (args[0] as string).matchAll(ansiRegex);
-    const cssMapped = [...allAnsiCodes].map((c) => cssMap[c[1] as string] || '');
+    const allAnsiCodes = args[0].matchAll(ansiRegex);
+    const cssMapped = [...allAnsiCodes].map((c) => cssMap[c[1]] || '');
     return oldLog(args[0].replaceAll(ansiRegex, '%c'), ...cssMapped);
   }
   return oldLog(...args);

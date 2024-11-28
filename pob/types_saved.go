@@ -40,7 +40,7 @@ type Build struct {
 	PassiveNodes           []int64
 	PassiveNodesStartPaths map[int64][]int64
 
-	PlayerStats []PlayerStat `xml:"PlayerStat"`
+	PlayerStats []PlayerStat `xml:"PlayerStat" crystalline:"not_nil"`
 }
 
 type PlayerStat struct {
@@ -51,19 +51,19 @@ type PlayerStat struct {
 type Tree struct {
 	ActiveSpec int `xml:"activeSpec,attr"`
 
-	Specs []Spec `xml:"Spec"`
+	Specs []Spec `xml:"Spec" crystalline:"not_nil"`
 }
 
 type Calcs struct {
-	Inputs   []Input   `xml:"Input"`
-	Sections []Section `xml:"Section"`
+	Inputs   []Input   `xml:"Input" crystalline:"not_nil"`
+	Sections []Section `xml:"Section" crystalline:"not_nil"`
 }
 
 type Items struct {
 	ActiveItemSet      int   `xml:"activeItemSet,attr"`
 	UseSecondWeaponSet *bool `xml:"useSecondWeaponSet,attr,omitempty"`
 
-	ItemSets []ItemSet `xml:"ItemSet"`
+	ItemSets []ItemSet `xml:"ItemSet" crystalline:"not_nil"`
 }
 
 type Skills struct {
@@ -76,7 +76,7 @@ type Skills struct {
 	ActiveSkillSet                int     `xml:"activeSkillSet,attr"`
 	SortGemsByDPS                 bool    `xml:"sortGemsByDPS,attr"`
 
-	SkillSets []SkillSet `xml:"SkillSet"`
+	SkillSets []SkillSet `xml:"SkillSet" crystalline:"not_nil"`
 }
 
 type TreeView struct {
@@ -89,8 +89,8 @@ type TreeView struct {
 }
 
 type Config struct {
-	Inputs       []Input `xml:"Input"`
-	Placeholders []Input `xml:"Placeholder"`
+	Inputs       []Input `xml:"Input" crystalline:"not_nil"`
+	Placeholders []Input `xml:"Placeholder" crystalline:"not_nil"`
 }
 
 type Input struct {
@@ -121,7 +121,7 @@ type Slot struct {
 type SkillSet struct {
 	ID int `xml:"id,attr"`
 
-	Skills []Skill `xml:"Skill"`
+	Skills []Skill `xml:"Skill" crystalline:"not_nil"`
 }
 
 type Skill struct {
@@ -131,7 +131,7 @@ type Skill struct {
 	Enabled              bool   `xml:"enabled,attr"`
 	IncludeInFullDPS     *bool  `xml:"includeInFullDPS,attr,omitempty"`
 
-	Gems []Gem `xml:"Gem"`
+	Gems []Gem `xml:"Gem" crystalline:"not_nil"`
 
 	Slot                  string // TODO Slot
 	SlotEnabled           bool

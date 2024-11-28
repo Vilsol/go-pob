@@ -5,59 +5,75 @@
 
   import { assets } from '$app/paths';
   import { browser } from '$app/environment';
-  import { syncWrap } from '../lib/go/worker';
+  import { syncWrap } from '$lib/go/worker';
   import { proxy } from 'comlink';
-  import type { Outputs } from '../lib/custom_types';
-  import { outputs, currentBuild, sampleBuildCode } from '../lib/global';
+  import type { Outputs } from '$lib/custom_types';
+  import { outputs, currentBuild, sampleBuildCode } from '$lib/global';
   import OverlayController from '$lib/components/overlays/OverlayController.svelte';
   import { fontScaling } from '$lib/global.js';
+  import { logError } from '$lib/utils';
+  import type { Snippet } from 'svelte';
 
-  let wasmLoading = true;
+  let {
+    children
+  }: {
+    children?: Snippet;
+  } = $props();
 
-  let loadingMessage = 'Initializing...';
-  let loadingStage = '';
+  let wasmLoading = $state(true);
+
+  let loadingMessage = $state('Initializing...');
+  let loadingStage = $state('');
 
   if (browser) {
     if (!syncWrap || syncWrap === null) {
       loadingMessage = 'Failed to initialize worker';
     } else {
-      syncWrap.booted.then((booted) => {
-        if (booted) {
-          wasmLoading = false;
-          return;
-        }
+      syncWrap.booted
+        .then((booted) => {
+          if (booted) {
+            wasmLoading = false;
+            return;
+          }
 
-        fetch(assets + '/go-pob.wasm')
-          .then((data) => data.arrayBuffer())
-          .then((data) => {
-            syncWrap
-              ?.boot(
-                data,
-                proxy((out: Outputs) => {
-                  outputs.set(out);
-                }),
-                proxy(currentBuild)
-              )
-              .then(async () => {
-                console.log('worker booted');
+          fetch(assets + '/go-pob.wasm')
+            .then((data) => data.arrayBuffer())
+            .then((data) => {
+              syncWrap
+                ?.boot(
+                  data,
+                  proxy((out: Outputs) => {
+                    outputs.set(out);
+                  }),
+                  proxy(currentBuild)
+                )
+                .then(async () => {
+                  console.log('worker booted');
 
-                loadingMessage = 'Loading data...';
-                await syncWrap?.loadData(
-                  proxy(async (stage: string) => {
-                    loadingMessage = 'Loading data:';
-                    loadingStage = stage;
-                  })
-                );
+                  loadingMessage = 'Loading data...';
+                  await syncWrap?.loadData(
+                    // eslint-disable-next-line @typescript-eslint/require-await
+                    proxy(async (stage: string) => {
+                      loadingMessage = 'Loading data:';
+                      loadingStage = stage;
+                    })
+                  );
 
-                wasmLoading = false;
+                  wasmLoading = false;
 
-                // TODO Remove from Prod
-                syncWrap?.ImportCode(sampleBuildCode).then(() => {
-                  syncWrap?.Tick('importBuildFromCode');
-                });
-              });
-          });
-      });
+                  // TODO Remove from Prod
+                  syncWrap
+                    ?.ImportCode(sampleBuildCode)
+                    .then(() => {
+                      syncWrap?.Tick('importBuildFromCode').catch(logError);
+                    })
+                    .catch(logError);
+                })
+                .catch(logError);
+            })
+            .catch(logError);
+        })
+        .catch(logError);
     }
   }
 </script>
@@ -80,7 +96,7 @@
       <Sidebar />
 
       <div class="h-full w-full overflow-hidden">
-        <slot />
+        {@render children?.()}
       </div>
     </div>
 

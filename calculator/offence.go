@@ -26,9 +26,9 @@ func calcDamage(activeSkill *ActiveSkill, output map[string]float64, cfg *ListCf
 		convMult := activeSkill.ConversionTable[otherType].Targets[damageType]
 		if convMult > 0 {
 			// Damage is being converted/gained from the other damage type
-			min, max := calcDamage(activeSkill, output, cfg, breakdown, otherType, typeFlags, &damageType)
-			addMin += min * convMult
-			addMax += max * convMult
+			minDamage, maxDamage := calcDamage(activeSkill, output, cfg, breakdown, otherType, typeFlags, &damageType)
+			addMin += minDamage * convMult
+			addMax += maxDamage * convMult
 		}
 	}
 

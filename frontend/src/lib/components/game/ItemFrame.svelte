@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { colorCodes, formatColors } from '../../display/colors';
+  import { colorCodes } from '$lib/display/colors';
+  import ColoredText from '$lib/components/common/ColoredText.svelte';
 
   type Section = {
     large?: boolean;
@@ -8,8 +9,13 @@
     text: string[];
   };
 
-  export let sections: Section[] = [];
-  export let color = colorCodes.WHITE;
+  let {
+    sections = [],
+    color = colorCodes.WHITE
+  }: {
+    sections?: Section[];
+    color?: string;
+  } = $props();
 </script>
 
 <div class="grid grid-flow-row min-w-[19em] max-w-[25vw] w-fit h-fit border-2" style="border-color: {color}">
@@ -21,7 +27,7 @@
       style="--border-color: {color}; color: {section.color || '#ffffff'}">
       {#each section.text as line}
         <div>
-          {@html formatColors(line)}
+          <ColoredText text={line} />
         </div>
       {/each}
     </div>

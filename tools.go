@@ -29,7 +29,7 @@ func generateTypes() {
 	}
 
 	tsFile = "/* eslint-disable */\n" + tsFile
-	jsFile = "/* eslint-disable */\n" + jsFile
+	jsFile = "/* eslint-disable */\n// @ts-nocheck\n" + jsFile
 
 	if err := os.MkdirAll("./frontend/src/lib/types", 0777); err != nil {
 		if !os.IsExist(err) {

@@ -22,18 +22,25 @@
   import { currentBuild } from '../global';
   import { syncWrap } from '../go/worker';
   import { writable } from 'svelte/store';
+  import { logError } from '$lib/utils';
 
   export let skillTree: Tree;
   export let skillTreeVersion: string;
 
-  let currentClass: string | undefined;
-  $: $currentBuild?.Build?.ClassName?.then((newClass) => (currentClass = newClass));
+  let currentClass: string | undefined = $state();
+  $effect(() => {
+    $currentBuild?.Build.ClassName.then((newClass) => (currentClass = newClass)).catch(logError);
+  });
 
-  let currentAscendancy: string | undefined;
-  $: $currentBuild?.Build?.AscendClassName?.then((newAscendancy) => (currentAscendancy = newAscendancy));
+  let currentAscendancy: string | undefined = $state();
+  $effect(() => {
+    $currentBuild?.Build.AscendClassName.then((newAscendancy) => (currentAscendancy = newAscendancy)).catch(logError);
+  });
 
   let activeNodes: number[] | undefined;
-  $: $currentBuild?.Build?.PassiveNodes?.then((newNodes) => (activeNodes = newNodes));
+  $effect(() => {
+    $currentBuild?.Build?.PassiveNodes?.then((newNodes) => (activeNodes = newNodes)).catch(logError);
+  });
 
   interface RenderParams {
     context: CanvasRenderingContext2D;
@@ -42,6 +49,7 @@
   }
 
   type RenderFunc = (params: RenderParams) => void;
+
 
   export let clickNode = (node: Node) => {
     const nodeId = node.skill ?? -1;
@@ -64,18 +72,27 @@
     currentBuild.set($currentBuild);
   }
 
+  interface Props {
+    clickNode?: (node: Node) => void;
+    children?: import('svelte').Snippet;
+  }
+
+  let { clickNode, children }: Props = $props();
+
+
   const titleFont = '25px Roboto Flex';
   const statsFont = '17px Roboto Flex';
 
-  let scaling = 10;
+  let scaling = $state(10);
 
-  let offsetX = 0;
-  let offsetY = 0;
+  let offsetX = $state(0);
+  let offsetY = $state(0);
 
   const drawScaling = 2.6;
 
-  $: cdnBase = `https://go-pob-data.pages.dev/data/${(skillTreeVersion || '3_18').replace('_', '.')}`;
-  $: cdnTreeBase = cdnBase + `/tree/assets/`;
+
+  let cdnBase = $derived(`https://go-pob-data.pages.dev/data/${($skillTreeVersion || '3_18').replace('_', '.')}`);
+  let cdnTreeBase = $derived(cdnBase + `/tree/assets/`);
 
   const spriteCache: Record<string, HTMLImageElement> = {};
   const cropCache: Record<string, HTMLCanvasElement> = {};
@@ -122,6 +139,7 @@
 
     if (cropCircle && spriteCache[spriteSheetUrl].complete) {
       const cacheKey = spriteSheetUrl + ':' + path + "--" + (active ? 'active' : 'inactive');
+      
       if (!(cacheKey in cropCache)) {
         const tempCanvas = document.createElement('canvas');
         const tempCtx = tempCanvas.getContext('2d')!;
@@ -181,19 +199,24 @@
     return result;
   };
 
-  let mousePos: Point = {
+  let mousePos = $state<Point>({
     x: Number.MIN_VALUE,
     y: Number.MIN_VALUE
-  };
+  });
 
-  let cursor = 'unset';
+  let cursor = $state('unset');
 
   const hoverPath = writable<number[]>([]);
-  const extraCache: Record<string, HTMLImageElement> = {};
+  const extraCache = $state<Record<string, HTMLImageElement>>({});
 
-  let hoveredNode: Node | undefined;
-  $: render = (({ context, width, height }: RenderParams) => {
+
+  let hoveredNode: Node | undefined = $state();
+  let render = $derived((({ context, width, height }) => {
     const start = window.performance.now();
+
+    if (!$skillTree) {
+      return;
+    }
 
     context.clearRect(0, 0, width, height);
 
@@ -225,6 +248,7 @@
     for (const [groupId, group] of drawnGroups) {
       const posX = ((groupId in ascendancyGroups && ascendancyGroupPositionOffsets[ascendancyGroups[groupId]]?.x) || 0) + group.x;
       const posY = ((groupId in ascendancyGroups && ascendancyGroupPositionOffsets[ascendancyGroups[groupId]]?.y) || 0) + group.y;
+
       const groupPos = toCanvasCoords(posX, posY, offsetX, offsetY, scaling);
 
       const maxOrbit = Math.max(...group.orbits);
@@ -262,6 +286,7 @@
         continue;
       }
 
+      const sourceActive = $hoverPath.indexOf(node.skill!) >= 0;
       for (const o of node.out) {
         const otherNodeId = parseInt(o);
         if (!drawnNodes.has(otherNodeId)) {
@@ -363,14 +388,14 @@
       } else if (node.isAscendancyStart) {
         drawSprite(context, 'AscendancyMiddle', rotatedPos, inverseSpritesOther);
       } else if (node.isKeystone) {
-        drawSprite(context, node.icon, rotatedPos, active ? inverseSpritesActive : inverseSpritesInactive);
+        drawSprite(context, node.icon!, rotatedPos, active ? inverseSpritesActive : inverseSpritesInactive);
         if (active || highlighted) {
           drawSprite(context, 'KeystoneFrameAllocated', rotatedPos, inverseSpritesOther);
         } else {
           drawSprite(context, 'KeystoneFrameUnallocated', rotatedPos, inverseSpritesOther);
         }
       } else if (node.isNotable) {
-        drawSprite(context, node.icon, rotatedPos, active ? inverseSpritesActive : inverseSpritesInactive);
+        drawSprite(context, node.icon!, rotatedPos, active ? inverseSpritesActive : inverseSpritesInactive);
 
         if (node.ascendancyName) {
           if (active || highlighted) {
@@ -401,12 +426,12 @@
         }
       } else if (node.isMastery) {
         if (active || highlighted) {
-          drawSprite(context, node.activeIcon, rotatedPos, inverseSpritesActive);
+          drawSprite(context, node.activeIcon!, rotatedPos, inverseSpritesActive);
         } else {
-          drawSprite(context, node.inactiveIcon, rotatedPos, inverseSpritesInactive);
+          drawSprite(context, node.inactiveIcon!, rotatedPos, inverseSpritesInactive);
         }
       } else {
-        drawSprite(context, node.icon, rotatedPos, active ? inverseSpritesActive : inverseSpritesInactive);
+        drawSprite(context, node.icon!, rotatedPos, active ? inverseSpritesActive : inverseSpritesInactive);
 
         if (node.ascendancyName) {
           if (active || highlighted) {
@@ -429,16 +454,22 @@
       if (hoveredNode !== undefined && currentClass) {
         const rootNodes = classStartNodes[skillTree.classes.findIndex((c) => c.name === currentClass)];
         const target = hoveredNode.skill;
-        syncWrap?.CalculateTreePath(skillTreeVersion || '3_18', [...rootNodes, ...activeNodes ?? []], target!).then((data) => {
-          hoverPath.set(data ?? []);
-        });
+        syncWrap?
+          .CalculateTreePath(skillTreeVersion || '3_18', [...rootNodes, ...activeNodes ?? []], target!)
+          .then((data) => {
+            if (data) {
+              hoverPath.set(data);
+            }
+          })
+          .catch(logError);
+
       } else {
         hoverPath.set([]);
       }
     }
 
     if (hoveredNode) {
-      const nodeName = hoveredNode.name;
+      const nodeName = hoveredNode.name || 'N/A';
       const nodeStats: { text: string; special: boolean }[] = (hoveredNode.stats || []).map((s) => ({
         text: s,
         special: false
@@ -532,7 +563,7 @@
     const end = window.performance.now();
 
     context.fillText(`${(end - start).toFixed(1)}ms`, width - 5, 17);
-  }) as RenderFunc;
+  }) as RenderFunc);
 
   let downX = 0;
   let downY = 0;
@@ -601,10 +632,10 @@
     event.stopImmediatePropagation();
   };
 
-  let parentContainer: HTMLElement;
+  let parentContainer = $state<HTMLElement>();
 
-  let width = 0;
-  let height = 0;
+  let width = $state(0);
+  let height = $state(0);
   const resize = () => {
     if (parentContainer) {
       width = parentContainer.offsetWidth;
@@ -612,23 +643,24 @@
     }
   };
 
-  let initialized = false;
-  $: {
-    if (!initialized && skillTree) {
+
+  let initialized = $state(false);
+  $effect(() => {
+    if (!initialized && $skillTree) {
       initialized = true;
       offsetX = skillTree.min_x + (window.innerWidth / 2) * scaling;
       offsetY = skillTree.min_y + (window.innerHeight / 2) * scaling;
     }
     resize();
-  }
+  });
 
   onMount(() => {
-    new ResizeObserver(resize).observe(parentContainer);
+    new ResizeObserver(resize).observe(parentContainer!);
     resize();
   });
 </script>
 
-<svelte:window on:pointerup={mouseUp} on:pointermove={mouseMove} on:resize={resize} />
+<svelte:window onpointerup={mouseUp} onpointermove={mouseMove} onresize={resize} />
 
 <div class="w-full h-full max-w-full max-h-full overflow-hidden" bind:this={parentContainer}>
   {#if width && height}
@@ -636,7 +668,7 @@
       <Canvas {width} {height} on:pointerdown={mouseDown} on:wheel={onScroll}>
         <Layer {render} />
       </Canvas>
-      <slot />
+      {@render children?.()}
     </div>
   {/if}
 </div>

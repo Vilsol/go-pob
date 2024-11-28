@@ -117,14 +117,14 @@ func (s *ModStore) EvalMod(m mod.Mod, cfg *ListCfg) interface{} {
 				if tag.TagLimitTotal {
 					limitTotal = &limit
 				} else {
-					mult = utils.Min(mult, limit)
+					mult = min(mult, limit)
 				}
 			}
 
 			if v, ok := value.(float64); ok {
 				out := v*mult + tag.TagBase
 				if limitTotal != nil {
-					out = utils.Min(out, *limitTotal)
+					out = min(out, *limitTotal)
 				}
 				value = out
 			} else {
@@ -210,14 +210,14 @@ func (s *ModStore) EvalMod(m mod.Mod, cfg *ListCfg) interface{} {
 				if tag.TagLimitTotal {
 					limitTotal = &limit
 				} else {
-					mult = utils.Min(mult, limit)
+					mult = min(mult, limit)
 				}
 			}
 
 			if v, ok := value.(float64); ok {
 				out := v*mult + tag.Base
 				if limitTotal != nil {
-					out = utils.Min(out, *limitTotal)
+					out = min(out, *limitTotal)
 				}
 				value = out
 			} else {

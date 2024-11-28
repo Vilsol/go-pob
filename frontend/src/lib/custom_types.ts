@@ -1,4 +1,5 @@
 import type { pob } from './types';
+import type { SkillGemCacheItem } from '$lib/cache';
 
 export type Outputs = {
   Output?: Record<string, number>;
@@ -6,4 +7,16 @@ export type Outputs = {
   SkillFlags?: Record<string, boolean>;
 };
 
-export type SkillGroupUpdate = Pick<pob.Skill, 'Enabled' | 'IncludeInFullDPS' | 'Slot' | 'Gems'>;
+export interface GemListValue {
+  label: string;
+  value: string;
+  data: SkillGemCacheItem;
+}
+
+interface GemWithStuff extends pob.Gem {
+  GemListValue: GemListValue;
+}
+
+export type SkillGroupUpdate = Pick<pob.Skill, 'Enabled' | 'IncludeInFullDPS' | 'Slot'> & {
+  Gems: Array<GemWithStuff>;
+};

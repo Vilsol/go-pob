@@ -1,21 +1,22 @@
 <script lang="ts">
-  import { formatColors } from '../display/colors';
+  import ColoredText from '$lib/components/common/ColoredText.svelte';
 
-  export let isActive = false;
-  export const isFirst = false;
-  export let isHover = false;
-  export const isSelectable = false;
-  export const getOptionLabel = undefined;
-  export const filterText = '';
+  let {
+    isActive = false,
+    isHover = false,
+    item
+  }: {
+    isActive?: boolean;
+    isHover?: boolean;
+    // TODO Tooltip
+    item: {
+      label: string;
+    };
+  } = $props();
 
-  // TODO Tooltip
-  export let item: {
-    label: string;
-  };
+  let itemClasses = $state('');
 
-  let itemClasses = '';
-
-  $: {
+  $effect(() => {
     const classes = [];
     if (isActive) {
       classes.push('active');
@@ -24,11 +25,11 @@
       classes.push('hover');
     }
     itemClasses = classes.join(' ');
-  }
+  });
 </script>
 
 <div class="item formatted {itemClasses}">
-  {@html formatColors(item.label)}
+  <ColoredText text={item.label} />
 </div>
 
 <style lang="postcss">
@@ -51,7 +52,7 @@
   }
 
   :global(.formatted span) {
-      position: relative;
-      top: -0.12em;
+    position: relative;
+    top: -0.12em;
   }
 </style>

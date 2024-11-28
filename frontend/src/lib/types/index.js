@@ -1,4 +1,5 @@
 /* eslint-disable */
+// @ts-nocheck
 export let builds;
 export let cache;
 export let calculator;
