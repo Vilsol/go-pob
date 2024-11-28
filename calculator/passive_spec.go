@@ -12,7 +12,7 @@ type PassiveSpec struct {
 	TreeVersion data.TreeVersion
 
 	Nodes              map[string]interface{} // TODO Implement
-	AllocNodes         map[string]interface{} // TODO Implement
+	AllocNodes         map[string]data.Node
 	AllocSubgraphNodes map[string]interface{} // TODO Implement
 	AllocExtendedNodes map[string]interface{} // TODO Implement
 	Jewels             map[string]interface{} // TODO Implement

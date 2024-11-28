@@ -113,6 +113,8 @@ class PoBWorker {
         OutputTable: out.Player.OutputTable,
         SkillFlags: out.Player.MainSkill.SkillFlags
       });
+      console.log("Errors from last tick:");
+      console.log(out.DebugErrors);
     }
   }
 

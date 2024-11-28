@@ -173,10 +173,6 @@
     }
     activeSkillSet = v;
   });
-  $: console.log('ACTIVE:', activeSkillSet);
-  $: console.log($currentBuild?.Skills?.then((wat) => {
-    console.log('WAT', wat);
-  }));
 
   let socketGroupList: string[] = [];
   $: $currentBuild?.Skills?.SkillSets?.[activeSkillSet - 1]?.Skills?.then(async (skills: unknown[]) => {

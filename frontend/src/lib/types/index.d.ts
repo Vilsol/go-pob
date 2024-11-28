@@ -74,12 +74,14 @@ export declare namespace calculator {
     GrantedSkillsItems?: Record<string, unknown | undefined>;
     Flasks?: Record<string, unknown | undefined>;
     GrantedPassives?: Record<string, unknown | undefined>;
+    AllocatedNodes?: Record<string, data.Node>;
     AuxSkillList?: Record<string, unknown | undefined>;
     ModeBuffs: boolean;
     ModeCombat: boolean;
     ModeEffective: boolean;
     KeystonesAdded?: Record<string, unknown | undefined>;
     MainSocketGroup: number;
+    DebugErrors?: Array<string>;
   }
   interface GemEffect {
     GrantedEffect?: calculator.GrantedEffect;
@@ -159,7 +161,7 @@ export declare namespace calculator {
     Build?: pob.PathOfBuilding;
     TreeVersion: string;
     Nodes?: Record<string, unknown | undefined>;
-    AllocNodes?: Record<string, unknown | undefined>;
+    AllocNodes?: Record<string, data.Node>;
     AllocSubgraphNodes?: Record<string, unknown | undefined>;
     AllocExtendedNodes?: Record<string, unknown | undefined>;
     Jewels?: Record<string, unknown | undefined>;
@@ -485,6 +487,7 @@ export declare namespace pob {
     MainSocketGroup: number;
     TargetVersion: string;
     PassiveNodes?: Array<number>;
+    PassiveNodesStartPaths?: Record<number, Array<number> | undefined>;
     PlayerStats?: Array<pob.PlayerStat>;
   }
   interface Calcs {

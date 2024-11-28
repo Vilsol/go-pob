@@ -60,6 +60,7 @@ type Environment struct {
 	Flasks              map[string]interface{} // TODO Implement
 
 	GrantedPassives map[string]interface{} // TODO Implement
+	AllocatedNodes  map[string]data.Node
 
 	AuxSkillList map[string]interface{} // TODO Implement
 
@@ -69,6 +70,8 @@ type Environment struct {
 
 	KeystonesAdded  map[string]interface{}
 	MainSocketGroup int
+
+	DebugErrors []string
 }
 
 type Actor struct {
