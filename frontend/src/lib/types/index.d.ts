@@ -493,8 +493,8 @@ export declare namespace pob {
     Level: number;
     MainSocketGroup: number;
     TargetVersion: string;
-    PassiveNodes: Array<number>;
-    PassiveNodesStartPaths: Record<number, Array<number> | undefined>;
+    PassiveNodes?: Array<number>;
+    PassiveNodesStartPaths?: Record<number, Array<number> | undefined>;
     PlayerStats: Array<pob.PlayerStat>;
   }
   interface Calcs {

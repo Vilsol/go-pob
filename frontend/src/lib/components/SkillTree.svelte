@@ -24,9 +24,6 @@
   import { writable } from 'svelte/store';
   import { logError } from '$lib/utils';
 
-  export let skillTree: Tree;
-  export let skillTreeVersion: string;
-
   let currentClass: string | undefined = $state();
   $effect(() => {
     $currentBuild?.Build.ClassName.then((newClass) => (currentClass = newClass)).catch(logError);
@@ -51,7 +48,7 @@
   type RenderFunc = (params: RenderParams) => void;
 
 
-  export let clickNode = (node: Node) => {
+  let clickNode = (node: Node) => {
     const nodeId = node.skill ?? -1;
     if (activeNodes?.includes(nodeId)) {
       syncWrap?.DeallocateNodes(nodeId);
@@ -73,11 +70,12 @@
   }
 
   interface Props {
-    clickNode?: (node: Node) => void;
+    skillTree: Tree;
+    skillTreeVersion: string;
     children?: import('svelte').Snippet;
   }
 
-  let { clickNode, children }: Props = $props();
+  let { skillTree, skillTreeVersion, children }: Props = $props();
 
 
   const titleFont = '25px Roboto Flex';
@@ -91,7 +89,7 @@
   const drawScaling = 2.6;
 
 
-  let cdnBase = $derived(`https://go-pob-data.pages.dev/data/${($skillTreeVersion || '3_18').replace('_', '.')}`);
+  let cdnBase = $derived(`https://go-pob-data.pages.dev/data/${(skillTreeVersion || '3_18').replace('_', '.')}`);
   let cdnTreeBase = $derived(cdnBase + `/tree/assets/`);
 
   const spriteCache: Record<string, HTMLImageElement> = {};
@@ -214,7 +212,7 @@
   let render = $derived((({ context, width, height }) => {
     const start = window.performance.now();
 
-    if (!$skillTree) {
+    if (!skillTree) {
       return;
     }
 
@@ -454,7 +452,7 @@
       if (hoveredNode !== undefined && currentClass) {
         const rootNodes = classStartNodes[skillTree.classes.findIndex((c) => c.name === currentClass)];
         const target = hoveredNode.skill;
-        syncWrap?
+        syncWrap
           .CalculateTreePath(skillTreeVersion || '3_18', [...rootNodes, ...activeNodes ?? []], target!)
           .then((data) => {
             if (data) {
@@ -646,7 +644,7 @@
 
   let initialized = $state(false);
   $effect(() => {
-    if (!initialized && $skillTree) {
+    if (!initialized && skillTree) {
       initialized = true;
       offsetX = skillTree.min_x + (window.innerWidth / 2) * scaling;
       offsetY = skillTree.min_y + (window.innerHeight / 2) * scaling;
