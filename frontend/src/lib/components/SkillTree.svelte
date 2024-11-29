@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Canvas, Layer } from 'svelte-canvas';
+  import { Canvas, Layer, type Render } from 'svelte-canvas';
   import type { Coord, Node, Sprite, Tree } from '../skill_tree/types';
   import {
     calculateNodePos,
@@ -21,7 +21,7 @@
   import { onMount } from 'svelte';
   import { currentBuild } from '../global';
   import { syncWrap } from '../go/worker';
-  import { writable } from 'svelte/store';
+  import { get, writable } from 'svelte/store';
   import { logError } from '$lib/utils';
 
   let currentClass: string | undefined = $state();
@@ -38,14 +38,6 @@
   $effect(() => {
     $currentBuild?.Build?.PassiveNodes?.then((newNodes) => (activeNodes = newNodes)).catch(logError);
   });
-
-  interface RenderParams {
-    context: CanvasRenderingContext2D;
-    width: number;
-    height: number;
-  }
-
-  type RenderFunc = (params: RenderParams) => void;
 
 
   let clickNode = (node: Node) => {
@@ -208,8 +200,9 @@
   const extraCache = $state<Record<string, HTMLImageElement>>({});
 
 
-  let hoveredNode: Node | undefined = $state();
-  let render = $derived((({ context, width, height }) => {
+
+  const hoveredNode = writable<Node | undefined>();
+  const render: Render = ({ context, width, height }) => {
     const start = window.performance.now();
 
     if (!skillTree) {
@@ -447,11 +440,11 @@
       }
     }
 
-    if (hoveredNode != newHoverNode) {
-      hoveredNode = newHoverNode;
-      if (hoveredNode !== undefined && currentClass) {
+    if (get(hoveredNode) != newHoverNode) {
+      hoveredNode.set(newHoverNode);
+      if (newHoverNode !== undefined && currentClass) {
         const rootNodes = classStartNodes[skillTree.classes.findIndex((c) => c.name === currentClass)];
-        const target = hoveredNode.skill;
+        const target = newHoverNode.skill!;
         syncWrap
           .CalculateTreePath(skillTreeVersion || '3_18', [...rootNodes, ...activeNodes ?? []], target!)
           .then((data) => {
@@ -466,9 +459,10 @@
       }
     }
 
-    if (hoveredNode) {
-      const nodeName = hoveredNode.name || 'N/A';
-      const nodeStats: { text: string; special: boolean }[] = (hoveredNode.stats || []).map((s) => ({
+    const hNode = get(hoveredNode);
+    if (hNode) {
+      const nodeName = hNode.name || 'N/A';
+      const nodeStats: { text: string; special: boolean }[] = (hNode.stats || []).map((s) => ({
         text: s,
         special: false
       }));
@@ -512,7 +506,7 @@
             });
           });
         });
-      } else if (hoveredNode.isJewelSocket) {
+      } else if (hNode.isJewelSocket) {
         allLines.push({
           text: 'Click to select this socket',
           offset,
@@ -548,7 +542,7 @@
       });
     }
 
-    if (hoveredNode) {
+    if (hNode) {
       cursor = 'pointer';
     } else {
       cursor = 'unset';
@@ -561,7 +555,7 @@
     const end = window.performance.now();
 
     context.fillText(`${(end - start).toFixed(1)}ms`, width - 5, 17);
-  }) as RenderFunc);
+  };
 
   let downX = 0;
   let downY = 0;
@@ -582,8 +576,9 @@
       y: event.offsetY
     };
 
-    if (hoveredNode) {
-      clickNode(hoveredNode);
+    const hNode = get(hoveredNode);
+    if (hNode) {
+      clickNode(hNode);
     }
   };
 
@@ -663,7 +658,7 @@
 <div class="w-full h-full max-w-full max-h-full overflow-hidden" bind:this={parentContainer}>
   {#if width && height}
     <div style="touch-action: none; cursor: {cursor}">
-      <Canvas {width} {height} on:pointerdown={mouseDown} on:wheel={onScroll}>
+      <Canvas {width} {height} onpointerdown={mouseDown} onwheel={onScroll}>
         <Layer {render} />
       </Canvas>
       {@render children?.()}
