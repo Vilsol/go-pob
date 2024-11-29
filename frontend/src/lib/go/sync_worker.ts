@@ -226,12 +226,12 @@ class PoBWorker {
 
   AllocateNodes(nodeIds: number[]) {
     this.currentBuild?.AllocateNodes(nodeIds);
-    this.Tick('AllocateNode');
+    void this.Tick('AllocateNode');
   }
 
   DeallocateNodes(nodeId: number) {
     this.currentBuild?.DeallocateNodes(nodeId);
-    this.Tick('DeallocateNode');
+    void this.Tick('DeallocateNode');
   }
 
   CalculateTreePath(version: string, activeNodes: number[], target: number) {

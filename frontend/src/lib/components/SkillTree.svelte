@@ -44,6 +44,7 @@
     const nodeId = node.skill ?? -1;
     if (activeNodes?.includes(nodeId)) {
       syncWrap?.DeallocateNodes(nodeId);
+      currentBuild.set($currentBuild);
     } else {
       // TODO: Needs support for ascendancies or any other disconnect groups
       const rootNodes = classStartNodes[skillTree.classes.findIndex((c) => c.name === currentClass)];
@@ -55,10 +56,9 @@
         // The first in the path is always an already allocated node
         const isRootInPath = rootNodes.includes(pathData[0]);
         syncWrap?.AllocateNodes(isRootInPath ? pathData : pathData.slice(1));
+        currentBuild.set($currentBuild);
       });
     }
-
-    currentBuild.set($currentBuild);
   }
 
   interface Props {
