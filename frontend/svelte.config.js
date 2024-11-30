@@ -17,7 +17,7 @@ const config = {
       fallback: 'index.html'
     }),
     paths: {
-      base: '/go-pob'
+      base: process.env.PATH_BASE || undefined
     }
   },
 

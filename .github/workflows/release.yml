@@ -43,6 +43,8 @@ jobs:
 
       - name: Build frontend
         working-directory: frontend
+        env:
+          PATH_BASE: "/go-pob"
         run: |
           pnpm run build
           ls -lah build
