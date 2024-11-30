@@ -12,8 +12,18 @@ import (
 	"github.com/Vilsol/go-pob/utils"
 )
 
-func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStoreFuncs, ModStoreFuncs, ModStoreFuncs) {
+func InitEnv(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode OutputMode) (*Environment, ModStoreFuncs, ModStoreFuncs, ModStoreFuncs) {
 	env := &Environment{}
+	env.Cache = envCache
+
+	// TODO This come from the build at some point but below it's not so not sure what to do here yet
+	currentTreeVersion := data.LatestTreeVersion
+
+	// Clear Node Mod cache if tree has changed
+	if env.Cache.TreeVersion != currentTreeVersion {
+		env.Cache.modsForNodes = make(map[string]ModList, len(data.TreeVersions[currentTreeVersion].Tree().Nodes))
+		env.Cache.TreeVersion = currentTreeVersion
+	}
 
 	env.DebugErrors = make([]string, 0)
 	env.Build = build
@@ -200,6 +210,7 @@ func InitEnv(build *pob.PathOfBuilding, mode OutputMode) (*Environment, ModStore
 	var tree = data.TreeVersions[data.LatestTreeVersion].Tree()
 	env.AllocatedNodes = make(map[string]data.Node)
 	/* *
+	// TODO
 	if override.addNodes or override.removeNodes then
 		nodes = { }
 		if override.addNodes then

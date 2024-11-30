@@ -2,6 +2,7 @@ package calculator
 
 import (
 	"github.com/Vilsol/go-pob/mod"
+	"github.com/Vilsol/go-pob/utils"
 )
 
 var _ ModStoreFuncs = (*ModList)(nil)
@@ -42,7 +43,8 @@ func (m *ModList) AddDB(db *ModList) {
 		return
 	}
 
-	m.mods = append(m.mods, db.mods...)
+	newMods := utils.CopySlice(db.mods)
+	m.mods = append(m.mods, newMods...)
 }
 
 func (m *ModList) List(cfg *ListCfg, names ...string) []interface{} {

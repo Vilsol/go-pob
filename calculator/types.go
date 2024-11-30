@@ -35,6 +35,7 @@ const (
 )
 
 type Environment struct {
+	Cache *EnvironmentCache
 	Build *pob.PathOfBuilding
 	Mode  OutputMode
 	Spec  *PassiveSpec
@@ -72,6 +73,11 @@ type Environment struct {
 	MainSocketGroup int
 
 	DebugErrors []string
+}
+
+type EnvironmentCache struct {
+	TreeVersion  data.TreeVersion
+	modsForNodes map[string]ModList // Mods for all nodes cached after being parsed
 }
 
 type Actor struct {
