@@ -52,7 +52,7 @@ func DecodeDecompress(code string) (string, error) {
 func removeValue[T comparable](s []T, v T) ([]T, error) {
 	var idx = slices.Index(s, v)
 	if idx == -1 {
-		return nil, fmt.Errorf("value %w was not found in slice", v)
+		return nil, fmt.Errorf("value %v was not found in slice", v)
 	}
 
 	s[idx] = s[len(s)-1]

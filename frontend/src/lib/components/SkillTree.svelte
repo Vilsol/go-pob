@@ -39,7 +39,6 @@
     $currentBuild?.Build?.PassiveNodes?.then((newNodes) => (activeNodes = newNodes)).catch(logError);
   });
 
-
   let clickNode = (node: Node) => {
     const nodeId = node.skill ?? -1;
     if (activeNodes?.includes(nodeId)) {
@@ -48,7 +47,7 @@
     } else {
       // TODO: Needs support for ascendancies or any other disconnect groups
       const rootNodes = classStartNodes[skillTree.classes.findIndex((c) => c.name === currentClass)];
-      syncWrap?.CalculateTreePath(skillTreeVersion || '3_18', [...rootNodes, ...activeNodes ?? []], nodeId).then((pathData) => {
+      syncWrap?.CalculateTreePath(skillTreeVersion || '3_18', [...rootNodes, ...(activeNodes ?? [])], nodeId).then((pathData) => {
         if (!pathData) {
           return;
         }
@@ -59,7 +58,7 @@
         currentBuild.set($currentBuild);
       });
     }
-  }
+  };
 
   interface Props {
     skillTree: Tree;
@@ -68,7 +67,6 @@
   }
 
   let { skillTree, skillTreeVersion, children }: Props = $props();
-
 
   const titleFont = '25px Roboto Flex';
   const statsFont = '17px Roboto Flex';
@@ -79,7 +77,6 @@
   let offsetY = $state(0);
 
   const drawScaling = 2.6;
-
 
   let cdnBase = $derived(`https://go-pob-data.pages.dev/data/${(skillTreeVersion || '3_18').replace('_', '.')}`);
   let cdnTreeBase = $derived(cdnBase + `/tree/assets/`);
@@ -128,8 +125,8 @@
     }
 
     if (cropCircle && spriteCache[spriteSheetUrl].complete) {
-      const cacheKey = spriteSheetUrl + ':' + path + "--" + (active ? 'active' : 'inactive');
-      
+      const cacheKey = spriteSheetUrl + ':' + path + '--' + (active ? 'active' : 'inactive');
+
       if (!(cacheKey in cropCache)) {
         const tempCanvas = document.createElement('canvas');
         const tempCtx = tempCanvas.getContext('2d')!;
@@ -198,8 +195,6 @@
 
   const hoverPath = writable<number[]>([]);
   const extraCache = $state<Record<string, HTMLImageElement>>({});
-
-
 
   const hoveredNode = writable<Node | undefined>();
   const render: Render = ({ context, width, height }) => {
@@ -446,14 +441,13 @@
         const rootNodes = classStartNodes[skillTree.classes.findIndex((c) => c.name === currentClass)];
         const target = newHoverNode.skill!;
         syncWrap
-          .CalculateTreePath(skillTreeVersion || '3_18', [...rootNodes, ...activeNodes ?? []], target!)
+          .CalculateTreePath(skillTreeVersion || '3_18', [...rootNodes, ...(activeNodes ?? [])], target!)
           .then((data) => {
             if (data) {
               hoverPath.set(data);
             }
           })
           .catch(logError);
-
       } else {
         hoverPath.set([]);
       }
@@ -635,7 +629,6 @@
       height = parentContainer.offsetHeight;
     }
   };
-
 
   let initialized = $state(false);
   $effect(() => {

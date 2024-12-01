@@ -20,6 +20,8 @@ func init() {
 }
 
 func TestEmptyEnv(t *testing.T) {
+	testCache := &EnvironmentCache{}
+
 	err := poe.InitializeAll(context.Background(), raw.LatestVersion, cache.Disk(), nil)
 	testza.AssertNoError(t, err)
 
@@ -29,7 +31,7 @@ func TestEmptyEnv(t *testing.T) {
 	build, err := builds.ParseBuild(file)
 	testza.AssertNoError(t, err)
 
-	_, cachedPlayerDB, cachedEnemyDB, cachedMinionDB := InitEnv(build, OutputModeMain)
+	_, cachedPlayerDB, cachedEnemyDB, cachedMinionDB := InitEnv(build, testCache, OutputModeMain)
 
 	testza.AssertEqual(t, 101, len(cachedPlayerDB.(*ModDB).Mods))
 	testza.AssertEqual(t, 60, len(cachedEnemyDB.(*ModDB).Mods))
