@@ -24,6 +24,14 @@
   import { get, writable } from 'svelte/store';
   import { logError } from '$lib/utils';
 
+  interface Props {
+    skillTree: Tree;
+    skillTreeVersion: string;
+    children?: import('svelte').Snippet;
+  }
+
+  let { skillTree, skillTreeVersion, children }: Props = $props();
+
   let currentClass: string | undefined = $state();
   $effect(() => {
     $currentBuild?.Build.ClassName.then((newClass) => (currentClass = newClass)).catch(logError);
@@ -42,31 +50,23 @@
   let clickNode = (node: Node) => {
     const nodeId = node.skill ?? -1;
     if (activeNodes?.includes(nodeId)) {
-      syncWrap?.DeallocateNodes(nodeId);
+      void syncWrap?.DeallocateNodes(nodeId);
       currentBuild.set($currentBuild);
     } else {
       // TODO: Needs support for ascendancies or any other disconnect groups
       const rootNodes = classStartNodes[skillTree.classes.findIndex((c) => c.name === currentClass)];
-      syncWrap?.CalculateTreePath(skillTreeVersion || '3_18', [...rootNodes, ...(activeNodes ?? [])], nodeId).then((pathData) => {
+      void syncWrap?.CalculateTreePath(skillTreeVersion || '3_18', [...rootNodes, ...(activeNodes ?? [])], nodeId).then((pathData) => {
         if (!pathData) {
           return;
         }
 
         // The first in the path is always an already allocated node
         const isRootInPath = rootNodes.includes(pathData[0]);
-        syncWrap?.AllocateNodes(isRootInPath ? pathData : pathData.slice(1));
+        void syncWrap?.AllocateNodes(isRootInPath ? pathData : pathData.slice(1));
         currentBuild.set($currentBuild);
       });
     }
   };
-
-  interface Props {
-    skillTree: Tree;
-    skillTreeVersion: string;
-    children?: import('svelte').Snippet;
-  }
-
-  let { skillTree, skillTreeVersion, children }: Props = $props();
 
   const titleFont = '25px Roboto Flex';
   const statsFont = '17px Roboto Flex';
@@ -272,7 +272,6 @@
         continue;
       }
 
-      const sourceActive = $hoverPath.indexOf(node.skill!) >= 0;
       for (const o of node.out) {
         const otherNodeId = parseInt(o);
         if (!drawnNodes.has(otherNodeId)) {
@@ -374,14 +373,14 @@
       } else if (node.isAscendancyStart) {
         drawSprite(context, 'AscendancyMiddle', rotatedPos, inverseSpritesOther);
       } else if (node.isKeystone) {
-        drawSprite(context, node.icon!, rotatedPos, active ? inverseSpritesActive : inverseSpritesInactive);
+        drawSprite(context, node.icon, rotatedPos, active ? inverseSpritesActive : inverseSpritesInactive);
         if (active || highlighted) {
           drawSprite(context, 'KeystoneFrameAllocated', rotatedPos, inverseSpritesOther);
         } else {
           drawSprite(context, 'KeystoneFrameUnallocated', rotatedPos, inverseSpritesOther);
         }
       } else if (node.isNotable) {
-        drawSprite(context, node.icon!, rotatedPos, active ? inverseSpritesActive : inverseSpritesInactive);
+        drawSprite(context, node.icon, rotatedPos, active ? inverseSpritesActive : inverseSpritesInactive);
 
         if (node.ascendancyName) {
           if (active || highlighted) {
@@ -412,12 +411,12 @@
         }
       } else if (node.isMastery) {
         if (active || highlighted) {
-          drawSprite(context, node.activeIcon!, rotatedPos, inverseSpritesActive);
+          drawSprite(context, node.activeIcon, rotatedPos, inverseSpritesActive);
         } else {
-          drawSprite(context, node.inactiveIcon!, rotatedPos, inverseSpritesInactive);
+          drawSprite(context, node.inactiveIcon, rotatedPos, inverseSpritesInactive);
         }
       } else {
-        drawSprite(context, node.icon!, rotatedPos, active ? inverseSpritesActive : inverseSpritesInactive);
+        drawSprite(context, node.icon, rotatedPos, active ? inverseSpritesActive : inverseSpritesInactive);
 
         if (node.ascendancyName) {
           if (active || highlighted) {
@@ -441,7 +440,7 @@
         const rootNodes = classStartNodes[skillTree.classes.findIndex((c) => c.name === currentClass)];
         const target = newHoverNode.skill!;
         syncWrap
-          .CalculateTreePath(skillTreeVersion || '3_18', [...rootNodes, ...(activeNodes ?? [])], target!)
+          .CalculateTreePath(skillTreeVersion || '3_18', [...rootNodes, ...(activeNodes ?? [])], target)
           .then((data) => {
             if (data) {
               hoverPath.set(data);
