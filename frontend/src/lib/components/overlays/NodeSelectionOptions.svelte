@@ -34,11 +34,11 @@
     return allLines;
   };
 
-  const getOptionOnClick = (index: number) => {
-    return clickSelectionOption(index);
+  const getOptionOnSelect = (index: number) => {
+    return selectionOption(index);
   };
 
-  let clickSelectionOption = (index: number) => (_: Event) => {
+  let selectionOption = (index: number) => (_: Event) => {
     if (!node) {
       console.warn('Attempted to select an option without underlying node available.');
       onclose();
@@ -57,7 +57,7 @@
       <div class="flex flex-row gap-1">
         <ol class="options-list">
           {#each lineOptions as option, i}
-            <li class="option_${i}" id="test" onclick={getOptionOnClick(i)}>{option.text}</li>
+            <li role="menuitem" class="option_${i}" onclick={getOptionOnSelect(i)} onkeydown={getOptionOnSelect(i)}>{option.text}</li>
           {/each}
         </ol>
       </div>

@@ -37,7 +37,8 @@
   const openNodeOptions = (node: Node) => {
     openOverlay({
       component: NodeSelectionOptions,
-      props: { node: node, onSelectOption: selectOption }
+      props: { node: node, onSelectOption: selectOption },
+      backdropClose: true
     });
   };
 
