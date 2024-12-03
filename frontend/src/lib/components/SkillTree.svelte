@@ -23,6 +23,8 @@
   import { syncWrap } from '../go/worker';
   import { get, writable } from 'svelte/store';
   import { logError } from '$lib/utils';
+  import { openOverlay } from '$lib/overlay';
+  import NodeSelectionOptions from './overlays/NodeSelectionOptions.svelte';
 
   interface Props {
     skillTree: Tree;
@@ -31,6 +33,14 @@
   }
 
   let { skillTree, skillTreeVersion, children }: Props = $props();
+
+  const openNodeOptions = (node: Node) => {
+    openOverlay({
+      // Todo: fixup type compatibility with base overlay
+      component: NodeSelectionOptions,
+      props: { node: node, onSelectOption: selectOption }
+    });
+  };
 
   let currentClass: string | undefined = $state();
   $effect(() => {
@@ -47,6 +57,24 @@
     $currentBuild?.Build?.PassiveNodes?.then((newNodes) => (activeNodes = newNodes)).catch(logError);
   });
 
+  let allocatePathToTarget = (nodeId: number) => {
+    const rootNodes = classStartNodes[skillTree.classes.findIndex((c) => c.name === currentClass)];
+    void syncWrap?.CalculateTreePath(skillTreeVersion || '3_18', [...rootNodes, ...(activeNodes ?? [])], nodeId).then((pathData) => {
+      if (!pathData) {
+        return;
+      }
+
+      // The first in the path is always an already allocated node
+      const isRootInPath = rootNodes.includes(pathData[0]);
+      void syncWrap?.AllocateNodes(isRootInPath ? pathData : pathData.slice(1));
+      currentBuild.set($currentBuild);
+    });
+  };
+
+  let selectOption = (node: Node, optionIndex: number) => {
+    allocatePathToTarget(node.skill ?? -1);
+  };
+
   let clickNode = (node: Node) => {
     const nodeId = node.skill ?? -1;
     if (activeNodes?.includes(nodeId)) {
@@ -54,17 +82,11 @@
       currentBuild.set($currentBuild);
     } else {
       // TODO: Needs support for ascendancies or any other disconnect groups
-      const rootNodes = classStartNodes[skillTree.classes.findIndex((c) => c.name === currentClass)];
-      void syncWrap?.CalculateTreePath(skillTreeVersion || '3_18', [...rootNodes, ...(activeNodes ?? [])], nodeId).then((pathData) => {
-        if (!pathData) {
-          return;
-        }
-
-        // The first in the path is always an already allocated node
-        const isRootInPath = rootNodes.includes(pathData[0]);
-        void syncWrap?.AllocateNodes(isRootInPath ? pathData : pathData.slice(1));
-        currentBuild.set($currentBuild);
-      });
+      if (node.isMastery) {
+        openNodeOptions(node);
+        return;
+      }
+      allocatePathToTarget(nodeId);
     }
   };
 
@@ -507,6 +529,31 @@
         });
 
         offset += 20;
+      } else if (hNode.isMastery) {
+        allLines.push({
+          text: 'Available mastery options are:',
+          offset,
+          special: false
+        });
+        offset += 20;
+        hNode.masteryEffects?.forEach((effect) => {
+          if (allLines.length > 0) {
+            offset += 10;
+          }
+          effect.stats.forEach((stat) => {
+            stat.split('\n').forEach((line) => {
+              if (allLines.length > 0) {
+                offset += 10;
+              }
+              allLines.push({
+                text: stat ?? 'N/A',
+                offset,
+                special: true
+              });
+              offset += 20;
+            });
+          });
+        });
       }
 
       const titleHeight = 55;
