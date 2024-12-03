@@ -72,6 +72,8 @@
   };
 
   let selectOption = (node: Node, optionIndex: number) => {
+    // Todo: allocate mastery option to currentBuild
+    console.info(`Selected mastery option ${optionIndex} for mastery node ${node.name} - nodeId ${node.skill}`);
     allocatePathToTarget(node.skill ?? -1);
   };
 
