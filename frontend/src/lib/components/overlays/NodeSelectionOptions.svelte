@@ -1,15 +1,19 @@
 <script lang="ts">
   import { fontScaling } from '$lib/global';
   import type { Node } from '../../skill_tree/types';
+
+  interface NodeSelectionOptionsProps {
+    node: Node;
+    onSelectOption: (node: Node, optionIdex: number) => void;
+  }
+
   let {
     node,
     onSelectOption,
     onclose
   }: {
-    node: Node;
-    onSelectOption: (node: Node, optionIdex: number) => void;
     onclose: () => void;
-  } = $props();
+  } & NodeSelectionOptionsProps = $props();
 
   type lineItem = {
     text: string;

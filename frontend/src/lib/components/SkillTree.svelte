@@ -36,7 +36,6 @@
 
   const openNodeOptions = (node: Node) => {
     openOverlay({
-      // Todo: fixup type compatibility with base overlay
       component: NodeSelectionOptions,
       props: { node: node, onSelectOption: selectOption }
     });
