@@ -38,10 +38,10 @@
     return clickSelectionOption(index);
   };
 
-  let clickSelectionOption = (index: number) => (event: Event) => {
+  let clickSelectionOption = (index: number) => (_: Event) => {
     if (!node) {
       console.warn('Attempted to select an option without underlying node available.');
-      return;
+      onclose();
     }
     onSelectOption(node, index);
     onclose();
