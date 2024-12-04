@@ -23,12 +23,8 @@
     const allLines: lineItem[] = [];
 
     node.masteryEffects?.forEach((effect) => {
-      effect.stats.forEach((stat) => {
-        stat.split('\n').forEach(() => {
-          allLines.push({
-            text: stat ?? 'N/A'
-          });
-        });
+      allLines.push({
+        text: effect.stats.join('\n') ?? 'N/A'
       });
     });
     return allLines;
@@ -50,14 +46,14 @@
   let lineOptions = getLineOptions(node);
 </script>
 
-<div class="flex flex-col gap-4">
+<div class="flex flex-col gap-2">
   <fieldset class="border border-white bg-neutral-900 p-2 mt-4 min-w-[15vw]">
-    <legend class="container"></legend>
-    <div class="side-by-side-max-content w-full">
+    <legend class="container">{node.name}</legend>
+    <div class="container">
       <div class="flex flex-row gap-1">
         <ol class="options-list">
           {#each lineOptions as option, i}
-            <li role="menuitem" class="option_${i}" onclick={getOptionOnSelect(i)} onkeydown={getOptionOnSelect(i)}>{option.text}</li>
+            <li role="menuitem" id="option_${i}" onclick={getOptionOnSelect(i)} onkeydown={getOptionOnSelect(i)}>{option.text}</li>
           {/each}
         </ol>
       </div>
@@ -78,5 +74,10 @@
 
   .options-list {
     text-align: left;
+    white-space: pre-wrap;
+  }
+
+  .options-list li {
+    margin: 5px;
   }
 </style>
