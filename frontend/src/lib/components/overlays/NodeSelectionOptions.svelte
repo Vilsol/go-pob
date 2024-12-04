@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { fontScaling } from '$lib/global';
   import type { Node } from '../../skill_tree/types';
 
   interface NodeSelectionOptionsProps {
@@ -19,10 +18,10 @@
     text: string;
   };
 
-  const getLineOptions = (node: Node): lineItem[] => {
+  const getLineOptions = (nodeToDescribe: Node): lineItem[] => {
     const allLines: lineItem[] = [];
 
-    node.masteryEffects?.forEach((effect) => {
+    nodeToDescribe.masteryEffects?.forEach((effect) => {
       allLines.push({
         text: effect.stats.join('\n') ?? 'N/A'
       });
@@ -30,11 +29,7 @@
     return allLines;
   };
 
-  const getOptionOnSelect = (index: number) => {
-    return selectionOption(index);
-  };
-
-  let selectionOption = (index: number) => (_: Event) => {
+  let selectionOption = (index: number) => () => {
     if (!node) {
       console.warn('Attempted to select an option without underlying node available.');
       onclose();
@@ -43,6 +38,7 @@
     onclose();
   };
 
+  const getOptionOnSelect = (index: number) => selectionOption(index);
   let lineOptions = getLineOptions(node);
 </script>
 

@@ -34,14 +34,6 @@
 
   let { skillTree, skillTreeVersion, children }: Props = $props();
 
-  const openNodeOptions = (node: Node) => {
-    openOverlay({
-      component: NodeSelectionOptions,
-      props: { node: node, onSelectOption: selectOption },
-      backdropClose: true
-    });
-  };
-
   let currentClass: string | undefined = $state();
   $effect(() => {
     $currentBuild?.Build.ClassName.then((newClass) => (currentClass = newClass)).catch(logError);
@@ -75,6 +67,14 @@
     // Todo: allocate mastery option to currentBuild
     console.debug(`Selected mastery option ${optionIndex} for mastery node ${node.name} - nodeId ${node.skill}`);
     allocatePathToTarget(node.skill ?? -1);
+  };
+
+  const openNodeOptions = (node: Node) => {
+    openOverlay({
+      component: NodeSelectionOptions,
+      props: { node: node, onSelectOption: selectOption },
+      backdropClose: true
+    });
   };
 
   let clickNode = (node: Node) => {
@@ -543,7 +543,7 @@
             offset += 10;
           }
           effect.stats.forEach((stat) => {
-            stat.split('\n').forEach((line) => {
+            stat.split('\n').forEach(() => {
               if (allLines.length > 0) {
                 offset += 10;
               }
