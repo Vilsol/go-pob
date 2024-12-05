@@ -1,0 +1,250 @@
+<script lang="ts">
+  import { Canvas, Layer, type Render } from 'svelte-canvas';
+  import type { Node } from '../../skill_tree/types';
+  import { calculateNodePos, distance, drawnNodes, skillTree, skillTreeVersion, classStartNodes, type Point } from '../../skill_tree';
+  import { onMount } from 'svelte';
+  import { currentBuild } from '../../global';
+  import { syncWrap } from '../../go/worker';
+  import { get, writable } from 'svelte/store';
+  import { logError } from '$lib/utils';
+  import AllSkillNodes from '$lib/components/skill-tree/AllSkillNodes.svelte';
+  import AllConnections from '$lib/components/skill-tree/AllConnections.svelte';
+  import AllGroups from '$lib/components/skill-tree/AllGroups.svelte';
+  import ClassImage from '$lib/components/skill-tree/ClassImage.svelte';
+  import Tooltip from '$lib/components/skill-tree/Tooltip.svelte';
+
+  let currentClass: string | undefined = $state();
+  $effect(() => {
+    $currentBuild?.Build.ClassName.then((newClass) => (currentClass = newClass)).catch(logError);
+  });
+
+  let currentAscendancy: string | undefined = $state();
+  $effect(() => {
+    $currentBuild?.Build.AscendClassName.then((newAscendancy) => (currentAscendancy = newAscendancy)).catch(logError);
+  });
+
+  interface Props {
+    clickNode?: (node: Node) => void;
+  }
+
+  let { clickNode = console.log }: Props = $props();
+
+  const cullingPadding = 50;
+
+  let scaling = $state(10);
+
+  let offsetX = $state(0);
+  let offsetY = $state(0);
+
+  const drawScaling = 2.6;
+
+  let cdnBase = $derived(`https://go-pob-data.pages.dev/data/${($skillTreeVersion || '3_18').replace('_', '.')}`);
+
+  let mousePos = $state<Point>({
+    x: Number.MIN_VALUE,
+    y: Number.MIN_VALUE
+  });
+
+  let cursor = $state('unset');
+
+  const hoverPath = writable<number[]>([]);
+
+  let start: DOMHighResTimeStamp;
+
+  const hoveredNode = writable<Node | undefined>();
+  $effect(() => {
+    let found = false;
+
+    for (const nodeId of Object.keys(drawnNodes)) {
+      const nNodeId = parseInt(nodeId);
+
+      const node: Node = drawnNodes[nNodeId];
+      const rotatedPos = calculateNodePos(node, offsetX, offsetY, scaling);
+      let touchDistance = 0;
+
+      if (node.classStartIndex !== undefined) {
+        // No touch distance for class start
+      } else if (node.isAscendancyStart) {
+        // No touch distance for ascendancy start
+      } else if (node.isKeystone) {
+        touchDistance = 110;
+      } else if (node.isNotable) {
+        touchDistance = 70;
+      } else if (node.isJewelSocket) {
+        touchDistance = 70;
+      } else if (node.isMastery) {
+        touchDistance = 85;
+      } else {
+        touchDistance = 50;
+      }
+
+      if (distance(rotatedPos, mousePos) < touchDistance / scaling) {
+        hoveredNode.set(node);
+        found = true;
+        break;
+      }
+    }
+
+    if (!found) {
+      hoveredNode.set(undefined);
+    }
+  });
+
+  $effect(() => {
+    if (!$skillTree) {
+      return;
+    }
+
+    if ($hoveredNode !== undefined && currentClass) {
+      const rootNodes = classStartNodes[$skillTree.classes.findIndex((c) => c.name === currentClass)];
+      const target = $hoveredNode.skill!;
+      syncWrap
+        .CalculateTreePath($skillTreeVersion || '3_18', rootNodes, target)
+        .then((data) => {
+          if (data && get(hoveredNode)) {
+            hoverPath.set(data);
+          }
+        })
+        .catch(logError);
+    } else {
+      hoverPath.set([]);
+    }
+  });
+
+  const renderStart: Render = ({ context, width, height }) => {
+    start = window.performance.now();
+
+    context.fillStyle = '#080c11';
+    context.fillRect(0, 0, width, height);
+  };
+
+  const renderEnd: Render = ({ context, width, height }) => {
+    if ($hoveredNode) {
+      cursor = 'pointer';
+    } else {
+      cursor = 'unset';
+    }
+
+    context.fillStyle = '#ffffff';
+    context.textAlign = 'right';
+    context.font = '12px Roboto Mono';
+
+    const end = window.performance.now();
+
+    context.fillText(`${(end - start).toFixed(1)}ms`, width - 5, 17);
+
+    context.strokeStyle = 'red';
+    context.strokeRect(cullingPadding, cullingPadding, width - cullingPadding * 2, height - cullingPadding * 2);
+  };
+
+  let downX = 0;
+  let downY = 0;
+
+  let startX = 0;
+  let startY = 0;
+
+  let down = false;
+  const mouseDown = (event: MouseEvent) => {
+    down = true;
+    downX = event.offsetX;
+    downY = event.offsetY;
+    startX = offsetX;
+    startY = offsetY;
+
+    mousePos = {
+      x: event.offsetX,
+      y: event.offsetY
+    };
+
+    if ($hoveredNode) {
+      clickNode($hoveredNode);
+    }
+  };
+
+  const mouseUp = (event: PointerEvent) => {
+    if (event.type === 'pointerup') {
+      down = false;
+    }
+
+    mousePos = {
+      x: event.offsetX,
+      y: event.offsetY
+    };
+  };
+
+  const mouseMove = (event: MouseEvent) => {
+    if (down) {
+      offsetX = startX - (downX - event.offsetX) * scaling;
+      offsetY = startY - (downY - event.offsetY) * scaling;
+    }
+
+    mousePos = {
+      x: event.offsetX,
+      y: event.offsetY
+    };
+  };
+
+  const onScroll = (event: WheelEvent) => {
+    if (event.deltaY > 0) {
+      if (scaling < 30) {
+        offsetX += event.offsetX;
+        offsetY += event.offsetY;
+      }
+    } else {
+      if (scaling > 3) {
+        offsetX -= event.offsetX;
+        offsetY -= event.offsetY;
+      }
+    }
+
+    scaling = Math.min(30, Math.max(3, scaling + event.deltaY / 100));
+
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+  };
+
+  let parentContainer = $state<HTMLElement>();
+
+  let width = $state(0);
+  let height = $state(0);
+  const resize = () => {
+    if (parentContainer) {
+      width = parentContainer.offsetWidth;
+      height = parentContainer.offsetHeight;
+    }
+  };
+
+  let initialized = $state(false);
+  $effect(() => {
+    if (!initialized && $skillTree) {
+      initialized = true;
+      offsetX = $skillTree.min_x + (window.innerWidth / 2) * scaling;
+      offsetY = $skillTree.min_y + (window.innerHeight / 2) * scaling;
+    }
+    resize();
+  });
+
+  onMount(() => {
+    new ResizeObserver(resize).observe(parentContainer!);
+    resize();
+  });
+</script>
+
+<svelte:window onpointerup={mouseUp} onpointermove={mouseMove} onresize={resize} />
+
+<div class="w-full h-full max-w-full max-h-full overflow-hidden" bind:this={parentContainer}>
+  {#if width && height}
+    <div style="touch-action: none; cursor: {cursor}">
+      <Canvas {width} {height} onpointerdown={mouseDown} onwheel={onScroll}>
+        <Layer render={renderStart} />
+        <ClassImage {scaling} {offsetX} {offsetY} {cullingPadding} {drawScaling} {currentClass} {cdnBase} />
+        <AllGroups {scaling} {offsetX} {offsetY} {cullingPadding} {currentAscendancy} {currentClass} {cdnBase} />
+        <AllConnections {scaling} {offsetX} {offsetY} {cullingPadding} hoverPath={$hoverPath} />
+        <AllSkillNodes hoveredNode={$hoveredNode} {cdnBase} {scaling} {offsetX} {offsetY} {cullingPadding} hoverPath={$hoverPath} />
+        <Tooltip hoveredNode={$hoveredNode} {mousePos} />
+        <Layer render={renderEnd} />
+      </Canvas>
+    </div>
+  {/if}
+</div>
