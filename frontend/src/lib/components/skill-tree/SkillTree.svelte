@@ -30,7 +30,7 @@
 
   let { skillTree, skillTreeVersion }: Props = $props();
 
-  const cullingPadding = 50;
+  const cullingPadding = -150;
 
   let scaling = $state(10);
 
