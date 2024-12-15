@@ -1,15 +1,7 @@
 <script lang="ts">
   import { Layer, type Render } from 'svelte-canvas';
   import type { Node } from '../../skill_tree/types';
-  import {
-    calculateNodePos,
-    drawnNodes,
-    toCanvasCoords,
-    orbitAngleAt,
-    drawnGroups,
-    ascendancyGroupPositionOffsets,
-    type Point
-  } from '../../skill_tree';
+  import { calculateNodePos, drawnNodes, toCanvasCoords, orbitAngleAt, drawnGroups, ascendancyGroupPositionOffsets, type Point } from '../../skill_tree';
   import { onMount } from 'svelte';
   import type { Tree } from '../../skill_tree/types';
 
@@ -119,7 +111,6 @@
               context.arc(groupPos.x, groupPos.y, canvasSkillTree.constants.orbitRadii[node.orbit!] / canvasScaling + 1, finalA, finalB);
             }
           });
-
         }
       });
     });
@@ -133,7 +124,7 @@
     const hoverSet = new Set(hoverPath);
     const activeSet = new Set(activeNodes);
 
-    connections.forEach(connection => {
+    connections.forEach((connection) => {
       const canvasPos = calculateNodePos(connection.node, offsetX, offsetY, scaling);
       const targetCanvasPos = calculateNodePos(connection.targetNode, offsetX, offsetY, scaling);
 
@@ -162,7 +153,6 @@
       }
 
       context.lineWidth = lineWidth / scaling;
-
 
       context.stroke();
     });

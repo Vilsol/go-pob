@@ -123,7 +123,14 @@
         }
       }
 
-      if (!(canvasPos.x < cullingPadding || canvasPos.x > canvasWidth - cullingPadding || canvasPos.y < cullingPadding || canvasPos.y > canvasHeight - cullingPadding)) {
+      if (
+        !(
+          canvasPos.x < cullingPadding ||
+          canvasPos.x > canvasWidth - cullingPadding ||
+          canvasPos.y < cullingPadding ||
+          canvasPos.y > canvasHeight - cullingPadding
+        )
+      ) {
         visibleNodePos.set(nNodeId, canvasPos);
       }
     });
@@ -279,7 +286,16 @@
         <ClassImage {scaling} {offsetX} {offsetY} {cullingPadding} {drawScaling} {currentClass} {cdnBase} {skillTree} />
         <AllGroups {scaling} {offsetX} {offsetY} {cullingPadding} {currentAscendancy} {currentClass} {cdnBase} {skillTree} />
         <AllConnections {scaling} {offsetX} {offsetY} {cullingPadding} hoverPath={$hoverPath} {skillTree} {activeNodes} />
-        <AllSkillNodes hoveredNode={$hoveredNode} {cdnBase} {scaling} {offsetX} {offsetY} {cullingPadding} hoverPath={$hoverPath} visibleNodePos={visibleNodePositions} {activeNodes} />
+        <AllSkillNodes
+          hoveredNode={$hoveredNode}
+          {cdnBase}
+          {scaling}
+          {offsetX}
+          {offsetY}
+          {cullingPadding}
+          hoverPath={$hoverPath}
+          visibleNodePos={visibleNodePositions}
+          {activeNodes} />
         <Tooltip hoveredNode={$hoveredNode} {mousePos} />
         <Layer render={renderEnd} />
       </Canvas>

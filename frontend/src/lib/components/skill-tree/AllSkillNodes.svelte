@@ -23,13 +23,7 @@
   interface PrecalculatedNode {
     node: Node;
     nNodeId: number;
-    draw(
-      context: CanvasRenderingContext2D,
-      canvasPos: Point,
-      canvasScaling: number,
-      active: boolean,
-      highlighted: boolean,
-    ): void;
+    draw(context: CanvasRenderingContext2D, canvasPos: Point, canvasScaling: number, active: boolean, highlighted: boolean): void;
   }
 
   const precalculatedNodes: Map<number, PrecalculatedNode> = new Map<number, PrecalculatedNode>();
@@ -45,7 +39,7 @@
           draw(context: CanvasRenderingContext2D, canvasPos: Point, canvasScaling: number) {
             drawSprite(context, 'AscendancyMiddle', canvasPos, inverseSpritesOther, canvasScaling, cdnBase);
           }
-        })
+        });
       } else if (node.isKeystone) {
         precalculatedNodes.set(nNodeId, {
           node,
@@ -58,7 +52,7 @@
               drawSprite(context, 'KeystoneFrameUnallocated', canvasPos, inverseSpritesOther, canvasScaling, cdnBase);
             }
           }
-        })
+        });
       } else if (node.isNotable) {
         if (node.ascendancyName) {
           precalculatedNodes.set(nNodeId, {
