@@ -30,10 +30,8 @@
       return;
     }
 
-    Object.keys(drawnGroups).forEach((groupId) => {
-      const nGroupId = parseInt(groupId);
-
-      const group: Group = drawnGroups[nGroupId];
+    drawnGroups.keys().forEach((nGroupId) => {
+      const group: Group = drawnGroups.get(nGroupId)!;
       const posX = ((nGroupId in ascendancyGroups && ascendancyGroupPositionOffsets[ascendancyGroups[nGroupId]]?.x) || 0) + group.x;
       const posY = ((nGroupId in ascendancyGroups && ascendancyGroupPositionOffsets[ascendancyGroups[nGroupId]]?.y) || 0) + group.y;
       const canvasPos = toCanvasCoords(posX, posY, offsetX, offsetY, scaling);

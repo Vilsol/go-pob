@@ -5,12 +5,12 @@
   import { logError } from '$lib/utils';
 
   onMount(() => {
-    if (!$skillTree || !$skillTreeVersion || Object.keys(drawnGroups).length === 0) {
+    if (!$skillTree || !$skillTreeVersion || drawnGroups.size === 0) {
       loadSkillTree('3_18').catch(logError);
     }
   });
 </script>
 
-{#if $skillTree && $skillTreeVersion && Object.keys(drawnGroups).length > 0}
+{#if $skillTree && $skillTreeVersion && drawnGroups.size > 0}
   <SkillTree />
 {/if}

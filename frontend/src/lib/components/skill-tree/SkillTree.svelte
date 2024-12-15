@@ -51,43 +51,63 @@
 
   let start: DOMHighResTimeStamp;
 
+  let parentContainer = $state<HTMLElement>();
+
+  let canvasWidth = $state(0);
+  let canvasHeight = $state(0);
+  const resize = () => {
+    if (parentContainer) {
+      canvasWidth = parentContainer.offsetWidth;
+      canvasHeight = parentContainer.offsetHeight;
+    }
+  };
+
   const hoveredNode = writable<Node | undefined>();
+  let visibleNodePositions = $state<Map<number, Point>>(new Map<number, Point>());
+
   $effect(() => {
     let found = false;
+    const visibleNodePos: Map<number, Point> = new Map<number, Point>();
 
-    for (const nodeId of Object.keys(drawnNodes)) {
-      const nNodeId = parseInt(nodeId);
+    for (const nNodeId of drawnNodes.keys()) {
+      const node: Node = drawnNodes.get(nNodeId)!;
+      const canvasPos = calculateNodePos(node, offsetX, offsetY, scaling);
 
-      const node: Node = drawnNodes[nNodeId];
-      const rotatedPos = calculateNodePos(node, offsetX, offsetY, scaling);
-      let touchDistance = 0;
+      if (!found) {
+        let touchDistance = 0;
 
-      if (node.classStartIndex !== undefined) {
-        // No touch distance for class start
-      } else if (node.isAscendancyStart) {
-        // No touch distance for ascendancy start
-      } else if (node.isKeystone) {
-        touchDistance = 110;
-      } else if (node.isNotable) {
-        touchDistance = 70;
-      } else if (node.isJewelSocket) {
-        touchDistance = 70;
-      } else if (node.isMastery) {
-        touchDistance = 85;
-      } else {
-        touchDistance = 50;
+        if (node.classStartIndex !== undefined) {
+          // No touch distance for class start
+        } else if (node.isAscendancyStart) {
+          // No touch distance for ascendancy start
+        } else if (node.isKeystone) {
+          touchDistance = 110;
+        } else if (node.isNotable) {
+          touchDistance = 70;
+        } else if (node.isJewelSocket) {
+          touchDistance = 70;
+        } else if (node.isMastery) {
+          touchDistance = 85;
+        } else {
+          touchDistance = 50;
+        }
+
+        if (distance(canvasPos, mousePos) < touchDistance / scaling) {
+          hoveredNode.set(node);
+          found = true;
+        }
       }
 
-      if (distance(rotatedPos, mousePos) < touchDistance / scaling) {
-        hoveredNode.set(node);
-        found = true;
-        break;
+      if (!(canvasPos.x < cullingPadding || canvasPos.x > canvasWidth - cullingPadding || canvasPos.y < cullingPadding || canvasPos.y > canvasHeight - cullingPadding)) {
+        visibleNodePos.set(nNodeId, canvasPos);
       }
     }
 
     if (!found) {
       hoveredNode.set(undefined);
     }
+
+    visibleNodePositions = visibleNodePos;
   });
 
   $effect(() => {
@@ -144,20 +164,22 @@
   let startY = 0;
 
   let down = false;
-  const mouseDown = (event: MouseEvent) => {
-    down = true;
-    downX = event.offsetX;
-    downY = event.offsetY;
-    startX = offsetX;
-    startY = offsetY;
+  const mouseDown = (event: Event) => {
+    if (event instanceof MouseEvent) {
+      down = true;
+      downX = event.offsetX;
+      downY = event.offsetY;
+      startX = offsetX;
+      startY = offsetY;
 
-    mousePos = {
-      x: event.offsetX,
-      y: event.offsetY
-    };
+      mousePos = {
+        x: event.offsetX,
+        y: event.offsetY
+      };
 
-    if ($hoveredNode) {
-      clickNode($hoveredNode);
+      if ($hoveredNode) {
+        clickNode($hoveredNode);
+      }
     }
   };
 
@@ -184,34 +206,25 @@
     };
   };
 
-  const onScroll = (event: WheelEvent) => {
-    if (event.deltaY > 0) {
-      if (scaling < 30) {
-        offsetX += event.offsetX;
-        offsetY += event.offsetY;
+  const onScroll = (event: Event) => {
+    if (event instanceof WheelEvent) {
+      if (event.deltaY > 0) {
+        if (scaling < 30) {
+          offsetX += event.offsetX;
+          offsetY += event.offsetY;
+        }
+      } else {
+        if (scaling > 3) {
+          offsetX -= event.offsetX;
+          offsetY -= event.offsetY;
+        }
       }
-    } else {
-      if (scaling > 3) {
-        offsetX -= event.offsetX;
-        offsetY -= event.offsetY;
-      }
-    }
 
-    scaling = Math.min(30, Math.max(3, scaling + event.deltaY / 100));
+      scaling = Math.min(30, Math.max(3, scaling + event.deltaY / 100));
 
-    event.preventDefault();
-    event.stopPropagation();
-    event.stopImmediatePropagation();
-  };
-
-  let parentContainer = $state<HTMLElement>();
-
-  let width = $state(0);
-  let height = $state(0);
-  const resize = () => {
-    if (parentContainer) {
-      width = parentContainer.offsetWidth;
-      height = parentContainer.offsetHeight;
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
     }
   };
 
@@ -234,14 +247,14 @@
 <svelte:window onpointerup={mouseUp} onpointermove={mouseMove} onresize={resize} />
 
 <div class="w-full h-full max-w-full max-h-full overflow-hidden" bind:this={parentContainer}>
-  {#if width && height}
+  {#if canvasWidth && canvasHeight}
     <div style="touch-action: none; cursor: {cursor}">
-      <Canvas {width} {height} onpointerdown={mouseDown} onwheel={onScroll}>
+      <Canvas width={canvasWidth} height={canvasHeight} onpointerdown={mouseDown} onwheel={onScroll}>
         <Layer render={renderStart} />
         <ClassImage {scaling} {offsetX} {offsetY} {cullingPadding} {drawScaling} {currentClass} {cdnBase} />
         <AllGroups {scaling} {offsetX} {offsetY} {cullingPadding} {currentAscendancy} {currentClass} {cdnBase} />
         <AllConnections {scaling} {offsetX} {offsetY} {cullingPadding} hoverPath={$hoverPath} />
-        <AllSkillNodes hoveredNode={$hoveredNode} {cdnBase} {scaling} {offsetX} {offsetY} {cullingPadding} hoverPath={$hoverPath} />
+        <AllSkillNodes hoveredNode={$hoveredNode} {cdnBase} {scaling} {offsetX} {offsetY} {cullingPadding} hoverPath={$hoverPath} visibleNodePos={visibleNodePositions} />
         <Tooltip hoveredNode={$hoveredNode} {mousePos} />
         <Layer render={renderEnd} />
       </Canvas>

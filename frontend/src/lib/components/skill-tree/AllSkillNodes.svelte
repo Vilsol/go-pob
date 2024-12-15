@@ -1,8 +1,9 @@
 <script lang="ts">
   import { Layer, type Render } from 'svelte-canvas';
   import type { Node } from '../../skill_tree/types';
-  import { calculateNodePos, drawnNodes, inverseSpritesInactive, inverseSpritesActive, skillTree, inverseSpritesOther } from '../../skill_tree';
+  import { drawnNodes, inverseSpritesInactive, inverseSpritesActive, skillTree, inverseSpritesOther, type Point } from '../../skill_tree';
   import { drawSprite } from '$lib/components/skill-tree/common';
+  import { onMount } from 'svelte';
 
   interface Props {
     node?: Node;
@@ -13,93 +14,165 @@
     cullingPadding: number;
     hoverPath: number[];
     hoveredNode?: Node;
+    visibleNodePos: Map<number, Point>;
   }
 
-  let { cdnBase, scaling, offsetX, offsetY, cullingPadding, hoverPath, hoveredNode }: Props = $props();
+  let { cdnBase, scaling, hoverPath, hoveredNode, visibleNodePos }: Props = $props();
 
-  const render: Render = ({ context, width, height }) => {
+  interface PrecalculatedNode {
+    node: Node;
+    nNodeId: number;
+    draw(
+      context: CanvasRenderingContext2D,
+      canvasPos: Point,
+      canvasScaling: number,
+      active: boolean,
+      highlighted: boolean,
+    ): void;
+  }
+
+  const precalculatedNodes: Array<PrecalculatedNode> = [];
+
+  onMount(() => {
+    drawnNodes.keys().forEach((nNodeId) => {
+      const node: Node = drawnNodes.get(nNodeId)!;
+
+      if (node.isAscendancyStart) {
+        precalculatedNodes.push({
+          node,
+          nNodeId,
+          draw(context: CanvasRenderingContext2D, canvasPos: Point, canvasScaling: number) {
+            drawSprite(context, 'AscendancyMiddle', canvasPos, inverseSpritesOther, canvasScaling, cdnBase);
+          }
+        })
+      } else if (node.isKeystone) {
+        precalculatedNodes.push({
+          node,
+          nNodeId,
+          draw(context: CanvasRenderingContext2D, canvasPos: Point, canvasScaling: number, active: boolean, highlighted: boolean) {
+            drawSprite(context, node.icon!, canvasPos, active ? inverseSpritesActive : inverseSpritesInactive, canvasScaling, cdnBase);
+            if (active || highlighted) {
+              drawSprite(context, 'KeystoneFrameAllocated', canvasPos, inverseSpritesOther, canvasScaling, cdnBase);
+            } else {
+              drawSprite(context, 'KeystoneFrameUnallocated', canvasPos, inverseSpritesOther, canvasScaling, cdnBase);
+            }
+          }
+        })
+      } else if (node.isNotable) {
+        if (node.ascendancyName) {
+          precalculatedNodes.push({
+            node,
+            nNodeId,
+            draw(context: CanvasRenderingContext2D, canvasPos: Point, canvasScaling: number, active: boolean, highlighted: boolean) {
+              drawSprite(context, node.icon!, canvasPos, active ? inverseSpritesActive : inverseSpritesInactive, canvasScaling, cdnBase);
+              if (active || highlighted) {
+                drawSprite(context, 'AscendancyFrameLargeAllocated', canvasPos, inverseSpritesOther, canvasScaling, cdnBase);
+              } else {
+                drawSprite(context, 'AscendancyFrameLargeNormal', canvasPos, inverseSpritesOther, canvasScaling, cdnBase);
+              }
+            }
+          });
+        } else {
+          precalculatedNodes.push({
+            node,
+            nNodeId,
+            draw(context: CanvasRenderingContext2D, canvasPos: Point, canvasScaling: number, active: boolean, highlighted: boolean) {
+              drawSprite(context, node.icon!, canvasPos, active ? inverseSpritesActive : inverseSpritesInactive, canvasScaling, cdnBase);
+              if (active || highlighted) {
+                drawSprite(context, 'NotableFrameAllocated', canvasPos, inverseSpritesOther, canvasScaling, cdnBase);
+              } else {
+                drawSprite(context, 'NotableFrameUnallocated', canvasPos, inverseSpritesOther, canvasScaling, cdnBase);
+              }
+            }
+          });
+        }
+      } else if (node.isJewelSocket) {
+        if (node.expansionJewel) {
+          precalculatedNodes.push({
+            node,
+            nNodeId,
+            draw(context: CanvasRenderingContext2D, canvasPos: Point, canvasScaling: number, active: boolean, highlighted: boolean) {
+              if (active || highlighted) {
+                drawSprite(context, 'JewelSocketAltActive', canvasPos, inverseSpritesOther, canvasScaling, cdnBase);
+              } else {
+                drawSprite(context, 'JewelSocketAltNormal', canvasPos, inverseSpritesOther, canvasScaling, cdnBase);
+              }
+            }
+          });
+        } else {
+          precalculatedNodes.push({
+            node,
+            nNodeId,
+            draw(context: CanvasRenderingContext2D, canvasPos: Point, canvasScaling: number, active: boolean, highlighted: boolean) {
+              if (active || highlighted) {
+                drawSprite(context, 'JewelFrameAllocated', canvasPos, inverseSpritesOther, canvasScaling, cdnBase);
+              } else {
+                drawSprite(context, 'JewelFrameUnallocated', canvasPos, inverseSpritesOther, canvasScaling, cdnBase);
+              }
+            }
+          });
+        }
+      } else if (node.isMastery) {
+        precalculatedNodes.push({
+          node,
+          nNodeId,
+          draw(context: CanvasRenderingContext2D, canvasPos: Point, canvasScaling: number, active: boolean, highlighted: boolean) {
+            if (active || highlighted) {
+              drawSprite(context, node.activeIcon!, canvasPos, inverseSpritesActive, canvasScaling, cdnBase);
+            } else {
+              drawSprite(context, node.inactiveIcon!, canvasPos, inverseSpritesInactive, canvasScaling, cdnBase);
+            }
+          }
+        });
+      } else {
+        if (node.ascendancyName) {
+          precalculatedNodes.push({
+            node,
+            nNodeId,
+            draw(context: CanvasRenderingContext2D, canvasPos: Point, canvasScaling: number, active: boolean, highlighted: boolean) {
+              drawSprite(context, node.icon!, canvasPos, active ? inverseSpritesActive : inverseSpritesInactive, canvasScaling, cdnBase);
+              if (active || highlighted) {
+                drawSprite(context, 'AscendancyFrameSmallAllocated', canvasPos, inverseSpritesOther, canvasScaling, cdnBase);
+              } else {
+                drawSprite(context, 'AscendancyFrameSmallNormal', canvasPos, inverseSpritesOther, canvasScaling, cdnBase);
+              }
+            }
+          });
+        } else {
+          precalculatedNodes.push({
+            node,
+            nNodeId,
+            draw(context: CanvasRenderingContext2D, canvasPos: Point, canvasScaling: number, active: boolean, highlighted: boolean) {
+              drawSprite(context, node.icon!, canvasPos, active ? inverseSpritesActive : inverseSpritesInactive, canvasScaling, cdnBase);
+              if (active || highlighted) {
+                drawSprite(context, 'PSSkillFrameActive', canvasPos, inverseSpritesOther, canvasScaling, cdnBase);
+              } else {
+                drawSprite(context, 'PSSkillFrame', canvasPos, inverseSpritesOther, canvasScaling, cdnBase);
+              }
+            }
+          });
+        }
+      }
+    });
+  });
+
+  const render: Render = ({ context }) => {
     if (!$skillTree) {
       return;
     }
 
-    Object.keys(drawnNodes).forEach((nodeId) => {
-      const nNodeId = parseInt(nodeId);
-
-      const node: Node = drawnNodes[nNodeId];
-      const canvasPos = calculateNodePos(node, offsetX, offsetY, scaling);
-
-      if (canvasPos.x < cullingPadding || canvasPos.x > width - cullingPadding || canvasPos.y < cullingPadding || canvasPos.y > height - cullingPadding) {
+    const hoverSet = new Set(hoverPath);
+    precalculatedNodes.forEach(node => {
+      const canvasPos = visibleNodePos.get(node.nNodeId);
+      if (!canvasPos) {
         return;
       }
 
       const active = false; // TODO Actually check if node is active
-      const highlighted = hoverPath.indexOf(node.skill!) >= 0 || hoveredNode === node;
+      const highlighted = hoverSet.has(node.node.skill!) || hoveredNode === node;
 
-      if (node.classStartIndex !== undefined) {
-        // Do not draw class start index node
-      } else if (node.isAscendancyStart) {
-        drawSprite(context, 'AscendancyMiddle', canvasPos, inverseSpritesOther, scaling, cdnBase);
-      } else if (node.isKeystone) {
-        drawSprite(context, node.icon!, canvasPos, active ? inverseSpritesActive : inverseSpritesInactive, scaling, cdnBase);
-        if (active || highlighted) {
-          drawSprite(context, 'KeystoneFrameAllocated', canvasPos, inverseSpritesOther, scaling, cdnBase);
-        } else {
-          drawSprite(context, 'KeystoneFrameUnallocated', canvasPos, inverseSpritesOther, scaling, cdnBase);
-        }
-      } else if (node.isNotable) {
-        drawSprite(context, node.icon!, canvasPos, active ? inverseSpritesActive : inverseSpritesInactive, scaling, cdnBase);
-
-        if (node.ascendancyName) {
-          if (active || highlighted) {
-            drawSprite(context, 'AscendancyFrameLargeAllocated', canvasPos, inverseSpritesOther, scaling, cdnBase);
-          } else {
-            drawSprite(context, 'AscendancyFrameLargeNormal', canvasPos, inverseSpritesOther, scaling, cdnBase);
-          }
-        } else {
-          if (active || highlighted) {
-            drawSprite(context, 'NotableFrameAllocated', canvasPos, inverseSpritesOther, scaling, cdnBase);
-          } else {
-            drawSprite(context, 'NotableFrameUnallocated', canvasPos, inverseSpritesOther, scaling, cdnBase);
-          }
-        }
-      } else if (node.isJewelSocket) {
-        if (node.expansionJewel) {
-          if (active || highlighted) {
-            drawSprite(context, 'JewelSocketAltActive', canvasPos, inverseSpritesOther, scaling, cdnBase);
-          } else {
-            drawSprite(context, 'JewelSocketAltNormal', canvasPos, inverseSpritesOther, scaling, cdnBase);
-          }
-        } else {
-          if (active || highlighted) {
-            drawSprite(context, 'JewelFrameAllocated', canvasPos, inverseSpritesOther, scaling, cdnBase);
-          } else {
-            drawSprite(context, 'JewelFrameUnallocated', canvasPos, inverseSpritesOther, scaling, cdnBase);
-          }
-        }
-      } else if (node.isMastery) {
-        if (active || highlighted) {
-          drawSprite(context, node.activeIcon!, canvasPos, inverseSpritesActive, scaling, cdnBase);
-        } else {
-          drawSprite(context, node.inactiveIcon!, canvasPos, inverseSpritesInactive, scaling, cdnBase);
-        }
-      } else {
-        drawSprite(context, node.icon!, canvasPos, active ? inverseSpritesActive : inverseSpritesInactive, scaling, cdnBase);
-
-        if (node.ascendancyName) {
-          if (active || highlighted) {
-            drawSprite(context, 'AscendancyFrameSmallAllocated', canvasPos, inverseSpritesOther, scaling, cdnBase);
-          } else {
-            drawSprite(context, 'AscendancyFrameSmallNormal', canvasPos, inverseSpritesOther, scaling, cdnBase);
-          }
-        } else {
-          if (active || highlighted) {
-            drawSprite(context, 'PSSkillFrameActive', canvasPos, inverseSpritesOther, scaling, cdnBase);
-          } else {
-            drawSprite(context, 'PSSkillFrame', canvasPos, inverseSpritesOther, scaling, cdnBase);
-          }
-        }
-      }
-    });
+      node.draw(context, canvasPos, scaling, active, highlighted);
+    })
   };
 </script>
 

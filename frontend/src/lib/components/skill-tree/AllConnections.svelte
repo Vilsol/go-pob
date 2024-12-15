@@ -1,7 +1,18 @@
 <script lang="ts">
   import { Layer, type Render } from 'svelte-canvas';
   import type { Node } from '../../skill_tree/types';
-  import { calculateNodePos, drawnNodes, skillTree, toCanvasCoords, orbitAngleAt, drawnGroups, ascendancyGroupPositionOffsets } from '../../skill_tree';
+  import {
+    calculateNodePos,
+    drawnNodes,
+    skillTree,
+    toCanvasCoords,
+    orbitAngleAt,
+    drawnGroups,
+    ascendancyGroupPositionOffsets,
+    type Point
+  } from '../../skill_tree';
+  import { onMount } from 'svelte';
+  import type { Tree } from '../../skill_tree/types';
 
   interface Props {
     scaling: number;
@@ -13,16 +24,26 @@
 
   let { scaling, offsetX, offsetY, hoverPath, cullingPadding }: Props = $props();
 
-  const render: Render = ({ context, width, height }) => {
-    if (!$skillTree) {
-      return;
-    }
+  interface PrecalculatedConnection {
+    node: Node;
+    targetNode: Node;
+    draw(
+      context: CanvasRenderingContext2D,
+      canvasPos: Point,
+      targetCanvasPos: Point,
+      canvasOffsetX: number,
+      canvasOffsetY: number,
+      canvasScaling: number,
+      canvasSkillTree: Tree
+    ): void;
+  }
 
+  const connections: Array<PrecalculatedConnection> = [];
+
+  onMount(() => {
     const connected: Record<string, boolean> = {};
-    Object.keys(drawnNodes).forEach((nodeId) => {
-      const nNodeId = parseInt(nodeId);
-
-      const node: Node = drawnNodes[nNodeId];
+    drawnNodes.keys().forEach((nNodeId) => {
+      const node: Node = drawnNodes.get(nNodeId)!;
 
       // Do not draw connections out of class starting nodes
       if (node.classStartIndex !== undefined) {
@@ -30,17 +51,14 @@
       }
 
       const angle = orbitAngleAt(node.orbit!, node.orbitIndex!);
-      const canvasPos = calculateNodePos(node, offsetX, offsetY, scaling);
-
-      const sourceActive = hoverPath.indexOf(node.skill!) >= 0;
 
       node.out?.forEach((o) => {
-        if (!drawnNodes[parseInt(o)]) {
+        if (!drawnNodes.get(parseInt(o))) {
           return;
         }
 
-        const min = Math.min(parseInt(o), parseInt(nodeId));
-        const max = Math.max(parseInt(o), parseInt(nodeId));
+        const min = Math.min(parseInt(o), nNodeId);
+        const max = Math.max(parseInt(o), nNodeId);
         const joined = min + ':' + max;
 
         if (joined in connected) {
@@ -48,7 +66,7 @@
         }
         connected[joined] = true;
 
-        const targetNode = drawnNodes[parseInt(o)];
+        const targetNode = drawnNodes.get(parseInt(o))!;
 
         // Do not draw connections to mastery nodes
         if (targetNode.isMastery) {
@@ -66,23 +84,16 @@
         }
 
         const targetAngle = orbitAngleAt(targetNode.orbit!, targetNode.orbitIndex!);
-        const targetCanvasPos = calculateNodePos(targetNode, offsetX, offsetY, scaling);
-
-        if (
-          (canvasPos.x < cullingPadding || canvasPos.x > width - cullingPadding || canvasPos.y < cullingPadding || canvasPos.y > height - cullingPadding) &&
-          (targetCanvasPos.x < cullingPadding ||
-            targetCanvasPos.x > width - cullingPadding ||
-            targetCanvasPos.y < cullingPadding ||
-            targetCanvasPos.y > height - cullingPadding)
-        ) {
-          return;
-        }
-
-        context.beginPath();
 
         if (node.group != targetNode.group || node.orbit != targetNode.orbit) {
-          context.moveTo(canvasPos.x, canvasPos.y);
-          context.lineTo(targetCanvasPos.x, targetCanvasPos.y);
+          connections.push({
+            node,
+            targetNode,
+            draw(context, canvasPos, targetCanvasPos) {
+              context.moveTo(canvasPos.x, canvasPos.y);
+              context.lineTo(targetCanvasPos.x, targetCanvasPos.y);
+            }
+          });
         } else {
           let a = Math.PI / 180 - (Math.PI / 180) * angle;
           let b = Math.PI / 180 - (Math.PI / 180) * targetAngle;
@@ -95,22 +106,65 @@
           const finalA = diff > Math.PI ? Math.max(a, b) : Math.min(a, b);
           const finalB = diff > Math.PI ? Math.min(a, b) : Math.max(a, b);
 
-          const group = drawnGroups[node.group!];
+          const group = drawnGroups.get(node.group!)!;
           const posX = ((node.ascendancyName && ascendancyGroupPositionOffsets[node.ascendancyName]?.x) || 0) + group.x;
           const posY = ((node.ascendancyName && ascendancyGroupPositionOffsets[node.ascendancyName]?.y) || 0) + group.y;
-          const groupPos = toCanvasCoords(posX, posY, offsetX, offsetY, scaling);
-          context.arc(groupPos.x, groupPos.y, $skillTree.constants.orbitRadii[node.orbit!] / scaling + 1, finalA, finalB);
-        }
 
-        if (sourceActive && hoverPath.indexOf(targetNode.skill!) >= 0) {
-          context.strokeStyle = `#c89c01`;
-        } else {
-          context.strokeStyle = `#524518`;
-        }
+          connections.push({
+            node,
+            targetNode,
+            draw(context, canvasPos, targetCanvasPos, canvasOffsetX, canvasOffsetY, canvasScaling, canvasSkillTree) {
+              const groupPos = toCanvasCoords(posX, posY, canvasOffsetX, canvasOffsetY, canvasScaling);
+              context.arc(groupPos.x, groupPos.y, canvasSkillTree.constants.orbitRadii[node.orbit!] / canvasScaling + 1, finalA, finalB);
+            }
+          });
 
-        context.lineWidth = 6 / scaling;
-        context.stroke();
+        }
       });
+    });
+  });
+
+  const render: Render = ({ context, width, height }) => {
+    if (!$skillTree) {
+      return;
+    }
+
+    if (!connections) {
+      return;
+    }
+
+    context.lineWidth = 6 / scaling;
+
+    const hoverSet = new Set(hoverPath);
+    const canvasSkillTree = $skillTree;
+
+    connections.forEach(connection => {
+      const canvasPos = calculateNodePos(connection.node, offsetX, offsetY, scaling);
+      const targetCanvasPos = calculateNodePos(connection.targetNode, offsetX, offsetY, scaling);
+
+      if (
+        (canvasPos.x < cullingPadding || canvasPos.x > width - cullingPadding || canvasPos.y < cullingPadding || canvasPos.y > height - cullingPadding) &&
+        (targetCanvasPos.x < cullingPadding ||
+          targetCanvasPos.x > width - cullingPadding ||
+          targetCanvasPos.y < cullingPadding ||
+          targetCanvasPos.y > height - cullingPadding)
+      ) {
+        return;
+      }
+
+      const sourceActive = hoverSet.has(connection.node.skill!);
+
+      context.beginPath();
+
+      connection.draw(context, canvasPos, targetCanvasPos, offsetX, offsetY, scaling, canvasSkillTree);
+
+      if (sourceActive && hoverSet.has(connection.targetNode.skill!)) {
+        context.strokeStyle = `#c89c01`;
+      } else {
+        context.strokeStyle = `#524518`;
+      }
+
+      context.stroke();
     });
   };
 </script>
