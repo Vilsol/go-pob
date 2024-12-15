@@ -1,5 +1,5 @@
 <script>
-  import SkillTree from '$lib/components/SkillTree.svelte';
+  import SkillTree from '$lib/components/skill-tree/SkillTree.svelte';
   import { drawnGroups, loadSkillTree, skillTree, skillTreeVersion } from '$lib/skill_tree';
   import { onMount } from 'svelte';
   import { logError } from '$lib/utils';

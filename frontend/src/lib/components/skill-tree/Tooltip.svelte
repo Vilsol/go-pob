@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Layer, type Render } from 'svelte-canvas';
   import type { Node } from '../../skill_tree/types';
-  import { type Point, skillTree } from '../../skill_tree';
+  import { type Point } from '../../skill_tree';
   import { wrapText } from '$lib/components/skill-tree/common';
 
   interface Props {
@@ -15,10 +15,6 @@
   const statsFont = '17px Roboto Flex';
 
   const render: Render = ({ context }) => {
-    if (!$skillTree) {
-      return;
-    }
-
     if (hoveredNode) {
       const nodeName = hoveredNode.name || 'N/A';
       const nodeStats: { text: string; special: boolean }[] = (hoveredNode.stats || []).map((s) => ({

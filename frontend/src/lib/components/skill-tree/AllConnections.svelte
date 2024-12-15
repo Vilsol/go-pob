@@ -4,7 +4,6 @@
   import {
     calculateNodePos,
     drawnNodes,
-    skillTree,
     toCanvasCoords,
     orbitAngleAt,
     drawnGroups,
@@ -20,9 +19,11 @@
     offsetY: number;
     hoverPath: number[];
     cullingPadding: number;
+    skillTree: Tree;
+    activeNodes: number[];
   }
 
-  let { scaling, offsetX, offsetY, hoverPath, cullingPadding }: Props = $props();
+  let { scaling, offsetX, offsetY, hoverPath, cullingPadding, skillTree, activeNodes }: Props = $props();
 
   interface PrecalculatedConnection {
     node: Node;
@@ -125,18 +126,12 @@
   });
 
   const render: Render = ({ context, width, height }) => {
-    if (!$skillTree) {
-      return;
-    }
-
     if (!connections) {
       return;
     }
 
-    context.lineWidth = 6 / scaling;
-
     const hoverSet = new Set(hoverPath);
-    const canvasSkillTree = $skillTree;
+    const activeSet = new Set(activeNodes);
 
     connections.forEach(connection => {
       const canvasPos = calculateNodePos(connection.node, offsetX, offsetY, scaling);
@@ -152,17 +147,22 @@
         return;
       }
 
-      const sourceActive = hoverSet.has(connection.node.skill!);
-
       context.beginPath();
 
-      connection.draw(context, canvasPos, targetCanvasPos, offsetX, offsetY, scaling, canvasSkillTree);
+      connection.draw(context, canvasPos, targetCanvasPos, offsetX, offsetY, scaling, skillTree);
 
-      if (sourceActive && hoverSet.has(connection.targetNode.skill!)) {
+      let lineWidth = 6;
+      if (activeSet.has(connection.node.skill!) && activeSet.has(connection.targetNode.skill!)) {
+        context.strokeStyle = `#e9deb6`;
+        lineWidth = 12;
+      } else if (hoverSet.has(connection.node.skill!) && hoverSet.has(connection.targetNode.skill!)) {
         context.strokeStyle = `#c89c01`;
       } else {
         context.strokeStyle = `#524518`;
       }
+
+      context.lineWidth = lineWidth / scaling;
+
 
       context.stroke();
     });

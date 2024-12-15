@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Layer, type Render } from 'svelte-canvas';
-  import { skillTree, toCanvasCoords } from '../../skill_tree';
+  import { toCanvasCoords } from '../../skill_tree';
+  import type { Tree } from '$lib/skill_tree/types';
 
   interface Props {
     scaling: number;
@@ -10,21 +11,18 @@
     cullingPadding: number;
     currentClass?: string;
     drawScaling: number;
+    skillTree: Tree;
   }
 
-  let { scaling, offsetX, offsetY, cdnBase, currentClass, drawScaling, cullingPadding }: Props = $props();
+  let { scaling, offsetX, offsetY, cdnBase, currentClass, drawScaling, cullingPadding, skillTree }: Props = $props();
 
   const extraCache = $state<Record<string, HTMLImageElement>>({});
 
   const render: Render = ({ context, width, height }) => {
-    if (!$skillTree) {
-      return;
-    }
-
     if (currentClass) {
-      const classIndex = $skillTree.classes.findIndex((c) => c.name === currentClass);
-      if (classIndex in $skillTree.extraImages) {
-        const img = $skillTree.extraImages[classIndex];
+      const classIndex = skillTree.classes.findIndex((c) => c.name === currentClass);
+      if (classIndex in skillTree.extraImages) {
+        const img = skillTree.extraImages[classIndex];
 
         if (!(img.image in extraCache)) {
           extraCache[img.image] = new Image();

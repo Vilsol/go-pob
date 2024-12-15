@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Canvas, Layer, type Render } from 'svelte-canvas';
-  import type { Node } from '../../skill_tree/types';
-  import { calculateNodePos, distance, drawnNodes, skillTree, skillTreeVersion, classStartNodes, type Point } from '../../skill_tree';
+  import type { Node, Tree } from '../../skill_tree/types';
+  import { calculateNodePos, distance, drawnNodes, classStartNodes, type Point } from '../../skill_tree';
   import { onMount } from 'svelte';
   import { currentBuild } from '../../global';
   import { syncWrap } from '../../go/worker';
@@ -24,10 +24,11 @@
   });
 
   interface Props {
-    clickNode?: (node: Node) => void;
+    skillTree: Tree;
+    skillTreeVersion: string;
   }
 
-  let { clickNode = console.log }: Props = $props();
+  let { skillTree, skillTreeVersion }: Props = $props();
 
   const cullingPadding = 50;
 
@@ -36,9 +37,34 @@
   let offsetX = $state(0);
   let offsetY = $state(0);
 
+  let activeNodes: number[] | undefined = $state();
+  $effect(() => {
+    $currentBuild?.Build?.PassiveNodes?.then((newNodes) => (activeNodes = newNodes)).catch(logError);
+  });
+
+  let clickNode = (node: Node) => {
+    const nodeId = node.skill ?? -1;
+    if (activeNodes?.includes(nodeId)) {
+      void syncWrap?.DeallocateNodes(nodeId);
+      currentBuild.set($currentBuild);
+    } else {
+      // TODO: Needs support for ascendancies or any other disconnect groups
+      const rootNodes = classStartNodes[skillTree.classes.findIndex((c) => c.name === currentClass)];
+      void syncWrap?.CalculateTreePath(skillTreeVersion || '3_18', [...rootNodes, ...(activeNodes ?? [])], nodeId).then((pathData) => {
+        if (!pathData) {
+          return;
+        }
+        // The first in the path is always an already allocated node
+        const isRootInPath = rootNodes.includes(pathData[0]);
+        void syncWrap?.AllocateNodes(isRootInPath ? pathData : pathData.slice(1));
+        currentBuild.set($currentBuild);
+      });
+    }
+  };
+
   const drawScaling = 2.6;
 
-  let cdnBase = $derived(`https://go-pob-data.pages.dev/data/${($skillTreeVersion || '3_18').replace('_', '.')}`);
+  let cdnBase = $derived(`https://go-pob-data.pages.dev/data/${(skillTreeVersion || '3_18').replace('_', '.')}`);
 
   let mousePos = $state<Point>({
     x: Number.MIN_VALUE,
@@ -69,8 +95,7 @@
     let found = false;
     const visibleNodePos: Map<number, Point> = new Map<number, Point>();
 
-    for (const nNodeId of drawnNodes.keys()) {
-      const node: Node = drawnNodes.get(nNodeId)!;
+    drawnNodes.forEach((node: Node, nNodeId: number) => {
       const canvasPos = calculateNodePos(node, offsetX, offsetY, scaling);
 
       if (!found) {
@@ -101,7 +126,7 @@
       if (!(canvasPos.x < cullingPadding || canvasPos.x > canvasWidth - cullingPadding || canvasPos.y < cullingPadding || canvasPos.y > canvasHeight - cullingPadding)) {
         visibleNodePos.set(nNodeId, canvasPos);
       }
-    }
+    });
 
     if (!found) {
       hoveredNode.set(undefined);
@@ -111,15 +136,15 @@
   });
 
   $effect(() => {
-    if (!$skillTree) {
+    if (!skillTree) {
       return;
     }
 
     if ($hoveredNode !== undefined && currentClass) {
-      const rootNodes = classStartNodes[$skillTree.classes.findIndex((c) => c.name === currentClass)];
+      const rootNodes = classStartNodes[skillTree.classes.findIndex((c) => c.name === currentClass)];
       const target = $hoveredNode.skill!;
       syncWrap
-        .CalculateTreePath($skillTreeVersion || '3_18', rootNodes, target)
+        .CalculateTreePath(skillTreeVersion || '3_18', [...rootNodes, ...(activeNodes ?? [])], target)
         .then((data) => {
           if (data && get(hoveredNode)) {
             hoverPath.set(data);
@@ -230,10 +255,10 @@
 
   let initialized = $state(false);
   $effect(() => {
-    if (!initialized && $skillTree) {
+    if (!initialized && skillTree) {
       initialized = true;
-      offsetX = $skillTree.min_x + (window.innerWidth / 2) * scaling;
-      offsetY = $skillTree.min_y + (window.innerHeight / 2) * scaling;
+      offsetX = skillTree.min_x + (window.innerWidth / 2) * scaling;
+      offsetY = skillTree.min_y + (window.innerHeight / 2) * scaling;
     }
     resize();
   });
@@ -251,10 +276,10 @@
     <div style="touch-action: none; cursor: {cursor}">
       <Canvas width={canvasWidth} height={canvasHeight} onpointerdown={mouseDown} onwheel={onScroll}>
         <Layer render={renderStart} />
-        <ClassImage {scaling} {offsetX} {offsetY} {cullingPadding} {drawScaling} {currentClass} {cdnBase} />
-        <AllGroups {scaling} {offsetX} {offsetY} {cullingPadding} {currentAscendancy} {currentClass} {cdnBase} />
-        <AllConnections {scaling} {offsetX} {offsetY} {cullingPadding} hoverPath={$hoverPath} />
-        <AllSkillNodes hoveredNode={$hoveredNode} {cdnBase} {scaling} {offsetX} {offsetY} {cullingPadding} hoverPath={$hoverPath} visibleNodePos={visibleNodePositions} />
+        <ClassImage {scaling} {offsetX} {offsetY} {cullingPadding} {drawScaling} {currentClass} {cdnBase} {skillTree} />
+        <AllGroups {scaling} {offsetX} {offsetY} {cullingPadding} {currentAscendancy} {currentClass} {cdnBase} {skillTree} />
+        <AllConnections {scaling} {offsetX} {offsetY} {cullingPadding} hoverPath={$hoverPath} {skillTree} {activeNodes} />
+        <AllSkillNodes hoveredNode={$hoveredNode} {cdnBase} {scaling} {offsetX} {offsetY} {cullingPadding} hoverPath={$hoverPath} visibleNodePos={visibleNodePositions} {activeNodes} />
         <Tooltip hoveredNode={$hoveredNode} {mousePos} />
         <Layer render={renderEnd} />
       </Canvas>

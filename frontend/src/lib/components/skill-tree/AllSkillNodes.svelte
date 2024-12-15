@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Layer, type Render } from 'svelte-canvas';
   import type { Node } from '../../skill_tree/types';
-  import { drawnNodes, inverseSpritesInactive, inverseSpritesActive, skillTree, inverseSpritesOther, type Point } from '../../skill_tree';
+  import { drawnNodes, inverseSpritesInactive, inverseSpritesActive, inverseSpritesOther, type Point } from '../../skill_tree';
   import { drawSprite } from '$lib/components/skill-tree/common';
   import { onMount } from 'svelte';
 
@@ -15,9 +15,10 @@
     hoverPath: number[];
     hoveredNode?: Node;
     visibleNodePos: Map<number, Point>;
+    activeNodes: number[];
   }
 
-  let { cdnBase, scaling, hoverPath, hoveredNode, visibleNodePos }: Props = $props();
+  let { cdnBase, scaling, hoverPath, hoveredNode, visibleNodePos, activeNodes }: Props = $props();
 
   interface PrecalculatedNode {
     node: Node;
@@ -31,14 +32,14 @@
     ): void;
   }
 
-  const precalculatedNodes: Array<PrecalculatedNode> = [];
+  const precalculatedNodes: Map<number, PrecalculatedNode> = new Map<number, PrecalculatedNode>();
 
   onMount(() => {
     drawnNodes.keys().forEach((nNodeId) => {
       const node: Node = drawnNodes.get(nNodeId)!;
 
       if (node.isAscendancyStart) {
-        precalculatedNodes.push({
+        precalculatedNodes.set(nNodeId, {
           node,
           nNodeId,
           draw(context: CanvasRenderingContext2D, canvasPos: Point, canvasScaling: number) {
@@ -46,7 +47,7 @@
           }
         })
       } else if (node.isKeystone) {
-        precalculatedNodes.push({
+        precalculatedNodes.set(nNodeId, {
           node,
           nNodeId,
           draw(context: CanvasRenderingContext2D, canvasPos: Point, canvasScaling: number, active: boolean, highlighted: boolean) {
@@ -60,7 +61,7 @@
         })
       } else if (node.isNotable) {
         if (node.ascendancyName) {
-          precalculatedNodes.push({
+          precalculatedNodes.set(nNodeId, {
             node,
             nNodeId,
             draw(context: CanvasRenderingContext2D, canvasPos: Point, canvasScaling: number, active: boolean, highlighted: boolean) {
@@ -73,7 +74,7 @@
             }
           });
         } else {
-          precalculatedNodes.push({
+          precalculatedNodes.set(nNodeId, {
             node,
             nNodeId,
             draw(context: CanvasRenderingContext2D, canvasPos: Point, canvasScaling: number, active: boolean, highlighted: boolean) {
@@ -88,7 +89,7 @@
         }
       } else if (node.isJewelSocket) {
         if (node.expansionJewel) {
-          precalculatedNodes.push({
+          precalculatedNodes.set(nNodeId, {
             node,
             nNodeId,
             draw(context: CanvasRenderingContext2D, canvasPos: Point, canvasScaling: number, active: boolean, highlighted: boolean) {
@@ -100,7 +101,7 @@
             }
           });
         } else {
-          precalculatedNodes.push({
+          precalculatedNodes.set(nNodeId, {
             node,
             nNodeId,
             draw(context: CanvasRenderingContext2D, canvasPos: Point, canvasScaling: number, active: boolean, highlighted: boolean) {
@@ -113,7 +114,7 @@
           });
         }
       } else if (node.isMastery) {
-        precalculatedNodes.push({
+        precalculatedNodes.set(nNodeId, {
           node,
           nNodeId,
           draw(context: CanvasRenderingContext2D, canvasPos: Point, canvasScaling: number, active: boolean, highlighted: boolean) {
@@ -126,7 +127,7 @@
         });
       } else {
         if (node.ascendancyName) {
-          precalculatedNodes.push({
+          precalculatedNodes.set(nNodeId, {
             node,
             nNodeId,
             draw(context: CanvasRenderingContext2D, canvasPos: Point, canvasScaling: number, active: boolean, highlighted: boolean) {
@@ -139,7 +140,7 @@
             }
           });
         } else {
-          precalculatedNodes.push({
+          precalculatedNodes.set(nNodeId, {
             node,
             nNodeId,
             draw(context: CanvasRenderingContext2D, canvasPos: Point, canvasScaling: number, active: boolean, highlighted: boolean) {
@@ -157,22 +158,17 @@
   });
 
   const render: Render = ({ context }) => {
-    if (!$skillTree) {
-      return;
-    }
-
     const hoverSet = new Set(hoverPath);
-    precalculatedNodes.forEach(node => {
-      const canvasPos = visibleNodePos.get(node.nNodeId);
-      if (!canvasPos) {
-        return;
-      }
+    const activeSet = new Set(activeNodes);
 
-      const active = false; // TODO Actually check if node is active
-      const highlighted = hoverSet.has(node.node.skill!) || hoveredNode === node;
+    visibleNodePos.forEach((canvasPos, nodeId) => {
+      const node = precalculatedNodes.get(nodeId)!;
+
+      const active = activeSet.has(nodeId); // TODO Actually check if node is active
+      const highlighted = hoverSet.has(nodeId) || hoveredNode === node;
 
       node.draw(context, canvasPos, scaling, active, highlighted);
-    })
+    });
   };
 </script>
 

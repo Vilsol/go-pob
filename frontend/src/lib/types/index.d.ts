@@ -9,13 +9,13 @@ export declare namespace cache {
 export declare namespace calculator {
   interface ActiveSkill {
     SkillFlags?: Record<string, boolean>;
-    SkillModList?: calculator.ModList;
-    SkillCfg?: calculator.ListCfg;
+    SkillModList?: moddb.ModList;
+    SkillCfg?: moddb.ListCfg;
     SkillTypes?: Record<string, boolean>;
     SkillData?: Record<string, unknown | undefined>;
     ActiveEffect?: calculator.GemEffect;
-    Weapon1Cfg?: calculator.ListCfg;
-    Weapon2Cfg?: calculator.ListCfg;
+    Weapon1Cfg?: moddb.ListCfg;
+    Weapon2Cfg?: moddb.ListCfg;
     SupportList?: Array<calculator.GemEffect | undefined>;
     Actor?: calculator.Actor;
     SocketGroup?: unknown;
@@ -26,14 +26,14 @@ export declare namespace calculator {
     Weapon2Flags: number;
     EffectList?: Array<calculator.GemEffect | undefined>;
     DisableReason: string;
-    BaseSkillModList?: calculator.ModList;
+    BaseSkillModList?: moddb.ModList;
     SlotName: string;
     MinionSkillTypes?: Record<string, boolean>;
-    BleedCfg?: calculator.ListCfg;
-    OHBleedCfg?: calculator.ListCfg;
+    BleedCfg?: moddb.ListCfg;
+    OHBleedCfg?: moddb.ListCfg;
   }
   interface Actor {
-    ModDB?: calculator.ModDB;
+    ModDB?: moddb.ModDB;
     Level: number;
     Enemy?: calculator.Actor;
     ItemList?: Record<string, unknown | undefined>;
@@ -45,6 +45,7 @@ export declare namespace calculator {
     WeaponData1?: Record<string, unknown | undefined>;
     WeaponData2?: Record<string, unknown | undefined>;
     StrDmgBonus: number;
+    GetOutput(stat: string): [number, boolean];
   }
   interface Calculator {
     PoB?: pob.PathOfBuilding;
@@ -55,13 +56,14 @@ export declare namespace calculator {
     Mult: number;
   }
   interface Environment {
+    Cache?: calculator.EnvironmentCache;
     Build?: pob.PathOfBuilding;
     Mode: string;
     Spec?: calculator.PassiveSpec;
-    ModDB?: calculator.ModDB;
-    EnemyModDB?: calculator.ModDB;
-    ItemModDB?: calculator.ModDB;
-    Minion?: calculator.ModDB;
+    ModDB?: moddb.ModDB;
+    EnemyModDB?: moddb.ModDB;
+    ItemModDB?: moddb.ModDB;
+    Minion?: moddb.ModDB;
     EnemyLevel: number;
     Player?: calculator.Actor;
     Enemy?: calculator.Actor;
@@ -82,6 +84,9 @@ export declare namespace calculator {
     KeystonesAdded?: Record<string, unknown | undefined>;
     MainSocketGroup: number;
     DebugErrors?: Array<string>;
+  }
+  interface EnvironmentCache {
+    TreeVersion: string;
   }
   interface GemEffect {
     GrantedEffect?: calculator.GrantedEffect;
@@ -104,58 +109,6 @@ export declare namespace calculator {
     CastTime(): number;
     DamageEffectiveness(): number;
     WeaponTypes(): (Array<string> | undefined);
-  }
-  interface ListCfg {
-    Flags?: number;
-    KeywordFlags?: number;
-    Source?: string;
-    SkillStats?: Record<string, number>;
-    SkillCond?: Record<string, boolean>;
-    SlotName: string;
-  }
-  interface ModDB {
-    ModStore?: calculator.ModStore;
-    Mods?: Record<string, Array<unknown | undefined> | undefined>;
-    AddDB(db?: calculator.ModDB): void;
-    AddList(list?: calculator.ModList): void;
-    AddMod(newMod?: unknown): void;
-    Clone(): (unknown | undefined);
-    EvalMod(arg1?: unknown, arg2?: calculator.ListCfg): (unknown | undefined);
-    Flag(cfg?: calculator.ListCfg, names?: Array<string>): boolean;
-    GetCondition(arg1: string, arg2?: calculator.ListCfg, arg3: boolean): [boolean, boolean];
-    GetMultiplier(arg1: string, arg2?: calculator.ListCfg, arg3: boolean): number;
-    GetStat(arg1: string, arg2?: calculator.ListCfg): number;
-    List(cfg?: calculator.ListCfg, names?: Array<string>): (Array<unknown | undefined> | undefined);
-    More(cfg?: calculator.ListCfg, names?: Array<string>): number;
-    Override(cfg?: calculator.ListCfg, names?: Array<string>): (unknown | undefined);
-    Sum(modType: string, cfg?: calculator.ListCfg, names?: Array<string>): number;
-  }
-  interface ModList {
-    ModStore?: calculator.ModStore;
-    AddDB(db?: calculator.ModList): void;
-    AddMod(newMod?: unknown): void;
-    Clone(): (unknown | undefined);
-    EvalMod(arg1?: unknown, arg2?: calculator.ListCfg): (unknown | undefined);
-    Flag(cfg?: calculator.ListCfg, names?: Array<string>): boolean;
-    GetCondition(arg1: string, arg2?: calculator.ListCfg, arg3: boolean): [boolean, boolean];
-    GetMultiplier(arg1: string, arg2?: calculator.ListCfg, arg3: boolean): number;
-    GetStat(arg1: string, arg2?: calculator.ListCfg): number;
-    List(cfg?: calculator.ListCfg, names?: Array<string>): (Array<unknown | undefined> | undefined);
-    More(cfg?: calculator.ListCfg, names?: Array<string>): number;
-    Override(cfg?: calculator.ListCfg, names?: Array<string>): (unknown | undefined);
-    Sum(modType: string, cfg?: calculator.ListCfg, names?: Array<string>): number;
-  }
-  interface ModStore {
-    Parent?: unknown;
-    Child?: unknown;
-    Actor?: calculator.Actor;
-    Multipliers?: Record<string, number>;
-    Conditions?: Record<string, boolean>;
-    Clone(): (calculator.ModStore | undefined);
-    EvalMod(m?: unknown, cfg?: calculator.ListCfg): (unknown | undefined);
-    GetCondition(variable: string, cfg?: calculator.ListCfg, noMod: boolean): [boolean, boolean];
-    GetMultiplier(variable: string, cfg?: calculator.ListCfg, noMod: boolean): number;
-    GetStat(stat: string, cfg?: calculator.ListCfg): number;
   }
   interface PassiveSpec {
     Build?: pob.PathOfBuilding;
@@ -395,6 +348,54 @@ export declare namespace fwd {
     Reset(rd?: unknown): void;
     Skip(n: number): [number, Error];
     WriteTo(w?: unknown): [number, Error];
+  }
+}
+export declare namespace moddb {
+  interface ListCfg {
+    Flags?: number;
+    KeywordFlags?: number;
+    Source?: string;
+    SkillStats?: Record<string, number>;
+    SkillCond?: Record<string, boolean>;
+    SlotName: string;
+  }
+  interface ModDB {
+    ModStore?: moddb.ModStore;
+    Mods?: Record<string, Array<unknown | undefined> | undefined>;
+    AddDB(db?: moddb.ModDB): void;
+    AddList(list?: moddb.ModList): void;
+    AddMod(newMod?: unknown): void;
+    Clone(): (unknown | undefined);
+    Flag(cfg?: moddb.ListCfg, names?: Array<string>): boolean;
+    GetCondition(arg1: string, arg2?: moddb.ListCfg, arg3: boolean): [boolean, boolean];
+    GetMultiplier(arg1: string, arg2?: moddb.ListCfg, arg3: boolean): number;
+    List(cfg?: moddb.ListCfg, names?: Array<string>): (Array<unknown | undefined> | undefined);
+    More(cfg?: moddb.ListCfg, names?: Array<string>): number;
+    Override(cfg?: moddb.ListCfg, names?: Array<string>): (unknown | undefined);
+    Sum(modType: string, cfg?: moddb.ListCfg, names?: Array<string>): number;
+  }
+  interface ModList {
+    ModStore?: moddb.ModStore;
+    AddDB(db?: moddb.ModList): void;
+    AddMod(newMod?: unknown): void;
+    Clone(): (unknown | undefined);
+    Flag(cfg?: moddb.ListCfg, names?: Array<string>): boolean;
+    GetCondition(arg1: string, arg2?: moddb.ListCfg, arg3: boolean): [boolean, boolean];
+    GetMultiplier(arg1: string, arg2?: moddb.ListCfg, arg3: boolean): number;
+    List(cfg?: moddb.ListCfg, names?: Array<string>): (Array<unknown | undefined> | undefined);
+    More(cfg?: moddb.ListCfg, names?: Array<string>): number;
+    Override(cfg?: moddb.ListCfg, names?: Array<string>): (unknown | undefined);
+    Sum(modType: string, cfg?: moddb.ListCfg, names?: Array<string>): number;
+  }
+  interface ModStore {
+    Parent?: unknown;
+    Child?: unknown;
+    Actor?: unknown;
+    Multipliers?: Record<string, number>;
+    Conditions?: Record<string, boolean>;
+    Clone(): (moddb.ModStore | undefined);
+    GetCondition(variable: string, cfg?: moddb.ListCfg, noMod: boolean): [boolean, boolean];
+    GetMultiplier(variable: string, cfg?: moddb.ListCfg, noMod: boolean): number;
   }
 }
 export declare namespace msgp {

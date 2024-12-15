@@ -1,8 +1,7 @@
 <script lang="ts">
   import { Layer, type Render } from 'svelte-canvas';
-  import type { Group } from '../../skill_tree/types';
+  import type { Group, Tree } from '../../skill_tree/types';
   import {
-    skillTree,
     toCanvasCoords,
     drawnGroups,
     ascendancyGroupPositionOffsets,
@@ -21,19 +20,15 @@
     cullingPadding: number;
     currentClass?: string;
     currentAscendancy?: string;
+    skillTree: Tree;
   }
 
-  let { scaling, offsetX, offsetY, cdnBase, currentClass, currentAscendancy, cullingPadding }: Props = $props();
+  let { scaling, offsetX, offsetY, cdnBase, currentClass, currentAscendancy, cullingPadding, skillTree }: Props = $props();
 
   const render: Render = ({ context, width, height }) => {
-    if (!$skillTree) {
-      return;
-    }
-
-    drawnGroups.keys().forEach((nGroupId) => {
-      const group: Group = drawnGroups.get(nGroupId)!;
-      const posX = ((nGroupId in ascendancyGroups && ascendancyGroupPositionOffsets[ascendancyGroups[nGroupId]]?.x) || 0) + group.x;
-      const posY = ((nGroupId in ascendancyGroups && ascendancyGroupPositionOffsets[ascendancyGroups[nGroupId]]?.y) || 0) + group.y;
+    drawnGroups.forEach((group, groupId) => {
+      const posX = ((groupId in ascendancyGroups && ascendancyGroupPositionOffsets[ascendancyGroups[groupId]]?.x) || 0) + group.x;
+      const posY = ((groupId in ascendancyGroups && ascendancyGroupPositionOffsets[ascendancyGroups[groupId]]?.y) || 0) + group.y;
       const canvasPos = toCanvasCoords(posX, posY, offsetX, offsetY, scaling);
 
       if (canvasPos.x < cullingPadding || canvasPos.x > width - cullingPadding || canvasPos.y < cullingPadding || canvasPos.y > height - cullingPadding) {
@@ -41,24 +36,24 @@
       }
 
       const maxOrbit = Math.max(...group.orbits);
-      if (nGroupId in classStartGroups) {
-        if (currentClass === $skillTree.classes[classStartGroups[nGroupId]].name) {
-          drawSprite(context, 'center' + $skillTree.classes[classStartGroups[nGroupId]].name.toLowerCase(), canvasPos, inverseSpritesOther, scaling, cdnBase);
+      if (groupId in classStartGroups) {
+        if (currentClass === skillTree.classes[classStartGroups[groupId]].name) {
+          drawSprite(context, 'center' + skillTree.classes[classStartGroups[groupId]].name.toLowerCase(), canvasPos, inverseSpritesOther, scaling, cdnBase);
         } else {
           drawSprite(context, 'PSStartNodeBackgroundInactive', canvasPos, inverseSpritesOther, scaling, cdnBase, false, true);
         }
-      } else if (nGroupId in ascendancyGroups) {
-        if (ascendancyStartGroups.has(nGroupId)) {
+      } else if (groupId in ascendancyGroups) {
+        if (ascendancyStartGroups.has(groupId)) {
           drawSprite(
             context,
-            'Classes' + ascendancyGroups[nGroupId],
+            'Classes' + ascendancyGroups[groupId],
             canvasPos,
             inverseSpritesOther,
             scaling,
             cdnBase,
             false,
             true,
-            currentAscendancy === ascendancyGroups[nGroupId]
+            currentAscendancy === ascendancyGroups[groupId]
           );
         }
       } else if (maxOrbit == 1) {
