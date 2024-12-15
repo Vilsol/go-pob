@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Layer, type Render } from 'svelte-canvas';
-  import type { Group, Tree } from '../../skill_tree/types';
+  import type { Tree } from '../../skill_tree/types';
   import {
     toCanvasCoords,
     drawnGroups,
