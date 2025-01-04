@@ -43,7 +43,7 @@ export const UITick = (source: string) => {
 export const fontScaling = writable(parseFloat(browser ? localStorage.getItem('options:fontScaling') || '12' : '12'));
 fontScaling.subscribe((v) => browser && localStorage.setItem('options:fontScaling', v.toString(10)));
 
-export const zoomSensitivity = writable(parseFloat(browser ? localStorage.getItem('options:zoomSensitivity') || '5' : '5'));
+export const zoomSensitivity = writable(parseFloat(browser ? localStorage.getItem('options:zoomSensitivity') || '3' : '3'));
 zoomSensitivity.subscribe((v) => browser && localStorage.setItem('options:zoomSensitivity', v.toString(10)));
 
 export const devMode = writable(browser ? localStorage.getItem('options:devMode') === 'true' : false);

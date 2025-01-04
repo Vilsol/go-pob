@@ -21,6 +21,8 @@ export const inverseSpritesOther: Record<string, Sprite> = {};
 
 let zoomLevel = 0.3835;
 
+export const scaling = 260;
+
 const expectedAscendancyStartingPositions: Record<string, { x: number; y: number }> = {
   Juggernaut: { x: -10400, y: 5200 },
   Berserker: { x: -10400, y: 3700 },
@@ -137,9 +139,9 @@ export type Point = {
   y: number;
 };
 
-export const toCanvasCoords = (x: number, y: number, offsetX: number, offsetY: number, scaling: number): Point => ({
-  x: (Math.abs(loadedSkillTree.min_x) + x + offsetX) / scaling,
-  y: (Math.abs(loadedSkillTree.min_y) + y + offsetY) / scaling
+export const toCanvasCoords = (x: number, y: number): Point => ({
+  x: x / scaling,
+  y: y / scaling
 });
 
 export const rotateAroundPoint = (center: Point, target: Point, angle: number): Point => {
@@ -172,7 +174,7 @@ export const orbitAngleAt = (orbit: number, index: number): number => {
 };
 
 const nodePosCache: Record<number, Point> = {};
-export const calculateNodePos = (node: Node, offsetX: number, offsetY: number, scaling: number): Point => {
+export const calculateNodePos = (node: Node): Point => {
   if (
     node.group === undefined ||
     node.orbit === undefined ||
@@ -192,10 +194,10 @@ export const calculateNodePos = (node: Node, offsetX: number, offsetY: number, s
 
     const targetAngle = orbitAngleAt(node.orbit, node.orbitIndex);
 
-    nodePosCache[node.skill] = rotateAroundPoint({ x: posX, y: posY }, { x: posX, y: posY - loadedSkillTree.constants.orbitRadii[node.orbit] }, targetAngle);
+    const point = rotateAroundPoint({ x: posX, y: posY }, { x: posX, y: posY - loadedSkillTree.constants.orbitRadii[node.orbit] }, targetAngle);
+
+    nodePosCache[node.skill] = toCanvasCoords(point.x, point.y);
   }
 
-  return toCanvasCoords(nodePosCache[node.skill].x, nodePosCache[node.skill].y, offsetX, offsetY, scaling);
+  return nodePosCache[node.skill];
 };
-
-export const distance = (p1: Point, p2: Point): number => Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));

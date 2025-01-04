@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { Layer, type Render } from 'svelte-canvas';
+  import { T } from '@threlte/core';
+  import { PlaneGeometry } from 'three';
   import type { Tree } from '../../skill_tree/types';
   import {
     toCanvasCoords,
@@ -10,61 +11,65 @@
     inverseSpritesOther,
     ascendancyStartGroups
   } from '../../skill_tree';
-  import { drawSprite } from '$lib/components/skill-tree/common';
+  import { loadSpriteTexture, relativeScale } from './common';
 
   interface Props {
-    scaling: number;
-    offsetX: number;
-    offsetY: number;
     cdnBase: string;
-    cullingPadding: number;
     currentClass?: string;
     currentAscendancy?: string;
     skillTree: Tree;
   }
 
-  let { scaling, offsetX, offsetY, cdnBase, currentClass, currentAscendancy, cullingPadding, skillTree }: Props = $props();
+  let { cdnBase, currentClass, currentAscendancy, skillTree }: Props = $props();
 
-  const render: Render = ({ context, width, height }) => {
-    drawnGroups.forEach((group, groupId) => {
-      const posX = ((groupId in ascendancyGroups && ascendancyGroupPositionOffsets[ascendancyGroups[groupId]]?.x) || 0) + group.x;
-      const posY = ((groupId in ascendancyGroups && ascendancyGroupPositionOffsets[ascendancyGroups[groupId]]?.y) || 0) + group.y;
-      const canvasPos = toCanvasCoords(posX, posY, offsetX, offsetY, scaling);
-
-      if (canvasPos.x < cullingPadding || canvasPos.x > width - cullingPadding || canvasPos.y < cullingPadding || canvasPos.y > height - cullingPadding) {
-        return;
-      }
-
-      const maxOrbit = Math.max(...group.orbits);
-      if (groupId in classStartGroups) {
-        if (currentClass === skillTree.classes[classStartGroups[groupId]].name) {
-          drawSprite(context, 'center' + skillTree.classes[classStartGroups[groupId]].name.toLowerCase(), canvasPos, inverseSpritesOther, scaling, cdnBase);
-        } else {
-          drawSprite(context, 'PSStartNodeBackgroundInactive', canvasPos, inverseSpritesOther, scaling, cdnBase, false, true);
-        }
-      } else if (groupId in ascendancyGroups) {
-        if (ascendancyStartGroups.has(groupId)) {
-          drawSprite(
-            context,
-            'Classes' + ascendancyGroups[groupId],
-            canvasPos,
-            inverseSpritesOther,
-            scaling,
-            cdnBase,
-            false,
-            true,
-            currentAscendancy === ascendancyGroups[groupId]
-          );
-        }
-      } else if (maxOrbit == 1) {
-        drawSprite(context, 'PSGroupBackground1', canvasPos, inverseSpritesOther, scaling, cdnBase);
-      } else if (maxOrbit == 2) {
-        drawSprite(context, 'PSGroupBackground2', canvasPos, inverseSpritesOther, scaling, cdnBase);
-      } else if (maxOrbit == 3 || group.orbits.length > 1) {
-        drawSprite(context, 'PSGroupBackground3', canvasPos, inverseSpritesOther, scaling, cdnBase, true);
-      }
-    });
-  };
+  // Create geometries for different group types
+  const groupGeometry = new PlaneGeometry(1, 1);
 </script>
 
-<Layer {render} />
+{#each Array.from(drawnGroups) as [groupId, group]}
+  {@const posX = ((groupId in ascendancyGroups && ascendancyGroupPositionOffsets[ascendancyGroups[groupId]]?.x) || 0) + group.x}
+  {@const posY = ((groupId in ascendancyGroups && ascendancyGroupPositionOffsets[ascendancyGroups[groupId]]?.y) || 0) + group.y}
+  {@const canvasPos = toCanvasCoords(posX, posY)}
+
+  {@const maxOrbit = Math.max(...group.orbits)}
+  {#if groupId in classStartGroups}
+    {@const isActiveClass = currentClass === skillTree.classes[classStartGroups[groupId]].name}
+    {@const spriteName = isActiveClass ? `center${skillTree.classes[classStartGroups[groupId]].name.toLowerCase()}` : 'PSStartNodeBackgroundInactive'}
+
+    {#await loadSpriteTexture(spriteName, cdnBase, inverseSpritesOther) then t}
+      <T.Mesh geometry={groupGeometry} position={[canvasPos.x, -canvasPos.y, 0.001]} scale={relativeScale(t.sprite, [1, 1, 1])}>
+        <T.MeshBasicMaterial map={t.texture} transparent opacity={isActiveClass ? 1 : 0.5} />
+      </T.Mesh>
+    {/await}
+  {:else if groupId in ascendancyGroups}
+    {#if ascendancyStartGroups.has(groupId)}
+      {#await loadSpriteTexture(`Classes${ascendancyGroups[groupId]}`, cdnBase, inverseSpritesOther) then t}
+        <T.Mesh geometry={groupGeometry} position={[canvasPos.x, -canvasPos.y, 0.001]} scale={relativeScale(t.sprite, [1, 1, 1])}>
+          <T.MeshBasicMaterial map={t.texture} transparent opacity={currentAscendancy === ascendancyGroups[groupId] ? 1 : 0.5} />
+        </T.Mesh>
+      {/await}
+    {/if}
+  {:else if maxOrbit === 1}
+    {#await loadSpriteTexture('PSGroupBackground1', cdnBase, inverseSpritesOther) then t}
+      <T.Mesh geometry={groupGeometry} position={[canvasPos.x, -canvasPos.y, 0.001]} scale={relativeScale(t.sprite, [1, 1, 1])}>
+        <T.MeshBasicMaterial map={t.texture} transparent />
+      </T.Mesh>
+    {/await}
+  {:else if maxOrbit === 2}
+    {#await loadSpriteTexture('PSGroupBackground2', cdnBase, inverseSpritesOther) then t}
+      <T.Mesh geometry={groupGeometry} position={[canvasPos.x, -canvasPos.y, 0.001]} scale={relativeScale(t.sprite, [1, 1, 1])}>
+        <T.MeshBasicMaterial map={t.texture} transparent />
+      </T.Mesh>
+    {/await}
+  {:else if maxOrbit === 3 || group.orbits.length > 1}
+    {#await loadSpriteTexture('PSGroupBackground3', cdnBase, inverseSpritesOther) then t}
+      <T.Mesh geometry={groupGeometry} position={[canvasPos.x, -canvasPos.y + 0.725, 0.001]} scale={relativeScale(t.sprite, [1, 1, 1])}>
+        <T.MeshBasicMaterial map={t.texture} transparent />
+      </T.Mesh>
+
+      <T.Mesh geometry={groupGeometry} position={[canvasPos.x, -canvasPos.y - 0.7, 0.001]} scale={relativeScale(t.sprite, [-1, -1, 1])}>
+        <T.MeshBasicMaterial map={t.texture} transparent />
+      </T.Mesh>
+    {/await}
+  {/if}
+{/each}

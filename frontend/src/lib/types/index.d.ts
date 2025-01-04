@@ -329,7 +329,7 @@ export declare namespace exposition {
     Support: boolean;
     CalculateStuff(): void;
   }
-  function CalculateAllocationPaths(version: string, activeNodes: Array<number>, rootNodes: Array<number>): (Record<number, number> | undefined);
+  function CalculateAllocationPaths(version: string, activeNodes?: Array<number>, rootNodes?: Array<number>): (Record<number, number> | undefined);
   function GetRawTree(version: string): Promise<(Uint8Array | undefined)>;
   function GetSkillGems(): (Array<exposition.SkillGem> | undefined);
   function GetStatByIndex(id: number): (poe.Stat | undefined);

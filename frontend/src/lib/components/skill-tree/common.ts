@@ -1,91 +1,6 @@
-import type { Point } from '$lib/skill_tree';
 import type { Coord, Sprite } from '$lib/skill_tree/types';
-
-const spriteCache: Record<string, HTMLImageElement> = {};
-const cropCache: Record<string, HTMLCanvasElement> = {};
-
-const drawScaling = 2.6;
-
-export const drawSprite = (
-  context: CanvasRenderingContext2D,
-  path: string,
-  pos: Point,
-  source: Record<string, Sprite>,
-  scaling: number,
-  cdnBase: string,
-  mirror = false,
-  cropCircle = false,
-  active = false
-) => {
-  const sprite = source[path];
-  if (!sprite) {
-    return;
-  }
-
-  const spriteSheetUrl = sprite.filename;
-  if (!(spriteSheetUrl in spriteCache)) {
-    const urlPath = new URL(spriteSheetUrl).pathname;
-    const base = urlPath.substring(urlPath.lastIndexOf('/') + 1);
-    const cdnTreeBase = cdnBase + `/tree/assets/`;
-    const finalUrl = cdnTreeBase + base;
-
-    spriteCache[spriteSheetUrl] = new Image();
-    spriteCache[spriteSheetUrl].src = finalUrl;
-  }
-
-  const self: Coord = sprite.coords[path];
-
-  const newWidth = (self.w / scaling) * drawScaling;
-  const newHeight = (self.h / scaling) * drawScaling;
-
-  const topLeftX = pos.x - newWidth / 2;
-  const topLeftY = pos.y - newHeight / 2;
-
-  let finalY = topLeftY;
-  if (mirror) {
-    finalY = topLeftY - newHeight / 2;
-  }
-
-  if (cropCircle && spriteCache[spriteSheetUrl].complete) {
-    const cacheKey = spriteSheetUrl + ':' + path + ';' + (active ? 'active' : '');
-    if (!(cacheKey in cropCache)) {
-      const tempCanvas = document.createElement('canvas');
-      const tempCtx = tempCanvas.getContext('2d')!;
-      tempCanvas.width = self.w;
-      tempCanvas.height = self.h;
-
-      tempCtx.save();
-
-      tempCtx.beginPath();
-      tempCtx.arc(self.w / 2, self.h / 2, self.w / 2, 0, Math.PI * 2, true);
-      tempCtx.closePath();
-      tempCtx.clip();
-
-      if (!active) {
-        tempCtx.filter = 'brightness(50%) opacity(50%)';
-      }
-
-      tempCtx.drawImage(spriteCache[spriteSheetUrl], self.x, self.y, self.w, self.h, 0, 0, self.w, self.h);
-
-      cropCache[cacheKey] = tempCanvas;
-    }
-
-    context.drawImage(cropCache[cacheKey], 0, 0, self.w, self.h, topLeftX, finalY, newWidth, newHeight);
-  } else {
-    context.drawImage(spriteCache[spriteSheetUrl], self.x, self.y, self.w, self.h, topLeftX, finalY, newWidth, newHeight);
-  }
-
-  if (mirror) {
-    context.save();
-
-    context.translate(topLeftX, topLeftY);
-    context.rotate(Math.PI);
-
-    context.drawImage(spriteCache[spriteSheetUrl], self.x, self.y, self.w, self.h, -newWidth, -(newHeight / 2), newWidth, -newHeight);
-
-    context.restore();
-  }
-};
+import { Texture } from 'three';
+import { useTexture } from '@threlte/extras';
 
 export const wrapText = (text: string, context: CanvasRenderingContext2D, width: number): string[] => {
   const result = [];
@@ -106,3 +21,50 @@ export const wrapText = (text: string, context: CanvasRenderingContext2D, width:
 
   return result;
 };
+
+const textureCache: Record<string, Record<string, { texture: Texture; sprite: Coord }>> = {};
+
+export const loadSpriteTexture = async (spriteName: string, cdnBase: string, source: Record<string, Sprite>): Promise<{ texture: Texture; sprite: Coord }> => {
+  const spriteSheet = source[spriteName];
+
+  if (!(spriteSheet.filename in textureCache)) {
+    textureCache[spriteSheet.filename] = {};
+  }
+
+  if (!(spriteName in textureCache[spriteSheet.filename])) {
+    const urlPath = new URL(spriteSheet.filename).pathname;
+    const base = urlPath.substring(urlPath.lastIndexOf('/') + 1);
+    const cdnTreeBase = cdnBase + `/tree/assets/`;
+    const finalUrl = cdnTreeBase + base;
+
+    const sprite = spriteSheet.coords[spriteName];
+
+    const uvX = sprite.x / spriteSheet.w;
+    const uvY = 1 - sprite.y / spriteSheet.h - sprite.h / spriteSheet.h;
+    const uvWidth = sprite.w / spriteSheet.w;
+    const uvHeight = sprite.h / spriteSheet.h;
+
+    const texture = await useTexture(finalUrl);
+
+    const spriteTexture = texture.clone();
+
+    spriteTexture.repeat.set(uvWidth, uvHeight);
+    spriteTexture.offset.set(uvX, uvY);
+    spriteTexture.needsUpdate = true;
+
+    textureCache[spriteSheet.filename][spriteName] = {
+      texture: spriteTexture,
+      sprite
+    };
+  }
+
+  return textureCache[spriteSheet.filename][spriteName];
+};
+
+const assetScale = 100;
+
+export const relativeScale = (sprite: { w: number; h: number }, vec: [x: number, y: number, z: number]): [x: number, y: number, z: number] => [
+  (vec[0] * sprite.w) / assetScale,
+  (vec[1] * sprite.h) / assetScale,
+  vec[2]
+];
