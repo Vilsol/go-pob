@@ -1,106 +1,96 @@
 <script lang="ts">
-  import { Layer, type Render } from 'svelte-canvas';
   import type { Node } from '../../skill_tree/types';
   import { type Point } from '../../skill_tree';
-  import { wrapText } from '$lib/components/skill-tree/common';
   import { devMode } from '$lib/global';
+  import { onMount } from 'svelte';
+  import { TextStyle, CanvasTextMetrics, Graphics, Container, Text, type Application } from 'pixi.js';
 
   interface Props {
     hoveredNode?: Node;
-    mousePos: Point;
+    app: Application;
+    pointerPosition: Point;
   }
 
-  let { hoveredNode, mousePos }: Props = $props();
+  let { hoveredNode, app, pointerPosition }: Props = $props();
 
-  const titleFont = '25px Roboto Flex';
-  const statsFont = '17px Roboto Flex';
+  let container: Container;
+  let tooltip: Graphics;
 
-  const render: Render = ({ context }) => {
-    if (hoveredNode) {
+  let titleStyle: TextStyle;
+  let title: Text;
+
+  let statsStyle: TextStyle;
+  let stats: Text;
+
+  onMount(() => {
+    container = new Container({
+      position: { x: app.screen.width / 2, y: app.screen.height / 2 },
+      interactive: false,
+      hitArea: undefined,
+      eventMode: 'none'
+    });
+
+    app.stage.addChild(container);
+
+    tooltip = new Graphics();
+    container.addChild(tooltip);
+
+    titleStyle = new TextStyle({ fontFamily: 'Arial', fontSize: 25, fill: 0xffffff, align: 'center' });
+    title = new Text('', titleStyle);
+    container.addChild(title);
+
+    statsStyle = new TextStyle({ fontFamily: 'Arial', fontSize: 17, fill: 0xffffff, align: 'left' });
+    stats = new Text('', statsStyle);
+    container.addChild(stats);
+
+    return () => {
+      container.destroy({
+        children: true
+      });
+    };
+  });
+
+  $effect(() => {
+    let maxWidth = 600;
+
+    tooltip.clear();
+
+    if (!hoveredNode) {
+      container.alpha = 0;
+    } else {
+      container.alpha = 1;
+
       let nodeName = hoveredNode.name || 'N/A';
       if ($devMode) {
         nodeName += ' (' + hoveredNode.skill + ')';
       }
-      const nodeStats: { text: string; special: boolean }[] = (hoveredNode.stats || []).map((s) => ({
-        text: s,
-        special: false
-      }));
 
-      context.font = titleFont;
-      const textMetrics = context.measureText(nodeName);
+      const statsText = hoveredNode?.stats?.join('\n').trim() || '';
 
-      const maxWidth = Math.max(textMetrics.width + 50, 600);
+      const titleMetrics = CanvasTextMetrics.measureText(nodeName, titleStyle);
+      const statsMetrics = CanvasTextMetrics.measureText(statsText, statsStyle);
 
-      context.font = statsFont;
-
-      const allLines: {
-        text: string;
-        offset: number;
-        special: boolean;
-      }[] = [];
-
-      const padding = 30;
-
-      let offset = 85;
-
-      if (nodeStats && nodeStats.length > 0) {
-        nodeStats.forEach((stat) => {
-          if (allLines.length > 0) {
-            offset += 5;
-          }
-
-          stat.text.split('\n').forEach((line) => {
-            if (allLines.length > 0) {
-              offset += 10;
-            }
-
-            const lines = wrapText(line, context, maxWidth - padding);
-            lines.forEach((l) => {
-              allLines.push({
-                text: l,
-                offset,
-                special: stat.special
-              });
-              offset += 20;
-            });
-          });
-        });
-      } else if (hoveredNode.isJewelSocket) {
-        allLines.push({
-          text: 'Click to select this socket',
-          offset,
-          special: true
-        });
-
-        offset += 20;
-      }
+      maxWidth = Math.max(titleMetrics.width + 50, maxWidth);
+      maxWidth = Math.max(statsMetrics.width + 30, maxWidth);
 
       const titleHeight = 55;
 
-      context.fillStyle = 'rgba(75,63,24,0.9)';
-      context.fillRect(mousePos.x, mousePos.y, maxWidth, titleHeight);
+      tooltip.fillStyle = 'rgba(75,63,24,0.9)';
+      tooltip.rect(0, 0, maxWidth, titleHeight);
+      tooltip.fill();
 
-      context.fillStyle = '#ffffff';
-      context.font = titleFont;
-      context.textAlign = 'center';
-      context.fillText(nodeName, mousePos.x + maxWidth / 2, mousePos.y + 35);
+      title.text = nodeName;
+      title.position.set(maxWidth / 2, titleHeight / 2);
+      title.anchor = 0.5;
 
-      context.fillStyle = 'rgba(0,0,0,0.8)';
-      context.fillRect(mousePos.x, mousePos.y + titleHeight, maxWidth, offset - titleHeight);
+      tooltip.fillStyle = 'rgba(0,0,0,0.8)';
+      tooltip.rect(0, titleHeight, maxWidth, statsMetrics.height + 30);
+      tooltip.fill();
 
-      context.font = statsFont;
-      context.textAlign = 'left';
-      allLines.forEach((l) => {
-        if (l.special) {
-          context.fillStyle = '#8cf34c';
-        } else {
-          context.fillStyle = '#ffffff';
-        }
-
-        context.fillText(l.text, mousePos.x + padding / 2, mousePos.y + l.offset);
-      });
+      stats.text = statsText;
+      stats.position.set(15, titleHeight + 15);
     }
-  };
-</script>
 
-<Layer {render} />
+    container.position.set(pointerPosition.x - maxWidth / 2, pointerPosition.y + 25);
+  });
+</script>

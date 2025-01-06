@@ -1,6 +1,7 @@
 import { writable } from 'svelte/store';
 import { syncWrap } from '../go/worker';
 import type { Group, Sprite, Tree, Node } from './types';
+import { Assets, Spritesheet, type SpritesheetData, Texture } from 'pixi.js';
 
 export const skillTree = writable<Tree | undefined>(undefined);
 export const skillTreeVersion = writable<string | undefined>(undefined);
@@ -18,6 +19,15 @@ export const classStartNodes: Record<number, number[]> = {};
 export const inverseSpritesInactive: Record<string, Sprite> = {};
 export const inverseSpritesActive: Record<string, Sprite> = {};
 export const inverseSpritesOther: Record<string, Sprite> = {};
+
+export enum SpritesheetType {
+  ACTIVE,
+  INACTIVE,
+  OTHERS
+}
+
+export let allInverseSpritesheets: Record<SpritesheetType, Record<string, Spritesheet>>;
+export let allExtraImages: Record<string, Texture>;
 
 let zoomLevel = 0.3835;
 
@@ -44,6 +54,11 @@ const expectedAscendancyStartingPositions: Record<string, { x: number; y: number
 };
 
 export const ascendancyGroupPositionOffsets: Record<string, { x: number; y: number }> = {};
+
+export const urlToCDN = (cdnBase: string, url: string) => {
+  const urlPath = new URL(url).pathname;
+  return cdnBase + `/tree/assets/` + urlPath.substring(urlPath.lastIndexOf('/') + 1);
+};
 
 export const loadSkillTree = async (version: string) => {
   if (!syncWrap) {
@@ -98,14 +113,74 @@ export const loadSkillTree = async (version: string) => {
     });
   });
 
+  skillTree.set(loadedSkillTree);
+  skillTreeVersion.set(version);
+};
+
+export const initializeSpritesheets = async (cdnBase: string) => {
+  // Type -> URL -> SpritesheetData
+  const allInverseSprites: Record<SpritesheetType, Record<string, SpritesheetData>> = {
+    [SpritesheetType.ACTIVE]: {},
+    [SpritesheetType.INACTIVE]: {},
+    [SpritesheetType.OTHERS]: {}
+  };
+
   for (const key of ['keystoneInactive', 'notableInactive', 'normalInactive', 'masteryInactive'] as const) {
-    const sprite = loadedSkillTree.sprites[key]?.[zoomLevel];
-    Object.keys(sprite?.coords || {}).forEach((c) => sprite && (inverseSpritesInactive[c] = sprite));
+    const sprites = loadedSkillTree.sprites[key]?.[zoomLevel];
+    if (sprites) {
+      Object.keys(sprites?.coords || {}).forEach((c) => {
+        inverseSpritesInactive[c] = sprites;
+
+        if (!(sprites.filename in allInverseSprites[SpritesheetType.INACTIVE])) {
+          allInverseSprites[SpritesheetType.INACTIVE][sprites.filename] = {
+            meta: {
+              scale: 1,
+              image: urlToCDN(cdnBase, sprites.filename),
+              size: {
+                w: sprites.w,
+                h: sprites.h
+              }
+            },
+            frames: {}
+          };
+        }
+
+        allInverseSprites[SpritesheetType.INACTIVE][sprites.filename].frames[c] = {
+          frame: {
+            ...sprites.coords[c]
+          }
+        };
+      });
+    }
   }
 
   for (const key of ['keystoneActive', 'notableActive', 'normalActive', 'masteryActiveSelected'] as const) {
-    const sprite = loadedSkillTree.sprites[key]?.[zoomLevel];
-    Object.keys(sprite.coords).forEach((c) => sprite && (inverseSpritesActive[c] = sprite));
+    const sprites = loadedSkillTree.sprites[key]?.[zoomLevel];
+    if (sprites) {
+      Object.keys(sprites.coords).forEach((c) => {
+        inverseSpritesActive[c] = sprites;
+
+        if (!(sprites.filename in allInverseSprites[SpritesheetType.ACTIVE])) {
+          allInverseSprites[SpritesheetType.ACTIVE][sprites.filename] = {
+            meta: {
+              scale: 1,
+              image: urlToCDN(cdnBase, sprites.filename),
+              size: {
+                w: sprites.w,
+                h: sprites.h
+              }
+            },
+            frames: {}
+          };
+        }
+
+        allInverseSprites[SpritesheetType.ACTIVE][sprites.filename].frames[c] = {
+          frame: {
+            ...sprites.coords[c]
+          }
+        };
+      });
+    }
   }
 
   for (const key of [
@@ -121,15 +196,73 @@ export const loadSkillTree = async (version: string) => {
     'line',
     'jewelRadius'
   ] as const) {
-    let sprite = loadedSkillTree.sprites[key]?.[zoomLevel];
-    if (!sprite) {
-      sprite = loadedSkillTree.sprites[key]?.[Object.keys(loadedSkillTree.sprites[key])[0]];
+    let sprites = loadedSkillTree.sprites[key]?.[zoomLevel];
+    if (!sprites) {
+      sprites = loadedSkillTree.sprites[key]?.[Object.keys(loadedSkillTree.sprites[key])[0]];
     }
-    Object.keys(sprite?.coords || {}).forEach((c) => sprite && (inverseSpritesOther[c] = sprite));
+
+    if (sprites) {
+      Object.keys(sprites?.coords || {}).forEach((c) => {
+        inverseSpritesOther[c] = sprites;
+
+        if (!(sprites.filename in allInverseSprites[SpritesheetType.OTHERS])) {
+          allInverseSprites[SpritesheetType.OTHERS][sprites.filename] = {
+            meta: {
+              scale: 1,
+              image: urlToCDN(cdnBase, sprites.filename),
+              size: {
+                w: sprites.w,
+                h: sprites.h
+              }
+            },
+            frames: {}
+          };
+        }
+
+        allInverseSprites[SpritesheetType.OTHERS][sprites.filename].frames[c] = {
+          frame: {
+            ...sprites.coords[c]
+          }
+        };
+      });
+    }
   }
 
-  skillTree.set(loadedSkillTree);
-  skillTreeVersion.set(version);
+  const urlToTexture = await Assets.load(
+    Object.values(allInverseSprites)
+      .flatMap((x) => Object.keys(x))
+      .map((url) => urlToCDN(cdnBase, url))
+  );
+
+  const parsers: Promise<unknown>[] = [];
+
+  // Type -> Name -> Spritesheet
+  allInverseSpritesheets = Object.entries(allInverseSprites).reduce(
+    (types, [type, sheet]) => ({
+      ...types,
+      [type]: Object.entries(sheet).reduce(
+        (names, [url, data]) => {
+          const spritesheet = new Spritesheet(urlToTexture[urlToCDN(cdnBase, url)] as Texture, data);
+          parsers.push(spritesheet.parse());
+          return {
+            ...names,
+            ...Object.fromEntries(Object.keys(spritesheet.data.frames).map((name) => [name, spritesheet]))
+          };
+        },
+        {} as Record<string, Spritesheet>
+      )
+    }),
+    {} as Record<SpritesheetType, Record<string, Spritesheet>>
+  );
+
+  await Promise.all(parsers);
+
+  allExtraImages = await Assets.load(
+    Object.entries(loadedSkillTree.extraImages).map(([k, v]) => ({
+      alias: k,
+      src: cdnBase + '/raw/' + v.image
+    }))
+  );
 };
 
 export type Point = {
@@ -137,9 +270,10 @@ export type Point = {
   y: number;
 };
 
-export const toCanvasCoords = (x: number, y: number, offsetX: number, offsetY: number, scaling: number): Point => ({
-  x: (Math.abs(loadedSkillTree.min_x) + x + offsetX) / scaling,
-  y: (Math.abs(loadedSkillTree.min_y) + y + offsetY) / scaling
+export const scaling = 2.6;
+export const toCanvasCoords = (x: number, y: number): Point => ({
+  x: x / scaling,
+  y: y / scaling
 });
 
 export const rotateAroundPoint = (center: Point, target: Point, angle: number): Point => {
@@ -172,7 +306,7 @@ export const orbitAngleAt = (orbit: number, index: number): number => {
 };
 
 const nodePosCache: Record<number, Point> = {};
-export const calculateNodePos = (node: Node, offsetX: number, offsetY: number, scaling: number): Point => {
+export const calculateNodePos = (node: Node): Point => {
   if (
     node.group === undefined ||
     node.orbit === undefined ||
@@ -195,7 +329,5 @@ export const calculateNodePos = (node: Node, offsetX: number, offsetY: number, s
     nodePosCache[node.skill] = rotateAroundPoint({ x: posX, y: posY }, { x: posX, y: posY - loadedSkillTree.constants.orbitRadii[node.orbit] }, targetAngle);
   }
 
-  return toCanvasCoords(nodePosCache[node.skill].x, nodePosCache[node.skill].y, offsetX, offsetY, scaling);
+  return toCanvasCoords(nodePosCache[node.skill].x, nodePosCache[node.skill].y);
 };
-
-export const distance = (p1: Point, p2: Point): number => Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));

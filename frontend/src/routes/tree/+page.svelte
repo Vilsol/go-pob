@@ -1,5 +1,5 @@
 <script>
-  import SkillTree from '$lib/components/skill-tree/SkillTree.svelte';
+  import SkillTreeCanvas from '$lib/components/skill-tree/SkillTreeCanvas.svelte';
   import { drawnGroups, loadSkillTree, skillTree, skillTreeVersion } from '$lib/skill_tree';
   import { onMount } from 'svelte';
   import { logError } from '$lib/utils';
@@ -12,5 +12,5 @@
 </script>
 
 {#if $skillTree && $skillTreeVersion && drawnGroups.size > 0}
-  <SkillTree skillTree={$skillTree} skillTreeVersion={$skillTreeVersion} />
+  <SkillTreeCanvas skillTree={$skillTree} skillTreeVersion={$skillTreeVersion} />
 {/if}
