@@ -117,9 +117,19 @@ func (b *PathOfBuilding) AllocateNodes(nodeIds []int64) {
 	b.Build.PassiveNodes = append(b.Build.PassiveNodes, nodeIds...)
 }
 
-func (b *PathOfBuilding) DeallocateNodes(nodeId int64) {
-	var newNodes, err = removeValue(b.Build.PassiveNodes, nodeId)
-	if err == nil {
-		b.Build.PassiveNodes = newNodes
+func (b *PathOfBuilding) DeallocateNodes(nodeIds []int64) {
+	activeNodesSet := make(map[int64]bool, len(b.Build.PassiveNodes))
+	for _, node := range b.Build.PassiveNodes {
+		activeNodesSet[node] = true
 	}
+
+	for _, nodeId := range nodeIds {
+		delete(activeNodesSet, nodeId)
+	}
+
+	activeNodes := make([]int64, 0, len(activeNodesSet))
+	for nodeId := range activeNodesSet {
+		activeNodes = append(activeNodes, nodeId)
+	}
+	b.Build.PassiveNodes = activeNodes
 }

@@ -329,7 +329,8 @@ export declare namespace exposition {
     Support: boolean;
     CalculateStuff(): void;
   }
-  function CalculateAllocationPaths(version: string, activeNodes: Array<number>, rootNodes: Array<number>): (Record<number, number> | undefined);
+  function CalculateAllocationPaths(version: string, activeNodes?: Array<number>, rootNodes?: Array<number>): (Record<number, number> | undefined);
+  function CalculatePrunableNodes(version: string, activeNodes?: Array<number>, rootNodes?: Array<number>): (Array<number> | undefined);
   function GetRawTree(version: string): Promise<(Uint8Array | undefined)>;
   function GetSkillGems(): (Array<exposition.SkillGem> | undefined);
   function GetStatByIndex(id: number): (poe.Stat | undefined);
@@ -564,7 +565,7 @@ export declare namespace pob {
     Config: pob.Config;
     AddNewSocketGroup(): void;
     AllocateNodes(nodeIds?: Array<number>): void;
-    DeallocateNodes(nodeId: number): void;
+    DeallocateNodes(nodeIds?: Array<number>): void;
     DeleteAllSocketGroups(): void;
     DeleteSocketGroup(index: number): void;
     GetStringOption(name: string): string;
