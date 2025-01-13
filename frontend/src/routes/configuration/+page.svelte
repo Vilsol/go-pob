@@ -3,7 +3,7 @@
   import Select from 'svelte-select';
   import SelectItem from '$lib/components/SelectItem.svelte';
   import SelectSelection from '$lib/components/SelectSelection.svelte';
-  import type { ConfigSection } from '$lib/display/configurations';
+  import type { AllVarTypes, ConfigSection } from '$lib/display/configurations';
   import { configurations } from '$lib/display/configurations';
   import { currentBuild } from '$lib/global';
   import type { pob } from '$lib/types';
@@ -12,8 +12,36 @@
   import ColoredText from '$lib/components/common/ColoredText.svelte';
   import { logError } from '$lib/utils';
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const valueWatchers: Record<string, any> = {};
+  type ValueTypes = boolean | number | string | { value: boolean | number | string };
+
+  const valueWatchers: Record<string, ValueTypes> = $state({});
+
+  let initialized = $state(false);
+  syncWrap
+    .GetAllConfigOptions()
+    .then((startOptions) => {
+      configurations.forEach((configuration) => {
+        configuration.variables.forEach((varData) => {
+          if (!(varData.var in valueWatchers)) {
+            // eslint-disable-next-line
+            let defaultState: any = varData.defaultState;
+            if (varData.type === 'list') {
+              defaultState = varData.list[0];
+            }
+
+            if (varData.type === 'list') {
+              const elem = varData.list.find((l) => l.value === startOptions?.[varData.var]);
+              valueWatchers[varData.var] = elem || defaultState;
+            } else {
+              valueWatchers[varData.var] = startOptions?.[varData.var] || defaultState;
+            }
+          }
+        });
+      });
+
+      initialized = true;
+    })
+    .catch(logError);
 
   // eslint-disable-next-line
   const filterSections = (list: ConfigSection[], _: Remote<pob.PathOfBuilding>): ConfigSection[] =>
@@ -112,58 +140,6 @@
             return false;
           }
 
-          if (!(varData.var in valueWatchers)) {
-            let defaultState: unknown = varData.defaultState;
-            if (varData.type === 'list') {
-              defaultState = varData.list[0];
-            }
-
-            const privateName = '_' + varData.var;
-            valueWatchers[privateName] = defaultState;
-
-            // TODO Clean up this mess
-            Object.defineProperty(valueWatchers, varData.var, {
-              get() {
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-return,@typescript-eslint/no-unsafe-member-access
-                return this[privateName];
-              },
-              set(value) {
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-                if (this[privateName] === value) {
-                  return;
-                }
-
-                if (varData.type === 'list') {
-                  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-                  if (this[privateName] === undefined || this[privateName].value !== value.value) {
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
-                    syncWrap?.SetConfigOption(varData.var, value.value).catch(logError);
-                  }
-                } else {
-                  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                  syncWrap?.SetConfigOption(varData.var, value).catch(logError);
-                }
-
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-                this[privateName] = value;
-              }
-            });
-
-            syncWrap
-              ?.GetConfigOption(varData.var)
-              .then((val) => {
-                if (varData.type === 'list') {
-                  const elem = varData.list.find((l) => l.value === val);
-                  if (elem !== undefined) {
-                    valueWatchers[varData.var] = elem;
-                  }
-                } else {
-                  valueWatchers[varData.var] = val;
-                }
-              })
-              .catch(logError);
-          }
-
           return true;
         })
       }))
@@ -194,7 +170,21 @@
     }
   };
 
-  const sections = $derived($currentBuild ? filterSections(configurations, $currentBuild) : []);
+  const sections = $derived($currentBuild && initialized ? filterSections(configurations, $currentBuild) : []);
+
+  const setValue = (varData: AllVarTypes, value: ValueTypes): void => {
+    if (valueWatchers[varData.var] === value) {
+      return;
+    }
+
+    valueWatchers[varData.var] = value;
+
+    if (typeof value === 'object') {
+      syncWrap?.SetConfigOption(varData.var, value.value).catch(logError);
+    } else {
+      syncWrap?.SetConfigOption(varData.var, value).catch(logError);
+    }
+  };
 </script>
 
 <svelte:window onmousemove={moveEvent} />
@@ -205,7 +195,9 @@
       <legend class="container">{section.name}</legend>
       <div class="side-by-side-max-content">
         {#each section.variables as v}
-          <div><label for={v.var}><ColoredText text={v.label} /></label></div>
+          <div onmouseover={() => (hoveredItem = v)} onfocus={() => (hoveredItem = v)} onmouseleave={() => (hoveredItem = undefined)} role="contentinfo">
+            <label for={v.var}><ColoredText text={v.label} /></label>
+          </div>
           <div
             class="w-full"
             onmouseover={() => (hoveredItem = v)}
@@ -214,7 +206,15 @@
             role="contentinfo">
             {#if v.type === 'list'}
               <div class="themed min-w-full">
-                <Select items={v.list} bind:value={valueWatchers[v.var]} clearable={false} placeholder="" showChevron={true} listOffset={0} id={v.var}>
+                <Select
+                  items={v.list}
+                  on:change={(val) => setValue(v, val.detail)}
+                  value={valueWatchers[v.var]}
+                  clearable={false}
+                  placeholder=""
+                  showChevron={true}
+                  listOffset={0}
+                  id={v.var}>
                   <!-- TODO CONVERT TO SVELTE 5 -->
                   <div slot="selection" let:selection>
                     <SelectSelection item={selection} />

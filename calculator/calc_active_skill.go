@@ -2,6 +2,7 @@ package calculator
 
 import (
 	"github.com/Vilsol/go-pob-data/poe"
+
 	"github.com/Vilsol/go-pob/data"
 	raw2 "github.com/Vilsol/go-pob/data/raw"
 	"github.com/Vilsol/go-pob/mod"
@@ -22,14 +23,18 @@ func CreateActiveSkill(activeEffect *GemEffect, supportList []*GemEffect, actor 
 		SummonSkill:  summonSkill,
 	}
 
+	activeGrantedEffect := activeEffect.GrantedEffect
+
 	activeSkill.SkillTypes = utils.CopyMap(activeEffect.GrantedEffect.SkillTypes)
 
-	/*
-		TODO -- Initialise skill types
-		if activeGrantedEffect.minionSkillTypes then
-			activeSkill.minionSkillTypes = copyTable(activeGrantedEffect.minionSkillTypes)
-		end
-	*/
+	// Initialise skill types
+	if activeGrantedEffect.Raw.AddMinionTypes != nil {
+		activeSkill.MinionSkillTypes = make(map[data.SkillType]bool)
+
+		for _, minionType := range activeGrantedEffect.Raw.AddMinionTypes {
+			activeSkill.MinionSkillTypes[data.SkillType(poe.ActiveSkillTypes[minionType].ID)] = true
+		}
+	}
 
 	activeSkill.SkillFlags = utils.CopyMap(activeEffect.GrantedEffect.BaseFlags)
 	activeSkill.SkillFlags[SkillFlagHit] = activeSkill.SkillFlags[SkillFlagHit] || activeSkill.SkillTypes[data.SkillTypeAttack] || activeSkill.SkillTypes[data.SkillTypeDamage] || activeSkill.SkillTypes[data.SkillTypeProjectile]
@@ -74,14 +79,12 @@ func CalcMergeSkillInstanceMods(env *Environment, modList *moddb.ModList, skillE
 	grantedEffect := skillEffect.GrantedEffect
 	stats := CalcBuildSkillInstanceStats(skillEffect, grantedEffect)
 
-	/*
-		TODO extraStats
-		if extraStats and extraStats[1] then
-			for _, stat in pairs(extraStats) do
-				stats[stat.key] = (stats[stat.key] or 0) + stat.value
-			end
-		end
-	*/
+	if len(extraStats) > 0 {
+		for _, stat := range extraStats {
+			statCast := stat.(mod.ExtraSkillStat)
+			stats[statCast.Key] = stats[statCast.Key] + utils.Number[float64](statCast.Value)
+		}
+	}
 
 	for stat, statValue := range stats {
 		statMap := raw2.GetCalculatedGrantedEffect(grantedEffect.Raw).GetCalculatedStatMap().Get(stat)
@@ -444,14 +447,18 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 		}
 	}
 
-	/*
-		TODO -- Apply gem/quality modifiers from support gems
-		for _, value in ipairs(skillModList:List(activeSkill.skillCfg, "SupportedGemProperty")) do
-			if value.keyword == "active_skill" and activeSkill.activeEffect.gemData then
-				activeEffect[value.key] = activeEffect[value.key] + value.value
-			end
-		end
-	*/
+	// Apply gem/quality modifiers from support gems
+	for _, value := range skillModList.List(activeSkill.SkillCfg, "SupportedGemProperty") {
+		castValue := value.(mod.SupportedGemProperty)
+		if castValue.Keyword == "active_skill" && activeSkill.ActiveEffect.GemData != nil {
+			switch castValue.Key {
+			case "level":
+				activeEffect.Level = activeEffect.Level + castValue.Value
+			default:
+				panic("unknown key: " + castValue.Key)
+			}
+		}
+	}
 
 	// Add active gem modifiers
 
@@ -494,12 +501,12 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 			t_insert(activeSkill.extraSkillModList, value.mod)
 		end
 	*/
-	/*
-		TODO -- Find totem level
-		if skillFlags.totem then
-			activeSkill.skillData.totemLevel = activeEffect.grantedEffectLevel.levelRequirement
-		end
-	*/
+
+	// Find totem level
+	if skillFlags[SkillFlagTotem] {
+		activeSkill.SkillData["totemLevel"] = activeEffect.GrantedEffectLevel.LevelRequirement
+	}
+
 	/*
 		TODO -- Add active mine multiplier
 		if skillFlags.mine then
@@ -722,6 +729,7 @@ func getWeaponFlags(env *Environment, weaponData map[string]interface{}, weaponT
 
 	if weaponTypes != nil {
 		/*
+			TODO weaponTypes
 			for _, types in ipairs(weaponTypes) do
 				if not types[weaponData.type] and
 				(not weaponData.countsAsAll1H or not (types["Claw"] or types["Dagger"] or types["One Handed Axe"] or types["One Handed Mace"] or types["One Handed Sword"])) then

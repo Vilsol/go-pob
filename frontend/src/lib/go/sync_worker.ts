@@ -111,8 +111,11 @@ class PoBWorker {
         OutputTable: out.Player.OutputTable,
         SkillFlags: out.Player.MainSkill.SkillFlags
       });
-      console.log('Errors from last tick:');
-      console.log(out.DebugErrors);
+
+      if (out.DebugErrors?.length) {
+        console.log('Errors from last tick:');
+        console.log(out.DebugErrors);
+      }
     }
   }
 
@@ -190,6 +193,33 @@ class PoBWorker {
     }
 
     return undefined;
+  }
+
+  GetAllConfigOptions(): Record<string, boolean | number | string> {
+    if (!this.currentBuild || !this.currentBuild.Config.Inputs) {
+      return {};
+    }
+
+    return this.currentBuild.Config.Inputs.reduce((out, input) => {
+      let val: unknown;
+
+      if (input.String !== undefined) {
+        val = input.String;
+      }
+
+      if (input.Number !== undefined) {
+        val = input.Number;
+      }
+
+      if (input.Boolean !== undefined) {
+        val = input.Boolean;
+      }
+
+      return {
+        ...out,
+        [input.Name]: val
+      };
+    }, {});
   }
 
   SetMainSocketGroup(mainSocketGroup: number) {

@@ -48,7 +48,7 @@ interface VariableCheck extends Variable {
   type: 'check';
 }
 
-type AllVarTypes = VariableList | VariableCount | VariableCheck | VariableInteger | VariableCountAllowZero;
+export type AllVarTypes = VariableList | VariableCount | VariableCheck | VariableInteger | VariableCountAllowZero;
 
 export interface ConfigSection {
   name: string;

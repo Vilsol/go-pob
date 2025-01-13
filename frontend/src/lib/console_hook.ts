@@ -35,10 +35,16 @@ const cssMap: Record<string, string> = {
 
 const oldLog = console.log;
 console.log = (...args) => {
-  if (args.length == 1 && typeof args[0] === 'string') {
+  if (args.length == 1 && typeof args[0] === 'string' && args[0].match(ansiRegex)?.length) {
     const allAnsiCodes = args[0].matchAll(ansiRegex);
     const cssMapped = [...allAnsiCodes].map((c) => cssMap[c[1]] || '');
-    return oldLog(args[0].replaceAll(ansiRegex, '%c'), ...cssMapped);
+    return oldLog('%c[go] ' + args[0].replaceAll(ansiRegex, '%c'), ...['color: gray', ...cssMapped]);
   }
-  return oldLog(...args);
+
+  const stack = new Error().stack;
+  const callerLine = stack?.split('\n')[1];
+  const match = callerLine?.match(/(?:([^@]+@).*?)?([^/]+?\.ts).*:(\d+):(\d+)/);
+  const location = match ? `${match[1]}${match[2]}:${match[3]}:${match[4]}` : 'unknown';
+
+  return oldLog('%c%s%c %s', 'color: gray', `[${location}]`, 'color: inherit', ...args);
 };

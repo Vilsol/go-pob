@@ -1,8 +1,11 @@
 package utils
 
 import (
+	"go/types"
 	"log/slog"
 	"strconv"
+
+	"github.com/Vilsol/go-pob/mod"
 )
 
 func CopySlice[T any](s []T) []T {
@@ -64,4 +67,71 @@ func Ternary[T any](cond bool, ifTrue T, ifFalse T) T {
 	}
 
 	return ifFalse
+}
+
+type numberLike interface {
+	int | int8 | int16 | int32 | int64 | uint | uint8 | uint16 | uint32 | uint64 | uintptr | float32 | float64
+}
+
+func Number[T numberLike](val any) T {
+	if val == nil {
+		return T(0)
+	}
+
+	switch x := val.(type) {
+	case string:
+		f, _ := strconv.ParseFloat(x, 64)
+		return T(f)
+	case bool:
+		if x {
+			return 1
+		}
+		return 0
+	case int:
+		return T(x)
+	case int8:
+		return T(x)
+	case int16:
+		return T(x)
+	case int32:
+		return T(x)
+	case int64:
+		return T(x)
+	case uint:
+		return T(x)
+	case uint8:
+		return T(x)
+	case uint16:
+		return T(x)
+	case uint32:
+		return T(x)
+	case uint64:
+		return T(x)
+	case uintptr:
+		return T(x)
+	case float32:
+		return T(x)
+	case float64:
+		return T(x)
+	case types.Nil:
+		return T(0)
+	}
+
+	panic("unreachable")
+}
+
+func Or(val *mod.ModValueMulti, or float64) float64 {
+	if val == nil {
+		return or
+	}
+
+	if val.Type() != mod.ModValueMultiTypeFloat {
+		return or
+	}
+
+	if val.Float() == 0 {
+		return or
+	}
+
+	return val.Float()
 }

@@ -3077,7 +3077,7 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 				maxStacks = skillModList.Override(cfg, "BleedStacksMax").Float()
 			}
 			globalOutput["BleedStacksMax"] = maxStacks
-			durationBase := utils.Ternary(utils.Has(skillData, "bleedDurationIsSkillDuration"), skillData["duration"].(float64), data.BleedDurationBase)
+			durationBase := utils.Ternary(utils.Has(skillData, "bleedDurationIsSkillDuration"), utils.Number[float64](skillData["duration"]), data.BleedDurationBase)
 
 			names := []string{"EnemyBleedDuration", "SkillAndDamagingAilmentDuration"}
 			if utils.Has(skillData, "bleedIsSkillEffect") {
@@ -3156,7 +3156,7 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 				end
 			*/
 
-			basePercent := utils.Ternary(utils.Has(skillData, "bleedBasePercent"), skillData["bleedBasePercent"].(float64), data.BleedPercentBase)
+			basePercent := utils.Ternary(utils.Has(skillData, "bleedBasePercent"), utils.Number[float64](skillData["bleedBasePercent"]), data.BleedPercentBase)
 			baseVal := calcAilmentDamage("Bleed", sourceHitDmg, sourceCritDmg) * basePercent / 100 * output["RuthlessBlowBleedEffect"] * output["FistOfWarAilmentEffect"] * globalOutput["AilmentWarcryEffect"]
 			if baseVal > 0 {
 				skillFlags[SkillFlagBleed] = true

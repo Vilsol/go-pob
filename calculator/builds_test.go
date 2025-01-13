@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/Vilsol/go-pob-data/poe"
+
 	"github.com/Vilsol/go-pob/cache"
 
 	"github.com/MarvinJWendt/testza"
@@ -17,7 +18,7 @@ import (
 	"github.com/Vilsol/go-pob/data/raw"
 )
 
-var enabled = false
+var enabled = true
 
 func init() {
 	config.InitLogging(false)
