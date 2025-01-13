@@ -172,7 +172,7 @@
 
   const sections = $derived($currentBuild && initialized ? filterSections(configurations, $currentBuild) : []);
 
-  const setValue = (varData: AllVarTypes, value: ValueTypes): void => {
+  const setValue = <T extends ValueTypes>(varData: AllVarTypes, value: T): void => {
     if (valueWatchers[varData.var] === value) {
       return;
     }
