@@ -18,7 +18,7 @@ import (
 	"github.com/Vilsol/go-pob/data/raw"
 )
 
-var enabled = true
+var enabled = false
 
 func init() {
 	config.InitLogging(false)
