@@ -104,3 +104,74 @@ func BenchmarkCalculateAllocationPaths(b *testing.B) {
 		TreeVersions[TreeVersion3_18].CalculateAllocationPaths([]int64{48828, 55373, 2151, 47062, 15144, 62103}, []int64{48828})
 	}
 }
+
+func TestCalculatePrunableNodesSinglePath(t *testing.T) {
+	// Starting from ranger attack speed root node, pathing to 'Path of the Hunter'
+	activeNonRootNodes := []int64{35179, 9009, 19506}
+	activeRootNodes := []int64{15144}
+	activeNodes := append(activeNonRootNodes, activeRootNodes...)
+
+	actual := TreeVersions[TreeVersion3_18].CalculatePrunableNodes(activeNodes, activeRootNodes)
+	testza.AssertLen(t, actual, 0, "There should be no prunable nodes")
+
+	// Delete the node before 'Path of the Hunter' which should cause it to be pruned
+	activeNonRootNodes = []int64{35179, 19506}
+	activeNodes = append(activeNonRootNodes, activeRootNodes...)
+
+	actual = TreeVersions[TreeVersion3_18].CalculatePrunableNodes(activeNodes, activeRootNodes)
+	expected := []int64{19506}
+	testza.AssertEqual(t, expected, actual, "Node should be pruned")
+}
+
+func TestCalculatePrunableNodesMultiPath(t *testing.T) {
+	// Starting from both ranger root nodes, path to 'Path of the Hunter'
+	activeNonRootNodes := []int64{35179, 60532, 9009, 19506}
+	activeRootNodes := []int64{15144, 62103}
+	activeNodes := append(activeNonRootNodes, activeRootNodes...)
+
+	actual := TreeVersions[TreeVersion3_18].CalculatePrunableNodes(activeNodes, activeRootNodes)
+	testza.AssertLen(t, actual, 0, "There should be no prunable nodes (1)")
+
+	// Delete the 2nd node after the top root node which wouldn't require anything
+	// to be pruned
+	activeNonRootNodes = []int64{60532, 9009, 19506}
+	activeNodes = append(activeNonRootNodes, activeRootNodes...)
+
+	actual = TreeVersions[TreeVersion3_18].CalculatePrunableNodes(activeNodes, activeRootNodes)
+	testza.AssertLen(t, actual, 0, "There should be no prunable nodes (2)")
+
+	// Delete the bottom root node which should cause all non-root nodes to be pruned
+	activeRootNodes = []int64{15144}
+	activeNodes = append(activeNonRootNodes, activeRootNodes...)
+
+	actual = TreeVersions[TreeVersion3_18].CalculatePrunableNodes(activeNodes, activeRootNodes)
+	expected := []int64{60532, 9009, 19506}
+	testza.AssertEqual(t, expected, actual, "All non-root nodes should be pruned")
+}
+
+func TestCalculatePrunableNodesCircular(t *testing.T) {
+	// Starting from ranger attack speed root node, path the entire circle between
+	// 'Path of the Hunter' and 'Reflexes'
+	activeNonRootNodes := []int64{35179, 9009, 19506, 8348, 6534, 20812, 44103, 32091, 17814, 60204}
+	activeRootNodes := []int64{15144}
+	activeNodes := append(activeNonRootNodes, activeRootNodes...)
+
+	actual := TreeVersions[TreeVersion3_18].CalculatePrunableNodes(activeNodes, activeRootNodes)
+	testza.AssertLen(t, actual, 0, "There should be no prunable nodes (1)")
+
+	// Delete the node below 'Reflexes' which wouldn't require anything to be pruned
+	activeNonRootNodes = []int64{35179, 9009, 19506, 8348, 6534, 20812, 44103, 17814, 60204}
+	activeNodes = append(activeNonRootNodes, activeRootNodes...)
+
+	actual = TreeVersions[TreeVersion3_18].CalculatePrunableNodes(activeNodes, activeRootNodes)
+	testza.AssertLen(t, actual, 0, "There should be no prunable nodes (2)")
+
+	// Delete the 'Path of the Hunter' node which should cause all nodes in the circle
+	// to be pruned
+	activeNonRootNodes = []int64{35179, 9009, 8348, 6534, 20812, 44103, 17814, 60204}
+	activeNodes = append(activeNonRootNodes, activeRootNodes...)
+
+	actual = TreeVersions[TreeVersion3_18].CalculatePrunableNodes(activeNodes, activeRootNodes)
+	expected := []int64{8348, 6534, 20812, 44103, 17814, 60204}
+	testza.AssertEqual(t, expected, actual, "All nodes in the circle should be pruned")
+}
