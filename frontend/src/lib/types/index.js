@@ -24,6 +24,7 @@ export const initializeCrystalline = () => {
   };
   exposition = {
     CalculateAllocationPaths: globalThis['go']['go-pob']['exposition']['CalculateAllocationPaths'],
+    CalculatePrunableNodes: globalThis['go']['go-pob']['exposition']['CalculatePrunableNodes'],
     GetRawTree: globalThis['go']['go-pob']['exposition']['GetRawTree'],
     GetSkillGems: globalThis['go']['go-pob']['exposition']['GetSkillGems'],
     GetStatByIndex: globalThis['go']['go-pob']['exposition']['GetStatByIndex']

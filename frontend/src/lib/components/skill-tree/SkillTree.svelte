@@ -68,8 +68,22 @@
   let clickNode = (node: Node) => {
     const nodeId = node.skill ?? -1;
     if (activeNodes?.includes(nodeId)) {
-      void syncWrap?.DeallocateNodes(nodeId);
-      currentBuild.set($currentBuild);
+      const version = skillTreeVersion || '3_18';
+      const rootNodes = classStartNodes[skillTree.classes.findIndex((c) => c.name === currentClass)];
+      syncWrap?.DeallocateNodes([nodeId])
+        .then(() => {
+          const nowActiveNodes = activeNodes.filter((n) => n !== nodeId);
+          syncWrap?.CalculatePrunableNodes(version, nowActiveNodes, rootNodes)
+            .then((nodeIds) => {
+              console.log(`Node ids to deallocate: ${nodeIds}`);
+              if (nodeIds) {
+                void syncWrap?.DeallocateNodes(nodeIds);
+              }
+              currentBuild.set($currentBuild);
+            })
+            .catch(logError);
+        })
+        .catch(logError);
     } else {
       allocationPaths
         .then((paths) => {

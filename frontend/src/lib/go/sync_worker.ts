@@ -259,13 +259,17 @@ class PoBWorker {
     void this.Tick('AllocateNode');
   }
 
-  DeallocateNodes(nodeId: number) {
-    this.currentBuild?.DeallocateNodes(nodeId);
-    void this.Tick('DeallocateNode');
+  DeallocateNodes(nodeIds: number[]) {
+    this.currentBuild?.DeallocateNodes(nodeIds);
+    void this.Tick('DeallocateNodes');
   }
 
   CalculateAllocationPaths(version: string, activeNodes: number[], rootNodes: number[]) {
     return exposition.CalculateAllocationPaths(version, activeNodes, rootNodes);
+  }
+
+  CalculatePrunableNodes(version: string, activeNodes: number[], rootNodes: number[]) {
+    return exposition.CalculatePrunableNodes(version, activeNodes, rootNodes);
   }
 
   BuildInfo() {

@@ -15,6 +15,6 @@ func CalculateAllocationPaths(version data.TreeVersion, activeNodes []int64, roo
 // 1a. On allocation calculate and store a list of adjacent nodes that are currently on a path towards a start node (pathsToStart)
 // 1b. Also make sure to check all previously allocated nodes and recalculate any new start paths adjacent nodes
 // 2. On Deallocate start pruning all subtrees connected to the target node that ARE NOT listed in the pathsToStart
-func CalculatePrunableNodes(version data.TreeVersion, activeNodes []int64, target int64) []int64 {
-	return make([]int64, 0)
+func CalculatePrunableNodes(version data.TreeVersion, activeNodes []int64, rootNodes []int64) []int64 {
+	return data.TreeVersions[version].CalculatePrunableNodes(activeNodes, rootNodes)
 }

@@ -100,3 +100,45 @@ func (v *TreeVersionData) CalculateAllocationPaths(activeNodes []int64, rootNode
 
 	return state.nextHops
 }
+
+func (v *TreeVersionData) CalculatePrunableNodes(activeNodes []int64, rootNodes []int64) []int64 {
+	_, adjacencyMap := v.getGraph()
+
+	activeNodesSet := make(map[int64]bool, len(activeNodes))
+	for _, node := range activeNodes {
+		activeNodesSet[node] = true
+	}
+
+	stack := make([]int64, 0, len(rootNodes)+len(activeNodes))
+	visited := make(map[int64]bool)
+
+	for _, rootNode := range rootNodes {
+		if activeNodesSet[rootNode] {
+			stack = append(stack, rootNode)
+		}
+	}
+
+	for len(stack) > 0 {
+		currentNode := stack[len(stack)-1]
+		stack = stack[:len(stack)-1]
+
+		if !visited[currentNode] {
+			visited[currentNode] = true
+
+			for adjacent := range adjacencyMap[currentNode] {
+				if activeNodesSet[adjacent] && !visited[adjacent] {
+					stack = append(stack, adjacent)
+				}
+			}
+		}
+	}
+
+	prunableNodes := make([]int64, 0, len(activeNodes))
+	for _, node := range activeNodes {
+		if !visited[node] {
+			prunableNodes = append(prunableNodes, node)
+		}
+	}
+
+	return prunableNodes
+}
