@@ -4,8 +4,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/jinzhu/copier"
-
 	"github.com/Vilsol/go-pob-data/poe"
 
 	"github.com/Vilsol/go-pob/data"
@@ -627,7 +625,11 @@ func InitEnv(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode OutputM
 	if env.Player.WeaponData1 == nil {
 		env.Player.WeaponData1 = &SkillData{}
 	}
-	utils.Panic(copier.Copy(env.Player.WeaponData1, data.UnarmedWeaponData[data.ClassIDs[env.Spec.ClassName]]))
+
+	for k, v := range data.UnarmedWeaponData[data.ClassIDs[env.Spec.ClassName]] {
+		utils.Set(env.Player.WeaponData1, k, v)
+	}
+
 	//if _, ok := env.Player.ItemList["Weapon 1"]; ok {
 	// TODO Weapon 1 Data
 	// env.player.itemList["Weapon 1"].weaponData and env.player.itemList["Weapon 1"].weaponData[1]
