@@ -51,6 +51,7 @@ const (
 	SourceBrittle       = Source("Brittle")
 	SourceSap           = Source("Sap")
 	SourceFeedingFrenzy = Source("Feeding Frenzy")
+	SourceSkill         = Source("Skill")
 )
 
 type KeywordFlag int

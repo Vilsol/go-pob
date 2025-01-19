@@ -42,7 +42,7 @@ type TreeVersionData struct {
 	adjacencyMap map[int64]map[int64]graph.Edge[int64]
 }
 
-const cdnTreeBase = "https://go-pob-data.pages.dev/data/%s/tree/data.json.br"
+const cdnTreeBase = "https://data.pob.gg/data/%s/tree/data.json.br"
 
 func (v *TreeVersionData) Tree() *Tree {
 	if v.cachedTree != nil {

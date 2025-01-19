@@ -9,6 +9,19 @@ import (
 	"github.com/Vilsol/go-pob/utils"
 )
 
+var resistTypeList = []string{
+	"Fire",
+	"Cold",
+	"Lightning",
+	"Chaos",
+}
+
+var isElemental = map[string]bool{
+	"Fire":      true,
+	"Cold":      true,
+	"Lightning": true,
+}
+
 func CalcArmourReductionF(armour float64, raw float64) float64 {
 	if armour == 0 && raw == 0 {
 		return 0
@@ -52,51 +65,51 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 	actor.Output["PhysicalResist"] = math.Min(math.Max(0, actor.ModDB.Sum(mod.TypeBase, nil, "PhysicalDamageReduction")), actor.Output["DamageReductionMax"])
 	actor.Output["PhysicalResistWhenHit"] = math.Min(math.Max(0, actor.Output["PhysicalResist"]+actor.ModDB.Sum(mod.TypeBase, nil, "PhysicalDamageReductionWhenHit")), actor.Output["DamageReductionMax"])
 
-	/*
-		TODO -- Highest Maximum Elemental Resistance for Melding of the Flesh
-		if modDB.Flag(nil, "ElementalResistMaxIsHighestResistMax") {
-			highestResistMax := 0;
-			highestResistMaxType := "";
-			for _, elem in ipairs(resistTypeList) {
-				resistMax := modDB.Override(nil, elem+"ResistMax") or min(data.misc.MaxResistCap, modDB.Sum(mod.TypeBase, nil, elem+"ResistMax", isElemental[elem] and "ElementalResistMax"))
-				if resistMax > highestResistMax and isElemental[elem] {
-					highestResistMax = resistMax;
-					highestResistMaxType = elem;
-				}
-			}
-			for _, elem in ipairs(resistTypeList) {
-				if isElemental[elem] {
-					modDB.NewMod(elem+"ResistMax", "OVERRIDE", highestResistMax, highestResistMaxType+" Melding of the Flesh");
-				}
+	// Highest Maximum Elemental Resistance for Melding of the Flesh
+	if modDB.Flag(nil, "ElementalResistMaxIsHighestResistMax") {
+		highestResistMax := float64(0)
+		highestResistMaxType := ""
+		for _, elem := range resistTypeList {
+			resistMax := utils.Or(modDB.Override(nil, elem+"ResistMax"), min(data.MaxResistCap, modDB.Sum(mod.TypeBase, nil, elem+"ResistMax", utils.Ternary(isElemental[elem], "ElementalResistMax", ""))))
+			if resistMax > highestResistMax && isElemental[elem] {
+				highestResistMax = resistMax
+				highestResistMaxType = elem
 			}
 		}
+		for _, elem := range resistTypeList {
+			if isElemental[elem] {
+				modDB.AddMod(mod.NewFloat(elem+"ResistMax", mod.TypeOverride, highestResistMax).Source(mod.Source(highestResistMaxType + " Melding of the Flesh")))
+			}
+		}
+	}
 
-		for _, elem in ipairs(resistTypeList) {
-			local min, max, total
-			min = data.misc.ResistFloor
-			max = modDB.Override(nil, elem+"ResistMax") or min(data.misc.MaxResistCap, modDB.Sum(mod.TypeBase, nil, elem+"ResistMax", isElemental[elem] and "ElementalResistMax"))
-			totemMax = modDB.Override(nil, "Totem"+elem+"ResistMax") or min(data.misc.MaxResistCap, modDB.Sum(mod.TypeBase, nil, "Totem"+elem+"ResistMax", isElemental[elem] and "TotemElementalResistMax"))
-			total = modDB.Override(nil, elem+"Resist")
-			totemTotal = modDB.Override(nil, "Totem"+elem+"Resist")
-			if not total {
-				base := modDB.Sum(mod.TypeBase, nil, elem+"Resist", isElemental[elem] and "ElementalResist")
-				total = base * calcLib.mod(modDB, nil, elem+"Resist", isElemental[elem] and "ElementalResist")
-			}
-			if not totemTotal {
-				base := modDB.Sum(mod.TypeBase, nil, "Totem"+elem+"Resist", isElemental[elem] and "TotemElementalResist")
-				totemTotal = base * calcLib.mod(modDB, nil, "Totem"+elem+"Resist", isElemental[elem] and "TotemElementalResist")
-			}
-			final := max(min(total, max), min)
-			totemFinal := max(min(totemTotal, totemMax), min)
-			actor.Output[elem+"Resist"] = final
-			actor.Output[elem+"ResistTotal"] = total
-			actor.Output[elem+"ResistOverCap"] = max(0, total - max)
-			actor.Output[elem+"ResistOver75"] = max(0, final - 75)
-			actor.Output["Missing"+elem+"Resist"] = max(0, totemMax - final)
-			actor.Output["Totem"+elem+"Resist"] = totemFinal
-			actor.Output["Totem"+elem+"ResistTotal"] = totemTotal
-			actor.Output["Totem"+elem+"ResistOverCap"] = max(0, totemTotal - totemMax)
-			actor.Output["MissingTotem"+elem+"Resist"] = max(0, totemMax - totemFinal)
+	for _, elem := range resistTypeList {
+		Min := float64(data.ResistFloor)
+		Max := utils.Or(modDB.Override(nil, elem+"ResistMax"), min(data.MaxResistCap, modDB.Sum(mod.TypeBase, nil, elem+"ResistMax", utils.Ternary(isElemental[elem], "ElementalResistMax", ""))))
+		totemMax := utils.Or(modDB.Override(nil, "Totem"+elem+"ResistMax"), min(data.MaxResistCap, modDB.Sum(mod.TypeBase, nil, "Totem"+elem+"ResistMax", utils.Ternary(isElemental[elem], "TotemElementalResistMax", ""))))
+		total := modDB.Override(nil, elem+"Resist")
+		totemTotal := modDB.Override(nil, "Totem"+elem+"Resist")
+		if total == nil {
+			base := modDB.Sum(mod.TypeBase, nil, elem+"Resist", utils.Ternary(isElemental[elem], "ElementalResist", ""))
+			total = mod.NewModValueFloat(base * calclib.Mod(modDB, nil, elem+"Resist", utils.Ternary(isElemental[elem], "ElementalResist", "")))
+		}
+		if totemTotal == nil {
+			base := modDB.Sum(mod.TypeBase, nil, "Totem"+elem+"Resist", utils.Ternary(isElemental[elem], "TotemElementalResist", ""))
+			totemTotal = mod.NewModValueFloat(base * calclib.Mod(modDB, nil, "Totem"+elem+"Resist", utils.Ternary(isElemental[elem], "TotemElementalResist", "")))
+		}
+		final := max(min(total.Float(), Max), Min)
+		totemFinal := max(min(totemTotal.Float(), totemMax), Min)
+		actor.Output[elem+"Resist"] = final
+		actor.Output[elem+"ResistTotal"] = total.Float()
+		actor.Output[elem+"ResistOverCap"] = max(0, total.Float()-Max)
+		actor.Output[elem+"ResistOver75"] = max(0, final-75)
+		actor.Output["Missing"+elem+"Resist"] = max(0, totemMax-final)
+		actor.Output["Totem"+elem+"Resist"] = totemFinal
+		actor.Output["Totem"+elem+"ResistTotal"] = totemTotal.Float()
+		actor.Output["Totem"+elem+"ResistOverCap"] = max(0, totemTotal.Float()-totemMax)
+		actor.Output["MissingTotem"+elem+"Resist"] = max(0, totemMax-totemFinal)
+		/*
+			TODO Breakdown
 			if breakdown {
 				breakdown[elem+"Resist"] = {
 					"Min: "+min+"%",
@@ -109,8 +122,8 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 					"Total: "+totemTotal+"%",
 				}
 			}
-		}
-	*/
+		*/
+	}
 
 	// Block
 	actor.Output["BlockChanceMax"] = modDB.Sum(mod.TypeBase, nil, "BlockChanceMax")

@@ -17,11 +17,11 @@ var SkillStatMap = map[string]*StatMap{
 	// Skill data modifiers
 	//
 	"base_skill_effect_duration": {
-		Mods: []mod.Mod{skill("duration", 0)},
+		Mods: []mod.Mod{skill("Duration", 0)},
 		Div:  utils.Ptr(float64(1000)),
 	},
 	"base_secondary_skill_effect_duration": {
-		Mods: []mod.Mod{skill("durationSecondary", 0)},
+		Mods: []mod.Mod{skill("DurationSecondary", 0)},
 		Div:  utils.Ptr(float64(1000)),
 	},
 	"spell_minimum_base_physical_damage": {
@@ -128,34 +128,34 @@ var SkillStatMap = map[string]*StatMap{
 		Mods: []mod.Mod{mod.NewFloat("DotMultiplier", "BASE", 0).Tag(mod.Condition("CriticalStrike"))},
 	},
 	"base_skill_show_average_damage_instead_of_dps": {
-		Mods: []mod.Mod{skill("showAverage", 1)}, // TODO Might be 'true'
+		Mods: []mod.Mod{skill("ShowAverage", 1)}, // TODO Might be 'true'
 	},
 	"cast_time_overrides_attack_duration": {
-		Mods: []mod.Mod{skill("castTimeOverridesAttackTime", 1)}, // TODO Might be 'true'
+		Mods: []mod.Mod{skill("CastTimeOverridesAttackTime", 1)}, // TODO Might be 'true'
 	},
 	"spell_cast_time_cannot_be_modified": {
-		Mods: []mod.Mod{skill("fixedCastTime", 1)}, // TODO Might be 'true'
+		Mods: []mod.Mod{skill("FixedCastTime", 1)}, // TODO Might be 'true'
 	},
 	"global_always_hit": {
-		Mods: []mod.Mod{skill("cannotBeEvaded", 1)}, // TODO Might be 'true'
+		Mods: []mod.Mod{skill("CannotBeEvaded", 1)}, // TODO Might be 'true'
 	},
 	"bleed_duration_is_skill_duration": {
-		Mods: []mod.Mod{skill("bleedDurationIsSkillDuration", 1)}, // TODO Might be 'true'
+		Mods: []mod.Mod{skill("BleedDurationIsSkillDuration", 1)}, // TODO Might be 'true'
 	},
 	"poison_duration_is_skill_duration": {
-		Mods: []mod.Mod{skill("poisonDurationIsSkillDuration", 1)}, // TODO Might be 'true'
+		Mods: []mod.Mod{skill("PoisonDurationIsSkillDuration", 1)}, // TODO Might be 'true'
 	},
 	"spell_damage_modifiers_apply_to_skill_dot": {
-		Mods: []mod.Mod{skill("dotIsSpell", 1)}, // TODO Might be 'true'
+		Mods: []mod.Mod{skill("DotIsSpell", 1)}, // TODO Might be 'true'
 	},
 	"projectile_damage_modifiers_apply_to_skill_dot": {
-		Mods: []mod.Mod{skill("dotIsProjectile", 1)}, // TODO Might be 'true'
+		Mods: []mod.Mod{skill("DotIsProjectile", 1)}, // TODO Might be 'true'
 	},
 	"additive_mine_duration_modifiers_apply_to_buff_effect_duration": {
-		Mods: []mod.Mod{skill("mineDurationAppliesToSkill", 1)}, // TODO Might be 'true'
+		Mods: []mod.Mod{skill("MineDurationAppliesToSkill", 1)}, // TODO Might be 'true'
 	},
 	"additive_arrow_speed_modifiers_apply_to_area_of_effect": {
-		Mods: []mod.Mod{skill("arrowSpeedAppliesToAreaOfEffect", 1)}, // TODO Might be 'true'
+		Mods: []mod.Mod{skill("ArrowSpeedAppliesToAreaOfEffect", 1)}, // TODO Might be 'true'
 	},
 	"skill_buff_effect_+%": {
 		Mods: []mod.Mod{mod.NewFloat("BuffEffect", "INC", 0)},
@@ -167,65 +167,65 @@ var SkillStatMap = map[string]*StatMap{
 		Mods: []mod.Mod{mod.NewFlag("CostLifeInsteadOfMana", true)},
 	},
 	"base_active_skill_totem_level": {
-		Mods: []mod.Mod{skill("totemLevel", 0)},
+		Mods: []mod.Mod{skill("TotemLevel", 0)},
 	},
 	"totem_support_gem_level": {
-		Mods: []mod.Mod{skill("totemLevel", 0)},
+		Mods: []mod.Mod{skill("TotemLevel", 0)},
 	},
 	"spell_uncastable_if_triggerable": {
-		Mods: []mod.Mod{skill("triggered", 1).Tag(mod.SkillType("Triggerable"))},
+		Mods: []mod.Mod{skill("Triggered", 1).Tag(mod.SkillType("Triggerable"))},
 	},
 	"unique_mjolner_lightning_spells_triggered": {
-		Mods: []mod.Mod{skill("triggeredByMjolner", 1).Tag(mod.SkillType("Triggerable"), mod.SkillType("Lightning"))},
+		Mods: []mod.Mod{skill("TriggeredByMjolner", 1).Tag(mod.SkillType("Triggerable"), mod.SkillType("Lightning"))},
 	},
 	"unique_cospris_malice_cold_spells_triggered": {
-		Mods: []mod.Mod{skill("triggeredByCospris", 1).Tag(mod.SkillType("Triggerable"), mod.SkillType("Spell"), mod.SkillType("Cold"))},
+		Mods: []mod.Mod{skill("TriggeredByCospris", 1).Tag(mod.SkillType("Triggerable"), mod.SkillType("Spell"), mod.SkillType("Cold"))},
 	},
 	"skill_has_trigger_from_unique_item": {
-		Mods: []mod.Mod{skill("triggeredByUnique", 0).Tag(mod.SkillType("Triggerable"))},
+		Mods: []mod.Mod{skill("TriggeredByUnique", 0).Tag(mod.SkillType("Triggerable"))},
 	},
 	"skill_triggered_when_you_focus_chance_%": {
-		Mods: []mod.Mod{skill("triggeredByFocus", 0).Tag(mod.SkillType("Triggerable"), mod.SkillType("Spell"))},
+		Mods: []mod.Mod{skill("TriggeredByFocus", 0).Tag(mod.SkillType("Triggerable"), mod.SkillType("Spell"))},
 		Div:  utils.Ptr(float64(100)),
 	},
 	"spell_has_trigger_from_crafted_item_mod": {
-		Mods: []mod.Mod{skill("triggeredByCraft", 0).Tag(mod.SkillType("Triggerable"), mod.SkillType("Spell"))},
+		Mods: []mod.Mod{skill("TriggeredByCraft", 0).Tag(mod.SkillType("Triggerable"), mod.SkillType("Spell"))},
 	},
 	"support_cast_on_mana_spent": {
-		Mods: []mod.Mod{skill("triggeredByManaSpent", 1).Tag(mod.SkillType("Triggerable"), mod.SkillType("Spell"))},
+		Mods: []mod.Mod{skill("TriggeredByManaSpent", 1).Tag(mod.SkillType("Triggerable"), mod.SkillType("Spell"))},
 	},
 	"display_mirage_warriors_no_spirit_strikes": {
-		Mods: []mod.Mod{skill("triggeredBySaviour", 1).Tag(mod.SkillType("Attack"))},
+		Mods: []mod.Mod{skill("TriggeredBySaviour", 1).Tag(mod.SkillType("Attack"))},
 	},
 	"cast_spell_on_linked_attack_crit": {
-		Mods: []mod.Mod{skill("triggeredByCoC", 1).Tag(mod.SkillType("Triggerable"), mod.SkillType("Spell"))},
+		Mods: []mod.Mod{skill("TriggeredByCoC", 1).Tag(mod.SkillType("Triggerable"), mod.SkillType("Spell"))},
 	},
 	"cast_linked_spells_on_attack_crit_%": {
-		Mods: []mod.Mod{skill("chanceToTriggerOnCrit", 0).Tag(mod.SkillType("Attack"))},
+		Mods: []mod.Mod{skill("ChanceToTriggerOnCrit", 0).Tag(mod.SkillType("Attack"))},
 	},
 	"cast_spell_on_linked_melee_kill": {
-		Mods: []mod.Mod{skill("triggeredByMeleeKill", 1).Tag(mod.SkillType("Triggerable"), mod.SkillType("Spell"))},
+		Mods: []mod.Mod{skill("TriggeredByMeleeKill", 1).Tag(mod.SkillType("Triggerable"), mod.SkillType("Spell"))},
 	},
 	"cast_linked_spells_on_melee_kill_%": {
-		Mods: []mod.Mod{skill("chanceToTriggerOnMeleeKill", 0).Tag(mod.SkillType("Attack"), mod.SkillType("Melee"))},
+		Mods: []mod.Mod{skill("ChanceToTriggerOnMeleeKill", 0).Tag(mod.SkillType("Attack"), mod.SkillType("Melee"))},
 	},
 	"cast_spell_while_linked_skill_channelling": {
-		Mods: []mod.Mod{skill("triggeredWhileChannelling", 1).Tag(mod.SkillType("Triggerable"), mod.SkillType("Spell"))},
+		Mods: []mod.Mod{skill("TriggeredWhileChannelling", 1).Tag(mod.SkillType("Triggerable"), mod.SkillType("Spell"))},
 	},
 	"skill_triggered_by_snipe": {
-		Mods: []mod.Mod{skill("triggered", 1).Tag(mod.SkillType("Triggerable"))},
+		Mods: []mod.Mod{skill("Triggered", 1).Tag(mod.SkillType("Triggerable"))},
 	},
 	"triggered_by_spiritual_cry": {
-		Mods: []mod.Mod{skill("triggeredByGeneralsCry", 1).Tag(mod.SkillType("Melee"), mod.SkillType("Attack"))},
+		Mods: []mod.Mod{skill("TriggeredByGeneralsCry", 1).Tag(mod.SkillType("Melee"), mod.SkillType("Attack"))},
 	},
 	"holy_relic_trigger_on_parent_attack_%": {
-		Mods: []mod.Mod{skill("triggeredByParentAttack", 1).Tag(mod.SkillType("Triggerable"))},
+		Mods: []mod.Mod{skill("TriggeredByParentAttack", 1).Tag(mod.SkillType("Triggerable"))},
 	},
 	"skill_can_own_mirage_archers": {
-		Mods: []mod.Mod{skill("triggeredByMirageArcher", 1).Tag(mod.SkillType("MirageArcherCanUse"))},
+		Mods: []mod.Mod{skill("TriggeredByMirageArcher", 1).Tag(mod.SkillType("MirageArcherCanUse"))},
 	},
 	"skill_double_hits_when_dual_wielding": {
-		Mods: []mod.Mod{skill("doubleHitsWhenDualWielding", 1)},
+		Mods: []mod.Mod{skill("DoubleHitsWhenDualWielding", 1)},
 	},
 	"area_of_effect_+%_while_not_dual_wielding": {
 		Mods: []mod.Mod{mod.NewFloat("AreaOfEffect", "INC", 0).Tag(mod.Condition("DualWielding").Neg(true))},
@@ -237,32 +237,32 @@ var SkillStatMap = map[string]*StatMap{
 		Mods: []mod.Mod{mod.NewFloat("RepeatCount", "BASE", 0)},
 	},
 	"display_minion_monster_level": {
-		Mods: []mod.Mod{skill("minionLevel", 0)},
+		Mods: []mod.Mod{skill("MinionLevel", 0)},
 	},
 	"display_skill_minions_level_is_corpse_level": {
-		Mods: []mod.Mod{skill("minionLevelIsEnemyLevel", 1)},
+		Mods: []mod.Mod{skill("MinionLevelIsEnemyLevel", 1)},
 	},
 	"active_skill_minion_added_damage_+%_final": {
-		Mods: []mod.Mod{skill("minionDamageEffectiveness", 0)},
+		Mods: []mod.Mod{skill("MinionDamageEffectiveness", 0)},
 	},
 	"base_bleed_on_hit_still_%_of_physical_damage_to_deal_per_minute": {
-		Mods: []mod.Mod{skill("bleedBasePercent", 0)},
+		Mods: []mod.Mod{skill("BleedBasePercent", 0)},
 		Div:  utils.Ptr(float64(60)),
 	},
 	"active_skill_base_radius_+": {
-		Mods: []mod.Mod{skill("radiusExtra", 0)},
+		Mods: []mod.Mod{skill("RadiusExtra", 0)},
 	},
 	"corpse_explosion_monster_life_%": {
-		Mods: []mod.Mod{skill("corpseExplosionLifeMultiplier", 0)},
+		Mods: []mod.Mod{skill("CorpseExplosionLifeMultiplier", 0)},
 		Div:  utils.Ptr(float64(100)),
 	},
 	"spell_base_fire_damage_%_maximum_life": {
-		Mods: []mod.Mod{skill("selfFireExplosionLifeMultiplier", 0)},
+		Mods: []mod.Mod{skill("SelfFireExplosionLifeMultiplier", 0)},
 		Div:  utils.Ptr(float64(100)),
 	},
 	// for some reason DeathWish adds another stat with same effect as above
 	"skill_minion_explosion_life_%": {
-		Mods: []mod.Mod{skill("selfFireExplosionLifeMultiplier", 0)},
+		Mods: []mod.Mod{skill("SelfFireExplosionLifeMultiplier", 0)},
 		Div:  utils.Ptr(float64(100)),
 	},
 	"deal_chaos_damage_per_second_for_10_seconds_on_hit": {
@@ -273,7 +273,7 @@ var SkillStatMap = map[string]*StatMap{
 		})},
 	},
 	"base_spell_cast_time_ms_override": {
-		Mods: []mod.Mod{skill("castTimeOverride", 0)},
+		Mods: []mod.Mod{skill("CastTimeOverride", 0)},
 		Div:  utils.Ptr(float64(1000)),
 	},
 	//
@@ -1359,17 +1359,17 @@ var SkillStatMap = map[string]*StatMap{
 		},
 	},
 	"override_off_hand_base_critical_strike_chance_to_5%": {
-		Mods:  []mod.Mod{skill("setOffHandBaseCritChance", 0)},
+		Mods:  []mod.Mod{skill("SetOffHandBaseCritChance", 0)},
 		Value: utils.Ptr(float64(5)),
 	},
 	"off_hand_local_minimum_added_physical_damage": {
-		Mods: []mod.Mod{skill("setOffHandPhysicalMin", 0)},
+		Mods: []mod.Mod{skill("SetOffHandPhysicalMin", 0)},
 	},
 	"off_hand_local_maximum_added_physical_damage": {
-		Mods: []mod.Mod{skill("setOffHandPhysicalMax", 0)},
+		Mods: []mod.Mod{skill("SetOffHandPhysicalMax", 0)},
 	},
 	"off_hand_base_weapon_attack_duration_ms": {
-		Mods: []mod.Mod{skill("setOffHandAttackTime", 0)},
+		Mods: []mod.Mod{skill("SetOffHandAttackTime", 0)},
 	},
 	"off_hand_minimum_added_physical_damage_per_15_shield_armour_and_evasion_rating": {
 		Mods: []mod.Mod{mod.NewFloat("PhysicalMin", "BASE", 0).Tag(mod.Condition("OffHandAttack"), mod.PerStat(15, "ArmourOnWeapon 2", "EvasionOnWeapon 2"))},
@@ -1684,7 +1684,7 @@ var SkillStatMap = map[string]*StatMap{
 		Mods: []mod.Mod{mod.NewFloat("BrandsAttachedLimit", "BASE", 0)},
 	},
 	"base_sigil_repeat_frequency_ms": {
-		Mods: []mod.Mod{skill("repeatFrequency", 0)},
+		Mods: []mod.Mod{skill("RepeatFrequency", 0)},
 		Div:  utils.Ptr(float64(1000)),
 	},
 	"sigil_repeat_frequency_+%": {

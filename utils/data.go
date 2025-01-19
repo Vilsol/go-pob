@@ -135,3 +135,16 @@ func Or(val *mod.ModValueMulti, or float64) float64 {
 
 	return val.Float()
 }
+
+func OrDefault(n float64, def float64) float64 {
+	if n != 0 {
+		return n
+	}
+	return def
+}
+
+func Panic(err error) {
+	if err != nil {
+		panic(err)
+	}
+}

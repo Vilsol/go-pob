@@ -4,6 +4,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/jinzhu/copier"
+
 	"github.com/Vilsol/go-pob-data/poe"
 
 	"github.com/Vilsol/go-pob/data"
@@ -54,8 +56,8 @@ func InitEnv(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode OutputM
 	env.Player.Enemy = env.Enemy
 	env.Enemy.Enemy = env.Player
 
-	env.RequirementsTableItems = make(map[string]interface{})
-	env.RequirementsTableGems = make([]*RequirementsTableGems, 0)
+	env.RequirementsTableItems = make([]*RequirementsTable, 0)
+	env.RequirementsTableGems = make([]*RequirementsTable, 0)
 
 	env.RadiusJewelList = make(map[string]interface{})
 	env.ExtraRadiusNodeList = make(map[string]interface{})
@@ -622,19 +624,22 @@ func InitEnv(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode OutputM
 		*/
 	}
 
-	env.Player.WeaponData1 = utils.CopyMap(data.UnarmedWeaponData[data.ClassIDs[env.Spec.ClassName]])
+	if env.Player.WeaponData1 == nil {
+		env.Player.WeaponData1 = &SkillData{}
+	}
+	utils.Panic(copier.Copy(env.Player.WeaponData1, data.UnarmedWeaponData[data.ClassIDs[env.Spec.ClassName]]))
 	//if _, ok := env.Player.ItemList["Weapon 1"]; ok {
 	// TODO Weapon 1 Data
 	// env.player.itemList["Weapon 1"].weaponData and env.player.itemList["Weapon 1"].weaponData[1]
 	//}
 
-	if utils.HasTrue(env.Player.WeaponData1, "countsAsDualWielding") {
+	if env.Player.WeaponData1.CountsAsDualWielding {
 		// TODO
 		// env.player.weaponData2 = env.player.itemList["Weapon 1"].weaponData[2]
 	} else {
 		// TODO
 		// env.player.weaponData2 = env.player.itemList["Weapon 2"] and env.player.itemList["Weapon 2"].weaponData and env.player.itemList["Weapon 2"].weaponData[2] or { }
-		env.Player.WeaponData2 = make(map[string]interface{})
+		env.Player.WeaponData2 = &SkillData{}
 	}
 
 	/*
@@ -946,9 +951,9 @@ func InitEnv(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode OutputM
 					}
 
 					if gemData != nil {
-						env.RequirementsTableGems = append(env.RequirementsTableGems, &RequirementsTableGems{
+						env.RequirementsTableGems = append(env.RequirementsTableGems, &RequirementsTable{
 							Source:    "Gem",
-							SourceGem: gemInstance,
+							SourceGem: utils.Ptr(gemInstance),
 							Str:       gemData.Str,
 							Dex:       gemData.Dex,
 							Int:       gemData.Int,
@@ -1027,10 +1032,8 @@ func InitEnv(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode OutputM
 		CalcBuildActiveSkillModList(env, activeSkill)
 	}
 
-	/*
-		TODO -- Merge Requirements Tables
-		env.requirementsTable = tableConcat(env.requirementsTableItems, env.requirementsTableGems)
-	*/
+	env.RequirementsTable = append(env.RequirementsTable, env.RequirementsTableItems...)
+	env.RequirementsTable = append(env.RequirementsTable, env.RequirementsTableGems...)
 
 	return env, cachedPlayerDB, cachedEnemyDB, cachedMinionDB
 }

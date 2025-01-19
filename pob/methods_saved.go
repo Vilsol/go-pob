@@ -87,6 +87,19 @@ func (b *PathOfBuilding) GetStringOption(name string) string {
 	return ""
 }
 
+func (b *PathOfBuilding) GetNumberOption(name string) float64 {
+	for _, input := range b.Config.Inputs {
+		if input.Name == name {
+			if input.Number == nil {
+				return 0
+			}
+
+			return *input.Number
+		}
+	}
+	return 0
+}
+
 func (b *PathOfBuilding) AddNewSocketGroup() {
 	b.Skills.SkillSets[b.Skills.ActiveSkillSet-1].Skills = append(b.Skills.SkillSets[b.Skills.ActiveSkillSet-1].Skills, Skill{
 		Enabled: true,

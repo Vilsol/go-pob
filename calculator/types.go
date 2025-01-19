@@ -2,6 +2,7 @@ package calculator
 
 import (
 	"github.com/Vilsol/go-pob-data/poe"
+
 	"github.com/Vilsol/go-pob/data"
 	"github.com/Vilsol/go-pob/data/raw"
 	"github.com/Vilsol/go-pob/mod"
@@ -51,8 +52,9 @@ type Environment struct {
 	Player *Actor
 	Enemy  *Actor
 
-	RequirementsTableItems map[string]interface{}   // TODO Implement
-	RequirementsTableGems  []*RequirementsTableGems // TODO Implement
+	RequirementsTable      []*RequirementsTable
+	RequirementsTableItems []*RequirementsTable
+	RequirementsTableGems  []*RequirementsTable
 
 	RadiusJewelList     map[string]interface{} // TODO Implement
 	ExtraRadiusNodeList map[string]interface{} // TODO Implement
@@ -89,10 +91,10 @@ type Actor struct {
 	ActiveSkillList []*ActiveSkill
 	Output          map[string]float64
 	OutputTable     map[OutTable]map[string]float64
-	MainSkill       *ActiveSkill           // TODO Implement
-	Breakdown       interface{}            // TODO Implement
-	WeaponData1     map[string]interface{} // TODO Implement. Might be SomeSource?
-	WeaponData2     map[string]interface{} // TODO Implement. Might be SomeSource?
+	MainSkill       *ActiveSkill
+	Breakdown       interface{} // TODO Implement
+	WeaponData1     *SkillData
+	WeaponData2     *SkillData
 	StrDmgBonus     float64
 }
 
@@ -130,7 +132,7 @@ type ActiveSkill struct {
 	SkillModList     *moddb.ModList
 	SkillCfg         *moddb.ListCfg
 	SkillTypes       map[data.SkillType]bool
-	SkillData        map[string]interface{} // TODO Implement. Might be SkillData?
+	SkillData        *SkillData
 	ActiveEffect     *GemEffect
 	Weapon1Cfg       *moddb.ListCfg
 	Weapon2Cfg       *moddb.ListCfg
@@ -149,6 +151,7 @@ type ActiveSkill struct {
 	MinionSkillTypes map[data.SkillType]bool
 	BleedCfg         *moddb.ListCfg
 	OHBleedCfg       *moddb.ListCfg
+	SkillTotemId     int
 }
 
 type ConversionTable struct {
@@ -188,25 +191,83 @@ const (
 	SkillFlagBleed            = SkillFlag("bleed")
 	SkillFlagDuration         = SkillFlag("duration")
 	SkillFlagIgniteCanStack   = SkillFlag("igniteCanStack")
+	SkillFlagDot              = SkillFlag("dot")
+	SkillFlagIgnite           = SkillFlag("ignite")
+	SkillFlagDecay            = SkillFlag("decay")
+	SkillFlagImpale           = SkillFlag("impale")
+	SkillFlagBallista         = SkillFlag("ballista")
 )
 
 type SkillData struct {
-	SupportBonechill      bool
-	Cooldown              float64
-	Triggered             bool
-	TriggeredByBrand      bool
-	TriggeredOnDeath      bool
-	TriggerTime           *float64
-	TriggeredBySaviour    bool
-	CritChance            *float64
-	SetOffHandPhysicalMin *float64
-	SetOffHandPhysicalMax *float64
-	AttackTime            *float64
-	CastTimeOverride      *float64
-	TimeOverride          *float64
-	FixedCastTime         bool
-	TriggerRate           *float64
-	ShowAverage           bool
+	SupportBonechill             bool
+	Cooldown                     float64
+	Triggered                    bool
+	TriggeredByBrand             bool
+	TriggeredOnDeath             bool
+	TriggerTime                  float64
+	TriggeredBySaviour           bool
+	CritChance                   float64
+	SetOffHandPhysicalMin        float64
+	SetOffHandPhysicalMax        float64
+	AttackTime                   float64
+	CastTimeOverride             float64
+	TimeOverride                 float64
+	FixedCastTime                bool
+	TriggerRate                  float64
+	ShowAverage                  bool
+	ManaReservationPercent       float64
+	TotemLevel                   int
+	CannotBeEvaded               bool
+	DoubleHitsWhenDualWielding   bool
+	DpsMultiplier                float64
+	BaseMultiplier               float64
+	DamageEffectiveness          float64
+	LifeLeechPerUse              float64
+	ManaLeechPerUse              float64
+	BleedDurationIsSkillDuration bool
+	BleedIsSkillEffect           bool
+	Duration                     float64
+	BleedBasePercent             float64
+	Type                         string
+	AttackRate                   float64
+	PhysicalMin                  float64
+	PhysicalMax                  float64
+	AttackSpeedInc               float64
+	CountsAsAll1H                bool
+	CountsAsDualWielding         bool
+
+	PhysicalBonusMin  float64
+	PhysicalBonusMax  float64
+	LightningMin      float64
+	LightningMax      float64
+	LightningBonusMin float64
+	LightningBonusMax float64
+	ColdMin           float64
+	ColdMax           float64
+	ColdBonusMin      float64
+	ColdBonusMax      float64
+	FireMin           float64
+	FireMax           float64
+	FireBonusMin      float64
+	FireBonusMax      float64
+	ChaosMin          float64
+	ChaosMax          float64
+	ChaosBonusMin     float64
+	ChaosBonusMax     float64
+
+	RadiusExtra                                float64
+	DurationSecondary                          float64
+	MinionLevel                                float64
+	FireDot                                    float64
+	TriggeredByCoC                             bool
+	DotIsSpell                                 bool
+	RepeatFrequency                            float64
+	TriggeredByMirageArcher                    bool
+	ChanceToTriggerOnCrit                      bool
+	ColdDot                                    bool
+	CorpseExplosionLifeMultiplier              float64
+	ChaosDot                                   bool
+	BaseManaCostIsAtLeastPercentUnreservedMana float64
 }
 
 type GrantedEffect struct {
@@ -238,18 +299,19 @@ func (g *GrantedEffect) CastTime() float64 {
 
 type DamagePass struct {
 	Label     string
-	Source    map[string]interface{}
+	Source    *SkillData
 	Config    *moddb.ListCfg
 	Output    map[string]float64
 	Breakdown interface{} // TODO Implement Breakdown
 }
 
-type RequirementsTableGems struct {
-	Source    string
-	SourceGem pob.Gem
-	Str       int
-	Dex       int
-	Int       int
+type RequirementsTable struct {
+	Source     string
+	SourceGem  *pob.Gem
+	SourceItem interface{}
+	Str        int
+	Dex        int
+	Int        int
 }
 
 type GemEffect struct {

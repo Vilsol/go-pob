@@ -2520,12 +2520,12 @@ var specialModList = map[string]interface{}{
 	// Guardian
 	`grants armour equal to (\d+)% of your reserved life to you and nearby allies`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
-			MOD("GrantReservedLifeAsAura", "LIST", mod.GrantReservedLifeAsAura{Mod: MOD("Armour", "BASE", num/100)}),
+			MOD("GrantReservedLifeAsAura", "LIST", mod.GrantReservedPoolAsAura{Mod: MOD("Armour", "BASE", num/100)}),
 		}, ""
 	},
 	`grants maximum energy shield equal to (\d+)% of your reserved mana to you and nearby allies`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
-			MOD("GrantReservedManaAsAura", "LIST", mod.GrantReservedManaAsAura{Mod: MOD("EnergyShield", "BASE", num/100)}),
+			MOD("GrantReservedManaAsAura", "LIST", mod.GrantReservedPoolAsAura{Mod: MOD("EnergyShield", "BASE", num/100)}),
 		}, ""
 	},
 	"warcries cost no mana": []mod.Mod{MOD("ManaCost", "MORE", -100).KeywordFlag(mod.KeywordFlagWarcry)},

@@ -1,6 +1,8 @@
 package moddb
 
 import (
+	"strings"
+
 	"github.com/Vilsol/go-pob/mod"
 	"github.com/Vilsol/go-pob/utils"
 )
@@ -185,4 +187,139 @@ func (m *ModDB) AddList(list *ModList) {
 	for _, newMod := range list.mods {
 		m.AddMod(newMod)
 	}
+}
+
+/*
+function ModDBClass:TabulateInternal(context, result, modType, cfg, flags, keywordFlags, source, ...)
+	local globalLimits = { }
+	for i = 1, select('#', ...) do
+		local modName = select(i, ...)
+		local modList = self.mods[modName]
+		if modList then
+			for i = 1, #modList do
+				local mod = modList[i]
+				if (mod.type == modType or not modType) and band(flags, mod.flags) == mod.flags and MatchKeywordFlags(keywordFlags, mod.keywordFlags) and (not source or mod.source:match("[^:]+") == source) then
+					local value
+					if mod[1] then
+						value = context:EvalMod(mod, cfg) or 0
+						if mod[1].globalLimit and mod[1].globalLimitKey then
+							globalLimits[mod[1].globalLimitKey] = globalLimits[mod[1].globalLimitKey] or 0
+							if globalLimits[mod[1].globalLimitKey] + value > mod[1].globalLimit then
+								value = mod[1].globalLimit - globalLimits[mod[1].globalLimitKey]
+							end
+							globalLimits[mod[1].globalLimitKey] = globalLimits[mod[1].globalLimitKey] + value
+						end
+					else
+						value = mod.value
+					end
+					if value and (value ~= 0 or mod.type == "OVERRIDE") then
+						t_insert(result, { value = value, mod = mod })
+					end
+				end
+			end
+		end
+	end
+	if self.parent then
+		self.parent:TabulateInternal(context, result, modType, cfg, flags, keywordFlags, source, ...)
+	end
+end
+
+*/
+
+type ModResult struct {
+	Value float64
+	Mod   mod.Mod
+}
+
+func (m *ModDB) TabulateInternal(context ModStoreFuncs, result *[]ModResult, modType mod.Type,
+	cfg *ListCfg, flags mod.MFlag, keywordFlags mod.KeywordFlag, source mod.Source, modNames ...string) {
+	// TODO Table
+	//globalLimits := make(map[string]float64)
+
+	for _, modName := range modNames {
+		modList, exists := m.Mods[modName]
+		if !exists {
+			continue
+		}
+
+		for _, mMod := range modList {
+			if (modType == "" || mMod.Type() == modType) &&
+				(flags&mMod.Flags()) == mMod.Flags() &&
+				mod.MatchKeywordFlags(keywordFlags, mMod.KeywordFlags()) &&
+				(source == "" || strings.Split(string(mMod.GetSource()), ":")[0] == string(source)) {
+
+				var value float64
+
+				if mMod.Value().Type() == mod.ModValueMultiTypeFloat {
+					value = mMod.Value().Float()
+				} else {
+					/*
+						TODO Table
+						value = context.evalMod(mMod, cfg).Float()
+
+						if mMod.Values[0].GlobalLimit > 0 && mMod.Values[0].GlobalLimitKey != "" {
+							key := mMod.Values[0].GlobalLimitKey
+							currentLimit := globalLimits[key]
+
+							if currentLimit+value > mMod.Values[0].GlobalLimit {
+								value = mMod.Values[0].GlobalLimit - currentLimit
+							}
+							globalLimits[key] += value
+						}
+					*/
+				}
+
+				if value != 0 || mMod.Type() == mod.TypeOverride {
+					*result = append(*result, ModResult{
+						Value: value,
+						Mod:   mMod,
+					})
+				}
+			}
+		}
+	}
+
+	if m.Parent != nil {
+		// TODO Parent
+		//m.Parent.TabulateInternal(context, result, modType, cfg, flags, keywordFlags, source, modNames...)
+	}
+}
+
+func (m *ModDB) Tabulate(modType mod.Type, cfg *ListCfg, modNames ...string) []ModResult {
+	var flags *mod.MFlag
+	var keywordFlags *mod.KeywordFlag
+	var source *mod.Source
+
+	if cfg != nil {
+		flags = cfg.Flags
+		keywordFlags = cfg.KeywordFlags
+		source = cfg.Source
+	}
+
+	if flags == nil {
+		flags = (*mod.MFlag)(utils.Ptr(0))
+	}
+
+	if keywordFlags == nil {
+		keywordFlags = (*mod.KeywordFlag)(utils.Ptr(0))
+	}
+
+	if source == nil {
+		source = (*mod.Source)(utils.Ptr(""))
+	}
+
+	results := make([]ModResult, 0)
+	m.TabulateInternal(m, &results, modType, cfg, *flags, *keywordFlags, *source, modNames...)
+	return results
+}
+
+func (m *ModDB) Max(cfg *ListCfg, modNames ...string) float64 {
+	globalMax := float64(0)
+	for _, value := range m.Tabulate(mod.TypeMAX, cfg, modNames...) {
+		val := m.evalMod(value.Mod, cfg).Float()
+		if val > globalMax {
+			globalMax = val
+		}
+	}
+	return globalMax
 }

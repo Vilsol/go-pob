@@ -1,7 +1,9 @@
 package utils
 
 import (
+	"fmt"
 	"log/slog"
+	"reflect"
 )
 
 func Has[K comparable, V any](m map[K]V, key K) bool {
@@ -33,11 +35,51 @@ func getBool(value interface{}) (bool, bool) {
 	return val, ok
 }
 
-func GetOr[V any, K comparable](m map[K]V, key K, or V) V {
-	if val, ok := m[key]; ok {
-		return val
+func GetOr[V any](m any, key string, or V) V {
+	r := reflect.ValueOf(m)
+
+	if r.Kind() == reflect.Pointer {
+		r = r.Elem()
 	}
-	return or
+
+	if r.IsZero() {
+		return or
+	}
+
+	f := r.FieldByName(key)
+	if f.Kind() == reflect.Invalid {
+		slog.Error("invalid key", slog.String("key", key), slog.String("obj", fmt.Sprintf("%#v", m)))
+		return or
+	}
+
+	if f.IsZero() {
+		return or
+	}
+
+	return f.Interface().(V)
+}
+
+func Set(m any, key string, value any) {
+	r := reflect.ValueOf(m)
+
+	if r.Kind() == reflect.Pointer {
+		r = r.Elem()
+	}
+
+	f := r.FieldByName(key)
+	if f.Kind() == reflect.Invalid {
+		slog.Error("invalid key", slog.String("key", key), slog.String("obj", fmt.Sprintf("%#v", m)))
+		return
+	}
+
+	v := reflect.ValueOf(value)
+	if v.Kind() == reflect.Float64 && f.Kind() == reflect.Bool {
+		f.Set(reflect.ValueOf(value.(float64) == 1))
+	} else if v.Kind() == reflect.Float64 && f.Kind() == reflect.Int {
+		f.Set(reflect.ValueOf(int(value.(float64))))
+	} else {
+		f.Set(v)
+	}
 }
 
 func MissingOrFalse[K comparable, V any](m map[K]V, key K) bool {
@@ -57,4 +99,14 @@ func MissingOrFalse[K comparable, V any](m map[K]V, key K) bool {
 	)
 
 	return false
+}
+
+func MapConcat[T comparable, M any](maps ...map[T]M) map[T]M {
+	out := make(map[T]M)
+	for _, m := range maps {
+		for k, v := range m {
+			out[k] = v
+		}
+	}
+	return out
 }

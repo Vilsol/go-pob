@@ -18,8 +18,6 @@ import (
 	"github.com/Vilsol/go-pob/data/raw"
 )
 
-var enabled = false
-
 func init() {
 	config.InitLogging(false)
 
@@ -29,7 +27,7 @@ func init() {
 }
 
 func TestManyBuilds(t *testing.T) {
-	if !enabled {
+	if os.Getenv("BIG") != "true" {
 		t.SkipNow()
 	}
 
@@ -51,7 +49,14 @@ func TestManyBuilds(t *testing.T) {
 				env := calculator.BuildOutput(OutputModeMain)
 
 				for _, stat := range build.Build.PlayerStats {
-					testza.AssertEqual(t, stat.Value, env.Player.OutputTable[OutTableMainHand][stat.Stat], stat.Stat)
+					baseStat := env.Player.Output[stat.Stat]
+					weaponStat := env.Player.OutputTable[OutTableMainHand][stat.Stat]
+
+					if baseStat != 0 {
+						testza.AssertEqual(t, stat.Value, baseStat, stat.Stat)
+					} else {
+						testza.AssertEqual(t, stat.Value, weaponStat, stat.Stat)
+					}
 				}
 			})
 		}

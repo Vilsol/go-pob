@@ -51,11 +51,7 @@ type ExtraSkill struct {
 	Source     interface{}
 }
 
-type GrantReservedLifeAsAura struct {
-	Mod Mod
-}
-
-type GrantReservedManaAsAura struct {
+type GrantReservedPoolAsAura struct {
 	Mod Mod
 }
 
