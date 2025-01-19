@@ -17,7 +17,7 @@ func GlobalEffect(names ...string) *GlobalEffectTag {
 	}
 }
 
-func (t GlobalEffectTag) Type() Type {
+func (t *GlobalEffectTag) Type() Type {
 	return t.TagType
 }
 

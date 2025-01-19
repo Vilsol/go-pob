@@ -15,7 +15,7 @@ func SkillType(skillType string) *SkillTypeTag {
 	}
 }
 
-func (t SkillTypeTag) Type() Type {
+func (t *SkillTypeTag) Type() Type {
 	return t.TagType
 }
 

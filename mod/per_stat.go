@@ -23,7 +23,7 @@ func PerStat(divide float64, stats ...string) *PerStatTag {
 	}
 }
 
-func (t PerStatTag) Type() Type {
+func (t *PerStatTag) Type() Type {
 	return t.TagType
 }
 

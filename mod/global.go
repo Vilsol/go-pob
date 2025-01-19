@@ -13,7 +13,7 @@ func Global() *GlobalTag {
 	}
 }
 
-func (t GlobalTag) Type() Type {
+func (t *GlobalTag) Type() Type {
 	return t.TagType
 }
 

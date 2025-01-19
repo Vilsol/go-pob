@@ -26,7 +26,7 @@ func StatThresholdStat(stat string, thresholdStat string) *StatThresholdTag {
 	}
 }
 
-func (t StatThresholdTag) Type() Type {
+func (t *StatThresholdTag) Type() Type {
 	return t.TagType
 }
 

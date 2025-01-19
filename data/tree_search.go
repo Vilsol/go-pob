@@ -10,8 +10,8 @@ type SearchState struct {
 
 // heap.Interface implementation to maintain SearchState.frontier as a
 // priority queue sorted by distance from active nodes.
-func (f SearchState) Len() int { return len(f.frontier) }
-func (f SearchState) Less(i, j int) bool {
+func (f *SearchState) Len() int { return len(f.frontier) }
+func (f *SearchState) Less(i, j int) bool {
 	iNode := f.frontier[i]
 	jNode := f.frontier[j]
 
@@ -27,8 +27,8 @@ func (f SearchState) Less(i, j int) bool {
 	// so we use the node ID as a tiebreaker
 	return iNode < jNode
 }
-func (f SearchState) Swap(i, j int) { f.frontier[i], f.frontier[j] = f.frontier[j], f.frontier[i] }
-func (f *SearchState) Push(x any)   { f.frontier = append(f.frontier, x.(int64)) }
+func (f *SearchState) Swap(i, j int) { f.frontier[i], f.frontier[j] = f.frontier[j], f.frontier[i] }
+func (f *SearchState) Push(x any)    { f.frontier = append(f.frontier, x.(int64)) }
 func (f *SearchState) Pop() any {
 	old := f.frontier
 	n := len(old)

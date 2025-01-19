@@ -15,7 +15,7 @@ func SocketedIn(slotName string) *SocketedInTag {
 	}
 }
 
-func (t SocketedInTag) Type() Type {
+func (t *SocketedInTag) Type() Type {
 	return t.TagType
 }
 

@@ -1,51 +1,51 @@
 {
   "lockfile_version": "1",
   "packages": {
-    "go-task@3.40.0": {
-      "last_modified": "2024-11-28T07:51:56Z",
-      "resolved": "github:NixOS/nixpkgs/226216574ada4c3ecefcbbec41f39ce4655f78ef#go-task",
+    "go-task@3.40.1": {
+      "last_modified": "2025-01-14T09:56:28Z",
+      "resolved": "github:NixOS/nixpkgs/357cd3dfdb8993af11268d755d53357720675e66#go-task",
       "source": "devbox-search",
-      "version": "3.40.0",
+      "version": "3.40.1",
       "systems": {
         "aarch64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/ynnx5bghcar86a89026rdysvpf51b2li-go-task-3.40.0",
+              "path": "/nix/store/aixfgx140ck769fgd62w2jn6zr0rpjap-go-task-3.40.1",
               "default": true
             }
           ],
-          "store_path": "/nix/store/ynnx5bghcar86a89026rdysvpf51b2li-go-task-3.40.0"
+          "store_path": "/nix/store/aixfgx140ck769fgd62w2jn6zr0rpjap-go-task-3.40.1"
         },
         "aarch64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/2ga7yc7nn0k01n2w3wa6fjbp0i31r6d6-go-task-3.40.0",
+              "path": "/nix/store/221dfg78szgn8sy0schr2yrxi0ksg7az-go-task-3.40.1",
               "default": true
             }
           ],
-          "store_path": "/nix/store/2ga7yc7nn0k01n2w3wa6fjbp0i31r6d6-go-task-3.40.0"
+          "store_path": "/nix/store/221dfg78szgn8sy0schr2yrxi0ksg7az-go-task-3.40.1"
         },
         "x86_64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/0fc73lrh98s9i7qjsxk8gjddxam5kv76-go-task-3.40.0",
+              "path": "/nix/store/yrfn4jmxsw16ngmgxslff18nrf7h1xy5-go-task-3.40.1",
               "default": true
             }
           ],
-          "store_path": "/nix/store/0fc73lrh98s9i7qjsxk8gjddxam5kv76-go-task-3.40.0"
+          "store_path": "/nix/store/yrfn4jmxsw16ngmgxslff18nrf7h1xy5-go-task-3.40.1"
         },
         "x86_64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/x5pbyv5p0yj3fl77j4bmgcj8s7jjcjwn-go-task-3.40.0",
+              "path": "/nix/store/66bmnhrlh62vxflw0siz8s7i5pff7i7j-go-task-3.40.1",
               "default": true
             }
           ],
-          "store_path": "/nix/store/x5pbyv5p0yj3fl77j4bmgcj8s7jjcjwn-go-task-3.40.0"
+          "store_path": "/nix/store/66bmnhrlh62vxflw0siz8s7i5pff7i7j-go-task-3.40.1"
         }
       }
     },
@@ -97,116 +97,116 @@
         }
       }
     },
-    "golangci-lint@1.61.0": {
-      "last_modified": "2024-09-10T15:01:03Z",
-      "resolved": "github:NixOS/nixpkgs/5ed627539ac84809c78b2dd6d26a5cebeb5ae269#golangci-lint",
+    "golangci-lint@1.63.4": {
+      "last_modified": "2025-01-09T11:09:19Z",
+      "resolved": "github:NixOS/nixpkgs/32af3611f6f05655ca166a0b1f47b57c762b5192#golangci-lint",
       "source": "devbox-search",
-      "version": "1.61.0",
+      "version": "1.63.4",
       "systems": {
         "aarch64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/mycyzj74j3hb0z3cn93zl27vn636nzvp-golangci-lint-1.61.0",
+              "path": "/nix/store/zxfnv79w3sgz14jnmhzrhv6dx5296mj8-golangci-lint-1.63.4",
               "default": true
             }
           ],
-          "store_path": "/nix/store/mycyzj74j3hb0z3cn93zl27vn636nzvp-golangci-lint-1.61.0"
+          "store_path": "/nix/store/zxfnv79w3sgz14jnmhzrhv6dx5296mj8-golangci-lint-1.63.4"
         },
         "aarch64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/615pmvpwdk4a8zvysig394qyxryycvv5-golangci-lint-1.61.0",
+              "path": "/nix/store/c3an4hghgy5y1d3851b6mrqk51nf7i2d-golangci-lint-1.63.4",
               "default": true
             }
           ],
-          "store_path": "/nix/store/615pmvpwdk4a8zvysig394qyxryycvv5-golangci-lint-1.61.0"
+          "store_path": "/nix/store/c3an4hghgy5y1d3851b6mrqk51nf7i2d-golangci-lint-1.63.4"
         },
         "x86_64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/1ka14pll6a8kmvp4m3j493kaks8kf7hk-golangci-lint-1.61.0",
+              "path": "/nix/store/ifpq8gpb5cmhmdivpj2xvh2zni0q18j9-golangci-lint-1.63.4",
               "default": true
             }
           ],
-          "store_path": "/nix/store/1ka14pll6a8kmvp4m3j493kaks8kf7hk-golangci-lint-1.61.0"
+          "store_path": "/nix/store/ifpq8gpb5cmhmdivpj2xvh2zni0q18j9-golangci-lint-1.63.4"
         },
         "x86_64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/l9q9gr0500smf0wiqyv3q804ld8xdj21-golangci-lint-1.61.0",
+              "path": "/nix/store/lf9p653yfg9zsgagks9n40cacghh6vjl-golangci-lint-1.63.4",
               "default": true
             }
           ],
-          "store_path": "/nix/store/l9q9gr0500smf0wiqyv3q804ld8xdj21-golangci-lint-1.61.0"
+          "store_path": "/nix/store/lf9p653yfg9zsgagks9n40cacghh6vjl-golangci-lint-1.63.4"
         }
       }
     },
-    "nodejs@22.8.0": {
-      "last_modified": "2024-09-10T15:01:03Z",
+    "nodejs@22.11.0": {
+      "last_modified": "2024-12-23T21:10:33Z",
       "plugin_version": "0.0.2",
-      "resolved": "github:NixOS/nixpkgs/5ed627539ac84809c78b2dd6d26a5cebeb5ae269#nodejs_22",
+      "resolved": "github:NixOS/nixpkgs/de1864217bfa9b5845f465e771e0ecb48b30e02d#nodejs_22",
       "source": "devbox-search",
-      "version": "22.8.0",
+      "version": "22.11.0",
       "systems": {
         "aarch64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/4r8kqr24z88m1xjbb1qf19p1mi6q35lp-nodejs-22.8.0",
+              "path": "/nix/store/9vkabbbbyfn8hv5l1r8fm59d27imq460-nodejs-22.11.0",
               "default": true
             },
             {
               "name": "libv8",
-              "path": "/nix/store/rqpibvqcpjxx26ls9kmdq1fr5yckss9l-nodejs-22.8.0-libv8"
+              "path": "/nix/store/m3rxxwm6jp95kjmh4rklqn0d76biz6wm-nodejs-22.11.0-libv8"
             }
           ],
-          "store_path": "/nix/store/4r8kqr24z88m1xjbb1qf19p1mi6q35lp-nodejs-22.8.0"
+          "store_path": "/nix/store/9vkabbbbyfn8hv5l1r8fm59d27imq460-nodejs-22.11.0"
         },
         "aarch64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/1wzl2brm8p6sb5b3wsdnn02m56cq36d4-nodejs-22.8.0",
+              "path": "/nix/store/z2lznj5fq0wagkhj7nkgmb5yr4gyv0ws-nodejs-22.11.0",
               "default": true
             },
             {
               "name": "libv8",
-              "path": "/nix/store/4dwa28gc3w0gr672pcf3j4lfncymdqjf-nodejs-22.8.0-libv8"
+              "path": "/nix/store/0xiwppqyszilzy9cg71c26fxg5qcxh89-nodejs-22.11.0-libv8"
             }
           ],
-          "store_path": "/nix/store/1wzl2brm8p6sb5b3wsdnn02m56cq36d4-nodejs-22.8.0"
+          "store_path": "/nix/store/z2lznj5fq0wagkhj7nkgmb5yr4gyv0ws-nodejs-22.11.0"
         },
         "x86_64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/mcdq9d48r8c2j29zgr7i80vnjzwh2lc3-nodejs-22.8.0",
+              "path": "/nix/store/s81s2z275wnjazk4ij3zvn6kslfa5ipf-nodejs-22.11.0",
               "default": true
             },
             {
               "name": "libv8",
-              "path": "/nix/store/16kfmgbsspjg1kpdvf9np5v2h371dh40-nodejs-22.8.0-libv8"
+              "path": "/nix/store/mm87n14lp5akdjlfwh1yg4l93zm8gv9h-nodejs-22.11.0-libv8"
             }
           ],
-          "store_path": "/nix/store/mcdq9d48r8c2j29zgr7i80vnjzwh2lc3-nodejs-22.8.0"
+          "store_path": "/nix/store/s81s2z275wnjazk4ij3zvn6kslfa5ipf-nodejs-22.11.0"
         },
         "x86_64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/xsrv93rg8vi05k9ig6v9mcvcyn01n6n2-nodejs-22.8.0",
+              "path": "/nix/store/fkyp1bm5gll9adnfcj92snyym524mdrj-nodejs-22.11.0",
               "default": true
             },
             {
               "name": "libv8",
-              "path": "/nix/store/gp8fkyafy0anm5pgdcq2x3qs2fm8syhl-nodejs-22.8.0-libv8"
+              "path": "/nix/store/fyaac3q8qn3zfxy72airfabm3dakmgf5-nodejs-22.11.0-libv8"
             }
           ],
-          "store_path": "/nix/store/xsrv93rg8vi05k9ig6v9mcvcyn01n6n2-nodejs-22.8.0"
+          "store_path": "/nix/store/fkyp1bm5gll9adnfcj92snyym524mdrj-nodejs-22.11.0"
         }
       }
     }

@@ -77,7 +77,7 @@
           syncWrap
             ?.CalculatePrunableNodes(version, nowActiveNodes, rootNodes)
             .then((nodeIds) => {
-              console.log(`Node ids to deallocate: ${nodeIds}`);
+              console.log(`Node ids to deallocate: ${JSON.stringify(nodeIds)}`);
               if (nodeIds) {
                 void syncWrap?.DeallocateNodes(nodeIds);
               }

@@ -25,6 +25,7 @@ linters:
     - bidichk
     - containedctx
     - contextcheck
+    - copyloopvar
     - decorder
     - dupl
     - durationcheck
@@ -34,7 +35,7 @@ linters:
     # While getting implemented, a lot of stuff is unused
     # TODO Turn on when reaching 1.0.0
     # - exhaustive
-    - exportloopref
+    - exptostd
     - gocheckcompilerdirectives
     - goconst
     - gofmt
@@ -43,17 +44,20 @@ linters:
     - gosimple
     - gosmopolitan
     - govet
+    - iface
     - ineffassign
     - mirror
     - misspell
     # - musttag
     - nilerr
+    - nilnesserr
     - nilnil
     - noctx
     - nonamedreturns
     - prealloc
     - predeclared
     - reassign
+    - recvcheck
     - revive
     - staticcheck
     - typecheck
@@ -63,6 +67,7 @@ linters:
     # - unparam
     # - unused
     - usestdlibvars
+    - usetesting
     - whitespace
     - wrapcheck
 
