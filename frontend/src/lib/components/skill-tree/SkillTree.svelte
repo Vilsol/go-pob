@@ -70,10 +70,12 @@
     if (activeNodes?.includes(nodeId)) {
       const version = skillTreeVersion || '3_18';
       const rootNodes = classStartNodes[skillTree.classes.findIndex((c) => c.name === currentClass)];
-      syncWrap?.DeallocateNodes([nodeId])
+      syncWrap
+        ?.DeallocateNodes([nodeId])
         .then(() => {
           const nowActiveNodes = activeNodes.filter((n) => n !== nodeId);
-          syncWrap?.CalculatePrunableNodes(version, nowActiveNodes, rootNodes)
+          syncWrap
+            ?.CalculatePrunableNodes(version, nowActiveNodes, rootNodes)
             .then((nodeIds) => {
               console.log(`Node ids to deallocate: ${nodeIds}`);
               if (nodeIds) {
