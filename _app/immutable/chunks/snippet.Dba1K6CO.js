@@ -1,1 +1,0 @@
-import{q as o,J as f,D as i,l as p,F as c,I as d,a5 as h}from"./runtime.BLVj8dz7.js";function _(e,n,...t){var s=e,r=d,a;o(()=>{r!==(r=n())&&(a&&(h(a),a=null),a=i(()=>r(s,...t)))},f),p&&(s=c)}export{_ as s};

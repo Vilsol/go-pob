@@ -1,1 +1,0 @@
-import{a as t,t as a}from"../chunks/disclose-version.BiKuDWK2.js";var n=a('<h1 class="text-3xl font-bold">How did you get here?</h1>');function d(r,o){console.error(o.errors,o.data);var e=n();t(r,e)}export{d as component};
