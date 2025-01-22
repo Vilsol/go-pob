@@ -12,7 +12,7 @@ export declare namespace calculator {
     SkillModList?: moddb.ModList;
     SkillCfg?: moddb.ListCfg;
     SkillTypes?: Record<string, boolean>;
-    SkillData?: Record<string, unknown | undefined>;
+    SkillData?: calculator.SkillData;
     ActiveEffect?: calculator.GemEffect;
     Weapon1Cfg?: moddb.ListCfg;
     Weapon2Cfg?: moddb.ListCfg;
@@ -21,7 +21,7 @@ export declare namespace calculator {
     SocketGroup?: unknown;
     SummonSkill?: calculator.ActiveSkill;
     ConversionTable?: Record<string, calculator.ConversionTable>;
-    Minion?: unknown;
+    Minion?: calculator.Actor;
     Weapon1Flags: number;
     Weapon2Flags: number;
     EffectList?: Array<calculator.GemEffect | undefined>;
@@ -31,29 +31,70 @@ export declare namespace calculator {
     MinionSkillTypes?: Record<string, boolean>;
     BleedCfg?: moddb.ListCfg;
     OHBleedCfg?: moddb.ListCfg;
+    SkillTotemId: number;
+    SkillPartName: string;
+    ActiveMineCount: number;
   }
   interface Actor {
     ModDB?: moddb.ModDB;
     Level: number;
     Enemy?: calculator.Actor;
-    ItemList?: Record<string, unknown | undefined>;
+    ItemList?: Record<string, calculator.ItemData | undefined>;
     ActiveSkillList?: Array<calculator.ActiveSkill | undefined>;
     Output?: Record<string, number>;
     OutputTable?: Record<string, Record<string, number> | undefined>;
     MainSkill?: calculator.ActiveSkill;
-    Breakdown?: unknown;
-    WeaponData1?: Record<string, unknown | undefined>;
-    WeaponData2?: Record<string, unknown | undefined>;
+    Breakdown?: calculator.Breakdown;
+    WeaponData1?: calculator.SkillData;
+    WeaponData2?: calculator.SkillData;
     StrDmgBonus: number;
+    MinionData?: unknown;
+    Reserved_LifeBase: number;
+    Reserved_LifePercent: number;
+    Reserved_ManaBase: number;
+    Reserved_ManaPercent: number;
     GetOutput(stat: string): [number, boolean];
+  }
+  interface ArmourData {
+    Ward: number;
+    EnergyShield: number;
+    Armour: number;
+    Evasion: number;
+    BlockChance: number;
+  }
+  interface BCol {
+    Label: string;
+    Key: string;
+  }
+  interface Breakdown {
+    ModDB?: moddb.ModDB;
+    Output?: Record<string, number>;
+    Actor?: calculator.Actor;
+    Data?: Record<string, calculator.Entry | undefined>;
+    AddCol(key: string, cols?: Array<calculator.BCol>): void;
+    AddLine(key: string, s: string): void;
+    AddRow(key: string, rows?: Array<Record<string, string> | undefined>): void;
+    GetData(): (Record<string, calculator.Entry | undefined> | undefined);
   }
   interface Calculator {
     PoB?: pob.PathOfBuilding;
     BuildOutput(mode: string): Promise<(calculator.Environment | undefined)>;
   }
+  interface ColProps {
+    Cfg: string;
+    ModSource?: string;
+    Enemy?: boolean;
+    ModName?: Array<string>;
+    ModType: string;
+  }
   interface ConversionTable {
     Targets?: Record<string, number>;
     Mult: number;
+  }
+  interface Entry {
+    Columns?: Array<calculator.BCol>;
+    Rows?: Array<Record<string, string> | undefined>;
+    Lines?: Array<string>;
   }
   interface Environment {
     Cache?: calculator.EnvironmentCache;
@@ -63,12 +104,13 @@ export declare namespace calculator {
     ModDB?: moddb.ModDB;
     EnemyModDB?: moddb.ModDB;
     ItemModDB?: moddb.ModDB;
-    Minion?: moddb.ModDB;
     EnemyLevel: number;
     Player?: calculator.Actor;
     Enemy?: calculator.Actor;
-    RequirementsTableItems?: Record<string, unknown | undefined>;
-    RequirementsTableGems?: Array<calculator.RequirementsTableGems | undefined>;
+    Minion?: calculator.Actor;
+    RequirementsTable?: Array<calculator.RequirementsTable | undefined>;
+    RequirementsTableItems?: Array<calculator.RequirementsTable | undefined>;
+    RequirementsTableGems?: Array<calculator.RequirementsTable | undefined>;
     RadiusJewelList?: Record<string, unknown | undefined>;
     ExtraRadiusNodeList?: Record<string, unknown | undefined>;
     GrantedSkills?: Record<string, unknown | undefined>;
@@ -84,6 +126,7 @@ export declare namespace calculator {
     KeystonesAdded?: Record<string, unknown | undefined>;
     MainSocketGroup: number;
     DebugErrors?: Array<string>;
+    CalcProps?: Record<string, number>;
   }
   interface EnvironmentCache {
     TreeVersion: string;
@@ -110,6 +153,9 @@ export declare namespace calculator {
     DamageEffectiveness(): number;
     WeaponTypes(): (Array<string> | undefined);
   }
+  interface ItemData {
+    ArmourData?: calculator.ArmourData;
+  }
   interface PassiveSpec {
     Build?: pob.PathOfBuilding;
     TreeVersion: string;
@@ -129,12 +175,93 @@ export declare namespace calculator {
     SelectClass(className: string): void;
     Tree(): (data.Tree | undefined);
   }
-  interface RequirementsTableGems {
+  interface RequirementsTable {
     Source: string;
-    SourceGem: pob.Gem;
+    SourceGem?: pob.Gem;
+    SourceItem?: unknown;
     Str: number;
     Dex: number;
     Int: number;
+  }
+  interface SkillData {
+    SupportBonechill: boolean;
+    Cooldown: number;
+    Triggered: boolean;
+    TriggeredByBrand: boolean;
+    TriggeredOnDeath: boolean;
+    TriggerTime: number;
+    TriggeredBySaviour: boolean;
+    CritChance: number;
+    SetOffHandPhysicalMin: number;
+    SetOffHandPhysicalMax: number;
+    AttackTime: number;
+    CastTimeOverride: number;
+    TimeOverride: number;
+    FixedCastTime: boolean;
+    TriggerRate: number;
+    ShowAverage: boolean;
+    ManaReservationPercent: number;
+    TotemLevel: number;
+    CannotBeEvaded: boolean;
+    DoubleHitsWhenDualWielding: boolean;
+    DpsMultiplier: number;
+    BaseMultiplier: number;
+    DamageEffectiveness: number;
+    LifeLeechPerUse: number;
+    ManaLeechPerUse: number;
+    BleedDurationIsSkillDuration: boolean;
+    BleedIsSkillEffect: boolean;
+    Duration: number;
+    BleedBasePercent: number;
+    Type: string;
+    AttackRate: number;
+    PhysicalMin: number;
+    PhysicalMax: number;
+    AttackSpeedInc: number;
+    CountsAsAll1H: boolean;
+    CountsAsDualWielding: boolean;
+    PhysicalBonusMin: number;
+    PhysicalBonusMax: number;
+    LightningMin: number;
+    LightningMax: number;
+    LightningBonusMin: number;
+    LightningBonusMax: number;
+    ColdMin: number;
+    ColdMax: number;
+    ColdBonusMin: number;
+    ColdBonusMax: number;
+    FireMin: number;
+    FireMax: number;
+    FireBonusMin: number;
+    FireBonusMax: number;
+    ChaosMin: number;
+    ChaosMax: number;
+    ChaosBonusMin: number;
+    ChaosBonusMax: number;
+    RadiusExtra: number;
+    DurationSecondary: number;
+    MinionLevel: number;
+    FireDot: number;
+    TriggeredByCoC: boolean;
+    DotIsSpell: boolean;
+    RepeatFrequency: number;
+    TriggeredByMirageArcher: boolean;
+    ChanceToTriggerOnCrit: boolean;
+    ColdDot: boolean;
+    CorpseExplosionLifeMultiplier: number;
+    ChaosDot: boolean;
+    BaseManaCostIsAtLeastPercentUnreservedMana: number;
+    ManaReservationFlat: number;
+    LifeReservationFlat: number;
+    LifeReservationPercent: number;
+    ManaReservationFlatForced?: number;
+    LifeReservationFlatForced?: number;
+    ManaReservationPercentForced?: number;
+    LifeReservationPercentForced?: number;
+    ManaReservedBase: number;
+    ManaReservedPercent: number;
+    LifeReservedBase: number;
+    LifeReservedPercent: number;
   }
   function NewCalculator(build: pob.PathOfBuilding): (calculator.Calculator | undefined);
 }
@@ -316,6 +443,9 @@ export declare namespace debug {
   }
 }
 export declare namespace exposition {
+  interface ElementWrapper {
+    Elements?: Record<string, calculator.ColProps>;
+  }
   interface GemPart {
     Name: string;
     Description: string;
@@ -334,6 +464,7 @@ export declare namespace exposition {
   function GetRawTree(version: string): Promise<(Uint8Array | undefined)>;
   function GetSkillGems(): (Array<exposition.SkillGem> | undefined);
   function GetStatByIndex(id: number): (poe.Stat | undefined);
+  function SetCalcTabElements(elements?: exposition.ElementWrapper): void;
 }
 export declare namespace fwd {
   interface Reader {
@@ -382,26 +513,38 @@ export declare namespace moddb {
     AddList(list?: moddb.ModList): void;
     AddMod(newMod?: unknown): void;
     Clone(): (unknown | undefined);
+    Combine(modType: string, cfg?: moddb.ListCfg, modNames?: Array<string>): (mod.ModValueMulti | undefined);
     Flag(cfg?: moddb.ListCfg, names?: Array<string>): boolean;
     GetCondition(arg1: string, arg2?: moddb.ListCfg, arg3: boolean): [boolean, boolean];
     GetMultiplier(arg1: string, arg2?: moddb.ListCfg, arg3: boolean): number;
     List(cfg?: moddb.ListCfg, names?: Array<string>): (Array<unknown | undefined> | undefined);
+    Max(cfg?: moddb.ListCfg, modNames?: Array<string>): number;
     More(cfg?: moddb.ListCfg, names?: Array<string>): number;
     Override(cfg?: moddb.ListCfg, names?: Array<string>): (mod.ModValueMulti | undefined);
     Sum(modType: string, cfg?: moddb.ListCfg, names?: Array<string>): number;
+    Tabulate(modType: string, cfg?: moddb.ListCfg, modNames?: Array<string>): (Array<moddb.ModResult> | undefined);
+    TabulateInternal(context?: unknown, result?: Array<moddb.ModResult>, modType: string, cfg?: moddb.ListCfg, flags: number, keywordFlags: number, source: string, modNames?: Array<string>): void;
   }
   interface ModList {
     ModStore?: moddb.ModStore;
     AddDB(db?: moddb.ModList): void;
     AddMod(newMod?: unknown): void;
     Clone(): (unknown | undefined);
+    Combine(modType: string, cfg?: moddb.ListCfg, modNames?: Array<string>): (mod.ModValueMulti | undefined);
     Flag(cfg?: moddb.ListCfg, names?: Array<string>): boolean;
     GetCondition(arg1: string, arg2?: moddb.ListCfg, arg3: boolean): [boolean, boolean];
     GetMultiplier(arg1: string, arg2?: moddb.ListCfg, arg3: boolean): number;
     List(cfg?: moddb.ListCfg, names?: Array<string>): (Array<unknown | undefined> | undefined);
+    Max(cfg?: moddb.ListCfg, modNames?: Array<string>): number;
     More(cfg?: moddb.ListCfg, names?: Array<string>): number;
     Override(cfg?: moddb.ListCfg, names?: Array<string>): (mod.ModValueMulti | undefined);
     Sum(modType: string, cfg?: moddb.ListCfg, names?: Array<string>): number;
+    Tabulate(modType: string, cfg?: moddb.ListCfg, modNames?: Array<string>): (Array<moddb.ModResult> | undefined);
+    TabulateInternal(context?: unknown, result?: Array<moddb.ModResult>, modType: string, cfg?: moddb.ListCfg, flags: number, keywordFlags: number, source: string, modNames?: Array<string>): void;
+  }
+  interface ModResult {
+    Value: number;
+    Mod?: unknown;
   }
   interface ModStore {
     Parent?: unknown;
@@ -568,6 +711,8 @@ export declare namespace pob {
     DeallocateNodes(nodeIds?: Array<number>): void;
     DeleteAllSocketGroups(): void;
     DeleteSocketGroup(index: number): void;
+    GetBooleanOption(name: string): boolean;
+    GetNumberOption(name: string): number;
     GetStringOption(name: string): string;
     RemoveConfigOption(name: string): void;
     SetAscendancy(ascendancy: string): void;
@@ -878,6 +1023,7 @@ export declare namespace raw {
     FormatText: string;
     ID: string;
     StatsKey: number;
+    Divisor: number;
     Key: number;
     DecodeMsg(dc?: msgp.Reader): Error;
     EncodeMsg(en?: msgp.Writer): Error;

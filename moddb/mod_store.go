@@ -25,6 +25,9 @@ type ModStoreFuncs interface {
 	GetMultiplier(variable string, cfg *ListCfg, noMod bool) float64
 	GetCondition(variable string, cfg *ListCfg, noMod bool) (bool, bool)
 	Clone() ModStoreFuncs
+	TabulateInternal(context ModStoreFuncs, result *[]ModResult, modType mod.Type,
+		cfg *ListCfg, flags mod.MFlag, keywordFlags mod.KeywordFlag, source mod.Source, modNames ...string)
+	Combine(modType mod.Type, cfg *ListCfg, modNames ...string) *mod.ModValueMulti
 }
 
 type Actor interface {

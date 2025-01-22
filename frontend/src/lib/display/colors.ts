@@ -50,14 +50,14 @@ const baseColorCodes = {
   SCOURGE: '#FF6E25',
   GRAY: '#9F9F9F',
   WHITE: '#FFFFFF'
-};
+} as const;
 
 const withStatsColorCodes = {
   ...baseColorCodes,
   STRENGTH: baseColorCodes.MARAUDER,
   DEXTERITY: baseColorCodes.RANGER,
   INTELLIGENCE: baseColorCodes.WITCH
-};
+} as const;
 
 export const colorCodes = {
   ...withStatsColorCodes,
@@ -68,7 +68,9 @@ export const colorCodes = {
   EVASION: withStatsColorCodes.POSITIVE,
   RAGE: withStatsColorCodes.WARNING,
   PHYS: withStatsColorCodes.NORMAL
-};
+} as const;
+
+export const colorCodesX = Object.fromEntries(Object.entries(colorCodes).map(([k, v]) => [k, '^' + v])) as typeof colorCodes;
 
 const colorRegex = new RegExp(/\^#([0-9A-F]{6})?/g);
 

@@ -100,6 +100,19 @@ func (b *PathOfBuilding) GetNumberOption(name string) float64 {
 	return 0
 }
 
+func (b *PathOfBuilding) GetBooleanOption(name string) bool {
+	for _, input := range b.Config.Inputs {
+		if input.Name == name {
+			if input.Boolean == nil {
+				return false
+			}
+
+			return *input.Boolean
+		}
+	}
+	return false
+}
+
 func (b *PathOfBuilding) AddNewSocketGroup() {
 	b.Skills.SkillSets[b.Skills.ActiveSkillSet-1].Skills = append(b.Skills.SkillSets[b.Skills.ActiveSkillSet-1].Skills, Skill{
 		Enabled: true,

@@ -7,6 +7,7 @@ import localforage from 'localforage';
 import type { currentBuild } from '../global';
 import { dump, type ProxiedRemote } from '../type_utils';
 import { reverseConfigOptions } from '../display/configurations';
+import type { CalcDataColProp } from '$lib/calcs/calc_sections';
 
 class PoBWorker {
   private _currentBuild?: pob.PathOfBuilding;
@@ -109,7 +110,9 @@ class PoBWorker {
       this.callback({
         Output: out.Player.Output,
         OutputTable: out.Player.OutputTable,
-        SkillFlags: out.Player.MainSkill.SkillFlags
+        SkillFlags: out.Player.MainSkill.SkillFlags,
+        Breakdown: dump(out.Player.Breakdown?.GetData() || {}),
+        Calcs: dump(out.CalcProps || {})
       });
 
       if (out.DebugErrors?.length) {
@@ -274,6 +277,24 @@ class PoBWorker {
 
   BuildInfo() {
     return dump(pob.BuildInfo);
+  }
+
+  setCalcTabElements(elements: Record<string, CalcDataColProp>) {
+    exposition.SetCalcTabElements({
+      Elements: Object.fromEntries(
+        Object.entries(elements).map(([k, v]) => [
+          k,
+          {
+            Cfg: v.cfg!,
+            ModSource: v.modSource,
+            Enemy: v.enemy,
+            ModName: typeof v.modName === 'string' ? [v.modName] : v.modName!,
+            ModType: v.modType!
+          } as calculator.ColProps
+        ])
+      )
+    });
+    void this.Tick('setCalcTabElements');
   }
 }
 

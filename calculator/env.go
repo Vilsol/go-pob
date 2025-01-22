@@ -205,7 +205,10 @@ func InitEnv(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode OutputM
 
 	cachedPlayerDB := env.ModDB.Clone()
 	cachedEnemyDB := env.EnemyModDB.Clone()
-	cachedMinionDB := env.Minion.Clone()
+	var cachedMinionDB moddb.ModStoreFuncs
+	if env.Minion != nil {
+		cachedMinionDB = env.Minion.ModDB.Clone()
+	}
 
 	var tree = data.TreeVersions[data.LatestTreeVersion].Tree()
 	env.AllocatedNodes = make(map[string]data.Node)

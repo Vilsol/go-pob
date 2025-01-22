@@ -280,8 +280,7 @@ func (m *ModDB) TabulateInternal(context ModStoreFuncs, result *[]ModResult, mod
 	}
 
 	if m.Parent != nil {
-		// TODO Parent
-		//m.Parent.TabulateInternal(context, result, modType, cfg, flags, keywordFlags, source, modNames...)
+		m.Parent.TabulateInternal(context, result, modType, cfg, flags, keywordFlags, source, modNames...)
 	}
 }
 
@@ -322,4 +321,21 @@ func (m *ModDB) Max(cfg *ListCfg, modNames ...string) float64 {
 		}
 	}
 	return globalMax
+}
+
+func (m *ModDB) Combine(modType mod.Type, cfg *ListCfg, modNames ...string) *mod.ModValueMulti {
+	switch modType {
+	case mod.TypeMore:
+		return mod.NewModValueFloat(m.More(cfg, modNames...))
+	case mod.TypeFlag:
+		return mod.NewModValueFlag(m.Flag(cfg, modNames...))
+	case mod.TypeOverride:
+		return m.Override(cfg, modNames...)
+	case mod.TypeList:
+		return mod.NewModValueList(m.List(cfg, modNames...))
+	case mod.TypeMAX:
+		return mod.NewModValueFloat(m.Max(cfg, modNames...))
+	default:
+		return mod.NewModValueFloat(m.Sum(modType, cfg, modNames...))
+	}
 }

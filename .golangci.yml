@@ -27,7 +27,7 @@ linters:
     - contextcheck
     - copyloopvar
     - decorder
-    - dupl
+    # - dupl
     - durationcheck
     - errcheck
     - errname

@@ -6,5 +6,6 @@ var envCache = &EnvironmentCache{}
 func (c *Calculator) BuildOutput(mode OutputMode) *Environment {
 	env, _, _, _ := InitEnv(c.PoB, envCache, mode)
 	PerformCalc(env)
+	env.CalcProps = FinalizeCalcTab(env)
 	return env
 }

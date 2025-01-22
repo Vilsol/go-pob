@@ -8,11 +8,12 @@
   import { syncWrap } from '$lib/go/worker';
   import { proxy } from 'comlink';
   import type { Outputs } from '$lib/custom_types';
-  import { outputs, currentBuild, sampleBuildCode } from '$lib/global';
+  import { outputs, currentBuild, sampleBuildCode, markBackendAsLoaded } from '$lib/global';
   import OverlayController from '$lib/components/overlays/OverlayController.svelte';
   import { fontScaling } from '$lib/global.js';
   import { logError } from '$lib/utils';
   import type { Snippet } from 'svelte';
+  import { get } from 'svelte/store';
 
   let {
     children
@@ -68,6 +69,8 @@
                       syncWrap?.Tick('importBuildFromCode').catch(logError);
                     })
                     .catch(logError);
+
+                  get(markBackendAsLoaded)();
                 })
                 .catch(logError);
             })

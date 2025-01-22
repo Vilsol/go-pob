@@ -1,6 +1,8 @@
 package moddb
 
 import (
+	"strings"
+
 	"github.com/Vilsol/go-pob/mod"
 	"github.com/Vilsol/go-pob/utils"
 )
@@ -205,4 +207,107 @@ func (m *ModList) Override(cfg *ListCfg, names ...string) *mod.ModValueMulti {
 	}
 
 	return nil
+}
+
+func (m *ModList) TabulateInternal(context ModStoreFuncs, result *[]ModResult, modType mod.Type,
+	cfg *ListCfg, flags mod.MFlag, keywordFlags mod.KeywordFlag, source mod.Source, modNames ...string) {
+
+	// TODO Table
+	//globalLimits := make(map[string]float64)
+
+	for _, mMod := range m.mods {
+		if (modType == "" || mMod.Type() == modType) &&
+			(flags&mMod.Flags()) == mMod.Flags() &&
+			mod.MatchKeywordFlags(keywordFlags, mMod.KeywordFlags()) &&
+			(source == "" || strings.Split(string(mMod.GetSource()), ":")[0] == string(source)) {
+
+			var value float64
+
+			if mMod.Value().Type() == mod.ModValueMultiTypeFloat {
+				value = mMod.Value().Float()
+			} else {
+				/*
+					TODO Table
+					value = context.evalMod(mMod, cfg).Float()
+
+					if mMod.Values[0].GlobalLimit > 0 && mMod.Values[0].GlobalLimitKey != "" {
+						key := mMod.Values[0].GlobalLimitKey
+						currentLimit := globalLimits[key]
+
+						if currentLimit+value > mMod.Values[0].GlobalLimit {
+							value = mMod.Values[0].GlobalLimit - currentLimit
+						}
+						globalLimits[key] += value
+					}
+				*/
+			}
+
+			if value != 0 || mMod.Type() == mod.TypeOverride {
+				*result = append(*result, ModResult{
+					Value: value,
+					Mod:   mMod,
+				})
+			}
+		}
+	}
+
+	if m.Parent != nil {
+		m.Parent.TabulateInternal(context, result, modType, cfg, flags, keywordFlags, source, modNames...)
+	}
+}
+
+func (m *ModList) Tabulate(modType mod.Type, cfg *ListCfg, modNames ...string) []ModResult {
+	var flags *mod.MFlag
+	var keywordFlags *mod.KeywordFlag
+	var source *mod.Source
+
+	if cfg != nil {
+		flags = cfg.Flags
+		keywordFlags = cfg.KeywordFlags
+		source = cfg.Source
+	}
+
+	if flags == nil {
+		flags = (*mod.MFlag)(utils.Ptr(0))
+	}
+
+	if keywordFlags == nil {
+		keywordFlags = (*mod.KeywordFlag)(utils.Ptr(0))
+	}
+
+	if source == nil {
+		source = (*mod.Source)(utils.Ptr(""))
+	}
+
+	results := make([]ModResult, 0)
+	m.TabulateInternal(m, &results, modType, cfg, *flags, *keywordFlags, *source, modNames...)
+	return results
+}
+
+func (m *ModList) Max(cfg *ListCfg, modNames ...string) float64 {
+	globalMax := float64(0)
+	for _, value := range m.Tabulate(mod.TypeMAX, cfg, modNames...) {
+		val := m.evalMod(value.Mod, cfg).Float()
+		if val > globalMax {
+			globalMax = val
+		}
+	}
+	return globalMax
+}
+
+func (m *ModList) Combine(modType mod.Type, cfg *ListCfg, modNames ...string) *mod.ModValueMulti {
+	switch modType {
+	case mod.TypeMore:
+		return mod.NewModValueFloat(m.More(cfg, modNames...))
+	case mod.TypeFlag:
+		return mod.NewModValueFlag(m.Flag(cfg, modNames...))
+	case mod.TypeOverride:
+		return m.Override(cfg, modNames...)
+	case mod.TypeList:
+		return mod.NewModValueList(m.List(cfg, modNames...))
+	case mod.TypeMAX:
+		return mod.NewModValueFloat(m.Max(cfg, modNames...))
+	default:
+		return mod.NewModValueFloat(m.Sum(modType, cfg, modNames...))
+	}
 }

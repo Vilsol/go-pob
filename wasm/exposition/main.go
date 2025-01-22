@@ -41,6 +41,8 @@ func Expose() *crystalline.Exposer {
 	e.ExposeFuncOrPanic(CalculateAllocationPaths)
 	e.ExposeFuncOrPanic(CalculatePrunableNodes)
 
+	e.ExposeFuncOrPanic(SetCalcTabElements)
+
 	info, _ := debug.ReadBuildInfo()
 	e.ExposeOrPanic(info, "pob", "BuildInfo")
 

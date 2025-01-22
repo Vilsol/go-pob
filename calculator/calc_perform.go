@@ -1,6 +1,7 @@
 package calculator
 
 import (
+	"fmt"
 	"math"
 	"sort"
 
@@ -42,13 +43,11 @@ func PerformCalc(env *Environment) {
 		activeSkill.SkillModList = moddb.NewModList()
 		activeSkill.SkillModList.Parent = activeSkill.BaseSkillModList
 		if activeSkill.Minion != nil {
-			/*
-				TODO // Build minion skills
-				activeSkill.minion.modDB = new("ModDB")
-				activeSkill.minion.modDB.actor = activeSkill.minion
-				calcs.createMinionSkills(env, activeSkill)
-				activeSkill.skillPartName = activeSkill.minion.mainSkill.activeEffect.grantedEffect.name
-			*/
+			// Build minion skills
+			activeSkill.Minion.ModDB = moddb.NewModDB()
+			activeSkill.Minion.ModDB.Actor = activeSkill.Minion
+			CalcCreateMinionSkills(env, activeSkill)
+			activeSkill.SkillPartName = activeSkill.Minion.MainSkill.ActiveEffect.GrantedEffect.Raw.ID
 		}
 	}
 
@@ -401,18 +400,11 @@ func PerformCalc(env *Environment) {
 		*/
 	}
 
-	/*
-		TODO Breakdown Module
-		breakdown := nil
-		if env.mode == "CALCS" {
-			// Initialise breakdown module
-			breakdown = LoadModule(calcs.breakdownModule, modDB, output, env.player)
-			env.player.breakdown = breakdown
-			if env.minion {
-				env.minion.breakdown = LoadModule(calcs.breakdownModule, env.minion.modDB, env.minion.output, env.minion)
-			}
-		}
-	*/
+	var breakdown *Breakdown = NewBreakdown(env.ModDB, env.Player.Output, env.Player)
+	env.Player.Breakdown = breakdown
+	if env.Minion != nil {
+		env.Minion.Breakdown = NewBreakdown(env.Minion.ModDB, env.Minion.Output, env.Minion)
+	}
 
 	/*
 		TODO // Special handling of Mageblood
@@ -528,74 +520,81 @@ func PerformCalc(env *Environment) {
 		}
 	*/
 
+	// Calculate skill life and mana reservations
+	env.Player.Reserved_LifeBase = 0
+	env.Player.Reserved_LifePercent = env.ModDB.Sum(mod.TypeBase, nil, "ExtraLifeReserved")
+	env.Player.Reserved_ManaBase = 0
+	env.Player.Reserved_ManaPercent = 0
 	/*
-		TODO // Calculate skill life and mana reservations
-		env.player.reserved_LifeBase = 0
-		env.player.reserved_LifePercent = modDB.Sum(mod.TypeBase, nil, "ExtraLifeReserved")
-		env.player.reserved_ManaBase = 0
-		env.player.reserved_ManaPercent = 0
-		if breakdown {
+		TODO Breakdown
+		if breakdown != nil {
 			breakdown.LifeReserved = { reservations = { } }
 			breakdown.ManaReserved = { reservations = { } }
 		}
-		for _, activeSkill in ipairs(env.player.activeSkillList) {
-			if activeSkill.skillTypes[SkillType.HasReservation] and not activeSkill.skillTypes[SkillType.ReservationBecomesCost] {
-				skillModList := activeSkill.skillModList
-				skillCfg := activeSkill.skillCfg
-				mult := skillModList:More(skillCfg, "SupportManaMultiplier")
-				pool := { ["Mana"] = { }, ["Life"] = { } }
-				pool.Mana.baseFlat = activeSkill.skillData.manaReservationFlat or activeSkill.activeEffect.grantedEffectLevel.manaReservationFlat or 0
-				if skillModList:Flag(skillCfg, "ManaCostGainAsReservation") and activeSkill.activeEffect.grantedEffectLevel.cost {
-					pool.Mana.baseFlat = skillModList:Sum(mod.TypeBase, skillCfg, "ManaCostBase") + (activeSkill.activeEffect.grantedEffectLevel.cost.Mana or 0)
-				}
-				pool.Mana.basePercent = activeSkill.skillData.manaReservationPercent or activeSkill.activeEffect.grantedEffectLevel.manaReservationPercent or 0
-				pool.Life.baseFlat = activeSkill.skillData.lifeReservationFlat or activeSkill.activeEffect.grantedEffectLevel.lifeReservationFlat or 0
-				if skillModList:Flag(skillCfg, "LifeCostGainAsReservation") and activeSkill.activeEffect.grantedEffectLevel.cost {
-					pool.Life.baseFlat = skillModList:Sum(mod.TypeBase, skillCfg, "LifeCostBase") + (activeSkill.activeEffect.grantedEffectLevel.cost.Life or 0)
-				}
-				pool.Life.basePercent = activeSkill.skillData.lifeReservationPercent or activeSkill.activeEffect.grantedEffectLevel.lifeReservationPercent or 0
-				if skillModList:Flag(skillCfg, "BloodMagicReserved") {
-					pool.Life.baseFlat = pool.Life.baseFlat + pool.Mana.baseFlat
-					pool.Mana.baseFlat = 0
-					activeSkill.skillData["LifeReservationFlatForced"] = activeSkill.skillData["ManaReservationFlatForced"]
-					activeSkill.skillData["ManaReservationFlatForced"] = nil
-					pool.Life.basePercent = pool.Life.basePercent + pool.Mana.basePercent
-					pool.Mana.basePercent = 0
-					activeSkill.skillData["LifeReservationPercentForced"] = activeSkill.skillData["ManaReservationPercentForced"]
-					activeSkill.skillData["ManaReservationPercentForced"] = nil
-				}
-				for name, values in pairs(pool) {
-					values.more = skillModList:More(skillCfg, name+"Reserved", "Reserved")
-					values.inc = skillModList:Sum(mod.TypeIncrease, skillCfg, name+"Reserved", "Reserved")
-					values.efficiency = max(skillModList:Sum(mod.TypeIncrease, skillCfg, name+"ReservationEfficiency", "ReservationEfficiency"), -100)
-					// used for Arcane Cloak calculations in ModStore.GetStat
-					env.player[name+"Efficiency"] = values.efficiency
-					if activeSkill.skillData[name+"ReservationFlatForced"] {
-						values.reservedFlat = activeSkill.skillData[name+"ReservationFlatForced"]
-					} else {
-						baseFlatVal := math.Floor(values.baseFlat * mult)
-						values.reservedFlat = 0
-						if values.more > 0 and values.inc > -100 and baseFlatVal ~= 0 {
-							values.reservedFlat = max(round(baseFlatVal * (100 + values.inc) / 100 * values.more / (1 + values.efficiency / 100), 0), 0)
-						}
+	*/
+	for _, activeSkill := range env.Player.ActiveSkillList {
+		if activeSkill.SkillTypes[data.SkillTypeHasReservation] && !activeSkill.SkillTypes[data.SkillTypeReservationBecomesCost] {
+			skillModList := activeSkill.SkillModList
+			skillCfg := activeSkill.SkillCfg
+			mult := skillModList.More(skillCfg, "SupportManaMultiplier")
+			pool := map[string]map[string]float64{
+				"Mana": {},
+				"Life": {},
+			}
+			pool["Mana"]["baseFlat"] = utils.OrF(activeSkill.SkillData.ManaReservationFlat, utils.OrNil(activeSkill.ActiveEffect.GrantedEffectLevel.ManaReservationFlat, 0))
+			if skillModList.Flag(skillCfg, "ManaCostGainAsReservation") && activeSkill.ActiveEffect.GrantedEffectLevel.Cost != nil {
+				pool["Mana"]["baseFlat"] = skillModList.Sum(mod.TypeBase, skillCfg, "ManaCostBase") + float64(activeSkill.ActiveEffect.GrantedEffectLevel.Cost["Mana"])
+			}
+			pool["Mana"]["basePercent"] = utils.OrF(activeSkill.SkillData.ManaReservationPercent, utils.OrNil(activeSkill.ActiveEffect.GrantedEffectLevel.ManaReservationPercent, 0))
+			pool["Life"]["baseFlat"] = utils.OrF(activeSkill.SkillData.LifeReservationFlat, utils.OrNil(activeSkill.ActiveEffect.GrantedEffectLevel.LifeReservationFlat, 0))
+			if skillModList.Flag(skillCfg, "LifeCostGainAsReservation") && activeSkill.ActiveEffect.GrantedEffectLevel.Cost != nil {
+				pool["Life"]["baseFlat"] = skillModList.Sum(mod.TypeBase, skillCfg, "LifeCostBase") + float64(activeSkill.ActiveEffect.GrantedEffectLevel.Cost["Life"])
+			}
+			pool["Life"]["basePercent"] = utils.OrF(activeSkill.SkillData.LifeReservationPercent, utils.OrNil(activeSkill.ActiveEffect.GrantedEffectLevel.LifeReservationPercent, 0))
+			if skillModList.Flag(skillCfg, "BloodMagicReserved") {
+				pool["Life"]["baseFlat"] = pool["Life"]["baseFlat"] + pool["Mana"]["baseFlat"]
+				pool["Mana"]["baseFlat"] = 0
+				activeSkill.SkillData.LifeReservationFlatForced = activeSkill.SkillData.ManaReservationFlatForced
+				activeSkill.SkillData.ManaReservationFlatForced = nil
+				pool["Life"]["basePercent"] = pool["Life"]["basePercent"] + pool["Mana"]["basePercent"]
+				pool["Mana"]["basePercent"] = 0
+				activeSkill.SkillData.LifeReservationPercentForced = activeSkill.SkillData.ManaReservationPercentForced
+				activeSkill.SkillData.ManaReservationPercentForced = nil
+			}
+			for name, values := range pool {
+				values["more"] = skillModList.More(skillCfg, name+"Reserved", "Reserved")
+				values["inc"] = skillModList.Sum(mod.TypeIncrease, skillCfg, name+"Reserved", "Reserved")
+				values["efficiency"] = max(skillModList.Sum(mod.TypeIncrease, skillCfg, name+"ReservationEfficiency", "ReservationEfficiency"), -100)
+				// used for Arcane Cloak calculations in ModStore.GetStat
+				env.Player.Output[name+"Efficiency"] = values["efficiency"]
+				if utils.GetOr[*float64](activeSkill.SkillData, name+"ReservationFlatForced", nil) != nil {
+					values["reservedFlat"] = *utils.GetOr[*float64](activeSkill.SkillData, name+"ReservationFlatForced", nil)
+				} else {
+					baseFlatVal := math.Floor(values["baseFlat"] * mult)
+					values["reservedFlat"] = 0
+					if values["more"] > 0 && values["inc"] > -100 && baseFlatVal != 0 {
+						values["reservedFlat"] = max(utils.RoundTo(baseFlatVal*(100+values["inc"])/100*values["more"]/(1+values["efficiency"]/100), 0), 0)
 					}
-					if activeSkill.skillData[name+"ReservationPercentForced"] {
-						values.reservedPercent = activeSkill.skillData[name+"ReservationPercentForced"]
-					} else {
-						basePercentVal := values.basePercent * mult
-						values.reservedPercent = 0
-						if values.more > 0 and values.inc > -100 and basePercentVal ~= 0 {
-							values.reservedPercent = max(round(basePercentVal * (100 + values.inc) / 100 * values.more / (1 + values.efficiency / 100), 2), 0)
-						}
+				}
+				if utils.GetOr[*float64](activeSkill.SkillData, name+"ReservationPercentForced", nil) != nil {
+					values["reservedPercent"] = *utils.GetOr[*float64](activeSkill.SkillData, name+"ReservationPercentForced", nil)
+				} else {
+					basePercentVal := values["basePercent"] * mult
+					values["reservedPercent"] = 0
+					if values["more"] > 0 && values["inc"] > -100 && basePercentVal != 0 {
+						values["reservedPercent"] = max(utils.RoundTo(basePercentVal*(100+values["inc"])/100*values["more"]/(1+values["efficiency"]/100), 2), 0)
 					}
-					if activeSkill.activeMineCount {
-						values.reservedFlat = values.reservedFlat * activeSkill.activeMineCount
-						values.reservedPercent = values.reservedPercent * activeSkill.activeMineCount
-					}
-					if values.reservedFlat ~= 0 {
-						activeSkill.skillData[name+"ReservedBase"] = values.reservedFlat
-						env.player["reserved_"+name+"Base"] = env.player["reserved_"+name+"Base"] + values.reservedFlat
-						if breakdown {
+				}
+				if activeSkill.ActiveMineCount != 0 {
+					values["reservedFlat"] = values["reservedFlat"] * activeSkill.ActiveMineCount
+					values["reservedPercent"] = values["reservedPercent"] * activeSkill.ActiveMineCount
+				}
+				if values["reservedFlat"] != 0 {
+					utils.Set(activeSkill.SkillData, name+"ReservedBase", values["reservedFlat"])
+					env.Player.Output["reserved_"+name+"Base"] = env.Player.Output["reserved_"+name+"Base"] + values["reservedFlat"]
+					/*
+						TODO Breakdown
+						if breakdown != nil {
 							t_insert(breakdown[name+"Reserved"].reservations, {
 								skillName = activeSkill.activeEffect.grantedEffect.name,
 								base = values.baseFlat,
@@ -606,12 +605,15 @@ func PerformCalc(env *Environment) {
 								total = values.reservedFlat,
 							})
 						}
-					}
-					if values.reservedPercent ~= 0 {
-						activeSkill.skillData[name+"ReservedPercent"] = values.reservedPercent
-						activeSkill.skillData[name+"ReservedBase"] = (activeSkill.skillData[name+"ReservedBase"] or 0) + m_ceil(actor.Output[name] * values.reservedPercent / 100)
-						env.player["reserved_"+name+"Percent"] = env.player["reserved_"+name+"Percent"] + values.reservedPercent
-						if breakdown {
+					*/
+				}
+				if values["reservedPercent"] != 0 {
+					utils.Set(activeSkill.SkillData, name+"ReservedPercent", values["reservedPercent"])
+					utils.Set(activeSkill.SkillData, name+"ReservedBase", (utils.GetOr(activeSkill.SkillData, name+"ReservedBase", float64(0)))+math.Ceil(env.Player.Output[name]*values["reservedPercent"]/100))
+					env.Player.Output["reserved_"+name+"Percent"] = env.Player.Output["reserved_"+name+"Percent"] + values["reservedPercent"]
+					/*
+						TODO Breakdown
+						if breakdown != nil {
 							t_insert(breakdown[name+"Reserved"].reservations, {
 								skillName = activeSkill.activeEffect.grantedEffect.name,
 								base = values.basePercent + "%",
@@ -622,11 +624,11 @@ func PerformCalc(env *Environment) {
 								total = values.reservedPercent + "%",
 							})
 						}
-					}
+					*/
 				}
 			}
 		}
-	*/
+	}
 
 	// Set the life/mana reservations
 	doActorLifeManaReservation(env.Player)
@@ -645,19 +647,13 @@ func PerformCalc(env *Environment) {
 		if env.ModDB.Flag(nil, "OmniscienceRequirements") {
 			breakdownAttr = "Omni"
 		}
-		/*
-			TODO Breakdown
-			if breakdown {
-				breakdown["Req"+attr] = {
-					rowList = { },
-					colList = {
-						{ label = attr, key = "req" },
-						{ label = "Source", key = "source" },
-						{ label = "Source Name", key = "sourceName" },
-					}
-				}
-			}
-		*/
+		if breakdown != nil {
+			breakdown.AddCol("Req"+attr,
+				BCol{Label: attr, Key: "req"},
+				BCol{Label: "Source", Key: "source"},
+				BCol{Label: "Source Name", Key: "sourceName"},
+			)
+		}
 		out := float64(0)
 		for _, reqSource := range env.RequirementsTable {
 			attrVal := float64(utils.GetOr(reqSource, attr, 0))
@@ -669,26 +665,27 @@ func PerformCalc(env *Environment) {
 					req = math.Floor(attributereq * omniReqMult)
 				}
 				out = max(out, req)
-				/*
-					TODO Breakdown
-					if breakdown {
-						row := {
-							req = req > actor.Output[breakdownAttr] and colorCodes.NEGATIVE+req or req,
-							reqNum = req,
-							source = reqSource.source,
-						}
-						if reqSource.source == "Item" {
-							item := reqSource.sourceItem
-							row.sourceName = colorCodes[item.rarity]+item.name
-							row.sourceNameTooltip = function(tooltip)
-								env.build.itemsTab:AddItemTooltip(tooltip, item, reqSource.sourceSlot)
-							}
-						} else if reqSource.source == "Gem" {
-							row.sourceName = s_format("%s%s ^7%d/%d", reqSource.sourceGem.color, reqSource.sourceGem.nameSpec, reqSource.sourceGem.level, reqSource.sourceGem.quality)
-						}
-						t_insert(breakdown["Req"+breakdownAttr].rowList, row)
+				if breakdown != nil {
+					row := map[string]string{
+						// TODO Colors.Negative
+						"req":    utils.Ternary(req > env.Player.Output[breakdownAttr], "^#DD0022"+fmt.Sprint(req), fmt.Sprint(req)),
+						"reqNum": fmt.Sprint(req),
+						"source": reqSource.Source,
 					}
-				*/
+					if reqSource.Source == "Item" {
+						row["sourceName"] = fmt.Sprint(reqSource.SourceItem)
+						// TODO Func
+						//item := reqSource.SourceItem
+						//row.SourceName = colorCodes[item.Rarity] + item.Name
+						//row.SourceNameTooltip = function(tooltip)
+						//	env.build.itemsTab.AddItemTooltip(tooltip, item, reqSource.sourceSlot)
+						//}
+					} else if reqSource.Source == "Gem" {
+						// TODO reqSource.sourceGem.color
+						row["sourceName"] = fmt.Sprintf("%s %d/%d", reqSource.SourceGem.NameSpec, reqSource.SourceGem.Level, reqSource.SourceGem.Quality)
+					}
+					breakdown.AddRow("Req"+breakdownAttr, row)
+				}
 			}
 		}
 		if env.ModDB.Flag(nil, "IgnoreAttributeRequirements") {
@@ -700,7 +697,7 @@ func PerformCalc(env *Environment) {
 			env.Player.Output["Req"+breakdownAttr] = out
 			/*
 				TODO Breakdown
-				if breakdown {
+				if breakdown != nil {
 					actor.Output["Req"+breakdownAttr+"String"] = out > (actor.Output[breakdownAttr] or 0) and colorCodes.NEGATIVE+out or out
 				}
 			*/
@@ -1400,7 +1397,7 @@ func PerformCalc(env *Environment) {
 				// Account for chance to hit/crit
 				sourceCritChance := GlobalCache.cachedData["CACHE"][uuid].CritChance
 				trigRate = trigRate * sourceCritChance / 100
-				if breakdown {
+				if breakdown != nil {
 					breakdown.Speed = {
 						s_format("%.2fs ^8(adjusted trigger rate)", actor.Output["ServerTriggerRate"]),
 						s_format("x %.2f%% ^8(%s effective crit chance)", sourceCritChance, source.activeEffect.grantedEffect.name),
@@ -1450,7 +1447,7 @@ func PerformCalc(env *Environment) {
 				// Account for chance to hit/crit
 				sourceHitChance := GlobalCache.cachedData["CACHE"][uuid].HitChance
 				trigRate = trigRate * sourceHitChance / 100
-				if breakdown {
+				if breakdown != nil {
 					breakdown.Speed = {
 						s_format("%.2fs ^8(adjusted trigger rate)", actor.Output["ServerTriggerRate"]),
 						s_format("x %.0f%% ^8(%s hit chance)", sourceHitChance, source.activeEffect.grantedEffect.name),
@@ -1579,7 +1576,7 @@ func PerformCalc(env *Environment) {
 				trigRate = icdr / kitavaCD
 				actor.Output["SourceTriggerRate"] = trigRate
 				actor.Output["ServerTriggerRate"] = min(actor.Output["SourceTriggerRate"], actor.Output["ActionTriggerRate"])
-				if breakdown {
+				if breakdown != nil {
 					modActionCooldown := kitavaCD / icdr
 					rateCapAdjusted := m_ceil(modActionCooldown * data.misc.ServerTickRate) / data.misc.ServerTickRate
 					extraICDRNeeded := m_ceil((modActionCooldown - rateCapAdjusted + data.misc.ServerTickTime) * icdr * 1000)
@@ -1603,7 +1600,7 @@ func PerformCalc(env *Environment) {
 				// Account for chance to trigger
 				kitavaTriggerChance := env.player.modDB.Sum(mod.TypeBase, nil, "KitavaTriggerChance")
 				trigRate = actor.Output["ServerTriggerRate"] * kitavaTriggerChance / 100
-				if breakdown {
+				if breakdown != nil {
 					breakdown.Speed = {
 						s_format("%.2fs ^8(adjusted trigger rate)", actor.Output["ServerTriggerRate"]),
 						s_format("x %.2f%% ^8(kitava's trigger chance)", kitavaTriggerChance),
@@ -1655,7 +1652,7 @@ func PerformCalc(env *Environment) {
 				trigRate = icdr / craftedCD
 				actor.Output["SourceTriggerRate"] = trigRate
 				actor.Output["ServerTriggerRate"] = min(actor.Output["SourceTriggerRate"], actor.Output["ActionTriggerRate"])
-				if breakdown {
+				if breakdown != nil {
 					modActionCooldown := craftedCD / icdr
 					rateCapAdjusted := m_ceil(modActionCooldown * data.misc.ServerTickRate) / data.misc.ServerTickRate
 					extraICDRNeeded := m_ceil((modActionCooldown - rateCapAdjusted + data.misc.ServerTickTime) * icdr * 1000)
@@ -1715,7 +1712,7 @@ func PerformCalc(env *Environment) {
 				trigRate = icdr / focusCD
 				actor.Output["SourceTriggerRate"] = trigRate
 				actor.Output["ServerTriggerRate"] = min(actor.Output["SourceTriggerRate"], actor.Output["ActionTriggerRate"])
-				if breakdown {
+				if breakdown != nil {
 					modActionCooldown := focusCD / icdr
 					rateCapAdjusted := m_ceil(modActionCooldown * data.misc.ServerTickRate) / data.misc.ServerTickRate
 					breakdown.SimData = {
@@ -1852,7 +1849,7 @@ func PerformCalc(env *Environment) {
 				sourceCritChance := GlobalCache.cachedData["CACHE"][uuid].CritChance
 				trigRate = trigRate * sourceCritChance / 100
 				trigRate = trigRate * (source.skillData.chanceToTriggerOnCrit or 100) / 100
-				if breakdown {
+				if breakdown != nil {
 					breakdown.Speed = {
 						s_format("%.2fs ^8(adjusted trigger rate)", actor.Output["ServerTriggerRate"]),
 						s_format("x %.2f%% ^8(%s crit chance)", sourceCritChance, source.activeEffect.grantedEffect.name),
@@ -1903,7 +1900,7 @@ func PerformCalc(env *Environment) {
 				// Account for chance to trigger on Melee Kill
 				trigRate = trigRate * source.skillData.chanceToTriggerOnMeleeKill / 100
 
-				if breakdown {
+				if breakdown != nil {
 					breakdown.Speed = {
 						s_format("%.2fs ^8(adjusted trigger rate)", actor.Output["ServerTriggerRate"]),
 						s_format("x %.2f%% ^8(chance to trigger on melee kill)", source.skillData.chanceToTriggerOnMeleeKill),
@@ -2370,7 +2367,7 @@ func doActorAttribsPoolsConditions(env *Environment, actor *Actor) {
 				actor.Output[stat] = math.Max(math.Round(CalcVal(actor.ModDB, stat, nil)), 0)
 				/*
 					TODO Breakdown
-					if breakdown {
+					if breakdown != nil {
 						breakdown[stat] = breakdown.simple(nil, nil, actor.Output[stat], stat)
 					}
 				*/
@@ -2397,7 +2394,7 @@ func doActorAttribsPoolsConditions(env *Environment, actor *Actor) {
 					for _, stat in pairs({"Str","Dex","Int"}) {
 						base := classStats["base_"+stat:lower()]
 						actor.Output[stat] = min(round(calcLib.val(modDB, stat)), base)
-						if breakdown {
+						if breakdown != nil {
 							breakdown[stat] = breakdown.simple(nil, nil, actor.Output[stat], stat)
 						}
 
@@ -2429,7 +2426,7 @@ func doActorAttribsPoolsConditions(env *Environment, actor *Actor) {
 				}
 
 				actor.Output["Omni"] = max(round(calcLib.val(modDB, "Omni")), 0)
-				if breakdown {
+				if breakdown != nil {
 					breakdown["Omni"] = breakdown.simple(nil, nil, actor.Output["Omni"], "Omni")
 				}
 
@@ -2523,7 +2520,7 @@ func doActorAttribsPoolsConditions(env *Environment, actor *Actor) {
 		actor.Output["Life"] = max(utils.RoundTo(base*(1+inc/100)*more*(1-conv/100), 0), 1)
 		/*
 			TODO Breakdown
-			if breakdown {
+			if breakdown != nil {
 				if inc ~= 0 or more ~= 1 or conv ~= 0 {
 					breakdown.Life = { }
 					breakdown.Life[1] = s_format("%g ^8(base)", base)
@@ -2548,7 +2545,7 @@ func doActorAttribsPoolsConditions(env *Environment, actor *Actor) {
 		base := actor.ModDB.Sum(mod.TypeBase, nil, "Mana")
 		inc := actor.ModDB.Sum(mod.TypeIncrease, nil, "Mana")
 		more := actor.ModDB.More(nil, "Mana")
-		if breakdown {
+		if breakdown != nil {
 			if inc ~= 0 or more ~= 1 or manaConv ~= 0 {
 				breakdown.Mana = { }
 				breakdown.Mana[1] = s_format("%g ^8(base)", base)

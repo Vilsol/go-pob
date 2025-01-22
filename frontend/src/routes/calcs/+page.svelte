@@ -1,125 +1,234 @@
-<script>
-  import ItemFrame from '$lib/components/game/ItemFrame.svelte';
-  import { colorCodes } from '$lib/display/colors';
+<script lang="ts">
+  import { backendLoaded, outputs } from '$lib/global';
+  import { type CalcDataCol, type CalcDataColProp, type CalcDataRow, type CalcSection, calcSections } from '$lib/calcs/calc_sections';
+  import ColoredText from '$lib/components/common/ColoredText.svelte';
+  import { FormatStr } from '$lib/calcs/formatting.js';
+  import { onMount } from 'svelte';
+  import { syncWrap } from '$lib/go/worker';
+
+  const grouped = calcSections.reduce(
+    (groups, section) => ({
+      ...groups,
+      [section[2]]: [...(groups[section[2]] || []), section]
+    }),
+    {} as Record<number, CalcSection[]>
+  );
+
+  const elementsOf = <M,>(obj: { [key: number]: M }): M[] =>
+    Object.entries(obj)
+      .filter(([k]) => !isNaN(parseInt(k)))
+      .map(([, v]) => v);
+
+  const getFormat = (row?: CalcDataRow): string => {
+    if (!row) {
+      return '';
+    }
+
+    if (row.format) {
+      return row.format;
+    }
+
+    const sub = elementsOf(row).find((e) => e.format);
+    if (sub && sub.format) {
+      return sub.format;
+    }
+
+    return '';
+  };
+
+  const widest = (rows: CalcDataRow[]) => {
+    let w = 0;
+    rows.forEach((row) => {
+      w = Math.max(w, elementsOf(row || {}).length);
+    });
+    return w;
+  };
+
+  let tooltipStyle = $state('');
+  let tooltipElement = $state<HTMLElement>();
+
+  let hoveredItem: CalcDataCol | undefined = $state(undefined);
+  let hoveredBreakdown: string | undefined = $state(undefined);
+
+  const moveEvent = (event: MouseEvent) => {
+    if (!hoveredItem) {
+      tooltipStyle = 'display: none';
+      return;
+    }
+
+    const breakdown: CalcDataColProp | undefined = elementsOf(hoveredItem).find((e) => e.breakdown);
+    if (!breakdown) {
+      tooltipStyle = 'display: none';
+      return;
+    }
+
+    hoveredBreakdown = breakdown.breakdown;
+
+    let left = event.x;
+    if (event.x > window.innerWidth / 2) {
+      left -= (tooltipElement?.clientWidth || 200) + 15;
+    } else {
+      left += 15;
+    }
+
+    let top = event.y;
+    if (event.y > window.innerHeight / 2) {
+      top -= (tooltipElement?.clientHeight || 100) + 15;
+    }
+
+    tooltipStyle = `top: ${top}px; left: ${left}px; border-color: #00CB3A`;
+  };
+
+  onMount(() => {
+    void backendLoaded.then(() => {
+      const dbElements: Record<string, CalcDataColProp> = {};
+      for (const section of calcSections) {
+        for (const [j, block] of section[4].entries()) {
+          for (const [k, row] of elementsOf(block.data).entries()) {
+            for (const [l, col] of elementsOf(row).entries()) {
+              for (const [m, prop] of elementsOf(col).entries()) {
+                const id = `${section[1]}:${j}:${k}:${l}:${m}`;
+                if (prop.modName && prop.modType && prop.cfg) {
+                  dbElements[id] = prop;
+                }
+              }
+            }
+          }
+        }
+      }
+      console.log(dbElements);
+
+      void syncWrap?.setCalcTabElements(dbElements);
+    });
+  });
 </script>
 
-<h1 class="text-3xl font-bold">TODO</h1>
-<br />
-Here are some sample item frames.
+<svelte:window onmousemove={moveEvent} />
 
-<div class="p-10 flex flex-wrap gap-10">
-  <ItemFrame
-    sections={[
-      {
-        large: true,
-        text: ['Hallowed Hybrid Flask']
-      },
-      {
-        color: colorCodes.GRAY,
-        text: [
-          `Recovers ^${colorCodes.WHITE}1740^# Life over ^${colorCodes.WHITE}5^# Seconds`,
-          `Recovers ^${colorCodes.WHITE}480^# Mana over ^${colorCodes.WHITE}5^# Seconds`,
-          `Consumes ^${colorCodes.WHITE}20^# of ^${colorCodes.WHITE}40^# Charges on use`
-        ]
-      },
-      {
-        color: colorCodes.GRAY,
-        text: [`Requires Level ^${colorCodes.WHITE}60`]
-      }
-    ]} />
-
-  <ItemFrame
-    color={colorCodes.MAGIC}
-    sections={[
-      {
-        large: true,
-        color: colorCodes.MAGIC,
-        text: ['Eternal Life Flask']
-      },
-      {
-        color: colorCodes.GRAY,
-        text: [
-          `Recovers ^${colorCodes.WHITE}2080^# Life over ^${colorCodes.WHITE}2^# Seconds`,
-          `Consumes ^${colorCodes.WHITE}15^# of ^${colorCodes.WHITE}45^# Charges on use`
-        ]
-      },
-      {
-        color: colorCodes.GRAY,
-        text: [`Requires Level ^${colorCodes.WHITE}65`]
-      }
-    ]} />
-
-  <ItemFrame
-    color={colorCodes.RARE}
-    sections={[
-      {
-        large: true,
-        color: colorCodes.RARE,
-        text: ['Hate Caress', 'Dragonscale Gauntlets']
-      },
-      {
-        color: colorCodes.GRAY,
-        text: [
-          `Armour: ^${colorCodes.WHITE}126`,
-          `Evasion Rating: ^${colorCodes.WHITE}155`,
-          `Sockets: ^${colorCodes.DEXTERITY}G^#=^${colorCodes.INTELLIGENCE}B^#=^${colorCodes.STRENGTH}R^#=^${colorCodes.STRENGTH}R`
-        ]
-      },
-      {
-        color: colorCodes.GRAY,
-        text: [`Requires Level ^${colorCodes.WHITE}68^#, ^${colorCodes.WHITE}115^# Str, ^${colorCodes.WHITE}108^# Dex, ^${colorCodes.WHITE}146^# Int`]
-      },
-      {
-        color: colorCodes.MAGIC,
-        text: [
-          `+29 to Evasion Rating`,
-          `+53 to maximum Life`,
-          `9% increased Rarity of Items found`,
-          `+45% to Fire Resistance`,
-          `+48% to Lightning Resistance`,
-          `Gain 11 Life per Enemy Killed`
-        ]
-      }
-    ]} />
-
-  <ItemFrame
-    color={colorCodes.UNIQUE}
-    sections={[
-      {
-        large: true,
-        color: colorCodes.UNIQUE,
-        text: ['Beacon of Madness', 'Two-Toned Boots']
-      },
-      {
-        color: colorCodes.GRAY,
-        text: [
-          `Armour: ^${colorCodes.WHITE}143`,
-          `Evasion Rating: ^${colorCodes.WHITE}30`,
-          `Sockets: ^${colorCodes.INTELLIGENCE}B^#=^${colorCodes.INTELLIGENCE}B^# ^${colorCodes.STRENGTH}R`
-        ]
-      },
-      {
-        color: colorCodes.GRAY,
-        text: [`Requires Level ^${colorCodes.WHITE}70^#, ^${colorCodes.WHITE}62^# Str, ^${colorCodes.WHITE}62^# Int`]
-      },
-      {
-        color: colorCodes.MAGIC,
-        text: [`+9% to Fire and Lightning Resistances`]
-      },
-      {
-        color: colorCodes.MAGIC,
-        text: [
-          `Grants Level 1 Embrace Madness Skill`,
-          `30% increased Movement Speed`,
-          `26% increased Effect of Non-Damaging Ailments`,
-          `You have Igniting, Chilling and Shocking Conflux while affected by Glorious Madness`,
-          `Immune to Elemental Ailments while affected by Glorious Madness`
-        ]
-      },
-      {
-        color: colorCodes.UNIQUE,
-        italic: true,
-        text: [`Nothing spreads as quickly as an idea.`]
-      }
-    ]} />
+<div class="p-2 px-4 h-full flex flex-col flex-wrap gap-4 w-full overflow-x-auto">
+  <div class="flex flex-row flex-wrap gap-2">
+    {#each Object.values(grouped) as group}
+      <div class="flex flex-col flex-wrap gap-2">
+        {#each group as section}
+          <div class="flex flex-col border-2 w-full" style="border-color: {section[3]}">
+            {#each section[4] as block, j}
+              {@const width = widest(elementsOf(block.data))}
+              <div class="head" style="border-color: {section[3]}">
+                <ColoredText text={FormatStr(block.label || '', $outputs)} />:
+                {#if block.data.extra}
+                  <ColoredText text={FormatStr(block.data.extra || '', $outputs)} />
+                {/if}
+              </div>
+              <div class="w-full">
+                <table class="w-full" style="border-collapse: collapse;">
+                  <tbody>
+                    {#each elementsOf(block.data) as row, k}
+                      {@const columns = elementsOf(row)}
+                      <tr>
+                        <td class="col w-fit text-right" style="border-color: {section[3]}"><ColoredText text={FormatStr(row.label || '', $outputs)} /></td>
+                        {#each columns as column, l}
+                          <td
+                            class="col"
+                            style="border-color: {section[3]}"
+                            onmouseover={() => (hoveredItem = column)}
+                            onfocus={() => (hoveredItem = column)}
+                            onmouseleave={() => (hoveredItem = undefined)}>
+                            <pre><ColoredText text={FormatStr(getFormat(column), $outputs, column, `${section[1]}:${j}:${k}:${l}`)} /></pre>
+                          </td>
+                        {/each}
+                        {#each Array(width - columns.length).fill(0) as ignored}
+                          <td class="col" style="border-color: {section[3]}" data-ignored={ignored}></td>
+                        {/each}
+                      </tr>
+                    {/each}
+                  </tbody>
+                </table>
+              </div>
+            {/each}
+          </div>
+        {/each}
+      </div>
+    {/each}
+  </div>
+  <div>
+    <pre>{JSON.stringify($outputs?.Calcs, null, 4)}</pre>
+  </div>
 </div>
+
+<div class="absolute pointer-events-none border-4 bg-black" style={tooltipStyle} bind:this={tooltipElement}>
+  {#if hoveredItem !== undefined && hoveredBreakdown !== undefined}
+    {@const hoveredData = $outputs?.Breakdown?.[hoveredBreakdown]}
+    {#if hoveredData}
+      <div class="flex flex-col gap-2">
+        {#if (hoveredData.Lines?.length || 0) > 0}
+          <div class="p-2 flex flex-col gap-1">
+            {#each hoveredData.Lines || [] as line}
+              <span>{line}</span>
+            {/each}
+          </div>
+        {/if}
+        {#if (hoveredData.Columns?.length || 0) > 0}
+          <table class="hover-table">
+            <thead>
+              <tr>
+                {#each hoveredData.Columns || [] as col}
+                  <th>{col.Label}</th>
+                {/each}
+              </tr>
+            </thead>
+            <tbody>
+              {#each hoveredData.Rows || [] as row}
+                {#if row}
+                  <tr>
+                    {#each hoveredData.Columns || [] as col}
+                      <td><ColoredText text={row?.[col.Key]} /></td>
+                    {/each}
+                  </tr>
+                {/if}
+              {/each}
+            </tbody>
+          </table>
+        {/if}
+      </div>
+    {:else}
+      <span>N/A</span>
+    {/if}
+  {/if}
+</div>
+
+<style lang="postcss">
+  .head {
+    @apply border-b-2 p-1;
+
+    &:not(:first-child) {
+      @apply border-t-2;
+    }
+  }
+  .col {
+    @apply text-sm p-1;
+
+    &:hover {
+      box-shadow: inset 0px 0px 0px 2px #00cb3a;
+    }
+
+    &:not(:last-child) {
+      @apply border-r-2;
+    }
+  }
+
+  .hover-table {
+    & td,
+    & th {
+      @apply p-1;
+    }
+
+    & tr:not(:last-child),
+    & thead tr {
+      @apply border-b;
+    }
+    & td:not(:last-child),
+    & th:not(:last-child) {
+      @apply border-r;
+    }
+  }
+</style>

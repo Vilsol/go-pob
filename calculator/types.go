@@ -45,12 +45,12 @@ type Environment struct {
 	ModDB      *moddb.ModDB
 	EnemyModDB *moddb.ModDB
 	ItemModDB  *moddb.ModDB
-	Minion     *moddb.ModDB
 
 	EnemyLevel int
 
 	Player *Actor
 	Enemy  *Actor
+	Minion *Actor
 
 	RequirementsTable      []*RequirementsTable
 	RequirementsTableItems []*RequirementsTable
@@ -76,6 +76,7 @@ type Environment struct {
 	MainSocketGroup int
 
 	DebugErrors []string
+	CalcProps   map[string]float64
 }
 
 type EnvironmentCache struct {
@@ -84,23 +85,40 @@ type EnvironmentCache struct {
 }
 
 type Actor struct {
-	ModDB           *moddb.ModDB
-	Level           int
-	Enemy           *Actor                 `json:"-"`
-	ItemList        map[string]interface{} // TODO Implement
-	ActiveSkillList []*ActiveSkill
-	Output          map[string]float64
-	OutputTable     map[OutTable]map[string]float64
-	MainSkill       *ActiveSkill
-	Breakdown       interface{} // TODO Implement
-	WeaponData1     *SkillData
-	WeaponData2     *SkillData
-	StrDmgBonus     float64
+	ModDB                *moddb.ModDB
+	Level                int
+	Enemy                *Actor `json:"-"`
+	ItemList             map[string]*ItemData
+	ActiveSkillList      []*ActiveSkill
+	Output               map[string]float64
+	OutputTable          map[OutTable]map[string]float64
+	MainSkill            *ActiveSkill
+	Breakdown            *Breakdown
+	WeaponData1          *SkillData
+	WeaponData2          *SkillData
+	StrDmgBonus          float64
+	MinionData           interface{}
+	Reserved_LifeBase    float64
+	Reserved_LifePercent float64
+	Reserved_ManaBase    float64
+	Reserved_ManaPercent float64
 }
 
 func (a *Actor) GetOutput(stat string) (float64, bool) {
 	v, ok := a.Output[stat]
 	return v, ok
+}
+
+type ItemData struct {
+	ArmourData *ArmourData
+}
+
+type ArmourData struct {
+	Ward         float64
+	EnergyShield float64
+	Armour       float64
+	Evasion      float64
+	BlockChance  float64
 }
 
 // TODO Fix Name
@@ -141,7 +159,7 @@ type ActiveSkill struct {
 	SocketGroup      interface{}
 	SummonSkill      *ActiveSkill
 	ConversionTable  map[data.DamageType]ConversionTable
-	Minion           interface{}
+	Minion           *Actor
 	Weapon1Flags     mod.MFlag
 	Weapon2Flags     mod.MFlag
 	EffectList       []*GemEffect
@@ -152,6 +170,8 @@ type ActiveSkill struct {
 	BleedCfg         *moddb.ListCfg
 	OHBleedCfg       *moddb.ListCfg
 	SkillTotemId     int
+	SkillPartName    string
+	ActiveMineCount  float64
 }
 
 type ConversionTable struct {
@@ -268,6 +288,17 @@ type SkillData struct {
 	CorpseExplosionLifeMultiplier              float64
 	ChaosDot                                   bool
 	BaseManaCostIsAtLeastPercentUnreservedMana float64
+	ManaReservationFlat                        float64
+	LifeReservationFlat                        float64
+	LifeReservationPercent                     float64
+	ManaReservationFlatForced                  *float64
+	LifeReservationFlatForced                  *float64
+	ManaReservationPercentForced               *float64
+	LifeReservationPercentForced               *float64
+	ManaReservedBase                           float64
+	ManaReservedPercent                        float64
+	LifeReservedBase                           float64
+	LifeReservedPercent                        float64
 }
 
 type GrantedEffect struct {

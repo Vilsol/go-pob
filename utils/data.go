@@ -148,3 +148,17 @@ func Panic(err error) {
 		panic(err)
 	}
 }
+
+func OrF(a float64, b float64) float64 {
+	if a == 0 {
+		return b
+	}
+	return a
+}
+
+func OrNil(n *float64, def float64) float64 {
+	if n != nil {
+		return *n
+	}
+	return def
+}

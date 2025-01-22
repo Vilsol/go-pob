@@ -1,6 +1,7 @@
 package calculator
 
 import (
+	"fmt"
 	"maps"
 	"math"
 	"strings"
@@ -1002,7 +1003,7 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 			if breakdown {
 				breakdown.DurationMod = breakdown.mod(skillModList, skillCfg, "Duration", "PrimaryDuration", "SkillAndDamagingAilmentDuration", skillData.mineDurationAppliesToSkill and "MineDuration" or nil)
 				if breakdown.DurationMod and skillData.durationSecondary {
-					t_insert(breakdown.DurationMod, 1, "Primary duration:")
+					breakdown.AddLine("DurationMod, 1", "Primary duration:")
 				}
 			}
 			durationBase := (skillData.duration or 0) + skillModList:Sum(mod.TypeBase, skillCfg, "Duration", "PrimaryDuration")
@@ -1017,13 +1018,13 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 						s_format("%.2fs ^8(base)", durationBase),
 					}
 					if actor.Output["DurationMod"] ~= 1 {
-						t_insert(breakdown.Duration, s_format("x %.4f ^8(duration modifier)", actor.Output["DurationMod"]))
+						breakdown.AddLine("Duration", fmt.Sprintf("x %.4f ^8(duration modifier)", actor.Output["DurationMod"]))
 					}
 					if skillData.debuff and debuffDurationMult ~= 1 {
-						t_insert(breakdown.Duration, s_format("/ %.3f ^8(debuff expires slower/faster)", 1 / debuffDurationMult))
+						breakdown.AddLine("Duration", fmt.Sprintf("/ %.3f ^8(debuff expires slower/faster)", 1 / debuffDurationMult))
 					}
 					t_insert(breakdown.Duration, s_format("rounded up to nearest server tick"))
-					t_insert(breakdown.Duration, s_format("= %.3fs", actor.Output["Duration"]))
+					breakdown.AddLine("Duration", fmt.Sprintf("= %.3fs", actor.Output["Duration"]))
 				}
 			}
 			durationBase = (skillData.durationSecondary or 0) + skillModList:Sum(mod.TypeBase, skillCfg, "Duration", "SecondaryDuration")
@@ -1037,19 +1038,19 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 				if breakdown and actor.Output["DurationSecondary"] ~= durationBase {
 					breakdown.SecondaryDurationMod = breakdown.mod(skillModList, skillCfg, "Duration", "SecondaryDuration", "SkillAndDamagingAilmentDuration", skillData.mineDurationAppliesToSkill and "MineDuration" or nil)
 					if breakdown.SecondaryDurationMod {
-						t_insert(breakdown.SecondaryDurationMod, 1, "Secondary duration:")
+						breakdown.AddLine("SecondaryDurationMod, 1", "Secondary duration:")
 					}
 					breakdown.DurationSecondary = {
 						s_format("%.2fs ^8(base)", durationBase),
 					}
 					if actor.Output["DurationMod"] ~= 1 {
-						t_insert(breakdown.DurationSecondary, s_format("x %.4f ^8(duration modifier)", durationMod))
+						breakdown.AddLine("DurationSecondary", fmt.Sprintf("x %.4f ^8(duration modifier)", durationMod))
 					}
 					if skillData.debuffSecondary and debuffDurationMult ~= 1 {
-						t_insert(breakdown.DurationSecondary, s_format("/ %.3f ^8(debuff expires slower/faster)", 1 / debuffDurationMult))
+						breakdown.AddLine("DurationSecondary", fmt.Sprintf("/ %.3f ^8(debuff expires slower/faster)", 1 / debuffDurationMult))
 					}
 					t_insert(breakdown.DurationSecondary, s_format("rounded up to nearest server tick"))
-					t_insert(breakdown.DurationSecondary, s_format("= %.3fs", actor.Output["DurationSecondary"]))
+					breakdown.AddLine("DurationSecondary", fmt.Sprintf("= %.3fs", actor.Output["DurationSecondary"]))
 				}
 			}
 			durationBase = (skillData.auraDuration or 0)
@@ -1161,7 +1162,7 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 					s_format("%.2f"+(val.percent and "%%" or "")+" ^8(base "+val.text+" cost)", val.baseCost)
 				}
 				if mult ~= 1 {
-					t_insert(breakdown[costName], s_format("x %.2f ^8(cost multiplier)", mult))
+					breakdown.AddLine(costName, fmt.Sprintf("x %.2f ^8(cost multiplier)", mult))
 				}
 				if val.baseCostNoMult ~= 0 {
 					t_insert(breakdown[costName], s_format("+ %d ^8(additional "+val.text+" cost)", val.baseCostNoMult))
@@ -1378,17 +1379,17 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 						if not breakdown[stat] {
 							breakdown[stat] = { }
 						}
-						t_insert(breakdown[stat], "Contribution from Main Hand:")
-						t_insert(breakdown[stat], s_format("%.1f", actor.Output["MainHand"][stat]))
-						t_insert(breakdown[stat], s_format("x %.3f ^8(portion of instances created by main hand)", mainPortion))
-						t_insert(breakdown[stat], s_format("= %.1f", actor.Output["MainHand"][stat] * mainPortion))
-						t_insert(breakdown[stat], "Contribution from Off Hand:")
-						t_insert(breakdown[stat], s_format("%.1f", actor.Output["OffHand"][stat]))
-						t_insert(breakdown[stat], s_format("x %.3f ^8(portion of instances created by off hand)", offPortion))
-						t_insert(breakdown[stat], s_format("= %.1f", actor.Output["OffHand"][stat] * offPortion))
-						t_insert(breakdown[stat], "Total:")
-						t_insert(breakdown[stat], s_format("%.1f + %.1f", actor.Output["MainHand"][stat] * mainPortion, actor.Output["OffHand"][stat] * offPortion))
-						t_insert(breakdown[stat], s_format("= %.1f", actor.Output[stat]))
+						breakdown.AddLine(stat, "Contribution from Main Hand:")
+						breakdown.AddLine(stat, fmt.Sprintf("%.1f", actor.Output["MainHand"][stat]))
+						breakdown.AddLine(stat, fmt.Sprintf("x %.3f ^8(portion of instances created by main hand)", mainPortion))
+						breakdown.AddLine(stat, fmt.Sprintf("= %.1f", actor.Output["MainHand"][stat] * mainPortion))
+						breakdown.AddLine(stat, "Contribution from Off Hand:")
+						breakdown.AddLine(stat, fmt.Sprintf("%.1f", actor.Output["OffHand"][stat]))
+						breakdown.AddLine(stat, fmt.Sprintf("x %.3f ^8(portion of instances created by off hand)", offPortion))
+						breakdown.AddLine(stat, fmt.Sprintf("= %.1f", actor.Output["OffHand"][stat] * offPortion))
+						breakdown.AddLine(stat, "Total:")
+						breakdown.AddLine(stat, fmt.Sprintf("%.1f + %.1f", actor.Output["MainHand"][stat] * mainPortion, actor.Output["OffHand"][stat] * offPortion))
+						breakdown.AddLine(stat, fmt.Sprintf("= %.1f", actor.Output[stat]))
 					}
 				*/
 			} else {
@@ -1421,19 +1422,19 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 					if breakdown {
 						if not breakdown[stat] then breakdown[stat] = { } end
 						t_insert(breakdown[stat], s_format(""))
-						t_insert(breakdown[stat], s_format("%.2f%% of ailment stacks use maximum damage", maxInstanceStacks * 100))
-						t_insert(breakdown[stat], s_format("Max Damage comes from %s", actor.Output["MainHand"][stat] >= actor.Output["OffHand"][stat] and "Main Hand" or "Off Hand"))
-						t_insert(breakdown[stat], s_format("= %.1f", maxInstance * maxInstanceStacks))
+						breakdown.AddLine(stat, fmt.Sprintf("%.2f%% of ailment stacks use maximum damage", maxInstanceStacks * 100))
+						breakdown.AddLine(stat, fmt.Sprintf("Max Damage comes from %s", actor.Output["MainHand"][stat] >= actor.Output["OffHand"][stat] and "Main Hand" or "Off Hand"))
+						breakdown.AddLine(stat, fmt.Sprintf("= %.1f", maxInstance * maxInstanceStacks))
 						if maxInstanceStacks < 1 {
 							t_insert(breakdown[stat], s_format("%.2f%% of ailment stacks use non-maximum damage", (1-maxInstanceStacks) * 100))
-							t_insert(breakdown[stat], s_format("= %.1f", minInstance * (1 - maxInstanceStacks)))
+							breakdown.AddLine(stat, fmt.Sprintf("= %.1f", minInstance * (1 - maxInstanceStacks)))
 						}
 						t_insert(breakdown[stat], "")
-						t_insert(breakdown[stat], "Total:")
+						breakdown.AddLine(stat, "Total:")
 						if maxInstanceStacks < 1 {
-							t_insert(breakdown[stat], s_format("%.1f + %.1f", maxInstance * maxInstanceStacks, minInstance * (1 - maxInstanceStacks)))
+							breakdown.AddLine(stat, fmt.Sprintf("%.1f + %.1f", maxInstance * maxInstanceStacks, minInstance * (1 - maxInstanceStacks)))
 						}
-						t_insert(breakdown[stat], s_format("= %.1f", actor.Output[stat]))
+						breakdown.AddLine(stat, fmt.Sprintf("= %.1f", actor.Output[stat]))
 					}
 				*/
 			} else {
@@ -1446,7 +1447,7 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 					TODO Breakdown
 					if breakdown {
 						if not breakdown[stat] then breakdown[stat] = { } end
-						t_insert(breakdown[stat], s_format("All ailment stacks comes from %s", actor.Output["MainHand"][stat] and "Main Hand" or "Off Hand"))
+						breakdown.AddLine(stat, fmt.Sprintf("All ailment stacks comes from %s", actor.Output["MainHand"][stat] and "Main Hand" or "Off Hand"))
 					}
 				*/
 			}
@@ -1635,13 +1636,13 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 					})
 					if actor.Output["Cooldown"] and (1 / actor.Output["Cooldown"]) < actor.Output["CastRate"] {
 						t_insert(breakdown.Speed, s_format("\n"))
-						t_insert(breakdown.Speed, s_format("1 / %.2f ^8(skill cooldown)", actor.Output["Cooldown"]))
+						breakdown.AddLine("Speed", fmt.Sprintf("1 / %.2f ^8(skill cooldown)", actor.Output["Cooldown"]))
 						if actor.Output["Repeats"] > 1 {
-							t_insert(breakdown.Speed, s_format("x %d ^8(repeat count)", actor.Output["Repeats"]))
+							breakdown.AddLine("Speed", fmt.Sprintf("x %d ^8(repeat count)", actor.Output["Repeats"]))
 						}
-						t_insert(breakdown.Speed, s_format("= %.2f ^8(casts per second)", actor.Output["Repeats"] / actor.Output["Cooldown"]))
+						breakdown.AddLine("Speed", fmt.Sprintf("= %.2f ^8(casts per second)", actor.Output["Repeats"] / actor.Output["Cooldown"]))
 						t_insert(breakdown.Speed, s_format("\n"))
-						t_insert(breakdown.Speed, s_format("= %.2f ^8(lower of cast rates)", actor.Output["Speed"]))
+						breakdown.AddLine("Speed", fmt.Sprintf("= %.2f ^8(lower of cast rates)", actor.Output["Speed"]))
 					}
 				}
 				if breakdown and calcLib.mod(skillModList, skillCfg, "SkillAttackTime") > 0 {
@@ -2115,9 +2116,9 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 					if breakdown and actor.Output["CritChance"] ~= baseCrit {
 						breakdown.CritChance = { }
 						if base ~= 0 {
-							t_insert(breakdown.CritChance, s_format("(%g + %g) ^8(base)", baseCrit, base))
+							breakdown.AddLine("CritChance", fmt.Sprintf("(%g + %g) ^8(base)", baseCrit, base))
 						} else {
-							t_insert(breakdown.CritChance, s_format("%g ^8(base)", baseCrit + base))
+							breakdown.AddLine("CritChance", fmt.Sprintf("%g ^8(base)", baseCrit + base))
 						}
 						if inc ~= 0 {
 							t_insert(breakdown.CritChance, s_format("x %.2f", 1 + inc/100)+" ^8(increased/reduced)")
@@ -2125,21 +2126,21 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 						if more ~= 1 {
 							t_insert(breakdown.CritChance, s_format("x %.2f", more)+" ^8(more/less)")
 						}
-						t_insert(breakdown.CritChance, s_format("= %.2f%% ^8(crit chance)", actor.Output["PreEffectiveCritChance"]))
+						breakdown.AddLine("CritChance", fmt.Sprintf("= %.2f%% ^8(crit chance)", actor.Output["PreEffectiveCritChance"]))
 						if preCapCritChance > 100 {
 							overCap := preCapCritChance - 100
 							t_insert(breakdown.CritChance, s_format("Crit is overcapped by %.2f%% (%d%% increased Critical Strike Chance)", overCap, overCap / more / (baseCrit + base) * 100))
 						}
 						if env.mode_effective and skillModList:Flag(cfg, "CritChanceLucky") {
-							t_insert(breakdown.CritChance, "Crit Chance is Lucky:")
-							t_insert(breakdown.CritChance, s_format("1 - (1 - %.4f) x (1 - %.4f)", preLuckyCritChance / 100, preLuckyCritChance / 100))
-							t_insert(breakdown.CritChance, s_format("= %.2f%%", preHitCheckCritChance))
+							breakdown.AddLine("CritChance", "Crit Chance is Lucky:")
+							breakdown.AddLine("CritChance", fmt.Sprintf("1 - (1 - %.4f) x (1 - %.4f)", preLuckyCritChance / 100, preLuckyCritChance / 100))
+							breakdown.AddLine("CritChance", fmt.Sprintf("= %.2f%%", preHitCheckCritChance))
 						}
 						if env.mode_effective and actor.Output["HitChance"] < 100 {
-							t_insert(breakdown.CritChance, "Crit confirmation roll:")
-							t_insert(breakdown.CritChance, s_format("%.2f%%", preHitCheckCritChance))
-							t_insert(breakdown.CritChance, s_format("x %.2f ^8(chance to hit)", actor.Output["HitChance"] / 100))
-							t_insert(breakdown.CritChance, s_format("= %.2f%%", actor.Output["CritChance"]))
+							breakdown.AddLine("CritChance", "Crit confirmation roll:")
+							breakdown.AddLine("CritChance", fmt.Sprintf("%.2f%%", preHitCheckCritChance))
+							breakdown.AddLine("CritChance", fmt.Sprintf("x %.2f ^8(chance to hit)", actor.Output["HitChance"] / 100))
+							breakdown.AddLine("CritChance", fmt.Sprintf("= %.2f%%", actor.Output["CritChance"]))
 						}
 					}
 				*/
@@ -2191,43 +2192,38 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 
 		pass.Output["ScaledDamageEffect"] = 1
 
-		/*
-			TODO // Calculate chance and multiplier for dealing triple damage on Normal and Crit
-			actor.Output["TripleDamageChanceOnCrit"] = min(skillModList:Sum(mod.TypeBase, cfg, "TripleDamageChanceOnCrit"), 100)
-			actor.Output["TripleDamageChance"] = min(skillModList:Sum(mod.TypeBase, cfg, "TripleDamageChance") or 0 + (env.mode_effective and enemyDB:Sum(mod.TypeBase, cfg, "SelfTripleDamageChance") or 0) + (actor.Output["TripleDamageChanceOnCrit"] * actor.Output["CritChance"] / 100), 100)
-			actor.Output["TripleDamageEffect"] = 1 + (2 * actor.Output["TripleDamageChance"] / 100)
-			actor.Output["ScaledDamageEffect"] = actor.Output["ScaledDamageEffect"] * actor.Output["TripleDamageEffect"]
-		*/
-		/*
-			TODO // Calculate chance and multiplier for dealing double damage on Normal and Crit
-			actor.Output["DoubleDamageChanceOnCrit"] = min(skillModList:Sum(mod.TypeBase, cfg, "DoubleDamageChanceOnCrit"), 100)
-			actor.Output["DoubleDamageChance"] = min(skillModList:Sum(mod.TypeBase, cfg, "DoubleDamageChance") + (env.mode_effective and enemyDB:Sum(mod.TypeBase, cfg, "SelfDoubleDamageChance") or 0) + (actor.Output["DoubleDamageChanceOnCrit"] * actor.Output["CritChance"] / 100), 100)
-			if globalOutput.IntimidatingUpTimeRatio and activeSkill.skillModList:Flag(nil, "Condition:WarcryMaxHit") {
-				actor.Output["DoubleDamageChance"] = 100
-			} else if globalOutput.IntimidatingUpTimeRatio {
-				actor.Output["DoubleDamageChance"] = min(actor.Output["DoubleDamageChance"] + globalOutput.IntimidatingUpTimeRatio, 100)
-			}
-		*/
-		/*
-			TODO // Triple Damage overrides Double Damage. If you have both, it's the same as just having Triple
-			// We need to subtract the probability of both happening in favor of Triple Damage
-			if actor.Output["TripleDamageChance"] > 0 {
-				actor.Output["DoubleDamageChance"] = max(actor.Output["DoubleDamageChance"] - actor.Output["TripleDamageChance"] * actor.Output["DoubleDamageChance"] / 100, 0)
-			}
-			actor.Output["DoubleDamageEffect"] = 1 + actor.Output["DoubleDamageChance"] / 100
-			actor.Output["ScaledDamageEffect"] = actor.Output["ScaledDamageEffect"] * actor.Output["DoubleDamageEffect"]
-		*/
-		/*
-			TODO // Calculate culling DPS
-			criticalCull := skillModList:Max(cfg, "CriticalCullPercent") or 0
-			if criticalCull > 0 {
-				criticalCull = criticalCull * (actor.Output["CritChance"] / 100)
-			}
-			regularCull := skillModList:Max(cfg, "CullPercent") or 0
-			maxCullPercent := max(criticalCull, regularCull)
-			globalOutput.CullPercent = maxCullPercent
-			globalOutput.CullMultiplier = 100 / (100 - globalOutput.CullPercent)
-		*/
+		// Calculate chance and multiplier for dealing triple damage on Normal and Crit
+		actor.Output["TripleDamageChanceOnCrit"] = min(skillModList.Sum(mod.TypeBase, pass.Config, "TripleDamageChanceOnCrit"), 100)
+		actor.Output["TripleDamageChance"] = min(skillModList.Sum(mod.TypeBase, pass.Config, "TripleDamageChance")+(utils.Ternary(env.ModeEffective, enemyDB.Sum(mod.TypeBase, pass.Config, "SelfTripleDamageChance"), 0))+(actor.Output["TripleDamageChanceOnCrit"]*actor.Output["CritChance"]/100), 100)
+		actor.Output["TripleDamageEffect"] = 1 + (2 * actor.Output["TripleDamageChance"] / 100)
+		actor.Output["ScaledDamageEffect"] = actor.Output["ScaledDamageEffect"] * actor.Output["TripleDamageEffect"]
+
+		// Calculate chance and multiplier for dealing double damage on Normal and Crit
+		actor.Output["DoubleDamageChanceOnCrit"] = min(skillModList.Sum(mod.TypeBase, pass.Config, "DoubleDamageChanceOnCrit"), 100)
+		actor.Output["DoubleDamageChance"] = min(skillModList.Sum(mod.TypeBase, pass.Config, "DoubleDamageChance")+(utils.Ternary(env.ModeEffective, enemyDB.Sum(mod.TypeBase, pass.Config, "SelfDoubleDamageChance"), 0))+(actor.Output["DoubleDamageChanceOnCrit"]*actor.Output["CritChance"]/100), 100)
+		if actor.Output["IntimidatingUpTimeRatio"] != 0 && activeSkill.SkillModList.Flag(nil, "Condition:WarcryMaxHit") {
+			actor.Output["DoubleDamageChance"] = 100
+		} else if actor.Output["IntimidatingUpTimeRatio"] != 0 {
+			actor.Output["DoubleDamageChance"] = min(actor.Output["DoubleDamageChance"]+actor.Output["IntimidatingUpTimeRatio"], 100)
+		}
+
+		// Triple Damage overrides Double Damage. If you have both, it's the same as just having Triple
+		// We need to subtract the probability of both happening in favor of Triple Damage
+		if actor.Output["TripleDamageChance"] > 0 {
+			actor.Output["DoubleDamageChance"] = max(actor.Output["DoubleDamageChance"]-actor.Output["TripleDamageChance"]*actor.Output["DoubleDamageChance"]/100, 0)
+		}
+		actor.Output["DoubleDamageEffect"] = 1 + actor.Output["DoubleDamageChance"]/100
+		actor.Output["ScaledDamageEffect"] = actor.Output["ScaledDamageEffect"] * actor.Output["DoubleDamageEffect"]
+
+		// Calculate culling DPS
+		criticalCull := skillModList.Max(pass.Config, "CriticalCullPercent")
+		if criticalCull > 0 {
+			criticalCull = criticalCull * (actor.Output["CritChance"] / 100)
+		}
+		regularCull := skillModList.Max(pass.Config, "CullPercent")
+		maxCullPercent := max(criticalCull, regularCull)
+		actor.Output["CullPercent"] = maxCullPercent
+		actor.Output["CullMultiplier"] = 100 / (100 - actor.Output["CullPercent"])
 
 		// Calculate base hit damage
 		for _, damageType := range data.DamageType("").Values() {
@@ -2263,33 +2259,33 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 			pass.Output[damageTypeMin+"Base"] = baseMin
 			pass.Output[damageTypeMax+"Base"] = baseMax
 
-			/*
-				TODO Breakdown
-				if breakdown {
-					breakdown[damageType] = { damageTypes = { } }
-					if baseMin ~= 0 and baseMax ~= 0 {
-						t_insert(breakdown[damageType], "Base damage:")
-						plus := ""
-						if (source[damageTypeMin] or 0) ~= 0 or (source[damageTypeMax] or 0) ~= 0 {
-							t_insert(breakdown[damageType], s_format("%d to %d ^8(base damage from %s)", source[damageTypeMin], source[damageTypeMax], source.type and "weapon" or "skill"))
-							if baseMultiplier ~= 1 {
-								t_insert(breakdown[damageType], s_format("x %.2f ^8(base damage multiplier)", baseMultiplier))
-							}
-							plus = "+ "
+			if breakdown != nil {
+				// TODO Breakdown
+				// breakdown[damageType] = { damageTypes = { } }
+				if baseMin != 0 && baseMax != 0 {
+					breakdown.AddLine(string(damageType), "Base damage:")
+					plus := ""
+					sourceMin := utils.GetOr(pass.Source, damageTypeMin, float64(0))
+					sourceMax := utils.GetOr(pass.Source, damageTypeMax, float64(0))
+					if sourceMin != 0 || sourceMax != 0 {
+						breakdown.AddLine(string(damageType), fmt.Sprintf("%.0f to %.0f ^8(base damage from %s)", sourceMin, sourceMax, utils.Ternary(pass.Source.Type != "", "weapon", "skill")))
+						if baseMultiplier != 1 {
+							breakdown.AddLine(string(damageType), fmt.Sprintf("x %.2f ^8(base damage multiplier)", baseMultiplier))
 						}
-						if addedMin ~= 0 or addedMax ~= 0 {
-							t_insert(breakdown[damageType], s_format("%s%d to %d ^8(added damage)", plus, addedMin, addedMax))
-							if damageEffectiveness ~= 1 {
-								t_insert(breakdown[damageType], s_format("x %.2f ^8(damage effectiveness)", damageEffectiveness))
-							}
-							if addedMult ~= 1 {
-								t_insert(breakdown[damageType], s_format("x %.2f ^8(added damage multiplier)", addedMult))
-							}
-						}
-						t_insert(breakdown[damageType], s_format("= %.1f to %.1f", baseMin, baseMax))
+						plus = "+ "
 					}
+					if addedMin != 0 || addedMax != 0 {
+						breakdown.AddLine(string(damageType), fmt.Sprintf("%s%.0f to %.0f ^8(added damage)", plus, addedMin, addedMax))
+						if damageEffectiveness != 1 {
+							breakdown.AddLine(string(damageType), fmt.Sprintf("x %.2f ^8(damage effectiveness)", damageEffectiveness))
+						}
+						if addedMult != 1 {
+							breakdown.AddLine(string(damageType), fmt.Sprintf("x %.2f ^8(added damage multiplier)", addedMult))
+						}
+					}
+					breakdown.AddLine(string(damageType), fmt.Sprintf("= %.1f to %.1f", baseMin, baseMax))
 				}
-			*/
+			}
 		}
 
 		totalHitMin := float64(0)
@@ -2335,34 +2331,31 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 					damageTypeHitMin, damageTypeHitMax = calcDamage(activeSkill, pass.Output, pass.Config, nil, damageType, 0, nil)
 					convMult := activeSkill.ConversionTable[damageType].Mult
 
-					/*
-						TODO Breakdown
-						if pass == 2 and breakdown {
-							t_insert(breakdown[damageType], "Hit damage:")
-							t_insert(breakdown[damageType], s_format("%d to %d ^8(total damage)", damageTypeHitMin, damageTypeHitMax))
-							if convMult ~= 1 {
-								t_insert(breakdown[damageType], s_format("x %g ^8(%g%% converted to other damage types)", convMult, (1-convMult)*100))
-							}
-							if actor.Output["TripleDamageEffect"] ~= 1 {
-								t_insert(breakdown[damageType], s_format("x %.2f ^8(multiplier from %.2f%% chance to deal triple damage)", actor.Output["TripleDamageEffect"], actor.Output["TripleDamageChance"]))
-							}
-							if actor.Output["DoubleDamageEffect"] ~= 1 {
-								t_insert(breakdown[damageType], s_format("x %.2f ^8(multiplier from %.2f%% chance to deal double damage)", actor.Output["DoubleDamageEffect"], actor.Output["DoubleDamageChance"]))
-							}
-							if actor.Output["RuthlessBlowHitEffect"] ~= 1 {
-								t_insert(breakdown[damageType], s_format("x %.2f ^8(ruthless blow effect modifier)", actor.Output["RuthlessBlowHitEffect"]))
-							}
-							if actor.Output["FistOfWarHitEffect"] ~= 1 {
-								t_insert(breakdown[damageType], s_format("x %.2f ^8(fist of war effect modifier)", actor.Output["FistOfWarHitEffect"]))
-							}
-							if globalOutput.OffensiveWarcryEffect ~= 1  and not activeSkill.skillModList:Flag(nil, "Condition:WarcryMaxHit") {
-								t_insert(breakdown[damageType], s_format("x %.2f ^8(aggregated warcry exerted effect modifier)", globalOutput.OffensiveWarcryEffect))
-							}
-							if globalOutput.MaxOffensiveWarcryEffect ~= 1 and activeSkill.skillModList:Flag(nil, "Condition:WarcryMaxHit") {
-								t_insert(breakdown[damageType], s_format("x %.2f ^8(aggregated max warcry exerted effect modifier)", globalOutput.MaxOffensiveWarcryEffect))
-							}
+					if p == 2 && breakdown != nil {
+						breakdown.AddLine(string(damageType), "Hit damage:")
+						breakdown.AddLine(string(damageType), fmt.Sprintf("%.0f to %.0f ^8(total damage)", damageTypeHitMin, damageTypeHitMax))
+						if convMult != 1 {
+							breakdown.AddLine(string(damageType), fmt.Sprintf("x %g ^8(%g%% converted to other damage types)", convMult, (1-convMult)*100))
 						}
-					*/
+						if actor.Output["TripleDamageEffect"] != 1 {
+							breakdown.AddLine(string(damageType), fmt.Sprintf("x %.2f ^8(multiplier from %.2f%% chance to deal triple damage)", actor.Output["TripleDamageEffect"], actor.Output["TripleDamageChance"]))
+						}
+						if actor.Output["DoubleDamageEffect"] != 1 {
+							breakdown.AddLine(string(damageType), fmt.Sprintf("x %.2f ^8(multiplier from %.2f%% chance to deal double damage)", actor.Output["DoubleDamageEffect"], actor.Output["DoubleDamageChance"]))
+						}
+						if actor.Output["RuthlessBlowHitEffect"] != 1 {
+							breakdown.AddLine(string(damageType), fmt.Sprintf("x %.2f ^8(ruthless blow effect modifier)", actor.Output["RuthlessBlowHitEffect"]))
+						}
+						if actor.Output["FistOfWarHitEffect"] != 1 {
+							breakdown.AddLine(string(damageType), fmt.Sprintf("x %.2f ^8(fist of war effect modifier)", actor.Output["FistOfWarHitEffect"]))
+						}
+						if actor.Output["OffensiveWarcryEffect"] != 1 && !activeSkill.SkillModList.Flag(nil, "Condition:WarcryMaxHit") {
+							breakdown.AddLine(string(damageType), fmt.Sprintf("x %.2f ^8(aggregated warcry exerted effect modifier)", actor.Output["OffensiveWarcryEffect"]))
+						}
+						if actor.Output["MaxOffensiveWarcryEffect"] != 1 && activeSkill.SkillModList.Flag(nil, "Condition:WarcryMaxHit") {
+							breakdown.AddLine(string(damageType), fmt.Sprintf("x %.2f ^8(aggregated max warcry exerted effect modifier)", actor.Output["MaxOffensiveWarcryEffect"]))
+						}
+					}
 
 					if skillModList.Flag(nil, "Condition:WarcryMaxHit") {
 						pass.Output["AllMult"] = convMult * pass.Output["ScaledDamageEffect"] * pass.Output["RuthlessBlowHitEffect"] * pass.Output["FistOfWarHitEffect"] * actor.Output["MaxOffensiveWarcryEffect"]
@@ -2396,8 +2389,7 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 						// Apply enemy resistances and damage taken modifiers
 						resist := float64(0)
 						pen := float64(0)
-						// TODO Breakdown
-						// sourceRes := data.DamageType("")
+						sourceRes := data.DamageType("")
 						takenInc := enemyDB.Sum(mod.TypeIncrease, pass.Config, "DamageTaken", string(damageType)+"DamageTaken")
 						takenMore := enemyDB.More(pass.Config, "DamageTaken", string(damageType)+"DamageTaken")
 
@@ -2454,8 +2446,7 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 								} else if elementUsed == data.DamageTypeChaos {
 									pen = skillModList.Sum(mod.TypeBase, pass.Config, "ChaosPenetration")
 								}
-								// TODO Breakdown
-								// sourceRes = elementUsed
+								sourceRes = elementUsed
 							} else if damageType.IsElemental() {
 								resist = enemyDB.Sum(mod.TypeBase, nil, string(damageType)+"Resist")
 								if env.ModDB.Flag(nil, "Enemy"+string(damageType)+"ResistEqualToYours") {
@@ -2502,23 +2493,19 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 						if env.Mode == OutputModeCalcs {
 							pass.Output[string(damageType)+"EffMult"] = effMult
 						}
-						/*
-							TODO Breakdown
-							if pass == 2 and breakdown and (effMult ~= 1 or sourceRes ~= 0) and skillModList:Flag(cfg, isElemental[damageType] and "CannotElePenIgnore" or nil) {
-								t_insert(breakdown[damageType], s_format("x %.3f ^8(effective DPS modifier)", effMult))
-								breakdown[damageType+"EffMult"] = breakdown.effMult(damageType, resist, 0, takenInc, effMult, takenMore, sourceRes, useRes)
-							} else if pass == 2 and breakdown and (effMult ~= 1 or sourceRes ~= 0) {
-								t_insert(breakdown[damageType], s_format("x %.3f ^8(effective DPS modifier)", effMult))
-								breakdown[damageType+"EffMult"] = breakdown.effMult(damageType, resist, pen, takenInc, effMult, takenMore, sourceRes, useRes)
-							}
-						*/
-					}
-					/*
-						TODO Breakdown
-						if pass == 2 and breakdown {
-							t_insert(breakdown[damageType], s_format("= %d to %d", damageTypeHitMin, damageTypeHitMax))
+						if p == 2 && breakdown != nil && (effMult != 1 || sourceRes != "") && skillModList.Flag(pass.Config, utils.Ternary(isElemental[string(damageType)], "CannotElePenIgnore", "")) {
+							breakdown.AddLine(string(damageType), fmt.Sprintf("x %.3f ^8(effective DPS modifier)", effMult))
+							// TODO Breakdown
+							//breakdown[damageType+"EffMult"] = breakdown.effMult(damageType, resist, 0, takenInc, effMult, takenMore, sourceRes, useRes)
+						} else if p == 2 && breakdown != nil && (effMult != 1 || sourceRes != "") {
+							breakdown.AddLine(string(damageType), fmt.Sprintf("x %.3f ^8(effective DPS modifier)", effMult))
+							// TODO Breakdown
+							//breakdown[damageType+"EffMult"] = breakdown.effMult(damageType, resist, pen, takenInc, effMult, takenMore, sourceRes, useRes)
 						}
-					*/
+					}
+					if p == 2 && breakdown != nil {
+						breakdown.AddLine(string(damageType), fmt.Sprintf("= %.2f to %.2f", damageTypeHitMin, damageTypeHitMax))
+					}
 
 					// Beginning of Leech Calculation for this DamageType
 					if utils.HasTrue(skillFlags, SkillFlagMine) || utils.HasTrue(skillFlags, SkillFlagTrap) || utils.HasTrue(skillFlags, SkillFlagTotem) {
@@ -2572,14 +2559,9 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 						}
 					}
 				} else {
-					/*
-						TODO Breakdown
-						if breakdown {
-							breakdown[damageType] = {
-								"You can't deal "+damageType+" damage"
-							}
-						}
-					*/
+					if breakdown != nil {
+						breakdown.AddLine(string(damageType), string("You can't deal "+damageType+" damage"))
+					}
 				}
 
 				if p == 1 {
@@ -2588,10 +2570,8 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 					totalCritMin = totalCritMin + damageTypeHitMin
 					totalCritMax = totalCritMax + damageTypeHitMax
 				} else {
-					if env.Mode == "CALCS" {
-						pass.Output[string(damageType)+"Min"] = damageTypeHitMin
-						pass.Output[string(damageType)+"Max"] = damageTypeHitMax
-					}
+					pass.Output[string(damageType)+"Min"] = damageTypeHitMin
+					pass.Output[string(damageType)+"Max"] = damageTypeHitMax
 					pass.Output[string(damageType)+"HitAverage"] = damageTypeHitAvg
 					totalHitAvg = totalHitAvg + damageTypeHitAvg
 					totalHitMin = totalHitMin + damageTypeHitMin
@@ -2643,27 +2623,24 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 				enemyDB.conditions.HitByLightningDamage = actor.Output["LightningHitAverage"] > 0
 			}
 		*/
-		/*
-			highestType := "Physical"
-			TODO // For each damage type, calculate percentage of total damage. Also tracks the highest damage type and outputs a Condition:TypeIsHighestDamageType flag for whichever the highest type is
-			for _, damageType in ipairs(dmgTypeList) {
-				if actor.Output[damageType+"HitAverage"] > 0 {
-					portion := actor.Output[damageType+"HitAverage"] / totalHitAvg * 100
-					highestPortion := actor.Output[highestType+"HitAverage"] / totalHitAvg * 100
-					if portion > highestPortion {
-						highestType = damageType
-						highestPortion = portion
-					}
-					if breakdown {
-						t_insert(breakdown[damageType], s_format("Portion of total damage: %d%%", portion))
-					}
+		highestType := "Physical"
+		// For each damage type, calculate percentage of total damage. Also tracks the highest damage type and outputs a Condition:TypeIsHighestDamageType flag for whichever the highest type is
+		for _, damageType := range dmgTypes {
+			if actor.Output[damageType+"HitAverage"] > 0 {
+				portion := actor.Output[damageType+"HitAverage"] / totalHitAvg * 100
+				highestPortion := actor.Output[highestType+"HitAverage"] / totalHitAvg * 100
+				if portion > highestPortion {
+					highestType = damageType
+				}
+				if breakdown != nil {
+					breakdown.AddLine(damageType, fmt.Sprintf("Portion of total damage: %.2f%%", portion))
 				}
 			}
-			skillModList:NewMod("Condition:"+highestType+"IsHighestDamageType", "FLAG", true, "Config")
+		}
+		skillModList.AddMod(mod.NewFlag("Condition:"+highestType+"IsHighestDamageType", true).Source("Config"))
 
-			hitRate := actor.Output["HitChance"] / 100 * (globalOutput.HitSpeed or globalOutput.Speed) * (skillData.dpsMultiplier or 1)
-		*/
 		/*
+			hitRate := actor.Output["HitChance"] / 100 * (globalOutput.HitSpeed or globalOutput.Speed) * (skillData.dpsMultiplier or 1)
 			TODO // Calculate leech
 			local function getLeechInstances(amount, total)
 				if total == 0 {
@@ -2721,22 +2698,22 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 				if actor.Output["CritEffect"] ~= 1 {
 					breakdown.AverageHit = { }
 					if skillModList:Flag(skillCfg, "LuckyHits") {
-						t_insert(breakdown.AverageHit, s_format("(1/3) x %d + (2/3) x %d = %.1f ^8(average from non-crits)", totalHitMin, totalHitMax, totalHitAvg))
+						breakdown.AddLine("AverageHit", fmt.Sprintf("(1/3) x %d + (2/3) x %d = %.1f ^8(average from non-crits)", totalHitMin, totalHitMax, totalHitAvg))
 					}
 					if skillModList:Flag(skillCfg, "CritLucky") or skillModList:Flag(skillCfg, "LuckyHits") {
-						t_insert(breakdown.AverageHit, s_format("(1/3) x %d + (2/3) x %d = %.1f ^8(average from crits)", totalCritMin, totalCritMax, totalCritAvg))
+						breakdown.AddLine("AverageHit", fmt.Sprintf("(1/3) x %d + (2/3) x %d = %.1f ^8(average from crits)", totalCritMin, totalCritMax, totalCritAvg))
 						t_insert(breakdown.AverageHit, "")
 					}
-					t_insert(breakdown.AverageHit, s_format("%.1f x (1 - %.4f) ^8(damage from non-crits)", totalHitAvg, actor.Output["CritChance"] / 100))
-					t_insert(breakdown.AverageHit, s_format("+ %.1f x %.4f ^8(damage from crits)", totalCritAvg, actor.Output["CritChance"] / 100))
-					t_insert(breakdown.AverageHit, s_format("= %.1f", actor.Output["AverageHit"]))
+					breakdown.AddLine("AverageHit", fmt.Sprintf("%.1f x (1 - %.4f) ^8(damage from non-crits)", totalHitAvg, actor.Output["CritChance"] / 100))
+					breakdown.AddLine("AverageHit", fmt.Sprintf("+ %.1f x %.4f ^8(damage from crits)", totalCritAvg, actor.Output["CritChance"] / 100))
+					breakdown.AddLine("AverageHit", fmt.Sprintf("= %.1f", actor.Output["AverageHit"]))
 				}
 				if isAttack {
 					breakdown.AverageDamage = { }
-					t_insert(breakdown.AverageDamage, s_format("%s:", pass.label))
-					t_insert(breakdown.AverageDamage, s_format("%.1f ^8(average hit)", actor.Output["AverageHit"]))
-					t_insert(breakdown.AverageDamage, s_format("x %.2f ^8(chance to hit)", actor.Output["HitChance"] / 100))
-					t_insert(breakdown.AverageDamage, s_format("= %.1f", actor.Output["AverageDamage"]))
+					breakdown.AddLine("AverageDamage", fmt.Sprintf("%s:", pass.label))
+					breakdown.AddLine("AverageDamage", fmt.Sprintf("%.1f ^8(average hit)", actor.Output["AverageHit"]))
+					breakdown.AddLine("AverageDamage", fmt.Sprintf("x %.2f ^8(chance to hit)", actor.Output["HitChance"] / 100))
+					breakdown.AddLine("AverageDamage", fmt.Sprintf("= %.1f", actor.Output["AverageDamage"]))
 				}
 			}
 		*/
@@ -2773,13 +2750,13 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 			if skillFlags.bothWeaponAttack {
 				if breakdown {
 					breakdown.AverageDamage = { }
-					t_insert(breakdown.AverageDamage, "Both weapons:")
+					breakdown.AddLine("AverageDamage", "Both weapons:")
 					if skillData.doubleHitsWhenDualWielding {
-						t_insert(breakdown.AverageDamage, s_format("%.1f + %.1f ^8(skill hits with both weapons at once)", actor.Output["MainHand"].AverageDamage, actor.Output["OffHand"].AverageDamage))
+						breakdown.AddLine("AverageDamage", fmt.Sprintf("%.1f + %.1f ^8(skill hits with both weapons at once)", actor.Output["MainHand"].AverageDamage, actor.Output["OffHand"].AverageDamage))
 					} else {
-						t_insert(breakdown.AverageDamage, s_format("(%.1f + %.1f) / 2 ^8(skill alternates weapons)", actor.Output["MainHand"].AverageDamage, actor.Output["OffHand"].AverageDamage))
+						breakdown.AddLine("AverageDamage", fmt.Sprintf("(%.1f + %.1f) / 2 ^8(skill alternates weapons)", actor.Output["MainHand"].AverageDamage, actor.Output["OffHand"].AverageDamage))
 					}
-					t_insert(breakdown.AverageDamage, s_format("= %.1f", actor.Output["AverageDamage"]))
+					breakdown.AddLine("AverageDamage", fmt.Sprintf("= %.1f", actor.Output["AverageDamage"]))
 				}
 			}
 		*/
@@ -2815,12 +2792,12 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 				}
 			}
 			if skillData.dpsMultiplier {
-				t_insert(breakdown.TotalDPS, s_format("x %g ^8(DPS multiplier for this skill)", skillData.dpsMultiplier))
+				breakdown.AddLine("TotalDPS", fmt.Sprintf("x %g ^8(DPS multiplier for this skill)", skillData.dpsMultiplier))
 			}
 			if quantityMultiplier > 1 {
-				t_insert(breakdown.TotalDPS, s_format("x %g ^8(quantity multiplier for this skill)", quantityMultiplier))
+				breakdown.AddLine("TotalDPS", fmt.Sprintf("x %g ^8(quantity multiplier for this skill)", quantityMultiplier))
 			}
-			t_insert(breakdown.TotalDPS, s_format("= %.1f", actor.Output["TotalDPS"]))
+			breakdown.AddLine("TotalDPS", fmt.Sprintf("= %.1f", actor.Output["TotalDPS"]))
 		}
 	*/
 	/*
@@ -3252,20 +3229,20 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 							breakdown.BleedDotMulti = breakdown.critDot(actor.Output["BleedDotMulti"], actor.Output["CritBleedDotMulti"], totalFromHit, totalFromCrit)
 							actor.Output["BleedDotMulti"] = (actor.Output["BleedDotMulti"] * totalFromHit) + (actor.Output["CritBleedDotMulti"] * totalFromCrit)
 						}
-						t_insert(breakdown.BleedDPS, s_format("x %.2f ^8(bleed deals %d%% per second)", basePercent/100, basePercent))
+						breakdown.AddLine("BleedDPS", fmt.Sprintf("x %.2f ^8(bleed deals %d%% per second)", basePercent/100, basePercent))
 						if effectMod ~= 1 {
-							t_insert(breakdown.BleedDPS, s_format("x %.2f ^8(ailment effect modifier)", effectMod))
+							breakdown.AddLine("BleedDPS", fmt.Sprintf("x %.2f ^8(ailment effect modifier)", effectMod))
 						}
 						if actor.Output["RuthlessBlowBleedEffect"] ~= 1 {
-							t_insert(breakdown.BleedDPS, s_format("x %.2f ^8(ruthless blow effect modifier)", actor.Output["RuthlessBlowBleedEffect"]))
+							breakdown.AddLine("BleedDPS", fmt.Sprintf("x %.2f ^8(ruthless blow effect modifier)", actor.Output["RuthlessBlowBleedEffect"]))
 						}
 						if actor.Output["FistOfWarAilmentEffect"] ~= 1 {
-							t_insert(breakdown.BleedDPS, s_format("x %.2f ^8(fist of war effect modifier)", actor.Output["FistOfWarAilmentEffect"]))
+							breakdown.AddLine("BleedDPS", fmt.Sprintf("x %.2f ^8(fist of war effect modifier)", actor.Output["FistOfWarAilmentEffect"]))
 						}
 						if globalOutput.AilmentWarcryEffect > 1 {
-							t_insert(breakdown.BleedDPS, s_format("x %.2f ^8(combined ailment warcry effect modifier)", globalOutput.AilmentWarcryEffect))
+							breakdown.AddLine("BleedDPS", fmt.Sprintf("x %.2f ^8(combined ailment warcry effect modifier)", globalOutput.AilmentWarcryEffect))
 						}
-						t_insert(breakdown.BleedDPS, s_format("= %.1f", baseVal))
+						breakdown.AddLine("BleedDPS", fmt.Sprintf("= %.1f", baseVal))
 						breakdown.multiChain(breakdown.BleedDPS, {
 							label = "Bleed DPS:",
 							base = s_format("%.1f ^8(total damage per second)", baseVal),
@@ -3423,8 +3400,8 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 							breakdown.PoisonDotMulti = breakdown.critDot(actor.Output["PoisonDotMulti"], actor.Output["CritPoisonDotMulti"], totalFromHit, totalFromCrit)
 							actor.Output["PoisonDotMulti"] = (actor.Output["PoisonDotMulti"] * totalFromHit) + (actor.Output["CritPoisonDotMulti"] * totalFromCrit)
 						}
-						t_insert(breakdown.PoisonDPS, "x 0.30 ^8(poison deals 30% per second)")
-						t_insert(breakdown.PoisonDPS, s_format("= %.1f", baseVal, 1))
+						breakdown.AddLine("PoisonDPS", "x 0.30 ^8(poison deals 30% per second)")
+						breakdown.AddLine("PoisonDPS", fmt.Sprintf("= %.1f", baseVal, 1))
 						breakdown.multiChain(breakdown.PoisonDPS, {
 							label = "Poison DPS:",
 							base = s_format("%.1f ^8(total damage per second)", baseVal),
@@ -3452,9 +3429,9 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 						if isAttack {
 							t_insert(breakdown.PoisonDamage, pass.label+":")
 						}
-						t_insert(breakdown.PoisonDamage, s_format("%.1f ^8(damage per second)", actor.Output["PoisonDPS"]))
-						t_insert(breakdown.PoisonDamage, s_format("x %.2fs ^8(poison duration)", globalOutput.PoisonDuration))
-						t_insert(breakdown.PoisonDamage, s_format("= %.1f ^8damage per poison stack", actor.Output["PoisonDamage"]))
+						breakdown.AddLine("PoisonDamage", fmt.Sprintf("%.1f ^8(damage per second)", actor.Output["PoisonDPS"]))
+						breakdown.AddLine("PoisonDamage", fmt.Sprintf("x %.2fs ^8(poison duration)", globalOutput.PoisonDuration))
+						breakdown.AddLine("PoisonDamage", fmt.Sprintf("= %.1f ^8damage per poison stack", actor.Output["PoisonDamage"]))
 						if not skillData.ShowAverage {
 							breakdown.TotalPoisonStacks = { }
 							if isAttack {
@@ -3645,8 +3622,8 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 					}
 
 					if breakdown {
-						t_insert(breakdown.IgniteDPS, "x 0.9 ^8(ignite deals 90% per second)")
-						t_insert(breakdown.IgniteDPS, s_format("= %.1f", baseVal, 1))
+						breakdown.AddLine("IgniteDPS", "x 0.9 ^8(ignite deals 90% per second)")
+						breakdown.AddLine("IgniteDPS", fmt.Sprintf("= %.1f", baseVal, 1))
 						breakdown.multiChain(breakdown.IgniteDPS, {
 							label = "Ignite DPS:",
 							base = s_format("%.1f ^8(total damage per second)", baseVal),
@@ -3669,9 +3646,9 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 							if isAttack {
 								t_insert(breakdown.IgniteDamage, pass.label+":")
 							}
-							t_insert(breakdown.IgniteDamage, s_format("%.1f ^8(damage per second)", actor.Output["IgniteDPS"]))
-							t_insert(breakdown.IgniteDamage, s_format("x %.2fs ^8(ignite duration)", globalOutput.IgniteDuration))
-							t_insert(breakdown.IgniteDamage, s_format("= %.1f ^8damage per ignite stack", actor.Output["IgniteDamage"]))
+							breakdown.AddLine("IgniteDamage", fmt.Sprintf("%.1f ^8(damage per second)", actor.Output["IgniteDPS"]))
+							breakdown.AddLine("IgniteDamage", fmt.Sprintf("x %.2fs ^8(ignite duration)", globalOutput.IgniteDuration))
+							breakdown.AddLine("IgniteDamage", fmt.Sprintf("= %.1f ^8damage per ignite stack", actor.Output["IgniteDamage"]))
 						}
 						if globalOutput.IgniteDuration ~= data.misc.IgniteDurationBase {
 							globalBreakdown.IgniteDuration = {
@@ -3765,7 +3742,7 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 					skillFlags.chill = true
 					actor.Output["FreezeDurationMod"] = 1 + skillModList:Sum(mod.TypeIncrease, cfg, "EnemyFreezeDuration") / 100 + enemyDB:Sum(mod.TypeIncrease, nil, "SelfFreezeDuration") / 100
 					if breakdown {
-						t_insert(breakdown.FreezeDPS, s_format("For freeze to apply for the minimum of 0.3 seconds, target must have no more than %.0f Ailment Threshold.", baseVal * 20 * actor.Output["FreezeDurationMod"]))
+						breakdown.AddLine("FreezeDPS", fmt.Sprintf("For freeze to apply for the minimum of 0.3 seconds, target must have no more than %.0f Ailment Threshold.", baseVal * 20 * actor.Output["FreezeDurationMod"]))
 						t_insert(breakdown.FreezeDPS, s_format("^8(Ailment Threshold is about equal to Life except on bosses where it is about half of their life)"))
 					}
 				}
@@ -3846,17 +3823,17 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 							if isAttack {
 								t_insert(breakdown[ailment+"Duration"], pass.label+":")
 							}
-							t_insert(breakdown[ailment+"Duration"], s_format("%.2fs ^8(base duration)", ailmentData[ailment].duration))
+							breakdown.AddLine(ailment+"Duration", fmt.Sprintf("%.2fs ^8(base duration)", ailmentData[ailment].duration))
 							if incDur ~= 0 {
-								t_insert(breakdown[ailment+"Duration"], s_format("x %.2f ^8(increased/reduced duration)", 1 + incDur / 100))
+								breakdown.AddLine(ailment+"Duration", fmt.Sprintf("x %.2f ^8(increased/reduced duration)", 1 + incDur / 100))
 							}
 							if moreDur ~= 1 {
-								t_insert(breakdown[ailment+"Duration"], s_format("x %.2f ^8(more/less duration)", moreDur))
+								breakdown.AddLine(ailment+"Duration", fmt.Sprintf("x %.2f ^8(more/less duration)", moreDur))
 							}
 							if debuffDurationMult ~= 1 {
-								t_insert(breakdown[ailment+"Duration"], s_format("/ %.2f ^8(debuff expires slower/faster)", 1 / debuffDurationMult))
+								breakdown.AddLine(ailment+"Duration", fmt.Sprintf("/ %.2f ^8(debuff expires slower/faster)", 1 / debuffDurationMult))
 							}
-							t_insert(breakdown[ailment+"Duration"], s_format("= %.2fs", output[ailment+"Duration"]))
+							breakdown.AddLine(ailment+"Duration", fmt.Sprintf("= %.2fs", output[ailment+"Duration"]))
 						}
 					}
 				}
@@ -3892,12 +3869,12 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 						s_format("%.2fs ^8(base duration)", base),
 					}
 					if incDur ~= 0 {
-						t_insert(breakdown.EnemyStunDuration, s_format("x %.2f ^8(increased/reduced stun duration)", 1 + incDur/100))
+						breakdown.AddLine("EnemyStunDuration", fmt.Sprintf("x %.2f ^8(increased/reduced stun duration)", 1 + incDur/100))
 					}
 					if incRecov ~= 0 {
-						t_insert(breakdown.EnemyStunDuration, s_format("/ %.2f ^8(increased/reduced enemy stun recovery)", 1 + incRecov/100))
+						breakdown.AddLine("EnemyStunDuration", fmt.Sprintf("/ %.2f ^8(increased/reduced enemy stun recovery)", 1 + incRecov/100))
 					}
-					t_insert(breakdown.EnemyStunDuration, s_format("= %.2fs", actor.Output["EnemyStunDuration"]))
+					breakdown.AddLine("EnemyStunDuration", fmt.Sprintf("= %.2fs", actor.Output["EnemyStunDuration"]))
 				}
 			}
 		*/
@@ -3933,16 +3910,16 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 
 				if breakdown {
 					breakdown.ImpaleStoredDamage = {}
-					t_insert(breakdown.ImpaleStoredDamage, "10% ^8(base value)")
-					t_insert(breakdown.ImpaleStoredDamage, s_format("x %.2f ^8(increased effectiveness)", storedExpectedDamageModifier))
-					t_insert(breakdown.ImpaleStoredDamage, s_format("= %.1f%%", actor.Output["ImpaleStoredDamage"]))
+					breakdown.AddLine("ImpaleStoredDamage", "10% ^8(base value)")
+					breakdown.AddLine("ImpaleStoredDamage", fmt.Sprintf("x %.2f ^8(increased effectiveness)", storedExpectedDamageModifier))
+					breakdown.AddLine("ImpaleStoredDamage", fmt.Sprintf("= %.1f%%", actor.Output["ImpaleStoredDamage"]))
 
 					breakdown.ImpaleModifier = {}
-					t_insert(breakdown.ImpaleModifier, s_format("%d ^8(number of stacks, can be overridden in the Configuration tab)", impaleStacks))
-					t_insert(breakdown.ImpaleModifier, s_format("x %.3f ^8(stored damage)", impaleStoredDamage))
-					t_insert(breakdown.ImpaleModifier, s_format("x %.2f ^8(impale chance)", impaleChance))
-					t_insert(breakdown.ImpaleModifier, s_format("x %.2f ^8(impale enemy physical damage reduction)", (1 - impaleResist / 100)))
-					t_insert(breakdown.ImpaleModifier, s_format("= %.3f ^8(impale damage multiplier)", impaleDMGModifier))
+					breakdown.AddLine("ImpaleModifier", fmt.Sprintf("%d ^8(number of stacks, can be overridden in the Configuration tab)", impaleStacks))
+					breakdown.AddLine("ImpaleModifier", fmt.Sprintf("x %.3f ^8(stored damage)", impaleStoredDamage))
+					breakdown.AddLine("ImpaleModifier", fmt.Sprintf("x %.2f ^8(impale chance)", impaleChance))
+					breakdown.AddLine("ImpaleModifier", fmt.Sprintf("x %.2f ^8(impale enemy physical damage reduction)", (1 - impaleResist / 100)))
+					breakdown.AddLine("ImpaleModifier", fmt.Sprintf("= %.3f ^8(impale damage multiplier)", impaleDMGModifier))
 				}
 			}
 		*/
@@ -4038,9 +4015,9 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 						s_format("%.2fs ^8(base duration)", 8)
 					}
 					if debuffDurationMult ~= 1 {
-						t_insert(breakdown.DecayDuration, s_format("/ %.2f ^8(debuff expires slower/faster)", 1 / debuffDurationMult))
+						breakdown.AddLine("DecayDuration", fmt.Sprintf("/ %.2f ^8(debuff expires slower/faster)", 1 / debuffDurationMult))
 					}
-					t_insert(breakdown.DecayDuration, s_format("= %.2fs", actor.Output["DecayDuration"]))
+					breakdown.AddLine("DecayDuration", fmt.Sprintf("= %.2fs", actor.Output["DecayDuration"]))
 				}
 			}
 		}
@@ -4156,12 +4133,12 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 					s_format("x %.2f ^8(skill duration)", actor.Output["Duration"]),
 				}
 				if skillData.dpsMultiplier {
-					t_insert(breakdown.TotalDot, s_format("x %g ^8(DPS multiplier for this skill)", skillData.dpsMultiplier))
+					breakdown.AddLine("TotalDot", fmt.Sprintf("x %g ^8(DPS multiplier for this skill)", skillData.dpsMultiplier))
 				}
 				if quantityMultiplier > 1 {
-					t_insert(breakdown.TotalDot, s_format("x %g ^8(quantity multiplier for this skill)", quantityMultiplier))
+					breakdown.AddLine("TotalDot", fmt.Sprintf("x %g ^8(quantity multiplier for this skill)", quantityMultiplier))
 				}
-				t_insert(breakdown.TotalDot, s_format("= %.1f", actor.Output["TotalDot"]))
+				breakdown.AddLine("TotalDot", fmt.Sprintf("= %.1f", actor.Output["TotalDot"]))
 			}
 		} else {
 			actor.Output["TotalDot"] = actor.Output["TotalDotInstance"]
@@ -4330,19 +4307,19 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 			TODO Breakdown
 			if breakdown {
 				breakdown.ImpaleDPS = {}
-				t_insert(breakdown.ImpaleDPS, s_format("%.2f ^8(average physical hit)", actor.Output["ImpaleHit"]))
-				t_insert(breakdown.ImpaleDPS, s_format("x %.2f ^8(chance to hit)", actor.Output["HitChance"] / 100))
+				breakdown.AddLine("ImpaleDPS", fmt.Sprintf("%.2f ^8(average physical hit)", actor.Output["ImpaleHit"]))
+				breakdown.AddLine("ImpaleDPS", fmt.Sprintf("x %.2f ^8(chance to hit)", actor.Output["HitChance"] / 100))
 				if skillFlags.notAverage {
 					t_insert(breakdown.ImpaleDPS, actor.Output["HitSpeed"] and s_format("x %.2f ^8(hit rate)", actor.Output["HitSpeed"]) or s_format("x %.2f ^8(%s rate)", actor.Output["Speed"], skillFlags.attack and "attack" or "cast"))
 				}
 				t_insert(breakdown.ImpaleDPS, s_format("x %.2f ^8(impale damage multiplier)", ((actor.Output["ImpaleModifier"] or 1) - 1)))
 				if skillData.dpsMultiplier {
-					t_insert(breakdown.ImpaleDPS, s_format("x %g ^8(dps multiplier for this skill)", skillData.dpsMultiplier))
+					breakdown.AddLine("ImpaleDPS", fmt.Sprintf("x %g ^8(dps multiplier for this skill)", skillData.dpsMultiplier))
 				}
 				if quantityMultiplier > 1 {
-					t_insert(breakdown.ImpaleDPS, s_format("x %g ^8(quantity multiplier for this skill)", quantityMultiplier))
+					breakdown.AddLine("ImpaleDPS", fmt.Sprintf("x %g ^8(quantity multiplier for this skill)", quantityMultiplier))
 				}
-				t_insert(breakdown.ImpaleDPS, s_format("= %.1f", actor.Output["ImpaleDPS"]))
+				breakdown.AddLine("ImpaleDPS", fmt.Sprintf("= %.1f", actor.Output["ImpaleDPS"]))
 			}
 		*/
 	}

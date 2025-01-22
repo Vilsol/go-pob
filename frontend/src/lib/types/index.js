@@ -27,7 +27,8 @@ export const initializeCrystalline = () => {
     CalculatePrunableNodes: globalThis['go']['go-pob']['exposition']['CalculatePrunableNodes'],
     GetRawTree: globalThis['go']['go-pob']['exposition']['GetRawTree'],
     GetSkillGems: globalThis['go']['go-pob']['exposition']['GetSkillGems'],
-    GetStatByIndex: globalThis['go']['go-pob']['exposition']['GetStatByIndex']
+    GetStatByIndex: globalThis['go']['go-pob']['exposition']['GetStatByIndex'],
+    SetCalcTabElements: globalThis['go']['go-pob']['exposition']['SetCalcTabElements']
   };
   pob = {
     BuildInfo: globalThis['go']['go-pob']['pob']['BuildInfo'],

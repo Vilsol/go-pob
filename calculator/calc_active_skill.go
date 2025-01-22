@@ -159,10 +159,10 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 		/*
 			TODO Handle multipart skills
 			if env.mode == "CALCS" and activeSkill == env.player.mainSkill {
-				activeEffect.srcInstance.skillPartCalcs = m_min(#activeGemParts, activeEffect.srcInstance.skillPartCalcs or 1)
+				activeEffect.srcInstance.skillPartCalcs = min(#activeGemParts, activeEffect.srcInstance.skillPartCalcs or 1)
 				activeSkill.skillPart = activeEffect.srcInstance.skillPartCalcs
 			} else {
-				activeEffect.srcInstance.skillPart = m_min(#activeGemParts, activeEffect.srcInstance.skillPart or 1)
+				activeEffect.srcInstance.skillPart = min(#activeGemParts, activeEffect.srcInstance.skillPart or 1)
 				activeSkill.skillPart = activeEffect.srcInstance.skillPart
 			}
 			part := activeGemParts[activeSkill.skillPart]
@@ -511,7 +511,7 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 			activeSkill.activeMineCount = (env.mode == "CALCS" and activeEffect.srcInstance.skillMineCountCalcs) or (env.mode ~= "CALCS" and activeEffect.srcInstance.skillMineCount)
 			if activeSkill.activeMineCount and activeSkill.activeMineCount > 0 {
 				skillModList:NewMod("Multiplier:ActiveMineCount", "BASE", activeSkill.activeMineCount, "Base")
-				env.enemy.modDB.multipliers["ActiveMineCount"] = m_max(activeSkill.activeMineCount or 0, env.enemy.modDB.multipliers["ActiveMineCount"] or 0)
+				env.enemy.modDB.multipliers["ActiveMineCount"] = max(activeSkill.activeMineCount or 0, env.enemy.modDB.multipliers["ActiveMineCount"] or 0)
 			}
 		}
 
@@ -521,9 +521,9 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 			limit := skillModList:Sum(mod.TypeBase, activeSkill.skillCfg, "Multiplier:"+activeGrantedEffect.name:gsub("%s+", "")+"MaxStages")
 			if limit > 0 {
 				if activeSkill.activeStageCount and activeSkill.activeStageCount > 0 {
-					skillModList:NewMod("Multiplier:"+activeGrantedEffect.name:gsub("%s+", "")+"Stage", "BASE", m_min(limit, activeSkill.activeStageCount), "Base")
+					skillModList:NewMod("Multiplier:"+activeGrantedEffect.name:gsub("%s+", "")+"Stage", "BASE", min(limit, activeSkill.activeStageCount), "Base")
 					activeSkill.activeStageCount = (activeSkill.activeStageCount or 0) - 1
-					skillModList:NewMod("Multiplier:"+activeGrantedEffect.name:gsub("%s+", "")+"StageAfterFirst", "BASE", m_min(limit - 1, activeSkill.activeStageCount), "Base")
+					skillModList:NewMod("Multiplier:"+activeGrantedEffect.name:gsub("%s+", "")+"StageAfterFirst", "BASE", min(limit - 1, activeSkill.activeStageCount), "Base")
 				}
 			}
 		}
@@ -579,7 +579,7 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 				minion.minionData = env.data.minions[minionType]
 				minion.level = activeSkill.skillData.minionLevelIsEnemyLevel and env.enemyLevel or activeSkill.skillData.minionLevel or activeEffect.grantedEffectLevel.levelRequirement
 				// fix minion level between 1 and 100
-				minion.level = m_min(m_max(minion.level,1),100)
+				minion.level = min(max(minion.level,1),100)
 				minion.itemList = { }
 				minion.uses = activeGrantedEffect.minionUses
 				minion.lifeTable = isSpectre and env.data.monsterLifeTable or env.data.monsterAllyLifeTable
@@ -758,4 +758,66 @@ func getWeaponFlags(env *Environment, weaponData *SkillData, weaponTypes [][]dat
 	}
 
 	return flags, info
+}
+
+// TODO Initialise the active skill's minion skills
+func CalcCreateMinionSkills(env *Environment, activeSkill *ActiveSkill) {
+	/*
+		local activeEffect = activeSkill.activeEffect
+		local minion = activeSkill.minion
+		local minionData = minion.minionData
+	*/
+	/*
+		minion.activeSkillList = { }
+		skillIdList := { }
+		for _, skillId in ipairs(minionData.skillList) {
+			if env.data.skills[skillId] {
+				t_insert(skillIdList, skillId)
+			}
+		}
+		for _, skill in ipairs(activeSkill.skillModList:List(activeSkill.skillCfg, "ExtraMinionSkill")) {
+			if not skill.minionList or isValueInArray(skill.minionList, minion.type) {
+				t_insert(skillIdList, skill.skillId)
+			}
+		}
+		if #skillIdList == 0 {
+			// Not ideal, but let's avoid horrible crashes if a spectre has no skills for some reason
+			t_insert(skillIdList, "Melee")
+		}
+		for _, skillId in ipairs(skillIdList) {
+			activeEffect := {
+				grantedEffect = env.data.skills[skillId],
+				level = 1,
+				quality = 0,
+			}
+			if #activeEffect.grantedEffect.levels > 1 {
+				for level, levelData in ipairs(activeEffect.grantedEffect.levels) {
+					if levelData.levelRequirement > minion.level {
+						break
+					} else {
+						activeEffect.level = level
+					}
+				}
+			}
+			minionSkill := calcs.createActiveSkill(activeEffect, activeSkill.supportList, minion, nil, activeSkill)
+			calcs.buildActiveSkillModList(env, minionSkill)
+			minionSkill.skillFlags.minion = true
+			minionSkill.skillFlags.minionSkill = true
+			minionSkill.skillFlags.haveMinion = true
+			minionSkill.skillFlags.spectre = activeSkill.skillFlags.spectre
+			minionSkill.skillData.damageEffectiveness = 1 + (activeSkill.skillData.minionDamageEffectiveness or 0) / 100
+			t_insert(minion.activeSkillList, minionSkill)
+		}
+		local skillIndex
+		if env.mode == "CALCS" {
+			skillIndex = max(min(activeEffect.srcInstance.skillMinionSkillCalcs or 1, #minion.activeSkillList), 1)
+			activeEffect.srcInstance.skillMinionSkillCalcs = skillIndex
+		} else {
+			skillIndex = max(min(activeEffect.srcInstance.skillMinionSkill or 1, #minion.activeSkillList), 1)
+			if env.mode == "MAIN" {
+				activeEffect.srcInstance.skillMinionSkill = skillIndex
+			}
+		}
+		minion.mainSkill = minion.activeSkillList[skillIndex]
+	*/
 }
