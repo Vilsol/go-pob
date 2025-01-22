@@ -150,9 +150,6 @@
       </div>
     {/each}
   </div>
-  <div>
-    <pre>{JSON.stringify($outputs?.Calcs, null, 4)}</pre>
-  </div>
 </div>
 
 <div class="absolute pointer-events-none border-4 bg-black" style={tooltipStyle} bind:this={tooltipElement}>
