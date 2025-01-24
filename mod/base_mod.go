@@ -19,6 +19,11 @@ func (m *BaseMod) Name() string {
 	return m.ModName
 }
 
+func (m *BaseMod) SetName(name string) Mod {
+	m.ModName = name
+	return m
+}
+
 func (m *BaseMod) Type() Type {
 	return m.ModType
 }
@@ -65,6 +70,11 @@ func (m *BaseMod) Tags() []Tag {
 
 func (m *BaseMod) Value() *ModValueMulti {
 	return m.ModValue
+}
+
+func (m *BaseMod) SetValue(value *ModValueMulti) Mod {
+	m.ModValue = value
+	return m
 }
 
 func (m *BaseMod) Clone() Mod {

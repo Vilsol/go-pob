@@ -66,15 +66,40 @@ export declare namespace calculator {
     Label: string;
     Key: string;
   }
+  interface BMultiChain {
+    Base: string;
+    Label: string;
+    Total: string;
+    Items?: Array<calculator.BMultiChainItem>;
+  }
+  interface BMultiChainItem {
+    Format: string;
+    Value: number;
+  }
+  interface BSlot {
+    Base: number;
+    Inc: string;
+    More: string;
+    Total: string;
+    Source: string;
+    SourceName?: string;
+    Item?: calculator.ItemData;
+  }
   interface Breakdown {
     ModDB?: moddb.ModDB;
     Output?: Record<string, number>;
     Actor?: calculator.Actor;
     Data?: Record<string, calculator.Entry | undefined>;
     AddCol(key: string, cols?: Array<calculator.BCol>): void;
-    AddLine(key: string, s: string): void;
+    AddLine(key: string, s?: Array<string>): void;
     AddRow(key: string, rows?: Array<Record<string, string> | undefined>): void;
+    AddSlot(key: string, slot?: Array<calculator.BSlot>): void;
+    EffMult(key: string, damageType: string, resist: number, pen: number, taken: number, mult: number, takenMore: number, sourceRes: string, useRes: boolean): void;
     GetData(): (Record<string, calculator.Entry | undefined> | undefined);
+    Mod(key: string, modList?: unknown, cfg?: moddb.ListCfg, names?: Array<string>): void;
+    MultiChain(key: string, chains?: Array<calculator.BMultiChain>): void;
+    Simple(extraBasePtr?: number, cfg?: moddb.ListCfg, total: number, key: string): void;
+    Slot(source: string, sourceName?: string, cfg?: moddb.ListCfg, base: number, total?: number, keys?: Array<string>): void;
   }
   interface Calculator {
     PoB?: pob.PathOfBuilding;
@@ -95,6 +120,7 @@ export declare namespace calculator {
     Columns?: Array<calculator.BCol>;
     Rows?: Array<Record<string, string> | undefined>;
     Lines?: Array<string>;
+    Slots?: Array<calculator.BSlot>;
   }
   interface Environment {
     Cache?: calculator.EnvironmentCache;

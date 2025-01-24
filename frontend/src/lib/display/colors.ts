@@ -72,7 +72,20 @@ export const colorCodes = {
 
 export const colorCodesX = Object.fromEntries(Object.entries(colorCodes).map(([k, v]) => [k, '^' + v])) as typeof colorCodes;
 
-const colorRegex = new RegExp(/\^#([0-9A-F]{6})?/g);
+const singleDigitCodes: Record<string, string> = {
+  ['0']: '#000000',
+  ['1']: '#FF0000',
+  ['2']: '#00FF00',
+  ['3']: '#0000FF',
+  ['4']: '#FFFF00',
+  ['5']: '#FF00FF',
+  ['6']: '#00FFFF',
+  ['7']: '#FFFFFF',
+  ['8']: '#B2B2B2',
+  ['9']: '#666666'
+};
+
+const colorRegex = new RegExp(/\^(?:#([0-9A-F]{6})?|([0-9]))/g);
 
 export const formatColors = (s: string): string => {
   let result = '';
@@ -86,6 +99,9 @@ export const formatColors = (s: string): string => {
     if (match[1]) {
       openCount++;
       result += `<span style='color: #${match[1]}'>`;
+    } else if (match[2]) {
+      openCount++;
+      result += `<span style='color: ${singleDigitCodes[match[2]]}'>`;
     } else {
       if (openCount > 0) {
         openCount--;

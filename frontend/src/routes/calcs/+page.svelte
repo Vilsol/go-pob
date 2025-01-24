@@ -96,7 +96,6 @@
           }
         }
       }
-      console.log(dbElements);
 
       void syncWrap?.setCalcTabElements(dbElements);
     });
@@ -160,7 +159,7 @@
         {#if (hoveredData.Lines?.length || 0) > 0}
           <div class="p-2 flex flex-col gap-1">
             {#each hoveredData.Lines || [] as line}
-              <span>{line}</span>
+              <ColoredText text={line} />
             {/each}
           </div>
         {/if}

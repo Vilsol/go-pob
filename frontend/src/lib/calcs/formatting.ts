@@ -7,7 +7,6 @@ const formatNumber = (numValue: number | string): string => {
   }
 
   if (isNaN(numValue)) {
-    console.log('invalid numeric number', numValue);
     return 'ERROR: ' + numValue.toString();
   }
 

@@ -2,6 +2,7 @@ package mod
 
 type Mod interface {
 	Name() string
+	SetName(name string) Mod
 	Type() Type
 	Source(source Source) Mod
 	Flag(flag MFlag) Mod
@@ -12,6 +13,7 @@ type Mod interface {
 	GetSource() Source
 	Tags() []Tag
 	Value() *ModValueMulti
+	SetValue(value *ModValueMulti) Mod
 	Clone() Mod
 	ClearTags()
 }

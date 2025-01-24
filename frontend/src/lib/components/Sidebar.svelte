@@ -178,9 +178,6 @@
       activeSkillSet = v;
     }).catch(logError);
   });
-  $effect(() => {
-    console.log('ACTIVE:', activeSkillSet);
-  });
 
   let socketGroupList = $state<string[]>([]);
   $effect(() => {

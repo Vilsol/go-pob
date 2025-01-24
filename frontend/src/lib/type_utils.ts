@@ -22,7 +22,18 @@ export const dump = <T>(obj: T): T => {
     return obj;
   }
 
-  const out = structuredClone(obj);
+  let out: T;
+  try {
+    out = structuredClone(obj);
+  } catch (error) {
+    if ('message' in (error as Error) && (error as Error).message === 'Function object could not be cloned.') {
+      console.trace('Attempted to dump a function:', obj);
+    } else {
+      console.error(error);
+    }
+
+    out = {} as T;
+  }
 
   for (const prop of Object.getOwnPropertyNames(obj)) {
     // @ts-expect-error TS7053

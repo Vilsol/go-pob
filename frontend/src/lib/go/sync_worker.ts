@@ -29,7 +29,6 @@ class PoBWorker {
   private updateStore() {
     if (this.currentBuildStore && this._currentBuild) {
       // Re-cast so we can force the correct type
-      console.log('SKILLS:', this._currentBuild?.Skills);
       this.currentBuildStore.set(proxy(this._currentBuild) as unknown as ProxiedRemote<pob.PathOfBuilding>);
     }
   }
