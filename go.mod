@@ -39,5 +39,3 @@ require (
 replace github.com/pterm/pterm v0.12.79 => github.com/pterm/pterm v0.12.40
 
 replace github.com/Vilsol/go-pob-data v0.0.0-20240726190620-c67b93b461c3 => ./go-pob-data
-
-replace github.com/oriath-net/pogo v0.0.0-20230425190806-78985d9ea758 => github.com/Vilsol/pogo v0.0.0-20250119025017-735f5b0cf613
