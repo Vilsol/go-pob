@@ -5,10 +5,9 @@ go 1.23.3
 require (
 	github.com/MarvinJWendt/testza v0.5.2
 	github.com/Vilsol/crystalline v0.0.13
-	github.com/Vilsol/go-pob-data v0.0.0-20240726190620-c67b93b461c3
+	github.com/Vilsol/go-pob-data v0.0.2
 	github.com/andybalholm/brotli v1.1.1
 	github.com/dominikbraun/graph v0.23.0
-	github.com/jinzhu/copier v0.4.0
 	github.com/lmittmann/tint v1.0.5
 	gopkg.in/djherbis/fscache.v0 v0.10.1
 )
@@ -37,5 +36,3 @@ require (
 )
 
 replace github.com/pterm/pterm v0.12.79 => github.com/pterm/pterm v0.12.40
-
-replace github.com/Vilsol/go-pob-data v0.0.0-20240726190620-c67b93b461c3 => ./go-pob-data
