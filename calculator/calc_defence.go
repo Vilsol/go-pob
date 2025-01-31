@@ -914,12 +914,12 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 					fmt.Sprintf("= %.2f", actor.Output[string(damageType+"EnemyDamage")]),
 				)
 				actor.Breakdown.AddRow("totalEnemyDamage", map[string]string{
-					"type":  fmt.Sprintf("%s", damageType),
+					"type":  string(damageType),
 					"value": fmt.Sprintf("%.2f", enemyDamage),
 					"mult":  fmt.Sprintf("%.2f", enemyDamageMult),
 					"crit":  fmt.Sprintf("%.2f", actor.Output["EnemyCritEffect"]),
 					"final": fmt.Sprintf("%.2f", actor.Output[string(damageType+"EnemyDamage")]),
-					"from":  fmt.Sprintf("%s", sourceStr),
+					"from":  sourceStr,
 				})
 			}
 		}
@@ -955,7 +955,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 					BCol{Label: "Value", Key: "value"},
 				)
 				actor.Breakdown.AddRow(string(damageType+"TakenDamage"), map[string]string{
-					"type":  fmt.Sprintf("%s", damageType),
+					"type":  string(damageType),
 					"value": fmt.Sprintf("%.2f", actor.Output[string(damageType+"TakenDamage")]),
 				})
 			}
@@ -968,7 +968,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 					actor.Output[string(damageConvertedType+"TakenDamage")] = actor.Output[string(damageConvertedType+"TakenDamage")] + damage
 					if actor.Breakdown != nil && damage > 0 {
 						actor.Breakdown.AddRow(string(damageConvertedType+"TakenDamage"), map[string]string{
-							"type":  fmt.Sprintf("%s", damageType),
+							"type":  string(damageType),
 							"value": fmt.Sprintf("%.2f", damage),
 						})
 					}
@@ -988,7 +988,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 			actor.Output["totalTakenDamage"] = actor.Output["totalTakenDamage"] + actor.Output[string(damageType+"TakenDamage")]
 			if actor.Breakdown != nil {
 				actor.Breakdown.AddRow("totalTakenDamage", map[string]string{
-					"type":  fmt.Sprintf("%s", damageType),
+					"type":  string(damageType),
 					"value": fmt.Sprintf("%.2f", actor.Output[string(damageType+"TakenDamage")]),
 				})
 			}
@@ -1102,7 +1102,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 			if actor.Breakdown != nil {
 				if portionArmour > 100 {
 					actor.Breakdown.AddLine("DamageReduction",
-						fmt.Sprintf("Enemy Hit Damage:"),
+						"Enemy Hit Damage:",
 						fmt.Sprintf("    %.2f ^8(total incoming damage)", damage),
 						fmt.Sprintf("    * %.2f ^8(from resistance, applies before armour)", portionArmour/100),
 					)
@@ -1153,7 +1153,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 				fmt.Sprintf("= %.1f", actor.Output[string(damageType+"TakenHit")]),
 			)
 			actor.Breakdown.AddRow("totalTakenHit", map[string]string{
-				"type":     fmt.Sprintf("%s", damageType),
+				"type":     string(damageType),
 				"incoming": fmt.Sprintf("%.1f incoming damage", actor.Output[string(damageType+"TakenDamage")]),
 				"mult":     fmt.Sprintf("x %.3f damage mult", actor.Output[string(damageType+"TakenHitMult")]),
 				"value":    fmt.Sprintf("%.2f", actor.Output[string(damageType+"TakenHit")]),
@@ -1189,13 +1189,13 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 		}
 		if actor.Breakdown != nil {
 			actor.Breakdown.AddLine("preventedLifeLoss",
-				fmt.Sprintf("Total life protected:"),
+				"Total life protected:",
 			)
 			if portionLife != 1 {
 				actor.Breakdown.AddLine("preventedLifeLoss", fmt.Sprintf("%.2f ^8(initial portion taken from petrified blood)", actor.Output["preventedLifeLoss"]/portionLife/100))
 				actor.Breakdown.AddLine("preventedLifeLoss", fmt.Sprintf("* %.2f ^8(portion of life on low life)", portionLife))
 				actor.Breakdown.AddLine("preventedLifeLoss", fmt.Sprintf("= %.2f ^8(final portion taken from petrified blood)", actor.Output["preventedLifeLoss"]/100))
-				actor.Breakdown.AddLine("preventedLifeLoss", fmt.Sprintf(""))
+				actor.Breakdown.AddLine("preventedLifeLoss", "")
 			} else {
 				actor.Breakdown.AddLine("preventedLifeLoss", fmt.Sprintf("%.2f ^8(portion taken from petrified blood)", actor.Output["preventedLifeLoss"]/100))
 			}
@@ -1254,7 +1254,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 		if actor.Breakdown != nil {
 			if actor.Output["sharedMindOverMatter"] != 0 {
 				actor.Breakdown.AddLine("sharedMindOverMatter",
-					fmt.Sprintf("Total life protected:"),
+					"Total life protected:",
 					fmt.Sprintf("%.2f ^8(%s)", sourcePool, manatext),
 					fmt.Sprintf("/ %.2f ^8(portion taken from mana)", actor.Output["sharedMindOverMatter"]/100),
 					fmt.Sprintf("x %.2f ^8(portion taken from life)", 1-actor.Output["sharedMindOverMatter"]/100),
@@ -1294,7 +1294,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 			if actor.Breakdown != nil {
 				if actor.Output[string(damageType+"MindOverMatter")] != 0 {
 					actor.Breakdown.AddLine("MindOverMatter",
-						fmt.Sprintf("Total life protected:"),
+						"Total life protected:",
 						fmt.Sprintf("%.2f ^8(%s)", sourcePool, manatext),
 						fmt.Sprintf("/ %.2f ^8(portion taken from mana)", MindOverMatter/100),
 						fmt.Sprintf("x %.2f ^8(portion taken from life)", 1-MindOverMatter/100),
@@ -1316,7 +1316,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 		lifeProtected := actor.Output["sharedGuardAbsorb"] / (actor.Output["sharedGuardAbsorbRate"] / 100) * (1 - actor.Output["sharedGuardAbsorbRate"]/100)
 		if actor.Breakdown != nil {
 			actor.Breakdown.AddLine("sharedGuardAbsorb",
-				fmt.Sprintf("Total life protected:"),
+				"Total life protected:",
 				fmt.Sprintf("%.2f ^8(guard limit)", actor.Output["sharedGuardAbsorb"]),
 				fmt.Sprintf("/ %.2f ^8(portion taken from guard)", actor.Output["sharedGuardAbsorbRate"]/100),
 				fmt.Sprintf("x %.2f ^8(portion taken from life and energy shield)", 1-actor.Output["sharedGuardAbsorbRate"]/100),
@@ -1334,7 +1334,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 			lifeProtected := actor.Output[string(damageType+"GuardAbsorb")] / (actor.Output[string(damageType+"GuardAbsorbRate")] / 100) * (1 - actor.Output[string(damageType+"GuardAbsorbRate")]/100)
 			if actor.Breakdown != nil {
 				actor.Breakdown.AddLine("GuardAbsorb",
-					fmt.Sprintf("Total life protected:"),
+					"Total life protected:",
 					fmt.Sprintf("%.2f ^8(guard limit)", actor.Output[string(damageType+"GuardAbsorb")]),
 					fmt.Sprintf("/ %.2f ^8(portion taken from guard)", actor.Output[string(damageType+"GuardAbsorbRate")]/100),
 					fmt.Sprintf("x %.2f ^8(portion taken from life and energy shield)", 1-actor.Output[string(damageType+"GuardAbsorbRate")]/100),
@@ -1375,7 +1375,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 		lifeProtected := actor.Output["FrostShieldLife"] / (actor.Output["FrostShieldDamageMitigation"] / 100) * (1 - actor.Output["FrostShieldDamageMitigation"]/100)
 		if actor.Breakdown != nil {
 			actor.Breakdown.AddLine("FrostShieldLife",
-				fmt.Sprintf("Total life protected:"),
+				"Total life protected:",
 				fmt.Sprintf("%.2f ^8(frost shield limit)", actor.Output["FrostShieldLife"]),
 				fmt.Sprintf("/ %.2f ^8(portion taken from frost shield)", actor.Output["FrostShieldDamageMitigation"]/100),
 				fmt.Sprintf("x %.2f ^8(portion taken from life and energy shield)", 1-actor.Output["FrostShieldDamageMitigation"]/100),
@@ -1417,7 +1417,6 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 	var numberOfHitsToDie func(DamageIn map[string]float64) int
 	numberOfHitsToDie = func(DamageIn map[string]float64) int {
 		numHits := 0
-		DamageIn["cycles"] = DamageIn["cycles"]
 		if DamageIn["cycles"] == 0 {
 			DamageIn["cycles"] = 1
 		}
@@ -1456,9 +1455,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 			if DamageIn[string(damageType+"EnergyShieldBypass")] == 0 {
 				DamageIn[string(damageType+"EnergyShieldBypass")] = actor.Output[string(damageType+"EnergyShieldBypass")]
 			}
-
 		}
-		DamageIn["LifeLossBelowHalfLost"] = DamageIn["LifeLossBelowHalfLost"]
 		DamageIn["WardBypass"] = utils.OrF(DamageIn["WardBypass"], modDB.Sum(mod.TypeBase, nil, "WardBypass"))
 
 		itterationMultiplier := float64(1)
@@ -1582,9 +1579,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 	{
 		DamageIn := make(map[string]float64)
 		BlockChance := float64(0)
-		blockEffect := float64(1)
 		suppressChance := float64(0)
-		suppressionEffect := float64(1)
 		ExtraAvoidChance := float64(0)
 		averageAvoidChance := float64(0)
 		worstOf := environment.Build.GetNumberOption("EHPUnluckyWorstOf")
@@ -1604,7 +1599,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 				BlockChance = BlockChance * BlockChance
 			}
 		}
-		blockEffect = (1 - BlockChance*actor.Output["BlockEffect"]/100)
+		blockEffect := 1 - BlockChance*actor.Output["BlockEffect"]/100
 		if !environment.Build.GetBooleanOption("DisableEHPGainOnBlock") {
 			DamageIn["LifeWhenHit"] = actor.Output["LifeOnBlock"] * BlockChance
 			DamageIn["ManaWhenHit"] = actor.Output["ManaOnBlock"] * BlockChance
@@ -1629,7 +1624,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 		if damageCategoryConfig == "Average" {
 			suppressChance = suppressChance / 2
 		}
-		suppressionEffect = 1 - suppressChance*actor.Output["SpellSuppressionEffect"]/100
+		suppressionEffect := 1 - suppressChance*actor.Output["SpellSuppressionEffect"]/100
 		// extra avoid chance
 		if damageCategoryConfig == "Projectile" || damageCategoryConfig == "SpellProjectile" {
 			ExtraAvoidChance = ExtraAvoidChance + actor.Output["AvoidProjectilesChance"]
@@ -1864,15 +1859,15 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 				totalEnergyShieldDegen = totalEnergyShieldDegen + energyShieldDegen
 				if actor.Breakdown != nil {
 					actor.Breakdown.AddRow("NetLifeRegen", map[string]string{
-						"type":  fmt.Sprintf("%s", damageType),
+						"type":  string(damageType),
 						"degen": fmt.Sprintf("%.2f", lifeDegen),
 					})
 					actor.Breakdown.AddRow("NetManaRegen", map[string]string{
-						"type":  fmt.Sprintf("%s", damageType),
+						"type":  string(damageType),
 						"degen": fmt.Sprintf("%.2f", manaDegen),
 					})
 					actor.Breakdown.AddRow("NetEnergyShieldRegen", map[string]string{
-						"type":  fmt.Sprintf("%s", damageType),
+						"type":  string(damageType),
 						"degen": fmt.Sprintf("%.2f", energyShieldDegen),
 					})
 				}

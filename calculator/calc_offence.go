@@ -958,7 +958,7 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 				if skillData.Debuff && debuffDurationMult != 1 {
 					breakdown.AddLine("Duration", fmt.Sprintf("/ %.3f ^8(debuff expires slower/faster)", 1/debuffDurationMult))
 				}
-				breakdown.AddLine("Duration", fmt.Sprintf("rounded up to nearest server tick"))
+				breakdown.AddLine("Duration", "rounded up to nearest server tick")
 				breakdown.AddLine("Duration", fmt.Sprintf("= %.3fs", actor.Output["Duration"]))
 			}
 		}
@@ -984,7 +984,7 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 				if skillData.DebuffSecondary && debuffDurationMult != 1 {
 					breakdown.AddLine("DurationSecondary", fmt.Sprintf("/ %.3f ^8(debuff expires slower/faster)", 1/debuffDurationMult))
 				}
-				breakdown.AddLine("DurationSecondary", fmt.Sprintf("rounded up to nearest server tick"))
+				breakdown.AddLine("DurationSecondary", "rounded up to nearest server tick")
 				breakdown.AddLine("DurationSecondary", fmt.Sprintf("= %.3fs", actor.Output["DurationSecondary"]))
 			}
 		}
@@ -997,7 +997,7 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 				breakdown.AddLine("AuraDuration",
 					fmt.Sprintf("%.2fs ^8(base)", durationBase),
 					fmt.Sprintf("x %.4f ^8(duration modifier)", durationMod),
-					fmt.Sprintf("rounded up to nearest server tick"),
+					"rounded up to nearest server tick",
 					fmt.Sprintf("= %.3fs", actor.Output["AuraDuration"]),
 				)
 			}
@@ -1011,7 +1011,7 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 				breakdown.AddLine("ReserveDuration",
 					fmt.Sprintf("%.2fs ^8(base)", durationBase),
 					fmt.Sprintf("x %.4f ^8(duration modifier)", durationMod),
-					fmt.Sprintf("rounded up to nearest server tick"),
+					"rounded up to nearest server tick",
 					fmt.Sprintf("= %.3fs", actor.Output["ReserveDuration"]),
 				)
 			}

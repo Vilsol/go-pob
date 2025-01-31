@@ -719,7 +719,7 @@ func getWeaponFlags(env *Environment, weaponData *SkillData, weaponTypes [][]dat
 		return 0, nil
 	}
 
-	info := data.WeaponTypes[data.ItemClassName(weaponData.Type)]
+	info := data.WeaponTypes[weaponData.Type]
 
 	if info == nil {
 		return 0, nil

@@ -37,7 +37,9 @@ linters:
     # - exhaustive
     - exptostd
     - gocheckcompilerdirectives
-    - goconst
+    # While getting implemented, a lot of stuff might duplicate
+    # TODO Turn on when reaching 1.0.0
+    # - goconst
     - gofmt
     - goimports
     - gosec
