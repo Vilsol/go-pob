@@ -2,6 +2,7 @@ package data
 
 import (
 	"github.com/Vilsol/go-pob-data/poe"
+
 	"github.com/Vilsol/go-pob/mod"
 	"github.com/Vilsol/go-pob/utils"
 )
@@ -198,20 +199,20 @@ const (
 	ProjectileDistanceCap     = 150
 
 	// Expected values to calculate EHP
-	stdBossDPSMult      = 4 / 4.25
-	pinnacleBossDPSMult = 8 / 4.25
-	pinnacleBossPen     = 25 / 5
-	uberBossDPSMult     = 10 / 4.25
-	uberBossPen         = 40 / 5
+	StdBossDPSMult      = 4 / 4.25
+	PinnacleBossDPSMult = 8 / 4.25
+	PinnacleBossPen     = 25 / 5
+	UberBossDPSMult     = 10 / 4.25
+	UberBossPen         = 40 / 5
 
 	// ehp helper function magic numbers
-	ehpCalcSpeedUp = 8
+	EhpCalcSpeedUp = 8
 
 	// depth needs to be a power of speedUp (in this case 8^3, will run 3 recursive calls deep)
-	ehpCalcMaxDepth = 512
+	EhpCalcMaxDepth = 512
 
 	// max hits is currently depth + speedup - 1 to give as much accuracy with as few cycles as possible, but can be increased for more accuracy
-	ehpCalcMaxHitsToCalc = 519
+	EhpCalcMaxHitsToCalc = 519
 )
 
 // All arrays start with a 0 element as from translation from Lua all array accesses start at 1
@@ -224,13 +225,13 @@ var MonsterDamageTable = []float64{0, 4.9899997711182, 5.5599999427795, 6.159999
 var MonsterArmourTable = []float64{0, 22, 26, 31, 36, 42, 48, 55, 62, 70, 78, 87, 97, 107, 119, 131, 144, 158, 173, 190, 207, 226, 246, 267, 290, 315, 341, 370, 400, 432, 467, 504, 543, 585, 630, 678, 730, 785, 843, 905, 972, 1042, 1118, 1198, 1284, 1375, 1472, 1575, 1685, 1802, 1927, 2059, 2200, 2350, 2509, 2678, 2858, 3050, 3253, 3469, 3698, 3942, 4201, 4476, 4768, 5078, 5407, 5756, 6127, 6520, 6937, 7380, 7850, 8348, 8876, 9436, 10030, 10660, 11328, 12036, 12787, 13582, 14425, 15319, 16265, 17268, 18331, 19457, 20649, 21913, 23250, 24667, 26168, 27756, 29438, 31220, 33105, 35101, 37214, 39450, 41817}
 
 var UnarmedWeaponData = map[int]map[string]interface{}{
-	0: {"Type": "None", "AttackRate": 1.2, "CritChance": float64(0), "PhysicalMin": float64(2), "PhysicalMax": float64(6)}, // Scion
-	1: {"Type": "None", "AttackRate": 1.2, "CritChance": float64(0), "PhysicalMin": float64(2), "PhysicalMax": float64(8)}, // Marauder
-	2: {"Type": "None", "AttackRate": 1.2, "CritChance": float64(0), "PhysicalMin": float64(2), "PhysicalMax": float64(5)}, // Ranger
-	3: {"Type": "None", "AttackRate": 1.2, "CritChance": float64(0), "PhysicalMin": float64(2), "PhysicalMax": float64(5)}, // Witch
-	4: {"Type": "None", "AttackRate": 1.2, "CritChance": float64(0), "PhysicalMin": float64(2), "PhysicalMax": float64(6)}, // Duelist
-	5: {"Type": "None", "AttackRate": 1.2, "CritChance": float64(0), "PhysicalMin": float64(2), "PhysicalMax": float64(6)}, // Templar
-	6: {"Type": "None", "AttackRate": 1.2, "CritChance": float64(0), "PhysicalMin": float64(2), "PhysicalMax": float64(5)}, // Shadow
+	0: {"Type": None, "AttackRate": 1.2, "CritChance": float64(0), "PhysicalMin": float64(2), "PhysicalMax": float64(6)}, // Scion
+	1: {"Type": None, "AttackRate": 1.2, "CritChance": float64(0), "PhysicalMin": float64(2), "PhysicalMax": float64(8)}, // Marauder
+	2: {"Type": None, "AttackRate": 1.2, "CritChance": float64(0), "PhysicalMin": float64(2), "PhysicalMax": float64(5)}, // Ranger
+	3: {"Type": None, "AttackRate": 1.2, "CritChance": float64(0), "PhysicalMin": float64(2), "PhysicalMax": float64(5)}, // Witch
+	4: {"Type": None, "AttackRate": 1.2, "CritChance": float64(0), "PhysicalMin": float64(2), "PhysicalMax": float64(6)}, // Duelist
+	5: {"Type": None, "AttackRate": 1.2, "CritChance": float64(0), "PhysicalMin": float64(2), "PhysicalMax": float64(6)}, // Templar
+	6: {"Type": None, "AttackRate": 1.2, "CritChance": float64(0), "PhysicalMin": float64(2), "PhysicalMax": float64(5)}, // Shadow
 }
 
 type SkillType string

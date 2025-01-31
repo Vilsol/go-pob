@@ -707,7 +707,7 @@ var SkillStatMap = map[string]*StatMap{
 		Mods: []mod.Mod{mod.NewFloat("AddedDamage", "MORE", 0)},
 	},
 	"shield_charge_damage_+%_maximum": {
-		Mods: []mod.Mod{mod.NewFloat("Damage", "MORE", 0).Flag(mod.MFlagHit).Tag(mod.DistanceRamp([][]int{
+		Mods: []mod.Mod{mod.NewFloat("Damage", "MORE", 0).Flag(mod.MFlagHit).Tag(mod.DistanceRamp([][]float64{
 			{0, 0},
 			{60, 1},
 		}))},

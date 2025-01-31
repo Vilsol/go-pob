@@ -156,6 +156,13 @@ func OrF(a float64, b float64) float64 {
 	return a
 }
 
+func OrS(a string, b string) string {
+	if a == "" {
+		return b
+	}
+	return a
+}
+
 func OrNil(n *float64, def float64) float64 {
 	if n != nil {
 		return *n

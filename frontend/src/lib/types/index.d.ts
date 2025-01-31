@@ -21,7 +21,7 @@ export declare namespace calculator {
     SocketGroup?: unknown;
     SummonSkill?: calculator.ActiveSkill;
     ConversionTable?: Record<string, calculator.ConversionTable>;
-    Minion?: calculator.Actor;
+    Minion?: calculator.ActorMinion;
     Weapon1Flags: number;
     Weapon2Flags: number;
     EffectList?: Array<calculator.GemEffect | undefined>;
@@ -34,6 +34,7 @@ export declare namespace calculator {
     SkillTotemId: number;
     SkillPartName: string;
     ActiveMineCount: number;
+    ExtraSkillModList?: Array<unknown | undefined>;
   }
   interface Actor {
     ModDB?: moddb.ModDB;
@@ -43,17 +44,25 @@ export declare namespace calculator {
     ActiveSkillList?: Array<calculator.ActiveSkill | undefined>;
     Output?: Record<string, number>;
     OutputTable?: Record<string, Record<string, number> | undefined>;
+    OutputStrings?: Record<string, string>;
     MainSkill?: calculator.ActiveSkill;
     Breakdown?: calculator.Breakdown;
     WeaponData1?: calculator.SkillData;
     WeaponData2?: calculator.SkillData;
     StrDmgBonus: number;
-    MinionData?: unknown;
     Reserved_LifeBase: number;
     Reserved_LifePercent: number;
     Reserved_ManaBase: number;
     Reserved_ManaPercent: number;
+    DamageShiftTable?: Record<string, Record<string, number> | undefined>;
     GetOutput(stat: string): [number, boolean];
+  }
+  interface ActorMinion {
+    Actor?: calculator.Actor;
+    Type: string;
+    MinionData: calculator.MinionData;
+    LifeTable?: Record<number, number>;
+    GetOutput(arg1: string): [number, boolean];
   }
   interface ArmourData {
     Ward: number;
@@ -66,6 +75,15 @@ export declare namespace calculator {
     Label: string;
     Key: string;
   }
+  interface BDamageType {
+    Source: string;
+    ConvSrc?: string;
+    Total: string;
+    ConvDst?: string;
+    Base?: string;
+    Inc?: string;
+    More?: string;
+  }
   interface BMultiChain {
     Base: string;
     Label: string;
@@ -75,6 +93,15 @@ export declare namespace calculator {
   interface BMultiChainItem {
     Format: string;
     Value: number;
+  }
+  interface BReservation {
+    SkillName: string;
+    Base: string;
+    Mult?: string;
+    More?: string;
+    Inc?: string;
+    Efficiency?: string;
+    Total: string;
   }
   interface BSlot {
     Base: number;
@@ -94,10 +121,14 @@ export declare namespace calculator {
     AddLine(key: string, s?: Array<string>): void;
     AddRow(key: string, rows?: Array<Record<string, string> | undefined>): void;
     AddSlot(key: string, slot?: Array<calculator.BSlot>): void;
+    DamageType(key: string, damageTypes?: Array<calculator.BDamageType>): void;
     EffMult(key: string, damageType: string, resist: number, pen: number, taken: number, mult: number, takenMore: number, sourceRes: string, useRes: boolean): void;
     GetData(): (Record<string, calculator.Entry | undefined> | undefined);
+    Has(key: string): boolean;
     Mod(key: string, modList?: unknown, cfg?: moddb.ListCfg, names?: Array<string>): void;
     MultiChain(key: string, chains?: Array<calculator.BMultiChain>): void;
+    Reservation(key: string, reservation?: Array<calculator.BReservation>): void;
+    SetLabel(key: string, label: string): void;
     Simple(extraBasePtr?: number, cfg?: moddb.ListCfg, total: number, key: string): void;
     Slot(source: string, sourceName?: string, cfg?: moddb.ListCfg, base: number, total?: number, keys?: Array<string>): void;
   }
@@ -121,6 +152,9 @@ export declare namespace calculator {
     Rows?: Array<Record<string, string> | undefined>;
     Lines?: Array<string>;
     Slots?: Array<calculator.BSlot>;
+    Reservations?: Array<calculator.BReservation>;
+    Label: string;
+    DamageTypes?: Array<calculator.BDamageType>;
   }
   interface Environment {
     Cache?: calculator.EnvironmentCache;
@@ -133,7 +167,7 @@ export declare namespace calculator {
     EnemyLevel: number;
     Player?: calculator.Actor;
     Enemy?: calculator.Actor;
-    Minion?: calculator.Actor;
+    Minion?: calculator.ActorMinion;
     RequirementsTable?: Array<calculator.RequirementsTable | undefined>;
     RequirementsTableItems?: Array<calculator.RequirementsTable | undefined>;
     RequirementsTableGems?: Array<calculator.RequirementsTable | undefined>;
@@ -153,6 +187,8 @@ export declare namespace calculator {
     MainSocketGroup: number;
     DebugErrors?: Array<string>;
     CalcProps?: Record<string, number>;
+    AegisModList?: moddb.ModList;
+    TheIronMass?: moddb.ModList;
   }
   interface EnvironmentCache {
     TreeVersion: string;
@@ -174,6 +210,7 @@ export declare namespace calculator {
     Parts?: Array<unknown | undefined>;
     SkillTypes?: Record<string, boolean>;
     BaseFlags?: Record<string, boolean>;
+    Funcs?: Record<string, (arg1?: calculator.ActiveSkill, arg2?: Record<string, number>, arg3?: calculator.Breakdown) => void>;
     BaseMultiplier(): number;
     CastTime(): number;
     DamageEffectiveness(): number;
@@ -181,6 +218,22 @@ export declare namespace calculator {
   }
   interface ItemData {
     ArmourData?: calculator.ArmourData;
+    Type: string;
+    ModList?: moddb.ModList;
+    SlotModList?: Record<number, moddb.ModList | undefined>;
+    WeaponData?: Array<unknown | undefined>;
+  }
+  interface MinionData {
+    Life: number;
+    EnergyShield: number;
+    Armour: number;
+    FireResist: number;
+    ColdResist: number;
+    LightningResist: number;
+    ChaosResist: number;
+    Accuracy: number;
+    ModList?: Array<unknown | undefined>;
+    Limit: string;
   }
   interface PassiveSpec {
     Build?: pob.PathOfBuilding;
@@ -288,6 +341,16 @@ export declare namespace calculator {
     ManaReservedPercent: number;
     LifeReservedBase: number;
     LifeReservedPercent: number;
+    MinionUseBowAndQuiver: boolean;
+    ArrowSpeedAppliesToAreaOfEffect: boolean;
+    GainPercentBaseWandDamage: number;
+    HitTimeOverride: number;
+    TrapCooldown: number;
+    MineDurationAppliesToSkill: boolean;
+    Debuff: boolean;
+    DebuffSecondary: boolean;
+    ReserveDuration: number;
+    AuraDuration: number;
   }
   function NewCalculator(build: pob.PathOfBuilding): (calculator.Calculator | undefined);
 }

@@ -2176,7 +2176,7 @@ var specialModList = map[string]interface{}{
 	`can allocate passives from the \w+'s starting point`: []mod.Mod{},
 	`projectiles gain damage as they travel farther, dealing up to (\d+)% increased damage with hits to targets`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
-			MOD("Damage", mod.TypeIncrease, num).Flag(mod.MFlagAttack).Flag(mod.MFlagProjectile).Tag(mod.DistanceRamp([][]int{{35, 0}, {70, 1}})),
+			MOD("Damage", mod.TypeIncrease, num).Flag(mod.MFlagAttack).Flag(mod.MFlagProjectile).Tag(mod.DistanceRamp([][]float64{{35, 0}, {70, 1}})),
 		}, ""
 	},
 	`(\d+)% chance to gain elusive on kill`: []mod.Mod{
@@ -4219,12 +4219,12 @@ var specialModList = map[string]interface{}{
 	},
 	`arrows gain damage as they travel farther, dealing up to (\d+)% increased damage with hits to targets`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
-			MOD("Damage", "INC", num).Flag(mod.MFlagBow).Flag(mod.MFlagHit).Tag(mod.DistanceRamp([][]int{{35, 0}, {70, 1}})),
+			MOD("Damage", "INC", num).Flag(mod.MFlagBow).Flag(mod.MFlagHit).Tag(mod.DistanceRamp([][]float64{{35, 0}, {70, 1}})),
 		}, ""
 	},
 	`arrows gain critical strike chance as they travel farther, up to (\d+)% increased critical strike chance`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
-			MOD("CritChance", "INC", num).Flag(mod.MFlagBow).Tag(mod.DistanceRamp([][]int{{35, 0}, {70, 1}})),
+			MOD("CritChance", "INC", num).Flag(mod.MFlagBow).Tag(mod.DistanceRamp([][]float64{{35, 0}, {70, 1}})),
 		}, ""
 	},
 	// Leech/Gain on Hit

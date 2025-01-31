@@ -3,6 +3,7 @@ package calclib
 import (
 	"github.com/Vilsol/go-pob/mod"
 	"github.com/Vilsol/go-pob/moddb"
+	"github.com/Vilsol/go-pob/utils"
 )
 
 // Calculate and combine INC/MORE modifiers for the given modifier names
@@ -25,23 +26,48 @@ func Val(modStore moddb.ModStoreFuncs, name string, cfgs ...*moddb.ListCfg) floa
 }
 
 // Correct the tags on conversion with multipliers so they carry over correctly
-func GetConvertedModTags(m mod.Mod, multiplier float64) interface{} {
-	modifiers := make(map[string]string)
-	/*
-		for k, value in ipairs(mod) do
+func GetConvertedModTags(m mod.Mod, multiplier float64, minionMods bool) []mod.Tag {
+	modifiers := make([]mod.Tag, len(m.Tags()))
 
-		if minionMods and value.type == "ActorCondition" and value.actor == "parent" then
-			modifiers[k] = { type = "Condition", var = value.var }
-		elseif value.limitTotal then
-			-- LimitTotal can apply to 'per stat' or 'multiplier', so just copy the whole and update the limit
-			local copy = copyTable(value)
-			copy.limit = copy.limit * multiplier
-			modifiers[k] = copy
-		else
-			modifiers[k] = copyTable(value)
-		end
+	for k, value := range m.Tags() {
+		if minionMods && value.Type() == "ActorCondition" && value.(*mod.ActorConditionTag).Actor != nil && *value.(*mod.ActorConditionTag).Actor == "parent" {
+			modifiers[k] = mod.Condition(value.(*mod.ActorConditionTag).VariableList...)
+		} else if value.Type() == "Multiplier" || value.Type() == "PerStat" {
+			// LimitTotal can apply to 'per stat' or 'multiplier', so just copy the whole and update the limit
+			var Copy mod.Tag
+			switch x := value.(type) {
+			case *mod.MultiplierTag:
+				Copy = &mod.MultiplierTag{
+					TagType:           x.TagType,
+					VariableList:      x.VariableList,
+					TagBase:           x.TagBase,
+					Division:          x.Division,
+					TagLimit:          utils.Ptr(utils.UnwrapOrF(x.TagLimit, 0) * multiplier),
+					TagLimitVariable:  x.TagLimitVariable,
+					TagLimitTotal:     x.TagLimitTotal,
+					TagActor:          x.TagActor,
+					TagGlobalLimit:    x.TagGlobalLimit,
+					TagGlobalLimitKey: x.TagGlobalLimitKey,
+				}
+			case *mod.PerStatTag:
+				Copy = &mod.PerStatTag{
+					TagType:           x.TagType,
+					StatList:          x.StatList,
+					Divide:            x.Divide,
+					TagLimit:          utils.Ptr(utils.UnwrapOrF(x.TagLimit, 0) * multiplier),
+					TagLimitVariable:  x.TagLimitVariable,
+					TagLimitTotal:     x.TagLimitTotal,
+					Base:              x.Base,
+					TagActor:          x.TagActor,
+					TagGlobalLimit:    x.TagGlobalLimit,
+					TagGlobalLimitKey: x.TagGlobalLimitKey,
+				}
+			}
+			modifiers[k] = Copy
+		} else {
+			modifiers[k] = value
+		}
+	}
 
-		end
-	*/
 	return modifiers
 }

@@ -50,7 +50,7 @@ type Environment struct {
 
 	Player *Actor
 	Enemy  *Actor
-	Minion *Actor
+	Minion *ActorMinion
 
 	RequirementsTable      []*RequirementsTable
 	RequirementsTableItems []*RequirementsTable
@@ -75,8 +75,10 @@ type Environment struct {
 	KeystonesAdded  map[string]interface{}
 	MainSocketGroup int
 
-	DebugErrors []string
-	CalcProps   map[string]float64
+	DebugErrors  []string
+	CalcProps    map[string]float64
+	AegisModList *moddb.ModList
+	TheIronMass  *moddb.ModList
 }
 
 type EnvironmentCache struct {
@@ -92,16 +94,38 @@ type Actor struct {
 	ActiveSkillList      []*ActiveSkill
 	Output               map[string]float64
 	OutputTable          map[OutTable]map[string]float64
+	OutputStrings        map[string]string
 	MainSkill            *ActiveSkill
 	Breakdown            *Breakdown
 	WeaponData1          *SkillData
 	WeaponData2          *SkillData
 	StrDmgBonus          float64
-	MinionData           interface{}
 	Reserved_LifeBase    float64
 	Reserved_LifePercent float64
 	Reserved_ManaBase    float64
 	Reserved_ManaPercent float64
+	DamageShiftTable     map[data.DamageType]map[data.DamageType]float64
+}
+
+type ActorMinion struct {
+	*Actor
+
+	Type       string
+	MinionData MinionData
+	LifeTable  map[int]int
+}
+
+type MinionData struct {
+	Life            float64
+	EnergyShield    float64
+	Armour          float64
+	FireResist      float64
+	ColdResist      float64
+	LightningResist float64
+	ChaosResist     float64
+	Accuracy        float64
+	ModList         []mod.Mod
+	Limit           string
 }
 
 func (a *Actor) GetOutput(stat string) (float64, bool) {
@@ -110,7 +134,11 @@ func (a *Actor) GetOutput(stat string) (float64, bool) {
 }
 
 type ItemData struct {
-	ArmourData *ArmourData
+	ArmourData  *ArmourData
+	Type        string
+	ModList     *moddb.ModList
+	SlotModList map[int]*moddb.ModList
+	WeaponData  []interface{}
 }
 
 type ArmourData struct {
@@ -146,32 +174,33 @@ const (
 )
 
 type ActiveSkill struct {
-	SkillFlags       map[SkillFlag]bool
-	SkillModList     *moddb.ModList
-	SkillCfg         *moddb.ListCfg
-	SkillTypes       map[data.SkillType]bool
-	SkillData        *SkillData
-	ActiveEffect     *GemEffect
-	Weapon1Cfg       *moddb.ListCfg
-	Weapon2Cfg       *moddb.ListCfg
-	SupportList      []*GemEffect
-	Actor            *Actor `json:"-"`
-	SocketGroup      interface{}
-	SummonSkill      *ActiveSkill
-	ConversionTable  map[data.DamageType]ConversionTable
-	Minion           *Actor
-	Weapon1Flags     mod.MFlag
-	Weapon2Flags     mod.MFlag
-	EffectList       []*GemEffect
-	DisableReason    string
-	BaseSkillModList *moddb.ModList
-	SlotName         string
-	MinionSkillTypes map[data.SkillType]bool
-	BleedCfg         *moddb.ListCfg
-	OHBleedCfg       *moddb.ListCfg
-	SkillTotemId     int
-	SkillPartName    string
-	ActiveMineCount  float64
+	SkillFlags        map[SkillFlag]bool
+	SkillModList      *moddb.ModList
+	SkillCfg          *moddb.ListCfg
+	SkillTypes        map[data.SkillType]bool
+	SkillData         *SkillData
+	ActiveEffect      *GemEffect
+	Weapon1Cfg        *moddb.ListCfg
+	Weapon2Cfg        *moddb.ListCfg
+	SupportList       []*GemEffect
+	Actor             *Actor `json:"-"`
+	SocketGroup       interface{}
+	SummonSkill       *ActiveSkill
+	ConversionTable   map[data.DamageType]ConversionTable
+	Minion            *ActorMinion
+	Weapon1Flags      mod.MFlag
+	Weapon2Flags      mod.MFlag
+	EffectList        []*GemEffect
+	DisableReason     string
+	BaseSkillModList  *moddb.ModList
+	SlotName          string
+	MinionSkillTypes  map[data.SkillType]bool
+	BleedCfg          *moddb.ListCfg
+	OHBleedCfg        *moddb.ListCfg
+	SkillTotemId      int
+	SkillPartName     string
+	ActiveMineCount   float64
+	ExtraSkillModList []mod.Mod
 }
 
 type ConversionTable struct {
@@ -216,6 +245,11 @@ const (
 	SkillFlagDecay            = SkillFlag("decay")
 	SkillFlagImpale           = SkillFlag("impale")
 	SkillFlagBallista         = SkillFlag("ballista")
+	SkillFlagMinion           = SkillFlag("minion")
+	SkillFlagRandomPhys       = SkillFlag("randomPhys")
+	SkillFlagForking          = SkillFlag("forking")
+	SkillFlagPiercing         = SkillFlag("piercing")
+	SkillFlagWarcry           = SkillFlag("warcry")
 )
 
 type SkillData struct {
@@ -248,7 +282,7 @@ type SkillData struct {
 	BleedIsSkillEffect           bool
 	Duration                     float64
 	BleedBasePercent             float64
-	Type                         string
+	Type                         data.ItemClassName
 	AttackRate                   float64
 	PhysicalMin                  float64
 	PhysicalMax                  float64
@@ -299,6 +333,16 @@ type SkillData struct {
 	ManaReservedPercent                        float64
 	LifeReservedBase                           float64
 	LifeReservedPercent                        float64
+	MinionUseBowAndQuiver                      bool
+	ArrowSpeedAppliesToAreaOfEffect            bool
+	GainPercentBaseWandDamage                  float64
+	HitTimeOverride                            float64
+	TrapCooldown                               float64
+	MineDurationAppliesToSkill                 bool
+	Debuff                                     bool
+	DebuffSecondary                            bool
+	ReserveDuration                            float64
+	AuraDuration                               float64
 }
 
 type GrantedEffect struct {
@@ -306,6 +350,7 @@ type GrantedEffect struct {
 	Parts      []interface{}
 	SkillTypes map[data.SkillType]bool
 	BaseFlags  map[SkillFlag]bool
+	Funcs      map[string]func(activeSkill *ActiveSkill, output map[string]float64, breakdown *Breakdown)
 }
 
 func (g *GrantedEffect) WeaponTypes() []data.ItemClassName {

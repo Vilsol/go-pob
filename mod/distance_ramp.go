@@ -4,10 +4,10 @@ var _ Tag = (*DistanceRampTag)(nil)
 
 type DistanceRampTag struct {
 	TagType Type
-	Ramp    [][]int
+	Ramp    [][]float64
 }
 
-func DistanceRamp(ramp [][]int) *DistanceRampTag {
+func DistanceRamp(ramp [][]float64) *DistanceRampTag {
 	return &DistanceRampTag{
 		TagType: TypeDistanceRamp,
 		Ramp:    ramp,

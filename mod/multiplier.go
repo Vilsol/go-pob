@@ -61,3 +61,18 @@ func (m *MultiplierTag) GlobalLimitKey(globalLimitKey string) *MultiplierTag {
 	m.TagGlobalLimitKey = &globalLimitKey
 	return m
 }
+
+func (m *MultiplierTag) Clone() Tag {
+	return &MultiplierTag{
+		TagType:           m.TagType,
+		VariableList:      m.VariableList,
+		TagBase:           m.TagBase,
+		Division:          m.Division,
+		TagLimit:          m.TagLimit,
+		TagLimitVariable:  m.TagLimitVariable,
+		TagLimitTotal:     m.TagLimitTotal,
+		TagActor:          m.TagActor,
+		TagGlobalLimit:    m.TagGlobalLimit,
+		TagGlobalLimitKey: m.TagGlobalLimitKey,
+	}
+}

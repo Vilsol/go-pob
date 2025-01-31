@@ -287,9 +287,12 @@ func (m *ModList) Tabulate(modType mod.Type, cfg *ListCfg, modNames ...string) [
 func (m *ModList) Max(cfg *ListCfg, modNames ...string) float64 {
 	globalMax := float64(0)
 	for _, value := range m.Tabulate(mod.TypeMAX, cfg, modNames...) {
-		val := m.evalMod(value.Mod, cfg).Float()
-		if val > globalMax {
-			globalMax = val
+		multi := m.evalMod(value.Mod, cfg)
+		if multi != nil {
+			val := multi.Float()
+			if val > globalMax {
+				globalMax = val
+			}
 		}
 	}
 	return globalMax

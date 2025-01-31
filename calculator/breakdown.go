@@ -36,11 +36,34 @@ type BMultiChain struct {
 	Items []BMultiChainItem
 }
 
+type BReservation struct {
+	SkillName  string
+	Base       string
+	Mult       *string
+	More       *string
+	Inc        *string
+	Efficiency *string
+	Total      string
+}
+
+type BDamageType struct {
+	Source  string
+	ConvSrc *string
+	Total   string
+	ConvDst *string
+	Base    *string
+	Inc     *string
+	More    *string
+}
+
 type Entry struct {
-	Columns []BCol
-	Rows    []map[string]string
-	Lines   []string
-	Slots   []BSlot
+	Columns      []BCol
+	Rows         []map[string]string
+	Lines        []string
+	Slots        []BSlot
+	Reservations []BReservation
+	Label        string
+	DamageTypes  []BDamageType
 }
 
 type Breakdown struct {
@@ -222,4 +245,33 @@ func (b *Breakdown) EffMult(key string, damageType data.DamageType, resist float
 		b.AddLine(key, "Effective DPS modifier:")
 		b.AddLine(key, fmt.Sprintf("= %.3f ^8(increased/reduced damage taken)", mult))
 	}
+}
+
+func (b *Breakdown) Reservation(key string, reservation ...BReservation) {
+	if _, ok := b.Data[key]; !ok {
+		b.Data[key] = &Entry{}
+	}
+
+	b.Data[key].Reservations = append(b.Data[key].Reservations, reservation...)
+}
+
+func (b *Breakdown) SetLabel(key string, label string) {
+	if _, ok := b.Data[key]; !ok {
+		b.Data[key] = &Entry{}
+	}
+
+	b.Data[key].Label = label
+}
+
+func (b *Breakdown) DamageType(key string, damageTypes ...BDamageType) {
+	if _, ok := b.Data[key]; !ok {
+		b.Data[key] = &Entry{}
+	}
+
+	b.Data[key].DamageTypes = append(b.Data[key].DamageTypes, damageTypes...)
+}
+
+func (b *Breakdown) Has(key string) bool {
+	_, ok := b.Data[key]
+	return ok
 }
