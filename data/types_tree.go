@@ -168,60 +168,86 @@ type Sprite struct {
 	Coords   map[string]Coord `json:"coords"`
 }
 
-type AscendancyName string
+type AscendancyID int
 
 const (
-	Ascendant    AscendancyName = "Ascendant"
-	Assassin     AscendancyName = "Assassin"
-	Berserker    AscendancyName = "Berserker"
-	Champion     AscendancyName = "Champion"
-	Chieftain    AscendancyName = "Chieftain"
-	Deadeye      AscendancyName = "Deadeye"
-	Elementalist AscendancyName = "Elementalist"
-	Gladiator    AscendancyName = "Gladiator"
-	Guardian     AscendancyName = "Guardian"
-	Hierophant   AscendancyName = "Hierophant"
-	Inquisitor   AscendancyName = "Inquisitor"
-	Juggernaut   AscendancyName = "Juggernaut"
-	Necromancer  AscendancyName = "Necromancer"
-	Occultist    AscendancyName = "Occultist"
-	Pathfinder   AscendancyName = "Pathfinder"
-	Raider       AscendancyName = "Raider"
-	Saboteur     AscendancyName = "Saboteur"
-	Slayer       AscendancyName = "Slayer"
-	Trickster    AscendancyName = "Trickster"
+	Ascendant AscendancyID = iota
+	Assassin
+	Berserker
+	Champion
+	Chieftain
+	Deadeye
+	Elementalist
+	Gladiator
+	Guardian
+	Hierophant
+	Inquisitor
+	Juggernaut
+	Necromancer
+	Occultist
+	Pathfinder
+	Raider
+	Saboteur
+	Slayer
+	Trickster
 )
+
+type AscendancyName string
+
+var AscendancyNameByID = map[AscendancyID]AscendancyName{
+	Ascendant:    "Ascendant",
+	Assassin:     "Assassin",
+	Berserker:    "Berserker",
+	Champion:     "Champion",
+	Chieftain:    "Chieftain",
+	Deadeye:      "Deadeye",
+	Elementalist: "Elementalist",
+	Gladiator:    "Gladiator",
+	Guardian:     "Guardian",
+	Hierophant:   "Hierophant",
+	Inquisitor:   "Inquisitor",
+	Juggernaut:   "Juggernaut",
+	Necromancer:  "Necromancer",
+	Occultist:    "Occultist",
+	Pathfinder:   "Pathfinder",
+	Raider:       "Raider",
+	Saboteur:     "Saboteur",
+	Slayer:       "Slayer",
+	Trickster:    "Trickster",
+}
+
+type ClassID int
+
+const (
+	Scion ClassID = iota
+	Marauder
+	Ranger
+	Witch
+	Duelist
+	Templar
+	Shadow
+)
+
+var ClassAscendancies = map[ClassID][]AscendancyID{
+	Scion:    {Ascendant},
+	Marauder: {Juggernaut, Berserker, Chieftain},
+	Ranger:   {Deadeye, Pathfinder, Raider},
+	Witch:    {Elementalist, Necromancer, Occultist},
+	Duelist:  {Slayer, Gladiator, Champion},
+	Templar:  {Hierophant, Inquisitor, Guardian},
+	Shadow:   {Assassin, Trickster, Saboteur},
+}
 
 type ClassName string
 
-const (
-	Duelist  ClassName = "Duelist"
-	Marauder ClassName = "Marauder"
-	Ranger   ClassName = "Ranger"
-	Scion    ClassName = "Scion"
-	Shadow   ClassName = "Shadow"
-	Templar  ClassName = "Templar"
-	Witch    ClassName = "Witch"
-)
+var ClassNameByID = map[ClassID]ClassName{
+	Scion:    "Scion",
+	Marauder: "Marauder",
+	Ranger:   "Ranger",
+	Witch:    "Witch",
+	Duelist:  "Duelist",
+	Templar:  "Templar",
+	Shadow:   "Shadow",
+}
 
 type OilType string
-
-var ClassAscendancies = map[ClassName][]AscendancyName{
-	Duelist:  {Slayer, Gladiator, Champion},
-	Marauder: {Juggernaut, Berserker, Chieftain},
-	Ranger:   {Deadeye, Pathfinder, Raider},
-	Scion:    {Ascendant},
-	Shadow:   {Assassin, Trickster, Saboteur},
-	Templar:  {Hierophant, Inquisitor, Guardian},
-	Witch:    {Elementalist, Necromancer, Occultist},
-}
-
-var ClassIDs = map[ClassName]int{
-	Duelist:  4,
-	Marauder: 1,
-	Ranger:   2,
-	Scion:    0,
-	Shadow:   6,
-	Templar:  5,
-	Witch:    3,
-}

@@ -629,7 +629,7 @@ func InitEnv(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode OutputM
 		env.Player.WeaponData1 = &SkillData{}
 	}
 
-	for k, v := range data.UnarmedWeaponData[data.ClassIDs[env.Spec.ClassName]] {
+	for k, v := range data.UnarmedWeaponData[env.Spec.ClassID] {
 		utils.Set(env.Player.WeaponData1, k, v)
 	}
 
