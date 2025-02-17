@@ -806,8 +806,8 @@ export declare namespace pob {
     GetNumberOption(name: string): number;
     GetStringOption(name: string): string;
     RemoveConfigOption(name: string): void;
-    SetAscendancy(ascendancyID: number): void;
-    SetClass(classID: number): void;
+    SetAscendancy(ascendancyName: string): void;
+    SetClass(className: string): void;
     SetConfigOption(value: pob.Input): void;
     SetDefaultGemLevel(gemLevel: number): void;
     SetDefaultGemQuality(gemQuality: number): void;

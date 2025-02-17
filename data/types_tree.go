@@ -26,7 +26,7 @@ type Class struct {
 }
 
 type Ascendancy struct {
-	ID                AscendancyID     `json:"id"`
+	ID                AscendancyName   `json:"id"`
 	Name              AscendancyName   `json:"name"`
 	FlavourText       *string          `json:"flavourText,omitempty"`
 	FlavourTextColour *string          `json:"flavourTextColour,omitempty"`

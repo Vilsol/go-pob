@@ -129,12 +129,12 @@ func (b *PathOfBuilding) DeleteAllSocketGroups() {
 	b.Skills.SkillSets[b.Skills.ActiveSkillSet-1].Skills = make([]Skill, 0)
 }
 
-func (b *PathOfBuilding) SetClass(classID data.ClassID) {
-	b.Build.ClassName = data.ClassNameByID[classID]
+func (b *PathOfBuilding) SetClass(className data.ClassName) {
+	b.Build.ClassName = className
 }
 
-func (b *PathOfBuilding) SetAscendancy(ascendancyID data.AscendancyID) {
-	b.Build.AscendClassName = data.AscendancyNameByID[ascendancyID]
+func (b *PathOfBuilding) SetAscendancy(ascendancyName data.AscendancyName) {
+	b.Build.AscendClassName = ascendancyName
 }
 
 func (b *PathOfBuilding) SetLevel(level int) {
