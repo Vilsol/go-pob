@@ -224,14 +224,14 @@ var MonsterAllyLifeTable = []float64{0, 15, 17, 20, 23, 26, 30, 33, 37, 41, 46, 
 var MonsterDamageTable = []float64{0, 4.9899997711182, 5.5599999427795, 6.1599998474121, 6.8099999427795, 7.5, 8.2299995422363, 9, 9.8199996948242, 10.699999809265, 11.619999885559, 12.60000038147, 13.640000343323, 14.739999771118, 15.909999847412, 17.139999389648, 18.450000762939, 19.829999923706, 21.290000915527, 22.840000152588, 24.469999313354, 26.190000534058, 28.010000228882, 29.940000534058, 31.959999084473, 34.110000610352, 36.360000610352, 38.75, 41.259998321533, 43.909999847412, 46.700000762939, 49.650001525879, 52.75, 56.009998321533, 59.450000762939, 63.080001831055, 66.889999389648, 70.910003662109, 75.129997253418, 79.580001831055, 84.26000213623, 89.180000305176, 94.349998474121, 99.800003051758, 105.51999664307, 111.5299987793, 117.86000061035, 124.5, 131.49000549316, 138.83000183105, 146.5299987793, 154.63000488281, 163.13999938965, 172.07000732422, 181.44999694824, 191.30000305176, 201.63000488281, 212.47999572754, 223.86999511719, 235.83000183105, 248.36999511719, 261.5299987793, 275.32998657227, 289.82000732422, 305.01000976563, 320.94000244141, 337.64999389648, 355.17999267578, 373.54998779297, 392.80999755859, 413.01000976563, 434.17999267578, 456.36999511719, 479.61999511719, 504, 529.53997802734, 556.29998779297, 584.34997558594, 613.72998046875, 644.5, 676.75, 710.52001953125, 745.89001464844, 782.94000244141, 821.72998046875, 862.35998535156, 904.90002441406, 949.44000244141, 996.07000732422, 1044.8900146484, 1096, 1149.5, 1205.5, 1264.1099853516, 1325.4499511719, 1389.6400146484, 1456.8199462891, 1527.1199951172, 1600.6800537109, 1677.6400146484, 1758.1700439453}
 var MonsterArmourTable = []float64{0, 22, 26, 31, 36, 42, 48, 55, 62, 70, 78, 87, 97, 107, 119, 131, 144, 158, 173, 190, 207, 226, 246, 267, 290, 315, 341, 370, 400, 432, 467, 504, 543, 585, 630, 678, 730, 785, 843, 905, 972, 1042, 1118, 1198, 1284, 1375, 1472, 1575, 1685, 1802, 1927, 2059, 2200, 2350, 2509, 2678, 2858, 3050, 3253, 3469, 3698, 3942, 4201, 4476, 4768, 5078, 5407, 5756, 6127, 6520, 6937, 7380, 7850, 8348, 8876, 9436, 10030, 10660, 11328, 12036, 12787, 13582, 14425, 15319, 16265, 17268, 18331, 19457, 20649, 21913, 23250, 24667, 26168, 27756, 29438, 31220, 33105, 35101, 37214, 39450, 41817}
 
-var UnarmedWeaponData = map[int]map[string]interface{}{
-	0: {"Type": None, "AttackRate": 1.2, "CritChance": float64(0), "PhysicalMin": float64(2), "PhysicalMax": float64(6)}, // Scion
-	1: {"Type": None, "AttackRate": 1.2, "CritChance": float64(0), "PhysicalMin": float64(2), "PhysicalMax": float64(8)}, // Marauder
-	2: {"Type": None, "AttackRate": 1.2, "CritChance": float64(0), "PhysicalMin": float64(2), "PhysicalMax": float64(5)}, // Ranger
-	3: {"Type": None, "AttackRate": 1.2, "CritChance": float64(0), "PhysicalMin": float64(2), "PhysicalMax": float64(5)}, // Witch
-	4: {"Type": None, "AttackRate": 1.2, "CritChance": float64(0), "PhysicalMin": float64(2), "PhysicalMax": float64(6)}, // Duelist
-	5: {"Type": None, "AttackRate": 1.2, "CritChance": float64(0), "PhysicalMin": float64(2), "PhysicalMax": float64(6)}, // Templar
-	6: {"Type": None, "AttackRate": 1.2, "CritChance": float64(0), "PhysicalMin": float64(2), "PhysicalMax": float64(5)}, // Shadow
+var UnarmedWeaponData = map[ClassID]map[string]interface{}{
+	Scion:    {"Type": None, "AttackRate": 1.2, "CritChance": float64(0), "PhysicalMin": float64(2), "PhysicalMax": float64(6)},
+	Marauder: {"Type": None, "AttackRate": 1.2, "CritChance": float64(0), "PhysicalMin": float64(2), "PhysicalMax": float64(8)},
+	Ranger:   {"Type": None, "AttackRate": 1.2, "CritChance": float64(0), "PhysicalMin": float64(2), "PhysicalMax": float64(5)},
+	Witch:    {"Type": None, "AttackRate": 1.2, "CritChance": float64(0), "PhysicalMin": float64(2), "PhysicalMax": float64(5)},
+	Duelist:  {"Type": None, "AttackRate": 1.2, "CritChance": float64(0), "PhysicalMin": float64(2), "PhysicalMax": float64(6)},
+	Templar:  {"Type": None, "AttackRate": 1.2, "CritChance": float64(0), "PhysicalMin": float64(2), "PhysicalMax": float64(6)},
+	Shadow:   {"Type": None, "AttackRate": 1.2, "CritChance": float64(0), "PhysicalMin": float64(2), "PhysicalMax": float64(5)},
 }
 
 type SkillType string

@@ -19,7 +19,9 @@ type PassiveSpec struct {
 	SubGraphs          map[string]interface{} // TODO Implement
 	MasterySelections  map[string]interface{} // TODO Implement
 
+	ClassID        data.ClassID
 	ClassName      data.ClassName
+	AscendancyID   data.AscendancyID
 	AscendancyName data.AscendancyName
 
 	AllocatedNotableCount int
@@ -42,10 +44,10 @@ func (p *PassiveSpec) Tree() *data.Tree {
 }
 
 func (p *PassiveSpec) Class() data.Class {
-	return p.Tree().Classes[data.ClassIDs[p.ClassName]]
+	return p.Tree().Classes[p.ClassID]
 }
 
-func (p *PassiveSpec) SelectClass(className data.ClassName) {
+func (p *PassiveSpec) SelectClass(classID data.ClassID) {
 	/*
 		TODO Implement
 		if self.curClassId then
@@ -56,7 +58,8 @@ func (p *PassiveSpec) SelectClass(className data.ClassName) {
 		end
 	*/
 
-	p.ClassName = className
+	p.ClassID = classID
+	p.ClassName = data.ClassNameByID[classID]
 
 	/*
 		TODO Implement
@@ -66,11 +69,12 @@ func (p *PassiveSpec) SelectClass(className data.ClassName) {
 		self.allocNodes[startNode.id] = startNode
 	*/
 
-	p.SelectAscendancyClass(data.ClassAscendancies[className][0])
+	p.SelectAscendancyClass(data.ClassAscendancies[p.ClassID][0])
 }
 
-func (p *PassiveSpec) SelectAscendancyClass(ascendancyName data.AscendancyName) {
-	p.AscendancyName = ascendancyName
+func (p *PassiveSpec) SelectAscendancyClass(ascendancyID data.AscendancyID) {
+	p.AscendancyID = ascendancyID
+	p.AscendancyName = data.AscendancyNameByID[ascendancyID]
 
 	/*
 		TODO Implement

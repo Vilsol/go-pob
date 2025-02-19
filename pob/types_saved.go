@@ -28,15 +28,15 @@ const (
 )
 
 type Build struct {
-	PantheonMinorGod       string           `xml:"pantheonMinorGod,attr"` // TODO Enum
-	PantheonMajorGod       string           `xml:"pantheonMajorGod,attr"` // TODO Enum
-	Bandit                 string           `xml:"bandit,attr"`           // TODO Enum
-	ViewMode               BuildViewMode    `xml:"viewMode,attr"`
-	ClassName              string           `xml:"className,attr"`       // TODO Enum
-	AscendClassName        string           `xml:"ascendClassName,attr"` // TODO Enum
-	Level                  int              `xml:"level,attr"`
-	MainSocketGroup        int              `xml:"mainSocketGroup,attr"`
-	TargetVersion          data.GameVersion `xml:"targetVersion,attr"`
+	PantheonMinorGod       string              `xml:"pantheonMinorGod,attr"` // TODO Enum
+	PantheonMajorGod       string              `xml:"pantheonMajorGod,attr"` // TODO Enum
+	Bandit                 string              `xml:"bandit,attr"`           // TODO Enum
+	ViewMode               BuildViewMode       `xml:"viewMode,attr"`
+	ClassName              data.ClassName      `xml:"className,attr"`
+	AscendClassName        data.AscendancyName `xml:"ascendClassName,attr"`
+	Level                  int                 `xml:"level,attr"`
+	MainSocketGroup        int                 `xml:"mainSocketGroup,attr"`
+	TargetVersion          data.GameVersion    `xml:"targetVersion,attr"`
 	PassiveNodes           []int64
 	PassiveNodesStartPaths map[int64][]int64
 
@@ -163,10 +163,10 @@ type Gem struct {
 }
 
 type Spec struct {
-	ClassID        int              `xml:"classID,attr"`       // TODO Enum
-	AscendClassID  int              `xml:"ascendClassID,attr"` // TODO Enum
-	TreeVersion    data.TreeVersion `xml:"treeVersion,attr"`   // TODO Enum
-	NodesAttr      string           `xml:"nodes,attr"`
-	MasteryEffects string           `xml:"masteryEffects,attr"`
-	URL            string           `xml:"URL"`
+	ClassID        data.ClassID      `xml:"classID,attr"`
+	AscendClassID  data.AscendancyID `xml:"ascendClassID,attr"`
+	TreeVersion    data.TreeVersion  `xml:"treeVersion,attr"` // TODO Enum
+	NodesAttr      string            `xml:"nodes,attr"`
+	MasteryEffects string            `xml:"masteryEffects,attr"`
+	URL            string            `xml:"URL"`
 }

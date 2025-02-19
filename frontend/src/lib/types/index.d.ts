@@ -245,13 +245,15 @@ export declare namespace calculator {
     Jewels?: Record<string, unknown | undefined>;
     SubGraphs?: Record<string, unknown | undefined>;
     MasterySelections?: Record<string, unknown | undefined>;
+    ClassID: number;
     ClassName: string;
+    AscendancyID: number;
     AscendancyName: string;
     AllocatedNotableCount: number;
     AllocatedMasteryCount: number;
     Class(): data.Class;
-    SelectAscendancyClass(ascendancyName: string): void;
-    SelectClass(className: string): void;
+    SelectAscendancyClass(ascendancyID: number): void;
+    SelectClass(classID: number): void;
     Tree(): (data.Tree | undefined);
   }
   interface RequirementsTable {
@@ -804,8 +806,8 @@ export declare namespace pob {
     GetNumberOption(name: string): number;
     GetStringOption(name: string): string;
     RemoveConfigOption(name: string): void;
-    SetAscendancy(ascendancy: string): void;
-    SetClass(clazz: string): void;
+    SetAscendancy(ascendancyName: string): void;
+    SetClass(className: string): void;
     SetConfigOption(value: pob.Input): void;
     SetDefaultGemLevel(gemLevel: number): void;
     SetDefaultGemQuality(gemQuality: number): void;
