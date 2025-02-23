@@ -66,6 +66,8 @@
             .then(async (data) => {
               console.log('wasm runtime size:', data.byteLength);
 
+              loadingMessage = 'Booting...';
+
               syncWrap
                 ?.boot(
                   data,
