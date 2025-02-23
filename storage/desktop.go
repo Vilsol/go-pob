@@ -184,7 +184,7 @@ func (d desktopStorage) ExistsInBuild(key string) bool {
 		if os.IsNotExist(err) {
 			return false
 		}
-		panic(err)
+		panic(fmt.Errorf("failed checking build: %w", err))
 	}
 	return true
 }
@@ -220,9 +220,9 @@ func (d desktopStorage) Delete(dir string) error {
 }
 
 func (d desktopStorage) buildBaseDir() string {
-	dir, err := os.UserCacheDir()
+	dir, err := os.UserConfigDir()
 	if err != nil {
-		panic(err)
+		panic(fmt.Errorf("failed getting user config: %w", err))
 	}
 
 	return filepath.Join(dir, "go-pob", "builds")
@@ -242,18 +242,30 @@ func InitializeStorage(
 ) {
 	dir, err := os.UserCacheDir()
 	if err != nil {
-		panic(err)
+		panic(fmt.Errorf("failed getting user cache dir: %w", err))
 	}
 
 	baseCacheDir := filepath.Join(dir, "go-pob", "bundle-cache")
 	if err := os.MkdirAll(baseCacheDir, 0777); err != nil {
 		if !os.IsExist(err) {
-			panic(err)
+			panic(fmt.Errorf("failed creating cache dir: %w", err))
 		}
 	}
 
 	cache, err = fscache.New(baseCacheDir, 0755, time.Hour*24*30) // 30 day cache
 	if err != nil {
-		panic(err)
+		panic(fmt.Errorf("failed creating cache: %w", err))
+	}
+
+	configDir, err := os.UserConfigDir()
+	if err != nil {
+		panic(fmt.Errorf("failed getting user config directory: %w", err))
+	}
+
+	baseBuildDir := filepath.Join(configDir, "go-pob", "builds")
+	if err := os.MkdirAll(baseBuildDir, 0777); err != nil {
+		if !os.IsExist(err) {
+			panic(fmt.Errorf("failed creating user build directory: %w", err))
+		}
 	}
 }

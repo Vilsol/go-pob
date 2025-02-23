@@ -33,7 +33,9 @@ jobs:
         working-directory: frontend
 
       - name: Build wasm
-        run: go build -ldflags="-s -w" -v -o frontend/static/go-pob.wasm ./wasm
+        run: |
+          go build -trimpath -tags=timetzdata -v -o frontend/static/go-pob.wasm ./wasm
+          gzip frontend/static/go-pob.wasm
         env:
           GOOS: js
           GOARCH: wasm
@@ -43,7 +45,7 @@ jobs:
         env:
           PATH_BASE: "/go-pob"
         run: |
-          pnpm run build
+          pnpm run build --mode production
           ls -lah build
 
       - name: Deploy
@@ -79,7 +81,9 @@ jobs:
         working-directory: frontend
 
       - name: Build wasm
-        run: go build -ldflags="-s -w" -v -o frontend/static/go-pob.wasm ./wasm
+        run: |
+          go build -trimpath -tags=timetzdata -v -o frontend/static/go-pob.wasm ./wasm
+          gzip frontend/static/go-pob.wasm
         env:
           GOOS: js
           GOARCH: wasm
@@ -87,7 +91,7 @@ jobs:
       - name: Build frontend
         working-directory: frontend
         run: |
-          pnpm run build
+          pnpm run build --mode production
           ls -lah build
 
       - name: Deploy

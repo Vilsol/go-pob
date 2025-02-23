@@ -16,6 +16,7 @@ require (
 	atomicgo.dev/assert v0.0.2 // indirect
 	github.com/Vilsol/slox v0.0.1 // indirect
 	github.com/atomicgo/cursor v0.0.1 // indirect
+	github.com/dave/jennifer v1.7.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/gookit/color v1.5.4 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.8 // indirect

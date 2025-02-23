@@ -4,8 +4,7 @@ package storage
 
 import (
 	"context"
-	"crypto/sha256"
-	"encoding/hex"
+	"encoding/base64"
 	"log/slog"
 
 	"github.com/Vilsol/go-pob/utils"
@@ -47,8 +46,7 @@ func Get() Storage {
 }
 
 func (d *wasmStorage) GetCache(key string) ([]byte, error) {
-	sum := sha256.Sum256([]byte(key))
-	hash := hex.EncodeToString(sum[:])
+	hash := base64.RawURLEncoding.EncodeToString([]byte(key))
 
 	slog.Log(
 		context.Background(),
@@ -62,8 +60,7 @@ func (d *wasmStorage) GetCache(key string) ([]byte, error) {
 }
 
 func (d *wasmStorage) SetCache(key string, value []byte) error {
-	sum := sha256.Sum256([]byte(key))
-	hash := hex.EncodeToString(sum[:])
+	hash := base64.RawURLEncoding.EncodeToString([]byte(key))
 
 	slog.Log(
 		context.Background(),
@@ -80,8 +77,7 @@ func (d *wasmStorage) SetCache(key string, value []byte) error {
 }
 
 func (d *wasmStorage) ExistsInCache(key string) bool {
-	sum := sha256.Sum256([]byte(key))
-	hash := hex.EncodeToString(sum[:])
+	hash := base64.RawURLEncoding.EncodeToString([]byte(key))
 	return d.exists("cache", hash)
 }
 

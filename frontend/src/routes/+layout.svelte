@@ -38,8 +38,8 @@
             return;
           }
 
-          fetch(assets + '/go-pob.wasm')
-            .then((data) => data.arrayBuffer())
+          fetch(assets + (import.meta.env.MODE === 'development' ? '/go-pob.wasm' : '/go-pob.wasm.gz'))
+            .then(async (data) => data.arrayBuffer())
             .then((data) => {
               syncWrap
                 ?.boot(

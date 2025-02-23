@@ -69,7 +69,7 @@ func (v *TreeVersionData) RawTree() []byte {
 		var err error
 		compressedTree, err = storage.Get().GetCache(treeURL)
 		if err != nil {
-			panic(err)
+			panic(fmt.Errorf("failed reading compressed tree: %w", err))
 		}
 	} else {
 		slog.Debug("fetching", slog.String("url", treeURL))
