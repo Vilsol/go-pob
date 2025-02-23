@@ -116,7 +116,6 @@ func Number[T numberLike](val any) T {
 		return T(0)
 	}
 
-	panic("unreachable")
 }
 
 func Or(val *mod.ModValueMulti, or float64) float64 {
