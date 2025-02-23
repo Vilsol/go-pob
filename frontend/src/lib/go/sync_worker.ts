@@ -10,6 +10,19 @@ import type { CalcDataColProp } from '$lib/calcs/calc_sections';
 import { configure, fs } from '@zenfs/core';
 import { IndexedDB } from '@zenfs/dom';
 
+const storageConfigurationPromise = configure({
+  mounts: {
+    '/cache': {
+      backend: IndexedDB,
+      storeName: 'cache'
+    },
+    '/builds': {
+      backend: IndexedDB,
+      storeName: 'builds'
+    }
+  }
+});
+
 class PoBWorker {
   private _currentBuild?: pob.PathOfBuilding;
 
@@ -52,18 +65,7 @@ class PoBWorker {
 
         config.InitLogging(false);
 
-        await configure({
-          mounts: {
-            '/cache': {
-              backend: IndexedDB,
-              storeName: 'cache'
-            },
-            '/builds': {
-              backend: IndexedDB,
-              storeName: 'builds'
-            }
-          }
-        });
+        await storageConfigurationPromise;
 
         await storage.InitializeStorage(
           // List
