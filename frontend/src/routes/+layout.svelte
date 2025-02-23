@@ -39,8 +39,31 @@
           }
 
           fetch(assets + (import.meta.env.MODE === 'development' ? '/go-pob.wasm' : '/go-pob.wasm.gz'))
-            .then(async (data) => data.arrayBuffer())
+            .then(async (data) => {
+              if (!data.body) {
+                loadingMessage = 'Failed to load wasm runtime';
+                throw new Error('Failed to load wasm runtime');
+              }
+
+              return data.arrayBuffer();
+            })
             .then((data) => {
+              if (data.byteLength < 2) {
+                loadingMessage = 'Failed to load wasm runtime';
+                throw new Error('Failed to load wasm runtime');
+              }
+
+              const dataArray = new Uint8Array(data);
+              if (dataArray[0] === 0x1f && dataArray[1] === 0x8b) {
+                loadingMessage = 'Decompressing wasm runtime...';
+
+                const decompressedStream = new Response(data).body!.pipeThrough(new DecompressionStream('gzip'));
+                return new Response(decompressedStream).arrayBuffer();
+              }
+
+              return data;
+            })
+            .then(async (data) => {
               console.log('wasm runtime size:', data.byteLength);
 
               syncWrap
