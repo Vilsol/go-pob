@@ -1,20 +1,17 @@
 <script lang="ts">
   import type { Outputs } from '../custom_types';
-  import { outputs, currentBuild } from '../global';
+  import { outputs, currentBuild } from '../global.js';
   import { displayStats } from '../display/stats';
   import type { Stat } from '../display/stats';
   import { printf } from 'fast-printf';
   import { colorCodes } from '../display/colors';
   import { base } from '$app/paths';
   import { onMount } from 'svelte';
-  import { GetSkillGems } from '../cache';
-  import { exposition } from '../types';
+  import { GetSkillGems, type SkillGemCacheItem } from '../cache';
   import { writable } from 'svelte/store';
   import { syncWrap } from '../go/worker';
-  import { openOverlay } from '../overlay';
-  import Options from './overlays/Options.svelte';
-  import Version from '$lib/components/overlays/Version.svelte';
   import { logError } from '$lib/utils';
+  import InfoBox from '$lib/components/InfoBox.svelte';
 
   interface Line {
     label: string;
@@ -54,7 +51,7 @@
 
   const formatStat = (statData: Stat, statVal: number, overCapStatVal?: number): [string, string] => {
     const val = statVal * (((statData.pc || statData.mod) && 100) || 1) - ((statData.mod && 100) || 0);
-    let color = colorCodes.NEGATIVE;
+    let color: string = colorCodes.NEGATIVE;
     if (statVal >= 0) {
       color = '#ffffff';
     }
@@ -157,7 +154,7 @@
     return lines;
   };
 
-  const skillGemMapping = $state<Record<string, exposition.SkillGem>>({});
+  const skillGemMapping = $state<Record<string, SkillGemCacheItem>>({});
   onMount(() => {
     GetSkillGems()
       .then((all) => {
@@ -224,20 +221,6 @@
     currentBuild.set($currentBuild);
   });
 
-  const openOptions = () => {
-    openOverlay({
-      component: Options,
-      props: {}
-    });
-  };
-
-  const openVersion = () => {
-    openOverlay({
-      component: Version,
-      props: {}
-    });
-  };
-
   let collapsed = $state(false);
 </script>
 
@@ -291,20 +274,7 @@
       </div>
     </div>
 
-    <div class="flex flex-row p-2">
-      <div class="flex flex-col flex-1 gap-2">
-        <button class="container min-w-full flex-1" onclick={openOptions}>Options</button>
-        <button class="container min-w-full flex-1">About</button>
-      </div>
-      <div class="flex flex-col flex-1 items-center">
-        <span class="flex-1 flex place-items-center">go-pob</span>
-        <button class="flex-1 flex place-items-center cursor-pointer" onclick={openVersion}>
-          {#await syncWrap?.BuildInfo() then buildInfo}
-            Version: {buildInfo?.Main?.Version}
-          {/await}
-        </button>
-      </div>
-    </div>
+    <InfoBox />
 
     <button class="absolute -right-3.5 top-1/2 cursor-pointer font-bold" onclick={() => (collapsed = true)}>&lt;</button>
   </div>
@@ -312,7 +282,7 @@
 
 <style lang="postcss">
   .sidebar-stat-wrapper {
-    max-height: calc(100% - 4.75em);
+    max-height: calc(100% - 5.5em);
   }
 
   .side-by-side-sidebar {

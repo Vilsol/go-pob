@@ -3,7 +3,7 @@
   import type { Node, Tree } from '$lib/skill_tree/types';
   import { calculateNodePos, distance, drawnNodes, classStartNodes, type Point } from '../../skill_tree';
   import { onMount } from 'svelte';
-  import { currentBuild, zoomSensitivity } from '$lib/global';
+  import { currentBuild, zoomSensitivity } from '$lib/global.js';
   import { syncWrap } from '$lib/go/worker';
   import { get, writable } from 'svelte/store';
   import { logError } from '$lib/utils';

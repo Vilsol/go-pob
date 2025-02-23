@@ -1,7 +1,7 @@
 <script lang="ts">
   import Input from '$lib/components/Input.svelte';
   import { syncWrap } from '$lib/go/worker';
-  import { sampleBuildCode } from '$lib/global';
+  import { sampleBuildCode } from '$lib/global.js';
   import { logError } from '$lib/utils';
 
   // TODO Set to empty in prod

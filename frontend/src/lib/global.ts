@@ -5,10 +5,14 @@ import { syncWrap } from './go/worker';
 import { browser } from '$app/environment';
 import type { ProxiedRemote } from '$lib/type_utils';
 import { logError } from '$lib/utils';
+import { PersistedState } from 'runed';
 
 export const outputs = writable<Outputs | undefined>();
 
 export const currentBuild = writable<ProxiedRemote<pob.PathOfBuilding> | undefined>();
+export const currentBuildPath = new PersistedState<string | undefined>('currentBuildPath', undefined, {
+  syncTabs: false
+});
 
 let uiTickLock = false;
 let uiTickAfter = false;

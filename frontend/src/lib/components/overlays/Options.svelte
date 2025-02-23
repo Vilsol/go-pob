@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { fontScaling, zoomSensitivity, devMode } from '$lib/global';
+  import { fontScaling, zoomSensitivity, devMode } from '$lib/global.js';
 
   let {
     onclose

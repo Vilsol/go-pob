@@ -1,20 +1,19 @@
 /* eslint-disable */
 // @ts-nocheck
 export let builds;
-export let cache;
 export let calculator;
 export let config;
 export let exposition;
 export let pob;
 export let raw;
+export let storage;
 
 export const initializeCrystalline = () => {
   builds = {
+    EmptyBuild: globalThis['go']['go-pob']['builds']['EmptyBuild'],
     ParseBuild: globalThis['go']['go-pob']['builds']['ParseBuild'],
-    ParseBuildStr: globalThis['go']['go-pob']['builds']['ParseBuildStr']
-  };
-  cache = {
-    InitializeDiskCache: globalThis['go']['go-pob']['cache']['InitializeDiskCache']
+    ParseBuildStr: globalThis['go']['go-pob']['builds']['ParseBuildStr'],
+    SerializeBuild: globalThis['go']['go-pob']['builds']['SerializeBuild']
   };
   calculator = {
     NewCalculator: globalThis['go']['go-pob']['calculator']['NewCalculator']
@@ -37,5 +36,13 @@ export const initializeCrystalline = () => {
   };
   raw = {
     InitializeAll: globalThis['go']['go-pob']['raw']['InitializeAll']
+  };
+  storage = {
+    DeleteBuild: globalThis['go']['go-pob']['storage']['DeleteBuild'],
+    GetBuild: globalThis['go']['go-pob']['storage']['GetBuild'],
+    InitializeStorage: globalThis['go']['go-pob']['storage']['InitializeStorage'],
+    ListBuilds: globalThis['go']['go-pob']['storage']['ListBuilds'],
+    NewFolder: globalThis['go']['go-pob']['storage']['NewFolder'],
+    SetBuild: globalThis['go']['go-pob']['storage']['SetBuild']
   };
 };

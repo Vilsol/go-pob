@@ -5,7 +5,7 @@
   import SelectSelection from '$lib/components/SelectSelection.svelte';
   import type { AllVarTypes, ConfigSection } from '$lib/display/configurations';
   import { configurations } from '$lib/display/configurations';
-  import { currentBuild } from '$lib/global';
+  import { currentBuild } from '$lib/global.js';
   import type { pob } from '$lib/types';
   import { syncWrap } from '$lib/go/worker';
   import type { Remote } from 'comlink';

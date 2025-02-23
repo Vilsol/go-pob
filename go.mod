@@ -1,6 +1,6 @@
 module github.com/Vilsol/go-pob
 
-go 1.23.3
+go 1.24.0
 
 require (
 	github.com/MarvinJWendt/testza v0.5.2

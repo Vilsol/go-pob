@@ -1,10 +1,9 @@
 /* eslint-disable */
 export declare namespace builds {
+  function EmptyBuild(): (pob.PathOfBuilding | undefined);
   function ParseBuild(rawXML?: Uint8Array): [(pob.PathOfBuilding | undefined), Error];
   function ParseBuildStr(rawXML: string): [(pob.PathOfBuilding | undefined), Error];
-}
-export declare namespace cache {
-  function InitializeDiskCache(arg1: (arg1: string) => Promise<(Uint8Array | undefined)>, arg2: (arg1: string, arg2?: Uint8Array) => Promise<void>, arg3: (arg1: string) => Promise<boolean>): Promise<void>;
+  function SerializeBuild(build?: pob.PathOfBuilding): [(Uint8Array | undefined), Error];
 }
 export declare namespace calculator {
   interface ActiveSkill {
@@ -745,7 +744,6 @@ export declare namespace pob {
     MainSocketGroup: number;
     TargetVersion: string;
     PassiveNodes?: Array<number>;
-    PassiveNodesStartPaths?: Record<number, Array<number> | undefined>;
     PlayerStats: Array<pob.PlayerStat>;
   }
   interface Calcs {
@@ -1307,6 +1305,21 @@ export declare namespace raw {
   }
   function InitializeAll(version: string, updateFunc: (arg1: string) => Promise<void>): Promise<Error>;
 }
+export declare namespace storage {
+  interface DirEntry {
+    Name: string;
+    Type: string;
+    Class: string;
+    LastEdit: string;
+    Level: number;
+  }
+  function DeleteBuild(path: string): Promise<Error>;
+  function GetBuild(path: string): Promise<[string, Error]>;
+  function InitializeStorage(list: (arg1: string, arg2: string) => Promise<(Array<storage.DirEntry> | undefined)>, get: (arg1: string, arg2: string) => Promise<(Uint8Array | undefined)>, set: (arg1: string, arg2: string, arg3?: Uint8Array) => Promise<void>, exists: (arg1: string, arg2: string) => Promise<boolean>, createFolder: (arg1: string, arg2: string) => Promise<void>, del: (arg1: string, arg2: string) => Promise<void>): Promise<void>;
+  function ListBuilds(dir: string): Promise<[(Array<storage.DirEntry> | undefined), Error]>;
+  function NewFolder(path: string): Promise<Error>;
+  function SetBuild(path: string, value: string): Promise<Error>;
+}
 export declare namespace time {
   interface Location {
     String(): string;
@@ -1315,7 +1328,9 @@ export declare namespace time {
     Add(d: number): time.Time;
     AddDate(years: number, months: number, days: number): time.Time;
     After(u: time.Time): boolean;
+    AppendBinary(b?: Uint8Array): [(Uint8Array | undefined), Error];
     AppendFormat(b?: Uint8Array, layout: string): (Uint8Array | undefined);
+    AppendText(b?: Uint8Array): [(Uint8Array | undefined), Error];
     Before(u: time.Time): boolean;
     Clock(): [number, number, number];
     Compare(u: time.Time): number;

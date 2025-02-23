@@ -1,9 +1,11 @@
 <script lang="ts">
   import NumberInput from './NumberInput.svelte';
-  import { currentBuild } from '$lib/global';
+  import { currentBuild, currentBuildPath } from '$lib/global.js';
   import { writable } from 'svelte/store';
   import { syncWrap } from '../go/worker';
   import { logError } from '$lib/utils';
+  import { openOverlay } from '$lib/overlay';
+  import SaveAs from '$lib/components/overlays/SaveAs.svelte';
 
   let updatingCurrentClass = $state(true);
   let updatingCurrentAscendancy = $state(true);
@@ -61,20 +63,44 @@
       updatingCurrentLevel = false;
     }).catch(logError);
   });
+
+  const saveBuildAs = () => {
+    openOverlay({
+      component: SaveAs
+    });
+  };
+
+  const saveBuild = () => {
+    if (!currentBuildPath || !currentBuildPath.current) {
+      return saveBuildAs();
+    }
+
+    syncWrap.SaveBuildAs(currentBuildPath.current).catch(logError);
+  };
+
+  const onBack = () => {
+    void syncWrap.ClearBuild();
+    currentBuildPath.current = undefined;
+  };
 </script>
 
 <div class="flex flex-row w-screen border-b-2 border-white bg-neutral-800 min-h-[3em]">
   <!-- Left Side -->
   <div class="flex flex-row justify-between border-r-2 border-white p-2 flex-1 items-center">
     <div class="flex flex-row gap-3 items-center">
-      <button class="container">&lt;&lt; Back</button>
+      <button class="container" onclick={onBack}>&lt;&lt; Back</button>
       <div class="flex flex-row items-center">
         <span>Current Build:</span>
-        <!-- TODO Placeholder -->
-        <div class="ml-2 container">Unnamed build</div>
+        <div class="ml-2 container">
+          {#if currentBuildPath && currentBuildPath.current}
+            {currentBuildPath.current.split('/').at(-1)}
+          {:else}
+            Unnamed build
+          {/if}
+        </div>
       </div>
-      <button class="container">Save</button>
-      <button class="container">Save As</button>
+      <button class="container" onclick={saveBuild}>Save</button>
+      <button class="container" onclick={saveBuildAs} disabled={!currentBuildPath || !currentBuildPath.current}>Save As</button>
     </div>
 
     <div class="container h-fit">

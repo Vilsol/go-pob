@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/Vilsol/go-pob-data/poe"
-	"github.com/Vilsol/go-pob/cache"
+	"github.com/Vilsol/go-pob/storage"
 
 	"github.com/MarvinJWendt/testza"
 
@@ -20,7 +20,7 @@ import (
 func init() {
 	config.InitLogging(false)
 
-	if err := poe.InitializeAll(context.Background(), raw.LatestVersion, cache.Disk(), nil); err != nil {
+	if err := poe.InitializeAll(context.Background(), raw.LatestVersion, raw.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
 		panic(err)
 	}
 }

@@ -1,5 +1,9 @@
 package data
 
+import (
+	"github.com/Vilsol/go-pob/pob"
+)
+
 type Tree struct {
 	Tree            string                `json:"tree"`
 	Classes         []Class               `json:"classes"`
@@ -18,19 +22,19 @@ type Tree struct {
 }
 
 type Class struct {
-	Name         ClassName    `json:"name"`
-	BaseStr      int64        `json:"base_str"`
-	BaseDex      int64        `json:"base_dex"`
-	BaseInt      int64        `json:"base_int"`
-	Ascendancies []Ascendancy `json:"ascendancies"`
+	Name         pob.ClassName `json:"name"`
+	BaseStr      int64         `json:"base_str"`
+	BaseDex      int64         `json:"base_dex"`
+	BaseInt      int64         `json:"base_int"`
+	Ascendancies []Ascendancy  `json:"ascendancies"`
 }
 
 type Ascendancy struct {
-	ID                AscendancyName   `json:"id"`
-	Name              AscendancyName   `json:"name"`
-	FlavourText       *string          `json:"flavourText,omitempty"`
-	FlavourTextColour *string          `json:"flavourTextColour,omitempty"`
-	FlavourTextRect   *FlavourTextRect `json:"flavourTextRect,omitempty"`
+	ID                pob.AscendancyName `json:"id"`
+	Name              pob.AscendancyName `json:"name"`
+	FlavourText       *string            `json:"flavourText,omitempty"`
+	FlavourTextColour *string            `json:"flavourTextColour,omitempty"`
+	FlavourTextRect   *FlavourTextRect   `json:"flavourTextRect,omitempty"`
 }
 
 type FlavourTextRect struct {
@@ -83,7 +87,7 @@ type Node struct {
 	Name                   *string         `json:"name,omitempty"`
 	Icon                   *string         `json:"icon,omitempty"`
 	IsNotable              *bool           `json:"isNotable,omitempty"`
-	Recipe                 []OilType       `json:"recipe,omitempty"`
+	Recipe                 []pob.OilType   `json:"recipe,omitempty"`
 	Stats                  []string        `json:"stats,omitempty"`
 	Group                  *int64          `json:"group,omitempty"`
 	Orbit                  *int64          `json:"orbit,omitempty"`
@@ -167,87 +171,3 @@ type Sprite struct {
 	H        int64            `json:"h"`
 	Coords   map[string]Coord `json:"coords"`
 }
-
-type AscendancyID int
-
-const (
-	Ascendant AscendancyID = iota
-	Assassin
-	Berserker
-	Champion
-	Chieftain
-	Deadeye
-	Elementalist
-	Gladiator
-	Guardian
-	Hierophant
-	Inquisitor
-	Juggernaut
-	Necromancer
-	Occultist
-	Pathfinder
-	Raider
-	Saboteur
-	Slayer
-	Trickster
-)
-
-type AscendancyName string
-
-var AscendancyNameByID = map[AscendancyID]AscendancyName{
-	Ascendant:    "Ascendant",
-	Assassin:     "Assassin",
-	Berserker:    "Berserker",
-	Champion:     "Champion",
-	Chieftain:    "Chieftain",
-	Deadeye:      "Deadeye",
-	Elementalist: "Elementalist",
-	Gladiator:    "Gladiator",
-	Guardian:     "Guardian",
-	Hierophant:   "Hierophant",
-	Inquisitor:   "Inquisitor",
-	Juggernaut:   "Juggernaut",
-	Necromancer:  "Necromancer",
-	Occultist:    "Occultist",
-	Pathfinder:   "Pathfinder",
-	Raider:       "Raider",
-	Saboteur:     "Saboteur",
-	Slayer:       "Slayer",
-	Trickster:    "Trickster",
-}
-
-type ClassID int
-
-const (
-	Scion ClassID = iota
-	Marauder
-	Ranger
-	Witch
-	Duelist
-	Templar
-	Shadow
-)
-
-var ClassAscendancies = map[ClassID][]AscendancyID{
-	Scion:    {Ascendant},
-	Marauder: {Juggernaut, Berserker, Chieftain},
-	Ranger:   {Deadeye, Pathfinder, Raider},
-	Witch:    {Elementalist, Necromancer, Occultist},
-	Duelist:  {Slayer, Gladiator, Champion},
-	Templar:  {Hierophant, Inquisitor, Guardian},
-	Shadow:   {Assassin, Trickster, Saboteur},
-}
-
-type ClassName string
-
-var ClassNameByID = map[ClassID]ClassName{
-	Scion:    "Scion",
-	Marauder: "Marauder",
-	Ranger:   "Ranger",
-	Witch:    "Witch",
-	Duelist:  "Duelist",
-	Templar:  "Templar",
-	Shadow:   "Shadow",
-}
-
-type OilType string

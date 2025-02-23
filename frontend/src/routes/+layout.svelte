@@ -8,12 +8,13 @@
   import { syncWrap } from '$lib/go/worker';
   import { proxy } from 'comlink';
   import type { Outputs } from '$lib/custom_types';
-  import { outputs, currentBuild, sampleBuildCode, markBackendAsLoaded } from '$lib/global';
+  import { outputs, currentBuild, markBackendAsLoaded } from '$lib/global.js';
   import OverlayController from '$lib/components/overlays/OverlayController.svelte';
   import { fontScaling } from '$lib/global.js';
   import { logError } from '$lib/utils';
   import type { Snippet } from 'svelte';
   import { get } from 'svelte/store';
+  import BuildSelectorPage from '$lib/components/build-selector/BuildSelectorPage.svelte';
 
   let {
     children
@@ -62,14 +63,6 @@
 
                   wasmLoading = false;
 
-                  // TODO Remove from Prod
-                  syncWrap
-                    ?.ImportCode(sampleBuildCode)
-                    .then(() => {
-                      syncWrap?.Tick('importBuildFromCode').catch(logError);
-                    })
-                    .catch(logError);
-
                   get(markBackendAsLoaded)();
                 })
                 .catch(logError);
@@ -92,6 +85,8 @@
         {/if}
       </div>
     </div>
+  {:else if !$currentBuild}
+    <BuildSelectorPage />
   {:else}
     <Header />
 
@@ -102,7 +97,7 @@
         {@render children?.()}
       </div>
     </div>
-
-    <OverlayController />
   {/if}
+
+  <OverlayController />
 </div>

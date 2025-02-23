@@ -9,7 +9,7 @@ type PassiveSpec struct {
 	// TODO UndoHandler
 
 	Build       *pob.PathOfBuilding
-	TreeVersion data.TreeVersion
+	TreeVersion pob.TreeVersion
 
 	Nodes              map[string]interface{} // TODO Implement
 	AllocNodes         map[string]data.Node
@@ -19,22 +19,22 @@ type PassiveSpec struct {
 	SubGraphs          map[string]interface{} // TODO Implement
 	MasterySelections  map[string]interface{} // TODO Implement
 
-	ClassID        data.ClassID
-	ClassName      data.ClassName
-	AscendancyID   data.AscendancyID
-	AscendancyName data.AscendancyName
+	ClassID        pob.ClassID
+	ClassName      pob.ClassName
+	AscendancyID   pob.AscendancyID
+	AscendancyName pob.AscendancyName
 
 	AllocatedNotableCount int
 	AllocatedMasteryCount int
 }
 
-func NewPassiveSpec(build *pob.PathOfBuilding, treeVersion data.TreeVersion) *PassiveSpec {
+func NewPassiveSpec(build *pob.PathOfBuilding, treeVersion pob.TreeVersion) *PassiveSpec {
 	passiveSpec := &PassiveSpec{
 		Build:       build,
 		TreeVersion: treeVersion,
 	}
 
-	passiveSpec.SelectClass(data.Scion)
+	passiveSpec.SelectClass(pob.Scion)
 
 	return passiveSpec
 }
@@ -47,7 +47,7 @@ func (p *PassiveSpec) Class() data.Class {
 	return p.Tree().Classes[p.ClassID]
 }
 
-func (p *PassiveSpec) SelectClass(classID data.ClassID) {
+func (p *PassiveSpec) SelectClass(classID pob.ClassID) {
 	/*
 		TODO Implement
 		if self.curClassId then
@@ -59,7 +59,7 @@ func (p *PassiveSpec) SelectClass(classID data.ClassID) {
 	*/
 
 	p.ClassID = classID
-	p.ClassName = data.ClassNameByID[classID]
+	p.ClassName = pob.ClassNameByID[classID]
 
 	/*
 		TODO Implement
@@ -69,12 +69,12 @@ func (p *PassiveSpec) SelectClass(classID data.ClassID) {
 		self.allocNodes[startNode.id] = startNode
 	*/
 
-	p.SelectAscendancyClass(data.ClassAscendancies[p.ClassID][0])
+	p.SelectAscendancyClass(pob.ClassAscendancies[p.ClassID][0])
 }
 
-func (p *PassiveSpec) SelectAscendancyClass(ascendancyID data.AscendancyID) {
+func (p *PassiveSpec) SelectAscendancyClass(ascendancyID pob.AscendancyID) {
 	p.AscendancyID = ascendancyID
-	p.AscendancyName = data.AscendancyNameByID[ascendancyID]
+	p.AscendancyName = pob.AscendancyNameByID[ascendancyID]
 
 	/*
 		TODO Implement

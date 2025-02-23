@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { backendLoaded, outputs } from '$lib/global';
+  import { backendLoaded, outputs } from '$lib/global.js';
   import { type CalcDataCol, type CalcDataColProp, type CalcDataRow, type CalcSection, calcSections } from '$lib/calcs/calc_sections';
   import ColoredText from '$lib/components/common/ColoredText.svelte';
   import { FormatStr } from '$lib/calcs/formatting.js';

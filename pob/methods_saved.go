@@ -2,8 +2,6 @@ package pob
 
 import (
 	"strconv"
-
-	"github.com/Vilsol/go-pob/data"
 )
 
 func (b *PathOfBuilding) WithMainSocketGroup(mainSocketGroup int) *PathOfBuilding {
@@ -129,11 +127,11 @@ func (b *PathOfBuilding) DeleteAllSocketGroups() {
 	b.Skills.SkillSets[b.Skills.ActiveSkillSet-1].Skills = make([]Skill, 0)
 }
 
-func (b *PathOfBuilding) SetClass(className data.ClassName) {
+func (b *PathOfBuilding) SetClass(className ClassName) {
 	b.Build.ClassName = className
 }
 
-func (b *PathOfBuilding) SetAscendancy(ascendancyName data.AscendancyName) {
+func (b *PathOfBuilding) SetAscendancy(ascendancyName AscendancyName) {
 	b.Build.AscendClassName = ascendancyName
 }
 
