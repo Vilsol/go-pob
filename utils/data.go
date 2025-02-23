@@ -115,7 +115,6 @@ func Number[T numberLike](val any) T {
 	default:
 		return T(0)
 	}
-
 }
 
 func Or(val *mod.ModValueMulti, or float64) float64 {
