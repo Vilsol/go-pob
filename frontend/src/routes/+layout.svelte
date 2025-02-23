@@ -41,6 +41,8 @@
           fetch(assets + (import.meta.env.MODE === 'development' ? '/go-pob.wasm' : '/go-pob.wasm.gz'))
             .then(async (data) => data.arrayBuffer())
             .then((data) => {
+              console.log('wasm runtime size:', data.byteLength);
+
               syncWrap
                 ?.boot(
                   data,
