@@ -696,7 +696,7 @@ func InitEnv(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode OutputM
 
 	var indexOrder []int
 	if selectedSkillSet < len(build.Skills.SkillSets) {
-		indexOrder = make([]int, len(build.Skills.SkillSets[selectedSkillSet].Skills))
+		indexOrder = make([]int, 0)
 		for i, socketGroup := range build.Skills.SkillSets[selectedSkillSet].Skills {
 			if socketGroup.Slot == "Amulet" || socketGroup.Slot == "Weapon 2" {
 				indexOrder = append([]int{i}, indexOrder...)

@@ -128,7 +128,7 @@ func (b *Breakdown) Slot(source string, sourceName *string, cfg *moddb.ListCfg, 
 			Base:       base,
 			Inc:        utils.Ternary(inc != 0, fmt.Sprintf(" x %.2f", 1+inc/100), ""),
 			More:       utils.Ternary(more != 1, fmt.Sprintf(" x %.2f", more), ""),
-			Total:      fmt.Sprintf("%.2f", utils.Ternary(total != nil, *total, base*(1+inc/100)*more)),
+			Total:      fmt.Sprintf("%.2f", utils.UnwrapOrF(total, base*(1+inc/100)*more)),
 			Source:     source,
 			SourceName: sourceName,
 			Item:       b.Actor.ItemList[source],
@@ -137,7 +137,7 @@ func (b *Breakdown) Slot(source string, sourceName *string, cfg *moddb.ListCfg, 
 }
 
 func (b *Breakdown) Simple(extraBasePtr *float64, cfg *moddb.ListCfg, total float64, key string) {
-	extraBase := utils.Ternary(extraBasePtr != nil, *extraBasePtr, 0)
+	extraBase := utils.UnwrapOrF(extraBasePtr, 0)
 	base := b.ModDB.Sum(mod.TypeBase, cfg, key)
 	if base+extraBase != 0 {
 		inc := b.ModDB.Sum(mod.TypeIncrease, cfg, key)
