@@ -8,8 +8,8 @@ github.com/MarvinJWendt/testza v0.2.12/go.mod h1:JOIegYyV7rX+7VZ9r77L/eH6CfJHHzX
 github.com/MarvinJWendt/testza v0.3.0/go.mod h1:eFcL4I0idjtIx8P9C6KkAuLgATNKpX4/2oUqKc6bF2c=
 github.com/MarvinJWendt/testza v0.5.2 h1:53KDo64C1z/h/d/stCYCPY69bt/OSwjq5KpFNwi+zB4=
 github.com/MarvinJWendt/testza v0.5.2/go.mod h1:xu53QFE5sCdjtMCKk8YMQ2MnymimEctc4n3EjyIYvEY=
-github.com/Vilsol/crystalline v0.0.13 h1:gWNpn2HSsEfMoFXFPu1ZjOH+tiIKClAUCHCmGv92OQs=
-github.com/Vilsol/crystalline v0.0.13/go.mod h1:CMCtotOX0LhhidNys1K3R/bYNw5qZVeDrVIm59OAzQE=
+github.com/Vilsol/crystalline v0.0.14 h1:6HRFG0fqeoWFImijnk1+D1ACR39rrrSwqvNdjbGd9mM=
+github.com/Vilsol/crystalline v0.0.14/go.mod h1:CMCtotOX0LhhidNys1K3R/bYNw5qZVeDrVIm59OAzQE=
 github.com/Vilsol/go-pob-data v0.0.2 h1:cSMcNhaE2GEqpuEbl/9rbq/QCYDA/gesRw890j0DCxI=
 github.com/Vilsol/go-pob-data v0.0.2/go.mod h1:gO6WGq+WW786byDH1B9SQHRFM7SXoB3uMhC0SG3vzAE=
 github.com/Vilsol/slox v0.0.1 h1:X5iskI+WLDxW5FNxYV9izEEWliFzRUNxcItHWetwnOk=

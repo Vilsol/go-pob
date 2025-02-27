@@ -4,7 +4,7 @@ go 1.24.0
 
 require (
 	github.com/MarvinJWendt/testza v0.5.2
-	github.com/Vilsol/crystalline v0.0.13
+	github.com/Vilsol/crystalline v0.0.14
 	github.com/Vilsol/go-pob-data v0.0.2
 	github.com/andybalholm/brotli v1.1.1
 	github.com/dominikbraun/graph v0.23.0
