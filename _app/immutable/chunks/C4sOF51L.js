@@ -1,1 +1,0 @@
-import{l as r,n as c,q as s,J as i,E as h,F as p,G as d}from"./B4OBrG4s.js";function m(t,f,o){r&&c();var e=t,a,n;s(()=>{a!==(a=f())&&(n&&(p(n),n=null),a&&(n=h(()=>o(e,a))))},i),r&&(e=d)}export{m as c};
