@@ -4,6 +4,9 @@ import (
 	"maps"
 	"math"
 
+	"github.com/Vilsol/go-pob-data/poe"
+
+	"github.com/Vilsol/go-pob/data"
 	"github.com/Vilsol/go-pob/mod"
 )
 
@@ -14,6 +17,14 @@ type ListCfg struct {
 	SkillStats   map[string]float64
 	SkillCond    map[string]bool
 	SlotName     string
+
+	SkillName          string
+	SummonSkillName    string
+	SkillGem           *poe.SkillGem
+	SkillGrantedEffect any
+	SkillPart          string
+	SkillTypes         map[data.SkillType]bool
+	SkillDist          float64
 }
 
 type ModStoreFuncs interface {

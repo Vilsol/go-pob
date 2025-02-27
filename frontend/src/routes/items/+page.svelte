@@ -2,6 +2,7 @@
   import Input from '$lib/components/Input.svelte';
   import { colorCodes } from '$lib/display/colors';
   import ItemFrame from '$lib/components/game/ItemFrame.svelte';
+  import { syncWrap } from '$lib/go/worker';
 
   const baseSlots = [
     'Weapon 1',
@@ -23,6 +24,10 @@
 </script>
 
 <div class="p-2 px-4 w-full h-full overflow-y-auto">
+  {#await syncWrap.GetItems() then items}
+    {JSON.stringify(items)}
+  {/await}
+
   <div class="flex flex-row gap-4">
     <div class="side-by-side-max-content min-w-[25em] max-w-[25em] h-fit">
       <span>Item set:</span>

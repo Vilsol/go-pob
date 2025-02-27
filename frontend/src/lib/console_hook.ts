@@ -46,5 +46,5 @@ console.log = (...args) => {
   const match = callerLine?.match(/(?:([^@]+@).*?)?([^/]+?\.ts).*:(\d+):(\d+)/);
   const location = match ? `${match[1]}${match[2]}:${match[3]}:${match[4]}` : 'unknown';
 
-  return oldLog('%c%s%c %s', 'color: gray', `[${location}]`, 'color: inherit', ...args);
+  return oldLog('%c%s%c', 'color: gray', `[${location}]`, 'color: inherit', ...args);
 };

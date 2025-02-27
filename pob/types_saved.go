@@ -59,6 +59,12 @@ type Items struct {
 	UseSecondWeaponSet *bool `xml:"useSecondWeaponSet,attr,omitempty"`
 
 	ItemSets []ItemSet `xml:"ItemSet" crystalline:"not_nil"`
+	Items    []Item    `xml:"Item"`
+}
+
+type Item struct {
+	ID   int    `xml:"id,attr"`
+	Text string `xml:",innerxml"`
 }
 
 type Skills struct {

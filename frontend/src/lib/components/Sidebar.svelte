@@ -178,9 +178,9 @@
 
   let socketGroupList = $state<string[]>([]);
   $effect(() => {
-    $currentBuild?.Skills?.SkillSets?.[activeSkillSet - 1]?.Skills?.then(async (skills: unknown[]) => {
+    $currentBuild?.Skills?.SkillSets?.[activeSkillSet - 1]?.Skills?.then(async (skills?: unknown[]) => {
       const finalList: string[] = [];
-      for (let i = 0; i < skills.length; i++) {
+      for (let i = 0; i < (skills?.length || 0); i++) {
         let label: string | undefined = await $currentBuild?.Skills?.SkillSets?.[activeSkillSet - 1]?.Skills?.[i].Label;
         if (label === '') {
           const allGems = $currentBuild?.Skills?.SkillSets?.[activeSkillSet - 1]?.Skills?.[i].Gems;

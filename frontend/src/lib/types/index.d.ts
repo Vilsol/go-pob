@@ -595,6 +595,13 @@ export declare namespace moddb {
     SkillStats?: Record<string, number>;
     SkillCond?: Record<string, boolean>;
     SlotName: string;
+    SkillName: string;
+    SummonSkillName: string;
+    SkillGem?: poe.SkillGem;
+    SkillGrantedEffect?: unknown;
+    SkillPart: string;
+    SkillTypes?: Record<string, boolean>;
+    SkillDist: number;
   }
   interface ModDB {
     ModStore?: moddb.ModStore;
@@ -776,6 +783,10 @@ export declare namespace pob {
     Number?: number;
     String?: string;
   }
+  interface Item {
+    ID: number;
+    Text: string;
+  }
   interface ItemSet {
     ID: string;
     UseSecondWeaponSet?: boolean;
@@ -785,6 +796,7 @@ export declare namespace pob {
     ActiveItemSet: number;
     UseSecondWeaponSet?: boolean;
     ItemSets: Array<pob.ItemSet>;
+    Items?: Array<pob.Item>;
   }
   interface PathOfBuilding {
     Build: pob.Build;

@@ -195,10 +195,14 @@ class PoBWorker {
       throw decodeError;
     }
 
+    console.log('Decoded build:', xml);
+
     const [build, parseError] = builds.ParseBuildStr(xml);
     if (parseError) {
       throw parseError;
     }
+
+    console.log('Parsed XML:', dump(build));
 
     this.currentBuild = build;
   }
@@ -477,6 +481,14 @@ class PoBWorker {
 
   ClearBuild() {
     this.currentBuild = undefined;
+  }
+
+  GetItems() {
+    if (!this.currentBuild) {
+      return;
+    }
+
+    return dump(this.currentBuild.Items);
   }
 }
 
