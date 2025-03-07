@@ -48,7 +48,6 @@ tasks:
     watch: true
     sources:
       - '**/*.go'
-      - exclude: '.devbox/**/*.go'
     cmds:
       - task: build-go
       - task: generate-typings

@@ -55,37 +55,13 @@ Clone the repository using this command:
 git clone -b dev https://github.com/Vilsol/go-pob.git
 ```
 
-### Windows
+### Windows / Linux / macOS
 
-If you are on Windows, you will semi-manually need to get all the dependencies needed for development.
+You only need to install `mise` which is a package manager: https://mise.jdx.dev/getting-started.html
 
-The suggested way to achieve this is via WinGet (except for `golangci-lint`, it has an outdated version, please use manual step below).
+Once you install `mise` you can run `mise install` to install all packages.
 
-```shell
-winget install --id=Task.Task  -e
-winget install --id=Schniz.fnm  -e
-winget install --id=GoLang.Go -v "1.23.3" -e
-```
-
-If you do not have WinGet, you will need to follow the manual install instructions for each:
-
-* Task: https://taskfile.dev/installation/
-* fnm: https://github.com/Schniz/fnm?tab=readme-ov-file#installation
-* Go: https://go.dev/doc/install
-* golangci-lint https://golangci-lint.run/welcome/install/
-
-After installing dependencies, you have two more steps
-
-1. For fnm: make sure that you add it to your shell https://github.com/Schniz/fnm?tab=readme-ov-file#powershell and then run `fnm use` in this project directory
-2. For node: execute `corepack enable` to be able to use `pnpm`
-
-### Linux
-
-If you are on Linux, you have an option to have all the dependencies automatically maintained with `devbox`.
-Just follow the installation instructions here: https://www.jetify.com/docs/devbox/installing_devbox/.
-If possible, you should also setup `direnv` so you don't need to run `devbox shell` every time: https://direnv.net/
-
-If unable, then have a look at the manual Windows instructions, and install the same tools.
+After you have downloaded everything, you might need to run `mise x -- corepack enable` to be able to use `pnpm`
 
 ## Setting up a development environment
 
@@ -101,17 +77,17 @@ If you want to use an IDE instead, [GoLand](https://www.jetbrains.com/go/) (for 
 To build the WASM binary, you can use the following command:
 
 ```shell
-task build-go
+mise x -- task build-go
 ```
 
 To re-generate any new typings that have been exposed from Go, you can use this:
 ```shell
-task generate
+mise x -- task generate
 ```
 
 If you want those to run continuously while developing, you can use:
 ```shell
-task dev-go
+mise x -- task dev-go
 ```
 
 ### Frontend (Svelte)
@@ -120,12 +96,12 @@ The frontend resides in the `./frontend`
 
 You can start the dev server via:
 ```shell
-task dev-frontend
+mise x -- task dev-frontend
 ```
 
 You can build it via:
 ```shell
-task build-frontend
+mise x -- task build-frontend
 ```
 
 ## Testing
@@ -136,13 +112,11 @@ All tests are run twice, first time in native Go, second time through WASM to en
 
 ### Running Native Tests
 
-Simply executing `task test` should run all tests.
+Simply executing `mise x -- task test` should run all tests.
 
 ### Running WASM Tests (you probably don't need this)
 
-First ensure that you have the appropriate NodeJS version installed. (current version can be seen in [devbox.json](devbox.json))
-
-Then you should be able to execute all tests using `./.github/wasm_test.sh` script.
+You should be able to execute all tests using `./.github/wasm_test.sh` script.
 
 ## Linting
 
@@ -152,13 +126,13 @@ If any of these linters fail, the CI build will not pass.
 
 The backend is linted using [`golangci-lint`](https://golangci-lint.run/usage/install/).
 
-You can execute it via `task lint-go` and format with `task format-go`.
+You can execute it via `mise x -- task lint-go` and format with `mise x -- task format-go`.
 
 ### Frontend (Svelte)
 
 The frontend is linted using `prettier` and `eslint`.
 
-You can execute those by using `task lint-frontend` and format with `task format-frontend`.
+You can execute those by using `mise x -- task lint-frontend` and format with `mise x -- task format-frontend`.
 
 ## Setting up a PoB reference environment
 
