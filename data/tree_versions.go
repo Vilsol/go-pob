@@ -10,23 +10,23 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/Vilsol/go-pob/cache"
 	"github.com/andybalholm/brotli"
 	"github.com/dominikbraun/graph"
+
+	"github.com/Vilsol/go-pob/pob"
+	"github.com/Vilsol/go-pob/storage"
 )
 
-type TreeVersion string
-
 const (
-	TreeVersion3_10 = TreeVersion("3_10")
-	TreeVersion3_11 = TreeVersion("3_11")
-	TreeVersion3_12 = TreeVersion("3_12")
-	TreeVersion3_13 = TreeVersion("3_13")
-	TreeVersion3_14 = TreeVersion("3_14")
-	TreeVersion3_15 = TreeVersion("3_15")
-	TreeVersion3_16 = TreeVersion("3_16")
-	TreeVersion3_17 = TreeVersion("3_17")
-	TreeVersion3_18 = TreeVersion("3_18")
+	TreeVersion3_10 = pob.TreeVersion("3_10")
+	TreeVersion3_11 = pob.TreeVersion("3_11")
+	TreeVersion3_12 = pob.TreeVersion("3_12")
+	TreeVersion3_13 = pob.TreeVersion("3_13")
+	TreeVersion3_14 = pob.TreeVersion("3_14")
+	TreeVersion3_15 = pob.TreeVersion("3_15")
+	TreeVersion3_16 = pob.TreeVersion("3_16")
+	TreeVersion3_17 = pob.TreeVersion("3_17")
+	TreeVersion3_18 = pob.TreeVersion("3_18")
 )
 
 const LatestTreeVersion = TreeVersion3_18
@@ -65,11 +65,11 @@ func (v *TreeVersionData) RawTree() []byte {
 
 	treeURL := fmt.Sprintf(cdnTreeBase, v.Display)
 	var compressedTree []byte
-	if cache.Disk().Exists(treeURL) {
+	if storage.Get().ExistsInCache(treeURL) {
 		var err error
-		compressedTree, err = cache.Disk().Get(treeURL)
+		compressedTree, err = storage.Get().GetCache(treeURL)
 		if err != nil {
-			panic(err)
+			panic(fmt.Errorf("failed reading compressed tree: %w", err))
 		}
 	} else {
 		slog.Debug("fetching", slog.String("url", treeURL))
@@ -87,7 +87,7 @@ func (v *TreeVersionData) RawTree() []byte {
 		}
 
 		defer func() {
-			_ = cache.Disk().Set(treeURL, compressedTree)
+			_ = storage.Get().SetCache(treeURL, compressedTree)
 		}()
 	}
 
@@ -160,4 +160,4 @@ func (v *TreeVersionData) getGraph() (graph.Graph[int64, int64], map[int64]map[i
 	return v.graph, v.adjacencyMap
 }
 
-var TreeVersions = make(map[TreeVersion]*TreeVersionData)
+var TreeVersions = make(map[pob.TreeVersion]*TreeVersionData)

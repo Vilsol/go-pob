@@ -1,7 +1,7 @@
 <script lang="ts">
   import NumberInput from '$lib/components/NumberInput.svelte';
   import Input from '$lib/components/Input.svelte';
-  import { currentBuild, UITick } from '$lib/global';
+  import { currentBuild, UITick } from '$lib/global.js';
   import { writable } from 'svelte/store';
   import { syncWrap } from '$lib/go/worker';
   import SelectItem from '$lib/components/SelectItem.svelte';
@@ -209,18 +209,18 @@
 
               label += gem.Base.Name;
             }
-          } else {
-            label = '<No active skills>';
           }
         }
 
-        if (label) {
-          finalList.push({
-            label,
-            enabled: await $currentBuild?.Skills?.SkillSets?.[activeSkillSet - 1]?.Skills?.[i].Enabled,
-            fullDPS: (await $currentBuild?.Skills?.SkillSets?.[activeSkillSet - 1]?.Skills?.[i].IncludeInFullDPS) || false
-          });
+        if (!label) {
+          label = '<No active skills>';
         }
+
+        finalList.push({
+          label,
+          enabled: await $currentBuild?.Skills?.SkillSets?.[activeSkillSet - 1]?.Skills?.[i].Enabled,
+          fullDPS: (await $currentBuild?.Skills?.SkillSets?.[activeSkillSet - 1]?.Skills?.[i].IncludeInFullDPS) || false
+        });
       }
       socketGroupList = finalList;
     }).catch(logError);

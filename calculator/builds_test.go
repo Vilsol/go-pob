@@ -9,19 +9,18 @@ import (
 
 	"github.com/Vilsol/go-pob-data/poe"
 
-	"github.com/Vilsol/go-pob/cache"
-
 	"github.com/MarvinJWendt/testza"
 
 	"github.com/Vilsol/go-pob/builds"
 	"github.com/Vilsol/go-pob/config"
 	"github.com/Vilsol/go-pob/data/raw"
+	"github.com/Vilsol/go-pob/storage"
 )
 
 func init() {
 	config.InitLogging(false)
 
-	if err := poe.InitializeAll(context.Background(), raw.LatestVersion, cache.Disk(), nil); err != nil {
+	if err := poe.InitializeAll(context.Background(), raw.LatestVersion, raw.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
 		panic(err)
 	}
 }

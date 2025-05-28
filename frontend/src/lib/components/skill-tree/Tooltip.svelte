@@ -3,7 +3,7 @@
   import type { Node } from '../../skill_tree/types';
   import { type Point } from '../../skill_tree';
   import { wrapText } from '$lib/components/skill-tree/common';
-  import { devMode } from '$lib/global';
+  import { devMode } from '$lib/global.js';
 
   interface Props {
     hoveredNode?: Node;

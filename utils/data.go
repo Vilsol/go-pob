@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"go/types"
 	"log/slog"
 	"strconv"
 
@@ -113,11 +112,9 @@ func Number[T numberLike](val any) T {
 		return T(x)
 	case float64:
 		return T(x)
-	case types.Nil:
+	default:
 		return T(0)
 	}
-
-	panic("unreachable")
 }
 
 func Or(val *mod.ModValueMulti, or float64) float64 {
@@ -141,12 +138,6 @@ func OrDefault(n float64, def float64) float64 {
 		return n
 	}
 	return def
-}
-
-func Panic(err error) {
-	if err != nil {
-		panic(err)
-	}
 }
 
 func OrF(a float64, b float64) float64 {

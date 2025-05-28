@@ -13,4 +13,3 @@ package-lock.json
 src/lib/types/index.d.ts
 src/lib/types/index.js
 static/tinymce/
-src/wasm_exec.js

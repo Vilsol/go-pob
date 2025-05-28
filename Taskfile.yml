@@ -9,7 +9,7 @@ tasks:
       GOOS: js
       GOARCH: wasm
     cmds:
-      - go build -ldflags="-s -w" -v -o frontend/static/go-pob.wasm ./wasm
+      - go build -v -o frontend/static/go-pob.wasm ./wasm
     generates:
       - frontend/static/go-pob.wasm
 
@@ -48,7 +48,6 @@ tasks:
     watch: true
     sources:
       - '**/*.go'
-      - exclude: '.devbox/**/*.go'
     cmds:
       - task: build-go
       - task: generate-typings

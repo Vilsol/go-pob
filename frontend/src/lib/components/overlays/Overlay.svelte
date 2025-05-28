@@ -18,9 +18,9 @@
   };
 </script>
 
-<button class="overlay" bind:this={backdrop} onclick={close} onkeyup={close}>
+<div class="overlay" role="presentation" bind:this={backdrop} onclick={close} onkeyup={close}>
   <config.component onclose={closeOverlay} {...config.props} />
-</button>
+</div>
 
 <style lang="postcss">
   .overlay {

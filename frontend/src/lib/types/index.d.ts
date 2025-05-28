@@ -1,10 +1,9 @@
 /* eslint-disable */
 export declare namespace builds {
+  function EmptyBuild(): (pob.PathOfBuilding | undefined);
   function ParseBuild(rawXML?: Uint8Array): [(pob.PathOfBuilding | undefined), Error];
   function ParseBuildStr(rawXML: string): [(pob.PathOfBuilding | undefined), Error];
-}
-export declare namespace cache {
-  function InitializeDiskCache(arg1: (arg1: string) => Promise<(Uint8Array | undefined)>, arg2: (arg1: string, arg2?: Uint8Array) => Promise<void>, arg3: (arg1: string) => Promise<boolean>): Promise<void>;
+  function SerializeBuild(build?: pob.PathOfBuilding): [(Uint8Array | undefined), Error];
 }
 export declare namespace calculator {
   interface ActiveSkill {
@@ -245,13 +244,15 @@ export declare namespace calculator {
     Jewels?: Record<string, unknown | undefined>;
     SubGraphs?: Record<string, unknown | undefined>;
     MasterySelections?: Record<string, unknown | undefined>;
+    ClassID: number;
     ClassName: string;
+    AscendancyID: number;
     AscendancyName: string;
     AllocatedNotableCount: number;
     AllocatedMasteryCount: number;
     Class(): data.Class;
-    SelectAscendancyClass(ascendancyName: string): void;
-    SelectClass(className: string): void;
+    SelectAscendancyClass(ascendancyID: number): void;
+    SelectClass(classID: number): void;
     Tree(): (data.Tree | undefined);
   }
   interface RequirementsTable {
@@ -594,6 +595,13 @@ export declare namespace moddb {
     SkillStats?: Record<string, number>;
     SkillCond?: Record<string, boolean>;
     SlotName: string;
+    SkillName: string;
+    SummonSkillName: string;
+    SkillGem?: poe.SkillGem;
+    SkillGrantedEffect?: unknown;
+    SkillPart: string;
+    SkillTypes?: Record<string, boolean>;
+    SkillDist: number;
   }
   interface ModDB {
     ModStore?: moddb.ModStore;
@@ -743,7 +751,6 @@ export declare namespace pob {
     MainSocketGroup: number;
     TargetVersion: string;
     PassiveNodes?: Array<number>;
-    PassiveNodesStartPaths?: Record<number, Array<number> | undefined>;
     PlayerStats: Array<pob.PlayerStat>;
   }
   interface Calcs {
@@ -776,6 +783,10 @@ export declare namespace pob {
     Number?: number;
     String?: string;
   }
+  interface Item {
+    ID: number;
+    Text: string;
+  }
   interface ItemSet {
     ID: string;
     UseSecondWeaponSet?: boolean;
@@ -785,6 +796,7 @@ export declare namespace pob {
     ActiveItemSet: number;
     UseSecondWeaponSet?: boolean;
     ItemSets: Array<pob.ItemSet>;
+    Items?: Array<pob.Item>;
   }
   interface PathOfBuilding {
     Build: pob.Build;
@@ -804,8 +816,8 @@ export declare namespace pob {
     GetNumberOption(name: string): number;
     GetStringOption(name: string): string;
     RemoveConfigOption(name: string): void;
-    SetAscendancy(ascendancy: string): void;
-    SetClass(clazz: string): void;
+    SetAscendancy(ascendancyName: string): void;
+    SetClass(className: string): void;
     SetConfigOption(value: pob.Input): void;
     SetDefaultGemLevel(gemLevel: number): void;
     SetDefaultGemQuality(gemQuality: number): void;
@@ -1305,6 +1317,21 @@ export declare namespace raw {
   }
   function InitializeAll(version: string, updateFunc: (arg1: string) => Promise<void>): Promise<Error>;
 }
+export declare namespace storage {
+  interface DirEntry {
+    Name: string;
+    Type: string;
+    Class: string;
+    LastEdit: string;
+    Level: number;
+  }
+  function DeleteBuild(path: string): Promise<Error>;
+  function GetBuild(path: string): Promise<[string, Error]>;
+  function InitializeStorage(list: (arg1: string, arg2: string) => Promise<(Array<storage.DirEntry> | undefined)>, get: (arg1: string, arg2: string) => Promise<(Uint8Array | undefined)>, set: (arg1: string, arg2: string, arg3?: Uint8Array) => Promise<void>, exists: (arg1: string, arg2: string) => Promise<boolean>, createFolder: (arg1: string, arg2: string) => Promise<void>, del: (arg1: string, arg2: string) => Promise<void>): Promise<void>;
+  function ListBuilds(dir: string): Promise<[(Array<storage.DirEntry> | undefined), Error]>;
+  function NewFolder(path: string): Promise<Error>;
+  function SetBuild(path: string, value: string): Promise<Error>;
+}
 export declare namespace time {
   interface Location {
     String(): string;
@@ -1313,7 +1340,9 @@ export declare namespace time {
     Add(d: number): time.Time;
     AddDate(years: number, months: number, days: number): time.Time;
     After(u: time.Time): boolean;
+    AppendBinary(b?: Uint8Array): [(Uint8Array | undefined), Error];
     AppendFormat(b?: Uint8Array, layout: string): (Uint8Array | undefined);
+    AppendText(b?: Uint8Array): [(Uint8Array | undefined), Error];
     Before(u: time.Time): boolean;
     Clock(): [number, number, number];
     Compare(u: time.Time): number;

@@ -1,9 +1,11 @@
 package data
 
-type GameVersion string
+import (
+	"github.com/Vilsol/go-pob/pob"
+)
 
 const (
-	GameVersion3_0 = GameVersion("3_0")
+	GameVersion3_0 = pob.GameVersion("3_0")
 )
 
 const LiveTargetVersion = GameVersion3_0

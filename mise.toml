@@ -1,0 +1,9 @@
+min_version = '2025.2.7'
+
+[tools]
+go = "1.24.0"
+golangci-lint = "1.64.5"
+task = "3.41.0"
+
+[env]
+MISE_NODE_COREPACK = true

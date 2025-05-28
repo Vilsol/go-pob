@@ -1,5 +1,10 @@
 package mod
 
+import (
+	"log/slog"
+	"reflect"
+)
+
 type ModValueMultiType string
 
 const (
@@ -45,11 +50,21 @@ func (m *ModValueMulti) SetList(v any) {
 }
 
 func (m *ModValueMulti) Clone() *ModValueMulti {
+	listValue := m.ValueList
+	if listValue != nil {
+		cloneable, ok := listValue.(Cloneable)
+		if ok {
+			listValue = cloneable.Clone(reflect.TypeOf(m.ValueList).Kind() == reflect.Ptr)
+		} else {
+			slog.Warn("list type not cloneable", slog.Any("type", reflect.TypeOf(listValue)))
+		}
+	}
+
 	return &ModValueMulti{
 		valueType:  m.valueType,
 		ValueFloat: m.ValueFloat,
 		ValueFlag:  m.ValueFlag,
-		ValueList:  m.ValueList,
+		ValueList:  listValue,
 	}
 }
 

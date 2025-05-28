@@ -2,6 +2,7 @@ package calculator
 
 import (
 	"strconv"
+	"strings"
 
 	"github.com/Vilsol/go-pob-data/poe"
 
@@ -177,14 +178,12 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 			skillFlags.multiPart = #activeGemParts > 1
 		*/
 	}
-	/*
-		TODO Shield Attacks
-		if (skillTypes[SkillType.RequiresShield] or skillFlags.shieldAttack) and not activeSkill.summonSkill and (not activeSkill.actor.itemList["Weapon 2"] or activeSkill.actor.itemList["Weapon 2"].type ~= "Shield") {
-			// Skill requires a shield to be equipped
-			skillFlags.disable = true
-			activeSkill.disableReason = "This skill requires a Shield"
-		}
-	*/
+
+	if (skillTypes[data.SkillTypeRequiresShield] || skillFlags[SkillFlagShieldAttack]) && activeSkill.SummonSkill == nil && (activeSkill.Actor.ItemList["Weapon 2"] == nil || activeSkill.Actor.ItemList["Weapon 2"].Type != "Shield") {
+		// Skill requires a shield to be equipped
+		skillFlags[SkillFlagDisable] = true
+		activeSkill.DisableReason = "This skill requires a Shield"
+	}
 
 	if skillFlags[SkillFlagShieldAttack] {
 		// Special handling for Spectral Shield Throw
@@ -359,28 +358,30 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 	}
 
 	// Calculate Distance for meleeDistance or projectileDistance (for melee proximity, e.g. Impact)
-	//effectiveRange := float64(0)
-	//if skillFlags[SkillFlagMelee] {
-	//	effectiveRange = env.Build.GetNumberOption("meleeDistance")
-	//} else {
-	//	effectiveRange = env.Build.GetNumberOption("projectileDistance")
-	//}
+	effectiveRange := float64(0)
+	if skillFlags[SkillFlagMelee] {
+		effectiveRange = env.Build.GetNumberOption("meleeDistance")
+	} else {
+		effectiveRange = env.Build.GetNumberOption("projectileDistance")
+	}
+
+	summonSkillName := ""
+	if activeSkill.SummonSkill != nil {
+		summonSkillName = activeSkill.SummonSkill.ActiveEffect.GrantedEffect.Raw.ID
+	}
 
 	activeSkill.SkillCfg = &moddb.ListCfg{
-		Flags:        utils.Ptr(skillModFlags | activeSkill.Weapon1Flags | activeSkill.Weapon2Flags),
-		KeywordFlags: utils.Ptr(skillKeywordFlags),
-		SkillCond:    make(map[string]bool),
-		/*
-			TODO
-			skillName = activeGrantedEffect.name:gsub("^Vaal ",""):gsub("Summon Skeletons","Summon Skeleton"), // This allows modifiers that target specific skills to also apply to their Vaal counterpart
-			summonSkillName = activeSkill.summonSkill and activeSkill.summonSkill.activeEffect.grantedEffect.name,
-			skillGem = activeEffect.gemData,
-			skillGrantedEffect = activeGrantedEffect,
-			skillPart = activeSkill.skillPart,
-			skillTypes = activeSkill.skillTypes,
-			skillDist = env.mode_effective and effectiveRange,
-			slotName = activeSkill.slotName,
-		*/
+		Flags:              utils.Ptr(skillModFlags | activeSkill.Weapon1Flags | activeSkill.Weapon2Flags),
+		KeywordFlags:       utils.Ptr(skillKeywordFlags),
+		SkillCond:          make(map[string]bool),
+		SkillName:          strings.ReplaceAll(strings.ReplaceAll(activeGrantedEffect.Raw.ID, "^Vaal ", ""), "Summon Skeletons", "Summon Skeleton"), // This allows modifiers that target specific skills to also apply to their Vaal counterpart
+		SummonSkillName:    summonSkillName,
+		SkillGem:           activeEffect.GemData,
+		SkillGrantedEffect: activeGrantedEffect,
+		SkillPart:          activeSkill.SkillPartName,
+		SkillTypes:         activeSkill.SkillTypes,
+		SkillDist:          utils.Ternary(env.ModeEffective, effectiveRange, 0),
+		SlotName:           activeSkill.SlotName,
 	}
 
 	// Build config structure for modifier searches
@@ -414,21 +415,20 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 	activeSkill.SkillModList = skillModList
 	activeSkill.BaseSkillModList = skillModList
 
-	/*
-		TODO // Initialise skill modifier list
-		if skillModList:Flag(activeSkill.skillCfg, "DisableSkill") and not skillModList:Flag(activeSkill.skillCfg, "EnableSkill") {
-			skillFlags.disable = true
-			activeSkill.disableReason = "Skills of this type are disabled"
-		}
+	if skillModList.Flag(activeSkill.SkillCfg, "DisableSkill") && !skillModList.Flag(activeSkill.SkillCfg, "EnableSkill") {
+		skillFlags[SkillFlagDisable] = true
+		activeSkill.DisableReason = "Skills of this type are disabled"
+	}
 
-		if skillFlags.disable {
-			wipeTable(skillFlags)
-			skillFlags.disable = true
-			calcLib.validateGemLevel(activeEffect)
-			activeEffect.grantedEffectLevel = activeGrantedEffect.levels[activeEffect.level]
-			return
+	if skillFlags[SkillFlagDisable] {
+		for k := range skillFlags {
+			delete(skillFlags, k)
 		}
-	*/
+		skillFlags[SkillFlagDisable] = true
+		CalcValidateGemLevel(activeEffect)
+		activeEffect.GrantedEffectLevel = raw2.GetCalculatedGrantedEffect(activeGrantedEffect.Raw).GetCalculatedLevels()[activeEffect.Level]
+		return
+	}
 
 	// Add support gem modifiers to skill mod list
 	for _, skillEffect := range activeSkill.EffectList {

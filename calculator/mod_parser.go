@@ -6312,7 +6312,7 @@ func ParseMod(line string, isComb bool) *ModCacheEntry {
 	return modCache[line]
 }
 
-func init() {
+func initializeRegex() {
 	formListCompiled = make(map[string]CompiledList[string])
 	for k, v := range formList {
 		formListCompiled[k] = CompiledList[string]{
@@ -6401,6 +6401,9 @@ func init() {
 			Value: v,
 		}
 	}
+}
 
+func init() {
+	utils2.RegisterPostInitHook(initializeRegex)
 	utils2.RegisterPostInitHook(initializeSkillNameList)
 }

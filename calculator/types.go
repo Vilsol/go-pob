@@ -82,7 +82,7 @@ type Environment struct {
 }
 
 type EnvironmentCache struct {
-	TreeVersion  data.TreeVersion
+	TreeVersion  pob.TreeVersion
 	modsForNodes map[string]moddb.ModList // Mods for all nodes cached after being parsed
 }
 

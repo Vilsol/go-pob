@@ -1,13 +1,27 @@
 import { expose, proxy } from 'comlink';
 import '$lib/console_hook';
 import '../../wasm_exec.js';
-import { initializeCrystalline, cache, raw, config, pob, builds, calculator, exposition } from '../types';
+import { initializeCrystalline, storage, raw, config, pob, builds, calculator, exposition } from '../types';
 import type { Outputs } from '../custom_types';
-import localforage from 'localforage';
-import type { currentBuild } from '../global';
+import type { currentBuild } from '../global.js';
 import { dump, type ProxiedRemote } from '../type_utils';
 import { reverseConfigOptions } from '../display/configurations';
 import type { CalcDataColProp } from '$lib/calcs/calc_sections';
+import { configure, fs } from '@zenfs/core';
+import { IndexedDB } from '@zenfs/dom';
+
+const storageConfigurationPromise = configure({
+  mounts: {
+    '/cache': {
+      backend: IndexedDB,
+      storeName: 'cache'
+    },
+    '/builds': {
+      backend: IndexedDB,
+      storeName: 'builds'
+    }
+  }
+});
 
 class PoBWorker {
   private _currentBuild?: pob.PathOfBuilding;
@@ -27,9 +41,13 @@ class PoBWorker {
   currentBuildStore?: typeof currentBuild;
 
   private updateStore() {
-    if (this.currentBuildStore && this._currentBuild) {
-      // Re-cast so we can force the correct type
-      this.currentBuildStore.set(proxy(this._currentBuild) as unknown as ProxiedRemote<pob.PathOfBuilding>);
+    if (this.currentBuildStore) {
+      if (this._currentBuild) {
+        // Re-cast so we can force the correct type
+        this.currentBuildStore.set(proxy(this._currentBuild) as unknown as ProxiedRemote<pob.PathOfBuilding>);
+      } else {
+        this.currentBuildStore.set(undefined);
+      }
     }
   }
 
@@ -47,18 +65,114 @@ class PoBWorker {
 
         config.InitLogging(false);
 
-        await cache.InitializeDiskCache(
-          async (key: string) => {
-            const item = await localforage.getItem(key);
-            if (item) {
-              return item as Uint8Array;
+        await storageConfigurationPromise;
+
+        await storage.InitializeStorage(
+          // List
+          async (bucket: string, dir: string) =>
+            new Promise((res, rej) => {
+              fs.readdir(`/${bucket}/${dir}`, (err, files) => {
+                if (err) {
+                  console.error(err);
+                  return rej(err);
+                }
+
+                res(
+                  files?.map((file) => {
+                    const fullPath = `/${bucket}/${dir}/${file}`;
+                    const stats = fs.statSync(fullPath);
+
+                    let clazz = '';
+                    let level = 0;
+
+                    if (stats.isFile()) {
+                      const buildFile = fs.readFileSync(fullPath);
+                      if (buildFile) {
+                        const [build] = builds.ParseBuildStr(buildFile.toString());
+                        clazz = build?.Build?.ClassName || '';
+                        level = build?.Build?.Level || 0;
+                      }
+                    }
+
+                    return {
+                      Name: file,
+                      Type: stats.isDirectory() ? 'dir' : 'file',
+                      Class: clazz,
+                      LastEdit: stats.mtime.toISOString(),
+                      Level: level
+                    };
+                  })
+                );
+              });
+            }),
+          // Get
+          async (bucket: string, key: string) =>
+            new Promise((res, rej) => {
+              fs.readFile(`/${bucket}/${key}`, (err, file) => {
+                if (err) {
+                  console.error(err);
+                  return rej(err);
+                }
+
+                if (file) {
+                  return res(new Uint8Array(file));
+                }
+
+                return res(new Uint8Array(0));
+              });
+            }),
+          // Write
+          async (bucket: string, key: string, value: Uint8Array | undefined) => {
+            if (!value || !key) {
+              return;
             }
-            return new Uint8Array(0);
+
+            return new Promise((res, rej) => {
+              console.log('Writing to storage', `/${bucket}/${key}`);
+              fs.writeFile(`/${bucket}/${key}`, value, (err) => {
+                if (err) {
+                  return rej(err);
+                }
+                res();
+              });
+            });
           },
-          async (key: string, value: Uint8Array | undefined) => {
-            await localforage.setItem(key, value);
-          },
-          async (key: string) => (await localforage.getItem(key)) instanceof Uint8Array
+          // Exists
+          async (bucket: string, key: string) =>
+            new Promise((res) => {
+              fs.access(`/${bucket}/${key}`, (err) => {
+                if (err) {
+                  console.error(err);
+                  return res(false);
+                }
+
+                return res(true);
+              });
+            }),
+          // New Folder
+          async (bucket: string, dir: string) =>
+            new Promise((res) => {
+              fs.mkdir(`/${bucket}/${dir}`, 0o777, (err) => {
+                if (err) {
+                  console.error(err);
+                  return res();
+                }
+
+                return res();
+              });
+            }),
+          // Delete
+          async (bucket: string, path: string) =>
+            new Promise((res) => {
+              fs.unlink(`/${bucket}/${path}`, (err) => {
+                if (err) {
+                  console.error(err);
+                  return res();
+                }
+
+                return res();
+              });
+            })
         );
 
         resolve(undefined);
@@ -81,10 +195,14 @@ class PoBWorker {
       throw decodeError;
     }
 
+    console.log('Decoded build:', xml);
+
     const [build, parseError] = builds.ParseBuildStr(xml);
     if (parseError) {
       throw parseError;
     }
+
+    console.log('Parsed XML:', dump(build));
 
     this.currentBuild = build;
   }
@@ -294,6 +412,83 @@ class PoBWorker {
       )
     });
     void this.Tick('setCalcTabElements');
+  }
+
+  async ListBuilds(dir: string) {
+    const [b] = await storage.ListBuilds(dir);
+    return dump(b);
+  }
+
+  async NewFolder(name: string) {
+    return await storage.NewFolder(name);
+  }
+
+  async Copy(from: string, to: string) {
+    return await storage.GetBuild(from).then(([build]) => {
+      if (!build) {
+        return;
+      }
+
+      return storage.SetBuild(to, build);
+    });
+  }
+
+  async Rename(from: string, to: string) {
+    return await this.Copy(from, to).then(() => storage.DeleteBuild(from));
+  }
+
+  async Delete(path: string) {
+    return await storage.DeleteBuild(path);
+  }
+
+  NewBuild() {
+    this.currentBuild = builds.EmptyBuild();
+  }
+
+  async SaveBuildAs(path: string) {
+    const [serialized, err] = builds.SerializeBuild(this.currentBuild);
+
+    if (err) {
+      console.error(dump(err));
+      return;
+    }
+
+    if (!serialized) {
+      console.error('failed serializing build');
+      return;
+    }
+
+    const build = new TextDecoder().decode(serialized);
+
+    return storage.SetBuild(path, build);
+  }
+
+  async OpenBuild(path: string) {
+    const [xml, err] = await storage.GetBuild(path);
+
+    if (err) {
+      console.error(dump(err));
+      return;
+    }
+
+    const [build, parseError] = builds.ParseBuildStr(xml);
+    if (parseError) {
+      throw parseError;
+    }
+
+    this.currentBuild = build;
+  }
+
+  ClearBuild() {
+    this.currentBuild = undefined;
+  }
+
+  GetItems() {
+    if (!this.currentBuild) {
+      return;
+    }
+
+    return dump(this.currentBuild.Items);
   }
 }
 

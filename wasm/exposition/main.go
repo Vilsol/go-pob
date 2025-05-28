@@ -6,11 +6,11 @@ import (
 	"runtime/debug"
 
 	"github.com/Vilsol/go-pob/builds"
-	"github.com/Vilsol/go-pob/cache"
 	"github.com/Vilsol/go-pob/calculator"
 	"github.com/Vilsol/go-pob/config"
 	"github.com/Vilsol/go-pob/data/raw"
 	"github.com/Vilsol/go-pob/pob"
+	"github.com/Vilsol/go-pob/storage"
 )
 
 func Expose() *crystalline.Exposer {
@@ -29,11 +29,19 @@ func Expose() *crystalline.Exposer {
 
 	e.ExposeFuncOrPanic(builds.ParseBuild)
 	e.ExposeFuncOrPanic(builds.ParseBuildStr)
+	e.ExposeFuncOrPanic(builds.SerializeBuild)
+	e.ExposeFuncOrPanic(builds.EmptyBuild)
 
 	e.ExposeFuncOrPanic(calculator.NewCalculator)
 	e.ExposeFuncOrPanicPromise(raw.InitializeAll)
-	e.ExposeFuncOrPanic(cache.InitializeDiskCache)
 	e.ExposeFuncOrPanic(config.InitLogging)
+
+	e.ExposeFuncOrPanic(storage.InitializeStorage)
+	e.ExposeFuncOrPanicPromise(storage.ListBuilds)
+	e.ExposeFuncOrPanicPromise(storage.NewFolder)
+	e.ExposeFuncOrPanicPromise(storage.GetBuild)
+	e.ExposeFuncOrPanicPromise(storage.SetBuild)
+	e.ExposeFuncOrPanicPromise(storage.DeleteBuild)
 
 	e.ExposeFuncOrPanic(GetSkillGems)
 	e.ExposeFuncOrPanicPromise(GetRawTree)

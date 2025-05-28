@@ -1,13 +1,12 @@
 package calculator
 
 import (
-	"context"
 	"os"
 	"testing"
 
 	"github.com/Vilsol/go-pob-data/poe"
-	"github.com/Vilsol/go-pob/cache"
 	"github.com/Vilsol/go-pob/moddb"
+	"github.com/Vilsol/go-pob/storage"
 
 	"github.com/MarvinJWendt/testza"
 
@@ -23,7 +22,7 @@ func init() {
 func TestEmptyEnv(t *testing.T) {
 	testCache := &EnvironmentCache{}
 
-	err := poe.InitializeAll(context.Background(), raw.LatestVersion, cache.Disk(), nil)
+	err := poe.InitializeAll(t.Context(), raw.LatestVersion, raw.AssetLoaderWrapper{Storage: storage.Get()}, nil)
 	testza.AssertNoError(t, err)
 
 	file, err := os.ReadFile("../testdata/builds/Fireball.xml")

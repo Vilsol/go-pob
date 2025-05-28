@@ -1,9 +1,5 @@
 package pob
 
-import (
-	"github.com/Vilsol/go-pob/data"
-)
-
 type PathOfBuilding struct {
 	Build    Build    `xml:"Build"`
 	Tree     Tree     `xml:"Tree"`
@@ -28,17 +24,16 @@ const (
 )
 
 type Build struct {
-	PantheonMinorGod       string           `xml:"pantheonMinorGod,attr"` // TODO Enum
-	PantheonMajorGod       string           `xml:"pantheonMajorGod,attr"` // TODO Enum
-	Bandit                 string           `xml:"bandit,attr"`           // TODO Enum
-	ViewMode               BuildViewMode    `xml:"viewMode,attr"`
-	ClassName              string           `xml:"className,attr"`       // TODO Enum
-	AscendClassName        string           `xml:"ascendClassName,attr"` // TODO Enum
-	Level                  int              `xml:"level,attr"`
-	MainSocketGroup        int              `xml:"mainSocketGroup,attr"`
-	TargetVersion          data.GameVersion `xml:"targetVersion,attr"`
-	PassiveNodes           []int64
-	PassiveNodesStartPaths map[int64][]int64
+	PantheonMinorGod string         `xml:"pantheonMinorGod,attr"` // TODO Enum
+	PantheonMajorGod string         `xml:"pantheonMajorGod,attr"` // TODO Enum
+	Bandit           string         `xml:"bandit,attr"`           // TODO Enum
+	ViewMode         BuildViewMode  `xml:"viewMode,attr"`
+	ClassName        ClassName      `xml:"className,attr"`
+	AscendClassName  AscendancyName `xml:"ascendClassName,attr"`
+	Level            int            `xml:"level,attr"`
+	MainSocketGroup  int            `xml:"mainSocketGroup,attr"`
+	TargetVersion    GameVersion    `xml:"targetVersion,attr"`
+	PassiveNodes     []int64
 
 	PlayerStats []PlayerStat `xml:"PlayerStat" crystalline:"not_nil"`
 }
@@ -64,6 +59,12 @@ type Items struct {
 	UseSecondWeaponSet *bool `xml:"useSecondWeaponSet,attr,omitempty"`
 
 	ItemSets []ItemSet `xml:"ItemSet" crystalline:"not_nil"`
+	Items    []Item    `xml:"Item"`
+}
+
+type Item struct {
+	ID   int    `xml:"id,attr"`
+	Text string `xml:",innerxml"`
 }
 
 type Skills struct {
@@ -163,10 +164,10 @@ type Gem struct {
 }
 
 type Spec struct {
-	ClassID        int              `xml:"classID,attr"`       // TODO Enum
-	AscendClassID  int              `xml:"ascendClassID,attr"` // TODO Enum
-	TreeVersion    data.TreeVersion `xml:"treeVersion,attr"`   // TODO Enum
-	NodesAttr      string           `xml:"nodes,attr"`
-	MasteryEffects string           `xml:"masteryEffects,attr"`
-	URL            string           `xml:"URL"`
+	ClassID        ClassID      `xml:"classID,attr"`
+	AscendClassID  AscendancyID `xml:"ascendClassID,attr"`
+	TreeVersion    TreeVersion  `xml:"treeVersion,attr"` // TODO Enum
+	NodesAttr      string       `xml:"nodes,attr"`
+	MasteryEffects string       `xml:"masteryEffects,attr"`
+	URL            string       `xml:"URL"`
 }

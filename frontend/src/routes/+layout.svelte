@@ -8,12 +8,13 @@
   import { syncWrap } from '$lib/go/worker';
   import { proxy } from 'comlink';
   import type { Outputs } from '$lib/custom_types';
-  import { outputs, currentBuild, sampleBuildCode, markBackendAsLoaded } from '$lib/global';
+  import { outputs, currentBuild, markBackendAsLoaded } from '$lib/global.js';
   import OverlayController from '$lib/components/overlays/OverlayController.svelte';
   import { fontScaling } from '$lib/global.js';
   import { logError } from '$lib/utils';
   import type { Snippet } from 'svelte';
   import { get } from 'svelte/store';
+  import BuildSelectorPage from '$lib/components/build-selector/BuildSelectorPage.svelte';
 
   let {
     children
@@ -37,9 +38,36 @@
             return;
           }
 
-          fetch(assets + '/go-pob.wasm')
-            .then((data) => data.arrayBuffer())
+          fetch(assets + (import.meta.env.MODE === 'development' ? '/go-pob.wasm' : '/go-pob.wasm.gz'))
+            .then(async (data) => {
+              if (!data.body) {
+                loadingMessage = 'Failed to load wasm runtime';
+                throw new Error('Failed to load wasm runtime');
+              }
+
+              return data.arrayBuffer();
+            })
             .then((data) => {
+              if (data.byteLength < 2) {
+                loadingMessage = 'Failed to load wasm runtime';
+                throw new Error('Failed to load wasm runtime');
+              }
+
+              const dataArray = new Uint8Array(data);
+              if (dataArray[0] === 0x1f && dataArray[1] === 0x8b) {
+                loadingMessage = 'Decompressing wasm runtime...';
+
+                const decompressedStream = new Response(data).body!.pipeThrough(new DecompressionStream('gzip'));
+                return new Response(decompressedStream).arrayBuffer();
+              }
+
+              return data;
+            })
+            .then(async (data) => {
+              console.log('wasm runtime size:', data.byteLength);
+
+              loadingMessage = 'Booting...';
+
               syncWrap
                 ?.boot(
                   data,
@@ -61,14 +89,6 @@
                   );
 
                   wasmLoading = false;
-
-                  // TODO Remove from Prod
-                  syncWrap
-                    ?.ImportCode(sampleBuildCode)
-                    .then(() => {
-                      syncWrap?.Tick('importBuildFromCode').catch(logError);
-                    })
-                    .catch(logError);
 
                   get(markBackendAsLoaded)();
                 })
@@ -92,6 +112,8 @@
         {/if}
       </div>
     </div>
+  {:else if !$currentBuild}
+    <BuildSelectorPage />
   {:else}
     <Header />
 
@@ -102,7 +124,7 @@
         {@render children?.()}
       </div>
     </div>
-
-    <OverlayController />
   {/if}
+
+  <OverlayController />
 </div>
