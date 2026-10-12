@@ -479,7 +479,12 @@ func configTools(argv []string) int {
 	}
 	corpus := args.corpus
 	if corpus == "" {
-		corpus = pyPathJoin(repo, "testdata/corpus-3.29")
+		version, err := gameDataVersion(repo)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "REFUSING: %v\n", err)
+			return 1
+		}
+		corpus = pyPathJoin(repo, "testdata/corpus-"+version)
 	}
 
 	if args.cmd == "splice" {

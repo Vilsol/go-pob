@@ -23,7 +23,7 @@ func TestMasteryTallyCountsRunegraftsSeparately(t *testing.T) {
 		{"0040-trickster-exsanguinate-of-transmission", 7, 6, 2},
 	} {
 		t.Run(tc.build, func(t *testing.T) {
-			file, err := os.ReadFile(filepath.Join("../testdata/corpus-3.29", tc.build+".xml"))
+			file, err := os.ReadFile(filepath.Join(corpusDirForLoadedData(t), tc.build+".xml"))
 			if err != nil {
 				t.Fatalf("read build: %v", err)
 			}

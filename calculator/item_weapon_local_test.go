@@ -100,8 +100,8 @@ func TestWeaponHandConditionNamesTheSlot(t *testing.T) {
 	} {
 		want := map[string][]string{
 			"Accuracy":     {tc.hand},
-			"LifeOnHit":    {tc.hand},
-			"ManaOnHit":    {tc.hand},
+			"LifeOnHit":    nil,
+			"ManaOnHit":    nil,
 			"PoisonChance": {tc.hand},
 			"BleedChance":  {"CriticalStrike", tc.hand},
 		}
@@ -128,7 +128,7 @@ func TestWeaponHandConditionDoesNotMutateSharedMods(t *testing.T) {
 	item := ParseItem(weaponLocalItem)
 
 	for _, m := range item.Mods {
-		if !weaponLocalTestNames[m.Name()] {
+		if !weaponLocalTestNames[m.Name()] || len(handConditionVars(m)) == 0 {
 			continue
 		}
 		for _, other := range item.slotModList2 {

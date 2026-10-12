@@ -5,6 +5,7 @@ import (
 	"compress/gzip"
 	"encoding/json"
 	"os"
+	"path/filepath"
 	"slices"
 	"testing"
 
@@ -23,7 +24,7 @@ func oracleModSectionTables(t *testing.T, file string) (*Environment, []modSecti
 	if err != nil {
 		t.Fatal(err)
 	}
-	raw, err := os.ReadFile("../testdata/corpus-3.29/" + file)
+	raw, err := os.ReadFile(filepath.Join(corpusDirForLoadedData(t), file))
 	if err != nil {
 		t.Fatal(err)
 	}

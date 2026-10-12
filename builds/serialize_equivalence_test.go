@@ -25,11 +25,11 @@ func serializeReference(t *testing.T, xmlText []byte) []byte {
 
 // TestSerializeBuildMatchesTheReference: on every 25th corpus build, largest first so the size hint is exercised shrinking.
 func TestSerializeBuildMatchesTheReference(t *testing.T) {
-	files, err := filepath.Glob(filepath.Join("..", "testdata", "corpus-3.29", "*.xml"))
+	files, err := filepath.Glob(filepath.Join(corpusDirForLoadedData(t), "*.xml"))
 	if err != nil || len(files) < 1000 {
 		t.Fatalf("REFUSING: %d corpus files (%v)", len(files), err)
 	}
-	picked := []string{filepath.Join("..", "testdata", "corpus-3.29", "0001-necromancer-unknown.xml")}
+	picked := []string{filepath.Join(corpusDirForLoadedData(t), "0001-necromancer-unknown.xml")}
 	for i := 0; i < len(files); i += 25 {
 		picked = append(picked, files[i])
 	}

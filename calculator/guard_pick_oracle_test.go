@@ -172,7 +172,7 @@ func TestGenerateGuardPicks(t *testing.T) {
 
 // TestGuardPickTakesTheOracleGuardFirst red-greens the pin on a build with Steelskin and Immortal Call both enabled.
 func TestGuardPickTakesTheOracleGuardFirst(t *testing.T) {
-	file, err := os.ReadFile("../testdata/corpus-3.29/0502-juggernaut-static-strike-of-gathering-lightning-4.xml")
+	file, err := os.ReadFile(filepath.Join(corpusDirForLoadedData(t), "0502-juggernaut-static-strike-of-gathering-lightning-4.xml"))
 	if err != nil {
 		t.Skipf("fixture build absent: %v", err)
 	}

@@ -14,7 +14,7 @@ import (
 
 // TestSavedTreeJewelsFitTheirSockets: Every jewel PoB saved in a tree socket of the corpus fits that socket here.
 func TestSavedTreeJewelsFitTheirSockets(t *testing.T) {
-	files, err := filepath.Glob("../testdata/corpus-3.29/*.xml")
+	files, err := filepath.Glob(filepath.Join(corpusDirForLoadedData(t), "*.xml"))
 	if err != nil || len(files) == 0 {
 		t.Fatalf("REFUSING: no corpus (%v)", err)
 	}

@@ -2,6 +2,7 @@ package calculator
 
 import (
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -10,7 +11,7 @@ import (
 
 // TestCompareModRows: The tooltip's rows are the breakdown's modifier rows, keyed without the item's id (CompareCalcsHelpers.lua:111-119).
 func TestCompareModRows(t *testing.T) {
-	raw, err := os.ReadFile("../testdata/corpus-3.29/0001-necromancer-unknown.xml")
+	raw, err := os.ReadFile(filepath.Join(corpusDirForLoadedData(t), "0001-necromancer-unknown.xml"))
 	if err != nil {
 		t.Fatal(err)
 	}

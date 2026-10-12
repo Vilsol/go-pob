@@ -18,7 +18,7 @@ func TestBlockIsComputedBeforePrimaryDefences(t *testing.T) {
 
 	const name = "0245-occultist-winter-orb-3.xml"
 
-	oracle, err := loadOutputOracle("../testdata/oracle-3.29/output-3.29.jsonl.gz")
+	oracle, err := oracleForLoadedData()
 	if err != nil {
 		t.Fatalf("oracle: %v", err)
 	}

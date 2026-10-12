@@ -116,7 +116,7 @@ func TestPruneStaleBuildsLeavesExactlyTheAcceptedSet(t *testing.T) {
 		if got[gone] {
 			t.Errorf("%s survived — a re-validate leaves a directory whose COUNT is wrong while "+
 				"every file in it is real, which is how 2148 wrong-league builds nearly reached "+
-				"testdata/corpus-3.29", gone)
+				"the 3.29 corpus", gone)
 		}
 	}
 }

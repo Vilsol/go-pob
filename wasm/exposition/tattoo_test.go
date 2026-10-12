@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/Vilsol/go-pob/builds"
+	"github.com/Vilsol/go-pob/data/raw"
 )
 
 var treacheryOverride = regexp.MustCompile(`(?s)<Override [^>]*nodeId="39836" dn="Runegraft of Treachery">.*?</Override>`)
@@ -16,7 +17,7 @@ func TestRemoveTattooMatchesTheSavedTree(t *testing.T) {
 	initItemData(t)
 	const file = "0007-elementalist-storm-burst-of-repulsion.xml"
 	build := corpusBuild(t, file)
-	xml, err := os.ReadFile(filepath.Join("..", "..", "testdata", "corpus-3.29", file))
+	xml, err := os.ReadFile(filepath.Join("..", "..", "testdata", "corpus-"+raw.LatestVersion, file))
 	if err != nil {
 		t.Fatal(err)
 	}

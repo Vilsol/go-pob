@@ -5,6 +5,7 @@ import (
 	"compress/gzip"
 	"encoding/json"
 	"os"
+	"path/filepath"
 	"slices"
 	"strings"
 	"testing"
@@ -58,7 +59,7 @@ func TestCalcsModSectionAgainstPoB(t *testing.T) {
 		}
 		env := envs[c.File]
 		if env == nil {
-			raw, err := os.ReadFile("../testdata/corpus-3.29/" + c.File)
+			raw, err := os.ReadFile(filepath.Join(corpusDirForLoadedData(t), c.File))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -101,7 +102,7 @@ func TestCalcsModSectionAgainstPoB(t *testing.T) {
 
 // TestCalcsModSectionItemRowsNameTheirItem: An Item source's row names its item.
 func TestCalcsModSectionItemRowsNameTheirItem(t *testing.T) {
-	raw, err := os.ReadFile("../testdata/corpus-3.29/0001-necromancer-unknown.xml")
+	raw, err := os.ReadFile(filepath.Join(corpusDirForLoadedData(t), "0001-necromancer-unknown.xml"))
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -45,7 +45,7 @@ func TestSplitSections(t *testing.T) {
 
 func parseCorpus(t *testing.T, name string) []byte {
 	t.Helper()
-	x, err := os.ReadFile(filepath.Join("..", "testdata", "corpus-3.29", name))
+	x, err := os.ReadFile(filepath.Join(corpusDirForLoadedData(t), name))
 	if err != nil {
 		t.Fatalf("REFUSING: %v", err)
 	}
@@ -54,7 +54,7 @@ func parseCorpus(t *testing.T, name string) []byte {
 
 // TestParseBuildOverMatchesParseBuild: An undo step parsed over the open build is the step parsed alone.
 func TestParseBuildOverMatchesParseBuild(t *testing.T) {
-	files, err := filepath.Glob(filepath.Join("..", "testdata", "corpus-3.29", "*.xml"))
+	files, err := filepath.Glob(filepath.Join(corpusDirForLoadedData(t), "*.xml"))
 	if err != nil || len(files) < 1000 {
 		t.Fatalf("REFUSING: %d corpus files (%v)", len(files), err)
 	}

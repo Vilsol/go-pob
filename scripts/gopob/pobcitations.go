@@ -34,7 +34,6 @@ var pcFuncLineGrandfather = map[string]bool{
 	"calculator/calc_perform.go::getUniqueItemTriggerName":  true,
 
 	"calculator/calc_offence.go::calcAilmentSourceDamage": true,
-	"calculator/calc_tools.go::CalcGemIsType":             true,
 	"calculator/calc_offence.go::calcSkillCooldown":       true,
 	"calculator/calc_perform.go::DoActorMisc":             true,
 	"calculator/calc_perform.go::determineCursePriority":  true,
@@ -1076,16 +1075,28 @@ func pobCitations(args []string) int {
 	fmt.Println()
 	fmt.Println("=== FUNCTION-LINE CHECK  (a func's marker must cite a Lua `function` line) ===")
 	fl := pcFuncLineFailures(pob, sc)
+	grandfather := pcFuncLineGrandfather
+	if path := os.Getenv("POB_CITATIONS_GRANDFATHER"); path != "" {
+		b, err := os.ReadFile(path) //nolint:gosec // a test fixture path
+		if err != nil {
+			//go-only: the grandfather override is a difftest fixture hook; the original had none.
+			pcRefuse(fmt.Sprintf("cannot read POB_CITATIONS_GRANDFATHER=%s: %v", path, err))
+		}
+		grandfather = map[string]bool{}
+		for _, k := range strings.Fields(string(b)) {
+			grandfather[k] = true
+		}
+	}
 	var flNew []pcFLFail
 	flKeys := map[string]bool{}
 	for _, f := range fl {
 		flKeys[f.key] = true
-		if !pcFuncLineGrandfather[f.key] {
+		if !grandfather[f.key] {
 			flNew = append(flNew, f)
 		}
 	}
 	var flStale []string
-	for k := range pcFuncLineGrandfather {
+	for k := range grandfather {
 		if !flKeys[k] {
 			flStale = append(flStale, k)
 		}
@@ -1095,7 +1106,7 @@ func pobCitations(args []string) int {
 		fmt.Printf("  MID-BODY %s\n", f.detail)
 	}
 	fmt.Printf("  -> %d func-attached marker(s) cite a range with no `function` line; %d "+
-		"grandfathered, %d NEW\n", len(fl), len(pcFuncLineGrandfather), len(flNew))
+		"grandfathered, %d NEW\n", len(fl), len(grandfather), len(flNew))
 	for _, k := range flStale {
 		fmt.Printf("  STALE-GRANDFATHER %s no longer needs grandfathering -- delete it from "+
 			"FUNC_LINE_GRANDFATHER\n", k)

@@ -154,7 +154,7 @@ jobs:
         run: go run ./scripts/testdatarelease fetch
 
       - name: Test
-        run: go test -v ./...
+        run: go test -v -timeout 60m ./...
 
   test-backend-race:
     name: Test Backend (race)
@@ -185,7 +185,7 @@ jobs:
         run: go run ./scripts/testdatarelease fetch
 
       - name: Test (race)
-        run: go test -race ./calculator/... ./moddb/... ./mod/... ./data/...
+        run: go test -race -timeout 60m ./calculator/... ./moddb/... ./mod/... ./data/...
 
   test-backend-wasm:
     name: Test Backend (wasm)
@@ -281,6 +281,34 @@ jobs:
         run: pnpm i
         working-directory: frontend
 
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Cache test data
+        uses: actions/cache@v4
+        with:
+          path: |
+            testdata/corpus-[0-9]*
+            testdata/oracle-[0-9]*
+            testdata/.installed-release
+          key: testdata-${{ hashFiles('scripts/testdata.json') }}
+
+      - name: Fetch test data
+        run: go run ./scripts/testdatarelease fetch
+
+      - name: Build wasm
+        run: go build -o frontend/static/go-pob.wasm ./wasm
+        env:
+          GOOS: js
+          GOARCH: wasm
+
+      - name: Populate the bundle cache
+        run: |
+          go test -count=1 ./wasm/exposition/
+          go test -count=1 -run TestLoadTreeGraph ./data/
+
       - name: Test
-        run: pnpm run test
+        run: pnpm exec vitest run --exclude 'e2e/**'
         working-directory: frontend

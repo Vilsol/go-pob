@@ -3,6 +3,7 @@ package data
 import (
 	"bufio"
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -70,7 +71,7 @@ func referenceFindScalableLine(line string, values []string) (string, []string, 
 func TestFindScalableLineMatchesTheEnumeration(t *testing.T) {
 	const maxValues = 9
 
-	f, err := os.Open("../testdata/corpus-3.29")
+	f, err := os.Open(filepath.Join("..", "testdata", "corpus-"+raw.LatestVersion))
 	if err != nil {
 		t.Skipf("corpus is absent: %v", err)
 	}
@@ -89,7 +90,7 @@ func TestFindScalableLineMatchesTheEnumeration(t *testing.T) {
 		if !strings.HasSuffix(name, ".xml") {
 			continue
 		}
-		fh, err := os.Open("../testdata/corpus-3.29/" + name)
+		fh, err := os.Open(filepath.Join("..", "testdata", "corpus-"+raw.LatestVersion, name))
 		if err != nil {
 			continue
 		}

@@ -10,7 +10,7 @@ import (
 
 // TestGemIDLookupMatchesUpstreamCollisionRule re-implements ModParser.lua:2032-2045 literally and requires our gemIdLookup port to agree on EVERY name.
 //
-//pob:src/Modules/ModParser.lua:2032-2045
+//pob:block:src/Modules/ModParser.lua:2032-2045
 func TestGemIDLookupMatchesUpstreamCollisionRule(t *testing.T) {
 	requireGameData(t, "3.29")
 

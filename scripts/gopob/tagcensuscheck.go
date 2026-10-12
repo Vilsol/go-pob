@@ -143,9 +143,16 @@ func orderedObject(raw json.RawMessage) ([]string, []json.RawMessage, error) {
 }
 
 func tagCensusCheck(args []string) int {
-	dumps := expandUser("~/go-pob-corpus/dumps-3.29")
+	var dumps string
 	if len(args) > 0 {
 		dumps = args[0]
+	} else {
+		version, err := gameDataVersion(".")
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "REFUSING: %v\n", err)
+			return 1
+		}
+		dumps = expandUser("~/go-pob-corpus/dumps-" + version)
 	}
 	files, _ := filepath.Glob(filepath.Join(dumps, "*.json"))
 	sort.Strings(files)

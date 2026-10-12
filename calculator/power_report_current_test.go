@@ -2,6 +2,7 @@ package calculator
 
 import (
 	"os"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -10,7 +11,7 @@ import (
 
 // TestPowerBuilderCurrent: The tree shows the node being calculated.
 func TestPowerBuilderCurrent(t *testing.T) {
-	raw, err := os.ReadFile("../testdata/corpus-3.29/0280-elementalist-fireball.xml")
+	raw, err := os.ReadFile(filepath.Join(corpusDirForLoadedData(t), "0280-elementalist-fireball.xml"))
 	if err != nil {
 		t.Fatal(err)
 	}

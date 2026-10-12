@@ -32,7 +32,7 @@ func corpusDirForVersion(version string) (string, error) {
 	return dir, nil
 }
 
-func corpusDirForLoadedData(t *testing.T) string {
+func corpusDirForLoadedData(t testing.TB) string {
 	t.Helper()
 	dir, err := corpusDirForVersion(raw.LatestVersion)
 	if err != nil {

@@ -1,8 +1,8 @@
 {
   "repo": "Vilsol/go-pob-testdata",
-  "release": "3.29-2026.10.12",
+  "release": "3.29-2026.10.12b",
   "assets": {
-    "corpus-3.29.tar.br": "b2482262211c0bf9f7dd6d0aa9def1e15b7e6864ca465c6c3bbf4940da348001",
-    "oracle-3.29.tar.br": "0a72e3f8752808ada728f87e7aa56b760fbd0e4adf6fb40c8b83d9c7f0208de9"
+    "corpus-3.29.tar.br": "7378ad9be7c3df277e2130e2614a1ada54e599ed04bd3c3374ea95fc56b6adeb",
+    "oracle-3.29.tar.br": "058dee5ecf0be238e126af52514ceef1ed96f224e4a5972c6ff3b90a17334421"
   }
 }

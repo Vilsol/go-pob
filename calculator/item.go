@@ -413,7 +413,7 @@ var (
 	modRangeValRE  = regexp.MustCompile(`\brange="([^"]*)"`)
 )
 
-//pob:src/Classes/ItemsTab.lua:1242-1244
+//pob:block:src/Classes/ItemsTab.lua:1242-1244
 func parseModRangeElements(raw string) []modRange {
 	if !strings.Contains(raw, "<ModRange") {
 		return nil
@@ -439,7 +439,7 @@ func parseModRangeElements(raw string) []modRange {
 	return out
 }
 
-//pob:src/Classes/ItemsTab.lua:1239-1256
+//pob:block:src/Classes/ItemsTab.lua:1239-1256
 func (i *Item) applyModRanges(ranges []modRange) {
 	if len(ranges) == 0 {
 		return
@@ -467,7 +467,7 @@ func (i *Item) applyModRanges(ranges []modRange) {
 	}
 }
 
-//pob:src/Classes/Item.lua:1034-1049
+//pob:block:src/Classes/Item.lua:1034-1049
 func (i *Item) buffModLineCount() int {
 	if i.Base == nil || i.Base.Flask == nil {
 		return 0
@@ -1587,6 +1587,14 @@ func (i *Item) buildModListForSlotNum(baseList []mod.Mod, slotNum int) []mod.Mod
 		armourData["Evasion"] = utils.RoundTo((evasionBase+armourEvasionBase+evasionEnergyShieldBase+evasionVariance*percentileOr(armourData, "EvasionBasePercentile"))*(1+(evasionInc+armourEvasionInc+evasionEnergyShieldInc+defencesInc)/100)*(1+qualityScalar/100), 0)
 		armourData["EnergyShield"] = utils.RoundTo((energyShieldBase+evasionEnergyShieldBase+armourEnergyShieldBase+energyShieldVariance*percentileOr(armourData, "EnergyShieldBasePercentile"))*(1+(energyShieldInc+armourEnergyShieldInc+evasionEnergyShieldInc+defencesInc)/100)*(1+qualityScalar/100), 0)
 		armourData["Ward"] = utils.RoundTo((wardBase+wardVariance*percentileOr(armourData, "WardBasePercentile"))*(1+(wardInc+defencesInc)/100)*(1+qualityScalar/100), 0)
+
+		//pob:block:src/Classes/Item.lua:2345-2356
+		for _, k := range []string{"Armour", "Evasion", "EnergyShield", "Ward"} {
+			if _, set := armourData[k+"BasePercentile"]; !set && armourData[k] > 0 {
+				armourData[k+"BasePercentile"] = 1
+			}
+		}
+
 		if ab.BlockChance != 0 {
 			blockChance := float64(ab.BlockChance) + calcLocal(&modList, "BlockChance", mod.TypeBase, 0)
 			blockChanceInc := calcLocal(&modList, "BlockChance", mod.TypeIncrease, 0)

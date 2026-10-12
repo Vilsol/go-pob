@@ -63,8 +63,9 @@ describe('plain -> rich -> plain is the identity', () => {
     );
   });
 
-  it('for every corpus build with notes', () => {
-    const dir = resolve(import.meta.dirname, '../../../../testdata/corpus-3.29');
+  const dir = resolve(import.meta.dirname, '../../../../testdata/corpus-3.29');
+  const corpusFiles = existsSync(dir) ? readdirSync(dir) : [];
+  it('for every corpus build with notes', { timeout: 20_000 + corpusFiles.length * 20 }, () => {
     if (!existsSync(dir)) return;
     const decode = (s: string) =>
       s.replace(/&(lt|gt|amp|apos|quot|#x?[0-9A-Fa-f]+);/g, (_, e: string) =>
@@ -81,7 +82,7 @@ describe('plain -> rich -> plain is the identity', () => {
                   : String.fromCodePoint(e[1] === 'x' ? parseInt(e.slice(2), 16) : Number(e.slice(1)))
       );
     let n = 0;
-    for (const f of readdirSync(dir)) {
+    for (const f of corpusFiles) {
       const m = /<Notes>([\s\S]*?)<\/Notes>/.exec(readFileSync(resolve(dir, f), 'utf8'));
       const notes = m ? decode(m[1]).replace(/^[ \t\n\v\f\r]+|[ \t\n\v\f\r]+$/g, '') : '';
       if (!notes) continue;

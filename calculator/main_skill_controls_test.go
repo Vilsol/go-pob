@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"encoding/json"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/Vilsol/go-pob/builds"
@@ -65,7 +66,7 @@ func loadSidebarControlsCases(t *testing.T) []sidebarControlsCase {
 
 func sidebarEnv(t *testing.T, file string) *Environment {
 	t.Helper()
-	raw, err := os.ReadFile("../testdata/corpus-3.29/" + file)
+	raw, err := os.ReadFile(filepath.Join(corpusDirForLoadedData(t), file))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -147,7 +148,7 @@ func TestCountAllocNodesAgainstPoB(t *testing.T) {
 
 // TestMainSkillControlsCarryTheDisableReason: Build.lua:1868-1871: a main skill the gear cannot use carries skillFlags.disable and its disableReason to the stat box.
 func TestMainSkillControlsCarryTheDisableReason(t *testing.T) {
-	raw, err := os.ReadFile("../testdata/corpus-3.29/0008-necromancer-vaal-summon-skeletons.xml")
+	raw, err := os.ReadFile(filepath.Join(corpusDirForLoadedData(t), "0008-necromancer-vaal-summon-skeletons.xml"))
 	if err != nil {
 		t.Fatal(err)
 	}

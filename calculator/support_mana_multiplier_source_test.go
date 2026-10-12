@@ -2,6 +2,7 @@ package calculator
 
 import (
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/Vilsol/go-pob/builds"
@@ -10,7 +11,7 @@ import (
 // TestSupportManaMultiplierCarriesTheSupportSource: CalcActiveSkill.lua:514 sources each support's SupportManaMultiplier with the support's modSource.
 func TestSupportManaMultiplierCarriesTheSupportSource(t *testing.T) {
 	requireGameData(t, "3.29")
-	raw, err := os.ReadFile("../testdata/corpus-3.29/0001-necromancer-unknown.xml")
+	raw, err := os.ReadFile(filepath.Join(corpusDirForLoadedData(t), "0001-necromancer-unknown.xml"))
 	if err != nil {
 		t.Fatal(err)
 	}

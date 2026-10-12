@@ -18,7 +18,7 @@ func TestArcticArmourGemResolvesItsPoBRow(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	xml, err := os.ReadFile(filepath.Join("..", "testdata", "corpus-3.29", "0006-elementalist-storm-burst.xml"))
+	xml, err := os.ReadFile(filepath.Join(corpusDirForLoadedData(t), "0006-elementalist-storm-burst.xml"))
 	if err != nil {
 		t.Fatal(err)
 	}

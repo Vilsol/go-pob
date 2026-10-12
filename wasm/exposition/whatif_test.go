@@ -28,7 +28,7 @@ func TestMiscCalculatorStatOutputs(t *testing.T) {
 		{"0004-trickster-lightning-tendrils-of-eccentricity.xml", true, false},
 		{"0008-necromancer-vaal-summon-skeletons.xml", false, true},
 	} {
-		xml, err := os.ReadFile(filepath.Join("..", "..", "testdata", "corpus-3.29", tc.file))
+		xml, err := os.ReadFile(filepath.Join("..", "..", "testdata", "corpus-"+raw.LatestVersion, tc.file))
 		if err != nil {
 			t.Fatalf("REFUSING: %v", err)
 		}

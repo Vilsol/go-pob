@@ -33,7 +33,7 @@ func TestSavedBuildSummaryMatchesPoB(t *testing.T) {
 			t.Fatalf("bad row %q", line)
 		}
 		rows++
-		raw, err := os.ReadFile(filepath.Join("..", "testdata", "corpus-3.29", col[0]))
+		raw, err := os.ReadFile(filepath.Join(corpusDirForLoadedData(t), col[0]))
 		if err != nil {
 			t.Fatalf("REFUSING: %v", err)
 		}
@@ -66,7 +66,7 @@ func TestSavedBuildSummaryMatchesPoB(t *testing.T) {
 
 // TestSavedBuildSummaryAgreesWithTheParse: The list read class and level off a full parse.
 func TestSavedBuildSummaryAgreesWithTheParse(t *testing.T) {
-	files, err := filepath.Glob(filepath.Join("..", "testdata", "corpus-3.29", "*.xml"))
+	files, err := filepath.Glob(filepath.Join(corpusDirForLoadedData(t), "*.xml"))
 	if err != nil || len(files) == 0 {
 		t.Fatalf("REFUSING: no corpus (%v)", err)
 	}

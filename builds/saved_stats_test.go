@@ -11,7 +11,7 @@ import (
 
 // TestSerializeBuildWithStatsWritesTheGivenStats: Build.lua:1014-1061: a save writes the stats of its last calculation, not the ones it was loaded with.
 func TestSerializeBuildWithStatsWritesTheGivenStats(t *testing.T) {
-	xml, err := os.ReadFile(filepath.Join("..", "testdata", "corpus-3.29", "0280-elementalist-fireball.xml"))
+	xml, err := os.ReadFile(filepath.Join(corpusDirForLoadedData(t), "0280-elementalist-fireball.xml"))
 	if err != nil {
 		t.Fatalf("REFUSING: %v", err)
 	}

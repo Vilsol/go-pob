@@ -47,8 +47,6 @@ type scArgs struct {
 
 func scParseArgs(argv []string) scArgs {
 	a := scArgs{
-		dumps:      pyExpandUser("~/go-pob-corpus/dumps-3.29"),
-		blob:       "testdata/oracle-3.29/output-3.29.jsonl.gz",
 		minSupport: 8,
 		top:        25,
 		failClass:  "wrong",
@@ -379,6 +377,18 @@ type scRow struct {
 
 func sourceCensus(argv []string) int {
 	args := scParseArgs(argv)
+	if args.dumps == "" || args.blob == "" {
+		version, err := gameDataVersion(".")
+		if err != nil {
+			scDie("REFUSING: %v", err)
+		}
+		if args.dumps == "" {
+			args.dumps = pyExpandUser("~/go-pob-corpus/dumps-" + version)
+		}
+		if args.blob == "" {
+			args.blob = "testdata/oracle-" + version + "/output-" + version + ".jsonl.gz"
+		}
+	}
 
 	order, ours, meta := scOurDump(args.ourDump)
 	blob := scBlob(args.blob)

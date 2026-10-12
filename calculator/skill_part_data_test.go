@@ -9,7 +9,7 @@ import (
 	"github.com/Vilsol/go-pob/moddb"
 )
 
-// TestBladeVortexBaseModsCarryEveryPart: Blade Vortex writes hitTimeOverride once per part.
+// TestBladeVortexBaseModsCarryEveryPart: Blade Vortex's base mods carry hitFrequency for every part and the blade count per part.
 func TestBladeVortexBaseModsCarryEveryPart(t *testing.T) {
 	list := moddb.NewModList()
 	for _, m := range raw.SkillBaseMods["BladeVortex"] {
@@ -18,40 +18,39 @@ func TestBladeVortexBaseModsCarryEveryPart(t *testing.T) {
 
 	for _, tc := range []struct {
 		part   int
-		hit    float64
 		blades float64
 	}{
-		{1, 0.6, 0},
-		{2, 0.6 / 2.75, 5},
-		{3, 0.6 / 4.5, 10},
+		{1, 0},
+		{2, 5},
+		{3, 10},
 	} {
 		cfg := &moddb.ListCfg{SkillPart: tc.part}
 
-		var hit float64
+		var freq float64
 		for _, v := range list.List(cfg, "SkillData") {
-			if sd, ok := v.(mod.SkillData); ok && sd.Key == "HitTimeOverride" {
-				hit = sd.Value
+			if sd, ok := v.(mod.SkillData); ok && sd.Key == "HitFrequency" {
+				freq = sd.Value
 			}
 		}
-		if math.Abs(hit-tc.hit) > 1e-9 {
-			t.Errorf("part %d: HitTimeOverride = %v, PoB act_dex.lua:945-947 gives %v", tc.part, hit, tc.hit)
+		if math.Abs(freq-0.6) > 1e-9 {
+			t.Errorf("part %d: HitFrequency = %v, PoB act_dex.lua:2250 gives 0.6", tc.part, freq)
 		}
 
 		blades := list.Sum(mod.TypeBase, cfg, "Multiplier:BladeVortexBlade")
 		if blades != tc.blades {
-			t.Errorf("part %d: Multiplier:BladeVortexBlade = %v, PoB act_dex.lua:943-944 gives %v", tc.part, blades, tc.blades)
+			t.Errorf("part %d: Multiplier:BladeVortexBlade = %v, PoB act_dex.lua:2251-2252 gives %v", tc.part, blades, tc.blades)
 		}
 	}
 }
 
-// TestEarthquakeStatMapCarriesPart2: Earthquake's aftershock damage is a part-2 statMap row (src/Data/Skills/act_str.lua).
+// TestEarthquakeStatMapCarriesPart2: Earthquake's aftershock damage is a part-2 statMap row (src/Data/Skills/act_str.lua:3313-3315).
 func TestEarthquakeStatMapCarriesPart2(t *testing.T) {
-	entry := raw.SkillStatMaps["Earthquake"]["earthquake_aftershock_minimum_added_physical_damage"]
+	entry := raw.SkillStatMaps["Earthquake"]["quake_slam_fully_charged_explosion_damage_+%_final"]
 	if entry == nil {
-		t.Fatal("Earthquake has no earthquake_aftershock_minimum_added_physical_damage entry")
+		t.Fatal("Earthquake has no quake_slam_fully_charged_explosion_damage_+%_final entry")
 	}
 	if len(entry.Mods) == 0 {
-		t.Fatal("Earthquake aftershock entry has no mods; PoB maps it to PhysicalMin tagged SkillPart 2")
+		t.Fatal("Earthquake aftershock entry has no mods; PoB maps it to Damage MORE tagged SkillPart 2")
 	}
 	for _, m := range entry.Mods {
 		for _, tag := range m.Tags() {

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math"
 	"os"
+	"path/filepath"
 	"slices"
 	"strconv"
 	"strings"
@@ -160,7 +161,7 @@ func TestPowerReportMatchesPoB(t *testing.T) {
 func BenchmarkPowerReport(b *testing.B) {
 	for _, file := range []string{"0280-elementalist-fireball.xml", "0001-necromancer-unknown.xml"} {
 		b.Run(strings.SplitN(file, "-", 2)[0], func(b *testing.B) {
-			raw, err := os.ReadFile("../testdata/corpus-3.29/" + file)
+			raw, err := os.ReadFile(filepath.Join(corpusDirForLoadedData(b), file))
 			if err != nil {
 				b.Fatal(err)
 			}
@@ -201,7 +202,7 @@ func TestPowerReportReuseMatchesFresh(t *testing.T) {
 		{"0012-occultist-unknown.xml", nil},
 		{"0048-warden-frost-blades.xml", []int64{63727}},
 	} {
-		raw, err := os.ReadFile("../testdata/corpus-3.29/" + tc.file)
+		raw, err := os.ReadFile(filepath.Join(corpusDirForLoadedData(t), tc.file))
 		if err != nil {
 			t.Fatal(err)
 		}

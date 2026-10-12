@@ -199,7 +199,7 @@ func setDifference(a, b map[string]bool) []string {
 
 func reverseSweepOracleKeys(t *testing.T) (map[string]int, map[string]int) {
 	t.Helper()
-	oracle, err := loadOutputOracle("../testdata/oracle-3.29/output-3.29.jsonl.gz")
+	oracle, err := oracleForLoadedData()
 	if err != nil {
 		t.Fatalf("REFUSING: cannot read the oracle blob, so the ORACLE column would read '-' "+
 			"for every name and rank real work as ungradeable: %v", err)

@@ -107,9 +107,6 @@ func insertImplicits(raw string, lines []string) string {
 var specLineRe = regexp.MustCompile(`^[A-Za-z ]+: `)
 
 func dbItemType(item *Item) string {
-	if item.Type == string(data.ThrustingOneHandSword) {
-		return string(data.OneHandSword)
-	}
 	return item.Type
 }
 

@@ -3,6 +3,7 @@ package calculator
 import (
 	"math"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/Vilsol/go-pob/builds"
@@ -26,7 +27,7 @@ func TestLancingSteelOfSprayingScalesByProjectileCount(t *testing.T) {
 	}
 	checked := 0
 	for _, c := range cases {
-		raw, err := os.ReadFile("../testdata/corpus-3.29/" + c.name)
+		raw, err := os.ReadFile(filepath.Join(corpusDirForLoadedData(t), c.name))
 		if err != nil {
 			t.Fatalf("%s: %v", c.name, err)
 		}

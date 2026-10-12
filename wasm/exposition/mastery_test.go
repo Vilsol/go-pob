@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/Vilsol/go-pob/builds"
+	"github.com/Vilsol/go-pob/data/raw"
 )
 
 // TestSelectMasteryEffectMatchesTheSavedChoice: Choosing another effect for 0280's mastery 63268 calculates as 0280 saved with that effect.
@@ -31,7 +32,7 @@ func TestSelectMasteryEffectMatchesTheSavedChoice(t *testing.T) {
 	if GetMasterySelections(build)[63268] != next {
 		t.Fatalf("selections = %v", GetMasterySelections(build))
 	}
-	xml, err := os.ReadFile(filepath.Join("..", "..", "testdata", "corpus-3.29", file))
+	xml, err := os.ReadFile(filepath.Join("..", "..", "testdata", "corpus-"+raw.LatestVersion, file))
 	if err != nil {
 		t.Fatal(err)
 	}

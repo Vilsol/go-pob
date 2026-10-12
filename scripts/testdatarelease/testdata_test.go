@@ -27,7 +27,7 @@ func TestPackIsDeterministicAndRoundTrips(t *testing.T) {
 	}
 
 	one, two := filepath.Join(root, "1.tar.br"), filepath.Join(root, "2.tar.br")
-	sum1, n, err := packDir(src, "corpus-x", one, nil)
+	sum1, n, err := packDir(src, "corpus-x", one, nil, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -37,7 +37,7 @@ func TestPackIsDeterministicAndRoundTrips(t *testing.T) {
 	if err := os.Chtimes(filepath.Join(src, "a.xml"), archiveTime.AddDate(3, 0, 0), archiveTime.AddDate(3, 0, 0)); err != nil {
 		t.Fatal(err)
 	}
-	sum2, _, err := packDir(src, "corpus-x", two, nil)
+	sum2, _, err := packDir(src, "corpus-x", two, nil, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -62,7 +62,7 @@ func TestPackRefusesLFSPointers(t *testing.T) {
 	if err := os.WriteFile(filepath.Join(src, "a.xml"), append(lfsPointer, "\noid sha256:00\n"...), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	if _, _, err := packDir(src, "corpus-x", filepath.Join(t.TempDir(), "o.tar.br"), nil); err == nil || !strings.Contains(err.Error(), "LFS") {
+	if _, _, err := packDir(src, "corpus-x", filepath.Join(t.TempDir(), "o.tar.br"), nil, nil); err == nil || !strings.Contains(err.Error(), "LFS") {
 		t.Fatalf("packed an LFS pointer: %v", err)
 	}
 }

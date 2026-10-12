@@ -18,9 +18,16 @@ type treePair struct{ build, id string }
 
 func classifyTreeSources(args []string) int {
 	pobData := filepath.Join(expandUser(envOr("POB_DIR", "~/PathOfBuilding")), "src", "Data")
-	dumps := expandUser(envOr("HOME", "~") + "/go-pob-corpus/dumps-3.29")
+	var dumps string
 	if len(args) > 0 {
 		dumps = args[0]
+	} else {
+		version, err := gameDataVersion(".")
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "REFUSING: %v\n", err)
+			return 1
+		}
+		dumps = expandUser(envOr("HOME", "~") + "/go-pob-corpus/dumps-" + version)
 	}
 
 	tattooFile := filepath.Join(pobData, "TattooPassives.lua")

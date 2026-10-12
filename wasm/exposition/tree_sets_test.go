@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/Vilsol/go-pob/builds"
+	"github.com/Vilsol/go-pob/data/raw"
 )
 
 // TestSetActiveTreeSpecMatchesTheSavedTree: Switching 0280 from "Lab 2" (tree 2) to "White maps" (tree 3) calculates as the same build saved with tree 3 active.
@@ -17,7 +18,7 @@ func TestSetActiveTreeSpecMatchesTheSavedTree(t *testing.T) {
 	if build.Tree.ActiveSpec != 2 {
 		t.Fatalf("REFUSING: 0280 opens on tree %d, want 2", build.Tree.ActiveSpec)
 	}
-	xml, err := os.ReadFile(filepath.Join("..", "..", "testdata", "corpus-3.29", file))
+	xml, err := os.ReadFile(filepath.Join("..", "..", "testdata", "corpus-"+raw.LatestVersion, file))
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -167,6 +167,21 @@ func defaultVersion(repo string) (string, int) {
 	return m[1], 0
 }
 
+func gameDataVersion(repo string) (string, error) {
+	if v := os.Getenv("POE_VERSION"); v != "" {
+		return v, nil
+	}
+	b, err := os.ReadFile(filepath.Join(repo, defaultVersionSource)) //nolint:gosec // a repo path
+	if err != nil {
+		return "", fmt.Errorf("cannot read %s for DefaultVersion: %w", defaultVersionSource, err)
+	}
+	m := reDefaultVersion.FindStringSubmatch(string(b))
+	if m == nil {
+		return "", fmt.Errorf("no `const DefaultVersion` in %s", defaultVersionSource)
+	}
+	return m[1], nil
+}
+
 func collapseSpaces(s string) string {
 	var b strings.Builder
 	b.Grow(len(s))

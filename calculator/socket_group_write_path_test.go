@@ -15,7 +15,7 @@ import (
 
 func loadCorpusBuild(t *testing.T, name string) *pob.PathOfBuilding {
 	t.Helper()
-	xml, err := os.ReadFile(filepath.Join("..", "testdata", "corpus-3.29", name))
+	xml, err := os.ReadFile(filepath.Join(corpusDirForLoadedData(t), name))
 	if err != nil {
 		t.Fatalf("REFUSING: %v (fetch the corpus with `mise run testdata`)", err)
 	}

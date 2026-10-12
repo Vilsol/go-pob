@@ -6,7 +6,7 @@ import (
 
 // TestFlaskEffectNotRemovedLinesParse pins ModParser.lua:5144-5152's three rows against the four LEECH rows they sit beside.
 //
-//pob:src/Modules/ModParser.lua:5144-5152
+//pob:block:src/Modules/ModParser.lua:5144-5152
 func TestFlaskEffectNotRemovedLinesParse(t *testing.T) {
 	for _, tc := range []struct {
 		line string

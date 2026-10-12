@@ -64,7 +64,7 @@ func TestDistanceToClassStartMatchesPinnedPoB(t *testing.T) {
 
 	for _, name := range order {
 		t.Run(name, func(t *testing.T) {
-			xml, err := os.ReadFile(filepath.Join("..", "testdata", "corpus-3.29", name))
+			xml, err := os.ReadFile(filepath.Join(corpusDirForLoadedData(t), name))
 			if err != nil {
 				t.Fatalf("REFUSING: %v", err)
 			}

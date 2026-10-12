@@ -2,6 +2,7 @@ package calculator
 
 import (
 	"runtime"
+	"runtime/debug"
 	"runtime/metrics"
 	"testing"
 )
@@ -41,6 +42,7 @@ func TestWhatIfsLetTheGCMarkWorkerRun(t *testing.T) {
 		return samples[0].Value.Uint64(), samples[1].Value.Float64() + samples[2].Value.Float64(), samples[3].Value.Float64()
 	}
 
+	defer debug.SetGCPercent(debug.SetGCPercent(10))
 	cycles0, background0, assist0 := read()
 	cycles, calcs := cycles0, 0
 	for k := 0; calcs < 400 && cycles-cycles0 < 4; k = (k + 20) % (len(ids) - 19) {

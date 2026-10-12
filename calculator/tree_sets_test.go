@@ -2,6 +2,7 @@ package calculator
 
 import (
 	"os"
+	"path/filepath"
 	"slices"
 	"strconv"
 	"testing"
@@ -13,7 +14,7 @@ import (
 
 func parseCorpusBuild(t *testing.T, file string) *pob.PathOfBuilding {
 	t.Helper()
-	raw, err := os.ReadFile("../testdata/corpus-3.29/" + file)
+	raw, err := os.ReadFile(filepath.Join(corpusDirForLoadedData(t), file))
 	if err != nil {
 		t.Fatal(err)
 	}

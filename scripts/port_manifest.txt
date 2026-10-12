@@ -176,6 +176,7 @@ scripts/testdatarelease/main.go     GO-NATIVE  pack / fetch dispatch and the scr
 scripts/testdatarelease/pack.go     GO-NATIVE  packs the corpus and oracle into deterministic tar + brotli release archives; no PoB analogue
 scripts/testdatarelease/fetch.go    GO-NATIVE  downloads, sha256-checks and installs the pinned release archives; no PoB analogue
 scripts/testdatarelease/scrub.go    GO-NATIVE  applies the public export's rewrites and leak check to the archives; no PoB analogue
+scripts/testdatarelease/names.go    GO-NATIVE  renames corpus files Windows cannot hold and rewrites their oracle keys; no PoB analogue
 scripts/corpus/archive.go           GO-NATIVE  writes and reads the durable per-league candidate index under testdata/corpus-index/, plus the link-rot sampler; no PoB analogue
 scripts/corpus/cdp.go               GO-NATIVE  stdlib RFC 6455 client and Chrome DevTools Protocol driver, so a discovery arm can render a page in a real browser instead of reading it with an HTTP client; no PoB analogue
 scripts/corpus/checkpoint.go        GO-NATIVE  per-(sub,endpoint,window) crawl cursor so an interrupted multi-hour crawl resumes; nothing in PoB crawls anything

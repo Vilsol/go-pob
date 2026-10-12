@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/Vilsol/go-pob/builds"
+	"github.com/Vilsol/go-pob/data/raw"
 )
 
 // TestSocketTreeJewelMatchesTheSavedSocket: Emptying 0008's socket 2311 calculates as 0008 saved without that jewel; putting it back as saved.
@@ -14,7 +15,7 @@ func TestSocketTreeJewelMatchesTheSavedSocket(t *testing.T) {
 	initItemData(t)
 	const file = "0008-necromancer-vaal-summon-skeletons.xml"
 	build := corpusBuild(t, file)
-	xml, err := os.ReadFile(filepath.Join("..", "..", "testdata", "corpus-3.29", file))
+	xml, err := os.ReadFile(filepath.Join("..", "..", "testdata", "corpus-"+raw.LatestVersion, file))
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -91,7 +91,7 @@ var itemClassTypes = map[string]string{
 	"One Hand Axes":             "One Handed Axe",
 	"One Hand Maces":            "One Handed Mace",
 	"One Hand Swords":           "One Handed Sword",
-	"Thrusting One Hand Swords": "Thrusting One Handed Sword",
+	"Thrusting One Hand Swords": "One Handed Sword",
 	"Two Hand Axes":             "Two Handed Axe",
 	"Two Hand Maces":            "Two Handed Mace",
 	"Two Hand Swords":           "Two Handed Sword",
@@ -114,6 +114,8 @@ var itemClassSubTypes = map[string]string{
 	"Abyss Jewels":   "Abyss",
 	"Rune Daggers":   "Rune Dagger",
 	"Warstaves":      "Warstaff",
+
+	"Thrusting One Hand Swords": "Thrusting",
 }
 
 //pob:block:src/Data/Bases/flask.lua:5-399

@@ -11,6 +11,7 @@ import (
 	"testing"
 
 	"github.com/Vilsol/go-pob/calculator"
+	"github.com/Vilsol/go-pob/data/raw"
 	"github.com/Vilsol/go-pob/pob"
 )
 
@@ -52,7 +53,7 @@ func TestMiscCalculatorForMatchesFresh(t *testing.T) {
 		"0001-necromancer-unknown.xml", "0011-saboteur-cyclone.xml", "0012-occultist-unknown.xml",
 		"0048-warden-frost-blades.xml", "0280-elementalist-fireball.xml", "0339-reliquarian-shield-crush-of-the-chieftain-2.xml",
 	}
-	ents, err := os.ReadDir(filepath.Join("..", "..", "testdata", "corpus-3.29"))
+	ents, err := os.ReadDir(filepath.Join("..", "..", "testdata", "corpus-"+raw.LatestVersion))
 	if err != nil {
 		t.Fatalf("REFUSING: %v", err)
 	}

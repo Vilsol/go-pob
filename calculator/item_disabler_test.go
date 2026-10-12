@@ -190,7 +190,7 @@ func TestItemDisablerRespectsIgnoreConfig(t *testing.T) {
 	requireGameData(t, "3.29")
 
 	const buildName = "2668-ladder-helias61_8746.Somersby_Grusha"
-	rawXML, err := os.ReadFile(filepath.Join("..", "testdata", "corpus-3.29", buildName+".xml"))
+	rawXML, err := os.ReadFile(filepath.Join(corpusDirForLoadedData(t), buildName+".xml"))
 	if err != nil {
 		t.Fatalf("REFUSING: %v", err)
 	}
@@ -209,7 +209,7 @@ func TestItemDisablerRespectsIgnoreConfig(t *testing.T) {
 
 func equippedSlotIDs(t *testing.T, build string) map[string]int {
 	t.Helper()
-	raw, err := os.ReadFile(filepath.Join("..", "testdata", "corpus-3.29", build+".xml"))
+	raw, err := os.ReadFile(filepath.Join(corpusDirForLoadedData(t), build+".xml"))
 	if err != nil {
 		t.Fatalf("REFUSING: %v", err)
 	}

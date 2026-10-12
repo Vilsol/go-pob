@@ -199,6 +199,9 @@ func unpack(archive, stage, dir string) error {
 		if !strings.HasPrefix(name, dir+"/") || strings.Contains(name, "..") || strings.Contains(name, `\`) {
 			return fmt.Errorf("entry %s is outside %s/", hdr.Name, dir)
 		}
+		if err := portableName(name); err != nil {
+			return err
+		}
 		if err := extract(tr, filepath.Join(stage, filepath.FromSlash(name))); err != nil {
 			return err
 		}

@@ -168,7 +168,7 @@ func TestItemModLineOrderDiff(t *testing.T) {
 		buildsSeen++
 
 		xmlName := strings.TrimSuffix(f, ".json") + ".xml"
-		xmlBytes, err := os.ReadFile(filepath.Join("..", "testdata", "corpus-3.29", xmlName))
+		xmlBytes, err := os.ReadFile(filepath.Join(corpusDirForLoadedData(t), xmlName))
 		if err != nil {
 			t.Fatalf("REFUSING: %v", err)
 		}

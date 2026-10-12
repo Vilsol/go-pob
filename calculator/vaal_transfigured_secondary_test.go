@@ -2,6 +2,7 @@ package calculator
 
 import (
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/Vilsol/go-pob-data/poe"
@@ -99,7 +100,7 @@ func TestVaalTransfiguredSecondaryArrivesOnACarrier(t *testing.T) {
 	requireGameData(t, "3.29")
 
 	const name = "0076-occultist-vaal-cold-snap-of-power.xml"
-	rawXML, err := os.ReadFile("../testdata/corpus-3.29/" + name)
+	rawXML, err := os.ReadFile(filepath.Join(corpusDirForLoadedData(t), name))
 	if err != nil {
 		t.Fatal(err)
 	}

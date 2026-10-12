@@ -9,6 +9,7 @@ import (
 
 	"github.com/Vilsol/go-pob/builds"
 	"github.com/Vilsol/go-pob/data"
+	"github.com/Vilsol/go-pob/data/raw"
 )
 
 // TestPrunableNodesOnRealBuilds: The tree page's deallocate preview (and the click that follows it) removes a node plus what it alone connects.
@@ -18,7 +19,7 @@ func TestPrunableNodesOnRealBuilds(t *testing.T) {
 	nodes := v.Tree().Nodes
 	for _, name := range names {
 		t.Run(name, func(t *testing.T) {
-			raw, err := os.ReadFile(filepath.Join("..", "testdata", "corpus-3.29", name))
+			raw, err := os.ReadFile(filepath.Join("..", "testdata", "corpus-"+raw.LatestVersion, name))
 			if err != nil {
 				t.Fatalf("REFUSING: %v", err)
 			}

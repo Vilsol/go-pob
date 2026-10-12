@@ -29,8 +29,11 @@ func TestIndomitableResolveResolves(t *testing.T) {
 	if n := countMods(ml, "DamageTaken", mod.TypeMore, -25); n != 1 {
 		t.Errorf("DamageTaken MORE -25 (Take 25%% less Damage): got %d, want 1", n)
 	}
-	if n := len(ml.Mods()); n != 1 {
-		t.Errorf("got %d mods, want 1 — PoB's dump for 157-berserker-blade-flurry carries only DamageTaken MORE -25", n)
+	if n := countMods(ml, "Damage", mod.TypeMore, -10); n != 1 {
+		t.Errorf("Damage MORE -10 (Deal 10%% less Damage): got %d, want 1", n)
+	}
+	if n := len(ml.Mods()); n != 2 {
+		t.Errorf("got %d mods, want 2 — PoB's dump for 0745-juggernaut-discharge-of-misery carries Damage MORE -10 and DamageTaken MORE -25 from Tree:52435", n)
 	}
 }
 

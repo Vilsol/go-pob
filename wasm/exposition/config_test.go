@@ -121,7 +121,7 @@ func TestParseModLinesLabels(t *testing.T) {
 func TestConfigRelevance(t *testing.T) {
 	initGameData(t)
 
-	xml, err := os.ReadFile(filepath.Join("..", "..", "testdata", "corpus-3.29", "0037-ascendant-fire-trap-of-blasting-2.xml"))
+	xml, err := os.ReadFile(filepath.Join("..", "..", "testdata", "corpus-"+raw.LatestVersion, "0037-ascendant-fire-trap-of-blasting-2.xml"))
 	if err != nil {
 		t.Fatalf("REFUSING: %v", err)
 	}
@@ -168,7 +168,7 @@ func TestConfigRelevance(t *testing.T) {
 // TestConfigPlaceholdersAreTheCalculationsOwn: ConfigOptions.lua:1457-1589, 2246-2286.
 func TestConfigPlaceholdersAreTheCalculationsOwn(t *testing.T) {
 	initGameData(t)
-	xml, err := os.ReadFile(filepath.Join("..", "..", "testdata", "corpus-3.29", "0280-elementalist-fireball.xml"))
+	xml, err := os.ReadFile(filepath.Join("..", "..", "testdata", "corpus-"+raw.LatestVersion, "0280-elementalist-fireball.xml"))
 	if err != nil {
 		t.Fatalf("REFUSING: %v", err)
 	}

@@ -191,7 +191,7 @@ func TestGeneratePairsPicks(t *testing.T) {
 
 // TestPartyCursePickTakesTheOracleOrder red-greens the pin on 1106: three ally curses, two free slots.
 func TestPartyCursePickTakesTheOracleOrder(t *testing.T) {
-	file, err := os.ReadFile("../testdata/corpus-3.29/1106-luminary-lightning-tendrils-of-eccentricity.xml")
+	file, err := os.ReadFile(filepath.Join(corpusDirForLoadedData(t), "1106-luminary-lightning-tendrils-of-eccentricity.xml"))
 	if err != nil {
 		t.Skipf("fixture build absent: %v", err)
 	}
@@ -320,7 +320,7 @@ func TestAbyssStatsCrossApplyFirstStat(t *testing.T) {
 // TestAbyssStatPickTakesTheOracleStat red-greens the pin on 8633, whose dump carries 2 on both Tree:6981 speed lines.
 func TestAbyssStatPickTakesTheOracleStat(t *testing.T) {
 	const b = "8633-ladder-갓시각_4716.CURSE_of_the_PROTEIN.xml"
-	file, err := os.ReadFile("../testdata/corpus-3.29/" + b)
+	file, err := os.ReadFile(filepath.Join(corpusDirForLoadedData(t), b))
 	if err != nil {
 		t.Skipf("fixture build absent: %v", err)
 	}

@@ -560,7 +560,7 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 	if skillCfg.SkillCond == nil {
 		skillCfg.SkillCond = make(map[string]bool)
 	}
-	//pob: Modules/CalcOffence.lua:485-488
+	//pob:block:src/Modules/CalcOffence.lua:485-488
 	skillCfg.SkillCond["SkillIsTriggered"] = skillData.Triggered
 	if skillCfg.SkillCond["SkillIsTriggered"] {
 		skillFlags[SkillFlagTriggered] = true
@@ -4097,7 +4097,8 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 				fmt.Sprintf("%.1f ^8(average damage)", actor.Output["AverageDamage"]),
 				utils.Ternary(actor.Output["HitSpeed"] != 0, fmt.Sprintf("x %.2f ^8(hit rate)", actor.Output["HitSpeed"]), fmt.Sprintf("x %.2f ^8(attack rate)", actor.Output["Speed"])),
 			)
-		} else if skillData.Triggered { //pob: Modules/CalcOffence.lua:3938
+		} else if skillData.Triggered {
+			//pob:block:src/Modules/CalcOffence.lua:3938-3942
 			breakdown.AddLine("TotalDPS",
 				fmt.Sprintf("%.1f ^8(average damage)", actor.Output["AverageDamage"]),
 				utils.Ternary(actor.Output["HitSpeed"] != 0, fmt.Sprintf("x %.2f ^8(hit rate)", actor.Output["HitSpeed"]), fmt.Sprintf("x %.2f ^8(trigger rate)", actor.Output["Speed"])),

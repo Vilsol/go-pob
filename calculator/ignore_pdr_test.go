@@ -34,7 +34,7 @@ func TestIgnoreEnemyPhysicalDamageReduction(t *testing.T) {
 	}
 	requireGameData(t, "3.29")
 
-	oracle, err := loadOutputOracle("../testdata/oracle-3.29/output-3.29.jsonl.gz")
+	oracle, err := oracleForLoadedData()
 	if err != nil {
 		t.Fatalf("oracle: %v", err)
 	}

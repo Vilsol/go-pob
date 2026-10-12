@@ -23,7 +23,7 @@ func TestBreakdownTablesCarryPoBsColumns(t *testing.T) {
 	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, raw.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
 		t.Fatal(err)
 	}
-	files, err := filepath.Glob(filepath.Join("..", "testdata", "corpus-3.29", "00[0-9][0-9]-*.xml"))
+	files, err := filepath.Glob(filepath.Join(corpusDirForLoadedData(t), "00[0-9][0-9]-*.xml"))
 	if err != nil || len(files) == 0 {
 		t.Fatalf("REFUSING: no corpus builds (%v)", err)
 	}

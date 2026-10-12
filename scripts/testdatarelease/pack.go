@@ -51,11 +51,23 @@ func cmdPack(args []string) error {
 		return fmt.Errorf("creating %s: %w", *out, err)
 	}
 
+	corpus, err := listFiles(filepath.Join("testdata", "corpus-"+version))
+	if err != nil {
+		return err
+	}
+	renames, err := portableRenames(corpus)
+	if err != nil {
+		return fmt.Errorf("corpus-%s: %w", version, err)
+	}
+	for _, old := range sortedKeys(renames) {
+		fmt.Printf("renamed for Windows: %s -> %s\n", old, renames[old])
+	}
+
 	m := manifest{Repo: repo, Release: version + "-" + *date, Assets: map[string]string{}}
 	var files []string
 	for _, dir := range []string{"corpus-" + version, "oracle-" + version} {
 		asset := dir + archiveExt
-		sum, n, err := packDir(filepath.Join("testdata", dir), dir, filepath.Join(*out, asset), rules)
+		sum, n, err := packDir(filepath.Join("testdata", dir), dir, filepath.Join(*out, asset), rules, renames)
 		if err != nil {
 			return fmt.Errorf("%s: %w", dir, err)
 		}
@@ -106,7 +118,7 @@ func gameDataVersion() (string, error) {
 	return string(m[1]), nil
 }
 
-func packDir(src, prefix, dst string, rules *exportRules) (string, int, error) {
+func listFiles(src string) ([]string, error) {
 	var names []string
 	err := filepath.WalkDir(src, func(p string, d fs.DirEntry, err error) error {
 		if err != nil {
@@ -126,7 +138,24 @@ func packDir(src, prefix, dst string, rules *exportRules) (string, int, error) {
 		return nil
 	})
 	if err != nil {
-		return "", 0, fmt.Errorf("listing %s: %w", src, err)
+		return nil, fmt.Errorf("listing %s: %w", src, err)
+	}
+	return names, nil
+}
+
+func sortedKeys(m map[string]string) []string {
+	keys := make([]string, 0, len(m))
+	for k := range m {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	return keys
+}
+
+func packDir(src, prefix, dst string, rules *exportRules, renames map[string]string) (string, int, error) {
+	names, err := listFiles(src)
+	if err != nil {
+		return "", 0, err
 	}
 	if len(names) == 0 {
 		return "", 0, fmt.Errorf("%s holds no files", src)
@@ -143,7 +172,7 @@ func packDir(src, prefix, dst string, rules *exportRules) (string, int, error) {
 	}
 	defer os.Remove(tmp)
 	h := sha256.New()
-	err = writeArchive(io.MultiWriter(f, h), src, prefix, names, rules)
+	err = writeArchive(io.MultiWriter(f, h), src, prefix, names, rules, renames)
 	if cerr := f.Close(); err == nil && cerr != nil {
 		err = fmt.Errorf("writing %s: %w", tmp, cerr)
 	}
@@ -156,11 +185,11 @@ func packDir(src, prefix, dst string, rules *exportRules) (string, int, error) {
 	return hex.EncodeToString(h.Sum(nil)), len(names), nil
 }
 
-func writeArchive(w io.Writer, src, prefix string, names []string, rules *exportRules) error {
+func writeArchive(w io.Writer, src, prefix string, names []string, rules *exportRules, renames map[string]string) error {
 	bw := brotli.NewWriterOptions(w, brotli.WriterOptions{Quality: 9, LGWin: 24})
 	tw := tar.NewWriter(bw)
 	for _, name := range names {
-		if err := addFile(tw, src, prefix, name, rules); err != nil {
+		if err := addFile(tw, src, prefix, name, rules, renames); err != nil {
 			return err
 		}
 	}
@@ -173,7 +202,7 @@ func writeArchive(w io.Writer, src, prefix string, names []string, rules *export
 	return nil
 }
 
-func addFile(tw *tar.Writer, src, prefix, name string, rules *exportRules) error {
+func addFile(tw *tar.Writer, src, prefix, name string, rules *exportRules, renames map[string]string) error {
 	p := filepath.Join(src, filepath.FromSlash(name))
 	b, err := os.ReadFile(p)
 	if err != nil {
@@ -183,6 +212,16 @@ func addFile(tw *tar.Writer, src, prefix, name string, rules *exportRules) error
 		return fmt.Errorf("%s is a Git LFS pointer; run `git lfs pull` first", p)
 	}
 	b = rules.rewrite("testdata/"+prefix+"/"+name, b)
+	if strings.HasPrefix(prefix, "oracle-") {
+		if b, err = renameOracle(src, name, b, renames); err != nil {
+			return err
+		}
+	} else if to, ok := renames[name]; ok {
+		name = to
+	}
+	if err := portableName(name); err != nil {
+		return err
+	}
 	hdr := &tar.Header{
 		Typeflag: tar.TypeReg,
 		Name:     prefix + "/" + name,

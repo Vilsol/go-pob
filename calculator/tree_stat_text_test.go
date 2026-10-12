@@ -8,32 +8,29 @@ import (
 	"github.com/Vilsol/go-pob/mod"
 )
 
-const pinnedPurposefulHarbinger = "Aura Buffs from Skills have 8% increased Effect on you for each Herald affecting you, up to 40%"
+var pinnedTreeStatText = map[string]string{
+	"18054": "Non-Damaging Elemental Ailments you inflict spread to nearby enemies within 2 metres",
+	"27602": "25% of Damage taken Recouped as Life, Mana and Energy Shield",
+}
 
 // TestTreeStatTextMatchesPinnedPoB is the gate on the fixup table.
 func TestTreeStatTextMatchesPinnedPoB(t *testing.T) {
-	tree := data.TreeVersions[data.TreeVersion3_18].Tree()
-	node, ok := tree.Nodes["51870"]
-	if !ok {
-		t.Fatal("node 51870 (Purposeful Harbinger) missing from the 3_18 tree")
-	}
-
-	var got []string
-	for _, line := range fixupTreeStatText(node.Stats) {
-		for _, part := range strings.Split(line, "\n") {
-			if part != "" {
-				got = append(got, part)
-			}
+	tree := data.TreeVersions[data.LatestTreeVersion].Tree()
+	for id, want := range pinnedTreeStatText {
+		node, ok := tree.Nodes[id]
+		if !ok {
+			t.Fatalf("node %s missing from the %s tree", id, data.LatestTreeVersion)
 		}
-	}
-	if len(got) != 1 || got[0] != pinnedPurposefulHarbinger {
-		t.Fatalf("got %q, want [%q]", got, pinnedPurposefulHarbinger)
+		got := fixupTreeStatText(node.Stats)
+		if len(got) == 0 || got[0] != want {
+			t.Errorf("node %s: got %q, want first line %q", id, got, want)
+		}
 	}
 }
 
 // TestTreeStatTextFixupsAreExhaustive pins the table in BOTH directions.
 func TestTreeStatTextFixupsAreExhaustive(t *testing.T) {
-	tree := data.TreeVersions[data.TreeVersion3_18].Tree()
+	tree := data.TreeVersions[data.LatestTreeVersion].Tree()
 	seen := map[string]bool{}
 	for _, node := range tree.Nodes {
 		for _, line := range node.Stats {
@@ -44,55 +41,32 @@ func TestTreeStatTextFixupsAreExhaustive(t *testing.T) {
 	}
 	for key := range treeStatTextFixups {
 		if !seen[key] {
-			t.Errorf("fixup key never occurs in the 3_18 tree, so it can never fire: %q", key)
+			t.Errorf("fixup key never occurs in the %s tree, so it can never fire: %q", data.LatestTreeVersion, key)
 		}
 	}
-	if len(treeStatTextFixups) != 1 {
-		t.Errorf("table holds %d entries; oracle/tree_stats.lua measured 2 divergent nodes of which 1 needs rewriting — re-run it before changing this", len(treeStatTextFixups))
+	if len(treeStatTextFixups) != len(pinnedTreeStatText) {
+		t.Errorf("table holds %d entries, pinnedTreeStatText %d — re-run `task tree-tables` before changing this", len(treeStatTextFixups), len(pinnedTreeStatText))
 	}
 }
 
-// TestPurposefulHarbingerParses is the behavioural half.
-func TestPurposefulHarbingerParses(t *testing.T) {
-	nodeMap := clusterNodeMap(data.TreeVersion3_18)
+// TestPurposefulHarbingerStaysUnparsed pins the pin's 3.29 wording as UNPARSED.
+func TestPurposefulHarbingerStaysUnparsed(t *testing.T) {
+	nodeMap := clusterNodeMap(data.LatestTreeVersion)
 	node, ok := nodeMap["Purposeful Harbinger"]
 	if !ok {
 		t.Fatal("Purposeful Harbinger missing from the cluster-jewel notable map")
 	}
 
-	var mods []mod.Mod
-	for _, line := range fixupTreeStatText(node.Stats) {
+	lines := fixupTreeStatText(node.Stats)
+	if len(lines) != 1 {
+		t.Fatalf("got %d stat lines, want 1", len(lines))
+	}
+	parts := strings.Split(lines[0], "\n")
+	for _, line := range append(parts, strings.Join(parts, " ")) {
 		entry := ParseMod(line, false)
-		if strings.Trim(entry.Extra, " ") != "" {
-			t.Fatalf("unparsed remainder %q for line %q", entry.Extra, line)
+		if strings.Trim(entry.Extra, " ") == "" {
+			t.Errorf("%q parsed to %d mods; the pin's ModCache leaves it unparsed", line, len(entry.ModList))
 		}
-		mods = append(mods, entry.ModList...)
-	}
-	if len(mods) != 1 {
-		t.Fatalf("got %d mods, want 1", len(mods))
-	}
-	m := mods[0]
-	if m.Name() != "SkillAuraEffectOnSelf" || m.Type() != mod.TypeIncrease {
-		t.Fatalf("got %s %s, want SkillAuraEffectOnSelf INC", m.Name(), m.Type())
-	}
-	if v := m.Value(); v == nil || v.Float() != 8 {
-		t.Fatalf("got value %v, want 8", m.Value())
-	}
-	if len(m.Tags()) != 1 {
-		t.Fatalf("got %d tags, want 1", len(m.Tags()))
-	}
-	mult, ok := m.Tags()[0].(*mod.MultiplierTag)
-	if !ok {
-		t.Fatalf("got tag %T, want *mod.MultiplierTag", m.Tags()[0])
-	}
-	if len(mult.VariableList) != 1 || mult.VariableList[0] != "Herald" {
-		t.Fatalf("got multiplier vars %v, want [Herald]", mult.VariableList)
-	}
-	if mult.TagGlobalLimit == nil || *mult.TagGlobalLimit != 40 {
-		t.Fatalf("got global limit %v, want 40", mult.TagGlobalLimit)
-	}
-	if mult.TagGlobalLimitKey == nil || *mult.TagGlobalLimitKey != "PurposefulHarbinger" {
-		t.Fatalf("got global limit key %v, want PurposefulHarbinger", mult.TagGlobalLimitKey)
 	}
 }
 

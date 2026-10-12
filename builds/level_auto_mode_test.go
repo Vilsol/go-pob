@@ -9,7 +9,7 @@ import (
 
 // TestCharacterLevelAutoModeRoundTrips: Build.lua:964 / 1009: characterLevelAutoMode is read from and written back to <Build>.
 func TestCharacterLevelAutoModeRoundTrips(t *testing.T) {
-	xml, err := os.ReadFile(filepath.Join("..", "testdata", "corpus-3.29", "0042-pathfinder-withering-step.xml"))
+	xml, err := os.ReadFile(filepath.Join(corpusDirForLoadedData(t), "0042-pathfinder-withering-step.xml"))
 	if err != nil {
 		t.Fatalf("REFUSING: %v", err)
 	}

@@ -28,7 +28,7 @@ func TestSetActiveItemSetMatchesTheSavedSet(t *testing.T) {
 	if build.Items.ActiveItemSet != 2 {
 		t.Fatalf("REFUSING: 0339 opens on set %d, want 2", build.Items.ActiveItemSet)
 	}
-	xml, err := os.ReadFile(filepath.Join("..", "..", "testdata", "corpus-3.29", "0339-reliquarian-shield-crush-of-the-chieftain-2.xml"))
+	xml, err := os.ReadFile(filepath.Join("..", "..", "testdata", "corpus-"+raw.LatestVersion, "0339-reliquarian-shield-crush-of-the-chieftain-2.xml"))
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -68,7 +68,7 @@ func TestModDebugDump(t *testing.T) {
 	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, raw.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
 		t.Fatal(err)
 	}
-	xml, err := os.ReadFile(filepath.Join("..", "..", "testdata", "corpus-3.29", "0008-necromancer-vaal-summon-skeletons.xml"))
+	xml, err := os.ReadFile(filepath.Join("..", "..", "testdata", "corpus-"+raw.LatestVersion, "0008-necromancer-vaal-summon-skeletons.xml"))
 	if err != nil {
 		t.Fatalf("REFUSING: %v", err)
 	}
