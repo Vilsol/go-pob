@@ -17,6 +17,7 @@ import (
 
 //go:generate go tool crystalline -app go-pob -dir ../.. -js-out ../../frontend/src/lib/types/index.js -ts-out ../../frontend/src/lib/types/index.d.ts -banner "/* eslint-disable */" ./...
 
+//crystalline:exports
 func Exports(r bind.Registry) {
 	r.Type(calculator.Calculator{}, bind.AsPromise("BuildOutput"))
 	r.Type(calculator.Breakdown{}, bind.PlainResult("GetData"))

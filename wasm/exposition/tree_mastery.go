@@ -4,6 +4,7 @@ import (
 	"github.com/Vilsol/crystalline/bind"
 )
 
+//crystalline:exports
 func TreeMasteryExports(r bind.Registry) {
 	r.Func(CalcMasteryEffect, bind.AsPromise())
 	r.Func(CalcTreeSpec, bind.AsPromise())

@@ -10,6 +10,7 @@ import (
 	"github.com/Vilsol/go-pob/pob"
 )
 
+//crystalline:exports
 func TreeJewelExports(r bind.Registry) {
 	r.Type(TreeJewel{}, bind.Plain())
 

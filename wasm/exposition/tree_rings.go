@@ -7,6 +7,7 @@ import (
 	"github.com/Vilsol/go-pob/pob"
 )
 
+//crystalline:exports
 func TreeRingExports(r bind.Registry) {
 	r.Type(calculator.TreeJewelRing{}, bind.Plain())
 	r.Type(calculator.TreeSocketRadius{}, bind.Plain())

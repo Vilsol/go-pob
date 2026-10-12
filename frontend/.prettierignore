@@ -14,3 +14,5 @@ src/lib/types/index.js
 src/lib/display/config_options_generated.ts
 
 src/lib/design/fixtures/*.json
+
+src/lib/design/testdata/*.json

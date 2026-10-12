@@ -7,6 +7,7 @@ import (
 	"github.com/Vilsol/go-pob/pob"
 )
 
+//crystalline:exports
 func TreeSetExports(r bind.Registry) {
 	r.Type(calculator.TreeSpecRow{}, bind.Plain())
 	r.Type(TreeSpecList{}, bind.Plain())

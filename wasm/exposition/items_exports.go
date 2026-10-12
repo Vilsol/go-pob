@@ -12,6 +12,7 @@ import (
 	"github.com/Vilsol/go-pob/storage"
 )
 
+//crystalline:exports
 func Items30Exports(r bind.Registry) {
 	r.Type(ItemSetTip{}, bind.Plain())
 

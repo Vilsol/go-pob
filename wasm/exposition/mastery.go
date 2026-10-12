@@ -7,6 +7,7 @@ import (
 	"github.com/Vilsol/go-pob/pob"
 )
 
+//crystalline:exports
 func MasteryExports(r bind.Registry) {
 	r.Type(calculator.MasteryOption{}, bind.Plain())
 

@@ -7,6 +7,7 @@ import (
 	"github.com/Vilsol/go-pob/pob"
 )
 
+//crystalline:exports
 func Skills30Exports(r bind.Registry) {
 	r.Type(calculator.GemDisplay{}, bind.Plain())
 	r.Type(calculator.GemDisplayRow{}, bind.Plain())

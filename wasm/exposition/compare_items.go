@@ -6,6 +6,7 @@ import (
 	"github.com/Vilsol/go-pob/calculator"
 )
 
+//crystalline:exports
 func CompareItemsExports(r bind.Registry) {
 	r.Type(calculator.CompareJewelSlot{}, bind.Plain())
 	r.Type(calculator.CompareSkillBreakdownRow{}, bind.Plain())

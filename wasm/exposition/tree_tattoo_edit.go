@@ -13,6 +13,7 @@ import (
 	"github.com/Vilsol/go-pob/pob"
 )
 
+//crystalline:exports
 func TreeTattooEditExports(r bind.Registry) {
 	r.Type(TattooChoice{}, bind.Plain())
 	r.Type(TattooArt{}, bind.Plain())

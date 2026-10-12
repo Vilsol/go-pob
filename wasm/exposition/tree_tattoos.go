@@ -7,6 +7,7 @@ import (
 	"github.com/Vilsol/go-pob/pob"
 )
 
+//crystalline:exports
 func TreeTattooExports(r bind.Registry) {
 	r.Type(calculator.TattooCountLine{}, bind.Plain())
 

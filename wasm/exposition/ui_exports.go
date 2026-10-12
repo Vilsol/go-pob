@@ -6,6 +6,7 @@ import (
 	"github.com/Vilsol/go-pob/calculator"
 )
 
+//crystalline:exports
 func Uigo2Exports(r bind.Registry) {
 	r.Func(calculator.SetDefaultItemAffixQuality, bind.AsPromise())
 }

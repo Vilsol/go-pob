@@ -15,6 +15,7 @@ import (
 	"github.com/Vilsol/go-pob/moddb"
 )
 
+//crystalline:exports
 func ModDebugExports(r bind.Registry) {
 	r.Func(ModDebugDump, bind.AsPromise())
 	r.Func(SetItemModDebug, bind.AsPromise())

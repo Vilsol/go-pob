@@ -7,6 +7,7 @@ import (
 	"github.com/Vilsol/go-pob/pob"
 )
 
+//crystalline:exports
 func TreeTimelessExports(r bind.Registry) {
 	r.Type(calculator.TimelessJewelType{}, bind.Plain())
 	r.Type(calculator.TimelessSocket{}, bind.Plain())

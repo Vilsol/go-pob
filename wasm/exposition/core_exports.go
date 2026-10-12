@@ -7,6 +7,7 @@ import (
 	"github.com/Vilsol/go-pob/pob"
 )
 
+//crystalline:exports
 func Core30Exports(r bind.Registry) {
 	r.Func(ItemPrimarySlot, bind.AsPromise())
 	r.Type(calculator.SecondaryAscendOption{}, bind.Plain())

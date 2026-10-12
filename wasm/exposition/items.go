@@ -12,6 +12,7 @@ import (
 	"github.com/Vilsol/go-pob/pob"
 )
 
+//crystalline:exports
 func ItemExports(r bind.Registry) {
 	r.Type(ParsedItem{}, bind.Plain())
 	r.Type(ItemModLine{}, bind.Plain())

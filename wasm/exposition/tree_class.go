@@ -7,6 +7,7 @@ import (
 	"github.com/Vilsol/go-pob/pob"
 )
 
+//crystalline:exports
 func TreeClassExports(r bind.Registry) {
 	r.Type(calculator.ClassChange{}, bind.Plain())
 

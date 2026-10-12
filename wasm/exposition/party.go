@@ -7,6 +7,7 @@ import (
 	"github.com/Vilsol/go-pob/pob"
 )
 
+//crystalline:exports
 func PartyExports(r bind.Registry) {
 	r.Type(calculator.PartySummaryEntry{}, bind.Plain())
 	r.Type(calculator.GemSupportPair{}, bind.Plain())

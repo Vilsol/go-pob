@@ -10,6 +10,7 @@ import (
 	"github.com/Vilsol/go-pob/pob"
 )
 
+//crystalline:exports
 func TreeVersionExports(r bind.Registry) {
 	r.Type(TreeVersionOption{}, bind.Plain())
 

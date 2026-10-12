@@ -8,6 +8,7 @@ import (
 	"github.com/Vilsol/go-pob/calculator"
 )
 
+//crystalline:exports
 func PowerReportExports(r bind.Registry) {
 	r.Type(calculator.PowerStat{}, bind.Plain())
 	r.Type(calculator.PowerReportEntry{}, bind.Plain())

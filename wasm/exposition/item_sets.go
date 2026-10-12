@@ -7,6 +7,7 @@ import (
 	"github.com/Vilsol/go-pob/pob"
 )
 
+//crystalline:exports
 func ItemSetExports(r bind.Registry) {
 	r.Type(ItemsTabSlotList{}, bind.Plain())
 	r.Type(SocketSlot{}, bind.Plain())

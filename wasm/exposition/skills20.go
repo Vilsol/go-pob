@@ -7,6 +7,7 @@ import (
 	"github.com/Vilsol/go-pob/pob"
 )
 
+//crystalline:exports
 func Skills20Exports(r bind.Registry) {
 	r.Func(GemDefaultLevelMode)
 	r.Func(GemDefaultLevel)

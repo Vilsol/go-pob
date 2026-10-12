@@ -7,6 +7,7 @@ import (
 	"github.com/Vilsol/go-pob/pob"
 )
 
+//crystalline:exports
 func TreeTooltipExports(r bind.Registry) {
 	r.Type(calculator.TreeCompareSpec{}, bind.Plain())
 	r.Type(calculator.TreeCompareMastery{}, bind.Plain())

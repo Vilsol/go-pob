@@ -8,6 +8,7 @@ import (
 	"github.com/Vilsol/go-pob/pob"
 )
 
+//crystalline:exports
 func TreeLinkExports(r bind.Registry) {
 	r.Func(ExportTreeLink, bind.AsPromise())
 	r.Func(ImportTreeLink, bind.AsPromise())

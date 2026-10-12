@@ -7,6 +7,7 @@ import (
 	"github.com/Vilsol/go-pob/pob"
 )
 
+//crystalline:exports
 func LoadoutExports(r bind.Registry) {
 	r.Type(calculator.LoadoutList{}, bind.Plain())
 

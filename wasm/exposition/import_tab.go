@@ -19,6 +19,7 @@ import (
 	"github.com/Vilsol/go-pob/pob"
 )
 
+//crystalline:exports
 func ImportTabExports(r bind.Registry) {
 	r.Func(ImportItemsAndSkills, bind.AsPromise())
 }
