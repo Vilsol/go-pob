@@ -260,3 +260,18 @@ test('Check for Update and Ctrl+U say there is no update when the host serves th
   await page.keyboard.press('Control+u');
   await expect(none).toHaveCount(2, { timeout: 60_000 });
 });
+
+test('a chunk the host answers with the HTML shell is a 404, and not kept', async ({ page, context }) => {
+  for (const host of [DATA_HOST]) await context.route(`${host}**`, (route) => route.abort());
+  await page.goto(`${BASE}/`);
+  await page.evaluate(() => navigator.serviceWorker.ready.then(() => undefined));
+  await expect.poll(() => page.evaluate(() => !!navigator.serviceWorker.controller), { timeout: 120_000 }).toBe(true);
+  const gone = `${BASE}/_app/immutable/nodes/gone.XXXXXXXX.js`;
+  await context.route(`**${gone}`, (route) => route.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', body: '<!doctype html><html></html>' }));
+  const got = await page.evaluate(async (url) => {
+    const res = await fetch(url);
+    const kept = await Promise.all((await caches.keys()).map(async (k) => !!(await (await caches.open(k)).match(url))));
+    return { status: res.status, kept: kept.some(Boolean) };
+  }, gone);
+  expect(got).toEqual({ status: 404, kept: false });
+});

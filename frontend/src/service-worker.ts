@@ -55,12 +55,23 @@ const workerChunks = async (cache: Cache) => {
   return [...found];
 };
 
+const APP_DIR = `${base}/_app/`;
+const misrouted = (path: string, res: Response) => path.startsWith(APP_DIR) && (res.headers.get('content-type') ?? '').startsWith('text/html');
+const notFound = () => new Response('', { status: 404, statusText: 'Not Found' });
+
 sw.addEventListener('install', (event) => {
   event.waitUntil(
     (async () => {
       const cache = await caches.open(APP);
       await cache.addAll(PRECACHE.map((url) => new Request(url, { cache: 'reload' })));
       await cache.addAll((await workerChunks(cache)).map((url) => new Request(url, { cache: 'reload' })));
+      for (const url of build) {
+        const res = await cache.match(url);
+        if (res && misrouted(url, res)) {
+          await caches.delete(APP);
+          throw new Error(`service worker: ${url} is not in the deployment the host serves`);
+        }
+      }
       if (WASM !== FALLBACK && !(await usableWasm(await cache.match(WASM)))) await cache.add(new Request(FALLBACK, { cache: 'reload' }));
       await cacheFonts().catch((e: unknown) => console.warn('service worker: fonts not cached', e));
     })()
@@ -102,10 +113,13 @@ sw.addEventListener('message', (event) => {
 });
 
 const cacheFirst = async (cacheName: string, request: Request, key: Request | string = request) => {
+  const path = new URL(request.url).pathname;
   const cache = (await caches.has(APP)) ? await caches.open(cacheName) : undefined;
   const hit = await cache?.match(key);
-  if (hit) return hit;
+  if (hit && !misrouted(path, hit)) return hit;
+  if (hit) await cache?.delete(key);
   const res = await fetch(request);
+  if (misrouted(path, res)) return notFound();
   if (cache && (res.ok || res.type === 'opaque')) await cache.put(key, res.clone());
   return res;
 };

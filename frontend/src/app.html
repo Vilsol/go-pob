@@ -26,6 +26,41 @@
         if (pt) r.style.fontSize = (16 * Math.min(Math.max(pt, 6), 18)) / 12 + 'px';
       } catch {}
     </script>
+    <script>
+      // a chunk of another deployment that fails to load makes SvelteKit reload into the same failure while a service
+      // worker keeps serving that deployment's shell: drop the workers and their deployment caches, then reload, once
+      // per minute and tab (lib/pwa registers a fresh worker afterwards; IndexedDB builds and data are untouched)
+      (() => {
+        const KEY = 'pob:chunk-recovered';
+        let busy = false;
+        const recover = async () => {
+          if (busy) return;
+          busy = true;
+          try {
+            if (Date.now() - Number(sessionStorage.getItem(KEY) || 0) < 60000) return;
+            const regs = (await navigator.serviceWorker?.getRegistrations()) ?? [];
+            await Promise.all(regs.map((r) => r.unregister()));
+            for (const k of await caches.keys()) if (k.startsWith('pob-app-')) await caches.delete(k);
+            sessionStorage.setItem(KEY, String(Date.now()));
+            console.warn('a chunk of another deployment failed to load: service worker reset, reloading');
+            location.reload();
+          } catch {
+            busy = false;
+          }
+        };
+        const chunkFailure = (e) =>
+          /dynamically imported module|Importing a module script failed|error loading dynamically imported module|Unable to preload/i.test(
+            String((e && e.message) || e)
+          );
+        addEventListener('vite:preloadError', () => void recover());
+        addEventListener('unhandledrejection', (e) => {
+          if (chunkFailure(e.reason)) void recover();
+        });
+        addEventListener('error', (e) => {
+          if (chunkFailure(e.error || e.message)) void recover();
+        });
+      })();
+    </script>
     %sveltekit.head%
   </head>
   <body>

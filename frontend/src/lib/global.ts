@@ -37,7 +37,11 @@ export const buildChannel: BuildChannel = {
   touch: () => currentBuild.set(get(currentBuild))
 };
 export const currentBuildPath = new PersistedState<string | undefined>('currentBuildPath', undefined, {
-  syncTabs: false
+  syncTabs: false,
+  serializer: {
+    serialize: (v) => (v === undefined ? '' : JSON.stringify(v)),
+    deserialize: (s) => (s === '' || s === 'undefined' ? undefined : (JSON.parse(s) as string))
+  }
 });
 
 let uiTickLock = false;
