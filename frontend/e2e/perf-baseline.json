@@ -1,0 +1,1409 @@
+{
+  "note": "Measured by `task e2e` (Chromium, one worker, production build via vite preview, game data served from the local Go bundle cache). Not a gate.",
+  "coldStart": {
+    "navToWasmBootedMs": {
+      "n": 32,
+      "p50": 848.5,
+      "p95": 1006.3,
+      "max": 1043.9
+    },
+    "navToDataLoadedMs": {
+      "n": 32,
+      "p50": 2141,
+      "p95": 2337.2,
+      "max": 2548.7
+    },
+    "newBuildToFirstStatsMs": {
+      "n": 32,
+      "p50": 464.5,
+      "p95": 518.6,
+      "max": 529.5
+    }
+  },
+  "actionToSettledMs": {
+    "import": {
+      "n": 54,
+      "p50": 729.2,
+      "p95": 1669.3,
+      "max": 2973.1,
+      "meanTicks": 1,
+      "where": {
+        "dispatchToWorkerMs": 266.1,
+        "goCalcMs": 359.8,
+        "workerSerializeMs": 1.2,
+        "messageMs": 2.2,
+        "uiUpdateMs": 9.9
+      }
+    },
+    "set-level": {
+      "n": 12,
+      "p50": 65.6,
+      "p95": 158,
+      "max": 158,
+      "meanTicks": 1,
+      "where": {
+        "dispatchToWorkerMs": 5.6,
+        "goCalcMs": 67.3,
+        "workerSerializeMs": 0.6,
+        "messageMs": 1.7,
+        "uiUpdateMs": 7.6
+      }
+    },
+    "set-class": {
+      "n": 1,
+      "p50": 65.7,
+      "p95": 65.7,
+      "max": 65.7,
+      "meanTicks": 2,
+      "where": {
+        "dispatchToWorkerMs": 5.1,
+        "goCalcMs": 43.1,
+        "workerSerializeMs": 2.1,
+        "messageMs": 4.6,
+        "uiUpdateMs": 15.4
+      }
+    },
+    "set-ascendancy": {
+      "n": 3,
+      "p50": 70.1,
+      "p95": 147.5,
+      "max": 147.5,
+      "meanTicks": 1,
+      "where": {
+        "dispatchToWorkerMs": 3.7,
+        "goCalcMs": 67.8,
+        "workerSerializeMs": 0.6,
+        "messageMs": 1.6,
+        "uiUpdateMs": 7.5
+      }
+    },
+    "set-main-skill": {
+      "n": 8,
+      "p50": 87,
+      "p95": 208.5,
+      "max": 208.5,
+      "meanTicks": 1,
+      "where": {
+        "dispatchToWorkerMs": 4.8,
+        "goCalcMs": 98.4,
+        "workerSerializeMs": 0.7,
+        "messageMs": 1.9,
+        "uiUpdateMs": 7.6
+      }
+    },
+    "toggle-config": {
+      "n": 16,
+      "p50": 123.6,
+      "p95": 177.3,
+      "max": 177.3,
+      "meanTicks": 1,
+      "where": {
+        "dispatchToWorkerMs": 24.5,
+        "goCalcMs": 90.5,
+        "workerSerializeMs": 0.7,
+        "messageMs": 1.6,
+        "uiUpdateMs": 8.3
+      }
+    },
+    "set-config-number": {
+      "n": 1,
+      "p50": 246.9,
+      "p95": 246.9,
+      "max": 246.9,
+      "meanTicks": 1,
+      "where": {
+        "dispatchToWorkerMs": 16.4,
+        "goCalcMs": 211.1,
+        "workerSerializeMs": 0.9,
+        "messageMs": 2.4,
+        "uiUpdateMs": 14.5
+      }
+    },
+    "set-gem-level": {
+      "n": 1,
+      "p50": 475.9,
+      "p95": 475.9,
+      "max": 475.9,
+      "meanTicks": 2,
+      "where": {
+        "dispatchToWorkerMs": 117.2,
+        "goCalcMs": 326.1,
+        "workerSerializeMs": 1.7,
+        "messageMs": 4.2,
+        "uiUpdateMs": 11.1
+      }
+    },
+    "allocate-node": {
+      "n": 7,
+      "p50": 137.1,
+      "p95": 259.9,
+      "max": 259.9,
+      "meanTicks": 1,
+      "where": {
+        "dispatchToWorkerMs": 68.5,
+        "goCalcMs": 70.5,
+        "workerSerializeMs": 0.6,
+        "messageMs": 1.5,
+        "uiUpdateMs": 7.1
+      }
+    },
+    "deallocate-node": {
+      "n": 13,
+      "p50": 175.7,
+      "p95": 404.4,
+      "max": 404.4,
+      "meanTicks": 2,
+      "where": {
+        "dispatchToWorkerMs": 33.9,
+        "goCalcMs": 157.1,
+        "workerSerializeMs": 1.3,
+        "messageMs": 4.2,
+        "uiUpdateMs": 11.8
+      }
+    },
+    "open-saved": {
+      "n": 13,
+      "p50": 2206,
+      "p95": 4394.3,
+      "max": 4394.3,
+      "meanTicks": 1,
+      "where": {
+        "dispatchToWorkerMs": 1132,
+        "goCalcMs": 1284.3,
+        "workerSerializeMs": 1.8,
+        "messageMs": 2.9,
+        "uiUpdateMs": 9.1
+      }
+    },
+    "allocate-path": {
+      "n": 1,
+      "p50": 102.2,
+      "p95": 102.2,
+      "max": 102.2,
+      "meanTicks": 1,
+      "where": {
+        "dispatchToWorkerMs": 37.2,
+        "goCalcMs": 55.8,
+        "workerSerializeMs": 0.7,
+        "messageMs": 1.5,
+        "uiUpdateMs": 5
+      }
+    }
+  },
+  "actionToSettledByBuildMs": {
+    "0280-elementalist-fireball": {
+      "import": {
+        "n": 5,
+        "p50": 757.8,
+        "p95": 798.7,
+        "max": 798.7
+      },
+      "open-saved": {
+        "n": 1,
+        "p50": 2171.5,
+        "p95": 2171.5,
+        "max": 2171.5
+      }
+    },
+    "0516-reliquarian-kinetic-fusillade": {
+      "import": {
+        "n": 3,
+        "p50": 707,
+        "p95": 775.8,
+        "max": 775.8
+      },
+      "set-level": {
+        "n": 2,
+        "p50": 38.8,
+        "p95": 40.5,
+        "max": 40.5
+      },
+      "open-saved": {
+        "n": 1,
+        "p50": 2240.6,
+        "p95": 2240.6,
+        "max": 2240.6
+      }
+    },
+    "0037-ascendant-fire-trap-of-blasting-2": {
+      "import": {
+        "n": 3,
+        "p50": 694.7,
+        "p95": 771.6,
+        "max": 771.6
+      },
+      "set-class": {
+        "n": 1,
+        "p50": 65.7,
+        "p95": 65.7,
+        "max": 65.7
+      },
+      "set-ascendancy": {
+        "n": 1,
+        "p50": 30.6,
+        "p95": 30.6,
+        "max": 30.6
+      },
+      "open-saved": {
+        "n": 1,
+        "p50": 2032.9,
+        "p95": 2032.9,
+        "max": 2032.9
+      }
+    },
+    "0339-reliquarian-shield-crush-of-the-chieftain-2": {
+      "import": {
+        "n": 11,
+        "p50": 134.2,
+        "p95": 1092.7,
+        "max": 1092.7
+      },
+      "set-main-skill": {
+        "n": 5,
+        "p50": 72.7,
+        "p95": 208.5,
+        "max": 208.5
+      },
+      "allocate-node": {
+        "n": 4,
+        "p50": 117,
+        "p95": 259.9,
+        "max": 259.9
+      },
+      "deallocate-node": {
+        "n": 7,
+        "p50": 160.9,
+        "p95": 175.7,
+        "max": 175.7
+      },
+      "toggle-config": {
+        "n": 5,
+        "p50": 89.5,
+        "p95": 114,
+        "max": 114
+      },
+      "set-level": {
+        "n": 5,
+        "p50": 61.8,
+        "p95": 77.2,
+        "max": 77.2
+      },
+      "set-ascendancy": {
+        "n": 1,
+        "p50": 70.1,
+        "p95": 70.1,
+        "max": 70.1
+      },
+      "open-saved": {
+        "n": 1,
+        "p50": 2047.7,
+        "p95": 2047.7,
+        "max": 2047.7
+      },
+      "allocate-path": {
+        "n": 1,
+        "p50": 102.2,
+        "p95": 102.2,
+        "max": 102.2
+      }
+    },
+    "0444-reliquarian-static-strike-2": {
+      "import": {
+        "n": 9,
+        "p50": 147.7,
+        "p95": 989.4,
+        "max": 989.4
+      },
+      "toggle-config": {
+        "n": 11,
+        "p50": 132.3,
+        "p95": 177.3,
+        "max": 177.3
+      },
+      "deallocate-node": {
+        "n": 6,
+        "p50": 237.8,
+        "p95": 404.4,
+        "max": 404.4
+      },
+      "set-level": {
+        "n": 5,
+        "p50": 123.9,
+        "p95": 158,
+        "max": 158
+      },
+      "allocate-node": {
+        "n": 3,
+        "p50": 138.6,
+        "p95": 174.1,
+        "max": 174.1
+      },
+      "set-main-skill": {
+        "n": 3,
+        "p50": 137.7,
+        "p95": 151.8,
+        "max": 151.8
+      },
+      "set-ascendancy": {
+        "n": 1,
+        "p50": 147.5,
+        "p95": 147.5,
+        "max": 147.5
+      },
+      "open-saved": {
+        "n": 1,
+        "p50": 2548.8,
+        "p95": 2548.8,
+        "max": 2548.8
+      }
+    },
+    "0009-trickster-cobra-lash": {
+      "import": {
+        "n": 3,
+        "p50": 1136.6,
+        "p95": 1333.3,
+        "max": 1333.3
+      },
+      "set-config-number": {
+        "n": 1,
+        "p50": 246.9,
+        "p95": 246.9,
+        "max": 246.9
+      },
+      "open-saved": {
+        "n": 1,
+        "p50": 2420.4,
+        "p95": 2420.4,
+        "max": 2420.4
+      }
+    },
+    "0008-necromancer-vaal-summon-skeletons": {
+      "import": {
+        "n": 3,
+        "p50": 1025.9,
+        "p95": 1141.9,
+        "max": 1141.9
+      },
+      "set-gem-level": {
+        "n": 1,
+        "p50": 475.9,
+        "p95": 475.9,
+        "max": 475.9
+      },
+      "open-saved": {
+        "n": 1,
+        "p50": 2425.7,
+        "p95": 2425.7,
+        "max": 2425.7
+      }
+    },
+    "0977-luminary-purity-of-ice-2": {
+      "import": {
+        "n": 4,
+        "p50": 97.3,
+        "p95": 805.8,
+        "max": 805.8
+      },
+      "open-saved": {
+        "n": 1,
+        "p50": 2136.6,
+        "p95": 2136.6,
+        "max": 2136.6
+      }
+    },
+    "4788-ladder-GeordiMcSnuff_1894.GeordiFlameOne": {
+      "import": {
+        "n": 2,
+        "p50": 73.1,
+        "p95": 773.4,
+        "max": 773.4
+      },
+      "open-saved": {
+        "n": 1,
+        "p50": 2179.6,
+        "p95": 2179.6,
+        "max": 2179.6
+      }
+    },
+    "13276-ladder-cuba_5717.cubamrc": {
+      "import": {
+        "n": 5,
+        "p50": 821.4,
+        "p95": 908.3,
+        "max": 908.3
+      },
+      "open-saved": {
+        "n": 1,
+        "p50": 2206,
+        "p95": 2206,
+        "max": 2206
+      }
+    },
+    "0667-guardian-summon-raging-spirit": {
+      "import": {
+        "n": 2,
+        "p50": 117.9,
+        "p95": 729.2,
+        "max": 729.2
+      },
+      "open-saved": {
+        "n": 1,
+        "p50": 1608.1,
+        "p95": 1608.1,
+        "max": 1608.1
+      }
+    },
+    "1591-necromancer-summon-holy-relic-of-conviction-15": {
+      "import": {
+        "n": 2,
+        "p50": 886.8,
+        "p95": 1669.3,
+        "max": 1669.3
+      },
+      "open-saved": {
+        "n": 1,
+        "p50": 3235.2,
+        "p95": 3235.2,
+        "max": 3235.2
+      }
+    },
+    "0001-necromancer-unknown": {
+      "import": {
+        "n": 2,
+        "p50": 1917.8,
+        "p95": 2973.1,
+        "max": 2973.1
+      },
+      "open-saved": {
+        "n": 1,
+        "p50": 4394.3,
+        "p95": 4394.3,
+        "max": 4394.3
+      }
+    }
+  },
+  "longTasks": {
+    "cold-start": {
+      "samples": 32,
+      "meanCount": 1,
+      "meanTotalMs": 56.4,
+      "maxMs": 71
+    },
+    "import": {
+      "samples": 54,
+      "meanCount": 0.1,
+      "meanTotalMs": 4.9,
+      "maxMs": 83
+    },
+    "set-level": {
+      "samples": 12,
+      "meanCount": 0,
+      "meanTotalMs": 0,
+      "maxMs": 0
+    },
+    "set-class": {
+      "samples": 1,
+      "meanCount": 0,
+      "meanTotalMs": 0,
+      "maxMs": 0
+    },
+    "set-ascendancy": {
+      "samples": 3,
+      "meanCount": 0,
+      "meanTotalMs": 0,
+      "maxMs": 0
+    },
+    "set-main-skill": {
+      "samples": 8,
+      "meanCount": 0,
+      "meanTotalMs": 0,
+      "maxMs": 0
+    },
+    "toggle-config": {
+      "samples": 16,
+      "meanCount": 0,
+      "meanTotalMs": 0,
+      "maxMs": 0
+    },
+    "set-config-number": {
+      "samples": 1,
+      "meanCount": 0,
+      "meanTotalMs": 0,
+      "maxMs": 0
+    },
+    "set-gem-level": {
+      "samples": 1,
+      "meanCount": 4,
+      "meanTotalMs": 449,
+      "maxMs": 166
+    },
+    "allocate-node": {
+      "samples": 7,
+      "meanCount": 0,
+      "meanTotalMs": 0,
+      "maxMs": 0
+    },
+    "deallocate-node": {
+      "samples": 13,
+      "meanCount": 0,
+      "meanTotalMs": 0,
+      "maxMs": 0
+    },
+    "open-saved": {
+      "samples": 13,
+      "meanCount": 0,
+      "meanTotalMs": 0,
+      "maxMs": 0
+    },
+    "tree-pan@3-before": {
+      "samples": 1,
+      "meanCount": 0,
+      "meanTotalMs": 0,
+      "maxMs": 0
+    },
+    "tree-pan@10-before": {
+      "samples": 2,
+      "meanCount": 0,
+      "meanTotalMs": 0,
+      "maxMs": 0
+    },
+    "tree-pan@25-before": {
+      "samples": 2,
+      "meanCount": 0,
+      "meanTotalMs": 0,
+      "maxMs": 0
+    },
+    "tree-zoom-before": {
+      "samples": 1,
+      "meanCount": 0,
+      "meanTotalMs": 0,
+      "maxMs": 0
+    },
+    "tree-hover-before": {
+      "samples": 1,
+      "meanCount": 0,
+      "meanTotalMs": 0,
+      "maxMs": 0
+    },
+    "allocate-path": {
+      "samples": 1,
+      "meanCount": 0,
+      "meanTotalMs": 0,
+      "maxMs": 0
+    },
+    "tree-pan@10-cpu4x-before": {
+      "samples": 1,
+      "meanCount": 0,
+      "meanTotalMs": 0,
+      "maxMs": 0
+    },
+    "tree": {
+      "samples": 2,
+      "meanCount": 0,
+      "meanTotalMs": 0,
+      "maxMs": 0
+    }
+  },
+  "interactionToNextPaintMs": {
+    "import": {
+      "n": 157,
+      "p50": 16,
+      "p95": 32,
+      "max": 120
+    },
+    "cold-start": {
+      "n": 31,
+      "p50": 16,
+      "p95": 16,
+      "max": 16
+    },
+    "toggle-config": {
+      "n": 33,
+      "p50": 24,
+      "p95": 24,
+      "max": 32
+    },
+    "set-config-number": {
+      "n": 1,
+      "p50": 40,
+      "p95": 40,
+      "max": 40
+    },
+    "set-gem-level": {
+      "n": 1,
+      "p50": 16,
+      "p95": 16,
+      "max": 16
+    },
+    "allocate-node": {
+      "n": 14,
+      "p50": 24,
+      "p95": 32,
+      "max": 32
+    },
+    "deallocate-node": {
+      "n": 35,
+      "p50": 24,
+      "p95": 40,
+      "max": 48
+    },
+    "set-main-skill": {
+      "n": 6,
+      "p50": 16,
+      "p95": 24,
+      "max": 24
+    },
+    "open-saved": {
+      "n": 26,
+      "p50": 16,
+      "p95": 24,
+      "max": 24
+    },
+    "tree-pan@3-before": {
+      "n": 1,
+      "p50": 16,
+      "p95": 16,
+      "max": 16
+    },
+    "tree-pan@10-before": {
+      "n": 2,
+      "p50": 24,
+      "p95": 32,
+      "max": 32
+    },
+    "tree-pan@25-before": {
+      "n": 2,
+      "p50": 24,
+      "p95": 24,
+      "max": 24
+    },
+    "tree-hover-before": {
+      "n": 1,
+      "p50": 32,
+      "p95": 32,
+      "max": 32
+    },
+    "allocate-path": {
+      "n": 1,
+      "p50": 32,
+      "p95": 32,
+      "max": 32
+    },
+    "tree": {
+      "n": 1,
+      "p50": 48,
+      "p95": 48,
+      "max": 48
+    }
+  },
+  "treeFrames": [
+    {
+      "kind": "frames",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "gesture": "pan@3",
+      "frames": 139,
+      "dropped": 1,
+      "maxGapMs": 33.4,
+      "durationMs": 2349,
+      "gapMs": {
+        "p50": 16.7,
+        "p95": 16.7,
+        "p99": 16.8
+      },
+      "draws": 121,
+      "renderMs": {
+        "p50": 0.2,
+        "p95": 0.3,
+        "p99": 0.6
+      },
+      "longTasks": 0,
+      "longTaskMs": 0,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "frames",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "gesture": "pan@10",
+      "frames": 136,
+      "dropped": 0,
+      "maxGapMs": 16.8,
+      "durationMs": 2279,
+      "gapMs": {
+        "p50": 16.7,
+        "p95": 16.8,
+        "p99": 16.8
+      },
+      "draws": 121,
+      "renderMs": {
+        "p50": 1,
+        "p95": 1.3,
+        "p99": 1.7
+      },
+      "longTasks": 0,
+      "longTaskMs": 0,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "frames",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "gesture": "pan@25",
+      "frames": 157,
+      "dropped": 0,
+      "maxGapMs": 16.8,
+      "durationMs": 2646,
+      "gapMs": {
+        "p50": 16.7,
+        "p95": 16.7,
+        "p99": 16.8
+      },
+      "draws": 121,
+      "renderMs": {
+        "p50": 10.5,
+        "p95": 13.5,
+        "p99": 14.4
+      },
+      "longTasks": 0,
+      "longTaskMs": 0,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "frames",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "gesture": "zoom",
+      "frames": 80,
+      "dropped": 0,
+      "maxGapMs": 16.8,
+      "durationMs": 1338,
+      "gapMs": {
+        "p50": 16.7,
+        "p95": 16.7,
+        "p99": 16.8
+      },
+      "draws": 39,
+      "renderMs": {
+        "p50": 11.7,
+        "p95": 23.7,
+        "p99": 23.9
+      },
+      "longTasks": 0,
+      "longTaskMs": 0,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "frames",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "gesture": "hover",
+      "frames": 89,
+      "dropped": 0,
+      "maxGapMs": 16.8,
+      "durationMs": 1492,
+      "gapMs": {
+        "p50": 16.7,
+        "p95": 16.8,
+        "p99": 16.8
+      },
+      "draws": 80,
+      "renderMs": {
+        "p50": 2.4,
+        "p95": 2.8,
+        "p99": 4.9
+      },
+      "longTasks": 0,
+      "longTaskMs": 0,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "frames",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "gesture": "pan@10-cpu4x",
+      "frames": 347,
+      "dropped": 32,
+      "maxGapMs": 33.4,
+      "durationMs": 6311,
+      "gapMs": {
+        "p50": 16.7,
+        "p95": 33.3,
+        "p99": 33.4
+      },
+      "draws": 121,
+      "renderMs": {
+        "p50": 3.7,
+        "p95": 4.4,
+        "p99": 5.3
+      },
+      "longTasks": 0,
+      "longTaskMs": 0,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "frames",
+      "build": "13276-ladder-cuba_5717.cubamrc",
+      "gesture": "pan@10",
+      "frames": 142,
+      "dropped": 2,
+      "maxGapMs": 33.4,
+      "durationMs": 2409,
+      "gapMs": {
+        "p50": 16.7,
+        "p95": 16.8,
+        "p99": 33.3
+      },
+      "draws": 121,
+      "renderMs": {
+        "p50": 1,
+        "p95": 1.4,
+        "p99": 4.4
+      },
+      "longTasks": 0,
+      "longTaskMs": 0,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "frames",
+      "build": "13276-ladder-cuba_5717.cubamrc",
+      "gesture": "pan@25",
+      "frames": 155,
+      "dropped": 0,
+      "maxGapMs": 16.8,
+      "durationMs": 2610,
+      "gapMs": {
+        "p50": 16.7,
+        "p95": 16.8,
+        "p99": 16.8
+      },
+      "draws": 121,
+      "renderMs": {
+        "p50": 11.2,
+        "p95": 13.6,
+        "p99": 14.8
+      },
+      "longTasks": 0,
+      "longTaskMs": 0,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    }
+  ],
+  "treeLatency": [
+    {
+      "kind": "tree-latency",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "what": "first-paint",
+      "ms": 110.4,
+      "renderMs": 3.6,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "tree-latency",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "what": "complete-paint",
+      "ms": 157,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "tree-latency",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "what": "hover",
+      "ms": 4.4,
+      "renderMs": 2.7,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "tree-latency",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "what": "hover",
+      "ms": 8,
+      "renderMs": 2.5,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "tree-latency",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "what": "hover",
+      "ms": 8,
+      "renderMs": 2.6,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "tree-latency",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "what": "hover",
+      "ms": 8,
+      "renderMs": 2.3,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "tree-latency",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "what": "hover",
+      "ms": 8,
+      "renderMs": 2.3,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "tree-latency",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "what": "hover",
+      "ms": 7.5,
+      "renderMs": 2.1,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "tree-latency",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "what": "hover",
+      "ms": 7.7,
+      "renderMs": 2.4,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "tree-latency",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "what": "hover",
+      "ms": 7.6,
+      "renderMs": 2.4,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "tree-latency",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "what": "hover",
+      "ms": 7.9,
+      "renderMs": 2.4,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "tree-latency",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "what": "hover",
+      "ms": 7.7,
+      "renderMs": 2.3,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "tree-latency",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "what": "hover",
+      "ms": 7.5,
+      "renderMs": 2.3,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "tree-latency",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "what": "hover",
+      "ms": 7.8,
+      "renderMs": 2.3,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "tree-latency",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "what": "hover",
+      "ms": 8.3,
+      "renderMs": 2.6,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "tree-latency",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "what": "hover",
+      "ms": 7.5,
+      "renderMs": 2.3,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "tree-latency",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "what": "hover",
+      "ms": 7.4,
+      "renderMs": 2.4,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "tree-latency",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "what": "hover",
+      "ms": 7.4,
+      "renderMs": 2.3,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "tree-latency",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "what": "hover",
+      "ms": 7.8,
+      "renderMs": 2.3,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "tree-latency",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "what": "hover",
+      "ms": 7.4,
+      "renderMs": 2.4,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "tree-latency",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "what": "hover",
+      "ms": 7.6,
+      "renderMs": 2.2,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "tree-latency",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "what": "hover",
+      "ms": 7.5,
+      "renderMs": 2.3,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "tree-latency",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "what": "hover",
+      "ms": 6,
+      "renderMs": 4.5,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "tree-latency",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "what": "hover",
+      "ms": 8.1,
+      "renderMs": 2.7,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "tree-latency",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "what": "hover",
+      "ms": 7.7,
+      "renderMs": 2.5,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "tree-latency",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "what": "hover",
+      "ms": 6.1,
+      "renderMs": 2.4,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "tree-latency",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "what": "hover",
+      "ms": 7.4,
+      "renderMs": 2.8,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "tree-latency",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "what": "hover",
+      "ms": 7,
+      "renderMs": 2.3,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "tree-latency",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "what": "hover",
+      "ms": 7.9,
+      "renderMs": 2.6,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "tree-latency",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "what": "hover",
+      "ms": 7.3,
+      "renderMs": 2.5,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "tree-latency",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "what": "hover",
+      "ms": 7.5,
+      "renderMs": 2.4,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "tree-latency",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "what": "hover",
+      "ms": 7.3,
+      "renderMs": 2.4,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "tree-latency",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "what": "hover",
+      "ms": 7.9,
+      "renderMs": 2.4,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "tree-latency",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "what": "hover",
+      "ms": 6.5,
+      "renderMs": 2.4,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "tree-latency",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "what": "hover",
+      "ms": 7.5,
+      "renderMs": 2.4,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "tree-latency",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "what": "hover",
+      "ms": 7.6,
+      "renderMs": 2.3,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "tree-latency",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "what": "hover",
+      "ms": 7,
+      "renderMs": 2.4,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "tree-latency",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "what": "hover",
+      "ms": 7.5,
+      "renderMs": 2.4,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "tree-latency",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "what": "hover",
+      "ms": 7.6,
+      "renderMs": 2.3,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "tree-latency",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "what": "hover",
+      "ms": 6.7,
+      "renderMs": 2.4,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "tree-latency",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "what": "hover",
+      "ms": 7.3,
+      "renderMs": 2.6,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "tree-latency",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "what": "hover",
+      "ms": 7.7,
+      "renderMs": 2.4,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "tree-latency",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "what": "allocate-22",
+      "ms": 121.9,
+      "renderMs": 2.8,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "tree-latency",
+      "build": "13276-ladder-cuba_5717.cubamrc",
+      "what": "first-paint",
+      "ms": 174.5,
+      "renderMs": 3,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    {
+      "kind": "tree-latency",
+      "build": "13276-ladder-cuba_5717.cubamrc",
+      "what": "complete-paint",
+      "ms": 212.8,
+      "gpu": "canvas | webgl: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    }
+  ],
+  "memory": [
+    {
+      "kind": "memory",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "when": "before-sequences",
+      "mainHeapMB": 7,
+      "workerHeapMB": null,
+      "wasmMemMB": 310,
+      "goLiveHeapMB": 185.9
+    },
+    {
+      "kind": "memory",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "when": "after-sequences",
+      "mainHeapMB": 9.3,
+      "workerHeapMB": null,
+      "wasmMemMB": 399.3,
+      "goLiveHeapMB": 206.7
+    },
+    {
+      "kind": "memory",
+      "build": "0444-reliquarian-static-strike-2",
+      "when": "before-sequences",
+      "mainHeapMB": 7,
+      "workerHeapMB": null,
+      "wasmMemMB": 310.5,
+      "goLiveHeapMB": 185.9
+    },
+    {
+      "kind": "memory",
+      "build": "0444-reliquarian-static-strike-2",
+      "when": "after-sequences",
+      "mainHeapMB": 9.3,
+      "workerHeapMB": null,
+      "wasmMemMB": 426,
+      "goLiveHeapMB": 203.3
+    },
+    {
+      "kind": "memory",
+      "build": "0008-necromancer-vaal-summon-skeletons",
+      "when": "after-import",
+      "mainHeapMB": 3.2,
+      "workerHeapMB": null,
+      "wasmMemMB": 306.3,
+      "goLiveHeapMB": 187.8
+    },
+    {
+      "kind": "memory",
+      "build": "0516-reliquarian-kinetic-fusillade",
+      "when": "after-import",
+      "mainHeapMB": 3.3,
+      "workerHeapMB": null,
+      "wasmMemMB": 306.3,
+      "goLiveHeapMB": 186.8
+    },
+    {
+      "kind": "memory",
+      "build": "0037-ascendant-fire-trap-of-blasting-2",
+      "when": "after-import",
+      "mainHeapMB": 3.3,
+      "workerHeapMB": null,
+      "wasmMemMB": 306.3,
+      "goLiveHeapMB": 187
+    },
+    {
+      "kind": "memory",
+      "build": "4788-ladder-GeordiMcSnuff_1894.GeordiFlameOne",
+      "when": "after-import",
+      "mainHeapMB": 3.2,
+      "workerHeapMB": null,
+      "wasmMemMB": 320,
+      "goLiveHeapMB": 186.7
+    },
+    {
+      "kind": "memory",
+      "build": "13276-ladder-cuba_5717.cubamrc",
+      "when": "after-import",
+      "mainHeapMB": 3.2,
+      "workerHeapMB": null,
+      "wasmMemMB": 306.3,
+      "goLiveHeapMB": 187.1
+    },
+    {
+      "kind": "memory",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "when": "after-import",
+      "mainHeapMB": 3.4,
+      "workerHeapMB": null,
+      "wasmMemMB": 306.3,
+      "goLiveHeapMB": 188.1
+    },
+    {
+      "kind": "memory",
+      "build": "0667-guardian-summon-raging-spirit",
+      "when": "after-import",
+      "mainHeapMB": 3.4,
+      "workerHeapMB": null,
+      "wasmMemMB": 306.3,
+      "goLiveHeapMB": 187.8
+    },
+    {
+      "kind": "memory",
+      "build": "0977-luminary-purity-of-ice-2",
+      "when": "after-import",
+      "mainHeapMB": 3.2,
+      "workerHeapMB": null,
+      "wasmMemMB": 306.3,
+      "goLiveHeapMB": 187
+    },
+    {
+      "kind": "memory",
+      "build": "0009-trickster-cobra-lash",
+      "when": "after-import",
+      "mainHeapMB": 3.7,
+      "workerHeapMB": null,
+      "wasmMemMB": 307,
+      "goLiveHeapMB": 190.4
+    },
+    {
+      "kind": "memory",
+      "build": "0280-elementalist-fireball",
+      "when": "after-import",
+      "mainHeapMB": 3.2,
+      "workerHeapMB": null,
+      "wasmMemMB": 306,
+      "goLiveHeapMB": 186.8
+    },
+    {
+      "kind": "memory",
+      "build": "0444-reliquarian-static-strike-2",
+      "when": "after-import",
+      "mainHeapMB": 3.2,
+      "workerHeapMB": null,
+      "wasmMemMB": 306.3,
+      "goLiveHeapMB": 187
+    },
+    {
+      "kind": "memory",
+      "build": "1591-necromancer-summon-holy-relic-of-conviction-15",
+      "when": "after-import",
+      "mainHeapMB": 3.2,
+      "workerHeapMB": null,
+      "wasmMemMB": 353.5,
+      "goLiveHeapMB": 187
+    },
+    {
+      "kind": "memory",
+      "build": "0001-necromancer-unknown",
+      "when": "after-import",
+      "mainHeapMB": 3.9,
+      "workerHeapMB": null,
+      "wasmMemMB": 378.8,
+      "goLiveHeapMB": 192.3
+    },
+    {
+      "kind": "memory",
+      "build": "0339-reliquarian-shield-crush-of-the-chieftain-2",
+      "when": "tree",
+      "mainHeapMB": 7.5,
+      "workerHeapMB": null,
+      "wasmMemMB": 311.5,
+      "goLiveHeapMB": 200.5
+    }
+  ]
+}

@@ -1,0 +1,423 @@
+builds/parsecache/codec.go          GO-NATIVE  gob encoding of a parsed pob.PathOfBuilding plus a presence bitmap that repairs gob's pointer elision; a serialisation format for OUR test cache, which PoB has no counterpart for
+builds/parsecache/fingerprint.go    GO-NATIVE  hashes the parser's own source so a cache entry is invalidated when the PARSER changes, not only when its input does; a cache-keying concern with no PoB analogue
+builds/parsecache/store.go          GO-NATIVE  content-addressed on-disk store for parsed builds, keyed by XML SHA-256 plus the parser fingerprint; PoB re-parses every time and has no cache
+builds/parse_over.go                GO-NATIVE  parses an undo step over the open build, reusing the sections whose saved bytes are unchanged; PoB re-parses every undo state (UndoHandler) and has no counterpart
+builds/parser.go                    GO-NATIVE  encoding/xml decoding of the build file into pob.PathOfBuilding; PoB parses XML with its own xml.lua into UI-class tables, so nothing here has a per-function counterpart
+
+internal/oraclebin/oraclebin.go     GO-NATIVE  the committed oracle blob's binary side-car: a columnar encoding of test fixture data, generated from the JSONL and keyed by its SHA-256. PoB has no oracle and no fixture format, so there is nothing to cite
+
+calculator/active_skill_set.go      PORT       src/Classes/SkillsTab.lua
+calculator/breakdown.go             PORT       src/Modules/CalcBreakdown.lua
+calculator/calc_active_skill.go     PORT       src/Modules/CalcActiveSkill.lua
+calculator/calc_defence.go          PORT       src/Modules/CalcDefence.lua
+calculator/calc_full_dps.go         PORT       src/Modules/Calcs.lua
+calculator/calc_offence.go          PORT       src/Modules/CalcOffence.lua
+calculator/calc_perform.go          PORT       src/Modules/CalcPerform.lua
+calculator/calc_triggers.go         PORT       src/Modules/CalcTriggers.lua
+calculator/calc_setup.go            PORT       src/Modules/CalcSetup.lua
+calculator/calc_tab_finalize.go     PORT       src/Classes/CalcSectionControl.lua,src/Modules/CalcSections.lua
+calculator/calc_tools.go            PORT       src/Modules/CalcTools.lua
+calculator/calclib/main.go          PORT       src/Modules/CalcTools.lua
+calculator/compare_power.go         PORT       src/Classes/CompareTab.lua,src/Classes/CalcsTab.lua,src/Classes/SkillsTab.lua,src/Modules/Calcs.lua
+calculator/cluster_jewel_mods.go    PORT       src/Modules/ModParser.lua
+calculator/cluster_jewels.go        PORT       src/Classes/PassiveSpec.lua
+calculator/configs.go               PORT       src/Modules/ConfigOptions.lua
+calculator/config_relevance.go      PORT       src/Classes/ConfigTab.lua
+calculator/env.go                   PORT       src/Modules/CalcSetup.lua
+calculator/loadouts.go              PORT       src/Modules/Build.lua
+calculator/main_skill_controls.go  PORT       src/Modules/Build.lua,src/Classes/PassiveSpec.lua
+calculator/sidebar_extras.go        PORT       src/Modules/Calcs.lua,src/Modules/CalcSetup.lua,src/Modules/Build.lua,src/Classes/ItemsTab.lua
+calculator/env_used.go              PORT       src/Modules/Calcs.lua
+calculator/item.go                  PORT       src/Classes/Item.lua
+calculator/item_bases.go            PORT       src/Export/Scripts/bases.lua,src/Data/Bases/flask.lua
+calculator/item_cache.go            GO-NATIVE  parsed-item cache keyed on raw item text; PoB re-parses every item on every build and has no cache to port
+calculator/item_setup.go            PORT       src/Modules/CalcSetup.lua
+calculator/item_tag_special.go      PORT       src/Classes/Item.lua,src/Modules/Data.lua
+calculator/items_tab.go             PORT       src/Classes/ItemsTab.lua,src/Classes/ItemSlotControl.lua,src/Modules/ItemTools.lua
+calculator/item_edit.go             PORT       src/Classes/ItemsTab.lua,src/Classes/Item.lua,src/Modules/Data.lua
+calculator/item_list.go             PORT       src/Classes/ItemsTab.lua,src/Classes/ItemListControl.lua,src/Classes/PassiveSpec.lua
+calculator/tincture_bases.go        PORT       src/Export/Scripts/bases.lua
+calculator/item_set_tooltip.go      PORT       src/Classes/ItemsTab.lua
+calculator/skills_tab_gems.go       PORT       src/Classes/SkillsTab.lua
+calculator/skills_whatif.go         PORT       src/Classes/GemSelectControl.lua,src/Classes/SkillsTab.lua
+calculator/spectre_library.go       PORT       src/Modules/Build.lua,src/Classes/MinionListControl.lua
+calculator/item_tooltip.go          PORT       src/Classes/ItemsTab.lua,src/Classes/Tooltip.lua,src/Modules/Build.lua,src/Modules/Main.lua,src/Modules/ItemTools.lua
+calculator/mastery.go               PORT       src/Classes/TreeTab.lua
+calculator/legion_transform.go      PORT       src/Classes/PassiveSpec.lua
+calculator/misc_calculator.go       PORT       src/Modules/Calcs.lua,src/Modules/CalcSetup.lua
+calculator/mod_parser.go            PORT       src/Modules/ModParser.lua
+calculator/mod_parser_index.go      GO-NATIVE  candidate-set prefilter for Go's regexp engine, which has no literal-prefix skip on anchored patterns; LuaJIT's pattern scan has no equivalent cost and PoB has no equivalent code
+calculator/mod_tools.go             PORT       src/Modules/ModParser.lua
+calculator/output.go                PORT       src/Modules/Calcs.lua
+calculator/party_tab.go             PORT       src/Classes/PartyTab.lua
+calculator/passive_spec.go          PORT       src/Classes/PassiveSpec.lua
+calculator/passive_spec_class.go    PORT       src/Classes/PassiveSpec.lua,src/Classes/PassiveTreeView.lua,src/Modules/Build.lua
+calculator/passive_spec_convert.go  PORT       src/Classes/TreeTab.lua
+calculator/passive_spec_mastery.go  PORT       src/Classes/PassiveMasteryControl.lua,src/Classes/PassiveTreeView.lua
+calculator/passive_spec_radius.go   PORT       src/Classes/PassiveTreeView.lua
+calculator/passive_spec_reset.go    PORT       src/Classes/PassiveSpec.lua,src/Classes/TreeTab.lua
+calculator/passive_spec_url.go      PORT       src/Classes/PassiveSpec.lua,src/Classes/TreeTab.lua
+calculator/power_report.go          PORT       src/Classes/CalcsTab.lua,src/Classes/TreeTab.lua,src/Modules/Data.lua,src/Classes/PassiveTree.lua,src/Classes/PassiveSpec.lua
+calculator/reduce_pools.go          PORT       src/Modules/CalcDefence.lua
+calculator/skill_funcs.go           PORT       src/Data/Skills/act_int.lua,src/Data/Skills/act_dex.lua,src/Data/Skills/act_str.lua,src/Data/Skills/other.lua
+calculator/tree_missing_nodes.go    GO-NATIVE  missingNode/resolveTreeNode helpers and the by-name index; the table moved to tree_missing_nodes_generated.go
+calculator/tree_missing_nodes_generated.go GENERATED  scripts/gopob/treetablesemit.go
+calculator/tree_stat_text.go        GO-NATIVE  fixupTreeStatText only; the table moved to tree_stat_text_generated.go
+calculator/tree_stat_text_generated.go GENERATED  scripts/gopob/treetablesemit.go
+calculator/tree_jewels.go           PORT       src/Classes/ItemsTab.lua,src/Classes/ItemSlotControl.lua
+calculator/tree_sets.go             PORT       src/Classes/TreeTab.lua,src/Classes/PassiveSpecListControl.lua,src/Classes/PassiveSpec.lua,src/Classes/PassiveTree.lua,src/GameVersions.lua
+calculator/tree_sets_switch.go      PORT       src/Classes/TreeTab.lua
+calculator/types.go                 GO-NATIVE  Go type declarations for env/actor/activeSkill, which PoB builds as anonymous Lua tables; the per-field provenance is already cited inline and the few methods are field accessors Lua does not need
+calculator/variant.go               PORT       src/Modules/Calcs.lua
+
+config/logging.go                   GO-NATIVE  slog setup; PoB has no logging module
+
+data/boss_skills_generated.go       GENERATED  scripts/gopob/oracleemitters4.go
+data/calculated.go                  GO-NATIVE  derives damage-stat name lists from go-pob's own DamageTypeFlags bitmask; PoB spells the lists out at each use site
+data/cluster_jewels.go              GENERATED  scripts/gopob/oracleemitters3.go
+data/constants.go                   GO-NATIVE  Go type declarations only; every PoB table moved to constants_generated.go on 2026-08-09
+data/constants_generated.go         GENERATED  scripts/gopob/coreconstantsemit.go
+data/game_versions.go               GO-NATIVE  go-pob's own enum of supported game-data versions
+data/item_tools.go                  PORT       src/Modules/ItemTools.lua
+data/mod_scalability.go             PORT       src/Modules/ItemTools.lua
+data/legion_passives_generated.go   GENERATED  scripts/gopob/oracleemitters4.go
+data/legion_passives.go             GO-NATIVE  LegionNode type + JewelRadiusIndexForLabel; the data moved to legion_passives_generated.go
+data/pantheons.go                   GENERATED  scripts/gopob/oracleemitters3.go
+data/tree_radius.go                 PORT       src/Classes/PassiveTree.lua
+data/tree_radius_node.go            PORT       src/Classes/PassiveTree.lua
+data/tree_search.go                 PORT       src/Classes/PassiveSpec.lua
+data/tree_versions.go               GO-NATIVE  fetches and decodes go-pob-data's tree JSON over HTTP and builds a dominikbraun/graph; PoB reads a bundled tree in PassiveTree.lua, whose geometry half IS ported, in data/tree_radius.go
+data/tattoo_passives_generated.go   GENERATED  scripts/gopob/oracleemitters2.go
+data/flavour_text_generated.go      GENERATED  scripts/gopob/flavourtextemit.go
+data/trees.go                       GO-NATIVE  registers go-pob's TreeVersionData table
+data/types_tree.go                  GO-NATIVE  Go struct declarations for go-pob-data's tree JSON schema
+
+data/raw/gems.go                    GENERATED  scripts/gopob/gemsemit.go
+data/raw/granted_effects.go         PORT       src/Modules/Data.lua
+data/raw/has_global_effect.go       GENERATED  scripts/gopob/oracleemitters.go
+data/raw/skill_gem_lookup.go         GO-NATIVE  reverse index from a gem's GAME id to its poe.SkillGem, rebuilt because go-pob-data never populates SkillGem.GrantedEffect; PoB reads its own Gems.lua table and has no lookup to port
+data/raw/main.go                    GO-NATIVE  go-pob-data asset loading over the storage interface; PoB ships its data in-tree and has nothing to load
+data/raw/prefetch.go                GO-NATIVE  concurrent read-ahead of the go-pob-data assets InitializeAll then walks one at a time; PoB ships its data in-tree and has nothing to load
+data/raw/deferred_tables.go         GO-NATIVE  first-use loading of the go-pob-data tables no first calculation needs; PoB ships its data in-tree and has nothing to load
+data/raw/minion_data.go             GENERATED  scripts/gopob/miniondataemit.go
+data/raw/minion_uses.go             GENERATED  scripts/gopob/oracleemitters.go
+data/raw/mod_scalability.go         GENERATED  scripts/gopob/modscalabilityemit.go
+data/raw/item_mod_stat_order.go     GENERATED  scripts/gopob/itemmodstatorderemit.go
+data/raw/minions.go                 GENERATED  scripts/gopob/oracleemitters2.go
+data/raw/skill_add_skill_types.go   GENERATED  scripts/gopob/oracleemitters.go
+data/raw/skill_base_mods.go         GENERATED  scripts/gopob/skillbasemodsemit.go
+data/raw/skill_flags.go             GENERATED  scripts/gopob/oracleemitters5.go
+data/raw/skill_hidden_levels.go     GENERATED  scripts/gopob/oracleemitters2.go
+data/raw/skill_parts.go             GENERATED  scripts/gopob/skillparts.go
+data/raw/skill_stat_map.go          GENERATED  scripts/gopob/skillstatmapglobalemit.go
+data/raw/skill_stat_maps.go         GENERATED  scripts/gopob/skillstatmapemit.go
+data/raw/skill_weapon_types.go      GENERATED  scripts/gopob/oracleemitters2.go
+data/raw/timeless_sources.go        GO-NATIVE  loads the five go-pob-data assets poe.InitializeAll omits (AlternateTreeVersions, PassiveSkills, AlternatePassiveSkills, AlternatePassiveAdditions, stat_descriptions). PoB gets the same rows from LoadModule of its own in-tree Lua, so there is no per-function counterpart to cite
+data/raw/spectre_data.go            GENERATED  scripts/gopob/miniondataemit.go
+
+mod/actor_condition.go              GO-NATIVE  tag struct + builder; evaluated in moddb/mod_store.go
+mod/base_mod.go                     GO-NATIVE  the mod struct and its builder methods; PoB uses modLib.createMod on a plain table
+mod/common.go                       GO-NATIVE  flag/keyword-flag bitmask constants and matching
+mod/condition.go                    GO-NATIVE  tag struct + builder; evaluated in moddb/mod_store.go
+mod/distance_ramp.go                GO-NATIVE  tag struct + builder; evaluated in moddb/mod_store.go
+mod/disables_item.go                GO-NATIVE  tag struct + builder; read by calculator/item_setup.go (CalcSetup.lua:841-905), never by EvalMod
+mod/flag.go                         GO-NATIVE  the boolean-mod variant of the mod struct
+mod/format.go                       PORT       src/Modules/ModTools.lua
+mod/global.go                       GO-NATIVE  tag struct + builder; evaluated in moddb/mod_store.go
+mod/item_condition.go               GO-NATIVE  tag struct + builder; evaluated in moddb/mod_store.go (evalItemConditionTag, ModStore.lua:648-718)
+mod/global_effect.go                GO-NATIVE  tag struct + builder; consumed in calculator/calc_active_skill.go
+mod/ignore_cond.go                  GO-NATIVE  tag struct + builder; evaluated in moddb/mod_store.go
+mod/in_slot.go                      GO-NATIVE  tag struct + builder; evaluated in moddb/mod_store.go
+mod/limit.go                        GO-NATIVE  tag struct + builder; evaluated in moddb/mod_store.go
+mod/list_types.go                   GO-NATIVE  the payload structs a TypeList mod can carry, plus their Clone/ScaleValue helpers; PoB stores these as bare Lua tables
+mod/melee_proximity.go              GO-NATIVE  tag struct + builder; evaluated in moddb/mod_store.go
+mod/mod.go                          GO-NATIVE  the Mod interface Go needs to unify the float/flag/list variants
+mod/monster_tag.go                  GO-NATIVE  tag struct + builder; evaluated in moddb/mod_store.go
+mod/mod_flag.go                     GO-NATIVE  tag struct + builder; evaluated in moddb/mod_store.go
+mod/mod_flag_or.go                  GO-NATIVE  tag struct + builder; evaluated in moddb/mod_store.go
+mod/multiplier.go                   GO-NATIVE  tag struct + builder; evaluated in moddb/mod_store.go
+mod/multiplier_threshold.go         GO-NATIVE  tag struct + builder; evaluated in moddb/mod_store.go
+mod/multivalue.go                   GO-NATIVE  the typed value wrapper Go needs where Lua stores a bare number, string or table
+mod/per_stat.go                     GO-NATIVE  tag struct + builder; evaluated in moddb/mod_store.go
+mod/percent_stat.go                 GO-NATIVE  tag struct + builder; evaluated in moddb/mod_store.go
+mod/skill_id.go                     GO-NATIVE  tag struct + builder; evaluated in moddb/mod_store.go
+mod/skill_name.go                   GO-NATIVE  tag struct + builder; evaluated in moddb/mod_store.go
+mod/skill_part.go                   GO-NATIVE  tag struct + builder; evaluated in moddb/mod_store.go
+mod/skill_type.go                   GO-NATIVE  tag struct + builder; evaluated in moddb/mod_store.go
+mod/slot_name.go                    GO-NATIVE  tag struct + builder; evaluated in moddb/mod_store.go
+mod/slot_number.go                  GO-NATIVE  tag struct + builder; evaluated in moddb/mod_store.go
+mod/socketed_in.go                  GO-NATIVE  tag struct + builder; evaluated in moddb/mod_store.go
+mod/stat_threshold.go               GO-NATIVE  tag struct + builder; evaluated in moddb/mod_store.go
+
+moddb/compare.go                    PORT       src/Modules/ModTools.lua
+moddb/eval_trace.go                 GO-NATIVE  diagnostic-only tracer over ModStore.evalTag; nothing in the calculation calls it and PoB has no equivalent
+moddb/mod_db.go                     PORT       src/Classes/ModDB.lua
+moddb/mod_list.go                   PORT       src/Classes/ModList.lua
+moddb/mod_store.go                  PORT       src/Classes/ModStore.lua
+
+pob/mastery.go                      PORT       src/Classes/PassiveSpec.lua,src/Classes/TreeTab.lua
+pob/methods_saved.go                GO-NATIVE  copy-on-write setters over the parsed build struct; PoB mutates its build tables directly from the UI classes, so each of these replaces a field assignment rather than a function
+pob/tattoo.go                       PORT       src/Classes/TreeTab.lua
+pob/tree_sets.go                    PORT       src/Classes/TreeTab.lua,src/Classes/PassiveSpecListControl.lua,src/Classes/PassiveSpec.lua
+pob/item_sets.go                    PORT       src/Classes/ItemsTab.lua,src/Classes/ItemSetListControl.lua,src/Classes/ItemListControl.lua
+pob/skill_sets.go                   PORT       src/Classes/SkillsTab.lua,src/Classes/SkillSetListControl.lua
+pob/socket_group_text.go            PORT       src/Classes/SkillsTab.lua,src/Modules/Common.lua
+pob/config_sets.go                  PORT       src/Classes/ConfigTab.lua,src/Classes/ConfigSetListControl.lua,src/Classes/ListControl.lua
+pob/calcs_skill.go                  PORT       src/Classes/CalcsTab.lua
+pob/tree_sets_order.go              PORT       src/Classes/ListControl.lua,src/Classes/PassiveSpecListControl.lua
+pob/types_custom.go                 GO-NATIVE  go-pob's own enums (game version, ascendancy id)
+pob/types_runtime.go                GO-NATIVE  go-pob's result struct handed to the frontend
+pob/types_saved.go                  GO-NATIVE  Go struct mirror of PoB's build XML schema; the per-field provenance is cited inline and the one method is an encoding/xml unmarshaler
+pob/utils.go                        PORT       src/Classes/ImportTab.lua
+
+oracle/tree_ours_dump/main.go       GO-NATIVE  dumps go-pob-data's tree so the two-tree diff can be produced offline; no PoB counterpart by construction
+scripts/pobdata_asset_audit/main.go GO-NATIVE  audits go-pob-data's published assets for a version (does each exist, does each DECODE); a separate Go module so it adds no production dependency, and no PoB analogue
+scripts/testdatarelease/main.go     GO-NATIVE  pack / fetch dispatch and the scripts/testdata.json pin; no PoB analogue
+scripts/testdatarelease/pack.go     GO-NATIVE  packs the corpus and oracle into deterministic tar + brotli release archives; no PoB analogue
+scripts/testdatarelease/fetch.go    GO-NATIVE  downloads, sha256-checks and installs the pinned release archives; no PoB analogue
+scripts/testdatarelease/scrub.go    GO-NATIVE  applies the public export's rewrites and leak check to the archives; no PoB analogue
+scripts/corpus/archive.go           GO-NATIVE  writes and reads the durable per-league candidate index under testdata/corpus-index/, plus the link-rot sampler; no PoB analogue
+scripts/corpus/cdp.go               GO-NATIVE  stdlib RFC 6455 client and Chrome DevTools Protocol driver, so a discovery arm can render a page in a real browser instead of reading it with an HTTP client; no PoB analogue
+scripts/corpus/checkpoint.go        GO-NATIVE  per-(sub,endpoint,window) crawl cursor so an interrupted multi-hour crawl resumes; nothing in PoB crawls anything
+scripts/corpus/discover.go          GO-NATIVE  arctic-shift and pathofexile.com forum spiders emitting the link index; no PoB analogue
+scripts/corpus/poebuilds.go         GO-NATIVE  poebuilds.cc discovery source and its per-league archive; a build-aggregator spider, no PoB analogue
+scripts/corpus/pobarchives.go       GO-NATIVE  pobarchives.com discovery source, filtered by TREE VERSION rather than by league; a build-directory spider, no PoB analogue
+scripts/corpus/fetch.go             GO-NATIVE  resumable rate-limited fetcher carrying the blocked-vs-rejected class split; no PoB analogue
+scripts/corpus/http.go              GO-NATIVE  per-host rate limiter and transport classifier; no PoB analogue
+scripts/corpus/index.go             GO-NATIVE  the link index and its per-host id specs; no PoB analogue
+scripts/corpus/ladder.go             GO-NATIVE  GGG ladder + character-window client: turns a league ladder into importable character JSON, paced by the server's own published X-Rate-Limit-Ip policy; no PoB analogue
+scripts/corpus/main.go              GO-NATIVE  subcommand dispatch for the harvester; no PoB analogue
+scripts/corpus/manifest.go          GO-NATIVE  renders MANIFEST.md from the provenance records; no PoB analogue
+scripts/corpus/pob.go               GO-NATIVE  export-code codec plus the corpus ACCEPTANCE criteria; PoB's own import path (Classes/ImportTab.lua) is already ported at pob/utils.go and answers a different question -- this decides whether a build belongs in a corpus, which PoB never asks
+scripts/corpus/selftest.go          GO-NATIVE  proves every acceptance check and transport classifier can return both answers; no PoB analogue
+scripts/corpus/wayback.go            GO-NATIVE  web.archive.org discovery source: enumerates archived URLs through the CDX index and harvests links out of the replayed snapshots; a crawler over an archive, no PoB analogue
+scripts/corpus/validate.go          GO-NATIVE  applies the criteria, dedups by content hash, emits the rejection breakdown; no PoB analogue
+
+storage/desktop.go                  GO-NATIVE  filesystem-backed asset cache; PoB has no equivalent layer
+storage/types.go                    GO-NATIVE  the storage interface both build tags implement
+storage/wasm.go                     GO-NATIVE  ZenFS/IndexedDB-backed asset cache; PoB has no equivalent layer
+
+utils/data.go                       GO-NATIVE  Ternary/Or/Ptr and friends -- Go stand-ins for Lua's `a or b`, `a and b or c` and implicit nil
+utils/logging.go                    GO-NATIVE  slog helpers
+utils/map.go                        GO-NATIVE  map access helpers that give Go the nil-tolerant field reads Lua gets for free
+utils/math.go                       GO-NATIVE  math helpers
+utils/slice.go                      GO-NATIVE  slice helpers
+utils/strings.go                    GO-NATIVE  string helpers
+
+wasm/exposition/calcs.go            GO-NATIVE  crystalline binding surface for the frontend
+wasm/exposition/config.go           GO-NATIVE  crystalline binding surface for the frontend
+wasm/exposition/crystalline_gen.go  GENERATED  [unverifiable: emitted by `go tool crystalline`, pinned in go.mod, not a script in this repo]
+wasm/exposition/data.go             GO-NATIVE  crystalline binding surface for the frontend
+wasm/exposition/gems.go             GO-NATIVE  crystalline binding surface for the frontend
+wasm/exposition/item_edit.go        GO-NATIVE  crystalline binding surface for the frontend
+wasm/exposition/item_sets.go        GO-NATIVE  crystalline binding surface for the frontend
+wasm/exposition/items.go            GO-NATIVE  crystalline binding surface for the frontend
+wasm/exposition/main.go             GO-NATIVE  crystalline binding surface for the frontend
+wasm/exposition/mastery.go          GO-NATIVE  crystalline binding surface for the frontend
+wasm/exposition/memory.go           GO-NATIVE  crystalline binding surface for the frontend
+wasm/exposition/power_report.go     GO-NATIVE  crystalline binding surface for the frontend
+wasm/exposition/skills20.go         GO-NATIVE  crystalline binding surface for the frontend
+wasm/exposition/tree.go             GO-NATIVE  crystalline binding surface for the frontend
+wasm/exposition/tree_jewels.go      GO-NATIVE  crystalline binding surface for the frontend
+wasm/exposition/tree_links.go       GO-NATIVE  crystalline binding surface for the frontend
+wasm/exposition/tree_rings.go       GO-NATIVE  crystalline binding surface for the frontend
+wasm/exposition/tree_class.go       GO-NATIVE  crystalline binding surface for the frontend
+wasm/exposition/loadouts.go         GO-NATIVE  crystalline binding surface for the frontend
+wasm/exposition/tree_mastery.go     GO-NATIVE  crystalline binding surface for the frontend
+wasm/exposition/tree_sets.go        GO-NATIVE  crystalline binding surface for the frontend
+wasm/exposition/tree_tattoos.go     GO-NATIVE  crystalline binding surface for the frontend
+wasm/exposition/tree_versions.go    GO-NATIVE  crystalline binding surface for the frontend
+wasm/exposition/whatif.go           GO-NATIVE  crystalline binding surface for the frontend
+wasm/exposition/mod_debug.go        PORT       src/Modules/Calcs.lua,src/Classes/ModDB.lua,src/Classes/ModList.lua,src/Modules/ModTools.lua,src/Modules/Common.lua,src/Data/Global.lua
+wasm/main.go                        GO-NATIVE  WASM entry point
+
+scripts/gopob/coreconstantsemit.go               GO-NATIVE  port of oracle/core_constants_emit.py; regenerates data/constants_generated.go, porting no Lua
+scripts/gopob/coreconstantsemit_tables.go        GO-NATIVE  the name->constant tables EXTRACTED from oracle/core_constants_emit.py, porting no Lua
+scripts/gopob/main.go                            GO-NATIVE  subcommand dispatch for the folded instrument binary; there is no PoB analogue of go-pob's tooling entry point
+scripts/gopob/kwbits.go                          GO-NATIVE  port of scripts/kw_bits_parity.py, our own KW_BITS parity checker; it READS PoB's Global.lua but ports no Lua
+scripts/gopob/miniondataemit.go                  GO-NATIVE  port of oracle/minion_data_emit.py; regenerates minion_data.go and spectre_data.go, porting no Lua
+scripts/gopob/miniondataemit_tables.go           GO-NATIVE  the name->constant tables EXTRACTED from oracle/minion_data_emit.py, porting no Lua
+scripts/gopob/pobpin.go                          GO-NATIVE  port of scripts/pob_pin.py; the PoB pin gate, porting no Lua
+scripts/gopob/pobdatatablesstamp.go              GO-NATIVE  port of oracle/pob_data_tables_stamp.py; stamps a DATA-table reference with the pin, porting no Lua
+scripts/gopob/dumpparallel.go                    GO-NATIVE  port of scripts/dump_parallel.sh; concurrent PoB dump runner, porting no Lua
+scripts/gopob/dumpalone.go                       GO-NATIVE  one build per PoB process, diffed against a committed dump; names the oracle floor, porting no Lua
+scripts/gopob/dumpshard.go                       GO-NATIVE  port of scripts/dump_shard.sh; the sharded corpus dumper, porting no Lua
+scripts/gopob/corpusdumpref.go                   GO-NATIVE  port of scripts/corpus_dump_ref.sh; dumps a ref via a throwaway worktree, porting no Lua
+scripts/gopob/testcachekey.go                    GO-NATIVE  port of scripts/test_cache_key.sh; the POE_VERSION cache-key gate, porting no Lua
+scripts/gopob/instrumentsrun.go                  GO-NATIVE  port of scripts/instruments.sh; the whole-instrument-chain runner and its cross-instrument invariants, porting no Lua
+scripts/gopob/commentstrip.go                  GO-NATIVE  removes go-pob's own prose comments from source files; reads the pin's Lua only to recognise its comments, porting no Lua
+scripts/gopob/regendata.go                     GO-NATIVE  port of scripts/regen_data.py; regenerates every generated data table from the pinned PoB and gates their staleness, porting no Lua
+scripts/gopob/regendata_tables.go              GO-NATIVE  the GENERATORS table EXTRACTED from scripts/regen_data.py, porting no Lua
+scripts/gopob/internal/difftest/golden.go        GO-NATIVE  records the ORIGINAL's verdict per fixture so the migration's proof survives deleting the scripts; a harness, porting no Lua
+scripts/gopob/internal/difftest/originals.go     GO-NATIVE  what the harness becomes once the originals are deleted: golden-only fixtures, and the class check that keeps a typo from silently retiring the differential; a harness, porting no Lua
+scripts/gopob/repin.go                           GO-NATIVE  port of scripts/repin.py; re-measures divergence pins on the integrated tree, porting no Lua
+scripts/gopob/luajitdet.go                       GO-NATIVE  port of scripts/build_luajit_deterministic.sh; the deterministic LuaJIT build+proof, porting no Lua
+scripts/gopob/probedeterminism.go                GO-NATIVE  port of oracle/probe_determinism.sh; the per-process reproducibility probe, porting no Lua
+scripts/gopob/nicerun.go                         GO-NATIVE  port of scripts/nice.sh; the low-priority command prefix, porting no Lua
+scripts/gopob/regenfixtures.go                   GO-NATIVE  port of scripts/regen_fixtures.sh; the oracle fixture regenerator, porting no Lua
+scripts/gopob/modaloracle.go                     GO-NATIVE  port of scripts/modal_oracle.sh; the modal-blob orchestrator, porting no Lua
+scripts/gopob/awgit.go                           GO-NATIVE  the git and exit-status helpers the dump tools share, porting no Lua
+scripts/gopob/sourcecensus.go                    GO-NATIVE  port of scripts/source_census.py; the source-class enrichment census, porting no Lua
+scripts/gopob/skillstatmapverify.go              GO-NATIVE  port of oracle/skill_stat_map_verify.py; a round-trip CHECK, porting no Lua
+scripts/gopob/triagedrops.go                     GO-NATIVE  port of scripts/triage_drops.py, our own dropped-mod-line triage
+scripts/gopob/tablerowcensus.go                  GO-NATIVE  port of scripts/table_row_census.py, our own per-family row census
+scripts/gopob/optionaltokencensus.go             GO-NATIVE  port of scripts/optional_token_census.py, our own optional-token census
+scripts/gopob/citationtriage.go                  GO-NATIVE  port of scripts/citation_triage.py, our own citation triage view
+scripts/gopob/citationdrift.go                   GO-NATIVE  port of scripts/citation_drift.py, our own MOVED/CHANGED citation classifier
+scripts/gopob/foldprogress.go                    GO-NATIVE  reports how much of the tooling has a verified Go port; measures this repo, not PoB
+scripts/gopob/citationaudit.go                   GO-NATIVE  port of scripts/citation_audit.py, our own //pob: range-shape audit
+scripts/gopob/statoverlap.go                     GO-NATIVE  port of scripts/stat_overlap.sh, our own failing-build containment matrix
+scripts/gopob/classifytreesources.go             GO-NATIVE  port of scripts/classify_tree_sources.sh; it READS PoB data files but ports no Lua
+scripts/gopob/corpusgrep.go                      GO-NATIVE  port of scripts/corpus_grep.py; it reads corpus build XML, our own test data
+scripts/gopob/coveragecensus.go                  GO-NATIVE  port of scripts/coverage_census.py; classifies OUR dead blocks, no PoB analogue
+scripts/gopob/coveragefeatures.go                GO-NATIVE  groups coverage-census dead blocks by //pob: marker and sizes them on build inputs; ports no Lua
+scripts/gopob/residualmap.go                     GO-NATIVE  port of scripts/residual_map.py; groups OUR oracle residual, no PoB analogue
+scripts/gopob/chunkinit.go                       GO-NATIVE  port of scripts/chunk_init.py; a source transform on OUR generated Go, no PoB analogue
+scripts/gopob/mkdropcases.go                     GO-NATIVE  port of scripts/mk_drop_cases.py; builds OUR item_parse fixtures from a drop census
+scripts/gopob/residualclusters.go                GO-NATIVE  port of scripts/residual_clusters.py; clusters OUR oracle residual, no PoB analogue
+scripts/gopob/datafields.go                      GO-NATIVE  the data-fields subcommand: writes/checks the go-pob-data field list and projects cached assets to .min; porting no Lua
+scripts/gopob/internal/datafields/analyze.go     GO-NATIVE  SSA analysis of which go-pob-data row fields go-pob reads, with conservative whole-type sinks; porting no Lua
+scripts/gopob/internal/datafields/list.go        GO-NATIVE  the per-asset key-path list format, its builder and the guard's comparison; porting no Lua
+scripts/gopob/internal/datafields/project.go     GO-NATIVE  byte-preserving msgpack projection of a go-pob-data asset onto a key-path list; porting no Lua
+scripts/gopob/internal/datafields/reach.go       GO-NATIVE  which go-pob-data functions go-pob can reach (static, CHA interface, func-value and reflection edges); porting no Lua
+scripts/gopob/verifycommon.go                    GO-NATIVE  port of oracle/verify_common.py; the plumbing BOTH round-trip verifiers share, porting no Lua
+scripts/gopob/zerovalueguardsweep.go             GO-NATIVE  port of scripts/zero_value_guard_sweep.py; greps OUR Go against PoB Lua, ports neither
+scripts/gopob/tagcensuscheck.go                  GO-NATIVE  port of scripts/tag_census_check.py; re-reads PoB DUMPS to cross-check OUR harness
+scripts/gopob/extractoutputoracle.go             GO-NATIVE  port of oracle/extract_output_oracle.py; reshapes PoB DUMPS into the oracle blob, ports no Lua
+scripts/gopob/pyrepr.go                          GO-NATIVE  python repr()/number formatting shared by the folded tools; emulates CPython, ports no Lua
+scripts/gopob/pyjson.go                          GO-NATIVE  python json.load semantics shared by the folded tools; emulates CPython, ports no Lua
+scripts/gopob/pobdumpdiff.go                     GO-NATIVE  port of scripts/pob_dump_diff.py; compares two PoB DUMP sets, ports no Lua
+scripts/gopob/modalblob.go                       GO-NATIVE  port of oracle/modal_blob.py; votes N extractions into the modal blob, ports no Lua
+scripts/gopob/pobcitations.go                    GO-NATIVE  port of scripts/pob_citations.py; verifies OUR //pob: markers, ports no Lua itself
+scripts/gopob/omissionreasons.go                 GO-NATIVE  port of scripts/omission_reasons.py; gates OUR generated tables, ports no Lua
+scripts/gopob/portdiff.go                        GO-NATIVE  port of scripts/port_diff.py; SHOWS PoB Lua beside our Go, ports none of it
+scripts/gopob/pydifflib.go                       GO-NATIVE  python difflib (SequenceMatcher, unified_diff) for the folded tools; emulates CPython
+scripts/gopob/citationdriftdiff.go               GO-NATIVE  port of scripts/citation_drift_diff.py; diffs PoB refs against each other, ports no Lua
+scripts/gopob/pobdrift.go                        GO-NATIVE  port of scripts/pob_drift.py; CLASSIFIES PoB citations against a candidate, ports no Lua
+scripts/gopob/luadata.go                         GO-NATIVE  port of scripts/lua_data.py; READS PoB's Lua data files as text, ports no Lua logic
+scripts/gopob/datarawmirror.go                   GO-NATIVE  port of scripts/dataraw_mirror.py; GRADES data/raw against PoB's Lua, ports none of it
+scripts/gopob/datarawmirror_extract.go           GO-NATIVE  port of scripts/dataraw_mirror.py's Lua extractors; reads PoB tables, ports no logic
+scripts/gopob/datarawmirror_report.go            GO-NATIVE  port of scripts/dataraw_mirror.py's spec and report; compares tables, ports no Lua
+scripts/gopob/datarawmirror_selftest.go          GO-NATIVE  port of scripts/dataraw_mirror.py's selftest; a control, ports no Lua
+scripts/gopob/tasktestrefs.go                    GO-NATIVE  port of scripts/task_test_refs.py; scans the repo's own drivers, ports no Lua
+scripts/gopob/tasktestrefs_run.go                GO-NATIVE  port of scripts/task_test_refs.py's driver loop and name-set ratchet; ports no Lua
+scripts/gopob/itemmodstatorderemit.go            GO-NATIVE  emits data/raw/item_mod_stat_order.go from `gamedatadump item-mod-stat-order`; no python ancestor, porting no Lua logic
+scripts/gopob/modscalabilityemit.go              GO-NATIVE  emits data/raw/mod_scalability.go from oracle/mod_scalability.lua; the one emitter with no python ancestor, porting no Lua logic
+scripts/gopob/oraclebinemit.go                   GO-NATIVE  regenerates the oracle blob's .orb side-car from the blob itself; a fixture-format tool with no PoB counterpart
+scripts/gopob/oracleemit.go                      GO-NATIVE  port of oracle/emit_common.py; the emitter family's preamble, ports no Lua
+scripts/gopob/oracleemitters.go                  GO-NATIVE  ports of three oracle/*_emit.py; they EMIT data/raw tables, porting no Lua logic
+scripts/gopob/oracleemitters2.go                 GO-NATIVE  four more oracle/*_emit.py ports; they EMIT data tables, porting no Lua logic
+scripts/gopob/flavourtextemit.go                 GO-NATIVE  emits data/flavour_text_generated.go from oracle/flavour_text.lua; ports no Lua logic
+scripts/gopob/oracleemitters3.go                 GO-NATIVE  pantheons + cluster-jewels emitter ports; they EMIT data tables, porting no Lua
+scripts/gopob/oracleemitters4.go                 GO-NATIVE  legion + boss-skills emitter ports; they EMIT data tables, porting no Lua
+scripts/gopob/oracleemitters5.go                 GO-NATIVE  skill-flags emitter port; EMITS three data tables, porting no Lua
+scripts/gopob/gemsemit.go                        GO-NATIVE  port of oracle/gems_emit.py; EMITS a data table, porting no Lua
+scripts/gopob/treetablesemit.go                  GO-NATIVE  port of oracle/tree_tables_emit.py; EMITS two calculator tables, porting no Lua
+scripts/gopob/modcommon.go                       GO-NATIVE  port of oracle/mod_common.py; PoB's mod vocabulary for the emitters, porting no Lua
+scripts/gopob/pycounter.go                       GO-NATIVE  collections.Counter's most_common ordering; emulates CPython, ports no Lua
+scripts/gopob/skillbasemodsemit.go               GO-NATIVE  port of oracle/skill_base_mods_emit.py; EMITS a data table, porting no Lua
+scripts/gopob/skillbasemodsdoc.go                GO-NATIVE  the generated table's header/footer text, extracted from the emitter; ports no Lua
+scripts/gopob/skillstatmapemit.go                GO-NATIVE  port of oracle/skill_stat_map_emit.py; EMITS a data table, porting no Lua
+scripts/gopob/skillstatmapdoc.go                 GO-NATIVE  the per-skill map's header text, extracted from the emitter; ports no Lua
+scripts/gopob/skillstatmapglobalemit.go          GO-NATIVE  port of oracle/skill_stat_map_global_emit.py; EMITS a data table, porting no Lua
+scripts/gopob/skillstatmapglobaldoc.go           GO-NATIVE  the global map's header text, extracted from the emitter; ports no Lua
+scripts/gopob/skillbasemodsverify.go             GO-NATIVE  port of oracle/skill_base_mods_verify.py; a round-trip CHECK, porting no Lua
+scripts/gopob/pyspace.go                         GO-NATIVE  python's \s / str.isspace() shared by the folded tools; emulates CPython, ports no Lua
+scripts/gopob/skillparts.go                      GO-NATIVE  port of oracle/skill_parts.py; SCANS PoB Lua text as data, porting no Lua
+scripts/gopob/extractcalcsdamage.go              GO-NATIVE  port of oracle/extract_calcs_damage.py; collates PoB dumps, porting no Lua
+scripts/gopob/treedivergence.go                  GO-NATIVE  port of oracle/tree_divergence.py; compares two tree dumps, porting no Lua
+scripts/gopob/configtools.go                     GO-NATIVE  port of scripts/config_tools.py; parses PoB Lua to drive OUR configs.go slices, ports no Lua
+scripts/gopob/pypath.go                          GO-NATIVE  python os.path.join semantics for the folded tools; emulates CPython, ports no Lua
+scripts/gopob/internal/difftest/difftest.go      GO-NATIVE  the differential-migration harness that grades each port against its Python original
+scripts/gopob/internal/difftest/keydeletion.go   GO-NATIVE  the key-deletion sweep: the REVERSE direction of the one-sided-refusal class, porting no Lua
+scripts/gopob/internal/gateversions/gateversions.go  GO-NATIVE  the gate/version table, formerly scripts/gate_versions.sh
+scripts/gopob/internal/root/root.go              GO-NATIVE  the repo-root resolution rule shared by every folded tool (spec §6 step 0e)
+scripts/gopob/internal/toolchain/toolchain.go    GO-NATIVE  mise-pinned tool resolution and child-process env for the folded binary
+scripts/gopob/internal/toolchain/luajit.go       GO-NATIVE  selects the deterministic LuaJIT build by CONTENT HASH; a --version assert cannot tell the two apart
+scripts/gopob/internal/toolchain/nice.go         GO-NATIVE  process priority, formerly scripts/nice.sh
+scripts/gopob/internal/toolchain/nice_linux.go   GO-NATIVE  the Linux setpriority/ioprio_set half of the above
+scripts/gopob/internal/toolchain/nice_other.go   GO-NATIVE  the non-Linux stub; CI builds every package for GOOS=js
+calculator/gem_tooltip.go           PORT       src/Classes/GemTooltip.lua,src/Classes/SkillsTab.lua
+calculator/stat_describer.go        PORT       src/Modules/StatDescriber.lua
+calculator/socket_group_tooltip.go  PORT       src/Classes/SkillsTab.lua
+data/raw/stat_descriptions_generated.go GENERATED scripts/gopob/statdescriptionsemit.go
+scripts/gopob/statdescriptionsemit.go            GO-NATIVE  emits data/raw/stat_descriptions_generated.go from scripts/gamedatadump and data/raw/skill_text_generated.go from oracle/skill_text.lua; ports no Lua logic
+wasm/exposition/skills_exports.go         GO-NATIVE  crystalline binding surface for the frontend
+calculator/gem_sort.go              PORT       src/Classes/GemSelectControl.lua
+pob/target_version.go               PORT       src/Modules/Build.lua
+calculator/tree_sets_respec.go      PORT       src/Classes/TreeTab.lua
+calculator/calcs_mod_section.go     PORT       src/Classes/CalcBreakdownControl.lua
+calculator/item_craft.go            PORT       src/Classes/ItemsTab.lua,src/Classes/Item.lua,src/Classes/NotableDBControl.lua
+data/item_craft_data.go             PORT       src/Modules/Data.lua
+data/item_craft_data_generated.go   GENERATED  scripts/gopob/itemcraftdataemit.go
+scripts/gopob/itemcraftdataemit.go               GO-NATIVE  emits data/item_craft_data_generated.go from oracle/item_craft_data.lua; ports no Lua logic
+calculator/item_corrupt.go          PORT       src/Classes/ItemsTab.lua,src/Classes/Item.lua
+calculator/item_implicit.go         PORT       src/Classes/ItemsTab.lua
+calculator/item_custom_mod.go       PORT       src/Classes/ItemsTab.lua,src/Classes/Item.lua
+calculator/item_affix.go            PORT       src/Classes/ItemsTab.lua,src/Classes/Item.lua,src/Classes/SliderControl.lua
+calculator/item_cluster_craft.go    PORT       src/Classes/ItemsTab.lua,src/Classes/Item.lua
+calculator/item_crucible.go         PORT       src/Classes/ItemsTab.lua,src/Classes/Item.lua
+calculator/item_db.go               PORT       src/Modules/Main.lua,src/Classes/ItemDBControl.lua,src/Modules/Common.lua
+data/item_db.go                     PORT       src/Modules/Data.lua
+data/item_db_generated.go           GENERATED  scripts/gopob/itemdbemit.go
+scripts/gopob/itemdbemit.go                      GO-NATIVE  emits data/item_db_generated.go from oracle/item_db.lua; ports no Lua logic
+wasm/exposition/item_db.go          GO-NATIVE  crystalline binding surface for the frontend
+calculator/item_variant_groups.go   PORT       src/Classes/Item.lua,src/Classes/ItemsTab.lua
+wasm/exposition/items_exports.go          GO-NATIVE  crystalline binding surface for the frontend
+pob/item_set_slots.go                      GO-NATIVE  item set slot writes for a set that is not the active one; ports no Lua logic
+calculator/item_shared_sets.go      PORT       src/Classes/SharedItemSetListControl.lua,src/Classes/ItemSetListControl.lua
+calculator/tree_cluster_nodes.go    PORT       src/Classes/PassiveSpec.lua
+data/raw/cache_namespace.go         GO-NATIVE  the go-pob-data module version that keys the asset cache; PoB ships its data in-tree and has no cache to key
+data/custom_mod_browser_generated.go GENERATED  scripts/gopob/custommodbrowseremit.go
+scripts/gopob/custommodbrowseremit.go           GO-NATIVE  emits data/custom_mod_browser_generated.go from oracle/custom_mod_browser.lua; ports no Lua logic
+calculator/custom_mod_browser.go    PORT       src/Classes/ConfigTab.lua
+pob/party.go                        PORT       src/Classes/PartyTab.lua
+wasm/exposition/party.go            GO-NATIVE  crystalline binding surface for the frontend
+calculator/calcs_buff_lists.go      PORT       src/Modules/Calcs.lua
+calculator/timeless_search.go       PORT       src/Classes/TreeTab.lua,src/Modules/Data.lua,src/Export/Scripts/legionPassives.lua
+calculator/timeless_trade.go        PORT       src/Classes/TreeTab.lua,src/Classes/TimelessJewelListControl.lua,src/Data/TimelessJewelData/LegionTradeIds.lua
+data/tree_position.go               PORT       src/Classes/PassiveTree.lua
+pob/timeless_data.go                PORT       src/Modules/Build.lua
+wasm/exposition/tree_timeless.go    GO-NATIVE  crystalline binding surface for the frontend
+calculator/tree_node_tooltip.go     PORT       src/Classes/PassiveTreeView.lua,src/Classes/GemTooltip.lua,src/Classes/TreeTab.lua
+wasm/exposition/tree_tooltip.go     GO-NATIVE  crystalline binding surface for the frontend
+calculator/jewel_compare.go         PORT       src/Classes/ItemsTab.lua
+pob/tree_sets_view.go               PORT       src/Classes/PassiveTreeView.lua
+pob/party_members.go                GO-NATIVE  go-pob's party member list (user decision 10-09); PoB imports into the buffers and keeps no members
+calculator/secondary_ascendancy.go  PORT       src/Modules/Build.lua
+wasm/exposition/core_exports.go           GO-NATIVE  crystalline binding surface for the frontend
+calculator/socket_group_source.go   PORT       src/Classes/SkillsTab.lua
+calculator/optimise_sockets.go      PORT       src/Classes/SkillsTab.lua
+calculator/compare_calcs_tooltip.go PORT       src/Classes/CompareCalcsHelpers.lua
+wasm/exposition/treecompare_exports.go    GO-NATIVE  crystalline binding surface for the frontend
+calculator/item_sort_values.go      PORT       src/Modules/Calcs.lua,src/Classes/ItemsTab.lua
+calculator/compare_items.go         PORT       src/Classes/CompareTab.lua,src/Classes/TradeHelpers.lua
+wasm/exposition/compare_items.go    PORT       src/Classes/CompareTab.lua
+calculator/compare_skill_breakdown.go PORT      src/Classes/CompareCalcsHelpers.lua
+calculator/compare_power_jewels.go  PORT       src/Classes/CompareTab.lua
+data/raw/skill_text_generated.go    GENERATED  scripts/gopob/statdescriptionsemit.go
+scripts/gamedatadump/main.go        GO-NATIVE  dispatches the go-pob-data dumpers task data-regen runs in place of oracle/*.lua
+scripts/gamedatadump/statdescriptions.go PORT  src/Export/Scripts/statdesc.lua,src/Modules/Common.lua
+scripts/gamedatadump/exportdesc.go  PORT       src/Export/statdesc.lua,src/Modules/Common.lua
+scripts/gamedatadump/pantheons.go   PORT       src/Export/Scripts/pantheons.lua
+scripts/gamedatadump/cluster.go     PORT       src/Export/Scripts/cluster.lua
+scripts/gamedatadump/legion.go      PORT       src/Export/Scripts/legionPassives.lua
+scripts/gamedatadump/tattoo.go      PORT       src/Export/Scripts/tattooPassives.lua
+scripts/gamedatadump/modscalability.go PORT    src/Export/statdesc.lua,src/Export/Scripts/modScalability.lua
+scripts/gamedatadump/minions.go     PORT       src/Export/Scripts/minions.lua,src/Export/Main.lua,src/Modules/Data.lua
+scripts/gamedatadump/misc.go        PORT       src/Export/Scripts/miscdata.lua,src/Export/Scripts/bossData.lua
+scripts/gamedatadump/luaexpr.go     GO-NATIVE  evaluates the Lua subset of PoB-authored data files (templates, SkillStatMap.lua, Global.lua) for the dumpers, porting no Lua logic
+scripts/gamedatadump/weapontypes.go PORT       src/Export/Scripts/skills.lua
+scripts/gamedatadump/mods.go        PORT       src/Export/Scripts/mods.lua,src/Export/statdesc.lua,src/Classes/Item.lua
+scripts/gamedatadump/gems.go        PORT       src/Export/Scripts/skills.lua
+scripts/gamedatadump/craft.go       PORT       src/Export/Scripts/mods.lua,src/Export/Scripts/essence.lua,src/Export/Scripts/crucible.lua,src/Modules/Data.lua
+scripts/gamedatadump/masters.go     PORT       src/Export/Scripts/masters.lua
+scripts/gamedatadump/enchant.go     PORT       src/Export/Scripts/enchant.lua,src/Modules/Data.lua
+scripts/gamedatadump/bases.go       PORT       src/Export/Scripts/bases.lua
+scripts/gamedatadump/flavour.go     PORT       src/Export/Scripts/flavourText.lua
+wasm/exposition/ui_exports.go           GO-NATIVE  crystalline binding surface for the frontend
+calculator/party_export.go         PORT       src/Modules/CalcPerform.lua,src/Classes/PartyTab.lua,src/Modules/ModTools.lua
+data/tattoo_passives.go              GO-NATIVE  TattooTarget type; the data is in tattoo_passives_generated.go
+wasm/exposition/tree_tattoo_edit.go PORT       src/Classes/TreeTab.lua,src/Classes/PassiveTreeView.lua,src/Classes/PassiveTree.lua
+scripts/gamedatadump/skills.go       PORT       src/Export/Scripts/skills.lua,src/Export/Main.lua
+wasm/exposition/import_tab.go       PORT       src/Classes/ImportTab.lua,src/Classes/Item.lua,src/Modules/Data.lua,src/Modules/ItemTools.lua

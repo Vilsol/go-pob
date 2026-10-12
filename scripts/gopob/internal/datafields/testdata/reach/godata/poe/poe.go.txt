@@ -1,0 +1,36 @@
+package poe
+
+import (
+	"context"
+
+	"github.com/Vilsol/go-pob-data/loader"
+	"github.com/Vilsol/go-pob-data/raw"
+)
+
+type Row struct {
+	raw.Row
+}
+
+var Rows []*Row
+
+var Others []*raw.Other
+
+func InitializeRows(ctx context.Context, version string) error {
+	return loader.InitHelper(ctx, version, "Rows", &Rows)
+}
+
+func (r *Row) GetHidden() int {
+	return r.Hidden
+}
+
+func (r *Row) GetVia() string {
+	return r.Via
+}
+
+func (r *Row) GetIface() string {
+	return r.Iface
+}
+
+func (r *Row) GetOther() string {
+	return Others[r.OtherKey].Name
+}

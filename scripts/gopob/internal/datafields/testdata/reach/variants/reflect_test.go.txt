@@ -1,0 +1,12 @@
+package app
+
+import (
+	"fmt"
+	"testing"
+
+	"github.com/Vilsol/go-pob-data/poe"
+)
+
+func TestReflect(t *testing.T) {
+	t.Log(fmt.Sprint(&poe.Row{}))
+}

@@ -1,0 +1,277 @@
+[
+	{
+		"name": "scalar of 1 is a no-op",
+		"fn": "applyValueScalar",
+		"line": "10% increased Damage",
+		"valueScalar": 1,
+		"numbers": 1
+	},
+	{
+		"name": "nil scalar is a no-op",
+		"fn": "applyValueScalar",
+		"line": "10% increased Damage",
+		"valueScalar": null,
+		"numbers": 1
+	},
+	{
+		"name": "scalar of 0 zeroes the value",
+		"fn": "applyValueScalar",
+		"line": "10% increased Damage",
+		"valueScalar": 0,
+		"numbers": 1
+	},
+	{
+		"name": "integer scaled up",
+		"fn": "applyValueScalar",
+		"line": "10% increased Damage",
+		"valueScalar": 1.2,
+		"numbers": 1
+	},
+	{
+		"name": "integer scaled down",
+		"fn": "applyValueScalar",
+		"line": "20% increased Damage",
+		"valueScalar": 0.5,
+		"numbers": 1
+	},
+	{
+		"name": "integer truncates toward zero",
+		"fn": "applyValueScalar",
+		"line": "7% increased Damage",
+		"valueScalar": 1.5,
+		"numbers": 1
+	},
+	{
+		"name": "trailing number has no suffix to match",
+		"fn": "applyValueScalar",
+		"line": "Adds 5",
+		"valueScalar": 2,
+		"numbers": 1
+	},
+	{
+		"name": "only first n numbers scaled",
+		"fn": "applyValueScalar",
+		"line": "Adds 10 to 20 Physical Damage",
+		"valueScalar": 1.2,
+		"numbers": 1
+	},
+	{
+		"name": "two numbers scaled",
+		"fn": "applyValueScalar",
+		"line": "Adds 10 to 20 Physical Damage",
+		"valueScalar": 1.2,
+		"numbers": 2
+	},
+	{
+		"name": "decimal branch wins when a decimal is present",
+		"fn": "applyValueScalar",
+		"line": "1.5% increased Damage",
+		"valueScalar": 1.2,
+		"numbers": 1
+	},
+	{
+		"name": "decimal result renders without trailing zero",
+		"fn": "applyValueScalar",
+		"line": "1.0% increased Damage",
+		"valueScalar": 2,
+		"numbers": 1
+	},
+	{
+		"name": "decimal branch ignores integers on the line",
+		"fn": "applyValueScalar",
+		"line": "Adds 1.5 to 20 Damage",
+		"valueScalar": 2,
+		"numbers": 1
+	},
+	{
+		"name": "midpoint of integer range",
+		"fn": "applyRange",
+		"line": "+(10-20) to maximum Life",
+		"range": 0.5,
+		"valueScalar": 1
+	},
+	{
+		"name": "bottom of integer range",
+		"fn": "applyRange",
+		"line": "+(10-20) to maximum Life",
+		"range": 0,
+		"valueScalar": 1
+	},
+	{
+		"name": "top of integer range",
+		"fn": "applyRange",
+		"line": "+(10-20) to maximum Life",
+		"range": 1,
+		"valueScalar": 1
+	},
+	{
+		"name": "rounds half up",
+		"fn": "applyRange",
+		"line": "+(10-15) to maximum Life",
+		"range": 0.5,
+		"valueScalar": 1
+	},
+	{
+		"name": "to-form normalised then rolled",
+		"fn": "applyRange",
+		"line": "+(10 to 20) to maximum Life",
+		"range": 0.5,
+		"valueScalar": 1
+	},
+	{
+		"name": "negative roll drops the plus sign",
+		"fn": "applyRange",
+		"line": "+(-20-10) to maximum Life",
+		"range": 0,
+		"valueScalar": 1
+	},
+	{
+		"name": "decimal range midpoint",
+		"fn": "applyRange",
+		"line": "(1.5-2.5)% increased Damage",
+		"range": 0.5,
+		"valueScalar": 1
+	},
+	{
+		"name": "decimal range rendering drops trailing zero",
+		"fn": "applyRange",
+		"line": "(1.0-3.0)% increased Damage",
+		"range": 0.5,
+		"valueScalar": 1
+	},
+	{
+		"name": "paired damage range rolled",
+		"fn": "applyRange",
+		"line": "Adds (10-20 to 30-40) Physical Damage",
+		"range": 0.5,
+		"valueScalar": 1
+	},
+	{
+		"name": "negative increased becomes reduced",
+		"fn": "applyRange",
+		"line": "-(10-20)% increased Damage",
+		"range": 0.5,
+		"valueScalar": 1
+	},
+	{
+		"name": "range then value scalar",
+		"fn": "applyRange",
+		"line": "+(10-20) to maximum Life",
+		"range": 0.5,
+		"valueScalar": 1.2
+	},
+	{
+		"name": "no range with a scalar still scales",
+		"fn": "applyRange",
+		"line": "10% increased Damage",
+		"range": 0.5,
+		"valueScalar": 1.2
+	},
+	{
+		"name": "negative half rounds toward positive infinity",
+		"fn": "applyRange",
+		"line": "+(-20-10) to maximum Life",
+		"range": 0.25,
+		"valueScalar": 1
+	},
+	{
+		"name": "negative half at midpoint drops the plus sign",
+		"fn": "applyRange",
+		"line": "+(-15-10) to maximum Life",
+		"range": 0.5,
+		"valueScalar": 1
+	},
+	{
+		"name": "negative paired range is not normalised",
+		"fn": "applyRange",
+		"line": "Adds (-15-10 to -5-20) Physical Damage",
+		"range": 0.5,
+		"valueScalar": 1
+	},
+	{
+		"name": "decimal range lands on a rounding boundary",
+		"fn": "applyRange",
+		"line": "(1.0-2.0)% increased Damage",
+		"range": 0.25,
+		"valueScalar": 1
+	},
+	{
+		"name": "trims leading and trailing whitespace",
+		"fn": "sanitiseItemText",
+		"text": "   New Item\nCoral Ring   "
+	},
+	{
+		"name": "normalises CRLF",
+		"fn": "sanitiseItemText",
+		"text": "New Item\r\nCoral Ring"
+	},
+	{
+		"name": "strips angle-bracket tags",
+		"fn": "sanitiseItemText",
+		"text": "<size:20>New Item"
+	},
+	{
+		"name": "utf8 en dash to hyphen",
+		"fn": "sanitiseItemText",
+		"text": "Adds 10–20 Damage"
+	},
+	{
+		"name": "utf8 em dash to hyphen",
+		"fn": "sanitiseItemText",
+		"text": "Adds 10—20 Damage"
+	},
+	{
+		"name": "utf8 minus sign to hyphen",
+		"fn": "sanitiseItemText",
+		"text": "Adds 10−20 Damage"
+	},
+	{
+		"name": "utf8 a-diaeresis folds to a",
+		"fn": "sanitiseItemText",
+		"text": "Mädchen"
+	},
+	{
+		"name": "utf8 o-diaeresis folds to o",
+		"fn": "sanitiseItemText",
+		"text": "König"
+	},
+	{
+		"name": "cp1252 en dash byte",
+		"fn": "sanitiseItemText",
+		"textBytes": [
+			65,
+			100,
+			100,
+			115,
+			32,
+			49,
+			48,
+			150,
+			50,
+			48
+		]
+	},
+	{
+		"name": "cp1252 a-diaeresis byte",
+		"fn": "sanitiseItemText",
+		"textBytes": [
+			77,
+			228,
+			100,
+			99,
+			104,
+			101,
+			110
+		]
+	},
+	{
+		"name": "unsupported high byte becomes question mark",
+		"fn": "sanitiseItemText",
+		"textBytes": [
+			65,
+			66,
+			255,
+			67
+		]
+	}
+]

@@ -1,24 +1,6 @@
-linters-settings:
-  wrapcheck:
-    ignorePackageGlobs:
-      - github.com/Vilsol/go-pob/*
-      - golang.org/x/sync/errgroup*
-    ignoreSigs:
-      - .Errorf(
-  revive:
-    rules:
-      - name: unused-parameter
-        disabled: true
-  exhaustive:
-    default-signifies-exhaustive: true
-  gosec:
-    excludes:
-      - G602
-  goconst:
-    min-len: 5
-
+version: "2"
 linters:
-  disable-all: true
+  default: none
   enable:
     - asasalint
     - asciicheck
@@ -27,30 +9,19 @@ linters:
     - contextcheck
     - copyloopvar
     - decorder
-    # - dupl
     - durationcheck
     - errcheck
     - errname
     - errorlint
-    # While getting implemented, a lot of stuff is unused
-    # TODO Turn on when reaching 1.0.0
-    # - exhaustive
     - exptostd
     - gocheckcompilerdirectives
-    # While getting implemented, a lot of stuff might duplicate
-    # TODO Turn on when reaching 1.0.0
-    # - goconst
-    - gofmt
-    - goimports
     - gosec
-    - gosimple
     - gosmopolitan
     - govet
     - iface
     - ineffassign
     - mirror
     - misspell
-    # - musttag
     - nilerr
     - nilnesserr
     - nilnil
@@ -62,22 +33,61 @@ linters:
     - recvcheck
     - revive
     - staticcheck
-    - typecheck
     - unconvert
-    # While getting implemented, a lot of stuff is unused
-    # TODO Turn on when reaching 1.0.0
-    # - unparam
-    # - unused
     - usestdlibvars
     - usetesting
     - whitespace
     - wrapcheck
-
-issues:
-  exclude-rules:
-    - linters:
-        - staticcheck
-      text: "SA9003:"
-    - linters:
-        - whitespace
-      text: "unnecessary leading newline"
+  settings:
+    exhaustive:
+      default-signifies-exhaustive: true
+    goconst:
+      min-len: 5
+    gosec:
+      excludes:
+        - G602
+    revive:
+      rules:
+        - name: unused-parameter
+          disabled: true
+    wrapcheck:
+      ignore-sigs:
+        - .Errorf(
+      ignore-package-globs:
+        - github.com/Vilsol/go-pob/*
+        - golang.org/x/sync/errgroup*
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    rules:
+      - linters:
+          - staticcheck
+        text: '^(QF|ST)[0-9]'
+      - linters:
+          - gosec
+        path: _test\.go
+        text: '(G702|G703):'
+      - linters:
+          - staticcheck
+        text: 'SA9003:'
+      - linters:
+          - whitespace
+        text: unnecessary leading newline
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
+    - gofmt
+    - goimports
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$

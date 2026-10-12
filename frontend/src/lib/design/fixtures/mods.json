@@ -1,0 +1,42 @@
+[
+  [
+    "10% increased Damage",
+    "ok",
+    "Damage INC 10"
+  ],
+  [
+    "+50 to maximum Life",
+    "ok",
+    "Life BASE 50"
+  ],
+  [
+    "Minions deal 15% more Damage",
+    "ok",
+    "MinionModifier LIST {Mod={ModFlags=0/ModKeywordFlags=0/ModName=Damage/ModReplaced=false/ModSource=/ModTags={}/ModType=MORE/ModValue={ValueFlag=false/ValueFloat=15/ValueList=nil}}}"
+  ],
+  [
+    "Nearby Enemies take 10% increased Physical Damage",
+    "ok",
+    "EnemyModifier LIST {Mod={ModFlags=0/ModKeywordFlags=0/ModName=PhysicalDamageTaken/ModReplaced=false/ModSource=/ModTags={}/ModType=INC/ModValue={ValueFlag=false/ValueFloat=10/ValueList=nil}}}"
+  ],
+  [
+    "80% increased global Accuracy Rating",
+    "ok",
+    "Accuracy INC 80 (Global)"
+  ],
+  [
+    "Crit Immune",
+    "bad",
+    ""
+  ],
+  [
+    "Totally not a modifier",
+    "bad",
+    ""
+  ],
+  [
+    "# boss uptime assumptions",
+    "comment",
+    ""
+  ]
+]

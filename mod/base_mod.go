@@ -13,6 +13,16 @@ type BaseMod struct {
 	ModKeywordFlags KeywordFlag
 	ModTags         []Tag
 	ModValue        *ModValueMulti
+
+	ModReplaced bool
+}
+
+func (m *BaseMod) Replaced() bool {
+	return m.ModReplaced
+}
+
+func (m *BaseMod) SetReplaced(replaced bool) {
+	m.ModReplaced = replaced
 }
 
 func (m *BaseMod) Name() string {
@@ -78,6 +88,12 @@ func (m *BaseMod) SetValue(value *ModValueMulti) Mod {
 }
 
 func (m *BaseMod) Clone() Mod {
+	var tags []Tag
+	if m.ModTags != nil {
+		tags = make([]Tag, len(m.ModTags))
+		copy(tags, m.ModTags)
+	}
+
 	c := &BaseMod{
 		parent:          m.parent,
 		ModName:         m.ModName,
@@ -85,11 +101,25 @@ func (m *BaseMod) Clone() Mod {
 		ModSource:       m.ModSource,
 		ModFlags:        m.ModFlags,
 		ModKeywordFlags: m.ModKeywordFlags,
-		ModTags:         m.ModTags,
+		ModTags:         tags,
 		ModValue:        m.ModValue.Clone(),
+		ModReplaced:     m.ModReplaced,
 	}
 	c.child = c
 	return c
+}
+
+func CloneSlice(mods []Mod) []Mod {
+	if mods == nil {
+		return nil
+	}
+
+	out := make([]Mod, len(mods))
+	for i, m := range mods {
+		out[i] = m.Clone()
+	}
+
+	return out
 }
 
 func (m *BaseMod) ClearTags() {

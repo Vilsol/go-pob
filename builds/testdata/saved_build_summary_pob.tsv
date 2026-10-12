@@ -1,0 +1,65 @@
+# what the pinned PoB held after loading each build headless (luajit + HeadlessWrapper.lua, one process per build):
+# file, build.spec.curClassName, curAscendClassName, build.characterLevel, and the displayLabel of
+# build.skillsTab.socketGroupList[build.mainSocketGroup] ("" when there is none). Sample: every 250th corpus build.
+0001-necromancer-unknown.xml	Witch	Necromancer	100	Herald of Agony
+0251-elementalist-freezing-pulse-2.xml	Witch	Elementalist	76	Winter Orb
+0501-hierophant-explosive-arrow-2.xml	Templar	Hierophant	94	Explosive Arrow
+0751-deadeye-ghostly-artillery.xml	Ranger	Deadeye	92	Ghostly Artillery
+10001-ladder-Flynbull05_6233.EAZEY_SCUBA.xml	Marauder	Juggernaut	100	Heavy Strike of Trarthus
+10229-ladder-HarryLM_0579.TenGallonJuggs.xml	Marauder	Juggernaut	97	Cyclone
+10456-ladder-Jodox_3253.JodoxNotMinions.xml	Scion	Luminary	100	Precision, Petrified Blood, Tempest Shield
+10683-ladder-LRcaNKkJVq_4015.RIBBAND_WEEKENDWASTED.xml	Marauder	Juggernaut	95	Static Strike of Gathering Lightning
+10910-ladder-Matixaru_7812.Matix_viper.xml	Ranger	Pathfinder	96	Viper Strike
+11138-ladder-Narcosynth_1663.Violence_Reimagined.xml	Witch	Necromancer	100	Raise Spectre
+11365-ladder-PDDSC2_4223.ЧЁ_ТЫ_ЖРЁШЬ_КОГДА_СРЁШЬ.xml	Scion	Reliquarian	98	Creeping Frost of Floes
+11592-ladder-RYAN_HOSER_1411.WorbinTimeHc.xml	Witch	Occultist	97	Winter Orb
+1181-elementalist-automation.xml	Witch	Elementalist	96	Freezing Pulse
+12047-ladder-SmokePsybot_5246.Didnthelpdied.xml	Templar	Guardian	94	Wintertide Brand
+12274-ladder-Tavrobel_5318.Serinde_Minion_Build.xml	Scion	Luminary	100	Siege Ballista of Trarthus, Siege Ballista of Trarthus, Siege Ballista of Trarthus, Siege Ballista of Trarthus, Siege Ballista of Trarthus, Siege Ballista of Trarthus
+12501-ladder-Tushí_5282.TushWorb.xml	Witch	Elementalist	97	Winter Orb
+12729-ladder-Xaros980_0711.ПоПыткаПыткаВан.xml	Witch	Necromancer	95	Vaal Animate Weapon
+12956-ladder-alme3_5261.Almemerctwo.xml	Scion	Luminary	97	Animate Guardian
+13183-ladder-brunodic_2636.HC_EzpoZaEspanKadA.xml	Marauder	Chieftain	94	Righteous Fire
+13410-ladder-dsata_1867.BenMinions.xml	Witch	Necromancer	96	Raise Spectre
+13638-ladder-greenpapa_5976.HellDxxDiver.xml	Templar	Guardian	95	Summon Raging Spirit, Animate Guardian of Smiting
+13865-ladder-jetpisces1_2285.一直被抓去嘉義寫圖控的苦逼.xml	Witch	Elementalist	100	Purity of Fire, Discipline, Clarity, Tempest Shield, Zealotry
+14092-ladder-loka2003_0382.LoLo_HCAllFLAME_I.xml	Scion	Reliquarian	95	Volatile Dead, Cyclone, Desecrate, Desecrate
+1431-hierophant-crackling-lance-of-disintegration-2.xml	Templar	Hierophant	99	Crackling Lance of Disintegration
+14547-ladder-rememberyouwantedthis_7513.Vahu_messagesinabottles.xml	Templar	Hierophant	99	Storm Burst of Repulsion
+14774-ladder-soulancient_7359.CoA_wKing.xml	Witch	Occultist	100	Winter Orb
+15001-ladder-user114_0984.braveDiver.xml	Templar	Hierophant	97	Kinetic Fusillade
+15229-ladder-zernoIIIko_3610.TheImmortalMerk.xml	Scion	Luminary	93	Vitality, Ancestral Cry, Enduring Cry
+1580-occultist-blight.xml	Witch	Occultist	100	Blight
+1874-ladder-Richi_007_3288.reil_elpepe.xml	Witch	Elementalist	100	Ethereal Knives
+2175-ladder-Keora_1530.Eikospectres.xml	Witch	Necromancer	100	Raise Spectre
+2425-ladder-Bosse_6924.BossesRF.xml	Marauder	Chieftain	100	Scorching Ray of Immolation
+2675-ladder-iceekk101_1793.Ewwwww_COTA.xml	Templar	Inquisitor	100	Righteous Fire, Sniper's Mark, Purity of Fire
+2925-ladder-DeDoDo_0462.AnotherSharknadoMovie.xml	Templar	Inquisitor	100	Assassin's Mark, Flame Dash, Frost Shield, Righteous Fire
+3175-ladder-Nukydz_5681.Worbyi.xml	Witch	Elementalist	100	Herald of Ice, Malevolence, Herald of Purity, Herald of Thunder, Herald of Ash
+3425-ladder-bck1206_0902.CHOBOHELP.xml	Witch	Necromancer	100	Raise Spectre
+3675-ladder-ouo87_2441.黑泥嘎.xml	Witch	Elementalist	100	Summon Flame Golem, Summon Lightning Golem, Summon Chaos Golem, Summon Stone Golem
+3925-ladder-601748381_2854.老大哥带我飞求求啦.xml	Scion	Luminary	100	Animate Guardian of Smiting, Raise Spectre
+4175-ladder-Bayo_4368.LightStackBooba.xml	Scion	Luminary	100	Stormblast Mine, Vitality, Precision
+4425-ladder-DODOMO_4119.DODOMOMOMO.xml	Ranger	Deadeye	100	Burning Arrow, Storm Rain, Sniper's Mark
+4675-ladder-Faendris_5470.Catenae.xml	Witch	Necromancer	100	Animate Guardian
+4925-ladder-HotDogPete_4097.MercPerc.xml	Scion	Luminary	100	Animate Guardian
+5175-ladder-Kleinaberfein_5803.WsemPruwet.xml	Witch	Necromancer	100	<No active skills>
+5425-ladder-Mate0227_1645.MommyAsmrEnjoyer.xml	Ranger	Pathfinder	100	Raise Spectre, Animate Guardian
+5675-ladder-OlegDuOchse_5344.CptAssCrackSparrow.xml	Witch	Occultist	100	Winter Orb
+5925-ladder-RickyReb_6189.Maya_The_Mental.xml	Witch	Elementalist	100	Vaal Reap
+6175-ladder-SpiritCrush3r_1199.FwtiaSeKuklo.xml	Marauder	Chieftain	100	Scorching Ray
+6425-ladder-UNZ_Jackal_3844.Jackal_KekW.xml	Ranger	Deadeye	100	Frenzy, Tornado, Sniper's Mark
+6675-ladder-Zehtun_0007.geliPrac.xml	Scion	Luminary	100	Raise Spectre, Animate Guardian
+6925-ladder-braVVo_6694.begyzacarry.xml	Scion	Ascendant	100	<No active skills>
+7175-ladder-evan0927_4176.賭博喵喵.xml	Marauder	Chieftain	100	Fireball
+7425-ladder-itssjp_6846.SJFreeze.xml	Witch	Elementalist	100	Vaal Ice Nova
+7675-ladder-lotogail_6819.AllfKazui.xml	Templar	Hierophant	100	Summon Flame Golem
+7925-ladder-one_almond_7952.im_gwegnant.xml	Witch	Necromancer	100	<No active skills>
+8175-ladder-shkarno_1171._Cheza_.xml	Witch	Occultist	100	Winter Orb
+8425-ladder-vialii3_1154.SlavesOwner.xml	Scion	Luminary	100	Shield Charge, Portal
+8675-ladder-별포식자_5077.SE_Allflame.xml	Scion	Luminary	100	Animate Guardian, Raise Spectre
+8925-ladder-Anclerino_6184.Ancler_shrinebuffs.xml	Witch	Elementalist	100	Summon Stone Golem, Summon Ice Golem, Summon Flame Golem, Summon Lightning Golem
+9175-ladder-BlueBird22_3165.Голубочкин.xml	Marauder	Juggernaut	94	Vaal Smite
+9425-ladder-CraserP_0524.Cabbagevedor.xml	Witch	Occultist	95	Bane of Condemnation, Temporal Chains, Despair
+9675-ladder-Dj.CooLPaPa.G_5352.Bitch_supp_kriss.xml	Scion	Luminary	97	Animate Guardian, Raise Spectre
+9925-ladder-Fanov_0357.FanovHeister.xml	Marauder	Chieftain	94	Phase Run, Void Sphere

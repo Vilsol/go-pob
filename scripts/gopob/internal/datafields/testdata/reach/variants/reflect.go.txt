@@ -1,0 +1,11 @@
+package app
+
+import (
+	"fmt"
+
+	"github.com/Vilsol/go-pob-data/poe"
+)
+
+func Reflect(r *poe.Row) string {
+	return fmt.Sprint(r)
+}

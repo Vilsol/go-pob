@@ -5,6 +5,7 @@ var _ Tag = (*MultiplierThresholdTag)(nil)
 type MultiplierThresholdTag struct {
 	TagType           Type
 	Variable          string
+	VariableList      []string
 	TagThreshold      *float64
 	ThresholdVariable *string
 	TagUpper          bool
@@ -15,6 +16,13 @@ func MultiplierThreshold(variable string) *MultiplierThresholdTag {
 	return &MultiplierThresholdTag{
 		TagType:  TypeMultiplierThreshold,
 		Variable: variable,
+	}
+}
+
+func MultiplierThresholdList(variables ...string) *MultiplierThresholdTag {
+	return &MultiplierThresholdTag{
+		TagType:      TypeMultiplierThreshold,
+		VariableList: variables,
 	}
 }
 

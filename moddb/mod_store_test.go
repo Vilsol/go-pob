@@ -57,7 +57,7 @@ func TestMultiplier(t *testing.T) {
 				m.AddMod(tm)
 			}
 			m.Multipliers = test.multipliers
-			got := m.evalMultiplier(test.mod, test.cfg, test.tag)
+			got := m.evalMultiplier(test.mod.Value(), test.cfg, test.tag)
 			testza.AssertEqual(t, test.expected, got)
 		})
 	}

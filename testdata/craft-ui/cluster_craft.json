@@ -1,0 +1,1375 @@
+{
+ "cases": [
+  {
+   "count": 10,
+   "raw": "Rarity: RARE\nNew Item\nLarge Cluster Jewel\nCrafted: true\nImplicits: 0",
+   "skill": "affliction_axe_and_sword_damage"
+  },
+  {
+   "count": 5,
+   "raw": "Rarity: MAGIC\nMedium Cluster Jewel\nCrafted: true\nImplicits: 0",
+   "skill": "affliction_aura_effect"
+  },
+  {
+   "count": 3,
+   "raw": "Rarity: RARE\nNew Item\nSmall Cluster Jewel\nCrafted: true\nImplicits: 0",
+   "skill": "affliction_maximum_life"
+  }
+ ],
+ "pob": [
+  {
+   "enchant": [
+    "Adds 10 Passive Skills",
+    "2 Added Passive Skills are Jewel Sockets",
+    "Added Small Passive Skills grant: Axe Attacks deal 12% increased Damage with Hits and Ailments\nAdded Small Passive Skills grant: Sword Attacks deal 12% increased Damage with Hits and Ailments"
+   ],
+   "explicit": [],
+   "slots": [
+    [
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantArmour",
+       "AfflictionJewelSmallPassivesGrantArmour2",
+       "AfflictionJewelSmallPassivesGrantArmour3_"
+      ],
+      "label": "Added Small Passive Skills also grant: +# to Armour"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantDamage_",
+       "AfflictionJewelSmallPassivesGrantDamage2_",
+       "AfflictionJewelSmallPassivesGrantDamage3"
+      ],
+      "label": "Added Small Passive Skills also grant: #% increased Damage"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantEvasion",
+       "AfflictionJewelSmallPassivesGrantEvasion2__",
+       "AfflictionJewelSmallPassivesGrantEvasion3"
+      ],
+      "label": "Added Small Passive Skills also grant: +# to Evasion"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantES",
+       "AfflictionJewelSmallPassivesGrantES2",
+       "AfflictionJewelSmallPassivesGrantES3"
+      ],
+      "label": "Added Small Passive Skills also grant: +# to Maximum Energy Shield"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantLife_",
+       "AfflictionJewelSmallPassivesGrantLife2_",
+       "AfflictionJewelSmallPassivesGrantLife3"
+      ],
+      "label": "Added Small Passive Skills also grant: +# to Maximum Life"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantMana",
+       "AfflictionJewelSmallPassivesGrantMana2",
+       "AfflictionJewelSmallPassivesGrantMana3"
+      ],
+      "label": "Added Small Passive Skills also grant: +# to Maximum Mana"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesHaveIncreasedEffect",
+       "AfflictionJewelSmallPassivesHaveIncreasedEffect2"
+      ],
+      "label": "Added Small Passive Skills have #% increased Effect"
+     },
+     {
+      "ids": [
+       "AfflictionNotableAggressiveDefence"
+      ],
+      "label": "1 Added Passive Skill is Aggressive Defence"
+     },
+     {
+      "ids": [
+       "AfflictionNotableBloodscent"
+      ],
+      "label": "1 Added Passive Skill is Bloodscent"
+     },
+     {
+      "ids": [
+       "AfflictionNotableCalamitous"
+      ],
+      "label": "1 Added Passive Skill is Calamitous"
+     },
+     {
+      "ids": [
+       "AfflictionNotableDevastator"
+      ],
+      "label": "1 Added Passive Skill is Devastator"
+     },
+     {
+      "ids": [
+       "AfflictionNotableDrivetheDestruction__"
+      ],
+      "label": "1 Added Passive Skill is Drive the Destruction"
+     },
+     {
+      "ids": [
+       "AfflictionNotableFeedtheFury"
+      ],
+      "label": "1 Added Passive Skill is Feed the Fury"
+     },
+     {
+      "ids": [
+       "AfflictionNotableFueltheFight"
+      ],
+      "label": "1 Added Passive Skill is Fuel the Fight"
+     },
+     {
+      "ids": [
+       "AfflictionNotableRunThrough"
+      ],
+      "label": "1 Added Passive Skill is Run Through"
+     },
+     {
+      "ids": [
+       "AfflictionNotableViciousSkewering"
+      ],
+      "label": "1 Added Passive Skill is Vicious Skewering"
+     },
+     {
+      "ids": [
+       "AfflictionNotableWoundAggravation____"
+      ],
+      "label": "1 Added Passive Skill is Wound Aggravation"
+     }
+    ],
+    [
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantArmour",
+       "AfflictionJewelSmallPassivesGrantArmour2",
+       "AfflictionJewelSmallPassivesGrantArmour3_"
+      ],
+      "label": "Added Small Passive Skills also grant: +# to Armour"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantDamage_",
+       "AfflictionJewelSmallPassivesGrantDamage2_",
+       "AfflictionJewelSmallPassivesGrantDamage3"
+      ],
+      "label": "Added Small Passive Skills also grant: #% increased Damage"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantEvasion",
+       "AfflictionJewelSmallPassivesGrantEvasion2__",
+       "AfflictionJewelSmallPassivesGrantEvasion3"
+      ],
+      "label": "Added Small Passive Skills also grant: +# to Evasion"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantES",
+       "AfflictionJewelSmallPassivesGrantES2",
+       "AfflictionJewelSmallPassivesGrantES3"
+      ],
+      "label": "Added Small Passive Skills also grant: +# to Maximum Energy Shield"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantLife_",
+       "AfflictionJewelSmallPassivesGrantLife2_",
+       "AfflictionJewelSmallPassivesGrantLife3"
+      ],
+      "label": "Added Small Passive Skills also grant: +# to Maximum Life"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantMana",
+       "AfflictionJewelSmallPassivesGrantMana2",
+       "AfflictionJewelSmallPassivesGrantMana3"
+      ],
+      "label": "Added Small Passive Skills also grant: +# to Maximum Mana"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesHaveIncreasedEffect",
+       "AfflictionJewelSmallPassivesHaveIncreasedEffect2"
+      ],
+      "label": "Added Small Passive Skills have #% increased Effect"
+     },
+     {
+      "ids": [
+       "AfflictionNotableAggressiveDefence"
+      ],
+      "label": "1 Added Passive Skill is Aggressive Defence"
+     },
+     {
+      "ids": [
+       "AfflictionNotableBloodscent"
+      ],
+      "label": "1 Added Passive Skill is Bloodscent"
+     },
+     {
+      "ids": [
+       "AfflictionNotableCalamitous"
+      ],
+      "label": "1 Added Passive Skill is Calamitous"
+     },
+     {
+      "ids": [
+       "AfflictionNotableDevastator"
+      ],
+      "label": "1 Added Passive Skill is Devastator"
+     },
+     {
+      "ids": [
+       "AfflictionNotableDrivetheDestruction__"
+      ],
+      "label": "1 Added Passive Skill is Drive the Destruction"
+     },
+     {
+      "ids": [
+       "AfflictionNotableFeedtheFury"
+      ],
+      "label": "1 Added Passive Skill is Feed the Fury"
+     },
+     {
+      "ids": [
+       "AfflictionNotableFueltheFight"
+      ],
+      "label": "1 Added Passive Skill is Fuel the Fight"
+     },
+     {
+      "ids": [
+       "AfflictionNotableRunThrough"
+      ],
+      "label": "1 Added Passive Skill is Run Through"
+     },
+     {
+      "ids": [
+       "AfflictionNotableViciousSkewering"
+      ],
+      "label": "1 Added Passive Skill is Vicious Skewering"
+     },
+     {
+      "ids": [
+       "AfflictionNotableWoundAggravation____"
+      ],
+      "label": "1 Added Passive Skill is Wound Aggravation"
+     }
+    ],
+    [
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantAttributes",
+       "AfflictionJewelSmallPassivesGrantAttributes2",
+       "AfflictionJewelSmallPassivesGrantAttributes3"
+      ],
+      "label": "Added Small Passive Skills also grant: +# to All Attributes"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantAttackSpeed",
+       "AfflictionJewelSmallPassivesGrantAttackSpeed2_",
+       "AfflictionJewelSmallPassivesGrantAttackSpeed3__"
+      ],
+      "label": "Added Small Passive Skills also grant: #% increased Attack Speed"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantChaosRes",
+       "AfflictionJewelSmallPassivesGrantChaosRes2",
+       "AfflictionJewelSmallPassivesGrantChaosRes3"
+      ],
+      "label": "Added Small Passive Skills also grant: +#% to Chaos Resistance"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantColdRes_",
+       "AfflictionJewelSmallPassivesGrantColdRes2",
+       "AfflictionJewelSmallPassivesGrantColdRes3"
+      ],
+      "label": "Added Small Passive Skills also grant: +#% to Cold Resistance"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantDex_",
+       "AfflictionJewelSmallPassivesGrantDex2",
+       "AfflictionJewelSmallPassivesGrantDex3_"
+      ],
+      "label": "Added Small Passive Skills also grant: +# to Dexterity"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantElementalRes",
+       "AfflictionJewelSmallPassivesGrantElementalRes2",
+       "AfflictionJewelSmallPassivesGrantElementalRes3"
+      ],
+      "label": "Added Small Passive Skills also grant: +#% to all Elemental Resistances"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantFireRes",
+       "AfflictionJewelSmallPassivesGrantFireRes2",
+       "AfflictionJewelSmallPassivesGrantFireRes3"
+      ],
+      "label": "Added Small Passive Skills also grant: +#% to Fire Resistance"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantInt_",
+       "AfflictionJewelSmallPassivesGrantInt2_",
+       "AfflictionJewelSmallPassivesGrantInt3"
+      ],
+      "label": "Added Small Passive Skills also grant: +# to Intelligence"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantLightningRes",
+       "AfflictionJewelSmallPassivesGrantLightningRes2_",
+       "AfflictionJewelSmallPassivesGrantLightningRes3"
+      ],
+      "label": "Added Small Passive Skills also grant: +#% to Lightning Resistance"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantManaRegen",
+       "AfflictionJewelSmallPassivesGrantManaRegen2",
+       "AfflictionJewelSmallPassivesGrantManaRegen3_"
+      ],
+      "label": "Added Small Passive Skills also grant: #% increased Mana Regeneration Rate"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantLifeRegen___",
+       "AfflictionJewelSmallPassivesGrantLifeRegen2_",
+       "AfflictionJewelSmallPassivesGrantLifeRegen3"
+      ],
+      "label": "Added Small Passive Skills also grant: Regenerate #% of Life per Second"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantStr",
+       "AfflictionJewelSmallPassivesGrantStr2_",
+       "AfflictionJewelSmallPassivesGrantStr3_"
+      ],
+      "label": "Added Small Passive Skills also grant: +# to Strength"
+     },
+     {
+      "ids": [
+       "AfflictionNotableHeavyHitter"
+      ],
+      "label": "1 Added Passive Skill is Heavy Hitter"
+     },
+     {
+      "ids": [
+       "AfflictionNotableMartialProwess"
+      ],
+      "label": "1 Added Passive Skill is Martial Prowess"
+     },
+     {
+      "ids": [
+       "AfflictionNotableSmitetheWeak"
+      ],
+      "label": "1 Added Passive Skill is Smite the Weak"
+     }
+    ],
+    [
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantAttributes",
+       "AfflictionJewelSmallPassivesGrantAttributes2",
+       "AfflictionJewelSmallPassivesGrantAttributes3"
+      ],
+      "label": "Added Small Passive Skills also grant: +# to All Attributes"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantAttackSpeed",
+       "AfflictionJewelSmallPassivesGrantAttackSpeed2_",
+       "AfflictionJewelSmallPassivesGrantAttackSpeed3__"
+      ],
+      "label": "Added Small Passive Skills also grant: #% increased Attack Speed"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantChaosRes",
+       "AfflictionJewelSmallPassivesGrantChaosRes2",
+       "AfflictionJewelSmallPassivesGrantChaosRes3"
+      ],
+      "label": "Added Small Passive Skills also grant: +#% to Chaos Resistance"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantColdRes_",
+       "AfflictionJewelSmallPassivesGrantColdRes2",
+       "AfflictionJewelSmallPassivesGrantColdRes3"
+      ],
+      "label": "Added Small Passive Skills also grant: +#% to Cold Resistance"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantDex_",
+       "AfflictionJewelSmallPassivesGrantDex2",
+       "AfflictionJewelSmallPassivesGrantDex3_"
+      ],
+      "label": "Added Small Passive Skills also grant: +# to Dexterity"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantElementalRes",
+       "AfflictionJewelSmallPassivesGrantElementalRes2",
+       "AfflictionJewelSmallPassivesGrantElementalRes3"
+      ],
+      "label": "Added Small Passive Skills also grant: +#% to all Elemental Resistances"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantFireRes",
+       "AfflictionJewelSmallPassivesGrantFireRes2",
+       "AfflictionJewelSmallPassivesGrantFireRes3"
+      ],
+      "label": "Added Small Passive Skills also grant: +#% to Fire Resistance"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantInt_",
+       "AfflictionJewelSmallPassivesGrantInt2_",
+       "AfflictionJewelSmallPassivesGrantInt3"
+      ],
+      "label": "Added Small Passive Skills also grant: +# to Intelligence"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantLightningRes",
+       "AfflictionJewelSmallPassivesGrantLightningRes2_",
+       "AfflictionJewelSmallPassivesGrantLightningRes3"
+      ],
+      "label": "Added Small Passive Skills also grant: +#% to Lightning Resistance"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantManaRegen",
+       "AfflictionJewelSmallPassivesGrantManaRegen2",
+       "AfflictionJewelSmallPassivesGrantManaRegen3_"
+      ],
+      "label": "Added Small Passive Skills also grant: #% increased Mana Regeneration Rate"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantLifeRegen___",
+       "AfflictionJewelSmallPassivesGrantLifeRegen2_",
+       "AfflictionJewelSmallPassivesGrantLifeRegen3"
+      ],
+      "label": "Added Small Passive Skills also grant: Regenerate #% of Life per Second"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantStr",
+       "AfflictionJewelSmallPassivesGrantStr2_",
+       "AfflictionJewelSmallPassivesGrantStr3_"
+      ],
+      "label": "Added Small Passive Skills also grant: +# to Strength"
+     },
+     {
+      "ids": [
+       "AfflictionNotableHeavyHitter"
+      ],
+      "label": "1 Added Passive Skill is Heavy Hitter"
+     },
+     {
+      "ids": [
+       "AfflictionNotableMartialProwess"
+      ],
+      "label": "1 Added Passive Skill is Martial Prowess"
+     },
+     {
+      "ids": [
+       "AfflictionNotableSmitetheWeak"
+      ],
+      "label": "1 Added Passive Skill is Smite the Weak"
+     }
+    ]
+   ]
+  },
+  {
+   "enchant": [
+    "Adds 5 Passive Skills",
+    "1 Added Passive Skill is a Jewel Socket",
+    "Added Small Passive Skills grant: 3% increased effect of Non-Curse Auras from your Skills"
+   ],
+   "explicit": [],
+   "slots": [
+    [
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantArmour",
+       "AfflictionJewelSmallPassivesGrantArmour2",
+       "AfflictionJewelSmallPassivesGrantArmour3_"
+      ],
+      "label": "Added Small Passive Skills also grant: +# to Armour"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantDamage_",
+       "AfflictionJewelSmallPassivesGrantDamage2_",
+       "AfflictionJewelSmallPassivesGrantDamage3"
+      ],
+      "label": "Added Small Passive Skills also grant: #% increased Damage"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantEvasion",
+       "AfflictionJewelSmallPassivesGrantEvasion2__",
+       "AfflictionJewelSmallPassivesGrantEvasion3"
+      ],
+      "label": "Added Small Passive Skills also grant: +# to Evasion"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantES",
+       "AfflictionJewelSmallPassivesGrantES2",
+       "AfflictionJewelSmallPassivesGrantES3"
+      ],
+      "label": "Added Small Passive Skills also grant: +# to Maximum Energy Shield"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantLife_",
+       "AfflictionJewelSmallPassivesGrantLife2_",
+       "AfflictionJewelSmallPassivesGrantLife3"
+      ],
+      "label": "Added Small Passive Skills also grant: +# to Maximum Life"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantMana",
+       "AfflictionJewelSmallPassivesGrantMana2",
+       "AfflictionJewelSmallPassivesGrantMana3"
+      ],
+      "label": "Added Small Passive Skills also grant: +# to Maximum Mana"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesHaveIncreasedEffect",
+       "AfflictionJewelSmallPassivesHaveIncreasedEffect2"
+      ],
+      "label": "Added Small Passive Skills have #% increased Effect"
+     },
+     {
+      "ids": [
+       "AfflictionNotableUncompromising_"
+      ],
+      "label": "1 Added Passive Skill is Uncompromising"
+     },
+     {
+      "ids": [
+       "AfflictionNotableSelfControl"
+      ],
+      "label": "1 Added Passive Skill is Self-Control"
+     },
+     {
+      "ids": [
+       "AfflictionNotableFirstAmongEquals__"
+      ],
+      "label": "1 Added Passive Skill is Spiteful Presence"
+     },
+     {
+      "ids": [
+       "AfflictionNotableSublimeForm"
+      ],
+      "label": "1 Added Passive Skill is Sublime Form"
+     },
+     {
+      "ids": [
+       "AfflictionNotableGroundedCommander"
+      ],
+      "label": "1 Added Passive Skill is Introspection"
+     },
+     {
+      "ids": [
+       "AfflictionNotableMasterofCommand__"
+      ],
+      "label": "1 Added Passive Skill is Master of Command"
+     },
+     {
+      "ids": [
+       "AfflictionNotablePreciseCommander"
+      ],
+      "label": "1 Added Passive Skill is Destructive Aspect"
+     },
+     {
+      "ids": [
+       "AfflictionNotablePureAptitude"
+      ],
+      "label": "1 Added Passive Skill is Pure Aptitude"
+     },
+     {
+      "ids": [
+       "AfflictionNotablePureCommander"
+      ],
+      "label": "1 Added Passive Skill is Electric Presence"
+     },
+     {
+      "ids": [
+       "AfflictionNotablePureGuile"
+      ],
+      "label": "1 Added Passive Skill is Pure Guile"
+     },
+     {
+      "ids": [
+       "AfflictionNotablePureMight"
+      ],
+      "label": "1 Added Passive Skill is Pure Might"
+     },
+     {
+      "ids": [
+       "AfflictionNotablePurposefulHarbinger"
+      ],
+      "label": "1 Added Passive Skill is Purposeful Harbinger"
+     },
+     {
+      "ids": [
+       "AfflictionNotableReplenishingPresence"
+      ],
+      "label": "1 Added Passive Skill is Replenishing Presence"
+     },
+     {
+      "ids": [
+       "AfflictionNotableStalwartCommander"
+      ],
+      "label": "1 Added Passive Skill is Volatile Presence"
+     },
+     {
+      "ids": [
+       "AfflictionNotableSummerCommander"
+      ],
+      "label": "1 Added Passive Skill is Mortifying Aspect"
+     },
+     {
+      "ids": [
+       "AfflictionNotableVengefulCommander"
+      ],
+      "label": "1 Added Passive Skill is Righteous Path"
+     },
+     {
+      "ids": [
+       "AfflictionNotableWinterCommander"
+      ],
+      "label": "1 Added Passive Skill is Frantic Aspect"
+     }
+    ],
+    [
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantAttributes",
+       "AfflictionJewelSmallPassivesGrantAttributes2",
+       "AfflictionJewelSmallPassivesGrantAttributes3"
+      ],
+      "label": "Added Small Passive Skills also grant: +# to All Attributes"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantAuraAreaOfEffect__",
+       "AfflictionJewelSmallPassivesGrantAuraAreaOfEffect2",
+       "AfflictionJewelSmallPassivesGrantAuraAreaOfEffect3"
+      ],
+      "label": "Added Small Passive Skills also grant: #% increased Area of Effect of Aura Skills"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantChaosRes",
+       "AfflictionJewelSmallPassivesGrantChaosRes2",
+       "AfflictionJewelSmallPassivesGrantChaosRes3"
+      ],
+      "label": "Added Small Passive Skills also grant: +#% to Chaos Resistance"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantColdRes_",
+       "AfflictionJewelSmallPassivesGrantColdRes2",
+       "AfflictionJewelSmallPassivesGrantColdRes3"
+      ],
+      "label": "Added Small Passive Skills also grant: +#% to Cold Resistance"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantDex_",
+       "AfflictionJewelSmallPassivesGrantDex2",
+       "AfflictionJewelSmallPassivesGrantDex3_"
+      ],
+      "label": "Added Small Passive Skills also grant: +# to Dexterity"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantElementalRes",
+       "AfflictionJewelSmallPassivesGrantElementalRes2",
+       "AfflictionJewelSmallPassivesGrantElementalRes3"
+      ],
+      "label": "Added Small Passive Skills also grant: +#% to all Elemental Resistances"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantFireRes",
+       "AfflictionJewelSmallPassivesGrantFireRes2",
+       "AfflictionJewelSmallPassivesGrantFireRes3"
+      ],
+      "label": "Added Small Passive Skills also grant: +#% to Fire Resistance"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantInt_",
+       "AfflictionJewelSmallPassivesGrantInt2_",
+       "AfflictionJewelSmallPassivesGrantInt3"
+      ],
+      "label": "Added Small Passive Skills also grant: +# to Intelligence"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantLightningRes",
+       "AfflictionJewelSmallPassivesGrantLightningRes2_",
+       "AfflictionJewelSmallPassivesGrantLightningRes3"
+      ],
+      "label": "Added Small Passive Skills also grant: +#% to Lightning Resistance"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantManaRegen",
+       "AfflictionJewelSmallPassivesGrantManaRegen2",
+       "AfflictionJewelSmallPassivesGrantManaRegen3_"
+      ],
+      "label": "Added Small Passive Skills also grant: #% increased Mana Regeneration Rate"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantLifeRegen___",
+       "AfflictionJewelSmallPassivesGrantLifeRegen2_",
+       "AfflictionJewelSmallPassivesGrantLifeRegen3"
+      ],
+      "label": "Added Small Passive Skills also grant: Regenerate #% of Life per Second"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantStr",
+       "AfflictionJewelSmallPassivesGrantStr2_",
+       "AfflictionJewelSmallPassivesGrantStr3_"
+      ],
+      "label": "Added Small Passive Skills also grant: +# to Strength"
+     }
+    ]
+   ]
+  },
+  {
+   "enchant": [
+    "Adds 3 Passive Skills",
+    "Added Small Passive Skills grant: 4% increased maximum Life"
+   ],
+   "explicit": [],
+   "slots": [
+    [
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantArmourSmall__",
+       "AfflictionJewelSmallPassivesGrantArmourSmall2__",
+       "AfflictionJewelSmallPassivesGrantArmourSmall3",
+       "AfflictionJewelSmallPassivesGrantArmourSmall4___",
+       "AfflictionJewelSmallPassivesGrantArmourSmall5"
+      ],
+      "label": "Added Small Passive Skills also grant: +# to Armour"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantDamageSmall_",
+       "AfflictionJewelSmallPassivesGrantDamageSmall2_",
+       "AfflictionJewelSmallPassivesGrantDamageSmall3_",
+       "AfflictionJewelSmallPassivesGrantDamageSmall4_",
+       "AfflictionJewelSmallPassivesGrantDamageSmall5"
+      ],
+      "label": "Added Small Passive Skills also grant: #% increased Damage"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantEvasionSmall",
+       "AfflictionJewelSmallPassivesGrantEvasionSmall2_",
+       "AfflictionJewelSmallPassivesGrantEvasionSmall3___",
+       "AfflictionJewelSmallPassivesGrantEvasionSmall4_",
+       "AfflictionJewelSmallPassivesGrantEvasionSmall5"
+      ],
+      "label": "Added Small Passive Skills also grant: +# to Evasion"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantESSmall",
+       "AfflictionJewelSmallPassivesGrantESSmall2",
+       "AfflictionJewelSmallPassivesGrantESSmall3_",
+       "AfflictionJewelSmallPassivesGrantESSmall4",
+       "AfflictionJewelSmallPassivesGrantESSmall5"
+      ],
+      "label": "Added Small Passive Skills also grant: +# to Maximum Energy Shield"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantLifeSmall",
+       "AfflictionJewelSmallPassivesGrantLifeSmall2",
+       "AfflictionJewelSmallPassivesGrantLifeSmall3",
+       "AfflictionJewelSmallPassivesGrantLifeSmall4",
+       "AfflictionJewelSmallPassivesGrantLifeSmall5_"
+      ],
+      "label": "Added Small Passive Skills also grant: +# to Maximum Life"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantManaSmall",
+       "AfflictionJewelSmallPassivesGrantManaSmall2_",
+       "AfflictionJewelSmallPassivesGrantManaSmall3",
+       "AfflictionJewelSmallPassivesGrantManaSmall4_",
+       "AfflictionJewelSmallPassivesGrantManaSmall5_"
+      ],
+      "label": "Added Small Passive Skills also grant: +# to Maximum Mana"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesHaveIncreasedEffect",
+       "AfflictionJewelSmallPassivesHaveIncreasedEffect2"
+      ],
+      "label": "Added Small Passive Skills have #% increased Effect"
+     },
+     {
+      "ids": [
+       "AfflictionNotableAdrenaline_"
+      ],
+      "label": "1 Added Passive Skill is Adrenaline"
+     },
+     {
+      "ids": [
+       "AfflictionNotableBlessed"
+      ],
+      "label": "1 Added Passive Skill is Blessed"
+     },
+     {
+      "ids": [
+       "AfflictionNotableBrushwithDeath"
+      ],
+      "label": "1 Added Passive Skill is Brush with Death"
+     },
+     {
+      "ids": [
+       "AfflictionNotableCarefulHandling"
+      ],
+      "label": "1 Added Passive Skill is Careful Handling"
+     },
+     {
+      "ids": [
+       "AfflictionNotableFeastofFlesh"
+      ],
+      "label": "1 Added Passive Skill is Feast of Flesh"
+     },
+     {
+      "ids": [
+       "AfflictionNotableFettle"
+      ],
+      "label": "1 Added Passive Skill is Fettle"
+     },
+     {
+      "ids": [
+       "AfflictionNotableFlowofLife_"
+      ],
+      "label": "1 Added Passive Skill is Flow of Life"
+     },
+     {
+      "ids": [
+       "AfflictionNotableGladiatorsFortitude"
+      ],
+      "label": "1 Added Passive Skill is Gladiator's Fortitude"
+     },
+     {
+      "ids": [
+       "AfflictionNotableHeartofIron"
+      ],
+      "label": "1 Added Passive Skill is Heart of Iron"
+     },
+     {
+      "ids": [
+       "AfflictionNotableHolisticHealth"
+      ],
+      "label": "1 Added Passive Skill is Holistic Health"
+     },
+     {
+      "ids": [
+       "AfflictionNotableNaturalVigour_"
+      ],
+      "label": "1 Added Passive Skill is Natural Vigour"
+     },
+     {
+      "ids": [
+       "AfflictionNotablePeaceAmidstChaos"
+      ],
+      "label": "1 Added Passive Skill is Peace Amidst Chaos"
+     },
+     {
+      "ids": [
+       "AfflictionNotablePeakVigour"
+      ],
+      "label": "1 Added Passive Skill is Peak Vigour"
+     },
+     {
+      "ids": [
+       "AfflictionNotableRoteReinforcement"
+      ],
+      "label": "1 Added Passive Skill is Rote Reinforcement"
+     },
+     {
+      "ids": [
+       "AfflictionNotableSage_"
+      ],
+      "label": "1 Added Passive Skill is Sage"
+     },
+     {
+      "ids": [
+       "AfflictionNotableSublimeSensation_"
+      ],
+      "label": "1 Added Passive Skill is Sublime Sensation"
+     },
+     {
+      "ids": [
+       "AfflictionNotableSurgingVitality"
+      ],
+      "label": "1 Added Passive Skill is Surging Vitality"
+     },
+     {
+      "ids": [
+       "AfflictionNotableToweringThreat"
+      ],
+      "label": "1 Added Passive Skill is Towering Threat"
+     },
+     {
+      "ids": [
+       "AfflictionNotableViciousGuard_"
+      ],
+      "label": "1 Added Passive Skill is Vicious Guard"
+     },
+     {
+      "ids": [
+       "AfflictionNotableWallofMuscle_"
+      ],
+      "label": "1 Added Passive Skill is Wall of Muscle"
+     }
+    ],
+    [
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantArmourSmall__",
+       "AfflictionJewelSmallPassivesGrantArmourSmall2__",
+       "AfflictionJewelSmallPassivesGrantArmourSmall3",
+       "AfflictionJewelSmallPassivesGrantArmourSmall4___",
+       "AfflictionJewelSmallPassivesGrantArmourSmall5"
+      ],
+      "label": "Added Small Passive Skills also grant: +# to Armour"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantDamageSmall_",
+       "AfflictionJewelSmallPassivesGrantDamageSmall2_",
+       "AfflictionJewelSmallPassivesGrantDamageSmall3_",
+       "AfflictionJewelSmallPassivesGrantDamageSmall4_",
+       "AfflictionJewelSmallPassivesGrantDamageSmall5"
+      ],
+      "label": "Added Small Passive Skills also grant: #% increased Damage"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantEvasionSmall",
+       "AfflictionJewelSmallPassivesGrantEvasionSmall2_",
+       "AfflictionJewelSmallPassivesGrantEvasionSmall3___",
+       "AfflictionJewelSmallPassivesGrantEvasionSmall4_",
+       "AfflictionJewelSmallPassivesGrantEvasionSmall5"
+      ],
+      "label": "Added Small Passive Skills also grant: +# to Evasion"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantESSmall",
+       "AfflictionJewelSmallPassivesGrantESSmall2",
+       "AfflictionJewelSmallPassivesGrantESSmall3_",
+       "AfflictionJewelSmallPassivesGrantESSmall4",
+       "AfflictionJewelSmallPassivesGrantESSmall5"
+      ],
+      "label": "Added Small Passive Skills also grant: +# to Maximum Energy Shield"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantLifeSmall",
+       "AfflictionJewelSmallPassivesGrantLifeSmall2",
+       "AfflictionJewelSmallPassivesGrantLifeSmall3",
+       "AfflictionJewelSmallPassivesGrantLifeSmall4",
+       "AfflictionJewelSmallPassivesGrantLifeSmall5_"
+      ],
+      "label": "Added Small Passive Skills also grant: +# to Maximum Life"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantManaSmall",
+       "AfflictionJewelSmallPassivesGrantManaSmall2_",
+       "AfflictionJewelSmallPassivesGrantManaSmall3",
+       "AfflictionJewelSmallPassivesGrantManaSmall4_",
+       "AfflictionJewelSmallPassivesGrantManaSmall5_"
+      ],
+      "label": "Added Small Passive Skills also grant: +# to Maximum Mana"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesHaveIncreasedEffect",
+       "AfflictionJewelSmallPassivesHaveIncreasedEffect2"
+      ],
+      "label": "Added Small Passive Skills have #% increased Effect"
+     },
+     {
+      "ids": [
+       "AfflictionNotableAdrenaline_"
+      ],
+      "label": "1 Added Passive Skill is Adrenaline"
+     },
+     {
+      "ids": [
+       "AfflictionNotableBlessed"
+      ],
+      "label": "1 Added Passive Skill is Blessed"
+     },
+     {
+      "ids": [
+       "AfflictionNotableBrushwithDeath"
+      ],
+      "label": "1 Added Passive Skill is Brush with Death"
+     },
+     {
+      "ids": [
+       "AfflictionNotableCarefulHandling"
+      ],
+      "label": "1 Added Passive Skill is Careful Handling"
+     },
+     {
+      "ids": [
+       "AfflictionNotableFeastofFlesh"
+      ],
+      "label": "1 Added Passive Skill is Feast of Flesh"
+     },
+     {
+      "ids": [
+       "AfflictionNotableFettle"
+      ],
+      "label": "1 Added Passive Skill is Fettle"
+     },
+     {
+      "ids": [
+       "AfflictionNotableFlowofLife_"
+      ],
+      "label": "1 Added Passive Skill is Flow of Life"
+     },
+     {
+      "ids": [
+       "AfflictionNotableGladiatorsFortitude"
+      ],
+      "label": "1 Added Passive Skill is Gladiator's Fortitude"
+     },
+     {
+      "ids": [
+       "AfflictionNotableHeartofIron"
+      ],
+      "label": "1 Added Passive Skill is Heart of Iron"
+     },
+     {
+      "ids": [
+       "AfflictionNotableHolisticHealth"
+      ],
+      "label": "1 Added Passive Skill is Holistic Health"
+     },
+     {
+      "ids": [
+       "AfflictionNotableNaturalVigour_"
+      ],
+      "label": "1 Added Passive Skill is Natural Vigour"
+     },
+     {
+      "ids": [
+       "AfflictionNotablePeaceAmidstChaos"
+      ],
+      "label": "1 Added Passive Skill is Peace Amidst Chaos"
+     },
+     {
+      "ids": [
+       "AfflictionNotablePeakVigour"
+      ],
+      "label": "1 Added Passive Skill is Peak Vigour"
+     },
+     {
+      "ids": [
+       "AfflictionNotableRoteReinforcement"
+      ],
+      "label": "1 Added Passive Skill is Rote Reinforcement"
+     },
+     {
+      "ids": [
+       "AfflictionNotableSage_"
+      ],
+      "label": "1 Added Passive Skill is Sage"
+     },
+     {
+      "ids": [
+       "AfflictionNotableSublimeSensation_"
+      ],
+      "label": "1 Added Passive Skill is Sublime Sensation"
+     },
+     {
+      "ids": [
+       "AfflictionNotableSurgingVitality"
+      ],
+      "label": "1 Added Passive Skill is Surging Vitality"
+     },
+     {
+      "ids": [
+       "AfflictionNotableToweringThreat"
+      ],
+      "label": "1 Added Passive Skill is Towering Threat"
+     },
+     {
+      "ids": [
+       "AfflictionNotableViciousGuard_"
+      ],
+      "label": "1 Added Passive Skill is Vicious Guard"
+     },
+     {
+      "ids": [
+       "AfflictionNotableWallofMuscle_"
+      ],
+      "label": "1 Added Passive Skill is Wall of Muscle"
+     }
+    ],
+    [
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantAttributesSmall",
+       "AfflictionJewelSmallPassivesGrantAttributesSmall2",
+       "AfflictionJewelSmallPassivesGrantAttributesSmall3_",
+       "AfflictionJewelSmallPassivesGrantAttributesSmall4",
+       "AfflictionJewelSmallPassivesGrantAttributesSmall5"
+      ],
+      "label": "Added Small Passive Skills also grant: +# to All Attributes"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantChaosResSmall",
+       "AfflictionJewelSmallPassivesGrantChaosResSmall2",
+       "AfflictionJewelSmallPassivesGrantChaosResSmall3",
+       "AfflictionJewelSmallPassivesGrantChaosResSmall4",
+       "AfflictionJewelSmallPassivesGrantChaosResSmall5"
+      ],
+      "label": "Added Small Passive Skills also grant: +#% to Chaos Resistance"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantColdResSmall",
+       "AfflictionJewelSmallPassivesGrantColdResSmall2",
+       "AfflictionJewelSmallPassivesGrantColdResSmall3",
+       "AfflictionJewelSmallPassivesGrantColdResSmall4",
+       "AfflictionJewelSmallPassivesGrantColdResSmall5_"
+      ],
+      "label": "Added Small Passive Skills also grant: +#% to Cold Resistance"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantDexSmall_",
+       "AfflictionJewelSmallPassivesGrantDexSmall2",
+       "AfflictionJewelSmallPassivesGrantDexSmall3",
+       "AfflictionJewelSmallPassivesGrantDexSmall4_",
+       "AfflictionJewelSmallPassivesGrantDexSmall5"
+      ],
+      "label": "Added Small Passive Skills also grant: +# to Dexterity"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantElementalResSmall",
+       "AfflictionJewelSmallPassivesGrantElementalResSmall2",
+       "AfflictionJewelSmallPassivesGrantElementalResSmall3",
+       "AfflictionJewelSmallPassivesGrantElementalResSmall4",
+       "AfflictionJewelSmallPassivesGrantElementalResSmall5"
+      ],
+      "label": "Added Small Passive Skills also grant: +#% to all Elemental Resistances"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantFireResSmall",
+       "AfflictionJewelSmallPassivesGrantFireResSmall2",
+       "AfflictionJewelSmallPassivesGrantFireResSmall3_",
+       "AfflictionJewelSmallPassivesGrantFireResSmall4",
+       "AfflictionJewelSmallPassivesGrantFireResSmall5"
+      ],
+      "label": "Added Small Passive Skills also grant: +#% to Fire Resistance"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantIntSmall_",
+       "AfflictionJewelSmallPassivesGrantIntSmall2",
+       "AfflictionJewelSmallPassivesGrantIntSmall3______",
+       "AfflictionJewelSmallPassivesGrantIntSmall4_",
+       "AfflictionJewelSmallPassivesGrantIntSmall5"
+      ],
+      "label": "Added Small Passive Skills also grant: +# to Intelligence"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantLightningResSmall",
+       "AfflictionJewelSmallPassivesGrantLightningResSmall2__",
+       "AfflictionJewelSmallPassivesGrantLightningResSmall3",
+       "AfflictionJewelSmallPassivesGrantLightningResSmall4_",
+       "AfflictionJewelSmallPassivesGrantLightningResSmall5"
+      ],
+      "label": "Added Small Passive Skills also grant: +#% to Lightning Resistance"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantManaRegenSmall_",
+       "AfflictionJewelSmallPassivesGrantManaRegenSmall2",
+       "AfflictionJewelSmallPassivesGrantManaRegenSmall3",
+       "AfflictionJewelSmallPassivesGrantManaRegenSmall4",
+       "AfflictionJewelSmallPassivesGrantManaRegenSmall5"
+      ],
+      "label": "Added Small Passive Skills also grant: #% increased Mana Regeneration Rate"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantLifeRegenSmall",
+       "AfflictionJewelSmallPassivesGrantLifeRegenSmall2_",
+       "AfflictionJewelSmallPassivesGrantLifeRegenSmall3_",
+       "AfflictionJewelSmallPassivesGrantLifeRegenSmall4_",
+       "AfflictionJewelSmallPassivesGrantLifeRegenSmall5"
+      ],
+      "label": "Added Small Passive Skills also grant: Regenerate #% of Life per Second"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantStrSmall_",
+       "AfflictionJewelSmallPassivesGrantStrSmall2",
+       "AfflictionJewelSmallPassivesGrantStrSmall3",
+       "AfflictionJewelSmallPassivesGrantStrSmall4_",
+       "AfflictionJewelSmallPassivesGrantStrSmall5"
+      ],
+      "label": "Added Small Passive Skills also grant: +# to Strength"
+     }
+    ],
+    [
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantAttributesSmall",
+       "AfflictionJewelSmallPassivesGrantAttributesSmall2",
+       "AfflictionJewelSmallPassivesGrantAttributesSmall3_",
+       "AfflictionJewelSmallPassivesGrantAttributesSmall4",
+       "AfflictionJewelSmallPassivesGrantAttributesSmall5"
+      ],
+      "label": "Added Small Passive Skills also grant: +# to All Attributes"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantChaosResSmall",
+       "AfflictionJewelSmallPassivesGrantChaosResSmall2",
+       "AfflictionJewelSmallPassivesGrantChaosResSmall3",
+       "AfflictionJewelSmallPassivesGrantChaosResSmall4",
+       "AfflictionJewelSmallPassivesGrantChaosResSmall5"
+      ],
+      "label": "Added Small Passive Skills also grant: +#% to Chaos Resistance"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantColdResSmall",
+       "AfflictionJewelSmallPassivesGrantColdResSmall2",
+       "AfflictionJewelSmallPassivesGrantColdResSmall3",
+       "AfflictionJewelSmallPassivesGrantColdResSmall4",
+       "AfflictionJewelSmallPassivesGrantColdResSmall5_"
+      ],
+      "label": "Added Small Passive Skills also grant: +#% to Cold Resistance"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantDexSmall_",
+       "AfflictionJewelSmallPassivesGrantDexSmall2",
+       "AfflictionJewelSmallPassivesGrantDexSmall3",
+       "AfflictionJewelSmallPassivesGrantDexSmall4_",
+       "AfflictionJewelSmallPassivesGrantDexSmall5"
+      ],
+      "label": "Added Small Passive Skills also grant: +# to Dexterity"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantElementalResSmall",
+       "AfflictionJewelSmallPassivesGrantElementalResSmall2",
+       "AfflictionJewelSmallPassivesGrantElementalResSmall3",
+       "AfflictionJewelSmallPassivesGrantElementalResSmall4",
+       "AfflictionJewelSmallPassivesGrantElementalResSmall5"
+      ],
+      "label": "Added Small Passive Skills also grant: +#% to all Elemental Resistances"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantFireResSmall",
+       "AfflictionJewelSmallPassivesGrantFireResSmall2",
+       "AfflictionJewelSmallPassivesGrantFireResSmall3_",
+       "AfflictionJewelSmallPassivesGrantFireResSmall4",
+       "AfflictionJewelSmallPassivesGrantFireResSmall5"
+      ],
+      "label": "Added Small Passive Skills also grant: +#% to Fire Resistance"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantIntSmall_",
+       "AfflictionJewelSmallPassivesGrantIntSmall2",
+       "AfflictionJewelSmallPassivesGrantIntSmall3______",
+       "AfflictionJewelSmallPassivesGrantIntSmall4_",
+       "AfflictionJewelSmallPassivesGrantIntSmall5"
+      ],
+      "label": "Added Small Passive Skills also grant: +# to Intelligence"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantLightningResSmall",
+       "AfflictionJewelSmallPassivesGrantLightningResSmall2__",
+       "AfflictionJewelSmallPassivesGrantLightningResSmall3",
+       "AfflictionJewelSmallPassivesGrantLightningResSmall4_",
+       "AfflictionJewelSmallPassivesGrantLightningResSmall5"
+      ],
+      "label": "Added Small Passive Skills also grant: +#% to Lightning Resistance"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantManaRegenSmall_",
+       "AfflictionJewelSmallPassivesGrantManaRegenSmall2",
+       "AfflictionJewelSmallPassivesGrantManaRegenSmall3",
+       "AfflictionJewelSmallPassivesGrantManaRegenSmall4",
+       "AfflictionJewelSmallPassivesGrantManaRegenSmall5"
+      ],
+      "label": "Added Small Passive Skills also grant: #% increased Mana Regeneration Rate"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantLifeRegenSmall",
+       "AfflictionJewelSmallPassivesGrantLifeRegenSmall2_",
+       "AfflictionJewelSmallPassivesGrantLifeRegenSmall3_",
+       "AfflictionJewelSmallPassivesGrantLifeRegenSmall4_",
+       "AfflictionJewelSmallPassivesGrantLifeRegenSmall5"
+      ],
+      "label": "Added Small Passive Skills also grant: Regenerate #% of Life per Second"
+     },
+     {
+      "ids": [
+       "AfflictionJewelSmallPassivesGrantStrSmall_",
+       "AfflictionJewelSmallPassivesGrantStrSmall2",
+       "AfflictionJewelSmallPassivesGrantStrSmall3",
+       "AfflictionJewelSmallPassivesGrantStrSmall4_",
+       "AfflictionJewelSmallPassivesGrantStrSmall5"
+      ],
+      "label": "Added Small Passive Skills also grant: +# to Strength"
+     }
+    ]
+   ]
+  }
+ ]
+}

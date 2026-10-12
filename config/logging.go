@@ -4,7 +4,10 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"math"
 	"os"
+	"runtime"
+	"strings"
 	"time"
 
 	"github.com/Vilsol/go-pob/utils"
@@ -18,11 +21,34 @@ const (
 	ansiBrightMagenta = "\033[95m"
 )
 
+const levelOff = slog.Level(math.MaxInt32)
+
+func LogLevel() slog.Level {
+	switch strings.ToLower(os.Getenv("LOG")) {
+	case "off", "none", "silent":
+		return levelOff
+	case "error":
+		return slog.LevelError
+	case "warn", "warning":
+		return slog.LevelWarn
+	case "info":
+		return slog.LevelInfo
+	case "debug":
+		return slog.LevelDebug
+	case "trace":
+		return utils.LevelTrace
+	}
+	if runtime.GOOS == "js" || (len(os.Args) > 0 && strings.HasSuffix(os.Args[0], ".test")) {
+		return slog.LevelError
+	}
+	return utils.LevelTrace
+}
+
 func InitLogging(withTime bool) {
 	slog.SetDefault(slog.New(
 		TimeStripper{
 			Upstream: tint.NewHandler(os.Stderr, &tint.Options{
-				Level:      utils.LevelTrace,
+				Level:      LogLevel(),
 				AddSource:  true,
 				TimeFormat: "2006-01-02T15:04:05.000Z07:00",
 				ReplaceAttr: func(groups []string, attr slog.Attr) slog.Attr {

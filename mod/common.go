@@ -25,9 +25,11 @@ const (
 	TypeGlobal              = Type("Global")
 	TypeSkillName           = Type("SkillName")
 	TypeMAX                 = Type("MAX")
+	TypeChance              = Type("CHANCE")
 	TypeStatThreshold       = Type("StatThreshold")
 	TypeSlotNumber          = Type("SlotNumber")
 	TypeSlotName            = Type("SlotName")
+	TypeItemCondition       = Type("ItemCondition")
 	TypeDistanceRamp        = Type("DistanceRamp")
 	TypeMultiplierThreshold = Type("MultiplierThreshold")
 	TypeModFlagOr           = Type("ModFlagOr")
@@ -37,6 +39,10 @@ const (
 	TypeMeleeProximity      = Type("MeleeProximity")
 	TypeIgnoreCond          = Type("IgnoreCond")
 	TypeSkillPart           = Type("SkillPart")
+	TypeLimit               = Type("Limit")
+	TypeDisablesItem        = Type("DisablesItem")
+	TypeMonsterTag          = Type("MonsterTag")
+	TypeDisablerFlag        = Type("Flag")
 )
 
 type Source string
@@ -68,12 +74,14 @@ const (
 	KeywordFlagCurse        = KeywordFlag(0x00000002)
 	KeywordFlagWarcry       = KeywordFlag(0x00000004)
 	KeywordFlagMovement     = KeywordFlag(0x00000008)
-	KeywordFlagFire         = KeywordFlag(0x00000010)
-	KeywordFlagCold         = KeywordFlag(0x00000020)
-	KeywordFlagLightning    = KeywordFlag(0x00000040)
-	KeywordFlagChaos        = KeywordFlag(0x00000080)
-	KeywordFlagVaal         = KeywordFlag(0x00000100)
-	KeywordFlagBow          = KeywordFlag(0x00000200)
+	KeywordFlagPhysical     = KeywordFlag(0x00000010)
+	KeywordFlagFire         = KeywordFlag(0x00000020)
+	KeywordFlagCold         = KeywordFlag(0x00000040)
+	KeywordFlagLightning    = KeywordFlag(0x00000080)
+	KeywordFlagChaos        = KeywordFlag(0x00000100)
+	KeywordFlagVaal         = KeywordFlag(0x00000200)
+	KeywordFlagBow          = KeywordFlag(0x00000400)
+	KeywordFlagArrow        = KeywordFlag(0x00000800)
 	KeywordFlagTrap         = KeywordFlag(0x00001000)
 	KeywordFlagMine         = KeywordFlag(0x00002000)
 	KeywordFlagTotem        = KeywordFlag(0x00004000)
@@ -96,11 +104,46 @@ const (
 	MatchAllMask = ^KeywordFlagMatchAll
 )
 
+var KeywordFlagsByName = map[string]KeywordFlag{
+	"Aura":         KeywordFlagAura,
+	"Curse":        KeywordFlagCurse,
+	"Warcry":       KeywordFlagWarcry,
+	"Movement":     KeywordFlagMovement,
+	"Physical":     KeywordFlagPhysical,
+	"Fire":         KeywordFlagFire,
+	"Cold":         KeywordFlagCold,
+	"Lightning":    KeywordFlagLightning,
+	"Chaos":        KeywordFlagChaos,
+	"Vaal":         KeywordFlagVaal,
+	"Bow":          KeywordFlagBow,
+	"Arrow":        KeywordFlagArrow,
+	"Trap":         KeywordFlagTrap,
+	"Mine":         KeywordFlagMine,
+	"Totem":        KeywordFlagTotem,
+	"Minion":       KeywordFlagMinion,
+	"Attack":       KeywordFlagAttack,
+	"Spell":        KeywordFlagSpell,
+	"Hit":          KeywordFlagHit,
+	"Ailment":      KeywordFlagAilment,
+	"Brand":        KeywordFlagBrand,
+	"Poison":       KeywordFlagPoison,
+	"Bleed":        KeywordFlagBleed,
+	"Ignite":       KeywordFlagIgnite,
+	"PhysicalDot":  KeywordFlagPhysicalDot,
+	"LightningDot": KeywordFlagLightningDot,
+	"ColdDot":      KeywordFlagColdDot,
+	"FireDot":      KeywordFlagFireDot,
+	"ChaosDot":     KeywordFlagChaosDot,
+	"MatchAll":     KeywordFlagMatchAll,
+}
+
+//pob:src/Data/Global.lua:143-154
 func MatchKeywordFlags(keywordFlags KeywordFlag, modKeywordFlags KeywordFlag) bool {
+	matchAll := modKeywordFlags&KeywordFlagMatchAll != 0
+
 	modKeywordFlags = modKeywordFlags & MatchAllMask
 	keywordFlags = keywordFlags & MatchAllMask
 
-	matchAll := modKeywordFlags&KeywordFlagMatchAll != 0
 	if matchAll {
 		return keywordFlags&modKeywordFlags == modKeywordFlags
 	}

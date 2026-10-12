@@ -13,6 +13,7 @@ export interface Sprite {
 }
 
 export interface Sprites {
+  [spriteType: string]: { [key: string]: Sprite };
   background: { [key: string]: Sprite };
   normalActive: { [key: string]: Sprite };
   notableActive: { [key: string]: Sprite };
@@ -25,6 +26,7 @@ export interface Sprites {
   masteryActiveSelected: { [key: string]: Sprite };
   masteryInactive: { [key: string]: Sprite };
   masteryActiveEffect: { [key: string]: Sprite };
+  tattooActiveEffect: { [key: string]: Sprite };
   ascendancyBackground: { [key: string]: Sprite };
   ascendancy: { [key: string]: Sprite };
   startNode: { [key: string]: Sprite };
@@ -164,4 +166,20 @@ export interface Tree {
   sprites: Sprites;
   imageZoomLevels: number[];
   points: Points;
+  alternate_ascendancies?: Ascendancy[];
+}
+
+/* PassiveSpec.lua:1885-2271 */
+export interface TreeClusterNode {
+  id: number;
+  type: 'Normal' | 'Notable' | 'Socket' | 'Keystone' | 'Mastery';
+  name: string;
+  icon: string;
+  stats: string[];
+  group: number;
+  orbit: number;
+  orbitIndex: number;
+  x: number;
+  y: number;
+  linked: number[];
 }

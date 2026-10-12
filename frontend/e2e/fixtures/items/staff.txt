@@ -1,0 +1,24 @@
+Item Class: Staves
+Rarity: Rare
+Oblivion Pillar
+Eclipse Staff
+--------
+Staff
+Quality: +20% (augmented)
+Physical Damage: 120-360
+Critical Strike Chance: 7.00%
+Attacks per Second: 1.25
+Weapon Range: 1.3 metres
+--------
+Requirements:
+Level: 70
+Str: 117
+Int: 117
+--------
+Item Level: 84
+--------
++20% Chance to Block Attack Damage while wielding a Staff (implicit)
+--------
++1 to Level of all Spell Skill Gems
+40% increased Spell Damage
++60 to maximum Life

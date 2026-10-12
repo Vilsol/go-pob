@@ -17,18 +17,23 @@ type ProxiedRemoteArray<T extends ArrayLike<unknown>> = Remote<Omit<T, 'length'>
 
 export type ProxiedRemote<T> = T extends ArrayLike<unknown> ? ProxiedRemoteArray<T> : ProxiedRemoteObject<T>;
 
-export const dump = <T>(obj: T): T => {
+export const releaseWrapper = (obj: unknown) => {
+  const release = (obj as { release?: unknown } | null | undefined)?.release;
+  if (typeof release === 'function') {
+    (release as () => void).call(obj);
+  }
+};
+
+export const dump = <T>(obj: T, release = false): T => {
   if (typeof obj !== 'object' || obj === null) {
     return obj;
   }
 
   let out: T;
   try {
-    out = structuredClone(obj);
+    out = release ? ((Array.isArray(obj) ? [] : {}) as T) : structuredClone(obj);
   } catch (error) {
-    if ('message' in (error as Error) && (error as Error).message === 'Function object could not be cloned.') {
-      console.trace('Attempted to dump a function:', obj);
-    } else {
+    if (!(error instanceof DOMException) || error.name !== 'DataCloneError') {
       console.error(error);
     }
 
@@ -36,12 +41,13 @@ export const dump = <T>(obj: T): T => {
   }
 
   for (const prop of Object.getOwnPropertyNames(obj)) {
+    if (prop === '__crystallineHandle') continue;
     // @ts-expect-error TS7053
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     let val = obj[prop];
 
     if (typeof val === 'object') {
-      val = dump(val as object);
+      val = dump(val as object, release);
     } else if (typeof val === 'function' || typeof val === 'symbol') {
       continue;
     }
@@ -49,6 +55,10 @@ export const dump = <T>(obj: T): T => {
     // @ts-expect-error TS7053
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     out[prop] = val;
+  }
+
+  if (release) {
+    releaseWrapper(obj);
   }
 
   return out;

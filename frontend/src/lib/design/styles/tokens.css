@@ -1,0 +1,174 @@
+@theme {
+  --color-*: initial;
+  --text-*: initial;
+  --shadow-*: initial;
+  --font-sans: 'IBM Plex Sans', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+
+  --color-ground: #0e0f11;
+  --color-surface-1: #16181b;
+  --color-surface-2: #1e2024;
+  --color-surface-3: #272a2f;
+  --color-well: #111215;
+  --color-inset: #121316;
+  --color-bar: #1b1d21;
+  --color-alt: #181a1d;
+  --color-tile: #1a1c20;
+  --color-hover: #2a2d33;
+  --color-hl: #1f2226;
+  --color-sel: #23262b;
+  --color-line: #2c2f35;
+  --color-line-strong: #3d4148;
+  --color-line-bright: #5a5e66;
+  --color-line-tree: #4a4e56;
+  --color-text: #ecebe6;
+  --color-text-2: #b3b0a8;
+  --color-text-3: #8d8a83;
+  --color-text-4: #85827b;
+  --color-text-soft: #d6d3cc;
+  --color-accent: #e0a84a;
+  --color-accent-hi: #f0c47a;
+  --color-accent-ink: #1a1206;
+  --color-better: #6cb4ff;
+  --color-worse: #ff9b52;
+  --color-error: #ff6b6b;
+  --color-warn-bg: #3a2616;
+  --color-warn-bg-2: #2a1d14;
+  --color-warn-line: #5a3a26;
+  --color-danger-bg: #2a1618;
+  --color-danger-line: #6b2a2a;
+  --color-build-a: #e0a84a;
+  --color-build-b: #6cb4ff;
+  --color-life: #e8705f;
+  --color-mana: #8f9bff;
+  --color-es: #8fe3e3;
+  --color-stat-fire: #d9913f;
+  --color-stat-cold: #7fa6e8;
+  --color-stat-light: #d6d36a;
+  --color-stat-chaos: #e36bbd;
+  --color-normal: #c8c8c8;
+  --color-magic: #8888ff;
+  --color-rare: #ffff77;
+  --color-unique: #af6025;
+  --color-relic: #60c060;
+  --color-gem: #1aa29b;
+  --color-crafted: #b8daf1;
+  --color-fractured: #a29160;
+  --color-fire: #b97123;
+  --color-cold: #3f6db3;
+  --color-lightning: #adaa47;
+  --color-chaos: #d02090;
+  --color-cls-witch: #7070ff;
+  --color-cls-shadow: #30c0d0;
+  --color-cls-marauder: #e05030;
+  --color-cls-ranger: #70ff70;
+  --color-cls-duelist: #e0e070;
+  --color-cls-templar: #c040ff;
+  --color-cls-scion: #fff0f0;
+  --color-node: #3a3d44;
+  --color-node-path: #2a4a6b;
+  --color-node-conq: #b085f5;
+  --color-node-start: #2a2217;
+  --color-node-jewel: #4a7fb5;
+  --color-proposal: #b9a6ff;
+
+  --color-hover-soft: #1c1f23;
+  --color-line-faint: #22252a;
+  --color-track: #34383f;
+  --color-ruler: #c9b48a;
+  --color-info-bg: #1b2430;
+  --color-info-line: #2f4460;
+  --color-bad-line: #8a4a24;
+  --color-link: #cfc8b6;
+  --color-art: #121417;
+  --color-tree-ground: #0b0c0e;
+  --color-node-none: #2f3238;
+  --color-calc-off: #e8a06a;
+  --color-calc-def: #9d9de8;
+  --color-rage: #e05030;
+  --color-sock-r: #e8705f;
+  --color-sock-g: #7fd07f;
+  --color-sock-b: #8f9bff;
+  --color-sock-w: #e8e4d8;
+  --color-gem-w: #d8d4c8;
+  --color-code-life: #e05030;
+  --color-code-mana: #7070ff;
+  --color-code-es: #88ffff;
+  --color-code-ward: #ffff77;
+  --color-code-evasion: #33ff77;
+
+  --text-10: 0.625rem;
+  --text-11: 0.6875rem;
+  --text-12: 0.75rem;
+  --text-13: 0.8125rem;
+  --text-14: 0.875rem;
+  --text-15: 0.9375rem;
+  --text-16: 1rem;
+  --text-17: 1.0625rem;
+  --text-18: 1.125rem;
+  --tracking-caps: 0.06em;
+  --tracking-caps-wide: 0.07em;
+  --tracking-caps-tight: 0.05em;
+
+  --radius-ovl: 10px;
+  --shadow-tip: 0 8px 24px rgba(0, 0, 0, 0.6);
+  --shadow-pop: 0 8px 20px rgba(0, 0, 0, 0.5);
+  --shadow-bd: 0 10px 28px rgba(0, 0, 0, 0.6);
+  --shadow-menu: 0 12px 28px rgba(0, 0, 0, 0.6);
+  --shadow-dlg: 0 16px 40px rgba(0, 0, 0, 0.6);
+  --shadow-sheet: 0 24px 60px rgba(0, 0, 0, 0.7);
+  --shadow-panel: 0 18px 44px rgba(0, 0, 0, 0.65);
+  --shadow-ghost: 0 10px 24px rgba(0, 0, 0, 0.6);
+}
+
+@utility tone-* {
+  --tone: --value(--color- *);
+}
+
+@layer base {
+  body {
+    margin: 0;
+    background: var(--color-ground);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+  }
+  h1,
+  h2,
+  h3 {
+    margin: 0;
+  }
+  a {
+    color: var(--color-accent);
+  }
+  button {
+    cursor: pointer;
+  }
+  button:disabled {
+    cursor: default;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-line-bright) transparent;
+  }
+  @supports not (scrollbar-color: auto) {
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      border: 2px solid transparent;
+      border-radius: 8px;
+      background: var(--color-line-bright) padding-box;
+    }
+  }
+  [hidden]:where(:not([hidden='until-found'])) {
+    display: none !important;
+  }
+}

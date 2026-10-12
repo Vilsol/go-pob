@@ -3,10 +3,7 @@ import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
-  // Consult https://github.com/sveltejs/svelte-preprocess
-  // for more information about preprocessors
   preprocess: vitePreprocess({
-    postcss: true,
     sourceMap: true
   }),
 
@@ -18,6 +15,10 @@ const config = {
     }),
     paths: {
       base: process.env.PATH_BASE || undefined
+    },
+    serviceWorker: {
+      register: false,
+      files: (file) => !/(^|\/)(go-pob\.wasm.*|_headers|\.DS_Store)$/.test(file)
     }
   },
 

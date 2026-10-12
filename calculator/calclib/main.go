@@ -7,11 +7,20 @@ import (
 )
 
 // Calculate and combine INC/MORE modifiers for the given modifier names
+//
+//pob:src/Modules/CalcTools.lua:15-18
 func Mod(modStore moddb.ModStoreFuncs, cfg *moddb.ListCfg, names ...string) float64 {
 	return (1 + (modStore.Sum(mod.TypeIncrease, cfg, names...))/100) * modStore.More(cfg, names...)
 }
 
+//pob:src/Modules/CalcTools.lua:20-29
+func Mods(modStore moddb.ModStoreFuncs, cfg *moddb.ListCfg, names ...string) (float64, float64) {
+	return 1 + modStore.Sum(mod.TypeIncrease, cfg, names...)/100, modStore.More(cfg, names...)
+}
+
 // Calculate value
+//
+//pob:src/Modules/CalcTools.lua:31-39
 func Val(modStore moddb.ModStoreFuncs, name string, cfgs ...*moddb.ListCfg) float64 {
 	var cfg *moddb.ListCfg
 	if len(cfgs) > 0 {
@@ -19,52 +28,39 @@ func Val(modStore moddb.ModStoreFuncs, name string, cfgs ...*moddb.ListCfg) floa
 	}
 
 	baseVal := modStore.Sum(mod.TypeBase, cfg, name)
-	if baseVal != 1 {
+	if baseVal != 0 {
 		return baseVal * Mod(modStore, cfg, name)
 	}
 	return 0
 }
 
 // Correct the tags on conversion with multipliers so they carry over correctly
+//
+//pob:src/Modules/CalcTools.lua:244-264
 func GetConvertedModTags(m mod.Mod, multiplier float64, minionMods bool) []mod.Tag {
 	modifiers := make([]mod.Tag, len(m.Tags()))
 
 	for k, value := range m.Tags() {
-		if minionMods && value.Type() == "ActorCondition" && value.(*mod.ActorConditionTag).Actor != nil && *value.(*mod.ActorConditionTag).Actor == "parent" {
-			modifiers[k] = mod.Condition(value.(*mod.ActorConditionTag).VariableList...)
-		} else if value.Type() == "Multiplier" || value.Type() == "PerStat" {
-			// LimitTotal can apply to 'per stat' or 'multiplier', so just copy the whole and update the limit
-			var Copy mod.Tag
-			switch x := value.(type) {
-			case *mod.MultiplierTag:
-				Copy = &mod.MultiplierTag{
-					TagType:           x.TagType,
-					VariableList:      x.VariableList,
-					TagBase:           x.TagBase,
-					Division:          x.Division,
-					TagLimit:          utils.Ptr(utils.UnwrapOrF(x.TagLimit, 0) * multiplier),
-					TagLimitVariable:  x.TagLimitVariable,
-					TagLimitTotal:     x.TagLimitTotal,
-					TagActor:          x.TagActor,
-					TagGlobalLimit:    x.TagGlobalLimit,
-					TagGlobalLimitKey: x.TagGlobalLimitKey,
-				}
-			case *mod.PerStatTag:
-				Copy = &mod.PerStatTag{
-					TagType:           x.TagType,
-					StatList:          x.StatList,
-					Divide:            x.Divide,
-					TagLimit:          utils.Ptr(utils.UnwrapOrF(x.TagLimit, 0) * multiplier),
-					TagLimitVariable:  x.TagLimitVariable,
-					TagLimitTotal:     x.TagLimitTotal,
-					Base:              x.Base,
-					TagActor:          x.TagActor,
-					TagGlobalLimit:    x.TagGlobalLimit,
-					TagGlobalLimitKey: x.TagGlobalLimitKey,
-				}
+		if actorCondition, ok := value.(*mod.ActorConditionTag); ok && minionMods && actorCondition.Actor != nil && *actorCondition.Actor == "parent" {
+			modifiers[k] = mod.Condition(actorCondition.VariableList...)
+			continue
+		}
+
+		// LimitTotal can apply to 'per stat' or 'multiplier', so just copy the whole and update the limit.
+		switch x := value.(type) {
+		case *mod.MultiplierTag:
+			c := *x
+			if c.TagLimitTotal && c.TagLimit != nil {
+				c.TagLimit = utils.Ptr(*c.TagLimit * multiplier)
 			}
-			modifiers[k] = Copy
-		} else {
+			modifiers[k] = &c
+		case *mod.PerStatTag:
+			c := *x
+			if c.TagLimitTotal && c.TagLimit != nil {
+				c.TagLimit = utils.Ptr(*c.TagLimit * multiplier)
+			}
+			modifiers[k] = &c
+		default:
 			modifiers[k] = value
 		}
 	}

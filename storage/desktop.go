@@ -4,8 +4,9 @@ package storage
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
-	"io"
 	"log/slog"
 	"os"
 	"path/filepath"
@@ -13,11 +14,18 @@ import (
 
 	"github.com/Vilsol/go-pob/builds"
 	"github.com/Vilsol/go-pob/utils"
-
-	"gopkg.in/djherbis/fscache.v0"
 )
 
-var cache *fscache.FSCache
+const CacheDirEnv = "GO_POB_CACHE_DIR"
+
+const cacheExpiry = time.Hour * 24 * 30
+
+var cacheDir string
+
+func cachePath(key string) string {
+	sum := sha256.Sum256([]byte(key))
+	return filepath.Join(cacheDir, hex.EncodeToString(sum[:]))
+}
 
 type desktopStorage struct {
 }
@@ -34,18 +42,12 @@ func (d desktopStorage) GetCache(key string) ([]byte, error) {
 		slog.String("key", key),
 	)
 
-	r, _, err := cache.Get(key)
+	b, err := os.ReadFile(cachePath(key))
 	if err != nil {
+		if os.IsNotExist(err) {
+			return nil, nil
+		}
 		return nil, fmt.Errorf("failed to get key from cache: %s: %w", key, err)
-	}
-
-	if r == nil {
-		return nil, nil
-	}
-
-	b, err := io.ReadAll(r)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read from cache: %w", err)
 	}
 
 	return b, nil
@@ -60,28 +62,37 @@ func (d desktopStorage) SetCache(key string, value []byte) error {
 		slog.Int("len", len(value)),
 	)
 
-	_ = cache.Remove(key)
-
-	_, w, err := cache.Get(key)
+	tmp, err := os.CreateTemp(cacheDir, ".tmp-*")
 	if err != nil {
-		return fmt.Errorf("failed to set key on cache: %s: %w", key, err)
+		return fmt.Errorf("failed to create cache temporary file: %w", err)
 	}
 
-	if w == nil {
-		return fmt.Errorf("could not write to cache")
-	}
-
-	defer w.Close()
-
-	if _, err := w.Write(value); err != nil {
+	if _, err := tmp.Write(value); err != nil {
+		_ = tmp.Close()
+		_ = os.Remove(tmp.Name())
 		return fmt.Errorf("failed to write to cache: %w", err)
+	}
+
+	if err := tmp.Close(); err != nil {
+		_ = os.Remove(tmp.Name())
+		return fmt.Errorf("failed to close cache temporary file: %w", err)
+	}
+
+	if err := os.Rename(tmp.Name(), cachePath(key)); err != nil {
+		_ = os.Remove(tmp.Name())
+		return fmt.Errorf("failed to set key on cache: %s: %w", key, err)
 	}
 
 	return nil
 }
 
 func (d desktopStorage) ExistsInCache(key string) bool {
-	return cache.Exists(key)
+	stat, err := os.Stat(cachePath(key))
+	if err != nil {
+		return false
+	}
+
+	return time.Since(stat.ModTime()) < cacheExpiry
 }
 
 func (d desktopStorage) List(dir string) ([]DirEntry, error) {
@@ -219,6 +230,46 @@ func (d desktopStorage) Delete(dir string) error {
 	return nil
 }
 
+func (d desktopStorage) GetSetting(key string) ([]byte, error) {
+	b, err := os.ReadFile(filepath.Join(d.settingsDir(), key))
+	if os.IsNotExist(err) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, fmt.Errorf("failed to read setting %s: %w", key, err)
+	}
+	return b, nil
+}
+
+func (d desktopStorage) SetSetting(key string, value []byte) error {
+	dir := d.settingsDir()
+	if err := os.MkdirAll(dir, 0o700); err != nil {
+		return fmt.Errorf("failed to create the settings directory: %w", err)
+	}
+	tmp, err := os.CreateTemp(dir, ".tmp-*")
+	if err != nil {
+		return fmt.Errorf("failed to create settings temporary file: %w", err)
+	}
+	if _, err := tmp.Write(value); err != nil {
+		_ = tmp.Close()
+		_ = os.Remove(tmp.Name())
+		return fmt.Errorf("failed to write setting %s: %w", key, err)
+	}
+	if err := tmp.Close(); err != nil {
+		_ = os.Remove(tmp.Name())
+		return fmt.Errorf("failed to close settings temporary file: %w", err)
+	}
+	if err := os.Rename(tmp.Name(), filepath.Join(dir, key)); err != nil {
+		_ = os.Remove(tmp.Name())
+		return fmt.Errorf("failed to set setting %s: %w", key, err)
+	}
+	return nil
+}
+
+func (d desktopStorage) settingsDir() string {
+	return filepath.Join(filepath.Dir(d.buildBaseDir()), "settings")
+}
+
 func (d desktopStorage) buildBaseDir() string {
 	dir, err := os.UserConfigDir()
 	if err != nil {
@@ -240,22 +291,24 @@ func InitializeStorage(
 	createFolder func(bucket string, dir string),
 	del func(bucket string, path string),
 ) {
-	dir, err := os.UserCacheDir()
-	if err != nil {
-		panic(fmt.Errorf("failed getting user cache dir: %w", err))
+	baseCacheDir := os.Getenv(CacheDirEnv)
+	if baseCacheDir == "" {
+		dir, err := os.UserCacheDir()
+		if err != nil {
+			panic(fmt.Errorf("failed getting user cache dir: %w", err))
+		}
+
+		baseCacheDir = filepath.Join(dir, "go-pob", "bundle-cache")
 	}
 
-	baseCacheDir := filepath.Join(dir, "go-pob", "bundle-cache")
+	//nolint:gosec // G703: baseCacheDir is the user's own cache dir (GO_POB_CACHE_DIR or os.UserCacheDir).
 	if err := os.MkdirAll(baseCacheDir, 0777); err != nil {
 		if !os.IsExist(err) {
 			panic(fmt.Errorf("failed creating cache dir: %w", err))
 		}
 	}
 
-	cache, err = fscache.New(baseCacheDir, 0755, time.Hour*24*30) // 30 day cache
-	if err != nil {
-		panic(fmt.Errorf("failed creating cache: %w", err))
-	}
+	cacheDir = baseCacheDir
 
 	configDir, err := os.UserConfigDir()
 	if err != nil {

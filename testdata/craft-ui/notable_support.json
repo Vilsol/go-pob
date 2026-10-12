@@ -1,0 +1,5442 @@
+{
+ "10016": {
+  "name": "Executioner",
+  "sd": [
+   "60% increased Damage with Hits against Enemies that are on Low Life",
+   "15% increased Area of Effect if you've Killed Recently"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "1006": {
+  "name": "Potency of Will",
+  "sd": [
+   "25% increased Skill Effect Duration"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "10115": {
+  "name": "Prodigal Perfection",
+  "sd": [
+   "20% increased maximum Mana",
+   "2% increased Spell Damage per 100 Maximum Mana, up to 40%"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "10511": {
+  "name": "Tolerance",
+  "sd": [
+   "+19% to Chaos Resistance",
+   "30% chance to Avoid being Poisoned",
+   "30% chance to Avoid Bleeding"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "10542": {
+  "name": "Spiked Bulwark",
+  "sd": [
+   "28% increased Armour",
+   "Reflects 50 Physical Damage to Melee Attackers"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "10835": {
+  "name": "Dreamer",
+  "sd": [
+   "30% increased Mana Regeneration Rate",
+   "15% increased Mana Cost Efficiency"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "11420": {
+  "name": "Arcanist's Dominion",
+  "sd": [
+   "20% increased Spell Damage",
+   "5% increased Cast Speed",
+   "+20 to Intelligence"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "11645": {
+  "name": "Breath of Lightning",
+  "sd": [
+   "30% increased Lightning Damage",
+   "50% increased Effect of Lightning Ailments"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "11730": {
+  "name": "Endurance",
+  "sd": [
+   "+1 to Maximum Endurance Charges"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "11784": {
+  "name": "Vampirism",
+  "sd": [
+   "Recover 3% of Life on Kill",
+   "12% of Damage taken Recouped as Life"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "11820": {
+  "name": "Anointed Flesh",
+  "sd": [
+   "+1% to all maximum Elemental Resistances",
+   "20% reduced Elemental Ailment Duration on you",
+   "20% reduced Effect of Chill and Shock on you"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "11924": {
+  "name": "Breath of Flames",
+  "sd": [
+   "+10% to Fire Damage over Time Multiplier",
+   "30% increased Fire Damage"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "12033": {
+  "name": "Wicked Blade",
+  "sd": [
+   "30% increased Damage with Bleeding",
+   "20% increased Bleeding Duration"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "12143": {
+  "name": "Influence",
+  "sd": [
+   "14% increased effect of Non-Curse Auras from your Skills"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "12702": {
+  "name": "Path of the Warrior",
+  "sd": [
+   "+50 to Armour",
+   "+20 to Strength",
+   "16% increased Physical Damage"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "12795": {
+  "name": "Versatility",
+  "sd": [
+   "5% increased Movement Speed",
+   "+20 to Dexterity and Intelligence",
+   "15% increased Accuracy Rating"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "12809": {
+  "name": "Berserking",
+  "sd": [
+   "6% increased Attack Speed",
+   "+5 to Maximum Rage"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "12878": {
+  "name": "Retaliation",
+  "sd": [
+   "Attack Skills deal 20% increased Damage while holding a Shield",
+   "8% increased Attack Speed while holding a Shield",
+   "60% increased Defences from Equipped Shield"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "13164": {
+  "name": "Divine Judgement",
+  "sd": [
+   "50% increased Elemental Damage"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "1325": {
+  "name": "Golem's Blood",
+  "sd": [
+   "10% increased maximum Life",
+   "Regenerate 1.6% of Life per second"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "13375": {
+  "name": "Multishot",
+  "sd": [
+   "Attacks fire an additional Projectile"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "1340": {
+  "name": "Rampart",
+  "sd": [
+   "30% increased Armour and Evasion Rating while Fortified",
+   "Fortifying Hits against Unique Enemies grant 100% increased Fortification"
+  ],
+  "unsupported": [
+   false,
+   true
+  ]
+ },
+ "1365": {
+  "name": "Knowledge Barrier",
+  "sd": [
+   "6% increased Energy Shield Recharge Rate for each different type of Mastery you have Allocated"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "13703": {
+  "name": "Defiant Stand",
+  "sd": [
+   "Gain 3 Endurance Charges when you consume maximum Valour to place a Banner",
+   "Gain 3 Frenzy Charges when you consume maximum Valour to place a Banner"
+  ],
+  "unsupported": [
+   true,
+   true
+  ]
+ },
+ "13739": {
+  "name": "Always Angry",
+  "sd": [
+   "+8 to Minimum Rage"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "1382": {
+  "name": "Spirit Void",
+  "sd": [
+   "1% of Attack Damage Leeched as Mana",
+   "40% increased Maximum total Mana Recovery per second from Leech"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "13922": {
+  "name": "Steadfast",
+  "sd": [
+   "+3 to maximum Fortification",
+   "Regenerate 0.1% of Life per second per Fortification"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "13935": {
+  "name": "Thrill of Battle",
+  "sd": [
+   "Gain 2 Mana per Enemy Hit with Attacks",
+   "25% increased Cost Efficiency of Attacks"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "14001": {
+  "name": "Unfaltering",
+  "sd": [
+   "50% increased Stun Threshold",
+   "10% of Damage taken from Stunning Hits is Recovered as Life"
+  ],
+  "unsupported": [
+   false,
+   true
+  ]
+ },
+ "1405": {
+  "name": "From the Shadows",
+  "sd": [
+   "12% increased Attack Speed with Daggers",
+   "40% increased Elusive Effect"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "14079": {
+  "name": "Wood, Stone, and Spell",
+  "sd": [
+   "10% increased effect of Arcane Surge on you per Summoned Totem"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "14587": {
+  "name": "Adaptive Steel",
+  "sd": [
+   "5% chance to Defend with 200% of Armour for each",
+   "time you've been Hit by an Enemy Recently, up to 30%"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "14606": {
+  "name": "Butchery",
+  "sd": [
+   "25% increased Physical Damage with Two Handed Melee Weapons",
+   "Attacks with Two Handed Melee Weapons deal 25% increased Damage with Ailments",
+   "5% increased Attack Speed with Two Handed Melee Weapons",
+   "+20 to Strength"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false,
+   false
+  ]
+ },
+ "14665": {
+  "name": "Divine Wrath",
+  "sd": [
+   "Gain 5% of Physical Damage as Extra Lightning Damage",
+   "Damage Penetrates 5% Lightning Resistance"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "14813": {
+  "name": "Revelry",
+  "sd": [
+   "+25 to maximum Mana",
+   "15% increased maximum Mana",
+   "10% increased Effect of Non-Curse Auras from your Skills on Enemies"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "15046": {
+  "name": "Redemption",
+  "sd": [
+   "Minions deal 20% increased Damage",
+   "Minions have 10% increased Attack Speed",
+   "Minions have 10% increased Cast Speed"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "15085": {
+  "name": "Ambidexterity",
+  "sd": [
+   "60% increased Attack Damage with Main Hand while Dual Wielding",
+   "30% increased Attack Speed with Off Hand while Dual Wielding"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "15226": {
+  "name": "Cruel Retort",
+  "sd": [
+   "Every fourth Retaliation Skill you use always Critically Strikes",
+   "Retaliation Skills have 20% increased Speed"
+  ],
+  "unsupported": [
+   true,
+   false
+  ]
+ },
+ "15290": {
+  "name": "Watchtowers",
+  "sd": [
+   "24% increased Totem Damage",
+   "Attack Skills have +1 to maximum number of Summoned Ballista Totems",
+   "1% increased Movement Speed per Summoned Totem"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "15344": {
+  "name": "Freedom of Movement",
+  "sd": [
+   "40% increased Evasion Rating while Phasing",
+   "10% increased Movement Speed while Phasing",
+   "+20 to Dexterity"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "15400": {
+  "name": "Skittering Runes",
+  "sd": [
+   "50% increased Area of Effect of Hex Skills",
+   "20% increased Mana Cost Efficiency of Curse Skills",
+   "20% increased Mana Reservation Efficiency of Curse Aura Skills"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "15437": {
+  "name": "Deflection",
+  "sd": [
+   "+8% Chance to Block Attack Damage while holding a Shield",
+   "25% chance to gain an Endurance Charge when you Block"
+  ],
+  "unsupported": [
+   false,
+   true
+  ]
+ },
+ "15614": {
+  "name": "Claws of the Hawk",
+  "sd": [
+   "60% increased Critical Strike Chance with Claws",
+   "+20% to Critical Strike Multiplier with Claws"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "1568": {
+  "name": "Fatal Blade",
+  "sd": [
+   "50% increased Critical Strike Chance with Swords",
+   "+25% to Critical Strike Multiplier with Swords"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "15711": {
+  "name": "Blast Radius",
+  "sd": [
+   "10% increased Area of Effect",
+   "20% increased Area Damage"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "15842": {
+  "name": "One With Nature",
+  "sd": [
+   "+8% to all Elemental Resistances",
+   "24% increased Critical Strike Chance for Attacks",
+   "24% increased Elemental Damage with Attack Skills"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "15852": {
+  "name": "Ethereal Feast",
+  "sd": [
+   "1% of Spell Damage Leeched as Energy Shield",
+   "40% increased Maximum total Energy Shield Recovery per second from Leech"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "16236": {
+  "name": "Toxic Strikes",
+  "sd": [
+   "+15% to Damage over Time Multiplier for Poison",
+   "15% chance to Poison on Hit"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "16243": {
+  "name": "Fusillade",
+  "sd": [
+   "15% increased Attack Speed with Wands",
+   "30% increased Accuracy Rating with Wands"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "16246": {
+  "name": "Tranquility",
+  "sd": [
+   "5% increased maximum Energy Shield",
+   "Transfiguration of Soul"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "16703": {
+  "name": "Skull Cracking",
+  "sd": [
+   "36% increased Physical Damage with Maces or Sceptres",
+   "Mace or Sceptre Attacks deal 36% increased Damage with Ailments",
+   "12% reduced Enemy Stun Threshold with Maces or Sceptres"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "17171": {
+  "name": "Flash Freeze",
+  "sd": [
+   "25% increased Cold Damage",
+   "15% chance to Freeze",
+   "30% increased Effect of Cold Ailments"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "17608": {
+  "name": "Silent Steps",
+  "sd": [
+   "20% increased Evasion Rating",
+   "40% increased Blind Effect"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "18174": {
+  "name": "Mystic Bulwark",
+  "sd": [
+   "6% Chance to Block Spell Damage",
+   "1% increased Mana Regeneration Rate per 1% Chance to Block Spell Damage"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "18357": {
+  "name": "Feline Swiftness",
+  "sd": [
+   "+10% Chance to Block Attack Damage while Dual Wielding",
+   "8% increased Movement Speed while Dual Wielding"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "18703": {
+  "name": "Graceful Assault",
+  "sd": [
+   "30% increased Effect of Onslaught on you",
+   "10% chance to gain Onslaught for 4 seconds on Kill",
+   "30% increased Armour and Evasion Rating during Onslaught"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "18707": {
+  "name": "Perfectionist",
+  "sd": [
+   "5% increased Movement Speed",
+   "30% chance to Avoid being Stunned",
+   "50% increased Stun and Block Recovery"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "18769": {
+  "name": "Written in Blood",
+  "sd": [
+   "10% increased maximum Energy Shield",
+   "10% increased maximum Life",
+   "+10 to Strength"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "18865": {
+  "name": "Melding",
+  "sd": [
+   "7% increased maximum Life",
+   "Gain 3% of Maximum Life as Extra Maximum Energy Shield"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "19069": {
+  "name": "Thick Skin",
+  "sd": [
+   "10% increased maximum Life",
+   "8% chance to Avoid Elemental Ailments"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "19103": {
+  "name": "Righteous Army",
+  "sd": [
+   "Regenerate 1% of Life per second",
+   "Minions deal 20% increased Damage",
+   "Minions Regenerate 1% of Life per second"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "19144": {
+  "name": "Sentinel",
+  "sd": [
+   "24% increased Evasion Rating and Armour",
+   "+10% to all Elemental Resistances"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "19506": {
+  "name": "Path of the Hunter",
+  "sd": [
+   "+100 to Accuracy Rating",
+   "16% increased Projectile Damage",
+   "+20 to Dexterity"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "19730": {
+  "name": "Assured Strike",
+  "sd": [
+   "24% increased Melee Damage",
+   "+0.4 metres to Melee Strike Range while at least 5 Enemies are Nearby"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "19794": {
+  "name": "Concussive Force",
+  "sd": [
+   "Hits Stun as though dealing 50% more Melee Fire Damage",
+   "Ignites from Stunning Melee Hits deal 20% more Damage"
+  ],
+  "unsupported": [
+   true,
+   true
+  ]
+ },
+ "19858": {
+  "name": "Herbalism",
+  "sd": [
+   "10% increased maximum Life",
+   "30% increased Flask Recovery rate"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "19897": {
+  "name": "Death Attunement",
+  "sd": [
+   "+1 to Maximum number of Spectres",
+   "+1 to Maximum number of Raised Zombies",
+   "+1 to Maximum number of Skeletons"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "20261": {
+  "name": "Contemplative Meditation",
+  "sd": [
+   "8% increased Reservation Efficiency of Skills",
+   "20% increased Cost Efficiency"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "203": {
+  "name": "Vinespike Cordial",
+  "sd": [
+   "Inflict a Grasping Vine on Hit against Enemies with fewer than",
+   "8 Grasping Vines during Effect of any Life Flask"
+  ],
+  "unsupported": [
+   true,
+   true
+  ]
+ },
+ "20528": {
+  "name": "Instability",
+  "sd": [
+   "+1 to Maximum Power Charges"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "20605": {
+  "name": "No Forgiveness",
+  "sd": [
+   "20% chance for used Retaliation Skills to remain Usable and not consume a Cooldown Use"
+  ],
+  "unsupported": [
+   true
+  ]
+ },
+ "20832": {
+  "name": "Sanctuary",
+  "sd": [
+   "+4% Chance to Block Attack Damage while holding a Shield",
+   "+4% Chance to Block Spell Damage while holding a Shield",
+   "+1% to all maximum Elemental Resistances"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "20835": {
+  "name": "Brinkmanship",
+  "sd": [
+   "Melee Skills have 20% increased Area of Effect"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "21228": {
+  "name": "Piercing Shots",
+  "sd": [
+   "Projectiles Pierce 2 additional Targets"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "21297": {
+  "name": "High Explosives",
+  "sd": [
+   "60% increased Critical Strike Chance with Traps",
+   "+20% to Critical Strike Multiplier with Traps",
+   "15% chance to gain a Power Charge when your Trap is triggered by an Enemy"
+  ],
+  "unsupported": [
+   false,
+   false,
+   true
+  ]
+ },
+ "21330": {
+  "name": "Quick Recovery",
+  "sd": [
+   "7% increased maximum Life",
+   "20% increased Mana Regeneration Rate",
+   "Regenerate 0.8% of Life per second"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "21389": {
+  "name": "Runesmith",
+  "sd": [
+   "12% increased Cast Speed with Brand Skills",
+   "Enemies take 5% increased Damage for each of your Brands Attached to them"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "21413": {
+  "name": "Combat Stamina",
+  "sd": [
+   "20% increased Armour",
+   "5% increased maximum Life",
+   "Regenerate 1% of Life per second"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "21435": {
+  "name": "Cloth and Chain",
+  "sd": [
+   "24% increased Evasion Rating and Armour",
+   "+12% to all Elemental Resistances"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "21460": {
+  "name": "Breath of Rime",
+  "sd": [
+   "30% increased Cold Damage",
+   "50% increased Duration of Cold Ailments"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "21602": {
+  "name": "Destructive Apparatus",
+  "sd": [
+   "60% increased Mine Duration",
+   "12% increased Mine Throwing Speed"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "21634": {
+  "name": "Arcane Chemistry",
+  "sd": [
+   "15% increased maximum Mana",
+   "30% increased Mana Recovery from Flasks",
+   "Mana Flasks gain 1 Charge every 3 seconds"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "21958": {
+  "name": "Cruel Preparation",
+  "sd": [
+   "10% increased maximum Life",
+   "+5% to all Elemental Resistances"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "21973": {
+  "name": "Decay Ward",
+  "sd": [
+   "Minions have +18% Chance to Block Attack Damage",
+   "Minions have +18% Chance to Block Spell Damage",
+   "Minions Recover 2% of their Life when they Block"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "22133": {
+  "name": "Invigorating Blaze",
+  "sd": [
+   "+10% to Fire Damage over Time Multiplier with Attack Skills",
+   "Recover 2% of Life when you Ignite a non-Ignited Enemy"
+  ],
+  "unsupported": [
+   false,
+   true
+  ]
+ },
+ "2225": {
+  "name": "Eagle Eye",
+  "sd": [
+   "+150 to Accuracy Rating",
+   "20% increased Critical Strike Chance",
+   "20% increased Accuracy Rating"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "22356": {
+  "name": "Hematophagy",
+  "sd": [
+   "40% increased Maximum total Life Recovery per second from Leech",
+   "100% increased total Recovery per second from Life Leech"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "22535": {
+  "name": "Whispers of Doom",
+  "sd": [
+   "You can apply an additional Curse"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "22702": {
+  "name": "Serpent Stance",
+  "sd": [
+   "40% increased Critical Strike Chance while wielding a Staff",
+   "+30% to Critical Strike Multiplier while wielding a Staff",
+   "+5% Chance to Block Attack Damage if you've dealt a Critical Strike Recently"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "22706": {
+  "name": "Savage Intensity",
+  "sd": [
+   "30% increased Cost Efficiency of Attacks",
+   "Inherent loss of Rage is 20% slower"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "2275": {
+  "name": "Nature's Concoction",
+  "sd": [
+   "Flasks adjacent to active Tinctures gain 2 charges when you Hit an",
+   "Enemy with a Melee Weapon, no more than once every second"
+  ],
+  "unsupported": [
+   true,
+   true
+  ]
+ },
+ "22972": {
+  "name": "Wandslinger",
+  "sd": [
+   "30% increased Damage while wielding a Wand",
+   "10% increased Attack Speed with Wands"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "23038": {
+  "name": "Slaughter",
+  "sd": [
+   "25% increased Physical Damage with Axes",
+   "Axe Attacks deal 25% increased Damage with Ailments",
+   "8% increased Attack Speed with Axes",
+   "Gain 1 Rage on Hit with Axes"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false,
+   false
+  ]
+ },
+ "23066": {
+  "name": "Savagery",
+  "sd": [
+   "+1 to Maximum Frenzy Charges"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "23549": {
+  "name": "Incorporeal",
+  "sd": [
+   "Elusive on you reduces in effect 50% slower",
+   "Elusive is removed from you at 20% effect"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "23690": {
+  "name": "Essence Infusion",
+  "sd": [
+   "15% faster start of Energy Shield Recharge",
+   "30% increased Energy Shield Recharge Rate"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "24050": {
+  "name": "Coldhearted Calculation",
+  "sd": [
+   "12% increased Damage",
+   "20% increased Mana Regeneration Rate",
+   "+20 to Intelligence"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "24067": {
+  "name": "Instinct",
+  "sd": [
+   "+12% chance to Suppress Spell Damage",
+   "Recover 50 Energy Shield when you Suppress Spell Damage"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "24133": {
+  "name": "Survivalist",
+  "sd": [
+   "24% increased Evasion Rating",
+   "+8% to all Elemental Resistances",
+   "+1% to maximum Cold Resistance"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "24256": {
+  "name": "Dynamo",
+  "sd": [
+   "18% increased maximum Mana",
+   "Guard Skills have 40% increased Duration"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "24324": {
+  "name": "Explosive Impact",
+  "sd": [
+   "30% increased Fire Damage",
+   "12% increased Area of Effect"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "24358": {
+  "name": "Selective Precision",
+  "sd": [
+   "First and Final shots of Barrage sequences fire Projectiles that Return to you"
+  ],
+  "unsupported": [
+   true
+  ]
+ },
+ "24362": {
+  "name": "Deep Thoughts",
+  "sd": [
+   "20% increased maximum Mana",
+   "20% increased Mana Regeneration Rate",
+   "+20 to Intelligence"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "24383": {
+  "name": "Warrior's Blood",
+  "sd": [
+   "Regenerate 1.8% of Life per second",
+   "20% increased Stun Threshold",
+   "+20 to Strength"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "24716": {
+  "name": "Battle Trance",
+  "sd": [
+   "+10 to Maximum Rage"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "24721": {
+  "name": "Ribcage Crusher",
+  "sd": [
+   "Mace or Sceptre Attacks deal 24% increased Damage with Hits and Ailments",
+   "6% increased Attack Speed with Maces or Sceptres",
+   "15% increased Area of Effect if you have Stunned an Enemy Recently"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "24858": {
+  "name": "Harpooner",
+  "sd": [
+   "20% chance to Impale Enemies on Hit with Two Handed Weapons",
+   "30% increased Effect of Impales you inflict with Two Handed Weapons on Non-Impaled Enemies",
+   "50% increased Impale Duration"
+  ],
+  "unsupported": [
+   false,
+   true,
+   false
+  ]
+ },
+ "25058": {
+  "name": "Blood Siphon",
+  "sd": [
+   "10% increased maximum Life",
+   "Gain 10 Life per Enemy Killed",
+   "+20 to Strength"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "25178": {
+  "name": "Primal Spirit",
+  "sd": [
+   "20% increased maximum Mana",
+   "Gain 4 Mana per Enemy Hit with Attacks if you've used a Mana Flask in the past 10 seconds",
+   "+20 to Strength and Intelligence"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "25367": {
+  "name": "Blade Master",
+  "sd": [
+   "20% increased Physical Damage with Swords",
+   "Sword Attacks deal 20% increased Damage with Ailments",
+   "8% increased Attack Speed with Swords",
+   "+200 to Accuracy Rating with Swords"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false,
+   false
+  ]
+ },
+ "25409": {
+  "name": "Indomitable Army",
+  "sd": [
+   "Minions have 15% additional Physical Damage Reduction",
+   "Minions have +15% to all Elemental Resistances",
+   "Moving while Bleeding doesn't cause Minions to take extra Damage"
+  ],
+  "unsupported": [
+   false,
+   false,
+   true
+  ]
+ },
+ "25411": {
+  "name": "Infused",
+  "sd": [
+   "+1 to Maximum Power Charges"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "25439": {
+  "name": "Undertaker",
+  "sd": [
+   "30% increased Damage if you have Consumed a corpse Recently",
+   "Desecrate and Unearth have +2 to Maximum number of corpses allowed",
+   "Regenerate 2% of Life per second if you've Consumed a corpse Recently"
+  ],
+  "unsupported": [
+   false,
+   true,
+   false
+  ]
+ },
+ "25456": {
+  "name": "Dervish",
+  "sd": [
+   "+3% Chance to Block Attack Damage while Dual Wielding",
+   "Attack Skills deal 24% increased Damage while Dual Wielding",
+   "6% increased Attack Speed while Dual Wielding"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "2550": {
+  "name": "Arsonist",
+  "sd": [
+   "+10% to Fire Damage over Time Multiplier",
+   "Regenerate 1.2% of Life per second"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "25738": {
+  "name": "Relentless Pursuit",
+  "sd": [
+   "10% increased Attack Speed if you've cast a Mark Spell Recently",
+   "10% increased Movement Speed if you've cast a Mark Spell Recently"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "25970": {
+  "name": "Acrimony",
+  "sd": [
+   "+15% to Damage over Time Multiplier"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "25989": {
+  "name": "Nomadic Teachings",
+  "sd": [
+   "+2% to all maximum Elemental Resistances"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "2599": {
+  "name": "Prepared Response",
+  "sd": [
+   "25% chance when you use a Retaliation Skill for a different Retaliation Skill to become Usable",
+   "Retaliation Skills become Usable for 30% longer"
+  ],
+  "unsupported": [
+   true,
+   true
+  ]
+ },
+ "26023": {
+  "name": "Savage Wounds",
+  "sd": [
+   "Bleeding you inflict deals Damage 15% faster"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "26096": {
+  "name": "Hatchet Master",
+  "sd": [
+   "Axe Attacks deal 24% increased Damage with Hits and Ailments",
+   "10% increased Attack Speed with Axes",
+   "20% chance to gain Onslaught for 4 seconds on Kill"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "26294": {
+  "name": "Bloodletting",
+  "sd": [
+   "+15% to Damage over Time Multiplier for Bleeding",
+   "10% chance to Aggravate Bleeding on targets you Hit with Attacks"
+  ],
+  "unsupported": [
+   false,
+   true
+  ]
+ },
+ "26557": {
+  "name": "Static Blows",
+  "sd": [
+   "30% increased Damage if you have Shocked an Enemy Recently",
+   "50% increased Duration of Lightning Ailments",
+   "30% increased Effect of Lightning Ailments"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "26564": {
+  "name": "Vanquisher",
+  "sd": [
+   "Crush Enemies for 4 seconds when you Hit them while they are on Full Life",
+   "40% increased Physical Damage"
+  ],
+  "unsupported": [
+   true,
+   false
+  ]
+ },
+ "26620": {
+  "name": "Corruption",
+  "sd": [
+   "20% increased Effect of Withered"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "26763": {
+  "name": "Perfected Formula",
+  "sd": [
+   "15% chance for Tinctures to not inflict Mana Burn",
+   "Tinctures applied to you have 10% reduced Mana Burn rate"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "26866": {
+  "name": "Sanctity",
+  "sd": [
+   "20% increased Armour",
+   "10% increased maximum Energy Shield",
+   "Regenerate 1% of Life per second",
+   "+10 to Strength and Intelligence"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false,
+   false
+  ]
+ },
+ "26960": {
+  "name": "Forethought",
+  "sd": [
+   "30% increased maximum Mana",
+   "10% increased Mana Cost of Skills"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "27119": {
+  "name": "Tribal Fury",
+  "sd": [
+   "Melee Strike Skills deal Splash Damage to surrounding targets"
+  ],
+  "unsupported": [
+   true
+  ]
+ },
+ "27137": {
+  "name": "Sanctum of Thought",
+  "sd": [
+   "You take 30% reduced Extra Damage from Critical Strikes",
+   "18% increased Armour",
+   "12% increased maximum Energy Shield"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "2715": {
+  "name": "Quickstep",
+  "sd": [
+   "+10% chance to Suppress Spell Damage",
+   "6% increased Movement Speed"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "27163": {
+  "name": "Arcane Will",
+  "sd": [
+   "30% increased maximum Mana",
+   "Regenerate 5 Mana per second",
+   "+10 to Intelligence"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "27190": {
+  "name": "Overprepared",
+  "sd": [
+   "Skills which Throw Traps have +1 Cooldown Use"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "27203": {
+  "name": "Heart and Soul",
+  "sd": [
+   "8% increased maximum Life",
+   "12% increased maximum Mana"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "27301": {
+  "name": "Martial Experience",
+  "sd": [
+   "30% increased Physical Damage with Two Handed Melee Weapons",
+   "Attacks with Two Handed Melee Weapons deal 30% increased Damage with Ailments",
+   "100% increased total Recovery per second from Life Leech",
+   "Hits have 30% chance to ignore Enemy Physical Damage Reduction"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false,
+   false
+  ]
+ },
+ "27308": {
+  "name": "Gravepact",
+  "sd": [
+   "+7% to Chaos Resistance",
+   "Minions have 8% chance to deal Double Damage"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "27422": {
+  "name": "Spirit of War",
+  "sd": [
+   "0.5% of Physical Attack Damage Leeched as Mana",
+   "25% increased Cost Efficiency of Attacks"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "27611": {
+  "name": "Lord of the Dead",
+  "sd": [
+   "Minions have 15% increased maximum Life",
+   "Minions deal 20% increased Damage",
+   "+1 to Maximum number of Raised Zombies",
+   "+1 to Maximum number of Skeletons"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false,
+   false
+  ]
+ },
+ "27623": {
+  "name": "Harsh Lessons",
+  "sd": [
+   "+12% to Damage Over Time Multiplier with Spell Skills",
+   "20% reduced Duration of Ailments on You"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "27781": {
+  "name": "Worship the Blightheart",
+  "sd": [
+   "Create Fungal Ground instead of Consecrated Ground"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "27788": {
+  "name": "Blood Drinker",
+  "sd": [
+   "10% increased maximum Life",
+   "Recover 2% of Life on Kill"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "27806": {
+  "name": "As The Thunder",
+  "sd": [
+   "25% increased Warcry Duration",
+   "20% increased Warcry Buff Effect"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "27929": {
+  "name": "Deep Wisdom",
+  "sd": [
+   "+20 to maximum Energy Shield",
+   "+20 to maximum Mana",
+   "+20 to Intelligence"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "28034": {
+  "name": "Empowered Bond",
+  "sd": [
+   "+2 to Level of all Link Skill Gems"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "28449": {
+  "name": "Surge of Vigour",
+  "sd": [
+   "Every 4 seconds, Regenerate 15% of Life over one second"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "28503": {
+  "name": "Life Raker",
+  "sd": [
+   "12% increased Attack Speed with Claws",
+   "12% increased Accuracy Rating with Claws",
+   "Gain 6 Life per Enemy Hit with Attacks"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "28754": {
+  "name": "Assassination",
+  "sd": [
+   "+25% to Critical Strike Multiplier",
+   "25% increased Critical Strike Chance"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "28878": {
+  "name": "Relentless",
+  "sd": [
+   "Regenerate 1% of Life per second if you have Stunned an Enemy Recently",
+   "25% increased Physical Damage"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "29049": {
+  "name": "Holy Fire",
+  "sd": [
+   "+12% to Fire Damage over Time Multiplier",
+   "+24% to Fire Resistance"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "29381": {
+  "name": "Ravenous Horde",
+  "sd": [
+   "Minions have 30% increased Movement Speed",
+   "Minions have 30% chance to gain Onslaught for 4 seconds on Kill"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "29522": {
+  "name": "Dance of Blades",
+  "sd": [
+   "You have Onslaught if you've changed Stance Recently"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "2959": {
+  "name": "Season of Ice",
+  "sd": [
+   "+12% to Cold Damage over Time Multiplier",
+   "20% increased Effect of Chill"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "29861": {
+  "name": "Explosive Runes",
+  "sd": [
+   "+30% to Brand Critical Strike Multiplier",
+   "30% increased Brand Attachment range"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "30160": {
+  "name": "Fending",
+  "sd": [
+   "15% chance to Knock Enemies Back on hit",
+   "25% increased Knockback Distance"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "30225": {
+  "name": "Lightning Walker",
+  "sd": [
+   "25% increased Lightning Damage",
+   "5% increased Cast Speed with Lightning Skills",
+   "+15% to Lightning Resistance"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "30302": {
+  "name": "Hearty",
+  "sd": [
+   "15% increased Life Regeneration rate",
+   "Regenerate 1.8% of Life per second"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "30439": {
+  "name": "Lava Lash",
+  "sd": [
+   "Damage with Weapons Penetrates 8% Fire Resistance",
+   "30% increased Fire Damage with Attack Skills"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "30471": {
+  "name": "True Strike",
+  "sd": [
+   "+15% to Critical Strike Multiplier",
+   "45% increased Critical Strike Chance"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "30693": {
+  "name": "Divine Fervour",
+  "sd": [
+   "20% increased Attack Damage",
+   "30% increased Melee Critical Strike Chance",
+   "+10 to Strength and Intelligence"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "30974": {
+  "name": "Expert Hunter",
+  "sd": [
+   "20% increased Effect of your Marks"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "31033": {
+  "name": "Robust",
+  "sd": [
+   "Regenerate 10 Life per second",
+   "Regenerate 1.2% of Life per second"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "31257": {
+  "name": "Natural Authority",
+  "sd": [
+   "Enemies Taunted by your Warcries take 8% increased Damage",
+   "20% increased Warcry Buff Effect"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "31359": {
+  "name": "Fatal Toxins",
+  "sd": [
+   "+10% to Damage over Time Multiplier for Poison",
+   "+10% to Chaos Resistance",
+   "30% increased Damage with Poison"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "31473": {
+  "name": "Master of Wounds",
+  "sd": [
+   "+12% to Damage over Time Multiplier for Bleeding",
+   "30% reduced Bleed Duration on you"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "31508": {
+  "name": "Aspect of the Lynx",
+  "sd": [
+   "20% increased Attack Damage",
+   "5% increased Movement Speed",
+   "20% increased Critical Strike Chance for Attacks"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "31513": {
+  "name": "Adjacent Animosity",
+  "sd": [
+   "10% reduced Projectile Speed",
+   "Projectiles deal 40% increased Damage with Hits to targets at the start",
+   "of their movement, reducing to 0% as they travel farther"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "31585": {
+  "name": "Careful Conservationist",
+  "sd": [
+   "10% reduced Flask Charges used",
+   "Flasks applied to you have 5% increased Effect",
+   "20% increased Flask Charges gained if you've dealt a Critical Strike Recently"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "3195": {
+  "name": "Legacy of the Wilds",
+  "sd": [
+   "Tinctures have 40% increased effect while at or above 10 stacks of Mana Burn"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "32059": {
+  "name": "Titanic Impacts",
+  "sd": [
+   "+45% to Critical Strike Multiplier with Two Handed Melee Weapons"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "32176": {
+  "name": "Soul Thief",
+  "sd": [
+   "15% increased Evasion Rating",
+   "10% increased maximum Energy Shield",
+   "Recover 2% of Energy Shield on Kill"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "32227": {
+  "name": "Adder's Touch",
+  "sd": [
+   "+25% to Damage over Time Multiplier for Poison from Critical Strikes",
+   "Critical Strikes with Daggers Poison the Enemy"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "32455": {
+  "name": "Storm Weaver",
+  "sd": [
+   "25% increased Cold Damage",
+   "25% increased Lightning Damage",
+   "Enemies Shocked or Frozen by you take 5% increased Elemental Damage"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "32681": {
+  "name": "Mark the Prey",
+  "sd": [
+   "Marked Enemy has 10% reduced Accuracy Rating",
+   "Marked Enemy takes 10% increased Damage"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "32738": {
+  "name": "Wall of Steel",
+  "sd": [
+   "+10% Chance to Block Attack Damage while Dual Wielding or holding a Shield",
+   "+300 Armour if you've Blocked Recently"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "32853": {
+  "name": "Sione's Ambition",
+  "sd": [
+   "Strike Skills which target additional Enemies can do so from 40% further away"
+  ],
+  "unsupported": [
+   true
+  ]
+ },
+ "32932": {
+  "name": "Sovereignty",
+  "sd": [
+   "12% increased Mana Reservation Efficiency of Skills",
+   "10% increased effect of Non-Curse Auras from your Skills"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "33082": {
+  "name": "Razor's Edge",
+  "sd": [
+   "35% increased Physical Damage with Swords",
+   "Sword Attacks deal 35% increased Damage with Ailments",
+   "Hits have 35% chance to ignore Enemy Physical Damage Reduction"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "3309": {
+  "name": "Fleetfoot",
+  "sd": [
+   "30% increased Evasion Rating",
+   "5% increased Movement Speed",
+   "30% increased Cooldown Recovery Rate of Movement Skills"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "33287": {
+  "name": "Juggernaut",
+  "sd": [
+   "24% increased Armour",
+   "8% increased maximum Life"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "33435": {
+  "name": "Holy Dominion",
+  "sd": [
+   "+12% to all Elemental Resistances",
+   "24% increased Elemental Damage",
+   "10% chance to Freeze, Shock and Ignite"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "33545": {
+  "name": "Harrier",
+  "sd": [
+   "8% increased Attack Speed",
+   "6% increased Cast Speed",
+   "5% increased Movement Speed"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "33582": {
+  "name": "Forceful Skewering",
+  "sd": [
+   "15% chance to Impale Enemies on Hit with Attacks",
+   "10% increased Impale Effect"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "33718": {
+  "name": "Champion of the Cause",
+  "sd": [
+   "12% increased Area of Effect of Aura Skills",
+   "8% increased Reservation Efficiency of Skills",
+   "6% increased effect of Non-Curse Auras from your Skills"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "33722": {
+  "name": "Hollow Effigy",
+  "sd": [
+   "Your Offering Skills do not require a Corpse"
+  ],
+  "unsupported": [
+   true
+  ]
+ },
+ "33725": {
+  "name": "Swagger",
+  "sd": [
+   "+8% Chance to Block Attack Damage while Dual Wielding",
+   "25% chance to gain a Frenzy Charge when you Block"
+  ],
+  "unsupported": [
+   false,
+   true
+  ]
+ },
+ "33777": {
+  "name": "Devastating Devices",
+  "sd": [
+   "50% increased Critical Strike Chance with Mines",
+   "+25% to Critical Strike Multiplier with Mines",
+   "10% chance to gain a Power Charge when your Mine is Detonated targeting an Enemy"
+  ],
+  "unsupported": [
+   false,
+   false,
+   true
+  ]
+ },
+ "33903": {
+  "name": "Will of Blades",
+  "sd": [
+   "40% increased Critical Strike Chance",
+   "20% increased Physical Damage"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "34009": {
+  "name": "Master of the Arena",
+  "sd": [
+   "Regenerate 1% of Life per second",
+   "10% increased Melee Physical Damage",
+   "+0.3 metres to Melee Strike Range",
+   "+20 to Strength"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false,
+   false
+  ]
+ },
+ "34173": {
+  "name": "Overcharge",
+  "sd": [
+   "+1 to Maximum Power Charges"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "34284": {
+  "name": "Seasoned Swordplay",
+  "sd": [
+   "50% increased Mana Reservation Efficiency of Stance Skills"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "34506": {
+  "name": "Golem Commander",
+  "sd": [
+   "40% increased Effect of Buffs granted by your Golems",
+   "+1 to maximum number of Summoned Golems"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "3452": {
+  "name": "Foresight",
+  "sd": [
+   "+20 to maximum Energy Shield",
+   "14% increased maximum Energy Shield",
+   "10% increased Energy Shield Recharge Rate"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "34591": {
+  "name": "Malicious Intent",
+  "sd": [
+   "+2 to Level of all Curse Skill Gems"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "34661": {
+  "name": "Fire Walker",
+  "sd": [
+   "25% increased Fire Damage",
+   "5% increased Cast Speed with Fire Skills",
+   "+15% to Fire Resistance"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "34666": {
+  "name": "Destroyer",
+  "sd": [
+   "25% increased Physical Damage with Two Handed Melee Weapons",
+   "Attacks with Two Handed Melee Weapons deal 25% increased Damage with Ailments",
+   "5% increased Attack Speed with Two Handed Melee Weapons",
+   "25% increased Stun Duration with Two Handed Melee Weapons on Enemies"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false,
+   false
+  ]
+ },
+ "34973": {
+  "name": "Measured Fury",
+  "sd": [
+   "Warcries Exert 1 additional Attack"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "34978": {
+  "name": "Colloidal Mixture",
+  "sd": [
+   "Tinctures applied to you have 15% increased Effect",
+   "Tinctures applied to you have 15% increased Effect if you've used a Life Flask Recently"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "35233": {
+  "name": "Discord Artisan",
+  "sd": [
+   "15% increased Damage for each Herald affecting you",
+   "20% increased Effect of Herald Buffs on you"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "35436": {
+  "name": "Kinetic Impacts",
+  "sd": [
+   "25% increased Physical Damage with Two Handed Melee Weapons",
+   "Attacks with Two Handed Melee Weapons deal 25% increased Damage with Ailments",
+   "10% chance to double Stun Duration",
+   "5% chance to deal Double Damage"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false,
+   false
+  ]
+ },
+ "35663": {
+  "name": "Strong Arm",
+  "sd": [
+   "25% increased Physical Damage with One Handed Melee Weapons",
+   "Attacks with One Handed Melee Weapons deal 25% increased Damage with Ailments",
+   "5% increased Attack Speed with One Handed Melee Weapons",
+   "+20 to Strength"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false,
+   false
+  ]
+ },
+ "35685": {
+  "name": "Fearsome Force",
+  "sd": [
+   "Minions have 60% increased Critical Strike Chance",
+   "Minions have +20% to Critical Strike Multiplier"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "35894": {
+  "name": "Trickery",
+  "sd": [
+   "20% increased Damage",
+   "20% increased Critical Strike Chance",
+   "+10 to Dexterity and Intelligence"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "35958": {
+  "name": "Faith and Steel",
+  "sd": [
+   "15% increased Armour",
+   "10% increased maximum Energy Shield",
+   "+8% to all Elemental Resistances"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "36281": {
+  "name": "Primeval Force",
+  "sd": [
+   "25% increased Elemental Damage during any Flask Effect",
+   "25% increased Elemental Damage with Attack Skills"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "36490": {
+  "name": "Flaying",
+  "sd": [
+   "Dagger Attacks deal 24% increased Damage with Hits and Ailments",
+   "12% increased Attack Speed with Daggers",
+   "18% increased Accuracy Rating with Daggers"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "36687": {
+  "name": "Avatar of the Hunt",
+  "sd": [
+   "30% increased Damage with Bows",
+   "+200 to Evasion Rating",
+   "6% increased Movement Speed",
+   "30% increased Damage Over Time with Bow Skills"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false,
+   false
+  ]
+ },
+ "36736": {
+  "name": "Burning Brutality",
+  "sd": [
+   "+12% to Fire Damage over Time Multiplier with Attack Skills",
+   "6% increased Attack Speed"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "36859": {
+  "name": "Steelwood Stance",
+  "sd": [
+   "Staff Attacks deal 30% increased Damage with Hits and Ailments",
+   "+800 Armour if you've Blocked Recently",
+   "+10% Chance to Block Attack Damage while wielding a Staff"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "36915": {
+  "name": "Sacrifice",
+  "sd": [
+   "Minions have 20% increased maximum Life",
+   "Regenerate 1% of Life per second",
+   "Minions Regenerate 1% of Life per second"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "36949": {
+  "name": "Devotion",
+  "sd": [
+   "10% increased maximum Life",
+   "25% increased Effect of Consecrated Ground you create"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "37078": {
+  "name": "Path of the Savant",
+  "sd": [
+   "16% increased Spell Damage",
+   "+20 to maximum Mana",
+   "+20 to Intelligence"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "37326": {
+  "name": "Stamina",
+  "sd": [
+   "+1 to Maximum Endurance Charges"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "37403": {
+  "name": "Infused Flesh",
+  "sd": [
+   "18% of Damage taken Recouped as Life"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "37425": {
+  "name": "Practised Reapplication",
+  "sd": [
+   "25% increased Tincture Cooldown Recovery Rate"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "37504": {
+  "name": "Intuition",
+  "sd": [
+   "+8% chance to Suppress Spell Damage",
+   "15% increased Evasion Rating",
+   "5% increased maximum Life"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "37512": {
+  "name": "Bastion of Faith",
+  "sd": [
+   "Consecrated Ground you create also grants",
+   "50% reduced duration of Damaging Ailments on you"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "37647": {
+  "name": "Dismembering",
+  "sd": [
+   "40% increased Melee Critical Strike Chance",
+   "+20% to Melee Critical Strike Multiplier",
+   "20% chance to Maim Enemies on Critical Strike with Attacks"
+  ],
+  "unsupported": [
+   false,
+   false,
+   true
+  ]
+ },
+ "38246": {
+  "name": "Presage",
+  "sd": [
+   "Herald Skills have 25% increased Area of Effect",
+   "20% increased Mana Reservation Efficiency of Herald Skills"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "38516": {
+  "name": "Righteous Decree",
+  "sd": [
+   "22% increased maximum Mana",
+   "12% increased Mana Cost Efficiency"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "38706": {
+  "name": "Way of the Warrior",
+  "sd": [
+   "16% increased Melee Damage",
+   "16% increased Armour",
+   "+16 to maximum Life",
+   "+30 to Strength"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false,
+   false
+  ]
+ },
+ "38849": {
+  "name": "Searing Heat",
+  "sd": [
+   "Ignites you inflict deal Damage 15% faster"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "38922": {
+  "name": "Goliath",
+  "sd": [
+   "50% chance to double Stun Duration"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "39530": {
+  "name": "Vitality Void",
+  "sd": [
+   "1% of Attack Damage Leeched as Life",
+   "40% increased Maximum total Life Recovery per second from Leech"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "39657": {
+  "name": "Pain Forger",
+  "sd": [
+   "60% increased Critical Strike Chance with Maces or Sceptres",
+   "10% reduced Enemy Stun Threshold with Maces or Sceptres",
+   "10% chance to gain a Power Charge when you Stun with Melee Damage"
+  ],
+  "unsupported": [
+   false,
+   false,
+   true
+  ]
+ },
+ "39743": {
+  "name": "Dark Arts",
+  "sd": [
+   "+8% Chance to Block Spell Damage while Dual Wielding",
+   "+8% Chance to Block Attack Damage while Dual Wielding",
+   "10% increased Attack Speed while Dual Wielding",
+   "10% increased Cast Speed while Dual Wielding"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false,
+   false
+  ]
+ },
+ "39761": {
+  "name": "Counterweight",
+  "sd": [
+   "60% increased Critical Strike Chance while wielding a Staff",
+   "+30% to Critical Strike Multiplier while wielding a Staff"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "39904": {
+  "name": "Brutal Skewering",
+  "sd": [
+   "Impales you inflict last 1 additional Hit"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "39986": {
+  "name": "Defiled Forces",
+  "sd": [
+   "Curse Skills have 15% increased Cast Speed",
+   "Refresh Duration of Chill and Shock on Enemies you Curse",
+   "Remove Elemental Ailments when you Cast a Curse Spell"
+  ],
+  "unsupported": [
+   false,
+   true,
+   true
+  ]
+ },
+ "40619": {
+  "name": "Awe and Terror",
+  "sd": [
+   "Enemies Killed near your Banner have 20% chance to Explode, dealing a tenth of their Life as Physical Damage",
+   "Banner Skills have 20% increased Area of Effect"
+  ],
+  "unsupported": [
+   true,
+   false
+  ]
+ },
+ "40645": {
+  "name": "Bone Breaker",
+  "sd": [
+   "30% increased Physical Damage with Maces or Sceptres",
+   "Mace or Sceptre Attacks deal 30% increased Damage with Ailments",
+   "15% increased Area of Effect"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "40743": {
+  "name": "Crystal Skin",
+  "sd": [
+   "+1% to all maximum Elemental Resistances",
+   "20% chance to Avoid Elemental Ailments"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "40849": {
+  "name": "Persistence",
+  "sd": [
+   "-10 Physical Damage taken from Hits",
+   "-1 Physical Damage taken from Hits per Level"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "41119": {
+  "name": "Lethality",
+  "sd": [
+   "Projectile Attack Skills have 50% increased Critical Strike Chance",
+   "Projectile Attack Skills have +30% to Critical Strike Multiplier"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "41137": {
+  "name": "Field Medicine",
+  "sd": [
+   "30% increased Life Recovery from Flasks",
+   "Life Flasks gain a Charge when you hit an Enemy, no more than once each second"
+  ],
+  "unsupported": [
+   false,
+   true
+  ]
+ },
+ "41169": {
+  "name": "Jagged Wounds",
+  "sd": [
+   "20% increased Maximum total Life Recovery per second from",
+   "Leech if you've dealt a Critical Strike recently"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "41305": {
+  "name": "Crushing Reply",
+  "sd": [
+   "Retaliation Skills have 50% increased Stun Duration on Enemies",
+   "Retaliation Skills Fortify on Melee Hit"
+  ],
+  "unsupported": [
+   false,
+   true
+  ]
+ },
+ "41307": {
+  "name": "Deadly Inclinations",
+  "sd": [
+   "18% increased Evasion Rating",
+   "+12 to maximum Life",
+   "16% increased Projectile Damage",
+   "+30 to Dexterity"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false,
+   false
+  ]
+ },
+ "41420": {
+  "name": "Natural Remedies",
+  "sd": [
+   "20% increased Flask Effect Duration",
+   "Flasks applied to you have 10% increased Effect",
+   "Remove Maim and Hinder when you use a Flask"
+  ],
+  "unsupported": [
+   false,
+   false,
+   true
+  ]
+ },
+ "41472": {
+  "name": "Discipline and Training",
+  "sd": [
+   "+30 to maximum Life",
+   "10% increased maximum Life"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "41476": {
+  "name": "Elder Power",
+  "sd": [
+   "10% increased Wand Damage per Power Charge",
+   "10% chance to gain a Power Charge on Kill"
+  ],
+  "unsupported": [
+   false,
+   true
+  ]
+ },
+ "41595": {
+  "name": "Marked for Death",
+  "sd": [
+   "Culling Strike against Marked Enemy"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "4177": {
+  "name": "Spiritual Aid",
+  "sd": [
+   "Increases and Reductions to Minion Damage also affect you"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "41870": {
+  "name": "Winter's Embrace",
+  "sd": [
+   "60% increased Freeze Duration on Enemies",
+   "30% increased Damage if you've Shattered an Enemy Recently"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "41989": {
+  "name": "Resourcefulness",
+  "sd": [
+   "+8% chance to Suppress Spell Damage",
+   "10% increased maximum Energy Shield",
+   "5% increased maximum Life"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "42009": {
+  "name": "Soul of Steel",
+  "sd": [
+   "+150 to Armour",
+   "30% increased Armour",
+   "+1% to all maximum Elemental Resistances"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "42041": {
+  "name": "Profane Chemistry",
+  "sd": [
+   "7% increased maximum Life",
+   "30% increased Life Recovery from Flasks",
+   "Life Flasks gain 1 Charge every 3 seconds"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "4207": {
+  "name": "Window of Opportunity",
+  "sd": [
+   "15% reduced Skill Effect Duration",
+   "Debuffs on you expire 15% faster"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "42443": {
+  "name": "Frenetic",
+  "sd": [
+   "+1 to Maximum Frenzy Charges"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "42649": {
+  "name": "Snowforged",
+  "sd": [
+   "25% increased Fire Damage",
+   "25% increased Cold Damage",
+   "Enemies Ignited or Chilled by you have -5% to Elemental Resistances"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "42686": {
+  "name": "Elemental Focus",
+  "sd": [
+   "20% increased Duration of Elemental Ailments on Enemies",
+   "20% increased Elemental Damage",
+   "20% increased Effect of Non-Damaging Ailments"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "42720": {
+  "name": "Heavy Draw",
+  "sd": [
+   "30% increased Physical Damage with Bows",
+   "50% increased Stun Duration with Bows on Enemies",
+   "30% increased Damage Over Time with Bow Skills"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "42795": {
+  "name": "Arcane Focus",
+  "sd": [
+   "20% increased maximum Energy Shield",
+   "10% faster start of Energy Shield Recharge",
+   "+10 to Intelligence"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "42804": {
+  "name": "Mind Drinker",
+  "sd": [
+   "20% increased maximum Mana",
+   "Recover 2% of Mana on Kill"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "42917": {
+  "name": "Whirling Barrier",
+  "sd": [
+   "20% chance to gain a Power Charge when you Block",
+   "+8% Chance to Block Attack Damage while wielding a Staff",
+   "+8% Chance to Block Spell Damage while wielding a Staff"
+  ],
+  "unsupported": [
+   true,
+   false,
+   false
+  ]
+ },
+ "43385": {
+  "name": "Winter Spirit",
+  "sd": [
+   "Gain 10% of Physical Damage as Extra Cold Damage"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "4354": {
+  "name": "Beacon of Hope",
+  "sd": [
+   "80% increased Area of Effect of Aura Skills"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "43689": {
+  "name": "Spiritual Command",
+  "sd": [
+   "Minions have 8% increased Attack Speed",
+   "Minions have 8% increased Cast Speed",
+   "Increases and Reductions to Minion Attack Speed also affect you"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "44102": {
+  "name": "Efficient Explosives",
+  "sd": [
+   "30% increased Mana Reservation Efficiency of Skills that throw Mines",
+   "Mines have a 15% chance to be Detonated an Additional Time"
+  ],
+  "unsupported": [
+   false,
+   true
+  ]
+ },
+ "44103": {
+  "name": "Reflexes",
+  "sd": [
+   "+10% chance to Suppress Spell Damage",
+   "+100 to Evasion Rating",
+   "30% increased Evasion Rating"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "44191": {
+  "name": "As The Mountain",
+  "sd": [
+   "+12% Chance to Block Attack Damage while Dual Wielding or holding a Shield",
+   "+3% to maximum Chance to Block Attack Damage"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "44207": {
+  "name": "Testudo",
+  "sd": [
+   "+10% Chance to Block Attack Damage while holding a Shield",
+   "60% increased Block Recovery",
+   "Recover 30 Life when you Block"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "44347": {
+  "name": "Divine Fury",
+  "sd": [
+   "Gain 5% of Physical Damage as Extra Fire Damage",
+   "Damage Penetrates 5% Fire Resistance"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "44562": {
+  "name": "Shaman's Dominion",
+  "sd": [
+   "50% increased Critical Strike Chance with Totem Skills",
+   "+20% to Critical Strike Multiplier with Totem Skills"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "44788": {
+  "name": "Potent Connections",
+  "sd": [
+   "25% increased Defences while you have at least four Linked targets",
+   "10% increased Movement Speed while you have at least two Linked targets"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "4481": {
+  "name": "Forces of Nature",
+  "sd": [
+   "Attack Damage Penetrates 10% of Enemy Elemental Resistances"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "44824": {
+  "name": "Mysticism",
+  "sd": [
+   "20% increased Spell Damage while Dual Wielding",
+   "6% increased Cast Speed while Dual Wielding",
+   "40% increased Mana Regeneration if you've used a Movement Skill Recently"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "44955": {
+  "name": "Frost Walker",
+  "sd": [
+   "25% increased Cold Damage",
+   "5% increased Cast Speed with Cold Skills",
+   "+15% to Cold Resistance"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "44988": {
+  "name": "Wasting",
+  "sd": [
+   "+10% to Chaos Damage over Time Multiplier",
+   "+17% to Chaos Resistance"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "45067": {
+  "name": "Thrill Killer",
+  "sd": [
+   "16% increased maximum Mana",
+   "Recover 2% of Mana on Kill"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "45283": {
+  "name": "Cornered Prey",
+  "sd": [
+   "+30% to Critical Strike Multiplier against Bleeding Enemies",
+   "80% increased Critical Strike Chance against Bleeding Enemies"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "45317": {
+  "name": "Ash, Frost and Storm",
+  "sd": [
+   "30% increased Elemental Damage",
+   "10% chance to Freeze, Shock and Ignite",
+   "30% increased Effect of Non-Damaging Ailments"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "45329": {
+  "name": "Trick Shot",
+  "sd": [
+   "30% increased Chaining range"
+  ],
+  "unsupported": [
+   true
+  ]
+ },
+ "45350": {
+  "name": "Glory of Command",
+  "sd": [
+   "40% increased Accuracy Rating while you have at least 1 nearby Ally",
+   "15% increased Area of Effect for Attacks while you have at least 1 nearby Ally"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "45608": {
+  "name": "Successive Detonations",
+  "sd": [
+   "10% increased Critical Strike Chance for each Mine Detonated",
+   "Recently, up to 100%",
+   "+4% to Critical Strike Multiplier for each Mine Detonated",
+   "Recently, up to 40%"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false,
+   false
+  ]
+ },
+ "45657": {
+  "name": "Trial of the Faith",
+  "sd": [
+   "50% increased Stun and Block Recovery",
+   "Regenerate 5% of Energy Shield over 1 second when Stunned",
+   "Regenerate 5% of Life over 1 second when Stunned"
+  ],
+  "unsupported": [
+   false,
+   true,
+   true
+  ]
+ },
+ "45803": {
+  "name": "Veteran Soldier",
+  "sd": [
+   "+15% to Physical Damage over Time Multiplier",
+   "+25 to maximum Life"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "45945": {
+  "name": "Conjured Barrier",
+  "sd": [
+   "30% chance to Ignore Stuns while Casting",
+   "50% increased Stun and Block Recovery",
+   "30% increased Mana Regeneration Rate while stationary"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "46408": {
+  "name": "Fangs of the Viper",
+  "sd": [
+   "20% increased Chaos Damage",
+   "5% increased Movement Speed",
+   "+20 to Dexterity",
+   "20% increased Physical Damage"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false,
+   false
+  ]
+ },
+ "46471": {
+  "name": "Powerful Bond",
+  "sd": [
+   "20% increased Buff Effect of your Links for which 50% of Link Duration has Expired",
+   "Curses are inflicted on you instead of Linked targets"
+  ],
+  "unsupported": [
+   true,
+   false
+  ]
+ },
+ "46842": {
+  "name": "Arcane Potency",
+  "sd": [
+   "30% increased Spell Critical Strike Chance",
+   "+30% to Critical Strike Multiplier for Spell Damage"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "46904": {
+  "name": "Arcane Sanctuary",
+  "sd": [
+   "+8% Chance to Block Spell Damage while holding a Shield",
+   "25% increased Spell Damage while holding a Shield",
+   "25% reduced Elemental Ailment Duration on you while holding a Shield"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "46965": {
+  "name": "Saboteur",
+  "sd": [
+   "30% increased Trap Damage",
+   "30% increased Mine Damage",
+   "Can have up to 2 additional Traps placed at a time",
+   "Can have up to 2 additional Remote Mines placed at a time"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false,
+   false
+  ]
+ },
+ "47065": {
+  "name": "Master of Blades",
+  "sd": [
+   "Hits have 30% chance to ignore Enemy Physical Damage Reduction",
+   "+30 to Strength",
+   "30% increased Physical Damage"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "47306": {
+  "name": "Throatseeker",
+  "sd": [
+   "+30% to Critical Strike Multiplier"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "47471": {
+  "name": "Overcharged",
+  "sd": [
+   "8% chance to gain a Power, Frenzy or Endurance Charge on Kill"
+  ],
+  "unsupported": [
+   true
+  ]
+ },
+ "47484": {
+  "name": "Depth Perception",
+  "sd": [
+   "+100 to Accuracy Rating",
+   "25% increased Critical Strike Chance",
+   "20% increased Accuracy Rating"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "47743": {
+  "name": "Farsight",
+  "sd": [
+   "24% increased Damage with Bows",
+   "6% increased Attack Speed with Bows",
+   "16% increased Accuracy Rating with Bows",
+   "24% increased Damage Over Time with Bow Skills"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false,
+   false
+  ]
+ },
+ "48298": {
+  "name": "Insightfulness",
+  "sd": [
+   "10% increased maximum Energy Shield",
+   "16% increased maximum Mana",
+   "16% increased Mana Cost Efficiency"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "4833": {
+  "name": "Vigour",
+  "sd": [
+   "+1 to Maximum Endurance Charges"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "48438": {
+  "name": "Bravery",
+  "sd": [
+   "24% increased Evasion Rating and Armour",
+   "8% increased maximum Life"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "4854": {
+  "name": "Asylum",
+  "sd": [
+   "+18% to Chaos Resistance",
+   "18% reduced Effect of Curses on you"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "48556": {
+  "name": "Heart of Darkness",
+  "sd": [
+   "27% increased Chaos Damage",
+   "Damage Penetrates 7% Chaos Resistance"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "48614": {
+  "name": "Fervour",
+  "sd": [
+   "+1 to Maximum Frenzy Charges"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "48698": {
+  "name": "Void Barrier",
+  "sd": [
+   "18% increased Evasion Rating",
+   "12% increased maximum Energy Shield",
+   "+10% chance to Suppress Spell Damage while on Full Energy Shield"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "48807": {
+  "name": "Art of the Gladiator",
+  "sd": [
+   "10% increased Attack Speed",
+   "Ignore all Movement Penalties from Armour",
+   "+20 to Dexterity",
+   "10% increased Accuracy Rating"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false,
+   false
+  ]
+ },
+ "48823": {
+  "name": "Deadly Draw",
+  "sd": [
+   "30% increased Damage Over Time with Bow Skills",
+   "Damaging Ailments deal damage 10% faster"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "4918": {
+  "name": "Indiscriminate Revenge",
+  "sd": [
+   "Retaliation Skills have 30% increased Area of Effect"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "49254": {
+  "name": "Retribution",
+  "sd": [
+   "15% increased Damage",
+   "Minions deal 15% increased Damage",
+   "5% increased Attack and Cast Speed",
+   "+10 to Strength and Intelligence"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false,
+   false
+  ]
+ },
+ "49318": {
+  "name": "Wrecking Ball",
+  "sd": [
+   "Attacks with Two Handed Melee Weapons deal 25% increased Damage with Hits and Ailments",
+   "10% increased Attack Speed with Two Handed Melee Weapons",
+   "40% increased Stun Duration with Two Handed Melee Weapons on Enemies"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "49379": {
+  "name": "Hired Killer",
+  "sd": [
+   "7% increased maximum Life",
+   "Recover 2% of Life on Kill"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "4940": {
+  "name": "Cleaving",
+  "sd": [
+   "30% increased Physical Damage with Axes",
+   "Axe Attacks deal 30% increased Damage with Ailments",
+   "15% chance to Intimidate Enemies for 4 seconds on Hit with Attacks"
+  ],
+  "unsupported": [
+   false,
+   false,
+   true
+  ]
+ },
+ "49416": {
+  "name": "Adamant",
+  "sd": [
+   "25% increased Armour",
+   "Remove Bleeding when you use a Guard Skill",
+   "Remove Corrupted Blood when you use a Guard Skill",
+   "Guard Skills have 25% increased Duration"
+  ],
+  "unsupported": [
+   false,
+   true,
+   true,
+   false
+  ]
+ },
+ "49445": {
+  "name": "Deep Breaths",
+  "sd": [
+   "35% increased Warcry Cooldown Recovery Rate",
+   "Warcry Skills have 40% increased Area of Effect"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "49459": {
+  "name": "King of the Hill",
+  "sd": [
+   "100% increased Critical Strike Chance with Bows"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "49538": {
+  "name": "Defiance",
+  "sd": [
+   "+3% Chance to Block Attack Damage while holding a Shield",
+   "Attack Skills deal 24% increased Damage while holding a Shield",
+   "60% increased Defences from Equipped Shield"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "49621": {
+  "name": "Acuity",
+  "sd": [
+   "6% increased Attack Speed",
+   "+100 to Accuracy Rating",
+   "20% increased Accuracy Rating"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "49645": {
+  "name": "Cauterisation",
+  "sd": [
+   "Bleeding enemies cannot inflict Bleeding on you",
+   "Ignited enemies cannot Ignite you"
+  ],
+  "unsupported": [
+   true,
+   true
+  ]
+ },
+ "49772": {
+  "name": "Utmost Might",
+  "sd": [
+   "+40 to Strength",
+   "8% increased Strength"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "49969": {
+  "name": "Courage",
+  "sd": [
+   "30% increased Armour if you have been Hit Recently",
+   "30% increased Evasion Rating if you haven't been Hit Recently",
+   "+15% chance to Suppress Spell Damage if you've Hit an Enemy Recently"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "50029": {
+  "name": "Unnatural Calm",
+  "sd": [
+   "18% increased maximum Energy Shield",
+   "15% increased Energy Shield Recharge Rate",
+   "+1% to maximum Lightning Resistance"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "50338": {
+  "name": "Ballistics",
+  "sd": [
+   "20% increased Projectile Speed",
+   "20% increased Projectile Damage",
+   "+20 to Dexterity"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "50690": {
+  "name": "Replenishing Remedies",
+  "sd": [
+   "15% increased Flask Charges gained",
+   "Life Flasks gain 2 Charges every 3 seconds",
+   "Mana Flasks gain 2 Charges every 3 seconds"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "50842": {
+  "name": "Veteran's Wrath",
+  "sd": [
+   "Gain 2 Rage on Melee Hit",
+   "Inherent Rage Loss starts 1 second later"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "50858": {
+  "name": "Admonisher",
+  "sd": [
+   "50% increased Warcry Speed",
+   "15% increased Damage for each time you've Warcried Recently"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "51108": {
+  "name": "Arcane Capacitor",
+  "sd": [
+   "15% increased maximum Mana",
+   "10% increased Effect of Arcane Surge on you per",
+   "200 Mana spent Recently, up to 50%",
+   "10% chance to gain Arcane Surge when you Kill an Enemy"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false,
+   false
+  ]
+ },
+ "51212": {
+  "name": "Entropy",
+  "sd": [
+   "23% increased Damage over Time",
+   "10% increased Skill Effect Duration"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "5126": {
+  "name": "Spinecruncher",
+  "sd": [
+   "30% increased Physical Damage with Maces or Sceptres",
+   "Mace or Sceptre Attacks deal 30% increased Damage with Ailments",
+   "100% increased Stun Duration against Enemies that are on Full Life"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "51360": {
+  "name": "Mixed Munitions",
+  "sd": [
+   "5% increased Cooldown Recovery Rate for throwing Traps per Mine Detonated Recently"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "51440": {
+  "name": "Druidic Rite",
+  "sd": [
+   "20% increased maximum Mana",
+   "20% increased Flask Effect Duration"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "51559": {
+  "name": "Smashing Strikes",
+  "sd": [
+   "Staff Attacks deal 30% increased Damage with Hits and Ailments",
+   "30% increased Critical Strike Chance with Staves",
+   "10% chance to gain an Endurance Charge on Melee Critical Strike"
+  ],
+  "unsupported": [
+   false,
+   false,
+   true
+  ]
+ },
+ "51748": {
+  "name": "Last Rites",
+  "sd": [
+   "Cursed Enemies you Kill are destroyed",
+   "Enemies Cursed by you have 50% reduced Life Regeneration Rate",
+   "Enemies you Curse cannot Recharge Energy Shield"
+  ],
+  "unsupported": [
+   true,
+   false,
+   true
+  ]
+ },
+ "51881": {
+  "name": "Master Fletcher",
+  "sd": [
+   "Bow Attacks fire an additional Arrow"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "52030": {
+  "name": "Burst of Energy",
+  "sd": [
+   "Recover 15% of Mana when you activate a Tincture"
+  ],
+  "unsupported": [
+   true
+  ]
+ },
+ "52031": {
+  "name": "Disintegration",
+  "sd": [
+   "60% increased Critical Strike Chance with Wands",
+   "+30% to Critical Strike Multiplier with Wands",
+   "+20 to Intelligence"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "52090": {
+  "name": "Feller of Foes",
+  "sd": [
+   "Axe Attacks deal 30% increased Damage with Hits and Ailments",
+   "+40% to Critical Strike Multiplier with Axes",
+   "+200 to Accuracy Rating with Axes"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "52157": {
+  "name": "Soul Siphon",
+  "sd": [
+   "+20 to maximum Mana",
+   "18% increased maximum Mana",
+   "Gain 10 Mana per Enemy Killed"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "52230": {
+  "name": "Weathered Hunter",
+  "sd": [
+   "+100 to Accuracy Rating",
+   "+10% to all Elemental Resistances",
+   "20% increased Accuracy Rating"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "52282": {
+  "name": "Tenacity",
+  "sd": [
+   "5% increased maximum Life",
+   "Transfiguration of Body"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "52742": {
+  "name": "Hasty Demise",
+  "sd": [
+   "30% increased Damage Over Time with Spell Skills",
+   "8% increased Cast Speed",
+   "10% reduced Skill Effect Duration"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "52789": {
+  "name": "Circle of Life",
+  "sd": [
+   "Gain 10 Life per Enemy Hit with Attacks",
+   "12% of Damage taken Recouped as Life"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "5289": {
+  "name": "Battle Rouse",
+  "sd": [
+   "15% increased maximum Mana",
+   "10% of Damage taken Recouped as Mana"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "529": {
+  "name": "Poisonous Fangs",
+  "sd": [
+   "+10% to Damage over Time Multiplier for Poison",
+   "Claw Attacks deal 25% increased Damage with Ailments",
+   "6% increased Attack Speed with Claws"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "53013": {
+  "name": "Atrophy",
+  "sd": [
+   "27% increased Chaos Damage",
+   "12% increased Skill Effect Duration"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "53042": {
+  "name": "Exceptional Performance",
+  "sd": [
+   "25% increased Skill Effect Duration"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "53114": {
+  "name": "Revenge of the Hunted",
+  "sd": [
+   "18% increased Evasion Rating",
+   "10% increased maximum Life",
+   "+10% chance to Suppress Spell Damage while on Full Life"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "53118": {
+  "name": "Barbarism",
+  "sd": [
+   "8% increased maximum Life",
+   "+1% to maximum Fire Resistance",
+   "+8% to Fire Resistance"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "53493": {
+  "name": "Annihilation",
+  "sd": [
+   "50% increased Spell Critical Strike Chance",
+   "+15% to Critical Strike Multiplier for Spell Damage"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "53573": {
+  "name": "Arcane Expanse",
+  "sd": [
+   "Spell Skills have 20% increased Area of Effect"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "53652": {
+  "name": "Steeped in the Profane",
+  "sd": [
+   "15% reduced Effect of Curses on you",
+   "10% increased Effect of your Curses"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "53757": {
+  "name": "Shamanistic Fury",
+  "sd": [
+   "25% increased Totem Damage",
+   "25% increased Totem Placement speed"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "53759": {
+  "name": "Cleansed Thoughts",
+  "sd": [
+   "Chaos Resistance is doubled"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "53802": {
+  "name": "Essence Extraction",
+  "sd": [
+   "25% increased Flask Charges gained",
+   "15% increased Mana Recovery Rate during Effect of any Mana Flask"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "53840": {
+  "name": "Vengeance",
+  "sd": [
+   "Every Rage also grants 1% increased Armour",
+   "Gain 3 Rage when Hit by an Enemy"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "54142": {
+  "name": "Finesse",
+  "sd": [
+   "8% increased Attack Speed",
+   "+20 to Dexterity",
+   "15% increased Accuracy Rating"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "54268": {
+  "name": "Blade Barrier",
+  "sd": [
+   "+10% Chance to Block Attack Damage while Dual Wielding",
+   "50% increased Block Recovery",
+   "Attack Skills deal 25% increased Damage while Dual Wielding"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "5430": {
+  "name": "Magmatic Strikes",
+  "sd": [
+   "Every 10 seconds, gain 30% of Physical Damage",
+   "as Extra Fire Damage for 4 seconds"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "544": {
+  "name": "Surveillance",
+  "sd": [
+   "Attacks used by Totems have 8% increased Attack Speed",
+   "Attack Skills have +1 to maximum number of Summoned Ballista Totems",
+   "Each Totem applies 1% increased Damage taken to Enemies near it"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "54629": {
+  "name": "Inexorable",
+  "sd": [
+   "25% chance to gain an Endurance Charge when you are Hit",
+   "50% increased Armour while stationary"
+  ],
+  "unsupported": [
+   true,
+   false
+  ]
+ },
+ "54694": {
+  "name": "Light of Divinity",
+  "sd": [
+   "20% increased Spell Damage",
+   "30% increased Spell Critical Strike Chance",
+   "+10 to Strength and Intelligence",
+   "10% increased Light Radius"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false,
+   false
+  ]
+ },
+ "54713": {
+  "name": "Force Shaper",
+  "sd": [
+   "Gain 10% of Physical Damage as Extra Chaos Damage",
+   "4% increased Attack and Cast Speed"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "54776": {
+  "name": "Mana Flows",
+  "sd": [
+   "16% increased maximum Mana",
+   "30% increased Mana Regeneration Rate",
+   "+20 to Intelligence"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "54791": {
+  "name": "Claws of the Magpie",
+  "sd": [
+   "Claw Attacks deal 25% increased Damage with Hits and Ailments",
+   "10% increased Attack Speed with Claws",
+   "25% chance to Steal Power, Frenzy, and Endurance Charges on Hit with Claws"
+  ],
+  "unsupported": [
+   false,
+   false,
+   true
+  ]
+ },
+ "55002": {
+  "name": "Righteous Fury",
+  "sd": [
+   "10% chance to create Consecrated Ground on Melee Kill, lasting 4 seconds",
+   "40% increased Melee Damage with Hits at Close Range"
+  ],
+  "unsupported": [
+   true,
+   false
+  ]
+ },
+ "55027": {
+  "name": "Shining Justice",
+  "sd": [
+   "20% increased Effect of Consecrated Ground you create",
+   "Consecrated Ground you create grants 30% increased Accuracy Rating to you and Allies"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "55114": {
+  "name": "Utmost Intellect",
+  "sd": [
+   "+40 to Intelligence",
+   "8% increased Intelligence"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "55194": {
+  "name": "Settling Ash",
+  "sd": [
+   "Nearby Enemies are Covered in Ash if you haven't moved in the past 2 seconds"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "55380": {
+  "name": "Clever Construction",
+  "sd": [
+   "10% Chance for Traps to Trigger an additional time"
+  ],
+  "unsupported": [
+   true
+  ]
+ },
+ "55381": {
+  "name": "Arcane Retaliation",
+  "sd": [
+   "25% more Spell Damage if you've been Stunned while Casting Recently"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "55485": {
+  "name": "Constitution",
+  "sd": [
+   "+20 to maximum Life",
+   "10% increased maximum Life"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "5574": {
+  "name": "Force of Darkness",
+  "sd": [
+   "Damage Penetrates 15% Chaos Resistance"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "55772": {
+  "name": "Blacksmith's Clout",
+  "sd": [
+   "35% increased Physical Damage with Maces or Sceptres",
+   "Mace or Sceptre Attacks deal 35% increased Damage with Ailments",
+   "+35% to Critical Strike Multiplier with Maces or Sceptres"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "56094": {
+  "name": "One with the River",
+  "sd": [
+   "30% increased Elemental Damage with Staves",
+   "Damage with Weapons Penetrates 5% Elemental Resistances"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "56146": {
+  "name": "Deliberate Brutality",
+  "sd": [
+   "Impales you inflict gain 50% increased Effect once 1 second of Duration has expired"
+  ],
+  "unsupported": [
+   true
+  ]
+ },
+ "56207": {
+  "name": "Hardened Scars",
+  "sd": [
+   "15% increased Life Recovery from Flasks",
+   "25% less Damage over Time taken during Effect of any Life Flask"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "5624": {
+  "name": "Crusader",
+  "sd": [
+   "8% increased maximum Mana",
+   "Transfiguration of Mind"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "56274": {
+  "name": "Lasting Tempest",
+  "sd": [
+   "50% increased Duration of Elemental Ailments on Enemies"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "56276": {
+  "name": "Nightstalker",
+  "sd": [
+   "+30% to Critical Strike Multiplier with Daggers",
+   "0.6% of Attack Damage Leeched as Life",
+   "0.6% of Attack Damage Leeched as Mana"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "56330": {
+  "name": "Flow of Battle",
+  "sd": [
+   "Retaliation Skills deal 30% increased Damage",
+   "Gain 5 Rage on Hit with Retaliation Skills"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "56359": {
+  "name": "Cannibalistic Rite",
+  "sd": [
+   "Attack Skills Cost Life instead of 10% of Mana Cost",
+   "25% increased Cost Efficiency of Attacks"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "56648": {
+  "name": "Claws of the Falcon",
+  "sd": [
+   "15% increased Accuracy Rating with Claws",
+   "+40% to Critical Strike Multiplier with Claws"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "56716": {
+  "name": "Heart of Thunder",
+  "sd": [
+   "30% increased Lightning Damage",
+   "Damage Penetrates 6% Lightning Resistance"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "570": {
+  "name": "Dazzling Strikes",
+  "sd": [
+   "50% increased Critical Strike Chance against Blinded Enemies",
+   "20% chance to Blind Enemies on Hit with Attacks",
+   "20% increased Blind Effect"
+  ],
+  "unsupported": [
+   false,
+   true,
+   false
+  ]
+ },
+ "57006": {
+  "name": "Vengeant Cascade",
+  "sd": [
+   "Returning Projectiles have 150% increased Speed"
+  ],
+  "unsupported": [
+   true
+  ]
+ },
+ "57199": {
+  "name": "Fangs of Frost",
+  "sd": [
+   "Damage with Weapons Penetrates 8% Cold Resistance",
+   "30% increased Cold Damage with Attack Skills"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "57839": {
+  "name": "Blade of Cunning",
+  "sd": [
+   "15% increased Accuracy Rating with Swords",
+   "45% increased Critical Strike Chance with Swords",
+   "+15% to Critical Strike Multiplier with Swords"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "57900": {
+  "name": "Command of Steel",
+  "sd": [
+   "+8% Chance to Block Attack Damage while holding a Shield",
+   "50% increased Defences from Equipped Shield"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "58032": {
+  "name": "Serpentine Spellslinger",
+  "sd": [
+   "Enemies Poisoned by you have -5% to Chaos Resistance",
+   "Spell Skills have +12% to Damage over Time Multiplier for Poison"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "58168": {
+  "name": "High Voltage",
+  "sd": [
+   "100% increased Critical Strike Chance against Shocked Enemies"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "58198": {
+  "name": "Fingers of Frost",
+  "sd": [
+   "Enemies Become Chilled as they Unfreeze, causing 30% reduced Action Speed",
+   "30% chance to Freeze Enemies which are Chilled"
+  ],
+  "unsupported": [
+   true,
+   false
+  ]
+ },
+ "58218": {
+  "name": "Purity of Flesh",
+  "sd": [
+   "8% increased maximum Energy Shield",
+   "10% increased maximum Life",
+   "+8% to Chaos Resistance"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "5823": {
+  "name": "Coordination",
+  "sd": [
+   "10% increased Attack Speed",
+   "8% increased Cast Speed",
+   "+10 to Dexterity and Intelligence"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "58382": {
+  "name": "Renowned Deeds",
+  "sd": [
+   "+30 to maximum Valour"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "58449": {
+  "name": "Born to Fight",
+  "sd": [
+   "4% increased Attack Speed",
+   "+20 to Strength",
+   "26% increased Physical Damage"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "58831": {
+  "name": "Disemboweling",
+  "sd": [
+   "50% increased Melee Critical Strike Chance",
+   "+25% to Melee Critical Strike Multiplier"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "58851": {
+  "name": "Leader of the Pack",
+  "sd": [
+   "20% increased Area of Effect of Aura Skills",
+   "12% increased Reservation Efficiency of Skills"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "58921": {
+  "name": "Disciple of the Slaughter",
+  "sd": [
+   "+1 to Minimum Frenzy Charges",
+   "8% chance to gain a Frenzy Charge on Kill",
+   "8% increased Damage per Frenzy Charge"
+  ],
+  "unsupported": [
+   false,
+   true,
+   false
+  ]
+ },
+ "59151": {
+  "name": "Brutal Blade",
+  "sd": [
+   "+6% Chance to Block Attack Damage while Dual Wielding or holding a Shield",
+   "Sword Attacks deal 24% increased Damage with Hits and Ailments",
+   "20% chance to gain a Frenzy Charge when you Block Attack Damage"
+  ],
+  "unsupported": [
+   false,
+   false,
+   true
+  ]
+ },
+ "59423": {
+  "name": "Escalation",
+  "sd": [
+   "10% increased Melee Damage for each second you've been affected by a Warcry Buff, up to a maximum of 60%"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "59556": {
+  "name": "Expeditious Munitions",
+  "sd": [
+   "50% increased Trap Trigger Area of Effect",
+   "12% increased Trap Throwing Speed"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "59605": {
+  "name": "Unstable Munitions",
+  "sd": [
+   "30% increased Trap Damage",
+   "12% increased Area of Effect",
+   "50% increased Trap Trigger Area of Effect"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "59766": {
+  "name": "Dirty Techniques",
+  "sd": [
+   "Damaging Ailments deal damage 15% faster"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "59866": {
+  "name": "Entrench",
+  "sd": [
+   "+12% chance to Suppress Spell Damage",
+   "Life Flasks gain 3 Charges when you Suppress Spell Damage"
+  ],
+  "unsupported": [
+   false,
+   true
+  ]
+ },
+ "59976": {
+  "name": "Careful Counterattack",
+  "sd": [
+   "10% chance to Block Attack Damage if you've used a Retaliation Skill Recently",
+   "10% chance to Block Spell Damage if you've used a Retaliation Skill Recently"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "6": {
+  "name": "Twin Terrors",
+  "sd": [
+   "100% increased Attack Critical Strike Chance while Dual Wielding"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "60002": {
+  "name": "Fury Bolts",
+  "sd": [
+   "20% increased Projectile Speed",
+   "20% increased Projectile Damage",
+   "+20 to Strength"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "60031": {
+  "name": "Prismatic Skin",
+  "sd": [
+   "+2% to all maximum Elemental Resistances"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "60085": {
+  "name": "Arcane Conservation",
+  "sd": [
+   "10% increased Cast Speed",
+   "20% increased Mana Cost Efficiency of Spells",
+   "3% increased Intelligence"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "60501": {
+  "name": "Heart of Flame",
+  "sd": [
+   "30% increased Fire Damage",
+   "Damage Penetrates 6% Fire Resistance"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "60619": {
+  "name": "Galvanic Hammer",
+  "sd": [
+   "10% increased Accuracy Rating with Maces or Sceptres",
+   "30% increased Elemental Damage with Maces or Sceptres",
+   "Damage with Weapons Penetrates 5% Elemental Resistances"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "60737": {
+  "name": "Sleight of Hand",
+  "sd": [
+   "Attacks with One Handed Weapons deal 30% increased Damage with Ailments",
+   "8% increased Attack Speed with One Handed Weapons",
+   "20% increased Damage with One Handed Weapons"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "60781": {
+  "name": "Inspiring Bond",
+  "sd": [
+   "10% chance for Energy Shield Recharge to start when you Link to a target",
+   "Link Skills have 20% increased Buff Effect if you have Linked to a target Recently"
+  ],
+  "unsupported": [
+   true,
+   false
+  ]
+ },
+ "61039": {
+  "name": "Wild Hunger",
+  "sd": [
+   "0.8% of Attack Damage Leeched as Life",
+   "30% increased Maximum total Life Recovery per second from Leech"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "61190": {
+  "name": "Rallying Icon",
+  "sd": [
+   "Banner Skills have 15% increased Aura Effect",
+   "Banners also grant +5% to all Elemental Resistances to you and Allies"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "61198": {
+  "name": "Heart of the Warrior",
+  "sd": [
+   "+20 to maximum Life",
+   "10% increased maximum Life",
+   "+10 to Strength"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "61308": {
+  "name": "Amplify",
+  "sd": [
+   "10% increased Area of Effect",
+   "20% increased Area Damage"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "61689": {
+  "name": "Explosive Elements",
+  "sd": [
+   "Mine Damage Penetrates 10% Elemental Resistances"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "61981": {
+  "name": "Doom Cast",
+  "sd": [
+   "60% increased Spell Critical Strike Chance",
+   "+15% to Critical Strike Multiplier for Spell Damage"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "61982": {
+  "name": "Grave Intentions",
+  "sd": [
+   "Minions have +27% to Chaos Resistance",
+   "Minions gain 20% of Maximum Life as Extra Maximum Energy Shield"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "62094": {
+  "name": "Taste for Blood",
+  "sd": [
+   "1% of Attack Damage Leeched as Life",
+   "30% increased Maximum total Life Recovery per second from Leech"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "6233": {
+  "name": "Blast Waves",
+  "sd": [
+   "Skills used by Mines deal 30% increased Area Damage if you Detonated a Mine Recently",
+   "Skills used by Mines have 15% increased Area of Effect if you Detonated a Mine Recently"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "6237": {
+  "name": "Precision",
+  "sd": [
+   "6% increased Attack and Cast Speed",
+   "+20 to Dexterity",
+   "10% increased Accuracy Rating"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "62577": {
+  "name": "Essence Surge",
+  "sd": [
+   "+30 to maximum Energy Shield",
+   "20% faster start of Energy Shield Recharge"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "62596": {
+  "name": "Mystic Talents",
+  "sd": [
+   "16% increased Spell Damage",
+   "+14 to maximum Energy Shield",
+   "25% increased Mana Regeneration Rate",
+   "+30 to Intelligence"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false,
+   false
+  ]
+ },
+ "62802": {
+  "name": "Brink of Death",
+  "sd": [
+   "Regenerate 4% of Life per second while on Low Life"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "62849": {
+  "name": "Glacial Cage",
+  "sd": [
+   "Enemies permanently take 1% increased Damage for each second they've ever been Chilled by you, up to a maximum of 10%"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "6289": {
+  "name": "Bloodless",
+  "sd": [
+   "10% increased maximum Life",
+   "Enemies Cannot Leech Life From you"
+  ],
+  "unsupported": [
+   false,
+   true
+  ]
+ },
+ "63033": {
+  "name": "Bannerman",
+  "sd": [
+   "Your Banner Buffs Linger on you for 3 seconds after you leave the Area",
+   "Banner Skills have 20% increased Duration"
+  ],
+  "unsupported": [
+   true,
+   false
+  ]
+ },
+ "63150": {
+  "name": "Ironwood",
+  "sd": [
+   "40% increased Totem Life",
+   "Totems have 40% additional Physical Damage Reduction"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "63207": {
+  "name": "Tempest Blast",
+  "sd": [
+   "Gain 20% of Wand Physical Damage as Extra Lightning Damage"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "63251": {
+  "name": "Inveterate",
+  "sd": [
+   "Prevent +3% of Suppressed Spell Damage",
+   "+15% chance to Suppress Spell Damage"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "63422": {
+  "name": "Lust for Carnage",
+  "sd": [
+   "12% increased Attack Speed",
+   "1.5% of Physical Attack Damage Leeched as Life"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "63453": {
+  "name": "Excess Sustenance",
+  "sd": [
+   "15% chance to gain 200 Life on Hit with Attacks"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "63635": {
+  "name": "Primal Manifestation",
+  "sd": [
+   "30% increased Totem Damage",
+   "30% increased Totem Life",
+   "50% increased Totem Duration"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "63727": {
+  "name": "Gladiator's Perseverance",
+  "sd": [
+   "10% increased Attack Speed when on Full Life",
+   "1% of Physical Attack Damage Leeched as Life",
+   "40% increased Attack Damage while Leeching"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "63921": {
+  "name": "Utmost Swiftness",
+  "sd": [
+   "+40 to Dexterity",
+   "8% increased Dexterity"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "63933": {
+  "name": "Totemic Zeal",
+  "sd": [
+   "30% increased Totem Placement speed",
+   "Spells Cast by Totems have 8% increased Cast Speed",
+   "Attacks used by Totems have 10% increased Attack Speed"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "63944": {
+  "name": "Prism Weave",
+  "sd": [
+   "6% increased Attack Speed with Wands",
+   "24% increased Elemental Damage with Wands",
+   "Damage with Weapons Penetrates 5% Elemental Resistances"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "63976": {
+  "name": "Shaper",
+  "sd": [
+   "40% increased Mana Regeneration Rate",
+   "Regenerate 1% of Life per second"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "64077": {
+  "name": "Warrior Training",
+  "sd": [
+   "+0.2 metres to Melee Strike Range",
+   "Melee Skills have 12% increased Area of Effect"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "64217": {
+  "name": "Aspect of Stone",
+  "sd": [
+   "20% chance to Avoid Physical Damage from Hits"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "64226": {
+  "name": "Roaring Challenge",
+  "sd": [
+   "25% increased total Power counted by Warcries"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "64355": {
+  "name": "Brand Equity",
+  "sd": [
+   "You can Cast 2 additional Brands",
+   "Brand Skills have 20% increased Duration",
+   "Brand Recall has 20% increased Cooldown Recovery Rate"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "64395": {
+  "name": "Blunt Trauma",
+  "sd": [
+   "40% increased Critical Strike Chance with Staves",
+   "+20% to Critical Strike Multiplier with Staves",
+   "Knocks Back Enemies if you get a Critical Strike with a Staff"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "64882": {
+  "name": "Disciple of the Unyielding",
+  "sd": [
+   "+1 to Minimum Endurance Charges",
+   "8% chance to gain an Endurance Charge on Kill",
+   "8% increased Damage per Endurance Charge"
+  ],
+  "unsupported": [
+   false,
+   true,
+   false
+  ]
+ },
+ "65053": {
+  "name": "Essence Sap",
+  "sd": [
+   "0.5% of Attack Damage Leeched as Mana",
+   "50% increased Maximum total Mana Recovery per second from Leech",
+   "100% increased total Recovery per second from Mana Leech"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "65093": {
+  "name": "Bladedancer",
+  "sd": [
+   "Sword Attacks deal 30% increased Damage with Hits and Ailments",
+   "+0.3 metres to Melee Strike Range with Swords"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "65097": {
+  "name": "Leadership",
+  "sd": [
+   "30% increased Area of Effect of Aura Skills",
+   "6% increased effect of Non-Curse Auras from your Skills"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "65107": {
+  "name": "Bastion Breaker",
+  "sd": [
+   "30% increased Attack Physical Damage",
+   "Hits have 50% chance to ignore Enemy Physical Damage Reduction"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "65108": {
+  "name": "Tireless",
+  "sd": [
+   "10% increased maximum Life",
+   "10% increased Cost Efficiency"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "65210": {
+  "name": "Heart of Oak",
+  "sd": [
+   "8% increased maximum Life",
+   "20% chance to Avoid being Stunned",
+   "Regenerate 2% of Life per Second if you've used a Life Flask in the past 10 seconds"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "65224": {
+  "name": "Aspect of the Eagle",
+  "sd": [
+   "20% increased Damage with Bows",
+   "6% increased Attack Speed with Bows",
+   "10% increased Accuracy Rating with Bows",
+   "20% increased Damage Over Time with Bow Skills"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false,
+   false
+  ]
+ },
+ "65273": {
+  "name": "Enigmatic Reach",
+  "sd": [
+   "3% increased Area of Effect per Power Charge",
+   "25% chance to gain a Power Charge when you Block Spell Damage",
+   "+8% Chance to Block Spell Damage while wielding a Staff"
+  ],
+  "unsupported": [
+   false,
+   true,
+   false
+  ]
+ },
+ "65308": {
+  "name": "Diamond Skin",
+  "sd": [
+   "+15% to all Elemental Resistances"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "65502": {
+  "name": "Heartseeker",
+  "sd": [
+   "+30% to Critical Strike Multiplier"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "6615": {
+  "name": "Arcing Blows",
+  "sd": [
+   "Damage with Weapons Penetrates 8% Lightning Resistance",
+   "30% increased Lightning Damage with Attack Skills"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "6770": {
+  "name": "Arcane Guarding",
+  "sd": [
+   "+10% Chance to Block Spell Damage while holding a Shield",
+   "60% increased Energy Shield from Equipped Shield"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "6783": {
+  "name": "Savage Skewering",
+  "sd": [
+   "15% increased Impale Effect"
+  ],
+  "unsupported": [
+   false
+  ]
+ },
+ "6799": {
+  "name": "Charisma",
+  "sd": [
+   "16% increased Mana Reservation Efficiency of Skills",
+   "6% increased effect of Non-Curse Auras from your Skills"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "6967": {
+  "name": "Safeguard",
+  "sd": [
+   "+3% to maximum Chance to Block Spell Damage",
+   "Recover 50 Energy Shield when you Block Spell Damage",
+   "+10% chance to Block Spell Damage while holding a Staff or Shield"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "7069": {
+  "name": "Split Shot",
+  "sd": [
+   "Projectiles have 50% chance for an additional Projectile when Forking"
+  ],
+  "unsupported": [
+   true
+  ]
+ },
+ "7085": {
+  "name": "Weapon Artistry",
+  "sd": [
+   "+4% Chance to Block Attack Damage while Dual Wielding or holding a Shield",
+   "8% increased Attack Speed",
+   "+0.2 metres to Melee Strike Range"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "7136": {
+  "name": "Master Sapper",
+  "sd": [
+   "30% increased Trap Damage",
+   "Can have up to 2 additional Traps placed at a time",
+   "15% chance to gain a Frenzy Charge when your Trap is triggered by an Enemy"
+  ],
+  "unsupported": [
+   false,
+   false,
+   true
+  ]
+ },
+ "7263": {
+  "name": "Swift Venoms",
+  "sd": [
+   "+14% to Damage over Time Multiplier for Poison",
+   "10% increased Attack Speed"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "7440": {
+  "name": "Harvester of Foes",
+  "sd": [
+   "30% increased Physical Damage with Axes",
+   "Axe Attacks deal 30% increased Damage with Ailments",
+   "12% increased Impale Effect"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "7555": {
+  "name": "Crackling Speed",
+  "sd": [
+   "24% increased Lightning Damage",
+   "8% increased Cast Speed"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "7688": {
+  "name": "Enduring Bond",
+  "sd": [
+   "20% increased Skill Effect Duration",
+   "Minions deal 30% increased Damage if you've used a Minion Skill Recently",
+   "20% increased Minion Duration"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "7918": {
+  "name": "Enigmatic Defence",
+  "sd": [
+   "20% increased Spell Damage while wielding a Staff",
+   "+8% Chance to Block Attack Damage while wielding a Staff",
+   "+8% Chance to Block Spell Damage while wielding a Staff"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "8001": {
+  "name": "Clever Thief",
+  "sd": [
+   "1% of Attack Damage Leeched as Life",
+   "1% of Attack Damage Leeched as Mana"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "8135": {
+  "name": "Practical Application",
+  "sd": [
+   "+10% to all Elemental Resistances",
+   "25% chance to Ignore Stuns while Casting",
+   "+20 to Strength and Dexterity"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "8458": {
+  "name": "Longshot",
+  "sd": [
+   "30% increased Projectile Speed",
+   "Projectiles gain Damage as they travel farther, dealing up",
+   "to 60% increased Damage with Hits to targets"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "861": {
+  "name": "Aggressive Bastion",
+  "sd": [
+   "+8% Chance to Block Attack Damage while holding a Shield",
+   "30% increased Physical Attack Damage while holding a Shield",
+   "Attack Skills deal 30% increased Damage with Ailments while holding a Shield",
+   "10% chance to gain an Endurance Charge on Kill while holding a Shield"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false,
+   true
+  ]
+ },
+ "8833": {
+  "name": "Heart of Ice",
+  "sd": [
+   "30% increased Cold Damage",
+   "Damage Penetrates 6% Cold Resistance"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "8920": {
+  "name": "Backstabbing",
+  "sd": [
+   "30% increased Critical Strike Chance with Daggers",
+   "+30% to Critical Strike Multiplier with Daggers",
+   "100% increased Critical Strike Chance against Enemies that are on Full Life"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "9015": {
+  "name": "Dire Torment",
+  "sd": [
+   "+25% to Damage over Time Multiplier for Ailments from Critical Strikes",
+   "40% increased Critical Strike Chance"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "9055": {
+  "name": "Volatile Mines",
+  "sd": [
+   "30% increased Mine Duration",
+   "Can have up to 3 additional Remote Mines placed at a time",
+   "Mines have 30% increased Detonation Speed"
+  ],
+  "unsupported": [
+   false,
+   false,
+   true
+  ]
+ },
+ "9194": {
+  "name": "Merciless Skewering",
+  "sd": [
+   "15% chance to Impale Enemies on Hit with Attacks",
+   "12% increased Impale Effect"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "9261": {
+  "name": "Disciple of the Forbidden",
+  "sd": [
+   "+1 to Minimum Power Charges",
+   "8% chance to gain a Power Charge on Kill",
+   "8% increased Damage per Power Charge"
+  ],
+  "unsupported": [
+   false,
+   true,
+   false
+  ]
+ },
+ "9432": {
+  "name": "Mental Rapidity",
+  "sd": [
+   "10% increased Cast Speed",
+   "30% increased Mana Regeneration Rate"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "9535": {
+  "name": "Hunter's Gambit",
+  "sd": [
+   "+10% to Chaos Damage over Time Multiplier",
+   "10% increased Skill Effect Duration",
+   "25% increased Damage Over Time with Bow Skills"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "9567": {
+  "name": "Light Eater",
+  "sd": [
+   "0.8% of Spell Damage Leeched as Energy Shield",
+   "30% increased Maximum total Energy Shield Recovery per second from Leech",
+   "24% increased Damage while on Full Energy Shield"
+  ],
+  "unsupported": [
+   false,
+   false,
+   false
+  ]
+ },
+ "9788": {
+  "name": "Nimbleness",
+  "sd": [
+   "8% increased Cast Speed",
+   "+15% to Critical Strike Multiplier for Spell Damage"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ },
+ "9864": {
+  "name": "Growth and Decay",
+  "sd": [
+   "+12% to Damage over Time Multiplier",
+   "Regenerate 1% of Life per second"
+  ],
+  "unsupported": [
+   false,
+   false
+  ]
+ }
+}

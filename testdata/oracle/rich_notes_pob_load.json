@@ -1,0 +1,14 @@
+{
+  "notes":"^xE05030No guard^7\n^x70FF70No flask^7\n^x8888FFChain default^7\n^xADAA47Vaal Haste off^7\n\n^xD02090^xD02090Upgrades from h^xD02090ere^7^xD02090:^7^7^7\n\n-Perfect Tiger and we cast determination\n-Awakened empower\n-Amanamu jewel? They are so weird\n\n\n\nIm not very versed in making my own builds but this looks promising\n\"quoted\" it's\ttabbed <tag> & ^1red",
+  "savedNotes":"^xE05030No guard^7\n^x70FF70No flask^7\n^x8888FFChain default^7\n^xADAA47Vaal Haste off^7\n\n^xD02090^xD02090Upgrades from h^xD02090ere^7^xD02090:^7^7^7\n\n-Perfect Tiger and we cast determination\n-Awakened empower\n-Amanamu jewel? They are so weird\n\n\n\nIm not very versed in making my own builds but this looks promising\n\"quoted\" it's\ttabbed <tag> & ^1red",
+  "firstSocketGroupLabel":"Main \"6L\" it's\nline two\ttabbed",
+  "enemyMods":"+10% to \"Fire\" Resistance\nit's a second line\tafter a tab",
+  "customMods":[{
+      "title":"Default",
+      "text":"--Spectral leader--\nMinions 15% increased Action Speed\n\n--Turtle--\nDetermination has no Reservation\n5% additional Physical Damage Reduction"
+    },{
+      "title":"Say \"hi\" it's",
+      "text":"+10 to \"Strength\"\n+5 to maximum Life"
+    }],
+  "savedHasRichNotes":false
+}

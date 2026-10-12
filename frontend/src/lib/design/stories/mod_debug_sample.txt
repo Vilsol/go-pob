@@ -1,0 +1,120 @@
+=== Modifiers ===
+'AbsorptionChargesMax':
+	0 = BASE|-|-|-|Base
+'AccelerationShrine':
+	true = FLAG|-|-|type=Condition/VarList={AccelerationShrine}|Base
+'Accuracy':
+	2 = BASE|-|-|type=Multiplier/Division=1/TagBase=-2/VariableList={Level}|Base
+	118 = BASE|-|-|-|Item:-1:Marylene's Fallacy, Lapis Amulet
+	194 = BASE|-|-|-|Dexterity
+	0 = INC|-|-|-|Consecrated Ground
+'ActionSpeed':
+	-10 = MORE|-|-|type=Condition/VarList={MalignantMadness}|Base
+	-60 = INC|-|-|type=GlobalEffect/GlobalEffectList={Debuff},type=Condition/VarList={AffectedByGloriousMadness}|10 Paralysing Touch Stacks
+'ActiveBrandLimit':
+	3 = BASE|-|-|-|Base
+'ActiveMineLimit':
+	15 = BASE|-|-|-|Base
+'ActiveTotemLimit':
+	1 = BASE|-|-|-|Base
+'ActiveTrapLimit':
+	15 = BASE|-|-|-|Base
+'AddToClusterJewelNode':
+	3% increased Damage = LIST|-|-|-|Item:-1:Soul Bliss, Small Cluster Jewel
+	+4 to Intelligence = LIST|-|-|-|Item:-1:Soul Bliss, Small Cluster Jewel
+	5% increased Damage = LIST|-|-|-|Item:-1:Spirit Curio, Small Cluster Jewel
+	+5% to Fire Resistance = LIST|-|-|-|Item:-1:Spirit Curio, Small Cluster Jewel
+	+8 to Strength = LIST|-|-|-|Item:-1:Spirit Curio, Small Cluster Jewel
+'Adrenaline':
+	true = FLAG|-|-|type=Condition/VarList={Adrenaline}|Base
+'AfflictionChargesMax':
+=== Conditions ===
+AffectedByArcaneSurge
+AffectedByFrostShield
+AffectedByGuardSkill
+AffectedByInfusedChannelling
+AffectedByNonVaalGuardSkill
+AffectedByPurityofElements
+AffectedBySmite
+AffectedBySteelskin
+=== Multipliers ===
+AmuletItem = 1
+AuraAffectingSelf = 4
+BeltItem = 1
+BloodCharge = 5
+BodyArmourItem = 1
+BootsItem = 1
+=== Main Skill ===
+Lightning Tendrils of Eccentricity 20/30
+Infused Channelling 21/30
+Focused Channelling 19/30
+Controlled Destruction 20/30
+Concentrated Effect 20/30
+Elemental Penetration 20/30
+=== Main Skill Flags ===
+Mod: Area,Cast,Hit,Spell
+Keyword: Hit,Lightning,Spell
+=== Main Skill Mods ===
+30 = Damage|MORE|-|-|-|Skill:SupportInfusedChannelling
+30 = SupportManaMultiplier|MORE|-|-|-|?
+15 = Speed|INC|Cast|-|-|Skill:SupportFocusedChannelling
+20 = Cost|MORE|-|-|type=Multiplier/Division=1/TagLimit=100/TagLimitTotal=true/VariableList={ChannellingTime}|Skill:SupportFocusedChannelling
+24 = Damage|MORE|-|-|type=Multiplier/Division=1/TagLimit=60/TagLimitTotal=true/VariableList={ChannellingTime}|Skill:SupportFocusedChannelling
+15 = Damage|INC|Spell|-|-|Skill:SupportControlledDestruction
+-80 = CritChance|MORE|-|-|-|Skill:SupportControlledDestruction
+39 = Damage|MORE|Spell|-|-|Skill:SupportControlledDestruction
+40 = SupportManaMultiplier|MORE|-|-|-|?
+15 = Damage|INC|Area|-|-|Skill:SupportConcentratedEffect
+39 = Damage|MORE|Area|-|-|Skill:SupportConcentratedEffect
+-30 = AreaOfEffect|MORE|-|-|-|Skill:SupportConcentratedEffect
+40 = SupportManaMultiplier|MORE|-|-|-|?
+15 = ElementalDamage|INC|-|-|-|Skill:SupportElementalPenetration
+28 = ElementalPenetration|BASE|-|-|-|Skill:SupportElementalPenetration
+30 = SupportManaMultiplier|MORE|-|-|-|?
+{Key=radius/Merge=/Value=36} = SkillData|LIST|-|-|-|Skill:LightningTendrilsAltX
+60 = CritMultiplier|BASE|-|-|-|Skill:LightningTendrilsAltX
+101 = CritChance|OVERRIDE|-|-|type=SkillPart/Part=3|Skill:LightningTendrilsAltX
+150 = AreaOfEffect|MORE|-|-|type=SkillPart/Part=3|Skill:LightningTendrilsAltX
+500 = Damage|MORE|-|Ailment,Hit|type=SkillPart/Part=3|Skill:LightningTendrilsAltX
+{Key=pulseDamage/Merge=/Value=500} = SkillData|LIST|-|-|-|Skill:LightningTendrilsAltX
+true = Every5UseCrit|FLAG|-|-|type=SkillPart/Part=1|Skill:LightningTendrilsAltX
+{Key=pulseInterval/Merge=/Value=5} = SkillData|LIST|-|-|-|Skill:LightningTendrilsAltX
+{Key=LightningMax/Merge=/Value=916} = SkillData|LIST|-|-|-|Skill:LightningTendrilsAltX
+{Key=LightningMin/Merge=/Value=48} = SkillData|LIST|-|-|-|Skill:LightningTendrilsAltX
+20 = GemLevel|BASE|-|-|-|Max Level
+20 = GemQuality|BASE|-|-|-|Max Quality
+10 = GemSocketQuality|BASE|-|-|-|Socket Quality
+0 = Multiplier:TraumaStacks|BASE|-|-|-|Maximum Sustainable Trauma Stacks
+278.08395692017 = Damage|MORE|-|Ailment,Hit|type=SkillPart/Part=1|Average Pulse Damage
+true = Condition:LightningHasDamage|FLAG|-|-|-|Config
+true = Condition:LightningIsHighestDamageType|FLAG|-|-|-|Config
+=== Main Skill Data ===
+CritChance = 6
+DpsMultiplier = 1
+LightningMax = 916
+LightningMin = 48
+PulseDamage = 500
+PulseInterval = 5
+Radius = 36
+== Aux Skills ==
+Skill #1:
+  Lightning Tendrils of Eccentricity 20/30
+  Infused Channelling 21/30
+  Focused Channelling 19/30
+  Controlled Destruction 20/30
+== Output Table ==
+AbsorptionCharges = 0
+AbsorptionChargesMax = 0
+AbsorptionChargesMin = 0
+Accuracy = 500
+AccuracyHitChance = 100
+ActionSpeedMod = 1
+ActiveMineLimit = 15
+ActiveTrapLimit = 15
+AfflictionCharges = 0
+AfflictionChargesMax = 0
+AfflictionChargesMin = 0
+AilmentWarcryEffect = 1
+AnyAegis = 0
+AnyBypass = 0
+AnyGuard = 0

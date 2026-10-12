@@ -1,9 +1,169 @@
 min_version = '2025.2.7'
 
 [tools]
-go = "1.24.0"
-golangci-lint = "1.64.5"
+go = "1.26.2"
+golangci-lint = "2.12.2"
 task = "3.41.0"
+zig = "0.13.0"
+luajit = "2.1.1744318430"
+node = "26"
+
+[tasks.test-race]
+description = "Run the Go tests under the race detector (cgo via zig cc)"
+run = './scripts/nice.sh env CGO_ENABLED=1 CC="zig cc" go test -race -ldflags=-linkmode=external ./calculator/... ./moddb/... ./mod/... ./data/...'
+
+[tasks.repin]
+description = "Re-measure every assertDivergesFromOracle pin on the integrated tree (CHECK=1 dry-runs)"
+run = "task repin"
+
+[tasks.citations]
+description = "Verify every //pob: citation resolves against the pinned PoB, and report coverage (REPORT=1 to never fail)"
+run = "task citations"
+
+[tasks.test-wasm]
+description = "Compile and RUN every package's tests under js/wasm via node (what CI does)"
+run = "./scripts/nice.sh ./.github/wasm_test.sh"
+
+[tasks.build-go]
+description = "Build frontend/static/go-pob.wasm (GOOS=js GOARCH=wasm)"
+run = "task build-go"
+
+[tasks.e2e]
+description = "Playwright e2e journeys + model-based sequences + perf baseline (Chromium)"
+run = "task e2e --"
+
+[tasks.build-frontend]
+description = "Build the SvelteKit frontend"
+run = "task build-frontend"
+
+[tasks.dev-go]
+description = "Watch *.go and rebuild the wasm + typings"
+run = "task dev-go"
+
+[tasks.dev-frontend]
+description = "Vite dev server"
+run = "task dev-frontend"
+
+[tasks.storybook]
+description = "Storybook for the design-spec components (http://localhost:6006)"
+run = "task storybook"
+
+[tasks.storybook-tests]
+description = "Every story as a browser test: renders, play function, a11y (axe)"
+run = "task storybook-tests"
+
+[tasks.design-fixtures]
+description = "Regenerate the Storybook shell's sample data from real corpus builds (CHECK=1 fails on drift)"
+run = "task design-fixtures"
+
+[tasks.storybook-publish]
+description = "Build the static Storybook and publish it to Chromatic"
+run = "task storybook-publish"
+
+[tasks.generate-typings]
+description = "Regenerate frontend/src/lib/types from the exposition layer"
+run = "task generate-typings"
+
+[tasks.dump]
+description = "Dump the 16-build set through headless PoB (set POB_DIR)"
+run = "task dump"
+
+[tasks.oracle]
+description = "Regenerate the small PoB oracle fixtures"
+run = "task oracle"
+
+[tasks.build]
+description = "Build the WASM binary and the frontend"
+run = "task build"
+
+[tasks.test]
+description = "Run the Go and frontend test suites"
+run = "task test"
+
+[tasks.lint-go]
+description = "golangci-lint over the Go packages"
+run = "task lint-go"
+
+[tasks.format-go]
+description = "Format the Go sources"
+run = "task format-go"
+
+[tasks.lint-frontend]
+description = "Lint the frontend (prettier/eslint)"
+run = "task lint-frontend"
+
+[tasks.format-frontend]
+description = "Format the frontend"
+run = "task format-frontend"
+
+[tasks.test-go]
+description = "Go test suite"
+run = "task test-go"
+
+[tasks.test-frontend]
+description = "Frontend vitest suite"
+run = "task test-frontend"
+
+[tasks.lint]
+description = "Lint Go and frontend"
+run = "task lint"
+
+[tasks.format]
+description = "Format Go and frontend"
+run = "task format"
+
+[tasks.generate]
+description = "Regenerate the JS/TS typings from the exposition layer"
+run = "task generate"
+
+[tasks.pre-commit]
+description = "generate + format + lint"
+run = "task pre-commit"
+
+[tasks.corpus-determinism]
+description = "Cross-process corpus determinism gate (RUNS=n; 8 default, 24 to clear a flake)"
+run = "task corpus-determinism"
+
+[tasks.corpus-dump]
+description = "Dump per-build corpus output for diffing: mise run corpus-dump OUT=<file> [REF=<sha>] (REF dumps that commit, working tree untouched)"
+run = "task corpus-dump"
+
+[tasks.census]
+description = "Player+enemy modDB census vs PoB's dumps (defaults to the v2 dumps; the old ones have no enemy side)"
+run = "task census"
+
+[tasks.corpus-diff]
+description = "Diff two corpus dumps: mise run corpus-diff -- A=<file> B=<file>"
+run = "task corpus-diff"
+
+[tasks.oracle-corpus]
+description = "Rebuild testdata/oracle-<version> from a dump set of the same version (IN=<dumps dir>)"
+run = "task oracle-corpus"
+
+[tasks.dump-reservation]
+description = "Per-skill reservation terms from headless PoB for a SUBSET of builds (BUILDS=<dir> OUT=<dir>)"
+run = "task dump-reservation"
+
+[tasks.task]
+description = "Escape hatch: run any Taskfile target under the pinned toolchain (mise run task -- <target>)"
+run = "task"
 
 [env]
 MISE_NODE_COREPACK = true
+NODE_OPTIONS = "--no-experimental-webstorage"
+GOFLAGS = "-trimpath"
+
+[hooks]
+enter = "mise i -q"
+postinstall = 'npx corepack enable'
+
+[settings]
+experimental = true
+
+[tasks.testdata]
+description = "Fetch the corpus and oracle release pinned in scripts/testdata.json into testdata/"
+run = "task testdata"
+
+[tasks.testdata-pack]
+description = "Pack the corpus and oracle into release archives and refresh scripts/testdata.json (OUT=<dir> DATE=yyyy.mm.dd)"
+run = "task testdata-pack"

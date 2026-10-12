@@ -1,0 +1,9 @@
+package app
+
+type ifacer interface {
+	GetIface() string
+}
+
+func Iface(i ifacer) string {
+	return i.GetIface()
+}

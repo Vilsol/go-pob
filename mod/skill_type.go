@@ -3,15 +3,15 @@ package mod
 var _ Tag = (*SkillTypeTag)(nil)
 
 type SkillTypeTag struct {
-	TagType   Type
-	SkillType string // TODO Change to data.SkillType
-	Negative  bool
+	TagType       Type
+	SkillTypeList []string
+	Negative      bool
 }
 
-func SkillType(skillType string) *SkillTypeTag {
+func SkillType(skillTypes ...string) *SkillTypeTag {
 	return &SkillTypeTag{
-		TagType:   TypeSkillType,
-		SkillType: skillType,
+		TagType:       TypeSkillType,
+		SkillTypeList: skillTypes,
 	}
 }
 

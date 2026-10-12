@@ -8,6 +8,7 @@ type StatThresholdTag struct {
 	Threshold        float64
 	TagUpper         bool
 	TagThresholdStat string
+	ThresholdPercent float64
 }
 
 func StatThreshold(stat string, threshold float64) *StatThresholdTag {
@@ -32,6 +33,11 @@ func (t *StatThresholdTag) Type() Type {
 
 func (t *StatThresholdTag) Upper(upper bool) *StatThresholdTag {
 	t.TagUpper = upper
+	return t
+}
+
+func (t *StatThresholdTag) Percent(thresholdPercent float64) *StatThresholdTag {
+	t.ThresholdPercent = thresholdPercent
 	return t
 }
 

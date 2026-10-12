@@ -1,0 +1,780 @@
+[
+ {
+  "line": "(1-1.5)% of Damage leeched as Life while affected by Vitality",
+  "range": 0.5
+ },
+ {
+  "line": "(1-1.5)% of Fire Damage Leeched as Life while affected by Anger",
+  "range": 0.5
+ },
+ {
+  "line": "(1-1.5)% of Lightning Damage is Leeched as Energy Shield while affected by Wrath",
+  "range": 0.5
+ },
+ {
+  "line": "(1-1.5)% of Lightning Damage is Leeched as Mana while affected by Wrath",
+  "range": 0.5
+ },
+ {
+  "line": "Regenerate (1-1.5)% of Life per second while affected by Vitality",
+  "range": 0.5
+ },
+ {
+  "line": "Regenerate (1.5-2.5)% of Energy Shield per Second while affected by Discipline",
+  "range": 0.5
+ },
+ {
+  "line": "+(1-2)% to Critical Strike Chance against Enemies on Consecrated Ground during Effect",
+  "range": 0.5
+ },
+ {
+  "line": "+(-15-10)% to all Elemental Resistances",
+  "range": 0.5
+ },
+ {
+  "line": "(2-3)% of Physical Attack Damage Leeched as Life",
+  "range": 0.5
+ },
+ {
+  "line": "+(-23-23)% to Chaos Resistance",
+  "range": 0.5
+ },
+ {
+  "line": "(0.8-1.2)% of Damage leeched as Life while affected by Vitality",
+  "range": 0.94
+ },
+ {
+  "line": "(1-1.5)% of Physical Attack Damage Leeched as Mana",
+  "range": 0.5
+ },
+ {
+  "line": "+(1.2-1.8)% to Critical Strike Chance while affected by Hatred",
+  "range": 0.94
+ },
+ {
+  "line": "Regenerate (100-140) Life per Second while affected by Vitality",
+  "range": 0.94
+ },
+ {
+  "line": "(1-3)% of Physical Damage Prevented Recently is Regenerated as Energy Shield Per Second if 6 Crusader Items are Equipped",
+  "range": 0.5
+ },
+ {
+  "line": "+(1-1.5)% to Spell Critical Strike Chance if 4 Shaper Items are Equipped",
+  "range": 0.5
+ },
+ {
+  "line": "Attacks have +(1-1.5)% to Critical Strike Chance if 4 Elder Items are Equipped",
+  "range": 0.5
+ },
+ {
+  "line": "Regenerate (15-20) Life per second per Endurance Charge",
+  "range": 0.5
+ },
+ {
+  "line": "Regenerate (15-20) Life per second",
+  "range": 0.5
+ },
+ {
+  "line": "(0.8-1)% of Attack Damage Leeched as Life",
+  "range": 0.74
+ },
+ {
+  "line": "(0.8-1)% of Physical Attack Damage Leeched as Life",
+  "range": 0.74
+ },
+ {
+  "line": "Regenerate (1.6-2)% of Life per second",
+  "range": 0.875
+ },
+ {
+  "line": "Regenerate (3-6) Mana per second",
+  "range": 0.939
+ },
+ {
+  "line": "(1-3)% of Elemental Damage Leeched as Energy Shield if 2 Shaper Items are Equipped",
+  "range": 0.8
+ },
+ {
+  "line": "(1-3)% of Physical Damage Leeched as Energy Shield if 2 Elder Items are Equipped",
+  "range": 0.8
+ },
+ {
+  "line": "(1.2-2)% of Physical Attack Damage Leeched as Life",
+  "range": 0.213
+ },
+ {
+  "line": "(2.6-3)% of Physical Attack Damage Leeched as Life",
+  "range": 0.1
+ },
+ {
+  "line": "+(-5-5) to Maximum Rage",
+  "range": 0.488
+ },
+ {
+  "line": "+(0.5-0.8)% to Spell Critical Strike Chance",
+  "range": 0.5
+ },
+ {
+  "line": "+(1-7)% to Unarmed Melee Attack Critical Strike Chance",
+  "range": 0.986667
+ },
+ {
+  "line": "+(5-10)% to Unarmed Melee Attack Critical Strike Chance",
+  "range": 0.912
+ },
+ {
+  "line": "Regenerate (1.00-1.50)% of Life per second while affected by Vitality",
+  "range": 0.4
+ },
+ {
+  "line": "Regenerate (1.50-2.50)% of Energy Shield per Second while affected by Discipline",
+  "range": 0.82
+ },
+ {
+  "line": "Regenerate (10-15) Life per second",
+  "range": 0.98
+ },
+ {
+  "line": "Regenerate (2-4) Life per second",
+  "range": 0.75
+ },
+ {
+  "line": "Regenerate (200-350) Life per second",
+  "range": 0.963
+ },
+ {
+  "line": "Regenerate (3-4) Life per second",
+  "range": 0.5
+ },
+ {
+  "line": "Regenerate (8-10) Mana per second",
+  "range": 0.9
+ },
+ {
+  "line": "(30-40)% faster start of Energy Shield Recharge while affected by Discipline",
+  "range": 0.5
+ },
+ {
+  "line": "+(20-30) to Dexterity",
+  "range": 0.5
+ },
+ {
+  "line": "+(17-20)% to Fire and Lightning Resistances",
+  "range": 1.0
+ },
+ {
+  "line": "+(8-12)% Chance to Block Attack Damage during Effect",
+  "range": 1.0
+ },
+ {
+  "line": "Minions deal (26-30)% increased Damage",
+  "range": 1.0
+ },
+ {
+  "line": "+(100-120) to maximum Mana",
+  "range": 0.5
+ },
+ {
+  "line": "(3-4)% chance to gain a Frenzy Charge on Kill",
+  "range": 0.5
+ },
+ {
+  "line": "(20-120)% increased Power Charge Duration",
+  "range": 0.0
+ },
+ {
+  "line": "+(25-75) to all Attributes",
+  "range": 1.0
+ },
+ {
+  "line": "(10-30)% chance to gain an Power Charge on Kill",
+  "range": 0.5
+ },
+ {
+  "line": "+(-30-30)% to Lightning Resistance",
+  "range": 0.866
+ },
+ {
+  "line": "(10-15)% chance to gain a Power Charge on Hit if 4 Crusader Items are Equipped",
+  "range": 0.5
+ },
+ {
+  "line": "(600-800)% more Physical Damage with Unarmed Melee Attacks",
+  "range": 0.5
+ },
+ {
+  "line": "Grants (6-10) Life per Enemy Hit",
+  "range": 0.5
+ },
+ {
+  "line": "(60-70)% increased effect",
+  "range": 0.963
+ },
+ {
+  "line": "Herald of Purity has (30-40)% increased Mana Reservation Efficiency",
+  "range": 0.5
+ },
+ {
+  "line": "Socketed Gems are Supported by Level (1-10) Faster Projectiles",
+  "range": 0.5
+ },
+ {
+  "line": "Socketed Gems are Supported by Level (1-10) Second Wind",
+  "range": 0.5
+ },
+ {
+  "line": "Socketed Gems are Supported by Level (25-35) Divine Blessing",
+  "range": 0.5
+ },
+ {
+  "line": "Socketed Gems are Supported by Level (25-35) Overexertion",
+  "range": 0.5
+ },
+ {
+  "line": "(17-18)% increased Area of Effect",
+  "range": 0.5
+ },
+ {
+  "line": "+(11-13)% to Physical Damage over Time Multiplier",
+  "range": 0.5
+ },
+ {
+  "line": "Denoted service of (500-8000) dekhara in the akhara of Asenath",
+  "range": 0.5
+ },
+ {
+  "line": "Socketed Gems are Supported by Level (25-35) Eclipse",
+  "range": 0.5
+ },
+ {
+  "line": "(20-60)% increased Armour and Energy Shield",
+  "range": 0.5
+ },
+ {
+  "line": "+(20-25)% to Fire Resistance",
+  "range": 1.0
+ },
+ {
+  "line": "Gain (5-8)% of Elemental Damage as Extra Chaos Damage",
+  "range": 0.793
+ },
+ {
+  "line": "(14-16)% increased Projectile Damage",
+  "range": 0.0
+ },
+ {
+  "line": "(30-35)% chance to Avoid Elemental Ailments",
+  "range": 0.5
+ },
+ {
+  "line": "(8-10)% chance to deal Double Damage",
+  "range": 0.5
+ },
+ {
+  "line": "+(20-25)% to Chaos Resistance when on Low Life",
+  "range": 0.5
+ },
+ {
+  "line": "+(51-58) to Dexterity",
+  "range": 0.74
+ },
+ {
+  "line": "Minions deal (67-82)% increased Damage",
+  "range": 0.915
+ },
+ {
+  "line": "(10-20)% increased Projectile Speed",
+  "range": 0.805
+ },
+ {
+  "line": "(15-25)% increased Stun and Block Recovery",
+  "range": 1.0
+ },
+ {
+  "line": "(21-23)% increased Stun Threshold",
+  "range": 1.0
+ },
+ {
+  "line": "(300-400)% increased Evasion and Energy Shield",
+  "range": 1.0
+ },
+ {
+  "line": "(5-7)% increased Global Defences",
+  "range": 0.5
+ },
+ {
+  "line": "(8-10)% increased maximum Mana",
+  "range": 0.5
+ },
+ {
+  "line": "+(100-150) to maximum Mana",
+  "range": 1.0
+ },
+ {
+  "line": "+(20-30) to Dexterity",
+  "range": 0.659
+ },
+ {
+  "line": "+(30-40)% to Lightning Resistance",
+  "range": 0.5
+ },
+ {
+  "line": "+(60-80) to Armour",
+  "range": 0.74
+ },
+ {
+  "line": "Adds (3-12) to (5-16) Fire Damage",
+  "range": 1.0
+ },
+ {
+  "line": "Gain (10-15)% of Physical Damage as Extra Chaos Damage",
+  "range": 1.0
+ },
+ {
+  "line": "Regenerate (66.7-75) Life per second",
+  "range": 1.0
+ },
+ {
+  "line": "(10-15)% Chance to Block Attack Damage",
+  "range": 0.5
+ },
+ {
+  "line": "(10-20)% of Cold Damage taken as Fire Damage",
+  "range": 0.927
+ },
+ {
+  "line": "(100-150)% increased Critical Strike Chance with Melee Weapons",
+  "range": 0.963
+ },
+ {
+  "line": "(140-180)% increased Physical Damage",
+  "range": 0.52439
+ },
+ {
+  "line": "(160-180)% increased Evasion and Energy Shield",
+  "range": 0.5
+ },
+ {
+  "line": "(20-25)% chance to Avoid being Stunned",
+  "range": 0.4
+ },
+ {
+  "line": "(20-40)% increased Duration",
+  "range": 0.8
+ },
+ {
+  "line": "(25-30)% increased Movement Speed",
+  "range": 0.2
+ },
+ {
+  "line": "(30-40)% increased Armour while Bleeding",
+  "range": 0.805
+ },
+ {
+  "line": "(31-44)% chance to Avoid being Stunned",
+  "range": 0.5
+ },
+ {
+  "line": "(40-50)% increased Critical Strike Chance",
+  "range": 0.5
+ },
+ {
+  "line": "(5-10)% increased Reservation Efficiency of Skills",
+  "range": 0.6
+ },
+ {
+  "line": "(50-75)% increased Physical Damage",
+  "range": 0.5
+ },
+ {
+  "line": "(6-9)% increased Attack Speed",
+  "range": 0.5
+ },
+ {
+  "line": "(70-100)% increased Elemental Damage with Melee Weapons",
+  "range": 0.170732
+ },
+ {
+  "line": "(9-10)% increased Trap Throwing Speed",
+  "range": 1.0
+ },
+ {
+  "line": "+(10-15)% to all Elemental Resistances",
+  "range": 0.793
+ },
+ {
+  "line": "+(10-77)% to Critical Strike Multiplier with Unarmed Melee Attacks",
+  "range": 0.850746
+ },
+ {
+  "line": "+(15-20) to all Attributes",
+  "range": 1.0
+ },
+ {
+  "line": "+(17-23)% to Chaos Resistance",
+  "range": 0.878
+ },
+ {
+  "line": "+(20-30) to maximum Life",
+  "range": 0.8
+ },
+ {
+  "line": "+(21-25)% to Global Critical Strike Multiplier",
+  "range": 0.66
+ },
+ {
+  "line": "+(25-40) to maximum Life",
+  "range": 0.533
+ },
+ {
+  "line": "+(30-50) to Strength",
+  "range": 0.6
+ },
+ {
+  "line": "+(40-50)% to Cold Resistance",
+  "range": 0.0
+ },
+ {
+  "line": "+(5-8)% Chance to Block Attack Damage while affected by Determination",
+  "range": 0.366
+ },
+ {
+  "line": "+(6-8)% to Chaos Damage over Time Multiplier",
+  "range": 0.854
+ },
+ {
+  "line": "+(8-12)% Chance to Block Attack Damage during Effect",
+  "range": 0.75
+ },
+ {
+  "line": "Adds (100-145) to (160-200) Cold Damage to Bow Attacks",
+  "range": 1.0
+ },
+ {
+  "line": "Adds (70-80) to (340-375) Physical Damage",
+  "range": 0.943
+ },
+ {
+  "line": "Consecrated Ground you create while affected by Zealotry causes enemies to take (8-10)% increased Damage",
+  "range": 0.7
+ },
+ {
+  "line": "Gain (15-25) Life per Enemy Killed",
+  "range": 0.4
+ },
+ {
+  "line": "Intimidating Cry has (15-17)% increased Cooldown Recovery Rate",
+  "range": 0.5
+ },
+ {
+  "line": "Non-Channelling Skills have -(7-6) to Total Mana Cost",
+  "range": 0.94
+ },
+ {
+  "line": "(1-1.5)% of Damage leeched as Life while affected by Vitality",
+  "range": 0.5,
+  "valueScalar": 1.2
+ },
+ {
+  "line": "(1-1.5)% of Damage leeched as Life while affected by Vitality",
+  "range": 0.5,
+  "valueScalar": 0.8
+ },
+ {
+  "line": "(1-1.5)% of Damage leeched as Life while affected by Vitality",
+  "range": 0.5,
+  "baseValueScalar": 1.21
+ },
+ {
+  "line": "(1-1.5)% of Damage leeched as Life while affected by Vitality",
+  "range": 0.5,
+  "valueScalar": 1.2,
+  "baseValueScalar": 1.21
+ },
+ {
+  "line": "(1-1.5)% of Fire Damage Leeched as Life while affected by Anger",
+  "range": 0.5,
+  "valueScalar": 1.2
+ },
+ {
+  "line": "(1-1.5)% of Fire Damage Leeched as Life while affected by Anger",
+  "range": 0.5,
+  "valueScalar": 0.8
+ },
+ {
+  "line": "(1-1.5)% of Fire Damage Leeched as Life while affected by Anger",
+  "range": 0.5,
+  "baseValueScalar": 1.21
+ },
+ {
+  "line": "(1-1.5)% of Fire Damage Leeched as Life while affected by Anger",
+  "range": 0.5,
+  "valueScalar": 1.2,
+  "baseValueScalar": 1.21
+ },
+ {
+  "line": "(1-1.5)% of Lightning Damage is Leeched as Energy Shield while affected by Wrath",
+  "range": 0.5,
+  "valueScalar": 1.2
+ },
+ {
+  "line": "(1-1.5)% of Lightning Damage is Leeched as Energy Shield while affected by Wrath",
+  "range": 0.5,
+  "valueScalar": 0.8
+ },
+ {
+  "line": "(1-1.5)% of Lightning Damage is Leeched as Energy Shield while affected by Wrath",
+  "range": 0.5,
+  "baseValueScalar": 1.21
+ },
+ {
+  "line": "(1-1.5)% of Lightning Damage is Leeched as Energy Shield while affected by Wrath",
+  "range": 0.5,
+  "valueScalar": 1.2,
+  "baseValueScalar": 1.21
+ },
+ {
+  "line": "(1-1.5)% of Lightning Damage is Leeched as Mana while affected by Wrath",
+  "range": 0.5,
+  "valueScalar": 1.2
+ },
+ {
+  "line": "(1-1.5)% of Lightning Damage is Leeched as Mana while affected by Wrath",
+  "range": 0.5,
+  "valueScalar": 0.8
+ },
+ {
+  "line": "(1-1.5)% of Lightning Damage is Leeched as Mana while affected by Wrath",
+  "range": 0.5,
+  "baseValueScalar": 1.21
+ },
+ {
+  "line": "(1-1.5)% of Lightning Damage is Leeched as Mana while affected by Wrath",
+  "range": 0.5,
+  "valueScalar": 1.2,
+  "baseValueScalar": 1.21
+ },
+ {
+  "line": "Regenerate (1-1.5)% of Life per second while affected by Vitality",
+  "range": 0.5,
+  "valueScalar": 1.2
+ },
+ {
+  "line": "Regenerate (1-1.5)% of Life per second while affected by Vitality",
+  "range": 0.5,
+  "valueScalar": 0.8
+ },
+ {
+  "line": "Regenerate (1-1.5)% of Life per second while affected by Vitality",
+  "range": 0.5,
+  "baseValueScalar": 1.21
+ },
+ {
+  "line": "Regenerate (1-1.5)% of Life per second while affected by Vitality",
+  "range": 0.5,
+  "valueScalar": 1.2,
+  "baseValueScalar": 1.21
+ },
+ {
+  "line": "Regenerate (1.5-2.5)% of Energy Shield per Second while affected by Discipline",
+  "range": 0.5,
+  "valueScalar": 1.2
+ },
+ {
+  "line": "Regenerate (1.5-2.5)% of Energy Shield per Second while affected by Discipline",
+  "range": 0.5,
+  "valueScalar": 0.8
+ },
+ {
+  "line": "Regenerate (1.5-2.5)% of Energy Shield per Second while affected by Discipline",
+  "range": 0.5,
+  "baseValueScalar": 1.21
+ },
+ {
+  "line": "Regenerate (1.5-2.5)% of Energy Shield per Second while affected by Discipline",
+  "range": 0.5,
+  "valueScalar": 1.2,
+  "baseValueScalar": 1.21
+ },
+ {
+  "line": "+(1-2)% to Critical Strike Chance against Enemies on Consecrated Ground during Effect",
+  "range": 0.5,
+  "valueScalar": 1.2
+ },
+ {
+  "line": "+(1-2)% to Critical Strike Chance against Enemies on Consecrated Ground during Effect",
+  "range": 0.5,
+  "valueScalar": 0.8
+ },
+ {
+  "line": "+(1-2)% to Critical Strike Chance against Enemies on Consecrated Ground during Effect",
+  "range": 0.5,
+  "baseValueScalar": 1.21
+ },
+ {
+  "line": "+(1-2)% to Critical Strike Chance against Enemies on Consecrated Ground during Effect",
+  "range": 0.5,
+  "valueScalar": 1.2,
+  "baseValueScalar": 1.21
+ },
+ {
+  "line": "+(-15-10)% to all Elemental Resistances",
+  "range": 0.5,
+  "valueScalar": 1.2
+ },
+ {
+  "line": "+(-15-10)% to all Elemental Resistances",
+  "range": 0.5,
+  "valueScalar": 0.8
+ },
+ {
+  "line": "+(-15-10)% to all Elemental Resistances",
+  "range": 0.5,
+  "baseValueScalar": 1.21
+ },
+ {
+  "line": "+(-15-10)% to all Elemental Resistances",
+  "range": 0.5,
+  "valueScalar": 1.2,
+  "baseValueScalar": 1.21
+ },
+ {
+  "line": "(2-3)% of Physical Attack Damage Leeched as Life",
+  "range": 0.5,
+  "valueScalar": 1.2
+ },
+ {
+  "line": "(2-3)% of Physical Attack Damage Leeched as Life",
+  "range": 0.5,
+  "valueScalar": 0.8
+ },
+ {
+  "line": "(2-3)% of Physical Attack Damage Leeched as Life",
+  "range": 0.5,
+  "baseValueScalar": 1.21
+ },
+ {
+  "line": "(2-3)% of Physical Attack Damage Leeched as Life",
+  "range": 0.5,
+  "valueScalar": 1.2,
+  "baseValueScalar": 1.21
+ },
+ {
+  "line": "+(-23-23)% to Chaos Resistance",
+  "range": 0.5,
+  "valueScalar": 1.2
+ },
+ {
+  "line": "+(-23-23)% to Chaos Resistance",
+  "range": 0.5,
+  "valueScalar": 0.8
+ },
+ {
+  "line": "+(-23-23)% to Chaos Resistance",
+  "range": 0.5,
+  "baseValueScalar": 1.21
+ },
+ {
+  "line": "+(-23-23)% to Chaos Resistance",
+  "range": 0.5,
+  "valueScalar": 1.2,
+  "baseValueScalar": 1.21
+ },
+ {
+  "line": "(0.8-1.2)% of Damage leeched as Life while affected by Vitality",
+  "range": 0.94,
+  "valueScalar": 1.2
+ },
+ {
+  "line": "(0.8-1.2)% of Damage leeched as Life while affected by Vitality",
+  "range": 0.94,
+  "valueScalar": 0.8
+ },
+ {
+  "line": "(0.8-1.2)% of Damage leeched as Life while affected by Vitality",
+  "range": 0.94,
+  "baseValueScalar": 1.21
+ },
+ {
+  "line": "(0.8-1.2)% of Damage leeched as Life while affected by Vitality",
+  "range": 0.94,
+  "valueScalar": 1.2,
+  "baseValueScalar": 1.21
+ },
+ {
+  "line": "(1-1.5)% of Physical Attack Damage Leeched as Mana",
+  "range": 0.5,
+  "valueScalar": 1.2
+ },
+ {
+  "line": "(1-1.5)% of Physical Attack Damage Leeched as Mana",
+  "range": 0.5,
+  "valueScalar": 0.8
+ },
+ {
+  "line": "(1-1.5)% of Physical Attack Damage Leeched as Mana",
+  "range": 0.5,
+  "baseValueScalar": 1.21
+ },
+ {
+  "line": "(1-1.5)% of Physical Attack Damage Leeched as Mana",
+  "range": 0.5,
+  "valueScalar": 1.2,
+  "baseValueScalar": 1.21
+ },
+ {
+  "line": "+(1.2-1.8)% to Critical Strike Chance while affected by Hatred",
+  "range": 0.94,
+  "valueScalar": 1.2
+ },
+ {
+  "line": "+(1.2-1.8)% to Critical Strike Chance while affected by Hatred",
+  "range": 0.94,
+  "valueScalar": 0.8
+ },
+ {
+  "line": "+(1.2-1.8)% to Critical Strike Chance while affected by Hatred",
+  "range": 0.94,
+  "baseValueScalar": 1.21
+ },
+ {
+  "line": "+(1.2-1.8)% to Critical Strike Chance while affected by Hatred",
+  "range": 0.94,
+  "valueScalar": 1.2,
+  "baseValueScalar": 1.21
+ },
+ {
+  "line": "Regenerate (100-140) Life per Second while affected by Vitality",
+  "range": 0.94,
+  "valueScalar": 1.2
+ },
+ {
+  "line": "Regenerate (100-140) Life per Second while affected by Vitality",
+  "range": 0.94,
+  "valueScalar": 0.8
+ },
+ {
+  "line": "Regenerate (100-140) Life per Second while affected by Vitality",
+  "range": 0.94,
+  "baseValueScalar": 1.21
+ },
+ {
+  "line": "Regenerate (100-140) Life per Second while affected by Vitality",
+  "range": 0.94,
+  "valueScalar": 1.2,
+  "baseValueScalar": 1.21
+ },
+ {
+  "line": "+10% to Maximum Effect of Shock",
+  "range": 0.5,
+  "valueScalar": 1.2,
+  "baseValueScalar": 1.21
+ },
+ {
+  "line": "+(-15-10)% to all Elemental Resistances",
+  "range": 0.5,
+  "valueScalar": 1.2,
+  "baseValueScalar": 1.21
+ }
+]

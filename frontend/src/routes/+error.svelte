@@ -9,4 +9,4 @@
   console.error(errors, data);
 </script>
 
-<h1 class="text-3xl font-bold">How did you get here?</h1>
+<h1 class="text-18 font-semibold">How did you get here?</h1>

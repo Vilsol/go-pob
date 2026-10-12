@@ -3,29 +3,41 @@ package moddb
 import (
 	"maps"
 	"math"
+	"reflect"
+	"slices"
+	"strings"
+	"sync"
 
 	"github.com/Vilsol/go-pob-data/poe"
 
 	"github.com/Vilsol/go-pob/data"
+	raw "github.com/Vilsol/go-pob/data/raw"
 	"github.com/Vilsol/go-pob/mod"
 )
 
 type ListCfg struct {
+	Actor        string
 	Flags        *mod.MFlag
 	KeywordFlags *mod.KeywordFlag
 	Source       *mod.Source
 	SkillStats   map[string]float64
 	SkillCond    map[string]bool
 	SlotName     string
+	Item         CfgItem
 
 	SkillName          string
 	SummonSkillName    string
 	SkillGem           *poe.SkillGem
 	SkillGrantedEffect any
-	SkillPart          string
+	SkillPart          int
 	SkillTypes         map[data.SkillType]bool
 	SkillDist          float64
+	SkillDistSet       bool
+	SocketColor        string
+	SocketNum          int
 }
+
+var GemIsType func(gem *poe.SkillGem, keyword string) bool
 
 type ModStoreFuncs interface {
 	List(cfg *ListCfg, names ...string) []interface{}
@@ -35,14 +47,83 @@ type ModStoreFuncs interface {
 	Override(cfg *ListCfg, names ...string) *mod.ModValueMulti
 	GetMultiplier(variable string, cfg *ListCfg, noMod bool) float64
 	GetCondition(variable string, cfg *ListCfg, noMod bool) (bool, bool)
+	GetActor() Actor
 	Clone() ModStoreFuncs
 	TabulateInternal(context ModStoreFuncs, result *[]ModResult, modType mod.Type,
 		cfg *ListCfg, flags mod.MFlag, keywordFlags mod.KeywordFlag, source mod.Source, modNames ...string)
 	Combine(modType mod.Type, cfg *ListCfg, modNames ...string) *mod.ModValueMulti
+
+	SumInternal(context ModStoreFuncs, modType mod.Type, cfg *ListCfg, names ...string) float64
+	MoreInternal(context ModStoreFuncs, cfg *ListCfg, names ...string) float64
+	FlagInternal(context ModStoreFuncs, cfg *ListCfg, names ...string) bool
+	OverrideInternal(context ModStoreFuncs, cfg *ListCfg, names ...string) *mod.ModValueMulti
+	ListInternal(context ModStoreFuncs, result *[]interface{}, cfg *ListCfg, names ...string)
+
+	evalMod(m mod.Mod, cfg *ListCfg) *mod.ModValueMulti
+
+	getStat(stat string, cfg *ListCfg) float64
+}
+
+//pob:block:src/Classes/ModStore.lua:143-149
+func cfgFlags(cfg *ListCfg) mod.MFlag {
+	if cfg == nil {
+		return 0
+	}
+	return cfg.Flags.Get()
+}
+
+//pob:block:src/Classes/ModStore.lua:143-149
+func cfgKeywordFlags(cfg *ListCfg) mod.KeywordFlag {
+	if cfg == nil {
+		return 0
+	}
+	return cfg.KeywordFlags.Get()
+}
+
+type multiplierSource interface {
+	GetMultiplier(variable string, cfg *ListCfg, noMod bool) float64
+}
+
+type statSource interface {
+	getStat(stat string, cfg *ListCfg) float64
 }
 
 type Actor interface {
 	GetOutput(string) (float64, bool)
+}
+
+type ActorLinks interface {
+	RelatedModDB(name string) ModStoreFuncs
+}
+
+type MinionMonsterTags interface {
+	MonsterTags() (tags []string, ok bool)
+}
+
+type ItemQueries interface {
+	EquippedSlots() []string
+	ItemInSlot(slot string) bool
+	ItemModifierMatches(slot, searchCond string) bool
+	ItemRarityIs(slot, rarity string) bool
+	ItemCorruptedIs(slot string, corrupted bool) bool
+	ItemNameIs(slot, name string) bool
+}
+
+type AllOneHandedWeapon interface {
+	AddedUsingCondition(v string) (bool, bool)
+}
+
+type CfgItem interface {
+	CfgNameIs(name string) bool
+	CfgRarityIs(rarity string) bool
+	CfgCorruptedIs(corrupted bool) bool
+	CfgModifierMatches(searchCond, slot string) bool
+}
+
+type ReservingAuras interface {
+	AuraManaReservedBase(skillName, summonSkillName string) (float64, bool)
+
+	AuraLifeReservedBase(skillName, summonSkillName string) (float64, bool)
 }
 
 type ModStore struct {
@@ -53,6 +134,7 @@ type ModStore struct {
 	Conditions  map[string]bool
 }
 
+//pob:src/Classes/ModStore.lua:30-35
 func NewModStore(parent ModStoreFuncs) *ModStore {
 	return &ModStore{
 		Parent:      parent,
@@ -78,56 +160,100 @@ func (s *ModStore) Clone() *ModStore {
 	return out
 }
 
-func (s *ModStore) evalMultiplier(m mod.Mod, cfg *ListCfg, tag *mod.MultiplierTag) *mod.ModValueMulti {
-	value := m.Value()
+//pob:block:src/Classes/ModStore.lua:32
+func (s *ModStore) GetActor() Actor {
+	if s.Actor != nil {
+		return s.Actor
+	}
 
-	target := s
-	limitTarget := s
+	if s.Parent != nil {
+		return s.Parent.GetActor()
+	}
+
+	return nil
+}
+
+//pob:block:src/Classes/ModStore.lua:503
+func (s *ModStore) relatedModDB(name string) ModStoreFuncs {
+	links, ok := s.GetActor().(ActorLinks)
+	if !ok {
+		return nil
+	}
+	return links.RelatedModDB(name)
+}
+
+type conditionSource interface {
+	GetCondition(variable string, cfg *ListCfg, noMod bool) (bool, bool)
+}
+
+//pob:block:src/Classes/ModStore.lua:349
+func tagDiv(div float64) float64 {
+	if div == 0 {
+		return 1
+	}
+	return div
+}
+
+//pob:block:src/Classes/ModStore.lua:326-400
+func (s *ModStore) evalMultiplier(value *mod.ModValueMulti, cfg *ListCfg, tag *mod.MultiplierTag) *mod.ModValueMulti {
+	var target multiplierSource = s
+	var limitTarget multiplierSource = s
 
 	// Allow limiting a self multiplier on a parent multiplier (eg. Agony Crawler on player virulence)
 	// This explicit target is necessary because even though the GetMultiplier method does call self.parent.GetMultiplier, it does so with noMod = true,
 	// disabling the summation (3rd part): (not noMod and self:Sum("BASE", cfg, multiplierName[var]) or 0)
+	if tag.TagLimitActor != "" {
+		db := s.relatedModDB(tag.TagLimitActor)
+		if db == nil {
+			return nil
+		}
+		limitTarget = db
+	}
 
-	/*
-		TODO Limit Actor
-		if tag.limitActor then
-			if self.actor[tag.limitActor] then
-				limitTarget = self.actor[tag.limitActor].modDB
-			else
-				return
-			end
-		end
-	*/
-
-	/*
-		TODO Actor
-		if tag.actor then
-			if self.actor[tag.actor] then
-				target = self.actor[tag.actor].modDB
-			else
-				return
-			end
-		end
-	*/
+	if tag.TagActor != "" {
+		db := s.relatedModDB(tag.TagActor)
+		if db == nil {
+			return nil
+		}
+		target = db
+	}
 
 	base := 0.0
 	for _, v := range tag.VariableList {
 		base += target.GetMultiplier(v, cfg, false)
 	}
 
-	mult := math.Floor(base/tag.Division + 0.0001)
+	div := tagDiv(tag.Division)
+	if tag.TagDivVariable != nil {
+		div = tagDiv(s.GetMultiplier(*tag.TagDivVariable, cfg, false))
+	}
+
+	mult := math.Floor(base/div + 0.0001)
+	if tag.TagNoFloor {
+		mult = base / div
+	}
+
 	var limitTotal *float64
-	if tag.TagLimit != nil || tag.TagLimitVariable != nil {
+	var limitNegTotal *float64
+	if tag.TagLimit != nil || tag.TagLimitVariable != nil || tag.TagLimitStat != nil {
 		limit := float64(0)
-		if tag.TagLimit != nil {
+		switch {
+		case tag.TagLimit != nil:
 			limit = *tag.TagLimit
-		} else {
+		case tag.TagLimitVariable != nil:
 			limit = limitTarget.GetMultiplier(*tag.TagLimitVariable, cfg, false)
+		default:
+			if ss, ok := limitTarget.(statSource); ok {
+				limit = ss.getStat(*tag.TagLimitStat, cfg)
+			}
 		}
 
-		if tag.TagLimitTotal {
+		switch {
+		case tag.TagLimitTotal:
 			limitTotal = &limit
-		} else {
+		case tag.TagLimitNegTotal:
+			limitNegTotal = &limit
+		default:
 			mult = min(mult, limit)
 		}
 	}
@@ -137,52 +263,43 @@ func (s *ModStore) evalMultiplier(m mod.Mod, cfg *ListCfg, tag *mod.MultiplierTa
 		if limitTotal != nil {
 			out = min(out, *limitTotal)
 		}
+		if limitNegTotal != nil {
+			out = max(out, *limitNegTotal)
+		}
+		value = value.Clone()
 		value.ValueFloat = out
-	} else {
-		/*
-			TODO Non-number multiplier
-			value = copyTable(value)
-			if value.mod then
-				value.mod.value = value.mod.value * mult + (tag.base or 0)
-				if limitTotal then
-					value.mod.value = m_min(value.mod.value, limitTotal)
-				end
-			else
-				value.value = value.value * mult + (tag.base or 0)
-				if limitTotal then
-					value.value = m_min(value.value, limitTotal)
-				end
-			end
-		*/
+	} else if scalable, ok := value.List().(mod.ScalableValue); ok {
+		scaled := scalable.ScaleValue(mult, tag.TagBase, limitTotal)
+
+		if reflect.TypeOf(value.List()).Kind() == reflect.Pointer {
+			scaled = scaled.Clone(true)
+		}
+
+		value = value.Clone()
+		value.SetList(scaled)
 	}
 	return value
 }
 
-func (s *ModStore) evalMultiplierThresholdTag(m mod.Mod, cfg *ListCfg, tag *mod.MultiplierThresholdTag) *mod.ModValueMulti {
-	value := m.Value()
-	target := s
-	/*
-		TODO Actor
-		if tag.actor then
-			if self.actor[tag.actor] then
-				target = self.actor[tag.actor].modDB
-			else
-				return
-			end
-		end
-	*/
+//pob:block:src/Classes/ModStore.lua:314-334
+func (s *ModStore) evalMultiplierThresholdTag(value *mod.ModValueMulti, cfg *ListCfg, tag *mod.MultiplierThresholdTag) *mod.ModValueMulti {
+	var target multiplierSource = s
+	if tag.TagActor != "" {
+		db := s.relatedModDB(tag.TagActor)
+		if db == nil {
+			return nil
+		}
+		target = db
+	}
 
-	mult := target.GetMultiplier(tag.Variable, cfg, false)
-	/*
-		TODO VarList
-		if tag.varList then
-			for _, var in pairs(tag.varList) do
-				mult = mult + target:GetMultiplier(var, cfg)
-			end
-		else
-			mult = target:GetMultiplier(tag.var, cfg)
-		end
-	*/
+	mult := float64(0)
+	if len(tag.VariableList) > 0 {
+		for _, v := range tag.VariableList {
+			mult += target.GetMultiplier(v, cfg, false)
+		}
+	} else {
+		mult = target.GetMultiplier(tag.Variable, cfg, false)
+	}
 
 	threshold := float64(0)
 	if tag.TagThreshold != nil {
@@ -197,26 +314,24 @@ func (s *ModStore) evalMultiplierThresholdTag(m mod.Mod, cfg *ListCfg, tag *mod.
 	return value
 }
 
-func (s *ModStore) evalPerStatTag(m mod.Mod, cfg *ListCfg, tag *mod.PerStatTag) *mod.ModValueMulti {
-	value := m.Value()
+//pob:block:src/Classes/ModStore.lua:335-379
+func (s *ModStore) evalPerStatTag(value *mod.ModValueMulti, cfg *ListCfg, tag *mod.PerStatTag) *mod.ModValueMulti {
 	base := float64(0)
-	target := s
+	var target statSource = s
 
 	// This functions similar to the above tagTypes in regard to which actor to use, but for PerStat
 	// if the actor is 'parent', we don't want to return if we're already using 'parent', just keep using 'self'
-
-	/*
-		TODO Actor
-		if tag.actor and self.actor[tag.actor] then
-			target = self.actor[tag.actor].modDB
-		end
-	*/
+	if tag.TagActor != "" {
+		if db := s.relatedModDB(tag.TagActor); db != nil {
+			target = db
+		}
+	}
 
 	for _, stat := range tag.StatList {
 		base += target.getStat(stat, cfg)
 	}
 
-	mult := math.Floor(base/tag.Divide + 0.0001)
+	mult := math.Floor(base/tagDiv(tag.Divide) + 0.0001)
 	var limitTotal *float64
 	if tag.TagLimit != nil || tag.TagLimitVariable != nil {
 		limit := float64(0)
@@ -238,142 +353,57 @@ func (s *ModStore) evalPerStatTag(m mod.Mod, cfg *ListCfg, tag *mod.PerStatTag) 
 		if limitTotal != nil {
 			out = min(out, *limitTotal)
 		}
+		value = value.Clone()
 		value.ValueFloat = out
-	} else {
-		/*
-			TODO Non-number multiplier
-			value = copyTable(value)
-			if value.mod then
-				value.mod.value = value.mod.value * mult + (tag.base or 0)
-				if limitTotal then
-					value.mod.value = m_min(value.mod.value, limitTotal)
-				end
-			else
-				value.value = value.value * mult + (tag.base or 0)
-				if limitTotal then
-					value.value = m_min(value.value, limitTotal)
-				end
-			end
-		*/
+	} else if scalable, ok := value.List().(mod.ScalableValue); ok {
+		scaled := scalable.ScaleValue(mult, tag.Base, limitTotal)
+
+		if reflect.TypeOf(value.List()).Kind() == reflect.Pointer {
+			scaled = scaled.Clone(true)
+		}
+
+		value = value.Clone()
+		value.SetList(scaled)
 	}
-	/*
-		TODO PercentStat
-		case *mod.PercentStatTag:
-			local base
-			if tag.statList then
-				base = 0
-				for _, stat in ipairs(tag.statList) do
-					base = base + self:GetStat(stat, cfg)
-				end
-			else
-				base = self:GetStat(tag.stat, cfg)
-			end
-			local mult = base * (tag.percent and tag.percent / 100 or 1)
-			local limitTotal
-			if tag.limit or tag.limitVar then
-				local limit = tag.limit or self:GetMultiplier(tag.limitVar, cfg)
-				if tag.limitTotal then
-					limitTotal = limit
-				else
-					mult = m_min(mult, limit)
-				end
-			end
-			if type(value) == "table" then
-				value = copyTable(value)
-				if value.mod then
-					value.mod.value = value.mod.value * mult + (tag.base or 0)
-					if limitTotal then
-						value.mod.value = m_min(value.mod.value, limitTotal)
-					end
-				else
-					value.value = value.value * mult + (tag.base or 0)
-					if limitTotal then
-						value.value = m_min(value.value, limitTotal)
-					end
-				end
-			else
-				value = value * mult + (tag.base or 0)
-				if limitTotal then
-					value = m_min(value, limitTotal)
-				end
-			end
-	*/
-	/*
-		TODO StatThreshold
-		case *mod.StatThresholdTag:
-			local stat
-			if tag.statList then
-				stat = 0
-				for _, stat in ipairs(tag.statList) do
-					stat = stat + self:GetStat(stat, cfg)
-				end
-			else
-				stat = self:GetStat(tag.stat, cfg)
-			end
-			local threshold = tag.threshold or self:GetStat(tag.thresholdStat, cfg)
-			if (tag.upper and stat > threshold) or (not tag.upper and stat < threshold) then
-				return
-			end
-	*/
-	/*
-		TODO DistanceRampTag
-		case *mod.DistanceRampTag:
-			if not cfg or not cfg.skillDist then
-				return
-			end
-			if cfg.skillDist <= tag.ramp[1][1] then
-				value = value * tag.ramp[1][2]
-			elseif cfg.skillDist >= tag.ramp[#tag.ramp][1] then
-				value = value * tag.ramp[#tag.ramp][2]
-			else
-				for i, dat in ipairs(tag.ramp) do
-					local next = tag.ramp[i+1]
-					if cfg.skillDist <= next[1] then
-						value = value * (dat[2] + (next[2] - dat[2]) * (cfg.skillDist - dat[1]) / (next[1] - dat[1]))
-						break
-					end
-				end
-			end
-	*/
-	/*
-		TODO MeleeProximityTag
-		case *mod.MeleeProximityTag:
-			if not cfg or not cfg.skillDist then
-				return
-			end
-			-- Max potency is 0-15 units of distance
-			if cfg.skillDist <= 15 then
-				value = value * tag.ramp[1]
-			-- Reduced potency (linear) until 40 units
-			elseif cfg.skillDist >= 16 and cfg.skillDist <= 39 then
-				value = value * (tag.ramp[1] - ((tag.ramp[1] / 25) * (cfg.skillDist - 15)))
-			elseif cfg.skillDist >= 40 then
-				value = 0
-			end
-	*/
-	/*
-		TODO LimitTag
-		case *mod.LimitTag:
-			value = m_min(value, tag.limit or self:GetMultiplier(tag.limitVar, cfg))
-	*/
 	return value
 }
 
-func (s *ModStore) evalConditionTag(m mod.Mod, cfg *ListCfg, tag *mod.ConditionTag) *mod.ModValueMulti {
-	value := m.Value()
-	match := false
-	for _, v := range tag.VarList {
-		var ok bool
-		match, ok = s.GetCondition(v, cfg, false)
-		if ok && match {
-			break
-		}
+//pob:block:src/Classes/ModStore.lua:588-589
+func (s *ModStore) evalLimitTag(value *mod.ModValueMulti, cfg *ListCfg, tag *mod.LimitTag) *mod.ModValueMulti {
+	limit := tag.TagLimit
+	if tag.LimitVar != "" {
+		limit = s.GetMultiplier(tag.LimitVar, cfg, false)
+	}
 
-		if !ok && cfg != nil && cfg.SkillCond != nil {
-			if c, ok := cfg.SkillCond[v]; ok && c {
-				match = true
-				break
+	if value.Type() == mod.ModValueMultiTypeFloat {
+		value = value.Clone()
+		value.ValueFloat = min(value.ValueFloat, limit)
+	}
+	return value
+}
+
+//pob:block:src/Classes/ModStore.lua:582-620
+func (s *ModStore) evalConditionTag(value *mod.ModValueMulti, cfg *ListCfg, tag *mod.ConditionTag) *mod.ModValueMulti {
+	match := false
+
+	allOneH, _ := s.GetActor().(AllOneHandedWeapon)
+
+	for _, v := range tag.VarList {
+		if tag.Negative && allOneH != nil {
+			if added, present := allOneH.AddedUsingCondition(v); present {
+				if !added {
+					return nil
+				}
+				continue
 			}
+		}
+		cond, _ := s.GetCondition(v, cfg, false)
+		if !cond && cfg != nil && cfg.SkillCond != nil {
+			cond = cfg.SkillCond[v]
+		}
+		if cond {
+			match = true
+			break
 		}
 	}
 
@@ -387,29 +417,28 @@ func (s *ModStore) evalConditionTag(m mod.Mod, cfg *ListCfg, tag *mod.ConditionT
 	return value
 }
 
-func (s *ModStore) evalActorConditionTag(m mod.Mod, cfg *ListCfg, tag *mod.ActorConditionTag) *mod.ModValueMulti {
-	value := m.Value()
-	target := s
+//pob:block:src/Classes/ModStore.lua:621-641
+func (s *ModStore) evalActorConditionTag(value *mod.ModValueMulti, cfg *ListCfg, tag *mod.ActorConditionTag) *mod.ModValueMulti {
+	var target conditionSource = s
 
 	if tag.Actor != nil {
-		// TODO Tag Actor
-		// target = self.actor[tag.actor] and self.actor[tag.actor].modDB
+		target = nil
+		if db := s.relatedModDB(*tag.Actor); db != nil {
+			target = db
+		}
 	}
 
 	match := false
-	for _, v := range tag.VariableList {
-		var ok bool
-		match, ok = target.GetCondition(v, cfg, false)
-		if ok && match {
-			break
-		}
-
-		if !ok && cfg != nil && cfg.SkillCond != nil {
-			if c, ok := cfg.SkillCond[v]; ok && c {
+	switch {
+	case target != nil && len(tag.VariableList) > 0:
+		for _, v := range tag.VariableList {
+			if c, _ := target.GetCondition(v, cfg, false); c {
 				match = true
 				break
 			}
 		}
+	case tag.Actor != nil && cfg != nil && *tag.Actor == cfg.Actor:
+		match = true
 	}
 
 	if tag.Negative {
@@ -419,160 +448,561 @@ func (s *ModStore) evalActorConditionTag(m mod.Mod, cfg *ListCfg, tag *mod.Actor
 	if !match {
 		return nil
 	}
-	/*
-		TODO SocketedIn
-		case *mod.SocketedInTag:
-			if not cfg or tag.slotName ~= cfg.slotName or (tag.keyword and (not cfg or not cfg.skillGem or not calcLib.gemIsType(cfg.skillGem, tag.keyword))) then
-				return
-			end
-	*/
-	/*
-		TODO SkillName
-		case *mod.SkillNameTag:
-			local match = false
-			local matchName = tag.summonSkill and (cfg and cfg.summonSkillName or "") or (cfg and cfg.skillName)
-			if tag.skillNameList then
-				for _, name in pairs(tag.skillNameList) do
-					if name == matchName then
-						match = true
-						break
-					end
-				end
-			else
-				match = (tag.skillName == matchName)
-			end
-			if tag.neg then
-				match = not match
-			end
-			if not match then
-				return
-			end
-	*/
-	/*
-		TODO SkillId
-		case *mod.SkillIdTag:
-			if not cfg or not cfg.skillGrantedEffect or cfg.skillGrantedEffect.id ~= tag.skillId then
-				return
-			end
-	*/
-	/*
-		TODO SkillPart
-		case *mod.SkillPartTag:
-			if not cfg then
-				return
-			end
-			local match = false
-			if tag.skillPartList then
-				for _, part in ipairs(tag.skillPartList) do
-					if part == cfg.skillPart then
-						match = true
-						break
-					end
-				end
-			else
-				match = (tag.skillPart == cfg.skillPart)
-			end
-			if tag.neg then
-				match = not match
-			end
-			if not match then
-				return
-			end
-	*/
-	/*
-		TODO SkillType
-		case *mod.SkillTypeTag:
-			local match = false
-			if tag.skillTypeList then
-				for _, type in pairs(tag.skillTypeList) do
-					if cfg and cfg.skillTypes and cfg.skillTypes[type] then
-						match = true
-						break
-					end
-				end
-			else
-				match = cfg and cfg.skillTypes and cfg.skillTypes[tag.skillType]
-			end
-			if tag.neg then
-				match = not match
-			end
-			if not match then
-				return
-			end
-	*/
-	/*
-		TODO SlotName
-		case *mod.SlotNameTag:
-			if not cfg then
-				return
-			end
-			local match = false
-			if tag.slotNameList then
-				for _, slot in ipairs(tag.slotNameList) do
-					if slot == cfg.slotName then
-						match = true
-						break
-					end
-				end
-			else
-				match = (tag.slotName == cfg.slotName)
-			end
-			if tag.neg then
-				match = not match
-			end
-			if not match then
-				return
-			end
-	*/
-	/*
-		TODO ModFlagOr
-		case *mod.ModFlagOrTag:
-			if not cfg or not cfg.flags then
-				return
-			end
-			if band(cfg.flags, tag.modFlags) == 0 then
-				return
-			end
-	*/
-	/*
-		TODO KeywordFlagAnd
-		case *mod.KeywordFlagAndTag:
-			if not cfg or not cfg.keywordFlags then
-				return
-			end
-			if band(cfg.keywordFlags, tag.keywordFlags) ~= tag.keywordFlags then
-				return
-			end
-	*/
 	return value
 }
 
+//pob:block:src/Classes/ModStore.lua:567-585
+func (s *ModStore) evalSkillNameTag(value *mod.ModValueMulti, cfg *ListCfg, tag *mod.SkillNameTag) *mod.ModValueMulti {
+	matchName := ""
+	if cfg != nil {
+		if tag.TagSummonSkill {
+			matchName = cfg.SummonSkillName
+		} else {
+			matchName = cfg.SkillName
+		}
+	}
+
+	if tag.IncludeTransfigured {
+		matchGameID := gameIDFromGemName(matchName)
+
+		match := false
+		if matchGameID != "" {
+			for _, name := range tag.SkillNameList {
+				if gameIDFromGemName(name) == matchGameID {
+					match = true
+					break
+				}
+			}
+		}
+		if tag.Negative {
+			match = !match
+		}
+		if !match {
+			return nil
+		}
+		return value
+	}
+	matchName = strings.ToLower(matchName)
+
+	match := false
+	for _, name := range tag.SkillNameList {
+		if strings.ToLower(name) == matchName {
+			match = true
+			break
+		}
+	}
+	if tag.Negative {
+		match = !match
+	}
+	if !match {
+		return nil
+	}
+	return value
+}
+
+//pob:block:src/Classes/ModStore.lua:795-798
+func (s *ModStore) evalSkillIDTag(value *mod.ModValueMulti, cfg *ListCfg, tag *mod.SkillIDTag) *mod.ModValueMulti {
+	if cfg == nil || cfg.SkillGrantedEffect == nil {
+		return nil
+	}
+	ge, ok := cfg.SkillGrantedEffect.(interface{ ID() string })
+	if !ok || ge.ID() != tag.ID() {
+		return nil
+	}
+	return value
+}
+
+//pob:block:src/Classes/ModStore.lua:799-819
+func (s *ModStore) evalSkillPartTag(value *mod.ModValueMulti, cfg *ListCfg, tag *mod.SkillPartTag) *mod.ModValueMulti {
+	if cfg == nil {
+		return nil
+	}
+
+	match := false
+	if tag.PartList != nil {
+		for _, part := range tag.PartList {
+			if part == cfg.SkillPart {
+				match = true
+				break
+			}
+		}
+	} else {
+		match = tag.Part == cfg.SkillPart
+	}
+
+	if tag.Negative {
+		match = !match
+	}
+
+	if !match {
+		return nil
+	}
+	return value
+}
+
+//pob:block:src/Classes/ModStore.lua:820-837
+func (s *ModStore) evalSkillTypeTag(value *mod.ModValueMulti, cfg *ListCfg, tag *mod.SkillTypeTag) *mod.ModValueMulti {
+	match := false
+	if cfg != nil && cfg.SkillTypes != nil {
+		for _, skillType := range tag.SkillTypeList {
+			if cfg.SkillTypes[data.SkillType(skillType)] {
+				match = true
+				break
+			}
+		}
+	}
+	if tag.Negative {
+		match = !match
+	}
+	if !match {
+		return nil
+	}
+	return value
+}
+
+//pob:block:src/Classes/ModStore.lua:847-867
+func (s *ModStore) evalSlotNameTag(value *mod.ModValueMulti, cfg *ListCfg, tag *mod.SlotNameTag) *mod.ModValueMulti {
+	if cfg == nil {
+		return nil
+	}
+	match := false
+	for _, slot := range tag.SlotNameList {
+		if slot == cfg.SlotName {
+			match = true
+			break
+		}
+	}
+	if !match {
+		return nil
+	}
+	return value
+}
+
+//pob:block:src/Classes/ModStore.lua:648-718
+func (s *ModStore) evalItemConditionTag(value *mod.ModValueMulti, cfg *ListCfg, tag *mod.ItemConditionTag) *mod.ModValueMulti {
+	queries, ok := s.GetActor().(ItemQueries)
+	if !ok {
+		return nil
+	}
+
+	itemSlot := titleCaseSlot(tag.ItemSlot)
+
+	var slots []string
+	var cfgItem CfgItem
+	switch {
+	case tag.AllSlots:
+		slots = queries.EquippedSlots()
+	case tag.BothSlots:
+		one, two := itemSlot+" 1", itemSlot+" 2"
+		if queries.ItemInSlot(one) && queries.ItemInSlot(two) {
+			src1, src2 := one, two
+			if queries.ItemNameIs(one, kalandrasTouch) {
+				src1 = src2
+			}
+			if queries.ItemNameIs(two, kalandrasTouch) {
+				src2 = src1
+			}
+			slots = []string{src1, src2}
+		}
+	default:
+		if queries.ItemInSlot(itemSlot) {
+			if queries.ItemNameIs(itemSlot, kalandrasTouch) {
+				if opposite := oppositeRingSlot(itemSlot); queries.ItemInSlot(opposite) {
+					slots = []string{opposite}
+				} else if cfg != nil && cfg.Item != nil {
+					cfgItem = cfg.Item
+				}
+			} else {
+				slots = []string{itemSlot}
+			}
+		} else if cfg != nil && cfg.Item != nil {
+			cfgItem = cfg.Item
+		}
+	}
+
+	match := true
+	for _, slot := range slots {
+		if tag.ExcludeSelf && slot == itemSlot {
+			continue
+		}
+		if tag.SearchCond != "" {
+			if queries.ItemModifierMatches(slot, strings.ToLower(tag.SearchCond)) == tag.Neg {
+				match = false
+				break
+			}
+		}
+		if tag.RarityCond != "" {
+			if queries.ItemRarityIs(slot, tag.RarityCond) == tag.Neg {
+				match = false
+				break
+			}
+		}
+		if tag.CorruptedCond != nil {
+			if queries.ItemCorruptedIs(slot, *tag.CorruptedCond) == tag.Neg {
+				match = false
+				break
+			}
+		}
+		if tag.NameCond != "" {
+			if queries.ItemNameIs(slot, tag.NameCond) == tag.Neg {
+				match = false
+				break
+			}
+		}
+	}
+
+	if match && cfgItem != nil {
+		if tag.SearchCond != "" && cfgItem.CfgModifierMatches(strings.ToLower(tag.SearchCond), strings.ToLower(itemSlot)) == tag.Neg {
+			match = false
+		}
+		if match && tag.RarityCond != "" && cfgItem.CfgRarityIs(tag.RarityCond) == tag.Neg {
+			match = false
+		}
+		if match && tag.CorruptedCond != nil && cfgItem.CfgCorruptedIs(*tag.CorruptedCond) == tag.Neg {
+			match = false
+		}
+		if match && tag.NameCond != "" && cfgItem.CfgNameIs(tag.NameCond) == tag.Neg {
+			match = false
+		}
+	}
+
+	if !match || (len(slots) == 0 && cfgItem == nil && !tag.Neg) {
+		return nil
+	}
+	return value
+}
+
+const kalandrasTouch = "Kalandra's Touch, Ring"
+
+func oppositeRingSlot(slot string) string {
+	switch {
+	case strings.HasSuffix(slot, "1"):
+		return slot[:len(slot)-1] + "2"
+	case strings.HasSuffix(slot, "2"):
+		return slot[:len(slot)-1] + "1"
+	}
+	return slot
+}
+
+func titleCaseSlot(slot string) string {
+	words := strings.Fields(strings.ToLower(slot))
+	for i, w := range words {
+		words[i] = strings.ToUpper(w[:1]) + w[1:]
+	}
+	return strings.Join(words, " ")
+}
+
+// elseif tag.socketColor and tag.sockets ~= "all" then
+//
+//pob:block:src/Classes/ModStore.lua:719-760
+func (s *ModStore) evalSocketedInTag(value *mod.ModValueMulti, cfg *ListCfg, tag *mod.SocketedInTag) *mod.ModValueMulti {
+	if cfg == nil || (tag.SlotName == "" && tag.TagKeyword == "" && tag.TagSocketColor == "") {
+		return nil
+	}
+	if tag.SlotName != "" && tag.SlotName != cfg.SlotName {
+		return nil
+	}
+	switch {
+	case tag.TagKeyword != "":
+		if cfg.SkillGem == nil || GemIsType == nil || !GemIsType(cfg.SkillGem, tag.TagKeyword) {
+			return nil
+		}
+	case tag.TagSocketColor != "":
+		if tag.TagSocketColor != cfg.SocketColor {
+			return nil
+		}
+	}
+	if len(tag.TagSockets) > 0 {
+		if cfg.SocketNum == 0 || !slices.Contains(tag.TagSockets, cfg.SocketNum) {
+			return nil
+		}
+	}
+	return value
+}
+
+//pob:block:src/Classes/ModStore.lua:868-874
+func (s *ModStore) evalModFlagOrTag(value *mod.ModValueMulti, cfg *ListCfg, tag *mod.ModFlagOrTag) *mod.ModValueMulti {
+	if cfg == nil || cfg.Flags == nil {
+		return nil
+	}
+	if (*cfg.Flags)&tag.Flag == 0 {
+		return nil
+	}
+	return value
+}
+
+//pob:block:src/Classes/ModStore.lua:419-432
+func (s *ModStore) evalStatThresholdTag(value *mod.ModValueMulti, cfg *ListCfg, tag *mod.StatThresholdTag) *mod.ModValueMulti {
+	stat := s.getStat(tag.Stat, cfg)
+	threshold := tag.Threshold
+	if tag.TagThresholdStat != "" {
+		threshold = s.getStat(tag.TagThresholdStat, cfg)
+	}
+	if tag.ThresholdPercent != 0 {
+		threshold *= tag.ThresholdPercent / 100
+	}
+	if (tag.TagUpper && stat > threshold) || (!tag.TagUpper && stat < threshold) {
+		return nil
+	}
+	return value
+}
+
+//pob:block:src/Classes/ModStore.lua:380-418
+func (s *ModStore) evalPercentStatTag(value *mod.ModValueMulti, cfg *ListCfg, tag *mod.PercentStatTag) *mod.ModValueMulti {
+	var target statSource = s
+	if tag.TagActor != "" {
+		if db := s.relatedModDB(tag.TagActor); db != nil {
+			target = db
+		}
+	}
+
+	base := target.getStat(tag.Stat, cfg)
+	//	local percent = tag.percent or GetMultiplier(self, tag.percentVar, cfg)
+	//	local mult = base * (percent and percent / 100 or 1)
+	//pob:block:src/Classes/ModStore.lua:504-505
+	percent := tag.Percent
+	if percent == 0 && tag.PercentVar != "" {
+		percent = s.GetMultiplier(tag.PercentVar, cfg, false)
+	}
+	mult := base * (percent / 100)
+	if tag.TagFloor {
+		mult = math.Floor(mult)
+	}
+
+	if value.Type() == mod.ModValueMultiTypeFloat {
+		value = value.Clone()
+		value.ValueFloat = math.Ceil(value.ValueFloat * mult)
+	} else if scalable, ok := value.List().(mod.ScalableValue); ok {
+		//pob:block:src/Classes/ModStore.lua:518-530
+		scaled := ceilScaledValue(scalable.ScaleValue(mult, 0, nil))
+
+		if reflect.TypeOf(value.List()).Kind() == reflect.Pointer {
+			scaled = scaled.Clone(true)
+		}
+
+		value = value.Clone()
+		value.SetList(scaled)
+	}
+	return value
+}
+
+func ceilScaledValue(scaled mod.Cloneable) mod.Cloneable {
+	switch v := scaled.(type) {
+	case mod.ScalableNestedMod:
+		return v.ScaleNestedMod(func(_ mod.Mod, x float64) float64 { return math.Ceil(x) })
+	case mod.SkillData:
+		v.Value = math.Ceil(v.Value)
+		return v
+	case mod.GemProperty:
+		v.Value = math.Ceil(v.Value)
+		return v
+	}
+	return scaled
+}
+
+//pob:block:src/Classes/ModStore.lua:555-571
+func (s *ModStore) evalDistanceRampTag(value *mod.ModValueMulti, cfg *ListCfg, tag *mod.DistanceRampTag) *mod.ModValueMulti {
+	if cfg == nil || !cfg.SkillDistSet || len(tag.Ramp) == 0 {
+		return nil
+	}
+
+	ramp := tag.Ramp
+	var mult float64
+	switch {
+	case cfg.SkillDist <= ramp[0][0]:
+		mult = ramp[0][1]
+	case cfg.SkillDist >= ramp[len(ramp)-1][0]:
+		mult = ramp[len(ramp)-1][1]
+	default:
+		for i := 0; i < len(ramp)-1; i++ {
+			next := ramp[i+1]
+			if cfg.SkillDist <= next[0] {
+				dat := ramp[i]
+				mult = dat[1] + (next[1]-dat[1])*(cfg.SkillDist-dat[0])/(next[0]-dat[0])
+				break
+			}
+		}
+	}
+
+	if value.Type() == mod.ModValueMultiTypeFloat {
+		value = value.Clone()
+		value.ValueFloat = value.ValueFloat * mult
+	}
+	return value
+}
+
+//pob:block:src/Classes/ModStore.lua:575-587
+func (s *ModStore) evalMeleeProximityTag(value *mod.ModValueMulti, cfg *ListCfg, tag *mod.MeleeProximityTag) *mod.ModValueMulti {
+	if cfg == nil || !cfg.SkillDistSet || len(tag.Ramp) == 0 {
+		return nil
+	}
+
+	r0 := float64(tag.Ramp[0])
+	var mult float64
+	mult = 1
+	switch {
+	case cfg.SkillDist <= 15:
+		mult = r0
+	case cfg.SkillDist >= 16 && cfg.SkillDist <= 39:
+		mult = r0 - (r0/25)*(cfg.SkillDist-15)
+	case cfg.SkillDist >= 40:
+		mult = 0
+	}
+
+	if value.Type() == mod.ModValueMultiTypeFloat {
+		value = value.Clone()
+		value.ValueFloat = value.ValueFloat * mult
+	}
+	return value
+}
+
+//pob:block:src/Classes/ModStore.lua:249-603
+func (s *ModStore) evalTag(raw mod.Tag, value *mod.ModValueMulti, cfg *ListCfg) *mod.ModValueMulti {
+	switch tag := raw.(type) {
+	case *mod.MultiplierTag:
+		value = s.evalMultiplier(value, cfg, tag)
+	case *mod.MultiplierThresholdTag:
+		value = s.evalMultiplierThresholdTag(value, cfg, tag)
+	case *mod.PerStatTag:
+		value = s.evalPerStatTag(value, cfg, tag)
+	case *mod.PercentStatTag:
+		value = s.evalPercentStatTag(value, cfg, tag)
+	case *mod.DistanceRampTag:
+		value = s.evalDistanceRampTag(value, cfg, tag)
+	case *mod.MeleeProximityTag:
+		value = s.evalMeleeProximityTag(value, cfg, tag)
+	case *mod.LimitTag:
+		value = s.evalLimitTag(value, cfg, tag)
+	case *mod.ConditionTag:
+		value = s.evalConditionTag(value, cfg, tag)
+	case *mod.ActorConditionTag:
+		value = s.evalActorConditionTag(value, cfg, tag)
+	case *mod.SkillNameTag:
+		value = s.evalSkillNameTag(value, cfg, tag)
+	case *mod.SkillIDTag:
+		value = s.evalSkillIDTag(value, cfg, tag)
+	case *mod.SkillPartTag:
+		value = s.evalSkillPartTag(value, cfg, tag)
+	case *mod.SkillTypeTag:
+		value = s.evalSkillTypeTag(value, cfg, tag)
+	case *mod.SlotNameTag:
+		value = s.evalSlotNameTag(value, cfg, tag)
+	case *mod.ItemConditionTag:
+		value = s.evalItemConditionTag(value, cfg, tag)
+	case *mod.SocketedInTag:
+		value = s.evalSocketedInTag(value, cfg, tag)
+	case *mod.ModFlagOrTag:
+		value = s.evalModFlagOrTag(value, cfg, tag)
+	case *mod.StatThresholdTag:
+		value = s.evalStatThresholdTag(value, cfg, tag)
+	case *mod.MonsterTagTag:
+		value = s.evalMonsterTagTag(value, tag)
+	}
+
+	return value
+}
+
+//pob:block:src/Classes/ModStore.lua:882-913
+func (s *ModStore) evalMonsterTagTag(value *mod.ModValueMulti, tag *mod.MonsterTagTag) *mod.ModValueMulti {
+	src, ok := s.GetActor().(MinionMonsterTags)
+	if !ok {
+		return nil
+	}
+	monsterTags, ok := src.MonsterTags()
+	if !ok {
+		return nil
+	}
+	match := false
+	for _, t := range monsterTags {
+		matchName := strings.ToLower(t)
+		for _, name := range tag.MonsterTagList {
+			if strings.ToLower(name) == matchName {
+				match = true
+				break
+			}
+		}
+		if match {
+			break
+		}
+	}
+	if tag.Negative {
+		match = !match
+	}
+	if !match {
+		return nil
+	}
+	return value
+}
+
+func (s *ModStore) EvalMod(m mod.Mod, cfg *ListCfg) *mod.ModValueMulti {
+	return s.evalMod(m, cfg)
+}
+
+//pob:src/Classes/ModStore.lua:246-606
 func (s *ModStore) evalMod(m mod.Mod, cfg *ListCfg) *mod.ModValueMulti {
 	value := m.Value()
 
-	if len(m.Tags()) == 0 {
-		return value
+	for _, raw := range m.Tags() {
+		value = s.evalTag(raw, value, cfg)
+		if value == nil {
+			return nil
+		}
 	}
+
+	return value
+}
+
+//pob:block:src/Classes/ModStore.lua:916-926
+func tagGlobalLimits(m mod.Mod) []globalLimitPair {
+	var out []globalLimitPair
 
 	for _, raw := range m.Tags() {
 		switch tag := raw.(type) {
 		case *mod.MultiplierTag:
-			value = s.evalMultiplier(m, cfg, tag)
-		case *mod.MultiplierThresholdTag:
-			value = s.evalMultiplierThresholdTag(m, cfg, tag)
+			if tag.TagGlobalLimit != nil && tag.TagGlobalLimitKey != nil {
+				out = append(out, globalLimitPair{limit: *tag.TagGlobalLimit, key: *tag.TagGlobalLimitKey})
+			}
 		case *mod.PerStatTag:
-			value = s.evalPerStatTag(m, cfg, tag)
-		case *mod.ConditionTag:
-			value = s.evalConditionTag(m, cfg, tag)
-		case *mod.ActorConditionTag:
-			value = s.evalActorConditionTag(m, cfg, tag)
+			if tag.TagGlobalLimit != 0 && tag.TagGlobalLimitKey != "" {
+				out = append(out, globalLimitPair{limit: tag.TagGlobalLimit, key: tag.TagGlobalLimitKey})
+			}
 		}
 	}
 
+	return out
+}
+
+type globalLimitPair struct {
+	key   string
+	limit float64
+}
+
+func applyGlobalLimits(globalLimits map[string]float64, pairs []globalLimitPair, value float64) float64 {
+	for _, p := range pairs {
+		value = applyGlobalLimit(globalLimits, p.key, p.limit, value)
+	}
 	return value
 }
 
+//pob:block:src/Classes/ModDB.lua:268-273
+func applyGlobalLimit(globalLimits map[string]float64, key string, limit float64, value float64) float64 {
+	if globalLimits[key]+value > limit {
+		value = limit - globalLimits[key]
+	}
+	globalLimits[key] += value
+	return value
+}
+
+//pob:src/Classes/ModStore.lua:225-227
 func (s *ModStore) GetMultiplier(variable string, cfg *ListCfg, noMod bool) float64 {
+	//	return (not noMod and self:Override(cfg, multiplierName[var]))
+	//	    or (self.multipliers[var] or 0) + (parent...) + (not noMod and self:Sum("BASE", ...) or 0)
+	if !noMod {
+		if override := s.Child.Override(cfg, "Multiplier:"+variable); override != nil {
+			return override.Float()
+		}
+	}
+
 	out := float64(0)
 
 	if mul, ok := s.Multipliers[variable]; ok {
@@ -584,40 +1014,64 @@ func (s *ModStore) GetMultiplier(variable string, cfg *ListCfg, noMod bool) floa
 	}
 
 	if !noMod {
-		// TODO ???
-		// out += s.Sum(mod.ModTypeBase, cfg, multiplierName[variable])
+		out += s.Child.Sum(mod.TypeBase, cfg, "Multiplier:"+variable)
 	}
 
 	return out
 }
 
-func (s *ModStore) getStat(stat string, cfg *ListCfg) float64 {
-	/*
-		TODO Mana handling
-		if stat == "ManaReservedPercent" then
-			local reservedPercentMana = 0
-			for _, activeSkill in ipairs(self.actor.activeSkillList) do
-				if (activeSkill.skillTypes[SkillType.Aura] and not activeSkill.skillFlags.disable and activeSkill.buffList and activeSkill.buffList[1] and activeSkill.buffList[1].name == cfg.skillName) then
-					local manaBase = activeSkill.skillData["ManaReservedBase"] or 0
-					reservedPercentMana = manaBase / self.actor.output["Mana"] * 100
-					break
-				end
-			end
-			return m_min(reservedPercentMana, 100) --Don't let people get more than 100% reservation for aura effect.
-		end
-		-- if ReservationEfficiency is -100, ManaUnreserved is nan which breaks everything if Arcane Cloak is enabled
-		if stat == "ManaUnreserved" and self.actor.output[stat] ~= self.actor.output[stat] then
-			-- 0% reserved = total mana
-			return self.actor.output["Mana"]
-		elseif stat == "ManaUnreserved" and not self.actor.output[stat] == nil and self.actor.output[stat] < 0 then
-			-- This reverse engineers how much mana is unreserved before efficiency for accurate Arcane Cloak calcs
-			local reservedPercentBeforeEfficiency = (math.abs(self.actor.output["ManaUnreservedPercent"]) + 100) * ((100 + self.actor["ManaEfficiency"]) / 100)
-			return self.actor.output["Mana"] * (math.ceil(reservedPercentBeforeEfficiency) / 100);
-		end
-	*/
+var StatReadProbe func(actor any, stat string, value float64, found bool)
 
-	if v, ok := s.Actor.GetOutput(stat); ok {
-		return v
+//pob:src/Classes/ModStore.lua:229-252
+func (s *ModStore) getStat(stat string, cfg *ListCfg) float64 {
+	if stat == "ManaReservedPercent" {
+		reserved := float64(0)
+		if reserving, ok := s.GetActor().(ReservingAuras); ok && cfg != nil {
+			if base, found := reserving.AuraManaReservedBase(cfg.SkillName, cfg.SummonSkillName); found {
+				if mana, has := s.GetActor().GetOutput("Mana"); has && mana != 0 {
+					reserved = math.Floor(base / mana * 100)
+				}
+			}
+		}
+		return math.Min(reserved, 100)
+	}
+
+	if stat == "LifeReservedPercent" {
+		reserved := float64(0)
+		if reserving, ok := s.GetActor().(ReservingAuras); ok && cfg != nil {
+			if base, found := reserving.AuraLifeReservedBase(cfg.SkillName, cfg.SummonSkillName); found {
+				if life, has := s.GetActor().GetOutput("Life"); has && life != 0 {
+					reserved = math.Floor(base / life * 100)
+				}
+			}
+		}
+		return math.Min(reserved, 100)
+	}
+
+	if actor := s.GetActor(); actor != nil {
+		v, ok := actor.GetOutput(stat)
+		if StatReadProbe != nil {
+			StatReadProbe(actor, stat, v, ok)
+		}
+		if ok {
+			if stat == "ManaUnreserved" && math.IsNaN(v) {
+				if mana, ok := actor.GetOutput("Mana"); ok {
+					return mana
+				}
+			}
+			if stat == "ManaUnreserved" && v < 0 {
+				mana, hasMana := actor.GetOutput("Mana")
+				pct, _ := actor.GetOutput("ManaUnreservedPercent")
+				eff, _ := actor.GetOutput("ManaEfficiency")
+				if hasMana {
+					reservedPercentBeforeEfficiency := (math.Abs(pct) + 100) * ((100 + eff) / 100)
+					return mana * (math.Ceil(reservedPercentBeforeEfficiency) / 100)
+				}
+			}
+			if v != 0 {
+				return v
+			}
+		}
 	}
 
 	if cfg != nil && cfg.SkillStats != nil {
@@ -629,26 +1083,63 @@ func (s *ModStore) getStat(stat string, cfg *ListCfg) float64 {
 	return 0
 }
 
+//pob:src/Classes/ModStore.lua:261-263
 func (s *ModStore) GetCondition(variable string, cfg *ListCfg, noMod bool) (bool, bool) {
-	out := false
-
-	if cond, ok := s.Conditions[variable]; ok {
-		return cond, true
+	if cond, ok := s.Conditions[variable]; ok && cond {
+		return true, true
 	}
 
 	if s.Parent != nil {
-		var ok bool
-		out, ok = s.Parent.GetCondition(variable, cfg, true)
-		if ok {
-			return out, true
-		}
-	}
-
-	if !noMod {
-		if s.Child.Flag(cfg, "Condition:"+variable) {
+		if out, _ := s.Parent.GetCondition(variable, cfg, true); out {
 			return true, true
 		}
 	}
 
-	return out, false
+	if !noMod && s.Child.Flag(cfg, "Condition:"+variable) {
+		return true, true
+	}
+
+	return false, false
+}
+
+var (
+	gemGameIDByBaseNameOnce sync.Once
+	gemGameIDByBaseName     map[string]string
+)
+
+//pob:src/Modules/CalcTools.lua:270-283
+func gameIDFromGemName(name string) string {
+	if name == "" {
+		return ""
+	}
+	gemGameIDByBaseNameOnce.Do(func() {
+		gemGameIDByBaseName = make(map[string]string, len(raw.Gems)+len(raw.GemVariants))
+		add := func(gemName, gameID string) {
+			key := strings.ToLower(gemName)
+			if prev, ok := gemGameIDByBaseName[key]; !ok || gameID < prev {
+				gemGameIDByBaseName[key] = gameID
+			}
+		}
+		resolve := func(row raw.PoBGem, gameID string) string {
+			if row.Tags["vaal"] && row.SecondaryGrantedEffectID != "" {
+				if base := raw.GemGameIDForGrantedEffectID[row.SecondaryGrantedEffectID]; base != "" {
+					return base
+				}
+			}
+			return gameID
+		}
+		for _, gameID := range slices.Sorted(maps.Keys(raw.Gems)) {
+			row := raw.Gems[gameID]
+			if row.Name != "" {
+				add(row.Name, resolve(row, gameID))
+			}
+		}
+		for _, effectID := range slices.Sorted(maps.Keys(raw.GemVariants)) {
+			row := raw.GemVariants[effectID]
+			if gameID := raw.GemGameIDForGrantedEffectID[effectID]; row.Name != "" && gameID != "" {
+				add(row.Name, resolve(row, gameID))
+			}
+		}
+	})
+	return gemGameIDByBaseName[strings.ToLower(name)]
 }

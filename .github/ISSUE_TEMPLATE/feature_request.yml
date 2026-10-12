@@ -1,0 +1,17 @@
+name: Feature Request
+description: Something Path of Building does that go-pob does not, or a new idea.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What would you like?
+      description: If Path of Building already has it, say where (tab, control).
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why does it matter to you?
+    validations:
+      required: false

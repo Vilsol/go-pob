@@ -18,7 +18,7 @@ type ModValueMulti struct {
 
 	ValueFloat float64
 	ValueFlag  bool
-	ValueList  any // TODO: Find a better data type for these mods
+	ValueList  any
 }
 
 func (m *ModValueMulti) Type() ModValueMultiType {
@@ -52,10 +52,11 @@ func (m *ModValueMulti) SetList(v any) {
 func (m *ModValueMulti) Clone() *ModValueMulti {
 	listValue := m.ValueList
 	if listValue != nil {
-		cloneable, ok := listValue.(Cloneable)
-		if ok {
-			listValue = cloneable.Clone(reflect.TypeOf(m.ValueList).Kind() == reflect.Ptr)
-		} else {
+		switch cloneable := listValue.(type) {
+		case Cloneable:
+			listValue = cloneable.Clone(reflect.TypeOf(m.ValueList).Kind() == reflect.Pointer)
+		case string:
+		default:
 			slog.Warn("list type not cloneable", slog.Any("type", reflect.TypeOf(listValue)))
 		}
 	}

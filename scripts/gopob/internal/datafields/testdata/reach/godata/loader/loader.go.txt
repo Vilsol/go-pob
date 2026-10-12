@@ -1,0 +1,8 @@
+package loader
+
+import "context"
+
+func InitHelper[T any](ctx context.Context, version string, name string, out *[]T) error {
+	*out = make([]T, 0)
+	return nil
+}

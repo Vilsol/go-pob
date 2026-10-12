@@ -1,0 +1,15 @@
+{
+  // ⚠️ THE HARNESS NEEDS ITS OWN PROJECT BECAUSE THE GENERATED ONE CANNOT SEE IT.
+  // .svelte-kit/tsconfig.json includes only ../src/** and ../tests/**, and a child tsconfig's
+  // `include` REPLACES its parent's rather than extending it — so adding harness/ to the root
+  // tsconfig would mean restating a generated list that `svelte-kit sync` rewrites.
+  //
+  // Without this, eslint's projectService reports `was not found by the project service` for every
+  // harness file NOT reachable from src/ by an import. That is a parsing error, which means the file
+  // is not linted at all while eslint still exits with a failure — the worst of both: no coverage and
+  // a red tool. Files that ARE reachable (go_runtime.ts, via notes_mount.test.ts) were linted
+  // normally, so the gap was invisible for exactly the files with no importer: setup.ts and the
+  // *.test.ts files.
+  "extends": "../tsconfig.json",
+  "include": ["./**/*.ts", "../src/lib/**/*.ts"]
+}

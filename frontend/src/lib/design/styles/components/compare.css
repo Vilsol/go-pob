@@ -1,0 +1,91 @@
+@layer components {
+  .pill {
+    @apply rounded-lg border border-(--tone)/53 bg-(--tone)/8 px-1.75 font-mono text-11 leading-4 font-semibold whitespace-nowrap text-(--tone);
+  }
+  .pill-even {
+    @apply border-line bg-transparent text-text-3;
+  }
+  .ruler {
+    @apply flex items-center gap-3.5 px-4 pt-4.5 pb-2 text-13 font-semibold tracking-[0.12em] whitespace-nowrap text-ruler lowercase;
+    font-variant-caps: all-small-caps;
+  }
+  .ruler::before,
+  .ruler::after {
+    content: '';
+    flex: 1 1 0;
+    height: 1px;
+  }
+  .ruler::before {
+    background: linear-gradient(90deg, rgba(224, 168, 74, 0) 0%, rgba(141, 138, 131, 0.35) 55%, rgba(224, 168, 74, 0.75) 100%);
+  }
+  .ruler::after {
+    background: linear-gradient(270deg, rgba(224, 168, 74, 0) 0%, rgba(141, 138, 131, 0.35) 55%, rgba(224, 168, 74, 0.75) 100%);
+  }
+  .tag {
+    @apply w-11.5 shrink-0 rounded-[3px] bg-(--tone)/14 py-px text-center text-[9px] font-semibold tracking-[0.04em] text-(--tone);
+  }
+  .tag-same {
+    @apply bg-surface-2 text-text-3;
+  }
+  .tag-level {
+    @apply bg-hover text-text;
+  }
+  .butterfly-row {
+    @apply box-border grid min-h-11 grid-cols-[96px_minmax(0,1fr)_190px_minmax(0,1fr)_96px] items-center gap-2.5 px-4 py-0.75 hover:bg-hover-soft;
+  }
+  .butterfly-value {
+    @apply font-mono text-14 text-text data-[win=true]:font-semibold;
+  }
+  .butterfly-label {
+    @apply flex flex-col items-center justify-center gap-0.5 text-center text-13 leading-4 text-text-2;
+  }
+  .bf-track {
+    @apply relative h-4.5;
+  }
+  .bf-bed,
+  .bf-frame {
+    @apply pointer-events-none absolute inset-0 box-border border border-track;
+  }
+  .bf-bed {
+    @apply bg-inset;
+  }
+  .bf-a .bf-bed,
+  .bf-a .bf-frame {
+    @apply rounded-l-[3px] border-r-0;
+  }
+  .bf-b .bf-bed,
+  .bf-b .bf-frame {
+    @apply rounded-r-[3px] border-l-0;
+  }
+  .bf-bar {
+    @apply absolute inset-y-0 w-(--w) bg-(--tone);
+  }
+  .bf-a .bf-bar {
+    @apply right-(--from) rounded-l-[3px];
+  }
+  .bf-b .bf-bar {
+    @apply left-(--from) rounded-r-[3px];
+  }
+  .bf-gap {
+    background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--tone) 21.96%, transparent) 0 2px, transparent 2px 7px), var(--color-inset);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tone) 33.33%, transparent);
+  }
+  .bf-tick {
+    @apply absolute -inset-y-1 w-0.5 bg-text-2;
+  }
+  .bf-a .bf-tick {
+    right: calc(var(--at) - 1px);
+  }
+  .bf-b .bf-tick {
+    left: calc(var(--at) - 1px);
+  }
+  .bf-tick-zero {
+    @apply w-px bg-line-bright;
+  }
+  .bf-a .bf-tick-zero {
+    right: calc(var(--at) - 0.5px);
+  }
+  .bf-b .bf-tick-zero {
+    left: calc(var(--at) - 0.5px);
+  }
+}

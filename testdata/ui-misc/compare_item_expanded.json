@@ -1,0 +1,1839 @@
+{
+ "pairs": [
+  [
+   "Rarity: RARE\nChimeric Gnarl\nTornado Wand\nUnique ID: bbeee377e973ee134a5db30352971b4725d3c83ee9b5c94276be1fccb01c0983\nItem Level: 76\nQuality: 0\nSockets: B-W-W\nLevelReq: 65\nImplicits: 1\n37% increased Spell Damage\n+16% to Fire Damage over Time Multiplier\n62% increased Fire Damage\n50% increased Spell Critical Strike Chance\n+1 to Level of all Lightning Spell Skill Gems\n14% increased Projectile Speed\n{crafted}16% increased Damage over Time",
+   "Rarity: UNIQUE\nDread Captain's Cutlass\nGhostflame Blade\nUnique ID: 9fc06b80107f8b35675c0b45db0897e4151457bdeb55f8ef1379b8abb3cd5bdf\nItem Level: 83\nQuality: 20\nSockets: B-G-R\nLevelReq: 68\nImplicits: 4\n{crafted}Quality does not increase Physical Damage\n{crafted}Grants 1% increased Accuracy per 2% Quality\nCan be Allflame Crafted as if Rare\nCannot gain Intangibility\n29% more Melee Damage while Burning\nAdds 26 to 51 Fire Damage\n+24% to Global Critical Strike Multiplier\n+727 to Accuracy Rating\nMelee Strikes Curse Enemies with Flammability on Hit, ignoring Curse Limit\n39% increased Elemental Damage with Attack Skills"
+  ],
+  [
+   "Rarity: RARE\nPhoenix Charm\nTwig Spirit Shield\nEnergy Shield: 7\nEnergyShieldBasePercentile: 0.5\nUnique ID: f91d8b182ecb9b59622a1309fb8494ea9763211bcb6df6f5c10c130b227f9e71\nItem Level: 14\nQuality: 0\nSockets: W W-W\nImplicits: 1\n13% increased Spell Damage\n+33 to maximum Life\n+1 to Level of all Lightning Spell Skill Gems\n+13% to Fire Resistance\nReflects 2 Physical Damage to Melee Attackers\n{crafted}+21% to Cold Resistance",
+   "Rarity: UNIQUE\nEmperor's Vigilance\nSteel Kite Shield\nArmour: 2191\nArmourBasePercentile: 0.9517\nEnergy Shield: 462\nEnergyShieldBasePercentile: 1\nUnique ID: 3eeac83cd2a94bfddfa17ac1a895d44e0114cfa324b9ad86fbc84c8c5b10a0a7\nItem Level: 78\nQuality: 20\nSockets: G-R-B\nLevelReq: 46\nImplicits: 0\n17% Chance to Block Spell Damage\n1000% increased Armour and Energy Shield\nDamage taken from Blocked Hits cannot bypass Energy Shield\nDamage taken from Unblocked hits always bypasses Energy Shield\nGlancing Blows"
+  ],
+  [
+   "Rarity: UNIQUE\nHonourhome\nSoldier Helmet\nArmour: 98\nArmourBasePercentile: 0.6367\nEnergy Shield: 24\nEnergyShieldBasePercentile: 0.6806\nUnique ID: bcc465346e31ae148a9ef14b9ba5da4af6d53075d427fc430baf2fb3e5f367d8\nItem Level: 85\nQuality: 0\nSockets: W-W-W-W\nLevelReq: 12\nImplicits: 1\n+2 to Level of Socketed Lightning Gems\n+2 to Level of Socketed Gems\nAdds 1 to 30 Lightning Damage to Spells and Attacks\n139% increased Armour and Energy Shield\n11% increased Rarity of Items found\n47% increased Mana Cost Efficiency\nCorrupted",
+   "Rarity: RARE\nEmpyrean Veil\nGiantslayer Helmet\nArmour: 1698\nArmourBasePercentile: 0.551\nUnique ID: 9470625bd77e38804b6dc5d30e90b0b77b3821cdb1e3da5422b00d7483470d7e\nSearing Exarch Item\nEater of Worlds Item\nItem Level: 86\nQuality: 20\nSockets: B-R-G-R\nLevelReq: 84\nImplicits: 2\n6% of Physical Damage from Hits taken as Cold Damage\n26% increased Mana Cost Efficiency\n+38 to Strength\n+92 to Armour\n96% increased Armour\n+144 to maximum Life\n+21% to Lightning Resistance\n+27% to Chaos Resistance"
+  ],
+  [
+   "Rarity: RARE\nGolem Curtain\nWyrmscale Doublet\nArmour: 377\nArmourBasePercentile: 0.658\nEvasion: 377\nEvasionBasePercentile: 0.658\nUnique ID: 2c899726fc9af40460c66eda245dc5425e29b2a5ba8eae8793939a3c871fe9c6\nItem Level: 41\nQuality: 0\nSockets: W-W-W-W-W W\nLevelReq: 38\nImplicits: 0\n+27 to Strength\n+9 to Dexterity\n25% increased Armour and Evasion\n+22% to Fire Resistance\n10% increased Stun and Block Recovery\n{crafted}41% increased Armour and Evasion",
+   "Rarity: RARE\nAgony Skin\nRoyal Plate\nArmour: 3772\nArmourBasePercentile: 0.7738\nUnique ID: 4d38f868e3213e41520c254ab7da7ef728f37577ab7cd9b7d18c6a0878aa155a\nSearing Exarch Item\nEater of Worlds Item\nItem Level: 92\nQuality: 20\nSockets: W-R-R-R-W-R\nLevelReq: 84\nImplicits: 2\n10% of Physical Damage from Hits taken as Lightning Damage\nGain a Frenzy Charge every 15 seconds\n95% increased Armour\n+47% to Cold Resistance\n+37% to Lightning Resistance\n13% increased Stun and Block Recovery\n8% additional Physical Damage Reduction\n{crafted}+292 to Armour"
+  ],
+  [
+   "Rarity: RARE\nBramble Touch\nApothecary's Gloves\nArmour: 219\nArmourBasePercentile: 0.6089\nEnergy Shield: 58\nEnergyShieldBasePercentile: 0.5457\nUnique ID: 26fd8c86f5fb3c80223148dd54fae224324795df9794293cdf8ace2e3515d73a\nItem Level: 85\nQuality: 0\nSockets: W-W-W-W\nLevelReq: 70\nImplicits: 1\n18% increased Damage over Time\n+41 to Dexterity\nAdds 2 to 28 Lightning Damage to Attacks\n86% increased Armour and Energy Shield\n+113 to maximum Life\n+28% to Fire Resistance\n{crafted}+24% to Cold Resistance",
+   "Rarity: RARE\nWrath Palm\nLeviathan Gauntlets\nArmour: 914\nArmourBasePercentile: 0.1331\nUnique ID: e0af7cdba9179eca675da6c23dc2ba11e7925d4b6397a0050cd664046bc2a8ee\nSearing Exarch Item\nEater of Worlds Item\nItem Level: 86\nQuality: 20\nSockets: B-G-R-W\nLevelReq: 84\nImplicits: 2\nInflict Fire Exposure on Hit, applying -11% to Fire Resistance\n8% increased Attack Speed\n36% increased Armour\n+83 to maximum Life\n+31% to Fire Resistance\n+30% to Chaos Resistance\nGain 11 Mana per Enemy Killed\n15% increased Stun and Block Recovery\n{crafted}72% increased Armour"
+  ],
+  [
+   "Rarity: RARE\nRune Road\nLegion Boots\nArmour: 173\nArmourBasePercentile: 0.053\nEnergy Shield: 35\nEnergyShieldBasePercentile: 0.053\nUnique ID: 88aede93c927bdbccc38ecc7af7abcfe673204ea502913f10f2b344bc894f590\nItem Level: 66\nQuality: 0\nSockets: W-W-W-R\nLevelReq: 58\nImplicits: 0\n65% increased Armour and Energy Shield\n+39% to Fire Resistance\n+26% to Lightning Resistance\n30% increased Movement Speed\n{crafted}+32 to maximum Life",
+   "Rarity: UNIQUE\nRalakesh's Impatience\nRiveted Boots\nArmour: 80\nArmourBasePercentile: 0.2778\nEnergy Shield: 17\nEnergyShieldBasePercentile: 0.1667\nUnique ID: 31d571e8226f7752e3b38df196f08b7304b71ec7693153edb87a83205e8e8f83\nItem Level: 85\nQuality: 20\nSockets: R-W-W W\nLevelReq: 36\nImplicits: 0\n+18% to Cold Resistance\n+23% to Chaos Resistance\n17% increased Movement Speed\nCorrupted Blood cannot be inflicted on you\nCount as having maximum number of Endurance Charges"
+  ],
+  [
+   "Rarity: RARE\nFate Heart\nJade Amulet\nUnique ID: e619f47e578cf6654147ea2f19dbd47737d35923fd2fa3f7b2c2ea51a05bcdad\nItem Level: 80\nLevelReq: 60\nImplicits: 1\n+29 to Dexterity\n+46 to maximum Energy Shield\n55% increased Mana Regeneration Rate\n+18% to Cold Resistance\n+1 to Minimum Frenzy Charges\n3% chance to gain a Frenzy Charge on Kill\n+1 to Level of all Physical Skill Gems\n{crafted}+46 to maximum Life",
+   "Rarity: UNIQUE\nReplica Dragonfang's Flight\nOnyx Amulet\nUnique ID: 5f9284df581bdbde75f497fe34877f5f35c1cd9e00b37b3438cd44e3616c4ddf\nItem Level: 85\nLevelReq: 56\nImplicits: 2\n{crafted}Allocates Charisma\n+16 to all Attributes\n+3 to Level of all Shield Crush Gems\n+10% to all Elemental Resistances\n7% increased Reservation Efficiency of Skills\nItems and Gems have 8% reduced Attribute Requirements"
+  ],
+  [
+   "Rarity: RARE\nDamnation Coil\nTopaz Ring\nUnique ID: 898a6d5275b60480ff9a3abcca82e6792c7eba995031ff65529b02f6c7810a2e\nItem Level: 58\nLevelReq: 32\nImplicits: 1\n+27% to Lightning Resistance\n+25 to Evasion Rating\n+7 to maximum Energy Shield\n+10% to all Elemental Resistances\n+25% to Cold Resistance\n{crafted}+36 to maximum Life",
+   "Rarity: RARE\nHypnotic Hold\nAmethyst Ring\nUnique ID: 02aaa5e731810d012d139e2072a5cf94b66da34cb5969d9387a3d580f649b2b2\nItem Level: 83\nLevelReq: 64\nImplicits: 1\n+23% to Chaos Resistance\n+33 to Dexterity\n+78 to maximum Life\n+67 to maximum Mana\n+13% to all Elemental Resistances\n{crafted}Non-Channelling Skills have -7 to Total Mana Cost\n{fractured}+463 to Accuracy Rating\nFractured Item"
+  ],
+  [
+   "Rarity: RARE\nVortex Finger\nTwo-Stone Ring\nUnique ID: 427032037b3baa63b6178630f14e683668362ab31cbfdcce9393beb9af9bf378\nItem Level: 37\nLevelReq: 20\nImplicits: 1\n+12% to Fire and Lightning Resistances\nAdds 7 to 12 Cold Damage to Attacks\n+9% to Fire Resistance\n+14% to Cold Resistance\n+9% to Lightning Resistance\n{crafted}+19 to maximum Life",
+   "Rarity: RARE\nDeath Knot\nAmethyst Ring\nUnique ID: f8969d38455012de12faed2abe270528704c41f851c65c31a84d312d177ff62e\nItem Level: 85\nLevelReq: 65\nImplicits: 1\n+23% to Chaos Resistance\n+53 to Intelligence\nAdds 8 to 18 Fire Damage to Attacks\n+113 to maximum Life\n+29% to Chaos Resistance\nGain 35 Life per Enemy Killed\n{crafted}Non-Channelling Skills have -7 to Total Mana Cost"
+  ],
+  [
+   "Rarity: RARE\nSoul Twine\nHeavy Belt\nUnique ID: a88cc6406ed8a9b4373c8ad276ca10188ee62dc7eaff4312da7f986bd3b3f3b7\nItem Level: 34\nLevelReq: 24\nImplicits: 1\n+34 to Strength\n+14 to Strength\n+56 to Armour\n+8 to maximum Energy Shield\n+42 to maximum Life\n+9% to Fire Resistance\n{crafted}+26% to Lightning Resistance",
+   "Rarity: UNIQUE\nArn's Anguish\nCloth Belt\nUnique ID: dba2c7fd3ff1f3929a3bfb484b53beaf7edb4ac0492ab0739fefa6261d625262\nItem Level: 86\nLevelReq: 68\nImplicits: 1\n19% increased Stun and Block Recovery\n+605 to Armour\n15% increased maximum Life\n+55% to Fire Resistance\n+1 to Maximum Endurance Charges\nModifiers to Minimum Endurance Charges instead apply to Minimum Brutal Charges\nMaximum Brutal Charges is equal to Maximum Endurance Charges\nGain Brutal Charges instead of Endurance Charges"
+  ],
+  [
+   "Rarity: MAGIC\nTransgressor's Divine Life Flask of Sealing\nUnique ID: 737424eb0b07bb2584965e019205956f0707b71efb2effd722b83758b93714d4\nItem Level: 62\nQuality: 0\nLevelReq: 60\nImplicits: 0\nGain 1 Charge when you are Hit by an Enemy\nGrants Immunity to Bleeding for 6 seconds if used while Bleeding\nGrants Immunity to Corrupted Blood for 6 seconds if used while affected by Corrupted Blood",
+   "Rarity: MAGIC\nApprentice's Divine Life Flask of Sealing\nUnique ID: 12c2e529d9dc1e1d2a454981fb51b28ef3a3d404bbcbc73343724b01f5722b19\nItem Level: 77\nQuality: 20\nLevelReq: 60\nImplicits: 0\n15% reduced Charges per use\nGrants Immunity to Bleeding for 6 seconds if used while Bleeding\nGrants Immunity to Corrupted Blood for 6 seconds if used while affected by Corrupted Blood"
+  ],
+  [
+   "Rarity: MAGIC\nAnalyst's Silver Flask of the Sable\nUnique ID: bc0a28ad12f767212dcf1d26f78179174a65d24e495c69b194ead4299aedf882\nItem Level: 65\nQuality: 0\nLevelReq: 48\nImplicits: 0\n24% increased Duration\n52% reduced Effect of Chill on you during Effect\n53% reduced Freeze Duration on you during Effect",
+   "Rarity: MAGIC\nSpecialist's Granite Flask of the Tortoise\nUnique ID: f3d4d3873a1681d8bc1984ce995b445c1748e36c9ed127df2e8513ca71508fe9\nItem Level: 83\nQuality: 20\nLevelReq: 49\nImplicits: 1\n{crafted}Used when Charges reach full\n26% chance to gain a Flask Charge when you deal a Critical Strike\n46% increased Armour during Effect"
+  ],
+  [
+   "Rarity: MAGIC\nPlentiful Granite Flask of Stiffness\nUnique ID: dc3a22bf2b0ee968a095acec92526b220a09bca4c7fbf574cfcf1145ee0bb9c9\nItem Level: 42\nQuality: 0\nLevelReq: 27\nImplicits: 0\n+22 to Maximum Charges\n52% increased Block and Stun Recovery during Effect",
+   "Rarity: MAGIC\nBountiful Quicksilver Flask of Rupturing\nUnique ID: a671ce6ef707c04d7e69bdc0dadbd46dfb936871f8f1de4768740898700ca7e6\nItem Level: 83\nQuality: 20\nLevelReq: 40\nImplicits: 1\n{crafted}Used when Charges reach full\n+24 to Maximum Charges\n42% increased Critical Strike Chance during Effect"
+  ],
+  [
+   "Rarity: UNIQUE\nDread Captain's Cutlass\nGhostflame Blade\nUnique ID: 9fc06b80107f8b35675c0b45db0897e4151457bdeb55f8ef1379b8abb3cd5bdf\nItem Level: 83\nQuality: 20\nSockets: B-G-R\nLevelReq: 68\nImplicits: 4\n{crafted}Quality does not increase Physical Damage\n{crafted}Grants 1% increased Accuracy per 2% Quality\nCan be Allflame Crafted as if Rare\nCannot gain Intangibility\n29% more Melee Damage while Burning\nAdds 26 to 51 Fire Damage\n+24% to Global Critical Strike Multiplier\n+727 to Accuracy Rating\nMelee Strikes Curse Enemies with Flammability on Hit, ignoring Curse Limit\n39% increased Elemental Damage with Attack Skills",
+   ""
+  ],
+  [
+   "Rarity: UNIQUE\nEmperor's Vigilance\nSteel Kite Shield\nArmour: 2191\nArmourBasePercentile: 0.9517\nEnergy Shield: 462\nEnergyShieldBasePercentile: 1\nUnique ID: 3eeac83cd2a94bfddfa17ac1a895d44e0114cfa324b9ad86fbc84c8c5b10a0a7\nItem Level: 78\nQuality: 20\nSockets: G-R-B\nLevelReq: 46\nImplicits: 0\n17% Chance to Block Spell Damage\n1000% increased Armour and Energy Shield\nDamage taken from Blocked Hits cannot bypass Energy Shield\nDamage taken from Unblocked hits always bypasses Energy Shield\nGlancing Blows",
+   "Rarity: RARE\nNew Item\nHarmonic Spirit Shield\nEnergy Shield: 79\nEnergyShieldBasePercentile: 1\nCrafted: true\nPrefix: {range:0.683}IncreasedLife9\nPrefix: {range:0.5}GlobalFireSpellGemsLevel1_\nPrefix: {range:0.915}LocalIncreasedBlockPercentage6\nSuffix: None\nSuffix: None\nSuffix: {range:1}AllResistances6\nQuality: 20\nSockets: B-B-B\nLevelReq: 68\nImplicits: 1\n{tags:caster_damage,damage,caster}{range:1}(10-15)% increased Spell Damage\n{prefix}75% increased Chance to Block\n{prefix}+140 to maximum Life\n{prefix}+1 to Level of all Fire Spell Skill Gems\n{suffix}+18% to all Elemental Resistances\n{tags:unveiled_mod,damage}{crafted}{range:0.5}(4-5)% chance to deal Double Damage"
+  ],
+  [
+   "Rarity: RARE\nEmpyrean Veil\nGiantslayer Helmet\nArmour: 1698\nArmourBasePercentile: 0.551\nUnique ID: 9470625bd77e38804b6dc5d30e90b0b77b3821cdb1e3da5422b00d7483470d7e\nSearing Exarch Item\nEater of Worlds Item\nItem Level: 86\nQuality: 20\nSockets: B-R-G-R\nLevelReq: 84\nImplicits: 2\n6% of Physical Damage from Hits taken as Cold Damage\n26% increased Mana Cost Efficiency\n+38 to Strength\n+92 to Armour\n96% increased Armour\n+144 to maximum Life\n+21% to Lightning Resistance\n+27% to Chaos Resistance",
+   ""
+  ],
+  [
+   "Rarity: RARE\nAgony Skin\nRoyal Plate\nArmour: 3772\nArmourBasePercentile: 0.7738\nUnique ID: 4d38f868e3213e41520c254ab7da7ef728f37577ab7cd9b7d18c6a0878aa155a\nSearing Exarch Item\nEater of Worlds Item\nItem Level: 92\nQuality: 20\nSockets: W-R-R-R-W-R\nLevelReq: 84\nImplicits: 2\n10% of Physical Damage from Hits taken as Lightning Damage\nGain a Frenzy Charge every 15 seconds\n95% increased Armour\n+47% to Cold Resistance\n+37% to Lightning Resistance\n13% increased Stun and Block Recovery\n8% additional Physical Damage Reduction\n{crafted}+292 to Armour",
+   ""
+  ],
+  [
+   "Rarity: RARE\nWrath Palm\nLeviathan Gauntlets\nArmour: 914\nArmourBasePercentile: 0.1331\nUnique ID: e0af7cdba9179eca675da6c23dc2ba11e7925d4b6397a0050cd664046bc2a8ee\nSearing Exarch Item\nEater of Worlds Item\nItem Level: 86\nQuality: 20\nSockets: B-G-R-W\nLevelReq: 84\nImplicits: 2\nInflict Fire Exposure on Hit, applying -11% to Fire Resistance\n8% increased Attack Speed\n36% increased Armour\n+83 to maximum Life\n+31% to Fire Resistance\n+30% to Chaos Resistance\nGain 11 Mana per Enemy Killed\n15% increased Stun and Block Recovery\n{crafted}72% increased Armour",
+   "Rarity: UNIQUE\nTanu Ahi\nWyrmscale Gauntlets\nArmour: 312\nArmourBasePercentile: 1\nEvasion: 312\nEvasionBasePercentile: 1\nQuality: 20\nSockets: G-G-G-G\nLevelReq: 49\nImplicits: 1\n{tags:elemental,resistance}{range:0.5}+(14-16)% to all Elemental Resistances\n{range:0.5}(8-12)% increased Attack Speed\n{range:1}(100-150)% increased Armour and Evasion\n{range:0.5}(2-3)% of Physical Attack Damage Leeched as Life\n10% chance to gain Adrenaline for 2 Seconds when Leech is\nremoved by Filling Unreserved Life\n10% chance to gain Onslaught for 4 Seconds when Leech is\nremoved by Filling Unreserved Life\nCorrupted"
+  ],
+  [
+   "Rarity: UNIQUE\nRalakesh's Impatience\nRiveted Boots\nArmour: 80\nArmourBasePercentile: 0.2778\nEnergy Shield: 17\nEnergyShieldBasePercentile: 0.1667\nUnique ID: 31d571e8226f7752e3b38df196f08b7304b71ec7693153edb87a83205e8e8f83\nItem Level: 85\nQuality: 20\nSockets: R-W-W W\nLevelReq: 36\nImplicits: 0\n+18% to Cold Resistance\n+23% to Chaos Resistance\n17% increased Movement Speed\nCorrupted Blood cannot be inflicted on you\nCount as having maximum number of Endurance Charges",
+   "Rarity: RARE\nNew Item\nTwo-Toned Boots (Armour/Evasion)\nArmour: 174\nArmourBasePercentile: 1\nEvasion: 174\nEvasionBasePercentile: 1\nCrafted: true\nPrefix: {range:0.208}IncreasedLife8\nPrefix: None\nPrefix: {range:0.542}MovementVelocity5\nSuffix: {range:1}ColdResist4\nSuffix: {range:1}FireResist4\nSuffix: {range:1}ChaosResist3\nQuality: 20\nSockets: G-G-G-G\nLevelReq: 70\nImplicits: 1\n{tags:elemental,fire,cold,resistance}{range:1}+(8-12)% to Fire and Cold Resistances\n{prefix}+118 to maximum Life\n{suffix}+29% to Fire Resistance\n{suffix}+29% to Cold Resistance\n{suffix}+20% to Chaos Resistance\n{prefix}30% increased Movement Speed"
+  ],
+  [
+   "Rarity: UNIQUE\nReplica Dragonfang's Flight\nOnyx Amulet\nUnique ID: 5f9284df581bdbde75f497fe34877f5f35c1cd9e00b37b3438cd44e3616c4ddf\nItem Level: 85\nLevelReq: 56\nImplicits: 2\n{crafted}Allocates Charisma\n+16 to all Attributes\n+3 to Level of all Shield Crush Gems\n+10% to all Elemental Resistances\n7% increased Reservation Efficiency of Skills\nItems and Gems have 8% reduced Attribute Requirements",
+   ""
+  ],
+  [
+   "Rarity: RARE\nHypnotic Hold\nAmethyst Ring\nUnique ID: 02aaa5e731810d012d139e2072a5cf94b66da34cb5969d9387a3d580f649b2b2\nItem Level: 83\nLevelReq: 64\nImplicits: 1\n+23% to Chaos Resistance\n+33 to Dexterity\n+78 to maximum Life\n+67 to maximum Mana\n+13% to all Elemental Resistances\n{crafted}Non-Channelling Skills have -7 to Total Mana Cost\n{fractured}+463 to Accuracy Rating\nFractured Item",
+   "Rarity: UNIQUE\nPraxis\nPaua Ring\nLevelReq: 22\nImplicits: 1\n{tags:resource}{range:0.5}+(20-30) to maximum Mana\n{tags:resource}{range:0.5}+(30-60) to maximum Mana\n{tags:resource}{range:1}Regenerate (3-6) Mana per second\n{tags:resource}{range:0}-(8-4) to Total Mana Cost of Skills\n{tags:resource}8% of Damage taken Recouped as Mana"
+  ],
+  [
+   "Rarity: RARE\nDeath Knot\nAmethyst Ring\nUnique ID: f8969d38455012de12faed2abe270528704c41f851c65c31a84d312d177ff62e\nItem Level: 85\nLevelReq: 65\nImplicits: 1\n+23% to Chaos Resistance\n+53 to Intelligence\nAdds 8 to 18 Fire Damage to Attacks\n+113 to maximum Life\n+29% to Chaos Resistance\nGain 35 Life per Enemy Killed\n{crafted}Non-Channelling Skills have -7 to Total Mana Cost",
+   "Rarity: RARE\nNew Item\nTwo-Stone Ring (Cold/Lightning)\nCrafted: true\nPrefix: {range:0.803}IncreasedLife5\nPrefix: None\nPrefix: None\nSuffix: {range:1}AllResistances5\nSuffix: {range:0.447}Dexterity8\nSuffix: {range:0.113}ChaosResist6\nLevelReq: 64\nImplicits: 1\n{tags:elemental,cold,lightning,resistance}{range:1}+(12-16)% to Cold and Lightning Resistances\n{suffix}+46 to Dexterity\n{prefix}+81 to maximum Life\n{suffix}+16% to all Elemental Resistances\n{suffix}+31% to Chaos Resistance"
+  ],
+  [
+   "Rarity: UNIQUE\nArn's Anguish\nCloth Belt\nUnique ID: dba2c7fd3ff1f3929a3bfb484b53beaf7edb4ac0492ab0739fefa6261d625262\nItem Level: 86\nLevelReq: 68\nImplicits: 1\n19% increased Stun and Block Recovery\n+605 to Armour\n15% increased maximum Life\n+55% to Fire Resistance\n+1 to Maximum Endurance Charges\nModifiers to Minimum Endurance Charges instead apply to Minimum Brutal Charges\nMaximum Brutal Charges is equal to Maximum Endurance Charges\nGain Brutal Charges instead of Endurance Charges",
+   "Rarity: RARE\nNew Item\nStygian Vise\nCrafted: true\nPrefix: {range:1}IncreasedLife9\nPrefix: {range:0.352}IncreasedPhysicalDamageReductionRating6\nPrefix: None\nSuffix: {range:0.183}Strength8\nSuffix: {range:0.338}LightningResist7\nSuffix: {range:0.225}FireResist7\nSockets: A\nLevelReq: 59\nImplicits: 1\nHas 1 Abyssal Socket\n+44 to Strength\n+350 to Armour\n+144 to maximum Life\n+43% to Fire Resistance\n+43% to Lightning Resistance"
+  ],
+  [
+   "Rarity: MAGIC\nApprentice's Divine Life Flask of Sealing\nUnique ID: 12c2e529d9dc1e1d2a454981fb51b28ef3a3d404bbcbc73343724b01f5722b19\nItem Level: 77\nQuality: 20\nLevelReq: 60\nImplicits: 0\n15% reduced Charges per use\nGrants Immunity to Bleeding for 6 seconds if used while Bleeding\nGrants Immunity to Corrupted Blood for 6 seconds if used while affected by Corrupted Blood",
+   "Rarity: MAGIC\nCareful Eternal Life Flask\nCrafted: true\nPrefix: {range:0.275}FlaskIncreasedRecoveryOnLowLife4\nSuffix: None\nQuality: 20\nLevelReq: 65\nImplicits: 0\n120% more Recovery if used while on Low Life"
+  ],
+  [
+   "Rarity: MAGIC\nSpecialist's Granite Flask of the Tortoise\nUnique ID: f3d4d3873a1681d8bc1984ce995b445c1748e36c9ed127df2e8513ca71508fe9\nItem Level: 83\nQuality: 20\nLevelReq: 49\nImplicits: 1\n{crafted}Used when Charges reach full\n26% chance to gain a Flask Charge when you deal a Critical Strike\n46% increased Armour during Effect",
+   "Rarity: MAGIC\nSurgeon's Silver Flask\nCrafted: true\nPrefix: {range:0.366}FlaskChanceRechargeOnCrit5\nSuffix: None\nQuality: 20\nLevelReq: 64\nImplicits: 0\n{prefix}32% chance to gain a Flask Charge when you deal a Critical Strike\n{tags:flask,resource,unveiled_mod,life}{crafted}Regenerate 3% of Life per second during Effect"
+  ],
+  [
+   "Rarity: MAGIC\nBountiful Quicksilver Flask of Rupturing\nUnique ID: a671ce6ef707c04d7e69bdc0dadbd46dfb936871f8f1de4768740898700ca7e6\nItem Level: 83\nQuality: 20\nLevelReq: 40\nImplicits: 1\n{crafted}Used when Charges reach full\n+24 to Maximum Charges\n42% increased Critical Strike Chance during Effect",
+   "Rarity: MAGIC\nMasochist's Granite Flask of the Tortoise\nCrafted: true\nPrefix: {range:0.5}FlaskFullRechargeOnHit4_\nSuffix: {range:0.873}FlaskBuffArmourWhileHealing2\nQuality: 20\nLevelReq: 50\nImplicits: 0\nGain 2 Charges when you are Hit by an Enemy\n49% increased Armour during Effect"
+  ],
+  [
+   "Rarity: RARE\nNew Item\nHarmonic Spirit Shield\nEnergy Shield: 79\nEnergyShieldBasePercentile: 1\nCrafted: true\nPrefix: {range:0.683}IncreasedLife9\nPrefix: {range:0.5}GlobalFireSpellGemsLevel1_\nPrefix: {range:0.915}LocalIncreasedBlockPercentage6\nSuffix: None\nSuffix: None\nSuffix: {range:1}AllResistances6\nQuality: 20\nSockets: B-B-B\nLevelReq: 68\nImplicits: 1\n{tags:caster_damage,damage,caster}{range:1}(10-15)% increased Spell Damage\n{prefix}75% increased Chance to Block\n{prefix}+140 to maximum Life\n{prefix}+1 to Level of all Fire Spell Skill Gems\n{suffix}+18% to all Elemental Resistances\n{tags:unveiled_mod,damage}{crafted}{range:0.5}(4-5)% chance to deal Double Damage",
+   ""
+  ],
+  [
+   "Rarity: UNIQUE\nTanu Ahi\nWyrmscale Gauntlets\nArmour: 312\nArmourBasePercentile: 1\nEvasion: 312\nEvasionBasePercentile: 1\nQuality: 20\nSockets: G-G-G-G\nLevelReq: 49\nImplicits: 1\n{tags:elemental,resistance}{range:0.5}+(14-16)% to all Elemental Resistances\n{range:0.5}(8-12)% increased Attack Speed\n{range:1}(100-150)% increased Armour and Evasion\n{range:0.5}(2-3)% of Physical Attack Damage Leeched as Life\n10% chance to gain Adrenaline for 2 Seconds when Leech is\nremoved by Filling Unreserved Life\n10% chance to gain Onslaught for 4 Seconds when Leech is\nremoved by Filling Unreserved Life\nCorrupted",
+   ""
+  ],
+  [
+   "Rarity: RARE\nNew Item\nTwo-Toned Boots (Armour/Evasion)\nArmour: 174\nArmourBasePercentile: 1\nEvasion: 174\nEvasionBasePercentile: 1\nCrafted: true\nPrefix: {range:0.208}IncreasedLife8\nPrefix: None\nPrefix: {range:0.542}MovementVelocity5\nSuffix: {range:1}ColdResist4\nSuffix: {range:1}FireResist4\nSuffix: {range:1}ChaosResist3\nQuality: 20\nSockets: G-G-G-G\nLevelReq: 70\nImplicits: 1\n{tags:elemental,fire,cold,resistance}{range:1}+(8-12)% to Fire and Cold Resistances\n{prefix}+118 to maximum Life\n{suffix}+29% to Fire Resistance\n{suffix}+29% to Cold Resistance\n{suffix}+20% to Chaos Resistance\n{prefix}30% increased Movement Speed",
+   ""
+  ],
+  [
+   "Rarity: UNIQUE\nPraxis\nPaua Ring\nLevelReq: 22\nImplicits: 1\n{tags:resource}{range:0.5}+(20-30) to maximum Mana\n{tags:resource}{range:0.5}+(30-60) to maximum Mana\n{tags:resource}{range:1}Regenerate (3-6) Mana per second\n{tags:resource}{range:0}-(8-4) to Total Mana Cost of Skills\n{tags:resource}8% of Damage taken Recouped as Mana",
+   ""
+  ],
+  [
+   "Rarity: RARE\nNew Item\nTwo-Stone Ring (Cold/Lightning)\nCrafted: true\nPrefix: {range:0.803}IncreasedLife5\nPrefix: None\nPrefix: None\nSuffix: {range:1}AllResistances5\nSuffix: {range:0.447}Dexterity8\nSuffix: {range:0.113}ChaosResist6\nLevelReq: 64\nImplicits: 1\n{tags:elemental,cold,lightning,resistance}{range:1}+(12-16)% to Cold and Lightning Resistances\n{suffix}+46 to Dexterity\n{prefix}+81 to maximum Life\n{suffix}+16% to all Elemental Resistances\n{suffix}+31% to Chaos Resistance",
+   ""
+  ],
+  [
+   "Rarity: RARE\nNew Item\nStygian Vise\nCrafted: true\nPrefix: {range:1}IncreasedLife9\nPrefix: {range:0.352}IncreasedPhysicalDamageReductionRating6\nPrefix: None\nSuffix: {range:0.183}Strength8\nSuffix: {range:0.338}LightningResist7\nSuffix: {range:0.225}FireResist7\nSockets: A\nLevelReq: 59\nImplicits: 1\nHas 1 Abyssal Socket\n+44 to Strength\n+350 to Armour\n+144 to maximum Life\n+43% to Fire Resistance\n+43% to Lightning Resistance",
+   ""
+  ],
+  [
+   "Rarity: MAGIC\nCareful Eternal Life Flask\nCrafted: true\nPrefix: {range:0.275}FlaskIncreasedRecoveryOnLowLife4\nSuffix: None\nQuality: 20\nLevelReq: 65\nImplicits: 0\n120% more Recovery if used while on Low Life",
+   ""
+  ],
+  [
+   "Rarity: MAGIC\nSurgeon's Silver Flask\nCrafted: true\nPrefix: {range:0.366}FlaskChanceRechargeOnCrit5\nSuffix: None\nQuality: 20\nLevelReq: 64\nImplicits: 0\n{prefix}32% chance to gain a Flask Charge when you deal a Critical Strike\n{tags:flask,resource,unveiled_mod,life}{crafted}Regenerate 3% of Life per second during Effect",
+   ""
+  ],
+  [
+   "Rarity: MAGIC\nMasochist's Granite Flask of the Tortoise\nCrafted: true\nPrefix: {range:0.5}FlaskFullRechargeOnHit4_\nSuffix: {range:0.873}FlaskBuffArmourWhileHealing2\nQuality: 20\nLevelReq: 50\nImplicits: 0\nGain 2 Charges when you are Hit by an Enemy\n49% increased Armour during Effect",
+   ""
+  ],
+  [
+   "",
+   "Rarity: UNIQUE\nThe Dark Seer\nShadow Sceptre\nUnique ID: 932ff47269cc23873ff4870cdee54ae4375770b3de89425d4171ee624a006aee\nItem Level: 85\nQuality: 0\nSockets: W-R-B\nLevelReq: 32\nImplicits: 1\n22% increased Elemental Damage\n+2 to Level of all Spell Skill Gems\n10% Global chance to Blind Enemies on hit\nEnemies Blinded by you have Malediction\n+2 Maximum Energy Shield per Level\n+2 Maximum Mana per Level\nUnaffected by Blind"
+  ],
+  [
+   "",
+   "Rarity: RARE\nBramble Call\nTitanium Spirit Shield\nEnergy Shield: 188\nEnergyShieldBasePercentile: 0.9875\nIntangibility: 33%\nUnique ID: 012ba8ec6c0fc6eff51419628b60af70049790eb539abfe87ad2dfd56f92010c\nShaper Item\nRedeemer Item\nItem Level: 86\nQuality: 28\nSockets: W-W-W\nLevelReq: 68\nImplicits: 0\n75% increased Chance to Block\nSocketed Gems have 30% increased Reservation Efficiency\n+70 to maximum Energy Shield\n+128 to maximum Life\nRecover 5% of Energy Shield when you Block\n8% increased effect of Non-Curse Auras from your Skills"
+  ],
+  [
+   "",
+   "Rarity: RARE\nGhoul Visage\nLich's Circlet\nEnergy Shield: 399\nEnergyShieldBasePercentile: 0.7108\nIntangibility: 9%\nUnique ID: dd8b5bd44ae66c0d56548c93b476640bef1acaf6d1b1dbb19935d40c15387077\nSearing Exarch Item\nEater of Worlds Item\nItem Level: 85\nQuality: 20\nSockets: B-G-R-B\nLevelReq: 84\nImplicits: 2\n12% increased Mana Reservation Efficiency of Skills\n11% increased Elemental Weakness Curse Effect\n+2 to Level of Socketed AoE Gems\n91% increased Energy Shield\n+46% to Fire Resistance\n8% increased Area of Effect\n9% increased Mana Reservation Efficiency of Skills\n{crafted}+45 to maximum Energy Shield\n{fractured}+2 to Level of Socketed Aura Gems\nFractured Item"
+  ],
+  [
+   "",
+   "Rarity: RARE\nGrim Carapace\nTwilight Regalia\nEnergy Shield: 948\nEnergyShieldBasePercentile: 0.5498\nIntangibility: 18%\nUnique ID: 7561b83233f2cd6ab45ee032f86b69f846c52d56e23e52b4edeb271e5f78e55f\nSearing Exarch Item\nEater of Worlds Item\nItem Level: 87\nQuality: 20\nSockets: B-G-B-W-B-R\nLevelReq: 84\nImplicits: 2\nGrace has 25% increased Aura Effect\n18% increased effect of Non-Curse Auras from your Skills\n+1 to Level of Socketed Dexterity Gems\n+1 to Level of Socketed Intelligence Gems\n+94 to maximum Energy Shield\n109% increased Energy Shield\n+47% to Lightning Resistance\n{fractured}Chaos Damage taken does not bypass Energy Shield while not on Low Life\nFractured Item"
+  ],
+  [
+   "",
+   "Rarity: UNIQUE\nThe Hand of Phrecia\nMesh Gloves\nArmour: 102\nArmourBasePercentile: 0.5514\nEnergy Shield: 21\nEnergyShieldBasePercentile: 0.4815\nUnique ID: 3f0d9d665bea8d825d627b098ddf0cb2470d10a6ba817597040cbedb618a624d\nItem Level: 84\nQuality: 0\nSockets: R-W-B-G\nLevelReq: 32\nImplicits: 0\n62% increased Armour and Energy Shield\n+11% to all Elemental Resistances\n40% increased Effect of Non-Curse Auras from your Skills while you have a Linked Target\nLinked Targets always count as in range of Non-Curse Auras from your Skills\nNon-Curse Auras from your Skills only apply to you and Linked Targets"
+  ],
+  [
+   "",
+   "Rarity: RARE\nSorrow Dash\nWarlock Boots\nEnergy Shield: 291\nEnergyShieldBasePercentile: 0.8054\nIntangibility: 10%\nUnique ID: 4b0e15724723c2f1c08fa8a0ed698ab7794db29d51d5dad4049bc5d9e8a8aea4\nSearing Exarch Item\nEater of Worlds Item\nItem Level: 84\nQuality: 20\nSockets: W-W-W-W\nLevelReq: 84\nImplicits: 2\n21% increased Cooldown Recovery Rate of Travel Skills\nDrops Brittle Ground while moving, lasting 4 seconds\n+41 to maximum Energy Shield\n99% increased Energy Shield\n+46% to Lightning Resistance\n+34% to Chaos Resistance\n25% increased Movement Speed\n{crafted}+27% to Fire Resistance"
+  ],
+  [
+   "",
+   "Rarity: RARE\nPain Torc\nFocused Amulet\nIntangibility: 9%\nUnique ID: 15a0bc3c95e7f468be20a52116fa95a53962149ab7420531e1dac012d70bee30\nCatalyst: Intrinsic\nCatalystQuality: 20\nItem Level: 84\nLevelReq: 60\nImplicits: 5\n{crafted}Allocates Champion of the Cause\n-1 Prefix Modifier allowed\n-2 Suffix Modifiers allowed\nImplicit Modifiers Cannot Be Changed\n100% increased Explicit Modifier magnitudes\n+2 to Level of all Skill Gems\n+2 to Level of all Lightning Skill Gems\n{crafted}+28 to all Attributes"
+  ],
+  [
+   "",
+   "Rarity: RARE\nLoath Nail\nCogwork Ring\nUnique ID: b4ed5cf0a43370e95772101b391e9a36bec5f98897793be13153eeb4a6cd420f\nCatalyst: Intrinsic\nCatalystQuality: 20\nItem Level: 86\nLevelReq: 65\nImplicits: 4\n-1 Prefix Modifier allowed\n+1 Suffix Modifier allowed\nImplicit Modifiers Cannot Be Changed\n25% increased Suffix Modifier magnitudes\n+23 to all Attributes\n+78 to Strength\n+73 to Dexterity\n+46 to maximum Energy Shield\n+18% to Chaos Resistance\n{crafted}Non-Channelling Skills have -7 to Total Mana Cost"
+  ],
+  [
+   "",
+   "Rarity: RARE\nBrimstone Grasp\nAmethyst Ring\nIntangibility: 21%\nUnique ID: 75cc7e9fe2226ef1a0c290fe61d235be3b9001962da1c6ed538f78f625377bbb\nCrusader Item\nItem Level: 86\nLevelReq: 67\nImplicits: 1\n+23% to Chaos Resistance\n+128 to Evasion Rating\n15% increased maximum Energy Shield\n+30 to maximum Life\n+46% to Lightning Resistance\n+35% to Chaos Resistance\n{crafted}+1 to Minimum Endurance Charges"
+  ],
+  [
+   "",
+   "Rarity: UNIQUE\nCeinture of Benevolence\nCloth Belt\nUnique ID: f48f519abeb48f6ca59b33278650f8c94c8cd5d4884c7924fd1b69554bf1ef58\nItem Level: 85\nLevelReq: 48\nImplicits: 2\n30% increased Rarity of Items found\n12% increased Movement Speed during any Flask Effect\n+40 to Dexterity\n+60 to maximum Mana\n8% reduced Flask Charges used\nNon-Unique Utility Flasks you Use apply to Linked Targets\nCorrupted"
+  ],
+  [
+   "Rarity: UNIQUE\nThe Dark Seer\nShadow Sceptre\nUnique ID: 932ff47269cc23873ff4870cdee54ae4375770b3de89425d4171ee624a006aee\nItem Level: 85\nQuality: 0\nSockets: W-R-B\nLevelReq: 32\nImplicits: 1\n22% increased Elemental Damage\n+2 to Level of all Spell Skill Gems\n10% Global chance to Blind Enemies on hit\nEnemies Blinded by you have Malediction\n+2 Maximum Energy Shield per Level\n+2 Maximum Mana per Level\nUnaffected by Blind",
+   "Rarity: RARE\nRune Razor\nElegant Foil\nUnique ID: cb72b7d49302c6b313fb7b191aa93ec40612494ea4f5f6b92e0c089a809f608f\nItem Level: 85\nQuality: 20\nSockets: R-G-W\nLevelReq: 30\nImplicits: 3\n{crafted}Quality does not increase Physical Damage\n{crafted}+0.1 metres to Weapon Range per 10% Quality\n+25% to Global Critical Strike Multiplier\n{fractured}Adds 21 to 301 Lightning Damage\nAdds 85 to 150 Cold Damage\n30% increased Attack Speed\n38% increased Critical Strike Chance\n+38% Critical Strike Multiplier while a Rare or Unique Enemy is Nearby\n{crafted}Hits can't be Evaded\nSplit\nFractured Item"
+  ],
+  [
+   "Rarity: RARE\nBramble Call\nTitanium Spirit Shield\nEnergy Shield: 188\nEnergyShieldBasePercentile: 0.9875\nIntangibility: 33%\nUnique ID: 012ba8ec6c0fc6eff51419628b60af70049790eb539abfe87ad2dfd56f92010c\nShaper Item\nRedeemer Item\nItem Level: 86\nQuality: 28\nSockets: W-W-W\nLevelReq: 68\nImplicits: 0\n75% increased Chance to Block\nSocketed Gems have 30% increased Reservation Efficiency\n+70 to maximum Energy Shield\n+128 to maximum Life\nRecover 5% of Energy Shield when you Block\n8% increased effect of Non-Curse Auras from your Skills",
+   "Rarity: UNIQUE\nAegis Aurora\nChampion Kite Shield\nArmour: 1408\nArmourBasePercentile: 0.7795\nEnergy Shield: 288\nEnergyShieldBasePercentile: 0.8466\nUnique ID: fa0b9b9b6c52c5042f958656073c006ec32fe7d87591a82596171876fc0982fc\nItem Level: 85\nQuality: 20\nSockets: G-B-R\nLevelReq: 62\nImplicits: 1\n5% Chance to Block Spell Damage\n389% increased Armour and Energy Shield\n+10% to all Elemental Resistances\n+5% to maximum Cold Resistance\n+6% Chance to Block\nRecover Energy Shield equal to 2% of Armour when you Block\n19% increased Elemental Damage with Attack Skills\nCorrupted"
+  ],
+  [
+   "Rarity: RARE\nGhoul Visage\nLich's Circlet\nEnergy Shield: 399\nEnergyShieldBasePercentile: 0.7108\nIntangibility: 9%\nUnique ID: dd8b5bd44ae66c0d56548c93b476640bef1acaf6d1b1dbb19935d40c15387077\nSearing Exarch Item\nEater of Worlds Item\nItem Level: 85\nQuality: 20\nSockets: B-G-R-B\nLevelReq: 84\nImplicits: 2\n12% increased Mana Reservation Efficiency of Skills\n11% increased Elemental Weakness Curse Effect\n+2 to Level of Socketed AoE Gems\n91% increased Energy Shield\n+46% to Fire Resistance\n8% increased Area of Effect\n9% increased Mana Reservation Efficiency of Skills\n{crafted}+45 to maximum Energy Shield\n{fractured}+2 to Level of Socketed Aura Gems\nFractured Item",
+   "Rarity: RARE\nHate Crest\nDivine Crown\nArmour: 1061\nArmourBasePercentile: 0.8359\nEnergy Shield: 237\nEnergyShieldBasePercentile: 0.8382\nSearing Exarch Item\nEater of Worlds Item\nCrafted: true\nPrefix: {range:0.5}GlobalIncreaseMinionSpellSkillGemLevel2\nPrefix: {range:0.833}LocalBaseArmourAndEnergyShield4\nPrefix: None\nSuffix: {range:1}LightningResist8\nSuffix: {range:0.5}ColdResist8\nSuffix: None\nCatalystQuality: 20\nItem Level: 85\nQuality: 28\nSockets: B-W-B-R\nLevelReq: 84\nImplicits: 2\n{tags:mana}{exarch}{range:1}(27-28)% increased Mana Cost Efficiency\n{tags:physical,chaos}{eater}7% of Physical Damage from Hits taken as Chaos Damage\n{prefix}+79 to Armour\n{prefix}+27 to maximum Energy Shield\n{prefix}+2 to Level of all Minion Skill Gems\n{suffix}+47% to Cold Resistance\n{suffix}+48% to Lightning Resistance\n{tags:defences,armour,energyshield}{prefix}{custom}{crafted}{range:0.944}(56-74)% increased Armour and Energy Shield\n{tags:attribute}{suffix}{custom}{range:0.25}+(31-35) to Strength and Intelligence\nFractured Item"
+  ],
+  [
+   "Rarity: RARE\nGrim Carapace\nTwilight Regalia\nEnergy Shield: 948\nEnergyShieldBasePercentile: 0.5498\nIntangibility: 18%\nUnique ID: 7561b83233f2cd6ab45ee032f86b69f846c52d56e23e52b4edeb271e5f78e55f\nSearing Exarch Item\nEater of Worlds Item\nItem Level: 87\nQuality: 20\nSockets: B-G-B-W-B-R\nLevelReq: 84\nImplicits: 2\nGrace has 25% increased Aura Effect\n18% increased effect of Non-Curse Auras from your Skills\n+1 to Level of Socketed Dexterity Gems\n+1 to Level of Socketed Intelligence Gems\n+94 to maximum Energy Shield\n109% increased Energy Shield\n+47% to Lightning Resistance\n{fractured}Chaos Damage taken does not bypass Energy Shield while not on Low Life\nFractured Item",
+   "Rarity: RARE\nDread Mantle\nTwilight Regalia\nEnergy Shield: 1326\nEnergyShieldBasePercentile: 1\nUnique ID: 6f5c354cd32524950aca5d7eaa58b5e43a09f5b6b5b978ba03c4f8996a4eff96\nSearing Exarch Item\nEater of Worlds Item\nItem Level: 91\nQuality: 28\nSockets: R-R-W-R-R-R\nLevelReq: 84\nImplicits: 3\n{crafted}8% increased Explicit Defence Modifier magnitudes\n11% of Physical Damage from Hits taken as Chaos Damage\n+23% to Critical Strike Multiplier for Attack Damage\n{fractured}10% increased Mana Reservation Efficiency of Skills\n+54 to Intelligence\n+101 to maximum Energy Shield\n157% increased Energy Shield\n18% increased Stun and Block Recovery\n{tags:unveiled_mod,defences,energy_shield}{crafted}Regenerate 150 Energy Shield per second while a Rare or Unique Enemy is Nearby\nSplit\nFractured Item"
+  ],
+  [
+   "Rarity: UNIQUE\nThe Hand of Phrecia\nMesh Gloves\nArmour: 102\nArmourBasePercentile: 0.5514\nEnergy Shield: 21\nEnergyShieldBasePercentile: 0.4815\nUnique ID: 3f0d9d665bea8d825d627b098ddf0cb2470d10a6ba817597040cbedb618a624d\nItem Level: 84\nQuality: 0\nSockets: R-W-B-G\nLevelReq: 32\nImplicits: 0\n62% increased Armour and Energy Shield\n+11% to all Elemental Resistances\n40% increased Effect of Non-Curse Auras from your Skills while you have a Linked Target\nLinked Targets always count as in range of Non-Curse Auras from your Skills\nNon-Curse Auras from your Skills only apply to you and Linked Targets",
+   "Rarity: RARE\nRune Mitts\nMartyr Gloves\nArmour: 478\nArmourBasePercentile: 0.4092\nEnergy Shield: 117\nEnergyShieldBasePercentile: 0.5141\nUnique ID: 82b028d3f7cca232811185e9a09aec04650bc983744481bd052a114e1bc8f2c1\nSearing Exarch Item\nEater of Worlds Item\nItem Level: 82\nQuality: 20\nSockets: B-B-B-B\nLevelReq: 78\nImplicits: 2\n11% increased Effect of your Marks\nNon-Vaal Strike Skills target 2 additional nearby Enemies\n{fractured}+46% to Fire Resistance\n{fractured}45 to 77 added Fire Damage against Burning Enemies\n12% increased Attack Speed\n+38 to Armour\n77% increased Armour and Energy Shield\n+17 to maximum Energy Shield\nMinions deal 29% increased Damage\n{crafted}+25 to Strength and Intelligence\nFractured Item"
+  ],
+  [
+   "Rarity: RARE\nSorrow Dash\nWarlock Boots\nEnergy Shield: 291\nEnergyShieldBasePercentile: 0.8054\nIntangibility: 10%\nUnique ID: 4b0e15724723c2f1c08fa8a0ed698ab7794db29d51d5dad4049bc5d9e8a8aea4\nSearing Exarch Item\nEater of Worlds Item\nItem Level: 84\nQuality: 20\nSockets: W-W-W-W\nLevelReq: 84\nImplicits: 2\n21% increased Cooldown Recovery Rate of Travel Skills\nDrops Brittle Ground while moving, lasting 4 seconds\n+41 to maximum Energy Shield\n99% increased Energy Shield\n+46% to Lightning Resistance\n+34% to Chaos Resistance\n25% increased Movement Speed\n{crafted}+27% to Fire Resistance",
+   "Rarity: RARE\nRift Spark\nPaladin Boots\nArmour: 644\nArmourBasePercentile: 0.6843\nEnergy Shield: 152\nEnergyShieldBasePercentile: 0.703\nUnique ID: 39e403d143525c78ea72636db4e565f7c4cbb9d84a7dd8476d455621b72da6e9\nSearing Exarch Item\nEater of Worlds Item\nItem Level: 86\nQuality: 20\nSockets: B-R-B-B\nLevelReq: 84\nImplicits: 2\nRegenerate 0.2% of Life per second per Endurance Charge\n4% increased Action Speed\n{fractured}35% increased Movement Speed\n+84 to Armour\n+28 to maximum Energy Shield\n+47% to Fire Resistance\n+47% to Cold Resistance\n+36% to Lightning Resistance\n{crafted}73% increased Armour and Energy Shield\nFractured Item"
+  ],
+  [
+   "Rarity: RARE\nPain Torc\nFocused Amulet\nIntangibility: 9%\nUnique ID: 15a0bc3c95e7f468be20a52116fa95a53962149ab7420531e1dac012d70bee30\nCatalyst: Intrinsic\nCatalystQuality: 20\nItem Level: 84\nLevelReq: 60\nImplicits: 5\n{crafted}Allocates Champion of the Cause\n-1 Prefix Modifier allowed\n-2 Suffix Modifiers allowed\nImplicit Modifiers Cannot Be Changed\n100% increased Explicit Modifier magnitudes\n+2 to Level of all Skill Gems\n+2 to Level of all Lightning Skill Gems\n{crafted}+28 to all Attributes",
+   "Rarity: UNIQUE\nBonemeld\nMarble Amulet\nUnique ID: 28ff7c03900e429eb2edba41c1904b4e1379469cf612372f51254e31a86ab3b6\nItem Level: 85\nLevelReq: 74\nImplicits: 2\n{crafted}Allocates Sione's Ambition\n{tags:block}{range:0.451}(4-5)% Chance to Block Spell Damage\n+24 to all Attributes\n+2 to Level of all Minion Skill Gems\n-2% to all Resistances per Minion from your Non-Vaal Skills\n4% increased Defences per Minion from your Non-Vaal Skills\nMinions gain added Resistances equal to 50% of your Resistances\nCorrupted"
+  ],
+  [
+   "Rarity: RARE\nLoath Nail\nCogwork Ring\nUnique ID: b4ed5cf0a43370e95772101b391e9a36bec5f98897793be13153eeb4a6cd420f\nCatalyst: Intrinsic\nCatalystQuality: 20\nItem Level: 86\nLevelReq: 65\nImplicits: 4\n-1 Prefix Modifier allowed\n+1 Suffix Modifier allowed\nImplicit Modifiers Cannot Be Changed\n25% increased Suffix Modifier magnitudes\n+23 to all Attributes\n+78 to Strength\n+73 to Dexterity\n+46 to maximum Energy Shield\n+18% to Chaos Resistance\n{crafted}Non-Channelling Skills have -7 to Total Mana Cost",
+   "Rarity: RARE\nLoath Hold\nBone Ring\nCrafted: true\nPrefix: {range:0}ReduceGlobalFlatManaCostStrIntMasterVendor\nPrefix: {range:0.187}MinionDamagePercent4\nPrefix: None\nSuffix: {range:0}CriticalMultiplierEssenceRing6_\nSuffix: {range:0}MinionAttackAndCastSpeed4\nSuffix: {range:0}AllResistances5\nCatalyst: Fertile\nCatalystQuality: 20\nItem Level: 85\nLevelReq: 59\nImplicits: 1\n{tags:elemental,resistance,minion}{range:1}Minions have +(10-15)% to all Elemental Resistances\n{suffix}+18% to Global Critical Strike Multiplier\n{suffix}+15% to all Elemental Resistances\n{prefix}{fractured}-12 to Total Mana Cost of Skills\n{prefix}Minions deal 32% increased Damage\n{suffix}Minions have 14% increased Attack and Cast Speed\n{tags:defences,energy_shield}{crafted}{range:1}+(26-30) to maximum Energy Shield\nFractured Item"
+  ],
+  [
+   "Rarity: RARE\nBrimstone Grasp\nAmethyst Ring\nIntangibility: 21%\nUnique ID: 75cc7e9fe2226ef1a0c290fe61d235be3b9001962da1c6ed538f78f625377bbb\nCrusader Item\nItem Level: 86\nLevelReq: 67\nImplicits: 1\n+23% to Chaos Resistance\n+128 to Evasion Rating\n15% increased maximum Energy Shield\n+30 to maximum Life\n+46% to Lightning Resistance\n+35% to Chaos Resistance\n{crafted}+1 to Minimum Endurance Charges",
+   "Rarity: UNIQUE\nProspero's Protection\nIron Ring\nItem Level: 83\nLevelReq: 36\nImplicits: 2\n{tags:elemental,resistance}{range:0.5}+(14-16)% to all Elemental Resistances\n{tags:mana,aura}{range:0}Determination has (20-30)% increased Mana Reservation Efficiency\n{range:1}(4-6)% Chance to Block Attack Damage\n{tags:attribute}{range:1}+(15-35) to Strength\n{tags:life}{range:0.133}+(45-60) to maximum Life\n{tags:defences,armour}Armour from Equipped Shield is doubled\n{tags:defences,armour}Gain no Armour from Equipped Body Armour\nCorrupted"
+  ],
+  [
+   "Rarity: UNIQUE\nCeinture of Benevolence\nCloth Belt\nUnique ID: f48f519abeb48f6ca59b33278650f8c94c8cd5d4884c7924fd1b69554bf1ef58\nItem Level: 85\nLevelReq: 48\nImplicits: 2\n30% increased Rarity of Items found\n12% increased Movement Speed during any Flask Effect\n+40 to Dexterity\n+60 to maximum Mana\n8% reduced Flask Charges used\nNon-Unique Utility Flasks you Use apply to Linked Targets\nCorrupted",
+   "Rarity: RARE\nRage Tether\nStygian Vise\nCrafted: true\nPrefix: {range:1}WeaponElementalDamage5\nPrefix: {range:0.203}IncreasedPhysicalDamageReductionRating7\nPrefix: {range:0.6}IncreasedEnergyShield10\nSuffix: {range:0.8}LightningResist5\nSuffix: {range:0.6}FireResist3\nSuffix: {range:0}ColdResist7\nItem Level: 85\nSockets: A\nLevelReq: 66\nImplicits: 1\nHas 1 Abyssal Socket\n{prefix}+413 to Armour\n{prefix}+41 to maximum Energy Shield\n{suffix}+21% to Fire Resistance\n{suffix}+42% to Cold Resistance\n{suffix}+34% to Lightning Resistance\n{prefix}42% increased Elemental Damage with Attack Skills\nFractured Item"
+  ],
+  [
+   "",
+   "Rarity: UNIQUE\nBottled Faith\nSulphur Flask\nUnique ID: 8a38dac26df18389b61bf10b4b406d627e3eb9a0a4d333b1c430f632339566d0\nItem Level: 85\nQuality: 20\nLevelReq: 27\nImplicits: 2\n{crafted}Used when you Hit a Rare or Unique Enemy, if not already in effect\nCreates Consecrated Ground on Use\n16% reduced Duration\nConsecrated Ground created by this Flask has Tripled Radius\nConsecrated Ground created during Effect applies 9% increased Damage taken to Enemies\n143% increased Critical Strike Chance against Enemies on Consecrated Ground during Effect"
+  ],
+  [
+   "",
+   "Rarity: MAGIC\nSpecialist's Diamond Flask of Incision\nUnique ID: 4f50c75815d2ad506a9f824c3f97691cf5e4dbd97e2ebc87fcad90de9e2a7ecf\nItem Level: 85\nQuality: 24\nLevelReq: 65\nImplicits: 1\n{crafted}Used when Charges reach full\n27% chance to gain a Flask Charge when you deal a Critical Strike\n54% increased Critical Strike Chance during Effect"
+  ],
+  [
+   "",
+   "Rarity: MAGIC\nMasochist's Quicksilver Flask of the Cheetah\nUnique ID: 08c9b2c481a1b9c7aef57416160c6d208c79e4779149a96001a5b8abde081e7c\nItem Level: 85\nQuality: 22\nLevelReq: 68\nImplicits: 1\n{crafted}Used when Charges reach full\nGain 2 Charges when you are Hit by an Enemy\n14% increased Movement Speed during Effect"
+  ],
+  [
+   "Rarity: RARE\nRune Razor\nElegant Foil\nUnique ID: cb72b7d49302c6b313fb7b191aa93ec40612494ea4f5f6b92e0c089a809f608f\nItem Level: 85\nQuality: 20\nSockets: R-G-W\nLevelReq: 30\nImplicits: 3\n{crafted}Quality does not increase Physical Damage\n{crafted}+0.1 metres to Weapon Range per 10% Quality\n+25% to Global Critical Strike Multiplier\n{fractured}Adds 21 to 301 Lightning Damage\nAdds 85 to 150 Cold Damage\n30% increased Attack Speed\n38% increased Critical Strike Chance\n+38% Critical Strike Multiplier while a Rare or Unique Enemy is Nearby\n{crafted}Hits can't be Evaded\nSplit\nFractured Item",
+   "Rarity: RARE\nSol Bane\nKinetic Wand\nUnique ID: be7a8d8e8a41c6750464f8a7a015e880fb3ea91a346bfc9a12bd61cdfd819828\nItem Level: 84\nQuality: 20\nSockets: B-B-W\nLevelReq: 59\nImplicits: 1\nCannot roll Caster Modifiers\nAdds 20 to 32 Physical Damage\nAdds 102 to 162 Fire Damage\n13% increased Attack Speed\n30% increased Critical Strike Chance\n+30% to Global Critical Strike Multiplier\n{crafted}64% increased Spell Damage"
+  ],
+  [
+   "Rarity: UNIQUE\nAegis Aurora\nChampion Kite Shield\nArmour: 1408\nArmourBasePercentile: 0.7795\nEnergy Shield: 288\nEnergyShieldBasePercentile: 0.8466\nUnique ID: fa0b9b9b6c52c5042f958656073c006ec32fe7d87591a82596171876fc0982fc\nItem Level: 85\nQuality: 20\nSockets: G-B-R\nLevelReq: 62\nImplicits: 1\n5% Chance to Block Spell Damage\n389% increased Armour and Energy Shield\n+10% to all Elemental Resistances\n+5% to maximum Cold Resistance\n+6% Chance to Block\nRecover Energy Shield equal to 2% of Armour when you Block\n19% increased Elemental Damage with Attack Skills\nCorrupted",
+   "Rarity: UNIQUE\nDawnbreaker\nColossal Tower Shield\nArmour: 2379\nArmourBasePercentile: 0.7087\nUnique ID: 70e90e549338fd2e77b43999cd6ee6ce1ac6a208c49c34188e787ba5bbd80787\nItem Level: 85\nQuality: 20\nSockets: R-R-R\nLevelReq: 67\nImplicits: 1\n+16 to maximum Life\n243% increased Armour\n+21% Chance to Block\n-1% Chance to Block Attack Damage for every 200 Fire Damage taken from Hits Recently\n14% of Cold Damage taken as Fire Damage\n14% of Lightning Damage taken as Fire Damage\n20% of Physical Damage taken as Fire Damage\nScorch Enemies in Close Range when you Block"
+  ],
+  [
+   "Rarity: RARE\nHate Crest\nDivine Crown\nArmour: 1061\nArmourBasePercentile: 0.8359\nEnergy Shield: 237\nEnergyShieldBasePercentile: 0.8382\nSearing Exarch Item\nEater of Worlds Item\nCrafted: true\nPrefix: {range:0.5}GlobalIncreaseMinionSpellSkillGemLevel2\nPrefix: {range:0.833}LocalBaseArmourAndEnergyShield4\nPrefix: None\nSuffix: {range:1}LightningResist8\nSuffix: {range:0.5}ColdResist8\nSuffix: None\nCatalystQuality: 20\nItem Level: 85\nQuality: 28\nSockets: B-W-B-R\nLevelReq: 84\nImplicits: 2\n{tags:mana}{exarch}{range:1}(27-28)% increased Mana Cost Efficiency\n{tags:physical,chaos}{eater}7% of Physical Damage from Hits taken as Chaos Damage\n{prefix}+79 to Armour\n{prefix}+27 to maximum Energy Shield\n{prefix}+2 to Level of all Minion Skill Gems\n{suffix}+47% to Cold Resistance\n{suffix}+48% to Lightning Resistance\n{tags:defences,armour,energyshield}{prefix}{custom}{crafted}{range:0.944}(56-74)% increased Armour and Energy Shield\n{tags:attribute}{suffix}{custom}{range:0.25}+(31-35) to Strength and Intelligence\nFractured Item",
+   "Rarity: RARE\nWoe Veil\nConqueror's Helmet\nArmour: 746\nArmourBasePercentile: 0.8622\nUnique ID: f813809c4cd688939fe3b34ee7ffda5d6391053f05df3f202f8241bbfaff80cc\nSearing Exarch Item\nEater of Worlds Item\nItem Level: 85\nQuality: 20\nSockets: W-R-W-R\nLevelReq: 78\nImplicits: 2\nDamage Penetrates 5% Fire Resistance\n8% of Fire Damage taken Recouped as Life\n+56 to Armour\n+138 to maximum Life\nRegenerate 90.5 Life per second\n+42% to Fire Resistance\n{crafted}+15% to Fire and Chaos Resistances"
+  ],
+  [
+   "Rarity: RARE\nDread Mantle\nTwilight Regalia\nEnergy Shield: 1326\nEnergyShieldBasePercentile: 1\nUnique ID: 6f5c354cd32524950aca5d7eaa58b5e43a09f5b6b5b978ba03c4f8996a4eff96\nSearing Exarch Item\nEater of Worlds Item\nItem Level: 91\nQuality: 28\nSockets: R-R-W-R-R-R\nLevelReq: 84\nImplicits: 3\n{crafted}8% increased Explicit Defence Modifier magnitudes\n11% of Physical Damage from Hits taken as Chaos Damage\n+23% to Critical Strike Multiplier for Attack Damage\n{fractured}10% increased Mana Reservation Efficiency of Skills\n+54 to Intelligence\n+101 to maximum Energy Shield\n157% increased Energy Shield\n18% increased Stun and Block Recovery\n{tags:unveiled_mod,defences,energy_shield}{crafted}Regenerate 150 Energy Shield per second while a Rare or Unique Enemy is Nearby\nSplit\nFractured Item",
+   "Rarity: UNIQUE\nCloak of Flame\nScholar's Robe\nEnergy Shield: 58\nEnergyShieldBasePercentile: 0.5333\nUnique ID: 93286a0a4baab8a9244aca02f2246562dd69cbbc16303423368d7fbfff8892ac\nItem Level: 83\nQuality: 20\nSockets: G-B-W-W-B-W\nLevelReq: 18\nImplicits: 0\n+75% to Fire Resistance\n40% increased Ignite Duration on Enemies\nReflects 100 Fire Damage to Melee Attackers\n40% of Physical Damage taken as Fire Damage"
+  ],
+  [
+   "Rarity: RARE\nRune Mitts\nMartyr Gloves\nArmour: 478\nArmourBasePercentile: 0.4092\nEnergy Shield: 117\nEnergyShieldBasePercentile: 0.5141\nUnique ID: 82b028d3f7cca232811185e9a09aec04650bc983744481bd052a114e1bc8f2c1\nSearing Exarch Item\nEater of Worlds Item\nItem Level: 82\nQuality: 20\nSockets: B-B-B-B\nLevelReq: 78\nImplicits: 2\n11% increased Effect of your Marks\nNon-Vaal Strike Skills target 2 additional nearby Enemies\n{fractured}+46% to Fire Resistance\n{fractured}45 to 77 added Fire Damage against Burning Enemies\n12% increased Attack Speed\n+38 to Armour\n77% increased Armour and Energy Shield\n+17 to maximum Energy Shield\nMinions deal 29% increased Damage\n{crafted}+25 to Strength and Intelligence\nFractured Item",
+   "Rarity: RARE\nMaelstrom Palm\nMurder Mitts\nEvasion: 160\nEvasionBasePercentile: 0.6852\nEnergy Shield: 32\nEnergyShieldBasePercentile: 0.5556\nUnique ID: 29985a6c18d70cfb3a5c295ea4e0dd7199c827b2f5296cade6ff16cd07df27f5\nSearing Exarch Item\nEater of Worlds Item\nItem Level: 83\nQuality: 20\nSockets: G-G-W W\nLevelReq: 67\nImplicits: 2\nInflict Fire Exposure on Hit, applying -11% to Fire Resistance\n15% chance to Intimidate Enemies for 4 seconds on Hit\n+53 to Dexterity\nAdds 1 to 33 Lightning Damage to Attacks\n+79 to maximum Life\n+64 to maximum Mana\n+43% to Fire Resistance\n{crafted}+15% to Fire and Chaos Resistances"
+  ],
+  [
+   "Rarity: RARE\nRift Spark\nPaladin Boots\nArmour: 644\nArmourBasePercentile: 0.6843\nEnergy Shield: 152\nEnergyShieldBasePercentile: 0.703\nUnique ID: 39e403d143525c78ea72636db4e565f7c4cbb9d84a7dd8476d455621b72da6e9\nSearing Exarch Item\nEater of Worlds Item\nItem Level: 86\nQuality: 20\nSockets: B-R-B-B\nLevelReq: 84\nImplicits: 2\nRegenerate 0.2% of Life per second per Endurance Charge\n4% increased Action Speed\n{fractured}35% increased Movement Speed\n+84 to Armour\n+28 to maximum Energy Shield\n+47% to Fire Resistance\n+47% to Cold Resistance\n+36% to Lightning Resistance\n{crafted}73% increased Armour and Energy Shield\nFractured Item",
+   "Rarity: RARE\nBlight Goad\nTwo-Toned Boots (Armour/Energy Shield)\nArmour: 168\nArmourBasePercentile: 0.7368\nEnergy Shield: 35\nEnergyShieldBasePercentile: 0.7917\nUnique ID: fbe44aeb3b160708b12e0155d709bcbdeac30a3c076bce87884be04ca38d4b1c\nSearing Exarch Item\nEater of Worlds Item\nItem Level: 86\nQuality: 20\nSockets: R W-W W\nLevelReq: 70\nImplicits: 2\n7% increased Life Regeneration rate\n+18% to Fire Resistance\n+99 to maximum Life\nRegenerate 41.7 Life per second\n+64 to maximum Mana\n+48% to Fire Resistance\n20% increased Movement Speed\n{crafted}+15% to Fire and Chaos Resistances"
+  ],
+  [
+   "Rarity: UNIQUE\nBonemeld\nMarble Amulet\nUnique ID: 28ff7c03900e429eb2edba41c1904b4e1379469cf612372f51254e31a86ab3b6\nItem Level: 85\nLevelReq: 74\nImplicits: 2\n{crafted}Allocates Sione's Ambition\n{tags:block}{range:0.451}(4-5)% Chance to Block Spell Damage\n+24 to all Attributes\n+2 to Level of all Minion Skill Gems\n-2% to all Resistances per Minion from your Non-Vaal Skills\n4% increased Defences per Minion from your Non-Vaal Skills\nMinions gain added Resistances equal to 50% of your Resistances\nCorrupted",
+   "Rarity: UNIQUE\nFoulborn Xoph's Heart\nAmber Amulet\nUnique ID: 3dea9b2a4dfba04440923cc5cd5b215ccc2bb502564dd061a55cf3c35db55790\nItem Level: 83\nLevelReq: 5\nImplicits: 2\n{crafted}Allocates Surveillance\n+30 to Strength\n+30 to Strength\n25% increased Fire Damage\n+25 to maximum Life\nNearby Enemies are Covered in Ash\n{mutated}15% of Physical Damage from Hits taken as Fire Damage"
+  ],
+  [
+   "Rarity: RARE\nLoath Hold\nBone Ring\nCrafted: true\nPrefix: {range:0}ReduceGlobalFlatManaCostStrIntMasterVendor\nPrefix: {range:0.187}MinionDamagePercent4\nPrefix: None\nSuffix: {range:0}CriticalMultiplierEssenceRing6_\nSuffix: {range:0}MinionAttackAndCastSpeed4\nSuffix: {range:0}AllResistances5\nCatalyst: Fertile\nCatalystQuality: 20\nItem Level: 85\nLevelReq: 59\nImplicits: 1\n{tags:elemental,resistance,minion}{range:1}Minions have +(10-15)% to all Elemental Resistances\n{suffix}+18% to Global Critical Strike Multiplier\n{suffix}+15% to all Elemental Resistances\n{prefix}{fractured}-12 to Total Mana Cost of Skills\n{prefix}Minions deal 32% increased Damage\n{suffix}Minions have 14% increased Attack and Cast Speed\n{tags:defences,energy_shield}{crafted}{range:1}+(26-30) to maximum Energy Shield\nFractured Item",
+   "Rarity: RARE\nGrim Knuckle\nEnthalpic Ring\nUnique ID: 7988767f4faf06491be4aeed672fcc22b17b12ad68b228b183df72d3407ee797\nItem Level: 85\nLevelReq: 65\nImplicits: 2\n+2% to maximum Fire Resistance\nCannot roll Modifiers of Non-Fire Damage Types\n+53 to Dexterity\nAdds 24 to 42 Fire Damage to Attacks\n+69 to maximum Life\n+49 to maximum Mana\n+36% to Fire Resistance\n{crafted}+15% to Fire and Chaos Resistances"
+  ],
+  [
+   "Rarity: UNIQUE\nProspero's Protection\nIron Ring\nItem Level: 83\nLevelReq: 36\nImplicits: 2\n{tags:elemental,resistance}{range:0.5}+(14-16)% to all Elemental Resistances\n{tags:mana,aura}{range:0}Determination has (20-30)% increased Mana Reservation Efficiency\n{range:1}(4-6)% Chance to Block Attack Damage\n{tags:attribute}{range:1}+(15-35) to Strength\n{tags:life}{range:0.133}+(45-60) to maximum Life\n{tags:defences,armour}Armour from Equipped Shield is doubled\n{tags:defences,armour}Gain no Armour from Equipped Body Armour\nCorrupted",
+   "Rarity: RARE\nDire Loop\nRuby Ring\nUnique ID: 12e3568a5c9283d908baac514a7faf8443e168717c98acdc6becc0c38d6f26be\nItem Level: 84\nLevelReq: 67\nImplicits: 1\n+30% to Fire Resistance\n+30 to maximum Energy Shield\n+104 to maximum Life\n+41 to maximum Mana\n+46% to Fire Resistance\n+26% to Chaos Resistance\n{crafted}+15% to Fire and Chaos Resistances"
+  ],
+  [
+   "Rarity: RARE\nRage Tether\nStygian Vise\nCrafted: true\nPrefix: {range:1}WeaponElementalDamage5\nPrefix: {range:0.203}IncreasedPhysicalDamageReductionRating7\nPrefix: {range:0.6}IncreasedEnergyShield10\nSuffix: {range:0.8}LightningResist5\nSuffix: {range:0.6}FireResist3\nSuffix: {range:0}ColdResist7\nItem Level: 85\nSockets: A\nLevelReq: 66\nImplicits: 1\nHas 1 Abyssal Socket\n{prefix}+413 to Armour\n{prefix}+41 to maximum Energy Shield\n{suffix}+21% to Fire Resistance\n{suffix}+42% to Cold Resistance\n{suffix}+34% to Lightning Resistance\n{prefix}42% increased Elemental Damage with Attack Skills\nFractured Item",
+   "Rarity: RARE\nDire Leash\nHeavy Belt\nUnique ID: c04b6c5360a93d75c18b5c63e1b4905e5624384e4ff2fa8e2dd1711bb1504ace\nItem Level: 85\nLevelReq: 67\nImplicits: 1\n+35 to Strength\n+84 to Armour\n+103 to maximum Life\nRegenerate 55.2 Life per second\n+46% to Fire Resistance\n+31% to Chaos Resistance\n{crafted}29% increased Elemental Damage with Attack Skills"
+  ],
+  [
+   "Rarity: UNIQUE\nBottled Faith\nSulphur Flask\nUnique ID: 8a38dac26df18389b61bf10b4b406d627e3eb9a0a4d333b1c430f632339566d0\nItem Level: 85\nQuality: 20\nLevelReq: 27\nImplicits: 2\n{crafted}Used when you Hit a Rare or Unique Enemy, if not already in effect\nCreates Consecrated Ground on Use\n16% reduced Duration\nConsecrated Ground created by this Flask has Tripled Radius\nConsecrated Ground created during Effect applies 9% increased Damage taken to Enemies\n143% increased Critical Strike Chance against Enemies on Consecrated Ground during Effect",
+   "Rarity: MAGIC\nEbullient Divine Life Flask of Sealing\nUnique ID: 5696b1179fda7b7d173c3c37ab57093c56ab2dcad8a17ec51b68d0f316e18d44\nItem Level: 62\nQuality: 20\nLevelReq: 60\nImplicits: 0\n50% reduced Amount Recovered\n135% increased Recovery rate\n50% of Recovery applied Instantly\nGrants Immunity to Bleeding for 8 seconds if used while Bleeding\nGrants Immunity to Corrupted Blood for 8 seconds if used while affected by Corrupted Blood"
+  ],
+  [
+   "Rarity: MAGIC\nSpecialist's Diamond Flask of Incision\nUnique ID: 4f50c75815d2ad506a9f824c3f97691cf5e4dbd97e2ebc87fcad90de9e2a7ecf\nItem Level: 85\nQuality: 24\nLevelReq: 65\nImplicits: 1\n{crafted}Used when Charges reach full\n27% chance to gain a Flask Charge when you deal a Critical Strike\n54% increased Critical Strike Chance during Effect",
+   "Rarity: MAGIC\nSeething Divine Life Flask of Warding\nUnique ID: b47755c97a50e0fddd3e5901beb52826fadd1570487bccaf2c64ed1b37104232\nItem Level: 83\nQuality: 20\nLevelReq: 60\nImplicits: 0\n66% reduced Amount Recovered\nInstant Recovery\nRemoves Curses on use"
+  ],
+  [
+   "Rarity: MAGIC\nMasochist's Quicksilver Flask of the Cheetah\nUnique ID: 08c9b2c481a1b9c7aef57416160c6d208c79e4779149a96001a5b8abde081e7c\nItem Level: 85\nQuality: 22\nLevelReq: 68\nImplicits: 1\n{crafted}Used when Charges reach full\nGain 2 Charges when you are Hit by an Enemy\n14% increased Movement Speed during Effect",
+   "Rarity: MAGIC\nSeething Divine Life Flask of Thermodynamics\nUnique ID: a278862ae3b6e5bea66231798bba50316a31fba436a4b9ab25c1fdcd159b6b94\nItem Level: 84\nQuality: 20\nLevelReq: 60\nImplicits: 0\n66% reduced Amount Recovered\nInstant Recovery\nGrants Immunity to Chill for 11 seconds if used while Chilled\nGrants Immunity to Freeze for 11 seconds if used while Frozen"
+  ],
+  [
+   "Rarity: UNIQUE\nHonourhome\nSoldier Helmet\nArmour: 98\nArmourBasePercentile: 0.6367\nEnergy Shield: 24\nEnergyShieldBasePercentile: 0.6806\nUnique ID: bcc465346e31ae148a9ef14b9ba5da4af6d53075d427fc430baf2fb3e5f367d8\nItem Level: 85\nQuality: 0\nSockets: W-W-W-W\nLevelReq: 12\nImplicits: 1\n+2 to Level of Socketed Lightning Gems\n+2 to Level of Socketed Gems\nAdds 1 to 30 Lightning Damage to Spells and Attacks\n139% increased Armour and Energy Shield\n11% increased Rarity of Items found\n47% increased Mana Cost Efficiency\nCorrupted",
+   "Rarity: UNIQUE\nHonourhome\nSoldier Helmet\nArmour: 98\nArmourBasePercentile: 0.6367\nEnergy Shield: 24\nEnergyShieldBasePercentile: 0.6806\nUnique ID: bcc465346e31ae148a9ef14b9ba5da4af6d53075d427fc430baf2fb3e5f367d8\nItem Level: 85\nQuality: 0\nSockets: W-W-W-W\nLevelReq: 12\nImplicits: 1\n+2 to Level of Socketed Lightning Gems\n+2 to Level of Socketed Gems\nAdds 1 to 30 Lightning Damage to Spells and Attacks\n139% increased Armour and Energy Shield\n11% increased Rarity of Items found\n47% increased Mana Cost Efficiency\nCorrupted"
+  ],
+  [
+   "Rarity: RARE\nGolem Curtain\nWyrmscale Doublet\nArmour: 377\nArmourBasePercentile: 0.658\nEvasion: 377\nEvasionBasePercentile: 0.658\nUnique ID: 2c899726fc9af40460c66eda245dc5425e29b2a5ba8eae8793939a3c871fe9c6\nItem Level: 41\nQuality: 0\nSockets: W-W-W-W-W W\nLevelReq: 38\nImplicits: 0\n+27 to Strength\n+9 to Dexterity\n25% increased Armour and Evasion\n+22% to Fire Resistance\n10% increased Stun and Block Recovery\n{crafted}41% increased Armour and Evasion",
+   ""
+  ]
+ ],
+ "cards": [
+  [
+   [
+    "^xFFFF77Chimeric Gnarl, Tornado Wand",
+    "^x7F7F7FPhys DPS: ^x8888FF63.1",
+    "^x7F7F7FTotal DPS: ^x8888FF63.1",
+    "^x7F7F7FCrit: ^x8888FF8.00%",
+    "^x7F7F7FAPS: ^x8888FF1.45",
+    "^x33FF77+ ^x8888FF37% increased Spell Damage",
+    "^x33FF77+ ^x8888FF+16% to Fire Damage over Time Multiplier",
+    "^x33FF77+ ^x8888FF62% increased Fire Damage",
+    "^x33FF77+ ^x8888FF50% increased Spell Critical Strike Chance",
+    "^x33FF77+ ^x8888FF+1 to Level of all Lightning Spell Skill Gems",
+    "^x33FF77+ ^x8888FF14% increased Projectile Speed",
+    "^x33FF77+ ^xB8DAF116% increased Damage over Time"
+   ],
+   [
+    "^xAF6025Dread Captain's Cutlass, Ghostflame Blade",
+    "^x7F7F7FPhys DPS: ^x8888FF79.8",
+    "^x7F7F7FEle DPS: ^x8888FF59.7",
+    "^x7F7F7FTotal DPS: ^x8888FF139.5",
+    "^x7F7F7FCrit: ^x8888FF6.50%",
+    "^x7F7F7FAPS: ^x8888FF1.55",
+    "^x33FF77+ ^xB8DAF1Quality does not increase Physical Damage",
+    "^x33FF77+ ^xB8DAF1Grants 1% increased Accuracy per 2% Quality",
+    "^x33FF77+ ^x8888FFCan be Allflame Crafted as if Rare",
+    "^x33FF77+ ^x8888FFCannot gain Intangibility",
+    "^x33FF77+ ^x8888FF29% more Melee Damage while Burning",
+    "^x33FF77+ ^x8888FFAdds 26 to 51 Fire Damage",
+    "^x33FF77+ ^x8888FF+24% to Global Critical Strike Multiplier",
+    "^x33FF77+ ^x8888FF+727 to Accuracy Rating",
+    "^x33FF77+ ^xF05050Melee Strikes Curse Enemies with Flammability on Hit, ignoring Curse Limit ^8(Not supported in PoB yet)",
+    "^x33FF77+ ^x8888FF39% increased Elemental Damage with Attack Skills"
+   ]
+  ],
+  [
+   [
+    "^xFFFF77Phoenix Charm, Twig Spirit Shield",
+    "^x7F7F7FES: ^x8888FF7",
+    "^x7F7F7FBlock: ^x8888FF22%",
+    "^x33FF77+ ^x8888FF13% increased Spell Damage",
+    "^x33FF77+ ^x8888FF+33 to maximum Life",
+    "^x33FF77+ ^x8888FF+1 to Level of all Lightning Spell Skill Gems",
+    "^x33FF77+ ^x8888FF+13% to Fire Resistance",
+    "^x33FF77+ ^x8888FFReflects 2 Physical Damage to Melee Attackers",
+    "^x33FF77+ ^xB8DAF1+21% to Cold Resistance"
+   ],
+   [
+    "^xAF6025Emperor's Vigilance, Steel Kite Shield",
+    "^x7F7F7FArmour: ^x8888FF2191",
+    "^x7F7F7FES: ^x8888FF462",
+    "^x7F7F7FBlock: ^x8888FF26%",
+    "^x33FF77+ ^x8888FF17% Chance to Block Spell Damage",
+    "^x33FF77+ ^x8888FF1000% increased Armour and Energy Shield",
+    "^x33FF77+ ^x8888FFDamage taken from Blocked Hits cannot bypass Energy Shield",
+    "^x33FF77+ ^x8888FFDamage taken from Unblocked hits always bypasses Energy Shield",
+    "^x33FF77+ ^x8888FFGlancing Blows"
+   ]
+  ],
+  [
+   [
+    "^xAF6025Honourhome, Soldier Helmet",
+    "^x7F7F7FArmour: ^x8888FF98",
+    "^x7F7F7FES: ^x8888FF24",
+    "^x33FF77+ ^x8888FF+2 to Level of Socketed Lightning Gems",
+    "^x33FF77+ ^x8888FF+2 to Level of Socketed Gems",
+    "^x33FF77+ ^x8888FFAdds 1 to 30 Lightning Damage to Spells and Attacks",
+    "^x33FF77+ ^x8888FF139% increased Armour and Energy Shield",
+    "^x33FF77+ ^x8888FF11% increased Rarity of Items found",
+    "^x33FF77> ^x8888FF47% increased Mana Cost Efficiency",
+    "^xDD0022Corrupted"
+   ],
+   [
+    "^xFFFF77Empyrean Veil, Giantslayer Helmet",
+    "^x7F7F7FArmour: ^x8888FF1698",
+    "^x33FF77+ ^x8888FF6% of Physical Damage from Hits taken as Cold Damage",
+    "^xDD0022< ^x8888FF26% increased Mana Cost Efficiency",
+    "^x33FF77+ ^x8888FF+38 to Strength",
+    "^x33FF77+ ^x8888FF+92 to Armour",
+    "^x33FF77+ ^x8888FF96% increased Armour",
+    "^x33FF77+ ^x8888FF+144 to maximum Life",
+    "^x33FF77+ ^x8888FF+21% to Lightning Resistance",
+    "^x33FF77+ ^x8888FF+27% to Chaos Resistance"
+   ]
+  ],
+  [
+   [
+    "^xFFFF77Golem Curtain, Wyrmscale Doublet",
+    "^x7F7F7FArmour: ^x8888FF377",
+    "^x7F7F7FEvasion: ^x8888FF377",
+    "^x33FF77+ ^x8888FF+27 to Strength",
+    "^x33FF77+ ^x8888FF+9 to Dexterity",
+    "^x33FF77+ ^x8888FF25% increased Armour and Evasion",
+    "^x33FF77+ ^x8888FF+22% to Fire Resistance",
+    "^xDD0022< ^x8888FF10% increased Stun and Block Recovery",
+    "^x33FF77+ ^xB8DAF141% increased Armour and Evasion"
+   ],
+   [
+    "^xFFFF77Agony Skin, Royal Plate",
+    "^x7F7F7FArmour: ^x8888FF3772",
+    "^x33FF77+ ^x8888FF10% of Physical Damage from Hits taken as Lightning Damage",
+    "^x33FF77+ ^xF05050Gain a Frenzy Charge every 15 seconds ^8(Not supported in PoB yet)",
+    "^x33FF77+ ^x8888FF95% increased Armour",
+    "^x33FF77+ ^x8888FF+47% to Cold Resistance",
+    "^x33FF77+ ^x8888FF+37% to Lightning Resistance",
+    "^x33FF77> ^x8888FF13% increased Stun and Block Recovery",
+    "^x33FF77+ ^x8888FF8% additional Physical Damage Reduction",
+    "^x33FF77+ ^xB8DAF1+292 to Armour"
+   ]
+  ],
+  [
+   [
+    "^xFFFF77Bramble Touch, Apothecary's Gloves",
+    "^x7F7F7FArmour: ^x8888FF219",
+    "^x7F7F7FES: ^x8888FF58",
+    "^x33FF77+ ^x8888FF18% increased Damage over Time",
+    "^x33FF77+ ^x8888FF+41 to Dexterity",
+    "^x33FF77+ ^x8888FFAdds 2 to 28 Lightning Damage to Attacks",
+    "^x33FF77+ ^x8888FF86% increased Armour and Energy Shield",
+    "^x33FF77> ^x8888FF+113 to maximum Life",
+    "^xDD0022< ^x8888FF+28% to Fire Resistance",
+    "^x33FF77+ ^xB8DAF1+24% to Cold Resistance"
+   ],
+   [
+    "^xFFFF77Wrath Palm, Leviathan Gauntlets",
+    "^x7F7F7FArmour: ^x8888FF914",
+    "^x33FF77+ ^x8888FFInflict Fire Exposure on Hit, applying -11% to Fire Resistance",
+    "^x33FF77+ ^x8888FF8% increased Attack Speed",
+    "^x33FF77+ ^x8888FF36% increased Armour",
+    "^xDD0022< ^x8888FF+83 to maximum Life",
+    "^x33FF77> ^x8888FF+31% to Fire Resistance",
+    "^x33FF77+ ^x8888FF+30% to Chaos Resistance",
+    "^x33FF77+ ^x8888FFGain 11 Mana per Enemy Killed",
+    "^x33FF77+ ^x8888FF15% increased Stun and Block Recovery",
+    "^x33FF77+ ^xB8DAF172% increased Armour"
+   ]
+  ],
+  [
+   [
+    "^xFFFF77Rune Road, Legion Boots",
+    "^x7F7F7FArmour: ^x8888FF173",
+    "^x7F7F7FES: ^x8888FF35",
+    "^x33FF77+ ^x8888FF65% increased Armour and Energy Shield",
+    "^x33FF77+ ^x8888FF+39% to Fire Resistance",
+    "^x33FF77+ ^x8888FF+26% to Lightning Resistance",
+    "^x33FF77> ^x8888FF30% increased Movement Speed",
+    "^x33FF77+ ^xB8DAF1+32 to maximum Life"
+   ],
+   [
+    "^xAF6025Ralakesh's Impatience, Riveted Boots",
+    "^x7F7F7FArmour: ^x8888FF80",
+    "^x7F7F7FES: ^x8888FF17",
+    "^x33FF77+ ^x8888FF+18% to Cold Resistance",
+    "^x33FF77+ ^x8888FF+23% to Chaos Resistance",
+    "^xDD0022< ^x8888FF17% increased Movement Speed",
+    "^x33FF77+ ^x8888FFCorrupted Blood cannot be inflicted on you",
+    "^x33FF77+ ^x8888FFCount as having maximum number of Endurance Charges"
+   ]
+  ],
+  [
+   [
+    "^xFFFF77Fate Heart, Jade Amulet",
+    "^x33FF77+ ^x8888FF+29 to Dexterity",
+    "^x33FF77+ ^x8888FF+46 to maximum Energy Shield",
+    "^x33FF77+ ^x8888FF55% increased Mana Regeneration Rate",
+    "^x33FF77+ ^x8888FF+18% to Cold Resistance",
+    "^x33FF77+ ^x8888FF+1 to Minimum Frenzy Charges",
+    "^x33FF77+ ^xF050503% chance to gain a Frenzy Charge on Kill ^8(Not supported in PoB yet)",
+    "^x33FF77+ ^x8888FF+1 to Level of all Physical Skill Gems",
+    "^x33FF77+ ^xB8DAF1+46 to maximum Life"
+   ],
+   [
+    "^xAF6025Replica Dragonfang's Flight, Onyx Amulet",
+    "^x33FF77+ ^xB8DAF1Allocates Charisma",
+    "^x33FF77+ ^x8888FF+16 to all Attributes",
+    "^x33FF77+ ^x8888FF+3 to Level of all Shield Crush Gems",
+    "^x33FF77+ ^x8888FF+10% to all Elemental Resistances",
+    "^x33FF77+ ^x8888FF7% increased Reservation Efficiency of Skills",
+    "^x33FF77+ ^x8888FFItems and Gems have 8% reduced Attribute Requirements"
+   ]
+  ],
+  [
+   [
+    "^xFFFF77Damnation Coil, Topaz Ring",
+    "^x33FF77+ ^x8888FF+27% to Lightning Resistance",
+    "^x33FF77+ ^x8888FF+25 to Evasion Rating",
+    "^x33FF77+ ^x8888FF+7 to maximum Energy Shield",
+    "^xDD0022< ^x8888FF+10% to all Elemental Resistances",
+    "^x33FF77+ ^x8888FF+25% to Cold Resistance",
+    "^xDD0022< ^xB8DAF1+36 to maximum Life"
+   ],
+   [
+    "^xFFFF77Hypnotic Hold, Amethyst Ring",
+    "^x33FF77+ ^x8888FF+23% to Chaos Resistance",
+    "^x33FF77+ ^x8888FF+33 to Dexterity",
+    "^x33FF77> ^x8888FF+78 to maximum Life",
+    "^x33FF77+ ^x8888FF+67 to maximum Mana",
+    "^x33FF77> ^x8888FF+13% to all Elemental Resistances",
+    "^x33FF77+ ^xB8DAF1Non-Channelling Skills have -7 to Total Mana Cost",
+    "^x33FF77+ ^xA29160+463 to Accuracy Rating"
+   ]
+  ],
+  [
+   [
+    "^xFFFF77Vortex Finger, Two-Stone Ring",
+    "^x33FF77+ ^x8888FF+12% to Fire and Lightning Resistances",
+    "^x33FF77+ ^x8888FFAdds 7 to 12 Cold Damage to Attacks",
+    "^x33FF77+ ^x8888FF+9% to Fire Resistance",
+    "^x33FF77+ ^x8888FF+14% to Cold Resistance",
+    "^x33FF77+ ^x8888FF+9% to Lightning Resistance",
+    "^xDD0022< ^xB8DAF1+19 to maximum Life"
+   ],
+   [
+    "^xFFFF77Death Knot, Amethyst Ring",
+    "^x33FF77+ ^x8888FF+23% to Chaos Resistance",
+    "^x33FF77+ ^x8888FF+53 to Intelligence",
+    "^x33FF77+ ^x8888FFAdds 8 to 18 Fire Damage to Attacks",
+    "^x33FF77> ^x8888FF+113 to maximum Life",
+    "^x33FF77+ ^x8888FF+29% to Chaos Resistance",
+    "^x33FF77+ ^x8888FFGain 35 Life per Enemy Killed",
+    "^x33FF77+ ^xB8DAF1Non-Channelling Skills have -7 to Total Mana Cost"
+   ]
+  ],
+  [
+   [
+    "^xFFFF77Soul Twine, Heavy Belt",
+    "^x33FF77+ ^x8888FF+34 to Strength",
+    "^x33FF77+ ^x8888FF+14 to Strength",
+    "^xDD0022< ^x8888FF+56 to Armour",
+    "^x33FF77+ ^x8888FF+8 to maximum Energy Shield",
+    "^x33FF77+ ^x8888FF+42 to maximum Life",
+    "^xDD0022< ^x8888FF+9% to Fire Resistance",
+    "^x33FF77+ ^xB8DAF1+26% to Lightning Resistance"
+   ],
+   [
+    "^xAF6025Arn's Anguish, Cloth Belt",
+    "^x33FF77+ ^x8888FF19% increased Stun and Block Recovery",
+    "^x33FF77> ^x8888FF+605 to Armour",
+    "^x33FF77+ ^x8888FF15% increased maximum Life",
+    "^x33FF77> ^x8888FF+55% to Fire Resistance",
+    "^x33FF77+ ^x8888FF+1 to Maximum Endurance Charges",
+    "^x33FF77+ ^x8888FFModifiers to Minimum Endurance Charges instead apply to Minimum Brutal Charges",
+    "^x33FF77+ ^x8888FFMaximum Brutal Charges is equal to Maximum Endurance Charges",
+    "^x33FF77+ ^x8888FFGain Brutal Charges instead of Endurance Charges"
+   ]
+  ],
+  [
+   [
+    "^x8888FFTransgressor's Divine Life Flask of Sealing",
+    "^x7F7F7FLife: ^x8888FF2400 ^x7F7F7F(3.5s)",
+    "^x7F7F7FCharges: ^x8888FF15/45",
+    "^x33FF77+ ^xF05050Gain 1 Charge when you are Hit by an Enemy ^8(Not supported in PoB yet)",
+    "^x8888FFGrants Immunity to Bleeding for 6 seconds if used while Bleeding",
+    "^x8888FFGrants Immunity to Corrupted Blood for 6 seconds if used while affected by Corrupted Blood"
+   ],
+   [
+    "^x8888FFApprentice's Divine Life Flask of Sealing",
+    "^x7F7F7FLife: ^x8888FF2880 ^x7F7F7F(3.5s)",
+    "^x7F7F7FCharges: ^x8888FF12/45",
+    "^x33FF77+ ^x8888FF15% reduced Charges per use",
+    "^x8888FFGrants Immunity to Bleeding for 6 seconds if used while Bleeding",
+    "^x8888FFGrants Immunity to Corrupted Blood for 6 seconds if used while affected by Corrupted Blood"
+   ]
+  ],
+  [
+   [
+    "^x8888FFAnalyst's Silver Flask of the Sable",
+    "^x7F7F7FDuration: ^x8888FF7.40s",
+    "^x7F7F7FCharges: ^x8888FF40/60",
+    "^x8888FFOnslaught",
+    "^x33FF77+ ^x8888FF24% increased Duration",
+    "^x33FF77+ ^x8888FF52% reduced Effect of Chill on you during Effect",
+    "^x33FF77+ ^x8888FF53% reduced Freeze Duration on you during Effect"
+   ],
+   [
+    "^x8888FFSpecialist's Granite Flask of the Tortoise",
+    "^x7F7F7FDuration: ^x8888FF7.20s",
+    "^x7F7F7FCharges: ^x8888FF30/60",
+    "^x8888FF+1500 to Armour",
+    "^x33FF77+ ^xF05050Used when Charges reach full ^8(Not supported in PoB yet)",
+    "^x33FF77+ ^x8888FF26% chance to gain a Flask Charge when you deal a Critical Strike",
+    "^x33FF77+ ^x8888FF46% increased Armour during Effect"
+   ]
+  ],
+  [
+   [
+    "^x8888FFPlentiful Granite Flask of Stiffness",
+    "^x7F7F7FDuration: ^x8888FF6.00s",
+    "^x7F7F7FCharges: ^x8888FF30/82",
+    "^x8888FF+1500 to Armour",
+    "^xDD0022< ^x8888FF+22 to Maximum Charges",
+    "^x33FF77+ ^x8888FF52% increased Block and Stun Recovery during Effect"
+   ],
+   [
+    "^x8888FFBountiful Quicksilver Flask of Rupturing",
+    "^x7F7F7FDuration: ^x8888FF7.20s",
+    "^x7F7F7FCharges: ^x8888FF30/84",
+    "^x8888FF40% increased Movement Speed",
+    "^x33FF77+ ^xF05050Used when Charges reach full ^8(Not supported in PoB yet)",
+    "^x33FF77> ^x8888FF+24 to Maximum Charges",
+    "^x33FF77+ ^x8888FF42% increased Critical Strike Chance during Effect"
+   ]
+  ],
+  [
+   [
+    "^xAF6025Dread Captain's Cutlass, Ghostflame Blade",
+    "^x7F7F7FPhys DPS: ^x8888FF79.8",
+    "^x7F7F7FEle DPS: ^x8888FF59.7",
+    "^x7F7F7FTotal DPS: ^x8888FF139.5",
+    "^x7F7F7FCrit: ^x8888FF6.50%",
+    "^x7F7F7FAPS: ^x8888FF1.55",
+    "^x33FF77+ ^xB8DAF1Quality does not increase Physical Damage",
+    "^x33FF77+ ^xB8DAF1Grants 1% increased Accuracy per 2% Quality",
+    "^x33FF77+ ^x8888FFCan be Allflame Crafted as if Rare",
+    "^x33FF77+ ^x8888FFCannot gain Intangibility",
+    "^x33FF77+ ^x8888FF29% more Melee Damage while Burning",
+    "^x33FF77+ ^x8888FFAdds 26 to 51 Fire Damage",
+    "^x33FF77+ ^x8888FF+24% to Global Critical Strike Multiplier",
+    "^x33FF77+ ^x8888FF+727 to Accuracy Rating",
+    "^x33FF77+ ^xF05050Melee Strikes Curse Enemies with Flammability on Hit, ignoring Curse Limit ^8(Not supported in PoB yet)",
+    "^x33FF77+ ^x8888FF39% increased Elemental Damage with Attack Skills"
+   ],
+   [
+    "^8(empty)"
+   ]
+  ],
+  [
+   [
+    "^xAF6025Emperor's Vigilance, Steel Kite Shield",
+    "^x7F7F7FArmour: ^x8888FF2191",
+    "^x7F7F7FES: ^x8888FF462",
+    "^x7F7F7FBlock: ^x8888FF26%",
+    "^x33FF77+ ^x8888FF17% Chance to Block Spell Damage",
+    "^x33FF77+ ^x8888FF1000% increased Armour and Energy Shield",
+    "^x33FF77+ ^x8888FFDamage taken from Blocked Hits cannot bypass Energy Shield",
+    "^x33FF77+ ^x8888FFDamage taken from Unblocked hits always bypasses Energy Shield",
+    "^x33FF77+ ^x8888FFGlancing Blows"
+   ],
+   [
+    "^xFFFF77New Item, Harmonic Spirit Shield",
+    "^x7F7F7FES: ^x8888FF79",
+    "^x7F7F7FBlock: ^x8888FF40%",
+    "^x33FF77+ ^x8888FF15% increased Spell Damage",
+    "^x33FF77+ ^x8888FF75% increased Chance to Block",
+    "^x33FF77+ ^x8888FF+140 to maximum Life",
+    "^x33FF77+ ^x8888FF+1 to Level of all Fire Spell Skill Gems",
+    "^x33FF77+ ^x8888FF+18% to all Elemental Resistances",
+    "^x33FF77+ ^xB8DAF15% chance to deal Double Damage"
+   ]
+  ],
+  [
+   [
+    "^xFFFF77Empyrean Veil, Giantslayer Helmet",
+    "^x7F7F7FArmour: ^x8888FF1698",
+    "^x33FF77+ ^x8888FF6% of Physical Damage from Hits taken as Cold Damage",
+    "^x33FF77+ ^x8888FF26% increased Mana Cost Efficiency",
+    "^x33FF77+ ^x8888FF+38 to Strength",
+    "^x33FF77+ ^x8888FF+92 to Armour",
+    "^x33FF77+ ^x8888FF96% increased Armour",
+    "^x33FF77+ ^x8888FF+144 to maximum Life",
+    "^x33FF77+ ^x8888FF+21% to Lightning Resistance",
+    "^x33FF77+ ^x8888FF+27% to Chaos Resistance"
+   ],
+   [
+    "^8(empty)"
+   ]
+  ],
+  [
+   [
+    "^xFFFF77Agony Skin, Royal Plate",
+    "^x7F7F7FArmour: ^x8888FF3772",
+    "^x33FF77+ ^x8888FF10% of Physical Damage from Hits taken as Lightning Damage",
+    "^x33FF77+ ^xF05050Gain a Frenzy Charge every 15 seconds ^8(Not supported in PoB yet)",
+    "^x33FF77+ ^x8888FF95% increased Armour",
+    "^x33FF77+ ^x8888FF+47% to Cold Resistance",
+    "^x33FF77+ ^x8888FF+37% to Lightning Resistance",
+    "^x33FF77+ ^x8888FF13% increased Stun and Block Recovery",
+    "^x33FF77+ ^x8888FF8% additional Physical Damage Reduction",
+    "^x33FF77+ ^xB8DAF1+292 to Armour"
+   ],
+   [
+    "^8(empty)"
+   ]
+  ],
+  [
+   [
+    "^xFFFF77Wrath Palm, Leviathan Gauntlets",
+    "^x7F7F7FArmour: ^x8888FF914",
+    "^x33FF77+ ^x8888FFInflict Fire Exposure on Hit, applying -11% to Fire Resistance",
+    "^x33FF77+ ^x8888FF8% increased Attack Speed",
+    "^x33FF77+ ^x8888FF36% increased Armour",
+    "^x33FF77+ ^x8888FF+83 to maximum Life",
+    "^x33FF77+ ^x8888FF+31% to Fire Resistance",
+    "^x33FF77+ ^x8888FF+30% to Chaos Resistance",
+    "^x33FF77+ ^x8888FFGain 11 Mana per Enemy Killed",
+    "^x33FF77+ ^x8888FF15% increased Stun and Block Recovery",
+    "^x33FF77+ ^xB8DAF172% increased Armour"
+   ],
+   [
+    "^xAF6025Tanu Ahi, Wyrmscale Gauntlets",
+    "^x7F7F7FArmour: ^x8888FF312",
+    "^x7F7F7FEvasion: ^x8888FF312",
+    "^x33FF77+ ^x8888FF+15% to all Elemental Resistances",
+    "^x33FF77+ ^x8888FF10% increased Attack Speed",
+    "^x33FF77+ ^x8888FF150% increased Armour and Evasion",
+    "^x33FF77+ ^x8888FF2.5% of Physical Attack Damage Leeched as Life",
+    "^x33FF77+ ^xF0505010% chance to gain Adrenaline for 2 Seconds when Leech is ^8(Not supported in PoB yet)",
+    "^x33FF77+ ^xF05050removed by Filling Unreserved Life ^8(Not supported in PoB yet)",
+    "^x33FF77+ ^xF05050removed by Filling Unreserved Life ^8(Not supported in PoB yet)",
+    "^x33FF77+ ^xF0505010% chance to gain Onslaught for 4 Seconds when Leech is ^8(Not supported in PoB yet)",
+    "^xDD0022Corrupted"
+   ]
+  ],
+  [
+   [
+    "^xAF6025Ralakesh's Impatience, Riveted Boots",
+    "^x7F7F7FArmour: ^x8888FF80",
+    "^x7F7F7FES: ^x8888FF17",
+    "^xDD0022< ^x8888FF+18% to Cold Resistance",
+    "^x33FF77> ^x8888FF+23% to Chaos Resistance",
+    "^xDD0022< ^x8888FF17% increased Movement Speed",
+    "^x33FF77+ ^x8888FFCorrupted Blood cannot be inflicted on you",
+    "^x33FF77+ ^x8888FFCount as having maximum number of Endurance Charges"
+   ],
+   [
+    "^xFFFF77New Item, Two-Toned Boots",
+    "^x7F7F7FArmour: ^x8888FF174",
+    "^x7F7F7FEvasion: ^x8888FF174",
+    "^x33FF77+ ^x8888FF+12% to Fire and Cold Resistances",
+    "^x33FF77+ ^x8888FF+118 to maximum Life",
+    "^x33FF77+ ^x8888FF+29% to Fire Resistance",
+    "^x33FF77> ^x8888FF+29% to Cold Resistance",
+    "^xDD0022< ^x8888FF+20% to Chaos Resistance",
+    "^x33FF77> ^x8888FF30% increased Movement Speed"
+   ]
+  ],
+  [
+   [
+    "^xAF6025Replica Dragonfang's Flight, Onyx Amulet",
+    "^x33FF77+ ^xB8DAF1Allocates Charisma",
+    "^x33FF77+ ^x8888FF+16 to all Attributes",
+    "^x33FF77+ ^x8888FF+3 to Level of all Shield Crush Gems",
+    "^x33FF77+ ^x8888FF+10% to all Elemental Resistances",
+    "^x33FF77+ ^x8888FF7% increased Reservation Efficiency of Skills",
+    "^x33FF77+ ^x8888FFItems and Gems have 8% reduced Attribute Requirements"
+   ],
+   [
+    "^8(empty)"
+   ]
+  ],
+  [
+   [
+    "^xFFFF77Hypnotic Hold, Amethyst Ring",
+    "^x33FF77+ ^x8888FF+23% to Chaos Resistance",
+    "^x33FF77+ ^x8888FF+33 to Dexterity",
+    "^x33FF77+ ^x8888FF+78 to maximum Life",
+    "^x33FF77+ ^x8888FF+67 to maximum Mana",
+    "^x33FF77+ ^x8888FF+13% to all Elemental Resistances",
+    "^x33FF77+ ^xB8DAF1Non-Channelling Skills have -7 to Total Mana Cost",
+    "^x33FF77+ ^xA29160+463 to Accuracy Rating"
+   ],
+   [
+    "^xAF6025Praxis, Paua Ring",
+    "^x33FF77+ ^x8888FF+25 to maximum Mana",
+    "^x33FF77+ ^x8888FF+45 to maximum Mana",
+    "^x33FF77+ ^x8888FFRegenerate 6 Mana per second",
+    "^x33FF77+ ^x8888FF-8 to Total Mana Cost of Skills",
+    "^x33FF77+ ^x8888FF8% of Damage taken Recouped as Mana"
+   ]
+  ],
+  [
+   [
+    "^xFFFF77Death Knot, Amethyst Ring",
+    "^xDD0022< ^x8888FF+23% to Chaos Resistance",
+    "^x33FF77+ ^x8888FF+53 to Intelligence",
+    "^x33FF77+ ^x8888FFAdds 8 to 18 Fire Damage to Attacks",
+    "^x33FF77> ^x8888FF+113 to maximum Life",
+    "^xDD0022< ^x8888FF+29% to Chaos Resistance",
+    "^x33FF77+ ^x8888FFGain 35 Life per Enemy Killed",
+    "^x33FF77+ ^xB8DAF1Non-Channelling Skills have -7 to Total Mana Cost"
+   ],
+   [
+    "^xFFFF77New Item, Two-Stone Ring",
+    "^x33FF77+ ^x8888FF+16% to Cold and Lightning Resistances",
+    "^x33FF77+ ^x8888FF+46 to Dexterity",
+    "^xDD0022< ^x8888FF+81 to maximum Life",
+    "^x33FF77+ ^x8888FF+16% to all Elemental Resistances",
+    "^x33FF77> ^x8888FF+31% to Chaos Resistance"
+   ]
+  ],
+  [
+   [
+    "^xAF6025Arn's Anguish, Cloth Belt",
+    "^x33FF77+ ^x8888FF19% increased Stun and Block Recovery",
+    "^x33FF77> ^x8888FF+605 to Armour",
+    "^x33FF77+ ^x8888FF15% increased maximum Life",
+    "^x33FF77> ^x8888FF+55% to Fire Resistance",
+    "^x33FF77+ ^x8888FF+1 to Maximum Endurance Charges",
+    "^x33FF77+ ^x8888FFModifiers to Minimum Endurance Charges instead apply to Minimum Brutal Charges",
+    "^x33FF77+ ^x8888FFMaximum Brutal Charges is equal to Maximum Endurance Charges",
+    "^x33FF77+ ^x8888FFGain Brutal Charges instead of Endurance Charges"
+   ],
+   [
+    "^xFFFF77New Item, Stygian Vise",
+    "^x33FF77+ ^x8888FFHas 1 Abyssal Socket",
+    "^x33FF77+ ^x8888FF+44 to Strength",
+    "^xDD0022< ^x8888FF+350 to Armour",
+    "^x33FF77+ ^x8888FF+144 to maximum Life",
+    "^xDD0022< ^x8888FF+43% to Fire Resistance",
+    "^x33FF77+ ^x8888FF+43% to Lightning Resistance"
+   ]
+  ],
+  [
+   [
+    "^x8888FFApprentice's Divine Life Flask of Sealing",
+    "^x7F7F7FLife: ^x8888FF2880 ^x7F7F7F(3.5s)",
+    "^x7F7F7FCharges: ^x8888FF12/45",
+    "^x33FF77+ ^x8888FF15% reduced Charges per use",
+    "^x33FF77+ ^x8888FFGrants Immunity to Bleeding for 6 seconds if used while Bleeding",
+    "^x33FF77+ ^x8888FFGrants Immunity to Corrupted Blood for 6 seconds if used while affected by Corrupted Blood"
+   ],
+   [
+    "^x8888FFCareful Eternal Life Flask",
+    "^x7F7F7FLife: ^x8888FF2496 ^x7F7F7F(2.0s)",
+    "^x7F7F7FCharges: ^x8888FF15/45",
+    "^x33FF77+ ^x8888FF120% more Recovery if used while on Low Life"
+   ]
+  ],
+  [
+   [
+    "^x8888FFSpecialist's Granite Flask of the Tortoise",
+    "^x7F7F7FDuration: ^x8888FF7.20s",
+    "^x7F7F7FCharges: ^x8888FF30/60",
+    "^x8888FF+1500 to Armour",
+    "^x33FF77+ ^xF05050Used when Charges reach full ^8(Not supported in PoB yet)",
+    "^xDD0022< ^x8888FF26% chance to gain a Flask Charge when you deal a Critical Strike",
+    "^x33FF77+ ^x8888FF46% increased Armour during Effect"
+   ],
+   [
+    "^x8888FFSurgeon's Silver Flask",
+    "^x7F7F7FDuration: ^x8888FF7.20s",
+    "^x7F7F7FCharges: ^x8888FF40/60",
+    "^x8888FFOnslaught",
+    "^x33FF77> ^x8888FF32% chance to gain a Flask Charge when you deal a Critical Strike",
+    "^x33FF77+ ^xB8DAF1Regenerate 3% of Life per second during Effect"
+   ]
+  ],
+  [
+   [
+    "^x8888FFBountiful Quicksilver Flask of Rupturing",
+    "^x7F7F7FDuration: ^x8888FF7.20s",
+    "^x7F7F7FCharges: ^x8888FF30/84",
+    "^x8888FF40% increased Movement Speed",
+    "^x33FF77+ ^xF05050Used when Charges reach full ^8(Not supported in PoB yet)",
+    "^x33FF77+ ^x8888FF+24 to Maximum Charges",
+    "^x33FF77+ ^x8888FF42% increased Critical Strike Chance during Effect"
+   ],
+   [
+    "^x8888FFMasochist's Granite Flask of the Tortoise",
+    "^x7F7F7FDuration: ^x8888FF7.20s",
+    "^x7F7F7FCharges: ^x8888FF30/60",
+    "^x8888FF+1500 to Armour",
+    "^x33FF77+ ^xF05050Gain 2 Charges when you are Hit by an Enemy ^8(Not supported in PoB yet)",
+    "^x33FF77+ ^x8888FF49% increased Armour during Effect"
+   ]
+  ],
+  [
+   [
+    "^xFFFF77New Item, Harmonic Spirit Shield",
+    "^x7F7F7FES: ^x8888FF79",
+    "^x7F7F7FBlock: ^x8888FF40%",
+    "^x33FF77+ ^x8888FF15% increased Spell Damage",
+    "^x33FF77+ ^x8888FF75% increased Chance to Block",
+    "^x33FF77+ ^x8888FF+140 to maximum Life",
+    "^x33FF77+ ^x8888FF+1 to Level of all Fire Spell Skill Gems",
+    "^x33FF77+ ^x8888FF+18% to all Elemental Resistances",
+    "^x33FF77+ ^xB8DAF15% chance to deal Double Damage"
+   ],
+   [
+    "^8(empty)"
+   ]
+  ],
+  [
+   [
+    "^xAF6025Tanu Ahi, Wyrmscale Gauntlets",
+    "^x7F7F7FArmour: ^x8888FF312",
+    "^x7F7F7FEvasion: ^x8888FF312",
+    "^x33FF77+ ^x8888FF+15% to all Elemental Resistances",
+    "^x33FF77+ ^x8888FF10% increased Attack Speed",
+    "^x33FF77+ ^x8888FF150% increased Armour and Evasion",
+    "^x33FF77+ ^x8888FF2.5% of Physical Attack Damage Leeched as Life",
+    "^x33FF77+ ^xF0505010% chance to gain Adrenaline for 2 Seconds when Leech is ^8(Not supported in PoB yet)",
+    "^x33FF77+ ^xF05050removed by Filling Unreserved Life ^8(Not supported in PoB yet)",
+    "^x33FF77+ ^xF05050removed by Filling Unreserved Life ^8(Not supported in PoB yet)",
+    "^x33FF77+ ^xF0505010% chance to gain Onslaught for 4 Seconds when Leech is ^8(Not supported in PoB yet)",
+    "^xDD0022Corrupted"
+   ],
+   [
+    "^8(empty)"
+   ]
+  ],
+  [
+   [
+    "^xFFFF77New Item, Two-Toned Boots",
+    "^x7F7F7FArmour: ^x8888FF174",
+    "^x7F7F7FEvasion: ^x8888FF174",
+    "^x33FF77+ ^x8888FF+12% to Fire and Cold Resistances",
+    "^x33FF77+ ^x8888FF+118 to maximum Life",
+    "^x33FF77+ ^x8888FF+29% to Fire Resistance",
+    "^x33FF77+ ^x8888FF+29% to Cold Resistance",
+    "^x33FF77+ ^x8888FF+20% to Chaos Resistance",
+    "^x33FF77+ ^x8888FF30% increased Movement Speed"
+   ],
+   [
+    "^8(empty)"
+   ]
+  ],
+  [
+   [
+    "^xAF6025Praxis, Paua Ring",
+    "^x33FF77+ ^x8888FF+25 to maximum Mana",
+    "^x33FF77+ ^x8888FF+45 to maximum Mana",
+    "^x33FF77+ ^x8888FFRegenerate 6 Mana per second",
+    "^x33FF77+ ^x8888FF-8 to Total Mana Cost of Skills",
+    "^x33FF77+ ^x8888FF8% of Damage taken Recouped as Mana"
+   ],
+   [
+    "^8(empty)"
+   ]
+  ],
+  [
+   [
+    "^xFFFF77New Item, Two-Stone Ring",
+    "^x33FF77+ ^x8888FF+16% to Cold and Lightning Resistances",
+    "^x33FF77+ ^x8888FF+46 to Dexterity",
+    "^x33FF77+ ^x8888FF+81 to maximum Life",
+    "^x33FF77+ ^x8888FF+16% to all Elemental Resistances",
+    "^x33FF77+ ^x8888FF+31% to Chaos Resistance"
+   ],
+   [
+    "^8(empty)"
+   ]
+  ],
+  [
+   [
+    "^xFFFF77New Item, Stygian Vise",
+    "^x33FF77+ ^x8888FFHas 1 Abyssal Socket",
+    "^x33FF77+ ^x8888FF+44 to Strength",
+    "^x33FF77+ ^x8888FF+350 to Armour",
+    "^x33FF77+ ^x8888FF+144 to maximum Life",
+    "^x33FF77+ ^x8888FF+43% to Fire Resistance",
+    "^x33FF77+ ^x8888FF+43% to Lightning Resistance"
+   ],
+   [
+    "^8(empty)"
+   ]
+  ],
+  [
+   [
+    "^x8888FFCareful Eternal Life Flask",
+    "^x7F7F7FLife: ^x8888FF2496 ^x7F7F7F(2.0s)",
+    "^x7F7F7FCharges: ^x8888FF15/45",
+    "^x33FF77+ ^x8888FF120% more Recovery if used while on Low Life"
+   ],
+   [
+    "^8(empty)"
+   ]
+  ],
+  [
+   [
+    "^x8888FFSurgeon's Silver Flask",
+    "^x7F7F7FDuration: ^x8888FF7.20s",
+    "^x7F7F7FCharges: ^x8888FF40/60",
+    "^x8888FFOnslaught",
+    "^x33FF77+ ^x8888FF32% chance to gain a Flask Charge when you deal a Critical Strike",
+    "^x33FF77+ ^xB8DAF1Regenerate 3% of Life per second during Effect"
+   ],
+   [
+    "^8(empty)"
+   ]
+  ],
+  [
+   [
+    "^x8888FFMasochist's Granite Flask of the Tortoise",
+    "^x7F7F7FDuration: ^x8888FF7.20s",
+    "^x7F7F7FCharges: ^x8888FF30/60",
+    "^x8888FF+1500 to Armour",
+    "^x33FF77+ ^xF05050Gain 2 Charges when you are Hit by an Enemy ^8(Not supported in PoB yet)",
+    "^x33FF77+ ^x8888FF49% increased Armour during Effect"
+   ],
+   [
+    "^8(empty)"
+   ]
+  ],
+  [
+   [
+    "^8(empty)"
+   ],
+   [
+    "^xAF6025The Dark Seer, Shadow Sceptre",
+    "^x7F7F7FPhys DPS: ^x8888FF45.6",
+    "^x7F7F7FTotal DPS: ^x8888FF45.6",
+    "^x7F7F7FCrit: ^x8888FF7.30%",
+    "^x7F7F7FAPS: ^x8888FF1.25",
+    "^x33FF77+ ^x8888FF22% increased Elemental Damage",
+    "^x33FF77+ ^x8888FF+2 to Level of all Spell Skill Gems",
+    "^x33FF77+ ^xF0505010% Global chance to Blind Enemies on hit ^8(Not supported in PoB yet)",
+    "^x33FF77+ ^x8888FFEnemies Blinded by you have Malediction",
+    "^x33FF77+ ^x8888FF+2 Maximum Energy Shield per Level",
+    "^x33FF77+ ^x8888FF+2 Maximum Mana per Level",
+    "^x33FF77+ ^x8888FFUnaffected by Blind"
+   ]
+  ],
+  [
+   [
+    "^8(empty)"
+   ],
+   [
+    "^xFFFF77Bramble Call, Titanium Spirit Shield",
+    "^x7F7F7FES: ^x8888FF188",
+    "^x7F7F7FBlock: ^x8888FF43%",
+    "^x33FF77+ ^x8888FF75% increased Chance to Block",
+    "^x33FF77+ ^x8888FFSocketed Gems have 30% increased Reservation Efficiency",
+    "^x33FF77+ ^x8888FF+70 to maximum Energy Shield",
+    "^x33FF77+ ^x8888FF+128 to maximum Life",
+    "^x33FF77+ ^x8888FFRecover 5% of Energy Shield when you Block",
+    "^x33FF77+ ^x8888FF8% increased effect of Non-Curse Auras from your Skills"
+   ]
+  ],
+  [
+   [
+    "^8(empty)"
+   ],
+   [
+    "^xFFFF77Ghoul Visage, Lich's Circlet",
+    "^x7F7F7FES: ^x8888FF399",
+    "^x33FF77+ ^x8888FF12% increased Mana Reservation Efficiency of Skills",
+    "^x33FF77+ ^x8888FF11% increased Elemental Weakness Curse Effect",
+    "^x33FF77+ ^x8888FF+2 to Level of Socketed AoE Gems",
+    "^x33FF77+ ^x8888FF91% increased Energy Shield",
+    "^x33FF77+ ^x8888FF+46% to Fire Resistance",
+    "^x33FF77+ ^x8888FF8% increased Area of Effect",
+    "^x33FF77+ ^x8888FF9% increased Mana Reservation Efficiency of Skills",
+    "^x33FF77+ ^xB8DAF1+45 to maximum Energy Shield",
+    "^x33FF77+ ^xA29160+2 to Level of Socketed Aura Gems"
+   ]
+  ],
+  [
+   [
+    "^8(empty)"
+   ],
+   [
+    "^xFFFF77Grim Carapace, Twilight Regalia",
+    "^x7F7F7FES: ^x8888FF948",
+    "^x33FF77+ ^x8888FFGrace has 25% increased Aura Effect",
+    "^x33FF77+ ^x8888FF18% increased effect of Non-Curse Auras from your Skills",
+    "^x33FF77+ ^x8888FF+1 to Level of Socketed Dexterity Gems",
+    "^x33FF77+ ^x8888FF+1 to Level of Socketed Intelligence Gems",
+    "^x33FF77+ ^x8888FF+94 to maximum Energy Shield",
+    "^x33FF77+ ^x8888FF109% increased Energy Shield",
+    "^x33FF77+ ^x8888FF+47% to Lightning Resistance",
+    "^x33FF77+ ^xA29160Chaos Damage taken does not bypass Energy Shield while not on Low Life"
+   ]
+  ],
+  [
+   [
+    "^8(empty)"
+   ],
+   [
+    "^xAF6025The Hand of Phrecia, Mesh Gloves",
+    "^x7F7F7FArmour: ^x8888FF102",
+    "^x7F7F7FES: ^x8888FF21",
+    "^x33FF77+ ^x8888FF62% increased Armour and Energy Shield",
+    "^x33FF77+ ^x8888FF+11% to all Elemental Resistances",
+    "^x33FF77+ ^x8888FF40% increased Effect of Non-Curse Auras from your Skills while you have a Linked Target",
+    "^x33FF77+ ^x8888FFLinked Targets always count as in range of Non-Curse Auras from your Skills",
+    "^x33FF77+ ^x8888FFNon-Curse Auras from your Skills only apply to you and Linked Targets"
+   ]
+  ],
+  [
+   [
+    "^8(empty)"
+   ],
+   [
+    "^xFFFF77Sorrow Dash, Warlock Boots",
+    "^x7F7F7FES: ^x8888FF291",
+    "^x33FF77+ ^x8888FF21% increased Cooldown Recovery Rate of Travel Skills",
+    "^x33FF77+ ^x8888FFDrops Brittle Ground while moving, lasting 4 seconds",
+    "^x33FF77+ ^x8888FF+41 to maximum Energy Shield",
+    "^x33FF77+ ^x8888FF99% increased Energy Shield",
+    "^x33FF77+ ^x8888FF+46% to Lightning Resistance",
+    "^x33FF77+ ^x8888FF+34% to Chaos Resistance",
+    "^x33FF77+ ^x8888FF25% increased Movement Speed",
+    "^x33FF77+ ^xB8DAF1+27% to Fire Resistance"
+   ]
+  ],
+  [
+   [
+    "^8(empty)"
+   ],
+   [
+    "^xFFFF77Pain Torc, Focused Amulet",
+    "^x33FF77+ ^xB8DAF1Allocates Champion of the Cause",
+    "^x33FF77+ ^x8888FF-1 Prefix Modifier allowed",
+    "^x33FF77+ ^x8888FF-2 Suffix Modifiers allowed",
+    "^x33FF77+ ^x8888FFImplicit Modifiers Cannot Be Changed",
+    "^x33FF77+ ^x8888FF100% increased Explicit Modifier magnitudes",
+    "^x33FF77+ ^x8888FF+2 to Level of all Skill Gems",
+    "^x33FF77+ ^x8888FF+2 to Level of all Lightning Skill Gems",
+    "^x33FF77+ ^xB8DAF1+28 to all Attributes"
+   ]
+  ],
+  [
+   [
+    "^8(empty)"
+   ],
+   [
+    "^xFFFF77Loath Nail, Cogwork Ring",
+    "^x33FF77+ ^x8888FF-1 Prefix Modifier allowed",
+    "^x33FF77+ ^x8888FF+1 Suffix Modifier allowed",
+    "^x33FF77+ ^x8888FFImplicit Modifiers Cannot Be Changed",
+    "^x33FF77+ ^x8888FF25% increased Suffix Modifier magnitudes",
+    "^x33FF77+ ^x8888FF+23 to all Attributes",
+    "^x33FF77+ ^x8888FF+78 to Strength",
+    "^x33FF77+ ^x8888FF+73 to Dexterity",
+    "^x33FF77+ ^x8888FF+46 to maximum Energy Shield",
+    "^x33FF77+ ^x8888FF+18% to Chaos Resistance",
+    "^x33FF77+ ^xB8DAF1Non-Channelling Skills have -7 to Total Mana Cost"
+   ]
+  ],
+  [
+   [
+    "^8(empty)"
+   ],
+   [
+    "^xFFFF77Brimstone Grasp, Amethyst Ring",
+    "^x33FF77+ ^x8888FF+23% to Chaos Resistance",
+    "^x33FF77+ ^x8888FF+128 to Evasion Rating",
+    "^x33FF77+ ^x8888FF15% increased maximum Energy Shield",
+    "^x33FF77+ ^x8888FF+30 to maximum Life",
+    "^x33FF77+ ^x8888FF+46% to Lightning Resistance",
+    "^x33FF77+ ^x8888FF+35% to Chaos Resistance",
+    "^x33FF77+ ^xB8DAF1+1 to Minimum Endurance Charges"
+   ]
+  ],
+  [
+   [
+    "^8(empty)"
+   ],
+   [
+    "^xAF6025Ceinture of Benevolence, Cloth Belt",
+    "^x33FF77+ ^x8888FF30% increased Rarity of Items found",
+    "^x33FF77+ ^x8888FF12% increased Movement Speed during any Flask Effect",
+    "^x33FF77+ ^x8888FF+40 to Dexterity",
+    "^x33FF77+ ^x8888FF+60 to maximum Mana",
+    "^x33FF77+ ^x8888FF8% reduced Flask Charges used",
+    "^x33FF77+ ^x8888FFNon-Unique Utility Flasks you Use apply to Linked Targets",
+    "^xDD0022Corrupted"
+   ]
+  ],
+  [
+   [
+    "^xAF6025The Dark Seer, Shadow Sceptre",
+    "^x7F7F7FPhys DPS: ^x8888FF45.6",
+    "^x7F7F7FTotal DPS: ^x8888FF45.6",
+    "^x7F7F7FCrit: ^x8888FF7.30%",
+    "^x7F7F7FAPS: ^x8888FF1.25",
+    "^x33FF77+ ^x8888FF22% increased Elemental Damage",
+    "^x33FF77+ ^x8888FF+2 to Level of all Spell Skill Gems",
+    "^x33FF77+ ^xF0505010% Global chance to Blind Enemies on hit ^8(Not supported in PoB yet)",
+    "^x33FF77+ ^x8888FFEnemies Blinded by you have Malediction",
+    "^x33FF77+ ^x8888FF+2 Maximum Energy Shield per Level",
+    "^x33FF77+ ^x8888FF+2 Maximum Mana per Level",
+    "^x33FF77+ ^x8888FFUnaffected by Blind"
+   ],
+   [
+    "^xFFFF77Rune Razor, Elegant Foil",
+    "^x7F7F7FPhys DPS: ^x8888FF53.0",
+    "^x7F7F7FEle DPS: ^x8888FF579.3",
+    "^x7F7F7FTotal DPS: ^x8888FF632.3",
+    "^x7F7F7FCrit: ^x8888FF7.59%",
+    "^x7F7F7FAPS: ^x8888FF2.08",
+    "^x33FF77+ ^xB8DAF1Quality does not increase Physical Damage",
+    "^x33FF77+ ^xB8DAF1+0.1 metres to Weapon Range per 10% Quality",
+    "^x33FF77+ ^x8888FF+25% to Global Critical Strike Multiplier",
+    "^x33FF77+ ^xA29160Adds 21 to 301 Lightning Damage",
+    "^x33FF77+ ^x8888FFAdds 85 to 150 Cold Damage",
+    "^x33FF77+ ^x8888FF30% increased Attack Speed",
+    "^x33FF77+ ^x8888FF38% increased Critical Strike Chance",
+    "^x33FF77+ ^x8888FF+38% Critical Strike Multiplier while a Rare or Unique Enemy is Nearby",
+    "^x33FF77+ ^xB8DAF1Hits can't be Evaded",
+    "^xDD0022Split"
+   ]
+  ],
+  [
+   [
+    "^xFFFF77Bramble Call, Titanium Spirit Shield",
+    "^x7F7F7FES: ^x8888FF188",
+    "^x7F7F7FBlock: ^x8888FF43%",
+    "^x33FF77+ ^x8888FF75% increased Chance to Block",
+    "^x33FF77+ ^x8888FFSocketed Gems have 30% increased Reservation Efficiency",
+    "^x33FF77+ ^x8888FF+70 to maximum Energy Shield",
+    "^x33FF77+ ^x8888FF+128 to maximum Life",
+    "^x33FF77+ ^x8888FFRecover 5% of Energy Shield when you Block",
+    "^x33FF77+ ^x8888FF8% increased effect of Non-Curse Auras from your Skills"
+   ],
+   [
+    "^xAF6025Aegis Aurora, Champion Kite Shield",
+    "^x7F7F7FArmour: ^x8888FF1408",
+    "^x7F7F7FES: ^x8888FF288",
+    "^x7F7F7FBlock: ^x8888FF32%",
+    "^x33FF77+ ^x8888FF5% Chance to Block Spell Damage",
+    "^x33FF77+ ^x8888FF389% increased Armour and Energy Shield",
+    "^x33FF77+ ^x8888FF+10% to all Elemental Resistances",
+    "^x33FF77+ ^x8888FF+5% to maximum Cold Resistance",
+    "^x33FF77+ ^x8888FF+6% Chance to Block",
+    "^x33FF77+ ^x8888FFRecover Energy Shield equal to 2% of Armour when you Block",
+    "^x33FF77+ ^x8888FF19% increased Elemental Damage with Attack Skills",
+    "^xDD0022Corrupted"
+   ]
+  ],
+  [
+   [
+    "^xFFFF77Ghoul Visage, Lich's Circlet",
+    "^x7F7F7FES: ^x8888FF399",
+    "^x33FF77+ ^x8888FF12% increased Mana Reservation Efficiency of Skills",
+    "^x33FF77+ ^x8888FF11% increased Elemental Weakness Curse Effect",
+    "^x33FF77+ ^x8888FF+2 to Level of Socketed AoE Gems",
+    "^x33FF77+ ^x8888FF91% increased Energy Shield",
+    "^x33FF77+ ^x8888FF+46% to Fire Resistance",
+    "^x33FF77+ ^x8888FF8% increased Area of Effect",
+    "^x33FF77+ ^x8888FF9% increased Mana Reservation Efficiency of Skills",
+    "^x33FF77> ^xB8DAF1+45 to maximum Energy Shield",
+    "^x33FF77+ ^xA29160+2 to Level of Socketed Aura Gems"
+   ],
+   [
+    "^xFFFF77Hate Crest, Divine Crown",
+    "^x7F7F7FArmour: ^x8888FF1061",
+    "^x7F7F7FES: ^x8888FF237",
+    "^x33FF77+ ^x8888FF28% increased Mana Cost Efficiency",
+    "^x33FF77+ ^x8888FF7% of Physical Damage from Hits taken as Chaos Damage",
+    "^x33FF77+ ^x8888FF+79 to Armour",
+    "^xDD0022< ^x8888FF+27 to maximum Energy Shield",
+    "^x33FF77+ ^x8888FF+2 to Level of all Minion Skill Gems",
+    "^x33FF77+ ^x8888FF+47% to Cold Resistance",
+    "^x33FF77+ ^x8888FF+48% to Lightning Resistance",
+    "^x33FF77+ ^xB8DAF173% increased Armour and Energy Shield",
+    "^x33FF77+ ^x5CF0BB+32 to Strength and Intelligence"
+   ]
+  ],
+  [
+   [
+    "^xFFFF77Grim Carapace, Twilight Regalia",
+    "^x7F7F7FES: ^x8888FF948",
+    "^x33FF77+ ^x8888FFGrace has 25% increased Aura Effect",
+    "^x33FF77+ ^x8888FF18% increased effect of Non-Curse Auras from your Skills",
+    "^x33FF77+ ^x8888FF+1 to Level of Socketed Dexterity Gems",
+    "^x33FF77+ ^x8888FF+1 to Level of Socketed Intelligence Gems",
+    "^xDD0022< ^x8888FF+94 to maximum Energy Shield",
+    "^xDD0022< ^x8888FF109% increased Energy Shield",
+    "^x33FF77+ ^x8888FF+47% to Lightning Resistance",
+    "^x33FF77+ ^xA29160Chaos Damage taken does not bypass Energy Shield while not on Low Life"
+   ],
+   [
+    "^xFFFF77Dread Mantle, Twilight Regalia",
+    "^x7F7F7FES: ^x8888FF1326",
+    "^x33FF77+ ^xB8DAF18% increased Explicit Defence Modifier magnitudes",
+    "^x33FF77+ ^x8888FF11% of Physical Damage from Hits taken as Chaos Damage",
+    "^x33FF77+ ^x8888FF+23% to Critical Strike Multiplier for Attack Damage",
+    "^x33FF77+ ^xA2916010% increased Mana Reservation Efficiency of Skills",
+    "^x33FF77+ ^x8888FF+54 to Intelligence",
+    "^x33FF77> ^x8888FF+101 to maximum Energy Shield",
+    "^x33FF77> ^x8888FF157% increased Energy Shield",
+    "^x33FF77+ ^x8888FF18% increased Stun and Block Recovery",
+    "^x33FF77+ ^xB8DAF1Regenerate 150 Energy Shield per second while a Rare or Unique Enemy is Nearby",
+    "^xDD0022Split"
+   ]
+  ],
+  [
+   [
+    "^xAF6025The Hand of Phrecia, Mesh Gloves",
+    "^x7F7F7FArmour: ^x8888FF102",
+    "^x7F7F7FES: ^x8888FF21",
+    "^xDD0022< ^x8888FF62% increased Armour and Energy Shield",
+    "^x33FF77+ ^x8888FF+11% to all Elemental Resistances",
+    "^x33FF77+ ^x8888FF40% increased Effect of Non-Curse Auras from your Skills while you have a Linked Target",
+    "^x33FF77+ ^x8888FFLinked Targets always count as in range of Non-Curse Auras from your Skills",
+    "^x33FF77+ ^x8888FFNon-Curse Auras from your Skills only apply to you and Linked Targets"
+   ],
+   [
+    "^xFFFF77Rune Mitts, Martyr Gloves",
+    "^x7F7F7FArmour: ^x8888FF478",
+    "^x7F7F7FES: ^x8888FF117",
+    "^x33FF77+ ^x8888FF11% increased Effect of your Marks",
+    "^x33FF77+ ^x8888FFNon-Vaal Strike Skills target 2 additional nearby Enemies",
+    "^x33FF77+ ^xA29160+46% to Fire Resistance",
+    "^x33FF77+ ^xA2916045 to 77 added Fire Damage against Burning Enemies",
+    "^x33FF77+ ^x8888FF12% increased Attack Speed",
+    "^x33FF77+ ^x8888FF+38 to Armour",
+    "^x33FF77> ^x8888FF77% increased Armour and Energy Shield",
+    "^x33FF77+ ^x8888FF+17 to maximum Energy Shield",
+    "^x33FF77+ ^x8888FFMinions deal 29% increased Damage",
+    "^x33FF77+ ^xB8DAF1+25 to Strength and Intelligence"
+   ]
+  ],
+  [
+   [
+    "^xFFFF77Sorrow Dash, Warlock Boots",
+    "^x7F7F7FES: ^x8888FF291",
+    "^x33FF77+ ^x8888FF21% increased Cooldown Recovery Rate of Travel Skills",
+    "^x33FF77+ ^x8888FFDrops Brittle Ground while moving, lasting 4 seconds",
+    "^x33FF77> ^x8888FF+41 to maximum Energy Shield",
+    "^x33FF77+ ^x8888FF99% increased Energy Shield",
+    "^x33FF77> ^x8888FF+46% to Lightning Resistance",
+    "^x33FF77+ ^x8888FF+34% to Chaos Resistance",
+    "^xDD0022< ^x8888FF25% increased Movement Speed",
+    "^xDD0022< ^xB8DAF1+27% to Fire Resistance"
+   ],
+   [
+    "^xFFFF77Rift Spark, Paladin Boots",
+    "^x7F7F7FArmour: ^x8888FF644",
+    "^x7F7F7FES: ^x8888FF152",
+    "^x33FF77+ ^x8888FFRegenerate 0.2% of Life per second per Endurance Charge",
+    "^x33FF77+ ^x8888FF4% increased Action Speed",
+    "^x33FF77> ^xA2916035% increased Movement Speed",
+    "^x33FF77+ ^x8888FF+84 to Armour",
+    "^xDD0022< ^x8888FF+28 to maximum Energy Shield",
+    "^x33FF77> ^x8888FF+47% to Fire Resistance",
+    "^x33FF77+ ^x8888FF+47% to Cold Resistance",
+    "^xDD0022< ^x8888FF+36% to Lightning Resistance",
+    "^x33FF77+ ^xB8DAF173% increased Armour and Energy Shield"
+   ]
+  ],
+  [
+   [
+    "^xFFFF77Pain Torc, Focused Amulet",
+    "^x33FF77+ ^xB8DAF1Allocates Champion of the Cause",
+    "^x33FF77+ ^x8888FF-1 Prefix Modifier allowed",
+    "^x33FF77+ ^x8888FF-2 Suffix Modifiers allowed",
+    "^x33FF77+ ^x8888FFImplicit Modifiers Cannot Be Changed",
+    "^x33FF77+ ^x8888FF100% increased Explicit Modifier magnitudes",
+    "^x33FF77+ ^x8888FF+2 to Level of all Skill Gems",
+    "^x33FF77+ ^x8888FF+2 to Level of all Lightning Skill Gems",
+    "^x33FF77> ^xB8DAF1+28 to all Attributes"
+   ],
+   [
+    "^xAF6025Bonemeld, Marble Amulet",
+    "^x33FF77+ ^xB8DAF1Allocates Sione's Ambition",
+    "^x33FF77+ ^x8888FF4% Chance to Block Spell Damage",
+    "^xDD0022< ^x8888FF+24 to all Attributes",
+    "^x33FF77+ ^x8888FF+2 to Level of all Minion Skill Gems",
+    "^x33FF77+ ^x8888FF-2% to all Resistances per Minion from your Non-Vaal Skills",
+    "^x33FF77+ ^x8888FF4% increased Defences per Minion from your Non-Vaal Skills",
+    "^x33FF77+ ^x8888FFMinions gain added Resistances equal to 50% of your Resistances",
+    "^xDD0022Corrupted"
+   ]
+  ],
+  [
+   [
+    "^xFFFF77Loath Nail, Cogwork Ring",
+    "^x33FF77+ ^x8888FF-1 Prefix Modifier allowed",
+    "^x33FF77+ ^x8888FF+1 Suffix Modifier allowed",
+    "^x33FF77+ ^x8888FFImplicit Modifiers Cannot Be Changed",
+    "^x33FF77+ ^x8888FF25% increased Suffix Modifier magnitudes",
+    "^x33FF77+ ^x8888FF+23 to all Attributes",
+    "^x33FF77+ ^x8888FF+78 to Strength",
+    "^x33FF77+ ^x8888FF+73 to Dexterity",
+    "^x33FF77+ ^x8888FF+46 to maximum Energy Shield",
+    "^x33FF77+ ^x8888FF+18% to Chaos Resistance",
+    "^x33FF77+ ^xB8DAF1Non-Channelling Skills have -7 to Total Mana Cost"
+   ],
+   [
+    "^xFFFF77Loath Hold, Bone Ring",
+    "^x33FF77+ ^x8888FFMinions have +15% to all Elemental Resistances",
+    "^x33FF77+ ^xA29160-12 to Total Mana Cost of Skills",
+    "^x33FF77+ ^x8888FF+18% to Global Critical Strike Multiplier",
+    "^x33FF77+ ^x8888FF+15% to all Elemental Resistances",
+    "^x33FF77+ ^x8888FFMinions deal 32% increased Damage",
+    "^x33FF77+ ^x8888FFMinions have 14% increased Attack and Cast Speed",
+    "^x33FF77+ ^xB8DAF1+30 to maximum Energy Shield"
+   ]
+  ],
+  [
+   [
+    "^xFFFF77Brimstone Grasp, Amethyst Ring",
+    "^x33FF77+ ^x8888FF+23% to Chaos Resistance",
+    "^x33FF77+ ^x8888FF+128 to Evasion Rating",
+    "^x33FF77+ ^x8888FF15% increased maximum Energy Shield",
+    "^x33FF77+ ^x8888FF+30 to maximum Life",
+    "^x33FF77+ ^x8888FF+46% to Lightning Resistance",
+    "^x33FF77+ ^x8888FF+35% to Chaos Resistance",
+    "^x33FF77+ ^xB8DAF1+1 to Minimum Endurance Charges"
+   ],
+   [
+    "^xAF6025Prospero's Protection, Iron Ring",
+    "^x33FF77+ ^x8888FF+15% to all Elemental Resistances",
+    "^x33FF77+ ^x8888FFDetermination has 20% increased Mana Reservation Efficiency",
+    "^x33FF77+ ^x8888FF6% Chance to Block Attack Damage",
+    "^x33FF77+ ^x8888FF+35 to Strength",
+    "^x33FF77+ ^x8888FF+47 to maximum Life",
+    "^x33FF77+ ^x8888FFArmour from Equipped Shield is doubled",
+    "^x33FF77+ ^x8888FFGain no Armour from Equipped Body Armour",
+    "^xDD0022Corrupted"
+   ]
+  ],
+  [
+   [
+    "^xAF6025Ceinture of Benevolence, Cloth Belt",
+    "^x33FF77+ ^x8888FF30% increased Rarity of Items found",
+    "^x33FF77+ ^x8888FF12% increased Movement Speed during any Flask Effect",
+    "^x33FF77+ ^x8888FF+40 to Dexterity",
+    "^x33FF77+ ^x8888FF+60 to maximum Mana",
+    "^x33FF77+ ^x8888FF8% reduced Flask Charges used",
+    "^x33FF77+ ^x8888FFNon-Unique Utility Flasks you Use apply to Linked Targets",
+    "^xDD0022Corrupted"
+   ],
+   [
+    "^xFFFF77Rage Tether, Stygian Vise",
+    "^x33FF77+ ^x8888FFHas 1 Abyssal Socket",
+    "^x33FF77+ ^x8888FF+413 to Armour",
+    "^x33FF77+ ^x8888FF+41 to maximum Energy Shield",
+    "^x33FF77+ ^x8888FF+21% to Fire Resistance",
+    "^x33FF77+ ^x8888FF+42% to Cold Resistance",
+    "^x33FF77+ ^x8888FF+34% to Lightning Resistance",
+    "^x33FF77+ ^x8888FF42% increased Elemental Damage with Attack Skills"
+   ]
+  ],
+  [
+   [
+    "^8(empty)"
+   ],
+   [
+    "^xAF6025Bottled Faith, Sulphur Flask",
+    "^x7F7F7FDuration: ^x8888FF8.10s",
+    "^x7F7F7FCharges: ^x8888FF40/60",
+    "^x8888FF40% increased Damage",
+    "^x33FF77+ ^xF05050Used when you Hit a Rare or Unique Enemy, if not already in effect ^8(Not supported in PoB yet)",
+    "^x33FF77+ ^x8888FFCreates Consecrated Ground on Use",
+    "^x33FF77+ ^x8888FF16% reduced Duration",
+    "^x33FF77+ ^xF05050Consecrated Ground created by this Flask has Tripled Radius ^8(Not supported in PoB yet)",
+    "^x33FF77+ ^x8888FFConsecrated Ground created during Effect applies 9% increased Damage taken to Enemies",
+    "^x33FF77+ ^x8888FF143% increased Critical Strike Chance against Enemies on Consecrated Ground during Effect"
+   ]
+  ],
+  [
+   [
+    "^8(empty)"
+   ],
+   [
+    "^x8888FFSpecialist's Diamond Flask of Incision",
+    "^x7F7F7FDuration: ^x8888FF7.40s",
+    "^x7F7F7FCharges: ^x8888FF20/40",
+    "^x8888FF100% increased Global Critical Strike Chance",
+    "^x33FF77+ ^xF05050Used when Charges reach full ^8(Not supported in PoB yet)",
+    "^x33FF77+ ^x8888FF27% chance to gain a Flask Charge when you deal a Critical Strike",
+    "^x33FF77+ ^x8888FF54% increased Critical Strike Chance during Effect"
+   ]
+  ],
+  [
+   [
+    "^8(empty)"
+   ],
+   [
+    "^x8888FFMasochist's Quicksilver Flask of the Cheetah",
+    "^x7F7F7FDuration: ^x8888FF7.30s",
+    "^x7F7F7FCharges: ^x8888FF30/60",
+    "^x8888FF40% increased Movement Speed",
+    "^x33FF77+ ^xF05050Used when Charges reach full ^8(Not supported in PoB yet)",
+    "^x33FF77+ ^xF05050Gain 2 Charges when you are Hit by an Enemy ^8(Not supported in PoB yet)",
+    "^x33FF77+ ^x8888FF14% increased Movement Speed during Effect"
+   ]
+  ],
+  [
+   [
+    "^xFFFF77Rune Razor, Elegant Foil",
+    "^x7F7F7FPhys DPS: ^x8888FF53.0",
+    "^x7F7F7FEle DPS: ^x8888FF579.3",
+    "^x7F7F7FTotal DPS: ^x8888FF632.3",
+    "^x7F7F7FCrit: ^x8888FF7.59%",
+    "^x7F7F7FAPS: ^x8888FF2.08",
+    "^x33FF77+ ^xB8DAF1Quality does not increase Physical Damage",
+    "^x33FF77+ ^xB8DAF1+0.1 metres to Weapon Range per 10% Quality",
+    "^xDD0022< ^x8888FF+25% to Global Critical Strike Multiplier",
+    "^x33FF77+ ^xA29160Adds 21 to 301 Lightning Damage",
+    "^x33FF77+ ^x8888FFAdds 85 to 150 Cold Damage",
+    "^x33FF77> ^x8888FF30% increased Attack Speed",
+    "^x33FF77> ^x8888FF38% increased Critical Strike Chance",
+    "^x33FF77+ ^x8888FF+38% Critical Strike Multiplier while a Rare or Unique Enemy is Nearby",
+    "^x33FF77+ ^xB8DAF1Hits can't be Evaded",
+    "^xDD0022Split"
+   ],
+   [
+    "^xFFFF77Sol Bane, Kinetic Wand",
+    "^x7F7F7FPhys DPS: ^x8888FF146.6",
+    "^x7F7F7FEle DPS: ^x8888FF238.9",
+    "^x7F7F7FTotal DPS: ^x8888FF385.5",
+    "^x7F7F7FCrit: ^x8888FF11.05%",
+    "^x7F7F7FAPS: ^x8888FF1.81",
+    "^x33FF77+ ^x8888FFCannot roll Caster Modifiers",
+    "^x33FF77+ ^x8888FFAdds 20 to 32 Physical Damage",
+    "^x33FF77+ ^x8888FFAdds 102 to 162 Fire Damage",
+    "^xDD0022< ^x8888FF13% increased Attack Speed",
+    "^xDD0022< ^x8888FF30% increased Critical Strike Chance",
+    "^x33FF77> ^x8888FF+30% to Global Critical Strike Multiplier",
+    "^x33FF77+ ^xB8DAF164% increased Spell Damage"
+   ]
+  ],
+  [
+   [
+    "^xAF6025Aegis Aurora, Champion Kite Shield",
+    "^x7F7F7FArmour: ^x8888FF1408",
+    "^x7F7F7FES: ^x8888FF288",
+    "^x7F7F7FBlock: ^x8888FF32%",
+    "^x33FF77+ ^x8888FF5% Chance to Block Spell Damage",
+    "^x33FF77+ ^x8888FF389% increased Armour and Energy Shield",
+    "^x33FF77+ ^x8888FF+10% to all Elemental Resistances",
+    "^x33FF77+ ^x8888FF+5% to maximum Cold Resistance",
+    "^xDD0022< ^x8888FF+6% Chance to Block",
+    "^x33FF77+ ^x8888FFRecover Energy Shield equal to 2% of Armour when you Block",
+    "^x33FF77+ ^x8888FF19% increased Elemental Damage with Attack Skills",
+    "^xDD0022Corrupted"
+   ],
+   [
+    "^xAF6025Dawnbreaker, Colossal Tower Shield",
+    "^x7F7F7FArmour: ^x8888FF2379",
+    "^x7F7F7FBlock: ^x8888FF44%",
+    "^x33FF77+ ^x8888FF+16 to maximum Life",
+    "^x33FF77+ ^x8888FF243% increased Armour",
+    "^x33FF77> ^x8888FF+21% Chance to Block",
+    "^x33FF77+ ^xF05050-1% Chance to Block Attack Damage for every 200 Fire Damage taken from Hits Recently ^8(Not supported in PoB yet)",
+    "^x33FF77+ ^x8888FF14% of Cold Damage taken as Fire Damage",
+    "^x33FF77+ ^x8888FF14% of Lightning Damage taken as Fire Damage",
+    "^x33FF77+ ^x8888FF20% of Physical Damage taken as Fire Damage",
+    "^x33FF77+ ^x8888FFScorch Enemies in Close Range when you Block"
+   ]
+  ],
+  [
+   [
+    "^xFFFF77Hate Crest, Divine Crown",
+    "^x7F7F7FArmour: ^x8888FF1061",
+    "^x7F7F7FES: ^x8888FF237",
+    "^x33FF77+ ^x8888FF28% increased Mana Cost Efficiency",
+    "^x33FF77+ ^x8888FF7% of Physical Damage from Hits taken as Chaos Damage",
+    "^x33FF77> ^x8888FF+79 to Armour",
+    "^x33FF77+ ^x8888FF+27 to maximum Energy Shield",
+    "^x33FF77+ ^x8888FF+2 to Level of all Minion Skill Gems",
+    "^x33FF77+ ^x8888FF+47% to Cold Resistance",
+    "^x33FF77+ ^x8888FF+48% to Lightning Resistance",
+    "^x33FF77+ ^xB8DAF173% increased Armour and Energy Shield",
+    "^x33FF77+ ^x5CF0BB+32 to Strength and Intelligence"
+   ],
+   [
+    "^xFFFF77Woe Veil, Conqueror's Helmet",
+    "^x7F7F7FArmour: ^x8888FF746",
+    "^x33FF77+ ^x8888FFDamage Penetrates 5% Fire Resistance",
+    "^x33FF77+ ^x8888FF8% of Fire Damage taken Recouped as Life",
+    "^xDD0022< ^x8888FF+56 to Armour",
+    "^x33FF77+ ^x8888FF+138 to maximum Life",
+    "^x33FF77+ ^x8888FFRegenerate 90.5 Life per second",
+    "^x33FF77+ ^x8888FF+42% to Fire Resistance",
+    "^x33FF77+ ^xB8DAF1+15% to Fire and Chaos Resistances"
+   ]
+  ],
+  [
+   [
+    "^xFFFF77Dread Mantle, Twilight Regalia",
+    "^x7F7F7FES: ^x8888FF1326",
+    "^x33FF77+ ^xB8DAF18% increased Explicit Defence Modifier magnitudes",
+    "^x33FF77+ ^x8888FF11% of Physical Damage from Hits taken as Chaos Damage",
+    "^x33FF77+ ^x8888FF+23% to Critical Strike Multiplier for Attack Damage",
+    "^x33FF77+ ^xA2916010% increased Mana Reservation Efficiency of Skills",
+    "^x33FF77+ ^x8888FF+54 to Intelligence",
+    "^x33FF77+ ^x8888FF+101 to maximum Energy Shield",
+    "^x33FF77+ ^x8888FF157% increased Energy Shield",
+    "^x33FF77+ ^x8888FF18% increased Stun and Block Recovery",
+    "^x33FF77+ ^xB8DAF1Regenerate 150 Energy Shield per second while a Rare or Unique Enemy is Nearby",
+    "^xDD0022Split"
+   ],
+   [
+    "^xAF6025Cloak of Flame, Scholar's Robe",
+    "^x7F7F7FES: ^x8888FF58",
+    "^x33FF77+ ^x8888FF+75% to Fire Resistance",
+    "^x33FF77+ ^x8888FF40% increased Ignite Duration on Enemies",
+    "^x33FF77+ ^xF05050Reflects 100 Fire Damage to Melee Attackers ^8(Not supported in PoB yet)",
+    "^x33FF77+ ^x8888FF40% of Physical Damage taken as Fire Damage"
+   ]
+  ],
+  [
+   [
+    "^xFFFF77Rune Mitts, Martyr Gloves",
+    "^x7F7F7FArmour: ^x8888FF478",
+    "^x7F7F7FES: ^x8888FF117",
+    "^x33FF77+ ^x8888FF11% increased Effect of your Marks",
+    "^x33FF77+ ^x8888FFNon-Vaal Strike Skills target 2 additional nearby Enemies",
+    "^x33FF77> ^xA29160+46% to Fire Resistance",
+    "^x33FF77+ ^xA2916045 to 77 added Fire Damage against Burning Enemies",
+    "^x33FF77+ ^x8888FF12% increased Attack Speed",
+    "^x33FF77+ ^x8888FF+38 to Armour",
+    "^x33FF77+ ^x8888FF77% increased Armour and Energy Shield",
+    "^x33FF77+ ^x8888FF+17 to maximum Energy Shield",
+    "^x33FF77+ ^x8888FFMinions deal 29% increased Damage",
+    "^x33FF77+ ^xB8DAF1+25 to Strength and Intelligence"
+   ],
+   [
+    "^xFFFF77Maelstrom Palm, Murder Mitts",
+    "^x7F7F7FEvasion: ^x8888FF160",
+    "^x7F7F7FES: ^x8888FF32",
+    "^x33FF77+ ^x8888FFInflict Fire Exposure on Hit, applying -11% to Fire Resistance",
+    "^x33FF77+ ^xF0505015% chance to Intimidate Enemies for 4 seconds on Hit ^8(Not supported in PoB yet)",
+    "^x33FF77+ ^x8888FF+53 to Dexterity",
+    "^x33FF77+ ^x8888FFAdds 1 to 33 Lightning Damage to Attacks",
+    "^x33FF77+ ^x8888FF+79 to maximum Life",
+    "^x33FF77+ ^x8888FF+64 to maximum Mana",
+    "^xDD0022< ^x8888FF+43% to Fire Resistance",
+    "^x33FF77+ ^xB8DAF1+15% to Fire and Chaos Resistances"
+   ]
+  ],
+  [
+   [
+    "^xFFFF77Rift Spark, Paladin Boots",
+    "^x7F7F7FArmour: ^x8888FF644",
+    "^x7F7F7FES: ^x8888FF152",
+    "^x33FF77+ ^x8888FFRegenerate 0.2% of Life per second per Endurance Charge",
+    "^x33FF77+ ^x8888FF4% increased Action Speed",
+    "^x33FF77> ^xA2916035% increased Movement Speed",
+    "^x33FF77+ ^x8888FF+84 to Armour",
+    "^x33FF77+ ^x8888FF+28 to maximum Energy Shield",
+    "^xDD0022< ^x8888FF+47% to Fire Resistance",
+    "^x33FF77+ ^x8888FF+47% to Cold Resistance",
+    "^x33FF77+ ^x8888FF+36% to Lightning Resistance",
+    "^x33FF77+ ^xB8DAF173% increased Armour and Energy Shield"
+   ],
+   [
+    "^xFFFF77Blight Goad, Two-Toned Boots",
+    "^x7F7F7FArmour: ^x8888FF168",
+    "^x7F7F7FES: ^x8888FF35",
+    "^x33FF77+ ^x8888FF7% increased Life Regeneration rate",
+    "^xDD0022< ^x8888FF+18% to Fire Resistance",
+    "^x33FF77+ ^x8888FF+99 to maximum Life",
+    "^x33FF77+ ^x8888FFRegenerate 41.7 Life per second",
+    "^x33FF77+ ^x8888FF+64 to maximum Mana",
+    "^x33FF77> ^x8888FF+48% to Fire Resistance",
+    "^xDD0022< ^x8888FF20% increased Movement Speed",
+    "^x33FF77+ ^xB8DAF1+15% to Fire and Chaos Resistances"
+   ]
+  ],
+  [
+   [
+    "^xAF6025Bonemeld, Marble Amulet",
+    "^x33FF77+ ^xB8DAF1Allocates Sione's Ambition",
+    "^x33FF77+ ^x8888FF4% Chance to Block Spell Damage",
+    "^x33FF77+ ^x8888FF+24 to all Attributes",
+    "^x33FF77+ ^x8888FF+2 to Level of all Minion Skill Gems",
+    "^x33FF77+ ^x8888FF-2% to all Resistances per Minion from your Non-Vaal Skills",
+    "^x33FF77+ ^x8888FF4% increased Defences per Minion from your Non-Vaal Skills",
+    "^x33FF77+ ^x8888FFMinions gain added Resistances equal to 50% of your Resistances",
+    "^xDD0022Corrupted"
+   ],
+   [
+    "^xAF6025Foulborn Xoph's Heart, Amber Amulet",
+    "^x33FF77+ ^xB8DAF1Allocates Surveillance",
+    "^x33FF77+ ^x8888FF+30 to Strength",
+    "^x33FF77+ ^x8888FF+30 to Strength",
+    "^x33FF77+ ^x8888FF25% increased Fire Damage",
+    "^x33FF77+ ^x8888FF+25 to maximum Life",
+    "^x33FF77+ ^x8888FFNearby Enemies are Covered in Ash",
+    "^x33FF77+ ^xCD228515% of Physical Damage from Hits taken as Fire Damage"
+   ]
+  ],
+  [
+   [
+    "^xFFFF77Loath Hold, Bone Ring",
+    "^x33FF77+ ^x8888FFMinions have +15% to all Elemental Resistances",
+    "^x33FF77+ ^xA29160-12 to Total Mana Cost of Skills",
+    "^x33FF77+ ^x8888FF+18% to Global Critical Strike Multiplier",
+    "^x33FF77+ ^x8888FF+15% to all Elemental Resistances",
+    "^x33FF77+ ^x8888FFMinions deal 32% increased Damage",
+    "^x33FF77+ ^x8888FFMinions have 14% increased Attack and Cast Speed",
+    "^x33FF77+ ^xB8DAF1+30 to maximum Energy Shield"
+   ],
+   [
+    "^xFFFF77Grim Knuckle, Enthalpic Ring",
+    "^x33FF77+ ^x8888FF+2% to maximum Fire Resistance",
+    "^x33FF77+ ^x8888FFCannot roll Modifiers of Non-Fire Damage Types",
+    "^x33FF77+ ^x8888FF+53 to Dexterity",
+    "^x33FF77+ ^x8888FFAdds 24 to 42 Fire Damage to Attacks",
+    "^x33FF77+ ^x8888FF+69 to maximum Life",
+    "^x33FF77+ ^x8888FF+49 to maximum Mana",
+    "^x33FF77+ ^x8888FF+36% to Fire Resistance",
+    "^x33FF77+ ^xB8DAF1+15% to Fire and Chaos Resistances"
+   ]
+  ],
+  [
+   [
+    "^xAF6025Prospero's Protection, Iron Ring",
+    "^x33FF77+ ^x8888FF+15% to all Elemental Resistances",
+    "^x33FF77+ ^x8888FFDetermination has 20% increased Mana Reservation Efficiency",
+    "^x33FF77+ ^x8888FF6% Chance to Block Attack Damage",
+    "^x33FF77+ ^x8888FF+35 to Strength",
+    "^x33FF77+ ^x8888FF+47 to maximum Life",
+    "^x33FF77+ ^x8888FFArmour from Equipped Shield is doubled",
+    "^x33FF77+ ^x8888FFGain no Armour from Equipped Body Armour",
+    "^xDD0022Corrupted"
+   ],
+   [
+    "^xFFFF77Dire Loop, Ruby Ring",
+    "^x33FF77+ ^x8888FF+30% to Fire Resistance",
+    "^x33FF77+ ^x8888FF+30 to maximum Energy Shield",
+    "^x33FF77+ ^x8888FF+104 to maximum Life",
+    "^x33FF77+ ^x8888FF+41 to maximum Mana",
+    "^x33FF77+ ^x8888FF+46% to Fire Resistance",
+    "^x33FF77+ ^x8888FF+26% to Chaos Resistance",
+    "^x33FF77+ ^xB8DAF1+15% to Fire and Chaos Resistances"
+   ]
+  ],
+  [
+   [
+    "^xFFFF77Rage Tether, Stygian Vise",
+    "^x33FF77+ ^x8888FFHas 1 Abyssal Socket",
+    "^x33FF77> ^x8888FF+413 to Armour",
+    "^x33FF77+ ^x8888FF+41 to maximum Energy Shield",
+    "^xDD0022< ^x8888FF+21% to Fire Resistance",
+    "^x33FF77+ ^x8888FF+42% to Cold Resistance",
+    "^x33FF77+ ^x8888FF+34% to Lightning Resistance",
+    "^x33FF77> ^x8888FF42% increased Elemental Damage with Attack Skills"
+   ],
+   [
+    "^xFFFF77Dire Leash, Heavy Belt",
+    "^x33FF77+ ^x8888FF+35 to Strength",
+    "^xDD0022< ^x8888FF+84 to Armour",
+    "^x33FF77+ ^x8888FF+103 to maximum Life",
+    "^x33FF77+ ^x8888FFRegenerate 55.2 Life per second",
+    "^x33FF77> ^x8888FF+46% to Fire Resistance",
+    "^x33FF77+ ^x8888FF+31% to Chaos Resistance",
+    "^xDD0022< ^xB8DAF129% increased Elemental Damage with Attack Skills"
+   ]
+  ],
+  [
+   [
+    "^xAF6025Bottled Faith, Sulphur Flask",
+    "^x7F7F7FDuration: ^x8888FF8.10s",
+    "^x7F7F7FCharges: ^x8888FF40/60",
+    "^x8888FF40% increased Damage",
+    "^x33FF77+ ^xF05050Used when you Hit a Rare or Unique Enemy, if not already in effect ^8(Not supported in PoB yet)",
+    "^x33FF77+ ^x8888FFCreates Consecrated Ground on Use",
+    "^x33FF77+ ^x8888FF16% reduced Duration",
+    "^x33FF77+ ^xF05050Consecrated Ground created by this Flask has Tripled Radius ^8(Not supported in PoB yet)",
+    "^x33FF77+ ^x8888FFConsecrated Ground created during Effect applies 9% increased Damage taken to Enemies",
+    "^x33FF77+ ^x8888FF143% increased Critical Strike Chance against Enemies on Consecrated Ground during Effect"
+   ],
+   [
+    "^x8888FFEbullient Divine Life Flask of Sealing",
+    "^x7F7F7FLife: ^x8888FF1440 ^x7F7F7F(1.5s)",
+    "^x7F7F7FCharges: ^x8888FF15/45",
+    "^x33FF77+ ^x8888FF50% reduced Amount Recovered",
+    "^x33FF77+ ^x8888FF135% increased Recovery rate",
+    "^x33FF77+ ^x8888FF50% of Recovery applied Instantly",
+    "^x33FF77+ ^x8888FFGrants Immunity to Bleeding for 8 seconds if used while Bleeding",
+    "^x33FF77+ ^x8888FFGrants Immunity to Corrupted Blood for 8 seconds if used while affected by Corrupted Blood"
+   ]
+  ],
+  [
+   [
+    "^x8888FFSpecialist's Diamond Flask of Incision",
+    "^x7F7F7FDuration: ^x8888FF7.40s",
+    "^x7F7F7FCharges: ^x8888FF20/40",
+    "^x8888FF100% increased Global Critical Strike Chance",
+    "^x33FF77+ ^xF05050Used when Charges reach full ^8(Not supported in PoB yet)",
+    "^x33FF77+ ^x8888FF27% chance to gain a Flask Charge when you deal a Critical Strike",
+    "^x33FF77+ ^x8888FF54% increased Critical Strike Chance during Effect"
+   ],
+   [
+    "^x8888FFSeething Divine Life Flask of Warding",
+    "^x7F7F7FLife: ^x8888FF979 ^x7F7F7F(3.5s)",
+    "^x7F7F7FCharges: ^x8888FF15/45",
+    "^x33FF77+ ^x8888FF66% reduced Amount Recovered",
+    "^x33FF77+ ^x8888FFInstant Recovery",
+    "^x33FF77+ ^x8888FFRemoves Curses on use"
+   ]
+  ],
+  [
+   [
+    "^x8888FFMasochist's Quicksilver Flask of the Cheetah",
+    "^x7F7F7FDuration: ^x8888FF7.30s",
+    "^x7F7F7FCharges: ^x8888FF30/60",
+    "^x8888FF40% increased Movement Speed",
+    "^x33FF77+ ^xF05050Used when Charges reach full ^8(Not supported in PoB yet)",
+    "^x33FF77+ ^xF05050Gain 2 Charges when you are Hit by an Enemy ^8(Not supported in PoB yet)",
+    "^x33FF77+ ^x8888FF14% increased Movement Speed during Effect"
+   ],
+   [
+    "^x8888FFSeething Divine Life Flask of Thermodynamics",
+    "^x7F7F7FLife: ^x8888FF979 ^x7F7F7F(3.5s)",
+    "^x7F7F7FCharges: ^x8888FF15/45",
+    "^x33FF77+ ^x8888FF66% reduced Amount Recovered",
+    "^x33FF77+ ^x8888FFInstant Recovery",
+    "^x33FF77+ ^x8888FFGrants Immunity to Chill for 11 seconds if used while Chilled",
+    "^x33FF77+ ^x8888FFGrants Immunity to Freeze for 11 seconds if used while Frozen"
+   ]
+  ],
+  [
+   [
+    "^xAF6025Honourhome, Soldier Helmet",
+    "^x7F7F7FArmour: ^x8888FF98",
+    "^x7F7F7FES: ^x8888FF24",
+    "^x8888FF+2 to Level of Socketed Lightning Gems",
+    "^x8888FF+2 to Level of Socketed Gems",
+    "^x8888FFAdds 1 to 30 Lightning Damage to Spells and Attacks",
+    "^x8888FF139% increased Armour and Energy Shield",
+    "^x8888FF11% increased Rarity of Items found",
+    "^x8888FF47% increased Mana Cost Efficiency",
+    "^xDD0022Corrupted"
+   ],
+   [
+    "^xAF6025Honourhome, Soldier Helmet",
+    "^x7F7F7FArmour: ^x8888FF98",
+    "^x7F7F7FES: ^x8888FF24",
+    "^x8888FF+2 to Level of Socketed Lightning Gems",
+    "^x8888FF+2 to Level of Socketed Gems",
+    "^x8888FFAdds 1 to 30 Lightning Damage to Spells and Attacks",
+    "^x8888FF139% increased Armour and Energy Shield",
+    "^x8888FF11% increased Rarity of Items found",
+    "^x8888FF47% increased Mana Cost Efficiency",
+    "^xDD0022Corrupted"
+   ]
+  ],
+  [
+   [
+    "^xFFFF77Golem Curtain, Wyrmscale Doublet",
+    "^x7F7F7FArmour: ^x8888FF377",
+    "^x7F7F7FEvasion: ^x8888FF377",
+    "^x33FF77+ ^x8888FF+27 to Strength",
+    "^x33FF77+ ^x8888FF+9 to Dexterity",
+    "^x33FF77+ ^x8888FF25% increased Armour and Evasion",
+    "^x33FF77+ ^x8888FF+22% to Fire Resistance",
+    "^x33FF77+ ^x8888FF10% increased Stun and Block Recovery",
+    "^x33FF77+ ^xB8DAF141% increased Armour and Evasion"
+   ],
+   [
+    "^8(empty)"
+   ]
+  ]
+ ]
+}

@@ -14,3 +14,18 @@ var capitalEachRegex = regexp.MustCompile(`(^\w|\s\w)`)
 func CapitalEach(s string) string {
 	return capitalEachRegex.ReplaceAllStringFunc(s, strings.ToUpper)
 }
+
+var (
+	gggColourTagRegex  = regexp.MustCompile(`<[^>]+>\{([^}]+)\}`)
+	gggKeywordRegex    = regexp.MustCompile(`\[([^|\]]+)\]`)
+	gggKeywordAltRegex = regexp.MustCompile(`\[[^|]+\|([^|]+)\]`)
+)
+
+// Removes GGG string tags used for keyword popups. E.g. "[Critical|Critical Hit]" -> "Critical Hit"
+//
+//pob:src/Modules/Common.lua:1048-1054
+func EscapeGGGString(text string) string {
+	line := gggColourTagRegex.ReplaceAllString(text, "${1}")
+	line = gggKeywordRegex.ReplaceAllString(line, "${1}")
+	return gggKeywordAltRegex.ReplaceAllString(line, "${1}")
+}

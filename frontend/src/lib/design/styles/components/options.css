@@ -1,0 +1,58 @@
+@layer components {
+  .option-group {
+    @apply mb-2.5 flex break-inside-avoid flex-col rounded-md border border-line bg-surface-1;
+  }
+  .option-head {
+    @apply flex justify-between gap-1.5 border-b border-line px-2.5 py-1.75 text-11 font-bold tracking-caps text-text-2 uppercase;
+  }
+  .option-count {
+    @apply font-normal tracking-normal normal-case text-(--tone,var(--color-text-3));
+  }
+  .option-row {
+    @apply flex items-center justify-between gap-2 border-b border-surface-2 px-2.5 py-1.25 text-12 text-text;
+  }
+  .option-more {
+    @apply px-2.5 py-1.25 text-11 text-text-3;
+  }
+  .list-option {
+    @apply flex items-center gap-2 rounded border border-transparent px-2 py-1.5 aria-selected:border-accent aria-selected:bg-surface-3;
+  }
+  .list-option:has(> [aria-current='true']) {
+    @apply border-accent bg-surface-3;
+  }
+  .list-option-btn {
+    @apply min-w-0 flex-[1_1_0] truncate border-0 bg-transparent p-0 text-left font-sans text-12 text-(--tone,var(--color-text));
+  }
+
+  .mod-cell {
+    @apply box-border flex h-7.5 items-center gap-1 rounded border border-line bg-ground px-1.5 font-mono text-12;
+  }
+  .mod-cell[data-hover='true'] {
+    @apply border-better;
+  }
+  .mod-cell[data-k='bad'] {
+    @apply border-bad-line;
+  }
+  .mod-cell-text {
+    @apply text-text;
+  }
+  .mod-cell[data-k='comment'] .mod-cell-text,
+  .mod-cell[data-k='empty'] .mod-cell-text {
+    @apply text-text-4;
+  }
+  .mod-cell[data-k='bad'] .mod-cell-text {
+    @apply text-worse underline decoration-worse decoration-wavy underline-offset-3;
+  }
+  .mod-cell[data-off='true'] .mod-cell-text {
+    @apply text-text-4 line-through decoration-current decoration-solid;
+  }
+  .mod-cell-badge {
+    @apply rounded-lg bg-surface-2 px-1.5 py-px font-sans text-10 font-semibold text-text-3;
+  }
+  .mod-cell[data-k='ok'] .mod-cell-badge {
+    @apply bg-info-bg text-better;
+  }
+  .mod-cell[data-k='bad'] .mod-cell-badge {
+    @apply bg-warn-bg text-worse;
+  }
+}

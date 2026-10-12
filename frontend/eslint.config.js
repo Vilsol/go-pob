@@ -32,7 +32,6 @@ export default tseslint.config(
       'no-use-before-define': 'error',
       'dot-notation': 'error',
       'no-async-promise-executor': 'off',
-      // Maybe review in future
       '@typescript-eslint/no-misused-promises': 'off'
     }
   },
@@ -57,7 +56,7 @@ export default tseslint.config(
     }
   },
   {
-    files: ['**/*.svelte'],
+    files: ['**/*.svelte', '**/*.svelte.ts'],
     languageOptions: {
       parserOptions: {
         extraFileExtensions: ['.svelte'],
@@ -65,7 +64,6 @@ export default tseslint.config(
       }
     },
     rules: {
-      // These are broken due to $props() right now
       '@typescript-eslint/no-unsafe-assignment': 'off',
       'prefer-const': 'off'
     }
@@ -77,13 +75,14 @@ export default tseslint.config(
       '.env.*',
       '.env',
       '.svelte-kit/',
+      '.storybook/',
+      'storybook-static/',
       'build/',
       'dist/',
       'node_modules',
       'package-lock.json',
       'package/',
-      'pnpm-lock.yaml',
-      'static/tinymce/'
+      'pnpm-lock.yaml'
     ]
   }
 );

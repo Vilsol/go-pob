@@ -1,0 +1,17 @@
+Item Class: Utility Flasks
+Rarity: Magic
+Chemist's Granite Flask of the Armadillo
+--------
+Quality: +20% (augmented)
+Lasts 4.80 (augmented) Seconds
+Consumes 25 of 50 Charges on use
+Currently has 50 Charges
++1500 to Armour
+--------
+Requirements:
+Level: 27
+--------
+Item Level: 84
+--------
+20% reduced Charges per use
++41% to Armour during Effect

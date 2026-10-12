@@ -1,0 +1,32 @@
+name: Bug Report
+description: Something calculates or behaves differently from Path of Building, or breaks.
+labels: [bug]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: Where did it happen?
+      description: pob.gg (release) or dev.pob.gg (rolling), and the version shown in About.
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what did you expect?
+      description: For a wrong number, say which stat, our value and Path of Building's value.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+    validations:
+      required: false
+  - type: textarea
+    id: build
+    attributes:
+      label: Build code
+      description: From the Import / Export page, or a pobb.in link.
+      render: text
+    validations:
+      required: false

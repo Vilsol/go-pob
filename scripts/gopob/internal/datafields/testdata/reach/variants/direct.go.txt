@@ -1,0 +1,7 @@
+package app
+
+import "github.com/Vilsol/go-pob-data/poe"
+
+func Direct(r *poe.Row) int {
+	return r.GetHidden()
+}

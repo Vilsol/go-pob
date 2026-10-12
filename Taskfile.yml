@@ -2,14 +2,20 @@ version: '3'
 
 interval: 250ms
 
+env:
+  GOFLAGS: -trimpath
+
+vars:
+  POB_DEFAULT:
+    sh: 'realpath "$(git rev-parse --git-common-dir)/../../PathOfBuilding" 2>/dev/null || echo ../PathOfBuilding'
+  GOPOB: 'go run {{.ROOT_DIR}}/scripts/gopob'
+  NICE: '{{.GOPOB}} nice'
+
 tasks:
   build-go:
     desc: "Build Go WASM binary and place it in the frontend"
-    env:
-      GOOS: js
-      GOARCH: wasm
     cmds:
-      - go build -v -o frontend/static/go-pob.wasm ./wasm
+      - '{{.NICE}} env GOOS=js GOARCH=wasm go build -v -o frontend/static/go-pob.wasm ./wasm'
     generates:
       - frontend/static/go-pob.wasm
 
@@ -17,13 +23,13 @@ tasks:
     desc: "Build JS frontend"
     dir: ./frontend/
     cmds:
-      - pnpm install
-      - pnpm run build
+      - '{{.NICE}} pnpm install'
+      - '{{.NICE}} pnpm run build'
 
   generate-typings:
-    desc: "Generate JS typings"
+    desc: "Generate the crystalline bindings, JS module and TS typings"
     cmds:
-      - go run tools.go types
+      - '{{.NICE}} go generate ./wasm/exposition'
 
   generate:
     desc: "Run all generate commands"
@@ -40,8 +46,34 @@ tasks:
     desc: "Frontend dev command (live updates)"
     dir: ./frontend/
     cmds:
-      - pnpm install
-      - pnpm run dev --clearScreen false
+      - '{{.NICE}} pnpm install'
+      - '{{.NICE}} pnpm run dev --clearScreen false'
+
+  storybook:
+    desc: "Storybook for the design-spec components (http://localhost:6006)"
+    dir: ./frontend/
+    cmds:
+      - '{{.NICE}} pnpm run storybook'
+
+  storybook-tests:
+    desc: "Every story as a browser test: renders, play function, a11y (axe)"
+    dir: ./frontend/
+    cmds:
+      - '{{.NICE}} npx vitest run --project storybook'
+
+  design-fixtures:
+    desc: "Regenerate the Storybook shell's sample data from real corpus builds (CHECK=1 fails on drift instead)"
+    deps: [build-go]
+    dir: ./frontend/
+    cmds:
+      - '{{.NICE}} node harness/design_fixtures.js {{if .CHECK}}--check{{end}}'
+
+  storybook-publish:
+    desc: "Build the static Storybook and publish it to Chromatic (token: CHROMATIC_PROJECT_TOKEN in frontend/.env.local)"
+    dir: ./frontend/
+    cmds:
+      - '{{.NICE}} pnpm run build-storybook'
+      - 'set -a && . ./.env.local && set +a && {{.NICE}} pnpm dlx chromatic@18.10.1 --storybook-build-dir storybook-static --exit-zero-on-changes --exit-once-uploaded'
 
   dev-go:
     desc: "Go WASM dev command (live updates)"
@@ -57,13 +89,90 @@ tasks:
   test-go:
     desc: "Run all Go tests"
     cmds:
-      - go test -v ./...
-  
+      - '{{.NICE}} go test -v ./...'
+
+  test-fast:
+    desc: "Tier 1: every test that does NOT need the corpus (~1m44s, 12 red at base, measured 2026-09-08). Run this per fix."
+    cmds:
+      - 'env -u CORPUS {{.NICE}} go test ./...'
+
+  gate:
+    desc: "Tier 2: the AUTHORITATIVE accuracy gate alone (~16s, GREEN at base). The number, without the sweeps."
+    cmds:
+      - 'CORPUS=true {{.NICE}} go test ./calculator/ -run TestCorpus3_29VsOracle -count=1 -v -timeout 60m'
+
+  gate-tight:
+    desc: "The gate's pairs graded at relative 1e-9 (sub-tolerance drift the gate passes); asserts a miss ceiling. WORKLIST=<dir> writes stats.tsv / builds.tsv."
+    cmds:
+      - 'CORPUS=true {{.NICE}} go test ./calculator/ -run "^TestOracle329TightTolerance$" -count=1 -v -timeout 60m'
+
+  test-full:
+    desc: "Tier 3: everything, incl. the ~22 corpus sweeps (~9 min, re-measure: this figure has not been checked since the corpus promotion). Once per batch."
+    cmds:
+      - 'CORPUS=true {{.NICE}} go test ./... -count=1 -v -timeout 60m'
+
   test-frontend:
     desc: "Run all frontend tests"
     dir: ./frontend/
     cmds:
-      - pnpm run test
+      - '{{.NICE}} pnpm run test'
+
+  write-path:
+    desc: "Assert a mutation through the JS surface reaches Go, and a no-op load/save changes nothing"
+    deps: [build-go]
+    dir: ./frontend/
+    cmds:
+      - '{{.NICE}} node harness/write_path.mjs'
+
+  component-tests:
+    desc: "Mount the real Svelte pages against the real worker and assert in Go"
+    deps: [build-go]
+    dir: ./frontend/
+    cmds:
+      - '{{.NICE}} npx vitest run harness/component _mount.test.ts'
+
+  e2e:
+    desc: "Playwright journeys, properties and model-based sequences on a targeted build set, with a perf baseline"
+    deps: [build-go]
+    dir: ./frontend/
+    cmds:
+      - '{{.NICE}} gzip -kf9 static/go-pob.wasm'
+      - '{{.NICE}} npx vite build --logLevel warn'
+      - '{{.NICE}} env E2E_BASELINE={{.E2E_BASELINE | default "0"}} npx playwright test -c e2e/playwright.config.ts {{.CLI_ARGS}}'
+
+  tree-bench:
+    desc: "The tree renderer's benchmark and draw-list equivalence check alone (a subset of task e2e); E2E_GPU=1 runs WebGL on the host GPU"
+    deps: [build-go]
+    dir: ./frontend/
+    cmds:
+      - '{{.NICE}} gzip -kf9 static/go-pob.wasm'
+      - '{{.NICE}} npx vite build --logLevel warn'
+      - '{{.NICE}} npx playwright test -c e2e/playwright.config.ts e2e/tree {{.CLI_ARGS}}'
+
+  e2e-baseline:
+    desc: "Run task e2e and rewrite the committed frontend/e2e/perf-baseline.json (a deliberate, reviewed change)"
+    cmds:
+      - task: e2e
+        vars: {E2E_BASELINE: "1"}
+
+  load-waterfall:
+    desc: "Page-load waterfall, cold and warm, per network profile (PROFILES=local,broadband,mobile RUNS=n APP_HOST=gh|cf); rows in frontend/e2e/.results/load-waterfall.jsonl"
+    deps: [build-go]
+    dir: ./frontend/
+    vars:
+      APP_HOST: '{{.APP_HOST | default "gh"}}'
+    cmds:
+      - '{{.NICE}} gzip -kf9 static/go-pob.wasm'
+      - '{{if eq .APP_HOST "cf"}}{{.NICE}} node scripts/compress-wasm.mjs{{else}}true{{end}}'
+      - '{{.NICE}} env {{if eq .APP_HOST "cf"}}VITE_WASM_FILE=go-pob.wasm.br{{end}} npx vite build --logLevel warn'
+      - '{{.NICE}} env APP_HOST={{.APP_HOST}} PROFILES={{.PROFILES | default "local,broadband,mobile"}} RUNS={{.RUNS | default "1"}} npx playwright test -c e2e/load/playwright.load.config.ts {{.CLI_ARGS}}'
+
+  encoding-compat:
+    desc: "Which decompression each engine (Chromium, Firefox, WebKit) does natively, over HTTP and HTTPS; rows in frontend/e2e/.results/encoding-compat.jsonl"
+    dir: ./frontend/
+    cmds:
+      - rm -f e2e/.results/encoding-compat.jsonl
+      - '{{.NICE}} npx playwright test -c e2e/load/playwright.compat.config.ts {{.CLI_ARGS}}'
 
   test:
     desc: "Run all tests"
@@ -73,13 +182,13 @@ tasks:
   lint-go:
     desc: "Lint all Go code"
     cmds:
-      - golangci-lint run
+      - '{{.NICE}} golangci-lint run'
 
   lint-frontend:
     desc: "Lint frontend"
     dir: ./frontend/
     cmds:
-      - pnpm run lint
+      - '{{.NICE}} pnpm run lint'
 
   lint:
     desc: "Lint everything"
@@ -90,13 +199,13 @@ tasks:
   format-go:
     desc: "Format all Go code"
     cmds:
-      - golangci-lint run --fix
+      - '{{.NICE}} golangci-lint run --fix'
 
   format-frontend:
     desc: "Format frontend"
     dir: ./frontend/
     cmds:
-      - pnpm run format
+      - '{{.NICE}} pnpm run format'
 
   format:
     desc: "Format everything"
@@ -104,9 +213,702 @@ tasks:
       - task: format-go
       - task: format-frontend
 
+  oracle:
+    desc: "Regenerate EVERY testdata/oracle/ expectation from headless Path of Building (set POB_DIR)"
+    vars:
+      POB: '{{.POB_DIR | default .POB_DEFAULT}}'
+      HERE:
+        sh: pwd
+    dir: '{{.POB}}/src'
+    cmds:
+      - '{{.NICE}} mise x -- luajit {{.HERE}}/oracle/item_tools.lua {{.HERE}}/testdata/oracle/item_tools_cases.json {{.HERE}}/testdata/oracle/item_tools_expected.json'
+      - '{{.NICE}} mise x -- luajit {{.HERE}}/oracle/build_stats.lua {{.HERE}}/testdata/many-builds {{.HERE}}/testdata/oracle/many_builds_expected.json'
+      - '{{.NICE}} mise x -- luajit {{.HERE}}/oracle/jewel_radius.lua {{.HERE}}/testdata/oracle/jewel_radius_expected.json'
+      - '{{.NICE}} mise x -- luajit {{.HERE}}/oracle/item_modlist.lua {{.HERE}}/testdata/oracle/item_parse_cases.json {{.HERE}}/testdata/oracle/item_modlist_expected.json'
+      - '{{.NICE}} mise x -- luajit {{.HERE}}/oracle/item_data.lua {{.HERE}}/testdata/oracle/item_parse_cases.json {{.HERE}}/testdata/oracle/item_data_expected.json'
+      - '{{.NICE}} mise x -- luajit {{.HERE}}/oracle/item_bases.lua {{.HERE}}/testdata/oracle/item_bases_cases.json {{.HERE}}/testdata/oracle/item_bases_expected.json'
+      - '{{.NICE}} mise x -- luajit {{.HERE}}/oracle/item_parse.lua {{.HERE}}/testdata/oracle/item_parse_cases.json {{.HERE}}/testdata/oracle/item_parse_expected.json'
+      - '{{.NICE}} mise x -- luajit {{.HERE}}/oracle/mod_parse.lua {{.HERE}}/testdata/oracle/item_parse_cases.json {{.HERE}}/testdata/oracle/mod_parse_expected.json'
+
+  oracle-mod-scalability:
+    desc: "Re-record the ground truth for ApplyRange's data.modScalability arm"
+    vars:
+      POB: '{{.POB_DIR | default .POB_DEFAULT}}'
+      HERE:
+        sh: pwd
+    dir: '{{.POB}}/src'
+    cmds:
+      - '{{.NICE}} mise x -- luajit {{.HERE}}/oracle/mod_scalability_cases.lua {{.HERE}}/testdata/oracle/mod_scalability_cases.json {{.HERE}}/testdata/oracle/mod_scalability_expected.json'
+      - '{{.NICE}} go test {{.HERE}}/data/ -run TestApplyRangeScalabilityAgainstPoB -v'
+
+  config-ui-oracles:
+    desc: "Regenerate the config page's option list and the custom-mod parse fixture from the pinned PoB"
+    vars:
+      POB:
+        sh: 'realpath "{{.POB_DIR | default .POB_DEFAULT}}"'
+      HERE:
+        sh: pwd
+    cmds:
+      - '{{.NICE}} mise x --cd {{.POB}}/src -- luajit {{.HERE}}/oracle/config_options.lua {{.HERE}}/frontend/src/lib/display/config_options_generated.ts'
+      - '{{.NICE}} mise x --cd {{.POB}}/src -- luajit {{.HERE}}/oracle/custom_mod_lines.lua {{.HERE}}/testdata/oracle/custom_mod_lines_cases.txt {{.HERE}}/testdata/oracle/custom_mod_lines_expected.json'
+
+  rich-notes-pob:
+    desc: "Rewrite the go-pob-written <RichNotes> build fixture and record what the pinned PoB reads from it"
+    vars:
+      POB:
+        sh: 'realpath "{{.POB_DIR | default .POB_DEFAULT}}"'
+      HERE:
+        sh: pwd
+    cmds:
+      - '{{.NICE}} env RICH_NOTES_WRITE_FIXTURE=1 go test ./builds/ -run TestRichNotesPoBLoadFixtureIsCurrent -count=1'
+      - '{{.NICE}} mise x --cd {{.POB}}/src -- luajit {{.HERE}}/oracle/rich_notes_pob_load.lua {{.HERE}}/testdata/notes/rich-notes-pob-load.xml {{.HERE}}/testdata/oracle/rich_notes_pob_load.json'
+      - '{{.NICE}} go test ./builds/ -run TestRichNotesLoadInPinnedPoB -count=1 -v'
+
+  data-fields:
+    desc: "Which go-pob-data row fields go-pob reads; -- --list FILE writes a list for upstream | --check | project | sizes"
+    cmds:
+      - '{{.GOPOB}} data-fields {{.CLI_ARGS}}'
+
+  data-regen:
+    desc: "Regenerate EVERY generated data file from the pinned PoB (--check to gate on staleness)"
+    cmds:
+      - '{{.GOPOB}} kw-bits-parity'
+      - '{{.GOPOB}} regen-data {{.CLI_ARGS}}'
+
+  pob-data-tables:
+    desc: "Regenerate the PoB DATA-table reference that TestPoBDataTableDrift grades against"
+    vars:
+      POB:
+        sh: 'realpath "{{.POB_DIR | default .POB_DEFAULT}}"'
+      OUT_DIR: '{{.OUT_DIR | default "testdata/pob-data-tables"}}'
+      HERE:
+        sh: pwd
+    cmds:
+      - mkdir -p {{.HERE}}/{{.OUT_DIR}}
+      - '{{.NICE}} mise x --cd {{.POB}}/src -- luajit {{.HERE}}/oracle/pob_data_tables.lua {{.HERE}}/{{.OUT_DIR}}'
+      - '{{.GOPOB}} pob-data-tables-stamp {{.HERE}}/{{.OUT_DIR}}'
+      - '{{.NICE}} go test ./data/ -run TestPoBDataTableDrift -v'
+
+  pob-cluster-jewels:
+    desc: "Regenerate data/cluster_jewels.go from the pinned PoB's data.clusterJewels"
+    vars:
+      POB:
+        sh: 'realpath "{{.POB_DIR | default .POB_DEFAULT}}"'
+      JSON: '{{.JSON | default "/tmp/pob-cluster-jewels.json"}}'
+      HERE:
+        sh: pwd
+    cmds:
+      - '{{.NICE}} mise x --cd {{.POB}}/src -- luajit {{.HERE}}/oracle/cluster_jewels.lua {{.JSON}}'
+      - '{{.GOPOB}} cluster-jewels-emit {{.JSON}} {{.HERE}}/data/cluster_jewels.go'
+      - '{{.NICE}} gofmt -w {{.HERE}}/data/cluster_jewels.go'
+      - "{{.NICE}} go test ./data/ -run 'TestClusterJewelData|TestPoBDataTableDrift' -v"
+
+  jewel-limits:
+    desc: "Which socketed jewels does PoB's 'Limited to: N' rule disable, and do they still transform the tree (BUILDS=<dir>)"
+    vars:
+      POB:
+        sh: 'realpath "{{.POB_DIR | default .POB_DEFAULT}}"'
+      BUILDS:
+        sh: 'realpath "{{.BUILDS | default "testdata/corpus-3.29"}}"'
+      HERE:
+        sh: pwd
+    cmds:
+      - '{{.NICE}} mise x --cd {{.POB}}/src -- luajit {{.HERE}}/oracle/jewel_limits.lua {{.BUILDS}}'
+
+  tree-stats:
+    desc: "Dump the pinned PoB's passive-tree node stat TEXT, to diff against go-pob-data's tree (OUT=)"
+    vars:
+      POB:
+        sh: 'realpath "{{.POB_DIR | default .POB_DEFAULT}}"'
+      OUT: '{{.OUT | default "/tmp/pob-tree-stats.json"}}'
+      HERE:
+        sh: pwd
+    cmds:
+      - '{{.NICE}} mise x --cd {{.POB}}/src -- luajit {{.HERE}}/oracle/tree_stats.lua {{.OUT}}'
+
+  calcs-chain:
+    desc: "WHERE the damage chain first diverges, per (build,hand,type) — dumps CALCS rungs and attributes them (LIST= a build-list file, OUT= dump dir)"
+    vars:
+      POB:
+        sh: 'realpath "{{.POB_DIR | default .POB_DEFAULT}}"'
+      OUT: '{{.OUT | default "/tmp/pob-calcs-dump"}}'
+      HERE:
+        sh: pwd
+      MAIN:
+        sh: dirname "$(git rev-parse --path-format=absolute --git-common-dir)"
+    cmds:
+      - mkdir -p {{.OUT}}
+      - '{{.GOPOB}} require-det-luajit calcs-chain'
+      - >-
+        {{.NICE}} env
+        LUA_CPATH="{{.POB}}/.luarocks/lib/lua/5.1/?.so;;"
+        LUA_PATH="{{.POB}}/runtime/lua/?.lua;{{.POB}}/runtime/lua/?/init.lua;{{.POB}}/.luarocks/share/lua/5.1/?.lua;{{.POB}}/.luarocks/share/lua/5.1/?/init.lua;;"
+        setarch "$(uname -m)" -R sh -c
+        "cd '{{.POB}}/src' && exec '{{.MAIN}}/.luajit-det/bin/luajit' '{{.HERE}}/oracle/dump_calcs_damage.lua' '{{.HERE}}/testdata/corpus-3.29' '{{.OUT}}' '{{.LIST}}'"
+      - '{{.NICE}} env CORPUS=true OPERATOR=true CALCS_DUMP={{.OUT}} go test ./calculator/ -run TestCalcsHandRungCensus -v -count=1 -timeout 60m'
+
+  modcache-diff:
+    desc: "Parser differential vs PoB over every ModCache line + one corpus line per uncached template, ranked by wrong carriers — WL=<worklist dir> OUT=<dir>"
+    vars:
+      POB:
+        sh: 'realpath "{{.POB_DIR | default .POB_DEFAULT}}"'
+      OUT: '{{.OUT | default "/tmp/pob-modcache-diff"}}'
+      HERE:
+        sh: pwd
+      MAIN:
+        sh: dirname "$(git rev-parse --path-format=absolute --git-common-dir)"
+    cmds:
+      - mkdir -p {{.OUT}}
+      - '{{.GOPOB}} require-det-luajit modcache-diff'
+      - '{{.NICE}} env CORPUS=true MCD_EXTRA_OUT={{.OUT}}/extra.txt go test ./calculator/ -run "TestModCacheDifferential$" -count=1'
+      - >-
+        {{.NICE}} env
+        LUA_CPATH="{{.POB}}/.luarocks/lib/lua/5.1/?.so;;"
+        LUA_PATH="{{.POB}}/runtime/lua/?.lua;{{.POB}}/runtime/lua/?/init.lua;{{.POB}}/.luarocks/share/lua/5.1/?.lua;{{.POB}}/.luarocks/share/lua/5.1/?/init.lua;;"
+        setarch "$(uname -m)" -R sh -c
+        "cd '{{.POB}}/src' && exec '{{.MAIN}}/.luajit-det/bin/luajit' '{{.HERE}}/oracle/mod_cache_live.lua' '{{.OUT}}/ModCacheLive.lua' '{{.OUT}}/extra.txt'"
+      - '{{.NICE}} env CORPUS=true MCD_RANK=1 MCD_CACHE={{.OUT}}/ModCacheLive.lua MCD_WL={{.WL}} MCD_OUT={{.OUT}}/worklist.tsv go test ./calculator/ -run "TestModCacheDifferential$" -count=1 -v'
+
+  pool-walk:
+    desc: "WHERE the EHP pool walk first diverges, per build and hit — dumps PoB's per-hit trajectory and grades ours against it (LIST= a build-list file, OUT= dump dir)"
+    vars:
+      POB:
+        sh: 'realpath "{{.POB_DIR | default .POB_DEFAULT}}"'
+      OUT: '{{.OUT | default "/tmp/pob-pool-walk-dump"}}'
+      HERE:
+        sh: pwd
+      MAIN:
+        sh: dirname "$(git rev-parse --path-format=absolute --git-common-dir)"
+    cmds:
+      - mkdir -p {{.OUT}}
+      - '{{.GOPOB}} require-det-luajit pool-walk'
+      - >-
+        {{.NICE}} env
+        LUA_CPATH="{{.POB}}/.luarocks/lib/lua/5.1/?.so;;"
+        LUA_PATH="{{.POB}}/runtime/lua/?.lua;{{.POB}}/runtime/lua/?/init.lua;{{.POB}}/.luarocks/share/lua/5.1/?.lua;{{.POB}}/.luarocks/share/lua/5.1/?/init.lua;;"
+        setarch "$(uname -m)" -R sh -c
+        "cd '{{.POB}}/src' && exec '{{.MAIN}}/.luajit-det/bin/luajit' '{{.HERE}}/oracle/dump_pool_walk.lua' '{{.HERE}}/testdata/corpus-3.29' '{{.OUT}}' '{{.LIST}}'"
+      - '{{.NICE}} env CORPUS=true POOL_WALK_DUMP={{.OUT}} go test ./calculator/ -run TestPoolWalkMatchesOracle -v -count=1 -timeout 60m'
+
+  pob-weapon-types:
+    desc: "Regenerate data/raw/skill_weapon_types.go from the committed PoB skill table"
+    vars:
+      HERE:
+        sh: pwd
+    cmds:
+      - gzip -dc {{.HERE}}/testdata/pob-skills/skills.json.gz | {{.GOPOB}} skill-weapon-types-emit > {{.HERE}}/data/raw/skill_weapon_types.go
+      - '{{.NICE}} gofmt -l {{.HERE}}/data/raw/skill_weapon_types.go'
+
+  pob-skill-table:
+    desc: "Regenerate testdata/pob-skills — PoB's OWN src/Data/Skills table (name/stats/skillTypes)"
+    vars:
+      POB:
+        sh: 'realpath "{{.POB_DIR | default .POB_DEFAULT}}"'
+      HERE:
+        sh: pwd
+      TMP: '/tmp/pob-skill-table.json'
+    cmds:
+      - '{{.NICE}} mise x --cd {{.POB}}/src -- luajit {{.HERE}}/oracle/skill_table.lua {{.TMP}}'
+      - mkdir -p {{.HERE}}/testdata/pob-skills
+      - gzip -9 -n -c {{.TMP}} > {{.HERE}}/testdata/pob-skills/skills.json.gz
+      - '{{.NICE}} env OPERATOR=true go test -count=1 ./calculator/ -run TestEmptySkillDataCensus -v'
+
+  empty-skill-data:
+    desc: "Which granted effects does go-pob build EMPTY where PoB declares content? (SKILL= names its builds)"
+    cmds:
+      - '{{.NICE}} env OPERATOR=true CORPUS=true SKILL={{.SKILL | default ""}} go test -count=1 -v ./calculator/ -run TestEmptySkillDataCensus'
+
+  dump:
+    desc: "Dump per-build stats + sources from headless PoB into testdata/pob-dumps (set POB_DIR)"
+    vars:
+      POB:
+        sh: 'realpath "{{.POB_DIR | default .POB_DEFAULT}}"'
+      HERE:
+        sh: pwd
+    cmds:
+      - '{{.NICE}} mise x --cd {{.POB}}/src -- luajit {{.HERE}}/oracle/dump_build.lua {{.HERE}}/testdata/many-builds {{.HERE}}/testdata/pob-dumps'
+
+  oracle-corpus:
+    desc: "Build testdata/oracle-<version> from a dump set of the same version (IN=<dumps dir>)"
+    vars:
+      V:
+        sh: 'v="${POE_VERSION:-$(sed -n ''s/^const DefaultVersion = "\(.*\)"$/\1/p'' data/raw/main.go)}"; [ -n "$v" ] || { echo "REFUSING: no DefaultVersion in data/raw/main.go and no POE_VERSION — the blob path would be a guess" >&2; exit 1; }; echo "$v"'
+      IN: '{{.IN | default (printf "~/go-pob-corpus/dumps-%s" .V)}}'
+      HERE:
+        sh: pwd
+    cmds:
+      - mkdir -p {{.HERE}}/testdata/oracle-{{.V}}
+      - '{{.GOPOB}} extract-output-oracle {{.IN}} /tmp/oracle-{{.V}}.jsonl'
+      - gzip -9 -n -c /tmp/oracle-{{.V}}.jsonl > {{.HERE}}/testdata/oracle-{{.V}}/output-{{.V}}.jsonl.gz
+      - rm -f /tmp/oracle-{{.V}}.jsonl
+      - task: oracle-bin
+        vars: {V: '{{.V}}'}
+      - ls -la {{.HERE}}/testdata/oracle-{{.V}}/
+
+  oracle-bin:
+    desc: "Rebuild the .orb side-car from the committed oracle blob (CHECK=1 reports staleness)"
+    vars:
+      V:
+        sh: 'v="${POE_VERSION:-$(sed -n ''s/^const DefaultVersion = "\(.*\)"$/\1/p'' data/raw/main.go)}"; [ -n "$v" ] || { echo "REFUSING: no DefaultVersion in data/raw/main.go and no POE_VERSION — the side-car path would be a guess" >&2; exit 1; }; echo "$v"'
+      CHECKFLAG: '{{if .CHECK}}--check{{end}}'
+    cmds:
+      - '{{.GOPOB}} oracle-bin {{.CHECKFLAG}} testdata/oracle-{{.V}}/output-{{.V}}.jsonl.gz'
+
+  luajit-det:
+    desc: "Build the DETERMINISTIC LuaJIT (pairs() order identical in every process) into .luajit-det/"
+    cmds:
+      - '{{.GOPOB}} build-luajit-det'
+
+  luajit-det-verify:
+    desc: "Re-prove the deterministic LuaJIT (20 processes, one iteration order) without rebuilding"
+    cmds:
+      - '{{.GOPOB}} build-luajit-det --verify'
+
+  repin:
+    desc: "Re-measure every assertDivergesFromOracle pin on the integrated tree (CHECK=1 to dry-run)"
+    cmds:
+      - 'env CHECK={{.CHECK | default ""}} {{.GOPOB}} repin'
+
+  dataraw-mirror:
+    desc: "Grade every hand-transcribed data/raw table against PoB's Lua (ROWS=n, SELFTEST=1)"
+    vars:
+      POB_DIR: '{{.POB_DIR | default "$HOME/PathOfBuilding"}}'
+    cmds:
+      - 'env POB_DIR={{.POB_DIR}} {{.GOPOB}} dataraw-mirror{{if .ROWS}} --rows {{.ROWS}}{{end}}{{if .SELFTEST}} --selftest{{end}}'
+
+  fold-progress:
+    desc: "How much of the Python/shell tooling has a VERIFIED Go port (instrument-substrate fold)"
+    cmds:
+      - '{{.NICE}} go run ./scripts/gopob fold-progress'
+
+  pob-pin:
+    desc: "Assert the pinned PoB checkout is the exact tree the oracle was built from (RECORD=1 to re-record)"
+    vars:
+      POB_DIR: '{{.POB_DIR | default "$HOME/PathOfBuilding"}}'
+    cmds:
+      - 'env POB_DIR={{.POB_DIR}} {{.GOPOB}} pob-pin {{if .RECORD}}--record{{end}}{{if .SELFTEST}} --selftest{{end}}'
+
+  citations:
+    desc: "Verify every //pob: citation resolves and cites a Lua function line, and report coverage over the PORT files (REPORT=1 to never fail, SELFTEST=1 to prove the checks can fail)"
+    cmds:
+      - 'env REPORT={{.REPORT | default ""}} POB_DIR={{.POB_DIR | default "$HOME/PathOfBuilding"}} {{.GOPOB}} pob-citations'
+      - 'env SWEEP=1 POB_DIR={{.POB_DIR | default "$HOME/PathOfBuilding"}} {{.GOPOB}} citation-audit {{if .SELFTEST}}--selftest{{end}}'
+
+  stat-ratios:
+    desc: "Cluster one stat's got/PoB ratio across the corpus — STAT=MainHand.PhysicalMinBase (PRECISION, MEMBERS)"
+    cmds:
+      - '{{.NICE}} env OPERATOR=true CORPUS=true STAT={{.STAT}} PRECISION={{.PRECISION | default "4"}} MEMBERS={{.MEMBERS | default "12"}} CLASS={{.CLASS}} LIMIT={{.LIMIT | default "40"}} go test ./calculator/ -run TestStatRatios -v -count=1'
+
+  dropped-keys:
+    desc: "Rank the SILENTLY-dropped skill-data keys by the builds they are dropped on [CENSUS_LIMIT=n]"
+    cmds:
+      - '{{.NICE}} env CORPUS=true CENSUS_LIMIT={{.CENSUS_LIMIT}} go test ./calculator/ -run TestDroppedSkillDataKeyCensus -v -count=1 -timeout 60m'
+
+  corpus-vs-oracle:
+    desc: "Which BUILDS make one stat wrong, by class — STAT=<name> CLASS=miss|wrong|extra|ok [LIMIT=n]"
+    cmds:
+      - task: stat-ratios
+        vars: { STAT: "{{.STAT}}", CLASS: "{{.CLASS}}", LIMIT: "{{.LIMIT}}", MEMBERS: "0" }
+
+  reduce-pools:
+    desc: "Dump PoB's OWN reducePoolsByDamage per build — BUILDS=<list file> OUT=<dir>"
+    vars:
+      POB: '{{.POB_DIR | default .POB_DEFAULT}}'
+    dir: '{{.POB}}/src'
+    cmds:
+      - '{{.NICE}} mise x -- luajit {{.ROOT_DIR}}/oracle/dump_reduce_pools.lua {{.ROOT_DIR}}/testdata/corpus-3.29 {{.OUT | default "/tmp/reduce-pools"}} {{.BUILDS}}'
+
+  diag:
+    desc: "Per-build diagnosis loop — BUILD=<name> [STEP=oracle|sources|mods|tags] [NAME= ACTOR= LIST= CFG=]"
+    vars:
+      STEP: '{{.STEP | default "oracle"}}'
+    cmds:
+      - |
+        case "{{.STEP}}" in
+          oracle)  RUN=TestDiagActorOracle ;;
+          sources) RUN=TestDiagBuildSources ;;
+          mods)    RUN='TestDiagBuildMods$' ;;
+          tags)    RUN=TestDiagEvalTags ;;
+          *) echo "REFUSING: STEP={{.STEP}} is not one of oracle|sources|mods|tags" >&2; exit 2 ;;
+        esac
+        CORPUS=true BUILD={{.BUILD}} NAME={{.NAME}} ACTOR={{.ACTOR}} LIST={{.LIST}} CFG={{.CFG}} \
+          go test ./calculator/ -run "$RUN" -v -count=1
+
+  data-field-population:
+    desc: "Which go-pob-data table FIELDS are never populated on any row — OUT=<dir>"
+    cmds:
+      - '{{.NICE}} env CENSUS_OUT={{.OUT}} go test ./data/raw/ -run TestDataFieldPopulationCensus -v -count=1'
+
+  tree-stat-drops:
+    desc: "Which TREE/MASTERY stat lines are discarded whole for one unmatched phrase — OUT=<dir>"
+    cmds:
+      - '{{.NICE}} env CORPUS=true CENSUS_OUT={{.OUT}} go test ./calculator/ -run TestTreeStatDropCensus -v -count=1'
+
+  overapplied-census:
+    desc: "Which stats do we make TOO LARGE — the class every other instrument here is blind to"
+    cmds:
+      - '{{.NICE}} env CORPUS=true go test ./calculator/ -run TestOverAppliedCensus -v -count=1'
+
+  breakdown-diff:
+    desc: "Diff OUR per-slot defence breakdown against PoB's — BUILD=<name without .xml> [STAT=Armour]"
+    cmds:
+      - '{{.NICE}} env CORPUS=true BUILD={{.BUILD}} STAT={{.STAT | default "Armour"}} go test ./calculator/ -run TestDiagBreakdown -v -count=1'
+
+  source-census:
+    desc: "Which of PoB's SOURCE CLASSES are enriched where one stat is wrong — STAT=<n> [DIRECTION=low|high|both] [DUMP=<f>]"
+    vars:
+      DUMP: '{{.DUMP | default ""}}'
+    cmds:
+      - '{{if not .DUMP}}{{.NICE}} env DUMP=/tmp/source-census-dump.txt.gz go test -count=1 ./calculator/ -run TestCorpusDump{{end}}'
+      - '{{.GOPOB}} source-census --our-dump {{.DUMP | default "/tmp/source-census-dump.txt.gz"}} --stat {{.STAT}} --direction {{.DIRECTION | default "both"}}'
+
+  item-drop-census:
+    desc: "Which ITEM mod lines are discarded whole — OUT=<dir> writes item_mod_drops.tsv"
+    cmds:
+      - '{{.NICE}} env CORPUS=true CENSUS_OUT={{.OUT}} go test ./calculator/ -run TestItemModDropCensus -v -count=1'
+
+  item-drop-vs-pob:
+    desc: "Which of our item-mod drops are DEFECTS — needs POB_VERDICT= and DROP_CASES="
+    cmds:
+      - '{{.NICE}} env POB_VERDICT={{.POB_VERDICT}} DROP_CASES={{.DROP_CASES}} go test ./calculator/ -run TestItemModDropVsPoB -v -count=1'
+
+  producer-census:
+    desc: "Which GRADED stats does nothing in this tree write — OUT=<dir> writes producer_census.tsv"
+    cmds:
+      - '{{.NICE}} env CORPUS=true CENSUS_OUT={{.OUT}} go test ./calculator/ -run TestProducerCensus -v -count=1'
+
+  writepath-census:
+    desc: "The WRITE-PATH round trip: what Serialize(Parse(x)) loses, adds or changes, over the whole corpus"
+    cmds:
+      - '{{.NICE}} env WRITEPATH_FULL=1 go test ./builds/ -run TestWritePathRoundTrip -v -count=1 -timeout 60m'
+
+  extra-census:
+    desc: "Which stats do WE write that PoB does not — OUT=<dir> writes extra_census.tsv"
+    cmds:
+      - '{{.NICE}} env CORPUS=true CENSUS_OUT={{.OUT}} go test ./calculator/ -run TestExtraCensus -v -count=1'
+
+  census:
+    desc: "Input-side censuses against PoB's dumps — WHICH=modb|tag|order|config (needs a dump set)"
+    cmds:
+      - |
+        case "{{.WHICH | default "config"}}" in
+          modb)   RUN=TestModDBCensus ;;
+          tag)    RUN=TestTagCensus ;;
+          order)  RUN=TestModOrderCensus ;;
+          config) RUN=TestConfigCensus ;;
+          *) echo "REFUSING: WHICH={{.WHICH}} is not one of modb|tag|order|config" >&2; exit 2 ;;
+        esac
+        OPERATOR=true CORPUS=true go test ./calculator/ -run "$RUN" -v -count=1
+
+  citations-audit:
+    desc: "Print the first+last Lua line of every //pob: range in a file — FILE=calculator/item.go [CONTEXT=2]"
+    cmds:
+      - 'env FILE={{.FILE}} CONTEXT={{.CONTEXT | default "0"}} POB_DIR={{.POB_DIR | default "$HOME/PathOfBuilding"}} {{.GOPOB}} citation-audit'
+
+  corpus-grep:
+    desc: "How many corpus builds contain a mod line — PATTERN='...' [LUA=1] [NAMES=1]"
+    cmds:
+      - 'env PATTERN=''{{.PATTERN}}'' LUA={{.LUA | default ""}} NAMES={{.NAMES | default ""}} {{.GOPOB}} corpus-grep'
+
+  corpus-predicate:
+    desc: "Count how many corpus builds satisfy a predicate — edit the body of TestCorpusPredicate first"
+    cmds:
+      - '{{.NICE}} env PREDICATE=true CORPUS=true go test ./calculator/ -run TestCorpusPredicate -v -count=1'
+
+  port-diff:
+    desc: "OUR Go beside the PINNED PoB's Lua — NAME=<modName> | SYMBOL= | FUNC= | LUA= | GREP="
+    cmds:
+      - 'env NAME="{{.NAME | default ""}}" SYMBOL="{{.SYMBOL | default ""}}" FUNC="{{.FUNC | default ""}}" LUA="{{.LUA | default ""}}" GREP=''{{.GREP | default ""}}'' CONTEXT="{{.CONTEXT | default "6"}}" MAX_HITS="{{.MAX_HITS | default "8"}}" POB_DIR="{{.POB_DIR | default .POB_DEFAULT}}" {{.GOPOB}} port-diff'
+
+  residual-matrix:
+    desc: "Dump the FULL (build,stat) mismatch matrix in one corpus pass — OUT=<file>"
+    cmds:
+      - '{{.NICE}} env CORPUS=true MATRIX_OUT={{.OUT}} go test ./calculator/ -run TestResidualMatrixDump -count=1 -v'
+
+  residual-clusters:
+    desc: "Collapse the residual into INDEPENDENT CAUSES and rank by yield per fix — MATRIX=<file>"
+    cmds:
+      - |
+        GRADED=""
+        if [ -n "{{.WL}}" ] && [ -r "{{.WL}}/totals.tsv" ]; then
+          GRADED=$(awk -F'\t' '$1=="ALL"{print $2}' "{{.WL}}/totals.tsv")
+        fi
+        if [ -z "$GRADED" ]; then
+          echo "⚠️  no WL= given, so every PERCENTAGE below is against a RETIRED corpus denominator." >&2
+          echo "    Pairs are still correct. Re-run as: task residual-clusters MATRIX=<f> WL=<worklist dir>" >&2
+        fi
+        env MATRIX={{.MATRIX}} ${GRADED:+GRADED=$GRADED} {{.GOPOB}} residual-clusters
+
+  comments:
+    desc: "Fail when a comment carries more than 3 lines of go-pob's own prose"
+    cmds:
+      - '{{.GOPOB}} comment-strip --max-prose=3 calculator moddb mod pob data/raw data utils builds'
+      - '{{.GOPOB}} comment-strip --tests --max-prose=3 calculator calculator/calclib moddb mod data data/raw builds builds/parsecache utils storage wasm/exposition'
+      - '{{.GOPOB}} comment-strip --tests --max-prose=3 scripts/gopob scripts/gopob/internal/difftest scripts/gopob/internal/gateversions scripts/gopob/internal/root scripts/gopob/internal/toolchain scripts/corpus'
+
+  residual-map:
+    desc: "Where the residual IS — by family, actor and build (WL=<worklist dir>, report-only)"
+    cmds:
+      - 'env WL={{.WL}} {{.GOPOB}} residual-map'
+
+  skill-modlist:
+    desc: "Diff the MAIN skill's mod list against the pin — BUILD=<b> or LIST=<file>, [TYPE=MORE] [BYSOURCE=1]"
+    cmds:
+      - '{{.NICE}} env CORPUS=true BUILD={{.BUILD}} LIST={{.LIST}} TYPE={{.TYPE}} BYSOURCE={{.BYSOURCE}} go test ./calculator/ -run TestDiagSkillModList -v -count=1 -timeout 60m'
+
+  override-census:
+    desc: "Grade what a build's <Override> nodes (tattoos AND runegrafts) contribute, by VALUE — BUILDS=<file> optional"
+    cmds:
+      - '{{.NICE}} env CORPUS=true OPERATOR=true BUILDS={{.BUILDS}} go test ./calculator/ -run TestTattooOverrideCensus -v -count=1 -timeout 60m'
+
+  enemy-effmult-inputs:
+    desc: "Split the ENEMY-side inputs to EffMult into the taken and resist classes — BUILDS=<file of build names>"
+    cmds:
+      - '{{.NICE}} env CORPUS=true BUILDS={{.BUILDS}} go test ./calculator/ -run TestEnemyEffMultInputCensus -v -count=1 -timeout 60m'
+
+  stat-overlap:
+    desc: "Do these stats fail on the SAME builds? STATS=\"A B C\" [WL=<worklist dir>] [SUBJECT=<stat>] — separates one cause from many"
+    cmds:
+      - 'env STATS="{{.STATS}}" OUT={{.OUT | default ""}} WL={{.WL | default ""}} SUBJECT={{.SUBJECT | default ""}} {{.GOPOB}} stat-overlap'
+
+  build-ranking:
+    desc: "Rank BUILDS by wrong pairs (report-only) — TOP=n STATS=n"
+    cmds:
+      - '{{.NICE}} env OPERATOR=true CORPUS=true TOP={{.TOP | default ""}} STATS={{.STATS | default ""}} go test ./calculator/ -run TestBuildRanking -v -count=1'
+
+  test-cache-key:
+    desc: "POE_VERSION must be part of go test's result-cache key (end-to-end probe, ~25s)"
+    cmds:
+      - '{{.GOPOB}} test-cache-key'
+
+  task-test-refs:
+    desc: "Every `go test -run <Name>` in the Taskfile must name a test that EXISTS (SELFTEST=1)"
+    cmds:
+      - 'env SELFTEST={{.SELFTEST | default ""}} SELFTEST_DIR={{.SELFTEST_DIR | default ""}} {{.GOPOB}} task-test-refs {{.UPDATE_NAMES | default ""}}'
+
+  omissions:
+    desc: "Verify every omission reason in a generated data table still holds (SELFTEST=1 to prove the checks can fail)"
+    cmds:
+      - 'env REPORT={{.REPORT | default ""}} POB_DIR={{.POB_DIR | default "$HOME/PathOfBuilding"}} {{.GOPOB}} omission-reasons {{if .SELFTEST}}--selftest{{end}}'
+
+  instruments:
+    desc: "Run EVERY instrument sequentially and print one consolidated report (COVERAGE=1 adds the coverage census, ~4 min)"
+    cmds:
+      - COVERAGE="{{.COVERAGE | default ""}}" ONLY="{{.ONLY | default ""}}" DUMPS="{{.DUMPS | default ""}}" {{.GOPOB}} instruments
+
+  coverage-census:
+    desc: "Which compiled branches never run over the 2027-build corpus (OVERLAY=1 also runs the whole suite, LIST=1 prints every block)"
+    vars:
+      D:
+        sh: mktemp -d
+      PKGS: ./calculator/...,./mod/...,./moddb/...,./data,./builds/...,./pob/...,./utils/...
+    cmds:
+      - CORPUS=true {{.NICE}} go test -count=1 -timeout 60m ./calculator/ -run 'TestCorpus3_29$' -covermode=atomic -coverpkg={{.PKGS}} -coverprofile={{.D}}/corpus.out || true
+      - '{{.NICE}} go tool cover -func={{.D}}/corpus.out > {{.D}}/corpus.func'
+      - '{{if .OVERLAY}}{{.NICE}} env CORPUS=true BIG=true go test -count=1 -timeout 60m ./... -covermode=atomic -coverpkg={{.PKGS}} -coverprofile={{.D}}/all.out || true{{end}}'
+      - '{{.GOPOB}} coverage-census --profile {{.D}}/corpus.out --funcs {{.D}}/corpus.func --root . {{if .OVERLAY}}--overlay {{.D}}/all.out{{end}} {{if .LIST}}--list{{end}} {{if .JSON}}--json {{.JSON}}{{end}}'
+
+  coverage-features:
+    desc: "Group coverage-census dead blocks into PoB features and size them (JSON=<census --json> [POOL=<character json dir>] [SHARED=<xml dir>] [UNIQUES=<PoB src/Data/Uniques>] [OUT=<tsv>])"
+    requires:
+      vars: [JSON]
+    cmds:
+      - '{{.GOPOB}} coverage-features --census {{.JSON}} {{if .POOL}}--pool {{.POOL}}{{end}} {{if .SHARED}}--shared {{.SHARED}}{{end}} {{if .UNIQUES}}--uniques {{.UNIQUES}}{{end}} {{if .OUT}}--tsv {{.OUT}}{{end}}'
+
+  corpus-determinism:
+    desc: "Evaluate the corpus for the loaded version in several processes, fail if any build disagrees (RUNS=n)"
+    cmds:
+      - OPERATOR=true CORPUS=true {{.NICE}} go test -count=1 -timeout 30m -v ./calculator/ -run TestCorpusIsDeterministic
+
+  corpus-dump:
+    desc: "Dump per-build corpus output for later diffing (OUT=<file>, .gz compresses; REF=<sha> dumps that commit instead of the working tree)"
+    requires:
+      vars: [OUT]
+    vars:
+      ABS:
+        sh: realpath -m "{{.OUT}}"
+      REF: '{{.REF | default ""}}'
+    cmds:
+      - '{{if .REF}}{{.GOPOB}} corpus-dump-ref {{.REF}} {{.ABS}}{{else}}{{.NICE}} env DUMP={{.ABS}} go test -count=1 -v ./calculator/ -run TestCorpusDump{{end}}'
+
+  corpus-diff:
+    desc: "Report which builds and stats moved between two corpus-dump files (A=<file> B=<file>)"
+    requires:
+      vars: [A, B]
+    vars:
+      ABS_A:
+        sh: realpath -m "{{.A}}"
+      ABS_B:
+        sh: realpath -m "{{.B}}"
+    cmds:
+      - '{{.NICE}} env DIFF_A={{.ABS_A}} DIFF_B={{.ABS_B}} go test -count=1 -v ./calculator/ -run TestCorpusDiff'
+
   pre-commit:
     desc: "Convenience script that should be run before committing"
     cmds:
       - task: generate
       - task: format
       - task: lint
+
+  corpus-harvest:
+    desc: "Harvest a league build corpus end to end: LEAGUE=3.19 TREE=3_19 FROM=2022-08-19 TO=2022-12-09"
+    vars:
+      WORK: '{{.WORK | default "$HOME/go-pob-corpus-319/full"}}'
+      SUBS: '{{.SUBS | default "PathOfExileBuilds"}}'
+    cmds:
+      - task: corpus-discover
+        vars: {WORK: '{{.WORK}}', SUBS: '{{.SUBS}}', FROM: '{{.FROM}}', TO: '{{.TO}}'}
+      - task: corpus-fetch
+        vars: {WORK: '{{.WORK}}'}
+      - task: corpus-validate
+        vars: {WORK: '{{.WORK}}', TREE: '{{.TREE}}'}
+      - task: corpus-manifest
+        vars: {WORK: '{{.WORK}}', LEAGUE: '{{.LEAGUE}}', TREE: '{{.TREE}}', FROM: '{{.FROM}}', TO: '{{.TO}}'}
+      - task: corpus-archive
+        vars: {WORK: '{{.WORK}}', LEAGUE: '{{.LEAGUE_KEY | default .TREE}}'}
+
+  corpus-discover:
+    desc: "Crawl a source into the link index — SOURCE=reddit|forum FROM=.. TO=.. [SUBS=..]"
+    vars:
+      WORK: '{{.WORK | default "$HOME/go-pob-corpus-319/full"}}'
+      SOURCE: '{{.SOURCE | default "reddit"}}'
+      SUBS: '{{.SUBS | default "PathOfExileBuilds"}}'
+    cmds:
+      - '{{.NICE}} go run ./scripts/corpus discover -work {{.WORK}} -source {{.SOURCE}} -subs {{.SUBS}} -from {{.FROM}} -to {{.TO}} {{if .V}}-v{{end}}'
+
+  corpus-discover-poebuilds:
+    desc: "Sweep poebuilds.cc's 21 ascendancy pages for one league — PB_LEAGUE=3.28 (or mirage; empty = current)"
+    vars:
+      WORK: '{{.WORK | default "$HOME/go-pob-corpus-319/full"}}'
+    cmds:
+      - '{{.NICE}} go run ./scripts/corpus discover -work {{.WORK}} -source poebuilds -pb-league ''{{.PB_LEAGUE}}'' {{if .V}}-v{{end}}'
+
+  corpus-discover-poebuilds-authors:
+    desc: "Sweep poebuilds.cc's ~267 sitemap AUTHOR pages — no league filter, every league at once"
+    vars:
+      WORK: '{{.WORK | default "$HOME/go-pob-corpus-319/full"}}'
+    cmds:
+      - '{{.NICE}} go run ./scripts/corpus discover -work {{.WORK}} -source poebuilds -pb-authors {{if .V}}-v{{end}}'
+
+  corpus-discover-pobarchives:
+    desc: "Sweep pobarchives.com's build directory for ONE TREE VERSION — PA_TREE=3.29 (required)"
+    vars:
+      WORK: '{{.WORK | default "$HOME/go-pob-corpus-319/full"}}'
+    cmds:
+      - '{{.NICE}} go run ./scripts/corpus discover -work {{.WORK}} -source pobarchives -pa-tree ''{{.PA_TREE}}'' {{if .V}}-v{{end}}'
+
+  corpus-fetch:
+    desc: "Resolve indexed links to PoB export codes (resumable, proxy-fallback)"
+    vars:
+      WORK: '{{.WORK | default "$HOME/go-pob-corpus-319/full"}}'
+    cmds:
+      - '{{.NICE}} go run ./scripts/corpus fetch -work {{.WORK}} {{if .LIMIT}}-limit {{.LIMIT}}{{end}} {{if .V}}-v{{end}}'
+
+  corpus-validate:
+    desc: "Apply the acceptance criteria and dedup — TREE=3_19 [WORK=..] or CORPUS=<dir> to grade an existing corpus"
+    vars:
+      WORK: '{{.WORK | default "$HOME/go-pob-corpus-319/full"}}'
+    cmds:
+      - '{{.NICE}} go run ./scripts/corpus validate {{if .CORPUS}}-corpus {{.CORPUS}}{{else}}-work {{.WORK}}{{end}} -tree {{.TREE}}'
+
+  corpus-manifest:
+    desc: "Render MANIFEST.md for a validated corpus — LEAGUE=.. TREE=.. FROM=.. TO=.."
+    vars:
+      WORK: '{{.WORK | default "$HOME/go-pob-corpus-319/full"}}'
+    cmds:
+      - '{{.NICE}} go run ./scripts/corpus manifest -work {{.WORK}} -league ''{{.LEAGUE}}'' -tree {{.TREE}} -from {{.FROM}} -to {{.TO}}'
+
+  corpus-harvest-status:
+    desc: "Per-stage snapshot of a harvest working directory (NOT-RUN is a distinct status)"
+    vars:
+      WORK: '{{.WORK | default "$HOME/go-pob-corpus-319/full"}}'
+    cmds:
+      - '{{.NICE}} go run ./scripts/corpus status -work {{.WORK}}'
+
+  import-characters:
+    desc: "Turn GGG character-window JSON into PoB build XML via PoB's own importer (IN=<dir of <id>.items.json + <id>.passives.json> OUT=<dir>)"
+    vars:
+      POB:
+        sh: 'realpath "{{.POB_DIR | default .POB_DEFAULT}}"'
+      HERE:
+        sh: pwd
+      IN: '{{.IN | default ""}}'
+      OUT: '{{.OUT | default ""}}'
+    cmds:
+      - '[ -n "{{.IN}}" ] || { echo "import-characters: IN=<dir of character JSON> is required" >&2; exit 1; }'
+      - '[ -n "{{.OUT}}" ] || { echo "import-characters: OUT=<dir for build XML> is required" >&2; exit 1; }' 
+      - mkdir -p {{.OUT}}
+      - '{{.GOPOB}} require-det-luajit import-characters'
+      - >-
+        LUA_CPATH="{{.POB}}/.luarocks/lib/lua/5.1/?.so;;"
+        LUA_PATH="{{.POB}}/runtime/lua/?.lua;{{.POB}}/runtime/lua/?/init.lua;{{.POB}}/.luarocks/share/lua/5.1/?.lua;{{.POB}}/.luarocks/share/lua/5.1/?/init.lua;;"
+        setarch "$(uname -m)" -R unshare -rn -- sh -c
+        "ip link set lo up; cd '{{.POB}}/src' && exec '{{.HERE}}/.luajit-det/bin/luajit' '{{.HERE}}/oracle/import_character.lua' '{{.IN}}' '{{.OUT}}'"
+
+  corpus-harvest-selftest:
+    desc: "Prove every acceptance check and transport classifier can return BOTH answers"
+    vars:
+      V:
+        sh: 'v="${POE_VERSION:-$(sed -n ''s/^const DefaultVersion = "\(.*\)"$/\1/p'' data/raw/main.go)}"; [ -n "$v" ] || { echo "REFUSING: no DefaultVersion in data/raw/main.go and no POE_VERSION — the corpus path would be a guess" >&2; exit 1; }; echo "$v"'
+      TREE:
+        sh: 'v="${POE_VERSION:-$(sed -n ''s/^const DefaultVersion = "\(.*\)"$/\1/p'' data/raw/main.go)}"; echo "${v//./_}"'
+    cmds:
+      - '{{.NICE}} go run ./scripts/corpus selftest -corpus testdata/corpus-{{.V}} -corpus-tree {{.TREE}}'
+
+  corpus-archive:
+    desc: "Write the DURABLE per-league link index into the repo — LEAGUE=3.19 [WORK=..]"
+    vars:
+      WORK: '{{.WORK | default "$HOME/go-pob-corpus-319/full"}}'
+    cmds:
+      - '{{.NICE}} go run ./scripts/corpus archive -work {{.WORK}} -league {{.LEAGUE}} -repo .'
+
+  corpus-seed:
+    desc: "Rebuild a working link index from a committed archive — LEAGUE=3.19 [WORK=..]"
+    vars:
+      WORK: '{{.WORK | default "$HOME/go-pob-corpus-319/full"}}'
+    cmds:
+      - '{{.NICE}} go run ./scripts/corpus seed -work {{.WORK}} -league {{.LEAGUE}} -repo . {{if .WITH_FETCH}}-with-fetch{{end}}'
+
+  corpus-linkrot:
+    desc: "How much of a committed league index is still fetchable — LEAGUE=3.18 [SAMPLE=400]"
+    vars:
+      WORK: '{{.WORK | default "$HOME/go-pob-corpus-319/linkrot"}}'
+      SAMPLE: '{{.SAMPLE | default "400"}}'
+    cmds:
+      - '{{.NICE}} go run ./scripts/corpus linkrot -in testdata/corpus-index/{{.LEAGUE}}/index.jsonl.gz -work {{.WORK}} -sample {{.SAMPLE}}'
+      - '{{.NICE}} go run ./scripts/corpus fetch -work {{.WORK}}'
+
+  tree-divergence:
+    desc: "Diff go-pob-data's passive tree against the pinned PoB's, one version (TREE=3_29, default the latest) — what tree_stat_text.go must cover"
+    vars:
+      POB:
+        sh: 'realpath "{{.POB_DIR | default .POB_DEFAULT}}"'
+      HERE:
+        sh: pwd
+    cmds:
+      - '{{.NICE}} go run {{.HERE}}/oracle/tree_ours_dump /tmp/tree-ours.json {{.TREE}}'
+      - 'LUA_PATH="$(mise x -- luajit -e "io.write(package.path)")" {{.NICE}} mise x --cd {{.POB}}/src -- luajit {{.HERE}}/oracle/tree_stats.lua /tmp/tree-pob.json {{.TREE}}'
+      - '{{.GOPOB}} tree-divergence /tmp/tree-ours.json /tmp/tree-pob.json'
+
+  tree-tables:
+    desc: "Emit the tree diff tables — ⚠️ MEASURED AT -3872, NOT ADOPTED; see NOT_GENERABLE"
+    vars:
+      POB:
+        sh: 'realpath "{{.POB_DIR | default .POB_DEFAULT}}"'
+      HERE:
+        sh: pwd
+    cmds:
+      - '{{.NICE}} go run {{.HERE}}/oracle/tree_ours_dump /tmp/tree-ours.json'
+      - 'LUA_PATH="$(mise x -- luajit -e "io.write(package.path)")" {{.NICE}} mise x --cd {{.POB}}/src -- luajit {{.HERE}}/oracle/tree_stats.lua /tmp/tree-pob.json'
+      - '{{.GOPOB}} tree-tables-emit /tmp/tree-ours.json /tmp/tree-pob.json /tmp/tree_missing_nodes_generated.go /tmp/tree_stat_text_generated.go'
+      - echo "wrote /tmp/tree_*_generated.go — NOT copied into calculator/; see rdNotGenerable in scripts/gopob/regendata.go"
+
+  testdata:
+    desc: "Fetch the corpus and oracle release pinned in scripts/testdata.json into testdata/ (TESTDATA_BASE_URL overrides the release URL)"
+    cmds:
+      - 'go run ./scripts/testdatarelease fetch'
+
+  testdata-pack:
+    desc: "Pack testdata/corpus-<v> and oracle-<v> into release archives in OUT, refresh scripts/testdata.json, print the gh release command"
+    cmds:
+      - '{{.NICE}} go run ./scripts/testdatarelease pack{{if .OUT}} -out {{.OUT}}{{end}}{{if .DATE}} -date {{.DATE}}{{end}}'

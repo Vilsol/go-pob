@@ -1,0 +1,23 @@
+@layer theme, base, components, utilities;
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities) source(none);
+@import './tokens.css';
+@import './components/layout.css';
+@import './components/buttons.css';
+@import './components/inputs.css';
+@import './components/status.css';
+@import './components/tooltips.css';
+@import './components/items.css';
+@import './components/tables.css';
+@import './components/options.css';
+@import './components/compare.css';
+@import './components/tone.css';
+@import './themes.css';
+@source "../**/*.svelte";
+@source "../**/*.ts";
+@source "../../shell";
+@source "../../components";
+@source "../../display";
+@source "../../../routes";
+
+@custom-variant hover (&:hover);

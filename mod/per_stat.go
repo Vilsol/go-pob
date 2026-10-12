@@ -37,6 +37,11 @@ func (t *PerStatTag) Limit(limit float64) *PerStatTag {
 	return t
 }
 
+func (t *PerStatTag) LimitVar(limitVar string) *PerStatTag {
+	t.TagLimitVariable = &limitVar
+	return t
+}
+
 func (t *PerStatTag) LimitTotal(limitTotal bool) *PerStatTag {
 	t.TagLimitTotal = limitTotal
 	return t

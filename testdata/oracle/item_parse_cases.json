@@ -1,0 +1,898 @@
+[
+ {
+  "name": "1.xml#1 Carrion Dew",
+  "raw": "Rarity: RARE\nCarrion Dew\nCobalt Jewel\nUnique ID: 59913eafb9ce3f03347864067aca69cafc3c0924a595b8478a58f02cb1e44634\nItem Level: 83\nImplicits: 0\n11% increased Damage over Time\n+7% to Chaos Damage over Time Multiplier\n5% increased Attack Speed while holding a Shield"
+ },
+ {
+  "name": "1.xml#2 Apocalypse Drop",
+  "raw": "Rarity: RARE\nApocalypse Drop\nCobalt Jewel\nUnique ID: 126478e442631939350677d8a24b6786f0f062dccb59f63f5ec1d1e64182ac2a\nItem Level: 84\nImplicits: 0\n12% increased Damage over Time\n12% increased Chaos Damage\n5% increased Attack Speed while holding a Shield\n+12% to Critical Strike Multiplier with Elemental Skills"
+ },
+ {
+  "name": "1.xml#3 Entropy Joy",
+  "raw": "Rarity: RARE\nEntropy Joy\nCrimson Jewel\nUnique ID: 310d56670918cfe11d155bad6be89570ed4440a56209d9c26b352782f24b7a68\nItem Level: 72\nImplicits: 0\n9% increased Damage\n10% increased Chaos Damage\n4% increased Attack Speed while holding a Shield\n+15% to Critical Strike Multiplier with Elemental Skills"
+ },
+ {
+  "name": "1.xml#4 Silver Flask",
+  "raw": "Rarity: MAGIC\nWide Silver Flask of the Eagle\nUnique ID: a9954821c5ebd9324adfad1f081a3bce7c5ac5880bdd49119467f6877886e39f\nItem Level: 85\nQuality: 0\nLevelReq: 49\nImplicits: 0\n+16 to Maximum Charges\n12% increased Attack Speed during Flask effect"
+ },
+ {
+  "name": "1.xml#5 Eternal Mana Flask",
+  "raw": "Rarity: MAGIC\nEnduring Eternal Mana Flask of the Arcanist\nUnique ID: 52548f4e8e86b6e07422a0bf433da86a6aa77ef7fb5a97aadf51dd39120cdb0c\nItem Level: 71\nQuality: 0\nLevelReq: 65\nImplicits: 0\n66% reduced Amount Recovered\nFlask effect is not removed when Unreserved Mana is Filled\nFlask effect does not Queue\n24% reduced Mana Cost of Skills during Flask Effect"
+ },
+ {
+  "name": "1.xml#6 Wrath Band",
+  "raw": "Rarity: RARE\nWrath Band\nPaua Ring\nUnique ID: e269d7e0a46509b18b101dc440386adff7b9a305f4f9b54c623d9ab6676353f1\nItem Level: 78\nLevelReq: 57\nImplicits: 1\n+30 to maximum Mana\n+55 to maximum Life\n+38 to maximum Mana\n+5% to all Elemental Resistances\n+40% to Fire Resistance\n+45% to Cold Resistance\n{crafted}Adds 13 to 27 Chaos Damage to Attacks"
+ },
+ {
+  "name": "1.xml#7 Dying Sun",
+  "raw": "Rarity: UNIQUE\nDying Sun\nRuby Flask\nUnique ID: 64e4c4329899b7aca9b675216c1ab30b5233bb1089195556b121482413817ef6\nItem Level: 87\nQuality: 0\nLevelReq: 68\nImplicits: 0\n131% increased Charges per use\n58% less Duration\n18% increased Area of Effect during Flask Effect\nSkills fire 2 additional Projectiles during Flask Effect"
+ },
+ {
+  "name": "1.xml#8 Devoto's Devotion",
+  "raw": "Rarity: UNIQUE\nDevoto's Devotion\nNightmare Bascinet\nArmour: 492\nArmourBasePercentile: 0.4741\nEvasion: 708\nEvasionBasePercentile: 0.4908\nUnique ID: 7bc75c38f88a0d3f67a1b5b652fc7288acdd3b8c65e71dc9ed4230713113508d\nItem Level: 85\nQuality: 0\nSockets: B-B-G-R\nLevelReq: 67\nImplicits: 0\n+55 to Dexterity\n10% reduced Global Physical Damage\n16% increased Attack Speed\n183% increased Armour and Evasion\n+23% to Chaos Resistance\n20% increased Movement Speed\nMercury Footprints"
+ },
+ {
+  "name": "1.xml#9 Fenumus' Weave",
+  "raw": "Rarity: UNIQUE\nFenumus' Weave\nCarnal Mitts\nEvasion: 233\nEvasionBasePercentile: 0.0923\nEnergy Shield: 49\nEnergyShieldBasePercentile: 0.0703\nUnique ID: 33c8eba535f2c344d9d3b55a1e973840e7543bf845a867d33878f934edb2b911\nItem Level: 80\nQuality: 20\nSockets: R-R-G-B\nLevelReq: 50\nImplicits: 0\nGrants Level 20 Aspect of the Spider Skill\n136% increased Evasion and Energy Shield\n+45 to maximum Life\n8% increased Attack and Cast Speed\n57% increased Damage with Hits and Ailments against Enemies affected by 3 Spider's Webs\nAdds 8 to 15 Chaos Damage for each Spider's Web on the Enemy"
+ },
+ {
+  "name": "1.xml#10 Torment Mark",
+  "raw": "Rarity: RARE\nTorment Mark\nLacquered Buckler\nEvasion: 1225\nEvasionBasePercentile: 0.5809\nUnique ID: d573a017912b6cbfc1e1b45d1dad2afde4a2a4af4685cd83757ea091f07a2f46\nItem Level: 85\nQuality: 0\nSockets: G B-B\nLevelReq: 60\nImplicits: 1\n6% increased Movement Speed\n+103 to Evasion Rating\n97% increased Evasion Rating\n+15% to all Elemental Resistances\n+28% to Cold Resistance\n+45% to Lightning Resistance\n{crafted}+55 to maximum Life"
+ },
+ {
+  "name": "1.xml#11 Woe Razor",
+  "raw": "Rarity: RARE\nWoe Razor\nSabre\nUnique ID: acb5c35881031215deb5cb0ff07f612ef78fe0f6a9f69551c1c4eeeb2a95aa9d\nItem Level: 12\nQuality: 0\nSockets: G R\nLevelReq: 10\nImplicits: 1\n40% increased Global Accuracy Rating\n+10 to Strength\nAdds 1 to 3 Physical Damage\nAdds 9 to 16 Fire Damage\n11% increased Critical Strike Chance"
+ },
+ {
+  "name": "1.xml#12 Demon Bite",
+  "raw": "Rarity: RARE\nDemon Bite\nBattered Foil\nUnique ID: e916598d007e389054b451b6043699d0f238d71ac82b433c69cfc26e71bf012a\nItem Level: 13\nQuality: 0\nSockets: G\nLevelReq: 12\nImplicits: 1\n+25% to Global Critical Strike Multiplier\n+8 to Dexterity\nAdds 9 to 15 Fire Damage\nAdds 2 to 28 Lightning Damage\n6% increased Attack Speed"
+ },
+ {
+  "name": "1.xml#13 Grim Clasp",
+  "raw": "Rarity: RARE\nGrim Clasp\nRustic Sash\nUnique ID: 68c27789c514161c704b88c81c1f82915cb54e587e11a08e0e535025bb2a9166\nItem Level: 85\nLevelReq: 68\nImplicits: 1\n16% increased Global Physical Damage\n+13 to Strength\n+60 to maximum Life\nRegenerate 5.3 Mana per second\n+44% to Fire Resistance\n+43% to Lightning Resistance\nFlasks applied to you have 10% increased Effect"
+ },
+ {
+  "name": "1.xml#14 Quicksilver Flask",
+  "raw": "Rarity: MAGIC\nAbecedarian's Quicksilver Flask of the Lynx\nUnique ID: a6f7d6b5c80acd5da01eafe2a7496e7af5ff0879d01b91cd3fe51a3dfa48d8e6\nItem Level: 84\nQuality: 0\nLevelReq: 52\nImplicits: 0\n34% reduced Duration\n25% increased effect\n9% increased Movement Speed during Flask effect"
+ },
+ {
+  "name": "1.xml#15 Duskblight",
+  "raw": "Rarity: UNIQUE\nDuskblight\nIronscale Boots\nArmour: 91\nArmourBasePercentile: 0.6991\nEvasion: 91\nEvasionBasePercentile: 0.6991\nUnique ID: 4b286b6b7ffba9e50cf36eef612ddcbbe188f80edfe25f5f3a76a17e8e717139\nItem Level: 85\nQuality: 0\nSockets: B-B-R-G\nLevelReq: 18\nImplicits: 0\nTrigger Level 1 Stalking Pustule on Kill\n122% increased Armour and Evasion\n+52 to maximum Life\n20% increased Movement Speed\n50% increased Stun and Block Recovery\n20% reduced Light Radius\n+50% to Chaos Resistance during any Flask Effect\nAdds 40 to 60 Chaos Damage to Spells and Attacks during any Flask Effect"
+ },
+ {
+  "name": "1.xml#16 Divine Life Flask",
+  "raw": "Rarity: MAGIC\nSaturated Divine Life Flask of Entropy\nUnique ID: 2e97460ae05257874db11214c71cecdfe775922181594c80c12e8f81592e0844\nItem Level: 83\nQuality: 20\nLevelReq: 64\nImplicits: 0\n68% increased Amount Recovered\n33% reduced Recovery rate\nGrants Immunity to Chill for 14 seconds if used while Chilled\nGrants Immunity to Freeze for 14 seconds if used while Frozen"
+ },
+ {
+  "name": "1.xml#17 Impresence",
+  "raw": "Rarity: UNIQUE\nImpresence\nOnyx Amulet\nUnique ID: 518f18f4bcb9d0aa21f18214ee2ffc846e175514c47ff19f0945b37c0084e431\nElder Item\nItem Level: 85\nLevelReq: 64\nImplicits: 2\n{crafted}Allocates Corruption\n+10 to all Attributes\n38% increased Damage over Time\nAdds 18 to 28 Chaos Damage\n+59 to maximum Life\n+23% to Chaos Resistance\nDespair has no Reservation if Cast as an Aura\nGain Maddening Presence for 10 seconds when you Kill a Rare or Unique Enemy"
+ },
+ {
+  "name": "1.xml#18 Skin of the Loyal",
+  "raw": "Rarity: UNIQUE\nSkin of the Loyal\nSimple Robe\nUnique ID: 5201ead9a51aa20dba9e7dd50032fe95b8a6a57fd7775ad1e174864c1526fe4e\nItem Level: 85\nQuality: 0\nSockets: B-G-G-G-G-G\nImplicits: 0\nSockets cannot be modified\n+1 to Level of Socketed Gems\n100% increased Global Defences"
+ },
+ {
+  "name": "1.xml#19 Maelstrom Knuckle",
+  "raw": "Rarity: RARE\nMaelstrom Knuckle\nTopaz Ring\nUnique ID: fa2303ff8d7ab40106f85870390ed49364dcc314329434a84166536307bd67d2\nItem Level: 86\nLevelReq: 68\nImplicits: 1\n+28% to Lightning Resistance\n+47 to Intelligence\nAdds 21 to 34 Cold Damage to Attacks\n+122 to Evasion Rating\n+78 to maximum Mana\n+47% to Fire Resistance\n+46% to Cold Resistance"
+ },
+ {
+  "name": "10.xml#1 Fight for Survival",
+  "raw": "Rarity: UNIQUE\nFight for Survival\nViridian Jewel\nUnique ID: 7dfdd47786bad989d5febeea7273e1bdec79e524a35d240733c471f2c2be400a\nItem Level: 72\nRadius: Medium\nLimited to: 2\nImplicits: 0\n15% increased Cold Damage\nWith at least 40 Dexterity in Radius, Melee Damage\ndealt by Frost Blades Penetrates 15% Cold Resistance\nWith at least 40 Dexterity in Radius, Frost Blades has 25% increased Projectile Speed"
+ },
+ {
+  "name": "10.xml#2 Loath Shard",
+  "raw": "Rarity: RARE\nLoath Shard\nCrimson Jewel\nUnique ID: 85aeb1a364c4ab4fdbdfc07ae9c85d84fbb8f6c30681e66c439a3946e13ee7cc\nItem Level: 80\nImplicits: 0\n16% increased Cold Damage\n+10% to all Elemental Resistances\n+12% to Cold Resistance"
+ },
+ {
+  "name": "10.xml#3 Fight for Survival",
+  "raw": "Rarity: UNIQUE\nFight for Survival\nViridian Jewel\nUnique ID: d93744322f062456a500d9bc2ea621aa0272e433f1cddbcc36fd45f6f60e7b8a\nItem Level: 71\nRadius: Medium\nLimited to: 2\nImplicits: 0\n15% increased Cold Damage\nWith at least 40 Dexterity in Radius, Melee Damage\ndealt by Frost Blades Penetrates 15% Cold Resistance\nWith at least 40 Dexterity in Radius, Frost Blades has 25% increased Projectile Speed"
+ },
+ {
+  "name": "10.xml#4 Sulphur Flask",
+  "raw": "Rarity: MAGIC\nDabbler's Sulphur Flask of the Skunk\nUnique ID: 416241155920ec59f8fd42d448a75f86718402bf9d38a05972a357b19e429835\nItem Level: 52\nQuality: 0\nLevelReq: 40\nImplicits: 1\nCreates Consecrated Ground on Use\n32% reduced Duration\n49% less Duration\n25% increased effect\nImmunity to Poison during Flask Effect"
+ },
+ {
+  "name": "10.xml#5 The Pandemonius",
+  "raw": "Rarity: UNIQUE\nThe Pandemonius\nJade Amulet\nUnique ID: e921071994ac80a2cf8923b2ce677fd6366059c663df8eca05361384c2b50929\nItem Level: 72\nLevelReq: 64\nImplicits: 1\n+29 to Dexterity\n22% increased Cold Damage\n+35% to Cold Resistance\nChill Enemy for 1 second when Hit, reducing their Action Speed by 30%\nBlind Chilled Enemies on Hit\nDamage Penetrates 20% Cold Resistance against Chilled Enemies\nCorrupted"
+ },
+ {
+  "name": "10.xml#6 Oskarm",
+  "raw": "Rarity: UNIQUE\nOskarm\nNubuck Gloves\nEvasion: 114\nEvasionBasePercentile: 0.3846\nUnique ID: 9954781949789d57857651de2d92b74324b4f3c208a6d7055dba6debe1dfca34\nItem Level: 75\nQuality: 0\nSockets: G-B-G-R\nLevelReq: 33\nImplicits: 0\nTrigger Level 10 Assassin's Mark when you Hit a Rare or Unique Enemy and have no Mark\n+12% chance to Suppress Spell Damage\n31% increased Global Accuracy Rating\n+49 to maximum Life\n-14% to Chaos Resistance\n2% increased Attack Critical Strike Chance per 200 Accuracy Rating"
+ },
+ {
+  "name": "10.xml#7 Silver Flask",
+  "raw": "Rarity: MAGIC\nApprentice's Silver Flask of the Dove\nUnique ID: bc5e7251532e94fe601c6c7a8b565000b9f8bfc1ddf1c1ea87a9a5130d4d42de\nItem Level: 84\nQuality: 20\nLevelReq: 65\nImplicits: 0\n14% reduced Charges per use\n17% increased Attack Speed during Flask effect"
+ },
+ {
+  "name": "10.xml#8 Tempest Grip",
+  "raw": "Rarity: RARE\nTempest Grip\nTwo-Stone Ring\nUnique ID: cb42cd9f92131dd9db79178f76da34220722753c2bdc183b541f15073a7e5b3a\nItem Level: 85\nLevelReq: 54\nImplicits: 1\n+15% to Fire and Lightning Resistances\n+41 to Intelligence\nAdds 9 to 17 Fire Damage to Attacks\n+16% to all Elemental Resistances\n+38% to Lightning Resistance\n{crafted}+55 to maximum Life"
+ },
+ {
+  "name": "10.xml#9 Diamond Flask",
+  "raw": "Rarity: MAGIC\nPractitioner's Diamond Flask of the Antelope\nUnique ID: ce51d66995fc7ff3b53275d48e680b240098b1e29d4c50db93e8d9f44ee250f3\nItem Level: 60\nQuality: 0\nLevelReq: 38\nImplicits: 0\n20% reduced Charges per use\n50% increased Evasion Rating during Flask effect"
+ },
+ {
+  "name": "10.xml#10 Replica Three-step Assault",
+  "raw": "Rarity: UNIQUE\nReplica Three-step Assault\nShagreen Boots\nEvasion: 237\nEvasionBasePercentile: 0.3962\nUnique ID: 893e9fee8e1146a6988efd8889103da6e22e56e585eec5824017d7b21d964a37\nItem Level: 75\nQuality: 0\nSockets: B-G-G-G\nLevelReq: 55\nImplicits: 1\n{crafted}6% increased Movement Speed if you haven't been Hit Recently\n+33 to Dexterity\n22% increased Evasion Rating\n+58 to maximum Life\n25% increased Movement Speed\n28% increased Elusive Effect\n10% increased Movement Speed if you've Hit an Enemy Recently"
+ },
+ {
+  "name": "10.xml#11 Starkonja's Head",
+  "raw": "Rarity: UNIQUE\nStarkonja's Head\nSilken Hood\nEvasion: 760\nEvasionBasePercentile: 0.4544\nUnique ID: d1c8022994249bce7a466e240e60d0e5a8cc8c2593d816892120c7fea49f9342\nItem Level: 69\nQuality: 0\nSockets: G-R-G G\nLevelReq: 60\nImplicits: 0\n+65 to Dexterity\n50% reduced Damage when on Low Life\n10% increased Attack Speed\n25% increased Global Critical Strike Chance\n110% increased Evasion Rating\n+95 to maximum Life\n150% increased Global Evasion Rating when on Low Life"
+ },
+ {
+  "name": "10.xml#12 Tabula Rasa",
+  "raw": "Rarity: UNIQUE\nTabula Rasa\nSimple Robe\nUnique ID: 74a600ec52ec7653565a7b7114fd686ae70729df0478b964c53f0fd780070d9d\nItem Level: 83\nQuality: 11\nSockets: W-W-W-W-W-W\nImplicits: 0"
+ },
+ {
+  "name": "10.xml#13 Eternal Life Flask",
+  "raw": "Rarity: MAGIC\nEbullient Eternal Life Flask of Warding\nUnique ID: 38d67c3398fcaef9eb35b34ce069f328fb78ab0956699f1a4c8a9c53d56f66bf\nItem Level: 70\nQuality: 0\nLevelReq: 65\nImplicits: 0\n50% reduced Amount Recovered\n135% increased Recovery rate\n50% of Recovery applied Instantly\nRemoves Curses on use"
+ },
+ {
+  "name": "10.xml#14 White Wind",
+  "raw": "Rarity: UNIQUE\nWhite Wind\nImperial Skean\nUnique ID: 8b375ccdd21123d598ad4f1418f1694fecc550232dbf46940bc46f67a96e39b1\nItem Level: 83\nQuality: 20\nSockets: R-R-R\nLevelReq: 66\nImplicits: 1\n30% increased Global Critical Strike Chance\nAdds 188 to 316 Cold Damage\n15% increased Attack Speed\n+1348 to Evasion Rating\n196% increased Cold Damage while your Off Hand is empty\n+34% chance to Suppress Spell Damage while your Off Hand is empty"
+ },
+ {
+  "name": "10.xml#15 Quicksilver Flask",
+  "raw": "Rarity: MAGIC\nApprentice's Quicksilver Flask of the Hare\nUnique ID: 63ea70c5d7259e7ac6a68e946399997d1c5db92f50965c8ac2b21d6ab9c8242e\nItem Level: 15\nQuality: 0\nLevelReq: 11\nImplicits: 0\n16% reduced Charges per use\n8% increased Movement Speed during Flask effect"
+ },
+ {
+  "name": "10.xml#16 Hate Band",
+  "raw": "Rarity: RARE\nHate Band\nTwo-Stone Ring\nUnique ID: 98b2454d76f7f77c9ed39b5d4a0686fcaab712257712816b35ee80417ad8238c\nItem Level: 83\nLevelReq: 57\nImplicits: 1\n+14% to Fire and Lightning Resistances\nAdds 10 to 24 Cold Damage to Attacks\n+34 to maximum Energy Shield\n+55 to maximum Life\n13% increased Rarity of Items found\n+31% to Fire Resistance\n+44% to Lightning Resistance\nCorrupted"
+ },
+ {
+  "name": "10.xml#17 Foe Twine",
+  "raw": "Rarity: RARE\nFoe Twine\nLeather Belt\nUnique ID: e77bf96579296115c513fb9d715089aaead8237dfd41eaaefa8481b7a7b4f195\nItem Level: 75\nLevelReq: 54\nImplicits: 1\n+31 to maximum Life\n+38 to maximum Energy Shield\n+60 to maximum Life\n+35% to Fire Resistance\n+41% to Cold Resistance\n{crafted}+16% to Fire and Cold Resistances"
+ },
+ {
+  "name": "11.xml#5 The Pandemonius",
+  "raw": "Rarity: UNIQUE\nThe Pandemonius\nJade Amulet\nUnique ID: e921071994ac80a2cf8923b2ce677fd6366059c663df8eca05361384c2b50929\nItem Level: 72\nLevelReq: 64\nImplicits: 2\n{crafted}Allocates Panopticon\n+29 to Dexterity\n22% increased Cold Damage\n+35% to Cold Resistance\nChill Enemy for 1 second when Hit, reducing their Action Speed by 30%\nBlind Chilled Enemies on Hit\nDamage Penetrates 20% Cold Resistance against Chilled Enemies\nCorrupted"
+ },
+ {
+  "name": "11.xml#6 Oskarm",
+  "raw": "Rarity: UNIQUE\nOskarm\nNubuck Gloves\nEvasion: 114\nEvasionBasePercentile: 0.3846\nUnique ID: 9954781949789d57857651de2d92b74324b4f3c208a6d7055dba6debe1dfca34\nItem Level: 75\nQuality: 0\nSockets: G-B-G-R\nLevelReq: 33\nImplicits: 2\n{tags:caster,curse}{range:1}Curse Enemies with Elemental Weakness on Hit, with (40-48)% increased Effect\n{tags:frenzy_charge}+1 to Maximum Frenzy Charges\nTrigger Level 10 Assassin's Mark when you Hit a Rare or Unique Enemy and have no Mark\n+12% chance to Suppress Spell Damage\n40% increased Global Accuracy Rating\n+49 to maximum Life\n-14% to Chaos Resistance\n2% increased Attack Critical Strike Chance per 200 Accuracy Rating\nCorrupted"
+ },
+ {
+  "name": "11.xml#11 Starkonja's Head",
+  "raw": "Rarity: UNIQUE\nStarkonja's Head\nSilken Hood\nEvasion: 760\nEvasionBasePercentile: 0.4544\nUnique ID: d1c8022994249bce7a466e240e60d0e5a8cc8c2593d816892120c7fea49f9342\nItem Level: 69\nQuality: 0\nSockets: G-R-G G\nLevelReq: 60\nImplicits: 1\n{crafted}40% increased Frost Blades Damage\n+65 to Dexterity\n50% reduced Damage when on Low Life\n10% increased Attack Speed\n25% increased Global Critical Strike Chance\n110% increased Evasion Rating\n+95 to maximum Life\n150% increased Global Evasion Rating when on Low Life"
+ },
+ {
+  "name": "11.xml#18 Bottled Faith",
+  "raw": "Rarity: UNIQUE\nBottled Faith\nSulphur Flask\nLeague: Synthesis\nVariant: Pre 3.15.0\nVariant: Pre 3.16.0\nVariant: Current\nSelected Variant: 3\nSulphur Flask\nQuality: 20\nLevelReq: 35\nImplicits: 0\nCreates Consecrated Ground on Use\n{variant:1}{range:0.5}(30-50)% increased Duration\n{variant:2}{range:0.5}(20-40)% increased Duration\n{variant:3}{range:1}(15-30)% reduced Duration\nConsecrated Ground created by this Flask has Tripled Radius\n{variant:1}{range:0.5}+(1.0-2.0)% to Critical Strike Chance against Enemies on Consecrated Ground during Effect\n{variant:2,3}{range:1}(100-150)% increased Critical Strike Chance against Enemies on Consecrated Ground during Effect\n{range:1}Consecrated Ground created during Effect applies (7-10)% increased Damage taken to Enemies"
+ },
+ {
+  "name": "11.xml#19 Maelstrom Mantle",
+  "raw": "Rarity: RARE\nMaelstrom Mantle\nAssassin's Garb\nEvasion: 932\nEvasionBasePercentile: 0.0631\nHunter Item\nCrusader Item\nItem Level: 83\nQuality: 20\nSockets: R-B-B-R-G-G\nLevelReq: 68\nImplicits: 1\n3% increased Movement Speed\n+35 to Evasion Rating\n+108 to maximum Life\nRegenerate 31.7 Life per second\n15% chance to gain a Power Charge on Critical Strike\nYou can apply an additional Curse\nAttacks have +1.5% to Critical Strike Chance"
+ },
+ {
+  "name": "12.xml#1 Darkray Vectors",
+  "raw": "Rarity: UNIQUE\nDarkray Vectors\nDragonscale Boots\nArmour: 212\nArmourBasePercentile: 0.1253\nEvasion: 212\nEvasionBasePercentile: 0.1253\nUnique ID: 22d688da87e8ece43b9e670746020a09dcda000831554bf984b941b606ae3b36\nItem Level: 77\nQuality: 20\nSockets: R-R-G-R\nLevelReq: 65\nImplicits: 0\n52% increased Armour and Evasion\n10% increased Evasion Rating per Frenzy Charge\n+39% to Lightning Resistance\n5% increased Movement Speed per Frenzy Charge\n+1 to Maximum Frenzy Charges\n40% reduced Frenzy Charge Duration\n25% reduced Light Radius"
+ },
+ {
+  "name": "12.xml#2 Starkonja's Head",
+  "raw": "Rarity: UNIQUE\nStarkonja's Head\nSilken Hood\nEvasion: 893\nEvasionBasePercentile: 0.6574\nUnique ID: 557996346c92d4e8b0b619d6b55ec0f609c6e8b66bfc2daa661f2bd1ddf5c409\nItem Level: 83\nQuality: 20\nSockets: G G-G R\nLevelReq: 60\nImplicits: 0\n+59 to Dexterity\n50% reduced Damage when on Low Life\n10% increased Attack Speed\n25% increased Global Critical Strike Chance\n122% increased Evasion Rating\n+99 to maximum Life\n150% increased Global Evasion Rating when on Low Life"
+ },
+ {
+  "name": "12.xml#3 Fate Gyre",
+  "raw": "Rarity: RARE\nFate Gyre\nSapphire Ring\nUnique ID: 74cb4919a63cb290087b38ecb13fe6cba525ef8db54cc85261e60094ee8712fc\nItem Level: 85\nLevelReq: 57\nImplicits: 1\n+28% to Cold Resistance\nAdds 14 to 20 Cold Damage\nAdds 16 to 20 Lightning Damage\n+41% to Fire Resistance\n+42% to Cold Resistance\n+44% to Lightning Resistance\n{crafted}+47 to maximum Life"
+ },
+ {
+  "name": "12.xml#4 Diamond Flask",
+  "raw": "Rarity: MAGIC\nDabbler's Diamond Flask of the Gazelle\nUnique ID: 4b83765a5a08a70bd813f924b219facaf4355332580413e952708c8d251dc091\nItem Level: 74\nQuality: 0\nLevelReq: 40\nImplicits: 0\n32% reduced Duration\n25% increased effect\n44% increased Evasion Rating during Flask effect"
+ },
+ {
+  "name": "12.xml#5 Jade Flask",
+  "raw": "Rarity: MAGIC\nAbecedarian's Jade Flask of Rupturing\nUnique ID: 643829cf43b3f278ededb54b6dcd5471d3c30f3c91139b8f43c4c7014453586f\nItem Level: 74\nQuality: 0\nLevelReq: 40\nImplicits: 0\n33% reduced Duration\n25% increased effect\n38% increased Critical Strike Chance during Flask Effect"
+ },
+ {
+  "name": "12.xml#6 Bloodseeker",
+  "raw": "Rarity: UNIQUE\nBloodseeker\nHellion's Paw\nUnique ID: 53e97fa62fa90eee24dd2fc27ea0c48ce9b12fb7c489a0c5e83e5355d2acca21\nItem Level: 85\nQuality: 20\nSockets: B-B-B\nLevelReq: 62\nImplicits: 1\n1.6% of Physical Attack Damage Leeched as Life\n163% increased Physical Damage\nAdds 10 to 12 Physical Damage\n5% increased Attack Speed\n1.2% of Physical Attack Damage Leeched as Life\n5% increased Movement Speed\nLife Leech from Hits with this Weapon is instant"
+ },
+ {
+  "name": "12.xml#7 Eternal Life Flask",
+  "raw": "Rarity: MAGIC\nEbullient Eternal Life Flask of Warding\nUnique ID: ce31f6cb7db308997ba26c02884a934d5ae014a3cc12e2a17b448459b138b7df\nItem Level: 71\nQuality: 0\nLevelReq: 65\nImplicits: 0\n48% reduced Amount Recovered\n135% increased Recovery rate\n50% of Recovery applied Instantly\nRemoves Curses on use"
+ },
+ {
+  "name": "12.xml#8 The Saviour",
+  "raw": "Rarity: UNIQUE\nThe Saviour\nLegion Sword\nUnique ID: 124f8da0ad3cc5ebc54da02ecb68e47c7b419107c69822acaa4bfbdf58210608\nItem Level: 86\nQuality: 20\nSockets: R-R-R\nLevelReq: 62\nImplicits: 1\n40% increased Global Accuracy Rating\nTriggers Level 20 Reflection when Equipped\n41% increased Physical Damage\nAdds 18 to 44 Physical Damage\n11% increased Attack Speed\n11% increased Critical Strike Chance"
+ },
+ {
+  "name": "12.xml#9 Rune Knuckle",
+  "raw": "Rarity: RARE\nRune Knuckle\nRuby Ring\nUnique ID: 7ffe95f87b5ad7d30b8d5d7aecb20a631b6a7a5552f7472b148a387e98d32981\nItem Level: 86\nLevelReq: 67\nImplicits: 1\n+30% to Fire Resistance\n+50 to Intelligence\n+17 to Evasion Rating\n+63 to maximum Mana\n+48% to Fire Resistance\n+30% to Lightning Resistance\n{crafted}+54 to maximum Life"
+ },
+ {
+  "name": "12.xml#10 Hrimburn",
+  "raw": "Rarity: UNIQUE\nHrimburn\nGoathide Gloves\nEvasion: 102\nEvasionBasePercentile: 0.8\nUnique ID: 4e6a25ac010e7b8e174eabf2a7064beed3906d32fcf099b6796fbbc15bd460b4\nItem Level: 75\nQuality: 20\nSockets: B-G-G-B\nLevelReq: 9\nImplicits: 0\n+29 to Strength\nAdds 7 to 15 Cold Damage to Spells and Attacks\n+45 to Evasion Rating\n+25% to Cold Resistance\n50% of Physical Damage Converted to Cold Damage\nReflects 10 Cold Damage to Melee Attackers\nYour Cold Damage can Ignite"
+ },
+ {
+  "name": "12.xml#11 Basalt Flask",
+  "raw": "Rarity: MAGIC\nAlchemist's Basalt Flask of the Tortoise\nUnique ID: ae976f052f22949638f32c62812a2a375fd9301bffd22a56299200d90948fc42\nItem Level: 88\nQuality: 6\nLevelReq: 64\nImplicits: 1\nTaunts nearby Enemies on use\n24% reduced Duration\n25% increased effect\n49% increased Armour during Flask effect"
+ },
+ {
+  "name": "12.xml#14 Quicksilver Flask",
+  "raw": "Rarity: MAGIC\nAbecedarian's Quicksilver Flask of the Falcon\nUnique ID: 5580ae49339e0cea78a852eba0412f29df3a95a69d25261b3565147c52ed1fc7\nItem Level: 83\nQuality: 0\nLevelReq: 16\nImplicits: 0\n35% reduced Duration\n25% increased effect\n9% increased Attack Speed during Flask effect"
+ },
+ {
+  "name": "12.xml#15 Replica Hyrri's Truth",
+  "raw": "Rarity: UNIQUE\nReplica Hyrri's Truth\nJade Amulet\nUnique ID: 9782bece311d438816b0e541c43df733f3d8c7a07701e2f342d6c5be4d23b40e\nItem Level: 69\nLevelReq: 64\nImplicits: 2\n{crafted}Allocates Panopticon\n+25 to Dexterity\nGrants Level 22 Hatred Skill\n+34 to Dexterity\nAdds 13 to 24 Physical Damage to Attacks\nAdds 13 to 25 Cold Damage to Attacks\n+24% to Global Critical Strike Multiplier\n0.85% of Cold Damage Leeched as Life\nHatred has 100% increased Mana Reservation Efficiency"
+ },
+ {
+  "name": "12.xml#16 Tabula Rasa",
+  "raw": "Rarity: UNIQUE\nTabula Rasa\nSimple Robe\nUnique ID: 6bfe4265681f83fc4eda087cbebaa2b106aabd55e360c86cecfce97f0ed764c9\nItem Level: 76\nQuality: 0\nSockets: W-W-W-W-W-W\nImplicits: 0"
+ },
+ {
+  "name": "12.xml#17 Dread Leash",
+  "raw": "Rarity: RARE\nDread Leash\nHeavy Belt\nUnique ID: 1ff823cc92cb20fd880ef7fd647e16afc3997febdb5da583677253f03beb080b\nItem Level: 84\nLevelReq: 67\nImplicits: 1\n+25 to Strength\n+53 to Strength\n+314 to Armour\n+47 to maximum Mana\n+42% to Cold Resistance\n+48% to Lightning Resistance\n29% increased Flask Life Recovery rate"
+ },
+ {
+  "name": "13.xml#18 Terminus Est",
+  "raw": "Rarity: UNIQUE\nTerminus Est\nTiger Sword\nVariant: Pre 2.6.0\nVariant: Pre 3.11.0\nVariant: Current\nSelected Variant: 3\nTiger Sword\nQuality: 20\nSockets: G-G-G-G-G-G\nLevelReq: 51\nImplicits: 2\n{variant:1}18% increased Accuracy Rating\n{variant:2,3}+360 to Accuracy Rating\n{variant:1}{range:0.5}(120-180)% increased Physical Damage\n{variant:2}{range:0.5}(220-260)% increased Physical Damage\n{variant:3}{range:1}(180-220)% increased Physical Damage\n{variant:2,3}{range:1}(50-75)% increased Critical Strike Chance\n20% increased Attack Speed\n+10 Mana Gained on Kill\n10% increased Movement Speed\nGain a Frenzy Charge on Critical Strike"
+ },
+ {
+  "name": "14.xml#1 Plague Crack",
+  "raw": "Rarity: RARE\nPlague Crack\nKarui Sceptre\nUnique ID: e71359d7990d27f090bfac570dcf6b635d3f00d1f4f926d23544cf56e13946f9\nItem Level: 84\nQuality: 26\nSockets: B-B-B\nLevelReq: 56\nImplicits: 1\n26% increased Elemental Damage\n18% reduced Attribute Requirements\n70% increased Fire Damage\n17% increased Attack Speed\n32% increased Burning Damage\n21% chance to Ignite\n{crafted}28% increased Damage over Time"
+ },
+ {
+  "name": "14.xml#2 Impresence",
+  "raw": "Rarity: UNIQUE\nImpresence\nOnyx Amulet\nUnique ID: a8c930d634a45ae55759c28f00e1523670d5b852ce55226d3585b21b24460b17\nElder Item\nItem Level: 85\nLevelReq: 64\nImplicits: 1\n+13 to all Attributes\nAdds 21 to 35 Fire Damage\n+70 to maximum Life\n+23% to Fire Resistance\nRegenerate 1% of Life per second\nFlammability has no Reservation if Cast as an Aura\nGain Maddening Presence for 10 seconds when you Kill a Rare or Unique Enemy\nCorrupted"
+ },
+ {
+  "name": "14.xml#3 Storm's Gift",
+  "raw": "Rarity: UNIQUE\nStorm's Gift\nAssassin's Mitts\nEvasion: 403\nEvasionBasePercentile: 0.3215\nEnergy Shield: 128\nEnergyShieldBasePercentile: 0.2432\nUnique ID: 05b6e105e27f68f4d900802547744961233555e455696e475de9fe3d07adfb9d\nItem Level: 82\nQuality: 0\nSockets: R-R-R-G\nLevelReq: 58\nImplicits: 2\n8% increased Fire Damage\n+13 to maximum Energy Shield\n30% increased Damage over Time\n266% increased Evasion and Energy Shield\n+28% to Lightning Resistance\nEnemies you kill are Shocked\nShocks you inflict spread to other Enemies within a Radius of 15"
+ },
+ {
+  "name": "14.xml#4 Legacy of Fury",
+  "raw": "Rarity: UNIQUE\nLegacy of Fury\nWyrmscale Boots\nArmour: 368\nArmourBasePercentile: 0.3712\nEvasion: 368\nEvasionBasePercentile: 0.3712\nUnique ID: 221879bb8efba5b42753efbfe41a3a042da5bb9dcf0c899690ef67c503b8f60f\nItem Level: 86\nQuality: 9\nSockets: R-R-R R\nLevelReq: 51\nImplicits: 0\n274% increased Armour and Evasion\n30% increased Movement Speed\nNearby Enemies are Scorched\n43% increased Effect of Scorch\n37% chance when you Kill a Scorched Enemy to Burn Each surrounding\nEnemy for 4 seconds, dealing 8% of the Killed Enemy's Life as Fire Damage per second"
+ },
+ {
+  "name": "14.xml#5 Rise of the Phoenix",
+  "raw": "Rarity: UNIQUE\nRise of the Phoenix\nMosaic Kite Shield\nArmour: 306\nArmourBasePercentile: 0.6004\nEnergy Shield: 61\nEnergyShieldBasePercentile: 0.4843\nUnique ID: f7e8106a41ecac01997a3ef62354d1454d32b0914f11ee3e3b7be99c02a5fdd9\nItem Level: 83\nQuality: 7\nSockets: R-R-B\nLevelReq: 65\nImplicits: 1\n+8% to all Elemental Resistances\n84% increased Armour and Energy Shield\n+56 to maximum Life\nRegenerate 19.5 Life per second\n+5% to maximum Fire Resistance\n+24% to Fire Resistance\n+25% to Fire Resistance while on Low Life\n10% increased Movement Speed when on Low Life\nCannot be Ignited while on Low Life"
+ },
+ {
+  "name": "14.xml#6 Basalt Flask",
+  "raw": "Rarity: MAGIC\nDabbler's Basalt Flask of Bracing\nUnique ID: 8e319d15ea3dc7b94b835f8ba7ee94e32cb3a53c3c97431e9087167a11bc7e32\nItem Level: 82\nQuality: 0\nLevelReq: 40\nImplicits: 1\nTaunts nearby Enemies on use\n31% reduced Duration\n25% increased effect\n59% increased Block and Stun Recovery during Flask effect"
+ },
+ {
+  "name": "14.xml#7 Divine Life Flask",
+  "raw": "Rarity: MAGIC\nEffervescent Divine Life Flask of Plenty\nUnique ID: c2fc3da02320a71457e5dbf480ba1e03cc59711a120d4515f4e8f9a01e44a292\nItem Level: 60\nQuality: 0\nLevelReq: 60\nImplicits: 0\n41% reduced Amount Recovered\n135% increased Recovery rate\n50% of Recovery applied Instantly\nRecover an additional 19% of Flask's Life Recovery Amount over 10 seconds if used while not on Full Life"
+ },
+ {
+  "name": "14.xml#8 Quicksilver Flask",
+  "raw": "Rarity: MAGIC\nAnalyst's Quicksilver Flask of the Hare\nUnique ID: 40f4cf83ef9cfad6f8b6056084d7192981e5dc2d7b3953b12781d4de6bce25d5\nItem Level: 52\nQuality: 0\nLevelReq: 28\nImplicits: 0\n23% increased Duration\n7% increased Movement Speed during Flask effect"
+ },
+ {
+  "name": "14.xml#11 Sulphur Flask",
+  "raw": "Rarity: MAGIC\nDabbler's Sulphur Flask of Persistence\nUnique ID: bf918de0c4c2f7eb33087f4eaaaaeba0bf3fece8046354d7b1bfb6fa290280d1\nItem Level: 58\nQuality: 0\nLevelReq: 40\nImplicits: 1\nCreates Consecrated Ground on Use\n28% reduced Duration\n25% increased effect\n31% Chance to Avoid being Stunned during Flask Effect"
+ },
+ {
+  "name": "14.xml#12 Torment Bind",
+  "raw": "Rarity: RARE\nTorment Bind\nLeather Belt\nUnique ID: b861746243d071d557ec629da63b781cfab48e3a30aeb2b07289df745acffca8\nItem Level: 78\nLevelReq: 59\nImplicits: 1\n+39 to maximum Life\n+36 to Strength\n10% reduced Enemy Stun Threshold\n+98 to maximum Life\nRegenerate 80.8 Life per second"
+ },
+ {
+  "name": "14.xml#13 Granite Flask",
+  "raw": "Rarity: MAGIC\nPractitioner's Granite Flask of the Pangolin\nUnique ID: df467de9392e6726e3f6c4d59777f07ed7ae82278933ce43f497fc6a8037fef6\nItem Level: 71\nQuality: 20\nLevelReq: 46\nImplicits: 0\n21% reduced Charges per use\n55% increased Armour during Flask effect"
+ },
+ {
+  "name": "14.xml#14 Rune Guardian",
+  "raw": "Rarity: RARE\nRune Guardian\nHarlequin Mask\nEvasion: 167\nEvasionBasePercentile: 0.3571\nEnergy Shield: 34\nEnergyShieldBasePercentile: 0.3333\nUnique ID: da350d2002acdeeb4acb691d02319dd1146cbc255d282bea71e143081f1cf5e9\nElder Item\nItem Level: 85\nQuality: 0\nSockets: B-R-B-B\nLevelReq: 57\nImplicits: 0\nSocketed Gems are Supported by Level 20 Concentrated Effect\n+42 to Intelligence\n+41 to maximum Life\n24% increased Rarity of Items found\n24% increased Area Damage\n{crafted}7% increased Life Regeneration rate"
+ },
+ {
+  "name": "14.xml#15 Inpulsa's Broken Heart",
+  "raw": "Rarity: UNIQUE\nInpulsa's Broken Heart\nSadist Garb\nEvasion: 528\nEvasionBasePercentile: 0.967\nEnergy Shield: 116\nEnergyShieldBasePercentile: 1\nUnique ID: cf4f8f0c9bdb16a1d120b46b252aa38afaf00fc44ce46bce57b7d35d5a0bc395\nItem Level: 72\nQuality: 8\nSockets: B-B-G-B-R B\nLevelReq: 68\nImplicits: 0\n+78 to maximum Life\n49% increased Damage if you have Shocked an Enemy Recently\n16% increased Effect of Shock\nShocked Enemies you Kill Explode, dealing 5% of\ntheir Life as Lightning Damage which cannot Shock\nUnaffected by Shock"
+ },
+ {
+  "name": "14.xml#16 Havoc Nail",
+  "raw": "Rarity: RARE\nHavoc Nail\nOpal Ring\nUnique ID: 57dc43d4dd05473658c914560eb7e7904af353769202d76197e716400bc47214\nItem Level: 78\nLevelReq: 80\nImplicits: 1\n23% increased Elemental Damage\n+23 to Intelligence\n+162 to Accuracy Rating\n+72 to maximum Life\nRegenerate 18.1 Life per second\n{crafted}+29 to maximum Energy Shield"
+ },
+ {
+  "name": "14.xml#17 Plague Circle",
+  "raw": "Rarity: RARE\nPlague Circle\nTopaz Ring\nUnique ID: 79c1e780e92f2285e2c3df796f099edf1da718a6abc4230b89dbc83ce3ebfeb4\nItem Level: 79\nLevelReq: 54\nImplicits: 1\n+25% to Lightning Resistance\n+15 to Strength\n+77 to maximum Life\nRegenerate 37.7 Life per second\n+41% to Cold Resistance\n{crafted}+26 to maximum Energy Shield"
+ },
+ {
+  "name": "15.xml#1 Lioneye's Fall",
+  "raw": "Rarity: UNIQUE\nLioneye's Fall\nViridian Jewel\nUnique ID: cf774df827a1d228b8170050886afdc6c746349ce56321412607b0229e6a8937\nItem Level: 85\nRadius: Medium\nImplicits: 1\nOverwhelm 2% Physical Damage Reduction\nMelee and Melee Weapon Type modifiers in Radius are Transformed to Bow Modifiers\nCorrupted"
+ },
+ {
+  "name": "15.xml#2 Lord of Steel",
+  "raw": "Rarity: UNIQUE\nLord of Steel\nViridian Jewel\nUnique ID: 731226401f8916e2ffabbf5b4b37c8cb5f047832fa8f5d1358ba5eb7dec48603\nItem Level: 80\nLimited to: 1\nImplicits: 1\nOverwhelm 2% Physical Damage Reduction\n5% increased Impale Effect\nCall of Steel deals Reflected Damage with 43% increased Area of Effect\nCall of Steel has 97% increased Use Speed\nCorrupted"
+ },
+ {
+  "name": "15.xml#3 Honour Circle",
+  "raw": "Rarity: RARE\nHonour Circle\nTopaz Ring\nUnique ID: 90340b10d12929b099a07c2699717267f2a19652c95251a676dbd17299d86a10\nItem Level: 85\nLevelReq: 67\nImplicits: 1\n+25% to Lightning Resistance\nAdds 4 to 10 Physical Damage to Attacks\n11% increased Rarity of Items found\n+36% to Fire Resistance\n+48% to Cold Resistance\n+36% to Lightning Resistance\n{crafted}+50 to maximum Life"
+ },
+ {
+  "name": "15.xml#4 Phoenix Urge",
+  "raw": "Rarity: RARE\nPhoenix Urge\nGoliath Greaves\nArmour: 196\nArmourBasePercentile: 0.0369\nUnique ID: 92cd4faf6a7a358e7bb2c34642e7ca503848a3ddf21d55c0288a521389958741\nItem Level: 75\nQuality: 10\nSockets: G-R-G-R\nLevelReq: 54\nImplicits: 0\n+42% to Fire Resistance\n+34% to Cold Resistance\n+10% to Lightning Resistance\n30% increased Movement Speed\n{crafted}+62 to maximum Life"
+ },
+ {
+  "name": "15.xml#5 Sorrow Charm",
+  "raw": "Rarity: RARE\nSorrow Charm\nTurquoise Amulet\nUnique ID: 421529e4cf2b35a6be2974f9af0d10b25a6fc01847608f52ebee9cc5e84a02c7\nItem Level: 82\nLevelReq: 65\nImplicits: 2\n{crafted}Allocates Vanquisher\n+19 to Dexterity and Intelligence\n+52 to Strength\n+27 to Intelligence\nAdds 15 to 25 Physical Damage to Attacks\n+44% to Lightning Resistance\n{crafted}+54 to maximum Life"
+ },
+ {
+  "name": "15.xml#7 Tabula Rasa",
+  "raw": "Rarity: UNIQUE\nTabula Rasa\nSimple Robe\nUnique ID: be96db56d7c936d949cffc1d1e6c6e62c942dbe7746c686ab7c1b8d32648d478\nItem Level: 80\nQuality: 0\nSockets: W-W-W-W-W-W\nImplicits: 0\nCorrupted"
+ },
+ {
+  "name": "15.xml#8 Asenath's Chant",
+  "raw": "Rarity: UNIQUE\nAsenath's Chant\nIron Circlet\nEnergy Shield: 134\nEnergyShieldBasePercentile: 0.6667\nUnique ID: c2018818836b88303b344b2df31bc0a3f715529b69d30dc3b7a0a6099b7314bf\nItem Level: 84\nQuality: 0\nSockets: R-B-R-G\nLevelReq: 8\nImplicits: 0\nTrigger a Socketed Spell when you Attack with a Bow, with a 0.3 second Cooldown\n15% increased Attack Speed\n14% increased Cast Speed\n+120 to maximum Energy Shield\n30% increased Mana Regeneration Rate\n5% increased Movement Speed\n36% increased Stun and Block Recovery"
+ },
+ {
+  "name": "15.xml#9 Diamond Flask",
+  "raw": "Rarity: MAGIC\nBottomless Diamond Flask of Incision\nUnique ID: 0a6906c483d148b6107605ad9b23261afd20288eec5a8178a17b63a175888c7a\nItem Level: 85\nQuality: 0\nLevelReq: 65\nImplicits: 0\n34% increased Charge Recovery\n50% increased Critical Strike Chance during Flask Effect"
+ },
+ {
+  "name": "15.xml#10 Corruption Trap",
+  "raw": "Rarity: RARE\nCorruption Trap\nRustic Sash\nUnique ID: cc7fc1ae245f237d72a5c7a7e6688069dce682239f5e2e844301859268291339\nItem Level: 85\nLevelReq: 64\nImplicits: 1\n23% increased Global Physical Damage\n+41 to Strength\n+78 to maximum Life\n+41% to Fire Resistance\n+41% to Cold Resistance\n{crafted}+254 to Armour and Evasion Rating"
+ },
+ {
+  "name": "15.xml#11 Haemophilia",
+  "raw": "Rarity: UNIQUE\nHaemophilia\nSerpentscale Gauntlets\nArmour: 83\nArmourBasePercentile: 0.5556\nEvasion: 83\nEvasionBasePercentile: 0.5556\nUnique ID: b3713cb777e274bc6878e6b18926afdc26edaa2580d85c3243d5df03195721ed\nItem Level: 84\nQuality: 0\nSockets: R-G-R-W\nLevelReq: 43\nImplicits: 0\n+26 to Strength\n25% increased Damage over Time\nAttacks have 25% chance to cause Bleeding\n38% increased Attack Damage against Bleeding Enemies\nBleeding Enemies you Kill Explode, dealing 5% of\ntheir Maximum Life as Physical Damage\n25% reduced Bleeding Duration\nCorrupted"
+ },
+ {
+  "name": "15.xml#12 Eternal Mana Flask",
+  "raw": "Rarity: MAGIC\nEnduring Eternal Mana Flask of the Mage\nItem Level: 66\nQuality: 20\nLevelReq: 65\nImplicits: 0\nRecovers 734 (augmented) Mana over 7 Seconds\nConsumes 8 of 42 Charges on use\nCurrently has 0 Charges\n66% reduced Amount Recovered\nFlask effect is not removed when Unreserved Mana is Filled\nFlask effect does not Queue\n20% reduced Mana Cost of Skills during Flask Effect"
+ },
+ {
+  "name": "16.xml#1 Replica Conqueror's Efficiency",
+  "raw": "Rarity: UNIQUE\nReplica Conqueror's Efficiency\nCrimson Jewel\nUnique ID: e74c3c39c01c84dd3f200e1f84ad6d7237517837f7c529a8b7494fbdc3d6cffe\nItem Level: 84\nLimited to: 1\nImplicits: 0\n4% increased Skill Effect Duration\n+5 to Maximum Rage\nNon-Channelling Skills have -9 to Total Mana Cost"
+ },
+ {
+  "name": "16.xml#2 The Pandemonius",
+  "raw": "Rarity: UNIQUE\nThe Pandemonius\nJade Amulet\nUnique ID: 1de194a5df7e3af88d395537c8c85ac2bffe8f263548a0ac58df2fdb03114db4\nItem Level: 72\nLevelReq: 64\nImplicits: 2\n{crafted}Allocates Overcharge\n+30 to Dexterity\n28% increased Cold Damage\n+38% to Cold Resistance\nChill Enemy for 1 second when Hit, reducing their Action Speed by 30%\nBlind Chilled Enemies on Hit\nDamage Penetrates 20% Cold Resistance against Chilled Enemies"
+ },
+ {
+  "name": "16.xml#3 Replica Tasalio's Sign",
+  "raw": "Rarity: UNIQUE\nReplica Tasalio's Sign\nSapphire Ring\nUnique ID: f56b46d68a095aeb36e548652d639cb7cc433a3a348568046807d9fb7f4c399f\nItem Level: 82\nLevelReq: 20\nImplicits: 1\n+25% to Cold Resistance\nAdds 17 to 35 Cold Damage to Spells and Attacks\n+251 to Evasion Rating\nYour Cold Damage cannot Freeze\nImmune to Chill\nAdds 60 to 80 Cold Damage against Chilled Enemies"
+ },
+ {
+  "name": "16.xml#4 Oskarm",
+  "raw": "Rarity: UNIQUE\nOskarm\nNubuck Gloves\nEvasion: 115\nEvasionBasePercentile: 0.4615\nUnique ID: 1c07a06a3a305deafe893cc4c2bfdd1ecb130c0370eee20100d29555dd82e833\nItem Level: 75\nQuality: 0\nSockets: B-B-B-B\nLevelReq: 33\nImplicits: 0\nTrigger Level 10 Assassin's Mark when you Hit a Rare or Unique Enemy and have no Mark\n+12% chance to Suppress Spell Damage\n37% increased Global Accuracy Rating\n+50 to maximum Life\n-14% to Chaos Resistance\n2% increased Attack Critical Strike Chance per 200 Accuracy Rating"
+ },
+ {
+  "name": "16.xml#5 Tabula Rasa",
+  "raw": "Rarity: UNIQUE\nTabula Rasa\nSimple Robe\nUnique ID: 0c24c62f7ebcf4a8502eaa8e9cd3140829c9ba41108bae7f0040f8e88a1b2b37\nItem Level: 55\nQuality: 0\nSockets: W-W-W-W-W-W\nImplicits: 0"
+ },
+ {
+  "name": "16.xml#6 Invasion Buckle",
+  "raw": "Rarity: RARE\nInvasion Buckle\nLeather Belt\nUnique ID: 4bf7d5b3b2c666a5297a8b14583dc1fce10463291bb36ebcdcbbad647e1575e7\nItem Level: 84\nLevelReq: 67\nImplicits: 1\n+28 to maximum Life\n+94 to maximum Life\n+32 to maximum Mana\n+43% to Fire Resistance\n+20% to Cold Resistance\n+47% to Lightning Resistance\n21% increased Flask Mana Recovery rate"
+ },
+ {
+  "name": "16.xml#8 Dying Sun",
+  "raw": "Rarity: UNIQUE\nDying Sun\nRuby Flask\nUnique ID: e3206c1a6b35790a732ff4fb52b89874f6b45af296598ed940f909d163258d7d\nItem Level: 86\nQuality: 0\nLevelReq: 68\nImplicits: 0\n141% increased Charges per use\n60% less Duration\n20% increased Area of Effect during Flask Effect\nSkills fire 2 additional Projectiles during Flask Effect"
+ },
+ {
+  "name": "16.xml#9 Beltimber Blade",
+  "raw": "Rarity: UNIQUE\nBeltimber Blade\nEternal Sword\nUnique ID: 872b8f922c2ce5d9522b57e33c5976cd71b88213e2a234a772eab94cd0841ce2\nItem Level: 85\nQuality: 0\nSockets: G-B G\nLevelReq: 66\nImplicits: 1\n+475 to Accuracy Rating\n199% increased Physical Damage\n20% increased Attack Speed\n80% increased Evasion Rating while moving\nSkills fire 2 additional Projectiles if you've used a Movement Skill Recently\nFar Shot"
+ },
+ {
+  "name": "16.xml#10 Dire Urge",
+  "raw": "Rarity: RARE\nDire Urge\nShagreen Boots\nEvasion: 273\nEvasionBasePercentile: 0.3404\nUnique ID: 5d7ddae23dcbb1a1528d72b36e61f9d3491826243cf87b786063c48fdbfc81ff\nItem Level: 80\nQuality: 10\nSockets: R-B-R-G\nLevelReq: 55\nImplicits: 0\n32% increased Evasion Rating\n+35% to Fire Resistance\n+31% to Lightning Resistance\n30% increased Movement Speed\n12% increased Stun and Block Recovery\n{crafted}+66 to maximum Life"
+ },
+ {
+  "name": "16.xml#11 Goldrim",
+  "raw": "Rarity: UNIQUE\nGoldrim\nLeather Cap\nEvasion: 67\nEvasionBasePercentile: 0.375\nUnique ID: 1002595f4c1678d9101817108961f540555eb13301456eb63d6dc0481ac5acf8\nItem Level: 49\nQuality: 0\nSockets: G-G-B-R\nImplicits: 0\n+45 to Evasion Rating\n10% increased Rarity of Items found\n+40% to all Elemental Resistances\nReflects 4 Physical Damage to Melee Attackers"
+ },
+ {
+  "name": "16.xml#12 Beltimber Blade",
+  "raw": "Rarity: UNIQUE\nBeltimber Blade\nEternal Sword\nUnique ID: 8196249855a4706f76632fa749f7fdbc8f5620933c388f1d9ce260876f17f7d4\nItem Level: 83\nQuality: 0\nSockets: G-B-G\nLevelReq: 66\nImplicits: 1\n+475 to Accuracy Rating\n212% increased Physical Damage\n20% increased Attack Speed\n80% increased Evasion Rating while moving\nSkills fire 2 additional Projectiles if you've used a Movement Skill Recently\nFar Shot"
+ },
+ {
+  "name": "16.xml#13 Eternal Mana Flask",
+  "raw": "Rarity: MAGIC\nEnduring Eternal Mana Flask of the Order\nUnique ID: fee7c9196662106ddf53ca7d52a21ecdf186b5acfac11c616b62aa86fea1fe5a\nItem Level: 84\nQuality: 20\nLevelReq: 65\nImplicits: 0\n66% reduced Amount Recovered\nFlask effect is not removed when Unreserved Mana is Filled\nFlask effect does not Queue\n{crafted}24% reduced Mana Cost of Skills during Flask Effect"
+ },
+ {
+  "name": "16.xml#16 Replica Tasalio's Sign",
+  "raw": "Rarity: UNIQUE\nReplica Tasalio's Sign\nSapphire Ring\nUnique ID: adcd33916d209e4424b3a1544700a41996bb9d8c4cbf9f19ead0037c7b165bc5\nItem Level: 84\nLevelReq: 20\nImplicits: 1\n+21% to Cold Resistance\nAdds 18 to 35 Cold Damage to Spells and Attacks\n+295 to Evasion Rating\nYour Cold Damage cannot Freeze\nImmune to Chill\nAdds 60 to 80 Cold Damage against Chilled Enemies"
+ },
+ {
+  "name": "16.xml#17 Quicksilver Flask",
+  "raw": "Rarity: MAGIC\nDabbler's Quicksilver Flask of the Lynx\nUnique ID: 436199e7f46b9189727a51b36c35942444332f06214b9f74a48ead2efb1fe93f\nItem Level: 75\nQuality: 0\nLevelReq: 52\nImplicits: 1\n{crafted}Used when you use a Life Flask\n28% reduced Duration\n25% increased effect\n11% increased Movement Speed during Flask effect"
+ },
+ {
+  "name": "16.xml#18 Eternal Life Flask",
+  "raw": "Rarity: MAGIC\nEffervescent Eternal Life Flask of Allaying\nUnique ID: daf70562d21a5a36dabc89d39998f38d05452e4a2e646510c9279c6e218c96fb\nItem Level: 70\nQuality: 0\nLevelReq: 65\nImplicits: 0\n41% reduced Amount Recovered\n135% increased Recovery rate\n50% of Recovery applied Instantly\nGrants Immunity to Bleeding for 14 seconds if used while Bleeding\nGrants Immunity to Corrupted Blood for 14 seconds if used while affected by Corrupted Blood"
+ },
+ {
+  "name": "2.xml#1 Energy From Within",
+  "raw": "Rarity: UNIQUE\nEnergy From Within\nCobalt Jewel\nUnique ID: bbba0819a5dcd92cd8a18fff1b01e2f3d58813a3523f31ccbd8eff1f3e91bf4e\nItem Level: 75\nRadius: Large\nImplicits: 0\n6% increased maximum Energy Shield\nIncreases and Reductions to Life in Radius are Transformed to apply to Energy Shield"
+ },
+ {
+  "name": "2.xml#2 Ghoul Hand",
+  "raw": "Rarity: RARE\nGhoul Hand\nSoldier Gloves\nArmour: 243\nArmourBasePercentile: 0.9183\nEnergy Shield: 50\nEnergyShieldBasePercentile: 1\nUnique ID: 543c9d24eb0041b173637731a5870938a98d771bbf80514c6246493ae191aa44\nItem Level: 85\nQuality: 0\nSockets: R-B-B-R\nLevelReq: 51\nImplicits: 0\n+52 to Strength\n+32 to Dexterity\n+33 to Intelligence\n138% increased Armour and Energy Shield\n+82 to maximum Life\n17% increased Stun and Block Recovery\nCorrupted"
+ },
+ {
+  "name": "2.xml#3 Diamond Flask",
+  "raw": "Rarity: MAGIC\nProvisioned Diamond Flask of the Lynx\nUnique ID: 65997f1e43c8eae28157d6cc3da51e850e46ff9b5bac7f8e87541e8bbb77f637\nItem Level: 83\nQuality: 10\nLevelReq: 52\nImplicits: 0\n46% increased Charge Recovery\n25% reduced effect\n11% increased Movement Speed during Flask effect"
+ },
+ {
+  "name": "2.xml#4 Eternal Mana Flask",
+  "raw": "Rarity: MAGIC\nEnduring Eternal Mana Flask of the Mage\nUnique ID: f92cf08e4c50e47fb7787c108c802d3760a2ea6044044295b7478b5a2c4e2755\nItem Level: 75\nQuality: 0\nLevelReq: 65\nImplicits: 0\n66% reduced Amount Recovered\nFlask effect is not removed when Unreserved Mana is Filled\nFlask effect does not Queue\n21% reduced Mana Cost of Skills during Flask Effect"
+ },
+ {
+  "name": "2.xml#5 Aul's Uprising",
+  "raw": "Rarity: UNIQUE\nAul's Uprising\nOnyx Amulet\nUnique ID: 9d6c847b4febee8ebf4d6753ae6c55c6fa84779ad03a6fff5885695a75ffb8f6\nItem Level: 85\nLevelReq: 55\nImplicits: 2\n{crafted}Allocates Divine Judgement\n+13 to all Attributes\n+30 to Intelligence\n16% increased maximum Energy Shield\n+51 to maximum Life\nHits against Nearby Enemies have 50% increased Critical Strike Chance\nDiscipline has no Reservation"
+ },
+ {
+  "name": "2.xml#6 Moonstone Ring",
+  "raw": "Rarity: MAGIC\nIncandescent Moonstone Ring of Craft\nUnique ID: f242641249a472db7448609bc7b5666275b51c5bc2405ac30d487c8f08f40249\nItem Level: 86\nLevelReq: 54\nImplicits: 1\n+17 to maximum Energy Shield\n+42 to maximum Energy Shield\n{crafted}+30 to Dexterity"
+ },
+ {
+  "name": "2.xml#7 Basalt Flask",
+  "raw": "Rarity: MAGIC\nDabbler's Basalt Flask of the Hummingbird\nUnique ID: 0fd6ef1630ec5c365ff2a12a599b503ca52cba84783fc858ce2fb63912ddba38\nItem Level: 84\nQuality: 0\nLevelReq: 49\nImplicits: 1\nTaunts nearby Enemies on use\n32% reduced Duration\n25% increased effect\n14% increased Cast Speed during Flask effect"
+ },
+ {
+  "name": "2.xml#8 Skin of the Loyal",
+  "raw": "Rarity: UNIQUE\nSkin of the Loyal\nSimple Robe\nUnique ID: 377a5f30695dd603cc9e2d3515d5acd8b0b61f07e8c0335f6d96c4f29adfb417\nItem Level: 85\nQuality: 20\nSockets: R-R-G-B-G-B\nImplicits: 0\nSockets cannot be modified\n+1 to Level of Socketed Gems\n100% increased Global Defences"
+ },
+ {
+  "name": "2.xml#9 Granite Flask",
+  "raw": "Rarity: MAGIC\nAbecedarian's Granite Flask of Penetrating\nUnique ID: f1bdc129aa77ecd93aa3e717b1285dcb6f3988b48376e80fc693cd71cf6c049d\nItem Level: 85\nQuality: 20\nLevelReq: 52\nImplicits: 1\n{crafted}Used when you use a Life Flask\n35% reduced Duration\n25% increased effect\n48% increased Critical Strike Chance during Flask Effect"
+ },
+ {
+  "name": "2.xml#10 Aegis Aurora",
+  "raw": "Rarity: UNIQUE\nAegis Aurora\nChampion Kite Shield\nArmour: 1047\nArmourBasePercentile: 0.7513\nEnergy Shield: 210\nEnergyShieldBasePercentile: 0.6575\nUnique ID: e02f172f6c7a8925ba625f7cbc456b0cbb854db32042a4deb7b1edd7c405298c\nItem Level: 85\nQuality: 20\nSockets: G-B-B\nLevelReq: 62\nImplicits: 0\n318% increased Armour and Energy Shield\n+10% to all Elemental Resistances\n+5% to maximum Cold Resistance\n+6% Chance to Block\nReplenishes Energy Shield by 2% of Armour when you Block\n17% increased Elemental Damage with Attack Skills\nCorrupted"
+ },
+ {
+  "name": "2.xml#11 Dire Girdle",
+  "raw": "Rarity: RARE\nDire Girdle\nChain Belt\nUnique ID: c3559296c10859568acfc65471f53e650997d396c1f4d9d4a9f2d41b0d7b1541\nItem Level: 85\nLevelReq: 67\nImplicits: 1\n+15 to maximum Energy Shield\n+345 to Armour\n+40 to maximum Energy Shield\n+27% to Fire Resistance\n+45% to Cold Resistance\n+48% to Lightning Resistance\n{crafted}+52 to maximum Mana"
+ },
+ {
+  "name": "2.xml#12 Quicksilver Flask",
+  "raw": "Rarity: MAGIC\nDabbler's Quicksilver Flask of the Pangolin\nUnique ID: 4753dcba40387fee43b18985faedc390877c0cbae04446325f34389937f40b81\nItem Level: 85\nQuality: 0\nLevelReq: 46\nImplicits: 0\n28% reduced Duration\n25% increased effect\n55% increased Armour during Flask effect"
+ },
+ {
+  "name": "2.xml#13 Blackflame",
+  "raw": "Rarity: UNIQUE\nBlackflame\nAmethyst Ring\nUnique ID: ceb66093bbc2c1b94fc88d614645fa88008ccc4b83654a04ba98ea5b7b24ec10\nItem Level: 83\nLevelReq: 49\nImplicits: 1\n+20% to Chaos Resistance\n+11% to Fire Damage over Time Multiplier\n50% reduced Ignite Duration on Enemies\n13% chance to Ignite\nEnemies Ignited by you take Chaos Damage instead of Fire Damage from Ignite\nWithered does not expire on Enemies Ignited by you\n+25% to Fire and Chaos Resistances"
+ },
+ {
+  "name": "2.xml#14 Viridi's Veil",
+  "raw": "Rarity: UNIQUE\nViridi's Veil\nPraetor Crown\nArmour: 503\nArmourBasePercentile: 0.8306\nEnergy Shield: 158\nEnergyShieldBasePercentile: 0.8335\nUnique ID: ecda5a3c31cbb647748ec46ce59440fe221e1c782c35e3438b72a7315a7651a3\nItem Level: 86\nQuality: 20\nSockets: R-R-B-B\nLevelReq: 68\nImplicits: 0\n+2 to Level of Socketed Gems\n158% increased Armour and Energy Shield\n+20% to all Elemental Resistances\nDamage of Enemies Hitting you is Unlucky while you have a Magic Ring Equipped\nYou are Hexproof if you have a Magic Ring in right slot\nTake no Extra Damage from Critical Strikes if you have a Magic Ring in left slot"
+ },
+ {
+  "name": "2.xml#15 Dire Call",
+  "raw": "Rarity: RARE\nDire Call\nOpal Sceptre\nUnique ID: 8ee8f4434743f36651d954c4c2f75655ace1f0f71a42c53a400abf580fa14aa6\nItem Level: 85\nQuality: 0\nSockets: B-R-G\nLevelReq: 60\nImplicits: 1\n40% increased Elemental Damage\n45% increased Fire Damage\nAdds 44 to 83 Fire Damage to Spells\n6% increased Attack Speed\n42% increased Critical Strike Chance for Spells\n38% increased Burning Damage\n{crafted}29% increased Damage over Time"
+ },
+ {
+  "name": "2.xml#16 Corpsewalker",
+  "raw": "Rarity: UNIQUE\nCorpsewalker\nCarnal Boots\nEvasion: 254\nEvasionBasePercentile: 0.6621\nEnergy Shield: 53\nEnergyShieldBasePercentile: 0.786\nUnique ID: 44e7d53749d77178363571d90de8ffd754942008b31f00fb8c72f3b20100eb13\nItem Level: 80\nQuality: 20\nSockets: R-B-G-B\nLevelReq: 55\nImplicits: 0\nTriggers Level 20 Corpse Walk when Equipped\n109% increased Evasion and Energy Shield\n25% increased Movement Speed\n34% increased Damage if you have Consumed a corpse Recently\nFor each nearby corpse, Regenerate 0.25% Life per second, up to 3%"
+ },
+ {
+  "name": "3.xml#1 Dragon Wound",
+  "raw": "Rarity: RARE\nDragon Wound\nViridian Jewel\nUnique ID: 7b1580b35131bf1570e3bc2ea0587678b25d65401812e024fb16cd2a66f8d094\nItem Level: 71\nImplicits: 0\n16% increased Global Physical Damage\n10% increased Melee Damage\n6% increased Attack Speed while Dual Wielding\n5% reduced Mana Cost of Skills"
+ },
+ {
+  "name": "3.xml#2 Sol Shard",
+  "raw": "Rarity: RARE\nSol Shard\nCrimson Jewel\nUnique ID: 15e4fb4f8257a391455ab2474631c7caaeec9f9606780b24b7be73529e47f1e2\nItem Level: 85\nImplicits: 0\n16% increased Global Physical Damage\n10% increased Melee Damage\n6% increased Attack Speed while Dual Wielding\n10% increased Area Damage"
+ },
+ {
+  "name": "3.xml#3 Ghoul Creed",
+  "raw": "Rarity: RARE\nGhoul Creed\nCobalt Jewel\nUnique ID: e5f2e94d6c2ff01623d8b29e2610191b00b60e09fcd631ee9ccb1a612407d579\nItem Level: 33\nImplicits: 0\n15% increased Global Physical Damage\n4% increased Attack Speed while Dual Wielding\n12% increased Area Damage\n3% increased Attack and Cast Speed"
+ },
+ {
+  "name": "3.xml#4 Rigwald's Savagery",
+  "raw": "Rarity: UNIQUE\nRigwald's Savagery\nRoyal Axe\nUnique ID: 960896b6c1baee6cff657fa9a34e0086a0bb104ee5ee4f2c9bf0bea3fdc1faab\nItem Level: 80\nQuality: 20\nSockets: R-R-R\nLevelReq: 67\nImplicits: 0\nAdds 61 to 164 Physical Damage\n40% increased Physical Attack Damage while Dual Wielding\n12% increased Attack Speed\n+25 to Maximum Rage while wielding a Sword"
+ },
+ {
+  "name": "3.xml#5 Eternal Life Flask",
+  "raw": "Rarity: MAGIC\nEbullient Eternal Life Flask of Plenty\nUnique ID: 9c503907e24c20e98a20747c86a8ed701aade45ad510721efa4cd4892306ca64\nItem Level: 67\nQuality: 13\nLevelReq: 65\nImplicits: 0\n50% reduced Amount Recovered\n135% increased Recovery rate\n50% of Recovery applied Instantly\nRecover an additional 21% of Flask's Life Recovery Amount over 10 seconds if used while not on Full Life"
+ },
+ {
+  "name": "3.xml#6 Haemophilia",
+  "raw": "Rarity: UNIQUE\nHaemophilia\nSerpentscale Gauntlets\nArmour: 80\nArmourBasePercentile: 0.2222\nEvasion: 80\nEvasionBasePercentile: 0.2222\nUnique ID: 5df8b3e771d13583b6eefeb68c6069f865fa7a3e308bc27dd9358eab41a67ae3\nItem Level: 60\nQuality: 0\nSockets: R-G-R-R\nLevelReq: 43\nImplicits: 0\n+27 to Strength\n25% increased Damage over Time\nAttacks have 25% chance to cause Bleeding\n38% increased Attack Damage against Bleeding Enemies\nBleeding Enemies you Kill Explode, dealing 5% of\ntheir Maximum Life as Physical Damage\n25% reduced Bleeding Duration"
+ },
+ {
+  "name": "3.xml#7 Bear's Girdle",
+  "raw": "Rarity: UNIQUE\nBear's Girdle\nLeather Belt\nUnique ID: 16fe1b2cee3a77c1d763c20649f57d8b8b4d7e61a29e48ab4dd84e095e0efcbc\nItem Level: 85\nLevelReq: 68\nImplicits: 1\n+33 to maximum Life\nAdds 7 to 11 Physical Damage to Attacks\n29% increased Stun Duration on Enemies\nNearby Enemies are Crushed while you have at least 25 Rage\n6% increased Physical Damage per 10 Rage\n+20 to Maximum Rage\nCorrupted"
+ },
+ {
+  "name": "3.xml#8 The Saviour",
+  "raw": "Rarity: UNIQUE\nThe Saviour\nLegion Sword\nUnique ID: 87858123bb75391eec4c0fceb3cafeb40b0b97630be38af8f85e3e37091f2417\nItem Level: 87\nQuality: 20\nSockets: B-B-R\nLevelReq: 62\nImplicits: 1\n40% increased Global Accuracy Rating\nTriggers Level 20 Reflection when Equipped\n46% increased Physical Damage\nAdds 20 to 44 Physical Damage\n10% increased Attack Speed\n8% increased Critical Strike Chance"
+ },
+ {
+  "name": "3.xml#9 Quicksilver Flask",
+  "raw": "Rarity: MAGIC\nDabbler's Quicksilver Flask of the Eagle\nUnique ID: a791b287b3438f01a3e00b81abf3fabf03fd51da4fd2d22bc7376714e4ae8c93\nItem Level: 84\nQuality: 0\nLevelReq: 49\nImplicits: 0\n29% reduced Duration\n25% increased effect\n14% increased Attack Speed during Flask effect"
+ },
+ {
+  "name": "3.xml#10 Pain Cloak",
+  "raw": "Rarity: RARE\nPain Cloak\nCrusader Plate\nArmour: 749\nArmourBasePercentile: 0.2574\nUnique ID: 2c6fb7c8dc7a69f421a93945db7d2809df4049e11c4e53eb220ddce7e8446682\nItem Level: 83\nQuality: 20\nSockets: G-G-R-R-R-R\nLevelReq: 59\nImplicits: 0\n+73 to maximum Life\nRegenerate 12.4 Life per second\n+45% to Cold Resistance\nReflects 3 Physical Damage to Melee Attackers\n{crafted}+19% to Fire and Lightning Resistances"
+ },
+ {
+  "name": "3.xml#11 Lion's Roar",
+  "raw": "Rarity: UNIQUE\nLion's Roar\nGranite Flask\nUnique ID: 38b61d379d007daaf15effe9f4416a7c2bafa06ae04eef28608261135cda09ec\nItem Level: 80\nQuality: 0\nLevelReq: 27\nImplicits: 0\nKnocks Back Enemies in an Area when you use a Flask\n75% chance to cause Enemies to Flee on use\nAdds Knockback to Melee Attacks during Flask effect\n10% more Melee Physical Damage during effect"
+ },
+ {
+  "name": "3.xml#12 Rage Nail",
+  "raw": "Rarity: RARE\nRage Nail\nTwo-Stone Ring\nUnique ID: 51780ce79b8f2a7f011e32c0cd749e8a741a205250c48df63502881dd16c9547\nItem Level: 84\nLevelReq: 59\nImplicits: 1\n+15% to Cold and Lightning Resistances\n+46 to Intelligence\n+64 to maximum Life\n+44% to Cold Resistance\n+29% to Lightning Resistance\n{crafted}Adds 6 to 10 Physical Damage to Attacks"
+ },
+ {
+  "name": "3.xml#13 Dusk Circle",
+  "raw": "Rarity: RARE\nDusk Circle\nRuby Ring\nUnique ID: 51fcb8e3ef8724ba4acccc144a7d63e34db709cd26da3fcbfaf2d4cab812edfe\nItem Level: 75\nLevelReq: 57\nImplicits: 1\n+30% to Fire Resistance\n+28 to Intelligence\n+61 to maximum Life\n+42% to Fire Resistance\n+19% to Fire and Chaos Resistances\n{crafted}Adds 7 to 10 Physical Damage to Attacks"
+ },
+ {
+  "name": "3.xml#14 Woe Road",
+  "raw": "Rarity: RARE\nWoe Road\nTwo-Toned Boots (Evasion/Energy Shield)\nEvasion: 143\nEvasionBasePercentile: 0.8947\nEnergy Shield: 29\nEnergyShieldBasePercentile: 0.75\nUnique ID: db45904e8713b822dc02baa1ae9c59bb15639c0fafd0541adb3342f60f8e6dea\nItem Level: 74\nQuality: 0\nSockets: R-R-G-B\nLevelReq: 70\nImplicits: 1\n+10% to Cold and Lightning Resistances\n{fractured}Regenerate 43.3 Life per second\n+67 to maximum Life\n+39% to Fire Resistance\n+35% to Lightning Resistance\n30% increased Movement Speed\n{crafted}+52 to maximum Mana"
+ },
+ {
+  "name": "3.xml#15 Impresence",
+  "raw": "Rarity: UNIQUE\nImpresence\nOnyx Amulet\nUnique ID: 9e0f8dbc2c8d1987fd4c1f08f231a61146c735887d255dc181c32269e133a239\nElder Item\nItem Level: 85\nLevelReq: 64\nImplicits: 2\n{crafted}Allocates Slaughter\n+15 to all Attributes\nAdds 16 to 25 Physical Damage\n+451 to Armour\n+54 to maximum Life\n35% increased Stun and Block Recovery\nVulnerability has no Reservation if Cast as an Aura\nGain Maddening Presence for 10 seconds when you Kill a Rare or Unique Enemy"
+ },
+ {
+  "name": "3.xml#16 Diamond Flask",
+  "raw": "Rarity: MAGIC\nAbecedarian's Diamond Flask of the Iguana\nUnique ID: 2ac74e4ed5331d429a7284f4143eb6dd0231988fed389e5f31f78faf219f8622\nItem Level: 84\nQuality: 0\nLevelReq: 60\nImplicits: 0\n38% reduced Duration\n37% less Duration\n25% increased effect\nImmunity to Bleeding and Corrupted Blood during Flask Effect"
+ },
+ {
+  "name": "3.xml#17 Silver Flask",
+  "raw": "Rarity: MAGIC\nBountiful Silver Flask of the Pangolin\nUnique ID: 8bad1ba10cf24e16905d98053c5ed7fd0c30f9c98276ab9ee600f278883861fa\nItem Level: 76\nQuality: 0\nLevelReq: 46\nImplicits: 0\n+24 to Maximum Charges\n51% increased Armour during Flask effect"
+ },
+ {
+  "name": "3.xml#18 Spirit Shelter",
+  "raw": "Rarity: RARE\nSpirit Shelter\nSilken Hood\nEvasion: 747\nEvasionBasePercentile: 0.9482\nUnique ID: 8af371c129d667c4d00804ef764a5a164eaafeba7510d815659510e92ed2bf1a\nItem Level: 77\nQuality: 20\nSockets: R-R-R-G\nLevelReq: 60\nImplicits: 3\n{crafted}Chain Hook has +1 Radius per 12 Rage\n19% increased Attack Damage\n21% reduced Mana Cost of Attacks\n77% increased Evasion Rating\n+27% to Cold Resistance\n+45% to Lightning Resistance\n15% increased Stun and Block Recovery\n{crafted}+64 to maximum Life"
+ },
+ {
+  "name": "4.xml#6 Haemophilia",
+  "raw": "Rarity: UNIQUE\nHaemophilia\nSerpentscale Gauntlets\nArmour: 80\nArmourBasePercentile: 0.2222\nEvasion: 80\nEvasionBasePercentile: 0.2222\nUnique ID: 5df8b3e771d13583b6eefeb68c6069f865fa7a3e308bc27dd9358eab41a67ae3\nItem Level: 60\nQuality: 0\nSockets: R-G-R-R\nLevelReq: 43\nImplicits: 1\n{tags:attack,critical}{range:1}Attacks have +(0.5-0.8)% to Critical Strike Chance\n+27 to Strength\n25% increased Damage over Time\nAttacks have 25% chance to cause Bleeding\n38% increased Attack Damage against Bleeding Enemies\nBleeding Enemies you Kill Explode, dealing 5% of\ntheir Maximum Life as Physical Damage\n25% reduced Bleeding Duration\nCorrupted"
+ },
+ {
+  "name": "4.xml#15 Impresence",
+  "raw": "Rarity: UNIQUE\nImpresence\nOnyx Amulet\nUnique ID: 9e0f8dbc2c8d1987fd4c1f08f231a61146c735887d255dc181c32269e133a239\nElder Item\nItem Level: 85\nLevelReq: 64\nImplicits: 2\n{crafted}Allocates Fatal Blade\n+15 to all Attributes\nAdds 16 to 25 Physical Damage\n+451 to Armour\n+54 to maximum Life\n35% increased Stun and Block Recovery\nVulnerability has no Reservation if Cast as an Aura\nGain Maddening Presence for 10 seconds when you Kill a Rare or Unique Enemy"
+ },
+ {
+  "name": "4.xml#19 Paradoxica",
+  "raw": "Rarity: UNIQUE\nParadoxica\nVaal Rapier\nLeague: Betrayal\nVariant: (Prefix) Always Hits\nVariant: (Prefix) Bleed On Hit Gained\nVariant: (Prefix) Chaos Damage And Chaos Skill Duration\nVariant: (Prefix) Chaos Penetration With Attacks\nVariant: (Prefix) Cold Added As Chaos\nVariant: (Prefix) Cold Damage And Base Chance To Freeze\nVariant: (Prefix) Elemental Penetration With Attacks\nVariant: (Prefix) Fire Added As Chaos\nVariant: (Prefix) Fire Damage And Chance To Ignite\nVariant: (Prefix) Increased Physical Damage And Bleed Chance\nVariant: (Prefix) Increased Physical Damage And Blind Chance\nVariant: (Prefix) Increased Physical Damage And Impale\nVariant: (Prefix) Increased Physical Damage And Poison Chance\nVariant: (Prefix) Lightning Added As Chaos\nVariant: (Prefix) Lightning Damage And Chance To Shock\nVariant: (Prefix) Minion Damage And Minion Maximum Life\nVariant: (Prefix) Physical Added As Chaos\nVariant: (Prefix) Spell Damage And Mana Regeneration Rate\nVariant: (Prefix) Spell Damage And Non Chaos Damage To Add As Chaos Damage\nVariant: (Suffix) Accuracy Rating Strength Dexterity\nVariant: (Suffix) Attack Speed And Trigger Level 1 Blood Rage On Kill Chance\nVariant: (Suffix) Attack Speed Dexterity Intelligence\nVariant: (Suffix) Attack Speed Percent If Rare Or Unique Enemy Nearby\nVariant: (Suffix) Cast Speed And Gain Arcane Surge On Kill Chance\nVariant: (Suffix) Chance To Deal Double Damage While Focused\nVariant: (Suffix) Chaos Damage Over Time Multiplier\nVariant: (Suffix) Cold Damage Over Time Multiplier\nVariant: (Suffix) Critical Strike Chance Strength Intelligence\nVariant: (Suffix) Critical Strike Multiplier If Rare Or Unique Enemy Nearby\nVariant: (Suffix) Damage Per Endurance Charge\nVariant: (Suffix) Damage Per Frenzy Charge\nVariant: (Suffix) Damage Per Power Charge\nVariant: (Suffix) Fire Damage Over Time Multiplier\nVariant: (Suffix) Minion Attack And Cast Speed On Weapon\nVariant: (Suffix) Physical Damage Over Time Multiplier\nVariant: (Suffix) Trigger Socketed Spell On Skill Use\nSelected Variant: 12\nVaal Rapier\nHas Alt Variant: true\nSelected Alt Variant: 22\nQuality: 20\nSockets: G-G-G\nLevelReq: 66\nImplicits: 1\n+25% to Global Critical Strike Multiplier\n{variant:1}Hits can't be Evaded\n{variant:2}{range:0.5}Adds (12-14) to (18-20) Physical Damage\n{variant:2}40% chance to cause Bleeding on Hit\n{variant:3}{range:0.5}(60-69)% increased Chaos Damage\n{variant:3}{range:0.5}Chaos Skills have (13-15)% increased Skill Effect Duration\n{variant:4}{range:0.5}Attacks with this Weapon Penetrate (14-16)% Chaos Resistance\n{variant:5}{range:0.5}Gain (9-10)% of Cold Damage as Extra Chaos Damage\n{variant:6}{range:0.5}(70-79)% increased Cold Damage\n{variant:6}{range:0.5}(21-23)% chance to Freeze\n{variant:7}{range:0.5}Attacks with this Weapon Penetrate (14-16)% Elemental Resistances\n{variant:8}{range:0.5}Gain (9-10)% of Fire Damage as Extra Chaos Damage\n{variant:9}{range:0.5}(70-79)% increased Fire Damage\n{variant:9}{range:0.5}(21-23)% chance to Ignite\n{variant:10}{range:0.5}(120-139)% increased Physical Damage\n{variant:10}{range:0.5}(21-25)% chance to cause Bleeding on Hit\n{variant:11}{range:0.5}(120-139)% increased Physical Damage\n{variant:11}{range:0.5}(21-25)% chance to Blind Enemies on hit\n{variant:12}{range:1}(120-139)% increased Physical Damage\n{variant:12}{range:1}(21-25)% chance to Impale Enemies on Hit with Attacks\n{variant:13}{range:0.5}(120-139)% increased Physical Damage\n{variant:13}{range:0.5}(21-25)% chance to Poison on Hit\n{variant:14}{range:0.5}Gain (9-10)% of Lightning Damage as Extra Chaos Damage\n{variant:15}{range:0.5}(70-79)% increased Lightning Damage\n{variant:15}{range:0.5}(21-23)% chance to Shock\n{variant:16}{range:0.5}Minions have (34-38)% increased maximum Life\n{variant:16}{range:0.5}Minions deal (34-38)% increased Damage\n{variant:17}{range:0.5}Gain (9-10)% of Physical Damage as Extra Chaos Damage\n{variant:18}{range:0.5}(70-79)% increased Spell Damage\n{variant:18}{range:0.5}(18-20)% increased Mana Regeneration Rate\n{variant:19}{range:0.5}(60-69)% increased Spell Damage\n{variant:19}Gain 5% of Non-Chaos Damage as extra Chaos Damage\n{variant:20}{range:1}+(25-28) to Strength and Dexterity\n{variant:20}{range:0.5}+(311-350) to Accuracy Rating\n{variant:21}15% chance to Trigger Level 1 Blood Rage when you Kill an Enemy\n{variant:21}{range:0.5}(18-22)% increased Attack Speed\n{variant:22}{range:1}+(25-28) to Dexterity and Intelligence\n{variant:22}{range:1}(18-22)% increased Attack Speed\n{variant:23}{range:0.5}(12-15)% increased Attack Speed while a Rare or Unique Enemy is Nearby\n{variant:24}{range:0.5}(18-22)% increased Cast Speed\n{variant:24}{range:0.5}15% chance to gain Arcane Surge when you Kill an Enemy\n{variant:25}{range:0.5}(18-20)% chance to deal Double Damage while Focused\n{variant:26}{range:0.5}+(24-28)% to Chaos Damage over Time Multiplier\n{variant:27}{range:0.5}+(24-28)% to Cold Damage over Time Multiplier\n{variant:28}{range:0.5}+(25-28) to Strength and Intelligence\n{variant:28}{range:0.5}(28-32)% increased Critical Strike Chance\n{variant:29}{range:0.5}+(36-40)% Critical Strike Multiplier while a Rare or Unique Enemy is Nearby\n{variant:30}{range:0.5}(5-6)% increased Damage per Endurance Charge\n{variant:31}{range:0.5}(5-6)% increased Damage per Frenzy Charge\n{variant:32}{range:0.5}(5-6)% increased Damage per Power Charge\n{variant:34}{range:0.5}+(24-28)% to Fire Damage over Time Multiplier\n{variant:35}{range:0.5}Minions have (18-20)% increased Attack Speed\n{variant:35}{range:0.5}Minions have (18-20)% increased Cast Speed\n{variant:36}{range:0.5}+(24-28)% to Physical Damage over Time Multiplier\n{variant:37}Trigger a Socketed Spell on Using a Skill, with a 4 second Cooldown\n{variant:37}Spells Triggered this way have 150% more Cost\nAttacks with this Weapon deal Double Damage"
+ },
+ {
+  "name": "4.xml#20 Jewel",
+  "raw": "Rarity: RARE\nJewel\nCrimson Jewel\nCrafted: true\nPrefix: {range:1}PercentIncreasedLifeJewel\nPrefix: {range:1}SwordAttackSpeedJewel\nSuffix: {range:1}MeleeDamageJewel_\nSuffix: {range:1}MeleeCritChanceJewel\nLevelReq: 0\nImplicits: 0\n12% increased Melee Damage\n8% increased Attack Speed with Swords\n14% increased Melee Critical Strike Chance\n7% increased maximum Life"
+ },
+ {
+  "name": "5.xml#1 Behemoth Curio",
+  "raw": "Rarity: RARE\nBehemoth Curio\nViridian Jewel\nUnique ID: 1fe749eb3fa9627aee3d06c47c79f1d38fa10858a3e3f6f7cd0c95ede61089a2\nItem Level: 86\nImplicits: 0\n+10 to Strength and Intelligence\n9% increased Damage\n8% increased Attack Speed with Bows\n6% increased maximum Life"
+ },
+ {
+  "name": "5.xml#2 Watcher's Eye",
+  "raw": "Rarity: UNIQUE\nWatcher's Eye\nPrismatic Jewel\nUnique ID: f7d6c5a07ed35624f048038c75190b21718b6542b1710300cd462a79643092d9\nItem Level: 86\nLimited to: 1\nImplicits: 0\n4% increased maximum Energy Shield\n4% increased maximum Life\n6% increased maximum Mana\n15% increased Attack Speed while affected by Precision\n60% increased Physical Damage while using Pride\nUnaffected by Bleeding while affected by Malevolence"
+ },
+ {
+  "name": "5.xml#3 Lioneye's Fall",
+  "raw": "Rarity: UNIQUE\nLioneye's Fall\nViridian Jewel\nUnique ID: 4d1fa1b0e81ffd07ca09fb0f4495785fb706387a32f79a0403704efc796b7187\nItem Level: 83\nRadius: Medium\nImplicits: 0\nMelee and Melee Weapon Type modifiers in Radius are Transformed to Bow Modifiers\nCorrupted"
+ },
+ {
+  "name": "5.xml#4 Rapture Mark",
+  "raw": "Rarity: RARE\nRapture Mark\nSpine Bow\nUnique ID: 1e0b7efcaf6c73f946966d089b0c693e9cc5db5623d5392a1e77dc38e397374a\nItem Level: 86\nQuality: 30\nSockets: R-R-R-G-G-G\nLevelReq: 64\nImplicits: 0\n23% increased Physical Damage\nAdds 41 to 73 Physical Damage\n9% increased Attack Speed\n28% increased Critical Strike Chance\nBow Attacks fire an additional Arrow\n+28 to Accuracy Rating\n{crafted}100% increased Physical Damage\n{crafted}20% chance to Blind Enemies on hit"
+ },
+ {
+  "name": "5.xml#5 Silver Flask",
+  "raw": "Rarity: MAGIC\nExaminer's Silver Flask of Incision\nUnique ID: a9cecd26b6b1d4f9f81275aea0771b136edec869a5ae23ee5b6cc01e44d15ae7\nItem Level: 84\nQuality: 0\nLevelReq: 65\nImplicits: 0\n27% increased Duration\n50% increased Critical Strike Chance during Flask Effect"
+ },
+ {
+  "name": "5.xml#6 Asenath's Chant",
+  "raw": "Rarity: UNIQUE\nAsenath's Chant\nIron Circlet\nEnergy Shield: 148\nEnergyShieldBasePercentile: 0.7778\nUnique ID: ad29a8e762d62aa0ef303e0f5120ca4474f846b8b47fe5c119fce2db4dcec48f\nItem Level: 81\nQuality: 20\nSockets: R-G-R-B\nLevelReq: 8\nImplicits: 1\n{crafted}Sniper's Mark has 30% increased Curse Effect\nTrigger a Socketed Spell when you Attack with a Bow, with a 0.3 second Cooldown\n15% increased Attack Speed\n15% increased Cast Speed\n+109 to maximum Energy Shield\n30% increased Mana Regeneration Rate\n5% increased Movement Speed\n35% increased Stun and Block Recovery"
+ },
+ {
+  "name": "5.xml#7 Rift Loop",
+  "raw": "Rarity: RARE\nRift Loop\nSapphire Ring\nUnique ID: 4d1c81de09ab24a697558d31bcab2b9138671d3586f14b0aabaf9d76465629f1\nItem Level: 85\nLevelReq: 67\nImplicits: 1\n+36% to Cold Resistance\n+79 to maximum Life\n+44 to maximum Mana\n+19% to all Elemental Resistances\n+55% to Fire Resistance\n+50% to Lightning Resistance\n{crafted}Non-Channelling Skills have -6 to Total Mana Cost"
+ },
+ {
+  "name": "5.xml#8 Chimeric Hold",
+  "raw": "Rarity: RARE\nChimeric Hold\nSteel Ring\nUnique ID: 468d327ab75a9675e52b924016a0b3d8c69b8ab4f5720b1e71e841d6300df7c9\nItem Level: 84\nLevelReq: 80\nImplicits: 1\nAdds 4 to 15 Physical Damage to Attacks\n+45 to Strength\nAdds 7 to 18 Physical Damage to Attacks\n+15% to all Elemental Resistances\n+46% to Cold Resistance\n{crafted}+55 to maximum Life"
+ },
+ {
+  "name": "5.xml#9 Jade Flask",
+  "raw": "Rarity: MAGIC\nScholar's Jade Flask of the Eagle\nUnique ID: ce36eac7c175fdf364a354bf26e4ab05595a2fca8b9decc6aed23625902ced7d\nItem Level: 64\nQuality: 0\nLevelReq: 49\nImplicits: 1\n{crafted}Used when you take a Savage Hit\n19% reduced Charges per use\n14% increased Attack Speed during Flask effect"
+ },
+ {
+  "name": "5.xml#10 Havoc Needle",
+  "raw": "Rarity: RARE\nHavoc Needle\nHeavy Arrow Quiver\nUnique ID: aa1aa550dca2b5458d0d4d810608edea18958fc43eba201e073496145e441f3b\nItem Level: 82\nLevelReq: 61\nImplicits: 1\nAdds 15 to 26 Physical Damage to Attacks\nAdds 21 to 38 Physical Damage to Attacks\nAdds 1 to 4 Lightning Damage to Attacks\n20% increased Global Critical Strike Chance\n+99 to maximum Life\nBow Attacks fire an additional Arrow\n12% increased Projectile Speed\n7% chance to gain a Frenzy Charge on Critical Strike"
+ },
+ {
+  "name": "5.xml#11 Haemophilia",
+  "raw": "Rarity: UNIQUE\nHaemophilia\nSerpentscale Gauntlets\nArmour: 98\nArmourBasePercentile: 0.4074\nEvasion: 98\nEvasionBasePercentile: 0.4074\nUnique ID: 36c8699f3f7cf6130bafbca17ffc1a49af897fef15bc74c6a0e0bf1615af67e2\nItem Level: 83\nQuality: 20\nSockets: B-R-R-R\nLevelReq: 43\nImplicits: 1\n+1 to Maximum Frenzy Charges\n+29 to Strength\n25% increased Damage over Time\nAttacks have 25% chance to cause Bleeding\n40% increased Attack Damage against Bleeding Enemies\nBleeding Enemies you Kill Explode, dealing 5% of\ntheir Maximum Life as Physical Damage\n25% reduced Bleeding Duration\nCorrupted"
+ },
+ {
+  "name": "5.xml#12 Aul's Uprising",
+  "raw": "Rarity: UNIQUE\nAul's Uprising\nOnyx Amulet\nUnique ID: 87c619a28c358e40a10bb97cd83a683715134b2dae94f0f4058c45611adcdfe6\nItem Level: 85\nLevelReq: 55\nImplicits: 2\n{crafted}Allocates Whispers of Doom\n+19 to all Attributes\n+34 to Dexterity\n17% increased Evasion Rating\n+69 to maximum Life\nNearby Enemies grant 25% increased Flask Charges\nGrace has no Reservation"
+ },
+ {
+  "name": "5.xml#13 Ghoul Locket",
+  "raw": "Rarity: RARE\nGhoul Locket\nLeather Belt\nUnique ID: b2d9df2d9f831e911915fe6816164f29fe677c6a17c96f86d6e33da5b60d7ba0\nItem Level: 85\nLevelReq: 67\nImplicits: 1\n+40 to maximum Life\n+422 to Armour\n+99 to maximum Life\n+48% to Fire Resistance\n+44% to Cold Resistance\n+48% to Lightning Resistance\n{crafted}30% increased Elemental Damage with Attack Skills"
+ },
+ {
+  "name": "5.xml#14 Yriel's Fostering",
+  "raw": "Rarity: UNIQUE\nYriel's Fostering\nExquisite Leather\nEvasion: 1950\nEvasionBasePercentile: 0.1972\nUnique ID: d50937b1413f45bebc4db9ace3576931d4f0bb1f441f334b726c4514b052bda8\nItem Level: 81\nQuality: 20\nSockets: G-G-G-G-G-R\nLevelReq: 62\nImplicits: 0\nGrants Level 20 Summon Bestial Rhoa Skill\n+334 to Accuracy Rating\n149% increased Evasion Rating\n+90 to maximum Life\nProjectile Attack Skills have 47% increased Critical Strike Chance\nProjectiles from Attacks have 20% chance to Maim on Hit while\nyou have a Bestial Minion\n15% increased Attack and Movement Speed while you have a Bestial Minion"
+ },
+ {
+  "name": "5.xml#16 Hate Span",
+  "raw": "Rarity: RARE\nHate Span\nTwo-Toned Boots (Armour/Energy Shield)\nArmour: 177\nArmourBasePercentile: 0.5344\nEnergy Shield: 36\nEnergyShieldBasePercentile: 0.4231\nUnique ID: 8bc2ce19762f1401abbbfbb28b9ee7940afd7ae66f5a9e5f4f2230e1eff192e1\nHunter Item\nRedeemer Item\nItem Level: 84\nQuality: 30\nSockets: G G-G G\nLevelReq: 70\nImplicits: 2\n{crafted}80% chance to Avoid being Stunned if you've Killed Recently\n+12% to Fire and Lightning Resistances\nRegenerate 7.2 Life per second\n30% increased Movement Speed\nCannot be Chilled\n10% chance to gain Onslaught for 4 seconds on Kill\n8% increased Attack, Cast and Movement Speed while you have Onslaught\n24% increased Effect of Tailwind on you\nYou have Tailwind if you have dealt a Critical Strike Recently\n{crafted}+70 to maximum Life"
+ },
+ {
+  "name": "5.xml#20 Eternal Life Flask",
+  "raw": "Rarity: MAGIC\nEffusive Eternal Life Flask of Warding\nUnique ID: b517cfa609ebd173e3a498ce65fda9be080a5a7b8aefdf3da722903ffee55d47\nItem Level: 76\nQuality: 20\nLevelReq: 65\nImplicits: 0\n45% reduced Amount Recovered\n135% increased Recovery rate\n50% of Recovery applied Instantly\nRemoves Curses on use"
+ },
+ {
+  "name": "6.xml#1 Eternal Mana Flask",
+  "raw": "Rarity: MAGIC\nEnduring Eternal Mana Flask of the Order\nUnique ID: bb457a77f07d166a8f5658d7e581b004151349c221148be5071f795ecc0fcbce\nItem Level: 70\nQuality: 17\nLevelReq: 65\nImplicits: 0\n66% reduced Amount Recovered\nFlask effect is not removed when Unreserved Mana is Filled\nFlask effect does not Queue\n{crafted}22% reduced Mana Cost of Skills during Flask Effect"
+ },
+ {
+  "name": "6.xml#2 Diamond Flask",
+  "raw": "Rarity: MAGIC\nScholar's Diamond Flask of Penetrating\nUnique ID: 0acc06ef95f6be2a79a61df9905cc8a28ec7b91c33e5e2a1b73a07ed2b325a5b\nItem Level: 85\nQuality: 0\nLevelReq: 52\nImplicits: 0\n18% reduced Charges per use\n47% increased Critical Strike Chance during Flask Effect"
+ },
+ {
+  "name": "6.xml#3 Hrimsorrow",
+  "raw": "Rarity: UNIQUE\nHrimsorrow\nGoathide Gloves\nEvasion: 100\nEvasionBasePercentile: 0.4957\nUnique ID: 3d7e5bdf3e615533644c8d35a62005af1eb3659ceb3cba15f8e5a5df04ca95ae\nItem Level: 82\nQuality: 15\nSockets: B-B-B R\nLevelReq: 9\nImplicits: 1\n+1 to Maximum Frenzy Charges\n+30 to Strength\nAdds 7 to 15 Cold Damage to Spells and Attacks\n+50 to Evasion Rating\n+21% to Cold Resistance\n50% of Physical Damage Converted to Cold Damage\nReflects 10 Cold Damage to Melee Attackers\nCorrupted"
+ },
+ {
+  "name": "6.xml#4 Darkray Vectors",
+  "raw": "Rarity: UNIQUE\nDarkray Vectors\nDragonscale Boots\nArmour: 235\nArmourBasePercentile: 0.9575\nEvasion: 235\nEvasionBasePercentile: 0.9575\nUnique ID: 9b5dfe0db469acc3c46ad48c3af88fc471dd38820e2826aab43e4b425d6cb442\nItem Level: 79\nQuality: 20\nSockets: R-G-G-W\nLevelReq: 65\nImplicits: 0\n50% increased Armour and Evasion\n10% increased Evasion Rating per Frenzy Charge\n+31% to Lightning Resistance\n5% increased Movement Speed per Frenzy Charge\n+1 to Maximum Frenzy Charges\n40% reduced Frenzy Charge Duration\n25% reduced Light Radius\nCorrupted"
+ },
+ {
+  "name": "6.xml#5 Voidforge",
+  "raw": "Rarity: UNIQUE\nVoidforge\nInfernal Sword\nUnique ID: 3729a3d93e342bc734540dfc714bf8c600d162201f0bbc94b653a0afe75d7c90\nShaper Item\nElder Item\nItem Level: 86\nQuality: 20\nSockets: B-B-B-R-G\nLevelReq: 67\nImplicits: 1\n30% increased Elemental Damage with Attack Skills\n56% increased Physical Damage\n6% increased Attack Speed\n+99 to maximum Life\nYour Elemental Damage can Shock\nGain 300% of Weapon Physical Damage as Extra Damage of a random Element\n20% increased Area of Effect for Attacks\nDeal no Non-Elemental Damage"
+ },
+ {
+  "name": "6.xml#6 The Pandemonius",
+  "raw": "Rarity: UNIQUE\nThe Pandemonius\nJade Amulet\nUnique ID: b4bf435dc5781ba0a4bf4fa595030693c48eb254c2a606600a1a7628fd9ca877\nItem Level: 72\nLevelReq: 64\nImplicits: 1\n+29 to Dexterity\n25% increased Cold Damage\n+38% to Cold Resistance\nChill Enemy for 1 second when Hit, reducing their Action Speed by 30%\nBlind Chilled Enemies on Hit\nDamage Penetrates 20% Cold Resistance against Chilled Enemies"
+ },
+ {
+  "name": "6.xml#7 Hate Whorl",
+  "raw": "Rarity: RARE\nHate Whorl\nTwo-Stone Ring\nUnique ID: bdd2a7cdbe3f0947a599eaf9470f05f5fe7e6da2a859c318d61c1c83f58e7f4e\nItem Level: 80\nLevelReq: 57\nImplicits: 1\n+16% to Fire and Cold Resistances\n+26 to Strength\nAdds 8 to 15 Physical Damage to Attacks\n+37 to Evasion Rating\n+45% to Cold Resistance\n+44% to Lightning Resistance\n{crafted}+55 to maximum Life"
+ },
+ {
+  "name": "6.xml#8 Grim Tether",
+  "raw": "Rarity: RARE\nGrim Tether\nLeather Belt\nUnique ID: 0cbe1f858a623430079cbd06e544fa5a5219e9a2bdbc929f05ea017d62e99613\nItem Level: 77\nLevelReq: 57\nImplicits: 1\n+40 to maximum Life\n+270 to Armour\n+25 to maximum Energy Shield\n+88 to maximum Life\nRegenerate 25.9 Life per second\n+44% to Fire Resistance\n+27% to Cold Resistance\nCorrupted"
+ },
+ {
+  "name": "6.xml#9 Abyssus",
+  "raw": "Rarity: UNIQUE\nAbyssus\nEzomyte Burgonet\nArmour: 810\nArmourBasePercentile: 0.3094\nUnique ID: f1d1a63db8ad4474fa37351bb24ce6f25a6fcad3b43d74021ead8ffe92a14a79\nItem Level: 83\nQuality: 20\nSockets: R-B-G-R\nLevelReq: 60\nImplicits: 0\n+21 to all Attributes\nAdds 40 to 60 Physical Damage to Attacks\n+122% to Melee Critical Strike Multiplier\n107% increased Armour\n41% increased Physical Damage taken"
+ },
+ {
+  "name": "6.xml#10 Plague Skin",
+  "raw": "Rarity: RARE\nPlague Skin\nGolden Plate\nArmour: 838\nArmourBasePercentile: 0.1926\nUnique ID: 691e3d34c922bbe3efcb0f27b33838d6ff41fad4f8845a271368e81c05b6f610\nItem Level: 84\nQuality: 0\nSockets: B-G-B-R-R-G\nLevelReq: 56\nImplicits: 0\n+41 to Armour\n36% increased Armour\n+90 to maximum Life\n+13% to Cold Resistance\n+35% to Lightning Resistance\n4% additional Physical Damage Reduction\nCorrupted"
+ },
+ {
+  "name": "6.xml#11 Eternal Life Flask",
+  "raw": "Rarity: MAGIC\nSimmering Eternal Life Flask of Bounty\nUnique ID: 3a49b583543b7e3d54e7f6c4f17dbde112c133487f0bc6af2a63b4741bb8151f\nItem Level: 70\nQuality: 0\nLevelReq: 65\nImplicits: 0\n55% reduced Amount Recovered\n135% increased Recovery rate\n50% of Recovery applied Instantly\nRecover an additional 26% of Flask's Life Recovery Amount over 10 seconds if used while not on Full Life"
+ },
+ {
+  "name": "6.xml#12 Vengeance Knot",
+  "raw": "Rarity: RARE\nVengeance Knot\nRuby Ring\nUnique ID: 0366599bedfaba8f4999bd89a3f833c7235730356bef8455f1fe9d163064deea\nItem Level: 78\nLevelReq: 54\nImplicits: 1\n+23% to Fire Resistance\n+41 to Intelligence\nAdds 7 to 15 Physical Damage to Attacks\n+52 to maximum Mana\n+11% to all Elemental Resistances\n+34% to Fire Resistance\n{crafted}+41 to maximum Life"
+ },
+ {
+  "name": "6.xml#15 Jade Flask",
+  "raw": "Rarity: MAGIC\nEndless Jade Flask of the Ibex\nUnique ID: 6de606b6729e8342281ba8369d1c78cf0f3022f7049f7e2852919f1bcb22ec6a\nItem Level: 84\nQuality: 0\nLevelReq: 46\nImplicits: 0\n27% increased Charge Recovery\n51% increased Evasion Rating during Flask effect"
+ },
+ {
+  "name": "6.xml#16 Quicksilver Flask",
+  "raw": "Rarity: MAGIC\nAbecedarian's Quicksilver Flask of the Eagle\nUnique ID: 23f5c52f6d884f5db8d1f8730d541ffd3d81c102bc589f4247a5900efefd209f\nItem Level: 84\nQuality: 0\nLevelReq: 49\nImplicits: 0\n36% reduced Duration\n25% increased effect\n14% increased Attack Speed during Flask effect"
+ },
+ {
+  "name": "7.xml#1 Circle of Guilt",
+  "raw": "Rarity: UNIQUE\nCircle of Guilt\nIron Ring\nUnique ID: fedd6624dd0e9737e27d8e7758b48eb177c0fc44f36347cf36911c1b34add385\nItem Level: 82\nLevelReq: 52\nImplicits: 3\n23% increased Damage while Leeching Mana\n12% increased Global Physical Damage\n+15% to Global Critical Strike Multiplier\n+16 to all Attributes\nAdds 10 to 14 Physical Damage\n+353 to Armour\nHerald of Purity has 53% increased Buff Effect\n43% increased Physical Damage while affected by Herald of Purity"
+ },
+ {
+  "name": "7.xml#2 Empyrean Mantle",
+  "raw": "Rarity: RARE\nEmpyrean Mantle\nAstral Plate\nArmour: 736\nArmourBasePercentile: 0.3521\nUnique ID: 4e92ba52dadffc34f3e07a1b57824971ca0df1449c9c9d37ee7f23c3b11df61c\nWarlord Item\nHunter Item\nItem Level: 86\nQuality: 27\nSockets: R-B-R-R-R-G\nLevelReq: 62\nImplicits: 3\n{crafted}Quality does not increase Defences\n{crafted}Grants +1 to Maximum Life per 2% Quality\n+12% to all Elemental Resistances\nAvoid Interruption from Stuns while using Socketed Attack Skills\nSocketed Attacks have -20 to Total Mana Cost\n10% increased maximum Life\n10% increased maximum Mana\n+47% to Lightning Resistance\nYou can apply an additional Curse\nAttacks have +1.97% to Critical Strike Chance\n{crafted}+75 to maximum Life"
+ },
+ {
+  "name": "7.xml#3 Ryslatha's Coil",
+  "raw": "Rarity: UNIQUE\nRyslatha's Coil\nStudded Belt\nUnique ID: c124c6ab9888dbab547b44c5d37ae999b1e281ebe921e1c4c66a9b3cdbba2057\nItem Level: 84\nLevelReq: 32\nImplicits: 1\n28% increased Stun Duration on Enemies\n+39 to Strength\n42% more Maximum Physical Attack Damage\n36% less Minimum Physical Attack Damage\nAdds 1 to 22 Physical Damage to Attacks\n+99 to maximum Life\nGain 50 Life when you Stun an Enemy"
+ },
+ {
+  "name": "7.xml#4 Skull Rosary",
+  "raw": "Rarity: RARE\nSkull Rosary\nTurquoise Amulet\nUnique ID: e99b7d345595c12025df231958cb8c0b2b7e76c51b1214a5fc18acd498b615c1\nWarlord Item\nItem Level: 85\nLevelReq: 67\nImplicits: 2\n{crafted}Allocates Panopticon\n+24 to Dexterity and Intelligence\n19% increased Melee Damage\n+41% to Global Critical Strike Multiplier\n+105 to maximum Life\n+48% to Cold Resistance\n+2 to Melee Strike Range\nPride has 60% increased Mana Reservation Efficiency\n{crafted}43% increased Damage while Leeching"
+ },
+ {
+  "name": "7.xml#5 Abyssus",
+  "raw": "Rarity: UNIQUE\nAbyssus\nEzomyte Burgonet\nArmour: 766\nArmourBasePercentile: 0.0623\nUnique ID: 8eef4958d982a8d6c6ad9b9f2073c713b70bb9125a50a13e4e6afba10bef7753\nItem Level: 83\nQuality: 0\nSockets: R-R-R-R\nLevelReq: 60\nImplicits: 1\n{crafted}Blood and Sand has 40% increased Buff Effect\n+23 to all Attributes\nAdds 40 to 60 Physical Damage to Attacks\n+125% to Melee Critical Strike Multiplier\n120% increased Armour\n42% increased Physical Damage taken"
+ },
+ {
+  "name": "7.xml#6 Hallowed Life Flask",
+  "raw": "Rarity: MAGIC\nViscous Hallowed Life Flask of Warding\nUnique ID: c48480262d72154e647d2545aa223f9a79341a8bfbf99e0ea112f898a8303357\nItem Level: 42\nQuality: 0\nLevelReq: 42\nImplicits: 0\n55% increased Recovery rate\nRemoves Curses on use"
+ },
+ {
+  "name": "7.xml#7 Demon Pace",
+  "raw": "Rarity: RARE\nDemon Pace\nTwo-Toned Boots (Armour/Evasion)\nArmour: 161\nArmourBasePercentile: 0.4298\nEvasion: 161\nEvasionBasePercentile: 0.4298\nUnique ID: 1aa38e2b38b9cfd3ec792ae8f58df7806aa8848b60baca025c1a893f1d6eacdf\nHunter Item\nRedeemer Item\nItem Level: 83\nQuality: 20\nSockets: R-R G-R\nLevelReq: 70\nImplicits: 2\n{crafted}16% increased Attack and Cast Speed if you've Killed Recently\n+11% to Fire and Cold Resistances\n+86 to maximum Life\n+44% to Lightning Resistance\nGain 8% of Physical Damage as Extra Cold Damage\n10% chance to gain Onslaught for 4 seconds on Kill\n9% increased Attack, Cast and Movement Speed while you have Onslaught\n22% increased Effect of Tailwind on you\nYou have Tailwind if you have dealt a Critical Strike Recently\n{crafted}20% increased Movement Speed\n{crafted}9% increased Movement Speed if you haven't been Hit Recently"
+ },
+ {
+  "name": "7.xml#8 Viper Circle",
+  "raw": "Rarity: RARE\nViper Circle\nTwo-Stone Ring\nUnique ID: 9340f84f8ff2bfbfacba8c07af31592d90aaae173e17f11b4f219db74d1c45ab\nWarlord Item\nItem Level: 85\nLevelReq: 64\nImplicits: 2\n{crafted}Your Meteor Towers deal 25% increased Damage\n+19% to Cold and Lightning Resistances\n25% increased Melee Damage\nAdds 7 to 11 Physical Damage to Attacks\n+19% to all Elemental Resistances\n+48% to Fire Resistance\nCurse Enemies with Vulnerability on Hit, with 32% increased Effect\n{crafted}+55 to maximum Life"
+ },
+ {
+  "name": "7.xml#9 Diamond Flask",
+  "raw": "Rarity: MAGIC\nExperimenter's Diamond Flask of the Penguin\nUnique ID: ffe382d8b3de37285a8a1d77fa5c6c1df125e11359edc9601e793c738a871076\nItem Level: 86\nQuality: 20\nLevelReq: 67\nImplicits: 1\n{crafted}Used when Charges reach full\n40% increased Duration\n37% less Duration\nImmunity to Freeze and Chill during Flask Effect"
+ },
+ {
+  "name": "7.xml#10 Bottled Faith",
+  "raw": "Rarity: UNIQUE\nBottled Faith\nSulphur Flask\nUnique ID: e056c4ccf33d98dba047ca865a79241f00d028365bba71acb87bd2fbcfbe2d11\nItem Level: 85\nQuality: 20\nLevelReq: 35\nImplicits: 3\n{crafted}69% increased effect\n{crafted}Gains no Charges during Flask Effect\nCreates Consecrated Ground on Use\n15% reduced Duration\nConsecrated Ground created by this Flask has Tripled Radius\nConsecrated Ground created during Effect applies 9% increased Damage taken to Enemies\n143% increased Critical Strike Chance against Enemies on Consecrated Ground during Flask effect"
+ },
+ {
+  "name": "7.xml#11 Pandemonium Spire",
+  "raw": "Rarity: RARE\nPandemonium Spire\nEventuality Rod\nUnique ID: 39603cb521d49e19b093a9bcc1190c3bb706bd2af89f60b137f63adc43070a45\nItem Level: 85\nQuality: 30\nSockets: W-W-W-W-W-W\nLevelReq: 70\nImplicits: 4\n{crafted}Has no Green Sockets\n{crafted}Physical Modifiers have 8% increased Effect\nItem sells for much more to vendors\n+1 to Maximum Power Charges and Maximum Endurance Charges\n{fractured}278% increased Physical Damage\n{fractured}+207 to Accuracy Rating\nAdds 50 to 90 Physical Damage\n30% increased Attack Speed\n+60% Critical Strike Multiplier while a Rare or Unique Enemy is Nearby\n{crafted}+23 to Strength and Intelligence\n{crafted}25% increased Critical Strike Chance"
+ },
+ {
+  "name": "7.xml#12 Rage Knuckle",
+  "raw": "Rarity: RARE\nRage Knuckle\nShagreen Gloves\nEvasion: 218\nEvasionBasePercentile: 0.1333\nUnique ID: 3eb95388a8706eaa15b472e534ea43ab88f5e97c821c3bd118d3ce2ca5f399bb\nItem Level: 82\nQuality: 20\nSockets: G-G-B-R\nLevelReq: 54\nImplicits: 2\n7% increased Effect of your Marks\n9% increased Attack Speed\n+28 to Dexterity\nAdds 6 to 11 Physical Damage to Attacks\n+66 to maximum Life\n+41% to Fire Resistance\n+44% to Cold Resistance\n{crafted}36% increased Damage while Leeching"
+ },
+ {
+  "name": "7.xml#13 Cinderswallow Urn",
+  "raw": "Rarity: UNIQUE\nCinderswallow Urn\nSilver Flask\nUnique ID: d53f85d5a1507c52c9e52646f362faa87d83aadc77e4d08cbfa00214aa253312\nItem Level: 85\nQuality: 20\nLevelReq: 48\nImplicits: 0\n+90 to Maximum Charges\nRecharges 5 Charges when you Consume an Ignited corpse\n200% increased Charges per use\nRegenerate 3% of Life per second during Flask Effect\nEnemies Ignited by you during Flask Effect take 9% increased Damage\nRecover 3% of Life when you Kill an Enemy during Flask Effect"
+ },
+ {
+  "name": "7.xml#14 Lion's Roar",
+  "raw": "Rarity: UNIQUE\nLion's Roar\nGranite Flask\nUnique ID: eec1c7adf51129475c86e0c0ae218ed932811d7d40fa160b6b9490966fef4e58\nItem Level: 73\nQuality: 20\nLevelReq: 27\nImplicits: 0\nKnocks Back Enemies in an Area when you use a Flask\n75% chance to cause Enemies to Flee on use\nAdds Knockback to Melee Attacks during Flask effect\n10% more Melee Physical Damage during effect"
+ },
+ {
+  "name": "7.xml#15 Pandemonium Essence",
+  "raw": "Rarity: RARE\nPandemonium Essence\nLarge Cluster Jewel\nUnique ID: 5d9eb8266bcb17088ecbf9f677f736d57c883f798ab9da90061b1948b5fe15d6\nItem Level: 83\nLevelReq: 40\nImplicits: 4\n{crafted}Adds 8 Passive Skills\n{crafted}2 Added Passive Skills are Jewel Sockets\n{crafted}Added Small Passive Skills grant: Staff Attacks deal 12% increased Damage with Hits and Ailments\nAdded Small Passive Skills grant: Mace or Sceptre Attacks deal 12% increased Damage with Hits and Ailments\nAdded Small Passive Skills also grant: 1% increased Attack Speed\n1 Added Passive Skill is Feed the Fury\n1 Added Passive Skill is Martial Prowess\n1 Added Passive Skill is Weight Advantage"
+ },
+ {
+  "name": "7.xml#16 Cataclysm Spark",
+  "raw": "Rarity: RARE\nCataclysm Spark\nMedium Cluster Jewel\nUnique ID: 343f5c5d0e812f502f324facb45834f08c1b2b140309a8f294b7b2ef5861dfdf\nItem Level: 85\nLevelReq: 67\nImplicits: 3\n{crafted}Adds 5 Passive Skills\n{crafted}1 Added Passive Skill is a Jewel Socket\n{crafted}Added Small Passive Skills grant: 15% increased Critical Strike Chance\nAdded Small Passive Skills also grant: +4 to All Attributes\nAdded Small Passive Skills also grant: +2 to Dexterity\n1 Added Passive Skill is Basics of Pain\n1 Added Passive Skill is Pressure Points"
+ },
+ {
+  "name": "7.xml#17 Oblivion Ichor",
+  "raw": "Rarity: RARE\nOblivion Ichor\nViridian Jewel\nUnique ID: 372d9fa29ea57b8946a703e79578d93143f93dc060f6ae710b13f9f83774aa68\nItem Level: 80\nImplicits: 0\n{fractured}+18% to Critical Strike Multiplier with Two Handed Melee Weapons\n+12% to Global Critical Strike Multiplier\n+15% to Melee Critical Strike Multiplier\n7% increased maximum Life"
+ },
+ {
+  "name": "7.xml#18 Eagle Delirium",
+  "raw": "Rarity: RARE\nEagle Delirium\nViridian Jewel\nUnique ID: 81e8a85dc4888b08c11139d7e36dca27695c3b2695f45f51e3b3f1143c5b5441\nItem Level: 83\nImplicits: 0\n{fractured}+18% to Critical Strike Multiplier with Two Handed Melee Weapons\n+12% to Global Critical Strike Multiplier\n+15% to Melee Critical Strike Multiplier\n7% increased maximum Life"
+ },
+ {
+  "name": "7.xml#19 Fulgent Ruin",
+  "raw": "Rarity: RARE\nFulgent Ruin\nViridian Jewel\nUnique ID: 356fe31871b13827a35a608ab9b31606c219e21d6607dcc013cfd7c9b3516b48\nItem Level: 84\nImplicits: 0\n{fractured}+18% to Critical Strike Multiplier with Two Handed Melee Weapons\n+12% to Global Critical Strike Multiplier\n+15% to Melee Critical Strike Multiplier\n7% increased maximum Life"
+ },
+ {
+  "name": "7.xml#20 Oblivion Desire",
+  "raw": "Rarity: RARE\nOblivion Desire\nMedium Cluster Jewel\nUnique ID: d029e9c9ca52e96267e209d8566c0cf0c77ddf29a3335f08f60152572e2fb2c8\nItem Level: 84\nLevelReq: 67\nImplicits: 3\n{crafted}Adds 5 Passive Skills\n{crafted}1 Added Passive Skill is a Jewel Socket\n{crafted}Added Small Passive Skills grant: 15% increased Critical Strike Chance\nAdded Small Passive Skills also grant: +8 to Dexterity\n1 Added Passive Skill is Basics of Pain\n1 Added Passive Skill is Pressure Points"
+ },
+ {
+  "name": "7.xml#21 Forbidden Flesh",
+  "raw": "Rarity: UNIQUE\nForbidden Flesh\nCobalt Jewel\nUnique ID: f80326223cfb4918aef7e3a1383addb2bfa2031c5a008cab5401b0a9b10a37a4\nItem Level: 86\nLimited to: 1\nRequires Class Duelist\nImplicits: 0\nAllocates Inspirational if you have the matching modifier on Forbidden Flame\nCorrupted"
+ },
+ {
+  "name": "7.xml#22 Damnation Ornament",
+  "raw": "Rarity: RARE\nDamnation Ornament\nViridian Jewel\nUnique ID: a86111c3a88e0cf9d627438d6401cae55aa345d241c6fcfb7d9d7940e4b02637\nItem Level: 81\nImplicits: 0\n{fractured}+18% to Critical Strike Multiplier with Two Handed Melee Weapons\n+12% to Global Critical Strike Multiplier\n+15% to Melee Critical Strike Multiplier\n7% increased maximum Life"
+ },
+ {
+  "name": "7.xml#23 Behemoth Star",
+  "raw": "Rarity: RARE\nBehemoth Star\nLarge Cluster Jewel\nUnique ID: 52b5dc48e6ff3817a8d7456d219497dd2f4fb37267fcbde5a5d96e0d0e0270d1\nItem Level: 81\nLevelReq: 40\nImplicits: 4\n{crafted}Adds 8 Passive Skills\n{crafted}2 Added Passive Skills are Jewel Sockets\n{crafted}Added Small Passive Skills grant: Staff Attacks deal 12% increased Damage with Hits and Ailments\nAdded Small Passive Skills grant: Mace or Sceptre Attacks deal 12% increased Damage with Hits and Ailments\nAdded Small Passive Skills also grant: 1% increased Attack Speed\n1 Added Passive Skill is Feed the Fury\n1 Added Passive Skill is Martial Prowess\n1 Added Passive Skill is Weight Advantage"
+ },
+ {
+  "name": "7.xml#24 Honour Solace",
+  "raw": "Rarity: RARE\nHonour Solace\nLarge Cluster Jewel\nUnique ID: 7d60513bdcd8346a00ea8cfd71c0dcad7cbf0d509fd486248e5036a564b02700\nItem Level: 82\nLevelReq: 60\nImplicits: 5\n{crafted}Adds 8 Passive Skills\n{crafted}2 Added Passive Skills are Jewel Sockets\n{crafted}Added Small Passive Skills grant: Staff Attacks deal 12% increased Damage with Hits and Ailments\nAdded Small Passive Skills grant: Mace or Sceptre Attacks deal 12% increased Damage with Hits and Ailments\nRegenerate 0.1% of Life per second\nAdded Small Passive Skills also grant: 1% increased Attack Speed\n1 Added Passive Skill is Feed the Fury\n1 Added Passive Skill is Martial Prowess\n1 Added Passive Skill is Overlord"
+ },
+ {
+  "name": "7.xml#25 Forbidden Flame",
+  "raw": "Rarity: UNIQUE\nForbidden Flame\nCrimson Jewel\nUnique ID: abe6c37c58c0b79dc30919dd7b5594381ee068f7d89a3069ab6afe29d926bee4\nItem Level: 86\nLimited to: 1\nRequires Class Duelist\nImplicits: 0\nAllocates Inspirational if you have the matching modifier on Forbidden Flesh\nCorrupted"
+ },
+ {
+  "name": "7.xml#26 Watcher's Eye",
+  "raw": "Rarity: UNIQUE\nWatcher's Eye\nPrismatic Jewel\nUnique ID: 006252309027b1c6b31ac35989705fb36b49a63ceb730f2a29071c15033d9bba\nItem Level: 86\nLimited to: 1\nImplicits: 0\n4% increased maximum Energy Shield\n5% increased maximum Life\n6% increased maximum Mana\n59% increased Attack Damage while affected by Precision\n1.17% of Fire Damage Leeched as Life while affected by Anger\n10% chance to deal Double Damage while using Pride"
+ },
+ {
+  "name": "7.xml#27 Gale Dream",
+  "raw": "Rarity: RARE\nGale Dream\nViridian Jewel\nUnique ID: 58d14bbf205565cf8514ab0fc1b632890facc6d050f25711474e29597115a1cc\nItem Level: 83\nImplicits: 0\n{fractured}+18% to Critical Strike Multiplier with Two Handed Melee Weapons\n+12% to Global Critical Strike Multiplier\n+15% to Melee Critical Strike Multiplier\n7% increased maximum Life"
+ },
+ {
+  "name": "7.xml#28 Hypnotic Vessel",
+  "raw": "Rarity: RARE\nHypnotic Vessel\nViridian Jewel\nUnique ID: 50d0171a6e1e2806dfb599d905cd660d66ccc433f3c5408ca3d92b6bba68ab69\nItem Level: 83\nImplicits: 0\n{fractured}+18% to Critical Strike Multiplier with Two Handed Melee Weapons\n+12% to Global Critical Strike Multiplier\n+15% to Melee Critical Strike Multiplier\n7% increased maximum Life"
+ },
+ {
+  "name": "8.xml#1 Kraken Bane",
+  "raw": "Rarity: RARE\nKraken Bane\nCrimson Jewel\nUnique ID: cc809f59e87556a2c65a70f57d4b0e563de1e0a7f59b4a90673b90d527dc5da9\nItem Level: 78\nImplicits: 0\n16% increased Fire Damage\n7% increased Attack Speed with Maces or Sceptres\n10% increased Area Damage"
+ },
+ {
+  "name": "8.xml#2 Behemoth Blood",
+  "raw": "Rarity: RARE\nBehemoth Blood\nCrimson Jewel\nUnique ID: e9423003644f83924b57deb984dd86b5dc7ecb897169d23416755a98b9dcb1da\nItem Level: 84\nImplicits: 0\n7% increased Attack Speed with Maces or Sceptres\n6% increased maximum Life\n11% increased Area Damage"
+ },
+ {
+  "name": "8.xml#3 Loath Wreck",
+  "raw": "Rarity: RARE\nLoath Wreck\nCrimson Jewel\nUnique ID: 685567278ab96cd53256e65eeccaa65e68f60a05ebbda447080274d9c6e47329\nItem Level: 78\nImplicits: 0\n+10 to Strength and Intelligence\n15% increased Global Physical Damage\n8% increased Attack Speed with Maces or Sceptres"
+ },
+ {
+  "name": "8.xml#4 Lion's Roar",
+  "raw": "Rarity: UNIQUE\nLion's Roar\nGranite Flask\nUnique ID: 8d1cf05f62b4a39816244ab4d4822cdc2bc81eb4d9bfd404bb4db93c67cc4169\nItem Level: 78\nQuality: 0\nLevelReq: 27\nImplicits: 0\nKnocks Back Enemies in an Area when you use a Flask\n75% chance to cause Enemies to Flee on use\nAdds Knockback to Melee Attacks during Flask effect\n10% more Melee Physical Damage during effect"
+ },
+ {
+  "name": "8.xml#5 Kaom's Way",
+  "raw": "Rarity: UNIQUE\nKaom's Way\nCoral Ring\nUnique ID: f955be8cd2aaaf1f3108b8c929d71ba0a251e620ebf6e86ed53cb82444f8f00b\nItem Level: 85\nLevelReq: 32\nImplicits: 1\n+29 to maximum Life\n+17 to Strength\nRegenerate 0.2% of Life per second per Endurance Charge\n+4 Life gained for each Enemy hit by your Attacks\n+1 to Maximum Endurance Charges\n2% increased Area of Effect per Endurance Charge\nCorrupted"
+ },
+ {
+  "name": "8.xml#6 Kaom's Way",
+  "raw": "Rarity: UNIQUE\nKaom's Way\nCoral Ring\nUnique ID: af1c2e2627198f6450eae4f10dc4dc15fc0fe62f46ec298afce3ef39e830ff41\nItem Level: 79\nLevelReq: 32\nImplicits: 1\n+29 to maximum Life\n+19 to Strength\nRegenerate 0.2% of Life per second per Endurance Charge\n+3 Life gained for each Enemy hit by your Attacks\n+1 to Maximum Endurance Charges\n2% increased Area of Effect per Endurance Charge"
+ },
+ {
+  "name": "8.xml#8 Tabula Rasa",
+  "raw": "Rarity: UNIQUE\nTabula Rasa\nSimple Robe\nUnique ID: 1867ba46dacdbb489178015700c3eb161e67a1c0bf1cfb8398e55652463ed9c9\nItem Level: 86\nQuality: 0\nSockets: W-W-W-W-W-W\nImplicits: 0\nCorrupted"
+ },
+ {
+  "name": "8.xml#9 Veruso's Battering Rams",
+  "raw": "Rarity: UNIQUE\nVeruso's Battering Rams\nTitan Gauntlets\nArmour: 590\nArmourBasePercentile: 0.2816\nUnique ID: 238ac165cbd55272e3056ebe5bc9894c70be6cac60cc539bd36af3e599812148\nItem Level: 72\nQuality: 0\nSockets: R-R-R-R\nLevelReq: 69\nImplicits: 0\n13% increased Attack Speed\n134% increased Armour\n5% increased Movement Speed\n50% increased Stun Duration on you\n4% increased Melee Damage per Endurance Charge\nYou cannot be Shocked while at maximum Endurance Charges"
+ },
+ {
+  "name": "8.xml#11 Death's Door",
+  "raw": "Rarity: UNIQUE\nDeath's Door\nCrusader Boots\nArmour: 372\nArmourBasePercentile: 0.1667\nEnergy Shield: 78\nEnergyShieldBasePercentile: 0.3333\nUnique ID: 93eb5881e95080694e144247e8affd10c8c4937d85f9ff3c10badcfd6ecf6085\nItem Level: 75\nQuality: 0\nSockets: R-R-R-B\nLevelReq: 64\nImplicits: 0\n+36 to Strength\n200% increased Armour and Energy Shield\n+14% to all Elemental Resistances\n25% increased Movement Speed\n+1 to Maximum Endurance Charges\n50% increased Elemental Ailment Duration on you\nBleeding cannot be inflicted on you"
+ },
+ {
+  "name": "8.xml#12 Hinekora's Sight",
+  "raw": "Rarity: UNIQUE\nHinekora's Sight\nOnyx Amulet\nUnique ID: 9d5a9ae22a0b25aa01c7c58588f307b3362b915791dd56ed13a40da36c490810\nItem Level: 83\nLevelReq: 44\nImplicits: 1\n+16 to all Attributes\nPrevent +3% of Suppressed Spell Damage\n+983 to Accuracy Rating\n+871 to Evasion Rating\nCannot be Blinded"
+ },
+ {
+  "name": "8.xml#13 Goldrim",
+  "raw": "Rarity: UNIQUE\nGoldrim\nLeather Cap\nEvasion: 53\nEvasionBasePercentile: 0.25\nUnique ID: 1f48622a173b905327e94bdb2fee0a5328a006e3be1154114d5019fabdd3bbe0\nItem Level: 71\nQuality: 0\nSockets: B R-R-G\nImplicits: 0\n+32 to Evasion Rating\n10% increased Rarity of Items found\n+38% to all Elemental Resistances\nReflects 4 Physical Damage to Melee Attackers"
+ },
+ {
+  "name": "8.xml#14 Sulphur Flask",
+  "raw": "Rarity: MAGIC\nAbecedarian's Sulphur Flask of the Mockingbird\nUnique ID: 0a9265dea7be8d153f5819132ff573fb40ab593fbc3afdd37354b7ce6234a7a8\nItem Level: 73\nQuality: 0\nLevelReq: 35\nImplicits: 1\nCreates Consecrated Ground on Use\n33% reduced Duration\n25% increased effect\n45% reduced Effect of Curses on you during Flask Effect"
+ },
+ {
+  "name": "8.xml#15 Belt of the Deceiver",
+  "raw": "Rarity: UNIQUE\nBelt of the Deceiver\nHeavy Belt\nUnique ID: 575d664f4e072d5799d63b3f15a11403de5760ff72a66d8850427b3bf2aaff91\nItem Level: 70\nLevelReq: 20\nImplicits: 1\n+25 to Strength\n24% increased Global Physical Damage\nYou take 30% reduced Extra Damage from Critical Strikes\n+32 to maximum Life\n+15% to all Elemental Resistances\nNearby Enemies are Intimidated"
+ },
+ {
+  "name": "8.xml#16 Nebuloch",
+  "raw": "Rarity: UNIQUE\nNebuloch\nNightmare Mace\nUnique ID: e2b21a18008f8ec923dfba14d062b59ea4be9418d942309060f58a34b0b30c34\nElder Item\nItem Level: 85\nQuality: 20\nSockets: B-B-B\nLevelReq: 68\nImplicits: 1\n10% reduced Enemy Stun Threshold\nAdds 57 to 112 Physical Damage\nGain 38% of Physical Attack Damage as Extra Fire Damage\n+4% to Chaos Resistance per Endurance Charge\n1% reduced Elemental Damage taken from Hits per Endurance Charge\nAdds 5 to 8 Physical Damage per Endurance Charge\n+500 to Armour per Endurance Charge\n200 Fire Damage taken per second per Endurance Charge if you've been Hit Recently"
+ },
+ {
+  "name": "8.xml#18 Nebuloch",
+  "raw": "Rarity: UNIQUE\nNebuloch\nNightmare Mace\nUnique ID: 9cfeccbe6b043691b8efdbbc4c028989c0bea01f756b45aa7939c1cdf7766d9a\nElder Item\nItem Level: 85\nQuality: 20\nSockets: R-G-R\nLevelReq: 68\nImplicits: 1\n10% reduced Enemy Stun Threshold\nAdds 50 to 117 Physical Damage\nGain 39% of Physical Attack Damage as Extra Fire Damage\n+4% to Chaos Resistance per Endurance Charge\n1% reduced Elemental Damage taken from Hits per Endurance Charge\nAdds 5 to 8 Physical Damage per Endurance Charge\n+500 to Armour per Endurance Charge\n200 Fire Damage taken per second per Endurance Charge if you've been Hit Recently"
+ },
+ {
+  "name": "9.xml#1 Replica Last Resort",
+  "raw": "Rarity: UNIQUE\nReplica Last Resort\nNailed Fist\nUnique ID: 3515874e3ac26d789fe8a190525bc6b9550d49c4ac2dbe7051fdb8d5af4844f2\nItem Level: 80\nQuality: 20\nSockets: B-B G\nImplicits: 1\n+3 Life gained for each Enemy hit by Attacks\n25% increased Attack Speed when on Low Life\n95% increased Physical Damage\n100% increased Accuracy Rating when on Low Life\n200% increased Damage with Claws while on Low Life\nDeal no Damage when not on Low Life\nCorrupted"
+ },
+ {
+  "name": "9.xml#2 Granite Flask",
+  "raw": "Rarity: MAGIC\nDabbler's Granite Flask of Incision\nUnique ID: 7f77ef2210362b2d75d608864ff0efe19200d6119fad3ff69186d3faf322cc96\nItem Level: 85\nQuality: 6\nLevelReq: 65\nImplicits: 0\n30% reduced Duration\n25% increased effect\n55% increased Critical Strike Chance during Flask Effect"
+ },
+ {
+  "name": "9.xml#3 Chimeric Whorl",
+  "raw": "Rarity: RARE\nChimeric Whorl\nSapphire Ring\nUnique ID: 811d3e45fb302d67a435e72c74592e4d1000eb52ad3da50c1d18230ea05b6abf\nItem Level: 85\nLevelReq: 57\nImplicits: 1\n+27% to Cold Resistance\nAdds 16 to 32 Fire Damage to Attacks\n+39% to Fire Resistance\n+45% to Cold Resistance\n+38% to Lightning Resistance\n{crafted}+47 to maximum Life"
+ },
+ {
+  "name": "9.xml#4 Quicksilver Flask",
+  "raw": "Rarity: MAGIC\nChemist's Quicksilver Flask of the Cheetah\nUnique ID: 9d54d70cd30803eb22439f405e2a922d71708fb8b617ac369c4792166f3a9340\nItem Level: 100\nQuality: 0\nLevelReq: 68\nImplicits: 0\n27% reduced Charges per use\n12% increased Movement Speed during Flask effect"
+ },
+ {
+  "name": "9.xml#5 Silver Flask",
+  "raw": "Rarity: MAGIC\nClinician's Silver Flask of the Eagle\nUnique ID: c547dde0dcd1a4ed84befb8a2c6ffe1765d0a1db8ff5c215c20423e324fc2ee1\nItem Level: 85\nQuality: 0\nLevelReq: 54\nImplicits: 0\n34% increased Duration\n14% increased Attack Speed during Flask effect"
+ },
+ {
+  "name": "9.xml#6 Oskarm",
+  "raw": "Rarity: UNIQUE\nOskarm\nNubuck Gloves\nEvasion: 113\nEvasionBasePercentile: 0.3077\nUnique ID: 27e1b000a75e00fc1c39a70ff36fc3193fcc1aa09b69486892cc60afa5b1163a\nItem Level: 83\nQuality: 0\nSockets: R-R R-G\nLevelReq: 33\nImplicits: 0\nTrigger Level 10 Assassin's Mark when you Hit a Rare or Unique Enemy and have no Mark\n+11% chance to Suppress Spell Damage\n38% increased Global Accuracy Rating\n+41 to maximum Life\n-15% to Chaos Resistance\n2% increased Attack Critical Strike Chance per 200 Accuracy Rating"
+ },
+ {
+  "name": "9.xml#7 Agony Coil",
+  "raw": "Rarity: RARE\nAgony Coil\nTwo-Stone Ring\nUnique ID: 73ecbe1c7ca1785f3a56f4c1845bc12f98229337e0b8875d9f2f14c698a843e8\nItem Level: 84\nLevelReq: 57\nImplicits: 1\n+14% to Fire and Cold Resistances\n+23 to maximum Energy Shield\n+23% to Fire Resistance\n+44% to Cold Resistance\n+44% to Lightning Resistance\n{crafted}+54 to maximum Life"
+ },
+ {
+  "name": "9.xml#8 Obscurantis",
+  "raw": "Rarity: UNIQUE\nObscurantis\nLion Pelt\nEvasion: 864\nEvasionBasePercentile: 0.3835\nUnique ID: 6eb778ea787ec19e21898c288b8c9940c0c59cbfa3961a4b03c783cbf0a5f334\nItem Level: 84\nQuality: 0\nSockets: R-R-R-G\nLevelReq: 70\nImplicits: 0\n+982 to Accuracy Rating\n115% increased Evasion Rating\n+73 to maximum Life\n1% increased Projectile Attack Damage per 200 Accuracy Rating"
+ },
+ {
+  "name": "9.xml#9 Diamond Flask",
+  "raw": "Rarity: MAGIC\nPractitioner's Diamond Flask of the Pangolin\nUnique ID: bc5ee46ff0167e2d38c89051d40d9cf6c431e80327e978363bba38d1f2db9d00\nItem Level: 82\nQuality: 0\nLevelReq: 46\nImplicits: 0\n21% reduced Charges per use\n51% increased Armour during Flask effect"
+ },
+ {
+  "name": "9.xml#10 Tabula Rasa",
+  "raw": "Rarity: UNIQUE\nTabula Rasa\nSimple Robe\nUnique ID: 703f70b04cea4a4e0079ffcf02ac0bd1086dd6d0dd0bbdb38b5ebd15995512d3\nItem Level: 71\nQuality: 20\nSockets: W-W-W-W-W-W\nImplicits: 1\n4% increased maximum Energy Shield\nCorrupted"
+ },
+ {
+  "name": "9.xml#11 Sulphur Flask",
+  "raw": "Rarity: MAGIC\nAbecedarian's Sulphur Flask of the Antelope\nUnique ID: 58aff0befdd327edff94b18fdc163263c64c6521b00fa72258bccfeaddce6ff8\nItem Level: 73\nQuality: 0\nLevelReq: 35\nImplicits: 1\nCreates Consecrated Ground on Use\n37% reduced Duration\n25% increased effect\n49% increased Evasion Rating during Flask effect"
+ },
+ {
+  "name": "9.xml#12 Replica Three-step Assault",
+  "raw": "Rarity: UNIQUE\nReplica Three-step Assault\nShagreen Boots\nEvasion: 273\nEvasionBasePercentile: 0.9245\nUnique ID: dbd6ed331f51e28c3d5bfcc2327a27ed6e48ba3cfb548a337755dde7f3a5454b\nItem Level: 69\nQuality: 0\nSockets: R-R-R R\nLevelReq: 55\nImplicits: 0\n+30 to Dexterity\n28% increased Evasion Rating\n+62 to maximum Life\n25% increased Movement Speed\n29% increased Elusive Effect\n10% increased Movement Speed if you've Hit an Enemy Recently"
+ },
+ {
+  "name": "9.xml#13 Hinekora's Sight",
+  "raw": "Rarity: UNIQUE\nHinekora's Sight\nOnyx Amulet\nUnique ID: 80af7a9580371ab6854b78adcb6cdb99859ae859b5c77cb6e2298fece280dc80\nItem Level: 70\nLevelReq: 44\nImplicits: 1\n+16 to all Attributes\nPrevent +3% of Suppressed Spell Damage\n+975 to Accuracy Rating\n+656 to Evasion Rating\nCannot be Blinded"
+ },
+ {
+  "name": "9.xml#14 Demon Bind",
+  "raw": "Rarity: RARE\nDemon Bind\nRustic Sash\nUnique ID: 80274870b5939002a5cb45546601cbd88a366c67eb99a434182cacb0ccf54ec4\nItem Level: 70\nLevelReq: 60\nImplicits: 1\n22% increased Global Physical Damage\n23% increased Damage\n+22 to maximum Energy Shield\n+46 to maximum Life\n+39% to Fire Resistance\n+37% to Lightning Resistance\n{crafted}+19% to Fire and Lightning Resistances"
+ },
+ {
+  "name": "9.xml#15 Replica Last Resort",
+  "raw": "Rarity: UNIQUE\nReplica Last Resort\nNailed Fist\nUnique ID: 7aa3a59a9ad03a342a63f0c120e39ae49c8f26230a9b4257e7b0419863fdfdee\nItem Level: 84\nQuality: 20\nSockets: R-G-G\nImplicits: 1\n+3 Life gained for each Enemy hit by Attacks\n25% increased Attack Speed when on Low Life\n95% increased Physical Damage\n100% increased Accuracy Rating when on Low Life\n200% increased Damage with Claws while on Low Life\nDeal no Damage when not on Low Life\nCorrupted"
+ }
+]

@@ -1,0 +1,84 @@
+@layer components {
+  .data-row {
+    @apply grid items-center gap-1.5 border-b border-surface-2 px-3 py-2;
+  }
+  .data-head {
+    @apply border-line py-1.75 text-11 text-text-3;
+  }
+  .cell-link {
+    @apply border-0 bg-transparent p-0 text-left font-sans text-12 font-semibold text-(--tone) hover:enabled:underline;
+  }
+
+  .menu {
+    @apply absolute right-0 z-40 box-border flex flex-col rounded-md border border-line-strong bg-surface-2 p-1.5 text-13 shadow-menu;
+  }
+  .menu-item {
+    @apply flex h-7.5 items-center gap-2 rounded border-0 bg-transparent px-2 text-left font-sans text-13 text-(--tone,var(--color-text)) hover:bg-hover focus:bg-hover disabled:text-text-4;
+  }
+  .dialog {
+    @apply box-border flex flex-col gap-3 rounded-ovl border border-line-strong bg-surface-2 p-4.5 shadow-dlg;
+  }
+  .dialog-sheet {
+    @apply gap-0 overflow-hidden bg-surface-1 p-0 shadow-sheet;
+  }
+  .sheet-head {
+    @apply flex items-center gap-2.5 border-b border-line bg-bar px-4.5 py-3.5;
+  }
+  .drag-ghost {
+    @apply pointer-events-none absolute z-30 flex -rotate-2 items-center gap-2 rounded-md border border-line-strong bg-surface-2 px-2.5 py-1.5 text-12 font-semibold whitespace-nowrap shadow-ghost;
+  }
+  .grip {
+    @apply tracking-[-2px] text-text-4;
+  }
+  .drop-target {
+    @apply bg-accent/16 outline-1 -outline-offset-1 outline-accent outline-dashed;
+  }
+  .drag-handle {
+    @apply h-7 w-5 cursor-grab border-0 bg-transparent p-0 text-12 tracking-[-2px] text-text-3 opacity-45;
+  }
+  [data-reorder-item] {
+    @apply cursor-grab rounded-md focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent;
+  }
+  [data-reorder-item] :where(input, select, textarea, button:not([data-reorder-press]), a) {
+    cursor: auto;
+  }
+  [data-reorder-item][data-grabbed] {
+    @apply bg-accent/14 outline-1 -outline-offset-1 outline-accent;
+  }
+  [data-reorder-active] [data-reorder-item] {
+    transition: transform 150ms ease;
+  }
+  [data-reorder-active],
+  [data-reorder-active] * {
+    cursor: grabbing !important;
+  }
+  [data-reorder-source] {
+    @apply opacity-40 outline-1 -outline-offset-1 outline-accent outline-dashed;
+  }
+  .reorder-ghost {
+    @apply pointer-events-none fixed z-50 m-0 box-border rounded-md border border-line-strong bg-surface-2 opacity-95 shadow-ghost;
+    transform: rotate(-1deg) scale(1.02);
+  }
+  .reorder-ghost[data-settling] {
+    @apply opacity-100 shadow-none;
+    transform: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    [data-reorder-active] [data-reorder-item] {
+      transition: none;
+    }
+  }
+
+  .issue-row {
+    @apply flex gap-2.5 border-b border-surface-3 px-4 py-2.5;
+  }
+  .issue-badge {
+    @apply flex size-5.5 shrink-0 items-center justify-center rounded-full bg-warn-bg text-12 font-semibold text-worse;
+  }
+  .log-list {
+    @apply m-0 list-none px-0 py-1 font-mono text-11 leading-[1.5];
+  }
+  .log-row {
+    @apply grid grid-cols-[58px_44px_58px_minmax(0,1fr)] gap-1.5 border-b border-sel px-3 py-0.75;
+  }
+}

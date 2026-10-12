@@ -5,6 +5,10 @@ import (
 	"github.com/Vilsol/go-pob/pob"
 )
 
+func CalcTreeVersion() pob.TreeVersion {
+	return data.LatestTreeVersion
+}
+
 func GetRawTree(version pob.TreeVersion) []byte {
 	return data.TreeVersions[version].RawTree()
 }
@@ -13,11 +17,10 @@ func CalculateAllocationPaths(version pob.TreeVersion, activeNodes []int64, root
 	return data.TreeVersions[version].CalculateAllocationPaths(activeNodes, rootNodes)
 }
 
-// TODO: Need some algorithm that figures out which nodes would be disconnected and therefore removed if the target node is removed
-// Important steps:
-// 1a. On allocation calculate and store a list of adjacent nodes that are currently on a path towards a start node (pathsToStart)
-// 1b. Also make sure to check all previously allocated nodes and recalculate any new start paths adjacent nodes
-// 2. On Deallocate start pruning all subtrees connected to the target node that ARE NOT listed in the pathsToStart
 func CalculatePrunableNodes(version pob.TreeVersion, activeNodes []int64, rootNodes []int64) []int64 {
 	return data.TreeVersions[version].CalculatePrunableNodes(activeNodes, rootNodes)
+}
+
+func CalculateDependentNodes(version pob.TreeVersion, activeNodes []int64, target int64, rootNodes []int64) []int64 {
+	return data.TreeVersions[version].CalculateDependentNodes(activeNodes, target, rootNodes)
 }

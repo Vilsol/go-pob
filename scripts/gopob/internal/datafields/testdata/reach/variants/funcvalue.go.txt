@@ -1,0 +1,9 @@
+package app
+
+import "github.com/Vilsol/go-pob-data/poe"
+
+var getters = map[string]func(*poe.Row) string{"via": (*poe.Row).GetVia}
+
+func FuncValue(r *poe.Row) string {
+	return getters["via"](r)
+}

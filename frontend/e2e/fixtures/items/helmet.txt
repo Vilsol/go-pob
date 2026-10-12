@@ -1,0 +1,20 @@
+Item Class: Helmets
+Rarity: Rare
+Doom Visor
+Hubris Circlet
+--------
+Quality: +20% (augmented)
+Energy Shield: 250 (augmented)
+--------
+Requirements:
+Level: 69
+Int: 154
+--------
+Sockets: B-B-B-G
+--------
+Item Level: 84
+--------
++2 to Level of Socketed Minion Gems
++80 to maximum Life
++40% to Fire Resistance
++35% to Cold Resistance (crafted)

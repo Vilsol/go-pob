@@ -10,6 +10,8 @@ import (
 	"github.com/Vilsol/go-pob/utils"
 )
 
+const CacheDirEnv = "GO_POB_CACHE_DIR"
+
 var store *wasmStorage
 
 type wasmStorage struct {
@@ -79,6 +81,18 @@ func (d *wasmStorage) SetCache(key string, value []byte) error {
 func (d *wasmStorage) ExistsInCache(key string) bool {
 	hash := base64.RawURLEncoding.EncodeToString([]byte(key))
 	return d.exists("cache", hash)
+}
+
+func (d *wasmStorage) GetSetting(key string) ([]byte, error) {
+	if !d.exists("settings", key) {
+		return nil, nil
+	}
+	return d.get("settings", key), nil
+}
+
+func (d *wasmStorage) SetSetting(key string, value []byte) error {
+	d.set("settings", key, value)
+	return nil
 }
 
 func (d *wasmStorage) List(dir string) ([]DirEntry, error) {

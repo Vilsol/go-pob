@@ -1,0 +1,5 @@
+{
+  // Own project for the same reason as harness/tsconfig.json: the generated root one cannot see e2e/.
+  "extends": "../tsconfig.json",
+  "include": ["./**/*.ts", "../src/lib/**/*.ts"]
+}

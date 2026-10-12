@@ -1,0 +1,1276 @@
+[{
+    "build":"0005-occultist-vaal-double-strike.xml",
+    "list":"total_strength, 0.017, 0, 0\nkarui_notable_add_life, 1.564, 0, 0\nkarui_notable_add_percent_strength, 0.573, 0, 0",
+    "modes":[{
+        "label":"Sort by Full DPS",
+        "stat":"FullDPS"
+      },{
+        "label":"Sort by Combined DPS",
+        "stat":"CombinedDPS"
+      },{
+        "label":"Sort by Hit DPS",
+        "stat":"TotalDPS"
+      },{
+        "label":"Sort by Impale + Hit DPS",
+        "stat":"WithImpaleDPS"
+      },{
+        "label":"Sort by Average Hit",
+        "stat":"AverageDamage"
+      },{
+        "label":"Sort by Attack/Cast Speed",
+        "stat":"Speed"
+      },{
+        "label":"Sort by DoT DPS",
+        "stat":"TotalDot"
+      },{
+        "label":"Sort by Bleed DPS",
+        "stat":"BleedDPS"
+      },{
+        "label":"Sort by Ignite DPS",
+        "stat":"IgniteDPS"
+      },{
+        "label":"Sort by Poison DPS",
+        "stat":"PoisonDPS"
+      },{
+        "label":"Sort by Life",
+        "stat":"Life"
+      },{
+        "label":"Sort by Life regen",
+        "stat":"LifeRegen"
+      },{
+        "label":"Sort by Life leech",
+        "stat":"LifeLeechRate"
+      },{
+        "label":"Sort by Armour",
+        "stat":"Armour"
+      },{
+        "label":"Sort by Evasion",
+        "stat":"Evasion"
+      },{
+        "label":"Sort by Energy Shield",
+        "stat":"EnergyShield"
+      },{
+        "label":"Sort by Recoverable ES",
+        "stat":"EnergyShieldRecoveryCap"
+      },{
+        "label":"Sort by Energy Shield regen",
+        "stat":"EnergyShieldRegen"
+      },{
+        "label":"Sort by Energy Shield leech",
+        "stat":"EnergyShieldLeechRate"
+      },{
+        "label":"Sort by Mana",
+        "stat":"Mana"
+      },{
+        "label":"Sort by Mana regen",
+        "stat":"ManaRegen"
+      },{
+        "label":"Sort by Mana leech",
+        "stat":"ManaLeechRate"
+      },{
+        "label":"Sort by Ward",
+        "stat":"Ward"
+      },{
+        "label":"Sort by Strength",
+        "stat":"Str"
+      },{
+        "label":"Sort by Dexterity",
+        "stat":"Dex"
+      },{
+        "label":"Sort by Intelligence",
+        "stat":"Int"
+      },{
+        "label":"Sort by Total Attributes",
+        "stat":"TotalAttr"
+      },{
+        "label":"Sort by Melee avoid chance",
+        "stat":"MeleeAvoidChance"
+      },{
+        "label":"Sort by Spell avoid chance",
+        "stat":"SpellAvoidChance"
+      },{
+        "label":"Sort by Projectile avoid chance",
+        "stat":"ProjectileAvoidChance"
+      },{
+        "label":"Sort by Effective Hit Pool",
+        "stat":"TotalEHP"
+      },{
+        "label":"Sort by Eff. Maximum Hit Taken",
+        "stat":"SecondMinimalMaximumHitTaken"
+      },{
+        "label":"Sort by Taken Phys dmg",
+        "stat":"PhysicalTakenHit"
+      },{
+        "label":"Sort by Taken Lightning dmg",
+        "stat":"LightningTakenHit"
+      },{
+        "label":"Sort by Taken Cold dmg",
+        "stat":"ColdTakenHit"
+      },{
+        "label":"Sort by Taken Fire dmg",
+        "stat":"FireTakenHit"
+      },{
+        "label":"Sort by Taken Chaos dmg",
+        "stat":"ChaosTakenHit"
+      },{
+        "label":"Sort by Crit Chance",
+        "stat":"CritChance"
+      },{
+        "label":"Sort by Crit Multiplier",
+        "stat":"CritMultiplier"
+      },{
+        "label":"Sort by Bleed Chance",
+        "stat":"BleedChance"
+      },{
+        "label":"Sort by Freeze Chance",
+        "stat":"FreezeChance"
+      },{
+        "label":"Sort by Ignite Chance",
+        "stat":"IgniteChance"
+      },{
+        "label":"Sort by Shock Chance",
+        "stat":"ShockChance"
+      },{
+        "label":"Sort by Move speed",
+        "stat":"EffectiveMovementSpeedMod"
+      },{
+        "label":"Sort by Light Radius",
+        "stat":"LightRadiusMod"
+      },{
+        "label":"Sort by Block Chance",
+        "stat":"BlockChance"
+      },{
+        "label":"Sort by Spell Block Chance",
+        "stat":"SpellBlockChance"
+      },{
+        "label":"Sort by Spell Suppression Chance",
+        "stat":"SpellSuppressionChance"
+      },{
+        "label":"Sort by Minion Attack/Cast Speed",
+        "stat":"MinionSpeed"
+      },{
+        "label":"Sort by Minion Life",
+        "stat":"MinionLife"
+      },{
+        "label":"Sort by Minion Life regen",
+        "stat":"MinionLifeRegen"
+      },{
+        "label":"Sort by Minion Life leech",
+        "stat":"MinionLifeLeechRate"
+      },{
+        "label":"Sort by Minion Armour",
+        "stat":"MinionArmour"
+      },{
+        "label":"Sort by Minion Evasion",
+        "stat":"MinionEvasion"
+      },{
+        "label":"Sort by Minion Energy Shield",
+        "stat":"MinionEnergyShield"
+      },{
+        "label":"Sort by Minion Recoverable ES",
+        "stat":"MinionEnergyShieldRecoveryCap"
+      },{
+        "label":"Sort by Minion Energy Shield regen",
+        "stat":"MinionEnergyShieldRegen"
+      },{
+        "label":"Sort by Minion Energy Shield leech",
+        "stat":"MinionEnergyShieldLeechRate"
+      },{
+        "label":"Sort by Minion Mana",
+        "stat":"MinionMana"
+      },{
+        "label":"Sort by Minion Mana regen",
+        "stat":"MinionManaRegen"
+      },{
+        "label":"Sort by Minion Mana leech",
+        "stat":"MinionManaLeechRate"
+      },{
+        "label":"Sort by Minion Ward",
+        "stat":"MinionWard"
+      },{
+        "label":"Sort by Minion Total Attributes",
+        "stat":"MinionTotalAttr"
+      },{
+        "label":"Sort by Minion Melee avoid chance",
+        "stat":"MinionMeleeAvoidChance"
+      },{
+        "label":"Sort by Minion Spell avoid chance",
+        "stat":"MinionSpellAvoidChance"
+      },{
+        "label":"Sort by Minion Projectile avoid chance",
+        "stat":"MinionProjectileAvoidChance"
+      },{
+        "label":"Sort by Minion Effective Hit Pool",
+        "stat":"MinionTotalEHP"
+      },{
+        "label":"Sort by Minion Eff. Maximum Hit Taken",
+        "stat":"MinionSecondMinimalMaximumHitTaken"
+      },{
+        "label":"Sort by Minion Taken Phys dmg",
+        "stat":"MinionPhysicalTakenHit"
+      },{
+        "label":"Sort by Minion Taken Lightning dmg",
+        "stat":"MinionLightningTakenHit"
+      },{
+        "label":"Sort by Minion Taken Cold dmg",
+        "stat":"MinionColdTakenHit"
+      },{
+        "label":"Sort by Minion Taken Fire dmg",
+        "stat":"MinionFireTakenHit"
+      },{
+        "label":"Sort by Minion Taken Chaos dmg",
+        "stat":"MinionChaosTakenHit"
+      },{
+        "label":"Sort by Minion Crit Chance",
+        "stat":"MinionCritChance"
+      },{
+        "label":"Sort by Minion Crit Multiplier",
+        "stat":"MinionCritMultiplier"
+      },{
+        "label":"Sort by Minion Bleed Chance",
+        "stat":"MinionBleedChance"
+      },{
+        "label":"Sort by Minion Freeze Chance",
+        "stat":"MinionFreezeChance"
+      },{
+        "label":"Sort by Minion Ignite Chance",
+        "stat":"MinionIgniteChance"
+      },{
+        "label":"Sort by Minion Shock Chance",
+        "stat":"MinionShockChance"
+      },{
+        "label":"Sort by Minion Move speed",
+        "stat":"MinionEffectiveMovementSpeedMod"
+      },{
+        "label":"Sort by Minion Block Chance",
+        "stat":"MinionBlockChance"
+      },{
+        "label":"Sort by Minion Spell Block Chance",
+        "stat":"MinionSpellBlockChance"
+      },{
+        "label":"Sort by Minion Spell Suppression Chance",
+        "stat":"MinionSpellSuppressionChance"
+      }],
+    "stat":"Life",
+    "type":2
+  },{
+    "build":"0005-occultist-vaal-double-strike.xml",
+    "list":"maraketh_notable_add_aura_effect, 0.342, 0, 0\nmaraketh_notable_add_global_crit_chance, 2.138, 0, 0\nmaraketh_notable_add_speed, 1.815, 0, 0",
+    "modes":[{
+        "label":"Sort by Full DPS",
+        "stat":"FullDPS"
+      },{
+        "label":"Sort by Combined DPS",
+        "stat":"CombinedDPS"
+      },{
+        "label":"Sort by Hit DPS",
+        "stat":"TotalDPS"
+      },{
+        "label":"Sort by Impale + Hit DPS",
+        "stat":"WithImpaleDPS"
+      },{
+        "label":"Sort by Average Hit",
+        "stat":"AverageDamage"
+      },{
+        "label":"Sort by Attack/Cast Speed",
+        "stat":"Speed"
+      },{
+        "label":"Sort by DoT DPS",
+        "stat":"TotalDot"
+      },{
+        "label":"Sort by Bleed DPS",
+        "stat":"BleedDPS"
+      },{
+        "label":"Sort by Ignite DPS",
+        "stat":"IgniteDPS"
+      },{
+        "label":"Sort by Poison DPS",
+        "stat":"PoisonDPS"
+      },{
+        "label":"Sort by Life",
+        "stat":"Life"
+      },{
+        "label":"Sort by Life regen",
+        "stat":"LifeRegen"
+      },{
+        "label":"Sort by Life leech",
+        "stat":"LifeLeechRate"
+      },{
+        "label":"Sort by Armour",
+        "stat":"Armour"
+      },{
+        "label":"Sort by Evasion",
+        "stat":"Evasion"
+      },{
+        "label":"Sort by Energy Shield",
+        "stat":"EnergyShield"
+      },{
+        "label":"Sort by Recoverable ES",
+        "stat":"EnergyShieldRecoveryCap"
+      },{
+        "label":"Sort by Energy Shield regen",
+        "stat":"EnergyShieldRegen"
+      },{
+        "label":"Sort by Energy Shield leech",
+        "stat":"EnergyShieldLeechRate"
+      },{
+        "label":"Sort by Mana",
+        "stat":"Mana"
+      },{
+        "label":"Sort by Mana regen",
+        "stat":"ManaRegen"
+      },{
+        "label":"Sort by Mana leech",
+        "stat":"ManaLeechRate"
+      },{
+        "label":"Sort by Ward",
+        "stat":"Ward"
+      },{
+        "label":"Sort by Strength",
+        "stat":"Str"
+      },{
+        "label":"Sort by Dexterity",
+        "stat":"Dex"
+      },{
+        "label":"Sort by Intelligence",
+        "stat":"Int"
+      },{
+        "label":"Sort by Total Attributes",
+        "stat":"TotalAttr"
+      },{
+        "label":"Sort by Melee avoid chance",
+        "stat":"MeleeAvoidChance"
+      },{
+        "label":"Sort by Spell avoid chance",
+        "stat":"SpellAvoidChance"
+      },{
+        "label":"Sort by Projectile avoid chance",
+        "stat":"ProjectileAvoidChance"
+      },{
+        "label":"Sort by Effective Hit Pool",
+        "stat":"TotalEHP"
+      },{
+        "label":"Sort by Eff. Maximum Hit Taken",
+        "stat":"SecondMinimalMaximumHitTaken"
+      },{
+        "label":"Sort by Taken Phys dmg",
+        "stat":"PhysicalTakenHit"
+      },{
+        "label":"Sort by Taken Lightning dmg",
+        "stat":"LightningTakenHit"
+      },{
+        "label":"Sort by Taken Cold dmg",
+        "stat":"ColdTakenHit"
+      },{
+        "label":"Sort by Taken Fire dmg",
+        "stat":"FireTakenHit"
+      },{
+        "label":"Sort by Taken Chaos dmg",
+        "stat":"ChaosTakenHit"
+      },{
+        "label":"Sort by Crit Chance",
+        "stat":"CritChance"
+      },{
+        "label":"Sort by Crit Multiplier",
+        "stat":"CritMultiplier"
+      },{
+        "label":"Sort by Bleed Chance",
+        "stat":"BleedChance"
+      },{
+        "label":"Sort by Freeze Chance",
+        "stat":"FreezeChance"
+      },{
+        "label":"Sort by Ignite Chance",
+        "stat":"IgniteChance"
+      },{
+        "label":"Sort by Shock Chance",
+        "stat":"ShockChance"
+      },{
+        "label":"Sort by Move speed",
+        "stat":"EffectiveMovementSpeedMod"
+      },{
+        "label":"Sort by Light Radius",
+        "stat":"LightRadiusMod"
+      },{
+        "label":"Sort by Block Chance",
+        "stat":"BlockChance"
+      },{
+        "label":"Sort by Spell Block Chance",
+        "stat":"SpellBlockChance"
+      },{
+        "label":"Sort by Spell Suppression Chance",
+        "stat":"SpellSuppressionChance"
+      },{
+        "label":"Sort by Minion Attack/Cast Speed",
+        "stat":"MinionSpeed"
+      },{
+        "label":"Sort by Minion Life",
+        "stat":"MinionLife"
+      },{
+        "label":"Sort by Minion Life regen",
+        "stat":"MinionLifeRegen"
+      },{
+        "label":"Sort by Minion Life leech",
+        "stat":"MinionLifeLeechRate"
+      },{
+        "label":"Sort by Minion Armour",
+        "stat":"MinionArmour"
+      },{
+        "label":"Sort by Minion Evasion",
+        "stat":"MinionEvasion"
+      },{
+        "label":"Sort by Minion Energy Shield",
+        "stat":"MinionEnergyShield"
+      },{
+        "label":"Sort by Minion Recoverable ES",
+        "stat":"MinionEnergyShieldRecoveryCap"
+      },{
+        "label":"Sort by Minion Energy Shield regen",
+        "stat":"MinionEnergyShieldRegen"
+      },{
+        "label":"Sort by Minion Energy Shield leech",
+        "stat":"MinionEnergyShieldLeechRate"
+      },{
+        "label":"Sort by Minion Mana",
+        "stat":"MinionMana"
+      },{
+        "label":"Sort by Minion Mana regen",
+        "stat":"MinionManaRegen"
+      },{
+        "label":"Sort by Minion Mana leech",
+        "stat":"MinionManaLeechRate"
+      },{
+        "label":"Sort by Minion Ward",
+        "stat":"MinionWard"
+      },{
+        "label":"Sort by Minion Total Attributes",
+        "stat":"MinionTotalAttr"
+      },{
+        "label":"Sort by Minion Melee avoid chance",
+        "stat":"MinionMeleeAvoidChance"
+      },{
+        "label":"Sort by Minion Spell avoid chance",
+        "stat":"MinionSpellAvoidChance"
+      },{
+        "label":"Sort by Minion Projectile avoid chance",
+        "stat":"MinionProjectileAvoidChance"
+      },{
+        "label":"Sort by Minion Effective Hit Pool",
+        "stat":"MinionTotalEHP"
+      },{
+        "label":"Sort by Minion Eff. Maximum Hit Taken",
+        "stat":"MinionSecondMinimalMaximumHitTaken"
+      },{
+        "label":"Sort by Minion Taken Phys dmg",
+        "stat":"MinionPhysicalTakenHit"
+      },{
+        "label":"Sort by Minion Taken Lightning dmg",
+        "stat":"MinionLightningTakenHit"
+      },{
+        "label":"Sort by Minion Taken Cold dmg",
+        "stat":"MinionColdTakenHit"
+      },{
+        "label":"Sort by Minion Taken Fire dmg",
+        "stat":"MinionFireTakenHit"
+      },{
+        "label":"Sort by Minion Taken Chaos dmg",
+        "stat":"MinionChaosTakenHit"
+      },{
+        "label":"Sort by Minion Crit Chance",
+        "stat":"MinionCritChance"
+      },{
+        "label":"Sort by Minion Crit Multiplier",
+        "stat":"MinionCritMultiplier"
+      },{
+        "label":"Sort by Minion Bleed Chance",
+        "stat":"MinionBleedChance"
+      },{
+        "label":"Sort by Minion Freeze Chance",
+        "stat":"MinionFreezeChance"
+      },{
+        "label":"Sort by Minion Ignite Chance",
+        "stat":"MinionIgniteChance"
+      },{
+        "label":"Sort by Minion Shock Chance",
+        "stat":"MinionShockChance"
+      },{
+        "label":"Sort by Minion Move speed",
+        "stat":"MinionEffectiveMovementSpeedMod"
+      },{
+        "label":"Sort by Minion Block Chance",
+        "stat":"MinionBlockChance"
+      },{
+        "label":"Sort by Minion Spell Block Chance",
+        "stat":"MinionSpellBlockChance"
+      },{
+        "label":"Sort by Minion Spell Suppression Chance",
+        "stat":"MinionSpellSuppressionChance"
+      }],
+    "stat":"CombinedDPS",
+    "type":3
+  },{
+    "build":"0028-occultist-forbidden-rite-of-soul-sacrifice.xml",
+    "list":"total_devotion, 0.008, 0, 0",
+    "modes":[{
+        "label":"Sort by Full DPS",
+        "stat":"FullDPS"
+      },{
+        "label":"Sort by Combined DPS",
+        "stat":"CombinedDPS"
+      },{
+        "label":"Sort by Hit DPS",
+        "stat":"TotalDPS"
+      },{
+        "label":"Sort by Impale + Hit DPS",
+        "stat":"WithImpaleDPS"
+      },{
+        "label":"Sort by Average Hit",
+        "stat":"AverageDamage"
+      },{
+        "label":"Sort by Attack/Cast Speed",
+        "stat":"Speed"
+      },{
+        "label":"Sort by DoT DPS",
+        "stat":"TotalDot"
+      },{
+        "label":"Sort by Bleed DPS",
+        "stat":"BleedDPS"
+      },{
+        "label":"Sort by Ignite DPS",
+        "stat":"IgniteDPS"
+      },{
+        "label":"Sort by Poison DPS",
+        "stat":"PoisonDPS"
+      },{
+        "label":"Sort by Life",
+        "stat":"Life"
+      },{
+        "label":"Sort by Life regen",
+        "stat":"LifeRegen"
+      },{
+        "label":"Sort by Life leech",
+        "stat":"LifeLeechRate"
+      },{
+        "label":"Sort by Armour",
+        "stat":"Armour"
+      },{
+        "label":"Sort by Evasion",
+        "stat":"Evasion"
+      },{
+        "label":"Sort by Energy Shield",
+        "stat":"EnergyShield"
+      },{
+        "label":"Sort by Recoverable ES",
+        "stat":"EnergyShieldRecoveryCap"
+      },{
+        "label":"Sort by Energy Shield regen",
+        "stat":"EnergyShieldRegen"
+      },{
+        "label":"Sort by Energy Shield leech",
+        "stat":"EnergyShieldLeechRate"
+      },{
+        "label":"Sort by Mana",
+        "stat":"Mana"
+      },{
+        "label":"Sort by Mana regen",
+        "stat":"ManaRegen"
+      },{
+        "label":"Sort by Mana leech",
+        "stat":"ManaLeechRate"
+      },{
+        "label":"Sort by Ward",
+        "stat":"Ward"
+      },{
+        "label":"Sort by Strength",
+        "stat":"Str"
+      },{
+        "label":"Sort by Dexterity",
+        "stat":"Dex"
+      },{
+        "label":"Sort by Intelligence",
+        "stat":"Int"
+      },{
+        "label":"Sort by Total Attributes",
+        "stat":"TotalAttr"
+      },{
+        "label":"Sort by Melee avoid chance",
+        "stat":"MeleeAvoidChance"
+      },{
+        "label":"Sort by Spell avoid chance",
+        "stat":"SpellAvoidChance"
+      },{
+        "label":"Sort by Projectile avoid chance",
+        "stat":"ProjectileAvoidChance"
+      },{
+        "label":"Sort by Effective Hit Pool",
+        "stat":"TotalEHP"
+      },{
+        "label":"Sort by Eff. Maximum Hit Taken",
+        "stat":"SecondMinimalMaximumHitTaken"
+      },{
+        "label":"Sort by Taken Phys dmg",
+        "stat":"PhysicalTakenHit"
+      },{
+        "label":"Sort by Taken Lightning dmg",
+        "stat":"LightningTakenHit"
+      },{
+        "label":"Sort by Taken Cold dmg",
+        "stat":"ColdTakenHit"
+      },{
+        "label":"Sort by Taken Fire dmg",
+        "stat":"FireTakenHit"
+      },{
+        "label":"Sort by Taken Chaos dmg",
+        "stat":"ChaosTakenHit"
+      },{
+        "label":"Sort by Crit Chance",
+        "stat":"CritChance"
+      },{
+        "label":"Sort by Crit Multiplier",
+        "stat":"CritMultiplier"
+      },{
+        "label":"Sort by Bleed Chance",
+        "stat":"BleedChance"
+      },{
+        "label":"Sort by Freeze Chance",
+        "stat":"FreezeChance"
+      },{
+        "label":"Sort by Ignite Chance",
+        "stat":"IgniteChance"
+      },{
+        "label":"Sort by Shock Chance",
+        "stat":"ShockChance"
+      },{
+        "label":"Sort by Move speed",
+        "stat":"EffectiveMovementSpeedMod"
+      },{
+        "label":"Sort by Light Radius",
+        "stat":"LightRadiusMod"
+      },{
+        "label":"Sort by Block Chance",
+        "stat":"BlockChance"
+      },{
+        "label":"Sort by Spell Block Chance",
+        "stat":"SpellBlockChance"
+      },{
+        "label":"Sort by Spell Suppression Chance",
+        "stat":"SpellSuppressionChance"
+      },{
+        "label":"Sort by Minion Attack/Cast Speed",
+        "stat":"MinionSpeed"
+      },{
+        "label":"Sort by Minion Life",
+        "stat":"MinionLife"
+      },{
+        "label":"Sort by Minion Life regen",
+        "stat":"MinionLifeRegen"
+      },{
+        "label":"Sort by Minion Life leech",
+        "stat":"MinionLifeLeechRate"
+      },{
+        "label":"Sort by Minion Armour",
+        "stat":"MinionArmour"
+      },{
+        "label":"Sort by Minion Evasion",
+        "stat":"MinionEvasion"
+      },{
+        "label":"Sort by Minion Energy Shield",
+        "stat":"MinionEnergyShield"
+      },{
+        "label":"Sort by Minion Recoverable ES",
+        "stat":"MinionEnergyShieldRecoveryCap"
+      },{
+        "label":"Sort by Minion Energy Shield regen",
+        "stat":"MinionEnergyShieldRegen"
+      },{
+        "label":"Sort by Minion Energy Shield leech",
+        "stat":"MinionEnergyShieldLeechRate"
+      },{
+        "label":"Sort by Minion Mana",
+        "stat":"MinionMana"
+      },{
+        "label":"Sort by Minion Mana regen",
+        "stat":"MinionManaRegen"
+      },{
+        "label":"Sort by Minion Mana leech",
+        "stat":"MinionManaLeechRate"
+      },{
+        "label":"Sort by Minion Ward",
+        "stat":"MinionWard"
+      },{
+        "label":"Sort by Minion Total Attributes",
+        "stat":"MinionTotalAttr"
+      },{
+        "label":"Sort by Minion Melee avoid chance",
+        "stat":"MinionMeleeAvoidChance"
+      },{
+        "label":"Sort by Minion Spell avoid chance",
+        "stat":"MinionSpellAvoidChance"
+      },{
+        "label":"Sort by Minion Projectile avoid chance",
+        "stat":"MinionProjectileAvoidChance"
+      },{
+        "label":"Sort by Minion Effective Hit Pool",
+        "stat":"MinionTotalEHP"
+      },{
+        "label":"Sort by Minion Eff. Maximum Hit Taken",
+        "stat":"MinionSecondMinimalMaximumHitTaken"
+      },{
+        "label":"Sort by Minion Taken Phys dmg",
+        "stat":"MinionPhysicalTakenHit"
+      },{
+        "label":"Sort by Minion Taken Lightning dmg",
+        "stat":"MinionLightningTakenHit"
+      },{
+        "label":"Sort by Minion Taken Cold dmg",
+        "stat":"MinionColdTakenHit"
+      },{
+        "label":"Sort by Minion Taken Fire dmg",
+        "stat":"MinionFireTakenHit"
+      },{
+        "label":"Sort by Minion Taken Chaos dmg",
+        "stat":"MinionChaosTakenHit"
+      },{
+        "label":"Sort by Minion Crit Chance",
+        "stat":"MinionCritChance"
+      },{
+        "label":"Sort by Minion Crit Multiplier",
+        "stat":"MinionCritMultiplier"
+      },{
+        "label":"Sort by Minion Bleed Chance",
+        "stat":"MinionBleedChance"
+      },{
+        "label":"Sort by Minion Freeze Chance",
+        "stat":"MinionFreezeChance"
+      },{
+        "label":"Sort by Minion Ignite Chance",
+        "stat":"MinionIgniteChance"
+      },{
+        "label":"Sort by Minion Shock Chance",
+        "stat":"MinionShockChance"
+      },{
+        "label":"Sort by Minion Move speed",
+        "stat":"MinionEffectiveMovementSpeedMod"
+      },{
+        "label":"Sort by Minion Block Chance",
+        "stat":"MinionBlockChance"
+      },{
+        "label":"Sort by Minion Spell Block Chance",
+        "stat":"MinionSpellBlockChance"
+      },{
+        "label":"Sort by Minion Spell Suppression Chance",
+        "stat":"MinionSpellSuppressionChance"
+      }],
+    "stat":"EnergyShield",
+    "type":4
+  },{
+    "build":"0010-elementalist-storm-burst-2.xml",
+    "list":"eternal_notable_crit_1, 80, 0, 0\neternal_notable_spell_2, 80, 0, 0",
+    "modes":[{
+        "label":"Sort by Full DPS",
+        "stat":"FullDPS"
+      },{
+        "label":"Sort by Combined DPS",
+        "stat":"CombinedDPS"
+      },{
+        "label":"Sort by Hit DPS",
+        "stat":"TotalDPS"
+      },{
+        "label":"Sort by Impale + Hit DPS",
+        "stat":"WithImpaleDPS"
+      },{
+        "label":"Sort by Average Hit",
+        "stat":"AverageDamage"
+      },{
+        "label":"Sort by Attack/Cast Speed",
+        "stat":"Speed"
+      },{
+        "label":"Sort by DoT DPS",
+        "stat":"TotalDot"
+      },{
+        "label":"Sort by Bleed DPS",
+        "stat":"BleedDPS"
+      },{
+        "label":"Sort by Ignite DPS",
+        "stat":"IgniteDPS"
+      },{
+        "label":"Sort by Poison DPS",
+        "stat":"PoisonDPS"
+      },{
+        "label":"Sort by Life",
+        "stat":"Life"
+      },{
+        "label":"Sort by Life regen",
+        "stat":"LifeRegen"
+      },{
+        "label":"Sort by Life leech",
+        "stat":"LifeLeechRate"
+      },{
+        "label":"Sort by Armour",
+        "stat":"Armour"
+      },{
+        "label":"Sort by Evasion",
+        "stat":"Evasion"
+      },{
+        "label":"Sort by Energy Shield",
+        "stat":"EnergyShield"
+      },{
+        "label":"Sort by Recoverable ES",
+        "stat":"EnergyShieldRecoveryCap"
+      },{
+        "label":"Sort by Energy Shield regen",
+        "stat":"EnergyShieldRegen"
+      },{
+        "label":"Sort by Energy Shield leech",
+        "stat":"EnergyShieldLeechRate"
+      },{
+        "label":"Sort by Mana",
+        "stat":"Mana"
+      },{
+        "label":"Sort by Mana regen",
+        "stat":"ManaRegen"
+      },{
+        "label":"Sort by Mana leech",
+        "stat":"ManaLeechRate"
+      },{
+        "label":"Sort by Ward",
+        "stat":"Ward"
+      },{
+        "label":"Sort by Strength",
+        "stat":"Str"
+      },{
+        "label":"Sort by Dexterity",
+        "stat":"Dex"
+      },{
+        "label":"Sort by Intelligence",
+        "stat":"Int"
+      },{
+        "label":"Sort by Total Attributes",
+        "stat":"TotalAttr"
+      },{
+        "label":"Sort by Melee avoid chance",
+        "stat":"MeleeAvoidChance"
+      },{
+        "label":"Sort by Spell avoid chance",
+        "stat":"SpellAvoidChance"
+      },{
+        "label":"Sort by Projectile avoid chance",
+        "stat":"ProjectileAvoidChance"
+      },{
+        "label":"Sort by Effective Hit Pool",
+        "stat":"TotalEHP"
+      },{
+        "label":"Sort by Eff. Maximum Hit Taken",
+        "stat":"SecondMinimalMaximumHitTaken"
+      },{
+        "label":"Sort by Taken Phys dmg",
+        "stat":"PhysicalTakenHit"
+      },{
+        "label":"Sort by Taken Lightning dmg",
+        "stat":"LightningTakenHit"
+      },{
+        "label":"Sort by Taken Cold dmg",
+        "stat":"ColdTakenHit"
+      },{
+        "label":"Sort by Taken Fire dmg",
+        "stat":"FireTakenHit"
+      },{
+        "label":"Sort by Taken Chaos dmg",
+        "stat":"ChaosTakenHit"
+      },{
+        "label":"Sort by Crit Chance",
+        "stat":"CritChance"
+      },{
+        "label":"Sort by Crit Multiplier",
+        "stat":"CritMultiplier"
+      },{
+        "label":"Sort by Bleed Chance",
+        "stat":"BleedChance"
+      },{
+        "label":"Sort by Freeze Chance",
+        "stat":"FreezeChance"
+      },{
+        "label":"Sort by Ignite Chance",
+        "stat":"IgniteChance"
+      },{
+        "label":"Sort by Shock Chance",
+        "stat":"ShockChance"
+      },{
+        "label":"Sort by Move speed",
+        "stat":"EffectiveMovementSpeedMod"
+      },{
+        "label":"Sort by Light Radius",
+        "stat":"LightRadiusMod"
+      },{
+        "label":"Sort by Block Chance",
+        "stat":"BlockChance"
+      },{
+        "label":"Sort by Spell Block Chance",
+        "stat":"SpellBlockChance"
+      },{
+        "label":"Sort by Spell Suppression Chance",
+        "stat":"SpellSuppressionChance"
+      },{
+        "label":"Sort by Minion Attack/Cast Speed",
+        "stat":"MinionSpeed"
+      },{
+        "label":"Sort by Minion Life",
+        "stat":"MinionLife"
+      },{
+        "label":"Sort by Minion Life regen",
+        "stat":"MinionLifeRegen"
+      },{
+        "label":"Sort by Minion Life leech",
+        "stat":"MinionLifeLeechRate"
+      },{
+        "label":"Sort by Minion Armour",
+        "stat":"MinionArmour"
+      },{
+        "label":"Sort by Minion Evasion",
+        "stat":"MinionEvasion"
+      },{
+        "label":"Sort by Minion Energy Shield",
+        "stat":"MinionEnergyShield"
+      },{
+        "label":"Sort by Minion Recoverable ES",
+        "stat":"MinionEnergyShieldRecoveryCap"
+      },{
+        "label":"Sort by Minion Energy Shield regen",
+        "stat":"MinionEnergyShieldRegen"
+      },{
+        "label":"Sort by Minion Energy Shield leech",
+        "stat":"MinionEnergyShieldLeechRate"
+      },{
+        "label":"Sort by Minion Mana",
+        "stat":"MinionMana"
+      },{
+        "label":"Sort by Minion Mana regen",
+        "stat":"MinionManaRegen"
+      },{
+        "label":"Sort by Minion Mana leech",
+        "stat":"MinionManaLeechRate"
+      },{
+        "label":"Sort by Minion Ward",
+        "stat":"MinionWard"
+      },{
+        "label":"Sort by Minion Total Attributes",
+        "stat":"MinionTotalAttr"
+      },{
+        "label":"Sort by Minion Melee avoid chance",
+        "stat":"MinionMeleeAvoidChance"
+      },{
+        "label":"Sort by Minion Spell avoid chance",
+        "stat":"MinionSpellAvoidChance"
+      },{
+        "label":"Sort by Minion Projectile avoid chance",
+        "stat":"MinionProjectileAvoidChance"
+      },{
+        "label":"Sort by Minion Effective Hit Pool",
+        "stat":"MinionTotalEHP"
+      },{
+        "label":"Sort by Minion Eff. Maximum Hit Taken",
+        "stat":"MinionSecondMinimalMaximumHitTaken"
+      },{
+        "label":"Sort by Minion Taken Phys dmg",
+        "stat":"MinionPhysicalTakenHit"
+      },{
+        "label":"Sort by Minion Taken Lightning dmg",
+        "stat":"MinionLightningTakenHit"
+      },{
+        "label":"Sort by Minion Taken Cold dmg",
+        "stat":"MinionColdTakenHit"
+      },{
+        "label":"Sort by Minion Taken Fire dmg",
+        "stat":"MinionFireTakenHit"
+      },{
+        "label":"Sort by Minion Taken Chaos dmg",
+        "stat":"MinionChaosTakenHit"
+      },{
+        "label":"Sort by Minion Crit Chance",
+        "stat":"MinionCritChance"
+      },{
+        "label":"Sort by Minion Crit Multiplier",
+        "stat":"MinionCritMultiplier"
+      },{
+        "label":"Sort by Minion Bleed Chance",
+        "stat":"MinionBleedChance"
+      },{
+        "label":"Sort by Minion Freeze Chance",
+        "stat":"MinionFreezeChance"
+      },{
+        "label":"Sort by Minion Ignite Chance",
+        "stat":"MinionIgniteChance"
+      },{
+        "label":"Sort by Minion Shock Chance",
+        "stat":"MinionShockChance"
+      },{
+        "label":"Sort by Minion Move speed",
+        "stat":"MinionEffectiveMovementSpeedMod"
+      },{
+        "label":"Sort by Minion Block Chance",
+        "stat":"MinionBlockChance"
+      },{
+        "label":"Sort by Minion Spell Block Chance",
+        "stat":"MinionSpellBlockChance"
+      },{
+        "label":"Sort by Minion Spell Suppression Chance",
+        "stat":"MinionSpellSuppressionChance"
+      }],
+    "stat":"CritChance",
+    "type":5
+  },{
+    "build":"0010-elementalist-storm-burst-2.xml",
+    "list":"kalguur_notable_9, 1, 0, 0\nkalguur_notable_15, 3.511, 0, 0\nkalguur_notable_19, 0.882, 0, 0\nkalguur_notable_18, 1.429, 0, 0\nkalguur_notable_21, 1.077, 0, 0\nkalguur_notable_11, 1.705, 0, 0\nkalguur_notable_14, 0.98, 0, 0\nkalguur_notable_16, 3.511, 0, 0",
+    "modes":[{
+        "label":"Sort by Full DPS",
+        "stat":"FullDPS"
+      },{
+        "label":"Sort by Combined DPS",
+        "stat":"CombinedDPS"
+      },{
+        "label":"Sort by Hit DPS",
+        "stat":"TotalDPS"
+      },{
+        "label":"Sort by Impale + Hit DPS",
+        "stat":"WithImpaleDPS"
+      },{
+        "label":"Sort by Average Hit",
+        "stat":"AverageDamage"
+      },{
+        "label":"Sort by Attack/Cast Speed",
+        "stat":"Speed"
+      },{
+        "label":"Sort by DoT DPS",
+        "stat":"TotalDot"
+      },{
+        "label":"Sort by Bleed DPS",
+        "stat":"BleedDPS"
+      },{
+        "label":"Sort by Ignite DPS",
+        "stat":"IgniteDPS"
+      },{
+        "label":"Sort by Poison DPS",
+        "stat":"PoisonDPS"
+      },{
+        "label":"Sort by Life",
+        "stat":"Life"
+      },{
+        "label":"Sort by Life regen",
+        "stat":"LifeRegen"
+      },{
+        "label":"Sort by Life leech",
+        "stat":"LifeLeechRate"
+      },{
+        "label":"Sort by Armour",
+        "stat":"Armour"
+      },{
+        "label":"Sort by Evasion",
+        "stat":"Evasion"
+      },{
+        "label":"Sort by Energy Shield",
+        "stat":"EnergyShield"
+      },{
+        "label":"Sort by Recoverable ES",
+        "stat":"EnergyShieldRecoveryCap"
+      },{
+        "label":"Sort by Energy Shield regen",
+        "stat":"EnergyShieldRegen"
+      },{
+        "label":"Sort by Energy Shield leech",
+        "stat":"EnergyShieldLeechRate"
+      },{
+        "label":"Sort by Mana",
+        "stat":"Mana"
+      },{
+        "label":"Sort by Mana regen",
+        "stat":"ManaRegen"
+      },{
+        "label":"Sort by Mana leech",
+        "stat":"ManaLeechRate"
+      },{
+        "label":"Sort by Ward",
+        "stat":"Ward"
+      },{
+        "label":"Sort by Strength",
+        "stat":"Str"
+      },{
+        "label":"Sort by Dexterity",
+        "stat":"Dex"
+      },{
+        "label":"Sort by Intelligence",
+        "stat":"Int"
+      },{
+        "label":"Sort by Total Attributes",
+        "stat":"TotalAttr"
+      },{
+        "label":"Sort by Melee avoid chance",
+        "stat":"MeleeAvoidChance"
+      },{
+        "label":"Sort by Spell avoid chance",
+        "stat":"SpellAvoidChance"
+      },{
+        "label":"Sort by Projectile avoid chance",
+        "stat":"ProjectileAvoidChance"
+      },{
+        "label":"Sort by Effective Hit Pool",
+        "stat":"TotalEHP"
+      },{
+        "label":"Sort by Eff. Maximum Hit Taken",
+        "stat":"SecondMinimalMaximumHitTaken"
+      },{
+        "label":"Sort by Taken Phys dmg",
+        "stat":"PhysicalTakenHit"
+      },{
+        "label":"Sort by Taken Lightning dmg",
+        "stat":"LightningTakenHit"
+      },{
+        "label":"Sort by Taken Cold dmg",
+        "stat":"ColdTakenHit"
+      },{
+        "label":"Sort by Taken Fire dmg",
+        "stat":"FireTakenHit"
+      },{
+        "label":"Sort by Taken Chaos dmg",
+        "stat":"ChaosTakenHit"
+      },{
+        "label":"Sort by Crit Chance",
+        "stat":"CritChance"
+      },{
+        "label":"Sort by Crit Multiplier",
+        "stat":"CritMultiplier"
+      },{
+        "label":"Sort by Bleed Chance",
+        "stat":"BleedChance"
+      },{
+        "label":"Sort by Freeze Chance",
+        "stat":"FreezeChance"
+      },{
+        "label":"Sort by Ignite Chance",
+        "stat":"IgniteChance"
+      },{
+        "label":"Sort by Shock Chance",
+        "stat":"ShockChance"
+      },{
+        "label":"Sort by Move speed",
+        "stat":"EffectiveMovementSpeedMod"
+      },{
+        "label":"Sort by Light Radius",
+        "stat":"LightRadiusMod"
+      },{
+        "label":"Sort by Block Chance",
+        "stat":"BlockChance"
+      },{
+        "label":"Sort by Spell Block Chance",
+        "stat":"SpellBlockChance"
+      },{
+        "label":"Sort by Spell Suppression Chance",
+        "stat":"SpellSuppressionChance"
+      },{
+        "label":"Sort by Minion Attack/Cast Speed",
+        "stat":"MinionSpeed"
+      },{
+        "label":"Sort by Minion Life",
+        "stat":"MinionLife"
+      },{
+        "label":"Sort by Minion Life regen",
+        "stat":"MinionLifeRegen"
+      },{
+        "label":"Sort by Minion Life leech",
+        "stat":"MinionLifeLeechRate"
+      },{
+        "label":"Sort by Minion Armour",
+        "stat":"MinionArmour"
+      },{
+        "label":"Sort by Minion Evasion",
+        "stat":"MinionEvasion"
+      },{
+        "label":"Sort by Minion Energy Shield",
+        "stat":"MinionEnergyShield"
+      },{
+        "label":"Sort by Minion Recoverable ES",
+        "stat":"MinionEnergyShieldRecoveryCap"
+      },{
+        "label":"Sort by Minion Energy Shield regen",
+        "stat":"MinionEnergyShieldRegen"
+      },{
+        "label":"Sort by Minion Energy Shield leech",
+        "stat":"MinionEnergyShieldLeechRate"
+      },{
+        "label":"Sort by Minion Mana",
+        "stat":"MinionMana"
+      },{
+        "label":"Sort by Minion Mana regen",
+        "stat":"MinionManaRegen"
+      },{
+        "label":"Sort by Minion Mana leech",
+        "stat":"MinionManaLeechRate"
+      },{
+        "label":"Sort by Minion Ward",
+        "stat":"MinionWard"
+      },{
+        "label":"Sort by Minion Total Attributes",
+        "stat":"MinionTotalAttr"
+      },{
+        "label":"Sort by Minion Melee avoid chance",
+        "stat":"MinionMeleeAvoidChance"
+      },{
+        "label":"Sort by Minion Spell avoid chance",
+        "stat":"MinionSpellAvoidChance"
+      },{
+        "label":"Sort by Minion Projectile avoid chance",
+        "stat":"MinionProjectileAvoidChance"
+      },{
+        "label":"Sort by Minion Effective Hit Pool",
+        "stat":"MinionTotalEHP"
+      },{
+        "label":"Sort by Minion Eff. Maximum Hit Taken",
+        "stat":"MinionSecondMinimalMaximumHitTaken"
+      },{
+        "label":"Sort by Minion Taken Phys dmg",
+        "stat":"MinionPhysicalTakenHit"
+      },{
+        "label":"Sort by Minion Taken Lightning dmg",
+        "stat":"MinionLightningTakenHit"
+      },{
+        "label":"Sort by Minion Taken Cold dmg",
+        "stat":"MinionColdTakenHit"
+      },{
+        "label":"Sort by Minion Taken Fire dmg",
+        "stat":"MinionFireTakenHit"
+      },{
+        "label":"Sort by Minion Taken Chaos dmg",
+        "stat":"MinionChaosTakenHit"
+      },{
+        "label":"Sort by Minion Crit Chance",
+        "stat":"MinionCritChance"
+      },{
+        "label":"Sort by Minion Crit Multiplier",
+        "stat":"MinionCritMultiplier"
+      },{
+        "label":"Sort by Minion Bleed Chance",
+        "stat":"MinionBleedChance"
+      },{
+        "label":"Sort by Minion Freeze Chance",
+        "stat":"MinionFreezeChance"
+      },{
+        "label":"Sort by Minion Ignite Chance",
+        "stat":"MinionIgniteChance"
+      },{
+        "label":"Sort by Minion Shock Chance",
+        "stat":"MinionShockChance"
+      },{
+        "label":"Sort by Minion Move speed",
+        "stat":"MinionEffectiveMovementSpeedMod"
+      },{
+        "label":"Sort by Minion Block Chance",
+        "stat":"MinionBlockChance"
+      },{
+        "label":"Sort by Minion Spell Block Chance",
+        "stat":"MinionSpellBlockChance"
+      },{
+        "label":"Sort by Minion Spell Suppression Chance",
+        "stat":"MinionSpellSuppressionChance"
+      }],
+    "stat":"TotalEHP",
+    "type":6
+  }]

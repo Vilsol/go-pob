@@ -1,0 +1,164 @@
+@layer components {
+  .page {
+    @apply box-border flex h-screen min-h-180 w-full min-w-[1280px] flex-col overflow-hidden bg-ground font-sans text-text;
+  }
+  .page-body {
+    @apply flex min-h-0 w-full min-w-0 flex-[1_1_0];
+  }
+  .page-main {
+    @apply relative box-border flex min-h-0 min-w-0 flex-[1_1_0] flex-col gap-3 px-5 py-3.5;
+  }
+  .slots {
+    @apply [&>.sc-host]:contents;
+  }
+  .scroll {
+    @apply box-border min-h-0 overflow-x-hidden overflow-y-auto [scrollbar-gutter:stable];
+  }
+  .panel {
+    @apply rounded-md border border-line bg-surface-1;
+  }
+
+  .caps {
+    @apply text-12 font-semibold tracking-caps text-text-2 uppercase;
+  }
+  .note {
+    @apply text-12 text-text-3;
+  }
+  .note-sm {
+    @apply text-11 text-text-3;
+  }
+  .subhead {
+    @apply text-11 font-bold tracking-caps text-text-2;
+  }
+  .kv {
+    @apply flex justify-between gap-2;
+  }
+
+  .tree-edge {
+    @apply absolute top-(--y) left-(--x) h-0.5 w-(--w) origin-left rotate-(--r) bg-node-none;
+  }
+  .tree-edge[data-state='on'] {
+    @apply h-0.75 bg-accent;
+  }
+  .tree-edge[data-state='path'] {
+    @apply h-0.75 bg-better;
+  }
+  .tree-edge[data-state='lose'] {
+    @apply h-0.75 bg-worse;
+  }
+  .tree-node {
+    @apply absolute top-(--y) left-(--x) box-border size-(--z) rounded-full border-0 bg-node p-0;
+  }
+  .tree-node:is([data-kind='n'], [data-kind='k']) {
+    @apply border-2 border-(--ring,var(--color-line-bright));
+  }
+  .tree-node[data-kind='k'] {
+    @apply rounded-[5px];
+  }
+  .tree-node[data-kind='m'] {
+    @apply border-2 border-line-strong bg-transparent;
+  }
+  .tree-node[data-kind='j'] {
+    @apply border-3 border-node-jewel;
+  }
+  .tree-node[data-alloc='true'] {
+    @apply bg-accent [--ring:var(--color-accent-hi)];
+  }
+  .tree-node[data-state='path'] {
+    @apply bg-node-path;
+  }
+  .tree-node[data-state='lose'] {
+    @apply bg-worse;
+  }
+  .tree-node[data-kind='c'] {
+    @apply border-2 border-accent bg-node-start;
+  }
+  .tree-node[data-open='true'] {
+    @apply border-accent;
+  }
+  .tree-node[data-hover='true'] {
+    @apply border-2 border-text;
+  }
+  .tree-node[data-match='true'] {
+    @apply shadow-[0_0_0_3px_var(--color-tree-ground),0_0_0_5px_var(--color-stat-light)];
+  }
+  .tree-node[data-conq='true'] {
+    @apply border-2 border-node-conq shadow-[0_0_8px_var(--color-node-conq)];
+  }
+  .tree-node[data-picked='true'] {
+    @apply border-3 border-better shadow-[0_0_0_4px_rgba(108,180,255,0.35)];
+  }
+  .tree-node[data-radius='true'] {
+    @apply outline-2 outline-offset-2 outline-better/80 outline-solid;
+  }
+  .radius-ring {
+    @apply pointer-events-none absolute top-(--y) left-(--x) box-border size-(--z) rounded-[50%] border-2 border-dashed border-better/55 bg-better/4;
+  }
+  .radius-ring[data-hot='true'] {
+    @apply border-solid border-better bg-better/8;
+  }
+  .notes-doc {
+    @apply min-h-full px-5.5 py-4.5 text-14 leading-[1.6] text-text outline-none;
+  }
+  .notes-doc h1 {
+    @apply mb-1 text-[20px] font-semibold;
+  }
+  .notes-doc h2 {
+    @apply mt-1 text-16 font-semibold;
+  }
+  .notes-doc ul {
+    @apply list-disc pl-5.5;
+  }
+  .notes-doc ol {
+    @apply list-decimal pl-5.5;
+  }
+  .notes-doc p {
+    @apply min-h-[1.6em] whitespace-pre-wrap;
+  }
+  .notes-doc h3 {
+    @apply mt-1 text-14 font-semibold text-text-2;
+  }
+  .notes-doc ul[data-type='taskList'] {
+    @apply list-none pl-0.5;
+  }
+  .notes-doc ul[data-type='taskList'] li {
+    @apply flex items-start gap-2;
+  }
+  .notes-doc ul[data-type='taskList'] li > label {
+    @apply mt-[0.2em] flex;
+  }
+  .notes-doc ul[data-type='taskList'] li > div {
+    @apply min-w-0 grow;
+  }
+  .notes-doc ul[data-type='taskList'] li[data-checked='true'] > div {
+    @apply text-text-3 line-through;
+  }
+  .notes-doc ul[data-type='taskList'] input[type='checkbox'] {
+    @apply m-0 box-border size-4 shrink-0 cursor-pointer appearance-none rounded-[3px] border border-line-strong bg-surface-2 bg-center bg-no-repeat checked:border-accent checked:bg-accent;
+    background-size: 80% 80%;
+  }
+  .notes-doc ul[data-type='taskList'] input[type='checkbox']:checked {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 6.2l2.4 2.4 4.6-5' fill='none' stroke='%231a1206' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  }
+  .notes-doc blockquote {
+    @apply my-1 border-l-2 border-line-strong pl-3 text-text-2;
+  }
+  .notes-doc code {
+    @apply rounded-[3px] bg-surface-3 px-1 font-mono text-[0.9em];
+  }
+  .notes-doc pre {
+    @apply my-1 rounded border border-line bg-ground px-3 py-2 font-mono text-13 whitespace-pre-wrap;
+  }
+  .notes-doc pre code {
+    @apply bg-transparent p-0;
+  }
+  .notes-doc hr {
+    @apply my-3 border-0 border-t border-line-strong;
+  }
+  .notes-doc a {
+    @apply text-accent underline;
+  }
+  .map-note {
+    @apply absolute rounded border border-line bg-surface-1/90 px-2 py-1.25 text-11 text-text-3;
+  }
+}

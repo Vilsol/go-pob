@@ -1,0 +1,3 @@
+module github.com/Vilsol/go-pob-data
+
+go 1.26.2

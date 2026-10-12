@@ -1,0 +1,25 @@
+@layer components {
+  .badge-warn {
+    @apply inline-flex h-4 items-center rounded-lg bg-warn-bg px-1.5 font-sans text-10 font-semibold tracking-normal text-worse normal-case;
+  }
+  .dot {
+    @apply size-2 shrink-0 rounded-full bg-(--tone,var(--color-accent));
+  }
+
+  .stat-group-head {
+    @apply flex items-center gap-1.5 border-0 bg-transparent py-0.5 text-left font-sans text-11 font-semibold tracking-caps-wide text-text-2 uppercase;
+  }
+  .stat-row {
+    @apply relative flex cursor-default items-center overflow-hidden rounded-[2px] text-13 leading-[21px] hover:bg-hover! before:absolute before:top-0.75 before:bottom-0.75 before:left-0 before:z-1 before:w-0.75 before:rounded-[2px] before:bg-(--tone,transparent) before:content-[''];
+  }
+  .stat-label {
+    @apply relative w-39.5 shrink-0 truncate pl-2.25 text-text-2;
+  }
+  .stat-value {
+    @apply relative font-mono whitespace-nowrap text-(--tone,var(--color-text));
+  }
+
+  .count-badge {
+    @apply box-border inline-flex h-4.5 min-w-4.5 items-center justify-center rounded-[9px] bg-(--tone) px-1.25 font-mono text-11 font-semibold text-accent-ink;
+  }
+}

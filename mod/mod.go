@@ -16,6 +16,8 @@ type Mod interface {
 	SetValue(value *ModValueMulti) Mod
 	Clone() Mod
 	ClearTags()
+	Replaced() bool
+	SetReplaced(replaced bool)
 }
 
 type MFlag int
@@ -61,9 +63,10 @@ const (
 
 	// Weapon classes
 
-	MFlagWeaponMelee  = MFlag(0x02000000)
-	MFlagWeaponRanged = MFlag(0x04000000)
-	MFlagWeapon1H     = MFlag(0x08000000)
-	MFlagWeapon2H     = MFlag(0x10000000)
-	MFlagWeaponMask   = MFlag(0x1FFF0000)
+	MFlagWeaponMelee  = MFlag(0x04000000)
+	MFlagWeaponRanged = MFlag(0x08000000)
+	MFlagWeapon1H     = MFlag(0x10000000)
+	MFlagWeapon2H     = MFlag(0x20000000)
+
+	MFlagWeaponMask = MFlag(0x3FFF0000)
 )

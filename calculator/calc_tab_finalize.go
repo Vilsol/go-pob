@@ -1,6 +1,10 @@
 package calculator
 
 import (
+	"strings"
+	"sync"
+
+	"github.com/Vilsol/go-pob/data"
 	"github.com/Vilsol/go-pob/mod"
 	"github.com/Vilsol/go-pob/moddb"
 	"github.com/Vilsol/go-pob/utils"
@@ -12,71 +16,57 @@ type ColProps struct {
 	Enemy     *bool
 	ModName   []string
 	ModType   mod.Type
+	Actor     string
 }
 
-var existingColProps map[string]ColProps
+var (
+	colPropsMu       sync.RWMutex
+	existingColProps map[string]ColProps
+)
 
+//pob:block:src/Classes/CalcSectionControl.lua:188-200
 func FinalizeCalcTab(env *Environment) map[string]float64 {
 	props := make(map[string]float64)
 
-	for k, prop := range existingColProps {
-		actor := env.Player
-		if prop.Enemy != nil && *prop.Enemy {
-			actor = env.Enemy
-		}
+	colPropsMu.RLock()
+	colProps := existingColProps
+	colPropsMu.RUnlock()
 
+	//pob:block:src/Classes/CalcSectionControl.lua:179
+	shown := env.Player
+	if env.Mode == OutputModeCalcs && env.Build != nil && env.Build.CalcsInputBool("showMinion") && env.Minion != nil && env.Minion.Actor != nil {
+		shown = env.Minion.Actor
+	}
+	for k, prop := range colProps {
+		actor := shown
 		if actor == nil {
 			continue
 		}
 
 		var modCfg *moddb.ListCfg
-		if actor.MainSkill != nil {
-			switch prop.Cfg {
-			case "skill":
-				modCfg = actor.MainSkill.SkillCfg
-			case "weapon1":
-				modCfg = actor.MainSkill.Weapon1Cfg
-			case "weapon2":
-				modCfg = actor.MainSkill.Weapon2Cfg
-			case "dot":
-				// TODO dot
-			case "dotPhysical":
-				// TODO dotPhysical
-			case "dotLightning":
-				// TODO dotLightning
-			case "dotCold":
-				// TODO dotCold
-			case "dotFire":
-				// TODO dotFire
-			case "dotChaos":
-				// TODO dotChaos
-			case "bleed":
-				modCfg = actor.MainSkill.BleedCfg
-			case "OHbleed":
-				modCfg = actor.MainSkill.OHBleedCfg
-			case "poison":
-				// TODO poison
-			case "OHpoison":
-				// TODO OHpoison
-			case "ignite":
-				// TODO ignite
-			case "OHignite":
-				// TODO OHignite
-			case "decay":
-				// TODO decay
-			}
+		if prop.Cfg != "" && actor.MainSkill != nil {
+			modCfg = mainSkillCfg(actor.MainSkill, prop.Cfg)
 		}
-
-		if modCfg != nil && prop.ModSource != nil {
+		if modCfg != nil {
+			cfgCopy := *modCfg
+			modCfg = &cfgCopy
+		} else {
+			modCfg = &moddb.ListCfg{}
+		}
+		if prop.ModSource != nil {
 			modCfg.Source = utils.Ptr(mod.Source(*prop.ModSource))
+		}
+		if prop.Actor != "" {
+			modCfg.Actor = prop.Actor
 		}
 
 		var modStore moddb.ModStoreFuncs
-		if prop.Enemy != nil && *prop.Enemy {
-			modStore = env.Enemy.ModDB
-		} else if prop.Cfg != "" && actor.MainSkill.SkillModList != nil {
+		switch {
+		case prop.Enemy != nil && *prop.Enemy && actor.Enemy != nil && actor.Enemy.ModDB != nil:
+			modStore = actor.Enemy.ModDB
+		case prop.Cfg != "" && actor.MainSkill != nil && actor.MainSkill.SkillModList != nil:
 			modStore = actor.MainSkill.SkillModList
-		} else {
+		default:
 			modStore = actor.ModDB
 		}
 
@@ -93,6 +83,40 @@ func FinalizeCalcTab(env *Environment) map[string]float64 {
 	return props
 }
 
+func mainSkillCfg(skill *ActiveSkill, name string) *moddb.ListCfg {
+	switch name {
+	case "skill":
+		return skill.SkillCfg
+	case "weapon1":
+		return skill.Weapon1Cfg
+	case "weapon2":
+		return skill.Weapon2Cfg
+	case "bleed":
+		return skill.BleedCfg
+	case "OHbleed":
+		return skill.OHBleedCfg
+	case "poison":
+		return skill.PoisonCfg
+	case "OHpoison":
+		return skill.OHPoisonCfg
+	case "ignite":
+		return skill.IgniteCfg
+	case "OHignite":
+		return skill.OHIgniteCfg
+	case "decay":
+		return skill.DecayCfg
+	case "dot":
+		return skill.DotCfg
+	}
+	if damageType, ok := strings.CutPrefix(name, "dot"); ok {
+		return skill.DotTypeCfg[data.DamageType(damageType)]
+	}
+	return nil
+}
+
+//pob:block:src/Modules/CalcSections.lua:70-75
 func SetColProps(colProps map[string]ColProps) {
+	colPropsMu.Lock()
 	existingColProps = colProps
+	colPropsMu.Unlock()
 }

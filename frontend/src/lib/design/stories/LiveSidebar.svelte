@@ -1,0 +1,27 @@
+<script lang="ts">
+  import Sidebar from '../Sidebar.svelte';
+  import type { BuildFixture } from '../fixtures';
+  import { breakdowns } from '../fixtures/shell';
+  import type { StatLine } from '$lib/display/stat_list';
+
+  type Control = 'MainActiveSkill' | 'SkillPart' | 'StageCount' | 'MineCount' | 'Minion' | 'MinionSkill';
+
+  type Props = { fx: BuildFixture; collapsed?: boolean; pinned?: string[] };
+  let { fx, collapsed = false, pinned = [] }: Props = $props();
+
+  let s = $state({ collapsed, pinned, group: fx.mainSocketGroup, controls: { ...fx.mainSkill } });
+</script>
+
+<Sidebar
+  sidebar={fx.sidebar}
+  socketGroups={fx.socketGroups}
+  mainSocketGroup={s.group}
+  controls={s.controls}
+  bind:collapsed={s.collapsed}
+  bind:pinned={s.pinned}
+  breakdown={(l: StatLine) => breakdowns[l.label]}
+  onmaingroup={(i: number) => (s.group = i)}
+  oncontrol={(field: Control, v: number | undefined) => {
+    if (field === 'StageCount' || field === 'MineCount') s.controls[field] = v === undefined ? '' : String(v);
+    else s.controls[field] = v ?? 0;
+  }} />

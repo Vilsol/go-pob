@@ -1,0 +1,157 @@
+[{
+    "fn":"applyValueScalar",
+    "name":"scalar of 1 is a no-op",
+    "out":"10% increased Damage"
+  },{
+    "fn":"applyValueScalar",
+    "name":"nil scalar is a no-op",
+    "out":"10% increased Damage"
+  },{
+    "fn":"applyValueScalar",
+    "name":"scalar of 0 zeroes the value",
+    "out":"0% increased Damage"
+  },{
+    "fn":"applyValueScalar",
+    "name":"integer scaled up",
+    "out":"12% increased Damage"
+  },{
+    "fn":"applyValueScalar",
+    "name":"integer scaled down",
+    "out":"10% increased Damage"
+  },{
+    "fn":"applyValueScalar",
+    "name":"integer truncates toward zero",
+    "out":"10% increased Damage"
+  },{
+    "fn":"applyValueScalar",
+    "name":"trailing number has no suffix to match",
+    "out":"Adds 5"
+  },{
+    "fn":"applyValueScalar",
+    "name":"only first n numbers scaled",
+    "out":"Adds 12 to 20 Physical Damage"
+  },{
+    "fn":"applyValueScalar",
+    "name":"two numbers scaled",
+    "out":"Adds 12 to 24 Physical Damage"
+  },{
+    "fn":"applyValueScalar",
+    "name":"decimal branch wins when a decimal is present",
+    "out":"1.6% increased Damage"
+  },{
+    "fn":"applyValueScalar",
+    "name":"decimal result renders without trailing zero",
+    "out":"1.0% increased Damage"
+  },{
+    "fn":"applyValueScalar",
+    "name":"decimal branch ignores integers on the line",
+    "out":"Adds 1.10 to 20 Damage"
+  },{
+    "fn":"applyRange",
+    "name":"midpoint of integer range",
+    "out":"+15 to maximum Life"
+  },{
+    "fn":"applyRange",
+    "name":"bottom of integer range",
+    "out":"+10 to maximum Life"
+  },{
+    "fn":"applyRange",
+    "name":"top of integer range",
+    "out":"+20 to maximum Life"
+  },{
+    "fn":"applyRange",
+    "name":"rounds half up",
+    "out":"+13 to maximum Life"
+  },{
+    "fn":"applyRange",
+    "name":"to-form normalised then rolled",
+    "out":"+(10 to 20) to maximum Life"
+  },{
+    "fn":"applyRange",
+    "name":"negative roll drops the plus sign",
+    "out":"-20 to maximum Life"
+  },{
+    "fn":"applyRange",
+    "name":"decimal range midpoint",
+    "out":"2% increased Damage"
+  },{
+    "fn":"applyRange",
+    "name":"decimal range rendering drops trailing zero",
+    "out":"2% increased Damage"
+  },{
+    "fn":"applyRange",
+    "name":"paired damage range rolled",
+    "out":"Adds (10-20 to 30-40) Physical Damage"
+  },{
+    "fn":"applyRange",
+    "name":"negative increased becomes reduced",
+    "out":"15% reduced Damage"
+  },{
+    "fn":"applyRange",
+    "name":"range then value scalar",
+    "out":"+18 to maximum Life"
+  },{
+    "fn":"applyRange",
+    "name":"no range with a scalar still scales",
+    "out":"12% increased Damage"
+  },{
+    "fn":"applyRange",
+    "name":"negative half rounds toward positive infinity",
+    "out":"-13 to maximum Life"
+  },{
+    "fn":"applyRange",
+    "name":"negative half at midpoint drops the plus sign",
+    "out":"-3 to maximum Life"
+  },{
+    "fn":"applyRange",
+    "name":"negative paired range is not normalised",
+    "out":"Adds (-15-10 to -5-20) Physical Damage"
+  },{
+    "fn":"applyRange",
+    "name":"decimal range lands on a rounding boundary",
+    "out":"1% increased Damage"
+  },{
+    "fn":"sanitiseItemText",
+    "name":"trims leading and trailing whitespace",
+    "out":"   New Item\nCoral Ring   "
+  },{
+    "fn":"sanitiseItemText",
+    "name":"normalises CRLF",
+    "out":"New Item\r\nCoral Ring"
+  },{
+    "fn":"sanitiseItemText",
+    "name":"strips angle-bracket tags",
+    "out":"New Item"
+  },{
+    "fn":"sanitiseItemText",
+    "name":"utf8 en dash to hyphen",
+    "out":"Adds 10-20 Damage"
+  },{
+    "fn":"sanitiseItemText",
+    "name":"utf8 em dash to hyphen",
+    "out":"Adds 10-20 Damage"
+  },{
+    "fn":"sanitiseItemText",
+    "name":"utf8 minus sign to hyphen",
+    "out":"Adds 10-20 Damage"
+  },{
+    "fn":"sanitiseItemText",
+    "name":"utf8 a-diaeresis folds to a",
+    "out":"Madchen"
+  },{
+    "fn":"sanitiseItemText",
+    "name":"utf8 o-diaeresis folds to o",
+    "out":"Konig"
+  },{
+    "fn":"sanitiseItemText",
+    "name":"cp1252 en dash byte",
+    "out":"Adds 10-20"
+  },{
+    "fn":"sanitiseItemText",
+    "name":"cp1252 a-diaeresis byte",
+    "out":"Madchen"
+  },{
+    "fn":"sanitiseItemText",
+    "name":"unsupported high byte becomes question mark",
+    "out":"AB?C"
+  }]

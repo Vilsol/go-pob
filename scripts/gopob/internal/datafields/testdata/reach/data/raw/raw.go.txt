@@ -1,0 +1,16 @@
+package raw
+
+import (
+	"context"
+
+	"github.com/Vilsol/go-pob-data/poe"
+)
+
+const DataModuleVersion = "v0.9.9"
+
+const DefaultVersion = "3.29"
+
+func Load() (string, error) {
+	err := poe.InitializeRows(context.Background(), DefaultVersion)
+	return poe.Rows[0].ID, err
+}

@@ -1,0 +1,100 @@
+{
+  "base": "Hubris Circlet",
+  "name": "Doom Visor, Hubris Circlet",
+  "tooltip": {
+    "Influence": null,
+    "Title": ["Doom Visor", "Hubris Circlet"],
+    "Lines": [
+      {
+        "Text": "",
+        "Separator": true
+      },
+      {
+        "Text": "^x7F7F7FQuality: ^x8888FF+20%",
+        "Separator": false
+      },
+      {
+        "Text": "^x7F7F7FEnergy Shield: ^7110",
+        "Separator": false
+      },
+      {
+        "Text": "^x7F7F7FSockets: ^x7070FFB^7=^x7070FFB^7=^x7070FFB^7=^x70FF70G",
+        "Separator": false
+      },
+      {
+        "Text": "",
+        "Separator": true
+      },
+      {
+        "Text": "^x7F7F7FRequires ^x7F7F7FLevel ^xDD002269^x7F7F7F, ^xDD0022154 ^x7F7F7FInt",
+        "Separator": false
+      },
+      {
+        "Text": "",
+        "Separator": true
+      },
+      {
+        "Text": "^x8888FF+2 to Level of Socketed Minion Gems",
+        "Separator": false
+      },
+      {
+        "Text": "^x8888FF+80 to maximum Life",
+        "Separator": false
+      },
+      {
+        "Text": "^x8888FF+40% to Fire Resistance",
+        "Separator": false
+      },
+      {
+        "Text": "^xB8DAF1+35% to Cold Resistance",
+        "Separator": false
+      },
+      {
+        "Text": "",
+        "Separator": true
+      },
+      {
+        "Text": "^7{Key=level/Keyword=Minion/KeywordList={}/Value=2} = GemProperty|LIST|-|-|type=SocketedIn/SlotName=Helmet",
+        "Separator": false
+      },
+      {
+        "Text": "^780 = Life|BASE|-|-|-",
+        "Separator": false
+      },
+      {
+        "Text": "^740 = FireResist|BASE|-|-|-",
+        "Separator": false
+      },
+      {
+        "Text": "^735 = ColdResist|BASE|-|-|-",
+        "Separator": false
+      },
+      {
+        "Text": "^71 = Multiplier:BlueSocketInHelmet|BASE|-|-|-",
+        "Separator": false
+      },
+      {
+        "Text": "^71 = Multiplier:BlueSocketInHelmet|BASE|-|-|-",
+        "Separator": false
+      },
+      {
+        "Text": "^71 = Multiplier:BlueSocketInHelmet|BASE|-|-|-",
+        "Separator": false
+      },
+      {
+        "Text": "^71 = Multiplier:GreenSocketInHelmet|BASE|-|-|-",
+        "Separator": false
+      },
+      {
+        "Text": "^70 = Multiplier:UnlinkedSocketInHelmet|BASE|-|-|-",
+        "Separator": false
+      },
+      {
+        "Text": "^720 = Multiplier:QualityOnHelmet|BASE|-|-|-",
+        "Separator": false
+      }
+    ],
+    "Skills": null,
+    "Children": []
+  }
+}

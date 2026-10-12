@@ -1,0 +1,400 @@
+{"file":"0001-necromancer-unknown.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0002-pathfinder-unknown.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0003-guardian-unknown.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0004-trickster-lightning-tendrils-of-eccentricity.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0005-occultist-vaal-double-strike.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0006-elementalist-storm-burst.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0007-elementalist-storm-burst-of-repulsion.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0008-necromancer-vaal-summon-skeletons.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0009-trickster-cobra-lash.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0010-elementalist-storm-burst-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0011-saboteur-cyclone.xml","info":"Cast While Channeling's Trigger: Cyclone","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0012-occultist-unknown.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0013-inquisitor-divine-ire.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0014-trickster-spark-of-the-nova.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0015-occultist-vaal-caustic-arrow.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0016-gladiator-dual-strike-of-ambidexterity.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0017-deadeye-spectral-throw-of-materialising.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0018-berserker-heavy-strike.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0019-champion-herald-of-agony.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0020-assassin-storm-burst.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0021-assassin-blade-flurry.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0022-saboteur-blade-trap-of-greatswords.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0023-elementalist-summon-ice-golem-of-hordes.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0024-trickster-frostbite.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0025-trickster-cobra-lash-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0026-ascendant-fire-trap-of-blasting.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0027-saboteur-spark-of-the-nova.xml","info":"Spark of the Nova's Trigger: Arcanist Brand:2 attached Brands","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0028-occultist-forbidden-rite-of-soul-sacrifice.xml","info":"Cast On Critical Strike's Trigger: Cyclone","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0029-inquisitor-spark-of-the-nova.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0030-saboteur-cyclone-2.xml","info":"Cast While Channeling's Trigger: Cyclone","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0031-guardian-raise-spectre.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0032-saboteur-spark-of-the-nova-2.xml","info":"Spark of the Nova's Trigger: Arcanist Brand:2 attached Brands","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0033-saboteur-blade-trap-of-greatswords-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0034-elementalist-storm-burst-of-repulsion-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0035-elementalist-shield-charge.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0036-elementalist-incinerate-of-venting.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0037-ascendant-fire-trap-of-blasting-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0038-saboteur-blade-trap-of-greatswords-3.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0039-hierophant-static-strike.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0040-trickster-exsanguinate-of-transmission.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0041-pathfinder-vaal-fireball.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0042-pathfinder-withering-step.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0043-pathfinder-toxic-rain.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0044-assassin-charged-dash.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0045-hierophant-spark-of-the-nova.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0046-elementalist-arc.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0047-elementalist-manabond.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0048-warden-frost-blades.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0049-hierophant-spark-of-the-nova-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0050-occultist-viper-strike-of-the-mamba.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0051-reliquarian-unknown.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0052-juggernaut-cleave.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0053-juggernaut-unknown.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0054-ascendant-unknown.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0055-ascendant-fire-trap-of-blasting-3.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0056-saboteur-ice-trap.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0057-trickster-spark-of-the-nova-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0058-saboteur-cyclone-3.xml","info":"Cast While Channeling's Trigger: Cyclone","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0059-occultist-viper-strike.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0060-assassin-icicle-mine.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0061-trickster-spark-of-the-nova-3.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0062-occultist-crackling-lance.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0063-occultist-wintertide-brand.xml","info":"Average Damage for 3 attached Brands","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0064-occultist-wintertide-brand-2.xml","info":"Average Damage for 3 attached Brands","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0065-chieftain-tectonic-slam.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0066-hierophant-forbidden-rite-of-soul-sacrifice.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0067-elementalist-freezing-pulse.xml","info":"DPS for 3 attached Brands","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0068-reliquarian-poisonous-concoction-of-bouncing.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0069-berserker-boneshatter.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0070-champion-frostblink.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0071-slayer-flicker-strike.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0072-occultist-voltaxic-burst.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0073-reliquarian-vaal-arc.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0074-reliquarian-vaal-arc-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0075-elementalist-winter-orb.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0076-occultist-vaal-cold-snap-of-power.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0077-pathfinder-toxic-rain-2.xml","info":"1 Mirage Archers using Toxic Rain","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0078-elementalist-penance-brand.xml","info":"DPS for 1 attached Brand","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0079-hierophant-herald-of-thunder.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0080-elementalist-penance-brand-2.xml","info":"DPS for 1 attached Brand","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0081-elementalist-summon-ice-golem.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0082-elementalist-wintertide-brand.xml","info":"Average Damage for 3 attached Brands","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0083-elementalist-vaal-cold-snap.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0084-occultist-voltaxic-burst-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0085-occultist-voltaxic-burst-3.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0086-elementalist-wintertide-brand-2.xml","info":"Average Damage for 3 attached Brands","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0087-juggernaut-ground-slam.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0088-elementalist-wintertide-brand-3.xml","info":"Average Damage for 3 attached Brands","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0089-reliquarian-poisonous-concoction-of-bouncing-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0090-elementalist-penance-brand-3.xml","info":"DPS for 2 attached Brands","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0091-elementalist-winter-orb-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0092-gladiator-war-banner.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0093-ascendant-frostblink.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0094-reliquarian-cyclone.xml","info":"Cast While Channeling's Trigger: Cyclone","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0095-berserker-shield-charge.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0096-reliquarian-storm-burst.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0097-elementalist-penance-brand-4.xml","info":"DPS for 2 attached Brands","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0098-elementalist-penance-brand-5.xml","info":"DPS for 1 attached Brand","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0099-elementalist-winter-orb-3.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0100-elementalist-penance-brand-6.xml","info":"DPS for 2 attached Brands","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0101-champion-lancing-steel.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0102-gladiator-raise-spectre.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0103-elementalist-mana-infused-staff.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0104-gladiator-boneshatter-of-complex-trauma.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0105-assassin-spellslinger.xml","info":"Spellslinger's Trigger: Frenzy","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0106-elementalist-lightning-tendrils-of-escalation.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0107-hierophant-stormblast-mine.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0108-assassin-cobra-lash.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0109-assassin-poisonous-concoction-of-bouncing.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0110-occultist-death-aura.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0111-berserker-earthshatter.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0112-occultist-vaal-cold-snap-of-power-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0113-chieftain-ice-crash.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0114-occultist-icicle-mine-of-fanning.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0115-elementalist-wintertide-brand-4.xml","info":"DPS for 3 attached Brands","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0116-reliquarian-blade-blast.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0117-berserker-earthshatter-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0118-reliquarian-unknown-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0119-reliquarian-vaal-arc-3.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0120-elementalist-frostblink.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0121-assassin-poisonous-concoction-of-bouncing-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0122-assassin-bladefall.xml","info":"Spellslinger's Trigger: Frenzy","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0123-elementalist-corrupting-fever.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0124-occultist-death-aura-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0125-occultist-death-aura-3.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0126-elementalist-wintertide-brand-5.xml","info":"Average Damage for 3 attached Brands","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0127-slayer-flicker-strike-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0128-trickster-exsanguinate.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0129-elementalist-winter-orb-4.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0130-slayer-sunder.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0131-elementalist-vaal-molten-shell.xml","info":"Cast when Damage Taken","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0132-elementalist-penance-brand-7.xml","info":"DPS for 1 attached Brand","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0133-elementalist-vaal-reap.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0134-chieftain-detonate-dead.xml","info":"Cast when Stunned","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0135-deadeye-elemental-hit-of-the-spectrum.xml","info":"1 Mirage Archers using Elemental Hit of the Spectrum","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0136-deadeye-elemental-hit-of-the-spectrum-2.xml","info":"1 Mirage Archers using Elemental Hit of the Spectrum","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0137-reliquarian-void-sphere-of-rending.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0138-berserker-earthshatter-3.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0139-elementalist-corrupting-fever-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0140-necromancer-summon-holy-relic-of-conviction.xml","info":"","info2":"","minionInfo":"Summon Holy Relic's attack Trigger: Lancing Steel of Spraying","minionInfo2":""}
+{"file":"0141-berserker-flicker-strike-of-power.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0142-elementalist-winter-orb-5.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0143-berserker-earthshatter-4.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0144-elementalist-winter-orb-6.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0145-elementalist-unknown.xml","info":"DPS for 3 attached Brands","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0146-elementalist-wintertide-brand-6.xml","info":"DPS for 3 attached Brands","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0147-necromancer-animate-weapon-of-ranged-arms.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0148-gladiator-flesh-and-stone.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0149-warden-frost-blades-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0150-necromancer-animate-weapon-of-ranged-arms-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0151-occultist-blight-of-contagion.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0152-slayer-shield-crush.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0153-guardian-vaal-domination.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0154-elementalist-winter-orb-7.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0155-scion-none-dark-bargain.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0156-assassin-steelskin.xml","info":"Cast when Damage Taken","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0157-elementalist-winter-orb-8.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0158-elementalist-penance-brand-8.xml","info":"DPS for 1 attached Brand","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0159-elementalist-winter-orb-9.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0160-elementalist-winter-orb-10.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0161-assassin-viper-strike-of-the-mamba.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0162-elementalist-rolling-magma.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0163-reliquarian-unknown-3.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0164-reliquarian-vaal-arc-4.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0165-occultist-unknown-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0166-occultist-unknown-3.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0167-slayer-cyclone.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0168-necromancer-animate-weapon-of-ranged-arms-3.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0169-elementalist-hexblast-of-contradiction.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0170-juggernaut-boneshatter-of-complex-trauma.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0171-reliquarian-reave.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0172-reliquarian-reave-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0173-juggernaut-vigilant-strike.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0174-juggernaut-vigilant-strike-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0175-juggernaut-vigilant-strike-3.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0176-juggernaut-vigilant-strike-4.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0177-necromancer-summon-holy-relic-of-conviction-2.xml","info":"","info2":"","minionInfo":"Summon Holy Relic's attack Trigger: Shield Charge","minionInfo2":""}
+{"file":"0178-elementalist-lightning-conduit.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0179-assassin-cold-snap.xml","info":"Spellslinger's Trigger: Frenzy","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0180-elementalist-winter-orb-11.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0181-chieftain-righteous-fire.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0182-assassin-freezing-pulse.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0183-pathfinder-toxic-rain-3.xml","info":"1 Mirage Archers using Toxic Rain","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0184-elementalist-exsanguinate-of-transmission.xml","info":"Poet's Pen's Trigger: Kinetic Blast","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0185-hierophant-kinetic-fusillade.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0186-slayer-elemental-hit.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0187-reliquarian-arc-of-oscillating.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0188-champion-generals-cry.xml","info":"6 GC Mirages using Lacerate of Butchering","info2":"1.5s for 6 Mirages to finish Attacking","minionInfo":"","minionInfo2":""}
+{"file":"0189-elementalist-vaal-ice-nova.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0190-trickster-exsanguinate-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0191-assassin-viper-strike-of-the-mamba-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0192-elementalist-wintertide-brand-7.xml","info":"Average Damage for 3 attached Brands","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0193-occultist-lightning-tendrils.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0194-juggernaut-boneshatter-of-complex-trauma-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0195-elementalist-kinetic-rain-of-impact.xml","info":"2 Sacred Wisps using Kinetic Rain of Impact","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0196-slayer-whirling-blades.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0197-juggernaut-static-strike-of-gathering-lightning.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0198-hierophant-storm-burst.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0199-hierophant-storm-burst-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0200-assassin-shield-charge.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0201-elementalist-vaal-cold-snap-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0202-assassin-winter-orb.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0203-pathfinder-toxic-rain-4.xml","info":"1 Mirage Archers using Toxic Rain","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0204-assassin-soulrend-of-reaping.xml","info":"Cast On Critical Strike's Trigger: Lancing Steel of Spraying","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0205-elementalist-vaal-ice-nova-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0206-inquisitor-holy-hammers.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0207-occultist-winter-orb.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0208-hierophant-lightning-tendrils-of-eccentricity.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0209-elementalist-lightning-tendrils-of-eccentricity.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0210-occultist-death-aura-4.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0211-hierophant-shock-nova-of-procession.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0212-occultist-death-aura-5.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0213-occultist-divine-ire-of-disintegration.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0214-occultist-vaal-cold-snap-of-power-3.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0215-slayer-cyclone-of-tumult.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0216-elementalist-hexblast-of-contradiction-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0217-elementalist-arc-of-oscillating.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0218-reliquarian-vaal-spark-of-unpredictability.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0219-hierophant-flammability.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0220-pathfinder-toxic-rain-5.xml","info":"1 Mirage Archers using Toxic Rain","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0221-reliquarian-ethereal-knives.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0222-inquisitor-tornado-of-elemental-turbulence.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0223-elementalist-eviscerate.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0224-champion-autoexertion.xml","info":"6 GC Mirages using Lacerate of Butchering","info2":"1.5s for 6 Mirages to finish Attacking","minionInfo":"","minionInfo2":""}
+{"file":"0225-assassin-frostblink.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0226-elementalist-vaal-arc.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0227-assassin-poisonous-concoction-of-bouncing-3.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0228-elementalist-winter-orb-12.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0229-occultist-winter-orb-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0230-warden-spectral-throw-of-materialising.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0231-berserker-flicker-strike.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0232-juggernaut-enduring-cry.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0233-elementalist-frostblink-of-wintry-blast.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0234-champion-cyclone.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0235-champion-sunder.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0236-elementalist-winter-orb-13.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0237-elementalist-hexblast-of-contradiction-3.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0238-elementalist-lightning-conduit-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0239-occultist-zealotry.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0240-necromancer-animate-weapon-of-ranged-arms-4.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0241-warden-galvanic-arrow.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0242-occultist-cyclone.xml","info":"Cast On Critical Strike's Trigger: Cyclone","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0243-necromancer-raise-spectre.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0244-guardian-dominating-blow-of-inspiring.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0245-occultist-winter-orb-3.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0246-hierophant-hexblast-of-havoc.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0247-elementalist-winter-orb-14.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0248-elementalist-winter-orb-15.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0249-champion-smite.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0250-elementalist-winter-orb-16.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0251-elementalist-freezing-pulse-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0252-elementalist-glacial-cascade-of-the-fissure.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0253-hierophant-freezing-pulse.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0254-hierophant-storm-burst-of-repulsion.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0255-elementalist-penance-brand-9.xml","info":"DPS for 1 attached Brand","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0256-necromancer-summon-raging-spirit-of-enormity.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0257-elementalist-winter-orb-17.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0258-elementalist-vulnerability.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0259-champion-boneshatter-of-complex-trauma.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0260-slayer-cyclone-of-tumult-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0261-elementalist-wintertide-brand-8.xml","info":"Average Damage for 3 attached Brands","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0262-warden-lightning-strike.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0263-assassin-blazing-salvo.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0264-juggernaut-earthshatter.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0265-elementalist-winter-orb-18.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0266-deadeye-vaal-venom-gyre.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0267-chieftain-treeskill.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0268-juggernaut-boneshatter-of-complex-trauma-3.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0269-juggernaut-determination.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0270-warden-elemental-hit-of-the-spectrum.xml","info":"2 Sacred Wisps using Elemental Hit of the Spectrum","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0271-occultist-doom-blast.xml","info":"Doom Blast triggering Hex: Temporal Chains","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0272-juggernaut-boneshatter-of-complex-trauma-4.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0273-chieftain-punishment.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0274-berserker-boneshatter-of-complex-trauma.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0275-berserker-earthshatter-5.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0276-gladiator-eviscerate.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0277-reliquarian-blade-blast-2.xml","info":"Cast when Damage Taken","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0278-reliquarian-vaal-arc-5.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0279-inquisitor-holy-hammers-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0280-elementalist-fireball.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0281-reliquarian-wrath.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0282-chieftain-incinerate-of-venting.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0283-elementalist-winter-orb-19.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0284-pathfinder-toxic-rain-6.xml","info":"1 Mirage Archers using Toxic Rain","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0285-chieftain-righteous-fire-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0286-pathfinder-poisonous-concoction-of-bouncing.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0287-pathfinder-toxic-rain-7.xml","info":"1 Mirage Archers using Toxic Rain","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0288-occultist-dark-bargain.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0289-necromancer-animate-weapon-of-ranged-arms-5.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0290-berserker-earthshatter-6.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0291-elementalist-winter-orb-20.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0292-hierophant-kinetic-fusillade-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0293-slayer-vaal-ground-slam-of-earthshaking.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0294-assassin-cold-snap-of-power.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0295-berserker-vaal-lightning-strike.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0296-slayer-cyclone-of-tumult-3.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0297-necromancer-animate-weapon-of-ranged-arms-6.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0298-elementalist-winter-orb-21.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0299-pathfinder-toxic-rain-8.xml","info":"1 Mirage Archers using Toxic Rain","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0300-pathfinder-toxic-rain-9.xml","info":"1 Mirage Archers using Toxic Rain","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0301-elementalist-winter-orb-22.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0302-assassin-cold-snap-of-power-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0303-chieftain-righteous-fire-3.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0304-elementalist-lightning-tendrils-of-eccentricity-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0305-occultist-dark-bargain-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0306-occultist-winter-orb-4.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0307-ascendant-lightning-tendrils-of-escalation.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0308-reliquarian-shield-crush-of-the-chieftain.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0309-berserker-flicker-strike-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0310-assassin-vaal-storm-call.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0311-ascendant-lightning-tendrils-of-escalation-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0312-pathfinder-toxic-rain-10.xml","info":"1 Mirage Archers using Toxic Rain","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0313-pathfinder-vaal-caustic-arrow.xml","info":"Manaforged Arrows's Trigger: Toxic Rain","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0314-pathfinder-toxic-rain-11.xml","info":"1 Mirage Archers using Toxic Rain","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0315-chieftain-righteous-fire-4.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0316-elementalist-winter-orb-23.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0317-elementalist-penance-brand-10.xml","info":"DPS for 2 attached Brands","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0318-elementalist-treeskill.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0319-elementalist-vaal-ice-nova-3.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0320-chieftain-shield-charge.xml","info":"Call the Pyre's Trigger: Shield Charge","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0321-berserker-earthshatter-7.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0322-assassin-lancing-steel-of-spraying.xml","info":"Cast On Critical Strike's Trigger: Lancing Steel of Spraying","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0323-necromancer-summon-holy-relic-of-conviction-3.xml","info":"","info2":"","minionInfo":"Summon Holy Relic's attack Trigger: Lancing Steel of Spraying","minionInfo2":""}
+{"file":"0324-champion-autoexertion-2.xml","info":"6 GC Mirages using Lacerate of Butchering","info2":"1.5s for 6 Mirages to finish Attacking","minionInfo":"","minionInfo2":""}
+{"file":"0325-slayer-shield-crush-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0326-slayer-shield-crush-3.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0327-slayer-shield-crush-4.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0328-slayer-shield-crush-5.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0329-slayer-shield-crush-6.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0330-slayer-shield-crush-7.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0331-saboteur-vaal-fireball.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0332-chieftain-righteous-fire-5.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0333-assassin-lancing-steel-of-spraying-2.xml","info":"Cast On Critical Strike's Trigger: Lancing Steel of Spraying","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0334-elementalist-penance-brand-11.xml","info":"DPS for 1 attached Brand","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0335-trickster-power-siphon.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0336-reliquarian-poisonous-concoction-of-bouncing-3.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0337-occultist-lightning-tendrils-of-escalation.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0338-occultist-lightning-tendrils-of-escalation-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0339-reliquarian-shield-crush-of-the-chieftain-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0340-hierophant-spark-of-the-nova-3.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0341-necromancer-kinetic-blast-of-clustering.xml","info":"2 Sacred Wisps using Kinetic Blast of Clustering","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0342-luminary-animate-guardian.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0343-hierophant-arc-of-oscillating.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0344-assassin-icicle-mine-of-fanning.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0345-assassin-icicle-mine-of-fanning-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0346-slayer-shield-crush-8.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0347-luminary-shield-charge.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0348-elementalist-shield-charge-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0349-slayer-flicker-strike-3.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0350-necromancer-bone-offering.xml","info":"Spellslinger's Trigger: Kinetic Blast of Clustering","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0351-gladiator-vitality.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0352-slayer-divine-blast-of-radiance.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0353-reliquarian-blade-blast-3.xml","info":"Cast when Damage Taken","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0354-gladiator-vitality-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0355-necromancer-summon-holy-relic-of-conviction-4.xml","info":"","info2":"","minionInfo":"Summon Holy Relic's attack Trigger: Lancing Steel of Spraying","minionInfo2":""}
+{"file":"0356-elementalist-winter-orb-24.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0357-berserker-earthshatter-8.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0358-necromancer-summon-raging-spirit.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0359-hierophant-divine-retribution.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0360-elementalist-kinetic-blast.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0361-necromancer-summon-holy-relic-of-conviction-5.xml","info":"","info2":"","minionInfo":"Summon Holy Relic's attack Trigger: Lancing Steel of Spraying","minionInfo2":""}
+{"file":"0362-slayer-shield-crush-9.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0363-assassin-cold-snap-of-power-3.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0364-assassin-voltaxic-burst.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0365-luminary-vaal-cold-snap.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0366-berserker-earthshatter-9.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0367-hierophant-lightning-bolt.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0368-luminary-flicker-strike-of-power.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0369-necromancer-automation.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0370-assassin-poisonous-concoction-of-bouncing-4.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0371-occultist-winter-orb-5.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0372-occultist-winter-orb-6.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0373-occultist-bane-of-condemnation.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0374-deadeye-elemental-hit-of-the-spectrum-3.xml","info":"1 Mirage Archers using Elemental Hit of the Spectrum","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0375-pathfinder-toxic-rain-12.xml","info":"1 Mirage Archers using Toxic Rain","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0376-assassin-freezing-pulse-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0377-reliquarian-poisonous-concoction-of-bouncing-4.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0378-juggernaut-static-strike-of-gathering-lightning-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0379-luminary-convocation.xml","info":"Automation","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0380-pathfinder-toxic-rain-13.xml","info":"1 Mirage Archers using Toxic Rain","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0381-assassin-soulrend-of-reaping-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0382-reliquarian-animate-guardian.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0383-juggernaut-static-strike-of-gathering-lightning-3.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0384-necromancer-animate-weapon-of-ranged-arms-7.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0385-assassin-ice-trap.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0386-assassin-freezing-pulse-3.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0387-reliquarian-storm-burst-of-repulsion.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0388-luminary-flame-link.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0389-necromancer-triggered-summon-phantasm.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0390-deadeye-kinetic-blast.xml","info":"2 Sacred Wisps using Kinetic Blast","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0391-chieftain-shield-crush-of-the-chieftain.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0392-inquisitor-righteous-fire.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0393-elementalist-reap.xml","info":"Poet's Pen's Trigger: Kinetic Bolt","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0394-elementalist-eviscerate-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0395-gladiator-flicker-strike.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0396-reliquarian-viper-strike.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0397-hierophant-bladefall-of-impaling.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0398-hierophant-wintertide-brand.xml","info":"DPS for 3 attached Brands","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0399-elementalist-eviscerate-3.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0400-trickster-exsanguinate-3.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}

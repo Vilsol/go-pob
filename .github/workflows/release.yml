@@ -7,56 +7,9 @@ on:
       - dev
 
 jobs:
-  release-gh:
-    name: Release on Github
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v4
-        with:
-          submodules: true
-
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version-file: go.mod
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: .node-version
-
-      - name: Enable corepack
-        run: corepack enable
-
-      - name: Install dependencies
-        run: pnpm i
-        working-directory: frontend
-
-      - name: Build wasm
-        run: |
-          go build -trimpath -tags=timetzdata -v -o frontend/static/go-pob.wasm ./wasm
-          gzip frontend/static/go-pob.wasm
-        env:
-          GOOS: js
-          GOARCH: wasm
-
-      - name: Build frontend
-        working-directory: frontend
-        env:
-          PATH_BASE: "/go-pob"
-        run: |
-          pnpm run build --mode production
-          ls -lah build
-
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./frontend/build
-          exclude_assets: ''
-
   release-cf:
-    name: Release on CF
+    name: Deploy to Cloudflare Pages
+    if: github.repository == 'Vilsol/go-pob'
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
@@ -83,13 +36,20 @@ jobs:
       - name: Build wasm
         run: |
           go build -trimpath -tags=timetzdata -v -o frontend/static/go-pob.wasm ./wasm
-          gzip frontend/static/go-pob.wasm
         env:
           GOOS: js
           GOARCH: wasm
 
+      - name: Compress wasm
+        run: |
+          gzip -k9 frontend/static/go-pob.wasm
+          node frontend/scripts/compress-wasm.mjs
+          rm frontend/static/go-pob.wasm frontend/static/go-pob.wasm.br.sha256
+
       - name: Build frontend
         working-directory: frontend
+        env:
+          VITE_WASM_FILE: go-pob.wasm.br
         run: |
           pnpm run build --mode production
           ls -lah build
@@ -99,4 +59,4 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy ./frontend/build --project-name=pob --branch=main
+          command: pages deploy ./frontend/build --project-name=pob --branch=${{ github.ref_name }}

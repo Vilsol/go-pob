@@ -1,0 +1,156 @@
+:root[data-theme='light'] {
+  --color-ground: #eceae4;
+  --color-surface-1: #f6f5f1;
+  --color-surface-2: #fdfcfa;
+  --color-surface-3: #e2dfd7;
+  --color-well: #e7e5df;
+  --color-inset: #efede8;
+  --color-bar: #e5e2db;
+  --color-alt: #f1efea;
+  --color-tile: #f3f1ec;
+  --color-hover: #dcd8cf;
+  --color-hl: #e9e6df;
+  --color-sel: #dfdbd2;
+  --color-line: #cfcbc2;
+  --color-line-strong: #b3aea4;
+  --color-line-bright: #8a857b;
+  --color-line-tree: #9e998f;
+  --color-text: #1c1b18;
+  --color-text-2: #403d38;
+  --color-text-3: #5c5953;
+  --color-text-4: #625f58;
+  --color-text-soft: #2b2925;
+  --color-accent: #9a6414;
+  --color-accent-hi: #b07a24;
+  --color-accent-ink: #fffaf0;
+  --color-better: #18569c;
+  --color-worse: #8f3d08;
+  --color-error: #c02626;
+  --color-warn-bg: #f7e4d1;
+  --color-warn-bg-2: #f4ebe0;
+  --color-warn-line: #d9a77d;
+  --color-danger-bg: #f8e0e0;
+  --color-danger-line: #d48f8f;
+  --color-build-a: #9a6414;
+  --color-build-b: #18569c;
+  --color-life: #b53a2a;
+  --color-mana: #4652c4;
+  --color-es: #17807f;
+  --color-stat-fire: #a85a16;
+  --color-stat-cold: #3463b0;
+  --color-stat-light: #7f7a0f;
+  --color-stat-chaos: #a82f82;
+  --color-normal: #55534e;
+  --color-magic: #4646c0;
+  --color-rare: #857300;
+  --color-unique: #a2561c;
+  --color-relic: #2b822b;
+  --color-gem: #11746e;
+  --color-crafted: #3a779f;
+  --color-fractured: #76683b;
+  --color-fire: #a8631a;
+  --color-cold: #3a65a8;
+  --color-lightning: #78751c;
+  --color-chaos: #a8187a;
+  --color-cls-witch: #4c4cc8;
+  --color-cls-shadow: #1b808b;
+  --color-cls-marauder: #b83b26;
+  --color-cls-ranger: #2b8f2b;
+  --color-cls-duelist: #807b12;
+  --color-cls-templar: #8f2ac4;
+  --color-cls-scion: #8a6464;
+  --color-node: #c4c0b6;
+  --color-node-path: #94b8de;
+  --color-node-conq: #8a5fd0;
+  --color-node-start: #e6d8be;
+  --color-proposal: #6550c0;
+  --color-hover-soft: #e9e7e1;
+  --color-line-faint: #ddd9d1;
+  --color-track: #c9c5bb;
+  --color-ruler: #75603a;
+  --color-info-bg: #e0eaf6;
+  --color-info-line: #a3bddc;
+  --color-bad-line: #d39a72;
+  --color-link: #4a4434;
+  --color-art: #e6e4de;
+  --color-node-none: #d2cec5;
+  --color-calc-off: #a85718;
+  --color-calc-def: #4b4bb8;
+  --color-rage: #b83b26;
+  --color-sock-r: #b53a2a;
+  --color-sock-g: #2b822b;
+  --color-sock-b: #4652c4;
+  --color-sock-w: #77715f;
+  --color-gem-w: #6a665c;
+  --color-code-life: #b83b26;
+  --color-code-mana: #4646c0;
+  --color-code-es: #17807f;
+  --color-code-ward: #857300;
+  --color-code-evasion: #1c8443;
+  --shadow-tip: 0 8px 24px rgba(0, 0, 0, 0.18);
+  --shadow-pop: 0 8px 20px rgba(0, 0, 0, 0.16);
+  --shadow-bd: 0 10px 28px rgba(0, 0, 0, 0.18);
+  --shadow-menu: 0 12px 28px rgba(0, 0, 0, 0.18);
+  --shadow-dlg: 0 16px 40px rgba(0, 0, 0, 0.2);
+  --shadow-sheet: 0 24px 60px rgba(0, 0, 0, 0.24);
+  --shadow-panel: 0 18px 44px rgba(0, 0, 0, 0.2);
+  --shadow-ghost: 0 10px 24px rgba(0, 0, 0, 0.18);
+}
+
+:root[data-theme='light'] [data-pob-color] {
+  color: color-mix(in oklab, var(--tone) 55%, black);
+}
+
+:root[data-theme='contrast'] {
+  --color-ground: #000000;
+  --color-surface-1: #0a0a0a;
+  --color-surface-2: #141414;
+  --color-surface-3: #2a2a2a;
+  --color-well: #050505;
+  --color-inset: #080808;
+  --color-bar: #101010;
+  --color-alt: #0c0c0c;
+  --color-tile: #0e0e0e;
+  --color-hover: #383838;
+  --color-hl: #1c1c1c;
+  --color-sel: #303030;
+  --color-line: #707070;
+  --color-line-strong: #a0a0a0;
+  --color-line-bright: #d0d0d0;
+  --color-line-tree: #909090;
+  --color-text: #ffffff;
+  --color-text-2: #ebebeb;
+  --color-text-3: #d6d6d6;
+  --color-text-4: #cccccc;
+  --color-text-soft: #f5f5f5;
+  --color-accent: #ffc24f;
+  --color-accent-hi: #ffd98c;
+  --color-better: #8fcaff;
+  --color-worse: #ffb472;
+  --color-error: #ff8a8a;
+  --color-warn-line: #a86c40;
+  --color-danger-line: #b84848;
+  --color-hover-soft: #1e1e1e;
+  --color-line-faint: #4a4a4a;
+  --color-track: #767676;
+  --color-info-line: #5585b8;
+  --color-bad-line: #c47442;
+  --color-link: #ffffff;
+}
+
+:root[data-motion='off'] *,
+:root[data-motion='off'] *::before,
+:root[data-motion='off'] *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}

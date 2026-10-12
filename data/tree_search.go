@@ -1,6 +1,10 @@
 package data
 
-import "container/heap"
+import (
+	"container/heap"
+	"slices"
+	"strconv"
+)
 
 type SearchState struct {
 	frontier  []int64
@@ -8,8 +12,6 @@ type SearchState struct {
 	nextHops  map[int64]int64
 }
 
-// heap.Interface implementation to maintain SearchState.frontier as a
-// priority queue sorted by distance from active nodes.
 func (f *SearchState) Len() int { return len(f.frontier) }
 func (f *SearchState) Less(i, j int) bool {
 	iNode := f.frontier[i]
@@ -23,8 +25,6 @@ func (f *SearchState) Less(i, j int) bool {
 		return false
 	}
 
-	// We want results to be consistent every time we run the algorithm,
-	// so we use the node ID as a tiebreaker
 	return iNode < jNode
 }
 func (f *SearchState) Swap(i, j int) { f.frontier[i], f.frontier[j] = f.frontier[j], f.frontier[i] }
@@ -37,16 +37,7 @@ func (f *SearchState) Pop() any {
 	return x
 }
 
-// Calculates the next hop you should take to traverse a shortest path from any
-// arbitrary node to the nearest active node. Active nodes map to -1. Disconnected
-// tree nodes will not appear in the result.
-//
-// The algorithm will always pick consistent paths through the tree each time it is
-// run when there are multiple shortest paths (this property is important to prevent
-// the skill tree UI from flip-flopping between options as users allocate nodes).
-//
-// Requires a single BFS of the tree, + a heap push/pop pair per node.
-// Time complexity: O(V * log(V) + E)
+//pob:src/Classes/PassiveSpec.lua:537-574
 func (v *TreeVersionData) CalculateAllocationPaths(activeNodes []int64, rootNodes []int64) map[int64]int64 {
 	_, adjacencyMap := v.getGraph()
 
@@ -65,30 +56,41 @@ func (v *TreeVersionData) CalculateAllocationPaths(activeNodes []int64, rootNode
 	for _, rootNode := range rootNodes {
 		_, isActive := state.distances[rootNode]
 		if !isActive {
-			// A root node is reachable, but if it isn't already
-			// active, we'd need to spend 1 distance allocating it.
 			state.distances[rootNode] = 1
 			state.nextHops[rootNode] = -1
+			if root, ok := v.Tree().Nodes[strconv.FormatInt(rootNode, 10)]; ok {
+				for _, other := range slices.Concat(root.Out, root.In) {
+					start, ok := v.Tree().Nodes[other]
+					if id, err := strconv.ParseInt(other, 10, 64); ok && err == nil && start.ClassStartIndex != nil {
+						state.nextHops[rootNode] = id
+						state.nextHops[id] = -1
+						break
+					}
+				}
+			}
 			state.frontier = append(state.frontier, rootNode)
 		}
 	}
 
-	// This is a BFS, but using a priority queue that sorts by both
-	// distance *and* node ID. The use of node ID ensures that we
-	// produce stable output when there are multiple shortest paths,
-	// despite the arbitrary iteration order of neighbors in the
-	// adjacency map.
+	blockedTargets, masteryParents := v.pathRuleSets()
+	tree := v.Tree()
+
 	heap.Init(&state)
 	for state.Len() > 0 {
 		currentNode := heap.Pop(&state).(int64)
 		currentDistance := state.distances[currentNode]
 
+		if masteryParents[currentNode] {
+			continue
+		}
+
 		for adjacency := range adjacencyMap[currentNode] {
+			if blockedTargets[adjacency] || !tree.inSpec(strconv.FormatInt(adjacency, 10)) {
+				continue
+			}
+
 			_, alreadyVisited := state.distances[adjacency]
 			if alreadyVisited {
-				// Visiting in heap order means that we can assume
-				// that any path we already found is no longer than
-				// this new path.
 				continue
 			}
 
@@ -101,8 +103,35 @@ func (v *TreeVersionData) CalculateAllocationPaths(activeNodes []int64, rootNode
 	return state.nextHops
 }
 
+func (v *TreeVersionData) pathRuleSets() (map[int64]bool, map[int64]bool) {
+	nodes := v.Tree().Nodes
+	blockedTargets := make(map[int64]bool, 16)
+	masteryParents := make(map[int64]bool, 512)
+	for id, node := range nodes {
+		isStart := node.ClassStartIndex != nil ||
+			(node.IsAscendancyStart != nil && *node.IsAscendancyStart)
+		isMastery := node.IsMastery != nil && *node.IsMastery
+		if !isStart && !isMastery {
+			continue
+		}
+		parsed, err := strconv.ParseInt(id, 10, 64)
+		if err != nil {
+			continue
+		}
+		if isStart {
+			blockedTargets[parsed] = true
+		}
+		if isMastery {
+			masteryParents[parsed] = true
+		}
+	}
+	return blockedTargets, masteryParents
+}
+
+//pob:src/Classes/PassiveSpec.lua:844-871
 func (v *TreeVersionData) CalculatePrunableNodes(activeNodes []int64, rootNodes []int64) []int64 {
 	_, adjacencyMap := v.getGraph()
+	_, masteryParents := v.pathRuleSets()
 
 	activeNodesSet := make(map[int64]bool, len(activeNodes))
 	for _, node := range activeNodes {
@@ -125,6 +154,10 @@ func (v *TreeVersionData) CalculatePrunableNodes(activeNodes []int64, rootNodes 
 		if !visited[currentNode] {
 			visited[currentNode] = true
 
+			if masteryParents[currentNode] {
+				continue
+			}
+
 			for adjacent := range adjacencyMap[currentNode] {
 				if activeNodesSet[adjacent] && !visited[adjacent] {
 					stack = append(stack, adjacent)
@@ -141,4 +174,50 @@ func (v *TreeVersionData) CalculatePrunableNodes(activeNodes []int64, rootNodes 
 	}
 
 	return prunableNodes
+}
+
+//pob:block:src/Classes/PassiveSpec.lua:1440-1497
+func (v *TreeVersionData) CalculateDependentNodes(activeNodes []int64, target int64, rootNodes []int64) []int64 {
+	nodes := v.Tree().Nodes
+	rootsFor := func(list []int64) []int64 {
+		out := append([]int64(nil), rootNodes...)
+		for _, id := range list {
+			if n, ok := nodes[strconv.FormatInt(id, 10)]; ok && n.IsAscendancyStart != nil && *n.IsAscendancyStart {
+				out = append(out, id)
+			}
+		}
+		return out
+	}
+
+	rest := make([]int64, 0, len(activeNodes))
+	for _, id := range activeNodes {
+		if id != target {
+			rest = append(rest, id)
+		}
+	}
+
+	before := make(map[int64]bool)
+	for _, id := range v.CalculatePrunableNodes(activeNodes, rootsFor(activeNodes)) {
+		before[id] = true
+	}
+	after := v.CalculatePrunableNodes(rest, rootsFor(rest))
+	out := make([]int64, 0, len(after))
+	for _, id := range after {
+		if !before[id] {
+			out = append(out, id)
+		}
+	}
+	return out
+}
+
+//pob:block:src/Classes/PassiveSpec.lua:44
+func (t *Tree) inSpec(key string) bool {
+	node, ok := t.Nodes[key]
+	if !ok || node.Group == nil || boolVal(node.IsProxy) {
+		return false
+	}
+	if group, ok := t.Groups[strconv.FormatInt(*node.Group, 10)]; ok && boolVal(group.IsProxy) {
+		return false
+	}
+	return node.ExpansionJewel == nil || node.ExpansionJewel.Parent == nil
 }

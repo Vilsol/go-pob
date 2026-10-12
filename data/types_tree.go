@@ -19,6 +19,8 @@ type Tree struct {
 	Sprites         Sprites               `json:"sprites"`
 	ImageZoomLevels []float64             `json:"imageZoomLevels"`
 	Points          Points                `json:"points"`
+
+	AlternateAscendancies []Ascendancy `json:"alternate_ascendancies,omitempty"`
 }
 
 type Class struct {
@@ -104,6 +106,7 @@ type Node struct {
 	AscendancyName         *string         `json:"ascendancyName,omitempty"`
 	GrantedDexterity       *int64          `json:"grantedDexterity,omitempty"`
 	IsAscendancyStart      *bool           `json:"isAscendancyStart,omitempty"`
+	IsBloodline            *bool           `json:"isBloodline,omitempty"`
 	IsMultipleChoice       *bool           `json:"isMultipleChoice,omitempty"`
 	GrantedIntelligence    *int64          `json:"grantedIntelligence,omitempty"`
 	IsJewelSocket          *bool           `json:"isJewelSocket,omitempty"`
@@ -115,6 +118,8 @@ type Node struct {
 	IsMultipleChoiceOption *bool           `json:"isMultipleChoiceOption,omitempty"`
 	IsBlighted             *bool           `json:"isBlighted,omitempty"`
 	ClassStartIndex        *int64          `json:"classStartIndex,omitempty"`
+
+	ClusterJewelIncEffect float64 `json:"-"`
 }
 
 type ExpansionJewel struct {

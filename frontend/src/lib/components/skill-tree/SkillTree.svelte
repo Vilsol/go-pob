@@ -1,37 +1,87 @@
 <script lang="ts">
-  import { Canvas, Layer, type Render } from 'svelte-canvas';
-  import type { Node, Tree } from '$lib/skill_tree/types';
-  import { calculateNodePos, distance, drawnNodes, classStartNodes, type Point } from '../../skill_tree';
+  import type { Node, Tree, TreeClusterNode } from '$lib/skill_tree/types';
+  import { classStartNodes } from '../../skill_tree';
+  import { secondaryAscendancy } from '$lib/skill_tree/geometry';
+  import type { Point } from '$lib/skill_tree/geometry';
   import { onMount } from 'svelte';
-  import { currentBuild, zoomSensitivity } from '$lib/global.js';
+  import { currentBuild, devMode, nodePowerTheme, outputs, zoomSensitivity } from '$lib/global.js';
   import { syncWrap } from '$lib/go/worker';
   import { get, writable } from 'svelte/store';
   import { logError } from '$lib/utils';
-  import AllSkillNodes from '$lib/components/skill-tree/AllSkillNodes.svelte';
-  import AllConnections from '$lib/components/skill-tree/AllConnections.svelte';
-  import AllGroups from '$lib/components/skill-tree/AllGroups.svelte';
-  import ClassImage from '$lib/components/skill-tree/ClassImage.svelte';
-  import Tooltip from '$lib/components/skill-tree/Tooltip.svelte';
-  import { calculateAllocationPath, type PrecalculatedAllocationPaths } from './paths';
+  import NodeSearch from '$lib/components/skill-tree/NodeSearch.svelte';
+  import { calculateAllocationPath, extendTrace, withClusterPaths, type PrecalculatedAllocationPaths } from './paths';
+  import { treeProbe } from './probe';
+  import { buildClusterLayer, buildScene, sceneDrawList } from './scene';
+  import { createRenderer, type TreeRenderer } from './renderer';
+  import NodeTooltip from './NodeTooltip.svelte';
+  import { keepForOffline } from '$lib/pwa';
+  import type { NodeStatDiff, StatDiffBlock } from '$lib/skill_tree/stat_compare';
+  import type { ClassChangeResult } from '$lib/skill_tree/class_change';
+  import { heatMixColour, heatSingleColour } from '$lib/skill_tree/heat';
 
   let currentClass: string | undefined = $state();
-  $effect(() => {
-    $currentBuild?.Build.ClassName.then((newClass) => (currentClass = newClass)).catch(logError);
-  });
-
   let currentAscendancy: string | undefined = $state();
-  $effect(() => {
-    $currentBuild?.Build.AscendClassName.then((newAscendancy) => (currentAscendancy = newAscendancy)).catch(logError);
-  });
+  let currentSecondaryAscendancy: string | undefined = $state();
+  let recordedTreeVersion: string | undefined = $state();
 
   interface Props {
     skillTree: Tree;
     skillTreeVersion: string;
+    chrome?: boolean;
+    onhover?: (node: Node | undefined) => void;
+    onpick?: (node: Node) => void;
+    onmenu?: (node: Node, at: Point) => void;
+    onpaths?: (active: number[], paths: PrecalculatedAllocationPaths) => void;
+    view?: { offsetX: number; offsetY: number; scaling: number; width: number; height: number };
+    /* PassiveTreeView.lua:1658-1706 */
+    statDiff?: NodeStatDiff;
+    dependents?: { node: number; ids: number[] };
+    /* PassiveTreeView.lua:840-846 */
+    socketArt?: Map<number, string>;
+    /* PassiveTreeView.lua:847-877 */
+    tattoos?: Map<number, { icon: string; effect: string }>;
+    /* PassiveTreeView.lua:906-919 */
+    heat?: { values: Map<number, number>; max: number; mix?: { mix: Map<number, [number, number]>; maxOffence: number; maxDefence: number } };
+    /* PassiveTreeView.lua:166-185, 814-816 */
+    baseTint?: Map<number, [number, number, number]>;
+    /* PassiveTreeView.lua:686-699, 811 */
+    compared?: number[];
+    /* PassiveTreeView.lua:679-681 */
+    split?: number[];
+    /* PassiveTreeView.lua:283-363 */
+    ontrace?: (trace: number[]) => void;
+    /* PassiveSpec.lua:1885-2271 */
+    cluster?: TreeClusterNode[];
+    /* PassiveTreeView.lua:1102-1156 */
+    compareCluster?: TreeClusterNode[];
+    /* PassiveTreeView.lua:474-490 */
+    onclassconfirm?: (className: string, answer: (decision: 1 | 2) => Promise<ClassChangeResult> | undefined) => void;
+    whatIf?: boolean;
   }
 
-  let { skillTree, skillTreeVersion }: Props = $props();
-
-  const cullingPadding = -150;
+  let {
+    skillTree,
+    skillTreeVersion,
+    chrome = true,
+    onhover,
+    onpick,
+    onmenu,
+    onpaths,
+    onclassconfirm,
+    heat,
+    baseTint,
+    compared,
+    split,
+    ontrace,
+    socketArt,
+    tattoos,
+    cluster,
+    compareCluster,
+    whatIf = true,
+    view = $bindable(),
+    statDiff = $bindable(),
+    dependents = $bindable()
+  }: Props = $props();
 
   let scaling = $state(10);
 
@@ -39,44 +89,94 @@
   let offsetY = $state(0);
 
   let activeNodes: number[] = $state([]);
+  // PassiveSpec.lua:776-784
+  let leapHeld = $state.raw(new Set<number>());
 
   $effect(() => {
-    $currentBuild?.Build?.PassiveNodes?.then((newNodes) => (activeNodes = newNodes ?? [])).catch(logError);
+    void $outputs;
+    if (!$currentBuild) {
+      return;
+    }
+    syncWrap
+      ?.GetLeapHeldNodes()
+      .then((held) => (leapHeld = new Set(held ?? [])))
+      .catch(logError);
+    Promise.all([syncWrap?.GetBuildInfo(), syncWrap?.GetPassiveNodes()])
+      .then(([info, nodes]) => {
+        currentClass = info?.className;
+        currentAscendancy = info?.ascendClassName;
+        currentSecondaryAscendancy = secondaryAscendancy(skillTree, info?.secondaryAscendClassId ?? 0);
+        recordedTreeVersion = info?.recordedTreeVersion;
+        activeNodes = nodes ?? [];
+      })
+      .catch(logError);
   });
 
+  const classRoots = () => classStartNodes[skillTree.classes.findIndex((c) => c.name === currentClass)] ?? [];
+
+  // PassiveSpec.lua:856-857
+
   function precalculateAllocationPaths(active: number[]): Promise<PrecalculatedAllocationPaths> {
-    const version = skillTreeVersion || '3_18';
-    const rootNodes = classStartNodes[skillTree.classes.findIndex((c) => c.name === currentClass)];
+    const rootNodes = classRoots();
+    const subgraphs = cluster ?? [];
     return syncWrap
-      ?.CalculateAllocationPaths(
-        version,
-        // Need to clone; can't directly marshal a state-proxy to go
-        [...active],
-        rootNodes
-      )
-      .then((paths) => paths ?? {})
+      ?.CalculateAllocationPaths(skillTreeVersion, [...active], rootNodes)
+      .then((paths) => withClusterPaths(paths ?? {}, subgraphs))
       .catch((e: Error) => {
         logError(e);
         return {};
       });
   }
 
-  // Must be recalculated when the active nodes change or when the graph topology
-  // changes (e.g. socketing a Thread of Hope).
   let allocationPaths: Promise<PrecalculatedAllocationPaths> = $derived(precalculateAllocationPaths(activeNodes));
+
+  $effect(() => {
+    const active = activeNodes;
+    allocationPaths.then((paths) => onpaths?.(active, paths)).catch(logError);
+  });
+
+  // PassiveTreeView.lua:283-290
+  let shiftDown = $state(false);
+  let trace = $state.raw<number[]>([]);
+  $effect(() => ontrace?.(trace));
+  const linkedNodes = (a: number, b: number) => {
+    const n = skillTree.nodes[a];
+    return !!n && ((n.out ?? []).includes(String(b)) || (n.in ?? []).includes(String(b)));
+  };
+  const onShift = (e: KeyboardEvent) => {
+    if (e.key !== 'Shift') return;
+    shiftDown = e.type === 'keydown';
+    if (!shiftDown) trace = [];
+  };
+
+  const allocate = (nodeId: number) => {
+    if (shiftDown && trace.length && trace[trace.length - 1] === nodeId) {
+      void syncWrap?.AllocateNodes([...trace].filter((id) => !activeNodes.includes(id)));
+      currentBuild.set($currentBuild);
+      trace = [];
+      return;
+    }
+    allocationPaths
+      .then((paths) => {
+        const path = calculateAllocationPath(paths, nodeId);
+        if (!path) {
+          return;
+        }
+        void syncWrap?.AllocateNodes(leapHeld.has(nodeId) ? [nodeId] : path);
+        currentBuild.set($currentBuild);
+      })
+      .catch(logError);
+  };
 
   let clickNode = (node: Node) => {
     const nodeId = node.skill ?? -1;
     if (activeNodes?.includes(nodeId)) {
-      const version = skillTreeVersion || '3_18';
-      const rootNodes = classStartNodes[skillTree.classes.findIndex((c) => c.name === currentClass)];
+      const cut = syncWrap?.CalculateDependentNodes(skillTreeVersion, [...activeNodes], nodeId, [...classRoots()]);
       syncWrap
         ?.DeallocateNodes([nodeId])
         .then(() => {
-          const nowActiveNodes = activeNodes.filter((n) => n !== nodeId);
-          syncWrap
-            ?.CalculatePrunableNodes(version, nowActiveNodes, rootNodes)
-            .then((nodeIds) => {
+          cut
+            ?.then((nodeIds) => {
               if (nodeIds) {
                 void syncWrap?.DeallocateNodes(nodeIds);
               }
@@ -85,23 +185,24 @@
             .catch(logError);
         })
         .catch(logError);
-    } else {
-      allocationPaths
-        .then((paths) => {
-          const path = calculateAllocationPath(paths, nodeId);
-          if (!path) {
-            return;
-          }
-          void syncWrap?.AllocateNodes(path);
-          currentBuild.set($currentBuild);
+    } else if (node.ascendancyName) {
+      // PassiveTreeView.lua:390-497
+      syncWrap
+        ?.ClickTreeAscendancyNode(nodeId)
+        .then((r) => {
+          if (!r?.handled) allocate(nodeId);
+          else if (r.needsConfirm) onclassconfirm?.(r.className, (decision) => syncWrap?.ClickTreeAscendancyNode(nodeId, decision));
+          else if (r.changed) currentBuild.set($currentBuild);
         })
         .catch(logError);
+    } else {
+      allocate(nodeId);
     }
   };
 
-  const drawScaling = 2.6;
+  export const toggle = (node: Node) => clickNode(node);
 
-  let cdnBase = $derived(`https://go-pob-data.pages.dev/data/${(skillTreeVersion || '3_18').replace('_', '.')}`);
+  let cdnBase = $derived(`https://data.pob.gg/data/${skillTreeVersion.replace('_', '.')}`);
 
   let mousePos = $state<Point>({
     x: Number.MIN_VALUE,
@@ -111,8 +212,6 @@
   let cursor = $state('unset');
 
   const hoverPath = writable<number[]>([]);
-
-  let start: DOMHighResTimeStamp;
 
   let parentContainer = $state<HTMLElement>();
 
@@ -126,57 +225,55 @@
   };
 
   const hoveredNode = writable<Node | undefined>();
-  let visibleNodePositions = $state<Map<number, Point>>(new Map<number, Point>());
+
+  const scene = buildScene(skillTree);
+  const placedById = new Map(scene.nodes.map((n) => [n.id, n]));
+  const clusterLayer = $derived(
+    buildClusterLayer(skillTree, [...(cluster ?? []), ...(compareCluster ?? [])], (id) => placedById.get(id), new Set((compareCluster ?? []).map((c) => c.id)))
+  );
+  $effect(() =>
+    keepForOffline(
+      scene.sheets.map((s) => `${cdnBase}/${s}`),
+      'tree'
+    )
+  );
+
+  const CELL = 256;
+  const MAX_TOUCH = 110;
+  const touchDistance = (node: Node) => {
+    if (node.classStartIndex !== undefined || node.isAscendancyStart) return 0;
+    if (node.isKeystone) return 110;
+    if (node.isNotable || node.isJewelSocket) return 70;
+    if (node.isMastery) return 85;
+    return 50;
+  };
+  const cellKey = (cx: number, cy: number) => cx * 4096 + cy;
+  const hoverGrid = new Map<number, number[]>();
+  scene.nodes.forEach((n, i) => {
+    if (touchDistance(n.node) === 0) return;
+    const k = cellKey(Math.floor(n.at.x / CELL), Math.floor(n.at.y / CELL));
+    hoverGrid.set(k, [...(hoverGrid.get(k) ?? []), i]);
+  });
+  const nodeAt = (x: number, y: number): Node | undefined => {
+    let best = -1;
+    for (let cx = Math.floor((x - MAX_TOUCH) / CELL); cx <= Math.floor((x + MAX_TOUCH) / CELL); cx++) {
+      for (let cy = Math.floor((y - MAX_TOUCH) / CELL); cy <= Math.floor((y + MAX_TOUCH) / CELL); cy++) {
+        for (const i of hoverGrid.get(cellKey(cx, cy)) ?? []) {
+          if ((best < 0 || i < best) && Math.hypot(scene.nodes[i].at.x - x, scene.nodes[i].at.y - y) < touchDistance(scene.nodes[i].node)) best = i;
+        }
+      }
+    }
+    if (best >= 0) return scene.nodes[best].node;
+    // PassiveSpec.lua:2043-2064
+    return clusterLayer.nodes.find((n) => !n.node.isMastery && Math.hypot(n.at.x - x, n.at.y - y) < touchDistance(n.node))?.node;
+  };
 
   $effect(() => {
-    let found = false;
-    const visibleNodePos: Map<number, Point> = new Map<number, Point>();
-
-    drawnNodes.forEach((node: Node, nNodeId: number) => {
-      const canvasPos = calculateNodePos(node, offsetX, offsetY, scaling);
-
-      if (!found) {
-        let touchDistance = 0;
-
-        if (node.classStartIndex !== undefined) {
-          // No touch distance for class start
-        } else if (node.isAscendancyStart) {
-          // No touch distance for ascendancy start
-        } else if (node.isKeystone) {
-          touchDistance = 110;
-        } else if (node.isNotable) {
-          touchDistance = 70;
-        } else if (node.isJewelSocket) {
-          touchDistance = 70;
-        } else if (node.isMastery) {
-          touchDistance = 85;
-        } else {
-          touchDistance = 50;
-        }
-
-        if (distance(canvasPos, mousePos) < touchDistance / scaling) {
-          hoveredNode.set(node);
-          found = true;
-        }
-      }
-
-      if (
-        !(
-          canvasPos.x < cullingPadding ||
-          canvasPos.x > canvasWidth - cullingPadding ||
-          canvasPos.y < cullingPadding ||
-          canvasPos.y > canvasHeight - cullingPadding
-        )
-      ) {
-        visibleNodePos.set(nNodeId, canvasPos);
-      }
-    });
-
-    if (!found) {
-      hoveredNode.set(undefined);
+    const node = nodeAt(mousePos.x * scaling - Math.abs(skillTree.min_x) - offsetX, mousePos.y * scaling - Math.abs(skillTree.min_y) - offsetY);
+    if (node !== get(hoveredNode)) {
+      hoveredNode.set(node);
+      onhover?.(node);
     }
-
-    visibleNodePositions = visibleNodePos;
   });
 
   $effect(() => {
@@ -186,11 +283,24 @@
 
     if ($hoveredNode !== undefined && currentClass) {
       const target = $hoveredNode.skill!;
+      const tracing = shiftDown;
       allocationPaths
         .then((paths) => {
           const path = calculateAllocationPath(paths, target);
-          if (path && get(hoveredNode)) {
-            hoverPath.set(path);
+          if (tracing) {
+            // PassiveTreeView.lua:283-363
+            if (!get(hoveredNode)) return;
+            const own = activeNodes.includes(target) ? undefined : path;
+            trace = extendTrace(trace, target, own, linkedNodes, (id) => !!skillTree.nodes[id]?.isMastery);
+            hoverPath.set(trace);
+            return;
+          }
+          if (path && get(hoveredNode) && leapHeld.has(target)) {
+            // PassiveTreeView.lua:367
+            hoverPath.set([]);
+          } else if (path && get(hoveredNode)) {
+            const anchor = paths[path[path.length - 1]];
+            hoverPath.set(anchor !== undefined && anchor !== -1 ? [...path, anchor] : path);
           }
         })
         .catch(logError);
@@ -199,31 +309,258 @@
     }
   });
 
-  const renderStart: Render = ({ context, width, height }) => {
-    start = window.performance.now();
+  let down = $state(false);
+  let dragging = $state(false);
 
-    context.fillStyle = '#080c11';
-    context.fillRect(0, 0, width, height);
-  };
+  // PassiveTreeView.lua:1658-1706
+  let grantedPassives: number[] = $state.raw([]);
+  let wantedDiff: Node | undefined;
+  let diffRunning = false;
 
-  const renderEnd: Render = ({ context, width, height }) => {
-    if ($hoveredNode) {
-      cursor = 'pointer';
+  $effect(() => {
+    void $outputs;
+    void activeNodes;
+    statDiff = undefined;
+    if (!whatIf) return;
+    syncWrap
+      ?.PrepareStatCompare()
+      .then(() => syncWrap?.GetGrantedPassives())
+      .then((g) => (grantedPassives = g ?? []))
+      .catch(logError);
+  });
+
+  const statDiffFor = async (node: Node) => {
+    const id = node.skill!;
+    const current = () => get(hoveredNode) === node && wantedDiff === undefined;
+    const active = activeNodes;
+    const alloc = active.includes(id);
+    const isGranted = !alloc && grantedPassives.includes(id);
+
+    let path: number[];
+    if (alloc) {
+      const ids = (await syncWrap?.CalculateDependentNodes(skillTreeVersion, [...active], id, [...classRoots()])) ?? [];
+      if (get(hoveredNode) === node) dependents = { node: id, ids };
+      path = [id, ...ids];
     } else {
-      cursor = 'unset';
+      path = calculateAllocationPath(await allocationPaths, id) ?? [];
+    }
+    const pathLength = path.length;
+    const showPath = pathLength > 1 && !isGranted;
+
+    const blocks: StatDiffBlock[] = [];
+    statDiff = { node: id, blocks, pending: true };
+
+    const compare = async (add: number[], remove: number[], header: string, nodeCount?: number) => {
+      if (!current()) return false;
+      const result = await syncWrap?.StatCompareNodes(add, remove, nodeCount);
+      if (!result || !current()) return false;
+      if (result.sections.length) {
+        blocks.push({ header, sections: result.sections, readyAt: performance.now(), calcMs: result.calcMs });
+      }
+      return true;
+    };
+
+    let pathNodes = path;
+    let ok: boolean;
+    if (alloc) {
+      ok = await compare([], [id], 'Unallocating this node will give you:');
+    } else if (isGranted) {
+      ok = await compare([], [id], 'This node is granted by an item. Removing it will give you:');
+    } else if (node.isMastery) {
+      pathNodes = path.filter((n) => n !== id);
+      ok = current();
+    } else {
+      ok = await compare([id], [], 'Allocating this node will give you:');
+    }
+    if (!ok) return;
+    statDiff = { node: id, blocks: [...blocks], pending: showPath };
+
+    if (showPath) {
+      ok = alloc
+        ? await compare([], pathNodes, 'Unallocating this node and all nodes depending on it will give you:', pathLength)
+        : await compare(pathNodes, [], 'Allocating this node and all nodes leading to it will give you:', pathLength);
+      if (!ok) return;
     }
 
-    context.fillStyle = '#ffffff';
-    context.textAlign = 'right';
-    context.font = '12px Roboto Mono';
-
-    const end = window.performance.now();
-
-    context.fillText(`${(end - start).toFixed(1)}ms`, width - 5, 17);
-
-    context.strokeStyle = 'red';
-    context.strokeRect(cullingPadding, cullingPadding, width - cullingPadding * 2, height - cullingPadding * 2);
+    let empty: string | undefined;
+    if (blocks.length === 0) {
+      empty = isGranted
+        ? 'This node is granted by an item. Removing it will cause no changes'
+        : `No changes from ${alloc ? 'unallocating' : 'allocating'} this node${showPath ? ` or the nodes ${alloc ? 'depending on' : 'leading to'} it` : ''}.`;
+    }
+    statDiff = { node: id, blocks: [...blocks], pending: false, empty };
   };
+
+  const runStatDiffs = async () => {
+    while (wantedDiff) {
+      const node = wantedDiff;
+      wantedDiff = undefined;
+      await statDiffFor(node).catch(logError);
+    }
+  };
+
+  const requestStatDiff = (node: Node | undefined) => {
+    wantedDiff = node;
+    if (!node) {
+      statDiff = undefined;
+      return;
+    }
+    if (!diffRunning) {
+      diffRunning = true;
+      void runStatDiffs().finally(() => (diffRunning = false));
+    }
+  };
+
+  $effect(() => {
+    void activeNodes;
+    // PassiveTreeView.lua:1146
+    const node = $hoveredNode;
+    requestStatDiff(!whatIf || dragging || compareCluster?.some((c) => c.id === node?.skill) ? undefined : node);
+  });
+
+  let devicePixelRatio = $state(1);
+  let glCanvas = $state<HTMLCanvasElement>();
+  let overlay = $state<HTMLCanvasElement>();
+  let renderer = $state.raw<TreeRenderer>();
+  let lastDrawMs = $state(0);
+  let overlayFrame = 0;
+
+  const drawOverlay = () => {
+    overlayFrame = 0;
+    const context = overlay?.getContext('2d');
+    if (!context) {
+      return;
+    }
+    context.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+    context.clearRect(0, 0, canvasWidth, canvasHeight);
+  };
+  const requestOverlay = () => {
+    if (overlayFrame === 0) {
+      overlayFrame = requestAnimationFrame(drawOverlay);
+    }
+  };
+
+  // PassiveTreeView.lua:906-949
+  const nodeTint = $derived.by(() => {
+    const out = new Map(baseTint ?? []);
+    if (!heat) return out;
+    const active = new Set(activeNodes);
+    for (const { node } of scene.nodes) {
+      const id = node.skill;
+      if (id === undefined || active.has(id) || node.classStartIndex !== undefined || node.isAscendancyStart) continue;
+      const [off, def] = heat.mix?.mix.get(id) ?? [0, 0];
+      out.set(
+        id,
+        heat.mix
+          ? heatMixColour(off, def, heat.mix.maxOffence, heat.mix.maxDefence, $nodePowerTheme)
+          : heatSingleColour(heat.values.get(id) ?? 0, heat.max, $nodePowerTheme)
+      );
+    }
+    return out;
+  });
+
+  const afterDraw = (ms: number) => {
+    if ($devMode) lastDrawMs = ms;
+    drawOverlay();
+    treeProbe()?.frame({
+      view: { offsetX, offsetY, scaling, width: canvasWidth, height: canvasHeight },
+      ms,
+      at: performance.now(),
+      hovered: get(hoveredNode)?.skill,
+      hoverPath: get(hoverPath).length,
+      active: activeNodes.length,
+      className: currentClass,
+      version: skillTreeVersion,
+      renderer: renderer?.kind,
+      complete: renderer?.complete()
+    });
+  };
+
+  $effect(() => {
+    if (!glCanvas || renderer) {
+      return;
+    }
+    const probe = treeProbe();
+    renderer = createRenderer(glCanvas, scene, cdnBase, afterDraw, probe?.renderer);
+    if (probe && renderer.kind === 'webgl') {
+      probe.drawList = () => ({ complete: renderer!.complete(), items: sceneDrawList(scene, scaling, renderer!.drawListArt()) });
+      probe.selfCheck = () => renderer!.selfCheck?.() ?? ['no self-check'];
+    }
+  });
+
+  $effect(() => {
+    renderer?.setView({ offsetX, offsetY, scaling, width: canvasWidth, height: canvasHeight, dpr: devicePixelRatio });
+    view = { offsetX, offsetY, scaling, width: canvasWidth, height: canvasHeight };
+  });
+
+  const MIN_SCALING = 3;
+  const MAX_SCALING = 30;
+  const scaleAbout = (x: number, y: number, newScaling: number) => {
+    offsetX += x * (newScaling - scaling);
+    offsetY += y * (newScaling - scaling);
+    scaling = newScaling;
+  };
+
+  export const zoom = (how: 'in' | 'out' | 'fit') => {
+    if (how === 'fit') {
+      const w = skillTree.max_x - skillTree.min_x;
+      const h = skillTree.max_y - skillTree.min_y;
+      scaling = Math.min(MAX_SCALING, Math.max(MIN_SCALING, Math.max(w / canvasWidth, h / canvasHeight)));
+      offsetX = (canvasWidth / 2) * scaling - Math.abs(skillTree.min_x) - (skillTree.min_x + w / 2);
+      offsetY = (canvasHeight / 2) * scaling - Math.abs(skillTree.min_y) - (skillTree.min_y + h / 2);
+      return;
+    }
+    const step = 2 * Math.pow(2, $zoomSensitivity - 5) * 1.2;
+    scaleAbout(canvasWidth / 2, canvasHeight / 2, Math.min(MAX_SCALING, Math.max(MIN_SCALING, scaling + (how === 'in' ? -step : step))));
+  };
+
+  // PassiveTreeView.lua:83-111
+  const baseScaling = () => (skillTree.max_x - skillTree.min_x) / Math.max(1, Math.min(canvasWidth, canvasHeight));
+  export const pobView = () => ({
+    zoomLevel: Math.round(Math.log(baseScaling() / scaling) / Math.log(1.2)),
+    zoomX: (Math.abs(skillTree.min_x) + offsetX) / scaling - canvasWidth / 2,
+    zoomY: (Math.abs(skillTree.min_y) + offsetY) / scaling - canvasHeight / 2
+  });
+  export const setPobView = (v: { zoomLevel: number; zoomX: number; zoomY: number }) => {
+    if (!canvasWidth || !canvasHeight) return;
+    scaling = Math.min(MAX_SCALING, Math.max(MIN_SCALING, baseScaling() / 1.2 ** v.zoomLevel));
+    offsetX = (v.zoomX + canvasWidth / 2) * scaling - Math.abs(skillTree.min_x);
+    offsetY = (v.zoomY + canvasHeight / 2) * scaling - Math.abs(skillTree.min_y);
+  };
+
+  /* PassiveTreeView.lua:1312-1321 */
+  export const focus = (id: number, to = MIN_SCALING) => {
+    const n = scene.nodes.find((s) => s.node.skill === id) ?? clusterLayer.nodes.find((s) => s.id === id);
+    if (!n) return;
+    scaling = Math.min(MAX_SCALING, Math.max(MIN_SCALING, to));
+    offsetX = (canvasWidth / 2) * scaling - Math.abs(skillTree.min_x) - n.at.x;
+    offsetY = (canvasHeight / 2) * scaling - Math.abs(skillTree.min_y) - n.at.y;
+  };
+
+  $effect(() => {
+    renderer?.setState({
+      active: new Set(activeNodes),
+      hoverPath: new Set($hoverPath),
+      hovered: $hoveredNode?.skill,
+      className: currentClass,
+      ascendancy: currentAscendancy,
+      secondaryAscendancy: currentSecondaryAscendancy,
+      socketArt,
+      tattoos,
+      cluster: clusterLayer,
+      tint: nodeTint,
+      granted: new Set(grantedPassives),
+      compared: compared && new Set(compared),
+      split: split && new Set(split),
+      heatMap: !!heat
+    });
+  });
+
+  $effect(() => {
+    cursor = $hoveredNode ? 'pointer' : 'unset';
+    void mousePos;
+    requestOverlay();
+  });
 
   let downX = 0;
   let downY = 0;
@@ -231,10 +568,30 @@
   let startX = 0;
   let startY = 0;
 
-  let down = false;
+  const canvasPoint = (event: MouseEvent): Point | undefined => {
+    if (!glCanvas) return undefined;
+    const r = glCanvas.getBoundingClientRect();
+    return { x: event.clientX - r.left, y: event.clientY - r.top };
+  };
+  const NOWHERE = { x: -1e6, y: -1e6 };
+
+  // PassiveTreeView.lua:259-263
+  const ctrlZoom = (event: MouseEvent, how: 'in' | 'out') => {
+    const step = 2 * Math.pow(2, $zoomSensitivity - 5) * 1.2;
+    scaleAbout(event.offsetX, event.offsetY, Math.min(MAX_SCALING, Math.max(MIN_SCALING, scaling + (how === 'in' ? -step : step))));
+  };
+
   const mouseDown = (event: Event) => {
     if (event instanceof MouseEvent) {
+      if (event.ctrlKey && event.button === 0) {
+        ctrlZoom(event, 'in');
+        return;
+      }
+      if (event.button === 2 && (onmenu || event.ctrlKey)) {
+        return;
+      }
       down = true;
+      dragging = false;
       downX = event.offsetX;
       downY = event.offsetY;
       startX = offsetX;
@@ -244,45 +601,54 @@
         x: event.offsetX,
         y: event.offsetY
       };
-
-      if ($hoveredNode) {
-        clickNode($hoveredNode);
-      }
     }
+  };
+
+  const contextMenu = (event: MouseEvent) => {
+    if (event.ctrlKey) {
+      event.preventDefault();
+      ctrlZoom(event, 'out');
+      return;
+    }
+    if (!onmenu) return;
+    event.preventDefault();
+    const node = $hoveredNode;
+    if (node) onmenu(node, { x: event.offsetX, y: event.offsetY });
   };
 
   const mouseUp = (event: PointerEvent) => {
+    // PassiveTreeView.lua:221-226
+    const click = event.type === 'pointerup' && down && !dragging && event.button === 0;
     if (event.type === 'pointerup') {
       down = false;
+      dragging = false;
     }
 
-    mousePos = {
-      x: event.offsetX,
-      y: event.offsetY
-    };
+    mousePos = event.target === glCanvas ? (canvasPoint(event) ?? NOWHERE) : NOWHERE;
+    if (click && $hoveredNode) {
+      if (onpick) onpick($hoveredNode);
+      else clickNode($hoveredNode);
+    }
   };
 
   const mouseMove = (event: MouseEvent) => {
-    if (down) {
-      offsetX = startX - (downX - event.offsetX) * scaling;
-      offsetY = startY - (downY - event.offsetY) * scaling;
+    const p = canvasPoint(event);
+    // PassiveTreeView.lua:244-251
+    if (down && p && !dragging && (Math.abs(p.x - downX) > 5 || Math.abs(p.y - downY) > 5)) dragging = true;
+    if (dragging && p) {
+      offsetX = startX - (downX - p.x) * scaling;
+      offsetY = startY - (downY - p.y) * scaling;
     }
 
-    mousePos = {
-      x: event.offsetX,
-      y: event.offsetY
-    };
+    mousePos = event.target === glCanvas || down ? (p ?? NOWHERE) : NOWHERE;
   };
 
   const onScroll = (event: Event) => {
     if (event instanceof WheelEvent) {
       const scalingAdjustment = Math.pow(2, $zoomSensitivity - 5) * (event.deltaY / 100);
-      const newScaling = Math.min(30, Math.max(3, scaling + scalingAdjustment));
+      const newScaling = Math.min(MAX_SCALING, Math.max(MIN_SCALING, scaling + scalingAdjustment));
 
-      // Keep the rescaled mouse position constant
-      offsetX += event.offsetX * (newScaling - scaling);
-      offsetY += event.offsetY * (newScaling - scaling);
-      scaling = newScaling;
+      scaleAbout(event.offsetX, event.offsetY, newScaling);
 
       event.preventDefault();
       event.stopPropagation();
@@ -303,32 +669,51 @@
   onMount(() => {
     new ResizeObserver(resize).observe(parentContainer!);
     resize();
+    return () => {
+      renderer?.destroy();
+      renderer = undefined;
+      cancelAnimationFrame(overlayFrame);
+    };
   });
 </script>
 
-<svelte:window onpointerup={mouseUp} onpointermove={mouseMove} onresize={resize} />
+<svelte:window
+  onpointerup={mouseUp}
+  onpointermove={mouseMove}
+  onresize={resize}
+  onkeydown={onShift}
+  onkeyup={onShift}
+  onblur={() => ((shiftDown = false), (trace = []))}
+  bind:devicePixelRatio />
 
-<div class="w-full h-full max-w-full max-h-full overflow-hidden" bind:this={parentContainer}>
+<div class="relative w-full h-full max-w-full max-h-full overflow-hidden" bind:this={parentContainer}>
+  {#if chrome}
+    <NodeSearch {activeNodes} onselect={clickNode} />
+    <p class="pointer-events-none absolute right-2 bottom-1 z-10 m-0 text-11 text-text-2" aria-label="Tree version">
+      Tree {skillTreeVersion.replace('_', '.')}{recordedTreeVersion && recordedTreeVersion !== skillTreeVersion
+        ? ` (build records ${recordedTreeVersion.replace('_', '.')})`
+        : ''}
+    </p>
+  {/if}
   {#if canvasWidth && canvasHeight}
-    <div style="touch-action: none; cursor: {cursor}">
-      <Canvas width={canvasWidth} height={canvasHeight} onpointerdown={mouseDown} onwheel={onScroll}>
-        <Layer render={renderStart} />
-        <ClassImage {scaling} {offsetX} {offsetY} {cullingPadding} {drawScaling} {currentClass} {cdnBase} {skillTree} />
-        <AllGroups {scaling} {offsetX} {offsetY} {cullingPadding} {currentAscendancy} {currentClass} {cdnBase} {skillTree} />
-        <AllConnections {scaling} {offsetX} {offsetY} {cullingPadding} hoverPath={$hoverPath} {skillTree} {activeNodes} />
-        <AllSkillNodes
-          hoveredNode={$hoveredNode}
-          {cdnBase}
-          {scaling}
-          {offsetX}
-          {offsetY}
-          {cullingPadding}
-          hoverPath={$hoverPath}
-          visibleNodePos={visibleNodePositions}
-          {activeNodes} />
-        <Tooltip hoveredNode={$hoveredNode} {mousePos} />
-        <Layer render={renderEnd} />
-      </Canvas>
+    <div
+      role="img"
+      aria-label="Passive skill tree"
+      data-heat={heat ? heat.values.size : undefined}
+      class="relative"
+      style="touch-action: none; cursor: {cursor}; width: {canvasWidth}px; height: {canvasHeight}px">
+      <canvas bind:this={glCanvas} class="absolute inset-0 w-full h-full" onpointerdown={mouseDown} onwheel={onScroll} oncontextmenu={contextMenu}></canvas>
+      <canvas
+        bind:this={overlay}
+        class="absolute inset-0 w-full h-full pointer-events-none"
+        width={canvasWidth * devicePixelRatio}
+        height={canvasHeight * devicePixelRatio}></canvas>
+      {#if $devMode}
+        <output aria-label="Render time" class="pointer-events-none absolute right-1.5 bottom-1 font-mono text-12 text-white">{lastDrawMs.toFixed(1)}ms</output>
+      {/if}
+      {#if chrome && $hoveredNode}
+        <NodeTooltip node={$hoveredNode} at={mousePos} width={canvasWidth} height={canvasHeight} devMode={$devMode} diff={statDiff} />
+      {/if}
     </div>
   {/if}
 </div>

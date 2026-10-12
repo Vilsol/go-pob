@@ -2,6 +2,7 @@ package calculator
 
 import (
 	"fmt"
+	"math"
 
 	"github.com/Vilsol/go-pob/data"
 	"github.com/Vilsol/go-pob/mod"
@@ -30,20 +31,22 @@ type BMultiChainItem struct {
 }
 
 type BMultiChain struct {
-	Base  string
-	Label string
-	Total string
-	Items []BMultiChainItem
+	Base    *BMultiChainItem
+	Label   string
+	Total   string
+	NoTotal bool
+	Items   []BMultiChainItem
 }
 
 type BReservation struct {
-	SkillName  string
-	Base       string
-	Mult       *string
-	More       *string
-	Inc        *string
-	Efficiency *string
-	Total      string
+	SkillName      string
+	Base           string
+	Mult           *string
+	More           *string
+	Inc            *string
+	Efficiency     *string
+	EfficiencyMore *string
+	Total          string
 }
 
 type BDamageType struct {
@@ -51,6 +54,7 @@ type BDamageType struct {
 	ConvSrc *string
 	Total   string
 	ConvDst *string
+	GainDst *string
 	Base    *string
 	Inc     *string
 	More    *string
@@ -64,6 +68,7 @@ type Entry struct {
 	Reservations []BReservation
 	Label        string
 	DamageTypes  []BDamageType
+	Radius       float64
 }
 
 type Breakdown struct {
@@ -74,6 +79,7 @@ type Breakdown struct {
 	Data map[string]*Entry
 }
 
+//pob:block:src/Modules/CalcBreakdown.lua:6-15
 func NewBreakdown(modDB *moddb.ModDB, output map[string]float64, actor *Actor) *Breakdown {
 	return &Breakdown{
 		ModDB:  modDB,
@@ -107,6 +113,28 @@ func (b *Breakdown) AddLine(key string, s ...string) {
 	b.Data[key].Lines = append(b.Data[key].Lines, s...)
 }
 
+//pob:src/Modules/CalcBreakdown.lua:95-109
+func (b *Breakdown) area(key string, base float64, areaMod float64, total float64, bp *radiusBreakpoints, label string) {
+	var out []string
+	if label != "" {
+		out = append(out, label)
+	}
+	if base != total {
+		out = append(out,
+			fmt.Sprintf("%.1fm ^8(base radius)", base/10),
+			fmt.Sprintf("x %.2f ^8(square root of area of effect modifier)", math.Floor(100*math.Sqrt(areaMod))/100),
+			fmt.Sprintf("= %.1fm", total/10),
+		)
+	}
+	if bp != nil {
+		out = append(out,
+			fmt.Sprintf("^8Next 0.1m breakpoint: %d%% increased AoE / a %d%% more AoE multiplier", bp.inc, bp.more),
+			fmt.Sprintf("^8Previous 0.1m breakpoint: %d%% reduced AoE / a %d%% less AoE multiplier", bp.red, bp.less),
+		)
+	}
+	b.Data[key] = &Entry{Lines: out, Radius: total}
+}
+
 func (b *Breakdown) GetData() map[string]*Entry {
 	return b.Data
 }
@@ -119,6 +147,7 @@ func (b *Breakdown) AddSlot(key string, slot ...BSlot) {
 	b.Data[key].Slots = append(b.Data[key].Slots, slot...)
 }
 
+//pob:src/Modules/CalcBreakdown.lua:81-93
 func (b *Breakdown) Slot(source string, sourceName *string, cfg *moddb.ListCfg, base float64, total *float64, keys ...string) {
 	inc := b.ModDB.Sum("INC", cfg, keys...)
 	more := b.ModDB.More(cfg, keys...)
@@ -136,6 +165,7 @@ func (b *Breakdown) Slot(source string, sourceName *string, cfg *moddb.ListCfg, 
 	}
 }
 
+//pob:src/Modules/CalcBreakdown.lua:44-67
 func (b *Breakdown) Simple(extraBasePtr *float64, cfg *moddb.ListCfg, total float64, key string) {
 	extraBase := utils.UnwrapOrF(extraBasePtr, 0)
 	base := b.ModDB.Sum(mod.TypeBase, cfg, key)
@@ -164,39 +194,44 @@ func (b *Breakdown) Simple(extraBasePtr *float64, cfg *moddb.ListCfg, total floa
 	}
 }
 
+//pob:src/Modules/CalcBreakdown.lua:17-42
 func (b *Breakdown) MultiChain(key string, chains ...BMultiChain) {
 	for _, chain := range chains {
-		base := chain.Base
+		multiplier := float64(1)
 		lines := 0
-		for _, mult := range chain.Items {
-			if mult.Value != 1 {
-				if lines == 0 {
-					if base != "" {
-						if chain.Label != "" {
-							b.AddLine(key, chain.Label)
-						}
-						b.AddLine(key, base)
-						b.AddLine(key, "x "+fmt.Sprintf(mult.Format, mult.Value))
-						lines = 2
-					} else {
-						base = fmt.Sprintf(mult.Format, mult.Value)
-					}
-				} else {
+		if chain.Label != "" {
+			b.AddLine(key, chain.Label)
+		}
+		if chain.Base != nil {
+			b.AddLine(key, fmt.Sprintf(chain.Base.Format, chain.Base.Value))
+		}
+		if chain.Base == nil || chain.Base.Value != 0 {
+			for _, mult := range chain.Items {
+				if mult.Value != 1 {
+					multiplier *= mult.Value
 					b.AddLine(key, "x "+fmt.Sprintf(mult.Format, mult.Value))
-					lines = lines + 1
+					lines++
 				}
 			}
-			if lines > 0 {
-				b.AddLine(key, chain.Total)
+		}
+		switch {
+		case chain.Total != "":
+			b.AddLine(key, chain.Total)
+		case (!chain.NoTotal && lines > 0 && chain.Base != nil) || (lines > 1 && chain.Base == nil):
+			base := float64(1)
+			if chain.Base != nil {
+				base = chain.Base.Value
 			}
+			b.AddLine(key, fmt.Sprintf("= %.2f", multiplier*base))
 		}
 	}
 }
 
+//pob:src/Modules/CalcBreakdown.lua:69-79
 func (b *Breakdown) Mod(key string, modList moddb.ModStoreFuncs, cfg *moddb.ListCfg, names ...string) {
 	inc := modList.Sum(mod.TypeIncrease, cfg, names...)
 	more := modList.More(cfg, names...)
-	if inc != 0 && more != 1 {
+	if inc != 0 || more != 1 {
 		b.AddLine(
 			key,
 			fmt.Sprintf("%.2f ^8(increased/reduced)", 1+inc/100),
@@ -206,28 +241,42 @@ func (b *Breakdown) Mod(key string, modList moddb.ModStoreFuncs, cfg *moddb.List
 	}
 }
 
-func (b *Breakdown) EffMult(key string, damageType data.DamageType, resist float64, pen float64, taken float64, mult float64, takenMore float64, sourceRes data.DamageType, useRes bool) {
+//pob:src/Modules/CalcBreakdown.lua:111-157
+func (b *Breakdown) EffMult(key string, damageType data.DamageType, resist float64, pen float64, taken float64, mult float64, takenMore float64, sourceRes data.DamageType, useRes bool, invertChance float64, effectiveResist *float64) {
 	resistForm := utils.Ternary(damageType == data.DamageTypePhysical, "physical damage reduction", "resistance")
-	if sourceRes != "" && sourceRes != damageType {
-		b.AddLine(key, fmt.Sprintf("Enemy %s: %.2f%% ^8(%s)", resistForm, resist, sourceRes))
-	} else if resist != 0 {
-		b.AddLine(key, fmt.Sprintf("Enemy %s: %.2f%%", resistForm, resist))
+	effRes := resist - pen
+	if effectiveResist != nil {
+		effRes = *effectiveResist
 	}
 
-	if pen != 0 || !useRes {
+	if sourceRes != "" && sourceRes != damageType {
+		b.AddLine(key, fmt.Sprintf("Enemy %s: %d%% ^8(%s)", resistForm, int(resist), sourceRes))
+	} else if resist != 0 {
+		b.AddLine(key, fmt.Sprintf("Enemy %s: %d%%", resistForm, int(resist)))
+	}
+
+	switch {
+	case invertChance != 0 && useRes:
+		normalResist := resist - pen
+		invertedResist := -resist - pen
 		b.AddLine(key, "Effective resistance:")
-		b.AddLine(key, fmt.Sprintf("%.2f%% ^8(resistance)", resist))
+		b.AddLine(key, fmt.Sprintf("%.6g%% ^8(non-inverted hit after penetration)", normalResist))
+		b.AddLine(key, fmt.Sprintf("%.6g%% ^8(inverted hit after penetration)", invertedResist))
+		b.AddLine(key, fmt.Sprintf("= %.6g%% ^8(weighted average from %.0f%% inversion chance)", effRes, invertChance*100))
+	case pen != 0 || !useRes:
+		b.AddLine(key, "Effective resistance:")
+		b.AddLine(key, fmt.Sprintf("%d%% ^8(resistance)", int(resist)))
 		if pen < 0 {
-			b.AddLine(key, fmt.Sprintf("+ %.2f%% ^8(penetration)", -pen))
+			b.AddLine(key, fmt.Sprintf("+ %d%% ^8(penetration)", int(-pen)))
 		} else if pen > 0 {
-			b.AddLine(key, fmt.Sprintf("- %.2f%% ^8(penetration)", pen))
+			b.AddLine(key, fmt.Sprintf("- %d%% ^8(penetration)", int(pen)))
 		}
 
 		if !useRes {
 			b.AddLine(key, fmt.Sprintf("x %d%% ^8(resistance ignored)", 0))
-			b.AddLine(key, fmt.Sprintf("= %d%%", (0)))
+			b.AddLine(key, fmt.Sprintf("= %d%%", 0))
 		} else {
-			b.AddLine(key, fmt.Sprintf("= %.2f%%", (resist-pen)))
+			b.AddLine(key, fmt.Sprintf("= %d%%", int(resist-pen)))
 		}
 	}
 
@@ -236,7 +285,7 @@ func (b *Breakdown) EffMult(key string, damageType data.DamageType, resist float
 			Label: "Effective DPS modifier:",
 			Total: fmt.Sprintf("= %.3f", mult),
 			Items: []BMultiChainItem{
-				{"%.2f ^8(" + resistForm + ")", 1 - (resist-pen)/100},
+				{"%.2f ^8(" + resistForm + ")", 1 - effRes/100},
 				{"%.2f ^8(increased/reduced damage taken)", 1 + taken/100},
 				{"%.2f ^8(more/less damage taken)", takenMore},
 			},

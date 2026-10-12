@@ -49,6 +49,28 @@ jobs:
         working-directory: ./frontend
         run: pnpm run lint
 
+  generated:
+    name: Generated Bindings
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Regenerate bindings
+        run: go generate ./wasm/exposition
+
+      - name: Check the committed output is current
+        run: |
+          git add -N frontend/src/lib/types wasm/exposition/crystalline_gen.go
+          git diff --exit-code -- frontend/src/lib/types wasm/exposition/crystalline_gen.go
+
   build-backend:
     name: Build Backend
     runs-on: ubuntu-latest
@@ -118,8 +140,51 @@ jobs:
         with:
           go-version-file: go.mod
 
+      - name: Cache test data
+        uses: actions/cache@v4
+        with:
+          path: |
+            testdata/corpus-[0-9]*
+            testdata/oracle-[0-9]*
+            testdata/.installed-release
+          key: testdata-${{ hashFiles('scripts/testdata.json') }}
+
+      - name: Fetch test data
+        run: go run ./scripts/testdatarelease fetch
+
       - name: Test
         run: go test -v ./...
+
+  test-backend-race:
+    name: Test Backend (race)
+    runs-on: ubuntu-latest
+    needs:
+      - build-backend
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Cache test data
+        uses: actions/cache@v4
+        with:
+          path: |
+            testdata/corpus-[0-9]*
+            testdata/oracle-[0-9]*
+            testdata/.installed-release
+          key: testdata-${{ hashFiles('scripts/testdata.json') }}
+
+      - name: Fetch test data
+        run: go run ./scripts/testdatarelease fetch
+
+      - name: Test (race)
+        run: go test -race ./calculator/... ./moddb/... ./mod/... ./data/...
 
   test-backend-wasm:
     name: Test Backend (wasm)
@@ -137,6 +202,18 @@ jobs:
         with:
           go-version-file: go.mod
 
+      - name: Cache test data
+        uses: actions/cache@v4
+        with:
+          path: |
+            testdata/corpus-[0-9]*
+            testdata/oracle-[0-9]*
+            testdata/.installed-release
+          key: testdata-${{ hashFiles('scripts/testdata.json') }}
+
+      - name: Fetch test data
+        run: go run ./scripts/testdatarelease fetch
+
       - uses: actions/setup-node@v4
         with:
           node-version-file: .node-version
@@ -146,6 +223,39 @@ jobs:
         env:
           GOOS: js
           GOARCH: wasm
+
+  corpus-gate:
+    name: Corpus Gate
+    runs-on: ubuntu-latest
+    needs:
+      - build-backend
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Cache test data
+        uses: actions/cache@v4
+        with:
+          path: |
+            testdata/corpus-[0-9]*
+            testdata/oracle-[0-9]*
+            testdata/.installed-release
+          key: testdata-${{ hashFiles('scripts/testdata.json') }}
+
+      - name: Fetch test data
+        run: go run ./scripts/testdatarelease fetch
+
+      - name: Gate
+        run: go test ./calculator/ -run TestCorpus3_29VsOracle -count=1 -v -timeout 60m
+        env:
+          CORPUS: "true"
 
   test-frontend:
     name: Test Frontend

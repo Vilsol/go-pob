@@ -1,4 +1,4 @@
-# Contributing to Path of Building
+# Contributing to go-pob
 
 ## Table of contents
 1. [Reporting bugs](#reporting-bugs)
@@ -13,23 +13,23 @@
 
 ### Before creating an issue:
 * Check that the bug hasn't been reported in an existing issue. View similar issues to the left of the submit button.
-* Make sure you are running the latest version of the program. Click "Check for Update" in the bottom left corner.
+* Make sure you are on the latest version: reload [pob.gg](https://pob.gg) (or [dev.pob.gg](https://dev.pob.gg) for the rolling build).
 * If you've found an issue with offence or defence calculations, make sure you check the breakdown for that calculation in the Calcs tab to see how it is being performed, as this may help you find the cause.
 
 ### When creating an issue:
 * Select the "Bug Report" issue template and fill out all fields.
 * Please provide detailed instructions on how to reproduce the bug, if possible.
-* Provide a build share code for a build that is affected by the bug, if possible.
-  In the "Import/Export Build" tab, click "Generate", then "Share" and add the link to your post.
+* Provide a build code for a build that is affected by the bug, if possible.
+  On the Import / Export page, generate the build code and paste it (or a pobb.in link) into your post.
 
-Build share codes allow us to reproduce bugs much more quickly.
+Build codes allow us to reproduce bugs much more quickly.
 
 ## Requesting features
 Feature requests are always welcome. Note that not all requests will receive an immediate response.
 
 ### Before submitting a feature request:
 * Check that the feature hasn't already been requested. Look at all issues with titles that might be related to the feature.
-* Make sure you are running the latest version of the program, as the feature may already have been added. Click "Check for Update" in the bottom left corner.
+* Make sure you are on the latest version, as the feature may already have been added.
 
 ### When submitting a feature request:
 * Select the "Feature Request" issue template and fill out all fields.
@@ -39,12 +39,13 @@ Feature requests are always welcome. Note that not all requests will receive an 
 ## Contributing code
 
 ### Before submitting a pull request:
-* Familiarise yourself with the code base [here](docs/rundown.md) to get you started.
+* Familiarise yourself with the layout in the [README](README.md#layout).
 * There is a [Discord](https://discordapp.com/) server for **active development** on the fork and members are happy to answer your questions there.
   If you are interested in joining, send a private message to any of **Cinnabarit#1341**, **LocalIdentity#9871**, **Yamin#5575** and we'll send you an invitation.
 
 ### When submitting a pull request:
-* **Pull requests must be created against the `dev` branch**, as all changes to the code are staged there before merging to `main`.
+* **Pull requests must be created against the `dev` branch.** `dev` deploys continuously to [dev.pob.gg](https://dev.pob.gg);
+  `main` holds releases, which deploy to [pob.gg](https://pob.gg).
 * Make sure that the changes have been thoroughly tested!
 
 ## Setting up a development installation
@@ -60,6 +61,9 @@ git clone -b dev https://github.com/Vilsol/go-pob.git
 You only need to install `mise` which is a package manager: https://mise.jdx.dev/getting-started.html
 
 Once you install `mise` you can run `mise install` to install all packages.
+
+Every dev command is a mise task; `mise tasks` lists them. Running them through mise gives everyone,
+CI included, the same pinned toolchain.
 
 After you have downloaded everything, you might need to run `mise x -- corepack enable` to be able to use `pnpm`
 
@@ -77,17 +81,17 @@ If you want to use an IDE instead, [GoLand](https://www.jetbrains.com/go/) (for 
 To build the WASM binary, you can use the following command:
 
 ```shell
-mise x -- task build-go
+mise run build-go
 ```
 
 To re-generate any new typings that have been exposed from Go, you can use this:
 ```shell
-mise x -- task generate
+mise run generate
 ```
 
 If you want those to run continuously while developing, you can use:
 ```shell
-mise x -- task dev-go
+mise run dev-go
 ```
 
 ### Frontend (Svelte)
@@ -96,23 +100,35 @@ The frontend resides in the `./frontend`
 
 You can start the dev server via:
 ```shell
-mise x -- task dev-frontend
+mise run dev-frontend
 ```
 
 You can build it via:
 ```shell
-mise x -- task build-frontend
+mise run build-frontend
 ```
 
 ## Testing
 
-PoB uses the builtin Go testing platform together with [testza](https://github.com/MarvinJWendt/testza) framework.
+go-pob uses Go's built-in testing package together with the [testza](https://github.com/MarvinJWendt/testza) framework.
 
 All tests are run twice, first time in native Go, second time through WASM to ensure that nothing breaks on either deployment.
 
 ### Running Native Tests
 
-Simply executing `mise x -- task test` should run all tests.
+Simply executing `mise run test` should run all tests.
+
+### Running the corpus gate
+
+The accuracy gate grades every build in `testdata/corpus-<version>/` against what Path of Building computes for it
+(`testdata/oracle-<version>/`). Both are release archives in
+[go-pob-testdata](https://github.com/Vilsol/go-pob-testdata), pinned by `scripts/testdata.json`; many unit tests read
+corpus builds too, so fetch them once after cloning (and again whenever the pin changes):
+
+```shell
+mise run testdata
+mise run task -- gate
+```
 
 ### Running WASM Tests (you probably don't need this)
 
@@ -126,21 +142,22 @@ If any of these linters fail, the CI build will not pass.
 
 The backend is linted using [`golangci-lint`](https://golangci-lint.run/usage/install/).
 
-You can execute it via `mise x -- task lint-go` and format with `mise x -- task format-go`.
+You can execute it via `mise run lint-go` and format with `mise run format-go`.
 
 ### Frontend (Svelte)
 
 The frontend is linted using `prettier` and `eslint`.
 
-You can execute those by using `mise x -- task lint-frontend` and format with `mise x -- task format-frontend`.
+You can execute those by using `mise run lint-frontend` and format with `mise run format-frontend`.
 
 ## Setting up a PoB reference environment
 
-You want to clone the `dev` branch of this repo https://github.com/Vilsol/PathOfBuilding (important, as it's pinned to specific commit)
+Regenerating the data tables or the oracle needs a Path of Building checkout of the pinned version (upstream
+v2.67.2, recorded in `scripts/pob_pin.json`), at `~/PathOfBuilding` or wherever `POB_DIR` points.
+`mise run task -- pob-pin` verifies that the checkout matches the pin.
 
-After that, simply running `devbox run install` will setup emmylua and then `devbox run launch` will run PoB with a debugger.
-
-Then add the following config in your local clone under `.vscode/launch.js` and run the debugger via VSCode UI:
+To debug PoB itself, run it under [EmmyLua](https://github.com/EmmyLua) and add the following to
+`.vscode/launch.json` in your PoB checkout, then start the debugger from the VS Code UI:
 ```json
 {
     "version": "0.2.0",

@@ -1,0 +1,1001 @@
+[{
+    "extra":"",
+    "line":"+50 to maximum Life",
+    "mods":[{
+        "name":"Life",
+        "tags":[],
+        "type":"BASE",
+        "value":"50"
+      }],
+    "parsed":true
+  },{
+    "extra":"",
+    "line":"^7+50 to maximum ^xE05030Life^7",
+    "mods":[{
+        "name":"Life",
+        "tags":[],
+        "type":"BASE",
+        "value":"50"
+      }],
+    "parsed":true
+  },{
+    "extra":"",
+    "line":"   40% increased Spell Damage   ",
+    "mods":[{
+        "name":"Damage",
+        "tags":[],
+        "type":"INC",
+        "value":"40"
+      }],
+    "parsed":true
+  },{
+    "extra":" ",
+    "line":"",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"# a comment line ",
+    "line":"# a comment line",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"this line is garbage ",
+    "line":"this line is garbage",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"",
+    "line":"Adds 10 to 20 Fire Damage to Attacks",
+    "mods":[{
+        "name":"FireMin",
+        "tags":[],
+        "type":"BASE",
+        "value":"10"
+      },{
+        "name":"FireMax",
+        "tags":[],
+        "type":"BASE",
+        "value":"20"
+      }],
+    "parsed":true
+  },{
+    "extra":"",
+    "line":"50% increased Attack Speed while holding a Shield",
+    "mods":[{
+        "name":"Speed",
+        "tags":["Condition"],
+        "type":"INC",
+        "value":"50"
+      }],
+    "parsed":true
+  },{
+    "extra":"",
+    "line":"You have Onslaught",
+    "mods":[{
+        "name":"Condition:Onslaught",
+        "tags":[],
+        "type":"FLAG",
+        "value":"true"
+      }],
+    "parsed":true
+  },{
+    "extra":"",
+    "line":"+2 to Level of all Minion Skill Gems",
+    "mods":[{
+        "name":"GemProperty",
+        "tags":[],
+        "type":"LIST",
+        "value":""
+      }],
+    "parsed":true
+  },{
+    "extra":"***************************************** ",
+    "line":"*****************************************",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"",
+    "line":"You can apply an additional Curse",
+    "mods":[{
+        "name":"EnemyCurseLimit",
+        "tags":[],
+        "type":"BASE",
+        "value":"1"
+      }],
+    "parsed":true
+  },{
+    "extra":"",
+    "line":"you can apply an additional curse",
+    "mods":[{
+        "name":"EnemyCurseLimit",
+        "tags":[],
+        "type":"BASE",
+        "value":"1"
+      }],
+    "parsed":true
+  },{
+    "extra":"",
+    "line":"Culling Strike",
+    "mods":[{
+        "name":"CullPercent",
+        "tags":["GlobalEffect"],
+        "type":"MAX",
+        "value":"10"
+      }],
+    "parsed":true
+  },{
+    "extra":"",
+    "line":"+200% to all resistances",
+    "mods":[{
+        "name":"ElementalResist",
+        "tags":[],
+        "type":"BASE",
+        "value":"200"
+      },{
+        "name":"ChaosResist",
+        "tags":[],
+        "type":"BASE",
+        "value":"200"
+      }],
+    "parsed":true
+  },{
+    "extra":"",
+    "line":"Corrupting fever deals 22% more damage",
+    "mods":[{
+        "name":"Damage",
+        "tags":["SkillName"],
+        "type":"MORE",
+        "value":"22"
+      }],
+    "parsed":true
+  },{
+    "extra":"",
+    "line":"Culling strike",
+    "mods":[{
+        "name":"CullPercent",
+        "tags":["GlobalEffect"],
+        "type":"MAX",
+        "value":"10"
+      }],
+    "parsed":true
+  },{
+    "extra":"",
+    "line":"Exsanguinate deals 24% more damage over time",
+    "mods":[{
+        "name":"Damage",
+        "tags":["SkillName"],
+        "type":"MORE",
+        "value":"24"
+      }],
+    "parsed":true
+  },{
+    "extra":"",
+    "line":"Reap deals 22% more damage over time",
+    "mods":[{
+        "name":"Damage",
+        "tags":["SkillName"],
+        "type":"MORE",
+        "value":"22"
+      }],
+    "parsed":true
+  },{
+    "extra":"",
+    "line":"+200% to Elemental Resistances",
+    "mods":[{
+        "name":"ElementalResist",
+        "tags":[],
+        "type":"BASE",
+        "value":"200"
+      }],
+    "parsed":true
+  },{
+    "extra":"",
+    "line":"Curse Enemies with Temporal Chains on Hit",
+    "mods":[{
+        "name":"ExtraSkill",
+        "tags":[],
+        "type":"LIST",
+        "value":""
+      }],
+    "parsed":true
+  },{
+    "extra":"Minion taunt ",
+    "line":"Minion taunt",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"",
+    "line":"nearby enemies deal 10% less damage",
+    "mods":[{
+        "name":"EnemyModifier",
+        "tags":[],
+        "type":"LIST",
+        "value":""
+      }],
+    "parsed":true
+  },{
+    "extra":"",
+    "line":"Nearby allies deal 50% increased damage",
+    "mods":[{
+        "name":"ExtraAura",
+        "tags":[],
+        "type":"LIST",
+        "value":""
+      }],
+    "parsed":true
+  },{
+    "extra":"-Minion Unholy might ",
+    "line":"-Minion Unholy might",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"",
+    "line":"25% Chance to Inflict withered For 2 seconds on hit",
+    "mods":[{
+        "name":"Condition:CanWither",
+        "tags":[],
+        "type":"FLAG",
+        "value":"true"
+      }],
+    "parsed":true
+  },{
+    "extra":"",
+    "line":"40% more damage",
+    "mods":[{
+        "name":"Damage",
+        "tags":[],
+        "type":"MORE",
+        "value":"40"
+      }],
+    "parsed":true
+  },{
+    "extra":"=== AG item mods === ",
+    "line":"=== AG item mods ===",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"life regen ",
+    "line":"Bone offering life regen",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"onslaught ",
+    "line":"Minions have onslaught",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"",
+    "line":"Nearby Allies have +50% to Critical Strike Multiplier",
+    "mods":[{
+        "name":"ExtraAura",
+        "tags":[],
+        "type":"LIST",
+        "value":""
+      }],
+    "parsed":true
+  },{
+    "extra":"Perfect forest warrior ",
+    "line":"Perfect forest warrior",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"=== CAP RES & DEX WITH GEAR === ",
+    "line":"^1=== CAP RES & DEX WITH GEAR ===",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"",
+    "line":"regenerate 2% of life per second",
+    "mods":[{
+        "name":"LifeRegenPercent",
+        "tags":[],
+        "type":"BASE",
+        "value":"2"
+      }],
+    "parsed":true
+  },{
+    "extra":"",
+    "line":"Minions deal 50% reduced damage",
+    "mods":[{
+        "name":"MinionModifier",
+        "tags":[],
+        "type":"LIST",
+        "value":""
+      }],
+    "parsed":true
+  },{
+    "extra":"",
+    "line":"Minions have 15% reduced attack speed",
+    "mods":[{
+        "name":"MinionModifier",
+        "tags":[],
+        "type":"LIST",
+        "value":""
+      }],
+    "parsed":true
+  },{
+    "extra":"Reducing Hulking Miscreations overinflated damage ",
+    "line":"Reducing Hulking Miscreations overinflated damage",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"",
+    "line":"You can apply an additional curse",
+    "mods":[{
+        "name":"EnemyCurseLimit",
+        "tags":[],
+        "type":"BASE",
+        "value":"1"
+      }],
+    "parsed":true
+  },{
+    "extra":"",
+    "line":"+50% to Critical Strike Multiplier",
+    "mods":[{
+        "name":"CritMultiplier",
+        "tags":[],
+        "type":"BASE",
+        "value":"50"
+      }],
+    "parsed":true
+  },{
+    "extra":"///fill out suffixes with resist ",
+    "line":"///fill out suffixes with resist",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"",
+    "line":"18% increased effect of your curses",
+    "mods":[{
+        "name":"CurseEffect",
+        "tags":[],
+        "type":"INC",
+        "value":"18"
+      }],
+    "parsed":true
+  },{
+    "extra":"",
+    "line":"25% more damage",
+    "mods":[{
+        "name":"Damage",
+        "tags":[],
+        "type":"MORE",
+        "value":"25"
+      }],
+    "parsed":true
+  },{
+    "extra":"",
+    "line":"28% increased effect of withered",
+    "mods":[{
+        "name":"WitherEffect",
+        "tags":[],
+        "type":"INC",
+        "value":"28"
+      }],
+    "parsed":true
+  },{
+    "extra":"CHAOS DOT BUFF ",
+    "line":"CHAOS DOT BUFF",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"",
+    "line":"Nearby allies deal 18% increased damage",
+    "mods":[{
+        "name":"ExtraAura",
+        "tags":[],
+        "type":"LIST",
+        "value":""
+      }],
+    "parsed":true
+  },{
+    "extra":"",
+    "line":"PACT OF GHORR",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"",
+    "line":"You and Nearby Allies have 47 to 61 added Chaos Damage",
+    "mods":[{
+        "name":"ExtraAura",
+        "tags":[],
+        "type":"LIST",
+        "value":""
+      },{
+        "name":"ExtraAura",
+        "tags":[],
+        "type":"LIST",
+        "value":""
+      }],
+    "parsed":true
+  },{
+    "extra":"",
+    "line":"You and nearby allies gain 50% increased Damage",
+    "mods":[{
+        "name":"ExtraAura",
+        "tags":[],
+        "type":"LIST",
+        "value":""
+      }],
+    "parsed":true
+  },{
+    "extra":"",
+    "line":"+10 Fortification",
+    "mods":[{
+        "name":"MinimumFortification",
+        "tags":[],
+        "type":"BASE",
+        "value":"10"
+      }],
+    "parsed":true
+  },{
+    "extra":"//Take Care Of Resistances ",
+    "line":"//Take Care Of Resistances",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"//Take Care Of Resistances and Attributes ",
+    "line":"//Take Care Of Resistances and Attributes",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"",
+    "line":"50% increased damage",
+    "mods":[{
+        "name":"Damage",
+        "tags":[],
+        "type":"INC",
+        "value":"50"
+      }],
+    "parsed":true
+  },{
+    "extra":"curse ",
+    "line":"Enfeeble curse",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"",
+    "line":"Nearby Enemies have Malediction",
+    "mods":[{
+        "name":"EnemyModifier",
+        "tags":[],
+        "type":"LIST",
+        "value":""
+      }],
+    "parsed":true
+  },{
+    "extra":"",
+    "line":"Nearby allies gain 18% increased Damage",
+    "mods":[{
+        "name":"ExtraAura",
+        "tags":[],
+        "type":"LIST",
+        "value":""
+      }],
+    "parsed":true
+  },{
+    "extra":"",
+    "line":"nearby enemies deal 9% less damage",
+    "mods":[{
+        "name":"EnemyModifier",
+        "tags":[],
+        "type":"LIST",
+        "value":""
+      }],
+    "parsed":true
+  },{
+    "extra":"",
+    "line":"12% Less Damage",
+    "mods":[{
+        "name":"Damage",
+        "tags":[],
+        "type":"MORE",
+        "value":"-12"
+      }],
+    "parsed":true
+  },{
+    "extra":"",
+    "line":"12% increased maximum life",
+    "mods":[{
+        "name":"Life",
+        "tags":[],
+        "type":"INC",
+        "value":"12"
+      }],
+    "parsed":true
+  },{
+    "extra":"",
+    "line":"24% more block chance",
+    "mods":[{
+        "name":"BlockChance",
+        "tags":[],
+        "type":"MORE",
+        "value":"24"
+      }],
+    "parsed":true
+  },{
+    "extra":"",
+    "line":"24% more spell block chance",
+    "mods":[{
+        "name":"SpellBlockChance",
+        "tags":[],
+        "type":"MORE",
+        "value":"24"
+      }],
+    "parsed":true
+  },{
+    "extra":"",
+    "line":"40% increased global defences",
+    "mods":[{
+        "name":"Defences",
+        "tags":["Global"],
+        "type":"INC",
+        "value":"40"
+      }],
+    "parsed":true
+  },{
+    "extra":"===25% inc damage taken from pact=== ",
+    "line":"===25% inc damage taken from pact===",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"CHARGED STAFF ",
+    "line":"CHARGED STAFF",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"Gloam ring ",
+    "line":"Gloam ring",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"Kingmaker ",
+    "line":"Kingmaker",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"",
+    "line":"Minions take 15% reduced Damage",
+    "mods":[{
+        "name":"MinionModifier",
+        "tags":[],
+        "type":"LIST",
+        "value":""
+      }],
+    "parsed":true
+  },{
+    "extra":"",
+    "line":"Nearby Allies have +10 Fortification",
+    "mods":[{
+        "name":"ExtraAura",
+        "tags":[],
+        "type":"LIST",
+        "value":""
+      }],
+    "parsed":true
+  },{
+    "extra":"",
+    "line":"Nearby Enemies cannot deal Critical Strikes",
+    "mods":[{
+        "name":"EnemyModifier",
+        "tags":[],
+        "type":"LIST",
+        "value":""
+      },{
+        "name":"EnemyModifier",
+        "tags":[],
+        "type":"LIST",
+        "value":""
+      }],
+    "parsed":true
+  },{
+    "extra":"Crown of the Tyrant ",
+    "line":"Crown of the Tyrant",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"Medium budget windscream ",
+    "line":"Medium budget windscream",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"",
+    "line":"Minions have 16% increased action speed",
+    "mods":[{
+        "name":"MinionModifier",
+        "tags":[],
+        "type":"LIST",
+        "value":""
+      }],
+    "parsed":true
+  },{
+    "extra":"",
+    "line":"Nearby Enemies are Scorched",
+    "mods":[{
+        "name":"EnemyModifier",
+        "tags":[],
+        "type":"LIST",
+        "value":""
+      },{
+        "name":"ScorchBase",
+        "tags":[],
+        "type":"BASE",
+        "value":"10"
+      }],
+    "parsed":true
+  },{
+    "extra":"",
+    "line":"Nearby Enemies have 18% increased Effect of Curses on them",
+    "mods":[{
+        "name":"EnemyModifier",
+        "tags":[],
+        "type":"LIST",
+        "value":""
+      }],
+    "parsed":true
+  },{
+    "extra":"",
+    "line":"Nearby allies have culling strike",
+    "mods":[{
+        "name":"ExtraAura",
+        "tags":[],
+        "type":"LIST",
+        "value":""
+      }],
+    "parsed":true
+  },{
+    "extra":"Spectral Leader (Congregation Support) ",
+    "line":"Spectral Leader (Congregation Support)",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"",
+    "line":"culling strike",
+    "mods":[{
+        "name":"CullPercent",
+        "tags":["GlobalEffect"],
+        "type":"MAX",
+        "value":"10"
+      }],
+    "parsed":true
+  },{
+    "extra":"\"Minions have 25% chance to get Unholy Migght after kill\": ",
+    "line":"\"Minions have 25% chance to get Unholy Migght after kill\":",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"(use Zealotry Spectre Perfect Pain Artist ",
+    "line":"(use Zealotry Spectre Perfect Pain Artist",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"+ (or Gloves Asenath Gentle Touchs: Punishment + Debilitated / Vixn`s)  + ",
+    "line":"+ (or Gloves Asenath Gentle Touchs: Punishment + Debilitated / Vixn`s)  +",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"+ 10% Shocked Ground ",
+    "line":"+ 10% Shocked Ground",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"+ 20% increased curse-effects ",
+    "line":"+ 20% increased curse-effects",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"+ AG Gloves-implicit + ",
+    "line":"+ AG Gloves-implicit +",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"+ After been hit: + ",
+    "line":"+ After been hit: +",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"+ All 4 hexes lvl 4 + ignoring curse limit + ",
+    "line":"+ All 4 hexes lvl 4 + ignoring curse limit +",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"++ Additional gemquality 30% enhanced ",
+    "line":"++ Additional gemquality 30% enhanced",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"++ All auras are low level around lvl 10 - lvl 15 granted by spectres (depending on spectre-lvl) ++ ",
+    "line":"++ All auras are low level around lvl 10 - lvl 15 granted by spectres (depending on spectre-lvl) ++",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"+++  AG Weapon Kingmaker  +++ ",
+    "line":"+++  AG Weapon Kingmaker  +++",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"+++ AG bodyarmour Garb of Ephemeral +++ ",
+    "line":"+++ AG bodyarmour Garb of Ephemeral +++",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"+++ AG's helmet Ylfeban`s Trickery ignoring curse-limit: +++ ",
+    "line":"+++ AG's helmet Ylfeban`s Trickery ignoring curse-limit: +++",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"+++ Average effect of Punishment +++ ",
+    "line":"+++ Average effect of Punishment +++",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"+++ Support-spectre Perfect Judgemental Spirit Discipline (Optional) +++ ",
+    "line":"+++ Support-spectre Perfect Judgemental Spirit Discipline (Optional) +++",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"++++ Carnage Chieftains / Stygian Silverbacks / Aboriginal Chieftains: ",
+    "line":"++++ Carnage Chieftains / Stygian Silverbacks / Aboriginal Chieftains:",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"+++++  AG helmet Ylfeban`s Trickery +++++ ",
+    "line":"+++++  AG helmet Ylfeban`s Trickery +++++",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"+++++  Chaos Golem of the Maelstrom  +++++ ",
+    "line":"+++++  Chaos Golem of the Maelstrom  +++++",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"+++++  Runegraft of Fortress  +++++ ",
+    "line":"+++++  Runegraft of Fortress  +++++",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"+++++ Animate Guardian +++++ ",
+    "line":"+++++ Animate Guardian +++++",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"+++++ Lycia Bloodline Bitter Heresity +++++ ",
+    "line":"+++++ Lycia Bloodline Bitter Heresity +++++",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"+++++ Support-spectre Perfect Guardian Turtle Spectre Determination +++++ ",
+    "line":"+++++ Support-spectre Perfect Guardian Turtle Spectre Determination +++++",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"+++++ Support-spectre Perfect Pain Artist Zealotry +++++ ",
+    "line":"+++++ Support-spectre Perfect Pain Artist Zealotry +++++",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"+++++ Support-spectres +++++ ",
+    "line":"+++++ Support-spectres +++++",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"++++++ The Golden Rule: Reflected Poison +++++ ",
+    "line":"++++++ The Golden Rule: Reflected Poison +++++",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":" Quality of all skills ",
+    "line":"+10% to Quality of all skills",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"",
+    "line":"+5% to  Physical Damage Reduction",
+    "mods":[{
+        "name":"PhysicalDamageReduction",
+        "tags":[],
+        "type":"BASE",
+        "value":"5"
+      }],
+    "parsed":true
+  },{
+    "extra":"",
+    "line":"+50% to Chaos Resistance",
+    "mods":[{
+        "name":"ChaosResist",
+        "tags":[],
+        "type":"BASE",
+        "value":"50"
+      }],
+    "parsed":true
+  },{
+    "extra":"--- CoC / Slinger Force Trigger Rate Fix ----- ",
+    "line":"--- CoC / Slinger Force Trigger Rate Fix -----",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"--- Remove Lancing Steel's DPS From Calc ---- ",
+    "line":"--- Remove Lancing Steel's DPS From Calc ----",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"////return proj/// ",
+    "line":"////return proj///",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"% to create Consecrated Ground  against unique and rare enemies for Lycia Bloodline Bitter Heresy ",
+    "line":"10% to create Consecrated Ground on hit against unique and rare enemies for Lycia Bloodline Bitter Heresy",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"",
+    "line":"11% increased effect of Withered",
+    "mods":[{
+        "name":"WitherEffect",
+        "tags":[],
+        "type":"INC",
+        "value":"11"
+      }],
+    "parsed":true
+  },{
+    "extra":"",
+    "line":"12% increased maximum mana",
+    "mods":[{
+        "name":"Mana",
+        "tags":[],
+        "type":"INC",
+        "value":"12"
+      }],
+    "parsed":true
+  },{
+    "extra":"",
+    "line":"23% increased effect of Withered",
+    "mods":[{
+        "name":"WitherEffect",
+        "tags":[],
+        "type":"INC",
+        "value":"23"
+      }],
+    "parsed":true
+  },{
+    "extra":"",
+    "line":"30% increased effect of Withered",
+    "mods":[{
+        "name":"WitherEffect",
+        "tags":[],
+        "type":"INC",
+        "value":"30"
+      }],
+    "parsed":true
+  },{
+    "extra":"",
+    "line":"35% more projectile damage",
+    "mods":[{
+        "name":"Damage",
+        "tags":[],
+        "type":"MORE",
+        "value":"35"
+      }],
+    "parsed":true
+  },{
+    "extra":"AsTrickster, Guardian, Pathfinder, Scion, Reli, Champ, Jugg: ",
+    "line":"AsTrickster, Guardian, Pathfinder, Scion, Reli, Champ, Jugg:",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"",
+    "line":"Curse Enemies with Despair on Hit",
+    "mods":[{
+        "name":"ExtraSkill",
+        "tags":[],
+        "type":"LIST",
+        "value":""
+      }],
+    "parsed":true
+  },{
+    "extra":"",
+    "line":"Curse Enemies with Enfeeble on Hit",
+    "mods":[{
+        "name":"ExtraSkill",
+        "tags":[],
+        "type":"LIST",
+        "value":""
+      }],
+    "parsed":true
+  },{
+    "extra":"",
+    "line":"Curse Enemies with Punishment on Hit",
+    "mods":[{
+        "name":"ExtraSkill",
+        "tags":[],
+        "type":"LIST",
+        "value":""
+      }],
+    "parsed":true
+  },{
+    "extra":"Enemies are Debilitated ",
+    "line":"Enemies are Debilitated",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"Enemies are intimidated ",
+    "line":"Enemies are intimidated",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"Enemies are on profane ground ",
+    "line":"Enemies are on profane ground",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"",
+    "line":"Fortify",
+    "mods":[{
+        "name":"Condition:Fortified",
+        "tags":[],
+        "type":"FLAG",
+        "value":"true"
+      }],
+    "parsed":true
+  },{
+    "extra":"In maps and other high density Unholy Might has 90-99% uptime ",
+    "line":"In maps and other high density Unholy Might has 90-99% uptime",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"Chaotic might ",
+    "line":"Minions have Chaotic might",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"Unholy Might: Granted as Necro in ascendancy \"Unnatural Strength\" ",
+    "line":"Minions have Unholy Might: Granted as Necro in ascendancy \"Unnatural Strength\"",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":" % increased  ",
+    "line":"Nearby Enemies take 20 % increased damage",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"chargesXXXDisabled ",
+    "line":"Nearby allies gain 3 frenzy chargesXXXDisabled",
+    "mods":[],
+    "parsed":false
+  },{
+    "extra":"",
+    "line":"Nearby allies have +30% to Critical Strike Multiplier",
+    "mods":[{
+        "name":"ExtraAura",
+        "tags":[],
+        "type":"LIST",
+        "value":""
+      }],
+    "parsed":true
+  },{
+    "extra":"",
+    "line":"Nearby allies have +50% to Critical Strike Multiplier",
+    "mods":[{
+        "name":"ExtraAura",
+        "tags":[],
+        "type":"LIST",
+        "value":""
+      }],
+    "parsed":true
+  },{
+    "extra":"",
+    "line":"Nearby enemies take 20% increased damage",
+    "mods":[{
+        "name":"EnemyModifier",
+        "tags":[],
+        "type":"LIST",
+        "value":""
+      }],
+    "parsed":true
+  },{
+    "extra":"Socketed into blue socket: ",
+    "line":"Socketed into blue socket:",
+    "mods":[],
+    "parsed":false
+  }]

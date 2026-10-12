@@ -1,0 +1,88 @@
+@layer components {
+  .btn {
+    @apply box-border inline-flex h-8 items-center justify-center gap-1.5 rounded border border-line-strong bg-surface-2 px-3.5 font-sans text-13 font-medium whitespace-nowrap text-text no-underline;
+  }
+  .btn:disabled:not(.btn-quiet) {
+    @apply border-line bg-surface-1 text-text-4;
+  }
+  .btn[aria-current='page'] {
+    @apply bg-surface-3;
+  }
+  .btn-xs {
+    @apply h-6.5 px-2 text-12;
+  }
+  .btn-sm {
+    @apply h-7.5 px-2.5 text-12;
+  }
+  .btn-md {
+    @apply h-8.5;
+  }
+  .btn-lg {
+    @apply h-9 px-4 text-14;
+  }
+  .btn-primary {
+    @apply border-0 bg-accent font-semibold text-accent-ink;
+  }
+  .btn-ghost {
+    @apply border-0 bg-transparent text-text-2;
+  }
+  .btn-danger {
+    @apply border-warn-line bg-transparent text-worse;
+  }
+  .btn-quiet:disabled {
+    @apply opacity-60;
+  }
+  .btn-quiet[data-dim='true'] {
+    @apply opacity-45;
+  }
+  .btn-icon {
+    @apply size-8 p-0;
+  }
+  .btn-icon.btn-md {
+    @apply size-8.5;
+  }
+  .btn-icon.btn-lg {
+    @apply size-9;
+  }
+  .btn-icon.btn-xs {
+    @apply size-7 bg-transparent font-normal text-text-2;
+  }
+  .btn-close {
+    @apply size-7 border-0 bg-transparent p-0 text-18 leading-none text-text-2;
+  }
+  .btn-2xs {
+    @apply h-6 px-2 text-11 font-normal;
+  }
+  .btn-dashed {
+    @apply border-dashed border-accent bg-transparent text-accent;
+  }
+  .btn-danger:disabled:not(.btn-quiet) {
+    @apply border-warn-line bg-transparent text-worse opacity-40;
+  }
+  .btn-bare {
+    @apply border-0 bg-transparent p-0 text-text-3;
+  }
+  .btn:hover:not(:disabled) {
+    @apply border-line-bright bg-hover;
+  }
+  .btn-primary:hover:not(:disabled) {
+    @apply bg-accent-hi;
+  }
+  .btn-ghost:hover:not(:disabled),
+  .btn-icon.btn-xs:hover:not(:disabled),
+  .btn-close:hover:not(:disabled) {
+    @apply bg-hover text-text;
+  }
+  .btn-danger:hover:not(:disabled) {
+    @apply border-warn-line bg-warn-bg;
+  }
+  .btn-dashed:hover:not(:disabled) {
+    @apply border-accent-hi bg-hover text-accent-hi;
+  }
+  .btn-bare:hover:not(:disabled) {
+    @apply text-text;
+  }
+  .head-btn {
+    @apply border-0 bg-transparent p-0 font-sans text-[length:inherit] font-medium tracking-[inherit] text-inherit hover:text-text;
+  }
+}

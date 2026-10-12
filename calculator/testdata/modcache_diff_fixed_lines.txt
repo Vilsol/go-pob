@@ -1,0 +1,81 @@
+All Damage inflicts Poison while affected by Glorious Madness
+Hits with this Weapon gain 100% of Physical Damage as Extra Cold or Lightning Damage
+Hits with this Weapon gain 88% of Physical Damage as Extra Cold or Lightning Damage
+Increases and Reductions to Minion Damage also affect you
+Your Spells are disabled
+All Hits with your next Non-Channelling Attack within 4 seconds of taking a Critical Strike will be Critical Strikes
+Attacks you use yourself have 50% more Attack Speed
+Attacks you use yourself Repeat an additional time
+Culling Strike against Frozen Enemies
+Enemies Cursed by you are Hindered if 25% of Curse Duration expired
+Every 4 seconds, Regenerate 35% of Life over one second if 2 Hunter Items are Equipped
+Every 4 seconds, Regenerate Energy Shield equal to 1% of Evasion Rating over 1 second
+Every 4 seconds, Regenerate Life equal to 1% of Armour and Evasion Rating over 1 second
+Gain additional Elemental Damage Reduction equal to half your Chaos Resistance
+If Amethyst Flask Charges are consumed, 37% of Physical Damage as Extra Chaos Damage
+If Diamond Flask Charges are consumed, 250% increased Critical Strike Chance
+Mark Skills Cost no Mana
+Minion Life is increased by their Overcapped Fire Resistance
+Minions gain Added Physical Damage equal to 10% of Maximum Energy Shield on your Equipped Helmet
+Nearby Enemies are Covered in Ash if you haven't moved in the past 2 seconds
+Prevent +15% of Suppressed Spell Damage while on Full Energy Shield
+Prevent +6% of Suppressed Spell Damage while on Full Energy Shield
+Recover 1% of Life per Withered Debuff on each Enemy you Kill
+Skeletons gain Added Chaos Damage equal to 25% of Maximum Energy Shield on your Equipped Shield
+Skeletons gain Added Chaos Damage equal to 30% of Maximum Energy Shield on your Equipped Shield
+Stuns from Critical Strikes have 100% increased Duration
+Vaal Attack Skills you Use yourself Cost Rage instead of requiring Souls
+Vaal Skills can store +1 Use
+You are Cursed with Vulnerability
+You can inflict an additional Ignite on each Enemy
+You have Shepherd of Souls if at least 4 Corrupted Items are Equipped
+Your Action Speed is at least 90% of base value
+Your Curses have 20% increased Effect if 50% of Curse Duration expired
+Your Curses have 25% increased Effect if 50% of Curse Duration expired
++50% to Critical Strike Multiplier against Stunned Enemies
+30% more Damage with Hits and Ailments against Enemies that are on Low Life while you are wielding an Axe
+3% chance to Recover all Life when you Kill an Enemy
+80% reduced Reflected Damage taken during Effect
+Deal 1% more Damage with Hits and Ailments to Rare and Unique Enemies for each second they've ever been in your Presence, up to a maximum of 100%
+Deal 1% more Damage with Hits and Ailments to Rare and Unique Enemies for every 2 seconds they've ever been in your Presence, up to a maximum of 50%
+Gain Unholy Might on Block for 3 seconds
+If Bismuth Flask Charges are consumed, Penetrate 25% Elemental Resistances
+Minions deal 20% more Damage while they are on Low Life
+Skills used by Totems deal 10% more Damage per maximum number of Summoned Totems
+Skills used by Totems have 10% more Area of Effect per maximum number of Summoned Totems
+Totems have 5% more Life per maximum number of Summoned Totems
+100% more Damage with Arrow Hits at Close Range
+30% more Damage with Arrow Hits at Close Range while you have Iron Reflexes
+40% increased Effect of Impales inflicted with Spells
+50% increased Effect of Impales inflicted with Spells
+50% more Damage with Arrow Hits at Close Range
+Arrows gain Critical Strike Chance as they travel farther, up to 100% increased Critical Strike Chance
+Arrows Pierce an additional Target
+Gain 18 Life per Enemy Hit with Spells
+Gain 20 Life per Enemy Hit with Spells
+Gain 3 Life per Enemy Hit with Spells
+Gain 8 Life per Enemy Hit with Spells
+Hits with this Weapon Shock Enemies as though dealing 175% more Damage
+Hits with this Weapon Shock Enemies as though dealing 200% more Damage
+Hits with this Weapon Shock Enemies as though dealing 300% more Damage
+Lose 13 Life per Enemy Hit with Spells
+Lose 15 Life per Enemy Hit with Spells
+Projectiles deal 20% increased Damage with Hits and Ailments for each time they have Chained
+Minions deal 80% increased Damage if you have Warcried Recently
+Your Hits permanently Intimidate Enemies that are on Full Life
+50% more Accuracy Rating against Marked Enemy
+Shepherd of Souls
++10% chance to Suppress Spell Damage for each Dagger you're Wielding
+20% increased Armour per second you've been stationary, up to a maximum of 100%
+Attacks with this Weapon have Added Fire Damage equal to 10% of Player's Maximum Life
+Attacks with this Weapon have Added Fire Damage equal to 12% of Player's Maximum Life
+Attacks with this Weapon have Added Fire Damage equal to 8% of Player's Maximum Life
+Attacks with this Weapon have Added Maximum Lightning Damage equal to 13% of Player's Maximum Energy Shield
+Attacks with this Weapon have Added Maximum Lightning Damage equal to 15% of Player's Maximum Energy Shield
+Attacks with this Weapon have Added Maximum Lightning Damage equal to 20% of Player's Maximum Energy Shield
+Cannot take Reflected Elemental Damage
+Cannot take Reflected Physical Damage
+Projectiles gain Damage as they travel farther, dealing up to 30% more Damage with Hits and Ailments
+Projectiles gain Damage as they travel farther, dealing up to 60% increased Damage with Hits to targets
+Unaffected by Curses
+You gain Divinity for 10 seconds on reaching maximum Divine Charges

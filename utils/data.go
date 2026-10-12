@@ -126,10 +126,6 @@ func Or(val *mod.ModValueMulti, or float64) float64 {
 		return or
 	}
 
-	if val.Float() == 0 {
-		return or
-	}
-
 	return val.Float()
 }
 

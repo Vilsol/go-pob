@@ -1,7 +1,8 @@
 export const logError = (err: Error) => {
   console.error(err);
-  // TODO Push to some viewable error log via UI
 };
+
+export const epochNow = () => performance.timeOrigin + performance.now();
 
 export class Emitter<T> {
   receiver: ((value: T) => void) | undefined;

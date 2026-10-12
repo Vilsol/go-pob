@@ -7,9 +7,10 @@ node_modules
 .env.*
 !.env.example
 
-# Ignore files for PNPM, NPM and YARN
 pnpm-lock.yaml
 package-lock.json
 src/lib/types/index.d.ts
 src/lib/types/index.js
-static/tinymce/
+src/lib/display/config_options_generated.ts
+
+src/lib/design/fixtures/*.json

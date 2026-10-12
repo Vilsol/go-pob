@@ -1,9 +1,11 @@
 package exposition
 
 import (
-	"github.com/Vilsol/crystalline"
-
 	"runtime/debug"
+
+	"github.com/Vilsol/crystalline/bind"
+	"github.com/Vilsol/go-pob-data/poe"
+	"github.com/tinylib/msgp/msgp"
 
 	"github.com/Vilsol/go-pob/builds"
 	"github.com/Vilsol/go-pob/calculator"
@@ -13,46 +15,103 @@ import (
 	"github.com/Vilsol/go-pob/storage"
 )
 
-func Expose() *crystalline.Exposer {
-	e := crystalline.NewExposer("go-pob")
+//go:generate go tool crystalline -app go-pob -dir ../.. -js-out ../../frontend/src/lib/types/index.js -ts-out ../../frontend/src/lib/types/index.d.ts -banner "/* eslint-disable */" ./...
 
-	crystalline.MarkPromise("calculator.Calculator", "BuildOutput")
+func Exports(r bind.Registry) {
+	r.Type(calculator.Calculator{}, bind.AsPromise("BuildOutput"))
+	r.Type(calculator.Breakdown{}, bind.PlainResult("GetData"))
 
-	crystalline.MarkIgnored("msgp.Reader", "ReadComplex64")
-	crystalline.MarkIgnored("msgp.Reader", "ReadComplex128")
+	r.Type(storage.DirEntry{}, bind.Plain())
+	r.Type(SkillGem{}, bind.Plain())
+	r.Type(GemPart{}, bind.Plain())
+	r.Type(ElementWrapper{}, bind.Plain())
+	r.Type(pob.Gem{}, bind.Plain())
+	r.Type(pob.Input{}, bind.Plain())
+	r.Type(StatOutputs{}, bind.Plain())
+	r.Type(MiscCalculator{}, bind.AsPromise("CalcNodes", "CompareItem", "CalcUnequip", "CalcToggleFlask", "AddItem", "ReplaceItem"))
+	r.Type(calculator.ConfigRelevance{}, bind.Plain())
+	r.Type(ModLine{}, bind.Plain())
 
-	crystalline.MarkIgnored("msgp.Writer", "WriteComplex64")
-	crystalline.MarkIgnored("msgp.Writer", "WriteComplex128")
+	r.Type(msgp.Reader{}, bind.Without("ReadComplex64", "ReadComplex128"))
+	r.Type(msgp.Writer{}, bind.Without("WriteComplex64", "WriteComplex128"))
 
-	e.ExposeFuncOrPanic(pob.DecodeDecompress)
-	e.ExposeFuncOrPanic(pob.CompressEncode)
+	r.Type(pob.Skills{}, bind.Without("UnmarshalXML"))
 
-	e.ExposeFuncOrPanic(builds.ParseBuild)
-	e.ExposeFuncOrPanic(builds.ParseBuildStr)
-	e.ExposeFuncOrPanic(builds.SerializeBuild)
-	e.ExposeFuncOrPanic(builds.EmptyBuild)
+	r.Type(poe.SkillGem{}, bind.Without("GetGemVariants", "GetLevelProgression"))
+	r.Type(poe.BaseItemType{}, bind.Without("GetEnchantMods"))
+	r.Type(poe.ActiveSkill{}, bind.Without("GetSkillSpecificStats", "GetSecondarySkillSpecificStats"))
 
-	e.ExposeFuncOrPanic(calculator.NewCalculator)
-	e.ExposeFuncOrPanicPromise(raw.InitializeAll)
-	e.ExposeFuncOrPanic(config.InitLogging)
+	r.Type(pob.Build{}, bind.Plain())
+	r.Type(pob.Tree{}, bind.Plain())
+	r.Type(pob.Calcs{}, bind.Plain())
+	r.Type(pob.Items{}, bind.Plain())
+	r.Type(pob.TreeView{}, bind.Plain())
+	r.Type(pob.Config{}, bind.Plain())
 
-	e.ExposeFuncOrPanic(storage.InitializeStorage)
-	e.ExposeFuncOrPanicPromise(storage.ListBuilds)
-	e.ExposeFuncOrPanicPromise(storage.NewFolder)
-	e.ExposeFuncOrPanicPromise(storage.GetBuild)
-	e.ExposeFuncOrPanicPromise(storage.SetBuild)
-	e.ExposeFuncOrPanicPromise(storage.DeleteBuild)
+	r.Func(pob.DecodeDecompress)
+	r.Func(pob.CompressEncode)
 
-	e.ExposeFuncOrPanic(GetSkillGems)
-	e.ExposeFuncOrPanicPromise(GetRawTree)
-	e.ExposeFuncOrPanic(GetStatByIndex)
-	e.ExposeFuncOrPanic(CalculateAllocationPaths)
-	e.ExposeFuncOrPanic(CalculatePrunableNodes)
+	r.Func(builds.ParseBuild)
+	r.Func(builds.ParseBuildStr)
+	r.Func(builds.ParseBuildOver)
+	r.Func(builds.SerializeBuild)
+	r.Func(builds.SerializeBuildWithStats)
+	r.Func(builds.EmptyBuild)
+	r.Func(builds.SavedBuildSummary)
 
-	e.ExposeFuncOrPanic(SetCalcTabElements)
+	r.Func(calculator.NewCalculator)
+	r.Func(raw.InitializeAll, bind.AsPromise())
+	r.Func(raw.LoadDeferred, bind.AsPromise())
+	r.Func(raw.GameDataVersion)
+	r.Func(config.InitLogging)
+
+	r.Func(storage.InitializeStorage)
+	r.Func(storage.ListBuilds, bind.AsPromise())
+	r.Func(storage.NewFolder, bind.AsPromise())
+	r.Func(storage.GetBuild, bind.AsPromise())
+	r.Func(storage.SetBuild, bind.AsPromise())
+	r.Func(storage.DeleteBuild, bind.AsPromise())
+
+	r.Func(GetSkillGems)
+	r.Func(CalcTreeVersion)
+	r.Func(GetRawTree, bind.AsPromise())
+	r.Func(GetStatByIndex)
+	r.Func(CalculateAllocationPaths)
+	r.Func(CalculatePrunableNodes)
+	r.Func(CalculateDependentNodes)
+	r.Func(GetMiscCalculator, bind.AsPromise())
+	r.Func(MiscCalculatorFor)
+	r.Func(ParseModLines)
+	r.Func(ModBrowserList)
+	r.Func(ModBrowserSupported)
+	r.Func(ConfigPlaceholders)
+
+	r.Type(calculator.ComparePowerCategories{}, bind.Plain())
+	r.Type(calculator.ComparePowerEntry{}, bind.Plain())
+	r.Type(calculator.ComparePowerBuilder{}, bind.Without("Step"))
+	r.Func(calculator.NewComparePowerBuilder)
+
+	r.Func(SetCalcTabElements)
+	r.Func(DefaultGem)
+	r.Func(GemError)
+	r.Func(LiveHeapMB)
 
 	info, _ := debug.ReadBuildInfo()
-	e.ExposeOrPanic(info, "pob", "BuildInfo")
+	r.Value("BuildInfo", info, bind.InNamespace("pob"))
+}
 
-	return e
+func DefaultGem(gemID string, nameSpec string, skillID string, level int, quality int) pob.Gem {
+	count := 1
+	return pob.Gem{
+		GemID:         gemID,
+		NameSpec:      nameSpec,
+		SkillID:       skillID,
+		Level:         level,
+		Quality:       quality,
+		QualityID:     "Default",
+		Count:         &count,
+		Enabled:       true,
+		EnableGlobal1: true,
+		EnableGlobal2: true,
+	}
 }

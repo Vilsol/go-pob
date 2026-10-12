@@ -1,0 +1,130 @@
++50 to maximum Life
+^7+50 to maximum ^xE05030Life^7
+   40% increased Spell Damage   
+
+# a comment line
+this line is garbage
+Adds 10 to 20 Fire Damage to Attacks
+50% increased Attack Speed while holding a Shield
+You have Onslaught
++2 to Level of all Minion Skill Gems
+*****************************************
+You can apply an additional Curse
+you can apply an additional curse
+Culling Strike
++200% to all resistances
+Corrupting fever deals 22% more damage
+Culling strike
+Exsanguinate deals 24% more damage over time
+Reap deals 22% more damage over time
++200% to Elemental Resistances
+Curse Enemies with Temporal Chains on Hit
+Minion taunt
+nearby enemies deal 10% less damage
+Nearby allies deal 50% increased damage
+-Minion Unholy might
+25% Chance to Inflict withered For 2 seconds on hit
+40% more damage
+=== AG item mods ===
+Bone offering life regen
+Minions have onslaught
+Nearby Allies have +50% to Critical Strike Multiplier
+Perfect forest warrior
+^1=== CAP RES & DEX WITH GEAR ===
+regenerate 2% of life per second
+Minions deal 50% reduced damage
+Minions have 15% reduced attack speed
+Reducing Hulking Miscreations overinflated damage
+You can apply an additional curse
++50% to Critical Strike Multiplier
+///fill out suffixes with resist
+18% increased effect of your curses
+25% more damage
+28% increased effect of withered
+CHAOS DOT BUFF
+Nearby allies deal 18% increased damage
+PACT OF GHORR
+You and Nearby Allies have 47 to 61 added Chaos Damage
+You and nearby allies gain 50% increased Damage
++10 Fortification
+//Take Care Of Resistances
+//Take Care Of Resistances and Attributes
+50% increased damage
+Enfeeble curse
+Nearby Enemies have Malediction
+Nearby allies gain 18% increased Damage
+nearby enemies deal 9% less damage
+12% Less Damage
+12% increased maximum life
+24% more block chance
+24% more spell block chance
+40% increased global defences
+===25% inc damage taken from pact===
+CHARGED STAFF
+Gloam ring
+Kingmaker
+Minions take 15% reduced Damage
+Nearby Allies have +10 Fortification
+Nearby Enemies cannot deal Critical Strikes
+Crown of the Tyrant
+Medium budget windscream
+Minions have 16% increased action speed
+Nearby Enemies are Scorched
+Nearby Enemies have 18% increased Effect of Curses on them
+Nearby allies have culling strike
+Spectral Leader (Congregation Support)
+culling strike
+"Minions have 25% chance to get Unholy Migght after kill":
+(use Zealotry Spectre Perfect Pain Artist
++ (or Gloves Asenath Gentle Touchs: Punishment + Debilitated / Vixn`s)  +
++ 10% Shocked Ground
++ 20% increased curse-effects
++ AG Gloves-implicit +
++ After been hit: +
++ All 4 hexes lvl 4 + ignoring curse limit +
+++ Additional gemquality 30% enhanced
+++ All auras are low level around lvl 10 - lvl 15 granted by spectres (depending on spectre-lvl) ++
++++  AG Weapon Kingmaker  +++
++++ AG bodyarmour Garb of Ephemeral +++
++++ AG's helmet Ylfeban`s Trickery ignoring curse-limit: +++
++++ Average effect of Punishment +++
++++ Support-spectre Perfect Judgemental Spirit Discipline (Optional) +++
+++++ Carnage Chieftains / Stygian Silverbacks / Aboriginal Chieftains:
++++++  AG helmet Ylfeban`s Trickery +++++
++++++  Chaos Golem of the Maelstrom  +++++
++++++  Runegraft of Fortress  +++++
++++++ Animate Guardian +++++
++++++ Lycia Bloodline Bitter Heresity +++++
++++++ Support-spectre Perfect Guardian Turtle Spectre Determination +++++
++++++ Support-spectre Perfect Pain Artist Zealotry +++++
++++++ Support-spectres +++++
+++++++ The Golden Rule: Reflected Poison +++++
++10% to Quality of all skills
++5% to  Physical Damage Reduction
++50% to Chaos Resistance
+--- CoC / Slinger Force Trigger Rate Fix -----
+--- Remove Lancing Steel's DPS From Calc ----
+////return proj///
+10% to create Consecrated Ground on hit against unique and rare enemies for Lycia Bloodline Bitter Heresy
+11% increased effect of Withered
+12% increased maximum mana
+23% increased effect of Withered
+30% increased effect of Withered
+35% more projectile damage
+AsTrickster, Guardian, Pathfinder, Scion, Reli, Champ, Jugg:
+Curse Enemies with Despair on Hit
+Curse Enemies with Enfeeble on Hit
+Curse Enemies with Punishment on Hit
+Enemies are Debilitated
+Enemies are intimidated
+Enemies are on profane ground
+Fortify
+In maps and other high density Unholy Might has 90-99% uptime
+Minions have Chaotic might
+Minions have Unholy Might: Granted as Necro in ascendancy "Unnatural Strength"
+Nearby Enemies take 20 % increased damage
+Nearby allies gain 3 frenzy chargesXXXDisabled
+Nearby allies have +30% to Critical Strike Multiplier
+Nearby allies have +50% to Critical Strike Multiplier
+Nearby enemies take 20% increased damage
+Socketed into blue socket:

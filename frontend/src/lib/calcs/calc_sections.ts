@@ -82,6 +82,8 @@ export type CalcDataColProp = {
     | 'OHignite'
     | 'decay';
   enemy?: boolean;
+  /* CalcSections.lua:1732-1773 */
+  actor?: 'player';
   modSource?: string;
   gearOnly?: boolean;
   flag?: string;
@@ -92,6 +94,11 @@ export type CalcDataColProp = {
 export type CalcDataCol = {
   format?: string;
   modType?: string;
+  flag?: string;
+  notFlag?: string;
+  flagList?: string[];
+  notFlagList?: string[];
+  haveOutput?: string;
   [key: number]: CalcDataColProp;
 };
 
@@ -120,24 +127,19 @@ export type CalcData = {
 export type CalcBlock = {
   defaultCollapsed: boolean;
   label: string;
+  color?: string;
+  haveOutput?: string;
   data: CalcData;
 };
 
-// The actual structure follows the pattern [ width, id, group, color, [ subsections ] ]
 export interface CalcSection {
-  // width
   0: number;
-  // id
   1: string;
-  // group
   2: number;
-  // color
   3: string;
-  // subsections array
   4: Array<CalcBlock>;
 }
 
-// format {width, id, group, color, subection:{default hidden, label, data:{}}}
 export const calcSections: CalcSection[] = [
   [
     3,
@@ -604,6 +606,66 @@ export const calcSections: CalcSection[] = [
       }
     ]
   ],
+  // CalcSections.lua:431-464
+  [
+    3,
+    'Pacts',
+    1,
+    colorCodes.OFFENCE,
+    [
+      {
+        defaultCollapsed: false,
+        label: 'Empowered Spells',
+        data: {
+          colWidth: 114,
+          0: {
+            haveOutput: 'CreatePactOffensiveCalcSection',
+            0: { format: 'Uptime' },
+            1: { format: '# of Empowered' },
+            2: { format: 'Projectiles' },
+            3: { format: 'Beam Chains' },
+            4: { format: 'Cascades' }
+          },
+          1: {
+            label: 'Pact of Beidat',
+            haveOutput: 'BeidatUpTimeRatio',
+            0: { format: '{2:output:BeidatUpTimeRatio}%', 0: { breakdown: 'BeidatUpTimeRatio' } },
+            1: { format: '{2:output:BeidatEmpoweredCount}' },
+            2: { format: '+{2:output:BeidatAdditionalProjectiles}' },
+            3: { format: '+{2:output:BeidatAdditionalBeamChains}' },
+            4: { format: '+{2:output:BeidatAdditionalCascades}' }
+          },
+          2: {
+            label: 'Pact of Ghorr',
+            haveOutput: 'GhorrUpTimeRatio',
+            0: { format: '{2:output:GhorrUpTimeRatio}%', 0: { breakdown: 'GhorrUpTimeRatio' } },
+            1: { format: '{2:output:GhorrEmpoweredCount}' },
+            2: { format: '' },
+            3: { format: '' },
+            4: { format: '' }
+          },
+          3: {
+            label: "Pact of K'Tash",
+            haveOutput: 'KtashUpTimeRatio',
+            0: { format: '{2:output:KtashUpTimeRatio}%', 0: { breakdown: 'KtashUpTimeRatio' } },
+            1: { format: '{2:output:KtashEmpoweredCount}' },
+            2: { format: '' },
+            3: { format: '' },
+            4: { format: '' }
+          },
+          4: {
+            label: 'Pact of Lycia',
+            haveOutput: 'LyciaUpTimeRatio',
+            0: { format: '{2:output:LyciaUpTimeRatio}%', 0: { breakdown: 'LyciaUpTimeRatio' } },
+            1: { format: '{2:output:LyciaEmpoweredCount}' },
+            2: { format: '' },
+            3: { format: '' },
+            4: { format: '' }
+          }
+        }
+      }
+    ]
+  ],
   [
     3,
     'Dot',
@@ -872,7 +934,6 @@ export const calcSections: CalcSection[] = [
         data: {
           extra: '{2:output:CritChance}% x{2:output:CritMultiplier}',
           flag: 'hit',
-          // Skill
           0: {
             label: 'Inc. Crit Chance',
             notFlag: 'attack',
@@ -903,7 +964,6 @@ export const calcSections: CalcSection[] = [
             }
           },
           3: { label: 'Crit Effect Mod', notFlag: 'attack', 0: { format: 'x {3:output:CritEffect}', 0: { breakdown: 'CritEffect' } } },
-          // Main Hand
           4: {
             label: 'MH Inc. Crit Chance',
             bgCol: colorCodesX.MAINHANDBG,
@@ -942,7 +1002,6 @@ export const calcSections: CalcSection[] = [
             flag: 'weapon1Attack',
             0: { format: 'x {3:output:MainHand.CritEffect}', 0: { breakdown: 'MainHand.CritEffect' } }
           },
-          // Off Hand
           8: {
             label: 'OH Inc. Crit Chance',
             bgCol: colorCodesX.OFFHANDBG,
@@ -3109,7 +3168,6 @@ export const calcSections: CalcSection[] = [
       }
     ]
   ],
-  //misc
   [
     1,
     'Attributes',
@@ -3141,7 +3199,6 @@ export const calcSections: CalcSection[] = [
       }
     ]
   ],
-  //defence
   [
     1,
     'Life',
@@ -3520,6 +3577,216 @@ export const calcSections: CalcSection[] = [
           1: { label: 'Mana on Block', 0: { format: '{0:output:ManaOnBlock}', 0: { modName: 'ManaOnBlock' } } },
           2: { label: 'ES on Block', 0: { format: '{0:output:EnergyShieldOnBlock}', 0: { modName: 'EnergyShieldOnBlock' } } },
           3: { label: 'ES on Spell Block', 0: { format: '{0:output:EnergyShieldOnSpellBlock}', 0: { modName: 'EnergyShieldOnSpellBlock' } } }
+        }
+      }
+    ]
+  ],
+  [
+    1,
+    'Flasks',
+    3,
+    colorCodes.CRAFTED,
+    [
+      {
+        defaultCollapsed: false,
+        label: 'Flasks',
+        data: {
+          extra: '+{0:output:FlaskEffect}%, {2:output:FlaskChargeGen}/s',
+          0: { label: 'Inc. Effect', 0: { format: '{0:mod:1}%', 0: { modName: 'FlaskEffect', modType: 'INC', actor: 'player' } } },
+          1: { label: 'Inc. Duration', 0: { format: '{0:mod:1}%', 0: { modName: 'FlaskDuration', modType: 'INC' } } },
+          2: { label: 'Inc. Charges Gain', 0: { format: '{0:mod:1}%', 0: { modName: 'FlaskChargesGained', modType: 'INC' } } },
+          3: { label: 'Inc. Charges Used', 0: { format: '{0:mod:1}%', 0: { modName: 'FlaskChargesUsed', modType: 'INC' } } },
+          4: { label: '% to not Consume', 0: { format: '{0:mod:1}%', 0: { modName: 'FlaskChanceNotConsumeCharges', modType: 'BASE' } } },
+          5: {
+            label: 'Charge on crit %',
+            0: { format: '{0:output:FlaskChargeOnCritChance}%', 0: { modName: 'FlaskChargeOnCritChance', modType: 'BASE' } }
+          },
+          6: {
+            label: 'Charges/s',
+            0: { format: '{2:output:FlaskChargeGen}', 0: { modName: ['FlaskChargesGenerated', 'FlaskChargesGeneratedPerEmptyFlask'], modType: 'BASE' } }
+          }
+        }
+      },
+      {
+        defaultCollapsed: true,
+        label: 'Utility Flasks',
+        color: colorCodes.MAGIC,
+        data: {
+          extra: '{2:output:UtilityFlaskChargeGen}/s',
+          0: {
+            label: 'Inc. Magic Effect',
+            0: {
+              format: '{0:mod:1,2}%',
+              0: { label: 'Magic Utility Flask Effect', modName: 'MagicUtilityFlaskEffect', modType: 'INC', actor: 'player' },
+              1: { label: 'Generic Flask Effect', modName: 'FlaskEffect', modType: 'INC', actor: 'player' }
+            }
+          },
+          1: {
+            label: 'Charges/s',
+            0: {
+              format: '{2:output:UtilityFlaskChargeGen}',
+              0: { label: 'Utility Flask Charges/s', modName: 'UtilityFlaskChargesGenerated', modType: 'BASE' },
+              1: { label: 'Generic Flask Charges/s', modName: ['FlaskChargesGenerated', 'FlaskChargesGeneratedPerEmptyFlask'], modType: 'BASE' }
+            }
+          }
+        }
+      },
+      {
+        defaultCollapsed: true,
+        label: 'Life Flasks',
+        color: colorCodes.LIFE,
+        data: {
+          extra: '{2:output:LifeFlaskChargeGen}/s',
+          0: { label: 'Inc. Recovery', 0: { format: '{0:mod:1}%', 0: { modName: 'FlaskLifeRecovery', modType: 'INC' } } },
+          1: { label: 'More Recovery', 0: { format: '{0:mod:1}%', 0: { modName: 'FlaskLifeRecovery', modType: 'MORE' } } },
+          2: {
+            label: 'Inc. Recovery Rate',
+            0: {
+              format: '{0:mod:1,2}%',
+              0: { label: 'Life Flask Recovery Rate', modName: 'FlaskLifeRecoveryRate', modType: 'INC' },
+              1: { label: 'Generic Flask Recovery Rate', modName: 'FlaskRecoveryRate', modType: 'INC' }
+            }
+          },
+          3: {
+            label: 'Charges/s',
+            0: {
+              format: '{2:output:LifeFlaskChargeGen}',
+              0: { label: 'Life Flask Charges/s', modName: 'LifeFlaskChargesGenerated', modType: 'BASE' },
+              1: { label: 'Generic Flask Charges/s', modName: ['FlaskChargesGenerated', 'FlaskChargesGeneratedPerEmptyFlask'], modType: 'BASE' }
+            }
+          }
+        }
+      },
+      {
+        defaultCollapsed: true,
+        label: 'Mana Flasks',
+        color: colorCodes.MANA,
+        data: {
+          extra: '{2:output:ManaFlaskChargeGen}/s',
+          0: { label: 'Inc. Recovery', 0: { format: '{0:mod:1}%', 0: { modName: 'FlaskManaRecovery', modType: 'INC' } } },
+          1: {
+            label: 'Inc. Recovery Rate',
+            0: {
+              format: '{0:mod:1,2}%',
+              0: { label: 'Mana Flask Recovery Rate', modName: 'FlaskManaRecoveryRate', modType: 'INC' },
+              1: { label: 'Generic Flask Recovery Rate', modName: 'FlaskRecoveryRate', modType: 'INC' }
+            }
+          },
+          2: {
+            label: 'Charges/s',
+            0: {
+              format: '{2:output:ManaFlaskChargeGen}',
+              0: { label: 'Mana Flask Charges/s', modName: 'ManaFlaskChargesGenerated', modType: 'BASE' },
+              1: { label: 'Generic Flask Charges/s', modName: ['FlaskChargesGenerated', 'FlaskChargesGeneratedPerEmptyFlask'], modType: 'BASE' }
+            }
+          }
+        }
+      },
+      {
+        defaultCollapsed: true,
+        label: 'Tinctures',
+        data: {
+          extra: '+{0:output:TinctureEffect}%, {0:output:TinctureLimit}',
+          0: { label: 'Inc. Effect', 0: { format: '{0:mod:1}%', 0: { modName: 'TinctureEffect', modType: 'INC', actor: 'player' } } },
+          1: { label: 'Tincture Limit', 0: { format: '{0:mod:1}', 0: { modName: 'TinctureLimit', modType: 'BASE' } } },
+          2: { label: 'ManaBurn inc Rate', 0: { format: '{0:mod:1}%', 0: { modName: 'TinctureManaBurnRate', modType: 'INC', actor: 'player' } } },
+          3: { label: 'ManaBurn more Rate', 0: { format: '{0:mod:1}%', 0: { modName: 'TinctureManaBurnRate', modType: 'MORE', actor: 'player' } } },
+          4: { label: '% Not Inflict ManaBurn', 0: { format: '{0:mod:1}%', 0: { modName: 'TincturesNotInflictManaBurn', modType: 'BASE' } } },
+          5: { label: 'Cooldown Recovery', 0: { format: '{0:mod:1}%', 0: { modName: 'TinctureCooldownRecovery', modType: 'INC', actor: 'player' } } }
+        }
+      }
+    ]
+  ],
+  [
+    1,
+    'Rage',
+    3,
+    colorCodes.RAGE,
+    [
+      {
+        defaultCollapsed: true,
+        label: 'Rage',
+        data: {
+          extra: '{0:output:Rage} ({1:output:RageEffect})',
+          0: { label: 'Total', 0: { format: '{0:output:Rage}' } },
+          1: { label: 'Rage Effect', 0: { format: '{1:output:RageEffect}', 0: { modName: 'RageEffect' } } },
+          2: { label: 'Maximum Rage', 0: { format: '{0:output:MaximumRage}', 0: { modName: 'MaximumRage' } } },
+          3: {
+            label: 'Recovery',
+            0: {
+              format: '{1:output:RageRegenRecovery} ({1:output:RageRegenPercent}%)',
+              0: { breakdown: 'RageRegenRecovery' },
+              1: { label: 'Sources', modName: ['RageRegen', 'RageRegenPercent', 'RageDegen', 'RageDegenPercent', 'RageRecovery'], modType: 'BASE' },
+              2: { label: 'Increased Rage Regeneration Rate', modName: ['RageRegen'], modType: 'INC' },
+              3: { label: 'More Rage Regeneration Rate', modName: ['RageRegen'], modType: 'MORE' },
+              4: { label: 'Recovery modifiers', modName: 'RageRecoveryRate' }
+            }
+          },
+          4: { label: 'Rage Loss Delay', 0: { format: '{1:output:InherentRageLossDelay}s', 0: { modName: 'InherentRageLossDelay' } } },
+          5: {
+            label: 'Inherent Rage Loss',
+            0: { format: '{1:output:InherentRageLoss} /s', 0: { modName: 'InherentRageLoss' }, 1: { modName: ['InherentRageLossIsPrevented'] } }
+          }
+        }
+      }
+    ]
+  ],
+  [
+    1,
+    'Charges',
+    3,
+    colorCodes.NORMAL,
+    [
+      {
+        defaultCollapsed: true,
+        label: 'Charges',
+        data: {
+          extra:
+            colorCodesX.RAGE +
+            '{0:output:EnduranceCharges}^7, ' +
+            colorCodesX.EVASION +
+            '{0:output:FrenzyCharges}^7, ' +
+            colorCodesX.MANA +
+            '{0:output:PowerCharges}'
+        }
+      },
+      {
+        defaultCollapsed: true,
+        label: 'Endurance',
+        haveOutput: 'UseEnduranceCharges',
+        data: {
+          extra: colorCodesX.RAGE + '{0:output:EnduranceCharges} ^7/ ' + colorCodesX.RAGE + '{0:output:EnduranceChargesMax}',
+          0: {
+            label: 'Max',
+            0: { format: '{0:output:EnduranceChargesMax}', 0: { modName: ['EnduranceChargesMax', 'PartyMemberMaximumEnduranceChargesEqualToYours'] } }
+          },
+          1: { label: 'Current', 0: { format: '{0:output:EnduranceCharges}', 0: { modName: ['EnduranceChargesMin', 'HaveMaximumEnduranceCharges'] } } },
+          2: { label: 'Spendable', 0: { format: '{0:output:RemovableEnduranceCharges}' } },
+          3: { label: 'Duration', 0: { format: '{0:output:EnduranceChargesDuration}s', 0: { modName: ['EnduranceChargesDuration', 'ChargeDuration'] } } }
+        }
+      },
+      {
+        defaultCollapsed: true,
+        label: 'Frenzy',
+        haveOutput: 'UseFrenzyCharges',
+        data: {
+          extra: colorCodesX.EVASION + '{0:output:FrenzyCharges} ^7/ ' + colorCodesX.EVASION + '{0:output:FrenzyChargesMax}',
+          0: { label: 'Max', 0: { format: '{0:output:FrenzyChargesMax}', 0: { modName: ['FrenzyChargesMax'] } } },
+          1: { label: 'Current', 0: { format: '{0:output:FrenzyCharges}', 0: { modName: ['FrenzyChargesMin', 'HaveMaximumFrenzyCharges'] } } },
+          2: { label: 'Spendable', 0: { format: '{0:output:RemovableFrenzyCharges}' } },
+          3: { label: 'Duration', 0: { format: '{0:output:FrenzyChargesDuration}s', 0: { modName: ['FrenzyChargesDuration', 'ChargeDuration'] } } }
+        }
+      },
+      {
+        defaultCollapsed: true,
+        label: 'Power',
+        haveOutput: 'UsePowerCharges',
+        data: {
+          extra: colorCodesX.MANA + '{0:output:PowerCharges} ^7/ ' + colorCodesX.MANA + '{0:output:PowerChargesMax}',
+          0: { label: 'Max', 0: { format: '{0:output:PowerChargesMax}', 0: { modName: ['PowerChargesMax'] } } },
+          1: { label: 'Current', 0: { format: '{0:output:PowerCharges}', 0: { modName: ['PowerChargesMin', 'HaveMaximumPowerCharges'] } } },
+          2: { label: 'Spendable', 0: { format: '{0:output:RemovablePowerCharges}' } },
+          3: { label: 'Duration', 0: { format: '{0:output:PowerChargesDuration}s', 0: { modName: ['PowerChargesDuration', 'ChargeDuration'] } } }
         }
       }
     ]

@@ -4,11 +4,28 @@
     <meta charset="utf-8" />
     <link rel="icon" href="%sveltekit.assets%/favicon.png" />
     <meta name="viewport" content="width=device-width" />
+    <link rel="manifest" href="%sveltekit.assets%/manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="%sveltekit.assets%/icon-192.png" />
+    <meta name="theme-color" content="#1b1d21" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz@8..144&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
 
+    <script>
+      // lib/display/appearance.ts before the first paint: the theme, animations and Font scaling kept in this browser
+      try {
+        const t = localStorage.getItem('options:theme');
+        const light = t === 'Light' || (t === 'Follow system' && matchMedia('(prefers-color-scheme: light)').matches);
+        const r = document.documentElement;
+        r.dataset.theme = light ? 'light' : t === 'High contrast' ? 'contrast' : 'dark';
+        r.style.colorScheme = light ? 'light' : 'dark';
+        if (localStorage.getItem('options:showAnimations') === 'false') r.dataset.motion = 'off';
+        const pt = Number(localStorage.getItem('options:fontScaling'));
+        if (pt) r.style.fontSize = (16 * Math.min(Math.max(pt, 6), 18)) / 12 + 'px';
+      } catch {}
+    </script>
     %sveltekit.head%
   </head>
   <body>

@@ -12,17 +12,21 @@ const (
 )
 
 type DirEntry struct {
-	Name     string
-	Type     DirEntryType
-	Class    string
-	LastEdit string
-	Level    int
+	Name       string
+	Type       DirEntryType
+	Class      string
+	LastEdit   string
+	Level      int
+	Ascendancy string
+	MainSkill  string
 }
 
 type Storage interface {
 	GetCache(key string) ([]byte, error)
 	SetCache(key string, value []byte) error
 	ExistsInCache(key string) bool
+	GetSetting(key string) ([]byte, error)
+	SetSetting(key string, value []byte) error
 
 	List(dir string) ([]DirEntry, error)
 	GetBuild(key string) (string, error)

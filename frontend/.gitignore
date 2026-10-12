@@ -9,4 +9,8 @@ node_modules
 .idea/
 static/go-pob.wasm
 static/go-pob.wasm.gz
-static/tinymce/
+static/go-pob.wasm.br
+static/go-pob.wasm.br.sha256
+e2e/.results
+storybook-static
+*storybook.log

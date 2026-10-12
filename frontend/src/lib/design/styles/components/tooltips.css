@@ -1,0 +1,14 @@
+@layer components {
+  .tooltip {
+    @apply box-border border border-line-strong bg-surface-2 font-sans text-11 text-text;
+  }
+  .tooltip-float {
+    @apply absolute top-(--y) right-(--r,auto) left-(--x,auto) z-4 shadow-tip pointer-events-none;
+  }
+  .tooltip-info {
+    @apply absolute top-[-4px] left-6 z-6 w-70 rounded-md px-2.5 py-2 text-12 font-normal whitespace-normal shadow-pop;
+  }
+  .info-btn {
+    @apply size-4.5 cursor-help rounded-full border border-line-bright bg-transparent p-0 font-sans text-11 font-semibold text-text-2;
+  }
+}

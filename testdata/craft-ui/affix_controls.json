@@ -1,0 +1,6503 @@
+{
+ "items": [
+  {
+   "edits": [
+    {
+     "modId": "LocalBaseEnergyShieldAndMana2",
+     "range": 0.3,
+     "slot": 1
+    },
+    {
+     "modId": "IncreasedMana5",
+     "range": 0.8,
+     "slot": 2
+    },
+    {
+     "modId": "Intelligence6",
+     "range": 0.25,
+     "slot": 4
+    }
+   ],
+   "raw": "Rarity: RARE\nNew Item\nHubris Circlet\nCrafted: true\nQuality: 20\nImplicits: 0"
+  },
+  {
+   "edits": [
+    {
+     "slot": 1,
+     "modId": "AddedPhysicalDamage6",
+     "range": 0.6
+    },
+    {
+     "slot": 2,
+     "modId": "AllAttributes2",
+     "range": 0.1
+    }
+   ],
+   "raw": "Rarity: MAGIC\nTwo-Stone Ring (Cold/Lightning)\nCrafted: true\nImplicits: 0"
+  },
+  {
+   "edits": [
+    {
+     "modId": "BlockShieldJewel",
+     "range": 0.5,
+     "slot": 1
+    }
+   ],
+   "raw": "Rarity: RARE\nNew Item\nCobalt Jewel\nCrafted: true\nImplicits: 0"
+  },
+  {
+   "edits": null,
+   "raw": "Rarity: RARE\nNew Item\nImperial Bow\nCrafted: true\nQuality: 20\nImplicits: 0"
+  },
+  {
+   "edits": null,
+   "raw": "Rarity: RARE\nNew Item\nSorcerer Gloves\nCrafted: true\nQuality: 20\nImplicits: 0\nShaper Item"
+  },
+  {
+   "edits": null,
+   "raw": "Rarity: RARE\nNew Item\nSearching Eye Jewel\nCrafted: true\nImplicits: 0"
+  },
+  {
+   "edits": [
+    {
+     "modId": "IncreasedLife5",
+     "range": 0.5,
+     "slot": 2
+    }
+   ],
+   "raw": "Rarity: RARE\nNew Item\nHubris Circlet\nCrafted: true\nPrefix: {range:0.3}LocalBaseEnergyShieldAndMana2\nPrefix: None\nPrefix: None\nSuffix: {range:0.25}Intelligence6\nSuffix: None\nSuffix: None\nQuality: 20\nLevelReq: 69\nImplicits: 0\n{tags:attribute}{suffix}+34 to Intelligence\n{tags:resource,mana,defences,energy_shield}{prefix}+12 to maximum Energy Shield\n{tags:resource,mana,defences,energy_shield}{prefix}+17 to maximum Mana"
+  }
+ ],
+ "pob": [
+  {
+   "explicit": [
+    "+34 to Intelligence",
+    "+12 to maximum Energy Shield",
+    "+55 to maximum Mana"
+   ],
+   "level": 69,
+   "limit": 6,
+   "name": "New Item, Hubris Circlet",
+   "slots": [
+    [
+     {
+      "ids": [
+       "LocalIncreasedEnergyShield1",
+       "LocalIncreasedEnergyShield2",
+       "LocalIncreasedEnergyShield3",
+       "LocalIncreasedEnergyShield4",
+       "LocalIncreasedEnergyShield5",
+       "LocalIncreasedEnergyShield6",
+       "LocalIncreasedEnergyShield7",
+       "LocalIncreasedEnergyShield8"
+      ],
+      "label": "+# to maximum Energy Shield"
+     },
+     {
+      "ids": [
+       "LocalBaseEnergyShieldAndLife1",
+       "LocalBaseEnergyShieldAndLife2",
+       "LocalBaseEnergyShieldAndLife3_"
+      ],
+      "label": "+# to maximum Energy Shield/+# to maximum Life"
+     },
+     {
+      "ids": [
+       "LocalBaseEnergyShieldAndMana1",
+       "LocalBaseEnergyShieldAndMana2",
+       "LocalBaseEnergyShieldAndMana3"
+      ],
+      "label": "+# to maximum Energy Shield/+# to maximum Mana"
+     },
+     {
+      "ids": [
+       "LocalIncreasedEnergyShieldPercent1",
+       "LocalIncreasedEnergyShieldPercent2",
+       "LocalIncreasedEnergyShieldPercent3",
+       "LocalIncreasedEnergyShieldPercent4",
+       "LocalIncreasedEnergyShieldPercent5",
+       "LocalIncreasedEnergyShieldPercent6",
+       "LocalIncreasedEnergyShieldPercent7_"
+      ],
+      "label": "#% increased Energy Shield"
+     },
+     {
+      "ids": [
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery1",
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery2",
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery3",
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery4",
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery5",
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery6"
+      ],
+      "label": "#% increased Energy Shield/#% increased Stun and Block Recovery"
+     },
+     {
+      "ids": [
+       "IncreasedLife0",
+       "IncreasedLife1",
+       "IncreasedLife2",
+       "IncreasedLife3",
+       "IncreasedLife4",
+       "IncreasedLife5",
+       "IncreasedLife6",
+       "IncreasedLife7",
+       "IncreasedLife8",
+       "IncreasedLife9"
+      ],
+      "label": "+# to maximum Life"
+     },
+     {
+      "ids": [
+       "IncreasedMana1",
+       "IncreasedMana2",
+       "IncreasedMana3",
+       "IncreasedMana4",
+       "IncreasedMana5",
+       "IncreasedMana6",
+       "IncreasedMana7",
+       "IncreasedMana8",
+       "IncreasedMana9",
+       "IncreasedMana10",
+       "IncreasedMana11",
+       "IncreasedMana12"
+      ],
+      "label": "+# to maximum Mana"
+     },
+     {
+      "ids": [
+       "ItemFoundRarityIncreasePrefix1",
+       "ItemFoundRarityIncreasePrefix2",
+       "ItemFoundRarityIncreasePrefix3"
+      ],
+      "label": "#% increased Rarity of Items found"
+     },
+     {
+      "ids": [
+       "GlobalIncreaseMinionSpellSkillGemLevel1",
+       "GlobalIncreaseMinionSpellSkillGemLevel2"
+      ],
+      "label": "+# to Level of all Minion Skill Gems"
+     },
+     {
+      "ids": [
+       "AttackerTakesDamage1",
+       "AttackerTakesDamage2"
+      ],
+      "label": "Reflects # Physical Damage to Melee Attackers"
+     }
+    ],
+    [
+     {
+      "ids": [
+       "LocalIncreasedEnergyShield1",
+       "LocalIncreasedEnergyShield2",
+       "LocalIncreasedEnergyShield3",
+       "LocalIncreasedEnergyShield4",
+       "LocalIncreasedEnergyShield5",
+       "LocalIncreasedEnergyShield6",
+       "LocalIncreasedEnergyShield7",
+       "LocalIncreasedEnergyShield8"
+      ],
+      "label": "+# to maximum Energy Shield"
+     },
+     {
+      "ids": [
+       "LocalBaseEnergyShieldAndLife1",
+       "LocalBaseEnergyShieldAndLife2",
+       "LocalBaseEnergyShieldAndLife3_"
+      ],
+      "label": "+# to maximum Energy Shield/+# to maximum Life"
+     },
+     {
+      "ids": [
+       "LocalBaseEnergyShieldAndMana1",
+       "LocalBaseEnergyShieldAndMana2",
+       "LocalBaseEnergyShieldAndMana3"
+      ],
+      "label": "+# to maximum Energy Shield/+# to maximum Mana"
+     },
+     {
+      "ids": [
+       "LocalIncreasedEnergyShieldPercent1",
+       "LocalIncreasedEnergyShieldPercent2",
+       "LocalIncreasedEnergyShieldPercent3",
+       "LocalIncreasedEnergyShieldPercent4",
+       "LocalIncreasedEnergyShieldPercent5",
+       "LocalIncreasedEnergyShieldPercent6",
+       "LocalIncreasedEnergyShieldPercent7_"
+      ],
+      "label": "#% increased Energy Shield"
+     },
+     {
+      "ids": [
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery1",
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery2",
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery3",
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery4",
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery5",
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery6"
+      ],
+      "label": "#% increased Energy Shield/#% increased Stun and Block Recovery"
+     },
+     {
+      "ids": [
+       "IncreasedLife0",
+       "IncreasedLife1",
+       "IncreasedLife2",
+       "IncreasedLife3",
+       "IncreasedLife4",
+       "IncreasedLife5",
+       "IncreasedLife6",
+       "IncreasedLife7",
+       "IncreasedLife8",
+       "IncreasedLife9"
+      ],
+      "label": "+# to maximum Life"
+     },
+     {
+      "ids": [
+       "IncreasedMana1",
+       "IncreasedMana2",
+       "IncreasedMana3",
+       "IncreasedMana4",
+       "IncreasedMana5",
+       "IncreasedMana6",
+       "IncreasedMana7",
+       "IncreasedMana8",
+       "IncreasedMana9",
+       "IncreasedMana10",
+       "IncreasedMana11",
+       "IncreasedMana12"
+      ],
+      "label": "+# to maximum Mana"
+     },
+     {
+      "ids": [
+       "ItemFoundRarityIncreasePrefix1",
+       "ItemFoundRarityIncreasePrefix2",
+       "ItemFoundRarityIncreasePrefix3"
+      ],
+      "label": "#% increased Rarity of Items found"
+     },
+     {
+      "ids": [
+       "GlobalIncreaseMinionSpellSkillGemLevel1",
+       "GlobalIncreaseMinionSpellSkillGemLevel2"
+      ],
+      "label": "+# to Level of all Minion Skill Gems"
+     },
+     {
+      "ids": [
+       "AttackerTakesDamage1",
+       "AttackerTakesDamage2"
+      ],
+      "label": "Reflects # Physical Damage to Melee Attackers"
+     }
+    ],
+    [
+     {
+      "ids": [
+       "LocalIncreasedEnergyShield1",
+       "LocalIncreasedEnergyShield2",
+       "LocalIncreasedEnergyShield3",
+       "LocalIncreasedEnergyShield4",
+       "LocalIncreasedEnergyShield5",
+       "LocalIncreasedEnergyShield6",
+       "LocalIncreasedEnergyShield7",
+       "LocalIncreasedEnergyShield8"
+      ],
+      "label": "+# to maximum Energy Shield"
+     },
+     {
+      "ids": [
+       "LocalBaseEnergyShieldAndLife1",
+       "LocalBaseEnergyShieldAndLife2",
+       "LocalBaseEnergyShieldAndLife3_"
+      ],
+      "label": "+# to maximum Energy Shield/+# to maximum Life"
+     },
+     {
+      "ids": [
+       "LocalBaseEnergyShieldAndMana1",
+       "LocalBaseEnergyShieldAndMana2",
+       "LocalBaseEnergyShieldAndMana3"
+      ],
+      "label": "+# to maximum Energy Shield/+# to maximum Mana"
+     },
+     {
+      "ids": [
+       "LocalIncreasedEnergyShieldPercent1",
+       "LocalIncreasedEnergyShieldPercent2",
+       "LocalIncreasedEnergyShieldPercent3",
+       "LocalIncreasedEnergyShieldPercent4",
+       "LocalIncreasedEnergyShieldPercent5",
+       "LocalIncreasedEnergyShieldPercent6",
+       "LocalIncreasedEnergyShieldPercent7_"
+      ],
+      "label": "#% increased Energy Shield"
+     },
+     {
+      "ids": [
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery1",
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery2",
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery3",
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery4",
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery5",
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery6"
+      ],
+      "label": "#% increased Energy Shield/#% increased Stun and Block Recovery"
+     },
+     {
+      "ids": [
+       "IncreasedLife0",
+       "IncreasedLife1",
+       "IncreasedLife2",
+       "IncreasedLife3",
+       "IncreasedLife4",
+       "IncreasedLife5",
+       "IncreasedLife6",
+       "IncreasedLife7",
+       "IncreasedLife8",
+       "IncreasedLife9"
+      ],
+      "label": "+# to maximum Life"
+     },
+     {
+      "ids": [
+       "IncreasedMana1",
+       "IncreasedMana2",
+       "IncreasedMana3",
+       "IncreasedMana4",
+       "IncreasedMana5",
+       "IncreasedMana6",
+       "IncreasedMana7",
+       "IncreasedMana8",
+       "IncreasedMana9",
+       "IncreasedMana10",
+       "IncreasedMana11",
+       "IncreasedMana12"
+      ],
+      "label": "+# to maximum Mana"
+     },
+     {
+      "ids": [
+       "ItemFoundRarityIncreasePrefix1",
+       "ItemFoundRarityIncreasePrefix2",
+       "ItemFoundRarityIncreasePrefix3"
+      ],
+      "label": "#% increased Rarity of Items found"
+     },
+     {
+      "ids": [
+       "GlobalIncreaseMinionSpellSkillGemLevel1",
+       "GlobalIncreaseMinionSpellSkillGemLevel2"
+      ],
+      "label": "+# to Level of all Minion Skill Gems"
+     },
+     {
+      "ids": [
+       "AttackerTakesDamage1",
+       "AttackerTakesDamage2"
+      ],
+      "label": "Reflects # Physical Damage to Melee Attackers"
+     }
+    ],
+    [
+     {
+      "ids": [
+       "ReducedLocalAttributeRequirements1",
+       "ReducedLocalAttributeRequirements2"
+      ],
+      "label": "#% reduced Attribute Requirements"
+     },
+     {
+      "ids": [
+       "Intelligence1",
+       "Intelligence2",
+       "Intelligence3",
+       "Intelligence4",
+       "Intelligence5",
+       "Intelligence6",
+       "Intelligence7",
+       "Intelligence8",
+       "Intelligence9",
+       "Intelligence10"
+      ],
+      "label": "+# to Intelligence"
+     },
+     {
+      "ids": [
+       "IncreasedAccuracyNew1_",
+       "IncreasedAccuracyNew2",
+       "IncreasedAccuracyNew3",
+       "IncreasedAccuracyNew4",
+       "IncreasedAccuracyNew5_",
+       "IncreasedAccuracyNew6"
+      ],
+      "label": "+# to Accuracy Rating"
+     },
+     {
+      "ids": [
+       "LightRadiusAndAccuracyNew1",
+       "LightRadiusAndAccuracyNew2",
+       "LightRadiusAndAccuracy3"
+      ],
+      "label": "#% increased Global Accuracy Rating/#% increased Light Radius"
+     },
+     {
+      "ids": [
+       "EnergyShieldRechargeRate1",
+       "EnergyShieldRechargeRate2",
+       "EnergyShieldRechargeRate3",
+       "EnergyShieldRechargeRate4",
+       "EnergyShieldRechargeRate5______"
+      ],
+      "label": "#% increased Energy Shield Recharge Rate"
+     },
+     {
+      "ids": [
+       "LifeRegeneration1",
+       "LifeRegeneration2",
+       "LifeRegeneration3",
+       "LifeRegeneration4",
+       "LifeRegeneration5",
+       "LifeRegeneration6",
+       "LifeRegeneration7",
+       "LifeRegeneration8_",
+       "LifeRegeneration9"
+      ],
+      "label": "Regenerate # Life per second"
+     },
+     {
+      "ids": [
+       "ItemFoundRarityIncrease1",
+       "ItemFoundRarityIncrease2",
+       "ItemFoundRarityIncrease3",
+       "ItemFoundRarityIncrease4"
+      ],
+      "label": "#% increased Rarity of Items found"
+     },
+     {
+      "ids": [
+       "FireResist1",
+       "FireResist2",
+       "FireResist3",
+       "FireResist4",
+       "FireResist5",
+       "FireResist6",
+       "FireResist7",
+       "FireResist8"
+      ],
+      "label": "+#% to Fire Resistance"
+     },
+     {
+      "ids": [
+       "ColdResist1",
+       "ColdResist2",
+       "ColdResist3",
+       "ColdResist4",
+       "ColdResist5",
+       "ColdResist6",
+       "ColdResist7",
+       "ColdResist8"
+      ],
+      "label": "+#% to Cold Resistance"
+     },
+     {
+      "ids": [
+       "LightningResist1",
+       "LightningResist2",
+       "LightningResist3",
+       "LightningResist4",
+       "LightningResist5",
+       "LightningResist6",
+       "LightningResist7",
+       "LightningResist8"
+      ],
+      "label": "+#% to Lightning Resistance"
+     },
+     {
+      "ids": [
+       "ChaosResist1",
+       "ChaosResist2",
+       "ChaosResist3",
+       "ChaosResist4",
+       "ChaosResist5",
+       "ChaosResist6"
+      ],
+      "label": "+#% to Chaos Resistance"
+     },
+     {
+      "ids": [
+       "StunRecovery1",
+       "StunRecovery2",
+       "StunRecovery3",
+       "StunRecovery4",
+       "StunRecovery5",
+       "StunRecovery6"
+      ],
+      "label": "#% increased Stun and Block Recovery"
+     }
+    ],
+    [
+     {
+      "ids": [
+       "ReducedLocalAttributeRequirements1",
+       "ReducedLocalAttributeRequirements2"
+      ],
+      "label": "#% reduced Attribute Requirements"
+     },
+     {
+      "ids": [
+       "Intelligence1",
+       "Intelligence2",
+       "Intelligence3",
+       "Intelligence4",
+       "Intelligence5",
+       "Intelligence6",
+       "Intelligence7",
+       "Intelligence8",
+       "Intelligence9",
+       "Intelligence10"
+      ],
+      "label": "+# to Intelligence"
+     },
+     {
+      "ids": [
+       "IncreasedAccuracyNew1_",
+       "IncreasedAccuracyNew2",
+       "IncreasedAccuracyNew3",
+       "IncreasedAccuracyNew4",
+       "IncreasedAccuracyNew5_",
+       "IncreasedAccuracyNew6"
+      ],
+      "label": "+# to Accuracy Rating"
+     },
+     {
+      "ids": [
+       "LightRadiusAndAccuracyNew1",
+       "LightRadiusAndAccuracyNew2",
+       "LightRadiusAndAccuracy3"
+      ],
+      "label": "#% increased Global Accuracy Rating/#% increased Light Radius"
+     },
+     {
+      "ids": [
+       "EnergyShieldRechargeRate1",
+       "EnergyShieldRechargeRate2",
+       "EnergyShieldRechargeRate3",
+       "EnergyShieldRechargeRate4",
+       "EnergyShieldRechargeRate5______"
+      ],
+      "label": "#% increased Energy Shield Recharge Rate"
+     },
+     {
+      "ids": [
+       "LifeRegeneration1",
+       "LifeRegeneration2",
+       "LifeRegeneration3",
+       "LifeRegeneration4",
+       "LifeRegeneration5",
+       "LifeRegeneration6",
+       "LifeRegeneration7",
+       "LifeRegeneration8_",
+       "LifeRegeneration9"
+      ],
+      "label": "Regenerate # Life per second"
+     },
+     {
+      "ids": [
+       "ItemFoundRarityIncrease1",
+       "ItemFoundRarityIncrease2",
+       "ItemFoundRarityIncrease3",
+       "ItemFoundRarityIncrease4"
+      ],
+      "label": "#% increased Rarity of Items found"
+     },
+     {
+      "ids": [
+       "FireResist1",
+       "FireResist2",
+       "FireResist3",
+       "FireResist4",
+       "FireResist5",
+       "FireResist6",
+       "FireResist7",
+       "FireResist8"
+      ],
+      "label": "+#% to Fire Resistance"
+     },
+     {
+      "ids": [
+       "ColdResist1",
+       "ColdResist2",
+       "ColdResist3",
+       "ColdResist4",
+       "ColdResist5",
+       "ColdResist6",
+       "ColdResist7",
+       "ColdResist8"
+      ],
+      "label": "+#% to Cold Resistance"
+     },
+     {
+      "ids": [
+       "LightningResist1",
+       "LightningResist2",
+       "LightningResist3",
+       "LightningResist4",
+       "LightningResist5",
+       "LightningResist6",
+       "LightningResist7",
+       "LightningResist8"
+      ],
+      "label": "+#% to Lightning Resistance"
+     },
+     {
+      "ids": [
+       "ChaosResist1",
+       "ChaosResist2",
+       "ChaosResist3",
+       "ChaosResist4",
+       "ChaosResist5",
+       "ChaosResist6"
+      ],
+      "label": "+#% to Chaos Resistance"
+     },
+     {
+      "ids": [
+       "StunRecovery1",
+       "StunRecovery2",
+       "StunRecovery3",
+       "StunRecovery4",
+       "StunRecovery5",
+       "StunRecovery6"
+      ],
+      "label": "#% increased Stun and Block Recovery"
+     }
+    ],
+    [
+     {
+      "ids": [
+       "ReducedLocalAttributeRequirements1",
+       "ReducedLocalAttributeRequirements2"
+      ],
+      "label": "#% reduced Attribute Requirements"
+     },
+     {
+      "ids": [
+       "Intelligence1",
+       "Intelligence2",
+       "Intelligence3",
+       "Intelligence4",
+       "Intelligence5",
+       "Intelligence6",
+       "Intelligence7",
+       "Intelligence8",
+       "Intelligence9",
+       "Intelligence10"
+      ],
+      "label": "+# to Intelligence"
+     },
+     {
+      "ids": [
+       "IncreasedAccuracyNew1_",
+       "IncreasedAccuracyNew2",
+       "IncreasedAccuracyNew3",
+       "IncreasedAccuracyNew4",
+       "IncreasedAccuracyNew5_",
+       "IncreasedAccuracyNew6"
+      ],
+      "label": "+# to Accuracy Rating"
+     },
+     {
+      "ids": [
+       "LightRadiusAndAccuracyNew1",
+       "LightRadiusAndAccuracyNew2",
+       "LightRadiusAndAccuracy3"
+      ],
+      "label": "#% increased Global Accuracy Rating/#% increased Light Radius"
+     },
+     {
+      "ids": [
+       "EnergyShieldRechargeRate1",
+       "EnergyShieldRechargeRate2",
+       "EnergyShieldRechargeRate3",
+       "EnergyShieldRechargeRate4",
+       "EnergyShieldRechargeRate5______"
+      ],
+      "label": "#% increased Energy Shield Recharge Rate"
+     },
+     {
+      "ids": [
+       "LifeRegeneration1",
+       "LifeRegeneration2",
+       "LifeRegeneration3",
+       "LifeRegeneration4",
+       "LifeRegeneration5",
+       "LifeRegeneration6",
+       "LifeRegeneration7",
+       "LifeRegeneration8_",
+       "LifeRegeneration9"
+      ],
+      "label": "Regenerate # Life per second"
+     },
+     {
+      "ids": [
+       "ItemFoundRarityIncrease1",
+       "ItemFoundRarityIncrease2",
+       "ItemFoundRarityIncrease3",
+       "ItemFoundRarityIncrease4"
+      ],
+      "label": "#% increased Rarity of Items found"
+     },
+     {
+      "ids": [
+       "FireResist1",
+       "FireResist2",
+       "FireResist3",
+       "FireResist4",
+       "FireResist5",
+       "FireResist6",
+       "FireResist7",
+       "FireResist8"
+      ],
+      "label": "+#% to Fire Resistance"
+     },
+     {
+      "ids": [
+       "ColdResist1",
+       "ColdResist2",
+       "ColdResist3",
+       "ColdResist4",
+       "ColdResist5",
+       "ColdResist6",
+       "ColdResist7",
+       "ColdResist8"
+      ],
+      "label": "+#% to Cold Resistance"
+     },
+     {
+      "ids": [
+       "LightningResist1",
+       "LightningResist2",
+       "LightningResist3",
+       "LightningResist4",
+       "LightningResist5",
+       "LightningResist6",
+       "LightningResist7",
+       "LightningResist8"
+      ],
+      "label": "+#% to Lightning Resistance"
+     },
+     {
+      "ids": [
+       "ChaosResist1",
+       "ChaosResist2",
+       "ChaosResist3",
+       "ChaosResist4",
+       "ChaosResist5",
+       "ChaosResist6"
+      ],
+      "label": "+#% to Chaos Resistance"
+     },
+     {
+      "ids": [
+       "StunRecovery1",
+       "StunRecovery2",
+       "StunRecovery3",
+       "StunRecovery4",
+       "StunRecovery5",
+       "StunRecovery6"
+      ],
+      "label": "#% increased Stun and Block Recovery"
+     }
+    ]
+   ]
+  },
+  {
+   "explicit": [
+    "+5 to all Attributes",
+    "Adds 8 to 14 Physical Damage to Attacks"
+   ],
+   "level": 35,
+   "limit": 2,
+   "name": "Annealed Two-Stone Ring of the Sky",
+   "slots": [
+    [
+     {
+      "ids": [
+       "AddedPhysicalDamage1",
+       "AddedPhysicalDamage2",
+       "AddedPhysicalDamage3",
+       "AddedPhysicalDamage4",
+       "AddedPhysicalDamage5",
+       "AddedPhysicalDamage6"
+      ],
+      "label": "Adds # to # Physical Damage to Attacks"
+     },
+     {
+      "ids": [
+       "AddedFireDamage1",
+       "AddedFireDamage2",
+       "AddedFireDamage3",
+       "AddedFireDamage4",
+       "AddedFireDamage5",
+       "AddedFireDamage6",
+       "AddedFireDamage7",
+       "AddedFireDamage8",
+       "AddedFireDamage9"
+      ],
+      "label": "Adds # to # Fire Damage to Attacks"
+     },
+     {
+      "ids": [
+       "AddedColdDamage1",
+       "AddedColdDamage2",
+       "AddedColdDamage3",
+       "AddedColdDamage4",
+       "AddedColdDamage5",
+       "AddedColdDamage6",
+       "AddedColdDamage7",
+       "AddedColdDamage8",
+       "AddedColdDamage9"
+      ],
+      "label": "Adds # to # Cold Damage to Attacks"
+     },
+     {
+      "ids": [
+       "AddedLightningDamage1",
+       "AddedLightningDamage2",
+       "AddedLightningDamage3",
+       "AddedLightningDamage4",
+       "AddedLightningDamage5",
+       "AddedLightningDamage6",
+       "AddedLightningDamage7",
+       "AddedLightningDamage8",
+       "AddedLightningDamage9"
+      ],
+      "label": "Adds # to # Lightning Damage to Attacks"
+     },
+     {
+      "ids": [
+       "IncreasedEvasionRating1",
+       "IncreasedEvasionRating2",
+       "IncreasedEvasionRating3",
+       "IncreasedEvasionRating4",
+       "IncreasedEvasionRating5",
+       "IncreasedEvasionRating6",
+       "IncreasedEvasionRating7"
+      ],
+      "label": "+# to Evasion Rating"
+     },
+     {
+      "ids": [
+       "IncreasedEnergyShield1",
+       "IncreasedEnergyShield2",
+       "IncreasedEnergyShield3",
+       "IncreasedEnergyShield4",
+       "IncreasedEnergyShield5",
+       "IncreasedEnergyShield6",
+       "IncreasedEnergyShield7",
+       "IncreasedEnergyShield8",
+       "IncreasedEnergyShield9",
+       "IncreasedEnergyShield10",
+       "IncreasedEnergyShield11"
+      ],
+      "label": "+# to maximum Energy Shield"
+     },
+     {
+      "ids": [
+       "IncreasedLife0",
+       "IncreasedLife1",
+       "IncreasedLife2",
+       "IncreasedLife3",
+       "IncreasedLife4",
+       "IncreasedLife5",
+       "IncreasedLife6",
+       "IncreasedLife7"
+      ],
+      "label": "+# to maximum Life"
+     },
+     {
+      "ids": [
+       "IncreasedMana1",
+       "IncreasedMana2",
+       "IncreasedMana3",
+       "IncreasedMana4",
+       "IncreasedMana5",
+       "IncreasedMana6",
+       "IncreasedMana7",
+       "IncreasedMana8",
+       "IncreasedMana9",
+       "IncreasedMana10",
+       "IncreasedMana11",
+       "IncreasedMana12",
+       "IncreasedMana13"
+      ],
+      "label": "+# to maximum Mana"
+     },
+     {
+      "ids": [
+       "ItemFoundRarityIncreasePrefix1",
+       "ItemFoundRarityIncreasePrefix2",
+       "ItemFoundRarityIncreasePrefix3",
+       "ItemFoundRarityIncreasePrefix4_"
+      ],
+      "label": "#% increased Rarity of Items found"
+     },
+     {
+      "ids": [
+       "WeaponElementalDamage1",
+       "WeaponElementalDamage2",
+       "WeaponElementalDamage3",
+       "WeaponElementalDamage4",
+       "WeaponElementalDamage5"
+      ],
+      "label": "#% increased Elemental Damage with Attack Skills"
+     }
+    ],
+    [
+     {
+      "ids": [
+       "AllAttributes1",
+       "AllAttributes2",
+       "AllAttributes3",
+       "AllAttributes4"
+      ],
+      "label": "+# to all Attributes"
+     },
+     {
+      "ids": [
+       "Strength1",
+       "Strength2",
+       "Strength3",
+       "Strength4",
+       "Strength5",
+       "Strength6",
+       "Strength7",
+       "Strength8",
+       "Strength9"
+      ],
+      "label": "+# to Strength"
+     },
+     {
+      "ids": [
+       "Dexterity1",
+       "Dexterity2",
+       "Dexterity3",
+       "Dexterity4",
+       "Dexterity5",
+       "Dexterity6",
+       "Dexterity7",
+       "Dexterity8",
+       "Dexterity9"
+      ],
+      "label": "+# to Dexterity"
+     },
+     {
+      "ids": [
+       "Intelligence1",
+       "Intelligence2",
+       "Intelligence3",
+       "Intelligence4",
+       "Intelligence5",
+       "Intelligence6",
+       "Intelligence7",
+       "Intelligence8",
+       "Intelligence9"
+      ],
+      "label": "+# to Intelligence"
+     },
+     {
+      "ids": [
+       "FireDamagePercent1",
+       "FireDamagePercent2",
+       "FireDamagePercent3",
+       "FireDamagePercent4"
+      ],
+      "label": "#% increased Fire Damage"
+     },
+     {
+      "ids": [
+       "ColdDamagePercent1",
+       "ColdDamagePercent2",
+       "ColdDamagePercent3",
+       "ColdDamagePercent4"
+      ],
+      "label": "#% increased Cold Damage"
+     },
+     {
+      "ids": [
+       "LightningDamagePercent1",
+       "LightningDamagePercent2",
+       "LightningDamagePercent3",
+       "LightningDamagePercent4"
+      ],
+      "label": "#% increased Lightning Damage"
+     },
+     {
+      "ids": [
+       "IncreasedAttackSpeed1"
+      ],
+      "label": "(5-7)% increased Attack Speed"
+     },
+     {
+      "ids": [
+       "IncreasedAccuracyNew1_",
+       "IncreasedAccuracyNew2",
+       "IncreasedAccuracyNew3",
+       "IncreasedAccuracyNew4",
+       "IncreasedAccuracyNew5_"
+      ],
+      "label": "+# to Accuracy Rating"
+     },
+     {
+      "ids": [
+       "LightRadiusAndAccuracyNew1",
+       "LightRadiusAndAccuracyNew2",
+       "LightRadiusAndAccuracy3"
+      ],
+      "label": "#% increased Global Accuracy Rating/#% increased Light Radius"
+     },
+     {
+      "ids": [
+       "IncreasedCastSpeed1",
+       "IncreasedCastSpeed2",
+       "IncreasedCastSpeed3"
+      ],
+      "label": "#% increased Cast Speed"
+     },
+     {
+      "ids": [
+       "LifeRegeneration1",
+       "LifeRegeneration2",
+       "LifeRegeneration3",
+       "LifeRegeneration4",
+       "LifeRegeneration5",
+       "LifeRegeneration6",
+       "LifeRegeneration7"
+      ],
+      "label": "Regenerate # Life per second"
+     },
+     {
+      "ids": [
+       "ManaRegeneration1",
+       "ManaRegeneration2",
+       "ManaRegeneration3",
+       "ManaRegeneration4",
+       "ManaRegeneration5",
+       "ManaRegeneration6"
+      ],
+      "label": "#% increased Mana Regeneration Rate"
+     },
+     {
+      "ids": [
+       "ItemFoundRarityIncrease1",
+       "ItemFoundRarityIncrease2",
+       "ItemFoundRarityIncrease3",
+       "ItemFoundRarityIncrease4"
+      ],
+      "label": "#% increased Rarity of Items found"
+     },
+     {
+      "ids": [
+       "AllResistances1",
+       "AllResistances2",
+       "AllResistances3",
+       "AllResistances4",
+       "AllResistances5"
+      ],
+      "label": "+#% to all Elemental Resistances"
+     },
+     {
+      "ids": [
+       "FireResist1",
+       "FireResist2",
+       "FireResist3",
+       "FireResist4",
+       "FireResist5",
+       "FireResist6",
+       "FireResist7",
+       "FireResist8"
+      ],
+      "label": "+#% to Fire Resistance"
+     },
+     {
+      "ids": [
+       "ColdResist1",
+       "ColdResist2",
+       "ColdResist3",
+       "ColdResist4",
+       "ColdResist5",
+       "ColdResist6",
+       "ColdResist7",
+       "ColdResist8"
+      ],
+      "label": "+#% to Cold Resistance"
+     },
+     {
+      "ids": [
+       "LightningResist1",
+       "LightningResist2",
+       "LightningResist3",
+       "LightningResist4",
+       "LightningResist5",
+       "LightningResist6",
+       "LightningResist7",
+       "LightningResist8"
+      ],
+      "label": "+#% to Lightning Resistance"
+     },
+     {
+      "ids": [
+       "ChaosResist1",
+       "ChaosResist2",
+       "ChaosResist3",
+       "ChaosResist4",
+       "ChaosResist5",
+       "ChaosResist6"
+      ],
+      "label": "+#% to Chaos Resistance"
+     },
+     {
+      "ids": [
+       "LifeLeechPermyriadSuffix1"
+      ],
+      "label": "(0.2-0.4)% of Physical Attack Damage Leeched as Life"
+     },
+     {
+      "ids": [
+       "ManaLeechPermyriadSuffix1"
+      ],
+      "label": "(0.2-0.4)% of Physical Attack Damage Leeched as Mana"
+     },
+     {
+      "ids": [
+       "LifeGainPerTarget1"
+      ],
+      "label": "Gain 2 Life per Enemy Hit with Attacks"
+     },
+     {
+      "ids": [
+       "LifeGainedFromEnemyDeath1",
+       "LifeGainedFromEnemyDeath2",
+       "LifeGainedFromEnemyDeath3",
+       "LifeGainedFromEnemyDeath4",
+       "LifeGainedFromEnemyDeath5",
+       "LifeGainedFromEnemyDeath6"
+      ],
+      "label": "Gain # Life per Enemy Killed"
+     },
+     {
+      "ids": [
+       "ManaGainedFromEnemyDeath1",
+       "ManaGainedFromEnemyDeath2",
+       "ManaGainedFromEnemyDeath3",
+       "ManaGainedFromEnemyDeath4",
+       "ManaGainedFromEnemyDeath5",
+       "ManaGainedFromEnemyDeath6"
+      ],
+      "label": "Gain # Mana per Enemy Killed"
+     },
+     {
+      "ids": [
+       "DamageTakenGainedAsLife1___",
+       "DamageTakenGainedAsLife2",
+       "DamageTakenGainedAsLife3",
+       "DamageTakenGainedAsLife4_"
+      ],
+      "label": "#% of Damage taken Recouped as Life"
+     }
+    ]
+   ]
+  },
+  {
+   "explicit": [
+    "+3% Chance to Block Attack Damage while holding a Shield"
+   ],
+   "level": 0,
+   "limit": 4,
+   "name": "New Item, Cobalt Jewel",
+   "slots": [
+    [
+     {
+      "ids": [
+       "BlockShieldJewel"
+      ],
+      "label": "+(2-3)% Chance to Block Attack Damage while holding a Shield"
+     },
+     {
+      "ids": [
+       "ShieldSpellBlockJewel"
+      ],
+      "label": "+(2-3)% Chance to Block Spell Damage while holding a Shield"
+     },
+     {
+      "ids": [
+       "DualWieldingSpellBlockForJewel"
+      ],
+      "label": "+(2-3)% Chance to Block Spell Damage while Dual Wielding"
+     },
+     {
+      "ids": [
+       "StaffSpellBlockJewel"
+      ],
+      "label": "+(2-3)% Chance to Block Spell Damage while wielding a Staff"
+     },
+     {
+      "ids": [
+       "BlockStaffJewel"
+      ],
+      "label": "+(2-3)% Chance to Block Attack Damage while wielding a Staff"
+     },
+     {
+      "ids": [
+       "BlockDualWieldingJewel"
+      ],
+      "label": "+(2-3)% Chance to Block Attack Damage while Dual Wielding"
+     },
+     {
+      "ids": [
+       "TotemDamageJewel"
+      ],
+      "label": "(12-16)% increased Totem Damage"
+     },
+     {
+      "ids": [
+       "TrapDamageJewel"
+      ],
+      "label": "(14-16)% increased Trap Damage"
+     },
+     {
+      "ids": [
+       "MineDamageJewel"
+      ],
+      "label": "(14-16)% increased Mine Damage"
+     },
+     {
+      "ids": [
+       "StaffSpellDamageJewel"
+      ],
+      "label": "(14-16)% increased Spell Damage while wielding a Staff"
+     },
+     {
+      "ids": [
+       "ShieldSpellDamageJewel"
+      ],
+      "label": "(14-16)% increased Spell Damage while holding a Shield"
+     },
+     {
+      "ids": [
+       "DualWieldingSpellDamageJewel_"
+      ],
+      "label": "(14-16)% increased Spell Damage while Dual Wielding"
+     },
+     {
+      "ids": [
+       "PhysicalDamageJewel"
+      ],
+      "label": "(14-16)% increased Global Physical Damage"
+     },
+     {
+      "ids": [
+       "FireDamageJewel"
+      ],
+      "label": "(14-16)% increased Fire Damage"
+     },
+     {
+      "ids": [
+       "FireGemCastSpeedJewel"
+      ],
+      "label": "(3-5)% increased Cast Speed with Fire Skills"
+     },
+     {
+      "ids": [
+       "ColdDamageJewel"
+      ],
+      "label": "(14-16)% increased Cold Damage"
+     },
+     {
+      "ids": [
+       "ColdGemCastSpeedJewel"
+      ],
+      "label": "(3-5)% increased Cast Speed with Cold Skills"
+     },
+     {
+      "ids": [
+       "LightningDamageJewel"
+      ],
+      "label": "(14-16)% increased Lightning Damage"
+     },
+     {
+      "ids": [
+       "LightningGemCastSpeedJewel_"
+      ],
+      "label": "(3-5)% increased Cast Speed with Lightning Skills"
+     },
+     {
+      "ids": [
+       "ChaosDamageJewel"
+      ],
+      "label": "(9-13)% increased Chaos Damage"
+     },
+     {
+      "ids": [
+       "DualWieldingAttackSpeedJewel"
+      ],
+      "label": "(4-6)% increased Attack Speed while Dual Wielding"
+     },
+     {
+      "ids": [
+       "ShieldAttackSpeedJewel"
+      ],
+      "label": "(4-6)% increased Attack Speed while holding a Shield"
+     },
+     {
+      "ids": [
+       "WandAttackSpeedJewel"
+      ],
+      "label": "(6-8)% increased Attack Speed with Wands"
+     },
+     {
+      "ids": [
+       "DualWieldingCastSpeedJewel"
+      ],
+      "label": "(3-5)% increased Cast Speed while Dual Wielding"
+     },
+     {
+      "ids": [
+       "ShieldCastSpeedJewel"
+      ],
+      "label": "(3-5)% increased Cast Speed while holding a Shield"
+     },
+     {
+      "ids": [
+       "StaffCastSpeedJewel"
+      ],
+      "label": "(3-5)% increased Cast Speed while wielding a Staff"
+     },
+     {
+      "ids": [
+       "FireCritChanceJewel"
+      ],
+      "label": "(14-18)% increased Critical Strike Chance with Fire Skills"
+     },
+     {
+      "ids": [
+       "LightningCritChanceJewel"
+      ],
+      "label": "(14-18)% increased Critical Strike Chance with Lightning Skills"
+     },
+     {
+      "ids": [
+       "ColdCritChanceJewel"
+      ],
+      "label": "(14-18)% increased Critical Strike Chance with Cold Skills"
+     },
+     {
+      "ids": [
+       "FireCritMultiplier"
+      ],
+      "label": "+(15-18)% to Critical Strike Multiplier with Fire Skills"
+     },
+     {
+      "ids": [
+       "LightningCritMultiplier"
+      ],
+      "label": "+(15-18)% to Critical Strike Multiplier with Lightning Skills"
+     },
+     {
+      "ids": [
+       "ColdCritMultiplier"
+      ],
+      "label": "+(15-18)% to Critical Strike Multiplier with Cold Skills"
+     },
+     {
+      "ids": [
+       "EnergyShieldJewel"
+      ],
+      "label": "(6-8)% increased maximum Energy Shield"
+     },
+     {
+      "ids": [
+       "EnergyShieldDelayJewel"
+      ],
+      "label": "(4-6)% faster start of Energy Shield Recharge"
+     },
+     {
+      "ids": [
+       "EnergyShieldRateJewel"
+      ],
+      "label": "(6-8)% increased Energy Shield Recharge Rate"
+     },
+     {
+      "ids": [
+       "PercentIncreasedLifeJewel"
+      ],
+      "label": "(5-7)% increased maximum Life"
+     },
+     {
+      "ids": [
+       "PercentIncreasedManaJewel"
+      ],
+      "label": "(8-10)% increased maximum Mana"
+     },
+     {
+      "ids": [
+       "IncreasedManaRegenJewel"
+      ],
+      "label": "(12-15)% increased Mana Regeneration Rate"
+     },
+     {
+      "ids": [
+       "MinionLifeJewel"
+      ],
+      "label": "Minions have (8-12)% increased maximum Life"
+     },
+     {
+      "ids": [
+       "TotemLifeJewel"
+      ],
+      "label": "(8-12)% increased Totem Life"
+     },
+     {
+      "ids": [
+       "TrapThrowSpeedJewel"
+      ],
+      "label": "(6-8)% increased Trap Throwing Speed"
+     },
+     {
+      "ids": [
+       "MineLaySpeedJewel"
+      ],
+      "label": "(6-8)% increased Mine Throwing Speed"
+     },
+     {
+      "ids": [
+       "MinionDamageJewel"
+      ],
+      "label": "Minions deal (14-16)% increased Damage"
+     },
+     {
+      "ids": [
+       "FlaskDurationJewel"
+      ],
+      "label": "(6-10)% increased Flask Effect Duration"
+     },
+     {
+      "ids": [
+       "ManaReservationEfficiencyJewel"
+      ],
+      "label": "(2-3)% increased Mana Reservation Efficiency of Skills"
+     },
+     {
+      "ids": [
+       "WandDamageJewel"
+      ],
+      "label": "(14-16)% increased Damage with Wands"
+     },
+     {
+      "ids": [
+       "FasterAilmentDamageJewel"
+      ],
+      "label": "Damaging Ailments deal damage (4-6)% faster"
+     }
+    ],
+    [
+     {
+      "ids": [
+       "BlockShieldJewel"
+      ],
+      "label": "+(2-3)% Chance to Block Attack Damage while holding a Shield"
+     },
+     {
+      "ids": [
+       "ShieldSpellBlockJewel"
+      ],
+      "label": "+(2-3)% Chance to Block Spell Damage while holding a Shield"
+     },
+     {
+      "ids": [
+       "DualWieldingSpellBlockForJewel"
+      ],
+      "label": "+(2-3)% Chance to Block Spell Damage while Dual Wielding"
+     },
+     {
+      "ids": [
+       "StaffSpellBlockJewel"
+      ],
+      "label": "+(2-3)% Chance to Block Spell Damage while wielding a Staff"
+     },
+     {
+      "ids": [
+       "BlockStaffJewel"
+      ],
+      "label": "+(2-3)% Chance to Block Attack Damage while wielding a Staff"
+     },
+     {
+      "ids": [
+       "BlockDualWieldingJewel"
+      ],
+      "label": "+(2-3)% Chance to Block Attack Damage while Dual Wielding"
+     },
+     {
+      "ids": [
+       "TotemDamageJewel"
+      ],
+      "label": "(12-16)% increased Totem Damage"
+     },
+     {
+      "ids": [
+       "TrapDamageJewel"
+      ],
+      "label": "(14-16)% increased Trap Damage"
+     },
+     {
+      "ids": [
+       "MineDamageJewel"
+      ],
+      "label": "(14-16)% increased Mine Damage"
+     },
+     {
+      "ids": [
+       "StaffSpellDamageJewel"
+      ],
+      "label": "(14-16)% increased Spell Damage while wielding a Staff"
+     },
+     {
+      "ids": [
+       "ShieldSpellDamageJewel"
+      ],
+      "label": "(14-16)% increased Spell Damage while holding a Shield"
+     },
+     {
+      "ids": [
+       "DualWieldingSpellDamageJewel_"
+      ],
+      "label": "(14-16)% increased Spell Damage while Dual Wielding"
+     },
+     {
+      "ids": [
+       "PhysicalDamageJewel"
+      ],
+      "label": "(14-16)% increased Global Physical Damage"
+     },
+     {
+      "ids": [
+       "FireDamageJewel"
+      ],
+      "label": "(14-16)% increased Fire Damage"
+     },
+     {
+      "ids": [
+       "FireGemCastSpeedJewel"
+      ],
+      "label": "(3-5)% increased Cast Speed with Fire Skills"
+     },
+     {
+      "ids": [
+       "ColdDamageJewel"
+      ],
+      "label": "(14-16)% increased Cold Damage"
+     },
+     {
+      "ids": [
+       "ColdGemCastSpeedJewel"
+      ],
+      "label": "(3-5)% increased Cast Speed with Cold Skills"
+     },
+     {
+      "ids": [
+       "LightningDamageJewel"
+      ],
+      "label": "(14-16)% increased Lightning Damage"
+     },
+     {
+      "ids": [
+       "LightningGemCastSpeedJewel_"
+      ],
+      "label": "(3-5)% increased Cast Speed with Lightning Skills"
+     },
+     {
+      "ids": [
+       "ChaosDamageJewel"
+      ],
+      "label": "(9-13)% increased Chaos Damage"
+     },
+     {
+      "ids": [
+       "DualWieldingAttackSpeedJewel"
+      ],
+      "label": "(4-6)% increased Attack Speed while Dual Wielding"
+     },
+     {
+      "ids": [
+       "ShieldAttackSpeedJewel"
+      ],
+      "label": "(4-6)% increased Attack Speed while holding a Shield"
+     },
+     {
+      "ids": [
+       "WandAttackSpeedJewel"
+      ],
+      "label": "(6-8)% increased Attack Speed with Wands"
+     },
+     {
+      "ids": [
+       "DualWieldingCastSpeedJewel"
+      ],
+      "label": "(3-5)% increased Cast Speed while Dual Wielding"
+     },
+     {
+      "ids": [
+       "ShieldCastSpeedJewel"
+      ],
+      "label": "(3-5)% increased Cast Speed while holding a Shield"
+     },
+     {
+      "ids": [
+       "StaffCastSpeedJewel"
+      ],
+      "label": "(3-5)% increased Cast Speed while wielding a Staff"
+     },
+     {
+      "ids": [
+       "FireCritChanceJewel"
+      ],
+      "label": "(14-18)% increased Critical Strike Chance with Fire Skills"
+     },
+     {
+      "ids": [
+       "LightningCritChanceJewel"
+      ],
+      "label": "(14-18)% increased Critical Strike Chance with Lightning Skills"
+     },
+     {
+      "ids": [
+       "ColdCritChanceJewel"
+      ],
+      "label": "(14-18)% increased Critical Strike Chance with Cold Skills"
+     },
+     {
+      "ids": [
+       "FireCritMultiplier"
+      ],
+      "label": "+(15-18)% to Critical Strike Multiplier with Fire Skills"
+     },
+     {
+      "ids": [
+       "LightningCritMultiplier"
+      ],
+      "label": "+(15-18)% to Critical Strike Multiplier with Lightning Skills"
+     },
+     {
+      "ids": [
+       "ColdCritMultiplier"
+      ],
+      "label": "+(15-18)% to Critical Strike Multiplier with Cold Skills"
+     },
+     {
+      "ids": [
+       "EnergyShieldJewel"
+      ],
+      "label": "(6-8)% increased maximum Energy Shield"
+     },
+     {
+      "ids": [
+       "EnergyShieldDelayJewel"
+      ],
+      "label": "(4-6)% faster start of Energy Shield Recharge"
+     },
+     {
+      "ids": [
+       "EnergyShieldRateJewel"
+      ],
+      "label": "(6-8)% increased Energy Shield Recharge Rate"
+     },
+     {
+      "ids": [
+       "PercentIncreasedLifeJewel"
+      ],
+      "label": "(5-7)% increased maximum Life"
+     },
+     {
+      "ids": [
+       "PercentIncreasedManaJewel"
+      ],
+      "label": "(8-10)% increased maximum Mana"
+     },
+     {
+      "ids": [
+       "IncreasedManaRegenJewel"
+      ],
+      "label": "(12-15)% increased Mana Regeneration Rate"
+     },
+     {
+      "ids": [
+       "MinionLifeJewel"
+      ],
+      "label": "Minions have (8-12)% increased maximum Life"
+     },
+     {
+      "ids": [
+       "TotemLifeJewel"
+      ],
+      "label": "(8-12)% increased Totem Life"
+     },
+     {
+      "ids": [
+       "TrapThrowSpeedJewel"
+      ],
+      "label": "(6-8)% increased Trap Throwing Speed"
+     },
+     {
+      "ids": [
+       "MineLaySpeedJewel"
+      ],
+      "label": "(6-8)% increased Mine Throwing Speed"
+     },
+     {
+      "ids": [
+       "MinionDamageJewel"
+      ],
+      "label": "Minions deal (14-16)% increased Damage"
+     },
+     {
+      "ids": [
+       "FlaskDurationJewel"
+      ],
+      "label": "(6-10)% increased Flask Effect Duration"
+     },
+     {
+      "ids": [
+       "ManaReservationEfficiencyJewel"
+      ],
+      "label": "(2-3)% increased Mana Reservation Efficiency of Skills"
+     },
+     {
+      "ids": [
+       "WandDamageJewel"
+      ],
+      "label": "(14-16)% increased Damage with Wands"
+     },
+     {
+      "ids": [
+       "FasterAilmentDamageJewel"
+      ],
+      "label": "Damaging Ailments deal damage (4-6)% faster"
+     }
+    ],
+    [
+     {
+      "ids": [
+       "AllAttributesJewel"
+      ],
+      "label": "+(6-8) to all Attributes"
+     },
+     {
+      "ids": [
+       "StrengthJewel"
+      ],
+      "label": "+(12-16) to Strength"
+     },
+     {
+      "ids": [
+       "DexterityJewel"
+      ],
+      "label": "+(12-16) to Dexterity"
+     },
+     {
+      "ids": [
+       "IntelligenceJewel"
+      ],
+      "label": "+(12-16) to Intelligence"
+     },
+     {
+      "ids": [
+       "StrengthDexterityJewel"
+      ],
+      "label": "+(8-10) to Strength and Dexterity"
+     },
+     {
+      "ids": [
+       "StrengthIntelligenceJewel"
+      ],
+      "label": "+(8-10) to Strength and Intelligence"
+     },
+     {
+      "ids": [
+       "DexterityIntelligenceJewel"
+      ],
+      "label": "+(8-10) to Dexterity and Intelligence"
+     },
+     {
+      "ids": [
+       "DamageJewel"
+      ],
+      "label": "(8-10)% increased Damage"
+     },
+     {
+      "ids": [
+       "DamageOverTimeJewel"
+      ],
+      "label": "(10-12)% increased Damage over Time"
+     },
+     {
+      "ids": [
+       "SpellDamageJewel"
+      ],
+      "label": "(10-12)% increased Spell Damage"
+     },
+     {
+      "ids": [
+       "JewelGlobalDamageOverTimeMultiplier1"
+      ],
+      "label": "+(4-6)% to Damage over Time Multiplier"
+     },
+     {
+      "ids": [
+       "JewelPhysicalDamageOverTimeMultiplier1"
+      ],
+      "label": "+(6-8)% to Physical Damage over Time Multiplier"
+     },
+     {
+      "ids": [
+       "JewelFireDamageOverTimeMultiplier1"
+      ],
+      "label": "+(6-8)% to Fire Damage over Time Multiplier"
+     },
+     {
+      "ids": [
+       "JewelColdDamageOverTimeMultiplier1"
+      ],
+      "label": "+(6-8)% to Cold Damage over Time Multiplier"
+     },
+     {
+      "ids": [
+       "JewelChaosNonAilmentDamageOverTimeMultiplier2"
+      ],
+      "label": "+(6-8)% to Chaos Damage over Time Multiplier"
+     },
+     {
+      "ids": [
+       "AttackSpeedJewel"
+      ],
+      "label": "(3-5)% increased Attack Speed"
+     },
+     {
+      "ids": [
+       "CastSpeedJewel"
+      ],
+      "label": "(2-4)% increased Cast Speed"
+     },
+     {
+      "ids": [
+       "SpellCritChanceJewel"
+      ],
+      "label": "(10-14)% increased Spell Critical Strike Chance"
+     },
+     {
+      "ids": [
+       "CriticalStrikeChanceJewel"
+      ],
+      "label": "(8-12)% increased Global Critical Strike Chance"
+     },
+     {
+      "ids": [
+       "ElementalCritChanceJewel"
+      ],
+      "label": "(10-14)% increased Critical Strike Chance with Elemental Skills"
+     },
+     {
+      "ids": [
+       "CriticalStrikeMultiplierJewel"
+      ],
+      "label": "+(9-12)% to Global Critical Strike Multiplier"
+     },
+     {
+      "ids": [
+       "SpellCritMultiplier"
+      ],
+      "label": "+(12-15)% to Critical Strike Multiplier for Spell Damage"
+     },
+     {
+      "ids": [
+       "ElementalCritMultiplier"
+      ],
+      "label": "+(12-15)% to Critical Strike Multiplier with Elemental Skills"
+     },
+     {
+      "ids": [
+       "AllResistancesJewel"
+      ],
+      "label": "+(8-10)% to all Elemental Resistances"
+     },
+     {
+      "ids": [
+       "MaximumFireResistanceJewel"
+      ],
+      "label": "+(1-2)% to maximum Fire Resistance"
+     },
+     {
+      "ids": [
+       "FireResistanceJewel"
+      ],
+      "label": "+(12-15)% to Fire Resistance"
+     },
+     {
+      "ids": [
+       "MaximumColdResistanceJewel"
+      ],
+      "label": "+(1-2)% to maximum Cold Resistance"
+     },
+     {
+      "ids": [
+       "ColdResistanceJewel"
+      ],
+      "label": "+(12-15)% to Cold Resistance"
+     },
+     {
+      "ids": [
+       "MaximumLightningResistanceJewel"
+      ],
+      "label": "+(1-2)% to maximum Lightning Resistance"
+     },
+     {
+      "ids": [
+       "LightningResistanceJewel"
+      ],
+      "label": "+(12-15)% to Lightning Resistance"
+     },
+     {
+      "ids": [
+       "ChaosResistanceJewel"
+      ],
+      "label": "+(7-13)% to Chaos Resistance"
+     },
+     {
+      "ids": [
+       "ChillEffectOnYouJewel"
+      ],
+      "label": "(30-35)% reduced Effect of Chill on you"
+     },
+     {
+      "ids": [
+       "EnergyShieldOnHitJewel"
+      ],
+      "label": "Gain (2-3) Energy Shield per Enemy Hit with Attacks"
+     },
+     {
+      "ids": [
+       "ProjectileSpeedJewel"
+      ],
+      "label": "(6-8)% increased Projectile Speed"
+     },
+     {
+      "ids": [
+       "ShockChanceAndDurationJewel"
+      ],
+      "label": "(12-16)% increased Shock Duration on Enemies/(3-5)% chance to Shock"
+     },
+     {
+      "ids": [
+       "FreezeChanceAndDurationJewel"
+      ],
+      "label": "(12-16)% increased Freeze Duration on Enemies/(3-5)% chance to Freeze"
+     },
+     {
+      "ids": [
+       "IgniteChanceAndDurationJewel"
+      ],
+      "label": "(6-8)% increased Ignite Duration on Enemies/(3-5)% chance to Ignite"
+     },
+     {
+      "ids": [
+       "StunDurationJewel"
+      ],
+      "label": "(10-14)% increased Stun Duration on Enemies"
+     },
+     {
+      "ids": [
+       "IgniteDurationOnYouJewel"
+      ],
+      "label": "(30-35)% reduced Ignite Duration on you"
+     },
+     {
+      "ids": [
+       "BurningDamageForJewel"
+      ],
+      "label": "(16-20)% increased Burning Damage"
+     },
+     {
+      "ids": [
+       "StunRecoveryJewel"
+      ],
+      "label": "(25-35)% increased Stun and Block Recovery"
+     },
+     {
+      "ids": [
+       "KnockbackChanceJewel_"
+      ],
+      "label": "(4-6)% chance to Knock Enemies Back on hit"
+     },
+     {
+      "ids": [
+       "ProjectileDamageJewel"
+      ],
+      "label": "(10-12)% increased Projectile Damage"
+     },
+     {
+      "ids": [
+       "AreaDamageJewel"
+      ],
+      "label": "(10-12)% increased Area Damage"
+     },
+     {
+      "ids": [
+       "AttackAndCastSpeedJewel"
+      ],
+      "label": "(2-4)% increased Attack and Cast Speed"
+     },
+     {
+      "ids": [
+       "CurseEffectOnYouJewel"
+      ],
+      "label": "(25-30)% reduced Effect of Curses on you"
+     },
+     {
+      "ids": [
+       "BleedChanceAndDurationForJewel__"
+      ],
+      "label": "Attacks have (3-5)% chance to cause Bleeding/(12-16)% increased Bleeding Duration"
+     },
+     {
+      "ids": [
+       "TotemElementalResistancesJewel"
+      ],
+      "label": "Totems gain +(6-10)% to all Elemental Resistances"
+     },
+     {
+      "ids": [
+       "FireColdResistanceJewel"
+      ],
+      "label": "+(10-12)% to Fire and Cold Resistances"
+     },
+     {
+      "ids": [
+       "FireLightningResistanceJewel"
+      ],
+      "label": "+(10-12)% to Fire and Lightning Resistances"
+     },
+     {
+      "ids": [
+       "ColdLightningResistanceJewel"
+      ],
+      "label": "+(10-12)% to Cold and Lightning Resistances"
+     },
+     {
+      "ids": [
+       "MinionElementalResistancesJewel"
+      ],
+      "label": "Minions have +(11-15)% to all Elemental Resistances"
+     },
+     {
+      "ids": [
+       "BleedDamageForJewel"
+      ],
+      "label": "(16-20)% increased Damage with Bleeding"
+     },
+     {
+      "ids": [
+       "PoisonChanceAndDurationForJewel"
+      ],
+      "label": "(6-8)% increased Poison Duration/(3-5)% chance to Poison on Hit"
+     },
+     {
+      "ids": [
+       "PoisonDamageForJewel"
+      ],
+      "label": "(16-20)% increased Damage with Poison"
+     },
+     {
+      "ids": [
+       "ImpaleChanceForJewel_"
+      ],
+      "label": "(5-7)% chance to Impale Enemies on Hit with Attacks"
+     },
+     {
+      "ids": [
+       "ManaCostEfficiencyJewel"
+      ],
+      "label": "(10-15)% increased Mana Cost Efficiency"
+     },
+     {
+      "ids": [
+       "LifeRecoupJewel"
+      ],
+      "label": "(4-6)% of Damage taken Recouped as Life"
+     },
+     {
+      "ids": [
+       "BleedDurationOnYouJewel"
+      ],
+      "label": "(30-35)% reduced Bleed Duration on you"
+     },
+     {
+      "ids": [
+       "PoisonDurationOnYouJewel"
+      ],
+      "label": "(30-35)% reduced Poison Duration on you"
+     },
+     {
+      "ids": [
+       "ShockEffectOnYouJewel"
+      ],
+      "label": "(30-35)% reduced Effect of Shock on you"
+     }
+    ],
+    [
+     {
+      "ids": [
+       "AllAttributesJewel"
+      ],
+      "label": "+(6-8) to all Attributes"
+     },
+     {
+      "ids": [
+       "StrengthJewel"
+      ],
+      "label": "+(12-16) to Strength"
+     },
+     {
+      "ids": [
+       "DexterityJewel"
+      ],
+      "label": "+(12-16) to Dexterity"
+     },
+     {
+      "ids": [
+       "IntelligenceJewel"
+      ],
+      "label": "+(12-16) to Intelligence"
+     },
+     {
+      "ids": [
+       "StrengthDexterityJewel"
+      ],
+      "label": "+(8-10) to Strength and Dexterity"
+     },
+     {
+      "ids": [
+       "StrengthIntelligenceJewel"
+      ],
+      "label": "+(8-10) to Strength and Intelligence"
+     },
+     {
+      "ids": [
+       "DexterityIntelligenceJewel"
+      ],
+      "label": "+(8-10) to Dexterity and Intelligence"
+     },
+     {
+      "ids": [
+       "DamageJewel"
+      ],
+      "label": "(8-10)% increased Damage"
+     },
+     {
+      "ids": [
+       "DamageOverTimeJewel"
+      ],
+      "label": "(10-12)% increased Damage over Time"
+     },
+     {
+      "ids": [
+       "SpellDamageJewel"
+      ],
+      "label": "(10-12)% increased Spell Damage"
+     },
+     {
+      "ids": [
+       "JewelGlobalDamageOverTimeMultiplier1"
+      ],
+      "label": "+(4-6)% to Damage over Time Multiplier"
+     },
+     {
+      "ids": [
+       "JewelPhysicalDamageOverTimeMultiplier1"
+      ],
+      "label": "+(6-8)% to Physical Damage over Time Multiplier"
+     },
+     {
+      "ids": [
+       "JewelFireDamageOverTimeMultiplier1"
+      ],
+      "label": "+(6-8)% to Fire Damage over Time Multiplier"
+     },
+     {
+      "ids": [
+       "JewelColdDamageOverTimeMultiplier1"
+      ],
+      "label": "+(6-8)% to Cold Damage over Time Multiplier"
+     },
+     {
+      "ids": [
+       "JewelChaosNonAilmentDamageOverTimeMultiplier2"
+      ],
+      "label": "+(6-8)% to Chaos Damage over Time Multiplier"
+     },
+     {
+      "ids": [
+       "AttackSpeedJewel"
+      ],
+      "label": "(3-5)% increased Attack Speed"
+     },
+     {
+      "ids": [
+       "CastSpeedJewel"
+      ],
+      "label": "(2-4)% increased Cast Speed"
+     },
+     {
+      "ids": [
+       "SpellCritChanceJewel"
+      ],
+      "label": "(10-14)% increased Spell Critical Strike Chance"
+     },
+     {
+      "ids": [
+       "CriticalStrikeChanceJewel"
+      ],
+      "label": "(8-12)% increased Global Critical Strike Chance"
+     },
+     {
+      "ids": [
+       "ElementalCritChanceJewel"
+      ],
+      "label": "(10-14)% increased Critical Strike Chance with Elemental Skills"
+     },
+     {
+      "ids": [
+       "CriticalStrikeMultiplierJewel"
+      ],
+      "label": "+(9-12)% to Global Critical Strike Multiplier"
+     },
+     {
+      "ids": [
+       "SpellCritMultiplier"
+      ],
+      "label": "+(12-15)% to Critical Strike Multiplier for Spell Damage"
+     },
+     {
+      "ids": [
+       "ElementalCritMultiplier"
+      ],
+      "label": "+(12-15)% to Critical Strike Multiplier with Elemental Skills"
+     },
+     {
+      "ids": [
+       "AllResistancesJewel"
+      ],
+      "label": "+(8-10)% to all Elemental Resistances"
+     },
+     {
+      "ids": [
+       "MaximumFireResistanceJewel"
+      ],
+      "label": "+(1-2)% to maximum Fire Resistance"
+     },
+     {
+      "ids": [
+       "FireResistanceJewel"
+      ],
+      "label": "+(12-15)% to Fire Resistance"
+     },
+     {
+      "ids": [
+       "MaximumColdResistanceJewel"
+      ],
+      "label": "+(1-2)% to maximum Cold Resistance"
+     },
+     {
+      "ids": [
+       "ColdResistanceJewel"
+      ],
+      "label": "+(12-15)% to Cold Resistance"
+     },
+     {
+      "ids": [
+       "MaximumLightningResistanceJewel"
+      ],
+      "label": "+(1-2)% to maximum Lightning Resistance"
+     },
+     {
+      "ids": [
+       "LightningResistanceJewel"
+      ],
+      "label": "+(12-15)% to Lightning Resistance"
+     },
+     {
+      "ids": [
+       "ChaosResistanceJewel"
+      ],
+      "label": "+(7-13)% to Chaos Resistance"
+     },
+     {
+      "ids": [
+       "ChillEffectOnYouJewel"
+      ],
+      "label": "(30-35)% reduced Effect of Chill on you"
+     },
+     {
+      "ids": [
+       "EnergyShieldOnHitJewel"
+      ],
+      "label": "Gain (2-3) Energy Shield per Enemy Hit with Attacks"
+     },
+     {
+      "ids": [
+       "ProjectileSpeedJewel"
+      ],
+      "label": "(6-8)% increased Projectile Speed"
+     },
+     {
+      "ids": [
+       "ShockChanceAndDurationJewel"
+      ],
+      "label": "(12-16)% increased Shock Duration on Enemies/(3-5)% chance to Shock"
+     },
+     {
+      "ids": [
+       "FreezeChanceAndDurationJewel"
+      ],
+      "label": "(12-16)% increased Freeze Duration on Enemies/(3-5)% chance to Freeze"
+     },
+     {
+      "ids": [
+       "IgniteChanceAndDurationJewel"
+      ],
+      "label": "(6-8)% increased Ignite Duration on Enemies/(3-5)% chance to Ignite"
+     },
+     {
+      "ids": [
+       "StunDurationJewel"
+      ],
+      "label": "(10-14)% increased Stun Duration on Enemies"
+     },
+     {
+      "ids": [
+       "IgniteDurationOnYouJewel"
+      ],
+      "label": "(30-35)% reduced Ignite Duration on you"
+     },
+     {
+      "ids": [
+       "BurningDamageForJewel"
+      ],
+      "label": "(16-20)% increased Burning Damage"
+     },
+     {
+      "ids": [
+       "StunRecoveryJewel"
+      ],
+      "label": "(25-35)% increased Stun and Block Recovery"
+     },
+     {
+      "ids": [
+       "KnockbackChanceJewel_"
+      ],
+      "label": "(4-6)% chance to Knock Enemies Back on hit"
+     },
+     {
+      "ids": [
+       "ProjectileDamageJewel"
+      ],
+      "label": "(10-12)% increased Projectile Damage"
+     },
+     {
+      "ids": [
+       "AreaDamageJewel"
+      ],
+      "label": "(10-12)% increased Area Damage"
+     },
+     {
+      "ids": [
+       "AttackAndCastSpeedJewel"
+      ],
+      "label": "(2-4)% increased Attack and Cast Speed"
+     },
+     {
+      "ids": [
+       "CurseEffectOnYouJewel"
+      ],
+      "label": "(25-30)% reduced Effect of Curses on you"
+     },
+     {
+      "ids": [
+       "BleedChanceAndDurationForJewel__"
+      ],
+      "label": "Attacks have (3-5)% chance to cause Bleeding/(12-16)% increased Bleeding Duration"
+     },
+     {
+      "ids": [
+       "TotemElementalResistancesJewel"
+      ],
+      "label": "Totems gain +(6-10)% to all Elemental Resistances"
+     },
+     {
+      "ids": [
+       "FireColdResistanceJewel"
+      ],
+      "label": "+(10-12)% to Fire and Cold Resistances"
+     },
+     {
+      "ids": [
+       "FireLightningResistanceJewel"
+      ],
+      "label": "+(10-12)% to Fire and Lightning Resistances"
+     },
+     {
+      "ids": [
+       "ColdLightningResistanceJewel"
+      ],
+      "label": "+(10-12)% to Cold and Lightning Resistances"
+     },
+     {
+      "ids": [
+       "MinionElementalResistancesJewel"
+      ],
+      "label": "Minions have +(11-15)% to all Elemental Resistances"
+     },
+     {
+      "ids": [
+       "BleedDamageForJewel"
+      ],
+      "label": "(16-20)% increased Damage with Bleeding"
+     },
+     {
+      "ids": [
+       "PoisonChanceAndDurationForJewel"
+      ],
+      "label": "(6-8)% increased Poison Duration/(3-5)% chance to Poison on Hit"
+     },
+     {
+      "ids": [
+       "PoisonDamageForJewel"
+      ],
+      "label": "(16-20)% increased Damage with Poison"
+     },
+     {
+      "ids": [
+       "ImpaleChanceForJewel_"
+      ],
+      "label": "(5-7)% chance to Impale Enemies on Hit with Attacks"
+     },
+     {
+      "ids": [
+       "ManaCostEfficiencyJewel"
+      ],
+      "label": "(10-15)% increased Mana Cost Efficiency"
+     },
+     {
+      "ids": [
+       "LifeRecoupJewel"
+      ],
+      "label": "(4-6)% of Damage taken Recouped as Life"
+     },
+     {
+      "ids": [
+       "BleedDurationOnYouJewel"
+      ],
+      "label": "(30-35)% reduced Bleed Duration on you"
+     },
+     {
+      "ids": [
+       "PoisonDurationOnYouJewel"
+      ],
+      "label": "(30-35)% reduced Poison Duration on you"
+     },
+     {
+      "ids": [
+       "ShockEffectOnYouJewel"
+      ],
+      "label": "(30-35)% reduced Effect of Shock on you"
+     }
+    ]
+   ]
+  },
+  {
+   "explicit": [],
+   "level": 66,
+   "limit": 6,
+   "name": "New Item, Imperial Bow",
+   "slots": [
+    [
+     {
+      "ids": [
+       "LocalIncreaseSocketedGemLevel1"
+      ],
+      "label": "+1 to Level of Socketed Gems"
+     },
+     {
+      "ids": [
+       "LocalIncreaseSocketedBowGemLevel1",
+       "LocalIncreaseSocketedBowGemLevel2"
+      ],
+      "label": "+# to Level of Socketed Bow Gems"
+     },
+     {
+      "ids": [
+       "LocalIncreasedPhysicalDamagePercent1",
+       "LocalIncreasedPhysicalDamagePercent2",
+       "LocalIncreasedPhysicalDamagePercent3",
+       "LocalIncreasedPhysicalDamagePercent4",
+       "LocalIncreasedPhysicalDamagePercent5",
+       "LocalIncreasedPhysicalDamagePercent6",
+       "LocalIncreasedPhysicalDamagePercent7",
+       "LocalIncreasedPhysicalDamagePercent8"
+      ],
+      "label": "#% increased Physical Damage"
+     },
+     {
+      "ids": [
+       "LocalIncreasedPhysicalDamagePercentAndAccuracyRating1",
+       "LocalIncreasedPhysicalDamagePercentAndAccuracyRating2",
+       "LocalIncreasedPhysicalDamagePercentAndAccuracyRating3",
+       "LocalIncreasedPhysicalDamagePercentAndAccuracyRating4",
+       "LocalIncreasedPhysicalDamagePercentAndAccuracyRating5",
+       "LocalIncreasedPhysicalDamagePercentAndAccuracyRating6",
+       "LocalIncreasedPhysicalDamagePercentAndAccuracyRating7",
+       "LocalIncreasedPhysicalDamagePercentAndAccuracyRating8"
+      ],
+      "label": "#% increased Physical Damage/+# to Accuracy Rating"
+     },
+     {
+      "ids": [
+       "LocalAddedPhysicalDamageTwoHand1",
+       "LocalAddedPhysicalDamageTwoHand2",
+       "LocalAddedPhysicalDamageTwoHand3",
+       "LocalAddedPhysicalDamageTwoHand4",
+       "LocalAddedPhysicalDamageTwoHand5",
+       "LocalAddedPhysicalDamageTwoHand6",
+       "LocalAddedPhysicalDamageTwoHand7",
+       "LocalAddedPhysicalDamageTwoHand8",
+       "LocalAddedPhysicalDamageTwoHand9"
+      ],
+      "label": "Adds # to # Physical Damage"
+     },
+     {
+      "ids": [
+       "LocalAddedFireDamageTwoHand1",
+       "LocalAddedFireDamageTwoHand2",
+       "LocalAddedFireDamageTwoHand3",
+       "LocalAddedFireDamageTwoHand4",
+       "LocalAddedFireDamageTwoHand5",
+       "LocalAddedFireDamageTwoHand6",
+       "LocalAddedFireDamageTwoHand7",
+       "LocalAddedFireDamageTwoHand8_",
+       "LocalAddedFireDamageTwoHand9",
+       "LocalAddedFireDamageTwoHand10"
+      ],
+      "label": "Adds # to # Fire Damage"
+     },
+     {
+      "ids": [
+       "LocalAddedColdDamageTwoHand1",
+       "LocalAddedColdDamageTwoHand2",
+       "LocalAddedColdDamageTwoHand3",
+       "LocalAddedColdDamageTwoHand4",
+       "LocalAddedColdDamageTwoHand5",
+       "LocalAddedColdDamageTwoHand6",
+       "LocalAddedColdDamageTwoHand7",
+       "LocalAddedColdDamageTwoHand8",
+       "LocalAddedColdDamageTwoHand9",
+       "LocalAddedColdDamageTwoHand10"
+      ],
+      "label": "Adds # to # Cold Damage"
+     },
+     {
+      "ids": [
+       "LocalAddedLightningDamageTwoHand1_",
+       "LocalAddedLightningDamageTwoHand2",
+       "LocalAddedLightningDamageTwoHand3",
+       "LocalAddedLightningDamageTwoHand4",
+       "LocalAddedLightningDamageTwoHand5",
+       "LocalAddedLightningDamageTwoHand6",
+       "LocalAddedLightningDamageTwoHand7",
+       "LocalAddedLightningDamageTwoHand8",
+       "LocalAddedLightningDamageTwoHand9",
+       "LocalAddedLightningDamageTwoHand10"
+      ],
+      "label": "Adds # to # Lightning Damage"
+     },
+     {
+      "ids": [
+       "LocalAddedChaosDamageTwoHand1"
+      ],
+      "label": "Adds (98-149) to (183-280) Chaos Damage"
+     },
+     {
+      "ids": [
+       "WeaponElementalDamageOnTwohandWeapon1",
+       "WeaponElementalDamageOnTwohandWeapon2____",
+       "WeaponElementalDamageOnTwohandWeapon3",
+       "WeaponElementalDamageOnTwohandWeapon4",
+       "WeaponElementalDamageOnTwohandWeapon5",
+       "WeaponElementalDamageOnTwohandWeapon6"
+      ],
+      "label": "#% increased Elemental Damage with Attack Skills"
+     }
+    ],
+    [
+     {
+      "ids": [
+       "LocalIncreaseSocketedGemLevel1"
+      ],
+      "label": "+1 to Level of Socketed Gems"
+     },
+     {
+      "ids": [
+       "LocalIncreaseSocketedBowGemLevel1",
+       "LocalIncreaseSocketedBowGemLevel2"
+      ],
+      "label": "+# to Level of Socketed Bow Gems"
+     },
+     {
+      "ids": [
+       "LocalIncreasedPhysicalDamagePercent1",
+       "LocalIncreasedPhysicalDamagePercent2",
+       "LocalIncreasedPhysicalDamagePercent3",
+       "LocalIncreasedPhysicalDamagePercent4",
+       "LocalIncreasedPhysicalDamagePercent5",
+       "LocalIncreasedPhysicalDamagePercent6",
+       "LocalIncreasedPhysicalDamagePercent7",
+       "LocalIncreasedPhysicalDamagePercent8"
+      ],
+      "label": "#% increased Physical Damage"
+     },
+     {
+      "ids": [
+       "LocalIncreasedPhysicalDamagePercentAndAccuracyRating1",
+       "LocalIncreasedPhysicalDamagePercentAndAccuracyRating2",
+       "LocalIncreasedPhysicalDamagePercentAndAccuracyRating3",
+       "LocalIncreasedPhysicalDamagePercentAndAccuracyRating4",
+       "LocalIncreasedPhysicalDamagePercentAndAccuracyRating5",
+       "LocalIncreasedPhysicalDamagePercentAndAccuracyRating6",
+       "LocalIncreasedPhysicalDamagePercentAndAccuracyRating7",
+       "LocalIncreasedPhysicalDamagePercentAndAccuracyRating8"
+      ],
+      "label": "#% increased Physical Damage/+# to Accuracy Rating"
+     },
+     {
+      "ids": [
+       "LocalAddedPhysicalDamageTwoHand1",
+       "LocalAddedPhysicalDamageTwoHand2",
+       "LocalAddedPhysicalDamageTwoHand3",
+       "LocalAddedPhysicalDamageTwoHand4",
+       "LocalAddedPhysicalDamageTwoHand5",
+       "LocalAddedPhysicalDamageTwoHand6",
+       "LocalAddedPhysicalDamageTwoHand7",
+       "LocalAddedPhysicalDamageTwoHand8",
+       "LocalAddedPhysicalDamageTwoHand9"
+      ],
+      "label": "Adds # to # Physical Damage"
+     },
+     {
+      "ids": [
+       "LocalAddedFireDamageTwoHand1",
+       "LocalAddedFireDamageTwoHand2",
+       "LocalAddedFireDamageTwoHand3",
+       "LocalAddedFireDamageTwoHand4",
+       "LocalAddedFireDamageTwoHand5",
+       "LocalAddedFireDamageTwoHand6",
+       "LocalAddedFireDamageTwoHand7",
+       "LocalAddedFireDamageTwoHand8_",
+       "LocalAddedFireDamageTwoHand9",
+       "LocalAddedFireDamageTwoHand10"
+      ],
+      "label": "Adds # to # Fire Damage"
+     },
+     {
+      "ids": [
+       "LocalAddedColdDamageTwoHand1",
+       "LocalAddedColdDamageTwoHand2",
+       "LocalAddedColdDamageTwoHand3",
+       "LocalAddedColdDamageTwoHand4",
+       "LocalAddedColdDamageTwoHand5",
+       "LocalAddedColdDamageTwoHand6",
+       "LocalAddedColdDamageTwoHand7",
+       "LocalAddedColdDamageTwoHand8",
+       "LocalAddedColdDamageTwoHand9",
+       "LocalAddedColdDamageTwoHand10"
+      ],
+      "label": "Adds # to # Cold Damage"
+     },
+     {
+      "ids": [
+       "LocalAddedLightningDamageTwoHand1_",
+       "LocalAddedLightningDamageTwoHand2",
+       "LocalAddedLightningDamageTwoHand3",
+       "LocalAddedLightningDamageTwoHand4",
+       "LocalAddedLightningDamageTwoHand5",
+       "LocalAddedLightningDamageTwoHand6",
+       "LocalAddedLightningDamageTwoHand7",
+       "LocalAddedLightningDamageTwoHand8",
+       "LocalAddedLightningDamageTwoHand9",
+       "LocalAddedLightningDamageTwoHand10"
+      ],
+      "label": "Adds # to # Lightning Damage"
+     },
+     {
+      "ids": [
+       "LocalAddedChaosDamageTwoHand1"
+      ],
+      "label": "Adds (98-149) to (183-280) Chaos Damage"
+     },
+     {
+      "ids": [
+       "WeaponElementalDamageOnTwohandWeapon1",
+       "WeaponElementalDamageOnTwohandWeapon2____",
+       "WeaponElementalDamageOnTwohandWeapon3",
+       "WeaponElementalDamageOnTwohandWeapon4",
+       "WeaponElementalDamageOnTwohandWeapon5",
+       "WeaponElementalDamageOnTwohandWeapon6"
+      ],
+      "label": "#% increased Elemental Damage with Attack Skills"
+     }
+    ],
+    [
+     {
+      "ids": [
+       "LocalIncreaseSocketedGemLevel1"
+      ],
+      "label": "+1 to Level of Socketed Gems"
+     },
+     {
+      "ids": [
+       "LocalIncreaseSocketedBowGemLevel1",
+       "LocalIncreaseSocketedBowGemLevel2"
+      ],
+      "label": "+# to Level of Socketed Bow Gems"
+     },
+     {
+      "ids": [
+       "LocalIncreasedPhysicalDamagePercent1",
+       "LocalIncreasedPhysicalDamagePercent2",
+       "LocalIncreasedPhysicalDamagePercent3",
+       "LocalIncreasedPhysicalDamagePercent4",
+       "LocalIncreasedPhysicalDamagePercent5",
+       "LocalIncreasedPhysicalDamagePercent6",
+       "LocalIncreasedPhysicalDamagePercent7",
+       "LocalIncreasedPhysicalDamagePercent8"
+      ],
+      "label": "#% increased Physical Damage"
+     },
+     {
+      "ids": [
+       "LocalIncreasedPhysicalDamagePercentAndAccuracyRating1",
+       "LocalIncreasedPhysicalDamagePercentAndAccuracyRating2",
+       "LocalIncreasedPhysicalDamagePercentAndAccuracyRating3",
+       "LocalIncreasedPhysicalDamagePercentAndAccuracyRating4",
+       "LocalIncreasedPhysicalDamagePercentAndAccuracyRating5",
+       "LocalIncreasedPhysicalDamagePercentAndAccuracyRating6",
+       "LocalIncreasedPhysicalDamagePercentAndAccuracyRating7",
+       "LocalIncreasedPhysicalDamagePercentAndAccuracyRating8"
+      ],
+      "label": "#% increased Physical Damage/+# to Accuracy Rating"
+     },
+     {
+      "ids": [
+       "LocalAddedPhysicalDamageTwoHand1",
+       "LocalAddedPhysicalDamageTwoHand2",
+       "LocalAddedPhysicalDamageTwoHand3",
+       "LocalAddedPhysicalDamageTwoHand4",
+       "LocalAddedPhysicalDamageTwoHand5",
+       "LocalAddedPhysicalDamageTwoHand6",
+       "LocalAddedPhysicalDamageTwoHand7",
+       "LocalAddedPhysicalDamageTwoHand8",
+       "LocalAddedPhysicalDamageTwoHand9"
+      ],
+      "label": "Adds # to # Physical Damage"
+     },
+     {
+      "ids": [
+       "LocalAddedFireDamageTwoHand1",
+       "LocalAddedFireDamageTwoHand2",
+       "LocalAddedFireDamageTwoHand3",
+       "LocalAddedFireDamageTwoHand4",
+       "LocalAddedFireDamageTwoHand5",
+       "LocalAddedFireDamageTwoHand6",
+       "LocalAddedFireDamageTwoHand7",
+       "LocalAddedFireDamageTwoHand8_",
+       "LocalAddedFireDamageTwoHand9",
+       "LocalAddedFireDamageTwoHand10"
+      ],
+      "label": "Adds # to # Fire Damage"
+     },
+     {
+      "ids": [
+       "LocalAddedColdDamageTwoHand1",
+       "LocalAddedColdDamageTwoHand2",
+       "LocalAddedColdDamageTwoHand3",
+       "LocalAddedColdDamageTwoHand4",
+       "LocalAddedColdDamageTwoHand5",
+       "LocalAddedColdDamageTwoHand6",
+       "LocalAddedColdDamageTwoHand7",
+       "LocalAddedColdDamageTwoHand8",
+       "LocalAddedColdDamageTwoHand9",
+       "LocalAddedColdDamageTwoHand10"
+      ],
+      "label": "Adds # to # Cold Damage"
+     },
+     {
+      "ids": [
+       "LocalAddedLightningDamageTwoHand1_",
+       "LocalAddedLightningDamageTwoHand2",
+       "LocalAddedLightningDamageTwoHand3",
+       "LocalAddedLightningDamageTwoHand4",
+       "LocalAddedLightningDamageTwoHand5",
+       "LocalAddedLightningDamageTwoHand6",
+       "LocalAddedLightningDamageTwoHand7",
+       "LocalAddedLightningDamageTwoHand8",
+       "LocalAddedLightningDamageTwoHand9",
+       "LocalAddedLightningDamageTwoHand10"
+      ],
+      "label": "Adds # to # Lightning Damage"
+     },
+     {
+      "ids": [
+       "LocalAddedChaosDamageTwoHand1"
+      ],
+      "label": "Adds (98-149) to (183-280) Chaos Damage"
+     },
+     {
+      "ids": [
+       "WeaponElementalDamageOnTwohandWeapon1",
+       "WeaponElementalDamageOnTwohandWeapon2____",
+       "WeaponElementalDamageOnTwohandWeapon3",
+       "WeaponElementalDamageOnTwohandWeapon4",
+       "WeaponElementalDamageOnTwohandWeapon5",
+       "WeaponElementalDamageOnTwohandWeapon6"
+      ],
+      "label": "#% increased Elemental Damage with Attack Skills"
+     }
+    ],
+    [
+     {
+      "ids": [
+       "ReducedLocalAttributeRequirements1",
+       "ReducedLocalAttributeRequirements2"
+      ],
+      "label": "#% reduced Attribute Requirements"
+     },
+     {
+      "ids": [
+       "Dexterity1",
+       "Dexterity2",
+       "Dexterity3",
+       "Dexterity4",
+       "Dexterity5",
+       "Dexterity6",
+       "Dexterity7",
+       "Dexterity8",
+       "Dexterity9"
+      ],
+      "label": "+# to Dexterity"
+     },
+     {
+      "ids": [
+       "GlobalDamageOverTimeMultiplier1h1",
+       "GlobalDamageOverTimeMultiplier1h2_",
+       "GlobalDamageOverTimeMultiplier1h3",
+       "GlobalDamageOverTimeMultiplier1h4",
+       "GlobalDamageOverTimeMultiplier1h5"
+      ],
+      "label": "+#% to Damage over Time Multiplier"
+     },
+     {
+      "ids": [
+       "LocalIncreasedAttackSpeed1",
+       "LocalIncreasedAttackSpeed2",
+       "LocalIncreasedAttackSpeed3",
+       "LocalIncreasedAttackSpeed4",
+       "LocalIncreasedAttackSpeed5"
+      ],
+      "label": "#% increased Attack Speed"
+     },
+     {
+      "ids": [
+       "LocalLightRadiusAndAccuracyNew1_",
+       "LocalLightRadiusAndAccuracyNew2",
+       "LocalLightRadiusAndAccuracy3"
+      ],
+      "label": "#% increased Global Accuracy Rating/#% increased Light Radius"
+     },
+     {
+      "ids": [
+       "LocalCriticalStrikeChance1",
+       "LocalCriticalStrikeChance2",
+       "LocalCriticalStrikeChance3",
+       "LocalCriticalStrikeChance4",
+       "LocalCriticalStrikeChance5",
+       "LocalCriticalStrikeChance6"
+      ],
+      "label": "#% increased Critical Strike Chance"
+     },
+     {
+      "ids": [
+       "LocalCriticalMultiplier1",
+       "LocalCriticalMultiplier2",
+       "LocalCriticalMultiplier3",
+       "LocalCriticalMultiplier4",
+       "LocalCriticalMultiplier5",
+       "LocalCriticalMultiplier6"
+      ],
+      "label": "+#% to Global Critical Strike Multiplier"
+     },
+     {
+      "ids": [
+       "LifeLeechPermyriadLocalSuffix1"
+      ],
+      "label": "(2-2.4)% of Physical Attack Damage Leeched as Life"
+     },
+     {
+      "ids": [
+       "ManaLeechPermyriadLocalSuffix1"
+      ],
+      "label": "(2.6-3.2)% of Physical Attack Damage Leeched as Mana"
+     },
+     {
+      "ids": [
+       "LifeGainPerTargetLocal1",
+       "LifeGainPerTargetLocal2",
+       "LifeGainPerTargetLocal3",
+       "LifeGainPerTargetLocal4",
+       "LifeGainPerTargetLocal5",
+       "LifeGainPerTargetLocal6",
+       "LifeGainPerTargetLocal7",
+       "LifeGainPerTargetLocal8"
+      ],
+      "label": "Grants # Life per Enemy Hit"
+     },
+     {
+      "ids": [
+       "LifeGainedFromEnemyDeath1",
+       "LifeGainedFromEnemyDeath2",
+       "LifeGainedFromEnemyDeath3",
+       "LifeGainedFromEnemyDeath4",
+       "LifeGainedFromEnemyDeath5",
+       "LifeGainedFromEnemyDeath6"
+      ],
+      "label": "Gain # Life per Enemy Killed"
+     },
+     {
+      "ids": [
+       "ManaGainedFromEnemyDeath1",
+       "ManaGainedFromEnemyDeath2",
+       "ManaGainedFromEnemyDeath3",
+       "ManaGainedFromEnemyDeath4",
+       "ManaGainedFromEnemyDeath5",
+       "ManaGainedFromEnemyDeath6"
+      ],
+      "label": "Gain # Mana per Enemy Killed"
+     },
+     {
+      "ids": [
+       "AdditionalArrowBow1_",
+       "AdditionalArrowBow2_"
+      ],
+      "label": "Bow Attacks fire an additional Arrow"
+     },
+     {
+      "ids": [
+       "ProjectileSpeed1",
+       "ProjectileSpeed2",
+       "ProjectileSpeed3",
+       "ProjectileSpeed4",
+       "ProjectileSpeed5"
+      ],
+      "label": "#% increased Projectile Speed"
+     },
+     {
+      "ids": [
+       "StunDuration1",
+       "StunDuration2",
+       "StunDuration3",
+       "StunDuration4",
+       "StunDuration5"
+      ],
+      "label": "#% increased Stun Duration on Enemies"
+     },
+     {
+      "ids": [
+       "LocalIncreasedAccuracyNew1",
+       "LocalIncreasedAccuracyNew2",
+       "LocalIncreasedAccuracyNew3",
+       "LocalIncreasedAccuracyNew4",
+       "LocalIncreasedAccuracyNew5",
+       "LocalIncreasedAccuracyNew6"
+      ],
+      "label": "+# to Accuracy Rating"
+     }
+    ],
+    [
+     {
+      "ids": [
+       "ReducedLocalAttributeRequirements1",
+       "ReducedLocalAttributeRequirements2"
+      ],
+      "label": "#% reduced Attribute Requirements"
+     },
+     {
+      "ids": [
+       "Dexterity1",
+       "Dexterity2",
+       "Dexterity3",
+       "Dexterity4",
+       "Dexterity5",
+       "Dexterity6",
+       "Dexterity7",
+       "Dexterity8",
+       "Dexterity9"
+      ],
+      "label": "+# to Dexterity"
+     },
+     {
+      "ids": [
+       "GlobalDamageOverTimeMultiplier1h1",
+       "GlobalDamageOverTimeMultiplier1h2_",
+       "GlobalDamageOverTimeMultiplier1h3",
+       "GlobalDamageOverTimeMultiplier1h4",
+       "GlobalDamageOverTimeMultiplier1h5"
+      ],
+      "label": "+#% to Damage over Time Multiplier"
+     },
+     {
+      "ids": [
+       "LocalIncreasedAttackSpeed1",
+       "LocalIncreasedAttackSpeed2",
+       "LocalIncreasedAttackSpeed3",
+       "LocalIncreasedAttackSpeed4",
+       "LocalIncreasedAttackSpeed5"
+      ],
+      "label": "#% increased Attack Speed"
+     },
+     {
+      "ids": [
+       "LocalLightRadiusAndAccuracyNew1_",
+       "LocalLightRadiusAndAccuracyNew2",
+       "LocalLightRadiusAndAccuracy3"
+      ],
+      "label": "#% increased Global Accuracy Rating/#% increased Light Radius"
+     },
+     {
+      "ids": [
+       "LocalCriticalStrikeChance1",
+       "LocalCriticalStrikeChance2",
+       "LocalCriticalStrikeChance3",
+       "LocalCriticalStrikeChance4",
+       "LocalCriticalStrikeChance5",
+       "LocalCriticalStrikeChance6"
+      ],
+      "label": "#% increased Critical Strike Chance"
+     },
+     {
+      "ids": [
+       "LocalCriticalMultiplier1",
+       "LocalCriticalMultiplier2",
+       "LocalCriticalMultiplier3",
+       "LocalCriticalMultiplier4",
+       "LocalCriticalMultiplier5",
+       "LocalCriticalMultiplier6"
+      ],
+      "label": "+#% to Global Critical Strike Multiplier"
+     },
+     {
+      "ids": [
+       "LifeLeechPermyriadLocalSuffix1"
+      ],
+      "label": "(2-2.4)% of Physical Attack Damage Leeched as Life"
+     },
+     {
+      "ids": [
+       "ManaLeechPermyriadLocalSuffix1"
+      ],
+      "label": "(2.6-3.2)% of Physical Attack Damage Leeched as Mana"
+     },
+     {
+      "ids": [
+       "LifeGainPerTargetLocal1",
+       "LifeGainPerTargetLocal2",
+       "LifeGainPerTargetLocal3",
+       "LifeGainPerTargetLocal4",
+       "LifeGainPerTargetLocal5",
+       "LifeGainPerTargetLocal6",
+       "LifeGainPerTargetLocal7",
+       "LifeGainPerTargetLocal8"
+      ],
+      "label": "Grants # Life per Enemy Hit"
+     },
+     {
+      "ids": [
+       "LifeGainedFromEnemyDeath1",
+       "LifeGainedFromEnemyDeath2",
+       "LifeGainedFromEnemyDeath3",
+       "LifeGainedFromEnemyDeath4",
+       "LifeGainedFromEnemyDeath5",
+       "LifeGainedFromEnemyDeath6"
+      ],
+      "label": "Gain # Life per Enemy Killed"
+     },
+     {
+      "ids": [
+       "ManaGainedFromEnemyDeath1",
+       "ManaGainedFromEnemyDeath2",
+       "ManaGainedFromEnemyDeath3",
+       "ManaGainedFromEnemyDeath4",
+       "ManaGainedFromEnemyDeath5",
+       "ManaGainedFromEnemyDeath6"
+      ],
+      "label": "Gain # Mana per Enemy Killed"
+     },
+     {
+      "ids": [
+       "AdditionalArrowBow1_",
+       "AdditionalArrowBow2_"
+      ],
+      "label": "Bow Attacks fire an additional Arrow"
+     },
+     {
+      "ids": [
+       "ProjectileSpeed1",
+       "ProjectileSpeed2",
+       "ProjectileSpeed3",
+       "ProjectileSpeed4",
+       "ProjectileSpeed5"
+      ],
+      "label": "#% increased Projectile Speed"
+     },
+     {
+      "ids": [
+       "StunDuration1",
+       "StunDuration2",
+       "StunDuration3",
+       "StunDuration4",
+       "StunDuration5"
+      ],
+      "label": "#% increased Stun Duration on Enemies"
+     },
+     {
+      "ids": [
+       "LocalIncreasedAccuracyNew1",
+       "LocalIncreasedAccuracyNew2",
+       "LocalIncreasedAccuracyNew3",
+       "LocalIncreasedAccuracyNew4",
+       "LocalIncreasedAccuracyNew5",
+       "LocalIncreasedAccuracyNew6"
+      ],
+      "label": "+# to Accuracy Rating"
+     }
+    ],
+    [
+     {
+      "ids": [
+       "ReducedLocalAttributeRequirements1",
+       "ReducedLocalAttributeRequirements2"
+      ],
+      "label": "#% reduced Attribute Requirements"
+     },
+     {
+      "ids": [
+       "Dexterity1",
+       "Dexterity2",
+       "Dexterity3",
+       "Dexterity4",
+       "Dexterity5",
+       "Dexterity6",
+       "Dexterity7",
+       "Dexterity8",
+       "Dexterity9"
+      ],
+      "label": "+# to Dexterity"
+     },
+     {
+      "ids": [
+       "GlobalDamageOverTimeMultiplier1h1",
+       "GlobalDamageOverTimeMultiplier1h2_",
+       "GlobalDamageOverTimeMultiplier1h3",
+       "GlobalDamageOverTimeMultiplier1h4",
+       "GlobalDamageOverTimeMultiplier1h5"
+      ],
+      "label": "+#% to Damage over Time Multiplier"
+     },
+     {
+      "ids": [
+       "LocalIncreasedAttackSpeed1",
+       "LocalIncreasedAttackSpeed2",
+       "LocalIncreasedAttackSpeed3",
+       "LocalIncreasedAttackSpeed4",
+       "LocalIncreasedAttackSpeed5"
+      ],
+      "label": "#% increased Attack Speed"
+     },
+     {
+      "ids": [
+       "LocalLightRadiusAndAccuracyNew1_",
+       "LocalLightRadiusAndAccuracyNew2",
+       "LocalLightRadiusAndAccuracy3"
+      ],
+      "label": "#% increased Global Accuracy Rating/#% increased Light Radius"
+     },
+     {
+      "ids": [
+       "LocalCriticalStrikeChance1",
+       "LocalCriticalStrikeChance2",
+       "LocalCriticalStrikeChance3",
+       "LocalCriticalStrikeChance4",
+       "LocalCriticalStrikeChance5",
+       "LocalCriticalStrikeChance6"
+      ],
+      "label": "#% increased Critical Strike Chance"
+     },
+     {
+      "ids": [
+       "LocalCriticalMultiplier1",
+       "LocalCriticalMultiplier2",
+       "LocalCriticalMultiplier3",
+       "LocalCriticalMultiplier4",
+       "LocalCriticalMultiplier5",
+       "LocalCriticalMultiplier6"
+      ],
+      "label": "+#% to Global Critical Strike Multiplier"
+     },
+     {
+      "ids": [
+       "LifeLeechPermyriadLocalSuffix1"
+      ],
+      "label": "(2-2.4)% of Physical Attack Damage Leeched as Life"
+     },
+     {
+      "ids": [
+       "ManaLeechPermyriadLocalSuffix1"
+      ],
+      "label": "(2.6-3.2)% of Physical Attack Damage Leeched as Mana"
+     },
+     {
+      "ids": [
+       "LifeGainPerTargetLocal1",
+       "LifeGainPerTargetLocal2",
+       "LifeGainPerTargetLocal3",
+       "LifeGainPerTargetLocal4",
+       "LifeGainPerTargetLocal5",
+       "LifeGainPerTargetLocal6",
+       "LifeGainPerTargetLocal7",
+       "LifeGainPerTargetLocal8"
+      ],
+      "label": "Grants # Life per Enemy Hit"
+     },
+     {
+      "ids": [
+       "LifeGainedFromEnemyDeath1",
+       "LifeGainedFromEnemyDeath2",
+       "LifeGainedFromEnemyDeath3",
+       "LifeGainedFromEnemyDeath4",
+       "LifeGainedFromEnemyDeath5",
+       "LifeGainedFromEnemyDeath6"
+      ],
+      "label": "Gain # Life per Enemy Killed"
+     },
+     {
+      "ids": [
+       "ManaGainedFromEnemyDeath1",
+       "ManaGainedFromEnemyDeath2",
+       "ManaGainedFromEnemyDeath3",
+       "ManaGainedFromEnemyDeath4",
+       "ManaGainedFromEnemyDeath5",
+       "ManaGainedFromEnemyDeath6"
+      ],
+      "label": "Gain # Mana per Enemy Killed"
+     },
+     {
+      "ids": [
+       "AdditionalArrowBow1_",
+       "AdditionalArrowBow2_"
+      ],
+      "label": "Bow Attacks fire an additional Arrow"
+     },
+     {
+      "ids": [
+       "ProjectileSpeed1",
+       "ProjectileSpeed2",
+       "ProjectileSpeed3",
+       "ProjectileSpeed4",
+       "ProjectileSpeed5"
+      ],
+      "label": "#% increased Projectile Speed"
+     },
+     {
+      "ids": [
+       "StunDuration1",
+       "StunDuration2",
+       "StunDuration3",
+       "StunDuration4",
+       "StunDuration5"
+      ],
+      "label": "#% increased Stun Duration on Enemies"
+     },
+     {
+      "ids": [
+       "LocalIncreasedAccuracyNew1",
+       "LocalIncreasedAccuracyNew2",
+       "LocalIncreasedAccuracyNew3",
+       "LocalIncreasedAccuracyNew4",
+       "LocalIncreasedAccuracyNew5",
+       "LocalIncreasedAccuracyNew6"
+      ],
+      "label": "+# to Accuracy Rating"
+     }
+    ]
+   ]
+  },
+  {
+   "explicit": [],
+   "level": 69,
+   "limit": 6,
+   "name": "New Item, Sorcerer Gloves",
+   "slots": [
+    [
+     {
+      "ids": [
+       "ProjectileDamageUber1",
+       "ProjectileDamageUber2",
+       "ProjectileDamageUber3",
+       "ProjectileDamageUberMaven_"
+      ],
+      "label": "Socketed Gems are Supported by Level # Slower Projectiles/#% increased Projectile Damage"
+     },
+     {
+      "ids": [
+       "SupportedByManaLeechUber1"
+      ],
+      "label": "Socketed Gems are Supported by Level 15 Mana Leech"
+     },
+     {
+      "ids": [
+       "SupportedByManaLeechUberMaven__"
+      ],
+      "label": "Socketed Gems are Supported by Level 20 Mana Leech/(20-30)% increased Maximum total Mana Recovery per second from Leech"
+     },
+     {
+      "ids": [
+       "AddedPhysicalDamage1",
+       "AddedPhysicalDamage2",
+       "AddedPhysicalDamage3",
+       "AddedPhysicalDamage4"
+      ],
+      "label": "Adds # to # Physical Damage to Attacks"
+     },
+     {
+      "ids": [
+       "AddedFireDamage1",
+       "AddedFireDamage2",
+       "AddedFireDamage3",
+       "AddedFireDamage4",
+       "AddedFireDamage5",
+       "AddedFireDamage6"
+      ],
+      "label": "Adds # to # Fire Damage to Attacks"
+     },
+     {
+      "ids": [
+       "AddedColdDamage1",
+       "AddedColdDamage2",
+       "AddedColdDamage3",
+       "AddedColdDamage4",
+       "AddedColdDamage5",
+       "AddedColdDamage6"
+      ],
+      "label": "Adds # to # Cold Damage to Attacks"
+     },
+     {
+      "ids": [
+       "AddedLightningDamage1",
+       "AddedLightningDamage2",
+       "AddedLightningDamage3",
+       "AddedLightningDamage4",
+       "AddedLightningDamage5",
+       "AddedLightningDamage6"
+      ],
+      "label": "Adds # to # Lightning Damage to Attacks"
+     },
+     {
+      "ids": [
+       "LocalIncreasedEnergyShield1",
+       "LocalIncreasedEnergyShield2",
+       "LocalIncreasedEnergyShield3",
+       "LocalIncreasedEnergyShield4",
+       "LocalIncreasedEnergyShield5",
+       "LocalIncreasedEnergyShield6",
+       "LocalIncreasedEnergyShield7"
+      ],
+      "label": "+# to maximum Energy Shield"
+     },
+     {
+      "ids": [
+       "LocalBaseEnergyShieldAndLife1",
+       "LocalBaseEnergyShieldAndLife2"
+      ],
+      "label": "+# to maximum Energy Shield/+# to maximum Life"
+     },
+     {
+      "ids": [
+       "LocalBaseEnergyShieldAndMana1",
+       "LocalBaseEnergyShieldAndMana2"
+      ],
+      "label": "+# to maximum Energy Shield/+# to maximum Mana"
+     },
+     {
+      "ids": [
+       "LocalIncreasedEnergyShieldPercent1",
+       "LocalIncreasedEnergyShieldPercent2",
+       "LocalIncreasedEnergyShieldPercent3",
+       "LocalIncreasedEnergyShieldPercent4",
+       "LocalIncreasedEnergyShieldPercent5",
+       "LocalIncreasedEnergyShieldPercent6",
+       "LocalIncreasedEnergyShieldPercent7_"
+      ],
+      "label": "#% increased Energy Shield"
+     },
+     {
+      "ids": [
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery1",
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery2",
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery3",
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery4",
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery5",
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery6"
+      ],
+      "label": "#% increased Energy Shield/#% increased Stun and Block Recovery"
+     },
+     {
+      "ids": [
+       "IncreasedLife0",
+       "IncreasedLife1",
+       "IncreasedLife2",
+       "IncreasedLife3",
+       "IncreasedLife4",
+       "IncreasedLife5",
+       "IncreasedLife6",
+       "IncreasedLife7",
+       "IncreasedLife8"
+      ],
+      "label": "+# to maximum Life"
+     },
+     {
+      "ids": [
+       "IncreasedMana1",
+       "IncreasedMana2",
+       "IncreasedMana3",
+       "IncreasedMana4",
+       "IncreasedMana5",
+       "IncreasedMana6",
+       "IncreasedMana7",
+       "IncreasedMana8",
+       "IncreasedMana9",
+       "IncreasedMana10",
+       "IncreasedMana11",
+       "IncreasedMana12"
+      ],
+      "label": "+# to maximum Mana"
+     },
+     {
+      "ids": [
+       "ItemFoundRarityIncreasePrefix1",
+       "ItemFoundRarityIncreasePrefix2"
+      ],
+      "label": "#% increased Rarity of Items found"
+     }
+    ],
+    [
+     {
+      "ids": [
+       "ProjectileDamageUber1",
+       "ProjectileDamageUber2",
+       "ProjectileDamageUber3",
+       "ProjectileDamageUberMaven_"
+      ],
+      "label": "Socketed Gems are Supported by Level # Slower Projectiles/#% increased Projectile Damage"
+     },
+     {
+      "ids": [
+       "SupportedByManaLeechUber1"
+      ],
+      "label": "Socketed Gems are Supported by Level 15 Mana Leech"
+     },
+     {
+      "ids": [
+       "SupportedByManaLeechUberMaven__"
+      ],
+      "label": "Socketed Gems are Supported by Level 20 Mana Leech/(20-30)% increased Maximum total Mana Recovery per second from Leech"
+     },
+     {
+      "ids": [
+       "AddedPhysicalDamage1",
+       "AddedPhysicalDamage2",
+       "AddedPhysicalDamage3",
+       "AddedPhysicalDamage4"
+      ],
+      "label": "Adds # to # Physical Damage to Attacks"
+     },
+     {
+      "ids": [
+       "AddedFireDamage1",
+       "AddedFireDamage2",
+       "AddedFireDamage3",
+       "AddedFireDamage4",
+       "AddedFireDamage5",
+       "AddedFireDamage6"
+      ],
+      "label": "Adds # to # Fire Damage to Attacks"
+     },
+     {
+      "ids": [
+       "AddedColdDamage1",
+       "AddedColdDamage2",
+       "AddedColdDamage3",
+       "AddedColdDamage4",
+       "AddedColdDamage5",
+       "AddedColdDamage6"
+      ],
+      "label": "Adds # to # Cold Damage to Attacks"
+     },
+     {
+      "ids": [
+       "AddedLightningDamage1",
+       "AddedLightningDamage2",
+       "AddedLightningDamage3",
+       "AddedLightningDamage4",
+       "AddedLightningDamage5",
+       "AddedLightningDamage6"
+      ],
+      "label": "Adds # to # Lightning Damage to Attacks"
+     },
+     {
+      "ids": [
+       "LocalIncreasedEnergyShield1",
+       "LocalIncreasedEnergyShield2",
+       "LocalIncreasedEnergyShield3",
+       "LocalIncreasedEnergyShield4",
+       "LocalIncreasedEnergyShield5",
+       "LocalIncreasedEnergyShield6",
+       "LocalIncreasedEnergyShield7"
+      ],
+      "label": "+# to maximum Energy Shield"
+     },
+     {
+      "ids": [
+       "LocalBaseEnergyShieldAndLife1",
+       "LocalBaseEnergyShieldAndLife2"
+      ],
+      "label": "+# to maximum Energy Shield/+# to maximum Life"
+     },
+     {
+      "ids": [
+       "LocalBaseEnergyShieldAndMana1",
+       "LocalBaseEnergyShieldAndMana2"
+      ],
+      "label": "+# to maximum Energy Shield/+# to maximum Mana"
+     },
+     {
+      "ids": [
+       "LocalIncreasedEnergyShieldPercent1",
+       "LocalIncreasedEnergyShieldPercent2",
+       "LocalIncreasedEnergyShieldPercent3",
+       "LocalIncreasedEnergyShieldPercent4",
+       "LocalIncreasedEnergyShieldPercent5",
+       "LocalIncreasedEnergyShieldPercent6",
+       "LocalIncreasedEnergyShieldPercent7_"
+      ],
+      "label": "#% increased Energy Shield"
+     },
+     {
+      "ids": [
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery1",
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery2",
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery3",
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery4",
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery5",
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery6"
+      ],
+      "label": "#% increased Energy Shield/#% increased Stun and Block Recovery"
+     },
+     {
+      "ids": [
+       "IncreasedLife0",
+       "IncreasedLife1",
+       "IncreasedLife2",
+       "IncreasedLife3",
+       "IncreasedLife4",
+       "IncreasedLife5",
+       "IncreasedLife6",
+       "IncreasedLife7",
+       "IncreasedLife8"
+      ],
+      "label": "+# to maximum Life"
+     },
+     {
+      "ids": [
+       "IncreasedMana1",
+       "IncreasedMana2",
+       "IncreasedMana3",
+       "IncreasedMana4",
+       "IncreasedMana5",
+       "IncreasedMana6",
+       "IncreasedMana7",
+       "IncreasedMana8",
+       "IncreasedMana9",
+       "IncreasedMana10",
+       "IncreasedMana11",
+       "IncreasedMana12"
+      ],
+      "label": "+# to maximum Mana"
+     },
+     {
+      "ids": [
+       "ItemFoundRarityIncreasePrefix1",
+       "ItemFoundRarityIncreasePrefix2"
+      ],
+      "label": "#% increased Rarity of Items found"
+     }
+    ],
+    [
+     {
+      "ids": [
+       "ProjectileDamageUber1",
+       "ProjectileDamageUber2",
+       "ProjectileDamageUber3",
+       "ProjectileDamageUberMaven_"
+      ],
+      "label": "Socketed Gems are Supported by Level # Slower Projectiles/#% increased Projectile Damage"
+     },
+     {
+      "ids": [
+       "SupportedByManaLeechUber1"
+      ],
+      "label": "Socketed Gems are Supported by Level 15 Mana Leech"
+     },
+     {
+      "ids": [
+       "SupportedByManaLeechUberMaven__"
+      ],
+      "label": "Socketed Gems are Supported by Level 20 Mana Leech/(20-30)% increased Maximum total Mana Recovery per second from Leech"
+     },
+     {
+      "ids": [
+       "AddedPhysicalDamage1",
+       "AddedPhysicalDamage2",
+       "AddedPhysicalDamage3",
+       "AddedPhysicalDamage4"
+      ],
+      "label": "Adds # to # Physical Damage to Attacks"
+     },
+     {
+      "ids": [
+       "AddedFireDamage1",
+       "AddedFireDamage2",
+       "AddedFireDamage3",
+       "AddedFireDamage4",
+       "AddedFireDamage5",
+       "AddedFireDamage6"
+      ],
+      "label": "Adds # to # Fire Damage to Attacks"
+     },
+     {
+      "ids": [
+       "AddedColdDamage1",
+       "AddedColdDamage2",
+       "AddedColdDamage3",
+       "AddedColdDamage4",
+       "AddedColdDamage5",
+       "AddedColdDamage6"
+      ],
+      "label": "Adds # to # Cold Damage to Attacks"
+     },
+     {
+      "ids": [
+       "AddedLightningDamage1",
+       "AddedLightningDamage2",
+       "AddedLightningDamage3",
+       "AddedLightningDamage4",
+       "AddedLightningDamage5",
+       "AddedLightningDamage6"
+      ],
+      "label": "Adds # to # Lightning Damage to Attacks"
+     },
+     {
+      "ids": [
+       "LocalIncreasedEnergyShield1",
+       "LocalIncreasedEnergyShield2",
+       "LocalIncreasedEnergyShield3",
+       "LocalIncreasedEnergyShield4",
+       "LocalIncreasedEnergyShield5",
+       "LocalIncreasedEnergyShield6",
+       "LocalIncreasedEnergyShield7"
+      ],
+      "label": "+# to maximum Energy Shield"
+     },
+     {
+      "ids": [
+       "LocalBaseEnergyShieldAndLife1",
+       "LocalBaseEnergyShieldAndLife2"
+      ],
+      "label": "+# to maximum Energy Shield/+# to maximum Life"
+     },
+     {
+      "ids": [
+       "LocalBaseEnergyShieldAndMana1",
+       "LocalBaseEnergyShieldAndMana2"
+      ],
+      "label": "+# to maximum Energy Shield/+# to maximum Mana"
+     },
+     {
+      "ids": [
+       "LocalIncreasedEnergyShieldPercent1",
+       "LocalIncreasedEnergyShieldPercent2",
+       "LocalIncreasedEnergyShieldPercent3",
+       "LocalIncreasedEnergyShieldPercent4",
+       "LocalIncreasedEnergyShieldPercent5",
+       "LocalIncreasedEnergyShieldPercent6",
+       "LocalIncreasedEnergyShieldPercent7_"
+      ],
+      "label": "#% increased Energy Shield"
+     },
+     {
+      "ids": [
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery1",
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery2",
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery3",
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery4",
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery5",
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery6"
+      ],
+      "label": "#% increased Energy Shield/#% increased Stun and Block Recovery"
+     },
+     {
+      "ids": [
+       "IncreasedLife0",
+       "IncreasedLife1",
+       "IncreasedLife2",
+       "IncreasedLife3",
+       "IncreasedLife4",
+       "IncreasedLife5",
+       "IncreasedLife6",
+       "IncreasedLife7",
+       "IncreasedLife8"
+      ],
+      "label": "+# to maximum Life"
+     },
+     {
+      "ids": [
+       "IncreasedMana1",
+       "IncreasedMana2",
+       "IncreasedMana3",
+       "IncreasedMana4",
+       "IncreasedMana5",
+       "IncreasedMana6",
+       "IncreasedMana7",
+       "IncreasedMana8",
+       "IncreasedMana9",
+       "IncreasedMana10",
+       "IncreasedMana11",
+       "IncreasedMana12"
+      ],
+      "label": "+# to maximum Mana"
+     },
+     {
+      "ids": [
+       "ItemFoundRarityIncreasePrefix1",
+       "ItemFoundRarityIncreasePrefix2"
+      ],
+      "label": "#% increased Rarity of Items found"
+     }
+    ],
+    [
+     {
+      "ids": [
+       "TrapDamageCooldownUber1_",
+       "TrapDamageCooldownUber2",
+       "TrapDamageCooldownUber3_",
+       "TrapDamageCooldownUberMaven"
+      ],
+      "label": "Socketed Gems are Supported by Level # Advanced Traps/#% increased Trap Damage"
+     },
+     {
+      "ids": [
+       "TrapSpeedCooldownUber1",
+       "TrapSpeedCooldownUber2",
+       "TrapSpeedCooldownUber3",
+       "TrapSpeedCooldownUberMaven_"
+      ],
+      "label": "Socketed Gems are Supported by Level # Advanced Traps/#% increased Trap Throwing Speed"
+     },
+     {
+      "ids": [
+       "TrapDamageUber1",
+       "TrapDamageUber2",
+       "TrapDamageUber3",
+       "TrapDamageUberMaven_"
+      ],
+      "label": "Socketed Gems are Supported by Level # Trap/#% increased Trap Damage"
+     },
+     {
+      "ids": [
+       "AdditionalTrapsThrownSupportedUberMaven"
+      ],
+      "label": "Socketed Gems are Supported by Level 25 Trap/Skills which Throw Traps throw up to 1 additional Trap"
+     },
+     {
+      "ids": [
+       "TrapDamageMineUber1",
+       "TrapDamageMineUber2_",
+       "TrapDamageMineUber3",
+       "TrapDamageMineUberMaven"
+      ],
+      "label": "Socketed Gems are Supported by Level # Trap And Mine Damage/#% increased Trap Damage"
+     },
+     {
+      "ids": [
+       "BlindOnHitSupportedUber1",
+       "BlindOnHitSupportedUber2",
+       "BlindOnHitSupportedUber3",
+       "BlindOnHitSupportedUberMaven"
+      ],
+      "label": "Socketed Gems are supported by Level # Blind/#% Global chance to Blind Enemies on hit"
+     },
+     {
+      "ids": [
+       "IncreasedCastSpeedUber1",
+       "IncreasedCastSpeedUber2",
+       "IncreasedCastSpeedUber3",
+       "IncreasedCastSpeedUberMaven_"
+      ],
+      "label": "Socketed Gems are Supported by Level # Faster Casting/#% increased Cast Speed"
+     },
+     {
+      "ids": [
+       "SocketedSpellCriticalMultiplierUber1",
+       "SocketedSpellCriticalMultiplierUber2",
+       "SocketedSpellCriticalMultiplierUber3",
+       "SocketedSpellCriticalMultiplierUberMaven"
+      ],
+      "label": "Socketed Spells have +#% to Critical Strike Multiplier"
+     },
+     {
+      "ids": [
+       "ReducedLocalAttributeRequirements1",
+       "ReducedLocalAttributeRequirements2"
+      ],
+      "label": "#% reduced Attribute Requirements"
+     },
+     {
+      "ids": [
+       "Dexterity1",
+       "Dexterity2",
+       "Dexterity3",
+       "Dexterity4",
+       "Dexterity5",
+       "Dexterity6",
+       "Dexterity7",
+       "Dexterity8",
+       "Dexterity9",
+       "Dexterity10"
+      ],
+      "label": "+# to Dexterity"
+     },
+     {
+      "ids": [
+       "Intelligence1",
+       "Intelligence2",
+       "Intelligence3",
+       "Intelligence4",
+       "Intelligence5",
+       "Intelligence6",
+       "Intelligence7",
+       "Intelligence8",
+       "Intelligence9"
+      ],
+      "label": "+# to Intelligence"
+     },
+     {
+      "ids": [
+       "FireDamageOverTimeMultiplierUber1___",
+       "FireDamageOverTimeMultiplierUber2",
+       "FireDamageOverTimeMultiplierUberMaven"
+      ],
+      "label": "+#% to Fire Damage over Time Multiplier"
+     },
+     {
+      "ids": [
+       "ColdDamageOverTimeMultiplierUber1",
+       "ColdDamageOverTimeMultiplierUber2_",
+       "ColdDamageOverTimeMultiplierUberMaven"
+      ],
+      "label": "+#% to Cold Damage over Time Multiplier"
+     },
+     {
+      "ids": [
+       "IncreasedAttackSpeed1",
+       "IncreasedAttackSpeed2",
+       "IncreasedAttackSpeed3",
+       "IncreasedAttackSpeed4"
+      ],
+      "label": "#% increased Attack Speed"
+     },
+     {
+      "ids": [
+       "IncreasedAccuracyNew1_",
+       "IncreasedAccuracyNew2",
+       "IncreasedAccuracyNew3",
+       "IncreasedAccuracyNew4",
+       "IncreasedAccuracyNew5_",
+       "IncreasedAccuracyNew6"
+      ],
+      "label": "+# to Accuracy Rating"
+     },
+     {
+      "ids": [
+       "EnergyShieldRechargeRate1",
+       "EnergyShieldRechargeRate2",
+       "EnergyShieldRechargeRate3",
+       "EnergyShieldRechargeRate4",
+       "EnergyShieldRechargeRate5______"
+      ],
+      "label": "#% increased Energy Shield Recharge Rate"
+     },
+     {
+      "ids": [
+       "LifeRegeneration1",
+       "LifeRegeneration2",
+       "LifeRegeneration3",
+       "LifeRegeneration4",
+       "LifeRegeneration5",
+       "LifeRegeneration6",
+       "LifeRegeneration7",
+       "LifeRegeneration8_"
+      ],
+      "label": "Regenerate # Life per second"
+     },
+     {
+      "ids": [
+       "ItemFoundRarityIncrease1",
+       "ItemFoundRarityIncrease2"
+      ],
+      "label": "#% increased Rarity of Items found"
+     },
+     {
+      "ids": [
+       "FireResist1",
+       "FireResist2",
+       "FireResist3",
+       "FireResist4",
+       "FireResist5",
+       "FireResist6",
+       "FireResist7",
+       "FireResist8"
+      ],
+      "label": "+#% to Fire Resistance"
+     },
+     {
+      "ids": [
+       "ColdResist1",
+       "ColdResist2",
+       "ColdResist3",
+       "ColdResist4",
+       "ColdResist5",
+       "ColdResist6",
+       "ColdResist7",
+       "ColdResist8"
+      ],
+      "label": "+#% to Cold Resistance"
+     },
+     {
+      "ids": [
+       "LightningResist1",
+       "LightningResist2",
+       "LightningResist3",
+       "LightningResist4",
+       "LightningResist5",
+       "LightningResist6",
+       "LightningResist7",
+       "LightningResist8"
+      ],
+      "label": "+#% to Lightning Resistance"
+     },
+     {
+      "ids": [
+       "ChaosResist1",
+       "ChaosResist2",
+       "ChaosResist3",
+       "ChaosResist4",
+       "ChaosResist5",
+       "ChaosResist6"
+      ],
+      "label": "+#% to Chaos Resistance"
+     },
+     {
+      "ids": [
+       "LifeLeechPermyriadSuffix1"
+      ],
+      "label": "(0.2-0.4)% of Physical Attack Damage Leeched as Life"
+     },
+     {
+      "ids": [
+       "ManaLeechPermyriadSuffix1"
+      ],
+      "label": "(0.2-0.4)% of Physical Attack Damage Leeched as Mana"
+     },
+     {
+      "ids": [
+       "LifeGainPerTarget1"
+      ],
+      "label": "Gain 2 Life per Enemy Hit with Attacks"
+     },
+     {
+      "ids": [
+       "LifeGainedFromEnemyDeath1",
+       "LifeGainedFromEnemyDeath2",
+       "LifeGainedFromEnemyDeath3",
+       "LifeGainedFromEnemyDeath4",
+       "LifeGainedFromEnemyDeath5",
+       "LifeGainedFromEnemyDeath6"
+      ],
+      "label": "Gain # Life per Enemy Killed"
+     },
+     {
+      "ids": [
+       "ManaGainedFromEnemyDeath1",
+       "ManaGainedFromEnemyDeath2",
+       "ManaGainedFromEnemyDeath3",
+       "ManaGainedFromEnemyDeath4",
+       "ManaGainedFromEnemyDeath5",
+       "ManaGainedFromEnemyDeath6"
+      ],
+      "label": "Gain # Mana per Enemy Killed"
+     },
+     {
+      "ids": [
+       "ChanceToAvoidInterruptionWhileCastingUber1_",
+       "ChanceToAvoidInterruptionWhileCastingUber2",
+       "ChanceToAvoidInterruptionWhileCastingUber3",
+       "ChanceToAvoidInterruptionWhileCastingUberMaven_"
+      ],
+      "label": "#% chance to Ignore Stuns while Casting"
+     }
+    ],
+    [
+     {
+      "ids": [
+       "TrapDamageCooldownUber1_",
+       "TrapDamageCooldownUber2",
+       "TrapDamageCooldownUber3_",
+       "TrapDamageCooldownUberMaven"
+      ],
+      "label": "Socketed Gems are Supported by Level # Advanced Traps/#% increased Trap Damage"
+     },
+     {
+      "ids": [
+       "TrapSpeedCooldownUber1",
+       "TrapSpeedCooldownUber2",
+       "TrapSpeedCooldownUber3",
+       "TrapSpeedCooldownUberMaven_"
+      ],
+      "label": "Socketed Gems are Supported by Level # Advanced Traps/#% increased Trap Throwing Speed"
+     },
+     {
+      "ids": [
+       "TrapDamageUber1",
+       "TrapDamageUber2",
+       "TrapDamageUber3",
+       "TrapDamageUberMaven_"
+      ],
+      "label": "Socketed Gems are Supported by Level # Trap/#% increased Trap Damage"
+     },
+     {
+      "ids": [
+       "AdditionalTrapsThrownSupportedUberMaven"
+      ],
+      "label": "Socketed Gems are Supported by Level 25 Trap/Skills which Throw Traps throw up to 1 additional Trap"
+     },
+     {
+      "ids": [
+       "TrapDamageMineUber1",
+       "TrapDamageMineUber2_",
+       "TrapDamageMineUber3",
+       "TrapDamageMineUberMaven"
+      ],
+      "label": "Socketed Gems are Supported by Level # Trap And Mine Damage/#% increased Trap Damage"
+     },
+     {
+      "ids": [
+       "BlindOnHitSupportedUber1",
+       "BlindOnHitSupportedUber2",
+       "BlindOnHitSupportedUber3",
+       "BlindOnHitSupportedUberMaven"
+      ],
+      "label": "Socketed Gems are supported by Level # Blind/#% Global chance to Blind Enemies on hit"
+     },
+     {
+      "ids": [
+       "IncreasedCastSpeedUber1",
+       "IncreasedCastSpeedUber2",
+       "IncreasedCastSpeedUber3",
+       "IncreasedCastSpeedUberMaven_"
+      ],
+      "label": "Socketed Gems are Supported by Level # Faster Casting/#% increased Cast Speed"
+     },
+     {
+      "ids": [
+       "SocketedSpellCriticalMultiplierUber1",
+       "SocketedSpellCriticalMultiplierUber2",
+       "SocketedSpellCriticalMultiplierUber3",
+       "SocketedSpellCriticalMultiplierUberMaven"
+      ],
+      "label": "Socketed Spells have +#% to Critical Strike Multiplier"
+     },
+     {
+      "ids": [
+       "ReducedLocalAttributeRequirements1",
+       "ReducedLocalAttributeRequirements2"
+      ],
+      "label": "#% reduced Attribute Requirements"
+     },
+     {
+      "ids": [
+       "Dexterity1",
+       "Dexterity2",
+       "Dexterity3",
+       "Dexterity4",
+       "Dexterity5",
+       "Dexterity6",
+       "Dexterity7",
+       "Dexterity8",
+       "Dexterity9",
+       "Dexterity10"
+      ],
+      "label": "+# to Dexterity"
+     },
+     {
+      "ids": [
+       "Intelligence1",
+       "Intelligence2",
+       "Intelligence3",
+       "Intelligence4",
+       "Intelligence5",
+       "Intelligence6",
+       "Intelligence7",
+       "Intelligence8",
+       "Intelligence9"
+      ],
+      "label": "+# to Intelligence"
+     },
+     {
+      "ids": [
+       "FireDamageOverTimeMultiplierUber1___",
+       "FireDamageOverTimeMultiplierUber2",
+       "FireDamageOverTimeMultiplierUberMaven"
+      ],
+      "label": "+#% to Fire Damage over Time Multiplier"
+     },
+     {
+      "ids": [
+       "ColdDamageOverTimeMultiplierUber1",
+       "ColdDamageOverTimeMultiplierUber2_",
+       "ColdDamageOverTimeMultiplierUberMaven"
+      ],
+      "label": "+#% to Cold Damage over Time Multiplier"
+     },
+     {
+      "ids": [
+       "IncreasedAttackSpeed1",
+       "IncreasedAttackSpeed2",
+       "IncreasedAttackSpeed3",
+       "IncreasedAttackSpeed4"
+      ],
+      "label": "#% increased Attack Speed"
+     },
+     {
+      "ids": [
+       "IncreasedAccuracyNew1_",
+       "IncreasedAccuracyNew2",
+       "IncreasedAccuracyNew3",
+       "IncreasedAccuracyNew4",
+       "IncreasedAccuracyNew5_",
+       "IncreasedAccuracyNew6"
+      ],
+      "label": "+# to Accuracy Rating"
+     },
+     {
+      "ids": [
+       "EnergyShieldRechargeRate1",
+       "EnergyShieldRechargeRate2",
+       "EnergyShieldRechargeRate3",
+       "EnergyShieldRechargeRate4",
+       "EnergyShieldRechargeRate5______"
+      ],
+      "label": "#% increased Energy Shield Recharge Rate"
+     },
+     {
+      "ids": [
+       "LifeRegeneration1",
+       "LifeRegeneration2",
+       "LifeRegeneration3",
+       "LifeRegeneration4",
+       "LifeRegeneration5",
+       "LifeRegeneration6",
+       "LifeRegeneration7",
+       "LifeRegeneration8_"
+      ],
+      "label": "Regenerate # Life per second"
+     },
+     {
+      "ids": [
+       "ItemFoundRarityIncrease1",
+       "ItemFoundRarityIncrease2"
+      ],
+      "label": "#% increased Rarity of Items found"
+     },
+     {
+      "ids": [
+       "FireResist1",
+       "FireResist2",
+       "FireResist3",
+       "FireResist4",
+       "FireResist5",
+       "FireResist6",
+       "FireResist7",
+       "FireResist8"
+      ],
+      "label": "+#% to Fire Resistance"
+     },
+     {
+      "ids": [
+       "ColdResist1",
+       "ColdResist2",
+       "ColdResist3",
+       "ColdResist4",
+       "ColdResist5",
+       "ColdResist6",
+       "ColdResist7",
+       "ColdResist8"
+      ],
+      "label": "+#% to Cold Resistance"
+     },
+     {
+      "ids": [
+       "LightningResist1",
+       "LightningResist2",
+       "LightningResist3",
+       "LightningResist4",
+       "LightningResist5",
+       "LightningResist6",
+       "LightningResist7",
+       "LightningResist8"
+      ],
+      "label": "+#% to Lightning Resistance"
+     },
+     {
+      "ids": [
+       "ChaosResist1",
+       "ChaosResist2",
+       "ChaosResist3",
+       "ChaosResist4",
+       "ChaosResist5",
+       "ChaosResist6"
+      ],
+      "label": "+#% to Chaos Resistance"
+     },
+     {
+      "ids": [
+       "LifeLeechPermyriadSuffix1"
+      ],
+      "label": "(0.2-0.4)% of Physical Attack Damage Leeched as Life"
+     },
+     {
+      "ids": [
+       "ManaLeechPermyriadSuffix1"
+      ],
+      "label": "(0.2-0.4)% of Physical Attack Damage Leeched as Mana"
+     },
+     {
+      "ids": [
+       "LifeGainPerTarget1"
+      ],
+      "label": "Gain 2 Life per Enemy Hit with Attacks"
+     },
+     {
+      "ids": [
+       "LifeGainedFromEnemyDeath1",
+       "LifeGainedFromEnemyDeath2",
+       "LifeGainedFromEnemyDeath3",
+       "LifeGainedFromEnemyDeath4",
+       "LifeGainedFromEnemyDeath5",
+       "LifeGainedFromEnemyDeath6"
+      ],
+      "label": "Gain # Life per Enemy Killed"
+     },
+     {
+      "ids": [
+       "ManaGainedFromEnemyDeath1",
+       "ManaGainedFromEnemyDeath2",
+       "ManaGainedFromEnemyDeath3",
+       "ManaGainedFromEnemyDeath4",
+       "ManaGainedFromEnemyDeath5",
+       "ManaGainedFromEnemyDeath6"
+      ],
+      "label": "Gain # Mana per Enemy Killed"
+     },
+     {
+      "ids": [
+       "ChanceToAvoidInterruptionWhileCastingUber1_",
+       "ChanceToAvoidInterruptionWhileCastingUber2",
+       "ChanceToAvoidInterruptionWhileCastingUber3",
+       "ChanceToAvoidInterruptionWhileCastingUberMaven_"
+      ],
+      "label": "#% chance to Ignore Stuns while Casting"
+     }
+    ],
+    [
+     {
+      "ids": [
+       "TrapDamageCooldownUber1_",
+       "TrapDamageCooldownUber2",
+       "TrapDamageCooldownUber3_",
+       "TrapDamageCooldownUberMaven"
+      ],
+      "label": "Socketed Gems are Supported by Level # Advanced Traps/#% increased Trap Damage"
+     },
+     {
+      "ids": [
+       "TrapSpeedCooldownUber1",
+       "TrapSpeedCooldownUber2",
+       "TrapSpeedCooldownUber3",
+       "TrapSpeedCooldownUberMaven_"
+      ],
+      "label": "Socketed Gems are Supported by Level # Advanced Traps/#% increased Trap Throwing Speed"
+     },
+     {
+      "ids": [
+       "TrapDamageUber1",
+       "TrapDamageUber2",
+       "TrapDamageUber3",
+       "TrapDamageUberMaven_"
+      ],
+      "label": "Socketed Gems are Supported by Level # Trap/#% increased Trap Damage"
+     },
+     {
+      "ids": [
+       "AdditionalTrapsThrownSupportedUberMaven"
+      ],
+      "label": "Socketed Gems are Supported by Level 25 Trap/Skills which Throw Traps throw up to 1 additional Trap"
+     },
+     {
+      "ids": [
+       "TrapDamageMineUber1",
+       "TrapDamageMineUber2_",
+       "TrapDamageMineUber3",
+       "TrapDamageMineUberMaven"
+      ],
+      "label": "Socketed Gems are Supported by Level # Trap And Mine Damage/#% increased Trap Damage"
+     },
+     {
+      "ids": [
+       "BlindOnHitSupportedUber1",
+       "BlindOnHitSupportedUber2",
+       "BlindOnHitSupportedUber3",
+       "BlindOnHitSupportedUberMaven"
+      ],
+      "label": "Socketed Gems are supported by Level # Blind/#% Global chance to Blind Enemies on hit"
+     },
+     {
+      "ids": [
+       "IncreasedCastSpeedUber1",
+       "IncreasedCastSpeedUber2",
+       "IncreasedCastSpeedUber3",
+       "IncreasedCastSpeedUberMaven_"
+      ],
+      "label": "Socketed Gems are Supported by Level # Faster Casting/#% increased Cast Speed"
+     },
+     {
+      "ids": [
+       "SocketedSpellCriticalMultiplierUber1",
+       "SocketedSpellCriticalMultiplierUber2",
+       "SocketedSpellCriticalMultiplierUber3",
+       "SocketedSpellCriticalMultiplierUberMaven"
+      ],
+      "label": "Socketed Spells have +#% to Critical Strike Multiplier"
+     },
+     {
+      "ids": [
+       "ReducedLocalAttributeRequirements1",
+       "ReducedLocalAttributeRequirements2"
+      ],
+      "label": "#% reduced Attribute Requirements"
+     },
+     {
+      "ids": [
+       "Dexterity1",
+       "Dexterity2",
+       "Dexterity3",
+       "Dexterity4",
+       "Dexterity5",
+       "Dexterity6",
+       "Dexterity7",
+       "Dexterity8",
+       "Dexterity9",
+       "Dexterity10"
+      ],
+      "label": "+# to Dexterity"
+     },
+     {
+      "ids": [
+       "Intelligence1",
+       "Intelligence2",
+       "Intelligence3",
+       "Intelligence4",
+       "Intelligence5",
+       "Intelligence6",
+       "Intelligence7",
+       "Intelligence8",
+       "Intelligence9"
+      ],
+      "label": "+# to Intelligence"
+     },
+     {
+      "ids": [
+       "FireDamageOverTimeMultiplierUber1___",
+       "FireDamageOverTimeMultiplierUber2",
+       "FireDamageOverTimeMultiplierUberMaven"
+      ],
+      "label": "+#% to Fire Damage over Time Multiplier"
+     },
+     {
+      "ids": [
+       "ColdDamageOverTimeMultiplierUber1",
+       "ColdDamageOverTimeMultiplierUber2_",
+       "ColdDamageOverTimeMultiplierUberMaven"
+      ],
+      "label": "+#% to Cold Damage over Time Multiplier"
+     },
+     {
+      "ids": [
+       "IncreasedAttackSpeed1",
+       "IncreasedAttackSpeed2",
+       "IncreasedAttackSpeed3",
+       "IncreasedAttackSpeed4"
+      ],
+      "label": "#% increased Attack Speed"
+     },
+     {
+      "ids": [
+       "IncreasedAccuracyNew1_",
+       "IncreasedAccuracyNew2",
+       "IncreasedAccuracyNew3",
+       "IncreasedAccuracyNew4",
+       "IncreasedAccuracyNew5_",
+       "IncreasedAccuracyNew6"
+      ],
+      "label": "+# to Accuracy Rating"
+     },
+     {
+      "ids": [
+       "EnergyShieldRechargeRate1",
+       "EnergyShieldRechargeRate2",
+       "EnergyShieldRechargeRate3",
+       "EnergyShieldRechargeRate4",
+       "EnergyShieldRechargeRate5______"
+      ],
+      "label": "#% increased Energy Shield Recharge Rate"
+     },
+     {
+      "ids": [
+       "LifeRegeneration1",
+       "LifeRegeneration2",
+       "LifeRegeneration3",
+       "LifeRegeneration4",
+       "LifeRegeneration5",
+       "LifeRegeneration6",
+       "LifeRegeneration7",
+       "LifeRegeneration8_"
+      ],
+      "label": "Regenerate # Life per second"
+     },
+     {
+      "ids": [
+       "ItemFoundRarityIncrease1",
+       "ItemFoundRarityIncrease2"
+      ],
+      "label": "#% increased Rarity of Items found"
+     },
+     {
+      "ids": [
+       "FireResist1",
+       "FireResist2",
+       "FireResist3",
+       "FireResist4",
+       "FireResist5",
+       "FireResist6",
+       "FireResist7",
+       "FireResist8"
+      ],
+      "label": "+#% to Fire Resistance"
+     },
+     {
+      "ids": [
+       "ColdResist1",
+       "ColdResist2",
+       "ColdResist3",
+       "ColdResist4",
+       "ColdResist5",
+       "ColdResist6",
+       "ColdResist7",
+       "ColdResist8"
+      ],
+      "label": "+#% to Cold Resistance"
+     },
+     {
+      "ids": [
+       "LightningResist1",
+       "LightningResist2",
+       "LightningResist3",
+       "LightningResist4",
+       "LightningResist5",
+       "LightningResist6",
+       "LightningResist7",
+       "LightningResist8"
+      ],
+      "label": "+#% to Lightning Resistance"
+     },
+     {
+      "ids": [
+       "ChaosResist1",
+       "ChaosResist2",
+       "ChaosResist3",
+       "ChaosResist4",
+       "ChaosResist5",
+       "ChaosResist6"
+      ],
+      "label": "+#% to Chaos Resistance"
+     },
+     {
+      "ids": [
+       "LifeLeechPermyriadSuffix1"
+      ],
+      "label": "(0.2-0.4)% of Physical Attack Damage Leeched as Life"
+     },
+     {
+      "ids": [
+       "ManaLeechPermyriadSuffix1"
+      ],
+      "label": "(0.2-0.4)% of Physical Attack Damage Leeched as Mana"
+     },
+     {
+      "ids": [
+       "LifeGainPerTarget1"
+      ],
+      "label": "Gain 2 Life per Enemy Hit with Attacks"
+     },
+     {
+      "ids": [
+       "LifeGainedFromEnemyDeath1",
+       "LifeGainedFromEnemyDeath2",
+       "LifeGainedFromEnemyDeath3",
+       "LifeGainedFromEnemyDeath4",
+       "LifeGainedFromEnemyDeath5",
+       "LifeGainedFromEnemyDeath6"
+      ],
+      "label": "Gain # Life per Enemy Killed"
+     },
+     {
+      "ids": [
+       "ManaGainedFromEnemyDeath1",
+       "ManaGainedFromEnemyDeath2",
+       "ManaGainedFromEnemyDeath3",
+       "ManaGainedFromEnemyDeath4",
+       "ManaGainedFromEnemyDeath5",
+       "ManaGainedFromEnemyDeath6"
+      ],
+      "label": "Gain # Mana per Enemy Killed"
+     },
+     {
+      "ids": [
+       "ChanceToAvoidInterruptionWhileCastingUber1_",
+       "ChanceToAvoidInterruptionWhileCastingUber2",
+       "ChanceToAvoidInterruptionWhileCastingUber3",
+       "ChanceToAvoidInterruptionWhileCastingUberMaven_"
+      ],
+      "label": "#% chance to Ignore Stuns while Casting"
+     }
+    ]
+   ]
+  },
+  {
+   "explicit": [],
+   "limit": 4,
+   "name": "New Item, Searching Eye Jewel",
+   "slots": [
+    [
+     {
+      "ids": [
+       "AbyssFlatArmourJewel1",
+       "AbyssFlatArmourJewel2",
+       "AbyssFlatArmourJewel3",
+       "AbyssFlatArmourJewel4__"
+      ],
+      "label": "+# to Armour"
+     },
+     {
+      "ids": [
+       "AbyssFlatEvasionJewel1",
+       "AbyssFlatEvasionJewel2",
+       "AbyssFlatEvasionJewel3",
+       "AbyssFlatEvasionJewel4_"
+      ],
+      "label": "+# to Evasion Rating"
+     },
+     {
+      "ids": [
+       "AbyssFlatEnergyShieldJewel1",
+       "AbyssFlatEnergyShieldJewel2",
+       "AbyssFlatEnergyShieldJewel3",
+       "AbyssFlatEnergyShieldJewel4"
+      ],
+      "label": "+# to maximum Energy Shield"
+     },
+     {
+      "ids": [
+       "AbyssJewelAddedLife1",
+       "AbyssJewelAddedLife2",
+       "AbyssJewelAddedLife3",
+       "AbyssJewelAddedLife4"
+      ],
+      "label": "+# to maximum Life"
+     },
+     {
+      "ids": [
+       "AbyssFlatLifeRegenerationJewel1",
+       "AbyssFlatLifeRegenerationJewel2",
+       "AbyssFlatLifeRegenerationJewel3_"
+      ],
+      "label": "Regenerate # Life per second"
+     },
+     {
+      "ids": [
+       "AbyssJewelAddedMana1",
+       "AbyssJewelAddedMana2",
+       "AbyssJewelAddedMana3",
+       "AbyssJewelAddedMana4"
+      ],
+      "label": "+# to maximum Mana"
+     },
+     {
+      "ids": [
+       "AbyssFlatManaShieldRegenerationJewel1",
+       "AbyssFlatManaShieldRegenerationJewel2",
+       "AbyssFlatManaShieldRegenerationJewel3"
+      ],
+      "label": "Regenerate # Mana per second"
+     },
+     {
+      "ids": [
+       "AbyssAddedPhysicalDamageWithBowsJewel1",
+       "AbyssAddedPhysicalDamageWithBowsJewel2_",
+       "AbyssAddedPhysicalDamageWithBowsJewel3",
+       "AbyssAddedPhysicalDamageWithBowsJewel4_",
+       "AbyssAddedPhysicalDamageWithBowsJewel5"
+      ],
+      "label": "# to # Added Physical Damage with Bow Attacks"
+     },
+     {
+      "ids": [
+       "AbyssAddedPhysicalDamageWithWandsJewel1_",
+       "AbyssAddedPhysicalDamageWithWandsJewel2",
+       "AbyssAddedPhysicalDamageWithWandsJewel3_",
+       "AbyssAddedPhysicalDamageWithWandsJewel4",
+       "AbyssAddedPhysicalDamageWithWandsJewel5"
+      ],
+      "label": "# to # Added Physical Damage with Wand Attacks"
+     },
+     {
+      "ids": [
+       "AbyssAddedFireDamageWithBowsJewel1",
+       "AbyssAddedFireDamageWithBowsJewel2",
+       "AbyssAddedFireDamageWithBowsJewel3_",
+       "AbyssAddedFireDamageWithBowsJewel4",
+       "AbyssAddedFireDamageWithBowsJewel5_",
+       "AbyssAddedFireDamageWithBowsJewel6_"
+      ],
+      "label": "# to # Added Fire Damage with Bow Attacks"
+     },
+     {
+      "ids": [
+       "AbyssAddedFireDamageWithWandsJewel1",
+       "AbyssAddedFireDamageWithWandsJewel2",
+       "AbyssAddedFireDamageWithWandsJewel3",
+       "AbyssAddedFireDamageWithWandsJewel4",
+       "AbyssAddedFireDamageWithWandsJewel5__",
+       "AbyssAddedFireDamageWithWandsJewel6"
+      ],
+      "label": "# to # Added Fire Damage with Wand Attacks"
+     },
+     {
+      "ids": [
+       "AbyssAddedColdDamageWithBowsJewel1",
+       "AbyssAddedColdDamageWithBowsJewel2",
+       "AbyssAddedColdDamageWithBowsJewel3_",
+       "AbyssAddedColdDamageWithBowsJewel4",
+       "AbyssAddedColdDamageWithBowsJewel5",
+       "AbyssAddedColdDamageWithBowsJewel6"
+      ],
+      "label": "# to # Added Cold Damage with Bow Attacks"
+     },
+     {
+      "ids": [
+       "AbyssAddedColdDamageWithWandsJewel1__",
+       "AbyssAddedColdDamageWithWandsJewel2",
+       "AbyssAddedColdDamageWithWandsJewel3_",
+       "AbyssAddedColdDamageWithWandsJewel4",
+       "AbyssAddedColdDamageWithWandsJewel5",
+       "AbyssAddedColdDamageWithWandsJewel6"
+      ],
+      "label": "# to # Added Cold Damage with Wand Attacks"
+     },
+     {
+      "ids": [
+       "AbyssAddedLightningDamageWithBowsJewel1",
+       "AbyssAddedLightningDamageWithBowsJewel2_",
+       "AbyssAddedLightningDamageWithBowsJewel3",
+       "AbyssAddedLightningDamageWithBowsJewel4",
+       "AbyssAddedLightningDamageWithBowsJewel5",
+       "AbyssAddedLightningDamageWithBowsJewel6"
+      ],
+      "label": "# to # Added Lightning Damage with Bow Attacks"
+     },
+     {
+      "ids": [
+       "AbyssAddedLightningDamageWithWandsJewel1_",
+       "AbyssAddedLightningDamageWithWandsJewel2",
+       "AbyssAddedLightningDamageWithWandsJewel3",
+       "AbyssAddedLightningDamageWithWandsJewel4",
+       "AbyssAddedLightningDamageWithWandsJewel5",
+       "AbyssAddedLightningDamageWithWandsJewel6"
+      ],
+      "label": "# to # Added Lightning Damage with Wand Attacks"
+     },
+     {
+      "ids": [
+       "AbyssAddedChaosDamageWithBowsJewel1_",
+       "AbyssAddedChaosDamageWithBowsJewel2",
+       "AbyssAddedChaosDamageWithBowsJewel3",
+       "AbyssAddedChaosDamageWithBowsJewel4",
+       "AbyssAddedChaosDamageWithBowsJewel5"
+      ],
+      "label": "# to # Added Chaos Damage with Bow Attacks"
+     },
+     {
+      "ids": [
+       "AbyssDamageOverTimeWhileDualWieldingJewel1",
+       "AbyssDamageOverTimeWhileDualWieldingJewel2"
+      ],
+      "label": "#% increased Damage over Time while Dual Wielding"
+     },
+     {
+      "ids": [
+       "AbyssDamageOverTimeWhileHoldingAShieldJewel1_",
+       "AbyssDamageOverTimeWhileHoldingAShieldJewel2_"
+      ],
+      "label": "#% increased Damage over Time while holding a Shield"
+     },
+     {
+      "ids": [
+       "AbyssDamageOverTimeWhileWieldingTwoHandedWeaponJewel1",
+       "AbyssDamageOverTimeWhileWieldingTwoHandedWeaponJewel2"
+      ],
+      "label": "#% increased Damage over Time while wielding a Two Handed Weapon"
+     },
+     {
+      "ids": [
+       "AbyssDamageRecoupedAsMana1",
+       "AbyssDamageRecoupedAsMana2"
+      ],
+      "label": "#% of Damage taken Recouped as Mana"
+     },
+     {
+      "ids": [
+       "AbyssCooldownRecoverySpeed1_",
+       "AbyssCooldownRecoverySpeed2__"
+      ],
+      "label": "#% increased Cooldown Recovery Rate"
+     },
+     {
+      "ids": [
+       "AbyssFlatEnergyShieldRegenerationJewel1",
+       "AbyssFlatEnergyShieldRegenerationJewel2",
+       "AbyssFlatEnergyShieldRegenerationJewel3"
+      ],
+      "label": "Regenerate # Energy Shield per second"
+     },
+     {
+      "ids": [
+       "AbyssImpaleEffect1_",
+       "AbyssImpaleEffect2_"
+      ],
+      "label": "#% increased Impale Effect"
+     }
+    ],
+    [
+     {
+      "ids": [
+       "AbyssFlatArmourJewel1",
+       "AbyssFlatArmourJewel2",
+       "AbyssFlatArmourJewel3",
+       "AbyssFlatArmourJewel4__"
+      ],
+      "label": "+# to Armour"
+     },
+     {
+      "ids": [
+       "AbyssFlatEvasionJewel1",
+       "AbyssFlatEvasionJewel2",
+       "AbyssFlatEvasionJewel3",
+       "AbyssFlatEvasionJewel4_"
+      ],
+      "label": "+# to Evasion Rating"
+     },
+     {
+      "ids": [
+       "AbyssFlatEnergyShieldJewel1",
+       "AbyssFlatEnergyShieldJewel2",
+       "AbyssFlatEnergyShieldJewel3",
+       "AbyssFlatEnergyShieldJewel4"
+      ],
+      "label": "+# to maximum Energy Shield"
+     },
+     {
+      "ids": [
+       "AbyssJewelAddedLife1",
+       "AbyssJewelAddedLife2",
+       "AbyssJewelAddedLife3",
+       "AbyssJewelAddedLife4"
+      ],
+      "label": "+# to maximum Life"
+     },
+     {
+      "ids": [
+       "AbyssFlatLifeRegenerationJewel1",
+       "AbyssFlatLifeRegenerationJewel2",
+       "AbyssFlatLifeRegenerationJewel3_"
+      ],
+      "label": "Regenerate # Life per second"
+     },
+     {
+      "ids": [
+       "AbyssJewelAddedMana1",
+       "AbyssJewelAddedMana2",
+       "AbyssJewelAddedMana3",
+       "AbyssJewelAddedMana4"
+      ],
+      "label": "+# to maximum Mana"
+     },
+     {
+      "ids": [
+       "AbyssFlatManaShieldRegenerationJewel1",
+       "AbyssFlatManaShieldRegenerationJewel2",
+       "AbyssFlatManaShieldRegenerationJewel3"
+      ],
+      "label": "Regenerate # Mana per second"
+     },
+     {
+      "ids": [
+       "AbyssAddedPhysicalDamageWithBowsJewel1",
+       "AbyssAddedPhysicalDamageWithBowsJewel2_",
+       "AbyssAddedPhysicalDamageWithBowsJewel3",
+       "AbyssAddedPhysicalDamageWithBowsJewel4_",
+       "AbyssAddedPhysicalDamageWithBowsJewel5"
+      ],
+      "label": "# to # Added Physical Damage with Bow Attacks"
+     },
+     {
+      "ids": [
+       "AbyssAddedPhysicalDamageWithWandsJewel1_",
+       "AbyssAddedPhysicalDamageWithWandsJewel2",
+       "AbyssAddedPhysicalDamageWithWandsJewel3_",
+       "AbyssAddedPhysicalDamageWithWandsJewel4",
+       "AbyssAddedPhysicalDamageWithWandsJewel5"
+      ],
+      "label": "# to # Added Physical Damage with Wand Attacks"
+     },
+     {
+      "ids": [
+       "AbyssAddedFireDamageWithBowsJewel1",
+       "AbyssAddedFireDamageWithBowsJewel2",
+       "AbyssAddedFireDamageWithBowsJewel3_",
+       "AbyssAddedFireDamageWithBowsJewel4",
+       "AbyssAddedFireDamageWithBowsJewel5_",
+       "AbyssAddedFireDamageWithBowsJewel6_"
+      ],
+      "label": "# to # Added Fire Damage with Bow Attacks"
+     },
+     {
+      "ids": [
+       "AbyssAddedFireDamageWithWandsJewel1",
+       "AbyssAddedFireDamageWithWandsJewel2",
+       "AbyssAddedFireDamageWithWandsJewel3",
+       "AbyssAddedFireDamageWithWandsJewel4",
+       "AbyssAddedFireDamageWithWandsJewel5__",
+       "AbyssAddedFireDamageWithWandsJewel6"
+      ],
+      "label": "# to # Added Fire Damage with Wand Attacks"
+     },
+     {
+      "ids": [
+       "AbyssAddedColdDamageWithBowsJewel1",
+       "AbyssAddedColdDamageWithBowsJewel2",
+       "AbyssAddedColdDamageWithBowsJewel3_",
+       "AbyssAddedColdDamageWithBowsJewel4",
+       "AbyssAddedColdDamageWithBowsJewel5",
+       "AbyssAddedColdDamageWithBowsJewel6"
+      ],
+      "label": "# to # Added Cold Damage with Bow Attacks"
+     },
+     {
+      "ids": [
+       "AbyssAddedColdDamageWithWandsJewel1__",
+       "AbyssAddedColdDamageWithWandsJewel2",
+       "AbyssAddedColdDamageWithWandsJewel3_",
+       "AbyssAddedColdDamageWithWandsJewel4",
+       "AbyssAddedColdDamageWithWandsJewel5",
+       "AbyssAddedColdDamageWithWandsJewel6"
+      ],
+      "label": "# to # Added Cold Damage with Wand Attacks"
+     },
+     {
+      "ids": [
+       "AbyssAddedLightningDamageWithBowsJewel1",
+       "AbyssAddedLightningDamageWithBowsJewel2_",
+       "AbyssAddedLightningDamageWithBowsJewel3",
+       "AbyssAddedLightningDamageWithBowsJewel4",
+       "AbyssAddedLightningDamageWithBowsJewel5",
+       "AbyssAddedLightningDamageWithBowsJewel6"
+      ],
+      "label": "# to # Added Lightning Damage with Bow Attacks"
+     },
+     {
+      "ids": [
+       "AbyssAddedLightningDamageWithWandsJewel1_",
+       "AbyssAddedLightningDamageWithWandsJewel2",
+       "AbyssAddedLightningDamageWithWandsJewel3",
+       "AbyssAddedLightningDamageWithWandsJewel4",
+       "AbyssAddedLightningDamageWithWandsJewel5",
+       "AbyssAddedLightningDamageWithWandsJewel6"
+      ],
+      "label": "# to # Added Lightning Damage with Wand Attacks"
+     },
+     {
+      "ids": [
+       "AbyssAddedChaosDamageWithBowsJewel1_",
+       "AbyssAddedChaosDamageWithBowsJewel2",
+       "AbyssAddedChaosDamageWithBowsJewel3",
+       "AbyssAddedChaosDamageWithBowsJewel4",
+       "AbyssAddedChaosDamageWithBowsJewel5"
+      ],
+      "label": "# to # Added Chaos Damage with Bow Attacks"
+     },
+     {
+      "ids": [
+       "AbyssDamageOverTimeWhileDualWieldingJewel1",
+       "AbyssDamageOverTimeWhileDualWieldingJewel2"
+      ],
+      "label": "#% increased Damage over Time while Dual Wielding"
+     },
+     {
+      "ids": [
+       "AbyssDamageOverTimeWhileHoldingAShieldJewel1_",
+       "AbyssDamageOverTimeWhileHoldingAShieldJewel2_"
+      ],
+      "label": "#% increased Damage over Time while holding a Shield"
+     },
+     {
+      "ids": [
+       "AbyssDamageOverTimeWhileWieldingTwoHandedWeaponJewel1",
+       "AbyssDamageOverTimeWhileWieldingTwoHandedWeaponJewel2"
+      ],
+      "label": "#% increased Damage over Time while wielding a Two Handed Weapon"
+     },
+     {
+      "ids": [
+       "AbyssDamageRecoupedAsMana1",
+       "AbyssDamageRecoupedAsMana2"
+      ],
+      "label": "#% of Damage taken Recouped as Mana"
+     },
+     {
+      "ids": [
+       "AbyssCooldownRecoverySpeed1_",
+       "AbyssCooldownRecoverySpeed2__"
+      ],
+      "label": "#% increased Cooldown Recovery Rate"
+     },
+     {
+      "ids": [
+       "AbyssFlatEnergyShieldRegenerationJewel1",
+       "AbyssFlatEnergyShieldRegenerationJewel2",
+       "AbyssFlatEnergyShieldRegenerationJewel3"
+      ],
+      "label": "Regenerate # Energy Shield per second"
+     },
+     {
+      "ids": [
+       "AbyssImpaleEffect1_",
+       "AbyssImpaleEffect2_"
+      ],
+      "label": "#% increased Impale Effect"
+     }
+    ],
+    [
+     {
+      "ids": [
+       "AbyssAllAttributesJewel1"
+      ],
+      "label": "+(6-8) to all Attributes"
+     },
+     {
+      "ids": [
+       "AbyssStrengthJewel1_"
+      ],
+      "label": "+(12-16) to Strength"
+     },
+     {
+      "ids": [
+       "AbyssDexterityJewel1_"
+      ],
+      "label": "+(12-16) to Dexterity"
+     },
+     {
+      "ids": [
+       "AbyssIntelligenceJewel1"
+      ],
+      "label": "+(12-16) to Intelligence"
+     },
+     {
+      "ids": [
+       "AbyssStrengthDexterityJewel1"
+      ],
+      "label": "+(8-10) to Strength and Dexterity"
+     },
+     {
+      "ids": [
+       "AbyssStrengthIntelligenceJewel1_"
+      ],
+      "label": "+(8-10) to Strength and Intelligence"
+     },
+     {
+      "ids": [
+       "AbyssDexterityIntelligenceJewel1"
+      ],
+      "label": "+(8-10) to Dexterity and Intelligence"
+     },
+     {
+      "ids": [
+       "AbyssAddedPhysicalSuffixJewel1",
+       "AbyssAddedPhysicalSuffixJewel2",
+       "AbyssAddedPhysicalSuffixJewel3"
+      ],
+      "label": "Adds # to # Physical Damage to Attacks"
+     },
+     {
+      "ids": [
+       "AbyssAddedFireSuffixJewel1",
+       "AbyssAddedFireSuffixJewel2",
+       "AbyssAddedFireSuffixJewel3",
+       "AbyssAddedFireSuffixJewel4_",
+       "AbyssAddedFireSuffixJewel5"
+      ],
+      "label": "Adds # to # Fire Damage to Attacks"
+     },
+     {
+      "ids": [
+       "AbyssAddedColdSuffixJewel1",
+       "AbyssAddedColdSuffixJewel2_",
+       "AbyssAddedColdSuffixJewel3",
+       "AbyssAddedColdSuffixJewel4",
+       "AbyssAddedColdSuffixJewel5_"
+      ],
+      "label": "Adds # to # Cold Damage to Attacks"
+     },
+     {
+      "ids": [
+       "AbyssAddedLightningSuffixJewel1",
+       "AbyssAddedLightningSuffixJewel2",
+       "AbyssAddedLightningSuffixJewel3",
+       "AbyssAddedLightningSuffixJewel4",
+       "AbyssAddedLightningSuffixJewel5"
+      ],
+      "label": "Adds # to # Lightning Damage to Attacks"
+     },
+     {
+      "ids": [
+       "AbyssAddedChaosSuffixJewel1",
+       "AbyssAddedChaosSuffixJewel2",
+       "AbyssAddedChaosSuffixJewel3"
+      ],
+      "label": "Adds # to # Chaos Damage to Attacks"
+     },
+     {
+      "ids": [
+       "AbyssAttackSpeedJewel1_"
+      ],
+      "label": "(3-5)% increased Attack Speed"
+     },
+     {
+      "ids": [
+       "AbyssAccuracyRatingJewel2",
+       "AbyssAccuracyRatingJewel3",
+       "AbyssAccuracyRatingJewel4",
+       "AbyssAccuracyRatingJewel5"
+      ],
+      "label": "+# to Accuracy Rating"
+     },
+     {
+      "ids": [
+       "AbyssCriticalStrikeChanceJewel1"
+      ],
+      "label": "(8-12)% increased Global Critical Strike Chance"
+     },
+     {
+      "ids": [
+       "AbyssCriticalStrikeMultiplierJewel1"
+      ],
+      "label": "+(9-12)% to Global Critical Strike Multiplier"
+     },
+     {
+      "ids": [
+       "AbyssAllResistancesJewel1"
+      ],
+      "label": "+(8-10)% to all Elemental Resistances"
+     },
+     {
+      "ids": [
+       "AbyssFireResistanceJewel1"
+      ],
+      "label": "+(12-15)% to Fire Resistance"
+     },
+     {
+      "ids": [
+       "AbyssColdResistanceJewel1"
+      ],
+      "label": "+(12-15)% to Cold Resistance"
+     },
+     {
+      "ids": [
+       "AbyssLightningResistanceJewel1"
+      ],
+      "label": "+(12-15)% to Lightning Resistance"
+     },
+     {
+      "ids": [
+       "AbyssChaosResistanceJewel1"
+      ],
+      "label": "+(7-13)% to Chaos Resistance"
+     },
+     {
+      "ids": [
+       "AbyssAvoidFreezeAndChillJewel1",
+       "AbyssAvoidFreezeAndChillJewel2"
+      ],
+      "label": "#% chance to Avoid being Frozen"
+     },
+     {
+      "ids": [
+       "AbyssAvoidIgniteJewel1_",
+       "AbyssAvoidIgniteJewel2"
+      ],
+      "label": "#% chance to Avoid being Ignited"
+     },
+     {
+      "ids": [
+       "AbyssAvoidShockJewel1",
+       "AbyssAvoidShockJewel2"
+      ],
+      "label": "#% chance to Avoid being Shocked"
+     },
+     {
+      "ids": [
+       "AbyssAvoidPoisonJewel1__",
+       "AbyssAvoidPoisonJewel2__"
+      ],
+      "label": "#% chance to Avoid being Poisoned"
+     },
+     {
+      "ids": [
+       "AbyssAvoidStunJewel1",
+       "AbyssAvoidStunJewel2"
+      ],
+      "label": "#% chance to Avoid being Stunned"
+     },
+     {
+      "ids": [
+       "AbyssFireColdResistanceJewel1"
+      ],
+      "label": "+(10-12)% to Fire and Cold Resistances"
+     },
+     {
+      "ids": [
+       "AbyssFireLightningResistanceJewel1"
+      ],
+      "label": "+(10-12)% to Fire and Lightning Resistances"
+     },
+     {
+      "ids": [
+       "AbyssColdLightningResistanceJewel1"
+      ],
+      "label": "+(10-12)% to Cold and Lightning Resistances"
+     },
+     {
+      "ids": [
+       "AbyssChanceToBlockIfDamagedRecentlyJewel1_"
+      ],
+      "label": "+(3-4)% Chance to Block Attack Damage if you were Damaged by a Hit Recently"
+     },
+     {
+      "ids": [
+       "AbyssChancetoGainPhasingOnKillJewel1",
+       "AbyssChancetoGainPhasingOnKillJewel2"
+      ],
+      "label": "#% chance to gain Phasing for # seconds on Kill"
+     },
+     {
+      "ids": [
+       "AbyssAvoidBleedingJewel1",
+       "AbyssAvoidBleedingJewel2"
+      ],
+      "label": "#% chance to Avoid Bleeding"
+     },
+     {
+      "ids": [
+       "AbyssMovementSpeedIfEnemySlainRecentlyJewel1"
+      ],
+      "label": "(2-4)% increased Movement Speed if you've Killed Recently"
+     },
+     {
+      "ids": [
+       "AbyssIncreasedArmourIfNoEnemySlainRecentlyJewel1__"
+      ],
+      "label": "(20-30)% increased Armour if you haven't Killed Recently"
+     },
+     {
+      "ids": [
+       "AbyssAttackSpeedIfCriticalStrikeDealtRecentlyJewel1"
+      ],
+      "label": "(6-8)% increased Attack Speed if you've dealt a Critical Strike Recently"
+     },
+     {
+      "ids": [
+       "AbyssAttacksBlindOnHitChanceJewel1",
+       "AbyssAttacksBlindOnHitChanceJewel2___"
+      ],
+      "label": "#% chance to Blind Enemies on Hit with Attacks"
+     },
+     {
+      "ids": [
+       "AbyssAvoidElementalAilmentsWhileElusiveJewel1"
+      ],
+      "label": "(10-20)% chance to Avoid Elemental Ailments while you have Elusive"
+     },
+     {
+      "ids": [
+       "AbyssCastSpeedIfCriticalStrikeDealtRecentlyJewel1"
+      ],
+      "label": "(5-7)% increased Cast Speed if you've dealt a Critical Strike Recently"
+     },
+     {
+      "ids": [
+       "AbyssSpellBlockChanceIfHitRecentlyJewel1",
+       "AbyssSpellDodgeAndDodgeChanceIfHitRecentlyJewel1"
+      ],
+      "label": "+#% Chance to Block Spell Damage if you were Damaged by a Hit Recently"
+     },
+     {
+      "ids": [
+       "AbyssJewelChillEffect1_"
+      ],
+      "label": "(10-20)% increased Effect of Cold Ailments"
+     },
+     {
+      "ids": [
+       "AbyssCriticalStrikeChanceIfNoCriticalStrikeDealtRecentlyJewel1"
+      ],
+      "label": "(20-30)% increased Critical Strike Chance if you haven't dealt a Critical Strike Recently"
+     },
+     {
+      "ids": [
+       "AbyssCriticalStrikeMultiplierIfEnemySlainRecentlyJewel1"
+      ],
+      "label": "+(8-14)% to Critical Strike Multiplier if you've Killed Recently"
+     },
+     {
+      "ids": [
+       "AbyssSelfCurseEffectOnConsecratedGroundJewel1__"
+      ],
+      "label": "(15-25)% reduced Effect of Curses on you while on Consecrated Ground"
+     },
+     {
+      "ids": [
+       "AbyssDamagePenetratesElementalResistancesIfNoEnemySlainRecentlyJewel1"
+      ],
+      "label": "Damage Penetrates 2% Elemental Resistances if you haven't Killed Recently"
+     },
+     {
+      "ids": [
+       "AbyssDamageIfEnemySlainRecentlyJewel1"
+      ],
+      "label": "(15-20)% increased Damage if you've Killed Recently"
+     },
+     {
+      "ids": [
+       "AbyssBlindedEnemiesCriticalStrikeChanceJewel1"
+      ],
+      "label": "Enemies Blinded by you have (20-30)% reduced Critical Strike Chance"
+     },
+     {
+      "ids": [
+       "AbyssHinderedEnemiesLifeRegenerationRateJewel1"
+      ],
+      "label": "Enemies Hindered by you have (25-35)% reduced Life Regeneration rate"
+     },
+     {
+      "ids": [
+       "AbyssIntimidatedEnemiesStunDurationJewel1"
+      ],
+      "label": "Enemies Intimidated by you have (10-15)% increased duration of stuns against them"
+     },
+     {
+      "ids": [
+       "AbyssMaimedEnemiesDamageOverTimeJewel1"
+      ],
+      "label": "Enemies Maimed by you take (4-5)% increased Damage Over Time"
+     },
+     {
+      "ids": [
+       "AbyssWitheredEnemiesAllResistanceJewel1___"
+      ],
+      "label": "Enemies Withered by you have -2% to all Resistances"
+     },
+     {
+      "ids": [
+       "AbyssEvasionRatingWhileMovingJewel1"
+      ],
+      "label": "(25-35)% increased Evasion Rating while moving"
+     },
+     {
+      "ids": [
+       "AbyssLifeRegenerationRateWhileMovingJewel1"
+      ],
+      "label": "Regenerate (0.5-1)% of Life per second while moving"
+     },
+     {
+      "ids": [
+       "AbyssJewelShockEffect1"
+      ],
+      "label": "(10-20)% increased Effect of Lightning Ailments"
+     },
+     {
+      "ids": [
+       "AbyssManaRegenerationRateWhileMovingJewel1"
+      ],
+      "label": "(20-25)% increased Mana Regeneration Rate while moving"
+     },
+     {
+      "ids": [
+       "AbyssMovementSpeedIfNotDamagedRecentlyJewel1"
+      ],
+      "label": "(3-4)% increased Movement Speed if you haven't taken Damage Recently"
+     },
+     {
+      "ids": [
+       "AbyssPhysicalDamageAddedAsExtraFireIfCriticalStrikeDealtRecentlyJewel1"
+      ],
+      "label": "Gain (2-4)% of Physical Damage as Extra Fire Damage if you've dealt a Critical Strike Recently"
+     }
+    ],
+    [
+     {
+      "ids": [
+       "AbyssAllAttributesJewel1"
+      ],
+      "label": "+(6-8) to all Attributes"
+     },
+     {
+      "ids": [
+       "AbyssStrengthJewel1_"
+      ],
+      "label": "+(12-16) to Strength"
+     },
+     {
+      "ids": [
+       "AbyssDexterityJewel1_"
+      ],
+      "label": "+(12-16) to Dexterity"
+     },
+     {
+      "ids": [
+       "AbyssIntelligenceJewel1"
+      ],
+      "label": "+(12-16) to Intelligence"
+     },
+     {
+      "ids": [
+       "AbyssStrengthDexterityJewel1"
+      ],
+      "label": "+(8-10) to Strength and Dexterity"
+     },
+     {
+      "ids": [
+       "AbyssStrengthIntelligenceJewel1_"
+      ],
+      "label": "+(8-10) to Strength and Intelligence"
+     },
+     {
+      "ids": [
+       "AbyssDexterityIntelligenceJewel1"
+      ],
+      "label": "+(8-10) to Dexterity and Intelligence"
+     },
+     {
+      "ids": [
+       "AbyssAddedPhysicalSuffixJewel1",
+       "AbyssAddedPhysicalSuffixJewel2",
+       "AbyssAddedPhysicalSuffixJewel3"
+      ],
+      "label": "Adds # to # Physical Damage to Attacks"
+     },
+     {
+      "ids": [
+       "AbyssAddedFireSuffixJewel1",
+       "AbyssAddedFireSuffixJewel2",
+       "AbyssAddedFireSuffixJewel3",
+       "AbyssAddedFireSuffixJewel4_",
+       "AbyssAddedFireSuffixJewel5"
+      ],
+      "label": "Adds # to # Fire Damage to Attacks"
+     },
+     {
+      "ids": [
+       "AbyssAddedColdSuffixJewel1",
+       "AbyssAddedColdSuffixJewel2_",
+       "AbyssAddedColdSuffixJewel3",
+       "AbyssAddedColdSuffixJewel4",
+       "AbyssAddedColdSuffixJewel5_"
+      ],
+      "label": "Adds # to # Cold Damage to Attacks"
+     },
+     {
+      "ids": [
+       "AbyssAddedLightningSuffixJewel1",
+       "AbyssAddedLightningSuffixJewel2",
+       "AbyssAddedLightningSuffixJewel3",
+       "AbyssAddedLightningSuffixJewel4",
+       "AbyssAddedLightningSuffixJewel5"
+      ],
+      "label": "Adds # to # Lightning Damage to Attacks"
+     },
+     {
+      "ids": [
+       "AbyssAddedChaosSuffixJewel1",
+       "AbyssAddedChaosSuffixJewel2",
+       "AbyssAddedChaosSuffixJewel3"
+      ],
+      "label": "Adds # to # Chaos Damage to Attacks"
+     },
+     {
+      "ids": [
+       "AbyssAttackSpeedJewel1_"
+      ],
+      "label": "(3-5)% increased Attack Speed"
+     },
+     {
+      "ids": [
+       "AbyssAccuracyRatingJewel2",
+       "AbyssAccuracyRatingJewel3",
+       "AbyssAccuracyRatingJewel4",
+       "AbyssAccuracyRatingJewel5"
+      ],
+      "label": "+# to Accuracy Rating"
+     },
+     {
+      "ids": [
+       "AbyssCriticalStrikeChanceJewel1"
+      ],
+      "label": "(8-12)% increased Global Critical Strike Chance"
+     },
+     {
+      "ids": [
+       "AbyssCriticalStrikeMultiplierJewel1"
+      ],
+      "label": "+(9-12)% to Global Critical Strike Multiplier"
+     },
+     {
+      "ids": [
+       "AbyssAllResistancesJewel1"
+      ],
+      "label": "+(8-10)% to all Elemental Resistances"
+     },
+     {
+      "ids": [
+       "AbyssFireResistanceJewel1"
+      ],
+      "label": "+(12-15)% to Fire Resistance"
+     },
+     {
+      "ids": [
+       "AbyssColdResistanceJewel1"
+      ],
+      "label": "+(12-15)% to Cold Resistance"
+     },
+     {
+      "ids": [
+       "AbyssLightningResistanceJewel1"
+      ],
+      "label": "+(12-15)% to Lightning Resistance"
+     },
+     {
+      "ids": [
+       "AbyssChaosResistanceJewel1"
+      ],
+      "label": "+(7-13)% to Chaos Resistance"
+     },
+     {
+      "ids": [
+       "AbyssAvoidFreezeAndChillJewel1",
+       "AbyssAvoidFreezeAndChillJewel2"
+      ],
+      "label": "#% chance to Avoid being Frozen"
+     },
+     {
+      "ids": [
+       "AbyssAvoidIgniteJewel1_",
+       "AbyssAvoidIgniteJewel2"
+      ],
+      "label": "#% chance to Avoid being Ignited"
+     },
+     {
+      "ids": [
+       "AbyssAvoidShockJewel1",
+       "AbyssAvoidShockJewel2"
+      ],
+      "label": "#% chance to Avoid being Shocked"
+     },
+     {
+      "ids": [
+       "AbyssAvoidPoisonJewel1__",
+       "AbyssAvoidPoisonJewel2__"
+      ],
+      "label": "#% chance to Avoid being Poisoned"
+     },
+     {
+      "ids": [
+       "AbyssAvoidStunJewel1",
+       "AbyssAvoidStunJewel2"
+      ],
+      "label": "#% chance to Avoid being Stunned"
+     },
+     {
+      "ids": [
+       "AbyssFireColdResistanceJewel1"
+      ],
+      "label": "+(10-12)% to Fire and Cold Resistances"
+     },
+     {
+      "ids": [
+       "AbyssFireLightningResistanceJewel1"
+      ],
+      "label": "+(10-12)% to Fire and Lightning Resistances"
+     },
+     {
+      "ids": [
+       "AbyssColdLightningResistanceJewel1"
+      ],
+      "label": "+(10-12)% to Cold and Lightning Resistances"
+     },
+     {
+      "ids": [
+       "AbyssChanceToBlockIfDamagedRecentlyJewel1_"
+      ],
+      "label": "+(3-4)% Chance to Block Attack Damage if you were Damaged by a Hit Recently"
+     },
+     {
+      "ids": [
+       "AbyssChancetoGainPhasingOnKillJewel1",
+       "AbyssChancetoGainPhasingOnKillJewel2"
+      ],
+      "label": "#% chance to gain Phasing for # seconds on Kill"
+     },
+     {
+      "ids": [
+       "AbyssAvoidBleedingJewel1",
+       "AbyssAvoidBleedingJewel2"
+      ],
+      "label": "#% chance to Avoid Bleeding"
+     },
+     {
+      "ids": [
+       "AbyssMovementSpeedIfEnemySlainRecentlyJewel1"
+      ],
+      "label": "(2-4)% increased Movement Speed if you've Killed Recently"
+     },
+     {
+      "ids": [
+       "AbyssIncreasedArmourIfNoEnemySlainRecentlyJewel1__"
+      ],
+      "label": "(20-30)% increased Armour if you haven't Killed Recently"
+     },
+     {
+      "ids": [
+       "AbyssAttackSpeedIfCriticalStrikeDealtRecentlyJewel1"
+      ],
+      "label": "(6-8)% increased Attack Speed if you've dealt a Critical Strike Recently"
+     },
+     {
+      "ids": [
+       "AbyssAttacksBlindOnHitChanceJewel1",
+       "AbyssAttacksBlindOnHitChanceJewel2___"
+      ],
+      "label": "#% chance to Blind Enemies on Hit with Attacks"
+     },
+     {
+      "ids": [
+       "AbyssAvoidElementalAilmentsWhileElusiveJewel1"
+      ],
+      "label": "(10-20)% chance to Avoid Elemental Ailments while you have Elusive"
+     },
+     {
+      "ids": [
+       "AbyssCastSpeedIfCriticalStrikeDealtRecentlyJewel1"
+      ],
+      "label": "(5-7)% increased Cast Speed if you've dealt a Critical Strike Recently"
+     },
+     {
+      "ids": [
+       "AbyssSpellBlockChanceIfHitRecentlyJewel1",
+       "AbyssSpellDodgeAndDodgeChanceIfHitRecentlyJewel1"
+      ],
+      "label": "+#% Chance to Block Spell Damage if you were Damaged by a Hit Recently"
+     },
+     {
+      "ids": [
+       "AbyssJewelChillEffect1_"
+      ],
+      "label": "(10-20)% increased Effect of Cold Ailments"
+     },
+     {
+      "ids": [
+       "AbyssCriticalStrikeChanceIfNoCriticalStrikeDealtRecentlyJewel1"
+      ],
+      "label": "(20-30)% increased Critical Strike Chance if you haven't dealt a Critical Strike Recently"
+     },
+     {
+      "ids": [
+       "AbyssCriticalStrikeMultiplierIfEnemySlainRecentlyJewel1"
+      ],
+      "label": "+(8-14)% to Critical Strike Multiplier if you've Killed Recently"
+     },
+     {
+      "ids": [
+       "AbyssSelfCurseEffectOnConsecratedGroundJewel1__"
+      ],
+      "label": "(15-25)% reduced Effect of Curses on you while on Consecrated Ground"
+     },
+     {
+      "ids": [
+       "AbyssDamagePenetratesElementalResistancesIfNoEnemySlainRecentlyJewel1"
+      ],
+      "label": "Damage Penetrates 2% Elemental Resistances if you haven't Killed Recently"
+     },
+     {
+      "ids": [
+       "AbyssDamageIfEnemySlainRecentlyJewel1"
+      ],
+      "label": "(15-20)% increased Damage if you've Killed Recently"
+     },
+     {
+      "ids": [
+       "AbyssBlindedEnemiesCriticalStrikeChanceJewel1"
+      ],
+      "label": "Enemies Blinded by you have (20-30)% reduced Critical Strike Chance"
+     },
+     {
+      "ids": [
+       "AbyssHinderedEnemiesLifeRegenerationRateJewel1"
+      ],
+      "label": "Enemies Hindered by you have (25-35)% reduced Life Regeneration rate"
+     },
+     {
+      "ids": [
+       "AbyssIntimidatedEnemiesStunDurationJewel1"
+      ],
+      "label": "Enemies Intimidated by you have (10-15)% increased duration of stuns against them"
+     },
+     {
+      "ids": [
+       "AbyssMaimedEnemiesDamageOverTimeJewel1"
+      ],
+      "label": "Enemies Maimed by you take (4-5)% increased Damage Over Time"
+     },
+     {
+      "ids": [
+       "AbyssWitheredEnemiesAllResistanceJewel1___"
+      ],
+      "label": "Enemies Withered by you have -2% to all Resistances"
+     },
+     {
+      "ids": [
+       "AbyssEvasionRatingWhileMovingJewel1"
+      ],
+      "label": "(25-35)% increased Evasion Rating while moving"
+     },
+     {
+      "ids": [
+       "AbyssLifeRegenerationRateWhileMovingJewel1"
+      ],
+      "label": "Regenerate (0.5-1)% of Life per second while moving"
+     },
+     {
+      "ids": [
+       "AbyssJewelShockEffect1"
+      ],
+      "label": "(10-20)% increased Effect of Lightning Ailments"
+     },
+     {
+      "ids": [
+       "AbyssManaRegenerationRateWhileMovingJewel1"
+      ],
+      "label": "(20-25)% increased Mana Regeneration Rate while moving"
+     },
+     {
+      "ids": [
+       "AbyssMovementSpeedIfNotDamagedRecentlyJewel1"
+      ],
+      "label": "(3-4)% increased Movement Speed if you haven't taken Damage Recently"
+     },
+     {
+      "ids": [
+       "AbyssPhysicalDamageAddedAsExtraFireIfCriticalStrikeDealtRecentlyJewel1"
+      ],
+      "label": "Gain (2-4)% of Physical Damage as Extra Fire Damage if you've dealt a Critical Strike Recently"
+     }
+    ]
+   ]
+  },
+  {
+   "explicit": [
+    "+34 to Intelligence",
+    "+12 to maximum Energy Shield",
+    "+77 to maximum Life",
+    "+17 to maximum Mana"
+   ],
+   "level": 69,
+   "limit": 6,
+   "name": "New Item, Hubris Circlet",
+   "slots": [
+    [
+     {
+      "ids": [
+       "LocalIncreasedEnergyShield1",
+       "LocalIncreasedEnergyShield2",
+       "LocalIncreasedEnergyShield3",
+       "LocalIncreasedEnergyShield4",
+       "LocalIncreasedEnergyShield5",
+       "LocalIncreasedEnergyShield6",
+       "LocalIncreasedEnergyShield7",
+       "LocalIncreasedEnergyShield8"
+      ],
+      "label": "+# to maximum Energy Shield"
+     },
+     {
+      "ids": [
+       "LocalBaseEnergyShieldAndLife1",
+       "LocalBaseEnergyShieldAndLife2",
+       "LocalBaseEnergyShieldAndLife3_"
+      ],
+      "label": "+# to maximum Energy Shield/+# to maximum Life"
+     },
+     {
+      "ids": [
+       "LocalBaseEnergyShieldAndMana1",
+       "LocalBaseEnergyShieldAndMana2",
+       "LocalBaseEnergyShieldAndMana3"
+      ],
+      "label": "+# to maximum Energy Shield/+# to maximum Mana"
+     },
+     {
+      "ids": [
+       "LocalIncreasedEnergyShieldPercent1",
+       "LocalIncreasedEnergyShieldPercent2",
+       "LocalIncreasedEnergyShieldPercent3",
+       "LocalIncreasedEnergyShieldPercent4",
+       "LocalIncreasedEnergyShieldPercent5",
+       "LocalIncreasedEnergyShieldPercent6",
+       "LocalIncreasedEnergyShieldPercent7_"
+      ],
+      "label": "#% increased Energy Shield"
+     },
+     {
+      "ids": [
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery1",
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery2",
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery3",
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery4",
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery5",
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery6"
+      ],
+      "label": "#% increased Energy Shield/#% increased Stun and Block Recovery"
+     },
+     {
+      "ids": [
+       "IncreasedLife0",
+       "IncreasedLife1",
+       "IncreasedLife2",
+       "IncreasedLife3",
+       "IncreasedLife4",
+       "IncreasedLife5",
+       "IncreasedLife6",
+       "IncreasedLife7",
+       "IncreasedLife8",
+       "IncreasedLife9"
+      ],
+      "label": "+# to maximum Life"
+     },
+     {
+      "ids": [
+       "IncreasedMana1",
+       "IncreasedMana2",
+       "IncreasedMana3",
+       "IncreasedMana4",
+       "IncreasedMana5",
+       "IncreasedMana6",
+       "IncreasedMana7",
+       "IncreasedMana8",
+       "IncreasedMana9",
+       "IncreasedMana10",
+       "IncreasedMana11",
+       "IncreasedMana12"
+      ],
+      "label": "+# to maximum Mana"
+     },
+     {
+      "ids": [
+       "ItemFoundRarityIncreasePrefix1",
+       "ItemFoundRarityIncreasePrefix2",
+       "ItemFoundRarityIncreasePrefix3"
+      ],
+      "label": "#% increased Rarity of Items found"
+     },
+     {
+      "ids": [
+       "GlobalIncreaseMinionSpellSkillGemLevel1",
+       "GlobalIncreaseMinionSpellSkillGemLevel2"
+      ],
+      "label": "+# to Level of all Minion Skill Gems"
+     },
+     {
+      "ids": [
+       "AttackerTakesDamage1",
+       "AttackerTakesDamage2"
+      ],
+      "label": "Reflects # Physical Damage to Melee Attackers"
+     }
+    ],
+    [
+     {
+      "ids": [
+       "LocalIncreasedEnergyShield1",
+       "LocalIncreasedEnergyShield2",
+       "LocalIncreasedEnergyShield3",
+       "LocalIncreasedEnergyShield4",
+       "LocalIncreasedEnergyShield5",
+       "LocalIncreasedEnergyShield6",
+       "LocalIncreasedEnergyShield7",
+       "LocalIncreasedEnergyShield8"
+      ],
+      "label": "+# to maximum Energy Shield"
+     },
+     {
+      "ids": [
+       "LocalBaseEnergyShieldAndLife1",
+       "LocalBaseEnergyShieldAndLife2",
+       "LocalBaseEnergyShieldAndLife3_"
+      ],
+      "label": "+# to maximum Energy Shield/+# to maximum Life"
+     },
+     {
+      "ids": [
+       "LocalIncreasedEnergyShieldPercent1",
+       "LocalIncreasedEnergyShieldPercent2",
+       "LocalIncreasedEnergyShieldPercent3",
+       "LocalIncreasedEnergyShieldPercent4",
+       "LocalIncreasedEnergyShieldPercent5",
+       "LocalIncreasedEnergyShieldPercent6",
+       "LocalIncreasedEnergyShieldPercent7_"
+      ],
+      "label": "#% increased Energy Shield"
+     },
+     {
+      "ids": [
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery1",
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery2",
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery3",
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery4",
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery5",
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery6"
+      ],
+      "label": "#% increased Energy Shield/#% increased Stun and Block Recovery"
+     },
+     {
+      "ids": [
+       "IncreasedLife0",
+       "IncreasedLife1",
+       "IncreasedLife2",
+       "IncreasedLife3",
+       "IncreasedLife4",
+       "IncreasedLife5",
+       "IncreasedLife6",
+       "IncreasedLife7",
+       "IncreasedLife8",
+       "IncreasedLife9"
+      ],
+      "label": "+# to maximum Life"
+     },
+     {
+      "ids": [
+       "IncreasedMana1",
+       "IncreasedMana2",
+       "IncreasedMana3",
+       "IncreasedMana4",
+       "IncreasedMana5",
+       "IncreasedMana6",
+       "IncreasedMana7",
+       "IncreasedMana8",
+       "IncreasedMana9",
+       "IncreasedMana10",
+       "IncreasedMana11",
+       "IncreasedMana12"
+      ],
+      "label": "+# to maximum Mana"
+     },
+     {
+      "ids": [
+       "ItemFoundRarityIncreasePrefix1",
+       "ItemFoundRarityIncreasePrefix2",
+       "ItemFoundRarityIncreasePrefix3"
+      ],
+      "label": "#% increased Rarity of Items found"
+     },
+     {
+      "ids": [
+       "GlobalIncreaseMinionSpellSkillGemLevel1",
+       "GlobalIncreaseMinionSpellSkillGemLevel2"
+      ],
+      "label": "+# to Level of all Minion Skill Gems"
+     },
+     {
+      "ids": [
+       "AttackerTakesDamage1",
+       "AttackerTakesDamage2"
+      ],
+      "label": "Reflects # Physical Damage to Melee Attackers"
+     }
+    ],
+    [
+     {
+      "ids": [
+       "LocalIncreasedEnergyShield1",
+       "LocalIncreasedEnergyShield2",
+       "LocalIncreasedEnergyShield3",
+       "LocalIncreasedEnergyShield4",
+       "LocalIncreasedEnergyShield5",
+       "LocalIncreasedEnergyShield6",
+       "LocalIncreasedEnergyShield7",
+       "LocalIncreasedEnergyShield8"
+      ],
+      "label": "+# to maximum Energy Shield"
+     },
+     {
+      "ids": [
+       "LocalBaseEnergyShieldAndLife1",
+       "LocalBaseEnergyShieldAndLife2",
+       "LocalBaseEnergyShieldAndLife3_"
+      ],
+      "label": "+# to maximum Energy Shield/+# to maximum Life"
+     },
+     {
+      "ids": [
+       "LocalIncreasedEnergyShieldPercent1",
+       "LocalIncreasedEnergyShieldPercent2",
+       "LocalIncreasedEnergyShieldPercent3",
+       "LocalIncreasedEnergyShieldPercent4",
+       "LocalIncreasedEnergyShieldPercent5",
+       "LocalIncreasedEnergyShieldPercent6",
+       "LocalIncreasedEnergyShieldPercent7_"
+      ],
+      "label": "#% increased Energy Shield"
+     },
+     {
+      "ids": [
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery1",
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery2",
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery3",
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery4",
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery5",
+       "LocalIncreasedEnergyShieldPercentAndStunRecovery6"
+      ],
+      "label": "#% increased Energy Shield/#% increased Stun and Block Recovery"
+     },
+     {
+      "ids": [
+       "IncreasedLife0",
+       "IncreasedLife1",
+       "IncreasedLife2",
+       "IncreasedLife3",
+       "IncreasedLife4",
+       "IncreasedLife5",
+       "IncreasedLife6",
+       "IncreasedLife7",
+       "IncreasedLife8",
+       "IncreasedLife9"
+      ],
+      "label": "+# to maximum Life"
+     },
+     {
+      "ids": [
+       "IncreasedMana1",
+       "IncreasedMana2",
+       "IncreasedMana3",
+       "IncreasedMana4",
+       "IncreasedMana5",
+       "IncreasedMana6",
+       "IncreasedMana7",
+       "IncreasedMana8",
+       "IncreasedMana9",
+       "IncreasedMana10",
+       "IncreasedMana11",
+       "IncreasedMana12"
+      ],
+      "label": "+# to maximum Mana"
+     },
+     {
+      "ids": [
+       "ItemFoundRarityIncreasePrefix1",
+       "ItemFoundRarityIncreasePrefix2",
+       "ItemFoundRarityIncreasePrefix3"
+      ],
+      "label": "#% increased Rarity of Items found"
+     },
+     {
+      "ids": [
+       "GlobalIncreaseMinionSpellSkillGemLevel1",
+       "GlobalIncreaseMinionSpellSkillGemLevel2"
+      ],
+      "label": "+# to Level of all Minion Skill Gems"
+     },
+     {
+      "ids": [
+       "AttackerTakesDamage1",
+       "AttackerTakesDamage2"
+      ],
+      "label": "Reflects # Physical Damage to Melee Attackers"
+     }
+    ],
+    [
+     {
+      "ids": [
+       "ReducedLocalAttributeRequirements1",
+       "ReducedLocalAttributeRequirements2"
+      ],
+      "label": "#% reduced Attribute Requirements"
+     },
+     {
+      "ids": [
+       "Intelligence1",
+       "Intelligence2",
+       "Intelligence3",
+       "Intelligence4",
+       "Intelligence5",
+       "Intelligence6",
+       "Intelligence7",
+       "Intelligence8",
+       "Intelligence9",
+       "Intelligence10"
+      ],
+      "label": "+# to Intelligence"
+     },
+     {
+      "ids": [
+       "IncreasedAccuracyNew1_",
+       "IncreasedAccuracyNew2",
+       "IncreasedAccuracyNew3",
+       "IncreasedAccuracyNew4",
+       "IncreasedAccuracyNew5_",
+       "IncreasedAccuracyNew6"
+      ],
+      "label": "+# to Accuracy Rating"
+     },
+     {
+      "ids": [
+       "LightRadiusAndAccuracyNew1",
+       "LightRadiusAndAccuracyNew2",
+       "LightRadiusAndAccuracy3"
+      ],
+      "label": "#% increased Global Accuracy Rating/#% increased Light Radius"
+     },
+     {
+      "ids": [
+       "EnergyShieldRechargeRate1",
+       "EnergyShieldRechargeRate2",
+       "EnergyShieldRechargeRate3",
+       "EnergyShieldRechargeRate4",
+       "EnergyShieldRechargeRate5______"
+      ],
+      "label": "#% increased Energy Shield Recharge Rate"
+     },
+     {
+      "ids": [
+       "LifeRegeneration1",
+       "LifeRegeneration2",
+       "LifeRegeneration3",
+       "LifeRegeneration4",
+       "LifeRegeneration5",
+       "LifeRegeneration6",
+       "LifeRegeneration7",
+       "LifeRegeneration8_",
+       "LifeRegeneration9"
+      ],
+      "label": "Regenerate # Life per second"
+     },
+     {
+      "ids": [
+       "ItemFoundRarityIncrease1",
+       "ItemFoundRarityIncrease2",
+       "ItemFoundRarityIncrease3",
+       "ItemFoundRarityIncrease4"
+      ],
+      "label": "#% increased Rarity of Items found"
+     },
+     {
+      "ids": [
+       "FireResist1",
+       "FireResist2",
+       "FireResist3",
+       "FireResist4",
+       "FireResist5",
+       "FireResist6",
+       "FireResist7",
+       "FireResist8"
+      ],
+      "label": "+#% to Fire Resistance"
+     },
+     {
+      "ids": [
+       "ColdResist1",
+       "ColdResist2",
+       "ColdResist3",
+       "ColdResist4",
+       "ColdResist5",
+       "ColdResist6",
+       "ColdResist7",
+       "ColdResist8"
+      ],
+      "label": "+#% to Cold Resistance"
+     },
+     {
+      "ids": [
+       "LightningResist1",
+       "LightningResist2",
+       "LightningResist3",
+       "LightningResist4",
+       "LightningResist5",
+       "LightningResist6",
+       "LightningResist7",
+       "LightningResist8"
+      ],
+      "label": "+#% to Lightning Resistance"
+     },
+     {
+      "ids": [
+       "ChaosResist1",
+       "ChaosResist2",
+       "ChaosResist3",
+       "ChaosResist4",
+       "ChaosResist5",
+       "ChaosResist6"
+      ],
+      "label": "+#% to Chaos Resistance"
+     },
+     {
+      "ids": [
+       "StunRecovery1",
+       "StunRecovery2",
+       "StunRecovery3",
+       "StunRecovery4",
+       "StunRecovery5",
+       "StunRecovery6"
+      ],
+      "label": "#% increased Stun and Block Recovery"
+     }
+    ],
+    [
+     {
+      "ids": [
+       "ReducedLocalAttributeRequirements1",
+       "ReducedLocalAttributeRequirements2"
+      ],
+      "label": "#% reduced Attribute Requirements"
+     },
+     {
+      "ids": [
+       "IncreasedAccuracyNew1_",
+       "IncreasedAccuracyNew2",
+       "IncreasedAccuracyNew3",
+       "IncreasedAccuracyNew4",
+       "IncreasedAccuracyNew5_",
+       "IncreasedAccuracyNew6"
+      ],
+      "label": "+# to Accuracy Rating"
+     },
+     {
+      "ids": [
+       "LightRadiusAndAccuracyNew1",
+       "LightRadiusAndAccuracyNew2",
+       "LightRadiusAndAccuracy3"
+      ],
+      "label": "#% increased Global Accuracy Rating/#% increased Light Radius"
+     },
+     {
+      "ids": [
+       "EnergyShieldRechargeRate1",
+       "EnergyShieldRechargeRate2",
+       "EnergyShieldRechargeRate3",
+       "EnergyShieldRechargeRate4",
+       "EnergyShieldRechargeRate5______"
+      ],
+      "label": "#% increased Energy Shield Recharge Rate"
+     },
+     {
+      "ids": [
+       "LifeRegeneration1",
+       "LifeRegeneration2",
+       "LifeRegeneration3",
+       "LifeRegeneration4",
+       "LifeRegeneration5",
+       "LifeRegeneration6",
+       "LifeRegeneration7",
+       "LifeRegeneration8_",
+       "LifeRegeneration9"
+      ],
+      "label": "Regenerate # Life per second"
+     },
+     {
+      "ids": [
+       "ItemFoundRarityIncrease1",
+       "ItemFoundRarityIncrease2",
+       "ItemFoundRarityIncrease3",
+       "ItemFoundRarityIncrease4"
+      ],
+      "label": "#% increased Rarity of Items found"
+     },
+     {
+      "ids": [
+       "FireResist1",
+       "FireResist2",
+       "FireResist3",
+       "FireResist4",
+       "FireResist5",
+       "FireResist6",
+       "FireResist7",
+       "FireResist8"
+      ],
+      "label": "+#% to Fire Resistance"
+     },
+     {
+      "ids": [
+       "ColdResist1",
+       "ColdResist2",
+       "ColdResist3",
+       "ColdResist4",
+       "ColdResist5",
+       "ColdResist6",
+       "ColdResist7",
+       "ColdResist8"
+      ],
+      "label": "+#% to Cold Resistance"
+     },
+     {
+      "ids": [
+       "LightningResist1",
+       "LightningResist2",
+       "LightningResist3",
+       "LightningResist4",
+       "LightningResist5",
+       "LightningResist6",
+       "LightningResist7",
+       "LightningResist8"
+      ],
+      "label": "+#% to Lightning Resistance"
+     },
+     {
+      "ids": [
+       "ChaosResist1",
+       "ChaosResist2",
+       "ChaosResist3",
+       "ChaosResist4",
+       "ChaosResist5",
+       "ChaosResist6"
+      ],
+      "label": "+#% to Chaos Resistance"
+     },
+     {
+      "ids": [
+       "StunRecovery1",
+       "StunRecovery2",
+       "StunRecovery3",
+       "StunRecovery4",
+       "StunRecovery5",
+       "StunRecovery6"
+      ],
+      "label": "#% increased Stun and Block Recovery"
+     }
+    ],
+    [
+     {
+      "ids": [
+       "ReducedLocalAttributeRequirements1",
+       "ReducedLocalAttributeRequirements2"
+      ],
+      "label": "#% reduced Attribute Requirements"
+     },
+     {
+      "ids": [
+       "IncreasedAccuracyNew1_",
+       "IncreasedAccuracyNew2",
+       "IncreasedAccuracyNew3",
+       "IncreasedAccuracyNew4",
+       "IncreasedAccuracyNew5_",
+       "IncreasedAccuracyNew6"
+      ],
+      "label": "+# to Accuracy Rating"
+     },
+     {
+      "ids": [
+       "LightRadiusAndAccuracyNew1",
+       "LightRadiusAndAccuracyNew2",
+       "LightRadiusAndAccuracy3"
+      ],
+      "label": "#% increased Global Accuracy Rating/#% increased Light Radius"
+     },
+     {
+      "ids": [
+       "EnergyShieldRechargeRate1",
+       "EnergyShieldRechargeRate2",
+       "EnergyShieldRechargeRate3",
+       "EnergyShieldRechargeRate4",
+       "EnergyShieldRechargeRate5______"
+      ],
+      "label": "#% increased Energy Shield Recharge Rate"
+     },
+     {
+      "ids": [
+       "LifeRegeneration1",
+       "LifeRegeneration2",
+       "LifeRegeneration3",
+       "LifeRegeneration4",
+       "LifeRegeneration5",
+       "LifeRegeneration6",
+       "LifeRegeneration7",
+       "LifeRegeneration8_",
+       "LifeRegeneration9"
+      ],
+      "label": "Regenerate # Life per second"
+     },
+     {
+      "ids": [
+       "ItemFoundRarityIncrease1",
+       "ItemFoundRarityIncrease2",
+       "ItemFoundRarityIncrease3",
+       "ItemFoundRarityIncrease4"
+      ],
+      "label": "#% increased Rarity of Items found"
+     },
+     {
+      "ids": [
+       "FireResist1",
+       "FireResist2",
+       "FireResist3",
+       "FireResist4",
+       "FireResist5",
+       "FireResist6",
+       "FireResist7",
+       "FireResist8"
+      ],
+      "label": "+#% to Fire Resistance"
+     },
+     {
+      "ids": [
+       "ColdResist1",
+       "ColdResist2",
+       "ColdResist3",
+       "ColdResist4",
+       "ColdResist5",
+       "ColdResist6",
+       "ColdResist7",
+       "ColdResist8"
+      ],
+      "label": "+#% to Cold Resistance"
+     },
+     {
+      "ids": [
+       "LightningResist1",
+       "LightningResist2",
+       "LightningResist3",
+       "LightningResist4",
+       "LightningResist5",
+       "LightningResist6",
+       "LightningResist7",
+       "LightningResist8"
+      ],
+      "label": "+#% to Lightning Resistance"
+     },
+     {
+      "ids": [
+       "ChaosResist1",
+       "ChaosResist2",
+       "ChaosResist3",
+       "ChaosResist4",
+       "ChaosResist5",
+       "ChaosResist6"
+      ],
+      "label": "+#% to Chaos Resistance"
+     },
+     {
+      "ids": [
+       "StunRecovery1",
+       "StunRecovery2",
+       "StunRecovery3",
+       "StunRecovery4",
+       "StunRecovery5",
+       "StunRecovery6"
+      ],
+      "label": "#% increased Stun and Block Recovery"
+     }
+    ]
+   ]
+  }
+ ]
+}

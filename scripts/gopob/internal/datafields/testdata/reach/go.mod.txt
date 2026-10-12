@@ -1,0 +1,7 @@
+module github.com/Vilsol/go-pob
+
+go 1.26.2
+
+require github.com/Vilsol/go-pob-data v0.9.9
+
+replace github.com/Vilsol/go-pob-data => ./godata

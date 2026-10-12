@@ -1,0 +1,13 @@
+package raw
+
+type Row struct {
+	ID       string
+	Hidden   int
+	Via      string
+	Iface    string
+	OtherKey int
+}
+
+type Other struct {
+	Name string
+}
