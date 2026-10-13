@@ -1,0 +1,6 @@
+tool     instruments
+fixture  the-run-directory-cannot-be-created
+original scripts/instruments.sh
+args     
+env      DUMPS=dumps GOPOB_NICED=1 INSTRUMENTS_UNDER_MISE=1 INSTRUMENT_TIMINGS=0 LOG_SAMPLE=3 RUNDIR=out
+unset    POE_VERSION ONLY COVERAGE

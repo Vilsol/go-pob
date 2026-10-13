@@ -1,0 +1,8 @@
+
+──── OURS: a/thing.go:10-12 ──────────────────────────
+      10 │ func PdUncited() {
+      11 │ 	_ = 2
+      12 │ }
+
+  ⚠️ a/thing.go:10 carries NO //pob: citation, so there is nothing to show beside it.
+     That is itself a finding. Use SYMBOL= to search the Lua by name.

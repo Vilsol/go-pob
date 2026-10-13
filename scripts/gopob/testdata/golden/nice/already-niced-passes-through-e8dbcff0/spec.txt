@@ -1,0 +1,5 @@
+tool     nice
+fixture  already-niced-passes-through
+original scripts/nice.sh
+args     ./probe.sh one two
+env      GOPOB_NICED=1

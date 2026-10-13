@@ -1,0 +1,8 @@
+--- ctDeadTwo ---
+	"ctDeadTwo": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
+		      modList.NewBase("I", val)
+		   },
+	/*
+
+	a suffix after the dead handler and no prefix before it
+	*/

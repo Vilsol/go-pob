@@ -1,0 +1,2 @@
+REFUSING: <sandbox>/builds/parser.go is not readable: No such file or directory
+An instrument that cannot answer must refuse, never return empty.

@@ -1,0 +1,5 @@
+tool     pob-dump-diff
+fixture  verbose-31
+original scripts/pob_dump_diff.py
+args     A B --verbose
+env      

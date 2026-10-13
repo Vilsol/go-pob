@@ -1,0 +1,5 @@
+tool     regen-fixtures
+fixture  a-probe-fails
+original scripts/regen_fixtures.sh
+args     mod_parse
+env      GOPOB_NICED=1 LUA_PATH=/sandbox/?.lua;; POB_DIR=pob

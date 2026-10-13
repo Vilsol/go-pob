@@ -1,0 +1,5 @@
+tool     mk-drop-cases
+fixture  empty-census
+original scripts/mk_drop_cases.py
+args     empty.tsv out.json
+env      

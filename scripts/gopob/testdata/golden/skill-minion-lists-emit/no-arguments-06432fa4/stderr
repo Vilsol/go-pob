@@ -1,0 +1,1 @@
+usage: skill_minion_lists_emit.py <dump.json> <out.go>

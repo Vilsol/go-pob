@@ -1,0 +1,5 @@
+tool     skill-stat-map-global-emit
+fixture  dump-missing-a-count
+original oracle/skill_stat_map_global_emit.py
+args     dump.json skill_stat_map.go
+env      

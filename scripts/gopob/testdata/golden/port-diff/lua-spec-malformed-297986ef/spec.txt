@@ -1,0 +1,5 @@
+tool     port-diff
+fixture  lua-spec-malformed
+original scripts/port_diff.py
+args     
+env      LUA=bogus POB_DIR=pob

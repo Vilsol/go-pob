@@ -1,0 +1,6 @@
+tool     minion-data-emit
+fixture  a-row-has-a-zero-loc
+original oracle/minion_data_emit.py
+args     dump.json out.go minions
+env      
+files    out.go

@@ -1,0 +1,2 @@
+REFUSING: JACCARD must be a number, not xyz
+usage: residual_clusters.py [MIN_BUILDS] [JACCARD]

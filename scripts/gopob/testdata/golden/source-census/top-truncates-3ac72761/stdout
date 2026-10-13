@@ -1,0 +1,20 @@
+run dump   ours.txt.gz  (3.29, testdata/corpus-3.29  )
+blob       blob/output.jsonl.gz
+PoB dumps  dumps  covering 14 of 14 graded builds
+tolerance  0.005  ·  treeSources >= 5  ·  failing class = wrong
+
+=== Life ===
+ok 6 · wrong 6 · miss 1 · extra 1
+  direction: ours HIGH on 3 · ours LOW on 3 · median ratio 2.0000
+  censusing the BOTH side: 6 failing builds
+  source rows: FAIL mean 12.00 · PASS mean 5.00 · BASELINE 2.40x  <- every raw ratio below must beat THIS, not 1.0
+
+     NORM     raw   %fail   %pass    nf    np   CLASS
+      INF     INF  100.0%    0.0%     6     0   ?|MORE
+      INF     INF  100.0%    0.0%     6     0   Flask:Divine Life|MORE
+
+  READ IT: NORM > 1 means enriched BEYOND the complexity confound. NORM near or
+  below 1 is the confound itself, however large `raw` looks. NORM = INF is a class
+  carried by failing builds and by NO passing build — the cleanest signal here.
+  A flat table is EVIDENCE OF INVENTION: this can only find a source PoB HAS.
+

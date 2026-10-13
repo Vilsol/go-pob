@@ -1,0 +1,1 @@
+REFUSING: the dump has no 'minions' entries. Re-run `go run ./scripts/gamedatadump minion-data`.

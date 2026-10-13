@@ -1,0 +1,7 @@
+REFUSING: unknown command 'bogus'; expected one of extract, inventory, compare, splice
+usage: config_tools.py <extract|inventory|compare|splice> [options]
+  --pob DIR      the pinned PathOfBuilding checkout
+  --repo DIR     the go-pob checkout (default: git rev-parse --show-toplevel)
+  --corpus DIR   corpus to count config usage in
+  --var NAME     repeatable
+  --dry-run      splice only: print instead of writing

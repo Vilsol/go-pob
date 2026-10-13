@@ -1,0 +1,26 @@
+PIN        <sandbox>/pin
+CANDIDATE  <sandbox>/cand
+
+--- a/calculator/marked.go
++++ b/calculator/marked.go
+@@ -6,7 +6,7 @@
+ //pob:src/Modules/Space.lua:2-4
+ func PbdSpace() {}
+ 
+-//pob:src/Modules/Moved.lua:2-4
++//pob:src/Modules/Moved.lua:5-7
+ func PbdMoved() {}
+ 
+ //pob:src/Modules/Twice.lua:2-4
+@@ -24,7 +24,7 @@
+ //pob:src/Modules/Gone.lua:2-4
+ func PbdGone() {}
+ 
+-//pob:src/Modules/Moved.lua:2-3, src/Modules/Moved.lua:3-4
++//pob:src/Modules/Moved.lua:5-6, src/Modules/Moved.lua:6-7
+ func PbdTwoRanges() {}
+ 
+ //pob:src/Modules/Chg.lua
+
+REWROTE 3 marker range(s) across 1 file(s)
+1 MOVED range(s) had several equally valid targets and were NOT rewritten; fix those by hand.

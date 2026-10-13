@@ -1,0 +1,7 @@
+
+──── OURS: a/thing.go:15-17 ──────────────────────────
+      15 │ func PdCitesMissingLua() {
+      16 │ 	_ = 3
+      17 │ }
+
+  ⚠️ cited src/Modules/NoSuchFile.lua does not exist under pob — the pin may be wrong (run `task pob-pin`).

@@ -1,0 +1,1 @@
+usage: pob_dump_diff.py <dirA> <dirB> [--verbose]

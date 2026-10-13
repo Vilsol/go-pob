@@ -1,0 +1,5 @@
+tool     repin
+fixture  check-zero-is-OFF
+original scripts/repin.py
+args     
+env      CHECK=0 GOPOB_NICED=1

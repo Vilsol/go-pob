@@ -1,0 +1,1 @@
+REFUSING: scripts/task_test_refs.names is empty, so the guard would pass vacuously.

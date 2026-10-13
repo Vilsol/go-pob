@@ -1,0 +1,6 @@
+tool     skill-parts
+fixture  happy
+original oracle/skill_parts.py
+args     out.go
+env      POB_DIR=pob
+files    out.go

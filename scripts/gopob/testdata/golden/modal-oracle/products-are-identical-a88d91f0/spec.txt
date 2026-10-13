@@ -1,0 +1,6 @@
+tool     modal-oracle
+fixture  products-are-identical
+original scripts/modal_oracle.sh
+args     dumps 2 out.jsonl.gz work
+env      GOPOB_NICED=1
+files    out.jsonl.gz out.jsonl.gz.report.txt work/run-1.jsonl work/run-1.jsonl.log work/run-2.jsonl.log

@@ -1,0 +1,6 @@
+tool     pob-drift
+fixture  fix-writes
+original scripts/pob_drift.py
+args     --candidate cand --fix
+env      POB_DIR=pin
+files    calculator/marked.go

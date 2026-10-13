@@ -1,0 +1,2 @@
+REFUSING: 'Nonesuch' does not appear in the blob's `output` table on ANY of 14 graded builds, and this census reads `output` ONLY.
+Censusing it here would classify every build as `extra`, which is a confident wrong answer rather than an empty one. Use the per-actor instruments (`task corpus-vs-oracle`, `task diag`) for non-player tables.

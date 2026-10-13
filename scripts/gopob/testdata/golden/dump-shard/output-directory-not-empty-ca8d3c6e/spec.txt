@@ -1,0 +1,5 @@
+tool     dump-shard
+fixture  output-directory-not-empty
+original scripts/dump_shard.sh
+args     pob . builds out 3
+env      GOPOB_NICED=1 LUAJIT=./fakeluajit NICE=0

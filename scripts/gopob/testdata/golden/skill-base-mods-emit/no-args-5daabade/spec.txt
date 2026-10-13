@@ -1,0 +1,5 @@
+tool     skill-base-mods-emit
+fixture  no-args
+original oracle/skill_base_mods_emit.py
+args     
+env      

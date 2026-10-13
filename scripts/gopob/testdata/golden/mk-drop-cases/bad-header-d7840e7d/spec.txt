@@ -1,0 +1,5 @@
+tool     mk-drop-cases
+fixture  bad-header
+original scripts/mk_drop_cases.py
+args     badheader.tsv out.json
+env      

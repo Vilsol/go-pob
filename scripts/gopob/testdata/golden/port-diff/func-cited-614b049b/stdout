@@ -1,0 +1,10 @@
+
+──── OURS: a/thing.go:5-7 ──────────────────────────
+       5 │ func PdCited() {
+       6 │ 	_ = 1
+       7 │ }
+
+──── PoB (cited): pob/src/Modules/ConfigOptions.lua:3-5 ───────────────────
+       3 │ function Cfg:doThing(a)
+       4 │ 	return a + pdUniqueToken
+       5 │ end

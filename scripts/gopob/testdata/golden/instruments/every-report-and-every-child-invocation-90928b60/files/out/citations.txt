@@ -1,0 +1,2 @@
+  PORT   349 / 455 top-level funcs cited (76.7%) across 37 file(s)
+  0 broken

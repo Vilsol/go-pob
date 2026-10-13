@@ -1317,7 +1317,17 @@ export declare namespace calculator {
     VaalBladeVortexBlade: number;
     RepeatFrequencyIncrease: number;
     BeamOverlapMultiplier: number;
+    ActiveArrowMultiplier?: number;
+    TornadoShotSecondaryHitChance?: number;
+    ShrapnelBallistaProjectileOverlap?: number;
+    HoaOverkill?: number;
+    HoaMoreBurn: number;
+    HoaOverkillPercent: number;
+    MoltenShellDamageMitigated?: number;
+    VaalMoltenShellDamageMitigated?: number;
+    MoltenShellReflect: number;
     TriggeredByMirageArcher: boolean;
+    TriggeredBySnipe: boolean;
     TriggeredBySacredWisps: boolean;
     ChanceToTriggerOnCrit: number;
     ColdDot: number;

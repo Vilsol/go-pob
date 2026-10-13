@@ -1,0 +1,50 @@
+pin keys 4206   with optionals 385   HARDCODED HERE 16
+
+  ours has literally: ^chaos skills [hd][ae][va][el] a
+  pin  pattern      : ^chaos skills [hd][ae][va][el] a? ?
+
+  ours has literally: ^cold skills [hd][ae][va][el] a
+  pin  pattern      : ^cold skills [hd][ae][va][el] a? ?
+
+  ours has literally: ^cold spells [hd][ae][va][el] a
+  pin  pattern      : ^cold spells [hd][ae][va][el] a? ?
+
+  ours has literally: ^fire skills [hd][ae][va][el] a
+  pin  pattern      : ^fire skills [hd][ae][va][el] a? ?
+
+  ours has literally: ^fire spells [hd][ae][va][el] a
+  pin  pattern      : ^fire spells [hd][ae][va][el] a? ?
+
+  ours has literally: ^lightning skills [hd][ae][va][el] a
+  pin  pattern      : ^lightning skills [hd][ae][va][el] a? ?
+
+  ours has literally: ^lightning spells [hd][ae][va][el] a
+  pin  pattern      : ^lightning spells [hd][ae][va][el] a? ?
+
+  ours has literally: ^nearby enemies'
+  pin  pattern      : ^nearby enemies'? 
+
+  ours has literally: ^skills used by your traps and mines
+  pin  pattern      : ^skills used by your traps and mines ([hgd]?[ae]?[via]?[enl]?[ ]?)
+
+  ours has literally: ^skills which throw mines
+  pin  pattern      : ^skills which throw mines ([hgd]?[ae]?[via]?[enl]?[ ]?)
+
+  ours has literally: ^spells [hd][ae][va][el] a
+  pin  pattern      : ^spells [hd][ae][va][el] a? ?
+
+  ours has literally: additional hits
+  pin  pattern      : (%d+) additional hits?
+
+  ours has literally: additional times
+  pin  pattern      : (%d+) additional times?
+
+  ours has literally: can't use helmets
+  pin  pattern      : can't use helmets?
+
+  ours has literally: while affected by flasks
+  pin  pattern      : while affected by flasks?
+
+  ours has literally: while affected by no flasks
+  pin  pattern      : while affected by no flasks?
+

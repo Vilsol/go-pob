@@ -1,0 +1,5 @@
+tool     tattoo-passives-emit
+fixture  three-arguments
+original oracle/tattoo_passives_emit.py
+args     dump.json out.go extra
+env      

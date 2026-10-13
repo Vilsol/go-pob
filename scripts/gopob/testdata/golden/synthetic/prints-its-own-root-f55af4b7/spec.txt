@@ -1,0 +1,5 @@
+tool     synthetic
+fixture  prints-its-own-root
+original scripts/tool.py
+args     
+env      

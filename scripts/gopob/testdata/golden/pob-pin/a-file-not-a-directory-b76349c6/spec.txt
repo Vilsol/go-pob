@@ -1,0 +1,5 @@
+tool     pob-pin
+fixture  a-file-not-a-directory
+original scripts/pob_pin.py
+args     
+env      POB_DIR=afile

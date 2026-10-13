@@ -1,0 +1,22 @@
+REFUSING: the dump is missing tables this emitter needs:
+  bossStats
+  characterConstants
+  jewelRadius
+  keystones
+  mapLevelLifeMult
+  misc
+  monsterAccuracyTable
+  monsterAllyDamageTable
+  monsterAllyLifeTable
+  monsterArmourTable
+  monsterDamageTable
+  monsterEvasionTable
+  monsterLifeTable
+  monsterLifeTable2
+  monsterLifeTable3
+  monsterPhysConversionMultiTable
+  nonDamagingAilment
+  unarmedWeaponData
+  weaponTypeInfo
+
+Re-run oracle/core_constants.lua against the pinned PoB.

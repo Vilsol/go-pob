@@ -1,0 +1,5 @@
+tool     residual-clusters
+fixture  min-builds-not-an-integer
+original scripts/residual_clusters.py
+args     abc
+env      MATRIX=matrix.tsv

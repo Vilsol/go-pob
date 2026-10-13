@@ -1,0 +1,129 @@
+pin keys 4148   pin keys absent here 789
+
+ MISS   PIN  HAVE  FAMILY  (only families with >= 1 missing, and at least one row ALREADY ported -- that is the partial-port signal)
+    8    20    12  trigger level when you
+                     - trigger level # # when you attack with a non vaal slam or strike skill near an enemy
+                     - trigger level # # when you attack with this weapon
+                     - trigger level # # when you block damage from a unique enemy
+    7    31    24  increases and reductions to
+                     - increases and reductions to # damage also apply to effect of auras from # skills at # of their value
+                     - increases and reductions to effect of flasks applied to you also applies to effect of arcane surge o
+                     - increases and reductions to minion cast speed also affects you
+    7    11     4  while a unique enemy
+                     - while a unique enemy is in your presence drops brittle ground while moving lasting # seconds
+                     - while a unique enemy is in your presence drops sapped ground while moving lasting # seconds
+                     - while a unique enemy is in your presence drops scorched ground while moving lasting # seconds
+    7    11     4  while a pinnacle atlas
+                     - while a pinnacle atlas boss is in your presence drops brittle ground while moving lasting # seconds
+                     - while a pinnacle atlas boss is in your presence drops sapped ground while moving lasting # seconds
+                     - while a pinnacle atlas boss is in your presence drops scorched ground while moving lasting # seconds
+    5     9     4  attacks with this weapon
+                     - attacks with this weapon have added fire damage equal to # of player s maximum life
+                     - attacks with this weapon have added maximum lightning damage equal to # of player s maximum energy s
+                     - attacks with this weapon have added maximum lightning damage equal to # of your energy shield
+    4     6     2  action speed cannot be
+                     - action speed cannot be modified to below # base value
+                     - action speed cannot be modified to below base value if you ve cast # in the past # seconds
+                     - action speed cannot be modified to below base value while ignited
+    4     5     1  projectiles deal increased damage
+                     - projectiles deal # increased damage with hits and ailments for each enemy pierced
+                     - projectiles deal # increased damage with hits and ailments for each remaining chain
+                     - projectiles deal # increased damage with hits and ailments for each time they have chained
+    4     5     1  prevent of suppressed spell
+                     - prevent # of suppressed spell damage if you have not suppressed spell damage recently
+                     - prevent # of suppressed spell damage per bark below maximum
+                     - prevent # of suppressed spell damage per hit suppressed recently
+    3    12     9  maximum number of summoned
+                     - maximum number of summoned phantasms is #
+                     - maximum number of summoned raging spirits is #
+                     - maximum number of summoned searing bond totems
+    3    10     7  trigger a socketed spell
+                     - trigger a socketed spell on unarmed melee critical strike with a # second cooldown
+                     - trigger a socketed spell when a hit from this weapon freezes a target with a # second cooldown
+                     - trigger a socketed spell when you block with a # second cooldown
+    3    10     7  hits with this weapon
+                     - hits with this weapon have # chance to ignore enemy physical damage reduction
+                     - hits with this weapon have # to critical strike multiplier per enemy power
+                     - hits with this weapon ignore enemy physical damage reduction
+    3     5     2  to level of socketed
+                     - # to level of socketed gems while there is a single gem socketed in this item
+                     - # to level of socketed skill gems per # player levels
+                     - # to level of socketed skill gems per socketed gem
+    3     5     2  minions have chance to
+                     - minions have # chance to deal double damage per fortification on you
+                     - minions have # chance to impale on attack hit per socketed ghastly eye jewel
+                     - minions have # chance to inflict withered on hit
+    3     5     2  gain of physical damage
+                     - gain # of physical damage as a random element if you ve cast # in the past # seconds
+                     - gain # of physical damage as extra damage of each element if # # items are equipped
+                     - gain # of physical damage as extra damage of each element per spirit charge
+    3     4     1  you have vaal pact
+                     - you have vaal pact while all socketed gems are red
+                     - you have vaal pact while at maximum endurance charges
+                     - you have vaal pact while focussed
+    2     5     3  you can apply an
+                     - you can apply an additional curse if # # items are equipped
+                     - you can apply an additional curse while at maximum power charges
+    2     5     3  take no extra damage
+                     - take no extra damage from critical strikes if energy shield recharge started recently
+                     - take no extra damage from critical strikes if you ve cast # in the past # seconds
+    2     5     3  hits have chance to
+                     - hits have # chance to ignore enemy monster physical damage reduction
+                     - hits have # chance to ignore enemy physical damage reduction while you have sacrificial zeal
+    2     4     2  when you kill an
+                     - when you kill an enemy affected by a non aura hex become immune to curses for remaining hex duration
+                     - when you kill an enemy cursed with a non aura hex become immune to curses for remaining hex duration
+    2     4     2  to maximum number of
+                     - # to maximum number of eaten souls
+                     - # to maximum number of sacred wisps
+    2     4     2  modifiers to chance to
+                     - modifiers to chance to suppress spell damage also apply to chance to avoid elemental ailments at # o
+                     - modifiers to chance to suppress spell damage also apply to chance to defend with # of armour at # of
+    2     4     2  chance to defend with
+                     - # chance to defend with # of armour for each time you ve been hit by an enemy recently up to #
+                     - # chance to defend with double your armour for each time you ve been hit by an enemy recently up to 
+    2     3     1  trigger level on critical
+                     - trigger level # # on critical strike against marked unique enemy
+                     - trigger level # # on critical strike with cleave or reave
+    2     3     1  non critical strikes deal
+                     - non critical strikes deal # less damage
+                     - non critical strikes deal no damage
+    2     3     1  never deal critical strikes
+                     - never deal critical strikes with attacks
+                     - never deal critical strikes with spells
+    2     3     1  inflict fire cold and
+                     - inflict fire cold and lightning exposure on enemies when you suppress their spell damage
+                     - inflict fire cold and lightning exposure on hit
+    2     3     1  fpoer each mine detonated
+                     - fpoer each mine detonated recently up to #
+                     - fpoer each mine detonated recently up to # per second
+    2     3     1  chance to ctarsitgger socketed
+                     - # chance to ctarsitgger socketed spells when you spend at least # life on an upfront cost to use or 
+                     - # chance to ctarsitgger socketed spells when you spend at least # mana on an upfront cost to use or 
+    2     3     1  chance for poisons inflicted
+                     - # chance for poisons inflicted with blast rain or artillery ballsista to deal # more damage
+                     - # chance for poisons inflicted with freezing pulse and eye of winter to deal # more damage
+    2     3     1  cannot deal critical strikes
+                     - cannot deal critical strikes with attacks
+                     - cannot deal critical strikes with spells
+    2     3     1  all damage from hits
+                     - all damage from hits can poison
+                     - all damage from hits with freezing pulse and eye of winter can poison
+    1     7     6  while you have a
+                     - while you have a linked target
+    1     7     6  auras from your skills
+                     - auras from your skills have # increased effect on you for each herald affecting you up to #
+    1     6     5  you take reduced extra
+                     - you take # reduced extra damage from critical strikes by cursed enemies
+    1     6     5  recover of energy shield
+                     - recover # of energy shield when you kill an enemy during flask effect
+    1     6     5  consecrated ground you create
+                     - consecrated ground you create grants immuneity to elemental ailments to you and allies
+    1     6     5  chaos damage taken does
+                     - chaos damage taken does not bypass energy shield while not on low mana
+    1     5     4  trigger level on melee
+                     - trigger level # # on melee critical strike
+    1     5     4  nearby enemies have fire
+                     - nearby enemies have fire exposure while at maximum rage
+    1     4     3  recover of life when
+                     - recover # of life when you kill an enemy during flask effect

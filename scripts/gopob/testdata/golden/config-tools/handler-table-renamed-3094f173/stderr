@@ -1,0 +1,1 @@
+REFUSING: ./calculator/configs.go has no `var configurations = map[string]ConfigApplyFunc{` -- the handler table moved or was renamed, and every handler would read as absent

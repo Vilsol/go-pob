@@ -1,0 +1,1 @@
+REFUSING: types.go: SkillData has no fields; every skill() entry would be dropped as an invalid key

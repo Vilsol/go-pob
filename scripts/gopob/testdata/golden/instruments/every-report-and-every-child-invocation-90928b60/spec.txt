@@ -1,0 +1,7 @@
+tool     instruments
+fixture  every-report-and-every-child-invocation
+original scripts/instruments.sh
+args     
+env      DUMPS=dumps GOPOB_NICED=1 INSTRUMENTS_UNDER_MISE=1 INSTRUMENT_TIMINGS=0 LOG_SAMPLE=3 RUNDIR=out
+unset    POE_VERSION ONLY COVERAGE
+files    .stub-log out/unit.txt out/unit.logs.txt out/oracle.txt out/corpus.txt out/moddb.txt out/modorder.txt out/tags.txt out/config.txt out/determinism.txt out/citations.txt out/omissions.txt out/taskrefs.txt out/cachekey.txt

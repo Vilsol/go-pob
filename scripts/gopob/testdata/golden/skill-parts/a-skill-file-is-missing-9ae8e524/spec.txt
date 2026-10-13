@@ -1,0 +1,5 @@
+tool     skill-parts
+fixture  a-skill-file-is-missing
+original oracle/skill_parts.py
+args     out.go
+env      POB_DIR=pob

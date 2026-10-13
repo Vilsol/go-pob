@@ -1,0 +1,2 @@
+REFUSING: refs/tables.json declares no tables. Stamping an empty reference would give it the
+  authority of the pin while passing every comparison trivially.

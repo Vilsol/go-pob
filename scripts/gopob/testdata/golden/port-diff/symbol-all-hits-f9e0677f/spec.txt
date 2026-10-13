@@ -1,0 +1,5 @@
+tool     port-diff
+fixture  symbol-all-hits
+original scripts/port_diff.py
+args     
+env      MAX_HITS=99 POB_DIR=pob SYMBOL=pdSharedName

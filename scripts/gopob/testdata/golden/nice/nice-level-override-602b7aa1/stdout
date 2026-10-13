@@ -1,0 +1,4 @@
+niceness: 13
+best-effort: prio 7
+GOPOB_NICED=1
+args: one two

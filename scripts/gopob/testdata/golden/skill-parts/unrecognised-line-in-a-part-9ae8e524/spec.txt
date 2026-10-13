@@ -1,0 +1,5 @@
+tool     skill-parts
+fixture  unrecognised-line-in-a-part
+original oracle/skill_parts.py
+args     out.go
+env      POB_DIR=pob

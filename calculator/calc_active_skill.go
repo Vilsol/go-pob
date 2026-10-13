@@ -164,31 +164,76 @@ func grantedEffectIsTrigger(grantedEffect *GrantedEffect) bool {
 	return false
 }
 
+type skillInstanceStat struct {
+	name    string
+	value   float64
+	statMap *raw2.StatMap
+}
+
+type skillInstanceStatsKey struct {
+	raw        *poe.GrantedEffect
+	level      int
+	quality    int
+	qualityID  string
+	actorLevel int
+	hasActor   bool
+}
+
+var skillInstanceStatsCache sync.Map
+
+func skillInstanceStats(skillEffect *GemEffect, grantedEffect *GrantedEffect) []skillInstanceStat {
+	key := skillInstanceStatsKey{raw: grantedEffect.Raw, level: skillEffect.Level, quality: skillEffect.Quality, qualityID: skillEffect.QualityID}
+	if skillEffect.ActorLevel != nil {
+		key.actorLevel, key.hasActor = *skillEffect.ActorLevel, true
+	}
+	if cached, ok := skillInstanceStatsCache.Load(key); ok {
+		return cached.([]skillInstanceStat)
+	}
+	stats := CalcBuildSkillInstanceStats(skillEffect, grantedEffect)
+	out := make([]skillInstanceStat, 0, len(stats))
+	for stat, value := range stats {
+		out = append(out, skillInstanceStat{name: stat, value: value})
+	}
+	slices.SortFunc(out, func(a, b skillInstanceStat) int { return strings.Compare(a.name, b.name) })
+	calculated := raw2.GetCalculatedGrantedEffect(grantedEffect.Raw)
+	for i := range out {
+		out[i].statMap = calculated.GetStatMapEntry(skillStatKeyForPoB(grantedEffect.Raw.ID, out[i].name))
+	}
+	cached, _ := skillInstanceStatsCache.LoadOrStore(key, out)
+	return cached.([]skillInstanceStat)
+}
+
 //pob:src/Modules/CalcActiveSkill.lua:52-70
 func CalcMergeSkillInstanceMods(env *Environment, modList *moddb.ModList, skillEffect *GemEffect, extraStats []interface{}) {
 	CalcValidateGemLevel(skillEffect)
 
 	grantedEffect := skillEffect.GrantedEffect
-	stats := CalcBuildSkillInstanceStats(skillEffect, grantedEffect)
 
 	if len(extraStats) > 0 {
+		stats := CalcBuildSkillInstanceStats(skillEffect, grantedEffect)
 		for _, stat := range extraStats {
 			statCast := stat.(mod.ExtraSkillStat)
 			stats[statCast.Key] = stats[statCast.Key] + utils.Number[float64](statCast.Value)
 		}
-	}
 
-	statNames := make([]string, 0, len(stats))
-	for stat := range stats {
-		statNames = append(statNames, stat)
-	}
-	slices.Sort(statNames)
-	for _, stat := range statNames {
-		statValue := stats[stat]
-		statMap := raw2.GetCalculatedGrantedEffect(grantedEffect.Raw).
-			GetStatMapEntry(skillStatKeyForPoB(grantedEffect.Raw.ID, stat))
-		if statMap != nil {
-			mergeStatMapEntry(modList, statMap, statValue)
+		statNames := make([]string, 0, len(stats))
+		for stat := range stats {
+			statNames = append(statNames, stat)
+		}
+		slices.Sort(statNames)
+		for _, stat := range statNames {
+			statValue := stats[stat]
+			statMap := raw2.GetCalculatedGrantedEffect(grantedEffect.Raw).
+				GetStatMapEntry(skillStatKeyForPoB(grantedEffect.Raw.ID, stat))
+			if statMap != nil {
+				mergeStatMapEntry(modList, statMap, statValue)
+			}
+		}
+	} else {
+		for _, stat := range skillInstanceStats(skillEffect, grantedEffect) {
+			if stat.statMap != nil {
+				mergeStatMapEntry(modList, stat.statMap, stat.value)
+			}
 		}
 	}
 
@@ -418,20 +463,12 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 		activeSkill.ActiveEffect.GrantedEffect.Raw != nil {
 		grantedEffect := activeSkill.ActiveEffect.GrantedEffect
 		CalcValidateGemLevel(activeSkill.ActiveEffect)
-		stats := CalcBuildSkillInstanceStats(activeSkill.ActiveEffect, grantedEffect)
-		statNames := make([]string, 0, len(stats))
-		for stat := range stats {
-			statNames = append(statNames, stat)
-		}
-		slices.Sort(statNames)
-		for _, stat := range statNames {
-			if stats[stat] == 0 {
+		for _, stat := range skillInstanceStats(activeSkill.ActiveEffect, grantedEffect) {
+			if stat.value == 0 {
 				continue
 			}
-			statMap := raw2.GetCalculatedGrantedEffect(grantedEffect.Raw).
-				GetStatMapEntry(skillStatKeyForPoB(grantedEffect.Raw.ID, stat))
-			if statMap != nil && statMap.SkillFlag != "" {
-				skillFlags[SkillFlag(statMap.SkillFlag)] = true
+			if stat.statMap != nil && stat.statMap.SkillFlag != "" {
+				skillFlags[SkillFlag(stat.statMap.SkillFlag)] = true
 			}
 		}
 	}
@@ -682,7 +719,7 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 	}
 
 	// Apply gem/quality modifiers from support gems.
-	//pob:src/Modules/CalcActiveSkill.lua:469-474
+	//pob:src/Modules/CalcActiveSkill.lua:549-559
 	for _, supportProperty := range skillModList.Tabulate(mod.TypeList, activeSkill.SkillCfg, "SupportedGemProperty") {
 		castValue := supportProperty.Mod.Value().List().(mod.SupportedGemProperty)
 		if castValue.Keyword == "grants_active_skill" && activeSkill.ActiveEffect.GemData != nil &&

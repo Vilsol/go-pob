@@ -1,0 +1,30 @@
+dumps            dumps
+files            186
+excluded         183 (want 184)
+included         3
+PLAYER   dumped mods        60   dumped tags        41   UNPARSED 1   fmt-vs-tags disagreements 2
+ENEMY    dumped mods         0   dumped tags         0   UNPARSED 0   fmt-vs-tags disagreements 0
+
+PLAYER tag types over included builds:
+         20  LateHeavy
+          1  Condition
+          1  Multiplier
+          1  None
+          1  SkillType
+          1  Second
+          1  AlphaTag
+          1  BravoTag
+          1  TTTied00
+          1  TTTied01
+          1  TTTied02
+          1  TTTied03
+          1  TTTied04
+          1  TTTied05
+          1  TTTied06
+          1  TTTied07
+          1  TTTied08
+          1  TTTied09
+          1  TTTied10
+          1  TTTied11
+          1  TTTied12
+          1  TTTied13

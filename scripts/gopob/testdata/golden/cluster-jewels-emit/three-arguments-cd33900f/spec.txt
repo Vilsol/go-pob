@@ -1,0 +1,5 @@
+tool     cluster-jewels-emit
+fixture  three-arguments
+original oracle/cluster_jewels_emit.py
+args     dump.json out.go extra
+env      

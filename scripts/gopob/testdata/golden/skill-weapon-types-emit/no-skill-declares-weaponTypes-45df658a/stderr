@@ -1,0 +1,1 @@
+REFUSING: no skill in the dump carries weaponTypes. Either the dump predates oracle/skill_table.lua's weaponTypes field or it is not a PoB skill table. Regenerate with `task pob-skill-table`.

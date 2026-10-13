@@ -1,0 +1,4 @@
+dumping 48b677856725aec59d9de9e6fc9a79ee22ae46af (HEAD) -> <sandbox>/realdir/out.txt.gz
+go-stub: args=test -count=1 -v ./calculator/ -run TestCorpusDump
+go-stub: DUMP=<sandbox>/realdir/out.txt.gz
+go-stub: cwd is the worktree

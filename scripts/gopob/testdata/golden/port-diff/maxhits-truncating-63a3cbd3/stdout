@@ -1,0 +1,34 @@
+=== port-diff NAME='pdSharedName' ===
+  PoB     14 site(s) across 7 file(s)
+  ours     5 site(s) across 1 file(s)
+  ⚠️ PoB has 9 MORE site(s). That is the port-gap signal — but a count is not a
+     defect: one Go row can port several Lua rows, and vice versa. Read the lines.
+
+──── PoB ────
+    5  src/Data/ModCache.lua
+    2  src/Aaa/Tied.lua
+    2  src/Modules/ConfigOptions.lua
+    2  src/Zzz/Tied.lua
+    1  src/Modules/Wide.lua
+    1  src/Zz.b/a.lua
+    1  src/Zz/a.lua
+
+    src/Data/ModCache.lua:2: local pdSharedName_0 = 0
+    src/Data/ModCache.lua:3: local pdSharedName_1 = 1
+    … 3 more in src/Data/ModCache.lua (MAX_HITS=2)
+    src/Aaa/Tied.lua:2: local pdSharedName = 1
+    src/Aaa/Tied.lua:3: local pdSharedName2 = 2
+    src/Modules/ConfigOptions.lua:6: -- pdSharedName appears here
+    src/Modules/ConfigOptions.lua:7: local pdSharedName = 2
+    src/Zzz/Tied.lua:2: local pdSharedName = 1
+    src/Zzz/Tied.lua:3: local pdSharedName2 = 2
+    src/Modules/Wide.lua:2: local pdSharedName = "üüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüü"
+    src/Zz.b/a.lua:2: local pdSharedName = 1
+    src/Zz/a.lua:2: local pdSharedName = 1
+
+──── OURS ────
+    5  a/thing.go
+
+    a/thing.go:3: // pdSharedName is mentioned here too.
+    a/thing.go:24: // more pdSharedName mentions, so the Go side has enough hits to truncate
+    … 3 more in a/thing.go (MAX_HITS=2)

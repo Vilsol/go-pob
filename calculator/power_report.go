@@ -229,18 +229,46 @@ func allocationPath(paths map[int64]int64, id int64) []int64 {
 	return nil
 }
 
+//pob:block:src/Classes/PassiveSpec.lua:1438-1592
 func (b *PowerBuilder) depends(id int64) []int64 {
+	if len(b.dependsOf) == 0 {
+		extra := map[int64][]int64{}
+		for key, n := range b.misc.base.clusterNodes {
+			if c, err := strconv.ParseInt(key, 10, 64); err == nil {
+				for _, out := range n.Out {
+					if other, err := strconv.ParseInt(out, 10, 64); err == nil {
+						extra[c] = append(extra[c], other)
+						extra[other] = append(extra[other], c)
+					}
+				}
+			}
+		}
+		version := data.TreeVersions[data.LatestTreeVersion]
+		node := func(id int64) (data.DependsNode, bool) {
+			d, ok := version.SpecDependsNode(id)
+			if !ok {
+				n, sub := b.subgraph[id]
+				if !sub {
+					return d, false
+				}
+				d = data.DependsNode{Type: powerNodeType(n)}
+			}
+			links := slices.Clone(extra[id])
+			slices.Sort(links)
+			for _, other := range links {
+				if !slices.Contains(d.Linked, other) {
+					d.Linked = append(d.Linked, other)
+				}
+			}
+			return d, true
+		}
+		alloc := allocSet(b.misc.build, b.tree)
+		b.dependsOf = data.SpecDepends(slices.Collect(maps.Keys(alloc)), node, leapJewels(b.misc.build, b.tree, alloc))
+	}
 	if d, ok := b.dependsOf[id]; ok {
 		return d
 	}
-	var d []int64
-	if b.graph != nil {
-		d = append([]int64{id}, b.graph.dependentNodes(b.misc.build.Build.PassiveNodes, id, b.roots)...)
-	} else {
-		d = append([]int64{id}, data.TreeVersions[data.LatestTreeVersion].CalculateDependentNodes(b.misc.build.Build.PassiveNodes, id, b.roots)...)
-	}
-	b.dependsOf[id] = d
-	return d
+	return []int64{id}
 }
 
 //pob:block:src/Classes/CalcsTab.lua:489-597

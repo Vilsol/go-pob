@@ -1,0 +1,5 @@
+tool     skill-flags-emit
+fixture  no-arguments
+original oracle/skill_flags_emit.py
+args     
+env      

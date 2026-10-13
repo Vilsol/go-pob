@@ -1,0 +1,5 @@
+{"build":"0001-alpha.xml","output":{"AbsentLoses":7.5,"Cluster":1.0,"Dropped2":3.0,"Dropped3":5.0,"FarApart":1.0,"NearZero":0.0,"Split22":1.0,"TieSmallest":1.0,"Tied00":7.0,"Tied01":7.0,"Tied02":7.0,"Tied03":7.0,"Tied04":7.0,"Tied05":7.0,"Tied06":7.0,"Tied07":7.0,"Tied08":7.0,"Tied09":7.0,"Tied10":7.0,"Tied11":7.0,"Tied12":7.0,"Tied13":7.0,"Tied14":7.0,"Unanimous":1.5,"ZZShared":1.0},"treeSources":46}
+{"build":"0002-beta.xml","output":{"Plain":2.0,"ZZShared":1.0},"outputMainHand":{"MH":1.0},"treeSources":46}
+{"build":"0003-gamma.xml","output":{"Only":9.0,"ZZShared":1.0},"treeSources":50}
+{"build":"0004-delta.xml","error":"headless PoB blew up \u2014 \u00fcn\u00efcode","output":{},"treeSources":0}
+{"build":"0005-epsilon.xml","output":{"Plain":1.0},"treeSources":47}

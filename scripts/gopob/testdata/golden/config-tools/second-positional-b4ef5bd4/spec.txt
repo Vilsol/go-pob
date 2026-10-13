@@ -1,0 +1,5 @@
+tool     config-tools
+fixture  second-positional
+original scripts/config_tools.py
+args     --pob pob --repo . --corpus corpus extract extra
+env      

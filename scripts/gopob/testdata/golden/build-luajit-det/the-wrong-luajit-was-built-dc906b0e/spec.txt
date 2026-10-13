@@ -1,0 +1,5 @@
+tool     build-luajit-det
+fixture  the-wrong-luajit-was-built
+original scripts/build_luajit_deterministic.sh
+args     --verify
+env      GOPOB_NICED=1

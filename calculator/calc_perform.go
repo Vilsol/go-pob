@@ -99,7 +99,7 @@ func extraCurseEffect(value mod.ExtraCurse) *GemEffect {
 	}
 }
 
-//pob:src/Modules/CalcPerform.lua:748-778
+//pob:src/Modules/CalcPerform.lua:563-593
 func determineCursePriority(curseName string, activeSkill *ActiveSkill) float64 {
 	source := ""
 	slot := ""
@@ -202,15 +202,22 @@ func mergeFlaskBuff(src *moddb.ModList, dest map[string]*moddb.ModList, order []
 
 //pob:block:src/Modules/CalcPerform.lua:1555-1563
 func flaskModKey(mods []mod.Mod) string {
-	var b strings.Builder
+	var b []byte
 	for _, m := range mods {
-		fmt.Fprintf(&b, "%v|%v|%v|%v", m.Name(), m.Type(), m.Flags(), m.KeywordFlags())
+		b = append(b, m.Name()...)
+		b = append(b, '|')
+		b = append(b, m.Type()...)
+		b = append(b, '|')
+		b = strconv.AppendInt(b, int64(m.Flags()), 10)
+		b = append(b, '|')
+		b = strconv.AppendInt(b, int64(m.KeywordFlags()), 10)
 		for _, tag := range m.Tags() {
-			fmt.Fprintf(&b, "|%v", mod.FormatValue(tag))
+			b = append(b, '|')
+			b = append(b, mod.FormatValue(tag)...)
 		}
-		b.WriteString("&")
+		b = append(b, '&')
 	}
-	return b.String()
+	return string(b)
 }
 
 type flaskSlotItem struct {
@@ -500,6 +507,7 @@ type cachedTriggerSkill struct {
 	Speed       float64
 	HitSpeed    float64
 	hitSpeedSet bool
+	HitTime     float64
 	ManaCost    float64
 	ManaCostRaw float64
 	HitChance   float64
@@ -614,6 +622,7 @@ func buildActiveSkillCache(env *Environment, skill *ActiveSkill) *cachedTriggerS
 		speedSet:    speedSet,
 		HitSpeed:    hitSpeed,
 		hitSpeedSet: hitSpeedSet,
+		HitTime:     subEnv.Player.Output["HitTime"],
 		ManaCost:    subEnv.Player.Output["ManaCost"],
 		ManaCostRaw: subEnv.Player.Output["ManaCostRaw"],
 		HitChance:   subEnv.Player.Output["HitChance"],
@@ -892,7 +901,7 @@ func performGeneralsCryMarks(env *Environment) {
 		skill.SkillTypes = map[data.SkillType]bool{}
 	}
 	skill.SkillTypes[data.SkillTypeTriggered] = true
-	skill.Marked = true
+	skill.SkillCfg.SkillCond["usedByMirage"] = true
 	skill.SkillTypes[data.SkillTypeOtherThingUsesSkill] = true
 }
 
@@ -1039,7 +1048,6 @@ func triggerSkillEligible(skill *ActiveSkill) bool {
 	return !skill.SkillTypes[data.SkillTypeOtherThingUsesSkill]
 }
 
-//pob:src/Modules/CalcPerform.lua:41-91
 func getTriggerActionTriggerRate(baseActionCooldown float64, env *Environment) float64 {
 	icdr := calclib.Mod(env.Player.MainSkill.SkillModList, env.Player.MainSkill.SkillCfg, "CooldownRecovery")
 
@@ -1226,7 +1234,7 @@ func calcActualTriggerRate(env *Environment, source *ActiveSkill, sourceAPS *flo
 	return trigRate
 }
 
-//pob:src/Modules/CalcPerform.lua:313-321
+//pob:src/Modules/CalcTriggers.lua:23-30
 func addTriggerIncMoreMods(activeSkill *ActiveSkill, sourceSkill *ActiveSkill) {
 	for _, value := range activeSkill.SkillModList.Tabulate(mod.TypeIncrease, sourceSkill.SkillCfg, "TriggeredDamage") {
 		activeSkill.SkillModList.AddMod(mod.NewFloat("Damage", mod.TypeIncrease, value.Mod.Value().Float()).
@@ -1264,7 +1272,7 @@ var itemGrantedSupportNames = map[string]string{
 	"SupportUniqueVirulenceSpellsCastOnBlock":                       "Festering Resentment Cast on Block",
 }
 
-//pob:src/Modules/CalcPerform.lua:323-336
+//pob:src/Modules/CalcTriggers.lua:1575-1590
 func getUniqueItemTriggerName(skill *ActiveSkill) string {
 	for _, gemInstance := range skill.SupportList {
 		if gemInstance.GrantedEffect == nil {
@@ -1378,7 +1386,11 @@ func performCalc(env *Environment, skipEHP bool) {
 		}
 		if activeSkill.Minion != nil {
 			// Build minion skills
-			activeSkill.Minion.ModDB = moddb.NewModDBSized(192)
+			if activeSkill == env.Player.MainSkill {
+				activeSkill.Minion.ModDB = moddb.NewModDBSized(192)
+			} else {
+				activeSkill.Minion.ModDB = moddb.NewModDB()
+			}
 			activeSkill.Minion.ModDB.Actor = activeSkill.Minion
 			reuseMinionSkills(env, activeSkill)
 			//pob:block:src/Modules/CalcPerform.lua:1267
@@ -2346,7 +2358,7 @@ func performCalc(env *Environment, skipEHP bool) {
 							mergeBuff(buff.UnscalableModList, buffs, buff.Name)
 						}
 					}
-					//pob:src/Modules/CalcPerform.lua:1849-1860
+					//pob:src/Modules/CalcPerform.lua:2426-2430
 					if env.Minion != nil && !(env.ModDB.Flag(nil, "SelfAurasCannotAffectAllies") ||
 						env.ModDB.Flag(nil, "SelfAurasOnlyAffectYou") ||
 						env.ModDB.Flag(nil, "SelfAuraSkillsCannotAffectAllies")) {
@@ -4494,7 +4506,7 @@ func performCalc(env *Environment, skipEHP bool) {
 	}
 
 	// Process misc buffs/modifiers
-	//pob:src/Modules/CalcPerform.lua:3316-3321
+	//pob:src/Modules/CalcPerform.lua:3423-3429
 	DoActorCharges(env, env.Player)
 	DoActorMisc(env, env.Player)
 	if env.Minion != nil {
@@ -4785,7 +4797,7 @@ func setAllOneHandedCondition(actor *Actor, cond string, added **bool, extra boo
 	actor.ModDB.Conditions[cond] = true
 }
 
-//pob:src/Modules/CalcPerform.lua:384-690
+//pob:src/Modules/CalcPerform.lua:135-524
 func doActorAttribsPoolsConditions(env *Environment, actor *Actor) {
 	/*
 		local modDB = actor.modDB
@@ -5334,7 +5346,7 @@ func DoActorCharges(env *Environment, actor *Actor) {
 	modDB.Multipliers["SpiritInfusion"] = actor.Output["SpiritInfusions"]
 }
 
-//pob:src/Modules/CalcPerform.lua:756-944
+//pob:src/Modules/CalcPerform.lua:612-944
 func DoActorMisc(env *Environment, actor *Actor) {
 	modDB := actor.ModDB
 	enemyDB := actor.Enemy.ModDB
@@ -5574,7 +5586,7 @@ func DoActorMisc(env *Environment, actor *Actor) {
 			modDB.AddMod(mod.NewFloat("ChaosDamage", mod.TypeMore, -100).Source("Excommunicated"))
 		}
 		if modDB.Flag(nil, "Blind") && !modDB.Flag(nil, "CannotBeBlinded") {
-			if !modDB.Flag(nil, "IgnoreBlindHitChance") {
+			if !modDB.Flag(nil, "UnaffectedByBlind") {
 				effect := 1 + modDB.Sum(mod.TypeIncrease, nil, "BlindEffect", "BuffEffectOnSelf")/100
 				// Override Blind effect if set.
 				if blindOverride := modDB.Override(nil, "BlindEffect"); blindOverride != nil {

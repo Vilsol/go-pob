@@ -1,0 +1,6 @@
+tool     skill-has-global-effect-emit
+fixture  an-empty-string-id
+original oracle/skill_has_global_effect_emit.py
+args     dump.json out.go
+env      
+files    out.go

@@ -269,7 +269,7 @@ func buildModListForNodeListPass(env *Environment, nodes map[string]data.Node, f
 	return modList, explodeSources
 }
 
-//pob:src/Classes/PassiveTree.lua:500-572
+//pob:src/Classes/PassiveTree.lua:769-846
 func processStats(env *Environment, modList *moddb.ModList, nodeId string, what string, stats []string) {
 	stats = fixupTreeStatText(stats)
 

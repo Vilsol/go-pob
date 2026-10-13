@@ -1,0 +1,5 @@
+tool     source-census
+fixture  stat-required
+original scripts/source_census.py
+args     --our-dump ours.txt.gz
+env      

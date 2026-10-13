@@ -23085,7 +23085,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 	if crystallineMarshalCalculatorSkillDataShape.IsUndefined() {
 		crystallineMarshalCalculatorSkillDataShape = crystallineShape("calculator.SkillData",
-			[]string{"StagesMax", "PulseInterval", "PulseDamage", "SupportBonechill", "Cooldown", "StoredUses", "Triggered", "TriggeredByBrand", "TriggeredByBattleMageCry", "TriggerOnCrit", "CountsAttachedBrandsInDamage", "AttachedBrandCount", "TriggeredOnDeath", "TriggeredByAutoexertion", "TriggeredByDamageTaken", "TriggeredWhileChannelling", "TriggeredByMeleeKill", "TriggeredByCospris", "TriggeredByMjolner", "TriggeredBySevenTeachings", "TriggeredByKineticFlux", "TriggeredByUnique", "TriggeredByFocus", "TriggeredByCraft", "TriggeredByManaSpent", "TriggeredByManaforged", "ManaForgedArrowsPercentThreshold", "TriggeredByParentAttack", "TriggeredByGeneralsCry", "TriggerTime", "TriggeredBySaviour", "CritChance", "SetOffHandPhysicalMin", "SetOffHandPhysicalMax", "PercentageLifeSacrificed", "PercentageSacrificedDealtAsChaos", "AdditionalRuinChance", "ManabondMissingManaGainPercent", "ManabondMissingUnreservedManaPercentage", "SetOffHandFireMin", "SetOffHandFireMax", "SetOffHandColdMin", "SetOffHandColdMax", "AttackTime", "CastTimeOverride", "CastTimeOverridesAttackTime", "TimeOverride", "FixedCastTime", "TriggerRate", "ShowAverage", "ManaReservationPercent", "TotemLevel", "CannotBeEvaded", "DoubleHitsWhenDualWielding", "DpsMultiplier", "DpsBaseMultiplier", "PodOverlapMultiplier", "DamagePerProjectile", "DelayPerProjectile", "MaxRageVortexSacrificePercentage", "FifthStrikeDamage", "FifthStrikeProjectiles", "BaseMultiplier", "DamageEffectiveness", "LifeLeechPerUse", "ManaLeechPerUse", "BleedDurationIsSkillDuration", "BleedIsSkillEffect", "Duration", "FrostBombDamagePer100ms", "BleedBasePercent", "Type", "AttackRate", "PhysicalMin", "PhysicalMax", "AttackSpeedInc", "CountsAsAll1H", "CountsAsDualWielding", "AddedUsingAxe", "AddedUsingSword", "AddedUsingDagger", "AddedUsingMace", "AddedUsingClaw", "PhysicalBonusMin", "PhysicalBonusMax", "LightningMin", "LightningMax", "LightningBonusMin", "LightningBonusMax", "ColdMin", "ColdMax", "ColdBonusMin", "ColdBonusMax", "FireMin", "FireMax", "FireBonusMin", "FireBonusMax", "ChaosMin", "ChaosMax", "ChaosBonusMin", "ChaosBonusMax", "LifeDealtAsChaos", "EnergyShieldDealtAsChaos", "LifeDealtAsFire", "SkeletonLife", "SelfDamageTakenLife", "SelfDamageTakenES", "Radius", "RadiusSecondary", "RadiusTertiary", "RadiusExtra", "RadiusTertiaryBaseMargin", "ProjectileSpeedAppliesToMSAreaOfEffect", "DurationSecondary", "DurationTertiary", "MinionLevel", "MinionLevelIsEnemyLevel", "MinionLevelIsPlayerLevel", "MinionDamageEffectiveness", "FireDot", "RFLifeMultiplier", "RFESMultiplier", "RFManaMultiplier", "RFMultiplier", "PercentSacrificed", "TriggeredByCoC", "DotIsSpell", "RepeatFrequency", "RepeatInterval", "HitFrequency", "CremationFireRate", "CremationFireRateIncrease", "DamageInterval", "HitFrequencyPerBlade", "IncVolleyFrequency", "VaalBladeVortexBlade", "RepeatFrequencyIncrease", "BeamOverlapMultiplier", "TriggeredByMirageArcher", "TriggeredBySacredWisps", "ChanceToTriggerOnCrit", "ColdDot", "CorpseExplosionLifeMultiplier", "SelfFireExplosionLifeMultiplier", "CorpseLife", "CorpseExplosionDamageType", "ChaosDot", "BaseManaCostIsAtLeastPercentUnreservedMana", "ManaReservationFlat", "LifeReservationFlat", "LifeReservationPercent", "ManaReservationFlatForced", "LifeReservationFlatForced", "ManaReservationPercentForced", "LifeReservationPercentForced", "ManaReservedBase", "ManaReservedPercent", "LifeReservedBase", "LifeReservedPercent", "AttackSpeedMultiplier", "MinionUseBowAndQuiver", "MinionUseMainHandWeapon", "ArrowSpeedAppliesToAreaOfEffect", "GainPercentBaseWandDamageToSpells", "HitTimeOverride", "TrapCooldown", "MineDurationAppliesToSkill", "Debuff", "DebuffSecondary", "DebuffTertiary", "ReserveDuration", "AuraDuration", "SoulPreventionDuration", "SkillEffectAppliesToSoulGainPrevention", "AuraCannotAffectSelf", "ThisIsNotABuff", "BuffNotPlayer", "BuffMinions", "BuffAllies", "AllowTotemBuff", "Enable", "DotIsArea", "DotIsProjectile", "DotIsAttack", "DotIsHit", "PhysicalDot", "LightningDot", "ExplodeCorpse", "HitChanceIsExplodeChance", "PhysicalEffectiveExplodePercentage", "LightningEffectiveExplodePercentage", "ColdEffectiveExplodePercentage", "FireEffectiveExplodePercentage", "ChaosEffectiveExplodePercentage", "PoisonIsSkillEffect", "PoisonDurationIsSkillDuration", "StackMultiplier", "RadiusIsWeaponRange", "Decay", "BaseStunDuration", "Range", "RangeBonus", "HitTimeMultiplier", "TotemFireOnce", "NumStages", "ProjectileSpeed", "StackCount", "SummonSpeed", "StrikeInterval", "RemainingDurationDamage"},
+			[]string{"StagesMax", "PulseInterval", "PulseDamage", "SupportBonechill", "Cooldown", "StoredUses", "Triggered", "TriggeredByBrand", "TriggeredByBattleMageCry", "TriggerOnCrit", "CountsAttachedBrandsInDamage", "AttachedBrandCount", "TriggeredOnDeath", "TriggeredByAutoexertion", "TriggeredByDamageTaken", "TriggeredWhileChannelling", "TriggeredByMeleeKill", "TriggeredByCospris", "TriggeredByMjolner", "TriggeredBySevenTeachings", "TriggeredByKineticFlux", "TriggeredByUnique", "TriggeredByFocus", "TriggeredByCraft", "TriggeredByManaSpent", "TriggeredByManaforged", "ManaForgedArrowsPercentThreshold", "TriggeredByParentAttack", "TriggeredByGeneralsCry", "TriggerTime", "TriggeredBySaviour", "CritChance", "SetOffHandPhysicalMin", "SetOffHandPhysicalMax", "PercentageLifeSacrificed", "PercentageSacrificedDealtAsChaos", "AdditionalRuinChance", "ManabondMissingManaGainPercent", "ManabondMissingUnreservedManaPercentage", "SetOffHandFireMin", "SetOffHandFireMax", "SetOffHandColdMin", "SetOffHandColdMax", "AttackTime", "CastTimeOverride", "CastTimeOverridesAttackTime", "TimeOverride", "FixedCastTime", "TriggerRate", "ShowAverage", "ManaReservationPercent", "TotemLevel", "CannotBeEvaded", "DoubleHitsWhenDualWielding", "DpsMultiplier", "DpsBaseMultiplier", "PodOverlapMultiplier", "DamagePerProjectile", "DelayPerProjectile", "MaxRageVortexSacrificePercentage", "FifthStrikeDamage", "FifthStrikeProjectiles", "BaseMultiplier", "DamageEffectiveness", "LifeLeechPerUse", "ManaLeechPerUse", "BleedDurationIsSkillDuration", "BleedIsSkillEffect", "Duration", "FrostBombDamagePer100ms", "BleedBasePercent", "Type", "AttackRate", "PhysicalMin", "PhysicalMax", "AttackSpeedInc", "CountsAsAll1H", "CountsAsDualWielding", "AddedUsingAxe", "AddedUsingSword", "AddedUsingDagger", "AddedUsingMace", "AddedUsingClaw", "PhysicalBonusMin", "PhysicalBonusMax", "LightningMin", "LightningMax", "LightningBonusMin", "LightningBonusMax", "ColdMin", "ColdMax", "ColdBonusMin", "ColdBonusMax", "FireMin", "FireMax", "FireBonusMin", "FireBonusMax", "ChaosMin", "ChaosMax", "ChaosBonusMin", "ChaosBonusMax", "LifeDealtAsChaos", "EnergyShieldDealtAsChaos", "LifeDealtAsFire", "SkeletonLife", "SelfDamageTakenLife", "SelfDamageTakenES", "Radius", "RadiusSecondary", "RadiusTertiary", "RadiusExtra", "RadiusTertiaryBaseMargin", "ProjectileSpeedAppliesToMSAreaOfEffect", "DurationSecondary", "DurationTertiary", "MinionLevel", "MinionLevelIsEnemyLevel", "MinionLevelIsPlayerLevel", "MinionDamageEffectiveness", "FireDot", "RFLifeMultiplier", "RFESMultiplier", "RFManaMultiplier", "RFMultiplier", "PercentSacrificed", "TriggeredByCoC", "DotIsSpell", "RepeatFrequency", "RepeatInterval", "HitFrequency", "CremationFireRate", "CremationFireRateIncrease", "DamageInterval", "HitFrequencyPerBlade", "IncVolleyFrequency", "VaalBladeVortexBlade", "RepeatFrequencyIncrease", "BeamOverlapMultiplier", "ActiveArrowMultiplier", "TornadoShotSecondaryHitChance", "ShrapnelBallistaProjectileOverlap", "HoaOverkill", "HoaMoreBurn", "HoaOverkillPercent", "MoltenShellDamageMitigated", "VaalMoltenShellDamageMitigated", "MoltenShellReflect", "TriggeredByMirageArcher", "TriggeredBySnipe", "TriggeredBySacredWisps", "ChanceToTriggerOnCrit", "ColdDot", "CorpseExplosionLifeMultiplier", "SelfFireExplosionLifeMultiplier", "CorpseLife", "CorpseExplosionDamageType", "ChaosDot", "BaseManaCostIsAtLeastPercentUnreservedMana", "ManaReservationFlat", "LifeReservationFlat", "LifeReservationPercent", "ManaReservationFlatForced", "LifeReservationFlatForced", "ManaReservationPercentForced", "LifeReservationPercentForced", "ManaReservedBase", "ManaReservedPercent", "LifeReservedBase", "LifeReservedPercent", "AttackSpeedMultiplier", "MinionUseBowAndQuiver", "MinionUseMainHandWeapon", "ArrowSpeedAppliesToAreaOfEffect", "GainPercentBaseWandDamageToSpells", "HitTimeOverride", "TrapCooldown", "MineDurationAppliesToSkill", "Debuff", "DebuffSecondary", "DebuffTertiary", "ReserveDuration", "AuraDuration", "SoulPreventionDuration", "SkillEffectAppliesToSoulGainPrevention", "AuraCannotAffectSelf", "ThisIsNotABuff", "BuffNotPlayer", "BuffMinions", "BuffAllies", "AllowTotemBuff", "Enable", "DotIsArea", "DotIsProjectile", "DotIsAttack", "DotIsHit", "PhysicalDot", "LightningDot", "ExplodeCorpse", "HitChanceIsExplodeChance", "PhysicalEffectiveExplodePercentage", "LightningEffectiveExplodePercentage", "ColdEffectiveExplodePercentage", "FireEffectiveExplodePercentage", "ChaosEffectiveExplodePercentage", "PoisonIsSkillEffect", "PoisonDurationIsSkillDuration", "StackMultiplier", "RadiusIsWeaponRange", "Decay", "BaseStunDuration", "Range", "RangeBonus", "HitTimeMultiplier", "TotemFireOnce", "NumStages", "ProjectileSpeed", "StackCount", "SummonSpeed", "StrikeInterval", "RemainingDurationDamage"},
 			func(v *calculator.SkillData, entry *crystallineEntry, field int) any {
 				switch field {
 				case 0:
@@ -23419,26 +23419,82 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 				case 137:
 					return float64(v.BeamOverlapMultiplier)
 				case 138:
-					return bool(v.TriggeredByMirageArcher)
+					return func() any {
+						if v.ActiveArrowMultiplier == nil {
+							return nil
+						}
+
+						return float64((*v.ActiveArrowMultiplier))
+					}()
 				case 139:
-					return bool(v.TriggeredBySacredWisps)
+					return func() any {
+						if v.TornadoShotSecondaryHitChance == nil {
+							return nil
+						}
+
+						return float64((*v.TornadoShotSecondaryHitChance))
+					}()
 				case 140:
-					return float64(v.ChanceToTriggerOnCrit)
+					return func() any {
+						if v.ShrapnelBallistaProjectileOverlap == nil {
+							return nil
+						}
+
+						return float64((*v.ShrapnelBallistaProjectileOverlap))
+					}()
 				case 141:
-					return float64(v.ColdDot)
+					return func() any {
+						if v.HoaOverkill == nil {
+							return nil
+						}
+
+						return float64((*v.HoaOverkill))
+					}()
 				case 142:
-					return float64(v.CorpseExplosionLifeMultiplier)
+					return float64(v.HoaMoreBurn)
 				case 143:
-					return float64(v.SelfFireExplosionLifeMultiplier)
+					return float64(v.HoaOverkillPercent)
 				case 144:
-					return float64(v.CorpseLife)
+					return func() any {
+						if v.MoltenShellDamageMitigated == nil {
+							return nil
+						}
+
+						return float64((*v.MoltenShellDamageMitigated))
+					}()
 				case 145:
-					return string(v.CorpseExplosionDamageType)
+					return func() any {
+						if v.VaalMoltenShellDamageMitigated == nil {
+							return nil
+						}
+
+						return float64((*v.VaalMoltenShellDamageMitigated))
+					}()
 				case 146:
-					return float64(v.ChaosDot)
+					return float64(v.MoltenShellReflect)
 				case 147:
-					return float64(v.BaseManaCostIsAtLeastPercentUnreservedMana)
+					return bool(v.TriggeredByMirageArcher)
 				case 148:
+					return bool(v.TriggeredBySnipe)
+				case 149:
+					return bool(v.TriggeredBySacredWisps)
+				case 150:
+					return float64(v.ChanceToTriggerOnCrit)
+				case 151:
+					return float64(v.ColdDot)
+				case 152:
+					return float64(v.CorpseExplosionLifeMultiplier)
+				case 153:
+					return float64(v.SelfFireExplosionLifeMultiplier)
+				case 154:
+					return float64(v.CorpseLife)
+				case 155:
+					return string(v.CorpseExplosionDamageType)
+				case 156:
+					return float64(v.ChaosDot)
+				case 157:
+					return float64(v.BaseManaCostIsAtLeastPercentUnreservedMana)
+				case 158:
 					return func() any {
 						if v.ManaReservationFlat == nil {
 							return nil
@@ -23446,7 +23502,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						return float64((*v.ManaReservationFlat))
 					}()
-				case 149:
+				case 159:
 					return func() any {
 						if v.LifeReservationFlat == nil {
 							return nil
@@ -23454,7 +23510,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						return float64((*v.LifeReservationFlat))
 					}()
-				case 150:
+				case 160:
 					return func() any {
 						if v.LifeReservationPercent == nil {
 							return nil
@@ -23462,7 +23518,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						return float64((*v.LifeReservationPercent))
 					}()
-				case 151:
+				case 161:
 					return func() any {
 						if v.ManaReservationFlatForced == nil {
 							return nil
@@ -23470,7 +23526,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						return float64((*v.ManaReservationFlatForced))
 					}()
-				case 152:
+				case 162:
 					return func() any {
 						if v.LifeReservationFlatForced == nil {
 							return nil
@@ -23478,7 +23534,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						return float64((*v.LifeReservationFlatForced))
 					}()
-				case 153:
+				case 163:
 					return func() any {
 						if v.ManaReservationPercentForced == nil {
 							return nil
@@ -23486,7 +23542,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						return float64((*v.ManaReservationPercentForced))
 					}()
-				case 154:
+				case 164:
 					return func() any {
 						if v.LifeReservationPercentForced == nil {
 							return nil
@@ -23494,109 +23550,109 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						return float64((*v.LifeReservationPercentForced))
 					}()
-				case 155:
-					return float64(v.ManaReservedBase)
-				case 156:
-					return float64(v.ManaReservedPercent)
-				case 157:
-					return float64(v.LifeReservedBase)
-				case 158:
-					return float64(v.LifeReservedPercent)
-				case 159:
-					return float64(v.AttackSpeedMultiplier)
-				case 160:
-					return bool(v.MinionUseBowAndQuiver)
-				case 161:
-					return bool(v.MinionUseMainHandWeapon)
-				case 162:
-					return bool(v.ArrowSpeedAppliesToAreaOfEffect)
-				case 163:
-					return float64(v.GainPercentBaseWandDamageToSpells)
-				case 164:
-					return float64(v.HitTimeOverride)
 				case 165:
-					return float64(v.TrapCooldown)
+					return float64(v.ManaReservedBase)
 				case 166:
-					return bool(v.MineDurationAppliesToSkill)
+					return float64(v.ManaReservedPercent)
 				case 167:
-					return bool(v.Debuff)
+					return float64(v.LifeReservedBase)
 				case 168:
-					return bool(v.DebuffSecondary)
+					return float64(v.LifeReservedPercent)
 				case 169:
-					return bool(v.DebuffTertiary)
+					return float64(v.AttackSpeedMultiplier)
 				case 170:
-					return float64(v.ReserveDuration)
+					return bool(v.MinionUseBowAndQuiver)
 				case 171:
-					return float64(v.AuraDuration)
+					return bool(v.MinionUseMainHandWeapon)
 				case 172:
-					return float64(v.SoulPreventionDuration)
+					return bool(v.ArrowSpeedAppliesToAreaOfEffect)
 				case 173:
-					return bool(v.SkillEffectAppliesToSoulGainPrevention)
+					return float64(v.GainPercentBaseWandDamageToSpells)
 				case 174:
-					return bool(v.AuraCannotAffectSelf)
+					return float64(v.HitTimeOverride)
 				case 175:
-					return bool(v.ThisIsNotABuff)
+					return float64(v.TrapCooldown)
 				case 176:
-					return bool(v.BuffNotPlayer)
+					return bool(v.MineDurationAppliesToSkill)
 				case 177:
-					return bool(v.BuffMinions)
+					return bool(v.Debuff)
 				case 178:
-					return bool(v.BuffAllies)
+					return bool(v.DebuffSecondary)
 				case 179:
-					return bool(v.AllowTotemBuff)
+					return bool(v.DebuffTertiary)
 				case 180:
-					return bool(v.Enable)
+					return float64(v.ReserveDuration)
 				case 181:
-					return bool(v.DotIsArea)
+					return float64(v.AuraDuration)
 				case 182:
-					return bool(v.DotIsProjectile)
+					return float64(v.SoulPreventionDuration)
 				case 183:
-					return bool(v.DotIsAttack)
+					return bool(v.SkillEffectAppliesToSoulGainPrevention)
 				case 184:
-					return bool(v.DotIsHit)
+					return bool(v.AuraCannotAffectSelf)
 				case 185:
-					return float64(v.PhysicalDot)
+					return bool(v.ThisIsNotABuff)
 				case 186:
-					return float64(v.LightningDot)
+					return bool(v.BuffNotPlayer)
 				case 187:
-					return bool(v.ExplodeCorpse)
+					return bool(v.BuffMinions)
 				case 188:
-					return bool(v.HitChanceIsExplodeChance)
+					return bool(v.BuffAllies)
 				case 189:
-					return float64(v.PhysicalEffectiveExplodePercentage)
+					return bool(v.AllowTotemBuff)
 				case 190:
-					return float64(v.LightningEffectiveExplodePercentage)
+					return bool(v.Enable)
 				case 191:
-					return float64(v.ColdEffectiveExplodePercentage)
+					return bool(v.DotIsArea)
 				case 192:
-					return float64(v.FireEffectiveExplodePercentage)
+					return bool(v.DotIsProjectile)
 				case 193:
-					return float64(v.ChaosEffectiveExplodePercentage)
+					return bool(v.DotIsAttack)
 				case 194:
-					return bool(v.PoisonIsSkillEffect)
+					return bool(v.DotIsHit)
 				case 195:
-					return bool(v.PoisonDurationIsSkillDuration)
+					return float64(v.PhysicalDot)
 				case 196:
-					return float64(v.StackMultiplier)
+					return float64(v.LightningDot)
 				case 197:
-					return bool(v.RadiusIsWeaponRange)
+					return bool(v.ExplodeCorpse)
 				case 198:
-					return float64(v.Decay)
+					return bool(v.HitChanceIsExplodeChance)
 				case 199:
-					return float64(v.BaseStunDuration)
+					return float64(v.PhysicalEffectiveExplodePercentage)
 				case 200:
-					return float64(v.Range)
+					return float64(v.LightningEffectiveExplodePercentage)
 				case 201:
-					return float64(v.RangeBonus)
+					return float64(v.ColdEffectiveExplodePercentage)
 				case 202:
-					return float64(v.HitTimeMultiplier)
+					return float64(v.FireEffectiveExplodePercentage)
 				case 203:
-					return bool(v.TotemFireOnce)
+					return float64(v.ChaosEffectiveExplodePercentage)
 				case 204:
-					return float64(v.NumStages)
+					return bool(v.PoisonIsSkillEffect)
 				case 205:
-					return float64(v.ProjectileSpeed)
+					return bool(v.PoisonDurationIsSkillDuration)
 				case 206:
+					return float64(v.StackMultiplier)
+				case 207:
+					return bool(v.RadiusIsWeaponRange)
+				case 208:
+					return float64(v.Decay)
+				case 209:
+					return float64(v.BaseStunDuration)
+				case 210:
+					return float64(v.Range)
+				case 211:
+					return float64(v.RangeBonus)
+				case 212:
+					return float64(v.HitTimeMultiplier)
+				case 213:
+					return bool(v.TotemFireOnce)
+				case 214:
+					return float64(v.NumStages)
+				case 215:
+					return float64(v.ProjectileSpeed)
+				case 216:
 					return func() any {
 						if v.StackCount == nil {
 							return nil
@@ -23604,7 +23660,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						return float64((*v.StackCount))
 					}()
-				case 207:
+				case 217:
 					return func() any {
 						if v.SummonSpeed == nil {
 							return nil
@@ -23612,9 +23668,9 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						return float64((*v.SummonSpeed))
 					}()
-				case 208:
+				case 218:
 					return float64(v.StrikeInterval)
-				case 209:
+				case 219:
 					return float64(v.RemainingDurationDamage)
 				}
 
@@ -25142,47 +25198,47 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 					})(value)
 				case 138:
 					(func(value js.Value) {
-						converted, err := crystallineToBool(value)
+						converted, err := crystallineToPtrFloat64(value)
 						if err != nil {
 							crystallineFail(err.Error())
 
 							return
 						}
 
-						v.TriggeredByMirageArcher = converted
+						v.ActiveArrowMultiplier = converted
 					})(value)
 				case 139:
 					(func(value js.Value) {
-						converted, err := crystallineToBool(value)
+						converted, err := crystallineToPtrFloat64(value)
 						if err != nil {
 							crystallineFail(err.Error())
 
 							return
 						}
 
-						v.TriggeredBySacredWisps = converted
+						v.TornadoShotSecondaryHitChance = converted
 					})(value)
 				case 140:
 					(func(value js.Value) {
-						converted, err := crystallineToFloat64(value)
+						converted, err := crystallineToPtrFloat64(value)
 						if err != nil {
 							crystallineFail(err.Error())
 
 							return
 						}
 
-						v.ChanceToTriggerOnCrit = converted
+						v.ShrapnelBallistaProjectileOverlap = converted
 					})(value)
 				case 141:
 					(func(value js.Value) {
-						converted, err := crystallineToFloat64(value)
+						converted, err := crystallineToPtrFloat64(value)
 						if err != nil {
 							crystallineFail(err.Error())
 
 							return
 						}
 
-						v.ColdDot = converted
+						v.HoaOverkill = converted
 					})(value)
 				case 142:
 					(func(value js.Value) {
@@ -25193,7 +25249,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 							return
 						}
 
-						v.CorpseExplosionLifeMultiplier = converted
+						v.HoaMoreBurn = converted
 					})(value)
 				case 143:
 					(func(value js.Value) {
@@ -25204,29 +25260,29 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 							return
 						}
 
-						v.SelfFireExplosionLifeMultiplier = converted
+						v.HoaOverkillPercent = converted
 					})(value)
 				case 144:
 					(func(value js.Value) {
-						converted, err := crystallineToFloat64(value)
+						converted, err := crystallineToPtrFloat64(value)
 						if err != nil {
 							crystallineFail(err.Error())
 
 							return
 						}
 
-						v.CorpseLife = converted
+						v.MoltenShellDamageMitigated = converted
 					})(value)
 				case 145:
 					(func(value js.Value) {
-						converted, err := crystallineToString(value)
+						converted, err := crystallineToPtrFloat64(value)
 						if err != nil {
 							crystallineFail(err.Error())
 
 							return
 						}
 
-						v.CorpseExplosionDamageType = converted
+						v.VaalMoltenShellDamageMitigated = converted
 					})(value)
 				case 146:
 					(func(value js.Value) {
@@ -25237,97 +25293,42 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 							return
 						}
 
-						v.ChaosDot = converted
+						v.MoltenShellReflect = converted
 					})(value)
 				case 147:
 					(func(value js.Value) {
-						converted, err := crystallineToFloat64(value)
+						converted, err := crystallineToBool(value)
 						if err != nil {
 							crystallineFail(err.Error())
 
 							return
 						}
 
-						v.BaseManaCostIsAtLeastPercentUnreservedMana = converted
+						v.TriggeredByMirageArcher = converted
 					})(value)
 				case 148:
 					(func(value js.Value) {
-						converted, err := crystallineToPtrFloat64(value)
+						converted, err := crystallineToBool(value)
 						if err != nil {
 							crystallineFail(err.Error())
 
 							return
 						}
 
-						v.ManaReservationFlat = converted
+						v.TriggeredBySnipe = converted
 					})(value)
 				case 149:
 					(func(value js.Value) {
-						converted, err := crystallineToPtrFloat64(value)
+						converted, err := crystallineToBool(value)
 						if err != nil {
 							crystallineFail(err.Error())
 
 							return
 						}
 
-						v.LifeReservationFlat = converted
+						v.TriggeredBySacredWisps = converted
 					})(value)
 				case 150:
-					(func(value js.Value) {
-						converted, err := crystallineToPtrFloat64(value)
-						if err != nil {
-							crystallineFail(err.Error())
-
-							return
-						}
-
-						v.LifeReservationPercent = converted
-					})(value)
-				case 151:
-					(func(value js.Value) {
-						converted, err := crystallineToPtrFloat64(value)
-						if err != nil {
-							crystallineFail(err.Error())
-
-							return
-						}
-
-						v.ManaReservationFlatForced = converted
-					})(value)
-				case 152:
-					(func(value js.Value) {
-						converted, err := crystallineToPtrFloat64(value)
-						if err != nil {
-							crystallineFail(err.Error())
-
-							return
-						}
-
-						v.LifeReservationFlatForced = converted
-					})(value)
-				case 153:
-					(func(value js.Value) {
-						converted, err := crystallineToPtrFloat64(value)
-						if err != nil {
-							crystallineFail(err.Error())
-
-							return
-						}
-
-						v.ManaReservationPercentForced = converted
-					})(value)
-				case 154:
-					(func(value js.Value) {
-						converted, err := crystallineToPtrFloat64(value)
-						if err != nil {
-							crystallineFail(err.Error())
-
-							return
-						}
-
-						v.LifeReservationPercentForced = converted
-					})(value)
-				case 155:
 					(func(value js.Value) {
 						converted, err := crystallineToFloat64(value)
 						if err != nil {
@@ -25336,7 +25337,62 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 							return
 						}
 
-						v.ManaReservedBase = converted
+						v.ChanceToTriggerOnCrit = converted
+					})(value)
+				case 151:
+					(func(value js.Value) {
+						converted, err := crystallineToFloat64(value)
+						if err != nil {
+							crystallineFail(err.Error())
+
+							return
+						}
+
+						v.ColdDot = converted
+					})(value)
+				case 152:
+					(func(value js.Value) {
+						converted, err := crystallineToFloat64(value)
+						if err != nil {
+							crystallineFail(err.Error())
+
+							return
+						}
+
+						v.CorpseExplosionLifeMultiplier = converted
+					})(value)
+				case 153:
+					(func(value js.Value) {
+						converted, err := crystallineToFloat64(value)
+						if err != nil {
+							crystallineFail(err.Error())
+
+							return
+						}
+
+						v.SelfFireExplosionLifeMultiplier = converted
+					})(value)
+				case 154:
+					(func(value js.Value) {
+						converted, err := crystallineToFloat64(value)
+						if err != nil {
+							crystallineFail(err.Error())
+
+							return
+						}
+
+						v.CorpseLife = converted
+					})(value)
+				case 155:
+					(func(value js.Value) {
+						converted, err := crystallineToString(value)
+						if err != nil {
+							crystallineFail(err.Error())
+
+							return
+						}
+
+						v.CorpseExplosionDamageType = converted
 					})(value)
 				case 156:
 					(func(value js.Value) {
@@ -25347,7 +25403,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 							return
 						}
 
-						v.ManaReservedPercent = converted
+						v.ChaosDot = converted
 					})(value)
 				case 157:
 					(func(value js.Value) {
@@ -25358,84 +25414,84 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 							return
 						}
 
-						v.LifeReservedBase = converted
+						v.BaseManaCostIsAtLeastPercentUnreservedMana = converted
 					})(value)
 				case 158:
 					(func(value js.Value) {
-						converted, err := crystallineToFloat64(value)
+						converted, err := crystallineToPtrFloat64(value)
 						if err != nil {
 							crystallineFail(err.Error())
 
 							return
 						}
 
-						v.LifeReservedPercent = converted
+						v.ManaReservationFlat = converted
 					})(value)
 				case 159:
 					(func(value js.Value) {
-						converted, err := crystallineToFloat64(value)
+						converted, err := crystallineToPtrFloat64(value)
 						if err != nil {
 							crystallineFail(err.Error())
 
 							return
 						}
 
-						v.AttackSpeedMultiplier = converted
+						v.LifeReservationFlat = converted
 					})(value)
 				case 160:
 					(func(value js.Value) {
-						converted, err := crystallineToBool(value)
+						converted, err := crystallineToPtrFloat64(value)
 						if err != nil {
 							crystallineFail(err.Error())
 
 							return
 						}
 
-						v.MinionUseBowAndQuiver = converted
+						v.LifeReservationPercent = converted
 					})(value)
 				case 161:
 					(func(value js.Value) {
-						converted, err := crystallineToBool(value)
+						converted, err := crystallineToPtrFloat64(value)
 						if err != nil {
 							crystallineFail(err.Error())
 
 							return
 						}
 
-						v.MinionUseMainHandWeapon = converted
+						v.ManaReservationFlatForced = converted
 					})(value)
 				case 162:
 					(func(value js.Value) {
-						converted, err := crystallineToBool(value)
+						converted, err := crystallineToPtrFloat64(value)
 						if err != nil {
 							crystallineFail(err.Error())
 
 							return
 						}
 
-						v.ArrowSpeedAppliesToAreaOfEffect = converted
+						v.LifeReservationFlatForced = converted
 					})(value)
 				case 163:
 					(func(value js.Value) {
-						converted, err := crystallineToFloat64(value)
+						converted, err := crystallineToPtrFloat64(value)
 						if err != nil {
 							crystallineFail(err.Error())
 
 							return
 						}
 
-						v.GainPercentBaseWandDamageToSpells = converted
+						v.ManaReservationPercentForced = converted
 					})(value)
 				case 164:
 					(func(value js.Value) {
-						converted, err := crystallineToFloat64(value)
+						converted, err := crystallineToPtrFloat64(value)
 						if err != nil {
 							crystallineFail(err.Error())
 
 							return
 						}
 
-						v.HitTimeOverride = converted
+						v.LifeReservationPercentForced = converted
 					})(value)
 				case 165:
 					(func(value js.Value) {
@@ -25446,76 +25502,87 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 							return
 						}
 
-						v.TrapCooldown = converted
+						v.ManaReservedBase = converted
 					})(value)
 				case 166:
 					(func(value js.Value) {
-						converted, err := crystallineToBool(value)
+						converted, err := crystallineToFloat64(value)
 						if err != nil {
 							crystallineFail(err.Error())
 
 							return
 						}
 
-						v.MineDurationAppliesToSkill = converted
+						v.ManaReservedPercent = converted
 					})(value)
 				case 167:
 					(func(value js.Value) {
-						converted, err := crystallineToBool(value)
+						converted, err := crystallineToFloat64(value)
 						if err != nil {
 							crystallineFail(err.Error())
 
 							return
 						}
 
-						v.Debuff = converted
+						v.LifeReservedBase = converted
 					})(value)
 				case 168:
 					(func(value js.Value) {
-						converted, err := crystallineToBool(value)
+						converted, err := crystallineToFloat64(value)
 						if err != nil {
 							crystallineFail(err.Error())
 
 							return
 						}
 
-						v.DebuffSecondary = converted
+						v.LifeReservedPercent = converted
 					})(value)
 				case 169:
 					(func(value js.Value) {
-						converted, err := crystallineToBool(value)
+						converted, err := crystallineToFloat64(value)
 						if err != nil {
 							crystallineFail(err.Error())
 
 							return
 						}
 
-						v.DebuffTertiary = converted
+						v.AttackSpeedMultiplier = converted
 					})(value)
 				case 170:
 					(func(value js.Value) {
-						converted, err := crystallineToFloat64(value)
+						converted, err := crystallineToBool(value)
 						if err != nil {
 							crystallineFail(err.Error())
 
 							return
 						}
 
-						v.ReserveDuration = converted
+						v.MinionUseBowAndQuiver = converted
 					})(value)
 				case 171:
 					(func(value js.Value) {
-						converted, err := crystallineToFloat64(value)
+						converted, err := crystallineToBool(value)
 						if err != nil {
 							crystallineFail(err.Error())
 
 							return
 						}
 
-						v.AuraDuration = converted
+						v.MinionUseMainHandWeapon = converted
 					})(value)
 				case 172:
 					(func(value js.Value) {
+						converted, err := crystallineToBool(value)
+						if err != nil {
+							crystallineFail(err.Error())
+
+							return
+						}
+
+						v.ArrowSpeedAppliesToAreaOfEffect = converted
+					})(value)
+				case 173:
+					(func(value js.Value) {
 						converted, err := crystallineToFloat64(value)
 						if err != nil {
 							crystallineFail(err.Error())
@@ -25523,40 +25590,29 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 							return
 						}
 
-						v.SoulPreventionDuration = converted
-					})(value)
-				case 173:
-					(func(value js.Value) {
-						converted, err := crystallineToBool(value)
-						if err != nil {
-							crystallineFail(err.Error())
-
-							return
-						}
-
-						v.SkillEffectAppliesToSoulGainPrevention = converted
+						v.GainPercentBaseWandDamageToSpells = converted
 					})(value)
 				case 174:
 					(func(value js.Value) {
-						converted, err := crystallineToBool(value)
+						converted, err := crystallineToFloat64(value)
 						if err != nil {
 							crystallineFail(err.Error())
 
 							return
 						}
 
-						v.AuraCannotAffectSelf = converted
+						v.HitTimeOverride = converted
 					})(value)
 				case 175:
 					(func(value js.Value) {
-						converted, err := crystallineToBool(value)
+						converted, err := crystallineToFloat64(value)
 						if err != nil {
 							crystallineFail(err.Error())
 
 							return
 						}
 
-						v.ThisIsNotABuff = converted
+						v.TrapCooldown = converted
 					})(value)
 				case 176:
 					(func(value js.Value) {
@@ -25567,7 +25623,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 							return
 						}
 
-						v.BuffNotPlayer = converted
+						v.MineDurationAppliesToSkill = converted
 					})(value)
 				case 177:
 					(func(value js.Value) {
@@ -25578,7 +25634,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 							return
 						}
 
-						v.BuffMinions = converted
+						v.Debuff = converted
 					})(value)
 				case 178:
 					(func(value js.Value) {
@@ -25589,7 +25645,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 							return
 						}
 
-						v.BuffAllies = converted
+						v.DebuffSecondary = converted
 					})(value)
 				case 179:
 					(func(value js.Value) {
@@ -25600,40 +25656,40 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 							return
 						}
 
-						v.AllowTotemBuff = converted
+						v.DebuffTertiary = converted
 					})(value)
 				case 180:
 					(func(value js.Value) {
-						converted, err := crystallineToBool(value)
+						converted, err := crystallineToFloat64(value)
 						if err != nil {
 							crystallineFail(err.Error())
 
 							return
 						}
 
-						v.Enable = converted
+						v.ReserveDuration = converted
 					})(value)
 				case 181:
 					(func(value js.Value) {
-						converted, err := crystallineToBool(value)
+						converted, err := crystallineToFloat64(value)
 						if err != nil {
 							crystallineFail(err.Error())
 
 							return
 						}
 
-						v.DotIsArea = converted
+						v.AuraDuration = converted
 					})(value)
 				case 182:
 					(func(value js.Value) {
-						converted, err := crystallineToBool(value)
+						converted, err := crystallineToFloat64(value)
 						if err != nil {
 							crystallineFail(err.Error())
 
 							return
 						}
 
-						v.DotIsProjectile = converted
+						v.SoulPreventionDuration = converted
 					})(value)
 				case 183:
 					(func(value js.Value) {
@@ -25644,7 +25700,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 							return
 						}
 
-						v.DotIsAttack = converted
+						v.SkillEffectAppliesToSoulGainPrevention = converted
 					})(value)
 				case 184:
 					(func(value js.Value) {
@@ -25655,29 +25711,29 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 							return
 						}
 
-						v.DotIsHit = converted
+						v.AuraCannotAffectSelf = converted
 					})(value)
 				case 185:
 					(func(value js.Value) {
-						converted, err := crystallineToFloat64(value)
+						converted, err := crystallineToBool(value)
 						if err != nil {
 							crystallineFail(err.Error())
 
 							return
 						}
 
-						v.PhysicalDot = converted
+						v.ThisIsNotABuff = converted
 					})(value)
 				case 186:
 					(func(value js.Value) {
-						converted, err := crystallineToFloat64(value)
+						converted, err := crystallineToBool(value)
 						if err != nil {
 							crystallineFail(err.Error())
 
 							return
 						}
 
-						v.LightningDot = converted
+						v.BuffNotPlayer = converted
 					})(value)
 				case 187:
 					(func(value js.Value) {
@@ -25688,7 +25744,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 							return
 						}
 
-						v.ExplodeCorpse = converted
+						v.BuffMinions = converted
 					})(value)
 				case 188:
 					(func(value js.Value) {
@@ -25699,62 +25755,62 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 							return
 						}
 
-						v.HitChanceIsExplodeChance = converted
+						v.BuffAllies = converted
 					})(value)
 				case 189:
 					(func(value js.Value) {
-						converted, err := crystallineToFloat64(value)
+						converted, err := crystallineToBool(value)
 						if err != nil {
 							crystallineFail(err.Error())
 
 							return
 						}
 
-						v.PhysicalEffectiveExplodePercentage = converted
+						v.AllowTotemBuff = converted
 					})(value)
 				case 190:
 					(func(value js.Value) {
-						converted, err := crystallineToFloat64(value)
+						converted, err := crystallineToBool(value)
 						if err != nil {
 							crystallineFail(err.Error())
 
 							return
 						}
 
-						v.LightningEffectiveExplodePercentage = converted
+						v.Enable = converted
 					})(value)
 				case 191:
 					(func(value js.Value) {
-						converted, err := crystallineToFloat64(value)
+						converted, err := crystallineToBool(value)
 						if err != nil {
 							crystallineFail(err.Error())
 
 							return
 						}
 
-						v.ColdEffectiveExplodePercentage = converted
+						v.DotIsArea = converted
 					})(value)
 				case 192:
 					(func(value js.Value) {
-						converted, err := crystallineToFloat64(value)
+						converted, err := crystallineToBool(value)
 						if err != nil {
 							crystallineFail(err.Error())
 
 							return
 						}
 
-						v.FireEffectiveExplodePercentage = converted
+						v.DotIsProjectile = converted
 					})(value)
 				case 193:
 					(func(value js.Value) {
-						converted, err := crystallineToFloat64(value)
+						converted, err := crystallineToBool(value)
 						if err != nil {
 							crystallineFail(err.Error())
 
 							return
 						}
 
-						v.ChaosEffectiveExplodePercentage = converted
+						v.DotIsAttack = converted
 					})(value)
 				case 194:
 					(func(value js.Value) {
@@ -25765,18 +25821,18 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 							return
 						}
 
-						v.PoisonIsSkillEffect = converted
+						v.DotIsHit = converted
 					})(value)
 				case 195:
 					(func(value js.Value) {
-						converted, err := crystallineToBool(value)
+						converted, err := crystallineToFloat64(value)
 						if err != nil {
 							crystallineFail(err.Error())
 
 							return
 						}
 
-						v.PoisonDurationIsSkillDuration = converted
+						v.PhysicalDot = converted
 					})(value)
 				case 196:
 					(func(value js.Value) {
@@ -25787,7 +25843,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 							return
 						}
 
-						v.StackMultiplier = converted
+						v.LightningDot = converted
 					})(value)
 				case 197:
 					(func(value js.Value) {
@@ -25798,18 +25854,18 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 							return
 						}
 
-						v.RadiusIsWeaponRange = converted
+						v.ExplodeCorpse = converted
 					})(value)
 				case 198:
 					(func(value js.Value) {
-						converted, err := crystallineToFloat64(value)
+						converted, err := crystallineToBool(value)
 						if err != nil {
 							crystallineFail(err.Error())
 
 							return
 						}
 
-						v.Decay = converted
+						v.HitChanceIsExplodeChance = converted
 					})(value)
 				case 199:
 					(func(value js.Value) {
@@ -25820,7 +25876,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 							return
 						}
 
-						v.BaseStunDuration = converted
+						v.PhysicalEffectiveExplodePercentage = converted
 					})(value)
 				case 200:
 					(func(value js.Value) {
@@ -25831,7 +25887,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 							return
 						}
 
-						v.Range = converted
+						v.LightningEffectiveExplodePercentage = converted
 					})(value)
 				case 201:
 					(func(value js.Value) {
@@ -25842,7 +25898,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 							return
 						}
 
-						v.RangeBonus = converted
+						v.ColdEffectiveExplodePercentage = converted
 					})(value)
 				case 202:
 					(func(value js.Value) {
@@ -25853,9 +25909,20 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 							return
 						}
 
-						v.HitTimeMultiplier = converted
+						v.FireEffectiveExplodePercentage = converted
 					})(value)
 				case 203:
+					(func(value js.Value) {
+						converted, err := crystallineToFloat64(value)
+						if err != nil {
+							crystallineFail(err.Error())
+
+							return
+						}
+
+						v.ChaosEffectiveExplodePercentage = converted
+					})(value)
+				case 204:
 					(func(value js.Value) {
 						converted, err := crystallineToBool(value)
 						if err != nil {
@@ -25864,21 +25931,21 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 							return
 						}
 
-						v.TotemFireOnce = converted
-					})(value)
-				case 204:
-					(func(value js.Value) {
-						converted, err := crystallineToFloat64(value)
-						if err != nil {
-							crystallineFail(err.Error())
-
-							return
-						}
-
-						v.NumStages = converted
+						v.PoisonIsSkillEffect = converted
 					})(value)
 				case 205:
 					(func(value js.Value) {
+						converted, err := crystallineToBool(value)
+						if err != nil {
+							crystallineFail(err.Error())
+
+							return
+						}
+
+						v.PoisonDurationIsSkillDuration = converted
+					})(value)
+				case 206:
+					(func(value js.Value) {
 						converted, err := crystallineToFloat64(value)
 						if err != nil {
 							crystallineFail(err.Error())
@@ -25886,29 +25953,18 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 							return
 						}
 
-						v.ProjectileSpeed = converted
-					})(value)
-				case 206:
-					(func(value js.Value) {
-						converted, err := crystallineToPtrFloat64(value)
-						if err != nil {
-							crystallineFail(err.Error())
-
-							return
-						}
-
-						v.StackCount = converted
+						v.StackMultiplier = converted
 					})(value)
 				case 207:
 					(func(value js.Value) {
-						converted, err := crystallineToPtrFloat64(value)
+						converted, err := crystallineToBool(value)
 						if err != nil {
 							crystallineFail(err.Error())
 
 							return
 						}
 
-						v.SummonSpeed = converted
+						v.RadiusIsWeaponRange = converted
 					})(value)
 				case 208:
 					(func(value js.Value) {
@@ -25919,9 +25975,119 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 							return
 						}
 
-						v.StrikeInterval = converted
+						v.Decay = converted
 					})(value)
 				case 209:
+					(func(value js.Value) {
+						converted, err := crystallineToFloat64(value)
+						if err != nil {
+							crystallineFail(err.Error())
+
+							return
+						}
+
+						v.BaseStunDuration = converted
+					})(value)
+				case 210:
+					(func(value js.Value) {
+						converted, err := crystallineToFloat64(value)
+						if err != nil {
+							crystallineFail(err.Error())
+
+							return
+						}
+
+						v.Range = converted
+					})(value)
+				case 211:
+					(func(value js.Value) {
+						converted, err := crystallineToFloat64(value)
+						if err != nil {
+							crystallineFail(err.Error())
+
+							return
+						}
+
+						v.RangeBonus = converted
+					})(value)
+				case 212:
+					(func(value js.Value) {
+						converted, err := crystallineToFloat64(value)
+						if err != nil {
+							crystallineFail(err.Error())
+
+							return
+						}
+
+						v.HitTimeMultiplier = converted
+					})(value)
+				case 213:
+					(func(value js.Value) {
+						converted, err := crystallineToBool(value)
+						if err != nil {
+							crystallineFail(err.Error())
+
+							return
+						}
+
+						v.TotemFireOnce = converted
+					})(value)
+				case 214:
+					(func(value js.Value) {
+						converted, err := crystallineToFloat64(value)
+						if err != nil {
+							crystallineFail(err.Error())
+
+							return
+						}
+
+						v.NumStages = converted
+					})(value)
+				case 215:
+					(func(value js.Value) {
+						converted, err := crystallineToFloat64(value)
+						if err != nil {
+							crystallineFail(err.Error())
+
+							return
+						}
+
+						v.ProjectileSpeed = converted
+					})(value)
+				case 216:
+					(func(value js.Value) {
+						converted, err := crystallineToPtrFloat64(value)
+						if err != nil {
+							crystallineFail(err.Error())
+
+							return
+						}
+
+						v.StackCount = converted
+					})(value)
+				case 217:
+					(func(value js.Value) {
+						converted, err := crystallineToPtrFloat64(value)
+						if err != nil {
+							crystallineFail(err.Error())
+
+							return
+						}
+
+						v.SummonSpeed = converted
+					})(value)
+				case 218:
+					(func(value js.Value) {
+						converted, err := crystallineToFloat64(value)
+						if err != nil {
+							crystallineFail(err.Error())
+
+							return
+						}
+
+						v.StrikeInterval = converted
+					})(value)
+				case 219:
 					(func(value js.Value) {
 						converted, err := crystallineToFloat64(value)
 						if err != nil {
@@ -54889,7 +55055,7 @@ func crystallineToCalculatorSkillDPS(value js.Value) (calculator.SkillDPS, error
 	return out, nil
 }
 
-var crystallineKnownCalculatorSkillData = map[string]bool{"StagesMax": true, "PulseInterval": true, "PulseDamage": true, "SupportBonechill": true, "Cooldown": true, "StoredUses": true, "Triggered": true, "TriggeredByBrand": true, "TriggeredByBattleMageCry": true, "TriggerOnCrit": true, "CountsAttachedBrandsInDamage": true, "AttachedBrandCount": true, "TriggeredOnDeath": true, "TriggeredByAutoexertion": true, "TriggeredByDamageTaken": true, "TriggeredWhileChannelling": true, "TriggeredByMeleeKill": true, "TriggeredByCospris": true, "TriggeredByMjolner": true, "TriggeredBySevenTeachings": true, "TriggeredByKineticFlux": true, "TriggeredByUnique": true, "TriggeredByFocus": true, "TriggeredByCraft": true, "TriggeredByManaSpent": true, "TriggeredByManaforged": true, "ManaForgedArrowsPercentThreshold": true, "TriggeredByParentAttack": true, "TriggeredByGeneralsCry": true, "TriggerTime": true, "TriggeredBySaviour": true, "CritChance": true, "SetOffHandPhysicalMin": true, "SetOffHandPhysicalMax": true, "PercentageLifeSacrificed": true, "PercentageSacrificedDealtAsChaos": true, "AdditionalRuinChance": true, "ManabondMissingManaGainPercent": true, "ManabondMissingUnreservedManaPercentage": true, "SetOffHandFireMin": true, "SetOffHandFireMax": true, "SetOffHandColdMin": true, "SetOffHandColdMax": true, "AttackTime": true, "CastTimeOverride": true, "CastTimeOverridesAttackTime": true, "TimeOverride": true, "FixedCastTime": true, "TriggerRate": true, "ShowAverage": true, "ManaReservationPercent": true, "TotemLevel": true, "CannotBeEvaded": true, "DoubleHitsWhenDualWielding": true, "DpsMultiplier": true, "DpsBaseMultiplier": true, "PodOverlapMultiplier": true, "DamagePerProjectile": true, "DelayPerProjectile": true, "MaxRageVortexSacrificePercentage": true, "FifthStrikeDamage": true, "FifthStrikeProjectiles": true, "BaseMultiplier": true, "DamageEffectiveness": true, "LifeLeechPerUse": true, "ManaLeechPerUse": true, "BleedDurationIsSkillDuration": true, "BleedIsSkillEffect": true, "Duration": true, "FrostBombDamagePer100ms": true, "BleedBasePercent": true, "Type": true, "AttackRate": true, "PhysicalMin": true, "PhysicalMax": true, "AttackSpeedInc": true, "CountsAsAll1H": true, "CountsAsDualWielding": true, "AddedUsingAxe": true, "AddedUsingSword": true, "AddedUsingDagger": true, "AddedUsingMace": true, "AddedUsingClaw": true, "PhysicalBonusMin": true, "PhysicalBonusMax": true, "LightningMin": true, "LightningMax": true, "LightningBonusMin": true, "LightningBonusMax": true, "ColdMin": true, "ColdMax": true, "ColdBonusMin": true, "ColdBonusMax": true, "FireMin": true, "FireMax": true, "FireBonusMin": true, "FireBonusMax": true, "ChaosMin": true, "ChaosMax": true, "ChaosBonusMin": true, "ChaosBonusMax": true, "LifeDealtAsChaos": true, "EnergyShieldDealtAsChaos": true, "LifeDealtAsFire": true, "SkeletonLife": true, "SelfDamageTakenLife": true, "SelfDamageTakenES": true, "Radius": true, "RadiusSecondary": true, "RadiusTertiary": true, "RadiusExtra": true, "RadiusTertiaryBaseMargin": true, "ProjectileSpeedAppliesToMSAreaOfEffect": true, "DurationSecondary": true, "DurationTertiary": true, "MinionLevel": true, "MinionLevelIsEnemyLevel": true, "MinionLevelIsPlayerLevel": true, "MinionDamageEffectiveness": true, "FireDot": true, "RFLifeMultiplier": true, "RFESMultiplier": true, "RFManaMultiplier": true, "RFMultiplier": true, "PercentSacrificed": true, "TriggeredByCoC": true, "DotIsSpell": true, "RepeatFrequency": true, "RepeatInterval": true, "HitFrequency": true, "CremationFireRate": true, "CremationFireRateIncrease": true, "DamageInterval": true, "HitFrequencyPerBlade": true, "IncVolleyFrequency": true, "VaalBladeVortexBlade": true, "RepeatFrequencyIncrease": true, "BeamOverlapMultiplier": true, "TriggeredByMirageArcher": true, "TriggeredBySacredWisps": true, "ChanceToTriggerOnCrit": true, "ColdDot": true, "CorpseExplosionLifeMultiplier": true, "SelfFireExplosionLifeMultiplier": true, "CorpseLife": true, "CorpseExplosionDamageType": true, "ChaosDot": true, "BaseManaCostIsAtLeastPercentUnreservedMana": true, "ManaReservationFlat": true, "LifeReservationFlat": true, "LifeReservationPercent": true, "ManaReservationFlatForced": true, "LifeReservationFlatForced": true, "ManaReservationPercentForced": true, "LifeReservationPercentForced": true, "ManaReservedBase": true, "ManaReservedPercent": true, "LifeReservedBase": true, "LifeReservedPercent": true, "AttackSpeedMultiplier": true, "MinionUseBowAndQuiver": true, "MinionUseMainHandWeapon": true, "ArrowSpeedAppliesToAreaOfEffect": true, "GainPercentBaseWandDamageToSpells": true, "HitTimeOverride": true, "TrapCooldown": true, "MineDurationAppliesToSkill": true, "Debuff": true, "DebuffSecondary": true, "DebuffTertiary": true, "ReserveDuration": true, "AuraDuration": true, "SoulPreventionDuration": true, "SkillEffectAppliesToSoulGainPrevention": true, "AuraCannotAffectSelf": true, "ThisIsNotABuff": true, "BuffNotPlayer": true, "BuffMinions": true, "BuffAllies": true, "AllowTotemBuff": true, "Enable": true, "DotIsArea": true, "DotIsProjectile": true, "DotIsAttack": true, "DotIsHit": true, "PhysicalDot": true, "LightningDot": true, "ExplodeCorpse": true, "HitChanceIsExplodeChance": true, "PhysicalEffectiveExplodePercentage": true, "LightningEffectiveExplodePercentage": true, "ColdEffectiveExplodePercentage": true, "FireEffectiveExplodePercentage": true, "ChaosEffectiveExplodePercentage": true, "PoisonIsSkillEffect": true, "PoisonDurationIsSkillDuration": true, "StackMultiplier": true, "RadiusIsWeaponRange": true, "Decay": true, "BaseStunDuration": true, "Range": true, "RangeBonus": true, "HitTimeMultiplier": true, "TotemFireOnce": true, "NumStages": true, "ProjectileSpeed": true, "StackCount": true, "SummonSpeed": true, "StrikeInterval": true, "RemainingDurationDamage": true}
+var crystallineKnownCalculatorSkillData = map[string]bool{"StagesMax": true, "PulseInterval": true, "PulseDamage": true, "SupportBonechill": true, "Cooldown": true, "StoredUses": true, "Triggered": true, "TriggeredByBrand": true, "TriggeredByBattleMageCry": true, "TriggerOnCrit": true, "CountsAttachedBrandsInDamage": true, "AttachedBrandCount": true, "TriggeredOnDeath": true, "TriggeredByAutoexertion": true, "TriggeredByDamageTaken": true, "TriggeredWhileChannelling": true, "TriggeredByMeleeKill": true, "TriggeredByCospris": true, "TriggeredByMjolner": true, "TriggeredBySevenTeachings": true, "TriggeredByKineticFlux": true, "TriggeredByUnique": true, "TriggeredByFocus": true, "TriggeredByCraft": true, "TriggeredByManaSpent": true, "TriggeredByManaforged": true, "ManaForgedArrowsPercentThreshold": true, "TriggeredByParentAttack": true, "TriggeredByGeneralsCry": true, "TriggerTime": true, "TriggeredBySaviour": true, "CritChance": true, "SetOffHandPhysicalMin": true, "SetOffHandPhysicalMax": true, "PercentageLifeSacrificed": true, "PercentageSacrificedDealtAsChaos": true, "AdditionalRuinChance": true, "ManabondMissingManaGainPercent": true, "ManabondMissingUnreservedManaPercentage": true, "SetOffHandFireMin": true, "SetOffHandFireMax": true, "SetOffHandColdMin": true, "SetOffHandColdMax": true, "AttackTime": true, "CastTimeOverride": true, "CastTimeOverridesAttackTime": true, "TimeOverride": true, "FixedCastTime": true, "TriggerRate": true, "ShowAverage": true, "ManaReservationPercent": true, "TotemLevel": true, "CannotBeEvaded": true, "DoubleHitsWhenDualWielding": true, "DpsMultiplier": true, "DpsBaseMultiplier": true, "PodOverlapMultiplier": true, "DamagePerProjectile": true, "DelayPerProjectile": true, "MaxRageVortexSacrificePercentage": true, "FifthStrikeDamage": true, "FifthStrikeProjectiles": true, "BaseMultiplier": true, "DamageEffectiveness": true, "LifeLeechPerUse": true, "ManaLeechPerUse": true, "BleedDurationIsSkillDuration": true, "BleedIsSkillEffect": true, "Duration": true, "FrostBombDamagePer100ms": true, "BleedBasePercent": true, "Type": true, "AttackRate": true, "PhysicalMin": true, "PhysicalMax": true, "AttackSpeedInc": true, "CountsAsAll1H": true, "CountsAsDualWielding": true, "AddedUsingAxe": true, "AddedUsingSword": true, "AddedUsingDagger": true, "AddedUsingMace": true, "AddedUsingClaw": true, "PhysicalBonusMin": true, "PhysicalBonusMax": true, "LightningMin": true, "LightningMax": true, "LightningBonusMin": true, "LightningBonusMax": true, "ColdMin": true, "ColdMax": true, "ColdBonusMin": true, "ColdBonusMax": true, "FireMin": true, "FireMax": true, "FireBonusMin": true, "FireBonusMax": true, "ChaosMin": true, "ChaosMax": true, "ChaosBonusMin": true, "ChaosBonusMax": true, "LifeDealtAsChaos": true, "EnergyShieldDealtAsChaos": true, "LifeDealtAsFire": true, "SkeletonLife": true, "SelfDamageTakenLife": true, "SelfDamageTakenES": true, "Radius": true, "RadiusSecondary": true, "RadiusTertiary": true, "RadiusExtra": true, "RadiusTertiaryBaseMargin": true, "ProjectileSpeedAppliesToMSAreaOfEffect": true, "DurationSecondary": true, "DurationTertiary": true, "MinionLevel": true, "MinionLevelIsEnemyLevel": true, "MinionLevelIsPlayerLevel": true, "MinionDamageEffectiveness": true, "FireDot": true, "RFLifeMultiplier": true, "RFESMultiplier": true, "RFManaMultiplier": true, "RFMultiplier": true, "PercentSacrificed": true, "TriggeredByCoC": true, "DotIsSpell": true, "RepeatFrequency": true, "RepeatInterval": true, "HitFrequency": true, "CremationFireRate": true, "CremationFireRateIncrease": true, "DamageInterval": true, "HitFrequencyPerBlade": true, "IncVolleyFrequency": true, "VaalBladeVortexBlade": true, "RepeatFrequencyIncrease": true, "BeamOverlapMultiplier": true, "ActiveArrowMultiplier": true, "TornadoShotSecondaryHitChance": true, "ShrapnelBallistaProjectileOverlap": true, "HoaOverkill": true, "HoaMoreBurn": true, "HoaOverkillPercent": true, "MoltenShellDamageMitigated": true, "VaalMoltenShellDamageMitigated": true, "MoltenShellReflect": true, "TriggeredByMirageArcher": true, "TriggeredBySnipe": true, "TriggeredBySacredWisps": true, "ChanceToTriggerOnCrit": true, "ColdDot": true, "CorpseExplosionLifeMultiplier": true, "SelfFireExplosionLifeMultiplier": true, "CorpseLife": true, "CorpseExplosionDamageType": true, "ChaosDot": true, "BaseManaCostIsAtLeastPercentUnreservedMana": true, "ManaReservationFlat": true, "LifeReservationFlat": true, "LifeReservationPercent": true, "ManaReservationFlatForced": true, "LifeReservationFlatForced": true, "ManaReservationPercentForced": true, "LifeReservationPercentForced": true, "ManaReservedBase": true, "ManaReservedPercent": true, "LifeReservedBase": true, "LifeReservedPercent": true, "AttackSpeedMultiplier": true, "MinionUseBowAndQuiver": true, "MinionUseMainHandWeapon": true, "ArrowSpeedAppliesToAreaOfEffect": true, "GainPercentBaseWandDamageToSpells": true, "HitTimeOverride": true, "TrapCooldown": true, "MineDurationAppliesToSkill": true, "Debuff": true, "DebuffSecondary": true, "DebuffTertiary": true, "ReserveDuration": true, "AuraDuration": true, "SoulPreventionDuration": true, "SkillEffectAppliesToSoulGainPrevention": true, "AuraCannotAffectSelf": true, "ThisIsNotABuff": true, "BuffNotPlayer": true, "BuffMinions": true, "BuffAllies": true, "AllowTotemBuff": true, "Enable": true, "DotIsArea": true, "DotIsProjectile": true, "DotIsAttack": true, "DotIsHit": true, "PhysicalDot": true, "LightningDot": true, "ExplodeCorpse": true, "HitChanceIsExplodeChance": true, "PhysicalEffectiveExplodePercentage": true, "LightningEffectiveExplodePercentage": true, "ColdEffectiveExplodePercentage": true, "FireEffectiveExplodePercentage": true, "ChaosEffectiveExplodePercentage": true, "PoisonIsSkillEffect": true, "PoisonDurationIsSkillDuration": true, "StackMultiplier": true, "RadiusIsWeaponRange": true, "Decay": true, "BaseStunDuration": true, "Range": true, "RangeBonus": true, "HitTimeMultiplier": true, "TotemFireOnce": true, "NumStages": true, "ProjectileSpeed": true, "StackCount": true, "SummonSpeed": true, "StrikeInterval": true, "RemainingDurationDamage": true}
 
 func crystallineToCalculatorSkillData(value js.Value) (calculator.SkillData, error) {
 	var out calculator.SkillData
@@ -56162,6 +56328,87 @@ func crystallineToCalculatorSkillData(value js.Value) (calculator.SkillData, err
 		out.BeamOverlapMultiplier = converted
 	}
 
+	if property := value.Get("ActiveArrowMultiplier"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToPtrFloat64(property)
+		if err != nil {
+			return out, errors.New("calculator.SkillData.ActiveArrowMultiplier: " + err.Error())
+		}
+
+		out.ActiveArrowMultiplier = converted
+	}
+
+	if property := value.Get("TornadoShotSecondaryHitChance"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToPtrFloat64(property)
+		if err != nil {
+			return out, errors.New("calculator.SkillData.TornadoShotSecondaryHitChance: " + err.Error())
+		}
+
+		out.TornadoShotSecondaryHitChance = converted
+	}
+
+	if property := value.Get("ShrapnelBallistaProjectileOverlap"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToPtrFloat64(property)
+		if err != nil {
+			return out, errors.New("calculator.SkillData.ShrapnelBallistaProjectileOverlap: " + err.Error())
+		}
+
+		out.ShrapnelBallistaProjectileOverlap = converted
+	}
+
+	if property := value.Get("HoaOverkill"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToPtrFloat64(property)
+		if err != nil {
+			return out, errors.New("calculator.SkillData.HoaOverkill: " + err.Error())
+		}
+
+		out.HoaOverkill = converted
+	}
+
+	if property := value.Get("HoaMoreBurn"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToFloat64(property)
+		if err != nil {
+			return out, errors.New("calculator.SkillData.HoaMoreBurn: " + err.Error())
+		}
+
+		out.HoaMoreBurn = converted
+	}
+
+	if property := value.Get("HoaOverkillPercent"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToFloat64(property)
+		if err != nil {
+			return out, errors.New("calculator.SkillData.HoaOverkillPercent: " + err.Error())
+		}
+
+		out.HoaOverkillPercent = converted
+	}
+
+	if property := value.Get("MoltenShellDamageMitigated"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToPtrFloat64(property)
+		if err != nil {
+			return out, errors.New("calculator.SkillData.MoltenShellDamageMitigated: " + err.Error())
+		}
+
+		out.MoltenShellDamageMitigated = converted
+	}
+
+	if property := value.Get("VaalMoltenShellDamageMitigated"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToPtrFloat64(property)
+		if err != nil {
+			return out, errors.New("calculator.SkillData.VaalMoltenShellDamageMitigated: " + err.Error())
+		}
+
+		out.VaalMoltenShellDamageMitigated = converted
+	}
+
+	if property := value.Get("MoltenShellReflect"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToFloat64(property)
+		if err != nil {
+			return out, errors.New("calculator.SkillData.MoltenShellReflect: " + err.Error())
+		}
+
+		out.MoltenShellReflect = converted
+	}
+
 	if property := value.Get("TriggeredByMirageArcher"); !property.IsUndefined() && !property.IsNull() {
 		converted, err := crystallineToBool(property)
 		if err != nil {
@@ -56169,6 +56416,15 @@ func crystallineToCalculatorSkillData(value js.Value) (calculator.SkillData, err
 		}
 
 		out.TriggeredByMirageArcher = converted
+	}
+
+	if property := value.Get("TriggeredBySnipe"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToBool(property)
+		if err != nil {
+			return out, errors.New("calculator.SkillData.TriggeredBySnipe: " + err.Error())
+		}
+
+		out.TriggeredBySnipe = converted
 	}
 
 	if property := value.Get("TriggeredBySacredWisps"); !property.IsUndefined() && !property.IsNull() {

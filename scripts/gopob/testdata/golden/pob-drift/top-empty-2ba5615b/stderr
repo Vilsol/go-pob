@@ -1,0 +1,2 @@
+REFUSING: --top wants an integer, not '' (TOP= sets it too)
+An instrument that cannot answer must refuse, never return empty.

@@ -1,0 +1,1 @@
+REFUSING: B shares the gameId G with A and declares no grantedEffectId, so nothing can look it up: it cannot be keyed here and GemVariants has no key for it. Model the new shape rather than letting the row vanish.

@@ -1,0 +1,5 @@
+tool     skill-stat-map-verify
+fixture  statthreshold-missing-its-FIRST-field
+original oracle/skill_stat_map_verify.py
+args     lua.json go.json
+env      

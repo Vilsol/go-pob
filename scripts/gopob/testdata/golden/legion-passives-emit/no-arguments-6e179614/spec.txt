@@ -1,0 +1,5 @@
+tool     legion-passives-emit
+fixture  no-arguments
+original oracle/legion_passives_emit.py
+args     
+env      

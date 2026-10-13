@@ -1,0 +1,6 @@
+tool     core-constants-emit
+fixture  out-path-is-a-directory
+original oracle/core_constants_emit.py
+args     dump.json adir
+env      
+files    out.go

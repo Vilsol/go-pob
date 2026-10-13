@@ -1,0 +1,5 @@
+tool     extract-calcs-damage
+fixture  dumps-dir-is-a-file
+original oracle/extract_calcs_damage.py
+args     notadir out.jsonl
+env      

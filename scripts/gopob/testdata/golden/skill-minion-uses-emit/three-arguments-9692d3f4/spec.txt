@@ -1,0 +1,5 @@
+tool     skill-minion-uses-emit
+fixture  three-arguments
+original oracle/skill_minion_uses_emit.py
+args     dump.json out.go extra
+env      

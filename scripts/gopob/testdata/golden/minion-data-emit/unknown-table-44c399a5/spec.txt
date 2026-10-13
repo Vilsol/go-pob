@@ -1,0 +1,6 @@
+tool     minion-data-emit
+fixture  unknown-table
+original oracle/minion_data_emit.py
+args     dump.json out.go nope
+env      
+files    out.go

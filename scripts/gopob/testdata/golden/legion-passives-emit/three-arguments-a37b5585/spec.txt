@@ -1,0 +1,5 @@
+tool     legion-passives-emit
+fixture  three-arguments
+original oracle/legion_passives_emit.py
+args     dump.json out.go extra
+env      

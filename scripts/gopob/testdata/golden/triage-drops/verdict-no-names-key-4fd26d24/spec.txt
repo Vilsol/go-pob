@@ -1,0 +1,5 @@
+tool     triage-drops
+fixture  verdict-no-names-key
+original scripts/triage_drops.py
+args     verdict.json cases.json
+env      

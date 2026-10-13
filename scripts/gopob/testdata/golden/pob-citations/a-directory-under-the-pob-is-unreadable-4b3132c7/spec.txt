@@ -1,0 +1,5 @@
+tool     pob-citations
+fixture  a-directory-under-the-pob-is-unreadable
+original scripts/pob_citations.py
+args     
+env      POB_DIR=pob

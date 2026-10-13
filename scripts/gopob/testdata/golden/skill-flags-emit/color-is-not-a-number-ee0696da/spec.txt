@@ -1,0 +1,6 @@
+tool     skill-flags-emit
+fixture  color-is-not-a-number
+original oracle/skill_flags_emit.py
+args     dump.json out.go
+env      
+files    out.go

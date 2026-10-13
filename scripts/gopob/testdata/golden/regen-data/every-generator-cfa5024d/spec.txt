@@ -1,0 +1,7 @@
+tool     regen-data
+fixture  every-generator
+original scripts/regen_data.py
+args     --check --pob pob
+env      GOPOB_NICED=1
+unset    POB_DIR
+files    .stub-log

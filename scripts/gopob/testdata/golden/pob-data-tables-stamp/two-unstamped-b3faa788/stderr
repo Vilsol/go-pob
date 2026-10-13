@@ -1,0 +1,3 @@
+REFUSING: 2 unstamped references in refs/../refs: second.json, tables.json.
+  Stamping them all would give several files the same pin, and the gate
+  refuses ambiguity by design. Remove the stale ones.

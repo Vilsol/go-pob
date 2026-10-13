@@ -1,0 +1,1 @@
+REFUSING: the dump has no addMinionList entries. PoB has carried exactly one (SupportSummonGhostOnKill) since 2.18.1; zero means the field was renamed and the dumper is looking for something that no longer exists.

@@ -1,0 +1,5 @@
+tool     corpus-grep
+fixture  no-pattern
+original scripts/corpus_grep.py
+args     
+env      PATTERN=

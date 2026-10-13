@@ -1,0 +1,5 @@
+tool     pob-pin
+fixture  record-missing
+original scripts/pob_pin.py
+args     
+env      POB_DIR=pob

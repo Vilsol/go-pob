@@ -1,0 +1,5 @@
+tool     mk-drop-cases
+fixture  no-args
+original scripts/mk_drop_cases.py
+args     census.tsv
+env      

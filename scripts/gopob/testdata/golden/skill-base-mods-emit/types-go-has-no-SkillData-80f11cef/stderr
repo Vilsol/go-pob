@@ -1,0 +1,1 @@
+REFUSING: types.go declares no `type SkillData struct {`; utils.Set resolves a SkillData mod's key by FIELD NAME on it, so this emitter cannot tell a valid key from an invalid one without it

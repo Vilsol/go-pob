@@ -1,0 +1,5 @@
+tool     pob-citations
+fixture  show-without-a-citation
+original scripts/pob_citations.py
+args     --show
+env      POB_DIR=pob

@@ -1,0 +1,6 @@
+tool     gems-emit
+fixture  two-gems-claim-one-granted-effect-as-PRIMARY
+original oracle/gems_emit.py
+args     dump.json out.go parser.go
+env      
+files    out.go

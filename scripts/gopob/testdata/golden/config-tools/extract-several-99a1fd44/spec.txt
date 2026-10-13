@@ -1,0 +1,5 @@
+tool     config-tools
+fixture  extract-several
+original scripts/config_tools.py
+args     --pob pob --repo . --corpus corpus extract --var ctPlain --var ctEscaped
+env      

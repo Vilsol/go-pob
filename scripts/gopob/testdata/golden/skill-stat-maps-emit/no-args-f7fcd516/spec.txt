@@ -1,0 +1,5 @@
+tool     skill-stat-maps-emit
+fixture  no-args
+original oracle/skill_stat_map_emit.py
+args     
+env      

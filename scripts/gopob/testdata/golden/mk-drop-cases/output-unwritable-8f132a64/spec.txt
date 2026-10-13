@@ -1,0 +1,5 @@
+tool     mk-drop-cases
+fixture  output-unwritable
+original scripts/mk_drop_cases.py
+args     census.tsv nodir/out.json
+env      

@@ -1,0 +1,2 @@
+REFUSING: pob has no src/ -- set POB_DIR
+An instrument that cannot answer must refuse, never return empty.

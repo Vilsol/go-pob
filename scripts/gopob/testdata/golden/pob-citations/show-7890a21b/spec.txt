@@ -1,0 +1,5 @@
+tool     pob-citations
+fixture  show
+original scripts/pob_citations.py
+args     --show src/Modules/Calc.lua:900-901
+env      POB_DIR=pob

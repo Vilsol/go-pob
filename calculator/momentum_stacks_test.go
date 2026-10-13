@@ -6,6 +6,8 @@ import (
 	"testing"
 
 	"github.com/Vilsol/go-pob/mod"
+	"github.com/Vilsol/go-pob/moddb"
+	"github.com/Vilsol/go-pob/utils"
 )
 
 // TestMomentumStacksMultiplier: Momentum Support's stack count.
@@ -29,7 +31,8 @@ func TestMomentumStacksMultiplier(t *testing.T) {
 		}
 		got := env.Player.ModDB.Sum(mod.TypeBase, nil, "Multiplier:MomentumStacks")
 		if !as.SkillModList.Flag(nil, "SupportedByMomentum") {
-			if got != 0 {
+			configured := env.Player.ModDB.Sum(mod.TypeBase, &moddb.ListCfg{Source: utils.Ptr(mod.Source("Config"))}, "Multiplier:MomentumStacks")
+			if got-configured != 0 {
 				control++
 				if firstBad == "" {
 					firstBad = fmt.Sprintf("%s has Multiplier:MomentumStacks=%v with no Momentum on the main skill", name, got)

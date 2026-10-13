@@ -1,0 +1,5 @@
+tool     corpus-grep
+fixture  bad-gopob-root
+original scripts/corpus_grep.py
+args     
+env      GOPOB_ROOT=testdata PATTERN=commontoken

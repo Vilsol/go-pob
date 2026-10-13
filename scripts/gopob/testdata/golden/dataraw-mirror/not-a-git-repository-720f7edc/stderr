@@ -1,0 +1,3 @@
+fatal: not a git repository (or any of the parent directories): .git
+REFUSING: git rev-parse --show-toplevel failed: exit status 128
+An instrument that cannot answer must refuse, never return empty.

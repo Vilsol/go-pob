@@ -1,0 +1,32 @@
+{
+ "pobPin": {
+  "content_sha256": "3cbaac3dc948e71d387b60a51def9e8495d431112fe9d8ae583a4d75dbb792f6",
+  "describe_advisory": null,
+  "dirty_advisory": false,
+  "file_count": 4,
+  "scope": [
+   "src",
+   "runtime/lua"
+  ],
+  "sha_advisory": "7c4a66683c0743b81581732831a23fc5367cf8e9"
+ },
+ "source": "oracle/pob_data_tables.lua",
+ "tables": {
+  "EmptyList": [],
+  "EmptyTable": {},
+  "MaximumBrittle": 0.5,
+  "Nested": {
+   "a": [
+    {
+     "deep": true
+    }
+   ]
+  },
+  "StoredUses": 3,
+  "TotemLife": [
+   1,
+   1.05,
+   1.1
+  ]
+ }
+}

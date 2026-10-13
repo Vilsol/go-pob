@@ -1,0 +1,6 @@
+tool     modal-blob
+fixture  fourteen-runs
+original oracle/modal_blob.py
+args     out.jsonl report.txt m00.jsonl m01.jsonl m02.jsonl m03.jsonl m04.jsonl m05.jsonl m06.jsonl m07.jsonl m08.jsonl m09.jsonl m10.jsonl m11.jsonl m12.jsonl m13.jsonl m14.jsonl --min-fraction=0
+env      
+files    out.jsonl report.txt

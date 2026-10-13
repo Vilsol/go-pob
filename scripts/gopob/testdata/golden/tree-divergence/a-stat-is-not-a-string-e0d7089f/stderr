@@ -1,0 +1,1 @@
+REFUSING: a node's stats hold a int, not a string

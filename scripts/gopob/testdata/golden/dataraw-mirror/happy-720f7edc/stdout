@@ -1,0 +1,92 @@
+data/raw MIRROR SWEEP   POB_DIR=pob
+====================================================================================================
+DENOMINATOR: 13 files, 17 tables  ->  4 IDENTICAL / 2 DIFFERS / 11 UNMAPPED
+
+TABLE                   VERDICT        OURS    PoB  SHARED  ONLY-OURS  ONLY-PoB  DECLARED  DIFFERING  MODE
+--------------------------------------------------------------------------------------------------------------
+Minions                 IDENTICAL         1      1       1          0         0         0          0  exact
+Spectres                DIFFERS           1      1       1          0         0         0          1  subset
+SkillBaseFlags          DIFFERS           2      1       1          1         0         0          1  exact
+SkillAddFlags           UNMAPPED          -      -       -          -         -         -          -  exact
+PoBSkills               IDENTICAL         2      2       2          0         0         0          0  exact
+SkillMinionLists        UNMAPPED          -      -       -          -         -         -          -  exact
+SupportAddMinionLists   UNMAPPED          -      -       -          -         -         -          -  exact
+SkillAddSkillTypes      UNMAPPED          -      -       -          -         -         -          -  subset
+SkillMinionUses         UNMAPPED          -      -       -          -         -         -          -  exact
+SkillMinionHasItemSet   UNMAPPED          -      -       -          -         -         -          -  exact
+Gems                    IDENTICAL         1      1       1          0         0         0          0  exact
+SkillParts              UNMAPPED          -      -       -          -         -         -          -  exact
+SkillHiddenLevels       IDENTICAL         0      2       0          0         2         0          0  subset
+SkillBaseMods           UNMAPPED          -      -       -          -         -         -          -  subset
+SkillStatMap            UNMAPPED          -      -       -          -         -         -          -  subset
+SkillStatMaps           UNMAPPED          -      -       -          -         -         -          -  subset
+SkillHasGlobalEffect    UNMAPPED          -      -       -          -         -         -          -  exact
+
+UNMAPPED -- UNVERIFIED, NOT CORRECT. This is the residual risk.
+----------------------------------------------------------------------------------------------------
+  [⚠️  UNEXPECTED] SkillAddFlags  (data/raw/skill_flags.go)
+      the extractor returned 0 rows from a source that exists -- the table's shape in PoB has
+      changed and the extractor no longer matches it
+  [⚠️  UNEXPECTED] SkillMinionLists  (data/raw/minions.go)
+      the extractor returned 0 rows from a source that exists -- the table's shape in PoB has
+      changed and the extractor no longer matches it
+  [⚠️  UNEXPECTED] SupportAddMinionLists  (data/raw/minions.go)
+      the extractor returned 0 rows from a source that exists -- the table's shape in PoB has
+      changed and the extractor no longer matches it
+  [⚠️  UNEXPECTED] SkillAddSkillTypes  (data/raw/skill_add_skill_types.go)
+      the extractor returned 0 rows from a source that exists -- the table's shape in PoB has
+      changed and the extractor no longer matches it
+  [⚠️  UNEXPECTED] SkillMinionUses  (data/raw/minion_uses.go)
+      not present in the Go dump (data/raw/mirror_dump_test.go)
+  [⚠️  UNEXPECTED] SkillMinionHasItemSet  (data/raw/minion_uses.go)
+      the extractor returned 0 rows from a source that exists -- the table's shape in PoB has
+      changed and the extractor no longer matches it
+  [⚠️  UNEXPECTED] SkillParts  (data/raw/skill_parts.go)
+      LuaParseError: expected a table, got Expr('skills.Fireball.parts')
+  [⚠️  UNEXPECTED] SkillBaseMods  (data/raw/skill_base_mods.go)
+      the extractor returned 0 rows from a source that exists -- the table's shape in PoB has
+      changed and the extractor no longer matches it
+  [⚠️  UNEXPECTED] SkillStatMap  (data/raw/skill_stat_map.go)
+      the extractor returned 0 rows from a source that exists -- the table's shape in PoB has
+      changed and the extractor no longer matches it
+  [⚠️  UNEXPECTED] SkillStatMaps  (data/raw/skill_stat_maps.go)
+      the extractor returned 0 rows from a source that exists -- the table's shape in PoB has
+      changed and the extractor no longer matches it
+  [DECLARED] SkillHasGlobalEffect  (data/raw/has_global_effect.go)
+      DERIVED, not transcribed: computed from SkillBaseMods and SkillStatMaps by this package,
+      mirroring what src/Modules/Data.lua:686-707 computes at load time. There is no PoB table to
+      diff a row against, so it is verified only transitively -- through the two tables it reads,
+      which this sweep does grade.
+
+DIFFERS: Spectres  (data/raw/spectre_data.go)  1 rows
+  SCOPE: same as Minions; ours is the 13 ids the 3.18 corpus references, by design
+----------------------------------------------------------------------------------------------------
+  Ghost
+      life: ours=99 pob=3.0
+      name: ours="Ghost" pob="Gh\u00f8st"
+
+DIFFERS: SkillBaseFlags  (data/raw/skill_flags.go)  1 rows
+  SCOPE: the full flag set per skill
+----------------------------------------------------------------------------------------------------
+  OnlyOurs
+      PRESENT IN OURS, ABSENT FROM PoB
+
+SCOPES (what IDENTICAL means for each table)
+----------------------------------------------------------------------------------------------------
+  Minions [exact]: every scalar field, weapon types, limit, skillList, and the mod NAME sequence
+  Spectres [subset]: same as Minions; ours is the 13 ids the 3.18 corpus references, by design
+  SkillBaseFlags [exact]: the full flag set per skill
+  PoBSkills [exact]: name, hidden, fromItem, fromTree, support
+  Gems [exact]: name and the full tag set; nine ids are renamed to go-pob-data's, per
+      builds.pobGemIDtoGameGemIDs
+  SkillHiddenLevels [subset]: stats and the positional level values, plus skillTypes WHERE WE DECLARE ONE -- that field is
+      an override for the hidden skills whose go-pob-data ActiveSkillTypes is empty, so an empty
+      one here means 'not overridden' rather than 'wrong'. Ours is the curated set of hidden
+      skills a corpus build actually reaches, so PoB-only rows are expected
+
+⚠️  IN THE Go DUMP BUT NOT IN THIS SPEC -- unswept: Unswept
+
+⚠️  SPECED BUT ABSENT FROM THE Go DUMP: SkillMinionUses
+
+RESULT: 2 DIFFERS, 11 UNMAPPED (10 of them unexpected), 0 declared deviations
+        FAILING -- see above

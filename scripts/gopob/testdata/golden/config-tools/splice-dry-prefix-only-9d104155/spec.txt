@@ -1,0 +1,5 @@
+tool     config-tools
+fixture  splice-dry-prefix-only
+original scripts/config_tools.py
+args     --pob pob --repo . --corpus corpus splice --var ctDeadOne --dry-run
+env      

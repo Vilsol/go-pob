@@ -1,0 +1,5 @@
+tool     pob-data-tables-stamp
+fixture  no-pin-record
+original oracle/pob_data_tables_stamp.py
+args     refs
+env      POB_DIR=pob

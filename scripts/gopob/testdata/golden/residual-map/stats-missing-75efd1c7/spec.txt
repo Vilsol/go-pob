@@ -1,0 +1,5 @@
+tool     residual-map
+fixture  stats-missing
+original scripts/residual_map.py
+args     
+env      WL=wl

@@ -1,0 +1,5 @@
+tool     corpus-dump-ref
+fixture  ref-does-not-resolve
+original scripts/corpus_dump_ref.sh
+args     no-such-ref out.txt.gz
+env      GOPOB_NICED=1

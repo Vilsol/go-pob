@@ -1,0 +1,6 @@
+tool     config-tools
+fixture  splice-writes
+original scripts/config_tools.py
+args     --pob pob --repo . --corpus corpus splice --var ctDeadOne
+env      
+files    calculator/configs.go

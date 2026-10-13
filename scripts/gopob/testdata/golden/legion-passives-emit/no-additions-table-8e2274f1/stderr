@@ -1,0 +1,1 @@
+REFUSING: the dump carries no `additions` table, which PassiveSpec.lua:1294 and :1316 index separately from the nodes

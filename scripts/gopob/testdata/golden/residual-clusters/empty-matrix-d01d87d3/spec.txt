@@ -1,0 +1,5 @@
+tool     residual-clusters
+fixture  empty-matrix
+original scripts/residual_clusters.py
+args     10
+env      MATRIX=empty.tsv

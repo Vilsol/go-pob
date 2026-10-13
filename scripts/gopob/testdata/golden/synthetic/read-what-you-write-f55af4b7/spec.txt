@@ -1,0 +1,5 @@
+tool     synthetic
+fixture  read-what-you-write
+original scripts/tool.py
+args     
+env      

@@ -1,0 +1,43 @@
+pin OK  content_sha256=0123456789abcdef…  <sandbox>/pob
+  ~ skill-table            testdata/pob-skills/skills.json.gz
+  ~ skill-weapon-types     data/raw/skill_weapon_types.go  (+0 lines)
+  ~ cluster-jewels         data/cluster_jewels.go
+  ~ core-constants         data/constants_generated.go
+  ~ pantheons              data/pantheons.go
+  ~ boss-skills            data/boss_skills_generated.go
+  ~ legion-passives        data/legion_passives_generated.go
+  ~ tattoo-passives        data/tattoo_passives_generated.go
+  ~ flavour-text           data/flavour_text_generated.go
+  ~ item-craft-data        data/item_craft_data_generated.go
+  ~ item-db                data/item_db_generated.go
+  ~ skill-has-global-effect data/raw/has_global_effect.go
+  ~ skill-base-mods        data/raw/skill_base_mods.go
+  ~ skill-stat-maps        data/raw/skill_stat_maps.go
+  ~ skill-add-skill-types  data/raw/skill_add_skill_types.go
+  ~ skill-hidden-levels    data/raw/skill_hidden_levels.go
+  ~ skill-stat-map-global  data/raw/skill_stat_map.go  (+0 lines)
+  ~ tree-tables            calculator/tree_missing_nodes_generated.go
+  = skill-parts            data/raw/skill_parts.go
+  ~ minion-data            data/raw/minion_data.go
+  ~ spectre-data           data/raw/spectre_data.go
+  ~ gems                   data/raw/gems.go
+  ~ skill-flags            data/raw/skill_flags.go
+  ~ minion-lists           data/raw/minions.go
+  ~ minion-uses            data/raw/minion_uses.go
+  ~ mod-scalability        data/raw/mod_scalability.go
+  ~ item-mod-stat-order    data/raw/item_mod_stat_order.go
+  ~ stat-descriptions      data/raw/stat_descriptions_generated.go
+  ~ skill-text             data/raw/skill_text_generated.go
+  ~ custom-mod-browser     data/custom_mod_browser_generated.go
+
+29 changed, 1 unchanged, 1 still hand-written, 0 deliberately not generable
+
+⚠️ GENERATED per the manifest but NOT produced by this tool — it cannot
+   refresh them, so a pin bump leaves them stale:
+     data/raw/never_emitted.go
+
+STILL HAND-WRITTEN (each needs an emitter; a pin bump rots them silently):
+     data/still_by_hand.go                    <- src/Data/SomeTable.lua
+
+STALE: the committed artifacts differ from what the pinned PoB produces.
+Run `task data-regen`, review the diff, and commit it.

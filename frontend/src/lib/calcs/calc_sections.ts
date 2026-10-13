@@ -1595,7 +1595,7 @@ export const calcSections: CalcSection[] = [
               format: '{0:output:MainHand.HitChance}%',
               0: { breakdown: 'MainHand.HitChance' },
               1: { label: 'Enemy Evasion modifiers', modName: ['Evasion', 'CannotEvade'], enemy: true },
-              2: { label: 'Player modifiers', modName: ['HitChance', 'CannotBeEvaded', 'IgnoreBlindHitChance'] }
+              2: { label: 'Player modifiers', modName: ['HitChance', 'CannotBeEvaded', 'UnaffectedByBlind'] }
             }
           },
           3: {
@@ -1616,7 +1616,7 @@ export const calcSections: CalcSection[] = [
               format: '{0:output:OffHand.HitChance}%',
               0: { breakdown: 'OffHand.HitChance' },
               1: { label: 'Enemy Evasion modifiers', modName: ['Evasion', 'CannotEvade'], enemy: true },
-              2: { label: 'Player modifiers', modName: ['HitChance', 'CannotBeEvaded', 'IgnoreBlindHitChance'] }
+              2: { label: 'Player modifiers', modName: ['HitChance', 'CannotBeEvaded', 'UnaffectedByBlind'] }
             }
           },
           5: {

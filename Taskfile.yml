@@ -1015,3 +1015,51 @@ tasks:
     desc: "Grade the power report against PoB's PowerBuilder on every testdata/power_oracle fixture, the Full DPS ones over the whole tree included"
     cmds:
       - '{{.NICE}} env POWER_ORACLE_FULL=1 go test ./calculator/ -run TestPowerReportMatchesPoBOracle -count=1 -timeout 60m'
+
+  power-golden:
+    desc: "Every power-report row on the benchmark builds, bit for bit — MODE=write|check DIR=<dir> (CASES=, BUILDS= narrow it)"
+    requires:
+      vars: [MODE, DIR]
+    cmds:
+      - '{{.NICE}} env POWER_GOLDEN={{.MODE}} POWER_GOLDEN_DIR={{.DIR}} POWER_GOLDEN_CASES="{{.CASES}}" POWER_GOLDEN_BUILDS="{{.BUILDS}}" go test ./calculator/ -run "^TestPowerReportGolden$" -count=1 -timeout 60m'
+
+  power-bench:
+    desc: "Time the power report on the benchmark builds, one core, CPU time beside wall — STATS='FullDPS' BUILDS='0280-elementalist-fireball' narrow it; DIR=<checkout> times another tree; ARGS= passes -test.cpuprofile etc."
+    vars:
+      DIR:
+        sh: 'realpath "{{.DIR | default "."}}"'
+      BIN:
+        sh: 'echo /tmp/gopob-power-bench-$$.test'
+    cmds:
+      - defer: 'rm -f {{.BIN}}'
+      - 'go -C {{.DIR}}/calculator test -c -o {{.BIN}}'
+      - >-
+        flock /tmp/gopob-perf.lock {{.NICE}} sh -c
+        'cat /proc/loadavg; cd {{.DIR}}/calculator && POWER_BENCH_STATS="{{.STATS}}" POWER_BENCH_BUILDS="{{.BUILDS}}"
+        time -f "cpu %U user %S sys %e wall" {{.BIN}} -test.run "^$" -test.bench PowerReportBuilds -test.benchtime 1x -test.benchmem -test.cpu 1
+        -test.timeout 60m {{.ARGS}}; s=$?; cat /proc/loadavg; exit $s'
+
+  power-bench-wasm:
+    desc: "power-bench under wasm (node), one test binary, CPU time beside wall — STATS= BUILDS= DIR= as power-bench"
+    vars:
+      DIR:
+        sh: 'realpath "{{.DIR | default "."}}"'
+      BIN:
+        sh: 'echo /tmp/gopob-power-bench-$$.wasm'
+    cmds:
+      - defer: 'rm -f {{.BIN}}'
+      - 'GOOS=js GOARCH=wasm go -C {{.DIR}}/calculator test -c -o {{.BIN}}'
+      - >-
+        flock /tmp/gopob-perf.lock {{.NICE}} sh -c
+        'cat /proc/loadavg; cd {{.DIR}}/calculator && env --ignore-environment POWER_BENCH_STATS="{{.STATS}}" POWER_BENCH_BUILDS="{{.BUILDS}}"
+        "$(command -v time)" -f "cpu %U user %S sys %e wall"
+        "$(command -v node)" "$(go env GOROOT)/lib/wasm/wasm_exec_node.js" {{.BIN}} -test.run "^$" -test.bench PowerReportBuilds
+        -test.benchtime 1x -test.benchmem -test.timeout 60m; s=$?; cat /proc/loadavg; exit $s'
+
+  power-icount:
+    desc: "User-space instructions per power-report what-if on one locked thread (load-independent), allocs and GCs beside — BUILDS= (default 0280) STAT= (default FullDPS) DIR=<checkout>"
+    vars:
+      DIR:
+        sh: 'realpath "{{.DIR | default "."}}"'
+    cmds:
+      - '{{.NICE}} env POWER_ICOUNT_BUILDS="{{.BUILDS | default "0280-elementalist-fireball"}}" POWER_ICOUNT_STAT="{{.STAT}}" go -C {{.DIR}} test ./calculator/ -run "^TestICountPowerReport$" -count=1 -v -timeout 60m'

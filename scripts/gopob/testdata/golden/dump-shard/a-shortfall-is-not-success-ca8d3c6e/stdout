@@ -1,0 +1,4 @@
+dump_shard: 7 builds over 3 shard(s) -> out
+dump_shard: FORCE_CLUSTER_KEY=unset EMPTY_MODCACHE=unset
+dump_shard: 3 process(es) launched
+dump_shard: 6 of 7 dumped (exit 0)

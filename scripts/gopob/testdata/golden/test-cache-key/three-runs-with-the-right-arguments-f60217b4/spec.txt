@@ -1,0 +1,6 @@
+tool     test-cache-key
+fixture  three-runs-with-the-right-arguments
+original scripts/test_cache_key.sh
+args     
+env      GOPOB_NICED=1
+files    .stub-log

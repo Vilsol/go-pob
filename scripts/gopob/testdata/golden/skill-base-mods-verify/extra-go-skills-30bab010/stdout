@@ -1,0 +1,7 @@
+lua: 0 skills, 0 mods
+go : 2 skills, 0 mods
+matched 1-to-1 against the Lua: 0
+
+DIFF: 2 problem(s)
+  skill AlphaSkill is in the Go table but not in the Lua
+  skill ZetaSkill is in the Go table but not in the Lua

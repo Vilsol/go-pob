@@ -1,0 +1,6 @@
+tool     chunk-init
+fixture  per2
+original scripts/chunk_init.py
+args     in.go Table --per 2
+env      
+files    in.go

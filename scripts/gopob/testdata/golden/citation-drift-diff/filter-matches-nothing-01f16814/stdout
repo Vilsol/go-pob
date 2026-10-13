@@ -1,0 +1,9 @@
+
+     0 citations with a non-empty old block
+     0 CHANGED — the upstream delta is printed above
+     0 of those located by SIMILARITY, not an exact anchor — check the ratio
+     0 NO-ANCHOR — located nothing; read by hand, do NOT read as unchanged
+
+⚠️ A DIFF IS NOT A DEFECT. It says the Lua moved on; whether OUR GO caught up is a
+   separate read. Several of these were re-ported here years after the marker was
+   written and are already current.

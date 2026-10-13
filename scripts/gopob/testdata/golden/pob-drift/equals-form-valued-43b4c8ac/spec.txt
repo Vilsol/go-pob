@@ -1,0 +1,5 @@
+tool     pob-drift
+fixture  equals-form-valued
+original scripts/pob_drift.py
+args     --candidate=cand --top=4
+env      POB_DIR=pin

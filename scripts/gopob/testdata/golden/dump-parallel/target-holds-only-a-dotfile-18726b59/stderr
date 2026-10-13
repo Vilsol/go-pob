@@ -1,0 +1,2 @@
+FATAL: out-1 exists and is NOT EMPTY — refusing to overwrite another run's output.
+       Remove it yourself, or pick a different OUT base.

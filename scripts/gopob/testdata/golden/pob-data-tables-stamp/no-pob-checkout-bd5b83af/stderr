@@ -1,0 +1,3 @@
+REFUSING: cannot establish the pin identity: <sandbox>/pob does not exist -- set POB_DIR to the PoB source checkout
+  Without it the reference cannot say which checkout it came from, and the gate
+  would have to take it on trust — the exact thing the stamp removes.

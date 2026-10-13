@@ -1,0 +1,6 @@
+tool     nice
+fixture  nice-level-override
+original scripts/nice.sh
+args     ./probe.sh one two
+env      NICE=3
+unset    GOPOB_NICED

@@ -1,0 +1,6 @@
+tool     nice
+fixture  nice-zero-disables
+original scripts/nice.sh
+args     ./probe.sh one two
+env      NICE=0
+unset    GOPOB_NICED

@@ -1,0 +1,78 @@
+=== ctAbsentEight  type=count  section=Delta  L45-45
+    (no apply function)
+
+=== ctAbsentEleven  type=count  section=Delta  L48-48
+    (no apply function)
+
+=== ctAbsentFive  type=count  section=Delta  L42-42
+    (no apply function)
+
+=== ctAbsentFour  type=check  section=Delta  L41-41
+    (no apply function)
+
+=== ctAbsentFourteen  type=count  section=Delta  L51-51
+    (no apply function)
+
+=== ctAbsentNine  type=list  section=Delta  L46-46
+    (no apply function)
+
+=== ctAbsentOne  type=check  section=Delta  L38-38
+    (no apply function)
+
+=== ctAbsentSeven  type=check  section=Delta  L44-44
+    (no apply function)
+
+=== ctAbsentSix  type=list  section=Delta  L43-43
+    (no apply function)
+
+=== ctAbsentTen  type=check  section=Delta  L47-47
+    (no apply function)
+
+=== ctAbsentThirteen  type=check  section=Delta  L50-50
+    (no apply function)
+
+=== ctAbsentThree  type=list  section=Delta  L40-40
+    (no apply function)
+
+=== ctAbsentTwelve  type=list  section=Delta  L49-49
+    (no apply function)
+
+=== ctAbsentTwo  type=count  section=Delta  L39-39
+    (no apply function)
+
+=== ctBothLiveAndDead  type=check  section=Gamma  L36-37
+apply = function(val, modList) modList:NewMod("J", "FLAG", val) end },
+
+=== ctBracesInString  type=count  section=Beta  L21-24  defaultPlaceholderState
+apply = function(val, modList) modList:NewMod("E", "BASE", val) end },
+
+=== ctDeadOne  type=check  section=Gamma  L32-33
+apply = function(val, modList) modList:NewMod("H", "FLAG", val) end },
+
+=== ctDeadTwo  type=count  section=Gamma  L34-35
+apply = function(val, modList) modList:NewMod("I", "BASE", val) end },
+
+=== ctEscaped  type=check  section=Gamma  L25-27
+apply = function(val, modList) modList:NewMod("F", "FLAG", val) end },
+
+=== ctLevelBracket  type=list  section=Beta  L11-13
+apply = function(val, modList) modList:NewMod("C", "BASE", val) end },
+
+=== ctLongComment  type=check  section=Beta  L15-17  defaultState
+apply = function(val, modList) modList:NewMod("D", "FLAG", val) end },
+
+=== ctNoApply  type=list  section=Gamma  L29-29
+    (no apply function)
+
+=== ctNoType  type=None  section=Gamma  L30-31
+apply = function(val, modList) modList:NewMod("G", "BASE", val) end },
+
+=== ctPlain  type=check  section=Alpha  L4-5
+apply = function(val, modList) modList:NewMod("A", "FLAG", val) end },
+
+=== ctStrayQuote  type=check  section=Beta  L18-20
+apply = function(val, modList) modList:NewMod("K", "FLAG", val) end },
+
+=== ctTooltip  type=count  section=Alpha  L6-10
+apply = function(val, modList) modList:NewMod("B", "BASE", val) end },
+

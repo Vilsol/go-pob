@@ -1,0 +1,6 @@
+tool     regen-data
+fixture  a-dumper-fails
+original scripts/regen_data.py
+args     --check --pob pob --only boss-skills
+env      GOPOB_NICED=1
+unset    POB_DIR

@@ -1,0 +1,1 @@
+usage: extract_output_oracle.py <dumpsDir> <out.jsonl>

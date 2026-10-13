@@ -244,11 +244,6 @@ var skillFuncsNotPorted = []string{
 	"FlamethrowerTrap.preDamageFunc",
 	"FrozenSweepAltX.preDamageFunc",
 	"FrozenSweep.preDamageFunc",
-	"HeraldOfAsh.preDamageFunc",
-	"MoltenShell.preDamageFunc",
-	"ShrapnelBallistaAltX.preDamageFunc",
-	"ShrapnelBallista.preDamageFunc",
-	"VaalMoltenShell.preDamageFunc",
 	"WaveOfConvictionAltY.preDamageFunc",
 	"WaveOfConviction.preDamageFunc",
 }

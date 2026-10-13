@@ -1,0 +1,105 @@
+MATRIX matrix.tsv
+499 mismatch rows · 23 failing stats · 422 builds with >=1 mismatch
+clustering stats failing on >= 10 builds, Jaccard >= 0.93
+
+  PAIRS     pp  STATS  BUILDS  RATIOS  LEAD STAT / MEMBERS
+    100  0.003      1     100       7  Gamma
+     80  0.002      2      40       1  AlphaOne, AlphaTwo
+     40  0.001      1      40       1  Beta
+     35  0.001      1      35       0  Delta
+     31  0.001      1      31       1  Epsilon
+     30  0.001      1      30       1  Rounder
+     12  0.000      1      12       1  Tied00
+     12  0.000      1      12       1  Tied01
+     12  0.000      1      12       1  Tied02
+     12  0.000      1      12       1  Tied03
+     12  0.000      1      12       1  Tied04
+     12  0.000      1      12       1  Tied05
+     12  0.000      1      12       1  Tied06
+     12  0.000      1      12       1  Tied07
+     12  0.000      1      12       1  Tied08
+     12  0.000      1      12       1  Tied09
+     12  0.000      1      12       1  Tied10
+     12  0.000      1      12       1  Tied11
+     12  0.000      1      12       1  Tied12
+     12  0.000      1      12       1  Tied13
+     12  0.000      1      12       1  Tied14
+
+                    1                  (tail: stats failing on < 10 builds, 3 pairs, 0.000pp)
+
+=== CONTAINMENT (A's builds are >=90% inside B's -> A is plausibly UPSTREAM of B) ===
+  [ 0] Gamma                                          builds   100  inside -> ROOT
+  [ 1] AlphaOne                                       builds    40  inside -> ROOT
+  [ 2] Beta                                           builds    40  inside -> ROOT
+  [ 3] Delta                                          builds    35  inside -> ROOT
+  [ 4] Epsilon                                        builds    31  inside -> ROOT
+  [ 5] Rounder                                        builds    30  inside -> ROOT
+  [ 6] Tied00                                         builds    12  inside -> ROOT
+  [ 7] Tied01                                         builds    12  inside -> ROOT
+  [ 8] Tied02                                         builds    12  inside -> ROOT
+  [ 9] Tied03                                         builds    12  inside -> ROOT
+  [10] Tied04                                         builds    12  inside -> ROOT
+  [11] Tied05                                         builds    12  inside -> ROOT
+  [12] Tied06                                         builds    12  inside -> ROOT
+  [13] Tied07                                         builds    12  inside -> ROOT
+
+=== ROOTS, ranked (contained in no larger cluster; fix these first) ===
+      100 pairs  0.003pp    100 builds      7 distinct ratios  Gamma
+       80 pairs  0.002pp     40 builds      1 distinct ratios  AlphaOne
+       40 pairs  0.001pp     40 builds      1 distinct ratios  Beta
+       35 pairs  0.001pp     35 builds      0 distinct ratios  Delta
+       31 pairs  0.001pp     31 builds      1 distinct ratios  Epsilon
+       30 pairs  0.001pp     30 builds      1 distinct ratios  Rounder
+       12 pairs  0.000pp     12 builds      1 distinct ratios  Tied00
+       12 pairs  0.000pp     12 builds      1 distinct ratios  Tied01
+       12 pairs  0.000pp     12 builds      1 distinct ratios  Tied02
+       12 pairs  0.000pp     12 builds      1 distinct ratios  Tied03
+       12 pairs  0.000pp     12 builds      1 distinct ratios  Tied04
+       12 pairs  0.000pp     12 builds      1 distinct ratios  Tied05
+       12 pairs  0.000pp     12 builds      1 distinct ratios  Tied06
+       12 pairs  0.000pp     12 builds      1 distinct ratios  Tied07
+
+=== EFFICIENCY: REACH@5 — what a cluster's five commonest ratios are worth ===
+ REACH@5   top1   top5   PAIRS  ABSENT  BUILDS  LEAD STAT
+      80   1.00   1.00      80       0      40  AlphaOne
+      72   0.15   0.72     100       0     100  Gamma
+      40   1.00   1.00      40       0      40  Beta
+      31   1.00   1.00      31       1      31  Epsilon
+      30   1.00   1.00      30       0      30  Rounder
+      12   1.00   1.00      12       0      12  Tied00
+      12   1.00   1.00      12       0      12  Tied01
+      12   1.00   1.00      12       0      12  Tied02
+      12   1.00   1.00      12       0      12  Tied03
+      12   1.00   1.00      12       0      12  Tied04
+      12   1.00   1.00      12       0      12  Tied05
+      12   1.00   1.00      12       0      12  Tied06
+      12   1.00   1.00      12       0      12  Tied07
+      12   1.00   1.00      12       0      12  Tied08
+      12   1.00   1.00      12       0      12  Tied09
+  REACH@5 = pairs x top5 share: what the FIVE commonest arithmetic relationships in that
+  cluster are worth. Both fixes measured so far landed their cluster's dominant ratio.
+
+=== REACHABLE BY EFFICIENCY BAND (cumulative, best-yield causes first) ===
+  current gate ~ 99.9844%   (499 pairs wrong)
+      BAND  CLUSTERS    PAIRS   ~FIXES   GATE AT
+  top5>= 0.8        19      361       95  99.9957%
+  top5>= 0.6        20      433      100  99.9979%
+  top5>= 0.4        20      433      100  99.9979%
+  top5>= 0.3        20      433      100  99.9979%
+  top5>= 0.2        20      433      100  99.9979%
+  top5>= 0.1        20      433      100  99.9979%
+  top5>= 0.0        21      433      105  99.9979%
+  ~FIXES assumes five fixes per cluster; both fixes measured so far cleared their
+  cluster's dominant ratio in ONE change, so this over-counts for concentrated clusters.
+  ⚠️ Clusters below the MIN_BUILDS cut are excluded entirely, so even the 0 row is an
+     UNDER-estimate by the 3-pair tail.
+
+⚠️ BOTH CONCENTRATION MEASURES ARE BIASED, IN OPPOSITE DIRECTIONS, AND BOTH WERE MEASURED.
+   Distinct-ratio COUNT over-states the work by ~40x: the self-ailment-duration cluster
+   showed 88 distinct ratios and took ONE code change, the enemy-modifier cluster 45 and
+   took two rows. TOP5 SHARE under-states RECOVERABLE pairs for ADDITIVE causes: a missing
+   flat modifier produces a DIFFERENT ratio on every build, so one cause can scatter across
+   hundreds of ratios and score top5 ~= 0. The FireResist off-by-one did exactly that -- it
+   read as 0.9889 / 0.9882 / 0.9878 and was a single missing point of maximum resistance.
+   Use top1 == 1.00 as a near-certain single fix; treat a low top5 as UNKNOWN, not as hard.
+⚠️ Every figure is an UPPER BOUND. Only the gate measures a change.

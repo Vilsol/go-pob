@@ -1,0 +1,5 @@
+tool     skill-stat-map-verify
+fixture  no-args
+original oracle/skill_stat_map_verify.py
+args     
+env      

@@ -1,0 +1,5 @@
+tool     port-diff
+fixture  func-cites-missing-lua
+original scripts/port_diff.py
+args     
+env      FUNC=PdCitesMissingLua POB_DIR=pob

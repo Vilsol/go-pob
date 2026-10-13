@@ -1,0 +1,5 @@
+tool     tree-tables-emit
+fixture  fixups-output-is-a-directory
+original oracle/tree_tables_emit.py
+args     ours.json pob.json missing.go fixups.go
+env      

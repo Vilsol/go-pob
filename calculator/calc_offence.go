@@ -153,7 +153,7 @@ func calcDamage(activeSkill *ActiveSkill, output map[string]float64, cfg *moddb.
 		math.Round((float64((baseMax*inc*more)*genericMoreMaxDamage) + addMax) * moreMaxDamage * incMaxDamage)
 }
 
-//pob:src/Modules/CalcOffence.lua:127-137
+//pob:src/Modules/CalcOffence.lua:138-149
 func calcAilmentSourceDamage(activeSkill *ActiveSkill, output map[string]float64, cfg *moddb.ListCfg, breakdown *Breakdown, breakdownKey string, damageType data.DamageType, typeFlags int) (float64, float64) {
 	minDamage, maxDamage := calcDamage(activeSkill, output, cfg, breakdown, breakdownKey, damageType, typeFlags, nil)
 	convMult := activeSkill.conversionTableFor(cfg)[damageType].Mult
@@ -166,71 +166,78 @@ func calcAilmentSourceDamage(activeSkill *ActiveSkill, output map[string]float64
 	return minDamage * convMult, maxDamage * convMult
 }
 
+var conversionNames = func() [5][5]struct{ global, skill, add []string } {
+	var out [5][5]struct{ global, skill, add []string }
+	types := data.DamageType("").Values()
+	for i, damageType := range types {
+		for j := i + 1; j < len(types); j++ {
+			otherType := types[j]
+			n := &out[i][j]
+			n.global = []string{string(damageType) + "DamageConvertTo" + string(otherType)}
+			n.add = []string{string(damageType) + "DamageGainAs" + string(otherType)}
+			if damageType.IsElemental() {
+				n.global = append(n.global, "ElementalDamageConvertTo"+string(otherType))
+				n.add = append(n.add, "ElementalDamageGainAs"+string(otherType))
+			}
+			if damageType != data.DamageTypeChaos {
+				n.global = append(n.global, "NonChaosDamageConvertTo"+string(otherType))
+				n.add = append(n.add, "NonChaosDamageGainAs"+string(otherType))
+			}
+			n.skill = []string{"Skill" + string(damageType) + "DamageConvertTo" + string(otherType)}
+		}
+	}
+	return out
+}()
+
 func buildConversionTable(skillModList *moddb.ModList, cfg *moddb.ListCfg) map[data.DamageType]ConversionTable {
 	table := make(map[data.DamageType]ConversionTable)
-	totalDamageTypes := len(data.DamageType("").Values())
+	types := data.DamageType("").Values()
+	totalDamageTypes := len(types)
 	for damageTypeIndex := 0; damageTypeIndex < totalDamageTypes; damageTypeIndex++ {
-		damageType := data.DamageType("").Values()[damageTypeIndex]
-		globalConv := make(map[data.DamageType]float64)
-		skillConv := make(map[data.DamageType]float64)
-		add := make(map[data.DamageType]float64)
+		damageType := types[damageTypeIndex]
+		var globalConv, skillConv, add [5]float64
 		globalTotal := float64(0)
 		skillTotal := float64(0)
 
 		for otherTypeIndex := damageTypeIndex + 1; otherTypeIndex < totalDamageTypes; otherTypeIndex++ {
 			// For all possible destination types, check for global and skill conversions
-			otherType := data.DamageType("").Values()[otherTypeIndex]
+			names := &conversionNames[damageTypeIndex][otherTypeIndex]
+			globalConv[otherTypeIndex] = math.Max(skillModList.Sum(mod.TypeBase, cfg, names.global...), 0)
+			globalTotal += globalConv[otherTypeIndex]
 
-			globalNames := []string{string(damageType) + "DamageConvertTo" + string(otherType)}
-			if damageType.IsElemental() {
-				globalNames = append(globalNames, "ElementalDamageConvertTo"+string(otherType))
-			}
-			if damageType != data.DamageTypeChaos {
-				globalNames = append(globalNames, "NonChaosDamageConvertTo"+string(otherType))
-			}
-			globalConv[otherType] = math.Max(skillModList.Sum(mod.TypeBase, cfg, globalNames...), 0)
-			globalTotal += globalConv[otherType]
+			skillConv[otherTypeIndex] = math.Max(skillModList.Sum(mod.TypeBase, cfg, names.skill...), 0)
+			skillTotal += skillConv[otherTypeIndex]
 
-			skillConv[otherType] = math.Max(skillModList.Sum(mod.TypeBase, cfg, "Skill"+string(damageType)+"DamageConvertTo"+string(otherType)), 0)
-			skillTotal += skillConv[otherType]
-
-			addNames := []string{string(damageType) + "DamageGainAs" + string(otherType)}
-			if damageType.IsElemental() {
-				addNames = append(addNames, "ElementalDamageGainAs"+string(otherType))
-			}
-			if damageType != data.DamageTypeChaos {
-				addNames = append(addNames, "NonChaosDamageGainAs"+string(otherType))
-			}
-			add[otherType] = math.Max(skillModList.Sum(mod.TypeBase, cfg, addNames...), 0)
+			add[otherTypeIndex] = math.Max(skillModList.Sum(mod.TypeBase, cfg, names.add...), 0)
 		}
 
 		if skillTotal > 100 {
 			// Skill conversion exceeds 100%, scale it down and remove non-skill conversions
 			factor := 100 / skillTotal
-			for convType, val := range skillConv {
-				skillConv[convType] = val * factor
-			}
-			for convType := range globalConv {
-				globalConv[convType] = 0
+			for i := damageTypeIndex + 1; i < totalDamageTypes; i++ {
+				skillConv[i] = skillConv[i] * factor
+				globalConv[i] = 0
 			}
 		} else if globalTotal+skillTotal > 100 {
 			// Conversion exceeds 100%, scale down non-skill conversions
 			factor := (100 - skillTotal) / globalTotal
-			for convType, val := range globalConv {
-				globalConv[convType] = val * factor
+			for i := damageTypeIndex + 1; i < totalDamageTypes; i++ {
+				globalConv[i] = globalConv[i] * factor
 			}
 			globalTotal = globalTotal * factor
 		}
 
+		n := totalDamageTypes - damageTypeIndex - 1
 		dmgTable := ConversionTable{
-			Targets:    make(map[data.DamageType]float64),
-			Conversion: make(map[data.DamageType]float64),
-			Gain:       make(map[data.DamageType]float64),
+			Targets:    make(map[data.DamageType]float64, n),
+			Conversion: make(map[data.DamageType]float64, n),
+			Gain:       make(map[data.DamageType]float64, n),
 		}
-		for convType, val := range globalConv {
-			dmgTable.Conversion[convType] = (val + skillConv[convType]) / 100
-			dmgTable.Gain[convType] = add[convType] / 100
-			dmgTable.Targets[convType] = (val + skillConv[convType] + add[convType]) / 100
+		for i := damageTypeIndex + 1; i < totalDamageTypes; i++ {
+			convType := types[i]
+			dmgTable.Conversion[convType] = (globalConv[i] + skillConv[i]) / 100
+			dmgTable.Gain[convType] = add[i] / 100
+			dmgTable.Targets[convType] = (globalConv[i] + skillConv[i] + add[i]) / 100
 		}
 
 		dmgTable.Mult = 1 - math.Min((globalTotal+skillTotal)/100, 1)
@@ -357,7 +364,7 @@ func activeSkillSlot(activeSkill *ActiveSkill) string {
 	return ""
 }
 
-//pob:src/Modules/CalcOffence.lua:262-267
+//pob:src/Modules/CalcOffence.lua:274-287
 func calcSkillCooldown(skillModList *moddb.ModList, skillCfg *moddb.ListCfg, skillData *SkillData) float64 {
 	cooldown := utils.Or(
 		skillModList.Override(skillCfg, "CooldownRecovery"),
@@ -996,10 +1003,6 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 			}
 		}
 	}
-	if skillModList.Flag(nil, "TriggeredBySnipe") && activeSkill.SkillTypes[data.SkillTypeTriggerable] {
-		skillModList.AddMod(mod.NewFloat("Damage", "MORE", 165).Source("Config").Flag(mod.MFlagHit).Tag(mod.Multiplier("SnipeStage")))
-		skillModList.AddMod(mod.NewFloat("Damage", "MORE", 120).Source("Config").Flag(mod.MFlagAilment).Tag(mod.Multiplier("SnipeStage")))
-	}
 	if skillModList.Sum(mod.TypeBase, nil, "CritMultiplierAppliesToDegen") > 0 {
 		for _, value := range skillModList.Tabulate("BASE", skillCfg, "CritMultiplier") {
 			if value.Mod.GetSource() != "Base" { // The global base Crit Multi doesn't apply to ailments with Perfect Agony
@@ -1316,7 +1319,7 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 			breakdown.Mod("AuraEffectMod", skillModList, skillCfg, "AuraEffect", auraEffectOnSelf)
 		}
 	}
-	//pob:src/Modules/CalcOffence.lua:859-878
+	//pob:src/Modules/CalcOffence.lua:1159-1178
 	if activeSkill.SkillTypes[data.SkillTypeHasReservation] && !activeSkill.SkillTypes[data.SkillTypeReservationBecomesCost] {
 		for _, pool := range []string{"Life", "Mana"} {
 			actor.Output[pool+"ReservedMod"] = 0
@@ -2321,12 +2324,12 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 			}
 		}
 		// Check Precise Technique Keystone condition per pass as MH/OH might have different values
-		//pob:src/Modules/CalcOffence.lua:1653-1655
+		//pob:src/Modules/CalcOffence.lua:2200-2202
 		condName := strings.ReplaceAll(pass.Label, " ", "") + "AccRatingHigherThanMaxLife"
 		skillModList.Conditions[condName] = pass.Output["Accuracy"] > env.Player.Output["Life"]
 
 		// Calculate attack/cast speed
-		//pob:src/Modules/CalcOffence.lua:1657-1660
+		//pob:src/Modules/CalcOffence.lua:2204-2207
 		if (activeSkill.ActiveEffect.GrantedEffect.CastTime() == 0) && !PoBSkillDeclaresNoCastTime(activeSkill.ActiveEffect.GrantedEffect.Raw) && skillData.CastTimeOverride == 0 && !skillData.Triggered {
 			pass.Output["Time"] = 0
 			pass.Output["Speed"] = 0
@@ -3916,9 +3919,9 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 		}
 		pass.Output["AverageDamage"] = pass.Output["AverageHit"] * pass.Output["HitChance"] / 100
 
-		//pob:block:src/Modules/CalcOffence.lua:2799-2800
+		//pob:block:src/Modules/CalcOffence.lua:3708
 		actor.Output["AverageBurstHits"] = utils.OrDefault(pass.Output["AverageBurstHits"], 1)
-		//pob:src/Modules/CalcOffence.lua:2800-2801
+		//pob:src/Modules/CalcOffence.lua:3709-3710
 		repeatPenalty := float64(1)
 		if skillModList.Flag(nil, "HasSeals") && activeSkill.SkillTypes[data.SkillTypeCanRapidFire] &&
 			!skillModList.Flag(nil, "NoRepeatBonuses") {
@@ -4878,7 +4881,7 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 		if canDeal[data.DamageTypeFire] && (output["IgniteChanceOnHit"]+output["IgniteChanceOnCrit"]) > 0 {
 			badIdea := ailmentSkillCond(skillCfg, cfg)
 
-			//pob:src/Modules/CalcOffence.lua:3692-3701
+			//pob:src/Modules/CalcOffence.lua:4868-4879
 			dotCfg := &moddb.ListCfg{
 				SkillName:       skillCfg.SkillName,
 				SkillPart:       skillCfg.SkillPart,
@@ -5395,7 +5398,7 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 	}
 
 	// Calculate skill DOT components
-	//pob:block:src/Modules/CalcOffence.lua:4318-4357
+	//pob:block:src/Modules/CalcOffence.lua:5648-5688
 	dotFlags := mod.MFlagDot | skillCfg.Flags.Get()
 	for _, clear := range []struct {
 		flag mod.MFlag

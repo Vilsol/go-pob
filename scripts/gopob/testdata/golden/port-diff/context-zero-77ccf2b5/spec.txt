@@ -1,0 +1,5 @@
+tool     port-diff
+fixture  context-zero
+original scripts/port_diff.py
+args     
+env      CONTEXT=0 POB_DIR=pob SYMBOL=pdSharedName

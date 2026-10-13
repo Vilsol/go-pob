@@ -1,0 +1,118 @@
+=== UNEXERCISED-CODE CENSUS ===
+instrumented blocks 28   statements 46
+never executed      27 blocks (96.4%)   45 statements (97.8%)
+  of which reached by a unit test but by no corpus build: 0
+  executed by nothing in the repository:                  27
+
+--- buckets ---
+     19  unclassified   -   (0 testonly)
+      1  data           config-unset-arm   (0 testonly)
+      1  data           config-type-assert   (0 testonly)
+      1  data           config-option   (0 testonly)
+      1  data           calcs-mode   (0 testonly)
+      1  data           defensive-guard   (0 testonly)
+      1  data           minion-data   (0 testonly)
+      1  data           mod-pattern   (0 testonly)
+      1  data           entry-point   (0 testonly)
+
+--- unclassified, by file ---
+      3  utils/zbusiest.go
+      2  calculator/env.go
+      1  utils/u00.go
+      1  utils/u01.go
+      1  utils/u02.go
+      1  utils/u03.go
+      1  utils/u04.go
+      1  utils/u05.go
+      1  utils/u06.go
+      1  utils/u07.go
+      1  utils/u08.go
+      1  utils/u09.go
+      1  utils/u10.go
+      1  utils/u11.go
+      1  utils/u12.go
+      1  utils/u13.go
+
+--- dead blocks ---
+
+DEAD calculator/configs.go:4-6 [data/config-unset-arm] Beta
+    > if !configChecked(val) { return }
+
+DEAD calculator/configs.go:7-9 [data/config-type-assert] Beta
+    > if !ok { return }
+
+DEAD calculator/configs.go:10-11 [data/config-option] Beta
+    > somethingElse() andMore()
+
+DEAD calculator/env.go:4-6 [data/calcs-mode] Alpha
+    > if OutputModeCalcs == mode { return }
+
+DEAD calculator/env.go:8-10 [data/defensive-guard] Alpha
+    > if err != nil { return }
+
+DEAD calculator/env.go:11-13 [unclassified/-] Alpha
+    > if a != nil && b.Thing { return }
+
+DEAD calculator/env.go:15-17 [data/minion-data] Alpha
+    ^ for _, v := range items {
+    > if v.AppliesToMinions { doThing() }
+
+DEAD calculator/env.go:19-21 [unclassified/-] Alpha
+    > if ok { fine() }
+
+DEAD calculator/mod_parser.go:4-6 [data/mod-pattern] Gamma
+    > register("increased golem damage per summoned Minion", func() { unreached() })
+
+DEAD pob/utils.go:4-4 [data/entry-point] Delta
+    > frontendOnly()
+
+DEAD utils/u00.go:4-7 [unclassified/-] U00
+    > if somethingUnclassifiable { a() b() }
+
+DEAD utils/u01.go:4-7 [unclassified/-] U01
+    > if somethingUnclassifiable { a() b() }
+
+DEAD utils/u02.go:4-7 [unclassified/-] U02
+    > if somethingUnclassifiable { a() b() }
+
+DEAD utils/u03.go:4-7 [unclassified/-] U03
+    > if somethingUnclassifiable { a() b() }
+
+DEAD utils/u04.go:4-7 [unclassified/-] U04
+    > if somethingUnclassifiable { a() b() }
+
+DEAD utils/u05.go:4-7 [unclassified/-] U05
+    > if somethingUnclassifiable { a() b() }
+
+DEAD utils/u06.go:4-7 [unclassified/-] U06
+    > if somethingUnclassifiable { a() b() }
+
+DEAD utils/u07.go:4-7 [unclassified/-] U07
+    > if somethingUnclassifiable { a() b() }
+
+DEAD utils/u08.go:4-7 [unclassified/-] U08
+    > if somethingUnclassifiable { a() b() }
+
+DEAD utils/u09.go:4-7 [unclassified/-] U09
+    > if somethingUnclassifiable { a() b() }
+
+DEAD utils/u10.go:4-7 [unclassified/-] U10
+    > if somethingUnclassifiable { a() b() }
+
+DEAD utils/u11.go:4-7 [unclassified/-] U11
+    > if somethingUnclassifiable { a() b() }
+
+DEAD utils/u12.go:4-7 [unclassified/-] U12
+    > if somethingUnclassifiable { a() b() }
+
+DEAD utils/u13.go:4-7 [unclassified/-] U13
+    > if somethingUnclassifiable { a() b() }
+
+DEAD utils/zbusiest.go:4-7 [unclassified/-] Busiest
+    > if one { a() b() }
+
+DEAD utils/zbusiest.go:8-11 [unclassified/-] Busiest
+    > if two { a() b() }
+
+DEAD utils/zbusiest.go:12-15 [unclassified/-] Busiest
+    > if three { a() b() }

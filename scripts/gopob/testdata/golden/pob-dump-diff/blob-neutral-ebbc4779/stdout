@@ -1,0 +1,11 @@
+compared 2 builds
+  4 Lua pointer stringification(s) normalised to <ptr> -- see normalise()
+  A A
+  B same
+
+  BLOB            0   (seven output tables + recomputed treeSources)
+  DERIVED         0   (modDB structurally; informational, never fatal)
+  OTHER           0   (censuses only; compare against YOUR measured floor)
+  breakdown       0   (not extracted into the blob)
+
+Blob-neutral: no oracle field and no treeSources moved. Check DERIVED and OTHER against the floor you measured on an UNMODIFIED A/B before calling this clean.

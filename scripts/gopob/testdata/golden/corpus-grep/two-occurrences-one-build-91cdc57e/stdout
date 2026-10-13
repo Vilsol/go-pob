@@ -1,0 +1,4 @@
+CORPUS <sandbox>/testdata/corpus-9.99
+PATTERN commontoken here and commontoken
+MATCHED 1 of 24 builds, 1 occurrence(s)
+  b03                                                  1

@@ -2374,7 +2374,7 @@ func isExpansionSocket(tree *data.Tree, nodeID string) bool {
 	return ok && node.ExpansionJewel != nil && node.ExpansionJewel.Parent != nil
 }
 
-//pob:block:src/Classes/Item.lua:236-242,src/Classes/Item.lua:1599-1601
+//pob:block:src/Classes/Item.lua:667-679,src/Classes/Item.lua:1599-1601
 func itemJewelRadiusIndex(item *Item) (int, bool) {
 	if index, ok := data.JewelRadiusIndexForLabel(item.JewelRadiusLabel); ok {
 		return index, true

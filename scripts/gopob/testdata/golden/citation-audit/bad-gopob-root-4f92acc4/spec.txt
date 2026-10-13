@@ -1,0 +1,5 @@
+tool     citation-audit
+fixture  bad-gopob-root
+original scripts/citation_audit.py
+args     
+env      FILE=calculator/marked.go GOPOB_ROOT=pob POB_DIR=pob

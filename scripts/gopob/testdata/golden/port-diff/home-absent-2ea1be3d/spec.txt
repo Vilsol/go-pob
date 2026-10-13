@@ -1,0 +1,6 @@
+tool     port-diff
+fixture  home-absent
+original scripts/port_diff.py
+args     
+env      NAME=pdSharedName
+unset    POB_DIR HOME

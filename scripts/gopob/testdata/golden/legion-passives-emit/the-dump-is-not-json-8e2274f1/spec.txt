@@ -1,0 +1,6 @@
+tool     legion-passives-emit
+fixture  the-dump-is-not-json
+original oracle/legion_passives_emit.py
+args     dump.json out.go
+env      
+files    out.go

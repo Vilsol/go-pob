@@ -1,0 +1,5 @@
+tool     citation-drift-diff
+fixture  all
+original scripts/citation_drift_diff.py
+args     
+env      OLD=old POB_DIR=pin

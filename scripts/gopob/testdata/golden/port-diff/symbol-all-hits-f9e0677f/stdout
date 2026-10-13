@@ -1,0 +1,171 @@
+=== port-diff SYMBOL='pdSharedName' ===
+  ours   5 hit(s) across 1 tracked Go file(s)
+  PoB    14 hit(s) across 7 Lua file(s)  (pob)
+
+──── OURS: a/thing.go:1-9 ──────────────────────────
+       1 │ package a
+       2 │ 
+       3 │ // pdSharedName is mentioned here too.
+       4 │ //pob:src/Modules/ConfigOptions.lua:3-5
+       5 │ func PdCited() {
+       6 │ 	_ = 1
+       7 │ }
+       8 │ 
+       9 │ // this one carries no marker at all
+
+──── OURS: a/thing.go:18-30 ──────────────────────────
+      18 │ 
+      19 │ // ⚠️ A ONE-LINE FUNC, whose opening line is already brace-balanced. The body scan breaks
+      20 │ // on `depth <= 0 && j > start`; without the second clause it would stop on the DECLARATION
+      21 │ // of every ordinary func too, and only a balanced first line tells the two apart.
+      22 │ func PdOneLine() { _ = 4 }
+      23 │ 
+      24 │ // more pdSharedName mentions, so the Go side has enough hits to truncate
+      25 │ func PdMentions() {
+      26 │ 	_ = "pdSharedName one"
+      27 │ 	_ = "pdSharedName two"
+      28 │ 	_ = "pdSharedName three"
+      29 │ }
+      30 │ 
+
+──── OURS: a/thing.go:20-30 ──────────────────────────
+      20 │ // on `depth <= 0 && j > start`; without the second clause it would stop on the DECLARATION
+      21 │ // of every ordinary func too, and only a balanced first line tells the two apart.
+      22 │ func PdOneLine() { _ = 4 }
+      23 │ 
+      24 │ // more pdSharedName mentions, so the Go side has enough hits to truncate
+      25 │ func PdMentions() {
+      26 │ 	_ = "pdSharedName one"
+      27 │ 	_ = "pdSharedName two"
+      28 │ 	_ = "pdSharedName three"
+      29 │ }
+      30 │ 
+
+──── OURS: a/thing.go:21-30 ──────────────────────────
+      21 │ // of every ordinary func too, and only a balanced first line tells the two apart.
+      22 │ func PdOneLine() { _ = 4 }
+      23 │ 
+      24 │ // more pdSharedName mentions, so the Go side has enough hits to truncate
+      25 │ func PdMentions() {
+      26 │ 	_ = "pdSharedName one"
+      27 │ 	_ = "pdSharedName two"
+      28 │ 	_ = "pdSharedName three"
+      29 │ }
+      30 │ 
+
+──── OURS: a/thing.go:22-30 ──────────────────────────
+      22 │ func PdOneLine() { _ = 4 }
+      23 │ 
+      24 │ // more pdSharedName mentions, so the Go side has enough hits to truncate
+      25 │ func PdMentions() {
+      26 │ 	_ = "pdSharedName one"
+      27 │ 	_ = "pdSharedName two"
+      28 │ 	_ = "pdSharedName three"
+      29 │ }
+      30 │ 
+
+──── PoB: pob/src/Aaa/Tied.lua:1-4 ───────────────────────────
+       1 │ -- Aaa/Tied.lua: two hits, tied with its sibling
+       2 │ local pdSharedName = 1
+       3 │ local pdSharedName2 = 2
+       4 │ 
+
+──── PoB: pob/src/Aaa/Tied.lua:1-4 ───────────────────────────
+       1 │ -- Aaa/Tied.lua: two hits, tied with its sibling
+       2 │ local pdSharedName = 1
+       3 │ local pdSharedName2 = 2
+       4 │ 
+
+──── PoB: pob/src/Data/ModCache.lua:1-7 ───────────────────────────
+       1 │ -- ModCache.lua fixture: the busiest file
+       2 │ local pdSharedName_0 = 0
+       3 │ local pdSharedName_1 = 1
+       4 │ local pdSharedName_2 = 2
+       5 │ local pdSharedName_3 = 3
+       6 │ local pdSharedName_4 = 4
+       7 │ 
+
+──── PoB: pob/src/Data/ModCache.lua:1-7 ───────────────────────────
+       1 │ -- ModCache.lua fixture: the busiest file
+       2 │ local pdSharedName_0 = 0
+       3 │ local pdSharedName_1 = 1
+       4 │ local pdSharedName_2 = 2
+       5 │ local pdSharedName_3 = 3
+       6 │ local pdSharedName_4 = 4
+       7 │ 
+
+──── PoB: pob/src/Data/ModCache.lua:1-7 ───────────────────────────
+       1 │ -- ModCache.lua fixture: the busiest file
+       2 │ local pdSharedName_0 = 0
+       3 │ local pdSharedName_1 = 1
+       4 │ local pdSharedName_2 = 2
+       5 │ local pdSharedName_3 = 3
+       6 │ local pdSharedName_4 = 4
+       7 │ 
+
+──── PoB: pob/src/Data/ModCache.lua:1-7 ───────────────────────────
+       1 │ -- ModCache.lua fixture: the busiest file
+       2 │ local pdSharedName_0 = 0
+       3 │ local pdSharedName_1 = 1
+       4 │ local pdSharedName_2 = 2
+       5 │ local pdSharedName_3 = 3
+       6 │ local pdSharedName_4 = 4
+       7 │ 
+
+──── PoB: pob/src/Data/ModCache.lua:1-7 ───────────────────────────
+       1 │ -- ModCache.lua fixture: the busiest file
+       2 │ local pdSharedName_0 = 0
+       3 │ local pdSharedName_1 = 1
+       4 │ local pdSharedName_2 = 2
+       5 │ local pdSharedName_3 = 3
+       6 │ local pdSharedName_4 = 4
+       7 │ 
+
+──── PoB: pob/src/Modules/ConfigOptions.lua:1-9 ───────────────────────────
+       1 │ -- ConfigOptions.lua fixture
+       2 │ local pdUniqueToken = 1
+       3 │ function Cfg:doThing(a)
+       4 │ 	return a + pdUniqueToken
+       5 │ end
+       6 │ -- pdSharedName appears here
+       7 │ local pdSharedName = 2
+       8 │ local tail = 3
+       9 │ 
+
+──── PoB: pob/src/Modules/ConfigOptions.lua:1-9 ───────────────────────────
+       1 │ -- ConfigOptions.lua fixture
+       2 │ local pdUniqueToken = 1
+       3 │ function Cfg:doThing(a)
+       4 │ 	return a + pdUniqueToken
+       5 │ end
+       6 │ -- pdSharedName appears here
+       7 │ local pdSharedName = 2
+       8 │ local tail = 3
+       9 │ 
+
+──── PoB: pob/src/Modules/Wide.lua:1-3 ───────────────────────────
+       1 │ -- wide.lua
+       2 │ local pdSharedName = "üüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüü"
+       3 │ 
+
+──── PoB: pob/src/Zz/a.lua:1-3 ───────────────────────────
+       1 │ -- Zz/a.lua
+       2 │ local pdSharedName = 1
+       3 │ 
+
+──── PoB: pob/src/Zz.b/a.lua:1-3 ───────────────────────────
+       1 │ -- Zz.b/a.lua
+       2 │ local pdSharedName = 1
+       3 │ 
+
+──── PoB: pob/src/Zzz/Tied.lua:1-4 ───────────────────────────
+       1 │ -- Zzz/Tied.lua: two hits, tied with its sibling
+       2 │ local pdSharedName = 1
+       3 │ local pdSharedName2 = 2
+       4 │ 
+
+──── PoB: pob/src/Zzz/Tied.lua:1-4 ───────────────────────────
+       1 │ -- Zzz/Tied.lua: two hits, tied with its sibling
+       2 │ local pdSharedName = 1
+       3 │ local pdSharedName2 = 2
+       4 │ 

@@ -1,0 +1,6 @@
+tool     core-constants-emit
+fixture  happy
+original oracle/core_constants_emit.py
+args     dump.json out.go
+env      
+files    out.go

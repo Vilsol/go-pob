@@ -1,0 +1,7 @@
+WRN  a warning that must be split off
+TRC  a trace that must be split off
+DBG  a debug line that must be split off
+
+--- 5 slog line(s) split off this run; 3 sampled above.
+--- The log statements are unchanged: re-run the command without
+--- scripts/instruments.sh to see all of them.

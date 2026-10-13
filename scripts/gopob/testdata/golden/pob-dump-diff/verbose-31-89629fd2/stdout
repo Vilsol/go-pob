@@ -1,0 +1,87 @@
+compared 2 builds
+  4 Lua pointer stringification(s) normalised to <ptr> -- see normalise()
+  A A
+  B B
+
+  BLOB            8   (seven output tables + recomputed treeSources)
+  DERIVED         2   (modDB structurally; informational, never fatal)
+  OTHER          66   (censuses only; compare against YOUR measured floor)
+  breakdown       2   (not extracted into the blob)
+    [BLOB] 0001-alpha.json: treeSources 3 vs 2 -- THIS CAN MOVE THE 184-BUILD EXCLUSION SET
+    [BLOB] 0001-alpha.json.output.Moved: 10 vs 12
+    [BLOB] 0001-alpha.json.output.OnlyA: ONLY-A
+    [BLOB] 0001-alpha.json.output.OnlyB: ONLY-B
+    [BLOB] 0002-beta.json: treeSources 3 vs 2 -- THIS CAN MOVE THE 184-BUILD EXCLUSION SET
+    [BLOB] 0002-beta.json.output.Moved: 10 vs 12
+    [BLOB] 0002-beta.json.output.OnlyA: ONLY-A
+    [BLOB] 0002-beta.json.output.OnlyB: ONLY-B
+    [DERIVED] 0001-alpha.json.modDB.Keyed: 4 vs 3 entries, multisets differ
+    [DERIVED] 0002-beta.json.modDB.Keyed: 4 vs 3 entries, multisets differ
+    [OTHER] 0001-alpha.json.census.Bulk00: 0 vs 100
+    [OTHER] 0001-alpha.json.census.Bulk01: 1 vs 101
+    [OTHER] 0001-alpha.json.census.Bulk02: 2 vs 102
+    [OTHER] 0001-alpha.json.census.Bulk03: 3 vs 103
+    [OTHER] 0001-alpha.json.census.Bulk04: 4 vs 104
+    [OTHER] 0001-alpha.json.census.Bulk05: 5 vs 105
+    [OTHER] 0001-alpha.json.census.Bulk06: 6 vs 106
+    [OTHER] 0001-alpha.json.census.Bulk07: 7 vs 107
+    [OTHER] 0001-alpha.json.census.Bulk08: 8 vs 108
+    [OTHER] 0001-alpha.json.census.Bulk09: 9 vs 109
+    [OTHER] 0001-alpha.json.census.Bulk10: 10 vs 110
+    [OTHER] 0001-alpha.json.census.Bulk11: 11 vs 111
+    [OTHER] 0001-alpha.json.census.Bulk12: 12 vs 112
+    [OTHER] 0001-alpha.json.census.Bulk13: 13 vs 113
+    [OTHER] 0001-alpha.json.census.Bulk14: 14 vs 114
+    [OTHER] 0001-alpha.json.census.Bulk15: 15 vs 115
+    [OTHER] 0001-alpha.json.census.Bulk16: 16 vs 116
+    [OTHER] 0001-alpha.json.census.Bulk17: 17 vs 117
+    [OTHER] 0001-alpha.json.census.Bulk18: 18 vs 118
+    [OTHER] 0001-alpha.json.census.Bulk19: 19 vs 119
+    [OTHER] 0001-alpha.json.census.Bulk20: 20 vs 120
+    [OTHER] 0001-alpha.json.census.Bulk21: 21 vs 121
+    [OTHER] 0001-alpha.json.census.Bulk22: 22 vs 122
+    [OTHER] 0001-alpha.json.census.Bulk23: 23 vs 123
+    [OTHER] 0001-alpha.json.census.Bulk24: 24 vs 124
+    [OTHER] 0001-alpha.json.census.Bulk25: 25 vs 125
+    [OTHER] 0001-alpha.json.census.Bulk26: 26 vs 126
+    [OTHER] 0001-alpha.json.census.Bulk27: 27 vs 127
+    [OTHER] 0001-alpha.json.census.Bulk28: 28 vs 128
+    [OTHER] 0001-alpha.json.census.Bulk29: 29 vs 129
+    [OTHER] 0001-alpha.json.census.Bulk30: 30 vs 130
+    [OTHER] 0001-alpha.json.census.Nested.Deep: 1 vs 9
+    [OTHER] 0001-alpha.json.census.Typed: TYPE int vs str
+    [OTHER] 0002-beta.json.census.Bulk00: 0 vs 100
+    [OTHER] 0002-beta.json.census.Bulk01: 1 vs 101
+    [OTHER] 0002-beta.json.census.Bulk02: 2 vs 102
+    [OTHER] 0002-beta.json.census.Bulk03: 3 vs 103
+    [OTHER] 0002-beta.json.census.Bulk04: 4 vs 104
+    [OTHER] 0002-beta.json.census.Bulk05: 5 vs 105
+    [OTHER] 0002-beta.json.census.Bulk06: 6 vs 106
+    [OTHER] 0002-beta.json.census.Bulk07: 7 vs 107
+    [OTHER] 0002-beta.json.census.Bulk08: 8 vs 108
+    [OTHER] 0002-beta.json.census.Bulk09: 9 vs 109
+    [OTHER] 0002-beta.json.census.Bulk10: 10 vs 110
+    [OTHER] 0002-beta.json.census.Bulk11: 11 vs 111
+    [OTHER] 0002-beta.json.census.Bulk12: 12 vs 112
+    [OTHER] 0002-beta.json.census.Bulk13: 13 vs 113
+    [OTHER] 0002-beta.json.census.Bulk14: 14 vs 114
+    [OTHER] 0002-beta.json.census.Bulk15: 15 vs 115
+    [OTHER] 0002-beta.json.census.Bulk16: 16 vs 116
+    [OTHER] 0002-beta.json.census.Bulk17: 17 vs 117
+    [OTHER] 0002-beta.json.census.Bulk18: 18 vs 118
+    [OTHER] 0002-beta.json.census.Bulk19: 19 vs 119
+    [OTHER] 0002-beta.json.census.Bulk20: 20 vs 120
+    [OTHER] 0002-beta.json.census.Bulk21: 21 vs 121
+    [OTHER] 0002-beta.json.census.Bulk22: 22 vs 122
+    [OTHER] 0002-beta.json.census.Bulk23: 23 vs 123
+    [OTHER] 0002-beta.json.census.Bulk24: 24 vs 124
+    [OTHER] 0002-beta.json.census.Bulk25: 25 vs 125
+    [OTHER] 0002-beta.json.census.Bulk26: 26 vs 126
+    [OTHER] 0002-beta.json.census.Bulk27: 27 vs 127
+    [OTHER] 0002-beta.json.census.Bulk28: 28 vs 128
+    [OTHER] 0002-beta.json.census.Bulk29: 29 vs 129
+    [OTHER] 0002-beta.json.census.Bulk30: 30 vs 130
+    [OTHER] 0002-beta.json.census.Nested.Deep: 1 vs 9
+    [OTHER] 0002-beta.json.census.Typed: TYPE int vs str
+
+NOT OUTPUT-NEUTRAL: the oracle blob would change. Do not keep this change without a deliberate, measured regeneration.

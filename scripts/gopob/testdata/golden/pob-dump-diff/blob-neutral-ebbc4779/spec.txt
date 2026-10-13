@@ -1,0 +1,5 @@
+tool     pob-dump-diff
+fixture  blob-neutral
+original scripts/pob_dump_diff.py
+args     A same
+env      

@@ -1,0 +1,17 @@
+id universes:  tattoo 3   legion 6
+overlap: 0  (must be 0)
+dumps scanned: 7
+
+  tattoo (ALL unported)                     5 builds       5 pairs
+  legion notable/vaal-small (unported)      2 builds       2 pairs
+  legion keystone/devotion/blank (done)     2 builds       2 pairs
+
+top named sources, classified:
+     3 builds  t_alpha                            TATTOO
+     1 builds  u_mystery                          UNKNOWN
+     1 builds  templar_devotion_node              LEGION
+     1 builds  t_charlie                          TATTOO
+     1 builds  t_bravo                            TATTOO
+     1 builds  l_notable_y                        LEGION
+     1 builds  l_keystoneish_notable              LEGION
+     1 builds  l_keystone_x                       LEGION

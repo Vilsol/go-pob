@@ -1,0 +1,6 @@
+tool     skill-flags-emit
+fixture  the-dump-is-a-json-array
+original oracle/skill_flags_emit.py
+args     dump.json out.go
+env      
+files    out.go

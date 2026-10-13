@@ -1,0 +1,5 @@
+tool     residual-clusters
+fixture  bad-header
+original scripts/residual_clusters.py
+args     10
+env      MATRIX=badheader.tsv

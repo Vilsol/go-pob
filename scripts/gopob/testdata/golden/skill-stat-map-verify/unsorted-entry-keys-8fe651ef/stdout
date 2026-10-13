@@ -1,0 +1,22 @@
+lua: 2 skills, 2 entries, 3 mods
+go : 2 skills, 2 entries, 3 mods
+matched 1-to-1 against the Lua: 1
+lua mods with no name/type (nested; mod/ has no constructor): 0
+lua statMap GROUPS compared (per-group scalars, CalcActiveSkill.lua:65-73): 0
+
+DIFF: 15 problem(s)
+  AlphaSkill/alpha: entry key present on only one side
+  AlphaSkill/beta: entry key present on only one side
+  AlphaSkill/damage: entry key present on only one side
+  AlphaSkill/delta: entry key present on only one side
+  AlphaSkill/gamma: entry key present on only one side
+  AlphaSkill/iota: entry key present on only one side
+  AlphaSkill/kappa: entry key present on only one side
+  AlphaSkill/lambda: entry key present on only one side
+  AlphaSkill/mu: entry key present on only one side
+  AlphaSkill/nu: entry key present on only one side
+  AlphaSkill/omega: entry key present on only one side
+  AlphaSkill/sigma: entry key present on only one side
+  AlphaSkill/theta: entry key present on only one side
+  AlphaSkill/xi: entry key present on only one side
+  AlphaSkill/zeta: entry key present on only one side

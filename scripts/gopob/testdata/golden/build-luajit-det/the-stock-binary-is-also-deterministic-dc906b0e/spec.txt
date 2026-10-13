@@ -1,0 +1,5 @@
+tool     build-luajit-det
+fixture  the-stock-binary-is-also-deterministic
+original scripts/build_luajit_deterministic.sh
+args     --verify
+env      GOPOB_NICED=1

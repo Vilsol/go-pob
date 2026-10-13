@@ -1,0 +1,6 @@
+tool     mk-drop-cases
+fixture  top-zero
+original scripts/mk_drop_cases.py
+args     census.tsv out.json 0
+env      
+files    out.json

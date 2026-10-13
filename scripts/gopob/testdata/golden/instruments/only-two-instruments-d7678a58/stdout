@@ -1,0 +1,21 @@
+
+=== go-pob INSTRUMENTS — abc1234 a pinned subject line ===
+run dir   out
+dumps     dumps
+coverage  skipped (COVERAGE=1 to include, ~4 min)
+
+  INSTRUMENT                             STATUS     secs  HEADLINE
+  TestCorpus3_29VsOracle (AUTHORITATIVE) PASS          -  matched 2961296 / 3208353  (92.2996%)   NaN/Inf on our side: 0; 5634 graded, 471 excluded
+
+--- FAILURES ---
+  none
+
+--- CROSS-INSTRUMENT INVARIANTS ---
+  SKIP  keyset BOTH+ABSENT == oracle denominator — TestKeySetCensus is not in the tree; restoring it restores this invariant
+  OK    oracle reports an excluded-build count — 471 excluded (<5 tree sources) — compare against the previous run, not against a literal
+  SKIP  every corpus build calculates — corpus did not run, or its scoreboard shape changed and headline_for matched nothing
+
+total -
+
+full output (reports scrubbed of slog lines; a sample of those is in *.logs.txt beside them):
+  out/oracle.txt

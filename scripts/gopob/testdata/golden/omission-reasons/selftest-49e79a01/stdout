@@ -1,0 +1,13 @@
+  ok       expect NO-PROVENANCE  got NO-PROVENANCE  a reason with no marker at all
+  BROKEN   expect GO-STALE       got -              stale go claim [go-absent:mod.TypeLimit]
+  ok       expect GO-MISSING     got GO-MISSING     renamed symbol [go:mod.ThisTypeDoesNotExist]
+  ok       expect NOFILE         got NOFILE         bad path [pob:src/Classes/NoSuchFile.lua:1-2]
+  BROKEN   expect RANGE          got NOFILE         past EOF [pob:src/Classes/ModStore.lua:999999-1000000]
+  ok       expect EMPTY-WHY      got EMPTY-WHY      no why [unverifiable:]
+  ok       expect MALFORMED      got MALFORMED      garbage range [pob:ModStore.lua:not-a-number]
+  BROKEN   expect (pass)         got NOFILE         fine [pob:src/Classes/ModStore.lua:525-528]
+  BROKEN   expect (pass)         got GO-MISSING     fine [go:mod.TypeLimit]
+  ok       expect (pass)         got -              fine [go-absent:mod.NoSuchTagAnywhere]
+  ok       expect (pass)         got -              fine [unverifiable: data-dependent]
+
+SELFTEST: 7 of 11 checks behave as declared

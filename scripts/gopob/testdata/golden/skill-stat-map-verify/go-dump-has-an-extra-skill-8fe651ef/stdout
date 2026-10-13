@@ -1,0 +1,8 @@
+lua: 2 skills, 2 entries, 3 mods
+go : 3 skills, 3 entries, 4 mods
+matched 1-to-1 against the Lua: 3
+lua mods with no name/type (nested; mod/ has no constructor): 0
+lua statMap GROUPS compared (per-group scalars, CalcActiveSkill.lua:65-73): 0
+
+DIFF: 1 problem(s)
+  skill ZetaSkill is in the Go table but not in the Lua

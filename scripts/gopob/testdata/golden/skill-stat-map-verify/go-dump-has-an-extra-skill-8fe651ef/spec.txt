@@ -1,0 +1,5 @@
+tool     skill-stat-map-verify
+fixture  go-dump-has-an-extra-skill
+original oracle/skill_stat_map_verify.py
+args     lua.json go.json
+env      

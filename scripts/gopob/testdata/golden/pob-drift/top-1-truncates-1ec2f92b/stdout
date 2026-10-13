@@ -1,0 +1,49 @@
+PIN        <sandbox>/pin  (no git description)
+CANDIDATE  <sandbox>/cand  (no git description)
+
+=== DENOMINATOR ===
+  11 citation(s) -- 10 ranged, 1 whole-file -- across 1 Go file(s), citing 8 Lua file(s)
+  11 of them sit in PORT files (scripts/port_manifest.txt)
+  1 cited Lua file(s) absent from the candidate
+      src/Modules/Gone.lua
+
+=== VERDICTS ===
+  UNCHANGED      2    18.2%  (1 byte-identical, 1 whitespace/comment-only)
+  MOVED          4    36.4%
+  CHANGED        2    18.2%
+  DELETED        3    27.3%
+  OK-or-MOVED     6    54.5%   (sites to open; NOT the go/no-go -- see PER-CITATION below)
+  by LINES      18 / 28 cited Lua line(s) survive =  64.3%   <- SIZE-INDEPENDENT
+
+=== PER-CITATION SURVIVAL  (one row = one site a human must handle) ===
+  100%   intact             6 citation(s)      16 cited line(s)
+  >= 50%  half rewritten    1 citation(s)       3 cited line(s)
+  0%     gone               3 citation(s)       9 cited line(s)
+  ---
+  RE-PORT SURFACE: 4 of 10 citation(s) survive below 85%  (12 cited line(s))
+  GO/NO-GO                60.0% of citations survive >= 85% of their own lines
+  VERDICT: RE-PORT -- too many individual sites diverged. A different budget; do not bump.
+        0.0%  calculator/marked.go:18                  src/Modules/Del.lua:2-4
+      ... 3 more (--top N, or --top 0 for all)
+             over 10 ranged citation(s); 1 whole-file marker(s) have no line count and are excluded
+
+=== MOVED  (mechanical; `--fix` rewrites these) ===
+  calculator/marked.go:12                        src/Modules/Twice.lua:2-4                  -> 3-5            +1 line(s), 2 equally valid target(s) in the file
+  ... 3 more (--top N)
+
+=== DELETED  (our port may now be dead code -- read each one) ===
+  calculator/marked.go:24                        src/Modules/Gone.lua:2-4                   the file is not in the candidate checkout
+  ... 2 more (--top N)
+
+=== CHANGED  (THE UPGRADE WORKLIST, ranked by diff size) ===
+   lines    sim  Go site                                  Lua range                                note
+       1    67%  calculator/marked.go:15                  src/Modules/Chg.lua:2-4                  2 of 3 line(s) survive
+  ... 1 more (--top N)
+
+  by Lua file:
+        2 range(s)       2 changed line(s)  src/Modules/Chg.lua
+
+  by Go file:
+        2 range(s)       2 changed line(s)  calculator/marked.go
+
+5 range(s) need human work; 4 are mechanical.

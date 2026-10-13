@@ -1,0 +1,7 @@
+
+──── OURS: a/thing.go:22-23 ──────────────────────────
+      22 │ func PdOneLine() { _ = 4 }
+      23 │ 
+
+  ⚠️ a/thing.go:22 carries NO //pob: citation, so there is nothing to show beside it.
+     That is itself a finding. Use SYMBOL= to search the Lua by name.

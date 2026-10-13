@@ -1,0 +1,13 @@
+run dump   ours.txt.gz  (3.29, testdata/corpus-3.29  )
+blob       blob/output.jsonl.gz
+PoB dumps  dumps  covering 14 of 14 graded builds
+tolerance  0.005  ·  treeSources >= 5  ·  failing class = wrong
+
+=== Tiny ===
+ok 13 · wrong 1 · miss 0 · extra 0
+  direction: ours HIGH on 1 · ours LOW on 0 · median ratio 1.1875
+  censusing the BOTH side: 1 failing builds
+  (cannot census: the 13 passing builds carry NO attributed source rows
+   for Tiny, so the complexity baseline is undefined. PoB attributes nothing
+   here, which is itself the finding — see the module docstring)
+

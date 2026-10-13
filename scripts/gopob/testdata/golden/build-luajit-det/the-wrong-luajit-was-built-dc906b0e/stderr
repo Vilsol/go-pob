@@ -1,0 +1,2 @@
+FATAL: built LuaJIT 2.1.9999999999, expected LuaJIT 2.1.1744318430.
+       A different LuaJIT changes more than iteration order.

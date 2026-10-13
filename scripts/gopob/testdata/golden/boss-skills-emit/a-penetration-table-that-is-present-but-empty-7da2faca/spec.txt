@@ -1,0 +1,6 @@
+tool     boss-skills-emit
+fixture  a-penetration-table-that-is-present-but-empty
+original oracle/boss_skills_emit.py
+args     dump.json out.go
+env      
+files    out.go

@@ -1,0 +1,5 @@
+tool     modal-blob
+fixture  no-args
+original oracle/modal_blob.py
+args     out.jsonl report.txt
+env      

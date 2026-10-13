@@ -1,0 +1,5 @@
+tool     kw-bits-parity
+fixture  happy
+original scripts/kw_bits_parity.py
+args     
+env      POB_DIR=pob

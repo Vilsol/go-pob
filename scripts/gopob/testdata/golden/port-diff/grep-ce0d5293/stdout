@@ -1,0 +1,23 @@
+=== port-diff GREP='pdUnique.oken' over 7 Lua file(s) under pob/src ===
+  2 hit(s) across 1 file(s)
+
+──── PoB: pob/src/Modules/ConfigOptions.lua:1-8 ───────────────────────────
+       1 │ -- ConfigOptions.lua fixture
+       2 │ local pdUniqueToken = 1
+       3 │ function Cfg:doThing(a)
+       4 │ 	return a + pdUniqueToken
+       5 │ end
+       6 │ -- pdSharedName appears here
+       7 │ local pdSharedName = 2
+       8 │ local tail = 3
+
+──── PoB: pob/src/Modules/ConfigOptions.lua:1-9 ───────────────────────────
+       1 │ -- ConfigOptions.lua fixture
+       2 │ local pdUniqueToken = 1
+       3 │ function Cfg:doThing(a)
+       4 │ 	return a + pdUniqueToken
+       5 │ end
+       6 │ -- pdSharedName appears here
+       7 │ local pdSharedName = 2
+       8 │ local tail = 3
+       9 │ 

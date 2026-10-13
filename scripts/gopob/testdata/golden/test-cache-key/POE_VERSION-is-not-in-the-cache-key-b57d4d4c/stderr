@@ -1,0 +1,3 @@
+FAIL: the 3.18 run was served from the 3.20 cache entry (ok  	module/calculator	(cached)).
+       POE_VERSION is not in the cache key. See registerVersionInTestCacheKey — the read must
+       happen while a test is RUNNING; a package init or a pre-m.Run TestMain is too early.

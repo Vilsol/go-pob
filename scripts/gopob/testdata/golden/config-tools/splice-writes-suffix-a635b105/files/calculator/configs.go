@@ -1,0 +1,35 @@
+package calculator
+
+var configurations = map[string]ConfigApplyFunc{
+	"ctPlain": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
+		modList.NewFlag("A", val)
+	},
+	"ctTooltip": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
+		modList.NewBase("B", val)
+	},
+	"ctBothLiveAndDead": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
+		modList.NewFlag("J", val)
+	},
+	/* a prefix before the dead handler, and no suffix after it
+	"ctDeadOne": func(val interface{}, modList *ModList, enemyModList *ModList) {
+		modList.NewFlag("H", val)
+	},
+	*/
+	"ctDeadTwo": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
+		modList.NewBase("I", val)
+	},
+	/*
+
+		a suffix after the dead handler and no prefix before it
+	*/
+	/* an older draft of the same dead handler, in its own block
+	"ctDeadTwo": func(val interface{}, modList *ModList, enemyModList *ModList) {
+		modList.NewBase("I-old", val)
+	},
+	*/
+	/* a stale draft repeating a LIVE key, which must not count as dead
+	"ctBothLiveAndDead": func(val interface{}, modList *ModList, enemyModList *ModList) {
+		modList.NewFlag("J", val)
+	},
+	*/
+}

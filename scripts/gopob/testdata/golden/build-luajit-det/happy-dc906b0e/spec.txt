@@ -1,0 +1,5 @@
+tool     build-luajit-det
+fixture  happy
+original scripts/build_luajit_deterministic.sh
+args     --verify
+env      GOPOB_NICED=1

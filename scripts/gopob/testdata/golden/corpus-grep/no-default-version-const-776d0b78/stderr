@@ -1,0 +1,1 @@
+corpus-grep: no `const DefaultVersion` in data/raw/main.go — the default game-data version moved and this script cannot follow it. Pass POE_VERSION explicitly.

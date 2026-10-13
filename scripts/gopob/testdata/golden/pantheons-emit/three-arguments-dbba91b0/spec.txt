@@ -1,0 +1,5 @@
+tool     pantheons-emit
+fixture  three-arguments
+original oracle/pantheons_emit.py
+args     dump.json out.go extra
+env      

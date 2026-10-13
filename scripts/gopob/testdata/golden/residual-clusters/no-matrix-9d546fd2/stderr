@@ -1,0 +1,2 @@
+REFUSING: no matrix at matrix.tsv. Generate it first:
+  CORPUS=true MATRIX_OUT=matrix.tsv go test ./calculator/ -run TestResidualMatrixDump -count=1

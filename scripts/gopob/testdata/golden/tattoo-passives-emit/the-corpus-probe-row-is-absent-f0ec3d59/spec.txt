@@ -1,0 +1,6 @@
+tool     tattoo-passives-emit
+fixture  the-corpus-probe-row-is-absent
+original oracle/tattoo_passives_emit.py
+args     dump.json out.go
+env      
+files    out.go

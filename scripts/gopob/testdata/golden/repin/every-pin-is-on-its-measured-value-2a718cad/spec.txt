@@ -1,0 +1,5 @@
+tool     repin
+fixture  every-pin-is-on-its-measured-value
+original scripts/repin.py
+args     
+env      GOPOB_NICED=1

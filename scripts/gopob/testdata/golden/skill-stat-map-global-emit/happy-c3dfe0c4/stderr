@@ -1,0 +1,4 @@
+entries 15  mods 8 -> kept 6, omitted 1
+     1  unhandled mod type NOSUCHTYPE [unverifiable: the mod type is data-dependent]
+          e.g. empty_stat/Damage
+    10 entries left with NO mods: empty_stat, blank_01, blank_02, blank_03, blank_04, blank_05, blank_06, blank_07

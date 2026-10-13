@@ -1,0 +1,5 @@
+tool     corpus-grep
+fixture  two-occurrences-one-build
+original scripts/corpus_grep.py
+args     
+env      NAMES=1 PATTERN=commontoken here and commontoken

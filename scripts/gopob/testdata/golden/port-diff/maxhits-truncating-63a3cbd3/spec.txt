@@ -1,0 +1,5 @@
+tool     port-diff
+fixture  maxhits-truncating
+original scripts/port_diff.py
+args     
+env      MAX_HITS=2 NAME=pdSharedName POB_DIR=pob

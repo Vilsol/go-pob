@@ -24,7 +24,7 @@ var (
 	existingColProps map[string]ColProps
 )
 
-//pob:block:src/Classes/CalcSectionControl.lua:188-200
+//pob:block:src/Modules/CalcFormat.lua:45-61
 func FinalizeCalcTab(env *Environment) map[string]float64 {
 	props := make(map[string]float64)
 

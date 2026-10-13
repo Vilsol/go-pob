@@ -1,0 +1,1 @@
+usage: skill_stat_map_global_emit.py <dump.json> <out.go>

@@ -1,0 +1,5 @@
+tool     kw-bits-parity
+fixture  bad-gopob-root
+original scripts/kw_bits_parity.py
+args     
+env      GOPOB_ROOT=pob POB_DIR=pob

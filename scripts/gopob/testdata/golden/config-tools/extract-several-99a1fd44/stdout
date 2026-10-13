@@ -1,0 +1,6 @@
+=== ctPlain  type=check  section=Alpha  L4-5
+apply = function(val, modList) modList:NewMod("A", "FLAG", val) end },
+
+=== ctEscaped  type=check  section=Gamma  L25-27
+apply = function(val, modList) modList:NewMod("F", "FLAG", val) end },
+

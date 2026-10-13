@@ -1,0 +1,5 @@
+tool     tag-census-check
+fixture  happy
+original scripts/tag_census_check.py
+args     dumps
+env      

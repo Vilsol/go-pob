@@ -1,0 +1,6 @@
+tool     coverage-census
+fixture  json
+original scripts/coverage_census.py
+args     --profile cov.out --funcs cov.func --root . --json out.json
+env      
+files    out.json

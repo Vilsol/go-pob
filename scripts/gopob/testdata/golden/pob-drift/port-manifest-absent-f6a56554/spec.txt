@@ -1,0 +1,5 @@
+tool     pob-drift
+fixture  port-manifest-absent
+original scripts/pob_drift.py
+args     --candidate cand
+env      POB_DIR=pin

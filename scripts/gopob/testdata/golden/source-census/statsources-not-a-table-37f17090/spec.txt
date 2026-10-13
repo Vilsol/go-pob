@@ -1,0 +1,5 @@
+tool     source-census
+fixture  statsources-not-a-table
+original scripts/source_census.py
+args     --our-dump ours.txt.gz --blob blob/output.jsonl.gz --dumps dumps --min-support 2 --stat Life
+env      

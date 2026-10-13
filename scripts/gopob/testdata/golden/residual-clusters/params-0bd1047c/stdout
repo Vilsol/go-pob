@@ -1,0 +1,45 @@
+MATRIX matrix.tsv
+499 mismatch rows · 23 failing stats · 422 builds with >=1 mismatch
+clustering stats failing on >= 10 builds, Jaccard >= 0.0
+
+  PAIRS     pp  STATS  BUILDS  RATIOS  LEAD STAT / MEMBERS
+    496  0.015     22     419       7  Gamma, AlphaOne, AlphaTwo, Beta, Delta, +17 more
+
+                    1                  (tail: stats failing on < 10 builds, 3 pairs, 0.000pp)
+
+=== CONTAINMENT (A's builds are >=90% inside B's -> A is plausibly UPSTREAM of B) ===
+  [ 0] Gamma                                          builds   419  inside -> ROOT
+
+=== ROOTS, ranked (contained in no larger cluster; fix these first) ===
+      496 pairs  0.015pp    419 builds      7 distinct ratios  Gamma
+
+=== EFFICIENCY: REACH@5 — what a cluster's five commonest ratios are worth ===
+ REACH@5   top1   top5   PAIRS  ABSENT  BUILDS  LEAD STAT
+     357   0.15   0.72     496      36     419  Gamma
+  REACH@5 = pairs x top5 share: what the FIVE commonest arithmetic relationships in that
+  cluster are worth. Both fixes measured so far landed their cluster's dominant ratio.
+
+=== REACHABLE BY EFFICIENCY BAND (cumulative, best-yield causes first) ===
+  current gate ~ 99.9844%   (499 pairs wrong)
+      BAND  CLUSTERS    PAIRS   ~FIXES   GATE AT
+  top5>= 0.8         0        0        0  99.9844%
+  top5>= 0.6         1      357        5  99.9956%
+  top5>= 0.4         1      357        5  99.9956%
+  top5>= 0.3         1      357        5  99.9956%
+  top5>= 0.2         1      357        5  99.9956%
+  top5>= 0.1         1      357        5  99.9956%
+  top5>= 0.0         1      357        5  99.9956%
+  ~FIXES assumes five fixes per cluster; both fixes measured so far cleared their
+  cluster's dominant ratio in ONE change, so this over-counts for concentrated clusters.
+  ⚠️ Clusters below the MIN_BUILDS cut are excluded entirely, so even the 0 row is an
+     UNDER-estimate by the 3-pair tail.
+
+⚠️ BOTH CONCENTRATION MEASURES ARE BIASED, IN OPPOSITE DIRECTIONS, AND BOTH WERE MEASURED.
+   Distinct-ratio COUNT over-states the work by ~40x: the self-ailment-duration cluster
+   showed 88 distinct ratios and took ONE code change, the enemy-modifier cluster 45 and
+   took two rows. TOP5 SHARE under-states RECOVERABLE pairs for ADDITIVE causes: a missing
+   flat modifier produces a DIFFERENT ratio on every build, so one cause can scatter across
+   hundreds of ratios and score top5 ~= 0. The FireResist off-by-one did exactly that -- it
+   read as 0.9889 / 0.9882 / 0.9878 and was a single missing point of maximum resistance.
+   Use top1 == 1.00 as a near-certain single fix; treat a low top5 as UNKNOWN, not as hard.
+⚠️ Every figure is an UPPER BOUND. Only the gate measures a change.

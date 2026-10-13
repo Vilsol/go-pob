@@ -1,0 +1,6 @@
+tool     skill-add-skill-types-emit
+fixture  a-support-declares-an-empty-list
+original oracle/skill_add_skill_types_emit.py
+args     dump.json out.go
+env      
+files    out.go

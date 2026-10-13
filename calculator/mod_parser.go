@@ -1775,13 +1775,15 @@ var modTagList = map[string]modNameListType{
 	`per blue socket`:                      {tag: mod.Multiplier("BlueSocketIn{SlotName}").Base(0)},
 	`per white socket`:                     {tag: mod.Multiplier("WhiteSocketIn{SlotName}").Base(0)},
 	`for each impale on enemy`:             {tag: mod.Multiplier("ImpaleStacks").Actor("enemy")},
-	`per animated weapon`:                  {tag: mod.PerStat(0, "ActiveAnimatedWeaponLimit").Actor("parent")},
-	`per grasping vine`:                    {tag: mod.Multiplier("GraspingVinesCount").Base(0)},
-	`per fragile regrowth`:                 {tag: mod.Multiplier("FragileRegrowthCount").Base(0)},
-	`per bark`:                             {tag: mod.Multiplier("BarkskinStacks").Base(0)},
-	`per bark below maximum`:               {tag: mod.Multiplier("MissingBarkskinStacks").Base(0)},
-	`per allocated mastery passive skill`:  {tag: mod.Multiplier("AllocatedMastery").Base(0)},
-	`per allocated notable passive skill`:  {tag: mod.Multiplier("AllocatedNotable").Base(0)},
+	//pob:src/Modules/ModParser.lua:1454
+	`per impale on enemy`:                 {tag: mod.Multiplier("ImpaleStacks").Actor("enemy")},
+	`per animated weapon`:                 {tag: mod.PerStat(0, "ActiveAnimatedWeaponLimit").Actor("parent")},
+	`per grasping vine`:                   {tag: mod.Multiplier("GraspingVinesCount").Base(0)},
+	`per fragile regrowth`:                {tag: mod.Multiplier("FragileRegrowthCount").Base(0)},
+	`per bark`:                            {tag: mod.Multiplier("BarkskinStacks").Base(0)},
+	`per bark below maximum`:              {tag: mod.Multiplier("MissingBarkskinStacks").Base(0)},
+	`per allocated mastery passive skill`: {tag: mod.Multiplier("AllocatedMastery").Base(0)},
+	`per allocated notable passive skill`: {tag: mod.Multiplier("AllocatedNotable").Base(0)},
 
 	`per (\d+)% of maximum mana they reserve`: {
 		fn: func(caps []string) modNameListType {
@@ -2732,7 +2734,7 @@ func extraSupportMods(entries []extraSupportEntry, level int, slotName string) [
 	return mods
 }
 
-//pob:src/Modules/ModParser.lua:1613-1620
+//pob:src/Modules/ModParser.lua:2046-2053
 func grantedExtraSkill(name string, level int, noSupports bool) []mod.Mod {
 	name, _ = strings.CutSuffix(strings.ToLower(name), " skill")
 	return []mod.Mod{
@@ -5906,7 +5908,7 @@ var specialModList = map[string]interface{}{
 	`hits that would ignite instead scorch`: []mod.Mod{FLAG("IgniteCanScorch"), FLAG("CannotIgnite")},
 	//pob:src/Modules/ModParser.lua:3027
 	`you can inflict an additional scorch on each enemy`: []mod.Mod{FLAG("ScorchCanStack"), MOD("ScorchStacksMax", "BASE", 1)},
-	//pob:src/Modules/ModParser.lua:3951-3955
+	//pob:block:src/Modules/ModParser.lua:3951-3955
 	"inflict fire, cold and lightning exposure on enemies when you suppress their spell damage": []mod.Mod{
 		MOD("EnemyModifier", "LIST", mod.EnemyModifier{Mod: MOD("FireExposure", "BASE", -10)}).Tag(mod.Condition("Effective")).Tag(mod.Condition("SuppressedRecently")),
 		MOD("EnemyModifier", "LIST", mod.EnemyModifier{Mod: MOD("ColdExposure", "BASE", -10)}).Tag(mod.Condition("Effective")).Tag(mod.Condition("SuppressedRecently")),
@@ -7473,6 +7475,8 @@ var specialModList = map[string]interface{}{
 	"bow attacks have culling strike": []mod.Mod{MOD("CullPercent", "MAX", 10).Flag(mod.MFlagAttack | mod.MFlagBow)},
 	//pob:block:src/Modules/ModParser.lua:5018
 	"nearby allies have culling strike": []mod.Mod{MOD("ExtraAura", "LIST", mod.ExtraAura{Mod: MOD("CullPercent", "MAX", 10), OnlyAllies: true})},
+	//pob:src/Modules/ModParser.lua:5019
+	"hits that stun enemies have culling strike": []mod.Mod{FLAG("Condition:maceMasteryStunCullSpecced")},
 	//pob:block:src/Modules/ModParser.lua:5087-5101
 	"raised beast spectres have farrul's farric presence": []mod.Mod{
 		MOD("ExtraAura", "LIST", mod.ExtraAura{FromAllies: true, Mod: MOD("Accuracy", "INC", 80)}).Tag(mod.Condition("HaveBeastSpectre")),
@@ -7596,6 +7600,10 @@ var specialModList = map[string]interface{}{
 	},
 	`recover (\d+)% of mana on kill`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("ManaOnKill", "BASE", 1).Tag(mod.PercentStat("Mana", num))}, ""
+	},
+	//pob:src/Modules/ModParser.lua:4661
+	`recover (\d+)% of mana on kill while you have a tincture active`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{MOD("ManaOnKill", "BASE", 1).Tag(mod.PercentStat("Mana", num)).Tag(mod.Condition("UsingTincture"))}, ""
 	},
 	`recover (\d+)% of mana on kill for each different type of mastery you have allocated`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
@@ -7841,6 +7849,10 @@ var specialModList = map[string]interface{}{
 	"cannot recover energy shield to above evasion rating": []mod.Mod{mod.NewFlag("EvasionESRecoveryCap", true)},
 	`warcries exert (\d+) additional attacks?`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewFloat("ExtraExertedAttacks", mod.TypeBase, num)}, ""
+	},
+	//pob:src/Modules/ModParser.lua:5238
+	`warcries have (\d+)% chance to exert (\d+) additional attacks?`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{MOD("ExtraExertedAttacks", "BASE", num*utils.Float(captures[1])/100)}, ""
 	},
 	`skills deal (\d+)% more damage for each warcry exerting them`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewFloat("EchoesExertAverageIncrease", mod.TypeMore, num)}, ""
@@ -8092,8 +8104,8 @@ var specialModList = map[string]interface{}{
 	"you have resolute technique while you do not have elemental overload": []mod.Mod{MOD("Keystone", "LIST", "Resolute Technique").Tag(mod.Condition("HaveElementalOverload").Neg(true))},
 	"hits ignore enemy monster fire resistance while you are ignited":      []mod.Mod{FLAG("IgnoreFireResistance").Tag(mod.Condition("Ignited"))},
 	"your hits can't be evaded by blinded enemies":                         []mod.Mod{FLAG("CannotBeEvaded").Tag(mod.ActorCondition("enemy", "Blinded"))},
-	"blind does not affect your chance to hit":                             []mod.Mod{mod.NewFlag("IgnoreBlindHitChance", true)},
-	"unaffected by blind": []mod.Mod{mod.NewFlag("IgnoreBlindHitChance", true)},
+	"blind does not affect your chance to hit":                             []mod.Mod{mod.NewFlag("UnaffectedByBlind", true)},
+	"unaffected by blind": []mod.Mod{mod.NewFlag("UnaffectedByBlind", true)},
 	"enemies blinded by you while you are blinded have malediction": []mod.Mod{MOD("EnemyModifier", "LIST", mod.EnemyModifier{Mod: FLAG("HasMalediction").Tag(mod.Condition("Blinded"))}).Tag(mod.Condition("Blinded"))},
 	//pob:block:src/Modules/ModParser.lua:5428-5429
 	"skills which throw traps have blood magic":          []mod.Mod{FLAG("CostLifeInsteadOfMana").Tag(mod.SkillType(string(data.SkillTypeTrapped)))},
@@ -8149,6 +8161,10 @@ var specialModList = map[string]interface{}{
 	},
 	`warcry skills have (\+\d+) seconds to cooldown`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("CooldownRecovery", "BASE", num).KeywordFlag(mod.KeywordFlagWarcry)}, ""
+	},
+	//pob:src/Modules/ModParser.lua:5458
+	`stance skills have (\+\d+) seconds to cooldown`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{MOD("CooldownRecovery", "BASE", num).Tag(mod.SkillType(string(data.SkillTypeStance)))}, ""
 	},
 	"using warcries is instant": []mod.Mod{mod.NewFlag("InstantWarcry", true)},
 	`attacks with axes or swords grant (\d+) rage on hit, no more than once every second`: []mod.Mod{
@@ -8382,6 +8398,8 @@ var specialModList = map[string]interface{}{
 	`skills supported by nightblade have (\d+)% increased effect of elusive`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewFloat("NightbladeSupportedElusiveEffect", mod.TypeIncrease, num)}, ""
 	},
+	//pob:src/Modules/ModParser.lua:5608
+	`(\d+)% chance to gain elusive when you block while dual wielding`: []mod.Mod{FLAG("Condition:CanBeElusive").Tag(mod.Condition("DualWielding"))},
 	//pob:src/Modules/ModParser.lua:5609
 	`elusive on you reduces in effect (\d+)% slower`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewFloat("ElusiveEffectLossSlower", mod.TypeIncrease, num)}, ""
@@ -8750,6 +8768,9 @@ var specialModList = map[string]interface{}{
 	`(\d+)% increased defences while you have at least four linked targets`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("Defences", "INC", num).Tag(mod.MultiplierThreshold("LinkedTargets").Threshold(4))}, ""
 	},
+	`your movement speed is equal to the highest movement speed among linked players`: []mod.Mod{
+		FLAG("MovementSpeedEqualHighestLinkedPlayers").Tag(mod.MultiplierThreshold("LinkedTargets").Threshold(1)),
+	},
 	`(\d+)% increased movement speed while you have at least two linked targets`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("MovementSpeed", "INC", num).Tag(mod.MultiplierThreshold("LinkedTargets").Threshold(2))}, ""
 	},
@@ -8785,6 +8806,24 @@ var specialModList = map[string]interface{}{
 				Mod: MOD("ElementalResistMax", "BASE", num).Tag(mod.GlobalEffect("Global").Unscalable(true)),
 			}),
 		}, ""
+	},
+	//pob:src/Modules/ModParser.lua:2877
+	`enemies in your link beams cannot apply elemental ailments`: []mod.Mod{
+		FLAG("ElementalAilmentImmune").Tag(mod.ActorCondition("enemy", "BetweenYouAndLinkedTarget")),
+	},
+	//pob:block:src/Modules/ModParser.lua:2879-2881
+	`you can inflict \+(\d+) hallowing flame on enemies`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{MOD("Multiplier:HallowingFlameMax", "BASE", num)}, ""
+	},
+	`gain (\d+)% of (\w+) damage as extra (\w+) damage for each of your hallowing flames that have been removed by an allied hit recently, up to (\d+)%`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{
+			MOD(firstToUpper(captures[1])+"DamageGainAs"+firstToUpper(captures[2]), "BASE", num).
+				Tag(mod.ActorCondition("enemy", "HallowingFlame")).
+				Tag(mod.Multiplier("HallowingFlameStacksRemovedByAlly").Limit(utils.Float(captures[3]) / num)),
+		}, ""
+	},
+	`(\d+)% increased magnitude of hallowing flame you inflict`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{MOD("HallowingFlameMagnitude", "INC", num)}, ""
 	},
 	`quicksilver flasks you use also apply to nearby allies`: []mod.Mod{mod.NewFlag("QuickSilverAppliesToAllies", true)},
 	`attacks have (\d+)% arcane might`: func(num float64, captures []string) ([]mod.Mod, string) {

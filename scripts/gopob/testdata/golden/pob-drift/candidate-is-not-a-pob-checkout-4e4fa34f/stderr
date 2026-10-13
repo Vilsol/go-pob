@@ -1,0 +1,4 @@
+REFUSING: candidate is not a PoB checkout: <sandbox>/notpob
+  Expected either src/ (a source checkout) or Modules/ + Classes/ (an
+  installed PoB).
+An instrument that cannot answer must refuse, never return empty.

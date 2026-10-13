@@ -1,0 +1,2 @@
+REFUSING: no Go func named 'PdNoSuchFunc' in any tracked non-test .go file.
+Try SYMBOL=PdNoSuchFunc to grep both trees for the literal instead.

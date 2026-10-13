@@ -1,0 +1,5 @@
+tool     port-diff
+fixture  lua-not-utf8
+original scripts/port_diff.py
+args     
+env      NAME=pdSharedName POB_DIR=pob

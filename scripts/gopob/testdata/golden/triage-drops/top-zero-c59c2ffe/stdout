@@ -1,0 +1,9 @@
+READY     28 lines,     12 build-instances -- every mod name already has a consumer
+BLOCKED    3 lines,      9 build-instances -- needs a consumer first (grep is an upper bound on READY, see header)
+
+=== READY, top 0 ===
+
+=== BLOCKED, top 20 (each needs its consumer written) ===
+     9  missing=OnlyInTest                                TEST ONLY
+     0  missing=OnlyInParser                              PARSER ONLY
+     0  missing=éééNameThatIsQuiteLongIndeed,AndAnotherL  WIDE NAMES

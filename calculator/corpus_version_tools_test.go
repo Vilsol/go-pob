@@ -88,9 +88,6 @@ func TestCorpusToolsFollowLoadedGameData(t *testing.T) {
 // TestCorpusGrepFollowsLoadedVersion pins the PRESENCE rung to the same corpus as the other two.
 func TestCorpusGrepFollowsLoadedVersion(t *testing.T) {
 	requireOperatorRun(t, "repo hygiene: the instruments follow POE_VERSION")
-	if _, err := exec.LookPath("python3"); err != nil {
-		t.Skipf("python3 not on PATH: %v", err)
-	}
 
 	entries, err := os.ReadDir("../testdata/corpus-" + raw.LatestVersion)
 	if err != nil {
@@ -105,7 +102,7 @@ func TestCorpusGrepFollowsLoadedVersion(t *testing.T) {
 
 	run := func(t *testing.T, pattern string) []byte {
 		t.Helper()
-		cmd := exec.CommandContext(t.Context(), "python3", "scripts/corpus_grep.py")
+		cmd := exec.CommandContext(t.Context(), "go", "run", "./scripts/gopob", "corpus-grep")
 		cmd.Dir = ".."
 		cmd.Env = append(os.Environ(), "PATTERN="+pattern, "POE_VERSION="+raw.LatestVersion)
 		out, err := cmd.CombinedOutput()

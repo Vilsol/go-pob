@@ -1,0 +1,9 @@
+
+NAME SET SHRANK: 1 name(s) no longer referenced by any live command
+
+  TestVanishedFromEveryDriver
+
+A name leaving this set means some driver stopped naming it — usually because a
+refactor moved the literal behind a variable, which narrows this checker without
+failing anything. Follow the value to its new home, or record the loss deliberately
+with --update-names.

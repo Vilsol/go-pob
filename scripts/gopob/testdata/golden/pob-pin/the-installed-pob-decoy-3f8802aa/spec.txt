@@ -1,0 +1,5 @@
+tool     pob-pin
+fixture  the-installed-pob-decoy
+original scripts/pob_pin.py
+args     
+env      POB_DIR=decoy

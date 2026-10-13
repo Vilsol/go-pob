@@ -1,0 +1,2 @@
+canary: 3 distinct md5 of 3 runs (must be >1 on stock luajit)
+item_tools     3 distinct md5 of 3 runs   NOT REPRODUCIBLE

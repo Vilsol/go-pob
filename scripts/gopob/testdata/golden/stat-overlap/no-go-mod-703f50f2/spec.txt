@@ -1,0 +1,5 @@
+tool     stat-overlap
+fixture  no-go-mod
+original scripts/stat_overlap.sh
+args     
+env      OUT=out STATS=Short MediumLengthStat AVeryLongStatNameThatOverflowsTheColumnAndThenSome

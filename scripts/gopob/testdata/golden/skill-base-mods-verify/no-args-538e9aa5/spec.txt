@@ -1,0 +1,5 @@
+tool     skill-base-mods-verify
+fixture  no-args
+original oracle/skill_base_mods_verify.py
+args     
+env      

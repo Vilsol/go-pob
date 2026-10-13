@@ -1,0 +1,2 @@
+FATAL: missing <repo-root>
+usage: dump_parallel.sh <pob-src-parent> <repo-root> <builds-dir> <out-base> <runs>

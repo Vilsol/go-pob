@@ -1,0 +1,1 @@
+usage: skill_add_skill_types_emit.py <dump.json> <out.go>

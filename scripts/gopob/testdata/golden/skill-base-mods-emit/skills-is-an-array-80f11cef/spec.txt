@@ -1,0 +1,5 @@
+tool     skill-base-mods-emit
+fixture  skills-is-an-array
+original oracle/skill_base_mods_emit.py
+args     dump.json out.go types.go
+env      

@@ -1,0 +1,6 @@
+tool     task-test-refs
+fixture  update-names
+original scripts/task_test_refs.py
+args     --update-names
+env      SELFTEST= SELFTEST_DIR=
+files    scripts/task_test_refs.names

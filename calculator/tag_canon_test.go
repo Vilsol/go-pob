@@ -100,7 +100,14 @@ func parsePobTags(seg string) []canonTag {
 	if seg == "" || seg == "-" {
 		return nil
 	}
-	raw := splitTop(seg, ',')
+	var raw []string
+	for _, r := range splitTop(seg, ',') {
+		if len(raw) > 0 && !strings.HasPrefix(r, "type=") {
+			raw[len(raw)-1] += "," + r
+			continue
+		}
+		raw = append(raw, r)
+	}
 	out := make([]canonTag, 0, len(raw))
 	for _, r := range raw {
 		typ := ""
@@ -501,5 +508,12 @@ func TestCanonTagRendersEveryTagField(t *testing.T) {
 	}
 	if n := len(canonUnserialised); n > canonUnserialisedCeiling {
 		t.Errorf("canonUnserialised has %d entries, ceiling %d — this list may only SHRINK", n, canonUnserialisedCeiling)
+	}
+}
+
+func TestParsePobTagsKeepsACommaInsideAValue(t *testing.T) {
+	got := parsePobTags("type=SkillName/skillName=Summon Skeletons,type=ItemCondition/itemSlot=Weapon 1/nameCond=The Iron Mass, Gladius")
+	if len(got) != 2 || got[0].typ != "SkillName" || got[1].typ != "ItemCondition" {
+		t.Fatalf("parsed %+v, want SkillName then ItemCondition", got)
 	}
 }

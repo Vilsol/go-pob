@@ -1,0 +1,1 @@
+corpus-grep: pattern uses '(?<', which python allows and RE2 does not (no lookaround, no backreferences). Rewrite it without, so this tool and its Go port answer the same question.

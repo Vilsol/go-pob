@@ -1,0 +1,5 @@
+tool     corpus-dump-ref
+fixture  empty-out-argument
+original scripts/corpus_dump_ref.sh
+args     HEAD 
+env      GOPOB_NICED=1

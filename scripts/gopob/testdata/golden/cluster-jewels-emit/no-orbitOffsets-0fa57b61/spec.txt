@@ -1,0 +1,6 @@
+tool     cluster-jewels-emit
+fixture  no-orbitOffsets
+original oracle/cluster_jewels_emit.py
+args     dump.json out.go
+env      
+files    out.go

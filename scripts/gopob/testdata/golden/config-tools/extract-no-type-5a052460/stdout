@@ -1,0 +1,3 @@
+=== ctNoType  type=None  section=Gamma  L30-31
+apply = function(val, modList) modList:NewMod("G", "BASE", val) end },
+

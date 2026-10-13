@@ -1,0 +1,5 @@
+extracting dumps-1 -> work/run-1.jsonl
+extracting dumps-2 -> work/run-2.jsonl
+modal-stub: argv=['--min-fraction=0.5', 'out.jsonl', 'out.jsonl.gz.report.txt', 'work/run-1.jsonl', 'work/run-2.jsonl']
+modal blob: out.jsonl.gz
+report:     out.jsonl.gz.report.txt

@@ -1,0 +1,5 @@
+tool     pob-citations
+fixture  happy
+original scripts/pob_citations.py
+args     
+env      POB_DIR=pob

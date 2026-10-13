@@ -1,0 +1,5 @@
+tool     table-row-census
+fixture  no-args
+original scripts/table_row_census.py
+args     
+env      

@@ -1,0 +1,6 @@
+tool     pantheons-emit
+fixture  the-dump-is-not-json
+original oracle/pantheons_emit.py
+args     dump.json out.go
+env      
+files    out.go

@@ -1,0 +1,5 @@
+tool     pob-dump-diff
+fixture  dir-missing
+original scripts/pob_dump_diff.py
+args     nope B
+env      

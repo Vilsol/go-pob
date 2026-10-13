@@ -1,0 +1,3 @@
+REFUSING (NOT-A-CHECKOUT): <sandbox>/nomarkers is not a PoB source checkout; missing src/Modules/Main.lua, src/Launch.lua, src/HeadlessWrapper.lua
+
+This is NOT a pass. The pin could not be verified at all.

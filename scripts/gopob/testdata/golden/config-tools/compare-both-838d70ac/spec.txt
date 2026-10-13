@@ -1,0 +1,5 @@
+tool     config-tools
+fixture  compare-both
+original scripts/config_tools.py
+args     --pob pob --repo . --corpus corpus compare --var ctBothLiveAndDead
+env      

@@ -1,0 +1,5 @@
+tool     pob-drift
+fixture  unknown-flag
+original scripts/pob_drift.py
+args     --nope
+env      POB_DIR=pin

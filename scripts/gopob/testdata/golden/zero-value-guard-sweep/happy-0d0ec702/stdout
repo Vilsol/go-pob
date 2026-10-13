@@ -1,0 +1,46 @@
+21 distinct Go fields guarded with >0/!=0; 20 also appear as a bare Lua presence test
+
+=== Busiest   (3 Go site(s))   lua: One.lua:2, Two.lua:1, Two.lua:2
+      a.go:4  if x.Busiest > 0 {
+      a.go:7  if y.Busiest != 0 {
+      a.go:10  if z.Busiest > 0 {
+=== Latecomer   (3 Go site(s))   lua: One.lua:22
+      c.go:40  if m.Latecomer > 0 {
+      c.go:43  if m.Latecomer != 0 {
+      c.go:46  if m.Latecomer > 0 {
+=== TieAlpha   (1 Go site(s))   lua: One.lua:3
+      a.go:15  if q.TieAlpha > 0 {
+=== TieBravo   (1 Go site(s))   lua: One.lua:4
+      a.go:18  if q.TieBravo != 0 {
+=== TieCharlie   (1 Go site(s))   lua: One.lua:5
+      b.go:4  if m.TieCharlie > 0 {
+=== TieDelta   (1 Go site(s))   lua: One.lua:6
+      b.go:7  if m.TieDelta != 0 {
+=== TieEcho   (1 Go site(s))   lua: One.lua:7
+      b.go:10  if m.TieEcho > 0 {
+=== TieFoxtrot   (1 Go site(s))   lua: One.lua:8
+      b.go:13  if m.TieFoxtrot != 0 {
+=== TieExtra00   (1 Go site(s))   lua: One.lua:10
+      c.go:4  if m.TieExtra00 > 0 {
+=== TieExtra01   (1 Go site(s))   lua: One.lua:11
+      c.go:7  if m.TieExtra01 > 0 {
+=== TieExtra02   (1 Go site(s))   lua: One.lua:12
+      c.go:10  if m.TieExtra02 > 0 {
+=== TieExtra03   (1 Go site(s))   lua: One.lua:13
+      c.go:13  if m.TieExtra03 > 0 {
+=== TieExtra04   (1 Go site(s))   lua: One.lua:14
+      c.go:16  if m.TieExtra04 > 0 {
+=== TieExtra05   (1 Go site(s))   lua: One.lua:15
+      c.go:19  if m.TieExtra05 > 0 {
+=== TieExtra06   (1 Go site(s))   lua: One.lua:16
+      c.go:22  if m.TieExtra06 > 0 {
+=== TieExtra07   (1 Go site(s))   lua: One.lua:17
+      c.go:25  if m.TieExtra07 > 0 {
+=== TieExtra08   (1 Go site(s))   lua: One.lua:18
+      c.go:28  if m.TieExtra08 > 0 {
+=== TieExtra09   (1 Go site(s))   lua: One.lua:19
+      c.go:31  if m.TieExtra09 > 0 {
+=== TieExtra10   (1 Go site(s))   lua: One.lua:20
+      c.go:34  if m.TieExtra10 > 0 {
+=== TieExtra11   (1 Go site(s))   lua: One.lua:21
+      c.go:37  if m.TieExtra11 > 0 {

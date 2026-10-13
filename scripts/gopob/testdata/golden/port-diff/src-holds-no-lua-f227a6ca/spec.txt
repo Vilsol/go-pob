@@ -1,0 +1,5 @@
+tool     port-diff
+fixture  src-holds-no-lua
+original scripts/port_diff.py
+args     
+env      NAME=pdSharedName POB_DIR=srcless

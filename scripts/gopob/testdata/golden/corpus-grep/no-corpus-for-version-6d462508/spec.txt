@@ -1,0 +1,5 @@
+tool     corpus-grep
+fixture  no-corpus-for-version
+original scripts/corpus_grep.py
+args     
+env      PATTERN=commontoken POE_VERSION=0.01

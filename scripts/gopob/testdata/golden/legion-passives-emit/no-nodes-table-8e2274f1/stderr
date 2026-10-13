@@ -1,0 +1,1 @@
+REFUSING: the dump carries no `nodes` table. Re-run go run ./scripts/gamedatadump legion-passives.

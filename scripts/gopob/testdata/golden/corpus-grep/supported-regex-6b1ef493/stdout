@@ -1,0 +1,19 @@
+CORPUS <sandbox>/testdata/corpus-9.99
+PATTERN common(token|thing)
+MATCHED 21 of 24 builds, 22 occurrence(s)
+  b03                                                  2
+  b05                                                  1
+  b06                                                  1
+  b07                                                  1
+  b08                                                  1
+  b09                                                  1
+  b10                                                  1
+  b11                                                  1
+  b12                                                  1
+  b13                                                  1
+  b14                                                  1
+  b15                                                  1
+  b16                                                  1
+  b17                                                  1
+  b18                                                  1
+  … and 6 more (NAMES=1 for all)

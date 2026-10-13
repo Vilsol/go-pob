@@ -1,0 +1,3 @@
+WARNING: the stock luajit is ALSO deterministic under this probe.
+         Either it is already built without the security hashing, or the probe
+         has stopped discriminating. Do not trust the result until you know which.

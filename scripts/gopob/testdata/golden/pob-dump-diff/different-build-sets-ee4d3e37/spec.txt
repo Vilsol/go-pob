@@ -1,0 +1,5 @@
+tool     pob-dump-diff
+fixture  different-build-sets
+original scripts/pob_dump_diff.py
+args     A otherset
+env      

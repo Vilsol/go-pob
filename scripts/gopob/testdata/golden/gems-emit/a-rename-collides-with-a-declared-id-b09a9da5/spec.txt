@@ -1,0 +1,6 @@
+tool     gems-emit
+fixture  a-rename-collides-with-a-declared-id
+original oracle/gems_emit.py
+args     dump.json out.go parser.go
+env      
+files    out.go

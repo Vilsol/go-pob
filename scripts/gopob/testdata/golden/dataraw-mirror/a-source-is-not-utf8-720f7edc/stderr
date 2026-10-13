@@ -1,0 +1,2 @@
+REFUSING: pob/src/Data/Minions.lua is not valid UTF-8 (a PoB source file)
+An instrument that cannot answer must refuse, never return empty.

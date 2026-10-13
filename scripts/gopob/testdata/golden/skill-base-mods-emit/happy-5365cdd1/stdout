@@ -1,0 +1,53 @@
+skills 9  mods 18 -> kept 20, omitted 27
+     4  unhandled mod type HEAVY
+          e.g. ZHeavy/H1
+          e.g. ZHeavy/H2
+          e.g. ZHeavy/H3
+     2  unhandled mod type MID
+          e.g. ZHeavy/M1
+          e.g. ZHeavy/M2
+     1  MinionModifier value carries no nested mod table
+          e.g. AllOmitted/MinionModifier
+     1  unhandled mod type WEIRD
+          e.g. AllOmitted/Unknown
+     1  keywordFlags 16 are not a union of named KeywordFlag bits
+          e.g. MaskBits/PhysKeyword
+     1  flags 32 are not a union of named MFlag bits
+          e.g. MaskBits/GhostBit
+     1  string-valued skill() entries (radiusLabel, radiusSecondaryLabel,
+//     radiusTertiaryLabel, triggerSource, corpseMonsterVariety): mod.SkillData.Value is a
+//     float64 and calculator.SkillData has no string field to receive them
+          e.g. OmitTieA/SkillData
+     1  skill() entry whose key has no field on calculator.SkillData
+//     (noSuchField), which utils.Set drops as an invalid key rather than storing
+          e.g. OmitTieB/SkillData
+     1  unhandled mod type T01
+          e.g. TieFarm/M01
+     1  unhandled mod type T02
+          e.g. TieFarm/M02
+     1  unhandled mod type T03
+          e.g. TieFarm/M03
+     1  unhandled mod type T04
+          e.g. TieFarm/M04
+     1  unhandled mod type T05
+          e.g. TieFarm/M05
+     1  unhandled mod type T06
+          e.g. TieFarm/M06
+     1  unhandled mod type T07
+          e.g. TieFarm/M07
+     1  unhandled mod type T08
+          e.g. TieFarm/M08
+     1  unhandled mod type T09
+          e.g. TieFarm/M09
+     1  unhandled mod type T10
+          e.g. TieFarm/M10
+     1  unhandled mod type T11
+          e.g. TieFarm/M11
+     1  unhandled mod type T12
+          e.g. TieFarm/M12
+     1  unhandled mod type T13
+          e.g. TieFarm/M13
+     1  unhandled mod type T14
+          e.g. TieFarm/M14
+     1  flags 1073741824 are not a union of named MFlag bits
+          e.g. UnnamedBit/Damage

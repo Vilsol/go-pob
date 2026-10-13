@@ -1,0 +1,5 @@
+tool     skill-parts
+fixture  an-escaped-quote-is-not-accepted
+original oracle/skill_parts.py
+args     out.go
+env      POB_DIR=pob

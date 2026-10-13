@@ -1,0 +1,5 @@
+tool     skill-stat-map-verify
+fixture  skilldata-value-is-not-a-table
+original oracle/skill_stat_map_verify.py
+args     lua.json go.json
+env      

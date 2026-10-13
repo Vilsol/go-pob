@@ -1,0 +1,6 @@
+tool     nice
+fixture  exit-status-is-the-command's
+original scripts/nice.sh
+args     ./probe.sh one two
+env      
+unset    GOPOB_NICED

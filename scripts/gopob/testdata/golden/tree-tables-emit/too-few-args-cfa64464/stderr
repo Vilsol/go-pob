@@ -1,0 +1,19 @@
+Emit calculator/tree_missing_nodes_generated.go and tree_stat_text_generated.go.
+
+    python3 oracle/tree_tables_emit.py <ours.json> <pob.json> <missing.go> <fixups.go>
+
+These two tables are the DIFF between go-pob-data's passive tree and the tree the pinned PoB
+grades with. They were hand-maintained for the whole of this project's history and went stale at
+3_18 ids while the pin graded 3_20, because nothing could produce the second side offline. Both
+dumps now exist (oracle/tree_ours_dump, oracle/tree_stats.lua), so the diff is derivable.
+
+⚠️ NORMALISE PoB's LINE SPLITTING OR THE OUTPUT IS 66x TOO BIG. PassiveTree.lua:493-501 splits
+one go-pob-data entry into several stat lines, so a naive comparison reports 66 divergent nodes
+at 3_20 where the true number is ONE. The other 65 are formatting.
+
+⚠️ TWO JUDGEMENTS CANNOT BE DERIVED AND ARE DECLARED BELOW, with the measurement that justifies
+each. This mirrors oracle/skill_hidden_levels_emit.py, which keeps its curated id list
+hand-declared in the emitter while generating the content: a generator may encode a decision as
+long as the decision is visible and reasoned, and that is strictly better than a whole file of
+undeclared decisions.
+

@@ -1,0 +1,5 @@
+tool     skill-parts
+fixture  crlf-file-reaches-a-refusal
+original oracle/skill_parts.py
+args     out.go
+env      POB_DIR=pob

@@ -1,0 +1,1 @@
+FAIL: a freshly cleared cache still served a cached result: ok  	module/calculator	(cached)

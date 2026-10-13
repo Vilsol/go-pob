@@ -1,0 +1,30 @@
+skills 5  entries 29  mods 32 -> kept 26, omitted 14
+entries PoB declares with no mods: 2 (of which 1 shadow a global-map stat)
+entries emptied by omission: 14 (of which 1 suppress a real global entry)
+boolean mod values emitted as 1/0:    2 at SkillData
+     3  unhandled mod type NOSUCHTYPE [unverifiable: the mod type is data-dependent]
+          e.g. DeltaSkill/shadowed_empty_stat/Damage
+          e.g. DeltaSkill/unshadowed_empty_stat/Damage
+          e.g. EpsilonSkill/group_wholly_omitted/Damage
+     1  GlobalEffect tag carries nosuchkey, which mod.GlobalEffectTag cannot express [go:mod.GlobalEffectTag]
+          e.g. AlphaSkill/globaleffect_unmodelled/Damage
+     1  Multiplier tag carries nosuchkey, which mod.MultiplierTag cannot express [go:mod.MultiplierTag]
+          e.g. AlphaSkill/multiplier_unrepresentable/Damage
+     1  mod has no 'value'
+          e.g. AlphaSkill/nameless_mod/<nameless>
+     1  MultiplierThreshold tag carries neither threshold nor thresholdVar [pob:src/Classes/ModStore.lua:331]
+          e.g. AlphaSkill/threshold_neither/Life
+     1  MultiplierThreshold tag carries varList, which mod.MultiplierThresholdTag cannot express [go:mod.MultiplierThresholdTag]
+          e.g. AlphaSkill/threshold_unmodelled/Life
+     1  mod carries 'nosuchmodkey' beyond the known mod fields, which this emitter neither models nor declares [go:mod.Mod]
+          e.g. DeltaSkill/named_mod_with_extra_key/Damage
+     1  nested mod group carrying the per-mod scalar 'div', which raw.StatMap cannot express: its Div/Mult are per-ENTRY and PoB writes one per GROUP [go:raw.StatMap]
+          e.g. DeltaSkill/nameless_mod_with_extra_key/<nameless>
+     1  SkillData LIST value carries nosuchfield, which mod.SkillData cannot express [go:mod.SkillData]
+          e.g. DeltaSkill/skilldata_unmodelled/SkillData
+     1  flags 4096 are not a union of named MFlag bits [unverifiable: the flag value is data-dependent; MFLAG_BITS in this file is the named set]
+          e.g. DeltaSkill/unnamed_bit/Damage
+     1  non-dict tag: a bare int in the tags array, from a skill() call written as if it took flags positionally [pob:Modules/Data.lua:52]
+          e.g. GammaSkill/nondict_tag/Damage
+     1  unknown tag type NoSuchTagType [unverifiable: a new tag type appears only when PoB adds one]
+          e.g. GammaSkill/unknown_tag/Damage

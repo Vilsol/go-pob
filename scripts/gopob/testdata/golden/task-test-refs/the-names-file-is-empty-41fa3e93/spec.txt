@@ -1,0 +1,5 @@
+tool     task-test-refs
+fixture  the-names-file-is-empty
+original scripts/task_test_refs.py
+args     
+env      SELFTEST= SELFTEST_DIR=

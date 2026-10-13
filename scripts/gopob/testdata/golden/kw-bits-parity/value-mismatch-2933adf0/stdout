@@ -1,0 +1,1 @@
+mod/common.go: Attack declares 0x00010000, PoB writes 0x00000042

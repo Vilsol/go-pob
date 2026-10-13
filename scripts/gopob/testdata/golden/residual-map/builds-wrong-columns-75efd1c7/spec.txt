@@ -1,0 +1,5 @@
+tool     residual-map
+fixture  builds-wrong-columns
+original scripts/residual_map.py
+args     
+env      WL=wl

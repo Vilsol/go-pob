@@ -1,0 +1,5 @@
+tool     regen-fixtures
+fixture  named-subset-runs-in-the-order-given
+original scripts/regen_fixtures.sh
+args     mod_parse item_tools
+env      GOPOB_NICED=1 LUA_PATH=/sandbox/?.lua;; POB_DIR=pob

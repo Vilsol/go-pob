@@ -24,7 +24,7 @@ func TestCalcsIntermediateCensus(t *testing.T) {
 	}
 	dumpDir := os.Getenv("CALCS_DUMP")
 	if dumpDir == "" {
-		t.Fatal("REFUSING: set CALCS_DUMP=<dir> from `task calcs-chain` (aligned CALCS side-car)")
+		t.Skip("set CALCS_DUMP=<dir> from `task calcs-chain` (aligned CALCS side-car)")
 	}
 	wlDir := os.Getenv("WL")
 	if wlDir == "" {

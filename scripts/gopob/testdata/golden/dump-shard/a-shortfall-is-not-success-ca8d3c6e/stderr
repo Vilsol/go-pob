@@ -1,0 +1,3 @@
+dump_shard: ⚠️ LUAJIT=./fakeluajit is not the deterministic build — this dump is a MOSAIC.
+dump_shard:   exploration only; build one with scripts/build_luajit_deterministic.sh
+dump_shard: ⚠️ SHORTFALL of 1 — check out.shard-*.log

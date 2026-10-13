@@ -1,0 +1,5 @@
+tool     skill-stat-maps-emit
+fixture  dump-not-an-object
+original oracle/skill_stat_map_emit.py
+args     dump.json skill_stat_maps.go skill_stat_map.go
+env      

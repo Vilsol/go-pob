@@ -1,0 +1,6 @@
+tool     extract-calcs-damage
+fixture  one-dump-only
+original oracle/extract_calcs_damage.py
+args     dumps out.jsonl
+env      
+files    out.jsonl

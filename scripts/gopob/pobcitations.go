@@ -28,30 +28,10 @@ var pcPortedPkgs = []string{"calculator", "moddb", "mod", "data", "pob", "utils"
 var pcClasses = []string{"PORT", "DATA", "GENERATED", "GO-NATIVE", "UNCLASSIFIED"}
 
 var pcFuncLineGrandfather = map[string]bool{
-	"calculator/calc_perform.go::addTriggerIncMoreMods":     true,
 	"calculator/calc_perform.go::calcDualWieldImpact":       true,
 	"calculator/calc_perform.go::getTriggerDefaultCooldown": true,
-	"calculator/calc_perform.go::getUniqueItemTriggerName":  true,
-
-	"calculator/calc_offence.go::calcAilmentSourceDamage": true,
-	"calculator/calc_offence.go::calcSkillCooldown":       true,
-	"calculator/calc_perform.go::DoActorMisc":             true,
-	"calculator/calc_perform.go::determineCursePriority":  true,
-	"calculator/calc_setup.go::processStats":              true,
-	"calculator/item.go::BuildModList":                    true,
-	"calculator/item.go::ParseItem":                       true,
-	"calculator/item.go::checkModLineVariant":             true,
-	"calculator/mod_parser.go::grantedExtraSkill":         true,
-	"data/raw/granted_effects.go::GetStatMapEntry":        true,
-	"mod/common.go::MatchKeywordFlags":                    true,
-	"moddb/mod_store.go::GetMultiplier":                   true,
-
-	"calculator/cluster_jewels.go::findSocket": true,
-	"calculator/configs.go::enemyIsBossLevel":  true,
-
-	"calculator/item_setup.go::quiverBonusMultiplier":  true,
-	"calculator/item_setup.go::slotNum":                true,
-	"calculator/item_setup.go::typeItemMultiplierName": true,
+	"calculator/cluster_jewels.go::findSocket":              true,
+	"calculator/configs.go::enemyIsBossLevel":               true,
 }
 
 var (

@@ -1,0 +1,1 @@
+REFUSING: parser.go declares no `pobGemIDtoGameGemIDs = map[string]string{`. It is the single definition of the PoB-vs-go-pob-data gem id divergence; if it was renamed or moved, point this emitter at it rather than re-declaring the table here.

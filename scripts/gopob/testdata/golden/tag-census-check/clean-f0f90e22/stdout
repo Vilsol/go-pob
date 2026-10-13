@@ -1,0 +1,10 @@
+dumps            dumps
+files            185
+excluded         184 (want 184)
+included         1
+PLAYER   dumped mods         8   dumped tags         2   UNPARSED 0   fmt-vs-tags disagreements 0
+ENEMY    dumped mods         0   dumped tags         0   UNPARSED 0   fmt-vs-tags disagreements 0
+
+PLAYER tag types over included builds:
+          1  Condition
+          1  Multiplier

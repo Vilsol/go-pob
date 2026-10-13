@@ -1,0 +1,10 @@
+lua: 1 skills, 1 entries, 6 mods
+go : 1 skills, 1 entries, 5 mods
+matched 1-to-1 against the Lua: 4
+lua mods with no name/type (nested; mod/ has no constructor): 1
+lua statMap GROUPS compared (per-group scalars, CalcActiveSkill.lua:65-73): 0
+
+DIFF: 1 problem(s)
+  AlphaSkill/damage: emitted mod has no Lua counterpart:
+      go  = ('Flags', 'MORE', ('float', 99.0), 0, 0, (('ModFlagOr', 3), ('SkillName', ['Fire'], False), ('StatThreshold', 'Str', 20.0, True), ('PercentStat', 'Life', 0.0, 'V'), ('ActorCondition', 'enemy', ['A', 'B'], False), ('MultiplierThreshold', 'M', 1.0, False, ''), ('GlobalEffect', ['Buff'], '', False), ('SkillType', 'Trap', False), ('UNKNOWN', 'NoSuchTagType')))
+      lua = ('Flags', 'MORE', ('float', 5.0), 0, 0, (('ModFlagOr', 3), ('SkillName', ['Fire'], False), ('StatThreshold', 'Str', 20.0, True), ('PercentStat', 'Life', 0.0, 'V'), ('ActorCondition', 'enemy', ['A', 'B'], False), ('MultiplierThreshold', 'M', 1.0, False, ''), ('GlobalEffect', ['Buff'], '', False), ('SkillType', 'Trap', False), ('UNKNOWN', 'NoSuchTagType')))

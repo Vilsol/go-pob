@@ -515,7 +515,7 @@ func (g *CalculatedGrantedEffect) GetStatSet() *poe.GrantedEffectStatSet {
 	return g.GetGrantedEffectStatSet()
 }
 
-//pob:src/Modules/Data.lua:951-963
+//pob:src/Modules/Data.lua:1004-1016
 func (g *CalculatedGrantedEffect) GetStatMapEntry(key string) *StatMap {
 	g.calculate()
 	if perSkill := SkillStatMaps[g.ID]; perSkill != nil {

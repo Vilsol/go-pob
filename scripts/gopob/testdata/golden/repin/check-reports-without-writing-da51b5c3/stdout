@@ -1,0 +1,6 @@
+  calculator/pins_test.go: b0001.xml Life  1111.25 -> 4321.5
+  calculator/pins_test.go: b0003.xml EnergyShield  250 -> -7.5e+02
+  calculator/sub/more_test.go: b0001.xml Life  1111.25 -> 4321.5
+  calculator/sub/more_test.go: b0003.xml EnergyShield  250 -> -7.5e+02
+
+CHECK=1: 4 pin(s) would be rewritten, 0 closed; nothing written

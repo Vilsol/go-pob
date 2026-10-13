@@ -1,0 +1,5 @@
+tool     port-diff
+fixture  func-one-line
+original scripts/port_diff.py
+args     
+env      FUNC=PdOneLine POB_DIR=pob

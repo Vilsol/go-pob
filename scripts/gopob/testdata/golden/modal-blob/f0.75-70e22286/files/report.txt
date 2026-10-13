@@ -1,0 +1,90 @@
+MODAL ORACLE REPORT
+runs                 4
+  r0.jsonl
+  r1.jsonl
+  r2.jsonl
+  r3.jsonl
+min-fraction         0.75 (strict majority when 0.5)
+builds               5
+(build,key) pairs    32  seen in at least one run
+
+DISAGREEMENT — the term a single-process blob samples blind
+  keys where runs disagreed   25  (78.1250% of pairs)
+  builds carrying any of them 3
+  distinct table:key          23
+  winning-vote histogram      [(3, 3), (2, 22)]
+
+PER-RUN DISTANCE FROM THE MODE — what ONE process's blob would have graded wrongly
+  run 1        0 pairs differ from the mode   r0.jsonl
+  run 2        0 pairs differ from the mode   r1.jsonl
+  run 3        0 pairs differ from the mode   r2.jsonl
+  run 4        0 pairs differ from the mode   r3.jsonl
+  mean 0.0, min 0, max 0
+
+DROPPED — no cluster reached the threshold, so the blob does not grade them
+  pairs   25
+  builds  3
+  keys    23
+
+  top dropped keys:
+         3  output:ZZShared
+         1  output:AbsentLoses
+         1  output:AbsentTie
+         1  output:AbsentWins
+         1  output:Dropped2
+         1  output:Dropped3
+         1  output:FarApart
+         1  output:Split22
+         1  output:Tied00
+         1  output:Tied01
+         1  output:Tied02
+         1  output:Tied03
+         1  output:Tied04
+         1  output:Tied05
+         1  output:Tied06
+         1  output:Tied07
+         1  output:Tied08
+         1  output:Tied09
+         1  output:Tied10
+         1  output:Tied11
+         1  output:Tied12
+         1  output:Tied13
+         1  output:Tied14
+  top dropped builds:
+        23  0001-alpha.xml
+         1  0002-beta.xml
+         1  0003-gamma.xml
+
+  top disagreeing keys:
+         3  output:ZZShared
+         1  output:AbsentLoses
+         1  output:AbsentTie
+         1  output:AbsentWins
+         1  output:Dropped2
+         1  output:Dropped3
+         1  output:FarApart
+         1  output:Split22
+         1  output:Tied00
+         1  output:Tied01
+         1  output:Tied02
+         1  output:Tied03
+         1  output:Tied04
+         1  output:Tied05
+         1  output:Tied06
+         1  output:Tied07
+         1  output:Tied08
+         1  output:Tied09
+         1  output:Tied10
+         1  output:Tied11
+         1  output:Tied12
+         1  output:Tied13
+         1  output:Tied14
+  top disagreeing builds:
+        23  0001-alpha.xml
+         1  0002-beta.xml
+         1  0003-gamma.xml
+
+STRUCTURAL
+  builds whose treeSources differed between runs   1
+    0002-beta.xml  [(44, 2), (46, 2)]
+  (build,table) present in some runs and not others 2

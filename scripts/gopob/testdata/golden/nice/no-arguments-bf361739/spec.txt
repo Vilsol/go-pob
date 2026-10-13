@@ -1,0 +1,6 @@
+tool     nice
+fixture  no-arguments
+original scripts/nice.sh
+args     
+env      
+unset    GOPOB_NICED

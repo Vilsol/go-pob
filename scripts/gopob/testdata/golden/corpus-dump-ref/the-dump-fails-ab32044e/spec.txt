@@ -1,0 +1,5 @@
+tool     corpus-dump-ref
+fixture  the-dump-fails
+original scripts/corpus_dump_ref.sh
+args     HEAD out.txt.gz
+env      GOPOB_NICED=1 GO_STUB_FAIL=1

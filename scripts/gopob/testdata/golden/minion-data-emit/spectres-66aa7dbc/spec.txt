@@ -1,0 +1,6 @@
+tool     minion-data-emit
+fixture  spectres
+original oracle/minion_data_emit.py
+args     dump.json out.go spectres
+env      
+files    out.go

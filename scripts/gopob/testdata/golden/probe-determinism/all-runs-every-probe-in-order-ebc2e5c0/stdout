@@ -1,0 +1,9 @@
+canary: 1 distinct md5 of 2 runs (must be >1 on stock luajit)
+item_tools     1 distinct md5 of 2 runs   OK
+many_builds    1 distinct md5 of 2 runs   OK
+jewel_radius   1 distinct md5 of 2 runs   OK
+item_modlist   1 distinct md5 of 2 runs   OK
+item_data      1 distinct md5 of 2 runs   OK
+item_bases     1 distinct md5 of 2 runs   OK
+item_parse     1 distinct md5 of 2 runs   OK
+mod_parse      1 distinct md5 of 2 runs   OK

@@ -1,0 +1,3 @@
+REFUSING: the two directories hold different build sets
+  only in A: ['0002-beta.json']
+  only in B: ['0009-zeta.json']

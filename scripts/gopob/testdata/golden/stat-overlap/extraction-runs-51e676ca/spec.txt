@@ -1,0 +1,6 @@
+tool     stat-overlap
+fixture  extraction-runs
+original scripts/stat_overlap.sh
+args     
+env      OUT=out STATS=Short Extracted Extracted2
+files    out/Extracted.txt out/Extracted2.txt

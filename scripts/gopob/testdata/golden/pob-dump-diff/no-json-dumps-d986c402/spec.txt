@@ -1,0 +1,5 @@
+tool     pob-dump-diff
+fixture  no-json-dumps
+original scripts/pob_dump_diff.py
+args     nodumps B
+env      

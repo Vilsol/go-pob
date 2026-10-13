@@ -1,0 +1,5 @@
+tool     omission-reasons
+fixture  pob-dir-is-not-a-checkout
+original scripts/omission_reasons.py
+args     
+env      POB_DIR=nopob

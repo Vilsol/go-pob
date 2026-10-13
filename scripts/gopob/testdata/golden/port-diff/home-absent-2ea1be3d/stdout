@@ -1,0 +1,17 @@
+=== port-diff NAME='pdSharedName' ===
+  PoB      0 site(s) across 0 file(s)
+  ours     5 site(s) across 1 file(s)
+  ⚠️ WE have 5 more site(s). We have implemented things PoB does not have
+     before; an over-applied filter and a starved producer both make numbers wrong.
+
+──── PoB ────
+  (none)
+
+──── OURS ────
+    5  a/thing.go
+
+    a/thing.go:3: // pdSharedName is mentioned here too.
+    a/thing.go:24: // more pdSharedName mentions, so the Go side has enough hits to truncate
+    a/thing.go:26: _ = "pdSharedName one"
+    a/thing.go:27: _ = "pdSharedName two"
+    a/thing.go:28: _ = "pdSharedName three"

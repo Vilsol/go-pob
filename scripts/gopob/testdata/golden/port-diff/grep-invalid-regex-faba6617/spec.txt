@@ -1,0 +1,5 @@
+tool     port-diff
+fixture  grep-invalid-regex
+original scripts/port_diff.py
+args     
+env      GREP=[unclosed POB_DIR=pob

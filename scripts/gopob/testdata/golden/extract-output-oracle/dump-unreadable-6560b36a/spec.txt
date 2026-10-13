@@ -1,0 +1,5 @@
+tool     extract-output-oracle
+fixture  dump-unreadable
+original oracle/extract_output_oracle.py
+args     dumps out.jsonl
+env      

@@ -1,0 +1,5 @@
+tool     stat-overlap
+fixture  one-stat
+original scripts/stat_overlap.sh
+args     
+env      OUT=out STATS=Short

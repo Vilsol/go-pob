@@ -1,0 +1,1 @@
+canary: 1 distinct md5 of 3 runs (must be >1 on stock luajit)

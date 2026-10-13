@@ -1,0 +1,1 @@
+REFUSING: SupportSecond has an empty addSkillTypes; an empty override would suppress go-pob-data's list and add nothing in its place.

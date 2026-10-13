@@ -1,0 +1,4 @@
+
+OMISSION REASONS: 0 checked, 1 FAILED
+  NO-REASONS     scripts/gopob/skillstatmapemit.go
+                 no Unrepresentable(...) sites found -- has the emitter been restructured? this gate is now blind

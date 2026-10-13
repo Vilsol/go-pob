@@ -1,0 +1,4 @@
+mod_parse      FAILED — /tmp/fx-mod_parse.err
+fake luajit: line two
+fake luajit: line three
+fake luajit: line four

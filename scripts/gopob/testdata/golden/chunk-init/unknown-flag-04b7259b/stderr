@@ -1,0 +1,2 @@
+chunk-init: unknown argument '--bogus'
+usage: chunk_init.py <file.go> <VarName> [--per N] [--check]

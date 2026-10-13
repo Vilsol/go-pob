@@ -1,0 +1,1 @@
+usage: pantheons_emit.py <dump.json> <out.go>

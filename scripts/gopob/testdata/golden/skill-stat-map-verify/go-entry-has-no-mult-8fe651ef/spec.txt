@@ -1,0 +1,5 @@
+tool     skill-stat-map-verify
+fixture  go-entry-has-no-mult
+original oracle/skill_stat_map_verify.py
+args     lua.json go.json
+env      

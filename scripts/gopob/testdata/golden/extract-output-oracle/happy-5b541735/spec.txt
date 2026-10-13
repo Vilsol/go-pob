@@ -1,0 +1,6 @@
+tool     extract-output-oracle
+fixture  happy
+original oracle/extract_output_oracle.py
+args     dumps out.jsonl
+env      
+files    out.jsonl

@@ -1,0 +1,29 @@
+PIN        <sandbox>/pin  (no git description)
+CANDIDATE  <sandbox>/pin  (no git description)
+           IDENTITY RUN -- pin and candidate are the same checkout. Every verdict
+           must be UNCHANGED; anything else means this tool is broken.
+
+=== DENOMINATOR ===
+  11 citation(s) -- 10 ranged, 1 whole-file -- across 1 Go file(s), citing 8 Lua file(s)
+  11 of them sit in PORT files (scripts/port_manifest.txt)
+  0 cited Lua file(s) absent from the candidate
+
+=== VERDICTS ===
+  UNCHANGED     11   100.0%  (11 byte-identical, 0 whitespace/comment-only)
+  MOVED          0     0.0%
+  CHANGED        0     0.0%
+  DELETED        0     0.0%
+  OK-or-MOVED    11   100.0%   (sites to open; NOT the go/no-go -- see PER-CITATION below)
+  by LINES      28 / 28 cited Lua line(s) survive = 100.0%   <- SIZE-INDEPENDENT
+
+=== PER-CITATION SURVIVAL  (one row = one site a human must handle) ===
+  100%   intact            10 citation(s)      28 cited line(s)
+  ---
+  RE-PORT SURFACE: 0 of 10 citation(s) survive below 85%  (0 cited line(s))
+  GO/NO-GO               100.0% of citations survive >= 85% of their own lines
+  VERDICT: BOUNDED -- work the sites listed below.
+             over 10 ranged citation(s); 1 whole-file marker(s) have no line count and are excluded
+
+=== CHANGED, in full (top 30) ===
+
+Nothing needs human work.

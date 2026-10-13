@@ -1,0 +1,2 @@
+REFUSING: --rows wants an integer, not ''
+An instrument that cannot answer must refuse, never return empty.

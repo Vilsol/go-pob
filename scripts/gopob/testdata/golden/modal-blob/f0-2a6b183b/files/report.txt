@@ -1,0 +1,66 @@
+MODAL ORACLE REPORT
+runs                 4
+  r0.jsonl
+  r1.jsonl
+  r2.jsonl
+  r3.jsonl
+min-fraction         0.0 (strict majority when 0.5)
+builds               5
+(build,key) pairs    34  seen in at least one run
+
+DISAGREEMENT — the term a single-process blob samples blind
+  keys where runs disagreed   27  (79.4118% of pairs)
+  builds carrying any of them 3
+  distinct table:key          25
+  winning-vote histogram      [(3, 5), (2, 22)]
+
+PER-RUN DISTANCE FROM THE MODE — what ONE process's blob would have graded wrongly
+  run 1        3 pairs differ from the mode   r0.jsonl
+  run 2        1 pairs differ from the mode   r1.jsonl
+  run 3       21 pairs differ from the mode   r2.jsonl
+  run 4       24 pairs differ from the mode   r3.jsonl
+  mean 12.2, min 1, max 24
+
+DROPPED — no cluster reached the threshold, so the blob does not grade them
+  pairs   0
+  builds  0
+  keys    0
+
+  top dropped keys:
+  top dropped builds:
+
+  top disagreeing keys:
+         3  output:ZZShared
+         1  output:AbsentLoses
+         1  output:AbsentTie
+         1  output:AbsentWins
+         1  output:Dropped2
+         1  output:Dropped3
+         1  output:FarApart
+         1  output:Split22
+         1  output:Tied00
+         1  output:Tied01
+         1  output:Tied02
+         1  output:Tied03
+         1  output:Tied04
+         1  output:Tied05
+         1  output:Tied06
+         1  output:Tied07
+         1  output:Tied08
+         1  output:Tied09
+         1  output:Tied10
+         1  output:Tied11
+         1  output:Tied12
+         1  output:Tied13
+         1  output:Tied14
+         1  outputMainHand:MH
+         1  enemyOutput:E
+  top disagreeing builds:
+        23  0001-alpha.xml
+         2  0002-beta.xml
+         2  0003-gamma.xml
+
+STRUCTURAL
+  builds whose treeSources differed between runs   1
+    0002-beta.xml  [(44, 2), (46, 2)]
+  (build,table) present in some runs and not others 2

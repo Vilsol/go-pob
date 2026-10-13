@@ -1,0 +1,3 @@
+REFUSING: 'ZzzNothingMatchesThis' matches nothing. Check the case (CalcActiveSkill.lua writes
+`skillData.CritChance` with a capital C among 21 lower-camel neighbours) and
+remember this is a REGEX — `output.Rage` matches any char where you meant a dot.

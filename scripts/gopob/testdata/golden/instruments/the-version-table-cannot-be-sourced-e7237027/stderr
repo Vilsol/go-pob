@@ -1,0 +1,2 @@
+REFUSING: gopob gate-versions --sh failed; the version table is unreadable.
+REFUSING: scripts/gate_versions.sh could not be sourced; the gate-version table is unreadable.

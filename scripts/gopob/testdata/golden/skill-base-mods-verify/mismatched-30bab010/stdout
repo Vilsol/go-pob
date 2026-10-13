@@ -1,0 +1,16 @@
+lua: 3 skills, 8 mods
+go : 3 skills, 8 mods
+matched 1-to-1 against the Lua: 6
+
+DIFF: 3 problem(s)
+  AlphaSkill: emitted mod has no Lua counterpart:
+      go  = ('Damage', 'INC', ('float', 26.0), 257, 65536, (('GlobalEffect', ['Buff'], 'Fortify', True),))
+      lua = ('Damage', 'INC', ('float', 25.0), 257, 65536, (('GlobalEffect', ['Buff'], 'Fortify', True),))
+            ('SkillData', 'LIST', ('skilldata', 'ShowAverage', 1.0), 0, 0, ())
+            ('Buff', 'FLAG', ('flag', True), 0, 0, ())
+  AlphaSkill: emitted mod has no Lua counterpart:
+      go  = ('SkillData', 'LIST', ('skilldata', 'ShowAverage', 0.0), 0, 0, ())
+      lua = ('Damage', 'INC', ('float', 25.0), 257, 65536, (('GlobalEffect', ['Buff'], 'Fortify', True),))
+            ('SkillData', 'LIST', ('skilldata', 'ShowAverage', 1.0), 0, 0, ())
+            ('Buff', 'FLAG', ('flag', True), 0, 0, ())
+  GammaSkill: mod Evasion carries source Skill:WrongSkill

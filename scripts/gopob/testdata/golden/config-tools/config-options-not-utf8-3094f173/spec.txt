@@ -1,0 +1,5 @@
+tool     config-tools
+fixture  config-options-not-utf8
+original scripts/config_tools.py
+args     --pob pob --repo . --corpus corpus inventory
+env      

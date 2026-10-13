@@ -1,0 +1,9 @@
+run dump   ours.txt.gz  (3.29, testdata/corpus-3.29  )
+blob       blob/output.jsonl.gz
+PoB dumps  dumps  covering 14 of 14 graded builds
+tolerance  0.005  ·  treeSources >= 5  ·  failing class = wrong
+
+=== Armour ===
+ok 14 · wrong 0 · miss 0 · extra 0
+  (cannot census: 0 failing and 14 passing builds — an enrichment needs both sides)
+

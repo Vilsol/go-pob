@@ -1,0 +1,4 @@
+lua: 3 skills, 8 mods
+go : 3 skills, 8 mods
+matched 1-to-1 against the Lua: 8
+DIFF: none - every emitted mod, value, flag, tag and source matches the Lua

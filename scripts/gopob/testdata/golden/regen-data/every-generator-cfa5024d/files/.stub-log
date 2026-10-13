@@ -1,0 +1,113 @@
+pob_pin POB_DIR=pob
+mise x -- luajit -e io.write(package.path)
+mise x -- luajit -e io.write(package.cpath)
+setarch -R luajit
+luajit skill_table.lua
+go run gamedatadump skill-weapon-types skill-weapon-types.json
+emit skill-weapon-types-emit skill-weapon-types.json skill_weapon_types.go
+go run gamedatadump cluster-jewels cluster-jewels.json
+emit cluster-jewels-emit cluster-jewels.json cluster_jewels.go
+go run gamedatadump core-constants-data core-constants-data.json
+mise x -- luajit -e io.write(package.path)
+mise x -- luajit -e io.write(package.cpath)
+setarch -R luajit
+luajit core_constants.lua
+emit core-constants-emit core-constants.json constants_generated.go
+go run gamedatadump pantheons pantheons.json
+emit pantheons-emit pantheons.json pantheons.go
+mise x -- luajit -e io.write(package.path)
+mise x -- luajit -e io.write(package.cpath)
+setarch -R luajit
+luajit boss_skills.lua
+emit boss-skills-emit boss-skills.json boss_skills_generated.go
+go run gamedatadump legion-passives legion-passives.json
+emit legion-passives-emit legion-passives.json legion_passives_generated.go
+go run gamedatadump tattoo-passives tattoo-passives.json
+emit tattoo-passives-emit tattoo-passives.json tattoo_passives_generated.go
+go run gamedatadump flavour-text flavour-text.json
+emit flavour-text-emit flavour-text.json flavour_text_generated.go
+go run gamedatadump item-craft-mods item-craft-data.json
+emit item-craft-data-emit item-craft-data.json item_craft_data_generated.go
+mise x -- luajit -e io.write(package.path)
+mise x -- luajit -e io.write(package.cpath)
+setarch -R luajit
+luajit item_db.lua
+emit item-db-emit item-db.json item_db_generated.go
+mise x -- luajit -e io.write(package.path)
+mise x -- luajit -e io.write(package.cpath)
+setarch -R luajit
+luajit skill_has_global_effect.lua
+emit skill-has-global-effect-emit skill-has-global-effect.json has_global_effect.go
+mise x -- luajit -e io.write(package.path)
+mise x -- luajit -e io.write(package.cpath)
+setarch -R luajit
+luajit skill_base_mods.lua
+emit skill-base-mods-emit skill-base-mods.json skill_base_mods.go types.go
+mise x -- luajit -e io.write(package.path)
+mise x -- luajit -e io.write(package.cpath)
+setarch -R luajit
+luajit skill_stat_map.lua
+emit skill-stat-maps-emit skill-stat-maps.json skill_stat_maps.go skill_stat_map.go
+chunk_init chunk-init skill_stat_maps.go SkillStatMaps
+go run gamedatadump skills-data skill-add-skill-types-data.json
+mise x -- luajit -e io.write(package.path)
+mise x -- luajit -e io.write(package.cpath)
+setarch -R luajit
+luajit skill_add_skill_types.lua
+emit skill-add-skill-types-emit skill-add-skill-types.json skill_add_skill_types.go
+go run gamedatadump skills-data skill-hidden-levels-data.json
+mise x -- luajit -e io.write(package.path)
+mise x -- luajit -e io.write(package.cpath)
+setarch -R luajit
+luajit skill_hidden_levels.lua
+emit skill-hidden-levels-emit skill-hidden-levels.json skill_hidden_levels.go
+mise x -- luajit -e io.write(package.path)
+mise x -- luajit -e io.write(package.cpath)
+setarch -R luajit
+luajit skill_stat_map_global.lua
+emit skill-stat-map-global-emit skill-stat-map-global.json skill_stat_map.go
+go run tree_ours_dump tree-ours.json
+mise x -- luajit -e io.write(package.path)
+mise x -- luajit -e io.write(package.cpath)
+setarch -R luajit
+luajit tree_stats.lua
+emit tree-tables-emit tree-ours.json tree-pob.json tree_missing_nodes_generated.go tree_stat_text_generated.go
+emit skill-parts skill_parts.go
+go run gamedatadump minion-data minion-data.json
+emit minion-data-emit minion-data.json minion_data.go minions
+go run gamedatadump minion-data spectre-data.json
+emit minion-data-emit spectre-data.json spectre_data.go spectres
+go run gamedatadump gems gems.json
+emit gems-emit gems.json gems.go parser.go
+mise x -- luajit -e io.write(package.path)
+mise x -- luajit -e io.write(package.cpath)
+setarch -R luajit
+luajit skill_flags.lua
+emit skill-flags-emit skill-flags.json skill_flags.go
+mise x -- luajit -e io.write(package.path)
+mise x -- luajit -e io.write(package.cpath)
+setarch -R luajit
+luajit skill_minion_fields.lua
+emit skill-minion-lists-emit minion-lists.json minions.go
+mise x -- luajit -e io.write(package.path)
+mise x -- luajit -e io.write(package.cpath)
+setarch -R luajit
+luajit skill_minion_fields.lua
+emit skill-minion-uses-emit minion-uses.json minion_uses.go
+go run gamedatadump mod-scalability mod-scalability.json
+emit mod-scalability-emit mod-scalability.json mod_scalability.go
+go run gamedatadump item-mod-stat-order item-mod-stat-order.json
+emit item-mod-stat-order-emit item-mod-stat-order.json item_mod_stat_order.go
+go run gamedatadump stat-descriptions stat-descriptions.json
+emit stat-descriptions-emit stat-descriptions.json stat_descriptions_generated.go
+go run gamedatadump skills-data skill-text-data.json
+mise x -- luajit -e io.write(package.path)
+mise x -- luajit -e io.write(package.cpath)
+setarch -R luajit
+luajit skill_text.lua
+emit skill-text-emit skill-text.json skill_text_generated.go
+mise x -- luajit -e io.write(package.path)
+mise x -- luajit -e io.write(package.cpath)
+setarch -R luajit
+luajit custom_mod_browser.lua
+emit custom-mod-browser-emit custom-mod-browser.json custom_mod_browser_generated.go

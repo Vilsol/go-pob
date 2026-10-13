@@ -1,0 +1,5 @@
+tool     task-test-refs
+fixture  a-driver-is-not-utf8
+original scripts/task_test_refs.py
+args     
+env      SELFTEST= SELFTEST_DIR=

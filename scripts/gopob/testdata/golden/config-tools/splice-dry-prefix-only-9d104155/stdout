@@ -1,0 +1,6 @@
+--- ctDeadOne ---
+/* a prefix before the dead handler, and no suffix after it
+	*/
+	"ctDeadOne": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
+				modList.NewFlag("H", val)
+			},

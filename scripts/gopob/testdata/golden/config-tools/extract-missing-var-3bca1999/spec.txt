@@ -1,0 +1,5 @@
+tool     config-tools
+fixture  extract-missing-var
+original scripts/config_tools.py
+args     --pob pob --repo . --corpus corpus extract --var ctNoSuchVar
+env      

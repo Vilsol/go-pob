@@ -3,6 +3,7 @@ package calculator
 import (
 	"math"
 	"os"
+	"strings"
 	"testing"
 )
 
@@ -15,18 +16,36 @@ func TestLeechZeroingRunsBeforeTheCompoundForm(t *testing.T) {
 	}
 	requireGameData(t, "3.29")
 
+	oracle, err := oracleForLoadedData()
+	if err != nil {
+		t.Fatalf("REFUSING: cannot load the oracle blob: %v", err)
+	}
 	_, names := corpusNamesForLoadedData(t)
-	immortalAmbition, nonInstant, control := 0, 0, 0
+	population, nonzero, control := 0, 0, 0
 	for _, b := range names {
 		env := corpusEnvForLoadedData(t, b)
-		if env.Player.ModDB.Flag(nil, "ImmortalAmbition") {
-			immortalAmbition++
-		}
-		if env.Player.ModDB.Flag(nil, "UnaffectedByNonInstantLifeLeech") {
-			nonInstant++
-		}
 		if env.Player.Output["LifeLeechInstanceRate"] > 0 {
 			control++
+		}
+		if !env.Player.ModDB.Flag(nil, "ImmortalAmbition") &&
+			!env.Player.ModDB.Flag(nil, "UnaffectedByNonInstantLifeLeech") {
+			continue
+		}
+		population++
+		rec, ok := oracle[b]
+		if !ok {
+			t.Fatalf("REFUSING: %s has no record in the oracle blob", b)
+		}
+		for k, want := range rec.Output {
+			if !strings.Contains(k, "Leech") {
+				continue
+			}
+			if want != 0 {
+				nonzero++
+			}
+			if got := env.Player.Output[k]; math.Abs(got-want) > math.Abs(want)*oracleDumpTolerance {
+				t.Errorf("%s: %s = %v, PoB reports %v", b, k, got, want)
+			}
 		}
 	}
 
@@ -34,15 +53,12 @@ func TestLeechZeroingRunsBeforeTheCompoundForm(t *testing.T) {
 		t.Fatal("REFUSING: no build has a nonzero LifeLeechInstanceRate, so this sweep is not " +
 			"reaching the leech calculation and its zeroes mean nothing")
 	}
-
-	if immortalAmbition > 0 || nonInstant > 0 {
-		t.Fatalf("the MEASURED ZERO recorded for this change no longer holds: ImmortalAmbition on "+
-			"%d builds and UnaffectedByNonInstantLifeLeech on %d. The two-phase order now has an "+
-			"observable population and needs a real oracle assertion instead of this census.",
-			immortalAmbition, nonInstant)
+	if population > 0 && nonzero == 0 {
+		t.Fatalf("REFUSING: %d builds carry the zeroing flags but PoB reports no nonzero leech "+
+			"output on any of them, so agreement here grades nothing", population)
 	}
-	t.Logf("ImmortalAmbition %d, UnaffectedByNonInstantLifeLeech %d, control %d of %d builds",
-		immortalAmbition, nonInstant, control, len(names))
+	t.Logf("%d builds zero non-instant leech; %d nonzero PoB leech outputs graded; control %d of %d builds",
+		population, nonzero, control, len(names))
 }
 
 // TestLeechPerHitStillMatchesTheOracle guards the restructure itself.

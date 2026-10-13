@@ -1,0 +1,2 @@
+chunk-init: --per needs a value
+usage: chunk_init.py <file.go> <VarName> [--per N] [--check]

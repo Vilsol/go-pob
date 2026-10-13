@@ -45,7 +45,7 @@ type PassiveSpec struct {
 	DistanceToClassStart map[string]int
 }
 
-//pob:src/Classes/PassiveSpec.lua:16-62,src/Classes/PassiveSpec.lua:70-129
+//pob:src/Classes/PassiveSpec.lua:19-28,src/Classes/PassiveSpec.lua:30-90
 func NewPassiveSpec(build *pob.PathOfBuilding, treeVersion pob.TreeVersion) *PassiveSpec {
 	passiveSpec := &PassiveSpec{
 		Build:       build,
@@ -110,7 +110,7 @@ func (p *PassiveSpec) SelectClass(classID pob.ClassID) {
 	p.SelectAscendancyClass(pob.ClassAscendancies[p.ClassID][0])
 }
 
-//pob:src/Classes/PassiveSpec.lua:362-385
+//pob:src/Classes/PassiveSpec.lua:599-617
 func (p *PassiveSpec) SelectAscendancyClass(ascendancyID pob.AscendancyID) {
 	p.AscendancyID = ascendancyID
 	p.AscendancyName = pob.AscendancyNameByID[ascendancyID]

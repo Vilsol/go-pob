@@ -1,0 +1,8 @@
+=== ctDeadOne  type=check
+--- PoB ---
+apply = function(val, modList) modList:NewMod("H", "FLAG", val) end },
+--- go-pob (DEAD) ---
+		"ctDeadOne": func(val interface{}, modList *ModList, enemyModList *ModList) {
+			modList.NewFlag("H", val)
+		},
+

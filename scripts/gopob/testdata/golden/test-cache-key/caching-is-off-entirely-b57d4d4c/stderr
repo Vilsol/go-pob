@@ -1,0 +1,2 @@
+FAIL: an identical re-run was NOT cached, so this check cannot tell a correct key from no
+       caching at all. Got: ok  	module/calculator	0.100s

@@ -10,17 +10,8 @@
 ADDED_ATTR /PathOfBuilding/Skills/SkillSet/Skill/Gem@enableGlobal1
 ADDED_ATTR /PathOfBuilding/Skills/SkillSet/Skill/Gem@enableGlobal2
 ADDED_ATTR /PathOfBuilding/Skills/SkillSet/Skill@label
-LOST_ATTR /PathOfBuilding/Build/TimelessData@conquerorTypeId
-LOST_ATTR /PathOfBuilding/Build/TimelessData@devotionVariant1
-LOST_ATTR /PathOfBuilding/Build/TimelessData@devotionVariant2
-LOST_ATTR /PathOfBuilding/Build/TimelessData@fallbackWeightModeIdx
-LOST_ATTR /PathOfBuilding/Build/TimelessData@jewelSocketId
-LOST_ATTR /PathOfBuilding/Build/TimelessData@jewelTypeId
 LOST_ATTR /PathOfBuilding/Build/TimelessData@searchList
 LOST_ATTR /PathOfBuilding/Build/TimelessData@searchListFallback
-LOST_ATTR /PathOfBuilding/Build/TimelessData@socketFilter
-LOST_ATTR /PathOfBuilding/Build/TimelessData@socketFilterDistance
-LOST_ATTR /PathOfBuilding/Build@characterLevelAutoMode
 LOST_ATTR /PathOfBuilding/Import@importLink
 LOST_ATTR /PathOfBuilding/Import@lastAccountHash
 LOST_ATTR /PathOfBuilding/Import@lastCharacterHash
@@ -33,18 +24,9 @@ LOST_ATTR /PathOfBuilding/Items/ItemSet/SocketIdURL@nodeId
 LOST_ATTR /PathOfBuilding/Items/TradeSearchWeights/Stat@label
 LOST_ATTR /PathOfBuilding/Items/TradeSearchWeights/Stat@stat
 LOST_ATTR /PathOfBuilding/Items/TradeSearchWeights/Stat@weightMult
-LOST_ATTR /PathOfBuilding/Items@showStatDifferences
-LOST_ATTR /PathOfBuilding/Party/ImportedBuffs@name
-LOST_ATTR /PathOfBuilding/Party@ShowAdvanceTools
-LOST_ATTR /PathOfBuilding/Party@append
-LOST_ATTR /PathOfBuilding/Party@destination
-LOST_ATTR /PathOfBuilding/Skills@showLegacyGems
-LOST_ELEM /PathOfBuilding/Build/TimelessData
 LOST_ELEM /PathOfBuilding/Items/ItemSet/SocketIdURL
 LOST_ELEM /PathOfBuilding/Items/TradeSearchWeights
 LOST_ELEM /PathOfBuilding/Items/TradeSearchWeights/Stat
-LOST_ELEM /PathOfBuilding/Party
-LOST_ELEM /PathOfBuilding/Party/ImportedBuffs
 REFORMATTED /PathOfBuilding/Build/PlayerStat@value
 # MinionStat is kept now (Build.lua:1052-1061); its value is a float64 like PlayerStat@value, so Go writes it in its own shortest form
 REFORMATTED /PathOfBuilding/Build/MinionStat@value

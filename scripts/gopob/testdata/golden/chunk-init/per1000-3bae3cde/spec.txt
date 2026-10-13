@@ -1,0 +1,6 @@
+tool     chunk-init
+fixture  per1000
+original scripts/chunk_init.py
+args     in.go Table --per 1000
+env      
+files    in.go

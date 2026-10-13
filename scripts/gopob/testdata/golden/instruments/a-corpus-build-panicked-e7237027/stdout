@@ -1,0 +1,48 @@
+
+=== go-pob INSTRUMENTS — abc1234 a pinned subject line ===
+run dir   out
+dumps     dumps
+coverage  skipped (COVERAGE=1 to include, ~4 min)
+
+  INSTRUMENT                             STATUS     secs  HEADLINE
+  OPERATOR=true CORPUS=true go test ./... (rest) PASS          -  all packages ok
+  TestCorpus3_29VsOracle (AUTHORITATIVE) PASS          -  matched 2961296 / 3208353  (92.2996%)   NaN/Inf on our side: 0; 5634 graded, 471 excluded
+  TestCorpus3_29 (crash gate)            PASS          -  6104/6105 built, 0 parse failure(s), 1 panic(s)
+  TestModDBCensus                        PASS          -  PLAYER 3 names diverge over 10 builds; ENEMY 1 names diverge over 10 builds
+  TestModOrderCensus                     PASS          -  CROSS-STAGE 17 pairs  (use this, NOT the raw ORDER count)
+  TestTagCensus                          PASS          -  PLAYER TAGS-DIFFER 4; ENEMY TAGS-DIFFER 0
+  TestConfigCensus                       PASS          -  DIFFER+ABSENT+EXTRA: 12 3 4
+  TestCorpusIsDeterministic              PASS          -  IDENTICAL across 2 processes
+  task citations                         PASS          -  PORT   349 / 455 top-level funcs cited (76.7%)
+  task omissions                         PASS          -  OMISSION REASONS: 42 checked, 0 unmarked
+  task task-test-refs                    PASS          -  (no headline matched — read out/taskrefs.txt)
+  task test-cache-key                    PASS          -  (no headline matched — read out/cachekey.txt)
+  task fma-census                        PASS          -  (no headline matched — read out/fma.txt)
+
+--- FAILURES ---
+  none
+
+--- CROSS-INSTRUMENT INVARIANTS ---
+  SKIP  keyset BOTH+ABSENT == oracle denominator — TestKeySetCensus is not in the tree; restoring it restores this invariant
+  OK    oracle reports an excluded-build count — 471 excluded (<5 tree sources) — compare against the previous run, not against a literal
+  BAD   every corpus build calculates — 6104/6105 built — some build panicked
+  A BAD invariant is worse than any single number moving: two instruments that disagree about
+  the population were never comparable, so every delta measured across them is void. Resolve it
+  before reading anything else above.
+
+total -
+
+full output (reports scrubbed of slog lines; a sample of those is in *.logs.txt beside them):
+  out/unit.txt
+  out/oracle.txt
+  out/corpus.txt
+  out/moddb.txt
+  out/modorder.txt
+  out/tags.txt
+  out/config.txt
+  out/determinism.txt
+  out/citations.txt
+  out/omissions.txt
+  out/taskrefs.txt
+  out/cachekey.txt
+  out/fma.txt

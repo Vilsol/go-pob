@@ -1,0 +1,5 @@
+tool     skill-weapon-types-emit
+fixture  a-json-array
+original oracle/skill_weapon_types_emit.py
+args     
+env      

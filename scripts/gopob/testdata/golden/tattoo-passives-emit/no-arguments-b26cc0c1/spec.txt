@@ -1,0 +1,5 @@
+tool     tattoo-passives-emit
+fixture  no-arguments
+original oracle/tattoo_passives_emit.py
+args     
+env      

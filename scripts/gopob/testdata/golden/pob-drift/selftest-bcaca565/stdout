@@ -1,0 +1,25 @@
+  ok      expect MOVED      got MOVED      off=10    blank lines inserted above a function
+  ok      expect MOVED      got MOVED      off=10    reindent + reworded comment + inserted blank inside
+  ok      expect CHANGED    got CHANGED    off=11    a statement changed
+  ok      expect DELETED    got DELETED    off=-     a function deleted
+  ok      expect DELETED    got DELETED    off=-     the whole file gone
+  ok      expect MOVED      got MOVED      off=7     an untouched block below every edit
+  ok      expect CHANGED    got CHANGED    off=-     a whole-file marker on a changed file
+  ok      expect UNCHANGED  got UNCHANGED  off=-     identity: blank lines inserted above a function
+  ok      expect UNCHANGED  got UNCHANGED  off=-     identity: reindent + reworded comment + inserted blank inside
+  ok      expect UNCHANGED  got UNCHANGED  off=-     identity: a statement changed
+  ok      expect UNCHANGED  got UNCHANGED  off=-     identity: a function deleted
+  ok      expect UNCHANGED  got UNCHANGED  off=-     identity: an untouched block below every edit
+  ok      expect UNCHANGED  got UNCHANGED  off=-     identity: a whole-file marker on a changed file
+  ok      expect UNCHANGED  got UNCHANGED  off=-     a comment-only edit
+  ok      expect UNCHANGED  got UNCHANGED  off=-     a reindent in place
+  ok      expect DELETED    got DELETED    off=-     a renamed function
+  ok      expect 0/3        got 0/3        off=-     DELETED counts 0 of 3 line(s): a deleted function
+  ok      expect 0/3        got 0/3        off=-     DELETED counts 0 of 3 line(s): a renamed function
+  ok      expect 0/3        got 0/3        off=-     DELETED counts 0 of 3 line(s): a file absent from the candidate
+  ok      expect at 18      got at 18      off=-     CHANGED anchors nearest where it sat
+  ok      expect rewritten  got rewritten  off=-     --fix rewrites both entries of one marker
+  ok      expect no raise   got no raise   off=-     report(--details) over every verdict class
+  ok      expect 2 row(s)   got 2 row(s)   off=-     --top 0 lists every row, in every section
+
+SELFTEST: 23 of 23 checks behave as declared

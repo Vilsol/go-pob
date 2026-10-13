@@ -1,0 +1,8 @@
+DEAD TEST REFERENCES: 1
+
+  scripts/dead.sh: -run TestNoSuchTestAnywhere matches no test function
+
+`go test -run` matching nothing exits 0 having evaluated nothing, so this driver
+reports on an empty set rather than failing. Point it at a live test or delete it.
+If the name is deliberately historical, express it as a MENTION — an inline `code
+span` in markdown prose, or a # comment in a script — not as a command.

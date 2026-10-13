@@ -1,0 +1,2 @@
+FATAL: missing <out.jsonl.gz>
+usage: modal_oracle.sh <dumps-base> <runs> <out.jsonl.gz> [workdir]

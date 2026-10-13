@@ -1,0 +1,5 @@
+tool     pantheons-emit
+fixture  no-arguments
+original oracle/pantheons_emit.py
+args     
+env      

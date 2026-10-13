@@ -1,0 +1,5 @@
+tool     task-test-refs
+fixture  gate-emitter-fails
+original scripts/task_test_refs.py
+args     
+env      SELFTEST= SELFTEST_DIR=

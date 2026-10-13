@@ -1,0 +1,5 @@
+tool     modal-blob
+fixture  report-path-is-a-directory
+original oracle/modal_blob.py
+args     out.jsonl outdir r0.jsonl r1.jsonl r2.jsonl r3.jsonl
+env      

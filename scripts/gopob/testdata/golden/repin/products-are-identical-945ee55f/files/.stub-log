@@ -1,0 +1,2 @@
+go-stub: args=test -count=1 -v ./calculator/ -run TestPinnedEvasion|TestPinnedLife|TestPinnedOthers|TestPinnedWard
+go-stub: CORPUS=true

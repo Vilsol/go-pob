@@ -1,0 +1,1 @@
+usage: cluster_jewels_emit.py <dump.json> <out.go>

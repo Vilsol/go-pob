@@ -1,0 +1,1 @@
+REFUSING: scripts/task_test_refs.names is missing; the name-set guard cannot answer. Run with --update-names to seed it.

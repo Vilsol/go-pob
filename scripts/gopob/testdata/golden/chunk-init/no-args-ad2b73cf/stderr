@@ -1,0 +1,2 @@
+chunk-init: need exactly <file.go> and <VarName>, got 0
+usage: chunk_init.py <file.go> <VarName> [--per N] [--check]

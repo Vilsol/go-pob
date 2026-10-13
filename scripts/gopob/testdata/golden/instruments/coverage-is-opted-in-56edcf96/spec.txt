@@ -1,0 +1,6 @@
+tool     instruments
+fixture  coverage-is-opted-in
+original scripts/instruments.sh
+args     
+env      COVERAGE=1 DUMPS=dumps GOPOB_NICED=1 INSTRUMENTS_UNDER_MISE=1 INSTRUMENT_TIMINGS=0 LOG_SAMPLE=3 RUNDIR=out
+unset    POE_VERSION ONLY

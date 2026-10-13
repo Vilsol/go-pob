@@ -196,11 +196,13 @@ func dropEnv(env []string, names []string) []string {
 	return out
 }
 
+var tierEnv = []string{"OPERATOR", "CORPUS"}
+
 func run(ctx context.Context, dir string, env, unset []string, argv []string, stdin []byte) result {
 	//nolint:gosec // the argv is the harness's own fixture invocation
 	cmd := exec.CommandContext(ctx, argv[0], argv[1:]...)
 	cmd.Dir = dir
-	cmd.Env = dropEnv(append(os.Environ(), env...), unset)
+	cmd.Env = dropEnv(append(dropEnv(os.Environ(), tierEnv), env...), unset)
 	if stdin != nil {
 		cmd.Stdin = bytes.NewReader(stdin)
 	}

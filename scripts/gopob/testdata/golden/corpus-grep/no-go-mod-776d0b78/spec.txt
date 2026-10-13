@@ -1,0 +1,5 @@
+tool     corpus-grep
+fixture  no-go-mod
+original scripts/corpus_grep.py
+args     
+env      PATTERN=commontoken

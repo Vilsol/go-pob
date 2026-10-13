@@ -1,0 +1,13 @@
+go test ./... -timeout 60m -skip TestCorpus3_29VsOracle|TestCorpus3_29|TestModDBCensus|TestModOrderCensus|TestTagCensus|TestConfigCensus|TestCorpusIsDeterministic | OPERATOR=true CORPUS=true
+go test ./calculator/ -run TestCorpus3_29VsOracle -v -timeout 30m | OPERATOR=unset CORPUS=true
+go test ./calculator/ -run TestCorpus3_29$ -v -timeout 30m | OPERATOR=unset CORPUS=true
+go test ./calculator/ -run TestModDBCensus -v -timeout 30m | OPERATOR=true CORPUS=true
+go test ./calculator/ -run TestModOrderCensus -v -timeout 30m | OPERATOR=true CORPUS=true
+go test ./calculator/ -run TestTagCensus -v -timeout 30m | OPERATOR=true CORPUS=true
+go test ./calculator/ -run TestConfigCensus -v -timeout 30m | OPERATOR=true CORPUS=true
+go test ./calculator/ -count=1 -run TestCorpusIsDeterministic -v -timeout 30m | OPERATOR=true CORPUS=true
+task citations
+task omissions
+task task-test-refs
+task test-cache-key
+task fma-census

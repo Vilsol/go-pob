@@ -1,0 +1,1 @@
+REFUSING: the dump carries no 'keywordFlagBits'. Re-run the dumper -- decoding PoB's numeric flags against this emitter's hardcoded 2.18.1 table silently mis-names every keyword flag from Fire onward under the 3.20 pin.

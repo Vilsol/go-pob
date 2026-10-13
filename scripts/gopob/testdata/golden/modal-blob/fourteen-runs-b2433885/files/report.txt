@@ -1,0 +1,62 @@
+MODAL ORACLE REPORT
+runs                 15
+  m00.jsonl
+  m01.jsonl
+  m02.jsonl
+  m03.jsonl
+  m04.jsonl
+  m05.jsonl
+  m06.jsonl
+  m07.jsonl
+  m08.jsonl
+  m09.jsonl
+  m10.jsonl
+  m11.jsonl
+  m12.jsonl
+  m13.jsonl
+  m14.jsonl
+min-fraction         0.0 (strict majority when 0.5)
+builds               1
+(build,key) pairs    1  seen in at least one run
+
+DISAGREEMENT — the term a single-process blob samples blind
+  keys where runs disagreed   1  (100.0000% of pairs)
+  builds carrying any of them 1
+  distinct table:key          1
+  winning-vote histogram      [(2, 1)]
+
+PER-RUN DISTANCE FROM THE MODE — what ONE process's blob would have graded wrongly
+  run 1        1 pairs differ from the mode   m00.jsonl
+  run 2        1 pairs differ from the mode   m01.jsonl
+  run 3        1 pairs differ from the mode   m02.jsonl
+  run 4        0 pairs differ from the mode   m03.jsonl
+  run 5        1 pairs differ from the mode   m04.jsonl
+  run 6        1 pairs differ from the mode   m05.jsonl
+  run 7        1 pairs differ from the mode   m06.jsonl
+  run 8        1 pairs differ from the mode   m07.jsonl
+  run 9        1 pairs differ from the mode   m08.jsonl
+  run 10       1 pairs differ from the mode   m09.jsonl
+  run 11       1 pairs differ from the mode   m10.jsonl
+  run 12       1 pairs differ from the mode   m11.jsonl
+  run 13       1 pairs differ from the mode   m12.jsonl
+  run 14       0 pairs differ from the mode   m13.jsonl
+  run 15       1 pairs differ from the mode   m14.jsonl
+  mean 0.9, min 0, max 1
+
+DROPPED — no cluster reached the threshold, so the blob does not grade them
+  pairs   0
+  builds  0
+  keys    0
+
+  top dropped keys:
+  top dropped builds:
+
+  top disagreeing keys:
+         1  output:Spread
+  top disagreeing builds:
+         1  0001-many.xml
+
+STRUCTURAL
+  builds whose treeSources differed between runs   1
+    0001-many.xml  [(40, 1), (41, 1), (42, 1), (43, 1), (44, 1), (45, 1), (46, 1), (47, 1), (48, 1), (49, 1), (50, 1), (51, 1), (52, 1), (53, 1), (54, 1)]
+  (build,table) present in some runs and not others 0

@@ -24,8 +24,8 @@ func TestUnaffectedByBlindParses(t *testing.T) {
 			continue
 		}
 		m := entry.ModList[0]
-		if m.Name() != "IgnoreBlindHitChance" || m.Type() != mod.TypeFlag {
-			t.Errorf("%q: got %s/%s, want IgnoreBlindHitChance/FLAG", line, m.Name(), m.Type())
+		if m.Name() != "UnaffectedByBlind" || m.Type() != mod.TypeFlag {
+			t.Errorf("%q: got %s/%s, want UnaffectedByBlind/FLAG", line, m.Name(), m.Type())
 		}
 	}
 }

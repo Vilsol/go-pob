@@ -1,0 +1,5 @@
+tool     config-tools
+fixture  inventory-no-corpus
+original scripts/config_tools.py
+args     --pob pob --repo . --corpus nope inventory
+env      

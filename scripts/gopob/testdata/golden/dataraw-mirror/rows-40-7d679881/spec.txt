@@ -1,0 +1,5 @@
+tool     dataraw-mirror
+fixture  rows-40
+original scripts/dataraw_mirror.py
+args     --rows 40
+env      POB_DIR=pob

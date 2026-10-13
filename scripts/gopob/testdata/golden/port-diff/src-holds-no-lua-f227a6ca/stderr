@@ -1,0 +1,1 @@
+REFUSING: no Lua under srcless/src — set POB_DIR, and check `task pob-pin`.

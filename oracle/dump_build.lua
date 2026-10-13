@@ -125,6 +125,32 @@ io.stderr:write(string.format(
 	"dump: keystone source reset armed (%d keystone mods snapshotted at boot)\n",
 	keystoneSourceCount))
 
+local levelCost = {}
+local levelCostCount = 0
+for _, granted in pairs(data.skills) do
+	for _, level in pairs(granted.levels or {}) do
+		if type(level) == "table" then
+			levelCost[level] = level.cost or false
+			levelCostCount = levelCostCount + 1
+		end
+	end
+end
+
+if levelCostCount == 0 then
+	io.stderr:write("dump: REFUSING -- data.skills carries no levels, so the cost snapshot ran " ..
+		"before the data was loaded and the per-build reset would be a no-op\n")
+	os.exit(1)
+end
+
+local function resetLevelCosts()
+	for level, cost in pairs(levelCost) do
+		level.cost = cost or nil
+	end
+end
+
+io.stderr:write(string.format(
+	"dump: skill level cost reset armed (%d levels snapshotted at boot)\n", levelCostCount))
+
 local json = require("dkjson")
 local lfs = require("lfs")
 
@@ -358,6 +384,8 @@ for _, file in ipairs(builds) do
 		resetFromItem()
 
 		resetKeystoneSources()
+
+		resetLevelCosts()
 
 		if emptyModCacheMode == "each" then
 			emptyModCache()

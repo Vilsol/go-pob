@@ -1,0 +1,3 @@
+emit: 2 emitted, 1 declined, 1 undeclared join candidate(s)
+  candidate (not emitted): node 4000 (Candidate Join) 'Projectiles gain Damage — as they travel farther, dealing up'...
+REFUSING: missing.go is not writable: Is a directory

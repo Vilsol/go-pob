@@ -1,0 +1,4 @@
+REFUSING: not one of the 8 cited Lua files exists in the candidate <sandbox>/empty.
+  Either it is not a PoB checkout of a comparable layout, or the paths moved
+  wholesale -- a run against it would report 8 DELETED and mean nothing.
+An instrument that cannot answer must refuse, never return empty.

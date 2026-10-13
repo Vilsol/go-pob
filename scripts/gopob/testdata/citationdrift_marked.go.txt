@@ -1,0 +1,52 @@
+package calculator
+
+//pob:src/Modules/Thing.lua:2
+func A() {}
+
+//pob:block:src/Modules/Thing.lua:3
+func B() {}
+
+//pob:src/Modules/Thing.lua:4
+func C() {}
+
+//pob:src/Modules/Thing.lua:5
+func D() {}
+
+//pob:src/Modules/Thing.lua:6-7
+func E() {}
+
+//pob:src/Modules/Missing.lua:1
+func F() {}
+
+//pob:src/Modules/Thing.lua:9-10
+func G() {}
+
+//pob:src/Modules/Thing.lua:11
+func H() {}
+
+//pob:src/Modules/Thing.lua:3,src/Modules/Thing.lua:12
+func I() {}
+
+//pob:src/Modules/Thing.lua:8
+func J() {}
+
+//pob:src/Modules/Thing.lua:12
+func K() {}
+
+//pob:src/Modules/Thing.lua:9
+func L() {}
+
+//pob:src/Modules/Thing.lua:10
+func M() {}
+
+//pob:src/Modules/Thing.lua:4
+func N() {}
+
+//pob:src/Modules/Thing.lua:5
+func O() {}
+
+//pob:src/Modules/Thing.lua:2
+func P() {}
+
+//pob:src/Modules/Thing.lua:13
+func Q() {}

@@ -1,0 +1,5 @@
+tool     dataraw-mirror
+fixture  our-own-parser-go-is-gone
+original scripts/dataraw_mirror.py
+args     
+env      POB_DIR=pob

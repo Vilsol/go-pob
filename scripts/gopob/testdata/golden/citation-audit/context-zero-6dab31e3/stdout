@@ -1,0 +1,50 @@
+
+calculator/marked.go:3  src/Modules/Thing.lua:1-4
+  >      1 | [local function Alpha()]
+           | ... 2 line(s) ...
+  <      4 | [end]
+
+calculator/marked.go:6  block:src/Modules/Thing.lua:4-4
+  >      4 | [end]
+    !! FIRST LINE IS A CLOSER — this range almost certainly starts one line too early and cites the previous block's tail
+
+calculator/marked.go:9  src/Modules/Thing.lua:5-5
+  >      5 | [-- a lone comment line]
+    !! THE ENTIRE RANGE IS ONE COMMENT LINE — it cites nothing executable
+
+calculator/marked.go:12  src/Modules/Thing.lua:6-6
+  >      6 | []
+    !! FIRST LINE IS BLANK
+
+calculator/marked.go:15  src/Modules/Thing.lua:2-2
+  >      2 | [	local x = 1 +]
+    !! LAST LINE ENDS MID-STATEMENT on `+` — the expression continues onto :3, which this range excludes
+
+calculator/marked.go:18  src/Modules/Thing.lua:8-8
+  >      8 | [local z = 3 and]
+    !! LAST LINE ENDS MID-STATEMENT on `and` — the expression continues onto :9, which this range excludes
+
+calculator/marked.go:21  src/Modules/Gone.lua:1-2
+    !! file not found under pob
+  calculator/marked.go:24  UNPARSED 'not-a-lua-reference'
+
+calculator/marked.go:27  src/Modules/Thing.lua:1-1
+  >      1 | [local function Alpha()]
+
+calculator/marked.go:27  src/Modules/Thing.lua:5-5
+  >      5 | [-- a lone comment line]
+    !! THE ENTIRE RANGE IS ONE COMMENT LINE — it cites nothing executable
+
+calculator/marked.go:30  src/Modules/Thing.lua:11-11
+  >     11 | [	else]
+
+calculator/marked.go:33  src/Modules/Thing.lua:12-12
+  >     12 | [local s = "a -- b" ..]
+    !! LAST LINE ENDS MID-STATEMENT on `..` — the expression continues onto :13, which this range excludes
+
+calculator/marked.go:36  src/Modules/Thing.lua:5-7
+  >      5 | [-- a lone comment line]
+           | ... 1 line(s) ...
+  <      7 | [	local y = 2]
+
+12 range(s) checked, 8 flagged.

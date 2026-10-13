@@ -1,0 +1,107 @@
+PoB checkout: pob
+
+=== MARKERS  //pob:<path>[:range] ===
+  16 citation(s) on 13 symbol(s), 1 whole-file marker(s), across 8 file(s)
+  BROKEN a/attach.go:4  src/Modules/Calc.lua:5-7  NOFILE: no src/Modules/Calc.lua in the pinned PoB
+  BROKEN a/bounds.go:3  src/Modules/Calc.lua:16-17  NOFILE: no src/Modules/Calc.lua in the pinned PoB
+  BROKEN a/bounds.go:6  src/Modules/Calc.lua:17-18  NOFILE: no src/Modules/Calc.lua in the pinned PoB
+  BROKEN a/broken.go:3  src/Modules/NoSuch.lua:1-2  NOFILE: no src/Modules/NoSuch.lua in the pinned PoB
+  BROKEN a/broken.go:6  src/Modules/Calc.lua:900-901  NOFILE: no src/Modules/Calc.lua in the pinned PoB
+  BROKEN a/broken.go:9  not a citation at all  MALFORMED: 'not a citation at all' is not `path.lua[:start[-end]]`
+  BROKEN a/broken.go:12  Calc.lua:5-7  NOFILE: no Calc.lua in the pinned PoB
+  BROKEN a/filemarker.go:1  src/Modules/Calc.lua  NOFILE: no src/Modules/Calc.lua in the pinned PoB
+  BROKEN a/filemarker.go:5  src/Modules/Calc.lua:5-7  NOFILE: no src/Modules/Calc.lua in the pinned PoB
+  BROKEN a/funcline.go:3  src/Modules/Calc.lua:11-12  NOFILE: no src/Modules/Calc.lua in the pinned PoB
+  BROKEN a/funcline.go:6  src/Modules/Calc.lua:11-12  NOFILE: no src/Modules/Calc.lua in the pinned PoB
+  BROKEN a/funcline.go:9  src/Modules/Calc.lua:13-14  NOFILE: no src/Modules/Calc.lua in the pinned PoB
+  BROKEN a/good.go:3  src/Modules/Calc.lua:5-7  NOFILE: no src/Modules/Calc.lua in the pinned PoB
+  BROKEN a/good.go:6  src/Modules/Calc.lua:9-10  NOFILE: no src/Modules/Calc.lua in the pinned PoB
+  BROKEN a/lexer.go:17  src/Modules/Calc.lua:11-12  NOFILE: no src/Modules/Calc.lua in the pinned PoB
+  BROKEN a/pkgmarker.go:1  src/Modules/Calc.lua  NOFILE: no src/Modules/Calc.lua in the pinned PoB
+  16 broken
+
+=== SWEEP of informal citations (Foo.lua:123 in a comment or a provenance string) ===
+  5 occurrence(s), 4 distinct target(s), in 1 file(s)
+  NOFILE=5
+  WRONG    a/lexer.go:5  Calc.lua:5  NOFILE: no Calc.lua in the pinned PoB
+  WRONG    a/lexer.go:11  Calc.lua:6  NOFILE: no Calc.lua in the pinned PoB
+  WRONG    a/lexer.go:13  Calc.lua:900  NOFILE: no Calc.lua in the pinned PoB
+  WRONG    a/lexer.go:20  Calc.lua:5-7  NOFILE: no Calc.lua in the pinned PoB
+  -> 5 occurrence(s) name a file or line that does not exist (4 distinct)
+  -> 0 occurrence(s) quote Lua that is not in the range they cite (0 distinct)
+  -> 0 occurrence(s) cite a comment-only range or a short path (0 distinct).
+     EMPTY HAS KNOWN FALSE POSITIVES: a citation may deliberately point at a Lua
+     COMMENT (`gem_lookup_test.go` cites CalcSetup.lua:924, which IS the comment it
+     quotes). Read before believing. It is reported because the same shape is also
+     what an off-by-one looks like.
+
+=== FUNCTION-LINE CHECK  (a func's marker must cite a Lua `function` line) ===
+  -> 0 func-attached marker(s) cite a range with no `function` line; 22 grandfathered, 0 NEW
+  STALE-GRANDFATHER calculator/calc_offence.go::calcAilmentSourceDamage no longer needs grandfathering -- delete it from FUNC_LINE_GRANDFATHER
+  STALE-GRANDFATHER calculator/calc_offence.go::calcSkillCooldown no longer needs grandfathering -- delete it from FUNC_LINE_GRANDFATHER
+  STALE-GRANDFATHER calculator/calc_perform.go::DoActorMisc no longer needs grandfathering -- delete it from FUNC_LINE_GRANDFATHER
+  STALE-GRANDFATHER calculator/calc_perform.go::addTriggerIncMoreMods no longer needs grandfathering -- delete it from FUNC_LINE_GRANDFATHER
+  STALE-GRANDFATHER calculator/calc_perform.go::calcDualWieldImpact no longer needs grandfathering -- delete it from FUNC_LINE_GRANDFATHER
+  STALE-GRANDFATHER calculator/calc_perform.go::determineCursePriority no longer needs grandfathering -- delete it from FUNC_LINE_GRANDFATHER
+  STALE-GRANDFATHER calculator/calc_perform.go::getTriggerDefaultCooldown no longer needs grandfathering -- delete it from FUNC_LINE_GRANDFATHER
+  STALE-GRANDFATHER calculator/calc_perform.go::getUniqueItemTriggerName no longer needs grandfathering -- delete it from FUNC_LINE_GRANDFATHER
+  STALE-GRANDFATHER calculator/calc_setup.go::processStats no longer needs grandfathering -- delete it from FUNC_LINE_GRANDFATHER
+  STALE-GRANDFATHER calculator/calc_tools.go::CalcGemIsType no longer needs grandfathering -- delete it from FUNC_LINE_GRANDFATHER
+  STALE-GRANDFATHER calculator/cluster_jewels.go::findSocket no longer needs grandfathering -- delete it from FUNC_LINE_GRANDFATHER
+  STALE-GRANDFATHER calculator/configs.go::enemyIsBossLevel no longer needs grandfathering -- delete it from FUNC_LINE_GRANDFATHER
+  STALE-GRANDFATHER calculator/item.go::BuildModList no longer needs grandfathering -- delete it from FUNC_LINE_GRANDFATHER
+  STALE-GRANDFATHER calculator/item.go::ParseItem no longer needs grandfathering -- delete it from FUNC_LINE_GRANDFATHER
+  STALE-GRANDFATHER calculator/item.go::checkModLineVariant no longer needs grandfathering -- delete it from FUNC_LINE_GRANDFATHER
+  STALE-GRANDFATHER calculator/item_setup.go::quiverBonusMultiplier no longer needs grandfathering -- delete it from FUNC_LINE_GRANDFATHER
+  STALE-GRANDFATHER calculator/item_setup.go::slotNum no longer needs grandfathering -- delete it from FUNC_LINE_GRANDFATHER
+  STALE-GRANDFATHER calculator/item_setup.go::typeItemMultiplierName no longer needs grandfathering -- delete it from FUNC_LINE_GRANDFATHER
+  STALE-GRANDFATHER calculator/mod_parser.go::grantedExtraSkill no longer needs grandfathering -- delete it from FUNC_LINE_GRANDFATHER
+  STALE-GRANDFATHER data/raw/granted_effects.go::GetStatMapEntry no longer needs grandfathering -- delete it from FUNC_LINE_GRANDFATHER
+  STALE-GRANDFATHER mod/common.go::MatchKeywordFlags no longer needs grandfathering -- delete it from FUNC_LINE_GRANDFATHER
+  STALE-GRANDFATHER moddb/mod_store.go::GetMultiplier no longer needs grandfathering -- delete it from FUNC_LINE_GRANDFATHER
+     A Go func that genuinely ports an INLINE Lua block writes `//pob:block:`,
+     which is an explicit claim rather than a silent exemption.
+
+=== CLASSIFICATION  (scripts/port_manifest.txt) ===
+  PORT            7 file(s)    14 top-level func(s)
+  DATA            0 file(s)     0 top-level func(s)
+  GENERATED       0 file(s)     0 top-level func(s)
+  GO-NATIVE       1 file(s)     3 top-level func(s)
+  UNCLASSIFIED    0 file(s)     0 top-level func(s)
+  MANIFEST-MISSING         a/unlisted.go
+                           not classified in scripts/port_manifest.txt. A new file is UNCLASSIFIED by default and there is no GO-NATIVE fallback: add it with evidence, or as UNCLASSIFIED with the question you could not answer.
+  MANIFEST-NOFILE          scripts/port_manifest.txt:6
+                           a/attach.go cites src/Modules/Calc.lua, which is not in the pinned PoB (pob)
+  MANIFEST-NOFILE          scripts/port_manifest.txt:5
+                           a/bounds.go cites src/Modules/Calc.lua, which is not in the pinned PoB (pob)
+  MANIFEST-NOFILE          scripts/port_manifest.txt:3
+                           a/broken.go cites src/Modules/Calc.lua, which is not in the pinned PoB (pob)
+  MANIFEST-NOFILE          scripts/port_manifest.txt:8
+                           a/filemarker.go cites src/Modules/Calc.lua, which is not in the pinned PoB (pob)
+  MANIFEST-NOFILE          scripts/port_manifest.txt:4
+                           a/funcline.go cites src/Modules/Calc.lua, which is not in the pinned PoB (pob)
+  MANIFEST-NOFILE          scripts/port_manifest.txt:2
+                           a/good.go cites src/Modules/Calc.lua, which is not in the pinned PoB (pob)
+  MANIFEST-NOFILE          scripts/port_manifest.txt:7
+                           a/pkgmarker.go cites src/Modules/Calc.lua, which is not in the pinned PoB (pob)
+  -> 8 classification failure(s)
+
+=== COVERAGE ===
+   funcs  cited  PORT file
+       1      0  a/pkgmarker.go
+       1      0  a/filemarker.go
+       4      4  a/broken.go
+       3      3  a/funcline.go
+       2      2  a/good.go
+       2      2  a/bounds.go
+       1      1  a/attach.go
+  ... 0 more PORT file(s)
+  PORT   12 / 14 top-level funcs cited (85.7%) across 7 file(s)  <- the number that means something
+  RAW    0 / 0 over all of calculator, moddb, mod, data, pob, utils, builds (0.0%)  <- for continuity only; ~-14 of those funcs are go-pob's own code with nothing to cite
+  1 file(s) carry a WHOLE-FILE marker, credited 0 funcs above (see the note in the source):
+    [PORT] a/filemarker.go  <- PORT file: cite its FUNCTIONS instead
+
+FAIL: 16 marker(s) do not resolve against pob
+FAIL: 13 cited symbol(s), below the floor of 16
+FAIL: 8 classification failure(s) in scripts/port_manifest.txt
+FAIL: 22 grandfathered entr(ies) are no longer needed. The list may only SHRINK -- delete them.

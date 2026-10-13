@@ -1,0 +1,5 @@
+tool     port-diff
+fixture  symbol
+original scripts/port_diff.py
+args     
+env      POB_DIR=pob SYMBOL=pdSharedName

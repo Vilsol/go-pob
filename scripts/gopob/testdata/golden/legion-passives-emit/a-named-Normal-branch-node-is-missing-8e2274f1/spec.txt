@@ -1,0 +1,6 @@
+tool     legion-passives-emit
+fixture  a-named-Normal-branch-node-is-missing
+original oracle/legion_passives_emit.py
+args     dump.json out.go
+env      
+files    out.go

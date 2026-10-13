@@ -83,7 +83,7 @@ func buildOrderedItemSlots() []itemSlot {
 	return slots
 }
 
-//pob:src/Classes/ItemSlotControl.lua:31
+//pob:block:src/Classes/ItemSlotControl.lua:31
 func slotNum(name string) int {
 	if m := slotTrailingNumRe.FindStringSubmatch(name); m != nil {
 		n, _ := strconv.Atoi(m[1])
@@ -379,7 +379,7 @@ func necromanticAegisAllocated(env *Environment) bool {
 	return node.Name != nil && *node.Name == "Necromantic Aegis"
 }
 
-//pob:block:src/Modules/CalcSetup.lua:641-665
+//pob:block:src/Modules/CalcSetup.lua:1016-1047
 func energyBladeReplacement(env *Environment, slotName string, item *Item) (*Item, bool) {
 	if slotName != "Weapon 1" && slotName != "Weapon 2" {
 		return nil, false
@@ -985,7 +985,7 @@ func socketedGemTags(gem pob.Gem) map[string]bool {
 	return nil
 }
 
-//pob:src/Modules/CalcSetup.lua:1200
+//pob:block:src/Modules/CalcSetup.lua:1200
 func typeItemMultiplierName(itemType string) string {
 	name := strings.ReplaceAll(itemType, " ", "")
 	if i := strings.LastIndex(name, "Handed"); i >= 0 {
@@ -1045,7 +1045,7 @@ func mergeModIntoList(list *moddb.ModList, m mod.Mod, skipNonAdditive bool) {
 	}
 }
 
-//pob:src/Modules/CalcSetup.lua:1126-1128
+//pob:block:src/Modules/CalcSetup.lua:1126-1128
 func quiverBonusMultiplier(env *Environment, itemList map[string]*Item, item *Item) (float64, bool) {
 	if item.Type != "Quiver" || env.InitialNodeModDB == nil {
 		return 0, false

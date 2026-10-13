@@ -1,0 +1,1 @@
+REFUSING: a table with all-digit keys is not the array 1..2; dkjson writes a contiguous run for a Lua array, so this dump has been edited or truncated

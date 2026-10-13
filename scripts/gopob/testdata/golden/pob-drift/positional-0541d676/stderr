@@ -1,0 +1,18 @@
+REFUSING: unknown argument 'wat'
+
+usage: pob_drift.py [--candidate DIR] [--pin DIR] [--top N]
+                    [--details] [--fix] [--dry-run] [--selftest]
+
+Classify every //pob: citation against a CANDIDATE PoB checkout: the upgrade worklist.
+
+  --candidate DIR  the PoB checkout to measure the pin's citations against (or CANDIDATE=)
+  --pin DIR        the pinned checkout the markers were written against (or POB_DIR=)
+  --top N          rows per section; 0 or less means ALL (or TOP=, default 30)
+  --details        print the diff of each CHANGED range (or DETAILS=1)
+  --fix            rewrite MOVED markers' line numbers. Opt-in, and never combined with the
+                   report -- this run prints a diff and nothing else (or FIX=1)
+  --dry-run        with --fix: print the diff, write nothing (or DRYRUN=1)
+  --selftest       the synthetic control
+  -h, --help       this text
+
+An instrument that cannot answer must refuse, never return empty.

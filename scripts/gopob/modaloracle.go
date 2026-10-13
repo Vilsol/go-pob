@@ -55,6 +55,12 @@ func modalOracle(argv []string) int {
 		if moStale(d, j) {
 			fmt.Printf("extracting %s -> %s\n", d, j)
 			cmd := exec.Command("nice", "-n", "15", "python3", //nolint:gosec,noctx // as in the original
+				//fold-dead-ok: the difftest STUBS this path by design — it asserts which commands
+				//fold-dead-ok: modal-oracle runs and with what argv, not what they compute, so a
+				//fold-dead-ok: re-exec of the folded subcommand cannot be substituted and the
+				//fold-dead-ok: harness becomes an integration test. RETIRED BY: modaloracle's
+				//fold-dead-ok: difftest being rebuilt against the Go subcommands, or dropped as
+				//fold-dead-ok: obsolete now that its original is deleted.
 				pyPathJoin(moHere(), "oracle", "extract_output_oracle.py"), d, j)
 			lf, err := os.Create(j + ".log") //nolint:gosec // an operator-supplied workdir path
 			if err == nil {
@@ -83,6 +89,7 @@ func modalOracle(argv []string) int {
 		minfrac = "0.5"
 	}
 	args := append([]string{
+		//fold-dead-ok: same as the extractor above — the difftest substitutes a stub here.
 		pyPathJoin(moHere(), "oracle", "modal_blob.py"),
 		"--min-fraction=" + minfrac, plain, out + ".report.txt",
 	}, inputs...)

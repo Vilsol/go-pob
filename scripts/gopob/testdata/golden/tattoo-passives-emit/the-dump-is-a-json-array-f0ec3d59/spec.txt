@@ -1,0 +1,6 @@
+tool     tattoo-passives-emit
+fixture  the-dump-is-a-json-array
+original oracle/tattoo_passives_emit.py
+args     dump.json out.go
+env      
+files    out.go

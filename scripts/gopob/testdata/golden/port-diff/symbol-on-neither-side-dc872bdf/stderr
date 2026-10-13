@@ -1,0 +1,4 @@
+REFUSING: 'ZzzNeitherSide' appears on NEITHER side. That is far more likely to be a typo or a case
+difference than a real absence — CalcActiveSkill.lua writes `skillData.CritChance`
+with a capital C among 21 lower-camel neighbours, and a case-sensitive query there
+reports 0 on the one row with a real population. Check the spelling, then believe it.

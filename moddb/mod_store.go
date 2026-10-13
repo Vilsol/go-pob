@@ -64,6 +64,105 @@ type ModStoreFuncs interface {
 	getStat(stat string, cfg *ListCfg) float64
 }
 
+func heapNames(names []string) []string {
+	out := make([]string, len(names))
+	for i, n := range names {
+		out[i] = strings.Clone(n)
+	}
+	return out
+}
+
+func sumIn(s, context ModStoreFuncs, modType mod.Type, cfg *ListCfg, names ...string) float64 {
+	switch s := s.(type) {
+	case *ModDB:
+		return s.SumInternal(context, modType, cfg, names...)
+	case *ModList:
+		return s.SumInternal(context, modType, cfg, names...)
+	}
+	return s.SumInternal(context, modType, cfg, heapNames(names)...)
+}
+
+func moreIn(s, context ModStoreFuncs, cfg *ListCfg, names ...string) float64 {
+	switch s := s.(type) {
+	case *ModDB:
+		return s.MoreInternal(context, cfg, names...)
+	case *ModList:
+		return s.MoreInternal(context, cfg, names...)
+	}
+	return s.MoreInternal(context, cfg, heapNames(names)...)
+}
+
+func flagIn(s, context ModStoreFuncs, cfg *ListCfg, names ...string) bool {
+	switch s := s.(type) {
+	case *ModDB:
+		return s.FlagInternal(context, cfg, names...)
+	case *ModList:
+		return s.FlagInternal(context, cfg, names...)
+	}
+	return s.FlagInternal(context, cfg, heapNames(names)...)
+}
+
+func overrideIn(s, context ModStoreFuncs, cfg *ListCfg, names ...string) *mod.ModValueMulti {
+	switch s := s.(type) {
+	case *ModDB:
+		return s.OverrideInternal(context, cfg, names...)
+	case *ModList:
+		return s.OverrideInternal(context, cfg, names...)
+	}
+	return s.OverrideInternal(context, cfg, heapNames(names)...)
+}
+
+func SumOf(s ModStoreFuncs, modType mod.Type, cfg *ListCfg, names ...string) float64 {
+	return sumIn(s, s, modType, cfg, names...)
+}
+
+func MoreOf(s ModStoreFuncs, cfg *ListCfg, names ...string) float64 {
+	return moreIn(s, s, cfg, names...)
+}
+
+func listIn(s, context ModStoreFuncs, result *[]interface{}, cfg *ListCfg, names ...string) {
+	switch s := s.(type) {
+	case *ModDB:
+		s.ListInternal(context, result, cfg, names...)
+	case *ModList:
+		s.ListInternal(context, result, cfg, names...)
+	default:
+		s.ListInternal(context, result, cfg, heapNames(names)...)
+	}
+}
+
+func tabulateIn(s, context ModStoreFuncs, result *[]ModResult, modType mod.Type, cfg *ListCfg, flags mod.MFlag,
+	keywordFlags mod.KeywordFlag, source mod.Source, names ...string) {
+	switch s := s.(type) {
+	case *ModDB:
+		s.TabulateInternal(context, result, modType, cfg, flags, keywordFlags, source, names...)
+	case *ModList:
+		s.TabulateInternal(context, result, modType, cfg, flags, keywordFlags, source, names...)
+	default:
+		s.TabulateInternal(context, result, modType, cfg, flags, keywordFlags, source, heapNames(names)...)
+	}
+}
+
+func modName(mo mod.Mod) string {
+	if bm, ok := mo.(*mod.BaseMod); ok {
+		return bm.ModName
+	}
+	return mo.Name()
+}
+
+func modMatches(mo mod.Mod, modType mod.Type, cfg *ListCfg) bool {
+	if bm, ok := mo.(*mod.BaseMod); ok {
+		return bm.ModType == modType &&
+			cfgFlags(cfg)&bm.ModFlags == bm.ModFlags &&
+			mod.MatchKeywordFlags(cfgKeywordFlags(cfg), bm.ModKeywordFlags) &&
+			(cfg == nil || cfg.Source == nil || sourcePrefixMatch(bm.ModSource, *cfg.Source))
+	}
+	return mo.Type() == modType &&
+		cfgFlags(cfg)&mo.Flags() == mo.Flags() &&
+		mod.MatchKeywordFlags(cfgKeywordFlags(cfg), mo.KeywordFlags()) &&
+		(cfg == nil || cfg.Source == nil || sourcePrefixMatch(mo.GetSource(), *cfg.Source))
+}
+
 //pob:block:src/Classes/ModStore.lua:143-149
 func cfgFlags(cfg *ListCfg) mod.MFlag {
 	if cfg == nil {
@@ -173,7 +272,7 @@ func (s *ModStore) GetActor() Actor {
 	return nil
 }
 
-//pob:block:src/Classes/ModStore.lua:503
+//pob:block:src/Classes/ModStore.lua:37-43
 func (s *ModStore) relatedModDB(name string) ModStoreFuncs {
 	links, ok := s.GetActor().(ActorLinks)
 	if !ok {
@@ -977,9 +1076,15 @@ type globalLimitPair struct {
 	limit float64
 }
 
-func applyGlobalLimits(globalLimits map[string]float64, pairs []globalLimitPair, value float64) float64 {
+func applyGlobalLimits(globalLimits *map[string]float64, pairs []globalLimitPair, value float64) float64 {
+	if len(pairs) == 0 {
+		return value
+	}
+	if *globalLimits == nil {
+		*globalLimits = make(map[string]float64)
+	}
 	for _, p := range pairs {
-		value = applyGlobalLimit(globalLimits, p.key, p.limit, value)
+		value = applyGlobalLimit(*globalLimits, p.key, p.limit, value)
 	}
 	return value
 }
@@ -993,12 +1098,12 @@ func applyGlobalLimit(globalLimits map[string]float64, key string, limit float64
 	return value
 }
 
-//pob:src/Classes/ModStore.lua:225-227
+//pob:src/Classes/ModStore.lua:265-267
 func (s *ModStore) GetMultiplier(variable string, cfg *ListCfg, noMod bool) float64 {
 	//	return (not noMod and self:Override(cfg, multiplierName[var]))
 	//	    or (self.multipliers[var] or 0) + (parent...) + (not noMod and self:Sum("BASE", ...) or 0)
 	if !noMod {
-		if override := s.Child.Override(cfg, "Multiplier:"+variable); override != nil {
+		if override := overrideIn(s.Child, s.Child, cfg, "Multiplier:"+variable); override != nil {
 			return override.Float()
 		}
 	}
@@ -1014,7 +1119,7 @@ func (s *ModStore) GetMultiplier(variable string, cfg *ListCfg, noMod bool) floa
 	}
 
 	if !noMod {
-		out += s.Child.Sum(mod.TypeBase, cfg, "Multiplier:"+variable)
+		out += sumIn(s.Child, s.Child, mod.TypeBase, cfg, "Multiplier:"+variable)
 	}
 
 	return out
@@ -1022,7 +1127,7 @@ func (s *ModStore) GetMultiplier(variable string, cfg *ListCfg, noMod bool) floa
 
 var StatReadProbe func(actor any, stat string, value float64, found bool)
 
-//pob:src/Classes/ModStore.lua:229-252
+//pob:src/Classes/ModStore.lua:269-318
 func (s *ModStore) getStat(stat string, cfg *ListCfg) float64 {
 	if stat == "ManaReservedPercent" {
 		reserved := float64(0)
@@ -1095,7 +1200,7 @@ func (s *ModStore) GetCondition(variable string, cfg *ListCfg, noMod bool) (bool
 		}
 	}
 
-	if !noMod && s.Child.Flag(cfg, "Condition:"+variable) {
+	if !noMod && flagIn(s.Child, s.Child, cfg, "Condition:"+variable) {
 		return true, true
 	}
 

@@ -1,0 +1,24 @@
+WORKLIST wl
+1200 graded pairs · 375 wrong · 31.2500pp residual
+1pp = 12 pairs
+  (200 pairs sit in stats that are PERFECT and therefore absent from stats.tsv — that is why the denominator is read from builds.tsv)
+
+=== BY FAMILY (first-match-wins; a total is an UPPER BOUND, families share causes) ===
+  pool inputs (Life/ES/Armour/Evasion/PDR)       95 pairs   7.917pp  (2 stats)
+  EHP / max-hit-taken (downstream)               90 pairs   7.500pp  (1 stats)
+  damage chain                                   90 pairs   7.500pp  (2 stats)
+  crit                                           45 pairs   3.750pp  (1 stats)
+  resistances                                    30 pairs   2.500pp  (1 stats)
+  unclassified                                   25 pairs   2.083pp  (2 stats)
+  ⚠️ 25 pairs are UNCLASSIFIED — extend FAMILIES or argue with it.
+
+=== BY ACTOR TABLE (error RATE is the column to read, not the total) ===
+  player (unprefixed)         250 wrong  20.833pp     6 stats   41.7% of its own graded pairs
+  Minion.                      80 wrong   6.667pp     2 stats   40.0% of its own graded pairs
+  MainHand.                    45 wrong   3.750pp     1 stats   45.0% of its own graded pairs
+
+=== BY BUILD (12 builds) ===
+  wrong fraction: p10 6.0%  p25 9.0%  median 18.0%  p75 27.0%  p90 30.0%
+  top   10 builds hold  96.2% of the residual
+  ⚠️ A FLAT DISTRIBUTION MEANS BUILD-FIRST IS THE WRONG AXIS. It has been flat every time
+     it was measured; re-measure rather than inheriting that, it is one command.

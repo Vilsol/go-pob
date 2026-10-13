@@ -1,0 +1,6 @@
+tool     gems-emit
+fixture  gems-is-an-array
+original oracle/gems_emit.py
+args     dump.json out.go parser.go
+env      
+files    out.go

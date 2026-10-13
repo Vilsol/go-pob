@@ -1,0 +1,34 @@
+CHANGED  calculator/marked.go:42                      src/Modules/Thing.lua:4 -> pin:4
+         old: local changedAnchorIdentifierCCCC = 3
+CHANGED  calculator/marked.go:51                      src/Modules/Thing.lua:13 -> pin:14
+         old: local absentTokenOne = absentTokenTwo + absentTokenThree + presentTokenFour
+CHANGED  calculator/marked.go:9                       src/Modules/Thing.lua:4 -> pin:4
+         old: local changedAnchorIdentifierCCCC = 3
+GONE     calculator/marked.go:12                      src/Modules/Thing.lua:5
+         old: local goneAnchorIdentifierDDDD = 4
+GONE     calculator/marked.go:24                      src/Modules/Thing.lua:11
+         old: local tenCharTok = 77
+GONE     calculator/marked.go:39                      src/Modules/Thing.lua:10
+         old: local equalLengthBBB = 222
+GONE     calculator/marked.go:45                      src/Modules/Thing.lua:5
+         old: local goneAnchorIdentifierDDDD = 4
+MOVED    calculator/marked.go:21                      src/Modules/Thing.lua:9-10 -> pin:10
+MOVED    calculator/marked.go:27                      src/Modules/Thing.lua:12 -> pin:13
+MOVED    calculator/marked.go:27                      src/Modules/Thing.lua:3 -> pin:5
+MOVED    calculator/marked.go:33                      src/Modules/Thing.lua:12 -> pin:13
+MOVED    calculator/marked.go:36                      src/Modules/Thing.lua:9 -> pin:10
+MOVED    calculator/marked.go:6                       src/Modules/Thing.lua:3 -> pin:5
+EMPTY-OLD calculator/marked.go:15                      src/Modules/Thing.lua:6-7
+NOFILE-OLD calculator/marked.go:18                      src/Modules/Missing.lua:1
+
+     3  CHANGED
+     4  GONE
+     6  MOVED
+     3  SAME
+     1  EMPTY-OLD
+     1  NOFILE-OLD
+    18  total citations examined against oldrev
+
+⚠️ MOVED is reliable; CHANGED and GONE are HYPOTHESES from a string match. Read both
+   versions before touching code. Re-pointing a CHANGED marker without re-porting the
+   Go silences the only signal that the function drifted.

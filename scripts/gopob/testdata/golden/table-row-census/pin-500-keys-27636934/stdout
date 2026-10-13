@@ -1,0 +1,3 @@
+pin keys 500   pin keys absent here 500
+
+ MISS   PIN  HAVE  FAMILY  (only families with >= 3 missing, and at least one row ALREADY ported -- that is the partial-port signal)

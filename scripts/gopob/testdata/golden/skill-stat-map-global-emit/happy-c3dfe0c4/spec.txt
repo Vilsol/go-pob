@@ -1,0 +1,6 @@
+tool     skill-stat-map-global-emit
+fixture  happy
+original oracle/skill_stat_map_global_emit.py
+args     dump.json skill_stat_map.go
+env      
+files    skill_stat_map.go

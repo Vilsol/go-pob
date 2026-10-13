@@ -1,0 +1,3 @@
+{"build":"0001-Beta.xml","error":"boom \u2014 \u00fcn\u00efcode <&> \ud83d\udd25","output":{},"treeSources":0}
+{"build":"0002-alpha.xml","output":{"A<B&C>D":8,"AAFirst":2,"Big":2880521056.8914,"Damage\u00fc":7,"ExpHighIn":9900000000000000.0,"ExpHighOut":1e+16,"ExpLowIn":0.0001,"ExpLowOut":1e-05,"FloatVal":5.0,"IntVal":5,"IntegralLargeFloat":2000000000.0,"NegZero":0,"NegZeroFloat":-0.0,"Normalised":1.5,"Small":0.00026740809142486,"ZZLast":1},"outputMainHand":{"MainHandOnly":1},"outputOffHand":{},"treeSources":5}
+{"build":"0003-gamma.xml","enemyOutput":{},"output":{"Only":1},"treeSources":0}

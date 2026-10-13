@@ -1,0 +1,5 @@
+REFUSING: 1 of 1 marker(s) do not resolve against the PIN <sandbox>/pin.
+  The pin is wrong, or the tree is. Fix `mise run citations` first -- every
+  verdict below would be measured against the wrong baseline.
+  e.g. calculator/marked.go:3  src/Modules/Unch.lua:900-901  RANGE: 900-901 outside src/Modules/Unch.lua (4 lines)
+An instrument that cannot answer must refuse, never return empty.

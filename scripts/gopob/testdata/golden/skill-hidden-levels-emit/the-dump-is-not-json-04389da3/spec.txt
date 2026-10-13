@@ -1,0 +1,6 @@
+tool     skill-hidden-levels-emit
+fixture  the-dump-is-not-json
+original oracle/skill_hidden_levels_emit.py
+args     dump.json out.go
+env      
+files    out.go

@@ -1,0 +1,5 @@
+tool     pob-citations
+fixture  pob-dir-is-not-a-checkout
+original scripts/pob_citations.py
+args     
+env      POB_DIR=nopob

@@ -1,0 +1,5 @@
+tool     corpus-grep
+fixture  lua-lazy-after-class
+original scripts/corpus_grep.py
+args     
+env      LUA=1 PATTERN=common%d-token

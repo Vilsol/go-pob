@@ -1,0 +1,6 @@
+CORPUS <sandbox>/testdata/corpus-9.99
+PATTERN With at least 40 Dexterity in Radius
+MATCHED 1 of 24 builds, 1 occurrence(s)
+  (a line-by-line grep would say 0 — the difference is mod lines WRAPPED across
+   newlines and &apos;-escaped text. That gap is why this script exists.)
+  b01                                                  1

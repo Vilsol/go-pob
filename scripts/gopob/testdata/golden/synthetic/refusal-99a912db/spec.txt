@@ -1,0 +1,5 @@
+tool     synthetic
+fixture  refusal
+original scripts/tool.py
+args     bad
+env      

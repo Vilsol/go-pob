@@ -1,0 +1,9 @@
+historical mentions (not failures): 6
+  DRIVER.md: TestInlineMention` named in prose
+  DRIVER.md: TestDoubledMention`` named in prose
+  DRIVER.md: TestBacktrackedMention` named in prose
+  DRIVER.md: TestLongGoneFromTheTree`. named in prose
+  scripts/driver.sh: TestCommentMention named in prose
+  scripts/driver.sh: TestAfterHashMention named in prose
+recorded 17 resolved name(s) in scripts/task_test_refs.names
+task test refs OK: 17 -run use(s) across 4 discovered driver(s), 17 test functions, 6 historical mention(s)

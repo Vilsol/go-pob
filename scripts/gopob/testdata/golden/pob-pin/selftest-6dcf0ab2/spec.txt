@@ -1,0 +1,5 @@
+tool     pob-pin
+fixture  selftest
+original scripts/pob_pin.py
+args     --selftest
+env      POB_DIR=pob

@@ -1,0 +1,5 @@
+tool     zero-value-guard-sweep
+fixture  bad-gopob-root
+original scripts/zero_value_guard_sweep.py
+args     
+env      GOPOB_ROOT=pob POB_DIR=pob

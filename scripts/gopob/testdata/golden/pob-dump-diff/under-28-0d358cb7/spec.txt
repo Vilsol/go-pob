@@ -1,0 +1,5 @@
+tool     pob-dump-diff
+fixture  under-28
+original scripts/pob_dump_diff.py
+args     A B
+env      

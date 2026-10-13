@@ -1,0 +1,5 @@
+tool     config-tools
+fixture  compare-absent
+original scripts/config_tools.py
+args     --pob pob --repo . --corpus corpus compare --var ctAbsentOne
+env      

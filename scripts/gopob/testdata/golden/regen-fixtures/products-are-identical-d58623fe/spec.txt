@@ -1,0 +1,6 @@
+tool     regen-fixtures
+fixture  products-are-identical
+original scripts/regen_fixtures.sh
+args     
+env      GOPOB_NICED=1 LUA_PATH=/sandbox/?.lua;; POB_DIR=pob
+files    testdata/oracle/item_tools_cases.json testdata/oracle/item_tools_expected.json testdata/oracle/many_builds_expected.json testdata/oracle/jewel_radius_expected.json testdata/oracle/item_parse_cases.json testdata/oracle/mod_parse_expected.json

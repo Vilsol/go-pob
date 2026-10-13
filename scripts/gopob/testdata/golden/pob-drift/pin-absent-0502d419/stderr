@@ -1,0 +1,2 @@
+REFUSING: pin checkout does not exist: nosuch
+An instrument that cannot answer must refuse, never return empty.

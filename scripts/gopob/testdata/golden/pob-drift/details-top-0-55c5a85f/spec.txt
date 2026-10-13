@@ -1,0 +1,5 @@
+tool     pob-drift
+fixture  details-top-0
+original scripts/pob_drift.py
+args     --candidate cand --top 0 --details
+env      POB_DIR=pin

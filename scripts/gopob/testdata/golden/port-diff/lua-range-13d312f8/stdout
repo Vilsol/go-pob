@@ -1,0 +1,5 @@
+
+──── PoB: pob/src/Modules/ConfigOptions.lua:3-5 ───────────────────────────
+       3 │ function Cfg:doThing(a)
+       4 │ 	return a + pdUniqueToken
+       5 │ end

@@ -1,0 +1,13 @@
+local function Alpha()
+	local x = 1 +
+		2
+end
+-- a lone comment line
+
+	local y = 2
+local z = 3 and
+	4
+end
+	else
+local s = "a -- b" ..
+	"c"

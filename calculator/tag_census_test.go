@@ -193,6 +193,7 @@ type tagSide struct {
 	dumpMods, dumpTags        int
 	pobTagsUnpaired           int
 	typeDisagree              int
+	typeDisagreeEx            []string
 	diffs                     []tagDivergence
 }
 
@@ -255,14 +256,19 @@ func tagCompare(dumped map[string][]tagDumpMod, ourMods map[string][]mod.Mod) ta
 			pobTags := parsePobTags(seg)
 			side.dumpTags += len(pobTags)
 
-			if len(pobTags) != len(m.Tags) {
+			disagree := len(pobTags) != len(m.Tags)
+			for i := 0; !disagree && i < len(pobTags); i++ {
+				disagree = pobTags[i].typ != m.Tags[i]
+			}
+			if disagree {
 				side.typeDisagree++
-			} else {
-				for i := range pobTags {
-					if pobTags[i].typ != m.Tags[i] {
-						side.typeDisagree++
-						break
+				if len(side.typeDisagreeEx) < 3 {
+					types := make([]string, len(pobTags))
+					for i, pt := range pobTags {
+						types[i] = pt.typ
 					}
+					side.typeDisagreeEx = append(side.typeDisagreeEx, fmt.Sprintf("%s [%s] fmt %v, tags %v: %s",
+						name, m.Type, types, m.Tags, truncate(m.Fmt, 160)))
 				}
 			}
 
@@ -494,7 +500,7 @@ func reportTagCensus(t *testing.T, results []tagResult, enemy bool, actor string
 	}
 
 	var pairs, match, unpairedPoB, unpairedOurs, unparsed, pobTags, ourTags int
-	var unparsedEx []string
+	var unparsedEx, typeDisagreeEx []string
 	var dumpMods, dumpTags, pobTagsUnpaired, typeDisagree int
 	byType := map[string]map[string]int{}
 	byTypeKey := map[string]int{}
@@ -518,6 +524,11 @@ func reportTagCensus(t *testing.T, results []tagResult, enemy bool, actor string
 		dumpTags += s.dumpTags
 		pobTagsUnpaired += s.pobTagsUnpaired
 		typeDisagree += s.typeDisagree
+		for _, ex := range s.typeDisagreeEx {
+			if len(typeDisagreeEx) < 3 {
+				typeDisagreeEx = append(typeDisagreeEx, ex)
+			}
+		}
 		if len(s.diffs) > 0 {
 			diffBuilds++
 		}
@@ -565,7 +576,8 @@ func reportTagCensus(t *testing.T, results []tagResult, enemy bool, actor string
 	}
 	if typeDisagree != 0 {
 		t.Errorf("%s: %d mods where the tag types parsed from fmt disagree with the dump's own "+
-			"tags array — the fmt parser is misreading the encoding", actor, typeDisagree)
+			"tags array — the fmt parser is misreading the encoding.\nExemplars:\n  %s",
+			actor, typeDisagree, strings.Join(typeDisagreeEx, "\n  "))
 	}
 	unmapped := 0
 	for _, m := range byType {

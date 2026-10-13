@@ -1,0 +1,6 @@
+tool     minion-data-emit
+fixture  out-path-is-a-directory
+original oracle/minion_data_emit.py
+args     dump.json adir minions
+env      
+files    out.go

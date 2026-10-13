@@ -2,6 +2,7 @@ package data
 
 import (
 	"container/heap"
+	"maps"
 	"slices"
 	"strconv"
 )
@@ -176,7 +177,6 @@ func (v *TreeVersionData) CalculatePrunableNodes(activeNodes []int64, rootNodes 
 	return prunableNodes
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:1440-1497
 func (v *TreeVersionData) CalculateDependentNodes(activeNodes []int64, target int64, rootNodes []int64) []int64 {
 	nodes := v.Tree().Nodes
 	rootsFor := func(list []int64) []int64 {
@@ -188,23 +188,302 @@ func (v *TreeVersionData) CalculateDependentNodes(activeNodes []int64, target in
 		}
 		return out
 	}
-
-	rest := make([]int64, 0, len(activeNodes))
-	for _, id := range activeNodes {
-		if id != target {
-			rest = append(rest, id)
-		}
-	}
-
 	before := make(map[int64]bool)
 	for _, id := range v.CalculatePrunableNodes(activeNodes, rootsFor(activeNodes)) {
 		before[id] = true
 	}
-	after := v.CalculatePrunableNodes(rest, rootsFor(rest))
-	out := make([]int64, 0, len(after))
-	for _, id := range after {
-		if !before[id] {
+
+	alloc := slices.Clone(activeNodes)
+	for _, root := range rootNodes {
+		if n, ok := v.SpecDependsNode(root); ok {
+			for _, id := range append([]int64{root}, n.Linked...) {
+				if o, ok := v.SpecDependsNode(id); ok && o.Type == "ClassStart" && !slices.Contains(alloc, id) {
+					alloc = append(alloc, id)
+				}
+			}
+		}
+	}
+	depends := SpecDepends(alloc, v.SpecDependsNode, nil)[target]
+	out := make([]int64, 0, len(depends))
+	for _, id := range depends {
+		if id != target && !before[id] {
 			out = append(out, id)
+		}
+	}
+	return out
+}
+
+//pob:block:src/Classes/PassiveTree.lua:521-552,src/Classes/PassiveTree.lua:603-628
+func (v *TreeVersionData) SpecDependsNode(id int64) (DependsNode, bool) {
+	n, ok := v.Tree().Nodes[strconv.FormatInt(id, 10)]
+	if !ok {
+		return DependsNode{}, false
+	}
+	out := DependsNode{Type: "Normal"}
+	switch {
+	case n.ClassStartIndex != nil:
+		out.Type = "ClassStart"
+	case n.IsAscendancyStart != nil && *n.IsAscendancyStart:
+		out.Type = "AscendClassStart"
+	case n.IsMastery != nil && *n.IsMastery:
+		out.Type = "Mastery"
+	case n.IsJewelSocket != nil && *n.IsJewelSocket:
+		out.Type = "Socket"
+	case n.IsKeystone != nil && *n.IsKeystone:
+		out.Type = "Keystone"
+	case n.IsNotable != nil && *n.IsNotable:
+		out.Type = "Notable"
+	}
+	if n.AscendancyName != nil {
+		out.Ascendancy = *n.AscendancyName
+	}
+	for _, key := range append(slices.Clone(n.Out), n.In...) {
+		if other, err := strconv.ParseInt(key, 10, 64); err == nil {
+			out.Linked = append(out.Linked, other)
+		}
+	}
+	return out, true
+}
+
+type DependsNode struct {
+	Type       string
+	Ascendancy string
+	Linked     []int64
+}
+
+type LeapJewel struct {
+	Socket       int64
+	LeapLike     bool
+	KeystoneOnly bool
+	Radius       map[int64]bool
+	Escape       map[int64]bool
+}
+
+type dependsState struct {
+	DependsNode
+	id               int64
+	alloc            bool
+	visited          bool
+	connectedToStart bool
+	depends          []int64
+	leaps            []int64
+}
+
+//pob:block:src/Classes/PassiveSpec.lua:1067-1095,src/Classes/PassiveSpec.lua:1133-1183,src/Classes/PassiveSpec.lua:1438-1592
+func SpecDepends(allocNodes []int64, node func(int64) (DependsNode, bool), jewels []LeapJewel) map[int64][]int64 {
+	nodes := map[int64]*dependsState{}
+	get := func(id int64) *dependsState {
+		if n, ok := nodes[id]; ok {
+			return n
+		}
+		d, ok := node(id)
+		if !ok {
+			nodes[id] = nil
+			return nil
+		}
+		n := &dependsState{DependsNode: d, id: id}
+		nodes[id] = n
+		return n
+	}
+	alloc := slices.Clone(allocNodes)
+	slices.Sort(alloc)
+	alloc = slices.Compact(alloc)
+	for _, id := range alloc {
+		if n := get(id); n != nil {
+			n.alloc = true
+		}
+	}
+	jewels = slices.Clone(jewels)
+	slices.SortFunc(jewels, func(a, b LeapJewel) int { return int(a.Socket - b.Socket) })
+	isStart := func(n *dependsState) bool { return n.Type == "ClassStart" || n.Type == "AscendClassStart" }
+
+	for _, id := range alloc {
+		n := get(id)
+		if n == nil {
+			continue
+		}
+		if n.Type != "ClassStart" && n.Type != "Socket" && n.Ascendancy == "" {
+			for _, j := range jewels {
+				if s := get(j.Socket); s == nil || !s.alloc {
+					continue
+				}
+				if j.Radius[id] && j.LeapLike && (!j.KeystoneOnly || n.Type == "Keystone") {
+					n.leaps = append(n.leaps, j.Socket)
+				}
+				if j.Escape[id] {
+					n.leaps = append(n.leaps, j.Socket)
+				}
+			}
+		}
+		n.depends = []int64{id}
+	}
+
+	inRadius := func(n *dependsState) []int64 {
+		var out []int64
+		for _, j := range jewels {
+			if j.Socket != n.id {
+				continue
+			}
+			for _, id := range alloc {
+				if j.LeapLike && j.Radius[id] {
+					out = append(out, id)
+				}
+			}
+			for _, id := range alloc {
+				if j.Escape[id] {
+					out = append(out, id)
+				}
+			}
+		}
+		return out
+	}
+
+	var visited []*dependsState
+	var findStart func(n *dependsState) bool
+	findStart = func(n *dependsState) bool {
+		n.visited = true
+		visited = append(visited, n)
+		for _, oid := range n.Linked {
+			other := get(oid)
+			if other == nil {
+				continue
+			}
+			startIndex := len(visited)
+			if other.alloc && (isStart(other) || (!other.visited && n.Type != "Mastery" && findStart(other))) {
+				if n.Ascendancy != "" && other.Ascendancy == "" {
+					for _, v := range visited[startIndex:] {
+						v.visited = false
+					}
+					visited = visited[:startIndex]
+				} else {
+					return true
+				}
+			}
+		}
+		return false
+	}
+
+	potentialDeps := map[int64][]int64{}
+	intuitiveLeaps := map[int64][]int64{}
+	for _, id := range alloc {
+		n := get(id)
+		if n == nil {
+			continue
+		}
+		n.visited = true
+		n.connectedToStart = false
+		anyStartFound := isStart(n)
+		for _, oid := range n.Linked {
+			other := get(oid)
+			if other == nil || !other.alloc || slices.Contains(n.depends, oid) {
+				continue
+			}
+			if isStart(other) {
+				anyStartFound = true
+				n.connectedToStart = true
+			} else if findStart(other) {
+				anyStartFound = true
+				n.connectedToStart = true
+				for _, v := range visited {
+					v.visited = false
+				}
+				visited = visited[:0]
+			} else {
+				depIds := map[int64]bool{}
+				for _, v := range visited {
+					if len(v.leaps) == 0 {
+						depIds[v.id] = true
+					}
+				}
+				for _, v := range visited {
+					if v.Type == "Mastery" {
+						otherPath := false
+						allocatedLinkCount := 0
+						for _, lid := range v.Linked {
+							if l := get(lid); l != nil && l.alloc {
+								allocatedLinkCount++
+							}
+						}
+						if allocatedLinkCount > 1 {
+							for _, lid := range v.Linked {
+								if l := get(lid); l != nil && l.alloc && !depIds[lid] {
+									otherPath = true
+								}
+							}
+						}
+						if !otherPath {
+							n.depends = append(n.depends, v.id)
+						}
+					} else {
+						if len(v.leaps) > 0 {
+							potentialDeps[v.id] = append(potentialDeps[v.id], id)
+						} else {
+							n.depends = append(n.depends, v.id)
+						}
+						intuitiveLeaps[id] = append(intuitiveLeaps[id], inRadius(v)...)
+					}
+					v.visited = false
+				}
+				visited = visited[:0]
+			}
+		}
+		n.visited = false
+		if !anyStartFound {
+			for _, dep := range n.depends {
+				for _, j := range jewels {
+					if s := get(j.Socket); s != nil && s.alloc && ((j.LeapLike && j.Radius[dep]) || j.Escape[dep]) {
+						intuitiveLeaps[j.Socket] = append(intuitiveLeaps[j.Socket], dep)
+						break
+					}
+				}
+			}
+		}
+	}
+
+	for _, id := range slices.Sorted(maps.Keys(potentialDeps)) {
+		potential := get(id)
+		seen := map[int64]bool{}
+		for _, nid := range potentialDeps[id] {
+			n := get(nid)
+			allDep := true
+			for _, provider := range potential.leaps {
+				if !slices.Contains(n.depends, provider) {
+					allDep = false
+				}
+			}
+			if allDep && !seen[nid] {
+				n.depends = append(n.depends, id)
+				seen[nid] = true
+			}
+		}
+	}
+
+	for _, id := range slices.Sorted(maps.Keys(intuitiveLeaps)) {
+		n := get(id)
+		seen := map[int64]bool{}
+		for _, did := range intuitiveLeaps[id] {
+			dep := get(did)
+			if dep.connectedToStart {
+				continue
+			}
+			allDep := true
+			for _, leap := range dep.leaps {
+				if !slices.Contains(n.depends, leap) {
+					allDep = false
+					break
+				}
+			}
+			if allDep && !seen[did] {
+				n.depends = append(n.depends, did)
+				seen[did] = true
+			}
+		}
+	}
+
+	out := make(map[int64][]int64, len(alloc))
+	for _, id := range alloc {
+		if n := get(id); n != nil {
+			out[id] = n.depends
 		}
 	}
 	return out

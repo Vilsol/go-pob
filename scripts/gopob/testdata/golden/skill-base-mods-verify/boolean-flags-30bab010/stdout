@@ -1,0 +1,8 @@
+lua: 1 skills, 1 mods
+go : 1 skills, 1 mods
+matched 1-to-1 against the Lua: 0
+
+DIFF: 1 problem(s)
+  AlphaSkill: emitted mod has no Lua counterpart:
+      go  = ('D', 'INC', ('float', 1.0), 1, 0, ())
+      lua = ('D', 'INC', ('float', 1.0), -1, 0, ())

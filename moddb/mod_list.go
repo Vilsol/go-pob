@@ -15,6 +15,24 @@ type ModList struct {
 	*ModStore
 
 	mods []mod.Mod
+
+	names listNameFilter
+}
+
+func (m *ModList) modsForAny(names []string) []mod.Mod {
+	for _, name := range names {
+		if m.names.mayHave(name) {
+			return m.mods
+		}
+	}
+	return nil
+}
+
+func (m *ModList) modsFor(name string) []mod.Mod {
+	if !m.names.mayHave(name) {
+		return nil
+	}
+	return m.mods
 }
 
 //pob:src/Classes/ModList.lua:19-21
@@ -41,6 +59,7 @@ func (m *ModList) Clone() ModStoreFuncs {
 
 //pob:src/Classes/ModList.lua:23-25
 func (m *ModList) AddMod(newMod mod.Mod) {
+	m.names.add(newMod.Name())
 	m.mods = append(m.mods, newMod)
 }
 
@@ -89,6 +108,7 @@ func (m *ModList) convertModInternal(oldName string, newMod mod.Mod) bool {
 			cur.Flags() == newMod.Flags() &&
 			cur.KeywordFlags() == newMod.KeywordFlags() &&
 			cur.GetSource() == newMod.GetSource() {
+			m.names.add(newMod.Name())
 			m.mods[i] = newMod
 			return true
 		}
@@ -108,6 +128,10 @@ func (m *ModList) Mods() []mod.Mod {
 
 func (m *ModList) SetMods(mods []mod.Mod) {
 	m.mods = mods
+	m.names = listNameFilter{}
+	for _, mo := range mods {
+		m.names.add(mo.Name())
+	}
 }
 
 //pob:src/Classes/ModList.lua:84-90
@@ -116,6 +140,9 @@ func (m *ModList) AddDB(db *ModList) {
 		return
 	}
 
+	for i, b := range db.names {
+		m.names[i] |= b
+	}
 	m.mods = append(m.mods, db.mods...)
 }
 
@@ -202,14 +229,11 @@ func (m *ModList) List(cfg *ListCfg, names ...string) []interface{} {
 //pob:src/Classes/ModList.lua:195-216
 func (m *ModList) ListInternal(context ModStoreFuncs, result *[]interface{}, cfg *ListCfg, names ...string) {
 	for _, name := range names {
-		for _, mo := range m.mods {
-			if mo.Name() != name {
+		for _, mo := range m.modsFor(name) {
+			if modName(mo) != name {
 				continue
 			}
-			if mo.Type() == mod.TypeList &&
-				cfgFlags(cfg)&mo.Flags() == mo.Flags() &&
-				mod.MatchKeywordFlags(cfgKeywordFlags(cfg), mo.KeywordFlags()) &&
-				(cfg == nil || cfg.Source == nil || sourcePrefixMatch(mo.GetSource(), *cfg.Source)) {
+			if modMatches(mo, mod.TypeList, cfg) {
 
 				value := context.evalMod(mo, cfg)
 				if value != nil {
@@ -220,7 +244,7 @@ func (m *ModList) ListInternal(context ModStoreFuncs, result *[]interface{}, cfg
 	}
 
 	if m.Parent != nil {
-		m.Parent.ListInternal(context, result, cfg, names...)
+		listIn(m.Parent, context, result, cfg, names...)
 	}
 }
 
@@ -233,15 +257,12 @@ func (m *ModList) Sum(modType mod.Type, cfg *ListCfg, names ...string) float64 {
 func (m *ModList) SumInternal(context ModStoreFuncs, modType mod.Type, cfg *ListCfg, names ...string) float64 {
 	result := float64(0)
 
-	for _, mo := range m.mods {
-		if !slices.Contains(names, mo.Name()) {
+	for _, mo := range m.modsForAny(names) {
+		if !slices.Contains(names, modName(mo)) {
 			continue
 		}
 
-		if mo.Type() == modType &&
-			cfgFlags(cfg)&mo.Flags() == mo.Flags() &&
-			mod.MatchKeywordFlags(cfgKeywordFlags(cfg), mo.KeywordFlags()) &&
-			(cfg == nil || cfg.Source == nil || sourcePrefixMatch(mo.GetSource(), *cfg.Source)) {
+		if modMatches(mo, modType, cfg) {
 
 			value := context.evalMod(mo, cfg)
 			if value != nil && value.Type() == mod.ModValueMultiTypeFloat {
@@ -251,7 +272,7 @@ func (m *ModList) SumInternal(context ModStoreFuncs, modType mod.Type, cfg *List
 	}
 
 	if m.Parent != nil {
-		result += m.Parent.SumInternal(context, modType, cfg, names...)
+		result += sumIn(m.Parent, context, modType, cfg, names...)
 	}
 
 	return result
@@ -270,15 +291,12 @@ func (m *ModList) MoreInternal(context ModStoreFuncs, cfg *ListCfg, names ...str
 
 	for _, name := range names {
 		modResult := float64(1)
-		for _, mo := range m.mods {
-			if mo.Name() != name {
+		for _, mo := range m.modsFor(name) {
+			if modName(mo) != name {
 				continue
 			}
 
-			if mo.Type() == mod.TypeMore &&
-				cfgFlags(cfg)&mo.Flags() == mo.Flags() &&
-				mod.MatchKeywordFlags(cfgKeywordFlags(cfg), mo.KeywordFlags()) &&
-				(cfg == nil || cfg.Source == nil || sourcePrefixMatch(mo.GetSource(), *cfg.Source)) {
+			if modMatches(mo, mod.TypeMore, cfg) {
 
 				value := context.evalMod(mo, cfg)
 				if value != nil && value.Type() == mod.ModValueMultiTypeFloat {
@@ -294,7 +312,7 @@ func (m *ModList) MoreInternal(context ModStoreFuncs, cfg *ListCfg, names ...str
 			}
 		}
 		if havePrecision {
-			power := math.Pow(10, float64(modPrecision))
+			power := pow10Of(modPrecision)
 			result = math.Floor(result*modResult*power) / power
 		} else {
 			result = result * luaRound(modResult, 2)
@@ -302,7 +320,7 @@ func (m *ModList) MoreInternal(context ModStoreFuncs, cfg *ListCfg, names ...str
 	}
 
 	if m.Parent != nil {
-		result *= m.Parent.MoreInternal(context, cfg, names...)
+		result *= moreIn(m.Parent, context, cfg, names...)
 	}
 
 	return result
@@ -315,15 +333,12 @@ func (m *ModList) Flag(cfg *ListCfg, names ...string) bool {
 
 //pob:src/Classes/ModList.lua:152-171
 func (m *ModList) FlagInternal(context ModStoreFuncs, cfg *ListCfg, names ...string) bool {
-	for _, mo := range m.mods {
-		if !slices.Contains(names, mo.Name()) {
+	for _, mo := range m.modsForAny(names) {
+		if !slices.Contains(names, modName(mo)) {
 			continue
 		}
 
-		if mo.Type() == mod.TypeFlag &&
-			cfgFlags(cfg)&mo.Flags() == mo.Flags() &&
-			mod.MatchKeywordFlags(cfgKeywordFlags(cfg), mo.KeywordFlags()) &&
-			(cfg == nil || cfg.Source == nil || sourcePrefixMatch(mo.GetSource(), *cfg.Source)) {
+		if modMatches(mo, mod.TypeFlag, cfg) {
 
 			value := context.evalMod(mo, cfg)
 			if value != nil && value.Type() == mod.ModValueMultiTypeFlag && value.Flag() {
@@ -333,7 +348,7 @@ func (m *ModList) FlagInternal(context ModStoreFuncs, cfg *ListCfg, names ...str
 	}
 
 	if m.Parent != nil {
-		if m.Parent.FlagInternal(context, cfg, names...) {
+		if flagIn(m.Parent, context, cfg, names...) {
 			return true
 		}
 	}
@@ -349,15 +364,12 @@ func (m *ModList) Override(cfg *ListCfg, names ...string) *mod.ModValueMulti {
 //pob:src/Classes/ModList.lua:173-193
 func (m *ModList) OverrideInternal(context ModStoreFuncs, cfg *ListCfg, names ...string) *mod.ModValueMulti {
 	for _, name := range names {
-		for _, mo := range m.mods {
-			if mo.Name() != name {
+		for _, mo := range m.modsFor(name) {
+			if modName(mo) != name {
 				continue
 			}
 
-			if mo.Type() == mod.TypeOverride &&
-				cfgFlags(cfg)&mo.Flags() == mo.Flags() &&
-				mod.MatchKeywordFlags(cfgKeywordFlags(cfg), mo.KeywordFlags()) &&
-				(cfg == nil || cfg.Source == nil || sourcePrefixMatch(mo.GetSource(), *cfg.Source)) {
+			if modMatches(mo, mod.TypeOverride, cfg) {
 
 				value := context.evalMod(mo, cfg)
 				if value != nil {
@@ -368,7 +380,7 @@ func (m *ModList) OverrideInternal(context ModStoreFuncs, cfg *ListCfg, names ..
 	}
 
 	if m.Parent != nil {
-		p := m.Parent.OverrideInternal(context, cfg, names...)
+		p := overrideIn(m.Parent, context, cfg, names...)
 		if p != nil {
 			return p
 		}
@@ -381,8 +393,8 @@ func (m *ModList) OverrideInternal(context ModStoreFuncs, cfg *ListCfg, names ..
 func (m *ModList) TabulateInternal(context ModStoreFuncs, result *[]ModResult, modType mod.Type,
 	cfg *ListCfg, flags mod.MFlag, keywordFlags mod.KeywordFlag, source mod.Source, modNames ...string) {
 
-	for _, mMod := range m.mods {
-		if !slices.Contains(modNames, mMod.Name()) {
+	for _, mMod := range m.modsForAny(modNames) {
+		if !slices.Contains(modNames, modName(mMod)) {
 			continue
 		}
 
@@ -423,7 +435,7 @@ func (m *ModList) TabulateInternal(context ModStoreFuncs, result *[]ModResult, m
 	}
 
 	if m.Parent != nil {
-		m.Parent.TabulateInternal(context, result, modType, cfg, flags, keywordFlags, source, modNames...)
+		tabulateIn(m.Parent, context, result, modType, cfg, flags, keywordFlags, source, modNames...)
 	}
 }
 

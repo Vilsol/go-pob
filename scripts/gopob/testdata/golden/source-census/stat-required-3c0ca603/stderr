@@ -1,0 +1,2 @@
+source-census: at least one --stat is required
+usage: source_census.py --our-dump F --stat S [--stat S]... [--dumps D] [--blob B] [--min-support N] [--top N] [--granular] [--fail-class wrong|miss|extra] [--direction both|high|low] [--self-check]

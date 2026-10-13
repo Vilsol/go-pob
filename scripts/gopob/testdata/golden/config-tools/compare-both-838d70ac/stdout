@@ -1,0 +1,8 @@
+=== ctBothLiveAndDead  type=check
+--- PoB ---
+apply = function(val, modList) modList:NewMod("J", "FLAG", val) end },
+--- go-pob (LIVE) ---
+		"ctBothLiveAndDead": func(val interface{}, modList *ModList, enemyModList *ModList) {
+			modList.NewFlag("J", val)
+		},
+

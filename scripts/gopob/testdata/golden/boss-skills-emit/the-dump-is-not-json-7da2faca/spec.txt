@@ -1,0 +1,6 @@
+tool     boss-skills-emit
+fixture  the-dump-is-not-json
+original oracle/boss_skills_emit.py
+args     dump.json out.go
+env      
+files    out.go

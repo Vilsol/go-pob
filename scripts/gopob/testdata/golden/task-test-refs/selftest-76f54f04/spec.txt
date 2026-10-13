@@ -1,0 +1,5 @@
+tool     task-test-refs
+fixture  selftest
+original scripts/task_test_refs.py
+args     
+env      SELFTEST= SELFTEST=1 SELFTEST_DIR=

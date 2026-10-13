@@ -1,0 +1,5 @@
+tool     test-cache-key
+fixture  the-test-cache-cannot-be-cleared
+original scripts/test_cache_key.sh
+args     
+env      GOPOB_NICED=1

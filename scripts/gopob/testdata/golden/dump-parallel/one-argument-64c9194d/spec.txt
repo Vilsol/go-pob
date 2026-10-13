@@ -1,0 +1,5 @@
+tool     dump-parallel
+fixture  one-argument
+original scripts/dump_parallel.sh
+args     pob
+env      GOPOB_NICED=1 LUAJIT=./fakeluajit NICE=0

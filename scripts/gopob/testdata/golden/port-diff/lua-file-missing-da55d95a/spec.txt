@@ -1,0 +1,5 @@
+tool     port-diff
+fixture  lua-file-missing
+original scripts/port_diff.py
+args     
+env      LUA=src/Modules/Gone.lua:1-2 POB_DIR=pob

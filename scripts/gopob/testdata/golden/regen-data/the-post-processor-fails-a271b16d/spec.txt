@@ -1,0 +1,6 @@
+tool     regen-data
+fixture  the-post-processor-fails
+original scripts/regen_data.py
+args     --check --pob pob --only skill-stat-maps
+env      GOPOB_NICED=1
+unset    POB_DIR

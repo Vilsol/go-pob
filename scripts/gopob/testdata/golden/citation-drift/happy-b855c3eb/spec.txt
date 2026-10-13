@@ -1,0 +1,5 @@
+tool     citation-drift
+fixture  happy
+original scripts/citation_drift.py
+args     
+env      OLD=oldrev POB_DIR=pob

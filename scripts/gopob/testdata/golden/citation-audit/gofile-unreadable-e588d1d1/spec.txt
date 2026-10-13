@@ -1,0 +1,5 @@
+tool     citation-audit
+fixture  gofile-unreadable
+original scripts/citation_audit.py
+args     
+env      FILE=calculator/marked.go POB_DIR=pob

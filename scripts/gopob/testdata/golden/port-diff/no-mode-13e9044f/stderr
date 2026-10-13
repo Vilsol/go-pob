@@ -1,0 +1,9 @@
+Show OUR Go and the PINNED PoB's Lua for the same thing, side by side.
+
+    task port-diff NAME=Condition:CanGainRage   # EVERY site on BOTH sides — the port-gap hunt
+    task port-diff SYMBOL=enemyChaosDamage      # a name that appears in both trees
+    task port-diff FUNC=CalcEnemyDamage         # a Go func, resolved through its //pob: citation
+    task port-diff LUA=src/Modules/ConfigOptions.lua:1500-1520   # just show me that Lua
+    task port-diff GREP='output%.Rage'          # FIND it in the Lua when you do not know the range
+
+REFUSING: pass exactly one of NAME=, SYMBOL=, FUNC=, LUA=, GREP=

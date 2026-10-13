@@ -1,0 +1,20 @@
+INVENTORY live=3 dead=2 absent=21 dead-and-set=2 absent-and-set=3 undeclared-and-set=2
+live    3
+dead    2
+absent  21  (in ConfigOptions.lua, no entry in configs.go's table)
+        ABSENT MEANS 'NO TABLE ENTRY', NOT 'UNIMPLEMENTED'. Several of the largest
+        absent vars are fully implemented by bespoke paths and adding a handler
+        would DOUBLE-APPLY them: bandit and both pantheon vars (417 builds each)
+        via env.go/applySoulMod, enemyLevel at env.go:44, and the whole
+        enemy*Damage family consumed directly at calc_defence.go:915. Check for a
+        bespoke consumer before ranking anything in this column as work.
+dead-and-set-by-a-corpus-build   2
+absent-and-set-by-a-corpus-build 3
+
+var                                        type             builds state
+undeclared-and-set (not in ConfigOptions.lua at all) 2: ['ctUndeclaredA', 'ctUndeclaredZ']
+ctDeadOne                                  check                 2 DEAD
+ctDeadTwo                                  count                 2 DEAD
+ctAbsentOne                                check                 2 ABSENT
+ctAbsentTwo                                count                 2 ABSENT
+ctAbsentThree                              list                  1 ABSENT

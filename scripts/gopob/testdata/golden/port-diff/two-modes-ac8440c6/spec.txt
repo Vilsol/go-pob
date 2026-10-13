@@ -1,0 +1,5 @@
+tool     port-diff
+fixture  two-modes
+original scripts/port_diff.py
+args     
+env      NAME=x POB_DIR=pob SYMBOL=y

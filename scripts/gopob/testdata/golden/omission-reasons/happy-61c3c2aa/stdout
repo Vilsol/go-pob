@@ -1,0 +1,25 @@
+scripts/gopob/skillstatmapemit.go        18 reasons, 5 header lines
+
+OMISSION REASONS: 18 checked, 11 FAILED
+  NO-PROVENANCE  scripts/gopob/skillstatmapemit.go:4
+                 reason carries no [pob:...] / [go:...] / [go-absent:...] / [unverifiable:...] marker: 'plain reason with no marker at all'
+  EMPTY-WHY      scripts/gopob/skillstatmapemit.go:6
+                 [unverifiable:] carries nothing -- an [unverifiable:] must say WHY nothing can be cited, and the other kinds must name a file or a symbol
+  GO-MISSING     scripts/gopob/skillstatmapemit.go:8
+                 [go:mod.OrNoSuchSymbolAnywhere] names a symbol that is no longer in the Go tree, so the reason no longer parses against reality
+  GO-STALE       scripts/gopob/skillstatmapemit.go:9
+                 [go-absent:mod.OrFixtureSymbol] claims that symbol is missing, but it EXISTS now -- the omission reason is stale and the mods it drops may be portable
+  NOFILE         scripts/gopob/skillstatmapemit.go:12
+                 [pob:src/Modules/NoSuch.lua] names no file in the pinned PoB
+  RANGE          scripts/gopob/skillstatmapemit.go:13
+                 [pob:src/Modules/Calc.lua] range 9999-10000 is outside src/Modules/Calc.lua (7 lines)
+  EMPTY          scripts/gopob/skillstatmapemit.go:14
+                 [pob:src/Modules/Calc.lua] range 3-4 holds no Lua -- blank lines and comments only, which is what a citation looks like after the file it points into has moved
+  MALFORMED      scripts/gopob/skillstatmapemit.go:15
+                 [pob:Calc.lua:not-a-number] is not path.lua[:start[-end]]
+  RANGE          scripts/gopob/skillstatmapemit.go:18
+                 [pob:src/Modules/Calc.lua] range 7-8 is outside src/Modules/Calc.lua (7 lines)
+  STALE-HEADER   data/raw/skill_stat_maps.go:5
+                 6 mods are omitted for a reason no emitter site can produce: 'a reason no emitter site can produce [go-absent:mod.OrGoneForever]'. Regenerate the table -- the header was written by an older emitter.
+  STALE-HEADER   data/raw/skill_stat_maps.go:8
+                 4 mods are omitted for a reason no emitter site can produce: 'PREFIX templated WIDGET omitted [go-absent:mod.OrNoSuchSymbolAnywhere]'. Regenerate the table -- the header was written by an older emitter.

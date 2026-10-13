@@ -1,0 +1,1 @@
+usage: skill_stat_map_emit.py <dump.json> <out.go> [data/raw/skill_stat_map.go]

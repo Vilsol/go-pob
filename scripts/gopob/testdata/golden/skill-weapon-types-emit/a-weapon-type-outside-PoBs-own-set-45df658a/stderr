@@ -1,0 +1,1 @@
+REFUSING: weaponTypes names not in PoB's weaponTypeInfo: ['Bows']. An unresolvable name disables EVERY skill declaring it -- fix the mapping rather than emitting it.

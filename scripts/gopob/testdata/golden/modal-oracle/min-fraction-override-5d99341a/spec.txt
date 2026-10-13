@@ -1,0 +1,5 @@
+tool     modal-oracle
+fixture  min-fraction-override
+original scripts/modal_oracle.sh
+args     dumps 2 out.jsonl.gz work
+env      GOPOB_NICED=1 MINFRAC=0

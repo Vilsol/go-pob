@@ -1,0 +1,7 @@
+dump_parallel: 2 runs, builds=builds, out=out-{1..2}
+dump_parallel: FORCE_CLUSTER_KEY=unset EMPTY_MODCACHE=unset
+dump_parallel: run 1 -> out-1
+dump_parallel: run 2 -> out-2
+dump_parallel: run 1 -> 3 files
+dump_parallel: run 2 -> 3 files
+dump_parallel: rc=0

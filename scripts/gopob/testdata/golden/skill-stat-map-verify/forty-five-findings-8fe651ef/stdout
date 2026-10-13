@@ -1,0 +1,127 @@
+lua: 1 skills, 1 entries, 0 mods
+go : 1 skills, 1 entries, 45 mods
+matched 1-to-1 against the Lua: 0
+lua mods with no name/type (nested; mod/ has no constructor): 0
+lua statMap GROUPS compared (per-group scalars, CalcActiveSkill.lua:65-73): 0
+
+DIFF: 45 problem(s)
+  A/s: emitted mod has no Lua counterpart:
+      go  = ('M01', 'INC', ('float', 1.0), 0, 0, ())
+      lua = <none left>
+  A/s: emitted mod has no Lua counterpart:
+      go  = ('M02', 'INC', ('float', 2.0), 0, 0, ())
+      lua = <none left>
+  A/s: emitted mod has no Lua counterpart:
+      go  = ('M03', 'INC', ('float', 3.0), 0, 0, ())
+      lua = <none left>
+  A/s: emitted mod has no Lua counterpart:
+      go  = ('M04', 'INC', ('float', 4.0), 0, 0, ())
+      lua = <none left>
+  A/s: emitted mod has no Lua counterpart:
+      go  = ('M05', 'INC', ('float', 5.0), 0, 0, ())
+      lua = <none left>
+  A/s: emitted mod has no Lua counterpart:
+      go  = ('M06', 'INC', ('float', 6.0), 0, 0, ())
+      lua = <none left>
+  A/s: emitted mod has no Lua counterpart:
+      go  = ('M07', 'INC', ('float', 7.0), 0, 0, ())
+      lua = <none left>
+  A/s: emitted mod has no Lua counterpart:
+      go  = ('M08', 'INC', ('float', 8.0), 0, 0, ())
+      lua = <none left>
+  A/s: emitted mod has no Lua counterpart:
+      go  = ('M09', 'INC', ('float', 9.0), 0, 0, ())
+      lua = <none left>
+  A/s: emitted mod has no Lua counterpart:
+      go  = ('M10', 'INC', ('float', 10.0), 0, 0, ())
+      lua = <none left>
+  A/s: emitted mod has no Lua counterpart:
+      go  = ('M11', 'INC', ('float', 11.0), 0, 0, ())
+      lua = <none left>
+  A/s: emitted mod has no Lua counterpart:
+      go  = ('M12', 'INC', ('float', 12.0), 0, 0, ())
+      lua = <none left>
+  A/s: emitted mod has no Lua counterpart:
+      go  = ('M13', 'INC', ('float', 13.0), 0, 0, ())
+      lua = <none left>
+  A/s: emitted mod has no Lua counterpart:
+      go  = ('M14', 'INC', ('float', 14.0), 0, 0, ())
+      lua = <none left>
+  A/s: emitted mod has no Lua counterpart:
+      go  = ('M15', 'INC', ('float', 15.0), 0, 0, ())
+      lua = <none left>
+  A/s: emitted mod has no Lua counterpart:
+      go  = ('M16', 'INC', ('float', 16.0), 0, 0, ())
+      lua = <none left>
+  A/s: emitted mod has no Lua counterpart:
+      go  = ('M17', 'INC', ('float', 17.0), 0, 0, ())
+      lua = <none left>
+  A/s: emitted mod has no Lua counterpart:
+      go  = ('M18', 'INC', ('float', 18.0), 0, 0, ())
+      lua = <none left>
+  A/s: emitted mod has no Lua counterpart:
+      go  = ('M19', 'INC', ('float', 19.0), 0, 0, ())
+      lua = <none left>
+  A/s: emitted mod has no Lua counterpart:
+      go  = ('M20', 'INC', ('float', 20.0), 0, 0, ())
+      lua = <none left>
+  A/s: emitted mod has no Lua counterpart:
+      go  = ('M21', 'INC', ('float', 21.0), 0, 0, ())
+      lua = <none left>
+  A/s: emitted mod has no Lua counterpart:
+      go  = ('M22', 'INC', ('float', 22.0), 0, 0, ())
+      lua = <none left>
+  A/s: emitted mod has no Lua counterpart:
+      go  = ('M23', 'INC', ('float', 23.0), 0, 0, ())
+      lua = <none left>
+  A/s: emitted mod has no Lua counterpart:
+      go  = ('M24', 'INC', ('float', 24.0), 0, 0, ())
+      lua = <none left>
+  A/s: emitted mod has no Lua counterpart:
+      go  = ('M25', 'INC', ('float', 25.0), 0, 0, ())
+      lua = <none left>
+  A/s: emitted mod has no Lua counterpart:
+      go  = ('M26', 'INC', ('float', 26.0), 0, 0, ())
+      lua = <none left>
+  A/s: emitted mod has no Lua counterpart:
+      go  = ('M27', 'INC', ('float', 27.0), 0, 0, ())
+      lua = <none left>
+  A/s: emitted mod has no Lua counterpart:
+      go  = ('M28', 'INC', ('float', 28.0), 0, 0, ())
+      lua = <none left>
+  A/s: emitted mod has no Lua counterpart:
+      go  = ('M29', 'INC', ('float', 29.0), 0, 0, ())
+      lua = <none left>
+  A/s: emitted mod has no Lua counterpart:
+      go  = ('M30', 'INC', ('float', 30.0), 0, 0, ())
+      lua = <none left>
+  A/s: emitted mod has no Lua counterpart:
+      go  = ('M31', 'INC', ('float', 31.0), 0, 0, ())
+      lua = <none left>
+  A/s: emitted mod has no Lua counterpart:
+      go  = ('M32', 'INC', ('float', 32.0), 0, 0, ())
+      lua = <none left>
+  A/s: emitted mod has no Lua counterpart:
+      go  = ('M33', 'INC', ('float', 33.0), 0, 0, ())
+      lua = <none left>
+  A/s: emitted mod has no Lua counterpart:
+      go  = ('M34', 'INC', ('float', 34.0), 0, 0, ())
+      lua = <none left>
+  A/s: emitted mod has no Lua counterpart:
+      go  = ('M35', 'INC', ('float', 35.0), 0, 0, ())
+      lua = <none left>
+  A/s: emitted mod has no Lua counterpart:
+      go  = ('M36', 'INC', ('float', 36.0), 0, 0, ())
+      lua = <none left>
+  A/s: emitted mod has no Lua counterpart:
+      go  = ('M37', 'INC', ('float', 37.0), 0, 0, ())
+      lua = <none left>
+  A/s: emitted mod has no Lua counterpart:
+      go  = ('M38', 'INC', ('float', 38.0), 0, 0, ())
+      lua = <none left>
+  A/s: emitted mod has no Lua counterpart:
+      go  = ('M39', 'INC', ('float', 39.0), 0, 0, ())
+      lua = <none left>
+  A/s: emitted mod has no Lua counterpart:
+      go  = ('M40', 'INC', ('float', 40.0), 0, 0, ())
+      lua = <none left>

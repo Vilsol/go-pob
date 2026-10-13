@@ -1,0 +1,1 @@
+usage: skill_hidden_levels_emit.py <dump.json> <out.go>

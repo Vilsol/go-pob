@@ -1,0 +1,5 @@
+tool     zero-value-guard-sweep
+fixture  no-lua-found
+original scripts/zero_value_guard_sweep.py
+args     
+env      POB_DIR=pob

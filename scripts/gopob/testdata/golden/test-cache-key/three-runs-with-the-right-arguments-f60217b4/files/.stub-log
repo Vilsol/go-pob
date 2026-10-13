@@ -1,0 +1,3 @@
+go-stub: run 1 POE_VERSION=unset CORPUS=true args=test ./calculator/ -run TestCorpus3_29VsOracle
+go-stub: run 2 POE_VERSION=unset CORPUS=true args=test ./calculator/ -run TestCorpus3_29VsOracle
+go-stub: run 3 POE_VERSION=3.18 CORPUS=true args=test ./calculator/ -run TestCorpus3_29VsOracle

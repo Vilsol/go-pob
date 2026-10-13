@@ -1,0 +1,6 @@
+tool     pob-data-tables-stamp
+fixture  stamps-a-named-reference
+original oracle/pob_data_tables_stamp.py
+args     refs/tables.json
+env      POB_DIR=pob
+files    refs/tables.json

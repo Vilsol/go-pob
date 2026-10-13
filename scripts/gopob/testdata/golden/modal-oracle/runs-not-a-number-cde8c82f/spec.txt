@@ -1,0 +1,5 @@
+tool     modal-oracle
+fixture  runs-not-a-number
+original scripts/modal_oracle.sh
+args     dumps many out.jsonl.gz work
+env      GOPOB_NICED=1

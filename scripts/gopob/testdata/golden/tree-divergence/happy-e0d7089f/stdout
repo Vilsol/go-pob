@@ -1,0 +1,21 @@
+ours tree 3_29  5 nodes with stats
+pob  tree 2.67.2-fixture  7 nodes with stats
+
+NODES PoB HAS AND WE DO NOT: 2
+       20  PoB Only Node Sorting Second
+      777  PoB Only Node
+
+NODES WE HAVE AND PoB DOES NOT (with stats): 0
+
+STAT-TEXT DIVERGENCES (line splitting normalised): 3
+     5087  Born in the Shadows
+           ours: Cannot be Blinded
+           pob : 100% chance to Avoid Blind
+      100  Ours Only Wording
+           pob : and one more
+      300  Reordered
+
+⚠️ A DIVERGENCE IS NOT AUTOMATICALLY A FIX TO ADD. Measured 2026-08-09: adding node
+   5087 (Born in the Shadows, ours 'Cannot be Blinded' vs PoB '100% chance to Avoid
+   Blind') to treeStatTextFixups COSTS 232 pairs — our parser handles our own wording
+   better than PoB's. Measure any entry before adding it, and record the number.

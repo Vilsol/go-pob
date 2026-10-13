@@ -1,0 +1,6 @@
+REFUSING (NOT-A-CHECKOUT): <sandbox>/decoy is not a PoB source checkout; missing src/Modules/Main.lua, src/Launch.lua, src/HeadlessWrapper.lua
+  This looks like an INSTALLED PoB (Launch.lua at the top level, no src/)
+  rather than a source checkout. That is the ~/PoB/PoE1 decoy the pin
+  guards against: it is a DIFFERENT, NEWER version of the program.
+
+This is NOT a pass. The pin could not be verified at all.

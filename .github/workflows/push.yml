@@ -25,6 +25,9 @@ jobs:
           version: v2.12.2
           args: --timeout 5m
 
+      - name: FMA census
+        run: go run ./scripts/gopob fma-census
+
   lint-frontend:
     name: Lint Frontend
     runs-on: ubuntu-latest

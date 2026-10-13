@@ -1,0 +1,6 @@
+tool     gems-emit
+fixture  a-shadowed-row-has-no-granted-effect
+original oracle/gems_emit.py
+args     dump.json out.go parser.go
+env      
+files    out.go

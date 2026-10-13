@@ -1,0 +1,5 @@
+tool     chunk-init
+fixture  file-unreadable
+original scripts/chunk_init.py
+args     in.go Table --per 3
+env      

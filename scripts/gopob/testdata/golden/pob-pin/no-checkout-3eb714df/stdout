@@ -1,0 +1,3 @@
+REFUSING (NO-CHECKOUT): <sandbox>/nope does not exist -- set POB_DIR to the PoB source checkout
+
+This is NOT a pass. The pin could not be verified at all.

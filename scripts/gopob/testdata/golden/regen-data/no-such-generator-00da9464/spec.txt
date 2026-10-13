@@ -1,0 +1,6 @@
+tool     regen-data
+fixture  no-such-generator
+original scripts/regen_data.py
+args     --check --pob pob --only no-such-generator
+env      GOPOB_NICED=1
+unset    POB_DIR

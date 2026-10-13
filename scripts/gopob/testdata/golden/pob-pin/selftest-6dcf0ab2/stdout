@@ -1,0 +1,11 @@
+  a path that does not exist                                 ok   want=NO-CHECKOUT got=2
+  a file where a directory was expected                      ok   want=NO-CHECKOUT got=2
+  an INSTALLED PoB (the ~/PoB/PoE1 decoy shape)              ok   want=NOT-A-CHECKOUT got=3
+  a source tree with no .git                                 ok   want=UNREADABLE got=4
+  the same files hash the same                               ok   want=same got=same
+  a one-file content change moves the hash                   ok   want=differs got=differs
+  dropping a file moves the hash                             ok   want=differs got=differs
+  concatenation cannot alias a two-file set                  ok   want=differs got=differs
+  an empty tracked set refuses rather than hashing nothing   ok   want=UNREADABLE got=UNREADABLE
+
+SELFTEST: 9 of 9 checks behave as declared

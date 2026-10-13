@@ -202,7 +202,7 @@ func DefenceForConditionals(actor *Actor) {
 	}
 }
 
-//pob:src/Modules/CalcDefence.lua:51-1988
+//pob:src/Modules/CalcDefence.lua:32-42
 type allyLifePool struct {
 	key        string
 	life       string
@@ -2216,7 +2216,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 	}
 
 	// helper function that iteratively reduces pools until life hits 0 to determine the number of hits it would take with given damage to die
-	//pob:block:src/Modules/CalcDefence.lua:1664-1873
+	//pob:block:src/Modules/CalcDefence.lua:2568-2733
 	wardAvoidBreakChance := math.Min(modDB.Sum(mod.TypeBase, nil, "WardAvoidBreakChance")/100, 1)
 	if modDB.Flag(nil, "Condition:WardNotBreak") {
 		wardAvoidBreakChance = 1

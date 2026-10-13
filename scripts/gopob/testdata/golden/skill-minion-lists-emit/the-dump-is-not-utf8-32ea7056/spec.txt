@@ -1,0 +1,6 @@
+tool     skill-minion-lists-emit
+fixture  the-dump-is-not-utf8
+original oracle/skill_minion_lists_emit.py
+args     dump.json out.go
+env      
+files    out.go

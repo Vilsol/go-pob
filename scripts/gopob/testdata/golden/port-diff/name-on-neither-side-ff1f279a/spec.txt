@@ -1,0 +1,5 @@
+tool     port-diff
+fixture  name-on-neither-side
+original scripts/port_diff.py
+args     
+env      NAME=ZzzNeitherSide POB_DIR=pob

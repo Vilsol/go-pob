@@ -1,0 +1,5 @@
+REFUSING: the checkout this reference was dumped from is NOT the pinned PoB.
+  measured content_sha256 6a5b092040060da184c9c972c0acfc3500576db9c2fd1a591e3b98f7e8d5859c (4 files)
+  recorded content_sha256 3cbaac3dc948e71d387b60a51def9e8495d431112fe9d8ae583a4d75dbb792f6 (4 files)
+  Run `task pob-pin` for the per-file breakdown. Re-dump from the pinned checkout,
+  or re-record the pin deliberately — but do not stamp this one.

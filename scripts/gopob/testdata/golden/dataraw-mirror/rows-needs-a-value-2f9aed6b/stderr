@@ -1,0 +1,13 @@
+REFUSING: --rows needs a value
+
+usage: dataraw_mirror.py [--rows N] [--selftest]
+
+Grade every hand-transcribed table in data/raw/ against the PoB Lua it came from.
+
+  --rows N     max DIFFERS rows printed per table (default 20)
+  --selftest   prove each verdict is reachable
+  -h, --help   this text
+
+  POB_DIR=<dir>  the checkout to grade against; REPORT=1 for the report-only run
+
+An instrument that cannot answer must refuse, never return empty.

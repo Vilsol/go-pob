@@ -1,0 +1,6 @@
+tool     modal-blob
+fixture  f0.49
+original oracle/modal_blob.py
+args     out.jsonl report.txt r0.jsonl r1.jsonl r2.jsonl r3.jsonl --min-fraction=0.49
+env      
+files    out.jsonl report.txt

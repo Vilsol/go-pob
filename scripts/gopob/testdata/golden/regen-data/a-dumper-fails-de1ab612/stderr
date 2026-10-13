@@ -1,0 +1,2 @@
+stub luajit: the dump failed
+REFUSING: command failed (5): setarch -R <sandbox>/.luajit-det/bin/luajit <sandbox>/oracle/boss_skills.lua <tmp>/boss-skills.json

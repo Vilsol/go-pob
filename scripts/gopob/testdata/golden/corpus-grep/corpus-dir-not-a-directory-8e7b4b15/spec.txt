@@ -1,0 +1,5 @@
+tool     corpus-grep
+fixture  corpus-dir-not-a-directory
+original scripts/corpus_grep.py
+args     
+env      CORPUS_DIR=nope PATTERN=commontoken

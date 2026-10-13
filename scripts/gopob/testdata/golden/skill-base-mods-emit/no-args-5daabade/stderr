@@ -1,0 +1,1 @@
+usage: skill_base_mods_emit.py <dump.json> <out.go> [calculator/types.go]

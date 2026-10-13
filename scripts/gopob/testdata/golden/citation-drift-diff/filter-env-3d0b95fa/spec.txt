@@ -1,0 +1,5 @@
+tool     citation-drift-diff
+fixture  filter-env
+original scripts/citation_drift_diff.py
+args     
+env      FILE=a/mark.go OLD=old POB_DIR=pin

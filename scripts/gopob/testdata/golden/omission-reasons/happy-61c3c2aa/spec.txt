@@ -1,0 +1,5 @@
+tool     omission-reasons
+fixture  happy
+original scripts/omission_reasons.py
+args     
+env      POB_DIR=pob

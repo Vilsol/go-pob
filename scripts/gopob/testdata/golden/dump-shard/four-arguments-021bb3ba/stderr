@@ -1,0 +1,2 @@
+FATAL: missing <shards>
+usage: dump_shard.sh <pob-dir> <repo-root> <builds-dir> <out-dir> <shards>

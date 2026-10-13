@@ -1,0 +1,2 @@
+
+1 mismatch(es). The emitters decode numbers PoB WROTE into names taken from mod/common.go, so mod/common.go must agree with PoB or every generated name means something else.

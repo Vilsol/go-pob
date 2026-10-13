@@ -1,0 +1,6 @@
+tool     cluster-jewels-emit
+fixture  the-output-is-not-writable
+original oracle/cluster_jewels_emit.py
+args     dump.json out.go
+env      
+files    out.go

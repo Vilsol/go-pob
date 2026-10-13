@@ -1,0 +1,5 @@
+tool     probe-determinism
+fixture  runs-not-a-number
+original oracle/probe_determinism.sh
+args     item_tools lots
+env      GOPOB_NICED=1 POB_DIR=pob

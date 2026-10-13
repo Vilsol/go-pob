@@ -1,0 +1,2 @@
+  ⚠️ .luajit-det is absent -- falling back to stock luajit. pairs() order varies per
+     process, so --check may report spurious changes. Build it with `task luajit-det`.

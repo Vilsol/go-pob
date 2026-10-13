@@ -1,0 +1,5 @@
+tool     port-diff
+fixture  func-not-found
+original scripts/port_diff.py
+args     
+env      FUNC=PdNoSuchFunc POB_DIR=pob

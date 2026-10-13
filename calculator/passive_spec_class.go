@@ -1,6 +1,7 @@
 package calculator
 
 import (
+	"maps"
 	"slices"
 	"strconv"
 	"strings"
@@ -239,7 +240,71 @@ func leapHeldBy(tree *data.Tree, sockets []pob.Socket, texts map[int]string, all
 	return held
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:856-857
+//pob:block:src/Classes/PassiveSpec.lua:1067-1095,src/Classes/PassiveSpec.lua:1146-1176
+func leapJewels(build *pob.PathOfBuilding, tree *data.Tree, alloc map[int64]bool) []data.LeapJewel {
+	i := build.ActiveSpecIndex()
+	if i < 0 {
+		return nil
+	}
+	texts := make(map[int]string, len(build.Items.Items))
+	for _, it := range build.Items.Items {
+		texts[it.ID] = it.Text
+	}
+	radius := tree.JewelRadiusNodes()
+	var out []data.LeapJewel
+	for _, socket := range build.Tree.Specs[i].Sockets {
+		text, ok := texts[socket.ItemID]
+		if socket.ItemID == 0 || !ok || !alloc[int64(socket.NodeID)] {
+			continue
+		}
+		item := PeekItem(text)
+		index, hasRadius := itemJewelRadiusIndex(item)
+		if !hasRadius {
+			continue
+		}
+		j := data.LeapJewel{Socket: int64(socket.NodeID), Radius: map[int64]bool{}, Escape: map[int64]bool{}}
+		keystones := map[string]bool{}
+		for _, m := range item.Mods {
+			if m.Name() != "JewelData" {
+				continue
+			}
+			value, ok := m.Value().List().(mod.JewelData)
+			if !ok {
+				continue
+			}
+			switch value.Key {
+			case "intuitiveLeapLike":
+				j.LeapLike = true
+			case "intuitiveLeapKeystoneOnly":
+				j.KeystoneOnly = true
+			case "impossibleEscapeKeystone":
+				if name, ok := value.Value.(string); ok {
+					keystones[strings.ToLower(name)] = true
+				}
+			}
+		}
+		if !j.LeapLike && len(keystones) == 0 {
+			continue
+		}
+		if per := radius[j.Socket]; index < len(per) {
+			for _, id := range per[index] {
+				j.Radius[id] = true
+			}
+		}
+		for key, node := range tree.Nodes {
+			if node.Name == nil || node.IsKeystone == nil || !*node.IsKeystone || !keystones[strings.ToLower(*node.Name)] {
+				continue
+			}
+			if id, err := strconv.ParseInt(key, 10, 64); err == nil {
+				maps.Copy(j.Escape, tree.NodesInRadiusOf(id, index))
+			}
+		}
+		out = append(out, j)
+	}
+	return out
+}
+
+//pob:block:src/Classes/PassiveSpec.lua:856-859
 func allocatedStarts(tree *data.Tree, alloc map[int64]bool) []int64 {
 	var out []int64
 	for id := range alloc {

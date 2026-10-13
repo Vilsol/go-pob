@@ -1,0 +1,6 @@
+tool     nice
+fixture  command-not-found
+original scripts/nice.sh
+args     definitely-not-a-real-command
+env      
+unset    GOPOB_NICED

@@ -1,0 +1,3 @@
+REFUSING: 'ZzzNeitherSide' appears on NEITHER side — far more likely a typo or a case difference than
+a real absence. ⚠️ AND A NAME BUILT BY CONCATENATION HAS NO LITERAL: `Multiplier:BlueSocketInHelmet` is assembled at item.go:976, so grepping the whole
+name finds nothing while the code produces it. Try a distinctive FRAGMENT.

@@ -397,6 +397,9 @@ func triggerConfigFor(env *Environment, key string, mainSkill *ActiveSkill) *tri
 	case "focus":
 		return &triggerConfig{customHandler: helmetFocusHandler}
 
+	case "snipe":
+		return snipeTriggerConfig(env, mainSkill)
+
 	//pob:src/Modules/CalcTriggers.lua:1058-1080
 	case "trigger craft":
 		return triggerCraftConfig(env, mainSkill)
@@ -1237,4 +1240,85 @@ func triggerConfigInputString(env *Environment, name string) string {
 		return ""
 	}
 	return resolvedConfigOption(env.Build, name)
+}
+
+//pob:src/Modules/CalcTriggers.lua:1399-1474
+func snipeTriggerConfig(env *Environment, mainSkill *ActiveSkill) *triggerConfig {
+	snipeStages := math.Min(env.Player.ModDB.Sum(mod.TypeBase, nil, "Multiplier:SnipeStage"),
+		env.Player.ModDB.Sum(mod.TypeBase, nil, "Multiplier:SnipeStagesMax"))
+	snipeHitMulti := mainSkill.SkillModList.Sum(mod.TypeBase, mainSkill.SkillCfg, "snipeHitMulti")
+	snipeAilmentMulti := mainSkill.SkillModList.Sum(mod.TypeBase, mainSkill.SkillCfg, "snipeAilmentMulti")
+	var triggeredSkills []*ActiveSkill
+
+	for _, skill := range env.Player.ActiveSkillList {
+		if skill.SkillData.TriggeredBySnipe && skill.SocketGroup != nil && socketGroupSlot(skill) == socketGroupSlot(mainSkill) {
+			triggeredSkills = append(triggeredSkills, skill)
+		}
+	}
+
+	if mainSkill.ActiveEffect.GrantedEffect.Name() == "Snipe" {
+		if mainSkill.mirageCopy {
+			// Snipe is being used by some other skill. In this case snipe does not get more damage mods
+			snipeStages = 0
+		} else {
+			// max(1, snipeStages) makes it behave consistently with other channeled ranged skills (scourge arrow)
+			mainSkill.SkillData.HitTimeMultiplier = math.Max(1, snipeStages) - 0.5 // First stage takes 0.5x time to channel compared to subsequent stages
+		}
+		if len(triggeredSkills) < 1 {
+			// Snipe is being used as a standalone skill
+			mainSkill.SkillModList.AddMod(mod.NewFloat("Multiplier:SnipeStages", mod.TypeBase, snipeStages).Source("Snipe"))
+			mainSkill.SkillModList.AddMod(mod.NewFloat("Damage", mod.TypeMore, snipeHitMulti).Source("Snipe").Flag(mod.MFlagHit).
+				Tag(mod.Multiplier("SnipeStages")))
+			mainSkill.SkillModList.AddMod(mod.NewFloat("Damage", mod.TypeMore, snipeAilmentMulti).Source("Snipe").Flag(mod.MFlagAilment).
+				Tag(mod.Multiplier("SnipeStages")))
+		} else {
+			// Snipe is being used as a trigger source, it triggers other skills but does no damage it self
+			for _, flag := range []string{"DealNoLightning", "DealNoCold", "DealNoFire", "DealNoChaos", "DealNoPhysical"} {
+				mainSkill.SkillModList.AddMod(mod.NewFlag(flag, true).Tag(mod.SkillName("Snipe").Transfigured(true)))
+			}
+		}
+		return nil
+	}
+
+	currentSkillSnipeIndex := 0
+	for index, skill := range triggeredSkills {
+		if skill == mainSkill {
+			currentSkillSnipeIndex = index + 1
+			break
+		}
+	}
+
+	// Does snipe have enough stages to trigger this skill?
+	if currentSkillSnipeIndex == 0 || float64(currentSkillSnipeIndex) > snipeStages {
+		mainSkill.SkillData.Triggered = false
+		mainSkill.infoMessage2 = "DPS reported assuming Self-Cast"
+		mainSkill.infoMessage = "Not enough Snipe stages to trigger this skill"
+		mainSkill.infoTrigger = ""
+		return nil
+	}
+	var source *ActiveSkill
+	var trigRate *float64
+	mainSkill.SkillModList.AddMod(mod.NewFloat("Multiplier:SnipeStages", mod.TypeBase, snipeStages).Source("Snipe"))
+	mainSkill.SkillModList.AddMod(mod.NewFloat("Damage", mod.TypeMore, snipeAilmentMulti).Source("Snipe").Flag(mod.MFlagAilment).
+		Tag(mod.Multiplier("SnipeStages")))
+	mainSkill.SkillModList.AddMod(mod.NewFloat("Damage", mod.TypeMore, snipeHitMulti).Source("Snipe").Flag(mod.MFlagHit).
+		Tag(mod.Multiplier("SnipeStages")))
+	for _, skill := range env.Player.ActiveSkillList {
+		if skill.ActiveEffect.GrantedEffect.Name() != "Snipe" || skill.SocketGroup == nil || socketGroupSlot(skill) != socketGroupSlot(mainSkill) {
+			continue
+		}
+		skill.SkillData.HitTimeMultiplier = snipeStages - 0.5
+		cached := buildActiveSkillCache(env, skill)
+		if cached == nil || !cached.hitSpeedSet {
+			continue
+		}
+		if !skill.SkillFlags[SkillFlagDisable] && (skill.SkillCfg != nil && !skill.SkillCfg.SkillCond["usedByMirage"]) &&
+			!skill.SkillTypes[data.SkillTypeOtherThingUsesSkill] && (source == nil || cached.HitSpeed > utils.UnwrapOrF(trigRate, 0)) {
+			trigRate = utils.Ptr(cached.HitSpeed)
+			env.Player.Output["ChannelTimeToTrigger"] = cached.HitTime
+			source = skill
+		}
+	}
+
+	return &triggerConfig{trigRate: trigRate, source: source}
 }

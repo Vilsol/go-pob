@@ -1,0 +1,6 @@
+tool     mk-drop-cases
+fixture  top999
+original scripts/mk_drop_cases.py
+args     census.tsv out.json 999
+env      
+files    out.json

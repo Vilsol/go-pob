@@ -1,0 +1,5 @@
+tool     dataraw-mirror
+fixture  unknown-flag
+original scripts/dataraw_mirror.py
+args     --nope
+env      POB_DIR=pob

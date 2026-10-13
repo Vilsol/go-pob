@@ -1,0 +1,5 @@
+tool     corpus-grep
+fixture  lookbehind-refused
+original scripts/corpus_grep.py
+args     
+env      PATTERN=(?<=a)b

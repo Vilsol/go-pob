@@ -1,0 +1,5 @@
+tool     coverage-census
+fixture  no-profile-flag
+original scripts/coverage_census.py
+args     --root .
+env      

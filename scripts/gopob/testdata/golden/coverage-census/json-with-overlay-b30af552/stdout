@@ -1,0 +1,34 @@
+=== UNEXERCISED-CODE CENSUS ===
+instrumented blocks 28   statements 46
+never executed      27 blocks (96.4%)   45 statements (97.8%)
+  of which reached by a unit test but by no corpus build: 0
+  executed by nothing in the repository:                  27
+
+--- buckets ---
+     19  unclassified   -   (0 testonly)
+      1  data           config-unset-arm   (0 testonly)
+      1  data           config-type-assert   (0 testonly)
+      1  data           config-option   (0 testonly)
+      1  data           calcs-mode   (0 testonly)
+      1  data           defensive-guard   (0 testonly)
+      1  data           minion-data   (0 testonly)
+      1  data           mod-pattern   (0 testonly)
+      1  data           entry-point   (0 testonly)
+
+--- unclassified, by file ---
+      3  utils/zbusiest.go
+      2  calculator/env.go
+      1  utils/u00.go
+      1  utils/u01.go
+      1  utils/u02.go
+      1  utils/u03.go
+      1  utils/u04.go
+      1  utils/u05.go
+      1  utils/u06.go
+      1  utils/u07.go
+      1  utils/u08.go
+      1  utils/u09.go
+      1  utils/u10.go
+      1  utils/u11.go
+      1  utils/u12.go
+      1  utils/u13.go

@@ -92,7 +92,7 @@ func TestCalcsModSectionAgainstPoB(t *testing.T) {
 	if total < 1000 {
 		t.Fatalf("only %d tables", total)
 	}
-	const ceiling = 3
+	const ceiling = 2
 	if wrong > ceiling {
 		t.Errorf("%d of %d tables differ, ceiling %d", wrong, total, ceiling)
 	} else if wrong < ceiling {

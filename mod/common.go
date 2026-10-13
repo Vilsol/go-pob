@@ -137,7 +137,7 @@ var KeywordFlagsByName = map[string]KeywordFlag{
 	"MatchAll":     KeywordFlagMatchAll,
 }
 
-//pob:src/Data/Global.lua:143-154
+//pob:src/Data/Global.lua:188-213
 func MatchKeywordFlags(keywordFlags KeywordFlag, modKeywordFlags KeywordFlag) bool {
 	matchAll := modKeywordFlags&KeywordFlagMatchAll != 0
 

@@ -1,0 +1,5 @@
+tool     residual-map
+fixture  zero-graded-pairs
+original scripts/residual_map.py
+args     
+env      WL=wl

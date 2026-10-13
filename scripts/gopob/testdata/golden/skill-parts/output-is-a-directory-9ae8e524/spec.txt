@@ -1,0 +1,5 @@
+tool     skill-parts
+fixture  output-is-a-directory
+original oracle/skill_parts.py
+args     out.go
+env      POB_DIR=pob

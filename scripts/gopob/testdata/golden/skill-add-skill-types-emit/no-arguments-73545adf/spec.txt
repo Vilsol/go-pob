@@ -1,0 +1,5 @@
+tool     skill-add-skill-types-emit
+fixture  no-arguments
+original oracle/skill_add_skill_types_emit.py
+args     
+env      

@@ -1,0 +1,2 @@
+REFUSING: MIN_BUILDS must be a non-negative integer, not abc
+usage: residual_clusters.py [MIN_BUILDS] [JACCARD]

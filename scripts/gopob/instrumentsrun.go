@@ -246,6 +246,7 @@ var (
 	insRxCitations    = regexp.MustCompile(`(TOTAL|PORT) +[0-9]+ / [0-9]+ top-level funcs cited \([0-9.]+%\)`)
 	insRxBroken       = regexp.MustCompile(`^ +[0-9]+ broken`)
 	insRxOmissions    = regexp.MustCompile(`OMISSION REASONS: [0-9]+ checked, .*`)
+	insRxFMA          = regexp.MustCompile(`[0-9]+ fused instruction\(s\) across .*`)
 	insRxNeverExec    = regexp.MustCompile(`never executed +[0-9]+ blocks \([0-9.]+%\)`)
 	insRxInstrumented = regexp.MustCompile(`instrumented blocks +[0-9]+`)
 	insRxFailDetail   = regexp.MustCompile(`^--- FAIL: |^ +[a-z_]+\.go:[0-9]+: |^FAIL: |^ *[0-9]+ marker\(s\) do not resolve`)
@@ -323,6 +324,8 @@ func (ir *insRun) headlineFor(slug, f string) string { //nolint:gocyclo // one a
 		}
 	case "omissions":
 		h = insGrepFirst(insRxOmissions, f)
+	case "fma":
+		h = insGrepFirst(insRxFMA, f)
 	case "coverage":
 		h = insSqueezeSpaces(insGrepFirst(insRxNeverExec, f))
 		h = insOr(h, "see the file") + " of " + insMatchIn(insDigits, insGrepFirst(insRxInstrumented, f))
@@ -635,6 +638,7 @@ func instrumentsMain(argv []string) int { //nolint:gocyclo // a linear chain, as
 	ir.runInstrument("omissions", "task omissions", false, []string{"task", "omissions"})
 	ir.runInstrument("taskrefs", "task task-test-refs", false, []string{"task", "task-test-refs"})
 	ir.runInstrument("cachekey", "task test-cache-key", false, []string{"task", "test-cache-key"})
+	ir.runInstrument("fma", "task fma-census", false, []string{"task", "fma-census"})
 
 	if ir.coverage != "" {
 		ir.runInstrument("coverage", "task coverage-census (opt-in)", false, []string{"task", "coverage-census"})

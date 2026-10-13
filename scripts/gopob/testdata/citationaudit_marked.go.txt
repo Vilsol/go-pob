@@ -1,0 +1,37 @@
+package calculator
+
+//pob:src/Modules/Thing.lua:1-4
+func Clean() {}
+
+//pob:block:src/Modules/Thing.lua:4
+func StartsOnACloser() {}
+
+//pob:src/Modules/Thing.lua:5
+func WholeRangeIsAComment() {}
+
+//pob:src/Modules/Thing.lua:6
+func StartsBlank() {}
+
+//pob:src/Modules/Thing.lua:2
+func EndsMidStatement() {}
+
+//pob:src/Modules/Thing.lua:8
+func EndsOnAnd() {}
+
+//pob:src/Modules/Gone.lua:1-2
+func FileNotFound() {}
+
+//pob:not-a-lua-reference
+func Unparsed() {}
+
+//pob:src/Modules/Thing.lua:1,src/Modules/Thing.lua:5
+func TwoSpecs() {}
+
+//pob:src/Modules/Thing.lua:11
+func StartsOnElse() {}
+
+//pob:src/Modules/Thing.lua:12
+func DashInsideAString() {}
+
+//pob:src/Modules/Thing.lua:5-7
+func CommentLedMultiLineRange() {}

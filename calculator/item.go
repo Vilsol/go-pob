@@ -389,7 +389,7 @@ var xmlEntityDecoder = strings.NewReplacer(
 	"&amp;", "&",
 )
 
-//pob:src/Classes/Item.lua:53-57
+//pob:src/Classes/Item.lua:91-95
 func ParseItem(raw string) *Item {
 	i := &Item{}
 	ranges := parseModRangeElements(raw)
@@ -1008,7 +1008,7 @@ func sortCraftedModLines(modLines []ModLine) {
 	})
 }
 
-//pob:src/Classes/Item.lua:971-979
+//pob:src/Classes/Item.lua:2081-2107
 func (i *Item) checkModLineVariant(ml ModLine) bool {
 	if i.UsesVariantGroups {
 		return i.checkModLineVariantGroups(ml)
@@ -1037,7 +1037,7 @@ func (i *Item) checkModLineVariant(ml ModLine) bool {
 	return false
 }
 
-//pob:src/Classes/Item.lua:1219-1375
+//pob:src/Classes/Item.lua:2482-2652
 func (i *Item) BuildModList() {
 	i.Mods = nil
 	i.WeaponData = nil
@@ -1767,7 +1767,7 @@ func (i *Item) NormaliseQuality() {
 	}
 }
 
-//pob:block:src/Classes/Item.lua:193-212
+//pob:block:src/Classes/Item.lua:632-639
 func matchSpec(line string) (string, string) {
 	if strings.Contains(line, ": ") {
 		if m := specHexRe.FindStringSubmatch(line); m != nil {
@@ -1989,7 +1989,7 @@ func (i *Item) applySpec(specName, specVal string, implicitLines *int, gameModeS
 	return false
 }
 
-//pob:block:src/Classes/Item.lua:361-552
+//pob:block:src/Classes/Item.lua:847-1331
 //nolint:gocyclo,maintidx // Mirrors the Lua block.
 func (i *Item) parseModLine(line string, l int, mode string, implicitLines int, gameModeStage *string, foundExplicit, foundImplicit *bool) int {
 	var variantList map[int]bool

@@ -1,0 +1,1 @@
+REFUSING: no go.mod declaring module github.com/Vilsol/go-pob at or above this tool; set GOPOB_ROOT to the checkout

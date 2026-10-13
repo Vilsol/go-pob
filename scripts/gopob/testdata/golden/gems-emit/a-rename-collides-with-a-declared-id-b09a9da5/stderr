@@ -1,0 +1,1 @@
+REFUSING: Metadata/Items/Gems/Smite rewrites to Metadata/Items/Gems/SkillGemSmite, which Metadata/Items/Gems/SkillGemSmite already occupies. The pinned PoB now declares both ids, so the pobGemIDtoGameGemIDs row for it is stale -- resolve it there, not here.

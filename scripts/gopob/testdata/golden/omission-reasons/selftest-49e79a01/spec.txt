@@ -1,0 +1,5 @@
+tool     omission-reasons
+fixture  selftest
+original scripts/omission_reasons.py
+args     --selftest
+env      POB_DIR=pob

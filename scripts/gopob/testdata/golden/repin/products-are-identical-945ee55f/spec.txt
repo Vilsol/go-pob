@@ -1,0 +1,6 @@
+tool     repin
+fixture  products-are-identical
+original scripts/repin.py
+args     
+env      GOPOB_NICED=1
+files    calculator/pins_test.go calculator/sub/more_test.go .stub-log

@@ -10,12 +10,12 @@ import (
 //
 //pob:src/Modules/CalcTools.lua:15-18
 func Mod(modStore moddb.ModStoreFuncs, cfg *moddb.ListCfg, names ...string) float64 {
-	return (1 + (modStore.Sum(mod.TypeIncrease, cfg, names...))/100) * modStore.More(cfg, names...)
+	return (1 + (moddb.SumOf(modStore, mod.TypeIncrease, cfg, names...))/100) * moddb.MoreOf(modStore, cfg, names...)
 }
 
 //pob:src/Modules/CalcTools.lua:20-29
 func Mods(modStore moddb.ModStoreFuncs, cfg *moddb.ListCfg, names ...string) (float64, float64) {
-	return 1 + modStore.Sum(mod.TypeIncrease, cfg, names...)/100, modStore.More(cfg, names...)
+	return 1 + moddb.SumOf(modStore, mod.TypeIncrease, cfg, names...)/100, moddb.MoreOf(modStore, cfg, names...)
 }
 
 // Calculate value
@@ -27,7 +27,7 @@ func Val(modStore moddb.ModStoreFuncs, name string, cfgs ...*moddb.ListCfg) floa
 		cfg = cfgs[0]
 	}
 
-	baseVal := modStore.Sum(mod.TypeBase, cfg, name)
+	baseVal := moddb.SumOf(modStore, mod.TypeBase, cfg, name)
 	if baseVal != 0 {
 		return baseVal * Mod(modStore, cfg, name)
 	}

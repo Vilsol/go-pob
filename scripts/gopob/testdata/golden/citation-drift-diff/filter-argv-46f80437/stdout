@@ -1,0 +1,47 @@
+
+=== a/mark.go:3  src/Modules/Anchored.lua:2-4 -> pin:3
+    go: func CddAnchored()
+   @@ -1,3 +1,3 @@
+    local distinctiveAnchorAlphaLongestSurvivingLine = 1
+   -return 1
+   +return 99
+    end
+
+=== a/mark.go:6  src/Modules/Offset.lua:2-6 -> pin:4
+    go: func CddOffset()
+   @@ -3,3 +3,3 @@
+    local offsetAnchorDistinctiveGamma = 3
+   -return 4
+   +return 44
+    end
+NO-ANCHOR a/mark.go:9  src/Modules/MultiOld.lua:2-4  (nothing in the pin resembles this block, best match only 0.40 — possibly DELETED)
+NO-ANCHOR a/mark.go:12  src/Modules/MultiPin.lua:2-4  (nothing in the pin resembles this block, best match only 0.40 — possibly DELETED)
+NO-ANCHOR a/mark.go:15  src/Modules/Rank.lua:1-3  (nothing in the pin resembles this block, best match only 0.33 — possibly DELETED)
+NO-ANCHOR a/mark.go:18  src/Modules/Weak.lua:1-5  (nothing in the pin resembles this block, best match only 0.20 — possibly DELETED)
+
+=== a/mark.go:24  src/Modules/Fuzzy.lua:1-4 -> pin:1  [FUZZY 0.75]
+    go: func CddFuzzy()
+   @@ -1,3 +1,3 @@
+    local a = 1
+   -local b = 2
+   +local b = 3
+    end
+NO-ANCHOR a/mark.go:27  src/Modules/Gone.lua:2-4  (nothing in the pin resembles this block — possibly DELETED)
+
+=== a/mark.go:33  src/Modules/Wide.lua:2-4 -> pin:1  [FUZZY 0.50]
+    go: func CddWideSymbolNameThatKeepsGoingAndGoingWellPastOneHundredAndTenCharactersSoTheCutIsVisible(a int, b int)
+   @@ -1,3 +1,3 @@
+   -local wideAnchorZeta = "üüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüü"
+   +
+   +local wideAnchorZeta = "öööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööö"
+    end
+   -
+
+    10 citations with a non-empty old block
+     4 CHANGED — the upstream delta is printed above
+     2 of those located by SIMILARITY, not an exact anchor — check the ratio
+     5 NO-ANCHOR — located nothing; read by hand, do NOT read as unchanged
+
+⚠️ A DIFF IS NOT A DEFECT. It says the Lua moved on; whether OUR GO caught up is a
+   separate read. Several of these were re-ported here years after the marker was
+   written and are already current.

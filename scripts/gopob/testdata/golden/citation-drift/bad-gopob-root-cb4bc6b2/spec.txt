@@ -1,0 +1,5 @@
+tool     citation-drift
+fixture  bad-gopob-root
+original scripts/citation_drift.py
+args     
+env      GOPOB_ROOT=pob OLD=oldrev POB_DIR=pob

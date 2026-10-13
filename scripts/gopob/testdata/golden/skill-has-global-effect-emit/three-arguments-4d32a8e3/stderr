@@ -1,0 +1,1 @@
+usage: skill_has_global_effect_emit.py <dump.json> <out.go>

@@ -632,6 +632,13 @@ func TestConfigFlip(t *testing.T) {
 			}
 		}
 	}
+	forced := map[string][]string{}
+	for _, kv := range strings.Split(os.Getenv("CARRIERS"), ",") {
+		if v, n, ok := strings.Cut(kv, "="); ok {
+			forced[v] = append(forced[v], n)
+			pool[n] = true
+		}
+	}
 	poolNames := slices.Sorted(func(yield func(string) bool) {
 		for n := range pool {
 			if !yield(n) {
@@ -676,6 +683,11 @@ func TestConfigFlip(t *testing.T) {
 		vis := map[string]bool{}
 		for _, n := range visibleOn[o.Var] {
 			vis[n] = true
+		}
+		for _, n := range forced[o.Var] {
+			if baseOf[n] != nil {
+				out = append(out, carrier{n, vis[n]})
+			}
 		}
 		for _, n := range nonDefaultCarriers[o.Var] {
 			if vis[n] && baseOf[n] != nil {

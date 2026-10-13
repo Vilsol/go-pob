@@ -1,0 +1,1 @@
+REFUSING: skill 'A' stat 's' carries statMap scalar 'skillFlag' inside a GROUP, which PoB never reads: CalcActiveSkill.lua:344 tests map.skillFlag on the ENTRY only. Model it or declare it; emitting it as an entry flag would invent a mapping upstream does not have.

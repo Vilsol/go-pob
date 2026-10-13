@@ -17,13 +17,7 @@ func TestRenamedFlagsCoverEveryUpstreamRow(t *testing.T) {
 		upstream string
 		ours     string
 		why      string
-	}{
-		{
-			upstream: "UnaffectedByBlind",
-			ours:     "IgnoreBlindHitChance",
-			why:      "named when the first of its two rows was ported; read at calc_perform.go's Blind arm (CalcPerform.lua:825)",
-		},
-	}
+	}{}
 
 	lua, err := os.ReadFile(filepath.Join(src, "Modules", "ModParser.lua"))
 	if err != nil {

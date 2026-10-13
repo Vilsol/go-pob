@@ -1,0 +1,5 @@
+tool     modal-oracle
+fixture  no-arguments
+original scripts/modal_oracle.sh
+args     
+env      GOPOB_NICED=1

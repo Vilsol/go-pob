@@ -1,0 +1,17 @@
+TestAlternationA
+TestAlternationB
+TestAnchored
+TestCorpus3_29
+TestCorpus3_29VsOracle
+TestDoubleQuoted
+TestFencedUse
+TestIndentedUse
+TestLooseUse
+TestQuotedFenceUse
+TestShellUse
+TestSingleQuoted
+TestSubtestPath
+TestTaskfileUse
+TestTrailingComment
+TestUnclosedIsAUse
+TestWorkflowUse

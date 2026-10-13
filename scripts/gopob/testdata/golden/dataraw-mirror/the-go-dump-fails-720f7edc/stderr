@@ -1,0 +1,6 @@
+FAIL	example.com/sandbox/data/raw [build failed]
+FAIL
+# example.com/sandbox/data/raw [example.com/sandbox/data/raw.test]
+data/raw/mirror_dump_blob.go:3:1: syntax error: non-declaration statement outside function body
+REFUSING: the Go dump failed; nothing was measured
+An instrument that cannot answer must refuse, never return empty.

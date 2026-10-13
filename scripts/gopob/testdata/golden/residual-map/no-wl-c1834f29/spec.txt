@@ -1,0 +1,5 @@
+tool     residual-map
+fixture  no-wl
+original scripts/residual_map.py
+args     
+env      WL=  

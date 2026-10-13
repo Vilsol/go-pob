@@ -1,0 +1,5 @@
+tool     skill-base-mods-verify
+fixture  a-go-mod-has-no-source
+original oracle/skill_base_mods_verify.py
+args     lua.json go.json
+env      

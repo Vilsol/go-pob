@@ -207,8 +207,11 @@ var configOrder = []string{
 	"raiseSpectreBladeVortexBladeCount",
 	"raiseSpectreKaomFireBeamTotemStage",
 	"raiseSpectreEnableSummonedUrsaRallyingCry",
+	"raiseSpectreEnableSlashingHorrorEnrage",
+	"raiseSpectreEnableSanguimancerDemonLowLife",
 	"raiseSpidersSpiderCount",
 	"animateWeaponLingeringBlade",
+	"ShrapnelBallistaProjectileOverlap",
 	"sigilOfPowerStages",
 	"siphoningTrapAffectedEnemies",
 	"configSnipeStages",
@@ -220,12 +223,14 @@ var configOrder = []string{
 	"shardsConsumed",
 	"steelWards",
 	"stormRainBeamOverlap",
+	"stormRainActiveArrows",
 	"summonElementalRelicEnableAngerAura",
 	"summonElementalRelicEnableHatredAura",
 	"summonElementalRelicEnableWrathAura",
 	"summonHolyRelicEnableHolyRelicBoon",
 	"summonLightningGolemEnableWrath",
 	"nearbyBleedingEnemies",
+	"tornadoShotSecondaryHitChance",
 	"toxicRainPodOverlap",
 	"hoaOverkill",
 	"VigilantStrikeBypassCD",
@@ -1375,7 +1380,7 @@ var configurations = map[string]ConfigApplyFunc{
 		if !ok {
 			return
 		}
-		modList.AddMod(mod.NewFloat("Multiplier:SnipeStage", mod.TypeBase, math.Min(v, 6)).Source("Config"))
+		modList.AddMod(mod.NewFloat("Multiplier:SnipeStage", mod.TypeBase, v).Source("Config"))
 	},
 	"configResonanceCount": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		modList.AddMod(mod.NewFloat("Multiplier:ResonanceCount", mod.TypeBase, math.Max(math.Min(configFloat(val), 50), 0)).Source("Config"))
@@ -4361,6 +4366,84 @@ var configurations = map[string]ConfigApplyFunc{
 			return
 		}
 		modList.AddMod(mod.NewList("SkillData", mod.SkillData{Key: "beamOverlapMultiplier", Value: v}).Source("Config").Tag(mod.SkillName("Storm Rain")))
+	},
+	//pob:block:src/Modules/ConfigOptions.lua:479-481
+	"hoaOverkill": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
+		v, ok := configCount(val)
+		if !ok {
+			return
+		}
+		modList.AddMod(mod.NewList("SkillData", mod.SkillData{Key: "hoaOverkill", Value: v}).Source("Config").Tag(mod.SkillName("Herald of Ash")))
+	},
+	//pob:block:src/Modules/ConfigOptions.lua:616-618
+	"ShrapnelBallistaProjectileOverlap": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
+		v, ok := configCount(val)
+		if !ok {
+			return
+		}
+		modList.AddMod(mod.NewList("SkillData", mod.SkillData{Key: "ShrapnelBallistaProjectileOverlap", Value: v}).Source("Config").Tag(mod.SkillName("Shrapnel Ballista").Transfigured(true)))
+	},
+	//pob:block:src/Modules/ConfigOptions.lua:663-665
+	"stormRainActiveArrows": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
+		v, ok := configCount(val)
+		if !ok {
+			return
+		}
+		modList.AddMod(mod.NewList("SkillData", mod.SkillData{Key: "activeArrowMultiplier", Value: v}).Source("Config").Tag(mod.SkillName("Storm Rain of the Conduit")))
+	},
+	//pob:block:src/Modules/ConfigOptions.lua:696-698
+	"tornadoShotSecondaryHitChance": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
+		v, ok := configCount(val)
+		if !ok {
+			return
+		}
+		modList.AddMod(mod.NewList("SkillData", mod.SkillData{Key: "tornadoShotSecondaryHitChance", Value: v}).Source("Config").Tag(mod.SkillName("Tornado Shot")))
+	},
+	//pob:block:src/Modules/ConfigOptions.lua:758-760
+	"MoltenShellDamageMitigated": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
+		v, ok := configCount(val)
+		if !ok {
+			return
+		}
+		modList.AddMod(mod.NewList("SkillData", mod.SkillData{Key: "MoltenShellDamageMitigated", Value: v}).Source("Config").Tag(mod.SkillName("Molten Shell")))
+	},
+	//pob:block:src/Modules/ConfigOptions.lua:762-764
+	"VaalMoltenShellDamageMitigated": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
+		v, ok := configCount(val)
+		if !ok {
+			return
+		}
+		modList.AddMod(mod.NewList("SkillData", mod.SkillData{Key: "VaalMoltenShellDamageMitigated", Value: v}).Source("Config").Tag(mod.SkillName("Molten Shell")))
+	},
+	//pob:block:src/Modules/ConfigOptions.lua:587-590
+	"raiseSpectreBladeVortexBladeCount": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
+		v, ok := configCount(val)
+		if !ok {
+			return
+		}
+		modList.AddMod(mod.NewList("SkillData", mod.SkillData{Key: "dpsMultiplier", Value: v}).Source("Config").Tag(mod.SkillId("DemonModularBladeVortexSpectre")))
+		modList.AddMod(mod.NewList("SkillData", mod.SkillData{Key: "dpsMultiplier", Value: v}).Source("Config").Tag(mod.SkillId("GhostPirateBladeVortexSpectre")))
+	},
+	//pob:block:src/Modules/ConfigOptions.lua:594-596
+	"raiseSpectreEnableSummonedUrsaRallyingCry": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
+		if !configChecked(val) {
+			return
+		}
+		modList.AddMod(mod.NewList("SkillData", mod.SkillData{Key: "enable", Value: 1}).Source("Config").Tag(mod.SkillId("DropBearSummonedRallyingCry")))
+	},
+	//pob:block:src/Modules/ConfigOptions.lua:597-599
+	"raiseSpectreEnableSlashingHorrorEnrage": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
+		if !configChecked(val) {
+			return
+		}
+		modList.AddMod(mod.NewList("SkillData", mod.SkillData{Key: "enable", Value: 0}).Source("Config").Tag(mod.SkillId("AzmeriDualStrikeDemonFireEnrage")))
+	},
+	//pob:block:src/Modules/ConfigOptions.lua:600-602
+	"raiseSpectreEnableSanguimancerDemonLowLife": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
+		if !configChecked(val) {
+			return
+		}
+		modList.AddMod(mod.NewList("SkillData", mod.SkillData{Key: "enable", Value: 0}).Source("Config").Tag(mod.SkillId("ABTTAzmeriShepherdSpellDamage")))
 	},
 }
 

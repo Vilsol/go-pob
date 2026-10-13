@@ -660,7 +660,17 @@ type SkillData struct {
 	VaalBladeVortexBlade                       float64
 	RepeatFrequencyIncrease                    float64
 	BeamOverlapMultiplier                      float64
+	ActiveArrowMultiplier                      *float64
+	TornadoShotSecondaryHitChance              *float64
+	ShrapnelBallistaProjectileOverlap          *float64
+	HoaOverkill                                *float64
+	HoaMoreBurn                                float64
+	HoaOverkillPercent                         float64
+	MoltenShellDamageMitigated                 *float64
+	VaalMoltenShellDamageMitigated             *float64
+	MoltenShellReflect                         float64
 	TriggeredByMirageArcher                    bool
+	TriggeredBySnipe                           bool
 	TriggeredBySacredWisps                     bool
 	ChanceToTriggerOnCrit                      float64
 	ColdDot                                    float64

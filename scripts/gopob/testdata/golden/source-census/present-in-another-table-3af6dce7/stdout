@@ -1,0 +1,5 @@
+run dump   ours.txt.gz  (3.29, testdata/corpus-3.29  )
+blob       blob/output.jsonl.gz
+PoB dumps  dumps  covering 14 of 14 graded builds
+tolerance  0.005  ·  treeSources >= 5  ·  failing class = wrong
+

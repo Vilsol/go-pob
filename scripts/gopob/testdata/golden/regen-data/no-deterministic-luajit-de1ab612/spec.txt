@@ -1,0 +1,6 @@
+tool     regen-data
+fixture  no-deterministic-luajit
+original scripts/regen_data.py
+args     --check --pob pob --only boss-skills
+env      GOPOB_NICED=1
+unset    POB_DIR

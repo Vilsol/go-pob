@@ -8,6 +8,7 @@ import (
 
 	"github.com/Vilsol/go-pob/builds"
 	"github.com/Vilsol/go-pob/mod"
+	"github.com/Vilsol/go-pob/pob"
 )
 
 // TestSpectreAllyLifePool covers CalcPerform.lua's spectre arm.
@@ -48,6 +49,26 @@ func TestSpectreAllyLifePool(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	stripped := 0
+	strip := func(in []pob.Input) []pob.Input {
+		out := in[:0]
+		for _, i := range in {
+			if i.Name == "TotalSpectreLife" {
+				stripped++
+				continue
+			}
+			out = append(out, i)
+		}
+		return out
+	}
+	parsed.Config.Inputs = strip(parsed.Config.Inputs)
+	for k := range parsed.Config.ConfigSets {
+		parsed.Config.ConfigSets[k].Inputs = strip(parsed.Config.ConfigSets[k].Inputs)
+	}
+	if stripped == 0 {
+		t.Fatalf("REFUSING: %s no longer saves a TotalSpectreLife override; grade the arm against "+
+			"PoB's %g directly again", build, want)
+	}
 	env := (&Calculator{PoB: parsed}).BuildOutput(OutputModeMain)
 
 	got := env.Player.ModDB.Sum(mod.TypeBase, nil, "TotalSpectreLife")
@@ -55,15 +76,18 @@ func TestSpectreAllyLifePool(t *testing.T) {
 		t.Fatalf("TotalSpectreLife = 0, PoB %g — the spectre arm did not fire at all", want)
 	}
 
-	const allyMinionLifeGap = 0.02
-	ratio := got / want
-	if ratio < 1-allyMinionLifeGap || ratio > 1+allyMinionLifeGap {
-		t.Errorf("TotalSpectreLife = %g, PoB %g (ratio %.4f, ActiveSpectreLimit %g). Outside the "+
-			"known ally-minion-Life band, so this is NOT the documented input divergence — either "+
-			"the spectre arm regressed or the minion Life moved.", got, want, ratio, limit)
+	perSpectre := float64(0)
+	for _, as := range env.Player.ActiveSkillList {
+		if as.SkillFlags[SkillFlagSpectre] && as.Minion != nil && as.Minion.Output != nil {
+			perSpectre = as.Minion.Output["Life"]
+			break
+		}
 	}
-	if perGroup := got / limit; perGroup <= 0 || got != perGroup*limit {
-		t.Errorf("TotalSpectreLife %g is not %g x a single group's Life — the :3680-3687 top-up did "+
-			"not use the limit", got, limit)
+	if perSpectre <= 0 {
+		t.Fatalf("REFUSING: no Raise Spectre minion with Life on %s, so the top-up has nothing to fill with", build)
+	}
+	if got != perSpectre*limit {
+		t.Errorf("TotalSpectreLife %g is not %g x the first spectre's Life %g — the :3680-3687 top-up "+
+			"did not fill to the limit", got, limit, perSpectre)
 	}
 }

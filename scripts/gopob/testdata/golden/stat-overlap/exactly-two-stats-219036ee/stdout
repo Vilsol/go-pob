@@ -1,0 +1,11 @@
+sets cached in out (CLASS=wrong)
+
+=== failing-build set sizes ===
+  Short                                  3 builds
+  MediumLengthStat                       3 builds
+
+=== CONTAINMENT: % of ROW's failing builds that ALSO fail COL ===
+    a high row means ROW is plausibly DOWNSTREAM of COL; read down a column for shared inputs
+                                      Short MediumLeng
+  Short                                100%        66%
+  MediumLengthStat                      66%       100%

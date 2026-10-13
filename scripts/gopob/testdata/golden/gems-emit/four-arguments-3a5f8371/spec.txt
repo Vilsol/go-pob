@@ -1,0 +1,5 @@
+tool     gems-emit
+fixture  four-arguments
+original oracle/gems_emit.py
+args     dump.json out.go parser.go extra
+env      

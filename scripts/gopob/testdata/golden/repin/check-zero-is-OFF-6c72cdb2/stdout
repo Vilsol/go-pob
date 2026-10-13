@@ -1,0 +1,7 @@
+  calculator/pins_test.go: b0001.xml Life  1111.25 -> 4321.5
+  calculator/pins_test.go: b0003.xml EnergyShield  250 -> -7.5e+02
+  calculator/sub/more_test.go: b0001.xml Life  1111.25 -> 4321.5
+  calculator/sub/more_test.go: b0003.xml EnergyShield  250 -> -7.5e+02
+
+rewrote 4 pin(s); 0 closed pin(s) need a human
+re-run the pin tests to confirm green, then commit with the measurement in the message

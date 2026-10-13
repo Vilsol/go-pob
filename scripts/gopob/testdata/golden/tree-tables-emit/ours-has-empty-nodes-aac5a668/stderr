@@ -1,0 +1,1 @@
+REFUSING: a dump has no nodes; an empty side emits an empty diff, which reads as 'the trees agree'.

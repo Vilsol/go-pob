@@ -1,0 +1,5 @@
+tool     skill-parts
+fixture  two-args
+original oracle/skill_parts.py
+args     out.go extra
+env      POB_DIR=pob

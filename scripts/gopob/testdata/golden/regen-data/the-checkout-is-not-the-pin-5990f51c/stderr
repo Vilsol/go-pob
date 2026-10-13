@@ -1,0 +1,4 @@
+REFUSING: the PoB checkout does not match scripts/pob_pin.json:
+content_sha256 mismatch: the checkout is not the pin
+
+Regenerating against the wrong checkout rewrites every table with plausible wrong data. Fix the checkout, or re-pin deliberately.

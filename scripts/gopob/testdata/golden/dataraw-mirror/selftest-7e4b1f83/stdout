@@ -1,0 +1,30 @@
+  OK    DIFFERS on a changed value                                                   
+  OK    DIFFERS on a row only we have                                                
+  OK    DIFFERS on a row only PoB has (mode=exact)                                   
+  OK    IDENTICAL ignores PoB-only rows under mode=subset                            
+  OK    subseq accepts a dropped mod                                                 
+  OK    subseq rejects a REORDERED mod list                                          
+  OK    subseq rejects a mod PoB does not have                                       
+  OK    a DECLARED deviation is not counted as DIFFERS                               
+  OK    a STALE deviation (declared, no longer differing) FAILS                      
+  OK    a DECLARED unmapped table carries a reason                                   
+  OK    every table is either extractable or DECLARED unmapped                       
+  OK    a missing source file raises SourceMissing                                   
+  OK    a missing skills glob raises SourceMissing                                   
+  OK    the parser REFUSES a value it cannot read                                    
+  OK    the parser REFUSES a non-mod entry in a mod list                             
+  OK    scan_assignments REFUSES an entry that a long string runs past the next one  
+  OK    scan_assignments REFUSES an entry that a block comment runs past the next one
+  OK    scan_assignments REFUSES an unterminated table, and says so                  
+  OK    a function body does not truncate its table                                  
+  OK    Lua duplicate keys resolve LAST-WINS                                         
+  OK    skillTypes REFUSES an alias to another skill's table                         
+  OK    skillTypes still reads an ordinary table                                     
+  OK    baseMods REFUSES an alias to another skill's table                           
+  OK    baseMods still reads an ordinary table                                       
+  OK    minion rows REFUSE an alias to another minion's table                        
+  OK    minion rows still read an ordinary table                                     
+  OK    parts REFUSES an alias to another skill's table                              
+  OK    parts still reads an ordinary parts table                                    
+
+selftest: 28/28 checks reachable

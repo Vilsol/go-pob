@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"os"
+	"slices"
 	"testing"
 
 	"github.com/Vilsol/go-pob/builds"
@@ -67,6 +68,10 @@ func TestPowerShardsOnTheSavedBuildMergeToTheReport(t *testing.T) {
 			}
 			if bad > 0 {
 				t.Errorf("%d of %d rows differ", bad, len(want))
+			}
+			wantAsc, gotAsc := rows(PowerAscendancy(single)), rows(MergePowerAscendancy(shards))
+			if len(wantAsc) == 0 || !slices.Equal(gotAsc, wantAsc) {
+				t.Errorf("ascendancy: %d merged, %d in the report", len(gotAsc), len(wantAsc))
 			}
 		})
 	}

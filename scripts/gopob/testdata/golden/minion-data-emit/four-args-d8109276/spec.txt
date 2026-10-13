@@ -1,0 +1,6 @@
+tool     minion-data-emit
+fixture  four-args
+original oracle/minion_data_emit.py
+args     dump.json out.go minions extra
+env      
+files    out.go

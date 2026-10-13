@@ -1,0 +1,5 @@
+tool     extract-output-oracle
+fixture  dumps-dir-is-a-file
+original oracle/extract_output_oracle.py
+args     notadir out.jsonl
+env      

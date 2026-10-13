@@ -1,0 +1,9 @@
+{"build":"0001-Beta.xml","mainSkill":"Cyclone","output":{"Above\ud83d\udca9BMP":7,"Angle<Br>&Co":3,"Big":2880521056.8914,"ExpHighIn":9900000000000000.0,"ExpHighOut":1e+16,"ExpLowIn":0.0001,"ExpLowOut":1e-05,"FloatVal":5.0,"IntVal":5,"IntegralLargeFloat":2000000000.0,"Na\u00efve":4,"NegZero":0},"outputMainHand":{"HitMax":30.5,"HitMin":12},"outputOffHand":{}}
+{"build":"0002-error.xml","error":"build failed to load","output":{}}
+{"build":"0003-falsy.xml","mainSkill":"","output":{"A":1}}
+{"build":"0004-zero.xml","mainSkill":"","output":{"A":1}}
+{"build":"0005-false.xml","mainSkill":"","output":{"A":1}}
+{"build":"0006-null.xml","mainSkill":"","output":{"A":1}}
+{"build":"0007-absent.xml","mainSkill":"","output":{"A":1}}
+{"build":"0008-numeric.xml","mainSkill":42,"output":{"A":1}}
+{"build":"0009-optional.xml","mainSkill":"S","output":{},"outputOffHand":{"B":2}}

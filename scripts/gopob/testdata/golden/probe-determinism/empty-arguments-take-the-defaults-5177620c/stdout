@@ -1,0 +1,2 @@
+canary: 1 distinct md5 of 8 runs (must be >1 on stock luajit)
+item_tools     1 distinct md5 of 8 runs   OK

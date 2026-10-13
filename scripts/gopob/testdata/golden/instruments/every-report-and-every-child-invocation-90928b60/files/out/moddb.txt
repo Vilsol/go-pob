@@ -1,0 +1,2 @@
+LEVEL 2: PER-MOD-NAME CENSUS (10 builds, 3 mod names diverge)
+LEVEL 2: ENEMY PER-MOD-NAME CENSUS (10 builds, 1 mod names diverge)

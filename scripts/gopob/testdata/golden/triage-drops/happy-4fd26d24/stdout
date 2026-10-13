@@ -1,0 +1,37 @@
+READY     28 lines,     12 build-instances -- every mod name already has a consumer
+BLOCKED    3 lines,      9 build-instances -- needs a consumer first (grep is an upper bound on READY, see header)
+
+=== READY, top 60 ===
+     7  HasConsumerA                                  WEIGHTED LINE
+     5  HasConsumerB,HasConsumerC                     TWO CONSUMERS
+     0  HasConsumerA                                  TIED 00
+     0  HasConsumerA                                  TIED 01
+     0  HasConsumerA                                  TIED 02
+     0  HasConsumerA                                  TIED 03
+     0  HasConsumerA                                  TIED 04
+     0  HasConsumerA                                  TIED 05
+     0  HasConsumerA                                  TIED 06
+     0  HasConsumerA                                  TIED 07
+     0  HasConsumerA                                  TIED 08
+     0  HasConsumerA                                  TIED 09
+     0  HasConsumerA                                  TIED 10
+     0  HasConsumerA                                  TIED 11
+     0  HasConsumerA                                  TIED 12
+     0  HasConsumerA                                  ’’’’’’’’’’’’’’’’’’’’’’’’’’’’’’’’’’’’’’’’’’’’’’’’’’’’’’’’’’’’’’’’’’’’’’’’’’’’’’
+     0  Ünïcode                                       SHORT UNICODE NAME
+     0  HasConsumerA                                  TIED 13
+     0  HasConsumerA                                  TIED 14
+     0  HasConsumerA                                  TIED 15
+     0  HasConsumerA                                  TIED 16
+     0  HasConsumerA                                  TIED 17
+     0  HasConsumerA                                  TIED 18
+     0  HasConsumerA                                  TIED 19
+     0  HasConsumerA                                  TIED 20
+     0  HasConsumerA                                  TIED 21
+     0  HasConsumerA                                  TIED 22
+     0  HasConsumerA                                  TIED 23
+
+=== BLOCKED, top 20 (each needs its consumer written) ===
+     9  missing=OnlyInTest                                TEST ONLY
+     0  missing=OnlyInParser                              PARSER ONLY
+     0  missing=éééNameThatIsQuiteLongIndeed,AndAnotherL  WIDE NAMES

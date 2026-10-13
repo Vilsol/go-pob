@@ -1,0 +1,6 @@
+tool     skill-minion-uses-emit
+fixture  happy
+original oracle/skill_minion_uses_emit.py
+args     dump.json out.go
+env      
+files    out.go

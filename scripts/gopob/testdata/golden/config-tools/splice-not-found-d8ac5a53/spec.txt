@@ -1,0 +1,5 @@
+tool     config-tools
+fixture  splice-not-found
+original scripts/config_tools.py
+args     --pob pob --repo . --corpus corpus splice --var ctNoSuchVar --dry-run
+env      

@@ -1,0 +1,5 @@
+tool     probe-determinism
+fixture  happy
+original oracle/probe_determinism.sh
+args     item_tools 3
+env      GOPOB_NICED=1 POB_DIR=pob

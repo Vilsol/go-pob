@@ -104,6 +104,22 @@ var perforateDpsMultiplierFloor skillFunc = func(activeSkill *ActiveSkill, _ map
 	activeSkill.SkillData.DpsMultiplier = math.Max(utils.OrDefault(activeSkill.SkillData.DpsMultiplier, 1), 1)
 }
 
+//pob:block:src/Data/Skills/act_dex.lua:13776-13784,src/Data/Skills/act_dex.lua:13864-13872
+var shrapnelBallistaPreDamage skillFunc = func(activeSkill *ActiveSkill, output map[string]float64, _ *Breakdown) {
+	if !activeSkill.SkillModList.Flag(nil, "SequentialProjectiles") {
+		overlap := 1.0
+		if activeSkill.SkillTypes[data.SkillTypeRain] {
+			overlap = output["ProjectileCount"]
+		}
+		activeSkill.SkillData.DpsMultiplier = utils.OrDefault(activeSkill.SkillData.DpsMultiplier, 1) *
+			min(utils.UnwrapOrF(activeSkill.SkillData.ShrapnelBallistaProjectileOverlap, overlap), output["ProjectileCount"])
+	}
+	if splitCount := output["SplitCount"]; splitCount > 0 {
+		activeSkill.SkillModList.AddMod(mod.NewFloat("DPS", mod.TypeMore, splitCount*100).Source("Split Return").
+			Tag(mod.Condition("ReturningProjectile")))
+	}
+}
+
 //pob:block:src/Data/Skills/act_dex.lua:10231-10238, src/Data/Skills/act_dex.lua:10334-10341
 func lancingSteelPreDamageFunc(source mod.Source) skillFunc {
 	return func(activeSkill *ActiveSkill, output map[string]float64, _ *Breakdown) {
@@ -594,7 +610,7 @@ var skillFuncs = map[string]map[string]skillFunc{
 		if activeSkill.SkillPart == 2 {
 			activeSkill.SkillData.HitTimeOverride = activeSkill.SkillData.HitFrequency /
 				(1 + activeSkill.SkillModList.Sum(mod.TypeIncrease, activeSkill.SkillCfg, "StormRainBeamFrequency")/100)
-			activeSkill.SkillData.DpsMultiplier = min(1,
+			activeSkill.SkillData.DpsMultiplier = min(utils.UnwrapOrF(activeSkill.SkillData.ActiveArrowMultiplier, 1),
 				activeSkill.SkillModList.Sum(mod.TypeBase, activeSkill.SkillCfg, "StormRainAllowedStormArrows"))
 		}
 	}},
@@ -704,10 +720,30 @@ var skillFuncs = map[string]map[string]skillFunc{
 			!activeSkill.SkillModList.Flag(nil, "TriggeredBySnipe") {
 			averageSecondaryProjectiles = 1 + output["SplitCount"]
 		}
-		chanceForSecondaryProjectilesToHit := min(20*
-			activeSkill.SkillModList.Sum(mod.TypeBase, activeSkill.SkillCfg, "tornadoShotSecondaryProjectiles")/100, 1)
+		chanceForSecondaryProjectilesToHit := min(utils.UnwrapOrF(activeSkill.SkillData.TornadoShotSecondaryHitChance,
+			20*activeSkill.SkillModList.Sum(mod.TypeBase, activeSkill.SkillCfg, "tornadoShotSecondaryProjectiles"))/100, 1)
 		activeSkill.SkillData.DpsMultiplier = utils.OrDefault(activeSkill.SkillData.DpsMultiplier, 1) *
 			(1 + float64(chanceForSecondaryProjectilesToHit*averageSecondaryProjectiles))
+	}},
+
+	"ShrapnelBallista":     {"preDamageFunc": shrapnelBallistaPreDamage},
+	"ShrapnelBallistaAltX": {"preDamageFunc": shrapnelBallistaPreDamage},
+	//pob:block:src/Data/Skills/act_str.lua:5680-5682
+	"HeraldOfAsh": {"preDamageFunc": func(activeSkill *ActiveSkill, _ map[string]float64, _ *Breakdown) {
+		activeSkill.SkillData.FireDot = utils.UnwrapOrF(activeSkill.SkillData.HoaOverkill, 0) *
+			(1 + activeSkill.SkillData.HoaMoreBurn/100) * activeSkill.SkillData.HoaOverkillPercent
+	}},
+	//pob:block:src/Data/Skills/act_str.lua:7536-7540
+	"MoltenShell": {"preDamageFunc": func(activeSkill *ActiveSkill, _ map[string]float64, _ *Breakdown) {
+		add := utils.UnwrapOrF(activeSkill.SkillData.MoltenShellDamageMitigated, 0) * activeSkill.SkillData.MoltenShellReflect / 100
+		activeSkill.SkillData.FireMin = add
+		activeSkill.SkillData.FireMax = add
+	}},
+	//pob:block:src/Data/Skills/act_str.lua:7638-7642
+	"VaalMoltenShell": {"preDamageFunc": func(activeSkill *ActiveSkill, _ map[string]float64, _ *Breakdown) {
+		add := utils.UnwrapOrF(activeSkill.SkillData.VaalMoltenShellDamageMitigated, 0) * activeSkill.SkillData.MoltenShellReflect / 100
+		activeSkill.SkillData.FireMin = add
+		activeSkill.SkillData.FireMax = add
 	}},
 
 	"Cremation": {"preDamageFunc": func(activeSkill *ActiveSkill, _ map[string]float64, _ *Breakdown) {

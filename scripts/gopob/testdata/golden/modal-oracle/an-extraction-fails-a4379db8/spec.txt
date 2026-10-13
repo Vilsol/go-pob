@@ -1,0 +1,5 @@
+tool     modal-oracle
+fixture  an-extraction-fails
+original scripts/modal_oracle.sh
+args     dumps 2 out.jsonl.gz work
+env      GOPOB_NICED=1
