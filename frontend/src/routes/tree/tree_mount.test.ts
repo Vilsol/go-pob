@@ -597,7 +597,7 @@ describe('the Tree page’s power report', () => {
     await fireEvent.change(view.getByRole('combobox', { name: 'Power report depth' }), { target: { value: '-1' } });
     const custom = await vi.waitFor(() => view.getByRole('textbox', { name: 'Custom node power depth' }));
     await fireEvent.change(custom, { target: { value: '7' } });
-    await vi.waitFor(() => expect(report.mock.calls.at(-1)).toEqual(['', 7]));
+    await vi.waitFor(() => expect(report.mock.calls.at(-1)).toEqual(['', 7, 1]));
     vi.restoreAllMocks();
     tick = vi.spyOn(workerInstance, 'Tick').mockResolvedValue(undefined);
     vi.spyOn(workerInstance, 'GetTreeSpecsPoints').mockResolvedValue([]);

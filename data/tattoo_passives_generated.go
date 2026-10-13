@@ -16,6 +16,13 @@ package data
 
 // TattooNodes is keyed by the `dn` a build's <Override> element names.
 var TattooNodes = map[string]LegionNode{
+	"": {
+		ID: "AscendancyAssassin19",
+		DN: "",
+		Stats: []string{
+			"Limited to 1 Ascendancy Tattoo",
+		},
+	},
 	"Acrobatics": {
 		ID: "acrobatics1136",
 		DN: "Acrobatics",
@@ -1455,6 +1462,10 @@ var TattooKeystones = map[string]bool{
 
 // TattooTargets is what the tattoo popup filters and shows (TreeTab.lua:846-878), keyed like TattooNodes.
 var TattooTargets = map[string]TattooTarget{
+	"": {
+		TargetType:        "Keystone",
+		ActiveEffectImage: "Art/2DArt/UIImages/InGame/AncestralTrial/PassiveTreeTattoos/KeystoneHinekoraPassiveBG.png",
+	},
 	"Acrobatics": {
 		TargetType:        "Keystone",
 		Icon:              "Art/2DArt/SkillIcons/passives/KeystoneAcrobatics.png",

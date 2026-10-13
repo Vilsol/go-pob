@@ -53,6 +53,9 @@ func (env *Environment) addModTagsUsed(isPlayer bool, m mod.Mod) {
 				addUsedTag(env.MinionConditionsUsed, t.VarList, m)
 			}
 		case *mod.ActorConditionTag:
+			if !actorConditionVar(t) {
+				continue
+			}
 			if t.Actor != nil && *t.Actor == "enemy" {
 				addUsedTag(env.EnemyConditionsUsed, t.VariableList, m)
 			} else {
@@ -178,6 +181,9 @@ func collectEnemyTagsUsed(env *Environment) {
 				case *mod.ConditionTag:
 					addUsedTag(env.EnemyConditionsUsed, t.VarList, m)
 				case *mod.ActorConditionTag:
+					if !actorConditionVar(t) {
+						continue
+					}
 					if t.Actor != nil && (*t.Actor == "enemy" || *t.Actor == "player") {
 						addUsedTag(env.ConditionsUsed, t.VariableList, m)
 					} else {
@@ -229,4 +235,8 @@ func thresholdVars(t *mod.MultiplierThresholdTag) []string {
 		return t.VariableList
 	}
 	return []string{t.Variable}
+}
+
+func actorConditionVar(t *mod.ActorConditionTag) bool {
+	return len(t.VariableList) == 1
 }

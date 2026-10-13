@@ -94,7 +94,7 @@ export const buildSidebar = (out: Outputs, tick?: TickWarnings): Sidebar => {
 
   if (out.Minion) {
     const lines: string[] = [];
-    const groups = buildStatList(out.Minion, minionDisplayStats, lines);
+    const groups = buildStatList(out.Minion, minionDisplayStats, lines).map((g) => g.map((l) => ({ ...l, minion: true })));
     statWarnings(warnings, lines);
     actorWarnings(warnings, out.Minion.Output ?? {}, undefined, w?.MinionAspectCount ?? 0);
     sections.push({ header: 'Minion', info: infoLines(out.MainSkill?.MinionInfoMessage, out.MainSkill?.MinionInfoMessage2), groups });

@@ -12,6 +12,7 @@
   import { syncWrap } from '$lib/go/worker';
   import { logError } from '$lib/utils';
   import type { calculator } from '$lib/types';
+  import type { StatLine } from '$lib/display/stat_list';
 
   const main = new MainGroup();
 
@@ -41,6 +42,7 @@
     onmaingroup={(i: number) => main.select(i)}
     oncontrol={(field: MainSkillField, v: number | undefined) => writeMainSkill($outputs?.MainSkill, field, v)}
     onspectres={openSpectres}
+    steps={(line: StatLine) => (line.stat ? syncWrap?.SidebarBreakdown(line.stat, !!line.minion) : undefined)}
     onbreakdown={() => void goto(`${base}/calcs`)} />
 {/if}
 <SpectreLibrary bind:open={spectresOpen} {library} {spectres} onsave={(ids: string[]) => syncWrap?.SetSpectres(ids).catch(logError)} />

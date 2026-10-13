@@ -313,6 +313,28 @@ test('tattoos: a tattooed node’s tooltip is the tattoo’s name and stats, not
   app.assertNoErrors();
 });
 
+// PassiveSpec.lua:1614-1635
+test('timeless jewels: a conquered node’s tooltip is the conquest’s name and lines, not the tree’s node', async ({ page }) => {
+  test.setTimeout(5 * 60_000);
+  const { app, build } = await openOnTree(page, '0006-elementalist-storm-burst');
+  const m = await go.model();
+  const conquered = m.exposition.TreeConqueredNodes(await m.exposition.GetMiscCalculator(build)) ?? [];
+  const t = tree.rawTree();
+  const renamed = conquered.find((c) => t.nodes[c.NodeID]?.isNotable && c.Name !== t.nodes[c.NodeID].name)!;
+  expect(renamed, 'control: Glorious Vanity renames a notable').toBeDefined();
+  const added = conquered.find((c) => !c.Replaced && (c.Stats?.length ?? 0) > (t.nodes[c.NodeID]?.stats?.length ?? 0))!;
+  for (const c of [renamed, ...(added ? [added] : [])]) {
+    const at = await nodeOnScreen(page, c.NodeID);
+    const box = await canvasBox(page);
+    await page.mouse.move(box.x + at.x, box.y + at.y);
+    const nodeTip = page.getByRole('tooltip').first();
+    await expect(nodeTip.locator('span.text-15').first()).toHaveText(c.Name);
+    expect(await nodeTip.locator('.text-magic > span').allTextContents()).toEqual(c.Stats);
+    await page.mouse.move(0, 0);
+  }
+  app.assertNoErrors();
+});
+
 test('radius jewels: a node in a jewel’s radius names the jewel and its radius lines', async ({ page }) => {
   test.setTimeout(5 * 60_000);
   const file = '0006-elementalist-storm-burst';
@@ -326,12 +348,13 @@ test('radius jewels: a node in a jewel’s radius names the jewel and its radius
   const outside = placedNodes(t).find((p) => p.node.isNotable && !p.node.ascendancyName && !radius.includes(p.node.skill!))!.node.skill!;
   expect(buildXml(file)).toContain('Passives in radius are Conquered by the Vaal');
 
+  const conquered = m.exposition.TreeConqueredNodes(await m.exposition.GetMiscCalculator(build)) ?? [];
   const tipOf = async (id: number) => {
     const at = await nodeOnScreen(page, id);
     const box = await canvasBox(page);
     await page.mouse.move(box.x + at.x, box.y + at.y);
     const nodeTip = page.getByRole('tooltip').first();
-    await expect(nodeTip.locator('span.text-15').first()).toHaveText(t.nodes[id].name!);
+    await expect(nodeTip.locator('span.text-15').first()).toHaveText(conquered.find((c) => c.NodeID === id)?.Name ?? t.nodes[id].name!);
     return nodeTip;
   };
   const tip = (await tipOf(inside)).getByLabel('Jewels affecting this node');
@@ -851,7 +874,15 @@ test('node power: the heat map colours nodes by Go’s power for the stat', asyn
   const misc = (await m.exposition.GetMiscCalculator(build))!;
   const builder = m.exposition.NewPowerBuilder(misc, 'Life', 0)!;
   while (builder.Step(1000) < 1);
-  const { values, max } = heatValues((builder.Report() ?? []) as PowerRow[]);
+  const t = tree.rawTree();
+  const ascendancy = new Set(
+    Object.values(t.nodes)
+      .filter((n) => n.ascendancyName)
+      .map((n) => n.skill!)
+  );
+  // TreeTab.lua:1116
+  const ascRows = (m.exposition.PowerAscendancy(builder) ?? []) as PowerRow[];
+  const { values, max } = heatValues([...((builder.Report() ?? []) as PowerRow[]), ...ascRows], ascendancy);
   builder.release();
   misc.release();
 
@@ -864,11 +895,12 @@ test('node power: the heat map colours nodes by Go’s power for the stat', asyn
   await expect(heat).toHaveAttribute('data-heat', String(values.size), { timeout: 10 * 60_000 });
   await expect(panel.getByRole('table', { name: 'Node power' })).toBeVisible();
 
-  const t = tree.rawTree();
   const offsets = ascendancyOffsets(t);
   const best = [...values.entries()].sort((a, b) => b[1] - a[1])[0][0];
   const none = [...values.entries()].find(([id, v]) => v <= 0 && !t.nodes[id].ascendancyName)![0];
-  for (const id of [best, none]) {
+  // PassiveTreeView.lua:907-919
+  const asc = ascRows.find((r) => !r.Allocated && r.Power > 0 && heatChannel(r.Power, max) < 1)!.ID;
+  for (const id of [best, none, asc]) {
     const at = nodeCentre(t, offsets, t.nodes[id])!;
     const want = Math.round(255 * heatChannel(values.get(id)!, max));
     await expect

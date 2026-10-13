@@ -149,9 +149,14 @@ func init() {
 	crystallineNamespace("go-pob", "exposition").Set("SetItemModDebug", crystallineWrap(js.FuncOf(crystallineFnExpositionSetItemModDebug)))
 	crystallineNamespace("go-pob", "exposition").Set("GetPartySummaries", crystallineWrap(js.FuncOf(crystallineFnExpositionGetPartySummaries)))
 	crystallineNamespace("go-pob", "exposition").Set("MiscGemSupportPairs", crystallineWrap(js.FuncOf(crystallineFnExpositionMiscGemSupportPairs)))
+	crystallineNamespace("go-pob", "exposition").Set("PowerAscendancy", crystallineWrap(js.FuncOf(crystallineFnExpositionPowerAscendancy)))
 	crystallineNamespace("go-pob", "exposition").Set("PowerStats", crystallineWrap(js.FuncOf(crystallineFnExpositionPowerStats)))
 	crystallineNamespace("go-pob", "exposition").Set("NodePowerStats", crystallineWrap(js.FuncOf(crystallineFnExpositionNodePowerStats)))
 	crystallineNamespace("go-pob", "exposition").Set("NewPowerBuilder", crystallineWrap(js.FuncOf(crystallineFnExpositionNewPowerBuilder)))
+	crystallineNamespace("go-pob", "exposition").Set("NewPowerBuilderShard", crystallineWrap(js.FuncOf(crystallineFnExpositionNewPowerBuilderShard)))
+	crystallineNamespace("go-pob", "exposition").Set("MergePowerReports", crystallineWrap(js.FuncOf(crystallineFnExpositionMergePowerReports)))
+	crystallineNamespace("go-pob", "exposition").Set("MergePowerAscendancy", crystallineWrap(js.FuncOf(crystallineFnExpositionMergePowerAscendancy)))
+	crystallineNamespace("go-pob", "exposition").Set("NewSidebarPass", crystallineWrap(js.FuncOf(crystallineFnExpositionNewSidebarPass)))
 	crystallineNamespace("go-pob", "exposition").Set("GemDefaultLevelMode", crystallineWrap(js.FuncOf(crystallineFnExpositionGemDefaultLevelMode)))
 	crystallineNamespace("go-pob", "exposition").Set("GemDefaultLevel", crystallineWrap(js.FuncOf(crystallineFnExpositionGemDefaultLevel)))
 	crystallineNamespace("go-pob", "exposition").Set("SocketedInItemNames", crystallineWrap(js.FuncOf(crystallineFnExpositionSocketedInItemNames)))
@@ -172,6 +177,7 @@ func init() {
 	crystallineNamespace("go-pob", "exposition").Set("ChangeTreeAscendancy", crystallineWrap(js.FuncOf(crystallineFnExpositionChangeTreeAscendancy)))
 	crystallineNamespace("go-pob", "exposition").Set("ClickTreeAscendancyNode", crystallineWrap(js.FuncOf(crystallineFnExpositionClickTreeAscendancyNode)))
 	crystallineNamespace("go-pob", "exposition").Set("MoveTreeSpec", crystallineWrap(js.FuncOf(crystallineFnExpositionMoveTreeSpec)))
+	crystallineNamespace("go-pob", "exposition").Set("TreeConqueredNodes", crystallineWrap(js.FuncOf(crystallineFnExpositionTreeConqueredNodes)))
 	crystallineNamespace("go-pob", "exposition").Set("TreeSocketChoices", crystallineWrap(js.FuncOf(crystallineFnExpositionTreeSocketChoices)))
 	crystallineNamespace("go-pob", "exposition").Set("TreeSocketedJewels", crystallineWrap(js.FuncOf(crystallineFnExpositionTreeSocketedJewels)))
 	crystallineNamespace("go-pob", "exposition").Set("SocketTreeJewel", crystallineWrap(js.FuncOf(crystallineFnExpositionSocketTreeJewel)))
@@ -827,10 +833,13 @@ func init() {
 	MasteryExports(crystallineRegistry{})
 	ModDebugExports(crystallineRegistry{})
 	PartyExports(crystallineRegistry{})
+	PowerAscendancyExports(crystallineRegistry{})
 	PowerReportExports(crystallineRegistry{})
+	SidebarBreakdownExports(crystallineRegistry{})
 	Skills20Exports(crystallineRegistry{})
 	Skills30Exports(crystallineRegistry{})
 	TreeClassExports(crystallineRegistry{})
+	TreeConqueredNodesExports(crystallineRegistry{})
 	TreeJewelExports(crystallineRegistry{})
 	TreeLinkExports(crystallineRegistry{})
 	TreeMasteryExports(crystallineRegistry{})
@@ -5552,6 +5561,53 @@ func crystallineFnExpositionMiscGemSupportPairs(this js.Value, args []js.Value) 
 	})
 }
 
+func crystallineFnExpositionPowerAscendancy(this js.Value, args []js.Value) (result any) {
+	defer crystallineRecover(&result)
+
+	if len(args) != 1 {
+		return crystallineFail("PowerAscendancy: expected 1 arguments, got " + strconv.Itoa(len(args)))
+	}
+
+	a0, err := crystallineToPtrExpositionPowerBuilder(args[0])
+	if err != nil {
+		return crystallineFail(err.Error())
+	}
+
+	r0 := PowerAscendancy(a0)
+
+	return crystallineJSON(func(b []byte, ok *bool) []byte {
+		if items0 := r0; items0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '[')
+			for i0 := range items0 {
+				if i0 > 0 {
+					b = append(b, ',')
+				}
+
+				b = crystallineAppendCalculatorPowerReportEntry(b, &items0[i0], ok)
+			}
+
+			b = append(b, ']')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			items := r0
+			if items == nil {
+				return nil
+			}
+
+			out := make([]any, 0, len(items))
+			for i := range items {
+				out = append(out, crystallineMarshalCalculatorPowerReportEntry(&items[i]))
+			}
+
+			return out
+		}()
+	})
+}
+
 func crystallineFnExpositionPowerStats(this js.Value, args []js.Value) (result any) {
 	defer crystallineRecover(&result)
 
@@ -5661,6 +5717,154 @@ func crystallineFnExpositionNewPowerBuilder(this js.Value, args []js.Value) (res
 	r0 := NewPowerBuilder(a0, a1, a2)
 
 	return crystallineMarshalExpositionPowerBuilder(r0)
+}
+
+func crystallineFnExpositionNewPowerBuilderShard(this js.Value, args []js.Value) (result any) {
+	defer crystallineRecover(&result)
+
+	if len(args) != 5 {
+		return crystallineFail("NewPowerBuilderShard: expected 5 arguments, got " + strconv.Itoa(len(args)))
+	}
+
+	a0, err := crystallineToPtrExpositionMiscCalculator(args[0])
+	if err != nil {
+		return crystallineFail(err.Error())
+	}
+
+	a1, err := crystallineToString(args[1])
+	if err != nil {
+		return crystallineFail(err.Error())
+	}
+
+	a2, err := crystallineToInt(args[2])
+	if err != nil {
+		return crystallineFail(err.Error())
+	}
+
+	a3, err := crystallineToInt(args[3])
+	if err != nil {
+		return crystallineFail(err.Error())
+	}
+
+	a4, err := crystallineToInt(args[4])
+	if err != nil {
+		return crystallineFail(err.Error())
+	}
+
+	r0 := NewPowerBuilderShard(a0, a1, a2, a3, a4)
+
+	return crystallineMarshalExpositionPowerBuilder(r0)
+}
+
+func crystallineFnExpositionMergePowerReports(this js.Value, args []js.Value) (result any) {
+	defer crystallineRecover(&result)
+
+	if len(args) != 1 {
+		return crystallineFail("MergePowerReports: expected 1 arguments, got " + strconv.Itoa(len(args)))
+	}
+
+	a0, err := crystallineToSliceOfCalculatorPowerShardRows(args[0])
+	if err != nil {
+		return crystallineFail(err.Error())
+	}
+
+	r0 := MergePowerReports(a0)
+
+	return crystallineJSON(func(b []byte, ok *bool) []byte {
+		if items0 := r0; items0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '[')
+			for i0 := range items0 {
+				if i0 > 0 {
+					b = append(b, ',')
+				}
+
+				b = crystallineAppendCalculatorPowerReportEntry(b, &items0[i0], ok)
+			}
+
+			b = append(b, ']')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			items := r0
+			if items == nil {
+				return nil
+			}
+
+			out := make([]any, 0, len(items))
+			for i := range items {
+				out = append(out, crystallineMarshalCalculatorPowerReportEntry(&items[i]))
+			}
+
+			return out
+		}()
+	})
+}
+
+func crystallineFnExpositionMergePowerAscendancy(this js.Value, args []js.Value) (result any) {
+	defer crystallineRecover(&result)
+
+	if len(args) != 1 {
+		return crystallineFail("MergePowerAscendancy: expected 1 arguments, got " + strconv.Itoa(len(args)))
+	}
+
+	a0, err := crystallineToSliceOfCalculatorPowerShardRows(args[0])
+	if err != nil {
+		return crystallineFail(err.Error())
+	}
+
+	r0 := MergePowerAscendancy(a0)
+
+	return crystallineJSON(func(b []byte, ok *bool) []byte {
+		if items0 := r0; items0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '[')
+			for i0 := range items0 {
+				if i0 > 0 {
+					b = append(b, ',')
+				}
+
+				b = crystallineAppendCalculatorPowerReportEntry(b, &items0[i0], ok)
+			}
+
+			b = append(b, ']')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			items := r0
+			if items == nil {
+				return nil
+			}
+
+			out := make([]any, 0, len(items))
+			for i := range items {
+				out = append(out, crystallineMarshalCalculatorPowerReportEntry(&items[i]))
+			}
+
+			return out
+		}()
+	})
+}
+
+func crystallineFnExpositionNewSidebarPass(this js.Value, args []js.Value) (result any) {
+	defer crystallineRecover(&result)
+
+	if len(args) != 1 {
+		return crystallineFail("NewSidebarPass: expected 1 arguments, got " + strconv.Itoa(len(args)))
+	}
+
+	a0, err := crystallineToPtrPobPathOfBuilding(args[0])
+	if err != nil {
+		return crystallineFail(err.Error())
+	}
+
+	r0 := NewSidebarPass(a0)
+
+	return crystallineMarshalExpositionSidebarPass(r0)
 }
 
 func crystallineFnExpositionGemDefaultLevelMode(this js.Value, args []js.Value) (result any) {
@@ -6411,6 +6615,53 @@ func crystallineFnExpositionMoveTreeSpec(this js.Value, args []js.Value) (result
 		MoveTreeSpec(a0, a1, a2)
 
 		return nil
+	})
+}
+
+func crystallineFnExpositionTreeConqueredNodes(this js.Value, args []js.Value) (result any) {
+	defer crystallineRecover(&result)
+
+	if len(args) != 1 {
+		return crystallineFail("TreeConqueredNodes: expected 1 arguments, got " + strconv.Itoa(len(args)))
+	}
+
+	a0, err := crystallineToPtrExpositionMiscCalculator(args[0])
+	if err != nil {
+		return crystallineFail(err.Error())
+	}
+
+	r0 := TreeConqueredNodes(a0)
+
+	return crystallineJSON(func(b []byte, ok *bool) []byte {
+		if items0 := r0; items0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '[')
+			for i0 := range items0 {
+				if i0 > 0 {
+					b = append(b, ',')
+				}
+
+				b = crystallineAppendCalculatorSpecNodeRewrite(b, &items0[i0], ok)
+			}
+
+			b = append(b, ']')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			items := r0
+			if items == nil {
+				return nil
+			}
+
+			out := make([]any, 0, len(items))
+			for i := range items {
+				out = append(out, crystallineMarshalCalculatorSpecNodeRewrite(&items[i]))
+			}
+
+			return out
+		}()
 	})
 }
 
@@ -21900,6 +22151,92 @@ func crystallineMarshalCalculatorPowerReportEntry(v *calculator.PowerReportEntry
 	return out
 }
 
+func crystallineMarshalCalculatorPowerShardRows(v *calculator.PowerShardRows) any {
+	if v == nil {
+		return nil
+	}
+
+	out := crystallineObjects.New()
+
+	out.Set("Rows", crystallineJSON(func(b []byte, ok *bool) []byte {
+		if items0 := v.Rows; items0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '[')
+			for i0 := range items0 {
+				if i0 > 0 {
+					b = append(b, ',')
+				}
+
+				b = crystallineAppendCalculatorPowerReportEntry(b, &items0[i0], ok)
+			}
+
+			b = append(b, ']')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			items := v.Rows
+			if items == nil {
+				return nil
+			}
+
+			out := make([]any, 0, len(items))
+			for i := range items {
+				out = append(out, crystallineMarshalCalculatorPowerReportEntry(&items[i]))
+			}
+
+			return out
+		}()
+	}))
+	out.Set("Owned", func() any {
+		items := v.Owned
+		if items == nil {
+			return nil
+		}
+
+		out := make([]any, 0, len(items))
+		for i := range items {
+			out = append(out, float64(items[i]))
+		}
+
+		return out
+	}())
+	out.Set("Ascendancy", crystallineJSON(func(b []byte, ok *bool) []byte {
+		if items0 := v.Ascendancy; items0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '[')
+			for i0 := range items0 {
+				if i0 > 0 {
+					b = append(b, ',')
+				}
+
+				b = crystallineAppendCalculatorPowerReportEntry(b, &items0[i0], ok)
+			}
+
+			b = append(b, ']')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			items := v.Ascendancy
+			if items == nil {
+				return nil
+			}
+
+			out := make([]any, 0, len(items))
+			for i := range items {
+				out = append(out, crystallineMarshalCalculatorPowerReportEntry(&items[i]))
+			}
+
+			return out
+		}()
+	}))
+
+	return out
+}
+
 func crystallineMarshalCalculatorPowerStat(v *calculator.PowerStat) any {
 	if v == nil {
 		return nil
@@ -25608,6 +25945,51 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 	}
 
 	return crystallineMarshalCalculatorSkillDataShape.Invoke(crystallineRetain(v))
+}
+
+func crystallineMarshalCalculatorSpecNodeRewrite(v *calculator.SpecNodeRewrite) any {
+	if v == nil {
+		return nil
+	}
+
+	out := crystallineObjects.New()
+
+	out.Set("NodeID", float64(v.NodeID))
+	out.Set("Name", string(v.Name))
+	out.Set("Stats", crystallineJSON(func(b []byte, ok *bool) []byte {
+		if items0 := v.Stats; items0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '[')
+			for i0 := range items0 {
+				if i0 > 0 {
+					b = append(b, ',')
+				}
+
+				b = crystallineAppendString(b, string(items0[i0]))
+			}
+
+			b = append(b, ']')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			items := v.Stats
+			if items == nil {
+				return nil
+			}
+
+			out := make([]any, 0, len(items))
+			for i := range items {
+				out = append(out, string(items[i]))
+			}
+
+			return out
+		}()
+	}))
+	out.Set("Replaced", bool(v.Replaced))
+
+	return out
 }
 
 func crystallineMarshalCalculatorSpectreRow(v *calculator.SpectreRow) any {
@@ -31375,7 +31757,7 @@ func crystallineMarshalExpositionPowerBuilder(v *PowerBuilder) any {
 				switch field {
 				}
 			},
-			[]string{"Current", "Report", "Step"},
+			[]string{"Current", "Report", "Shard", "Step", "Tasks"},
 			func(v *PowerBuilder, method int, args []js.Value) any {
 				switch method {
 				case 0:
@@ -31425,6 +31807,19 @@ func crystallineMarshalExpositionPowerBuilder(v *PowerBuilder) any {
 						}()
 					})
 				case 2:
+					if len(args) != 0 {
+						return crystallineFail("Shard: expected 0 arguments, got " + strconv.Itoa(len(args)))
+					}
+
+					r0 := v.Shard()
+
+					return crystallineJSON(func(b []byte, ok *bool) []byte {
+						b = crystallineAppendCalculatorPowerShardRows(b, &r0, ok)
+						return b
+					}, func() any {
+						return crystallineMarshalCalculatorPowerShardRows(&r0)
+					})
+				case 3:
 					if len(args) != 1 {
 						return crystallineFail("Step: expected 1 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -31435,6 +31830,14 @@ func crystallineMarshalExpositionPowerBuilder(v *PowerBuilder) any {
 					}
 
 					r0 := v.Step(a0)
+
+					return float64(r0)
+				case 4:
+					if len(args) != 0 {
+						return crystallineFail("Tasks: expected 0 arguments, got " + strconv.Itoa(len(args)))
+					}
+
+					r0 := v.Tasks()
 
 					return float64(r0)
 				}
@@ -31488,6 +31891,87 @@ func crystallineMarshalExpositionSharedItemSetRow(v *SharedItemSetRow) any {
 	}))
 
 	return out
+}
+
+var crystallineMarshalExpositionSidebarPassShape js.Value
+
+func crystallineMarshalExpositionSidebarPass(v *SidebarPass) any {
+	if v == nil {
+		return nil
+	}
+
+	if crystallineMarshalExpositionSidebarPassShape.IsUndefined() {
+		crystallineMarshalExpositionSidebarPassShape = crystallineShape("exposition.SidebarPass",
+			[]string{},
+			func(v *SidebarPass, entry *crystallineEntry, field int) any {
+				switch field {
+				}
+
+				return nil
+			},
+			func(v *SidebarPass, field int, value js.Value) {
+				switch field {
+				}
+			},
+			[]string{"Breakdown"},
+			func(v *SidebarPass, method int, args []js.Value) any {
+				switch method {
+				case 0:
+					if len(args) != 2 {
+						return crystallineFail("Breakdown: expected 2 arguments, got " + strconv.Itoa(len(args)))
+					}
+
+					a0, err := crystallineToBool(args[0])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					a1, err := crystallineToString(args[1])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					r0 := v.Breakdown(a0, a1)
+
+					return crystallineJSON(func(b []byte, ok *bool) []byte {
+						if items0 := r0; items0 == nil {
+							b = append(b, "null"...)
+						} else {
+							b = append(b, '[')
+							for i0 := range items0 {
+								if i0 > 0 {
+									b = append(b, ',')
+								}
+
+								b = crystallineAppendString(b, string(items0[i0]))
+							}
+
+							b = append(b, ']')
+						}
+						return b
+					}, func() any {
+						return func() any {
+							items := r0
+							if items == nil {
+								return nil
+							}
+
+							out := make([]any, 0, len(items))
+							for i := range items {
+								out = append(out, string(items[i]))
+							}
+
+							return out
+						}()
+					})
+				}
+
+				return nil
+			},
+		)
+	}
+
+	return crystallineMarshalExpositionSidebarPassShape.Invoke(crystallineRetain(v))
 }
 
 func crystallineMarshalExpositionSkillGem(v *SkillGem) any {
@@ -48540,6 +49024,60 @@ func crystallineAppendCalculatorPowerReportEntry(b []byte, v *calculator.PowerRe
 	return append(b, '}')
 }
 
+func crystallineAppendCalculatorPowerShardRows(b []byte, v *calculator.PowerShardRows, ok *bool) []byte {
+	if v == nil {
+		return append(b, "null"...)
+	}
+
+	b = append(b, "{\"Rows\":"...)
+	if items0 := v.Rows; items0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '[')
+		for i0 := range items0 {
+			if i0 > 0 {
+				b = append(b, ',')
+			}
+
+			b = crystallineAppendCalculatorPowerReportEntry(b, &items0[i0], ok)
+		}
+
+		b = append(b, ']')
+	}
+	b = append(b, ",\"Owned\":"...)
+	if items0 := v.Owned; items0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '[')
+		for i0 := range items0 {
+			if i0 > 0 {
+				b = append(b, ',')
+			}
+
+			b = crystallineAppendNumber(b, float64(items0[i0]), ok)
+		}
+
+		b = append(b, ']')
+	}
+	b = append(b, ",\"Ascendancy\":"...)
+	if items0 := v.Ascendancy; items0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '[')
+		for i0 := range items0 {
+			if i0 > 0 {
+				b = append(b, ',')
+			}
+
+			b = crystallineAppendCalculatorPowerReportEntry(b, &items0[i0], ok)
+		}
+
+		b = append(b, ']')
+	}
+
+	return append(b, '}')
+}
+
 func crystallineAppendCalculatorPowerStat(b []byte, v *calculator.PowerStat, ok *bool) []byte {
 	if v == nil {
 		return append(b, "null"...)
@@ -48594,6 +49132,36 @@ func crystallineAppendCalculatorSecondaryAscendancyDropdown(b []byte, v *calcula
 	b = crystallineAppendNumber(b, float64(v.Selected), ok)
 	b = append(b, ",\"Enabled\":"...)
 	b = strconv.AppendBool(b, bool(v.Enabled))
+
+	return append(b, '}')
+}
+
+func crystallineAppendCalculatorSpecNodeRewrite(b []byte, v *calculator.SpecNodeRewrite, ok *bool) []byte {
+	if v == nil {
+		return append(b, "null"...)
+	}
+
+	b = append(b, "{\"NodeID\":"...)
+	b = crystallineAppendNumber(b, float64(v.NodeID), ok)
+	b = append(b, ",\"Name\":"...)
+	b = crystallineAppendString(b, string(v.Name))
+	b = append(b, ",\"Stats\":"...)
+	if items0 := v.Stats; items0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '[')
+		for i0 := range items0 {
+			if i0 > 0 {
+				b = append(b, ',')
+			}
+
+			b = crystallineAppendString(b, string(items0[i0]))
+		}
+
+		b = append(b, ']')
+	}
+	b = append(b, ",\"Replaced\":"...)
+	b = strconv.AppendBool(b, bool(v.Replaced))
 
 	return append(b, '}')
 }
@@ -54039,6 +54607,200 @@ func crystallineToCalculatorOutputMode(value js.Value) (calculator.OutputMode, e
 	return calculator.OutputMode(converted), nil
 }
 
+var crystallineKnownCalculatorPowerReportEntry = map[string]bool{"ID": true, "Name": true, "Type": true, "Power": true, "PathPower": true, "PathDist": true, "Allocated": true, "Stats": true, "Cluster": true, "Offence": true, "Defence": true}
+
+func crystallineToCalculatorPowerReportEntry(value js.Value) (calculator.PowerReportEntry, error) {
+	var out calculator.PowerReportEntry
+
+	if value.IsUndefined() || value.IsNull() {
+		return out, errors.New("calculator.PowerReportEntry: expected an object, got null")
+	}
+
+	if handle, ok := crystallineHandleOf(value); ok {
+		resolved, found := crystallineResolve(handle)
+		if !found {
+			return out, errors.New("calculator.PowerReportEntry: the value behind this handle has been released")
+		}
+
+		typed, ok := resolved.(*calculator.PowerReportEntry)
+		if !ok {
+			return out, errors.New("calculator.PowerReportEntry: handle refers to a different type")
+		}
+
+		return *typed, nil
+	}
+
+	if value.Type() != js.TypeObject {
+		return out, errors.New("calculator.PowerReportEntry: expected an object")
+	}
+
+	if err := crystallineUnknownProperty(value, "calculator.PowerReportEntry", crystallineKnownCalculatorPowerReportEntry); err != nil {
+		return out, err
+	}
+
+	if property := value.Get("ID"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToInt64(property)
+		if err != nil {
+			return out, errors.New("calculator.PowerReportEntry.ID: " + err.Error())
+		}
+
+		out.ID = converted
+	}
+
+	if property := value.Get("Name"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToString(property)
+		if err != nil {
+			return out, errors.New("calculator.PowerReportEntry.Name: " + err.Error())
+		}
+
+		out.Name = converted
+	}
+
+	if property := value.Get("Type"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToString(property)
+		if err != nil {
+			return out, errors.New("calculator.PowerReportEntry.Type: " + err.Error())
+		}
+
+		out.Type = converted
+	}
+
+	if property := value.Get("Power"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToFloat64(property)
+		if err != nil {
+			return out, errors.New("calculator.PowerReportEntry.Power: " + err.Error())
+		}
+
+		out.Power = converted
+	}
+
+	if property := value.Get("PathPower"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToFloat64(property)
+		if err != nil {
+			return out, errors.New("calculator.PowerReportEntry.PathPower: " + err.Error())
+		}
+
+		out.PathPower = converted
+	}
+
+	if property := value.Get("PathDist"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToInt(property)
+		if err != nil {
+			return out, errors.New("calculator.PowerReportEntry.PathDist: " + err.Error())
+		}
+
+		out.PathDist = converted
+	}
+
+	if property := value.Get("Allocated"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToBool(property)
+		if err != nil {
+			return out, errors.New("calculator.PowerReportEntry.Allocated: " + err.Error())
+		}
+
+		out.Allocated = converted
+	}
+
+	if property := value.Get("Stats"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToSliceOfString(property)
+		if err != nil {
+			return out, errors.New("calculator.PowerReportEntry.Stats: " + err.Error())
+		}
+
+		out.Stats = converted
+	}
+
+	if property := value.Get("Cluster"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToBool(property)
+		if err != nil {
+			return out, errors.New("calculator.PowerReportEntry.Cluster: " + err.Error())
+		}
+
+		out.Cluster = converted
+	}
+
+	if property := value.Get("Offence"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToFloat64(property)
+		if err != nil {
+			return out, errors.New("calculator.PowerReportEntry.Offence: " + err.Error())
+		}
+
+		out.Offence = converted
+	}
+
+	if property := value.Get("Defence"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToFloat64(property)
+		if err != nil {
+			return out, errors.New("calculator.PowerReportEntry.Defence: " + err.Error())
+		}
+
+		out.Defence = converted
+	}
+
+	return out, nil
+}
+
+var crystallineKnownCalculatorPowerShardRows = map[string]bool{"Rows": true, "Owned": true, "Ascendancy": true}
+
+func crystallineToCalculatorPowerShardRows(value js.Value) (calculator.PowerShardRows, error) {
+	var out calculator.PowerShardRows
+
+	if value.IsUndefined() || value.IsNull() {
+		return out, errors.New("calculator.PowerShardRows: expected an object, got null")
+	}
+
+	if handle, ok := crystallineHandleOf(value); ok {
+		resolved, found := crystallineResolve(handle)
+		if !found {
+			return out, errors.New("calculator.PowerShardRows: the value behind this handle has been released")
+		}
+
+		typed, ok := resolved.(*calculator.PowerShardRows)
+		if !ok {
+			return out, errors.New("calculator.PowerShardRows: handle refers to a different type")
+		}
+
+		return *typed, nil
+	}
+
+	if value.Type() != js.TypeObject {
+		return out, errors.New("calculator.PowerShardRows: expected an object")
+	}
+
+	if err := crystallineUnknownProperty(value, "calculator.PowerShardRows", crystallineKnownCalculatorPowerShardRows); err != nil {
+		return out, err
+	}
+
+	if property := value.Get("Rows"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToSliceOfCalculatorPowerReportEntry(property)
+		if err != nil {
+			return out, errors.New("calculator.PowerShardRows.Rows: " + err.Error())
+		}
+
+		out.Rows = converted
+	}
+
+	if property := value.Get("Owned"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToSliceOfInt64(property)
+		if err != nil {
+			return out, errors.New("calculator.PowerShardRows.Owned: " + err.Error())
+		}
+
+		out.Owned = converted
+	}
+
+	if property := value.Get("Ascendancy"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToSliceOfCalculatorPowerReportEntry(property)
+		if err != nil {
+			return out, errors.New("calculator.PowerShardRows.Ascendancy: " + err.Error())
+		}
+
+		out.Ascendancy = converted
+	}
+
+	return out, nil
+}
+
 var crystallineKnownCalculatorSkillDPS = map[string]bool{"Name": true, "DPS": true, "Count": true, "Trigger": true, "SkillPart": true, "Source": true}
 
 func crystallineToCalculatorSkillDPS(value js.Value) (calculator.SkillDPS, error) {
@@ -58032,6 +58794,40 @@ func crystallineToExpositionMiscCalculator(value js.Value) (MiscCalculator, erro
 	}
 
 	if err := crystallineUnknownProperty(value, "exposition.MiscCalculator", crystallineKnownExpositionMiscCalculator); err != nil {
+		return out, err
+	}
+
+	return out, nil
+}
+
+var crystallineKnownExpositionPowerBuilder = map[string]bool{}
+
+func crystallineToExpositionPowerBuilder(value js.Value) (PowerBuilder, error) {
+	var out PowerBuilder
+
+	if value.IsUndefined() || value.IsNull() {
+		return out, errors.New("exposition.PowerBuilder: expected an object, got null")
+	}
+
+	if handle, ok := crystallineHandleOf(value); ok {
+		resolved, found := crystallineResolve(handle)
+		if !found {
+			return out, errors.New("exposition.PowerBuilder: the value behind this handle has been released")
+		}
+
+		typed, ok := resolved.(*PowerBuilder)
+		if !ok {
+			return out, errors.New("exposition.PowerBuilder: handle refers to a different type")
+		}
+
+		return *typed, nil
+	}
+
+	if value.Type() != js.TypeObject {
+		return out, errors.New("exposition.PowerBuilder: expected an object")
+	}
+
+	if err := crystallineUnknownProperty(value, "exposition.PowerBuilder", crystallineKnownExpositionPowerBuilder); err != nil {
 		return out, err
 	}
 
@@ -62329,6 +63125,33 @@ func crystallineToPtrExpositionMiscCalculator(value js.Value) (*MiscCalculator, 
 	return &built, nil
 }
 
+func crystallineToPtrExpositionPowerBuilder(value js.Value) (*PowerBuilder, error) {
+	if value.IsUndefined() || value.IsNull() {
+		return nil, nil
+	}
+
+	if handle, ok := crystallineHandleOf(value); ok {
+		resolved, found := crystallineResolve(handle)
+		if !found {
+			return nil, errors.New("the value behind this handle has been released")
+		}
+
+		typed, ok := resolved.(*PowerBuilder)
+		if !ok {
+			return nil, errors.New("handle refers to a different type")
+		}
+
+		return typed, nil
+	}
+
+	built, err := crystallineToExpositionPowerBuilder(value)
+	if err != nil {
+		return nil, err
+	}
+
+	return &built, nil
+}
+
 func crystallineToPtrFloat64(value js.Value) (*float64, error) {
 	if value.IsUndefined() || value.IsNull() {
 		return nil, nil
@@ -65082,6 +65905,52 @@ func crystallineToSliceOfCalculatorModMagnitudeMod(value js.Value) ([]calculator
 
 	for i := 0; i < value.Length(); i++ {
 		item, err := crystallineToCalculatorModMagnitudeMod(value.Index(i))
+		if err != nil {
+			return nil, errors.New("[" + strconv.Itoa(i) + "]: " + err.Error())
+		}
+
+		out = append(out, item)
+	}
+
+	return out, nil
+}
+
+func crystallineToSliceOfCalculatorPowerReportEntry(value js.Value) ([]calculator.PowerReportEntry, error) {
+	if value.IsUndefined() || value.IsNull() {
+		return nil, nil
+	}
+
+	if !js.Global().Get("Array").Call("isArray", value).Bool() {
+		return nil, errors.New("expected an array")
+	}
+
+	out := make([]calculator.PowerReportEntry, 0, value.Length())
+
+	for i := 0; i < value.Length(); i++ {
+		item, err := crystallineToCalculatorPowerReportEntry(value.Index(i))
+		if err != nil {
+			return nil, errors.New("[" + strconv.Itoa(i) + "]: " + err.Error())
+		}
+
+		out = append(out, item)
+	}
+
+	return out, nil
+}
+
+func crystallineToSliceOfCalculatorPowerShardRows(value js.Value) ([]calculator.PowerShardRows, error) {
+	if value.IsUndefined() || value.IsNull() {
+		return nil, nil
+	}
+
+	if !js.Global().Get("Array").Call("isArray", value).Bool() {
+		return nil, errors.New("expected an array")
+	}
+
+	out := make([]calculator.PowerShardRows, 0, value.Length())
+
+	for i := 0; i < value.Length(); i++ {
+		item, err := crystallineToCalculatorPowerShardRows(value.Index(i))
 		if err != nil {
 			return nil, errors.New("[" + strconv.Itoa(i) + "]: " + err.Error())
 		}

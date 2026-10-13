@@ -26,6 +26,8 @@ import { modRowsEqual } from '$lib/display/compare_mods';
 import type { ItemDBFilterInput, ItemDBLists, ItemDBRowPlain } from '$lib/design/item_db';
 import { fs } from '@zenfs/core';
 import { configureStorage } from './storage_config';
+import { initializeStorage } from './storage_init';
+import { PowerPool, type PowerPoolRun } from './power_pool';
 import { noteCall, whenIdle } from './idle';
 
 const storageConfigurationPromise = configureStorage();
@@ -70,6 +72,8 @@ class PoBWorker {
 
   booted = false;
 
+  private wasmModule?: WebAssembly.Module;
+
   callback?: TickCallback;
   currentBuildStore?: BuildChannel;
 
@@ -104,6 +108,7 @@ class PoBWorker {
       const go = new Go();
       performance.mark('pob:instantiate-start');
       void WebAssembly.instantiate(wasm, go.importObject).then(async (result) => {
+        this.wasmModule = result.module;
         performance.mark('pob:instantiated');
         void go.run(result.instance);
         performance.mark('pob:go-main');
@@ -116,108 +121,7 @@ class PoBWorker {
 
         await storageConfigurationPromise;
 
-        await storage.InitializeStorage(
-          async (bucket: string, dir: string) =>
-            new Promise((res, rej) => {
-              fs.readdir(`/${bucket}/${dir}`, (err, files) => {
-                if (err) {
-                  console.error(err);
-                  return rej(err);
-                }
-
-                res(
-                  files?.map((file) => {
-                    const fullPath = `/${bucket}/${dir}/${file}`;
-                    const stats = fs.statSync(fullPath);
-
-                    let summary: builds.SavedBuild | undefined;
-                    if (stats.isFile()) {
-                      const buildFile = fs.readFileSync(fullPath);
-                      if (buildFile) {
-                        const parsed = builds.SavedBuildSummary(buildFile.toString());
-                        summary = parsed.ok ? parsed.value : undefined;
-                      }
-                    }
-
-                    return {
-                      Name: file,
-                      Type: stats.isDirectory() ? 'dir' : 'file',
-                      Class: summary?.ClassName || '',
-                      LastEdit: stats.mtime.toISOString(),
-                      Level: summary?.Level || 0,
-                      Ascendancy: summary?.Ascendancy ?? '',
-                      MainSkill: summary?.MainSkill ?? ''
-                    };
-                  })
-                );
-              });
-            }),
-          async (bucket: string, key: string) =>
-            new Promise((res, rej) => {
-              fs.readFile(`/${bucket}/${key}`, (err, file) => {
-                if (err) {
-                  console.error(err);
-                  return rej(err);
-                }
-
-                if (file) {
-                  return res(new Uint8Array(file));
-                }
-
-                return res(new Uint8Array(0));
-              });
-            }),
-          async (bucket: string, key: string, value: Uint8Array | undefined) => {
-            if (!value || !key) {
-              return;
-            }
-
-            return new Promise((res, rej) => {
-              console.log('Writing to storage', `/${bucket}/${key}`);
-              fs.writeFile(`/${bucket}/${key}`, value, (err) => {
-                if (err) {
-                  return rej(err);
-                }
-                res();
-              });
-            });
-          },
-          async (bucket: string, key: string) =>
-            new Promise((res) => {
-              fs.access(`/${bucket}/${key}`, (err) => {
-                if (err) {
-                  if (err.code !== 'ENOENT') {
-                    console.error(err);
-                  }
-                  return res(false);
-                }
-
-                return res(true);
-              });
-            }),
-          async (bucket: string, dir: string) =>
-            new Promise((res) => {
-              fs.mkdir(`/${bucket}/${dir}`, 0o777, (err) => {
-                if (err) {
-                  console.error(err);
-                  return res();
-                }
-
-                return res();
-              });
-            }),
-          async (bucket: string, path: string) =>
-            new Promise((res) => {
-              fs.unlink(`/${bucket}/${path}`, (err) => {
-                if (err) {
-                  console.error(err);
-                  return res();
-                }
-
-                return res();
-              });
-            })
-        );
+        await initializeStorage();
 
         performance.mark('pob:storage-ready');
         resolve(undefined);
@@ -1559,7 +1463,10 @@ class PoBWorker {
     return [...(exposition.PowerStats() ?? [])];
   }
 
-  async BuildPowerReport(stat: string, maxDepth: number): Promise<{ rows: calculator.PowerReportEntry[]; ms: number } | undefined> {
+  async BuildPowerReport(
+    stat: string,
+    maxDepth: number
+  ): Promise<{ rows: calculator.PowerReportEntry[]; ascendancy?: calculator.PowerReportEntry[]; ms: number } | undefined> {
     const seq = ++this.powerSeq;
     this.powerDone = 0;
     const token = this.miscCalculator();
@@ -1585,7 +1492,7 @@ class PoBWorker {
       if (token !== this.misc || seq !== this.powerSeq) {
         return undefined;
       }
-      return { rows: [...(builder.Report() ?? [])], ms: performance.now() - start };
+      return { rows: [...(builder.Report() ?? [])], ascendancy: [...(exposition.PowerAscendancy(builder) ?? [])], ms: performance.now() - start };
     } finally {
       builder.release();
       this.miscCalls--;
@@ -1599,6 +1506,7 @@ class PoBWorker {
 
   CancelPowerReport() {
     this.powerSeq++;
+    this.powerPool?.cancel();
   }
 
   // TreeTab.lua:992-1036
@@ -3495,46 +3403,129 @@ class PoBWorker {
 
   private livePower?: exposition.PowerBuilder;
 
-  async BuildPowerReportLive(stat: string, maxDepth: number): Promise<{ rows: calculator.PowerReportEntry[]; ms: number } | undefined> {
+  private powerPool?: PowerPool;
+  private livePool?: PowerPoolRun;
+  private liveTasks = 0;
+  private powerMainDone = 0;
+  private localShards = 0;
+
+  async BuildPowerReportLive(
+    stat: string,
+    maxDepth: number,
+    workers = 1
+  ): Promise<{ rows: calculator.PowerReportEntry[]; ascendancy?: calculator.PowerReportEntry[]; ms: number } | undefined> {
     const seq = ++this.powerSeq;
     this.powerDone = 0;
+    this.powerMainDone = 0;
     const token = this.miscCalculator();
     const m = await token;
     if (!m || token !== this.misc || seq !== this.powerSeq) {
       return undefined;
     }
-    const builder = exposition.NewPowerBuilder(m.calc, stat, maxDepth);
+    const count = workers > 1 && this.wasmModule && this.currentBuild ? workers : 1;
+    if (count === 1) this.powerPool?.terminate();
+    const builder = count > 1 ? exposition.NewPowerBuilderShard(m.calc, stat, maxDepth, 0, count) : exposition.NewPowerBuilder(m.calc, stat, maxDepth);
     if (!builder) {
       return undefined;
     }
+    const stale = () => token !== this.misc || seq !== this.powerSeq;
     this.miscCalls++;
     this.livePower = builder;
+    this.liveTasks = count > 1 ? builder.Tasks() : 0;
     const start = performance.now();
+    let pool: PowerPoolRun | undefined;
+    if (count > 1 && this.currentBuild) {
+      this.powerPool ??= new PowerPool(() => this.wasmModule);
+      const xml = new TextDecoder().decode(builds.SerializeBuild(this.currentBuild).unwrap());
+      pool = this.powerPool.run(seq, xml, stat, maxDepth, count);
+      this.livePool = pool;
+    }
     try {
       for (let done = 0; done < 1; ) {
-        if (token !== this.misc || seq !== this.powerSeq) {
+        if (stale()) {
           return undefined;
         }
         done = builder.Step(40);
-        this.powerDone = done;
+        this.powerMainDone = done;
+        this.powerDone = this.poolDone(done);
         await yieldToQueue();
       }
-      if (token !== this.misc || seq !== this.powerSeq) {
+      const shards = [builder.Shard()];
+      for (const [i, p] of (pool?.shards ?? []).entries()) {
+        let rows = await p.catch((err: unknown) => {
+          console.warn(`power shard ${i + 1} runs here: ${String(err)}`);
+          return this.localPowerShard(m.calc, stat, maxDepth, i + 1, count, stale);
+        });
+        if (rows === undefined && !stale()) rows = await this.localPowerShard(m.calc, stat, maxDepth, i + 1, count, stale);
+        if (!rows || stale()) {
+          return undefined;
+        }
+        shards.push(rows);
+      }
+      if (stale()) {
         return undefined;
       }
-      return { rows: [...(builder.Report() ?? [])], ms: performance.now() - start };
+      if (!pool) return { rows: [...(builder.Report() ?? [])], ascendancy: [...(exposition.PowerAscendancy(builder) ?? [])], ms: performance.now() - start };
+      const ascendancy = exposition.MergePowerAscendancy(shards);
+      return { rows: [...(exposition.MergePowerReports(shards) ?? [])], ascendancy: [...(ascendancy ?? [])], ms: performance.now() - start };
     } finally {
-      if (this.livePower === builder) this.livePower = undefined;
+      if (this.livePower === builder) {
+        this.livePower = undefined;
+        this.livePool = undefined;
+      }
       builder.release();
       this.miscCalls--;
       this.releaseIdleMisc();
     }
   }
 
+  private async localPowerShard(
+    calc: exposition.MiscCalculator,
+    stat: string,
+    maxDepth: number,
+    index: number,
+    count: number,
+    stale: () => boolean
+  ): Promise<calculator.PowerShardRows | undefined> {
+    const b = exposition.NewPowerBuilderShard(calc, stat, maxDepth, index, count);
+    if (!b) return undefined;
+    this.localShards++;
+    try {
+      for (let done = 0; done < 1; ) {
+        if (stale()) return undefined;
+        done = b.Step(40);
+        await yieldToQueue();
+      }
+      return b.Shard();
+    } finally {
+      b.release();
+    }
+  }
+
+  private poolDone(done: number): number {
+    const pool = this.livePool;
+    if (!pool) return done;
+    let sum = done * this.liveTasks;
+    let total = this.liveTasks;
+    for (const p of pool.progress()) {
+      const tasks = p.tasks || this.liveTasks;
+      sum += p.done * tasks;
+      total += tasks;
+    }
+    return total ? sum / total : 1;
+  }
+
   PowerReportLive(withRows: boolean): { done: number; current: number; rows?: calculator.PowerReportEntry[] } {
     const b = this.livePower;
     if (!b) return { done: this.powerDone, current: 0 };
-    return { done: this.powerDone, current: b.Current(), rows: withRows ? [...(b.Report() ?? [])].filter((r) => r.Power !== 0) : undefined };
+    const pool = this.livePool;
+    if (pool) this.powerDone = this.poolDone(this.powerMainDone);
+    const rows = !withRows ? undefined : pool ? [b.Shard(), ...pool.partial()].flatMap((s) => s.Rows ?? []) : [...(b.Report() ?? [])];
+    return { done: this.powerDone, current: b.Current(), rows: rows?.filter((r) => r.Power !== 0) };
+  }
+
+  PowerPoolStats(): { workers: number; running: number; bootMs: (number | undefined)[]; memoryMB: (number | undefined)[]; localShards: number } {
+    return { ...(this.powerPool?.stats() ?? { workers: 0, running: 0, bootMs: [], memoryMB: [] }), localShards: this.localShards };
   }
 
   // Build.lua:534-540
@@ -3932,6 +3923,32 @@ class PoBWorker {
     if (!(await exposition.SelectLoadout(e.build, name))) return this.GetCompareInfo();
     if (e.build.Items.ActiveItemSet !== item) await exposition.SetActiveItemSet(e.build, e.build.Items.ActiveItemSet);
     return this.recalcCompare(e);
+  }
+
+  /* PassiveSpec.lua:1614-1635, 2380-2388 */
+  async GetTreeConqueredNodes(): Promise<{ nodeId: number; name: string; stats: string[]; replaced: boolean }[]> {
+    if (!this.misc && !this.tickMisc) return [];
+    const token = this.miscCalculator();
+    const m = await token;
+    if (!m || token !== this.misc) return [];
+    return (exposition.TreeConqueredNodes(m.calc) ?? []).map((r) => ({ nodeId: r.NodeID, name: r.Name, stats: [...(r.Stats ?? [])], replaced: r.Replaced }));
+  }
+
+  private sidebarPass?: { tick: number; pass?: exposition.SidebarPass };
+
+  private runSidebarPass(): exposition.SidebarPass | undefined {
+    return this.currentBuild ? exposition.NewSidebarPass(this.currentBuild) : undefined;
+  }
+
+  SidebarBreakdown(stat: string, minion: boolean): string[] | undefined {
+    if (!this.currentBuild) return undefined;
+    const tick = this.ticksStarted;
+    if (this.sidebarPass?.tick !== tick) {
+      releaseWrapper(this.sidebarPass?.pass);
+      this.sidebarPass = { tick, pass: this.runSidebarPass() };
+    }
+    const lines = this.sidebarPass.pass?.Breakdown(minion, stat);
+    return lines ? [...lines] : undefined;
   }
 }
 

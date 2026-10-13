@@ -1112,6 +1112,11 @@ export declare namespace calculator {
     readonly Offence: number;
     readonly Defence: number;
   }
+  interface PowerShardRows {
+    readonly Rows?: Array<calculator.PowerReportEntry>;
+    readonly Owned?: Array<number>;
+    readonly Ascendancy?: Array<calculator.PowerReportEntry>;
+  }
   interface PowerStat {
     readonly Stat: string;
     readonly Label: string;
@@ -1445,6 +1450,12 @@ export declare namespace calculator {
     readonly SkillFlagTriggered: "triggered";
     readonly SkillFlagFocused: "focused";
   };
+  interface SpecNodeRewrite {
+    readonly NodeID: number;
+    readonly Name: string;
+    readonly Stats?: Array<string>;
+    readonly Replaced: boolean;
+  }
   interface SpectreRow {
     readonly ID: string;
     readonly Name: string;
@@ -2231,7 +2242,9 @@ export declare namespace exposition {
   interface PowerBuilder {
     Current(): number;
     Report(): (Array<calculator.PowerReportEntry> | undefined);
+    Shard(): calculator.PowerShardRows;
     Step(budgetMs: number): number;
+    Tasks(): number;
     /** Releases the Go resources behind this wrapper. */
     release(): void;
     [Symbol.dispose](): void;
@@ -2239,6 +2252,12 @@ export declare namespace exposition {
   interface SharedItemSetRow {
     readonly Title: string;
     readonly Tip?: Array<string>;
+  }
+  interface SidebarPass {
+    Breakdown(minion: boolean, stat: string): (Array<string> | undefined);
+    /** Releases the Go resources behind this wrapper. */
+    release(): void;
+    [Symbol.dispose](): void;
   }
   interface SkillGem {
     readonly MaxLevel: number;
@@ -2416,6 +2435,8 @@ export declare namespace exposition {
   function ItemsTabSlots(build: pob.PathOfBuilding | undefined): Promise<exposition.ItemsTabSlotList>;
   function LeapHeldNodes(build: pob.PathOfBuilding | undefined): Promise<(Array<number> | undefined)>;
   function LiveHeapMB(): number;
+  function MergePowerAscendancy(shards: Array<calculator.PowerShardRows> | undefined): (Array<calculator.PowerReportEntry> | undefined);
+  function MergePowerReports(shards: Array<calculator.PowerShardRows> | undefined): (Array<calculator.PowerReportEntry> | undefined);
   function MiscCalculatorFor(build: pob.PathOfBuilding | undefined, calc: calculator.Calculator | undefined): (exposition.MiscCalculator | undefined);
   function MiscGemDisplays(m: exposition.MiscCalculator | undefined): (Array<calculator.GemDisplayRow> | undefined);
   function MiscGemSortCache(m: exposition.MiscCalculator | undefined, group: number, gems: Array<pob.Gem> | undefined): (Array<calculator.GemSortRow> | undefined);
@@ -2429,6 +2450,8 @@ export declare namespace exposition {
   function NewItemSet(build: pob.PathOfBuilding | undefined, title: string): Promise<number>;
   function NewLoadout(build: pob.PathOfBuilding | undefined, name: string): Promise<void>;
   function NewPowerBuilder(m: exposition.MiscCalculator | undefined, stat: string, maxDepth: number): (exposition.PowerBuilder | undefined);
+  function NewPowerBuilderShard(m: exposition.MiscCalculator | undefined, stat: string, maxDepth: number, index: number, count: number): (exposition.PowerBuilder | undefined);
+  function NewSidebarPass(build: pob.PathOfBuilding | undefined): (exposition.SidebarPass | undefined);
   function NewTimelessSearch(m: exposition.MiscCalculator | undefined, q: calculator.TimelessSearchQuery): (exposition.TimelessSearch | undefined);
   function NewTreeSpec(build: pob.PathOfBuilding | undefined, title: string): Promise<void>;
   function NodePowerStats(): (Array<calculator.PowerStat> | undefined);
@@ -2437,6 +2460,7 @@ export declare namespace exposition {
   function OptimiseSockets(build: pob.PathOfBuilding | undefined, slotName: string): Promise<boolean>;
   function ParseItem(build: pob.PathOfBuilding | undefined, text: string, stats: calculator.ItemTooltipStats): Promise<Result<exposition.ParsedItem>>;
   function ParseModLines(lines: Array<string> | undefined): (Array<exposition.ModLine> | undefined);
+  function PowerAscendancy(p: exposition.PowerBuilder | undefined): (Array<calculator.PowerReportEntry> | undefined);
   function PowerStats(): (Array<calculator.PowerStat> | undefined);
   function RemoveAllTreeTattoos(build: pob.PathOfBuilding | undefined): Promise<void>;
   function RenameItemSet(build: pob.PathOfBuilding | undefined, itemSetID: number, title: string): Promise<void>;
@@ -2474,6 +2498,7 @@ export declare namespace exposition {
   function TimelessSockets(build: pob.PathOfBuilding | undefined): (Array<calculator.TimelessSocket> | undefined);
   function TimelessTradeTypes(): (Array<string> | undefined);
   function ToggleEquipItem(build: pob.PathOfBuilding | undefined, itemID: number, second: boolean): Promise<boolean>;
+  function TreeConqueredNodes(m: exposition.MiscCalculator | undefined): (Array<calculator.SpecNodeRewrite> | undefined);
   function TreeSocketChoices(build: pob.PathOfBuilding | undefined, nodeID: number): Promise<(Array<exposition.TreeJewel> | undefined)>;
   function TreeSocketedJewels(build: pob.PathOfBuilding | undefined): Promise<(Array<exposition.TreeJewel> | undefined)>;
   function TreeSpecCompare(build: pob.PathOfBuilding | undefined, specID: number): calculator.TreeCompareSpec;

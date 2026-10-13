@@ -299,7 +299,9 @@ func oeTattooNodeLiteral(row map[string]any, indent, where string) ([]string, in
 	if !idOK || nodeID == "" {
 		return nil, oeRefuse(where + " has no id")
 	}
-	if !dnOK || dn == "" {
+	// TattooPassives.lua keys the one nameless row (AscendancyAssassin19) "", and the keystone popup lists it
+	// (TreeTab.lua:850-874); only a row without a `dn` is refused
+	if !dnOK {
 		return nil, oeRefuse(fmt.Sprintf("%s (%s) has no `dn`, which is the key the build file "+
 			"references it by", where, nodeID))
 	}

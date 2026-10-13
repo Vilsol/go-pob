@@ -1,0 +1,3308 @@
+{
+  "0005-occultist-vaal-double-strike.xml":{
+    "10763":{
+      "name":"Critical Strike Chance",
+      "stats":["20% increased Critical Strike Chance"," ","+4 to Strength"]
+    },
+    "11018":{
+      "name":"Evasion and Energy Shield",
+      "stats":["8% increased Evasion Rating","5% increased maximum Energy Shield"," ","+4 to Strength"]
+    },
+    "11489":{
+      "name":"Dagger Critical Strike Chance and Multiplier",
+      "stats":["18% increased Critical Strike Chance with Daggers","+14% to Critical Strike Multiplier with Daggers"," ","+4 to Strength"]
+    },
+    "13885":{
+      "name":"Dexterity",
+      "stats":["+10 to Dexterity"," ","+2 to Strength"]
+    },
+    "1405":{
+      "name":"From the Shadows",
+      "stats":["12% increased Attack Speed with Daggers","40% increased Elusive Effect"," ","20% increased Burning Damage"]
+    },
+    "15614":{
+      "name":"Claws of the Hawk",
+      "stats":["60% increased Critical Strike Chance with Claws","+20% to Critical Strike Multiplier with Claws"," ","Regenerate 1% of Life per second"]
+    },
+    "1767":{
+      "name":"Life and Energy Shield on Kill",
+      "stats":["Gain 15 Life per Enemy Killed","Gain 15 Energy Shield per Enemy Killed"," ","+4 to Strength"]
+    },
+    "17749":{
+      "name":"Life Recoup",
+      "stats":["6% of Damage taken Recouped as Life"," ","+4 to Strength"]
+    },
+    "17908":{
+      "name":"Claw Damage and Attack Speed",
+      "stats":["Claw Attacks deal 8% increased Damage with Hits and Ailments","4% increased Attack Speed with Claws"," ","+4 to Strength"]
+    },
+    "18182":{
+      "name":"Intelligence",
+      "stats":["+10 to Intelligence"," ","+2 to Strength"]
+    },
+    "18747":{
+      "name":"Life Recoup",
+      "stats":["6% of Damage taken Recouped as Life"," ","+4 to Strength"]
+    },
+    "19210":{
+      "name":"Physical Damage and Ignore Physical Damage Reduction",
+      "stats":["Hits have 10% chance to ignore Enemy Physical Damage Reduction","14% increased Physical Damage"," ","+4 to Strength"]
+    },
+    "22261":{
+      "name":"Dagger Damage and Attack Speed",
+      "stats":["Dagger Attacks deal 8% increased Damage with Hits and Ailments","4% increased Attack Speed with Daggers"," ","+4 to Strength"]
+    },
+    "24050":{
+      "name":"Coldhearted Calculation",
+      "stats":["12% increased Damage","20% increased Mana Regeneration Rate","+20 to Intelligence"," ","+20 to Strength"]
+    },
+    "25260":{
+      "name":"Life",
+      "stats":["6% increased maximum Life"," ","+4 to Strength"]
+    },
+    "25411":{
+      "name":"Infused",
+      "stats":["+1 to Maximum Power Charges"," ","+15% to Melee Critical Strike Multiplier"]
+    },
+    "25775":{
+      "name":"Claw Damage and Attack Speed",
+      "stats":["Claw Attacks deal 8% increased Damage with Hits and Ailments","4% increased Attack Speed with Claws"," ","+4 to Strength"]
+    },
+    "27656":{
+      "name":"Intelligence",
+      "stats":["+10 to Intelligence"," ","+2 to Strength"]
+    },
+    "27788":{
+      "name":"Blood Drinker",
+      "stats":["10% increased maximum Life","Recover 2% of Life on Kill"," ","20% increased Armour"]
+    },
+    "27962":{
+      "name":"Trap Throwing Speed and Trigger Area",
+      "stats":["20% increased Trap Trigger Area of Effect","4% increased Trap Throwing Speed"," ","+4 to Strength"]
+    },
+    "28012":{
+      "name":"Dexterity",
+      "stats":["+10 to Dexterity"," ","+2 to Strength"]
+    },
+    "28753":{
+      "name":"Trap Damage",
+      "stats":["12% increased Trap Damage"," ","+4 to Strength"]
+    },
+    "30319":{
+      "name":"Trap Critical Strike Chance and Multiplier",
+      "stats":["24% increased Critical Strike Chance with Traps","+8% to Critical Strike Multiplier with Traps"," ","+4 to Strength"]
+    },
+    "30338":{
+      "name":"Damage Over Time",
+      "stats":["10% increased Damage over Time"," ","+4 to Strength"]
+    },
+    "30745":{
+      "name":"Claw Critical Strike Chance and Multiplier",
+      "stats":["20% increased Critical Strike Chance with Claws","+10% to Critical Strike Multiplier with Claws"," ","+4 to Strength"]
+    },
+    "31501":{
+      "name":"Trap Throwing Speed and Trigger Area",
+      "stats":["20% increased Trap Trigger Area of Effect","4% increased Trap Throwing Speed"," ","+4 to Strength"]
+    },
+    "32176":{
+      "name":"Soul Thief",
+      "stats":["15% increased Evasion Rating","10% increased maximum Energy Shield","Recover 2% of Energy Shield on Kill"," ","Regenerate 1% of Life per second"]
+    },
+    "32681":{
+      "name":"Mark the Prey",
+      "stats":["Marked Enemy has 10% reduced Accuracy Rating","Marked Enemy takes 10% increased Damage"," ","20% increased Melee Damage"]
+    },
+    "3314":{
+      "name":"Frenzy Charge Duration",
+      "stats":["20% increased Frenzy Charge Duration"," ","+4 to Strength"]
+    },
+    "33903":{
+      "name":"Will of Blades",
+      "stats":["40% increased Critical Strike Chance","20% increased Physical Damage"," ","30% increased Melee Critical Strike Chance"]
+    },
+    "3424":{
+      "name":"Dagger Damage and Movement Speed",
+      "stats":["Dagger Attacks deal 10% increased Damage with Hits and Ailments","3% increased Movement Speed"," ","+4 to Strength"]
+    },
+    "35255":{
+      "name":"Strength of Blood",
+      "stats":["Life Recovery from Non-Instant Leech is not applied","2% additional Physical Damage Reduction for every 3% Life Recovery per second from Leech"]
+    },
+    "3537":{
+      "name":"Power Charge Duration",
+      "stats":["20% increased Power Charge Duration"," ","+4 to Strength"]
+    },
+    "35384":{
+      "name":"Claw Damage and Attack Speed",
+      "stats":["Claw Attacks deal 8% increased Damage with Hits and Ailments","4% increased Attack Speed with Claws"," ","+4 to Strength"]
+    },
+    "35851":{
+      "name":"Accuracy and Critical Strike Chance",
+      "stats":["15% increased Critical Strike Chance","10% increased Accuracy Rating"," ","+4 to Strength"]
+    },
+    "36225":{
+      "name":"Claw Critical Strike Chance and Multiplier",
+      "stats":["20% increased Critical Strike Chance with Claws","+10% to Critical Strike Multiplier with Claws"," ","+4 to Strength"]
+    },
+    "36490":{
+      "name":"Flaying",
+      "stats":["Dagger Attacks deal 24% increased Damage with Hits and Ailments","12% increased Attack Speed with Daggers","18% increased Accuracy Rating with Daggers"," ","4% increased maximum Life"]
+    },
+    "3656":{
+      "name":"Intelligence",
+      "stats":["+10 to Intelligence"," ","+2 to Strength"]
+    },
+    "38864":{
+      "name":"Dagger Damage and Attack Speed",
+      "stats":["Dagger Attacks deal 8% increased Damage with Hits and Ailments","4% increased Attack Speed with Daggers"," ","+4 to Strength"]
+    },
+    "38995":{
+      "name":"Life and Mana on Hit",
+      "stats":["Gain 4 Life per Enemy Hit with Attacks","Gain 2 Mana per Enemy Hit with Attacks"," ","+4 to Strength"]
+    },
+    "40362":{
+      "name":"Life",
+      "stats":["6% increased maximum Life"," ","+4 to Strength"]
+    },
+    "40644":{
+      "name":"Elemental Damage",
+      "stats":["10% increased Elemental Damage"," ","+4 to Strength"]
+    },
+    "41989":{
+      "name":"Resourcefulness",
+      "stats":["+8% chance to Suppress Spell Damage","10% increased maximum Energy Shield","5% increased maximum Life"," ","0.4% of Attack Damage Leeched as Life"]
+    },
+    "42443":{
+      "name":"Frenetic",
+      "stats":["+1 to Maximum Frenzy Charges"," ","20% increased Burning Damage"]
+    },
+    "42623":{
+      "name":"One Handed Damage",
+      "stats":["Attacks with One Handed Weapons deal 20% increased Damage with Ailments","14% increased Damage with One Handed Weapons"," ","+4 to Strength"]
+    },
+    "42686":{
+      "name":"Elemental Focus",
+      "stats":["20% increased Duration of Elemental Ailments on Enemies","20% increased Elemental Damage","20% increased Effect of Non-Damaging Ailments"," ","10% chance to Intimidate Enemies for 4 seconds on Hit"]
+    },
+    "4269":{
+      "name":"Damage against Marked Enemy",
+      "stats":["20% increased Damage with Hits and Ailments against Marked Enemy"," ","+4 to Strength"]
+    },
+    "42804":{
+      "name":"Mind Drinker",
+      "stats":["20% increased maximum Mana","Recover 2% of Mana on Kill"," ","20% increased Melee Damage"]
+    },
+    "43316":{
+      "name":"Physical Damage and Ignore Physical Damage Reduction",
+      "stats":["Hits have 10% chance to ignore Enemy Physical Damage Reduction","14% increased Physical Damage"," ","+4 to Strength"]
+    },
+    "44134":{
+      "name":"Dagger Critical Strike Chance and Multiplier",
+      "stats":["18% increased Critical Strike Chance with Daggers","+14% to Critical Strike Multiplier with Daggers"," ","+4 to Strength"]
+    },
+    "45827":{
+      "name":"Trap Damage",
+      "stats":["16% increased Trap Damage"," ","+4 to Strength"]
+    },
+    "46277":{
+      "name":"Dexterity",
+      "stats":["+10 to Dexterity"," ","+2 to Strength"]
+    },
+    "46408":{
+      "name":"Fangs of the Viper",
+      "stats":["20% increased Chaos Damage","5% increased Movement Speed","+20 to Dexterity","20% increased Physical Damage"," ","+1 to maximum Fortification"]
+    },
+    "46965":{
+      "name":"Saboteur",
+      "stats":["30% increased Trap Damage","30% increased Mine Damage","Can have up to 2 additional Traps placed at a time","Can have up to 2 additional Remote Mines placed at a time"," ","20% increased Melee Damage"]
+    },
+    "47065":{
+      "name":"Master of Blades",
+      "stats":["Hits have 30% chance to ignore Enemy Physical Damage Reduction","+30 to Strength","30% increased Physical Damage"," ","5% chance to deal Double Damage"]
+    },
+    "47362":{
+      "name":"Life and Energy Shield on Kill",
+      "stats":["Gain 15 Life per Enemy Killed","Gain 15 Energy Shield per Enemy Killed"," ","+4 to Strength"]
+    },
+    "47422":{
+      "name":"Dagger Critical Strike Chance and Multiplier",
+      "stats":["18% increased Critical Strike Chance with Daggers","+14% to Critical Strike Multiplier with Daggers"," ","+4 to Strength"]
+    },
+    "47484":{
+      "name":"Depth Perception",
+      "stats":["+100 to Accuracy Rating","25% increased Critical Strike Chance","20% increased Accuracy Rating"," ","You take 10% reduced Extra Damage from Critical Strikes"]
+    },
+    "49308":{
+      "name":"Mana",
+      "stats":["8% increased maximum Mana"," ","+4 to Strength"]
+    },
+    "49568":{
+      "name":"Claw Critical Strike Chance and Multiplier",
+      "stats":["20% increased Critical Strike Chance with Claws","+10% to Critical Strike Multiplier with Claws"," ","+4 to Strength"]
+    },
+    "52789":{
+      "name":"Circle of Life",
+      "stats":["Gain 10 Life per Enemy Hit with Attacks","12% of Damage taken Recouped as Life"," ","12% increased Totem Placement speed"]
+    },
+    "53213":{
+      "name":"Dexterity",
+      "stats":["+10 to Dexterity"," ","+2 to Strength"]
+    },
+    "54338":{
+      "name":"Physical Damage",
+      "stats":["10% increased Physical Damage"," ","+4 to Strength"]
+    },
+    "54791":{
+      "name":"Claws of the Magpie",
+      "stats":["Claw Attacks deal 25% increased Damage with Hits and Ailments","10% increased Attack Speed with Claws","25% chance to Steal Power, Frenzy, and Endurance Charges on Hit with Claws"," ","+1 to maximum Fortification"]
+    },
+    "55414":{
+      "name":"Dagger Damage",
+      "stats":["Dagger Attacks deal 12% increased Damage with Hits and Ailments"," ","+4 to Strength"]
+    },
+    "55880":{
+      "name":"Damage against Marked Enemy",
+      "stats":["20% increased Damage with Hits and Ailments against Marked Enemy"," ","+4 to Strength"]
+    },
+    "56174":{
+      "name":"Dagger Damage and Attack Speed",
+      "stats":["Dagger Attacks deal 8% increased Damage with Hits and Ailments","4% increased Attack Speed with Daggers"," ","+4 to Strength"]
+    },
+    "5629":{
+      "name":"Claw Damage",
+      "stats":["Claw Attacks deal 12% increased Damage with Hits and Ailments"," ","+4 to Strength"]
+    },
+    "56295":{
+      "name":"Intelligence",
+      "stats":["+10 to Intelligence"," ","+2 to Strength"]
+    },
+    "5802":{
+      "name":"Dagger Damage and Movement Speed",
+      "stats":["Dagger Attacks deal 10% increased Damage with Hits and Ailments","3% increased Movement Speed"," ","+4 to Strength"]
+    },
+    "58244":{
+      "name":"Intelligence",
+      "stats":["+10 to Intelligence"," ","+2 to Strength"]
+    },
+    "59556":{
+      "name":"Expeditious Munitions",
+      "stats":["50% increased Trap Trigger Area of Effect","12% increased Trap Throwing Speed"," ","+20 to Strength"]
+    },
+    "60259":{
+      "name":"Evasion and Energy Shield",
+      "stats":["8% increased Evasion Rating","5% increased maximum Energy Shield"," ","+4 to Strength"]
+    },
+    "60592":{
+      "name":"Accuracy and Critical Strike Chance",
+      "stats":["15% increased Critical Strike Chance","10% increased Accuracy Rating"," ","+4 to Strength"]
+    },
+    "60737":{
+      "name":"Sleight of Hand",
+      "stats":["Attacks with One Handed Weapons deal 30% increased Damage with Ailments","8% increased Attack Speed with One Handed Weapons","20% increased Damage with One Handed Weapons"," ","20% increased Physical Damage"]
+    },
+    "60949":{
+      "name":"Trap and Mine Damage",
+      "stats":["14% increased Trap Damage","14% increased Mine Damage"," ","+4 to Strength"]
+    },
+    "63228":{
+      "name":"Mana",
+      "stats":["8% increased maximum Mana"," ","+4 to Strength"]
+    },
+    "6615":{
+      "name":"Arcing Blows",
+      "stats":["Damage with Weapons Penetrates 8% Lightning Resistance","30% increased Lightning Damage with Attack Skills"," ","12% increased Totem Placement speed"]
+    },
+    "7112":{
+      "name":"Dexterity",
+      "stats":["+10 to Dexterity"," ","+2 to Strength"]
+    },
+    "8001":{
+      "name":"Clever Thief",
+      "stats":["1% of Attack Damage Leeched as Life","1% of Attack Damage Leeched as Mana"," ","+15% to Melee Critical Strike Multiplier"]
+    },
+    "8012":{
+      "name":"Life and Mana on Hit",
+      "stats":["Gain 4 Life per Enemy Hit with Attacks","Gain 2 Mana per Enemy Hit with Attacks"," ","+4 to Strength"]
+    },
+    "8920":{
+      "name":"Backstabbing",
+      "stats":["30% increased Critical Strike Chance with Daggers","+30% to Critical Strike Multiplier with Daggers","100% increased Critical Strike Chance against Enemies that are on Full Life"," ","+20 to Strength"]
+    }
+  },
+  "0006-elementalist-storm-burst.xml":{
+    "11420":{
+      "name":"Might of the Vaal",
+      "stats":["+9% to Fire Resistance","6% increased Skill Effect Duration","7% increased Physical Damage"]
+    },
+    "11820":{
+      "name":"Thaumaturgical Protection",
+      "stats":["8% Chance to Block Spell Damage","22% increased Defences from Equipped Shield"]
+    },
+    "13009":{
+      "name":"Mana",
+      "stats":["6% increased maximum Mana"]
+    },
+    "14151":{
+      "name":"Critical Strike Multiplier",
+      "stats":["+10% to Critical Strike Multiplier"]
+    },
+    "15081":{
+      "name":"Chaos Damage",
+      "stats":["8% increased Chaos Damage"]
+    },
+    "17579":{
+      "name":"Minion Damage",
+      "stats":["Minions deal 8% increased Damage"]
+    },
+    "17821":{
+      "name":"Fire Damage",
+      "stats":["12% increased Fire Damage"]
+    },
+    "18866":{
+      "name":"Skill Duration",
+      "stats":["5% increased Skill Effect Duration"]
+    },
+    "1957":{
+      "name":"Block",
+      "stats":["+2% Chance to Block Attack Damage"]
+    },
+    "20142":{
+      "name":"Skill Duration",
+      "stats":["6% increased Skill Effect Duration"]
+    },
+    "21330":{
+      "name":"Might of the Vaal",
+      "stats":["4% increased Skill Effect Duration","10% increased Area Damage","4% increased effect of Non-Curse Auras from your Skills"]
+    },
+    "21934":{
+      "name":"Cold Resistance",
+      "stats":["+9% to Cold Resistance"]
+    },
+    "22062":{
+      "name":"Attack Speed",
+      "stats":["3% increased Attack Speed"]
+    },
+    "23690":{
+      "name":"Revitalising Darkness",
+      "stats":["34% increased Chaos Damage","0.2% of Chaos Damage Leeched as Life"]
+    },
+    "27564":{
+      "name":"Projectile Damage",
+      "stats":["11% increased Projectile Damage"]
+    },
+    "30370":{
+      "name":"Cold Resistance",
+      "stats":["+10% to Cold Resistance"]
+    },
+    "31875":{
+      "name":"Block",
+      "stats":["+2% Chance to Block Attack Damage"]
+    },
+    "33296":{
+      "name":"Critical Strike Chance",
+      "stats":["7% increased Critical Strike Chance"]
+    },
+    "34098":{
+      "name":"Corrupted Soul",
+      "stats":["50% of Non-Chaos Damage taken bypasses Energy Shield","Gain 15% of Maximum Life as Extra Maximum Energy Shield"]
+    },
+    "34478":{
+      "name":"Evasion",
+      "stats":["9% increased Evasion Rating"]
+    },
+    "34661":{
+      "name":"Energy Flow Studies",
+      "stats":["12% increased maximum Energy Shield","13% increased Energy Shield Recharge Rate"]
+    },
+    "36542":{
+      "name":"Fire Resistance",
+      "stats":["+12% to Fire Resistance"]
+    },
+    "36774":{
+      "name":"Minion Damage",
+      "stats":["Minions deal 12% increased Damage"]
+    },
+    "37569":{
+      "name":"Critical Strike Multiplier",
+      "stats":["+6% to Critical Strike Multiplier"]
+    },
+    "39648":{
+      "name":"Skill Duration",
+      "stats":["5% increased Skill Effect Duration"]
+    },
+    "4184":{
+      "name":"Area of Effect",
+      "stats":["4% increased Area of Effect"]
+    },
+    "42981":{
+      "name":"Energy Shield",
+      "stats":["5% increased maximum Energy Shield"]
+    },
+    "4397":{
+      "name":"Fire Resistance",
+      "stats":["+11% to Fire Resistance"]
+    },
+    "45366":{
+      "name":"Lightning Resistance",
+      "stats":["+12% to Lightning Resistance"]
+    },
+    "46340":{
+      "name":"Curse Effect",
+      "stats":["2% increased Effect of your Curses"]
+    },
+    "47251":{
+      "name":"Spell Suppression",
+      "stats":["+4% chance to Suppress Spell Damage"]
+    },
+    "4854":{
+      "name":"Revitalising Frost",
+      "stats":["33% increased Cold Damage","0.2% of Cold Damage Leeched as Life"]
+    },
+    "51804":{
+      "name":"Spell Damage",
+      "stats":["11% increased Spell Damage"]
+    },
+    "52742":{
+      "name":"Cult of Ice",
+      "stats":["+1% to maximum Cold Resistance","+24% to Cold Resistance"]
+    },
+    "53493":{
+      "name":"Construct Studies",
+      "stats":["36% increased Evasion Rating","7% chance to Blind Enemies on Hit"]
+    },
+    "53802":{
+      "name":"Revitalising Flames",
+      "stats":["29% increased Fire Damage","0.2% of Fire Damage Leeched as Life"]
+    },
+    "54954":{
+      "name":"Cold Resistance",
+      "stats":["+11% to Cold Resistance"]
+    },
+    "5591":{
+      "name":"Cold Resistance",
+      "stats":["+9% to Cold Resistance"]
+    },
+    "60398":{
+      "name":"Spell Damage",
+      "stats":["7% increased Spell Damage"]
+    },
+    "60648":{
+      "name":"Movement Speed",
+      "stats":["3% increased Movement Speed"]
+    },
+    "651":{
+      "name":"Spell Block",
+      "stats":["2% Chance to Block Spell Damage"]
+    },
+    "7388":{
+      "name":"Spell Block",
+      "stats":["2% Chance to Block Spell Damage"]
+    },
+    "739":{
+      "name":"Block",
+      "stats":["+2% Chance to Block Attack Damage"]
+    },
+    "7688":{
+      "name":"Exquisite Pain",
+      "stats":["33% increased Damage over Time","11% increased Skill Effect Duration"]
+    },
+    "9149":{
+      "name":"Area Damage",
+      "stats":["8% increased Area Damage"]
+    }
+  },
+  "0007-elementalist-storm-burst-of-repulsion.xml":{
+    "11420":{
+      "name":"Energy Flow Studies",
+      "stats":["12% increased maximum Energy Shield","12% increased Energy Shield Recharge Rate"]
+    },
+    "11820":{
+      "name":"Ancient Hex",
+      "stats":["4% increased Effect of your Curses","Curse Skills have 20% increased Skill Effect Duration"]
+    },
+    "13009":{
+      "name":"Movement Speed",
+      "stats":["3% increased Movement Speed"]
+    },
+    "14151":{
+      "name":"Curse Effect",
+      "stats":["2% increased Effect of your Curses"]
+    },
+    "15081":{
+      "name":"Critical Strike Multiplier",
+      "stats":["+6% to Critical Strike Multiplier"]
+    },
+    "17579":{
+      "name":"Cast Speed",
+      "stats":["3% increased Cast Speed"]
+    },
+    "17821":{
+      "name":"Movement Speed",
+      "stats":["3% increased Movement Speed"]
+    },
+    "18866":{
+      "name":"Projectile Speed",
+      "stats":["9% increased Projectile Speed"]
+    },
+    "1957":{
+      "name":"Spell Suppression",
+      "stats":["+4% chance to Suppress Spell Damage"]
+    },
+    "20142":{
+      "name":"Cold Resistance",
+      "stats":["+9% to Cold Resistance"]
+    },
+    "21330":{
+      "name":"Cult of Lightning",
+      "stats":["+1% to maximum Lightning Resistance","+28% to Lightning Resistance"]
+    },
+    "21934":{
+      "name":"Physical Damage",
+      "stats":["12% increased Physical Damage"]
+    },
+    "22062":{
+      "name":"Evasion",
+      "stats":["7% increased Evasion Rating"]
+    },
+    "23690":{
+      "name":"Ritual of Flesh",
+      "stats":["8% increased maximum Life","Regenerate 1% of Life per second"]
+    },
+    "27564":{
+      "name":"Critical Strike Multiplier",
+      "stats":["+6% to Critical Strike Multiplier"]
+    },
+    "30370":{
+      "name":"Damage Over Time",
+      "stats":["7% increased Damage over Time"]
+    },
+    "31875":{
+      "name":"Avoid Elemental Ailments",
+      "stats":["3% chance to Avoid Elemental Ailments"]
+    },
+    "32241":{
+      "name":"Runegraft of the Warp",
+      "stats":["Buffs on you expire 30% slower","Debuffs on you expire 30% faster","Limited to 1 Runegraft of the Warp"]
+    },
+    "33296":{
+      "name":"Skill Duration",
+      "stats":["5% increased Skill Effect Duration"]
+    },
+    "34098":{
+      "name":"Corrupted Soul",
+      "stats":["50% of Non-Chaos Damage taken bypasses Energy Shield","Gain 15% of Maximum Life as Extra Maximum Energy Shield"]
+    },
+    "34478":{
+      "name":"Movement Speed",
+      "stats":["3% increased Movement Speed"]
+    },
+    "34661":{
+      "name":"Might of the Vaal",
+      "stats":["9% increased Physical Damage","3% chance to Avoid Elemental Ailments","5% chance to Ignite"]
+    },
+    "36542":{
+      "name":"Cold Damage",
+      "stats":["10% increased Cold Damage"]
+    },
+    "36774":{
+      "name":"Spell Suppression",
+      "stats":["+4% chance to Suppress Spell Damage"]
+    },
+    "37569":{
+      "name":"Physical Damage",
+      "stats":["8% increased Physical Damage"]
+    },
+    "39648":{
+      "name":"Avoid Elemental Ailments",
+      "stats":["3% chance to Avoid Elemental Ailments"]
+    },
+    "39836":{
+      "name":"Runegraft of Treachery",
+      "stats":["15% increased Reservation Efficiency of Skills","Auras from your Skills which affect Allies also affect Enemies","Limited to 1 Runegraft of Treachery"]
+    },
+    "4184":{
+      "name":"Fire Damage",
+      "stats":["9% increased Fire Damage"]
+    },
+    "42981":{
+      "name":"Skill Duration",
+      "stats":["7% increased Skill Effect Duration"]
+    },
+    "4397":{
+      "name":"Physical Damage",
+      "stats":["8% increased Physical Damage"]
+    },
+    "45366":{
+      "name":"Cold Resistance",
+      "stats":["+10% to Cold Resistance"]
+    },
+    "46340":{
+      "name":"Cast Speed",
+      "stats":["2% increased Cast Speed"]
+    },
+    "47251":{
+      "name":"Curse Effect",
+      "stats":["2% increased Effect of your Curses"]
+    },
+    "4854":{
+      "name":"Revitalising Darkness",
+      "stats":["25% increased Chaos Damage","0.2% of Chaos Damage Leeched as Life"]
+    },
+    "51804":{
+      "name":"Aura Effect",
+      "stats":["2% increased effect of Non-Curse Auras from your Skills"]
+    },
+    "52742":{
+      "name":"Exquisite Pain",
+      "stats":["25% increased Damage over Time","11% increased Skill Effect Duration"]
+    },
+    "53493":{
+      "name":"Ritual of Stillness",
+      "stats":["25% increased Cold Damage","Damage Penetrates 4% Cold Resistance"]
+    },
+    "53802":{
+      "name":"Revitalising Winds",
+      "stats":["0.2% of Physical Damage Leeched as Life","32% increased Physical Damage"]
+    },
+    "54954":{
+      "name":"Evasion",
+      "stats":["9% increased Evasion Rating"]
+    },
+    "5591":{
+      "name":"Projectile Speed",
+      "stats":["9% increased Projectile Speed"]
+    },
+    "60398":{
+      "name":"Physical Damage",
+      "stats":["8% increased Physical Damage"]
+    },
+    "60648":{
+      "name":"Projectile Damage",
+      "stats":["8% increased Projectile Damage"]
+    },
+    "651":{
+      "name":"Attack Speed",
+      "stats":["4% increased Attack Speed"]
+    },
+    "7388":{
+      "name":"Curse Effect",
+      "stats":["2% increased Effect of your Curses"]
+    },
+    "739":{
+      "name":"Critical Strike Multiplier",
+      "stats":["+6% to Critical Strike Multiplier"]
+    },
+    "7688":{
+      "name":"Exquisite Pain",
+      "stats":["34% increased Damage over Time","10% increased Skill Effect Duration"]
+    },
+    "9149":{
+      "name":"Evasion",
+      "stats":["7% increased Evasion Rating"]
+    }
+  },
+  "0017-deadeye-spectral-throw-of-materialising.xml":{
+    "10763":{
+      "name":"Critical Strike Chance",
+      "stats":["20% increased Critical Strike Chance"," ","+4 to Dexterity"]
+    },
+    "11018":{
+      "name":"Evasion and Energy Shield",
+      "stats":["8% increased Evasion Rating","5% increased maximum Energy Shield"," ","+4 to Dexterity"]
+    },
+    "11489":{
+      "name":"Dagger Critical Strike Chance and Multiplier",
+      "stats":["18% increased Critical Strike Chance with Daggers","+14% to Critical Strike Multiplier with Daggers"," ","+4 to Dexterity"]
+    },
+    "13885":{
+      "name":"Dexterity",
+      "stats":["+10 to Dexterity"," ","+2 to Dexterity"]
+    },
+    "1405":{
+      "name":"From the Shadows",
+      "stats":["12% increased Attack Speed with Daggers","40% increased Elusive Effect"," ","20% chance to Avoid being Stunned"]
+    },
+    "15614":{
+      "name":"Claws of the Hawk",
+      "stats":["60% increased Critical Strike Chance with Claws","+20% to Critical Strike Multiplier with Claws"," ","4% increased maximum Life"]
+    },
+    "1767":{
+      "name":"Life and Energy Shield on Kill",
+      "stats":["Gain 15 Life per Enemy Killed","Gain 15 Energy Shield per Enemy Killed"," ","+4 to Dexterity"]
+    },
+    "17749":{
+      "name":"Life Recoup",
+      "stats":["6% of Damage taken Recouped as Life"," ","+4 to Dexterity"]
+    },
+    "17908":{
+      "name":"Claw Damage and Attack Speed",
+      "stats":["Claw Attacks deal 8% increased Damage with Hits and Ailments","4% increased Attack Speed with Claws"," ","+4 to Dexterity"]
+    },
+    "18182":{
+      "name":"Intelligence",
+      "stats":["+10 to Intelligence"," ","+2 to Dexterity"]
+    },
+    "18747":{
+      "name":"Life Recoup",
+      "stats":["6% of Damage taken Recouped as Life"," ","+4 to Dexterity"]
+    },
+    "19210":{
+      "name":"Physical Damage and Ignore Physical Damage Reduction",
+      "stats":["Hits have 10% chance to ignore Enemy Physical Damage Reduction","14% increased Physical Damage"," ","+4 to Dexterity"]
+    },
+    "22261":{
+      "name":"Dagger Damage and Attack Speed",
+      "stats":["Dagger Attacks deal 8% increased Damage with Hits and Ailments","4% increased Attack Speed with Daggers"," ","+4 to Dexterity"]
+    },
+    "24050":{
+      "name":"Coldhearted Calculation",
+      "stats":["12% increased Damage","20% increased Mana Regeneration Rate","+20 to Intelligence"," ","20% increased Projectile Damage"]
+    },
+    "25260":{
+      "name":"Life",
+      "stats":["6% increased maximum Life"," ","+4 to Dexterity"]
+    },
+    "25411":{
+      "name":"Infused",
+      "stats":["+1 to Maximum Power Charges"," ","Gain 5% of Physical Damage as Extra Cold Damage"]
+    },
+    "25775":{
+      "name":"Claw Damage and Attack Speed",
+      "stats":["Claw Attacks deal 8% increased Damage with Hits and Ailments","4% increased Attack Speed with Claws"," ","+4 to Dexterity"]
+    },
+    "27656":{
+      "name":"Intelligence",
+      "stats":["+10 to Intelligence"," ","+2 to Dexterity"]
+    },
+    "27788":{
+      "name":"Blood Drinker",
+      "stats":["10% increased maximum Life","Recover 2% of Life on Kill"," ","20% increased Projectile Damage"]
+    },
+    "27962":{
+      "name":"Trap Throwing Speed and Trigger Area",
+      "stats":["20% increased Trap Trigger Area of Effect","4% increased Trap Throwing Speed"," ","+4 to Dexterity"]
+    },
+    "28012":{
+      "name":"Dexterity",
+      "stats":["+10 to Dexterity"," ","+2 to Dexterity"]
+    },
+    "28753":{
+      "name":"Trap Damage",
+      "stats":["12% increased Trap Damage"," ","+4 to Dexterity"]
+    },
+    "30319":{
+      "name":"Trap Critical Strike Chance and Multiplier",
+      "stats":["24% increased Critical Strike Chance with Traps","+8% to Critical Strike Multiplier with Traps"," ","+4 to Dexterity"]
+    },
+    "30338":{
+      "name":"Damage Over Time",
+      "stats":["10% increased Damage over Time"," ","+4 to Dexterity"]
+    },
+    "30745":{
+      "name":"Claw Critical Strike Chance and Multiplier",
+      "stats":["20% increased Critical Strike Chance with Claws","+10% to Critical Strike Multiplier with Claws"," ","+4 to Dexterity"]
+    },
+    "31501":{
+      "name":"Trap Throwing Speed and Trigger Area",
+      "stats":["20% increased Trap Trigger Area of Effect","4% increased Trap Throwing Speed"," ","+4 to Dexterity"]
+    },
+    "32176":{
+      "name":"Soul Thief",
+      "stats":["15% increased Evasion Rating","10% increased maximum Energy Shield","Recover 2% of Energy Shield on Kill"," ","20% increased Projectile Damage"]
+    },
+    "32681":{
+      "name":"Mark the Prey",
+      "stats":["Marked Enemy has 10% reduced Accuracy Rating","Marked Enemy takes 10% increased Damage"," ","20% increased Damage with Poison"]
+    },
+    "3314":{
+      "name":"Frenzy Charge Duration",
+      "stats":["20% increased Frenzy Charge Duration"," ","+4 to Dexterity"]
+    },
+    "33903":{
+      "name":"Will of Blades",
+      "stats":["40% increased Critical Strike Chance","20% increased Physical Damage"," ","10% increased Duration of Elemental Ailments on Enemies"]
+    },
+    "3424":{
+      "name":"Dagger Damage and Movement Speed",
+      "stats":["Dagger Attacks deal 10% increased Damage with Hits and Ailments","3% increased Movement Speed"," ","+4 to Dexterity"]
+    },
+    "35255":{
+      "name":"Second Sight",
+      "stats":["You are Blind","Blind does not affect your Light Radius","25% more Melee Critical Strike Chance while Blinded"]
+    },
+    "3537":{
+      "name":"Power Charge Duration",
+      "stats":["20% increased Power Charge Duration"," ","+4 to Dexterity"]
+    },
+    "35384":{
+      "name":"Claw Damage and Attack Speed",
+      "stats":["Claw Attacks deal 8% increased Damage with Hits and Ailments","4% increased Attack Speed with Claws"," ","+4 to Dexterity"]
+    },
+    "35851":{
+      "name":"Accuracy and Critical Strike Chance",
+      "stats":["15% increased Critical Strike Chance","10% increased Accuracy Rating"," ","+4 to Dexterity"]
+    },
+    "36225":{
+      "name":"Claw Critical Strike Chance and Multiplier",
+      "stats":["20% increased Critical Strike Chance with Claws","+10% to Critical Strike Multiplier with Claws"," ","+4 to Dexterity"]
+    },
+    "36490":{
+      "name":"Flaying",
+      "stats":["Dagger Attacks deal 24% increased Damage with Hits and Ailments","12% increased Attack Speed with Daggers","18% increased Accuracy Rating with Daggers"," ","Gain 5% of Physical Damage as Extra Cold Damage"]
+    },
+    "3656":{
+      "name":"Intelligence",
+      "stats":["+10 to Intelligence"," ","+2 to Dexterity"]
+    },
+    "38864":{
+      "name":"Dagger Damage and Attack Speed",
+      "stats":["Dagger Attacks deal 8% increased Damage with Hits and Ailments","4% increased Attack Speed with Daggers"," ","+4 to Dexterity"]
+    },
+    "38995":{
+      "name":"Life and Mana on Hit",
+      "stats":["Gain 4 Life per Enemy Hit with Attacks","Gain 2 Mana per Enemy Hit with Attacks"," ","+4 to Dexterity"]
+    },
+    "40362":{
+      "name":"Life",
+      "stats":["6% increased maximum Life"," ","+4 to Dexterity"]
+    },
+    "40644":{
+      "name":"Elemental Damage",
+      "stats":["10% increased Elemental Damage"," ","+4 to Dexterity"]
+    },
+    "41989":{
+      "name":"Resourcefulness",
+      "stats":["+8% chance to Suppress Spell Damage","10% increased maximum Energy Shield","5% increased maximum Life"," ","4% increased maximum Life"]
+    },
+    "42443":{
+      "name":"Frenetic",
+      "stats":["+1 to Maximum Frenzy Charges"," ","10% increased Flask Charges gained"]
+    },
+    "42623":{
+      "name":"One Handed Damage",
+      "stats":["Attacks with One Handed Weapons deal 20% increased Damage with Ailments","14% increased Damage with One Handed Weapons"," ","+4 to Dexterity"]
+    },
+    "42686":{
+      "name":"Elemental Focus",
+      "stats":["20% increased Duration of Elemental Ailments on Enemies","20% increased Elemental Damage","20% increased Effect of Non-Damaging Ailments"," ","25% chance to gain Alchemist's Genius when you use a Flask"]
+    },
+    "4269":{
+      "name":"Damage against Marked Enemy",
+      "stats":["20% increased Damage with Hits and Ailments against Marked Enemy"," ","+4 to Dexterity"]
+    },
+    "42804":{
+      "name":"Mind Drinker",
+      "stats":["20% increased maximum Mana","Recover 2% of Mana on Kill"," ","5% increased Movement Speed"]
+    },
+    "43316":{
+      "name":"Physical Damage and Ignore Physical Damage Reduction",
+      "stats":["Hits have 10% chance to ignore Enemy Physical Damage Reduction","14% increased Physical Damage"," ","+4 to Dexterity"]
+    },
+    "44134":{
+      "name":"Dagger Critical Strike Chance and Multiplier",
+      "stats":["18% increased Critical Strike Chance with Daggers","+14% to Critical Strike Multiplier with Daggers"," ","+4 to Dexterity"]
+    },
+    "45827":{
+      "name":"Trap Damage",
+      "stats":["16% increased Trap Damage"," ","+4 to Dexterity"]
+    },
+    "46277":{
+      "name":"Dexterity",
+      "stats":["+10 to Dexterity"," ","+2 to Dexterity"]
+    },
+    "46408":{
+      "name":"Fangs of the Viper",
+      "stats":["20% increased Chaos Damage","5% increased Movement Speed","+20 to Dexterity","20% increased Physical Damage"," ","8% increased effect of Non-Curse Auras from your Skills"]
+    },
+    "46965":{
+      "name":"Saboteur",
+      "stats":["30% increased Trap Damage","30% increased Mine Damage","Can have up to 2 additional Traps placed at a time","Can have up to 2 additional Remote Mines placed at a time"," ","5% increased Attack and Cast Speed"]
+    },
+    "47065":{
+      "name":"Master of Blades",
+      "stats":["Hits have 30% chance to ignore Enemy Physical Damage Reduction","+30 to Strength","30% increased Physical Damage"," ","8% increased effect of Non-Curse Auras from your Skills"]
+    },
+    "47362":{
+      "name":"Life and Energy Shield on Kill",
+      "stats":["Gain 15 Life per Enemy Killed","Gain 15 Energy Shield per Enemy Killed"," ","+4 to Dexterity"]
+    },
+    "47422":{
+      "name":"Dagger Critical Strike Chance and Multiplier",
+      "stats":["18% increased Critical Strike Chance with Daggers","+14% to Critical Strike Multiplier with Daggers"," ","+4 to Dexterity"]
+    },
+    "47484":{
+      "name":"Depth Perception",
+      "stats":["+100 to Accuracy Rating","25% increased Critical Strike Chance","20% increased Accuracy Rating"," ","Minions have 15% increased Movement Speed"]
+    },
+    "49308":{
+      "name":"Mana",
+      "stats":["8% increased maximum Mana"," ","+4 to Dexterity"]
+    },
+    "49568":{
+      "name":"Claw Critical Strike Chance and Multiplier",
+      "stats":["20% increased Critical Strike Chance with Claws","+10% to Critical Strike Multiplier with Claws"," ","+4 to Dexterity"]
+    },
+    "52789":{
+      "name":"Circle of Life",
+      "stats":["Gain 10 Life per Enemy Hit with Attacks","12% of Damage taken Recouped as Life"," ","5% chance to Blind Enemies on Hit"]
+    },
+    "53213":{
+      "name":"Dexterity",
+      "stats":["+10 to Dexterity"," ","+2 to Dexterity"]
+    },
+    "54338":{
+      "name":"Physical Damage",
+      "stats":["10% increased Physical Damage"," ","+4 to Dexterity"]
+    },
+    "54791":{
+      "name":"Claws of the Magpie",
+      "stats":["Claw Attacks deal 25% increased Damage with Hits and Ailments","10% increased Attack Speed with Claws","25% chance to Steal Power, Frenzy, and Endurance Charges on Hit with Claws"," ","10% increased Effect of Non-Damaging Ailments"]
+    },
+    "55414":{
+      "name":"Dagger Damage",
+      "stats":["Dagger Attacks deal 12% increased Damage with Hits and Ailments"," ","+4 to Dexterity"]
+    },
+    "55880":{
+      "name":"Damage against Marked Enemy",
+      "stats":["20% increased Damage with Hits and Ailments against Marked Enemy"," ","+4 to Dexterity"]
+    },
+    "56174":{
+      "name":"Dagger Damage and Attack Speed",
+      "stats":["Dagger Attacks deal 8% increased Damage with Hits and Ailments","4% increased Attack Speed with Daggers"," ","+4 to Dexterity"]
+    },
+    "5629":{
+      "name":"Claw Damage",
+      "stats":["Claw Attacks deal 12% increased Damage with Hits and Ailments"," ","+4 to Dexterity"]
+    },
+    "56295":{
+      "name":"Intelligence",
+      "stats":["+10 to Intelligence"," ","+2 to Dexterity"]
+    },
+    "5802":{
+      "name":"Dagger Damage and Movement Speed",
+      "stats":["Dagger Attacks deal 10% increased Damage with Hits and Ailments","3% increased Movement Speed"," ","+4 to Dexterity"]
+    },
+    "58244":{
+      "name":"Intelligence",
+      "stats":["+10 to Intelligence"," ","+2 to Dexterity"]
+    },
+    "59556":{
+      "name":"Expeditious Munitions",
+      "stats":["50% increased Trap Trigger Area of Effect","12% increased Trap Throwing Speed"," ","20% increased Elemental Damage"]
+    },
+    "60259":{
+      "name":"Evasion and Energy Shield",
+      "stats":["8% increased Evasion Rating","5% increased maximum Energy Shield"," ","+4 to Dexterity"]
+    },
+    "60592":{
+      "name":"Accuracy and Critical Strike Chance",
+      "stats":["15% increased Critical Strike Chance","10% increased Accuracy Rating"," ","+4 to Dexterity"]
+    },
+    "60737":{
+      "name":"Sleight of Hand",
+      "stats":["Attacks with One Handed Weapons deal 30% increased Damage with Ailments","8% increased Attack Speed with One Handed Weapons","20% increased Damage with One Handed Weapons"," ","+20 to Dexterity"]
+    },
+    "60949":{
+      "name":"Trap and Mine Damage",
+      "stats":["14% increased Trap Damage","14% increased Mine Damage"," ","+4 to Dexterity"]
+    },
+    "63228":{
+      "name":"Mana",
+      "stats":["8% increased maximum Mana"," ","+4 to Dexterity"]
+    },
+    "6615":{
+      "name":"Arcing Blows",
+      "stats":["Damage with Weapons Penetrates 8% Lightning Resistance","30% increased Lightning Damage with Attack Skills"," ","5% increased Movement Speed"]
+    },
+    "7112":{
+      "name":"Dexterity",
+      "stats":["+10 to Dexterity"," ","+2 to Dexterity"]
+    },
+    "8001":{
+      "name":"Clever Thief",
+      "stats":["1% of Attack Damage Leeched as Life","1% of Attack Damage Leeched as Mana"," ","Minions have 15% increased Movement Speed"]
+    },
+    "8012":{
+      "name":"Life and Mana on Hit",
+      "stats":["Gain 4 Life per Enemy Hit with Attacks","Gain 2 Mana per Enemy Hit with Attacks"," ","+4 to Dexterity"]
+    },
+    "8920":{
+      "name":"Backstabbing",
+      "stats":["30% increased Critical Strike Chance with Daggers","+30% to Critical Strike Multiplier with Daggers","100% increased Critical Strike Chance against Enemies that are on Full Life"," ","5% increased Attack and Cast Speed"]
+    }
+  },
+  "0020-assassin-storm-burst.xml":{
+    "10017":{
+      "name":"Attack Speed",
+      "stats":["4% increased Attack Speed"," ","+5 to Devotion"]
+    },
+    "11334":{
+      "name":"Tattoo of the Hinekora Storyteller",
+      "stats":["+3% to Chaos Resistance"]
+    },
+    "12801":{
+      "name":"Evasion and Life",
+      "stats":["10% increased Evasion Rating","4% increased maximum Life"," ","+5 to Devotion"]
+    },
+    "15549":{
+      "name":"Tattoo of the Hinekora Storyteller",
+      "stats":["+3% to Chaos Resistance"]
+    },
+    "17788":{
+      "name":"Flask Charges Gained",
+      "stats":["10% increased Flask Charges gained"," ","+5 to Devotion"]
+    },
+    "19401":{
+      "name":"Life Gain on Hit",
+      "stats":["Gain 5 Life per Enemy Hit with Attacks"," ","+5 to Devotion"]
+    },
+    "20167":{
+      "name":"Dagger Ailment Damage and Poison Chance",
+      "stats":["Dagger Attacks deal 20% increased Damage with Ailments","15% chance to Poison on Hit with Attacks"," ","+5 to Devotion"]
+    },
+    "20546":{
+      "name":"Tattoo of the Hinekora Storyteller",
+      "stats":["+3% to Chaos Resistance"]
+    },
+    "21019":{
+      "name":"Tincture Effect",
+      "stats":["Tinctures applied to you have 10% increased Effect"," ","+5 to Devotion"]
+    },
+    "22488":{
+      "name":"Trap Throwing Speed",
+      "stats":["5% increased Trap Throwing Speed"," ","+5 to Devotion"]
+    },
+    "22845":{
+      "name":"Tincture Effect",
+      "stats":["Tinctures applied to you have 8% increased Effect"," ","+5 to Devotion"]
+    },
+    "23439":{
+      "name":"Critical Strike Chance",
+      "stats":["25% increased Critical Strike Chance"," ","+5 to Devotion"]
+    },
+    "23507":{
+      "name":"Attack and Cast Speed",
+      "stats":["4% increased Attack Speed","4% increased Cast Speed"," ","+5 to Devotion"]
+    },
+    "24496":{
+      "name":"Devotion",
+      "stats":["+10 to Devotion"]
+    },
+    "25067":{
+      "name":"Evasion and Life",
+      "stats":["10% increased Evasion Rating","5% increased maximum Life"," ","+5 to Devotion"]
+    },
+    "31137":{
+      "name":"Charge on Kill",
+      "stats":["2% chance to gain a Power, Frenzy or Endurance Charge on Kill"," ","+5 to Devotion"]
+    },
+    "32227":{
+      "name":"Adder's Touch",
+      "stats":["+25% to Damage over Time Multiplier for Poison from Critical Strikes","Critical Strikes with Daggers Poison the Enemy"," ","+5 to Devotion"]
+    },
+    "34978":{
+      "name":"Colloidal Mixture",
+      "stats":["Tinctures applied to you have 15% increased Effect","Tinctures applied to you have 15% increased Effect if you've used a Life Flask Recently"," ","+5 to Devotion"]
+    },
+    "35737":{
+      "name":"Charge on Kill",
+      "stats":["2% chance to gain a Power, Frenzy or Endurance Charge on Kill"," ","+5 to Devotion"]
+    },
+    "3634":{
+      "name":"Life Leech",
+      "stats":["0.4% of Attack Damage Leeched as Life"," ","+5 to Devotion"]
+    },
+    "36877":{
+      "name":"Trap Damage",
+      "stats":["12% increased Trap Damage"," ","+5 to Devotion"]
+    },
+    "37663":{
+      "name":"Chaos Damage Over Time Multiplier",
+      "stats":["+5% to Chaos Damage over Time Multiplier"," ","+5 to Devotion"]
+    },
+    "38344":{
+      "name":"Attack Speed",
+      "stats":["4% increased Attack Speed"," ","+5 to Devotion"]
+    },
+    "3863":{
+      "name":"Dagger Critical Strike Multiplier and Poison Duration",
+      "stats":["+15% to Critical Strike Multiplier with Daggers","5% increased Poison Duration"," ","+5 to Devotion"]
+    },
+    "38662":{
+      "name":"Devotion",
+      "stats":["+10 to Devotion"]
+    },
+    "39524":{
+      "name":"Critical Ailment Damage Over Time Multiplier",
+      "stats":["+14% to Damage over Time Multiplier for Ailments from Critical Strikes"," ","+5 to Devotion"]
+    },
+    "39861":{
+      "name":"Devotion",
+      "stats":["+10 to Devotion"]
+    },
+    "4011":{
+      "name":"Devotion",
+      "stats":["+10 to Devotion"]
+    },
+    "41250":{
+      "name":"Projectile Damage",
+      "stats":["10% increased Projectile Damage"," ","+5 to Devotion"]
+    },
+    "41380":{
+      "name":"Bow Attack Speed and Accuracy",
+      "stats":["4% increased Attack Speed with Bows","8% increased Accuracy Rating with Bows"," ","+5 to Devotion"]
+    },
+    "41536":{
+      "name":"Projectile Damage",
+      "stats":["10% increased Projectile Damage"," ","+5 to Devotion"]
+    },
+    "41819":{
+      "name":"Life Leech Speed",
+      "stats":["60% increased total Recovery per second from Life Leech"," ","+5 to Devotion"]
+    },
+    "42133":{
+      "name":"Life Flask Charge Gain",
+      "stats":["Life Flasks gain 1 Charge every 3 seconds"," ","+5 to Devotion"]
+    },
+    "4219":{
+      "name":"Evasion and Energy Shield",
+      "stats":["10% increased Evasion Rating","5% increased maximum Energy Shield"," ","+5 to Devotion"]
+    },
+    "42964":{
+      "name":"Bow Damage",
+      "stats":["12% increased Damage with Bows","12% increased Damage Over Time with Bow Skills"," ","+5 to Devotion"]
+    },
+    "44988":{
+      "name":"Wasting",
+      "stats":["+10% to Chaos Damage over Time Multiplier","+17% to Chaos Resistance"," ","+5 to Devotion"]
+    },
+    "45035":{
+      "name":"Projectile Damage and Accuracy",
+      "stats":["+30 to Accuracy Rating","16% increased Projectile Damage"," ","+5 to Devotion"]
+    },
+    "45593":{
+      "name":"Evasion and Life",
+      "stats":["10% increased Evasion Rating","5% increased maximum Life"," ","+5 to Devotion"]
+    },
+    "45838":{
+      "name":"Devotion",
+      "stats":["+10 to Devotion"]
+    },
+    "465":{
+      "name":"Projectile Damage and Attack Speed",
+      "stats":["4% increased Attack Speed","10% increased Projectile Damage"," ","+5 to Devotion"]
+    },
+    "47471":{
+      "name":"Enduring Faith",
+      "stats":["+1 to Minimum Endurance Charges while you have at least 150 Devotion"]
+    },
+    "48477":{
+      "name":"Attack and Cast Speed",
+      "stats":["4% increased Attack Speed","4% increased Cast Speed"," ","+5 to Devotion"]
+    },
+    "48698":{
+      "name":"Void Barrier",
+      "stats":["18% increased Evasion Rating","12% increased maximum Energy Shield","+10% chance to Suppress Spell Damage while on Full Energy Shield"," ","+5 to Devotion"]
+    },
+    "49408":{
+      "name":"Evasion and Energy Shield",
+      "stats":["10% increased Evasion Rating","4% increased maximum Energy Shield"," ","+5 to Devotion"]
+    },
+    "49639":{
+      "name":"Inner Conviction",
+      "stats":["3% more Spell Damage per Power Charge","Gain Power Charges instead of Frenzy Charges"]
+    },
+    "49978":{
+      "name":"Devotion",
+      "stats":["+10 to Devotion"]
+    },
+    "50338":{
+      "name":"Heated Devotion",
+      "stats":["15% of Physical Damage Converted to Fire Damage while you have at least 150 Devotion"]
+    },
+    "50690":{
+      "name":"Replenishing Remedies",
+      "stats":["15% increased Flask Charges gained","Life Flasks gain 2 Charges every 3 seconds","Mana Flasks gain 2 Charges every 3 seconds"," ","+5 to Devotion"]
+    },
+    "51786":{
+      "name":"Devotion",
+      "stats":["+10 to Devotion"]
+    },
+    "53114":{
+      "name":"Smite the Wicked",
+      "stats":["10% chance to inflict Fire Exposure on Hit if you have at least 150 Devotion"]
+    },
+    "56090":{
+      "name":"Evasion and Energy Shield",
+      "stats":["10% increased Evasion Rating","4% increased maximum Energy Shield"," ","+5 to Devotion"]
+    },
+    "57248":{
+      "name":"Attack and Cast Speed",
+      "stats":["4% increased Attack Speed","4% increased Cast Speed"," ","+5 to Devotion"]
+    },
+    "57259":{
+      "name":"Mana Flask Charge Gain",
+      "stats":["Mana Flasks gain 1 Charge every 3 seconds"," ","+5 to Devotion"]
+    },
+    "58968":{
+      "name":"Chaos Damage Over Time Multiplier",
+      "stats":["+5% to Chaos Damage over Time Multiplier"," ","+5 to Devotion"]
+    },
+    "59370":{
+      "name":"Devotion",
+      "stats":["+10 to Devotion"]
+    },
+    "6042":{
+      "name":"Life Gain on Hit",
+      "stats":["Gain 5 Life per Enemy Hit with Attacks"," ","+5 to Devotion"]
+    },
+    "62094":{
+      "name":"Taste for Blood",
+      "stats":["1% of Attack Damage Leeched as Life","30% increased Maximum total Life Recovery per second from Leech"," ","+5 to Devotion"]
+    },
+    "62712":{
+      "name":"Projectile Damage",
+      "stats":["10% increased Projectile Damage"," ","+5 to Devotion"]
+    },
+    "62795":{
+      "name":"Evasion and Energy Shield",
+      "stats":["10% increased Evasion Rating","5% increased maximum Energy Shield"," ","+5 to Devotion"]
+    },
+    "63194":{
+      "name":"Reservation Efficiency",
+      "stats":["8% increased Mana Reservation Efficiency of Skills"," ","+5 to Devotion"]
+    },
+    "63453":{
+      "name":"Excess Sustenance",
+      "stats":["15% chance to gain 200 Life on Hit with Attacks"," ","+5 to Devotion"]
+    },
+    "63795":{
+      "name":"Devotion",
+      "stats":["+10 to Devotion"]
+    },
+    "64265":{
+      "name":"Aura Area of Effect",
+      "stats":["12% increased Area of Effect of Aura Skills"," ","+5 to Devotion"]
+    },
+    "64509":{
+      "name":"Dagger Ailment Damage",
+      "stats":["Dagger Attacks deal 16% increased Damage with Ailments"," ","+5 to Devotion"]
+    },
+    "65033":{
+      "name":"Attack Speed",
+      "stats":["4% increased Attack Speed"," ","+5 to Devotion"]
+    },
+    "6538":{
+      "name":"Devotion",
+      "stats":["+10 to Devotion"]
+    },
+    "6799":{
+      "name":"Charisma",
+      "stats":["16% increased Mana Reservation Efficiency of Skills","6% increased effect of Non-Curse Auras from your Skills"," ","+5 to Devotion"]
+    },
+    "7136":{
+      "name":"Master Sapper",
+      "stats":["30% increased Trap Damage","Can have up to 2 additional Traps placed at a time","15% chance to gain a Frenzy Charge when your Trap is triggered by an Enemy"," ","+5 to Devotion"]
+    },
+    "8640":{
+      "name":"Devotion",
+      "stats":["+10 to Devotion"]
+    },
+    "8938":{
+      "name":"Devotion",
+      "stats":["+10 to Devotion"]
+    },
+    "9015":{
+      "name":"Intolerance of Sin",
+      "stats":["+1% to all maximum Resistances if you have at least 150 Devotion"]
+    },
+    "9355":{
+      "name":"Devotion",
+      "stats":["+10 to Devotion"]
+    }
+  },
+  "0021-assassin-blade-flurry.xml":{
+    "10763":{
+      "name":"Critical Strike Chance",
+      "stats":["20% increased Critical Strike Chance"," ","+4 to Dexterity"]
+    },
+    "11018":{
+      "name":"Evasion and Energy Shield",
+      "stats":["8% increased Evasion Rating","5% increased maximum Energy Shield"," ","+4 to Dexterity"]
+    },
+    "11489":{
+      "name":"Dagger Critical Strike Chance and Multiplier",
+      "stats":["18% increased Critical Strike Chance with Daggers","+14% to Critical Strike Multiplier with Daggers"," ","+4 to Dexterity"]
+    },
+    "13885":{
+      "name":"Dexterity",
+      "stats":["+10 to Dexterity"," ","+2 to Dexterity"]
+    },
+    "1405":{
+      "name":"From the Shadows",
+      "stats":["12% increased Attack Speed with Daggers","40% increased Elusive Effect"," ","25% increased Critical Strike Chance"]
+    },
+    "15614":{
+      "name":"Claws of the Hawk",
+      "stats":["60% increased Critical Strike Chance with Claws","+20% to Critical Strike Multiplier with Claws"," ","20% increased Elemental Damage"]
+    },
+    "1767":{
+      "name":"Life and Energy Shield on Kill",
+      "stats":["Gain 15 Life per Enemy Killed","Gain 15 Energy Shield per Enemy Killed"," ","+4 to Dexterity"]
+    },
+    "17749":{
+      "name":"Life Recoup",
+      "stats":["6% of Damage taken Recouped as Life"," ","+4 to Dexterity"]
+    },
+    "17908":{
+      "name":"Claw Damage and Attack Speed",
+      "stats":["Claw Attacks deal 8% increased Damage with Hits and Ailments","4% increased Attack Speed with Claws"," ","+4 to Dexterity"]
+    },
+    "18182":{
+      "name":"Intelligence",
+      "stats":["+10 to Intelligence"," ","+2 to Dexterity"]
+    },
+    "18747":{
+      "name":"Life Recoup",
+      "stats":["6% of Damage taken Recouped as Life"," ","+4 to Dexterity"]
+    },
+    "19210":{
+      "name":"Physical Damage and Ignore Physical Damage Reduction",
+      "stats":["Hits have 10% chance to ignore Enemy Physical Damage Reduction","14% increased Physical Damage"," ","+4 to Dexterity"]
+    },
+    "19750":{
+      "name":"Runegraft of the Warp",
+      "stats":["Defend with 120% of Armour against Projectile Attacks","5% more chance to Evade Melee Attacks","8% increased Evasion Rating per Frenzy Charge","8% increased Armour per Endurance Charge","80% increased Stun and Block Recovery","Every 4 seconds, Regenerate Life equal to 1% of Armour and Evasion Rating over 1 second","40% increased Evasion Rating if you have been Hit Recently","40% increased Armour if you haven't been Hit Recently","Immune to Bleeding if Equipped Helmet has higher Armour than Evasion Rating","Immune to Poison if Equipped Helmet has higher Evasion Rating than Armour"]
+    },
+    "22261":{
+      "name":"Dagger Damage and Attack Speed",
+      "stats":["Dagger Attacks deal 8% increased Damage with Hits and Ailments","4% increased Attack Speed with Daggers"," ","+4 to Dexterity"]
+    },
+    "24050":{
+      "name":"Coldhearted Calculation",
+      "stats":["12% increased Damage","20% increased Mana Regeneration Rate","+20 to Intelligence"," ","5% chance to Blind Enemies on Hit"]
+    },
+    "25260":{
+      "name":"Life",
+      "stats":["6% increased maximum Life"," ","+4 to Dexterity"]
+    },
+    "25411":{
+      "name":"Infused",
+      "stats":["+1 to Maximum Power Charges"," ","Gain 5% of Physical Damage as Extra Cold Damage"]
+    },
+    "25775":{
+      "name":"Claw Damage and Attack Speed",
+      "stats":["Claw Attacks deal 8% increased Damage with Hits and Ailments","4% increased Attack Speed with Claws"," ","+4 to Dexterity"]
+    },
+    "27656":{
+      "name":"Intelligence",
+      "stats":["+10 to Intelligence"," ","+2 to Dexterity"]
+    },
+    "27788":{
+      "name":"Blood Drinker",
+      "stats":["10% increased maximum Life","Recover 2% of Life on Kill"," ","5% increased Dexterity"]
+    },
+    "27962":{
+      "name":"Trap Throwing Speed and Trigger Area",
+      "stats":["20% increased Trap Trigger Area of Effect","4% increased Trap Throwing Speed"," ","+4 to Dexterity"]
+    },
+    "28012":{
+      "name":"Dexterity",
+      "stats":["+10 to Dexterity"," ","+2 to Dexterity"]
+    },
+    "28753":{
+      "name":"Trap Damage",
+      "stats":["12% increased Trap Damage"," ","+4 to Dexterity"]
+    },
+    "30319":{
+      "name":"Trap Critical Strike Chance and Multiplier",
+      "stats":["24% increased Critical Strike Chance with Traps","+8% to Critical Strike Multiplier with Traps"," ","+4 to Dexterity"]
+    },
+    "30338":{
+      "name":"Damage Over Time",
+      "stats":["10% increased Damage over Time"," ","+4 to Dexterity"]
+    },
+    "30745":{
+      "name":"Claw Critical Strike Chance and Multiplier",
+      "stats":["20% increased Critical Strike Chance with Claws","+10% to Critical Strike Multiplier with Claws"," ","+4 to Dexterity"]
+    },
+    "31501":{
+      "name":"Trap Throwing Speed and Trigger Area",
+      "stats":["20% increased Trap Trigger Area of Effect","4% increased Trap Throwing Speed"," ","+4 to Dexterity"]
+    },
+    "32176":{
+      "name":"Soul Thief",
+      "stats":["15% increased Evasion Rating","10% increased maximum Energy Shield","Recover 2% of Energy Shield on Kill"," ","Minions have 15% increased Movement Speed"]
+    },
+    "32681":{
+      "name":"Mark the Prey",
+      "stats":["Marked Enemy has 10% reduced Accuracy Rating","Marked Enemy takes 10% increased Damage"," ","+20 to Dexterity"]
+    },
+    "3314":{
+      "name":"Frenzy Charge Duration",
+      "stats":["20% increased Frenzy Charge Duration"," ","+4 to Dexterity"]
+    },
+    "33903":{
+      "name":"Will of Blades",
+      "stats":["40% increased Critical Strike Chance","20% increased Physical Damage"," ","8% increased effect of Non-Curse Auras from your Skills"]
+    },
+    "3424":{
+      "name":"Dagger Damage and Movement Speed",
+      "stats":["Dagger Attacks deal 10% increased Damage with Hits and Ailments","3% increased Movement Speed"," ","+4 to Dexterity"]
+    },
+    "35255":{
+      "name":"The Traitor",
+      "stats":["Flasks Gain 4 Charges per empty Flask Slot every 5 seconds"]
+    },
+    "3537":{
+      "name":"Power Charge Duration",
+      "stats":["20% increased Power Charge Duration"," ","+4 to Dexterity"]
+    },
+    "35384":{
+      "name":"Claw Damage and Attack Speed",
+      "stats":["Claw Attacks deal 8% increased Damage with Hits and Ailments","4% increased Attack Speed with Claws"," ","+4 to Dexterity"]
+    },
+    "35851":{
+      "name":"Accuracy and Critical Strike Chance",
+      "stats":["15% increased Critical Strike Chance","10% increased Accuracy Rating"," ","+4 to Dexterity"]
+    },
+    "36225":{
+      "name":"Claw Critical Strike Chance and Multiplier",
+      "stats":["20% increased Critical Strike Chance with Claws","+10% to Critical Strike Multiplier with Claws"," ","+4 to Dexterity"]
+    },
+    "36490":{
+      "name":"Flaying",
+      "stats":["Dagger Attacks deal 24% increased Damage with Hits and Ailments","12% increased Attack Speed with Daggers","18% increased Accuracy Rating with Daggers"," ","5% chance to Blind Enemies on Hit"]
+    },
+    "3656":{
+      "name":"Intelligence",
+      "stats":["+10 to Intelligence"," ","+2 to Dexterity"]
+    },
+    "38864":{
+      "name":"Dagger Damage and Attack Speed",
+      "stats":["Dagger Attacks deal 8% increased Damage with Hits and Ailments","4% increased Attack Speed with Daggers"," ","+4 to Dexterity"]
+    },
+    "38995":{
+      "name":"Life and Mana on Hit",
+      "stats":["Gain 4 Life per Enemy Hit with Attacks","Gain 2 Mana per Enemy Hit with Attacks"," ","+4 to Dexterity"]
+    },
+    "40362":{
+      "name":"Life",
+      "stats":["6% increased maximum Life"," ","+4 to Dexterity"]
+    },
+    "40644":{
+      "name":"Elemental Damage",
+      "stats":["10% increased Elemental Damage"," ","+4 to Dexterity"]
+    },
+    "41989":{
+      "name":"Resourcefulness",
+      "stats":["+8% chance to Suppress Spell Damage","10% increased maximum Energy Shield","5% increased maximum Life"," ","20% increased Evasion Rating"]
+    },
+    "42443":{
+      "name":"Frenetic",
+      "stats":["+1 to Maximum Frenzy Charges"," ","20% increased Damage with Poison"]
+    },
+    "42623":{
+      "name":"One Handed Damage",
+      "stats":["Attacks with One Handed Weapons deal 20% increased Damage with Ailments","14% increased Damage with One Handed Weapons"," ","+4 to Dexterity"]
+    },
+    "42686":{
+      "name":"Elemental Focus",
+      "stats":["20% increased Duration of Elemental Ailments on Enemies","20% increased Elemental Damage","20% increased Effect of Non-Damaging Ailments"," ","Minions have 15% increased Movement Speed"]
+    },
+    "4269":{
+      "name":"Damage against Marked Enemy",
+      "stats":["20% increased Damage with Hits and Ailments against Marked Enemy"," ","+4 to Dexterity"]
+    },
+    "42804":{
+      "name":"Mind Drinker",
+      "stats":["20% increased maximum Mana","Recover 2% of Mana on Kill"," ","4% increased maximum Life"]
+    },
+    "43316":{
+      "name":"Physical Damage and Ignore Physical Damage Reduction",
+      "stats":["Hits have 10% chance to ignore Enemy Physical Damage Reduction","14% increased Physical Damage"," ","+4 to Dexterity"]
+    },
+    "44134":{
+      "name":"Dagger Critical Strike Chance and Multiplier",
+      "stats":["18% increased Critical Strike Chance with Daggers","+14% to Critical Strike Multiplier with Daggers"," ","+4 to Dexterity"]
+    },
+    "45827":{
+      "name":"Trap Damage",
+      "stats":["16% increased Trap Damage"," ","+4 to Dexterity"]
+    },
+    "46277":{
+      "name":"Dexterity",
+      "stats":["+10 to Dexterity"," ","+2 to Dexterity"]
+    },
+    "46408":{
+      "name":"Fangs of the Viper",
+      "stats":["20% increased Chaos Damage","5% increased Movement Speed","+20 to Dexterity","20% increased Physical Damage"," ","5% increased Movement Speed"]
+    },
+    "46965":{
+      "name":"Saboteur",
+      "stats":["30% increased Trap Damage","30% increased Mine Damage","Can have up to 2 additional Traps placed at a time","Can have up to 2 additional Remote Mines placed at a time"," ","20% increased Evasion Rating"]
+    },
+    "47065":{
+      "name":"Master of Blades",
+      "stats":["Hits have 30% chance to ignore Enemy Physical Damage Reduction","+30 to Strength","30% increased Physical Damage"," ","20% increased Evasion Rating"]
+    },
+    "47362":{
+      "name":"Life and Energy Shield on Kill",
+      "stats":["Gain 15 Life per Enemy Killed","Gain 15 Energy Shield per Enemy Killed"," ","+4 to Dexterity"]
+    },
+    "47422":{
+      "name":"Dagger Critical Strike Chance and Multiplier",
+      "stats":["18% increased Critical Strike Chance with Daggers","+14% to Critical Strike Multiplier with Daggers"," ","+4 to Dexterity"]
+    },
+    "47484":{
+      "name":"Depth Perception",
+      "stats":["+100 to Accuracy Rating","25% increased Critical Strike Chance","20% increased Accuracy Rating"," ","25% chance to gain Alchemist's Genius when you use a Flask"]
+    },
+    "49308":{
+      "name":"Mana",
+      "stats":["8% increased maximum Mana"," ","+4 to Dexterity"]
+    },
+    "49568":{
+      "name":"Claw Critical Strike Chance and Multiplier",
+      "stats":["20% increased Critical Strike Chance with Claws","+10% to Critical Strike Multiplier with Claws"," ","+4 to Dexterity"]
+    },
+    "52789":{
+      "name":"Circle of Life",
+      "stats":["Gain 10 Life per Enemy Hit with Attacks","12% of Damage taken Recouped as Life"," ","Minions have 15% increased Movement Speed"]
+    },
+    "53213":{
+      "name":"Dexterity",
+      "stats":["+10 to Dexterity"," ","+2 to Dexterity"]
+    },
+    "54338":{
+      "name":"Physical Damage",
+      "stats":["10% increased Physical Damage"," ","+4 to Dexterity"]
+    },
+    "54791":{
+      "name":"Claws of the Magpie",
+      "stats":["Claw Attacks deal 25% increased Damage with Hits and Ailments","10% increased Attack Speed with Claws","25% chance to Steal Power, Frenzy, and Endurance Charges on Hit with Claws"," ","5% increased Movement Speed"]
+    },
+    "55414":{
+      "name":"Dagger Damage",
+      "stats":["Dagger Attacks deal 12% increased Damage with Hits and Ailments"," ","+4 to Dexterity"]
+    },
+    "55880":{
+      "name":"Damage against Marked Enemy",
+      "stats":["20% increased Damage with Hits and Ailments against Marked Enemy"," ","+4 to Dexterity"]
+    },
+    "56174":{
+      "name":"Dagger Damage and Attack Speed",
+      "stats":["Dagger Attacks deal 8% increased Damage with Hits and Ailments","4% increased Attack Speed with Daggers"," ","+4 to Dexterity"]
+    },
+    "5629":{
+      "name":"Claw Damage",
+      "stats":["Claw Attacks deal 12% increased Damage with Hits and Ailments"," ","+4 to Dexterity"]
+    },
+    "56295":{
+      "name":"Intelligence",
+      "stats":["+10 to Intelligence"," ","+2 to Dexterity"]
+    },
+    "5802":{
+      "name":"Dagger Damage and Movement Speed",
+      "stats":["Dagger Attacks deal 10% increased Damage with Hits and Ailments","3% increased Movement Speed"," ","+4 to Dexterity"]
+    },
+    "58244":{
+      "name":"Intelligence",
+      "stats":["+10 to Intelligence"," ","+2 to Dexterity"]
+    },
+    "59556":{
+      "name":"Expeditious Munitions",
+      "stats":["50% increased Trap Trigger Area of Effect","12% increased Trap Throwing Speed"," ","20% increased Evasion Rating"]
+    },
+    "60259":{
+      "name":"Evasion and Energy Shield",
+      "stats":["8% increased Evasion Rating","5% increased maximum Energy Shield"," ","+4 to Dexterity"]
+    },
+    "60592":{
+      "name":"Accuracy and Critical Strike Chance",
+      "stats":["15% increased Critical Strike Chance","10% increased Accuracy Rating"," ","+4 to Dexterity"]
+    },
+    "60737":{
+      "name":"Sleight of Hand",
+      "stats":["Attacks with One Handed Weapons deal 30% increased Damage with Ailments","8% increased Attack Speed with One Handed Weapons","20% increased Damage with One Handed Weapons"," ","8% increased effect of Non-Curse Auras from your Skills"]
+    },
+    "60949":{
+      "name":"Trap and Mine Damage",
+      "stats":["14% increased Trap Damage","14% increased Mine Damage"," ","+4 to Dexterity"]
+    },
+    "63228":{
+      "name":"Mana",
+      "stats":["8% increased maximum Mana"," ","+4 to Dexterity"]
+    },
+    "65528":{
+      "name":"Runegraft of the Agile",
+      "stats":["Elusive's Effect on you is increased instead for the first 2 seconds","Limited to 1 Runegraft of the Agile"]
+    },
+    "6615":{
+      "name":"Arcing Blows",
+      "stats":["Damage with Weapons Penetrates 8% Lightning Resistance","30% increased Lightning Damage with Attack Skills"," ","5% increased Dexterity"]
+    },
+    "7112":{
+      "name":"Dexterity",
+      "stats":["+10 to Dexterity"," ","+2 to Dexterity"]
+    },
+    "8001":{
+      "name":"Clever Thief",
+      "stats":["1% of Attack Damage Leeched as Life","1% of Attack Damage Leeched as Mana"," ","20% increased Damage with Poison"]
+    },
+    "8012":{
+      "name":"Life and Mana on Hit",
+      "stats":["Gain 4 Life per Enemy Hit with Attacks","Gain 2 Mana per Enemy Hit with Attacks"," ","+4 to Dexterity"]
+    },
+    "8920":{
+      "name":"Backstabbing",
+      "stats":["30% increased Critical Strike Chance with Daggers","+30% to Critical Strike Multiplier with Daggers","100% increased Critical Strike Chance against Enemies that are on Full Life"," ","+20% to Cold Resistance"]
+    }
+  },
+  "0028-occultist-forbidden-rite-of-soul-sacrifice.xml":{
+    "10115":{
+      "name":"Thundrous Devotion",
+      "stats":["15% of Physical Damage Converted to Lightning Damage while you have at least 150 Devotion"]
+    },
+    "1031":{
+      "name":"Devotion",
+      "stats":["+10 to Devotion"]
+    },
+    "11551":{
+      "name":"Devotion",
+      "stats":["+10 to Devotion"]
+    },
+    "11645":{
+      "name":"Heated Devotion",
+      "stats":["15% of Physical Damage Converted to Fire Damage while you have at least 150 Devotion"]
+    },
+    "11924":{
+      "name":"Breath of Flames",
+      "stats":["+10% to Fire Damage over Time Multiplier","30% increased Fire Damage"," ","+5 to Devotion"]
+    },
+    "12128":{
+      "name":"Inner Conviction",
+      "stats":["3% more Spell Damage per Power Charge","Gain Power Charges instead of Frenzy Charges"]
+    },
+    "12439":{
+      "name":"Cold Damage and Freeze Chance",
+      "stats":["10% increased Cold Damage","15% chance to Freeze"," ","+5 to Devotion"]
+    },
+    "12852":{
+      "name":"Elemental Damage",
+      "stats":["10% increased Elemental Damage"," ","+5 to Devotion"]
+    },
+    "12913":{
+      "name":"Mana",
+      "stats":["+20 to maximum Mana","10% increased maximum Mana"," ","+5 to Devotion"]
+    },
+    "1346":{
+      "name":"Spell Critical Strike Chance",
+      "stats":["20% increased Spell Critical Strike Chance"," ","+5 to Devotion"]
+    },
+    "13559":{
+      "name":"Burning Damage Multiplier",
+      "stats":["+5% to Fire Damage over Time Multiplier"," ","+5 to Devotion"]
+    },
+    "13753":{
+      "name":"Energy Shield",
+      "stats":["6% increased maximum Energy Shield"," ","+5 to Devotion"]
+    },
+    "14040":{
+      "name":"Fire Damage",
+      "stats":["16% increased Fire Damage"," ","+5 to Devotion"]
+    },
+    "14936":{
+      "name":"Life",
+      "stats":["6% increased maximum Life"," ","+5 to Devotion"]
+    },
+    "15117":{
+      "name":"Devotion",
+      "stats":["+10 to Devotion"]
+    },
+    "15167":{
+      "name":"Golem Life and Buff Effect",
+      "stats":["20% increased Effect of Buffs granted by your Golems","Golems have 15% increased Maximum Life"," ","+5 to Devotion"]
+    },
+    "18174":{
+      "name":"Mystic Bulwark",
+      "stats":["6% Chance to Block Spell Damage","1% increased Mana Regeneration Rate per 1% Chance to Block Spell Damage"," ","+5 to Devotion"]
+    },
+    "18663":{
+      "name":"Inner Conviction",
+      "stats":["3% more Spell Damage per Power Charge","Gain Power Charges instead of Frenzy Charges"]
+    },
+    "19008":{
+      "name":"Shield Spell Damage and Spell Block",
+      "stats":["+3% Chance to Block Spell Damage while holding a Shield","8% increased Spell Damage while holding a Shield"," ","+5 to Devotion"]
+    },
+    "19501":{
+      "name":"Devotion",
+      "stats":["+10 to Devotion"]
+    },
+    "19635":{
+      "name":"Devotion",
+      "stats":["+10 to Devotion"]
+    },
+    "20528":{
+      "name":"Instability",
+      "stats":["+1 to Maximum Power Charges"," ","+5 to Devotion"]
+    },
+    "21075":{
+      "name":"Area of Effect Damage",
+      "stats":["10% increased Area Damage"," ","+5 to Devotion"]
+    },
+    "21460":{
+      "name":"Breath of Rime",
+      "stats":["30% increased Cold Damage","50% increased Duration of Cold Ailments"," ","+5 to Devotion"]
+    },
+    "21958":{
+      "name":"Cruel Preparation",
+      "stats":["10% increased maximum Life","+5% to all Elemental Resistances"," ","+5 to Devotion"]
+    },
+    "22090":{
+      "name":"Cold Damage",
+      "stats":["16% increased Cold Damage"," ","+5 to Devotion"]
+    },
+    "22315":{
+      "name":"Mana Regeneration",
+      "stats":["20% increased Mana Regeneration Rate"," ","+5 to Devotion"]
+    },
+    "22972":{
+      "name":"Wandslinger",
+      "stats":["30% increased Damage while wielding a Wand","10% increased Attack Speed with Wands"," ","+5 to Devotion"]
+    },
+    "24362":{
+      "name":"Deep Thoughts",
+      "stats":["20% increased maximum Mana","20% increased Mana Regeneration Rate","+20 to Intelligence"," ","+5 to Devotion"]
+    },
+    "2474":{
+      "name":"Life Recoup",
+      "stats":["6% of Damage taken Recouped as Life"," ","+5 to Devotion"]
+    },
+    "24872":{
+      "name":"Golem Life and Buff Effect",
+      "stats":["20% increased Effect of Buffs granted by your Golems","Golems have 15% increased Maximum Life"," ","+5 to Devotion"]
+    },
+    "27163":{
+      "name":"Arcane Will",
+      "stats":["30% increased maximum Mana","Regenerate 5 Mana per second","+10 to Intelligence"," ","+5 to Devotion"]
+    },
+    "27611":{
+      "name":"Lord of the Dead",
+      "stats":["Minions have 15% increased maximum Life","Minions deal 20% increased Damage","+1 to Maximum number of Raised Zombies","+1 to Maximum number of Skeletons"," ","+5 to Devotion"]
+    },
+    "29781":{
+      "name":"Mana",
+      "stats":["8% increased maximum Mana"," ","+5 to Devotion"]
+    },
+    "31462":{
+      "name":"Burning Damage Multiplier",
+      "stats":["+5% to Fire Damage over Time Multiplier"," ","+5 to Devotion"]
+    },
+    "32431":{
+      "name":"Lightning Damage",
+      "stats":["12% increased Lightning Damage"," ","+5 to Devotion"]
+    },
+    "33755":{
+      "name":"Life",
+      "stats":["6% increased maximum Life"," ","+5 to Devotion"]
+    },
+    "34225":{
+      "name":"Curse Effect",
+      "stats":["5% increased Effect of your Curses"," ","+5 to Devotion"]
+    },
+    "34506":{
+      "name":"Thoughts and Prayers",
+      "stats":["Gain 5% of Maximum Mana as Extra Maximum Energy Shield while you have at least 150 Devotion"]
+    },
+    "34591":{
+      "name":"Malicious Intent",
+      "stats":["+2 to Level of all Curse Skill Gems"," ","+5 to Devotion"]
+    },
+    "35233":{
+      "name":"Smite the Wicked",
+      "stats":["10% chance to inflict Fire Exposure on Hit if you have at least 150 Devotion"]
+    },
+    "35730":{
+      "name":"Curse Duration",
+      "stats":["15% increased Curse Duration"," ","+5 to Devotion"]
+    },
+    "36107":{
+      "name":"Reservation Efficiency of Heralds",
+      "stats":["10% increased Mana Reservation Efficiency of Herald Skills"," ","+5 to Devotion"]
+    },
+    "36121":{
+      "name":"Lightning Damage",
+      "stats":["16% increased Lightning Damage"," ","+5 to Devotion"]
+    },
+    "36226":{
+      "name":"Cold Damage and Freeze Chance",
+      "stats":["10% increased Cold Damage","10% chance to Freeze"," ","+5 to Devotion"]
+    },
+    "36412":{
+      "name":"Cold Damage",
+      "stats":["16% increased Cold Damage"," ","+5 to Devotion"]
+    },
+    "37403":{
+      "name":"Infused Flesh",
+      "stats":["18% of Damage taken Recouped as Life"," ","+5 to Devotion"]
+    },
+    "38148":{
+      "name":"Cold Damage",
+      "stats":["16% increased Cold Damage"," ","+5 to Devotion"]
+    },
+    "38176":{
+      "name":"Devotion",
+      "stats":["+10 to Devotion"]
+    },
+    "38246":{
+      "name":"Presage",
+      "stats":["Herald Skills have 25% increased Area of Effect","20% increased Mana Reservation Efficiency of Herald Skills"," ","+5 to Devotion"]
+    },
+    "38789":{
+      "name":"Ignite Chance and Duration",
+      "stats":["15% increased Ignite Duration on Enemies","15% chance to Ignite"," ","+5 to Devotion"]
+    },
+    "38805":{
+      "name":"Area of Effect",
+      "stats":["10% increased Area of Effect"," ","+5 to Devotion"]
+    },
+    "38900":{
+      "name":"Area of Effect",
+      "stats":["10% increased Area of Effect"," ","+5 to Devotion"]
+    },
+    "40075":{
+      "name":"Staff Spell Damage",
+      "stats":["12% increased Spell Damage while wielding a Staff"," ","+5 to Devotion"]
+    },
+    "40351":{
+      "name":"Inner Conviction",
+      "stats":["3% more Spell Damage per Power Charge","Gain Power Charges instead of Frenzy Charges"]
+    },
+    "40609":{
+      "name":"Cold Damage",
+      "stats":["16% increased Cold Damage"," ","+5 to Devotion"]
+    },
+    "40705":{
+      "name":"Cold Damage Over Time Multiplier",
+      "stats":["+5% to Cold Damage over Time Multiplier"," ","+5 to Devotion"]
+    },
+    "42485":{
+      "name":"Staff Spell Damage and Block",
+      "stats":["10% increased Spell Damage while wielding a Staff","+3% Chance to Block Attack Damage while wielding a Staff"," ","+5 to Devotion"]
+    },
+    "43000":{
+      "name":"Mana and Spell Damage",
+      "stats":["10% increased Spell Damage","5% increased maximum Mana"," ","+5 to Devotion"]
+    },
+    "4367":{
+      "name":"Devotion",
+      "stats":["+10 to Devotion"]
+    },
+    "44184":{
+      "name":"Devotion",
+      "stats":["+10 to Devotion"]
+    },
+    "44723":{
+      "name":"Spell Critical Strike Chance",
+      "stats":["20% increased Spell Critical Strike Chance"," ","+5 to Devotion"]
+    },
+    "44955":{
+      "name":"Frost Walker",
+      "stats":["25% increased Cold Damage","5% increased Cast Speed with Cold Skills","+15% to Cold Resistance"," ","+5 to Devotion"]
+    },
+    "44983":{
+      "name":"Fire Damage",
+      "stats":["16% increased Fire Damage"," ","+5 to Devotion"]
+    },
+    "46111":{
+      "name":"Curse Effect",
+      "stats":["5% increased Effect of your Curses"," ","+5 to Devotion"]
+    },
+    "46469":{
+      "name":"Lightning Damage and Shock Chance",
+      "stats":["10% increased Lightning Damage","10% chance to Shock"," ","+5 to Devotion"]
+    },
+    "48514":{
+      "name":"Mana and Mana Regeneration",
+      "stats":["8% increased maximum Mana","10% increased Mana Regeneration Rate"," ","+5 to Devotion"]
+    },
+    "49534":{
+      "name":"Staff Spell Damage and Spell Block",
+      "stats":["10% increased Spell Damage while wielding a Staff","+3% Chance to Block Spell Damage while wielding a Staff"," ","+5 to Devotion"]
+    },
+    "49588":{
+      "name":"Lightning Damage and Shock Chance",
+      "stats":["10% increased Lightning Damage","10% chance to Shock"," ","+5 to Devotion"]
+    },
+    "50472":{
+      "name":"Wand Damage",
+      "stats":["14% increased Damage while wielding a Wand"," ","+5 to Devotion"]
+    },
+    "50826":{
+      "name":"Mana and Spell Block",
+      "stats":["2% Chance to Block Spell Damage","5% increased maximum Mana"," ","+5 to Devotion"]
+    },
+    "51213":{
+      "name":"Reservation Efficiency of Heralds",
+      "stats":["10% increased Mana Reservation Efficiency of Herald Skills"," ","+5 to Devotion"]
+    },
+    "51382":{
+      "name":"Curse Duration",
+      "stats":["15% increased Curse Duration"," ","+5 to Devotion"]
+    },
+    "53279":{
+      "name":"Devotion",
+      "stats":["+10 to Devotion"]
+    },
+    "53732":{
+      "name":"Cold Damage Over Time Multiplier",
+      "stats":["+5% to Cold Damage over Time Multiplier"," ","+5 to Devotion"]
+    },
+    "54657":{
+      "name":"Cast Speed",
+      "stats":["4% increased Cast Speed"," ","+5 to Devotion"]
+    },
+    "55647":{
+      "name":"Lightning Damage",
+      "stats":["16% increased Lightning Damage"," ","+5 to Devotion"]
+    },
+    "55804":{
+      "name":"Life Recoup",
+      "stats":["6% of Damage taken Recouped as Life"," ","+5 to Devotion"]
+    },
+    "56158":{
+      "name":"Spell Damage per Power Charge",
+      "stats":["4% increased Spell Damage per Power Charge"," ","+5 to Devotion"]
+    },
+    "56716":{
+      "name":"Heart of Thunder",
+      "stats":["30% increased Lightning Damage","Damage Penetrates 6% Lightning Resistance"," ","+5 to Devotion"]
+    },
+    "57362":{
+      "name":"Lightning Damage",
+      "stats":["16% increased Lightning Damage"," ","+5 to Devotion"]
+    },
+    "58210":{
+      "name":"Shield Spell Damage",
+      "stats":["12% increased Spell Damage while holding a Shield"," ","+5 to Devotion"]
+    },
+    "58604":{
+      "name":"Lightning Damage",
+      "stats":["16% increased Lightning Damage"," ","+5 to Devotion"]
+    },
+    "5972":{
+      "name":"Cold Damage",
+      "stats":["12% increased Cold Damage"," ","+5 to Devotion"]
+    },
+    "60085":{
+      "name":"Arcane Conservation",
+      "stats":["10% increased Cast Speed","20% increased Mana Cost Efficiency of Spells","3% increased Intelligence"," ","+5 to Devotion"]
+    },
+    "60388":{
+      "name":"Mana",
+      "stats":["8% increased maximum Mana"," ","+5 to Devotion"]
+    },
+    "60989":{
+      "name":"Herald Buff Effect",
+      "stats":["10% increased Effect of Herald Buffs on you"," ","+5 to Devotion"]
+    },
+    "61264":{
+      "name":"Lightning Damage and Shock Chance",
+      "stats":["10% increased Lightning Damage","10% chance to Shock"," ","+5 to Devotion"]
+    },
+    "61804":{
+      "name":"Fire Damage",
+      "stats":["12% increased Fire Damage"," ","+5 to Devotion"]
+    },
+    "63039":{
+      "name":"Herald Buff Effect",
+      "stats":["10% increased Effect of Herald Buffs on you"," ","+5 to Devotion"]
+    },
+    "63067":{
+      "name":"Wand Damage and Attack Speed",
+      "stats":["10% increased Damage while wielding a Wand","4% increased Attack Speed with Wands"," ","+5 to Devotion"]
+    },
+    "63903":{
+      "name":"Inner Conviction",
+      "stats":["3% more Spell Damage per Power Charge","Gain Power Charges instead of Frenzy Charges"]
+    },
+    "7918":{
+      "name":"Enigmatic Defence",
+      "stats":["20% increased Spell Damage while wielding a Staff","+8% Chance to Block Attack Damage while wielding a Staff","+8% Chance to Block Spell Damage while wielding a Staff"," ","+5 to Devotion"]
+    },
+    "8302":{
+      "name":"Power Charge Duration",
+      "stats":["20% increased Power Charge Duration"," ","+5 to Devotion"]
+    },
+    "8624":{
+      "name":"Ignite Chance and Duration",
+      "stats":["15% increased Ignite Duration on Enemies","15% chance to Ignite"," ","+5 to Devotion"]
+    },
+    "8833":{
+      "name":"Heart of Ice",
+      "stats":["30% increased Cold Damage","Damage Penetrates 6% Cold Resistance"," ","+5 to Devotion"]
+    },
+    "9432":{
+      "name":"Mental Rapidity",
+      "stats":["10% increased Cast Speed","30% increased Mana Regeneration Rate"," ","+5 to Devotion"]
+    }
+  },
+  "0029-inquisitor-spark-of-the-nova.xml":{
+    "1031":{
+      "name":"Tattoo of the Valako Stormrider",
+      "stats":["+6% to Lightning Resistance"]
+    },
+    "10575":{
+      "name":"Tattoo of the Valako Warrior",
+      "stats":["5% increased Lightning Damage"]
+    },
+    "10829":{
+      "name":"Tattoo of the Arohongui Moonwarden",
+      "stats":["+6% to Cold Resistance"]
+    },
+    "11420":{
+      "name":"Gemling Inquisition",
+      "stats":["80% increased Spell Damage"]
+    },
+    "11497":{
+      "name":"Tattoo of the Arohongui Moonwarden",
+      "stats":["+6% to Cold Resistance"]
+    },
+    "11820":{
+      "name":"Rural Life",
+      "stats":["80% chance to Avoid being Shocked"]
+    },
+    "12125":{
+      "name":"Runegraft of the River",
+      "stats":["20% chance on reaching Low Life to recover to Full Life","Limited to 1 Runegraft of the River"]
+    },
+    "13009":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "13712":{
+      "name":"Runegraft of the Fortress",
+      "stats":["8% increased Damage for each of your Aura or Herald Skills affecting you","+1% to all maximum Elemental Resistances if you have Reserved Life and Mana","20% increased Life Reservation Efficiency of Skills","30% increased Area of Effect of Aura Skills","Auras from your Skills have 10% increased Effect on you","Non-Curse Aura Skills have 50% increased Duration"]
+    },
+    "14151":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "15064":{
+      "name":"Tattoo of the Ngamahu Firewalker",
+      "stats":["+6% to Fire Resistance"]
+    },
+    "15081":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "15117":{
+      "name":"Tattoo of the Valako Stormrider",
+      "stats":["+6% to Lightning Resistance"]
+    },
+    "16167":{
+      "name":"Tattoo of the Arohongui Moonwarden",
+      "stats":["+6% to Cold Resistance"]
+    },
+    "17579":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "17735":{
+      "name":"Tattoo of the Valako Stormrider",
+      "stats":["+6% to Lightning Resistance"]
+    },
+    "17821":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "18866":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "1957":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "19635":{
+      "name":"Tattoo of the Valako Stormrider",
+      "stats":["+6% to Lightning Resistance"]
+    },
+    "20142":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "21330":{
+      "name":"Chitus' Heart",
+      "stats":["80% increased Lightning Damage with Attack Skills"]
+    },
+    "21934":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "22062":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "23027":{
+      "name":"Tattoo of the Ngamahu Firewalker",
+      "stats":["+6% to Fire Resistance"]
+    },
+    "23690":{
+      "name":"Street Urchin",
+      "stats":["+50% to Cold Resistance"]
+    },
+    "238":{
+      "name":"Tattoo of the Arohongui Moonwarden",
+      "stats":["+6% to Cold Resistance"]
+    },
+    "26270":{
+      "name":"Tattoo of the Hinekora Warmonger",
+      "stats":["Minions have 5% increased maximum Life"]
+    },
+    "27564":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "29199":{
+      "name":"Tattoo of the Valako Warrior",
+      "stats":["5% increased Lightning Damage"]
+    },
+    "29353":{
+      "name":"Tattoo of the Ngamahu Firewalker",
+      "stats":["+6% to Fire Resistance"]
+    },
+    "30370":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "31875":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "31931":{
+      "name":"Tattoo of the Ngamahu Firewalker",
+      "stats":["+6% to Fire Resistance"]
+    },
+    "33296":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "34098":{
+      "name":"Supreme Ostentation",
+      "stats":["Ignore Attribute Requirements","Gain no inherent bonuses from Attributes"]
+    },
+    "34171":{
+      "name":"Tattoo of the Ngamahu Firewalker",
+      "stats":["+6% to Fire Resistance"]
+    },
+    "34478":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "34661":{
+      "name":"City Walls",
+      "stats":["+12% Chance to Block Attack Damage"]
+    },
+    "36542":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "36678":{
+      "name":"Tattoo of the Valako Stormrider",
+      "stats":["+6% to Lightning Resistance"]
+    },
+    "36774":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "37569":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "37999":{
+      "name":"Tattoo of the Valako Warrior",
+      "stats":["5% increased Lightning Damage"]
+    },
+    "39416":{
+      "name":"Runegraft of Time",
+      "stats":["20% chance for Skills to not consume a Cooldown on use","Limited to 1 Runegraft of Time"]
+    },
+    "39648":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "39841":{
+      "name":"Tattoo of the Hinekora Storyteller",
+      "stats":["+3% to Chaos Resistance"]
+    },
+    "40366":{
+      "name":"Tattoo of the Valako Stormrider",
+      "stats":["+6% to Lightning Resistance"]
+    },
+    "4184":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "42760":{
+      "name":"Tattoo of the Valako Stormrider",
+      "stats":["+6% to Lightning Resistance"]
+    },
+    "42981":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "43647":{
+      "name":"Runegraft of the Warp",
+      "stats":["Buffs on you expire 30% slower","Debuffs on you expire 30% faster","Limited to 1 Runegraft of the Warp"]
+    },
+    "4367":{
+      "name":"Tattoo of the Valako Stormrider",
+      "stats":["+6% to Lightning Resistance"]
+    },
+    "4397":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "44184":{
+      "name":"Tattoo of the Hinekora Warmonger",
+      "stats":["Minions have 5% increased maximum Life"]
+    },
+    "44202":{
+      "name":"Tattoo of the Ngamahu Firewalker",
+      "stats":["+6% to Fire Resistance"]
+    },
+    "44948":{
+      "name":"Runegraft of the Fortress",
+      "stats":["Regenerate 5 Mana per second","Recover 10% of Mana over 1 second when you use a Guard Skill","10% of Damage taken Recouped as Mana","15% increased Mana Cost Efficiency","10% chance to Recover 10% of Mana when you use a Skill","12% increased Mana Reservation Efficiency of Skills"]
+    },
+    "45366":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "46340":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "47251":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "4854":{
+      "name":"Rites of Solaris",
+      "stats":["80% chance to Avoid being Chilled"]
+    },
+    "51804":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "52742":{
+      "name":"Gemling Inquisition",
+      "stats":["80% increased Spell Damage"]
+    },
+    "53279":{
+      "name":"Tattoo of the Valako Stormrider",
+      "stats":["+6% to Lightning Resistance"]
+    },
+    "53493":{
+      "name":"Axiom Warden",
+      "stats":["Minions have 80% increased maximum Life"]
+    },
+    "53802":{
+      "name":"Axiom Warden",
+      "stats":["Minions have 80% increased maximum Life"]
+    },
+    "54954":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "5591":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "58402":{
+      "name":"Tattoo of the Valako Warrior",
+      "stats":["5% increased Lightning Damage"]
+    },
+    "60398":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "60472":{
+      "name":"Tattoo of the Ngamahu Firewalker",
+      "stats":["+6% to Fire Resistance"]
+    },
+    "60648":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "63447":{
+      "name":"Tattoo of the Hinekora Warmonger",
+      "stats":["Minions have 5% increased maximum Life"]
+    },
+    "64210":{
+      "name":"Tattoo of the Hinekora Warmonger",
+      "stats":["Minions have 5% increased maximum Life"]
+    },
+    "651":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "6764":{
+      "name":"Tattoo of the Valako Warrior",
+      "stats":["5% increased Lightning Damage"]
+    },
+    "7388":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "739":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "7444":{
+      "name":"Tattoo of the Tasalio Shaman",
+      "stats":["5% chance to Hinder Enemies on Hit with Spells"]
+    },
+    "7688":{
+      "name":"Dialla's Wit",
+      "stats":["15% increased Cast Speed"]
+    },
+    "7938":{
+      "name":"Tattoo of the Valako Stormrider",
+      "stats":["+6% to Lightning Resistance"]
+    },
+    "9149":{
+      "name":"Price of Glory",
+      "stats":[]
+    }
+  },
+  "0043-pathfinder-toxic-rain.xml":{
+    "10763":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "10829":{
+      "name":"Tattoo of the Tawhoa Naturalist",
+      "stats":["8% increased Life Recovery from Flasks"]
+    },
+    "11018":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "11489":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "11497":{
+      "name":"Tattoo of the Tawhoa Naturalist",
+      "stats":["8% increased Life Recovery from Flasks"]
+    },
+    "12412":{
+      "name":"Tattoo of the Tawhoa Naturalist",
+      "stats":["8% increased Life Recovery from Flasks"]
+    },
+    "13885":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "1405":{
+      "name":"Rigwald's Might",
+      "stats":["80% increased Melee Physical Damage"]
+    },
+    "14292":{
+      "name":"Tattoo of the Tawhoa Naturalist",
+      "stats":["8% increased Life Recovery from Flasks"]
+    },
+    "1461":{
+      "name":"Tattoo of the Tawhoa Naturalist",
+      "stats":["8% increased Life Recovery from Flasks"]
+    },
+    "15614":{
+      "name":"Eternal Fortitude",
+      "stats":["8% increased Armour per Endurance Charge"]
+    },
+    "16167":{
+      "name":"Tattoo of the Tawhoa Naturalist",
+      "stats":["8% increased Life Recovery from Flasks"]
+    },
+    "1767":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "17749":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "17908":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "18182":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "18747":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "19210":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "20807":{
+      "name":"Tattoo of the Tawhoa Naturalist",
+      "stats":["8% increased Life Recovery from Flasks"]
+    },
+    "22261":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "238":{
+      "name":"Tattoo of the Tawhoa Naturalist",
+      "stats":["8% increased Life Recovery from Flasks"]
+    },
+    "24050":{
+      "name":"Robust Diet",
+      "stats":["10% increased maximum Life"]
+    },
+    "24496":{
+      "name":"Tattoo of the Tawhoa Herbalist",
+      "stats":["4% increased Flask Effect Duration"]
+    },
+    "25260":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "25411":{
+      "name":"Eternal Resilience",
+      "stats":["Gain 1 Endurance Charge every second if you've been Hit Recently"]
+    },
+    "25775":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "27656":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "27788":{
+      "name":"With Eyes Open",
+      "stats":["+37% to Chaos Resistance"]
+    },
+    "27962":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "28012":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "28753":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "30319":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "30338":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "30745":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "31501":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "32176":{
+      "name":"Chitus' Heart",
+      "stats":["80% increased Lightning Damage with Attack Skills"]
+    },
+    "32681":{
+      "name":"Gleaming Legion",
+      "stats":["80% increased Armour"]
+    },
+    "3314":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "33903":{
+      "name":"Discerning Taste",
+      "stats":["12% increased Mana Reservation Efficiency of Skills"]
+    },
+    "3424":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "35255":{
+      "name":"Supreme Decadence",
+      "stats":["Life Recovery from Flasks also applies to Energy Shield","30% less Life Recovery from Flasks"]
+    },
+    "3537":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "35384":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "35851":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "36225":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "36287":{
+      "name":"Tattoo of the Tawhoa Naturalist",
+      "stats":["8% increased Life Recovery from Flasks"]
+    },
+    "36490":{
+      "name":"With Eyes Open",
+      "stats":["+37% to Chaos Resistance"]
+    },
+    "3656":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "38662":{
+      "name":"Tattoo of the Ramako Shaman",
+      "stats":["+2% chance to Suppress Spell Damage"]
+    },
+    "38864":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "38995":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "39861":{
+      "name":"Tattoo of the Tawhoa Herbalist",
+      "stats":["4% increased Flask Effect Duration"]
+    },
+    "40362":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "40644":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "41989":{
+      "name":"Eternal Resilience",
+      "stats":["Gain 1 Endurance Charge every second if you've been Hit Recently"]
+    },
+    "42443":{
+      "name":"Slum Lord",
+      "stats":["Minions deal 80% increased Damage"]
+    },
+    "42623":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "42686":{
+      "name":"Gemling Training",
+      "stats":["80% increased Physical Damage"]
+    },
+    "4269":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "42804":{
+      "name":"Flawless Execution",
+      "stats":["80% increased Critical Strike Chance"]
+    },
+    "43316":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "44134":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "44316":{
+      "name":"Runegraft of the Warp",
+      "stats":["Buffs on you expire 30% slower","Debuffs on you expire 30% faster","Limited to 1 Runegraft of the Warp"]
+    },
+    "45827":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "46277":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "46408":{
+      "name":"Gemling Ambush",
+      "stats":["80% increased Spell Critical Strike Chance"]
+    },
+    "46965":{
+      "name":"Robust Diet",
+      "stats":["10% increased maximum Life"]
+    },
+    "47065":{
+      "name":"Crematorium Worker",
+      "stats":["+50% to Fire Resistance"]
+    },
+    "47362":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "47422":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "47484":{
+      "name":"Brutal Execution",
+      "stats":["+40% to Critical Strike Multiplier"]
+    },
+    "49308":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "49568":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "49978":{
+      "name":"Tattoo of the Ramako Shaman",
+      "stats":["+2% chance to Suppress Spell Damage"]
+    },
+    "51786":{
+      "name":"Tattoo of the Ramako Shaman",
+      "stats":["+2% chance to Suppress Spell Damage"]
+    },
+    "52789":{
+      "name":"Rites of Lunaris",
+      "stats":["30% increased Effect of Chill"]
+    },
+    "53213":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "5408":{
+      "name":"Tattoo of the Tawhoa Naturalist",
+      "stats":["8% increased Life Recovery from Flasks"]
+    },
+    "54338":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "54791":{
+      "name":"Rigwald's Might",
+      "stats":["80% increased Melee Physical Damage"]
+    },
+    "55414":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "55880":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "56174":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "5629":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "56295":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "5802":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "58244":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "59370":{
+      "name":"Tattoo of the Tasalio Warrior",
+      "stats":["5% chance to Blind Enemies on Hit with Attacks"]
+    },
+    "59556":{
+      "name":"Eternal Subjugation",
+      "stats":["15% chance to gain a Power Charge on Critical Strike"]
+    },
+    "59606":{
+      "name":"Tattoo of the Tawhoa Naturalist",
+      "stats":["8% increased Life Recovery from Flasks"]
+    },
+    "60259":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "60592":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "60737":{
+      "name":"Bloody Flowers' Rebellion",
+      "stats":["80% increased Cold Damage with Attack Skills"]
+    },
+    "60949":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "63228":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "63795":{
+      "name":"Tattoo of the Tasalio Warrior",
+      "stats":["5% chance to Blind Enemies on Hit with Attacks"]
+    },
+    "6615":{
+      "name":"Baleful Augmentation",
+      "stats":["+50% to Lightning Resistance"]
+    },
+    "7112":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "8001":{
+      "name":"Gemling Ambush",
+      "stats":["80% increased Spell Critical Strike Chance"]
+    },
+    "8012":{
+      "name":"Price of Glory",
+      "stats":[]
+    },
+    "8920":{
+      "name":"Gemling Ambush",
+      "stats":["80% increased Spell Critical Strike Chance"]
+    },
+    "8938":{
+      "name":"Tattoo of the Tawhoa Herbalist",
+      "stats":["4% increased Flask Effect Duration"]
+    }
+  },
+  "0048-warden-frost-blades.xml":{
+    "10763":{
+      "name":"Critical Strike Chance",
+      "stats":["20% increased Critical Strike Chance"," ","+4 to Strength"]
+    },
+    "11018":{
+      "name":"Evasion and Energy Shield",
+      "stats":["8% increased Evasion Rating","5% increased maximum Energy Shield"," ","+4 to Strength"]
+    },
+    "11489":{
+      "name":"Dagger Critical Strike Chance and Multiplier",
+      "stats":["18% increased Critical Strike Chance with Daggers","+14% to Critical Strike Multiplier with Daggers"," ","+4 to Strength"]
+    },
+    "13885":{
+      "name":"Dexterity",
+      "stats":["+10 to Dexterity"," ","+2 to Strength"]
+    },
+    "1405":{
+      "name":"From the Shadows",
+      "stats":["12% increased Attack Speed with Daggers","40% increased Elusive Effect"," ","20% increased Armour"]
+    },
+    "15614":{
+      "name":"Claws of the Hawk",
+      "stats":["60% increased Critical Strike Chance with Claws","+20% to Critical Strike Multiplier with Claws"," ","+1 to maximum Fortification"]
+    },
+    "1767":{
+      "name":"Life and Energy Shield on Kill",
+      "stats":["Gain 15 Life per Enemy Killed","Gain 15 Energy Shield per Enemy Killed"," ","+4 to Strength"]
+    },
+    "17749":{
+      "name":"Life Recoup",
+      "stats":["6% of Damage taken Recouped as Life"," ","+4 to Strength"]
+    },
+    "17908":{
+      "name":"Claw Damage and Attack Speed",
+      "stats":["Claw Attacks deal 8% increased Damage with Hits and Ailments","4% increased Attack Speed with Claws"," ","+4 to Strength"]
+    },
+    "18182":{
+      "name":"Intelligence",
+      "stats":["+10 to Intelligence"," ","+2 to Strength"]
+    },
+    "18747":{
+      "name":"Life Recoup",
+      "stats":["6% of Damage taken Recouped as Life"," ","+4 to Strength"]
+    },
+    "19210":{
+      "name":"Physical Damage and Ignore Physical Damage Reduction",
+      "stats":["Hits have 10% chance to ignore Enemy Physical Damage Reduction","14% increased Physical Damage"," ","+4 to Strength"]
+    },
+    "22261":{
+      "name":"Dagger Damage and Attack Speed",
+      "stats":["Dagger Attacks deal 8% increased Damage with Hits and Ailments","4% increased Attack Speed with Daggers"," ","+4 to Strength"]
+    },
+    "24050":{
+      "name":"Coldhearted Calculation",
+      "stats":["12% increased Damage","20% increased Mana Regeneration Rate","+20 to Intelligence"," ","5% chance to gain an Endurance Charge on Kill"]
+    },
+    "25260":{
+      "name":"Life",
+      "stats":["6% increased maximum Life"," ","+4 to Strength"]
+    },
+    "25411":{
+      "name":"Infused",
+      "stats":["+1 to Maximum Power Charges"," ","+20 to Strength"]
+    },
+    "25775":{
+      "name":"Claw Damage and Attack Speed",
+      "stats":["Claw Attacks deal 8% increased Damage with Hits and Ailments","4% increased Attack Speed with Claws"," ","+4 to Strength"]
+    },
+    "27656":{
+      "name":"Intelligence",
+      "stats":["+10 to Intelligence"," ","+2 to Strength"]
+    },
+    "27788":{
+      "name":"Blood Drinker",
+      "stats":["10% increased maximum Life","Recover 2% of Life on Kill"," ","20% increased Totem Damage"]
+    },
+    "27962":{
+      "name":"Trap Throwing Speed and Trigger Area",
+      "stats":["20% increased Trap Trigger Area of Effect","4% increased Trap Throwing Speed"," ","+4 to Strength"]
+    },
+    "28012":{
+      "name":"Dexterity",
+      "stats":["+10 to Dexterity"," ","+2 to Strength"]
+    },
+    "28753":{
+      "name":"Trap Damage",
+      "stats":["12% increased Trap Damage"," ","+4 to Strength"]
+    },
+    "30319":{
+      "name":"Trap Critical Strike Chance and Multiplier",
+      "stats":["24% increased Critical Strike Chance with Traps","+8% to Critical Strike Multiplier with Traps"," ","+4 to Strength"]
+    },
+    "30338":{
+      "name":"Damage Over Time",
+      "stats":["10% increased Damage over Time"," ","+4 to Strength"]
+    },
+    "30745":{
+      "name":"Claw Critical Strike Chance and Multiplier",
+      "stats":["20% increased Critical Strike Chance with Claws","+10% to Critical Strike Multiplier with Claws"," ","+4 to Strength"]
+    },
+    "31501":{
+      "name":"Trap Throwing Speed and Trigger Area",
+      "stats":["20% increased Trap Trigger Area of Effect","4% increased Trap Throwing Speed"," ","+4 to Strength"]
+    },
+    "32176":{
+      "name":"Soul Thief",
+      "stats":["15% increased Evasion Rating","10% increased maximum Energy Shield","Recover 2% of Energy Shield on Kill"," ","+1 to maximum Fortification"]
+    },
+    "32681":{
+      "name":"Mark the Prey",
+      "stats":["Marked Enemy has 10% reduced Accuracy Rating","Marked Enemy takes 10% increased Damage"," ","30% increased Melee Critical Strike Chance"]
+    },
+    "3314":{
+      "name":"Frenzy Charge Duration",
+      "stats":["20% increased Frenzy Charge Duration"," ","+4 to Strength"]
+    },
+    "33903":{
+      "name":"Will of Blades",
+      "stats":["40% increased Critical Strike Chance","20% increased Physical Damage"," ","+20% to Fire Resistance"]
+    },
+    "3424":{
+      "name":"Dagger Damage and Movement Speed",
+      "stats":["Dagger Attacks deal 10% increased Damage with Hits and Ailments","3% increased Movement Speed"," ","+4 to Strength"]
+    },
+    "35255":{
+      "name":"Chainbreaker",
+      "stats":["Mana Recovery from Regeneration is not applied","1 Rage Regenerated for every 25 Mana Regeneration per Second","Does not delay Inherent Loss of Rage","Skills Cost +3 Rage"]
+    },
+    "3537":{
+      "name":"Power Charge Duration",
+      "stats":["20% increased Power Charge Duration"," ","+4 to Strength"]
+    },
+    "35384":{
+      "name":"Claw Damage and Attack Speed",
+      "stats":["Claw Attacks deal 8% increased Damage with Hits and Ailments","4% increased Attack Speed with Claws"," ","+4 to Strength"]
+    },
+    "35851":{
+      "name":"Accuracy and Critical Strike Chance",
+      "stats":["15% increased Critical Strike Chance","10% increased Accuracy Rating"," ","+4 to Strength"]
+    },
+    "36225":{
+      "name":"Claw Critical Strike Chance and Multiplier",
+      "stats":["20% increased Critical Strike Chance with Claws","+10% to Critical Strike Multiplier with Claws"," ","+4 to Strength"]
+    },
+    "36490":{
+      "name":"Flaying",
+      "stats":["Dagger Attacks deal 24% increased Damage with Hits and Ailments","12% increased Attack Speed with Daggers","18% increased Accuracy Rating with Daggers"," ","12% increased Totem Placement speed"]
+    },
+    "3656":{
+      "name":"Intelligence",
+      "stats":["+10 to Intelligence"," ","+2 to Strength"]
+    },
+    "38864":{
+      "name":"Dagger Damage and Attack Speed",
+      "stats":["Dagger Attacks deal 8% increased Damage with Hits and Ailments","4% increased Attack Speed with Daggers"," ","+4 to Strength"]
+    },
+    "38995":{
+      "name":"Life and Mana on Hit",
+      "stats":["Gain 4 Life per Enemy Hit with Attacks","Gain 2 Mana per Enemy Hit with Attacks"," ","+4 to Strength"]
+    },
+    "40362":{
+      "name":"Life",
+      "stats":["6% increased maximum Life"," ","+4 to Strength"]
+    },
+    "40644":{
+      "name":"Elemental Damage",
+      "stats":["10% increased Elemental Damage"," ","+4 to Strength"]
+    },
+    "41989":{
+      "name":"Resourcefulness",
+      "stats":["+8% chance to Suppress Spell Damage","10% increased maximum Energy Shield","5% increased maximum Life"," ","30% increased Melee Critical Strike Chance"]
+    },
+    "42443":{
+      "name":"Frenetic",
+      "stats":["+1 to Maximum Frenzy Charges"," ","+1 to maximum Fortification"]
+    },
+    "42623":{
+      "name":"One Handed Damage",
+      "stats":["Attacks with One Handed Weapons deal 20% increased Damage with Ailments","14% increased Damage with One Handed Weapons"," ","+4 to Strength"]
+    },
+    "42686":{
+      "name":"Elemental Focus",
+      "stats":["20% increased Duration of Elemental Ailments on Enemies","20% increased Elemental Damage","20% increased Effect of Non-Damaging Ailments"," ","20% increased Melee Damage"]
+    },
+    "4269":{
+      "name":"Damage against Marked Enemy",
+      "stats":["20% increased Damage with Hits and Ailments against Marked Enemy"," ","+4 to Strength"]
+    },
+    "42804":{
+      "name":"Mind Drinker",
+      "stats":["20% increased maximum Mana","Recover 2% of Mana on Kill"," ","+1 to maximum Fortification"]
+    },
+    "43316":{
+      "name":"Physical Damage and Ignore Physical Damage Reduction",
+      "stats":["Hits have 10% chance to ignore Enemy Physical Damage Reduction","14% increased Physical Damage"," ","+4 to Strength"]
+    },
+    "44134":{
+      "name":"Dagger Critical Strike Chance and Multiplier",
+      "stats":["18% increased Critical Strike Chance with Daggers","+14% to Critical Strike Multiplier with Daggers"," ","+4 to Strength"]
+    },
+    "45827":{
+      "name":"Trap Damage",
+      "stats":["16% increased Trap Damage"," ","+4 to Strength"]
+    },
+    "46277":{
+      "name":"Dexterity",
+      "stats":["+10 to Dexterity"," ","+2 to Strength"]
+    },
+    "46408":{
+      "name":"Fangs of the Viper",
+      "stats":["20% increased Chaos Damage","5% increased Movement Speed","+20 to Dexterity","20% increased Physical Damage"," ","+15% to Melee Critical Strike Multiplier"]
+    },
+    "46965":{
+      "name":"Saboteur",
+      "stats":["30% increased Trap Damage","30% increased Mine Damage","Can have up to 2 additional Traps placed at a time","Can have up to 2 additional Remote Mines placed at a time"," ","8% increased Warcry Buff Effect"]
+    },
+    "47065":{
+      "name":"Master of Blades",
+      "stats":["Hits have 30% chance to ignore Enemy Physical Damage Reduction","+30 to Strength","30% increased Physical Damage"," ","5% chance to deal Double Damage"]
+    },
+    "47362":{
+      "name":"Life and Energy Shield on Kill",
+      "stats":["Gain 15 Life per Enemy Killed","Gain 15 Energy Shield per Enemy Killed"," ","+4 to Strength"]
+    },
+    "47422":{
+      "name":"Dagger Critical Strike Chance and Multiplier",
+      "stats":["18% increased Critical Strike Chance with Daggers","+14% to Critical Strike Multiplier with Daggers"," ","+4 to Strength"]
+    },
+    "47484":{
+      "name":"Depth Perception",
+      "stats":["+100 to Accuracy Rating","25% increased Critical Strike Chance","20% increased Accuracy Rating"," ","You take 10% reduced Extra Damage from Critical Strikes"]
+    },
+    "49308":{
+      "name":"Mana",
+      "stats":["8% increased maximum Mana"," ","+4 to Strength"]
+    },
+    "49568":{
+      "name":"Claw Critical Strike Chance and Multiplier",
+      "stats":["20% increased Critical Strike Chance with Claws","+10% to Critical Strike Multiplier with Claws"," ","+4 to Strength"]
+    },
+    "52789":{
+      "name":"Circle of Life",
+      "stats":["Gain 10 Life per Enemy Hit with Attacks","12% of Damage taken Recouped as Life"," ","20% increased Armour"]
+    },
+    "53213":{
+      "name":"Dexterity",
+      "stats":["+10 to Dexterity"," ","+2 to Strength"]
+    },
+    "54338":{
+      "name":"Physical Damage",
+      "stats":["10% increased Physical Damage"," ","+4 to Strength"]
+    },
+    "54791":{
+      "name":"Claws of the Magpie",
+      "stats":["Claw Attacks deal 25% increased Damage with Hits and Ailments","10% increased Attack Speed with Claws","25% chance to Steal Power, Frenzy, and Endurance Charges on Hit with Claws"," ","20% increased Totem Damage"]
+    },
+    "55414":{
+      "name":"Dagger Damage",
+      "stats":["Dagger Attacks deal 12% increased Damage with Hits and Ailments"," ","+4 to Strength"]
+    },
+    "55880":{
+      "name":"Damage against Marked Enemy",
+      "stats":["20% increased Damage with Hits and Ailments against Marked Enemy"," ","+4 to Strength"]
+    },
+    "56174":{
+      "name":"Dagger Damage and Attack Speed",
+      "stats":["Dagger Attacks deal 8% increased Damage with Hits and Ailments","4% increased Attack Speed with Daggers"," ","+4 to Strength"]
+    },
+    "5629":{
+      "name":"Claw Damage",
+      "stats":["Claw Attacks deal 12% increased Damage with Hits and Ailments"," ","+4 to Strength"]
+    },
+    "56295":{
+      "name":"Intelligence",
+      "stats":["+10 to Intelligence"," ","+2 to Strength"]
+    },
+    "5802":{
+      "name":"Dagger Damage and Movement Speed",
+      "stats":["Dagger Attacks deal 10% increased Damage with Hits and Ailments","3% increased Movement Speed"," ","+4 to Strength"]
+    },
+    "58244":{
+      "name":"Intelligence",
+      "stats":["+10 to Intelligence"," ","+2 to Strength"]
+    },
+    "59556":{
+      "name":"Expeditious Munitions",
+      "stats":["50% increased Trap Trigger Area of Effect","12% increased Trap Throwing Speed"," ","20% increased Melee Damage"]
+    },
+    "60259":{
+      "name":"Evasion and Energy Shield",
+      "stats":["8% increased Evasion Rating","5% increased maximum Energy Shield"," ","+4 to Strength"]
+    },
+    "60592":{
+      "name":"Accuracy and Critical Strike Chance",
+      "stats":["15% increased Critical Strike Chance","10% increased Accuracy Rating"," ","+4 to Strength"]
+    },
+    "60737":{
+      "name":"Sleight of Hand",
+      "stats":["Attacks with One Handed Weapons deal 30% increased Damage with Ailments","8% increased Attack Speed with One Handed Weapons","20% increased Damage with One Handed Weapons"," ","0.4% of Attack Damage Leeched as Life"]
+    },
+    "60949":{
+      "name":"Trap and Mine Damage",
+      "stats":["14% increased Trap Damage","14% increased Mine Damage"," ","+4 to Strength"]
+    },
+    "63228":{
+      "name":"Mana",
+      "stats":["8% increased maximum Mana"," ","+4 to Strength"]
+    },
+    "65528":{
+      "name":"Runegraft of the Imbued",
+      "stats":["Tinctures applied to you have 30% increased Effect while affected by no Flasks","Limited to 1 Runegraft of the Imbued"]
+    },
+    "6615":{
+      "name":"Arcing Blows",
+      "stats":["Damage with Weapons Penetrates 8% Lightning Resistance","30% increased Lightning Damage with Attack Skills"," ","5% chance to deal Double Damage"]
+    },
+    "7112":{
+      "name":"Dexterity",
+      "stats":["+10 to Dexterity"," ","+2 to Strength"]
+    },
+    "8001":{
+      "name":"Clever Thief",
+      "stats":["1% of Attack Damage Leeched as Life","1% of Attack Damage Leeched as Mana"," ","Gain 1 Rage on Melee Hit"]
+    },
+    "8012":{
+      "name":"Life and Mana on Hit",
+      "stats":["Gain 4 Life per Enemy Hit with Attacks","Gain 2 Mana per Enemy Hit with Attacks"," ","+4 to Strength"]
+    },
+    "8920":{
+      "name":"Backstabbing",
+      "stats":["30% increased Critical Strike Chance with Daggers","+30% to Critical Strike Multiplier with Daggers","100% increased Critical Strike Chance against Enemies that are on Full Life"," ","4% increased maximum Life"]
+    }
+  },
+  "0049-hierophant-spark-of-the-nova-2.xml":{
+    "11420":{
+      "name":"Enduring Faith",
+      "stats":["+1 to Minimum Endurance Charges while you have at least 150 Devotion"]
+    },
+    "11820":{
+      "name":"Anointed Flesh",
+      "stats":["+1% to all maximum Elemental Resistances","20% reduced Elemental Ailment Duration on you","20% reduced Effect of Chill and Shock on you"," ","+5 to Devotion"]
+    },
+    "13009":{
+      "name":"Devotion",
+      "stats":["+10 to Devotion"]
+    },
+    "14151":{
+      "name":"Devotion",
+      "stats":["+10 to Devotion"]
+    },
+    "15081":{
+      "name":"Minion Damage and Duration",
+      "stats":["Minions deal 12% increased Damage","12% increased Minion Duration"," ","+5 to Devotion"]
+    },
+    "17579":{
+      "name":"Spell Damage",
+      "stats":["10% increased Spell Damage"," ","+5 to Devotion"]
+    },
+    "17821":{
+      "name":"Mana Regeneration and Life",
+      "stats":["4% increased maximum Life","10% increased Mana Regeneration Rate"," ","+5 to Devotion"]
+    },
+    "18866":{
+      "name":"Cast Speed",
+      "stats":["4% increased Cast Speed"," ","+5 to Devotion"]
+    },
+    "1957":{
+      "name":"Cast Speed",
+      "stats":["4% increased Cast Speed"," ","+5 to Devotion"]
+    },
+    "20142":{
+      "name":"Totem Critical Strike Multiplier",
+      "stats":["+16% to Critical Strike Multiplier with Totem Skills"," ","+5 to Devotion"]
+    },
+    "21330":{
+      "name":"Quick Recovery",
+      "stats":["7% increased maximum Life","20% increased Mana Regeneration Rate","Regenerate 0.8% of Life per second"," ","+5 to Devotion"]
+    },
+    "21934":{
+      "name":"Spell Damage",
+      "stats":["10% increased Spell Damage"," ","+5 to Devotion"]
+    },
+    "22062":{
+      "name":"Minion Damage and Duration",
+      "stats":["Minions deal 12% increased Damage","12% increased Minion Duration"," ","+5 to Devotion"]
+    },
+    "23690":{
+      "name":"Essence Infusion",
+      "stats":["15% faster start of Energy Shield Recharge","30% increased Energy Shield Recharge Rate"," ","+5 to Devotion"]
+    },
+    "27564":{
+      "name":"Devotion",
+      "stats":["+10 to Devotion"]
+    },
+    "30370":{
+      "name":"Spell Damage Over Time",
+      "stats":["12% increased Damage Over Time with Spell Skills"," ","+5 to Devotion"]
+    },
+    "31875":{
+      "name":"Devotion",
+      "stats":["+10 to Devotion"]
+    },
+    "33296":{
+      "name":"Spell Damage",
+      "stats":["12% increased Spell Damage"," ","+5 to Devotion"]
+    },
+    "34098":{
+      "name":"Inner Conviction",
+      "stats":["3% more Spell Damage per Power Charge","Gain Power Charges instead of Frenzy Charges"]
+    },
+    "34478":{
+      "name":"Energy Shield Recharge Rate",
+      "stats":["15% increased Energy Shield Recharge Rate"," ","+5 to Devotion"]
+    },
+    "34661":{
+      "name":"Fire Walker",
+      "stats":["25% increased Fire Damage","5% increased Cast Speed with Fire Skills","+15% to Fire Resistance"," ","+5 to Devotion"]
+    },
+    "36542":{
+      "name":"Devotion",
+      "stats":["+10 to Devotion"]
+    },
+    "36774":{
+      "name":"Spell Damage",
+      "stats":["10% increased Spell Damage"," ","+5 to Devotion"]
+    },
+    "37569":{
+      "name":"Devotion",
+      "stats":["+10 to Devotion"]
+    },
+    "39648":{
+      "name":"Mana Regeneration and Life",
+      "stats":["4% increased maximum Life","10% increased Mana Regeneration Rate"," ","+5 to Devotion"]
+    },
+    "4184":{
+      "name":"Elemental Damage",
+      "stats":["10% increased Elemental Damage"," ","+5 to Devotion"]
+    },
+    "42981":{
+      "name":"Mana Flasks",
+      "stats":["10% increased Mana Recovery from Flasks","5% increased Flask Charges gained"," ","+5 to Devotion"]
+    },
+    "4397":{
+      "name":"Devotion",
+      "stats":["+10 to Devotion"]
+    },
+    "45366":{
+      "name":"Totem Critical Strike Multiplier",
+      "stats":["+16% to Critical Strike Multiplier with Totem Skills"," ","+5 to Devotion"]
+    },
+    "46340":{
+      "name":"Devotion",
+      "stats":["+10 to Devotion"]
+    },
+    "47251":{
+      "name":"Devotion",
+      "stats":["+10 to Devotion"]
+    },
+    "4854":{
+      "name":"Thoughts and Prayers",
+      "stats":["Gain 5% of Maximum Mana as Extra Maximum Energy Shield while you have at least 150 Devotion"]
+    },
+    "51804":{
+      "name":"Spell Damage Over Time",
+      "stats":["16% increased Damage Over Time with Spell Skills"," ","+5 to Devotion"]
+    },
+    "52742":{
+      "name":"Hasty Demise",
+      "stats":["30% increased Damage Over Time with Spell Skills","8% increased Cast Speed","10% reduced Skill Effect Duration"," ","+5 to Devotion"]
+    },
+    "53493":{
+      "name":"Annihilation",
+      "stats":["50% increased Spell Critical Strike Chance","+15% to Critical Strike Multiplier for Spell Damage"," ","+5 to Devotion"]
+    },
+    "53802":{
+      "name":"Essence Extraction",
+      "stats":["25% increased Flask Charges gained","15% increased Mana Recovery Rate during Effect of any Mana Flask"," ","+5 to Devotion"]
+    },
+    "54954":{
+      "name":"Curse and Chaos Resistance",
+      "stats":["+6% to Chaos Resistance","6% reduced Effect of Curses on you"," ","+5 to Devotion"]
+    },
+    "5591":{
+      "name":"Energy Shield Recharge Rate",
+      "stats":["15% increased Energy Shield Recharge Rate"," ","+5 to Devotion"]
+    },
+    "60398":{
+      "name":"Devotion",
+      "stats":["+10 to Devotion"]
+    },
+    "60648":{
+      "name":"Mana Flasks",
+      "stats":["10% increased Mana Recovery from Flasks","5% increased Flask Charges gained"," ","+5 to Devotion"]
+    },
+    "651":{
+      "name":"Elemental Resistances",
+      "stats":["10% reduced Elemental Ailment Duration on you","10% reduced Effect of Chill and Shock on you"," ","+5 to Devotion"]
+    },
+    "7388":{
+      "name":"Devotion",
+      "stats":["+10 to Devotion"]
+    },
+    "739":{
+      "name":"Cast Speed",
+      "stats":["4% increased Cast Speed"," ","+5 to Devotion"]
+    },
+    "7688":{
+      "name":"Enduring Bond",
+      "stats":["20% increased Skill Effect Duration","Minions deal 30% increased Damage if you've used a Minion Skill Recently","20% increased Minion Duration"," ","+5 to Devotion"]
+    },
+    "9149":{
+      "name":"Chill and Freeze Resistance",
+      "stats":["20% reduced Effect of Chill on you","20% reduced Freeze Duration on you"," ","+5 to Devotion"]
+    }
+  }
+}

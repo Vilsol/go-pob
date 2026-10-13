@@ -1288,4 +1288,16 @@ func TestConfigVisibility(t *testing.T) {
 	}
 	fmt.Printf("config-visibility: %d builds; %d options PoB shows and we hide somewhere, %d we show and PoB hides; %s\n",
 		len(bv), len(pobOnly), len(goOnly), filepath.Join(out, "visibility.tsv"))
+	const visibilityCeiling = 5
+	pairs := 0
+	for _, m := range []map[string][]string{pobOnly, goOnly} {
+		for _, b := range m {
+			pairs += len(b)
+		}
+	}
+	if pairs > visibilityCeiling {
+		t.Errorf("%d option x build visibility differences, ceiling %d", pairs, visibilityCeiling)
+	} else if pairs < visibilityCeiling {
+		t.Logf("%d option x build visibility differences under ceiling %d, lower it", pairs, visibilityCeiling)
+	}
 }

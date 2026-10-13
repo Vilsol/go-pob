@@ -42,23 +42,23 @@ func TestClassAscendancyOrderMatchesTheTree(t *testing.T) {
 // TestTreeSpecPointsMatchPoB: The tree list's point counts.
 func TestTreeSpecPointsMatchPoB(t *testing.T) {
 	tree := data.TreeVersions[data.LatestTreeVersion].Tree()
-	checked := 0
+	checked, clusters := 0, 0
 	for _, want := range loadSidebarControlsCases(t) {
 		build := parseCorpusBuild(t, want.File)
 		spec := build.Tree.Specs[build.ActiveSpecIndex()]
 		if slices.ContainsFunc(pob.SpecNodes(spec), func(id int64) bool { return id >= 65536 }) {
-			continue
+			clusters++
 		}
-		used, ascUsed := specAllocCounts(tree, spec)
+		used, ascUsed := specAllocCounts(tree, specSubgraph(build, build.ActiveSpecIndex()+1, spec), spec)
 		if used != want.Used || ascUsed != want.AscUsed {
 			t.Errorf("%s: %d / %d, PoB %d / %d", want.File, used, ascUsed, want.Used, want.AscUsed)
 		}
 		checked++
 	}
-	if checked < 10 {
-		t.Fatalf("only %d builds checked", checked)
+	if checked < 10 || clusters == 0 {
+		t.Fatalf("only %d builds checked, %d with subgraph nodes", checked, clusters)
 	}
-	t.Logf("%d builds checked", checked)
+	t.Logf("%d builds checked, %d with subgraph nodes", checked, clusters)
 }
 
 func TestTreeSpecsLabelsEachTree(t *testing.T) {

@@ -25,6 +25,7 @@
     collapsed?: boolean;
     pinned?: string[];
     breakdown?: (line: StatLine) => Breakdown | undefined;
+    steps?: (line: StatLine) => Promise<string[] | undefined> | undefined;
     onmaingroup?: (index: number) => void;
     oncontrol?: (field: Control, value: number | undefined) => void;
     /* Build.lua:552-554 */
@@ -39,6 +40,7 @@
     collapsed = $bindable(false),
     pinned = $bindable([]),
     breakdown,
+    steps,
     onmaingroup,
     oncontrol,
     onspectres,
@@ -117,6 +119,25 @@
     minionTipY = row.top - aside!.getBoundingClientRect().top;
   };
   const tip = $derived(hover ? { ...(breakdown?.(hover.entry.line) ?? { groups: [] }), line: hover.entry.line } : undefined);
+  const STEPS_DELAY = 150;
+  let tipSteps = $state.raw<{ entry: Entry; lines?: string[] }>();
+  $effect(() => {
+    const entry = hover?.entry;
+    void sidebar;
+    if (!entry || !steps) return;
+    let live = true;
+    const timer = setTimeout(() => {
+      steps(entry.line)
+        ?.then((lines) => {
+          if (live) tipSteps = { entry, lines };
+        })
+        .catch(() => {});
+    }, STEPS_DELAY);
+    return () => {
+      live = false;
+      clearTimeout(timer);
+    };
+  });
   let tipH = $state(0);
   const tipTop = $derived(hover && aside ? Math.max(8, Math.min(hover.y - tipH / 2, aside.clientHeight - tipH - 8)) : 0);
 
@@ -363,6 +384,7 @@
           value={tip.line.value + (tip.line.note ?? '')}
           formula={tip.formula}
           groups={tip.groups}
+          lines={tipSteps?.entry === hover.entry ? tipSteps.lines : undefined}
           footer="Click for the full breakdown on the Calcs page" />
       </div>
     {/if}

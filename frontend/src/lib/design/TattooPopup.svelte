@@ -47,7 +47,7 @@
           class="w-80"
           aria-label="Modifier"
           {value}
-          options={choices.map((c) => ({ value: c.dn, label: c.dn, title: c.descriptions.join('\n') }))}
+          options={choices.map((c) => ({ value: c.dn, label: c.dn || c.label.trim(), title: c.descriptions.join('\n') }))}
           onchange={(e: Event & { currentTarget: HTMLSelectElement }) => (selected = choices.findIndex((c) => c.dn === e.currentTarget.value))} /></label>
       <div class="flex min-h-10 flex-col gap-0.5" aria-label="Modifier lines">
         {#each chosen?.descriptions ?? [] as l, i (i)}<span>{l}</span>{/each}

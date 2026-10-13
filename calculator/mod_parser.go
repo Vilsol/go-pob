@@ -5905,7 +5905,13 @@ var specialModList = map[string]interface{}{
 	},
 	`hits that would ignite instead scorch`: []mod.Mod{FLAG("IgniteCanScorch"), FLAG("CannotIgnite")},
 	//pob:src/Modules/ModParser.lua:3027
-	`you can inflict an additional scorch on each enemy`:                     []mod.Mod{FLAG("ScorchCanStack"), MOD("ScorchStacksMax", "BASE", 1)},
+	`you can inflict an additional scorch on each enemy`: []mod.Mod{FLAG("ScorchCanStack"), MOD("ScorchStacksMax", "BASE", 1)},
+	//pob:src/Modules/ModParser.lua:3951-3955
+	"inflict fire, cold and lightning exposure on enemies when you suppress their spell damage": []mod.Mod{
+		MOD("EnemyModifier", "LIST", mod.EnemyModifier{Mod: MOD("FireExposure", "BASE", -10)}).Tag(mod.Condition("Effective")).Tag(mod.Condition("SuppressedRecently")),
+		MOD("EnemyModifier", "LIST", mod.EnemyModifier{Mod: MOD("ColdExposure", "BASE", -10)}).Tag(mod.Condition("Effective")).Tag(mod.Condition("SuppressedRecently")),
+		MOD("EnemyModifier", "LIST", mod.EnemyModifier{Mod: MOD("LightningExposure", "BASE", -10)}).Tag(mod.Condition("Effective")).Tag(mod.Condition("SuppressedRecently")),
+	},
 	"critical strike chance is increased by chance to suppress spell damage": []mod.Mod{MOD("CritChance", "INC", 1).Tag(mod.PerStat(1, "SpellSuppressionChance"))},
 	`you take (\d+)% reduced extra damage from suppressed critical strikes`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewFloat("ReduceSuppressedCritExtraDamage", mod.TypeBase, num)}, ""
@@ -6031,12 +6037,14 @@ var specialModList = map[string]interface{}{
 		return []mod.Mod{MOD("EnemyCurseLimit", "BASE", 1).Tag(mod.MultiplierThreshold(firstToUpper(captures[1]) + "Item").Threshold(utils.Float(captures[0])))}, ""
 	},
 	"you can apply one fewer curse": []mod.Mod{MOD("EnemyCurseLimit", "BASE", -1)},
-	"hits that fail to freeze due to insufficient freeze duration inflict hoarfrost":   []mod.Mod{FLAG("HitsCanInflictHoarfrost")},
-	"inflict barnacles on nearby enemies every second":                                 []mod.Mod{FLAG("CanInflictBarnacles")},
-	"your nearby party members maximum endurance charges is equal to yours":            []mod.Mod{FLAG("PartyMemberMaximumEnduranceChargesEqualToYours")},
-	"your warcries inflict hallowing flame":                                            []mod.Mod{FLAG("Condition:CanInflictHallowingFlame").Tag(mod.Condition("UsedWarcryRecently"))},
-	"attacks with this weapon inflict hallowing flame on hit":                          []mod.Mod{FLAG("Condition:CanInflictHallowingFlame")},
-	"inflict hallowing flame on hit while on consecrated ground":                       []mod.Mod{FLAG("Condition:CanInflictHallowingFlame").Tag(mod.Condition("OnConsecratedGround"))},
+	"hits that fail to freeze due to insufficient freeze duration inflict hoarfrost": []mod.Mod{FLAG("HitsCanInflictHoarfrost")},
+	"inflict barnacles on nearby enemies every second":                               []mod.Mod{FLAG("CanInflictBarnacles")},
+	"your nearby party members maximum endurance charges is equal to yours":          []mod.Mod{FLAG("PartyMemberMaximumEnduranceChargesEqualToYours")},
+	"your warcries inflict hallowing flame":                                          []mod.Mod{FLAG("Condition:CanInflictHallowingFlame").Tag(mod.Condition("UsedWarcryRecently"))},
+	"attacks with this weapon inflict hallowing flame on hit":                        []mod.Mod{FLAG("Condition:CanInflictHallowingFlame")},
+	"inflict hallowing flame on hit while on consecrated ground":                     []mod.Mod{FLAG("Condition:CanInflictHallowingFlame").Tag(mod.Condition("OnConsecratedGround"))},
+	//pob:src/Modules/ModParser.lua:4334
+	"inflict hallowing flame on melee hit":                                             []mod.Mod{FLAG("Condition:CanInflictHallowingFlame")},
 	"your blink and mirror arrow clones use your gloves":                               []mod.Mod{FLAG("BlinkAndMirrorUseGloves")},
 	"socketed vaal skills grant elusive when used":                                     []mod.Mod{FLAG("Condition:CanBeElusive")},
 	"rage grants cast speed instead of attack speed":                                   []mod.Mod{FLAG("Condition:RageCastSpeed")},
@@ -7401,7 +7409,11 @@ var specialModList = map[string]interface{}{
 			FLAG("CurseImmune").Tag(mod.MultiplierThreshold("Rage").Threshold(num)),
 		}, ""
 	},
-	"the effect of chill on you is reversed": []mod.Mod{mod.NewFlag("SelfChillEffectIsReversed", true)},
+	//pob:src/Modules/ModParser.lua:4945
+	"the effect of chill on you is reversed": []mod.Mod{
+		mod.NewFlag("SelfChillEffectIsReversed", true),
+		MOD("Dummy", "DUMMY", 1).Tag(mod.Condition("Chilled")),
+	},
 	`your movement speed is (\d+)% of its base value`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("MovementSpeed", "OVERRIDE", num/100)}, ""
 	},

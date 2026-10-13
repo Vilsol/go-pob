@@ -23,6 +23,7 @@
   } from '$lib/display/item_options';
   import { notSupportedNote } from '$lib/design/pob_text';
   import { syncWrap } from '$lib/go/worker';
+  import { POWER_WORKER_CHOICES, powerWorkers } from '$lib/go/power_workers';
   import { logError } from '$lib/utils';
   import { colorHighlight, colorNegative, colorPositive, edgeSearchHighlight, hexColour } from '$lib/skill_tree/options';
   import { get } from 'svelte/store';
@@ -30,6 +31,8 @@
 
   type Props = { open?: boolean };
   let { open = $bindable(false) }: Props = $props();
+
+  const workerLabel = (n: number) => (n > 1 ? String(n) : 'Off');
 
   const sections: SettingsSection[] = [
     {
@@ -127,6 +130,20 @@
         { id: 'colorNegative', label: 'Hex colour for negative values', kind: 'color', value: '#ff9b52', hint: 'Stat differences and breakdowns' },
         { id: 'colorHighlight', label: 'Hex colour for highlight nodes', kind: 'color', value: '#ff0000', hint: 'The passive tree search' },
         { id: 'edgeSearchHighlight', label: 'Show search circles at viewport edge', kind: 'check', value: true }
+      ]
+    },
+    {
+      id: 'power',
+      label: 'Power report',
+      rows: [
+        {
+          id: 'powerWorkers',
+          label: 'Parallel workers',
+          kind: 'select',
+          value: 'Off',
+          opts: POWER_WORKER_CHOICES.map(workerLabel),
+          hint: 'Splits the power report over more workers; each one holds its own copy of the game data, about 400 MB'
+        }
       ]
     },
     {
@@ -249,6 +266,7 @@
     titleBuild: $showTitlebarName,
     zoomSensitivity: $zoomSensitivity,
     nodePowerTheme: $nodePowerTheme,
+    powerWorkers: workerLabel($powerWorkers),
     thousands: $numberFormat.showThousandsSeparators,
     compact: $numberFormat.useCompactValues,
     thousandsSep: $numberFormat.thousandsSeparator === ' ' ? 'space' : $numberFormat.thousandsSeparator,
@@ -299,6 +317,7 @@
     else if (id === 'devMode') devMode.set(!!v);
     else if (id === 'titleBuild') showTitlebarName.set(!!v);
     else if (id === 'zoomSensitivity') zoomSensitivity.set(Number(v));
+    else if (id === 'powerWorkers') powerWorkers.set(POWER_WORKER_CHOICES.find((n) => workerLabel(n) === String(v)) ?? 1);
     else if (id === 'nodePowerTheme' && (NODE_POWER_THEMES as string[]).includes(String(v))) nodePowerTheme.set(String(v) as NodePowerTheme);
     else if (id === 'thousands') setNumbers({ showThousandsSeparators: !!v });
     else if (id === 'compact') setNumbers({ useCompactValues: !!v });

@@ -1,5 +1,6 @@
 <script lang="ts">
   import { untrack } from 'svelte';
+  import { get } from 'svelte/store';
   import { goto as gotoPage } from '$app/navigation';
   import { base as appBase } from '$app/paths';
   import TreePage from '$lib/design/TreePage.svelte';
@@ -19,6 +20,7 @@
   import { estimatePlayerProgress } from '$lib/display/points';
   import { currentBuild, devMode, outputs } from '$lib/global.js';
   import { syncWrap } from '$lib/go/worker';
+  import { powerWorkers } from '$lib/go/power_workers';
   import { logError } from '$lib/utils';
   import Dialog from '$lib/design/Dialog.svelte';
   import Button from '$lib/design/Button.svelte';
@@ -375,6 +377,8 @@
   let powerCustom = $state('0');
   const powerDepth = $derived(depthChoice === -1 ? Number.parseInt(powerCustom, 10) || 0 : depthChoice);
   let powerRows = $state.raw<PowerRow[]>();
+  // TreeTab.lua:1116, PassiveTreeView.lua:907-933
+  let powerAscendancy = $state.raw<PowerRow[]>([]);
   let powerMs = $state<number>();
   let powerProgress = $state(0);
   let powerFocus = $state<number>();
@@ -417,10 +421,11 @@
           .catch(logError);
       }, 250);
       syncWrap
-        ?.BuildPowerReportLive(stat, depth)
+        ?.BuildPowerReportLive(stat, depth, get(powerWorkers))
         .then((r) => {
           if (!live || !r) return;
           powerRows = r.rows;
+          powerAscendancy = r.ascendancy ?? [];
           powerMs = r.ms;
           powerFlashes.arrive(r.rows.filter((row) => row.Power !== 0).map((row) => row.ID));
         })
@@ -458,7 +463,7 @@
   };
   // PassiveTreeView.lua:920-933
   const ascendancyNodes = $derived(new Set(base.nodes.filter((n) => base.byId.get(n.id)?.ascendancyName).map((n) => n.id)));
-  const heatRows = $derived(heatOn && powerRows ? powerRows : powerRows === undefined ? powerPartial : undefined);
+  const heatRows = $derived(heatOn && powerRows ? [...powerRows, ...powerAscendancy] : powerRows === undefined ? powerPartial : undefined);
   const heat = $derived(
     heatRows ? { ...heatValues(heatRows, ascendancyNodes), mix: powerStat === '' ? heatMixValues(heatRows, ascendancyNodes) : undefined } : undefined
   );
@@ -517,6 +522,15 @@
     syncWrap
       ?.GetTreeTattooNodes()
       .then((t) => (tattooTips = new Map((t ?? []).map((x) => [x.nodeId, x]))))
+      .catch(logError);
+  });
+  // PassiveSpec.lua:1185-1372, 2380-2388
+  let conqueredTips = $state.raw<Map<number, { name: string; stats: string[]; replaced: boolean }>>(new Map());
+  $effect(() => {
+    void $outputs;
+    syncWrap
+      ?.GetTreeConqueredNodes()
+      .then((c) => (conqueredTips = new Map((c ?? []).map((x) => [x.nodeId, x]))))
       .catch(logError);
   });
   // TreeTab.lua:946-973
@@ -654,7 +668,7 @@
   const costs = $derived(allocationCosts(paths));
   const nodes = $derived(
     base.nodes.map((node): TreeNodeFx => {
-      const tattoo = tattooTips.get(node.id);
+      const tattoo = conqueredTips.get(node.id) ?? tattooTips.get(node.id);
       const n = tattoo ? { ...node, name: tattoo.name + ($devMode ? ` (${node.id})` : ''), stats: tattoo.stats } : node;
       if (alloc[n.id]) {
         const lose = dependents?.node === n.id ? dependents.ids : undefined;
@@ -991,7 +1005,7 @@
       <div class="border-t border-line pt-2" aria-label="Granted skill"><TooltipLines {lines} center /></div>
     {/each}
   {/if}
-  {@const reminder = tattooTips.has(n.id) ? tattooTips.get(n.id)!.reminder : node?.reminderText}
+  {@const reminder = tattooTips.has(n.id) ? tattooTips.get(n.id)!.reminder : conqueredTips.get(n.id)?.replaced ? [] : node?.reminderText}
   {#if reminder?.length}
     <div class="flex flex-col gap-0.5 border-t border-line pt-2 text-12 text-[#a0a080]" aria-label="Reminder text">
       {#each reminder as l, i (i)}<span>{l}</span>{/each}

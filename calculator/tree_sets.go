@@ -1,6 +1,7 @@
 package calculator
 
 import (
+	"slices"
 	"strconv"
 	"strings"
 
@@ -37,7 +38,7 @@ func treeVersionDisplay(v pob.TreeVersion) string {
 }
 
 //pob:block:src/Classes/PassiveSpec.lua:824-835,src/Classes/PassiveSpec.lua:279-286
-func specAllocCounts(tree *data.Tree, spec pob.Spec) (int, int) {
+func specAllocCounts(tree *data.Tree, subgraph map[string]data.Node, spec pob.Spec) (int, int) {
 	selections := make(map[int64]int64)
 	for _, m := range masteryEffectsRegex.FindAllStringSubmatch(spec.MasteryEffects, -1) {
 		node, errNode := strconv.ParseInt(m[1], 10, 64)
@@ -49,7 +50,7 @@ func specAllocCounts(tree *data.Tree, spec pob.Spec) (int, int) {
 	used, ascUsed := 0, 0
 	seen := make(map[int64]bool)
 	for _, id := range pob.SpecNodes(spec) {
-		node, ok := tree.Nodes[strconv.FormatInt(id, 10)]
+		node, ok := specOrSubgraphNode(tree, subgraph, id)
 		if seen[id] || !ok {
 			continue
 		}
@@ -74,11 +75,11 @@ func specAllocCounts(tree *data.Tree, spec pob.Spec) (int, int) {
 }
 
 //pob:block:src/Classes/PassiveSpec.lua:836-838
-func specSocketCount(tree *data.Tree, spec pob.Spec) int {
+func specSocketCount(tree *data.Tree, subgraph map[string]data.Node, spec pob.Spec) int {
 	n := 0
 	seen := make(map[int64]bool)
 	for _, id := range pob.SpecNodes(spec) {
-		node, ok := tree.Nodes[strconv.FormatInt(id, 10)]
+		node, ok := specOrSubgraphNode(tree, subgraph, id)
 		if !seen[id] && ok && node.IsJewelSocket != nil && *node.IsJewelSocket {
 			n++
 		}
@@ -112,11 +113,32 @@ func TreeSpecs(build *pob.PathOfBuilding) []TreeSpecRow {
 func TreeSpecsPoints(build *pob.PathOfBuilding) []TreeSpecPoints {
 	tree := data.TreeVersions[data.LatestTreeVersion].Tree()
 	out := make([]TreeSpecPoints, 0, len(build.Tree.Specs))
-	for _, spec := range build.Tree.Specs {
-		used, ascUsed := specAllocCounts(tree, spec)
-		out = append(out, TreeSpecPoints{Used: used, AscendUsed: ascUsed, Sockets: specSocketCount(tree, spec)})
+	for i, spec := range build.Tree.Specs {
+		subgraph := specSubgraph(build, i+1, spec)
+		used, ascUsed := specAllocCounts(tree, subgraph, spec)
+		out = append(out, TreeSpecPoints{Used: used, AscendUsed: ascUsed, Sockets: specSocketCount(tree, subgraph, spec)})
 	}
 	return out
+}
+
+//pob:block:src/Classes/PassiveSpec.lua:1652
+func specSubgraph(build *pob.PathOfBuilding, specID int, spec pob.Spec) map[string]data.Node {
+	if !slices.ContainsFunc(pob.SpecNodes(spec), func(id int64) bool { return id >= 1<<16 }) {
+		return nil
+	}
+	other := *build
+	other.Tree.ActiveSpec = specID
+	nodes, _ := buildClusterJewelLayout(&Environment{Build: &other}, data.LatestTreeVersion, false)
+	return nodes
+}
+
+func specOrSubgraphNode(tree *data.Tree, subgraph map[string]data.Node, id int64) (data.Node, bool) {
+	key := strconv.FormatInt(id, 10)
+	if n, ok := tree.Nodes[key]; ok {
+		return n, true
+	}
+	n, ok := subgraph[key]
+	return n, ok
 }
 
 //pob:block:src/Classes/PassiveSpec.lua:603-613

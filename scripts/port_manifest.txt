@@ -57,7 +57,10 @@ calculator/passive_spec_mastery.go  PORT       src/Classes/PassiveMasteryControl
 calculator/passive_spec_radius.go   PORT       src/Classes/PassiveTreeView.lua
 calculator/passive_spec_reset.go    PORT       src/Classes/PassiveSpec.lua,src/Classes/TreeTab.lua
 calculator/passive_spec_url.go      PORT       src/Classes/PassiveSpec.lua,src/Classes/TreeTab.lua
+calculator/power_ascendancy.go      PORT       src/Classes/CalcsTab.lua
 calculator/power_report.go          PORT       src/Classes/CalcsTab.lua,src/Classes/TreeTab.lua,src/Modules/Data.lua,src/Classes/PassiveTree.lua,src/Classes/PassiveSpec.lua
+calculator/power_shard.go           GO-NATIVE  splits the power report over web workers by cache-key group and merges their rows back in Report's order; PoB runs the report in one coroutine and has no counterpart
+calculator/spec_node_rewrites.go    PORT       src/Classes/PassiveSpec.lua
 calculator/reduce_pools.go          PORT       src/Modules/CalcDefence.lua
 calculator/skill_funcs.go           PORT       src/Data/Skills/act_int.lua,src/Data/Skills/act_dex.lua,src/Data/Skills/act_str.lua,src/Data/Skills/other.lua
 calculator/tree_missing_nodes.go    GO-NATIVE  missingNode/resolveTreeNode helpers and the by-name index; the table moved to tree_missing_nodes_generated.go
@@ -216,6 +219,7 @@ wasm/exposition/items.go            GO-NATIVE  crystalline binding surface for t
 wasm/exposition/main.go             GO-NATIVE  crystalline binding surface for the frontend
 wasm/exposition/mastery.go          GO-NATIVE  crystalline binding surface for the frontend
 wasm/exposition/memory.go           GO-NATIVE  crystalline binding surface for the frontend
+wasm/exposition/power_ascendancy.go GO-NATIVE  crystalline binding surface for the frontend
 wasm/exposition/power_report.go     GO-NATIVE  crystalline binding surface for the frontend
 wasm/exposition/skills20.go         GO-NATIVE  crystalline binding surface for the frontend
 wasm/exposition/tree.go             GO-NATIVE  crystalline binding surface for the frontend
@@ -227,6 +231,8 @@ wasm/exposition/loadouts.go         GO-NATIVE  crystalline binding surface for t
 wasm/exposition/tree_mastery.go     GO-NATIVE  crystalline binding surface for the frontend
 wasm/exposition/tree_sets.go        GO-NATIVE  crystalline binding surface for the frontend
 wasm/exposition/tree_tattoos.go     GO-NATIVE  crystalline binding surface for the frontend
+wasm/exposition/tree_conquered_nodes.go GO-NATIVE  crystalline binding surface for the frontend
+wasm/exposition/sidebar_breakdown.go GO-NATIVE  crystalline binding surface for the frontend
 wasm/exposition/tree_versions.go    GO-NATIVE  crystalline binding surface for the frontend
 wasm/exposition/whatif.go           GO-NATIVE  crystalline binding surface for the frontend
 wasm/exposition/mod_debug.go        PORT       src/Modules/Calcs.lua,src/Classes/ModDB.lua,src/Classes/ModList.lua,src/Modules/ModTools.lua,src/Modules/Common.lua,src/Data/Global.lua

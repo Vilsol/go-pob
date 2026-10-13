@@ -24,6 +24,18 @@
   let selected = $state(0);
   let added = $state('');
   const choices = $derived(ROWS.filter((r) => showLegacy || !r.legacy));
+  // TreeTab.lua:871
+  const KEYSTONE: TattooChoiceFx[] = [
+    {
+      dn: '',
+      label: '                                                Limited to 1 Ascendancy Tattoo',
+      descriptions: ['Limited to 1 Ascendancy Tattoo'],
+      legacy: false
+    },
+    { dn: 'Acrobatics', label: 'Acrobatics', descriptions: ['Limited to 1 Keystone Tattoo'], legacy: false }
+  ];
+  let keystoneSelected = $state(0);
+  let keystoneAdded = $state<string>();
 </script>
 
 <Story
@@ -54,5 +66,31 @@
       onreset={() => (added = '')}
       onclose={() => {}} />
     <output aria-label="Added">{added}</output>
+  </div>
+</Story>
+
+<Story
+  name="The nameless keystone row"
+  asChild
+  play={async ({ canvasElement }) => {
+    const c = within(canvasElement.ownerDocument.body);
+    const dialog = c.getByRole('dialog', { name: 'Replace modifier of Point Blank' });
+    const options = within(within(dialog).getByRole('combobox', { name: 'Modifier' })).getAllByRole('option');
+    await expect(options.map((o) => o.textContent?.trim())).toEqual(['Limited to 1 Ascendancy Tattoo', 'Acrobatics']);
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Add' }));
+    await expect(c.getByLabelText('Added')).toHaveTextContent('(nameless)');
+  }}>
+  <div class="h-150">
+    <TattooPopup
+      open
+      nodeName="Point Blank"
+      choices={KEYSTONE}
+      bind:selected={keystoneSelected}
+      count={0}
+      countLines={[]}
+      onadd={(dn: string) => (keystoneAdded = dn)}
+      onreset={() => {}}
+      onclose={() => {}} />
+    <output aria-label="Added">{keystoneAdded === '' ? '(nameless)' : (keystoneAdded ?? '')}</output>
   </div>
 </Story>

@@ -277,7 +277,7 @@ func powerOracleCensus(b *PowerBuilder, o *powerOracle) (map[string][]string, in
 	}
 	values := map[int64]float64{}
 	var maxGot float64
-	for _, r := range report {
+	for _, r := range append(slices.Clone(report), b.AscendancyPower()...) {
 		if r.Allocated || r.Cluster {
 			continue
 		}
@@ -315,6 +315,9 @@ func powerOracleCensus(b *PowerBuilder, o *powerOracle) (map[string][]string, in
 			cls := "heat-colour"
 			if n := b.treeNode(id); n.AscendancyName != nil && *n.AscendancyName != "" {
 				cls = "heat-ascendancy"
+				if b.power[id] == nil {
+					cls = "heat-groupless"
+				}
 			}
 			if id >= 1<<16 {
 				cls = "cluster-subgraph"
@@ -336,7 +339,6 @@ func valueClass(unparsed bool, class string) string {
 func TestPowerReportMatchesPoBOracle(t *testing.T) {
 	ceilings := map[string]int{
 		"0021-assassin-blade-flurry/FullDPS:2/data-groupless":           1,
-		"0021-assassin-blade-flurry/FullDPS:2/heat-ascendancy":          3,
 		"0021-assassin-blade-flurry/FullDPS:2/parser":                   1,
 		"0021-assassin-blade-flurry/FullDPS:2/path-value":               6,
 		"0021-assassin-blade-flurry/FullDPS:2/top20":                    1,
@@ -345,59 +347,47 @@ func TestPowerReportMatchesPoBOracle(t *testing.T) {
 		"0036-elementalist-incinerate-of-venting/Life:2/depends":        7,
 		"0036-elementalist-incinerate-of-venting/Life:2/path-value":     6,
 		"0179-assassin-cold-snap/FullDPS:0/data-groupless":              7,
+		"0179-assassin-cold-snap/FullDPS:0/heat-groupless":              1,
 		"0179-assassin-cold-snap/FullDPS:0/depends":                     1,
-		"0179-assassin-cold-snap/FullDPS:0/heat-ascendancy":             117,
 		"0179-assassin-cold-snap/FullDPS:0/heat-colour":                 1,
 		"0179-assassin-cold-snap/FullDPS:0/parser":                      46,
 		"0179-assassin-cold-snap/Life:0/data-groupless":                 7,
-		"0179-assassin-cold-snap/Life:0/heat-ascendancy":                13,
 		"0179-assassin-cold-snap/Life:0/parser":                         46,
-		"0179-assassin-cold-snap/OffDef:2/heat-ascendancy":              4,
 		"0215-slayer-cyclone-of-tumult/CombinedDPS:0/data-groupless":    7,
-		"0215-slayer-cyclone-of-tumult/CombinedDPS:0/heat-ascendancy":   97,
+		"0215-slayer-cyclone-of-tumult/CombinedDPS:0/heat-groupless":    1,
 		"0215-slayer-cyclone-of-tumult/CombinedDPS:0/parser":            45,
 		"0215-slayer-cyclone-of-tumult/FullDPS:0/data-groupless":        7,
-		"0215-slayer-cyclone-of-tumult/FullDPS:0/heat-ascendancy":       100,
+		"0215-slayer-cyclone-of-tumult/FullDPS:0/heat-groupless":        1,
 		"0215-slayer-cyclone-of-tumult/FullDPS:0/heat-colour":           4,
 		"0215-slayer-cyclone-of-tumult/FullDPS:0/parser":                49,
 		"0215-slayer-cyclone-of-tumult/FullDPS:0/value":                 1,
 		"0215-slayer-cyclone-of-tumult/Life:3/data-groupless":           1,
 		"0215-slayer-cyclone-of-tumult/Life:3/depends":                  1,
 		"0215-slayer-cyclone-of-tumult/OffDef:0/data-groupless":         6,
-		"0215-slayer-cyclone-of-tumult/OffDef:0/heat-ascendancy":        97,
+		"0215-slayer-cyclone-of-tumult/OffDef:0/heat-groupless":         1,
 		"0215-slayer-cyclone-of-tumult/OffDef:0/parser":                 45,
 		"0280-elementalist-fireball/CombinedDPS:0/data-groupless":       7,
-		"0280-elementalist-fireball/CombinedDPS:0/heat-ascendancy":      70,
 		"0280-elementalist-fireball/CombinedDPS:0/heat-colour":          1,
 		"0280-elementalist-fireball/CombinedDPS:0/parser":               46,
 		"0280-elementalist-fireball/FullDPS:0/data-groupless":           7,
-		"0280-elementalist-fireball/FullDPS:0/heat-ascendancy":          104,
 		"0280-elementalist-fireball/FullDPS:0/heat-colour":              1,
 		"0280-elementalist-fireball/FullDPS:0/parser":                   46,
 		"0280-elementalist-fireball/FullDPS:3/data-groupless":           1,
-		"0280-elementalist-fireball/FullDPS:3/heat-ascendancy":          9,
 		"0280-elementalist-fireball/Life:0/data-groupless":              7,
-		"0280-elementalist-fireball/Life:0/heat-ascendancy":             13,
 		"0280-elementalist-fireball/Life:0/parser":                      46,
 		"0280-elementalist-fireball/OffDef:0/data-groupless":            6,
-		"0280-elementalist-fireball/OffDef:0/heat-ascendancy":           70,
 		"0280-elementalist-fireball/OffDef:0/heat-colour":               1,
 		"0280-elementalist-fireball/OffDef:0/parser":                    46,
 		"0369-necromancer-automation/FullDPS:0/data-groupless":          7,
-		"0369-necromancer-automation/FullDPS:0/heat-ascendancy":         30,
 		"0369-necromancer-automation/FullDPS:0/parser":                  46,
 		"0369-necromancer-automation/Life:0/data-groupless":             7,
-		"0369-necromancer-automation/Life:0/heat-ascendancy":            14,
 		"0369-necromancer-automation/Life:0/parser":                     46,
-		"0369-necromancer-automation/OffDef:3/heat-ascendancy":          5,
 		"0651-elementalist-reap-5/FullDPS:0/data-groupless":             7,
-		"0651-elementalist-reap-5/FullDPS:0/heat-ascendancy":            91,
+		"0651-elementalist-reap-5/FullDPS:0/heat-groupless":             2,
 		"0651-elementalist-reap-5/FullDPS:0/heat-colour":                1,
 		"0651-elementalist-reap-5/FullDPS:0/parser":                     46,
 		"0651-elementalist-reap-5/Life:0/data-groupless":                7,
-		"0651-elementalist-reap-5/Life:0/heat-ascendancy":               6,
 		"0651-elementalist-reap-5/Life:0/parser":                        46,
-		"0651-elementalist-reap-5/OffDef:3/heat-ascendancy":             3,
 	}
 	for _, tc := range powerOracleCases {
 		for _, sd := range tc.stats {

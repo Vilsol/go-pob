@@ -74,6 +74,9 @@ func TestTattooChoicesFilterByTarget(t *testing.T) {
 	if !slices.Contains(choiceNames(keystone), "Acrobatics") {
 		t.Errorf("a keystone is not offered Acrobatics: %q", choiceNames(keystone))
 	}
+	if len(keystone) == 0 || keystone[0].DN != "" || !slices.Equal(keystone[0].Descriptions, []string{"Limited to 1 Ascendancy Tattoo"}) {
+		t.Errorf("a keystone's first choice is not the nameless row: %+v", keystone[:min(1, len(keystone))])
+	}
 	mastery := GetTattooChoices(build, treeNodeNamed(t, func(_ int64, n data.Node) bool {
 		return n.IsMastery != nil && *n.IsMastery && len(n.MasteryEffects) > 0
 	}), false)

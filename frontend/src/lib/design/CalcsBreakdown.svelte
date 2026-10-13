@@ -5,7 +5,7 @@
   import type { CalcBreakdown, ItemTip } from './fixtures';
   import FloatingItemTip from './FloatingItemTip.svelte';
   import RadiusVisual from '$lib/components/radius/RadiusVisual.svelte';
-  import { breakdownStep } from './breakdown_lines';
+  import BreakdownSteps from './BreakdownSteps.svelte';
   import type { Snippet } from 'svelte';
 
   // CalcBreakdownControl.lua:174-209
@@ -158,20 +158,7 @@
         </div>
         {#if p.bd}
           {#if p.bd.lines.length}
-            <div role="group" class="grid grid-cols-[1.1em_max-content_minmax(0,1fr)] items-baseline gap-x-2 gap-y-0.5" aria-label="Calculation">
-              {#each p.bd.lines as l, j (j)}
-                {@const st = breakdownStep(l)}
-                {#if 'prose' in st}
-                  <div class="col-span-3 text-11 leading-snug text-text-2"><PobText text={st.prose} /></div>
-                {:else}
-                  <div class={['contents', st.op === '=' && '[&>*]:border-t [&>*]:border-line [&>*]:pt-0.5']} data-step>
-                    <span class="text-center font-mono text-text-3">{st.op ?? ''}</span>
-                    <span class={['text-right font-mono', st.op === '=' ? 'font-semibold text-text' : 'text-text']}><PobText text={st.value} /></span>
-                    <span class="min-w-0 text-11 text-text-3"><PobText text={st.note ?? ''} /></span>
-                  </div>
-                {/if}
-              {/each}
-            </div>
+            <BreakdownSteps lines={p.bd.lines} />
           {/if}
           {#if p.bd.radius}<RadiusVisual radius={p.bd.radius} />{/if}
           {#if p.bd.columns && p.bd.rows}

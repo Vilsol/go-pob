@@ -45,14 +45,26 @@ const cacheFonts = async () => {
 };
 
 const IMMUTABLE = `${base}/_app/immutable/`;
-const workerChunks = async (cache: Cache) => {
+const cacheWorkerChunks = async (cache: Cache) => {
   const found = new Set<string>();
+  const queue: string[] = [];
+  const add = (file: string) => {
+    const url = `${IMMUTABLE}workers/${file}`;
+    if (!found.has(url)) {
+      found.add(url);
+      queue.push(url);
+    }
+  };
   for (const url of build) {
     if (!url.endsWith('.js')) continue;
     const text = (await (await cache.match(url))?.text()) ?? '';
-    for (const m of text.matchAll(/workers\/([\w.-]+\.js)/g)) found.add(`${IMMUTABLE}workers/${m[1]}`);
+    for (const m of text.matchAll(/workers\/([\w.-]+\.js)/g)) add(m[1]);
   }
-  return [...found];
+  for (let url = queue.shift(); url; url = queue.shift()) {
+    await cache.add(new Request(url, { cache: 'reload' }));
+    const text = (await (await cache.match(url))?.text()) ?? '';
+    for (const m of text.matchAll(/new URL\("([\w.-]+\.js)",\s*self\.location/g)) add(m[1]);
+  }
 };
 
 const APP_DIR = `${base}/_app/`;
@@ -64,7 +76,7 @@ sw.addEventListener('install', (event) => {
     (async () => {
       const cache = await caches.open(APP);
       await cache.addAll(PRECACHE.map((url) => new Request(url, { cache: 'reload' })));
-      await cache.addAll((await workerChunks(cache)).map((url) => new Request(url, { cache: 'reload' })));
+      await cacheWorkerChunks(cache);
       for (const url of build) {
         const res = await cache.match(url);
         if (res && misrouted(url, res)) {

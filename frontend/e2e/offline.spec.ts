@@ -1,5 +1,5 @@
 import { test, expect, chromium, type BrowserContext, type Page } from '@playwright/test';
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 
@@ -94,6 +94,19 @@ test('offline after one online visit: reload, open a saved build, edit it', asyn
     const answer = (await kept.jsonValue()) as { count: number; missing: string[] };
     console.log(`tree sheets kept for offline: ${answer.count}, missing ${answer.missing.length}`);
     expect(answer.missing, 'tree sheets the service worker could not keep').toEqual([]);
+    const workers = readdirSync(resolve(import.meta.dirname, '../.svelte-kit/output/client/_app/immutable/workers')).map(
+      (f) => `${BASE}/_app/immutable/workers/${f}`
+    );
+    expect(
+      workers.some((u) => u.includes('power_worker')),
+      'the build has no power worker chunk'
+    ).toBe(true);
+    const uncached = await page.evaluate(async (urls) => {
+      const out: string[] = [];
+      for (const u of urls) if (!(await caches.match(u))) out.push(u);
+      return out;
+    }, workers);
+    expect(uncached, 'worker chunks the service worker did not precache').toEqual([]);
   }
   if (BASE) await page.unroute(`${baseURL}/`);
 

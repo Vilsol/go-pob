@@ -198,7 +198,6 @@ func dumpTattooPassives() (any, error) {
 		}
 	}
 	scanned := len(nodes)
-	delete(nodes, "")
 	if len(nodes) == 0 {
 		return nil, fmt.Errorf("no PassiveSkillOverrides row")
 	}

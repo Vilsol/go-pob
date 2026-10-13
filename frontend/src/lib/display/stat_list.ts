@@ -16,6 +16,8 @@ export interface StatLine {
   /* Build.lua:1725-1738 */
   detail?: boolean;
   gauge?: Gauge;
+  stat?: string;
+  minion?: boolean;
 }
 
 export interface SkillDPSEntry {
@@ -142,7 +144,8 @@ export const buildStatList = (input: StatListInput, statList: Stat[] = displaySt
         value: formatted.value,
         valueColor: formatted.color,
         note: note || undefined,
-        ...(gauge && { gauge })
+        ...(gauge && { gauge }),
+        ...(!statData.childStat && { stat: statData.stat })
       });
     }
     // src/Modules/Build.lua:1763-1768
