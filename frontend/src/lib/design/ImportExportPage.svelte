@@ -75,7 +75,7 @@
     ['replace', 'Import to this build', 'overwrites the tree, items, skills and config of this build'],
     ['compare', 'Import as a comparison', 'opens it on the Compare page next to this build']
   ];
-  const HINT = 'Paste a code or a link from pobb.in, PoeNinja, pob.codes, Maxroll, Pastebin.com, Rentry.co or poedb.tw, or a character JSON';
+  const HINT = 'Paste a code or a link from pobb.in, PoeNinja, pob.codes, Maxroll, Pastebin.com or poedb.tw, or a character JSON';
 
   let verdict = $state<Verdict | null>(null);
   $effect(() => {

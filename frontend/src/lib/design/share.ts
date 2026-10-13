@@ -43,7 +43,6 @@ export const SITES: Site[] = [
     regex: /pastebinp\.com\/(\w+)\s*$/,
     download: 'pastebinp.com/raw/$1'
   },
-  { label: 'Rentry.co', id: 'rentry', match: /^https:\/\/rentry\.co\/\w+/, regex: /rentry\.co\/(\w+)\s*$/, download: 'rentry.co/paste/$1/raw' },
   {
     label: 'poedb.tw',
     id: 'PoEDB',
@@ -54,6 +53,14 @@ export const SITES: Site[] = [
   }
 ];
 export const EXPORT_SITES = SITES.filter((s) => s.link);
+
+export const DROPPED_SITES: { label: string; match: RegExp; text: string }[] = [
+  {
+    label: 'Rentry.co',
+    match: /^https:\/\/rentry\.co\/\w+/,
+    text: "Rentry.co links cannot be imported: rentry only serves a paste with its owner's access code. Paste the build code instead."
+  }
+];
 
 export type ImportMode = 'new' | 'replace' | 'compare';
 
@@ -71,7 +78,9 @@ export const importLink = (raw: string): string => {
 export const urlVerdict = (raw: string): Verdict | undefined => {
   const t = importLink(raw);
   const site = SITES.find((s) => s.match.test(t));
-  return site ? { valid: true, text: `URL is valid (${site.label})`, site: site.label } : undefined;
+  if (site) return { valid: true, text: `URL is valid (${site.label})`, site: site.label };
+  const dropped = DROPPED_SITES.find((s) => s.match.test(t));
+  return dropped && { valid: false, text: dropped.text };
 };
 
 /* BuildSiteTools.lua:100 */

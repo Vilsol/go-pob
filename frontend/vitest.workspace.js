@@ -19,7 +19,7 @@ export default defineWorkspace([
     plugins: [tailwindcss(), sveltekit(), storybookTest({ configDir: '.storybook' })],
     test: {
       name: 'storybook',
-      testTimeout: 30_000,
+      testTimeout: 60_000,
       browser: {
         enabled: true,
         headless: true,

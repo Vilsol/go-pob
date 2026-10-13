@@ -42,7 +42,6 @@ describe('/api/build', () => {
     ['PoeNinja', 'Abc1', 'https://poe.ninja/poe1/pob/raw/Abc1', IMMUTABLE_TTL],
     ['pastebin', 'DsS6Qsxa', 'https://pastebin.com/raw/DsS6Qsxa', EDITABLE_TTL],
     ['pastebinProxy', 'DsS6Qsxa', 'https://pastebinp.com/raw/DsS6Qsxa', EDITABLE_TTL],
-    ['rentry', 'abc', 'https://rentry.co/paste/abc/raw', EDITABLE_TTL],
     ['PoEDB', 'abc', 'https://poedb.tw/pob/abc/raw', EDITABLE_TTL]
   ])('%s %s → %s, cached %ss', async (site, id, url, ttl) => {
     const { fetchMock, d } = deps(() => new Response('code'));
@@ -63,6 +62,7 @@ describe('/api/build', () => {
     ['a query in a poe.ninja field', 'site=PoeNinja&id=overview%2Fcode&account=a%26x%3Dy&name=b&overview=c&type=d', 'malformed PoeNinja character'],
     ['the character path on another site', 'site=Maxroll&id=overview%2Fcode&account=a&name=b&overview=c&type=d', 'malformed Maxroll id'],
     ['an unknown site', 'site=evil&id=abc', 'unknown site'],
+    ['a site go-pob drops', 'site=rentry&id=abc', 'unknown site'],
     ['a missing site', 'id=abc', 'unknown site'],
     ['a missing id', 'site=POBBin', 'malformed pobb.in id'],
     ['a path in a .+ id', 'site=Maxroll&id=../../admin', 'malformed Maxroll id'],

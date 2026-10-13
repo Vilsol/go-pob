@@ -2,12 +2,14 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { downloadUrl, importLink, jsonVerdict, SITES, urlVerdict } from './share';
+import { downloadUrl, DROPPED_SITES, importLink, jsonVerdict, SITES, urlVerdict } from './share';
 
-const rows = readFileSync(resolve(__dirname, 'testdata/build_sites.tsv'), 'utf8')
+const pinRows = readFileSync(resolve(__dirname, 'testdata/build_sites.tsv'), 'utf8')
   .trim()
   .split('\n')
   .map((l) => l.split('\t'));
+const dropped = new Set(DROPPED_SITES.map((s) => s.label));
+const rows = pinRows.filter((r) => !dropped.has(r[0]));
 
 describe('downloadUrl', () => {
   it('covers every site PoB lists', () => {
@@ -16,6 +18,13 @@ describe('downloadUrl', () => {
 
   it.each(rows)('%s: %s → %s', (label, link, raw) => {
     expect(downloadUrl(link)).toEqual({ site: label, url: raw });
+  });
+
+  it('leaves out only the sites go-pob drops, and refuses their links with a reason', () => {
+    expect(pinRows.filter((r) => dropped.has(r[0])).map((r) => r[0])).toEqual(['Rentry.co']);
+    const link = pinRows.find((r) => r[0] === 'Rentry.co')![1];
+    expect(downloadUrl(link)).toBeUndefined();
+    expect(urlVerdict(link)).toEqual({ valid: false, text: DROPPED_SITES[0].text });
   });
 
   it('is undefined for text that is no site link', () => {
