@@ -1023,6 +1023,26 @@ func calcsTriggers(env *Environment, actor *Actor) {
 		triggerRateCap = 1 / actionCooldownTickRounded
 		output["TriggerRateCap"] = triggerRateCap
 	}
+	//pob:block:src/Modules/CalcTriggers.lua:587-614
+	if triggerName == "Doom Blast" && triggerConfigInputString(env, "doomBlastSource") == "expiration" && sourceCached != nil {
+		expirationRate := 1 / sourceCached.Duration
+		if expirationRate > trigRate {
+			env.Player.ModDB.AddMod(mod.NewFlag("UsesCurseOverlaps", true).Source("Config"))
+		} else {
+			trigRate = expirationRate
+		}
+	} else if triggerName == "Doom Blast" && triggerConfigInputString(env, "doomBlastSource") == "hexblast" {
+		var hexBlast *ActiveSkill
+		var rate float64
+		for _, skill := range env.Player.ActiveSkillList {
+			if skill.ActiveEffect.GrantedEffect.Name() == "Hexblast" && !isTriggered(skill) && skill != mainSkill {
+				hexBlast, rate = findTriggerSkill(env, skill, hexBlast, rate, nil, nil)
+			}
+		}
+		if hexBlast != nil {
+			trigRate = 1 / (1/trigRate + 1/rate)
+		}
+	}
 
 	globalTrigger := source == nil || config.ignoreSourceRate
 	if globalTrigger && math.IsInf(triggerRateCap, 1) {

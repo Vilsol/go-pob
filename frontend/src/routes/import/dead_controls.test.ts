@@ -38,13 +38,15 @@ describe('import page has no enabled-but-dead controls', () => {
     const enabled = controls(view.container)
       .filter((c) => !c.disabled)
       .map(nameOf);
-    expect(enabled).toHaveLength(6);
+    expect(enabled).toHaveLength(8);
     expect(enabled[0]).toBe('Copy code');
     expect(enabled[1]).toMatch(/^Export support/);
     expect(enabled[2]).toMatch(/^To import a build/);
     expect(enabled[3]).toMatch(/^Import as a new build/);
     expect(enabled[4]).toMatch(/^Import to this build/);
     expect(enabled[5]).toMatch(/^Import as a comparison/);
+    expect(enabled[6]).toMatch(/^Realm/);
+    expect(enabled[7]).toMatch(/^Account name/);
   });
 
   it('imports a code as the comparison, then opens the Compare page', async () => {
@@ -73,6 +75,6 @@ describe('import page has no enabled-but-dead controls', () => {
       .filter((c) => !c.title.trim())
       .map(nameOf);
     expect(offenders).toEqual([]);
-    for (const name of ['Fetch characters', 'Share']) expect(view.getByRole('button', { name })).toHaveProperty('disabled', true);
+    expect(view.getByRole('button', { name: 'Share' })).toHaveProperty('disabled', true);
   });
 });

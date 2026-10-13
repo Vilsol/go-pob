@@ -81,7 +81,7 @@ func ApplyValueScalar(line string, valueScalar, baseValueScalar *float64, number
 		if baseValueScalar == nil || *baseValueScalar == 1 {
 			return v
 		}
-		return math.Floor(v**baseValueScalar*power+0.5) / power
+		return math.Floor(float64(v**baseValueScalar*power)+0.5) / power
 	}
 
 	if precision != nil {
@@ -93,7 +93,7 @@ func ApplyValueScalar(line string, valueScalar, baseValueScalar *float64, number
 
 	return replaceLimit(integerRe, line, numbers, func(g []string) string {
 		num, _ := strconv.ParseFloat(g[1], 64)
-		return luaNum(math.Floor(scaleBase(num)*scalar+0.001)) + g[2]
+		return luaNum(math.Floor(float64(scaleBase(num)*scalar)+0.001)) + g[2]
 	})
 }
 
@@ -208,7 +208,7 @@ func applyRangeUncached(line string, rangeVal float64, valueScalar, baseValueSca
 		if precision != nil {
 			power = math.Pow(10, float64(*precision))
 		}
-		numVal := math.Floor((rangeLow+rangeVal*(rangeHigh-rangeLow))*power+0.5) / power
+		numVal := math.Floor(float64((rangeLow+float64(rangeVal*(rangeHigh-rangeLow)))*power)+0.5) / power
 		if numVal < 0 && plus == "+" {
 			plus = ""
 		}

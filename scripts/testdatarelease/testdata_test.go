@@ -150,7 +150,7 @@ func TestExportRulesRewriteAndRefuseLeaks(t *testing.T) {
 			}
 			names = append(names, clean)
 		}
-		if err := r.checkAll(src, "corpus-x", names); (err != nil) != c.leaks {
+		if err := r.checkAll(os.DirFS(src), src, "corpus-x", names); (err != nil) != c.leaks {
 			t.Errorf("%s: leaks=%v, checkAll returned %v", c.name, c.leaks, err)
 		}
 	}

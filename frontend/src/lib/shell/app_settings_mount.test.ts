@@ -71,16 +71,25 @@ const open = () => {
 const root = document.documentElement;
 
 describe('AppSettings', () => {
-  it('Font scaling sizes the root font and is kept; Reset puts back 12 pt', async () => {
+  it('Font scaling sizes the root font on release and is kept; Reset puts back 12 pt', async () => {
     const s = open();
     const slider = s.getByRole('slider', { name: 'Font scaling' });
+    const shown = () => slider.closest('[data-setting]')!.textContent;
     expect(root.style.fontSize).toBe('16px');
     await fireEvent.input(slider, { target: { value: '18' } });
+    expect(shown()).toContain('18pt');
+    expect(get(fontScaling)).toBe(12);
+    expect(root.style.fontSize).toBe('16px');
+    await fireEvent.input(slider, { target: { value: '17' } });
+    expect(root.style.fontSize).toBe('16px');
+    await fireEvent.change(slider, { target: { value: '18' } });
     expect(get(fontScaling)).toBe(18);
     expect(root.style.fontSize).toBe('24px');
     expect(localStorage.getItem('options:fontScaling')).toBe('18');
     await fireEvent.input(slider, { target: { value: '6' } });
+    await fireEvent.change(slider, { target: { value: '6' } });
     expect(root.style.fontSize).toBe('8px');
+    expect(shown()).toContain('6pt');
     await fireEvent.click(s.getByRole('button', { name: 'Reset this section' }));
     expect(root.style.fontSize).toBe('16px');
   });
@@ -128,6 +137,19 @@ describe('AppSettings', () => {
     expect(get(allAffixSliders)).toBe(false);
     expect(localStorage.getItem('options:showAllItemAffixes')).toBe('false');
     showAllItemAffixes.set(true);
+  });
+
+  it('Default items view (Board / List) is kept as the Items page’s opening layout', async () => {
+    const { itemsLayout } = await import('$lib/display/appearance');
+    const s = open();
+    await fireEvent.click(s.getByRole('tab', { name: /^Items/ }));
+    const pick = s.getByRole<HTMLSelectElement>('combobox', { name: 'Default items view' });
+    expect(pick.value).toBe('Board');
+    await fireEvent.change(pick, { target: { value: 'List' } });
+    expect(get(itemsLayout)).toBe('list');
+    expect(localStorage.getItem('options:itemsLayout')).toBe('list');
+    await fireEvent.click(s.getByRole('button', { name: 'Reset this section' }));
+    expect(get(itemsLayout)).toBe('board');
   });
 
   it('Default item affix quality (Main.lua:1099-1106) is a 0-1 slider in 0.05 steps, kept, and given to Go', async () => {

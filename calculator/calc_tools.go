@@ -254,7 +254,7 @@ func getGemStatRequirement(level float64, isSupport bool, multi float64) float64
 	if isSupport {
 		statType = 0.5
 	}
-	req := math.Floor((20+(level-3)*3)*math.Pow(multi/100, 0.9)*statType + 0.5)
+	req := math.Floor(float64((20+float64((level-3)*3))*math.Pow(multi/100, 0.9)*statType) + 0.5)
 	if req < 14 {
 		return 0
 	}
@@ -380,7 +380,7 @@ func CalcBuildSkillInstanceStats(skillInstance *GemEffect, grantedEffect *Grante
 						}
 					}
 
-					availableEffectiveness = utils.Ptr((3.885209 + 0.360246*(actorLevel-1)) * (baseEffectiveness) * math.Pow(1+(incrementalEffectiveness), actorLevel-1))
+					availableEffectiveness = utils.Ptr((3.885209 + float64(0.360246*(actorLevel-1))) * (baseEffectiveness) * math.Pow(1+(incrementalEffectiveness), actorLevel-1))
 				}
 				statValue = math.Round(*availableEffectiveness * level.Values[index])
 			} else if statInterpolation == 2 {

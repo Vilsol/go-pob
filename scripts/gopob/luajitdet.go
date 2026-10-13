@@ -7,8 +7,6 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
-
-	"golang.org/x/sys/unix"
 )
 
 const (
@@ -50,7 +48,7 @@ func ljDistinct(bin, probe string, runs int) int {
 }
 
 func ljVerify(bin string) int {
-	if unix.Access(bin, unix.X_OK) != nil {
+	if !executableByMe(bin) {
 		return ljFatal(2, "no binary at %s — run without --verify first.", bin)
 	}
 

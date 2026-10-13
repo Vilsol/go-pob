@@ -38,7 +38,7 @@ func buildPair(t *testing.T, pySrc, goSrc string) (Spec, func() (string, error))
 	gd := t.TempDir()
 	mustWrite(t, filepath.Join(gd, "go.mod"), "module synthetic\n\ngo 1.26.2\n")
 	mustWrite(t, filepath.Join(gd, "main.go"), goSrc)
-	bin := filepath.Join(t.TempDir(), "port")
+	bin := filepath.Join(t.TempDir(), ExeName("port"))
 	cmd := exec.CommandContext(t.Context(), "go", "build", "-o", bin, ".")
 	cmd.Dir = gd
 	if out, err := cmd.CombinedOutput(); err != nil {
@@ -105,6 +105,17 @@ func TestAFaithfulPortPasses(t *testing.T) {
 	s, mk := buildPair(t, pyRefusing, goFaithful)
 	s.PythonArgs, s.GoArgs = []string{"bad"}, []string{"bad"}
 	RunFixture(t, t.Context(), s, Fixture{Name: "refusal"}, mk)
+}
+
+// TestAPortThatCannotStartSaysWhy: A BINARY exec CANNOT FIND MUST NOT READ AS AN EMPTY EXIT -1.
+func TestAPortThatCannotStartSaysWhy(t *testing.T) {
+	s, mk := buildPair(t, pyRefusing, goFaithful)
+	s.GoBin += ".missing"
+	f := &fake{}
+	RunFixture(f, t.Context(), s, Fixture{Name: "happy"}, mk)
+	if !f.failed || !strings.Contains(f.msg, "difftest: cannot run "+s.GoBin) {
+		t.Fatalf("a port that never started did not say so: %q", f.msg)
+	}
 }
 
 // TestStderrIsTheSoleDiscriminator: THE CONTROL FOR "stderr IS NOT OPTIONAL".

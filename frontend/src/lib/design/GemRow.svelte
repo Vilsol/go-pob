@@ -33,6 +33,8 @@
     grip?: Snippet;
     /* SkillsTab.lua:861-920 */
     onqualityhover?: (on: boolean) => void;
+    /* SkillsTab.lua:948-960 */
+    onenabledhover?: (on: boolean) => void;
     /* GemSelectControl.lua:629-646 */
     onnamehover?: (on: boolean) => void;
   };
@@ -61,6 +63,7 @@
     onglobal,
     grip,
     onqualityhover,
+    onenabledhover,
     onnamehover
   }: Props = $props();
   const shownGlobals = $derived((globals ?? []).map((g, i) => ({ ...g, i })).filter((g) => g.label));
@@ -91,6 +94,10 @@
         class="check size-3.75"
         checked={enabled}
         aria-label="{name} enabled"
+        onmouseenter={() => onenabledhover?.(true)}
+        onmouseleave={() => onenabledhover?.(false)}
+        onfocus={() => onenabledhover?.(true)}
+        onblur={() => onenabledhover?.(false)}
         onchange={(e) => onenabled?.(e.currentTarget.checked)} />{/if}</span>
   {#if onlevel}
     <!-- svelte-ignore a11y_no_static_element_interactions -->

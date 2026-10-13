@@ -465,7 +465,7 @@ func (env *Environment) CalcsModSection(sd ModSectionData, showMinion bool) []Mo
 				}
 				t := v.Float()
 				if modType == mod.TypeMore {
-					t = math.Floor((t-1)*100 + 0.5)
+					t = math.Floor(float64((t-1)*100) + 0.5)
 				}
 				return breakdownModValue(t, modType), t != 0
 			}

@@ -1,5 +1,6 @@
 <script lang="ts">
   import { tick, untrack } from 'svelte';
+  import { get } from 'svelte/store';
   import { loadSkillTree, skillTree } from '$lib/skill_tree';
   import type { Tree } from '$lib/skill_tree/types';
   import { page } from '$app/state';
@@ -25,6 +26,7 @@
   import { itemUsage, type UsageContext } from '$lib/design/item_usage';
   import { buildRevision, currentBuild, outputs } from '$lib/global.js';
   import { migrateEldritchImplicits, slotOnlyTooltips } from '$lib/display/item_options';
+  import { itemsLayout } from '$lib/display/appearance';
   import { syncWrap } from '$lib/go/worker';
   import { logError } from '$lib/utils';
   import type { calculator, exposition, pob } from '$lib/types';
@@ -106,6 +108,7 @@
   };
 
   // ItemListControl.lua:77-183
+  let layout = $state(get(itemsLayout));
   let stashFilter = $state('Any Loadout');
   let stashFilters = $state<string[]>([]);
   let sharedSets = $state<{ title: string; tip: string[] }[]>([]);
@@ -872,6 +875,7 @@
 <svelte:window {onkeydown} />
 {#if view}
   <ItemsPage
+    bind:layout
     data={{ activeSet: view.activeSet, items: view.items, sets: view.sets, impact: {}, jewels: view.jewels, stash: view.stash }}
     sets={view.sets}
     setId={view.activeSet}

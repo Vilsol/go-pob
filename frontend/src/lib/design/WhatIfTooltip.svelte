@@ -19,8 +19,25 @@
     empty?: string;
     extra?: Snippet;
     tail?: Snippet;
+    translucent?: boolean;
   };
-  let { title, kind, mods = [], modsTitle, info = [], footer, action, sections, id, node, pending = false, empty, extra, tail }: Props = $props();
+  let {
+    title,
+    kind,
+    mods = [],
+    modsTitle,
+    info = [],
+    footer,
+    action,
+    sections,
+    id,
+    node,
+    pending = false,
+    empty,
+    extra,
+    tail,
+    translucent = false
+  }: Props = $props();
   // Tooltip.lua:95
   const lines = (entries: string[]) => entries.flatMap((e) => e.split('\n'));
 </script>
@@ -28,7 +45,10 @@
 <div
   role="tooltip"
   {id}
-  class="tooltip flex w-max max-w-[min(640px,90vw)] min-w-90 flex-col gap-2 rounded-ovl px-4 py-3 text-13 shadow-[0_8px_24px_rgba(0,0,0,0.5)]">
+  class={[
+    'tooltip flex w-max max-w-[min(640px,90vw)] min-w-90 flex-col gap-2 rounded-ovl px-4 py-3 text-13 shadow-[0_8px_24px_rgba(0,0,0,0.5)]',
+    translucent && 'bg-surface-2/88'
+  ]}>
   <div class="flex items-baseline justify-between">
     <span class="text-15 font-semibold">{title}</span>{#if kind}<span class="note">{kind}</span>{/if}
   </div>

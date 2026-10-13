@@ -45,6 +45,8 @@
     gemwhatif?: (name: string) => Promise<StatCompareSection[] | undefined>;
     /* SkillsTab.lua:911-918 */
     qualitywhatif?: (gem: number) => Promise<StatCompareSection[] | undefined>;
+    /* SkillsTab.lua:948-960 */
+    enabledwhatif?: (gem: number) => Promise<StatCompareSection[] | undefined>;
     /* SkillsTab.lua:868-909 */
     gemtip?: (kind: 'gem' | 'list' | 'quality', key: number | string) => Promise<{ Text: string; Separator: boolean }[] | undefined>;
     /* GemSelectControl.lua:255-441 */
@@ -81,6 +83,7 @@
     slotLocked,
     gemwhatif,
     qualitywhatif,
+    enabledwhatif,
     gemtip,
     sortCache,
     onpicker,
@@ -171,12 +174,14 @@
   type TipLine = { Text: string; Separator: boolean };
   let hoverGem = $state<string>();
   let hoverQuality = $state<number>();
+  let hoverEnabled = $state<number>();
   let hoverName = $state<number>();
   const listedGem = $derived(open ? (hoverGem ?? (active >= 0 ? results[active]?.name : undefined)) : undefined);
   let whatIf = $state.raw<{ key: string; header: string; head?: TipLine[]; sections?: StatCompareSection[]; done?: boolean }>();
   $effect(() => {
     const name = listedGem;
     const qi = hoverQuality;
+    const ei = hoverEnabled;
     const ni = hoverName;
     let key: string | undefined;
     let run: (() => Promise<StatCompareSection[] | undefined>) | undefined;
@@ -187,6 +192,10 @@
       header = 'Selecting this gem will give you:';
       run = gemwhatif && (() => gemwhatif(name));
       tip = gemtip && (() => gemtip('list', name));
+    } else if (ei !== undefined && enabledwhatif && group.gems[ei]) {
+      key = `enabled:${ei}`;
+      header = group.gems[ei].enabled ? 'Disabling this gem will give you:' : 'Enabling this gem will give you:';
+      run = () => enabledwhatif(ei);
     } else if (qi !== undefined && (qualitywhatif || gemtip)) {
       key = `quality:${qi}`;
       header = 'Setting to 20 quality will give you:';
@@ -211,7 +220,7 @@
   const tipAnchor = $derived(
     whatIf?.key.startsWith('gem:')
       ? optEls[results.findIndex((r) => r.name === listedGem)]
-      : rowEls[(whatIf?.key.startsWith('quality:') ? hoverQuality : hoverName) ?? -1]
+      : rowEls[(whatIf?.key.startsWith('quality:') ? hoverQuality : whatIf?.key.startsWith('enabled:') ? hoverEnabled : hoverName) ?? -1]
   );
   const deltaText = (r: (typeof results)[number]) =>
     r.socketed
@@ -329,6 +338,7 @@
           error={gem.error}
           globals={gem.globals}
           onqualityhover={(qualitywhatif || gemtip) && ((on: boolean) => (hoverQuality = on ? i : hoverQuality === i ? undefined : hoverQuality))}
+          onenabledhover={enabledwhatif && ((on: boolean) => (hoverEnabled = on ? i : hoverEnabled === i ? undefined : hoverEnabled))}
           onglobal={(index, on) => ongem(i, { globals: (gem.globals ?? []).map((g, k) => (k === index ? { ...g, on } : g)) })}
           linkLocked={socketsLocked}>
           {#snippet grip()}<span aria-hidden="true" class="flex text-text-3"><Icon name="grip" /></span>{/snippet}

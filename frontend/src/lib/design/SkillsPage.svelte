@@ -65,6 +65,7 @@
       slotLocked?: (group: number) => string | undefined;
       gemwhatif?: (group: number, name: string) => Promise<StatCompareSection[] | undefined>;
       qualitywhatif?: (group: number, gem: number) => Promise<StatCompareSection[] | undefined>;
+      enabledwhatif?: (group: number, gem: number) => Promise<StatCompareSection[] | undefined>;
       gemtip?: (group: number, kind: 'gem' | 'list' | 'quality', key: number | string) => Promise<{ Text: string; Separator: boolean }[] | undefined>;
       sortCache?: { canSupport: Record<string, boolean>; dps: Record<string, number>; progress?: number };
       onpicker?: (group: number, open: boolean) => void;
@@ -400,6 +401,7 @@
       slotLocked={editor?.slotLocked?.(selected)}
       gemwhatif={editor?.gemwhatif && ((name: string) => editor.gemwhatif!(selected, name))}
       qualitywhatif={editor?.qualitywhatif && ((g: number) => editor.qualitywhatif!(selected, g))}
+      enabledwhatif={editor?.enabledwhatif && ((g: number) => editor.enabledwhatif!(selected, g))}
       gemtip={editor?.gemtip && ((kind: 'gem' | 'list' | 'quality', key: number | string) => editor.gemtip!(selected, kind, key))}
       sortCache={editor?.sortCache}
       onpicker={editor?.onpicker && ((open: boolean) => editor.onpicker!(selected, open))}

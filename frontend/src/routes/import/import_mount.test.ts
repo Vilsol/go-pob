@@ -118,7 +118,8 @@ describe('import/+page.svelte', () => {
     writeText.mockClear();
     await fireEvent.click(view.getByRole('button', { name: 'Copy code' }));
     expect(writeText).toHaveBeenCalledWith(code.value);
-    await vi.waitFor(() => expect(view.getByRole('status').textContent).toContain('Copied'));
+    const sharing = within(view.getByRole('region', { name: 'Build sharing' }));
+    await vi.waitFor(() => expect(sharing.getByRole('status').textContent).toContain('Copied'));
   });
 
   it('an imported code replaces the build Go holds, then Ticks', async () => {
@@ -204,7 +205,7 @@ describe('import/+page.svelte', () => {
       return box;
     };
 
-    it("downloads the site's raw code, then imports it and Ticks", async () => {
+    it("downloads the site's raw code through pob.gg's proxy (/api/build), then imports it and Ticks", async () => {
       let answer!: (r: Response) => void;
       const fetch = vi.fn((url: string) => {
         void url;
@@ -218,7 +219,7 @@ describe('import/+page.svelte', () => {
       expect(go.disabled).toBe(false);
       tick.mockClear();
       await fireEvent.click(go);
-      await vi.waitFor(() => expect(fetch).toHaveBeenCalledWith('https://pobb.in/pob/aBcD1234'));
+      await vi.waitFor(() => expect(fetch).toHaveBeenCalledWith('/api/build?site=POBBin&id=aBcD1234'));
       const busy = box.getByRole<HTMLButtonElement>('button', { name: 'Retrieving paste..' });
       expect(busy.disabled).toBe(true);
       answer(new Response(`${other.code}\n`, { status: 200 }));
@@ -240,10 +241,10 @@ describe('import/+page.svelte', () => {
       expect(serialize(workerInstance.currentBuild)).toBe(before);
     });
 
-    it("reports the site's error status, and leaves the build alone", async () => {
+    it("reports the site's error status the proxy passed through, and leaves the build alone", async () => {
       vi.stubGlobal(
         'fetch',
-        vi.fn(() => Promise.resolve(new Response('gone', { status: 404 })))
+        vi.fn(() => Promise.resolve(new Response('pobb.in answered 404', { status: 404 })))
       );
       const before = serialize(workerInstance.currentBuild);
       const box = await typeLink();
@@ -257,6 +258,7 @@ describe('import/+page.svelte', () => {
   it('a character JSON is imported through the worker with no confirm, and its message shown', async () => {
     const json = await readFile(resolve(process.cwd(), '../testdata/import/sample_character.json'), 'utf8');
     const call = vi.spyOn(workerInstance, 'ImportItemsAndSkills').mockResolvedValue({ ok: true, text: 'Items and skills successfully imported.' });
+    const tree = vi.spyOn(workerInstance, 'ImportPassiveTreeAndJewels').mockResolvedValue({ ok: true, text: 'Passive tree and jewels successfully imported.' });
     const before = serialize(workerInstance.currentBuild);
     goto.mockClear();
     const { box } = await mount();
@@ -264,12 +266,109 @@ describe('import/+page.svelte', () => {
     await fireEvent.input(field, { target: { value: json } });
     expect(document.getElementById(field.getAttribute('aria-describedby')!)!.textContent).toBe('JSON is valid');
     await fireEvent.click(box.getByRole('button', { name: 'Import' }));
-    await vi.waitFor(() => expect(box.getByRole('status').textContent).toBe('Items and skills successfully imported.'));
+    await vi.waitFor(() =>
+      expect(box.getByRole('status').textContent).toBe('Items and skills successfully imported. Passive tree and jewels successfully imported.')
+    );
     expect(within(document.body).queryByRole('dialog', { name: 'Build Import' })).toBeNull();
     expect(call).toHaveBeenCalledTimes(1);
     expect(JSON.parse(call.mock.calls[0][0])).toEqual(JSON.parse(json));
+    // ImportTab.lua:703
+    expect(tree).toHaveBeenCalledTimes(1);
+    expect(tree.mock.calls[0][0]).toBe(call.mock.calls[0][0]);
+    expect(call.mock.invocationCallOrder[0]).toBeLessThan(tree.mock.invocationCallOrder[0]);
     expect(serialize(workerInstance.currentBuild)).toBe(before);
     expect(goto).not.toHaveBeenCalled();
     call.mockRestore();
+    tree.mockRestore();
+  });
+
+  // ImportTab.lua:321-472, 813-1020
+  describe('the account import', () => {
+    const list = [
+      { name: 'Zed', realm: 'pc', class: 'Necromancer', league: 'Standard', level: 90 },
+      { name: 'Ann', realm: 'pc', class: 'Deadeye', league: 'Mercenaries', level: 95 }
+    ];
+    const serveApi = (answers: Record<string, () => Response>) => {
+      const f = vi.fn((url: string) => Promise.resolve(answers[/\/api\/poe\/(\w+)\?/.exec(url)?.[1] ?? '']?.() ?? new Response('', { status: 500 })));
+      vi.stubGlobal('fetch', f);
+      return f;
+    };
+    const section = async () => {
+      const { view } = await mount();
+      return within(view.getByRole('region', { name: 'Character import' }));
+    };
+    const start = async (chars: Awaited<ReturnType<typeof section>>, account: string) => {
+      await fireEvent.input(chars.getByRole('textbox', { name: /Account name/ }), { target: { value: account } });
+      await fireEvent.click(chars.getByRole('button', { name: 'Start' }));
+    };
+    afterEach(() => {
+      vi.unstubAllGlobals();
+      localStorage.clear();
+    });
+
+    it('needs the discriminator, says the private-profile message, and writes nothing', async () => {
+      const f = serveApi({ characters: () => new Response('', { status: 403 }) });
+      const before = serialize(workerInstance.currentBuild);
+      const chars = await section();
+      await fireEvent.input(chars.getByRole('textbox', { name: /Account name/ }), { target: { value: 'Vilsol' } });
+      expect(chars.getByRole<HTMLButtonElement>('button', { name: 'Start' }).disabled).toBe(true);
+      expect(chars.getByText('Missing discriminator e.g. #1234')).toBeTruthy();
+      await start(chars, 'Vilsol#3184');
+      await vi.waitFor(() => expect(chars.getByRole('status').textContent).toBe('Character import status: Account profile is private or does not exist.'));
+      expect(f).toHaveBeenCalledTimes(1);
+      expect(f.mock.calls[0][0]).toBe('/api/poe/characters?realm=pc&account=Vilsol%233184');
+      expect(serialize(workerInstance.currentBuild)).toBe(before);
+    });
+
+    it("lists the account's characters by league, remembers the account, and imports the tree after the overwrite confirm", async () => {
+      const f = serveApi({
+        characters: () => Response.json(list),
+        profile: () => Response.json({ accountName: 'Vilsol-3184' }),
+        passives: () => new Response('{"hashes":[1,2]}')
+      });
+      const tree = vi.spyOn(workerInstance, 'ImportAccountPassiveTree').mockResolvedValue({ ok: true, text: 'Passive tree and jewels successfully imported.' });
+      outputs.set({ PointsUsed: [12, 0, 0, 0] } as never);
+      const chars = await section();
+      await start(chars, 'vilsol#3184');
+      await vi.waitFor(() => expect(chars.getByRole('status').textContent).toBe('Character import status: Character list successfully retrieved.'));
+      expect(JSON.parse(localStorage.getItem('import:accounts') ?? '[]')).toEqual(['Vilsol#3184']);
+      const pick = chars.getByRole<HTMLSelectElement>('combobox', { name: 'Character' });
+      expect([...pick.options].map((o) => o.textContent)).toEqual(['Ann — Deadeye lvl 95']);
+      await fireEvent.change(chars.getByRole('combobox', { name: 'League' }), { target: { value: '' } });
+      expect([...pick.options].map((o) => o.textContent)).toEqual(['Ann — Deadeye lvl 95 in Mercenaries', 'Zed — Necromancer lvl 90 in Standard']);
+      await fireEvent.change(pick, { target: { value: 'Zed' } });
+      await fireEvent.click(chars.getByRole('button', { name: 'Passive Tree and Jewels' }));
+      const dialog = await vi.waitFor(() => within(document.body).getByRole('dialog', { name: 'Character Import' }));
+      expect(tree).not.toHaveBeenCalled();
+      await fireEvent.click(within(dialog).getByRole('button', { name: 'Import' }));
+      await vi.waitFor(() => expect(chars.getByRole('status').textContent).toBe('Character import status: Passive tree and jewels successfully imported.'));
+      expect(f.mock.calls.at(-1)?.[0]).toBe('/api/poe/passives?realm=pc&account=Vilsol%233184&character=Zed');
+      expect(tree).toHaveBeenCalledWith(JSON.stringify(list[0]), '{"hashes":[1,2]}', true);
+      tree.mockRestore();
+      outputs.set(undefined);
+    });
+
+    it("imports the items and skills with PoB's three boxes, and says GGG's error", async () => {
+      serveApi({
+        characters: () => Response.json(list),
+        profile: () => new Response('pathofexile.com answered 403 (challenge)', { status: 403 }),
+        items: () => new Response('{"items":[]}')
+      });
+      const items = vi.spyOn(workerInstance, 'ImportAccountItems').mockResolvedValue({ ok: true, text: 'Items and skills successfully imported.' });
+      const chars = await section();
+      await start(chars, 'vilsol#3184');
+      await vi.waitFor(() => expect(chars.getByRole('button', { name: 'Items and Skills' })).toBeTruthy());
+      await fireEvent.click(chars.getByRole('checkbox', { name: 'Ignore weapon swap' }));
+      await fireEvent.click(chars.getByRole('button', { name: 'Items and Skills' }));
+      await vi.waitFor(() => expect(chars.getByRole('status').textContent).toBe('Character import status: Items and skills successfully imported.'));
+      expect(items).toHaveBeenCalledWith(JSON.stringify(list[1]), '{"items":[]}', true, true, true);
+      serveApi({ items: () => new Response('', { status: 429, headers: { 'Retry-After': '30' } }) });
+      await fireEvent.click(chars.getByRole('button', { name: 'Items and Skills' }));
+      await vi.waitFor(() =>
+        expect(chars.getByRole('status').textContent).toBe('Character import status: Error importing character data, try again (Response code: 429)')
+      );
+      expect(items).toHaveBeenCalledTimes(1);
+      items.mockRestore();
+    });
   });
 });

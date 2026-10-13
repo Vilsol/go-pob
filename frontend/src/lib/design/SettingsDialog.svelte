@@ -21,6 +21,7 @@
   const uid = $props.id();
   const tabs = $state<HTMLButtonElement[]>([]);
   let asking = $state<string>();
+  const drafts = $state<Record<string, number>>({});
   const val = (r: Setting) => values[r.id] ?? r.value;
   const cur = $derived(sections.find((s) => s.id === section) ?? sections[0]);
   const byId = (id: string) => sections.flatMap((s) => s.rows).find((r) => r.id === id);
@@ -79,8 +80,13 @@
                 step={r.step}
                 value={x}
                 class="min-w-0 flex-[1_1_0] accent-accent"
-                oninput={(e) => onchange(r.id, Number(e.currentTarget.value))} />
-              <span class="w-11 text-right font-mono text-12 text-text-2">{x}{r.unit}</span>
+                oninput={(e) => (r.onRelease ? (drafts[r.id] = Number(e.currentTarget.value)) : onchange(r.id, Number(e.currentTarget.value)))}
+                onchange={(e) => {
+                  if (!r.onRelease) return;
+                  delete drafts[r.id];
+                  onchange(r.id, Number(e.currentTarget.value));
+                }} />
+              <span class="w-11 text-right font-mono text-12 text-text-2">{drafts[r.id] ?? x}{r.unit}</span>
             {:else if r.kind === 'check'}
               <input {id} type="checkbox" class="check" checked={!!x} onchange={() => onchange(r.id, !x)} />
             {:else if r.kind === 'select'}

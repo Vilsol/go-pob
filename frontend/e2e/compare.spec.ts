@@ -92,8 +92,10 @@ test('importing a comparison leaves A untouched, and the summary shows each buil
 
   // CompareTab.lua:1462-1525
   const aCode = await go.encode(buildXml(A));
-  await page.route('https://pobb.in/pob/e2e-compare', (route) =>
-    route.fulfill({ status: 200, body: aCode, headers: { 'access-control-allow-origin': '*', 'content-type': 'text/plain' } })
+  // BuildSiteTools.lua:88-113
+  await page.route(
+    (u) => u.pathname.endsWith('/api/build') && u.searchParams.get('site') === 'POBBin' && u.searchParams.get('id') === 'e2e-compare',
+    (route) => route.fulfill({ status: 200, body: aCode, headers: { 'content-type': 'text/plain' } })
   );
   const choose = page.getByRole('region', { name: 'Choose a build to compare' });
   await choose.getByRole('textbox', { name: 'Comparison build code' }).fill('https://pobb.in/e2e-compare');
@@ -333,6 +335,8 @@ test('items, Equip and Calcs controls show and write each build’s own, as the 
 
   const version = (b: Parameters<typeof go.fresh>[0]) => go.fresh(b, (x) => (x.Tree.Specs ?? [])[x.ActiveSpecIndex()]?.TreeVersion ?? '');
   const sets = page.getByRole('group', { name: 'Comparison build sets' });
+  await sets.getByRole('button', { name: /^This build's sets/ }).click();
+  await sets.getByRole('button', { name: /^Comparison sets/ }).click();
   await expect(sets.getByRole('combobox', { name: 'Primary tree version' })).toHaveValue(version(a));
   await expect(sets.getByRole('combobox', { name: 'Comparison tree version' })).toHaveValue(version(bModel));
 

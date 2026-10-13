@@ -27,7 +27,7 @@ func (t *Tree) NodesInRadiusOf(centre int64, radiusIndex int) map[int64]bool {
 			continue
 		}
 		vx, vy := p.x-cp.x, p.y-cp.y
-		if d2 := vx*vx + vy*vy; r.Inner*r.Inner <= d2 && d2 <= r.Outer*r.Outer {
+		if d2 := float64(vx*vx) + float64(vy*vy); r.Inner*r.Inner <= d2 && d2 <= r.Outer*r.Outer {
 			out[id] = true
 		}
 	}

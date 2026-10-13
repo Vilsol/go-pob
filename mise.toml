@@ -7,6 +7,7 @@ task = "3.41.0"
 zig = "0.13.0"
 luajit = "2.1.1744318430"
 node = "26"
+"npm:wrangler" = "4.143.1"
 
 [tasks.test-race]
 description = "Run the Go tests under the race detector (cgo via zig cc)"
@@ -167,3 +168,11 @@ run = "task testdata"
 [tasks.testdata-pack]
 description = "Pack the corpus and oracle into release archives and refresh scripts/testdata.json (OUT=<dir> DATE=yyyy.mm.dd)"
 run = "task testdata-pack"
+
+[tasks.pages-dev]
+description = "Serve frontend/build with the Pages Functions (/api/*) via wrangler pages dev (PORT=8788)"
+run = "task pages-dev"
+
+[tasks.import-live]
+description = "Live import-proxy check against a running pages-dev (IMPORT_LIVE=1; BASE=<url>)"
+run = "task import-live"

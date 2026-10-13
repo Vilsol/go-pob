@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -90,7 +91,7 @@ func (r *exportRules) leak(path string, b []byte) error {
 	return nil
 }
 
-func (r *exportRules) checkAll(src, prefix string, names []string) error {
+func (r *exportRules) checkAll(fsys fs.FS, src, prefix string, names []string) error {
 	if r == nil {
 		return nil
 	}
@@ -103,7 +104,7 @@ func (r *exportRules) checkAll(src, prefix string, names []string) error {
 			defer wg.Done()
 			for name := range work {
 				p := filepath.Join(src, filepath.FromSlash(name))
-				b, err := os.ReadFile(p)
+				b, err := fs.ReadFile(fsys, name)
 				if err != nil {
 					errs <- fmt.Errorf("reading %s: %w", p, err)
 					continue

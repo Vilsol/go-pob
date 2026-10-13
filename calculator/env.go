@@ -442,7 +442,18 @@ func initEnvSpecKeep(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode
 		//	elseif bandit == "Oak"     then modDB:NewMod("Life",            "BASE", 40, "Bandit")
 		//	else                            modDB:NewMod("ExtraPoints",     "BASE",  1, "Bandit")
 		//	end
-		switch build.Build.Bandit {
+		bandit, majorGod, minorGod := build.Build.Bandit, build.Build.PantheonMajorGod, build.Build.PantheonMinorGod
+		if input := build.GetStringOption("bandit"); input != "" {
+			bandit = input
+		}
+		if input := build.GetStringOption("pantheonMajorGod"); input != "" {
+			majorGod = input
+		}
+		if input := build.GetStringOption("pantheonMinorGod"); input != "" {
+			minorGod = input
+		}
+		//pob:block:src/Modules/CalcSetup.lua:550-558
+		switch bandit {
 		case "Alira":
 			env.ModDB.AddMod(mod.NewFloat("ElementalResist", mod.TypeBase, 15).Source("Bandit"))
 		case "Kraityn":
@@ -454,8 +465,9 @@ func initEnvSpecKeep(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode
 		}
 
 		// Add Pantheon mods
-		applySoulMod(env, build.Build.PantheonMajorGod)
-		applySoulMod(env, build.Build.PantheonMinorGod)
+		//pob:block:src/Modules/CalcSetup.lua:563-571
+		applySoulMod(env, majorGod)
+		applySoulMod(env, minorGod)
 
 		// Initialise enemy modifier database
 		initModDB(env, env.EnemyModDB)

@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"strings"
 )
 
@@ -205,8 +206,17 @@ func run(ctx context.Context, dir string, env, unset []string, argv []string, st
 	var out, errb bytes.Buffer
 	cmd.Stdout = &out
 	cmd.Stderr = &errb
-	_ = cmd.Run()
+	if err := cmd.Run(); cmd.ProcessState == nil {
+		fmt.Fprintf(&errb, "difftest: cannot run %s: %v\n", argv[0], err)
+	}
 	return result{stdout: out.Bytes(), stderr: errb.Bytes(), code: cmd.ProcessState.ExitCode()}
+}
+
+func ExeName(name string) string {
+	if runtime.GOOS == "windows" {
+		return name + ".exe"
+	}
+	return name
 }
 
 func firstLine(b []byte) []byte {

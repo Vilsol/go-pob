@@ -1,6 +1,7 @@
 package toolchain
 
 import (
+	"errors"
 	"os"
 	"path/filepath"
 	"strings"
@@ -121,8 +122,12 @@ func TestChildEnvPinsGotoolchainToTheMiseVersion(t *testing.T) {
 
 func TestNiceIsIdempotentAndAbsolute(t *testing.T) {
 	before, err := Niceness()
+	if errors.Is(err, ErrNicenessUnsupported) {
+		assertNiceUnsupported(t)
+		return
+	}
 	if err != nil {
-		t.Skipf("niceness unreadable on this platform: %v", err)
+		t.Fatalf("cannot read this process's niceness: %v", err)
 	}
 	t.Setenv("GOPOB_NICED", "")
 	t.Setenv("NICE", "7")
@@ -191,8 +196,12 @@ func assertFingerprint(t *testing.T, bin Binary) {
 // TestNiceReportsTheNicenessItAchievedNotTheOneItRequested: Nice() MUST REPORT WHAT HAPPENED, NOT WHAT IT ASKED FOR.
 func TestNiceReportsTheNicenessItAchievedNotTheOneItRequested(t *testing.T) {
 	before, err := Niceness()
+	if errors.Is(err, ErrNicenessUnsupported) {
+		assertNiceUnsupported(t)
+		return
+	}
 	if err != nil {
-		t.Skipf("niceness unreadable on this platform: %v", err)
+		t.Fatalf("cannot read this process's niceness: %v", err)
 	}
 	t.Setenv("GOPOB_NICED", "")
 	t.Setenv("NICE", "7")
@@ -204,5 +213,17 @@ func TestNiceReportsTheNicenessItAchievedNotTheOneItRequested(t *testing.T) {
 	if got != actual {
 		t.Fatalf("Nice() reported %d, the process is actually at %d (started at %d) — the return "+
 			"value is the REQUEST, not the result", got, actual, before)
+	}
+}
+
+func assertNiceUnsupported(t *testing.T) {
+	t.Helper()
+	t.Setenv("GOPOB_NICED", "")
+	t.Setenv("NICE", "7")
+	if got := Nice(); got != -1 {
+		t.Fatalf("Nice() reported niceness %d on a platform where it cannot read one", got)
+	}
+	if os.Getenv("GOPOB_NICED") == "" {
+		t.Fatal("Nice() did not export GOPOB_NICED, so the shell layers below would nice again")
 	}
 }

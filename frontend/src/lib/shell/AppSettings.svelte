@@ -2,7 +2,7 @@
   import SettingsDialog from '$lib/design/SettingsDialog.svelte';
   import type { Setting, SettingsSection } from '$lib/design/fixtures/app';
   import { backendLoaded, devMode, fontScaling, nodePowerTheme, outputs, zoomSensitivity } from '$lib/global.js';
-  import { THEMES, showAnimations, theme, type Theme } from '$lib/display/appearance';
+  import { ITEMS_LAYOUTS, THEMES, itemsLayout, showAnimations, theme, type ItemsLayout, type Theme } from '$lib/display/appearance';
   import { allAffixSliders } from '$lib/design/items';
   import { addToast } from '$lib/design/toast';
   import { checkForUpdate } from '$lib/pwa';
@@ -45,7 +45,8 @@
           min: 6,
           max: 18,
           step: 0.5,
-          unit: 'pt'
+          unit: 'pt',
+          onRelease: true
         },
         {
           id: 'theme',
@@ -132,6 +133,14 @@
       id: 'items',
       label: 'Items',
       rows: [
+        {
+          id: 'itemsLayout',
+          label: 'Default items view',
+          kind: 'select',
+          value: 'Board',
+          opts: ['Board', 'List'],
+          hint: 'How the Items page lays out the equipped slots when opened'
+        },
         {
           id: 'slotTooltips',
           label: 'Show tooltips only for affected slots',
@@ -233,6 +242,7 @@
     theme: $theme,
     animations: $showAnimations,
     affixSliders: $showAllItemAffixes,
+    itemsLayout: $itemsLayout === 'list' ? 'List' : 'Board',
     dataVersion,
     cache: cacheSize,
     devMode: $devMode,
@@ -284,6 +294,8 @@
     else if (id === 'theme' && (THEMES as readonly string[]).includes(String(v))) theme.set(String(v) as Theme);
     else if (id === 'animations') showAnimations.set(!!v);
     else if (id === 'affixSliders') showAllItemAffixes.set(!!v);
+    else if (id === 'itemsLayout' && (ITEMS_LAYOUTS as readonly string[]).includes(String(v).toLowerCase()))
+      itemsLayout.set(String(v).toLowerCase() as ItemsLayout);
     else if (id === 'devMode') devMode.set(!!v);
     else if (id === 'titleBuild') showTitlebarName.set(!!v);
     else if (id === 'zoomSensitivity') zoomSensitivity.set(Number(v));

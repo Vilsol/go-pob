@@ -119,7 +119,7 @@ func determineCursePriority(curseName string, activeSkill *ActiveSkill) float64 
 	}
 
 	basePriority := cursePriority[curseName]
-	socketPriority := socket * cursePriority["SocketPriorityBase"]
+	socketPriority := float64(socket * cursePriority["SocketPriorityBase"])
 	slotPriority := cursePriority[strings.ReplaceAll(slot, " Swap", "")]
 	sourcePriority := 0.0
 	if activeSkill != nil && activeSkill.SkillTypes[data.SkillTypeAura] {
@@ -1084,8 +1084,8 @@ func packageSkillDataForSimulation(env *Environment, skill *ActiveSkill) *trigge
 }
 
 //pob:src/Modules/Common.lua:951-960
-func ceilB(x float64, base float64) float64  { return base * math.Ceil(x/base) }
-func floorB(x float64, base float64) float64 { return base * math.Floor(x/base) }
+func ceilB(x float64, base float64) float64  { return float64(base * math.Ceil(x/base)) }
+func floorB(x float64, base float64) float64 { return float64(base * math.Floor(x/base)) }
 
 //pob:src/Modules/CalcTriggers.lua:90-133
 func calcMultiSpellRotationImpact329(env *Environment, skillRotation []*triggerRotationSkill, sourceRate float64, triggerCD float64, chance float64, actor *Actor) float64 {
@@ -1143,7 +1143,7 @@ func calcMultiSpellRotationImpact329(env *Environment, skillRotation []*triggerR
 		if sd.count == 0 {
 			continue
 		}
-		rate := 1 / (simTime/sd.count + triggerIncrement/chance*100 - triggerIncrement)
+		rate := 1 / (simTime/sd.count + float64(triggerIncrement/chance*100) - triggerIncrement)
 		if sd.uuid == mainUUID {
 			mainRate = rate
 		}
@@ -4349,7 +4349,7 @@ func performCalc(env *Environment, skipEHP bool) {
 				effect *= calclib.Mod(env.ModDB, nil, "Enemy"+ailment+"Effect")
 			}
 			//pob:src/Modules/CalcPerform.lua:3523
-			effect *= calclib.Mod(env.EnemyModDB, nil, "Self"+ailment+"Effect")
+			effect = float64(effect * calclib.Mod(env.EnemyModDB, nil, "Self"+ailment+"Effect"))
 
 			if scalesWithSource {
 				env.ModDB.AddMod(mod.NewFloat(ailment+"Override", mod.TypeBase, effect).
@@ -5532,21 +5532,21 @@ func DoActorMisc(env *Environment, actor *Actor) {
 				inc = inc + modDB.Sum(mod.TypeIncrease, nil, "NightbladeSupportedElusiveEffect")
 			}
 			inc = inc + maxSkillInc
-			elusiveEffectMod := (1 + inc/100) * modDB.More(nil, "ElusiveEffect", "BuffEffectOnSelf") * 100
+			elusiveEffectMod := float64((1 + inc/100) * modDB.More(nil, "ElusiveEffect", "BuffEffectOnSelf") * 100)
 
 			elusiveEffectMinThreshold := utils.Or(modDB.Override(nil, "ElusiveEffectMinThreshold"), 0)
 			elusiveEffectIncreaseDuration := modDB.Sum(mod.TypeBase, nil, "ElusiveEffectIncreaseDuration")
 			peakElusiveEffect := elusiveEffectMod
 			if elusiveEffectIncreaseDuration > 0 {
 				elusiveEffectChangeRate := 20 / (1 + modDB.Sum(mod.TypeIncrease, nil, "ElusiveEffectLossSlower")/100)
-				peakElusiveEffect = elusiveEffectMod + elusiveEffectChangeRate*elusiveEffectIncreaseDuration
+				peakElusiveEffect = elusiveEffectMod + float64(elusiveEffectChangeRate*elusiveEffectIncreaseDuration)
 				elusiveEffectDecreaseDuration := (peakElusiveEffect - elusiveEffectMinThreshold) / elusiveEffectChangeRate
 				totalElusiveEffectDuration := elusiveEffectIncreaseDuration + elusiveEffectDecreaseDuration
 				averageIncreaseEffect := (elusiveEffectMod + peakElusiveEffect) / 2
 				averageDecreaseEffect := (peakElusiveEffect + elusiveEffectMinThreshold) / 2
 				//pob:src/Modules/CalcPerform.lua:797
-				actor.Output["ElusiveEffectMod"] = (averageIncreaseEffect*elusiveEffectIncreaseDuration +
-					averageDecreaseEffect*elusiveEffectDecreaseDuration) / totalElusiveEffectDuration
+				actor.Output["ElusiveEffectMod"] = (float64(averageIncreaseEffect*elusiveEffectIncreaseDuration) +
+					float64(averageDecreaseEffect*elusiveEffectDecreaseDuration)) / totalElusiveEffectDuration
 			} else {
 				//pob:src/Modules/CalcPerform.lua:799
 				actor.Output["ElusiveEffectMod"] = (elusiveEffectMod + elusiveEffectMinThreshold) / 2
@@ -5864,7 +5864,7 @@ func initMinionModDB(env *Environment, activeSkill *ActiveSkill, output map[stri
 			perDex = dexBonus.Float()
 		}
 		minion.ModDB.AddMod(mod.NewFloat("Accuracy", mod.TypeBase,
-			calclib.Val(env.ModDB, "Accuracy")+calclib.Val(env.ModDB, "Dex")*perDex).Source("Player"))
+			calclib.Val(env.ModDB, "Accuracy")+float64(calclib.Val(env.ModDB, "Dex")*perDex)).Source("Player"))
 	} else {
 		minion.ModDB.AddMod(mod.NewFlag("CannotBeEvaded", true).Source("Minion Attacks always hit"))
 	}

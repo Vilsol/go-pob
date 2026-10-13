@@ -39,6 +39,9 @@ func init() {
 	crystallineNamespace("go-pob", "exposition").Set("ChangeSecondaryAscendancy", crystallineWrap(js.FuncOf(crystallineFnExpositionChangeSecondaryAscendancy)))
 	crystallineNamespace("go-pob", "exposition").Set("SocketGroupSourceNames", crystallineWrap(js.FuncOf(crystallineFnExpositionSocketGroupSourceNames)))
 	crystallineNamespace("go-pob", "exposition").Set("OptimiseSockets", crystallineWrap(js.FuncOf(crystallineFnExpositionOptimiseSockets)))
+	crystallineNamespace("go-pob", "exposition").Set("ImportPassiveTreeAndJewels", crystallineWrap(js.FuncOf(crystallineFnExpositionImportPassiveTreeAndJewels)))
+	crystallineNamespace("go-pob", "exposition").Set("ImportAccountPassiveTree", crystallineWrap(js.FuncOf(crystallineFnExpositionImportAccountPassiveTree)))
+	crystallineNamespace("go-pob", "exposition").Set("ImportAccountItems", crystallineWrap(js.FuncOf(crystallineFnExpositionImportAccountItems)))
 	crystallineNamespace("go-pob", "exposition").Set("ImportItemsAndSkills", crystallineWrap(js.FuncOf(crystallineFnExpositionImportItemsAndSkills)))
 	crystallineNamespace("go-pob", "exposition").Set("ItemDBLists", crystallineWrap(js.FuncOf(crystallineFnExpositionItemDBLists)))
 	crystallineNamespace("go-pob", "exposition").Set("ItemDBTooltip", crystallineWrap(js.FuncOf(crystallineFnExpositionItemDBTooltip)))
@@ -190,6 +193,7 @@ func init() {
 	crystallineNamespace("go-pob", "exposition").Set("GetTattooChoices", crystallineWrap(js.FuncOf(crystallineFnExpositionGetTattooChoices)))
 	crystallineNamespace("go-pob", "exposition").Set("AddTattoo", crystallineWrap(js.FuncOf(crystallineFnExpositionAddTattoo)))
 	crystallineNamespace("go-pob", "exposition").Set("TreeTattooArt", crystallineWrap(js.FuncOf(crystallineFnExpositionTreeTattooArt)))
+	crystallineNamespace("go-pob", "exposition").Set("TreeTattooNodes", crystallineWrap(js.FuncOf(crystallineFnExpositionTreeTattooNodes)))
 	crystallineNamespace("go-pob", "exposition").Set("ResetTreeNodes", crystallineWrap(js.FuncOf(crystallineFnExpositionResetTreeNodes)))
 	crystallineNamespace("go-pob", "exposition").Set("RemoveAllTreeTattoos", crystallineWrap(js.FuncOf(crystallineFnExpositionRemoveAllTreeTattoos)))
 	crystallineNamespace("go-pob", "exposition").Set("GetTattooCountLines", crystallineWrap(js.FuncOf(crystallineFnExpositionGetTattooCountLines)))
@@ -811,6 +815,7 @@ func init() {
 
 	CompareItemsExports(crystallineRegistry{})
 	Core30Exports(crystallineRegistry{})
+	ImportPassiveTreeExports(crystallineRegistry{})
 	ImportTabExports(crystallineRegistry{})
 	ItemDBExports(crystallineRegistry{})
 	ItemEditExports(crystallineRegistry{})
@@ -832,6 +837,7 @@ func init() {
 	TreeRingExports(crystallineRegistry{})
 	TreeSetExports(crystallineRegistry{})
 	TreeTattooEditExports(crystallineRegistry{})
+	TreeTattooNodesExports(crystallineRegistry{})
 	TreeTattooExports(crystallineRegistry{})
 	TreeTimelessExports(crystallineRegistry{})
 	TreeTooltipExports(crystallineRegistry{})
@@ -2117,6 +2123,125 @@ func crystallineFnExpositionOptimiseSockets(this js.Value, args []js.Value) (res
 		r0 := OptimiseSockets(a0, a1)
 
 		return bool(r0)
+	})
+}
+
+func crystallineFnExpositionImportPassiveTreeAndJewels(this js.Value, args []js.Value) (result any) {
+	defer crystallineRecover(&result)
+
+	if len(args) != 3 {
+		return crystallineFail("ImportPassiveTreeAndJewels: expected 3 arguments, got " + strconv.Itoa(len(args)))
+	}
+
+	return crystallinePromise(func() any {
+		a0, err := crystallineToPtrPobPathOfBuilding(args[0])
+		if err != nil {
+			return crystallineFail(err.Error())
+		}
+
+		a1, err := crystallineToString(args[1])
+		if err != nil {
+			return crystallineFail(err.Error())
+		}
+
+		a2, err := crystallineToBool(args[2])
+		if err != nil {
+			return crystallineFail(err.Error())
+		}
+
+		r0, r1 := ImportPassiveTreeAndJewels(a0, a1, a2)
+
+		if r1 != nil {
+			return crystallineErr(r1)
+		}
+
+		return crystallineOk(string(r0))
+	})
+}
+
+func crystallineFnExpositionImportAccountPassiveTree(this js.Value, args []js.Value) (result any) {
+	defer crystallineRecover(&result)
+
+	if len(args) != 4 {
+		return crystallineFail("ImportAccountPassiveTree: expected 4 arguments, got " + strconv.Itoa(len(args)))
+	}
+
+	return crystallinePromise(func() any {
+		a0, err := crystallineToPtrPobPathOfBuilding(args[0])
+		if err != nil {
+			return crystallineFail(err.Error())
+		}
+
+		a1, err := crystallineToString(args[1])
+		if err != nil {
+			return crystallineFail(err.Error())
+		}
+
+		a2, err := crystallineToString(args[2])
+		if err != nil {
+			return crystallineFail(err.Error())
+		}
+
+		a3, err := crystallineToBool(args[3])
+		if err != nil {
+			return crystallineFail(err.Error())
+		}
+
+		r0, r1 := ImportAccountPassiveTree(a0, a1, a2, a3)
+
+		if r1 != nil {
+			return crystallineErr(r1)
+		}
+
+		return crystallineOk(string(r0))
+	})
+}
+
+func crystallineFnExpositionImportAccountItems(this js.Value, args []js.Value) (result any) {
+	defer crystallineRecover(&result)
+
+	if len(args) != 6 {
+		return crystallineFail("ImportAccountItems: expected 6 arguments, got " + strconv.Itoa(len(args)))
+	}
+
+	return crystallinePromise(func() any {
+		a0, err := crystallineToPtrPobPathOfBuilding(args[0])
+		if err != nil {
+			return crystallineFail(err.Error())
+		}
+
+		a1, err := crystallineToString(args[1])
+		if err != nil {
+			return crystallineFail(err.Error())
+		}
+
+		a2, err := crystallineToString(args[2])
+		if err != nil {
+			return crystallineFail(err.Error())
+		}
+
+		a3, err := crystallineToBool(args[3])
+		if err != nil {
+			return crystallineFail(err.Error())
+		}
+
+		a4, err := crystallineToBool(args[4])
+		if err != nil {
+			return crystallineFail(err.Error())
+		}
+
+		a5, err := crystallineToBool(args[5])
+		if err != nil {
+			return crystallineFail(err.Error())
+		}
+
+		r0, r1 := ImportAccountItems(a0, a1, a2, a3, a4, a5)
+
+		if r1 != nil {
+			return crystallineErr(r1)
+		}
+
+		return crystallineOk(string(r0))
 	})
 }
 
@@ -7096,6 +7221,53 @@ func crystallineFnExpositionTreeTattooArt(this js.Value, args []js.Value) (resul
 			out := make([]any, 0, len(items))
 			for i := range items {
 				out = append(out, crystallineMarshalExpositionTattooArt(&items[i]))
+			}
+
+			return out
+		}()
+	})
+}
+
+func crystallineFnExpositionTreeTattooNodes(this js.Value, args []js.Value) (result any) {
+	defer crystallineRecover(&result)
+
+	if len(args) != 1 {
+		return crystallineFail("TreeTattooNodes: expected 1 arguments, got " + strconv.Itoa(len(args)))
+	}
+
+	a0, err := crystallineToPtrPobPathOfBuilding(args[0])
+	if err != nil {
+		return crystallineFail(err.Error())
+	}
+
+	r0 := TreeTattooNodes(a0)
+
+	return crystallineJSON(func(b []byte, ok *bool) []byte {
+		if items0 := r0; items0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '[')
+			for i0 := range items0 {
+				if i0 > 0 {
+					b = append(b, ',')
+				}
+
+				b = crystallineAppendExpositionTattooNodeTip(b, &items0[i0], ok)
+			}
+
+			b = append(b, ']')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			items := r0
+			if items == nil {
+				return nil
+			}
+
+			out := make([]any, 0, len(items))
+			for i := range items {
+				out = append(out, crystallineMarshalExpositionTattooNodeTip(&items[i]))
 			}
 
 			return out
@@ -31673,6 +31845,81 @@ func crystallineMarshalExpositionTattooChoice(v *TattooChoice) any {
 	return out
 }
 
+func crystallineMarshalExpositionTattooNodeTip(v *TattooNodeTip) any {
+	if v == nil {
+		return nil
+	}
+
+	out := crystallineObjects.New()
+
+	out.Set("NodeID", float64(v.NodeID))
+	out.Set("Name", string(v.Name))
+	out.Set("Stats", crystallineJSON(func(b []byte, ok *bool) []byte {
+		if items0 := v.Stats; items0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '[')
+			for i0 := range items0 {
+				if i0 > 0 {
+					b = append(b, ',')
+				}
+
+				b = crystallineAppendString(b, string(items0[i0]))
+			}
+
+			b = append(b, ']')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			items := v.Stats
+			if items == nil {
+				return nil
+			}
+
+			out := make([]any, 0, len(items))
+			for i := range items {
+				out = append(out, string(items[i]))
+			}
+
+			return out
+		}()
+	}))
+	out.Set("Reminder", crystallineJSON(func(b []byte, ok *bool) []byte {
+		if items0 := v.Reminder; items0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '[')
+			for i0 := range items0 {
+				if i0 > 0 {
+					b = append(b, ',')
+				}
+
+				b = crystallineAppendString(b, string(items0[i0]))
+			}
+
+			b = append(b, ']')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			items := v.Reminder
+			if items == nil {
+				return nil
+			}
+
+			out := make([]any, 0, len(items))
+			for i := range items {
+				out = append(out, string(items[i]))
+			}
+
+			return out
+		}()
+	}))
+
+	return out
+}
+
 var crystallineMarshalExpositionTimelessSearchShape js.Value
 
 func crystallineMarshalExpositionTimelessSearch(v *TimelessSearch) any {
@@ -49704,6 +49951,49 @@ func crystallineAppendExpositionTattooChoice(b []byte, v *TattooChoice, ok *bool
 	}
 	b = append(b, ",\"Legacy\":"...)
 	b = strconv.AppendBool(b, bool(v.Legacy))
+
+	return append(b, '}')
+}
+
+func crystallineAppendExpositionTattooNodeTip(b []byte, v *TattooNodeTip, ok *bool) []byte {
+	if v == nil {
+		return append(b, "null"...)
+	}
+
+	b = append(b, "{\"NodeID\":"...)
+	b = crystallineAppendNumber(b, float64(v.NodeID), ok)
+	b = append(b, ",\"Name\":"...)
+	b = crystallineAppendString(b, string(v.Name))
+	b = append(b, ",\"Stats\":"...)
+	if items0 := v.Stats; items0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '[')
+		for i0 := range items0 {
+			if i0 > 0 {
+				b = append(b, ',')
+			}
+
+			b = crystallineAppendString(b, string(items0[i0]))
+		}
+
+		b = append(b, ']')
+	}
+	b = append(b, ",\"Reminder\":"...)
+	if items0 := v.Reminder; items0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '[')
+		for i0 := range items0 {
+			if i0 > 0 {
+				b = append(b, ',')
+			}
+
+			b = crystallineAppendString(b, string(items0[i0]))
+		}
+
+		b = append(b, ']')
+	}
 
 	return append(b, '}')
 }

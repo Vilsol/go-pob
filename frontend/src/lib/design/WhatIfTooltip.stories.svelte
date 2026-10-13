@@ -80,3 +80,13 @@
       }
     ]
   }} />
+
+<Story
+  name="Over the tree"
+  args={{ translucent: true }}
+  play={async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    const bg = getComputedStyle(canvasElement.querySelector('[role="tooltip"]')!).backgroundColor;
+    const alpha = Number(/[\d.]+(?=\)$)/.exec(bg.replace(/\s/g, ''))?.[0] ?? 1);
+    await expect(alpha, bg).toBeLessThan(1);
+    await expect(alpha, bg).toBeGreaterThan(0.8);
+  }} />

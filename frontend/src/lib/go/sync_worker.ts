@@ -3857,6 +3857,82 @@ class PoBWorker {
     void this.Tick('ImportItemsAndSkills');
     return { ok: true, text: result.value };
   }
+
+  /* ImportTab.lua:703 */
+  async ImportPassiveTreeAndJewels(json: string): Promise<{ ok: boolean; text: string }> {
+    if (this.dataReady) await this.dataReady;
+    if (!this.currentBuild) return { ok: false, text: 'no build' };
+    const result = await exposition.ImportPassiveTreeAndJewels(this.currentBuild, json, true);
+    if (!result.ok) return { ok: false, text: result.error.message };
+    this.updateStore();
+    void this.Tick('ImportPassiveTreeAndJewels');
+    return { ok: true, text: result.value };
+  }
+
+  /* ImportTab.lua:813-849 */
+  async ImportAccountPassiveTree(character: string, passives: string, deleteJewels: boolean): Promise<{ ok: boolean; text: string }> {
+    if (this.dataReady) await this.dataReady;
+    if (!this.currentBuild) return { ok: false, text: 'no build' };
+    const result = await exposition.ImportAccountPassiveTree(this.currentBuild, character, passives, deleteJewels);
+    if (!result.ok) return { ok: false, text: result.error.message };
+    this.updateStore();
+    void this.Tick('ImportAccountPassiveTree');
+    return { ok: true, text: result.value };
+  }
+
+  /* ImportTab.lua:851-885 */
+  async ImportAccountItems(
+    character: string,
+    items: string,
+    clearItems: boolean,
+    clearSkills: boolean,
+    ignoreWeaponSwap: boolean
+  ): Promise<{ ok: boolean; text: string }> {
+    if (this.dataReady) await this.dataReady;
+    if (!this.currentBuild) return { ok: false, text: 'no build' };
+    const result = await exposition.ImportAccountItems(this.currentBuild, character, items, clearItems, clearSkills, ignoreWeaponSwap);
+    if (!result.ok) return { ok: false, text: result.error.message };
+    this.updateStore();
+    void this.Tick('ImportAccountItems');
+    return { ok: true, text: result.value };
+  }
+
+  /* SkillsTab.lua:948-960 */
+  async GemEnableCompare(socketGroup: number, gemIndex: number): Promise<StatCompareSection[] | undefined> {
+    if (!this.currentBuild) return undefined;
+    const gems = this.fresh((b) => b.Skills.SkillSets[b.ActiveSkillSetIndex()]?.Skills?.[socketGroup]?.Gems) ?? [];
+    const gem = gems[gemIndex];
+    if (!gem) return undefined;
+    return this.gemWhatIf(socketGroup, gemIndex, { ...gem, Enabled: !gem.Enabled });
+  }
+
+  GetTreeTattooNodes(): { nodeId: number; name: string; stats: string[]; reminder: string[] }[] {
+    if (!this.currentBuild) return [];
+    return (exposition.TreeTattooNodes(this.currentBuild) ?? []).map((t) => ({
+      nodeId: t.NodeID,
+      name: t.Name,
+      stats: t.Stats ?? [],
+      reminder: t.Reminder ?? []
+    }));
+  }
+
+  /* Build.lua:753-878 */
+  async GetCompareLoadouts(): Promise<{ loadouts: string[]; selected: number }> {
+    const b = this.compareB?.build;
+    if (!b) return { loadouts: [], selected: -1 };
+    const l = await exposition.GetLoadouts(b);
+    return { loadouts: [...(l?.Loadouts ?? [])], selected: l?.Selected ?? -1 };
+  }
+
+  /* Build.lua:355-414 */
+  async SelectCompareLoadout(name: string): Promise<CompareInfo> {
+    const e = this.compareB;
+    if (!e) return this.GetCompareInfo();
+    const item = e.build.Items.ActiveItemSet;
+    if (!(await exposition.SelectLoadout(e.build, name))) return this.GetCompareInfo();
+    if (e.build.Items.ActiveItemSet !== item) await exposition.SetActiveItemSet(e.build, e.build.Items.ActiveItemSet);
+    return this.recalcCompare(e);
+  }
 }
 
 export const workerInstance = new PoBWorker();

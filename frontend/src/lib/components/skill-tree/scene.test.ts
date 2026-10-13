@@ -221,6 +221,35 @@ describe('the tree scene', () => {
     expect(STYLE_WIDTHS[Style.ActiveCompared]).toBe(STYLE_WIDTHS[Style.Active]);
   });
 
+  // PassiveTreeView.lua:708-710, 972-976
+  it('draws what the hovered node takes with it in red', () => {
+    const scene = buildScene(tree!);
+    const i = scene.connections.findIndex((c) => !tree!.nodes[c.a].ascendancyName && !tree!.nodes[c.a].classStartIndex && !tree!.nodes[c.b].classStartIndex);
+    const { a, b } = scene.connections[i];
+    const both = new Set([a, b]);
+    const tints = (state: { hovered?: number; depends?: Set<number> }) => {
+      fillScene(scene, { ...empty(), active: both, ...state }, () => true);
+      const list = sceneDrawList(scene, 1, undefined) as { k: string; q?: number[]; t?: number[] }[];
+      const at = (p: { x: number; y: number }) =>
+        list
+          .filter((s) => s.k === 'sprite' && Math.round(s.q![0] + s.q![2] / 2) === Math.round(p.x) && Math.round(s.q![1] + s.q![5] / 2) === Math.round(p.y))
+          .map((s) => s.t);
+      const pos = (id: number) => scene.nodes.find((n) => n.id === id)!.at;
+      return { style: scene.strokes[i * STROKE_FLOATS + 5], a: at(pos(a)), b: at(pos(b)) };
+    };
+    const off = tints({ hovered: a });
+    expect(off.style).toBe(Style.Active);
+    expect(
+      off.b.some((t) => t),
+      'control: no tint without dependents'
+    ).toBe(false);
+    const on = tints({ hovered: a, depends: both });
+    expect(on.style).toBe(Style.Depends);
+    expect(STYLE_COLOURS[Style.Depends]).toBe('#e90000');
+    expect(on.b.at(-1), "the dependent's frame").toEqual([1, 0, 0]);
+    expect(on.a, "the hovered node's own sprites").toEqual(off.a);
+  });
+
   // PassiveTreeView.lua:679-683
   it("draws a connector on Split Personality's path in its colour", () => {
     const scene = buildScene(tree!);

@@ -25,9 +25,13 @@ func ImportTabExports(r bind.Registry) {
 }
 
 type characterData struct {
+	Name      string           `json:"name"`
+	Class     string           `json:"class"`
+	League    string           `json:"league"`
 	Level     int              `json:"level"`
 	Equipment []importItemData `json:"equipment"`
 	Guardian  []importItemData `json:"guardian"`
+	Jewels    []importItemData `json:"jewels"`
 	Passives  json.RawMessage  `json:"passives"`
 }
 
@@ -265,7 +269,9 @@ func (t *importTab) importItem(itemData importItemData, slotName string, ignoreW
 	if slotName == "" {
 		switch {
 		case itemData.InventoryID == "PassiveJewels":
-			return
+			if slots := data.TreeVersions[data.LatestTreeVersion].Tree().JewelSlots; itemData.X >= 0 && itemData.X < len(slots) {
+				slotName = "Jewel " + strconv.FormatInt(slots[itemData.X], 10)
+			}
 		case itemData.InventoryID == "Flask":
 			slotName = "Flask " + strconv.Itoa(itemData.X+1)
 		case !(ignoreWeaponSwap && (itemData.InventoryID == "Weapon2" || itemData.InventoryID == "Offhand2")):
@@ -489,7 +495,10 @@ func (t *importTab) importItem(itemData importItemData, slotName string, ignoreW
 	} else {
 		id = t.build.AddItem(text)
 	}
-	if itemSetID != 0 && itemSetID != t.build.Items.ActiveItemSet {
+	if nodeID, ok := strings.CutPrefix(slotName, "Jewel "); ok {
+		n, _ := strconv.Atoi(nodeID)
+		t.build.SocketJewel(n, id)
+	} else if itemSetID != 0 && itemSetID != t.build.Items.ActiveItemSet {
 		t.build.SetSetSlotItem(itemSetID, slotName, id)
 	} else {
 		t.build.SetSlotItem(slotName, id)
@@ -814,24 +823,37 @@ func activeSkillName(gem pob.Gem) string {
 	return skill.Name
 }
 
-//pob:src/Classes/ImportTab.lua:1380-1490
 func ImportItemsAndSkills(build *pob.PathOfBuilding, characterJSON string, clearItems bool, clearSkills bool, ignoreWeaponSwap bool) (string, error) {
 	if build == nil {
 		return "", fmt.Errorf("no build")
 	}
+	charData, err := decodeCharacterJSON(characterJSON)
+	if err != nil {
+		return "", err
+	}
+	return importItemsAndSkills(build, charData, clearItems, clearSkills, ignoreWeaponSwap), nil
+}
+
+//pob:block:src/Classes/ImportTab.lua:609-628
+func decodeCharacterJSON(characterJSON string) (*characterData, error) {
 	var wrapper struct {
 		Character *characterData `json:"character"`
 	}
 	if err := json.Unmarshal([]byte(characterJSON), &wrapper); err != nil {
-		return "", fmt.Errorf("Invalid JSON format (decode error)")
+		return nil, fmt.Errorf("Invalid JSON format (decode error)")
 	}
 	charData := wrapper.Character
 	if charData == nil {
-		return "", fmt.Errorf("Invalid JSON format (character missing)")
+		return nil, fmt.Errorf("Invalid JSON format (character missing)")
 	}
 	if charData.Equipment == nil || charData.Passives == nil {
-		return "", fmt.Errorf("Invalid JSON format (equipment or passives missing)")
+		return nil, fmt.Errorf("Invalid JSON format (equipment or passives missing)")
 	}
+	return charData, nil
+}
+
+//pob:src/Classes/ImportTab.lua:1380-1490
+func importItemsAndSkills(build *pob.PathOfBuilding, charData *characterData, clearItems bool, clearSkills bool, ignoreWeaponSwap bool) string {
 	if len(build.Skills.SkillSets) == 0 {
 		build.Skills.SkillSets = []pob.SkillSet{{ID: 1}}
 		build.Skills.ActiveSkillSet = 1
@@ -943,5 +965,5 @@ func ImportItemsAndSkills(build *pob.PathOfBuilding, characterJSON string, clear
 		build.SetMainSocketGroup(build.GuessMainSocketGroup())
 	}
 	build.SetLevel(charData.Level)
-	return "Items and skills successfully imported.", nil
+	return "Items and skills successfully imported."
 }

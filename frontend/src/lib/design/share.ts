@@ -2,6 +2,7 @@
 
 export type Site = {
   label: string;
+  id: string;
   match: RegExp;
   regex: RegExp;
   download: string;
@@ -11,6 +12,7 @@ export type Site = {
 export const SITES: Site[] = [
   {
     label: 'Maxroll',
+    id: 'Maxroll',
     match: /^https:\/\/maxroll\.gg\/poe\/pob\/.*/,
     regex: /maxroll\.gg\/poe\/pob\/(.+)\s*$/,
     download: 'maxroll.gg/poe/api/pob/$1',
@@ -18,23 +20,38 @@ export const SITES: Site[] = [
   },
   {
     label: 'pob.codes',
+    id: 'PoBCodes',
     match: /^https:\/\/pob\.codes\/b\/.+/,
     regex: /pob\.codes\/b\/(.+)\s*$/,
     download: 'api.pob.codes/$1/raw',
     link: 'https://pob.codes/b/'
   },
-  { label: 'pobb.in', match: /^https:\/\/pobb\.in\/.+/, regex: /pobb\.in\/(.+)\s*$/, download: 'pobb.in/pob/$1', link: 'https://pobb.in/' },
+  { label: 'pobb.in', id: 'POBBin', match: /^https:\/\/pobb\.in\/.+/, regex: /pobb\.in\/(.+)\s*$/, download: 'pobb.in/pob/$1', link: 'https://pobb.in/' },
   {
     label: 'PoeNinja',
+    id: 'PoeNinja',
     match: /^https:\/\/poe\.ninja\/?p?o?e?1?\/pob\/\w+/,
     regex: /poe\.ninja\/?p?o?e?1?\/pob\/(\w+)\s*$/,
     download: 'poe.ninja/poe1/pob/raw/$1',
     link: 'https://poe.ninja/poe1/pob/'
   },
-  { label: 'Pastebin.com', match: /^https:\/\/pastebin\.com\/\w+/, regex: /pastebin\.com\/(\w+)\s*$/, download: 'pastebin.com/raw/$1' },
-  { label: 'PastebinP.com', match: /^https:\/\/pastebinp\.com\/\w+/, regex: /pastebinp\.com\/(\w+)\s*$/, download: 'pastebinp.com/raw/$1' },
-  { label: 'Rentry.co', match: /^https:\/\/rentry\.co\/\w+/, regex: /rentry\.co\/(\w+)\s*$/, download: 'rentry.co/paste/$1/raw' },
-  { label: 'poedb.tw', match: /^https:\/\/poedb\.tw\/.+/, regex: /poedb\.tw\/pob\/(.+)\s*$/, download: 'poedb.tw/pob/$1/raw', link: 'https://poedb.tw/pob/' }
+  { label: 'Pastebin.com', id: 'pastebin', match: /^https:\/\/pastebin\.com\/\w+/, regex: /pastebin\.com\/(\w+)\s*$/, download: 'pastebin.com/raw/$1' },
+  {
+    label: 'PastebinP.com',
+    id: 'pastebinProxy',
+    match: /^https:\/\/pastebinp\.com\/\w+/,
+    regex: /pastebinp\.com\/(\w+)\s*$/,
+    download: 'pastebinp.com/raw/$1'
+  },
+  { label: 'Rentry.co', id: 'rentry', match: /^https:\/\/rentry\.co\/\w+/, regex: /rentry\.co\/(\w+)\s*$/, download: 'rentry.co/paste/$1/raw' },
+  {
+    label: 'poedb.tw',
+    id: 'PoEDB',
+    match: /^https:\/\/poedb\.tw\/.+/,
+    regex: /poedb\.tw\/pob\/(.+)\s*$/,
+    download: 'poedb.tw/pob/$1/raw',
+    link: 'https://poedb.tw/pob/'
+  }
 ];
 export const EXPORT_SITES = SITES.filter((s) => s.link);
 

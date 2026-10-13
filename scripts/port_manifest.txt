@@ -256,6 +256,9 @@ scripts/gopob/luajitdet.go                       GO-NATIVE  port of scripts/buil
 scripts/gopob/probedeterminism.go                GO-NATIVE  port of oracle/probe_determinism.sh; the per-process reproducibility probe, porting no Lua
 scripts/gopob/nicerun.go                         GO-NATIVE  port of scripts/nice.sh; the low-priority command prefix, porting no Lua
 scripts/gopob/regenfixtures.go                   GO-NATIVE  port of scripts/regen_fixtures.sh; the oracle fixture regenerator, porting no Lua
+scripts/gopob/sysdeps_unix.go                    GO-NATIVE  the unix half of the OS calls the tools share (access, kill -0, getpriority, exec), porting no Lua
+scripts/gopob/sysdeps_windows.go                 GO-NATIVE  the Windows half of the above, so the tool builds and runs there, porting no Lua
+scripts/gopob/fmacensus.go                       GO-NATIVE  the fused multiply-add census over the calculation packages (arm64, amd64 v3), porting no Lua
 scripts/gopob/modaloracle.go                     GO-NATIVE  port of scripts/modal_oracle.sh; the modal-blob orchestrator, porting no Lua
 scripts/gopob/awgit.go                           GO-NATIVE  the git and exit-status helpers the dump tools share, porting no Lua
 scripts/gopob/sourcecensus.go                    GO-NATIVE  port of scripts/source_census.py; the source-class enrichment census, porting no Lua
@@ -422,3 +425,5 @@ data/tattoo_passives.go              GO-NATIVE  TattooTarget type; the data is i
 wasm/exposition/tree_tattoo_edit.go PORT       src/Classes/TreeTab.lua,src/Classes/PassiveTreeView.lua,src/Classes/PassiveTree.lua
 scripts/gamedatadump/skills.go       PORT       src/Export/Scripts/skills.lua,src/Export/Main.lua
 wasm/exposition/import_tab.go       PORT       src/Classes/ImportTab.lua,src/Classes/Item.lua,src/Modules/Data.lua,src/Modules/ItemTools.lua
+wasm/exposition/import_passive_tree.go PORT       src/Classes/ImportTab.lua,src/Classes/PassiveSpec.lua,src/Classes/PassiveTree.lua,src/Modules/Build.lua,src/Modules/ConfigOptions.lua
+wasm/exposition/tree_tattoo_nodes.go PORT       src/Classes/PassiveSpec.lua,src/Classes/PassiveTreeView.lua

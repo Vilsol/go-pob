@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 // CalcBreakdownControl.lua:174-209
 import { describe, expect, it, afterEach } from 'vitest';
-import { render, cleanup, within } from '@testing-library/svelte';
+import { render, cleanup, within, fireEvent } from '@testing-library/svelte';
 import CalcsBreakdown from './CalcsBreakdown.svelte';
 
 afterEach(cleanup);
@@ -91,5 +91,50 @@ describe('CalcsBreakdown modifier tables', () => {
         .getAllByRole('columnheader')
         .map((h) => h.textContent)
     ).toContain('Stat');
+  });
+});
+
+describe('CalcsBreakdown width', () => {
+  it('follows a drag and the arrow keys, and comes back at that width', async () => {
+    const props = { id: 'bd', pinned: false, onunpin: () => {}, parts: [] };
+    const first = render(CalcsBreakdown, props);
+    const aside = first.getByRole('complementary', { name: 'Breakdown' });
+    const handle = first.getByRole('separator', { name: 'Resize breakdown' });
+    const width = () => parseFloat(aside.style.width);
+    const w0 = width();
+    expect(w0).toBeGreaterThan(0);
+    await fireEvent.keyDown(handle, { key: 'ArrowLeft' });
+    expect(width()).toBe(w0 + 16);
+    if (!('PointerEvent' in window)) Object.assign(window, { PointerEvent: MouseEvent });
+    await fireEvent.pointerDown(handle, { clientX: 500, pointerId: 1, button: 0 });
+    await fireEvent.pointerMove(handle, { clientX: 400, pointerId: 1 });
+    await fireEvent.pointerUp(handle, { clientX: 400, pointerId: 1 });
+    expect(width()).toBe(w0 + 116);
+    expect(handle.getAttribute('aria-valuenow')).toBe(String(w0 + 116));
+    first.unmount();
+    const again = render(CalcsBreakdown, props);
+    expect(parseFloat(again.getByRole('complementary', { name: 'Breakdown' }).style.width)).toBe(w0 + 116);
+  });
+});
+
+describe('CalcsBreakdown reading', () => {
+  it('splits the title and lays the calculation out as steps', () => {
+    const { getByRole, container } = render(CalcsBreakdown, {
+      id: 'bd',
+      title: 'Life · Total',
+      pinned: true,
+      onunpin: () => {},
+      parts: [{ text: '2,301', bd: { lines: ['1180 (base)', 'x 1.95 (increased/reduced)', '= 2301', 'Next breakpoint: 6% increased'] } }]
+    });
+    const h = getByRole('heading', { name: 'Life · Total' });
+    expect(h.textContent).toBe('Life · Total');
+    expect([...h.querySelectorAll('span:not(.sr-only)')].map((s) => s.textContent)).toEqual(['Life', 'Total']);
+    const steps = [...container.querySelectorAll('[data-step]')].map((s) => [...s.children].map((c) => c.textContent));
+    expect(steps).toEqual([
+      ['', '1180', '(base)'],
+      ['×', '1.95', '(increased/reduced)'],
+      ['=', '2301', '']
+    ]);
+    expect(within(getByRole('group', { name: 'Calculation' })).getByText('Next breakpoint: 6% increased')).toBeTruthy();
   });
 });

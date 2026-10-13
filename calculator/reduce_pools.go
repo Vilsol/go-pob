@@ -53,7 +53,7 @@ func lostTo(m map[data.DamageType]map[string]float64, dt data.DamageType, key st
 	if m[dt] == nil {
 		m[dt] = make(map[string]float64, 4)
 	}
-	m[dt][key] += v
+	m[dt][key] += float64(v)
 }
 
 //pob:block:src/Modules/CalcDefence.lua:188-421
@@ -168,7 +168,7 @@ func ReducePoolsByDamage(poolTable *PoolTable, damageTable map[data.DamageType]f
 		}
 		if protectsMana && esBypass < 1 {
 			esPoolsRemaining[dt] = math.Floor(math.Min(math.Min(maxMoM*(1-esBypass), energyShield),
-				lifePlusMoMHitPool/(1-(1-esBypass)*momEffect)-lifePlusMoMHitPool))
+				lifePlusMoMHitPool/(1-float64((1-esBypass)*momEffect))-lifePlusMoMHitPool))
 			momPoolsRemaining[dt] = math.Floor(math.Min(maxMoM-esPoolsRemaining[dt], momPool))
 		} else {
 			esPoolsRemaining[dt] = math.Floor(esPool)
@@ -228,7 +228,7 @@ func ReducePoolsByDamage(poolTable *PoolTable, damageTable map[data.DamageType]f
 		if ward > 0 && (wardBypassBelow == 0 || damageTotal >= wardBeforeHit*wardBypassBelow) {
 			tempDamage := math.Min(damageRemainder*(1-modDB.Sum(mod.TypeBase, nil, "WardBypass")/100), ward)
 			ward -= tempDamage
-			tempDamage *= wardActiveChance
+			tempDamage = float64(tempDamage * wardActiveChance)
 			damageRemainder -= tempDamage
 			lostTo(resourcesLost, dt, "ward", tempDamage)
 		}
@@ -267,7 +267,7 @@ func ReducePoolsByDamage(poolTable *PoolTable, damageTable map[data.DamageType]f
 
 		//pob:block:src/Modules/CalcDefence.lua:348-384
 		if output["preventedLifeLossTotal"] > 0 {
-			halfLife := output["Life"] * 0.5
+			halfLife := float64(output["Life"] * 0.5)
 			lifeOverHalfLife := math.Max(life-halfLife, 0)
 			preventPercent := output["preventedLifeLoss"] / 100
 			poolAboveLow := lifeOverHalfLife / (1 - preventPercent)
@@ -280,18 +280,18 @@ func ReducePoolsByDamage(poolTable *PoolTable, damageTable map[data.DamageType]f
 			}
 			if output["preventedLifeLossBelowHalf"] != 0 {
 				damageToSplit := math.Min(damageRemainder, poolAboveLow)
-				lostLife := damageToSplit * (1 - preventPercent)
-				preventedLoss := damageToSplit * preventPercent
+				lostLife := float64(damageToSplit * (1 - preventPercent))
+				preventedLoss := float64(damageToSplit * preventPercent)
 				damageRemainder -= damageToSplit
 				lifeLossLostOverTime += preventedLoss
 				life -= lostLife
 				lostTo(resourcesLost, dt, "life", lostLife)
 				lostTo(resourcesLost, dt, "lifeLossPrevented", preventedLoss)
 				if life <= halfLife {
-					unspecific := damageRemainder * preventPercent
+					unspecific := float64(damageRemainder * preventPercent)
 					lifeLossLostOverTime += unspecific
 					damageRemainder -= unspecific
-					specific := damageRemainder * preventBelowHalfPercent
+					specific := float64(damageRemainder * preventBelowHalfPercent)
 					lifeBelowHalfLossLostOverTime += specific
 					damageRemainder -= specific
 					lostTo(resourcesLost, dt, "lifeLossPrevented", unspecific+specific)
@@ -388,7 +388,7 @@ func TakenHitFromDamage(rawDamage float64, damageType data.DamageType, actor *Ac
 		}
 		convertedDamage := rawDamage * convertPercent / 100
 		vaalArctic := math.Min(-modDB.Sum(mod.TypeMore, nil, "VaalArcticArmourMitigation")/100, 1)
-		reducedDamage := math.Floor(math.Max(convertedDamage*damageMitigationMultiplierForType(convertedDamage, damageConvertedType)+takenFlat, 0)*output[string(damageConvertedType+"AfterReductionTakenHitMulti")]+0.5) * (1 - vaalArctic)
+		reducedDamage := float64(math.Floor(float64(math.Max(float64(convertedDamage*damageMitigationMultiplierForType(convertedDamage, damageConvertedType))+takenFlat, 0)*output[string(damageConvertedType+"AfterReductionTakenHitMulti")])+0.5) * (1 - vaalArctic))
 		receivedDamageSum += reducedDamage
 		if reducedDamage > 0 || convertPercent > 0 {
 			damages[damageConvertedType] = reducedDamage

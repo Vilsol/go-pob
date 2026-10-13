@@ -811,15 +811,15 @@ func (m *MiscCalculator) EffectiveFlaskStats(item *Item) []string {
 			if lifeMoreOnLowLife > 1 {
 				lowLifeMulti = ((lifeMoreOnLowLife - 1) / (1 + effectInc/100)) + 1
 			}
-			inst := fd["lifeBase"] * instantPerc / 100 * (1 + lifeInc/100) * lifeMore * (1 + effectInc/100) * lowLifeMulti
+			inst := float64(fd["lifeBase"] * instantPerc / 100 * (1 + lifeInc/100) * lifeMore * (1 + effectInc/100) * lowLifeMulti)
 			base := fd["lifeBase"] * (1 - instantPerc/100) * (1 + lifeInc/100) * lifeMore * (1 + effectInc/100) * (1 + durInc/100) * lowLifeMulti
-			grad := base * output["LifeRecoveryRateMod"]
-			esGrad := base * output["EnergyShieldRecoveryRateMod"]
+			grad := float64(base * output["LifeRecoveryRateMod"])
+			esGrad := float64(base * output["EnergyShieldRecoveryRateMod"])
 			lifeDur = fd["duration"] * (1 + durInc/100) / (1 + rateInc/100) / (1 + lifeRateInc/100)
 
 			if fd["lifeAdditional"] > 0 && !configInputBool(m.build, "conditionFullLife") {
-				totalAdditionalAmount := (fd["lifeAdditional"] / 100) * fd["lifeTotal"] * output["LifeRecoveryRateMod"]
-				additionalGrad := (lifeDur / 10) * totalAdditionalAmount
+				totalAdditionalAmount := float64((fd["lifeAdditional"] / 100) * fd["lifeTotal"] * output["LifeRecoveryRateMod"])
+				additionalGrad := float64((lifeDur / 10) * totalAdditionalAmount)
 				leftoverDur := 10 - lifeDur
 				leftoverAmount := totalAdditionalAmount - additionalGrad
 				switch {
@@ -861,9 +861,9 @@ func (m *MiscCalculator) EffectiveFlaskStats(item *Item) []string {
 			manaInc := modDB.Sum(mod.TypeIncrease, nil, "FlaskManaRecovery")
 			manaRateInc := modDB.Sum(mod.TypeIncrease, nil, "FlaskManaRecoveryRate")
 			instantPerc := fd["instantPerc"] + modDB.Sum(mod.TypeBase, nil, "ManaFlaskInstantRecovery")
-			inst := fd["manaBase"] * instantPerc / 100 * (1 + manaInc/100) * (1 + effectInc/100)
+			inst := float64(fd["manaBase"] * instantPerc / 100 * (1 + manaInc/100) * (1 + effectInc/100))
 			base := fd["manaBase"] * (1 - instantPerc/100) * (1 + manaInc/100) * (1 + effectInc/100) * (1 + durInc/100)
-			grad := base * output["ManaRecoveryRateMod"]
+			grad := float64(base * output["ManaRecoveryRateMod"])
 			lifeGrad := base * output["LifeRecoveryRateMod"]
 			manaDur = fd["duration"] * (1 + durInc/100) / (1 + rateInc/100) / (1 + manaRateInc/100)
 			if inst > 0 && grad > 0 {
@@ -884,7 +884,7 @@ func (m *MiscCalculator) EffectiveFlaskStats(item *Item) []string {
 		add("^8Flask effect duration: ^7%s0s", luaFixed(fd["duration"]*(1+durInc/100), 1))
 	}
 	if effectMod := 1 + (fd["effectInc"]+effectInc)/100; effectMod != 1 {
-		add("^8Flask effect modifier: ^7%+d%%", int(effectMod*100-100))
+		add("^8Flask effect modifier: ^7%+d%%", int(float64(effectMod*100)-100))
 	}
 	usedInc := modDB.Sum(mod.TypeIncrease, nil, "FlaskChargesUsed")
 	if usedInc != 0 {
@@ -893,7 +893,7 @@ func (m *MiscCalculator) EffectiveFlaskStats(item *Item) []string {
 	}
 	gainMod := fd["gainMod"] * (1 + modDB.Sum(mod.TypeIncrease, nil, "FlaskChargesGained")/100)
 	if gainMod != 1 {
-		add("^8Charge gain modifier: ^7%+d%%", int(gainMod*100-100))
+		add("^8Charge gain modifier: ^7%+d%%", int(float64(gainMod*100)-100))
 	}
 
 	chargesGenerated := modDB.Sum(mod.TypeBase, nil, "FlaskChargesGenerated")
@@ -910,10 +910,10 @@ func (m *MiscCalculator) EffectiveFlaskStats(item *Item) []string {
 	if item.BaseName == "Iron Flask" {
 		chargesGeneratedOnWardBreak += modDB.Sum(mod.TypeBase, nil, "IronFlaskChargesGeneratedOnWardBreak")
 	}
-	chargesGeneratedPerFlask := modDB.Sum(mod.TypeBase, nil, "FlaskChargesGeneratedPerEmptyFlask") * float64(emptyFlaskSlots(m.build))
-	chargesGenerated *= gainMod
+	chargesGeneratedPerFlask := float64(modDB.Sum(mod.TypeBase, nil, "FlaskChargesGeneratedPerEmptyFlask") * float64(emptyFlaskSlots(m.build)))
+	chargesGenerated = float64(chargesGenerated * gainMod)
 	chargesGeneratedOnWardBreak *= gainMod
-	chargesGeneratedPerFlask *= gainMod
+	chargesGeneratedPerFlask = float64(chargesGeneratedPerFlask * gainMod)
 	if total := chargesGenerated + chargesGeneratedPerFlask; total > 0 {
 		add("^8Charges generated: ^7%s^8 per second", luaFixed(total, 2))
 	}
@@ -939,7 +939,7 @@ func (m *MiscCalculator) EffectiveFlaskStats(item *Item) []string {
 		if flaskChargesUsed > 0 && flaskDuration > 0 {
 			per3Duration := flaskDuration - luaMod(flaskDuration, 3)
 			per5Duration := flaskDuration - luaMod(flaskDuration, 5)
-			minimumChargesGenerated := per3Duration*chargesGenerated + per5Duration*chargesGeneratedPerFlask
+			minimumChargesGenerated := float64(per3Duration*chargesGenerated) + float64(per5Duration*chargesGeneratedPerFlask)
 			percentageMin := math.Min(minimumChargesGenerated/flaskChargesUsed*100, 100)
 			if percentageMin < 100 && chanceToNotConsumeCharges < 100 {
 				averageChargesGenerated := (chargesGenerated + chargesGeneratedPerFlask) * flaskDuration
@@ -958,7 +958,7 @@ func (m *MiscCalculator) EffectiveFlaskStats(item *Item) []string {
 }
 
 func luaMod(a, b float64) float64 {
-	return a - math.Floor(a/b)*b
+	return a - float64(math.Floor(a/b)*b)
 }
 
 func configInputBool(build *pob.PathOfBuilding, name string) bool {
@@ -1016,7 +1016,7 @@ func (m *MiscCalculator) EffectiveTinctureStats(item *Item) []string {
 	}
 	effectMod := (1 + (td["effectInc"]+effectInc)/100) * (1 + quality/100)
 	if effectMod != 1 {
-		stats = append(stats, fmt.Sprintf("^8Tincture effect modifier: ^7%+d%%", int(effectMod*100-100)))
+		stats = append(stats, fmt.Sprintf("^8Tincture effect modifier: ^7%+d%%", int(float64(effectMod*100)-100)))
 	}
 	burn := 1 / (td["manaBurn"] / (1 + modDB.Sum(mod.TypeIncrease, playerActorCfg, "TinctureManaBurnRate")/100) / (1 + modDB.Sum(mod.TypeMore, playerActorCfg, "TinctureManaBurnRate")/100))
 	stats = append(stats, "^8Mana Burn Inflicted Every Second: ^7"+luaFixed(burn, 2))

@@ -152,7 +152,10 @@ export const initializeCrystalline = () => {
     GetTreeVersionOptions: wrap('exposition.GetTreeVersionOptions', globalThis['go']['go-pob']['exposition']['GetTreeVersionOptions']),
     GoldRespecPrice: wrap('exposition.GoldRespecPrice', globalThis['go']['go-pob']['exposition']['GoldRespecPrice']),
     ImplicitText: wrap('exposition.ImplicitText', globalThis['go']['go-pob']['exposition']['ImplicitText']),
+    ImportAccountItems: wrap('exposition.ImportAccountItems', globalThis['go']['go-pob']['exposition']['ImportAccountItems']),
+    ImportAccountPassiveTree: wrap('exposition.ImportAccountPassiveTree', globalThis['go']['go-pob']['exposition']['ImportAccountPassiveTree']),
     ImportItemsAndSkills: wrap('exposition.ImportItemsAndSkills', globalThis['go']['go-pob']['exposition']['ImportItemsAndSkills']),
+    ImportPassiveTreeAndJewels: wrap('exposition.ImportPassiveTreeAndJewels', globalThis['go']['go-pob']['exposition']['ImportPassiveTreeAndJewels']),
     ImportSharedItemSet: wrap('exposition.ImportSharedItemSet', globalThis['go']['go-pob']['exposition']['ImportSharedItemSet']),
     ImportTreeLink: wrap('exposition.ImportTreeLink', globalThis['go']['go-pob']['exposition']['ImportTreeLink']),
     ItemAffixControls: wrap('exposition.ItemAffixControls', globalThis['go']['go-pob']['exposition']['ItemAffixControls']),
@@ -236,7 +239,8 @@ export const initializeCrystalline = () => {
     TreeSocketedJewels: wrap('exposition.TreeSocketedJewels', globalThis['go']['go-pob']['exposition']['TreeSocketedJewels']),
     TreeSpecCompare: wrap('exposition.TreeSpecCompare', globalThis['go']['go-pob']['exposition']['TreeSpecCompare']),
     TreeSpecRespecCost: wrap('exposition.TreeSpecRespecCost', globalThis['go']['go-pob']['exposition']['TreeSpecRespecCost']),
-    TreeTattooArt: wrap('exposition.TreeTattooArt', globalThis['go']['go-pob']['exposition']['TreeTattooArt'])
+    TreeTattooArt: wrap('exposition.TreeTattooArt', globalThis['go']['go-pob']['exposition']['TreeTattooArt']),
+    TreeTattooNodes: wrap('exposition.TreeTattooNodes', globalThis['go']['go-pob']['exposition']['TreeTattooNodes'])
   };
   mod = {
     KeywordFlag: globalThis['go']['go-pob']['mod']['KeywordFlag'],

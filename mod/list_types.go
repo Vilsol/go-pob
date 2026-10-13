@@ -46,7 +46,7 @@ type GemProperty struct {
 }
 
 func (g GemProperty) ScaleValue(mult, base float64, limitTotal *float64) Cloneable {
-	out := g.Value*mult + base
+	out := float64(g.Value*mult) + base
 	if limitTotal != nil {
 		out = min(out, *limitTotal)
 	}
@@ -81,7 +81,7 @@ type SkillData struct {
 }
 
 func (s SkillData) ScaleValue(mult, base float64, limitTotal *float64) Cloneable {
-	out := s.Value*mult + base
+	out := float64(s.Value*mult) + base
 	if limitTotal != nil {
 		out = min(out, *limitTotal)
 	}
@@ -172,7 +172,7 @@ type ExtraAura struct {
 func (s ExtraAura) ScaleValue(mult, base float64, limitTotal *float64) Cloneable {
 	scaled := s.Mod.Clone()
 	if v := scaled.Value(); v != nil && v.Type() == ModValueMultiTypeFloat {
-		out := v.Float()*mult + base
+		out := float64(v.Float()*mult) + base
 		if limitTotal != nil {
 			out = min(out, *limitTotal)
 		}
@@ -230,7 +230,7 @@ type PlayerModifier = MinionModifier
 func (s MinionModifier) ScaleValue(mult, base float64, limitTotal *float64) Cloneable {
 	scaled := s.Mod.Clone()
 	if v := scaled.Value(); v != nil && v.Type() == ModValueMultiTypeFloat {
-		out := v.Float()*mult + base
+		out := float64(v.Float()*mult) + base
 		if limitTotal != nil {
 			out = min(out, *limitTotal)
 		}

@@ -682,6 +682,7 @@
       return def ? syncWrap?.GemSelectCompare(i, def.ID, def.Base.Name) : undefined;
     },
     qualitywhatif: async (i: number, gem: number) => syncWrap?.GemQualityCompare(i, gem),
+    enabledwhatif: async (i: number, gem: number) => syncWrap?.GemEnableCompare(i, gem),
     gemtip: async (i: number, kind: 'gem' | 'list' | 'quality', key: number | string) => {
       if (kind === 'list') {
         const def = gemByName.get(String(key));

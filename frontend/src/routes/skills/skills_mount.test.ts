@@ -479,6 +479,31 @@ describe('the group list shortcuts', () => {
       quality.mockRestore();
     }
   });
+
+  // SkillsTab.lua:948-960
+  it("hovering a gem's enable checkbox asks for its what-if, worded by the gem's state", async () => {
+    await mountSkills();
+    const compare = vi.spyOn(workerInstance, 'GemEnableCompare').mockResolvedValue([]);
+    const box = () => within(editor()).getAllByRole('checkbox', { name: / enabled$/ })[0] as HTMLInputElement;
+    const shown = () => within(editor()).getByRole('status', { name: 'What-if' });
+    try {
+      expect(box().checked, 'the first gem starts enabled').toBe(true);
+      await fireEvent.mouseEnter(box());
+      await vi.waitFor(() => expect(compare).toHaveBeenCalledWith(GROUP, 0), { timeout: 5000 });
+      await vi.waitFor(() => expect(shown().textContent).toContain('Disabling this gem will give you:'));
+      await fireEvent.mouseLeave(box());
+      await vi.waitFor(() => expect(within(editor()).queryByRole('status', { name: 'What-if' })).toBeNull());
+      await fireEvent.click(box());
+      await vi.waitFor(() => expect(goGems()[0].Enabled).toBe(false), { timeout: 5000 });
+      await fireEvent.focus(box());
+      await vi.waitFor(() => expect(shown().textContent).toContain('Enabling this gem will give you:'));
+      expect(compare).toHaveBeenCalledTimes(2);
+      await fireEvent.click(box());
+      await vi.waitFor(() => expect(goGems()[0].Enabled).toBe(true), { timeout: 5000 });
+    } finally {
+      compare.mockRestore();
+    }
+  });
 });
 
 describe('the gem tooltip (GemTooltip.lua)', () => {

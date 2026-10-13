@@ -34,17 +34,17 @@ func applyAntonym(num, word string) string {
 
 func roundSymmetric(val float64) float64 {
 	if val >= 0 {
-		return math.Floor(val + 0.5)
+		return math.Floor(float64(val) + 0.5)
 	}
-	return math.Ceil(val - 0.5)
+	return math.Ceil(float64(val) - 0.5)
 }
 
 func roundSymmetricDec(val float64, dec int) float64 {
 	factor := math.Pow(10, float64(dec))
 	if val >= 0 {
-		return math.Floor(val*factor+0.5) / factor
+		return math.Floor(float64(val*factor)+0.5) / factor
 	}
-	return math.Ceil(val*factor-0.5) / factor
+	return math.Ceil(float64(val*factor)-0.5) / factor
 }
 
 func floorSymmetric(val float64) float64 {
@@ -52,7 +52,7 @@ func floorSymmetric(val float64) float64 {
 }
 
 func alwaysPositiveRound(val float64) float64 {
-	return floorSymmetric(val + 0.5)
+	return floorSymmetric(float64(val) + 0.5)
 }
 
 //pob:src/Modules/ItemTools.lua:61-75
@@ -76,7 +76,7 @@ func formatValue(value float64, baseValueScalar, valueScalar *float64, precision
 		return luaNum(value)
 	}
 
-	dec := int(math.Floor(math.Log10(precision) + 0.001))
+	dec := int(math.Floor(float64(math.Log10(precision)) + 0.001))
 	if dec > 2 {
 		dec = 2
 	}
@@ -304,7 +304,7 @@ func stripLineForScalability(line string, rangeVal float64) (string, []string) {
 		sign := g[1]
 		rangeLow, _ := strconv.ParseFloat(g[2], 64)
 		rangeHigh, _ := strconv.ParseFloat(g[3], 64)
-		value := rangeLow + rangeVal*(rangeHigh-rangeLow)
+		value := rangeLow + float64(rangeVal*(rangeHigh-rangeLow))
 		if sign == "-" {
 			value *= -1
 		}

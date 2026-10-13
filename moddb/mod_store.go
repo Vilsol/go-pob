@@ -259,7 +259,7 @@ func (s *ModStore) evalMultiplier(value *mod.ModValueMulti, cfg *ListCfg, tag *m
 	}
 
 	if value.Type() == mod.ModValueMultiTypeFloat {
-		out := value.Float()*mult + tag.TagBase
+		out := float64(value.Float()*mult) + tag.TagBase
 		if limitTotal != nil {
 			out = min(out, *limitTotal)
 		}
@@ -349,7 +349,7 @@ func (s *ModStore) evalPerStatTag(value *mod.ModValueMulti, cfg *ListCfg, tag *m
 	}
 
 	if value.Type() == mod.ModValueMultiTypeFloat {
-		out := value.Float()*mult + tag.Base
+		out := float64(value.Float()*mult) + tag.Base
 		if limitTotal != nil {
 			out = min(out, *limitTotal)
 		}
@@ -844,7 +844,7 @@ func (s *ModStore) evalMeleeProximityTag(value *mod.ModValueMulti, cfg *ListCfg,
 	case cfg.SkillDist <= 15:
 		mult = r0
 	case cfg.SkillDist >= 16 && cfg.SkillDist <= 39:
-		mult = r0 - (r0/25)*(cfg.SkillDist-15)
+		mult = r0 - float64((r0/25)*(cfg.SkillDist-15))
 	case cfg.SkillDist >= 40:
 		mult = 0
 	}

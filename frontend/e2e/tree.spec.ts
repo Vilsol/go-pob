@@ -293,6 +293,58 @@ test('tree sets: the select and the manage list switch passive trees as Go does'
   app.assertNoErrors();
 });
 
+// PassiveSpec.lua:1614-1635
+test('tattoos: a tattooed node’s tooltip is the tattoo’s name and stats, not the tree’s node', async ({ page }) => {
+  test.setTimeout(5 * 60_000);
+  const { app, build } = await openOnTree(page, '0020-assassin-storm-burst');
+  const m = await go.model();
+  const tips = m.exposition.TreeTattooNodes(build) ?? [];
+  const tip = tips.find((t) => t.NodeID === 15549)!;
+  expect(tip, 'the build tattoos node 15549').toBeDefined();
+  const own = tree.rawTree().nodes[15549];
+  expect(own.name, 'control: the tattoo renames the node').not.toBe(tip.Name);
+  const at = await nodeOnScreen(page, 15549);
+  const box = await canvasBox(page);
+  await page.mouse.move(box.x + at.x, box.y + at.y);
+  const nodeTip = page.getByRole('tooltip').first();
+  await expect(nodeTip.locator('span.text-15').first()).toHaveText(tip.Name);
+  expect(await nodeTip.locator('.text-magic > span').allTextContents()).toEqual(tip.Stats);
+  await page.mouse.move(0, 0);
+  app.assertNoErrors();
+});
+
+test('radius jewels: a node in a jewel’s radius names the jewel and its radius lines', async ({ page }) => {
+  test.setTimeout(5 * 60_000);
+  const file = '0006-elementalist-storm-burst';
+  const { app, build } = await openOnTree(page, file);
+  const m = await go.model();
+  const rings = (await m.exposition.GetTreeJewelRings(build, [])) ?? [];
+  expect(rings.map((r) => r.Art)).toEqual(['Glorious Vanity']);
+  const radius = ((await m.exposition.GetTreeSocketRadii(build, rings[0].NodeID)) ?? []).find((x) => x.Outer === rings[0].Outer)!.Nodes ?? [];
+  const t = tree.rawTree();
+  const inside = radius.find((n) => t.nodes[n]?.isNotable)!;
+  const outside = placedNodes(t).find((p) => p.node.isNotable && !p.node.ascendancyName && !radius.includes(p.node.skill!))!.node.skill!;
+  expect(buildXml(file)).toContain('Passives in radius are Conquered by the Vaal');
+
+  const tipOf = async (id: number) => {
+    const at = await nodeOnScreen(page, id);
+    const box = await canvasBox(page);
+    await page.mouse.move(box.x + at.x, box.y + at.y);
+    const nodeTip = page.getByRole('tooltip').first();
+    await expect(nodeTip.locator('span.text-15').first()).toHaveText(t.nodes[id].name!);
+    return nodeTip;
+  };
+  const tip = (await tipOf(inside)).getByLabel('Jewels affecting this node');
+  await expect(tip).toContainText('In radius of Glorious Vanity');
+  const lines = await tip.locator('[data-line]').allTextContents();
+  expect(lines).toContain('Passives in radius are Conquered by the Vaal');
+  for (const l of lines) expect(l).toMatch(/radius|ring/i);
+  await page.mouse.move(0, 0);
+  await expect((await tipOf(outside)).getByLabel('Jewels affecting this node')).toHaveCount(0);
+  await page.mouse.move(0, 0);
+  app.assertNoErrors();
+});
+
 test('mastery effects: choosing an effect, and allocating a mastery by its choice, as Go does', async ({ page }) => {
   const file = '0280-elementalist-fireball';
   const { app, build } = await openOnTree(page, file);
@@ -387,6 +439,23 @@ test('power report: the panel lists Go’s report for the chosen stat, built off
   expect(view.scaling).toBe(3);
   expect(Math.abs(at.x - view.width / 2)).toBeLessThan(2);
   expect(Math.abs(at.y - view.height / 2)).toBeLessThan(2);
+
+  await table.locator(`[data-power-node="${first.ID}"]`).first().hover();
+  const ring = page.locator(`[data-power-hover="${first.ID}"]`);
+  const box = await canvasBox(page);
+  const ringBox = (await ring.boundingBox())!;
+  expect(Math.abs(ringBox.x + ringBox.width / 2 - (box.x + at.x))).toBeLessThan(2);
+  expect(Math.abs(ringBox.y + ringBox.height / 2 - (box.y + at.y))).toBeLessThan(2);
+  await page.mouse.move(box.x + 5, box.y + box.height - 5);
+  await expect(page.locator('[data-power-hover]')).toHaveCount(0);
+
+  const cols = await table
+    .locator('[role="row"]')
+    .evaluateAll((els) => els.slice(0, 40).map((r) => [...r.querySelectorAll('[role="cell"], [role="columnheader"]')].map((c) => c.getBoundingClientRect())));
+  for (const row of cols) {
+    expect(row.map((c) => Math.round(c.left))).toEqual(cols[0].map((c) => Math.round(c.left)));
+    for (let k = 1; k < row.length; k++) expect(row[k].left - row[k - 1].right, `the gap before column ${k}`).toBeGreaterThanOrEqual(8);
+  }
 
   // PowerReportListControl.lua:58-96
   await table.getByRole('button', { name: 'Points' }).click();

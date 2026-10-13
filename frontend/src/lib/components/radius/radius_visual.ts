@@ -39,3 +39,25 @@ export const circleRows = (radius: number, width = RADIUS_BOX.width, height = RA
   }
   return rows;
 };
+
+export const ringPath = (radius: number, width = RADIUS_BOX.width, height = RADIUS_BOX.height) => {
+  let d = '';
+  let open = false;
+  for (let deg = 0; deg <= 360; deg += 2) {
+    const r = (deg / 180) * Math.PI;
+    const x = Math.sin(r) * radius;
+    const y = Math.cos(r) * radius;
+    // Main.lua:1494
+    if (122 + (y + x) * cos45 * sin35 < 1) {
+      open = false;
+      continue;
+    }
+    const [sx, sy] = worldToScreen(x, y, 0, width, height);
+    d += `${open ? 'L' : 'M'}${sx} ${sy}`;
+    open = true;
+  }
+  return d;
+};
+
+export const ringLabelAt = (radius: number, width = RADIUS_BOX.width, height = RADIUS_BOX.height) =>
+  worldToScreen(radius * Math.SQRT1_2, -radius * Math.SQRT1_2, 0, width, height);

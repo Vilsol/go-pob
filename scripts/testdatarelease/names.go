@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/fs"
 	"os"
 	"path"
 	"path/filepath"
@@ -55,14 +56,14 @@ func portableRenames(names []string) (map[string]string, error) {
 	return renames, nil
 }
 
-func renameOracle(src, name string, b []byte, renames map[string]string) ([]byte, error) {
+func renameOracle(fsys fs.FS, name string, b []byte, renames map[string]string) ([]byte, error) {
 	switch {
 	case len(renames) == 0:
 		return b, nil
 	case strings.HasSuffix(name, ".jsonl.gz"):
 		return renameJSONL(b, renames)
 	case strings.HasSuffix(name, oraclebin.BinExt):
-		return regenerateBin(filepath.Join(src, filepath.FromSlash(oraclebin.SourcePath(name))), renames)
+		return regenerateBin(fsys, oraclebin.SourcePath(name), renames)
 	}
 	for old := range renames {
 		if bytes.Contains(b, []byte(strings.TrimSuffix(old, ".xml"))) {
@@ -107,8 +108,8 @@ func renameJSONL(gz []byte, renames map[string]string) ([]byte, error) {
 	return out.Bytes(), nil
 }
 
-func regenerateBin(jsonlPath string, renames map[string]string) ([]byte, error) {
-	src, err := os.ReadFile(jsonlPath) //nolint:gosec // the oracle beside the side-car
+func regenerateBin(fsys fs.FS, jsonlPath string, renames map[string]string) ([]byte, error) {
+	src, err := fs.ReadFile(fsys, jsonlPath)
 	if err != nil {
 		return nil, fmt.Errorf("reading %s: %w", jsonlPath, err)
 	}
@@ -116,7 +117,7 @@ func regenerateBin(jsonlPath string, renames map[string]string) ([]byte, error) 
 	if err != nil {
 		return nil, err
 	}
-	tmp := filepath.Join(os.TempDir(), "testdatarelease-"+path.Base(filepath.ToSlash(jsonlPath)))
+	tmp := filepath.Join(os.TempDir(), "testdatarelease-"+path.Base(jsonlPath))
 	if err := os.WriteFile(tmp, b, 0o600); err != nil {
 		return nil, fmt.Errorf("writing %s: %w", tmp, err)
 	}

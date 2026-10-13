@@ -265,7 +265,7 @@ func moreHighPrecisionFor(name string) (int, bool) {
 
 func luaRound(val float64, dec int) float64 {
 	p := math.Pow(10, float64(dec))
-	return math.Floor(val*p+0.5) / p
+	return math.Floor(float64(val*p)+0.5) / p
 }
 
 //pob:src/Classes/ModDB.lua:157-194

@@ -52,3 +52,7 @@ if (browser) {
   });
   fontScaling.subscribe((pt) => (root.style.fontSize = rootFontSize(pt)));
 }
+
+export const ITEMS_LAYOUTS = ['board', 'list'] as const;
+export type ItemsLayout = (typeof ITEMS_LAYOUTS)[number];
+export const itemsLayout = persisted<ItemsLayout>('options:itemsLayout', 'board', (s) => ITEMS_LAYOUTS.find((l) => l === s));

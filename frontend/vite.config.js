@@ -1,10 +1,11 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import tailwindcss from '@tailwindcss/vite';
 import { availableParallelism } from 'node:os';
+import { importProxy } from './src/lib/import_proxy/vite';
 
 /** @type {import('vite').UserConfig} */
 const config = {
-  plugins: [tailwindcss(), sveltekit()],
+  plugins: [tailwindcss(), sveltekit(), importProxy()],
 
   resolve: process.env.VITEST ? { conditions: ['browser'] } : undefined,
 

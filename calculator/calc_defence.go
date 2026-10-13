@@ -45,7 +45,7 @@ func CalcArmourReductionF(armour float64, raw float64) float64 {
 	if armour == 0 && raw == 0 {
 		return 0
 	}
-	return armour / (armour + raw*5) * 100
+	return armour / (armour + float64(raw*5)) * 100
 }
 
 //pob:src/Modules/CalcDefence.lua:74-76
@@ -120,7 +120,7 @@ func ApplyDmgTakenConversion(skillModList *moddb.ModList, output map[string]floa
 		}
 		reductMult := (1 - math.Max(math.Min(output["DamageReductionMax"], armourReduct+reduction), 0)/100) * damageTakenMods
 		combinedMult := resMult * reductMult
-		finalDamage := damage * combinedMult
+		finalDamage := float64(damage * combinedMult)
 		totalDamageTaken += finalDamage
 
 		if breakdown != nil {
@@ -140,7 +140,7 @@ func ApplyDmgTakenConversion(skillModList *moddb.ModList, output map[string]floa
 
 //pob:src/Modules/CalcDefence.lua:177-181
 func calcLifeHitPoolWithLossPrevention(life float64, maxLife float64, lifeLossPrevented float64, lifeLossBelowHalfPrevented float64) float64 {
-	halfLife := maxLife * 0.5
+	halfLife := float64(maxLife * 0.5)
 	aboveLow := math.Max(life-halfLife, 0)
 	return aboveLow/(1-lifeLossPrevented/100) + math.Min(life, halfLife)/(1-lifeLossBelowHalfPrevented/100)/(1-lifeLossPrevented/100)
 }
@@ -159,7 +159,7 @@ func calcMoMEBPoolF(lifePool float64, momEffect float64, esBypass float64, manaU
 			energyShieldRecoveryCap,
 			math.Min(
 				maxMoMPool*(1-esBypass),
-				(lifePool+maxManaUsable)/(1-(1-esBypass)*momEffect)-(lifePool+maxManaUsable),
+				(lifePool+maxManaUsable)/(1-float64((1-esBypass)*momEffect))-(lifePool+maxManaUsable),
 			),
 		))
 	}
@@ -249,6 +249,11 @@ func allyLifePoolByKey(key string) allyLifePool {
 }
 
 func enemyDamageCategory(environment *Environment) string {
+	if preset := environment.Build.GetStringOption("presetBossSkills"); preset != "" && preset != "None" {
+		if bossData, ok := data.BossSkills[preset]; ok && bossData.DamageType != "" {
+			return bossData.DamageType
+		}
+	}
 	if c := environment.Build.GetStringOption("enemyDamageType"); c != "" {
 		return c
 	}
@@ -310,7 +315,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 		actor.Output["BlockChance"] = min(totalBlockChance, actor.Output["BlockChanceMax"])
 		actor.Output["BlockChanceOverCap"] = max(0, totalBlockChance-actor.Output["BlockChanceMax"])
 	}
-	actor.Output["ProjectileBlockChance"] = min(actor.Output["BlockChance"]+modDB.Sum(mod.TypeBase, nil, "ProjectileBlockChance")*calclib.Mod(modDB, nil, "BlockChance"), actor.Output["BlockChanceMax"])
+	actor.Output["ProjectileBlockChance"] = min(actor.Output["BlockChance"]+float64(modDB.Sum(mod.TypeBase, nil, "ProjectileBlockChance")*calclib.Mod(modDB, nil, "BlockChance")), actor.Output["BlockChanceMax"])
 	if modDB.Flag(nil, "SpellBlockChanceMaxIsBlockChanceMax") {
 		actor.Output["SpellBlockChanceMax"] = actor.Output["BlockChanceMax"]
 	} else {
@@ -329,7 +334,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 		totalSpellBlockChance := utils.RoundTo(modDB.Sum(mod.TypeBase, nil, "SpellBlockChance")*(1+inc/100)*more, 0)
 		actor.Output["SpellBlockChance"] = min(totalSpellBlockChance, actor.Output["SpellBlockChanceMax"])
 		actor.Output["SpellBlockChanceOverCap"] = max(0, totalSpellBlockChance-actor.Output["SpellBlockChanceMax"])
-		actor.Output["SpellProjectileBlockChance"] = max(min(actor.Output["SpellBlockChance"]+modDB.Sum(mod.TypeBase, nil, "ProjectileSpellBlockChance")*calclib.Mod(modDB, nil, "SpellBlockChance"), actor.Output["SpellBlockChanceMax"]), 0)
+		actor.Output["SpellProjectileBlockChance"] = max(min(actor.Output["SpellBlockChance"]+float64(modDB.Sum(mod.TypeBase, nil, "ProjectileSpellBlockChance")*calclib.Mod(modDB, nil, "SpellBlockChance")), actor.Output["SpellBlockChanceMax"]), 0)
 	}
 	if actor.Breakdown != nil {
 		actor.Breakdown.Simple(utils.Ptr(baseBlockChance), nil, actor.Output["BlockChance"], "BlockChance")
@@ -371,7 +376,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 			blockChance := actor.Output[key] / 100
 			switch {
 			case modDB.Flag(nil, "Unexciting"):
-				actor.Output[key] = (3*blockChance*blockChance - 2*blockChance*blockChance*blockChance) * 100
+				actor.Output[key] = (float64(3*blockChance*blockChance) - float64(2*blockChance*blockChance*blockChance)) * 100
 			case blockRolls > 0:
 				actor.Output[key] = (1 - math.Pow(1-blockChance, blockRolls+1)) * 100
 			default:
@@ -459,8 +464,8 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 
 				if slot == "Body Armour" && modDB.Flag(nil, "ConvertBodyArmourArmourEvasionToWard") {
 					conversion := math.Min(modDB.Sum(mod.TypeBase, nil, "BodyArmourArmourEvasionToWardPercent")/100, 1)
-					convertedArmour := armourBase * conversion
-					convertedEvasion := evasionBase * conversion
+					convertedArmour := float64(armourBase * conversion)
+					convertedEvasion := float64(evasionBase * conversion)
 					armourBase = armourBase - convertedArmour
 					evasionBase = evasionBase - convertedEvasion
 					wardBase = wardBase + (convertedEvasion + convertedArmour)
@@ -470,7 +475,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 					if modDB.Flag(nil, "EnergyShieldToWard") {
 						inc := modDB.Sum(mod.TypeIncrease, slotCfg, "Ward", "Defences", "EnergyShield")
 						more := modDB.More(slotCfg, "Ward", "Defences")
-						ward = ward + wardBase*(1+inc/100)*more
+						ward = ward + float64(wardBase*(1+inc/100)*more)
 						gearWard = gearWard + wardBase
 						if actor.Breakdown != nil {
 							actor.Breakdown.AddSlot("Ward", BSlot{
@@ -483,7 +488,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 							})
 						}
 					} else {
-						ward = ward + wardBase*calclib.Mod(modDB, slotCfg, "Ward", "Defences")
+						ward = ward + float64(wardBase*calclib.Mod(modDB, slotCfg, "Ward", "Defences"))
 						gearWard = gearWard + wardBase
 						if actor.Breakdown != nil {
 							actor.Breakdown.Slot(slot, nil, slotCfg, wardBase, nil, "Ward", "Defences")
@@ -493,7 +498,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 				if energyShieldBase > 0 {
 					if modDB.Flag(nil, "EnergyShieldToWard") {
 						more := modDB.More(slotCfg, "EnergyShield", "Defences")
-						energyShield = energyShield + energyShieldBase*more
+						energyShield = energyShield + float64(energyShieldBase*more)
 						gearEnergyShield = gearEnergyShield + energyShieldBase
 						if actor.Breakdown != nil {
 							actor.Breakdown.AddSlot("EnergyShield", BSlot{
@@ -505,7 +510,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 							})
 						}
 					} else if !modDB.Flag(nil, "ConvertArmourESToLife") {
-						energyShield = energyShield + energyShieldBase*calclib.Mod(modDB, slotCfg, "EnergyShield", "Defences", slot+"ESAndArmour")
+						energyShield = energyShield + float64(energyShieldBase*calclib.Mod(modDB, slotCfg, "EnergyShield", "Defences", slot+"ESAndArmour"))
 						gearEnergyShield = gearEnergyShield + energyShieldBase
 						if actor.Breakdown != nil {
 							actor.Breakdown.Slot(slot, nil, slotCfg, energyShieldBase, nil, "EnergyShield", "Defences")
@@ -514,9 +519,9 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 				}
 				if armourBase > 0 {
 					if slot == "Body Armour" && modDB.Flag(nil, "Unbreakable") {
-						armourBase = armourBase * 2
+						armourBase = float64(armourBase * 2)
 					}
-					armour = armour + armourBase*calclib.Mod(modDB, slotCfg, "Armour", "ArmourAndEvasion", "Defences", slot+"ESAndArmour")
+					armour = armour + float64(armourBase*calclib.Mod(modDB, slotCfg, "Armour", "ArmourAndEvasion", "Defences", slot+"ESAndArmour"))
 					gearArmour = gearArmour + armourBase
 					if actor.Breakdown != nil {
 						actor.Breakdown.Slot(slot, nil, slotCfg, armourBase, nil, "Armour", "ArmourAndEvasion", "Defences")
@@ -529,9 +534,9 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 						actor.Breakdown.Slot(slot, nil, slotCfg, evasionBase, nil, "Evasion", "ArmourAndEvasion", "Defences")
 					}
 					if ironReflexes {
-						armour = armour + evasionBase*calclib.Mod(modDB, slotCfg, "Armour", "Evasion", "ArmourAndEvasion", "Defences")
+						armour = armour + float64(evasionBase*calclib.Mod(modDB, slotCfg, "Armour", "Evasion", "ArmourAndEvasion", "Defences"))
 					} else {
-						evasion = evasion + evasionBase*calclib.Mod(modDB, slotCfg, "Evasion", "ArmourAndEvasion", "Defences")
+						evasion = evasion + float64(evasionBase*calclib.Mod(modDB, slotCfg, "Evasion", "ArmourAndEvasion", "Defences"))
 					}
 				}
 			}
@@ -543,7 +548,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 				//pob:block:src/Modules/CalcDefence.lua:931-933
 				inc := modDB.Sum(mod.TypeIncrease, nil, "Ward", "Defences", "EnergyShield")
 				more := modDB.More(nil, "Ward", "Defences")
-				ward = ward + wardBase*(1+inc/100)*more
+				ward = ward + float64(wardBase*(1+inc/100)*more)
 				if actor.Breakdown != nil {
 					actor.Breakdown.AddSlot("Ward", BSlot{
 						Base:   wardBase,
@@ -555,7 +560,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 					})
 				}
 			} else {
-				ward = ward + wardBase*calclib.Mod(modDB, nil, "Ward", "Defences")
+				ward = ward + float64(wardBase*calclib.Mod(modDB, nil, "Ward", "Defences"))
 				if actor.Breakdown != nil {
 					actor.Breakdown.Slot("Global", nil, nil, wardBase, nil, "Ward", "Defences")
 				}
@@ -564,9 +569,9 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 		energyShieldBase = modDB.Sum(mod.TypeBase, nil, "EnergyShield")
 		if energyShieldBase > 0 {
 			if modDB.Flag(nil, "EnergyShieldToWard") {
-				energyShield = energyShield + energyShieldBase*modDB.More(nil, "EnergyShield", "Defences")
+				energyShield = energyShield + float64(energyShieldBase*modDB.More(nil, "EnergyShield", "Defences"))
 			} else {
-				energyShield = energyShield + energyShieldBase*calclib.Mod(modDB, nil, "EnergyShield", "Defences")
+				energyShield = energyShield + float64(energyShieldBase*calclib.Mod(modDB, nil, "EnergyShield", "Defences"))
 			}
 			if actor.Breakdown != nil {
 				more := modDB.More(slotCfg, "EnergyShield", "Defences")
@@ -581,7 +586,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 		}
 		armourBase = modDB.Sum(mod.TypeBase, nil, "Armour", "ArmourAndEvasion")
 		if armourBase > 0 {
-			armour = armour + armourBase*calclib.Mod(modDB, nil, "Armour", "ArmourAndEvasion", "Defences")
+			armour = armour + float64(armourBase*calclib.Mod(modDB, nil, "Armour", "ArmourAndEvasion", "Defences"))
 			if actor.Breakdown != nil {
 				actor.Breakdown.Slot("Global", nil, nil, armourBase, nil, "Armour", "ArmourAndEvasion", "Defences")
 			}
@@ -589,12 +594,12 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 		evasionBase = modDB.Sum(mod.TypeBase, nil, "Evasion", "ArmourAndEvasion")
 		if evasionBase > 0 {
 			if ironReflexes {
-				armour = armour + evasionBase*calclib.Mod(modDB, nil, "Armour", "Evasion", "ArmourAndEvasion", "Defences")
+				armour = armour + float64(evasionBase*calclib.Mod(modDB, nil, "Armour", "Evasion", "ArmourAndEvasion", "Defences"))
 				if actor.Breakdown != nil {
 					actor.Breakdown.Slot("Conversion", utils.Ptr("Evasion to Armour"), nil, evasionBase, nil, "Armour", "Evasion", "ArmourAndEvasion", "Defences")
 				}
 			} else {
-				evasion = evasion + evasionBase*calclib.Mod(modDB, nil, "Evasion", "ArmourAndEvasion", "Defences")
+				evasion = evasion + float64(evasionBase*calclib.Mod(modDB, nil, "Evasion", "ArmourAndEvasion", "Defences"))
 				if actor.Breakdown != nil {
 					actor.Breakdown.Slot("Global", nil, nil, evasionBase, nil, "Evasion", "ArmourAndEvasion", "Defences")
 				}
@@ -603,7 +608,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 		convManaToArmour := modDB.Sum(mod.TypeBase, nil, "ManaConvertToArmour")
 		if convManaToArmour > 0 {
 			armourBase = 2 * modDB.Sum(mod.TypeBase, nil, "Mana") * convManaToArmour / 100
-			total := armourBase * calclib.Mod(modDB, nil, "Mana", "Armour", "ArmourAndEvasion", "Defences")
+			total := float64(armourBase * calclib.Mod(modDB, nil, "Mana", "Armour", "ArmourAndEvasion", "Defences"))
 			armour = armour + total
 			if actor.Breakdown != nil {
 				actor.Breakdown.Slot("Conversion", utils.Ptr("Mana to Armour"), nil, armourBase, utils.Ptr(total), "Armour", "ArmourAndEvasion", "Defences", "Mana")
@@ -612,7 +617,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 		convManaToES := modDB.Sum(mod.TypeBase, nil, "ManaGainAsEnergyShield")
 		if convManaToES > 0 {
 			energyShieldBase = modDB.Sum(mod.TypeBase, nil, "Mana") * convManaToES / 100
-			energyShield = energyShield + energyShieldBase*calclib.Mod(modDB, nil, "Mana", "EnergyShield", "Defences")
+			energyShield = energyShield + float64(energyShieldBase*calclib.Mod(modDB, nil, "Mana", "EnergyShield", "Defences"))
 			if actor.Breakdown != nil {
 				actor.Breakdown.Slot("Conversion", utils.Ptr("Mana to Energy Shield"), nil, energyShieldBase, nil, "EnergyShield", "Defences", "Mana")
 			}
@@ -648,7 +653,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 		convEvasionToArmour := modDB.Sum(mod.TypeBase, nil, "EvasionGainAsArmour")
 		if convEvasionToArmour > 0 {
 			armourBase = (modDB.Sum(mod.TypeBase, nil, "Evasion", "ArmourAndEvasion") + gearEvasion) * convEvasionToArmour / 100
-			total := armourBase * calclib.Mod(modDB, nil, "Evasion", "Armour", "ArmourAndEvasion", "Defences")
+			total := float64(armourBase * calclib.Mod(modDB, nil, "Evasion", "Armour", "ArmourAndEvasion", "Defences"))
 			armour = armour + total
 			if actor.Breakdown != nil {
 				actor.Breakdown.Slot("Conversion", utils.Ptr("Evasion to Armour"), nil, armourBase, utils.Ptr(total), "Armour", "ArmourAndEvasion", "Defences", "Evasion")
@@ -694,9 +699,9 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 			enemyAccuracy := utils.RoundTo(calclib.Val(actor.Enemy.ModDB, "Accuracy"), 0)
 			evadeChance := modDB.Sum(mod.TypeBase, nil, "EvadeChance")
 			hitChance := calclib.Mod(actor.Enemy.ModDB, nil, "HitChance")
-			actor.Output["EvadeChance"] = 100 - (CalcHitChance(actor.Output["Evasion"], enemyAccuracy)-evadeChance)*hitChance
-			actor.Output["MeleeEvadeChance"] = max(0, min(data.EvadeChanceCap, (100-(CalcHitChance(actor.Output["MeleeEvasion"], enemyAccuracy)-evadeChance)*hitChance)*calclib.Mod(modDB, nil, "EvadeChance", "MeleeEvadeChance")))
-			actor.Output["ProjectileEvadeChance"] = max(0, min(data.EvadeChanceCap, (100-(CalcHitChance(actor.Output["ProjectileEvasion"], enemyAccuracy)-evadeChance)*hitChance)*calclib.Mod(modDB, nil, "EvadeChance", "ProjectileEvadeChance")))
+			actor.Output["EvadeChance"] = 100 - float64((CalcHitChance(actor.Output["Evasion"], enemyAccuracy)-evadeChance)*hitChance)
+			actor.Output["MeleeEvadeChance"] = max(0, min(data.EvadeChanceCap, (100-float64((CalcHitChance(actor.Output["MeleeEvasion"], enemyAccuracy)-evadeChance)*hitChance))*calclib.Mod(modDB, nil, "EvadeChance", "MeleeEvadeChance")))
+			actor.Output["ProjectileEvadeChance"] = max(0, min(data.EvadeChanceCap, (100-float64((CalcHitChance(actor.Output["ProjectileEvasion"], enemyAccuracy)-evadeChance)*hitChance))*calclib.Mod(modDB, nil, "EvadeChance", "ProjectileEvadeChance")))
 			if actor.Output["MeleeEvadeChance"] != actor.Output["ProjectileEvadeChance"] {
 				actor.Output["splitEvade"] = 1
 			} else {
@@ -757,7 +762,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 		suppressChance := actor.Output["EffectiveSpellSuppressionChance"] / 100
 		switch {
 		case modDB.Flag(nil, "Unexciting"):
-			actor.Output["EffectiveSpellSuppressionChance"] = (3*suppressChance*suppressChance - 2*suppressChance*suppressChance*suppressChance) * 100
+			actor.Output["EffectiveSpellSuppressionChance"] = (float64(3*suppressChance*suppressChance) - float64(2*suppressChance*suppressChance*suppressChance)) * 100
 		case suppressRolls > 0:
 			actor.Output["EffectiveSpellSuppressionChance"] = (1 - math.Pow(1-suppressChance, suppressRolls+1)) * 100
 		default:
@@ -905,10 +910,10 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 		baseDegen += math.Max(pool*tinctureDegenPercent/100, tinctureDegenPercent)
 		degenRate := float64(0)
 		if baseDegen > 0 {
-			degenRate = baseDegen * calclib.Mod(modDB, nil, name+"Degen")
+			degenRate = float64(baseDegen * calclib.Mod(modDB, nil, name+"Degen"))
 		}
 		actor.Output[name+"Degen"] = degenRate
-		recoveryRate := modDB.Sum(mod.TypeBase, nil, name+"Recovery") * recoveryRateMod
+		recoveryRate := float64(modDB.Sum(mod.TypeBase, nil, name+"Recovery") * recoveryRateMod)
 		actor.Output[name+"Recovery"] = recoveryRate
 
 		unaffectedRegen := regenRate
@@ -1356,12 +1361,9 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 		//	    output.ConfiguredEvadeChance = output[damageCategoryConfig.."EvadeChance"] or 0
 		//	    if worstOf > 1 then ... square it, twice when worstOf == 4 ... end
 		//	end
+		damageCategoryConfig := enemyDamageCategory(environment)
 		//pob:block:src/Modules/CalcDefence.lua:1643-1666
 		{
-			damageCategoryConfig := environment.Build.GetStringOption("enemyDamageType")
-			if damageCategoryConfig == "" {
-				damageCategoryConfig = "Average"
-			}
 			worstOf := environment.Build.GetNumberOption("EHPUnluckyWorstOf")
 			if worstOf == 0 {
 				worstOf = 1
@@ -1377,138 +1379,148 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 				}
 			}
 		}
-		//	local enemyCritChance = enemyDB:Flag(nil, "NeverCrit") and 0 or enemyDB:Flag(nil, "AlwaysCrit") and 100
-		//	  or m_max(m_min((modDB:Override(nil, "enemyCritChance") or env.configInput["enemyCritChance"]
-		//	    * (1 + modDB:Sum("INC", nil, "EnemyCritChance") / 100 + enemyDB:Sum("INC", nil, "CritChance") / 100)
-		//pob:block:src/Modules/CalcDefence.lua:1694-1697
-		enemyCritChance := 0.0
-		switch {
-		case actor.Enemy.ModDB.Flag(nil, "NeverCrit"):
-			enemyCritChance = 0
-		case actor.Enemy.ModDB.Flag(nil, "AlwaysCrit"):
-			enemyCritChance = 100
-		default:
-			base := utils.Or(actor.ModDB.Override(nil, "enemyCritChance"), enemyConfigNumber(environment, "enemyCritChance"))
-			scaled := base *
-				(1 + actor.ModDB.Sum(mod.TypeIncrease, nil, "EnemyCritChance")/100 +
-					actor.Enemy.ModDB.Sum(mod.TypeIncrease, nil, "CritChance")/100) *
-				(1 - actor.Output["ConfiguredEvadeChance"]/100)
-			enemyCritChance = math.Max(math.Min(scaled, 100), 0)
-		}
-		actor.Output["EnemyCritChance"] = enemyCritChance
-		enemyCritDamage := math.Max(enemyConfigNumber(environment, "enemyCritDamage")+
-			actor.Enemy.ModDB.Sum(mod.TypeBase, nil, "CritMultiplier"), 0)
-		actor.Output["EnemyCritEffect"] = 1 + enemyCritChance/100*(enemyCritDamage/100)*(1-actor.Output["CritExtraDamageReduction"]/100)
-		enemyDamageConversion := make(map[data.DamageType]map[data.DamageType]float64)
-		for _, damageType := range data.DamageType("").Values() {
-			enemyDamageMult := calclib.Mod(actor.Enemy.ModDB, nil, "Damage", string(damageType+"Damage"), utils.Ternary(isElemental[string(damageType)], "ElementalDamage", "")) // missing taunt from allies
-			enemyDamage, fromInput := enemyConfigNumberSource(environment, string("enemy"+damageType+"Damage"))
-			sourceStr := utils.Ternary(fromInput, "Config", "Default")
-			enemyPen := enemyConfigNumber(environment, string("enemy"+damageType+"Pen"))
-			enemyOverwhelm, _ := environment.Build.GetNumberOptionOK(string("enemy" + damageType + "Overwhelm"))
+		//pob:block:src/Modules/CalcDefence.lua:1671-1677
+		if damageCategoryConfig == "DamageOverTime" {
+			for _, damageType := range data.DamageType("").Values() {
+				actor.Output[string(damageType+"EnemyPen")] = 0
+				actor.Output[string(damageType+"EnemyDamageMult")] = calclib.Mod(actor.Enemy.ModDB, nil, "Damage", string(damageType+"Damage"), utils.Ternary(isElemental[string(damageType)], "ElementalDamage", "")) // missing taunt from allies
+				actor.Output[string(damageType+"EnemyOverwhelm")] = 0
+				actor.Output[string(damageType+"EnemyDamage")] = 0
+			}
+		} else {
+			//	local enemyCritChance = enemyDB:Flag(nil, "NeverCrit") and 0 or enemyDB:Flag(nil, "AlwaysCrit") and 100
+			//	  or m_max(m_min((modDB:Override(nil, "enemyCritChance") or env.configInput["enemyCritChance"]
+			//	    * (1 + modDB:Sum("INC", nil, "EnemyCritChance") / 100 + enemyDB:Sum("INC", nil, "CritChance") / 100)
+			//pob:block:src/Modules/CalcDefence.lua:1694-1697
+			enemyCritChance := 0.0
+			switch {
+			case actor.Enemy.ModDB.Flag(nil, "NeverCrit"):
+				enemyCritChance = 0
+			case actor.Enemy.ModDB.Flag(nil, "AlwaysCrit"):
+				enemyCritChance = 100
+			default:
+				base := utils.Or(actor.ModDB.Override(nil, "enemyCritChance"), enemyConfigNumber(environment, "enemyCritChance"))
+				scaled := base *
+					(1 + actor.ModDB.Sum(mod.TypeIncrease, nil, "EnemyCritChance")/100 +
+						actor.Enemy.ModDB.Sum(mod.TypeIncrease, nil, "CritChance")/100) *
+					(1 - actor.Output["ConfiguredEvadeChance"]/100)
+				enemyCritChance = math.Max(math.Min(scaled, 100), 0)
+			}
+			actor.Output["EnemyCritChance"] = enemyCritChance
+			enemyCritDamage := math.Max(enemyConfigNumber(environment, "enemyCritDamage")+
+				actor.Enemy.ModDB.Sum(mod.TypeBase, nil, "CritMultiplier"), 0)
+			actor.Output["EnemyCritEffect"] = 1 + float64(enemyCritChance/100*(enemyCritDamage/100)*(1-actor.Output["CritExtraDamageReduction"]/100))
+			enemyDamageConversion := make(map[data.DamageType]map[data.DamageType]float64)
+			for _, damageType := range data.DamageType("").Values() {
+				enemyDamageMult := calclib.Mod(actor.Enemy.ModDB, nil, "Damage", string(damageType+"Damage"), utils.Ternary(isElemental[string(damageType)], "ElementalDamage", "")) // missing taunt from allies
+				enemyDamage, fromInput := enemyConfigNumberSource(environment, string("enemy"+damageType+"Damage"))
+				sourceStr := utils.Ternary(fromInput, "Config", "Default")
+				enemyPen := enemyConfigNumber(environment, string("enemy"+damageType+"Pen"))
+				enemyOverwhelm, _ := environment.Build.GetNumberOptionOK(string("enemy" + damageType + "Overwhelm"))
 
-			enemyCfgKeywordFlags := mod.MatchAllMask
-			enemyCfg := &moddb.ListCfg{KeywordFlags: &enemyCfgKeywordFlags}
-			enemyDamage = enemyDamage + (actor.Enemy.ModDB.Sum(mod.TypeBase, enemyCfg, string(damageType+"Min"))+actor.Enemy.ModDB.Sum(mod.TypeBase, enemyCfg, string(damageType+"Max")))/2
+				enemyCfgKeywordFlags := mod.MatchAllMask
+				enemyCfg := &moddb.ListCfg{KeywordFlags: &enemyCfgKeywordFlags}
+				enemyDamage = enemyDamage + (actor.Enemy.ModDB.Sum(mod.TypeBase, enemyCfg, string(damageType+"Min"))+actor.Enemy.ModDB.Sum(mod.TypeBase, enemyCfg, string(damageType+"Max")))/2
 
-			conversionTotal := float64(0)
-			if damageType == data.DamageTypePhysical {
-				conversion := make(map[data.DamageType]float64, 5)
-				skillConversion := make(map[data.DamageType]float64, 5)
-				total, totalSkill := float64(0), float64(0)
-				for _, to := range data.DamageType("").Values() {
-					skillConversion[to] = actor.Enemy.ModDB.Sum(mod.TypeBase, enemyCfg, string(damageType+"DamageSkillConvertTo"+to))
-					conversion[to] = actor.Enemy.ModDB.Sum(mod.TypeBase, enemyCfg, string(damageType+"DamageConvertTo"+to))
-					totalSkill += skillConversion[to]
-					total += conversion[to]
-				}
-				switch {
-				case totalSkill > 100:
-					mult := 100 / totalSkill
-					totalSkill *= mult
-					total = 0
+				conversionTotal := float64(0)
+				if damageType == data.DamageTypePhysical {
+					conversion := make(map[data.DamageType]float64, 5)
+					skillConversion := make(map[data.DamageType]float64, 5)
+					total, totalSkill := float64(0), float64(0)
 					for _, to := range data.DamageType("").Values() {
-						skillConversion[to] *= mult
-						conversion[to] = 0
+						skillConversion[to] = actor.Enemy.ModDB.Sum(mod.TypeBase, enemyCfg, string(damageType+"DamageSkillConvertTo"+to))
+						conversion[to] = actor.Enemy.ModDB.Sum(mod.TypeBase, enemyCfg, string(damageType+"DamageConvertTo"+to))
+						totalSkill += skillConversion[to]
+						total += conversion[to]
 					}
-				case total+totalSkill > 100:
-					mult := (100 - totalSkill) / total
-					total *= mult
-					for _, to := range data.DamageType("").Values() {
-						conversion[to] *= mult
-					}
-				}
-				conversionTotal = total + totalSkill
-				// Calculate the amount converted/gained as
-				for _, to := range data.DamageType("").Values() {
-					gainAsPercent := actor.Enemy.ModDB.Sum(mod.TypeBase, enemyCfg, string(damageType+"DamageGainAs"+to)) / 100
-					conversionPercent := conversion[to] / 100
-					skillConversionPercent := skillConversion[to] / 100
-					if skillConversionPercent > 0 && to != data.DamageTypeChaos {
-						physBonus := 1 + data.MonsterPhysConversionMultiTable[environment.EnemyLevel]/100
-						conversionPercent += skillConversionPercent * physBonus
-					}
-					if gainAsPercent > 0 || conversionPercent > 0 {
-						if enemyDamageConversion[to] == nil {
-							enemyDamageConversion[to] = make(map[data.DamageType]float64, 1)
+					switch {
+					case totalSkill > 100:
+						mult := 100 / totalSkill
+						totalSkill *= mult
+						total = 0
+						for _, to := range data.DamageType("").Values() {
+							skillConversion[to] *= mult
+							conversion[to] = 0
 						}
-						enemyDamageConversion[to][damageType] = enemyDamage*gainAsPercent + enemyDamage*conversionPercent
+					case total+totalSkill > 100:
+						mult := (100 - totalSkill) / total
+						total *= mult
+						for _, to := range data.DamageType("").Values() {
+							conversion[to] *= mult
+						}
+					}
+					conversionTotal = total + totalSkill
+					// Calculate the amount converted/gained as
+					for _, to := range data.DamageType("").Values() {
+						gainAsPercent := actor.Enemy.ModDB.Sum(mod.TypeBase, enemyCfg, string(damageType+"DamageGainAs"+to)) / 100
+						conversionPercent := conversion[to] / 100
+						skillConversionPercent := skillConversion[to] / 100
+						if skillConversionPercent > 0 && to != data.DamageTypeChaos {
+							physBonus := 1 + data.MonsterPhysConversionMultiTable[environment.EnemyLevel]/100
+							conversionPercent += float64(skillConversionPercent * physBonus)
+						}
+						if gainAsPercent > 0 || conversionPercent > 0 {
+							if enemyDamageConversion[to] == nil {
+								enemyDamageConversion[to] = make(map[data.DamageType]float64, 1)
+							}
+							enemyDamageConversion[to][damageType] = float64(enemyDamage*gainAsPercent) + float64(enemyDamage*conversionPercent)
+						}
 					}
 				}
-			}
 
-			//pob:block:src/Modules/CalcDefence.lua:1763
-			enemyOverwhelm = enemyOverwhelm +
-				actor.Enemy.ModDB.Sum(mod.TypeBase, nil, "PhysicalOverwhelm") +
-				modDB.Sum(mod.TypeBase, nil, "EnemyPhysicalOverwhelm")
+				//pob:block:src/Modules/CalcDefence.lua:1763
+				enemyOverwhelm = enemyOverwhelm +
+					actor.Enemy.ModDB.Sum(mod.TypeBase, nil, "PhysicalOverwhelm") +
+					modDB.Sum(mod.TypeBase, nil, "EnemyPhysicalOverwhelm")
 
-			actor.Output[string(damageType+"EnemyPen")] = enemyPen
-			actor.Output[string(damageType+"EnemyDamageMult")] = enemyDamageMult
-			actor.Output[string(damageType+"EnemyOverwhelm")] = enemyOverwhelm
-			actor.Output["totalEnemyDamageIn"] = actor.Output["totalEnemyDamageIn"] + enemyDamage
-			actor.Output[string(damageType+"EnemyDamage")] = enemyDamage * (1 - conversionTotal/100) * enemyDamageMult * actor.Output["EnemyCritEffect"]
-			conversionExtra := -enemyDamage*enemyDamageMult*actor.Output["EnemyCritEffect"] + actor.Output[string(damageType+"EnemyDamage")]
-			if fromTypes := enemyDamageConversion[damageType]; fromTypes != nil {
-				for _, fromType := range data.DamageType("").Values() {
-					convertedDamage, ok := fromTypes[fromType]
-					if !ok {
-						continue
+				actor.Output[string(damageType+"EnemyPen")] = enemyPen
+				actor.Output[string(damageType+"EnemyDamageMult")] = enemyDamageMult
+				actor.Output[string(damageType+"EnemyOverwhelm")] = enemyOverwhelm
+				actor.Output["totalEnemyDamageIn"] = actor.Output["totalEnemyDamageIn"] + enemyDamage
+				actor.Output[string(damageType+"EnemyDamage")] = enemyDamage * (1 - conversionTotal/100) * enemyDamageMult * actor.Output["EnemyCritEffect"]
+				conversionExtra := float64(-enemyDamage*enemyDamageMult*actor.Output["EnemyCritEffect"]) + actor.Output[string(damageType+"EnemyDamage")]
+				if fromTypes := enemyDamageConversion[damageType]; fromTypes != nil {
+					for _, fromType := range data.DamageType("").Values() {
+						convertedDamage, ok := fromTypes[fromType]
+						if !ok {
+							continue
+						}
+						convertedMult := calclib.Mod(actor.Enemy.ModDB, nil, "Damage", string(damageType+"Damage"), string(fromType+"Damage"),
+							utils.Ternary(isElemental[string(damageType)], "ElementalDamage", ""),
+							utils.Ternary(isElemental[string(fromType)], "ElementalDamage", "")) // missing taunt from allies
+						actor.Output[string(damageType+"EnemyDamage")] += float64(convertedDamage * convertedMult * actor.Output["EnemyCritEffect"])
+						conversionExtra += float64(convertedDamage * convertedMult * actor.Output["EnemyCritEffect"])
 					}
-					convertedMult := calclib.Mod(actor.Enemy.ModDB, nil, "Damage", string(damageType+"Damage"), string(fromType+"Damage"),
-						utils.Ternary(isElemental[string(damageType)], "ElementalDamage", ""),
-						utils.Ternary(isElemental[string(fromType)], "ElementalDamage", "")) // missing taunt from allies
-					actor.Output[string(damageType+"EnemyDamage")] += convertedDamage * convertedMult * actor.Output["EnemyCritEffect"]
-					conversionExtra += convertedDamage * convertedMult * actor.Output["EnemyCritEffect"]
 				}
-			}
-			actor.Output["totalEnemyDamage"] = actor.Output["totalEnemyDamage"] + actor.Output[string(damageType+"EnemyDamage")]
-			if actor.Breakdown != nil {
-				convSign := ""
-				switch {
-				case conversionExtra > 0:
-					convSign = "+"
-				case conversionExtra < 0:
-					convSign = "-"
+				actor.Output["totalEnemyDamage"] = actor.Output["totalEnemyDamage"] + actor.Output[string(damageType+"EnemyDamage")]
+				if actor.Breakdown != nil {
+					convSign := ""
+					switch {
+					case conversionExtra > 0:
+						convSign = "+"
+					case conversionExtra < 0:
+						convSign = "-"
+					}
+					lines := []string{
+						fmt.Sprintf("from %s: %.2f", sourceStr, enemyDamage),
+						fmt.Sprintf("* %.2f (modifiers to enemy damage)", enemyDamageMult),
+						fmt.Sprintf("* %.3f (enemy crit effect)", actor.Output["EnemyCritEffect"]),
+					}
+					if conversionExtra != 0 {
+						lines = append(lines, fmt.Sprintf("%s %.2f (enemy damage conversion)", convSign, math.Abs(conversionExtra)))
+					}
+					lines = append(lines, fmt.Sprintf("= %.2f", actor.Output[string(damageType+"EnemyDamage")]))
+					actor.Breakdown.AddLine(string(damageType+"EnemyDamage"), lines...)
+					actor.Breakdown.AddRow("totalEnemyDamage", map[string]string{
+						"type":     string(damageType),
+						"value":    fmt.Sprintf("%.2f", enemyDamage),
+						"mult":     fmt.Sprintf("%.2f", enemyDamageMult),
+						"crit":     fmt.Sprintf("%.2f", actor.Output["EnemyCritEffect"]),
+						"convMult": fmt.Sprintf("%s%.2f", convSign, math.Abs(conversionExtra)),
+						"final":    fmt.Sprintf("%.2f", actor.Output[string(damageType+"EnemyDamage")]),
+						"from":     sourceStr,
+					})
 				}
-				lines := []string{
-					fmt.Sprintf("from %s: %.2f", sourceStr, enemyDamage),
-					fmt.Sprintf("* %.2f (modifiers to enemy damage)", enemyDamageMult),
-					fmt.Sprintf("* %.3f (enemy crit effect)", actor.Output["EnemyCritEffect"]),
-				}
-				if conversionExtra != 0 {
-					lines = append(lines, fmt.Sprintf("%s %.2f (enemy damage conversion)", convSign, math.Abs(conversionExtra)))
-				}
-				lines = append(lines, fmt.Sprintf("= %.2f", actor.Output[string(damageType+"EnemyDamage")]))
-				actor.Breakdown.AddLine(string(damageType+"EnemyDamage"), lines...)
-				actor.Breakdown.AddRow("totalEnemyDamage", map[string]string{
-					"type":     string(damageType),
-					"value":    fmt.Sprintf("%.2f", enemyDamage),
-					"mult":     fmt.Sprintf("%.2f", enemyDamageMult),
-					"crit":     fmt.Sprintf("%.2f", actor.Output["EnemyCritEffect"]),
-					"convMult": fmt.Sprintf("%s%.2f", convSign, math.Abs(conversionExtra)),
-					"final":    fmt.Sprintf("%.2f", actor.Output[string(damageType+"EnemyDamage")]),
-					"from":     sourceStr,
-				})
 			}
 		}
 	}
@@ -1585,10 +1597,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 	}
 	// Damage taken multipliers/Degen calculations
 	actor.Output["AnyTakenReflect"] = 0
-	damageCategoryConfig := environment.Build.GetStringOption("enemyDamageType")
-	if damageCategoryConfig == "" {
-		damageCategoryConfig = "Average"
-	}
+	damageCategoryConfig := enemyDamageCategory(environment)
 	for _, damageType := range data.DamageType("").Values() {
 		baseTakenInc := modDB.Sum(mod.TypeIncrease, nil, "DamageTaken", string(damageType+"DamageTaken"))
 		baseTakenMore := modDB.More(nil, "DamageTaken", string(damageType+"DamageTaken"))
@@ -1665,6 +1674,13 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 			BCol{Label: "Value", Key: "value"},
 		)
 	}
+	//pob:block:src/Modules/CalcDefence.lua:1956
+	impaleFlags, impaleKeywords := mod.MFlag(0), mod.KeywordFlag(0)
+	if damageCategoryConfig == "Melee" || damageCategoryConfig == "Projectile" || damageCategoryConfig == "Average" {
+		impaleFlags = mod.MFlagAttack
+	}
+	enemyImpaleChance := actor.Enemy.ModDB.Sum(mod.TypeBase, &moddb.ListCfg{Flags: &impaleFlags, KeywordFlags: &impaleKeywords}, "ImpaleChance") *
+		utils.Ternary(damageCategoryConfig == "Average", 0.5, float64(1)) * (1 - actor.Output["ImpaleAvoidChance"])
 	for _, damageType := range data.DamageType("").Values() {
 		// Calculate incoming damage multiplier
 		resist := utils.Ternary(modDB.Flag(nil, string("SelfIgnore"+damageType+"Resistance")), 0, utils.OrF(actor.Output[string(damageType+"ResistWhenHit")], actor.Output[string(damageType+"Resist")]))
@@ -1691,16 +1707,39 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 			float64(0),
 			modDB.Sum(mod.TypeBase, nil, string("ArmourAppliesTo"+damageType+"DamageTaken")),
 		), 100)
+		//pob:block:src/Modules/CalcDefence.lua:1964
+		impaleDamage := float64(0)
+		if enemyImpaleChance > 0 && damageType == data.DamageTypePhysical {
+			impaleDamage = damage * data.ImpaleStoredDamageBase
+		}
+		impaleArmourReduct := float64(0)
 		effectiveAppliedArmour := (actor.Output["Armour"] * percentOfArmourApplies / 100) * (1 + actor.Output["ArmourDefense"])
+		//pob:block:src/Modules/CalcDefence.lua:1969-1973
+		physicalReductionBasedOnWard := damageType == data.DamageTypePhysical && modDB.Flag(nil, "PhysicalReductionBasedOnWard")
+		if physicalReductionBasedOnWard {
+			multiplier := float64(0)
+			if override := modDB.Override(nil, "PhysicalReductionBasedOnWardPercent"); override != nil {
+				multiplier = override.Float() / 100
+			}
+			effectiveAppliedArmour = actor.Output["Ward"] * multiplier
+		}
 		resMult := 1 - (resist-enemyPen)/100
 		armourReduct := float64(0)
-		if percentOfArmourApplies > 0 {
+		//pob:block:src/Modules/CalcDefence.lua:1985-1998
+		if percentOfArmourApplies > 0 || physicalReductionBasedOnWard {
 			armourReduct = CalcArmourReduction(effectiveAppliedArmour, damage*resMult)
 			armourReduct = min(actor.Output["DamageReductionMax"], armourReduct)
+			if impaleDamage > 0 {
+				impaleArmourReduct = min(actor.Output["DamageReductionMax"], CalcArmourReduction(effectiveAppliedArmour, impaleDamage*resMult))
+			}
 		}
 		totalReduct := min(actor.Output["DamageReductionMax"], armourReduct+reduction)
 		reductMult := 1 - max(min(actor.Output["DamageReductionMax"], totalReduct-enemyOverwhelm), 0)/100
-		actor.Output[string(damageType+"DamageReduction")] = 100 - reductMult*100
+		actor.Output[string(damageType+"DamageReduction")] = 100 - float64(reductMult*100)
+		if impaleDamage > 0 {
+			impaleDamage = impaleDamage * resMult * (1 - max(min(actor.Output["DamageReductionMax"], min(actor.Output["DamageReductionMax"], impaleArmourReduct+reduction)-enemyOverwhelm), 0)/100)
+			impaleDamage = impaleDamage * enemyImpaleChance / 100 * 5 * actor.Output[string(damageType+"TakenReflect")]
+		}
 		if actor.Breakdown != nil {
 			if armourReduct != 0 {
 				if resMult != 1 {
@@ -1720,7 +1759,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 				actor.Breakdown.AddLine(string(damageType+"DamageReduction"), fmt.Sprintf("Enemy Overwhelm %s Damage: %.0f%%", damageType, enemyOverwhelm))
 			}
 			if utils.Ternary(armourReduct != 0, 1, 0)+utils.Ternary(reduction != 0, 1, 0)+utils.Ternary(enemyOverwhelm != 0, 1, 0) >= 2 {
-				actor.Breakdown.AddLine(string(damageType+"DamageReduction"), fmt.Sprintf("Total %s Damage Reduction: %.0f%%", damageType, 100-reductMult*100))
+				actor.Breakdown.AddLine(string(damageType+"DamageReduction"), fmt.Sprintf("Total %s Damage Reduction: %.0f%%", damageType, 100-float64(reductMult*100)))
 			}
 		}
 		takenMult := actor.Output[string(damageType+"TakenHitMult")]
@@ -1742,7 +1781,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 		actor.Output[string(damageType+"BaseTakenHitMult")] = baseMult * afterReductionMulti
 		takenMultReflect := actor.Output[string(damageType+"TakenReflect")]
 		finalReflect := baseMult * takenMultReflect
-		actor.Output[string(damageType+"TakenHit")] = max(damage*baseMult+takenFlat, 0) * takenMult * spellSuppressMult
+		actor.Output[string(damageType+"TakenHit")] = float64(max(float64(damage*baseMult)+takenFlat, 0)*takenMult*spellSuppressMult) + impaleDamage
 		actor.Output[string(damageType+"TakenHitMult")] = utils.Ternary(damage > 0, actor.Output[string(damageType+"TakenHit")]/damage, 0)
 		actor.Output["totalTakenHit"] = actor.Output["totalTakenHit"] + actor.Output[string(damageType+"TakenHit")]
 		if actor.Output["AnyTakenReflect"] != 0 {
@@ -1842,7 +1881,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 		}
 		actor.Output["InterruptStunAvoidChance"] = min(modDB.Sum(mod.TypeBase, nil, "AvoidInterruptStun", "AvoidInteruptStun"), 100)
 
-		effectiveEnemyDamage := actor.Output["totalTakenHit"] + actor.Output["PhysicalTakenHit"]*0.25
+		effectiveEnemyDamage := actor.Output["totalTakenHit"] + float64(actor.Output["PhysicalTakenHit"]*0.25)
 		if damageCategoryConfig != "Average" {
 			effectiveEnemyDamage = effectiveEnemyDamage * (1 + data.StunNotMeleeDamageMult*3) / 4
 		} else if damageCategoryConfig != "Melee" {
@@ -1881,7 +1920,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 		if !environment.Build.GetBooleanOption("conditionLowLife") {
 			// portion of life that is lowlife
 			portionLife = min(actor.Output["Life"]*0.5/recoverable, 1)
-			actor.Output["preventedLifeLossTotal"] = actor.Output["preventedLifeLoss"] + actor.Output["preventedLifeLossBelowHalf"]*portionLife
+			actor.Output["preventedLifeLossTotal"] = actor.Output["preventedLifeLoss"] + float64(actor.Output["preventedLifeLossBelowHalf"]*portionLife)
 		} else {
 			actor.Output["preventedLifeLossTotal"] = actor.Output["preventedLifeLoss"] + actor.Output["preventedLifeLossBelowHalf"]
 		}
@@ -2153,7 +2192,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 				manatext = manatext + " and non-bypassed Energy Shield"
 			} else {
 				if actor.Output[string(damageType+"EnergyShieldBypass")] > 0 {
-					poolProtected := actor.Output["EnergyShieldRecoveryCap"] / (1 - actor.Output[string(damageType+"EnergyShieldBypass")]/100) * (actor.Output[string(damageType+"EnergyShieldBypass")] / 100)
+					poolProtected := float64(actor.Output["EnergyShieldRecoveryCap"] / (1 - actor.Output[string(damageType+"EnergyShieldBypass")]/100) * (actor.Output[string(damageType+"EnergyShieldBypass")] / 100))
 					actor.Output[string(damageType+"TotalPool")] = max(actor.Output[string(damageType+"TotalPool")]-poolProtected, 0) + min(actor.Output[string(damageType+"TotalPool")], poolProtected)/(actor.Output[string(damageType+"EnergyShieldBypass")]/100)
 					actor.Output[string(damageType+"TotalHitPool")] = max(actor.Output[string(damageType+"TotalHitPool")]-poolProtected, 0) + min(actor.Output[string(damageType+"TotalHitPool")], poolProtected)/(actor.Output[string(damageType+"EnergyShieldBypass")]/100)
 				} else {
@@ -2257,8 +2296,8 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 			//	local damage = DamageIn[damageType] or 0
 			vaalArcticArmourMultiplier := float64(1)
 			if vaalArcticArmourHitsLeft > 0 {
-				vaalArcticArmourMultiplier = 1 - actor.Output["VaalArcticArmourMitigation"]*
-					math.Min(vaalArcticArmourHitsLeft/itterationMultiplier, 1)
+				vaalArcticArmourMultiplier = 1 - float64(actor.Output["VaalArcticArmourMitigation"]*
+					math.Min(vaalArcticArmourHitsLeft/itterationMultiplier, 1))
 			}
 			vaalArcticArmourHitsLeft = vaalArcticArmourHitsLeft - itterationMultiplier
 			for _, damageType := range data.DamageType("").Values() {
@@ -2275,7 +2314,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 			_, missingManaSet := DamageIn["MissingManaBeforeEnemyHit"]
 			if (DamageIn["GainWhenHit"] != 0 || missingLifeSet || missingManaSet) &&
 				(itterationMultiplier > 1 || DamageIn["cycles"] > 1) {
-				gainMult := itterationMultiplier * DamageIn["cycles"]
+				gainMult := float64(itterationMultiplier * DamageIn["cycles"])
 				if missingLifeSet {
 					life = min(life+DamageIn["MissingLifeBeforeEnemyHit"]*(actor.Output["LifeUnreserved"]-life)*(gainMult-1)/100,
 						gainMult*actor.Output["LifeRecoverable"])
@@ -2285,9 +2324,9 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 						gainMult*actor.Output["ManaUnreserved"])
 				}
 				if DamageIn["GainWhenHit"] != 0 {
-					life = min(life+DamageIn["LifeWhenHit"]*(gainMult-1), gainMult*(actor.Output["LifeRecoverable"]))
-					mana = min(mana+DamageIn["ManaWhenHit"]*(gainMult-1), gainMult*(actor.Output["ManaUnreserved"]))
-					energyShield = min(energyShield+DamageIn["EnergyShieldWhenHit"]*(gainMult-1), gainMult*actor.Output["EnergyShieldRecoveryCap"])
+					life = min(life+float64(DamageIn["LifeWhenHit"]*(gainMult-1)), gainMult*(actor.Output["LifeRecoverable"]))
+					mana = min(mana+float64(DamageIn["ManaWhenHit"]*(gainMult-1)), gainMult*(actor.Output["ManaUnreserved"]))
+					energyShield = min(energyShield+float64(DamageIn["EnergyShieldWhenHit"]*(gainMult-1)), gainMult*actor.Output["EnergyShieldRecoveryCap"])
 				}
 			}
 			//pob:block:src/Modules/CalcDefence.lua:2661-2666
@@ -2353,7 +2392,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 				}
 				if modDB.Flag(nil, "EnergyShieldProtectsMana") && esBypass < 1 {
 					esPoolsRemaining[damageType] = math.Floor(min(min(maxMoM*(1-esBypass), energyShield),
-						lifePlusMoMHitPool/(1-(1-esBypass)*momEffect)-lifePlusMoMHitPool))
+						lifePlusMoMHitPool/(1-float64((1-esBypass)*momEffect))-lifePlusMoMHitPool))
 					momPoolsRemaining[damageType] = math.Floor(min(maxMoM-esPoolsRemaining[damageType], momPool))
 				} else {
 					esPoolsRemaining[damageType] = math.Floor(esPool)
@@ -2401,7 +2440,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 					if ward > 0 && (wardBypassBelow == 0 || drainDamageTotal >= wardBeforeHit*wardBypassBelow) {
 						tempDamage := min(Damage[damageType]*(1-DamageIn["WardBypass"]/100), ward)
 						ward = ward - tempDamage
-						tempDamage = tempDamage * wardActiveChance
+						tempDamage = float64(tempDamage * wardActiveChance)
 						Damage[damageType] = Damage[damageType] - tempDamage
 					}
 					if energyShield > 0 && (!modDB.Flag(nil, "EnergyShieldProtectsMana")) && actor.Output[string(damageType+"EnergyShieldBypass")] < 100 {
@@ -2439,7 +2478,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 						}
 					}
 					if actor.Output["preventedLifeLossTotal"] > 0 {
-						halfLife := actor.Output["Life"] * 0.5
+						halfLife := float64(actor.Output["Life"] * 0.5)
 						lifeOverHalfLife := max(life-halfLife, 0)
 						preventPercent := actor.Output["preventedLifeLoss"] / 100
 						poolAboveLow := lifeOverHalfLife / (1 - preventPercent)
@@ -2452,21 +2491,21 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 						}
 						if actor.Output["preventedLifeLossBelowHalf"] != 0 {
 							damageToSplit := min(Damage[damageType], poolAboveLow)
-							lostLife := damageToSplit * (1 - preventPercent)
-							preventedLoss := damageToSplit * preventPercent
+							lostLife := float64(damageToSplit * (1 - preventPercent))
+							preventedLoss := float64(damageToSplit * preventPercent)
 							Damage[damageType] = Damage[damageType] - damageToSplit
 							lifeLossLostOverTime = lifeLossLostOverTime + preventedLoss
 							life = life - lostLife
 							if life <= halfLife {
-								unspecificallyLowLifePreventedDamage := Damage[damageType] * preventPercent
+								unspecificallyLowLifePreventedDamage := float64(Damage[damageType] * preventPercent)
 								lifeLossLostOverTime = lifeLossLostOverTime + unspecificallyLowLifePreventedDamage
 								Damage[damageType] = Damage[damageType] - unspecificallyLowLifePreventedDamage
-								specificallyLowLifePreventedDamage := Damage[damageType] * preventBelowHalfPercent
+								specificallyLowLifePreventedDamage := float64(Damage[damageType] * preventBelowHalfPercent)
 								lifeBelowHalfLossLostOverTime = lifeBelowHalfLossLostOverTime + specificallyLowLifePreventedDamage
 								Damage[damageType] = Damage[damageType] - specificallyLowLifePreventedDamage
 							}
 						} else {
-							tempDamage := Damage[damageType] * preventPercent
+							tempDamage := float64(Damage[damageType] * preventPercent)
 							lifeLossLostOverTime = lifeLossLostOverTime + tempDamage
 							Damage[damageType] = Damage[damageType] - tempDamage
 						}
@@ -2540,7 +2579,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 				DamageDown["LimitEHPSpeedup"] = DamageIn["LimitEHPSpeedup"]
 				DamageDown["cycles"] = DamageIn["cycles"] * speedUp
 				DamageDown["iterations"] = DamageIn["iterations"]
-				itterationMultiplier = max((numberOfHitsToDie(DamageDown)-1)*speedUp-1, 1)
+				itterationMultiplier = max(float64((numberOfHitsToDie(DamageDown)-1)*speedUp)-1, 1)
 				// avoid unnecessary calculations if we know we survive infinite hits
 				if math.IsInf(itterationMultiplier, 1) {
 					return math.Inf(1)
@@ -2573,7 +2612,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 		// Recalculate total hit damage
 		damageTotal = 0
 		for _, damageType := range data.DamageType("").Values() {
-			damageTotal = damageTotal + DamageIn[string(damageType)]*numHits
+			damageTotal = damageTotal + float64(DamageIn[string(damageType)]*numHits)
 		}
 		if life >= 0 && damageTotal >= maxDamage {
 			return math.Inf(1)
@@ -2583,214 +2622,217 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 		}
 		return max(numHits, 0)
 	}
-	// number of damaging hits needed to be taken to die
-	{
-		DamageIn := make(map[string]float64)
-		for _, damageType := range data.DamageType("").Values() {
-			DamageIn[string(damageType)] = actor.Output[string(damageType+"TakenHit")]
-		}
-		if actor.Output["preventedLifeLossTotal"] > 0 {
-			DamageIn["LimitEHPSpeedup"] = 1
-		}
-		actor.Output["NumberOfDamagingHits"] = numberOfHitsToDie(DamageIn)
-	}
-
-	{
-		DamageIn := make(map[string]float64)
-		BlockChance := float64(0)
-		suppressChance := float64(0)
-		ExtraAvoidChance := float64(0)
-		averageAvoidChance := float64(0)
-		worstOf := environment.Build.GetNumberOption("EHPUnluckyWorstOf")
-		if worstOf == 0 {
-			worstOf = 1
-		}
-		//pob:src/Modules/CalcDefence.lua:2748-2755
-		if damageCategoryConfig == "Melee" || damageCategoryConfig == "Untyped" {
-			BlockChance = actor.Output["EffectiveBlockChance"] / 100
-		} else {
-			BlockChance = actor.Output["Effective"+damageCategoryConfig+"BlockChance"] / 100
-		}
-		if actor.Enemy.ModDB.Flag(nil, "CannotBeBlocked") {
-			BlockChance = 0
-		}
-		blockEffect := 1 - BlockChance*actor.Output["BlockEffect"]/100
-		gainOnBlock := !environment.Build.GetBooleanOption("DisableEHPGainOnBlock") &&
-			actor.Output["NumberOfDamagingHits"] > 1
-		if gainOnBlock {
-			DamageIn["LifeWhenHit"] = actor.Output["LifeOnBlock"] * BlockChance
-			DamageIn["ManaWhenHit"] = actor.Output["ManaOnBlock"] * BlockChance
-			DamageIn["EnergyShieldWhenHit"] = actor.Output["EnergyShieldOnBlock"] * BlockChance
-			if damageCategoryConfig == "Spell" || damageCategoryConfig == "SpellProjectile" {
-				DamageIn["EnergyShieldWhenHit"] = DamageIn["EnergyShieldWhenHit"] + actor.Output["EnergyShieldOnSpellBlock"]*BlockChance
-			} else if damageCategoryConfig == "Average" {
-				DamageIn["EnergyShieldWhenHit"] = DamageIn["EnergyShieldWhenHit"] + actor.Output["EnergyShieldOnSpellBlock"]/2*BlockChance
-			}
-		}
-		if damageCategoryConfig == "Spell" || damageCategoryConfig == "SpellProjectile" || damageCategoryConfig == "Average" {
-			suppressChance = actor.Output["EffectiveSpellSuppressionChance"] / 100
-		}
-		// We include suppression in damage reduction if it is 100% otherwise we handle it here.
-		suppressionEffect := float64(1)
-		if suppressChance < 1 {
-			if damageCategoryConfig == "Average" {
-				suppressChance = suppressChance / 2
-			}
-			DamageIn["EnergyShieldWhenHit"] = DamageIn["EnergyShieldWhenHit"] + actor.Output["EnergyShieldOnSuppress"]*suppressChance
-			DamageIn["LifeWhenHit"] = DamageIn["LifeWhenHit"] + actor.Output["LifeOnSuppress"]*suppressChance
-			suppressionEffect = 1 - suppressChance*actor.Output["SpellSuppressionEffect"]/100
-		} else {
-			averageFactor := utils.Ternary(damageCategoryConfig == "Average", 0.5, float64(1))
-			DamageIn["EnergyShieldWhenHit"] = DamageIn["EnergyShieldWhenHit"] + actor.Output["EnergyShieldOnSuppress"]*averageFactor
-			DamageIn["LifeWhenHit"] = DamageIn["LifeWhenHit"] + actor.Output["LifeOnSuppress"]*averageFactor
-		}
-		// extra avoid chance
-		if damageCategoryConfig == "Projectile" || damageCategoryConfig == "SpellProjectile" {
-			ExtraAvoidChance = ExtraAvoidChance + actor.Output["AvoidProjectilesChance"]
-		} else if damageCategoryConfig == "Average" {
-			ExtraAvoidChance = ExtraAvoidChance + actor.Output["AvoidProjectilesChance"]/2
-		}
-		if gainOnBlock {
-			DamageIn["MissingLifeBeforeEnemyHit"] = modDB.Sum(mod.TypeBase, nil, "MissingLifeBeforeEnemyHit")
-			DamageIn["MissingManaBeforeEnemyHit"] = modDB.Sum(mod.TypeBase, nil, "MissingManaBeforeEnemyHit")
-			if DamageIn["LifeWhenHit"] != 0 || DamageIn["ManaWhenHit"] != 0 || DamageIn["EnergyShieldWhenHit"] != 0 ||
-				DamageIn["MissingLifeBeforeEnemyHit"] != 0 || DamageIn["MissingManaBeforeEnemyHit"] != 0 {
-				DamageIn["GainWhenHit"] = 1
-			}
-		} else {
-			DamageIn["LifeWhenHit"] = 0
-			DamageIn["ManaWhenHit"] = 0
-			DamageIn["EnergyShieldWhenHit"] = 0
-		}
-		for _, damageType := range data.DamageType("").Values() {
-			if modDB.Flag(nil, "BlockedDamageDoesntBypassES") && actor.Output[string(damageType+"EnergyShieldBypass")] < 100 && damageType != "Chaos" {
-				DamageIn[string(damageType+"EnergyShieldBypass")] = actor.Output[string(damageType+"EnergyShieldBypass")] * (1 - BlockChance)
-			}
-			AvoidChance := float64(0)
-			if specificTypeAvoidance {
-				AvoidChance = min(actor.Output[string("Avoid"+damageType+"DamageChance")]+ExtraAvoidChance, data.AvoidChanceCap)
-				// unlucky config to lower the value of block, dodge, evade etc for ehp
-				if worstOf > 1 {
-					AvoidChance = AvoidChance / 100 * AvoidChance
-					if worstOf == 4 {
-						AvoidChance = AvoidChance / 100 * AvoidChance
-					}
-				}
-				averageAvoidChance = averageAvoidChance + AvoidChance
-			}
-			DamageIn[string(damageType)] = actor.Output[string(damageType+"TakenHit")] * (blockEffect * suppressionEffect * (1 - AvoidChance/100))
-		}
-		// taken over time degen initialisation
-		if actor.Output["preventedLifeLossTotal"] > 0 {
-			DamageIn["TrackLifeLossOverTime"] = 1
-			actor.Output["LifeLossLostOverTime"] = 0
-			actor.Output["LifeBelowHalfLossLostOverTime"] = 0
-		}
-		averageAvoidChance = averageAvoidChance / 5
-		actor.Output["ConfiguredDamageChance"] = 100 * (blockEffect * suppressionEffect * (1 - averageAvoidChance/100))
-		if actor.Output["anyRecoup"] > 0 {
-			DamageIn["TrackRecoupable"] = 1
+	//pob:block:src/Modules/CalcDefence.lua:2735-2931
+	if damageCategoryConfig != "DamageOverTime" {
+		// number of damaging hits needed to be taken to die
+		{
+			DamageIn := make(map[string]float64)
 			for _, damageType := range data.DamageType("").Values() {
-				actor.Output[string(damageType)+"RecoupableDamageTaken"] = 0
+				DamageIn[string(damageType)] = actor.Output[string(damageType+"TakenHit")]
 			}
-		}
-		if DamageIn["TrackRecoupable"] != 0 || DamageIn["TrackLifeLossOverTime"] != 0 || DamageIn["GainWhenHit"] != 0 {
-			DamageIn["LimitEHPSpeedup"] = 1
-		}
-		if actor.Output["ConfiguredDamageChance"] != 100 || DamageIn["TrackRecoupable"] != 0 ||
-			DamageIn["TrackLifeLossOverTime"] != 0 || DamageIn["GainWhenHit"] != 0 {
-			actor.Output["NumberOfMitigatedDamagingHits"] = numberOfHitsToDie(DamageIn)
-		} else {
-			actor.Output["NumberOfMitigatedDamagingHits"] = actor.Output["NumberOfDamagingHits"]
-		}
-		if actor.Breakdown != nil {
-			actor.Breakdown.AddLine("ConfiguredDamageChance",
-				fmt.Sprintf("%.2f ^8(chance for block to fail)", 1-BlockChance),
-			)
-			if actor.Output["ShowBlockEffect"] != 0 {
-				actor.Breakdown.AddLine("ConfiguredDamageChance", fmt.Sprintf("x %.2f ^8(block effect)", actor.Output["BlockEffect"]/100))
+			if actor.Output["preventedLifeLossTotal"] > 0 {
+				DamageIn["LimitEHPSpeedup"] = 1
 			}
-			if suppressionEffect > 0 {
-				actor.Breakdown.AddLine("ConfiguredDamageChance", fmt.Sprintf("x %.3f ^8(suppression effect)", suppressionEffect))
-			}
-			if averageAvoidChance > 0 {
-				actor.Breakdown.AddLine("ConfiguredDamageChance", fmt.Sprintf("x %.2f ^8(chance for avoidance to fail)", 1-averageAvoidChance/100))
-			}
-			actor.Breakdown.AddLine("ConfiguredDamageChance", fmt.Sprintf("= %.1f%% ^8(of damage taken from a%s hit)", actor.Output["ConfiguredDamageChance"], utils.Ternary(damageCategoryConfig == "Average", "n ", " ")+damageCategoryConfig))
+			actor.Output["NumberOfDamagingHits"] = numberOfHitsToDie(DamageIn)
 		}
-	}
-	{
-		worstOf := environment.Build.GetNumberOption("EHPUnluckyWorstOf")
-		if worstOf == 0 {
-			worstOf = 1
-		}
-		avoidAll := 1 - actor.Output["AvoidAllDamageFromHitsChance"]/100
-		avoidProjectiles := 1 - utils.Ternary(specificTypeAvoidance, float64(0), actor.Output["AvoidProjectilesChance"])/100
-		actor.Output["MeleeNotHitChance"] = 100 - (1-actor.Output["MeleeEvadeChance"]/100)*(1-actor.Output["EffectiveAttackDodgeChance"]/100)*avoidAll*100
-		actor.Output["ProjectileNotHitChance"] = 100 - (1-actor.Output["ProjectileEvadeChance"]/100)*(1-actor.Output["EffectiveAttackDodgeChance"]/100)*avoidAll*avoidProjectiles*100
-		actor.Output["SpellNotHitChance"] = 100 - (1-actor.Output["EffectiveSpellDodgeChance"]/100)*avoidAll*100
-		actor.Output["SpellProjectileNotHitChance"] = 100 - (1-actor.Output["EffectiveSpellDodgeChance"]/100)*avoidAll*avoidProjectiles*100
-		//pob:src/Modules/CalcDefence.lua:1652
-		actor.Output["UntypedNotHitChance"] = 100 - avoidAll*100
-		actor.Output["AverageNotHitChance"] = (actor.Output["MeleeNotHitChance"] + actor.Output["ProjectileNotHitChance"] + actor.Output["SpellNotHitChance"] + actor.Output["SpellProjectileNotHitChance"]) / 4
-		actor.Output["ConfiguredNotHitChance"] = actor.Output[damageCategoryConfig+"NotHitChance"]
-		// unlucky config to lower the value of block, dodge, evade etc for ehp
-		if worstOf > 1 {
-			actor.Output["ConfiguredNotHitChance"] = actor.Output["ConfiguredNotHitChance"] / 100 * actor.Output["ConfiguredNotHitChance"]
-			if worstOf == 4 {
-				actor.Output["ConfiguredNotHitChance"] = actor.Output["ConfiguredNotHitChance"] / 100 * actor.Output["ConfiguredNotHitChance"]
-			}
-		}
-		actor.Output["TotalNumberOfHits"] = actor.Output["NumberOfMitigatedDamagingHits"] / (1 - actor.Output["ConfiguredNotHitChance"]/100)
-		if actor.Breakdown != nil {
-			if damageCategoryConfig == "Melee" || damageCategoryConfig == "Projectile" {
-				actor.Breakdown.AddLine("ConfiguredNotHitChance", fmt.Sprintf("%.2f ^8(chance for evasion to fail)", 1-actor.Output[damageCategoryConfig+"EvadeChance"]/100))
-				actor.Breakdown.AddLine("ConfiguredNotHitChance", fmt.Sprintf("x %.2f ^8(chance for dodge to fail)", 1-actor.Output["AttackDodgeChance"]/100))
-			} else if damageCategoryConfig == "Spell" || damageCategoryConfig == "SpellProjectile" {
-				actor.Breakdown.AddLine("ConfiguredNotHitChance", fmt.Sprintf("%.2f ^8(chance for dodge to fail)", 1-actor.Output["SpellDodgeChance"]/100))
-			} else if damageCategoryConfig == "Average" {
-				actor.Breakdown.AddLine("ConfiguredNotHitChance", fmt.Sprintf("%.2f ^8(chance for evasion to fail, only applies to the attack portion)", 1-(actor.Output["MeleeEvadeChance"]+actor.Output["ProjectileEvadeChance"])/2/100))
-				actor.Breakdown.AddLine("ConfiguredNotHitChance", fmt.Sprintf("x%.2f ^8(chance for dodge to fail)", 1-(actor.Output["AttackDodgeChance"]+actor.Output["SpellDodgeChance"])/2/100))
-			}
-			if worstOf > 1 {
-				actor.Breakdown.AddLine("ConfiguredNotHitChance", fmt.Sprintf("unlucky worst of %.2f", worstOf))
-			}
-			actor.Breakdown.AddLine("ConfiguredNotHitChance", fmt.Sprintf("= %.2f%% ^8(chance to be hit by a%s hit)", 100-actor.Output["ConfiguredNotHitChance"], utils.Ternary(damageCategoryConfig == "Average", "n ", " ")+damageCategoryConfig))
-			actor.Breakdown.AddLine("TotalNumberOfHits",
-				fmt.Sprintf("%.2f ^8(Number of mitigated hits)", actor.Output["NumberOfMitigatedDamagingHits"]),
-				fmt.Sprintf("/ %.2f ^8(Chance to even be hit)", 1-actor.Output["ConfiguredNotHitChance"]/100),
-				fmt.Sprintf("= %.2f ^8(total average number of hits you can take)", actor.Output["TotalNumberOfHits"]),
-			)
-		}
-	}
 
-	// effective hit pool
-	actor.Output["TotalEHP"] = actor.Output["TotalNumberOfHits"] * actor.Output["totalEnemyDamageIn"]
-	if actor.Breakdown != nil {
-		actor.Breakdown.AddLine("TotalEHP",
-			fmt.Sprintf("%.2f ^8(total average number of hits you can take)", actor.Output["TotalNumberOfHits"]),
-			fmt.Sprintf("x %.2f ^8(total incoming damage)", actor.Output["totalEnemyDamageIn"]),
-			fmt.Sprintf("= %.2f ^8(total damage you can take)", actor.Output["TotalEHP"]),
-		)
-	}
-	// survival time
-	//pob:block:src/Modules/CalcDefence.lua:2917-2930
-	{
-		enemySkillTime, fromInput := enemyConfigNumberSource(environment, "enemySpeed")
-		if !fromInput {
-			enemySkillTime = utils.OrF(enemySkillTime, 700)
+		{
+			DamageIn := make(map[string]float64)
+			BlockChance := float64(0)
+			suppressChance := float64(0)
+			ExtraAvoidChance := float64(0)
+			averageAvoidChance := float64(0)
+			worstOf := environment.Build.GetNumberOption("EHPUnluckyWorstOf")
+			if worstOf == 0 {
+				worstOf = 1
+			}
+			//pob:src/Modules/CalcDefence.lua:2748-2755
+			if damageCategoryConfig == "Melee" || damageCategoryConfig == "Untyped" {
+				BlockChance = actor.Output["EffectiveBlockChance"] / 100
+			} else {
+				BlockChance = actor.Output["Effective"+damageCategoryConfig+"BlockChance"] / 100
+			}
+			if actor.Enemy.ModDB.Flag(nil, "CannotBeBlocked") {
+				BlockChance = 0
+			}
+			blockEffect := 1 - BlockChance*actor.Output["BlockEffect"]/100
+			gainOnBlock := !environment.Build.GetBooleanOption("DisableEHPGainOnBlock") &&
+				actor.Output["NumberOfDamagingHits"] > 1
+			if gainOnBlock {
+				DamageIn["LifeWhenHit"] = actor.Output["LifeOnBlock"] * BlockChance
+				DamageIn["ManaWhenHit"] = actor.Output["ManaOnBlock"] * BlockChance
+				DamageIn["EnergyShieldWhenHit"] = actor.Output["EnergyShieldOnBlock"] * BlockChance
+				if damageCategoryConfig == "Spell" || damageCategoryConfig == "SpellProjectile" {
+					DamageIn["EnergyShieldWhenHit"] = DamageIn["EnergyShieldWhenHit"] + float64(actor.Output["EnergyShieldOnSpellBlock"]*BlockChance)
+				} else if damageCategoryConfig == "Average" {
+					DamageIn["EnergyShieldWhenHit"] = DamageIn["EnergyShieldWhenHit"] + float64(actor.Output["EnergyShieldOnSpellBlock"]/2*BlockChance)
+				}
+			}
+			if damageCategoryConfig == "Spell" || damageCategoryConfig == "SpellProjectile" || damageCategoryConfig == "Average" {
+				suppressChance = actor.Output["EffectiveSpellSuppressionChance"] / 100
+			}
+			// We include suppression in damage reduction if it is 100% otherwise we handle it here.
+			suppressionEffect := float64(1)
+			if suppressChance < 1 {
+				if damageCategoryConfig == "Average" {
+					suppressChance = suppressChance / 2
+				}
+				DamageIn["EnergyShieldWhenHit"] = DamageIn["EnergyShieldWhenHit"] + float64(actor.Output["EnergyShieldOnSuppress"]*suppressChance)
+				DamageIn["LifeWhenHit"] = DamageIn["LifeWhenHit"] + float64(actor.Output["LifeOnSuppress"]*suppressChance)
+				suppressionEffect = 1 - suppressChance*actor.Output["SpellSuppressionEffect"]/100
+			} else {
+				averageFactor := utils.Ternary(damageCategoryConfig == "Average", 0.5, float64(1))
+				DamageIn["EnergyShieldWhenHit"] = DamageIn["EnergyShieldWhenHit"] + float64(actor.Output["EnergyShieldOnSuppress"]*averageFactor)
+				DamageIn["LifeWhenHit"] = DamageIn["LifeWhenHit"] + float64(actor.Output["LifeOnSuppress"]*averageFactor)
+			}
+			// extra avoid chance
+			if damageCategoryConfig == "Projectile" || damageCategoryConfig == "SpellProjectile" {
+				ExtraAvoidChance = ExtraAvoidChance + actor.Output["AvoidProjectilesChance"]
+			} else if damageCategoryConfig == "Average" {
+				ExtraAvoidChance = ExtraAvoidChance + actor.Output["AvoidProjectilesChance"]/2
+			}
+			if gainOnBlock {
+				DamageIn["MissingLifeBeforeEnemyHit"] = modDB.Sum(mod.TypeBase, nil, "MissingLifeBeforeEnemyHit")
+				DamageIn["MissingManaBeforeEnemyHit"] = modDB.Sum(mod.TypeBase, nil, "MissingManaBeforeEnemyHit")
+				if DamageIn["LifeWhenHit"] != 0 || DamageIn["ManaWhenHit"] != 0 || DamageIn["EnergyShieldWhenHit"] != 0 ||
+					DamageIn["MissingLifeBeforeEnemyHit"] != 0 || DamageIn["MissingManaBeforeEnemyHit"] != 0 {
+					DamageIn["GainWhenHit"] = 1
+				}
+			} else {
+				DamageIn["LifeWhenHit"] = 0
+				DamageIn["ManaWhenHit"] = 0
+				DamageIn["EnergyShieldWhenHit"] = 0
+			}
+			for _, damageType := range data.DamageType("").Values() {
+				if modDB.Flag(nil, "BlockedDamageDoesntBypassES") && actor.Output[string(damageType+"EnergyShieldBypass")] < 100 && damageType != "Chaos" {
+					DamageIn[string(damageType+"EnergyShieldBypass")] = actor.Output[string(damageType+"EnergyShieldBypass")] * (1 - BlockChance)
+				}
+				AvoidChance := float64(0)
+				if specificTypeAvoidance {
+					AvoidChance = min(actor.Output[string("Avoid"+damageType+"DamageChance")]+ExtraAvoidChance, data.AvoidChanceCap)
+					// unlucky config to lower the value of block, dodge, evade etc for ehp
+					if worstOf > 1 {
+						AvoidChance = AvoidChance / 100 * AvoidChance
+						if worstOf == 4 {
+							AvoidChance = AvoidChance / 100 * AvoidChance
+						}
+					}
+					averageAvoidChance = averageAvoidChance + AvoidChance
+				}
+				DamageIn[string(damageType)] = actor.Output[string(damageType+"TakenHit")] * (blockEffect * suppressionEffect * (1 - AvoidChance/100))
+			}
+			// taken over time degen initialisation
+			if actor.Output["preventedLifeLossTotal"] > 0 {
+				DamageIn["TrackLifeLossOverTime"] = 1
+				actor.Output["LifeLossLostOverTime"] = 0
+				actor.Output["LifeBelowHalfLossLostOverTime"] = 0
+			}
+			averageAvoidChance = averageAvoidChance / 5
+			actor.Output["ConfiguredDamageChance"] = 100 * (blockEffect * suppressionEffect * (1 - averageAvoidChance/100))
+			if actor.Output["anyRecoup"] > 0 {
+				DamageIn["TrackRecoupable"] = 1
+				for _, damageType := range data.DamageType("").Values() {
+					actor.Output[string(damageType)+"RecoupableDamageTaken"] = 0
+				}
+			}
+			if DamageIn["TrackRecoupable"] != 0 || DamageIn["TrackLifeLossOverTime"] != 0 || DamageIn["GainWhenHit"] != 0 {
+				DamageIn["LimitEHPSpeedup"] = 1
+			}
+			if actor.Output["ConfiguredDamageChance"] != 100 || DamageIn["TrackRecoupable"] != 0 ||
+				DamageIn["TrackLifeLossOverTime"] != 0 || DamageIn["GainWhenHit"] != 0 {
+				actor.Output["NumberOfMitigatedDamagingHits"] = numberOfHitsToDie(DamageIn)
+			} else {
+				actor.Output["NumberOfMitigatedDamagingHits"] = actor.Output["NumberOfDamagingHits"]
+			}
+			if actor.Breakdown != nil {
+				actor.Breakdown.AddLine("ConfiguredDamageChance",
+					fmt.Sprintf("%.2f ^8(chance for block to fail)", 1-BlockChance),
+				)
+				if actor.Output["ShowBlockEffect"] != 0 {
+					actor.Breakdown.AddLine("ConfiguredDamageChance", fmt.Sprintf("x %.2f ^8(block effect)", actor.Output["BlockEffect"]/100))
+				}
+				if suppressionEffect > 0 {
+					actor.Breakdown.AddLine("ConfiguredDamageChance", fmt.Sprintf("x %.3f ^8(suppression effect)", suppressionEffect))
+				}
+				if averageAvoidChance > 0 {
+					actor.Breakdown.AddLine("ConfiguredDamageChance", fmt.Sprintf("x %.2f ^8(chance for avoidance to fail)", 1-averageAvoidChance/100))
+				}
+				actor.Breakdown.AddLine("ConfiguredDamageChance", fmt.Sprintf("= %.1f%% ^8(of damage taken from a%s hit)", actor.Output["ConfiguredDamageChance"], utils.Ternary(damageCategoryConfig == "Average", "n ", " ")+damageCategoryConfig))
+			}
 		}
-		enemySkillTime = enemySkillTime / (1 + actor.Enemy.ModDB.Sum(mod.TypeIncrease, nil, "Speed")/100)
-		enemyActionSpeed := CalcActionSpeedMod(actor.Enemy)
-		enemySkillTime = enemySkillTime / 1000 / enemyActionSpeed
-		actor.Output["enemySkillTime"] = enemySkillTime
-		actor.Output["EHPSurvivalTime"] = actor.Output["TotalNumberOfHits"] * enemySkillTime
+		{
+			worstOf := environment.Build.GetNumberOption("EHPUnluckyWorstOf")
+			if worstOf == 0 {
+				worstOf = 1
+			}
+			avoidAll := 1 - actor.Output["AvoidAllDamageFromHitsChance"]/100
+			avoidProjectiles := 1 - utils.Ternary(specificTypeAvoidance, float64(0), actor.Output["AvoidProjectilesChance"])/100
+			actor.Output["MeleeNotHitChance"] = 100 - float64((1-actor.Output["MeleeEvadeChance"]/100)*(1-actor.Output["EffectiveAttackDodgeChance"]/100)*avoidAll*100)
+			actor.Output["ProjectileNotHitChance"] = 100 - float64((1-actor.Output["ProjectileEvadeChance"]/100)*(1-actor.Output["EffectiveAttackDodgeChance"]/100)*avoidAll*avoidProjectiles*100)
+			actor.Output["SpellNotHitChance"] = 100 - float64((1-actor.Output["EffectiveSpellDodgeChance"]/100)*avoidAll*100)
+			actor.Output["SpellProjectileNotHitChance"] = 100 - float64((1-actor.Output["EffectiveSpellDodgeChance"]/100)*avoidAll*avoidProjectiles*100)
+			//pob:src/Modules/CalcDefence.lua:1652
+			actor.Output["UntypedNotHitChance"] = 100 - float64(avoidAll*100)
+			actor.Output["AverageNotHitChance"] = (actor.Output["MeleeNotHitChance"] + actor.Output["ProjectileNotHitChance"] + actor.Output["SpellNotHitChance"] + actor.Output["SpellProjectileNotHitChance"]) / 4
+			actor.Output["ConfiguredNotHitChance"] = actor.Output[damageCategoryConfig+"NotHitChance"]
+			// unlucky config to lower the value of block, dodge, evade etc for ehp
+			if worstOf > 1 {
+				actor.Output["ConfiguredNotHitChance"] = actor.Output["ConfiguredNotHitChance"] / 100 * actor.Output["ConfiguredNotHitChance"]
+				if worstOf == 4 {
+					actor.Output["ConfiguredNotHitChance"] = actor.Output["ConfiguredNotHitChance"] / 100 * actor.Output["ConfiguredNotHitChance"]
+				}
+			}
+			actor.Output["TotalNumberOfHits"] = actor.Output["NumberOfMitigatedDamagingHits"] / (1 - actor.Output["ConfiguredNotHitChance"]/100)
+			if actor.Breakdown != nil {
+				if damageCategoryConfig == "Melee" || damageCategoryConfig == "Projectile" {
+					actor.Breakdown.AddLine("ConfiguredNotHitChance", fmt.Sprintf("%.2f ^8(chance for evasion to fail)", 1-actor.Output[damageCategoryConfig+"EvadeChance"]/100))
+					actor.Breakdown.AddLine("ConfiguredNotHitChance", fmt.Sprintf("x %.2f ^8(chance for dodge to fail)", 1-actor.Output["AttackDodgeChance"]/100))
+				} else if damageCategoryConfig == "Spell" || damageCategoryConfig == "SpellProjectile" {
+					actor.Breakdown.AddLine("ConfiguredNotHitChance", fmt.Sprintf("%.2f ^8(chance for dodge to fail)", 1-actor.Output["SpellDodgeChance"]/100))
+				} else if damageCategoryConfig == "Average" {
+					actor.Breakdown.AddLine("ConfiguredNotHitChance", fmt.Sprintf("%.2f ^8(chance for evasion to fail, only applies to the attack portion)", 1-(actor.Output["MeleeEvadeChance"]+actor.Output["ProjectileEvadeChance"])/2/100))
+					actor.Breakdown.AddLine("ConfiguredNotHitChance", fmt.Sprintf("x%.2f ^8(chance for dodge to fail)", 1-(actor.Output["AttackDodgeChance"]+actor.Output["SpellDodgeChance"])/2/100))
+				}
+				if worstOf > 1 {
+					actor.Breakdown.AddLine("ConfiguredNotHitChance", fmt.Sprintf("unlucky worst of %.2f", worstOf))
+				}
+				actor.Breakdown.AddLine("ConfiguredNotHitChance", fmt.Sprintf("= %.2f%% ^8(chance to be hit by a%s hit)", 100-actor.Output["ConfiguredNotHitChance"], utils.Ternary(damageCategoryConfig == "Average", "n ", " ")+damageCategoryConfig))
+				actor.Breakdown.AddLine("TotalNumberOfHits",
+					fmt.Sprintf("%.2f ^8(Number of mitigated hits)", actor.Output["NumberOfMitigatedDamagingHits"]),
+					fmt.Sprintf("/ %.2f ^8(Chance to even be hit)", 1-actor.Output["ConfiguredNotHitChance"]/100),
+					fmt.Sprintf("= %.2f ^8(total average number of hits you can take)", actor.Output["TotalNumberOfHits"]),
+				)
+			}
+		}
+
+		// effective hit pool
+		actor.Output["TotalEHP"] = actor.Output["TotalNumberOfHits"] * actor.Output["totalEnemyDamageIn"]
 		if actor.Breakdown != nil {
-			actor.Breakdown.AddLine("EHPSurvivalTime",
+			actor.Breakdown.AddLine("TotalEHP",
 				fmt.Sprintf("%.2f ^8(total average number of hits you can take)", actor.Output["TotalNumberOfHits"]),
-				fmt.Sprintf("x %.2f ^8enemy attack/cast time", enemySkillTime),
-				fmt.Sprintf("= %.2f seconds ^8(total time it would take to die)", actor.Output["EHPSurvivalTime"]),
+				fmt.Sprintf("x %.2f ^8(total incoming damage)", actor.Output["totalEnemyDamageIn"]),
+				fmt.Sprintf("= %.2f ^8(total damage you can take)", actor.Output["TotalEHP"]),
 			)
+		}
+		// survival time
+		//pob:block:src/Modules/CalcDefence.lua:2917-2930
+		{
+			enemySkillTime, fromInput := enemyConfigNumberSource(environment, "enemySpeed")
+			if !fromInput {
+				enemySkillTime = utils.OrF(enemySkillTime, 700)
+			}
+			enemySkillTime = enemySkillTime / (1 + actor.Enemy.ModDB.Sum(mod.TypeIncrease, nil, "Speed")/100)
+			enemyActionSpeed := CalcActionSpeedMod(actor.Enemy)
+			enemySkillTime = enemySkillTime / 1000 / enemyActionSpeed
+			actor.Output["enemySkillTime"] = enemySkillTime
+			actor.Output["EHPSurvivalTime"] = actor.Output["TotalNumberOfHits"] * enemySkillTime
+			if actor.Breakdown != nil {
+				actor.Breakdown.AddLine("EHPSurvivalTime",
+					fmt.Sprintf("%.2f ^8(total average number of hits you can take)", actor.Output["TotalNumberOfHits"]),
+					fmt.Sprintf("x %.2f ^8enemy attack/cast time", enemySkillTime),
+					fmt.Sprintf("= %.2f seconds ^8(total time it would take to die)", actor.Output["EHPSurvivalTime"]),
+				)
+			}
 		}
 	}
 
@@ -2817,14 +2859,14 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 				recoupTime = 3
 			}
 
-			total := actor.Output[recoupType+"Recoup"] / 100 * totalDamage
+			total := float64(actor.Output[recoupType+"Recoup"] / 100 * totalDamage)
 			if actor.Output["Elemental"+recoupType+"Recoup"] > 0 && totalElementalDamage > 0 {
-				total += actor.Output["Elemental"+recoupType+"Recoup"] / 100 * totalElementalDamage
+				total += float64(actor.Output["Elemental"+recoupType+"Recoup"] / 100 * totalElementalDamage)
 			}
 			for _, dt := range data.DamageType("").Values() {
 				damageType := string(dt)
 				if actor.Output[damageType+recoupType+"Recoup"] > 0 && actor.Output[damageType+"RecoupableDamageTaken"] > 0 {
-					total += actor.Output[damageType+recoupType+"Recoup"] / 100 * actor.Output[damageType+"RecoupableDamageTaken"]
+					total += float64(actor.Output[damageType+recoupType+"Recoup"] / 100 * actor.Output[damageType+"RecoupableDamageTaken"])
 				}
 			}
 			actor.Output["Total"+recoupType+"RecoupRecovery"] = total
@@ -2867,7 +2909,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 	// petrified blood "degen"
 	if actor.Output["preventedLifeLossTotal"] > 0 {
 		LifeLossBelowHalfLost := modDB.Sum(mod.TypeBase, nil, "LifeLossBelowHalfLost") / 100
-		lost := actor.Output["LifeLossLostOverTime"] + actor.Output["LifeBelowHalfLossLostOverTime"]*LifeLossBelowHalfLost
+		lost := actor.Output["LifeLossLostOverTime"] + float64(actor.Output["LifeBelowHalfLossLostOverTime"]*LifeLossBelowHalfLost)
 		actor.Output["LifeLossLostMax"] = lost / 4
 		actor.Output["LifeLossLostAvg"] = lost / (actor.Output["EHPSurvivalTime"] + 4)
 		if actor.Breakdown != nil {
@@ -2919,8 +2961,8 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 
 		percentageNonElemental := (actor.Output["PhysicalTakenHit"] + actor.Output["ChaosTakenHit"]) / actor.Output["totalTakenHit"]
 		percentageElemental := 1 - percentageNonElemental
-		portionNonElemental := math.Pow(actor.Output["totalTakenHit"]/PvpTvalue/PvpNonElemental2, PvpNonElemental1) * PvpTvalue * PvpNonElemental2 * percentageNonElemental
-		portionElemental := math.Pow(actor.Output["totalTakenHit"]/PvpTvalue/PvpElemental2, PvpElemental1) * PvpTvalue * PvpElemental2 * percentageElemental
+		portionNonElemental := float64(math.Pow(actor.Output["totalTakenHit"]/PvpTvalue/PvpNonElemental2, PvpNonElemental1) * PvpTvalue * PvpNonElemental2 * percentageNonElemental)
+		portionElemental := float64(math.Pow(actor.Output["totalTakenHit"]/PvpTvalue/PvpElemental2, PvpElemental1) * PvpTvalue * PvpElemental2 * percentageElemental)
 		actor.Output["PvPTotalTakenHit"] = (portionNonElemental + portionElemental) * PvpMultiplier
 
 		if actor.Breakdown != nil {
@@ -2977,7 +3019,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 			if convertPercent <= 0 {
 				continue
 			}
-			total := baseVal * (convertPercent / 100) * actor.Output[string(damageConvertedType+"TakenDotMult")]
+			total := float64(baseVal * (convertPercent / 100) * actor.Output[string(damageConvertedType+"TakenDotMult")])
 			actor.Output[string(damageConvertedType+"BuildDegen")] = actor.Output[string(damageConvertedType+"BuildDegen")] + total
 			actor.Output["TotalBuildDegen"] = actor.Output["TotalBuildDegen"] + total
 			if actor.Breakdown != nil {
@@ -3100,7 +3142,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 	}
 
 	//pob:block:src/Modules/CalcDefence.lua:3487-3742
-	enemyCritAilmentEffect := 1 + actor.Output["EnemyCritChance"]/100*0.5*(1-actor.Output["CritExtraDamageReduction"]/100)
+	enemyCritAilmentEffect := 1 + float64(actor.Output["EnemyCritChance"]/100*0.5*(1-actor.Output["CritExtraDamageReduction"]/100))
 	const enemyCritThreshold = 10.1
 	enemyBleedChance := float64(0)
 	enemyIgniteChance := float64(0)
@@ -3112,7 +3154,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 			(actor.Output["EnemyCritChance"] > enemyCritThreshold || enemyIgniteChance > 0) {
 			enemyCritAilmentChance = actor.Output["EnemyCritChance"]
 		}
-		enemyIgniteChance = (enemyCritAilmentChance + (1-enemyCritAilmentChance/100)*enemyIgniteChance) *
+		enemyIgniteChance = (enemyCritAilmentChance + float64((1-enemyCritAilmentChance/100)*enemyIgniteChance)) *
 			(1 - actor.Output["IgniteAvoidChance"]/100)
 	}
 	enemyPoisonChance := float64(0)
@@ -3130,7 +3172,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 				if convertPercent <= 0 {
 					continue
 				}
-				total := baseVal * (convertPercent / 100) * actor.Output[string(damageConvertedType+"TakenDotMult")]
+				total := float64(baseVal * (convertPercent / 100) * actor.Output[string(damageConvertedType+"TakenDotMult")])
 				actor.Output[string(damageConvertedType+"EnemyDegen")] += total
 				actor.Output["TotalDegen"] += total
 			}
@@ -3232,7 +3274,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 	for _, damageType := range data.DamageType("").Values() {
 		wardBypass := modDB.Sum(mod.TypeBase, nil, "WardBypass")
 		if wardBypass > 0 {
-			poolProtected := actor.Output["Ward"] / (1 - wardBypass/100) * (wardBypass / 100)
+			poolProtected := float64(actor.Output["Ward"] / (1 - wardBypass/100) * (wardBypass / 100))
 			sourcePool := actor.Output[string(damageType+"TotalHitPool")]
 			sourcePool = max(sourcePool-poolProtected, 0) + min(sourcePool, poolProtected)/(wardBypass/100)
 			actor.Output[string(damageType+"TotalHitPool")] = sourcePool
@@ -3252,7 +3294,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 			if GuardAbsorbRate >= 100 {
 				actor.Output[string(damageType+"TotalHitPool")] = actor.Output[string(damageType+"TotalHitPool")] + GuardAbsorb
 			} else {
-				poolProtected := GuardAbsorb / (GuardAbsorbRate / 100) * (1 - GuardAbsorbRate/100)
+				poolProtected := float64(GuardAbsorb / (GuardAbsorbRate / 100) * (1 - GuardAbsorbRate/100))
 				actor.Output[string(damageType+"TotalHitPool")] = max(actor.Output[string(damageType+"TotalHitPool")]-poolProtected, 0) + min(actor.Output[string(damageType+"TotalHitPool")], poolProtected)/(1-GuardAbsorbRate/100)
 			}
 		}
@@ -3267,7 +3309,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 			if mitigation == 100 {
 				actor.Output[string(damageType+"TotalHitPool")] = actor.Output[string(damageType+"TotalHitPool")] + life
 			} else {
-				poolProtected := life / (mitigation / 100) * (1 - mitigation/100)
+				poolProtected := float64(life / (mitigation / 100) * (1 - mitigation/100))
 				actor.Output[string(damageType+"TotalHitPool")] = max(actor.Output[string(damageType+"TotalHitPool")]-poolProtected, 0) + min(actor.Output[string(damageType+"TotalHitPool")], poolProtected)/(1-mitigation/100)
 			}
 		}
@@ -3309,16 +3351,16 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 					flatDR := reductionPercent / 100
 					enemyOverwhelmPercent := utils.Ternary(modDB.Flag(nil, string("SelfIgnore"+damageConvertedType+"DamageReduction")), 0, actor.Output[string(damageConvertedType+"EnemyOverwhelm")])
 
-					poolNetOfFlat := totalHitPool - takenFlat*totalTakenMulti
+					poolNetOfFlat := totalHitPool - float64(takenFlat*totalTakenMulti)
 
 					resistXConvert := totalResistMult * damageConvertedMulti
-					a := 5 * (1 - flatDR + enemyOverwhelmPercent/100) * totalTakenMulti * resistXConvert * resistXConvert
-					b := ((enemyOverwhelmPercent/100-flatDR)*effectiveAppliedArmour*totalTakenMulti - 5*poolNetOfFlat) * resistXConvert
-					c := -effectiveAppliedArmour * poolNetOfFlat
+					a := float64(5 * (1 - flatDR + enemyOverwhelmPercent/100) * totalTakenMulti * resistXConvert * resistXConvert)
+					b := float64((float64((enemyOverwhelmPercent/100-flatDR)*effectiveAppliedArmour*totalTakenMulti) - float64(5*poolNetOfFlat)) * resistXConvert)
+					c := float64(-effectiveAppliedArmour * poolNetOfFlat)
 
 					raw := math.Inf(1)
 					if a != 0 {
-						raw = (math.Sqrt(math.Max(b*b-4*a*c, 0)) - b) / (2 * a)
+						raw = (math.Sqrt(math.Max(float64(b*b)-float64(4*a*c), 0)) - b) / (2 * a)
 					}
 
 					noDRMaxHit := totalHitPool / damageConvertedMulti / totalResistMult / totalTakenMulti * (1 - takenFlat*totalTakenMulti/totalHitPool)

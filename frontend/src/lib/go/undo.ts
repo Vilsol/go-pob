@@ -283,7 +283,10 @@ export const STEP_LABELS: Record<string, { action: string; page: string }> = {
   EquipCompareJewel: { action: "socket the compared build's jewel", page: 'Compare' },
   exportParty: { action: 'toggle Export support', page: 'Import / Export' },
   AddTattoo: { action: 'tattoo a node', page: 'Tree' },
-  ImportItemsAndSkills: { action: 'import items and skills', page: 'Import / Export' }
+  ImportItemsAndSkills: { action: 'import items and skills', page: 'Import / Export' },
+  ImportPassiveTreeAndJewels: { action: 'import the passive tree and jewels', page: 'Import / Export' },
+  ImportAccountPassiveTree: { action: 'import the passive tree and jewels', page: 'Import / Export' },
+  ImportAccountItems: { action: 'import items and skills', page: 'Import / Export' }
 };
 
 export const stepLabel = (source: string) => STEP_LABELS[source] ?? { action: source, page: '' };

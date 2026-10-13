@@ -5,9 +5,6 @@ import (
 	"os"
 	"os/exec"
 	"strconv"
-	"syscall"
-
-	"golang.org/x/sys/unix"
 
 	"github.com/Vilsol/go-pob/scripts/gopob/internal/toolchain"
 )
@@ -18,11 +15,12 @@ func nrExec(argv []string) int {
 		fmt.Fprintf(os.Stderr, "scripts/nice.sh: %s: command not found\n", argv[0])
 		return 127
 	}
-	if err := syscall.Exec(path, argv, os.Environ()); err != nil { //nolint:gosec // running the operator's command IS this tool; it is a prefix, as in the original
+	code, err := replaceProcess(path, argv)
+	if err != nil {
 		fmt.Fprintf(os.Stderr, "scripts/nice.sh: %s: %s\n", argv[0], errnoText(err))
 		return 126
 	}
-	return 0
+	return code
 }
 
 func niceRun(argv []string) int {
@@ -48,7 +46,7 @@ func niceRun(argv []string) int {
 	_ = os.Setenv("GOPOB_NICED", "1")
 
 	if inc, err := strconv.Atoi(niceness); err == nil {
-		if cur, err := unix.Getpriority(unix.PRIO_PROCESS, 0); err == nil {
+		if cur, err := rawGetpriority(); err == nil {
 			toolchain.SetprioritySelf(nrTargetNiceness(cur, inc))
 		}
 	}

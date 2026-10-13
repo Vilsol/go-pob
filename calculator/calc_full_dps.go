@@ -3,6 +3,7 @@ package calculator
 import (
 	"math"
 	"slices"
+	"strings"
 
 	"github.com/Vilsol/go-pob-data/poe"
 
@@ -75,7 +76,7 @@ func calcFullDPS(c *Calculator, env *Environment, mode OutputMode, cache *Enviro
 					minionName = minion.MinionData.Name + ": "
 				}
 				skills = append(skills, SkillDPS{Name: skillName, DPS: mout["TotalDPS"], Count: activeSkillCount, Trigger: activeSkill.infoTrigger, SkillPart: minionName + activeSkill.SkillPartName})
-				combinedDPS += mout["TotalDPS"] * activeSkillCount
+				combinedDPS += float64(mout["TotalDPS"] * activeSkillCount)
 			}
 			if mout["BleedDPS"] > f.BleedDPS {
 				f.BleedDPS = mout["BleedDPS"]
@@ -86,10 +87,10 @@ func calcFullDPS(c *Calculator, env *Environment, mode OutputMode, cache *Enviro
 				f.igniteSource = skillName
 			}
 			if mout["PoisonDPS"] > 0 {
-				f.PoisonDPS += mout["TotalPoisonDPS"] * activeSkillCount
+				f.PoisonDPS += float64(mout["TotalPoisonDPS"] * activeSkillCount)
 			}
 			if mout["ImpaleDPS"] > 0 {
-				f.ImpaleDPS += mout["ImpaleDPS"] * activeSkillCount
+				f.ImpaleDPS += float64(mout["ImpaleDPS"] * activeSkillCount)
 			}
 			if mout["DecayDPS"] > 0 {
 				f.DecayDPS += mout["DecayDPS"]
@@ -99,6 +100,14 @@ func calcFullDPS(c *Calculator, env *Environment, mode OutputMode, cache *Enviro
 			}
 			if mout["CullMultiplier"] > 1 && mout["CullMultiplier"] > f.CullingMulti {
 				f.CullingMulti = mout["CullMultiplier"]
+			}
+			// This is a fix to prevent skills such as Absolution or Dominating Blow from being counted multiple times when increasing minions count
+			//pob:block:src/Modules/Calcs.lua:240-245
+			if (strings.Contains(skillName, "Absolution") && fullEnv.ModDB.Flag(nil, "Condition:AbsolutionSkillDamageCountedOnce")) ||
+				(strings.Contains(skillName, "Dominating Blow") && fullEnv.ModDB.Flag(nil, "Condition:DominatingBlowSkillDamageCountedOnce")) ||
+				(strings.Contains(skillName, "Holy Strike") && fullEnv.ModDB.Flag(nil, "Condition:HolyStrikeSkillDamageCountedOnce")) {
+				activeSkillCount = 1
+				activeSkill.infoMessage2 = "Skill Damage"
 			}
 		}
 
@@ -116,7 +125,7 @@ func calcFullDPS(c *Calculator, env *Environment, mode OutputMode, cache *Enviro
 			if mout["TotalDPS"] > 0 {
 				//pob:block:src/Modules/Calcs.lua:251
 				skills = append(skills, SkillDPS{Name: mirage.Name + " (Mirage)", DPS: mout["TotalDPS"], Count: mirageCount, SkillPart: mirage.SkillPartName})
-				combinedDPS += mout["TotalDPS"] * mirageCount
+				combinedDPS += float64(mout["TotalDPS"] * mirageCount)
 			}
 			if mout["BleedDPS"] > f.BleedDPS {
 				f.BleedDPS = mout["BleedDPS"]
@@ -127,10 +136,10 @@ func calcFullDPS(c *Calculator, env *Environment, mode OutputMode, cache *Enviro
 				f.igniteSource = skillName + " (Mirage)"
 			}
 			if mout["PoisonDPS"] > 0 {
-				f.PoisonDPS += mout["TotalPoisonDPS"] * mirageCount
+				f.PoisonDPS += float64(mout["TotalPoisonDPS"] * mirageCount)
 			}
 			if mout["ImpaleDPS"] > 0 {
-				f.ImpaleDPS += mout["ImpaleDPS"] * mirageCount
+				f.ImpaleDPS += float64(mout["ImpaleDPS"] * mirageCount)
 			}
 			if mout["DecayDPS"] > 0 {
 				f.DecayDPS += mout["DecayDPS"]
@@ -142,7 +151,7 @@ func calcFullDPS(c *Calculator, env *Environment, mode OutputMode, cache *Enviro
 				if dotCanStack {
 					stackCount = mirageCount
 				}
-				f.DotDPS += mout["TotalDot"] * stackCount
+				f.DotDPS += float64(mout["TotalDot"] * stackCount)
 			}
 			if mout["CullMultiplier"] > 1 && mout["CullMultiplier"] > f.CullingMulti {
 				f.CullingMulti = mout["CullMultiplier"]
@@ -164,7 +173,7 @@ func calcFullDPS(c *Calculator, env *Environment, mode OutputMode, cache *Enviro
 				skillPart = activeSkill.infoMessage2
 			}
 			skills = append(skills, SkillDPS{Name: skillName, DPS: out["TotalDPS"], Count: activeSkillCount, Trigger: activeSkill.infoTrigger, SkillPart: skillPart})
-			combinedDPS += out["TotalDPS"] * activeSkillCount
+			combinedDPS += float64(out["TotalDPS"] * activeSkillCount)
 		}
 		if out["BleedDPS"] > f.BleedDPS {
 			f.BleedDPS = out["BleedDPS"]
@@ -183,14 +192,14 @@ func calcFullDPS(c *Calculator, env *Environment, mode OutputMode, cache *Enviro
 			f.burningGroundSource = skillName
 		}
 		if out["PoisonDPS"] > 0 {
-			f.PoisonDPS += out["TotalPoisonDPS"] * activeSkillCount
+			f.PoisonDPS += float64(out["TotalPoisonDPS"] * activeSkillCount)
 		}
 		if out["CausticGroundDPS"] > f.CausticGroundDPS {
 			f.CausticGroundDPS = out["CausticGroundDPS"]
 			f.causticGroundSource = skillName
 		}
 		if out["ImpaleDPS"] > 0 {
-			f.ImpaleDPS += out["ImpaleDPS"] * activeSkillCount
+			f.ImpaleDPS += float64(out["ImpaleDPS"] * activeSkillCount)
 		}
 		if out["DecayDPS"] > 0 {
 			f.DecayDPS += out["DecayDPS"]
@@ -200,7 +209,7 @@ func calcFullDPS(c *Calculator, env *Environment, mode OutputMode, cache *Enviro
 			if subEnv.Player.MainSkill != nil && subEnv.Player.MainSkill.SkillFlags[SkillFlagDotCanStack] {
 				stackCount = activeSkillCount
 			}
-			f.DotDPS += out["TotalDot"] * stackCount
+			f.DotDPS += float64(out["TotalDot"] * stackCount)
 		}
 		if out["CullMultiplier"] > 1 && out["CullMultiplier"] > f.CullingMulti {
 			f.CullingMulti = out["CullMultiplier"]
@@ -296,7 +305,7 @@ func (f fullDPSBuckets) rollUp(combinedDPS float64, skills *[]SkillDPS) (float64
 	totalDotDPS = math.Min(totalDotDPS, data.DotDpsCap)
 	combinedDPS += totalDotDPS
 	if f.CullingMulti > 0 {
-		cullingDPS := combinedDPS * (f.CullingMulti - 1)
+		cullingDPS := float64(combinedDPS * (f.CullingMulti - 1))
 		*skills = append(*skills, SkillDPS{Name: "Full Culling DPS", DPS: cullingDPS, Count: 1})
 		combinedDPS += cullingDPS
 	}

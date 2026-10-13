@@ -20,6 +20,8 @@ const rawJson = (v: string) => {
 const worker = vi.hoisted(() => ({
   granted: [] as number[],
   paths: {} as Record<number, number>,
+  active: [] as number[],
+  depends: [] as number[],
   calls: [] as string[]
 }));
 
@@ -27,7 +29,8 @@ vi.mock('$lib/go/worker', () => {
   const known: Record<string, (...a: unknown[]) => unknown> = {
     GetTree: (v) => rawJson(v as string),
     GetBuildInfo: () => ({ className: 'Witch', ascendClassName: 'None', secondaryAscendClassId: 0 }),
-    GetPassiveNodes: () => [],
+    GetPassiveNodes: () => worker.active,
+    CalculateDependentNodes: () => worker.depends,
     GetLeapHeldNodes: () => [],
     CalculateAllocationPaths: () => worker.paths,
     GetGrantedPassives: () => worker.granted
@@ -144,6 +147,26 @@ describe('the state handed to the renderer', () => {
     expect([...(states.at(-1)?.compared ?? [])]).toEqual([1, 2]);
     expect([...(states.at(-1)?.split ?? [])]).toEqual([3]);
     worker.granted = [];
+  });
+});
+
+// PassiveTreeView.lua:372-375
+describe('hovering an allocated node', () => {
+  it('hands the renderer the node and its dependents, and nothing once the pointer leaves', async () => {
+    const node = someNotable();
+    worker.active = [node.skill!, 11, 12];
+    worker.depends = [11, 12];
+    states.length = 0;
+    const { canvas, component } = await mount();
+    await vi.waitFor(() => expect([...(states.at(-1)?.active ?? [])]).toContain(node.skill));
+    component.focus(node.skill!);
+    await fireEvent.pointerMove(canvas, { clientX: W / 2, clientY: H / 2 });
+    await vi.waitFor(() => expect([...(states.at(-1)?.depends ?? [])].sort()).toEqual([11, 12, node.skill!].sort()));
+    expect(states.at(-1)?.hovered).toBe(node.skill);
+    await fireEvent.pointerMove(canvas, { clientX: 1, clientY: 1 });
+    await vi.waitFor(() => expect(states.at(-1)?.depends?.size).toBe(0));
+    worker.active = [];
+    worker.depends = [];
   });
 });
 

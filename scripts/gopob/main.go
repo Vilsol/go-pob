@@ -93,6 +93,8 @@ const usage = `gopob <subcommand> [flags]
                         the same round-trip for the PER-SKILL stat maps. 1 = a finding
   pob-pin [--record]    assert the PoB checkout IS the tree the oracle was built against.
                         CONTENT is the assertion; the git SHA is only reported
+  fma-census            every multiply-add the compiler fuses in the calculation packages on
+                        arm64 and amd64 v3; fails on any site not on the allow-list
   regen-fixtures [name ...]
                         regenerate the eight testdata/oracle fixtures from the PINNED PoB.
                         Needs the DETERMINISTIC luajit and setarch -R; neither is a default
@@ -267,6 +269,8 @@ func main() {
 		os.Exit(skillStatMapVerify(os.Args[2:]))
 	case "pob-pin":
 		os.Exit(pobPin(os.Args[2:]))
+	case "fma-census":
+		os.Exit(fmaCensus(os.Args[2:]))
 	case "pob-data-tables-stamp":
 		os.Exit(pobDataTablesStamp(os.Args[2:]))
 	case "source-census":

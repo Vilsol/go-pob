@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { Snippet } from 'svelte';
   import FloatingLabel from './FloatingLabel.svelte';
   import Checkbox from './Checkbox.svelte';
   import ChoiceCard from './ChoiceCard.svelte';
@@ -36,6 +37,7 @@
     onexportparty?: (on: boolean) => void;
     /* Build.lua:1160-1162 */
     focusCode?: boolean;
+    characterImport?: Snippet;
   };
   let {
     code,
@@ -60,7 +62,8 @@
     onimporttree,
     onimportitems,
     onexportparty,
-    focusCode = false
+    focusCode = false,
+    characterImport
   }: Props = $props();
   let codeInput = $state<HTMLInputElement>();
   $effect(() => {
@@ -160,71 +163,71 @@
   {#if imported}<div role="status" class={['toned text-12', toneClass('up')]}>{imported}</div>{/if}
 </section>
 
-<section aria-label="Character import" class="panel col-span-2 flex flex-col gap-3 p-3.5">
-  <div class="flex items-baseline justify-between">
-    <h2 class="subhead text-13">CHARACTER IMPORT</h2>
-    <span class="note"
-      >Character import status: <span class={['toned', toneClass(characters ? 'up' : 'muted')]}
-        >{characters ? `Fetched ${characters.length} characters` : unavailable.characters ? 'Not available' : 'Not fetched'}</span
-      ></span>
-  </div>
-  {#if unavailable.characters}<p class="note">{unavailable.characters}</p>{/if}
-  <div class="flex items-end gap-2.5">
-    <label class="field"
-      >Account name <input
-        class="input h-8.5 w-55 px-2.5"
-        bind:value={account}
-        placeholder="AccountName#0000"
-        disabled={!!unavailable.characters}
-        title={unavailable.characters} /></label>
-    <FloatingLabel label="Realm"
-      ><select class="select h-8.5" bind:value={realm} disabled={!!unavailable.characters} title={unavailable.characters}
-        >{#each realms as r (r)}<option>{r}</option>{/each}</select
-      ></FloatingLabel>
-    <button
-      class="btn btn-md"
-      disabled={!account.trim() || !!unavailable.characters}
-      title={unavailable.characters}
-      onclick={() => onfetch?.(account.trim(), realm)}>Fetch characters</button>
-  </div>
-  {#if characters}
-    <div class="flex items-start gap-4">
-      <div class="flex w-105 shrink-0 flex-col gap-2">
-        <FloatingLabel label="League"
-          ><select
-            class="select h-8.5"
-            value={league || leagues[0]}
-            onchange={(e) => {
-              league = e.currentTarget.value;
-              picked = 0;
-            }}
-            >{#each leagues as l (l)}<option>{l}</option>{/each}</select
-          ></FloatingLabel>
-        <span class="text-12 text-text-2">Choose character to import data from:</span>
-        <div role="group" aria-label="Characters" class="flex flex-col gap-2">
-          {#each inLeague as c, i (c.name)}
-            <ChoiceCard pressed={c === chosen} class="flex-row items-center justify-between px-2.5 py-2" onclick={() => (picked = i)}
-              ><span class="font-semibold">{c.name}</span><span class={['toned text-12', toneClass(c.className.toLowerCase() as Tone)]} data-pob-color
-                >{c.ascendancy} · level {c.level}</span
-              ></ChoiceCard>
-          {/each}
-        </div>
-      </div>
-      <div class="grid min-w-0 grow grid-cols-2 gap-3">
-        <div class="flex flex-col gap-2 rounded-md border border-line bg-ground p-3 text-13">
-          <h3 class="text-13 font-bold">Passive Tree and Jewels</h3>
-          <span class="text-12 text-worse">Importing the passive tree will overwrite your current tree.</span>
-          <Checkbox compact bind:checked={opts.deleteJewels}>Delete jewels: delete all equipped jewels when importing</Checkbox>
-          <button class="btn btn-primary self-start px-3 text-12" onclick={() => chosen && onimporttree?.(chosen, opts)}>Import tree</button>
-        </div>
-        <div class="flex flex-col gap-2 rounded-md border border-line bg-ground p-3 text-13">
-          <h3 class="text-13 font-bold">Items and Skills</h3>
-          <Checkbox compact bind:checked={opts.deleteSkills}>Delete skills: delete all existing skills</Checkbox>
-          <Checkbox compact bind:checked={opts.deleteEquipment}>Delete equipment: delete all equipped items</Checkbox>
-          <Checkbox compact bind:checked={opts.ignoreSwap}>Ignore weapon swap: skip items and skills in weapon swap</Checkbox>
-          <button class="btn btn-primary self-start px-3 text-12" onclick={() => chosen && onimportitems?.(chosen, opts)}>Import items and skills</button>
-        </div>
-      </div>
+{#if characterImport}{@render characterImport()}{:else}<section aria-label="Character import" class="panel col-span-2 flex flex-col gap-3 p-3.5">
+    <div class="flex items-baseline justify-between">
+      <h2 class="subhead text-13">CHARACTER IMPORT</h2>
+      <span class="note"
+        >Character import status: <span class={['toned', toneClass(characters ? 'up' : 'muted')]}
+          >{characters ? `Fetched ${characters.length} characters` : unavailable.characters ? 'Not available' : 'Not fetched'}</span
+        ></span>
     </div>
-  {/if}
-</section>
+    {#if unavailable.characters}<p class="note">{unavailable.characters}</p>{/if}
+    <div class="flex items-end gap-2.5">
+      <label class="field"
+        >Account name <input
+          class="input h-8.5 w-55 px-2.5"
+          bind:value={account}
+          placeholder="AccountName#0000"
+          disabled={!!unavailable.characters}
+          title={unavailable.characters} /></label>
+      <FloatingLabel label="Realm"
+        ><select class="select h-8.5" bind:value={realm} disabled={!!unavailable.characters} title={unavailable.characters}
+          >{#each realms as r (r)}<option>{r}</option>{/each}</select
+        ></FloatingLabel>
+      <button
+        class="btn btn-md"
+        disabled={!account.trim() || !!unavailable.characters}
+        title={unavailable.characters}
+        onclick={() => onfetch?.(account.trim(), realm)}>Fetch characters</button>
+    </div>
+    {#if characters}
+      <div class="flex items-start gap-4">
+        <div class="flex w-105 shrink-0 flex-col gap-2">
+          <FloatingLabel label="League"
+            ><select
+              class="select h-8.5"
+              value={league || leagues[0]}
+              onchange={(e) => {
+                league = e.currentTarget.value;
+                picked = 0;
+              }}
+              >{#each leagues as l (l)}<option>{l}</option>{/each}</select
+            ></FloatingLabel>
+          <span class="text-12 text-text-2">Choose character to import data from:</span>
+          <div role="group" aria-label="Characters" class="flex flex-col gap-2">
+            {#each inLeague as c, i (c.name)}
+              <ChoiceCard pressed={c === chosen} class="flex-row items-center justify-between px-2.5 py-2" onclick={() => (picked = i)}
+                ><span class="font-semibold">{c.name}</span><span class={['toned text-12', toneClass(c.className.toLowerCase() as Tone)]} data-pob-color
+                  >{c.ascendancy} · level {c.level}</span
+                ></ChoiceCard>
+            {/each}
+          </div>
+        </div>
+        <div class="grid min-w-0 grow grid-cols-2 gap-3">
+          <div class="flex flex-col gap-2 rounded-md border border-line bg-ground p-3 text-13">
+            <h3 class="text-13 font-bold">Passive Tree and Jewels</h3>
+            <span class="text-12 text-worse">Importing the passive tree will overwrite your current tree.</span>
+            <Checkbox compact bind:checked={opts.deleteJewels}>Delete jewels: delete all equipped jewels when importing</Checkbox>
+            <button class="btn btn-primary self-start px-3 text-12" onclick={() => chosen && onimporttree?.(chosen, opts)}>Import tree</button>
+          </div>
+          <div class="flex flex-col gap-2 rounded-md border border-line bg-ground p-3 text-13">
+            <h3 class="text-13 font-bold">Items and Skills</h3>
+            <Checkbox compact bind:checked={opts.deleteSkills}>Delete skills: delete all existing skills</Checkbox>
+            <Checkbox compact bind:checked={opts.deleteEquipment}>Delete equipment: delete all equipped items</Checkbox>
+            <Checkbox compact bind:checked={opts.ignoreSwap}>Ignore weapon swap: skip items and skills in weapon swap</Checkbox>
+            <button class="btn btn-primary self-start px-3 text-12" onclick={() => chosen && onimportitems?.(chosen, opts)}>Import items and skills</button>
+          </div>
+        </div>
+      </div>
+    {/if}
+  </section>{/if}

@@ -161,6 +161,25 @@ describe('items page', () => {
     expect(tick, 'mounting the page ticked').not.toHaveBeenCalled();
   });
 
+  it('opens in the Default items view setting: Board unless set to List; the page switch does not change it', async () => {
+    const { itemsLayout } = await import('$lib/display/appearance');
+    const pressed = (v: { getByRole: (r: string, o: { name: string }) => HTMLElement }, name: string) =>
+      v.getByRole('button', { name }).getAttribute('aria-pressed');
+    expect(get(itemsLayout)).toBe('board');
+    let view = await mount();
+    let layout = within(await view.findByRole('group', { name: 'Layout' }, { timeout: 10_000 }));
+    expect([pressed(layout, 'Board'), pressed(layout, 'List')]).toEqual(['true', 'false']);
+    await fireEvent.click(layout.getByRole('button', { name: 'List' }));
+    expect(get(itemsLayout)).toBe('board');
+    cleanup();
+    itemsLayout.set('list');
+    onTestFinished(() => itemsLayout.set('board'));
+    view = await mount();
+    layout = within(await view.findByRole('group', { name: 'Layout' }, { timeout: 10_000 }));
+    expect([pressed(layout, 'Board'), pressed(layout, 'List')]).toEqual(['false', 'true']);
+    expect(view.queryByRole('region', { name: 'Equipped items' })).toBeNull();
+  });
+
   it('flask checkbox writes Active to Go, then ticks', async () => {
     const { findByRole } = await mount();
     const box = await findByRole('checkbox', { name: 'Flask 2 active' });

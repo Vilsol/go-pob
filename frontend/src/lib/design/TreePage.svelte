@@ -678,6 +678,7 @@
         bind:clientHeight={tipH}
         bind:clientWidth={tipW}>
         <WhatIfTooltip
+          translucent
           id="{uid}-tip"
           title={tip.name}
           kind={tip.kind}

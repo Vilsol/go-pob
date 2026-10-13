@@ -75,7 +75,7 @@ func itemClusterInfo(raw string, item *Item) (ClusterInfo, bool) {
 }
 
 func clusterNodeCount(val float64, cj data.ClusterJewel) int {
-	return int(math.Floor(val*float64(cj.MaxNodes-cj.MinNodes) + float64(cj.MinNodes) + 0.5))
+	return int(math.Floor(float64(val*float64(cj.MaxNodes-cj.MinNodes)) + float64(cj.MinNodes) + 0.5))
 }
 
 //pob:block:src/Classes/ItemsTab.lua:700-715,src/Classes/ItemsTab.lua:2086-2105

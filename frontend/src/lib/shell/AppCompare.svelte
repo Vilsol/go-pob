@@ -9,15 +9,18 @@
   import { get } from 'svelte/store';
   import { buildRevision, currentBuild, currentBuildPath, outputs } from '$lib/global.js';
   import { syncWrap } from '$lib/go/worker';
-  import Dialog from '$lib/design/Dialog.svelte';
   import type { CalcsHeaderField, CalcsHeaderSide } from '$lib/design/compare';
   import { writeMainSkill } from './main_skill';
   import { logError } from '$lib/utils';
   import { compareName, linkCode } from './link_import';
-  import type { CompareInfo, CompareSetKind, CompareSets } from './compare_types';
+  import type { CompareInfo } from './compare_types';
   import { GetSkillGems } from '$lib/cache';
   import ComparePage from '$lib/design/ComparePage.svelte';
   import BuySimilarDialog from '$lib/design/BuySimilarDialog.svelte';
+  import BuildPicker from '$lib/design/BuildPicker.svelte';
+  import AppCompareSets from './AppCompareSets.svelte';
+  import type { SavedBuild } from '$lib/design/fixtures/app';
+  import { loadBuildSort, saveBuildSort } from '$lib/display/build_sort';
   import { tradeDefences, type TradeDefence, type TradeItem } from '$lib/design/trade';
   import type { CompareFixture, PowerRow } from '$lib/design/fixtures';
   import type { Tree } from '$lib/skill_tree/types';
@@ -81,11 +84,15 @@
     () => info.seq === 0 || adding,
     async (empty) => {
       const w = syncWrap;
-      return empty && w ? (await loadTree((dir) => w.ListBuilds(dir), '')).builds : [];
+      return empty && w ? await loadTree((dir) => w.ListBuilds(dir), '') : { builds: [], folders: [] };
     }
   );
   let code = $state('');
   let codeName = $state('');
+  let picking = $state(false);
+  // CompareTab.lua:1588-1593
+  let pickSort = $state(loadBuildSort());
+  $effect(() => saveBuildSort(pickSort));
   const load = (run: () => Promise<CompareInfo> | undefined) => {
     loadError = null;
     loading = true;
@@ -102,86 +109,6 @@
   };
   // CompareTab.lua:923-933
   let configShowAll = $state(false);
-  // CompareTab.lua:290-389
-  let sets = $state<CompareSets | undefined>();
-  $effect(() => {
-    if (!info.seq) return;
-    syncWrap
-      ?.GetCompareSets()
-      .then((s) => (sets = s))
-      .catch(logError);
-  });
-  const SET_SELECTS: { kind: CompareSetKind; label: string }[] = [
-    { kind: 'tree', label: 'Tree set' },
-    { kind: 'skill', label: 'Skill set' },
-    { kind: 'item', label: 'Item set' },
-    { kind: 'config', label: 'Config set' },
-    { kind: 'group', label: 'Socket group' },
-    { kind: 'skills', label: 'Main skill' },
-    { kind: 'parts', label: 'Skill part' },
-    { kind: 'minion', label: 'Minion' },
-    { kind: 'minionSkill', label: 'Minion skill' }
-  ];
-  // CompareTab.lua:395-435
-  const setCount = (kind: 'stage' | 'mine', text: string) => {
-    const v = text.trim() === '' ? undefined : Number(text);
-    if (v !== undefined && !Number.isInteger(v)) return;
-    syncWrap
-      ?.SetCompareCount(kind, v)
-      .then((i) => (info = i))
-      .catch(logError);
-  };
-  // CompareTab.lua:941-959
-  type ConfigSets = { sets: { id: number; title?: string }[]; active: number };
-  let aConfigSets = $state<ConfigSets>({ sets: [], active: 0 });
-  $effect(() => {
-    void $buildRevision;
-    if (!info.seq) return;
-    syncWrap
-      ?.GetConfigSets()
-      .then((c) => (aConfigSets = c))
-      .catch(logError);
-  });
-  // CompareTab.lua:775-831
-  // TreeTab.lua:649-666
-  let primarySets = $state<Awaited<ReturnType<NonNullable<typeof syncWrap>['GetComparePrimarySets']>>>();
-  $effect(() => {
-    void $buildRevision;
-    if (!info.seq) return;
-    syncWrap
-      ?.GetComparePrimarySets()
-      .then((p) => (primarySets = p))
-      .catch(logError);
-  });
-  let versionList = $state<{ value: string; label: string }[]>([]);
-  $effect(() => {
-    syncWrap
-      ?.GetTreeVersionOptions()
-      .then((v) => (versionList = v ?? []))
-      .catch(logError);
-  });
-  let converting = $state<{ side: 'a' | 'b'; version: string } | null>(null);
-  let convertMsg = $state('');
-  const convertTo = async (replace: boolean) => {
-    const c = converting;
-    converting = null;
-    if (!c) return;
-    if (c.side === 'a') convertMsg = (await syncWrap?.ConvertTreeSpec(c.version, replace)) ?? '';
-    else {
-      const r = await syncWrap?.ConvertCompareTreeSpec(c.version, replace);
-      if (r) {
-        info = r.info;
-        convertMsg = r.msg;
-      }
-    }
-  };
-  const pickSet = (kind: CompareSetKind, index: number) => {
-    syncWrap
-      ?.SetCompareSet(kind, index)
-      .then((i) => (info = i))
-      .catch(logError);
-  };
-
   let tree = $state<Tree | undefined>();
   const treeLoad = async () => {
     if (tree || !syncWrap) return tree;
@@ -467,17 +394,16 @@
       onclick={() => load(async () => syncWrap?.LoadCompareCode(await linkCode(code), compareName(code, codeName)) ?? Promise.reject(new Error('no worker')))}
       >Compare</button>
     <h3 class="subhead mt-1">OR A SAVED BUILD</h3>
-    <ul aria-label="Saved builds" class="flex flex-col gap-1 text-13">
-      {#each saved.current ?? [] as b (b.folder + '/' + b.name)}
-        <li>
-          <button class="btn btn-sm" disabled={loading} onclick={() => load(() => syncWrap?.LoadCompareSaved(pathOf(b.folder, b.name)))}
-            >{b.folder ? `${b.folder}/` : ''}{b.name}</button>
-          <span class="note">{b.className}{b.ascendancy ? ` · ${b.ascendancy}` : ''} · level {b.level}</span>
-        </li>
-      {:else}
-        <li class="note">No saved builds.</li>
-      {/each}
-    </ul>
+    <!-- CompareTab.lua:1529-1640 -->
+    <button class="btn btn-md self-start" aria-haspopup="dialog" disabled={loading} onclick={() => (picking = true)}>Choose a saved build…</button>
+    <BuildPicker
+      bind:open={picking}
+      title="Compare with a saved build"
+      bind:sort={pickSort}
+      action="Compare"
+      builds={saved.current?.builds}
+      folders={saved.current?.folders ?? []}
+      onpick={(b: SavedBuild) => load(() => syncWrap?.LoadCompareSaved(pathOf(b.folder, b.name)))} />
     {#if adding}<button class="btn btn-sm self-start" onclick={() => (adding = false)}>Cancel</button>{/if}
     {#if loading}<span role="status" class="note">Loading…</span>{/if}
     {#if loadError}<div role="alert" class="toned tone-down text-12">Comparison failed: {loadError}</div>{/if}
@@ -497,107 +423,7 @@
     <button class="btn btn-2xs" onclick={() => (adding = true)}>Import…</button>
     <button class="btn btn-2xs" onclick={remove}>Remove comparison</button>
   </div>
-  {#if sets}
-    {@const cur = sets}
-    <div role="group" aria-label="Comparison build sets" class="flex shrink-0 flex-wrap items-center gap-2 text-12">
-      <label class="field field-inline"
-        >This build's config set:
-        <select
-          class="select input-xs max-w-50"
-          aria-label="Primary config set"
-          disabled={aConfigSets.sets.length < 2}
-          value={String(aConfigSets.active)}
-          onchange={(e) => {
-            const set = aConfigSets.sets[Number(e.currentTarget.value)];
-            if (set) syncWrap?.SetActiveConfigSet(set.id)?.catch(logError);
-          }}
-          >{#each aConfigSets.sets as c, i (i)}<option value={String(i)}>{c.title || 'Default'}</option>{/each}</select
-        ></label>
-      {#if primarySets}
-        {@const ps = primarySets}
-        <label class="field field-inline"
-          >This build's tree set:
-          <select
-            class="select input-xs max-w-50"
-            aria-label="Primary tree set"
-            disabled={ps.tree.labels.length < 2}
-            value={String(ps.tree.active)}
-            onchange={(e) => syncWrap?.SetActiveTreeSpec(Number(e.currentTarget.value) + 1)?.catch(logError)}
-            >{#each ps.tree.labels as l, i (i)}<option value={String(i)}>{l}</option>{/each}</select
-          ></label>
-        <label class="field field-inline"
-          >This build's item set:
-          <select
-            class="select input-xs max-w-50"
-            aria-label="Primary item set"
-            disabled={ps.item.labels.length < 2}
-            value={String(ps.item.active)}
-            onchange={(e) => syncWrap?.SetActiveItemSet(ps.item.ids[Number(e.currentTarget.value)])?.catch(logError)}
-            >{#each ps.item.labels as l, i (i)}<option value={String(i)}>{l}</option>{/each}</select
-          ></label>
-        {#each [{ side: 'a' as const, label: "This build's tree version", aria: 'Primary tree version' }, { side: 'b' as const, label: 'Comparison tree version', aria: 'Comparison tree version' }] as v (v.side)}
-          <label class="field field-inline"
-            >{v.label}:
-            <select
-              class="select input-xs max-w-50"
-              aria-label={v.aria}
-              value={ps.versions[v.side]}
-              onchange={(e) => {
-                const version = e.currentTarget.value;
-                e.currentTarget.value = ps.versions[v.side];
-                if (version !== ps.versions[v.side]) converting = { side: v.side, version };
-              }}
-              >{#each versionList as o (o.value)}<option value={o.value}>{o.label}</option>{/each}</select
-            ></label>
-        {/each}
-      {/if}
-      {#each SET_SELECTS as sel (sel.kind)}
-        {@const list = cur[sel.kind]}
-        {#if list}
-          <label class="field field-inline"
-            >{sel.label}:
-            <select
-              class="select input-xs max-w-50"
-              aria-label="Comparison {sel.label.toLowerCase()}"
-              disabled={list.labels.length < 2 ||
-                (sel.kind === 'skills' && !cur.skills.enabled) ||
-                ((sel.kind === 'minion' || sel.kind === 'minionSkill') && !cur[sel.kind]?.enabled)}
-              value={String(list.active)}
-              onchange={(e) => pickSet(sel.kind, Number(e.currentTarget.value))}
-              >{#each list.labels as l, i (i)}<option value={String(i)}>{l}</option>{/each}</select
-            ></label>
-        {/if}
-      {/each}
-      {#each [{ kind: 'stage' as const, label: 'Stages' }, { kind: 'mine' as const, label: 'Mines' }] as box (box.kind)}
-        {#if cur[box.kind] !== undefined}
-          <label class="field field-inline"
-            >{box.label}:
-            <input
-              class="input input-xs w-13"
-              inputmode="numeric"
-              aria-label="Comparison {box.label.toLowerCase()}"
-              value={cur[box.kind]}
-              onchange={(e) => setCount(box.kind, e.currentTarget.value)} /></label>
-        {/if}
-      {/each}
-    </div>
-  {/if}
-  {#if convertMsg}<div role="alert" class="note text-12">{convertMsg}</div>{/if}
-  <Dialog
-    open={converting !== null}
-    onclose={() => (converting = null)}
-    title={converting ? `Convert to Version ${versionList.find((o) => o.value === converting?.version)?.label ?? converting.version}` : 'Convert'}
-    class="w-115 p-4.5">
-    <div class="flex flex-col gap-3 text-13">
-      <p class="m-0">Warning: some or all of the passives may be de-allocated due to changes in the tree.</p>
-      <p class="m-0">Convert will replace your current tree.<br />Copy + Convert will backup your current tree.</p>
-      <div class="flex gap-1.5">
-        <button class="btn btn-sm btn-primary" onclick={() => void convertTo(true)}>Convert</button>
-        <button class="btn btn-sm" onclick={() => void convertTo(false)}>Copy + Convert</button>
-        <button class="btn btn-sm" onclick={() => (converting = null)}>Cancel</button>
-      </div>
-    </div>
-  </Dialog>
+  <AppCompareSets bind:info />
   <ComparePage
     {compare}
     aSkills={m.aSkills}

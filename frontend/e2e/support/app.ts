@@ -310,11 +310,12 @@ export class App {
     }
   }
 
+  /* PassiveSpec.lua:1614-1635 */
   async treeNode(name: string) {
     const id = / (#\d+)$/.exec(name)?.[1];
     if (!id) throw new Error(`treeNode: "${name}" is not a search result's name ("<node> #<id>")`);
     await this.page.getByRole('searchbox', { name: 'Search the tree' }).fill(id);
-    return this.page.getByRole('region', { name: 'Search results' }).getByRole('button', { name, exact: true });
+    return this.page.getByRole('region', { name: 'Search results' }).getByRole('button', { name: new RegExp(` ${id}$`) });
   }
 
   async exportCode(): Promise<string> {

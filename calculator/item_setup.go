@@ -676,7 +676,7 @@ func mergeTreeJewels(env *Environment, byID map[int]string) {
 		//pob:block:src/Modules/CalcSetup.lua:959-964
 		scale := 1.0
 		if inc, ok := jewelIncEffectFromClassStart(item); ok {
-			scale += float64(env.Spec.DistanceToClassStart[nodeID]) * (inc / 100)
+			scale += float64(float64(env.Spec.DistanceToClassStart[nodeID]) * (inc / 100))
 		}
 
 		srcList := asModList(item.Mods)

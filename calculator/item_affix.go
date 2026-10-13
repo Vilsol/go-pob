@@ -477,7 +477,7 @@ func midTier(modList []string) string {
 	if len(modList) == 1 {
 		return modList[0]
 	}
-	return modList[int(math.Floor(float64(len(modList)-1)*(*defaultItemAffixQuality)+0.5))]
+	return modList[int(math.Floor(float64(float64(len(modList)-1)*(*defaultItemAffixQuality))+0.5))]
 }
 
 //pob:block:src/Classes/ItemsTab.lua:717-722,src/Classes/ItemsTab.lua:2108-2332
@@ -583,7 +583,7 @@ func ItemAffixControls(raw string) (AffixControls, bool) {
 func divVal(val float64, divCount int) (int, float64) {
 	if divCount > 1 {
 		div := max(int(math.Ceil(val*float64(divCount))), 1)
-		return div, val*float64(divCount) - float64(div) + 1
+		return div, float64(val*float64(divCount)) - float64(div) + 1
 	}
 	return 1, val
 }

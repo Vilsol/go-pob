@@ -11,6 +11,7 @@ import (
 	"io"
 	"io/fs"
 	"os"
+	"path"
 	"path/filepath"
 	"regexp"
 	"sort"
@@ -118,9 +119,11 @@ func gameDataVersion() (string, error) {
 	return string(m[1]), nil
 }
 
-func listFiles(src string) ([]string, error) {
+func listFiles(src string) ([]string, error) { return listFS(os.DirFS(src), src) }
+
+func listFS(fsys fs.FS, src string) ([]string, error) {
 	var names []string
-	err := filepath.WalkDir(src, func(p string, d fs.DirEntry, err error) error {
+	err := fs.WalkDir(fsys, ".", func(p string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
@@ -128,13 +131,9 @@ func listFiles(src string) ([]string, error) {
 			return nil
 		}
 		if !d.Type().IsRegular() {
-			return fmt.Errorf("%s is not a regular file", p)
+			return fmt.Errorf("%s is not a regular file", path.Join(filepath.ToSlash(src), p))
 		}
-		rel, err := filepath.Rel(src, p)
-		if err != nil {
-			return fmt.Errorf("%s: %w", p, err)
-		}
-		names = append(names, filepath.ToSlash(rel))
+		names = append(names, p)
 		return nil
 	})
 	if err != nil {
@@ -153,7 +152,11 @@ func sortedKeys(m map[string]string) []string {
 }
 
 func packDir(src, prefix, dst string, rules *exportRules, renames map[string]string) (string, int, error) {
-	names, err := listFiles(src)
+	return packFS(os.DirFS(src), src, prefix, dst, rules, renames)
+}
+
+func packFS(fsys fs.FS, src, prefix, dst string, rules *exportRules, renames map[string]string) (string, int, error) {
+	names, err := listFS(fsys, src)
 	if err != nil {
 		return "", 0, err
 	}
@@ -161,7 +164,7 @@ func packDir(src, prefix, dst string, rules *exportRules, renames map[string]str
 		return "", 0, fmt.Errorf("%s holds no files", src)
 	}
 	sort.Strings(names)
-	if err := rules.checkAll(src, prefix, names); err != nil {
+	if err := rules.checkAll(fsys, src, prefix, names); err != nil {
 		return "", 0, err
 	}
 
@@ -172,7 +175,7 @@ func packDir(src, prefix, dst string, rules *exportRules, renames map[string]str
 	}
 	defer os.Remove(tmp)
 	h := sha256.New()
-	err = writeArchive(io.MultiWriter(f, h), src, prefix, names, rules, renames)
+	err = writeArchive(io.MultiWriter(f, h), fsys, src, prefix, names, rules, renames)
 	if cerr := f.Close(); err == nil && cerr != nil {
 		err = fmt.Errorf("writing %s: %w", tmp, cerr)
 	}
@@ -185,11 +188,11 @@ func packDir(src, prefix, dst string, rules *exportRules, renames map[string]str
 	return hex.EncodeToString(h.Sum(nil)), len(names), nil
 }
 
-func writeArchive(w io.Writer, src, prefix string, names []string, rules *exportRules, renames map[string]string) error {
+func writeArchive(w io.Writer, fsys fs.FS, src, prefix string, names []string, rules *exportRules, renames map[string]string) error {
 	bw := brotli.NewWriterOptions(w, brotli.WriterOptions{Quality: 9, LGWin: 24})
 	tw := tar.NewWriter(bw)
 	for _, name := range names {
-		if err := addFile(tw, src, prefix, name, rules, renames); err != nil {
+		if err := addFile(tw, fsys, src, prefix, name, rules, renames); err != nil {
 			return err
 		}
 	}
@@ -202,9 +205,9 @@ func writeArchive(w io.Writer, src, prefix string, names []string, rules *export
 	return nil
 }
 
-func addFile(tw *tar.Writer, src, prefix, name string, rules *exportRules, renames map[string]string) error {
+func addFile(tw *tar.Writer, fsys fs.FS, src, prefix, name string, rules *exportRules, renames map[string]string) error {
 	p := filepath.Join(src, filepath.FromSlash(name))
-	b, err := os.ReadFile(p)
+	b, err := fs.ReadFile(fsys, name)
 	if err != nil {
 		return fmt.Errorf("reading %s: %w", p, err)
 	}
@@ -213,7 +216,7 @@ func addFile(tw *tar.Writer, src, prefix, name string, rules *exportRules, renam
 	}
 	b = rules.rewrite("testdata/"+prefix+"/"+name, b)
 	if strings.HasPrefix(prefix, "oracle-") {
-		if b, err = renameOracle(src, name, b, renames); err != nil {
+		if b, err = renameOracle(fsys, name, b, renames); err != nil {
 			return err
 		}
 	} else if to, ok := renames[name]; ok {

@@ -312,6 +312,23 @@
   let down = $state(false);
   let dragging = $state(false);
 
+  // PassiveTreeView.lua:372-375
+  let hoverDepends = $state.raw(new Set<number>());
+  $effect(() => {
+    const node = $hoveredNode;
+    const id = node?.skill;
+    if (id === undefined || dragging || !activeNodes.includes(id)) {
+      hoverDepends = new Set();
+      return;
+    }
+    syncWrap
+      ?.CalculateDependentNodes(skillTreeVersion, [...activeNodes], id, [...classRoots()])
+      .then((ids) => {
+        if (get(hoveredNode) === node) hoverDepends = new Set([id, ...(ids ?? [])]);
+      })
+      .catch(logError);
+  });
+
   // PassiveTreeView.lua:1658-1706
   let grantedPassives: number[] = $state.raw([]);
   let wantedDiff: Node | undefined;
@@ -552,7 +569,8 @@
       granted: new Set(grantedPassives),
       compared: compared && new Set(compared),
       split: split && new Set(split),
-      heatMap: !!heat
+      heatMap: !!heat,
+      depends: hoverDepends
     });
   });
 

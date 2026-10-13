@@ -5,11 +5,13 @@ import (
 	"bytes"
 	"compress/gzip"
 	"encoding/json"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"sort"
 	"strings"
 	"testing"
+	"testing/fstest"
 
 	"github.com/andybalholm/brotli"
 
@@ -67,16 +69,13 @@ func writeGz(t *testing.T, p string, lines ...string) {
 
 func TestPackRenamesTheCorpusAndItsOracleKeys(t *testing.T) {
 	root := t.TempDir()
-	corpus, oracle := filepath.Join(root, "corpus-x"), filepath.Join(root, "oracle-x")
-	for _, d := range []string{corpus, oracle} {
-		if err := os.MkdirAll(d, 0o755); err != nil {
-			t.Fatal(err)
-		}
+	oracle := filepath.Join(root, "oracle-x")
+	if err := os.MkdirAll(oracle, 0o755); err != nil {
+		t.Fatal(err)
 	}
+	corpus := fstest.MapFS{}
 	for _, n := range []string{"a|b.xml", "c.xml"} {
-		if err := os.WriteFile(filepath.Join(corpus, n), []byte("<"+n+"/>"), 0o600); err != nil {
-			t.Fatal(err)
-		}
+		corpus[n] = &fstest.MapFile{Data: []byte("<" + n + "/>"), Mode: 0o600}
 	}
 	jsonl := filepath.Join(oracle, "output-x.jsonl.gz")
 	writeGz(t, jsonl, `{"build":"a|b.xml","output":{"Life":1}}`, `{"build":"c.xml","output":{"Life":2}}`)
@@ -87,7 +86,7 @@ func TestPackRenamesTheCorpusAndItsOracleKeys(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	names, err := listFiles(corpus)
+	names, err := listFS(corpus, "corpus-x")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -96,9 +95,9 @@ func TestPackRenamesTheCorpusAndItsOracleKeys(t *testing.T) {
 		t.Fatal(err)
 	}
 	stage := filepath.Join(root, "stage")
-	for _, dir := range []string{"corpus-x", "oracle-x"} {
+	for dir, fsys := range map[string]fs.FS{"corpus-x": corpus, "oracle-x": os.DirFS(oracle)} {
 		archive := filepath.Join(root, dir+archiveExt)
-		if _, _, err := packDir(filepath.Join(root, dir), dir, archive, nil, renames); err != nil {
+		if _, _, err := packFS(fsys, dir, dir, archive, nil, renames); err != nil {
 			t.Fatal(err)
 		}
 		if err := unpack(archive, stage, dir); err != nil {

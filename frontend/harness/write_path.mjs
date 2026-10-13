@@ -360,6 +360,23 @@ console.log('\n=== bind.Plain() subtrees cross as data, and Skills deliberately 
   );
 }
 
+console.log('\n=== the account import lands in Go (importproxy) ===');
+
+{
+  // ImportTab.lua:1489
+  const { port1: a, port2: b } = new MessageChannel();
+  a.unref();
+  b.unref();
+  Comlink.expose({ ImportAccountItems: (c, i, ci, cs, w) => mod.exposition.ImportAccountItems(build, c, i, ci, cs, w) }, b);
+  const importer = Comlink.wrap(a);
+  const savedLevel = () => Number(new TextDecoder().decode(builds.SerializeBuild(build).unwrap()).match(/<Build [^>]*level="(\d+)"/)?.[1]);
+  const level = savedLevel() === 87 ? 88 : 87;
+  const entry = JSON.stringify({ name: 'Harness', realm: 'pc', class: 'Necromancer', league: 'Standard', level });
+  const res = await importer.ImportAccountItems(entry, '{"items":[]}', false, false, false);
+  await settle();
+  check('ImportAccountItems -> Build.Level from the character list entry', res?.ok && savedLevel() === level, `ok=${res?.ok} level=${savedLevel()}`);
+}
+
 console.log(`\n${checked} checks, ${failures} failed`);
 if (checked === 0) refuse('zero checks ran — a harness that checks nothing must not exit 0');
 process.exit(failures === 0 ? 0 : 1);

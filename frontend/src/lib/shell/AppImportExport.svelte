@@ -15,6 +15,9 @@
   import Dialog from '$lib/design/Dialog.svelte';
   import Button from '$lib/design/Button.svelte';
   import PobText from '$lib/design/PobText.svelte';
+  import CharacterImport from '$lib/design/CharacterImport.svelte';
+  import { NEGATIVE, POSITIVE, REALM_LIST, type AccountCharacter, type ImportStage } from '$lib/design/account';
+  import { downloadCharacter, fetchCharacterList, lastAccount, lastRealm, loadHistory, removeAccount, saveAccount } from './account_import';
 
   const exported = resource(
     () => [identityOf($outputs), $buildRevision] as const,
@@ -97,19 +100,19 @@
     imported = null;
     // ImportTab.lua:701-705
     if (jsonVerdict(text)?.valid) {
-      syncWrap
-        ?.ImportItemsAndSkills(text)
-        .then((r) => {
-          if (r.ok) imported = r.text;
-          else importError = r.text;
-        })
-        .catch(failed);
+      void (async () => {
+        const items = await syncWrap?.ImportItemsAndSkills(text);
+        if (!items?.ok) return void (importError = items?.text ?? null);
+        const tree = await syncWrap?.ImportPassiveTreeAndJewels(text);
+        if (!tree?.ok) return void (importError = tree?.text ?? null);
+        imported = `${items.text} ${tree.text}`;
+      })().catch(failed);
       return;
     }
     const link = downloadUrl(text);
     if (link) {
       fetching = true;
-      downloadBuild(link.site, link.url)
+      downloadBuild(text)
         .then((raw) => importCode(raw, how, failed))
         .catch(failed)
         .finally(() => (fetching = false));
@@ -117,7 +120,92 @@
     }
     importCode(text, how, failed);
   };
+
+  // ImportTab.lua:321-472, 813-1020
+  let realm = $state(lastRealm());
+  let account = $state(lastAccount());
+  let accountName = '';
+  let history = $state(loadHistory());
+  let charStatus = $state('Idle');
+  let stage = $state<ImportStage>('GETACCOUNTNAME');
+  let characters = $state<AccountCharacter[]>([]);
+  let lastLeague = $state<string>();
+  let confirmTree = $state<() => void>();
+  let confirmTreeOpen = $state(false);
+  $effect(() => {
+    if (confirmTree) confirmTreeOpen = true;
+  });
+
+  const onstart = async () => {
+    stage = 'DOWNLOADCHARLIST';
+    charStatus = 'Retrieving character list...';
+    const r = await fetchCharacterList(realm, account);
+    charStatus = r.status;
+    if (!r.ok) {
+      stage = 'GETACCOUNTNAME';
+      return;
+    }
+    account = accountName = r.accountName;
+    characters = r.characters;
+    stage = 'SELECTCHAR';
+    history = saveAccount(history, account, realm);
+  };
+
+  const importCharacter = async (
+    c: AccountCharacter,
+    endpoint: 'passives' | 'items',
+    apply: (body: string) => Promise<{ ok: boolean; text: string } | undefined>
+  ) => {
+    stage = 'IMPORTING';
+    charStatus = endpoint === 'passives' ? 'Retrieving character passive tree...' : 'Retrieving character items...';
+    const d = await downloadCharacter(endpoint, realm, accountName, c);
+    if (!d.ok) {
+      stage = 'SELECTCHAR';
+      charStatus = d.status;
+      return;
+    }
+    lastLeague ??= c.league;
+    const r = await apply(d.body);
+    stage = 'SELECTCHAR';
+    charStatus = r?.ok ? `${POSITIVE}${r.text}` : `${NEGATIVE}${r?.text ?? 'no build'}`;
+  };
+
+  const onimporttree = (c: AccountCharacter, deleteJewels: boolean) => {
+    const run = () =>
+      void importCharacter(c, 'passives', async (body) => syncWrap?.ImportAccountPassiveTree(JSON.stringify(c), body, deleteJewels)).catch(logError);
+    // ImportTab.lua:433-440
+    if (($outputs?.PointsUsed?.[0] ?? 0) > 0) confirmTree = run;
+    else run();
+  };
+  const onimportitems = (c: AccountCharacter, o: { clearItems: boolean; clearSkills: boolean; ignoreWeaponSwap: boolean }) =>
+    void importCharacter(c, 'items', async (body) =>
+      syncWrap?.ImportAccountItems(JSON.stringify(c), body, o.clearItems, o.clearSkills, o.ignoreWeaponSwap)
+    ).catch(logError);
 </script>
+
+{#if confirmTree}<Dialog
+    bind:open={confirmTreeOpen}
+    title="Character Import"
+    onclose={() => {
+      confirmTree = undefined;
+    }}>
+    <p class="m-0 text-13">Importing the passive tree will overwrite your current tree.</p>
+    {#snippet actions()}
+      <Button
+        variant="primary"
+        onclick={() => {
+          const run = confirmTree;
+          confirmTreeOpen = false;
+          confirmTree = undefined;
+          run?.();
+        }}>Import</Button>
+      <Button
+        onclick={() => {
+          confirmTreeOpen = false;
+          confirmTree = undefined;
+        }}>Cancel</Button>
+    {/snippet}
+  </Dialog>{/if}
 
 {#if confirmImport}<Dialog
     bind:open={confirmOpen}
@@ -157,4 +245,24 @@
   {onexportparty}
   {oncopy}
   {onimport}
-  focusCode={!!page.state.focusImport} />
+  focusCode={!!page.state.focusImport}>
+  {#snippet characterImport()}
+    <CharacterImport
+      realms={REALM_LIST}
+      bind:realm
+      bind:account
+      {history}
+      status={charStatus}
+      {stage}
+      {characters}
+      {lastLeague}
+      onstart={() => void onstart().catch(logError)}
+      onremoveaccount={(a: string) => (history = removeAccount(history, a))}
+      {onimporttree}
+      {onimportitems}
+      onclose={() => {
+        stage = 'GETACCOUNTNAME';
+        charStatus = 'Idle';
+      }} />
+  {/snippet}
+</ImportExportPage>

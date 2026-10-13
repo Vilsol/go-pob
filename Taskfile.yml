@@ -912,3 +912,78 @@ tasks:
     desc: "Pack testdata/corpus-<v> and oracle-<v> into release archives in OUT, refresh scripts/testdata.json, print the gh release command"
     cmds:
       - '{{.NICE}} go run ./scripts/testdatarelease pack{{if .OUT}} -out {{.OUT}}{{end}}{{if .DATE}} -date {{.DATE}}{{end}}'
+
+  pages-dev:
+    desc: "Serve frontend/build with its Pages Functions (/api/*) as Cloudflare Pages does (build first: npx vite build in frontend/; PORT=8788)"
+    dir: ./frontend/
+    env:
+      SSL_CERT_FILE: '{{.SSL_CERT_FILE | default "/etc/ssl/certs/ca-certificates.crt"}}'
+    cmds:
+      - '{{.NICE}} wrangler pages dev ./build --ip 127.0.0.1 --port {{.PORT | default "8788"}} --compatibility-date=2026-09-26'
+
+  import-live:
+    desc: "Live import-proxy check against a running `task pages-dev` (never in CI; BASE=http://127.0.0.1:8788)"
+    dir: ./frontend/
+    cmds:
+      - 'IMPORT_LIVE=1 IMPORT_BASE={{.BASE | default "http://127.0.0.1:8788"}} {{.NICE}} npx vitest run import_proxy/live'
+
+  fma-census:
+    desc: "Every multiply-add the compiler fuses in the calculation packages (arm64, amd64 v3); fails on any site not on fmaAllow in scripts/gopob/fmacensus.go"
+    cmds:
+      - '{{.GOPOB}} fma-census'
+
+  config-census:
+    desc: "Every pin Config option joined with our handler maps (handled / dead / absent), the Go code naming it, and its corpus population — OUT=<dir>"
+    vars:
+      POB:
+        sh: 'realpath "{{.POB_DIR | default .POB_DEFAULT}}"'
+      OUT: '{{.OUT | default "/tmp/config-census"}}'
+      HERE:
+        sh: pwd
+    cmds:
+      - mkdir -p {{.OUT}}
+      - '{{.NICE}} mise x --cd {{.POB}}/src -- luajit {{.HERE}}/oracle/config_flip.lua options {{.OUT}}/options.json'
+      - '{{.NICE}} env CORPUS=true OPERATOR=true CONFIG_OPTIONS={{.OUT}}/options.json CONFIG_CENSUS_OUT={{.OUT}} go test ./calculator/ -run "^TestConfigOptionCensus$" -count=1 -v -timeout 60m'
+
+  config-flip:
+    desc: "Config flip differential: every pin option x value set on a corpus build PoB shows it on, run through PoB and us, classified AGREE-MOVES / DISAGREE / INERT-BOTH / OURS-ONLY — OUT=<dir> [OPTIONS=a,b] [SHARDS=n] [STRIDE=n]"
+    vars:
+      POB:
+        sh: 'realpath "{{.POB_DIR | default .POB_DEFAULT}}"'
+      OUT: '{{.OUT | default "/tmp/config-flip"}}'
+      HERE:
+        sh: pwd
+      MAIN:
+        sh: dirname "$(git rev-parse --path-format=absolute --git-common-dir)"
+    cmds:
+      - mkdir -p {{.OUT}}
+      - '{{.GOPOB}} require-det-luajit config-flip'
+      - '{{.NICE}} mise x --cd {{.POB}}/src -- luajit {{.HERE}}/oracle/config_flip.lua options {{.OUT}}/options.json'
+      - >-
+        flock {{.OUT}}/.lock {{.NICE}} env CORPUS=true OPERATOR=true
+        CONFIG_OPTIONS={{.OUT}}/options.json CONFIG_FLIP_OUT={{.OUT}}
+        POB_SRC={{.POB}}/src LUAJIT={{.MAIN}}/.luajit-det/bin/luajit FLIP_SCRIPT={{.HERE}}/oracle/config_flip.lua
+        OPTIONS={{.OPTIONS}} SHARDS={{.SHARDS}} STRIDE={{.STRIDE}} FLIP_FIXTURE={{.FIXTURE}}
+        go test ./calculator/ -run "^TestConfigFlip$" -count=1 -v -timeout 180m
+
+  config-visibility:
+    desc: "On a config-flip run's carrier pool, the options PoB's Config tab shows vs the ones the frontend's isRelevant shows from our ConfigRelevance — OUT=<the config-flip dir>"
+    vars:
+      OUT: '{{.OUT | default "/tmp/config-flip"}}'
+    cmds:
+      - '{{.NICE}} env CORPUS=true OPERATOR=true CONFIG_OPTIONS={{.OUT}}/options.json CONFIG_FLIP_OUT={{.OUT}} go test ./calculator/ -run "^TestConfigVisibility$" -count=1 -v -timeout 60m'
+
+  config-placeholders:
+    desc: "The Config page's placeholders (ConfigPlaceholders) against PoB's ConfigTab placeholder table on every EVERY-th corpus build (default 40) — OUT=<dir>"
+    vars:
+      POB:
+        sh: 'realpath "{{.POB_DIR | default .POB_DEFAULT}}"'
+      OUT: '{{.OUT | default "/tmp/config-placeholders"}}'
+      EVERY: '{{.EVERY | default "40"}}'
+      HERE:
+        sh: pwd
+    cmds:
+      - mkdir -p {{.OUT}}
+      - 'ls {{.HERE}}/testdata/corpus-3.29/*.xml | awk "NR % {{.EVERY}} == 0" > {{.OUT}}/list.txt'
+      - '{{.NICE}} mise x --cd {{.POB}}/src -- luajit {{.HERE}}/oracle/config_placeholders.lua {{.OUT}}/list.txt {{.OUT}}/placeholders.json'
+      - '{{.NICE}} env CORPUS=true OPERATOR=true CONFIG_PLACEHOLDERS={{.OUT}}/placeholders.json go test ./calculator/ -run "^TestConfigPlaceholdersAgainstPoB$" -count=1 -v'

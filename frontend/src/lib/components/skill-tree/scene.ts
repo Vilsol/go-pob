@@ -21,10 +21,10 @@ export const Variant = { Plain: 0, Crop: 1, CropDim: 2 } as const;
 type Variant = (typeof Variant)[keyof typeof Variant];
 
 // PassiveTreeView.lua:693-699
-export const Style = { Base: 0, Hover: 1, Active: 2, ActiveCompared: 3, ActiveOwn: 4, SplitBase: 5, SplitHover: 6, SplitActive: 7 } as const;
+export const Style = { Base: 0, Hover: 1, Active: 2, ActiveCompared: 3, ActiveOwn: 4, SplitBase: 5, SplitHover: 6, SplitActive: 7, Depends: 8 } as const;
 
-export const STYLE_COLOURS = ['#524518', '#c89c01', '#e9deb6', '#00de00', '#e90000', '#523a04', '#c88300', '#e9ba1e'];
-export const STYLE_WIDTHS = [6, 6, 12, 12, 12, 6, 6, 12];
+export const STYLE_COLOURS = ['#524518', '#c89c01', '#e9deb6', '#00de00', '#e90000', '#523a04', '#c88300', '#e9ba1e', '#e90000'];
+export const STYLE_WIDTHS = [6, 6, 12, 12, 12, 6, 6, 12, 12];
 
 export const SPRITE_FLOATS = 13;
 
@@ -67,6 +67,8 @@ export type SceneState = {
   heatMap?: boolean;
   /* PassiveTreeView.lua:847-877 */
   tattoos?: Map<number, { icon: string; effect: string }>;
+  /* PassiveTreeView.lua:372-375 */
+  depends?: Set<number>;
 };
 
 export type Scene = {
@@ -322,6 +324,7 @@ export const fillScene = (scene: Scene, state: SceneState, sheetReady: (i: numbe
       else if (!baseActive && style === Style.Active) style = Style.ActiveOwn;
     }
     if (style <= Style.Active && state.split?.has(c.a) && state.split.has(c.b)) style += Style.SplitBase;
+    if (state.depends?.has(c.a) && state.depends.has(c.b)) style = Style.Depends;
     const o = i * STROKE_FLOATS;
     st[o] = c.geom[0];
     st[o + 1] = c.geom[1];
@@ -342,6 +345,8 @@ export const fillScene = (scene: Scene, state: SceneState, sheetReady: (i: numbe
     // PassiveTreeView.lua:831-833
     const framed = lit || !!state.heatMap;
     const tint = packTint(state.tint?.get(id));
+    // PassiveTreeView.lua:960-963, 972-976
+    const frameTint = state.depends?.has(id) && state.hovered !== id ? packTint([1, 0, 0]) : tint;
     const tattoo = state.tattoos?.get(id);
     const icon = () => {
       // PassiveTreeView.lua:877
@@ -351,11 +356,11 @@ export const fillScene = (scene: Scene, state: SceneState, sheetReady: (i: numbe
       const src = active ? inverseSpritesActive : inverseSpritesInactive;
       put(sp, src[node.icon!], node.icon!, at.x, at.y, Variant.Plain, false, tint);
     };
-    const frame = (name: string) => put(sp, other(name), name, at.x, at.y, Variant.Plain, false, tint);
+    const frame = (name: string) => put(sp, other(name), name, at.x, at.y, Variant.Plain, false, frameTint);
     // src/Classes/PassiveTreeView.lua:821-828
     const ascFrame = (name: string) => {
       const bloodline = bloodlineSprites[node.ascendancyName!]?.[name];
-      put(sp, bloodline ?? other(name), name, at.x, at.y, Variant.Plain, false, tint);
+      put(sp, bloodline ?? other(name), name, at.x, at.y, Variant.Plain, false, frameTint);
     };
     if (node.isAscendancyStart) {
       ascFrame('AscendancyMiddle');

@@ -739,7 +739,7 @@ var (
 
 func luaRound(val float64, dec int) float64 {
 	f := math.Pow(10, float64(dec))
-	return math.Floor(val*f+0.5) / f
+	return math.Floor(float64(val*f)+0.5) / f
 }
 
 func luaValuePattern(value string) string {
@@ -1469,7 +1469,7 @@ func (i *Item) buildModListForSlotNum(baseList []mod.Mod, slotNum int) []mod.Mod
 			math.Floor(quality/8*calcLocal(&modList, "AlternateQualityLocalAttackSpeedPer8Quality", mod.TypeIncrease, 0))
 		weaponData["AttackRate"] = utils.RoundTo(wb.AttackRateBase*(1+weaponData["AttackSpeedInc"]/100), 2)
 		weaponData["rangeBonus"] = calcLocal(&modList, "WeaponRange", mod.TypeBase, 0) +
-			10*calcLocal(&modList, "WeaponRangeMetre", mod.TypeBase, 0) +
+			float64(10*calcLocal(&modList, "WeaponRangeMetre", mod.TypeBase, 0)) +
 			math.Floor(quality/10*calcLocal(&modList, "AlternateQualityLocalWeaponRangePer10Quality", mod.TypeBase, 0))
 		weaponData["range"] = float64(wb.Range) + weaponData["rangeBonus"]
 
@@ -1496,7 +1496,7 @@ func (i *Item) buildModListForSlotNum(baseList []mod.Mod, slotNum int) []mod.Mod
 			if minVal > 0 && maxVal > 0 {
 				weaponData[dmgType+"Min"] = minVal
 				weaponData[dmgType+"Max"] = maxVal
-				dps := (minVal + maxVal) / 2 * weaponData["AttackRate"]
+				dps := float64((minVal + maxVal) / 2 * weaponData["AttackRate"])
 				weaponData[dmgType+"DPS"] = dps
 				if dmgType != "Physical" && dmgType != "Chaos" {
 					weaponData["ElementalDPS"] += dps
@@ -1583,10 +1583,10 @@ func (i *Item) buildModListForSlotNum(baseList []mod.Mod, slotNum int) []mod.Mod
 			}
 		}
 
-		armourData["Armour"] = utils.RoundTo((armourBase+armourEvasionBase+armourEnergyShieldBase+armourVariance*percentileOr(armourData, "ArmourBasePercentile"))*(1+(armourInc+armourEvasionInc+armourEnergyShieldInc+defencesInc)/100)*(1+qualityScalar/100), 0)
-		armourData["Evasion"] = utils.RoundTo((evasionBase+armourEvasionBase+evasionEnergyShieldBase+evasionVariance*percentileOr(armourData, "EvasionBasePercentile"))*(1+(evasionInc+armourEvasionInc+evasionEnergyShieldInc+defencesInc)/100)*(1+qualityScalar/100), 0)
-		armourData["EnergyShield"] = utils.RoundTo((energyShieldBase+evasionEnergyShieldBase+armourEnergyShieldBase+energyShieldVariance*percentileOr(armourData, "EnergyShieldBasePercentile"))*(1+(energyShieldInc+armourEnergyShieldInc+evasionEnergyShieldInc+defencesInc)/100)*(1+qualityScalar/100), 0)
-		armourData["Ward"] = utils.RoundTo((wardBase+wardVariance*percentileOr(armourData, "WardBasePercentile"))*(1+(wardInc+defencesInc)/100)*(1+qualityScalar/100), 0)
+		armourData["Armour"] = utils.RoundTo((armourBase+armourEvasionBase+armourEnergyShieldBase+float64(armourVariance*percentileOr(armourData, "ArmourBasePercentile")))*(1+(armourInc+armourEvasionInc+armourEnergyShieldInc+defencesInc)/100)*(1+qualityScalar/100), 0)
+		armourData["Evasion"] = utils.RoundTo((evasionBase+armourEvasionBase+evasionEnergyShieldBase+float64(evasionVariance*percentileOr(armourData, "EvasionBasePercentile")))*(1+(evasionInc+armourEvasionInc+evasionEnergyShieldInc+defencesInc)/100)*(1+qualityScalar/100), 0)
+		armourData["EnergyShield"] = utils.RoundTo((energyShieldBase+evasionEnergyShieldBase+armourEnergyShieldBase+float64(energyShieldVariance*percentileOr(armourData, "EnergyShieldBasePercentile")))*(1+(energyShieldInc+armourEnergyShieldInc+evasionEnergyShieldInc+defencesInc)/100)*(1+qualityScalar/100), 0)
+		armourData["Ward"] = utils.RoundTo((wardBase+float64(wardVariance*percentileOr(armourData, "WardBasePercentile")))*(1+(wardInc+defencesInc)/100)*(1+qualityScalar/100), 0)
 
 		//pob:block:src/Classes/Item.lua:2345-2356
 		for _, k := range []string{"Armour", "Evasion", "EnergyShield", "Ward"} {

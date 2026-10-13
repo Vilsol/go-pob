@@ -55,6 +55,7 @@ export type Setting = {
   unit?: string;
   opts?: string[];
   danger?: boolean;
+  onRelease?: boolean;
   confirm?: string;
 };
 export type SettingsSection = { id: string; label: string; rows: Setting[] };

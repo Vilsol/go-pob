@@ -2287,6 +2287,12 @@ export declare namespace exposition {
     readonly Descriptions?: Array<string>;
     readonly Legacy: boolean;
   }
+  interface TattooNodeTip {
+    readonly NodeID: number;
+    readonly Name: string;
+    readonly Stats?: Array<string>;
+    readonly Reminder?: Array<string>;
+  }
   interface TimelessSearch {
     AddItem(build: pob.PathOfBuilding | undefined, row: number, devotion1: number, devotion2: number, socketLabel: string): number;
     Count(): number;
@@ -2386,7 +2392,10 @@ export declare namespace exposition {
   function GetTreeVersionOptions(): (Array<exposition.TreeVersionOption> | undefined);
   function GoldRespecPrice(build: pob.PathOfBuilding | undefined): number;
   function ImplicitText(text: string, sourceID: string, modID: string, custom: string): Promise<[string, boolean]>;
+  function ImportAccountItems(build: pob.PathOfBuilding | undefined, characterJSON: string, itemsJSON: string, clearItems: boolean, clearSkills: boolean, ignoreWeaponSwap: boolean): Promise<Result<string>>;
+  function ImportAccountPassiveTree(build: pob.PathOfBuilding | undefined, characterJSON: string, passivesJSON: string, deleteJewels: boolean): Promise<Result<string>>;
   function ImportItemsAndSkills(build: pob.PathOfBuilding | undefined, characterJSON: string, clearItems: boolean, clearSkills: boolean, ignoreWeaponSwap: boolean): Promise<Result<string>>;
+  function ImportPassiveTreeAndJewels(build: pob.PathOfBuilding | undefined, characterJSON: string, deleteJewels: boolean): Promise<Result<string>>;
   function ImportSharedItemSet(build: pob.PathOfBuilding | undefined, index: number): Promise<number>;
   function ImportTreeLink(build: pob.PathOfBuilding | undefined, title: string, link: string): Promise<string>;
   function ItemAffixControls(text: string): Promise<[calculator.AffixControls, boolean]>;
@@ -2470,6 +2479,7 @@ export declare namespace exposition {
   function TreeSpecCompare(build: pob.PathOfBuilding | undefined, specID: number): calculator.TreeCompareSpec;
   function TreeSpecRespecCost(build: pob.PathOfBuilding | undefined, index: number): calculator.TreeSpecRespec;
   function TreeTattooArt(build: pob.PathOfBuilding | undefined): (Array<exposition.TattooArt> | undefined);
+  function TreeTattooNodes(build: pob.PathOfBuilding | undefined): (Array<exposition.TattooNodeTip> | undefined);
 }
 export declare namespace fwd {
   interface Reader {

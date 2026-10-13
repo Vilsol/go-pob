@@ -619,9 +619,9 @@ func (m *MiscCalculator) timelessSearchSocket(q TimelessSearchQuery, socketID in
 			r = &timelessResultNode{}
 			resultNodes[seed][legionID] = r
 		}
-		r.totalWeight += weight
+		r.totalWeight += float64(weight)
 		r.targetNodeNames = append(r.targetNodeNames, timelessName(nodeOf(targetNode).Name))
-		seedWeights[seed] += weight
+		seedWeights[seed] += float64(weight)
 	}
 
 	for curSeed := timelessJewelSeedMin[jewelTypeID] * seedMultiplier; curSeed <= timelessJewelSeedMax[jewelTypeID]*seedMultiplier; curSeed += seedMultiplier {
@@ -669,9 +669,9 @@ func (m *MiscCalculator) timelessSearchSocket(q TimelessSearchQuery, socketID in
 				if len(info.AlternatePassiveAdditionInformations) == 0 {
 					if d := desiredNodes[curNodeID]; d != nil && curNode != nil {
 						r1, _ := timelessRoll(*curNode, 0, info.StatRolls)
-						weight := d.nodeWeight * r1
+						weight := float64(d.nodeWeight * r1)
 						if r2, ok := timelessRoll(*curNode, 1, info.StatRolls); ok {
-							weight += d.nodeWeight2 * r2
+							weight += float64(d.nodeWeight2 * r2)
 						}
 						add(curSeed, curNodeID, targetNode, weight)
 					}
@@ -701,11 +701,11 @@ func (m *MiscCalculator) timelessSearchSocket(q TimelessSearchQuery, socketID in
 			}
 			var addedWeight float64
 			if jewelTypeID == 4 {
-				addedWeight = desiredNodes["totalStat"].nodeWeight * float64(5*otherSmalls+10*attributeSmalls)
-				addedWeight += r.totalWeight * 4
+				addedWeight = float64(desiredNodes["totalStat"].nodeWeight * float64(5*otherSmalls+10*attributeSmalls))
+				addedWeight += float64(r.totalWeight * 4)
 			} else {
-				addedWeight = desiredNodes["totalStat"].nodeWeight * float64(4*otherSmalls+2*attributeSmalls)
-				addedWeight += r.totalWeight * 19
+				addedWeight = float64(desiredNodes["totalStat"].nodeWeight * float64(4*otherSmalls+2*attributeSmalls))
+				addedWeight += float64(r.totalWeight * 19)
 			}
 			r.totalWeight += addedWeight
 			seedWeights[curSeed] += addedWeight

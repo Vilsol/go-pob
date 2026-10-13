@@ -42,7 +42,7 @@ func (t *Tree) OrbitPosition(group int64, orbit, oidx int) (float64, float64, bo
 		return 0, 0, false
 	}
 	radius := float64(t.Constants.OrbitRadii[orbit])
-	return g.X + math.Sin(angles[oidx])*radius, g.Y - math.Cos(angles[oidx])*radius, true
+	return g.X + float64(math.Sin(angles[oidx])*radius), g.Y - float64(math.Cos(angles[oidx])*radius), true
 }
 
 type nodePos struct {
@@ -125,8 +125,8 @@ func (t *Tree) buildGeometry() *treeGeometry {
 		angle := angles[oidx]
 		radius := float64(orbitRadii[orbit])
 		positions[id] = nodePos{
-			x:     group.X + math.Sin(angle)*radius,
-			y:     group.Y - math.Cos(angle)*radius,
+			x:     group.X + float64(math.Sin(angle)*radius),
+			y:     group.Y - float64(math.Cos(angle)*radius),
 			valid: true,
 		}
 	}
@@ -206,7 +206,7 @@ func (t *Tree) buildJewelRadiusNodes(positions map[int64]nodePos) map[int64][][]
 				continue
 			}
 			vx, vy := c.x-sp.x, c.y-sp.y
-			d2 := vx*vx + vy*vy
+			d2 := float64(vx*vx) + float64(vy*vy)
 			for i := range radii {
 				if radii[i].inner2 <= d2 && d2 <= radii[i].outer2 {
 					perRadius[i] = append(perRadius[i], c.id)

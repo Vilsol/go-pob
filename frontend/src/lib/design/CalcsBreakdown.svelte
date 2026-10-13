@@ -5,6 +5,7 @@
   import type { CalcBreakdown, ItemTip } from './fixtures';
   import FloatingItemTip from './FloatingItemTip.svelte';
   import RadiusVisual from '$lib/components/radius/RadiusVisual.svelte';
+  import { breakdownStep } from './breakdown_lines';
   import type { Snippet } from 'svelte';
 
   // CalcBreakdownControl.lua:174-209
@@ -72,57 +73,138 @@
     { key: 'SourceName', label: 'Source Name' }
   ];
   const colsOf = (rows: ModRow[]) => COLS.filter((c) => c.key !== 'Name' || rows.some((r) => r.Name));
+  const heading = $derived.by(() => {
+    const at = title?.indexOf(' · ') ?? -1;
+    return at < 0 ? { row: title ?? 'Breakdown' } : { section: title!.slice(0, at), row: title!.slice(at + 3) };
+  });
+
+  const WIDTH_MIN = 260;
+  const WIDTH_MAX = 960;
+  const WIDTH_KEY = 'go-pob:calcs-breakdown-width';
+  const storedWidth = () => {
+    try {
+      return Number(localStorage.getItem(WIDTH_KEY)) || 320;
+    } catch {
+      return 320;
+    }
+  };
+  let width = $state(Math.min(WIDTH_MAX, Math.max(WIDTH_MIN, storedWidth())));
+  let resizing: { x: number; w: number } | undefined;
+  const setWidth = (w: number) => {
+    width = Math.round(Math.min(WIDTH_MAX, Math.max(WIDTH_MIN, w)));
+    try {
+      localStorage.setItem(WIDTH_KEY, String(width));
+    } catch {
+      // empty
+    }
+  };
 </script>
 
-<aside {id} aria-label="Breakdown" class="flex w-80 shrink-0 flex-col border-l border-line bg-surface-1 max-[1500px]:w-64">
+<!-- eslint-disable-next-line svelte/no-unused-svelte-ignore -->
+<!-- svelte-ignore a11y_no_noninteractive_tabindex, a11y_no_noninteractive_element_interactions -->
+<div
+  role="separator"
+  aria-label="Resize breakdown"
+  aria-orientation="vertical"
+  aria-valuenow={width}
+  aria-valuemin={WIDTH_MIN}
+  aria-valuemax={WIDTH_MAX}
+  tabindex="0"
+  class="relative z-5 -mr-1.5 w-1.5 shrink-0 cursor-col-resize hover:bg-surface-3 focus-visible:bg-surface-3"
+  onkeydown={(e: KeyboardEvent) => {
+    const d = e.key === 'ArrowLeft' ? 16 : e.key === 'ArrowRight' ? -16 : 0;
+    if (!d) return;
+    e.preventDefault();
+    setWidth(width + d);
+  }}
+  onpointerdown={(e: PointerEvent) => {
+    if (e.button > 0) return;
+    resizing = { x: e.clientX, w: width };
+    (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+  }}
+  onpointermove={(e: PointerEvent) => {
+    if (resizing) setWidth(resizing.w + resizing.x - e.clientX);
+  }}
+  onpointerup={() => (resizing = undefined)}
+  onpointercancel={() => (resizing = undefined)}>
+</div>
+
+<aside {id} aria-label="Breakdown" class="box-border flex max-w-[60vw] shrink-0 flex-col border-l border-line bg-surface-1" style:width="{width}px">
   <div class="flex min-h-11 items-center gap-2 border-b border-line px-3 py-2">
-    <h2 class="min-w-0 grow truncate text-13 font-semibold">{title ?? 'Breakdown'}</h2>
+    <h2 class="m-0 flex min-w-0 grow flex-col text-13 leading-tight font-semibold" aria-label={title ?? 'Breakdown'}>
+      {#if heading.section}<span class="truncate text-10 font-semibold tracking-caps-tight text-text-3 uppercase">{heading.section}</span>
+        <span class="sr-only">·</span>{/if}
+      <span class="break-words">{heading.row}</span>
+    </h2>
     {#if title}<span class={['rounded-lg px-1.5 text-10 font-semibold', pinned ? 'bg-surface-3 text-accent' : 'bg-surface-2 text-text-2']}
         >{pinned ? 'PINNED' : 'PREVIEW'}</span
       >{/if}
     {#if pinned || pinnedTitle}<Button size="2xs" onclick={onunpin}>Unpin</Button>{/if}
   </div>
   {#if pinnedTitle && !pinned}<div class="border-b border-line px-3 py-1 text-11 text-text-3">Pinned: {pinnedTitle} · leave the row to go back</div>{/if}
-  <div class="scroll flex grow flex-col gap-2.5 px-3 py-2.5 text-11">
+  <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+  <div class="scroll flex grow flex-col gap-3 px-3 py-2.5 text-12" tabindex="0">
     {#if !title}
       <p class="m-0 text-12 text-text-3">Hover a row (or focus it) to preview its breakdown here; click it to pin the breakdown while you scan.</p>
     {:else if !parts.length}
       <p class="m-0 text-12 text-text-3">No breakdown for this row.</p>
     {/if}
     {#each parts as p, i (i)}
-      <div class="flex flex-col gap-1">
-        <div class="kv items-baseline border-b border-line-faint pb-0.5">
+      <div class="flex flex-col gap-2 rounded border border-line-faint bg-surface-2 px-2.5 py-2" data-part>
+        <div class="flex items-baseline justify-between gap-2">
           <span class="text-10 font-semibold tracking-caps-tight text-text-2 uppercase"
             >{#if p.head}<PobText text={p.head.replace(/:$/, '')} />{:else}Value{/if}</span>
-          <span class="font-mono text-12"><PobText text={p.text} /></span>
+          <span class="font-mono text-15 font-semibold" data-part-value><PobText text={p.text} /></span>
         </div>
         {#if p.bd}
-          {#each p.bd.lines as l, j (j)}<div class="font-mono leading-[1.45] text-text-2"><PobText text={l} /></div>{/each}
+          {#if p.bd.lines.length}
+            <div role="group" class="grid grid-cols-[1.1em_max-content_minmax(0,1fr)] items-baseline gap-x-2 gap-y-0.5" aria-label="Calculation">
+              {#each p.bd.lines as l, j (j)}
+                {@const st = breakdownStep(l)}
+                {#if 'prose' in st}
+                  <div class="col-span-3 text-11 leading-snug text-text-2"><PobText text={st.prose} /></div>
+                {:else}
+                  <div class={['contents', st.op === '=' && '[&>*]:border-t [&>*]:border-line [&>*]:pt-0.5']} data-step>
+                    <span class="text-center font-mono text-text-3">{st.op ?? ''}</span>
+                    <span class={['text-right font-mono', st.op === '=' ? 'font-semibold text-text' : 'text-text']}><PobText text={st.value} /></span>
+                    <span class="min-w-0 text-11 text-text-3"><PobText text={st.note ?? ''} /></span>
+                  </div>
+                {/if}
+              {/each}
+            </div>
+          {/if}
           {#if p.bd.radius}<RadiusVisual radius={p.bd.radius} />{/if}
           {#if p.bd.columns && p.bd.rows}
-            <div role="table" aria-label="Sources" class="flex flex-col" style:--n={p.bd.columns.length}>
-              <div role="row" class="grid grid-cols-[repeat(var(--n),minmax(0,1fr))] gap-x-2 border-b border-line py-0.5 text-10 text-text-3">
-                {#each p.bd.columns as c (c.key)}<span role="columnheader" class="truncate" title={c.label}>{c.label}</span>{/each}
+            <div
+              role="table"
+              aria-label="Sources"
+              class="scroll grid grid-cols-[repeat(var(--n),minmax(max-content,auto))] gap-x-3 text-11"
+              style:--n={p.bd.columns.length}>
+              <div role="row" class="col-span-full grid grid-cols-subgrid border-b border-line py-0.5 text-10 text-text-3">
+                {#each p.bd.columns as c (c.key)}<span role="columnheader" title={c.label}>{c.label}</span>{/each}
               </div>
               {#each p.bd.rows as r, j (j)}
-                <div role="row" class="grid grid-cols-[repeat(var(--n),minmax(0,1fr))] gap-x-2 border-b border-surface-2 py-0.5">
-                  {#each p.bd.columns as c, k (c.key)}<span role="cell" class={['truncate', k === 0 && 'font-mono']} title={pobPlain(r[c.key])}
+                <div role="row" class="col-span-full grid grid-cols-subgrid py-0.5 even:bg-bar">
+                  {#each p.bd.columns as c, k (c.key)}<span role="cell" class={[k === 0 && 'font-mono']} title={pobPlain(r[c.key])}
                       ><PobText text={r[c.key]} /></span
                     >{/each}
                 </div>
               {/each}
-              {#if p.bd.more}<span class="pt-0.5 text-text-3">+ {p.bd.more} more sources</span>{/if}
+              {#if p.bd.more}<span class="col-span-full pt-0.5 text-text-3">+ {p.bd.more} more sources</span>{/if}
             </div>
           {/if}
           {#each p.bd.tables ?? [] as t (t.label)}
-            <div role="table" aria-label={t.label} class="flex flex-col overflow-x-auto" style:--n={t.columns.length}>
-              <div role="row" class="grid grid-cols-[repeat(var(--n),minmax(3.5rem,1fr))] gap-x-2 border-b border-line py-0.5 text-10 text-text-3">
-                {#each t.columns as c (c.key)}<span role="columnheader" class="truncate" title={c.label}>{c.label}</span>{/each}
+            <div
+              role="table"
+              aria-label={t.label}
+              class="scroll grid grid-cols-[repeat(var(--n),minmax(max-content,auto))] gap-x-3 text-11"
+              style:--n={t.columns.length}>
+              <div role="row" class="col-span-full grid grid-cols-subgrid border-b border-line py-0.5 text-10 text-text-3">
+                {#each t.columns as c (c.key)}<span role="columnheader" title={c.label}>{c.label}</span>{/each}
               </div>
               {#each t.rows as r, j (j)}
-                <div role="row" class="grid grid-cols-[repeat(var(--n),minmax(3.5rem,1fr))] gap-x-2 border-b border-surface-2 py-0.5">
-                  {#each t.columns as c (c.key)}<span role="cell" class="truncate font-mono" title={pobPlain(r[c.key])}><PobText text={r[c.key]} /></span
-                    >{/each}
+                <div role="row" class="col-span-full grid grid-cols-subgrid py-0.5 even:bg-bar">
+                  {#each t.columns as c (c.key)}<span role="cell" class="font-mono" title={pobPlain(r[c.key])}><PobText text={r[c.key]} /></span>{/each}
                 </div>
               {/each}
             </div>
@@ -132,29 +214,41 @@
           {#each p.modTables as s, j (j)}
             {@const t = { rows: s.rows, cols: colsOf(s.rows) }}
             {#if t.rows.length}
-              <div role="table" aria-label={s.label ?? 'Modifiers'} class="flex flex-col overflow-x-auto" style:--n={t.cols.length}>
-                {#if s.label}<div class="text-10 font-semibold text-text-2">{s.label}:</div>{/if}
-                <div role="row" class="grid grid-cols-[repeat(var(--n),minmax(3.5rem,1fr))] gap-x-2 border-b border-line py-0.5 text-10 text-text-3">
-                  {#each t.cols as c (c.key)}<span role="columnheader" class="truncate" title={c.label}>{c.label}</span>{/each}
+              <div role="table" aria-label={s.label ?? 'Modifiers'} class="flex flex-col">
+                {#if s.label}<div class="pb-0.5 text-10 font-semibold tracking-caps-tight text-text-2 uppercase">{s.label}</div>{/if}
+                <div role="row" class="sr-only">
+                  {#each t.cols as c (c.key)}<span role="columnheader">{c.label}</span>{/each}
                 </div>
                 {#each t.rows as r, k (k)}
-                  <div role="row" class="grid grid-cols-[repeat(var(--n),minmax(3.5rem,1fr))] gap-x-2 border-b border-surface-2 py-0.5">
-                    {#each t.cols as c (c.key)}<!-- svelte-ignore a11y_interactive_supports_focus --><span
-                        onmouseenter={c.key === 'SourceName' ? enterSource(r) : undefined}
-                        onmouseleave={c.key === 'SourceName' ? leaveSource : undefined}
-                        role="cell"
-                        class={['truncate', c.key === 'Value' && 'font-mono']}
-                        title={c.key === 'Source' && r.Totals?.length ? r.Totals.join('\n') : pobPlain(String(r[c.key] ?? ''))}
+                  <div role="row" class="grid grid-cols-[3.5em_minmax(0,1fr)] gap-x-2 border-t border-line-faint py-1 first-of-type:border-t-0">
+                    {#each t.cols.slice(0, 1) as c (c.key)}<span role="cell" class="text-right font-mono text-13 text-text"
                         ><PobText text={String(r[c.key] ?? '')} /></span
                       >{/each}
+                    <div class="flex min-w-0 flex-wrap items-baseline gap-x-1.5 gap-y-0">
+                      {#each t.cols.slice(1) as c (c.key)}<!-- svelte-ignore a11y_interactive_supports_focus --><span
+                          onmouseenter={c.key === 'SourceName' ? enterSource(r) : undefined}
+                          onmouseleave={c.key === 'SourceName' ? leaveSource : undefined}
+                          role="cell"
+                          class={[
+                            'min-w-0 empty:hidden',
+                            c.key === 'SourceName'
+                              ? '-order-1 basis-full text-12 break-words text-text'
+                              : c.key === 'Source'
+                                ? 'rounded-sm bg-surface-3 px-1 text-10 text-text-2'
+                                : 'text-11 text-text-3'
+                          ]}
+                          title={c.key === 'Source' && r.Totals?.length ? r.Totals.join('\n') : pobPlain(String(r[c.key] ?? ''))}
+                          >{#if r[c.key]}<PobText text={String(r[c.key])} />{/if}</span
+                        >{/each}
+                    </div>
                   </div>
                 {/each}
               </div>
             {/if}
           {/each}
         {:else if p.mods}
-          <div class="text-text-3">The modifiers summed into it (per-source list not computed yet):</div>
-          {#each p.mods as m, k (k)}<div class="font-mono break-all text-text-2">{m}</div>{/each}
+          <div class="text-11 text-text-3">The modifiers summed into it (per-source list not computed yet):</div>
+          {#each p.mods as m, k (k)}<div class="font-mono text-11 break-all text-text-2">{m}</div>{/each}
         {/if}
       </div>
     {/each}

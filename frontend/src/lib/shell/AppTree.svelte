@@ -31,6 +31,7 @@
   import TimelessDialog from './TimelessDialog.svelte';
   import { PowerFlashes } from './power_flash';
   import TooltipLines from '$lib/design/TooltipLines.svelte';
+  import PobText from '$lib/design/PobText.svelte';
   import { colorHighlight, edgeSearchHighlight, hexColour } from '$lib/skill_tree/options';
 
   const POWER_SETTLE_MS = 1000;
@@ -377,6 +378,7 @@
   let powerMs = $state<number>();
   let powerProgress = $state(0);
   let powerFocus = $state<number>();
+  let powerHover = $state<number>();
   let powerStarted = $state(false);
   const powerFlashes = new PowerFlashes();
   let powerPartial = $state.raw<PowerRow[]>();
@@ -506,6 +508,15 @@
     syncWrap
       ?.GetTreeTattooArt()
       .then((a) => (tattooArt = new Map((a ?? []).map((x) => [x.nodeId, { icon: x.icon, effect: x.effect }]))))
+      .catch(logError);
+  });
+  // PassiveSpec.lua:1614-1635
+  let tattooTips = $state.raw<Map<number, { name: string; stats: string[]; reminder: string[] }>>(new Map());
+  $effect(() => {
+    void treeTattoos;
+    syncWrap
+      ?.GetTreeTattooNodes()
+      .then((t) => (tattooTips = new Map((t ?? []).map((x) => [x.nodeId, x]))))
       .catch(logError);
   });
   // TreeTab.lua:946-973
@@ -642,7 +653,9 @@
 
   const costs = $derived(allocationCosts(paths));
   const nodes = $derived(
-    base.nodes.map((n): TreeNodeFx => {
+    base.nodes.map((node): TreeNodeFx => {
+      const tattoo = tattooTips.get(node.id);
+      const n = tattoo ? { ...node, name: tattoo.name + ($devMode ? ` (${node.id})` : ''), stats: tattoo.stats } : node;
       if (alloc[n.id]) {
         const lose = dependents?.node === n.id ? dependents.ids : undefined;
         return { ...n, ...masteryFx(n), a: 1, lose: lose?.length, loseIds: lose };
@@ -763,6 +776,19 @@
       .then((r) => (rings = r ?? []))
       .catch(logError);
   });
+  let inRadiusOf = $state.raw(new Map<number, number[]>());
+  $effect(() => {
+    const own = rings.filter((r) => socketed.some((j) => j.NodeID === r.nodeId));
+    Promise.all(
+      own.map(async (r) => ({ socket: r.nodeId, nodes: ((await syncWrap?.GetTreeSocketRadii(r.nodeId)) ?? []).find((x) => x.outer === r.outer)?.nodes ?? [] }))
+    )
+      .then((list) => {
+        const out = new Map<number, number[]>();
+        for (const { socket, nodes: ids } of list) for (const id of ids) if (id !== socket) out.set(id, [...(out.get(id) ?? []), socket]);
+        inRadiusOf = out;
+      })
+      .catch(logError);
+  });
   // PassiveTreeView.lua:814-816
   let splitPath = $state.raw<number[]>([]);
   $effect(() => {
@@ -869,7 +895,13 @@
   });
 
   // PassiveTreeView.lua:1478-1513, 1601-1644, 1712-1746
-  let tipExtra = $state.raw<{ id: number; skills: calculator.TooltipLine[][]; jewel?: calculator.ItemTooltip; distance?: number }>();
+  let tipExtra = $state.raw<{
+    id: number;
+    skills: calculator.TooltipLine[][];
+    jewel?: calculator.ItemTooltip;
+    distance?: number;
+    affecting?: { socket: number; title: string[]; lines: calculator.TooltipLine[] }[];
+  }>();
   let tipNode = $state<number | null>(null);
   $effect(() => {
     const id = tipNode;
@@ -877,13 +909,18 @@
     // PassiveTreeView.lua:1479
     const isSocket = !!base.byId.get(id)?.isJewelSocket;
     const socket = isSocket && socketed.some((j) => j.NodeID === id);
+    const reaching = untrack(() => inRadiusOf.get(id)) ?? [];
     Promise.all([
       syncWrap?.GetNodeSkillTooltips(id),
       socket ? syncWrap?.SocketJewelTooltip(id) : undefined,
-      isSocket && untrack(() => alloc[id]) ? syncWrap?.GetSocketDistance(id) : undefined
+      isSocket && untrack(() => alloc[id]) ? syncWrap?.GetSocketDistance(id) : undefined,
+      Promise.all(reaching.map(async (s) => ({ socket: s, tip: await syncWrap?.SocketJewelTooltip(s) })))
     ])
-      .then(([skills, jewel, distance]) => {
-        if (tipNode === id) tipExtra = { id, skills: skills ?? [], jewel, distance };
+      .then(([skills, jewel, distance, reach]) => {
+        const affecting = reach.flatMap(({ socket: s, tip }) =>
+          tip ? [{ socket: s, title: tip.Title ?? [], lines: (tip.Lines ?? []).filter((l) => !l.Separator && /radius|ring/i.test(l.Text)) }] : []
+        );
+        if (tipNode === id) tipExtra = { id, skills: skills ?? [], jewel, distance, affecting };
       })
       .catch(logError);
   });
@@ -939,14 +976,25 @@
       <div class="border-t border-line pt-2 text-12" aria-label="Distance to start">Distance to start: {tipExtra.distance}</div>
     {/if}
   {/if}
+  {#if tipExtra?.id === n.id && tipExtra.affecting?.length}
+    <div class="flex flex-col gap-1.5 border-t border-line pt-2 text-12" aria-label="Jewels affecting this node">
+      {#each tipExtra.affecting as a (a.socket)}
+        <div class="flex flex-col gap-0.5" data-affecting-socket={a.socket}>
+          <span class="text-text-2">In radius of <PobText text={a.title[0] ?? ''} /></span>
+          {#if a.lines.length}<div class="pl-2"><TooltipLines lines={a.lines} /></div>{/if}
+        </div>
+      {/each}
+    </div>
+  {/if}
   {#if tipExtra?.id === n.id}
     {#each tipExtra.skills as lines, i (i)}
       <div class="border-t border-line pt-2" aria-label="Granted skill"><TooltipLines {lines} center /></div>
     {/each}
   {/if}
-  {#if node?.reminderText?.length}
+  {@const reminder = tattooTips.has(n.id) ? tattooTips.get(n.id)!.reminder : node?.reminderText}
+  {#if reminder?.length}
     <div class="flex flex-col gap-0.5 border-t border-line pt-2 text-12 text-[#a0a080]" aria-label="Reminder text">
-      {#each node.reminderText as l, i (i)}<span>{l}</span>{/each}
+      {#each reminder as l, i (i)}<span>{l}</span>{/each}
     </div>
   {/if}
   {#if node?.flavourText?.length}
@@ -1137,8 +1185,12 @@
         {:else}
           <span class="note" data-power-ms={powerMs !== undefined ? Math.round(powerMs) : undefined}
             >{shownPower.length} nodes · Click to focus node on tree</span>
-          <div role="table" aria-label="Node power" class="scroll flex min-h-0 flex-col text-12">
-            <div role="row" class="grid grid-cols-[56px_minmax(0,1fr)_64px_44px_64px] gap-1.5 border-b border-line pb-0.5 text-11 text-text-3">
+          <div
+            role="table"
+            aria-label="Node power"
+            class="scroll grid min-h-0 grid-cols-[minmax(0,auto)_minmax(0,1fr)_auto_auto_auto] content-start gap-x-3 text-12"
+            onmouseleave={() => (powerHover = undefined)}>
+            <div role="row" class="sticky top-0 z-1 col-span-5 grid grid-cols-subgrid border-b border-line bg-surface-1 px-1.5 pb-0.5 text-11 text-text-3">
               {#each [['type', 'Type'], ['name', 'Node Name'], ['power', powerLabel], ['points', 'Points'], ['perPoint', 'pp']] as [col, label] (col)}
                 <span role="columnheader" class={col === 'type' || col === 'name' ? '' : 'text-right'} aria-sort={col === powerSort ? 'descending' : undefined}
                   >{#if col === 'name'}{label}{:else}<button
@@ -1152,11 +1204,13 @@
               <button
                 role="row"
                 class={[
-                  'grid grid-cols-[56px_minmax(0,1fr)_64px_44px_64px] gap-1.5 border-0 bg-transparent py-0.5 text-left font-sans text-12 text-text hover:bg-surface-3',
+                  'col-span-5 grid grid-cols-subgrid border-0 bg-transparent px-1.5 py-1 text-left font-sans text-12 text-text even:bg-bar hover:bg-surface-3',
                   r.ID === powerFocus && 'bg-surface-3'
                 ]}
                 data-power-node={r.ID}
                 title={r.Stats?.join('\n')}
+                onmouseenter={() => (powerHover = r.ID)}
+                onfocus={() => (powerHover = r.ID)}
                 onclick={() => {
                   powerFocus = r.ID;
                   if (!r.Cluster) canvasEl?.focus(r.ID);
@@ -1164,7 +1218,8 @@
                 ><span role="cell" class="truncate text-text-2">{r.Type}</span><span role="cell" class="truncate">{r.Name}</span><span
                   role="cell"
                   class={['text-right font-mono', r.dir === 'up' ? 'text-better' : r.dir === 'down' ? 'text-worse' : '']}>{r.power}</span
-                ><span role="cell" class="text-right font-mono">{r.points}</span><span role="cell" class="text-right font-mono">{r.perPoint}</span></button>
+                ><span role="cell" class="text-right font-mono">{r.points}</span><span role="cell" class="text-right font-mono text-text-2">{r.perPoint}</span
+                ></button>
             {/each}
           </div>
         {/if}
@@ -1223,6 +1278,19 @@
                   </div>
                 {/if}
               {/each}
+            {/if}
+          {/if}
+          {#if powerOpen && powerHover !== undefined}
+            {@const p = project(powerHover)}
+            {#if p}
+              <div
+                class="absolute -translate-x-1/2 -translate-y-1/2 rounded-full border-3 border-accent shadow-[0_0_12px_var(--color-accent)]"
+                data-power-hover={powerHover}
+                style:left="{p.x}px"
+                style:top="{p.y}px"
+                style:width="{Math.max(28, 450 / view.scaling)}px"
+                style:height="{Math.max(28, 450 / view.scaling)}px">
+              </div>
             {/if}
           {/if}
           {#each [...powerFlashes.flashing] as [id, k] (id + ':' + k)}
