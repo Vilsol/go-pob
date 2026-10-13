@@ -92,6 +92,7 @@ const rootToken = "<sandbox>"
 func (r result) normalise(dir string) result {
 	tok := []byte(rootToken)
 	sub := func(b []byte) []byte {
+		b = bytes.ReplaceAll(b, []byte("\r\n"), []byte("\n"))
 		b = bytes.ReplaceAll(b, []byte(dir), tok)
 		if resolved, err := filepath.EvalSymlinks(dir); err == nil && resolved != dir {
 			b = bytes.ReplaceAll(b, []byte(resolved), tok)

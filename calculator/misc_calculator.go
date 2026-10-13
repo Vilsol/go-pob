@@ -44,15 +44,17 @@ func (o *CalcOverride) removesNodeKey(id string) bool {
 }
 
 type MiscCalculator struct {
-	build *pob.PathOfBuilding
-	cache *EnvironmentCache
-	base  *Environment
+	build       *pob.PathOfBuilding
+	cache       *EnvironmentCache
+	base        *Environment
+	usedFullDPS bool
 }
 
 //pob:src/Modules/Calcs.lua:123-133
 func GetMiscCalculator(build *pob.PathOfBuilding) *MiscCalculator {
 	m := &MiscCalculator{build: build, cache: envCache}
 	m.base = m.run(nil)
+	m.usedFullDPS = len(m.base.Player.SkillDPS) > 0
 	return m
 }
 
@@ -64,7 +66,7 @@ func MiscCalculatorOver(build *pob.PathOfBuilding, c *Calculator) *MiscCalculato
 	if build == nil || c == nil || c.main == nil {
 		return nil
 	}
-	return &MiscCalculator{build: build, cache: envCache, base: c.main}
+	return &MiscCalculator{build: build, cache: envCache, base: c.main, usedFullDPS: len(c.main.Player.SkillDPS) > 0}
 }
 
 //pob:src/Modules/Calcs.lua:134-147
@@ -83,7 +85,8 @@ func (m *MiscCalculator) run(override *CalcOverride) *Environment {
 	runtime.Gosched()
 	env, cachedPlayerDB, cachedEnemyDB, cachedMinionDB := InitEnvOverride(m.build, m.cache, OutputModeCalculator, override)
 	PerformCalc(env)
-	fullDPS, fullDotDPS, _ := calcFullDPS(&Calculator{PoB: m.build}, env, OutputModeCalculator, m.cache, env.override, &calcSpecEnv{cachedPlayerDB: cachedPlayerDB, cachedEnemyDB: cachedEnemyDB, cachedMinionDB: cachedMinionDB})
+	fullDPS, fullDotDPS, skills := calcFullDPS(&Calculator{PoB: m.build}, env, OutputModeCalculator, m.cache, env.override, &calcSpecEnv{cachedPlayerDB: cachedPlayerDB, cachedEnemyDB: cachedEnemyDB, cachedMinionDB: cachedMinionDB})
+	env.Player.SkillDPS = skills
 	env.Player.Output["FullDPS"] = fullDPS
 	env.Player.Output["FullDotDPS"] = fullDotDPS
 	return env

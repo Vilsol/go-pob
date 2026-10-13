@@ -987,3 +987,31 @@ tasks:
       - 'ls {{.HERE}}/testdata/corpus-3.29/*.xml | awk "NR % {{.EVERY}} == 0" > {{.OUT}}/list.txt'
       - '{{.NICE}} mise x --cd {{.POB}}/src -- luajit {{.HERE}}/oracle/config_placeholders.lua {{.OUT}}/list.txt {{.OUT}}/placeholders.json'
       - '{{.NICE}} env CORPUS=true OPERATOR=true CONFIG_PLACEHOLDERS={{.OUT}}/placeholders.json go test ./calculator/ -run "^TestConfigPlaceholdersAgainstPoB$" -count=1 -v'
+
+  power-oracle:
+    desc: "PoB's PowerBuilder on one corpus build per <stat>:<depth> (oracle/power_report.lua) — BUILD=<name, no .xml> STATS='Life:0 FullDPS:3' OUT=<dir, default calculator/testdata/power_oracle>"
+    requires:
+      vars: [BUILD, STATS]
+    vars:
+      POB:
+        sh: 'realpath "{{.POB_DIR | default .POB_DEFAULT}}"'
+      HERE:
+        sh: pwd
+      OUT: '{{.OUT | default (printf "%s/calculator/testdata/power_oracle" .HERE)}}'
+      MAIN:
+        sh: dirname "$(git rev-parse --path-format=absolute --git-common-dir)"
+    cmds:
+      - '{{.GOPOB}} require-det-luajit power-oracle'
+      - mkdir -p {{.OUT}}
+      - >-
+        {{.NICE}} env
+        LUA_CPATH="{{.POB}}/.luarocks/lib/lua/5.1/?.so;;"
+        LUA_PATH="{{.POB}}/runtime/lua/?.lua;{{.POB}}/runtime/lua/?/init.lua;{{.POB}}/.luarocks/share/lua/5.1/?.lua;{{.POB}}/.luarocks/share/lua/5.1/?/init.lua;;"
+        setarch "$(uname -m)" -R sh -c
+        "cd '{{.POB}}/src' && exec '{{.MAIN}}/.luajit-det/bin/luajit' '{{.HERE}}/oracle/power_report.lua' '{{.OUT}}' '{{.HERE}}/testdata/corpus-3.29/{{.BUILD}}.xml' {{.STATS}}"
+      - 'gzip -9 -n -f {{.OUT}}/{{.BUILD}}_*.tsv'
+
+  power-oracle-check:
+    desc: "Grade the power report against PoB's PowerBuilder on every testdata/power_oracle fixture, the Full DPS ones over the whole tree included"
+    cmds:
+      - '{{.NICE}} env POWER_ORACLE_FULL=1 go test ./calculator/ -run TestPowerReportMatchesPoBOracle -count=1 -timeout 60m'

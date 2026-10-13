@@ -1,7 +1,10 @@
 package calculator
 
 import (
+	"container/heap"
+	"maps"
 	"math"
+	"runtime"
 	"slices"
 	"sort"
 	"strconv"
@@ -144,11 +147,15 @@ type PowerBuilder struct {
 	maxDepth int
 	base     float64
 
-	tree    *data.Tree
-	alloc   map[int64]bool
-	granted map[int64]bool
-	paths   map[int64]int64
-	roots   []int64
+	tree      *data.Tree
+	alloc     map[int64]bool
+	granted   map[int64]bool
+	paths     map[int64]int64
+	roots     []int64
+	rewrites  map[string]nodeRewrite
+	dependsOf map[int64][]int64
+	subgraph  map[int64]data.Node
+	graph     *powerGraph
 
 	nodes        []int64
 	keys         map[int64]string
@@ -163,11 +170,15 @@ type PowerBuilder struct {
 
 	tasks     []func()
 	next      int
+	calcs     int
 	taskNodes []int64
 }
 
 func (b *PowerBuilder) treeNode(id int64) data.Node {
-	return b.tree.Nodes[strconv.FormatInt(id, 10)]
+	if n, ok := b.tree.Nodes[strconv.FormatInt(id, 10)]; ok {
+		return n
+	}
+	return b.subgraph[id]
 }
 
 //pob:block:src/Classes/PassiveTree.lua:521-552
@@ -189,9 +200,13 @@ func powerNodeType(n data.Node) string {
 	return "Normal"
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:44
+//pob:block:src/Classes/PassiveSpec.lua:44,src/Classes/PassiveTree.lua:109-140
 func specNode(tree *data.Tree, n data.Node) bool {
 	if n.Group == nil || (n.IsProxy != nil && *n.IsProxy) || (n.ExpansionJewel != nil && n.ExpansionJewel.Parent != nil) {
+		return false
+	}
+	if n.AscendancyName != nil && legacyAlternateAscendancies[*n.AscendancyName] &&
+		slices.ContainsFunc(tree.AlternateAscendancies, func(a data.Ascendancy) bool { return string(a.ID) == *n.AscendancyName }) {
 		return false
 	}
 	g, ok := tree.Groups[strconv.FormatInt(*n.Group, 10)]
@@ -215,23 +230,35 @@ func allocationPath(paths map[int64]int64, id int64) []int64 {
 }
 
 func (b *PowerBuilder) depends(id int64) []int64 {
-	return append([]int64{id}, data.TreeVersions[data.LatestTreeVersion].CalculateDependentNodes(b.misc.build.Build.PassiveNodes, id, b.roots)...)
+	if d, ok := b.dependsOf[id]; ok {
+		return d
+	}
+	var d []int64
+	if b.graph != nil {
+		d = append([]int64{id}, b.graph.dependentNodes(b.misc.build.Build.PassiveNodes, id, b.roots)...)
+	} else {
+		d = append([]int64{id}, data.TreeVersions[data.LatestTreeVersion].CalculateDependentNodes(b.misc.build.Build.PassiveNodes, id, b.roots)...)
+	}
+	b.dependsOf[id] = d
+	return d
 }
 
 //pob:block:src/Classes/CalcsTab.lua:489-597
 func (m *MiscCalculator) NewPowerBuilder(stat PowerStat, maxDepth int) *PowerBuilder {
 	b := &PowerBuilder{
-		misc: m, stat: stat, maxDepth: maxDepth, base: powerStatValue(m.base, stat),
-		tree:     data.TreeVersions[data.LatestTreeVersion].Tree(),
-		alloc:    map[int64]bool{},
-		granted:  map[int64]bool{},
-		keys:     map[int64]string{},
-		power:    map[int64]*nodePower{},
-		mastery:  map[int64]map[int64]*nodePower{},
-		cluster:  map[int64]float64{},
-		cache:    map[string]float64{},
-		combined: map[string][2]float64{},
+		misc: m, stat: stat, maxDepth: maxDepth,
+		tree:      data.TreeVersions[data.LatestTreeVersion].Tree(),
+		alloc:     map[int64]bool{},
+		granted:   map[int64]bool{},
+		dependsOf: map[int64][]int64{},
+		keys:      map[int64]string{},
+		power:     map[int64]*nodePower{},
+		mastery:   map[int64]map[int64]*nodePower{},
+		cluster:   map[int64]float64{},
+		cache:     map[string]float64{},
+		combined:  map[string][2]float64{},
 	}
+	b.base = b.value(m.base)
 	for _, id := range m.build.Build.PassiveNodes {
 		b.alloc[id] = true
 	}
@@ -248,7 +275,50 @@ func (m *MiscCalculator) NewPowerBuilder(stat PowerStat, maxDepth int) *PowerBui
 			}
 		}
 	}
-	b.paths = data.TreeVersions[data.LatestTreeVersion].CalculateAllocationPaths(m.build.Build.PassiveNodes, b.roots)
+	for key, n := range m.base.clusterNodes {
+		if _, ok := b.tree.Nodes[key]; ok {
+			continue
+		}
+		if id, err := strconv.ParseInt(key, 10, 64); err == nil {
+			if b.subgraph == nil {
+				b.subgraph = map[int64]data.Node{}
+			}
+			b.subgraph[id] = n
+		}
+	}
+	if b.subgraph != nil {
+		b.graph = newPowerGraph(b.tree, m.base.clusterNodes)
+	}
+	//pob:block:src/Classes/PassiveSpec.lua:1145
+	leap := map[int64]bool{}
+	for id := range leapHeld(m.build, b.tree, allocSet(m.build, b.tree)) {
+		if n := b.treeNode(id); powerNodeType(n) != "ClassStart" && powerNodeType(n) != "Socket" && (n.AscendancyName == nil || *n.AscendancyName == "") {
+			leap[id] = true
+		}
+	}
+	//pob:block:src/Classes/PassiveSpec.lua:1596-1609
+	seeds := m.build.Build.PassiveNodes
+	if len(leap) > 0 {
+		roots := slices.Clone(b.roots)
+		for _, id := range seeds {
+			if n := b.treeNode(id); n.IsAscendancyStart != nil && *n.IsAscendancyStart {
+				roots = append(roots, id)
+			}
+		}
+		var unconnected []int64
+		if b.graph != nil {
+			unconnected = b.graph.prunable(seeds, roots)
+		} else {
+			unconnected = data.TreeVersions[data.LatestTreeVersion].CalculatePrunableNodes(seeds, roots)
+		}
+		seeds = slices.DeleteFunc(slices.Clone(seeds), func(id int64) bool { return leap[id] && slices.Contains(unconnected, id) })
+	}
+	if b.graph != nil {
+		b.paths = b.graph.allocationPaths(seeds, b.roots)
+	} else {
+		b.paths = data.TreeVersions[data.LatestTreeVersion].CalculateAllocationPaths(seeds, b.roots)
+	}
+	b.rewrites = nodeRewrites(m.base)
 	selections := map[int64]int64{}
 	for _, s := range activeMasterySelections(m.build) {
 		selections[s.Node] = s.Effect
@@ -256,14 +326,17 @@ func (m *MiscCalculator) NewPowerBuilder(stat PowerStat, maxDepth int) *PowerBui
 
 	distanceMap := map[int][]int64{}
 	var masteryNodes []int64
+	specNodes := map[int64]data.Node{}
 	for key, n := range b.tree.Nodes {
 		if !specNode(b.tree, n) {
 			continue
 		}
-		id, err := strconv.ParseInt(key, 10, 64)
-		if err != nil {
-			continue
+		if id, err := strconv.ParseInt(key, 10, 64); err == nil {
+			specNodes[id] = n
 		}
+	}
+	maps.Copy(specNodes, b.subgraph)
+	for id, n := range specNodes {
 		b.nodes = append(b.nodes, id)
 		b.power[id] = &nodePower{}
 		b.keys[id] = b.modKey(id, selections)
@@ -281,6 +354,10 @@ func (m *MiscCalculator) NewPowerBuilder(stat PowerStat, maxDepth int) *PowerBui
 				masteryNodes = append(masteryNodes, id)
 			}
 			continue
+		}
+		//pob:block:src/Classes/CalcsTab.lua:572-577,src/Classes/PassiveSpec.lua:1145
+		if leap[id] {
+			pathDist = 1
 		}
 		b.power[id].distance = pathDist
 		distanceMap[pathDist] = append(distanceMap[pathDist], id)
@@ -332,7 +409,7 @@ func (m *MiscCalculator) NewPowerBuilder(stat PowerStat, maxDepth int) *PowerBui
 	}
 	slices.Sort(b.clusterNodes)
 	for _, id := range b.clusterNodes {
-		if key := statsModKey(b.treeNode(id).Stats); key != "" && !b.granted[id] {
+		if key := statsModKey(b.treeNode(id).Stats); key != "" && !b.granted[id] && !stat.Combined {
 			b.tasks = append(b.tasks, func() { b.cluster[id] = b.calc(key, &CalcOverride{AddNodes: []int64{id}}) })
 			b.taskNodes = append(b.taskNodes, id)
 		}
@@ -359,10 +436,34 @@ func statsModKey(stats []string) string {
 	return strings.Join(stats, "\n")
 }
 
+//pob:block:src/Classes/PassiveSpec.lua:1614-1623,src/Classes/PassiveSpec.lua:2380-2388
+func (b *PowerBuilder) specNodeStats(id int64) (string, []string) {
+	n := b.treeNode(id)
+	name := ""
+	if n.Name != nil {
+		name = *n.Name
+	}
+	r, ok := b.rewrites[strconv.FormatInt(id, 10)]
+	if !ok {
+		return name, n.Stats
+	}
+	stats := n.Stats
+	if rep := r.effectiveReplacement(); rep != nil {
+		name, stats = rep.DN, rep.Stats
+	}
+	for _, line := range r.addStats {
+		if line != "" {
+			stats = append(slices.Clip(stats), line)
+		}
+	}
+	return name, stats
+}
+
 func (b *PowerBuilder) modKey(id int64, selections map[int64]int64) string {
 	n := b.treeNode(id)
 	if !isMasteryNode(n) {
-		return statsModKey(n.Stats)
+		_, stats := b.specNodeStats(id)
+		return statsModKey(stats)
 	}
 	var lines []string
 	for _, e := range n.MasteryEffects {
@@ -378,22 +479,38 @@ func (b *PowerBuilder) modKey(id int64, selections map[int64]int64) string {
 
 //pob:block:src/Modules/Calcs.lua:135-145
 func (b *PowerBuilder) run(override *CalcOverride) *Environment {
-	if b.stat.Stat == "FullDPS" {
-		return b.misc.Calc(override)
-	}
-	var env *Environment
+	b.calcs++
+	runtime.Gosched()
+	fullDPS := b.stat.Stat == "FullDPS" && b.misc.usedFullDPS
 	if b.spec == nil || !sameInputs(b.specInputs, b.misc.build.Config.Inputs) {
-		var player, enemy, minion moddb.ModStoreFuncs
 		inputs := cloneInputs(b.misc.build.Config.Inputs)
-		env, player, enemy, minion = initEnvSpec(b.misc.build, b.misc.cache, OutputModeCalculator, false, override, nil)
+		env, player, enemy, minion := initEnvSpec(b.misc.build, b.misc.cache, OutputModeCalculator, false, override, nil)
 		b.spec = &calcSpecEnv{cachedPlayerDB: player, cachedEnemyDB: enemy, cachedMinionDB: minion, flatDB: true,
 			clusterNodes: env.clusterNodes, clusterNodesSet: true}
 		b.specInputs = inputs
-	} else {
-		env, _, _, _ = initEnvSpecKeep(b.misc.build, b.misc.cache, OutputModeCalculator, false, override, b.spec, false)
+		PerformCalc(env)
+		if fullDPS {
+			b.rollUp(env, env.override)
+		}
+		return env
 	}
+	if fullDPS {
+		env := &Environment{Player: &Actor{Output: map[string]float64{}}}
+		b.rollUp(env, override)
+		return env
+	}
+	env, _, _, _ := initEnvSpecKeep(b.misc.build, b.misc.cache, OutputModeCalculator, false, override, b.spec, false)
 	PerformCalc(env)
 	return env
+}
+
+//pob:block:src/Modules/Calcs.lua:141-144
+func (b *PowerBuilder) rollUp(env *Environment, override *CalcOverride) {
+	fullDPS, fullDotDPS, _ := calcFullDPS(&Calculator{PoB: b.misc.build}, env, OutputModeCalculator, b.misc.cache, override,
+		&calcSpecEnv{cachedPlayerDB: b.spec.cachedPlayerDB, cachedEnemyDB: b.spec.cachedEnemyDB, cachedMinionDB: b.spec.cachedMinionDB,
+			clusterNodes: b.spec.clusterNodes, clusterNodesSet: true})
+	env.Player.Output["FullDPS"] = fullDPS
+	env.Player.Output["FullDotDPS"] = fullDotDPS
 }
 
 //pob:block:src/Classes/CalcsTab.lua:606-609
@@ -404,7 +521,7 @@ func (b *PowerBuilder) calc(key string, override *CalcOverride) float64 {
 	}
 	v, ok := b.cache[key]
 	if !ok {
-		v = powerStatValue(b.run(override), b.stat)
+		v = b.value(b.run(override))
 		b.cache[key] = v
 	}
 	return v - b.base
@@ -421,7 +538,14 @@ func (b *PowerBuilder) calcCombined(key string, override *CalcOverride) (float64
 }
 
 func (b *PowerBuilder) powerOf(env *Environment) float64 {
-	return powerStatValue(env, b.stat) - b.base
+	return b.value(env) - b.base
+}
+
+func (b *PowerBuilder) value(env *Environment) float64 {
+	if b.stat.Stat == "FullDPS" && !b.misc.usedFullDPS {
+		return powerStatValue(env, PowerStat{Stat: "CombinedDPS"})
+	}
+	return powerStatValue(env, b.stat)
 }
 
 //pob:block:src/Classes/CalcsTab.lua:604-646
@@ -443,7 +567,7 @@ func (b *PowerBuilder) nodeTask(id int64, distance int, selections map[int64]int
 				p.path = b.powerOf(b.run(&CalcOverride{AddNodes: path}))
 			}
 		}
-	} else {
+	} else if !b.stat.Combined {
 		p.single, p.hasSingle = b.calc(key+"_remove", &CalcOverride{RemoveNodes: []int64{id}}), true
 		if !ascendancy {
 			p.path, p.hasPath = p.single, true
@@ -473,6 +597,13 @@ func (b *PowerBuilder) masteryTask(id int64, effect data.MasteryEffect) {
 		b.mastery[id] = map[int64]*nodePower{}
 	}
 	b.mastery[id][effect.Effect] = ep
+	p := b.power[id]
+	if b.stat.Combined {
+		ep.single, ep.defence = b.calcCombined("effect:"+strings.Join(effect.Stats, "\n"), &CalcOverride{AddNodes: []int64{id}})
+		ep.hasSingle = true
+		p.single, p.defence, p.hasSingle = max(p.single, ep.single), max(p.defence, ep.defence), true
+		return
+	}
 	ep.single, ep.hasSingle = b.calc("effect:"+strings.Join(effect.Stats, "\n"), &CalcOverride{AddNodes: []int64{id}}), true
 	path := allocationPath(b.paths, id)
 	if path != nil && (n.AscendancyName == nil || *n.AscendancyName == "") {
@@ -481,7 +612,6 @@ func (b *PowerBuilder) masteryTask(id int64, effect data.MasteryEffect) {
 			ep.path = b.powerOf(b.run(&CalcOverride{AddNodes: path}))
 		}
 	}
-	p := b.power[id]
 	p.single, p.hasSingle = max(p.single, ep.single), true
 	p.path, p.hasPath = max(p.path, ep.path), true
 }
@@ -558,8 +688,9 @@ func (b *PowerBuilder) Report() []PowerReportEntry {
 		switch typ := powerNodeType(n); typ {
 		case "Normal", "Keystone", "Notable":
 			d := pathDist()
+			name, stats := b.specNodeStats(id)
 			report = append(report, PowerReportEntry{ID: id, Name: name, Type: typ, Power: p.single, PathPower: p.path / float64(d),
-				PathDist: d, Allocated: isAlloc, Stats: n.Stats, Offence: p.single, Defence: p.defence})
+				PathDist: d, Allocated: isAlloc, Stats: stats, Offence: p.single, Defence: p.defence})
 		case "Mastery":
 			d := pathDist()
 			for _, effect := range n.MasteryEffects {
@@ -573,7 +704,7 @@ func (b *PowerBuilder) Report() []PowerReportEntry {
 					pathPower = ep.path
 				}
 				report = append(report, PowerReportEntry{ID: id, Name: name + ": " + strings.Join(label, " / "), Type: typ,
-					Power: ep.single, PathPower: pathPower / float64(d), PathDist: d, Allocated: isAlloc, Stats: label})
+					Power: ep.single, PathPower: pathPower / float64(d), PathDist: d, Allocated: isAlloc, Stats: label, Offence: ep.single, Defence: ep.defence})
 			}
 		}
 	}
@@ -604,4 +735,211 @@ func samePtr[T comparable](x, y *T) bool {
 		return x == y
 	}
 	return *x == *y
+}
+
+type powerGraph struct {
+	tree          *data.Tree
+	adjacency     map[int64][]int64
+	blocked       map[int64]bool
+	masteryParent map[int64]bool
+	subgraph      map[int64]bool
+}
+
+func newPowerGraph(tree *data.Tree, clusterNodes map[string]data.Node) *powerGraph {
+	g := &powerGraph{tree: tree, adjacency: map[int64][]int64{}, blocked: map[int64]bool{}, masteryParent: map[int64]bool{},
+		subgraph: map[int64]bool{}}
+	link := func(from, to int64) {
+		if !slices.Contains(g.adjacency[from], to) {
+			g.adjacency[from] = append(g.adjacency[from], to)
+		}
+	}
+	for _, n := range tree.Nodes {
+		if n.Skill == nil {
+			continue
+		}
+		if n.ClassStartIndex != nil || (n.IsAscendancyStart != nil && *n.IsAscendancyStart) {
+			g.blocked[*n.Skill] = true
+		}
+		if n.IsMastery != nil && *n.IsMastery {
+			g.masteryParent[*n.Skill] = true
+		}
+		for _, out := range n.Out {
+			target, ok := tree.Nodes[out]
+			id, err := strconv.ParseInt(out, 10, 64)
+			if !ok || err != nil || target.ClassStartIndex != nil {
+				continue
+			}
+			if (target.AscendancyName == nil) != (n.AscendancyName == nil) ||
+				(target.AscendancyName != nil && *target.AscendancyName != *n.AscendancyName) {
+				continue
+			}
+			link(*n.Skill, id)
+			if target.IsMastery == nil || !*target.IsMastery {
+				link(id, *n.Skill)
+			}
+		}
+	}
+	for key, n := range clusterNodes {
+		id, err := strconv.ParseInt(key, 10, 64)
+		if err != nil {
+			continue
+		}
+		if _, ok := tree.Nodes[key]; !ok {
+			g.subgraph[id] = true
+		}
+		for _, out := range n.Out {
+			if other, err := strconv.ParseInt(out, 10, 64); err == nil {
+				link(id, other)
+				link(other, id)
+			}
+		}
+	}
+	return g
+}
+
+//pob:block:src/Classes/PassiveSpec.lua:44
+func (g *powerGraph) inSpec(id int64) bool {
+	if g.subgraph[id] {
+		return true
+	}
+	n, ok := g.tree.Nodes[strconv.FormatInt(id, 10)]
+	if !ok || n.Group == nil || (n.IsProxy != nil && *n.IsProxy) {
+		return false
+	}
+	if group, ok := g.tree.Groups[strconv.FormatInt(*n.Group, 10)]; ok && group.IsProxy != nil && *group.IsProxy {
+		return false
+	}
+	return n.ExpansionJewel == nil || n.ExpansionJewel.Parent == nil
+}
+
+type pathFrontier struct {
+	ids       []int64
+	distances map[int64]int64
+}
+
+func (f *pathFrontier) Len() int { return len(f.ids) }
+func (f *pathFrontier) Less(i, j int) bool {
+	if di, dj := f.distances[f.ids[i]], f.distances[f.ids[j]]; di != dj {
+		return di < dj
+	}
+	return f.ids[i] < f.ids[j]
+}
+func (f *pathFrontier) Swap(i, j int) { f.ids[i], f.ids[j] = f.ids[j], f.ids[i] }
+func (f *pathFrontier) Push(x any)    { f.ids = append(f.ids, x.(int64)) }
+func (f *pathFrontier) Pop() any {
+	x := f.ids[len(f.ids)-1]
+	f.ids = f.ids[:len(f.ids)-1]
+	return x
+}
+
+//pob:src/Classes/PassiveSpec.lua:537-574
+func (g *powerGraph) allocationPaths(activeNodes []int64, rootNodes []int64) map[int64]int64 {
+	hops := map[int64]int64{}
+	frontier := &pathFrontier{distances: map[int64]int64{}}
+	distances := frontier.distances
+	for _, id := range activeNodes {
+		hops[id] = -1
+		distances[id] = 0
+		frontier.ids = append(frontier.ids, id)
+	}
+	for _, root := range rootNodes {
+		if _, active := distances[root]; active {
+			continue
+		}
+		hops[root] = -1
+		if n, ok := g.tree.Nodes[strconv.FormatInt(root, 10)]; ok {
+			for _, other := range slices.Concat(n.Out, n.In) {
+				start, ok := g.tree.Nodes[other]
+				if id, err := strconv.ParseInt(other, 10, 64); ok && err == nil && start.ClassStartIndex != nil {
+					hops[root] = id
+					hops[id] = -1
+					break
+				}
+			}
+		}
+		distances[root] = 1
+		frontier.ids = append(frontier.ids, root)
+	}
+	heap.Init(frontier)
+	for frontier.Len() > 0 {
+		current := heap.Pop(frontier).(int64)
+		if g.masteryParent[current] {
+			continue
+		}
+		for _, next := range g.adjacency[current] {
+			if g.blocked[next] || !g.inSpec(next) {
+				continue
+			}
+			if _, seen := distances[next]; seen {
+				continue
+			}
+			distances[next] = distances[current] + 1
+			hops[next] = current
+			heap.Push(frontier, next)
+		}
+	}
+	return hops
+}
+
+//pob:block:src/Classes/PassiveSpec.lua:1440-1497
+func (g *powerGraph) dependentNodes(activeNodes []int64, target int64, rootNodes []int64) []int64 {
+	rootsFor := func(list []int64) []int64 {
+		out := slices.Clone(rootNodes)
+		for _, id := range list {
+			if n, ok := g.tree.Nodes[strconv.FormatInt(id, 10)]; ok && n.IsAscendancyStart != nil && *n.IsAscendancyStart {
+				out = append(out, id)
+			}
+		}
+		return out
+	}
+	rest := slices.DeleteFunc(slices.Clone(activeNodes), func(id int64) bool { return id == target })
+	before := map[int64]bool{}
+	for _, id := range g.prunable(activeNodes, rootsFor(activeNodes)) {
+		before[id] = true
+	}
+	var out []int64
+	for _, id := range g.prunable(rest, rootsFor(rest)) {
+		if !before[id] {
+			out = append(out, id)
+		}
+	}
+	return out
+}
+
+//pob:src/Classes/PassiveSpec.lua:844-871
+func (g *powerGraph) prunable(activeNodes []int64, rootNodes []int64) []int64 {
+	active := map[int64]bool{}
+	for _, id := range activeNodes {
+		active[id] = true
+	}
+	var stack []int64
+	for _, root := range rootNodes {
+		if active[root] {
+			stack = append(stack, root)
+		}
+	}
+	visited := map[int64]bool{}
+	for len(stack) > 0 {
+		current := stack[len(stack)-1]
+		stack = stack[:len(stack)-1]
+		if visited[current] {
+			continue
+		}
+		visited[current] = true
+		if g.masteryParent[current] {
+			continue
+		}
+		for _, next := range g.adjacency[current] {
+			if active[next] && !visited[next] {
+				stack = append(stack, next)
+			}
+		}
+	}
+	var out []int64
+	for _, id := range activeNodes {
+		if !visited[id] {
+			out = append(out, id)
+		}
+	}
+	return out
 }

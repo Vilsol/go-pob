@@ -38,6 +38,7 @@ func calcFullDPS(c *Calculator, env *Environment, mode OutputMode, cache *Enviro
 	fullEnv, cachedPlayerDB, cachedEnemyDB, cachedMinionDB := initEnvSpec(build, cache, mode, false, override, specEnv)
 	fullEnv.triggerCache = env.triggerCache
 
+	reinit := false
 	for index, activeSkill := range fullEnv.Player.ActiveSkillList {
 		socketGroup, ok := activeSkill.SocketGroup.(*pob.Skill)
 		if !ok || socketGroup == nil {
@@ -58,6 +59,10 @@ func calcFullDPS(c *Calculator, env *Environment, mode OutputMode, cache *Enviro
 			continue
 		}
 
+		if reinit {
+			fullEnv = reinitFullDPSEnv(fullEnv, cache, mode, cachedPlayerDB, cachedEnemyDB, cachedMinionDB)
+		}
+		reinit = true
 		fullEnv.Player.MainSkill = activeSkill
 		performCalc(fullEnv, true)
 		recordFullDPSSkillCosts(env, index, fullEnv)
@@ -214,8 +219,6 @@ func calcFullDPS(c *Calculator, env *Environment, mode OutputMode, cache *Enviro
 		if out["CullMultiplier"] > 1 && out["CullMultiplier"] > f.CullingMulti {
 			f.CullingMulti = out["CullMultiplier"]
 		}
-
-		fullEnv = reinitFullDPSEnv(fullEnv, cache, mode, cachedPlayerDB, cachedEnemyDB, cachedMinionDB)
 	}
 
 	combinedDPS, totalDotDPS := f.rollUp(combinedDPS, &skills)
