@@ -15,6 +15,7 @@ import (
 
 // TestCalcsSkillBuffsMatchPoB: The Calcs tab's SkillBuffs / SkillDebuffs breakdowns.
 func TestCalcsSkillBuffsMatchPoB(t *testing.T) {
+	t.Parallel()
 	requireGameData(t, "3.29")
 	f, err := os.Open("../testdata/oracle/calcs_skill_buffs_expected.jsonl.gz")
 	if err != nil {

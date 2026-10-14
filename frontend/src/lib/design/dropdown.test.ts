@@ -51,4 +51,61 @@ describe('Dropdown', () => {
     await fireEvent.keyDown(box, { key: 'Enter' });
     expect(onchange).toHaveBeenCalledWith('c');
   });
+
+  it('searchable: typing filters the entries by every word, the keys move over what is shown, Escape clears then closes', async () => {
+    const onchange = vi.fn();
+    const many = [
+      { value: '0', label: 'None' },
+      { value: '1', label: '+# to maximum Life' },
+      { value: '2', label: '#% increased maximum Life' },
+      { value: '3', label: '+#% to Fire Resistance' },
+      { value: '4', label: '#% increased Life Regeneration rate' }
+    ];
+    render(Dropdown, { options: many, value: '0', searchable: true, 'aria-label': 'Affix 1', onchange });
+    const box = screen.getByRole('combobox', { name: 'Affix 1' });
+    await fireEvent.keyDown(box, { key: 'l' });
+    await fireEvent.keyDown(box, { key: 'i' });
+    await fireEvent.keyDown(box, { key: 'f' });
+    await fireEvent.keyDown(box, { key: 'e' });
+    await fireEvent.keyDown(box, { key: ' ' });
+    await fireEvent.keyDown(box, { key: 'i' });
+    await fireEvent.keyDown(box, { key: 'n' });
+    await fireEvent.keyDown(box, { key: 'c' });
+    expect(screen.getAllByRole('option').map((o) => o.textContent?.trim())).toEqual(['#% increased maximum Life', '#% increased Life Regeneration rate']);
+    expect(screen.getByRole('searchbox', { name: 'Filter Affix 1' })).toHaveProperty('value', 'life inc');
+    await vi.waitFor(() => expect(box.getAttribute('aria-activedescendant')).toMatch(/-o2$/));
+    await fireEvent.keyDown(box, { key: 'ArrowDown' });
+    await vi.waitFor(() => expect(box.getAttribute('aria-activedescendant')).toMatch(/-o4$/));
+    await fireEvent.keyDown(box, { key: 'Backspace' });
+    await fireEvent.keyDown(box, { key: 'Backspace' });
+    await fireEvent.keyDown(box, { key: 'Backspace' });
+    await fireEvent.keyDown(box, { key: 'Backspace' });
+    expect(screen.getAllByRole('option')).toHaveLength(3);
+    await fireEvent.keyDown(box, { key: 'Escape' });
+    expect(screen.getAllByRole('option')).toHaveLength(5);
+    await fireEvent.keyDown(box, { key: 'r' });
+    await fireEvent.keyDown(box, { key: 'e' });
+    await fireEvent.keyDown(box, { key: 's' });
+    await fireEvent.keyDown(box, { key: 'Enter' });
+    expect(onchange).toHaveBeenCalledWith('3');
+    expect(screen.queryByRole('listbox')).toBeNull();
+    await fireEvent.click(box);
+    expect(screen.getAllByRole('option')).toHaveLength(5);
+    await fireEvent.input(screen.getByRole('searchbox', { name: 'Filter Affix 1' }), { target: { value: 'fire' } });
+    expect(screen.getAllByRole('option').map((o) => o.textContent?.trim())).toEqual(['+#% to Fire Resistance']);
+  });
+
+  it('searchable: an entry the text names exactly is the one Enter picks, wherever it is in the list', async () => {
+    const onchange = vi.fn();
+    const types = [
+      { value: '0', label: 'Helmet: Armour/Energy Shield' },
+      { value: '1', label: 'Helmet: Energy Shield' }
+    ];
+    render(Dropdown, { options: types, value: '0', searchable: true, 'aria-label': 'Type', onchange });
+    const box = screen.getByRole('combobox', { name: 'Type' });
+    for (const k of 'helmet: energy shield') await fireEvent.keyDown(box, { key: k });
+    expect(screen.getAllByRole('option')).toHaveLength(2);
+    await fireEvent.keyDown(box, { key: 'Enter' });
+    expect(onchange).toHaveBeenCalledWith('1');
+  });
 });

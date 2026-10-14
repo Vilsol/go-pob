@@ -93,6 +93,8 @@
     onexporttree?: () => Promise<string>;
     /* TreeTab.lua:682-810 */
     onimporttree?: (title: string, link: string) => Promise<string>;
+    /* TreeTab.lua:818-830 */
+    onshrinktree?: (link: string) => Promise<string>;
     specTip?: {
       index: number;
       title: string;
@@ -168,6 +170,7 @@
     specTip,
     onexporttree,
     onimporttree,
+    onshrinktree,
     versions = [],
     specVersion,
     onresettree,
@@ -209,11 +212,26 @@
   };
 
   // TreeTab.lua:629-647
-  let linkForm = $state<{ op: 'import'; title: string; link: string; msg: string; busy: boolean } | { op: 'export'; link: string; copied: boolean } | null>(
-    null
-  );
+  let linkForm = $state<
+    | { op: 'import'; title: string; link: string; msg: string; busy: boolean }
+    | { op: 'export'; link: string; copied: boolean; shrink: 'idle' | 'busy' | 'done'; msg: string }
+    | null
+  >(null);
   const exportTree = async () => {
-    linkForm = { op: 'export', link: (await onexporttree?.()) ?? '', copied: false };
+    linkForm = { op: 'export', link: (await onexporttree?.()) ?? '', copied: false, shrink: 'idle', msg: '' };
+  };
+  // TreeTab.lua:818-830
+  const shrinkTree = async () => {
+    const f = linkForm;
+    if (f?.op !== 'export' || !onshrinktree) return;
+    f.shrink = 'busy';
+    try {
+      f.link = await onshrinktree(f.link);
+      f.copied = false;
+    } catch {
+      f.msg = 'Failed to get PoEURL link. Try again later.';
+    }
+    f.shrink = 'done';
   };
   const importTree = async () => {
     const f = linkForm;
@@ -781,23 +799,27 @@
 <!-- TreeTab.lua:1011-1036, PassiveMasteryControl.lua:37-43 -->
 <Dialog open={!!M} title={M?.name ?? ''} class="w-[min(1000px,95vw)] p-4" onclose={closeMastery}>
   {#if M}
-    <div class="mt-2 grid h-[min(460px,70vh)] grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-3">
+    <div
+      role="presentation"
+      class="mt-2 grid h-[min(460px,calc(100dvh-8rem))] grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-3"
+      onmouseleave={() => M && onmasteryhover?.(M.id, null)}>
       <div class="scroll flex flex-col gap-2">
         <span class="note">{alloc[M.id] ? 'Choose one effect' : 'Choose one effect to allocate it'}</span>
         <div role="group" aria-label="Mastery effects" class="flex flex-col gap-1.5">
           {#each M.effects ?? [] as e, i (i)}
             <button
-              class="choice-card items-center justify-between gap-2.5 px-2.25 py-1.75 text-12 aria-pressed:bg-surface-3"
+              class={['choice-card items-center justify-between gap-2.5 px-2.25 py-1.75 text-12 aria-pressed:bg-surface-3', i === M.picked && 'border-accent']}
               aria-pressed={i === M.effect}
+              data-power-pick={i === M.picked || undefined}
               onclick={() => {
                 onmastery?.(M.id, i);
                 closeMastery();
               }}
               onmouseenter={() => M && onmasteryhover?.(M.id, i)}
-              onmouseleave={() => M && onmasteryhover?.(M.id, null)}
               onfocus={() => M && onmasteryhover?.(M.id, i)}
               onblur={() => M && onmasteryhover?.(M.id, null)}
-              ><span class="text-magic">{e.join(' / ')}</span>{#if i === M.effect}<span class="font-mono text-11 text-accent">selected</span>{/if}</button>
+              ><span class="text-magic">{e.join(' / ')}</span>{#if i === M.effect}<span class="font-mono text-11 text-accent">selected</span
+                >{:else if i === M.picked}<span class="font-mono text-11 text-accent">power pick</span>{/if}</button>
           {/each}
         </div>
         {#if alloc[M.id] && onpick}
@@ -811,7 +833,7 @@
       </div>
       <div class="scroll">
         {#if masteryDiff && masteryDiff.node === M.id && M.effects?.[masteryDiff.effect]}
-          <div aria-label="Mastery effect tooltip">
+          <div aria-label="Mastery effect tooltip" class="[&>[role=tooltip]]:w-auto [&>[role=tooltip]]:max-w-full [&>[role=tooltip]]:min-w-0">
             <WhatIfTooltip
               title={M.name}
               kind={KIND_NAME.m}
@@ -1045,7 +1067,11 @@
             readonly
             value={linkForm.link}
             onfocus={(e) => e.currentTarget.select()} />
+          {#if linkForm.msg}<span role="alert" class="text-12 text-worse">{linkForm.msg}</span>{/if}
           <div class="flex gap-1.5">
+            {#if onshrinktree}<Button size="sm" disabled={linkForm.shrink !== 'idle'} onclick={() => void shrinkTree()}
+                >{linkForm.shrink === 'busy' ? 'Shrinking...' : linkForm.shrink === 'done' ? 'Done' : 'Shrink with PoEURL'}</Button
+              >{/if}
             <Button
               size="sm"
               onclick={() => {

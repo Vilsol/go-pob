@@ -224,6 +224,8 @@
     const list = within(ed).getByRole('listbox', { name: 'Gem results' });
     await expect(list.scrollHeight).toBeGreaterThan(list.clientHeight);
     await expect(list.getBoundingClientRect().top).toBeGreaterThanOrEqual(0);
+    // GemSelectControl.lua:536-541
+    await expect(within(list).getAllByRole('option').length).toBeLessThan(60);
     await userEvent.keyboard('{ArrowUp}');
     const last = document.getElementById(box.getAttribute('aria-activedescendant')!)!;
     await waitFor(() => expect(last.getBoundingClientRect().bottom).toBeLessThanOrEqual(list.getBoundingClientRect().bottom + 1));

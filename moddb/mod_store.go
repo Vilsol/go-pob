@@ -7,6 +7,7 @@ import (
 	"slices"
 	"strings"
 	"sync"
+	"sync/atomic"
 
 	"github.com/Vilsol/go-pob-data/poe"
 
@@ -208,6 +209,16 @@ type ItemQueries interface {
 	ItemNameIs(slot, name string) bool
 }
 
+type ItemInfluenceQueries interface {
+	ItemShaperIs(slot string, shaper bool) bool
+	ItemElderIs(slot string, elder bool) bool
+}
+
+type CfgItemInfluence interface {
+	CfgShaperIs(shaper bool) bool
+	CfgElderIs(elder bool) bool
+}
+
 type AllOneHandedWeapon interface {
 	AddedUsingCondition(v string) (bool, bool)
 }
@@ -240,6 +251,13 @@ func NewModStore(parent ModStoreFuncs) *ModStore {
 		Multipliers: make(map[string]float64),
 		Conditions:  make(map[string]bool),
 	}
+}
+
+func SetCondition(s *ModStore, name string, value bool) {
+	if s.Conditions == nil {
+		s.Conditions = make(map[string]bool)
+	}
+	s.Conditions[name] = value
 }
 
 func (s *ModStore) Clone() *ModStore {
@@ -742,6 +760,14 @@ func (s *ModStore) evalItemConditionTag(value *mod.ModValueMulti, cfg *ListCfg, 
 				break
 			}
 		}
+		//pob:block:src/Classes/ModStore.lua:688-697
+		if tag.ShaperCond || tag.ElderCond {
+			influence, ok := queries.(ItemInfluenceQueries)
+			if !ok || (tag.ShaperCond && influence.ItemShaperIs(slot, true) == tag.Neg) || (tag.ElderCond && influence.ItemElderIs(slot, true) == tag.Neg) {
+				match = false
+				break
+			}
+		}
 		if tag.NameCond != "" {
 			if queries.ItemNameIs(slot, tag.NameCond) == tag.Neg {
 				match = false
@@ -759,6 +785,12 @@ func (s *ModStore) evalItemConditionTag(value *mod.ModValueMulti, cfg *ListCfg, 
 		}
 		if match && tag.CorruptedCond != nil && cfgItem.CfgCorruptedIs(*tag.CorruptedCond) == tag.Neg {
 			match = false
+		}
+		if match && (tag.ShaperCond || tag.ElderCond) {
+			influence, ok := cfgItem.(CfgItemInfluence)
+			if !ok || (tag.ShaperCond && influence.CfgShaperIs(true) == tag.Neg) || (tag.ElderCond && influence.CfgElderIs(true) == tag.Neg) {
+				match = false
+			}
 		}
 		if match && tag.NameCond != "" && cfgItem.CfgNameIs(tag.NameCond) == tag.Neg {
 			match = false
@@ -825,6 +857,17 @@ func (s *ModStore) evalModFlagOrTag(value *mod.ModValueMulti, cfg *ListCfg, tag 
 		return nil
 	}
 	if (*cfg.Flags)&tag.Flag == 0 {
+		return nil
+	}
+	return value
+}
+
+//pob:block:src/Classes/ModStore.lua:875-881
+func (s *ModStore) evalKeywordFlagAndTag(value *mod.ModValueMulti, cfg *ListCfg, tag *mod.KeywordFlagAndTag) *mod.ModValueMulti {
+	if cfg == nil || cfg.KeywordFlags == nil {
+		return nil
+	}
+	if (*cfg.KeywordFlags)&tag.KeywordFlags != tag.KeywordFlags {
 		return nil
 	}
 	return value
@@ -992,6 +1035,8 @@ func (s *ModStore) evalTag(raw mod.Tag, value *mod.ModValueMulti, cfg *ListCfg) 
 		value = s.evalSocketedInTag(value, cfg, tag)
 	case *mod.ModFlagOrTag:
 		value = s.evalModFlagOrTag(value, cfg, tag)
+	case *mod.KeywordFlagAndTag:
+		value = s.evalKeywordFlagAndTag(value, cfg, tag)
 	case *mod.StatThresholdTag:
 		value = s.evalStatThresholdTag(value, cfg, tag)
 	case *mod.MonsterTagTag:
@@ -1098,12 +1143,48 @@ func applyGlobalLimit(globalLimits map[string]float64, key string, limit float64
 	return value
 }
 
+type nameTable struct {
+	prefix string
+	names  atomic.Pointer[map[string]string]
+	mu     sync.Mutex
+}
+
+func (t *nameTable) of(variable string) string {
+	if names := t.names.Load(); names != nil {
+		if name, ok := (*names)[variable]; ok {
+			return name
+		}
+	}
+	t.mu.Lock()
+	defer t.mu.Unlock()
+	old := t.names.Load()
+	if old != nil {
+		if name, ok := (*old)[variable]; ok {
+			return name
+		}
+	}
+	next := make(map[string]string, 1)
+	if old != nil {
+		next = maps.Clone(*old)
+	}
+	name := t.prefix + variable
+	next[variable] = name
+	t.names.Store(&next)
+	return name
+}
+
+//pob:block:src/Classes/ModStore.lua:21-28
+var (
+	multiplierName = &nameTable{prefix: "Multiplier:"}
+	conditionName  = &nameTable{prefix: "Condition:"}
+)
+
 //pob:src/Classes/ModStore.lua:265-267
 func (s *ModStore) GetMultiplier(variable string, cfg *ListCfg, noMod bool) float64 {
 	//	return (not noMod and self:Override(cfg, multiplierName[var]))
 	//	    or (self.multipliers[var] or 0) + (parent...) + (not noMod and self:Sum("BASE", ...) or 0)
 	if !noMod {
-		if override := overrideIn(s.Child, s.Child, cfg, "Multiplier:"+variable); override != nil {
+		if override := overrideIn(s.Child, s.Child, cfg, multiplierName.of(variable)); override != nil {
 			return override.Float()
 		}
 	}
@@ -1119,7 +1200,7 @@ func (s *ModStore) GetMultiplier(variable string, cfg *ListCfg, noMod bool) floa
 	}
 
 	if !noMod {
-		out += sumIn(s.Child, s.Child, mod.TypeBase, cfg, "Multiplier:"+variable)
+		out += sumIn(s.Child, s.Child, mod.TypeBase, cfg, multiplierName.of(variable))
 	}
 
 	return out
@@ -1200,7 +1281,7 @@ func (s *ModStore) GetCondition(variable string, cfg *ListCfg, noMod bool) (bool
 		}
 	}
 
-	if !noMod && flagIn(s.Child, s.Child, cfg, "Condition:"+variable) {
+	if !noMod && flagIn(s.Child, s.Child, cfg, conditionName.of(variable)) {
 		return true, true
 	}
 

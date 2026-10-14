@@ -23,7 +23,7 @@ vi.mock('$lib/cache', () => ({
 const { bootWorker, loadCorpusBuild } = await import('../../../harness/component/go_runtime');
 const { readGate } = await import('../../../harness/component/as_remote');
 const { get } = await import('svelte/store');
-const { currentBuild } = await import('$lib/global');
+const { currentBuild, outputs } = await import('$lib/global');
 const { workerInstance } = await import('$lib/go/sync_worker');
 
 const BUILD = '0008-necromancer-vaal-summon-skeletons.xml';
@@ -504,6 +504,31 @@ describe('the group list shortcuts', () => {
       compare.mockRestore();
     }
   });
+  it('the gem enable what-if is asked again once the toggle is calculated, without a re-hover', async () => {
+    await mountSkills();
+    let calculated = false;
+    const life = { label: 'Life', value: '+10', better: true };
+    const compare = vi.spyOn(workerInstance, 'GemEnableCompare').mockImplementation(() => Promise.resolve(calculated ? [{ lines: [life] }] : []));
+    const box = () => within(editor()).getAllByRole('checkbox', { name: / enabled$/ })[0] as HTMLInputElement;
+    const shown = () => within(editor()).getByRole('status', { name: 'What-if' });
+    const before = get(outputs);
+    try {
+      await fireEvent.mouseEnter(box());
+      await vi.waitFor(() => expect(shown().textContent).toContain('Disabling this gem will give you:'));
+      await fireEvent.click(box());
+      await vi.waitFor(() => expect(goGems()[0].Enabled).toBe(false), { timeout: 5000 });
+      await vi.waitFor(() => expect(shown().textContent).toContain('Enabling this gem will give you:'));
+      calculated = true;
+      outputs.set({ ...before } as NonNullable<typeof before>);
+      await vi.waitFor(() => expect(shown().textContent).toContain('Life'));
+      expect(shown().textContent).toContain('Enabling this gem will give you:');
+      await fireEvent.click(box());
+      await vi.waitFor(() => expect(goGems()[0].Enabled).toBe(true), { timeout: 5000 });
+    } finally {
+      compare.mockRestore();
+      outputs.set(before);
+    }
+  });
 });
 
 describe('the gem tooltip (GemTooltip.lua)', () => {
@@ -565,6 +590,31 @@ describe('the socket group tooltip (SkillsTab:AddSocketGroupTooltip)', () => {
       await vi.waitFor(() => expect(screen.queryByRole('tooltip', { name: 'Socket group tooltip' })).toBeNull());
     } finally {
       tip.mockRestore();
+    }
+  });
+
+  it('a Ctrl+click toggle under a still pointer reads the tooltip again once calculated', async () => {
+    await mountSkills();
+    let calculated = false;
+    const tip = vi
+      .spyOn(workerInstance, 'SocketGroupTooltip')
+      .mockImplementation(() => Promise.resolve([{ Text: calculated ? '^7After the toggle' : '^7Before the toggle', Separator: false }]));
+    const shown = () => screen.getByRole('tooltip', { name: 'Socket group tooltip' });
+    const enabled = goGroup(1)?.Enabled;
+    const before = get(outputs);
+    try {
+      await fireEvent.mouseEnter(cards()[1]);
+      await vi.waitFor(() => expect(shown().textContent).toContain('Before the toggle'));
+      await fireEvent.click(cards()[1], { ctrlKey: true });
+      await vi.waitFor(() => expect(goGroup(1)?.Enabled).toBe(!enabled), { timeout: 5000 });
+      calculated = true;
+      outputs.set({ ...before } as NonNullable<typeof before>);
+      await vi.waitFor(() => expect(shown().textContent).toContain('After the toggle'));
+      await fireEvent.click(cards()[1], { ctrlKey: true });
+      await vi.waitFor(() => expect(goGroup(1)?.Enabled).toBe(enabled), { timeout: 5000 });
+    } finally {
+      tip.mockRestore();
+      outputs.set(before);
     }
   });
 });

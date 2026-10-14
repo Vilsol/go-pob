@@ -13,6 +13,7 @@
   import type { ItemSummary, ModLine, StatDiff } from './fixtures';
   import type { AffixRow } from './fixtures/items';
 
+  // ItemsTab.lua:988-993
   type Mods = { implicits: ModLine[]; explicits: ModLine[] };
   type Props = {
     open?: boolean;
@@ -24,10 +25,28 @@
     readonly?: string;
     whatIf?: WhatIf;
     onedittext?: () => void;
+    modTable?: boolean;
+    onmodtable?: () => void;
+    onclone?: () => void;
     onsave?: (item: ItemSummary, equip: boolean) => void;
     onclose?: () => void;
   };
-  let { open = $bindable(false), item, slot, impact, isNew = false, affixes, readonly, whatIf, onedittext, onsave, onclose }: Props = $props();
+  let {
+    open = $bindable(false),
+    item,
+    slot,
+    impact,
+    isNew = false,
+    affixes,
+    readonly,
+    whatIf,
+    onedittext,
+    modTable,
+    onmodtable,
+    onclone,
+    onsave,
+    onclose
+  }: Props = $props();
 
   const RARITIES = ['Normal', 'Magic', 'Rare', 'Unique', 'Relic'];
   const start = (): Mods => ({ implicits: [...item.implicits], explicits: [...item.explicits] });
@@ -89,8 +108,26 @@
         onedittext();
         open = false;
       }}>Edit as text</Button>
-    <Button size="sm" aria-haspopup="dialog" disabled={!!readonly} title={readonly} onclick={() => (picker = true)}>Mod table</Button>
-    <Button size="sm" disabled={!!readonly} title={readonly}>Clone as new item</Button>
+    <Button
+      size="sm"
+      aria-haspopup="dialog"
+      disabled={readonly !== undefined && !(onmodtable && modTable)}
+      title={readonly === undefined ? undefined : !onmodtable ? readonly : modTable ? undefined : 'PoB adds modifiers to magic and rare items only'}
+      onclick={() => {
+        if (readonly === undefined) picker = true;
+        else if (onmodtable) {
+          onmodtable();
+          open = false;
+        }
+      }}>Mod table</Button>
+    <Button
+      size="sm"
+      disabled={!onclone}
+      title={onclone ? 'Open a copy in the paste panel, saved as a new item' : readonly}
+      onclick={() => {
+        onclone?.();
+        open = false;
+      }}>Clone as new item</Button>
     {#if !readonly}
       <div role="group" aria-label="Item editor history" class="ml-auto flex items-center gap-1.5 rounded-md border border-line bg-surface-1 px-1.5 py-0.75">
         <span class="text-11 text-text-3">Item history</span>

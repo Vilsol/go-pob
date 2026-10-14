@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { untrack } from 'svelte';
   import TooltipLines from './TooltipLines.svelte';
   import FloatingLabel from './FloatingLabel.svelte';
   import Select from './Select.svelte';
@@ -76,6 +77,7 @@
     grouptip?: (group: number) => Promise<{ Text: string; Separator: boolean }[] | undefined>;
     /* SkillListControl.lua:234-260 */
     groupicon?: (slot: string) => string | undefined;
+    revision?: unknown;
   };
   let {
     sets,
@@ -109,7 +111,8 @@
     onoption,
     editor,
     grouptip,
-    groupicon
+    groupicon,
+    revision
   }: Props = $props();
   let groupTip = $state.raw<{ i: number; lines?: { Text: string; Separator: boolean }[] }>();
   const showGroupTip = (i: number) => {
@@ -121,6 +124,16 @@
       })
       .catch(() => {});
   };
+  $effect(() => {
+    void revision;
+    const i = untrack(() => groupTip?.i);
+    if (i === undefined || !grouptip) return;
+    grouptip(i)
+      .then((lines) => {
+        if (groupTip?.i === i) groupTip = { i, lines };
+      })
+      .catch(() => {});
+  });
 
   const SORTS = ['Full DPS', 'Combined DPS', 'Hit DPS', 'Average Hit', 'DoT DPS', 'Bleed DPS', 'Ignite DPS', 'Poison DPS', 'Effective Hit Pool'];
   const LEVELS = [
@@ -405,6 +418,7 @@
       gemtip={editor?.gemtip && ((kind: 'gem' | 'list' | 'quality', key: number | string) => editor.gemtip!(selected, kind, key))}
       sortCache={editor?.sortCache}
       onpicker={editor?.onpicker && ((open: boolean) => editor.onpicker!(selected, open))}
-      slottip={editor?.slottip} />
+      slottip={editor?.slottip}
+      {revision} />
   {/key}
 {/if}

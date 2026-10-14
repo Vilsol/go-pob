@@ -12,6 +12,7 @@ import (
 
 // TestCalcsAreaBreakdownsMatchPoB: breakdown.area (CalcBreakdown.lua:95-109) against the pin's CALCS pass over every 40th corpus build.
 func TestCalcsAreaBreakdownsMatchPoB(t *testing.T) {
+	t.Parallel()
 	requireGameData(t, "3.29")
 	f, err := os.Open("../testdata/oracle/calcs_area_breakdowns_expected.jsonl.gz")
 	if err != nil {

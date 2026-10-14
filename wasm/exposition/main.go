@@ -10,6 +10,7 @@ import (
 	"github.com/Vilsol/go-pob/builds"
 	"github.com/Vilsol/go-pob/calculator"
 	"github.com/Vilsol/go-pob/config"
+	"github.com/Vilsol/go-pob/data"
 	"github.com/Vilsol/go-pob/data/raw"
 	"github.com/Vilsol/go-pob/pob"
 	"github.com/Vilsol/go-pob/storage"
@@ -80,6 +81,8 @@ func Exports(r bind.Registry) {
 	r.Func(CalculateAllocationPaths)
 	r.Func(CalculatePrunableNodes)
 	r.Func(CalculateDependentNodes)
+	r.Type(data.SubgraphNode{}, bind.Plain())
+	r.Func(CalculateDependentNodesWith)
 	r.Func(GetMiscCalculator, bind.AsPromise())
 	r.Func(MiscCalculatorFor)
 	r.Func(ParseModLines)

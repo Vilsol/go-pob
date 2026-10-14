@@ -134,6 +134,8 @@ type Environment struct {
 
 	fullDPSSkillCosts map[int]skillCostEntry
 
+	spare spareOutputs
+
 	specAllocCounts allocatedNodeCounts
 
 	nodeModList *moddb.ModList
@@ -334,6 +336,8 @@ type ItemData struct {
 	OtherModLines    []string
 
 	GrantedSkills []ItemGrantedSkill
+
+	shaper, elder bool
 }
 
 type ArmourData struct {

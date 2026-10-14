@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { POWER_FLASH_MS, PowerFlashes } from './power_flash';
+import { POWER_FLASH_MS, PowerFlashes, powerRingSize } from './power_flash';
 
 afterEach(() => vi.useRealTimers());
 
@@ -26,5 +26,12 @@ describe('the power report flashes (UI_ISSUES Tree 4)', () => {
     expect(f.flashing.size).toBe(0);
     f.arrive([1]);
     expect([...f.flashing.keys()]).toEqual([1]);
+  });
+});
+
+describe('the power report hover ring', () => {
+  it('is three quarters of its first size (28px floor, 450 tree units)', () => {
+    expect(powerRingSize(3)).toBe(0.75 * (450 / 3));
+    expect(powerRingSize(100)).toBe(0.75 * 28);
   });
 });

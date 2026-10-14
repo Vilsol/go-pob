@@ -301,9 +301,12 @@ describe('import/+page.svelte', () => {
       await fireEvent.input(chars.getByRole('textbox', { name: /Account name/ }), { target: { value: account } });
       await fireEvent.click(chars.getByRole('button', { name: 'Start' }));
     };
-    afterEach(() => {
+    afterEach(async () => {
       vi.unstubAllGlobals();
       localStorage.clear();
+      const { accountSession, resetAccountSession } = await import('$lib/shell/account_session.svelte');
+      resetAccountSession();
+      accountSession.lastLeague = undefined;
     });
 
     it('needs the discriminator, says the private-profile message, and writes nothing', async () => {
@@ -344,8 +347,28 @@ describe('import/+page.svelte', () => {
       await vi.waitFor(() => expect(chars.getByRole('status').textContent).toBe('Character import status: Passive tree and jewels successfully imported.'));
       expect(f.mock.calls.at(-1)?.[0]).toBe('/api/poe/passives?realm=pc&account=Vilsol%233184&character=Zed');
       expect(tree).toHaveBeenCalledWith(JSON.stringify(list[0]), '{"hashes":[1,2]}', true);
+      // ImportTab.lua:441, 1925-1931
+      const { unsavedName } = await import('$lib/shell/build_name.svelte');
+      expect(unsavedName.predefined).toBe('Vilsol - Zed');
       tree.mockRestore();
       outputs.set(undefined);
+    });
+
+    it('returning to the page selects the character chosen in a league other than the default one', async () => {
+      serveApi({ characters: () => Response.json(list), profile: () => Response.json({ accountName: 'Vilsol-3184' }) });
+      let chars = await section();
+      await start(chars, 'vilsol#3184');
+      await vi.waitFor(() => expect(chars.getByRole('status').textContent).toBe('Character import status: Character list successfully retrieved.'));
+      expect(chars.getByRole<HTMLSelectElement>('combobox', { name: 'League' }).value).toBe('Mercenaries');
+      await fireEvent.change(chars.getByRole('combobox', { name: 'League' }), { target: { value: 'Standard' } });
+      expect(chars.getByRole<HTMLSelectElement>('combobox', { name: 'Character' }).value).toBe('Zed');
+      const { accountSession } = await import('$lib/shell/account_session.svelte');
+      await vi.waitFor(() => expect(accountSession.selected?.name).toBe('Zed'));
+      cleanup();
+      chars = await section();
+      expect(chars.getByRole<HTMLSelectElement>('combobox', { name: 'League' }).value).toBe('Standard');
+      expect(chars.getByRole<HTMLSelectElement>('combobox', { name: 'Character' }).value).toBe('Zed');
+      expect(accountSession.selected?.name).toBe('Zed');
     });
 
     it("imports the items and skills with PoB's three boxes, and says GGG's error", async () => {

@@ -1,8 +1,10 @@
 package data_test
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 	"strconv"
 	"strings"
 	"testing"
@@ -60,48 +62,73 @@ func TestPrunableNodesOnRealBuilds(t *testing.T) {
 				base[id] = true
 			}
 			t.Logf("%d allocated nodes are already cut off (cluster jewel inner sockets and what hangs off them)", len(base))
+			if len(base)*2 > len(active) {
+				t.Fatalf("REFUSING: %d of %d allocated nodes are already cut off, so the roots never reach the tree", len(base), len(active))
+			}
 
 			_, adj := data.TreeGraphForTest(v)
 			set := make(map[int64]bool, len(active))
 			for _, id := range active {
 				set[id] = true
 			}
-			for _, id := range active {
-				n := nodes[strconv.FormatInt(id, 10)]
-				if n.ClassStartIndex != nil || (n.IsAscendancyStart != nil && *n.IsAscendancyStart) || (n.IsMastery != nil && *n.IsMastery) {
-					continue
-				}
-				nb := 0
-				for a := range adj[id] {
-					if set[a] {
-						nb++
+
+			check := func(depends func(id int64) []int64) []string {
+				var errs []string
+
+				leaves := 0
+				for _, id := range active {
+					n := nodes[strconv.FormatInt(id, 10)]
+					if n.ClassStartIndex != nil || (n.IsAscendancyStart != nil && *n.IsAscendancyStart) || (n.IsMastery != nil && *n.IsMastery) {
+						continue
+					}
+					nb := 0
+					for a := range adj[id] {
+						if set[a] {
+							nb++
+						}
+					}
+					if nb != 1 {
+						continue
+					}
+					leaves++
+					if got := depends(id); len(got) != 0 {
+						errs = append(errs, fmt.Sprintf("removing leaf %d (%v) also takes %d nodes: %v", id, *n.Name, len(got), got))
 					}
 				}
-				if nb != 1 {
-					continue
+				if leaves == 0 {
+					errs = append(errs, "CONTROL: no allocated leaf, so the leaf check proves nothing")
 				}
-				if got := v.CalculateDependentNodes(active, id, roots); len(got) != 0 {
-					t.Errorf("removing leaf %d (%v) also takes %d nodes: %v", id, *n.Name, len(got), got)
+
+				found := false
+				for _, id := range active {
+					deps := depends(id)
+					if len(deps) < 2 {
+						continue
+					}
+					found = true
+					for _, d := range deps {
+						if !set[d] || base[d] || d == id {
+							errs = append(errs, fmt.Sprintf("removing %d takes %d, which is not an allocated, reachable, other node", id, d))
+						}
+					}
+					break
 				}
-				break
+				if !found {
+					errs = append(errs, "CONTROL: no allocated node carries a branch of 2+ nodes, so the leaf check proves nothing")
+				}
+				return errs
 			}
 
-			found := false
-			for _, id := range active {
-				deps := v.CalculateDependentNodes(active, id, roots)
-				if len(deps) < 2 {
-					continue
-				}
-				found = true
-				for _, d := range deps {
-					if !set[d] || base[d] || d == id {
-						t.Errorf("removing %d takes %d, which is not an allocated, reachable, other node", id, d)
-					}
-				}
-				break
+			for _, e := range check(func(id int64) []int64 { return v.CalculateDependentNodes(active, id, roots) }) {
+				t.Error(e)
 			}
-			if !found {
-				t.Errorf("CONTROL: no allocated node carries a branch of 2+ nodes, so the leaf check proves nothing")
+
+			naive := func(id int64) []int64 {
+				rest := slices.DeleteFunc(slices.Clone(active), func(n int64) bool { return n == id })
+				return v.CalculatePrunableNodes(rest, pruneRoots(rest))
+			}
+			if len(base) > 0 && len(check(naive)) == 0 {
+				t.Error("FIXTURE: the over-counting implementation passes the checks, so they cannot catch it")
 			}
 		})
 	}

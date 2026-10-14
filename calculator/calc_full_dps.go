@@ -37,6 +37,9 @@ func calcFullDPS(c *Calculator, env *Environment, mode OutputMode, cache *Enviro
 	//pob:block:src/Modules/Calcs.lua:177
 	fullEnv, cachedPlayerDB, cachedEnemyDB, cachedMinionDB := initEnvSpec(build, cache, mode, false, override, specEnv)
 	fullEnv.triggerCache = env.triggerCache
+	if specEnv != nil && specEnv.spare != nil {
+		fullEnv.spare, *specEnv.spare = *specEnv.spare, spareOutputs{}
+	}
 
 	reinit := false
 	for index, activeSkill := range fullEnv.Player.ActiveSkillList {
@@ -60,7 +63,9 @@ func calcFullDPS(c *Calculator, env *Environment, mode OutputMode, cache *Enviro
 		}
 
 		if reinit {
+			spare := spareOutputsOf(fullEnv)
 			fullEnv = reinitFullDPSEnv(fullEnv, cache, mode, cachedPlayerDB, cachedEnemyDB, cachedMinionDB)
+			fullEnv.spare = spare
 		}
 		reinit = true
 		fullEnv.Player.MainSkill = activeSkill
@@ -221,9 +226,41 @@ func calcFullDPS(c *Calculator, env *Environment, mode OutputMode, cache *Enviro
 		}
 	}
 
+	if specEnv != nil && specEnv.spare != nil {
+		if reinit {
+			*specEnv.spare = spareOutputsOf(fullEnv)
+		} else {
+			*specEnv.spare = fullEnv.spare
+		}
+	}
+
 	combinedDPS, totalDotDPS := f.rollUp(combinedDPS, &skills)
 
 	return combinedDPS, totalDotDPS, skills
+}
+
+type spareOutputs struct{ player, minion map[string]float64 }
+
+func spareOutputsOf(env *Environment) spareOutputs {
+	s := env.spare
+	env.spare = spareOutputs{}
+	if m := env.Player.Output; m != nil {
+		s.player = m
+	}
+	if m := env.Player.OutputTable["Minion"]; m != nil {
+		s.minion = m
+	}
+	return s
+}
+
+func takeSpareOutput(m *map[string]float64) map[string]float64 {
+	out := *m
+	if out == nil {
+		return make(map[string]float64, 896)
+	}
+	*m = nil
+	clear(out)
+	return out
 }
 
 //pob:block:src/Modules/Calcs.lua:327-335

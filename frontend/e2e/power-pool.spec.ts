@@ -10,7 +10,15 @@ type Rows = { ID: number; Name: string; Power: number; PathPower: number; PathDi
 type PoolWorker = {
   BuildPowerReportLive(stat: string, depth: number, workers: number): Promise<{ rows: Rows; ms: number } | undefined>;
   CancelPowerReport(): Promise<void>;
-  PowerPoolStats(): Promise<{ workers: number; running: number; bootMs: (number | undefined)[]; memoryMB: (number | undefined)[]; localShards: number }>;
+  PowerPoolWarm(workers: number): Promise<void>;
+  PowerPoolStats(): Promise<{
+    workers: number;
+    warm?: number;
+    running: number;
+    bootMs: (number | undefined)[];
+    memoryMB: (number | undefined)[];
+    localShards: number;
+  }>;
 };
 type Pool = { cachedWorker: { syncWrap: PoolWorker } };
 
@@ -49,6 +57,10 @@ test('parallel workers: the pooled report is the one-worker report row for row; 
   const single = await report(page, 'Life', 2, 1);
   expect(single.rows?.length, 'the one-worker report').toBeGreaterThan(100);
   expect((await poolStats(page)).workers, 'Off starts no worker').toBe(0);
+  const cold = await report(page, 'Life', 2, 3);
+  expect(cold.rows).toEqual(single.rows);
+  expect((await poolStats(page)).workers, 'the cold report boots the workers').toBe(2);
+  await expect.poll(async () => (await poolStats(page)).warm, { timeout: 60_000 }).toBe(2);
   const pooled = await report(page, 'Life', 2, 3);
   expect(pooled.rows).toEqual(single.rows);
   const stats = await poolStats(page);
@@ -88,8 +100,48 @@ test('parallel workers: Off by default; the panel runs the report on the workers
   await panel.getByRole('combobox', { name: 'Power stat' }).selectOption('FullDPS');
   await panel.getByRole('button', { name: 'Start' }).click();
   await expect.poll(async () => (await poolStats(page)).running, { timeout: 5 * 60_000 }).toBe(1);
+  await panel.getByRole('button', { name: 'Stop' }).click();
+  await expect.poll(async () => (await poolStats(page)).running, { timeout: 10_000 }).toBe(0);
+  await expect(panel.getByRole('progressbar')).toHaveCount(0);
+  await expect(panel.getByRole('button', { name: 'Stop' })).toHaveCount(0);
+  await panel.getByRole('button', { name: 'Start' }).click();
+  await expect.poll(async () => (await poolStats(page)).running, { timeout: 5 * 60_000 }).toBe(1);
   await panel.getByRole('button', { name: 'Close power report' }).click();
   await expect.poll(async () => (await poolStats(page)).running, { timeout: 10_000 }).toBe(0);
+  app.assertNoErrors();
+});
+
+test('parallel workers: the tree marks the node every running worker calculates', async ({ page }) => {
+  test.setTimeout(15 * 60_000);
+  const app = await open(page, '0280-elementalist-fireball');
+  await page.getByRole('button', { name: 'Settings' }).click();
+  const sheet = page.getByRole('dialog', { name: 'Settings' });
+  await sheet.getByRole('tab', { name: /^Power report/ }).click();
+  await sheet.getByRole('combobox', { name: 'Parallel workers' }).selectOption('3');
+  await sheet.getByRole('button', { name: 'Save' }).click();
+  await expect(sheet).toBeHidden();
+
+  await app.goTo('Tree');
+  await page.getByRole('button', { name: /^Power/ }).click();
+  const panel = page.getByRole('region', { name: 'Power report' });
+  await panel.getByRole('combobox', { name: 'Power stat' }).selectOption('FullDPS');
+  await panel.getByRole('button', { name: 'Start' }).click();
+  await expect.poll(async () => (await poolStats(page)).running, { timeout: 5 * 60_000 }).toBe(2);
+  const marked = new Set<string>();
+  await expect
+    .poll(
+      async () => {
+        const ids = await page.locator('[data-power-current]').evaluateAll((els) => els.map((e) => e.getAttribute('data-power-current') ?? ''));
+        if (ids.length > 1) ids.forEach((id) => marked.add(id));
+        return ids.length;
+      },
+      { timeout: 60_000 }
+    )
+    .toBeGreaterThan(1);
+  await panel.getByRole('button', { name: 'Stop' }).click();
+  await expect.poll(async () => (await poolStats(page)).running, { timeout: 10_000 }).toBe(0);
+  await expect(page.locator('[data-power-current]')).toHaveCount(0);
+  expect(marked.size).toBeGreaterThan(1);
   app.assertNoErrors();
 });
 
@@ -140,5 +192,35 @@ test('parallel workers: 0280 Full DPS wall-clock at 1, 2 and 4 workers', async (
       console.log(JSON.stringify({ kind: 'power-pool-warm', workers, bootMs: warm.bootMs, lifeReportMs: Date.now() - t0 }));
       await report(page, 'Life', 1, 1);
     }
+  }
+});
+
+test('parallel workers: break-even by stat and depth, cold and warm', async ({ page }) => {
+  test.skip(process.env.E2E_POWER_BENCH !== '1', 'E2E_POWER_BENCH=1');
+  test.setTimeout(60 * 60_000);
+  const file = process.env.E2E_POWER_BUILD ?? '0280-elementalist-fireball';
+  await open(page, file);
+  const cases = (process.env.E2E_POWER_CASES ?? 'Life:2 Life:1 Life:0 CombinedDPS:2 FullDPS:2').split(' ');
+  for (const c of cases) {
+    const [stat, depth] = [c.split(':')[0], Number(c.split(':')[1])];
+    const load = () => execFileSync('cat', ['/proc/loadavg'], { encoding: 'utf8' }).trim().split(' ')[0];
+    const one = await report(page, stat, depth, 1);
+    const cold = await report(page, stat, depth, 4);
+    await expect.poll(async () => (await poolStats(page)).warm, { timeout: 60_000 }).toBe(3);
+    const warm = await report(page, stat, depth, 4);
+    expect(cold.rows).toEqual(one.rows);
+    expect(warm.rows).toEqual(one.rows);
+    console.log(
+      JSON.stringify({
+        kind: 'power-pool-break-even',
+        build: file,
+        case: c,
+        rows: one.rows?.length,
+        off: Math.round(one.ms),
+        cold: Math.round(cold.ms),
+        warm: Math.round(warm.ms),
+        load: load()
+      })
+    );
   }
 });

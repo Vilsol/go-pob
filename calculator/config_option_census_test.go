@@ -260,10 +260,8 @@ func configHandlerSets() (map[string]bool, map[string]bool) {
 // TestConfigOptionCensus is `task config-census`: one row per pin option.
 func TestConfigOptionCensus(t *testing.T) {
 	requireOperatorRun(t, "report-only census; `task config-census`")
-	optsPath, out := os.Getenv("CONFIG_OPTIONS"), os.Getenv("CONFIG_CENSUS_OUT")
-	if optsPath == "" || out == "" {
-		t.Fatal("REFUSING: set CONFIG_OPTIONS (oracle/config_flip.lua options) and CONFIG_CENSUS_OUT")
-	}
+	in := requireTaskInput(t, "config-census", "CONFIG_OPTIONS", "CONFIG_CENSUS_OUT")
+	optsPath, out := in[0], in[1]
 	opts, err := loadConfigPinOptions(optsPath)
 	if err != nil {
 		t.Fatal(err)

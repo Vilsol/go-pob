@@ -23,12 +23,14 @@ const blockLines = (b: WhatIfBlock): TipLine[] => {
   return out;
 };
 
-/* PassiveTreeView.lua:1695-1724 */
-export const nodeWhatIfLines = (blocks: WhatIfBlock[], pathLength: number): TipLine[] => {
+/* PassiveTreeView.lua:1658-1724 */
+export const nodeWhatIfLines = (blocks: WhatIfBlock[], pathLength: number, diffs = true): TipLine[] => {
   const out: TipLine[] = [{ text: '', sep: true }];
-  for (const b of blocks) out.push(...blockLines(b));
-  if (!blocks.some((b) => b.sections.some((s) => s.lines.length))) {
-    out.push({ text: `^7No changes from allocating this node${pathLength > 1 ? ' or the nodes leading to it' : ''}.`, sep: false });
+  if (!diffs) out.push({ text: `${TIP}Tip: Press Ctrl+D to enable the display of stat differences.`, sep: false });
+  else {
+    for (const b of blocks) out.push(...blockLines(b));
+    if (!blocks.some((b) => b.sections.some((s) => s.lines.length))) out.push({ text: '^7No changes from allocating this node.', sep: false });
+    out.push({ text: `${TIP}Tip: Press Ctrl+D to disable the display of stat differences.`, sep: false });
   }
   if (pathLength > 0) {
     out.push({ text: '', sep: true }, { text: `^7${pathLength} points to node`, sep: false });

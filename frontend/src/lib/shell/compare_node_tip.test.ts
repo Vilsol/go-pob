@@ -21,6 +21,7 @@ describe('nodeWhatIfLines', () => {
       '^xDD0022-12 Life',
       '^7Allocating this node and all nodes leading to it will give you:',
       '^x33FF77+1,234.5 Total DPS (+3.2%) ^8[+411.5 pp]',
+      '^x80A080Tip: Press Ctrl+D to disable the display of stat differences.',
       '---',
       '^73 points to node',
       '^x80A080Tip: To reach this node by a different path, hold Shift, then trace the path and click this node'
@@ -50,7 +51,18 @@ describe('nodeWhatIfLines', () => {
   });
 
   it("says PoB's no-change line when nothing moves (PassiveTreeView.lua:1703)", () => {
-    expect(nodeWhatIfLines([], 2).map((l) => l.text)).toContain('^7No changes from allocating this node or the nodes leading to it.');
-    expect(nodeWhatIfLines([], 1).map((l) => l.text)).toContain('^7No changes from allocating this node.');
+    for (const n of [1, 2]) expect(nodeWhatIfLines([], n).map((l) => l.text)).toContain('^7No changes from allocating this node.');
+  });
+
+  it('shows only the Ctrl+D tip while the stat differences are off (PassiveTreeView.lua:1707-1710)', () => {
+    expect(
+      nodeWhatIfLines([{ header: '^7Allocating this node will give you:', sections: [{ lines: [dps] }] }], 2, false).map((l) => (l.sep ? '---' : l.text))
+    ).toEqual([
+      '---',
+      '^x80A080Tip: Press Ctrl+D to enable the display of stat differences.',
+      '---',
+      '^72 points to node',
+      '^x80A080Tip: To reach this node by a different path, hold Shift, then trace the path and click this node'
+    ]);
   });
 });

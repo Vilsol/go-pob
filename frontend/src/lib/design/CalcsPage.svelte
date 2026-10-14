@@ -90,6 +90,11 @@
     groupTipFor = -1;
     groupTip = undefined;
   };
+  $effect(() => {
+    void calcs;
+    void mainSocketGroup;
+    if (groupTipFor !== -1) showGroupTip();
+  });
   const digits = (e: Event) => {
     const raw = (e.currentTarget as HTMLInputElement).value.replace(/\D/g, '');
     return raw === '' ? undefined : parseInt(raw);

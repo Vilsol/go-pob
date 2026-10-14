@@ -38,6 +38,7 @@
     onconfigsets?: (op: SetListOp) => void;
     /* ConfigTab.lua:721-766 */
     whatif?: (key: string, value: ConfigValue) => Promise<StatCompareSection[] | undefined>;
+    revision?: unknown;
   };
   let {
     inputs,
@@ -55,7 +56,8 @@
     onconfigset,
     output,
     onconfigsets,
-    whatif
+    whatif,
+    revision
   }: Props = $props();
   let managing = $state(false);
 
@@ -98,8 +100,9 @@
     const o = [...view.most, ...view.sections.flatMap((s) => s.rows)].find((r): r is OptionView => r.kind === 'option' && r.v.var === key);
     return o && hasTip(o) ? o : undefined;
   });
-  let compare = $state.raw<{ key: string; sections?: StatCompareSection[] }>();
+  let compare = $state.raw<{ key: string; rev: unknown; sections?: StatCompareSection[] }>();
   $effect(() => {
+    const rev = revision;
     const o = tipOption;
     if (!o || !canCompare(o) || !whatif) {
       compare = undefined;
@@ -107,11 +110,12 @@
     }
     const value = (o.v.type === 'check' ? o.value !== true : tipValue(o)) as ConfigValue;
     const key = `${o.v.var}:${String(o.value)}:${String(value)}`;
-    if (compare?.key === key) return;
-    compare = { key };
+    if (compare?.key === key && compare.rev === rev) return;
+    const asked = { key, rev, sections: compare?.key === key ? compare.sections : undefined };
+    compare = asked;
     whatif(o.v.var, value)
       .then((sections) => {
-        if (compare?.key === key) compare = { key, sections };
+        if (compare === asked) compare = { key, rev, sections };
       })
       .catch(() => {});
   });
@@ -226,7 +230,7 @@
       {/if}
     {/each}
   </div>
-  <ConfigCustom groups={custom} selected={customSelected} ops={customOps} />
+  <ConfigCustom groups={custom} selected={customSelected} ops={customOps} {revision} />
 </div>
 
 {#if tip && tipOption}

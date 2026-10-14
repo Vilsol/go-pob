@@ -1,5 +1,6 @@
 <script lang="ts">
   import { buildName, unsavedName } from './build_name.svelte';
+  import { resetAccountSession } from './account_session.svelte';
   import { goto } from '$app/navigation';
   import { base } from '$app/paths';
   import { page } from '$app/state';
@@ -161,6 +162,8 @@
       setTimeout(() => {
         void syncWrap.ClearBuild();
         unsavedName.imported = false;
+        unsavedName.predefined = undefined;
+        resetAccountSession();
         currentBuildPath.current = undefined;
       }, 100)
     );

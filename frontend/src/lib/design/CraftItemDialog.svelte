@@ -3,6 +3,7 @@
   import Button from './Button.svelte';
   import FloatingLabel from './FloatingLabel.svelte';
   import Select from './Select.svelte';
+  import Dropdown from './Dropdown.svelte';
   import ItemTooltip from './ItemTooltip.svelte';
   import type { CraftChoice, TipProps } from './items';
 
@@ -31,8 +32,10 @@
     base = groups[t].bases.indexOf(start);
   });
   const choice = $derived({ rarity, title, base: bases[base] ?? '' });
+  let hovered = $state<number | null>(null);
   $effect(() => {
-    if (open && choice.base) onpreview?.(choice);
+    const b = hovered === null ? choice.base : (bases[hovered] ?? choice.base);
+    if (open && b) onpreview?.({ ...choice, base: b });
   });
 </script>
 
@@ -51,22 +54,27 @@
       {/if}
     </div>
     <FloatingLabel label="Type"
-      ><Select
-        class="h-7.5"
+      ><Dropdown
+        class="block h-7.5 w-full"
+        searchable
         aria-label="Type"
         options={groups.map((g, i) => ({ value: String(i), label: g.type }))}
         value={String(type)}
-        onchange={(e: Event & { currentTarget: HTMLSelectElement }) => {
-          type = Number(e.currentTarget.value);
+        onchange={(v: string) => {
+          type = Number(v);
           base = 0;
         }} /></FloatingLabel>
     <FloatingLabel label="Base"
-      ><Select
-        class="h-7.5"
+      ><Dropdown
+        class="block h-7.5 w-full"
+        searchable
         aria-label="Base"
         options={bases.map((b, i) => ({ value: String(i), label: b }))}
         value={String(base)}
-        onchange={(e: Event & { currentTarget: HTMLSelectElement }) => (base = Number(e.currentTarget.value))} /></FloatingLabel>
+        onhover={(i: number | null) => (hovered = i)}
+        onchange={(v: string) => {
+          base = Number(v);
+        }} /></FloatingLabel>
     {#if preview}
       <div aria-label="Base preview" role="group" class="self-start"><ItemTooltip {...preview} /></div>
     {/if}

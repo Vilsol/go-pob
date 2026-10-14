@@ -1,12 +1,19 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import type { Plugin } from 'vite';
-import { handleBuild, handlePoe } from './proxy';
+import { Readable } from 'node:stream';
+import { handleBuild, handlePoe, handlePoeUrl, handleShare } from './proxy';
 
 const route = (req: IncomingMessage) => {
-  const request = new Request(new URL(req.url ?? '/', 'http://localhost'), { method: req.method });
-  const { pathname } = new URL(request.url);
+  const url = new URL(req.url ?? '/', 'http://localhost');
   const deps = { fetch };
+  const { pathname } = url;
+  if (pathname === '/api/share') {
+    const body = req.method === 'POST' ? (Readable.toWeb(req) as ReadableStream<Uint8Array>) : undefined;
+    return handleShare(new Request(url, { method: req.method, body, duplex: 'half' } as RequestInit), deps);
+  }
+  const request = new Request(url, { method: req.method });
   if (pathname === '/api/build') return handleBuild(request, deps);
+  if (pathname === '/api/poeurl') return handlePoeUrl(request, deps);
   const poe = /^\/api\/poe\/([^/]+)$/.exec(pathname);
   return poe ? handlePoe(poe[1], request, deps) : undefined;
 };

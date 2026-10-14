@@ -53,7 +53,7 @@ const run = async (r: Extract<PowerPoolRequest, { type: 'run' }>) => {
       const now = performance.now();
       const rows = now - sent >= ROWS_MS;
       if (rows) sent = now;
-      post({ type: 'progress', seq: r.seq, done, tasks, shard: rows ? builder.Shard() : undefined });
+      post({ type: 'progress', seq: r.seq, done, tasks, current: builder.Current(), shard: rows ? builder.Shard() : undefined });
       await yieldToQueue();
     }
     if (live()) post({ type: 'done', seq: r.seq, shard: builder.Shard(), tasks, memory: memory?.buffer.byteLength ?? 0 });

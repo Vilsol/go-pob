@@ -12,10 +12,10 @@ func TestOppositeRingInfluenceRowsAcceptBothSpellings(t *testing.T) {
 		line string
 		want string
 	}{
-		{"70% increased Attack Damage if your opposite Ring is a Shaper Item", "ShaperItemInRing {OtherSlotNum}"},
-		{"70% increased Attack Damage if your other Ring is a Shaper Item", "ShaperItemInRing {OtherSlotNum}"},
-		{"80% increased Spell Damage if your opposite Ring is an Elder Item", "ElderItemInRing {OtherSlotNum}"},
-		{"80% increased Spell Damage if your other Ring is an Elder Item", "ElderItemInRing {OtherSlotNum}"},
+		{"70% increased Attack Damage if your opposite Ring is a Shaper Item", "shaper"},
+		{"70% increased Attack Damage if your other Ring is a Shaper Item", "shaper"},
+		{"80% increased Spell Damage if your opposite Ring is an Elder Item", "elder"},
+		{"80% increased Spell Damage if your other Ring is an Elder Item", "elder"},
 	} {
 		t.Run(tc.line, func(t *testing.T) {
 			e := ParseMod(tc.line, false)
@@ -26,21 +26,21 @@ func TestOppositeRingInfluenceRowsAcceptBothSpellings(t *testing.T) {
 				t.Fatalf("leftover Extra %q — the whole mod line is discarded", e.Extra)
 			}
 
-			var got []string
+			var tag *mod.ItemConditionTag
 			for _, tg := range e.ModList[0].Tags() {
-				if c, ok := tg.(*mod.ConditionTag); ok {
-					got = append(got, c.VarList...)
+				if c, ok := tg.(*mod.ItemConditionTag); ok {
+					tag = c
 				}
 			}
-			found := false
-			for _, v := range got {
-				if v == tc.want {
-					found = true
-				}
+			if tag == nil {
+				t.Fatalf("no ItemCondition tag on %q", tc.line)
 			}
-			if !found {
-				t.Errorf("condition vars = %v, want %q; the {OtherSlotNum} placeholder is what "+
-					"item setup resolves to the OTHER ring, so a literal slot would read the wrong one", got, tc.want)
+			if tag.ItemSlot != "Ring {OtherSlotNum}" {
+				t.Errorf("itemSlot = %q, want \"Ring {OtherSlotNum}\"; item setup resolves the placeholder to the OTHER ring, "+
+					"so a literal slot would read the wrong one", tag.ItemSlot)
+			}
+			if got := map[string]bool{"shaper": tag.ShaperCond, "elder": tag.ElderCond}; !got[tc.want] || got["shaper"] == got["elder"] {
+				t.Errorf("shaperCond=%v elderCond=%v, want only %sCond", tag.ShaperCond, tag.ElderCond, tc.want)
 			}
 		})
 	}

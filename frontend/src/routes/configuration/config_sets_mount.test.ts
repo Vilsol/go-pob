@@ -2,6 +2,7 @@
 
 import { describe, expect, it, beforeAll, afterEach, vi, type MockInstance } from 'vitest';
 import { render, fireEvent, cleanup, within, screen } from '@testing-library/svelte';
+import { get } from 'svelte/store';
 
 afterEach(cleanup);
 if (!HTMLDialogElement.prototype.showModal) {
@@ -50,10 +51,11 @@ beforeAll(async () => {
   outputs.set(undefined);
 }, 120_000);
 
-const mount = async () => {
+const mount = async (q = 'Arcane Surge') => {
   const Page = (await import('./+page.svelte')).default;
   const view = render(Page);
   await view.findAllByRole('textbox', { name: /Modifier line/ });
+  await fireEvent.input(view.getByRole('searchbox', { name: 'Filter options' }), { target: { value: q } });
   await fireEvent.click(view.getByRole('checkbox', { name: /Show options that don’t affect this build/ }));
   return view;
 };
@@ -167,9 +169,33 @@ describe('Manage config sets', () => {
     }
   });
 
+  it("a checkbox's what-if is asked again once its toggle is calculated, without a re-hover", async () => {
+    const view = await mount();
+    let calculated = false;
+    const compare = vi
+      .spyOn(workerInstance, 'ConfigCompare')
+      .mockImplementation(() => Promise.resolve([{ lines: [{ label: calculated ? 'After the toggle' : 'Before the toggle', value: '+1', better: true }] }]));
+    const before = get(outputs);
+    const on = optionBox(view).checked;
+    try {
+      await fireEvent.mouseEnter(optionBox(view).closest(`[data-var="${OPTION}"]`)!);
+      await vi.waitFor(() => expect(screen.getByRole('tooltip').textContent).toContain('Before the toggle'));
+      await fireEvent.click(optionBox(view));
+      await vi.waitFor(() => expect(goHas(OPTION)).toBe(!on));
+      calculated = true;
+      outputs.set({ ...before } as NonNullable<typeof before>);
+      await vi.waitFor(() => expect(screen.getByRole('tooltip').textContent).toContain('After the toggle'));
+      await fireEvent.click(optionBox(view));
+      await vi.waitFor(() => expect(goHas(OPTION)).toBe(on));
+    } finally {
+      compare.mockRestore();
+      outputs.set(before);
+    }
+  });
+
   // ConfigTab.lua:727-758
   it("hovering a dropdown's entry asks Go what selecting it gives", async () => {
-    const view = await mount();
+    const view = await mount('Boss');
     const compare = vi.spyOn(workerInstance, 'ConfigCompare').mockResolvedValue([{ lines: [{ label: 'Total DPS', value: '+1', better: true }] }]);
     try {
       const row = view.container.querySelector<HTMLElement>('[data-var="enemyIsBoss"]')!;

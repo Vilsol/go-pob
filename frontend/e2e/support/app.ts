@@ -69,9 +69,17 @@ export class App {
     await page.addInitScript(initPerf);
     await page.goto('/');
 
+    const stalled = async (stage: string, e: unknown) => {
+      const reached = await page
+        .evaluate(() => performance.getEntriesByType('mark').map((m) => `${m.name}@${m.startTime.toFixed(0)}`))
+        .catch(() => ['(page gone)']);
+      throw new Error(`App.open stalled waiting for ${stage}; marks: ${reached.join(', ') || 'none'}\n${String(e)}`);
+    };
     const newBuild = page.getByRole('button', { name: 'New build', exact: true });
-    await newBuild.waitFor({ timeout: SETTLE_TIMEOUT });
-    await page.waitForFunction(() => performance.getEntriesByName('pob:data-loaded').length > 0, undefined, { timeout: SETTLE_TIMEOUT });
+    await newBuild.waitFor({ timeout: SETTLE_TIMEOUT }).catch((e: unknown) => stalled('the New build button', e));
+    await page
+      .waitForFunction(() => performance.getEntriesByName('pob:data-loaded').length > 0, undefined, { timeout: SETTLE_TIMEOUT })
+      .catch((e: unknown) => stalled('pob:data-loaded', e));
     const marks = await page.evaluate(() => ({
       boot: performance.getEntriesByName('pob:wasm-booted')[0]?.startTime ?? NaN,
       data: performance.getEntriesByName('pob:data-loaded')[0]?.startTime ?? NaN

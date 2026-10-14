@@ -218,28 +218,48 @@ func specRoots(tree *data.Tree, classID pob.ClassID) []int64 {
 	return roots
 }
 
-//pob:block:src/Classes/ItemsTab.lua:1789-1809
-func socketCuts(build *pob.PathOfBuilding, itemID int) map[int][]int64 {
-	cuts := map[int][]int64{}
+type socketCut struct {
+	socket  int64
+	depends []int64
+}
+
+//pob:block:src/Classes/ItemsTab.lua:1789-1805
+func socketCuts(build *pob.PathOfBuilding, itemID int) map[int][]socketCut {
+	cuts := map[int][]socketCut{}
 	for k, spec := range build.Tree.Specs {
-		version, ok := data.TreeVersions[spec.TreeVersion]
-		if !ok {
-			version = data.TreeVersions[data.LatestTreeVersion]
+		if k == build.ActiveSpecIndex() {
+			continue
 		}
 		nodes := pob.SpecNodes(spec)
-		if k == build.ActiveSpecIndex() {
-			nodes = build.Build.PassiveNodes
-		}
 		for _, s := range spec.Sockets {
 			id := int64(s.NodeID)
 			if s.ItemID != itemID || !slices.Contains(nodes, id) {
 				continue
 			}
-			cuts[k] = append(cuts[k], id)
-			cuts[k] = append(cuts[k], version.CalculateDependentNodes(nodes, id, specRoots(version.Tree(), spec.ClassID))...)
+			shadow, tree := specShadow(build, k)
+			shadow.DeallocateNodes([]int64{id})
+			pruneOrphansOn(shadow, tree)
+			var depends []int64
+			for _, n := range nodes {
+				if n != id && !slices.Contains(shadow.Build.PassiveNodes, n) {
+					depends = append(depends, n)
+				}
+			}
+			cuts[k] = append(cuts[k], socketCut{id, depends})
 		}
 	}
 	return cuts
+}
+
+func specShadow(build *pob.PathOfBuilding, k int) (*pob.PathOfBuilding, *data.Tree) {
+	shadow := *build
+	shadow.Tree.Specs = slices.Clone(build.Tree.Specs)
+	shadow.SetActiveSpec(k + 1)
+	version := build.Tree.Specs[k].TreeVersion
+	if _, ok := data.TreeVersions[version]; !ok {
+		version = data.LatestTreeVersion
+	}
+	return &shadow, data.TreeVersions[version].Tree()
 }
 
 //pob:block:src/Classes/ItemListControl.lua:30-41,src/Classes/ItemsTab.lua:1768-1815
@@ -247,15 +267,15 @@ func DeleteItems(build *pob.PathOfBuilding, itemIDs []int) bool {
 	changed := false
 	for i := len(itemIDs) - 1; i >= 0; i-- {
 		cuts := socketCuts(build, itemIDs[i])
-		delete(cuts, build.ActiveSpecIndex())
+		socketed := activeSocketed(build, itemIDs[i])
 		if !build.DeleteItem(itemIDs[i]) {
 			continue
 		}
 		changed = true
-		for k, nodes := range cuts {
-			build.DeallocateSpecNodes(k, nodes)
+		for k, c := range cuts {
+			cutSpecSockets(build, k, c)
 		}
-		dropClusterRemnants(build)
+		dropClusterRemnants(build, socketed)
 	}
 	if changed {
 		PopulateSlots(build)
@@ -263,25 +283,65 @@ func DeleteItems(build *pob.PathOfBuilding, itemIDs []int) bool {
 	return changed
 }
 
+func activeSocketed(build *pob.PathOfBuilding, itemID int) bool {
+	i := build.ActiveSpecIndex()
+	return i >= 0 && slices.ContainsFunc(build.Tree.Specs[i].Sockets, func(s pob.Socket) bool { return s.ItemID == itemID })
+}
+
 //pob:block:src/Classes/PassiveSpec.lua:1723-1790
-func dropClusterRemnants(build *pob.PathOfBuilding) {
+func dropClusterRemnants(build *pob.PathOfBuilding, socketed bool) {
 	version := data.LatestTreeVersion
 	tree := data.TreeVersions[version].Tree()
-	nodes := buildClusterJewelGraphs(&Environment{Build: build, Cache: NewEnvironmentCache()}, version)
-	var gone []int64
-	for _, id := range build.Build.PassiveNodes {
-		if _, ok := nodes[strconv.FormatInt(id, 10)]; ok {
-			continue
-		}
-		node, static := tree.Nodes[strconv.FormatInt(id, 10)]
-		if (!static && id >= clusterNodeIDBase) || (static && node.ExpansionJewel != nil && node.ExpansionJewel.Parent != nil) {
-			gone = append(gone, id)
-		}
-	}
-	if len(gone) > 0 {
+	gone := clusterRemnants(build, build.Build.PassiveNodes, version)
+	if len(gone) > 0 || socketed {
 		build.DeallocateNodes(gone)
 		pruneOrphansOn(build, tree)
 	}
+}
+
+func cutSpecSockets(build *pob.PathOfBuilding, k int, cuts []socketCut) {
+	before := pob.SpecNodes(build.Tree.Specs[k])
+	shadow, tree := specShadow(build, k)
+	cut := make([]int64, 0, len(cuts))
+	var kept []int64
+	for _, c := range cuts {
+		cut = append(cut, c.socket)
+		for _, id := range c.depends {
+			if !isClusterNode(tree, id) {
+				kept = append(kept, id)
+			}
+		}
+	}
+	shadow.DeallocateNodes(cut)
+	shadow.DeallocateNodes(append(clusterRemnants(shadow, shadow.Build.PassiveNodes, build.Tree.Specs[k].TreeVersion), kept...))
+	pruneOrphansOn(shadow, tree)
+	var gone []int64
+	for _, id := range before {
+		if !slices.Contains(shadow.Build.PassiveNodes, id) && !slices.Contains(kept, id) {
+			gone = append(gone, id)
+		}
+	}
+	build.DeallocateSpecNodes(k, gone)
+}
+
+func clusterRemnants(build *pob.PathOfBuilding, allocated []int64, version pob.TreeVersion) []int64 {
+	if _, ok := data.TreeVersions[version]; !ok {
+		version = data.LatestTreeVersion
+	}
+	tree := data.TreeVersions[version].Tree()
+	nodes := buildClusterJewelGraphs(&Environment{Build: build, Cache: NewEnvironmentCache()}, version)
+	var gone []int64
+	for _, id := range allocated {
+		if _, ok := nodes[strconv.FormatInt(id, 10)]; !ok && isClusterNode(tree, id) {
+			gone = append(gone, id)
+		}
+	}
+	return gone
+}
+
+func isClusterNode(tree *data.Tree, id int64) bool {
+	node, static := tree.Nodes[strconv.FormatInt(id, 10)]
+	return (!static && id >= clusterNodeIDBase) || (static && node.ExpansionJewel != nil && node.ExpansionJewel.Parent != nil)
 }
 
 //pob:block:src/Classes/ItemListControl.lua:47-63

@@ -813,6 +813,17 @@ class PoBWorker {
     return exposition.CalculateDependentNodes(version, activeNodes, target, rootNodes);
   }
 
+  /* PassiveSpec.lua:1438-1592 */
+  CalculateDependentNodesWith(
+    version: string,
+    activeNodes: number[],
+    target: number,
+    rootNodes: number[],
+    subgraph: Parameters<typeof exposition.CalculateDependentNodesWith>[4]
+  ) {
+    return exposition.CalculateDependentNodesWith(version, activeNodes, target, rootNodes, subgraph);
+  }
+
   /* src/Modules/Calcs.lua:123-148 */
   private misc?: Promise<{ calc: exposition.MiscCalculator; base: exposition.StatOutputs } | undefined>;
   private tickMisc?: exposition.MiscCalculator;
@@ -3422,8 +3433,13 @@ class PoBWorker {
     if (!m || token !== this.misc || seq !== this.powerSeq) {
       return undefined;
     }
-    const count = workers > 1 && this.wasmModule && this.currentBuild ? workers : 1;
-    if (count === 1) this.powerPool?.terminate();
+    const pooled = workers > 1 && this.wasmModule !== undefined && this.currentBuild !== undefined;
+    if (pooled) this.powerPool ??= new PowerPool(() => this.wasmModule);
+    const xml = pooled ? new TextDecoder().decode(builds.SerializeBuild(this.currentBuild).unwrap()) : '';
+    const warm = pooled && this.powerPool!.warm(workers, xml);
+    const count = pooled && (warm || maxDepth === 0) ? workers : 1;
+    if (!pooled) this.powerPool?.terminate();
+    else if (count === 1) this.powerPool?.cancel();
     const builder = count > 1 ? exposition.NewPowerBuilderShard(m.calc, stat, maxDepth, 0, count) : exposition.NewPowerBuilder(m.calc, stat, maxDepth);
     if (!builder) {
       return undefined;
@@ -3434,9 +3450,7 @@ class PoBWorker {
     this.liveTasks = count > 1 ? builder.Tasks() : 0;
     const start = performance.now();
     let pool: PowerPoolRun | undefined;
-    if (count > 1 && this.currentBuild) {
-      this.powerPool ??= new PowerPool(() => this.wasmModule);
-      const xml = new TextDecoder().decode(builds.SerializeBuild(this.currentBuild).unwrap());
+    if (count > 1 && this.powerPool) {
       pool = this.powerPool.run(seq, xml, stat, maxDepth, count);
       this.livePool = pool;
     }
@@ -3515,13 +3529,14 @@ class PoBWorker {
     return total ? sum / total : 1;
   }
 
-  PowerReportLive(withRows: boolean): { done: number; current: number; rows?: calculator.PowerReportEntry[] } {
+  PowerReportLive(withRows: boolean): { done: number; current: number[]; rows?: calculator.PowerReportEntry[] } {
     const b = this.livePower;
-    if (!b) return { done: this.powerDone, current: 0 };
+    if (!b) return { done: this.powerDone, current: [] };
     const pool = this.livePool;
     if (pool) this.powerDone = this.poolDone(this.powerMainDone);
     const rows = !withRows ? undefined : pool ? [b.Shard(), ...pool.partial()].flatMap((s) => s.Rows ?? []) : [...(b.Report() ?? [])];
-    return { done: this.powerDone, current: b.Current(), rows: rows?.filter((r) => r.Power !== 0) };
+    const current = [...new Set([b.Current(), ...(pool?.current() ?? [])])].filter((id) => id !== 0);
+    return { done: this.powerDone, current, rows: rows?.filter((r) => r.Power !== 0) };
   }
 
   PowerPoolStats(): { workers: number; running: number; bootMs: (number | undefined)[]; memoryMB: (number | undefined)[]; localShards: number } {
@@ -3949,6 +3964,23 @@ class PoBWorker {
     }
     const lines = this.sidebarPass.pass?.Breakdown(minion, stat);
     return lines ? [...lines] : undefined;
+  }
+
+  /* PassiveTreeView.lua:1755-1762 */
+  CompareSpecJewelTooltip(specId: number, nodeId: number): calculator.ItemTooltip | undefined {
+    if (!this.currentBuild) return undefined;
+    const [tip, ok] = exposition.CompareSpecJewelTooltip(this.currentBuild, specId, nodeId, this.itemTipStats);
+    return ok ? tip : undefined;
+  }
+
+  PowerPoolWarm(workers: number): void {
+    if (workers <= 1) {
+      this.powerPool?.terminate();
+      return;
+    }
+    if (!this.wasmModule || !this.currentBuild) return;
+    this.powerPool ??= new PowerPool(() => this.wasmModule);
+    this.powerPool.warm(workers, new TextDecoder().decode(builds.SerializeBuild(this.currentBuild).unwrap()));
   }
 }
 

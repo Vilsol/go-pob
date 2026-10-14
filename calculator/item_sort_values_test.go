@@ -7,52 +7,56 @@ import (
 
 // TestSortValuesEqualTheFullWhatIf: The popups' sort values skip the Full DPS roll-up for every other stat.
 func TestSortValuesEqualTheFullWhatIf(t *testing.T) {
+	t.Parallel()
 	initItemsTabData(t)
 	for _, file := range []string{"0280-elementalist-fireball.xml", "0339-reliquarian-shield-crush-of-the-chieftain-2.xml"} {
-		build := loadCorpusBuild(t, file)
-		misc := GetMiscCalculator(build)
-		_, helmet := activeSetSlot(build, "Helmet")
-		item := ParseItem(helmet)
-		var ids []string
-		for _, g := range buildImplicitMods(item, "EATER") {
-			for k, m := range g.Mods {
-				if k%9 == 0 {
-					ids = append(ids, m.ID)
+		t.Run(file, func(t *testing.T) {
+			t.Parallel()
+			build := loadCorpusBuild(t, file)
+			misc := GetMiscCalculator(build)
+			_, helmet := activeSetSlot(build, "Helmet")
+			item := ParseItem(helmet)
+			var ids []string
+			for _, g := range buildImplicitMods(item, "EATER") {
+				for k, m := range g.Mods {
+					if k%9 == 0 {
+						ids = append(ids, m.ID)
+					}
 				}
 			}
-		}
-		if len(ids) < 10 {
-			t.Fatalf("REFUSING: %d Eater implicits sampled for %s's helmet", len(ids), file)
-		}
-		texts, found := implicitSortTexts(helmet, item, "EATER", ids)
-		for k, id := range ids {
-			if text, ok := ImplicitText(helmet, "EATER", id, ""); text != texts[k] || ok != found[k] {
-				t.Fatalf("%s %s: the item text differs from ImplicitText's", file, id)
+			if len(ids) < 10 {
+				t.Fatalf("REFUSING: %d Eater implicits sampled for %s's helmet", len(ids), file)
 			}
-		}
-		texts, found = append(texts, texts[0]), append(found, true)
+			texts, found := implicitSortTexts(helmet, item, "EATER", ids)
+			for k, id := range ids {
+				if text, ok := ImplicitText(helmet, "EATER", id, ""); text != texts[k] || ok != found[k] {
+					t.Fatalf("%s %s: the item text differs from ImplicitText's", file, id)
+				}
+			}
+			texts, found = append(texts, texts[0]), append(found, true)
 
-		envs := make([]*Environment, len(texts))
-		for k, text := range texts {
-			envs[k] = misc.Calc(&CalcOverride{RepSlotName: item.getPrimarySlot(), RepItem: ParseItem(text)})
-		}
-		compared, nonzero := 0, 0
-		for _, ps := range PowerStats() {
-			got := misc.sortValues(item.getPrimarySlot(), texts, found, ps)
-			for k := range texts {
-				want := powerStatValue(envs[k], ps)
-				if math.Float64bits(got[k]) != math.Float64bits(want) && !(math.IsNaN(got[k]) && math.IsNaN(want)) {
-					t.Errorf("%s %s with %s: sort value %v, the full what-if %v", file, ps.Stat, ids[min(k, len(ids)-1)], got[k], want)
-				}
-				compared++
-				if want != 0 {
-					nonzero++
+			envs := make([]*Environment, len(texts))
+			for k, text := range texts {
+				envs[k] = misc.Calc(&CalcOverride{RepSlotName: item.getPrimarySlot(), RepItem: ParseItem(text)})
+			}
+			compared, nonzero := 0, 0
+			for _, ps := range PowerStats() {
+				got := misc.sortValues(item.getPrimarySlot(), texts, found, ps)
+				for k := range texts {
+					want := powerStatValue(envs[k], ps)
+					if math.Float64bits(got[k]) != math.Float64bits(want) && !(math.IsNaN(got[k]) && math.IsNaN(want)) {
+						t.Errorf("%s %s with %s: sort value %v, the full what-if %v", file, ps.Stat, ids[min(k, len(ids)-1)], got[k], want)
+					}
+					compared++
+					if want != 0 {
+						nonzero++
+					}
 				}
 			}
-		}
-		if nonzero < compared/4 {
-			t.Fatalf("REFUSING: %s: only %d of %d values nonzero", file, nonzero, compared)
-		}
+			if nonzero < compared/4 {
+				t.Fatalf("REFUSING: %s: only %d of %d values nonzero", file, nonzero, compared)
+			}
+		})
 	}
 }
 

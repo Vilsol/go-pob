@@ -33,8 +33,10 @@ func traceCoverageCases(t *testing.T) (map[string]map[string]mod.Mod, *ModDB, *L
 	playerDB.Actor.(*linkedActor).monsterTags = []string{"construct"}
 
 	attack := mod.MFlagAttack
+	arrowAttack := mod.KeywordFlagArrow | mod.KeywordFlagAttack
 	cfg := &ListCfg{
 		Flags:              &attack,
+		KeywordFlags:       &arrowAttack,
 		SkillStats:         map[string]float64{"Strength": 200, "Life": 1000},
 		SkillName:          "Cyclone",
 		SummonSkillName:    "Raise Spectre",
@@ -116,6 +118,10 @@ func traceCoverageCases(t *testing.T) (map[string]map[string]mod.Mod, *ModDB, *L
 		"StatThresholdTag": {
 			"admits": base().Tag(mod.StatThreshold("Strength", 100)),
 			"gates":  base().Tag(mod.StatThreshold("Strength", 900)),
+		},
+		"KeywordFlagAndTag": {
+			"admits": base().Tag(mod.KeywordFlagAnd(mod.KeywordFlagArrow)),
+			"gates":  base().Tag(mod.KeywordFlagAnd(mod.KeywordFlagArrow | mod.KeywordFlagSpell)),
 		},
 		"MonsterTagTag": {
 			"admits": base().Tag(mod.MonsterTag("Construct")),

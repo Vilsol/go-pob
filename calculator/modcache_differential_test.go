@@ -268,6 +268,10 @@ func mcdPobMod(v *luaVal) mcdMod {
 		case 'b':
 			m.value = strconv.FormatBool(val.b)
 		case 's':
+			if f, err := strconv.ParseFloat(val.str, 64); err == nil && m.typ != "LIST" {
+				m.value = mcdNum(f)
+				break
+			}
 			m.value = "{" + mcdLeafString(val.str) + "}"
 		case 't':
 			var leaves []string
@@ -309,6 +313,12 @@ func mcdOurLeaves(v reflect.Value, out *[]string, depth int) {
 	case reflect.Struct:
 		for i := 0; i < v.NumField(); i++ {
 			if v.Type() == reflect.TypeOf(mod.ExtraSkill{}) && v.Type().Field(i).Name == "SkillName" {
+				continue
+			}
+			if v.Type().Field(i).Name == "KeyOfScaledMod" {
+				continue
+			}
+			if v.Type() == reflect.TypeOf(mod.WeaponData{}) && v.Type().Field(i).Name == "Unset" {
 				continue
 			}
 			mcdOurLeaves(v.Field(i), out, depth+1)

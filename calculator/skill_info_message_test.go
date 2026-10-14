@@ -9,6 +9,7 @@ import (
 
 // TestSkillInfoMessagesMatchPoB: Produced by oracle/skill_info_message.lua from the pinned PoB over the first 400 corpus builds.
 func TestSkillInfoMessagesMatchPoB(t *testing.T) {
+	t.Parallel()
 	f, err := os.Open("../testdata/oracle/skill_info_message_expected.jsonl")
 	if err != nil {
 		t.Fatal(err)

@@ -508,23 +508,17 @@ func TestConfigFlip(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
+	in := requireTaskInput(t, "config-flip", "CONFIG_FLIP_OUT", "CONFIG_OPTIONS", "POB_SRC", "LUAJIT", "FLIP_SCRIPT")
+	out, err := filepath.Abs(in[0])
+	if err != nil {
+		t.Fatal(err)
+	}
+	opts, err := loadConfigPinOptions(in[1])
+	if err != nil {
+		t.Fatal(err)
+	}
 	requireGameData(t, "3.29")
-	env := func(k string) string {
-		v := os.Getenv(k)
-		if v == "" {
-			t.Fatalf("REFUSING: %s is unset; run this through `task config-flip`", k)
-		}
-		return v
-	}
-	out, err := filepath.Abs(env("CONFIG_FLIP_OUT"))
-	if err != nil {
-		t.Fatal(err)
-	}
-	opts, err := loadConfigPinOptions(env("CONFIG_OPTIONS"))
-	if err != nil {
-		t.Fatal(err)
-	}
-	runner := flipPoBRunner{pobSrc: env("POB_SRC"), luajit: env("LUAJIT"), script: env("FLIP_SCRIPT"), shards: 6}
+	runner := flipPoBRunner{pobSrc: in[2], luajit: in[3], script: in[4], shards: 6}
 	if v, err := strconv.Atoi(os.Getenv("SHARDS")); err == nil && v > 0 {
 		runner.shards = v
 	}
@@ -754,7 +748,7 @@ func TestConfigFlip(t *testing.T) {
 
 	controlOpt, hasControl := optByVar["resistancePenalty"]
 	if !hasControl {
-		all, _ := loadConfigPinOptions(env("CONFIG_OPTIONS"))
+		all, _ := loadConfigPinOptions(in[1])
 		for _, o := range all {
 			if o.Var == "resistancePenalty" {
 				controlOpt, hasControl = o, true
@@ -1180,10 +1174,8 @@ func TestConfigVisibility(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	out, optsPath := os.Getenv("CONFIG_FLIP_OUT"), os.Getenv("CONFIG_OPTIONS")
-	if out == "" || optsPath == "" {
-		t.Fatal("REFUSING: set CONFIG_FLIP_OUT (a config-flip run) and CONFIG_OPTIONS")
-	}
+	in := requireTaskInput(t, "config-visibility", "CONFIG_FLIP_OUT", "CONFIG_OPTIONS")
+	out, optsPath := in[0], in[1]
 	opts, err := loadConfigPinOptions(optsPath)
 	if err != nil {
 		t.Fatal(err)

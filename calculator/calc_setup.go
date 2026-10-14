@@ -277,6 +277,7 @@ func processStats(env *Environment, modList *moddb.ModList, nodeId string, what 
 	copy(lines, stats)
 
 	swallowed := make(map[int]bool)
+	source := mod.Source("Tree:" + nodeId)
 
 	for i := 0; i < len(lines); i++ {
 		if swallowed[i] {
@@ -321,7 +322,7 @@ func processStats(env *Environment, modList *moddb.ModList, nodeId string, what 
 		}
 
 		for _, m := range entry.ModList {
-			modList.AddMod(mod.SetSource(m, mod.Source("Tree:"+nodeId)))
+			modList.AddMod(mod.SetSource(m, source))
 		}
 	}
 }

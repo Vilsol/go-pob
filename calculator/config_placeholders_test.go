@@ -16,10 +16,7 @@ import (
 // TestConfigPlaceholdersAgainstPoB is `task config-placeholders`.
 func TestConfigPlaceholdersAgainstPoB(t *testing.T) {
 	requireOperatorRun(t, "reads oracle/config_placeholders.lua output; `task config-placeholders`")
-	path := os.Getenv("CONFIG_PLACEHOLDERS")
-	if path == "" {
-		t.Fatal("REFUSING: set CONFIG_PLACEHOLDERS")
-	}
+	path := requireTaskInput(t, "config-placeholders", "CONFIG_PLACEHOLDERS")[0]
 	raw, err := os.ReadFile(path)
 	if err != nil {
 		t.Fatal(err)

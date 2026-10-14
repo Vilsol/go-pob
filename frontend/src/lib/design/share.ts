@@ -1,4 +1,4 @@
-// Modules/BuildSiteTools.lua:19-44, ImportTab.lua:574-640
+// Modules/BuildSiteTools.lua:19-42, ImportTab.lua:574-640
 
 export type Site = {
   label: string;
@@ -7,6 +7,7 @@ export type Site = {
   regex: RegExp;
   download: string;
   link?: string;
+  post?: { url: string; fields: string; codeOut: string };
 };
 
 export const SITES: Site[] = [
@@ -16,7 +17,8 @@ export const SITES: Site[] = [
     match: /^https:\/\/maxroll\.gg\/poe\/pob\/.*/,
     regex: /maxroll\.gg\/poe\/pob\/(.+)\s*$/,
     download: 'maxroll.gg/poe/api/pob/$1',
-    link: 'https://maxroll.gg/poe/pob/'
+    link: 'https://maxroll.gg/poe/pob/',
+    post: { url: 'https://maxroll.gg/poe/api/pob', fields: 'pobCode=', codeOut: 'https://maxroll.gg/poe/pob/' }
   },
   {
     label: 'pob.codes',
@@ -24,16 +26,26 @@ export const SITES: Site[] = [
     match: /^https:\/\/pob\.codes\/b\/.+/,
     regex: /pob\.codes\/b\/(.+)\s*$/,
     download: 'api.pob.codes/$1/raw',
-    link: 'https://pob.codes/b/'
+    link: 'https://pob.codes/b/',
+    post: { url: 'https://api.pob.codes/pob/plain', fields: '', codeOut: 'https://pob.codes/b/' }
   },
-  { label: 'pobb.in', id: 'POBBin', match: /^https:\/\/pobb\.in\/.+/, regex: /pobb\.in\/(.+)\s*$/, download: 'pobb.in/pob/$1', link: 'https://pobb.in/' },
+  {
+    label: 'pobb.in',
+    id: 'POBBin',
+    match: /^https:\/\/pobb\.in\/.+/,
+    regex: /pobb\.in\/(.+)\s*$/,
+    download: 'pobb.in/pob/$1',
+    link: 'https://pobb.in/',
+    post: { url: 'https://pobb.in/pob/', fields: '', codeOut: 'https://pobb.in/' }
+  },
   {
     label: 'PoeNinja',
     id: 'PoeNinja',
     match: /^https:\/\/poe\.ninja\/?p?o?e?1?\/pob\/\w+/,
     regex: /poe\.ninja\/?p?o?e?1?\/pob\/(\w+)\s*$/,
     download: 'poe.ninja/poe1/pob/raw/$1',
-    link: 'https://poe.ninja/poe1/pob/'
+    link: 'https://poe.ninja/poe1/pob/',
+    post: { url: 'https://poe.ninja/poe1/pob/api/upload', fields: 'code=', codeOut: '' }
   },
   { label: 'Pastebin.com', id: 'pastebin', match: /^https:\/\/pastebin\.com\/\w+/, regex: /pastebin\.com\/(\w+)\s*$/, download: 'pastebin.com/raw/$1' },
   {
@@ -49,10 +61,12 @@ export const SITES: Site[] = [
     match: /^https:\/\/poedb\.tw\/.+/,
     regex: /poedb\.tw\/pob\/(.+)\s*$/,
     download: 'poedb.tw/pob/$1/raw',
-    link: 'https://poedb.tw/pob/'
+    link: 'https://poedb.tw/pob/',
+    post: { url: 'https://poedb.tw/pob/api/gen', fields: '', codeOut: '' }
   }
 ];
-export const EXPORT_SITES = SITES.filter((s) => s.link);
+/* ImportTab.lua:522-532 */
+export const EXPORT_SITES = SITES.filter((s) => s.post);
 
 export const DROPPED_SITES: { label: string; match: RegExp; text: string }[] = [
   {

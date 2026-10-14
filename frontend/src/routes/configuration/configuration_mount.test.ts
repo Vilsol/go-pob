@@ -266,6 +266,37 @@ describe('the custom group enable checkbox tooltip (ConfigTab.lua:53-68)', () =>
   });
 });
 
+describe('the custom group enable checkbox tooltip under a still pointer', () => {
+  it('follows the toggle: the header at once, the what-if once the toggle is calculated', async () => {
+    const view = await mount();
+    let calculated = false;
+    const compare = vi
+      .spyOn(workerInstance, 'CustomModGroupCompare')
+      .mockImplementation(() => Promise.resolve([{ lines: [{ label: calculated ? 'After the toggle' : 'Before the toggle', value: '+1', better: true }] }]));
+    const box = () => within(view.getByRole('list', { name: 'Mod groups' })).getAllByRole<HTMLInputElement>('checkbox')[0];
+    const shown = () => view.getByRole('tooltip', { name: 'Group toggle what-if' }).textContent;
+    const header = (on: boolean) => (on ? 'Disabling this group will give you:' : 'Enabling this group will give you:');
+    const before = get(outputs);
+    const on = box().checked;
+    try {
+      await fireEvent.mouseOver(box());
+      await vi.waitFor(() => expect(shown()).toContain('Before the toggle'));
+      expect(shown()).toContain(header(on));
+      await fireEvent.click(box());
+      await vi.waitFor(() => expect(blocks()[0].Enabled).toBe(on ? 'false' : 'true'));
+      await vi.waitFor(() => expect(shown()).toContain(header(!on)));
+      calculated = true;
+      outputs.set({ ...before } as NonNullable<typeof before>);
+      await vi.waitFor(() => expect(shown()).toContain('After the toggle'));
+      await fireEvent.click(box());
+      await vi.waitFor(() => expect(blocks()[0].Enabled).toBe(on ? 'true' : 'false'));
+    } finally {
+      compare.mockRestore();
+      outputs.set(before);
+    }
+  });
+});
+
 // ConfigTab.lua:42-44, 1305-1550
 describe('the Mod Browser', () => {
   it('searches, shows Supported and appends the chosen line to the group', async () => {

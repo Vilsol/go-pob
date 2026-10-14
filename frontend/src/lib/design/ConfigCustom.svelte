@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { untrack } from 'svelte';
   import ListOption from './ListOption.svelte';
   import ModCell from './ModCell.svelte';
   import Button from './Button.svelte';
@@ -10,8 +11,8 @@
   import type { StatCompareSection } from '$lib/skill_tree/stat_compare';
 
   // ConfigTab.lua:15-86
-  type Props = { groups: CustomGroup[]; selected: number; ops: CustomOps; badHint?: string };
-  let { groups, selected, ops, badHint = 'Not recognised: no modifier has this wording' }: Props = $props();
+  type Props = { groups: CustomGroup[]; selected: number; ops: CustomOps; badHint?: string; revision?: unknown };
+  let { groups, selected, ops, badHint = 'Not recognised: no modifier has this wording', revision }: Props = $props();
 
   const g = $derived(groups[selected]);
   const ok = $derived(g?.cells.filter((c) => c.k === 'ok').length ?? 0);
@@ -25,23 +26,37 @@
   const hide = (c: number) => () => {
     if (tip?.c === c) tip = undefined;
   };
+  let toggleOver = $state.raw<{ i: number; anchor: HTMLElement }>();
   let toggleTip = $state.raw<{ i: number; header: string; anchor: HTMLElement; sections?: StatCompareSection[] }>();
   const ontoggleover = (i: number) => (e: Event) => {
     const box = (e.target as HTMLElement).closest('input[type="checkbox"]');
-    if (!box || !ops.togglewhatif || toggleTip?.i === i) return;
-    const header = groups[i]?.enabled ? 'Disabling this group will give you:' : 'Enabling this group will give you:';
-    const anchor = e.currentTarget as HTMLElement;
-    toggleTip = { i, header, anchor };
+    if (!box || !ops.togglewhatif || toggleOver?.i === i) return;
+    toggleOver = { i, anchor: e.currentTarget as HTMLElement };
+  };
+  const ontoggleout = (i: number) => (e: Event) => {
+    if ((e.target as HTMLElement).closest('input[type="checkbox"]') && toggleOver?.i === i) toggleOver = undefined;
+  };
+  $effect(() => {
+    void revision;
+    const over = toggleOver;
+    const enabled = over && groups[over.i]?.enabled;
+    if (!over || !ops.togglewhatif) {
+      toggleTip = undefined;
+      return;
+    }
+    const { i, anchor } = over;
+    const header = enabled ? 'Disabling this group will give you:' : 'Enabling this group will give you:';
+    let live = true;
+    const shown = untrack(() => toggleTip);
+    toggleTip = { i, header, anchor, sections: shown?.i === i && shown.header === header ? shown.sections : undefined };
     ops
       .togglewhatif(i)
       .then((sections) => {
-        if (toggleTip?.i === i) toggleTip = { i, header, anchor, sections };
+        if (live) toggleTip = { i, header, anchor, sections };
       })
       .catch(() => {});
-  };
-  const ontoggleout = (i: number) => (e: Event) => {
-    if ((e.target as HTMLElement).closest('input[type="checkbox"]') && toggleTip?.i === i) toggleTip = undefined;
-  };
+    return () => (live = false);
+  });
 </script>
 
 <section aria-label="Custom modifiers" class="panel relative mb-1 shrink-0">

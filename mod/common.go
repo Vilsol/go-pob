@@ -33,6 +33,7 @@ const (
 	TypeDistanceRamp        = Type("DistanceRamp")
 	TypeMultiplierThreshold = Type("MultiplierThreshold")
 	TypeModFlagOr           = Type("ModFlagOr")
+	TypeKeywordFlagAnd      = Type("KeywordFlagAnd")
 	TypeInSlot              = Type("InSlot")
 	TypeDummy               = Type("DUMMY")
 	TypeGlobalEffect        = Type("GlobalEffect")

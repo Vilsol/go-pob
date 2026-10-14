@@ -101,6 +101,11 @@ const usage = `gopob <subcommand> [flags]
   modal-oracle <dumps-base> <runs> <out.jsonl.gz> [workdir]
                         extract N dump dirs and vote them into ONE modal blob; the report beside
                         it carries the disagreement rate and is as much the point as the blob
+  affected-tests        [--dry] [go test args...] BASE=<ref>: go test only the packages the change
+                        since BASE (default merge-base dev) and the working tree can reach
+  test-tiers fast|slow [go test args] | record <log>...
+                        the operator suite split at 10s per test (scripts/gopob/operator_slow_tests.txt);
+                        fast names any test that crossed the line, record rewrites the list
   nice <command> [args...]
                         run a command at low CPU and IO priority; idempotent across the five
                         nesting layers via GOPOB_NICED. NICE=0 disables, NICE=<n> overrides
@@ -213,6 +218,10 @@ func main() {
 		os.Exit(statOverlap(os.Args[2:]))
 	case "classify-tree-sources":
 		os.Exit(classifyTreeSources(os.Args[2:]))
+	case "affected-tests":
+		os.Exit(affectedTests(os.Args[2:]))
+	case "test-tiers":
+		os.Exit(testTiers(os.Args[2:]))
 	case "corpus-grep":
 		os.Exit(corpusGrep(os.Args[2:]))
 	case "coverage-census":

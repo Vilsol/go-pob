@@ -24,3 +24,7 @@ func CalculatePrunableNodes(version pob.TreeVersion, activeNodes []int64, rootNo
 func CalculateDependentNodes(version pob.TreeVersion, activeNodes []int64, target int64, rootNodes []int64) []int64 {
 	return data.TreeVersions[version].CalculateDependentNodes(activeNodes, target, rootNodes)
 }
+
+func CalculateDependentNodesWith(version pob.TreeVersion, activeNodes []int64, target int64, rootNodes []int64, subgraph []data.SubgraphNode) []int64 {
+	return data.TreeVersions[version].CalculateDependentNodesWith(activeNodes, target, rootNodes, subgraph)
+}

@@ -20,6 +20,7 @@ var respecKnownDiff = map[string]bool{"0044-assassin-charged-dash.xml/3": true}
 
 // TestTreeSpecRespecCostMatchesPoB: Produced by oracle/tree_spec_respec.lua from the pinned PoB.
 func TestTreeSpecRespecCostMatchesPoB(t *testing.T) {
+	t.Parallel()
 	f, err := os.Open("../testdata/oracle/tree_spec_respec_expected.jsonl")
 	if err != nil {
 		t.Fatal(err)

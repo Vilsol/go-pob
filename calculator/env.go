@@ -123,14 +123,16 @@ type calcAccelerate struct {
 
 //pob:block:src/Modules/CalcSetup.lua:379-383
 type calcSpecEnv struct {
-	cachedPlayerDB  moddb.ModStoreFuncs
-	cachedEnemyDB   moddb.ModStoreFuncs
-	cachedMinionDB  moddb.ModStoreFuncs
-	env             *Environment
-	accelerate      calcAccelerate
-	flatDB          bool
-	clusterNodes    map[string]data.Node
-	clusterNodesSet bool
+	cachedPlayerDB       moddb.ModStoreFuncs
+	cachedEnemyDB        moddb.ModStoreFuncs
+	cachedMinionDB       moddb.ModStoreFuncs
+	env                  *Environment
+	accelerate           calcAccelerate
+	flatDB               bool
+	clusterNodes         map[string]data.Node
+	clusterNodesSet      bool
+	spare                *spareOutputs
+	distanceToClassStart map[string]int
 }
 
 func wipeModDB(db *moddb.ModDB) {
@@ -189,8 +191,9 @@ func wipeEnv(env *Environment, accelerate calcAccelerate) {
 
 //pob:block:src/Modules/CalcSetup.lua:1843-1863
 func resetAcceleratedSkillData(env *Environment, activeSkill *ActiveSkill) {
-	skillData := activeSkill.SkillData
-	activeSkill.SkillData = &SkillData{}
+	old := *activeSkill.SkillData
+	skillData := &old
+	*activeSkill.SkillData = SkillData{}
 	for _, value := range utils.CastSlice[mod.SkillData](env.ModDB.List(activeSkill.SkillCfg, "SkillData")) {
 		utils.Set(activeSkill.SkillData, value.Key, value.Value)
 	}
@@ -549,8 +552,17 @@ func initEnvSpecKeep(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode
 		}
 		resolveNodes(nodeIDs, env.AllocatedNodes)
 
-		env.Spec.DistanceToClassStart = buildDistanceToClassStart(
-			env.AllocatedNodes, classStartNodeID(tree, env.Spec.ClassID))
+		if specEnv != nil && specEnv.distanceToClassStart != nil {
+			env.Spec.DistanceToClassStart = specEnv.distanceToClassStart
+		} else {
+			specNodes := env.AllocatedNodes
+			if overridesNodes {
+				specNodes = make(map[string]data.Node, len(env.Build.Build.PassiveNodes))
+				resolveNodes(env.Build.Build.PassiveNodes, specNodes)
+			}
+			env.Spec.DistanceToClassStart = buildDistanceToClassStart(
+				specNodes, classStartNodeID(tree, env.Spec.ClassID))
+		}
 
 		masteryOverrides := tattooedNodes(env)
 		counts = countAllocatedNodes(env, env.AllocatedNodes, masteryOverrides)

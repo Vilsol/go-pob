@@ -1048,15 +1048,6 @@ func triggerSkillEligible(skill *ActiveSkill) bool {
 	return !skill.SkillTypes[data.SkillTypeOtherThingUsesSkill]
 }
 
-func getTriggerActionTriggerRate(baseActionCooldown float64, env *Environment) float64 {
-	icdr := calclib.Mod(env.Player.MainSkill.SkillModList, env.Player.MainSkill.SkillCfg, "CooldownRecovery")
-
-	modActionCooldown := utils.Or(env.Player.MainSkill.SkillModList.Override(env.Player.MainSkill.SkillCfg, "CooldownRecovery"), baseActionCooldown/icdr)
-	rateCapAdjusted := math.Ceil(modActionCooldown*data.ServerTickRate) / data.ServerTickRate
-
-	return 1 / rateCapAdjusted
-}
-
 type triggerRotationSkill struct {
 	uuid     string
 	cd       float64
@@ -1195,10 +1186,10 @@ func calcActualTriggerRate(env *Environment, source *ActiveSkill, sourceAPS *flo
 		if addsCastTime != 0 {
 			output["addsCastTime"] = addsCastTime
 		}
+		//pob:block:src/Modules/CalcTriggers.lua:583-586
+		output["TriggerRateCap"] = math.Inf(1)
 		if actionCooldown != 0 {
 			output["TriggerRateCap"] = 1 / actionCooldown
-		} else {
-			output["TriggerRateCap"] = getTriggerActionTriggerRate(env.Player.MainSkill.SkillData.Cooldown, env)
 		}
 	}
 
@@ -1348,7 +1339,6 @@ func PerformCalc(env *Environment) {
 
 func reuseMinionSkills(env *Environment, activeSkill *ActiveSkill) {
 	if activeSkill == env.Player.MainSkill {
-		activeSkill.reusableMinionSkills, activeSkill.reusableMinionMain = nil, nil
 		CalcCreateMinionSkills(env, activeSkill)
 		return
 	}
@@ -1398,7 +1388,7 @@ func performCalc(env *Environment, skipEHP bool) {
 		}
 	}
 
-	env.Player.Output = make(map[string]float64, 896)
+	env.Player.Output = takeSpareOutput(&env.spare.player)
 	env.Player.OutputTable = make(map[OutTable]map[string]float64)
 	env.Player.OutputStrings = make(map[string]string)
 
@@ -1409,7 +1399,7 @@ func performCalc(env *Environment, skipEHP bool) {
 	env.Minion = env.Player.MainSkill.Minion
 	if env.Minion != nil {
 		// Initialise minion modifier database
-		env.Player.OutputTable["Minion"] = make(map[string]float64, 896)
+		env.Player.OutputTable["Minion"] = takeSpareOutput(&env.spare.minion)
 		initMinionModDB(env, env.Player.MainSkill, env.Player.OutputTable["Minion"])
 	}
 
@@ -1904,14 +1894,15 @@ func performCalc(env *Environment, skipEHP bool) {
 				activeSkill.SkillData.ManaReservationPercentForced = nil
 			}
 			for name, values := range pool {
-				values["more"] = skillModList.More(skillCfg, name+"Reserved", "Reserved")
-				values["inc"] = skillModList.Sum(mod.TypeIncrease, skillCfg, name+"Reserved", "Reserved")
-				values["efficiency"] = max(skillModList.Sum(mod.TypeIncrease, skillCfg, name+"ReservationEfficiency", "ReservationEfficiency"), -100)
-				values["efficiencyMore"] = skillModList.More(skillCfg, name+"ReservationEfficiency", "ReservationEfficiency")
+				rn := reservationNames[name]
+				values["more"] = skillModList.More(skillCfg, rn.reserved, "Reserved")
+				values["inc"] = skillModList.Sum(mod.TypeIncrease, skillCfg, rn.reserved, "Reserved")
+				values["efficiency"] = max(skillModList.Sum(mod.TypeIncrease, skillCfg, rn.efficiency, "ReservationEfficiency"), -100)
+				values["efficiencyMore"] = skillModList.More(skillCfg, rn.efficiency, "ReservationEfficiency")
 				// used for Arcane Cloak calculations in ModStore.GetStat
-				env.Player.Output[name+"Efficiency"] = values["efficiency"]
-				if utils.GetOr[*float64](activeSkill.SkillData, name+"ReservationFlatForced", nil) != nil {
-					values["reservedFlat"] = *utils.GetOr[*float64](activeSkill.SkillData, name+"ReservationFlatForced", nil)
+				env.Player.Output[rn.outEfficiency] = values["efficiency"]
+				if utils.GetOr[*float64](activeSkill.SkillData, rn.flatForced, nil) != nil {
+					values["reservedFlat"] = *utils.GetOr[*float64](activeSkill.SkillData, rn.flatForced, nil)
 				} else {
 					baseFlatVal := math.Floor(values["baseFlat"] * mult)
 					values["reservedFlat"] = 0
@@ -1919,8 +1910,8 @@ func performCalc(env *Environment, skipEHP bool) {
 						values["reservedFlat"] = max(utils.RoundTo(baseFlatVal*(100+values["inc"])/100*values["more"]/(1+values["efficiency"]/100)/values["efficiencyMore"], 0), 0)
 					}
 				}
-				if utils.GetOr[*float64](activeSkill.SkillData, name+"ReservationPercentForced", nil) != nil {
-					values["reservedPercent"] = *utils.GetOr[*float64](activeSkill.SkillData, name+"ReservationPercentForced", nil)
+				if utils.GetOr[*float64](activeSkill.SkillData, rn.percentForced, nil) != nil {
+					values["reservedPercent"] = *utils.GetOr[*float64](activeSkill.SkillData, rn.percentForced, nil)
 				} else {
 					basePercentVal := values["basePercent"] * mult
 					values["reservedPercent"] = 0
@@ -1938,10 +1929,10 @@ func performCalc(env *Environment, skipEHP bool) {
 					values["reservedPercent"] = values["reservedPercent"] * (activeSkill.ActiveStageCount + 1)
 				}
 				if values["reservedFlat"] != 0 {
-					utils.Set(activeSkill.SkillData, name+"ReservedBase", values["reservedFlat"])
-					env.Player.Output["reserved_"+name+"Base"] = env.Player.Output["reserved_"+name+"Base"] + values["reservedFlat"]
+					utils.Set(activeSkill.SkillData, rn.reservedBase, values["reservedFlat"])
+					env.Player.Output[rn.reservedBaseOut] = env.Player.Output[rn.reservedBaseOut] + values["reservedFlat"]
 					if breakdown != nil {
-						breakdown.Reservation(name+"Reserved", BReservation{
+						breakdown.Reservation(rn.reserved, BReservation{
 							SkillName:      activeSkill.ActiveEffect.GrantedEffect.Name(),
 							Base:           fmt.Sprint(values["baseFlat"]),
 							Mult:           utils.Ternary(mult != 1, utils.Ptr("x "+fmt.Sprint(mult)), nil),
@@ -1954,11 +1945,11 @@ func performCalc(env *Environment, skipEHP bool) {
 					}
 				}
 				if values["reservedPercent"] != 0 {
-					utils.Set(activeSkill.SkillData, name+"ReservedPercent", values["reservedPercent"])
-					utils.Set(activeSkill.SkillData, name+"ReservedBase", (utils.GetOr(activeSkill.SkillData, name+"ReservedBase", float64(0)))+math.Ceil(env.Player.Output[name]*values["reservedPercent"]/100))
-					env.Player.Output["reserved_"+name+"Percent"] = env.Player.Output["reserved_"+name+"Percent"] + values["reservedPercent"]
+					utils.Set(activeSkill.SkillData, rn.reservedPercent, values["reservedPercent"])
+					utils.Set(activeSkill.SkillData, rn.reservedBase, (utils.GetOr(activeSkill.SkillData, rn.reservedBase, float64(0)))+math.Ceil(env.Player.Output[name]*values["reservedPercent"]/100))
+					env.Player.Output[rn.reservedPercentOut] = env.Player.Output[rn.reservedPercentOut] + values["reservedPercent"]
 					if breakdown != nil {
-						breakdown.Reservation(name+"Reserved", BReservation{
+						breakdown.Reservation(rn.reserved, BReservation{
 							SkillName:      activeSkill.ActiveEffect.GrantedEffect.Name(),
 							Base:           fmt.Sprint(values["basePercent"]) + "%",
 							Mult:           utils.Ternary(mult != 1, utils.Ptr("x "+fmt.Sprint(mult)), nil),
@@ -1971,7 +1962,7 @@ func performCalc(env *Environment, skipEHP bool) {
 					}
 				}
 				if skillModList.Flag(skillCfg, "HasUncancellableReservation") {
-					env.Player.Output["uncancellable_"+name+"Reservation"] = env.Player.Output["uncancellable_"+name+"Reservation"] + values["reservedPercent"]
+					env.Player.Output[rn.uncancellable] = env.Player.Output[rn.uncancellable] + values["reservedPercent"]
 				}
 			}
 		}
@@ -2410,8 +2401,8 @@ func performCalc(env *Environment, skipEHP bool) {
 					if env.Player.MainSkill.SkillFlags[SkillFlagTotem] &&
 						!(env.ModDB.Flag(nil, "SelfAurasCannotAffectAllies") ||
 							env.ModDB.Flag(nil, "SelfAuraSkillsCannotAffectAllies")) {
-						env.Player.MainSkill.SkillModList.Conditions["AffectedBy"+buffNameKey] = true
-						env.Player.MainSkill.SkillModList.Conditions["AffectedByAura"] = true
+						moddb.SetCondition(env.Player.MainSkill.SkillModList.ModStore, "AffectedBy"+buffNameKey, true)
+						moddb.SetCondition(env.Player.MainSkill.SkillModList.ModStore, "AffectedByAura", true)
 
 						inc := skillModList.Sum(mod.TypeIncrease, skillCfg, "AuraEffect", "BuffEffect", "AuraBuffEffect")
 						more := skillModList.More(skillCfg, "AuraEffect", "BuffEffect", "AuraBuffEffect")
@@ -2881,8 +2872,8 @@ func performCalc(env *Environment, skipEHP bool) {
 								}
 								if env.Player.MainSkill.SkillFlags[SkillFlagTotem] &&
 									!env.Player.MainSkill.SkillModList.Conditions["AffectedBy"+minionBuffNameKey] {
-									env.Player.MainSkill.SkillModList.Conditions["AffectedBy"+minionBuffNameKey] = true
-									env.Player.MainSkill.SkillModList.Conditions["AffectedByAura"] = true
+									moddb.SetCondition(env.Player.MainSkill.SkillModList.ModStore, "AffectedBy"+minionBuffNameKey, true)
+									moddb.SetCondition(env.Player.MainSkill.SkillModList.ModStore, "AffectedByAura", true)
 									inc := minionSkillModList.Sum(mod.TypeIncrease, minionSkillCfg, "AuraEffect", "BuffEffect", "AuraBuffEffect")
 									more := minionSkillModList.More(minionSkillCfg, "AuraEffect", "BuffEffect", "AuraBuffEffect")
 									scale := math.Max((1+inc/100)*more, 0)
@@ -4282,137 +4273,6 @@ func performCalc(env *Environment, skipEHP bool) {
 		doActorLifeManaReservation(env.Player, true)
 	}
 
-	// Calculate maximum and apply the strongest non-damaging ailments.
-	nonDamagingAilments := []struct {
-		ailment   data.Ailment
-		condition string
-		mods      func(num float64) []mod.Mod
-	}{
-		{data.AilmentChill, "Chilled", func(num float64) []mod.Mod {
-			mods := []mod.Mod{
-				mod.NewFloat("ActionSpeed", mod.TypeIncrease, -num).Source("Chill").Tag(mod.Condition("Chilled")),
-			}
-			switch {
-			case env.ModDB.Flag(nil, "ChillEffectIncDamageTaken"):
-				mods = append(mods, mod.NewFloat("DamageTaken", mod.TypeIncrease, num).
-					Source("Ahuana's Bite").Tag(mod.Condition("Chilled")))
-			case env.ModDB.Flag(nil, "ChillEffectIncColdDamageTaken"):
-				mods = append(mods, mod.NewFloat("ColdDamageTaken", mod.TypeIncrease, num).
-					Source("Chilled by Hits").Tag(mod.Condition("Chilled")))
-			case env.ModDB.Flag(nil, "ChillingAreaIncColdDamageTaken"):
-				mods = append(mods, mod.NewFloat("ColdDamageTaken", mod.TypeIncrease, num).
-					Source("Chilling Area").Tag(mod.Condition("Chilled")))
-			case hasBonechill && (hasGuaranteedBonechill || env.EnemyModDB.Sum(mod.TypeBase, nil, "ChillVal") > 0):
-				mods = append(mods, mod.NewFloat("ColdDamageTaken", mod.TypeIncrease, num).
-					Source("Bonechill").Tag(mod.Condition("Chilled")))
-			}
-			if env.ModDB.Flag(nil, "ChillEffectLessDamageDealt") {
-				mods = append(mods, mod.NewFloat("Damage", mod.TypeMore, -num/2).
-					Source("Shaper of Winter").Tag(mod.Condition("Chilled")))
-			}
-			return mods
-		}},
-		{data.AilmentShock, "Shocked", func(num float64) []mod.Mod {
-			if !env.ModDB.Flag(nil, "ShockCanStack") {
-				return []mod.Mod{mod.NewFloat("DamageTaken", mod.TypeIncrease, num).Source("Shock").Tag(mod.Condition("Shocked"))}
-			}
-			limit := ailmentStacksMax(env.ModDB, "ShockStacksMax")
-			env.Player.Output["CurrentShock"] = num * min(env.EnemyModDB.Sum(mod.TypeBase, nil, "Multiplier:ShockStacks"), limit)
-			return []mod.Mod{mod.NewFloat("DamageTaken", mod.TypeIncrease, num).Source("Shock").
-				Tag(mod.Condition("Shocked"), mod.Multiplier("ShockStacks").Limit(limit))}
-		}},
-		{data.AilmentScorch, "Scorched", func(num float64) []mod.Mod {
-			if !env.ModDB.Flag(nil, "ScorchCanStack") {
-				return []mod.Mod{mod.NewFloat("ElementalResist", mod.TypeBase, -num).Source("Scorch").Tag(mod.Condition("Scorched"))}
-			}
-			limit := ailmentStacksMax(env.ModDB, "ScorchStacksMax")
-			env.Player.Output["CurrentScorch"] = num * min(env.EnemyModDB.Sum(mod.TypeBase, nil, "Multiplier:ScorchStacks"), limit)
-			return []mod.Mod{mod.NewFloat("ElementalResist", mod.TypeBase, -num).Source("Scorch").
-				Tag(mod.Condition("Scorched"), mod.Multiplier("ScorchStacks").Limit(limit))}
-		}},
-		{data.AilmentBrittle, "Brittle", func(num float64) []mod.Mod {
-			return []mod.Mod{mod.NewFloat("SelfCritChance", mod.TypeBase, num).Source("Brittle").Tag(mod.Condition("Brittle"))}
-		}},
-		{data.AilmentSap, "Sapped", func(num float64) []mod.Mod {
-			return []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, -num).Source("Sap").Tag(mod.Condition("Sapped"))}
-		}},
-	}
-
-	for _, val := range nonDamagingAilments {
-		ailment := string(val.ailment)
-		ailmentData := data.NonDamagingAilments[val.ailment]
-
-		if env.EnemyModDB.Flag(nil, "Condition:Already"+val.condition) ||
-			env.EnemyModDB.Flag(nil, ailment+"Immune", "ElementalAilmentImmune") ||
-			env.EnemyModDB.Sum(mod.TypeBase, nil, "Avoid"+ailment, "AvoidAilments", "AvoidElementalAilments") >= 100 {
-			continue
-		}
-
-		override := float64(0)
-		minimum := float64(0)
-		for _, value := range env.ModDB.Tabulate(mod.TypeBase, nil, ailment+"Base", ailment+"Override", ailment+"Minimum") {
-			srcMod := value.Mod
-			effect := srcMod.Value().Float()
-			scalesWithSource := srcMod.Name() == ailment+"Base" || srcMod.Name() == ailment+"Minimum"
-			if srcMod.Name() == ailment+"Override" {
-				env.EnemyModDB.AddMod(mod.NewFlag("Condition:"+val.condition, true).Source(srcMod.GetSource()))
-			}
-			if scalesWithSource {
-				effect *= calclib.Mod(env.ModDB, nil, "Enemy"+ailment+"Effect")
-			}
-			//pob:src/Modules/CalcPerform.lua:3523
-			effect = float64(effect * calclib.Mod(env.EnemyModDB, nil, "Self"+ailment+"Effect"))
-
-			if scalesWithSource {
-				env.ModDB.AddMod(mod.NewFloat(ailment+"Override", mod.TypeBase, effect).
-					Source(srcMod.GetSource()).
-					Flag(srcMod.Flags()).
-					KeywordFlag(srcMod.KeywordFlags()).
-					Tag(srcMod.Tags()...))
-				if srcMod.Name() == ailment+"Minimum" {
-					minimum += effect
-				}
-			}
-
-			override = max(max(override, effect), minimum)
-		}
-
-		maxAilment := float64(0)
-		if override := env.ModDB.Override(nil, ailment+"Max"); override != nil {
-			maxAilment = utils.Or(override, 0)
-		} else {
-			for _, skill := range env.Player.ActiveSkillList {
-				if skill == nil || skill.BaseSkillModList == nil {
-					continue
-				}
-				skillMax := ailmentData.Max + skill.BaseSkillModList.Sum(mod.TypeBase, nil, ailment+"Max")
-				if skillMax > maxAilment {
-					maxAilment = skillMax
-				}
-			}
-		}
-		env.Player.Output["Maximum"+ailment] = maxAilment
-		precision := math.Pow(10, ailmentData.Precision)
-		env.Player.Output["Current"+ailment] = math.Floor(min(max(override,
-			env.EnemyModDB.Sum(mod.TypeBase, nil, ailment+"Val")),
-			env.Player.Output["Maximum"+ailment])*precision) / precision
-
-		for _, m := range val.mods(env.Player.Output["Current"+ailment]) {
-			env.EnemyModDB.AddMod(m)
-		}
-		env.EnemyModDB.AddMod(mod.NewFlag("Condition:Already"+val.condition, true).Tag(mod.Condition(val.condition)))
-	}
-
-	for _, m := range []struct{ ailment, multiplier string }{
-		{"Chill", "Multiplier:ChillEffect"},
-		{"Shock", "Multiplier:ShockEffect"},
-	} {
-		current := env.Player.Output["Current"+m.ailment]
-		if existing := env.EnemyModDB.Sum(mod.TypeBase, nil, m.multiplier); existing < current {
-			env.EnemyModDB.AddMod(mod.NewFloat(m.multiplier, mod.TypeBase, current-existing))
-		}
-	}
-
 	//pob:src/Modules/CalcPerform.lua:3352
 	if exports != nil {
 		exports.aura["extraAura"] = &partyBuffExport{effectMult: 1}
@@ -4513,6 +4373,140 @@ func performCalc(env *Environment, skipEHP bool) {
 		DoActorCharges(env, env.Minion.Actor)
 		DoActorMisc(env, env.Minion.Actor)
 	}
+
+	// Calculate maximum and apply the strongest non-damaging ailments.
+	//pob:block:src/Modules/CalcPerform.lua:3431-3556
+	nonDamagingAilments := []struct {
+		ailment   data.Ailment
+		condition string
+		mods      func(num float64) []mod.Mod
+	}{
+		{data.AilmentChill, "Chilled", func(num float64) []mod.Mod {
+			mods := []mod.Mod{
+				mod.NewFloat("ActionSpeed", mod.TypeIncrease, -num).Source("Chill").Tag(mod.Condition("Chilled")),
+			}
+			switch {
+			case env.ModDB.Flag(nil, "ChillEffectIncDamageTaken"):
+				mods = append(mods, mod.NewFloat("DamageTaken", mod.TypeIncrease, num).
+					Source("Ahuana's Bite").Tag(mod.Condition("Chilled")))
+			case env.ModDB.Flag(nil, "ChillEffectIncColdDamageTaken"):
+				mods = append(mods, mod.NewFloat("ColdDamageTaken", mod.TypeIncrease, num).
+					Source("Chilled by Hits").Tag(mod.Condition("Chilled")))
+			case env.ModDB.Flag(nil, "ChillingAreaIncColdDamageTaken"):
+				mods = append(mods, mod.NewFloat("ColdDamageTaken", mod.TypeIncrease, num).
+					Source("Chilling Area").Tag(mod.Condition("Chilled")))
+			case hasBonechill && (hasGuaranteedBonechill || env.EnemyModDB.Sum(mod.TypeBase, nil, "ChillVal") > 0):
+				mods = append(mods, mod.NewFloat("ColdDamageTaken", mod.TypeIncrease, num).
+					Source("Bonechill").Tag(mod.Condition("Chilled")))
+			}
+			if env.ModDB.Flag(nil, "ChillEffectLessDamageDealt") {
+				mods = append(mods, mod.NewFloat("Damage", mod.TypeMore, -num/2).
+					Source("Shaper of Winter").Tag(mod.Condition("Chilled")))
+			}
+			return mods
+		}},
+		{data.AilmentShock, "Shocked", func(num float64) []mod.Mod {
+			if !env.ModDB.Flag(nil, "ShockCanStack") {
+				return []mod.Mod{mod.NewFloat("DamageTaken", mod.TypeIncrease, num).Source("Shock").Tag(mod.Condition("Shocked"))}
+			}
+			limit := ailmentStacksMax(env.ModDB, "ShockStacksMax")
+			env.Player.Output["CurrentShock"] = num * min(env.EnemyModDB.Sum(mod.TypeBase, nil, "Multiplier:ShockStacks"), limit)
+			return []mod.Mod{mod.NewFloat("DamageTaken", mod.TypeIncrease, num).Source("Shock").
+				Tag(mod.Condition("Shocked"), mod.Multiplier("ShockStacks").Limit(limit))}
+		}},
+		{data.AilmentScorch, "Scorched", func(num float64) []mod.Mod {
+			if !env.ModDB.Flag(nil, "ScorchCanStack") {
+				return []mod.Mod{mod.NewFloat("ElementalResist", mod.TypeBase, -num).Source("Scorch").Tag(mod.Condition("Scorched"))}
+			}
+			limit := ailmentStacksMax(env.ModDB, "ScorchStacksMax")
+			env.Player.Output["CurrentScorch"] = num * min(env.EnemyModDB.Sum(mod.TypeBase, nil, "Multiplier:ScorchStacks"), limit)
+			return []mod.Mod{mod.NewFloat("ElementalResist", mod.TypeBase, -num).Source("Scorch").
+				Tag(mod.Condition("Scorched"), mod.Multiplier("ScorchStacks").Limit(limit))}
+		}},
+		{data.AilmentBrittle, "Brittle", func(num float64) []mod.Mod {
+			return []mod.Mod{mod.NewFloat("SelfCritChance", mod.TypeBase, num).Source("Brittle").Tag(mod.Condition("Brittle"))}
+		}},
+		{data.AilmentSap, "Sapped", func(num float64) []mod.Mod {
+			return []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, -num).Source("Sap").Tag(mod.Condition("Sapped"))}
+		}},
+	}
+
+	for _, val := range nonDamagingAilments {
+		ailment := string(val.ailment)
+		ailmentData := data.NonDamagingAilments[val.ailment]
+
+		if env.EnemyModDB.Flag(nil, "Condition:Already"+val.condition) ||
+			env.EnemyModDB.Flag(nil, ailment+"Immune", "ElementalAilmentImmune") ||
+			env.EnemyModDB.Sum(mod.TypeBase, nil, "Avoid"+ailment, "AvoidAilments", "AvoidElementalAilments") >= 100 {
+			continue
+		}
+
+		override := float64(0)
+		minimum := float64(0)
+		for _, value := range env.ModDB.Tabulate(mod.TypeBase, nil, ailment+"Base", ailment+"Override", ailment+"Minimum") {
+			srcMod := value.Mod
+			effect := srcMod.Value().Float()
+			scalesWithSource := srcMod.Name() == ailment+"Base" || srcMod.Name() == ailment+"Minimum"
+			if srcMod.Name() == ailment+"Override" {
+				env.EnemyModDB.AddMod(mod.NewFlag("Condition:"+val.condition, true).Source(srcMod.GetSource()))
+			}
+			if scalesWithSource {
+				effect *= calclib.Mod(env.ModDB, nil, "Enemy"+ailment+"Effect")
+			}
+			//pob:src/Modules/CalcPerform.lua:3523
+			effect = float64(effect * calclib.Mod(env.EnemyModDB, nil, "Self"+ailment+"Effect"))
+
+			if scalesWithSource {
+				env.ModDB.AddMod(mod.NewFloat(ailment+"Override", mod.TypeBase, effect).
+					Source(srcMod.GetSource()).
+					Flag(srcMod.Flags()).
+					KeywordFlag(srcMod.KeywordFlags()).
+					Tag(srcMod.Tags()...))
+				if srcMod.Name() == ailment+"Minimum" {
+					minimum += effect
+				}
+			}
+
+			override = max(max(override, effect), minimum)
+		}
+
+		maxAilment := float64(0)
+		ailmentMax := ailment + "Max"
+		if override := env.ModDB.Override(nil, ailmentMax); override != nil {
+			maxAilment = utils.Or(override, 0)
+		} else {
+			for _, skill := range env.Player.ActiveSkillList {
+				if skill == nil || skill.BaseSkillModList == nil {
+					continue
+				}
+				skillMax := ailmentData.Max + skill.BaseSkillModList.Sum(mod.TypeBase, nil, ailmentMax)
+				if skillMax > maxAilment {
+					maxAilment = skillMax
+				}
+			}
+		}
+		env.Player.Output["Maximum"+ailment] = maxAilment
+		precision := math.Pow(10, ailmentData.Precision)
+		env.Player.Output["Current"+ailment] = math.Floor(min(max(override,
+			env.EnemyModDB.Sum(mod.TypeBase, nil, ailment+"Val")),
+			env.Player.Output["Maximum"+ailment])*precision) / precision
+
+		for _, m := range val.mods(env.Player.Output["Current"+ailment]) {
+			env.EnemyModDB.AddMod(m)
+		}
+		env.EnemyModDB.AddMod(mod.NewFlag("Condition:Already"+val.condition, true).Tag(mod.Condition(val.condition)))
+	}
+
+	for _, m := range []struct{ ailment, multiplier string }{
+		{"Chill", "Multiplier:ChillEffect"},
+		{"Shock", "Multiplier:ShockEffect"},
+	} {
+		current := env.Player.Output["Current"+m.ailment]
+		if existing := env.EnemyModDB.Sum(mod.TypeBase, nil, m.multiplier); existing < current {
+			env.EnemyModDB.AddMod(mod.NewFloat(m.multiplier, mod.TypeBase, current-existing))
+		}
+	}
+
 	DoActorCharges(env, env.Enemy)
 	DoActorMisc(env, env.Enemy)
 
@@ -4706,15 +4700,42 @@ func performCalc(env *Environment, skipEHP bool) {
 	//pob:block:src/Modules/CalcPerform.lua:3864-3898
 	if ms := env.Player.MainSkill; ms != nil && ms.ActiveEffect != nil && ms.ActiveEffect.SrcInstance != nil {
 		sml, cfg := ms.SkillModList, ms.SkillCfg
+		baseLevel := sml.Sum(mod.TypeBase, cfg, "GemLevel")
+		totalItemLevel := sml.Sum(mod.TypeBase, cfg, "GemItemLevel")
+		totalSupportLevel := sml.Sum(mod.TypeBase, cfg, "GemSupportLevel")
 		env.Player.Output["GemHasLevel"] = 1
-		env.Player.Output["GemLevel"] = sml.Sum(mod.TypeBase, cfg, "GemLevel") +
-			sml.Sum(mod.TypeBase, cfg, "GemSupportLevel") +
-			sml.Sum(mod.TypeBase, cfg, "GemItemLevel")
+		env.Player.Output["GemLevel"] = baseLevel + totalSupportLevel + totalItemLevel
+		//pob:block:src/Modules/CalcPerform.lua:3877-3887
+		if bd := env.Player.Breakdown; bd != nil {
+			bd.Data["GemLevel"] = &Entry{Lines: []string{fmt.Sprintf("%d ^8(level from gem)", int(baseLevel))}}
+			if totalSupportLevel > 0 {
+				bd.AddLine("GemLevel", fmt.Sprintf("+ %d ^8(level from support)", int(totalSupportLevel)))
+			}
+			if totalItemLevel > 0 {
+				bd.AddLine("GemLevel", fmt.Sprintf("+ %d ^8(level from items)", int(totalItemLevel)))
+			}
+			bd.AddLine("GemLevel", fmt.Sprintf("= %d", int(env.Player.Output["GemLevel"])))
+		}
+		baseQuality := sml.Sum(mod.TypeBase, cfg, "GemQuality")
+		totalItemQuality := sml.Sum(mod.TypeBase, cfg, "GemItemQuality")
+		totalSupportQuality := sml.Sum(mod.TypeBase, cfg, "GemSupportQuality")
+		socketQuality := sml.Sum(mod.TypeBase, cfg, "GemSocketQuality")
 		env.Player.Output["GemHasQuality"] = 1
-		env.Player.Output["GemQuality"] = sml.Sum(mod.TypeBase, cfg, "GemQuality") +
-			sml.Sum(mod.TypeBase, cfg, "GemSupportQuality") +
-			sml.Sum(mod.TypeBase, cfg, "GemItemQuality") +
-			sml.Sum(mod.TypeBase, cfg, "GemSocketQuality")
+		env.Player.Output["GemQuality"] = baseQuality + totalSupportQuality + totalItemQuality + socketQuality
+		//pob:block:src/Modules/CalcPerform.lua:3900-3913
+		if bd := env.Player.Breakdown; bd != nil {
+			bd.Data["GemQuality"] = &Entry{Lines: []string{fmt.Sprintf("%d ^8(quality from gem)", int(baseQuality))}}
+			if totalSupportQuality > 0 {
+				bd.AddLine("GemQuality", fmt.Sprintf("+ %d ^8(quality from support)", int(totalSupportQuality)))
+			}
+			if totalItemQuality > 0 {
+				bd.AddLine("GemQuality", fmt.Sprintf("+ %d ^8(quality from items)", int(totalItemQuality)))
+			}
+			if socketQuality > 0 {
+				bd.AddLine("GemQuality", fmt.Sprintf("+ %d ^8(quality from socket)", int(socketQuality)))
+			}
+			bd.AddLine("GemQuality", fmt.Sprintf("= %d", int(env.Player.Output["GemQuality"])))
+		}
 	}
 
 	if env.Minion != nil {
@@ -4747,24 +4768,25 @@ func performCalc(env *Environment, skipEHP bool) {
 //pob:src/Modules/CalcPerform.lua:526-560
 func doActorLifeManaReservation(actor *Actor, addAura bool) {
 	for _, pool := range []string{"Life", "Mana"} {
+		pn := poolReservationNames[pool]
 		Max := actor.Output[pool]
 		reserved := float64(0)
 		if Max > 0 {
-			lowPerc := actor.ModDB.Sum(mod.TypeBase, nil, "Low"+pool+"Percentage")
-			reserved = actor.Output["reserved_"+pool+"Base"] + math.Ceil(Max*actor.Output["reserved_"+pool+"Percent"]/100)
-			uncancellableReservation := actor.Output["uncancellable_"+pool+"Reservation"]
-			actor.Output[pool+"Reserved"] = min(reserved, Max)
-			actor.Output[pool+"ReservedPercent"] = min(reserved/Max*100, 100)
-			actor.Output[pool+"Unreserved"] = Max - reserved
-			actor.Output[pool+"UnreservedPercent"] = (Max - reserved) / Max * 100
-			actor.Output[pool+"UncancellableReservation"] = min(uncancellableReservation, 0)
-			actor.Output[pool+"CancellableReservation"] = 100 - uncancellableReservation
+			lowPerc := actor.ModDB.Sum(mod.TypeBase, nil, pn.lowPercentage)
+			reserved = actor.Output[pn.reservedBase] + math.Ceil(Max*actor.Output[pn.reservedPercentIn]/100)
+			uncancellableReservation := actor.Output[pn.uncancellableIn]
+			actor.Output[pn.reserved] = min(reserved, Max)
+			actor.Output[pn.reservedPercent] = min(reserved/Max*100, 100)
+			actor.Output[pn.unreserved] = Max - reserved
+			actor.Output[pn.unreservedPercent] = (Max - reserved) / Max * 100
+			actor.Output[pn.uncancellable] = min(uncancellableReservation, 0)
+			actor.Output[pn.cancellable] = 100 - uncancellableReservation
 			threshold := data.LowPoolThreshold
 			if lowPerc > 0 {
 				threshold = lowPerc
 			}
 			if (Max-reserved)/Max <= threshold {
-				actor.ModDB.Conditions["Low"+pool] = true
+				actor.ModDB.Conditions[pn.low] = true
 			}
 		}
 		if !addAura {
@@ -5105,19 +5127,20 @@ func doActorLifeMana(actor *Actor) {
 		} else {
 			actor.Output["Life"] = max(utils.RoundTo(base*(1+inc/100)*more*(1-conv/100), 0), 1)
 		}
+		//pob:block:src/Modules/CalcPerform.lua:91-106
 		if actor.Breakdown != nil {
-			if inc != 0 || more != 1 || conv != 0 {
-				actor.Breakdown.AddLine("Life", fmt.Sprintf("%g ^8(base)", base))
+			if inc != 0 || more != 1 || conv != 0 || override != nil {
+				actor.Breakdown.Data["Life"] = &Entry{Lines: []string{fmt.Sprintf("%.6g ^8(base)", base)}}
 				if inc != 0 {
 					actor.Breakdown.AddLine("Life", fmt.Sprintf("x %.2f ^8(increased/reduced)", 1+inc/100))
 				}
 				if more != 1 {
 					actor.Breakdown.AddLine("Life", fmt.Sprintf("x %.2f ^8(more/less)", more))
 				}
-				if conv != 0 {
-					actor.Breakdown.AddLine("Life", fmt.Sprintf("x %.2f ^8(converted to Energy Shield)", 1-conv/100))
+				if override != nil {
+					actor.Breakdown.AddLine("Life", fmt.Sprintf("= %.6g ^8(life override)", override.Float()))
 				}
-				actor.Breakdown.AddLine("Life", fmt.Sprintf("= %g", actor.Output["Life"]))
+				actor.Breakdown.AddLine("Life", fmt.Sprintf("= %.6g", actor.Output["Life"]))
 			}
 		}
 	}
@@ -5126,9 +5149,10 @@ func doActorLifeMana(actor *Actor) {
 	base := actor.ModDB.Sum(mod.TypeBase, nil, "Mana")
 	inc := actor.ModDB.Sum(mod.TypeIncrease, nil, "Mana")
 	more := actor.ModDB.More(nil, "Mana")
+	//pob:block:src/Modules/CalcPerform.lua:113-128
 	if actor.Breakdown != nil {
 		if inc != 0 || more != 1 || manaConv != 0 {
-			actor.Breakdown.AddLine("Mana", fmt.Sprintf("%g ^8(base)", base))
+			actor.Breakdown.Data["Mana"] = &Entry{Lines: []string{fmt.Sprintf("%.6g ^8(base)", base)}}
 			if inc != 0 {
 				actor.Breakdown.AddLine("Mana", fmt.Sprintf("x %.2f ^8(increased/reduced)", 1+inc/100))
 			}
@@ -5138,7 +5162,7 @@ func doActorLifeMana(actor *Actor) {
 			if manaConv != 0 {
 				actor.Breakdown.AddLine("Mana", fmt.Sprintf("x %.2f ^8(converted to Armour)", 1-manaConv/100))
 			}
-			actor.Breakdown.AddLine("Mana", fmt.Sprintf("= %g", actor.Output["Mana"]))
+			actor.Breakdown.AddLine("Mana", fmt.Sprintf("= %.6g", actor.Output["Mana"]))
 		}
 	}
 	actor.Output["LowestOfMaximumLifeAndMaximumMana"] = min(actor.Output["Life"], actor.Output["Mana"])
@@ -6263,3 +6287,40 @@ var elementKeywordFlag = map[string]mod.KeywordFlag{
 	"Chaos":     mod.KeywordFlagChaos,
 	"Physical":  mod.KeywordFlagPhysical,
 }
+
+var reservationNames = func() map[string]*struct {
+	reserved, efficiency, outEfficiency, flatForced, percentForced, reservedPercent, reservedBase string
+	reservedBaseOut, reservedPercentOut, uncancellable                                            string
+} {
+	out := map[string]*struct {
+		reserved, efficiency, outEfficiency, flatForced, percentForced, reservedPercent, reservedBase string
+		reservedBaseOut, reservedPercentOut, uncancellable                                            string
+	}{}
+	for _, name := range []string{"Mana", "Life"} {
+		out[name] = &struct {
+			reserved, efficiency, outEfficiency, flatForced, percentForced, reservedPercent, reservedBase string
+			reservedBaseOut, reservedPercentOut, uncancellable                                            string
+		}{name + "Reserved", name + "ReservationEfficiency", name + "Efficiency", name + "ReservationFlatForced", name + "ReservationPercentForced",
+			name + "ReservedPercent", name + "ReservedBase", "reserved_" + name + "Base", "reserved_" + name + "Percent", "uncancellable_" + name + "Reservation"}
+	}
+	return out
+}()
+
+var poolReservationNames = func() map[string]*struct {
+	lowPercentage, reservedBase, reservedPercentIn, uncancellableIn, reserved, reservedPercent string
+	unreserved, unreservedPercent, uncancellable, cancellable, low                             string
+} {
+	out := map[string]*struct {
+		lowPercentage, reservedBase, reservedPercentIn, uncancellableIn, reserved, reservedPercent string
+		unreserved, unreservedPercent, uncancellable, cancellable, low                             string
+	}{}
+	for _, pool := range []string{"Life", "Mana"} {
+		out[pool] = &struct {
+			lowPercentage, reservedBase, reservedPercentIn, uncancellableIn, reserved, reservedPercent string
+			unreserved, unreservedPercent, uncancellable, cancellable, low                             string
+		}{"Low" + pool + "Percentage", "reserved_" + pool + "Base", "reserved_" + pool + "Percent", "uncancellable_" + pool + "Reservation",
+			pool + "Reserved", pool + "ReservedPercent", pool + "Unreserved", pool + "UnreservedPercent", pool + "UncancellableReservation",
+			pool + "CancellableReservation", "Low" + pool}
+	}
+	return out
+}()

@@ -332,6 +332,8 @@ func canonOurTag(t mod.Tag) canonTag {
 		setBool("allSlots", tag.AllSlots)
 		setBool("bothSlots", tag.BothSlots)
 		setBool("excludeSelf", tag.ExcludeSelf)
+		setBool("shaperCond", tag.ShaperCond)
+		setBool("elderCond", tag.ElderCond)
 		setBool("neg", tag.Neg)
 	case *mod.GlobalTag:
 		setBool("neg", tag.Negative)
@@ -341,6 +343,8 @@ func canonOurTag(t mod.Tag) canonTag {
 		setNum("modFlags", float64(tag.Flag))
 	case *mod.ModFlagOrTag:
 		setNum("modFlags", float64(tag.Flag))
+	case *mod.KeywordFlagAndTag:
+		setNum("keywordFlags", float64(tag.KeywordFlags))
 	case *mod.DistanceRampTag:
 		set("ramp", canonRampFloat(tag.Ramp))
 	case *mod.MeleeProximityTag:

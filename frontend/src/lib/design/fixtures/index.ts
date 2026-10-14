@@ -20,6 +20,8 @@ export type ItemTip = {
   lines: { text: string; sep: boolean }[];
   /* ItemsTab.lua:4748-4794 */
   children?: { text: string; sep: boolean }[][];
+  /* PassiveTreeView.lua:1607-1627 */
+  childrenShown?: boolean;
 };
 
 export type ItemSummary = {
@@ -165,6 +167,7 @@ export type TreeNodeFx = {
   loseIds?: number[];
   effects?: string[][];
   effect?: number;
+  picked?: number;
 };
 export type TreeSocketFx = { id: number; pts: number; notables: string[]; keystones: string[]; smalls: number; jewel?: string };
 export type TreeFixture = {

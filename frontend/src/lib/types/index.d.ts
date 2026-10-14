@@ -117,10 +117,12 @@ export declare namespace calculator {
     EquippedSlots(): (Array<string> | undefined);
     GetOutput(stat: string): [number, boolean];
     ItemCorruptedIs(slot: string, corrupted: boolean): boolean;
+    ItemElderIs(slot: string, elder: boolean): boolean;
     ItemInSlot(slot: string): boolean;
     ItemModifierMatches(slot: string, searchCond: string): boolean;
     ItemNameIs(slot: string, name: string): boolean;
     ItemRarityIs(slot: string, rarity: string): boolean;
+    ItemShaperIs(slot: string, shaper: boolean): boolean;
     MonsterTags(): [(Array<string> | undefined), boolean];
     /** Releases the Go resources behind this wrapper. */
     release(): void;
@@ -138,10 +140,12 @@ export declare namespace calculator {
     EquippedSlots(): (Array<string> | undefined);
     GetOutput(stat: string): [number, boolean];
     ItemCorruptedIs(slot: string, corrupted: boolean): boolean;
+    ItemElderIs(slot: string, elder: boolean): boolean;
     ItemInSlot(slot: string): boolean;
     ItemModifierMatches(slot: string, searchCond: string): boolean;
     ItemNameIs(slot: string, name: string): boolean;
     ItemRarityIs(slot: string, rarity: string): boolean;
+    ItemShaperIs(slot: string, shaper: boolean): boolean;
     MonsterTags(): [(Array<string> | undefined), boolean];
     /** Releases the Go resources behind this wrapper. */
     release(): void;
@@ -754,9 +758,11 @@ export declare namespace calculator {
     TinctureData?: Record<string, number>;
     BuildModList(): void;
     CfgCorruptedIs(corrupted: boolean): boolean;
+    CfgElderIs(elder: boolean): boolean;
     CfgModifierMatches(searchCond: string, slot: string): boolean;
     CfgNameIs(name: string): boolean;
     CfgRarityIs(rarity: string): boolean;
+    CfgShaperIs(shaper: boolean): boolean;
     Clone(): (calculator.Item | undefined);
     NormaliseQuality(): void;
     ParseRaw(raw: string): void;
@@ -1111,6 +1117,8 @@ export declare namespace calculator {
     readonly Cluster: boolean;
     readonly Offence: number;
     readonly Defence: number;
+    readonly Effect: number;
+    readonly Picked: boolean;
   }
   interface PowerShardRows {
     readonly Rows?: Array<calculator.PowerReportEntry>;
@@ -2033,6 +2041,11 @@ export declare namespace data {
     release(): void;
     [Symbol.dispose](): void;
   }
+  interface SubgraphNode {
+    readonly ID: number;
+    readonly Type: string;
+    readonly Linked?: Array<number>;
+  }
   interface Tree {
     Tree: string;
     Classes?: Array<data.Class>;
@@ -2362,11 +2375,13 @@ export declare namespace exposition {
   function CalcTreeVersion(): string;
   function CalculateAllocationPaths(version: string, activeNodes: Array<number> | undefined, rootNodes: Array<number> | undefined): (Record<number, number> | undefined);
   function CalculateDependentNodes(version: string, activeNodes: Array<number> | undefined, target: number, rootNodes: Array<number> | undefined): (Array<number> | undefined);
+  function CalculateDependentNodesWith(version: string, activeNodes: Array<number> | undefined, target: number, rootNodes: Array<number> | undefined, subgraph: Array<data.SubgraphNode> | undefined): (Array<number> | undefined);
   function CalculatePrunableNodes(version: string, activeNodes: Array<number> | undefined, rootNodes: Array<number> | undefined): (Array<number> | undefined);
   function ChangeSecondaryAscendancy(build: pob.PathOfBuilding | undefined, ascendClassID: number): Promise<void>;
   function ChangeTreeAscendancy(build: pob.PathOfBuilding | undefined, ascendancy: string): Promise<void>;
   function ChangeTreeClass(build: pob.PathOfBuilding | undefined, className: string, decision: number): Promise<calculator.ClassChange>;
   function ClickTreeAscendancyNode(build: pob.PathOfBuilding | undefined, nodeID: number, decision: number): Promise<calculator.ClassChange>;
+  function CompareSpecJewelTooltip(build: pob.PathOfBuilding | undefined, specID: number, nodeID: number, stats: calculator.ItemTooltipStats): [calculator.ItemTooltip, boolean];
   function ConfigPlaceholders(build: pob.PathOfBuilding | undefined): (Record<string, number> | undefined);
   function ConvertAllTreeSpecs(build: pob.PathOfBuilding | undefined, version: string): Promise<string>;
   function ConvertTreeSpec(build: pob.PathOfBuilding | undefined, version: string, replace: boolean): Promise<string>;
@@ -2641,7 +2656,7 @@ export declare namespace mod {
   interface Tag {
     Type(): mod.Type;
   }
-  type Type = "INC" | "MORE" | "BASE" | "FLAG" | "OVERRIDE" | "LIST" | "SocketedIn" | "PerStat" | "PercentStat" | "Condition" | "ActorCondition" | "Multiplier" | "ModFlag" | "SkillType" | "SkillId" | "Global" | "SkillName" | "MAX" | "CHANCE" | "StatThreshold" | "SlotNumber" | "SlotName" | "ItemCondition" | "DistanceRamp" | "MultiplierThreshold" | "ModFlagOr" | "InSlot" | "DUMMY" | "GlobalEffect" | "MeleeProximity" | "IgnoreCond" | "SkillPart" | "Limit" | "DisablesItem" | "MonsterTag" | "Flag";
+  type Type = "INC" | "MORE" | "BASE" | "FLAG" | "OVERRIDE" | "LIST" | "SocketedIn" | "PerStat" | "PercentStat" | "Condition" | "ActorCondition" | "Multiplier" | "ModFlag" | "SkillType" | "SkillId" | "Global" | "SkillName" | "MAX" | "CHANCE" | "StatThreshold" | "SlotNumber" | "SlotName" | "ItemCondition" | "DistanceRamp" | "MultiplierThreshold" | "ModFlagOr" | "KeywordFlagAnd" | "InSlot" | "DUMMY" | "GlobalEffect" | "MeleeProximity" | "IgnoreCond" | "SkillPart" | "Limit" | "DisablesItem" | "MonsterTag" | "Flag";
   const Type: {
     readonly TypeIncrease: "INC";
     readonly TypeMore: "MORE";
@@ -2669,6 +2684,7 @@ export declare namespace mod {
     readonly TypeDistanceRamp: "DistanceRamp";
     readonly TypeMultiplierThreshold: "MultiplierThreshold";
     readonly TypeModFlagOr: "ModFlagOr";
+    readonly TypeKeywordFlagAnd: "KeywordFlagAnd";
     readonly TypeInSlot: "InSlot";
     readonly TypeDummy: "DUMMY";
     readonly TypeGlobalEffect: "GlobalEffect";

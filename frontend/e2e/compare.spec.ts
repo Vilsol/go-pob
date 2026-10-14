@@ -176,6 +176,8 @@ test('the power report lists what the Go model measures, and Equip writes B’s 
   const tip = page.locator('#compare-power-tip');
   await expect(tip).toContainText(/Allocating this node will give you:|No changes from allocating this node/, { timeout: 60_000 });
   await expect(tip).toContainText(`${points} points to node`);
+  // PassiveTreeView.lua:1706
+  await expect(tip).toContainText('Tip: Press Ctrl+D to disable the display of stat differences.');
 
   // CompareTab.lua:968-974
   await page.getByRole('combobox', { name: 'Metric' }).first().selectOption('Mana');

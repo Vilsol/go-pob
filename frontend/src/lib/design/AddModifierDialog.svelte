@@ -3,6 +3,7 @@
   import Button from './Button.svelte';
   import FloatingLabel from './FloatingLabel.svelte';
   import Select from './Select.svelte';
+  import Dropdown from './Dropdown.svelte';
   import ItemTooltip from './ItemTooltip.svelte';
   import ImpactBlocks from './ImpactBlocks.svelte';
   import PobText from './PobText.svelte';
@@ -95,12 +96,15 @@
       <input class="input h-7.5" aria-label="Custom modifier" bind:value={custom} />
     {:else}
       <FloatingLabel label="Modifier"
-        ><Select
-          class="h-7.5"
+        ><Dropdown
+          class="block h-7.5 w-full"
+          searchable
           aria-label="Modifier"
           options={order.map((k, i) => ({ value: String(i), label: plainText(mods[k].label) }))}
           value={String(pick)}
-          onchange={(e: Event & { currentTarget: HTMLSelectElement }) => (pick = Number(e.currentTarget.value))} /></FloatingLabel>
+          onchange={(v: string) => {
+            pick = Number(v);
+          }} /></FloatingLabel>
       {#if mod}
         <div role="group" aria-label="Modifier comparison" class="flex flex-col gap-1 font-mono text-13">
           {#each mod.lines as l, k (k)}<span class="font-sans"><PobText text={'^7' + l} /></span>{/each}

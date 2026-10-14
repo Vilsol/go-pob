@@ -31,7 +31,8 @@
   import type { ClassChangeResult } from '$lib/skill_tree/class_change';
   import { heatMixValues, heatValues } from '$lib/skill_tree/heat';
   import TimelessDialog from './TimelessDialog.svelte';
-  import { PowerFlashes } from './power_flash';
+  import { PowerFlashes, powerRingSize } from './power_flash';
+  import { resolvePoeUrl, shrinkTreeLink } from './link_import';
   import TooltipLines from '$lib/design/TooltipLines.svelte';
   import PobText from '$lib/design/PobText.svelte';
   import { colorHighlight, edgeSearchHighlight, hexColour } from '$lib/skill_tree/options';
@@ -77,6 +78,10 @@
         info = { className: i.className, ascendClassName: i.ascendClassName, level: i.level, recordedTreeVersion: i.recordedTreeVersion };
       })
       .catch(logError);
+  });
+
+  $effect(() => {
+    syncWrap?.PowerPoolWarm($powerWorkers).catch(logError);
   });
 
   $effect(() => {
@@ -385,6 +390,7 @@
   let powerHover = $state<number>();
   let powerStarted = $state(false);
   const powerFlashes = new PowerFlashes();
+  let powerCurrent = $state.raw<number[]>([]);
   let powerPartial = $state.raw<PowerRow[]>();
   let q = $state('');
   const powerStats = $derived(powerOpen || heatOn ? (syncWrap?.GetPowerStats() ?? Promise.resolve([])) : Promise.resolve([]));
@@ -413,6 +419,7 @@
           .then((l) => {
             if (!live) return;
             powerProgress = l.done;
+            powerCurrent = l.current;
             if (l.rows) {
               powerPartial = l.rows;
               powerFlashes.arrive(l.rows.map((r) => r.ID));
@@ -434,6 +441,7 @@
           clearInterval(poll);
           if (live) {
             powerPartial = undefined;
+            powerCurrent = [];
           }
         });
     };
@@ -445,6 +453,7 @@
       clearInterval(poll);
       powerFlashes.reset();
       powerPartial = undefined;
+      powerCurrent = [];
     };
   });
   const closePower = () => {
@@ -453,6 +462,11 @@
     void syncWrap?.CancelPowerReport();
   };
   $effect(() => () => void syncWrap?.CancelPowerReport());
+  // TreeTab.lua:310-313
+  const stopPower = () => {
+    powerStarted = false;
+    void syncWrap?.CancelPowerReport();
+  };
   const setHeat = (on: boolean) => {
     heatOn = on;
     if (!on && powerStat === '') powerStat = 'Life';
@@ -599,16 +613,28 @@
       })
       .catch(logError);
   });
+  const powerPick = $derived(
+    new Map((powerOpen || heatOn ? (powerRows ?? []) : []).filter((r) => r.Picked && r.Effect !== undefined).map((r) => [r.ID, r.Effect!]))
+  );
   const masteryFx = (n: TreeNodeFx): Partial<TreeNodeFx> => {
     if (n.k !== 'm') return {};
+    const pick = powerPick.get(n.id);
     if (options?.node === n.id) {
-      return { effects: options.opts.map((o) => [o.Label]), effect: options.opts.findIndex((o) => o.Selected) };
+      return {
+        effects: options.opts.map((o) => [o.Label]),
+        effect: options.opts.findIndex((o) => o.Selected),
+        picked: pick === undefined ? undefined : options.opts.findIndex((o) => o.Effect === pick)
+      };
     }
     if (n.id === masteryOpen) return { effects: [], effect: -1 };
     // PassiveTreeView.lua:1584-1592
     const held = new Set(Object.entries(selections).flatMap(([node, e]) => (Number(node) === n.id ? [] : [e])));
     const shown = (base.byId.get(n.id)?.masteryEffects ?? []).filter((e) => !held.has(e.effect));
-    return { effects: shown.map((e) => [e.stats.join(' / ')]), effect: shown.findIndex((e) => e.effect === selections[n.id]) };
+    return {
+      effects: shown.map((e) => [e.stats.join(' / ')]),
+      effect: shown.findIndex((e) => e.effect === selections[n.id]),
+      picked: pick === undefined ? undefined : shown.findIndex((e) => e.effect === pick)
+    };
   };
   // PassiveMasteryControl.lua:37-43, PassiveTreeView.lua:1671-1705
   let masteryDiff = $state<{ node: number; effect: number; pending: boolean; empty?: string; blocks: StatDiffBlock[] }>();
@@ -644,9 +670,7 @@
         });
       }
     }
-    const empty = blocks.length
-      ? undefined
-      : `No changes from ${isAlloc ? 'unallocating' : 'allocating'} this node${!isAlloc && path.length > 1 ? ' or the nodes leading to it' : ''}.`;
+    const empty = blocks.length ? undefined : `No changes from ${isAlloc ? 'unallocating' : 'allocating'} this node.`;
     masteryDiff = { node: id, effect: index!, pending: false, blocks: [...blocks], empty };
   };
   $effect(() => {
@@ -923,10 +947,12 @@
     // PassiveTreeView.lua:1479
     const isSocket = !!base.byId.get(id)?.isJewelSocket;
     const socket = isSocket && socketed.some((j) => j.NodeID === id);
-    const reaching = untrack(() => inRadiusOf.get(id)) ?? [];
+    // PassiveTreeView.lua:1755-1762
+    const comparedSocket = untrack(() => compareCluster.find((c) => c.id === id)?.type === 'Socket');
+    const reaching = inRadiusOf.get(id) ?? [];
     Promise.all([
       syncWrap?.GetNodeSkillTooltips(id),
-      socket ? syncWrap?.SocketJewelTooltip(id) : undefined,
+      socket ? syncWrap?.SocketJewelTooltip(id) : comparedSocket ? syncWrap?.CompareSpecJewelTooltip(untrack(() => compareSpec) + 1, id) : undefined,
       isSocket && untrack(() => alloc[id]) ? syncWrap?.GetSocketDistance(id) : undefined,
       Promise.all(reaching.map(async (s) => ({ socket: s, tip: await syncWrap?.SocketJewelTooltip(s) })))
     ])
@@ -1104,9 +1130,19 @@
   onconvert={convertTree}
   onconvertall={convertAllTrees}
   onexporttree={async () => (await syncWrap?.ExportTreeLink()) ?? ''}
+  onshrinktree={shrinkTreeLink}
   onimporttree={async (title: string, link: string) => {
+    // TreeTab.lua:759-789
+    let resolved = link;
+    if (/poeurl\.com\//.test(link)) {
+      try {
+        resolved = await resolvePoeUrl(link);
+      } catch (err) {
+        return err instanceof Error ? err.message : String(err);
+      }
+    }
     editSeq++;
-    const msg = (await syncWrap?.ImportTreeLink(title, link)) ?? '';
+    const msg = (await syncWrap?.ImportTreeLink(title, resolved)) ?? '';
     if (!msg) currentBuild.set($currentBuild);
     if (managing) readPoints();
     return msg;
@@ -1182,6 +1218,8 @@
             ><input class="check" type="checkbox" checked={heatOn} onchange={(e) => setHeat(e.currentTarget.checked)} /><span>Show node power</span></label>
           {#if !powerStarted}
             <button class="btn btn-sm ml-auto px-3" onclick={() => (powerStarted = true)}>Start</button>
+          {:else if !powerRows}
+            <button class="btn btn-sm ml-auto px-3" onclick={stopPower}>Stop</button>
           {/if}
         </div>
         {#if !powerStarted}
@@ -1241,6 +1279,9 @@
     {/if}
   {/snippet}
   {#snippet nodeTipExtra(n: TreeNodeFx)}
+    {#if n.k === 'm' && n.picked !== undefined && n.effects?.[n.picked]}
+      <div class="text-12 text-accent" data-power-pick={n.picked}>Power report picks: {n.effects[n.picked].join(' / ')}</div>
+    {/if}
     {@render nodeTipBody(n)}
   {/snippet}
   {#snippet nodeTipTail(n: TreeNodeFx)}
@@ -1302,11 +1343,22 @@
                 data-power-hover={powerHover}
                 style:left="{p.x}px"
                 style:top="{p.y}px"
-                style:width="{Math.max(28, 450 / view.scaling)}px"
-                style:height="{Math.max(28, 450 / view.scaling)}px">
+                style:width="{powerRingSize(view.scaling)}px"
+                style:height="{powerRingSize(view.scaling)}px">
               </div>
             {/if}
           {/if}
+          {#each powerCurrent as id (id)}
+            {@const p = project(id)}
+            {#if p}
+              <div
+                class="absolute size-8 -translate-x-1/2 -translate-y-1/2 animate-pulse rounded-full border-2 border-accent"
+                data-power-current={id}
+                style:left="{p.x}px"
+                style:top="{p.y}px">
+              </div>
+            {/if}
+          {/each}
           {#each [...powerFlashes.flashing] as [id, k] (id + ':' + k)}
             {@const p = project(id)}
             {#if p}

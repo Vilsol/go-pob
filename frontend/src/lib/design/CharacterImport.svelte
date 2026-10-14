@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { untrack } from 'svelte';
   import FloatingLabel from './FloatingLabel.svelte';
   import Checkbox from './Checkbox.svelte';
   import PobText from './PobText.svelte';
@@ -19,6 +20,8 @@
     onremoveaccount?: (account: string) => void;
     onimporttree?: (c: AccountCharacter, deleteJewels: boolean) => void;
     onimportitems?: (c: AccountCharacter, o: ItemOpts) => void;
+    onselect?: (c: AccountCharacter | undefined) => void;
+    selected?: string;
     onclose?: () => void;
   };
   let {
@@ -34,11 +37,13 @@
     onremoveaccount,
     onimporttree,
     onimportitems,
+    onselect,
+    selected,
     onclose
   }: Props = $props();
 
   const uid = $props.id();
-  let picked = $state('');
+  let picked = $state(untrack(() => selected ?? ''));
   let deleteJewels = $state(true);
   let items = $state<ItemOpts>({ clearSkills: true, clearItems: true, ignoreWeaponSwap: false });
   let historyPick = $state('');
@@ -48,12 +53,16 @@
   const standardOf = (l: string) =>
     l.includes('Hardcore') ? 'Hardcore' : l.includes('HC SSF') ? 'SSF Hardcore' : l.includes('SSF') ? 'SSF Standard' : 'Standard';
   let league = $state<string | undefined>();
+  let restore = untrack(() => characters.find((c) => c.name === selected)?.league);
   $effect(() => {
     const ls = leagues;
-    league = lastLeague && ls.includes(lastLeague) ? lastLeague : lastLeague && ls.includes(standardOf(lastLeague)) ? standardOf(lastLeague) : ls[0];
+    const kept = restore && ls.includes(restore) ? restore : undefined;
+    restore = undefined;
+    league = kept ?? (lastLeague && ls.includes(lastLeague) ? lastLeague : lastLeague && ls.includes(standardOf(lastLeague)) ? standardOf(lastLeague) : ls[0]);
   });
   const list = $derived(characterList(realm.realmCode, league, characters));
   const chosen = $derived(list.find((e) => e.char.name === picked) ?? list[0]);
+  $effect(() => onselect?.(chosen?.char));
   const selecting = $derived(stage === 'SELECTCHAR');
   const startOff = $derived(canStart(account) ? undefined : 'Enter the account name with its discriminator, e.g. Name#1234');
 </script>

@@ -539,7 +539,7 @@ describe('the Tree page’s power report', () => {
       { Stat: 'Life', Label: 'Life' }
     ] as never);
     const report = vi.spyOn(workerInstance, 'BuildPowerReportLive').mockImplementation(() => new Promise(() => {}));
-    vi.spyOn(workerInstance, 'PowerReportLive').mockReturnValue({ done: 0, current: 0 });
+    vi.spyOn(workerInstance, 'PowerReportLive').mockReturnValue({ done: 0, current: [] });
     outputs.set({} as never);
     const view = await mount();
     await fireEvent.click(view.getByRole('button', { name: /^Power/ }));
@@ -576,7 +576,7 @@ describe('the Tree page’s power report', () => {
       { Stat: 'Life', Label: 'Life' }
     ] as never);
     const report = vi.spyOn(workerInstance, 'BuildPowerReportLive').mockImplementation(() => new Promise(() => {}));
-    vi.spyOn(workerInstance, 'PowerReportLive').mockReturnValue({ done: 0, current: 0 });
+    vi.spyOn(workerInstance, 'PowerReportLive').mockReturnValue({ done: 0, current: [] });
     outputs.set({} as never);
     const view = await mount();
     expect(view.queryByRole('checkbox', { name: /Show node power/i })).toBeNull();

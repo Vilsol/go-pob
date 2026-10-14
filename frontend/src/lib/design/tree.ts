@@ -77,6 +77,9 @@ export type PowerRow = {
   /* CalcsTab.lua:541 */
   Offence?: number;
   Defence?: number;
+  /* CalcsTab.lua:684 */
+  Effect?: number;
+  Picked?: boolean;
 };
 /* PowerReportListControl.lua:31 */
 export type PowerFilter = 'unallocated' | 'clusters' | 'allocated';

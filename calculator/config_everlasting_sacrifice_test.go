@@ -19,11 +19,11 @@ func TestEverlastingSacrificeConfigDispatches(t *testing.T) {
 
 	on := moddb.NewModList()
 	apply(true, on, moddb.NewModList())
-	on.Conditions["Combat"] = true
+	moddb.SetCondition(on.ModStore, "Combat", true)
 	if got := on.Sum("BASE", nil, "ElementalResistMax"); got != 0 {
 		t.Errorf("without Condition:EverlastingSacrifice ElementalResistMax = %v, want 0", got)
 	}
-	on.Conditions["EverlastingSacrifice"] = true
+	moddb.SetCondition(on.ModStore, "EverlastingSacrifice", true)
 	if got := on.Sum("BASE", nil, "ElementalResistMax"); got != 5 {
 		t.Errorf("ElementalResistMax = %v, want 5", got)
 	}
@@ -33,8 +33,8 @@ func TestEverlastingSacrificeConfigDispatches(t *testing.T) {
 
 	off := moddb.NewModList()
 	apply(false, off, moddb.NewModList())
-	off.Conditions["Combat"] = true
-	off.Conditions["EverlastingSacrifice"] = true
+	moddb.SetCondition(off.ModStore, "Combat", true)
+	moddb.SetCondition(off.ModStore, "EverlastingSacrifice", true)
 	if got := off.Sum("BASE", nil, "ElementalResistMax"); got != 0 {
 		t.Errorf("unchecked must add nothing, ElementalResistMax = %v", got)
 	}

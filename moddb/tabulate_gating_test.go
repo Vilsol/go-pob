@@ -35,7 +35,7 @@ func TestTabulateAppliesConditionGateModList(t *testing.T) {
 	testza.AssertEqual(t, 1, len(res))
 	testza.AssertEqual(t, 7.0, res[0].Value)
 
-	list.Conditions["Fortified"] = true
+	SetCondition(list.ModStore, "Fortified", true)
 	res = list.Tabulate(mod.TypeIncrease, nil, "Damage")
 	testza.AssertEqual(t, 2, len(res))
 }

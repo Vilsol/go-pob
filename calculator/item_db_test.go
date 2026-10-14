@@ -473,7 +473,7 @@ func TestItemSkillTooltipsAgainstPoB(t *testing.T) {
 	}
 }
 
-const itemSkillTooltipFloor = 229
+const itemSkillTooltipFloor = 235
 
 func newBuildTooltipContext() ItemTooltipContext {
 	return ItemTooltipContext{CharacterLevel: 1, ClassName: "Scion", ShowFlavourText: true, DBMode: true, Stats: ItemTooltipStats{Str: 20, Dex: 20, Int: 20}}

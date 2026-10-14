@@ -7,6 +7,7 @@ import (
 
 // TestCompareJewelPowerBuilder: CompareTab.lua:2785-2868: each jewel B holds in a tree socket where A has another.
 func TestCompareJewelPowerBuilder(t *testing.T) {
+	t.Parallel()
 	initItemsTabData(t)
 	a := loadCorpusBuild(t, "0011-saboteur-cyclone.xml")
 	b := loadCorpusBuild(t, "0009-trickster-cobra-lash.xml")

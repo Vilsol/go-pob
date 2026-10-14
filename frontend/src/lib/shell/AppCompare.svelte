@@ -17,6 +17,9 @@
   import { GetSkillGems } from '$lib/cache';
   import ComparePage from '$lib/design/ComparePage.svelte';
   import BuySimilarDialog from '$lib/design/BuySimilarDialog.svelte';
+  import Dialog from '$lib/design/Dialog.svelte';
+  import Button from '$lib/design/Button.svelte';
+  import { accountSession, canReimport, reimportPrimary } from './account_session.svelte';
   import BuildPicker from '$lib/design/BuildPicker.svelte';
   import AppCompareSets from './AppCompareSets.svelte';
   import type { SavedBuild } from '$lib/design/fixtures/app';
@@ -372,7 +375,29 @@
     if (ui.swapped) return;
     (action === 'Take' ? take(id) : drop(id)).catch(logError);
   };
+
+  // CompareTab.lua:244-271
+  const reimportTip = $derived.by(() => {
+    if (accountSession.stage !== 'SELECTCHAR') return 'No character selected.\nGo to Import/Export Build tab and select a character first.';
+    const c = accountSession.selected;
+    return `${c ? `Re-import character from the game server:\n${c.name} (${c.class}, ${c.league})` : 'Re-import the currently selected character.'}\nRefreshes passive tree, jewels, items, and skills.`;
+  });
+  let confirmTree = $state<() => void>();
 </script>
+
+{#if confirmTree}<Dialog open title="Character Import" onclose={() => (confirmTree = undefined)}>
+    <p class="m-0 text-13">Importing the passive tree will overwrite your current tree.</p>
+    {#snippet actions()}
+      <Button
+        variant="primary"
+        onclick={() => {
+          const run = confirmTree;
+          confirmTree = undefined;
+          run?.();
+        }}>Import</Button>
+      <Button onclick={() => (confirmTree = undefined)}>Cancel</Button>
+    {/snippet}
+  </Dialog>{/if}
 
 {#if !$currentBuild}
   <p class="note p-5" role="status">Open a build to compare it.</p>
@@ -421,6 +446,8 @@
         >{#each info.names as n, i (i)}<option value={String(i)}>{n}</option>{/each}</select
       ></label>
     <button class="btn btn-2xs" onclick={() => (adding = true)}>Import…</button>
+    <button class="btn btn-2xs" disabled={!canReimport()} title={reimportTip} onclick={() => reimportPrimary((run) => (confirmTree = run))}
+      >Re-import Current</button>
     <button class="btn btn-2xs" onclick={remove}>Remove comparison</button>
   </div>
   <AppCompareSets bind:info />
@@ -453,15 +480,19 @@
           const paths = (await syncWrap.CalculateAllocationPaths(await syncWrap.GetTreeVersion(), [...nodes], classRoots(m.t, m.sides.a.className))) ?? {};
           const path = calculateAllocationPath(paths, id) ?? [];
           const blocks: WhatIfBlock[] = [];
-          const one = await syncWrap.StatCompareNodes([id], []);
+          const diffs = (await syncWrap.GetTreeViewState())?.ShowStatDifferences ?? true;
+          const one = diffs ? await syncWrap.StatCompareNodes([id], []) : undefined;
           if (one?.sections.length) blocks.push({ header: '^7Allocating this node will give you:', sections: one.sections });
-          if (path.length > 1) {
+          if (diffs && path.length > 1) {
             const all = await syncWrap.StatCompareNodes(path, [], path.length);
             if (all?.sections.length) blocks.push({ header: '^7Allocating this node and all nodes leading to it will give you:', sections: all.sections });
           }
-          lines.push(...nodeWhatIfLines(blocks, path.length));
+          lines.push(...nodeWhatIfLines(blocks, path.length, diffs));
         }
-        return { influence: [], title: [n.name ?? String(r.nodeId)], lines };
+        // PassiveTreeView.lua:1607-1627
+        const skills = ui.swapped ? [] : ((await syncWrap?.GetNodeSkillTooltips(r.nodeId)) ?? []);
+        const children = skills.map((c) => c.map((l) => ({ text: l.Text, sep: l.Separator })));
+        return { influence: [], title: [n.name ?? String(r.nodeId)], lines, children, childrenShown: true };
       }
       const t = r.cat === 'items' ? await syncWrap?.CompareItemTooltip(ui.swapped ? 'a' : 'b', r.what) : undefined;
       return t

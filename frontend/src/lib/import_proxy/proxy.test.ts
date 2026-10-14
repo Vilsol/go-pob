@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
-import { BUILD_CAP, EDITABLE_TTL, IMMUTABLE_TTL, POE_TTL, USER_AGENT, handleBuild, handlePoe, type Deps } from './proxy';
+import { deflateSync } from 'node:zlib';
+import { BUILD_CAP, EDITABLE_TTL, IMMUTABLE_TTL, LINK_CAP, POE_TTL, USER_AGENT, handleBuild, handlePoe, handlePoeUrl, handleShare, type Deps } from './proxy';
 
 const memoryCache = () => {
   const m = new Map<string, Response>();
@@ -222,5 +223,115 @@ describe('/api/poe', () => {
   it('stops reading past the cap', async () => {
     const { d } = deps(() => new Response('x', { headers: { 'Content-Length': String(64 << 20) } }));
     expect((await poe('items', 'realm=pc&account=a%231&character=b', d)).status).toBe(502);
+  });
+});
+
+describe('/api/share', () => {
+  // ImportTab.lua:504
+  const CODE = deflateSync('<?xml version="1.0"?><PathOfBuilding><Build/></PathOfBuilding>').toString('base64').replace(/\+/g, '-').replace(/\//g, '_');
+  const post = (site: string, body: BodyInit | null, method = 'POST') => new Request(`https://pob.gg/api/share?site=${site}`, { method, body });
+
+  it.each([
+    ['POBBin', 'https://pobb.in/pob/', '', 'abc-DEF', 'https://pobb.in/abc-DEF'],
+    ['Maxroll', 'https://maxroll.gg/poe/api/pob', 'pobCode=', 'x1y2', 'https://maxroll.gg/poe/pob/x1y2'],
+    ['PoBCodes', 'https://api.pob.codes/pob/plain', '', 'k3', 'https://pob.codes/b/k3'],
+    ['PoeNinja', 'https://poe.ninja/poe1/pob/api/upload', 'code=', 'https://poe.ninja/poe1/pob/1a2b', 'https://poe.ninja/poe1/pob/1a2b'],
+    ['PoEDB', 'https://poedb.tw/pob/api/gen', '', 'https://poedb.tw/pob/zz9\n', 'https://poedb.tw/pob/zz9']
+  ])('%s: posts postFields..code to %s and answers codeOut..answer', async (site, url, fields, answer, link) => {
+    const { fetchMock, d } = deps(() => new Response(answer));
+    const res = await handleShare(post(site, `${CODE}\n`), d);
+    expect(res.status).toBe(200);
+    expect(await res.text()).toBe(link);
+    expect(res.headers.get('Cache-Control')).toBe('no-store');
+    expect(fetchMock).toHaveBeenCalledWith(url, {
+      method: 'POST',
+      headers: { 'User-Agent': USER_AGENT, 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: fields + CODE
+    });
+  });
+
+  it('refuses anything but POST', async () => {
+    const { fetchMock, d } = deps(() => new Response('x'));
+    expect((await handleShare(post('POBBin', null, 'GET'), d)).status).toBe(405);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['a site PoB only imports from', 'pastebin', CODE, 400],
+    ['an unknown site', 'nope', CODE, 400],
+    ['text that is not base64', 'POBBin', 'hello world', 400],
+    ['base64 that does not inflate', 'POBBin', 'aGVsbG8', 400],
+    ['a deflated document that is not a build', 'POBBin', deflateSync('<html/>').toString('base64'), 400],
+    ['a body past the cap', 'POBBin', 'A'.repeat(BUILD_CAP + 1), 413]
+  ])('never uploads %s', async (_, site, body, status) => {
+    const { fetchMock, d } = deps(() => new Response('x'));
+    expect((await handleShare(post(site, body), d)).status).toBe(status);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("passes a site's refusal through (BuildSiteTools.lua:74: only a 200 is a link)", async () => {
+    const { d } = deps(() => new Response('slow down', { status: 429, headers: { 'cf-mitigated': 'challenge' } }));
+    const res = await handleShare(post('POBBin', CODE), d);
+    expect(res.status).toBe(429);
+    expect(await res.text()).toBe('pobb.in answered 429 (challenge)');
+    const created = deps(() => new Response('abc', { status: 201 }));
+    expect((await handleShare(post('POBBin', CODE), created.d)).status).toBe(201);
+  });
+
+  it("answers 502 for an answer that is not the site's link, or a long one", async () => {
+    for (const answer of ['<html>oops</html>', 'https://example.com/x', 'a'.repeat(LINK_CAP + 1)]) {
+      const { d } = deps(() => new Response(answer));
+      const res = await handleShare(post(answer.startsWith('https') ? 'PoeNinja' : 'POBBin', CODE), d);
+      expect(res.status, answer.slice(0, 20)).toBe(502);
+    }
+  });
+
+  it('answers 502 when the site is unreachable', async () => {
+    const { d } = deps(() => Promise.reject(new TypeError('fetch failed')));
+    const res = await handleShare(post('POBBin', CODE), d);
+    expect(res.status).toBe(502);
+    expect(await res.text()).toBe('pobb.in is unreachable');
+  });
+});
+
+describe('/api/poeurl', () => {
+  const ask = (q: string) => new Request(`https://pob.gg/api/poeurl?${q}`);
+  const TREE = 'https://www.pathofexile.com/passive-skill-tree/3.29.0/AAAABgMADI6-HwKSwQ';
+
+  it('answers where a PoEURL link redirects, never following it (TreeTab.lua:763-777)', async () => {
+    const { fetchMock, d } = deps(() => new Response(null, { status: 302, headers: { Location: TREE } }));
+    const res = await handlePoeUrl(ask('id=dABz'), d);
+    expect(res.status).toBe(200);
+    expect(await res.text()).toBe(TREE);
+    expect(fetchMock).toHaveBeenCalledWith('http://poeurl.com/dABz', { headers: { 'User-Agent': USER_AGENT }, redirect: 'manual' });
+  });
+
+  it.each([
+    ['no redirect', new Response('page', { status: 200 })],
+    ['a redirect back to poeurl.com', new Response(null, { status: 302, headers: { Location: 'http://poeurl.com/error' } })]
+  ])('fails on %s as PoB does', async (_, answer) => {
+    const { d } = deps(() => answer);
+    const res = await handlePoeUrl(ask('id=dABz'), d);
+    expect(res.status).toBe(502);
+    expect(await res.text()).toBe('Failed to resolve PoEURL link');
+  });
+
+  it('shrinks a tree link to http://poeurl.com/<answer> (TreeTab.lua:821-826)', async () => {
+    const { fetchMock, d } = deps(() => new Response('dABz\n'));
+    const res = await handlePoeUrl(ask(`shrink=${encodeURIComponent(TREE)}`), d);
+    expect(await res.text()).toBe('http://poeurl.com/dABz');
+    expect(fetchMock.mock.calls[0][0]).toBe(`http://poeurl.com/shrink.php?url=${encodeURIComponent(TREE)}`);
+  });
+
+  it.each([['   '], ['<html>busy</html>']])('fails a shrink answered %j', async (answer) => {
+    const { d } = deps(() => new Response(answer));
+    const res = await handlePoeUrl(ask(`shrink=${encodeURIComponent(TREE)}`), d);
+    expect(res.status).toBe(502);
+  });
+
+  it.each([['id=a/b'], ['id='], ['shrink=https://example.com/x'], ['']])('asks nothing for %j', async (q) => {
+    const { fetchMock, d } = deps(() => new Response('x'));
+    expect((await handlePoeUrl(ask(q), d)).status).toBe(400);
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 });

@@ -124,6 +124,7 @@ vi.mock('$app/state', () => ({ page: { state: {}, url: new URL('http://localhost
 
 const { currentBuildPath, devMode, nodePowerTheme, zoomSensitivity } = await import('$lib/global');
 const { defaultCharLevel, defaultGemQuality, showFlavourText, showWarnings } = await import('$lib/display/item_options');
+const { unsavedName } = await import('./build_name.svelte');
 
 const mount = async () => {
   seed();
@@ -346,6 +347,7 @@ describe('SaveAsDialog', () => {
   it('saves the open build in the picked folder (SaveBuildAs) and names it; New folder is made inside that folder', async () => {
     seed();
     calls.length = 0;
+    currentBuildPath.current = '';
     const Dlg = (await import('./SaveAsDialog.svelte')).default;
     const onsaved = vi.fn();
     render(Dlg, { open: true, onsaved });
@@ -367,6 +369,54 @@ describe('SaveAsDialog', () => {
     await waitFor(() => expect(onsaved).toHaveBeenCalledOnce());
     expect(calls).toEqual([['SaveBuildAs', '/Leagues/Mapping/Spark mapper']]);
     expect(currentBuildPath.current).toBe('/Leagues/Mapping/Spark mapper');
+  });
+
+  // Build.lua:1400, ImportTab.lua:1925-1931
+  it("starts from the account import's name, else the build's file name", async () => {
+    seed();
+    const Dlg = (await import('./SaveAsDialog.svelte')).default;
+    currentBuildPath.current = '';
+    unsavedName.predefined = 'Vilsol - Zed';
+    const { unmount } = render(Dlg, { open: true });
+    const field = () => within(screen.getByRole('dialog', { name: 'Save build as' })).getByRole<HTMLInputElement>('textbox', { name: 'Build name' });
+    expect(field().value).toBe('Vilsol - Zed');
+    unmount();
+    currentBuildPath.current = '/Leagues/Spark';
+    render(Dlg, { open: true });
+    expect(field().value).toBe('Spark');
+    unsavedName.predefined = undefined;
+    currentBuildPath.current = '';
+  });
+
+  // Build.lua:1384-1396
+  it('asks before saving over a build of that name in that folder', async () => {
+    seed();
+    calls.length = 0;
+    currentBuildPath.current = '';
+    const Dlg = (await import('./SaveAsDialog.svelte')).default;
+    const onsaved = vi.fn();
+    render(Dlg, { open: true, onsaved });
+    const d = within(screen.getByRole('dialog', { name: 'Save build as' }));
+    const folder = d.getByRole<HTMLSelectElement>('combobox', { name: 'Folder' });
+    await waitFor(() => expect(folder.options.length).toBe(3));
+    await fireEvent.change(folder, { target: { value: 'Leagues' } });
+    const name = d.getByRole<HTMLInputElement>('textbox', { name: 'Build name' });
+    await fireEvent.input(name, { target: { value: 'Spark' } });
+    await fireEvent.click(d.getByRole('button', { name: 'Save' }));
+    const ask = within(screen.getByRole('dialog', { name: 'Replace “Spark”?' }));
+    expect(ask.getByText(/Leagues already holds a build named Spark/)).toBeTruthy();
+    await fireEvent.click(ask.getByRole('button', { name: 'Cancel' }));
+    expect(screen.queryByRole('dialog', { name: 'Replace “Spark”?' })).toBeNull();
+    expect(screen.getByRole('dialog', { name: 'Save build as' })).toBeTruthy();
+    expect(name.value).toBe('Spark');
+    expect(calls.filter((c) => c[0] === 'SaveBuildAs')).toEqual([]);
+    expect(onsaved).not.toHaveBeenCalled();
+
+    await fireEvent.click(d.getByRole('button', { name: 'Save' }));
+    await fireEvent.click(within(screen.getByRole('dialog', { name: 'Replace “Spark”?' })).getByRole('button', { name: 'Replace' }));
+    await waitFor(() => expect(onsaved).toHaveBeenCalledOnce());
+    expect(calls.filter((c) => c[0] === 'SaveBuildAs')).toEqual([['SaveBuildAs', '/Leagues/Spark']]);
+    currentBuildPath.current = '';
   });
 
   // Build.lua:2069-2072
@@ -452,5 +502,30 @@ describe('AppBuildList keys', () => {
     await fireEvent.input(within(dialog()).getByRole('textbox'), { target: { value: 'Leagues 2' } });
     await fireEvent.click(within(dialog()).getByRole('button', { name: 'Copy' }));
     await waitFor(() => expect(calls).toContainEqual(['CopyFolder', '/Leagues', '/Leagues 2']));
+  });
+
+  it('asks before a folder copy merges into a folder of that name', async () => {
+    seed();
+    dirs.add('/Archive');
+    const Page = (await import('./AppBuildList.svelte')).default;
+    const grid = render(Page).getByRole('grid', { name: 'Builds' });
+    await waitFor(() => expect(grid.querySelector('[data-folder="Archive"]')).toBeTruthy());
+    calls.length = 0;
+    const leagues = () => grid.querySelector<HTMLElement>('[data-folder="Leagues"]')!;
+    const copyAs = async (name: string) => {
+      await fireEvent.keyDown(within(leagues()).getByRole('button'), { key: 'c', ctrlKey: true });
+      await fireEvent.keyDown(document.body, { key: 'v', ctrlKey: true });
+      await fireEvent.input(within(dialog()).getByRole('textbox'), { target: { value: name } });
+      await fireEvent.click(within(dialog()).getByRole('button', { name: 'Copy' }));
+    };
+    await copyAs('Archive');
+    const ask = within(screen.getByRole('dialog', { name: 'Merge into “Archive”?' }));
+    expect(ask.getByText(/All builds already holds a folder named Archive/)).toBeTruthy();
+    await fireEvent.click(ask.getByRole('button', { name: 'Cancel' }));
+    expect(calls.filter((c) => c[0] === 'CopyFolder')).toEqual([]);
+
+    await copyAs('Archive');
+    await fireEvent.click(within(screen.getByRole('dialog', { name: 'Merge into “Archive”?' })).getByRole('button', { name: 'Merge' }));
+    await waitFor(() => expect(calls.filter((c) => c[0] === 'CopyFolder')).toEqual([['CopyFolder', '/Leagues', '/Archive']]));
   });
 });

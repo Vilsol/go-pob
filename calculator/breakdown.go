@@ -188,10 +188,13 @@ func (b *Breakdown) Simple(extraBasePtr *float64, cfg *moddb.ListCfg, total floa
 			if more != 1 {
 				lines = append(lines, fmt.Sprintf("x %.2f ^8(more/less)", more))
 			}
+			lines = append(lines, fmt.Sprintf("= %g", total))
 
-			b.AddLine(key, lines...)
+			b.Data[key] = &Entry{Lines: lines}
+			return
 		}
 	}
+	delete(b.Data, key)
 }
 
 //pob:src/Modules/CalcBreakdown.lua:17-42
@@ -232,17 +235,19 @@ func (b *Breakdown) Mod(key string, modList moddb.ModStoreFuncs, cfg *moddb.List
 	inc := modList.Sum(mod.TypeIncrease, cfg, names...)
 	more := modList.More(cfg, names...)
 	if inc != 0 || more != 1 {
-		b.AddLine(
-			key,
+		b.Data[key] = &Entry{Lines: []string{
 			fmt.Sprintf("%.2f ^8(increased/reduced)", 1+inc/100),
 			fmt.Sprintf("x %.2f ^8(more/less)", more),
 			fmt.Sprintf("= %.2f", (1+inc/100)*more),
-		)
+		}}
+		return
 	}
+	delete(b.Data, key)
 }
 
 //pob:src/Modules/CalcBreakdown.lua:111-157
 func (b *Breakdown) EffMult(key string, damageType data.DamageType, resist float64, pen float64, taken float64, mult float64, takenMore float64, sourceRes data.DamageType, useRes bool, invertChance float64, effectiveResist *float64) {
+	b.Data[key] = &Entry{}
 	resistForm := utils.Ternary(damageType == data.DamageTypePhysical, "physical damage reduction", "resistance")
 	effRes := resist - pen
 	if effectiveResist != nil {

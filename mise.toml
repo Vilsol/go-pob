@@ -176,3 +176,15 @@ run = "task pages-dev"
 [tasks.import-live]
 description = "Live import-proxy check against a running pages-dev (IMPORT_LIVE=1; BASE=<url>)"
 run = "task import-live"
+
+[tasks.affected-tests]
+description = "go test only the packages the change since BASE (default merge-base dev) and the working tree can reach"
+run = "task affected-tests --"
+
+[tasks.test-operator-fast]
+description = "The operator suite without the tests listed in scripts/gopob/operator_slow_tests.txt"
+run = "task test-operator-fast --"
+
+[tasks.e2e-serve]
+description = "Build once and keep a warm vite preview for `task e2e REUSE=1 SPECS=...`"
+run = "task e2e-serve"

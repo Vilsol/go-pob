@@ -1,4 +1,5 @@
 // BuildSiteTools.lua:88-113, ImportTab.lua:813-960
+// BuildSiteTools.lua:44-82
 
 import { SITES } from '../design/share';
 
@@ -20,7 +21,7 @@ export type Deps = {
 const text = (status: number, body: string, headers: Record<string, string> = {}) =>
   new Response(body, { status, headers: { 'Content-Type': 'text/plain; charset=utf-8', ...headers } });
 
-export const readCapped = async (res: Response, cap: number): Promise<string | undefined> => {
+export const readCapped = async (res: Pick<Response, 'headers' | 'body'>, cap: number): Promise<string | undefined> => {
   if (Number(res.headers.get('Content-Length') ?? 0) > cap) {
     await res.body?.cancel();
     return undefined;
@@ -101,6 +102,85 @@ export const handleBuild = async (request: Request, deps: Deps): Promise<Respons
     if (body === undefined) return text(502, `${site.label} answered more than ${BUILD_CAP} bytes`);
     return text(200, body, { 'Cache-Control': `public, max-age=${ttl}, s-maxage=${ttl}` });
   });
+};
+
+export const LINK_CAP = 1 << 10;
+const LINK = /^https:\/\/[\w\-./]+$/;
+const XML_CAP = 32 << 20;
+
+/* ImportTab.lua:504 */
+const isBuildCode = async (code: string) => {
+  if (!/^[\w\-+/]+={0,2}$/.test(code)) return false;
+  try {
+    const bytes = Uint8Array.from(atob(code.replace(/-/g, '+').replace(/_/g, '/')), (c) => c.charCodeAt(0));
+    const xml = await readCapped(new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate'))), XML_CAP);
+    return !!xml && xml.includes('<PathOfBuilding');
+  } catch {
+    return false;
+  }
+};
+
+/* BuildSiteTools.lua:47-82, ImportTab.lua:550 */
+export const handleShare = async (request: Request, deps: Deps): Promise<Response> => {
+  if (request.method !== 'POST') return text(405, 'POST only', { Allow: 'POST' });
+  const site = SITES.find((s) => s.id === new URL(request.url).searchParams.get('site'));
+  if (!site?.post) return text(400, 'unknown site');
+  const body = await readCapped(request, BUILD_CAP);
+  if (body === undefined) return text(413, `a build code is at most ${BUILD_CAP} bytes`);
+  const code = body.trim();
+  if (!(await isBuildCode(code))) return text(400, 'not a build code');
+  let res: Response;
+  try {
+    res = await (0, deps.fetch)(site.post.url, {
+      method: 'POST',
+      headers: { 'User-Agent': USER_AGENT, 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: site.post.fields + code
+    });
+  } catch {
+    return text(502, `${site.label} is unreachable`);
+  }
+  if (res.status !== 200) {
+    await res.body?.cancel();
+    return upstreamError(site.label, res);
+  }
+  const answer = await readCapped(res, LINK_CAP);
+  const link = answer === undefined ? undefined : site.post.codeOut + answer.trim();
+  if (!link || !LINK.test(link) || !site.match.test(link)) return text(502, `${site.label} answered no link`);
+  return text(200, link, { 'Cache-Control': 'no-store' });
+};
+
+const POEURL = 'http://poeurl.com/';
+const POEURL_ID = /^\w{1,32}$/;
+/* TreeTab.lua:813 */
+const TREE_LINK = /^https:\/\/www\.pathofexile\.com\/(?:fullscreen-)?passive-skill-tree\/[\w\-./]{1,4096}$/;
+
+/* TreeTab.lua:759-778, TreeTab.lua:818-830 */
+export const handlePoeUrl = async (request: Request, deps: Deps): Promise<Response> => {
+  if (request.method !== 'GET') return text(405, 'GET only', { Allow: 'GET' });
+  const params = new URL(request.url).searchParams;
+  const id = params.get('id');
+  const shrink = params.get('shrink');
+  if (id !== null && !POEURL_ID.test(id)) return text(400, 'malformed PoEURL id');
+  if (id === null && (shrink === null || !TREE_LINK.test(shrink))) return text(400, 'not a passive tree link');
+  let res: Response;
+  try {
+    res =
+      id !== null
+        ? await (0, deps.fetch)(POEURL + id, { headers: { 'User-Agent': USER_AGENT }, redirect: 'manual' })
+        : await (0, deps.fetch)(`${POEURL}shrink.php?url=${encodeURIComponent(shrink!)}`, { headers: { 'User-Agent': USER_AGENT } });
+  } catch {
+    return text(502, 'PoEURL is unreachable');
+  }
+  if (id !== null) {
+    await res.body?.cancel();
+    const to = res.headers.get('Location') ?? '';
+    if (!/^https?:\/\/[^\s]{1,4096}$/.test(to) || /poeurl\.com\//.test(to)) return text(502, 'Failed to resolve PoEURL link');
+    return text(200, to, { 'Cache-Control': `public, max-age=${IMMUTABLE_TTL}, s-maxage=${IMMUTABLE_TTL}` });
+  }
+  const body = res.ok ? await readCapped(res, LINK_CAP) : (await res.body?.cancel(), undefined);
+  const short = body?.trim() ?? '';
+  if (!POEURL_ID.test(short)) return text(502, 'Failed to get PoEURL link');
+  return text(200, POEURL + short, { 'Cache-Control': 'no-store' });
 };
 
 /* ImportTab.lua:18-22 */

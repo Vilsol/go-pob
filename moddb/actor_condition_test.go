@@ -26,6 +26,18 @@ type fakeEquippedItem struct {
 	rarity    string
 	corrupted bool
 	name      string
+	shaper    bool
+	elder     bool
+}
+
+func (a *linkedActor) ItemShaperIs(slot string, shaper bool) bool {
+	item, ok := a.equipped[slot]
+	return ok && item.shaper == shaper
+}
+
+func (a *linkedActor) ItemElderIs(slot string, elder bool) bool {
+	item, ok := a.equipped[slot]
+	return ok && item.elder == elder
 }
 
 func (a *linkedActor) GetOutput(string) (float64, bool) { return 0, false }

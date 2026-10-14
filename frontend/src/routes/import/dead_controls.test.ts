@@ -38,15 +38,17 @@ describe('import page has no enabled-but-dead controls', () => {
     const enabled = controls(view.container)
       .filter((c) => !c.disabled)
       .map(nameOf);
-    expect(enabled).toHaveLength(8);
+    expect(enabled).toHaveLength(10);
     expect(enabled[0]).toBe('Copy code');
-    expect(enabled[1]).toMatch(/^Export support/);
-    expect(enabled[2]).toMatch(/^To import a build/);
-    expect(enabled[3]).toMatch(/^Import as a new build/);
-    expect(enabled[4]).toMatch(/^Import to this build/);
-    expect(enabled[5]).toMatch(/^Import as a comparison/);
-    expect(enabled[6]).toMatch(/^Realm/);
-    expect(enabled[7]).toMatch(/^Account name/);
+    expect(enabled[1]).toMatch(/^Share via/);
+    expect(enabled[2]).toBe('Share');
+    expect(enabled[3]).toMatch(/^Export support/);
+    expect(enabled[4]).toMatch(/^To import a build/);
+    expect(enabled[5]).toMatch(/^Import as a new build/);
+    expect(enabled[6]).toMatch(/^Import to this build/);
+    expect(enabled[7]).toMatch(/^Import as a comparison/);
+    expect(enabled[8]).toMatch(/^Realm/);
+    expect(enabled[9]).toMatch(/^Account name/);
   });
 
   it('imports a code as the comparison, then opens the Compare page', async () => {
@@ -75,6 +77,24 @@ describe('import page has no enabled-but-dead controls', () => {
       .filter((c) => !c.title.trim())
       .map(nameOf);
     expect(offenders).toEqual([]);
-    expect(view.getByRole('button', { name: 'Share' })).toHaveProperty('disabled', true);
+  });
+
+  // ImportTab.lua:539-554
+  it('shares the code to the chosen site and shows the link, or the error', async () => {
+    const posted: [string, string][] = [];
+    let answer = new Response('https://pobb.in/abc', { headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
+    vi.stubGlobal('fetch', (url: string, init: { body: string }) => (posted.push([url, init.body]), Promise.resolve(answer)));
+    const view = await mount();
+    const select = view.getByRole('combobox', { name: 'Share via' }) as HTMLSelectElement;
+    await fireEvent.change(select, { target: { value: 'pobb.in' } });
+    await fireEvent.click(view.getByRole('button', { name: 'Share' }));
+    await vi.waitFor(() => expect((view.getByRole('textbox', { name: 'Share link' }) as HTMLInputElement).value).toBe('https://pobb.in/abc'));
+    expect(posted).toEqual([['/api/share?site=POBBin', 'eNoLz08BAAKkAU4=']]);
+    expect(localStorage.getItem('options:lastExportWebsite')).toBe('pobb.in');
+    answer = new Response('pobb.in answered 429', { status: 429, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
+    await fireEvent.click(view.getByRole('button', { name: 'Share' }));
+    await vi.waitFor(() => expect(view.getByRole('alert').textContent).toBe('Error creating link: pobb.in answered 429'));
+    expect(view.queryByRole('textbox', { name: 'Share link' })).toBeNull();
+    vi.unstubAllGlobals();
   });
 });

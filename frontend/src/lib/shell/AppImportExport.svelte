@@ -7,17 +7,18 @@
   import { syncWrap } from '$lib/go/worker';
   import { logError } from '$lib/utils';
   import ImportExportPage from '$lib/design/ImportExportPage.svelte';
-  import { downloadUrl, jsonVerdict, type ImportMode } from '$lib/design/share';
-  import { REALMS, UNAVAILABLE } from './import_export';
+  import { EXPORT_SITES, downloadUrl, jsonVerdict, type ImportMode } from '$lib/design/share';
+  import { REALMS, UNAVAILABLE, loadExportSite, saveExportSite } from './import_export';
   import { identityOf } from './identity';
-  import { downloadBuild } from './link_import';
+  import { downloadBuild, shareBuild } from './link_import';
   import { unsavedName } from './build_name.svelte';
   import Dialog from '$lib/design/Dialog.svelte';
   import Button from '$lib/design/Button.svelte';
   import PobText from '$lib/design/PobText.svelte';
   import CharacterImport from '$lib/design/CharacterImport.svelte';
-  import { NEGATIVE, POSITIVE, REALM_LIST, type AccountCharacter, type ImportStage } from '$lib/design/account';
-  import { downloadCharacter, fetchCharacterList, lastAccount, lastRealm, loadHistory, removeAccount, saveAccount } from './account_import';
+  import { REALM_LIST, type AccountCharacter } from '$lib/design/account';
+  import { removeAccount } from './account_import';
+  import { accountSession, importItems, importTree, resetAccountSession, startAccount } from './account_session.svelte';
 
   const exported = resource(
     () => [identityOf($outputs), $buildRevision] as const,
@@ -49,9 +50,29 @@
   let imported = $state<string | null>(null);
   let fetching = $state(false);
 
+  // ImportTab.lua:534-554
+  let site = $state((EXPORT_SITES.find((x) => x.label === loadExportSite()) ?? EXPORT_SITES[0]).label);
+  let shareLink = $state<string | null>(null);
+  let sharing = $state(false);
+  let shareError = $state<string | null>(null);
+  const onshare = (to: string) => {
+    saveExportSite(to);
+    sharing = true;
+    shareError = null;
+    shareLink = null;
+    const shared = code;
+    shareBuild(shared, to)
+      .then((l) => {
+        if (shared === code) shareLink = l;
+      })
+      .catch((err: unknown) => (shareError = err instanceof Error ? err.message : String(err)))
+      .finally(() => (sharing = false));
+  };
+
   $effect(() => {
     void code;
     copied = false;
+    shareLink = null;
   });
 
   const oncopy = (text: string) => {
@@ -74,6 +95,7 @@
       syncWrap
         ?.ImportCode(text)
         .then(() => {
+          resetAccountSession();
           if (how === 'new') {
             currentBuildPath.current = '';
             unsavedName.imported = true;
@@ -122,65 +144,12 @@
   };
 
   // ImportTab.lua:321-472, 813-1020
-  let realm = $state(lastRealm());
-  let account = $state(lastAccount());
-  let accountName = '';
-  let history = $state(loadHistory());
-  let charStatus = $state('Idle');
-  let stage = $state<ImportStage>('GETACCOUNTNAME');
-  let characters = $state<AccountCharacter[]>([]);
-  let lastLeague = $state<string>();
+  const s = accountSession;
   let confirmTree = $state<() => void>();
   let confirmTreeOpen = $state(false);
   $effect(() => {
     if (confirmTree) confirmTreeOpen = true;
   });
-
-  const onstart = async () => {
-    stage = 'DOWNLOADCHARLIST';
-    charStatus = 'Retrieving character list...';
-    const r = await fetchCharacterList(realm, account);
-    charStatus = r.status;
-    if (!r.ok) {
-      stage = 'GETACCOUNTNAME';
-      return;
-    }
-    account = accountName = r.accountName;
-    characters = r.characters;
-    stage = 'SELECTCHAR';
-    history = saveAccount(history, account, realm);
-  };
-
-  const importCharacter = async (
-    c: AccountCharacter,
-    endpoint: 'passives' | 'items',
-    apply: (body: string) => Promise<{ ok: boolean; text: string } | undefined>
-  ) => {
-    stage = 'IMPORTING';
-    charStatus = endpoint === 'passives' ? 'Retrieving character passive tree...' : 'Retrieving character items...';
-    const d = await downloadCharacter(endpoint, realm, accountName, c);
-    if (!d.ok) {
-      stage = 'SELECTCHAR';
-      charStatus = d.status;
-      return;
-    }
-    lastLeague ??= c.league;
-    const r = await apply(d.body);
-    stage = 'SELECTCHAR';
-    charStatus = r?.ok ? `${POSITIVE}${r.text}` : `${NEGATIVE}${r?.text ?? 'no build'}`;
-  };
-
-  const onimporttree = (c: AccountCharacter, deleteJewels: boolean) => {
-    const run = () =>
-      void importCharacter(c, 'passives', async (body) => syncWrap?.ImportAccountPassiveTree(JSON.stringify(c), body, deleteJewels)).catch(logError);
-    // ImportTab.lua:433-440
-    if (($outputs?.PointsUsed?.[0] ?? 0) > 0) confirmTree = run;
-    else run();
-  };
-  const onimportitems = (c: AccountCharacter, o: { clearItems: boolean; clearSkills: boolean; ignoreWeaponSwap: boolean }) =>
-    void importCharacter(c, 'items', async (body) =>
-      syncWrap?.ImportAccountItems(JSON.stringify(c), body, o.clearItems, o.clearSkills, o.ignoreWeaponSwap)
-    ).catch(logError);
 </script>
 
 {#if confirmTree}<Dialog
@@ -237,6 +206,11 @@
   {importError}
   {imported}
   {fetching}
+  link={shareLink}
+  {sharing}
+  {shareError}
+  bind:site
+  {onshare}
   realms={REALMS}
   unavailable={UNAVAILABLE}
   bind:importText
@@ -249,20 +223,22 @@
   {#snippet characterImport()}
     <CharacterImport
       realms={REALM_LIST}
-      bind:realm
-      bind:account
-      {history}
-      status={charStatus}
-      {stage}
-      {characters}
-      {lastLeague}
-      onstart={() => void onstart().catch(logError)}
-      onremoveaccount={(a: string) => (history = removeAccount(history, a))}
-      {onimporttree}
-      {onimportitems}
+      bind:realm={s.realm}
+      bind:account={s.account}
+      history={s.history}
+      status={s.status}
+      stage={s.stage}
+      characters={s.characters}
+      lastLeague={s.lastLeague}
+      onstart={() => void startAccount().catch(logError)}
+      onremoveaccount={(a: string) => (s.history = removeAccount(s.history, a))}
+      selected={s.selected?.name}
+      onselect={(c?: AccountCharacter) => (s.selected = c)}
+      onimporttree={(c: AccountCharacter, deleteJewels: boolean) => importTree(c, deleteJewels, (run) => (confirmTree = run))}
+      onimportitems={importItems}
       onclose={() => {
-        stage = 'GETACCOUNTNAME';
-        charStatus = 'Idle';
+        s.stage = 'GETACCOUNTNAME';
+        s.status = 'Idle';
       }} />
   {/snippet}
 </ImportExportPage>

@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/Vilsol/go-pob/data"
+	"github.com/Vilsol/go-pob/mod"
 )
 
 // TestAilmentTypeListMatchesPoB pins data.Ailment("").Values() to PoB v2.18.1 src/Modules/Data.lua:341.
@@ -54,7 +55,7 @@ func TestElementalAilmentTypeListMatchesPoB(t *testing.T) {
 	}
 }
 
-// TestElementalAilmentImmunityModsStayElementalOnly guards the seven "immune to elemental ailments while X" handlers.
+// TestElementalAilmentImmunityModsStayElementalOnly guards the "immune to elemental ailments while X" handlers.
 func TestElementalAilmentImmunityModsStayElementalOnly(t *testing.T) {
 	lines := []string{
 		"Immune to Elemental Ailments while on Consecrated Ground",
@@ -76,13 +77,21 @@ func TestElementalAilmentImmunityModsStayElementalOnly(t *testing.T) {
 			t.Errorf("%q: did not parse (extra %q)", line, extra)
 			continue
 		}
-		if len(mods) != 7 {
-			t.Errorf("%q: emitted %d mods, PoB's elementalAilmentTypeList loop emits 7", line, len(mods))
+		if len(mods) != 1 {
+			t.Errorf("%q: emitted %d mods, pin-3.29's ModParser emits one ElementalAilmentImmune flag", line, len(mods))
+			continue
 		}
-		for _, m := range mods {
-			if forbidden[m.Name()] {
-				t.Errorf("%q: emitted %s, but PoB loops elementalAilmentTypeList which has no Bleed/Poison", line, m.Name())
+		m := mods[0]
+		if m.Name() == "ExtraAura" {
+			if aura, ok := m.Value().List().(mod.ExtraAura); ok {
+				m = aura.Mod
 			}
+		}
+		if m.Name() != "ElementalAilmentImmune" {
+			t.Errorf("%q: emitted %s, want ElementalAilmentImmune", line, m.Name())
+		}
+		if forbidden[m.Name()] {
+			t.Errorf("%q: emitted %s, which is not an elemental ailment", line, m.Name())
 		}
 	}
 }

@@ -13,6 +13,7 @@ import (
 
 // TestCompareSkillBreakdownMatchesPoB: The Compare tab's skill breakdown panel.
 func TestCompareSkillBreakdownMatchesPoB(t *testing.T) {
+	t.Parallel()
 	requireGameData(t, "3.29")
 	f, err := os.Open("../testdata/ui-misc/compare_skill_breakdown.jsonl.gz")
 	if err != nil {

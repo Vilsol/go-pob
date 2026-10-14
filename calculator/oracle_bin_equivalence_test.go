@@ -16,6 +16,7 @@ import (
 
 // TestOracleBinMatchesJSONL is the whole licence for the .orb side-car to exist.
 func TestOracleBinMatchesJSONL(t *testing.T) {
+	t.Parallel()
 	blob, err := oracleBlobForVersion(raw.LatestVersion)
 	if err != nil {
 		t.Fatal(err)

@@ -79,3 +79,97 @@ Projectiles gain Damage as they travel farther, dealing up to 30% more Damage wi
 Projectiles gain Damage as they travel farther, dealing up to 60% increased Damage with Hits to targets
 Unaffected by Curses
 You gain Divinity for 10 seconds on reaching maximum Divine Charges
+Grants Level 20 Shaper's Despair, which will be used by Shaper Memory
+Trigger Level 20 Bone Offering, Flesh Offering or Spirit Offering every 5 seconds
+Grants Level 20 Snipe Skill
+Socketed Vaal Skills require 30% less Souls per Use
+Trigger Level 15 Feast of Flesh every 5 seconds
+Grants Call of Steel
+10% increased Area of Effect per second you've been stationary, up to a maximum of 50%
+Brand Recall has 4% increased Cooldown Recovery Rate per Brand, up to a maximum of 40%
+3% increased Poison Duration for each Poison you have inflicted Recently, up to a maximum of 100%
+5% increased Poison Duration for each Poison you have inflicted Recently, up to a maximum of 100%
+Enemies take 4% increased Elemental Damage from your Hits for each Withered you have inflicted on them
+Socketed Travel Skills deal 80% more Damage
+Socketed Warcry Skills have +1 Cooldown Use
+Hits from Socketed Vaal Skills ignore Enemy Monster Resistances
+Damage with Hits from Socketed Vaal Skills is Lucky
+Consecrated Ground you create causes Life Regeneration to also Recover Energy Shield for you and Allies
+Gain Sacrificial Zeal when you use a Skill, dealing you 150% of the Skill's Mana Cost as Physical Damage per Second
+Attacks always inflict Bleeding while you have Cat's Stealth
+Regenerate 1 Rage per second for every 200 Life Recovery per second from Regeneration
+No Physical Damage
+Immune to Elemental Ailments while on Consecrated Ground if you have at least 150 Devotion
+Arrows Pierce 2 additional Targets
+Arrows that Pierce have 50% chance to inflict Bleeding
+100% increased Critical Strike Chance with arrows that Fork
+40% more Attack Speed with Melee Skills while you are Unencumbered
+Arrows Pierce all Targets
+Arrows Pierce all Targets after Forking
+Arrows that Pierce have +50% to Critical Strike Multiplier
+Gain 18 Energy Shield for each Enemy you Hit which is affected by a Spider's Web
+Hits with this Weapon Freeze Enemies as though dealing 175% more Damage
+Projectiles deal 20% increased Damage with Hits and Ailments for each Enemy Pierced
+100% increased Quantity of Items Dropped by Slain Normal Enemies
+125% increased Rarity of Items Dropped by Slain Magic Enemies
+12% increased effect of Non-Curse Auras from your skills while your Ward is Broken
+15% increased Quantity of Items Dropped by Slain Frozen Enemies
+30% increased Effect of Blind from Melee Weapons
+30% increased Rarity of Items Dropped by Slain Shocked Enemies
+Gain 5 Life for each Ignited Enemy hit with Attacks
+Gain Onslaught for 4 seconds on Hit while at maximum Frenzy Charges
+Hits with this Weapon have +10% to Critical Strike Multiplier per Enemy Power
+Vulnerability can affect Hexproof Enemies
+Your Hexes can affect Hexproof Enemies
+Summoned Arbalists fire 4 additional Projectiles
+Summoned Arbalists' Projectiles Fork
+Summoned Arbalists have 20% chance to inflict Cold Exposure on Hit
+Summoned Arbalists Convert 100% of Physical Damage to Fire Damage
+Summoned Arbalists have 25% chance to Freeze, Shock, and Ignite
+Summoned Arbalists' Attacks have 60% chance to inflict Bleeding
+Summoned Arbalists have 35% chance to deal Double Damage
++2 to maximum Snipe Stages
+10% chance to Trigger Explosive Toad when you kill an Enemy
+Cannot Poison Enemies with at least 12 Poisons on them
+Chance to Evade Hits is based off of 200% of your Ward instead of your Evasion Rating
+Excommunicate Enemies on Melee Hit for 3 seconds
+Flasks applied to you have 1% increased Effect per Level
+Flasks gain 1 Charge per second if you've Hit a Unique Enemy Recently
+Increases and Reductions to Minion Cast Speed also affect you
+Intimidate Enemies for 4 seconds on Hit with Attacks while at maximum Endurance Charges
+Iron Flasks gain 2 charges when your Ward Breaks
+Life Flasks used while on Low Life apply Recovery Instantly
+Minions deal no Non-Cold Damage
+Non-Critical Strikes deal no Damage
+Non-Travel Attack Skills Repeat an additional Time
+Non-critical strikes deal 80% less Damage
+Non-instant Mana Recovery from Flasks is also Recovered as Life
+Prevent +1% of Suppressed Spell Damage per Hit Suppressed Recently
+Projectiles from Attacks Fork
+Projectiles from Attacks can Fork 1 additional time
+Spell Skills cannot deal Critical Strikes except on final Repeat
+Warcries grant Arcane Surge to you and Allies, with 10% increased effect per 5 power, up to 50%
+When an Enemy Hit deals Elemental Damage to you, their Resistance to those Elements becomes zero for 4 seconds
+While on Low Life, Life Flasks gain 6 Charges every 3 seconds
+With a Searching Eye Jewel Socketed, Blind Enemies for 4 seconds on Hit with Attacks
+Wither on Hit with this weapon against Enemies with at least 12 Poisons on them
+You cannot be Shocked while Frozen
+You have Vaal Pact while at maximum Endurance Charges
+Your Bleeding does not deal extra Damage while the Enemy is moving and cannot be Aggravated
+Your Hexes have infinite Duration
+Deal no Non-Physical Damage
+You gain Onslaught for 4 seconds on Hit
+Grant bonuses to Non-Channelling Skills you use by consuming 3 Charges from a Flask of each of the following types, if possible:
+One modifier from Consumed Jewels will be retained
+Socketed Rare Abyssal Jewels will be Consumed
+Summoned Skeleton Warriors and Soldiers wield this Weapon while in your Main Hand
+Critical Strike Chance is increased by Overcapped Lightning Resistance
+Maximum Critical Strike Chance is 50%
+70% increased Attack Damage if your opposite Ring is a Shaper Item
+70% increased Spell Damage if your opposite Ring is an Elder Item
+80% increased Attack Damage if your opposite Ring is a Shaper Item
+80% increased Spell Damage if your opposite Ring is an Elder Item
+Cannot be Stunned by Attacks if your opposite Ring is an Elder Item
+Cannot be Stunned by Spells if your opposite Ring is a Shaper Item
+Arrows deal 30 to 50 Added Fire Damage for each time they've Pierced
+Arrows deal 50% increased Damage with Hits and Ailments to Targets they Pierce

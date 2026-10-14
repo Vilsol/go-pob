@@ -38,7 +38,7 @@ func (m *ModList) modsFor(name string) []mod.Mod {
 //pob:src/Classes/ModList.lua:19-21
 func NewModList() *ModList {
 	m := &ModList{
-		ModStore: NewModStore(nil),
+		ModStore: &ModStore{},
 		mods:     make([]mod.Mod, 0),
 	}
 	m.ModStore.Child = m

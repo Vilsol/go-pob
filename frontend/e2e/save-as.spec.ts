@@ -48,6 +48,40 @@ test('a saved build can Save As from the top bar (0280)', async ({ page }) => {
   app.assertNoErrors();
 });
 
+// Build.lua:1384-1396
+test('Save As over an existing name asks before replacing it (0280)', async ({ page }) => {
+  const file = '0280-elementalist-fireball';
+  const xml = buildXml(file);
+  const build = await go.loadXml(xml);
+  const want = async () => expectedLines(await go.outputs(build));
+  const app = await App.open(page, file);
+  await app.importCode(await go.encode(xml), want);
+
+  const taken = `e2e-save-as-taken-${file}`;
+  await page.getByRole('button', { name: /^Save \(/ }).click();
+  await saveIn(page, taken);
+  await expect(page.getByRole('banner').getByText(taken, { exact: true })).toBeVisible();
+
+  await page.getByRole('button', { name: 'Save As' }).click();
+  const dialog = page.getByRole('dialog', { name: 'Save build as' });
+  const ask = page.getByRole('dialog', { name: `Replace “${taken}”?` });
+  await dialog.getByRole('textbox', { name: 'Build name' }).fill(taken);
+  await dialog.getByRole('button', { name: 'Save', exact: true }).click();
+  await expect(ask).toContainText(`All builds already holds a build named ${taken}.`);
+  await ask.getByRole('button', { name: 'Cancel' }).click();
+  await expect(ask).toBeHidden();
+  await expect(dialog.getByRole('textbox', { name: 'Build name' }), 'Cancel dropped the name').toHaveValue(taken);
+
+  await dialog.getByRole('button', { name: 'Save', exact: true }).click();
+  await ask.getByRole('button', { name: 'Replace' }).click();
+  await expect(dialog).toBeHidden();
+
+  await page.reload();
+  await app.savedBuild(taken).waitFor({ timeout: 180_000 });
+  await expect(app.savedBuild(taken), 'the replaced build is listed once').toHaveCount(1);
+  app.assertNoErrors();
+});
+
 // Build.lua:1352-1379
 // Build.lua:1160-1162
 test('leaving a build with unsaved changes asks Save / Don’t Save / Cancel (0280)', async ({ page }) => {

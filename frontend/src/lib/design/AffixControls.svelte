@@ -1,6 +1,7 @@
 <script lang="ts">
   import FloatingLabel from './FloatingLabel.svelte';
   import Select from './Select.svelte';
+  import Dropdown from './Dropdown.svelte';
   import PobText from './PobText.svelte';
   import ImpactBlocks from './ImpactBlocks.svelte';
   import { plainText, type AffixControls, type CraftApi } from './crafting';
@@ -65,17 +66,19 @@
         bind:value={sort} /></FloatingLabel>
   {/if}
   {#each affixes.controls as c, i (i)}
-    <FloatingLabel label="{c.type}:"
-      ><Select
-        class="h-7.5"
-        aria-label="Affix {i + 1}"
-        options={orderOf(i).map((k) => ({ value: String(k), label: plainText(c.series[k].label) }))}
-        value={String(c.sel)}
-        onfocus={() => (focus = i)}
-        onchange={(e: Event & { currentTarget: HTMLSelectElement }) => {
-          focus = i;
-          void craft.affixEdit?.(i, Number(e.currentTarget.value), c.sliderVal);
-        }} /></FloatingLabel>
+    <div class="contents" onfocusin={() => (focus = i)}>
+      <FloatingLabel label="{c.type}:"
+        ><Dropdown
+          class="block h-7.5 w-full"
+          searchable
+          aria-label="Affix {i + 1}"
+          options={orderOf(i).map((k) => ({ value: String(k), label: plainText(c.series[k].label) }))}
+          value={String(c.sel)}
+          onchange={(v: string) => {
+            focus = i;
+            void craft.affixEdit?.(i, Number(v), c.sliderVal);
+          }} /></FloatingLabel>
+    </div>
     {#if c.sliderShown}
       <label class="field field-inline gap-2 text-12"
         >Roll<input

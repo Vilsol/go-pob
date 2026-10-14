@@ -53,10 +53,10 @@ export const BOARD_SLOTS: { slot: string; x: number; y: number; w: number; h: nu
   { slot: 'Ring 1', x: 252, y: 266, w: 84, h: 84 },
   { slot: 'Amulet', x: 532, y: 210, w: 84, h: 84 },
   { slot: 'Ring 2', x: 532, y: 308, w: 84, h: 84 },
-  { slot: 'Gloves', x: 154, y: 364, w: 168, h: 168 },
-  { slot: 'Belt', x: 350, y: 476, w: 168, h: 70 },
-  { slot: 'Boots', x: 546, y: 406, w: 168, h: 168 },
-  ...[210, 302, 395, 487, 580].map((x, i) => ({ slot: `Flask ${i + 1}`, x, y: 574, w: 78, h: 120 }))
+  { slot: 'Gloves', x: 168, y: 406, w: 168, h: 168 },
+  { slot: 'Belt', x: 350, y: 490, w: 168, h: 84 },
+  { slot: 'Boots', x: 532, y: 406, w: 168, h: 168 },
+  ...[210, 302, 395, 487, 580].map((x, i) => ({ slot: `Flask ${i + 1}`, x, y: 588, w: 78, h: 120 }))
 ];
 
 export type ImpactBlock = { header: string; slot?: string; lines?: string[]; sections: StatCompareSection[]; readyAt?: number; calcMs?: number };

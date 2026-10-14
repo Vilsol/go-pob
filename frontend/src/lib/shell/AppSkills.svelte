@@ -738,7 +738,8 @@
     {onsort}
     {options}
     {onoption}
-    {editor} />
+    {editor}
+    revision={$outputs} />
 {:else}
   <p class="note" role="status">Loading the skills…</p>
 {/if}

@@ -1,5 +1,6 @@
 <script lang="ts">
   import { unsavedName } from './build_name.svelte';
+  import { resetAccountSession } from './account_session.svelte';
   import { onMount } from 'svelte';
   import { goto, pushState } from '$app/navigation';
   import { base } from '$app/paths';
@@ -96,6 +97,16 @@
 
   // BuildList.lua:135-167
   // BuildList.lua:141-145, 156-160
+  const intoFolder = (name: string, run: () => void) => {
+    if (folders.includes(folder ? `${folder}/${name}` : name)) {
+      ask_({
+        title: `Merge into “${name}”?`,
+        body: `${folder ? leaf(folder) : 'All builds'} already holds a folder named ${name}. The two are merged, and its builds of the same name are replaced and cannot be brought back.`,
+        confirm: 'Merge',
+        run
+      });
+    } else run();
+  };
   const pasteFolder = (f: string, cut: boolean) => {
     const name = leaf(f);
     const from = pathOf(f.slice(0, Math.max(0, f.length - name.length - 1)), name);
@@ -110,11 +121,14 @@
         label: 'Name of the copy',
         value: `${name} (copy)`,
         confirm: 'Copy',
-        run: (to) => void syncWrap.CopyFolder(from, pathOf(folder, to)).then(reload).catch(logError)
+        run: (to) => intoFolder(to, () => void syncWrap.CopyFolder(from, pathOf(folder, to)).then(reload).catch(logError))
       });
       return;
     }
-    void (cut ? syncWrap.MoveFolder(from, pathOf(folder, name)) : syncWrap.CopyFolder(from, pathOf(folder, name))).then(reload).catch(logError);
+    intoFolder(
+      name,
+      () => void (cut ? syncWrap.MoveFolder(from, pathOf(folder, name)) : syncWrap.CopyFolder(from, pathOf(folder, name))).then(reload).catch(logError)
+    );
   };
   const paste = (id: string, cut: boolean) => {
     if (id.startsWith('folder:')) {
@@ -141,6 +155,8 @@
     const path = pathOf(b.folder, b.name);
     currentBuildPath.current = path;
     unsavedName.imported = false;
+    unsavedName.predefined = undefined;
+    resetAccountSession();
     syncWrap.OpenBuild(path).catch(logError);
   };
 
@@ -151,6 +167,8 @@
   const newBuild = () => {
     void syncWrap.NewBuild({ level: get(defaultCharLevel), gemQuality: get(defaultGemQuality) });
     unsavedName.imported = false;
+    unsavedName.predefined = undefined;
+    resetAccountSession();
     currentBuildPath.current = '';
   };
 </script>

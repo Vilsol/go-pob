@@ -56,6 +56,7 @@ func assertScanEqual[T any](t *testing.T, line string, patternList map[string]Co
 
 // TestAnchoredIndexMatchesFullScan: The anchored index must be a pure prefilter.
 func TestAnchoredIndexMatchesFullScan(t *testing.T) {
+	t.Parallel()
 	initParserForTest(t)
 
 	for _, line := range modLinesForTest(t) {
@@ -66,6 +67,7 @@ func TestAnchoredIndexMatchesFullScan(t *testing.T) {
 
 // TestAnchoredIndexSpecialModListMatchesFullScan: specialModList holds bare interface{} values.
 func TestAnchoredIndexSpecialModListMatchesFullScan(t *testing.T) {
+	t.Parallel()
 	initParserForTest(t)
 
 	for _, line := range modLinesForTest(t) {
@@ -95,6 +97,7 @@ func assertScanAnyEqual[T any](t *testing.T, line string, patternList map[string
 
 // TestAnyOffsetIndexMatchesFullScan: The any-offset index must be a pure prefilter too.
 func TestAnyOffsetIndexMatchesFullScan(t *testing.T) {
+	t.Parallel()
 	initParserForTest(t)
 
 	for _, line := range modLinesForTest(t) {
@@ -214,6 +217,7 @@ func TestRequiredLiteral(t *testing.T) {
 
 // TestRequiredLiteralIsInEveryMatch: on many-mods.txt, every pattern a scan would try on a line and skips for lacking its literal does not match that line.
 func TestRequiredLiteralIsInEveryMatch(t *testing.T) {
+	t.Parallel()
 	initParserForTest(t)
 	ParseMod("+10 to maximum Life", false)
 	checked := 0

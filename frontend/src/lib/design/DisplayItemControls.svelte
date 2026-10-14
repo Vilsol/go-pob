@@ -17,8 +17,8 @@
   // ItemsTab.lua:378-715, 1025-1070, 1522-1541, 2335-2382
   // ItemsTab.lua:1025-1089
   // ItemsTab.lua:509-553
-  type Props = { info: DisplayInfo; onedit: (edit: DisplayEdit) => void; craft?: CraftApi };
-  let { info, onedit, craft }: Props = $props();
+  type Props = { info: DisplayInfo; onedit: (edit: DisplayEdit) => void; craft?: CraftApi; customRequest?: boolean };
+  let { info, onedit, craft, customRequest = $bindable(false) }: Props = $props();
 
   let enchantSlot = $state(0);
   let anointSlot = $state(0);
@@ -28,6 +28,11 @@
   let implicitOpen = $state(false);
   let customOpen = $state(false);
   let crucibleOpen = $state(false);
+  $effect(() => {
+    if (!customRequest) return;
+    customRequest = false;
+    if (info.addCustom && craft) customOpen = true;
+  });
   let rangeLine = $state(0);
   const ranged = $derived(info.mods.flatMap((m, i) => (m.hasRange ? [i] : [])));
   const picked = $derived(ranged.includes(rangeLine) ? rangeLine : ranged[0]);

@@ -113,6 +113,7 @@
   });
 
   const classRoots = () => classStartNodes[skillTree.classes.findIndex((c) => c.name === currentClass)] ?? [];
+  const subgraphNodes = () => (cluster ?? []).map((c) => ({ ID: c.id, Type: c.type, Linked: [...c.linked] }));
 
   // PassiveSpec.lua:856-857
 
@@ -171,7 +172,7 @@
   let clickNode = (node: Node) => {
     const nodeId = node.skill ?? -1;
     if (activeNodes?.includes(nodeId)) {
-      const cut = syncWrap?.CalculateDependentNodes(skillTreeVersion, [...activeNodes], nodeId, [...classRoots()]);
+      const cut = syncWrap?.CalculateDependentNodesWith(skillTreeVersion, [...activeNodes], nodeId, [...classRoots()], subgraphNodes());
       syncWrap
         ?.DeallocateNodes([nodeId])
         .then(() => {
@@ -322,7 +323,7 @@
       return;
     }
     syncWrap
-      ?.CalculateDependentNodes(skillTreeVersion, [...activeNodes], id, [...classRoots()])
+      ?.CalculateDependentNodesWith(skillTreeVersion, [...activeNodes], id, [...classRoots()], subgraphNodes())
       .then((ids) => {
         if (get(hoveredNode) === node) hoverDepends = new Set([id, ...(ids ?? [])]);
       })
@@ -355,7 +356,7 @@
 
     let path: number[];
     if (alloc) {
-      const ids = (await syncWrap?.CalculateDependentNodes(skillTreeVersion, [...active], id, [...classRoots()])) ?? [];
+      const ids = (await syncWrap?.CalculateDependentNodesWith(skillTreeVersion, [...active], id, [...classRoots()], subgraphNodes())) ?? [];
       if (get(hoveredNode) === node) dependents = { node: id, ids };
       path = [id, ...ids];
     } else {
@@ -403,7 +404,8 @@
     if (blocks.length === 0) {
       empty = isGranted
         ? 'This node is granted by an item. Removing it will cause no changes'
-        : `No changes from ${alloc ? 'unallocating' : 'allocating'} this node${showPath ? ` or the nodes ${alloc ? 'depending on' : 'leading to'} it` : ''}.`;
+        : // PassiveTreeView.lua:1703
+          `No changes from ${alloc ? 'unallocating' : 'allocating'} this node.`;
     }
     statDiff = { node: id, blocks: [...blocks], pending: false, empty };
   };

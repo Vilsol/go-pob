@@ -7,6 +7,7 @@ import * as go from './support/go_model';
 import { expectedLines } from './support/stats';
 import type * as Types from '../src/lib/types';
 import { plainText, sortByValue } from '../src/lib/design/crafting';
+import { choose, entries, expectEntries } from './support/dropdown';
 
 const setup = async (page: Page, file: string) => {
   const xml = buildXml(file);
@@ -48,8 +49,8 @@ test('enchant and anoint the display item (0280)', async ({ page }) => {
   const skills = await dialog.getByRole('combobox', { name: 'Skill' }).locator('option').allTextContents();
   expect(skills).toEqual(choices.Used);
   const enchantment = dialog.getByRole('combobox', { name: 'Enchantment' });
-  await expect(enchantment.locator('option').first()).not.toHaveText('');
-  const line = (await enchantment.locator('option').first().textContent())!;
+  await expect(enchantment).not.toHaveText('');
+  const line = (await entries(enchantment))[0];
   await expect(dialog.getByRole('group', { name: 'Enchanted item' })).toContainText(line);
 
   // ItemsTab.lua:2754-2814
@@ -67,13 +68,16 @@ test('enchant and anoint the display item (0280)', async ({ page }) => {
   if (!pick) throw new Error('REFUSING: no used skill whose enchantments Full DPS reorders');
   await dialog.getByRole('combobox', { name: 'Skill' }).selectOption({ label: pick.skill });
   await dialog.getByRole('combobox', { name: 'Source' }).selectOption({ index: pick.index });
-  const lines = await enchantment.locator('option').allTextContents();
+  const lines = await entries(enchantment);
   expect(lines).toEqual(pick.lines);
   await dialog.getByRole('combobox', { name: 'Sort by' }).selectOption({ label: 'Full DPS' });
   await expect(enchantment).toHaveAttribute('aria-busy', 'false', { timeout: 120_000 });
   const values = pick.values;
-  await expect(enchantment.locator('option')).toHaveText(sortByValue(values, lines.length).map((k) => lines[k]));
-  const top = (await enchantment.locator('option').first().textContent())!;
+  await expectEntries(
+    enchantment,
+    sortByValue(values, lines.length).map((k) => lines[k])
+  );
+  const top = (await entries(enchantment))[0];
   await dialog.getByRole('button', { name: 'Enchant', exact: true }).click();
   const enchanted = await edit(helmet, { Kind: 'enchant', Index: 1, Text: top });
   await expect(box).toHaveValue(enchanted);
@@ -168,15 +172,15 @@ test('corrupt the display item (0280)', async ({ page }) => {
   const [choices] = await m.exposition.ItemCorruptChoices(helmet);
   const mods = choices.Corrupted!;
   const first = dialog.getByRole('combobox', { name: 'Implicit #1' });
-  await expect(first.locator('option')).toHaveText(['None', ...mods.map((x) => x.Label)]);
-  await first.selectOption({ label: mods[0].Label });
+  await expectEntries(first, ['None', ...mods.map((x) => x.Label)]);
+  await choose(first, mods[0].Label);
   const second = dialog.getByRole('combobox', { name: 'Implicit #2' });
-  await expect(second.locator('option')).toHaveText(['None', ...mods.filter((x) => x.Group !== mods[0].Group).map((x) => x.Label)]);
+  await expectEntries(second, ['None', ...mods.filter((x) => x.Group !== mods[0].Group).map((x) => x.Label)]);
   // ItemsTab.lua:3301-3308, 2408-2422
   await expect(dialog.getByRole('group', { name: 'Implicit comparison' })).toContainText('Adding this mod will give');
 
   // ItemsTab.lua:3064-3135
-  await first.selectOption({ index: 0 });
+  await choose(first, 'None');
   await dialog.getByRole('combobox', { name: 'Sort by' }).selectOption({ label: 'Life' });
   await expect(dialog.getByRole('combobox', { name: 'Sort by' })).toHaveAttribute('aria-busy', 'false', { timeout: 120_000 });
   const values = [
@@ -190,9 +194,9 @@ test('corrupt the display item (0280)', async ({ page }) => {
   ];
   const order = sortByValue(values, mods.length);
   expect(order.some((k, i) => k !== i)).toBe(true);
-  await expect(first.locator('option')).toHaveText(['None', ...order.map((k) => mods[k].Label)]);
+  await expectEntries(first, ['None', ...order.map((k) => mods[k].Label)]);
   const top = mods[order[0]];
-  await first.selectOption({ label: top.Label });
+  await choose(first, top.Label);
   await dialog.getByRole('button', { name: 'Corrupted', exact: true }).click();
   await expect(box).toHaveValue(await corrupt(helmet, 'Corrupted', [top.ID], []));
 
@@ -241,7 +245,10 @@ test('add an implicit to the display item (0280)', async ({ page }) => {
 
   const groups = choices.Groups!.EXARCH!;
   await expect(dialog.getByRole('combobox', { name: 'Type' }).locator('option')).toHaveText(groups.map((g) => g.Label));
-  await expect(dialog.getByRole('combobox', { name: 'Modifier' }).locator('option')).toHaveText(groups[0].Mods!.map((x) => x.Label));
+  await expectEntries(
+    dialog.getByRole('combobox', { name: 'Modifier' }),
+    groups[0].Mods!.map((x) => x.Label)
+  );
   await expect(dialog.getByRole('group', { name: 'Implicit comparison' })).toContainText('Adding this mod will give');
 
   // ItemsTab.lua:3957-4040
@@ -306,7 +313,10 @@ test('add a modifier to the display item (0280)', async ({ page }) => {
   await expect(dialog.getByRole('combobox', { name: 'Source' }).locator('option')).toHaveText(choices.Sources!.map((s) => s.Label));
   const bench = choices.Mods!.MASTER!;
   const modifier = dialog.getByRole('combobox', { name: 'Modifier' });
-  await expect(modifier.locator('option')).toHaveText(bench.map((x) => plainText(x.Label)));
+  await expectEntries(
+    modifier,
+    bench.map((x) => plainText(x.Label))
+  );
   await expect(dialog.getByRole('group', { name: 'Modifier comparison' })).toContainText('Adding this mod will give');
 
   // ItemsTab.lua:3356-3406
@@ -324,7 +334,10 @@ test('add a modifier to the display item (0280)', async ({ page }) => {
   ];
   const order = sortByValue(v, prefixes.length);
   expect(order.some((k, i) => k !== i)).toBe(true);
-  await expect(modifier.locator('option')).toHaveText(order.map((k) => plainText(prefixes[k].Label)));
+  await expectEntries(
+    modifier,
+    order.map((k) => plainText(prefixes[k].Label))
+  );
   await dialog.getByRole('button', { name: 'Add', exact: true }).click();
   await expect(box).toHaveValue(await text('PREFIX', prefixes[order[0]].ID, ''));
 
@@ -359,11 +372,14 @@ test('affix dropdowns on a crafted item (0280)', async ({ page }) => {
   const first = affixes.getByRole('combobox', { name: 'Affix 1' });
   await expect(affixes.getByRole('combobox', { name: /^Affix \d$/ })).toHaveCount(6);
   let c = await controls(crafted);
-  await expect(first.locator('option')).toHaveText(c[0].Series!.map((s) => plainText(s.Label)));
+  await expectEntries(
+    first,
+    c[0].Series!.map((s) => plainText(s.Label))
+  );
 
   // ItemsTab.lua:796-811
   const life = c[0].Series!.findIndex((s) => s.Label === '+# to maximum Life');
-  await first.selectOption({ label: '+# to maximum Life' });
+  await choose(first, '+# to maximum Life');
   const withLife = await edit(crafted, 0, life, c[0].SliderVal);
   await expect(box).toHaveValue(withLife);
   await expect(affixes.getByRole('group', { name: 'Affix comparison' })).toContainText('Adding this mod will give');
@@ -383,7 +399,10 @@ test('affix dropdowns on a crafted item (0280)', async ({ page }) => {
   const idx = c[1].Series!.map((_, k) => k);
   const order = [0, ...idx.slice(1).sort((a, b) => (p[b] ?? 0) - (p[a] ?? 0))];
   expect(order.some((k, i) => k !== i)).toBe(true);
-  await expect(affixes.getByRole('combobox', { name: 'Affix 2' }).locator('option')).toHaveText(order.map((k) => plainText(c[1].Series![k].Label)));
+  await expectEntries(
+    affixes.getByRole('combobox', { name: 'Affix 2' }),
+    order.map((k) => plainText(c[1].Series![k].Label))
+  );
 
   misc.release();
   app.assertNoErrors();
@@ -416,7 +435,8 @@ test('cluster jewel crafting (0280)', async ({ page }) => {
 
   // ItemsTab.lua:2150-2155
   const [controls] = await m.exposition.ItemAffixControls(withCount);
-  await expect(page.getByRole('group', { name: 'Affixes' }).getByRole('combobox', { name: 'Affix 1' }).locator('option')).toHaveText(
+  await expectEntries(
+    page.getByRole('group', { name: 'Affixes' }).getByRole('combobox', { name: 'Affix 1' }),
     controls.Controls![0].Series!.map((s) => plainText(s.Label))
   );
   app.assertNoErrors();

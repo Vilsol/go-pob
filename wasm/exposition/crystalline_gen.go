@@ -131,6 +131,7 @@ func init() {
 	crystallineNamespace("go-pob", "exposition").Set("CalculateAllocationPaths", crystallineWrap(js.FuncOf(crystallineFnExpositionCalculateAllocationPaths)))
 	crystallineNamespace("go-pob", "exposition").Set("CalculatePrunableNodes", crystallineWrap(js.FuncOf(crystallineFnExpositionCalculatePrunableNodes)))
 	crystallineNamespace("go-pob", "exposition").Set("CalculateDependentNodes", crystallineWrap(js.FuncOf(crystallineFnExpositionCalculateDependentNodes)))
+	crystallineNamespace("go-pob", "exposition").Set("CalculateDependentNodesWith", crystallineWrap(js.FuncOf(crystallineFnExpositionCalculateDependentNodesWith)))
 	crystallineNamespace("go-pob", "exposition").Set("GetMiscCalculator", crystallineWrap(js.FuncOf(crystallineFnExpositionGetMiscCalculator)))
 	crystallineNamespace("go-pob", "exposition").Set("MiscCalculatorFor", crystallineWrap(js.FuncOf(crystallineFnExpositionMiscCalculatorFor)))
 	crystallineNamespace("go-pob", "exposition").Set("ParseModLines", crystallineWrap(js.FuncOf(crystallineFnExpositionParseModLines)))
@@ -177,6 +178,7 @@ func init() {
 	crystallineNamespace("go-pob", "exposition").Set("ChangeTreeAscendancy", crystallineWrap(js.FuncOf(crystallineFnExpositionChangeTreeAscendancy)))
 	crystallineNamespace("go-pob", "exposition").Set("ClickTreeAscendancyNode", crystallineWrap(js.FuncOf(crystallineFnExpositionClickTreeAscendancyNode)))
 	crystallineNamespace("go-pob", "exposition").Set("MoveTreeSpec", crystallineWrap(js.FuncOf(crystallineFnExpositionMoveTreeSpec)))
+	crystallineNamespace("go-pob", "exposition").Set("CompareSpecJewelTooltip", crystallineWrap(js.FuncOf(crystallineFnExpositionCompareSpecJewelTooltip)))
 	crystallineNamespace("go-pob", "exposition").Set("TreeConqueredNodes", crystallineWrap(js.FuncOf(crystallineFnExpositionTreeConqueredNodes)))
 	crystallineNamespace("go-pob", "exposition").Set("TreeSocketChoices", crystallineWrap(js.FuncOf(crystallineFnExpositionTreeSocketChoices)))
 	crystallineNamespace("go-pob", "exposition").Set("TreeSocketedJewels", crystallineWrap(js.FuncOf(crystallineFnExpositionTreeSocketedJewels)))
@@ -354,6 +356,7 @@ func init() {
 		"TypeDistanceRamp":        "DistanceRamp",
 		"TypeMultiplierThreshold": "MultiplierThreshold",
 		"TypeModFlagOr":           "ModFlagOr",
+		"TypeKeywordFlagAnd":      "KeywordFlagAnd",
 		"TypeInSlot":              "InSlot",
 		"TypeDummy":               "DUMMY",
 		"TypeGlobalEffect":        "GlobalEffect",
@@ -839,6 +842,7 @@ func init() {
 	Skills20Exports(crystallineRegistry{})
 	Skills30Exports(crystallineRegistry{})
 	TreeClassExports(crystallineRegistry{})
+	TreeCompareJewelExports(crystallineRegistry{})
 	TreeConqueredNodesExports(crystallineRegistry{})
 	TreeJewelExports(crystallineRegistry{})
 	TreeLinkExports(crystallineRegistry{})
@@ -4917,6 +4921,55 @@ func crystallineFnExpositionCalculateDependentNodes(this js.Value, args []js.Val
 	}()
 }
 
+func crystallineFnExpositionCalculateDependentNodesWith(this js.Value, args []js.Value) (result any) {
+	defer crystallineRecover(&result)
+
+	if len(args) != 5 {
+		return crystallineFail("CalculateDependentNodesWith: expected 5 arguments, got " + strconv.Itoa(len(args)))
+	}
+
+	a0, err := crystallineToPobTreeVersion(args[0])
+	if err != nil {
+		return crystallineFail(err.Error())
+	}
+
+	a1, err := crystallineToSliceOfInt64(args[1])
+	if err != nil {
+		return crystallineFail(err.Error())
+	}
+
+	a2, err := crystallineToInt64(args[2])
+	if err != nil {
+		return crystallineFail(err.Error())
+	}
+
+	a3, err := crystallineToSliceOfInt64(args[3])
+	if err != nil {
+		return crystallineFail(err.Error())
+	}
+
+	a4, err := crystallineToSliceOfDataSubgraphNode(args[4])
+	if err != nil {
+		return crystallineFail(err.Error())
+	}
+
+	r0 := CalculateDependentNodesWith(a0, a1, a2, a3, a4)
+
+	return func() any {
+		items := r0
+		if items == nil {
+			return nil
+		}
+
+		out := make([]any, 0, len(items))
+		for i := range items {
+			out = append(out, float64(items[i]))
+		}
+
+		return out
+	}()
+}
+
 func crystallineFnExpositionGetMiscCalculator(this js.Value, args []js.Value) (result any) {
 	defer crystallineRecover(&result)
 
@@ -6616,6 +6669,43 @@ func crystallineFnExpositionMoveTreeSpec(this js.Value, args []js.Value) (result
 
 		return nil
 	})
+}
+
+func crystallineFnExpositionCompareSpecJewelTooltip(this js.Value, args []js.Value) (result any) {
+	defer crystallineRecover(&result)
+
+	if len(args) != 4 {
+		return crystallineFail("CompareSpecJewelTooltip: expected 4 arguments, got " + strconv.Itoa(len(args)))
+	}
+
+	a0, err := crystallineToPtrPobPathOfBuilding(args[0])
+	if err != nil {
+		return crystallineFail(err.Error())
+	}
+
+	a1, err := crystallineToInt(args[1])
+	if err != nil {
+		return crystallineFail(err.Error())
+	}
+
+	a2, err := crystallineToInt(args[2])
+	if err != nil {
+		return crystallineFail(err.Error())
+	}
+
+	a3, err := crystallineToCalculatorItemTooltipStats(args[3])
+	if err != nil {
+		return crystallineFail(err.Error())
+	}
+
+	r0, r1 := CompareSpecJewelTooltip(a0, a1, a2, a3)
+
+	return []any{crystallineJSON(func(b []byte, ok *bool) []byte {
+		b = crystallineAppendCalculatorItemTooltip(b, &r0, ok)
+		return b
+	}, func() any {
+		return crystallineMarshalCalculatorItemTooltip(&r0)
+	}), bool(r1)}
 }
 
 func crystallineFnExpositionTreeConqueredNodes(this js.Value, args []js.Value) (result any) {
@@ -9641,7 +9731,7 @@ func crystallineMarshalCalculatorActor(v *calculator.Actor) any {
 					})(value)
 				}
 			},
-			[]string{"AddedUsingCondition", "AuraLifeReservedBase", "AuraManaReservedBase", "EquippedSlots", "GetOutput", "ItemCorruptedIs", "ItemInSlot", "ItemModifierMatches", "ItemNameIs", "ItemRarityIs", "MonsterTags"},
+			[]string{"AddedUsingCondition", "AuraLifeReservedBase", "AuraManaReservedBase", "EquippedSlots", "GetOutput", "ItemCorruptedIs", "ItemElderIs", "ItemInSlot", "ItemModifierMatches", "ItemNameIs", "ItemRarityIs", "ItemShaperIs", "MonsterTags"},
 			func(v *calculator.Actor, method int, args []js.Value) any {
 				switch method {
 				case 0:
@@ -9763,6 +9853,24 @@ func crystallineMarshalCalculatorActor(v *calculator.Actor) any {
 
 					return bool(r0)
 				case 6:
+					if len(args) != 2 {
+						return crystallineFail("ItemElderIs: expected 2 arguments, got " + strconv.Itoa(len(args)))
+					}
+
+					a0, err := crystallineToString(args[0])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					a1, err := crystallineToBool(args[1])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					r0 := v.ItemElderIs(a0, a1)
+
+					return bool(r0)
+				case 7:
 					if len(args) != 1 {
 						return crystallineFail("ItemInSlot: expected 1 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -9775,7 +9883,7 @@ func crystallineMarshalCalculatorActor(v *calculator.Actor) any {
 					r0 := v.ItemInSlot(a0)
 
 					return bool(r0)
-				case 7:
+				case 8:
 					if len(args) != 2 {
 						return crystallineFail("ItemModifierMatches: expected 2 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -9793,7 +9901,7 @@ func crystallineMarshalCalculatorActor(v *calculator.Actor) any {
 					r0 := v.ItemModifierMatches(a0, a1)
 
 					return bool(r0)
-				case 8:
+				case 9:
 					if len(args) != 2 {
 						return crystallineFail("ItemNameIs: expected 2 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -9811,7 +9919,7 @@ func crystallineMarshalCalculatorActor(v *calculator.Actor) any {
 					r0 := v.ItemNameIs(a0, a1)
 
 					return bool(r0)
-				case 9:
+				case 10:
 					if len(args) != 2 {
 						return crystallineFail("ItemRarityIs: expected 2 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -9829,7 +9937,25 @@ func crystallineMarshalCalculatorActor(v *calculator.Actor) any {
 					r0 := v.ItemRarityIs(a0, a1)
 
 					return bool(r0)
-				case 10:
+				case 11:
+					if len(args) != 2 {
+						return crystallineFail("ItemShaperIs: expected 2 arguments, got " + strconv.Itoa(len(args)))
+					}
+
+					a0, err := crystallineToString(args[0])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					a1, err := crystallineToBool(args[1])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					r0 := v.ItemShaperIs(a0, a1)
+
+					return bool(r0)
+				case 12:
 					if len(args) != 0 {
 						return crystallineFail("MonsterTags: expected 0 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -10009,7 +10135,7 @@ func crystallineMarshalCalculatorActorMinion(v *calculator.ActorMinion) any {
 					})(value)
 				}
 			},
-			[]string{"AddedUsingCondition", "AuraLifeReservedBase", "AuraManaReservedBase", "EquippedSlots", "GetOutput", "ItemCorruptedIs", "ItemInSlot", "ItemModifierMatches", "ItemNameIs", "ItemRarityIs", "MonsterTags"},
+			[]string{"AddedUsingCondition", "AuraLifeReservedBase", "AuraManaReservedBase", "EquippedSlots", "GetOutput", "ItemCorruptedIs", "ItemElderIs", "ItemInSlot", "ItemModifierMatches", "ItemNameIs", "ItemRarityIs", "ItemShaperIs", "MonsterTags"},
 			func(v *calculator.ActorMinion, method int, args []js.Value) any {
 				switch method {
 				case 0:
@@ -10131,6 +10257,24 @@ func crystallineMarshalCalculatorActorMinion(v *calculator.ActorMinion) any {
 
 					return bool(r0)
 				case 6:
+					if len(args) != 2 {
+						return crystallineFail("ItemElderIs: expected 2 arguments, got " + strconv.Itoa(len(args)))
+					}
+
+					a0, err := crystallineToString(args[0])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					a1, err := crystallineToBool(args[1])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					r0 := v.ItemElderIs(a0, a1)
+
+					return bool(r0)
+				case 7:
 					if len(args) != 1 {
 						return crystallineFail("ItemInSlot: expected 1 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -10143,7 +10287,7 @@ func crystallineMarshalCalculatorActorMinion(v *calculator.ActorMinion) any {
 					r0 := v.ItemInSlot(a0)
 
 					return bool(r0)
-				case 7:
+				case 8:
 					if len(args) != 2 {
 						return crystallineFail("ItemModifierMatches: expected 2 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -10161,7 +10305,7 @@ func crystallineMarshalCalculatorActorMinion(v *calculator.ActorMinion) any {
 					r0 := v.ItemModifierMatches(a0, a1)
 
 					return bool(r0)
-				case 8:
+				case 9:
 					if len(args) != 2 {
 						return crystallineFail("ItemNameIs: expected 2 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -10179,7 +10323,7 @@ func crystallineMarshalCalculatorActorMinion(v *calculator.ActorMinion) any {
 					r0 := v.ItemNameIs(a0, a1)
 
 					return bool(r0)
-				case 9:
+				case 10:
 					if len(args) != 2 {
 						return crystallineFail("ItemRarityIs: expected 2 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -10197,7 +10341,25 @@ func crystallineMarshalCalculatorActorMinion(v *calculator.ActorMinion) any {
 					r0 := v.ItemRarityIs(a0, a1)
 
 					return bool(r0)
-				case 10:
+				case 11:
+					if len(args) != 2 {
+						return crystallineFail("ItemShaperIs: expected 2 arguments, got " + strconv.Itoa(len(args)))
+					}
+
+					a0, err := crystallineToString(args[0])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					a1, err := crystallineToBool(args[1])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					r0 := v.ItemShaperIs(a0, a1)
+
+					return bool(r0)
+				case 12:
 					if len(args) != 0 {
 						return crystallineFail("MonsterTags: expected 0 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -17955,7 +18117,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 					})(value)
 				}
 			},
-			[]string{"BuildModList", "CfgCorruptedIs", "CfgModifierMatches", "CfgNameIs", "CfgRarityIs", "Clone", "NormaliseQuality", "ParseRaw", "PrimarySlot", "VariantGroupOptions"},
+			[]string{"BuildModList", "CfgCorruptedIs", "CfgElderIs", "CfgModifierMatches", "CfgNameIs", "CfgRarityIs", "CfgShaperIs", "Clone", "NormaliseQuality", "ParseRaw", "PrimarySlot", "VariantGroupOptions"},
 			func(v *calculator.Item, method int, args []js.Value) any {
 				switch method {
 				case 0:
@@ -17980,6 +18142,19 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 					return bool(r0)
 				case 2:
+					if len(args) != 1 {
+						return crystallineFail("CfgElderIs: expected 1 arguments, got " + strconv.Itoa(len(args)))
+					}
+
+					a0, err := crystallineToBool(args[0])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					r0 := v.CfgElderIs(a0)
+
+					return bool(r0)
+				case 3:
 					if len(args) != 2 {
 						return crystallineFail("CfgModifierMatches: expected 2 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -17997,7 +18172,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 					r0 := v.CfgModifierMatches(a0, a1)
 
 					return bool(r0)
-				case 3:
+				case 4:
 					if len(args) != 1 {
 						return crystallineFail("CfgNameIs: expected 1 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -18010,7 +18185,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 					r0 := v.CfgNameIs(a0)
 
 					return bool(r0)
-				case 4:
+				case 5:
 					if len(args) != 1 {
 						return crystallineFail("CfgRarityIs: expected 1 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -18023,7 +18198,20 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 					r0 := v.CfgRarityIs(a0)
 
 					return bool(r0)
-				case 5:
+				case 6:
+					if len(args) != 1 {
+						return crystallineFail("CfgShaperIs: expected 1 arguments, got " + strconv.Itoa(len(args)))
+					}
+
+					a0, err := crystallineToBool(args[0])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					r0 := v.CfgShaperIs(a0)
+
+					return bool(r0)
+				case 7:
 					if len(args) != 0 {
 						return crystallineFail("Clone: expected 0 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -18031,7 +18219,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 					r0 := v.Clone()
 
 					return crystallineMarshalCalculatorItem(r0)
-				case 6:
+				case 8:
 					if len(args) != 0 {
 						return crystallineFail("NormaliseQuality: expected 0 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -18039,7 +18227,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 					v.NormaliseQuality()
 
 					return nil
-				case 7:
+				case 9:
 					if len(args) != 1 {
 						return crystallineFail("ParseRaw: expected 1 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -18052,7 +18240,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 					v.ParseRaw(a0)
 
 					return nil
-				case 8:
+				case 10:
 					if len(args) != 0 {
 						return crystallineFail("PrimarySlot: expected 0 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -18060,7 +18248,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 					r0 := v.PrimarySlot()
 
 					return string(r0)
-				case 9:
+				case 11:
 					if len(args) != 2 {
 						return crystallineFail("VariantGroupOptions: expected 2 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -22147,6 +22335,8 @@ func crystallineMarshalCalculatorPowerReportEntry(v *calculator.PowerReportEntry
 	out.Set("Cluster", bool(v.Cluster))
 	out.Set("Offence", float64(v.Offence))
 	out.Set("Defence", float64(v.Defence))
+	out.Set("Effect", float64(v.Effect))
+	out.Set("Picked", bool(v.Picked))
 
 	return out
 }
@@ -29458,6 +29648,32 @@ func crystallineMarshalDataSprites(v *data.Sprites) any {
 	}
 
 	return crystallineMarshalDataSpritesShape.Invoke(crystallineRetain(v))
+}
+
+func crystallineMarshalDataSubgraphNode(v *data.SubgraphNode) any {
+	if v == nil {
+		return nil
+	}
+
+	out := crystallineObjects.New()
+
+	out.Set("ID", float64(v.ID))
+	out.Set("Type", string(v.Type))
+	out.Set("Linked", func() any {
+		items := v.Linked
+		if items == nil {
+			return nil
+		}
+
+		out := make([]any, 0, len(items))
+		for i := range items {
+			out = append(out, float64(items[i]))
+		}
+
+		return out
+	}())
+
+	return out
 }
 
 var crystallineMarshalDataTreeShape js.Value
@@ -49186,6 +49402,10 @@ func crystallineAppendCalculatorPowerReportEntry(b []byte, v *calculator.PowerRe
 	b = crystallineAppendNumber(b, float64(v.Offence), ok)
 	b = append(b, ",\"Defence\":"...)
 	b = crystallineAppendNumber(b, float64(v.Defence), ok)
+	b = append(b, ",\"Effect\":"...)
+	b = crystallineAppendNumber(b, float64(v.Effect), ok)
+	b = append(b, ",\"Picked\":"...)
+	b = strconv.AppendBool(b, bool(v.Picked))
 
 	return append(b, '}')
 }
@@ -54773,7 +54993,7 @@ func crystallineToCalculatorOutputMode(value js.Value) (calculator.OutputMode, e
 	return calculator.OutputMode(converted), nil
 }
 
-var crystallineKnownCalculatorPowerReportEntry = map[string]bool{"ID": true, "Name": true, "Type": true, "Power": true, "PathPower": true, "PathDist": true, "Allocated": true, "Stats": true, "Cluster": true, "Offence": true, "Defence": true}
+var crystallineKnownCalculatorPowerReportEntry = map[string]bool{"ID": true, "Name": true, "Type": true, "Power": true, "PathPower": true, "PathDist": true, "Allocated": true, "Stats": true, "Cluster": true, "Offence": true, "Defence": true, "Effect": true, "Picked": true}
 
 func crystallineToCalculatorPowerReportEntry(value js.Value) (calculator.PowerReportEntry, error) {
 	var out calculator.PowerReportEntry
@@ -54901,6 +55121,24 @@ func crystallineToCalculatorPowerReportEntry(value js.Value) (calculator.PowerRe
 		}
 
 		out.Defence = converted
+	}
+
+	if property := value.Get("Effect"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToInt64(property)
+		if err != nil {
+			return out, errors.New("calculator.PowerReportEntry.Effect: " + err.Error())
+		}
+
+		out.Effect = converted
+	}
+
+	if property := value.Get("Picked"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToBool(property)
+		if err != nil {
+			return out, errors.New("calculator.PowerReportEntry.Picked: " + err.Error())
+		}
+
+		out.Picked = converted
 	}
 
 	return out, nil
@@ -58852,6 +59090,67 @@ func crystallineToDataSprites(value js.Value) (data.Sprites, error) {
 		}
 
 		out.JewelRadius = converted
+	}
+
+	return out, nil
+}
+
+var crystallineKnownDataSubgraphNode = map[string]bool{"ID": true, "Type": true, "Linked": true}
+
+func crystallineToDataSubgraphNode(value js.Value) (data.SubgraphNode, error) {
+	var out data.SubgraphNode
+
+	if value.IsUndefined() || value.IsNull() {
+		return out, errors.New("data.SubgraphNode: expected an object, got null")
+	}
+
+	if handle, ok := crystallineHandleOf(value); ok {
+		resolved, found := crystallineResolve(handle)
+		if !found {
+			return out, errors.New("data.SubgraphNode: the value behind this handle has been released")
+		}
+
+		typed, ok := resolved.(*data.SubgraphNode)
+		if !ok {
+			return out, errors.New("data.SubgraphNode: handle refers to a different type")
+		}
+
+		return *typed, nil
+	}
+
+	if value.Type() != js.TypeObject {
+		return out, errors.New("data.SubgraphNode: expected an object")
+	}
+
+	if err := crystallineUnknownProperty(value, "data.SubgraphNode", crystallineKnownDataSubgraphNode); err != nil {
+		return out, err
+	}
+
+	if property := value.Get("ID"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToInt64(property)
+		if err != nil {
+			return out, errors.New("data.SubgraphNode.ID: " + err.Error())
+		}
+
+		out.ID = converted
+	}
+
+	if property := value.Get("Type"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToString(property)
+		if err != nil {
+			return out, errors.New("data.SubgraphNode.Type: " + err.Error())
+		}
+
+		out.Type = converted
+	}
+
+	if property := value.Get("Linked"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToSliceOfInt64(property)
+		if err != nil {
+			return out, errors.New("data.SubgraphNode.Linked: " + err.Error())
+		}
+
+		out.Linked = converted
 	}
 
 	return out, nil
@@ -66299,6 +66598,29 @@ func crystallineToSliceOfDataMasteryEffect(value js.Value) ([]data.MasteryEffect
 
 	for i := 0; i < value.Length(); i++ {
 		item, err := crystallineToDataMasteryEffect(value.Index(i))
+		if err != nil {
+			return nil, errors.New("[" + strconv.Itoa(i) + "]: " + err.Error())
+		}
+
+		out = append(out, item)
+	}
+
+	return out, nil
+}
+
+func crystallineToSliceOfDataSubgraphNode(value js.Value) ([]data.SubgraphNode, error) {
+	if value.IsUndefined() || value.IsNull() {
+		return nil, nil
+	}
+
+	if !js.Global().Get("Array").Call("isArray", value).Bool() {
+		return nil, errors.New("expected an array")
+	}
+
+	out := make([]data.SubgraphNode, 0, value.Length())
+
+	for i := 0; i < value.Length(); i++ {
+		item, err := crystallineToDataSubgraphNode(value.Index(i))
 		if err != nil {
 			return nil, errors.New("[" + strconv.Itoa(i) + "]: " + err.Error())
 		}

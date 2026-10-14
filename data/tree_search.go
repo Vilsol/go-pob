@@ -131,6 +131,10 @@ func (v *TreeVersionData) pathRuleSets() (map[int64]bool, map[int64]bool) {
 
 //pob:src/Classes/PassiveSpec.lua:844-871
 func (v *TreeVersionData) CalculatePrunableNodes(activeNodes []int64, rootNodes []int64) []int64 {
+	return v.prunableNodes(activeNodes, rootNodes, nil)
+}
+
+func (v *TreeVersionData) prunableNodes(activeNodes []int64, rootNodes []int64, sub *subgraphLinks) []int64 {
 	_, adjacencyMap := v.getGraph()
 	_, masteryParents := v.pathRuleSets()
 
@@ -155,11 +159,16 @@ func (v *TreeVersionData) CalculatePrunableNodes(activeNodes []int64, rootNodes 
 		if !visited[currentNode] {
 			visited[currentNode] = true
 
-			if masteryParents[currentNode] {
+			if masteryParents[currentNode] || sub.mastery(currentNode) {
 				continue
 			}
 
 			for adjacent := range adjacencyMap[currentNode] {
+				if activeNodesSet[adjacent] && !visited[adjacent] {
+					stack = append(stack, adjacent)
+				}
+			}
+			for _, adjacent := range sub.links(currentNode) {
 				if activeNodesSet[adjacent] && !visited[adjacent] {
 					stack = append(stack, adjacent)
 				}
@@ -178,6 +187,48 @@ func (v *TreeVersionData) CalculatePrunableNodes(activeNodes []int64, rootNodes 
 }
 
 func (v *TreeVersionData) CalculateDependentNodes(activeNodes []int64, target int64, rootNodes []int64) []int64 {
+	return v.CalculateDependentNodesWith(activeNodes, target, rootNodes, nil)
+}
+
+type SubgraphNode struct {
+	ID     int64
+	Type   string
+	Linked []int64
+}
+
+type subgraphLinks struct {
+	nodes map[int64]SubgraphNode
+	extra map[int64][]int64
+}
+
+func newSubgraphLinks(subgraph []SubgraphNode) *subgraphLinks {
+	if len(subgraph) == 0 {
+		return nil
+	}
+	s := &subgraphLinks{nodes: map[int64]SubgraphNode{}, extra: map[int64][]int64{}}
+	for _, n := range subgraph {
+		s.nodes[n.ID] = n
+		for _, other := range n.Linked {
+			s.extra[n.ID] = append(s.extra[n.ID], other)
+			s.extra[other] = append(s.extra[other], n.ID)
+		}
+	}
+	return s
+}
+
+func (s *subgraphLinks) links(id int64) []int64 {
+	if s == nil {
+		return nil
+	}
+	return s.extra[id]
+}
+
+func (s *subgraphLinks) mastery(id int64) bool {
+	return s != nil && s.nodes[id].Type == "Mastery"
+}
+
+func (v *TreeVersionData) CalculateDependentNodesWith(activeNodes []int64, target int64, rootNodes []int64, subgraph []SubgraphNode) []int64 {
+	sub := newSubgraphLinks(subgraph)
 	nodes := v.Tree().Nodes
 	rootsFor := func(list []int64) []int64 {
 		out := append([]int64(nil), rootNodes...)
@@ -189,8 +240,29 @@ func (v *TreeVersionData) CalculateDependentNodes(activeNodes []int64, target in
 		return out
 	}
 	before := make(map[int64]bool)
-	for _, id := range v.CalculatePrunableNodes(activeNodes, rootsFor(activeNodes)) {
+	for _, id := range v.prunableNodes(activeNodes, rootsFor(activeNodes), sub) {
 		before[id] = true
+	}
+	node := v.SpecDependsNode
+	if sub != nil {
+		node = func(id int64) (DependsNode, bool) {
+			d, ok := v.SpecDependsNode(id)
+			if !ok {
+				n, in := sub.nodes[id]
+				if !in {
+					return d, false
+				}
+				d = DependsNode{Type: n.Type}
+			}
+			links := slices.Clone(sub.links(id))
+			slices.Sort(links)
+			for _, other := range links {
+				if !slices.Contains(d.Linked, other) {
+					d.Linked = append(d.Linked, other)
+				}
+			}
+			return d, true
+		}
 	}
 
 	alloc := slices.Clone(activeNodes)
@@ -203,7 +275,7 @@ func (v *TreeVersionData) CalculateDependentNodes(activeNodes []int64, target in
 			}
 		}
 	}
-	depends := SpecDepends(alloc, v.SpecDependsNode, nil)[target]
+	depends := SpecDepends(alloc, node, nil)[target]
 	out := make([]int64, 0, len(depends))
 	for _, id := range depends {
 		if id != target && !before[id] {

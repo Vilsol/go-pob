@@ -210,10 +210,7 @@
     const { c, main } = page(canvasElement);
     const share = within(c.getByRole('region', { name: 'Build sharing' }));
     await expect(share.getByRole('button', { name: 'Copy code' })).toBeEnabled();
-    for (const el of [share.getByRole('button', { name: 'Share' }), share.getByRole('combobox', { name: 'Share via' })]) {
-      await expect(el).toBeDisabled();
-      await expect(el).toHaveAttribute('title', APP_UNAVAILABLE.share);
-    }
+    for (const el of [share.getByRole('button', { name: 'Share' }), share.getByRole('combobox', { name: 'Share via' })]) await expect(el).toBeEnabled();
     const exportSupport = share.getByRole('checkbox', { name: /Export support/ });
     await expect(exportSupport).toBeEnabled();
     await userEvent.click(exportSupport);

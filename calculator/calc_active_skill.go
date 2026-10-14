@@ -179,13 +179,33 @@ type skillInstanceStatsKey struct {
 	hasActor   bool
 }
 
-var skillInstanceStatsCache sync.Map
+var skillInstanceStatsCache, skillInstanceModsCache sync.Map
 
-func skillInstanceStats(skillEffect *GemEffect, grantedEffect *GrantedEffect) []skillInstanceStat {
+func newSkillInstanceStatsKey(skillEffect *GemEffect, grantedEffect *GrantedEffect) skillInstanceStatsKey {
 	key := skillInstanceStatsKey{raw: grantedEffect.Raw, level: skillEffect.Level, quality: skillEffect.Quality, qualityID: skillEffect.QualityID}
 	if skillEffect.ActorLevel != nil {
 		key.actorLevel, key.hasActor = *skillEffect.ActorLevel, true
 	}
+	return key
+}
+
+func skillInstanceMods(skillEffect *GemEffect, grantedEffect *GrantedEffect) []mod.Mod {
+	key := newSkillInstanceStatsKey(skillEffect, grantedEffect)
+	if cached, ok := skillInstanceModsCache.Load(key); ok {
+		return cached.([]mod.Mod)
+	}
+	list := moddb.NewModList()
+	for _, stat := range skillInstanceStats(skillEffect, grantedEffect) {
+		if stat.statMap != nil {
+			mergeStatMapEntry(list, stat.statMap, stat.value)
+		}
+	}
+	cached, _ := skillInstanceModsCache.LoadOrStore(key, list.Mods())
+	return cached.([]mod.Mod)
+}
+
+func skillInstanceStats(skillEffect *GemEffect, grantedEffect *GrantedEffect) []skillInstanceStat {
+	key := newSkillInstanceStatsKey(skillEffect, grantedEffect)
 	if cached, ok := skillInstanceStatsCache.Load(key); ok {
 		return cached.([]skillInstanceStat)
 	}
@@ -230,10 +250,8 @@ func CalcMergeSkillInstanceMods(env *Environment, modList *moddb.ModList, skillE
 			}
 		}
 	} else {
-		for _, stat := range skillInstanceStats(skillEffect, grantedEffect) {
-			if stat.statMap != nil {
-				mergeStatMapEntry(modList, stat.statMap, stat.value)
-			}
+		for _, m := range skillInstanceMods(skillEffect, grantedEffect) {
+			modList.AddMod(m)
 		}
 	}
 
@@ -1108,9 +1126,12 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 			destList = buff.UnscalableModList
 		}
 		match := false
-		for _, destMod := range destList.Mods() {
+		destMods := destList.Mods()
+		for d, destMod := range destMods {
 			if moddb.CompareModParams(skillMod, destMod) && (destMod.Type() == mod.TypeBase || destMod.Type() == mod.TypeIncrease) {
+				destMod = destMod.Clone()
 				destMod.Value().SetFloat(destMod.Value().Float() + skillMod.Value().Float())
+				destMods[d] = destMod
 				match = true
 				break
 			}

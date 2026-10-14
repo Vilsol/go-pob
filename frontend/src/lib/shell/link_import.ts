@@ -2,6 +2,7 @@ import { syncWrap } from '$lib/go/worker';
 import { currentBuildPath } from '$lib/global.js';
 import { downloadUrl, importLink, SITES, type Site } from '$lib/design/share';
 import { unsavedName } from './build_name.svelte';
+import { resetAccountSession } from './account_session.svelte';
 
 // ImportTab.lua:684-699, BuildSiteTools.lua:88-113
 const DIRECT = new Set(['PoBCodes']);
@@ -47,6 +48,45 @@ const download = async ({ site, url }: Download) => {
   return (await res.text()).trim();
 };
 
+/* ImportTab.lua:539-554, BuildSiteTools.lua:47-82 */
+export const shareBuild = async (code: string, label: string) => {
+  const site = SITES.find((s) => s.label === label);
+  if (!site?.post) throw new Error(`${label} does not take uploads`);
+  let res: Response;
+  try {
+    res = await fetch(`/api/share?site=${site.id}`, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: code });
+  } catch {
+    throw new Error("pob.gg's share proxy is unreachable");
+  }
+  if (!res.headers.get('Content-Type')?.startsWith('text/plain')) throw new Error("pob.gg's share proxy is not available here");
+  const text = (await res.text()).trim();
+  if (!res.ok) throw new Error(text);
+  return text;
+};
+
+const poeUrl = async (query: string) => {
+  let res: Response;
+  try {
+    res = await fetch(`/api/poeurl?${query}`);
+  } catch {
+    throw new Error('PoEURL is unreachable');
+  }
+  if (!res.headers.get('Content-Type')?.startsWith('text/plain')) throw new Error("pob.gg's PoEURL proxy is not available here");
+  const text = (await res.text()).trim();
+  if (!res.ok) throw new Error(text);
+  return text;
+};
+
+/* TreeTab.lua:759-789 */
+export const resolvePoeUrl = async (link: string) => {
+  const id = /poeurl\.com\/(\w+)/.exec(link)?.[1];
+  if (!id) throw new Error('Failed to resolve PoEURL link');
+  return poeUrl(new URLSearchParams({ id }).toString());
+};
+
+/* TreeTab.lua:818-830 */
+export const shrinkTreeLink = (link: string) => poeUrl(new URLSearchParams({ shrink: link }).toString());
+
 export const downloadBuild = async (text: string) => {
   const link = linkDownload(text);
   if (!link) throw new Error('not a build site link');
@@ -66,6 +106,7 @@ export const openImportLink = async (text: string) => {
   await syncWrap?.ImportCode(code);
   currentBuildPath.current = '';
   unsavedName.imported = true;
+  resetAccountSession();
 };
 /* CompareTab.lua:1485, 1495, 1511 */
 export const compareName = (text: string, name: string) => {

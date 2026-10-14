@@ -21,6 +21,24 @@
     }
   });
 
+  const listOf = (box: HTMLElement) => box.ownerDocument.getElementById(box.getAttribute('aria-controls') ?? '') as HTMLElement;
+  const openList = async (box: HTMLElement) => {
+    if (box.getAttribute('aria-expanded') !== 'true') await userEvent.click(box);
+    await waitFor(() => expect(listOf(box)).toBeTruthy());
+    return listOf(box);
+  };
+  const entries = async (box: HTMLElement) => {
+    const out = within(await openList(box))
+      .getAllByRole('option')
+      .map((o) => o.textContent?.trim());
+    await userEvent.click(box);
+    return out;
+  };
+  const chooseAt = async (box: HTMLElement, i: number) => {
+    await userEvent.click(within(await openList(box)).getAllByRole('option')[i]);
+    await waitFor(() => expect(box).toHaveAttribute('aria-expanded', 'false'));
+  };
+
   const notable = (id: number, name: string, stat: string): AnointNotable => ({ id, name, stats: [stat], reminder: [], recipe: ['Clear Oil'] });
   const notables = [
     notable(1, 'Constitution', '+20 to maximum Life'),
@@ -197,12 +215,12 @@
     const d = within(dialog);
     await waitFor(() => expect(d.getByRole('combobox', { name: 'Skill' })).toHaveDisplayValue('Fireball'));
     await userEvent.selectOptions(d.getByRole('combobox', { name: 'Sort by' }), 'Full DPS');
-    await waitFor(() =>
-      expect(
-        within(d.getByRole('combobox', { name: 'Enchantment' }))
-          .getAllByRole('option')
-          .map((o) => o.textContent)
-      ).toEqual(['40% increased Fireball Damage', '20% increased Fireball Damage', '10% increased Fireball Damage'])
+    await waitFor(async () =>
+      expect(await entries(d.getByRole('combobox', { name: 'Enchantment' }))).toEqual([
+        '40% increased Fireball Damage',
+        '20% increased Fireball Damage',
+        '10% increased Fireball Damage'
+      ])
     );
     await waitFor(() => expect(d.getByRole('group', { name: 'Enchanted item' })).toHaveTextContent('40% increased Fireball Damage'));
   }}>
@@ -243,13 +261,9 @@
     const dialog = await c.findByRole('dialog', { name: 'Corrupted Item' });
     const d = within(dialog);
     const first = await d.findByRole('combobox', { name: 'Implicit #1' });
-    await waitFor(() => expect(within(first).getAllByRole('option')).toHaveLength(4));
-    await userEvent.selectOptions(first, 'A');
-    await expect(
-      within(d.getByRole('combobox', { name: 'Implicit #2' }))
-        .getAllByRole('option')
-        .map((o) => o.textContent)
-    ).toEqual(['None', '+1 to Maximum Power Charges']);
+    await waitFor(async () => expect(await entries(first)).toHaveLength(4));
+    await chooseAt(first, 1);
+    await expect(await entries(d.getByRole('combobox', { name: 'Implicit #2' }))).toEqual(['None', '+1 to Maximum Power Charges']);
     await waitFor(() => expect(d.getByRole('group', { name: 'Implicit comparison' })).toHaveTextContent('Adding this mod will give:'));
     await userEvent.click(d.getByRole('tab', { name: 'Roll Ranges' }));
     await expect(d.getByRole('group', { name: 'Roll Ranges' })).toHaveTextContent('+50 to maximum Life');
@@ -274,7 +288,7 @@
           .map((o) => o.textContent)
       ).toEqual(['+# to maximum Life', '#% increased Spell Damage'])
     );
-    await expect(d.getByRole('combobox', { name: 'Modifier' })).toHaveDisplayValue('+30 to maximum Life');
+    await expect(d.getByRole('combobox', { name: 'Modifier' })).toHaveTextContent('+30 to maximum Life');
     await userEvent.selectOptions(d.getByRole('combobox', { name: 'Source' }), 'Custom');
     await expect(d.getByRole('textbox', { name: 'Custom implicit' })).toBeVisible();
   }}>
@@ -289,10 +303,10 @@
     const dialog = await c.findByRole('dialog', { name: 'Add Modifier to Item' });
     const d = within(dialog);
     const mod = await d.findByRole('combobox', { name: 'Modifier' });
-    await waitFor(() => expect(within(mod).getAllByRole('option')).toHaveLength(2));
-    await expect(within(mod).getAllByRole('option')[0]).toHaveTextContent('+(25-34) to maximum Mana (Prefix)');
+    await waitFor(async () => expect(await entries(mod)).toHaveLength(2));
+    await expect((await entries(mod))[0]).toBe('+(25-34) to maximum Mana (Prefix)');
     await userEvent.selectOptions(d.getByRole('combobox', { name: 'Sort by' }), 'Life');
-    await waitFor(() => expect(d.getByRole('combobox', { name: 'Modifier' })).toHaveDisplayValue('+(25-34) to maximum Life (Prefix)'));
+    await waitFor(() => expect(d.getByRole('combobox', { name: 'Modifier' })).toHaveTextContent('+(25-34) to maximum Life (Prefix)'));
     await userEvent.selectOptions(d.getByRole('combobox', { name: 'Source' }), 'Custom');
     await expect(d.getByRole('textbox', { name: 'Custom modifier' })).toBeVisible();
   }}>
@@ -305,15 +319,9 @@
   play={async ({ canvasElement }) => {
     const c = within(canvasElement);
     const first = c.getByRole('combobox', { name: 'Affix 1' });
-    await expect(first).toHaveDisplayValue('+# to maximum Life');
+    await expect(first).toHaveTextContent('+# to maximum Life');
     await userEvent.selectOptions(c.getByRole('combobox', { name: 'Modifier sorting' }), 'Life');
-    await waitFor(() =>
-      expect(
-        within(first)
-          .getAllByRole('option')
-          .map((o) => o.textContent)
-      ).toEqual(['None', '+# to maximum Life', '+# to maximum Mana'])
-    );
+    await waitFor(async () => expect(await entries(first)).toEqual(['None', '+# to maximum Life', '+# to maximum Mana']));
     await userEvent.click(first);
     await waitFor(() => expect(c.getByRole('group', { name: 'Affix comparison' })).toHaveTextContent('Adding this mod will give:'));
   }}>

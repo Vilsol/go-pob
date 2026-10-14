@@ -138,7 +138,7 @@ func fmaTargetNames() string {
 
 func fmaCompile(repo string, tg fmaTarget) ([]fmaSite, int) {
 	argv := make([]string, 0, 1+2*len(fmaPackages))
-	argv = append(argv, "build")
+	argv = append(argv, "build", "-trimpath")
 	pkgs := make([]string, 0, len(fmaPackages))
 	for _, p := range fmaPackages {
 		argv = append(argv, "-gcflags="+fmaModule+p+"/...=-S")

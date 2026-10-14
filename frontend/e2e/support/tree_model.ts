@@ -65,7 +65,8 @@ export const treeState = (build: Build, cluster: { ID: number; Type: string; Lin
   };
   const named = (id: number): TreeNode => ({ id, name: t.nodes[id].name! });
   // PassiveSpec.lua:856-857
-  const depends = (id: number) => m.exposition.CalculateDependentNodes(version, active, id, roots) ?? [];
+  const subgraph = cluster.map((c) => ({ ID: c.ID, Type: c.Type, Linked: c.Linked ?? [] }));
+  const depends = (id: number) => m.exposition.CalculateDependentNodesWith(version, active, id, roots, subgraph) ?? [];
 
   return {
     active,

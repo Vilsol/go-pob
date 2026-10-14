@@ -117,7 +117,7 @@ var parserBlocked atomic.Int64
 
 var processed atomic.Int64
 
-const knownParserBlocked = 8
+const knownParserBlocked = 1
 
 func countExtras(i *Item) int {
 	n := 0

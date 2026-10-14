@@ -22,7 +22,7 @@ const setup = async (page: Page, file: string) => {
   await app.goTo('Items');
   await app.followWorker(t0, () => expect(board(page)).toBeVisible());
   await page.getByRole('tablist', { name: 'Item views' }).getByRole('tab', { name: 'Browse items' }).click();
-  return { app, build };
+  return { app, build, t0 };
 };
 
 const filter = (f: Partial<{ Slot: number; Type: number; League: number; Requirement: number; Obtainable: number; Search: string; SearchMode: number }>) => ({
@@ -38,7 +38,7 @@ const filter = (f: Partial<{ Slot: number; Type: number; League: number; Require
 
 test('the unique and rare DBs list what the model lists, filtered and sorted (0280)', async ({ page }) => {
   test.setTimeout(300_000);
-  const { app, build } = await setup(page, '0280-elementalist-fireball');
+  const { app, build, t0 } = await setup(page, '0280-elementalist-fireball');
   const m = await go.model();
   const misc = (await m.exposition.GetMiscCalculator(build))!;
   const stats = await go.itemTooltipStats(build);
@@ -51,7 +51,7 @@ test('the unique and rare DBs list what the model lists, filtered and sorted (02
   // ItemDBControl.lua:112-126
   const all = rows('UNIQUE', filter({}));
   expect(all.length, 'vacuity: the unique DB is empty').toBeGreaterThan(1000);
-  await expect(names()).toHaveCount(all.length);
+  await app.followWorker(t0, () => expect(names()).toHaveCount(all.length));
   await expect(names().first()).toHaveText(all[0]);
 
   const filters = page.getByRole('complementary', { name: 'Filters' });
@@ -82,7 +82,7 @@ test('the unique and rare DBs list what the model lists, filtered and sorted (02
     .first()
     .click();
   const craft = page.getByRole('dialog', { name: 'Craft Item' });
-  await expect(craft.getByRole('combobox', { name: 'Base' }).locator('option:checked')).toHaveText(base);
+  await expect(craft.getByRole('combobox', { name: 'Base' })).toHaveText(base);
   await craft.getByRole('button', { name: 'Cancel' }).click();
   app.assertNoErrors();
 });

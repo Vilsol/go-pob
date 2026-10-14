@@ -10,6 +10,8 @@ type ItemConditionTag struct {
 	RarityCond    string
 	CorruptedCond *bool
 	NameCond      string
+	ShaperCond    bool
+	ElderCond     bool
 
 	AllSlots    bool
 	BothSlots   bool
@@ -39,6 +41,16 @@ func (t *ItemConditionTag) Rarity(rarity string) *ItemConditionTag {
 
 func (t *ItemConditionTag) Corrupted(corrupted bool) *ItemConditionTag {
 	t.CorruptedCond = &corrupted
+	return t
+}
+
+func (t *ItemConditionTag) Shaper() *ItemConditionTag {
+	t.ShaperCond = true
+	return t
+}
+
+func (t *ItemConditionTag) Elder() *ItemConditionTag {
+	t.ElderCond = true
 	return t
 }
 

@@ -3,6 +3,7 @@
   import Button from './Button.svelte';
   import FloatingLabel from './FloatingLabel.svelte';
   import Select from './Select.svelte';
+  import Dropdown from './Dropdown.svelte';
   import Checkbox from './Checkbox.svelte';
   import ItemTooltip from './ItemTooltip.svelte';
   import { enchantSkills, sortByValue, type CraftApi, type EnchantChoices } from './crafting';
@@ -105,13 +106,16 @@
           bind:value={sort} /></FloatingLabel>
     </div>
     <FloatingLabel label="Enchantment"
-      ><Select
-        class="h-7.5"
+      ><Dropdown
+        class="block h-7.5 w-full"
+        searchable
         aria-label="Enchantment"
         aria-busy={sorting}
         options={order.map((k, i) => ({ value: String(i), label: lines[k] }))}
         value={String(pick)}
-        onchange={(e: Event & { currentTarget: HTMLSelectElement }) => (pick = Number(e.currentTarget.value))} /></FloatingLabel>
+        onchange={(v: string) => {
+          pick = Number(v);
+        }} /></FloatingLabel>
     {#if sorting}<span class="note">Sorting…</span>{/if}
     {#if preview}
       <div aria-label="Enchanted item" role="group" class="self-start"><ItemTooltip {...preview} /></div>

@@ -218,6 +218,7 @@
     onconfigsets={(op: SetListOp) => void onconfigsets(op).catch(logError)}
     whatif={async (key: string, value: ConfigValue) => syncWrap?.ConfigCompare(key, value)}
     output={$outputs?.Output}
+    revision={$outputs}
     onreset={() => (confirming = true)} />
 {:else}
   <p class="note" role="status">Loading the configuration…</p>

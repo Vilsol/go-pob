@@ -27,6 +27,10 @@
     imported?: string | null;
     /* ImportTab.lua:709-714 */
     fetching?: boolean;
+    /* ImportTab.lua:544 */
+    sharing?: boolean;
+    /* ImportTab.lua:548 */
+    shareError?: string | null;
     oncopy?: (code: string) => void;
     onshare?: (site: string) => void;
     onimport?: (text: string, mode: ImportMode) => void;
@@ -55,6 +59,8 @@
     importError = null,
     imported = null,
     fetching = false,
+    sharing = false,
+    shareError = null,
     oncopy,
     onshare,
     onimport,
@@ -114,8 +120,10 @@
       ><select class="select h-8.5" bind:value={site} disabled={!!unavailable.share} title={unavailable.share}>
         {#each EXPORT_SITES as s (s.label)}<option value={s.label}>{s.label}</option>{/each}
       </select></FloatingLabel>
-    <button class="btn btn-md btn-primary" disabled={!!unavailable.share} title={unavailable.share} onclick={() => onshare?.(site)}>Share</button>
+    <button class="btn btn-md btn-primary" disabled={!code || sharing || !!unavailable.share} title={unavailable.share} onclick={() => onshare?.(site)}
+      >{sharing ? 'Creating link...' : 'Share'}</button>
   </div>
+  {#if shareError}<div role="alert" class={['toned text-12', toneClass('down')]}>Error creating link: {shareError}</div>{/if}
   {#if link}
     <div class="flex items-center gap-2 text-12">
       <span class="whitespace-nowrap text-better">✓ Link created</span><input

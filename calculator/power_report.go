@@ -132,6 +132,8 @@ type PowerReportEntry struct {
 	Cluster   bool
 	Offence   float64
 	Defence   float64
+	Effect    int64
+	Picked    bool
 }
 
 type nodePower struct {
@@ -172,6 +174,8 @@ type PowerBuilder struct {
 	next      int
 	calcs     int
 	taskNodes []int64
+	last      *Environment
+	spare     spareOutputs
 }
 
 func (b *PowerBuilder) treeNode(id int64) data.Node {
@@ -508,18 +512,22 @@ func (b *PowerBuilder) modKey(id int64, selections map[int64]int64) string {
 //pob:block:src/Modules/Calcs.lua:135-145
 func (b *PowerBuilder) run(override *CalcOverride) *Environment {
 	b.calcs++
+	if b.last != nil {
+		b.spare, b.last = spareOutputsOf(b.last), nil
+	}
 	runtime.Gosched()
 	fullDPS := b.stat.Stat == "FullDPS" && b.misc.usedFullDPS
 	if b.spec == nil || !sameInputs(b.specInputs, b.misc.build.Config.Inputs) {
 		inputs := cloneInputs(b.misc.build.Config.Inputs)
 		env, player, enemy, minion := initEnvSpec(b.misc.build, b.misc.cache, OutputModeCalculator, false, override, nil)
 		b.spec = &calcSpecEnv{cachedPlayerDB: player, cachedEnemyDB: enemy, cachedMinionDB: minion, flatDB: true,
-			clusterNodes: env.clusterNodes, clusterNodesSet: true}
+			clusterNodes: env.clusterNodes, clusterNodesSet: true, distanceToClassStart: env.Spec.DistanceToClassStart}
 		b.specInputs = inputs
 		PerformCalc(env)
 		if fullDPS {
 			b.rollUp(env, env.override)
 		}
+		b.last = env
 		return env
 	}
 	if fullDPS {
@@ -528,7 +536,9 @@ func (b *PowerBuilder) run(override *CalcOverride) *Environment {
 		return env
 	}
 	env, _, _, _ := initEnvSpecKeep(b.misc.build, b.misc.cache, OutputModeCalculator, false, override, b.spec, false)
+	env.spare, b.spare = b.spare, spareOutputs{}
 	PerformCalc(env)
+	b.last = env
 	return env
 }
 
@@ -536,7 +546,7 @@ func (b *PowerBuilder) run(override *CalcOverride) *Environment {
 func (b *PowerBuilder) rollUp(env *Environment, override *CalcOverride) {
 	fullDPS, fullDotDPS, _ := calcFullDPS(&Calculator{PoB: b.misc.build}, env, OutputModeCalculator, b.misc.cache, override,
 		&calcSpecEnv{cachedPlayerDB: b.spec.cachedPlayerDB, cachedEnemyDB: b.spec.cachedEnemyDB, cachedMinionDB: b.spec.cachedMinionDB,
-			clusterNodes: b.spec.clusterNodes, clusterNodesSet: true})
+			clusterNodes: b.spec.clusterNodes, clusterNodesSet: true, spare: &b.spare, distanceToClassStart: b.spec.distanceToClassStart})
 	env.Player.Output["FullDPS"] = fullDPS
 	env.Player.Output["FullDotDPS"] = fullDotDPS
 }
@@ -721,6 +731,8 @@ func (b *PowerBuilder) Report() []PowerReportEntry {
 				PathDist: d, Allocated: isAlloc, Stats: stats, Offence: p.single, Defence: p.defence})
 		case "Mastery":
 			d := pathDist()
+			first := len(report)
+			picked, best := -1, 0.0
 			for _, effect := range n.MasteryEffects {
 				ep := b.mastery[id][effect.Effect]
 				if ep == nil {
@@ -731,8 +743,15 @@ func (b *PowerBuilder) Report() []PowerReportEntry {
 				if ep.hasPath {
 					pathPower = ep.path
 				}
+				if !isAlloc && ep.single > best {
+					picked, best = len(report), ep.single
+				}
 				report = append(report, PowerReportEntry{ID: id, Name: name + ": " + strings.Join(label, " / "), Type: typ,
-					Power: ep.single, PathPower: pathPower / float64(d), PathDist: d, Allocated: isAlloc, Stats: label, Offence: ep.single, Defence: ep.defence})
+					Power: ep.single, PathPower: pathPower / float64(d), PathDist: d, Allocated: isAlloc, Stats: label, Offence: ep.single, Defence: ep.defence,
+					Effect: effect.Effect})
+			}
+			if picked >= first {
+				report[picked].Picked = true
 			}
 		}
 	}

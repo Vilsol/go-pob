@@ -85,10 +85,7 @@ func ourTooltipLines(t ItemTooltip, rarity string) []string {
 	return out
 }
 
-var tooltipKnownDivergences = map[string]string{
-	"15007-ladder-vaccine415_3384.shrunken_nutz.xml#12": "mod parser: ours parses \"Grants Level 20 Aspect of Solaris Skill\", the pin leaves it unsupported",
-	"3431-ladder-bigimot2_5487.eAlexandr.xml#18":        "mod parser: the pin parses \"60% increased Rarity of Items Dropped by Slain Rare or Unique Enemies\", ours leaves it unsupported",
-}
+var tooltipKnownDivergences = map[string]string{}
 
 // TestAddItemTooltipAgainstPoB grades every tooltip line, colour codes included, against the pin.
 func TestAddItemTooltipAgainstPoB(t *testing.T) {

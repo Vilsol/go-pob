@@ -52,7 +52,7 @@ func TestModListMoreHasNoGlobalLimit(t *testing.T) {
 		list.AddMod(mod.NewFloat("Defences", mod.TypeMore, 100).
 			Tag(mod.Multiplier("OathOfTheMajiDoubled").GlobalLimit(100).GlobalLimitKey("OathOfTheMajiLimit")))
 	}
-	list.Multipliers["OathOfTheMajiDoubled"] = 1
+	list.Multipliers = map[string]float64{"OathOfTheMajiDoubled": 1}
 
 	testza.AssertEqual(t, 4.0, list.More(nil, "Defences"))
 }

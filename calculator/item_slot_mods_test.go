@@ -177,20 +177,20 @@ Quality: 0
 	item := ParseItem(shaperRing)
 	testza.AssertEqual(t, "Ring", item.Type)
 
-	conditionVars := func(list []mod.Mod) []string {
+	shaperSlots := func(list []mod.Mod) []string {
 		var out []string
 		for _, m := range list {
 			for _, tag := range m.Tags() {
-				if c, ok := tag.(*mod.ConditionTag); ok {
-					out = append(out, c.VarList...)
+				if c, ok := tag.(*mod.ItemConditionTag); ok && c.ShaperCond {
+					out = append(out, c.ItemSlot)
 				}
 			}
 		}
 		return out
 	}
 
-	testza.AssertContains(t, conditionVars(item.Mods), "ShaperItemInRing 2",
+	testza.AssertContains(t, shaperSlots(item.Mods), "Ring 2",
 		"Ring 1's mods must look at Ring 2")
-	testza.AssertContains(t, conditionVars(item.slotModList2), "ShaperItemInRing 1",
+	testza.AssertContains(t, shaperSlots(item.slotModList2), "Ring 1",
 		"Ring 2's mods must look at Ring 1")
 }

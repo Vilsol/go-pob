@@ -469,6 +469,7 @@ test('power report: the panel lists Go’s report for the chosen stat, built off
   const ringBox = (await ring.boundingBox())!;
   expect(Math.abs(ringBox.x + ringBox.width / 2 - (box.x + at.x))).toBeLessThan(2);
   expect(Math.abs(ringBox.y + ringBox.height / 2 - (box.y + at.y))).toBeLessThan(2);
+  expect(await ring.evaluate((el) => parseFloat(el.style.width))).toBe((0.75 * 450) / 3);
   await page.mouse.move(box.x + 5, box.y + box.height - 5);
   await expect(page.locator('[data-power-hover]')).toHaveCount(0);
 
@@ -704,6 +705,149 @@ test('mastery effects: hovering an effect shows its stat differences as Go calcu
   app.assertNoErrors();
 });
 
+// PassiveTreeView.lua:960-976
+test('dependents: hovering a cluster jewel socket reddens its subgraph nodes', async ({ page }) => {
+  await page.addInitScript(() =>
+    setTimeout(() => {
+      const probe = (globalThis as unknown as { __treeProbe?: { renderer?: string } }).__treeProbe;
+      if (probe) probe.renderer = 'webgl';
+    })
+  );
+  const { app, build } = await openOnTree(page, '0719-gladiator-herald-of-agony-2');
+  const m = await go.model();
+  const cluster = (await m.exposition.GetTreeClusterNodes(build)) ?? [];
+  const state = tree.treeState(build, cluster);
+  const sockets = [...new Set(cluster.flatMap((c) => c.Linked ?? []).filter((id) => id < 1 << 16 && state.active.includes(id)))];
+  const socket = sockets.sort((a, b) => state.depends(b).length - state.depends(a).length)[0];
+  const deps = state.depends(socket);
+  const inner = cluster.filter((c) => c.ID !== socket && deps.includes(c.ID) && c.Type !== 'Mastery');
+  expect(inner.length, 'the socket carries no allocated subgraph node').toBeGreaterThan(0);
+  const red = async (c: { X: number; Y: number }) => {
+    const list = await page.evaluate(() => (globalThis as unknown as { __treeProbe: { drawList?: () => { items: unknown[] } } }).__treeProbe.drawList?.());
+    return ((list?.items ?? []) as { k: string; q: number[]; t?: number[] }[]).some(
+      (i) => i.k === 'sprite' && Math.abs(i.q[0] + i.q[2] / 2 - c.X) < 1 && Math.abs(i.q[1] + i.q[5] / 2 - c.Y) < 1 && i.t?.[0] === 1 && !i.t[1] && !i.t[2]
+    );
+  };
+  const at = await nodeOnScreen(page, socket, build);
+  expect(await red(inner[0])).toBe(false);
+  const box = await canvasBox(page);
+  await page.mouse.move(box.x + at.x, box.y + at.y);
+  for (const c of inner) await expect.poll(() => red(c), `subgraph node ${c.ID}`).toBe(true);
+  // PassiveTreeView.lua:1731-1733
+  await expect(page.getByRole('tooltip').first()).toContainText(`removes ${deps.length} nodes`);
+  app.assertNoErrors();
+});
+
+// CalcsTab.lua:684
+test('power report: a mastery shows the effect the report picks', async ({ page }) => {
+  test.setTimeout(20 * 60_000);
+  const { app, build } = await openOnTree(page, '0280-elementalist-fireball');
+  const m = await go.model();
+  const misc = (await m.exposition.GetMiscCalculator(build))!;
+  const builder = m.exposition.NewPowerBuilder(misc, 'Life', 0)!;
+  while (builder.Step(1000) < 1);
+  const rows = (builder.Report() ?? []) as PowerRow[];
+  builder.release();
+  misc.release();
+  const pick = rows.filter((r) => r.Picked && r.PathDist < 1000).sort((a, b) => b.Power - a.Power)[0];
+  expect(pick, 'the model picks no mastery effect').toBeDefined();
+  const own = rows.filter((r) => r.ID === pick.ID && !r.Allocated);
+  expect(pick.Power, "the pick is the node's best row").toBe(Math.max(...own.map((r) => r.Power)));
+  expect(own.filter((r) => r.Power === pick.Power)[0], 'the first of equal rows').toBe(pick);
+  const label = (pick.Stats ?? []).join(' / ');
+
+  await page.getByRole('button', { name: /^Power/ }).click();
+  const panel = page.getByRole('region', { name: 'Power report' });
+  await panel.getByRole('button', { name: 'Start' }).click();
+  await expect(panel.getByRole('table', { name: 'Node power' })).toBeVisible({ timeout: 10 * 60_000 });
+
+  const t = tree.rawTree();
+  const at = await nodeOnScreen(page, pick.ID);
+  const box = await canvasBox(page);
+  await page.mouse.move(box.x + at.x, box.y + at.y);
+  const tip = page.getByRole('tooltip').filter({ hasText: t.nodes[pick.ID].name! });
+  await expect(tip.locator('[data-power-pick]')).toHaveText(`Power report picks: ${label}`);
+
+  await page.mouse.click(box.x + at.x, box.y + at.y);
+  const effects = page.getByRole('dialog').getByRole('group', { name: 'Mastery effects' });
+  await expect(effects.locator('[data-power-pick]')).toHaveCount(1);
+  await expect(effects.locator('[data-power-pick]')).toContainText(label);
+  await page.keyboard.press('Escape');
+
+  await panel.getByRole('button', { name: 'Close power report' }).click();
+  await page.mouse.move(box.x + 5, box.y + box.height - 5);
+  await page.mouse.move(box.x + at.x, box.y + at.y);
+  await expect(tip).toBeVisible();
+  await expect(tip.locator('[data-power-pick]')).toHaveCount(0);
+  app.assertNoErrors();
+});
+
+test('mastery effects: the modal fits the viewport, the tooltip is not cut off and stays while it is scrolled', async ({ page }) => {
+  const { app, build } = await openOnTree(page, '0280-elementalist-fireball');
+  const t = tree.rawTree();
+  const state = tree.treeState(build);
+  const held = Object.values(t.nodes)
+    .filter((n) => n.isMastery && n.masteryEffects?.length && !state.active.includes(n.skill!) && (state.path(n.skill!)?.length ?? 0) > 1)
+    .sort((a, b) => b.masteryEffects!.length - a.masteryEffects!.length)[0].skill!;
+  const panel = page.getByRole('dialog');
+  const tip = page.locator('[aria-label="Mastery effect tooltip"]');
+  const inside = (b: { x: number; y: number; width: number; height: number }, w: number, h: number, what: string) => {
+    expect(b.x, `${what} left`).toBeGreaterThanOrEqual(0);
+    expect(b.y, `${what} top`).toBeGreaterThanOrEqual(0);
+    expect(b.x + b.width, `${what} right`).toBeLessThanOrEqual(w + 0.5);
+    expect(b.y + b.height, `${what} bottom`).toBeLessThanOrEqual(h + 0.5);
+  };
+  for (const [w, h] of [
+    [1600, 1000],
+    [800, 360]
+  ]) {
+    await page.setViewportSize({ width: w, height: h });
+    await (await app.treeNode(tree.resultName({ id: held, name: t.nodes[held].name! }))).click();
+    await expect(panel).toBeVisible();
+    inside((await panel.boundingBox())!, w, h, `the modal at ${w}x${h}`);
+    expect(await panel.evaluate((d) => d.scrollHeight - d.clientHeight), `the modal's own overflow at ${w}x${h}`).toBeLessThanOrEqual(1);
+    const buttons = panel.getByRole('group', { name: 'Mastery effects' }).getByRole('button');
+    const last = buttons.last();
+    await last.scrollIntoViewIfNeeded();
+    inside((await last.boundingBox())!, w, h, `the last effect at ${w}x${h}`);
+    const busy = tip.getByRole('group', { name: 'Stat differences' });
+    let tallest = 0;
+    let most = 0;
+    for (let k = 0; k < (await buttons.count()); k++) {
+      await buttons.nth(k).hover();
+      await expect(busy).toHaveAttribute('aria-busy', 'false', { timeout: 60_000 });
+      const height = await tip.evaluate((el) => el.scrollHeight);
+      if (height > most) [tallest, most] = [k, height];
+    }
+    await buttons.nth(tallest).hover();
+    await expect(busy).toHaveAttribute('aria-busy', 'false', { timeout: 60_000 });
+    const clip = await tip.evaluate((el) => {
+      const col = el.parentElement!;
+      const box = el.querySelector('[role="tooltip"]')!.getBoundingClientRect();
+      const c = col.getBoundingClientRect();
+      return { right: box.right - c.right, left: c.left - box.left };
+    });
+    expect(clip.right, `the tooltip past its column at ${w}x${h}`).toBeLessThanOrEqual(0.5);
+    expect(clip.left, `the tooltip before its column at ${w}x${h}`).toBeLessThanOrEqual(0.5);
+    const col = await tip.evaluate((el) => {
+      const r = el.parentElement!.getBoundingClientRect();
+      return { x: r.x, y: r.y, width: r.width, height: r.height };
+    });
+    inside(col, w, h, `the tooltip's column at ${w}x${h}`);
+    await page.mouse.move(col.x + col.width - 4, col.y + col.height / 2, { steps: 8 });
+    await expect(tip).toBeVisible();
+    const scroller = tip.locator('xpath=..');
+    const overflow = await scroller.evaluate((el) => el.scrollHeight - el.clientHeight);
+    if (h < 600) expect(overflow, 'the small viewport scrolls the tooltip').toBeGreaterThan(0);
+    await page.mouse.wheel(0, 400);
+    if (overflow > 0) await expect.poll(() => scroller.evaluate((el) => el.scrollTop)).toBeGreaterThan(0);
+    await expect(tip).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(panel).toHaveCount(0);
+  }
+  app.assertNoErrors();
+});
+
 // TreeTab.lua:51-104
 test('tree sets: the open list moves nothing, the tooltip shows beside the select', async ({ page }) => {
   const { app } = await openOnTree(page, '0280-elementalist-fireball');
@@ -824,6 +968,50 @@ test('tree links: Export Tree gives the tree’s link; Import Tree adds a tree f
   await expect(dialog.getByRole('option', { name: /^From a link/ })).toContainText('current');
   expect(go.fresh(build, (b) => b.Tree.ActiveSpec)).toBe(4);
   app.assertNoErrors();
+});
+
+// TreeTab.lua:759-789, 818-830
+test('tree links: Shrink with PoEURL, and a PoEURL link imported as the link it redirects to', async ({ page }) => {
+  const file = '0280-elementalist-fireball';
+  const { app, build } = await openOnTree(page, file);
+  const m = await go.model();
+  const link = await m.exposition.ExportTreeLink(build);
+  const asked: string[] = [];
+  await page.route('**/api/poeurl?*', (route) => {
+    const q = new URL(route.request().url()).searchParams;
+    asked.push(q.get('id') ?? `shrink ${q.get('shrink')}`);
+    if (q.get('id') === 'bad') return route.fulfill({ status: 502, contentType: 'text/plain; charset=utf-8', body: 'Failed to resolve PoEURL link' });
+    return route.fulfill({ status: 200, contentType: 'text/plain; charset=utf-8', body: q.get('id') ? link : 'http://poeurl.com/dABz' });
+  });
+  await treeSelect(page).choose('Manage trees…');
+  const dialog = page.getByRole('dialog', { name: 'Manage passive trees' });
+
+  await dialog.getByRole('button', { name: 'Export Tree' }).click();
+  const exported = dialog.getByRole('group', { name: 'Export Tree' });
+  await expect(exported.getByRole('textbox', { name: 'Passive tree link' })).toHaveValue(link);
+  await exported.getByRole('button', { name: 'Shrink with PoEURL' }).click();
+  await expect(exported.getByRole('textbox', { name: 'Passive tree link' })).toHaveValue('http://poeurl.com/dABz');
+  await expect(exported.getByRole('button', { name: 'Done' }).first()).toBeDisabled();
+  await exported.getByRole('button', { name: 'Done' }).last().click();
+
+  await dialog.getByRole('button', { name: 'Import Tree' }).click();
+  const form = dialog.getByRole('form', { name: 'Import Tree' });
+  await form.getByRole('textbox', { name: 'Enter name for this passive tree' }).fill('From PoEURL');
+  await form.getByRole('textbox', { name: 'Enter passive tree link' }).fill('http://poeurl.com/bad');
+  await form.getByRole('button', { name: 'Import' }).click();
+  await expect(form.getByRole('alert')).toHaveText('Failed to resolve PoEURL link');
+  await form.getByRole('textbox', { name: 'Enter passive tree link' }).fill('http://poeurl.com/dABz');
+  await app.act(
+    'import-tree-poeurl',
+    () => form.getByRole('button', { name: 'Import' }).click(),
+    async () => {
+      expect(await m.exposition.ImportTreeLink(build, 'From PoEURL', link)).toBe('');
+      return expectedLines(await go.outputs(build));
+    }
+  );
+  await expect(dialog.getByRole('option', { name: /^From PoEURL/ })).toContainText('current');
+  expect(asked).toEqual([`shrink ${link}`, 'bad', 'dABz']);
+  expect(app.errors.filter((e) => !e.includes('status of 502') || !e.includes('/api/poeurl?id=bad'))).toEqual([]);
 });
 
 // TreeTab.lua:322-340, 588-612

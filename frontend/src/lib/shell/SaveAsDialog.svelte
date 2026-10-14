@@ -10,6 +10,8 @@
   import { leaf } from '$lib/design/builds';
   import { loadTree, pathOf } from './build_list';
   import { saveErrorText } from './save_error';
+  import { saveAsName } from './build_name.svelte';
+  import type { SavedBuild } from '$lib/design/fixtures/app';
 
   type Props = { open?: boolean; onsaved?: () => void };
   let { open = $bindable(false), onsaved }: Props = $props();
@@ -17,20 +19,26 @@
   let name = $state('Unnamed build');
   let folder = $state('');
   let folders = $state<string[]>([]);
+  let builds = $state<SavedBuild[]>([]);
   let asking = $state(false);
+  let replacing = $state(false);
   let failed = $state<string>();
 
   const load = () =>
     loadTree((dir) => syncWrap.ListBuilds(dir), '')
-      .then((t) => (folders = t.folders))
+      .then((t) => {
+        folders = t.folders;
+        builds = t.builds;
+      })
       .catch(logError);
 
   $effect(() => {
-    if (open) void load();
+    if (!open) return;
+    name = saveAsName(currentBuildPath.current);
+    void load();
   });
 
-  const save = () => {
-    if (!name) return;
+  const write = () => {
     const target = pathOf(folder, name);
     failed = undefined;
     syncWrap
@@ -44,6 +52,13 @@
         logError(e);
         failed = saveErrorText(target);
       });
+  };
+
+  // Build.lua:1384-1396
+  const save = () => {
+    if (!name) return;
+    if (builds.some((b) => b.folder === folder && b.name === name)) replacing = true;
+    else write();
   };
 
   const newFolder = (n: string) => {
@@ -80,6 +95,21 @@
   {#snippet actions()}
     <Button size="md" variant="ghost" class="px-3" onclick={() => (open = false)}>Cancel</Button>
     <Button size="md" variant="primary" class="px-4" disabled={!name} onclick={save}>Save</Button>
+  {/snippet}
+</Dialog>
+
+<Dialog bind:open={replacing} title="Replace “{name}”?">
+  <span class="text-13 text-text-2"
+    >{folder ? leaf(folder) : 'All builds'} already holds a build named {name}. It is replaced, and cannot be brought back.</span>
+  {#snippet actions()}
+    <Button size="md" variant="ghost" class="px-3" onclick={() => (replacing = false)}>Cancel</Button>
+    <Button
+      size="md"
+      variant="danger-solid"
+      onclick={() => {
+        replacing = false;
+        write();
+      }}>Replace</Button>
   {/snippet}
 </Dialog>
 

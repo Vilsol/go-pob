@@ -3,6 +3,7 @@
   import Button from './Button.svelte';
   import FloatingLabel from './FloatingLabel.svelte';
   import Select from './Select.svelte';
+  import Dropdown from './Dropdown.svelte';
   import Segmented from './Segmented.svelte';
   import ItemTooltip from './ItemTooltip.svelte';
   import ImpactBlocks from './ImpactBlocks.svelte';
@@ -144,13 +145,14 @@
       {#each Array.from({ length: count }, (_, k) => k) as i (i)}
         {@const other = picks[i % 2 === 0 ? i + 1 : i - 1]}
         <FloatingLabel label="Implicit #{i + 1}"
-          ><Select
-            class="h-7.5"
+          ><Dropdown
+            class="block h-7.5 w-full"
+            searchable
             aria-label="Implicit #{i + 1}"
             options={[{ value: '', label: 'None' }, ...corruptOptions(sorted(typeOf(i)), other).map((m) => ({ value: m.id, label: m.label }))]}
             value={picks[i]}
-            onchange={(e: Event & { currentTarget: HTMLSelectElement }) => {
-              picks[i] = e.currentTarget.value;
+            onchange={(v: string) => {
+              picks[i] = v;
               focus = i;
             }} /></FloatingLabel>
       {/each}

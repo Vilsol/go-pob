@@ -96,6 +96,21 @@ tasks:
     cmds:
       - 'env -u CORPUS {{.NICE}} go test ./...'
 
+  affected-tests:
+    desc: "go test only the packages a change can reach: changed since BASE (default merge-base dev) plus the working tree, and every package whose tests import them. RUN=<regex>, DRY=1 prints the pick only, CLI_ARGS pass to go test"
+    cmds:
+      - 'env -u CORPUS BASE="{{.BASE}}" {{.GOPOB}} affected-tests {{if .DRY}}--dry{{end}} {{if .RUN}}-run "{{.RUN}}"{{end}} {{.CLI_ARGS}}'
+
+  test-operator-fast:
+    desc: "The operator suite (OPERATOR=true CORPUS=true go test ./...) without the tests in scripts/gopob/operator_slow_tests.txt; prints failures only and names any test that newly took >= 10s. CLI_ARGS pass to go test"
+    cmds:
+      - '{{.GOPOB}} test-tiers fast {{.CLI_ARGS}}'
+
+  test-operator-slow:
+    desc: "Only the operator-suite tests in scripts/gopob/operator_slow_tests.txt (the other half of test-operator-fast)"
+    cmds:
+      - '{{.GOPOB}} test-tiers slow {{.CLI_ARGS}}'
+
   gate:
     desc: "Tier 2: the AUTHORITATIVE accuracy gate alone (~16s, GREEN at base). The number, without the sweeps."
     cmds:
@@ -133,12 +148,27 @@ tasks:
 
   e2e:
     desc: "Playwright journeys, properties and model-based sequences on a targeted build set, with a perf baseline"
+    dir: ./frontend/
+    cmds:
+      - '{{if eq .REUSE "1"}}node e2e/serve.mjs port > /dev/null{{else}}{{.TASK_EXE}} -d {{.ROOT_DIR}} build-go{{end}}'
+      - '{{if ne .REUSE "1"}}{{.NICE}} gzip -kf9 static/go-pob.wasm{{end}}'
+      - '{{if ne .REUSE "1"}}{{.NICE}} npx vite build --logLevel warn{{end}}'
+      - '{{.NICE}} env E2E_BASELINE={{.E2E_BASELINE | default "0"}} {{if eq .REUSE "1"}}E2E_REUSE=1 E2E_PORT=$(node e2e/serve.mjs port){{end}} npx playwright test -c e2e/playwright.config.ts {{.SPECS}} {{.CLI_ARGS}}'
+
+  e2e-serve:
+    desc: "Build the wasm and the frontend, then keep one vite preview warm on a free port for `task e2e REUSE=1`; re-run after a code change (it rebuilds, the server stays)"
     deps: [build-go]
     dir: ./frontend/
     cmds:
       - '{{.NICE}} gzip -kf9 static/go-pob.wasm'
       - '{{.NICE}} npx vite build --logLevel warn'
-      - '{{.NICE}} env E2E_BASELINE={{.E2E_BASELINE | default "0"}} npx playwright test -c e2e/playwright.config.ts {{.CLI_ARGS}}'
+      - node e2e/serve.mjs start
+
+  e2e-serve-stop:
+    desc: "Stop this worktree's warm e2e server"
+    dir: ./frontend/
+    cmds:
+      - node e2e/serve.mjs stop
 
   tree-bench:
     desc: "The tree renderer's benchmark and draw-list equivalence check alone (a subset of task e2e); E2E_GPU=1 runs WebGL on the host GPU"

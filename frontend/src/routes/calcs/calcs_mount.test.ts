@@ -188,6 +188,28 @@ describe('the Calcs-local skill controls', () => {
     tip.mockRestore();
   }, 60_000);
 
+  it('the socket group tooltip follows a group picked under a still pointer', async () => {
+    const { outputs } = await import('$lib/global');
+    const { fireEvent, screen } = await import('@testing-library/svelte');
+    vi.spyOn(workerInstance, 'Tick').mockResolvedValue(undefined);
+    const tip = vi.spyOn(workerInstance, 'SocketGroupTooltip').mockImplementation((i: number) => Promise.resolve([{ Text: `^7Group ${i}`, Separator: false }]));
+    const empty = () => ({ Output: {}, SkillFlags: {}, CalcsTab: { Output: {}, OutputTable: {}, SkillFlags: {}, Breakdown: {}, Calcs: {} } });
+    outputs.set(empty());
+    render(Page);
+    const group = await vi.waitFor(() => screen.getByRole<HTMLSelectElement>('combobox', { name: 'Socket Group' }), { timeout: 10_000 });
+    await vi.waitFor(() => expect(group.options.length).toBeGreaterThan(2), { timeout: 10_000 });
+    const from = Number(group.value);
+    const to = from === 0 ? 1 : 0;
+    await fireEvent.mouseEnter(group.closest('div.relative')!);
+    const shown = () => screen.getByRole('tooltip', { name: 'Socket group tooltip' });
+    await vi.waitFor(() => expect(shown().textContent).toContain(`Group ${from}`));
+    await fireEvent.change(group, { target: { value: String(to) } });
+    outputs.set(empty());
+    await vi.waitFor(() => expect(shown().textContent).toContain(`Group ${to}`), { timeout: 10_000 });
+    await fireEvent.change(group, { target: { value: String(from) } });
+    tip.mockRestore();
+  }, 60_000);
+
   it("a row's breakdown asks the worker for its modifier tables (CalcBreakdownControl:AddModSection) and draws them", async () => {
     const { outputs } = await import('$lib/global');
     const { fireEvent, screen, within } = await import('@testing-library/svelte');

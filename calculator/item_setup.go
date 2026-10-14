@@ -101,6 +101,25 @@ var (
 	slotFirstNumRe    = regexp.MustCompile(`(\d+)`)
 )
 
+//pob:block:src/Classes/ModStore.lua:688-697
+func (a *Actor) ItemShaperIs(slot string, shaper bool) bool {
+	item := a.ItemList[slot]
+	return item != nil && item.shaper == shaper
+}
+
+func (a *Actor) ItemElderIs(slot string, elder bool) bool {
+	item := a.ItemList[slot]
+	return item != nil && item.elder == elder
+}
+
+func (i *Item) CfgShaperIs(shaper bool) bool {
+	return i.Influence.Shaper == shaper
+}
+
+func (i *Item) CfgElderIs(elder bool) bool {
+	return i.Influence.Elder == elder
+}
+
 func itemToItemData(item *Item) *ItemData {
 	id := &ItemData{
 		Type:                      item.Type,
@@ -109,6 +128,8 @@ func itemToItemData(item *Item) *ItemData {
 		Corrupted:                 item.Corrupted,
 		SocketColourAlwaysMatches: item.SocketColourAlwaysMatches,
 		GrantedSkills:             item.GrantedSkills,
+		shaper:                    item.Influence.Shaper,
+		elder:                     item.Influence.Elder,
 	}
 	if len(item.Sockets) > 0 {
 		id.SocketColors = make([]string, len(item.Sockets))
@@ -857,14 +878,12 @@ func updateItemCounts(env *Environment, item *Item, slotName string) {
 
 	if item.Influence.Shaper {
 		env.ItemModDB.Multipliers["ShaperItem"]++
-		env.ItemModDB.Conditions["ShaperItemIn"+slotName] = true
 	} else {
 		env.ItemModDB.Multipliers["NonShaperItem"]++
 	}
 
 	if item.Influence.Elder {
 		env.ItemModDB.Multipliers["ElderItem"]++
-		env.ItemModDB.Conditions["ElderItemIn"+slotName] = true
 	} else {
 		env.ItemModDB.Multipliers["NonElderItem"]++
 	}

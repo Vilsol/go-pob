@@ -61,6 +61,7 @@
     /* SkillsTab.lua:294-343 */
     imbued?: { value: string; options: string[]; enabled: boolean };
     onimbued?: (name: string) => void;
+    revision?: unknown;
   };
   let {
     group,
@@ -91,7 +92,8 @@
     sourceNote,
     supporting = [],
     imbued,
-    onimbued
+    onimbued,
+    revision
   }: Props = $props();
   // GemSelectControl.lua:620-627
   let hoverRow = $state<number>();
@@ -157,6 +159,68 @@
   };
   const rowEls: HTMLElement[] = $state([]);
   const optEls: HTMLElement[] = $state([]);
+  const OVERSCAN = 8;
+  let listEl = $state<HTMLElement>();
+  let headEl = $state<HTMLElement>();
+  let scrollTop = $state(0);
+  let rowH = $state(29);
+  $effect(() => {
+    const h = optEls.find(Boolean)?.offsetHeight;
+    if (h) rowH = h;
+  });
+  const span = $derived.by(() => {
+    const rows = Math.ceil((listEl?.clientHeight || 420) / rowH);
+    const top = Math.floor((scrollTop - (headEl?.offsetHeight ?? 0)) / rowH) - OVERSCAN;
+    const from = Math.max(0, Math.min(top, results.length - rows - OVERSCAN));
+    return { from, to: Math.min(results.length, from + rows + 2 * OVERSCAN) };
+  });
+  const shown = $derived(results.slice(span.from, span.to));
+  $effect(() => {
+    if (!open) scrollTop = 0;
+  });
+  const reveal = (i: number) => {
+    if (i < 0) return;
+    const head = headEl?.offsetHeight ?? 0;
+    const view = listEl?.clientHeight || 420;
+    const top = head + i * rowH;
+    if (top - head < scrollTop) scrollTop = top - head;
+    else if (top + rowH > scrollTop + view) scrollTop = top + rowH - view;
+    void tick().then(() => {
+      if (listEl) listEl.scrollTop = scrollTop;
+    });
+  };
+  let boxEl = $state<HTMLElement>();
+  function dropFrom(list: HTMLElement, field: HTMLElement | undefined) {
+    const place = () => {
+      if (!field) return;
+      const a = field.getBoundingClientRect();
+      const pad = 8;
+      const gap = 4;
+      const above = a.top - gap - pad;
+      const below = innerHeight - a.bottom - gap - pad;
+      const max = Math.min(420, innerHeight * 0.6);
+      const up = above >= Math.min(max, below);
+      list.style.left = `${a.left}px`;
+      list.style.width = `${a.width}px`;
+      list.style.maxHeight = `${Math.max(0, Math.min(max, up ? above : below))}px`;
+      list.style.top = up ? '' : `${a.bottom + gap}px`;
+      list.style.bottom = up ? `${innerHeight - a.top + gap}px` : '';
+    };
+    const onscroll = (e: Event) => e.target !== list && place();
+    place();
+    addEventListener('resize', place);
+    addEventListener('scroll', onscroll, true);
+    return {
+      update: (f: HTMLElement | undefined) => {
+        field = f;
+        place();
+      },
+      destroy: () => {
+        removeEventListener('resize', place);
+        removeEventListener('scroll', onscroll, true);
+      }
+    };
+  }
   function onkeydown(e: KeyboardEvent) {
     if (e.key === 'Escape') {
       open = false;
@@ -166,7 +230,7 @@
       const n = results.length;
       const step = e.key === 'ArrowDown' ? 1 : -1;
       active = !n ? -1 : active < 0 ? (step > 0 ? 0 : n - 1) : (active + step + n) % n;
-      void tick().then(() => optEls[active]?.scrollIntoView?.({ block: 'nearest' }));
+      reveal(active);
     } else if (e.key === 'Enter' && open) add(active < 0 ? 0 : active);
     else return;
     e.preventDefault();
@@ -178,7 +242,9 @@
   let hoverName = $state<number>();
   const listedGem = $derived(open ? (hoverGem ?? (active >= 0 ? results[active]?.name : undefined)) : undefined);
   let whatIf = $state.raw<{ key: string; header: string; head?: TipLine[]; sections?: StatCompareSection[]; done?: boolean }>();
+  let whatIfRun = 0;
   $effect(() => {
+    void revision;
     const name = listedGem;
     const qi = hoverQuality;
     const ei = hoverEnabled;
@@ -205,6 +271,7 @@
       key = `tip:${ni}`;
       tip = () => gemtip('gem', ni);
     }
+    const n = ++whatIfRun;
     if (!key) {
       whatIf = undefined;
       return;
@@ -213,7 +280,7 @@
     whatIf = { key: k, header };
     Promise.all([tip?.(), run?.()])
       .then(([head, sections]) => {
-        if (whatIf?.key === k) whatIf = { key: k, header, head, sections, done: true };
+        if (n === whatIfRun) whatIf = { key: k, header, head, sections, done: true };
       })
       .catch(() => {});
   });
@@ -357,6 +424,7 @@
   <div class="relative">
     <input
       type="text"
+      bind:this={boxEl}
       role="combobox"
       class="input h-8.5 w-full border-dashed border-accent px-2.5"
       placeholder="Add a gem — type to filter, Esc to close"
@@ -395,15 +463,20 @@
         role="listbox"
         id="{uid}-results"
         aria-label="Gem results"
-        class="absolute inset-x-0 bottom-9.5 z-3 max-h-[min(60vh,420px)] overflow-y-auto overscroll-contain rounded-md border border-line-strong bg-surface-2 shadow-pop">
-        <div class="sticky top-0 z-1 border-b border-line bg-surface-2 px-2.5 py-1.5 text-11 text-text-2">
+        bind:this={listEl}
+        use:dropFrom={boxEl}
+        onscroll={(e) => (scrollTop = e.currentTarget.scrollTop)}
+        class="fixed z-20 overflow-y-auto overscroll-contain rounded-md border border-line-strong bg-surface-2 shadow-pop">
+        <div bind:this={headEl} class="sticky top-0 z-1 border-b border-line bg-surface-2 px-2.5 py-1.5 text-11 text-text-2">
           {results.length} gems{sortOn ? ` · sorted by ${sortStat}` : ''}{#if sortCache?.progress !== undefined && sortCache.progress < 100}<span
               class="float-right"
               role="status"
               aria-label="Sort progress">Sorting {sortCache.progress}%</span
             >{/if}
         </div>
-        {#each results as r, i (r.name)}
+        {#if span.from}<div aria-hidden="true" style:height="{span.from * rowH}px"></div>{/if}
+        {#each shown as r, k (r.name)}
+          {@const i = span.from + k}
           <div
             bind:this={optEls[i]}
             role="option"
@@ -426,6 +499,7 @@
         {:else}
           <div class="note px-2.5 py-2">No gems match “{q}”.</div>
         {/each}
+        {#if span.to < results.length}<div aria-hidden="true" style:height="{(results.length - span.to) * rowH}px"></div>{/if}
       </div>
     {/if}
   </div>

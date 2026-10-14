@@ -4,6 +4,7 @@ import { App } from './support/app';
 import { buildXml } from './support/builds';
 import * as go from './support/go_model';
 import { expectedLines } from './support/stats';
+import { choose, entries } from './support/dropdown';
 import type * as Types from '../src/lib/types';
 
 type Build = Awaited<ReturnType<typeof go.loadXml>>;
@@ -265,7 +266,7 @@ test('stash: sort, ctrl+click equip, double-click, copy (0339)', async ({ page }
   const rowNames = () =>
     stash
       .getByRole('table')
-      .getByRole('button', { name: /^(?!Delete )/ })
+      .getByRole('button', { name: /^(?!Delete |Actions for )/ })
       .allTextContents();
 
   await app.act(
@@ -274,12 +275,13 @@ test('stash: sort, ctrl+click equip, double-click, copy (0339)', async ({ page }
     async () => (await m.exposition.SortItems(build), lines())
   );
   const sorted = await Promise.all(items().map((it) => nameOf(it.text)));
+  // ItemListControl.lua:119-121
   await expect
     .poll(async () => {
       const shown = await rowNames();
       let k = 0;
       for (const n of sorted) if (n === shown[k]) k++;
-      return k === shown.length && shown.length > 10;
+      return k === shown.length && shown.length === sorted.length;
     })
     .toBe(true);
 
@@ -513,11 +515,11 @@ test('item controls and craft (0280)', async ({ page }) => {
   await page.getByRole('button', { name: 'Craft item…' }).click();
   const craft = page.getByRole('dialog', { name: 'Craft Item' });
   await craft.getByRole('textbox', { name: 'Name' }).fill('Test Crown');
-  await craft.getByRole('combobox', { name: 'Type' }).selectOption({ label: 'Helmet' });
-  const base = await craft.getByRole('combobox', { name: 'Base' }).locator('option').first().textContent();
-  await expect(craft.getByRole('group', { name: 'Base preview' })).toContainText(base!);
+  await choose(craft.getByRole('combobox', { name: 'Type' }), 'Helmet');
+  const base = (await entries(craft.getByRole('combobox', { name: 'Base' })))[0];
+  await expect(craft.getByRole('group', { name: 'Base preview' })).toContainText(base);
   await craft.getByRole('button', { name: 'Create' }).click();
-  const [crafted, ok] = await m.exposition.CraftItemText(2, 'Test Crown', base!);
+  const [crafted, ok] = await m.exposition.CraftItemText(2, 'Test Crown', base);
   expect(ok).toBe(true);
   await expect(box).toHaveValue(crafted);
   await expect(page.getByRole('article', { name: 'Item: Test Crown' })).toBeVisible();

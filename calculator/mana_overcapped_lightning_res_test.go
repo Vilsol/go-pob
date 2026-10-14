@@ -58,8 +58,8 @@ func TestManaIncreasedByOvercappedLightningResParses(t *testing.T) {
 	}
 
 	c := ParseMod("Critical Strike Chance is increased by Overcapped Lightning Resistance", false)
-	if c == nil || len(c.ModList) != 1 || c.ModList[0].Name() != "CritChance" {
-		t.Errorf("the crit sibling no longer yields CritChance alone: %+v", c)
+	if c == nil || len(c.ModList) != 1 || c.ModList[0].Name() != "CritChanceIncreasedByOvercappedLightningRes" {
+		t.Errorf("the crit sibling no longer yields ModParser.lua:3527's flag alone: %+v", c)
 	}
 	l := ParseMod("Your Maximum Energy Shield is equal to 20% of your Maximum Life", false)
 	if l == nil || len(l.ModList) != 1 || l.ModList[0].Name() != "EnergyShield" {

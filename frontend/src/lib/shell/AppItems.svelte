@@ -206,7 +206,7 @@
     });
     // ItemsTab.lua:208-222, 1652-1670
     const jewels = tabSlots.sockets.map((s) => ({ node: s.node, item: items[s.item] ? s.item : 0, choices: s.choices }));
-    // ItemListControl.lua:242-258
+    // ItemListControl.lua:113-121, 242-258
     const ctx: UsageContext = { sets, activeSet, ...loaded.usage };
     // ItemsTab.lua:1731-1765
     const usage = (item: number) => itemUsage(item, { jewel: /Jewel$/.test(items[item].base), abyss: /Abyss/.test(items[item].base) }, ctx);
@@ -217,8 +217,7 @@
       ? filtered.items.filter((item) => items[item]).map((item) => ({ item, used: usage(item) || 'Equipped' }))
       : [...new Set([...(raw?.Items ?? []).map((it) => it.ID), ...Object.keys(items).map(Number)])]
           .filter((item) => items[item])
-          .map((item) => ({ item, used: usage(item) }))
-          .filter((s) => s.used !== '');
+          .map((item) => ({ item, used: usage(item) || 'Equipped' }));
     view = { activeSet, items, texts, sets, jewels, abyssal: tabSlots.abyssal, extraSlots, stash, equipped, slotItems };
   };
 
@@ -393,6 +392,8 @@
   });
   // ItemsTab.lua:378-715
   let display = $state<DisplayInfo>();
+  let customFor: string | undefined;
+  let customRequest = $state(false);
   // ItemsTab.lua:342-350
   let pasteTrade = $state<{ item: TradeItem; slot?: string; defences: TradeDefence[] }>();
   let buying = $state(false);
@@ -428,6 +429,10 @@
     ]);
     display = d && { ...d, ...c, affixes, ...extras };
     if (!current()) return;
+    if (customFor === text) {
+      customFor = undefined;
+      customRequest = true;
+    }
     const result = await syncWrap?.ItemCompare(text);
     if (!current()) return;
     if (result) paste = { ...paste, pending: false, blocks: stamp(result) };
@@ -622,10 +627,21 @@
       );
     }
   });
+  // ItemsTab.lua:2582-2587
+  let craftSeq = 0;
   const oncraftpreview = async (c: CraftChoice) => {
+    const mine = ++craftSeq;
     const t = await syncWrap?.CraftItemText(c);
     const p = t ? await syncWrap?.ParseItem(t) : undefined;
-    craftPreview = p?.item ? tipOf(summary(p.item), undefined, 'candidate') : undefined;
+    if (mine !== craftSeq) return;
+    if (!t || !p?.item) {
+      craftPreview = undefined;
+      return;
+    }
+    const tip = { ...tipOf(summary(p.item), undefined, 'candidate'), impactTitle: '', impactSub: undefined, impact: [] };
+    craftPreview = { ...tip, whatIf: { key: 'craft', pending: true, blocks: [] } };
+    const r = await syncWrap?.ItemCompare(t);
+    if (mine === craftSeq) craftPreview = { ...tip, whatIf: { key: 'craft', pending: false, blocks: r ? stamp(r) : [] } };
   };
   const oncraftcreate = async (c: CraftChoice) => {
     const t = await syncWrap?.CraftItemText(c);
@@ -835,16 +851,46 @@
     void untrack(() => readShared());
   });
 
-  const onedittext = (ed: Editing) => {
+  const editedText = (ed: Editing) => {
     const key = ed.key;
     const slot = key === undefined ? undefined : view?.equipped.find((e) => e.SlotName === key);
     const t = key === undefined ? undefined : (slot?.Text ?? view?.texts[key]);
-    if (t === undefined) return;
-    const id = slot?.ItemID ?? Number(key);
-    edited = id > 0 ? { id, name: slot?.Name ?? ed.item.name } : undefined;
-    text = unescapeXml(t);
+    return t === undefined ? undefined : { id: slot?.ItemID ?? Number(key), name: slot?.Name ?? ed.item.name, text: unescapeXml(t) };
+  };
+  const onedittext = (ed: Editing) => {
+    const e = editedText(ed);
+    if (!e) return;
+    edited = e.id > 0 ? { id: e.id, name: e.name } : undefined;
+    text = e.text;
     pageView = 'equipped';
   };
+  const onclone = (ed: Editing) => {
+    const e = editedText(ed);
+    if (!e) return;
+    edited = undefined;
+    text = e.text;
+    pageView = 'equipped';
+  };
+  const onmodtable = (ed: Editing) => {
+    const e = editedText(ed);
+    if (!e) return;
+    const same = e.text === text && display;
+    onedittext(ed);
+    if (same) customRequest = true;
+    else customFor = e.text;
+  };
+  // ItemsTab.lua:991-993
+  let editorModTable = $state<boolean>();
+  $effect(() => {
+    const e = editing && untrack(() => editedText(editing!));
+    editorModTable = undefined;
+    if (!e) return;
+    void Promise.resolve(syncWrap?.GetDisplayItemCraft(e.text))
+      .then((c) => {
+        if (editing && untrack(() => editedText(editing!))?.text === e.text) editorModTable = !!c?.addCustom;
+      })
+      .catch(logError);
+  });
 
   // ItemsTab.lua:1471-1484
   // stat differences
@@ -914,6 +960,10 @@
       onsave(equip, slot).catch(logError);
     }}
     {onedittext}
+    {editorModTable}
+    {onmodtable}
+    {onclone}
+    bind:customRequest
     {oncancelpaste}
     onbuysimilar={pasteTrade && (() => (buying = true))}
     {ondelete}

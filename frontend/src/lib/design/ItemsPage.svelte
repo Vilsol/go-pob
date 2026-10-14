@@ -88,6 +88,10 @@
     onadd?: (name: string, equip: boolean) => void;
     onsave?: (item: ItemSummary, slot: string | undefined, equip: boolean) => void;
     onedittext?: (editing: Editing) => void;
+    editorModTable?: boolean;
+    onmodtable?: (editing: Editing) => void;
+    onclone?: (editing: Editing) => void;
+    customRequest?: boolean;
     oncancelpaste?: () => void;
     /* ItemsTab.lua:342-350 */
     onbuysimilar?: () => void;
@@ -162,6 +166,10 @@
     onadd,
     onsave,
     onedittext,
+    editorModTable,
+    onmodtable,
+    onclone,
+    customRequest = $bindable(false),
     oncancelpaste,
     onbuysimilar,
     ondelete,
@@ -481,7 +489,7 @@
           </div>
           {#if onbuysimilar}<Button size="sm" class="self-start" aria-haspopup="dialog" onclick={onbuysimilar}>Buy similar</Button>{/if}
           {#if display && ondisplayedit}
-            <DisplayItemControls info={display} onedit={ondisplayedit} craft={displayCraft} />
+            <DisplayItemControls info={display} onedit={ondisplayedit} craft={displayCraft} bind:customRequest />
           {/if}
           <section aria-label="Equip impact" aria-busy={live.pending} class="flex flex-col gap-2.5 border-t border-line pt-2.5 font-mono text-13">
             <ImpactBlocks blocks={live.blocks}>
@@ -537,7 +545,7 @@
     rows={stashRows}
     col="USED"
     footer={equipFromList ? 'Hover an item for its equip impact; ⋯ on a slot equips it.' : 'Hover an item for its equip impact in each slot it fits.'}
-    empty="Every item in this build is in the active item set or passive tree."
+    empty={stashFilter && stashFilter !== 'Any Loadout' ? `No item is in ${stashFilter}.` : 'This build has no items yet.'}
     bind:hover
     {whatIf}
     onedit={editStash}
@@ -547,6 +555,8 @@
     ontoggle={ontoggle && ((key: string, second: boolean) => /^\d+$/.test(key) && ontoggle(Number(key), second))}
     onopen={onedittext && openStash}
     oncopy={oncopy && ((key: string) => /^\d+$/.test(key) && oncopy(Number(key)))}
+    onclone={onclone && ((key: string) => data.items[key] && onclone({ item: data.items[key], key }))}
+    onshare={ondropshared && ((key: string) => ondropshared({ id: Number(key) }))}
     ondropitem={ondropstash && ((d: ItemDrag, before?: string) => ondropstash(d, before === undefined ? undefined : Number(before)))}
     dropAt={!stashFilter || stashFilter === 'Any Loadout'}
     filters={stashFilters}
@@ -620,6 +630,9 @@
       {readonly}
       whatIf={whatIf && whatIf.key === ed.key ? whatIf : undefined}
       onedittext={onedittext && (() => onedittext(ed))}
+      modTable={editorModTable}
+      onmodtable={onmodtable && (() => onmodtable(ed))}
+      onclone={onclone && (() => onclone(ed))}
       onsave={(it: ItemSummary, equip: boolean) => onsave?.(it, ed.slot, equip)}
       onclose={() => (editing = null)} />
   {/key}

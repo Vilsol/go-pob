@@ -67,7 +67,7 @@ func TestSumModListHasNoGlobalLimit(t *testing.T) {
 		list.AddMod(mod.NewFloat("SkillAuraEffectOnSelf", mod.TypeIncrease, 10).
 			Tag(mod.Multiplier("Herald").GlobalLimit(25).GlobalLimitKey("PurposefulHarbinger")))
 	}
-	list.Multipliers["Herald"] = 1
+	list.Multipliers = map[string]float64{"Herald": 1}
 
 	testza.AssertEqual(t, 30.0, list.Sum(mod.TypeIncrease, nil, "SkillAuraEffectOnSelf"))
 }
@@ -79,7 +79,7 @@ func TestSumEvaluatesParentInChildContext(t *testing.T) {
 
 	child := NewModDB()
 	child.Parent = parent
-	child.Conditions["Fortified"] = true
+	SetCondition(child.ModStore, "Fortified", true)
 
 	testza.AssertEqual(t, 30.0, child.Sum(mod.TypeIncrease, nil, "Damage"))
 }
@@ -103,7 +103,7 @@ func TestMoreEvaluatesParentInChildContext(t *testing.T) {
 
 	child := NewModDB()
 	child.Parent = parent
-	child.Conditions["Fortified"] = true
+	SetCondition(child.ModStore, "Fortified", true)
 
 	testza.AssertEqual(t, 1.5, child.More(nil, "Damage"))
 }
@@ -118,7 +118,7 @@ func TestFlagEvaluatesParentInChildContext(t *testing.T) {
 
 	testza.AssertEqual(t, false, child.Flag(nil, "CannotBeStunned"))
 
-	child.Conditions["Fortified"] = true
+	SetCondition(child.ModStore, "Fortified", true)
 	testza.AssertEqual(t, true, child.Flag(nil, "CannotBeStunned"))
 }
 
@@ -129,7 +129,7 @@ func TestOverrideEvaluatesParentInChildContext(t *testing.T) {
 
 	child := NewModDB()
 	child.Parent = parent
-	child.Conditions["Fortified"] = true
+	SetCondition(child.ModStore, "Fortified", true)
 
 	value := child.Override(nil, "Speed")
 	if value == nil {
@@ -148,7 +148,7 @@ func TestListEvaluatesParentInChildContext(t *testing.T) {
 
 	testza.AssertEqual(t, 0, len(child.List(nil, "ExtraSkill")))
 
-	child.Conditions["Fortified"] = true
+	SetCondition(child.ModStore, "Fortified", true)
 	res := child.List(nil, "ExtraSkill")
 	testza.AssertEqual(t, 1, len(res))
 	testza.AssertEqual(t, "Vaal Haste", res[0])
@@ -161,7 +161,7 @@ func TestSumModListEvaluatesParentInChildContext(t *testing.T) {
 
 	child := NewModList()
 	child.Parent = parent
-	child.Conditions["Fortified"] = true
+	SetCondition(child.ModStore, "Fortified", true)
 
 	testza.AssertEqual(t, 30.0, child.Sum(mod.TypeIncrease, nil, "Damage"))
 }

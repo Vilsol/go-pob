@@ -81,6 +81,7 @@ func (c timelessSearchCase) query() TimelessSearchQuery {
 
 // TestTimelessSearchAgainstPoB grades Find a Timeless Jewel's socket list.
 func TestTimelessSearchAgainstPoB(t *testing.T) {
+	t.Parallel()
 	initItemsTabData(t)
 	graded := 0
 	for _, c := range loadTimelessSearchCases(t) {

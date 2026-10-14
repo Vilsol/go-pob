@@ -2,6 +2,8 @@ import { SvelteMap } from 'svelte/reactivity';
 
 export const POWER_FLASH_MS = 1000;
 
+export const powerRingSize = (scaling: number) => Math.max(21, 337.5 / scaling);
+
 export class PowerFlashes {
   readonly flashing = new SvelteMap<number, number>();
   #seen = new Set<number>();

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"maps"
 	"math"
+	"slices"
 	"strings"
 
 	"github.com/Vilsol/go-pob/calculator/calclib"
@@ -336,9 +337,17 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 		actor.Output["SpellBlockChanceOverCap"] = max(0, totalSpellBlockChance-actor.Output["SpellBlockChanceMax"])
 		actor.Output["SpellProjectileBlockChance"] = max(min(actor.Output["SpellBlockChance"]+float64(modDB.Sum(mod.TypeBase, nil, "ProjectileSpellBlockChance")*calclib.Mod(modDB, nil, "SpellBlockChance")), actor.Output["SpellBlockChanceMax"]), 0)
 	}
+	//pob:block:src/Modules/CalcDefence.lua:718-728
 	if actor.Breakdown != nil {
-		actor.Breakdown.Simple(utils.Ptr(baseBlockChance), nil, actor.Output["BlockChance"], "BlockChance")
-		actor.Breakdown.Simple(nil, nil, actor.Output["SpellBlockChance"], "SpellBlockChance")
+		actor.Breakdown.Data["BlockChance"] = &Entry{Lines: []string{
+			fmt.Sprintf("Base: %.14g%%", baseBlockChance),
+			fmt.Sprintf("Max: %.14g%%", actor.Output["BlockChanceMax"]),
+			fmt.Sprintf("Total: %.14g%%", actor.Output["BlockChance"]+actor.Output["BlockChanceOverCap"]),
+		}}
+		actor.Breakdown.Data["SpellBlockChance"] = &Entry{Lines: []string{
+			fmt.Sprintf("Max: %.14g%%", actor.Output["SpellBlockChanceMax"]),
+			fmt.Sprintf("Total: %.14g%%", actor.Output["SpellBlockChance"]+actor.Output["SpellBlockChanceOverCap"]),
+		}}
 	}
 	if modDB.Flag(nil, "CannotBlockAttacks") {
 		actor.Output["BlockChance"] = 0
@@ -699,31 +708,48 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 			enemyAccuracy := utils.RoundTo(calclib.Val(actor.Enemy.ModDB, "Accuracy"), 0)
 			evadeChance := modDB.Sum(mod.TypeBase, nil, "EvadeChance")
 			hitChance := calclib.Mod(actor.Enemy.ModDB, nil, "HitChance")
-			actor.Output["EvadeChance"] = 100 - float64((CalcHitChance(actor.Output["Evasion"], enemyAccuracy)-evadeChance)*hitChance)
-			actor.Output["MeleeEvadeChance"] = max(0, min(data.EvadeChanceCap, (100-float64((CalcHitChance(actor.Output["MeleeEvasion"], enemyAccuracy)-evadeChance)*hitChance))*calclib.Mod(modDB, nil, "EvadeChance", "MeleeEvadeChance")))
-			actor.Output["ProjectileEvadeChance"] = max(0, min(data.EvadeChanceCap, (100-float64((CalcHitChance(actor.Output["ProjectileEvasion"], enemyAccuracy)-evadeChance)*hitChance))*calclib.Mod(modDB, nil, "EvadeChance", "ProjectileEvadeChance")))
+			//pob:block:src/Modules/CalcDefence.lua:1078-1086
+			evadeStat := actor.Output["Evasion"]
+			meleeEvadeStat := actor.Output["MeleeEvasion"]
+			projectileEvadeStat := actor.Output["ProjectileEvasion"]
+			if modDB.Flag(nil, "EvadeChanceBasedOnWard") {
+				multiplier := float64(0)
+				if o := modDB.Override(nil, "EvadeChanceBasedOnWardPercent"); o != nil {
+					multiplier = o.Float() / 100
+				}
+				evadeStat = actor.Output["Ward"] * multiplier
+				meleeEvadeStat = evadeStat
+				projectileEvadeStat = evadeStat
+			}
+			actor.Output["EvadeChance"] = 100 - float64((CalcHitChance(evadeStat, enemyAccuracy)-evadeChance)*hitChance)
+			actor.Output["MeleeEvadeChance"] = max(0, min(data.EvadeChanceCap, (100-float64((CalcHitChance(meleeEvadeStat, enemyAccuracy)-evadeChance)*hitChance))*calclib.Mod(modDB, nil, "EvadeChance", "MeleeEvadeChance")))
+			actor.Output["ProjectileEvadeChance"] = max(0, min(data.EvadeChanceCap, (100-float64((CalcHitChance(projectileEvadeStat, enemyAccuracy)-evadeChance)*hitChance))*calclib.Mod(modDB, nil, "EvadeChance", "ProjectileEvadeChance")))
 			if actor.Output["MeleeEvadeChance"] != actor.Output["ProjectileEvadeChance"] {
 				actor.Output["splitEvade"] = 1
 			} else {
 				actor.Output["EvadeChance"] = actor.Output["MeleeEvadeChance"]
 				actor.Output["dontSplitEvade"] = 1
 			}
+			//pob:block:src/Modules/CalcDefence.lua:1097-1115
 			if actor.Breakdown != nil {
-				actor.Breakdown.AddLine("EvadeChance",
-					fmt.Sprintf("Enemy level: %d ^8(%s the Configuration tab)", environment.EnemyLevel, utils.Ternary(environment.Build.GetNumberOption("enemyLevel") != 0, "overridden from", "can be overridden in")),
-					fmt.Sprintf("Average enemy accuracy: %.2f", enemyAccuracy),
-					fmt.Sprintf("Approximate evade chance: %.2f%%", actor.Output["EvadeChance"]),
-				)
-				actor.Breakdown.AddLine("MeleeEvadeChance",
-					fmt.Sprintf("Enemy level: %d ^8(%s the Configuration tab)", environment.EnemyLevel, utils.Ternary(environment.Build.GetNumberOption("enemyLevel") != 0, "overridden from", "can be overridden in")),
-					fmt.Sprintf("Average enemy accuracy: %.2f", enemyAccuracy),
-					fmt.Sprintf("Approximate melee evade chance: %.2f%%", actor.Output["MeleeEvadeChance"]),
-				)
-				actor.Breakdown.AddLine("ProjectileEvadeChance",
-					fmt.Sprintf("Enemy level: %d ^8(%s the Configuration tab)", environment.EnemyLevel, utils.Ternary(environment.Build.GetNumberOption("enemyLevel") != 0, "overridden from", "can be overridden in")),
-					fmt.Sprintf("Average enemy accuracy: %.2f", enemyAccuracy),
-					fmt.Sprintf("Approximate projectile evade chance: %.2f%%", actor.Output["ProjectileEvadeChance"]),
-				)
+				enemyLevel := fmt.Sprintf("Enemy level: %d ^8(%s the Configuration tab)", environment.EnemyLevel, utils.Ternary(environment.Build.GetNumberOption("enemyLevel") != 0, "overridden from", "can be overridden in"))
+				actor.Breakdown.Data["EvadeChance"] = &Entry{Lines: []string{
+					enemyLevel,
+					fmt.Sprintf("Average enemy accuracy: %d", int(enemyAccuracy)),
+					fmt.Sprintf("Approximate evade chance: %d%%", int(actor.Output["EvadeChance"])),
+				}}
+				actor.Breakdown.Data["MeleeEvadeChance"] = &Entry{Lines: []string{
+					enemyLevel,
+					fmt.Sprintf("Average enemy accuracy: %d", int(enemyAccuracy)),
+					fmt.Sprintf("Effective Evasion: %d", int(meleeEvadeStat)),
+					fmt.Sprintf("Approximate melee evade chance: %d%%", int(actor.Output["MeleeEvadeChance"])),
+				}}
+				actor.Breakdown.Data["ProjectileEvadeChance"] = &Entry{Lines: []string{
+					enemyLevel,
+					fmt.Sprintf("Average enemy accuracy: %d", int(enemyAccuracy)),
+					fmt.Sprintf("Effective Evasion: %d", int(projectileEvadeStat)),
+					fmt.Sprintf("Approximate projectile evade chance: %d%%", int(actor.Output["ProjectileEvadeChance"])),
+				}}
 			}
 		}
 	}
@@ -820,30 +846,33 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 	actor.Output["MaxLifeLeechInstance"] = actor.Output["Life"] * calclib.Val(modDB, "MaxLifeLeechInstance") / 100
 	actor.Output["MaxLifeLeechRatePercent"] = calclib.Val(modDB, "MaxLifeLeechRate")
 	actor.Output["MaxLifeLeechRate"] = actor.Output["Life"] * actor.Output["MaxLifeLeechRatePercent"] / 100
+	//pob:block:src/Modules/CalcDefence.lua:1210-1216
 	if actor.Breakdown != nil {
-		actor.Breakdown.AddLine("MaxLifeLeechRate",
-			fmt.Sprintf("%.2f ^8(maximum life)", actor.Output["Life"]),
-			fmt.Sprintf("x %.2f%% ^8(percentage of life to maximum leech rate)", actor.Output["MaxLifeLeechRatePercent"]),
+		actor.Breakdown.Data["MaxLifeLeechRate"] = &Entry{Lines: []string{
+			fmt.Sprintf("%d ^8(maximum life)", int(actor.Output["Life"])),
+			fmt.Sprintf("x %d%% ^8(percentage of life to maximum leech rate)", int(actor.Output["MaxLifeLeechRatePercent"])),
 			fmt.Sprintf("= %.1f", actor.Output["MaxLifeLeechRate"]),
-		)
+		}}
 	}
 	actor.Output["MaxEnergyShieldLeechInstance"] = actor.Output["EnergyShield"] * calclib.Val(modDB, "MaxEnergyShieldLeechInstance") / 100
 	actor.Output["MaxEnergyShieldLeechRate"] = actor.Output["EnergyShield"] * calclib.Val(modDB, "MaxEnergyShieldLeechRate") / 100
+	//pob:block:src/Modules/CalcDefence.lua:1219-1225
 	if actor.Breakdown != nil {
-		actor.Breakdown.AddLine("MaxEnergyShieldLeechRate",
-			fmt.Sprintf("%.2f ^8(maximum energy shield)", actor.Output["EnergyShield"]),
-			fmt.Sprintf("x %.2f%% ^8(percentage of energy shield to maximum leech rate)", calclib.Val(modDB, "MaxEnergyShieldLeechRate")),
+		actor.Breakdown.Data["MaxEnergyShieldLeechRate"] = &Entry{Lines: []string{
+			fmt.Sprintf("%d ^8(maximum energy shield)", int(actor.Output["EnergyShield"])),
+			fmt.Sprintf("x %d%% ^8(percentage of energy shield to maximum leech rate)", int(calclib.Val(modDB, "MaxEnergyShieldLeechRate"))),
 			fmt.Sprintf("= %.1f", actor.Output["MaxEnergyShieldLeechRate"]),
-		)
+		}}
 	}
 	actor.Output["MaxManaLeechInstance"] = actor.Output["Mana"] * calclib.Val(modDB, "MaxManaLeechInstance") / 100
 	actor.Output["MaxManaLeechRate"] = actor.Output["Mana"] * calclib.Val(modDB, "MaxManaLeechRate") / 100
+	//pob:block:src/Modules/CalcDefence.lua:1228-1234
 	if actor.Breakdown != nil {
-		actor.Breakdown.AddLine("MaxManaLeechRate",
-			fmt.Sprintf("%.2f ^8(maximum mana)", actor.Output["Mana"]),
-			fmt.Sprintf("x %.2f%% ^8(percentage of mana to maximum leech rate)", modDB.Sum(mod.TypeBase, nil, "MaxManaLeechRate")),
+		actor.Breakdown.Data["MaxManaLeechRate"] = &Entry{Lines: []string{
+			fmt.Sprintf("%d ^8(maximum mana)", int(actor.Output["Mana"])),
+			fmt.Sprintf("x %d%% ^8(percentage of mana to maximum leech rate)", int(calclib.Val(modDB, "MaxManaLeechRate"))),
 			fmt.Sprintf("= %.1f", actor.Output["MaxManaLeechRate"]),
-		)
+		}}
 	}
 
 	// Regeneration
@@ -859,17 +888,18 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 	}
 	for i, resource := range regenResources {
 		name := resource.name
+		n := &regenNames[i]
 		pool := actor.Output[name]
 		baseRegen := float64(0)
-		inc := modDB.Sum(mod.TypeIncrease, nil, name+"Regen")
-		more := modDB.More(nil, name+"Regen")
+		inc := modDB.Sum(mod.TypeIncrease, nil, n.regen)
+		more := modDB.More(nil, n.regen)
 		regen := float64(0)
 		regenRate := float64(0)
-		recoveryRateMod := utils.OrF(actor.Output[name+"RecoveryRateMod"], 1)
+		recoveryRateMod := utils.OrF(actor.Output[n.recoveryRateMod], 1)
 
 		switch {
-		case modDB.Flag(nil, "No"+name+"Regen") || modDB.Flag(nil, "CannotGain"+name):
-			actor.Output[name+"Regen"] = 0
+		case modDB.Flag(nil, n.noRegen) || modDB.Flag(nil, n.cannotGain):
+			actor.Output[n.regen] = 0
 		case name == "Life" && modDB.Flag(nil, "ZealotsOath"):
 			actor.Output["LifeRegen"] = 0
 			lifeBase := modDB.Sum(mod.TypeBase, nil, "LifeRegen")
@@ -890,7 +920,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 					}
 				}
 			}
-			baseRegen = modDB.Sum(mod.TypeBase, nil, name+"Regen") + pool*modDB.Sum(mod.TypeBase, nil, name+"RegenPercent")/100
+			baseRegen = modDB.Sum(mod.TypeBase, nil, n.regen) + pool*modDB.Sum(mod.TypeBase, nil, n.regenPercent)/100
 			regen = baseRegen * (1 + inc/100) * more
 			if regen != 0 {
 				for j := i + 1; j < len(regenResources); j++ {
@@ -901,39 +931,39 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 				}
 			}
 			regenRate = utils.RoundTo(regen*recoveryRateMod, 1)
-			actor.Output[name+"Regen"] = regenRate
+			actor.Output[n.regen] = regenRate
 		}
 
-		actor.Output[name+"RegenInc"] = inc
-		baseDegen := modDB.Sum(mod.TypeBase, nil, name+"Degen") + pool*modDB.Sum(mod.TypeBase, nil, name+"DegenPercent")/100
-		tinctureDegenPercent := modDB.Sum(mod.TypeBase, nil, name+"DegenPercentTincture")
+		actor.Output[n.regenInc] = inc
+		baseDegen := modDB.Sum(mod.TypeBase, nil, n.degen) + pool*modDB.Sum(mod.TypeBase, nil, n.degenPercent)/100
+		tinctureDegenPercent := modDB.Sum(mod.TypeBase, nil, n.degenPercentTincture)
 		baseDegen += math.Max(pool*tinctureDegenPercent/100, tinctureDegenPercent)
 		degenRate := float64(0)
 		if baseDegen > 0 {
-			degenRate = float64(baseDegen * calclib.Mod(modDB, nil, name+"Degen"))
+			degenRate = float64(baseDegen * calclib.Mod(modDB, nil, n.degen))
 		}
-		actor.Output[name+"Degen"] = degenRate
-		recoveryRate := float64(modDB.Sum(mod.TypeBase, nil, name+"Recovery") * recoveryRateMod)
-		actor.Output[name+"Recovery"] = recoveryRate
+		actor.Output[n.degen] = degenRate
+		recoveryRate := float64(modDB.Sum(mod.TypeBase, nil, n.recovery) * recoveryRateMod)
+		actor.Output[n.recovery] = recoveryRate
 
 		unaffectedRegen := regenRate
-		if modDB.Flag(nil, "UnaffectedBy"+name+"Regen") {
+		if modDB.Flag(nil, n.unaffectedBy) {
 			unaffectedRegen = 0
 		}
-		actor.Output[name+"RegenRecovery"] = unaffectedRegen - degenRate + recoveryRate
-		if actor.Output[name+"RegenRecovery"] > 0 {
-			modDB.AddMod(mod.NewFlag("Condition:CanGain"+name, true).Source(mod.Source(resource.display + "Regen")))
+		actor.Output[n.regenRecovery] = unaffectedRegen - degenRate + recoveryRate
+		if actor.Output[n.regenRecovery] > 0 {
+			modDB.AddMod(mod.NewFlag(n.canGain, true).Source(mod.Source(resource.display + "Regen")))
 		}
 		//	output[resource.."RegenPercent"] = pool > 0 and round(... / pool * 100, 1) or 0
 		//pob:block:src/Modules/CalcDefence.lua:1299
 		if pool > 0 {
-			actor.Output[name+"RegenPercent"] = utils.RoundTo(actor.Output[name+"RegenRecovery"]/pool*100, 1)
+			actor.Output[n.regenPercent] = utils.RoundTo(actor.Output[n.regenRecovery]/pool*100, 1)
 		} else {
-			actor.Output[name+"RegenPercent"] = 0
+			actor.Output[n.regenPercent] = 0
 		}
 
 		if actor.Breakdown != nil {
-			actor.Breakdown.MultiChain(name+"RegenRecovery", BMultiChain{
+			actor.Breakdown.MultiChain(n.regenRecovery, BMultiChain{
 				Label: resource.display + " Regeneration:",
 				Base:  &BMultiChainItem{"%.1f ^8(base)", baseRegen},
 				Total: fmt.Sprintf("= %.1f ^8per second", regenRate),
@@ -943,19 +973,19 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 					{"%.2f ^8(recovery rate modifier)", recoveryRateMod},
 				},
 			})
-			if modDB.Flag(nil, "UnaffectedBy"+name+"Regen") {
-				actor.Breakdown.AddLine(name+"RegenRecovery", "Unaffected by "+resource.display+" Regen")
+			if modDB.Flag(nil, n.unaffectedBy) {
+				actor.Breakdown.AddLine(n.regenRecovery, "Unaffected by "+resource.display+" Regen")
 			}
 			if degenRate != 0 {
-				actor.Breakdown.AddLine(name+"RegenRecovery",
+				actor.Breakdown.AddLine(n.regenRecovery,
 					fmt.Sprintf("- %.1f ^8(degen)", degenRate),
 					fmt.Sprintf("= %.1f ^8per second", unaffectedRegen-degenRate),
 				)
 			}
 			if recoveryRate != 0 {
-				actor.Breakdown.AddLine(name+"RegenRecovery",
+				actor.Breakdown.AddLine(n.regenRecovery,
 					fmt.Sprintf("+ %.1f ^8(recovery)", recoveryRate),
-					fmt.Sprintf("= %.1f ^8per second", actor.Output[name+"RegenRecovery"]),
+					fmt.Sprintf("= %.1f ^8per second", actor.Output[n.regenRecovery]),
 				)
 			}
 		}
@@ -1026,12 +1056,13 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 		}
 		actor.Output["EnergyShieldRechargeDelay"] = data.EnergyShieldRechargeDelay / (1 + modDB.Sum(mod.TypeIncrease, nil, "EnergyShieldRechargeFaster")/100)
 		if actor.Breakdown != nil {
+			//pob:block:src/Modules/CalcDefence.lua:1373-1379
 			if actor.Output["EnergyShieldRechargeDelay"] != data.EnergyShieldRechargeDelay {
-				actor.Breakdown.AddLine("EnergyShieldRechargeDelay",
-					fmt.Sprintf("%ds ^8(base)", data.EnergyShieldRechargeDelay),
+				actor.Breakdown.Data["EnergyShieldRechargeDelay"] = &Entry{Lines: []string{
+					fmt.Sprintf("%.2fs ^8(base)", float64(data.EnergyShieldRechargeDelay)),
 					fmt.Sprintf("/ %.2f ^8(faster start)", 1+modDB.Sum(mod.TypeIncrease, nil, "EnergyShieldRechargeFaster")/100),
 					fmt.Sprintf("= %.2fs", actor.Output["EnergyShieldRechargeDelay"]),
-				)
+				}}
 			}
 		}
 	} else {
@@ -1041,6 +1072,25 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 	{
 		actor.Output["anyRecoup"] = 0
 		recoupTypeList := []string{"Life", "Mana", "EnergyShield"}
+		//pob:block:src/Modules/CalcDefence.lua:1398-1408
+		recoupBreakdown := func(key string, base float64, recoupType string) {
+			if actor.Breakdown == nil {
+				return
+			}
+			seconds := 4
+			if modDB.Flag(nil, "3Second"+recoupType+"Recoup") || modDB.Flag(nil, "3SecondRecoup") {
+				seconds = 3
+			}
+			if actor.Output[recoupType+"RecoveryRateMod"] != 1 {
+				actor.Breakdown.Data[key] = &Entry{Lines: []string{
+					fmt.Sprintf("%d%% ^8(base)", int(base)),
+					fmt.Sprintf("* %.2f ^8(recovery rate modifier)", actor.Output[recoupType+"RecoveryRateMod"]),
+					fmt.Sprintf("= %.1f%% over %d seconds", actor.Output[key], seconds),
+				}}
+			} else {
+				actor.Breakdown.Data[key] = &Entry{Lines: []string{fmt.Sprintf("%d%% over %d seconds", int(actor.Output[key]), seconds)}}
+			}
+		}
 		for _, recoupType := range recoupTypeList {
 			baseRecoup := modDB.Sum(mod.TypeBase, nil, recoupType+"Recoup")
 			if recoupType == "Life" && modDB.Flag(nil, "EnergyShieldRecoupInsteadOfLife") {
@@ -1050,6 +1100,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 			} else {
 				actor.Output[recoupType+"Recoup"] = baseRecoup * actor.Output[recoupType+"RecoveryRateMod"]
 				actor.Output["anyRecoup"] += actor.Output[recoupType+"Recoup"]
+				recoupBreakdown(recoupType+"Recoup", baseRecoup, recoupType)
 			}
 			addToEnergyShieldFlag := "Add" + recoupType + "RecoupToEnergyShieldRecoup"
 			if modDB.Flag(nil, addToEnergyShieldFlag) {
@@ -1067,21 +1118,24 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 			}
 		}
 
-		for _, recoupType := range recoupTypeList {
-			for _, dt := range data.DamageType("").Values() {
+		for ri, recoupType := range recoupTypeList {
+			for di, dt := range data.DamageType("").Values() {
 				damageType := string(dt)
-				recoup := modDB.Sum(mod.TypeBase, nil, damageType+recoupType+"Recoup")
+				names := &damageRecoupNames[ri][di]
+				recoup := modDB.Sum(mod.TypeBase, nil, names.recoup)
 				if recoupType == "Life" && modDB.Flag(nil, "EnergyShieldRecoupInsteadOfLife") {
 					actor.Output[damageType+"LifeRecoup"] = 0
-					modDB.AddMod(mod.NewFloat(damageType+"EnergyShieldRecoup", mod.TypeBase, recoup).Source("Life Recoup Conversion"))
+					modDB.AddMod(mod.NewFloat(names.energyShield, mod.TypeBase, recoup).Source("Life Recoup Conversion"))
 				} else {
-					actor.Output[damageType+recoupType+"Recoup"] = recoup * actor.Output[recoupType+"RecoveryRateMod"]
-					actor.Output["anyRecoup"] += actor.Output[damageType+recoupType+"Recoup"]
+					actor.Output[names.recoup] = recoup * actor.Output[recoupType+"RecoveryRateMod"]
+					actor.Output["anyRecoup"] += actor.Output[names.recoup]
+					//pob:block:src/Modules/CalcDefence.lua:1433-1443
+					recoupBreakdown(names.recoup, recoup, recoupType)
 				}
-				addToEnergyShieldFlag := "Add" + recoupType + "RecoupToEnergyShieldRecoup"
+				addToEnergyShieldFlag := names.addToEnergyShield
 				if modDB.Flag(nil, addToEnergyShieldFlag) {
 					if tab := modDB.Tabulate(mod.TypeFlag, nil, addToEnergyShieldFlag); len(tab) > 0 {
-						modDB.ReplaceMod(mod.NewFloat(damageType+"EnergyShieldRecoup", mod.TypeBase, recoup).Source(tab[0].Mod.GetSource()))
+						modDB.ReplaceMod(mod.NewFloat(names.energyShield, mod.TypeBase, recoup).Source(tab[0].Mod.GetSource()))
 					}
 				}
 			}
@@ -1104,18 +1158,34 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 			more := modDB.More(nil, resource+"Regen")
 			actor.Output["PhysicalDamageMitigated"+resource+"PseudoRecoup"] = pseudo * (1 + inc/100) * more * actor.Output[resource+"RecoveryRateMod"]
 			actor.Output["anyRecoup"] += actor.Output["PhysicalDamageMitigated"+resource+"PseudoRecoup"]
+			//pob:block:src/Modules/CalcDefence.lua:1465-1477
+			if actor.Breakdown != nil {
+				key := "PhysicalDamageMitigated" + resource + "PseudoRecoup"
+				actor.Breakdown.Data[key] = &Entry{}
+				if actor.Output[resource+"RecoveryRateMod"] != 1 || inc != 0 || more != 1 {
+					actor.Breakdown.AddLine(key, fmt.Sprintf("%d%% ^8(base)", int(pseudo)))
+					if inc != 0 || more != 1 {
+						actor.Breakdown.AddLine(key, fmt.Sprintf("* %.2f ^8(regeneration rate modifier)", (1+inc/100)*more))
+					}
+					if actor.Output[resource+"RecoveryRateMod"] != 1 {
+						actor.Breakdown.AddLine(key, fmt.Sprintf("* %.2f ^8(recovery rate modifier)", actor.Output[resource+"RecoveryRateMod"]))
+					}
+				}
+				actor.Breakdown.AddLine(key, fmt.Sprintf("= %.1f%% over %d seconds", actor.Output[key], int(duration)))
+			}
 		}
 	}
 
 	// Ward recharge
 	actor.Output["WardRechargeDelay"] = data.WardRechargeDelay / (1 + modDB.Sum(mod.TypeIncrease, nil, "WardRechargeFaster")/100)
 	if actor.Breakdown != nil {
+		//pob:block:src/Modules/CalcDefence.lua:1486-1492
 		if actor.Output["WardRechargeDelay"] != data.WardRechargeDelay {
-			actor.Breakdown.AddLine("WardRechargeDelay",
-				fmt.Sprintf("%ds ^8(base)", data.WardRechargeDelay),
+			actor.Breakdown.Data["WardRechargeDelay"] = &Entry{Lines: []string{
+				fmt.Sprintf("%.2fs ^8(base)", float64(data.WardRechargeDelay)),
 				fmt.Sprintf("/ %.2f ^8(faster start)", 1+modDB.Sum(mod.TypeIncrease, nil, "WardRechargeFaster")/100),
 				fmt.Sprintf("= %.2fs", actor.Output["WardRechargeDelay"]),
-			)
+			}}
 		}
 	}
 
@@ -1128,20 +1198,20 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 
 	//pob:block:src/Modules/CalcDefence.lua:136-139
 	//pob:block:src/Modules/CalcDefence.lua:1499-1500
-	for _, damageType := range data.DamageType("").Values() {
-		names := []string{string(damageType + "DamageReduction")}
+	for di, damageType := range data.DamageType("").Values() {
+		names := []string{damageReductionNames[di]}
 		if damageType == data.DamageTypeFire || damageType == data.DamageTypeCold || damageType == data.DamageTypeLightning {
 			names = append(names, "ElementalDamageReduction")
 		}
 
-		if override := actor.ModDB.Override(nil, string(damageType+"DamageReduction")); override != nil {
-			actor.Output[string("Base"+damageType+"DamageReduction")] = override.Float()
-			actor.Output[string("Base"+damageType+"DamageReductionWhenHit")] = override.Float()
+		if override := actor.ModDB.Override(nil, damageReductionNames[di]); override != nil {
+			actor.Output[baseDamageReductionNames[di]] = override.Float()
+			actor.Output[baseDamageReductionWhenHitNames[di]] = override.Float()
 			continue
 		}
 
-		actor.Output[string("Base"+damageType+"DamageReduction")] = math.Min(math.Max(0, actor.ModDB.Sum(mod.TypeBase, nil, names...)), actor.Output["DamageReductionMax"])
-		actor.Output[string("Base"+damageType+"DamageReductionWhenHit")] = math.Min(math.Max(0, actor.Output[string("Base"+damageType+"DamageReduction")]+actor.ModDB.Sum(mod.TypeBase, nil, string(damageType+"DamageReductionWhenHit"))), actor.Output["DamageReductionMax"])
+		actor.Output[baseDamageReductionNames[di]] = math.Min(math.Max(0, actor.ModDB.Sum(mod.TypeBase, nil, names...)), actor.Output["DamageReductionMax"])
+		actor.Output[baseDamageReductionWhenHitNames[di]] = math.Min(math.Max(0, actor.Output[baseDamageReductionNames[di]]+actor.ModDB.Sum(mod.TypeBase, nil, damageReductionWhenHitNames[di])), actor.Output["DamageReductionMax"])
 	}
 
 	actor.Output["MovementSpeedMod"] = utils.Or(modDB.Override(nil, "MovementSpeed"), calclib.Mod(modDB, nil, "MovementSpeed"))
@@ -1185,9 +1255,9 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 
 	// damage avoidances
 	specificTypeAvoidance := false
-	for _, damageType := range data.DamageType("").Values() {
-		actor.Output[string("Avoid"+damageType+"DamageChance")] = min(modDB.Sum(mod.TypeBase, nil, string("Avoid"+damageType+"DamageChance")), data.AvoidChanceCap)
-		if actor.Output[string("Avoid"+damageType+"DamageChance")] > 0 {
+	for di := range data.DamageType("").Values() {
+		actor.Output[avoidDamageChanceNames[di]] = min(modDB.Sum(mod.TypeBase, nil, avoidDamageChanceNames[di]), data.AvoidChanceCap)
+		if actor.Output[avoidDamageChanceNames[di]] > 0 {
 			specificTypeAvoidance = true
 		}
 	}
@@ -1238,9 +1308,9 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 	for _, ailment := range data.ElementalAilment("").Values() {
 		isElementalAilment[ailment] = true
 	}
-	for _, ailment := range data.Ailment("").Values() {
-		names := []string{string("Avoid" + ailment), "AvoidAilments"}
-		immuneFlags := []string{string(ailment + "Immune")}
+	for ai, ailment := range data.Ailment("").Values() {
+		names := []string{avoidAilmentNames[ai], "AvoidAilments"}
+		immuneFlags := []string{ailmentImmuneNames[ai]}
 		shockAvoidAppliesToAll := float64(0)
 		if isElementalAilment[ailment] {
 			names = append(names, "AvoidElementalAilments")
@@ -1250,10 +1320,10 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 			}
 		}
 		if modDB.Flag(nil, immuneFlags...) {
-			actor.Output[string(ailment+"AvoidChance")] = 100
+			actor.Output[ailmentAvoidChanceNames[ai]] = 100
 			continue
 		}
-		actor.Output[string(ailment+"AvoidChance")] = math.Floor(min(modDB.Sum(mod.TypeBase, nil, names...)+shockAvoidAppliesToAll, 100))
+		actor.Output[ailmentAvoidChanceNames[ai]] = math.Floor(min(modDB.Sum(mod.TypeBase, nil, names...)+shockAvoidAppliesToAll, 100))
 	}
 	//pob:block:src/Modules/CalcDefence.lua:1588-1589
 	if modDB.Flag(nil, "CurseImmune") {
@@ -1301,32 +1371,33 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 		isElementalAilmentForDuration[ailment] = true
 	}
 	igniteAppliesToAll := modDB.Flag(nil, "IgniteDurationAppliesToElementalAilments")
-	for _, ailment := range data.Ailment("").Values() {
+	for ai, ailment := range data.Ailment("").Values() {
+		selfDuration := selfAilmentDurationNames[ai]
 		divisor := 100 + actor.Output["DebuffExpirationRate"] +
 			modDB.Sum(mod.TypeBase, nil, string("Self"+ailment+"DebuffExpirationRate"))
 		if !isElementalAilmentForDuration[ailment] {
 			//pob:block:src/Modules/CalcDefence.lua:1618-1622
-			more := modDB.More(nil, string("Self"+ailment+"Duration"), "SelfAilmentDuration")
-			inc := (100 + modDB.Sum(mod.TypeIncrease, nil, string("Self"+ailment+"Duration"), "SelfAilmentDuration")) * 100
-			actor.Output[string("Self"+ailment+"Duration")] = inc * more / divisor
+			more := modDB.More(nil, selfDuration, "SelfAilmentDuration")
+			inc := (100 + modDB.Sum(mod.TypeIncrease, nil, selfDuration, "SelfAilmentDuration")) * 100
+			actor.Output[selfDuration] = inc * more / divisor
 			continue
 		}
 		//pob:block:src/Modules/CalcDefence.lua:1623-1628
 		foldIgnite := igniteAppliesToAll && ailment != data.AilmentIgnite
-		more := modDB.More(nil, string("Self"+ailment+"Duration"), "SelfAilmentDuration", "SelfElementalAilmentDuration")
+		more := modDB.More(nil, selfDuration, "SelfAilmentDuration", "SelfElementalAilmentDuration")
 		if foldIgnite {
 			more *= modDB.More(nil, "SelfIgniteDuration")
 		}
-		incSum := modDB.Sum(mod.TypeIncrease, nil, string("Self"+ailment+"Duration"), "SelfAilmentDuration", "SelfElementalAilmentDuration")
+		incSum := modDB.Sum(mod.TypeIncrease, nil, selfDuration, "SelfAilmentDuration", "SelfElementalAilmentDuration")
 		if foldIgnite {
 			incSum += modDB.Sum(mod.TypeIncrease, nil, "SelfIgniteDuration")
 		}
-		actor.Output[string("Self"+ailment+"Duration")] = more * (100 + incSum) * 100 / divisor
+		actor.Output[selfDuration] = more * (100 + incSum) * 100 / divisor
 	}
 	//pob:block:src/Modules/CalcDefence.lua:1629-1631
-	for _, ailment := range data.Ailment("").Values() {
-		selfName := string("Self" + ailment + "Effect")
-		enemyName := string("Enemy" + ailment + "Effect")
+	for ai, ailment := range data.Ailment("").Values() {
+		selfName := selfAilmentEffectNames[ai]
+		enemyName := enemyAilmentEffectNames[ai]
 		self := modDB.More(nil, selfName) * (100 + modDB.Sum(mod.TypeIncrease, nil, selfName))
 		enemyFactor := float64(1)
 		if modDB.Flag(nil, string("Condition:"+ailment+"edSelf")) {
@@ -1501,16 +1572,17 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 					case conversionExtra < 0:
 						convSign = "-"
 					}
+					//pob:block:src/Modules/CalcDefence.lua:1779-1788
 					lines := []string{
-						fmt.Sprintf("from %s: %.2f", sourceStr, enemyDamage),
+						fmt.Sprintf("from %s: %d", sourceStr, int(enemyDamage)),
 						fmt.Sprintf("* %.2f (modifiers to enemy damage)", enemyDamageMult),
 						fmt.Sprintf("* %.3f (enemy crit effect)", actor.Output["EnemyCritEffect"]),
 					}
 					if conversionExtra != 0 {
-						lines = append(lines, fmt.Sprintf("%s %.2f (enemy damage conversion)", convSign, math.Abs(conversionExtra)))
+						lines = append(lines, fmt.Sprintf("%s %d (enemy damage conversion)", convSign, int(math.Abs(conversionExtra))))
 					}
-					lines = append(lines, fmt.Sprintf("= %.2f", actor.Output[string(damageType+"EnemyDamage")]))
-					actor.Breakdown.AddLine(string(damageType+"EnemyDamage"), lines...)
+					lines = append(lines, fmt.Sprintf("= %d", int(actor.Output[string(damageType+"EnemyDamage")])))
+					actor.Breakdown.Data[string(damageType+"EnemyDamage")] = &Entry{Lines: lines}
 					actor.Breakdown.AddRow("totalEnemyDamage", map[string]string{
 						"type":     string(damageType),
 						"value":    fmt.Sprintf("%.2f", enemyDamage),
@@ -1740,26 +1812,28 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 			impaleDamage = impaleDamage * resMult * (1 - max(min(actor.Output["DamageReductionMax"], min(actor.Output["DamageReductionMax"], impaleArmourReduct+reduction)-enemyOverwhelm), 0)/100)
 			impaleDamage = impaleDamage * enemyImpaleChance / 100 * 5 * actor.Output[string(damageType+"TakenReflect")]
 		}
+		//pob:block:src/Modules/CalcDefence.lua:1999-2021
 		if actor.Breakdown != nil {
+			actor.Breakdown.Data[string(damageType+"DamageReduction")] = &Entry{}
 			if armourReduct != 0 {
 				if resMult != 1 {
-					actor.Breakdown.AddLine(string(damageType+"DamageReduction"), fmt.Sprintf("Enemy Hit Damage After Resistance: %.0f ^8(total incoming damage)", damage*resMult))
+					actor.Breakdown.AddLine(string(damageType+"DamageReduction"), fmt.Sprintf("Enemy Hit Damage After Resistance: %d ^8(total incoming damage)", int(damage*resMult)))
 				} else {
-					actor.Breakdown.AddLine(string(damageType+"DamageReduction"), fmt.Sprintf("Enemy Hit Damage: %.0f ^8(total incoming damage)", damage))
+					actor.Breakdown.AddLine(string(damageType+"DamageReduction"), fmt.Sprintf("Enemy Hit Damage: %d ^8(total incoming damage)", int(damage)))
 				}
-				if percentOfArmourApplies != 100 {
-					actor.Breakdown.AddLine(string(damageType+"DamageReduction"), fmt.Sprintf("%.0f%% percent of armour applies", percentOfArmourApplies))
+				if percentOfArmourApplies != 100 && !physicalReductionBasedOnWard {
+					actor.Breakdown.AddLine(string(damageType+"DamageReduction"), fmt.Sprintf("%d%% percent of armour applies", int(percentOfArmourApplies)))
 				}
-				actor.Breakdown.AddLine(string(damageType+"DamageReduction"), fmt.Sprintf("Reduction from Armour: %.0f%%", armourReduct))
+				actor.Breakdown.AddLine(string(damageType+"DamageReduction"), fmt.Sprintf("Reduction from Armour: %d%%", int(armourReduct)))
 			}
 			if reduction != 0 {
-				actor.Breakdown.AddLine(string(damageType+"DamageReduction"), fmt.Sprintf("Base %s Damage Reduction: %.0f%%", damageType, reduction))
+				actor.Breakdown.AddLine(string(damageType+"DamageReduction"), fmt.Sprintf("Base %s Damage Reduction: %d%%", damageType, int(reduction)))
 			}
 			if enemyOverwhelm != 0 {
-				actor.Breakdown.AddLine(string(damageType+"DamageReduction"), fmt.Sprintf("Enemy Overwhelm %s Damage: %.0f%%", damageType, enemyOverwhelm))
+				actor.Breakdown.AddLine(string(damageType+"DamageReduction"), fmt.Sprintf("Enemy Overwhelm %s Damage: %d%%", damageType, int(enemyOverwhelm)))
 			}
 			if utils.Ternary(armourReduct != 0, 1, 0)+utils.Ternary(reduction != 0, 1, 0)+utils.Ternary(enemyOverwhelm != 0, 1, 0) >= 2 {
-				actor.Breakdown.AddLine(string(damageType+"DamageReduction"), fmt.Sprintf("Total %s Damage Reduction: %.0f%%", damageType, 100-float64(reductMult*100)))
+				actor.Breakdown.AddLine(string(damageType+"DamageReduction"), fmt.Sprintf("Total %s Damage Reduction: %d%%", damageType, int(100-float64(reductMult*100))))
 			}
 		}
 		takenMult := actor.Output[string(damageType+"TakenHitMult")]
@@ -1787,22 +1861,57 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 		if actor.Output["AnyTakenReflect"] != 0 {
 			actor.Output[string(damageType+"TakenReflectMult")] = finalReflect
 		}
+		//pob:block:src/Modules/CalcDefence.lua:2047-2095
 		if actor.Breakdown != nil {
-			actor.Breakdown.AddLine("TakenHitMult",
-				fmt.Sprintf("Resistance: %.2f", 1-resist/100),
-			)
-			if enemyPen > 0 {
-				actor.Breakdown.AddLine(string(damageType+"TakenHitMult"), fmt.Sprintf("Enemy Pen: %.2f", enemyPen))
+			key := string(damageType + "TakenHitMult")
+			actor.Breakdown.Data[key] = &Entry{}
+			if resist != 0 {
+				actor.Breakdown.AddLine(key, fmt.Sprintf("Resistance: %.2f", 1-resist/100))
 			}
-			actor.Breakdown.AddLine(string(damageType+"TakenHitMult"), fmt.Sprintf("+ Flat: %.3f", takenFlat))
-			actor.Breakdown.AddLine(string(damageType+"TakenHitMult"), fmt.Sprintf("x Taken: %.3f", takenMult))
-			actor.Breakdown.AddLine(string(damageType+"TakenHitMult"), fmt.Sprintf("= %.3f", actor.Output[string(damageType+"TakenHitMult")]))
-			actor.Breakdown.AddLine("TakenHit",
-				fmt.Sprintf("Final %s Damage taken:", damageType),
-				fmt.Sprintf("%.1f incoming damage", actor.Output[string(damageType+"TakenDamage")]),
-				fmt.Sprintf("x %.3f damage mult", actor.Output[string(damageType+"TakenHitMult")]),
-				fmt.Sprintf("= %.1f", actor.Output[string(damageType+"TakenHit")]),
-			)
+			if enemyPen != 0 {
+				actor.Breakdown.AddLine(key, fmt.Sprintf("+ Enemy Pen: %.2f", enemyPen/100))
+			}
+			if resist != 0 && enemyPen != 0 {
+				actor.Breakdown.AddLine(key, fmt.Sprintf("= %.2f", resMult))
+			}
+			if reduction != 0 {
+				actor.Breakdown.AddLine(key, fmt.Sprintf("Base %s Damage Taken: %.2f", damageType, 1-reduction/100))
+			}
+			if armourReduct != 0 {
+				if resMult != 1 {
+					actor.Breakdown.AddLine(key, fmt.Sprintf("Enemy Hit Damage After Resistance: %d ^8(total incoming damage)", int(damage*resMult)))
+				} else {
+					actor.Breakdown.AddLine(key, fmt.Sprintf("Enemy Hit Damage: %d ^8(total incoming damage)", int(damage)))
+				}
+				if percentOfArmourApplies != 100 && !physicalReductionBasedOnWard {
+					actor.Breakdown.AddLine(key, fmt.Sprintf("%d%% percent of armour applies", int(percentOfArmourApplies)))
+				}
+				actor.Breakdown.AddLine(key, fmt.Sprintf("Reduction from Armour: %.2f", 1-armourReduct/100))
+			}
+			if enemyOverwhelm != 0 {
+				actor.Breakdown.AddLine(key, fmt.Sprintf("+ Enemy Overwhelm %s Damage: %.2f", damageType, enemyOverwhelm/100))
+			}
+			if reduction != 0 || armourReduct != 0 || enemyOverwhelm != 0 {
+				actor.Breakdown.AddLine(key, fmt.Sprintf("= %.2f", reductMult))
+			}
+			if resMult != 1 && reductMult != 1 {
+				actor.Breakdown.AddLine(key, fmt.Sprintf("%.2f x %.2f = %.3f", resMult, reductMult, baseMult))
+			}
+			if takenFlat != 0 {
+				actor.Breakdown.AddLine(key, fmt.Sprintf("+ Flat: %d", int(takenFlat)))
+			}
+			if takenMult != 1 {
+				actor.Breakdown.AddLine(key, fmt.Sprintf("x Taken: %.3f", takenMult))
+			}
+			if spellSuppressMult != 1 {
+				actor.Breakdown.AddLine(key, fmt.Sprintf("x Spell Suppression: %.3f", spellSuppressMult))
+			}
+			if impaleDamage != 0 {
+				actor.Breakdown.AddLine(key, fmt.Sprintf("+ Impale: %.1f", impaleDamage))
+			}
+			if takenMult != 1 || takenFlat != 0 || spellSuppressMult != 1 || impaleDamage != 0 {
+				actor.Breakdown.AddLine(key, fmt.Sprintf("= %.3f", actor.Output[key]))
+			}
 			actor.Breakdown.AddRow("totalTakenHit", map[string]string{
 				"type":     string(damageType),
 				"incoming": fmt.Sprintf("%.1f incoming damage", actor.Output[string(damageType+"TakenDamage")]),
@@ -1823,21 +1932,30 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 	}
 	{
 		stunThresholdBase := float64(0)
+		stunThresholdSource := ""
 		if modDB.Flag(nil, "StunThresholdBasedOnEnergyShieldInsteadOfLife") {
-			stunThresholdBase = actor.Output["EnergyShield"] * modDB.Sum(mod.TypeBase, nil, "StunThresholdEnergyShieldPercent") / 100
+			stunThresholdMult := modDB.Sum(mod.TypeBase, nil, "StunThresholdEnergyShieldPercent")
+			stunThresholdBase = actor.Output["EnergyShield"] * stunThresholdMult / 100
+			stunThresholdSource = fmt.Sprintf("%.14g%% of Energy Shield", stunThresholdMult)
 		} else if modDB.Flag(nil, "StunThresholdBasedOnManaInsteadOfLife") {
-			stunThresholdBase = actor.Output["Mana"] * modDB.Sum(mod.TypeBase, nil, "StunThresholdManaPercent") / 100
+			stunThresholdMult := modDB.Sum(mod.TypeBase, nil, "StunThresholdManaPercent")
+			stunThresholdBase = actor.Output["Mana"] * stunThresholdMult / 100
+			stunThresholdSource = fmt.Sprintf("%.14g%% of Mana", stunThresholdMult)
 		} else if modDB.Flag(nil, "ChaosInoculation") {
 			stunThresholdBase = modDB.Sum(mod.TypeBase, nil, "Life")
+			stunThresholdSource = "Life before Chaos Inoculation"
 		} else {
 			stunThresholdBase = actor.Output["Life"]
+			stunThresholdSource = "Life"
 		}
 		//pob:block:src/Modules/CalcDefence.lua:2128-2132
 		if modDB.Flag(nil, "AddESToStunThreshold") {
 			esMult := modDB.Sum(mod.TypeBase, nil, "ESToStunThresholdPercent")
 			stunThresholdBase += actor.Output["EnergyShield"] * esMult / 100
+			stunThresholdSource = fmt.Sprintf("%s and %.14g%% of Energy Shield", stunThresholdSource, esMult)
 		}
-		actor.Output["StunThreshold"] = stunThresholdBase * (1 + modDB.Sum(mod.TypeIncrease, nil, "StunThreshold")/100)
+		stunThresholdMod := 1 + modDB.Sum(mod.TypeIncrease, nil, "StunThreshold")/100
+		actor.Output["StunThreshold"] = stunThresholdBase * stunThresholdMod
 
 		//pob:block:src/Modules/CalcDefence.lua:1328-1376
 		//pob:block:src/Modules/CalcDefence.lua:2136-2139
@@ -1849,12 +1967,26 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 			notAvoidChance = notAvoidChance * 0.5
 		}
 		actor.Output["StunAvoidChance"] = 100 - notAvoidChance
+
+		//pob:block:src/Modules/CalcDefence.lua:2142-2152
+		if actor.Breakdown != nil {
+			actor.Breakdown.Data["StunThreshold"] = &Entry{Lines: []string{fmt.Sprintf("%d ^8(base from %s)", int(stunThresholdBase), stunThresholdSource)}}
+			if stunThresholdMod != 1 {
+				actor.Breakdown.AddLine("StunThreshold", fmt.Sprintf("* %.2f ^8(increased threshold)", stunThresholdMod))
+				actor.Breakdown.AddLine("StunThreshold", fmt.Sprintf("= %d", int(actor.Output["StunThreshold"])))
+			}
+			actor.Breakdown.Data["StunAvoidChance"] = &Entry{Lines: []string{
+				colorCustom + "NOTE: Having any energy shield when the hit occurs grants 50% chance to avoid stun.",
+				colorCustom + "POB only applies this modifier when ES > Total incoming damage.",
+			}}
+		}
+		//pob:block:src/Modules/CalcDefence.lua:2153-2186
 		if actor.Output["StunAvoidChance"] >= 100 {
 			actor.Output["StunDuration"] = 0
 			actor.Output["BlockDuration"] = 0
 			if actor.Breakdown != nil {
-				actor.Breakdown.AddLine("StunDuration", "Cannot be Stunned")
-				actor.Breakdown.AddLine("BlockDuration", "Cannot be Stunned")
+				actor.Breakdown.Data["StunDuration"] = &Entry{Lines: []string{"Cannot be Stunned"}}
+				actor.Breakdown.Data["BlockDuration"] = &Entry{Lines: []string{"Cannot be Stunned"}}
 			}
 		} else {
 			stunDuration := 1 + modDB.Sum(mod.TypeIncrease, nil, "StunDuration")/100
@@ -1865,18 +1997,20 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 			actor.Output["StunDuration"] = math.Ceil(baseStunDuration*stunDuration/stunRecovery*data.ServerTickRate) / data.ServerTickRate
 			actor.Output["BlockDuration"] = math.Ceil(baseStunDuration*stunDuration/stunAndBlockRecovery*data.ServerTickRate) / data.ServerTickRate
 			if actor.Breakdown != nil {
-				actor.Breakdown.AddLine("StunDuration",
-					fmt.Sprintf("%.2fs ^8(base)", baseStunDuration),
-					fmt.Sprintf("* %.2f ^8(increased duration)", stunDuration),
-					fmt.Sprintf("/ %.2f ^8(increased/reduced recovery)", stunRecovery),
-					fmt.Sprintf("= %.2fs", actor.Output["StunDuration"]),
-				)
-				actor.Breakdown.AddLine("BlockDuration",
-					fmt.Sprintf("%.2fs ^8(base)", baseStunDuration),
-					fmt.Sprintf("* %.2f ^8(increased duration)", stunDuration),
-					fmt.Sprintf("/ %.2f ^8(increased/reduced block recovery)", stunAndBlockRecovery),
-					fmt.Sprintf("= %.2fs", actor.Output["BlockDuration"]),
-				)
+				actor.Breakdown.Data["StunDuration"] = &Entry{Lines: []string{fmt.Sprintf("%.2fs ^8(base)", baseStunDuration)}}
+				actor.Breakdown.Data["BlockDuration"] = &Entry{Lines: []string{fmt.Sprintf("%.2fs ^8(base)", baseStunDuration)}}
+				if stunDuration != 1 {
+					actor.Breakdown.AddLine("StunDuration", fmt.Sprintf("* %.2f ^8(increased duration)", stunDuration))
+					actor.Breakdown.AddLine("BlockDuration", fmt.Sprintf("* %.2f ^8(increased duration)", stunDuration))
+				}
+				if stunRecovery != 1 {
+					actor.Breakdown.AddLine("StunDuration", fmt.Sprintf("/ %.2f ^8(increased/reduced recovery)", stunRecovery))
+				}
+				if stunAndBlockRecovery != 1 {
+					actor.Breakdown.AddLine("BlockDuration", fmt.Sprintf("/ %.2f ^8(increased/reduced block recovery)", stunAndBlockRecovery))
+				}
+				actor.Breakdown.AddLine("StunDuration", "rounded up to nearest server tick", fmt.Sprintf("= %.2fs", actor.Output["StunDuration"]))
+				actor.Breakdown.AddLine("BlockDuration", "rounded up to nearest server tick", fmt.Sprintf("= %.2fs", actor.Output["BlockDuration"]))
 			}
 		}
 		actor.Output["InterruptStunAvoidChance"] = min(modDB.Sum(mod.TypeBase, nil, "AvoidInterruptStun", "AvoidInteruptStun"), 100)
@@ -1889,6 +2023,23 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 		}
 		baseStunChance := min(data.StunBaseMult*effectiveEnemyDamage/actor.Output["StunThreshold"], 100)
 		actor.Output["SelfStunChance"] = utils.Ternary(baseStunChance > data.MinStunChanceNeeded, baseStunChance, float64(0)) * notAvoidChance / 100
+		//pob:block:src/Modules/CalcDefence.lua:2196-2211
+		if actor.Breakdown != nil {
+			actor.Breakdown.Data["SelfStunChance"] = &Entry{Lines: []string{
+				fmt.Sprintf("%d%% ^8(stun multiplier)", int(data.StunBaseMult)),
+				fmt.Sprintf("* %.1f ^8(effective enemy stun damage)", effectiveEnemyDamage),
+				fmt.Sprintf("/ %d ^8(stun threshold)", int(actor.Output["StunThreshold"])),
+			}}
+			if baseStunChance < data.MinStunChanceNeeded {
+				actor.Breakdown.AddLine("SelfStunChance", fmt.Sprintf("= %.2f%%", baseStunChance))
+				actor.Breakdown.AddLine("SelfStunChance", fmt.Sprintf("Stun Chance has to be more than %d%% to stun.", int(data.MinStunChanceNeeded)))
+			} else {
+				if notAvoidChance != 100 {
+					actor.Breakdown.AddLine("SelfStunChance", fmt.Sprintf("* %.2f ^8(1 - chance to avoid stun)", notAvoidChance/100))
+				}
+				actor.Breakdown.AddLine("SelfStunChance", fmt.Sprintf("= %.2f%%", actor.Output["SelfStunChance"]))
+			}
+		}
 	}
 
 	// Life Recoverable
@@ -2058,14 +2209,15 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 		actor.Output["OnlySharedGuard"] = 1
 		actor.Output["sharedGuardAbsorb"] = calclib.Val(modDB, "GuardAbsorbLimit")
 		lifeProtected := actor.Output["sharedGuardAbsorb"] / (actor.Output["sharedGuardAbsorbRate"] / 100) * (1 - actor.Output["sharedGuardAbsorbRate"]/100)
+		//pob:block:src/Modules/CalcDefence.lua:2386-2394
 		if actor.Breakdown != nil {
-			actor.Breakdown.AddLine("sharedGuardAbsorb",
+			actor.Breakdown.Data["sharedGuardAbsorb"] = &Entry{Lines: []string{
 				"Total life protected:",
-				fmt.Sprintf("%.2f ^8(guard limit)", actor.Output["sharedGuardAbsorb"]),
+				fmt.Sprintf("%d ^8(guard limit)", int(actor.Output["sharedGuardAbsorb"])),
 				fmt.Sprintf("/ %.2f ^8(portion taken from guard)", actor.Output["sharedGuardAbsorbRate"]/100),
 				fmt.Sprintf("x %.2f ^8(portion taken from life and energy shield)", 1-actor.Output["sharedGuardAbsorbRate"]/100),
-				fmt.Sprintf("= %.2f", lifeProtected),
-			)
+				fmt.Sprintf("= %d", int(lifeProtected)),
+			}}
 		}
 	}
 	for _, damageType := range data.DamageType("").Values() {
@@ -2076,14 +2228,15 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 			actor.Output["OnlySharedGuard"] = 0
 			actor.Output[string(damageType+"GuardAbsorb")] = calclib.Val(modDB, string(damageType+"GuardAbsorbLimit"))
 			lifeProtected := actor.Output[string(damageType+"GuardAbsorb")] / (actor.Output[string(damageType+"GuardAbsorbRate")] / 100) * (1 - actor.Output[string(damageType+"GuardAbsorbRate")]/100)
+			//pob:block:src/Modules/CalcDefence.lua:2404-2412
 			if actor.Breakdown != nil {
-				actor.Breakdown.AddLine("GuardAbsorb",
+				actor.Breakdown.Data[string(damageType+"GuardAbsorb")] = &Entry{Lines: []string{
 					"Total life protected:",
-					fmt.Sprintf("%.2f ^8(guard limit)", actor.Output[string(damageType+"GuardAbsorb")]),
+					fmt.Sprintf("%d ^8(guard limit)", int(actor.Output[string(damageType+"GuardAbsorb")])),
 					fmt.Sprintf("/ %.2f ^8(portion taken from guard)", actor.Output[string(damageType+"GuardAbsorbRate")]/100),
 					fmt.Sprintf("x %.2f ^8(portion taken from life and energy shield)", 1-actor.Output[string(damageType+"GuardAbsorbRate")]/100),
-					fmt.Sprintf("= %.2f", lifeProtected),
-				)
+					fmt.Sprintf("= %d", int(lifeProtected)),
+				}}
 			}
 		}
 	}
@@ -2116,14 +2269,15 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 		actor.Output["FrostShieldDamageMitigation"] = modDB.Sum(mod.TypeBase, nil, "FrostGlobeDamageMitigation")
 
 		lifeProtected := actor.Output["FrostShieldLife"] / (actor.Output["FrostShieldDamageMitigation"] / 100) * (1 - actor.Output["FrostShieldDamageMitigation"]/100)
+		//pob:block:src/Modules/CalcDefence.lua:2448-2456
 		if actor.Breakdown != nil {
-			actor.Breakdown.AddLine("FrostShieldLife",
+			actor.Breakdown.Data["FrostShieldLife"] = &Entry{Lines: []string{
 				"Total life protected:",
-				fmt.Sprintf("%.2f ^8(frost shield limit)", actor.Output["FrostShieldLife"]),
+				fmt.Sprintf("%d ^8(frost shield limit)", int(actor.Output["FrostShieldLife"])),
 				fmt.Sprintf("/ %.2f ^8(portion taken from frost shield)", actor.Output["FrostShieldDamageMitigation"]/100),
 				fmt.Sprintf("x %.2f ^8(portion taken from life and energy shield)", 1-actor.Output["FrostShieldDamageMitigation"]/100),
-				fmt.Sprintf("= %.2f", lifeProtected),
-			)
+				fmt.Sprintf("= %d", int(lifeProtected)),
+			}}
 		}
 	}
 	{
@@ -2201,17 +2355,18 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 				}
 			}
 		}
+		//pob:block:src/Modules/CalcDefence.lua:2554-2565
 		if actor.Breakdown != nil {
-			actor.Breakdown.AddLine("TotalPool",
-				fmt.Sprintf("Life: %.2f", actor.Output["LifeRecoverable"]),
-			)
+			actor.Breakdown.Data[string(damageType+"TotalPool")] = &Entry{Lines: []string{
+				fmt.Sprintf("Life: %d", int(actor.Output["LifeRecoverable"])),
+			}}
 			if actor.Output[string(damageType+"ManaEffectiveLife")] != actor.Output["LifeRecoverable"] {
-				actor.Breakdown.AddLine(string(damageType+"TotalPool"), fmt.Sprintf("%s through MoM: %.2f", manatext, actor.Output[string(damageType+"ManaEffectiveLife")]-actor.Output["LifeRecoverable"]))
+				actor.Breakdown.AddLine(string(damageType+"TotalPool"), fmt.Sprintf("%s through MoM: %d", manatext, int(actor.Output[string(damageType+"ManaEffectiveLife")]-actor.Output["LifeRecoverable"])))
 			}
 			if (!modDB.Flag(nil, "EnergyShieldProtectsMana")) && actor.Output[string(damageType+"EnergyShieldBypass")] < 100 {
-				actor.Breakdown.AddLine(string(damageType+"TotalPool"), fmt.Sprintf("Non-bypassed Energy Shield: %.2f", actor.Output[string(damageType+"TotalPool")]-actor.Output[string(damageType+"ManaEffectiveLife")]))
+				actor.Breakdown.AddLine(string(damageType+"TotalPool"), fmt.Sprintf("Non-bypassed Energy Shield: %d", int(actor.Output[string(damageType+"TotalPool")]-actor.Output[string(damageType+"ManaEffectiveLife")])))
 			}
-			actor.Breakdown.AddLine(string(damageType+"TotalPool"), fmt.Sprintf("TotalPool: %.2f", actor.Output[string(damageType+"TotalPool")]))
+			actor.Breakdown.AddLine(string(damageType+"TotalPool"), fmt.Sprintf("TotalPool: %d", int(actor.Output[string(damageType+"TotalPool")])))
 		}
 	}
 
@@ -2744,20 +2899,21 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 			} else {
 				actor.Output["NumberOfMitigatedDamagingHits"] = actor.Output["NumberOfDamagingHits"]
 			}
+			//pob:block:src/Modules/CalcDefence.lua:2841-2855
 			if actor.Breakdown != nil {
-				actor.Breakdown.AddLine("ConfiguredDamageChance",
+				actor.Breakdown.Data["ConfiguredDamageChance"] = &Entry{Lines: []string{
 					fmt.Sprintf("%.2f ^8(chance for block to fail)", 1-BlockChance),
-				)
+				}}
 				if actor.Output["ShowBlockEffect"] != 0 {
 					actor.Breakdown.AddLine("ConfiguredDamageChance", fmt.Sprintf("x %.2f ^8(block effect)", actor.Output["BlockEffect"]/100))
 				}
-				if suppressionEffect > 0 {
+				if suppressionEffect != 1 {
 					actor.Breakdown.AddLine("ConfiguredDamageChance", fmt.Sprintf("x %.3f ^8(suppression effect)", suppressionEffect))
 				}
 				if averageAvoidChance > 0 {
 					actor.Breakdown.AddLine("ConfiguredDamageChance", fmt.Sprintf("x %.2f ^8(chance for avoidance to fail)", 1-averageAvoidChance/100))
 				}
-				actor.Breakdown.AddLine("ConfiguredDamageChance", fmt.Sprintf("= %.1f%% ^8(of damage taken from a%s hit)", actor.Output["ConfiguredDamageChance"], utils.Ternary(damageCategoryConfig == "Average", "n ", " ")+damageCategoryConfig))
+				actor.Breakdown.AddLine("ConfiguredDamageChance", fmt.Sprintf("= %.1f%% ^8(of damage taken from a%s hit)", actor.Output["ConfiguredDamageChance"], utils.Ternary(damageCategoryConfig == "Average" || damageCategoryConfig == "Untyped", "n ", " ")+damageCategoryConfig))
 			}
 		}
 		{
@@ -2783,36 +2939,62 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 				}
 			}
 			actor.Output["TotalNumberOfHits"] = actor.Output["NumberOfMitigatedDamagingHits"] / (1 - actor.Output["ConfiguredNotHitChance"]/100)
+			//pob:block:src/Modules/CalcDefence.lua:2861-2904
 			if actor.Breakdown != nil {
+				const key = "ConfiguredNotHitChance"
+				actor.Breakdown.Data[key] = &Entry{}
 				if damageCategoryConfig == "Melee" || damageCategoryConfig == "Projectile" {
-					actor.Breakdown.AddLine("ConfiguredNotHitChance", fmt.Sprintf("%.2f ^8(chance for evasion to fail)", 1-actor.Output[damageCategoryConfig+"EvadeChance"]/100))
-					actor.Breakdown.AddLine("ConfiguredNotHitChance", fmt.Sprintf("x %.2f ^8(chance for dodge to fail)", 1-actor.Output["AttackDodgeChance"]/100))
+					if actor.Output[damageCategoryConfig+"EvadeChance"] > 0 {
+						actor.Breakdown.AddLine(key, fmt.Sprintf("%.2f ^8(chance for evasion to fail)", 1-actor.Output[damageCategoryConfig+"EvadeChance"]/100))
+					}
+					if actor.Output["AttackDodgeChance"] > 0 {
+						actor.Breakdown.AddLine(key, fmt.Sprintf("x %.2f ^8(chance for dodge to fail)", 1-actor.Output["AttackDodgeChance"]/100))
+					}
+					if damageCategoryConfig == "Projectile" && !specificTypeAvoidance && actor.Output["AvoidProjectilesChance"] > 0 {
+						actor.Breakdown.AddLine(key, fmt.Sprintf("x %.2f ^8(chance for avoidance to fail)", 1-actor.Output["AvoidProjectilesChance"]/100))
+					}
 				} else if damageCategoryConfig == "Spell" || damageCategoryConfig == "SpellProjectile" {
-					actor.Breakdown.AddLine("ConfiguredNotHitChance", fmt.Sprintf("%.2f ^8(chance for dodge to fail)", 1-actor.Output["SpellDodgeChance"]/100))
+					if actor.Output["SpellDodgeChance"] > 0 {
+						actor.Breakdown.AddLine(key, fmt.Sprintf("%.2f ^8(chance for dodge to fail)", 1-actor.Output["SpellDodgeChance"]/100))
+					}
+					if damageCategoryConfig == "SpellProjectile" && !specificTypeAvoidance && actor.Output["AvoidProjectilesChance"] > 0 {
+						actor.Breakdown.AddLine(key, fmt.Sprintf("x %.2f ^8(chance for avoidance to fail)", 1-actor.Output["AvoidProjectilesChance"]/100))
+					}
 				} else if damageCategoryConfig == "Average" {
-					actor.Breakdown.AddLine("ConfiguredNotHitChance", fmt.Sprintf("%.2f ^8(chance for evasion to fail, only applies to the attack portion)", 1-(actor.Output["MeleeEvadeChance"]+actor.Output["ProjectileEvadeChance"])/2/100))
-					actor.Breakdown.AddLine("ConfiguredNotHitChance", fmt.Sprintf("x%.2f ^8(chance for dodge to fail)", 1-(actor.Output["AttackDodgeChance"]+actor.Output["SpellDodgeChance"])/2/100))
+					if actor.Output["MeleeEvadeChance"] > 0 || actor.Output["ProjectileEvadeChance"] > 0 {
+						actor.Breakdown.AddLine(key, fmt.Sprintf("%.2f ^8(chance for evasion to fail, only applies to the attack portion)", 1-(actor.Output["MeleeEvadeChance"]+actor.Output["ProjectileEvadeChance"])/2/100))
+					}
+					if actor.Output["AttackDodgeChance"] > 0 || actor.Output["SpellDodgeChance"] > 0 {
+						actor.Breakdown.AddLine(key, fmt.Sprintf("x%.2f ^8(chance for dodge to fail)", 1-(actor.Output["AttackDodgeChance"]+actor.Output["SpellDodgeChance"])/2/100))
+					}
+					if !specificTypeAvoidance && actor.Output["AvoidProjectilesChance"] > 0 {
+						actor.Breakdown.AddLine(key, fmt.Sprintf("x %.2f ^8(chance for avoidance to fail)", 1-actor.Output["AvoidProjectilesChance"]/2/100))
+					}
+				}
+				if actor.Output["AvoidAllDamageFromHitsChance"] > 0 {
+					actor.Breakdown.AddLine(key, fmt.Sprintf("x %.2f ^8(chance for damage avoidance to fail)", 1-actor.Output["AvoidAllDamageFromHitsChance"]/100))
 				}
 				if worstOf > 1 {
-					actor.Breakdown.AddLine("ConfiguredNotHitChance", fmt.Sprintf("unlucky worst of %.2f", worstOf))
+					actor.Breakdown.AddLine(key, fmt.Sprintf("unlucky worst of %d", int(worstOf)))
 				}
-				actor.Breakdown.AddLine("ConfiguredNotHitChance", fmt.Sprintf("= %.2f%% ^8(chance to be hit by a%s hit)", 100-actor.Output["ConfiguredNotHitChance"], utils.Ternary(damageCategoryConfig == "Average", "n ", " ")+damageCategoryConfig))
-				actor.Breakdown.AddLine("TotalNumberOfHits",
+				actor.Breakdown.AddLine(key, fmt.Sprintf("= %d%% ^8(chance to be hit by a%s hit)", int(100-actor.Output["ConfiguredNotHitChance"]), utils.Ternary(damageCategoryConfig == "Average" || damageCategoryConfig == "Untyped", "n ", " ")+damageCategoryConfig))
+				actor.Breakdown.Data["TotalNumberOfHits"] = &Entry{Lines: []string{
 					fmt.Sprintf("%.2f ^8(Number of mitigated hits)", actor.Output["NumberOfMitigatedDamagingHits"]),
 					fmt.Sprintf("/ %.2f ^8(Chance to even be hit)", 1-actor.Output["ConfiguredNotHitChance"]/100),
 					fmt.Sprintf("= %.2f ^8(total average number of hits you can take)", actor.Output["TotalNumberOfHits"]),
-				)
+				}}
 			}
 		}
 
 		// effective hit pool
 		actor.Output["TotalEHP"] = actor.Output["TotalNumberOfHits"] * actor.Output["totalEnemyDamageIn"]
+		//pob:block:src/Modules/CalcDefence.lua:2909-2915
 		if actor.Breakdown != nil {
-			actor.Breakdown.AddLine("TotalEHP",
+			actor.Breakdown.Data["TotalEHP"] = &Entry{Lines: []string{
 				fmt.Sprintf("%.2f ^8(total average number of hits you can take)", actor.Output["TotalNumberOfHits"]),
-				fmt.Sprintf("x %.2f ^8(total incoming damage)", actor.Output["totalEnemyDamageIn"]),
-				fmt.Sprintf("= %.2f ^8(total damage you can take)", actor.Output["TotalEHP"]),
-			)
+				fmt.Sprintf("x %d ^8(total incoming damage)", int(actor.Output["totalEnemyDamageIn"])),
+				fmt.Sprintf("= %d ^8(total damage you can take)", int(actor.Output["TotalEHP"])),
+			}}
 		}
 		// survival time
 		//pob:block:src/Modules/CalcDefence.lua:2917-2930
@@ -2903,6 +3085,74 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 			actor.Output[recoupType+"RecoupRecoveryMax"] = total/recoupTime + pseudo/pseudoDuration + extraMax
 			actor.Output[recoupType+"RecoupRecoveryAvg"] = total/(actor.Output["EHPSurvivalTime"]+recoupTime) +
 				pseudo/(actor.Output["EHPSurvivalTime"]+pseudoDuration) + extraAvg
+			//pob:block:src/Modules/CalcDefence.lua:2970-3018
+			if actor.Breakdown != nil {
+				maxKey, avgKey := recoupType+"RecoupRecoveryMax", recoupType+"RecoupRecoveryAvg"
+				var lines []string
+				multipleTypes := 0
+				if actor.Output[recoupType+"Recoup"] > 0 {
+					lines = append(lines,
+						fmt.Sprintf("%d ^8(total damage taken during ehp calcs)", int(totalDamage)),
+						fmt.Sprintf("* %.2f ^8(percent of damage recouped)", actor.Output[recoupType+"Recoup"]/100),
+					)
+					multipleTypes++
+				}
+				if actor.Output["Elemental"+recoupType+"Recoup"] > 0 && totalElementalDamage > 0 {
+					if multipleTypes > 0 {
+						lines = append(lines, "")
+					}
+					lines = append(lines,
+						fmt.Sprintf("%s%d ^8(total elemental damage taken during ehp calcs)", utils.Ternary(multipleTypes > 0, "+", ""), int(totalDamage)),
+						fmt.Sprintf("* %.2f ^8(percent of damage recouped)", actor.Output["Elemental"+recoupType+"Recoup"]/100),
+					)
+					multipleTypes++
+				}
+				for _, dt := range data.DamageType("").Values() {
+					damageType := string(dt)
+					if actor.Output[damageType+recoupType+"Recoup"] > 0 && actor.Output[damageType+"RecoupableDamageTaken"] > 0 {
+						if multipleTypes > 0 {
+							lines = append(lines, "")
+						}
+						lines = append(lines,
+							fmt.Sprintf("%s%d ^8(total %s damage taken during ehp calcs)", utils.Ternary(multipleTypes > 0, "+", ""), int(totalDamage), damageType),
+							fmt.Sprintf("* %.2f ^8(percent of damage recouped)", actor.Output[damageType+recoupType+"Recoup"]/100),
+						)
+						multipleTypes++
+					}
+				}
+				lines = append(lines, fmt.Sprintf("= %d ^8(total damage recoup amount)", int(total)))
+				avg := slices.Clone(lines)
+				lines = append(lines, fmt.Sprintf("/ %.2f ^8(over %d seconds)", recoupTime, int(recoupTime)))
+				if pseudo > 0 {
+					lines = append(lines,
+						fmt.Sprintf("+ %.2f ^8(total damage mitigated pseudo recoup amount)", pseudo),
+						fmt.Sprintf("/ %.2f ^8(over %d seconds)", pseudoDuration, int(pseudoDuration)),
+					)
+				}
+				if e, ok := extraPseudoRecoup[recoupType]; ok {
+					lines = append(lines,
+						fmt.Sprintf("+ %.2f ^8(total damage mitigated pseudo recoup amount)", e.amount),
+						fmt.Sprintf("/ %.2f ^8(over %d seconds)", e.duration, int(e.duration)),
+					)
+				}
+				lines = append(lines, fmt.Sprintf("= %.2f per second ^8", actor.Output[maxKey]))
+				avg = append(avg, fmt.Sprintf("/ %.2f ^8(total time of the recoup (survival time + %d seconds))", actor.Output["EHPSurvivalTime"]+recoupTime, int(recoupTime)))
+				if pseudo > 0 {
+					avg = append(avg,
+						fmt.Sprintf("+ %.2f ^8(total damage mitigated pseudo recoup amount)", pseudo),
+						fmt.Sprintf("/ %.2f ^8(total time of the recoup (survival time + %d seconds)", actor.Output["EHPSurvivalTime"]+pseudoDuration, int(pseudoDuration)),
+					)
+				}
+				if e, ok := extraPseudoRecoup[recoupType]; ok {
+					avg = append(avg,
+						fmt.Sprintf("+ %.2f ^8(total damage mitigated pseudo recoup amount)", e.amount),
+						fmt.Sprintf("/ %.2f ^8(total time of the recoup (survival time + %d seconds)", actor.Output["EHPSurvivalTime"]+e.duration, int(e.duration)),
+					)
+				}
+				avg = append(avg, fmt.Sprintf("= %.2f per second ^8", actor.Output[avgKey]))
+				actor.Breakdown.Data[maxKey] = &Entry{Lines: lines}
+				actor.Breakdown.Data[avgKey] = &Entry{Lines: avg}
+			}
 		}
 	}
 
@@ -2999,12 +3249,13 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 	// effective health pool vs dots
 	for _, damageType := range data.DamageType("").Values() {
 		actor.Output[string(damageType+"DotEHP")] = actor.Output[string(damageType+"TotalPool")] / actor.Output[string(damageType+"TakenDotMult")]
+		//pob:block:src/Modules/CalcDefence.lua:3330-3336
 		if actor.Breakdown != nil {
-			actor.Breakdown.AddLine(string(damageType+"DotEHP"),
-				fmt.Sprintf("Total Pool: %.2f", actor.Output[string(damageType+"TotalPool")]),
+			actor.Breakdown.Data[string(damageType+"DotEHP")] = &Entry{Lines: []string{
+				fmt.Sprintf("Total Pool: %d", int(actor.Output[string(damageType+"TotalPool")])),
 				fmt.Sprintf("Dot Damage Taken modifier: %.2f", actor.Output[string(damageType+"TakenDotMult")]),
-				fmt.Sprintf("Total Effective Dot Pool: %.2f", actor.Output[string(damageType+"DotEHP")]),
-			)
+				fmt.Sprintf("Total Effective Dot Pool: %d", int(actor.Output[string(damageType+"DotEHP")])),
+			}}
 		}
 	}
 
@@ -3469,11 +3720,11 @@ func calcResistances(actor *Actor, modDB *moddb.ModDB) {
 
 	// Process Resistance conversion mods.
 	//pob:block:src/Modules/CalcDefence.lua:513-558
-	for _, resFrom := range resistTypeList {
+	for fi, resFrom := range resistTypeList {
 		var maxRes float64
 		maxResSet := false
-		for _, resTo := range resistTypeList {
-			conversionRate := modDB.Sum(mod.TypeBase, nil, resFrom+"MaxResConvertTo"+resTo) / 100
+		for ti, resTo := range resistTypeList {
+			conversionRate := modDB.Sum(mod.TypeBase, nil, resistConvertNames[fi][ti].maxRes) / 100
 			if conversionRate == 0 {
 				continue
 			}
@@ -3491,11 +3742,11 @@ func calcResistances(actor *Actor, modDB *moddb.ModDB) {
 			}
 		}
 	}
-	for _, resFrom := range resistTypeList {
+	for fi, resFrom := range resistTypeList {
 		var res float64
 		resSet := false
-		for _, resTo := range resistTypeList {
-			conversionRate := modDB.Sum(mod.TypeBase, nil, resFrom+"ResConvertTo"+resTo) / 100
+		for ti, resTo := range resistTypeList {
+			conversionRate := modDB.Sum(mod.TypeBase, nil, resistConvertNames[fi][ti].res) / 100
 			if conversionRate == 0 {
 				continue
 			}
@@ -3540,31 +3791,32 @@ func calcResistances(actor *Actor, modDB *moddb.ModDB) {
 		}
 	}
 
-	for _, elem := range resistTypeList {
+	for ei, elem := range resistTypeList {
+		n := &resistNames[ei]
 		Min := float64(data.ResistFloor)
-		Max := utils.Or(modDB.Override(nil, elem+"ResistMax"), min(data.MaxResistCap, modDB.Sum(mod.TypeBase, nil, elem+"ResistMax", utils.Ternary(isElemental[elem], "ElementalResistMax", ""))))
-		totemMax := utils.Or(modDB.Override(nil, "Totem"+elem+"ResistMax"), min(data.MaxResistCap, modDB.Sum(mod.TypeBase, nil, "Totem"+elem+"ResistMax", utils.Ternary(isElemental[elem], "TotemElementalResistMax", ""))))
-		totalMV := modDB.Override(nil, elem+"Resist")
-		totemTotalMV := modDB.Override(nil, "Totem"+elem+"Resist")
+		Max := utils.Or(modDB.Override(nil, n.max), min(data.MaxResistCap, modDB.Sum(mod.TypeBase, nil, n.max, utils.Ternary(isElemental[elem], "ElementalResistMax", ""))))
+		totemMax := utils.Or(modDB.Override(nil, n.totemMax), min(data.MaxResistCap, modDB.Sum(mod.TypeBase, nil, n.totemMax, utils.Ternary(isElemental[elem], "TotemElementalResistMax", ""))))
+		totalMV := modDB.Override(nil, n.resist)
+		totemTotalMV := modDB.Override(nil, n.totem)
 		var total, dotTotal, totemTotal float64
 		dotSet := false
 		if totalMV == nil {
-			base := modDB.Sum(mod.TypeBase, nil, elem+"Resist", utils.Ternary(isElemental[elem], "ElementalResist", ""))
-			inc := max(calclib.Mod(modDB, nil, elem+"Resist", utils.Ternary(isElemental[elem], "ElementalResist", "")), 0)
+			base := modDB.Sum(mod.TypeBase, nil, n.resist, utils.Ternary(isElemental[elem], "ElementalResist", ""))
+			inc := max(calclib.Mod(modDB, nil, n.resist, utils.Ternary(isElemental[elem], "ElementalResist", "")), 0)
 			total = base * inc
 			//pob:block:src/Modules/CalcDefence.lua:589-590
 			dotBase := modDB.Sum(mod.TypeBase, &moddb.ListCfg{
 				Flags:        utils.Ptr(mod.MFlagDot),
 				KeywordFlags: utils.Ptr(mod.KeywordFlag(0)),
-			}, elem+"Resist", utils.Ternary(isElemental[elem], "ElementalResist", ""))
+			}, n.resist, utils.Ternary(isElemental[elem], "ElementalResist", ""))
 			dotTotal = dotBase * inc
 			dotSet = true
 		} else {
 			total = totalMV.Float()
 		}
 		if totemTotalMV == nil {
-			base := modDB.Sum(mod.TypeBase, nil, "Totem"+elem+"Resist", utils.Ternary(isElemental[elem], "TotemElementalResist", ""))
-			totemTotal = base * max(calclib.Mod(modDB, nil, "Totem"+elem+"Resist", utils.Ternary(isElemental[elem], "TotemElementalResist", "")), 0)
+			base := modDB.Sum(mod.TypeBase, nil, n.totem, utils.Ternary(isElemental[elem], "TotemElementalResist", ""))
+			totemTotal = base * max(calclib.Mod(modDB, nil, n.totem, utils.Ternary(isElemental[elem], "TotemElementalResist", "")), 0)
 		} else {
 			totemTotal = totemTotalMV.Float()
 		}
@@ -3581,24 +3833,24 @@ func calcResistances(actor *Actor, modDB *moddb.ModDB) {
 		final := max(min(total, Max), Min)
 		dotFinal := max(min(dotTotal, Max), Min)
 		totemFinal := max(min(totemTotal, totemMax), Min)
-		actor.Output[elem+"Resist"] = final
-		actor.Output[elem+"ResistTotal"] = total
-		actor.Output[elem+"ResistOverCap"] = max(0, total-Max)
-		actor.Output[elem+"ResistOver75"] = max(0, final-75)
-		actor.Output["Missing"+elem+"Resist"] = max(0, Max-final)
+		actor.Output[n.resist] = final
+		actor.Output[n.total] = total
+		actor.Output[n.overCap] = max(0, total-Max)
+		actor.Output[n.over75] = max(0, final-75)
+		actor.Output[n.missing] = max(0, Max-final)
 		//pob:block:src/Modules/CalcDefence.lua:615
-		actor.Output[elem+"ResistOverTime"] = dotFinal
-		actor.Output["Totem"+elem+"Resist"] = totemFinal
-		actor.Output["Totem"+elem+"ResistTotal"] = totemTotal
-		actor.Output["Totem"+elem+"ResistOverCap"] = max(0, totemTotal-totemMax)
-		actor.Output["MissingTotem"+elem+"Resist"] = max(0, totemMax-totemFinal)
+		actor.Output[n.overTime] = dotFinal
+		actor.Output[n.totem] = totemFinal
+		actor.Output[n.totemTotal] = totemTotal
+		actor.Output[n.totemOverCap] = max(0, totemTotal-totemMax)
+		actor.Output[n.missingTotem] = max(0, totemMax-totemFinal)
 		if actor.Breakdown != nil {
-			actor.Breakdown.AddLine(elem+"Resist",
+			actor.Breakdown.AddLine(n.resist,
 				"Min: "+fmt.Sprint(Min)+"%",
 				"Max: "+fmt.Sprint(Max)+"%",
 				"Total: "+fmt.Sprint(total)+"%",
 			)
-			actor.Breakdown.AddLine("Totem"+elem+"Resist",
+			actor.Breakdown.AddLine(n.totem,
 				"Min: "+fmt.Sprint(Min)+"%",
 				"Max: "+fmt.Sprint(totemMax)+"%",
 				"Total: "+fmt.Sprint(totemTotal)+"%",
@@ -3606,3 +3858,84 @@ func calcResistances(actor *Actor, modDB *moddb.ModDB) {
 		}
 	}
 }
+
+var damageRecoupNames = func() [3][5]struct{ recoup, energyShield, addToEnergyShield string } {
+	var out [3][5]struct{ recoup, energyShield, addToEnergyShield string }
+	for ri, recoupType := range []string{"Life", "Mana", "EnergyShield"} {
+		for di, dt := range data.DamageType("").Values() {
+			out[ri][di].recoup = string(dt) + recoupType + "Recoup"
+			out[ri][di].energyShield = string(dt) + "EnergyShieldRecoup"
+			out[ri][di].addToEnergyShield = "Add" + recoupType + "RecoupToEnergyShieldRecoup"
+		}
+	}
+	return out
+}()
+
+var resistNames = func() []struct {
+	resist, total, max, overCap, over75, missing, overTime  string
+	totem, totemTotal, totemMax, totemOverCap, missingTotem string
+} {
+	out := make([]struct {
+		resist, total, max, overCap, over75, missing, overTime  string
+		totem, totemTotal, totemMax, totemOverCap, missingTotem string
+	}, len(resistTypeList))
+	for i, elem := range resistTypeList {
+		n := &out[i]
+		n.resist, n.total, n.max = elem+"Resist", elem+"ResistTotal", elem+"ResistMax"
+		n.overCap, n.over75, n.missing, n.overTime = elem+"ResistOverCap", elem+"ResistOver75", "Missing"+elem+"Resist", elem+"ResistOverTime"
+		n.totem, n.totemTotal, n.totemMax = "Totem"+elem+"Resist", "Totem"+elem+"ResistTotal", "Totem"+elem+"ResistMax"
+		n.totemOverCap, n.missingTotem = "Totem"+elem+"ResistOverCap", "MissingTotem"+elem+"Resist"
+	}
+	return out
+}()
+
+func namesOf[T ~string](values []T, prefix, suffix string) []string {
+	out := make([]string, len(values))
+	for i, v := range values {
+		out[i] = prefix + string(v) + suffix
+	}
+	return out
+}
+
+var (
+	damageReductionNames            = namesOf(data.DamageType("").Values(), "", "DamageReduction")
+	damageReductionWhenHitNames     = namesOf(data.DamageType("").Values(), "", "DamageReductionWhenHit")
+	baseDamageReductionNames        = namesOf(data.DamageType("").Values(), "Base", "DamageReduction")
+	baseDamageReductionWhenHitNames = namesOf(data.DamageType("").Values(), "Base", "DamageReductionWhenHit")
+	avoidDamageChanceNames          = namesOf(data.DamageType("").Values(), "Avoid", "DamageChance")
+	avoidAilmentNames               = namesOf(data.Ailment("").Values(), "Avoid", "")
+	ailmentImmuneNames              = namesOf(data.Ailment("").Values(), "", "Immune")
+	ailmentAvoidChanceNames         = namesOf(data.Ailment("").Values(), "", "AvoidChance")
+	selfAilmentDurationNames        = namesOf(data.Ailment("").Values(), "Self", "Duration")
+	selfAilmentEffectNames          = namesOf(data.Ailment("").Values(), "Self", "Effect")
+	enemyAilmentEffectNames         = namesOf(data.Ailment("").Values(), "Enemy", "Effect")
+)
+
+var regenNames = func() [4]struct {
+	regen, regenInc, regenPercent, regenRecovery, recoveryRateMod, recovery, degen, degenPercent, degenPercentTincture string
+	noRegen, cannotGain, unaffectedBy, canGain                                                                         string
+} {
+	var out [4]struct {
+		regen, regenInc, regenPercent, regenRecovery, recoveryRateMod, recovery, degen, degenPercent, degenPercentTincture string
+		noRegen, cannotGain, unaffectedBy, canGain                                                                         string
+	}
+	for i, name := range []string{"Mana", "Life", "EnergyShield", "Rage"} {
+		n := &out[i]
+		n.regen, n.regenInc, n.regenPercent, n.regenRecovery = name+"Regen", name+"RegenInc", name+"RegenPercent", name+"RegenRecovery"
+		n.recoveryRateMod, n.recovery = name+"RecoveryRateMod", name+"Recovery"
+		n.degen, n.degenPercent, n.degenPercentTincture = name+"Degen", name+"DegenPercent", name+"DegenPercentTincture"
+		n.noRegen, n.cannotGain, n.unaffectedBy, n.canGain = "No"+name+"Regen", "CannotGain"+name, "UnaffectedBy"+name+"Regen", "Condition:CanGain"+name
+	}
+	return out
+}()
+
+var resistConvertNames = func() [][]struct{ maxRes, res string } {
+	out := make([][]struct{ maxRes, res string }, len(resistTypeList))
+	for f, resFrom := range resistTypeList {
+		out[f] = make([]struct{ maxRes, res string }, len(resistTypeList))
+		for t, resTo := range resistTypeList {
+			out[f][t].maxRes, out[f][t].res = resFrom+"MaxResConvertTo"+resTo, resFrom+"ResConvertTo"+resTo
+		}
+	}
+	return out
+}()
