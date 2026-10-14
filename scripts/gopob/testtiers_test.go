@@ -1,7 +1,9 @@
 package main
 
 import (
+	"errors"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -108,5 +110,79 @@ func TestTestTiersRecordKeepsOnlyTestsOverTheLine(t *testing.T) {
 	}
 	if rc := tiRecord(list, []string{filepath.Join(dir, "empty")}); rc != root.RefusalCode {
 		t.Fatalf("a missing log: rc %d", rc)
+	}
+}
+
+// TestTestTiersAffectedRunsTheOperatorTierOfChangedPackagesOnly: in a sandbox module, pkg/a's test passes only under the operator env.
+func TestTestTiersAffectedRunsTheOperatorTierOfChangedPackagesOnly(t *testing.T) {
+	repo := repoRoot(t)
+	bin := buildPort(t, repo)
+	sb := t.TempDir()
+	files := map[string]string{
+		"go.mod":        "module " + root.Module + "\n\ngo 1.26.2\n",
+		tiListFile:      "x/y TestSlowElsewhere 99.0\n",
+		"pkg/a/a.go":    "package a\n",
+		"pkg/b/b.go":    "package b\n",
+		"frontend/x.ts": "export {}\n",
+		"pkg/a/a_test.go": "package a\n\nimport (\n\t\"os\"\n\t\"testing\"\n)\n\n" +
+			"func TestOperatorEnv(t *testing.T) {\n\tif os.Getenv(\"OPERATOR\") != \"true\" || os.Getenv(\"CORPUS\") != \"true\" {\n\t\tt.Fatal(\"not the operator tier\")\n\t}\n}\n",
+		"pkg/b/b_test.go": "package b\n\nimport \"testing\"\n\nfunc TestNeverPicked(t *testing.T) { t.Fatal(\"b was picked\") }\n",
+	}
+	for rel, body := range files {
+		if err := os.MkdirAll(filepath.Join(sb, filepath.Dir(rel)), 0o750); err != nil {
+			t.Fatal(err)
+		}
+		if err := put(sb, rel, body); err != nil {
+			t.Fatal(err)
+		}
+	}
+	git := func(args ...string) {
+		t.Helper()
+		cmd := exec.CommandContext(t.Context(), "git", args...)
+		cmd.Dir = sb
+		cmd.Env = append(os.Environ(), "GIT_AUTHOR_NAME=t", "GIT_AUTHOR_EMAIL=t@t", "GIT_COMMITTER_NAME=t", "GIT_COMMITTER_EMAIL=t@t")
+		if out, err := cmd.CombinedOutput(); err != nil {
+			t.Fatalf("git %v: %v\n%s", args, err, out)
+		}
+	}
+	git("init", "-q")
+	git("add", ".")
+	git("commit", "-q", "--no-gpg-sign", "-m", "base")
+	run := func() (string, int) {
+		t.Helper()
+		cmd := exec.CommandContext(t.Context(), bin, "test-tiers", "affected")
+		cmd.Dir = sb
+		cmd.Env = append(os.Environ(), "GOPOB_ROOT="+sb, "BASE=HEAD", "OPERATOR=", "CORPUS=", "GOFLAGS=-count=1")
+		out, err := cmd.CombinedOutput()
+		var ee *exec.ExitError
+		if errors.As(err, &ee) {
+			return string(out), ee.ExitCode()
+		} else if err != nil {
+			t.Fatal(err)
+		}
+		return string(out), 0
+	}
+
+	if err := put(sb, "frontend/x.ts", "export const x = 1\n"); err != nil {
+		t.Fatal(err)
+	}
+	out, rc := run()
+	if rc != 0 || !strings.Contains(out, "nothing to test") || strings.Contains(out, "go test") {
+		t.Fatalf("frontend-only change: rc %d\n%s", rc, out)
+	}
+
+	if err := put(sb, "pkg/a/a.go", "package a\n\nconst A = 1\n"); err != nil {
+		t.Fatal(err)
+	}
+	out, rc = run()
+	if rc != 0 || !strings.Contains(out, "ok  \tpkg/a") || strings.Contains(out, "pkg/b") {
+		t.Fatalf("pkg/a change: rc %d\n%s", rc, out)
+	}
+
+	if err := put(sb, "pkg/b/b.go", "package b\n\nconst B = 1\n"); err != nil {
+		t.Fatal(err)
+	}
+	if out, rc = run(); rc == 0 || !strings.Contains(out, "b was picked") {
+		t.Fatalf("pkg/b change must run b's failing test: rc %d\n%s", rc, out)
 	}
 }

@@ -45,6 +45,11 @@ type partyActor struct {
 	outputTables map[string]map[string]float64
 }
 
+func (a *partyActor) GetOutput(stat string) (float64, bool) {
+	v, ok := a.output[stat]
+	return v, ok
+}
+
 type partyTab struct {
 	actor        *partyActor
 	enemyModList *moddb.ModList
@@ -57,16 +62,18 @@ func newPartyBuffList() *partyBuffList {
 
 //pob:block:src/Classes/PartyTab.lua:18-20
 func newPartyTab() *partyTab {
+	actor := &partyActor{
+		Aura:         newPartyBuffList(),
+		Curse:        newPartyBuffList(),
+		Warcry:       newPartyBuffList(),
+		Link:         newPartyBuffList(),
+		modDB:        moddb.NewModDB(),
+		output:       make(map[string]float64),
+		outputTables: make(map[string]map[string]float64),
+	}
+	actor.modDB.Actor = actor
 	return &partyTab{
-		actor: &partyActor{
-			Aura:         newPartyBuffList(),
-			Curse:        newPartyBuffList(),
-			Warcry:       newPartyBuffList(),
-			Link:         newPartyBuffList(),
-			modDB:        moddb.NewModDB(),
-			output:       make(map[string]float64),
-			outputTables: make(map[string]map[string]float64),
-		},
+		actor:        actor,
 		enemyModList: moddb.NewModList(),
 	}
 }
@@ -306,8 +313,19 @@ func (t *partyTab) parseNamedBuffs(list *partyBuffList, buf string, buffType str
 			if buffType == "Link" {
 				m.SetName(strings.ReplaceAll(m.Name(), "Parent", "PartyMember"))
 				for _, tag := range m.Tags() {
-					if mt, ok := tag.(*mod.MultiplierTag); ok && mt.TagActor == "parent" {
-						mt.TagActor = "partyMembers"
+					switch tt := tag.(type) {
+					case *mod.MultiplierTag:
+						if tt.TagActor == "parent" {
+							tt.TagActor = "partyMembers"
+						}
+					case *mod.PercentStatTag:
+						if tt.TagActor == "parent" {
+							tt.TagActor = "partyMembers"
+						}
+					case *mod.MultiplierThresholdTag:
+						if tt.TagActor == "parent" {
+							tt.TagActor = "partyMembers"
+						}
 					}
 				}
 			}
@@ -491,6 +509,10 @@ func buildPartyTag(fields map[string]string, order []string) (mod.Tag, *float64,
 			case "var":
 			case "actor":
 				mt.Actor(fields[k])
+			case "limitVar":
+				mt.LimitVar(fields[k])
+			case "limitActor":
+				mt.LimitActor(fields[k])
 			case "limitTotal":
 				mt.LimitTotal(fields[k] == "true")
 			case "div", "limit", "base":
@@ -506,6 +528,52 @@ func buildPartyTag(fields map[string]string, order []string) (mod.Tag, *float64,
 				case "base":
 					mt.Base(v)
 				}
+			default:
+				return false, nil
+			}
+			return true, nil
+		}
+	case "MultiplierThreshold":
+		mt := mod.MultiplierThreshold(fields["var"])
+		tag = mt
+		handled = func(k string) (bool, error) {
+			switch k {
+			case "var":
+			case "actor":
+				mt.Actor(fields[k])
+			case "thresholdVar":
+				mt.ThresholdVar(fields[k])
+			case "upper":
+				mt.Upper(fields[k] == "true")
+			case "threshold":
+				v, err := num(k)
+				if err != nil {
+					return false, err
+				}
+				mt.Threshold(v)
+			default:
+				return false, nil
+			}
+			return true, nil
+		}
+	case "PercentStat":
+		ps := mod.PercentStat(fields["stat"], 0)
+		tag = ps
+		handled = func(k string) (bool, error) {
+			switch k {
+			case "stat":
+			case "actor":
+				ps.Actor(fields[k])
+			case "percentVar":
+				ps.PercentVar = fields[k]
+			case "floor":
+				ps.TagFloor = fields[k] == "true"
+			case "percent":
+				v, err := num(k)
+				if err != nil {
+					return false, err
+				}
+				ps.Percent = v
 			default:
 				return false, nil
 			}

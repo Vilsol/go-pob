@@ -108,8 +108,8 @@ func calcDamage(activeSkill *ActiveSkill, output map[string]float64, cfg *moddb.
 			}
 			if convDst != nil {
 				table := activeSkill.conversionTableFor(cfg)[damageType]
-				row.ConvDst = utils.Ptr(fmt.Sprintf("%d%% to %s", luaInt(table.Conversion[*convDst]*100), *convDst))
-				row.GainDst = utils.Ptr(fmt.Sprintf("%d%% gained as %s", luaInt(table.Gain[*convDst]*100), *convDst))
+				row.ConvDst = utils.Ptr(luaSprintf("%d%% to %s", luaInt(table.Conversion[*convDst]*100), *convDst))
+				row.GainDst = utils.Ptr(luaSprintf("%d%% gained as %s", luaInt(table.Gain[*convDst]*100), *convDst))
 			}
 			breakdown.DamageType(breakdownKey, row)
 		}
@@ -140,10 +140,10 @@ func calcDamage(activeSkill *ActiveSkill, output map[string]float64, cfg *moddb.
 		if convDst != nil {
 			table := activeSkill.conversionTableFor(cfg)[damageType]
 			if table.Conversion[*convDst] > 0 {
-				row.ConvDst = utils.Ptr(fmt.Sprintf("%d%% to %s", luaInt(table.Conversion[*convDst]*100), *convDst))
+				row.ConvDst = utils.Ptr(luaSprintf("%d%% to %s", luaInt(table.Conversion[*convDst]*100), *convDst))
 			}
 			if table.Gain[*convDst] > 0 {
-				row.GainDst = utils.Ptr(fmt.Sprintf("%d%% gained as %s", luaInt(table.Gain[*convDst]*100), *convDst))
+				row.GainDst = utils.Ptr(luaSprintf("%d%% gained as %s", luaInt(table.Gain[*convDst]*100), *convDst))
 			}
 		}
 		breakdown.DamageType(breakdownKey, row)
@@ -159,9 +159,9 @@ func calcAilmentSourceDamage(activeSkill *ActiveSkill, output map[string]float64
 	convMult := activeSkill.conversionTableFor(cfg)[damageType].Mult
 	if breakdown != nil && convMult != 1 {
 		breakdown.AddLine(breakdownKey, "Source damage:")
-		breakdown.AddLine(breakdownKey, fmt.Sprintf("%d to %d ^8(total damage)", luaInt(minDamage), luaInt(maxDamage)))
-		breakdown.AddLine(breakdownKey, fmt.Sprintf("x %.6g ^8(%.6g%% converted to other damage types)", convMult, (1-convMult)*100))
-		breakdown.AddLine(breakdownKey, fmt.Sprintf("= %d to %d", luaInt(minDamage*convMult), luaInt(maxDamage*convMult)))
+		breakdown.AddLine(breakdownKey, luaSprintf("%d to %d ^8(total damage)", luaInt(minDamage), luaInt(maxDamage)))
+		breakdown.AddLine(breakdownKey, luaSprintf("x %.6g ^8(%.6g%% converted to other damage types)", convMult, (1-convMult)*100))
+		breakdown.AddLine(breakdownKey, luaSprintf("= %d to %d", luaInt(minDamage*convMult), luaInt(maxDamage*convMult)))
 	}
 	return minDamage * convMult, maxDamage * convMult
 }
@@ -510,7 +510,7 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 			output["AreaOfEffectRadius"] = calcRadius(baseRadius, output["AreaOfEffectMod"])
 			output["AreaOfEffectRadiusMetres"] = output["AreaOfEffectRadius"] / 10
 			if breakdown != nil {
-				breakdown.area("AreaOfEffectRadius", baseRadius, output["AreaOfEffectMod"], output["AreaOfEffectRadius"], calcRadiusBreakpoints(baseRadius, incArea, moreArea), "")
+				breakdown.area("AreaOfEffectRadius", baseRadius, output["AreaOfEffectMod"], output["AreaOfEffectRadius"], calcRadiusBreakpoints(baseRadius, incArea, moreArea), skillData.RadiusLabel)
 			}
 			if skillData.RadiusSecondary != 0 {
 				incAreaSecondary, moreAreaSecondary := calclib.Mods(skillModList, skillCfg, "AreaOfEffect", "AreaOfEffectSecondary")
@@ -523,7 +523,7 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 					if !skillData.ProjectileSpeedAppliesToMSAreaOfEffect {
 						bp = calcRadiusBreakpoints(baseRadius, incAreaSecondary, moreAreaSecondary)
 					}
-					breakdown.area("AreaOfEffectRadiusSecondary", baseRadius, output["AreaOfEffectModSecondary"], output["AreaOfEffectRadiusSecondary"], bp, "")
+					breakdown.area("AreaOfEffectRadiusSecondary", baseRadius, output["AreaOfEffectModSecondary"], output["AreaOfEffectRadiusSecondary"], bp, skillData.RadiusSecondaryLabel)
 				}
 			}
 			if skillData.RadiusTertiary != 0 {
@@ -555,7 +555,7 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 				} else {
 					output["AreaOfEffectRadiusTertiary"] = calcRadius(baseRadius, output["AreaOfEffectModTertiary"])
 					if breakdown != nil {
-						breakdown.area("AreaOfEffectRadiusTertiary", baseRadius, output["AreaOfEffectModTertiary"], output["AreaOfEffectRadiusTertiary"], calcRadiusBreakpoints(baseRadius, incAreaTertiary, moreAreaTertiary), "")
+						breakdown.area("AreaOfEffectRadiusTertiary", baseRadius, output["AreaOfEffectModTertiary"], output["AreaOfEffectRadiusTertiary"], calcRadiusBreakpoints(baseRadius, incAreaTertiary, moreAreaTertiary), skillData.RadiusTertiaryLabel)
 					}
 				}
 				output["AreaOfEffectRadiusTertiaryMetres"] = output["AreaOfEffectRadiusTertiary"] / 10
@@ -566,7 +566,7 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 			breakdown.Data["AreaOfEffectMod"] = &Entry{}
 			if output["AreaOfEffectMod"] != 1 {
 				breakdown.MultiChain("AreaOfEffectMod", BMultiChain{
-					Total: fmt.Sprintf("= %.2f", output["AreaOfEffectMod"]),
+					Total: luaSprintf("= %.2f", output["AreaOfEffectMod"]),
 					Items: []BMultiChainItem{
 						{"%.2f ^8(increased/reduced)", 1 + skillModList.Sum(mod.TypeIncrease, skillCfg, "AreaOfEffect")/100},
 						{"%.2f ^8(more/less)", skillModList.More(skillCfg, "AreaOfEffect")},
@@ -602,7 +602,7 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 		if cVal.Merge == "MAX" {
 			utils.Set(skillData, cVal.Key, max(cVal.Value, utils.GetOr[float64](skillData, cVal.Key, 0)))
 		} else {
-			utils.Set(skillData, cVal.Key, cVal.Value)
+			utils.Set(skillData, cVal.Key, cVal.SetValue())
 		}
 	}
 	// Add addition stat bonuses
@@ -1057,7 +1057,7 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 			breakdown.MultiChain("SealGainTime", BMultiChain{
 				Label: "Gain frequency:",
 				Base:  &BMultiChainItem{"%.2fs ^8(base gain frequency)", skillModList.Sum(mod.TypeBase, skillCfg, "SealGainFrequency")},
-				Total: fmt.Sprintf("= %.2fs ^8per Seal", actor.Output["SealCooldown"]),
+				Total: luaSprintf("= %.2fs ^8per Seal", actor.Output["SealCooldown"]),
 				Items: []BMultiChainItem{
 					{"%.2f ^8(increased/reduced gain frequency)", 1 + skillModList.Sum(mod.TypeIncrease, skillCfg, "SealGainFrequency")/100},
 					{"%.2f ^8(action speed modifier)", actor.Output["ActionSpeedMod"]},
@@ -1368,7 +1368,7 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 		unscaledEffect := calclib.Mod(skillModList, skillCfg, "WarcryEffect", "BuffEffect")
 		actor.Output["WarcryEffectMod"] = unscaledEffect * uptime
 		if breakdown != nil {
-			breakdown.AddLine("WarcryEffectMod", fmt.Sprintf("%.2f ^8(effect modifiers)", unscaledEffect))
+			breakdown.AddLine("WarcryEffectMod", luaSprintf("%.2f ^8(effect modifiers)", unscaledEffect))
 		}
 	}
 	if activeSkill.SkillTypes[data.SkillTypeLink] {
@@ -1427,13 +1427,13 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 			addedCooldown := skillModList.Sum(mod.TypeBase, skillCfg, "CooldownRecovery")
 			rounded := !((skillData.StoredUses != nil && *skillData.StoredUses > 1) || skillModList.Sum(mod.TypeBase, skillCfg, "AdditionalCooldownUses") > 0)
 			breakdown.Data["Cooldown"] = &Entry{Lines: []string{
-				fmt.Sprintf("%.2fs ^8(base)", utils.OrF(skillData.Cooldown, 0+addedCooldown)),
-				fmt.Sprintf("/ %.2f ^8(increased/reduced cooldown recovery)", 1+skillModList.Sum(mod.TypeIncrease, skillCfg, "CooldownRecovery")/100),
+				luaSprintf("%.2fs ^8(base)", utils.OrF(skillData.Cooldown, 0+addedCooldown)),
+				luaSprintf("/ %.2f ^8(increased/reduced cooldown recovery)", 1+skillModList.Sum(mod.TypeIncrease, skillCfg, "CooldownRecovery")/100),
 			}}
 			if rounded {
 				breakdown.AddLine("Cooldown", "rounded up to nearest server tick")
 			}
-			breakdown.AddLine("Cooldown", fmt.Sprintf("= %.3fs", actor.Output["Cooldown"]))
+			breakdown.AddLine("Cooldown", luaSprintf("= %.3fs", actor.Output["Cooldown"]))
 		}
 	}
 	//pob:block:src/Modules/CalcOffence.lua:952-963
@@ -1443,11 +1443,11 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 		actor.Output["StoredUses"] = baseUses + additionalUses
 		//pob:block:src/Modules/CalcOffence.lua:1303-1309
 		if breakdown != nil {
-			breakdown.Data["StoredUses"] = &Entry{Lines: []string{fmt.Sprintf("%d ^8(skill use%s)", luaInt(baseUses), utils.Ternary(baseUses == 1, "", "s"))}}
+			breakdown.Data["StoredUses"] = &Entry{Lines: []string{luaSprintf("%d ^8(skill use%s)", luaInt(baseUses), utils.Ternary(baseUses == 1, "", "s"))}}
 			if additionalUses != 0 {
 				breakdown.AddLine("StoredUses",
-					fmt.Sprintf("+ %d ^8(additional use%s)", luaInt(additionalUses), utils.Ternary(additionalUses == 1, "", "s")),
-					fmt.Sprintf("= %d ^8(total use%s)", luaInt(actor.Output["StoredUses"]), utils.Ternary(actor.Output["StoredUses"] == 1, "", "s")),
+					luaSprintf("+ %d ^8(additional use%s)", luaInt(additionalUses), utils.Ternary(additionalUses == 1, "", "s")),
+					luaSprintf("= %d ^8(total use%s)", luaInt(actor.Output["StoredUses"]), utils.Ternary(actor.Output["StoredUses"] == 1, "", "s")),
 				)
 			}
 		}
@@ -1508,7 +1508,7 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 			breakdown.MultiChain("TotemPlacementTime", BMultiChain{
 				Label: "Placement speed:",
 				Base:  &BMultiChainItem{"%.2f ^8(base placement speed)", baseSpeed},
-				Total: fmt.Sprintf("= %.2f ^8per second", actor.Output["TotemPlacementSpeed"]),
+				Total: luaSprintf("= %.2f ^8per second", actor.Output["TotemPlacementSpeed"]),
 				Items: []BMultiChainItem{
 					{"%.2f ^8(increased/reduced placement speed)", 1 + skillModList.Sum(mod.TypeIncrease, skillCfg, "TotemPlacementSpeed")/100},
 					{"%.2f ^8(more/less placement speed)", skillModList.More(skillCfg, "TotemPlacementSpeed")},
@@ -1566,13 +1566,13 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 			actor.Output["CorpseLife"] = actor.Output["BaseCorpseLife"] * actor.Output["CorpseLifeInc"]
 			if breakdown != nil {
 				breakdown.CorpseLife = {
-					fmt.Sprintf("%d ^8(base life of a level %d monster)", env.data.monsterLifeTable[actor.Output["CorpseLevel"] or 1], actor.Output["CorpseLevel"] or "n/a"),
-					fmt.Sprintf("x %.2f ^8(%s variety multiplier)", env.data.monsterVarietyLifeMult[skillData.corpseMonsterVariety] or 1, skillData.corpseMonsterVariety),
-					fmt.Sprintf("x %.2f ^8(map level %d monster life multiplier from config)", env.data.mapLevelLifeMult[env.enemyLevel] or 1, env.enemyLevel),
-					fmt.Sprintf(" = %d ^8(base corpse life)", actor.Output["BaseCorpseLife"]),
-					fmt.Sprintf(""),
-					fmt.Sprintf("x %.2f ^8(corpse maximum life increases)", actor.Output["CorpseLifeInc"]),
-					fmt.Sprintf(" = %d", actor.Output["CorpseLife"]),
+					luaSprintf("%d ^8(base life of a level %d monster)", env.data.monsterLifeTable[actor.Output["CorpseLevel"] or 1], actor.Output["CorpseLevel"] or "n/a"),
+					luaSprintf("x %.2f ^8(%s variety multiplier)", env.data.monsterVarietyLifeMult[skillData.corpseMonsterVariety] or 1, skillData.corpseMonsterVariety),
+					luaSprintf("x %.2f ^8(map level %d monster life multiplier from config)", env.data.mapLevelLifeMult[env.enemyLevel] or 1, env.enemyLevel),
+					luaSprintf(" = %d ^8(base corpse life)", actor.Output["BaseCorpseLife"]),
+					luaSprintf(""),
+					luaSprintf("x %.2f ^8(corpse maximum life increases)", actor.Output["CorpseLifeInc"]),
+					luaSprintf(" = %d", actor.Output["CorpseLife"]),
 				}
 			}
 		}
@@ -1662,16 +1662,16 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 			//pob:block:src/Modules/CalcOffence.lua:1477-1480
 			if breakdown != nil && actor.Output["Duration"] != durationBase {
 				breakdown.Data["Duration"] = &Entry{Lines: []string{
-					fmt.Sprintf("%.2fs ^8(base)", durationBase),
+					luaSprintf("%.2fs ^8(base)", durationBase),
 				}}
 				if actor.Output["DurationMod"] != 1 {
-					breakdown.AddLine("Duration", fmt.Sprintf("x %.4f ^8(duration modifier)", actor.Output["DurationMod"]))
+					breakdown.AddLine("Duration", luaSprintf("x %.4f ^8(duration modifier)", actor.Output["DurationMod"]))
 				}
 				if skillData.Debuff && debuffDurationMult != 1 {
-					breakdown.AddLine("Duration", fmt.Sprintf("/ %.3f ^8(debuff expires slower/faster)", 1/debuffDurationMult))
+					breakdown.AddLine("Duration", luaSprintf("/ %.3f ^8(debuff expires slower/faster)", 1/debuffDurationMult))
 				}
 				breakdown.AddLine("Duration", "rounded up to nearest server tick")
-				breakdown.AddLine("Duration", fmt.Sprintf("= %.3fs", actor.Output["Duration"]))
+				breakdown.AddLine("Duration", luaSprintf("= %.3fs", actor.Output["Duration"]))
 			}
 		}
 		durationBase = (skillData.DurationSecondary) + skillModList.Sum(mod.TypeBase, skillCfg, "Duration", "SecondaryDuration")
@@ -1689,16 +1689,16 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 					breakdown.Data["SecondaryDurationMod"].Lines = append([]string{"Secondary duration:"}, breakdown.Data["SecondaryDurationMod"].Lines...)
 				}
 				breakdown.Data["DurationSecondary"] = &Entry{Lines: []string{
-					fmt.Sprintf("%.2fs ^8(base)", durationBase),
+					luaSprintf("%.2fs ^8(base)", durationBase),
 				}}
 				if actor.Output["DurationMod"] != 1 {
-					breakdown.AddLine("DurationSecondary", fmt.Sprintf("x %.4f ^8(duration modifier)", durationMod))
+					breakdown.AddLine("DurationSecondary", luaSprintf("x %.4f ^8(duration modifier)", durationMod))
 				}
 				if skillData.DebuffSecondary && debuffDurationMult != 1 {
-					breakdown.AddLine("DurationSecondary", fmt.Sprintf("/ %.3f ^8(debuff expires slower/faster)", 1/debuffDurationMult))
+					breakdown.AddLine("DurationSecondary", luaSprintf("/ %.3f ^8(debuff expires slower/faster)", 1/debuffDurationMult))
 				}
 				breakdown.AddLine("DurationSecondary", "rounded up to nearest server tick")
-				breakdown.AddLine("DurationSecondary", fmt.Sprintf("= %.3fs", actor.Output["DurationSecondary"]))
+				breakdown.AddLine("DurationSecondary", luaSprintf("= %.3fs", actor.Output["DurationSecondary"]))
 			}
 		}
 		//pob:block:src/Modules/CalcOffence.lua:1518-1526
@@ -1718,10 +1718,10 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 			actor.Output["AuraDuration"] = math.Ceil(actor.Output["AuraDuration"]*data.ServerTickRate) / data.ServerTickRate
 			if breakdown != nil && actor.Output["AuraDuration"] != durationBase {
 				breakdown.AddLine("AuraDuration",
-					fmt.Sprintf("%.2fs ^8(base)", durationBase),
-					fmt.Sprintf("x %.4f ^8(duration modifier)", durationMod),
+					luaSprintf("%.2fs ^8(base)", durationBase),
+					luaSprintf("x %.4f ^8(duration modifier)", durationMod),
 					"rounded up to nearest server tick",
-					fmt.Sprintf("= %.3fs", actor.Output["AuraDuration"]),
+					luaSprintf("= %.3fs", actor.Output["AuraDuration"]),
 				)
 			}
 		}
@@ -1732,10 +1732,10 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 			actor.Output["ReserveDuration"] = math.Ceil(actor.Output["ReserveDuration"]*data.ServerTickRate) / data.ServerTickRate
 			if breakdown != nil && actor.Output["ReserveDuration"] != durationBase {
 				breakdown.AddLine("ReserveDuration",
-					fmt.Sprintf("%.2fs ^8(base)", durationBase),
-					fmt.Sprintf("x %.4f ^8(duration modifier)", durationMod),
+					luaSprintf("%.2fs ^8(base)", durationBase),
+					luaSprintf("x %.4f ^8(duration modifier)", durationMod),
 					"rounded up to nearest server tick",
-					fmt.Sprintf("= %.3fs", actor.Output["ReserveDuration"]),
+					luaSprintf("= %.3fs", actor.Output["ReserveDuration"]),
 				)
 			}
 		}
@@ -1751,10 +1751,10 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 			actor.Output["SoulGainPreventionDuration"] = math.Max(math.Ceil(actor.Output["SoulGainPreventionDuration"]*data.ServerTickRate), 1) / data.ServerTickRate
 			if breakdown != nil && actor.Output["SoulGainPreventionDuration"] != durationBase {
 				breakdown.AddLine("SoulGainPreventionDuration",
-					fmt.Sprintf("%.2fs ^8(base)", durationBase),
-					fmt.Sprintf("x %.4f ^8(duration modifier)", durationMod),
+					luaSprintf("%.2fs ^8(base)", durationBase),
+					luaSprintf("x %.4f ^8(duration modifier)", durationMod),
 					"rounded up to nearest server tick",
-					fmt.Sprintf("= %.3fs", actor.Output["SoulGainPreventionDuration"]),
+					luaSprintf("= %.3fs", actor.Output["SoulGainPreventionDuration"]),
 				)
 			}
 		}
@@ -1764,12 +1764,12 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 		actor.Output["TotemDuration"] = math.Ceil(totemDurationBase*actor.Output["TotemDurationMod"]*data.ServerTickRate) / data.ServerTickRate
 		if breakdown != nil {
 			breakdown.Mod("TotemDurationMod", skillModList, skillCfg, "TotemDuration")
-			breakdown.AddLine("TotemDuration", fmt.Sprintf("%.2fs ^8(base)", totemDurationBase))
+			breakdown.AddLine("TotemDuration", luaSprintf("%.2fs ^8(base)", totemDurationBase))
 			if actor.Output["TotemDurationMod"] != 1 {
-				breakdown.AddLine("TotemDuration", fmt.Sprintf("x %.4f ^8(duration modifier)", actor.Output["TotemDurationMod"]))
+				breakdown.AddLine("TotemDuration", luaSprintf("x %.4f ^8(duration modifier)", actor.Output["TotemDurationMod"]))
 			}
 			breakdown.AddLine("TotemDuration", "rounded up to nearest server tick")
-			breakdown.AddLine("TotemDuration", fmt.Sprintf("= %.3fs", actor.Output["TotemDuration"]))
+			breakdown.AddLine("TotemDuration", luaSprintf("= %.3fs", actor.Output["TotemDuration"]))
 		}
 		//pob:block:src/Modules/CalcOffence.lua:1605-1608
 		actor.Output["ImpaleDurationMod"] = math.Max(calclib.Mod(skillModList, skillCfg, "ImpaleDuration"), 0)
@@ -1778,14 +1778,14 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 		//pob:block:src/Modules/CalcOffence.lua:1609-1622
 		if breakdown != nil {
 			breakdown.Mod("ImpaleDurationMod", skillModList, skillCfg, "ImpaleDuration")
-			breakdown.Data["ImpaleDuration"] = &Entry{Lines: []string{fmt.Sprintf("%.2fs ^8(base)", impaleDurationBase)}}
+			breakdown.Data["ImpaleDuration"] = &Entry{Lines: []string{luaSprintf("%.2fs ^8(base)", impaleDurationBase)}}
 			if debuffDurationMult != 1 {
-				breakdown.AddLine("ImpaleDuration", fmt.Sprintf("/ %.3f ^8(debuff expires slower/faster)", 1/debuffDurationMult))
+				breakdown.AddLine("ImpaleDuration", luaSprintf("/ %.3f ^8(debuff expires slower/faster)", 1/debuffDurationMult))
 			}
 			if actor.Output["ImpaleDurationMod"] != 1 {
-				breakdown.AddLine("ImpaleDuration", fmt.Sprintf("x %.4f ^8(duration modifier)", actor.Output["ImpaleDurationMod"]))
+				breakdown.AddLine("ImpaleDuration", luaSprintf("x %.4f ^8(duration modifier)", actor.Output["ImpaleDurationMod"]))
 			}
-			breakdown.AddLine("ImpaleDuration", "rounded up to nearest server tick", fmt.Sprintf("= %.3fs", actor.Output["ImpaleDuration"]))
+			breakdown.AddLine("ImpaleDuration", "rounded up to nearest server tick", luaSprintf("= %.3fs", actor.Output["ImpaleDuration"]))
 		}
 	}
 
@@ -1810,13 +1810,13 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 			if breakdown != nil {
 				if skillModList.Flag(skillCfg, "NoCooldownRecoveryInDuration") {
 					breakdown.AddLine(durationType+"Uptime",
-						fmt.Sprintf("%.2fs / (%.2fs + %.2fs)", duration, cooldown, duration),
-						fmt.Sprintf("= %d%%", luaInt(actor.Output[durationType+"Uptime"])),
+						luaSprintf("%.2fs / (%.2fs + %.2fs)", duration, cooldown, duration),
+						luaSprintf("= %d%%", luaInt(actor.Output[durationType+"Uptime"])),
 					)
 				} else {
 					breakdown.AddLine(durationType+"Uptime",
-						fmt.Sprintf("%.2fs / %.2fs", duration, cooldown),
-						fmt.Sprintf("= %d%%", luaInt(actor.Output[durationType+"Uptime"])),
+						luaSprintf("%.2fs / %.2fs", duration, cooldown),
+						luaSprintf("= %d%%", luaInt(actor.Output[durationType+"Uptime"])),
 					)
 				}
 			}
@@ -1985,42 +1985,42 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 			//pob:block:src/Modules/CalcOffence.lua:1801-1836
 			if breakdown != nil && hasCost[costKey] {
 				breakdown.Data[costName] = &Entry{Lines: []string{
-					fmt.Sprintf("%.2f"+utils.Ternary(val.Percent, "%%", "")+" ^8(base "+val.Text+" cost)", val.BaseCost),
+					luaSprintf("%.2f"+utils.Ternary(val.Percent, "%%", "")+" ^8(base "+val.Text+" cost)", val.BaseCost),
 				}}
 				if mult != 1 {
-					breakdown.AddLine(costName, fmt.Sprintf("x %.4f ^8(cost multiplier)", mult))
+					breakdown.AddLine(costName, luaSprintf("x %.4f ^8(cost multiplier)", mult))
 				}
 				if val.BaseCostNoMult != 0 {
-					breakdown.AddLine(costName, fmt.Sprintf("+ %d ^8(additional "+val.Text+" cost)", luaInt(val.BaseCostNoMult)))
+					breakdown.AddLine(costName, luaSprintf("+ %d ^8(additional "+val.Text+" cost)", luaInt(val.BaseCostNoMult)))
 				}
 				if val.Type == "Life" && (hybridLifeCost+additionalLifeCost) != 0 && !skillModList.Flag(skillCfg, "CostLifeInsteadOfMana") {
-					breakdown.AddLine(costName, fmt.Sprintf("x %.2f ^8(mana cost conversion)", hybridLifeCost+additionalLifeCost))
+					breakdown.AddLine(costName, luaSprintf("x %.2f ^8(mana cost conversion)", hybridLifeCost+additionalLifeCost))
 				}
 				if val.Type == "ES" && additionalESCost != 0 && !skillModList.Flag(skillCfg, "CostLifeInsteadOfMana") && !skillModList.Flag(skillCfg, "CostESInsteadOfManaOrLife") {
-					breakdown.AddLine(costName, fmt.Sprintf("x %.2f ^8(mana cost conversion)", additionalESCost))
+					breakdown.AddLine(costName, luaSprintf("x %.2f ^8(mana cost conversion)", additionalESCost))
 				}
 				if inc != 0 {
-					breakdown.AddLine(costName, fmt.Sprintf("x %.2f ^8(increased/reduced "+val.Text+" cost)", 1+inc/100))
+					breakdown.AddLine(costName, luaSprintf("x %.2f ^8(increased/reduced "+val.Text+" cost)", 1+inc/100))
 				}
 				if moreCost != 1 {
-					breakdown.AddLine(costName, fmt.Sprintf("x %.2f ^8(more/less cost)", moreCost))
+					breakdown.AddLine(costName, luaSprintf("x %.2f ^8(more/less cost)", moreCost))
 				}
 				if moreType != 1 {
-					breakdown.AddLine(costName, fmt.Sprintf("x %.2f ^8(more/less "+val.Text+" cost)", moreType))
+					breakdown.AddLine(costName, luaSprintf("x %.2f ^8(more/less "+val.Text+" cost)", moreType))
 				}
 				if costEfficiency != 1 {
-					breakdown.AddLine(costName, fmt.Sprintf("/ %.2f ^8("+val.Text+" cost efficiency)", costEfficiency))
+					breakdown.AddLine(costName, luaSprintf("/ %.2f ^8("+val.Text+" cost efficiency)", costEfficiency))
 				}
 				if val.TotalCost != 0 {
-					breakdown.AddLine(costName, fmt.Sprintf("%+d ^8(total "+val.Text+" cost)", int(val.TotalCost)))
+					breakdown.AddLine(costName, luaSprintf("%+d ^8(total "+val.Text+" cost)", int(val.TotalCost)))
 				}
 				if val.Type == "Mana" && hybridLifeCost > 0 {
-					breakdown.AddLine(costName, fmt.Sprintf("x %.2f ^8(%d%% paid for with life)", 1-hybridLifeCost, luaInt(hybridLifeCost*100)))
+					breakdown.AddLine(costName, luaSprintf("x %.2f ^8(%d%% paid for with life)", 1-hybridLifeCost, luaInt(hybridLifeCost*100)))
 				}
 				if val.Upfront {
-					breakdown.AddLine(costName, fmt.Sprintf("= %d"+utils.Ternary(val.Percent, "%%", ""), luaInt(actor.Output[costName])))
+					breakdown.AddLine(costName, luaSprintf("= %d"+utils.Ternary(val.Percent, "%%", ""), luaInt(actor.Output[costName])))
 				} else {
-					breakdown.AddLine(costName, fmt.Sprintf("= %.2f"+utils.Ternary(val.Percent, "%%", ""), actor.Output[costName]))
+					breakdown.AddLine(costName, luaSprintf("= %.2f"+utils.Ternary(val.Percent, "%%", ""), actor.Output[costName]))
 				}
 			}
 		}
@@ -2039,7 +2039,7 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 	if activeSkill.SkillTypes[data.SkillTypeBrand] {
 		damageLabel := utils.Ternary(skillData.CountsAttachedBrandsInDamage, "Average Damage", "DPS")
 		count := int(actor.Output["AttachedBrandCount"])
-		activeSkill.infoMessage = fmt.Sprintf("%s for %d attached Brand%s", damageLabel, count, utils.Ternary(count == 1, "", "s"))
+		activeSkill.infoMessage = luaSprintf("%s for %d attached Brand%s", damageLabel, count, utils.Ternary(count == 1, "", "s"))
 	}
 
 	if skillData.ExplodeCorpse && (skillData.CorpseLife != 0 || env.EnemyLevel != 0) {
@@ -2230,16 +2230,16 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 					actor.Output[stat] = float64(outputTable[OutTableMainHand][stat]*mainChance) + float64(outputTable[OutTableOffHand][stat]*offChance)
 					if breakdown != nil {
 						breakdown.AddLine(stat, "Contribution from Main Hand:")
-						breakdown.AddLine(stat, fmt.Sprintf("%.1f", actor.OutputTable[OutTableMainHand][stat]))
-						breakdown.AddLine(stat, fmt.Sprintf("x %.3f ^8(chance of main hand)", mainChance))
-						breakdown.AddLine(stat, fmt.Sprintf("= %.1f", actor.OutputTable[OutTableMainHand][stat]*mainChance))
+						breakdown.AddLine(stat, luaSprintf("%.1f", actor.OutputTable[OutTableMainHand][stat]))
+						breakdown.AddLine(stat, luaSprintf("x %.3f ^8(chance of main hand)", mainChance))
+						breakdown.AddLine(stat, luaSprintf("= %.1f", actor.OutputTable[OutTableMainHand][stat]*mainChance))
 						breakdown.AddLine(stat, "Contribution from Off Hand:")
-						breakdown.AddLine(stat, fmt.Sprintf("%.1f", actor.OutputTable[OutTableOffHand][stat]))
-						breakdown.AddLine(stat, fmt.Sprintf("x %.3f ^8(chance of  off hand)", offChance))
-						breakdown.AddLine(stat, fmt.Sprintf("= %.1f", actor.OutputTable[OutTableOffHand][stat]*offChance))
+						breakdown.AddLine(stat, luaSprintf("%.1f", actor.OutputTable[OutTableOffHand][stat]))
+						breakdown.AddLine(stat, luaSprintf("x %.3f ^8(chance of  off hand)", offChance))
+						breakdown.AddLine(stat, luaSprintf("= %.1f", actor.OutputTable[OutTableOffHand][stat]*offChance))
 						breakdown.AddLine(stat, "Total:")
-						breakdown.AddLine(stat, fmt.Sprintf("%.1f + %.1f", actor.OutputTable[OutTableMainHand][stat]*mainChance, actor.OutputTable[OutTableOffHand][stat]*offChance))
-						breakdown.AddLine(stat, fmt.Sprintf("= %.1f", actor.Output[stat]))
+						breakdown.AddLine(stat, luaSprintf("%.1f + %.1f", actor.OutputTable[OutTableMainHand][stat]*mainChance, actor.OutputTable[OutTableOffHand][stat]*offChance))
+						breakdown.AddLine(stat, luaSprintf("= %.1f", actor.Output[stat]))
 					}
 					return
 				}
@@ -2249,16 +2249,16 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 				actor.Output[stat] = float64(outputTable[OutTableMainHand][stat]*mainPortion) + float64(outputTable[OutTableOffHand][stat]*offPortion)
 				if breakdown != nil {
 					breakdown.AddLine(stat, "Contribution from Main Hand:")
-					breakdown.AddLine(stat, fmt.Sprintf("%.1f", actor.OutputTable[OutTableMainHand][stat]))
-					breakdown.AddLine(stat, fmt.Sprintf("x %.3f ^8(portion of instances created by main hand)", mainPortion))
-					breakdown.AddLine(stat, fmt.Sprintf("= %.1f", actor.OutputTable[OutTableMainHand][stat]*mainPortion))
+					breakdown.AddLine(stat, luaSprintf("%.1f", actor.OutputTable[OutTableMainHand][stat]))
+					breakdown.AddLine(stat, luaSprintf("x %.3f ^8(portion of instances created by main hand)", mainPortion))
+					breakdown.AddLine(stat, luaSprintf("= %.1f", actor.OutputTable[OutTableMainHand][stat]*mainPortion))
 					breakdown.AddLine(stat, "Contribution from Off Hand:")
-					breakdown.AddLine(stat, fmt.Sprintf("%.1f", actor.OutputTable[OutTableOffHand][stat]))
-					breakdown.AddLine(stat, fmt.Sprintf("x %.3f ^8(portion of instances created by off hand)", offPortion))
-					breakdown.AddLine(stat, fmt.Sprintf("= %.1f", actor.OutputTable[OutTableOffHand][stat]*offPortion))
+					breakdown.AddLine(stat, luaSprintf("%.1f", actor.OutputTable[OutTableOffHand][stat]))
+					breakdown.AddLine(stat, luaSprintf("x %.3f ^8(portion of instances created by off hand)", offPortion))
+					breakdown.AddLine(stat, luaSprintf("= %.1f", actor.OutputTable[OutTableOffHand][stat]*offPortion))
 					breakdown.AddLine(stat, "Total:")
-					breakdown.AddLine(stat, fmt.Sprintf("%.1f + %.1f", actor.OutputTable[OutTableMainHand][stat]*mainPortion, actor.OutputTable[OutTableOffHand][stat]*offPortion))
-					breakdown.AddLine(stat, fmt.Sprintf("= %.1f", actor.Output[stat]))
+					breakdown.AddLine(stat, luaSprintf("%.1f + %.1f", actor.OutputTable[OutTableMainHand][stat]*mainPortion, actor.OutputTable[OutTableOffHand][stat]*offPortion))
+					breakdown.AddLine(stat, luaSprintf("= %.1f", actor.Output[stat]))
 				}
 			} else {
 				//pob:src/Modules/CalcOffence.lua:2062
@@ -2283,25 +2283,25 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 				actor.Output[stat] = float64(maxInstance*maxInstanceStacks) + float64(minInstance*(1-maxInstanceStacks))
 				if breakdown != nil {
 					breakdown.AddLine(stat, "")
-					breakdown.AddLine(stat, fmt.Sprintf("%.2f%% of ailment stacks use maximum damage", maxInstanceStacks*100))
-					breakdown.AddLine(stat, fmt.Sprintf("Max Damage comes from %s", utils.Ternary(actor.OutputTable[OutTableMainHand][stat] >= actor.OutputTable[OutTableOffHand][stat], "Main Hand", "Off Hand")))
-					breakdown.AddLine(stat, fmt.Sprintf("= %.1f", maxInstance*maxInstanceStacks))
+					breakdown.AddLine(stat, luaSprintf("%.2f%% of ailment stacks use maximum damage", maxInstanceStacks*100))
+					breakdown.AddLine(stat, luaSprintf("Max Damage comes from %s", utils.Ternary(actor.OutputTable[OutTableMainHand][stat] >= actor.OutputTable[OutTableOffHand][stat], "Main Hand", "Off Hand")))
+					breakdown.AddLine(stat, luaSprintf("= %.1f", maxInstance*maxInstanceStacks))
 					if maxInstanceStacks < 1 {
-						breakdown.AddLine(stat, fmt.Sprintf("%.2f%% of ailment stacks use non-maximum damage", (1-maxInstanceStacks)*100))
-						breakdown.AddLine(stat, fmt.Sprintf("= %.1f", minInstance*(1-maxInstanceStacks)))
+						breakdown.AddLine(stat, luaSprintf("%.2f%% of ailment stacks use non-maximum damage", (1-maxInstanceStacks)*100))
+						breakdown.AddLine(stat, luaSprintf("= %.1f", minInstance*(1-maxInstanceStacks)))
 					}
 					breakdown.AddLine(stat, "")
 					breakdown.AddLine(stat, "Total:")
 					if maxInstanceStacks < 1 {
-						breakdown.AddLine(stat, fmt.Sprintf("%.1f + %.1f", maxInstance*maxInstanceStacks, minInstance*(1-maxInstanceStacks)))
+						breakdown.AddLine(stat, luaSprintf("%.1f + %.1f", maxInstance*maxInstanceStacks, minInstance*(1-maxInstanceStacks)))
 					}
-					breakdown.AddLine(stat, fmt.Sprintf("= %.1f", actor.Output[stat]))
+					breakdown.AddLine(stat, luaSprintf("= %.1f", actor.Output[stat]))
 				}
 			} else {
 				//pob:src/Modules/CalcOffence.lua:2093
 				mainOrOff(stat)
 				if breakdown != nil {
-					breakdown.AddLine(stat, fmt.Sprintf("All ailment stacks comes from %s", utils.Ternary(actor.OutputTable[OutTableMainHand][stat] != 0, "Main Hand", "Off Hand")))
+					breakdown.AddLine(stat, luaSprintf("All ailment stacks comes from %s", utils.Ternary(actor.OutputTable[OutTableMainHand][stat] != 0, "Main Hand", "Off Hand")))
 				}
 			}
 		} else if mode == ModeDPS {
@@ -2338,7 +2338,7 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 			breakdown.Data["Accuracy"] = &Entry{}
 			breakdown.MultiChain("Accuracy", BMultiChain{
 				Base:  &BMultiChainItem{"%.6g ^8(base)", base},
-				Total: fmt.Sprintf("= %.6g", pass.Output["Accuracy"]),
+				Total: luaSprintf("= %.6g", pass.Output["Accuracy"]),
 				Items: []BMultiChainItem{
 					{"%.2f ^8(increased/reduced)", 1 + inc/100},
 					{"%.2f ^8(more/less)", accuracyMore},
@@ -2349,7 +2349,7 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 				breakdown.MultiChain("Accuracy", BMultiChain{
 					Label: "Effective Accuracy vs Enemy",
 					Base:  &BMultiChainItem{"%.6g ^8(base)", baseVsEnemy},
-					Total: fmt.Sprintf("= %.6g", accuracyVsEnemy),
+					Total: luaSprintf("= %.6g", accuracyVsEnemy),
 					Items: []BMultiChainItem{
 						{"%.2f ^8(increased/reduced)", 1 + incVsEnemy/100},
 						{"%.2f ^8(more/less)", moreVsEnemy},
@@ -2368,7 +2368,7 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 			}
 			if breakdown != nil {
 				breakdown.Data["Accuracy"] = &Entry{Lines: []string{
-					fmt.Sprintf("Using Main Hand Accuracy due to Mastery: %.14g", pass.Output["Accuracy"]),
+					luaSprintf("Using Main Hand Accuracy due to Mastery: %.14g", pass.Output["Accuracy"]),
 				}}
 			}
 		}
@@ -2385,8 +2385,8 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 			if breakdown != nil {
 				breakdown.Data["AccuracyHitChance"] = &Entry{Lines: []string{
 					"Enemy level: " + fmt.Sprint(env.EnemyLevel) + utils.Ternary(env.Build.GetNumberOption("enemyLevel") != 0, " ^8(overridden from the Configuration tab", " ^8(can be overridden in the Configuration tab)"),
-					fmt.Sprintf("Enemy evasion: %.14g", enemyEvasion),
-					fmt.Sprintf("Approximate hit chance: %.14g%%", pass.Output["AccuracyHitChance"]),
+					luaSprintf("Enemy evasion: %.14g", enemyEvasion),
+					luaSprintf("Approximate hit chance: %.14g%%", pass.Output["AccuracyHitChance"]),
 				}}
 			}
 		}
@@ -2456,9 +2456,9 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 						skillData.unleashTriggerRate = skillData.triggerRate * (cachedSourceSkill.ActiveSkill.skillData.dpsMultiplier or 1)
 						if breakdown != nil {
 							breakdown.Speed = {
-								fmt.Sprintf("%.2f ^8(trigger rate)", skillData.triggerRate),
-								fmt.Sprintf("* %.2f ^8(multiplier from Unleash)", cachedSourceSkill.ActiveSkill.skillData.dpsMultiplier or 1),
-								fmt.Sprintf("= %.2f", skillData.unleashTriggerRate),
+								luaSprintf("%.2f ^8(trigger rate)", skillData.triggerRate),
+								luaSprintf("* %.2f ^8(multiplier from Unleash)", cachedSourceSkill.ActiveSkill.skillData.dpsMultiplier or 1),
+								luaSprintf("= %.2f", skillData.unleashTriggerRate),
 							}
 						}
 						// over-write the triggerRate modifier after breakdown as other calcs use it
@@ -2602,7 +2602,7 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 				breakdown.Data["Speed"] = &Entry{}
 				breakdown.MultiChain("Speed", BMultiChain{
 					Base:  &BMultiChainItem{"%.2f ^8(base)", 1 / baseTime},
-					Total: fmt.Sprintf("= %.2f ^8casts per second", pass.Output["CastRate"]),
+					Total: luaSprintf("= %.2f ^8casts per second", pass.Output["CastRate"]),
 					Items: []BMultiChainItem{
 						{"%.2f ^8(increased/reduced)", 1 + inc/100},
 						{"%.2f ^8(more/less)", more},
@@ -2611,20 +2611,20 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 				})
 				if utils.Has(pass.Output, "Cooldown") && (1/pass.Output["Cooldown"]) < pass.Output["CastRate"] {
 					breakdown.AddLine("Speed", "\n")
-					breakdown.AddLine("Speed", fmt.Sprintf("1 / %.2f ^8(skill cooldown)", pass.Output["Cooldown"]))
+					breakdown.AddLine("Speed", luaSprintf("1 / %.2f ^8(skill cooldown)", pass.Output["Cooldown"]))
 					if pass.Output["Repeats"] > 1 {
-						breakdown.AddLine("Speed", fmt.Sprintf("x %d ^8(repeat count)", luaInt(pass.Output["Repeats"])))
+						breakdown.AddLine("Speed", luaSprintf("x %d ^8(repeat count)", luaInt(pass.Output["Repeats"])))
 					}
-					breakdown.AddLine("Speed", fmt.Sprintf("= %.2f ^8(casts per second)", pass.Output["Repeats"]/pass.Output["Cooldown"]))
+					breakdown.AddLine("Speed", luaSprintf("= %.2f ^8(casts per second)", pass.Output["Repeats"]/pass.Output["Cooldown"]))
 					breakdown.AddLine("Speed", "\n")
-					breakdown.AddLine("Speed", fmt.Sprintf("= %.2f ^8(lower of cast rates)", pass.Output["Speed"]))
+					breakdown.AddLine("Speed", luaSprintf("= %.2f ^8(lower of cast rates)", pass.Output["Speed"]))
 				}
 			}
 			if breakdown != nil && calclib.Mod(skillModList, skillCfg, "SkillAttackTime") > 0 {
 				breakdown.Data["Time"] = &Entry{}
 				breakdown.MultiChain("Time", BMultiChain{
 					Base:  &BMultiChainItem{"%.2f ^8(base)", 1 / (pass.Output["Speed"] * calclib.Mod(skillModList, skillCfg, "SkillAttackTime"))},
-					Total: fmt.Sprintf("= %.2f ^8seconds per attack", pass.Output["Time"]),
+					Total: luaSprintf("= %.2f ^8seconds per attack", pass.Output["Time"]),
 					Items: []BMultiChainItem{
 						{"%.2f ^8(total modifier)", calclib.Mod(skillModList, skillCfg, "SkillAttackTime")},
 					},
@@ -2679,15 +2679,15 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 			if breakdown != nil {
 				breakdown.Data["Speed"] = &Entry{Lines: []string{
 					"Use Offhand Weapon Attack Speed:",
-					fmt.Sprintf("= %.2f", actor.Output["Speed"]),
+					luaSprintf("= %.2f", actor.Output["Speed"]),
 				}}
 			}
 		} else if utils.HasTrue(skillFlags, SkillFlagBothWeaponAttack) {
 			if breakdown != nil {
 				breakdown.Data["Speed"] = &Entry{Lines: []string{
 					"Both weapons:",
-					fmt.Sprintf("2 / (1 / %.2f + 1 / %.2f)", actor.OutputTable[OutTableMainHand]["Speed"], actor.OutputTable[OutTableOffHand]["Speed"]),
-					fmt.Sprintf("= %.2f", actor.Output["Speed"]),
+					luaSprintf("2 / (1 / %.2f + 1 / %.2f)", actor.OutputTable[OutTableMainHand]["Speed"], actor.OutputTable[OutTableOffHand]["Speed"]),
+					luaSprintf("= %.2f", actor.Output["Speed"]),
 				}}
 			}
 		}
@@ -2936,10 +2936,10 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 					globalBreakdown.Data["ExertedAttackUptimeRatio"] = &Entry{Lines: []string{"Maximum of:"}}
 					for _, cryTimeRatio := range []string{"AncestralUpTimeRatio", "InfernalUpTimeRatio", "IntimidatingUpTimeRatio", "RallyingUpTimeRatio", "SeismicUpTimeRatio", "BattlemageUpTimeRatio"} {
 						if utils.Has(globalOutput, cryTimeRatio) {
-							globalBreakdown.AddLine("ExertedAttackUptimeRatio", fmt.Sprintf("%d%% ^8(%s Cry Uptime)", luaInt(globalOutput[cryTimeRatio]), strings.TrimSuffix(cryTimeRatio, "UpTimeRatio")))
+							globalBreakdown.AddLine("ExertedAttackUptimeRatio", luaSprintf("%d%% ^8(%s Cry Uptime)", luaInt(globalOutput[cryTimeRatio]), strings.TrimSuffix(cryTimeRatio, "UpTimeRatio")))
 						}
 					}
-					globalBreakdown.AddLine("ExertedAttackUptimeRatio", fmt.Sprintf("= %d%%", luaInt(globalOutput["ExertedAttackUptimeRatio"])))
+					globalBreakdown.AddLine("ExertedAttackUptimeRatio", luaSprintf("= %d%%", luaInt(globalOutput["ExertedAttackUptimeRatio"])))
 				}
 				if globalOutput["ExertedAttackUptimeRatio"] > 0 && !exertedAttackUptimeRatioCalculated {
 					incExertedAttacks := skillModList.Sum(mod.TypeIncrease, cfg, "ExertIncrease")
@@ -3026,12 +3026,12 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 				globalOutput[pactKey+"UpTimeRatio"] = uptime
 				if actor.Breakdown != nil {
 					actor.Breakdown.AddLine(pactKey+"UpTimeRatio",
-						fmt.Sprintf("(%.2f ^8(number of Empowered)", count),
-						fmt.Sprintf("/ %.2f) ^8(casts per second)", globalOutput["Speed"]),
-						fmt.Sprintf("/ (%.2f ^8(pact cooldown)", cooldown),
-						fmt.Sprintf("+ %.2f) ^8(pact cast time)", castTime),
-						fmt.Sprintf("* %.2f ^8(stored uses)", storedUses),
-						fmt.Sprintf("= %.2f%%", uptime),
+						luaSprintf("(%.2f ^8(number of Empowered)", count),
+						luaSprintf("/ %.2f) ^8(casts per second)", globalOutput["Speed"]),
+						luaSprintf("/ (%.2f ^8(pact cooldown)", cooldown),
+						luaSprintf("+ %.2f) ^8(pact cast time)", castTime),
+						luaSprintf("* %.2f ^8(stored uses)", storedUses),
+						luaSprintf("= %.2f%%", uptime),
 					)
 				}
 
@@ -3107,18 +3107,18 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 				actor.Output["FistOfWarUptimeRatio"] = min((1/pass.Output["Speed"])/actor.Output["FistOfWarCooldown"], 1) * 100
 				if actor.Breakdown != nil {
 					actor.Breakdown.AddLine("FistOfWarUptimeRatio",
-						fmt.Sprintf("min( (1 / %.2f) ^8(second per attack)", pass.Output["Speed"]),
-						fmt.Sprintf("/ %.2f, 1) ^8(fist of war cooldown)", actor.Output["FistOfWarCooldown"]),
-						fmt.Sprintf("= %.2f%%", actor.Output["FistOfWarUptimeRatio"]),
+						luaSprintf("min( (1 / %.2f) ^8(second per attack)", pass.Output["Speed"]),
+						luaSprintf("/ %.2f, 1) ^8(fist of war cooldown)", actor.Output["FistOfWarCooldown"]),
+						luaSprintf("= %.2f%%", actor.Output["FistOfWarUptimeRatio"]),
 					)
 				}
 				actor.Output["AvgFistOfWarDamage"] = actor.Output["FistOfWarDamageMultiplier"]
 				actor.Output["AvgFistOfWarDamageEffect"] = 1 + float64(actor.Output["FistOfWarDamageMultiplier"]*(actor.Output["FistOfWarUptimeRatio"]/100))
 				if actor.Breakdown != nil {
 					actor.Breakdown.AddLine("AvgFistOfWarDamageEffect",
-						fmt.Sprintf("1 + (%.2f ^8(fist of war damage multiplier)", actor.Output["FistOfWarDamageMultiplier"]),
-						fmt.Sprintf("x %.2f) ^8(fist of war uptime ratio)", actor.Output["FistOfWarUptimeRatio"]/100),
-						fmt.Sprintf("= %.2f", actor.Output["AvgFistOfWarDamageEffect"]),
+						luaSprintf("1 + (%.2f ^8(fist of war damage multiplier)", actor.Output["FistOfWarDamageMultiplier"]),
+						luaSprintf("x %.2f) ^8(fist of war uptime ratio)", actor.Output["FistOfWarUptimeRatio"]/100),
+						luaSprintf("= %.2f", actor.Output["AvgFistOfWarDamageEffect"]),
 					)
 				}
 				actor.Output["MaxFistOfWarDamageEffect"] = 1 + actor.Output["FistOfWarDamageMultiplier"]
@@ -3272,56 +3272,56 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 						baseCritFromMainHandStr = " from parent main weapon"
 					}
 					if base != 0 {
-						breakdown.AddLine("CritChance", fmt.Sprintf("(%.6g + %.6g) ^8(base%s)", baseCrit, base, baseCritFromMainHandStr))
+						breakdown.AddLine("CritChance", luaSprintf("(%.6g + %.6g) ^8(base%s)", baseCrit, base, baseCritFromMainHandStr))
 					} else {
-						breakdown.AddLine("CritChance", fmt.Sprintf("%.6g ^8(base%s)", baseCrit+base, baseCritFromMainHandStr))
+						breakdown.AddLine("CritChance", luaSprintf("%.6g ^8(base%s)", baseCrit+base, baseCritFromMainHandStr))
 					}
 					if inc != 0 {
-						breakdown.AddLine("CritChance", fmt.Sprintf("x %.2f", 1+inc/100)+" ^8(increased/reduced)")
+						breakdown.AddLine("CritChance", luaSprintf("x %.2f", 1+inc/100)+" ^8(increased/reduced)")
 					}
 					if more != 1 {
-						breakdown.AddLine("CritChance", fmt.Sprintf("x %.2f", more)+" ^8(more/less)")
+						breakdown.AddLine("CritChance", luaSprintf("x %.2f", more)+" ^8(more/less)")
 					}
-					breakdown.AddLine("CritChance", fmt.Sprintf("= %.2f%% ^8(crit chance)", pass.Output["PreEffectiveCritChance"]))
+					breakdown.AddLine("CritChance", luaSprintf("= %.2f%% ^8(crit chance)", pass.Output["PreEffectiveCritChance"]))
 					if preCapCritChance > 100 {
 						overCap := preCapCritChance - 100
-						breakdown.AddLine("CritChance", fmt.Sprintf("Crit is overcapped by %.2f%% (%d%% increased Critical Strike Chance)", overCap, luaInt(overCap/more/(baseCrit+base)*100)))
+						breakdown.AddLine("CritChance", luaSprintf("Crit is overcapped by %.2f%% (%d%% increased Critical Strike Chance)", overCap, luaInt(overCap/more/(baseCrit+base)*100)))
 					}
 					if env.ModeEffective {
 						if critRolls != 0 {
 							if skillModList.Flag(skillCfg, "Unexciting") {
 								breakdown.AddLine("CritChance", "Crit Chance is Unexciting:")
-								breakdown.AddLine("CritChance", fmt.Sprintf("(3 x %.4f^ 2) - (2 x %.4f^ 3)", preLuckyCritChance/100, preLuckyCritChance/100))
+								breakdown.AddLine("CritChance", luaSprintf("(3 x %.4f^ 2) - (2 x %.4f^ 3)", preLuckyCritChance/100, preLuckyCritChance/100))
 							} else {
 								breakdown.AddLine("CritChance", "Crit Chance is Lucky:")
-								breakdown.AddLine("CritChance", fmt.Sprintf("1 - (1 - %.4f)^ %d", preLuckyCritChance/100, luaInt(critRolls)+1))
+								breakdown.AddLine("CritChance", luaSprintf("1 - (1 - %.4f)^ %d", preLuckyCritChance/100, luaInt(critRolls)+1))
 							}
-							breakdown.AddLine("CritChance", fmt.Sprintf("= %.2f%%", pass.Output["PreBifurcateCritChance"]))
+							breakdown.AddLine("CritChance", luaSprintf("= %.2f%%", pass.Output["PreBifurcateCritChance"]))
 						}
 						if skillModList.Flag(pass.Config, "BifurcateCrit") {
 							breakdown.AddLine("CritChance", "Critical Strike Bifurcates:")
-							breakdown.AddLine("CritChance", fmt.Sprintf("1 - (1 - %.4f) x (1 - %.4f)", pass.Output["PreBifurcateCritChance"]/100, pass.Output["PreBifurcateCritChance"]/100))
-							breakdown.AddLine("CritChance", fmt.Sprintf("= %.2f%%", preSkillUseCritChance))
+							breakdown.AddLine("CritChance", luaSprintf("1 - (1 - %.4f) x (1 - %.4f)", pass.Output["PreBifurcateCritChance"]/100, pass.Output["PreBifurcateCritChance"]/100))
+							breakdown.AddLine("CritChance", luaSprintf("= %.2f%%", preSkillUseCritChance))
 						}
 					}
 					if env.ModeEffective {
 						every3 := skillModList.Flag(skillCfg, "Every3UseCrit")
 						every5 := skillModList.Flag(skillCfg, "Every5UseCrit")
 						if every3 {
-							breakdown.AddLine("CritChance", fmt.Sprintf("+ %.2f%% ^8(crit every 3rd use)", (2*preSkillUseCritChance+100)/3-preSkillUseCritChance))
+							breakdown.AddLine("CritChance", luaSprintf("+ %.2f%% ^8(crit every 3rd use)", (2*preSkillUseCritChance+100)/3-preSkillUseCritChance))
 						}
 						if every5 {
-							breakdown.AddLine("CritChance", fmt.Sprintf("+ %.2f%% ^8(crit every 5th use)", (float64(4*preSkillUseCritChance)+100)/5-preSkillUseCritChance))
+							breakdown.AddLine("CritChance", luaSprintf("+ %.2f%% ^8(crit every 5th use)", (float64(4*preSkillUseCritChance)+100)/5-preSkillUseCritChance))
 						}
 						if every3 || every5 {
-							breakdown.AddLine("CritChance", fmt.Sprintf("= %.2f%%", preHitCheckCritChance))
+							breakdown.AddLine("CritChance", luaSprintf("= %.2f%%", preHitCheckCritChance))
 						}
 					}
 					if env.ModeEffective && pass.Output["AccuracyHitChance"] < 100 {
 						breakdown.AddLine("CritChance", "Crit confirmation roll:")
-						breakdown.AddLine("CritChance", fmt.Sprintf("%.2f%%", preHitCheckCritChance))
-						breakdown.AddLine("CritChance", fmt.Sprintf("x %.2f ^8(chance to hit)", pass.Output["AccuracyHitChance"]/100))
-						breakdown.AddLine("CritChance", fmt.Sprintf("= %.2f%%", pass.Output["CritChance"]))
+						breakdown.AddLine("CritChance", luaSprintf("%.2f%%", preHitCheckCritChance))
+						breakdown.AddLine("CritChance", luaSprintf("x %.2f ^8(chance to hit)", pass.Output["AccuracyHitChance"]/100))
+						breakdown.AddLine("CritChance", luaSprintf("= %.2f%%", pass.Output["CritChance"]))
 					}
 				}
 			}
@@ -3341,9 +3341,9 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 					extraDamage = utils.RoundTo(extraDamage*enemyInc, 2)
 					if breakdown != nil && enemyInc != 1 {
 						breakdown.AddLine("CritMultiplier",
-							fmt.Sprintf("%.2f%% ^8(additional extra damage)", (enemyDB.Sum(mod.TypeBase, nil, "SelfCritMultiplier")+skillModList.Sum(mod.TypeBase, pass.Config, "CritMultiplier"))/100),
-							fmt.Sprintf("x %.2f ^8(increased/reduced extra crit damage taken by enemy)", enemyInc),
-							fmt.Sprintf("= %.2f%% ^8(extra crit damage)", extraDamage*100),
+							luaSprintf("%.2f%% ^8(additional extra damage)", (enemyDB.Sum(mod.TypeBase, nil, "SelfCritMultiplier")+skillModList.Sum(mod.TypeBase, pass.Config, "CritMultiplier"))/100),
+							luaSprintf("x %.2f ^8(increased/reduced extra crit damage taken by enemy)", enemyInc),
+							luaSprintf("= %.2f%% ^8(extra crit damage)", extraDamage*100),
 						)
 					}
 				}
@@ -3388,9 +3388,9 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 			//pob:block:src/Modules/CalcOffence.lua:3176-3182
 			if breakdown != nil && pass.Output["CritEffect"] != 1 {
 				breakdown.Data["CritEffect"] = &Entry{Lines: []string{
-					fmt.Sprintf("(1 - %.4f) ^8(portion of damage from non-crits)", critChancePercentage),
-					fmt.Sprintf("+ [ (%.4f x %.6g) ^8(portion of damage from crits)", critChancePercentage, pass.Output["CritMultiplier"]),
-					fmt.Sprintf("= %.3f", pass.Output["CritEffect"]),
+					luaSprintf("(1 - %.4f) ^8(portion of damage from non-crits)", critChancePercentage),
+					luaSprintf("+ [ (%.4f x %.6g) ^8(portion of damage from crits)", critChancePercentage, pass.Output["CritMultiplier"]),
+					luaSprintf("= %.3f", pass.Output["CritEffect"]),
 				}}
 			}
 		}
@@ -3519,22 +3519,22 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 					sourceMin := utils.GetOr(pass.Source, damageTypeMin, float64(0))
 					sourceMax := utils.GetOr(pass.Source, damageTypeMax, float64(0))
 					if sourceMin != 0 || sourceMax != 0 {
-						breakdown.AddLine(string(damageType), fmt.Sprintf("%d to %d ^8(base damage from %s)", luaInt(sourceMin), luaInt(sourceMax), utils.Ternary(pass.Source.Type != "", "weapon", "skill")))
+						breakdown.AddLine(string(damageType), luaSprintf("%d to %d ^8(base damage from %s)", luaInt(sourceMin), luaInt(sourceMax), utils.Ternary(pass.Source.Type != "", "weapon", "skill")))
 						if baseMultiplier != 1 {
-							breakdown.AddLine(string(damageType), fmt.Sprintf("x %.2f ^8(base damage multiplier)", baseMultiplier))
+							breakdown.AddLine(string(damageType), luaSprintf("x %.2f ^8(base damage multiplier)", baseMultiplier))
 						}
 						plus = "+ "
 					}
 					if addedMin != 0 || addedMax != 0 {
-						breakdown.AddLine(string(damageType), fmt.Sprintf("%s%d to %d ^8(added damage)", plus, luaInt(addedMin), luaInt(addedMax)))
+						breakdown.AddLine(string(damageType), luaSprintf("%s%d to %d ^8(added damage)", plus, luaInt(addedMin), luaInt(addedMax)))
 						if damageEffectiveness != 1 {
-							breakdown.AddLine(string(damageType), fmt.Sprintf("x %.2f ^8(damage effectiveness)", damageEffectiveness))
+							breakdown.AddLine(string(damageType), luaSprintf("x %.2f ^8(damage effectiveness)", damageEffectiveness))
 						}
 						if addedMult != 1 {
-							breakdown.AddLine(string(damageType), fmt.Sprintf("x %.2f ^8(added damage multiplier)", addedMult))
+							breakdown.AddLine(string(damageType), luaSprintf("x %.2f ^8(added damage multiplier)", addedMult))
 						}
 					}
-					breakdown.AddLine(string(damageType), fmt.Sprintf("= %.1f to %.1f", baseMin, baseMax))
+					breakdown.AddLine(string(damageType), luaSprintf("= %.1f to %.1f", baseMin, baseMax))
 				}
 			}
 		}
@@ -3585,30 +3585,30 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 
 					if p == 2 && breakdown != nil {
 						breakdown.AddLine(string(damageType), "Hit damage:")
-						breakdown.AddLine(string(damageType), fmt.Sprintf("%d to %d ^8(total damage)", luaInt(damageTypeHitMin), luaInt(damageTypeHitMax)))
+						breakdown.AddLine(string(damageType), luaSprintf("%d to %d ^8(total damage)", luaInt(damageTypeHitMin), luaInt(damageTypeHitMax)))
 						if convMult != 1 {
-							breakdown.AddLine(string(damageType), fmt.Sprintf("x %.6g ^8(%.6g%% converted to other damage types)", convMult, (1-convMult)*100))
+							breakdown.AddLine(string(damageType), luaSprintf("x %.6g ^8(%.6g%% converted to other damage types)", convMult, (1-convMult)*100))
 						}
 						if pass.Output["DoubleDamageEffect"] != 0 {
 							if pass.Output["TripleDamageEffect"] != 0 {
-								breakdown.AddLine(string(damageType), fmt.Sprintf("x %.2f ^8(1 + %.2f + %.2f multiplier from %.1f%% chance to deal double damage and %d%% chance to deal triple damage)", 1+pass.Output["DoubleDamageEffect"]+pass.Output["TripleDamageEffect"], pass.Output["DoubleDamageEffect"], pass.Output["TripleDamageEffect"], pass.Output["DoubleDamageChance"], luaInt(pass.Output["TripleDamageChance"])))
+								breakdown.AddLine(string(damageType), luaSprintf("x %.2f ^8(1 + %.2f + %.2f multiplier from %.1f%% chance to deal double damage and %d%% chance to deal triple damage)", 1+pass.Output["DoubleDamageEffect"]+pass.Output["TripleDamageEffect"], pass.Output["DoubleDamageEffect"], pass.Output["TripleDamageEffect"], pass.Output["DoubleDamageChance"], luaInt(pass.Output["TripleDamageChance"])))
 							} else {
-								breakdown.AddLine(string(damageType), fmt.Sprintf("x %.2f ^8(multiplier from %d%% chance to deal double damage)", 1+pass.Output["DoubleDamageEffect"], luaInt(pass.Output["DoubleDamageChance"])))
+								breakdown.AddLine(string(damageType), luaSprintf("x %.2f ^8(multiplier from %d%% chance to deal double damage)", 1+pass.Output["DoubleDamageEffect"], luaInt(pass.Output["DoubleDamageChance"])))
 							}
 						} else if pass.Output["TripleDamageEffect"] != 0 {
-							breakdown.AddLine(string(damageType), fmt.Sprintf("x %.2f ^8(multiplier from %d%% chance to deal triple damage)", 1+pass.Output["TripleDamageEffect"], luaInt(pass.Output["TripleDamageChance"])))
+							breakdown.AddLine(string(damageType), luaSprintf("x %.2f ^8(multiplier from %d%% chance to deal triple damage)", 1+pass.Output["TripleDamageEffect"], luaInt(pass.Output["TripleDamageChance"])))
 						}
 						if pass.Output["RuthlessBlowHitEffect"] != 1 {
-							breakdown.AddLine(string(damageType), fmt.Sprintf("x %.2f ^8(ruthless blow effect modifier)", pass.Output["RuthlessBlowHitEffect"]))
+							breakdown.AddLine(string(damageType), luaSprintf("x %.2f ^8(ruthless blow effect modifier)", pass.Output["RuthlessBlowHitEffect"]))
 						}
 						if pass.Output["FistOfWarDamageEffect"] != 1 {
-							breakdown.AddLine(string(damageType), fmt.Sprintf("x %.2f ^8(fist of war effect modifier)", pass.Output["FistOfWarDamageEffect"]))
+							breakdown.AddLine(string(damageType), luaSprintf("x %.2f ^8(fist of war effect modifier)", pass.Output["FistOfWarDamageEffect"]))
 						}
 						if actor.Output["OffensiveWarcryEffect"] != 1 && !activeSkill.SkillModList.Flag(nil, "Condition:WarcryMaxHit") {
-							breakdown.AddLine(string(damageType), fmt.Sprintf("x %.2f ^8(aggregated warcry exerted effect modifier)", actor.Output["OffensiveWarcryEffect"]))
+							breakdown.AddLine(string(damageType), luaSprintf("x %.2f ^8(aggregated warcry exerted effect modifier)", actor.Output["OffensiveWarcryEffect"]))
 						}
 						if actor.Output["MaxOffensiveWarcryEffect"] != 1 && activeSkill.SkillModList.Flag(nil, "Condition:WarcryMaxHit") {
-							breakdown.AddLine(string(damageType), fmt.Sprintf("x %.2f ^8(aggregated max warcry exerted effect modifier)", actor.Output["MaxOffensiveWarcryEffect"]))
+							breakdown.AddLine(string(damageType), luaSprintf("x %.2f ^8(aggregated max warcry exerted effect modifier)", actor.Output["MaxOffensiveWarcryEffect"]))
 						}
 					}
 
@@ -3806,15 +3806,15 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 							pass.Output[string(damageType)+"EffMult"] = effMult
 						}
 						if p == 2 && breakdown != nil && (effMult != 1 || sourceRes != "" || invertChance > 0) && skillModList.Flag(pass.Config, utils.Ternary(isElemental[string(damageType)], "CannotElePenIgnore", "")) {
-							breakdown.AddLine(string(damageType), fmt.Sprintf("x %.3f ^8(effective DPS modifier)", effMult))
+							breakdown.AddLine(string(damageType), luaSprintf("x %.3f ^8(effective DPS modifier)", effMult))
 							breakdown.EffMult(string(damageType+"EffMult"), damageType, resist, 0, takenInc, effMult, takenMore, sourceRes, useRes, invertChance, &effectiveResist)
 						} else if p == 2 && breakdown != nil && (effMult != 1 || sourceRes != "" || invertChance > 0) {
-							breakdown.AddLine(string(damageType), fmt.Sprintf("x %.3f ^8(effective DPS modifier)", effMult))
+							breakdown.AddLine(string(damageType), luaSprintf("x %.3f ^8(effective DPS modifier)", effMult))
 							breakdown.EffMult(string(damageType+"EffMult"), damageType, resist, pen, takenInc, effMult, takenMore, sourceRes, useRes, invertChance, &effectiveResist)
 						}
 					}
 					if p == 2 && breakdown != nil {
-						breakdown.AddLine(string(damageType), fmt.Sprintf("= %d to %d", luaInt(damageTypeHitMin), luaInt(damageTypeHitMax)))
+						breakdown.AddLine(string(damageType), luaSprintf("= %d to %d", luaInt(damageTypeHitMin), luaInt(damageTypeHitMax)))
 					}
 
 					// Beginning of Leech Calculation for this DamageType
@@ -3942,7 +3942,7 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 					highestType = damageType
 				}
 				if breakdown != nil {
-					breakdown.AddLine(damageType, fmt.Sprintf("Portion of total damage: %d%%", luaInt(portion)))
+					breakdown.AddLine(damageType, luaSprintf("Portion of total damage: %d%%", luaInt(portion)))
 				}
 			}
 		}
@@ -4068,29 +4068,29 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 				rolls := int(math.Abs(damageRolls)) + 2
 				rollsCrit := int(math.Abs(critRolls)) + 2
 				if damageRolls > 0 {
-					breakdown.AddLine("AverageHit", fmt.Sprintf("(1/%d) x %d + (%d/%d) x %d = %.1f ^8(average from non-crits)", rolls, luaInt(totalHitMin), rolls-1, rolls, luaInt(totalHitMax), totalHitAvg))
+					breakdown.AddLine("AverageHit", luaSprintf("(1/%d) x %d + (%d/%d) x %d = %.1f ^8(average from non-crits)", rolls, luaInt(totalHitMin), rolls-1, rolls, luaInt(totalHitMax), totalHitAvg))
 				}
 				if damageRolls < 0 {
-					breakdown.AddLine("AverageHit", fmt.Sprintf("(%d/%d) x %d + (1/%d) x %d = %.1f ^8(average from non-crits)", rolls-1, rolls, luaInt(totalHitMin), rolls, luaInt(totalHitMax), totalHitAvg))
+					breakdown.AddLine("AverageHit", luaSprintf("(%d/%d) x %d + (1/%d) x %d = %.1f ^8(average from non-crits)", rolls-1, rolls, luaInt(totalHitMin), rolls, luaInt(totalHitMax), totalHitAvg))
 				}
 				if damageRolls > 0 || critRolls > 0 || skillModList.Flag(skillCfg, "CritLucky") {
-					breakdown.AddLine("AverageHit", fmt.Sprintf("(1/%d) x %d + (%d/%d) x %d = %.1f ^8(average from crits)", rollsCrit, luaInt(totalCritMin), rollsCrit-1, rollsCrit, luaInt(totalCritMax), totalCritAvg))
+					breakdown.AddLine("AverageHit", luaSprintf("(1/%d) x %d + (%d/%d) x %d = %.1f ^8(average from crits)", rollsCrit, luaInt(totalCritMin), rollsCrit-1, rollsCrit, luaInt(totalCritMax), totalCritAvg))
 					breakdown.AddLine("AverageHit", "")
 				}
 				if damageRolls < 0 && !skillModList.Flag(skillCfg, "CritLucky") {
-					breakdown.AddLine("AverageHit", fmt.Sprintf("(%d/%d) x %d + (1/%d) x %d = %.1f ^8(average from crits)", rolls-1, rolls, luaInt(totalCritMin), rolls, luaInt(totalCritMax), totalCritAvg))
+					breakdown.AddLine("AverageHit", luaSprintf("(%d/%d) x %d + (1/%d) x %d = %.1f ^8(average from crits)", rolls-1, rolls, luaInt(totalCritMin), rolls, luaInt(totalCritMax), totalCritAvg))
 					breakdown.AddLine("AverageHit", "")
 				}
-				breakdown.AddLine("AverageHit", fmt.Sprintf("%.1f x (1 - %.4f) ^8(damage from non-crits)", totalHitAvg, pass.Output["CritChance"]/100))
-				breakdown.AddLine("AverageHit", fmt.Sprintf("+ %.1f x %.4f ^8(damage from crits)", totalCritAvg, pass.Output["CritChance"]/100))
-				breakdown.AddLine("AverageHit", fmt.Sprintf("= %.1f", pass.Output["AverageHit"]))
+				breakdown.AddLine("AverageHit", luaSprintf("%.1f x (1 - %.4f) ^8(damage from non-crits)", totalHitAvg, pass.Output["CritChance"]/100))
+				breakdown.AddLine("AverageHit", luaSprintf("+ %.1f x %.4f ^8(damage from crits)", totalCritAvg, pass.Output["CritChance"]/100))
+				breakdown.AddLine("AverageHit", luaSprintf("= %.1f", pass.Output["AverageHit"]))
 			}
 			if pass.Output["HitChance"] < 100 {
 				breakdown.Data["AverageDamage"] = &Entry{Lines: []string{
-					fmt.Sprintf("%s:", pass.Label),
-					fmt.Sprintf("%.1f ^8(average hit)", pass.Output["AverageHit"]),
-					fmt.Sprintf("x %.2f ^8(chance to hit)", pass.Output["HitChance"]/100),
-					fmt.Sprintf("= %.1f", pass.Output["AverageDamage"]),
+					luaSprintf("%s:", pass.Label),
+					luaSprintf("%.1f ^8(average hit)", pass.Output["AverageHit"]),
+					luaSprintf("x %.2f ^8(chance to hit)", pass.Output["HitChance"]/100),
+					luaSprintf("= %.1f", pass.Output["AverageDamage"]),
 				}}
 			}
 		}
@@ -4098,25 +4098,25 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 		//pob:block:src/Modules/CalcOffence.lua:3746-3765
 		if globalBreakdown != nil && actor.Output["AverageBurstDamage"] > 0 {
 			key := "AverageBurstDamage"
-			globalBreakdown.Data[key] = &Entry{Lines: []string{fmt.Sprintf("%.1f ^8(average hit)", pass.Output["AverageHit"])}}
+			globalBreakdown.Data[key] = &Entry{Lines: []string{luaSprintf("%.1f ^8(average hit)", pass.Output["AverageHit"])}}
 			if pass.Output["HitChance"] < 100 {
-				globalBreakdown.AddLine(key, fmt.Sprintf("x %.2f ^8(chance to hit)", pass.Output["HitChance"]/100))
+				globalBreakdown.AddLine(key, luaSprintf("x %.2f ^8(chance to hit)", pass.Output["HitChance"]/100))
 			}
 			if repeatPenalty < 1 {
 				globalBreakdown.AddLine(key,
-					fmt.Sprintf("x %.2f ^8(number of repeats)", actor.Output["AverageBurstHits"]-1),
-					fmt.Sprintf("x %.2f ^8(repeat penalty)", repeatPenalty),
-					fmt.Sprintf("= %.1f ^8(repeat damage total)", actor.Output["AverageBurstDamage"]-pass.Output["AverageDamage"]),
+					luaSprintf("x %.2f ^8(number of repeats)", actor.Output["AverageBurstHits"]-1),
+					luaSprintf("x %.2f ^8(repeat penalty)", repeatPenalty),
+					luaSprintf("= %.1f ^8(repeat damage total)", actor.Output["AverageBurstDamage"]-pass.Output["AverageDamage"]),
 					"",
-					fmt.Sprintf("+ %.1f ^8(first hit)", pass.Output["AverageHit"]),
+					luaSprintf("+ %.1f ^8(first hit)", pass.Output["AverageHit"]),
 				)
 				if pass.Output["HitChance"] < 100 {
-					globalBreakdown.AddLine(key, fmt.Sprintf("x %.2f ^8(chance to hit)", pass.Output["HitChance"]/100))
+					globalBreakdown.AddLine(key, luaSprintf("x %.2f ^8(chance to hit)", pass.Output["HitChance"]/100))
 				}
 			} else {
-				globalBreakdown.AddLine(key, fmt.Sprintf("x %.2f ^8(number of hits)", actor.Output["AverageBurstHits"]))
+				globalBreakdown.AddLine(key, luaSprintf("x %.2f ^8(number of hits)", actor.Output["AverageBurstHits"]))
 			}
-			globalBreakdown.AddLine(key, fmt.Sprintf("= %.1f ^8(total burst damage)", actor.Output["AverageBurstDamage"]))
+			globalBreakdown.AddLine(key, luaSprintf("= %.1f ^8(total burst damage)", actor.Output["AverageBurstDamage"]))
 		}
 
 		// Calculate PvP values
@@ -4167,37 +4167,37 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 
 			if breakdown != nil {
 				percentBoth := percentageNonElemental > 0 && percentageElemental > 0
-				breakdown.AddLine("PvpAverageHit", fmt.Sprintf("Pvp Formula is (D/(T*M))^E*T*%s, where D is the damage, T is the time taken,", utils.Ternary(percentBoth, "M*P", "M")))
-				breakdown.AddLine("PvpAverageHit", fmt.Sprintf(" M is the multiplier%s", utils.Ternary(percentBoth, ", E is the exponent and P is the percentage of that type (ele or non ele)", " and E is the exponent")))
+				breakdown.AddLine("PvpAverageHit", luaSprintf("Pvp Formula is (D/(T*M))^E*T*%s, where D is the damage, T is the time taken,", utils.Ternary(percentBoth, "M*P", "M")))
+				breakdown.AddLine("PvpAverageHit", luaSprintf(" M is the multiplier%s", utils.Ternary(percentBoth, ", E is the exponent and P is the percentage of that type (ele or non ele)", " and E is the exponent")))
 				if percentBoth {
-					breakdown.AddLine("PvpAverageHit", fmt.Sprintf("(M= %.1f for ele and %.1f for non-ele)(E= %.2f for ele and %.2f for non-ele)", PvpElemental2, PvpNonElemental2, PvpElemental1, PvpNonElemental1))
-					breakdown.AddLine("PvpAverageHit", fmt.Sprintf("(%.1f / (%.2f * %.1f)) ^ %.2f * %.2f * %.1f * %.2f = %.1f", output["AverageHit"], PvpTvalue, PvpNonElemental2, PvpNonElemental1, PvpTvalue, PvpNonElemental2, percentageNonElemental, portionNonElemental))
-					breakdown.AddLine("PvpAverageHit", fmt.Sprintf("(%.1f / (%.2f * %.1f)) ^ %.2f * %.2f * %.1f * %.2f = %.1f", output["AverageHit"], PvpTvalue, PvpElemental2, PvpElemental1, PvpTvalue, PvpElemental2, percentageElemental, portionElemental))
-					breakdown.AddLine("PvpAverageHit", fmt.Sprintf("(portionNonElemental + portionElemental)%s", utils.Ternary(PvpMultiplier != 1, " * PvP multiplier", " ")))
+					breakdown.AddLine("PvpAverageHit", luaSprintf("(M= %.1f for ele and %.1f for non-ele)(E= %.2f for ele and %.2f for non-ele)", PvpElemental2, PvpNonElemental2, PvpElemental1, PvpNonElemental1))
+					breakdown.AddLine("PvpAverageHit", luaSprintf("(%.1f / (%.2f * %.1f)) ^ %.2f * %.2f * %.1f * %.2f = %.1f", output["AverageHit"], PvpTvalue, PvpNonElemental2, PvpNonElemental1, PvpTvalue, PvpNonElemental2, percentageNonElemental, portionNonElemental))
+					breakdown.AddLine("PvpAverageHit", luaSprintf("(%.1f / (%.2f * %.1f)) ^ %.2f * %.2f * %.1f * %.2f = %.1f", output["AverageHit"], PvpTvalue, PvpElemental2, PvpElemental1, PvpTvalue, PvpElemental2, percentageElemental, portionElemental))
+					breakdown.AddLine("PvpAverageHit", luaSprintf("(portionNonElemental + portionElemental)%s", utils.Ternary(PvpMultiplier != 1, " * PvP multiplier", " ")))
 					if PvpMultiplier != 1 {
-						breakdown.AddLine("PvpAverageHit", fmt.Sprintf("(%.1f + %.1f) * %g", portionNonElemental, portionElemental, PvpMultiplier))
+						breakdown.AddLine("PvpAverageHit", luaSprintf("(%.1f + %.1f) * %g", portionNonElemental, portionElemental, PvpMultiplier))
 					} else {
-						breakdown.AddLine("PvpAverageHit", fmt.Sprintf("%.1f + %.1f", portionNonElemental, portionElemental))
+						breakdown.AddLine("PvpAverageHit", luaSprintf("%.1f + %.1f", portionNonElemental, portionElemental))
 					}
 				} else if percentageElemental <= 0 {
-					breakdown.AddLine("PvpAverageHit", fmt.Sprintf("(M= %.1f for non-ele)(E= %.2f for non-ele)", PvpNonElemental2, PvpNonElemental1))
-					breakdown.AddLine("PvpAverageHit", fmt.Sprintf("(%.1f / (%.2f * %.1f)) ^ %.2f * %.2f * %.1f = %.1f", output["AverageHit"], PvpTvalue, PvpNonElemental2, PvpNonElemental1, PvpTvalue, PvpNonElemental2, portionNonElemental))
+					breakdown.AddLine("PvpAverageHit", luaSprintf("(M= %.1f for non-ele)(E= %.2f for non-ele)", PvpNonElemental2, PvpNonElemental1))
+					breakdown.AddLine("PvpAverageHit", luaSprintf("(%.1f / (%.2f * %.1f)) ^ %.2f * %.2f * %.1f = %.1f", output["AverageHit"], PvpTvalue, PvpNonElemental2, PvpNonElemental1, PvpTvalue, PvpNonElemental2, portionNonElemental))
 					if PvpMultiplier != 1 {
-						breakdown.AddLine("PvpAverageHit", fmt.Sprintf("%.1f * %g ^8(portionNonElemental * PvP multiplier)", portionNonElemental, PvpMultiplier))
+						breakdown.AddLine("PvpAverageHit", luaSprintf("%.1f * %g ^8(portionNonElemental * PvP multiplier)", portionNonElemental, PvpMultiplier))
 					}
 				} else if percentageNonElemental <= 0 {
-					breakdown.AddLine("PvpAverageHit", fmt.Sprintf("(M= %.1f for ele)(E= %.2f for ele)", PvpElemental2, PvpElemental1))
-					breakdown.AddLine("PvpAverageHit", fmt.Sprintf("(%.1f / (%.2f * %.1f)) ^ %.2f * %.2f * %.1f = %.1f", output["AverageHit"], PvpTvalue, PvpElemental2, PvpElemental1, PvpTvalue, PvpElemental2, portionElemental))
+					breakdown.AddLine("PvpAverageHit", luaSprintf("(M= %.1f for ele)(E= %.2f for ele)", PvpElemental2, PvpElemental1))
+					breakdown.AddLine("PvpAverageHit", luaSprintf("(%.1f / (%.2f * %.1f)) ^ %.2f * %.2f * %.1f = %.1f", output["AverageHit"], PvpTvalue, PvpElemental2, PvpElemental1, PvpTvalue, PvpElemental2, portionElemental))
 					if PvpMultiplier != 1 {
-						breakdown.AddLine("PvpAverageHit", fmt.Sprintf("%.1f * %g ^8(portionElemental * PvP multiplier)", portionElemental, PvpMultiplier))
+						breakdown.AddLine("PvpAverageHit", luaSprintf("%.1f * %g ^8(portionElemental * PvP multiplier)", portionElemental, PvpMultiplier))
 					}
 				}
-				breakdown.AddLine("PvpAverageHit", fmt.Sprintf("= %.1f", output["PvpAverageHit"]))
+				breakdown.AddLine("PvpAverageHit", luaSprintf("= %.1f", output["PvpAverageHit"]))
 				if isAttack {
-					breakdown.AddLine("PvpAverageDamage", fmt.Sprintf("%s:", pass.Label))
-					breakdown.AddLine("PvpAverageDamage", fmt.Sprintf("%.1f ^8(average pvp hit)", output["PvpAverageHit"]))
-					breakdown.AddLine("PvpAverageDamage", fmt.Sprintf("x %.2f ^8(chance to hit)", output["HitChance"]/100))
-					breakdown.AddLine("PvpAverageDamage", fmt.Sprintf("= %.1f", output["PvpAverageDamage"]))
+					breakdown.AddLine("PvpAverageDamage", luaSprintf("%s:", pass.Label))
+					breakdown.AddLine("PvpAverageDamage", luaSprintf("%.1f ^8(average pvp hit)", output["PvpAverageHit"]))
+					breakdown.AddLine("PvpAverageDamage", luaSprintf("x %.2f ^8(chance to hit)", output["HitChance"]/100))
+					breakdown.AddLine("PvpAverageDamage", luaSprintf("= %.1f", output["PvpAverageDamage"]))
 				}
 			}
 		}
@@ -4245,11 +4245,11 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 			if breakdown != nil {
 				breakdown.Data["AverageDamage"] = &Entry{Lines: []string{"Both weapons:"}}
 				if skillData.DoubleHitsWhenDualWielding {
-					breakdown.AddLine("AverageDamage", fmt.Sprintf("%.1f + %.1f ^8(skill hits with both weapons at once)", actor.OutputTable[OutTableMainHand]["AverageDamage"], actor.OutputTable[OutTableOffHand]["AverageDamage"]))
+					breakdown.AddLine("AverageDamage", luaSprintf("%.1f + %.1f ^8(skill hits with both weapons at once)", actor.OutputTable[OutTableMainHand]["AverageDamage"], actor.OutputTable[OutTableOffHand]["AverageDamage"]))
 				} else {
-					breakdown.AddLine("AverageDamage", fmt.Sprintf("(%.1f + %.1f) / 2 ^8(skill alternates weapons)", actor.OutputTable[OutTableMainHand]["AverageDamage"], actor.OutputTable[OutTableOffHand]["AverageDamage"]))
+					breakdown.AddLine("AverageDamage", luaSprintf("(%.1f + %.1f) / 2 ^8(skill alternates weapons)", actor.OutputTable[OutTableMainHand]["AverageDamage"], actor.OutputTable[OutTableOffHand]["AverageDamage"]))
 				}
-				breakdown.AddLine("AverageDamage", fmt.Sprintf("= %.1f", actor.Output["AverageDamage"]))
+				breakdown.AddLine("AverageDamage", luaSprintf("= %.1f", actor.Output["AverageDamage"]))
 			}
 		}
 	}
@@ -4258,34 +4258,34 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 		TODO CALCS
 		if env.mode == "CALCS" {
 			if skillData.ShowAverage {
-				actor.Output["DisplayDamage"] = formatNumSep(fmt.Sprintf("%.1f", actor.Output["AverageDamage"])) + " average damage"
+				actor.Output["DisplayDamage"] = formatNumSep(luaSprintf("%.1f", actor.Output["AverageDamage"])) + " average damage"
 			} else {
-				actor.Output["DisplayDamage"] = formatNumSep(fmt.Sprintf("%.1f", actor.Output["TotalDPS"])) + " DPS"
+				actor.Output["DisplayDamage"] = formatNumSep(luaSprintf("%.1f", actor.Output["TotalDPS"])) + " DPS"
 			}
 		}
 	*/
 	//pob:block:src/Modules/CalcOffence.lua:3932-3955
 	if breakdown != nil {
-		rate := fmt.Sprintf("x %.2f ^8(cast rate)", actor.Output["Speed"])
+		rate := luaSprintf("x %.2f ^8(cast rate)", actor.Output["Speed"])
 		if isAttack {
-			rate = fmt.Sprintf("x %.2f ^8(attack rate)", actor.Output["Speed"])
+			rate = luaSprintf("x %.2f ^8(attack rate)", actor.Output["Speed"])
 		} else if skillData.Triggered {
-			rate = fmt.Sprintf("x %.2f ^8(trigger rate)", actor.Output["Speed"])
+			rate = luaSprintf("x %.2f ^8(trigger rate)", actor.Output["Speed"])
 		}
 		if utils.Has(actor.Output, "HitSpeed") {
-			rate = fmt.Sprintf("x %.2f ^8(hit rate)", actor.Output["HitSpeed"])
+			rate = luaSprintf("x %.2f ^8(hit rate)", actor.Output["HitSpeed"])
 		}
 		breakdown.Data["TotalDPS"] = &Entry{Lines: []string{
-			fmt.Sprintf("%.1f ^8(%s)", actor.Output["AverageDamage"], utils.Ternary(isAttack || skillData.Triggered, "average damage", "average hit")),
+			luaSprintf("%.1f ^8(%s)", actor.Output["AverageDamage"], utils.Ternary(isAttack || skillData.Triggered, "average damage", "average hit")),
 			rate,
 		}}
 		if dpsMultiplier := utils.OrDefault(skillData.DpsMultiplier, 1); dpsMultiplier != 1 {
-			breakdown.AddLine("TotalDPS", fmt.Sprintf("x %.6g ^8(DPS multiplier for this skill)", dpsMultiplier))
+			breakdown.AddLine("TotalDPS", luaSprintf("x %.6g ^8(DPS multiplier for this skill)", dpsMultiplier))
 		}
 		if quantityMultiplier > 1 {
-			breakdown.AddLine("TotalDPS", fmt.Sprintf("x %.6g ^8(quantity multiplier for this skill)", quantityMultiplier))
+			breakdown.AddLine("TotalDPS", luaSprintf("x %.6g ^8(quantity multiplier for this skill)", quantityMultiplier))
 		}
-		breakdown.AddLine("TotalDPS", fmt.Sprintf("= %.1f", actor.Output["TotalDPS"]))
+		breakdown.AddLine("TotalDPS", luaSprintf("= %.1f", actor.Output["TotalDPS"]))
 		//pob:block:src/Modules/CalcOffence.lua:3956-3974
 		if env.Build.GetBooleanOption("PvpScaling") {
 			rateType := "cast"
@@ -4295,16 +4295,16 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 				rateType = "trigger"
 			}
 			breakdown.AddLine("PvpTotalDPS",
-				fmt.Sprintf("%.1f ^8(average pvp hit)", actor.Output["PvpAverageDamage"]),
-				utils.Ternary(actor.Output["HitSpeed"] != 0, fmt.Sprintf("x %.2f ^8(hit rate)", actor.Output["HitSpeed"]), fmt.Sprintf("x %.2f ^8(%s rate)", actor.Output["Speed"], rateType)),
+				luaSprintf("%.1f ^8(average pvp hit)", actor.Output["PvpAverageDamage"]),
+				utils.Ternary(actor.Output["HitSpeed"] != 0, luaSprintf("x %.2f ^8(hit rate)", actor.Output["HitSpeed"]), luaSprintf("x %.2f ^8(%s rate)", actor.Output["Speed"], rateType)),
 			)
 			if skillData.DpsMultiplier != 1 {
-				breakdown.AddLine("PvpTotalDPS", fmt.Sprintf("x %g ^8(DPS multiplier for this skill)", skillData.DpsMultiplier))
+				breakdown.AddLine("PvpTotalDPS", luaSprintf("x %g ^8(DPS multiplier for this skill)", skillData.DpsMultiplier))
 			}
 			if quantityMultiplier > 1 {
-				breakdown.AddLine("PvpTotalDPS", fmt.Sprintf("x %g ^8(quantity multiplier for this skill)", quantityMultiplier))
+				breakdown.AddLine("PvpTotalDPS", luaSprintf("x %g ^8(quantity multiplier for this skill)", quantityMultiplier))
 			}
-			breakdown.AddLine("PvpTotalDPS", fmt.Sprintf("= %.1f", actor.Output["PvpTotalDPS"]))
+			breakdown.AddLine("PvpTotalDPS", luaSprintf("= %.1f", actor.Output["PvpTotalDPS"]))
 		}
 	}
 	//pob:block:src/Modules/CalcOffence.lua:3977-3979
@@ -4585,15 +4585,15 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 					breakdown.AddLine(key, pass.Label+":")
 				}
 				breakdown.AddLine(key,
-					fmt.Sprintf("Chance on Non-crit: %d%%", luaInt(chanceOnHit)),
-					fmt.Sprintf("Chance on Crit: %d%%", luaInt(chanceOnCrit)),
+					luaSprintf("Chance on Non-crit: %d%%", luaInt(chanceOnHit)),
+					luaSprintf("Chance on Crit: %d%%", luaInt(chanceOnCrit)),
 				)
 				if chanceOnHit != chanceOnCrit {
 					breakdown.AddLine(key,
 						"Combined chance:",
-						fmt.Sprintf("%d x (1 - %.4f) ^8(chance from non-crits)", luaInt(chanceOnHit), sourceCritChance/100),
-						fmt.Sprintf("+ %d x %.4f ^8(chance from crits)", luaInt(chanceOnCrit), sourceCritChance/100),
-						fmt.Sprintf("= %.2f", float64(chanceOnHit*(1-sourceCritChance/100))+float64(chanceOnCrit*sourceCritChance/100)),
+						luaSprintf("%d x (1 - %.4f) ^8(chance from non-crits)", luaInt(chanceOnHit), sourceCritChance/100),
+						luaSprintf("+ %d x %.4f ^8(chance from crits)", luaInt(chanceOnCrit), sourceCritChance/100),
+						luaSprintf("= %.2f", float64(chanceOnHit*(1-sourceCritChance/100))+float64(chanceOnCrit*sourceCritChance/100)),
 					)
 				}
 			}
@@ -4607,44 +4607,44 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 					breakdown.AddLine(key, pass.Label+":")
 				}
 				if sourceHitDmg == sourceCritDmg || output["CritChance"] == 0 {
-					breakdown.AddLine(key, "Total damage:", fmt.Sprintf("%.1f ^8(source damage)", sourceHitDmg))
+					breakdown.AddLine(key, "Total damage:", luaSprintf("%.1f ^8(source damage)", sourceHitDmg))
 					if sourceMult > 1 {
 						breakdown.AddLine(key,
-							fmt.Sprintf("x %.2f ^8(inflicting as though dealing more damage)", sourceMult),
-							fmt.Sprintf("= %.1f", baseVal*sourceMult),
+							luaSprintf("x %.2f ^8(inflicting as though dealing more damage)", sourceMult),
+							luaSprintf("= %.1f", baseVal*sourceMult),
 						)
 					}
 				} else {
 					if baseFromHit > 0 {
 						breakdown.AddLine(key,
 							"Damage from Non-crits:",
-							fmt.Sprintf("%.1f ^8(source damage from non-crits)", sourceHitDmg),
-							fmt.Sprintf("x %.3f ^8(portion of instances created by non-crits)", chanceFromHit/(chanceFromHit+chanceFromCrit)),
+							luaSprintf("%.1f ^8(source damage from non-crits)", sourceHitDmg),
+							luaSprintf("x %.3f ^8(portion of instances created by non-crits)", chanceFromHit/(chanceFromHit+chanceFromCrit)),
 						)
 						if sourceMult == 1 || baseFromCrit != 0 {
-							breakdown.AddLine(key, fmt.Sprintf("= %.1f", baseFromHit))
+							breakdown.AddLine(key, luaSprintf("= %.1f", baseFromHit))
 						}
 					}
 					if baseFromCrit > 0 {
 						breakdown.AddLine(key,
 							"Damage from Crits:",
-							fmt.Sprintf("%.1f ^8(source damage from crits)", sourceCritDmg),
-							fmt.Sprintf("x %.3f ^8(portion of instances created by crits)", chanceFromCrit/(chanceFromHit+chanceFromCrit)),
+							luaSprintf("%.1f ^8(source damage from crits)", sourceCritDmg),
+							luaSprintf("x %.3f ^8(portion of instances created by crits)", chanceFromCrit/(chanceFromHit+chanceFromCrit)),
 						)
 						if sourceMult == 1 || baseFromHit != 0 {
-							breakdown.AddLine(key, fmt.Sprintf("= %.1f", baseFromCrit))
+							breakdown.AddLine(key, luaSprintf("= %.1f", baseFromCrit))
 						}
 					}
 					if baseFromHit > 0 && baseFromCrit > 0 {
-						breakdown.AddLine(key, "Total damage:", fmt.Sprintf("%.1f + %.1f", baseFromHit, baseFromCrit))
+						breakdown.AddLine(key, "Total damage:", luaSprintf("%.1f + %.1f", baseFromHit, baseFromCrit))
 						if sourceMult == 1 {
-							breakdown.AddLine(key, fmt.Sprintf("= %.1f", baseVal))
+							breakdown.AddLine(key, luaSprintf("= %.1f", baseVal))
 						}
 					}
 					if sourceMult > 1 {
 						breakdown.AddLine(key,
-							fmt.Sprintf("x %.2f ^8(inflicting as though dealing more damage)", sourceMult),
-							fmt.Sprintf("= %.1f", baseVal*sourceMult),
+							luaSprintf("x %.2f ^8(inflicting as though dealing more damage)", sourceMult),
+							luaSprintf("= %.1f", baseVal*sourceMult),
 						)
 					}
 				}
@@ -4713,9 +4713,9 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 				// assume skills with no cast, attack, or cooldown time are single cast
 				bleedStacks = float64(bleedStacks * globalOutput["BleedDuration"] * hitRate)
 			}
+			activeTotems := utils.Or(env.ModDB.Override(nil, "TotemsSummoned"),
+				skillModList.Sum(mod.TypeBase, skillCfg, "ActiveTotemLimit", "ActiveBallistaLimit"))
 			if skillFlags[SkillFlagTotem] {
-				activeTotems := utils.Or(env.ModDB.Override(nil, "TotemsSummoned"),
-					skillModList.Sum(mod.TypeBase, skillCfg, "ActiveTotemLimit", "ActiveBallistaLimit"))
 				bleedStacks = float64(bleedStacks * activeTotems)
 			}
 			if configStacks > 0 {
@@ -4723,10 +4723,38 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 			}
 
 			bleedStackPotential := bleedStacks / maxStacks
-			if o := skillModList.Override(nil, "BleedStackPotentialOverride"); o != nil {
+			o := skillModList.Override(nil, "BleedStackPotentialOverride")
+			if o != nil {
 				bleedStackPotential = o.Float() / maxStacks
 			}
 			globalOutput["BleedStackPotential"] = bleedStackPotential
+
+			//pob:block:src/Modules/CalcOffence.lua:4342-4361
+			if globalBreakdown != nil {
+				key := "BleedStackPotential"
+				globalBreakdown.Data[key] = &Entry{Lines: []string{"Ratio of bleed stacks to maximum active bleeds:"}}
+				if o != nil {
+					globalBreakdown.AddLine(key, luaSprintf("= %g ^8(stack potential override)", bleedStackPotential))
+				} else {
+					globalBreakdown.AddLine(key,
+						luaSprintf("%.2f ^8(chance to hit)", output["HitChance"]/100),
+						luaSprintf("* %.2f ^8(chance to bleed)", bleedChance),
+					)
+					if hitRate > 0 {
+						globalBreakdown.AddLine(key, luaSprintf("* (%.2f / %.2f) ^8(Bleed duration / Attack Time)", globalOutput["BleedDuration"], utils.OrDefault(output["HitTime"], output["Time"])))
+					}
+					if dpsMultiplier := utils.OrDefault(skillData.DpsMultiplier, 1); dpsMultiplier != 1 {
+						globalBreakdown.AddLine(key, luaSprintf("* %g ^8(DPS multiplier for this skill)", dpsMultiplier))
+					}
+					if skillFlags[SkillFlagTotem] {
+						globalBreakdown.AddLine(key, luaSprintf("* %d ^8(active number of Totems)", luaInt(activeTotems)))
+					}
+					globalBreakdown.AddLine(key,
+						luaSprintf("/ %d ^8(max number of stacks)", luaInt(maxStacks)),
+						luaSprintf("= %.2f", bleedStackPotential),
+					)
+				}
+			}
 
 			//pob:block:src/Modules/CalcOffence.lua:4363-4372
 			bleedRollAverage := float64(50)
@@ -4734,19 +4762,27 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 				bleedRollAverage = float64((bleedStacks - (maxStacks-1)/2) / (bleedStacks + 1) * 100)
 			}
 			globalOutput["BleedRollAverage"] = bleedRollAverage
-			/*
-				TODO Breakdown
-				if globalBreakdown {
-					globalBreakdown.BleedStackPotential = {
-						fmt.Sprintf(colorCodes.CUSTOM+"NOTE: Calculation uses new Weighted Avg Ailment formula"),
-						fmt.Sprintf(""),
-						fmt.Sprintf("%.2f ^8(chance to hit)", actor.Output["HitChance"] / 100),
-						fmt.Sprintf("* (%.2f / %.2f) ^8(BleedDuration / Attack Time)", globalOutput.BleedDuration, actor.Output["Time"]),
-						fmt.Sprintf("/ %d ^8(max number of stacks)", maxStacks),
-						fmt.Sprintf("= %.2f", globalOutput.BleedStackPotential),
-					}
+			//pob:block:src/Modules/CalcOffence.lua:4373-4387
+			if globalBreakdown != nil {
+				key := "BleedRollAverage"
+				globalBreakdown.Data[key] = &Entry{Lines: []string{
+					colorCustom + "This is the average roll of a Bleed affecting the enemy if you are constantly attacking",
+					luaSprintf(colorCustom+"If attacking constantly, your average strongest bleed currently achieves ^7%.2f%%"+colorCustom+" of its max damage", bleedRollAverage),
+					"",
+					"Average Bleed Roll:",
+				}}
+				if bleedStacks >= maxStacks {
+					globalBreakdown.AddLine(key,
+						luaSprintf("%.2f - (%.2f - 1)/2", bleedStacks, maxStacks),
+						luaSprintf("/ (%.2f + 1)", bleedStacks),
+						luaSprintf("= %.2f%%", bleedRollAverage),
+					)
+				} else {
+					globalBreakdown.AddLine(key, luaSprintf("50%% (averaging <= %d bleeds)", luaInt(maxStacks)))
 				}
-			*/
+			}
+
+			var sourceMinHitDmg, sourceMaxHitDmg, sourceMaxCritDmg float64
 
 			for _, sub_pass := range []int{1, 2} {
 				dotCfg.SkillCond["CriticalStrike"] = sub_pass != 1
@@ -4771,54 +4807,47 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 						output["CritBleedDotMulti"] = bleedDotMulti()
 					}
 					sourceMinCritDmg := float64(minDmg * output["CritBleedDotMulti"])
-					sourceMaxCritDmg := float64(maxDmg * output["CritBleedDotMulti"])
+					sourceMaxCritDmg = float64(maxDmg * output["CritBleedDotMulti"])
 					sourceCritDmg = sourceMinCritDmg + (sourceMaxCritDmg-sourceMinCritDmg)*bleedRollAverage/100
 				} else {
 					output["BleedDotMulti"] = bleedDotMulti()
-					sourceMinHitDmg := float64(minDmg * output["BleedDotMulti"])
-					sourceMaxHitDmg := float64(maxDmg * output["BleedDotMulti"])
+					sourceMinHitDmg = float64(minDmg * output["BleedDotMulti"])
+					sourceMaxHitDmg = float64(maxDmg * output["BleedDotMulti"])
 					sourceHitDmg = sourceMinHitDmg + (sourceMaxHitDmg-sourceMinHitDmg)*bleedRollAverage/100
 				}
 			}
 
-			/*
-				TODO Breakdown
-				if globalBreakdown {
-					if sourceHitDmg == sourceCritDmg {
-						globalBreakdown.BleedDPS = {
-							fmt.Sprintf(colorCodes.CUSTOM+"NOTE: Calculation uses new Weighted Avg Ailment formula"),
-							fmt.Sprintf(""),
-							fmt.Sprintf("Dmg Derivation:"),
-							fmt.Sprintf("(%.2f + (%.2f - %.2f) ^8(min source physical + (max source physical - min source physical)", actor.Output["BleedPhysicalMin"], actor.Output["BleedPhysicalMax"], actor.Output["BleedPhysicalMin"]),
-							fmt.Sprintf("/ 2^(1 / (%.2f + 1))) ^8(/ 2^(1 / (stack potential + 1)))", bleedStacks),
-							fmt.Sprintf("* %.2f ^8(Bleed DoT Multi)", actor.Output["BleedDotMulti"]),
-							fmt.Sprintf("= %.2f", sourceHitDmg),
-						}
-					} else {
-						globalBreakdown.BleedDPS = {
-							fmt.Sprintf(colorCodes.CUSTOM+"NOTE: Calculation uses new Weighted Avg Ailment formula"),
-							fmt.Sprintf(""),
-							fmt.Sprintf("Non-Crit Dmg Derivation:"),
-							fmt.Sprintf("(%.2f + (%.2f - %.2f) ^8(min source physical + (max source physical - min source physical)", actor.Output["BleedPhysicalMin"], actor.Output["BleedPhysicalMax"], actor.Output["BleedPhysicalMin"]),
-							fmt.Sprintf("/ 2^(1 / (%.2f + 1))) ^8(/ 2^(1 / (stack potential + 1)))", bleedStacks),
-							fmt.Sprintf("* %.2f ^8(Bleed DoT Multi for Non-Crit)", actor.Output["BleedDotMulti"]),
-							fmt.Sprintf("= %.2f", sourceHitDmg),
-							fmt.Sprintf(""),
-							fmt.Sprintf("Crit Dmg Derivation:"),
-							fmt.Sprintf("(%.2f + (%.2f - %.2f) ^8(min source physical + (max source physical - min source physical)", actor.Output["BleedPhysicalMin"], actor.Output["BleedPhysicalMax"], actor.Output["BleedPhysicalMin"]),
-							fmt.Sprintf("/ 2^(1 / (%.2f + 1))) ^8(/ 2^(1 / (stack potential + 1)))", bleedStacks),
-							fmt.Sprintf("* %.2f ^8(Bleed DoT Multi for Crit)", actor.Output["CritBleedDotMulti"]),
-							fmt.Sprintf("= %.2f", sourceCritDmg),
-						}
+			//pob:block:src/Modules/CalcOffence.lua:4414-4443
+			if breakdown != nil {
+				breakdown.Data["BleedDPS"] = &Entry{Lines: []string{colorCustom + "NOTE: Calculation uses new Weighted Avg formula for critical hits"}}
+			}
+			if globalBreakdown != nil {
+				derivation := func(multiLabel string, multi float64, format string, avg float64) []string {
+					return []string{
+						luaSprintf("%.0f + (%.0f - %.0f) * %.2f%%", output["BleedPhysicalMin"], output["BleedPhysicalMax"], output["BleedPhysicalMin"], bleedRollAverage),
+						"^8min source phys + (max source phys - min source phys) * average bleed roll",
+						luaSprintf("* %.2f ^8(%s)", multi, multiLabel),
+						luaSprintf(format, avg),
 					}
 				}
-			*/
+				if sourceHitDmg == sourceCritDmg || output["CritChance"] == 0 {
+					globalBreakdown.Data["BleedDPS"] = &Entry{Lines: append([]string{"Dmg Derivation:"}, derivation("Bleed DoT Multi", output["BleedDotMulti"], "= %.2f", sourceHitDmg)...)}
+				} else {
+					lines := append([]string{"Non-Crit Dmg Derivation:"}, derivation("Bleed DoT Multi for Non-Crit", output["BleedDotMulti"], "= %.0f", sourceHitDmg)...)
+					lines = append(lines, "", "Crit Dmg Derivation:")
+					lines = append(lines, derivation("Bleed DoT Multi for Crit", output["CritBleedDotMulti"], "= %.2f", sourceCritDmg)...)
+					globalBreakdown.Data["BleedDPS"] = &Entry{Lines: lines}
+				}
+			}
 
 			basePercent := utils.Ternary(skillData.BleedBasePercent != 0, skillData.BleedBasePercent, data.BleedPercentBase)
 			// over-stacking bleed stacks increases the chance a critical bleed is present
 			//pob:block:src/Modules/CalcOffence.lua:3363-3365
 			//pob:block:src/Modules/CalcOffence.lua:4446
 			ailmentCritChance := 100 * (1 - math.Pow(1-output["CritChance"]/100, max(bleedStackPotential, 1)))
+			//pob:block:src/Modules/CalcOffence.lua:4448-4449
+			baseMinVal := calcAilmentDamage("Bleed", ailmentCritChance, sourceMinHitDmg, 0, true) * basePercent / 100
+			baseMaxVal := calcAilmentDamage("Bleed", 100, sourceMaxHitDmg, sourceMaxCritDmg, true) * basePercent / 100 * output["RuthlessBlowAilmentEffect"] * output["FistOfWarDamageEffect"] * globalOutput["AilmentWarcryEffect"]
 			baseVal := calcAilmentDamage("Bleed", ailmentCritChance, sourceHitDmg, sourceCritDmg, false) * basePercent / 100 * output["RuthlessBlowAilmentEffect"] * output["FistOfWarDamageEffect"] * globalOutput["AilmentWarcryEffect"]
 			if baseVal > 0 {
 				skillFlags[SkillFlagBleed] = true
@@ -4840,9 +4869,96 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 				//pob:block:src/Modules/CalcOffence.lua:4466-4477
 				activeBleeds := min(bleedStacks, maxStacks)
 				output["BaseBleedDPS"] = baseVal * effectMod * rateMod * activeBleeds * effMult
-				output["BleedDPS"] = min(output["BaseBleedDPS"], data.DotDpsCap)
+				bleedDPSUncapped := output["BaseBleedDPS"]
+				bleedDPSCapped := min(bleedDPSUncapped, data.DotDpsCap)
+				minBleedDPSUncapped := float64(baseMinVal * effectMod * rateMod * activeBleeds * effMult)
+				minBleedDPSCapped := min(minBleedDPSUncapped, data.DotDpsCap)
+				maxBleedDPSUncapped := float64(baseMaxVal * effectMod * rateMod * activeBleeds * effMult)
+				maxBleedDPSCapped := min(maxBleedDPSUncapped, data.DotDpsCap)
+				output["BleedDPS"] = bleedDPSCapped
 				globalOutput["BleedStacks"] = bleedStacks
 				globalOutput["BleedDamage"] = output["BaseBleedDPS"] * globalOutput["BleedDuration"]
+				//pob:block:src/Modules/CalcOffence.lua:4478-4556
+				if breakdown != nil {
+					if critMulti, ok := output["CritBleedDotMulti"]; ok && critMulti != output["BleedDotMulti"] {
+						chanceFromHit := float64(output["BleedChanceOnHit"] / 100 * (1 - globalOutput["CritChance"]/100))
+						chanceFromCrit := float64(output["BleedChanceOnCrit"] / 100 * ailmentCritChance / 100)
+						totalFromHit := chanceFromHit / (chanceFromHit + chanceFromCrit)
+						totalFromCrit := chanceFromCrit / (chanceFromHit + chanceFromCrit)
+						breakdown.Data["BleedDotMulti"] = &Entry{Lines: breakdownCritDot(output["BleedDotMulti"], critMulti, totalFromHit, totalFromCrit)}
+						if env.Mode == OutputModeCalcs {
+							output["BleedDotMulti"] = float64(output["BleedDotMulti"]*totalFromHit) + float64(critMulti*totalFromCrit)
+						}
+					}
+					key := "BleedDPS"
+					breakdown.AddLine(key, luaSprintf("x %.2f ^8(bleed deals %d%% per second)", basePercent/100, luaInt(basePercent)))
+					if effectMod != 1 {
+						breakdown.AddLine(key, luaSprintf("x %.2f ^8(ailment effect modifier)", effectMod))
+					}
+					if output["RuthlessBlowAilmentEffect"] != 1 {
+						breakdown.AddLine(key, luaSprintf("x %.2f ^8(ruthless blow effect modifier)", output["RuthlessBlowAilmentEffect"]))
+					}
+					if output["FistOfWarDamageEffect"] != 1 {
+						breakdown.AddLine(key, luaSprintf("x %.2f ^8(fist of war effect modifier)", output["FistOfWarDamageEffect"]))
+					}
+					if globalOutput["AilmentWarcryEffect"] > 1 {
+						breakdown.AddLine(key, luaSprintf("x %.2f ^8(combined ailment warcry effect modifier)", globalOutput["AilmentWarcryEffect"]))
+					}
+					breakdown.AddLine(key, luaSprintf("= %.1f", baseVal), "", "Total Bleed DPS:")
+					if baseVal != bleedDPSUncapped {
+						breakdown.AddLine(key, luaSprintf("%.1f ^8(base damage per second)", baseVal))
+					}
+					if effectMod != 1 {
+						breakdown.AddLine(key, luaSprintf("x %.2f ^8(ailment effect modifier)", effectMod))
+					}
+					if rateMod != 1 {
+						breakdown.AddLine(key, luaSprintf("x %.2f ^8(damage rate modifier)", rateMod))
+					}
+					if activeBleeds != 1 {
+						breakdown.AddLine(key, luaSprintf("x %.2f ^8(avg bleed stacks)", activeBleeds))
+					}
+					if effMult != 1 {
+						breakdown.AddLine(key, luaSprintf("x %.3f ^8(effective DPS modifier from enemy debuffs)", effMult))
+					}
+					if output["BleedDPS"] != bleedDPSUncapped {
+						breakdown.AddLine(key,
+							luaSprintf("= %.1f ^8(Uncapped raw Bleed DPS)", bleedDPSUncapped),
+							luaSprintf("^8(Raw Bleed DPS is "+colorNegative+"overcapped ^8by^7 %.0f ^8:^7 %.1f%%^8)", bleedDPSUncapped-bleedDPSCapped, (bleedDPSUncapped-bleedDPSCapped)/bleedDPSCapped*100),
+							luaSprintf("= %d ^8(Capped Bleed DPS)", luaInt(bleedDPSCapped)),
+						)
+					} else {
+						breakdown.AddLine(key, luaSprintf("= %.1f ^8per second", output["BleedDPS"]))
+					}
+					breakdown.AddLine(key, luaSprintf("%.2f%% of Maximum Bleed DPS", output["BleedDPS"]/maxBleedDPSCapped*100), "", "DPS Range:")
+					if maxBleedDPSCapped == maxBleedDPSUncapped && minBleedDPSCapped == minBleedDPSUncapped {
+						breakdown.AddLine(key, luaSprintf("%.0f to %.0f ^8(Bleed DPS Range)", minBleedDPSUncapped, maxBleedDPSUncapped))
+					} else {
+						breakdown.AddLine(key, luaSprintf("%.0f to %.0f ^8(Uncapped Bleed DPS Range)", minBleedDPSUncapped, maxBleedDPSUncapped))
+					}
+					if minBleedDPSCapped != minBleedDPSUncapped {
+						breakdown.AddLine(key, luaSprintf("^8(Raw Min Bleed DPS is "+colorNegative+"overcapped ^8by^7 %.0f ^8:^7 %.1f%%^8)", minBleedDPSUncapped-minBleedDPSCapped, (minBleedDPSUncapped-minBleedDPSCapped)/minBleedDPSCapped*100))
+					}
+					if maxBleedDPSCapped != maxBleedDPSUncapped {
+						breakdown.AddLine(key, luaSprintf("^8(Raw Max Bleed DPS is "+colorNegative+"overcapped ^8by^7 %.0f ^8:^7 %.1f%%^8)", maxBleedDPSUncapped-maxBleedDPSCapped, (maxBleedDPSUncapped-maxBleedDPSCapped)/maxBleedDPSCapped*100))
+					}
+					if maxBleedDPSCapped != maxBleedDPSUncapped || minBleedDPSCapped != minBleedDPSUncapped {
+						breakdown.AddLine(key, luaSprintf("%.0f to %.0f ^8(Capped Bleed DPS Range)", minBleedDPSCapped, maxBleedDPSCapped))
+					}
+					if globalOutput["BleedDuration"] != durationBase {
+						key := "BleedDuration"
+						globalBreakdown.Data[key] = &Entry{Lines: []string{luaSprintf("%.2fs ^8(base duration)", durationBase)}}
+						if durationMod != 1 {
+							globalBreakdown.AddLine(key, luaSprintf("x %.2f ^8(duration modifier)", durationMod))
+						}
+						if rateMod != 1 {
+							globalBreakdown.AddLine(key, luaSprintf("/ %.2f ^8(damage rate modifier)", rateMod))
+						}
+						if debuffDurationMult != 1 {
+							globalBreakdown.AddLine(key, luaSprintf("/ %.2f ^8(debuff expires slower/faster)", 1/debuffDurationMult))
+						}
+						globalBreakdown.AddLine(key, luaSprintf("= %.2fs", globalOutput["BleedDuration"]))
+					}
+				}
 			}
 		}
 		// Calculate poison chance and damage
@@ -4902,26 +5018,44 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 			poisonStacks := output["HitChance"] / 100 * poisonChance * additionalPoisonStacks *
 				utils.OrDefault(skillData.DpsMultiplier, 1) *
 				utils.OrDefault(skillData.StackMultiplier, 1) * quantityMultiplier
-			if speed := utils.OrDefault(globalOutput["HitSpeed"], globalOutput["Speed"]); speed > 0 {
+			speed := utils.OrDefault(globalOutput["HitSpeed"], globalOutput["Speed"])
+			if speed > 0 {
 				poisonStacks = poisonStacks * globalOutput["PoisonDuration"] * speed
 			}
 			poisonOnEnemy, _ := env.Build.GetNumberOptionOK("multiplierPoisonOnEnemy")
 			if poisonStacks < additionalPoisonStacks && poisonOnEnemy == 0 {
 				skillModList.AddMod(mod.NewFlag("Condition:NonPoisonedOnly", true).Source("Calculation"))
 			}
+			//pob:block:src/Modules/CalcOffence.lua:4623-4649
+			if globalBreakdown != nil {
+				key := "PoisonStacks"
+				globalBreakdown.Data[key] = &Entry{}
+				globalBreakdown.MultiChain(key, BMultiChain{
+					Base: &BMultiChainItem{Format: "%.2fs ^8(poison duration)", Value: globalOutput["PoisonDuration"]},
+					Items: []BMultiChainItem{
+						{Format: "%.2f ^8(poison chance)", Value: poisonChance},
+						{Format: "%.2f ^8(hit chance)", Value: output["HitChance"] / 100},
+						{Format: "%.2f ^8(avg. # of poisons inflicted)", Value: additionalPoisonStacks},
+						{Format: "%.2f ^8(hits per second)", Value: speed},
+						{Format: "%g ^8(dps multiplier for this skill)", Value: utils.OrDefault(skillData.DpsMultiplier, 1)},
+						{Format: "%g ^8(stack multiplier for this skill)", Value: utils.OrDefault(skillData.StackMultiplier, 1)},
+						{Format: "%g ^8(quantity multiplier for this skill)", Value: quantityMultiplier},
+					},
+					Total: luaSprintf("= %.2f", poisonStacks),
+				})
+				if skillModList.Flag(nil, "Condition:NonPoisonedOnly") {
+					globalBreakdown.AddLine(key, "Assuming 'non-Poisoned' Enemy")
+					if poisonStacks < additionalPoisonStacks {
+						globalBreakdown.AddLine(key, "^8(time between hits is longer than poison duration)")
+					} else {
+						globalBreakdown.AddLine(key, "^8(affected by poison stack limit of: "+luaNumber(additionalPoisonStacks)+")")
+					}
+				}
+			}
 
 			sourceHitDmg := float64(0)
 			sourceCritDmg := float64(0)
-			/*
-				TODO Breakdown
-				if breakdown != nil {
-					breakdown.PoisonPhysical = { damageTypes = { } }
-					breakdown.PoisonLightning = { damageTypes = { } }
-					breakdown.PoisonCold = { damageTypes = { } }
-					breakdown.PoisonFire = { damageTypes = { } }
-					breakdown.PoisonChaos = { damageTypes = { } }
-				}
-			*/
+			var sourceMinHitDmg, sourceMaxHitDmg, sourceMaxCritDmg float64
 
 			for _, sub_pass := range []int{1, 2} {
 				dotCfg.SkillCond["CriticalStrike"] = sub_pass != 1
@@ -4992,12 +5126,24 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 						output["CritPoisonDotMulti"] = poisonDotMulti()
 					}
 					sourceCritDmg = (totalMin + totalMax) / 2 * output["CritPoisonDotMulti"]
+					sourceMaxCritDmg = totalMax * output["CritPoisonDotMulti"]
 				} else {
 					output["PoisonDotMulti"] = poisonDotMulti()
 					sourceHitDmg = (totalMin + totalMax) / 2 * output["PoisonDotMulti"]
+					sourceMinHitDmg = totalMin * output["PoisonDotMulti"]
+					sourceMaxHitDmg = totalMax * output["PoisonDotMulti"]
 				}
 			}
+			//pob:block:src/Modules/CalcOffence.lua:4714-4718
+			if globalBreakdown != nil {
+				globalBreakdown.Data["PoisonDPS"] = &Entry{Lines: []string{
+					luaSprintf("Ailment mode: %s ^8(can be changed in the Configuration tab)", utils.Ternary(ailmentMode == "CRIT", "Crits Only", "Average Damage")),
+				}}
+			}
 
+			//pob:block:src/Modules/CalcOffence.lua:4719-4720
+			baseMinVal := calcAilmentDamage("Poison", output["CritChance"], sourceMinHitDmg, 0, true) * data.PoisonPercentBase
+			baseMaxVal := calcAilmentDamage("Poison", 100, sourceMaxHitDmg, sourceMaxCritDmg, true) * data.PoisonPercentBase * output["RuthlessBlowAilmentEffect"] * output["FistOfWarDamageEffect"] * globalOutput["AilmentWarcryEffect"]
 			//pob:src/Modules/CalcOffence.lua:4721
 			baseVal := calcAilmentDamage("Poison", output["CritChance"], sourceHitDmg, sourceCritDmg, false) * data.PoisonPercentBase * output["RuthlessBlowAilmentEffect"] * output["FistOfWarDamageEffect"] * globalOutput["AilmentWarcryEffect"]
 			if baseVal > 0 {
@@ -5024,8 +5170,14 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 				globalOutput["PoisonStacks"] = poisonStacks
 
 				effectMod := CalcMod(skillModList, dotCfg, "AilmentEffect")
-				output["PoisonDPS"] = min(baseVal*effectMod*rateMod*effMult, data.DotDpsCap)
+				singlePoisonDPSUncapped := min(baseVal*effectMod*rateMod*effMult, data.DotDpsCap)
+				singlePoisonDPSCapped := min(singlePoisonDPSUncapped, data.DotDpsCap)
+				output["PoisonDPS"] = singlePoisonDPSCapped
 				output["PoisonDamage"] = output["PoisonDPS"] * globalOutput["PoisonDuration"]
+				minPoisonDPSUncapped := float64(baseMinVal * effectMod * rateMod * effMult)
+				minPoisonDPSCapped := min(minPoisonDPSUncapped, data.DotDpsCap)
+				maxPoisonDPSUncapped := float64(baseMaxVal * effectMod * rateMod * effMult)
+				maxPoisonDPSCapped := min(maxPoisonDPSUncapped, data.DotDpsCap)
 
 				//pob:block:src/Modules/CalcOffence.lua:4750-4755
 				groundMult := max(
@@ -5034,18 +5186,121 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 				)
 				if groundMult > 0 {
 					output["CausticGroundDPS"] = min(baseVal*effectMod*rateMod*effMult*groundMult/100, data.DotDpsCap)
+					//pob:block:src/Modules/CalcOffence.lua:4756-4763
+					if breakdown != nil {
+						breakdown.Data["CausticGroundDPS"] = &Entry{Lines: []string{
+							luaSprintf("%.1f ^8(single poison damage per second)", baseVal*effectMod*rateMod),
+							luaSprintf("* %.1f%% ^8(percent as Caustic ground)", groundMult),
+							luaSprintf("* %.3f ^8(effect mult)", effMult),
+							luaSprintf("= %.1f ^8per second", output["CausticGroundDPS"]),
+						}}
+					}
 				}
 
+				var poisonDPSUncapped, poisonDPSCapped float64
 				if skillData.ShowAverage {
 					//pob:src/Modules/CalcOffence.lua:4768
 					output["TotalPoisonAverageDamage"] = output["PoisonDamage"]
 					output["TotalPoisonDPS"] = output["PoisonDPS"]
 				} else {
-					output["TotalPoisonDPS"] = min(output["PoisonDPS"]*poisonStacks, data.DotDpsCap)
+					poisonDPSUncapped = singlePoisonDPSCapped * poisonStacks
+					poisonDPSCapped = min(poisonDPSUncapped, data.DotDpsCap)
+					output["TotalPoisonDPS"] = poisonDPSCapped
 				}
-				/*
-					TODO Breakdown -- see CalcOffence.lua:3139-3196
-				*/
+				//pob:block:src/Modules/CalcOffence.lua:4775-4862
+				if breakdown != nil {
+					if critMulti, ok := output["CritPoisonDotMulti"]; ok && critMulti != output["PoisonDotMulti"] {
+						chanceFromHit := float64(output["PoisonChanceOnHit"] / 100 * (1 - globalOutput["CritChance"]/100))
+						chanceFromCrit := float64(output["PoisonChanceOnCrit"] / 100 * globalOutput["CritChance"] / 100)
+						totalFromHit := chanceFromHit / (chanceFromHit + chanceFromCrit)
+						totalFromCrit := chanceFromCrit / (chanceFromHit + chanceFromCrit)
+						breakdown.Data["PoisonDotMulti"] = &Entry{Lines: breakdownCritDot(output["PoisonDotMulti"], critMulti, totalFromHit, totalFromCrit)}
+						if env.Mode == OutputModeCalcs {
+							output["PoisonDotMulti"] = float64(output["PoisonDotMulti"]*totalFromHit) + float64(critMulti*totalFromCrit)
+						}
+					}
+					key := "PoisonDPS"
+					if output["RuthlessBlowAilmentEffect"] != 1 {
+						breakdown.AddLine(key, luaSprintf("x %.2f ^8(ruthless blow effect modifier)", output["RuthlessBlowAilmentEffect"]))
+					}
+					breakdown.AddLine(key, "x 0.30 ^8(poison deals 30% per second)", luaSprintf("= %.1f", baseVal), "", "Poison DPS:")
+					if baseVal != singlePoisonDPSUncapped {
+						breakdown.AddLine(key, luaSprintf("%.1f ^8(base damage per second)", baseVal))
+					}
+					if effectMod != 1 {
+						breakdown.AddLine(key, luaSprintf("x %.2f ^8(ailment effect modifier)", effectMod))
+					}
+					if rateMod != 1 {
+						breakdown.AddLine(key, luaSprintf("x %.2f ^8(damage rate modifier)", rateMod))
+					}
+					if effMult != 1 {
+						breakdown.AddLine(key, luaSprintf("x %.3f ^8(effective DPS modifier from enemy debuffs)", effMult))
+					}
+					if output["PoisonDPS"] != singlePoisonDPSUncapped {
+						breakdown.AddLine(key,
+							luaSprintf("= %.1f ^8(Uncapped raw Poison DPS)", singlePoisonDPSUncapped),
+							luaSprintf("^8(Raw Poison DPS is "+colorNegative+"overcapped ^8by^7 %.0f ^8:^7 %.1f%%^8)", singlePoisonDPSUncapped-singlePoisonDPSCapped, (singlePoisonDPSUncapped-singlePoisonDPSCapped)/singlePoisonDPSCapped*100),
+							luaSprintf("= %d ^8(Capped Poison DPS)", luaInt(singlePoisonDPSCapped)),
+						)
+					} else {
+						breakdown.AddLine(key, luaSprintf("= %.1f ^8per second", output["PoisonDPS"]))
+					}
+					breakdown.AddLine(key, luaSprintf("%.2f%% of Maximum Poison DPS", output["PoisonDPS"]/maxPoisonDPSCapped*100), "", "DPS Range:")
+					if maxPoisonDPSCapped == maxPoisonDPSUncapped && minPoisonDPSCapped == minPoisonDPSUncapped {
+						breakdown.AddLine(key, luaSprintf("%.0f to %.0f ^8(Poison DPS Range)", minPoisonDPSUncapped, maxPoisonDPSUncapped))
+					} else {
+						breakdown.AddLine(key, luaSprintf("%.0f to %.0f ^8(Uncapped Poison DPS Range)", minPoisonDPSUncapped, maxPoisonDPSUncapped))
+					}
+					if minPoisonDPSCapped != minPoisonDPSUncapped {
+						breakdown.AddLine(key, luaSprintf("^8(Raw Min Poison DPS is "+colorNegative+"overcapped ^8by^7 %.0f ^8:^7 %.1f%%^8)", minPoisonDPSUncapped-minPoisonDPSCapped, (minPoisonDPSUncapped-minPoisonDPSCapped)/minPoisonDPSCapped*100))
+					}
+					if maxPoisonDPSCapped != maxPoisonDPSUncapped {
+						breakdown.AddLine(key, luaSprintf("^8(Raw Max Poison DPS is "+colorNegative+"overcapped ^8by^7 %.0f ^8:^7 %.1f%%^8)", maxPoisonDPSUncapped-maxPoisonDPSCapped, (maxPoisonDPSUncapped-maxPoisonDPSCapped)/maxPoisonDPSCapped*100))
+					}
+					if maxPoisonDPSCapped != maxPoisonDPSUncapped || minPoisonDPSCapped != minPoisonDPSUncapped {
+						breakdown.AddLine(key, luaSprintf("%.0f to %.0f ^8(Capped Poison DPS Range)", minPoisonDPSCapped, maxPoisonDPSCapped))
+					}
+					if !skillData.ShowAverage && poisonStacks != 1 {
+						key := "TotalPoisonDPS"
+						breakdown.Data[key] = &Entry{Lines: []string{
+							luaSprintf("%.1f ^8single poison damage per second", singlePoisonDPSCapped),
+							luaSprintf("x %.2f ^8(poison stacks)", poisonStacks),
+						}}
+						if output["TotalPoisonDPS"] != poisonDPSUncapped {
+							breakdown.AddLine(key,
+								luaSprintf("= %.1f ^8(Uncapped raw Poison DPS)", poisonDPSUncapped),
+								luaSprintf("^8(Raw Poison DPS is "+colorNegative+"overcapped ^8by^7 %.0f ^8:^7 %.1f%%^8)", poisonDPSUncapped-poisonDPSCapped, (poisonDPSUncapped-poisonDPSCapped)/poisonDPSCapped*100),
+								luaSprintf("= %d ^8(Capped Poison DPS)", luaInt(poisonDPSCapped)),
+							)
+						} else {
+							breakdown.AddLine(key, luaSprintf("= %.1f ^8per second", poisonDPSCapped))
+						}
+					}
+					if globalOutput["PoisonDuration"] != 2 {
+						key := "PoisonDuration"
+						globalBreakdown.Data[key] = &Entry{Lines: []string{luaSprintf("%.2fs ^8(base duration)", durationBase)}}
+						if durationMod != 1 {
+							globalBreakdown.AddLine(key, luaSprintf("x %.2f ^8(duration modifier)", durationMod))
+						}
+						if rateMod != 1 {
+							globalBreakdown.AddLine(key, luaSprintf("/ %.2f ^8(damage rate modifier)", rateMod))
+						}
+						if debuffDurationMult != 1 {
+							globalBreakdown.AddLine(key, luaSprintf("/ %.2f ^8(debuff expires slower/faster)", 1/debuffDurationMult))
+						}
+						globalBreakdown.AddLine(key, luaSprintf("= %.2fs", globalOutput["PoisonDuration"]))
+					}
+					key = "PoisonDamage"
+					breakdown.Data[key] = &Entry{}
+					if isAttack {
+						breakdown.AddLine(key, pass.Label+":")
+					}
+					breakdown.AddLine(key,
+						luaSprintf("%.1f ^8(damage per second)", singlePoisonDPSCapped),
+						luaSprintf("x %.2fs ^8(poison duration)", globalOutput["PoisonDuration"]),
+						luaSprintf("= %.1f ^8damage per poison stack", output["PoisonDamage"]),
+					)
+				}
 			}
 		}
 		// Calculate ignite chance and damage
@@ -5140,32 +5395,32 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 				if override := skillModList.Override(nil, "IgniteStackPotentialOverride"); override != nil {
 					if maxStacks != 1 {
 						globalBreakdown.AddLine(key,
-							fmt.Sprintf("= %d / %d ^8(stack potential override / max ignite stacks)", luaInt(override.Float()), luaInt(maxStacks)),
-							fmt.Sprintf("= %g ^8(stack potential)", *overrideStackPotential),
+							luaSprintf("= %d / %d ^8(stack potential override / max ignite stacks)", luaInt(override.Float()), luaInt(maxStacks)),
+							luaSprintf("= %g ^8(stack potential)", *overrideStackPotential),
 						)
 					} else {
-						globalBreakdown.AddLine(key, fmt.Sprintf("= %g ^8(stack potential override)", *overrideStackPotential))
+						globalBreakdown.AddLine(key, luaSprintf("= %g ^8(stack potential override)", *overrideStackPotential))
 					}
 				} else {
 					globalBreakdown.AddLine(key,
-						fmt.Sprintf("%.2f ^8(chance to hit)", output["HitChance"]/100),
-						fmt.Sprintf("* %.2f ^8(chance to ignite)", igniteChance),
+						luaSprintf("%.2f ^8(chance to hit)", output["HitChance"]/100),
+						luaSprintf("* %.2f ^8(chance to ignite)", igniteChance),
 					)
 					_, hasCooldown := output["Cooldown"]
 					switch {
 					case skillData.TriggeredOnDeath:
 						globalBreakdown.AddLine(key, "* 1 ^8Cast on Death override")
 					case hasCooldown:
-						globalBreakdown.AddLine(key, fmt.Sprintf("* (%.2f / max(%.2f, %.2f) ^8(Ignite Duration / max(Cooldown, Cast Time))", globalOutput["IgniteDuration"], output["Cooldown"], utils.OrDefault(output["HitTime"], output["Time"])))
+						globalBreakdown.AddLine(key, luaSprintf("* (%.2f / max(%.2f, %.2f) ^8(Ignite Duration / max(Cooldown, Cast Time))", globalOutput["IgniteDuration"], output["Cooldown"], utils.OrDefault(output["HitTime"], output["Time"])))
 					case utils.OrDefault(globalOutput["HitSpeed"], globalOutput["Speed"]) > 0:
-						globalBreakdown.AddLine(key, fmt.Sprintf("* (%.2f / %.2f) ^8(Ignite Duration / Attack Time)", globalOutput["IgniteDuration"], utils.OrDefault(globalOutput["HitTime"], output["Time"])))
+						globalBreakdown.AddLine(key, luaSprintf("* (%.2f / %.2f) ^8(Ignite Duration / Attack Time)", globalOutput["IgniteDuration"], utils.OrDefault(globalOutput["HitTime"], output["Time"])))
 					}
 					if dpsMultiplier := utils.OrDefault(skillData.DpsMultiplier, 1); dpsMultiplier != 1 {
-						globalBreakdown.AddLine(key, fmt.Sprintf("* %g ^8(DPS multiplier for this skill)", dpsMultiplier))
+						globalBreakdown.AddLine(key, luaSprintf("* %g ^8(DPS multiplier for this skill)", dpsMultiplier))
 					}
 					globalBreakdown.AddLine(key,
-						fmt.Sprintf("/ %d ^8(max number of stacks)", luaInt(maxStacks)),
-						fmt.Sprintf("= %.2f", globalOutput["IgniteStackPotential"]),
+						luaSprintf("/ %d ^8(max number of stacks)", luaInt(maxStacks)),
+						luaSprintf("= %.2f", globalOutput["IgniteStackPotential"]),
 					)
 				}
 			}
@@ -5181,29 +5436,29 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 				key := "IgniteRollAverage"
 				globalBreakdown.Data[key] = &Entry{Lines: []string{
 					colorCustom + "This is the average roll of an ignite affecting the enemy if you are constantly attacking",
-					fmt.Sprintf(colorCustom+"If attacking constantly, your average strongest Ignite currently achieves ^7%.2f%%"+colorCustom+" of its max damage", igniteRollAverage),
+					luaSprintf(colorCustom+"If attacking constantly, your average strongest Ignite currently achieves ^7%.2f%%"+colorCustom+" of its max damage", igniteRollAverage),
 					"",
 					"Average Ignite Roll:",
 				}}
 				if igniteStacks >= maxStacks {
 					globalBreakdown.AddLine(key,
-						fmt.Sprintf("%.2f - (%.2f - 1)/2", igniteStacks, maxStacks),
-						fmt.Sprintf("/ (%.2f + 1)", igniteStacks),
-						fmt.Sprintf("= %.2f%%", igniteRollAverage),
+						luaSprintf("%.2f - (%.2f - 1)/2", igniteStacks, maxStacks),
+						luaSprintf("/ (%.2f + 1)", igniteStacks),
+						luaSprintf("= %.2f%%", igniteRollAverage),
 					)
 				} else {
-					globalBreakdown.AddLine(key, fmt.Sprintf("50%% (averaging <= %d ignites)", luaInt(maxStacks)))
+					globalBreakdown.AddLine(key, luaSprintf("50%% (averaging <= %d ignites)", luaInt(maxStacks)))
 				}
 			}
 			/*
 				TODO Breakdown
 				if globalBreakdown {
 					globalBreakdown.IgniteStackPotential = {
-						fmt.Sprintf(colorCodes.CUSTOM+"NOTE: Calculation uses new Weighted Avg Ailment formula"),
-						fmt.Sprintf(""),
-						fmt.Sprintf("(%.2f / %.2f) ^8(IgniteDuration / Cast Time)", globalOutput.IgniteDuration, output.Time),
-						fmt.Sprintf("/ %d ^8(max number of stacks)", maxStacks),
-						fmt.Sprintf("= %.2f", globalOutput.IgniteStackPotential),
+						luaSprintf(colorCodes.CUSTOM+"NOTE: Calculation uses new Weighted Avg Ailment formula"),
+						luaSprintf(""),
+						luaSprintf("(%.2f / %.2f) ^8(IgniteDuration / Cast Time)", globalOutput.IgniteDuration, output.Time),
+						luaSprintf("/ %d ^8(max number of stacks)", maxStacks),
+						luaSprintf("= %.2f", globalOutput.IgniteStackPotential),
 					}
 				}
 			*/
@@ -5287,24 +5542,24 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 				if sourceHitDmg == sourceCritDmg || output["CritChance"] == 0 {
 					globalBreakdown.Data["IgniteDPS"] = &Entry{Lines: []string{
 						"Dmg Derivation:",
-						fmt.Sprintf("%.0f + (%.0f - %.0f) * %.2f%%", output["IgniteTotalMin"], output["IgniteTotalMax"], output["IgniteTotalMin"], igniteRollAverage),
+						luaSprintf("%.0f + (%.0f - %.0f) * %.2f%%", output["IgniteTotalMin"], output["IgniteTotalMax"], output["IgniteTotalMin"], igniteRollAverage),
 						"^8min combined sources + (max combined sources - min combined sources) * average ignite roll",
-						fmt.Sprintf("* %.2f ^8(Ignite DoT Multi)", output["IgniteDotMulti"]),
-						fmt.Sprintf("= %.2f", sourceHitDmg),
+						luaSprintf("* %.2f ^8(Ignite DoT Multi)", output["IgniteDotMulti"]),
+						luaSprintf("= %.2f", sourceHitDmg),
 					}}
 				} else {
 					globalBreakdown.Data["IgniteDPS"] = &Entry{Lines: []string{
 						"Non-Crit Dmg Derivation:",
-						fmt.Sprintf("%.0f + (%.0f - %.0f) * %.2f%%", output["IgniteTotalMin"], output["IgniteTotalMax"], output["IgniteTotalMin"], igniteRollAverage),
+						luaSprintf("%.0f + (%.0f - %.0f) * %.2f%%", output["IgniteTotalMin"], output["IgniteTotalMax"], output["IgniteTotalMin"], igniteRollAverage),
 						"^8min combined sources + (max combined sources - min combined sources) * average ignite roll",
-						fmt.Sprintf("* %.2f ^8(Ignite DoT Multi for Non-Crit)", output["IgniteDotMulti"]),
-						fmt.Sprintf("= %.2f", sourceHitDmg),
+						luaSprintf("* %.2f ^8(Ignite DoT Multi for Non-Crit)", output["IgniteDotMulti"]),
+						luaSprintf("= %.2f", sourceHitDmg),
 						"",
 						"Crit Dmg Derivation:",
-						fmt.Sprintf("%.0f + (%.0f - %.0f) * %.2f%%", output["IgniteTotalMin"], output["IgniteTotalMax"], output["IgniteTotalMin"], igniteRollAverage),
+						luaSprintf("%.0f + (%.0f - %.0f) * %.2f%%", output["IgniteTotalMin"], output["IgniteTotalMax"], output["IgniteTotalMin"], igniteRollAverage),
 						"^8min combined sources + (max combined sources - min combined sources) * average ignite roll",
-						fmt.Sprintf("* %.2f ^8(Ignite DoT Multi for Crit)", output["CritIgniteDotMulti"]),
-						fmt.Sprintf("= %.2f", sourceCritDmg),
+						luaSprintf("* %.2f ^8(Ignite DoT Multi for Crit)", output["CritIgniteDotMulti"]),
+						luaSprintf("= %.2f", sourceCritDmg),
 					}}
 				}
 			}
@@ -5368,10 +5623,10 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 					//pob:block:src/Modules/CalcOffence.lua:5109-5116
 					if globalBreakdown != nil {
 						globalBreakdown.Data["BurningGroundDPS"] = &Entry{Lines: []string{
-							fmt.Sprintf("%.1f ^8(ignite damage per second)", baseVal*effectMod*rateMod),
-							fmt.Sprintf("* %.1f%% ^8(percent as burning ground)", groundMult),
-							fmt.Sprintf("* %.3f ^8(effective DPS modifier)", fireEffMult),
-							fmt.Sprintf("= %.1f ^8per second", globalOutput["BurningGroundDPS"]),
+							luaSprintf("%.1f ^8(ignite damage per second)", baseVal*effectMod*rateMod),
+							luaSprintf("* %.1f%% ^8(percent as burning ground)", groundMult),
+							luaSprintf("* %.3f ^8(effective DPS modifier)", fireEffMult),
+							luaSprintf("= %.1f ^8per second", globalOutput["BurningGroundDPS"]),
 						}}
 					}
 				}
@@ -5386,47 +5641,47 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 				if breakdown != nil {
 					key := "IgniteDPS"
 					if output["RuthlessBlowAilmentEffect"] != 1 {
-						breakdown.AddLine(key, fmt.Sprintf("x %.2f ^8(ruthless blow effect modifier)", output["RuthlessBlowAilmentEffect"]))
+						breakdown.AddLine(key, luaSprintf("x %.2f ^8(ruthless blow effect modifier)", output["RuthlessBlowAilmentEffect"]))
 					}
-					breakdown.AddLine(key, "x 0.9 ^8(ignite deals 90% per second)", fmt.Sprintf("= %.1f", baseVal), "", "Average Ignite DPS:")
+					breakdown.AddLine(key, "x 0.9 ^8(ignite deals 90% per second)", luaSprintf("= %.1f", baseVal), "", "Average Ignite DPS:")
 					if baseVal != igniteDPSUncapped {
-						breakdown.AddLine(key, fmt.Sprintf("%.1f ^8(base damage per second)", baseVal))
+						breakdown.AddLine(key, luaSprintf("%.1f ^8(base damage per second)", baseVal))
 					}
 					if effectMod != 1 {
-						breakdown.AddLine(key, fmt.Sprintf("x %.2f ^8(ailment effect modifier)", effectMod))
+						breakdown.AddLine(key, luaSprintf("x %.2f ^8(ailment effect modifier)", effectMod))
 					}
 					if rateMod != 1 {
-						breakdown.AddLine(key, fmt.Sprintf("x %.2f ^8(burn rate modifier)", rateMod))
+						breakdown.AddLine(key, luaSprintf("x %.2f ^8(burn rate modifier)", rateMod))
 					}
 					if activeIgnites != 1 {
-						breakdown.AddLine(key, fmt.Sprintf("x %.2f ^8(avg ignite stacks)", activeIgnites))
+						breakdown.AddLine(key, luaSprintf("x %.2f ^8(avg ignite stacks)", activeIgnites))
 					}
 					if effMult != 1 {
-						breakdown.AddLine(key, fmt.Sprintf("x %.3f ^8(effective DPS modifier from enemy debuffs)", effMult))
+						breakdown.AddLine(key, luaSprintf("x %.3f ^8(effective DPS modifier from enemy debuffs)", effMult))
 					}
 					if output["IgniteDPS"] != igniteDPSUncapped {
 						breakdown.AddLine(key,
-							fmt.Sprintf("= %.1f ^8(Uncapped raw Ignite DPS)", igniteDPSUncapped),
-							fmt.Sprintf("^8(Raw Ignite DPS is "+colorNegative+"overcapped ^8by^7 %.0f ^8:^7 %.1f%%^8)", igniteDPSUncapped-igniteDPSCapped, (igniteDPSUncapped-igniteDPSCapped)/igniteDPSCapped*100),
-							fmt.Sprintf("= %d ^8(Capped Ignite DPS)", luaInt(igniteDPSCapped)),
+							luaSprintf("= %.1f ^8(Uncapped raw Ignite DPS)", igniteDPSUncapped),
+							luaSprintf("^8(Raw Ignite DPS is "+colorNegative+"overcapped ^8by^7 %.0f ^8:^7 %.1f%%^8)", igniteDPSUncapped-igniteDPSCapped, (igniteDPSUncapped-igniteDPSCapped)/igniteDPSCapped*100),
+							luaSprintf("= %d ^8(Capped Ignite DPS)", luaInt(igniteDPSCapped)),
 						)
 					} else {
-						breakdown.AddLine(key, fmt.Sprintf("= %.1f ^8per second", output["IgniteDPS"]))
+						breakdown.AddLine(key, luaSprintf("= %.1f ^8per second", output["IgniteDPS"]))
 					}
-					breakdown.AddLine(key, fmt.Sprintf("%.2f%% of Maximum Ignite DPS", output["IgniteDPS"]/maxIgniteDPSCapped*100), "", "DPS Range:")
+					breakdown.AddLine(key, luaSprintf("%.2f%% of Maximum Ignite DPS", output["IgniteDPS"]/maxIgniteDPSCapped*100), "", "DPS Range:")
 					if maxIgniteDPSCapped == maxIgniteDPSUncapped && minIgniteDPSCapped == minIgniteDPSUncapped {
-						breakdown.AddLine(key, fmt.Sprintf("%.0f to %.0f ^8(Ignite DPS Range)", minIgniteDPSUncapped, maxIgniteDPSUncapped))
+						breakdown.AddLine(key, luaSprintf("%.0f to %.0f ^8(Ignite DPS Range)", minIgniteDPSUncapped, maxIgniteDPSUncapped))
 					} else {
-						breakdown.AddLine(key, fmt.Sprintf("%.0f to %.0f ^8(Uncapped Ignite DPS Range)", minIgniteDPSUncapped, maxIgniteDPSUncapped))
+						breakdown.AddLine(key, luaSprintf("%.0f to %.0f ^8(Uncapped Ignite DPS Range)", minIgniteDPSUncapped, maxIgniteDPSUncapped))
 					}
 					if minIgniteDPSCapped != minIgniteDPSUncapped {
-						breakdown.AddLine(key, fmt.Sprintf("^8(Raw Min Ignite DPS is "+colorNegative+"overcapped ^8by^7 %.0f ^8:^7 %.1f%%^8)", minIgniteDPSUncapped-minIgniteDPSCapped, (minIgniteDPSUncapped-minIgniteDPSCapped)/minIgniteDPSCapped*100))
+						breakdown.AddLine(key, luaSprintf("^8(Raw Min Ignite DPS is "+colorNegative+"overcapped ^8by^7 %.0f ^8:^7 %.1f%%^8)", minIgniteDPSUncapped-minIgniteDPSCapped, (minIgniteDPSUncapped-minIgniteDPSCapped)/minIgniteDPSCapped*100))
 					}
 					if maxIgniteDPSCapped != maxIgniteDPSUncapped {
-						breakdown.AddLine(key, fmt.Sprintf("^8(Raw Max Ignite DPS is "+colorNegative+"overcapped ^8by^7 %.0f ^8:^7 %.1f%%^8)", maxIgniteDPSUncapped-maxIgniteDPSCapped, (maxIgniteDPSUncapped-maxIgniteDPSCapped)/maxIgniteDPSCapped*100))
+						breakdown.AddLine(key, luaSprintf("^8(Raw Max Ignite DPS is "+colorNegative+"overcapped ^8by^7 %.0f ^8:^7 %.1f%%^8)", maxIgniteDPSUncapped-maxIgniteDPSCapped, (maxIgniteDPSUncapped-maxIgniteDPSCapped)/maxIgniteDPSCapped*100))
 					}
 					if maxIgniteDPSCapped != maxIgniteDPSUncapped || minIgniteDPSCapped != minIgniteDPSUncapped {
-						breakdown.AddLine(key, fmt.Sprintf("%.0f to %.0f ^8(Capped Ignite DPS Range)", minIgniteDPSCapped, maxIgniteDPSCapped))
+						breakdown.AddLine(key, luaSprintf("%.0f to %.0f ^8(Capped Ignite DPS Range)", minIgniteDPSCapped, maxIgniteDPSCapped))
 					}
 					if critMulti, ok := output["CritIgniteDotMulti"]; ok && critMulti != output["IgniteDotMulti"] {
 						chanceFromHit := float64(output["IgniteChanceOnHit"] / 100 * (1 - globalOutput["CritChance"]/100))
@@ -5444,24 +5699,24 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 							breakdown.AddLine("IgniteDamage", pass.Label+":")
 						}
 						breakdown.AddLine("IgniteDamage",
-							fmt.Sprintf("%.1f ^8(damage per second)", output["IgniteDPS"]),
-							fmt.Sprintf("x %.2fs ^8(ignite duration)", globalOutput["IgniteDuration"]),
-							fmt.Sprintf("= %.1f ^8damage per ignite stack", output["IgniteDamage"]),
+							luaSprintf("%.1f ^8(damage per second)", output["IgniteDPS"]),
+							luaSprintf("x %.2fs ^8(ignite duration)", globalOutput["IgniteDuration"]),
+							luaSprintf("= %.1f ^8damage per ignite stack", output["IgniteDamage"]),
 						)
 					}
 					if globalOutput["IgniteDuration"] != data.IgniteDurationBase {
 						key := "IgniteDuration"
-						globalBreakdown.Data[key] = &Entry{Lines: []string{fmt.Sprintf("%.2fs ^8(base duration)", durationBase)}}
+						globalBreakdown.Data[key] = &Entry{Lines: []string{luaSprintf("%.2fs ^8(base duration)", durationBase)}}
 						if durationMod != 1 {
-							globalBreakdown.AddLine(key, fmt.Sprintf("x %.2f ^8(duration modifier)", durationMod))
+							globalBreakdown.AddLine(key, luaSprintf("x %.2f ^8(duration modifier)", durationMod))
 						}
 						if rateMod != 1 {
-							globalBreakdown.AddLine(key, fmt.Sprintf("/ %.2f ^8(burn rate modifier)", rateMod))
+							globalBreakdown.AddLine(key, luaSprintf("/ %.2f ^8(burn rate modifier)", rateMod))
 						}
 						if debuffDurationMult != 1 {
-							globalBreakdown.AddLine(key, fmt.Sprintf("/ %.2f ^8(debuff expires slower/faster)", 1/debuffDurationMult))
+							globalBreakdown.AddLine(key, luaSprintf("/ %.2f ^8(debuff expires slower/faster)", 1/debuffDurationMult))
 						}
-						globalBreakdown.AddLine(key, fmt.Sprintf("= %.2fs", globalOutput["IgniteDuration"]))
+						globalBreakdown.AddLine(key, luaSprintf("= %.2fs", globalOutput["IgniteDuration"]))
 					}
 				}
 			}
@@ -5485,13 +5740,25 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 				chillMax = override.Float()
 			}
 			output["ChillSourceEffect"] = min(chillMax, math.Floor(*data.NonDamagingAilments[data.AilmentChill].Default*output["ChillEffectMod"]))
+			//pob:block:src/Modules/CalcOffence.lua:5263-5272
+			if breakdown != nil {
+				breakdown.Data["DotChill"] = &Entry{}
+				breakdown.MultiChain("DotChill", BMultiChain{
+					Label: luaSprintf("Effect of Chill: ^8(capped at %d%%)", luaInt(chillMax)),
+					Items: []BMultiChainItem{
+						{Format: "%.2f ^8(increased/reduced effect of chill)", Value: 1 + incChill/100},
+						{Format: "%.2f ^8(more/less effect of chill)", Value: moreChill},
+					},
+					Total: luaSprintf("= %.0f%%", output["ChillSourceEffect"]),
+				})
+			}
 		}
 
 		if (output["FreezeChanceOnHit"] + output["FreezeChanceOnCrit"]) > 0 {
 			//pob:block:src/Modules/CalcOffence.lua:5276-5280
 			if breakdown != nil {
 				globalBreakdown.Data["FreezeDurationMod"] = &Entry{Lines: []string{
-					fmt.Sprintf("Ailment mode: %s ^8(can be changed in the Configuration tab)", utils.Ternary(ailmentMode == "CRIT", "Crits Only", "Average Damage")),
+					luaSprintf("Ailment mode: %s ^8(can be changed in the Configuration tab)", utils.Ternary(ailmentMode == "CRIT", "Crits Only", "Average Damage")),
 				}}
 			}
 			freezeHitDmg, freezeCritDmg := calcAverageSourceDamage(data.AilmentFreeze)
@@ -5502,7 +5769,7 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 				//pob:block:src/Modules/CalcOffence.lua:5285-5288
 				if breakdown != nil {
 					breakdown.AddLine("FreezeDPS",
-						fmt.Sprintf("For freeze to apply for the minimum of 0.3 seconds, target must have no more than %.0f Ailment Threshold.", baseVal*20*output["FreezeDurationMod"]),
+						luaSprintf("For freeze to apply for the minimum of 0.3 seconds, target must have no more than %.0f Ailment Threshold.", baseVal*20*output["FreezeDurationMod"]),
 						"^8(Ailment Threshold is about equal to Life except on bosses where it is about half of their life)",
 					)
 				}
@@ -5517,7 +5784,7 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 			//pob:block:src/Modules/CalcOffence.lua:5294-5298
 			if breakdown != nil {
 				globalBreakdown.Data[name+"EffectMod"] = &Entry{Lines: []string{
-					fmt.Sprintf("Ailment mode: %s ^8(can be changed in the Configuration tab)", utils.Ternary(ailmentMode == "CRIT", "Crits Only", "Average Damage")),
+					luaSprintf("Ailment mode: %s ^8(can be changed in the Configuration tab)", utils.Ternary(ailmentMode == "CRIT", "Crits Only", "Average Damage")),
 				}}
 			}
 
@@ -5546,17 +5813,17 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 				if isAttack {
 					breakdown.AddLine(key, pass.Label+":")
 				}
-				breakdown.AddLine(key, fmt.Sprintf("%.2fs ^8(base duration)", baseDuration))
+				breakdown.AddLine(key, luaSprintf("%.2fs ^8(base duration)", baseDuration))
 				if incDur != 0 {
-					breakdown.AddLine(key, fmt.Sprintf("x %.2f ^8(increased/reduced duration)", 1+incDur/100))
+					breakdown.AddLine(key, luaSprintf("x %.2f ^8(increased/reduced duration)", 1+incDur/100))
 				}
 				if moreDur != 1 {
-					breakdown.AddLine(key, fmt.Sprintf("x %.2f ^8(more/less duration)", moreDur))
+					breakdown.AddLine(key, luaSprintf("x %.2f ^8(more/less duration)", moreDur))
 				}
 				if debuffDurationMult != 1 {
-					breakdown.AddLine(key, fmt.Sprintf("/ %.2f ^8(debuff expires slower/faster)", 1/debuffDurationMult))
+					breakdown.AddLine(key, luaSprintf("/ %.2f ^8(debuff expires slower/faster)", 1/debuffDurationMult))
 				}
-				breakdown.AddLine(key, fmt.Sprintf("= %.2fs", output[name+"Duration"]))
+				breakdown.AddLine(key, luaSprintf("= %.2fs", output[name+"Duration"]))
 			}
 		}
 		// Calculate knockback chance/distance
@@ -5614,30 +5881,30 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 		//pob:block:src/Modules/CalcOffence.lua:5440-5470
 		if breakdown != nil && output["EnemyStunDuration"] != stunBase {
 			key := "EnemyStunDuration"
-			breakdown.Data[key] = &Entry{Lines: []string{fmt.Sprintf("%.2fs ^8(base duration)", stunBase)}}
+			breakdown.Data[key] = &Entry{Lines: []string{luaSprintf("%.2fs ^8(base duration)", stunBase)}}
 			if incStunDur != 0 || (incStunDurCrit != 0 && output["CritChance"] != 0) {
-				breakdown.AddLine(key, fmt.Sprintf("x %.2f ^8(increased/reduced stun duration)", 1+(incStunDur+incStunDurCrit*output["CritChance"]/100)/100))
+				breakdown.AddLine(key, luaSprintf("x %.2f ^8(increased/reduced stun duration)", 1+(incStunDur+incStunDurCrit*output["CritChance"]/100)/100))
 			}
 			if moreStunDur != 1 {
-				breakdown.AddLine(key, fmt.Sprintf("x %.2f ^8(more/less stun duration)", moreStunDur))
+				breakdown.AddLine(key, luaSprintf("x %.2f ^8(more/less stun duration)", moreStunDur))
 			}
 			if chanceToDouble != 0 {
-				breakdown.AddLine(key, fmt.Sprintf("x %.2f ^8(chance to double stun duration)", 1+chanceToDouble/100))
+				breakdown.AddLine(key, luaSprintf("x %.2f ^8(chance to double stun duration)", 1+chanceToDouble/100))
 			}
 			if incStunRecov != 0 {
-				breakdown.AddLine(key, fmt.Sprintf("/ %.2f ^8(increased/reduced enemy stun recovery)", 1+incStunRecov/100))
+				breakdown.AddLine(key, luaSprintf("/ %.2f ^8(increased/reduced enemy stun recovery)", 1+incStunRecov/100))
 			}
-			breakdown.AddLine(key, fmt.Sprintf("= %.2fs", output["EnemyStunDuration"]))
+			breakdown.AddLine(key, luaSprintf("= %.2fs", output["EnemyStunDuration"]))
 			if minimumStunDuration != maximumStunDuration {
-				breakdown.AddLine(key, fmt.Sprintf("(minimum: %.2fs, maximum: %.2fs)", minimumStunDuration, maximumStunDuration))
+				breakdown.AddLine(key, luaSprintf("(minimum: %.2fs, maximum: %.2fs)", minimumStunDuration, maximumStunDuration))
 			}
 			if enemyActionSpeed := CalcActionSpeedMod(actor.Enemy); enemyActionSpeed != 1 {
 				breakdown.AddLine(key,
-					fmt.Sprintf("/ %.2f ^8(enemy action speed)", enemyActionSpeed),
-					fmt.Sprintf("= %.2fs (note that for effects that care about duration this is ignored)", output["EnemyStunDuration"]/enemyActionSpeed),
+					luaSprintf("/ %.2f ^8(enemy action speed)", enemyActionSpeed),
+					luaSprintf("= %.2fs (note that for effects that care about duration this is ignored)", output["EnemyStunDuration"]/enemyActionSpeed),
 				)
 				if minimumStunDuration != maximumStunDuration {
-					breakdown.AddLine(key, fmt.Sprintf("(minimum: %.2fs, maximum: %.2fs)", minimumStunDuration/enemyActionSpeed, maximumStunDuration/enemyActionSpeed))
+					breakdown.AddLine(key, luaSprintf("(minimum: %.2fs, maximum: %.2fs)", minimumStunDuration/enemyActionSpeed, maximumStunDuration/enemyActionSpeed))
 				}
 			}
 		}
@@ -5685,17 +5952,17 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 				breakdown.Data["ImpaleStoredDamage"] = &Entry{}
 				breakdown.Data["ImpaleModifier"] = &Entry{}
 				breakdown.AddLine("ImpaleStoredDamage", "10% ^8(base value)")
-				breakdown.AddLine("ImpaleStoredDamage", fmt.Sprintf("x %.2f ^8(increased effectiveness)", storedExpectedDamageModifier))
-				breakdown.AddLine("ImpaleStoredDamage", fmt.Sprintf("= %.1f%%", output["ImpaleStoredDamage"]))
+				breakdown.AddLine("ImpaleStoredDamage", luaSprintf("x %.2f ^8(increased effectiveness)", storedExpectedDamageModifier))
+				breakdown.AddLine("ImpaleStoredDamage", luaSprintf("= %.1f%%", output["ImpaleStoredDamage"]))
 
-				breakdown.AddLine("ImpaleModifier", fmt.Sprintf("%d ^8(number of stacks, can be overridden in the Configuration tab)", luaInt(impaleStacks)))
-				breakdown.AddLine("ImpaleModifier", fmt.Sprintf("x %.3f ^8(stored damage)", impaleStoredDamage))
-				breakdown.AddLine("ImpaleModifier", fmt.Sprintf("x %.2f ^8(impale chance)", impaleChance))
-				breakdown.AddLine("ImpaleModifier", fmt.Sprintf("x %.2f ^8(impale enemy physical damage reduction)", 1-impaleResist/100))
+				breakdown.AddLine("ImpaleModifier", luaSprintf("%d ^8(number of stacks, can be overridden in the Configuration tab)", luaInt(impaleStacks)))
+				breakdown.AddLine("ImpaleModifier", luaSprintf("x %.3f ^8(stored damage)", impaleStoredDamage))
+				breakdown.AddLine("ImpaleModifier", luaSprintf("x %.2f ^8(impale chance)", impaleChance))
+				breakdown.AddLine("ImpaleModifier", luaSprintf("x %.2f ^8(impale enemy physical damage reduction)", 1-impaleResist/100))
 				if impaleTaken != 1 {
-					breakdown.AddLine("ImpaleModifier", fmt.Sprintf("x %.2f ^8(impale enemy damage taken)", impaleTaken))
+					breakdown.AddLine("ImpaleModifier", luaSprintf("x %.2f ^8(impale enemy damage taken)", impaleTaken))
 				}
-				breakdown.AddLine("ImpaleModifier", fmt.Sprintf("= %.3f ^8(impale damage multiplier)", impaleDMGModifier))
+				breakdown.AddLine("ImpaleModifier", luaSprintf("= %.3f ^8(impale damage multiplier)", impaleDMGModifier))
 			}
 		}
 	}
@@ -5787,10 +6054,17 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 		}
 		actor.Output["DecayDPS"] = skillData.Decay * (1 + inc/100) * more * (1 + mult/100) * effMult
 		actor.Output["DecayDuration"] = 8 * debuffDurationMult
-		/*
-			TODO Breakdown -- breakdown.DecayDPS / breakdown.DecayDuration,
-			CalcOffence.lua:3742-3755.
-		*/
+		//pob:block:src/Modules/CalcOffence.lua:5604-5616
+		if breakdown != nil {
+			breakdown.Dot("DecayDPS", skillData.Decay, inc, more, mult, 1, 1, effMult, actor.Output["DecayDPS"])
+			if actor.Output["DecayDuration"] != 8 {
+				breakdown.Data["DecayDuration"] = &Entry{Lines: []string{luaSprintf("%.2fs ^8(base duration)", 8.0)}}
+				if debuffDurationMult != 1 {
+					breakdown.AddLine("DecayDuration", luaSprintf("/ %.2f ^8(debuff expires slower/faster)", 1/debuffDurationMult))
+				}
+				breakdown.AddLine("DecayDuration", luaSprintf("= %.2fs", actor.Output["DecayDuration"]))
+			}
+		}
 	}
 
 	//pob:block:src/Modules/CalcOffence.lua:5619-5645
@@ -5940,6 +6214,10 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 		} else {
 			actor.Output["TotalDotInstance"] = min(actor.Output["TotalDotInstance"]+total+actor.Output[string(damageType)+"Dot"], data.DotDpsCap)
 		}
+		//pob:block:src/Modules/CalcOffence.lua:5730-5733
+		if breakdown != nil {
+			breakdown.Dot(string(damageType)+"Dot", baseVal, inc, more, mult, 1, auraMult, effMult, total)
+		}
 	}
 
 	if skillModList.Flag(nil, "DotCanStack") {
@@ -6058,8 +6336,8 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 				lines = append(lines, e.Lines[:len(e.Lines)-1]...)
 			}
 			lines = append(lines,
-				fmt.Sprintf("x %.2f ^8("+timeType+" speed)", useSpeed),
-				fmt.Sprintf("= %.2f per second", actor.Output[usedResource+"PerSecondCost"]),
+				luaSprintf("x %.2f ^8("+timeType+" speed)", useSpeed),
+				luaSprintf("= %.2f per second", actor.Output[usedResource+"PerSecondCost"]),
 			)
 			breakdown.Data[usedResource+"PerSecondCost"] = &Entry{Lines: lines}
 		}
@@ -6276,35 +6554,35 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 			if splitHands {
 				mh, oh := actor.OutputTable[OutTableMainHand], actor.OutputTable[OutTableOffHand]
 				breakdown.AddLine("ImpaleDPS", "Main Hand:")
-				breakdown.AddLine("ImpaleDPS", fmt.Sprintf("%.2f ^8(MH average physical hit before mitigation)", mh["impaleStoredHitAvg"]))
-				breakdown.AddLine("ImpaleDPS", fmt.Sprintf("x %.2f ^8(MH chance to hit)", mh["HitChance"]/100))
-				breakdown.AddLine("ImpaleDPS", fmt.Sprintf("x %.2f ^8(MH impale damage multiplier)\n", utils.OrDefault(mh["ImpaleModifier"], 1)-1))
-				breakdown.AddLine("ImpaleDPS", fmt.Sprintf("= %.2f", mainHandImpaleDPS))
+				breakdown.AddLine("ImpaleDPS", luaSprintf("%.2f ^8(MH average physical hit before mitigation)", mh["impaleStoredHitAvg"]))
+				breakdown.AddLine("ImpaleDPS", luaSprintf("x %.2f ^8(MH chance to hit)", mh["HitChance"]/100))
+				breakdown.AddLine("ImpaleDPS", luaSprintf("x %.2f ^8(MH impale damage multiplier)\n", utils.OrDefault(mh["ImpaleModifier"], 1)-1))
+				breakdown.AddLine("ImpaleDPS", luaSprintf("= %.2f", mainHandImpaleDPS))
 				breakdown.AddLine("ImpaleDPS", "Off Hand:")
-				breakdown.AddLine("ImpaleDPS", fmt.Sprintf("%.2f ^8(OH average physical hit before mitigation)", oh["impaleStoredHitAvg"]))
-				breakdown.AddLine("ImpaleDPS", fmt.Sprintf("x %.2f ^8(OH chance to hit)", oh["HitChance"]/100))
-				breakdown.AddLine("ImpaleDPS", fmt.Sprintf("x %.2f ^8(OH impale damage multiplier)", utils.OrDefault(oh["ImpaleModifier"], 1)-1))
-				breakdown.AddLine("ImpaleDPS", fmt.Sprintf("= %.2f", offHandImpaleDPS))
+				breakdown.AddLine("ImpaleDPS", luaSprintf("%.2f ^8(OH average physical hit before mitigation)", oh["impaleStoredHitAvg"]))
+				breakdown.AddLine("ImpaleDPS", luaSprintf("x %.2f ^8(OH chance to hit)", oh["HitChance"]/100))
+				breakdown.AddLine("ImpaleDPS", luaSprintf("x %.2f ^8(OH impale damage multiplier)", utils.OrDefault(oh["ImpaleModifier"], 1)-1))
+				breakdown.AddLine("ImpaleDPS", luaSprintf("= %.2f", offHandImpaleDPS))
 				breakdown.AddLine("ImpaleDPS", "Combined total:")
-				breakdown.AddLine("ImpaleDPS", fmt.Sprintf("%.2f + %.2f", mainHandImpaleDPS, offHandImpaleDPS))
+				breakdown.AddLine("ImpaleDPS", luaSprintf("%.2f + %.2f", mainHandImpaleDPS, offHandImpaleDPS))
 			} else {
-				breakdown.AddLine("ImpaleDPS", fmt.Sprintf("%.2f ^8(average physical hit before mitigation)", actor.Output["impaleStoredHitAvg"]))
-				breakdown.AddLine("ImpaleDPS", fmt.Sprintf("x %.2f ^8(chance to hit)", actor.Output["HitChance"]/100))
-				breakdown.AddLine("ImpaleDPS", fmt.Sprintf("x %.2f ^8(impale damage multiplier)", utils.OrDefault(actor.Output["ImpaleModifier"], 1)-1))
+				breakdown.AddLine("ImpaleDPS", luaSprintf("%.2f ^8(average physical hit before mitigation)", actor.Output["impaleStoredHitAvg"]))
+				breakdown.AddLine("ImpaleDPS", luaSprintf("x %.2f ^8(chance to hit)", actor.Output["HitChance"]/100))
+				breakdown.AddLine("ImpaleDPS", luaSprintf("x %.2f ^8(impale damage multiplier)", utils.OrDefault(actor.Output["ImpaleModifier"], 1)-1))
 			}
 			if skillFlags[SkillFlagNotAverage] {
-				breakdown.AddLine("ImpaleDPS", utils.Ternary(actor.Output["HitSpeed"] != 0, fmt.Sprintf("x %.2f ^8(hit rate)", actor.Output["HitSpeed"]), fmt.Sprintf("x %.2f ^8(%s rate)", actor.Output["Speed"], utils.Ternary(skillFlags[SkillFlagAttack], "attack", "cast"))))
+				breakdown.AddLine("ImpaleDPS", utils.Ternary(actor.Output["HitSpeed"] != 0, luaSprintf("x %.2f ^8(hit rate)", actor.Output["HitSpeed"]), luaSprintf("x %.2f ^8(%s rate)", actor.Output["Speed"], utils.Ternary(skillFlags[SkillFlagAttack], "attack", "cast"))))
 			}
 			if skillData.DpsMultiplier != 0 {
-				breakdown.AddLine("ImpaleDPS", fmt.Sprintf("x %g ^8(dps multiplier for this skill)", skillData.DpsMultiplier))
+				breakdown.AddLine("ImpaleDPS", luaSprintf("x %g ^8(dps multiplier for this skill)", skillData.DpsMultiplier))
 			}
 			if quantityMultiplier > 1 {
-				breakdown.AddLine("ImpaleDPS", fmt.Sprintf("x %g ^8(quantity multiplier for this skill)", quantityMultiplier))
+				breakdown.AddLine("ImpaleDPS", luaSprintf("x %g ^8(quantity multiplier for this skill)", quantityMultiplier))
 			}
 			if actor.Output["ImpaleDuration"] <= 0 {
 				breakdown.AddLine("ImpaleDPS", "x 0 ^8(no Impale Duration)")
 			}
-			breakdown.AddLine("ImpaleDPS", fmt.Sprintf("= %.1f", actor.Output["ImpaleDPS"]))
+			breakdown.AddLine("ImpaleDPS", luaSprintf("= %.1f", actor.Output["ImpaleDPS"]))
 		}
 	}
 

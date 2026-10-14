@@ -35,9 +35,7 @@ type customModLineExpected struct {
 	} `json:"mods"`
 }
 
-var knownModLineDivergences = map[string]bool{
-	"Minions take 15% reduced Damage": true,
-}
+var knownModLineDivergences = map[string]bool{}
 
 // TestParseModLinesAgainstPoB: Graded against oracle/custom_mod_lines.lua: PoB's own verdict on the same lines.
 func TestParseModLinesAgainstPoB(t *testing.T) {

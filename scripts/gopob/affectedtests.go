@@ -241,14 +241,37 @@ func affectedTests(args []string) int {
 		}
 		goArgs = append(goArgs, a)
 	}
+	repo, dirs, rc := atAffected()
+	if rc != 0 || len(dirs) == 0 {
+		return rc
+	}
+	cmd := append(append([]string{"go", "test"}, dirs...), goArgs...)
+	fmt.Println(strings.Join(cmd, " "))
+	if dry {
+		return 0
+	}
+	c := exec.CommandContext(context.Background(), cmd[0], cmd[1:]...) //nolint:gosec // go test with the caller's own arguments
+	c.Dir = repo
+	c.Stdin, c.Stdout, c.Stderr = os.Stdin, os.Stdout, os.Stderr
+	if err := c.Run(); err != nil {
+		var ee *exec.ExitError
+		if errors.As(err, &ee) {
+			return ee.ExitCode()
+		}
+		return atRefuse(err.Error())
+	}
+	return 0
+}
+
+func atAffected() (string, []string, int) {
 	repo, err := root.Resolve()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
-		return root.RefusalCode
+		return "", nil, root.RefusalCode
 	}
 	repo, err = filepath.EvalSymlinks(repo)
 	if err != nil {
-		return atRefuse(err.Error())
+		return "", nil, atRefuse(err.Error())
 	}
 
 	base := os.Getenv("BASE")
@@ -257,13 +280,13 @@ func affectedTests(args []string) int {
 		mb, err := atGit(repo, "merge-base", "dev", "HEAD")
 		if err != nil || len(mb) != 1 {
 			//go-only: a new tool with no original; it cannot pick a base.
-			return atRefuse(fmt.Sprintf("no merge-base with dev; set BASE=<ref> (%v)", err))
+			return "", nil, atRefuse(fmt.Sprintf("no merge-base with dev; set BASE=<ref> (%v)", err))
 		}
 		base, baseFrom = mb[0], "merge-base dev HEAD"
 	}
 	if _, err := atGit(repo, "rev-parse", "--verify", "--quiet", base+"^{commit}"); err != nil {
 		//go-only: a new tool with no original; BASE must name a commit.
-		return atRefuse(fmt.Sprintf("BASE %q is not a commit", base))
+		return "", nil, atRefuse(fmt.Sprintf("BASE %q is not a commit", base))
 	}
 
 	seen := map[string]bool{}
@@ -275,7 +298,7 @@ func affectedTests(args []string) int {
 	} {
 		lines, err := atGit(repo, q...)
 		if err != nil {
-			return atRefuse(err.Error())
+			return "", nil, atRefuse(err.Error())
 		}
 		for _, l := range lines {
 			if !seen[l] {
@@ -288,7 +311,7 @@ func affectedTests(args []string) int {
 
 	pkgs, err := atListPackages(repo)
 	if err != nil {
-		return atRefuse(err.Error())
+		return "", nil, atRefuse(err.Error())
 	}
 	sel := atSelect(repo, pkgs, changed)
 
@@ -306,32 +329,17 @@ func affectedTests(args []string) int {
 			cause = "no changed file belongs to a Go package"
 		}
 		fmt.Printf("selected 0 of %d packages: %s; nothing to test\n", sel.allPkgs, cause)
-		return 0
+		return repo, nil, 0
 	}
 	fmt.Printf("selected %d of %d packages:\n", len(sel.picked), sel.allPkgs)
-	cmd := []string{"go", "test"}
+	var dirs []string
 	for _, p := range sel.picked {
 		fmt.Printf("  %-40s %s\n", atShort(p.pkg.ImportPath), p.reason)
 		rel, err := filepath.Rel(repo, p.pkg.Dir)
 		if err != nil {
-			return atRefuse(err.Error())
+			return "", nil, atRefuse(err.Error())
 		}
-		cmd = append(cmd, "./"+filepath.ToSlash(rel))
+		dirs = append(dirs, "./"+filepath.ToSlash(rel))
 	}
-	cmd = append(cmd, goArgs...)
-	fmt.Println(strings.Join(cmd, " "))
-	if dry {
-		return 0
-	}
-	c := exec.CommandContext(context.Background(), cmd[0], cmd[1:]...) //nolint:gosec // go test with the caller's own arguments
-	c.Dir = repo
-	c.Stdin, c.Stdout, c.Stderr = os.Stdin, os.Stdout, os.Stderr
-	if err := c.Run(); err != nil {
-		var ee *exec.ExitError
-		if errors.As(err, &ee) {
-			return ee.ExitCode()
-		}
-		return atRefuse(err.Error())
-	}
-	return 0
+	return repo, dirs, 0
 }

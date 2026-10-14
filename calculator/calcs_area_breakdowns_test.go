@@ -47,9 +47,6 @@ func TestCalcsAreaBreakdownsMatchPoB(t *testing.T) {
 		env := BuildOutputWithCache(c, OutputModeCalcs, cache)
 		for key, w := range area {
 			seen++
-			if len(w) > 0 && w[0] != "" && w[0][len(w[0])-1] == ':' {
-				w = w[1:]
-			}
 			var got []string
 			if e := env.Player.Breakdown.Data[key]; e != nil {
 				got = append(slices.Clone(e.Lines), fmt.Sprintf("radius=%s", luaNumber(e.Radius)))

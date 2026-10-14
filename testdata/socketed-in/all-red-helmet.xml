@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PathOfBuilding>
+	<Build className="Marauder" targetVersion="3_0" bandit="None" pantheonMajorGod="None" pantheonMinorGod="None" level="90" mainSocketGroup="1" viewMode="CALCS" ascendClassName="None">
+	</Build>
+	<Import/>
+	<Config>
+	</Config>
+	<Tree activeSpec="1">
+		<Spec treeVersion="3_29" masteryEffects="" ascendClassId="0" nodes="" classId="1">
+		</Spec>
+	</Tree>
+	<Notes>
+	</Notes>
+	<Skills defaultGemLevel="20" matchGemLevelToCharacterLevel="false" showAltQualityGems="false" defaultGemQuality="0" activeSkillSet="1" sortGemsByDPS="true" sortGemsByDPSField="CombinedDPS" showSupportGemTypes="ALL">
+		<SkillSet id="1">
+			<Skill label="Auras" enabled="true" slot="Helmet" includeInFullDPS="false" mainActiveSkillCalcs="1" mainActiveSkill="1">
+				<Gem nameSpec="Vitality" skillId="Vitality" gemId="Metadata/Items/Gems/SkillGemVitality" level="20" quality="0" qualityId="Default" enabled="true" enableGlobal1="true" enableGlobal2="true" count="1"/>
+				<Gem nameSpec="Determination" skillId="Determination" gemId="Metadata/Items/Gems/SkillGemDetermination" level="20" quality="0" qualityId="Default" enabled="true" enableGlobal1="true" enableGlobal2="true" count="1"/>
+			</Skill>
+		</SkillSet>
+	</Skills>
+	<Items activeItemSet="1" useSecondWeaponSet="false">
+		<Item id="1">
+			Rarity: RARE
+Test Crown
+Iron Hat
+Sockets: R-R
+LevelReq: 1
+Implicits: 0
+You have Vaal Pact while all Socketed Gems are Red
+		</Item>
+		<ItemSet id="1" useSecondWeaponSet="false">
+			<Slot name="Helmet" itemId="1"/>
+		</ItemSet>
+	</Items>
+</PathOfBuilding>

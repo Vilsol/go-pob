@@ -13,6 +13,7 @@ func (b *PathOfBuilding) SetGemSkillPartCalcs(skillSet int, socketGroup int, gem
 //pob:block:src/Classes/CalcsTab.lua:69-76
 func (b *PathOfBuilding) SetGemSkillStageCountCalcs(skillSet int, socketGroup int, gem int, stageCount int) {
 	b.Skills.SkillSets[skillSet].Skills[socketGroup].Gems[gem].SkillStageCountCalcs = stageCount
+	b.Skills.SkillSets[skillSet].Skills[socketGroup].Gems[gem].stageCountCalcsZero = false
 }
 
 //pob:block:src/Classes/CalcsTab.lua:78-85

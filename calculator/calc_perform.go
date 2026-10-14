@@ -2033,7 +2033,7 @@ func performCalc(env *Environment, skipEHP bool) {
 					if reqSource.Source == "Item" {
 						row["sourceName"] = fmt.Sprint(reqSource.SourceItem)
 					} else if reqSource.Source == "Gem" {
-						row["sourceName"] = fmt.Sprintf("%s %d/%d", reqSource.SourceGem.NameSpec, reqSource.SourceGem.Level, reqSource.SourceGem.Quality)
+						row["sourceName"] = luaSprintf("%s %d/%d", reqSource.SourceGem.NameSpec, reqSource.SourceGem.Level, reqSource.SourceGem.Quality)
 					}
 					breakdown.AddRow("Req"+breakdownAttr, row)
 				}
@@ -2118,8 +2118,9 @@ func performCalc(env *Environment, skipEHP bool) {
 	exports := newPartyBuffExports(env)
 	minionCurses := make([]*curseEntry, 0)
 	minionCurseLimit := 1
-	//pob:block:src/Modules/CalcPerform.lua:1275
+	//pob:block:src/Modules/CalcPerform.lua:1275-1276
 	partyMembers := env.partyMembers()
+	env.Player.partyMembers = partyMembers
 	//pob:block:src/Modules/CalcPerform.lua:2154
 	allyBuffs := partyMembers.Aura
 	hasActiveSpectreSkill := false
@@ -3917,9 +3918,9 @@ func performCalc(env *Environment, skipEHP bool) {
 				trigRate = trigRate * sourceCritChance / 100
 				if breakdown != nil {
 					breakdown.Speed = {
-						fmt.Sprintf("%.2fs ^8(adjusted trigger rate)", actor.Output["ServerTriggerRate"]),
-						fmt.Sprintf("x %.2f%% ^8(%s effective crit chance)", sourceCritChance, source.activeEffect.grantedEffect.name),
-						fmt.Sprintf("= %.2f ^8per second", trigRate),
+						luaSprintf("%.2fs ^8(adjusted trigger rate)", actor.Output["ServerTriggerRate"]),
+						luaSprintf("x %.2f%% ^8(%s effective crit chance)", sourceCritChance, source.activeEffect.grantedEffect.name),
+						luaSprintf("= %.2f ^8per second", trigRate),
 					}
 				}
 
@@ -3968,9 +3969,9 @@ func performCalc(env *Environment, skipEHP bool) {
 				trigRate = trigRate * sourceHitChance / 100
 				if breakdown != nil {
 					breakdown.Speed = {
-						fmt.Sprintf("%.2fs ^8(adjusted trigger rate)", actor.Output["ServerTriggerRate"]),
-						fmt.Sprintf("x %.0f%% ^8(%s hit chance)", sourceHitChance, source.activeEffect.grantedEffect.name),
-						fmt.Sprintf("= %.2f ^8per second", trigRate),
+						luaSprintf("%.2fs ^8(adjusted trigger rate)", actor.Output["ServerTriggerRate"]),
+						luaSprintf("x %.0f%% ^8(%s hit chance)", sourceHitChance, source.activeEffect.grantedEffect.name),
+						luaSprintf("= %.2f ^8per second", trigRate),
 					}
 				}
 
@@ -3990,81 +3991,6 @@ func performCalc(env *Environment, skipEHP bool) {
 	}
 
 	/*
-		TODO // Kitava's Thirst
-		if env.Player.MainSkill.skillData.triggeredByManaSpent and not env.Player.MainSkill.skillFlags.minion {
-			triggerName := "Kitava"
-			spellCount := 0
-			icdr := calcLib.mod(env.Player.MainSkill.skillModList, env.Player.MainSkill.skillCfg, "CooldownRecovery")
-			reqManaCost := env.Player.modDB.Sum(mod.TypeBase, nil, "KitavaRequiredManaCost")
-			trigRate := 0
-			source := nil
-			for _, skill := range (env.Player.activeSkillList) {
-				if not skill.skillTypes[SkillType.Triggered] and skill != env.Player.MainSkill and not skill.skillData.triggeredByManaSpent {
-					source, trigRate = findTriggerSkill(env, skill, source, trigRate, reqManaCost, nil)
-				}
-				if skill.skillData.triggeredByManaSpent and env.Player.MainSkill.socketGroup.slot == skill.socketGroup.slot {
-					spellCount = spellCount + 1
-				}
-			}
-
-			if not source or spellCount < 1 {
-				env.Player.MainSkill.skillData.triggeredByManaSpent = nil
-				env.Player.MainSkill.infoMessage = fmt.Sprintf("No %s Triggering Skill Found", triggerName)
-				env.Player.MainSkill.infoMessage2 = "DPS reported assuming Self-Cast"
-				env.Player.MainSkill.infoTrigger = ""
-			} else {
-				env.Player.MainSkill.skillData.triggered = true
-
-				actor.Output["ActionTriggerRate"] = getTriggerActionTriggerRate(env.Player.MainSkill.skillData.cooldown, env, breakdown)
-
-				// Get action trigger rate
-				kitavaCD := getTriggerDefaultCooldown(env.Player.MainSkill.supportList, "SupportCastOnManaSpent")
-
-				trigRate = icdr / kitavaCD
-				actor.Output["SourceTriggerRate"] = trigRate
-				actor.Output["ServerTriggerRate"] = min(actor.Output["SourceTriggerRate"], actor.Output["ActionTriggerRate"])
-				if breakdown != nil {
-					modActionCooldown := kitavaCD / icdr
-					rateCapAdjusted := m_ceil(modActionCooldown * data.misc.ServerTickRate) / data.misc.ServerTickRate
-					extraICDRNeeded := m_ceil((modActionCooldown - rateCapAdjusted + data.misc.ServerTickTime) * icdr * 1000)
-					breakdown.SimData = {
-						fmt.Sprintf("%.2f ^8(base cooldown of kitava's trigger)", kitavaCD),
-						fmt.Sprintf("/ %.2f ^8(increased/reduced cooldown recovery)", icdr),
-						fmt.Sprintf("= %.4f ^8(final cooldown of trigger)", modActionCooldown),
-						fmt.Sprintf(""),
-						fmt.Sprintf("%.3f ^8(adjusted for server tick rate)", rateCapAdjusted),
-						fmt.Sprintf("^8(extra ICDR of %d%% would reach next breakpoint)", extraICDRNeeded),
-						fmt.Sprintf(""),
-						fmt.Sprintf("Trigger rate:"),
-						fmt.Sprintf("1 / %.3f", rateCapAdjusted),
-						fmt.Sprintf("= %.2f ^8per second", 1 / rateCapAdjusted),
-					}
-					breakdown.ServerTriggerRate = {
-						fmt.Sprintf("%.2f ^8(smaller of 'cap' and 'skill' trigger rates)", actor.Output["ServerTriggerRate"]),
-					}
-				}
-
-				// Account for chance to trigger
-				kitavaTriggerChance := env.Player.modDB.Sum(mod.TypeBase, nil, "KitavaTriggerChance")
-				trigRate = actor.Output["ServerTriggerRate"] * kitavaTriggerChance / 100
-				if breakdown != nil {
-					breakdown.Speed = {
-						fmt.Sprintf("%.2fs ^8(adjusted trigger rate)", actor.Output["ServerTriggerRate"]),
-						fmt.Sprintf("x %.2f%% ^8(kitava's trigger chance)", kitavaTriggerChance),
-						fmt.Sprintf("= %.2f ^8per second", trigRate),
-					}
-				}
-
-				// Account for Trigger-related INC/MORE modifiers
-				addTriggerIncMoreMods(env.Player.MainSkill, env.Player.MainSkill)
-				env.Player.MainSkill.skillData.triggerRate = trigRate
-				env.Player.MainSkill.skillData.triggerSource = source
-				env.Player.MainSkill.infoMessage = "Kitava's Triggering Skill: " + source.activeEffect.grantedEffect.name
-				env.Player.MainSkill.infoTrigger = triggerName
-			}
-		}
-	*/
-	/*
 		TODO // Helmet Focus Trigger
 		if env.Player.MainSkill.skillData.triggeredByFocus and not env.Player.MainSkill.skillFlags.minion {
 			triggerName := "Focus"
@@ -4079,7 +4005,7 @@ func performCalc(env *Environment, skipEHP bool) {
 			}
 			if not source or spellCount < 1 {
 				env.Player.MainSkill.skillData.triggeredByFocus = nil
-				env.Player.MainSkill.infoMessage = fmt.Sprintf("No %s Triggering Skill Found", triggerName)
+				env.Player.MainSkill.infoMessage = luaSprintf("No %s Triggering Skill Found", triggerName)
 				env.Player.MainSkill.infoMessage2 = "DPS reported assuming Self-Cast"
 				env.Player.MainSkill.infoTrigger = ""
 			} else {
@@ -4098,18 +4024,18 @@ func performCalc(env *Environment, skipEHP bool) {
 					modActionCooldown := focusCD / icdr
 					rateCapAdjusted := m_ceil(modActionCooldown * data.misc.ServerTickRate) / data.misc.ServerTickRate
 					breakdown.SimData = {
-						fmt.Sprintf("%.2f ^8(base cooldown of focus trigger)", focusCD),
-						fmt.Sprintf("/ %.2f ^8(increased/reduced cooldown recovery)", icdr),
-						fmt.Sprintf("= %.4f ^8(final cooldown of trigger)", modActionCooldown),
-						fmt.Sprintf(""),
-						fmt.Sprintf("%.3f ^8(adjusted for server tick rate)", rateCapAdjusted),
-						fmt.Sprintf(""),
-						fmt.Sprintf("Trigger rate:"),
-						fmt.Sprintf("1 / %.3f", rateCapAdjusted),
-						fmt.Sprintf("= %.2f ^8per second", 1 / rateCapAdjusted),
+						luaSprintf("%.2f ^8(base cooldown of focus trigger)", focusCD),
+						luaSprintf("/ %.2f ^8(increased/reduced cooldown recovery)", icdr),
+						luaSprintf("= %.4f ^8(final cooldown of trigger)", modActionCooldown),
+						luaSprintf(""),
+						luaSprintf("%.3f ^8(adjusted for server tick rate)", rateCapAdjusted),
+						luaSprintf(""),
+						luaSprintf("Trigger rate:"),
+						luaSprintf("1 / %.3f", rateCapAdjusted),
+						luaSprintf("= %.2f ^8per second", 1 / rateCapAdjusted),
 					}
 					breakdown.ServerTriggerRate = {
-						fmt.Sprintf("%.2f ^8(smaller of 'cap' and 'skill' trigger rates)", actor.Output["ServerTriggerRate"]),
+						luaSprintf("%.2f ^8(smaller of 'cap' and 'skill' trigger rates)", actor.Output["ServerTriggerRate"]),
 					}
 				}
 
@@ -4211,9 +4137,9 @@ func performCalc(env *Environment, skipEHP bool) {
 
 				if breakdown != nil {
 					breakdown.Speed = {
-						fmt.Sprintf("%.2fs ^8(adjusted trigger rate)", actor.Output["ServerTriggerRate"]),
-						fmt.Sprintf("x %.2f%% ^8(chance to trigger on melee kill)", source.skillData.chanceToTriggerOnMeleeKill),
-						fmt.Sprintf("= %.2f ^8per second", trigRate),
+						luaSprintf("%.2fs ^8(adjusted trigger rate)", actor.Output["ServerTriggerRate"]),
+						luaSprintf("x %.2f%% ^8(chance to trigger on melee kill)", source.skillData.chanceToTriggerOnMeleeKill),
+						luaSprintf("= %.2f ^8per second", trigRate),
 					}
 				}
 
@@ -4261,9 +4187,9 @@ func performCalc(env *Environment, skipEHP bool) {
 					trigRate = trigRate * sourceHitChance / 100
 					if env.Minion.breakdown {
 						env.Minion.breakdown.Speed = {
-							fmt.Sprintf("%.2fs ^8(adjusted trigger rate)", env.Minion.output.ServerTriggerRate),
-							fmt.Sprintf("x %.2f%% ^8(%s Hit chance)", sourceHitChance, source.activeEffect.grantedEffect.name),
-							fmt.Sprintf("= %.2f ^8per second", trigRate),
+							luaSprintf("%.2fs ^8(adjusted trigger rate)", env.Minion.output.ServerTriggerRate),
+							luaSprintf("x %.2f%% ^8(%s Hit chance)", sourceHitChance, source.activeEffect.grantedEffect.name),
+							luaSprintf("= %.2f ^8per second", trigRate),
 						}
 					}
 
@@ -4303,6 +4229,18 @@ func performCalc(env *Environment, skipEHP bool) {
 		calcResistances(tempResistActor, tempModDB)
 		doActorLifeMana(env.Player)
 		doActorLifeManaReservation(env.Player, true)
+	}
+
+	//pob:block:src/Modules/CalcPerform.lua:3345-3349
+	if env.ModDB.Flag(env.Player.MainSkill.SkillCfg, "Condition:CanInflictHallowingFlame") {
+		magnitude := utils.Or(env.ModDB.Override(nil, "HallowingFlameMagnitude"), env.ModDB.Sum(mod.TypeIncrease, nil, "HallowingFlameMagnitude"))
+		val := math.Floor(25 * (1 + magnitude/100))
+		env.ModDB.AddMod(mod.NewList("ExtraAura", mod.ExtraAura{
+			Mod: mod.NewFloat("PhysicalDamageGainAsFire", mod.TypeBase, val).Source("Hallowing Flame").
+				Tag(mod.GlobalEffect("Global").Unscalable(true)).
+				Tag(mod.ActorCondition("enemy", "HallowingFlame")).
+				Tag(mod.Multiplier("HallowingFlame").Actor("enemy")),
+		}))
 	}
 
 	//pob:src/Modules/CalcPerform.lua:3352
@@ -4576,6 +4514,7 @@ func performCalc(env *Environment, skipEHP bool) {
 
 	//pob:block:src/Modules/CalcPerform.lua:3596-3599
 	needsAllyLife := !env.skipEHP && env.ModDB.Sum(mod.TypeBase, nil, allyLifeRedirects...) != 0
+	env.Player.allyLifeList = map[string][]*allyLifeEntry{}
 	if needsAllyLife {
 		spectreLimit := env.Player.Output["ActiveSpectreLimit"]
 		if override := env.Build.GetNumberOption("multiplierSummonedMinion"); override != 0 {
@@ -4583,6 +4522,7 @@ func performCalc(env *Environment, skipEHP bool) {
 		}
 		spectreCount := float64(0)
 		firstSpectreLife := float64(0)
+		var firstSpectreEntry *allyLifeEntry
 		spectrePool := allyLifePoolByKey("spectres")
 		spectrePool.source = "Spectres"
 		calculatedLifePool := map[string]bool{}
@@ -4661,8 +4601,10 @@ func performCalc(env *Environment, skipEHP bool) {
 						continue
 					}
 					spectreCount++
+					entry := env.Player.addAllyLife(pool.life, activeSkill.Minion.Actor, minionLife, 1)
 					if firstSpectreLife == 0 {
 						firstSpectreLife = minionLife
+						firstSpectreEntry = entry
 					}
 					env.ModDB.AddMod(mod.NewFloat(pool.life, mod.TypeBase, minionLife).Source(mod.Source(pool.source)))
 					continue
@@ -4676,10 +4618,14 @@ func performCalc(env *Environment, skipEHP bool) {
 					}
 				}
 				env.ModDB.AddMod(mod.NewFloat(pool.life, mod.TypeBase, minionLife*count).Source(mod.Source(pool.source)))
+				env.Player.addAllyLife(pool.life, activeSkill.Minion.Actor, minionLife*count, count)
 			}
 		}
 
 		if firstSpectreLife > 0 && spectreCount < spectreLimit {
+			//pob:block:src/Modules/CalcPerform.lua:3684-3685
+			firstSpectreEntry.count += spectreLimit - spectreCount
+			firstSpectreEntry.life += float64(firstSpectreLife * (spectreLimit - spectreCount))
 			env.ModDB.AddMod(mod.NewFloat(spectrePool.life, mod.TypeBase,
 				firstSpectreLife*(spectreLimit-spectreCount)).Source(mod.Source(spectrePool.source)))
 		}
@@ -4707,10 +4653,14 @@ func performCalc(env *Environment, skipEHP bool) {
 		nearestIsVaal := vaalTotem != nil && (normalTotem == nil || vaalLife > normalLife) && totemOverride == nil
 		if normalTotem != nil && !nearestIsVaal && totemRedirect != 0 && totemOverride == nil {
 			env.ModDB.AddMod(mod.NewFloat("TotalTotemLife", mod.TypeBase, normalLife).Source("Totem"))
+			//pob:src/Modules/CalcPerform.lua:3712
+			env.Player.allyLifeList["TotalTotemLife"] = []*allyLifeEntry{{name: normalTotem.ActiveEffect.GrantedEffect.Name(), life: normalLife}}
 		}
 		if vaalTotem != nil && env.ModDB.Override(nil, "TotalVaalRejuvenationTotemLife") == nil &&
 			(env.ModDB.Sum(mod.TypeBase, nil, "takenFromVaalRejuvenationTotemsBeforeYou") != 0 || (nearestIsVaal && totemRedirect != 0)) {
 			env.ModDB.AddMod(mod.NewFloat("TotalVaalRejuvenationTotemLife", mod.TypeBase, vaalLife).Source("Vaal Rejuvenation Totem"))
+			//pob:src/Modules/CalcPerform.lua:3716
+			env.Player.allyLifeList["TotalVaalRejuvenationTotemLife"] = []*allyLifeEntry{{name: vaalTotem.ActiveEffect.GrantedEffect.Name(), life: vaalLife}}
 		}
 	}
 
@@ -4739,14 +4689,14 @@ func performCalc(env *Environment, skipEHP bool) {
 		env.Player.Output["GemLevel"] = baseLevel + totalSupportLevel + totalItemLevel
 		//pob:block:src/Modules/CalcPerform.lua:3877-3887
 		if bd := env.Player.Breakdown; bd != nil {
-			bd.Data["GemLevel"] = &Entry{Lines: []string{fmt.Sprintf("%d ^8(level from gem)", luaInt(baseLevel))}}
+			bd.Data["GemLevel"] = &Entry{Lines: []string{luaSprintf("%d ^8(level from gem)", luaInt(baseLevel))}}
 			if totalSupportLevel > 0 {
-				bd.AddLine("GemLevel", fmt.Sprintf("+ %d ^8(level from support)", luaInt(totalSupportLevel)))
+				bd.AddLine("GemLevel", luaSprintf("+ %d ^8(level from support)", luaInt(totalSupportLevel)))
 			}
 			if totalItemLevel > 0 {
-				bd.AddLine("GemLevel", fmt.Sprintf("+ %d ^8(level from items)", luaInt(totalItemLevel)))
+				bd.AddLine("GemLevel", luaSprintf("+ %d ^8(level from items)", luaInt(totalItemLevel)))
 			}
-			bd.AddLine("GemLevel", fmt.Sprintf("= %d", luaInt(env.Player.Output["GemLevel"])))
+			bd.AddLine("GemLevel", luaSprintf("= %d", luaInt(env.Player.Output["GemLevel"])))
 		}
 		baseQuality := sml.Sum(mod.TypeBase, cfg, "GemQuality")
 		totalItemQuality := sml.Sum(mod.TypeBase, cfg, "GemItemQuality")
@@ -4756,17 +4706,17 @@ func performCalc(env *Environment, skipEHP bool) {
 		env.Player.Output["GemQuality"] = baseQuality + totalSupportQuality + totalItemQuality + socketQuality
 		//pob:block:src/Modules/CalcPerform.lua:3900-3913
 		if bd := env.Player.Breakdown; bd != nil {
-			bd.Data["GemQuality"] = &Entry{Lines: []string{fmt.Sprintf("%d ^8(quality from gem)", luaInt(baseQuality))}}
+			bd.Data["GemQuality"] = &Entry{Lines: []string{luaSprintf("%d ^8(quality from gem)", luaInt(baseQuality))}}
 			if totalSupportQuality > 0 {
-				bd.AddLine("GemQuality", fmt.Sprintf("+ %d ^8(quality from support)", luaInt(totalSupportQuality)))
+				bd.AddLine("GemQuality", luaSprintf("+ %d ^8(quality from support)", luaInt(totalSupportQuality)))
 			}
 			if totalItemQuality > 0 {
-				bd.AddLine("GemQuality", fmt.Sprintf("+ %d ^8(quality from items)", luaInt(totalItemQuality)))
+				bd.AddLine("GemQuality", luaSprintf("+ %d ^8(quality from items)", luaInt(totalItemQuality)))
 			}
 			if socketQuality > 0 {
-				bd.AddLine("GemQuality", fmt.Sprintf("+ %d ^8(quality from socket)", luaInt(socketQuality)))
+				bd.AddLine("GemQuality", luaSprintf("+ %d ^8(quality from socket)", luaInt(socketQuality)))
 			}
-			bd.AddLine("GemQuality", fmt.Sprintf("= %d", luaInt(env.Player.Output["GemQuality"])))
+			bd.AddLine("GemQuality", luaSprintf("= %d", luaInt(env.Player.Output["GemQuality"])))
 		}
 	}
 
@@ -5162,17 +5112,17 @@ func doActorLifeMana(actor *Actor) {
 		//pob:block:src/Modules/CalcPerform.lua:91-106
 		if actor.Breakdown != nil {
 			if inc != 0 || more != 1 || conv != 0 || override != nil {
-				actor.Breakdown.Data["Life"] = &Entry{Lines: []string{fmt.Sprintf("%.6g ^8(base)", base)}}
+				actor.Breakdown.Data["Life"] = &Entry{Lines: []string{luaSprintf("%.6g ^8(base)", base)}}
 				if inc != 0 {
-					actor.Breakdown.AddLine("Life", fmt.Sprintf("x %.2f ^8(increased/reduced)", 1+inc/100))
+					actor.Breakdown.AddLine("Life", luaSprintf("x %.2f ^8(increased/reduced)", 1+inc/100))
 				}
 				if more != 1 {
-					actor.Breakdown.AddLine("Life", fmt.Sprintf("x %.2f ^8(more/less)", more))
+					actor.Breakdown.AddLine("Life", luaSprintf("x %.2f ^8(more/less)", more))
 				}
 				if override != nil {
-					actor.Breakdown.AddLine("Life", fmt.Sprintf("= %.6g ^8(life override)", override.Float()))
+					actor.Breakdown.AddLine("Life", luaSprintf("= %.6g ^8(life override)", override.Float()))
 				}
-				actor.Breakdown.AddLine("Life", fmt.Sprintf("= %.6g", actor.Output["Life"]))
+				actor.Breakdown.AddLine("Life", luaSprintf("= %.6g", actor.Output["Life"]))
 			}
 		}
 	}
@@ -5184,17 +5134,17 @@ func doActorLifeMana(actor *Actor) {
 	//pob:block:src/Modules/CalcPerform.lua:113-128
 	if actor.Breakdown != nil {
 		if inc != 0 || more != 1 || manaConv != 0 {
-			actor.Breakdown.Data["Mana"] = &Entry{Lines: []string{fmt.Sprintf("%.6g ^8(base)", base)}}
+			actor.Breakdown.Data["Mana"] = &Entry{Lines: []string{luaSprintf("%.6g ^8(base)", base)}}
 			if inc != 0 {
-				actor.Breakdown.AddLine("Mana", fmt.Sprintf("x %.2f ^8(increased/reduced)", 1+inc/100))
+				actor.Breakdown.AddLine("Mana", luaSprintf("x %.2f ^8(increased/reduced)", 1+inc/100))
 			}
 			if more != 1 {
-				actor.Breakdown.AddLine("Mana", fmt.Sprintf("x %.2f ^8(more/less)", more))
+				actor.Breakdown.AddLine("Mana", luaSprintf("x %.2f ^8(more/less)", more))
 			}
 			if manaConv != 0 {
-				actor.Breakdown.AddLine("Mana", fmt.Sprintf("x %.2f ^8(converted to Armour)", 1-manaConv/100))
+				actor.Breakdown.AddLine("Mana", luaSprintf("x %.2f ^8(converted to Armour)", 1-manaConv/100))
 			}
-			actor.Breakdown.AddLine("Mana", fmt.Sprintf("= %.6g", actor.Output["Mana"]))
+			actor.Breakdown.AddLine("Mana", luaSprintf("= %.6g", actor.Output["Mana"]))
 		}
 	}
 	actor.Output["LowestOfMaximumLifeAndMaximumMana"] = min(actor.Output["Life"], actor.Output["Mana"])
@@ -6047,6 +5997,21 @@ func addMinionModifiers(modList *moddb.ModList, skillCfg *moddb.ListCfg, minion 
 		}
 		minion.ModDB.AddMod(minionMod.Mod)
 	}
+}
+
+type allyLifeEntry struct {
+	name        string
+	life, count float64
+}
+
+//pob:block:src/Modules/CalcPerform.lua:3668-3670
+func (a *Actor) addAllyLife(pool string, minion *Actor, life, count float64) *allyLifeEntry {
+	entry := &allyLifeEntry{life: life, count: count}
+	if minion.MinionData != nil {
+		entry.name = minion.MinionData.Name
+	}
+	a.allyLifeList[pool] = append(a.allyLifeList[pool], entry)
+	return entry
 }
 
 func prepareAllyMinion(env *Environment, activeSkill *ActiveSkill) {

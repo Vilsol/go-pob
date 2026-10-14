@@ -146,5 +146,7 @@ testdata/.testdata-tmp/
 
 .wrangler/
 
+/.cache/
+
 testdata/corpus-[0-9]*/
 testdata/oracle-[0-9]*/

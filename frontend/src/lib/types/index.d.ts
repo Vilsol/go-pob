@@ -259,6 +259,7 @@ export declare namespace calculator {
     AddLine(key: string, s: Array<string> | undefined): void;
     AddRow(key: string, rows: Array<Record<string, string> | undefined> | undefined): void;
     DamageType(key: string, damageTypes: Array<calculator.BDamageType> | undefined): void;
+    Dot(key: string, baseVal: number, inc: number, more: number, mult: number, rate: number, aura: number, effMult: number, total: number): void;
     EffMult(key: string, damageType: data.DamageType, resist: number, pen: number, taken: number, mult: number, takenMore: number, sourceRes: data.DamageType, useRes: boolean, invertChance: number, effectiveResist: number | undefined): void;
     GetData(): (Record<string, calculator.EntryPlain | undefined> | undefined);
     Has(key: string): boolean;
@@ -1301,6 +1302,9 @@ export declare namespace calculator {
     Radius: number;
     RadiusSecondary: number;
     RadiusTertiary: number;
+    RadiusLabel: string;
+    RadiusSecondaryLabel: string;
+    RadiusTertiaryLabel: string;
     RadiusExtra: number;
     RadiusTertiaryBaseMargin: number;
     ProjectileSpeedAppliesToMSAreaOfEffect: boolean;
@@ -2730,6 +2734,9 @@ export declare namespace moddb {
     SkillDistSet: boolean;
     SocketColor: string;
     SocketNum: number;
+    IntelligenceGems: number;
+    DexterityGems: number;
+    StrengthGems: number;
     /** Releases the Go resources behind this wrapper. */
     release(): void;
     [Symbol.dispose](): void;

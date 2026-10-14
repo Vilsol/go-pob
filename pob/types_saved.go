@@ -3,6 +3,7 @@ package pob
 import (
 	"encoding/xml"
 	"fmt"
+	"strconv"
 )
 
 type PathOfBuilding struct {
@@ -69,6 +70,23 @@ type Spectre struct {
 type PlayerStat struct {
 	Value float64 `xml:"value,attr"`
 	Stat  string  `xml:"stat,attr"`
+}
+
+func (p *PlayerStat) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	for _, attr := range start.Attr {
+		switch attr.Name.Local {
+		case "stat":
+			p.Stat = attr.Value
+		case "value":
+			if v, err := strconv.ParseFloat(attr.Value, 64); err == nil {
+				p.Value = v
+			}
+		}
+	}
+	if err := d.Skip(); err != nil {
+		return fmt.Errorf("failed to parse PlayerStat: %w", err)
+	}
+	return nil
 }
 
 type FullDPSSkill struct {
@@ -367,7 +385,40 @@ type Gem struct {
 	SkillMinionSkillCalcs   *int    `xml:"skillMinionSkillCalcs,attr,omitempty"`
 	SkillMinionItemSetCalcs *int    `xml:"skillMinionItemSetCalcs,attr,omitempty"`
 
-	explodeSource string
+	explodeSource       string
+	stageCountZero      bool
+	stageCountCalcsZero bool
+}
+
+type gemXML Gem
+
+func (g *Gem) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	if err := d.DecodeElement((*gemXML)(g), &start); err != nil {
+		return fmt.Errorf("failed to parse Gem: %w", err)
+	}
+	for _, attr := range start.Attr {
+		switch attr.Name.Local {
+		case "skillStageCount":
+			g.stageCountZero = g.SkillStageCount == 0
+		case "skillStageCountCalcs":
+			g.stageCountCalcsZero = g.SkillStageCountCalcs == 0
+		}
+	}
+	return nil
+}
+
+//pob:block:src/Classes/SkillsTab.lua:587-588
+func (g Gem) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	if g.stageCountZero && g.SkillStageCount == 0 {
+		start.Attr = append(start.Attr, xml.Attr{Name: xml.Name{Local: "skillStageCount"}, Value: "0"})
+	}
+	if g.stageCountCalcsZero && g.SkillStageCountCalcs == 0 {
+		start.Attr = append(start.Attr, xml.Attr{Name: xml.Name{Local: "skillStageCountCalcs"}, Value: "0"})
+	}
+	if err := e.EncodeElement(gemXML(g), start); err != nil {
+		return fmt.Errorf("failed to encode Gem: %w", err)
+	}
+	return nil
 }
 
 func (g *Gem) SetExplodeSource(source string) {

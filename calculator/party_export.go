@@ -210,9 +210,11 @@ func stackMineMods(mods []mod.Mod, stackCount float64) []mod.Mod {
 		for _, tag := range m.Tags() {
 			if ge, ok := tag.(*mod.GlobalEffectTag); ok && ge.EffectStackVarTag == "ActiveMineCount" {
 				c := m.Clone()
-				for _, ct := range c.Tags() {
+				for j, ct := range c.Tags() {
 					if cge, ok := ct.(*mod.GlobalEffectTag); ok && cge.EffectStackVarTag == "ActiveMineCount" {
-						cge.EffectStackVarTag = ""
+						cp := *cge
+						cp.EffectStackVarTag = ""
+						c.Tags()[j] = &cp
 					}
 				}
 				if val := c.Value(); val != nil && val.Type() == mod.ModValueMultiTypeFloat {

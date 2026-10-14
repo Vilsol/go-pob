@@ -6,8 +6,10 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"sort"
 	"strings"
+	"sync"
 	"unicode"
 	"unicode/utf8"
 
@@ -19,6 +21,7 @@ const defaultVersionSource = "data/raw/main.go"
 var (
 	reDefaultVersion = regexp.MustCompile(`const\s+DefaultVersion\s*=\s*"([^"]+)"`)
 	reUnsupportedRE  = regexp.MustCompile(`\(\?[=!<]|\\[1-9]`)
+	reAnchored       = regexp.MustCompile(`[\^$]|\\[Az]`)
 )
 
 func cgRefuse(msg string) int {
@@ -37,27 +40,31 @@ func corpusGrep(args []string) int {
 		return root.RefusalCode
 	}
 
-	pattern := os.Getenv("PATTERN")
-	if pattern == "" {
-		fmt.Fprintln(os.Stderr, "set PATTERN=<text|regex>")
-		return 2
+	patterns, rc := cgPatterns()
+	if rc != 0 {
+		return rc
 	}
-	if os.Getenv("LUA") == "1" {
-		out, rc := luaToRegex(pattern)
-		if rc != 0 {
-			return rc
+	rxs := make([]*regexp.Regexp, len(patterns))
+	for i, pattern := range patterns {
+		if os.Getenv("LUA") == "1" {
+			out, rc := luaToRegex(pattern)
+			if rc != 0 {
+				return rc
+			}
+			pattern = out
+			patterns[i] = out
 		}
-		pattern = out
-	}
-	if m := reUnsupportedRE.FindString(pattern); m != "" {
-		return cgRefuse(fmt.Sprintf("pattern uses %s, which python allows and RE2 does not "+
-			"(no lookaround, no backreferences). Rewrite it without, so this tool and its Go port "+
-			"answer the same question.", pyRepr(m)))
-	}
-	rx, err := regexp.Compile("(?i)" + pattern)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "corpus-grep: bad pattern %s\n", pyRepr(pattern))
-		return 1
+		if m := reUnsupportedRE.FindString(pattern); m != "" {
+			return cgRefuse(fmt.Sprintf("pattern uses %s, which python allows and RE2 does not "+
+				"(no lookaround, no backreferences). Rewrite it without, so this tool and its Go port "+
+				"answer the same question.", pyRepr(m)))
+		}
+		rx, err := regexp.Compile("(?i)" + pattern)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "corpus-grep: bad pattern %s\n", pyRepr(pattern))
+			return 1
+		}
+		rxs[i] = rx
 	}
 
 	corpus, rc := corpusDir(repo)
@@ -73,37 +80,179 @@ func corpusGrep(args []string) int {
 		return cgRefuse("no builds under " + corpus)
 	}
 
+	scans := cgScan(files, rxs, cgLiterals(patterns))
+	for _, sc := range scans {
+		if sc.invalid {
+			return cgRefuse(sc.path + " is not valid UTF-8")
+		}
+	}
+	for i, pattern := range patterns {
+		cgReport(corpus, pattern, len(files), scans, i)
+	}
+	return 0
+}
+
+func cgPatterns() ([]string, int) {
+	pattern, file := os.Getenv("PATTERN"), os.Getenv("PATTERNS_FILE")
+	if pattern != "" && file != "" {
+		//go-only: PATTERNS_FILE has no counterpart in the original.
+		return nil, cgRefuse("set PATTERN or PATTERNS_FILE, not both")
+	}
+	if file == "" {
+		if pattern == "" {
+			fmt.Fprintln(os.Stderr, "set PATTERN=<text|regex>")
+			return nil, 2
+		}
+		return []string{pattern}, 0
+	}
+	b, err := os.ReadFile(file) //nolint:gosec // operator path
+	if err != nil {
+		//go-only: PATTERNS_FILE has no counterpart in the original.
+		return nil, cgRefuse(fmt.Sprintf("cannot read PATTERNS_FILE=%s (%s)", file, errnoText(err)))
+	}
+	var out []string
+	for _, ln := range strings.Split(string(b), "\n") {
+		if ln = strings.TrimRight(ln, "\r"); strings.TrimSpace(ln) != "" {
+			out = append(out, ln)
+		}
+	}
+	if len(out) == 0 {
+		//go-only: PATTERNS_FILE has no counterpart in the original.
+		return nil, cgRefuse("PATTERNS_FILE=" + file + " has no patterns")
+	}
+	return out, 0
+}
+
+type cgFile struct {
+	path    string
+	skipped bool
+	invalid bool
+	naive   []bool
+	counts  []int
+}
+
+func cgScan(files []string, rxs []*regexp.Regexp, lits []string) []cgFile {
+	out := make([]cgFile, len(files))
+	jobs := make(chan int)
+	var wg sync.WaitGroup
+	for range runtime.GOMAXPROCS(0) {
+		wg.Go(func() {
+			for i := range jobs {
+				out[i] = cgScanOne(files[i], rxs, lits)
+			}
+		})
+	}
+	for i := range files {
+		jobs <- i
+	}
+	close(jobs)
+	wg.Wait()
+	return out
+}
+
+func cgScanOne(path string, rxs []*regexp.Regexp, lits []string) cgFile {
+	sc := cgFile{path: path}
+	b, err := os.ReadFile(path) //nolint:gosec // a path this tool globbed
+	if err != nil {
+		sc.skipped = true
+		return sc
+	}
+	raw := string(b)
+	if !utf8.ValidString(raw) {
+		sc.invalid = true
+		return sc
+	}
+	flat := html.UnescapeString(collapseSpaces(raw))
+	sc.naive = make([]bool, len(rxs))
+	sc.counts = make([]int, len(rxs))
+	var lines []string
+	var foldedRaw, foldedFlat string
+	for i, rx := range rxs {
+		if lits[i] != "" {
+			if foldedRaw == "" {
+				foldedRaw, foldedFlat = cgFold(raw), cgFold(flat)
+			}
+			sc.counts[i] = strings.Count(foldedFlat, lits[i])
+			sc.naive[i] = strings.Contains(foldedRaw, lits[i])
+			continue
+		}
+		sc.counts[i] = len(rx.FindAllString(flat, -1))
+		if !reAnchored.MatchString(rx.String()) && !rx.MatchString(raw) {
+			continue
+		}
+		if lines == nil {
+			lines = strings.Split(raw, "\n")
+		}
+		for _, ln := range lines {
+			if rx.MatchString(ln) {
+				sc.naive[i] = true
+				break
+			}
+		}
+	}
+	return sc
+}
+
+func cgLiterals(patterns []string) []string {
+	out := make([]string, len(patterns))
+	for i, p := range patterns {
+		if regexp.QuoteMeta(p) == p && cgIsASCII(p) && !strings.Contains(p, "\n") {
+			out[i] = cgFold(p)
+		}
+	}
+	return out
+}
+
+func cgIsASCII(s string) bool {
+	for i := range len(s) {
+		if s[i] >= utf8.RuneSelf {
+			return false
+		}
+	}
+	return true
+}
+
+func cgFold(s string) string {
+	var b strings.Builder
+	b.Grow(len(s))
+	for _, r := range s {
+		switch {
+		case r == '\u017f':
+			b.WriteByte('s')
+		case r == '\u212a':
+			b.WriteByte('k')
+		case 'A' <= r && r <= 'Z':
+			b.WriteByte(byte(r) + 'a' - 'A')
+		default:
+			b.WriteRune(r)
+		}
+	}
+	return b.String()
+}
+
+func cgReport(corpus, pattern string, nFiles int, scans []cgFile, i int) {
 	type hit struct {
 		name string
 		n    int
 	}
 	var hits []hit
 	total, naive := 0, 0
-	for _, path := range files {
-		b, readErr := os.ReadFile(path) //nolint:gosec // a path this tool globbed
-		if readErr != nil {
+	for _, sc := range scans {
+		if sc.skipped {
 			continue
 		}
-		raw := string(b)
-		if !utf8.ValidString(raw) {
-			return cgRefuse(path + " is not valid UTF-8")
+		if sc.naive[i] {
+			naive++
 		}
-		for _, ln := range strings.Split(raw, "\n") {
-			if rx.MatchString(ln) {
-				naive++
-				break
-			}
-		}
-		flat := html.UnescapeString(collapseSpaces(raw))
-		if n := len(rx.FindAllString(flat, -1)); n > 0 {
-			hits = append(hits, hit{strings.TrimSuffix(filepath.Base(path), ".xml"), n})
+		if n := sc.counts[i]; n > 0 {
+			hits = append(hits, hit{strings.TrimSuffix(filepath.Base(sc.path), ".xml"), n})
 			total += n
 		}
 	}
 
 	fmt.Printf("CORPUS %s\n", corpus)
 	fmt.Printf("PATTERN %s\n", pattern)
-	fmt.Printf("MATCHED %d of %d builds, %d occurrence(s)\n", len(hits), len(files), total)
+	fmt.Printf("MATCHED %d of %d builds, %d occurrence(s)\n", len(hits), nFiles, total)
 	if len(hits) == 0 {
 		fmt.Print("  ⚠️  0 matches means 0 in the INPUT XML — item text, gem names and config only.\n" +
 			"      Mods from the PASSIVE TREE, from gem/skill data, or COMPOSED at parse time\n" +
@@ -125,7 +274,6 @@ func corpusGrep(args []string) int {
 	if os.Getenv("NAMES") != "1" && len(hits) > len(show) {
 		fmt.Printf("  … and %d more (NAMES=1 for all)\n", len(hits)-len(show))
 	}
-	return 0
 }
 
 func corpusDir(repo string) (string, int) {

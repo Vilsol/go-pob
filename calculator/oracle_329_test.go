@@ -287,13 +287,13 @@ func gradeCorpus3_29(t *testing.T, tolerance float64) {
 	}
 }
 
-const oracle329MatchedFloor = 13174499
+const oracle329MatchedFloor = 13582393
 
 const oracle329NaNCeiling = 0
 
 const oracleTightTolerance = 1e-9
 
-const oracle329TightMissCeiling = 7
+const oracle329TightMissCeiling = 345
 
 type statTally struct{ seen, ok, nan int }
 

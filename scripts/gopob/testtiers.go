@@ -138,12 +138,12 @@ func tiScan(r io.Reader, w io.Writer) (map[[2]string]float64, int, error) {
 	return times, failed, nil
 }
 
-func tiRun(repo string, extraEnv []string, goArgs []string, w io.Writer) (map[[2]string]float64, int, error) {
-	args := append([]string{"test", "-json", "-timeout", "60m", "./..."}, goArgs...)
+func tiRun(repo string, pkgs []string, goArgs []string, w io.Writer) (map[[2]string]float64, int, error) {
+	args := append(append([]string{"test", "-json", "-timeout", "60m"}, pkgs...), goArgs...)
 	fmt.Fprintln(w, "OPERATOR=true CORPUS=true go "+strings.Join(args, " "))
 	cmd := exec.CommandContext(context.Background(), "go", args...) //nolint:gosec // go test with the caller's own arguments
 	cmd.Dir = repo
-	cmd.Env = append(append(os.Environ(), "OPERATOR=true", "CORPUS=true"), extraEnv...)
+	cmd.Env = append(os.Environ(), "OPERATOR=true", "CORPUS=true")
 	cmd.Stderr = w
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
@@ -220,7 +220,7 @@ func tiRecord(path string, logs []string) int {
 func testTiers(args []string) int {
 	if len(args) == 0 {
 		//go-only: a new tool with no original.
-		return tiRefuse("usage: test-tiers fast|slow [go test args] | record <log>...")
+		return tiRefuse("usage: test-tiers fast|affected|slow [go test args] | record <log>...")
 	}
 	repo, err := root.Resolve()
 	if err != nil {
@@ -243,12 +243,18 @@ func testTiers(args []string) int {
 	var failed int
 	switch args[0] {
 	case "fast":
-		times, failed, err = tiRun(repo, nil, append([]string{"-skip", tiNamesRegex(entries)}, args[1:]...), os.Stdout)
+		times, failed, err = tiRun(repo, []string{"./..."}, append([]string{"-skip", tiNamesRegex(entries)}, args[1:]...), os.Stdout)
+	case "affected":
+		_, dirs, rc := atAffected()
+		if rc != 0 || len(dirs) == 0 {
+			return rc
+		}
+		times, failed, err = tiRun(repo, dirs, append([]string{"-skip", tiNamesRegex(entries)}, args[1:]...), os.Stdout)
 	case "slow":
-		times, failed, err = tiRun(repo, nil, append([]string{"-run", tiNamesRegex(entries)}, args[1:]...), os.Stdout)
+		times, failed, err = tiRun(repo, []string{"./..."}, append([]string{"-run", tiNamesRegex(entries)}, args[1:]...), os.Stdout)
 	default:
 		//go-only: a new tool with no original.
-		return tiRefuse(fmt.Sprintf("unknown mode %q; want fast, slow or record", args[0]))
+		return tiRefuse(fmt.Sprintf("unknown mode %q; want fast, affected, slow or record", args[0]))
 	}
 	if err != nil {
 		return tiRefuse(err.Error())

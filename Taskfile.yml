@@ -106,6 +106,11 @@ tasks:
     cmds:
       - '{{.GOPOB}} test-tiers fast {{.CLI_ARGS}}'
 
+  test-operator-affected:
+    desc: "test-operator-fast over affected-tests' packages only (BASE=<ref>, default merge-base dev, plus the working tree); nothing picked runs nothing. CLI_ARGS pass to go test"
+    cmds:
+      - 'BASE="{{.BASE}}" {{.GOPOB}} test-tiers affected {{.CLI_ARGS}}'
+
   test-operator-slow:
     desc: "Only the operator-suite tests in scripts/gopob/operator_slow_tests.txt (the other half of test-operator-fast)"
     cmds:
@@ -212,7 +217,7 @@ tasks:
   lint-go:
     desc: "Lint all Go code"
     cmds:
-      - '{{.NICE}} golangci-lint run'
+      - 'GOLANGCI_LINT_CACHE="{{.ROOT_DIR}}/.cache/golangci-lint" {{.NICE}} golangci-lint run'
 
   lint-frontend:
     desc: "Lint frontend"
@@ -636,9 +641,9 @@ tasks:
       - 'env FILE={{.FILE}} CONTEXT={{.CONTEXT | default "0"}} POB_DIR={{.POB_DIR | default "$HOME/PathOfBuilding"}} {{.GOPOB}} citation-audit'
 
   corpus-grep:
-    desc: "How many corpus builds contain a mod line — PATTERN='...' [LUA=1] [NAMES=1]"
+    desc: "How many corpus builds contain a mod line — PATTERN='...' or PATTERNS_FILE=<one per line, from the repo root> (one corpus pass, a block per pattern) [LUA=1] [NAMES=1]"
     cmds:
-      - 'env PATTERN=''{{.PATTERN}}'' LUA={{.LUA | default ""}} NAMES={{.NAMES | default ""}} {{.GOPOB}} corpus-grep'
+      - 'env PATTERN=''{{.PATTERN}}'' PATTERNS_FILE=''{{.PATTERNS_FILE}}'' LUA={{.LUA | default ""}} NAMES={{.NAMES | default ""}} {{.GOPOB}} corpus-grep'
 
   corpus-predicate:
     desc: "Count how many corpus builds satisfy a predicate — edit the body of TestCorpusPredicate first"
@@ -1093,3 +1098,24 @@ tasks:
         sh: 'realpath "{{.DIR | default "."}}"'
     cmds:
       - '{{.NICE}} env POWER_ICOUNT_BUILDS="{{.BUILDS | default "0280-elementalist-fireball"}}" POWER_ICOUNT_STAT="{{.STAT}}" go -C {{.DIR}} test ./calculator/ -run "^TestICountPowerReport$" -count=1 -v -timeout 60m'
+
+  corpus-pobcodes:
+    desc: "Import a pob.codes test-builds snapshot into testdata/corpus-<PATCH> — [SNAP=<json>, default: fetch the live one] [WRITE=1]; re-running on an imported snapshot only verifies it"
+    vars:
+      PATCH: '{{.PATCH | default "3.29"}}'
+      TREE: '{{.TREE | default (replace "." "_" .PATCH)}}'
+      FILE: '{{.SNAP | default "/tmp/pobcodes-corpus.json"}}'
+    cmds:
+      - '{{if not .SNAP}}curl -fsS -o {{.FILE}} https://api.pob.codes/test-builds/corpus{{end}}'
+      - '{{.NICE}} go run ./scripts/corpus snapshot -in {{.FILE}} -corpus testdata/corpus-{{.PATCH}} -patch {{.PATCH}} -tree {{.TREE}} -index testdata/corpus-index/{{.PATCH}} {{if .WRITE}}-write{{end}}'
+
+  corpus-dump-each:
+    desc: "Dump each build in LIST through the pinned PoB, one deterministic-LuaJIT process per build — LIST=<file> OUT=<new dir> [JOBS=4] [BUILDS=testdata/corpus-3.29]"
+    vars:
+      POB:
+        sh: 'realpath "{{.POB_DIR | default .POB_DEFAULT}}"'
+      BUILDS: '{{.BUILDS | default "testdata/corpus-3.29"}}'
+      MAIN:
+        sh: dirname "$(git rev-parse --path-format=absolute --git-common-dir)"
+    cmds:
+      - 'LUAJIT="{{.MAIN}}/.luajit-det/bin/luajit" {{.NICE}} scripts/corpus/dump_each.sh {{.POB}} . {{.BUILDS}} {{.LIST}} {{.OUT}} {{.JOBS | default 4}}'

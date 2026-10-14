@@ -206,6 +206,36 @@ func triggerConfigFor(env *Environment, key string, mainSkill *ActiveSkill) *tri
 			},
 		}
 
+	//pob:src/Modules/CalcTriggers.lua:1081-1094
+	case "kitava's thirst":
+		requiredManaCost := env.Player.ModDB.Sum(mod.TypeBase, nil, "KitavaRequiredManaCost")
+		return &triggerConfig{
+			triggerChance: utils.Ptr(env.Player.ModDB.Sum(mod.TypeBase, nil, "KitavaTriggerChance")),
+			triggerName:   "Kitava's Thirst",
+			comparer: func(cached *cachedTriggerSkill, source *ActiveSkill, triggerRate float64) bool {
+				return defaultTriggerComparer(cached, source, triggerRate) && cached.ManaCost >= requiredManaCost
+			},
+			triggerSkillCond: func(skill *ActiveSkill) bool {
+				return true
+				// Filtering done by skill() in SkillStatMap, comparer and default excludes
+			},
+		}
+
+	//pob:src/Modules/CalcTriggers.lua:1095-1108
+	case "foulborn kitava's thirst":
+		requiredLifeCost := env.Player.ModDB.Sum(mod.TypeBase, nil, "FoulbornKitavaRequiredLifeCost")
+		return &triggerConfig{
+			triggerChance: utils.Ptr(env.Player.ModDB.Sum(mod.TypeBase, nil, "FoulbornKitavaTriggerChance")),
+			triggerName:   "Foulborn Kitava's Thirst",
+			comparer: func(cached *cachedTriggerSkill, source *ActiveSkill, triggerRate float64) bool {
+				return defaultTriggerComparer(cached, source, triggerRate) && cached.costs["LifeCost"] >= requiredLifeCost
+			},
+			triggerSkillCond: func(skill *ActiveSkill) bool {
+				return true
+				// Filtering done by skill() in SkillStatMap, comparer and default excludes
+			},
+		}
+
 	//pob:src/Modules/CalcTriggers.lua:1109-1116
 	case "mjolner":
 		return &triggerConfig{

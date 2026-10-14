@@ -195,6 +195,7 @@ scripts/corpus/main.go              GO-NATIVE  subcommand dispatch for the harve
 scripts/corpus/manifest.go          GO-NATIVE  renders MANIFEST.md from the provenance records; no PoB analogue
 scripts/corpus/pob.go               GO-NATIVE  export-code codec plus the corpus ACCEPTANCE criteria; PoB's own import path (Classes/ImportTab.lua) is already ported at pob/utils.go and answers a different question -- this decides whether a build belongs in a corpus, which PoB never asks
 scripts/corpus/selftest.go          GO-NATIVE  proves every acceptance check and transport classifier can return both answers; no PoB analogue
+scripts/corpus/snapshot.go          GO-NATIVE  imports a pob.codes test-builds snapshot: verifies each code's sha256, decodes, judges, dedupes by normalised content and records every verdict; no PoB analogue
 scripts/corpus/wayback.go            GO-NATIVE  web.archive.org discovery source: enumerates archived URLs through the CDX index and harvests links out of the replayed snapshots; a crawler over an archive, no PoB analogue
 scripts/corpus/validate.go          GO-NATIVE  applies the criteria, dedups by content hash, emits the rejection breakdown; no PoB analogue
 

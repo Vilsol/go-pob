@@ -29,12 +29,40 @@ const responds = async (port) => {
   }
 };
 
+const servesStale = async (port) => {
+  const index = join(FRONTEND, 'build', 'index.html');
+  if (!existsSync(index)) return 'there is no build/index.html';
+  const asset = readFileSync(index, 'utf8').match(/["'](?:\.)?(\/_app\/immutable\/[^"']+\.js)["']/)?.[1];
+  if (!asset) return 'build/index.html names no /_app/immutable asset';
+  try {
+    const res = await fetch(`http://localhost:${port}${asset}`, { signal: AbortSignal.timeout(2000) });
+    if (!res.ok) return `${asset} answers ${res.status}`;
+    const body = Buffer.from(await res.arrayBuffer());
+    if (!body.equals(readFileSync(join(FRONTEND, 'build', asset)))) return `${asset} differs from the build on disk`;
+    return '';
+  } catch (e) {
+    return `${asset}: ${e.message}`;
+  }
+};
+
 const readState = async () => {
   if (!existsSync(STATE)) return { state: null, why: 'no warm server was started for this worktree' };
   const state = JSON.parse(readFileSync(STATE, 'utf8'));
   if (!alive(state.pid)) return { state: null, why: `the warm server (pid ${state.pid}) has exited; its log is ${LOG}` };
-  if (!(await responds(state.port))) return { state: null, why: `pid ${state.pid} is alive but port ${state.port} does not answer` };
+  const live = { state: null, pid: state.pid };
+  if (!(await responds(state.port))) return { ...live, why: `pid ${state.pid} is alive but port ${state.port} does not answer` };
+  const stale = await servesStale(state.port);
+  if (stale) return { ...live, why: `pid ${state.pid} serves an older build (${stale})` };
   return { state };
+};
+
+const kill = (pid) => {
+  try {
+    process.kill(-pid);
+    return true;
+  } catch {
+    return false;
+  }
 };
 
 const freePort = () =>
@@ -48,11 +76,16 @@ const freePort = () =>
   });
 
 const start = async () => {
-  const { state } = await readState();
+  const { state, pid, why } = await readState();
   if (state) {
     console.log(`e2e-serve: reusing pid ${state.pid}; it serves the build just made`);
     console.log(`E2E_PORT=${state.port}`);
     return 0;
+  }
+  if (pid) {
+    console.log(`e2e-serve: restarting: ${why}`);
+    kill(pid);
+    rmSync(STATE, { force: true });
   }
   const port = await freePort();
   const log = openSync(LOG, 'w');
@@ -75,11 +108,7 @@ const start = async () => {
     await new Promise((r) => setTimeout(r, 250));
   }
   console.error(`REFUSING: e2e-serve: vite preview did not answer on ${port} within 60s; log ${LOG}`);
-  try {
-    process.kill(-child.pid);
-  } catch {
-    // empty
-  }
+  kill(child.pid);
   return REFUSED;
 };
 
@@ -99,12 +128,7 @@ const stop = async () => {
     return 0;
   }
   const { pid } = JSON.parse(readFileSync(STATE, 'utf8'));
-  try {
-    process.kill(-pid);
-    console.log(`e2e-serve: stopped pid ${pid}`);
-  } catch {
-    console.log(`e2e-serve: pid ${pid} had already exited`);
-  }
+  console.log(kill(pid) ? `e2e-serve: stopped pid ${pid}` : `e2e-serve: pid ${pid} had already exited`);
   rmSync(STATE, { force: true });
   return 0;
 };

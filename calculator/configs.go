@@ -751,6 +751,8 @@ var configPlaceholderVars = []string{
 	"multiplierWitheredStackCountSelf",
 	"ScorchStacks",
 	"ShockStacks",
+	"multiplierEnemyHallowingFlame",
+	"multiplierHallowingFlameStacksRemovedByAlly",
 }
 
 //pob:block:src/Classes/ConfigTab.lua:1091-1092

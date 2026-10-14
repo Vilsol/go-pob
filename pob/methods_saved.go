@@ -55,6 +55,7 @@ func (b *PathOfBuilding) SetGemSkillPart(skillSet int, socketGroup int, gem int,
 //pob:src/Modules/Build.lua:504-510
 func (b *PathOfBuilding) SetGemSkillStageCount(skillSet int, socketGroup int, gem int, stageCount int) {
 	b.Skills.SkillSets[skillSet].Skills[socketGroup].Gems[gem].SkillStageCount = stageCount
+	b.Skills.SkillSets[skillSet].Skills[socketGroup].Gems[gem].stageCountZero = false
 }
 
 //pob:src/Modules/Build.lua:516-522

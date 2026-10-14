@@ -3,13 +3,68 @@ package calculator
 import (
 	"fmt"
 	"math"
+	"math/big"
 	"regexp"
+	"strings"
 
 	"github.com/Vilsol/go-pob/data"
 	"github.com/Vilsol/go-pob/mod"
 	"github.com/Vilsol/go-pob/moddb"
 	"github.com/Vilsol/go-pob/utils"
 )
+
+func luaSprintf(format string, args ...any) string {
+	arg := 0
+	for i := 0; i < len(format); i++ {
+		if format[i] != '%' {
+			continue
+		}
+		i++
+		for i < len(format) && strings.IndexByte("+- #0", format[i]) >= 0 {
+			i++
+		}
+		for i < len(format) && format[i] >= '0' && format[i] <= '9' {
+			i++
+		}
+		prec := -1
+		if i < len(format) && format[i] == '.' {
+			prec = 0
+			for i++; i < len(format) && format[i] >= '0' && format[i] <= '9'; i++ {
+				prec = prec*10 + int(format[i]-'0')
+			}
+		}
+		if i >= len(format) || format[i] == '%' {
+			continue
+		}
+		if arg < len(args) && (format[i] == 'f' || format[i] == 'F') {
+			if v, ok := args[arg].(float64); ok {
+				if prec < 0 {
+					prec = 6
+				}
+				if isDecimalTie(v, prec) {
+					args[arg] = math.Nextafter(v, math.Copysign(math.Inf(1), v))
+				}
+			}
+		}
+		arg++
+	}
+	return fmt.Sprintf(format, args...)
+}
+
+func isDecimalTie(v float64, prec int) bool {
+	if math.IsNaN(v) || math.IsInf(v, 0) || prec > 20 {
+		return false
+	}
+	scaled := float64(math.Abs(v) * math.Pow10(prec))
+	if math.Abs(scaled-math.Floor(scaled)-0.5) > 1e-6 {
+		return false
+	}
+	exact := new(big.Float).SetPrec(2048).SetFloat64(math.Abs(v))
+	exact.Mul(exact, new(big.Float).SetPrec(2048).SetInt(new(big.Int).Exp(big.NewInt(10), big.NewInt(int64(prec)), nil)))
+	whole, _ := exact.Int(nil)
+	frac := exact.Sub(exact, new(big.Float).SetPrec(2048).SetInt(whole))
+	return frac.Cmp(big.NewFloat(0.5)) == 0
+}
 
 type BCol struct {
 	Label string
@@ -158,18 +213,35 @@ func (b *Breakdown) area(key string, base float64, areaMod float64, total float6
 	}
 	if base != total {
 		out = append(out,
-			fmt.Sprintf("%.1fm ^8(base radius)", base/10),
-			fmt.Sprintf("x %.2f ^8(square root of area of effect modifier)", math.Floor(100*math.Sqrt(areaMod))/100),
-			fmt.Sprintf("= %.1fm", total/10),
+			luaSprintf("%.1fm ^8(base radius)", base/10),
+			luaSprintf("x %.2f ^8(square root of area of effect modifier)", math.Floor(100*math.Sqrt(areaMod))/100),
+			luaSprintf("= %.1fm", total/10),
 		)
 	}
 	if bp != nil {
 		out = append(out,
-			fmt.Sprintf("^8Next 0.1m breakpoint: %d%% increased AoE / a %d%% more AoE multiplier", bp.inc, bp.more),
-			fmt.Sprintf("^8Previous 0.1m breakpoint: %d%% reduced AoE / a %d%% less AoE multiplier", bp.red, bp.less),
+			luaSprintf("^8Next 0.1m breakpoint: %d%% increased AoE / a %d%% more AoE multiplier", bp.inc, bp.more),
+			luaSprintf("^8Previous 0.1m breakpoint: %d%% reduced AoE / a %d%% less AoE multiplier", bp.red, bp.less),
 		)
 	}
 	b.Data[key] = &Entry{Lines: out, Radius: total}
+}
+
+//pob:src/Modules/CalcBreakdown.lua:159-170
+func (b *Breakdown) Dot(key string, baseVal, inc, more, mult, rate, aura, effMult, total float64) {
+	b.Data[key] = &Entry{}
+	b.MultiChain(key, BMultiChain{
+		Base: &BMultiChainItem{Format: "%.1f ^8(base damage per second)", Value: baseVal},
+		Items: []BMultiChainItem{
+			{Format: "%.2f ^8(increased/reduced)", Value: 1 + inc/100},
+			{Format: "%.2f ^8(more/less)", Value: more},
+			{Format: "%.2f ^8(multiplier)", Value: 1 + mult/100},
+			{Format: "%.2f ^8(rate modifier)", Value: rate},
+			{Format: "%.3f ^8(aura effect modifier)", Value: aura},
+			{Format: "%.3f ^8(effective DPS modifier)", Value: effMult},
+		},
+		Total: luaSprintf("= %.1f ^8per second", total),
+	})
 }
 
 //pob:src/Modules/CalcBreakdown.lua:172-193
@@ -179,24 +251,24 @@ func breakdownCritDot(dotMulti, critMulti, dotChance, critChance float64) []stri
 	if dotChance > 0 {
 		out = append(out,
 			"Contribution from Non-crits:",
-			fmt.Sprintf("%.2f ^8(dot multiplier for non-crits)", dotMulti),
-			fmt.Sprintf("x %.4f ^8(portion of instances created by non-crits)", dotChance),
-			fmt.Sprintf("= %.2f", dotMulti*dotChance),
+			luaSprintf("%.2f ^8(dot multiplier for non-crits)", dotMulti),
+			luaSprintf("x %.4f ^8(portion of instances created by non-crits)", dotChance),
+			luaSprintf("= %.2f", dotMulti*dotChance),
 		)
 	}
 	if critChance > 0 {
 		out = append(out,
 			"Contribution from Crits:",
-			fmt.Sprintf("%.2f ^8(dot multiplier for crits)", critMulti),
-			fmt.Sprintf("x %.4f ^8(portion of instances created by crits)", critChance),
-			fmt.Sprintf("= %.2f", critMulti*critChance),
+			luaSprintf("%.2f ^8(dot multiplier for crits)", critMulti),
+			luaSprintf("x %.4f ^8(portion of instances created by crits)", critChance),
+			luaSprintf("= %.2f", critMulti*critChance),
 		)
 	}
 	if (dotChance > 0 && critChance > 0) && (dotMulti != critMulti) {
 		out = append(out,
 			"Effective DoT Multiplier:",
-			fmt.Sprintf("%.2f + %.2f", dotMulti*dotChance, critMulti*critChance),
-			fmt.Sprintf("= %.2f", combined),
+			luaSprintf("%.2f + %.2f", dotMulti*dotChance, critMulti*critChance),
+			luaSprintf("= %.2f", combined),
 		)
 	}
 	return out
@@ -208,59 +280,59 @@ func (b *Breakdown) leech(instant, instantRate, instances, pool float64, rate st
 	if b.Actor.MainSkill.SkillData.ShowAverage {
 		if instant > 0 {
 			if instantLeechProportion != 1 {
-				out = append(out, fmt.Sprintf("Instant Leech: %.1f ^8(%d%% x %.1f)", instant, luaInt(instantLeechProportion*100), dur*pool*data.LeechRateBase/(1-instantLeechProportion)))
+				out = append(out, luaSprintf("Instant Leech: %.1f ^8(%d%% x %.1f)", instant, luaInt(instantLeechProportion*100), dur*pool*data.LeechRateBase/(1-instantLeechProportion)))
 			} else {
-				out = append(out, fmt.Sprintf("Instant Leech: %.1f", instant))
+				out = append(out, luaSprintf("Instant Leech: %.1f", instant))
 			}
 		}
 		if instances > 0 {
 			out = append(out,
 				"Total leeched per instance:",
-				fmt.Sprintf("%d ^8(size of leech destination pool)", luaInt(pool)),
-				fmt.Sprintf("x %.2f ^8(base leech rate is %d%% per second)", data.LeechRateBase, luaInt(100*data.LeechRateBase)),
+				luaSprintf("%d ^8(size of leech destination pool)", luaInt(pool)),
+				luaSprintf("x %.2f ^8(base leech rate is %d%% per second)", data.LeechRateBase, luaInt(100*data.LeechRateBase)),
 			)
 			rateMod := CalcMod(b.store(), nil, rate)
 			if rateMod != 1 {
-				out = append(out, fmt.Sprintf("x %.2f ^8(leech rate modifier)", rateMod))
+				out = append(out, luaSprintf("x %.2f ^8(leech rate modifier)", rateMod))
 			}
 			out = append(out,
-				fmt.Sprintf("x %.2fs ^8(instance duration)", dur),
-				fmt.Sprintf("= %.1f", pool*data.LeechRateBase*rateMod*dur),
+				luaSprintf("x %.2fs ^8(instance duration)", dur),
+				luaSprintf("= %.1f", pool*data.LeechRateBase*rateMod*dur),
 			)
 		}
 	} else {
 		if instantRate > 0 {
 			if instantLeechProportion != 1 {
-				out = append(out, fmt.Sprintf("Instant Leech: %.1f ^8(%d%% x %.1f)", instant, luaInt(instantLeechProportion*100), dur*pool*data.LeechRateBase/(1-instantLeechProportion)))
+				out = append(out, luaSprintf("Instant Leech: %.1f ^8(%d%% x %.1f)", instant, luaInt(instantLeechProportion*100), dur*pool*data.LeechRateBase/(1-instantLeechProportion)))
 			} else {
-				out = append(out, fmt.Sprintf("Instant Leech: %.1f", instant))
+				out = append(out, luaSprintf("Instant Leech: %.1f", instant))
 			}
-			out = append(out, fmt.Sprintf("Instant Leech per second: %.1f ^8(%.1f x %.2f)", instantRate, instant, hitRate))
+			out = append(out, luaSprintf("Instant Leech per second: %.1f ^8(%.1f x %.2f)", instantRate, instant, hitRate))
 		}
 		if instances > 0 {
 			out = append(out,
 				"Rate per instance:",
-				fmt.Sprintf("%d ^8(size of leech destination pool)", luaInt(pool)),
-				fmt.Sprintf("x %.2f ^8(base leech rate is %d%% per second)", data.LeechRateBase, luaInt(100*data.LeechRateBase)),
+				luaSprintf("%d ^8(size of leech destination pool)", luaInt(pool)),
+				luaSprintf("x %.2f ^8(base leech rate is %d%% per second)", data.LeechRateBase, luaInt(100*data.LeechRateBase)),
 			)
 			rateMod := CalcMod(b.store(), nil, rate)
 			if rateMod != 1 {
-				out = append(out, fmt.Sprintf("x %.2f ^8(leech rate modifier)", rateMod))
+				out = append(out, luaSprintf("x %.2f ^8(leech rate modifier)", rateMod))
 			}
 			out = append(out,
-				fmt.Sprintf("= %.1f ^8per second", pool*data.LeechRateBase*rateMod),
+				luaSprintf("= %.1f ^8per second", pool*data.LeechRateBase*rateMod),
 				"Maximum leech rate against one target:",
-				fmt.Sprintf("%.1f", pool*data.LeechRateBase*rateMod),
-				fmt.Sprintf("x %.2f ^8(average instances)", instances),
+				luaSprintf("%.1f", pool*data.LeechRateBase*rateMod),
+				luaSprintf("x %.2f ^8(average instances)", instances),
 			)
 			total := pool * data.LeechRateBase * rateMod * instances
-			out = append(out, fmt.Sprintf("= %.1f ^8per second", total))
+			out = append(out, luaSprintf("= %.1f ^8per second", total))
 			if total <= maxRate {
-				out = append(out, fmt.Sprintf("Time to reach max: %.1fs", dur))
+				out = append(out, luaSprintf("Time to reach max: %.1fs", dur))
 			}
-			out = append(out, fmt.Sprintf("Leech rate cap: %.1f", maxRate))
+			out = append(out, luaSprintf("Leech rate cap: %.1f", maxRate))
 			if total > maxRate {
-				out = append(out, fmt.Sprintf("Time to reach cap: %.1fs", dur/total*maxRate))
+				out = append(out, luaSprintf("Time to reach cap: %.1fs", dur/total*maxRate))
 			}
 		}
 	}
@@ -316,9 +388,9 @@ func (b *Breakdown) Slot(source string, sourceName *string, cfg *moddb.ListCfg, 
 	for _, key := range keys {
 		b.AddSlot(key, BSlot{
 			Base:       base,
-			Inc:        utils.Ternary(inc != 0, fmt.Sprintf(" x %.2f", 1+inc/100), ""),
-			More:       utils.Ternary(more != 1, fmt.Sprintf(" x %.2f", more), ""),
-			Total:      fmt.Sprintf("%.2f", utils.UnwrapOrF(total, base*(1+inc/100)*more)),
+			Inc:        utils.Ternary(inc != 0, luaSprintf(" x %.2f", 1+inc/100), ""),
+			More:       utils.Ternary(more != 1, luaSprintf(" x %.2f", more), ""),
+			Total:      luaSprintf("%.2f", utils.UnwrapOrF(total, base*(1+inc/100)*more)),
 			Source:     source,
 			SourceName: sourceName,
 			Item:       b.Actor.ItemList[source],
@@ -337,19 +409,19 @@ func (b *Breakdown) Simple(extraBasePtr *float64, cfg *moddb.ListCfg, total floa
 			lines := make([]string, 0)
 
 			if base != 0 && extraBase != 0 {
-				lines = append(lines, fmt.Sprintf("(%g + %g) ^8(base)", extraBase, base))
+				lines = append(lines, luaSprintf("(%g + %g) ^8(base)", extraBase, base))
 			} else {
-				lines = append(lines, fmt.Sprintf("%g ^8(base)", base+extraBase))
+				lines = append(lines, luaSprintf("%g ^8(base)", base+extraBase))
 			}
 
 			if inc != 0 {
-				lines = append(lines, fmt.Sprintf("x %.2f ^8(increased/reduced)", 1+inc/100))
+				lines = append(lines, luaSprintf("x %.2f ^8(increased/reduced)", 1+inc/100))
 			}
 
 			if more != 1 {
-				lines = append(lines, fmt.Sprintf("x %.2f ^8(more/less)", more))
+				lines = append(lines, luaSprintf("x %.2f ^8(more/less)", more))
 			}
-			lines = append(lines, fmt.Sprintf("= %g", total))
+			lines = append(lines, luaSprintf("= %g", total))
 
 			b.Data[key] = &Entry{Lines: lines}
 			return
@@ -367,13 +439,13 @@ func (b *Breakdown) MultiChain(key string, chains ...BMultiChain) {
 			b.AddLine(key, chain.Label)
 		}
 		if chain.Base != nil {
-			b.AddLine(key, fmt.Sprintf(chain.Base.Format, chain.Base.Value))
+			b.AddLine(key, luaSprintf(chain.Base.Format, chain.Base.Value))
 		}
 		if chain.Base == nil || chain.Base.Value != 0 {
 			for _, mult := range chain.Items {
 				if mult.Value != 1 {
 					multiplier *= mult.Value
-					b.AddLine(key, "x "+fmt.Sprintf(mult.Format, mult.Value))
+					b.AddLine(key, "x "+luaSprintf(mult.Format, mult.Value))
 					lines++
 				}
 			}
@@ -386,7 +458,7 @@ func (b *Breakdown) MultiChain(key string, chains ...BMultiChain) {
 			if chain.Base != nil {
 				base = chain.Base.Value
 			}
-			b.AddLine(key, fmt.Sprintf("= %.2f", multiplier*base))
+			b.AddLine(key, luaSprintf("= %.2f", multiplier*base))
 		}
 	}
 }
@@ -397,9 +469,9 @@ func (b *Breakdown) Mod(key string, modList moddb.ModStoreFuncs, cfg *moddb.List
 	more := modList.More(cfg, names...)
 	if inc != 0 || more != 1 {
 		b.Data[key] = &Entry{Lines: []string{
-			fmt.Sprintf("%.2f ^8(increased/reduced)", 1+inc/100),
-			fmt.Sprintf("x %.2f ^8(more/less)", more),
-			fmt.Sprintf("= %.2f", (1+inc/100)*more),
+			luaSprintf("%.2f ^8(increased/reduced)", 1+inc/100),
+			luaSprintf("x %.2f ^8(more/less)", more),
+			luaSprintf("= %.2f", (1+inc/100)*more),
 		}}
 		return
 	}
@@ -416,9 +488,9 @@ func (b *Breakdown) EffMult(key string, damageType data.DamageType, resist float
 	}
 
 	if sourceRes != "" && sourceRes != damageType {
-		b.AddLine(key, fmt.Sprintf("Enemy %s: %d%% ^8(%s)", resistForm, luaInt(resist), sourceRes))
+		b.AddLine(key, luaSprintf("Enemy %s: %d%% ^8(%s)", resistForm, luaInt(resist), sourceRes))
 	} else if resist != 0 {
-		b.AddLine(key, fmt.Sprintf("Enemy %s: %d%%", resistForm, luaInt(resist)))
+		b.AddLine(key, luaSprintf("Enemy %s: %d%%", resistForm, luaInt(resist)))
 	}
 
 	switch {
@@ -426,30 +498,30 @@ func (b *Breakdown) EffMult(key string, damageType data.DamageType, resist float
 		normalResist := resist - pen
 		invertedResist := -resist - pen
 		b.AddLine(key, "Effective resistance:")
-		b.AddLine(key, fmt.Sprintf("%.6g%% ^8(non-inverted hit after penetration)", normalResist))
-		b.AddLine(key, fmt.Sprintf("%.6g%% ^8(inverted hit after penetration)", invertedResist))
-		b.AddLine(key, fmt.Sprintf("= %.6g%% ^8(weighted average from %.0f%% inversion chance)", effRes, invertChance*100))
+		b.AddLine(key, luaSprintf("%.6g%% ^8(non-inverted hit after penetration)", normalResist))
+		b.AddLine(key, luaSprintf("%.6g%% ^8(inverted hit after penetration)", invertedResist))
+		b.AddLine(key, luaSprintf("= %.6g%% ^8(weighted average from %.0f%% inversion chance)", effRes, invertChance*100))
 	case pen != 0 || !useRes:
 		b.AddLine(key, "Effective resistance:")
-		b.AddLine(key, fmt.Sprintf("%d%% ^8(resistance)", luaInt(resist)))
+		b.AddLine(key, luaSprintf("%d%% ^8(resistance)", luaInt(resist)))
 		if pen < 0 {
-			b.AddLine(key, fmt.Sprintf("+ %d%% ^8(penetration)", luaInt(-pen)))
+			b.AddLine(key, luaSprintf("+ %d%% ^8(penetration)", luaInt(-pen)))
 		} else if pen > 0 {
-			b.AddLine(key, fmt.Sprintf("- %d%% ^8(penetration)", luaInt(pen)))
+			b.AddLine(key, luaSprintf("- %d%% ^8(penetration)", luaInt(pen)))
 		}
 
 		if !useRes {
-			b.AddLine(key, fmt.Sprintf("x %d%% ^8(resistance ignored)", 0))
-			b.AddLine(key, fmt.Sprintf("= %d%%", 0))
+			b.AddLine(key, luaSprintf("x %d%% ^8(resistance ignored)", 0))
+			b.AddLine(key, luaSprintf("= %d%%", 0))
 		} else {
-			b.AddLine(key, fmt.Sprintf("= %d%%", luaInt(resist-pen)))
+			b.AddLine(key, luaSprintf("= %d%%", luaInt(resist-pen)))
 		}
 	}
 
 	if useRes {
 		b.MultiChain(key, BMultiChain{
 			Label: "Effective DPS modifier:",
-			Total: fmt.Sprintf("= %.3f", mult),
+			Total: luaSprintf("= %.3f", mult),
 			Items: []BMultiChainItem{
 				{"%.2f ^8(" + resistForm + ")", 1 - effRes/100},
 				{"%.2f ^8(increased/reduced damage taken)", 1 + taken/100},
@@ -458,7 +530,7 @@ func (b *Breakdown) EffMult(key string, damageType data.DamageType, resist float
 		})
 	} else {
 		b.AddLine(key, "Effective DPS modifier:")
-		b.AddLine(key, fmt.Sprintf("= %.3f ^8(increased/reduced damage taken)", mult))
+		b.AddLine(key, luaSprintf("= %.3f ^8(increased/reduced damage taken)", mult))
 	}
 }
 

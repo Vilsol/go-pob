@@ -14,9 +14,8 @@ skills 9  mods 18 -> kept 20, omitted 27
           e.g. MaskBits/PhysKeyword
      1  flags 32 are not a union of named MFlag bits
           e.g. MaskBits/GhostBit
-     1  string-valued skill() entries (radiusLabel, radiusSecondaryLabel,
-//     radiusTertiaryLabel, triggerSource, corpseMonsterVariety): mod.SkillData.Value is a
-//     float64 and calculator.SkillData has no string field to receive them
+     1  string-valued skill() entries (triggerSource, corpseMonsterVariety) whose key has
+//     no string field on calculator.SkillData
           e.g. OmitTieA/SkillData
      1  skill() entry whose key has no field on calculator.SkillData
 //     (noSuchField), which utils.Set drops as an invalid key rather than storing

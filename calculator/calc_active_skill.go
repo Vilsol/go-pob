@@ -45,7 +45,16 @@ func skillPartsFor(id string) []raw2.SkillPart {
 		id = alias
 	}
 
+	if borrowed, ok := skillPartsAndFuncsBorrowedFrom[id]; ok {
+		id = borrowed
+	}
+
 	return raw2.SkillParts[id]
+}
+
+//pob:block:src/Data/Skills/act_dex.lua:7321-7322
+var skillPartsAndFuncsBorrowedFrom = map[string]string{
+	"ExplosiveTrapAltX": "ExplosiveTrap",
 }
 
 //pob:block:src/Modules/CalcActiveSkill.lua:102-104
@@ -889,10 +898,10 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 
 	// Extract skill data
 	for _, value := range utils.CastSlice[mod.SkillData](env.ModDB.List(activeSkill.SkillCfg, "SkillData")) {
-		utils.Set(activeSkill.SkillData, value.Key, value.Value)
+		utils.Set(activeSkill.SkillData, value.Key, value.SetValue())
 	}
 	for _, value := range utils.CastSlice[mod.SkillData](skillModList.List(activeSkill.SkillCfg, "SkillData")) {
-		utils.Set(activeSkill.SkillData, value.Key, value.Value)
+		utils.Set(activeSkill.SkillData, value.Key, value.SetValue())
 	}
 
 	// Create minion

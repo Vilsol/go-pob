@@ -36,6 +36,9 @@ type ListCfg struct {
 	SkillDistSet       bool
 	SocketColor        string
 	SocketNum          int
+	IntelligenceGems   float64
+	DexterityGems      float64
+	StrengthGems       float64
 }
 
 var GemIsType func(gem *poe.SkillGem, keyword string) bool
@@ -830,21 +833,40 @@ func (s *ModStore) evalSocketedInTag(value *mod.ModValueMulti, cfg *ListCfg, tag
 	if cfg == nil || (tag.SlotName == "" && tag.TagKeyword == "" && tag.TagSocketColor == "") {
 		return nil
 	}
-	if tag.SlotName != "" && tag.SlotName != cfg.SlotName {
-		return nil
+	var match []bool
+	if tag.SlotName != "" {
+		match = append(match, tag.SlotName == cfg.SlotName)
 	}
 	switch {
 	case tag.TagKeyword != "":
-		if cfg.SkillGem == nil || GemIsType == nil || !GemIsType(cfg.SkillGem, tag.TagKeyword) {
-			return nil
+		match = append(match, cfg.SkillGem != nil && GemIsType != nil && GemIsType(cfg.SkillGem, tag.TagKeyword))
+	case tag.TagSocketColor != "" && !tag.TagSocketsAll:
+		match = append(match, tag.TagSocketColor == cfg.SocketColor)
+	}
+	if tag.TagSocketsAll || tag.TagSocketsCount != 0 || len(tag.TagSockets) > 0 {
+		var count float64
+		switch tag.TagSocketColor {
+		case "R":
+			count = cfg.StrengthGems
+		case "G":
+			count = cfg.DexterityGems
+		case "B":
+			count = cfg.IntelligenceGems
 		}
-	case tag.TagSocketColor != "":
-		if tag.TagSocketColor != cfg.SocketColor {
+		switch {
+		case tag.TagSocketsAll:
+			total := cfg.IntelligenceGems + cfg.DexterityGems + cfg.StrengthGems
+			match = append(match, total == count && total > 0)
+		case len(tag.TagSockets) > 0 && cfg.SocketNum != 0:
+			match = append(match, slices.Contains(tag.TagSockets, cfg.SocketNum))
+		case tag.TagSocketsCount != 0:
+			match = append(match, count < tag.TagSocketsCount)
+		default:
 			return nil
 		}
 	}
-	if len(tag.TagSockets) > 0 {
-		if cfg.SocketNum == 0 || !slices.Contains(tag.TagSockets, cfg.SocketNum) {
+	for _, v := range match {
+		if (!tag.TagNeg && !v) || (tag.TagNeg && v) {
 			return nil
 		}
 	}

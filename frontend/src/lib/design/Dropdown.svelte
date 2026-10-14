@@ -160,7 +160,7 @@
   <button
     type="button"
     role="combobox"
-    class={['select h-full w-full truncate text-left', sizes[size]]}
+    class={['select max-h-full min-h-full w-full truncate text-left', sizes[size]]}
     aria-haspopup="listbox"
     aria-expanded={open}
     aria-controls="{uid}-list"

@@ -16,6 +16,7 @@ commands:
   fetch      resolve indexed links to PoB export codes (resumable)
   validate   decode, apply acceptance criteria, dedup, write builds/
   manifest   render MANIFEST.md from a validated corpus
+  snapshot   import a pob.codes test-builds snapshot straight into a corpus directory
   archive    write the DURABLE per-league link index into the repo (winners AND rejects)
   seed       rebuild a working index from a committed archive — costs zero re-crawling
   linkrot    sample an archive's links to measure how many are still reachable
@@ -46,6 +47,8 @@ func main() {
 		err = cmdValidate(args)
 	case "manifest":
 		err = cmdManifest(args)
+	case "snapshot":
+		err = cmdSnapshot(args)
 	case "archive":
 		err = cmdArchive(args)
 	case "seed":

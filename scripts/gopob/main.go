@@ -103,7 +103,7 @@ const usage = `gopob <subcommand> [flags]
                         it carries the disagreement rate and is as much the point as the blob
   affected-tests        [--dry] [go test args...] BASE=<ref>: go test only the packages the change
                         since BASE (default merge-base dev) and the working tree can reach
-  test-tiers fast|slow [go test args] | record <log>...
+  test-tiers fast|affected|slow [go test args] | record <log>...
                         the operator suite split at 10s per test (scripts/gopob/operator_slow_tests.txt);
                         fast names any test that crossed the line, record rewrites the list
   nice <command> [args...]
@@ -166,7 +166,7 @@ const usage = `gopob <subcommand> [flags]
   stat-overlap          STATS="A B C" [OUT=<dir>]: do these stats fail on the SAME BUILDS -- the
                         only instrument that separates a downstream aggregate from an independent
                         defect. Containment is a BOUND, not a cause
-  corpus-grep           PATTERN=<mod line> [LUA=] [NAMES=]: size a population from the INPUT XML.
+  corpus-grep           PATTERN=<mod line> | PATTERNS_FILE=<file> [LUA=] [NAMES=]: size a population from the INPUT XML.
                         Handles the newline-wrapped and &apos;-escaped forms a hand grep misses
   coverage-census --profile F --funcs F --root D [--overlay F] [--list] [--json F]
                         which blocks never executed. Track the RATIO: the denominator grows

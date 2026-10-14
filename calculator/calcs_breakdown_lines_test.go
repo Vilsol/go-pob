@@ -13,8 +13,8 @@ import (
 )
 
 const (
-	breakdownLinesDifferingKeysCeiling  = 129
-	breakdownLinesDifferingPairsCeiling = 490
+	breakdownLinesDifferingKeysCeiling  = 60
+	breakdownLinesDifferingPairsCeiling = 124
 )
 
 // TestCalcsBreakdownLinesMatchPoB: The lines of every breakdown key.

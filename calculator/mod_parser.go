@@ -4845,6 +4845,13 @@ var specialModList = map[string]interface{}{
 	`attack skills gain (\d+)% of physical damage as extra fire damage per socketed red gem`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("SocketProperty", "LIST", mod.SocketProperty{Mod: MOD("PhysicalDamageGainAsFire", "BASE", num).Flag(mod.MFlagAttack)}).Tag(mod.SocketedIn("{SlotName}").Keyword("strength").Sockets(1, 2, 3, 4, 5, 6))}, ""
 	},
+	//pob:src/Modules/ModParser.lua:3246-3247
+	"you have vaal pact while all socketed gems are red": []mod.Mod{
+		MOD("GroupProperty", "LIST", mod.GroupProperty{Mod: MOD("Keystone", "LIST", "Vaal Pact")}).Tag(mod.SocketedIn("{SlotName}").SocketColor("R").SocketsAll()),
+	},
+	"you have immortal ambition while all socketed gems are red": []mod.Mod{
+		MOD("GroupProperty", "LIST", mod.GroupProperty{Mod: MOD("Keystone", "LIST", "Immortal Ambition")}).Tag(mod.SocketedIn("{SlotName}").SocketColor("R").SocketsAll()),
+	},
 	`(\d+)% of damage taken recouped as life per socketed red gem`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("SocketProperty", "LIST", mod.SocketProperty{Mod: mod.NewFloat("LifeRecoup", mod.TypeBase, num)}).Tag(mod.SocketedIn("{SlotName}").Keyword("strength").Sockets(1, 2, 3, 4, 5, 6))}, ""
 	},
@@ -6330,6 +6337,13 @@ var specialModList = map[string]interface{}{
 		FLAG("Condition:UnholyMight").Tag(mod.Condition("BlockedRecently")),
 		FLAG("Condition:CanWither").Tag(mod.Condition("BlockedRecently")),
 	},
+	//pob:src/Modules/ModParser.lua:4678-4679
+	`minions take (\d+)% increased damage`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{MOD("MinionModifier", "LIST", mod.MinionModifier{Mod: MOD("DamageTaken", "INC", num)})}, ""
+	},
+	`minions take (\d+)% reduced damage`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{MOD("MinionModifier", "LIST", mod.MinionModifier{Mod: MOD("DamageTaken", "INC", -num)})}, ""
+	},
 	`you and your minions take (\d+)% reduced reflected (\w+) damage`: func(num float64, captures []string) ([]mod.Mod, string) {
 		name := firstToUpper(captures[1]) + "ReflectedDamageTaken"
 		return []mod.Mod{
@@ -7011,7 +7025,10 @@ var specialModList = map[string]interface{}{
 				Tag(mod.SkillType(string(data.SkillTypeVaal)).Neg(true)),
 		}, ""
 	},
-	"projectiles pierce an additional target": []mod.Mod{mod.NewFloat("PierceCount", mod.TypeBase, 1)},
+	//pob:src/Modules/ModParser.lua:4533-4534
+	"tornado shot fires an additional secondary projectile": []mod.Mod{MOD("tornadoShotSecondaryProjectiles", "BASE", 1).Tag(mod.SkillName("Tornado Shot"))},
+	"tornado shot fires 2 additional secondary projectiles": []mod.Mod{MOD("tornadoShotSecondaryProjectiles", "BASE", 2).Tag(mod.SkillName("Tornado Shot"))},
+	"projectiles pierce an additional target":               []mod.Mod{mod.NewFloat("PierceCount", mod.TypeBase, 1)},
 	`projectiles pierce (\d+) targets?`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewFloat("PierceCount", mod.TypeBase, num)}, ""
 	},

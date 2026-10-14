@@ -123,7 +123,7 @@ func payloadInstances(t *testing.T) map[string]Cloneable {
 		AffectedByAuraMod{}, AffectedByCurseMod{}, ArmourData{}, ConquerorType{},
 		EnemyModifier{}, ExtraAura{}, ExtraAuraEffect{}, ExtraCurse{}, ExtraMinionSkill{},
 		ExtraSkill{}, ExtraSkillMod{}, ExtraSkillStat{}, ExtraSupport{}, GemProperty{},
-		GrantReservedPoolAsAura{}, GrantedAscendancyNode{}, ImpossibleEscapeKeystones{},
+		GrantReservedPoolAsAura{}, GrantedAscendancyNode{}, GroupProperty{}, ImpossibleEscapeKeystones{},
 		JewelData{}, LegionJewel{}, LinkedSupport{}, MinionModifier{}, PactDamage{},
 		SelfDamage{}, SkillData{}, SocketProperty{}, SupportedGemProperty{},
 		WeaponData{},

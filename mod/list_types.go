@@ -75,9 +75,17 @@ func (g GemProperty) Clone(pointer bool) Cloneable {
 }
 
 type SkillData struct {
-	Key   string
-	Value float64
-	Merge string
+	Key    string
+	Value  float64
+	Merge  string
+	String string
+}
+
+func (s SkillData) SetValue() any {
+	if s.String != "" {
+		return s.String
+	}
+	return s.Value
 }
 
 func (s SkillData) ScaleValue(mult, base float64, limitTotal *float64) Cloneable {
@@ -87,17 +95,19 @@ func (s SkillData) ScaleValue(mult, base float64, limitTotal *float64) Cloneable
 	}
 
 	return SkillData{
-		Key:   s.Key,
-		Value: out,
-		Merge: s.Merge,
+		Key:    s.Key,
+		Value:  out,
+		Merge:  s.Merge,
+		String: s.String,
 	}
 }
 
 func (s SkillData) Clone(pointer bool) Cloneable {
 	obj := SkillData{
-		Key:   s.Key,
-		Value: s.Value,
-		Merge: s.Merge,
+		Key:    s.Key,
+		Value:  s.Value,
+		Merge:  s.Merge,
+		String: s.String,
 	}
 
 	if pointer {
@@ -134,6 +144,26 @@ func (s SocketProperty) ScaleNestedMod(scale func(Mod, float64) float64) Cloneab
 func (s SocketProperty) Clone(pointer bool) Cloneable {
 	obj := SocketProperty{
 		Mod: s.Mod.Clone(),
+	}
+
+	if pointer {
+		return &obj
+	}
+
+	return obj
+}
+
+type GroupProperty struct {
+	Mod Mod
+}
+
+func (g GroupProperty) ScaleNestedMod(scale func(Mod, float64) float64) Cloneable {
+	return GroupProperty{Mod: scaleNestedModValue(g.Mod, scale)}
+}
+
+func (g GroupProperty) Clone(pointer bool) Cloneable {
+	obj := GroupProperty{
+		Mod: g.Mod.Clone(),
 	}
 
 	if pointer {

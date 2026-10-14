@@ -189,16 +189,33 @@ func wipeEnv(env *Environment, accelerate calcAccelerate) {
 	}
 }
 
+//pob:block:src/Modules/CalcSetup.lua:1607-1610
+func countGroupGemColour(groupCfg *moddb.ListCfg, gemData *poe.SkillGem, skillID string) {
+	pobGem, ok := pobGemForVariant(gemData, skillID)
+	if !ok {
+		return
+	}
+	if pobGem.Tags["intelligence"] {
+		groupCfg.IntelligenceGems++
+	}
+	if pobGem.Tags["dexterity"] {
+		groupCfg.DexterityGems++
+	}
+	if pobGem.Tags["strength"] {
+		groupCfg.StrengthGems++
+	}
+}
+
 //pob:block:src/Modules/CalcSetup.lua:1843-1863
 func resetAcceleratedSkillData(env *Environment, activeSkill *ActiveSkill) {
 	old := *activeSkill.SkillData
 	skillData := &old
 	*activeSkill.SkillData = SkillData{}
 	for _, value := range utils.CastSlice[mod.SkillData](env.ModDB.List(activeSkill.SkillCfg, "SkillData")) {
-		utils.Set(activeSkill.SkillData, value.Key, value.Value)
+		utils.Set(activeSkill.SkillData, value.Key, value.SetValue())
 	}
 	for _, value := range utils.CastSlice[mod.SkillData](activeSkill.SkillModList.List(activeSkill.SkillCfg, "SkillData")) {
-		utils.Set(activeSkill.SkillData, value.Key, value.Value)
+		utils.Set(activeSkill.SkillData, value.Key, value.SetValue())
 	}
 	activeSkill.SkillData.ManaReservationPercent = skillData.ManaReservationPercent
 	activeSkill.SkillData.Cooldown = skillData.Cooldown
@@ -1056,6 +1073,7 @@ func initEnvSpecKeep(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode
 				} else {
 					groupCfg.SlotName = ""
 				}
+				groupCfg.IntelligenceGems, groupCfg.DexterityGems, groupCfg.StrengthGems = 0, 0, 0
 
 				propertyModList := gemPropertyList(env, groupCfg)
 
@@ -1125,6 +1143,7 @@ func initEnvSpecKeep(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode
 							if gemData != nil && !processedSockets[&socketGroup.Gems[gemIndex]] {
 								processedSockets[&socketGroup.Gems[gemIndex]] = true
 								applySocketMods(env, gemData, groupCfg, gemIndex+1)
+								countGroupGemColour(groupCfg, gemData, gemInstance.SkillID)
 							}
 							supportList = addBestSupport(supportEffect, supportList, env.Mode)
 						}
@@ -1224,6 +1243,7 @@ func initEnvSpecKeep(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode
 								if gemData != nil && !processedSockets[&socketGroup.Gems[gemIndex]] {
 									processedSockets[&socketGroup.Gems[gemIndex]] = true
 									applySocketMods(env, gemData, groupCfg, gemIndex+1)
+									countGroupGemColour(groupCfg, gemData, gemInstance.SkillID)
 								}
 
 								if gemData != nil {
@@ -1311,6 +1331,11 @@ func initEnvSpecKeep(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode
 							env.RequirementsTableGems = append(env.RequirementsTableGems, req)
 						}
 					}
+				}
+
+				//pob:block:src/Modules/CalcSetup.lua:1771-1773
+				for _, value := range env.ModDB.List(groupCfg, "GroupProperty") {
+					env.Player.ModDB.AddMod(value.(mod.GroupProperty).Mod.Clone().Source(mod.Source(groupCfg.SlotName)))
 				}
 
 				if index == env.MainSocketGroup && len(socketGroupSkillList) > 0 {
@@ -1778,7 +1803,11 @@ func allocateGrantedPassives(env *Environment, treeVersion pob.TreeVersion) {
 	tree := data.TreeVersions[treeVersion].Tree()
 
 	for _, name := range names {
+		//pob:block:src/Modules/CalcSetup.lua:1288-1290
 		nodeID, ok := notableMap[strings.ToLower(name)]
+		if !ok {
+			nodeID, ok = data.TreeVersions[treeVersion].AscendancyMap()[strings.ToLower(name)]
+		}
 		if !ok {
 			continue
 		}

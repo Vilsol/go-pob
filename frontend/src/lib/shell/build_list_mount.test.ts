@@ -203,12 +203,13 @@ describe('AppBuildList', () => {
     defaultGemQuality.set(0);
   });
 
-  it('Import build makes a new build and goes to Import / Export', async () => {
+  it('Import build goes to Import / Export, then makes a new build', async () => {
     const { view } = await mount();
     nav.goto.mockClear();
     await fireEvent.click(view.getByRole('button', { name: 'Import build' }));
-    expect(calls).toEqual([['NewBuild']]);
+    await waitFor(() => expect(calls).toEqual([['NewBuild']]));
     expect(nav.goto).toHaveBeenCalledWith('/import');
+    expect(nav.goto.mock.invocationCallOrder[0]).toBeLessThan(fake.NewBuild.mock.invocationCallOrder.at(-1)!);
   });
 
   it('double-click, Enter and the name open a build by its storage path (OpenBuild) and name the open build', async () => {

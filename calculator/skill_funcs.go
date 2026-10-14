@@ -17,6 +17,9 @@ type skillFunc = func(activeSkill *ActiveSkill, output map[string]float64, break
 
 //pob:src/Modules/CalcOffence.lua:476-481
 func skillFuncsFor(id string) map[string]skillFunc {
+	if borrowed, ok := skillPartsAndFuncsBorrowedFrom[id]; ok {
+		id = borrowed
+	}
 	return skillFuncs[id]
 }
 

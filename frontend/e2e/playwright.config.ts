@@ -18,6 +18,7 @@ const server = process.env.E2E_SERVER === 'dev' ? `vite dev --port ${PORT} --str
 
 export default defineConfig({
   testDir: '.',
+  testMatch: '**/*.spec.ts',
   workers: process.env.E2E_PERF === '1' || process.env.E2E_BASELINE === '1' ? 1 : WORKERS,
   fullyParallel: process.env.E2E_FULLY_PARALLEL !== '0',
   retries: 0,

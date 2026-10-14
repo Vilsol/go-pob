@@ -226,8 +226,7 @@
     })}
   onnew={newBuild}
   onimport={() => {
-    newBuild();
-    void goto(`${base}/import`);
+    void goto(`${base}/import`).then(newBuild);
   }}
   onabout={() => (about = true)}
   onsettings={() => (settings = true)}>

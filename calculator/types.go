@@ -164,6 +164,8 @@ type Actor struct {
 	Enemy                    *Actor `json:"-"`
 	Player                   *Actor `json:"-"`
 	Parent                   *Actor `json:"-"`
+	partyMembers             *partyActor
+	allyLifeList             map[string][]*allyLifeEntry
 	MinionData               *raw.MinionInfo
 	ItemList                 map[string]*ItemData
 	ActiveSkillList          []*ActiveSkill
@@ -257,6 +259,11 @@ func (a *Actor) RelatedModDB(name string) moddb.ModStoreFuncs {
 		case a.Enemy != nil && a.Enemy.Player != nil:
 			related = a.Enemy.Player
 		}
+	case "partyMembers":
+		if a.partyMembers == nil {
+			return nil
+		}
+		return a.partyMembers.modDB
 	}
 
 	if related == nil || related.ModDB == nil {
@@ -636,6 +643,9 @@ type SkillData struct {
 	Radius                                     float64
 	RadiusSecondary                            float64
 	RadiusTertiary                             float64
+	RadiusLabel                                string
+	RadiusSecondaryLabel                       string
+	RadiusTertiaryLabel                        string
 	RadiusExtra                                float64
 	RadiusTertiaryBaseMargin                   float64
 	ProjectileSpeedAppliesToMSAreaOfEffect     bool

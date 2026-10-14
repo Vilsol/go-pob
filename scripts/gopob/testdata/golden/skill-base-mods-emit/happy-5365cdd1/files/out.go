@@ -24,9 +24,8 @@ import "github.com/Vilsol/go-pob/mod"
 //   - 1 unhandled mod type WEIRD
 //   - 1 keywordFlags 16 are not a union of named KeywordFlag bits
 //   - 1 flags 32 are not a union of named MFlag bits
-//   - 1 string-valued skill() entries (radiusLabel, radiusSecondaryLabel,
-//     radiusTertiaryLabel, triggerSource, corpseMonsterVariety): mod.SkillData.Value is a
-//     float64 and calculator.SkillData has no string field to receive them
+//   - 1 string-valued skill() entries (triggerSource, corpseMonsterVariety) whose key has
+//     no string field on calculator.SkillData
 //   - 1 skill() entry whose key has no field on calculator.SkillData
 //     (noSuchField), which utils.Set drops as an invalid key rather than storing
 //   - 1 unhandled mod type T01

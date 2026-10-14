@@ -290,6 +290,13 @@ func canonOurTag(t mod.Tag) canonTag {
 			}
 			set("sockets", canonList(nums))
 		}
+		if tag.TagSocketsAll {
+			set("sockets", "all")
+		}
+		if tag.TagSocketsCount != 0 {
+			setNum("sockets", tag.TagSocketsCount)
+		}
+		setBool("neg", tag.TagNeg)
 	case *mod.SlotNameTag:
 		set("slotNames", strings.Join(tag.SlotNameList, ","))
 	case *mod.SlotNumberTag:

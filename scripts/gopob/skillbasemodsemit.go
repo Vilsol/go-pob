@@ -48,6 +48,8 @@ func sbmExtra(t map[string]any, ok map[string]bool) []string {
 
 var sbmField = regexp.MustCompile(`(?m)^\t([\p{L}\p{N}_]+)` + pySpaceClass)
 
+var sbmStringField = regexp.MustCompile(`(?m)^\t([\p{L}\p{N}_]+)` + pySpaceClass + `+string$`)
+
 func sbmReq(d map[string]any, key, what string) (any, error) {
 	v, ok := d[key]
 	if !ok {
@@ -343,7 +345,7 @@ func sbmEmitTag(t map[string]any, skillTypes map[string]any, v *mcVocab) (string
 
 var json1 = mustNumber("1")
 
-func sbmEmitMod(m map[string]any, sid string, fields map[string]bool, v *mcVocab) (string, []any, error) {
+func sbmEmitMod(m map[string]any, sid string, fields, stringFields map[string]bool, v *mcVocab) (string, []any, error) {
 	if err := mcReqMod(m); err != nil {
 		return "", nil, err
 	}
@@ -381,12 +383,6 @@ func sbmEmitMod(m map[string]any, sid string, fields map[string]bool, v *mcVocab
 			return "", nil, mcUnrep("SkillData mod value is not a table")
 		}
 		x := vm["value"]
-		if _, isStr := x.(string); isStr {
-			return "", nil, mcUnrep("string-valued skill() entries (radiusLabel, " +
-				"radiusSecondaryLabel,\n//     radiusTertiaryLabel, triggerSource, " +
-				"corpseMonsterVariety): mod.SkillData.Value is a\n//     float64 and " +
-				"calculator.SkillData has no string field to receive them")
-		}
 		rawKey, err := sbmReq(vm, "key", "SkillData")
 		if err != nil {
 			return "", nil, err
@@ -396,6 +392,15 @@ func sbmEmitMod(m map[string]any, sid string, fields map[string]bool, v *mcVocab
 			return "", nil, mcUnrep("skill() entry whose key is not a non-empty string")
 		}
 		key := strings.ToUpper(ks[:1]) + ks[1:]
+		if str, isStr := x.(string); isStr {
+			if !stringFields[key] {
+				return "", nil, mcUnrep("string-valued skill() entries (triggerSource, " +
+					"corpseMonsterVariety) whose key has\n//     no string field on calculator.SkillData")
+			}
+			base = fmt.Sprintf("mod.NewList(\"SkillData\", mod.SkillData{Key: %s, String: %s})",
+				mcGoStr(key), mcGoStr(str))
+			break
+		}
 		if !fields[key] {
 			return "", nil, mcUnrep("skill() entry whose key has no field on "+
 				"calculator.SkillData\n//     (%s), which utils.Set drops as an invalid key "+
@@ -434,7 +439,7 @@ func sbmEmitMod(m map[string]any, sid string, fields map[string]bool, v *mcVocab
 				filled[field] = def
 			}
 		}
-		nbase, ntags, err := sbmEmitMod(filled, sid, fields, v)
+		nbase, ntags, err := sbmEmitMod(filled, sid, fields, stringFields, v)
 		if err != nil {
 			return "", nil, err
 		}
@@ -530,6 +535,10 @@ func skillBaseModsEmit(args []string) int {
 	for _, m := range sbmField.FindAllStringSubmatch(body, -1) {
 		fields[m[1]] = true
 	}
+	stringFields := map[string]bool{}
+	for _, m := range sbmStringField.FindAllStringSubmatch(body, -1) {
+		stringFields[m[1]] = true
+	}
 	if len(fields) == 0 {
 		return mcRefuse(fmt.Sprintf("%s: SkillData has no fields; every skill() entry would be "+
 			"dropped as an invalid key", typesPath))
@@ -554,7 +563,7 @@ func skillBaseModsEmit(args []string) int {
 				omitDetail.add("mod is not a JSON object", sid+"/?")
 				continue
 			}
-			base, tags, err := sbmEmitMod(m, sid, fields, vocab)
+			base, tags, err := sbmEmitMod(m, sid, fields, stringFields, vocab)
 			if err == nil {
 				emitted := []string{}
 				for _, tAny := range tags {
