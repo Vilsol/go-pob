@@ -76,6 +76,7 @@ func soSandbox(t *testing.T, repo string) func() (string, error) {
 }
 
 func TestStatOverlapPortIsIndistinguishable(t *testing.T) {
+	requirePOSIX(t)
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := soSandbox(t, repo)

@@ -410,7 +410,7 @@ test('allocate a passive node from the tree search, then deallocate it', async (
   await app.openTree(tree.treeVersion());
   await expect(await app.treeNode(tree.resultName(target)), 'the reopened tree lost the allocation').toHaveAttribute('aria-pressed', 'true');
 
-  const after = tree.treeState(build);
+  const after = tree.treeState(build, await tree.clusterOf(build));
   await app.act(
     'deallocate-node',
     () => button.click(),
@@ -463,7 +463,7 @@ test('the tree draws the tree the build is calculated on, whatever version the b
     }
   );
   await expect(button, 'the allocated node still reads as unallocated').toHaveAttribute('aria-pressed', 'true');
-  const after = tree.treeState(build);
+  const after = tree.treeState(build, await tree.clusterOf(build));
   await app.act(
     'deallocate-node',
     () => button.click(),

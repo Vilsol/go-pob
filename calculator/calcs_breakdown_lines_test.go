@@ -13,8 +13,8 @@ import (
 )
 
 const (
-	breakdownLinesDifferingKeysCeiling  = 177
-	breakdownLinesDifferingPairsCeiling = 6208
+	breakdownLinesDifferingKeysCeiling  = 129
+	breakdownLinesDifferingPairsCeiling = 490
 )
 
 // TestCalcsBreakdownLinesMatchPoB: The lines of every breakdown key.
@@ -34,7 +34,7 @@ func TestCalcsBreakdownLinesMatchPoB(t *testing.T) {
 
 	type tally struct{ doubled, missing, extra, wrong int }
 	census := map[string]*tally{}
-	n, pobLined, hand := 0, 0, 0
+	n, pobLined := 0, 0
 	for sc.Scan() {
 		var want struct {
 			Build  string
@@ -62,7 +62,7 @@ func TestCalcsBreakdownLinesMatchPoB(t *testing.T) {
 			}
 			ours := map[string][]string{}
 			if actor.bd != nil {
-				for k, e := range actor.bd.Data {
+				for k, e := range actor.bd.GetData() {
 					if e != nil && len(e.Lines) > 0 {
 						ours[k] = e.Lines
 					}
@@ -70,26 +70,14 @@ func TestCalcsBreakdownLinesMatchPoB(t *testing.T) {
 			}
 			keys := map[string]bool{}
 			for k := range pob {
-				if !strings.Contains(k, ".") {
-					keys[k] = true
-					pobLined++
-				}
+				keys[k] = true
+				pobLined++
 			}
 			for k := range ours {
 				keys[k] = true
 			}
 			for k := range keys {
 				w, g := pob[k], ours[k]
-				if mh, oh := pob["MainHand."+k], pob["OffHand."+k]; w == nil && (mh == nil) != (oh == nil) {
-					if mh == nil {
-						mh = oh
-					}
-					if slices.Equal(g, mh) {
-						hand++
-						continue
-					}
-					w = mh
-				}
 				if slices.Equal(g, w) {
 					continue
 				}
@@ -107,7 +95,7 @@ func TestCalcsBreakdownLinesMatchPoB(t *testing.T) {
 				default:
 					census[id].wrong++
 				}
-				if os.Getenv("BREAKDOWN_KEY") == id {
+				if bk := os.Getenv("BREAKDOWN_KEY"); bk == id || bk == "*" {
 					t.Logf("%s %s:\n ours %q\n PoB  %q", want.Build, id, g, w)
 				}
 			}
@@ -139,8 +127,8 @@ func TestCalcsBreakdownLinesMatchPoB(t *testing.T) {
 		c := census[id]
 		fmt.Fprintf(&sb, "%-40s %7d %7d %7d %7d\n", id, c.doubled, c.missing, c.extra, c.wrong)
 	}
-	t.Logf("%d builds, %d PoB breakdowns with lines; %d keys differ on %d (key, build) pairs; %d pairs agree only per hand\n%s",
-		n, pobLined, len(census), builds, hand, sb.String())
+	t.Logf("%d builds, %d PoB breakdowns with lines; %d keys differ on %d (key, build) pairs\n%s",
+		n, pobLined, len(census), builds, sb.String())
 	if len(census) > breakdownLinesDifferingKeysCeiling {
 		t.Errorf("%d breakdown keys differ from the pin, ceiling %d", len(census), breakdownLinesDifferingKeysCeiling)
 	}

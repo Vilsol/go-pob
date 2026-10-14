@@ -219,6 +219,7 @@ func ttReadPy(t *testing.T, repo string) []byte {
 
 // TestTaskTestRefsGateEmitterRefusal points GOPOB_BIN at a binary that exits non-zero, which is the only way to reach the bridge's refusal.
 func TestTaskTestRefsGateEmitterRefusal(t *testing.T) {
+	requirePOSIX(t)
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := ttSandbox(t, repo)

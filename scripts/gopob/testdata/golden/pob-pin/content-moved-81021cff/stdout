@@ -3,7 +3,7 @@ PoB pin check
   scope      src, runtime/lua
   tracked    4 files (recorded 4)
   describe   None (recorded None)
-  HEAD       7c4a66683c0743b81581732831a23fc5367cf8e9
+  HEAD       08564f01f5d43dfedf26ccb67398eae02fdf5540
   NOTE       the checkout has uncommitted changes to TRACKED files;
              they are inside content_sha256, so this is only a warning if the
              hash still matches -- but the tree is then not reproducible from

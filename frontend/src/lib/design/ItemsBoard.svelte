@@ -111,7 +111,7 @@
         role="group"
         aria-label="{b.slot} slot"
         class="absolute top-(--y) left-(--x) h-(--h) w-(--w)"
-        style="--x: {b.x}px; --y: {b.y}px; --w: {b.w}px; --h: {b.h}px"
+        style="--x: {b.x / 16}rem; --y: {b.y / 16}rem; --w: {b.w / 16}rem; --h: {b.h / 16}rem"
         {...dropTarget(k) ?? {}}>
         <button
           bind:this={els[k]}
@@ -133,7 +133,8 @@
           <span class="text-10 tracking-caps-tight text-text-3 uppercase">{flask ? '' : b.slot}</span>
           <span
             data-pob-color={e && (!flask || flasks[k]) ? '' : undefined}
-            class={['text-12 leading-[15px] font-semibold', e && (!flask || flasks[k]) ? 'text-(--tone)' : 'text-text-3']}>{e ? e.item.name : 'Empty'}</span>
+            class={['text-12 leading-[0.9375rem] font-semibold', e && (!flask || flasks[k]) ? 'text-(--tone)' : 'text-text-3']}
+            >{e ? e.item.name : 'Empty'}</span>
           <span class="note-sm font-mono">{e?.item.sockets ?? ''}</span>
         </button>
         {#if e || fitting(k).length}

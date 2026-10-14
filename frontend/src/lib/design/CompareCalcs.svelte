@@ -52,7 +52,7 @@
   {:else if !sections.length}
     <span class="note">No section differs.</span>
   {:else}
-    <div class="columns-[340px] gap-2.5">
+    <div class="columns-[21.25rem] gap-2.5">
       {#each sections as s, i (i)}
         <div role="table" aria-label={pobPlain(s.blocks[0]?.label ?? s.id)} class="mb-2.5 break-inside-avoid rounded border border-line bg-surface-1 text-11">
           <div role="row" class={['grid gap-2 border-b border-line px-2 py-0.5 text-10 tracking-caps-tight', GRID]}>

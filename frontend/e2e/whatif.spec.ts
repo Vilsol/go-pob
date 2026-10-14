@@ -67,7 +67,7 @@ const hover = async (page: Page, target: Placed, rest: { x: number; y: number })
 /* PassiveTreeView.lua:1662-1698 */
 const expected = async (build: Build, id: number): Promise<DiffBlock[]> => {
   const m = await go.model();
-  const state = tree.treeState(build);
+  const state = tree.treeState(build, await tree.clusterOf(build));
   const misc = (await m.exposition.GetMiscCalculator(build))!;
   try {
     const base = misc.Base() as WhatIfOutputs;
@@ -96,7 +96,7 @@ const strip = (b: Shown[]): DiffBlock[] => b.map(({ header, sections }) => ({ he
 
 const candidates = async (page: Page, build: Build) => {
   const t = tree.rawTree();
-  const state = tree.treeState(build);
+  const state = tree.treeState(build, await tree.clusterOf(build));
   const view = (await lastFrame(page))!.view;
   const placed = placedNodes(t);
   const inView = placed

@@ -831,7 +831,7 @@ type DamagePass struct {
 	Source    *SkillData
 	Config    *moddb.ListCfg
 	Output    map[string]float64
-	Breakdown interface{}
+	Breakdown *Breakdown
 }
 
 type RequirementsTable struct {

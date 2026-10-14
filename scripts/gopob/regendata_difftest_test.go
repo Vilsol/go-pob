@@ -317,6 +317,7 @@ func rdSpec(bin, binDir string, args ...string) difftest.Spec {
 }
 
 func TestRegenDataPortIsIndistinguishable(t *testing.T) {
+	requirePOSIX(t)
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk, binDir := rdSandbox(t, repo)
@@ -347,6 +348,7 @@ func TestRegenDataPortIsIndistinguishable(t *testing.T) {
 
 // TestRegenDataRefusesAnUnknownGenerator: THE REMAINING REFUSALS NEED DIFFERENT ARGV AND SO CANNOT SHARE ONE FIXTURE TABLE: Spec.PythonArgs is per-SPEC.
 func TestRegenDataRefusesAnUnknownGenerator(t *testing.T) {
+	requirePOSIX(t)
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk, binDir := rdSandbox(t, repo)
@@ -359,6 +361,7 @@ func TestRegenDataRefusesAnUnknownGenerator(t *testing.T) {
 
 // TestRegenDataRefusesWhenADumperFails: A DUMPER FAILING IS A DIFFERENT MESSAGE FROM AN EMITTER FAILING.
 func TestRegenDataRefusesWhenADumperFails(t *testing.T) {
+	requirePOSIX(t)
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk, binDir := rdSandbox(t, repo)
@@ -371,6 +374,7 @@ func TestRegenDataRefusesWhenADumperFails(t *testing.T) {
 
 // TestRegenDataRefusesWhenThePostProcessorFails: THE POST-PROCESSOR IS ITS OWN STEP AND ITS OWN REFUSAL.
 func TestRegenDataRefusesWhenThePostProcessorFails(t *testing.T) {
+	requirePOSIX(t)
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk, binDir := rdSandbox(t, repo)
@@ -383,6 +387,7 @@ func TestRegenDataRefusesWhenThePostProcessorFails(t *testing.T) {
 
 // TestRegenDataCheckFailsOnADriftedArtifact: THIS IS WHAT THE TOOL IS FOR, AND IT IS A FINDING RATHER THAN A REFUSAL.
 func TestRegenDataCheckFailsOnADriftedArtifact(t *testing.T) {
+	requirePOSIX(t)
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk, binDir := rdSandbox(t, repo)
@@ -394,6 +399,7 @@ func TestRegenDataCheckFailsOnADriftedArtifact(t *testing.T) {
 
 // TestRegenDataWarnsWithoutTheDeterministicLuajit: WITHOUT .luajit-det THE TOOL FALLS BACK TO STOCK LuaJIT AND SAYS SO.
 func TestRegenDataWarnsWithoutTheDeterministicLuajit(t *testing.T) {
+	requirePOSIX(t)
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk, binDir := rdSandbox(t, repo)
@@ -407,6 +413,7 @@ func TestRegenDataWarnsWithoutTheDeterministicLuajit(t *testing.T) {
 
 // TestRegenDataRunsTheWholeTableAndReportsCoverage: THE WHOLE TABLE IN ONE RUN, which is the only way the manifest-coverage report.
 func TestRegenDataRunsTheWholeTableAndReportsCoverage(t *testing.T) {
+	requirePOSIX(t)
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk, binDir := rdSandbox(t, repo)
@@ -418,6 +425,7 @@ func TestRegenDataRunsTheWholeTableAndReportsCoverage(t *testing.T) {
 }
 
 func TestRegenDataIsStableAcrossSeeds(t *testing.T) {
+	requirePOSIX(t)
 	repo := repoRoot(t)
 	mk, binDir := rdSandbox(t, repo)
 	difftest.SelfIdentity(t, t.Context(), difftest.Spec{
@@ -501,6 +509,7 @@ func rdGzip(b []byte) ([]byte, error) {
 
 // TestRegenDataProducesAReproducibleGzip: `gzip -9 -n`, ASSERTED ON THE HEADER RATHER THAN BY COMPARISON.
 func TestRegenDataProducesAReproducibleGzip(t *testing.T) {
+	requirePOSIX(t)
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 
@@ -553,6 +562,7 @@ func TestRegenDataProducesAReproducibleGzip(t *testing.T) {
 
 // TestRegenDataCheckLeavesTheRepositoryAlone: --check MUST NOT TOUCH THE REPOSITORY.
 func TestRegenDataCheckLeavesTheRepositoryAlone(t *testing.T) {
+	requirePOSIX(t)
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 

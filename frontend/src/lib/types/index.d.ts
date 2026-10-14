@@ -1131,6 +1131,10 @@ export declare namespace calculator {
     readonly Negate: boolean;
     readonly Combined: boolean;
   }
+  interface RebaseResult {
+    readonly Text: string;
+    readonly Dropped?: Array<string>;
+  }
   interface RequirementsTable {
     Source: string;
     SourceGem?: pob.Gem;
@@ -2487,6 +2491,8 @@ export declare namespace exposition {
   function ParseModLines(lines: Array<string> | undefined): (Array<exposition.ModLine> | undefined);
   function PowerAscendancy(p: exposition.PowerBuilder | undefined): (Array<calculator.PowerReportEntry> | undefined);
   function PowerStats(): (Array<calculator.PowerStat> | undefined);
+  function RebaseChoices(text: string): Promise<(Array<string> | undefined)>;
+  function RebaseItemText(text: string, baseName: string): Promise<[calculator.RebaseResult, boolean]>;
   function RemoveAllTreeTattoos(build: pob.PathOfBuilding | undefined): Promise<void>;
   function RenameItemSet(build: pob.PathOfBuilding | undefined, itemSetID: number, title: string): Promise<void>;
   function RenameSharedItemSet(index: number, title: string): Promise<boolean>;

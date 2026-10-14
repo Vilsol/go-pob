@@ -27,6 +27,7 @@ export const fontScaling = persisted('options:fontScaling', 12, (s) => parseFloa
 export const theme = persisted<Theme>('options:theme', 'Dark', (s) => THEMES.find((t) => t === s));
 /* Main.lua:1027-1029, PassiveTreeView.lua:1251 */
 export const showAnimations = persisted('options:showAnimations', true, (s) => s !== 'false');
+export const showStatBars = persisted('options:showStatBars', true, (s) => s !== 'false');
 
 export const themeAttr = (t: Theme, systemLight: boolean) =>
   t === 'Light' || (t === 'Follow system' && systemLight) ? 'light' : t === 'High contrast' ? 'contrast' : 'dark';

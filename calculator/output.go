@@ -27,6 +27,10 @@ func BuildOutputWithCache(c *Calculator, mode OutputMode, cache *EnvironmentCach
 		} else {
 			calcsBuffLists(env, c.main.MultipliersUsed)
 		}
+		env.Player.Breakdown.cFloatSpelling()
+		if env.Minion != nil {
+			env.Minion.Breakdown.cFloatSpelling()
+		}
 	}
 
 	if mode == OutputModeMain {

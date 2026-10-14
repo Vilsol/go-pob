@@ -112,8 +112,22 @@ func TestModOrderCensus(t *testing.T) {
 			"no longer comparable to the oracle's", excluded, want)
 	}
 
-	player := reportOrderCensus(t, results, false, "PLAYER")
-	enemy := reportOrderCensus(t, results, true, "ENEMY")
+	unstable := loadPinUnstableOrders(t)
+	player := reportOrderCensus(t, results, false, "PLAYER", unstable)
+	enemy := reportOrderCensus(t, results, true, "ENEMY", unstable)
+	if !limited {
+		var stale []string
+		for k, seen := range unstable {
+			if !seen {
+				stale = append(stale, k)
+			}
+		}
+		sort.Strings(stale)
+		if len(stale) > 0 {
+			t.Errorf("%d pairs in testdata/oracle/mod_order_pin_unstable.tsv no longer diverge; remove them:\n%s",
+				len(stale), strings.Join(stale, "\n"))
+		}
+	}
 
 	if !limited {
 		if player > modOrderCrossStageCeiling {
@@ -320,7 +334,27 @@ func collapseStages(stages []string) string {
 	return strings.Join(out, ",")
 }
 
-func reportOrderCensus(t *testing.T, results []orderResult, enemy bool, actor string) int {
+func loadPinUnstableOrders(t *testing.T) map[string]bool {
+	t.Helper()
+	raw, err := os.ReadFile("../testdata/oracle/mod_order_pin_unstable.tsv")
+	if err != nil {
+		t.Fatalf("REFUSING: %v", err)
+	}
+	out := map[string]bool{}
+	for _, line := range strings.Split(string(raw), "\n") {
+		if line == "" || strings.HasPrefix(line, "#") {
+			continue
+		}
+		f := strings.Split(line, "\t")
+		if len(f) != 4 {
+			t.Fatalf("REFUSING: malformed line %q", line)
+		}
+		out[f[0]+"\t"+f[1]+"\t"+f[2]] = false
+	}
+	return out
+}
+
+func reportOrderCensus(t *testing.T, results []orderResult, enemy bool, actor string, unstable map[string]bool) int {
 	t.Helper()
 
 	type shapeAgg struct {
@@ -343,7 +377,7 @@ func reportOrderCensus(t *testing.T, results []orderResult, enemy bool, actor st
 	withinStage := map[string]*shapeAgg{}
 
 	var buildCount, orderPairs, contentPairs, matchPairs int
-	var crossPairs, withinPairs, buildsWithCross int
+	var crossPairs, withinPairs, buildsWithCross, unstablePairs int
 
 	for i := range results {
 		r := &results[i]
@@ -369,8 +403,19 @@ func reportOrderCensus(t *testing.T, results []orderResult, enemy bool, actor st
 				bump(withinStage, d.movedIn, r.build+" / "+d.name)
 				continue
 			}
+			if _, ok := unstable[actor+"\t"+r.build+"\t"+d.name]; ok {
+				unstable[actor+"\t"+r.build+"\t"+d.name] = true
+				unstablePairs++
+				continue
+			}
 			cross = true
 			crossPairs++
+			if f := os.Getenv("ORDER_LIST"); f != "" {
+				if fh, err := os.OpenFile(f, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644); err == nil {
+					fmt.Fprintf(fh, "%s\t%s\t%s\n", actor, r.build, d.name)
+					fh.Close()
+				}
+			}
 			bump(crossName, d.name, r.build)
 			crossNameInst[d.name] += len(d.perm)
 			bump(crossPerm, d.name+"  ["+formatPerm(d.perm)+"]", r.build)
@@ -397,6 +442,8 @@ func reportOrderCensus(t *testing.T, results []orderResult, enemy bool, actor st
 
 	fmt.Printf("\n  ORDER split by whether a PIPELINE STAGE moved:\n")
 	fmt.Printf("    CROSS-STAGE  %8d pairs   <- THE MEASUREMENT: a stage sits on the wrong side of another\n", crossPairs)
+	fmt.Printf("    PIN-UNSTABLE %8d pairs      cross-stage, excluded: the pin's own order moves with allocation\n", unstablePairs)
+	fmt.Printf("                                   (listed in testdata/oracle/mod_order_pin_unstable.tsv)\n")
 	fmt.Printf("    WITHIN-STAGE %8d pairs      stage sequence intact; see table D — the Tree rows are PoB's\n", withinPairs)
 	fmt.Printf("                                   LuaJIT hash order and mean nothing, the Item/Skill rows are real\n")
 	fmt.Printf("    builds carrying at least one CROSS-STAGE divergence: %d of %d\n", buildsWithCross, buildCount)

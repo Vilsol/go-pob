@@ -1,6 +1,7 @@
 package calculator
 
 import (
+	"fmt"
 	"math"
 
 	"github.com/Vilsol/go-pob/data"
@@ -54,6 +55,13 @@ func lostTo(m map[data.DamageType]map[string]float64, dt data.DamageType, key st
 		m[dt] = make(map[string]float64, 4)
 	}
 	m[dt][key] += float64(v)
+}
+
+func lostSet(m map[data.DamageType]map[string]float64, dt data.DamageType, key string, v float64) {
+	if m[dt] == nil {
+		m[dt] = make(map[string]float64, 4)
+	}
+	m[dt][key] = v
 }
 
 //pob:block:src/Modules/CalcDefence.lua:188-421
@@ -285,8 +293,7 @@ func ReducePoolsByDamage(poolTable *PoolTable, damageTable map[data.DamageType]f
 				damageRemainder -= damageToSplit
 				lifeLossLostOverTime += preventedLoss
 				life -= lostLife
-				lostTo(resourcesLost, dt, "life", lostLife)
-				lostTo(resourcesLost, dt, "lifeLossPrevented", preventedLoss)
+				lostSet(resourcesLost, dt, "life", lostLife)
 				if life <= halfLife {
 					unspecific := float64(damageRemainder * preventPercent)
 					lifeLossLostOverTime += unspecific
@@ -294,8 +301,9 @@ func ReducePoolsByDamage(poolTable *PoolTable, damageTable map[data.DamageType]f
 					specific := float64(damageRemainder * preventBelowHalfPercent)
 					lifeBelowHalfLossLostOverTime += specific
 					damageRemainder -= specific
-					lostTo(resourcesLost, dt, "lifeLossPrevented", unspecific+specific)
+					preventedLoss = preventedLoss + unspecific + specific
 				}
+				lostTo(resourcesLost, dt, "lifeLossPrevented", preventedLoss)
 			} else {
 				tempDamage := damageRemainder * output["preventedLifeLoss"] / 100
 				lifeLossLostOverTime += tempDamage
@@ -307,7 +315,7 @@ func ReducePoolsByDamage(poolTable *PoolTable, damageTable map[data.DamageType]f
 			tempDamage := math.Min(damageRemainder, life)
 			life -= tempDamage
 			damageRemainder -= tempDamage
-			lostTo(resourcesLost, dt, "life", tempDamage)
+			lostSet(resourcesLost, dt, "life", resourcesLost[dt]["life"]+math.Max(tempDamage, 0))
 		}
 		overkillDamage += damageRemainder
 		lostTo(resourcesLost, dt, "overkill", damageRemainder)
@@ -360,6 +368,60 @@ func ReducePoolsByDamage(poolTable *PoolTable, damageTable map[data.DamageType]f
 }
 
 func ptrF(v float64) *float64 { return &v }
+
+//pob:src/Data/Global.lua:70-73
+const (
+	colorLife = colorStrength
+	colorMana = colorIntelligence
+	colorES   = colorSource
+	colorWard = "^xFFFF77"
+)
+
+//pob:src/Modules/CalcDefence.lua:428-475
+func incomingDamageBreakdown(breakdownTable []string, poolsRemaining *PoolTable, output map[string]float64) []string {
+	for _, ally := range allyLifePoolList {
+		if pool := poolsRemaining.AlliesTakenBeforeYou[ally.key]; pool != nil {
+			life := output[ally.life]
+			breakdownTable = append(breakdownTable, fmt.Sprintf("\t%d "+colorGem+ally.label+" ^7(%d remaining)", luaInt(life-pool.Remaining), luaInt(pool.Remaining)))
+		}
+	}
+	for _, damageType := range data.DamageType("").Values() {
+		if lost, ok := poolsRemaining.ResourcesLost[damageType]["aegis"]; ok {
+			breakdownTable = append(breakdownTable, fmt.Sprintf("\t%d "+colorGem+"%s Aegis charge ^7(%d remaining)", luaInt(lost), damageType, luaInt(poolsRemaining.Aegis[string(damageType)])))
+		}
+	}
+	if output["sharedElementalAegis"] != 0 && output["sharedElementalAegis"] != poolsRemaining.Aegis["sharedElemental"] {
+		breakdownTable = append(breakdownTable, fmt.Sprintf("\t%d "+colorGem+"Elemental Aegis charge ^7(%d remaining)", luaInt(output["sharedElementalAegis"]-poolsRemaining.Aegis["sharedElemental"]), luaInt(poolsRemaining.Aegis["sharedElemental"])))
+	}
+	if output["sharedAegis"] > 0 {
+		breakdownTable = append(breakdownTable, fmt.Sprintf("\t%d "+colorGem+"Shared Aegis charge ^7(%d remaining)", luaInt(output["sharedAegis"]-poolsRemaining.Aegis["shared"]), luaInt(poolsRemaining.Aegis["shared"])))
+	}
+	for _, damageType := range data.DamageType("").Values() {
+		if lost, ok := poolsRemaining.ResourcesLost[damageType]["guard"]; ok {
+			breakdownTable = append(breakdownTable, fmt.Sprintf("\n\t%d "+colorScourge+"%s Guard charge ^7(%d remaining)", luaInt(lost), damageType, luaInt(poolsRemaining.Guard[string(damageType)])))
+		}
+	}
+	if output["sharedGuardAbsorb"] > 0 {
+		breakdownTable = append(breakdownTable, fmt.Sprintf("\t%d "+colorScourge+"Shared Guard charge ^7(%d remaining)", luaInt(output["sharedGuardAbsorb"]-poolsRemaining.Guard["shared"]), luaInt(poolsRemaining.Guard["shared"])))
+	}
+	if output["Ward"] > 0 {
+		breakdownTable = append(breakdownTable, fmt.Sprintf("\t%d "+colorWard+"Ward", luaInt(output["Ward"])))
+	}
+	if output["EnergyShieldRecoveryCap"] != *poolsRemaining.EnergyShield && output["EnergyShieldRecoveryCap"] > 0 {
+		breakdownTable = append(breakdownTable, fmt.Sprintf("\t%d "+colorES+"Energy Shield ^7(%d remaining)", luaInt(output["EnergyShieldRecoveryCap"]-*poolsRemaining.EnergyShield), luaInt(*poolsRemaining.EnergyShield)))
+	}
+	if output["ManaUnreserved"] != *poolsRemaining.Mana && output["ManaUnreserved"] > 0 {
+		breakdownTable = append(breakdownTable, fmt.Sprintf("\t%d "+colorMana+"Mana ^7(%d remaining)", luaInt(output["ManaUnreserved"]-*poolsRemaining.Mana), luaInt(*poolsRemaining.Mana)))
+	}
+	if poolsRemaining.LifeLossLostOverTime+poolsRemaining.LifeBelowHalfLossLostOverTime > 0 {
+		breakdownTable = append(breakdownTable, fmt.Sprintf("\t%d "+colorLife+"Life ^7Loss Prevented", luaInt(poolsRemaining.LifeLossLostOverTime+poolsRemaining.LifeBelowHalfLossLostOverTime)))
+	}
+	breakdownTable = append(breakdownTable, fmt.Sprintf("\t%d "+colorLife+"Life ^7(%d remaining)", luaInt(output["LifeRecoverable"]-*poolsRemaining.Life), luaInt(*poolsRemaining.Life)))
+	if poolsRemaining.OverkillDamage >= 1 {
+		breakdownTable = append(breakdownTable, fmt.Sprintf("\t%d "+colorNegative+"Overkill damage", luaInt(poolsRemaining.OverkillDamage)))
+	}
+	return breakdownTable
+}
 
 //pob:block:src/Modules/CalcDefence.lua:149-174
 func TakenHitFromDamage(rawDamage float64, damageType data.DamageType, actor *Actor) (float64, map[data.DamageType]float64) {

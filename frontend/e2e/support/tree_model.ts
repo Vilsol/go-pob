@@ -47,7 +47,12 @@ export const rawTree = (): Tree => {
 
 export type TreeNode = { id: number; name: string };
 
-export const treeState = (build: Build, cluster: { ID: number; Type: string; Linked?: number[] }[] = []) => {
+export const clusterOf = async (build: Build) => {
+  if (!loaded) throw new Error('clusterOf() before prepareTree()');
+  return (await loaded.m.exposition.GetTreeClusterNodes(build)) ?? [];
+};
+
+export const treeState = (build: Build, cluster?: { ID: number; Type: string; Linked?: number[] }[]) => {
   if (!loaded) {
     throw new Error('treeState() before prepareTree()');
   }
@@ -57,7 +62,7 @@ export const treeState = (build: Build, cluster: { ID: number; Type: string; Lin
   const roots = classStartNodes(t)[t.classes.findIndex((c) => c.name === className)];
   const paths = withClusterPaths(
     m.exposition.CalculateAllocationPaths(version, active, roots) ?? {},
-    cluster.map((c) => ({ id: c.ID, type: c.Type, linked: c.Linked ?? [] }))
+    (cluster ?? []).map((c) => ({ id: c.ID, type: c.Type, linked: c.Linked ?? [] }))
   );
   const selectable = (id: number) => {
     const n = t.nodes[id];
@@ -65,8 +70,11 @@ export const treeState = (build: Build, cluster: { ID: number; Type: string; Lin
   };
   const named = (id: number): TreeNode => ({ id, name: t.nodes[id].name! });
   // PassiveSpec.lua:856-857
-  const subgraph = cluster.map((c) => ({ ID: c.ID, Type: c.Type, Linked: c.Linked ?? [] }));
-  const depends = (id: number) => m.exposition.CalculateDependentNodesWith(version, active, id, roots, subgraph) ?? [];
+  const subgraph = (cluster ?? []).map((c) => ({ ID: c.ID, Type: c.Type, Linked: c.Linked ?? [] }));
+  const depends = (id: number) => {
+    if (!cluster && active.some((n) => n >= 1 << 16)) throw new Error('treeState(build) without clusterOf(build) on a build holding cluster subgraph nodes');
+    return m.exposition.CalculateDependentNodesWith(version, active, id, roots, subgraph) ?? [];
+  };
 
   return {
     active,

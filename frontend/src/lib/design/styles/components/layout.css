@@ -1,6 +1,6 @@
 @layer components {
   .page {
-    @apply box-border flex h-screen min-h-180 w-full min-w-[1280px] flex-col overflow-hidden bg-ground font-sans text-text;
+    @apply box-border flex h-screen min-h-180 w-full min-w-320 flex-col overflow-hidden bg-ground font-sans text-text;
   }
   .page-body {
     @apply flex min-h-0 w-full min-w-0 flex-[1_1_0];
@@ -98,10 +98,10 @@
     @apply border-solid border-better bg-better/8;
   }
   .notes-doc {
-    @apply min-h-full px-5.5 py-4.5 text-14 leading-[1.6] text-text outline-none;
+    @apply box-border min-h-full px-5.5 py-4.5 text-14 leading-[1.6] text-text outline-none;
   }
   .notes-doc h1 {
-    @apply mb-1 text-[20px] font-semibold;
+    @apply mb-1 text-[1.25rem] font-semibold;
   }
   .notes-doc h2 {
     @apply mt-1 text-16 font-semibold;

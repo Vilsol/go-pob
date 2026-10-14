@@ -297,7 +297,7 @@ func socketDescriptionLine(item *Item) string {
 func addRequirementsToTooltip(t *ItemTooltip, ctx ItemTooltipContext, level, str, dex, intel, strBase, dexBase, intBase float64) {
 	var req []string
 	if level > 0 {
-		req = append(req, fmt.Sprintf("^x7F7F7FLevel %s%d", statColor(level, nil, f64(float64(ctx.CharacterLevel))), int(level)))
+		req = append(req, fmt.Sprintf("^x7F7F7FLevel %s%d", statColor(level, nil, f64(float64(ctx.CharacterLevel))), luaInt(level)))
 	}
 	s := ctx.Stats
 	if s.OmniscienceRequirements {
@@ -310,17 +310,17 @@ func addRequirementsToTooltip(t *ItemTooltip, ctx ItemTooltipContext, level, str
 		}
 		omni := math.Floor(highestAttribute * (100 / omniSatisfy))
 		if omni > 0 || omni > s.Omni {
-			req = append(req, fmt.Sprintf("%s%d ^x7F7F7FOmni", statColor(omni, f64(0), f64(s.Omni)), int(omni)))
+			req = append(req, fmt.Sprintf("%s%d ^x7F7F7FOmni", statColor(omni, f64(0), f64(s.Omni)), luaInt(omni)))
 		}
 	} else {
 		if str > 14 || str > s.Str {
-			req = append(req, fmt.Sprintf("%s%d ^x7F7F7FStr", statColor(str, f64(strBase), f64(s.Str)), int(str)))
+			req = append(req, fmt.Sprintf("%s%d ^x7F7F7FStr", statColor(str, f64(strBase), f64(s.Str)), luaInt(str)))
 		}
 		if dex > 14 || dex > s.Dex {
-			req = append(req, fmt.Sprintf("%s%d ^x7F7F7FDex", statColor(dex, f64(dexBase), f64(s.Dex)), int(dex)))
+			req = append(req, fmt.Sprintf("%s%d ^x7F7F7FDex", statColor(dex, f64(dexBase), f64(s.Dex)), luaInt(dex)))
 		}
 		if intel > 14 || intel > s.Int {
-			req = append(req, fmt.Sprintf("%s%d ^x7F7F7FInt", statColor(intel, f64(intBase), f64(s.Int)), int(intel)))
+			req = append(req, fmt.Sprintf("%s%d ^x7F7F7FInt", statColor(intel, f64(intBase), f64(s.Int)), luaInt(intel)))
 		}
 	}
 	if len(req) > 0 {
@@ -450,7 +450,7 @@ func AddItemTooltip(item *Item, ctx ItemTooltipContext) ItemTooltip {
 		}
 		totalDamageTypes := 0
 		if _, ok := wd["PhysicalDPS"]; ok {
-			t.addLine(fmt.Sprintf("^x7F7F7FPhysical Damage: "+colorMagic+"%d-%d (%s DPS)", int(wd["PhysicalMin"]), int(wd["PhysicalMax"]), luaFixed(wd["PhysicalDPS"], 1)))
+			t.addLine(fmt.Sprintf("^x7F7F7FPhysical Damage: "+colorMagic+"%d-%d (%s DPS)", luaInt(wd["PhysicalMin"]), luaInt(wd["PhysicalMax"]), luaFixed(wd["PhysicalDPS"], 1)))
 			totalDamageTypes++
 		}
 		if _, ok := wd["ElementalDPS"]; ok {
@@ -462,7 +462,7 @@ func AddItemTooltip(item *Item, ctx ItemTooltipContext) ItemTooltip {
 					} else {
 						elemLine = "^x7F7F7FElemental Damage: "
 					}
-					elemLine += fmt.Sprintf("%s%d-%d", v.color, int(wd[v.name+"Min"]), int(wd[v.name+"Max"]))
+					elemLine += fmt.Sprintf("%s%d-%d", v.color, luaInt(wd[v.name+"Min"]), luaInt(wd[v.name+"Max"]))
 				}
 			}
 			t.addLine(elemLine)
@@ -470,7 +470,7 @@ func AddItemTooltip(item *Item, ctx ItemTooltipContext) ItemTooltip {
 			totalDamageTypes++
 		}
 		if _, ok := wd["ChaosDPS"]; ok {
-			t.addLine(fmt.Sprintf("^x7F7F7FChaos Damage: "+colorChaos+"%d-%d "+colorMagic+"(%s DPS)", int(wd["ChaosMin"]), int(wd["ChaosMax"]), luaFixed(wd["ChaosDPS"], 1)))
+			t.addLine(fmt.Sprintf("^x7F7F7FChaos Damage: "+colorChaos+"%d-%d "+colorMagic+"(%s DPS)", luaInt(wd["ChaosMin"]), luaInt(wd["ChaosMax"]), luaFixed(wd["ChaosDPS"], 1)))
 			totalDamageTypes++
 		}
 		if totalDamageTypes > 1 {
@@ -487,19 +487,19 @@ func AddItemTooltip(item *Item, ctx ItemTooltipContext) ItemTooltip {
 			t.addLine(fmt.Sprintf("^x7F7F7FQuality: "+colorMagic+"+%d%%", quality))
 		}
 		if base.Armour.BlockChance != 0 && ad["BlockChance"] > 0 {
-			t.addLine(fmt.Sprintf("^x7F7F7FChance to Block: %s%d%%", statColor(ad["BlockChance"], f64(float64(base.Armour.BlockChance)), nil), int(ad["BlockChance"])))
+			t.addLine(fmt.Sprintf("^x7F7F7FChance to Block: %s%d%%", statColor(ad["BlockChance"], f64(float64(base.Armour.BlockChance)), nil), luaInt(ad["BlockChance"])))
 		}
 		if ad["Armour"] > 0 {
-			t.addLine(fmt.Sprintf("^x7F7F7FArmour: %s%d", statColor(ad["Armour"], nil, nil), int(ad["Armour"])))
+			t.addLine(fmt.Sprintf("^x7F7F7FArmour: %s%d", statColor(ad["Armour"], nil, nil), luaInt(ad["Armour"])))
 		}
 		if ad["Evasion"] > 0 {
-			t.addLine(fmt.Sprintf("^x7F7F7FEvasion Rating: %s%d", statColor(ad["Evasion"], nil, nil), int(ad["Evasion"])))
+			t.addLine(fmt.Sprintf("^x7F7F7FEvasion Rating: %s%d", statColor(ad["Evasion"], nil, nil), luaInt(ad["Evasion"])))
 		}
 		if ad["EnergyShield"] > 0 {
-			t.addLine(fmt.Sprintf("^x7F7F7FEnergy Shield: %s%d", statColor(ad["EnergyShield"], nil, nil), int(ad["EnergyShield"])))
+			t.addLine(fmt.Sprintf("^x7F7F7FEnergy Shield: %s%d", statColor(ad["EnergyShield"], nil, nil), luaInt(ad["EnergyShield"])))
 		}
 		if ad["Ward"] > 0 {
-			t.addLine(fmt.Sprintf("^x7F7F7FWard: %s%d", statColor(ad["Ward"], nil, nil), int(ad["Ward"])))
+			t.addLine(fmt.Sprintf("^x7F7F7FWard: %s%d", statColor(ad["Ward"], nil, nil), luaInt(ad["Ward"])))
 		}
 	case base.Flask != nil:
 		fd := item.FlaskData
@@ -511,29 +511,29 @@ func AddItemTooltip(item *Item, ctx ItemTooltipContext) ItemTooltip {
 		if hasLife {
 			if fd["lifeGradual"] != 0 {
 				t.addLine(fmt.Sprintf("^x7F7F7FRecovers %s%d ^x7F7F7FLife over %s%s0 ^x7F7F7FSeconds",
-					statColor(fd["lifeTotal"], f64(float64(base.Flask.Life)), nil), int(fd["lifeGradual"]),
+					statColor(fd["lifeTotal"], f64(float64(base.Flask.Life)), nil), luaInt(fd["lifeGradual"]),
 					statColor(fd["duration"], f64(base.Flask.Duration), nil), luaFixed(fd["duration"], 1)))
 			}
 			if fd["lifeInstant"] != 0 {
-				t.addLine(fmt.Sprintf("^x7F7F7FRecovers %s%d ^x7F7F7FLife instantly", statColor(fd["lifeTotal"], f64(float64(base.Flask.Life)), nil), int(fd["lifeInstant"])))
+				t.addLine(fmt.Sprintf("^x7F7F7FRecovers %s%d ^x7F7F7FLife instantly", statColor(fd["lifeTotal"], f64(float64(base.Flask.Life)), nil), luaInt(fd["lifeInstant"])))
 			}
 		}
 		if hasMana {
 			if fd["manaGradual"] != 0 {
 				t.addLine(fmt.Sprintf("^x7F7F7FRecovers %s%d ^x7F7F7FMana over %s%s0 ^x7F7F7FSeconds",
-					statColor(fd["manaTotal"], f64(float64(base.Flask.Mana)), nil), int(fd["manaGradual"]),
+					statColor(fd["manaTotal"], f64(float64(base.Flask.Mana)), nil), luaInt(fd["manaGradual"]),
 					statColor(fd["duration"], f64(base.Flask.Duration), nil), luaFixed(fd["duration"], 1)))
 			}
 			if fd["manaInstant"] != 0 {
-				t.addLine(fmt.Sprintf("^x7F7F7FRecovers %s%d ^x7F7F7FMana instantly", statColor(fd["manaTotal"], f64(float64(base.Flask.Mana)), nil), int(fd["manaInstant"])))
+				t.addLine(fmt.Sprintf("^x7F7F7FRecovers %s%d ^x7F7F7FMana instantly", statColor(fd["manaTotal"], f64(float64(base.Flask.Mana)), nil), luaInt(fd["manaInstant"])))
 			}
 		}
 		if !hasLife && !hasMana {
 			t.addLine(fmt.Sprintf("^x7F7F7FLasts %s%s ^x7F7F7FSeconds", statColor(fd["duration"], f64(base.Flask.Duration), nil), luaFixed(fd["duration"], 2)))
 		}
 		t.addLine(fmt.Sprintf("^x7F7F7FConsumes %s%d ^x7F7F7Fof %s%d ^x7F7F7FCharges on use",
-			statColor(fd["chargesUsed"], f64(float64(base.Flask.ChargesUsed)), nil), int(fd["chargesUsed"]),
-			statColor(fd["chargesMax"], f64(float64(base.Flask.ChargesMax)), nil), int(fd["chargesMax"])))
+			statColor(fd["chargesUsed"], f64(float64(base.Flask.ChargesUsed)), nil), luaInt(fd["chargesUsed"]),
+			statColor(fd["chargesMax"], f64(float64(base.Flask.ChargesMax)), nil), luaInt(fd["chargesMax"])))
 		for _, line := range base.Flask.Buff {
 			if ParseMod(line, false).Extra != "" {
 				t.addLine(colorUnsupported + line + notSupportedTooltipText)
@@ -571,7 +571,7 @@ func AddItemTooltip(item *Item, ctx ItemTooltipContext) ItemTooltip {
 					if line != "" {
 						line += ", "
 					}
-					line += fmt.Sprintf("%s%d %s^7", []string{colorStrength, colorDexterity, colorIntelligence}[i], int(v), stat)
+					line += fmt.Sprintf("%s%d %s^7", []string{colorStrength, colorDexterity, colorIntelligence}[i], luaInt(v), stat)
 				}
 			}
 			if line != "" {
@@ -825,35 +825,35 @@ func (m *MiscCalculator) EffectiveFlaskStats(item *Item) []string {
 				switch {
 				case inst > 0 && grad > 0:
 					add("^8Life recovered: ^7%d ^8(^7%d^8 instantly, plus ^7%d ^8over^7 %ss^8, and an additional ^7%d ^8over subsequent ^7%ss^8)",
-						int(inst+grad+totalAdditionalAmount), int(inst), int(grad+additionalGrad), luaFixed(lifeDur, 2), int(leftoverAmount), luaFixed(leftoverDur, 2))
+						luaInt(inst+grad+totalAdditionalAmount), luaInt(inst), luaInt(grad+additionalGrad), luaFixed(lifeDur, 2), luaInt(leftoverAmount), luaFixed(leftoverDur, 2))
 				case inst > 0:
 					lifeDur = 0
 					add("^8Life recovered: ^7%d ^8(^7%d^8 instantly, and an additional ^7%d ^8over ^7%ss^8)",
-						int(inst+totalAdditionalAmount), int(inst), int(totalAdditionalAmount), luaFixed(10, 2))
+						luaInt(inst+totalAdditionalAmount), luaInt(inst), luaInt(totalAdditionalAmount), luaFixed(10, 2))
 				default:
 					add("^8Life recovered: ^7%d ^8(^7%d ^8over ^7%ss^8, and an additional ^7%d ^8over subsequent ^7%ss^8)",
-						int(grad+totalAdditionalAmount), int(grad+additionalGrad), luaFixed(lifeDur, 2), int(leftoverAmount), luaFixed(leftoverDur, 2))
+						luaInt(grad+totalAdditionalAmount), luaInt(grad+additionalGrad), luaFixed(lifeDur, 2), luaInt(leftoverAmount), luaFixed(leftoverDur, 2))
 				}
 			} else {
 				if inst > 0 && grad > 0 {
-					add("^8Life recovered: ^7%d ^8(^7%d^8 instantly, plus ^7%d ^8over^7 %ss^8)", int(inst+grad), int(inst), int(grad), luaFixed(lifeDur, 2))
+					add("^8Life recovered: ^7%d ^8(^7%d^8 instantly, plus ^7%d ^8over^7 %ss^8)", luaInt(inst+grad), luaInt(inst), luaInt(grad), luaFixed(lifeDur, 2))
 				} else if inst+grad != fd["lifeTotal"] || (inst == 0 && lifeDur != fd["duration"]) {
 					if inst > 0 {
 						lifeDur = 0
-						add("^8Life recovered: ^7%d ^8instantly", int(inst))
+						add("^8Life recovered: ^7%d ^8instantly", luaInt(inst))
 					} else if grad > 0 {
-						add("^8Life recovered: ^7%d ^8over ^7%ss", int(grad), luaFixed(lifeDur, 2))
+						add("^8Life recovered: ^7%d ^8over ^7%ss", luaInt(grad), luaFixed(lifeDur, 2))
 					}
 				}
 			}
 			if modDB.Flag(nil, "LifeFlaskAppliesToEnergyShield") {
 				switch {
 				case inst > 0 && esGrad > 0:
-					add("^8Energy Shield recovered: ^7%d ^8(^7%d^8 instantly, plus ^7%d ^8over^7 %ss^8)", int(inst+esGrad), int(inst), int(esGrad), luaFixed(lifeDur, 2))
+					add("^8Energy Shield recovered: ^7%d ^8(^7%d^8 instantly, plus ^7%d ^8over^7 %ss^8)", luaInt(inst+esGrad), luaInt(inst), luaInt(esGrad), luaFixed(lifeDur, 2))
 				case inst > 0 && esGrad == 0:
-					add("^8Energy Shield recovered: ^7%d ^8instantly", int(inst))
+					add("^8Energy Shield recovered: ^7%d ^8instantly", luaInt(inst))
 				case inst == 0 && esGrad > 0:
-					add("^8Energy Shield recovered: ^7%d ^8over ^7%ss", int(esGrad), luaFixed(lifeDur, 2))
+					add("^8Energy Shield recovered: ^7%d ^8over ^7%ss", luaInt(esGrad), luaFixed(lifeDur, 2))
 				}
 			}
 		}
@@ -867,17 +867,17 @@ func (m *MiscCalculator) EffectiveFlaskStats(item *Item) []string {
 			lifeGrad := base * output["LifeRecoveryRateMod"]
 			manaDur = fd["duration"] * (1 + durInc/100) / (1 + rateInc/100) / (1 + manaRateInc/100)
 			if inst > 0 && grad > 0 {
-				add("^8Mana recovered: ^7%d ^8(^7%d^8 instantly, plus ^7%d ^8over^7 %ss^8)", int(inst+grad), int(inst), int(grad), luaFixed(manaDur, 2))
+				add("^8Mana recovered: ^7%d ^8(^7%d^8 instantly, plus ^7%d ^8over^7 %ss^8)", luaInt(inst+grad), luaInt(inst), luaInt(grad), luaFixed(manaDur, 2))
 			} else if inst+grad != fd["manaTotal"] || (inst == 0 && manaDur != fd["duration"]) {
 				if inst > 0 {
 					manaDur = 0
-					add("^8Mana recovered: ^7%d ^8instantly", int(inst))
+					add("^8Mana recovered: ^7%d ^8instantly", luaInt(inst))
 				} else if grad > 0 {
-					add("^8Mana recovered: ^7%d ^8over ^7%ss", int(grad), luaFixed(manaDur, 2))
+					add("^8Mana recovered: ^7%d ^8over ^7%ss", luaInt(grad), luaFixed(manaDur, 2))
 				}
 			}
 			if modDB.Flag(nil, "ManaFlaskAppliesToLife") && lifeGrad > 0 {
-				add("^8Life recovered: ^7%d ^8over ^7%ss", int(lifeGrad), luaFixed(manaDur, 2))
+				add("^8Life recovered: ^7%d ^8over ^7%ss", luaInt(lifeGrad), luaFixed(manaDur, 2))
 			}
 		}
 	} else if durInc != 0 {
@@ -889,7 +889,7 @@ func (m *MiscCalculator) EffectiveFlaskStats(item *Item) []string {
 	usedInc := modDB.Sum(mod.TypeIncrease, nil, "FlaskChargesUsed")
 	if usedInc != 0 {
 		used := math.Floor(fd["chargesUsed"] * (1 + usedInc/100))
-		add("^8Charges used: ^7%d ^8of ^7%d ^8(^7%d ^8uses)", int(used), int(fd["chargesMax"]), int(math.Floor(fd["chargesMax"]/used)))
+		add("^8Charges used: ^7%d ^8of ^7%d ^8(^7%d ^8uses)", luaInt(used), luaInt(fd["chargesMax"]), luaInt(math.Floor(fd["chargesMax"]/used)))
 	}
 	gainMod := fd["gainMod"] * (1 + modDB.Sum(mod.TypeIncrease, nil, "FlaskChargesGained")/100)
 	if gainMod != 1 {
@@ -922,7 +922,7 @@ func (m *MiscCalculator) EffectiveFlaskStats(item *Item) []string {
 	}
 	chanceToNotConsumeCharges := math.Min(modDB.Sum(mod.TypeBase, nil, "FlaskChanceNotConsumeCharges"), 100)
 	if chanceToNotConsumeCharges != 0 {
-		add("^8Chance to not consume charges: ^7%d%%", int(chanceToNotConsumeCharges))
+		add("^8Chance to not consume charges: ^7%d%%", luaInt(chanceToNotConsumeCharges))
 	}
 
 	hasUptime := fb.Life == 0 && fb.Mana == 0
@@ -945,7 +945,7 @@ func (m *MiscCalculator) EffectiveFlaskStats(item *Item) []string {
 				averageChargesGenerated := (chargesGenerated + chargesGeneratedPerFlask) * flaskDuration
 				averageChargesUsed := flaskChargesUsed * (100 - chanceToNotConsumeCharges) / 100
 				percentageAvg := math.Min(averageChargesGenerated/averageChargesUsed*100, 100)
-				add("^8Flask uptime: ^7%d%%^8 average, ^7%d%%^8 minimum", int(percentageAvg), int(percentageMin))
+				add("^8Flask uptime: ^7%d%%^8 average, ^7%d%%^8 minimum", luaInt(percentageAvg), luaInt(percentageMin))
 			} else {
 				add("^8Flask uptime: ^7100%%^8")
 			}
@@ -1021,7 +1021,7 @@ func (m *MiscCalculator) EffectiveTinctureStats(item *Item) []string {
 	burn := 1 / (td["manaBurn"] / (1 + modDB.Sum(mod.TypeIncrease, playerActorCfg, "TinctureManaBurnRate")/100) / (1 + modDB.Sum(mod.TypeMore, playerActorCfg, "TinctureManaBurnRate")/100))
 	stats = append(stats, "^8Mana Burn Inflicted Every Second: ^7"+luaFixed(burn, 2))
 	if notBurn := math.Min(modDB.Sum(mod.TypeBase, nil, "TincturesNotInflictManaBurn"), 100); notBurn != 0 {
-		stats = append(stats, fmt.Sprintf("^8Chance to not inflict Mana Burn: ^7%d%%", int(notBurn)))
+		stats = append(stats, fmt.Sprintf("^8Chance to not inflict Mana Burn: ^7%d%%", luaInt(notBurn)))
 	}
 	cooldown := tinctureBaseOf(item.Base.Name).Cooldown / (1 + (modDB.Sum(mod.TypeIncrease, playerActorCfg, "TinctureCooldownRecovery")+td["cooldownInc"])/100)
 	stats = append(stats, "^8Tincture Cooldown when deactivated: ^7"+luaFixed(cooldown, 2)+"^8 seconds")

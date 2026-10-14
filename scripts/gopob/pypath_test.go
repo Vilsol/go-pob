@@ -21,13 +21,13 @@ func TestPyPathJoinMatchesCPython(t *testing.T) {
 		t.Fatal(err)
 	}
 	cmd := exec.CommandContext(t.Context(), "python3", "-c",
-		"import json,sys,os\nfor p in json.load(sys.stdin): print(os.path.join(*p))")
+		"import json,sys,posixpath\nfor p in json.load(sys.stdin): print(posixpath.join(*p))")
 	cmd.Stdin = strings.NewReader(string(payload))
 	out, err := cmd.Output()
 	if err != nil {
 		t.Fatalf("python3: %v", err)
 	}
-	want := strings.Split(strings.TrimSuffix(string(out), "\n"), "\n")
+	want := strings.Split(strings.TrimSuffix(strings.ReplaceAll(string(out), "\r\n", "\n"), "\n"), "\n")
 	if len(want) != len(cases) {
 		t.Fatalf("python printed %d lines for %d cases", len(want), len(cases))
 	}

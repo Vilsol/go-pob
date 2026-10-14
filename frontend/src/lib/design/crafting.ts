@@ -32,6 +32,8 @@ export type AffixSeries = { label: string; tiers: number; haveRange: boolean; to
 export type AffixControls = {
   sorting: boolean;
   controls: { type: string; series: AffixSeries[]; sel: number; sliderShown: boolean; sliderVal: number }[];
+  base?: string;
+  bases?: string[];
 };
 
 export type CrucibleChoices = { nodes: { id: string; label: string; lines: string[] }[][]; selected: string[] };
@@ -59,6 +61,7 @@ export type CraftApi = {
   affixEdit?: (slot: number, series: number, slider: number) => Promise<string | undefined>;
   affixRollTooltip?: (slot: number, slider: number) => Promise<string[]>;
   affixPowers?: (slot: number, stat: string) => Promise<number[]>;
+  rebase?: (base: string) => Promise<string[] | undefined>;
   crucibleChoices?: () => Promise<CrucibleChoices | undefined>;
   crucibleText?: (ids: string[]) => Promise<string | undefined>;
   tipOf?: (text: string) => Promise<TipProps | undefined>;

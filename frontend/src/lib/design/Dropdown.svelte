@@ -1,6 +1,5 @@
 <script lang="ts">
   import { tick } from 'svelte';
-  import type { ClassValue } from 'svelte/elements';
 
   type Option = { value: string; label: string; title?: string };
   type Props = {
@@ -111,12 +110,47 @@
       if (shown.includes(active)) choose(active);
     } else if (e.key === 'Escape') {
       e.preventDefault();
+      e.stopPropagation();
       if (q) void filter('');
       else close();
     } else if (e.key === 'Tab') close();
   };
   const outside = (e: PointerEvent) => {
     if (open && !root.contains(e.target as Node)) close();
+  };
+
+  const placed = (panel: HTMLElement) => {
+    const pad = 8;
+    const gap = 4;
+    const place = () => {
+      const r = root.getBoundingClientRect();
+      panel.style.maxHeight = '';
+      const natural = panel.offsetHeight;
+      const below = innerHeight - r.bottom - gap - pad;
+      const above = r.top - gap - pad;
+      const down = below >= natural || below >= above;
+      const h = Math.min(natural, Math.max(0, down ? below : above));
+      panel.style.maxHeight = `${h}px`;
+      panel.style.minWidth = `${Math.min(r.width, innerWidth - 2 * pad)}px`;
+      const x = Math.min(r.left, innerWidth - pad - panel.offsetWidth);
+      panel.style.setProperty('--x', `${Math.max(pad, x)}px`);
+      panel.style.setProperty('--y', `${down ? r.bottom + gap : r.top - gap - h}px`);
+    };
+    place();
+    const ro = typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(place);
+    ro?.observe(panel);
+    const moved = (e: Event) => {
+      if (!panel.contains(e.target as Node)) place();
+    };
+    addEventListener('scroll', moved, true);
+    addEventListener('resize', place);
+    return {
+      destroy: () => {
+        ro?.disconnect();
+        removeEventListener('scroll', moved, true);
+        removeEventListener('resize', place);
+      }
+    };
   };
 </script>
 
@@ -136,47 +170,49 @@
     {...aria}
     onclick={() => (open ? close() : show())}
     onkeydown={(e) => onkeydown(e)}>{options[chosen]?.label ?? ''}</button>
-  {#snippet entriesList(cls: ClassValue)}
-    <ul bind:this={list} id="{uid}-list" role="listbox" aria-label={aria['aria-label']} class={cls}>
-      {#each shown as i (i)}
-        {@const o = options[i]}
-        <!-- svelte-ignore a11y_click_events_have_key_events -->
-        <li
-          id="{uid}-o{i}"
-          role="option"
-          aria-selected={i === chosen}
-          class={['menu-item cursor-pointer whitespace-nowrap', i === active && 'bg-surface-3']}
-          title={o.title}
-          onmouseenter={() => void moveTo(i)}
-          onmouseleave={() => {
-            if (active === i) onhover?.(null, null);
-          }}
-          onclick={(e) => {
-            e.preventDefault();
-            choose(i);
-          }}>
-          {o.label}
-        </li>
-      {:else}
-        <li role="presentation" class="note px-2 py-1">No entry matches “{q}”</li>
-      {/each}
-    </ul>
-  {/snippet}
-  {#if open && searchable}
-    <div class="menu top-full mt-1 w-max max-w-[min(40rem,90vw)] min-w-full gap-1">
-      <input
-        type="search"
-        class="input input-xs w-full"
-        aria-label="Filter {aria['aria-label'] ?? ''}"
-        aria-controls="{uid}-list"
-        placeholder="Type to filter…"
-        autocomplete="off"
-        value={q}
-        oninput={(e) => void filter(e.currentTarget.value)}
-        onkeydown={(e) => onkeydown(e, true)} />
-      {@render entriesList('flex max-h-80 flex-col overflow-y-auto')}
+  {#if open}
+    <div class="menu fixed top-(--y) right-auto left-(--x) w-max max-w-[min(40rem,calc(100vw-16px))] gap-1" use:placed>
+      {#if searchable}
+        <input
+          type="search"
+          class="input input-xs w-full shrink-0"
+          aria-label="Filter {aria['aria-label'] ?? ''}"
+          aria-controls="{uid}-list"
+          placeholder="Type to filter…"
+          autocomplete="off"
+          value={q}
+          oninput={(e) => void filter(e.currentTarget.value)}
+          onkeydown={(e) => onkeydown(e, true)} />
+      {/if}
+      <ul
+        bind:this={list}
+        id="{uid}-list"
+        role="listbox"
+        aria-label={aria['aria-label']}
+        class="m-0 flex max-h-80 min-h-0 list-none flex-col overflow-x-hidden overflow-y-auto p-0">
+        {#each shown as i (i)}
+          {@const o = options[i]}
+          <!-- svelte-ignore a11y_click_events_have_key_events -->
+          <li
+            id="{uid}-o{i}"
+            role="option"
+            aria-selected={i === chosen}
+            class={['menu-item shrink-0 cursor-pointer aria-selected:font-semibold', i === active && 'bg-hover']}
+            title={o.title ?? o.label}
+            onmouseenter={() => void moveTo(i)}
+            onmouseleave={() => {
+              if (active === i) onhover?.(null, null);
+            }}
+            onclick={(e) => {
+              e.preventDefault();
+              choose(i);
+            }}>
+            <span class="min-w-0 truncate">{o.label}</span>
+          </li>
+        {:else}
+          <li role="presentation" class="note shrink-0 px-2 py-1">No entry matches “{q}”</li>
+        {/each}
+      </ul>
     </div>
-  {:else if open}
-    {@render entriesList('menu absolute top-full z-40 mt-1 max-h-80 min-w-full overflow-y-auto')}
   {/if}
 </div>

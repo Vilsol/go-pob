@@ -31,7 +31,7 @@
     @apply bg-hover text-text;
   }
   .butterfly-row {
-    @apply box-border grid min-h-11 grid-cols-[96px_minmax(0,1fr)_190px_minmax(0,1fr)_96px] items-center gap-2.5 px-4 py-0.75 hover:bg-hover-soft;
+    @apply box-border grid min-h-11 grid-cols-[7rem_minmax(0,1fr)_11.875rem_minmax(0,1fr)_7rem] items-center gap-2.5 px-4 py-0.75 hover:bg-hover-soft;
   }
   .butterfly-value {
     @apply font-mono text-14 text-text data-[win=true]:font-semibold;

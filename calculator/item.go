@@ -2527,3 +2527,10 @@ func SetDefaultItemAffixQuality(q float64) {
 
 	resetItemDB()
 }
+
+func luaInt(x float64) int64 {
+	if math.IsNaN(x) || x >= 1<<63 || x < -(1<<63) {
+		return math.MinInt64
+	}
+	return int64(x)
+}

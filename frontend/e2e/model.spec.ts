@@ -169,7 +169,7 @@ class DeallocateNode implements fc.AsyncCommand<Model, Real> {
   check = (m: Readonly<Model>) => this.pick(m) !== undefined;
   async run(m: Model, r: Real) {
     const node = this.pick(m)!;
-    const state = tree.treeState(m.build);
+    const state = tree.treeState(m.build, await tree.clusterOf(m.build));
     await r.app.openTree(tree.treeVersion());
     const button = await r.app.treeNode(tree.resultName(node));
     await expect(button, 'the page holds a different allocation than the model').toHaveAttribute('aria-pressed', 'true');

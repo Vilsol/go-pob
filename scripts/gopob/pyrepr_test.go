@@ -36,7 +36,7 @@ func TestPyReprMatchesCPython(t *testing.T) {
 	if err != nil {
 		t.Fatalf("python3: %v", err)
 	}
-	want := strings.Split(strings.TrimSuffix(string(out), "\n"), "\n")
+	want := strings.Split(strings.TrimSuffix(strings.ReplaceAll(string(out), "\r\n", "\n"), "\n"), "\n")
 	if len(want) != len(cases) {
 		t.Fatalf("python printed %d lines for %d cases", len(want), len(cases))
 	}
@@ -65,7 +65,7 @@ func TestPyNumberReprMatchesCPython(t *testing.T) {
 	if err != nil {
 		t.Fatalf("python3: %v", err)
 	}
-	want := strings.Split(strings.TrimSuffix(string(out), "\n"), "\n")
+	want := strings.Split(strings.TrimSuffix(strings.ReplaceAll(string(out), "\r\n", "\n"), "\n"), "\n")
 	for i, s := range cases {
 		if got := pyNumberRepr(json.Number(s)); got != want[i] {
 			t.Errorf("pyNumberRepr(%s)\n  go     = %s\n  python = %s", s, got, want[i])

@@ -3180,11 +3180,11 @@ export const calcSections: CalcSection[] = [
         data: {
           extra:
             colorCodesX.STRENGTH +
-            '{0:output:Str}^#, ' +
+            '{0:output:Str}^7, ' +
             colorCodesX.DEXTERITY +
-            '{0:output:Dex}^#, ' +
+            '{0:output:Dex}^7, ' +
             colorCodesX.INTELLIGENCE +
-            '{0:output:Int}^#, ' +
+            '{0:output:Int}^7, ' +
             colorCodesX.RARE +
             '{0:output:Omni}',
           0: { label: 'Strength', 0: { format: '{0:output:Str}', 0: { breakdown: 'Str' }, 1: { modName: 'Str' } } },
@@ -3489,9 +3489,9 @@ export const calcSections: CalcSection[] = [
         data: {
           extra:
             colorCodesX.FIRE +
-            '{0:output:FireResist}+{0:output:FireResistOverCap}^#/' +
+            '{0:output:FireResist}+{0:output:FireResistOverCap}^7/' +
             colorCodesX.COLD +
-            '{0:output:ColdResist}+{0:output:ColdResistOverCap}^#/' +
+            '{0:output:ColdResist}+{0:output:ColdResistOverCap}^7/' +
             colorCodesX.LIGHTNING +
             '{0:output:LightningResist}+{0:output:LightningResistOverCap}',
           0: {

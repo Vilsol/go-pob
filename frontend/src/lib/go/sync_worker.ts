@@ -3982,6 +3982,15 @@ class PoBWorker {
     this.powerPool ??= new PowerPool(() => this.wasmModule);
     this.powerPool.warm(workers, new TextDecoder().decode(builds.SerializeBuild(this.currentBuild).unwrap()));
   }
+
+  async RebaseChoices(text: string): Promise<string[]> {
+    return [...((await exposition.RebaseChoices(text)) ?? [])];
+  }
+
+  async RebaseItemText(text: string, base: string): Promise<{ text: string; dropped: string[] } | undefined> {
+    const [r, ok] = await exposition.RebaseItemText(text, base);
+    return ok ? { text: r.Text, dropped: [...(r.Dropped ?? [])] } : undefined;
+  }
 }
 
 export const workerInstance = new PoBWorker();

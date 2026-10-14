@@ -121,6 +121,7 @@ func rpSpec(bin, binDir string, env ...string) difftest.Spec {
 }
 
 func TestRepinPortIsIndistinguishable(t *testing.T) {
+	requirePOSIX(t)
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk, binDir := rpSandbox(t, repo)
@@ -190,6 +191,7 @@ func TestRepinPortIsIndistinguishable(t *testing.T) {
 
 // TestRepinRewritesTheRightLiterals: THE REWRITTEN SOURCE IS THE PRODUCT.
 func TestRepinRewritesTheRightLiterals(t *testing.T) {
+	requirePOSIX(t)
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk, binDir := rpSandbox(t, repo)

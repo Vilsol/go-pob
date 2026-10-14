@@ -86,6 +86,7 @@ func dsSpec(bin string, env []string, args ...string) difftest.Spec {
 }
 
 func TestDumpShardPortIsIndistinguishable(t *testing.T) {
+	requireWorks(t, probeNamespaces)
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := dsSandbox(t, repo, 7)
@@ -209,6 +210,7 @@ exit 3
 
 // TestDumpShardSplitsRoundRobin: THE ROUND-ROBIN SPLIT IS INVISIBLE IN THE TOOL'S OWN OUTPUT, and it is the reason this script is not three lines.
 func TestDumpShardSplitsRoundRobin(t *testing.T) {
+	requireWorks(t, probeNamespaces)
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := dsSandbox(t, repo, 7)
@@ -221,6 +223,7 @@ func TestDumpShardSplitsRoundRobin(t *testing.T) {
 }
 
 func TestDumpShardIsStableAcrossLocales(t *testing.T) {
+	requireWorks(t, probeNamespaces)
 	repo := repoRoot(t)
 	mk := dsSandbox(t, repo, 7)
 	difftest.SelfIdentity(t, t.Context(), difftest.Spec{

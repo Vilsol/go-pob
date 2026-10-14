@@ -99,7 +99,7 @@
       <span class="text-text-3">A {aPoints} pts · B {bPoints} pts · {shared} shared · {small.length} small nodes differ</span>
     </div>
     {#each diffs as d (d.id)}
-      <div class="grid grid-cols-[28px_minmax(0,1fr)_120px_64px] items-center gap-1.5 border-b border-surface-2 py-1">
+      <div class="grid grid-cols-[1.75rem_minmax(0,1fr)_7.5rem_4rem] items-center gap-1.5 border-b border-surface-2 py-1">
         <span class={['toned font-semibold', OWNER[d.owner]]}>{d.owner.toUpperCase()}</span>
         <span class="truncate" title={d.name}>{d.name}</span>
         <span class="text-text-3">{KIND[d.kind]}</span>

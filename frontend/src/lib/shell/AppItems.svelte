@@ -421,13 +421,14 @@
     paste = { item: summary(p.item), name: p.item.Name, pending: true, blocks: [] };
     const tradeItem = { rarity: p.item.Rarity, title: p.item.Title, name: p.item.Name, baseName: p.item.BaseName, type: p.item.Type };
     pasteTrade = { item: tradeItem, slot: p.item.FitSlots?.[0], defences: tradeDefences(tradeItem, p.item.ArmourData) };
-    const [d, c, affixes, extras] = await Promise.all([
+    const [d, c, affixes, extras, bases] = await Promise.all([
       syncWrap?.GetDisplayItem(text),
       syncWrap?.GetDisplayItemCraft(text),
       syncWrap?.GetAffixControls(text),
-      syncWrap?.GetDisplayItemExtras(text)
+      syncWrap?.GetDisplayItemExtras(text),
+      syncWrap?.RebaseChoices(text)
     ]);
-    display = d && { ...d, ...c, affixes, ...extras };
+    display = d && { ...d, ...c, affixes: affixes && { ...affixes, base: p.item.BaseName, bases }, ...extras };
     if (!current()) return;
     if (customFor === text) {
       customFor = undefined;
@@ -562,6 +563,14 @@
     else if (r?.error) say(r.error);
   };
 
+  // ItemsTab.lua:2856, 3335, 3653, 4368
+  const popupTip = async (t: string): Promise<TipProps | undefined> => {
+    const [p, r] = await Promise.all([syncWrap?.ParseItem(t), syncWrap?.ItemCompare(t)]);
+    if (!p?.item) return undefined;
+    const tip = { ...tipOf(summary(p.item), undefined, 'candidate'), impactTitle: '', impactSub: undefined, impact: [] };
+    return { ...tip, whatIf: { key: 'popup', pending: false, blocks: r ? stamp(r) : [] } };
+  };
+
   // ItemsTab.lua:2661-3015
   const displayCraft: CraftApi = {
     enchantChoices: async () => syncWrap?.GetEnchantChoices(text),
@@ -569,8 +578,7 @@
     sortStats: async () => ((await syncWrap?.GetPowerStats()) ?? []).map((s) => ({ stat: s.Stat, label: s.Label })),
     preview: async (edit) => {
       const r = await syncWrap?.EditItemText(text, edit);
-      const p = r?.text !== undefined ? await syncWrap?.ParseItem(r.text) : undefined;
-      return p?.item ? tipOf(summary(p.item), undefined, 'candidate') : undefined;
+      return r?.text !== undefined ? popupTip(r.text) : undefined;
     },
     enchantSort: async (slot, list, stat) => (await syncWrap?.EnchantSortValues(text, slot, list, stat)) ?? [],
     anointPowers: async (slot, ids, stat) => (await syncWrap?.AnointPowers(text, slot, ids, stat)) ?? [],
@@ -600,12 +608,14 @@
     },
     affixRollTooltip: async (slot, slider) => (await syncWrap?.AffixRollTooltip(text, slot, slider)) ?? [],
     affixPowers: async (slot, stat) => (await syncWrap?.AffixPowers(text, slot, stat)) ?? [],
+    rebase: async (base) => {
+      const r = await syncWrap?.RebaseItemText(text, base);
+      if (r) text = r.text;
+      return r?.dropped;
+    },
     crucibleChoices: async () => syncWrap?.GetCrucibleChoices(text),
     crucibleText: async (ids) => syncWrap?.CrucibleText(text, ids),
-    tipOf: async (t) => {
-      const p = await syncWrap?.ParseItem(t);
-      return p?.item ? tipOf(summary(p.item), undefined, 'candidate') : undefined;
-    },
+    tipOf: popupTip,
     settext: (t) => {
       text = t;
     }

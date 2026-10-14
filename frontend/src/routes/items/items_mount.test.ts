@@ -373,3 +373,56 @@ describe('item paste', () => {
     await vi.waitFor(() => expect(box.value).toBe(NEW_GLOVES));
   });
 });
+
+// ItemsTab.lua:3651-3654, 4368
+describe('item popups', () => {
+  it("Add modifier's preview shows the item's slot comparison from Go", async () => {
+    const spies = [
+      vi.spyOn(workerInstance, 'NormaliseDisplayItem').mockResolvedValue(NEW_GLOVES),
+      vi.spyOn(workerInstance, 'GetDisplayItem').mockResolvedValue({
+        quality: 0,
+        hasQuality: false,
+        variants: [],
+        variant: 0,
+        altVariants: [],
+        sockets: '',
+        socketLimit: 0,
+        defaultColor: '',
+        canInfluence: false,
+        influence: [],
+        showsCatalyst: false,
+        catalyst: 0,
+        catalystQuality: 0,
+        mods: []
+      }),
+      vi.spyOn(workerInstance, 'GetDisplayItemCraft').mockResolvedValue({ addCustom: true }),
+      vi.spyOn(workerInstance, 'GetAffixControls').mockResolvedValue(undefined),
+      vi.spyOn(workerInstance, 'GetDisplayItemExtras').mockResolvedValue(undefined),
+      vi.spyOn(workerInstance, 'RebaseChoices').mockResolvedValue([]),
+      vi.spyOn(workerInstance, 'GetCustomModChoices').mockResolvedValue({ sources: [{ id: 'CUSTOM', label: 'Custom' }], mods: {} }),
+      vi.spyOn(workerInstance, 'CustomModText').mockResolvedValue(NEW_GLOVES)
+    ];
+    const compare = vi
+      .spyOn(workerInstance, 'ItemCompare')
+      .mockImplementation((text: string) =>
+        Promise.resolve(
+          text === NEW_GLOVES ? { blocks: [{ header: 'Equipping this item in Gloves will give you:', slot: 'Gloves', sections: [] }], calcMs: 0 } : undefined
+        )
+      );
+    onTestFinished(() => {
+      spies.forEach((s) => s.mockRestore());
+      compare.mockResolvedValue(undefined);
+    });
+    const { findByRole } = await mount();
+    const box = (await findByRole('textbox', { name: 'Item text' })) as HTMLTextAreaElement;
+    await fireEvent.paste(box, { clipboardData: { getData: () => NEW_GLOVES } });
+    await fireEvent.click(await findByRole('button', { name: 'Add modifier...' }));
+    const dialog = within(await findByRole('dialog', { name: 'Add Modifier to Item' }));
+    await fireEvent.input(await dialog.findByRole('textbox', { name: 'Custom modifier' }), { target: { value: '+7 to Dexterity' } });
+    const preview = within(await dialog.findByRole('group', { name: 'New item' }));
+    await vi.waitFor(() =>
+      expect(preview.getByRole('group', { name: 'Stat differences' }).textContent).toContain('Equipping this item in Gloves will give you:')
+    );
+    expect(preview.queryByText('Fits no equipment slot')).toBeNull();
+  });
+});

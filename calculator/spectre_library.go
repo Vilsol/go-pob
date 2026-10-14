@@ -66,7 +66,7 @@ func spectreTooltip(minion *raw2.MinionInfo) []string {
 		fmt.Sprintf("^7Life Multiplier: x%s", luaFixed(minion.Life, 2)),
 	}
 	if minion.EnergyShield != 0 {
-		lines = append(lines, fmt.Sprintf("^7Energy Shield: %d%% of base Life", int(minion.EnergyShield*100)))
+		lines = append(lines, fmt.Sprintf("^7Energy Shield: %d%% of base Life", luaInt(minion.EnergyShield*100)))
 	}
 	if minion.Armour != 0 {
 		lines = append(lines, fmt.Sprintf("^7Armour Multiplier: x%s", luaFixed(1+minion.Armour, 2)))
@@ -75,8 +75,8 @@ func spectreTooltip(minion *raw2.MinionInfo) []string {
 		lines = append(lines, fmt.Sprintf("^7Evasion Multiplier: x%s", luaFixed(1+minion.Evasion, 2)))
 	}
 	lines = append(lines,
-		fmt.Sprintf("^7Resistances: %s%d^7/%s%d^7/%s%d^7/%s%d", colorFire, int(minion.FireResist), colorCold, int(minion.ColdResist),
-			colorLightning, int(minion.LightningResist), colorChaos, int(minion.ChaosResist)),
+		fmt.Sprintf("^7Resistances: %s%d^7/%s%d^7/%s%d^7/%s%d", colorFire, luaInt(minion.FireResist), colorCold, luaInt(minion.ColdResist),
+			colorLightning, luaInt(minion.LightningResist), colorChaos, luaInt(minion.ChaosResist)),
 		fmt.Sprintf("^7Base Damage: x%s", luaFixed(minion.Damage, 2)),
 		fmt.Sprintf("^7Base Attack Speed: %s", luaFixed(1/minion.AttackTime, 2)),
 	)

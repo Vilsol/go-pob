@@ -59,7 +59,7 @@ const pwa = vi.hoisted(() => ({ checkForUpdate: vi.fn(() => Promise.resolve()) }
 vi.mock('$lib/pwa', () => pwa);
 
 const { fontScaling, zoomSensitivity, markBackendAsLoaded } = await import('$lib/global');
-const { theme, showAnimations } = await import('$lib/display/appearance');
+const { theme, showAnimations, showStatBars } = await import('$lib/display/appearance');
 const { allAffixSliders } = await import('$lib/design/items');
 const { showAllItemAffixes, defaultItemAffixQuality } = await import('$lib/display/item_options');
 const AppSettings = (await import('./AppSettings.svelte')).default;
@@ -125,6 +125,17 @@ describe('AppSettings', () => {
     expect(localStorage.getItem('options:showAnimations')).toBe('false');
     showAnimations.set(true);
     expect(root.dataset.motion).toBeUndefined();
+  });
+
+  it('Show stat bars is on by default, and off is kept; Reset turns it back on', async () => {
+    const s = open();
+    const box = s.getByRole('checkbox', { name: 'Show stat bars' });
+    expect((box as HTMLInputElement).checked).toBe(true);
+    await fireEvent.click(box);
+    expect(get(showStatBars)).toBe(false);
+    expect(localStorage.getItem('options:showStatBars')).toBe('false');
+    await fireEvent.click(s.getByRole('button', { name: 'Reset this section' }));
+    expect(get(showStatBars)).toBe(true);
   });
 
   it('Show all item affix sliders (Main.lua:121, on by default) sets the item editor’s option', async () => {

@@ -372,7 +372,7 @@
   <div role="group" aria-label="Gems" class="relative flex flex-col text-13" bind:this={gemBox}>
     <div
       aria-hidden="true"
-      class="grid grid-cols-[18px_44px_repeat(24,minmax(0,1fr))] gap-1.5 border-b border-line px-1.5 py-1 text-10 tracking-[0.04em] text-text-2">
+      class="grid grid-cols-[1.125rem_2.75rem_repeat(24,minmax(0,1fr))] gap-1.5 border-b border-line px-1.5 py-1 text-10 tracking-[0.04em] text-text-2">
       <span></span><span>SOCKET</span><span>ON</span><span class={ongemcount ? 'col-span-10' : 'col-span-13'}>GEM</span><span class="col-span-4">LEVEL</span
       ><span class="col-span-4">QUAL.</span>{#if ongemcount}<span class="col-span-3">COUNT</span>{/if}<span class="col-span-2"></span>
     </div>

@@ -5,6 +5,7 @@
   import { METRICS, type Metric, type MetricId, arrowed, dirTone, metricIndex, num, pctOf, signed } from './compare';
   import type { ItemTip, PowerRow } from './fixtures';
   import FloatingItemTip from './FloatingItemTip.svelte';
+  import PobText from './PobText.svelte';
 
   type Props = {
     power: PowerRow[];
@@ -56,7 +57,7 @@
   const max = $derived(Math.max(1, ...rows.map((p) => Math.abs(p.impact[mi]))));
   const total = $derived(rows.reduce((s, p) => s + p.impact[mi], 0));
   const diff = $derived(b - a);
-  const GRID = 'grid-cols-[70px_minmax(0,1fr)_120px_190px_56px_100px_70px]';
+  const GRID = 'grid-cols-[4.375rem_minmax(0,1fr)_7.5rem_11.875rem_3.5rem_6.25rem_4.375rem]';
 </script>
 
 <section aria-label="Compare power report" class="panel text-13">
@@ -110,14 +111,14 @@
             onmouseenter={(e) => void showTip(p, e.currentTarget)}
             onfocus={(e) => void showTip(p, e.currentTarget)}
             onmouseleave={() => (hover = undefined)}
-            onblur={() => (hover = undefined)}>{p.what}</span
+            onblur={() => (hover = undefined)}><PobText text={p.what} /></span
           ><span class="note-sm truncate">{p.detail}</span></span>
         <span
           role="cell"
           aria-hidden="true"
-          class="relative h-3 before:absolute before:-top-0.5 before:-bottom-0.5 before:left-1/2 before:w-px before:bg-line-strong before:content-['']"
+          class="relative h-4 before:absolute before:top-0 before:bottom-0 before:left-1/2 before:w-px before:bg-line-strong before:content-['']"
           ><span
-            class={['absolute top-0.5 left-(--x) h-2 w-(--w) rounded-[1px] bg-(--tone)', toneClass(dirTone(v))]}
+            class={['absolute top-1 left-(--x) h-2 w-(--w) rounded-[1px] bg-(--tone)', toneClass(dirTone(v))]}
             style:--x={v >= 0 ? '50%' : `${(50 - w).toFixed(1)}%`}
             style:--w={`${w.toFixed(1)}%`}></span
           ></span>

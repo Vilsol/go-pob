@@ -99,7 +99,7 @@ func CompareItemExpanded(raw string, other string) []string {
 			if ad := item.ArmourData; ad != nil {
 				for _, k := range []struct{ key, label, unit string }{{"Armour", "Armour", ""}, {"Evasion", "Evasion", ""}, {"EnergyShield", "ES", ""}, {"Ward", "Ward", ""}, {"BlockChance", "Block", "%%"}} {
 					if v := ad[k.key]; v > 0 {
-						emit("^x7F7F7F%s: "+colorMagic+"%d"+k.unit, k.label, int(v))
+						emit("^x7F7F7F%s: "+colorMagic+"%d"+k.unit, k.label, luaInt(v))
 					}
 				}
 			}
@@ -108,10 +108,10 @@ func CompareItemExpanded(raw string, other string) []string {
 				life, hasLife := fd["lifeTotal"]
 				mana, hasMana := fd["manaTotal"]
 				if hasLife {
-					emit("^x7F7F7FLife: "+colorMagic+"%d ^x7F7F7F(%.1fs)", int(life), fd["duration"])
+					emit("^x7F7F7FLife: "+colorMagic+"%d ^x7F7F7F(%.1fs)", luaInt(life), fd["duration"])
 				}
 				if hasMana {
-					emit("^x7F7F7FMana: "+colorMagic+"%d ^x7F7F7F(%.1fs)", int(mana), fd["duration"])
+					emit("^x7F7F7FMana: "+colorMagic+"%d ^x7F7F7F(%.1fs)", luaInt(mana), fd["duration"])
 				}
 				if d, ok := fd["duration"]; !hasLife && !hasMana && ok {
 					emit("^x7F7F7FDuration: "+colorMagic+"%.2fs", d)
@@ -119,7 +119,7 @@ func CompareItemExpanded(raw string, other string) []string {
 				used, okUsed := fd["chargesUsed"]
 				charges, okMax := fd["chargesMax"]
 				if okUsed && okMax {
-					emit("^x7F7F7FCharges: "+colorMagic+"%d/%d", int(used), int(charges))
+					emit("^x7F7F7FCharges: "+colorMagic+"%d/%d", luaInt(used), luaInt(charges))
 				}
 				for _, line := range base.Flask.Buff {
 					c := colorMagic

@@ -573,7 +573,7 @@
 
 <svelte:window onpointerdown={outside} onkeydown={pageKey} />
 
-<div class="box-border flex h-13 shrink-0 items-center gap-2.5 border-b border-line px-4" data-toolbar>
+<div class="box-border flex min-h-13 shrink-0 flex-wrap items-center gap-2.5 border-b border-line px-4 py-0.5" data-toolbar>
   <FloatingLabel label="Class" class="[--float-bg:var(--color-surface-1)]"
     ><select class="select h-8.5 bg-surface-1" value={className} onchange={(e) => onclass?.(e.currentTarget.value)}
       >{#each tree.classes as o (o)}<option>{o}</option>{/each}</select

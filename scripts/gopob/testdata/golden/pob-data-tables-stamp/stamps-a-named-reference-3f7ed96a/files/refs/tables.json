@@ -8,7 +8,7 @@
    "src",
    "runtime/lua"
   ],
-  "sha_advisory": "7c4a66683c0743b81581732831a23fc5367cf8e9"
+  "sha_advisory": "08564f01f5d43dfedf26ccb67398eae02fdf5540"
  },
  "source": "oracle/pob_data_tables.lua",
  "tables": {

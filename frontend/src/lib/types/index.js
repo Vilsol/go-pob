@@ -206,6 +206,8 @@ export const initializeCrystalline = () => {
     ParseModLines: wrap('exposition.ParseModLines', globalThis['go']['go-pob']['exposition']['ParseModLines']),
     PowerAscendancy: wrap('exposition.PowerAscendancy', globalThis['go']['go-pob']['exposition']['PowerAscendancy']),
     PowerStats: wrap('exposition.PowerStats', globalThis['go']['go-pob']['exposition']['PowerStats']),
+    RebaseChoices: wrap('exposition.RebaseChoices', globalThis['go']['go-pob']['exposition']['RebaseChoices']),
+    RebaseItemText: wrap('exposition.RebaseItemText', globalThis['go']['go-pob']['exposition']['RebaseItemText']),
     RemoveAllTreeTattoos: wrap('exposition.RemoveAllTreeTattoos', globalThis['go']['go-pob']['exposition']['RemoveAllTreeTattoos']),
     RenameItemSet: wrap('exposition.RenameItemSet', globalThis['go']['go-pob']['exposition']['RenameItemSet']),
     RenameSharedItemSet: wrap('exposition.RenameSharedItemSet', globalThis['go']['go-pob']['exposition']['RenameSharedItemSet']),

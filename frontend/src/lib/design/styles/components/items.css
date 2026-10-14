@@ -4,7 +4,7 @@
   }
 
   .gem-row {
-    @apply box-border grid h-10.5 grid-cols-[18px_44px_repeat(24,minmax(0,1fr))] items-center gap-1.5 border-b border-line-faint px-1.5 hover:bg-hover-soft;
+    @apply box-border grid h-10.5 grid-cols-[1.125rem_2.75rem_repeat(24,minmax(0,1fr))] items-center gap-1.5 border-b border-line-faint px-1.5 hover:bg-hover-soft;
   }
   .socket {
     @apply relative z-1 box-border flex size-6 items-center justify-center rounded-full border-3 border-(--tone) bg-ground;

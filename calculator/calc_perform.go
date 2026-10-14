@@ -1087,9 +1087,19 @@ func ceilB(x float64, base float64) float64  { return float64(base * math.Ceil(x
 func floorB(x float64, base float64) float64 { return float64(base * math.Floor(x/base)) }
 
 //pob:src/Modules/CalcTriggers.lua:90-133
-func calcMultiSpellRotationImpact329(env *Environment, skillRotation []*triggerRotationSkill, sourceRate float64, triggerCD float64, chance float64, actor *Actor) float64 {
+type triggerSimBreakdown struct {
+	simTime float64
+	rates   []triggerSimRate
+}
+
+type triggerSimRate struct {
+	name string
+	rate float64
+}
+
+func calcMultiSpellRotationImpact329(env *Environment, skillRotation []*triggerRotationSkill, sourceRate float64, triggerCD float64, chance float64, actor *Actor) (float64, *triggerSimBreakdown) {
 	if sourceRate <= 0 || len(skillRotation) == 0 {
-		return 0
+		return 0, nil
 	}
 	if chance == 0 {
 		chance = 100
@@ -1136,19 +1146,22 @@ func calcMultiSpellRotationImpact329(env *Environment, skillRotation []*triggerR
 		nextTrigger += triggerIncrement
 	}
 
+	trigRateTable := &triggerSimBreakdown{simTime: simTime}
 	mainUUID := cacheSkillUUID(env, actor.MainSkill)
 	mainRate := float64(0)
 	for _, sd := range skillRotation {
 		if sd.count == 0 {
+			trigRateTable.rates = append(trigRateTable.rates, triggerSimRate{name: sd.uuid})
 			continue
 		}
 		rate := 1 / (simTime/sd.count + float64(triggerIncrement/chance*100) - triggerIncrement)
+		trigRateTable.rates = append(trigRateTable.rates, triggerSimRate{name: sd.uuid, rate: rate})
 		if sd.uuid == mainUUID {
 			mainRate = rate
 		}
 	}
 
-	return mainRate
+	return mainRate, trigRateTable
 }
 
 //pob:src/Modules/CalcPerform.lua:161-290
@@ -1204,7 +1217,7 @@ func calcActualTriggerRate(env *Environment, source *ActiveSkill, sourceAPS *flo
 		if simTriggerCD == 0 {
 			simTriggerCD = env.Player.MainSkill.SkillData.Cooldown
 		}
-		output["SourceTriggerRate"] = calcMultiSpellRotationImpact329(env, spellCount, *sourceAPS, simTriggerCD, triggerChance, env.Player)
+		output["SourceTriggerRate"], _ = calcMultiSpellRotationImpact329(env, spellCount, *sourceAPS, simTriggerCD, triggerChance, env.Player)
 		trigRate = math.Min(output["SourceTriggerRate"], output["TriggerRateCap"])
 
 		if env.ModDB.Flag(nil, "HaveTriggerBots") && env.Player.MainSkill.SkillTypes[data.SkillTypeSpell] {
@@ -3136,6 +3149,25 @@ func performCalc(env *Environment, skipEHP bool) {
 		flaskMinion.applyToMinion(env)
 	}
 
+	//pob:block:src/Modules/CalcPerform.lua:3068-3085
+	if env.ModeCombat {
+		if env.ModDB.Flag(nil, "UseEnduranceCharges") && env.ModDB.Flag(nil, "EnduranceChargesConvertToBrutalCharges") {
+			tripleDmgChancePerEndurance := env.ModDB.Sum(mod.TypeBase, nil, "PerBrutalTripleDamageChance")
+			env.ModDB.AddMod(mod.NewFloat("TripleDamageChance", "BASE", tripleDmgChancePerEndurance).Tag(mod.Multiplier("BrutalCharge")))
+		}
+		if env.ModDB.Flag(nil, "UseFrenzyCharges") && env.ModDB.Flag(nil, "FrenzyChargesConvertToAfflictionCharges") {
+			dmgPerAffliction := env.ModDB.Sum(mod.TypeBase, nil, "PerAfflictionAilmentDamage")
+			effectPerAffliction := env.ModDB.Sum(mod.TypeBase, nil, "PerAfflictionNonDamageEffect")
+			env.ModDB.AddMod(mod.NewFloat("Damage", "MORE", dmgPerAffliction).Source("Affliction Charges").KeywordFlag(mod.KeywordFlagAilment).Tag(mod.Multiplier("AfflictionCharge")))
+			env.ModDB.AddMod(mod.NewFloat("EnemyChillEffect", "MORE", effectPerAffliction).Source("Affliction Charges").Tag(mod.Multiplier("AfflictionCharge")))
+			env.ModDB.AddMod(mod.NewFloat("EnemyShockEffect", "MORE", effectPerAffliction).Source("Affliction Charges").Tag(mod.Multiplier("AfflictionCharge")))
+			env.ModDB.AddMod(mod.NewFloat("EnemyFreezeEffect", "MORE", effectPerAffliction).Source("Affliction Charges").Tag(mod.Multiplier("AfflictionCharge")))
+			env.ModDB.AddMod(mod.NewFloat("EnemyScorchEffect", "MORE", effectPerAffliction).Source("Affliction Charges").Tag(mod.Multiplier("AfflictionCharge")))
+			env.ModDB.AddMod(mod.NewFloat("EnemyBrittleEffect", "MORE", effectPerAffliction).Source("Affliction Charges").Tag(mod.Multiplier("AfflictionCharge")))
+			env.ModDB.AddMod(mod.NewFloat("EnemySapEffect", "MORE", effectPerAffliction).Source("Affliction Charges").Tag(mod.Multiplier("AfflictionCharge")))
+		}
+	}
+
 	//pob:block:src/Modules/CalcPerform.lua:2200-2243
 	extraCurseSources := []struct {
 		dest  *[]*curseEntry
@@ -4707,14 +4739,14 @@ func performCalc(env *Environment, skipEHP bool) {
 		env.Player.Output["GemLevel"] = baseLevel + totalSupportLevel + totalItemLevel
 		//pob:block:src/Modules/CalcPerform.lua:3877-3887
 		if bd := env.Player.Breakdown; bd != nil {
-			bd.Data["GemLevel"] = &Entry{Lines: []string{fmt.Sprintf("%d ^8(level from gem)", int(baseLevel))}}
+			bd.Data["GemLevel"] = &Entry{Lines: []string{fmt.Sprintf("%d ^8(level from gem)", luaInt(baseLevel))}}
 			if totalSupportLevel > 0 {
-				bd.AddLine("GemLevel", fmt.Sprintf("+ %d ^8(level from support)", int(totalSupportLevel)))
+				bd.AddLine("GemLevel", fmt.Sprintf("+ %d ^8(level from support)", luaInt(totalSupportLevel)))
 			}
 			if totalItemLevel > 0 {
-				bd.AddLine("GemLevel", fmt.Sprintf("+ %d ^8(level from items)", int(totalItemLevel)))
+				bd.AddLine("GemLevel", fmt.Sprintf("+ %d ^8(level from items)", luaInt(totalItemLevel)))
 			}
-			bd.AddLine("GemLevel", fmt.Sprintf("= %d", int(env.Player.Output["GemLevel"])))
+			bd.AddLine("GemLevel", fmt.Sprintf("= %d", luaInt(env.Player.Output["GemLevel"])))
 		}
 		baseQuality := sml.Sum(mod.TypeBase, cfg, "GemQuality")
 		totalItemQuality := sml.Sum(mod.TypeBase, cfg, "GemItemQuality")
@@ -4724,17 +4756,17 @@ func performCalc(env *Environment, skipEHP bool) {
 		env.Player.Output["GemQuality"] = baseQuality + totalSupportQuality + totalItemQuality + socketQuality
 		//pob:block:src/Modules/CalcPerform.lua:3900-3913
 		if bd := env.Player.Breakdown; bd != nil {
-			bd.Data["GemQuality"] = &Entry{Lines: []string{fmt.Sprintf("%d ^8(quality from gem)", int(baseQuality))}}
+			bd.Data["GemQuality"] = &Entry{Lines: []string{fmt.Sprintf("%d ^8(quality from gem)", luaInt(baseQuality))}}
 			if totalSupportQuality > 0 {
-				bd.AddLine("GemQuality", fmt.Sprintf("+ %d ^8(quality from support)", int(totalSupportQuality)))
+				bd.AddLine("GemQuality", fmt.Sprintf("+ %d ^8(quality from support)", luaInt(totalSupportQuality)))
 			}
 			if totalItemQuality > 0 {
-				bd.AddLine("GemQuality", fmt.Sprintf("+ %d ^8(quality from items)", int(totalItemQuality)))
+				bd.AddLine("GemQuality", fmt.Sprintf("+ %d ^8(quality from items)", luaInt(totalItemQuality)))
 			}
 			if socketQuality > 0 {
-				bd.AddLine("GemQuality", fmt.Sprintf("+ %d ^8(quality from socket)", int(socketQuality)))
+				bd.AddLine("GemQuality", fmt.Sprintf("+ %d ^8(quality from socket)", luaInt(socketQuality)))
 			}
-			bd.AddLine("GemQuality", fmt.Sprintf("= %d", int(env.Player.Output["GemQuality"])))
+			bd.AddLine("GemQuality", fmt.Sprintf("= %d", luaInt(env.Player.Output["GemQuality"])))
 		}
 	}
 

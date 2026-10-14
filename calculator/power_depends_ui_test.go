@@ -11,7 +11,7 @@ import (
 // TestTreeDependentsCoverClusterSubgraphs: what the tree draws red on hovering an allocated node.
 func TestTreeDependentsCoverClusterSubgraphs(t *testing.T) {
 	t.Parallel()
-	for _, file := range []string{"0719-gladiator-herald-of-agony-2.xml", "0511-elementalist-tornado-of-elemental-turbulence.xml", "0549-guardian-tempest-shield.xml"} {
+	for _, file := range []string{"0719-gladiator-herald-of-agony-2.xml", "0511-elementalist-tornado-of-elemental-turbulence.xml", "0549-guardian-tempest-shield.xml", "0339-reliquarian-shield-crush-of-the-chieftain-2.xml"} {
 		t.Run(file, func(t *testing.T) {
 			t.Parallel()
 			build := parseCorpusBuild(t, file)

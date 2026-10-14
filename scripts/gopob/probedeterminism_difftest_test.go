@@ -40,12 +40,20 @@ fi
 exit 0
 `
 
+const pdmFakeMise = `#!/bin/sh
+echo 'mise ERROR "luajit" couldn'"'"'t exec process: No such file or directory' >&2
+exit 1
+`
+
 func pdmSandbox(t *testing.T, repo string) (func() (string, error), string) {
 	t.Helper()
 	sh := difftest.ReadOriginal(t, repo, pdmSh)
 	base := t.TempDir()
 	luajit := filepath.Join(base, "fakeluajit")
 	if err := os.WriteFile(luajit, []byte(pdmFakeLuajit), 0o700); err != nil { //nolint:gosec
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(base, "mise"), []byte(pdmFakeMise), 0o700); err != nil { //nolint:gosec
 		t.Fatal(err)
 	}
 	n := 0
@@ -99,6 +107,7 @@ func pdmSpec(bin, luajit string, env []string, args ...string) difftest.Spec {
 		Stderr:       difftest.StderrExact,
 		Env: append([]string{
 			"GOPOB_NICED=1", "POB_DIR=pob", "LUAJIT=" + luajit,
+			"PATH=" + filepath.Dir(luajit) + string(os.PathListSeparator) + os.Getenv("PATH"),
 		}, env...),
 		RefusalSites:    6,
 		StderrNormalise: pdmCollapseMiseErrors,
@@ -129,6 +138,7 @@ func pdmCollapseMiseErrors(b []byte) []byte {
 }
 
 func TestProbeDeterminismPortIsIndistinguishable(t *testing.T) {
+	requireWorks(t, probeSetarch)
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk, luajit := pdmSandbox(t, repo)

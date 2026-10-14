@@ -104,6 +104,7 @@ func rfSpec(bin, luajit string, env []string, args ...string) difftest.Spec {
 }
 
 func TestRegenFixturesPortIsIndistinguishable(t *testing.T) {
+	requireWorks(t, probeSetarch)
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk, luajit, notExec := rfSandbox(t, repo)
@@ -175,6 +176,7 @@ func TestRegenFixturesPortIsIndistinguishable(t *testing.T) {
 
 // TestRegenFixturesWritesEveryFixtureFile: THE FIXTURES ARE THE PRODUCT AND THE EIGHT PROGRESS LINES ARE THE LABEL.
 func TestRegenFixturesWritesEveryFixtureFile(t *testing.T) {
+	requireWorks(t, probeSetarch)
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk, luajit, _ := rfSandbox(t, repo)
@@ -194,6 +196,7 @@ func TestRegenFixturesWritesEveryFixtureFile(t *testing.T) {
 }
 
 func TestRegenFixturesIsStableAcrossLocales(t *testing.T) {
+	requireWorks(t, probeSetarch)
 	repo := repoRoot(t)
 	mk, luajit, _ := rfSandbox(t, repo)
 	difftest.SelfIdentity(t, t.Context(), difftest.Spec{

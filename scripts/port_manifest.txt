@@ -215,6 +215,7 @@ wasm/exposition/crystalline_gen.go  GENERATED  [unverifiable: emitted by `go too
 wasm/exposition/data.go             GO-NATIVE  crystalline binding surface for the frontend
 wasm/exposition/gems.go             GO-NATIVE  crystalline binding surface for the frontend
 wasm/exposition/item_edit.go        GO-NATIVE  crystalline binding surface for the frontend
+wasm/exposition/item_rebase.go      GO-NATIVE  crystalline binding surface for the frontend
 wasm/exposition/item_sets.go        GO-NATIVE  crystalline binding surface for the frontend
 wasm/exposition/items.go            GO-NATIVE  crystalline binding surface for the frontend
 wasm/exposition/main.go             GO-NATIVE  crystalline binding surface for the frontend

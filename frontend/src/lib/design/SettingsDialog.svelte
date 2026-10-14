@@ -66,7 +66,7 @@
       {#each cur.rows as r (r.id)}
         {@const x = val(r)}
         {@const id = `${uid}-${r.id}`}
-        <div class="data-row grid-cols-[minmax(0,1fr)_240px] gap-3 rounded px-2 py-2.25 hover:bg-bar" data-setting={r.id}>
+        <div class="data-row grid-cols-[minmax(0,1fr)_15rem] gap-3 rounded px-2 py-2.25 hover:bg-bar" data-setting={r.id}>
           <span class="flex min-w-0 flex-col gap-0.5"
             >{#if r.kind === 'number' || r.kind === 'info'}<span class="text-13">{r.label}</span>{:else}<label for={id} class="text-13">{r.label}</label
               >{/if}{#if r.hint}<span class="note-sm">{r.hint}</span>{/if}</span>

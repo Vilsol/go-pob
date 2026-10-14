@@ -66,6 +66,8 @@ func init() {
 	crystallineNamespace("go-pob", "exposition").Set("AffixRollTooltip", crystallineWrap(js.FuncOf(crystallineFnExpositionAffixRollTooltip)))
 	crystallineNamespace("go-pob", "exposition").Set("ItemCrucibleChoices", crystallineWrap(js.FuncOf(crystallineFnExpositionItemCrucibleChoices)))
 	crystallineNamespace("go-pob", "exposition").Set("CrucibleText", crystallineWrap(js.FuncOf(crystallineFnExpositionCrucibleText)))
+	crystallineNamespace("go-pob", "exposition").Set("RebaseChoices", crystallineWrap(js.FuncOf(crystallineFnExpositionRebaseChoices)))
+	crystallineNamespace("go-pob", "exposition").Set("RebaseItemText", crystallineWrap(js.FuncOf(crystallineFnExpositionRebaseItemText)))
 	crystallineNamespace("go-pob", "exposition").Set("ItemsTabSlots", crystallineWrap(js.FuncOf(crystallineFnExpositionItemsTabSlots)))
 	crystallineNamespace("go-pob", "exposition").Set("SetWeaponSet", crystallineWrap(js.FuncOf(crystallineFnExpositionSetWeaponSet)))
 	crystallineNamespace("go-pob", "exposition").Set("NewItemSet", crystallineWrap(js.FuncOf(crystallineFnExpositionNewItemSet)))
@@ -828,6 +830,7 @@ func init() {
 	ImportTabExports(crystallineRegistry{})
 	ItemDBExports(crystallineRegistry{})
 	ItemEditExports(crystallineRegistry{})
+	ItemRebaseExports(crystallineRegistry{})
 	ItemSetExports(crystallineRegistry{})
 	ItemExports(crystallineRegistry{})
 	Items30Exports(crystallineRegistry{})
@@ -3029,6 +3032,84 @@ func crystallineFnExpositionCrucibleText(this js.Value, args []js.Value) (result
 		r0, r1 := CrucibleText(a0, a1)
 
 		return []any{string(r0), bool(r1)}
+	})
+}
+
+func crystallineFnExpositionRebaseChoices(this js.Value, args []js.Value) (result any) {
+	defer crystallineRecover(&result)
+
+	if len(args) != 1 {
+		return crystallineFail("RebaseChoices: expected 1 arguments, got " + strconv.Itoa(len(args)))
+	}
+
+	return crystallinePromise(func() any {
+		a0, err := crystallineToString(args[0])
+		if err != nil {
+			return crystallineFail(err.Error())
+		}
+
+		r0 := RebaseChoices(a0)
+
+		return crystallineJSON(func(b []byte, ok *bool) []byte {
+			if items0 := r0; items0 == nil {
+				b = append(b, "null"...)
+			} else {
+				b = append(b, '[')
+				for i0 := range items0 {
+					if i0 > 0 {
+						b = append(b, ',')
+					}
+
+					b = crystallineAppendString(b, string(items0[i0]))
+				}
+
+				b = append(b, ']')
+			}
+			return b
+		}, func() any {
+			return func() any {
+				items := r0
+				if items == nil {
+					return nil
+				}
+
+				out := make([]any, 0, len(items))
+				for i := range items {
+					out = append(out, string(items[i]))
+				}
+
+				return out
+			}()
+		})
+	})
+}
+
+func crystallineFnExpositionRebaseItemText(this js.Value, args []js.Value) (result any) {
+	defer crystallineRecover(&result)
+
+	if len(args) != 2 {
+		return crystallineFail("RebaseItemText: expected 2 arguments, got " + strconv.Itoa(len(args)))
+	}
+
+	return crystallinePromise(func() any {
+		a0, err := crystallineToString(args[0])
+		if err != nil {
+			return crystallineFail(err.Error())
+		}
+
+		a1, err := crystallineToString(args[1])
+		if err != nil {
+			return crystallineFail(err.Error())
+		}
+
+		r0, r1 := RebaseItemText(a0, a1)
+
+		return []any{crystallineJSON(func(b []byte, ok *bool) []byte {
+			b = crystallineAppendCalculatorRebaseResult(b, &r0, ok)
+			return b
+		}, func() any {
+			return crystallineMarshalCalculatorRebaseResult(&r0)
+		}), bool(r1)}
 	})
 }
 
@@ -22438,6 +22519,49 @@ func crystallineMarshalCalculatorPowerStat(v *calculator.PowerStat) any {
 	out.Set("Label", string(v.Label))
 	out.Set("Negate", bool(v.Negate))
 	out.Set("Combined", bool(v.Combined))
+
+	return out
+}
+
+func crystallineMarshalCalculatorRebaseResult(v *calculator.RebaseResult) any {
+	if v == nil {
+		return nil
+	}
+
+	out := crystallineObjects.New()
+
+	out.Set("Text", string(v.Text))
+	out.Set("Dropped", crystallineJSON(func(b []byte, ok *bool) []byte {
+		if items0 := v.Dropped; items0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '[')
+			for i0 := range items0 {
+				if i0 > 0 {
+					b = append(b, ',')
+				}
+
+				b = crystallineAppendString(b, string(items0[i0]))
+			}
+
+			b = append(b, ']')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			items := v.Dropped
+			if items == nil {
+				return nil
+			}
+
+			out := make([]any, 0, len(items))
+			for i := range items {
+				out = append(out, string(items[i]))
+			}
+
+			return out
+		}()
+	}))
 
 	return out
 }
@@ -49477,6 +49601,32 @@ func crystallineAppendCalculatorPowerStat(b []byte, v *calculator.PowerStat, ok 
 	b = strconv.AppendBool(b, bool(v.Negate))
 	b = append(b, ",\"Combined\":"...)
 	b = strconv.AppendBool(b, bool(v.Combined))
+
+	return append(b, '}')
+}
+
+func crystallineAppendCalculatorRebaseResult(b []byte, v *calculator.RebaseResult, ok *bool) []byte {
+	if v == nil {
+		return append(b, "null"...)
+	}
+
+	b = append(b, "{\"Text\":"...)
+	b = crystallineAppendString(b, string(v.Text))
+	b = append(b, ",\"Dropped\":"...)
+	if items0 := v.Dropped; items0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '[')
+		for i0 := range items0 {
+			if i0 > 0 {
+				b = append(b, ',')
+			}
+
+			b = crystallineAppendString(b, string(items0[i0]))
+		}
+
+		b = append(b, ']')
+	}
 
 	return append(b, '}')
 }

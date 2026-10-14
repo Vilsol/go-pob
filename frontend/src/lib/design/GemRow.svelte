@@ -117,7 +117,7 @@
     {#if oncount}<span class="col-span-3"><NumberInput size="xs" value={count} min={1} max={99} label="{name} count" class="w-full" onchange={oncount} /></span
       >{/if}
     <span class="col-span-2 flex justify-end">
-      {#if onremove}<button class="btn-bare size-5.5" aria-label="Remove {name}" title="Remove this gem" onclick={onremove}>×</button>{/if}
+      {#if onremove}<button class="btn-bare size-5.5 text-13" aria-label="Remove {name}" title="Remove this gem" onclick={onremove}>×</button>{/if}
     </span>
   {:else}
     <span class={['toned col-span-14', toneClass(tone), !support && 'font-semibold']}

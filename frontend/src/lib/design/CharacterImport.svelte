@@ -88,24 +88,21 @@
           }} /></label>
       <button class="btn btn-md btn-primary" disabled={!!startOff || stage !== 'GETACCOUNTNAME'} title={startOff} onclick={() => onstart?.(realm, account)}
         >Start</button>
-      <FloatingLabel label="Account history"
-        ><select
-          class="select h-8.5"
-          bind:value={historyPick}
-          disabled={history.length === 0}
-          title={history.length === 0 ? 'No account imported yet' : undefined}
-          onchange={() => (account = historyPick)}
-          ><option value="" disabled>—</option>{#each history as a (a)}<option>{a}</option>{/each}</select
-        ></FloatingLabel>
-      <button
-        class="btn btn-md"
-        aria-label="Remove account from history"
-        disabled={!historyPick}
-        title={historyPick ? 'Removes account from the dropdown list' : 'Pick an account in the history first'}
-        onclick={() => {
-          onremoveaccount?.(historyPick);
-          historyPick = '';
-        }}>X</button>
+      {#if history.length > 0}
+        <FloatingLabel label="Account history"
+          ><select class="select h-8.5" bind:value={historyPick} onchange={() => (account = historyPick)}
+            ><option value="" disabled>—</option>{#each history as a (a)}<option>{a}</option>{/each}</select
+          ></FloatingLabel>
+        <button
+          class="btn btn-md"
+          aria-label="Remove account from history"
+          disabled={!historyPick}
+          title={historyPick ? 'Removes account from the dropdown list' : 'Pick an account in the history first'}
+          onclick={() => {
+            onremoveaccount?.(historyPick);
+            historyPick = '';
+          }}>X</button>
+      {/if}
     </div>
     <div id="{uid}-discriminator" class="text-12">
       {#if missingDiscriminator(account)}<PobText text="^1Missing discriminator e.g. #1234" />{/if}

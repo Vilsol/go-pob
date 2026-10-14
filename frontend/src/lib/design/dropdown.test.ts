@@ -52,6 +52,23 @@ describe('Dropdown', () => {
     expect(onchange).toHaveBeenCalledWith('c');
   });
 
+  it('Escape on the open list does not reach its dialog; on the closed box it does', async () => {
+    const outer = vi.fn();
+    document.body.addEventListener('keydown', outer);
+    try {
+      render(Dropdown, { options, value: 'a', 'aria-label': 'Pick' });
+      const box = screen.getByRole('combobox', { name: 'Pick' });
+      await fireEvent.click(box);
+      await fireEvent.keyDown(box, { key: 'Escape' });
+      expect(screen.queryByRole('listbox')).toBeNull();
+      expect(outer).not.toHaveBeenCalled();
+      await fireEvent.keyDown(box, { key: 'Escape' });
+      expect(outer).toHaveBeenCalledTimes(1);
+    } finally {
+      document.body.removeEventListener('keydown', outer);
+    }
+  });
+
   it('searchable: typing filters the entries by every word, the keys move over what is shown, Escape clears then closes', async () => {
     const onchange = vi.fn();
     const many = [

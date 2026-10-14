@@ -2,7 +2,7 @@
   import SettingsDialog from '$lib/design/SettingsDialog.svelte';
   import type { Setting, SettingsSection } from '$lib/design/fixtures/app';
   import { backendLoaded, devMode, fontScaling, nodePowerTheme, outputs, zoomSensitivity } from '$lib/global.js';
-  import { ITEMS_LAYOUTS, THEMES, itemsLayout, showAnimations, theme, type ItemsLayout, type Theme } from '$lib/display/appearance';
+  import { ITEMS_LAYOUTS, THEMES, itemsLayout, showAnimations, showStatBars, theme, type ItemsLayout, type Theme } from '$lib/display/appearance';
   import { allAffixSliders } from '$lib/design/items';
   import { addToast } from '$lib/design/toast';
   import { checkForUpdate } from '$lib/pwa';
@@ -61,6 +61,7 @@
         },
         // Main.lua:1027-1029
         { id: 'animations', label: 'Show animations', kind: 'check', value: true, hint: 'Off also honours the system “reduce motion” setting' },
+        { id: 'statBars', label: 'Show stat bars', kind: 'check', value: true, hint: 'The value bars behind the sidebar and Calcs stats' },
         { id: 'titleBuild', label: 'Show build name in window title', kind: 'check', value: true, hint: 'The tab title becomes “<build> (<class>) - go-pob”' },
         { id: 'devMode', label: 'Dev mode', kind: 'check', value: false, hint: 'Passive tooltips show the node id' },
         // Main.lua:1085-1096
@@ -258,6 +259,7 @@
     fontScaling: $fontScaling,
     theme: $theme,
     animations: $showAnimations,
+    statBars: $showStatBars,
     affixSliders: $showAllItemAffixes,
     itemsLayout: $itemsLayout === 'list' ? 'List' : 'Board',
     dataVersion,
@@ -311,6 +313,7 @@
     if (id === 'fontScaling') fontScaling.set(Math.min(Math.max(Number(v) || 12, 6), 18));
     else if (id === 'theme' && (THEMES as readonly string[]).includes(String(v))) theme.set(String(v) as Theme);
     else if (id === 'animations') showAnimations.set(!!v);
+    else if (id === 'statBars') showStatBars.set(!!v);
     else if (id === 'affixSliders') showAllItemAffixes.set(!!v);
     else if (id === 'itemsLayout' && (ITEMS_LAYOUTS as readonly string[]).includes(String(v).toLowerCase()))
       itemsLayout.set(String(v).toLowerCase() as ItemsLayout);

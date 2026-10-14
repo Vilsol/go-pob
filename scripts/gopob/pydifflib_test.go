@@ -101,7 +101,7 @@ func ddAsk(t *testing.T, script string, cases []ddCase) []string {
 	if err != nil {
 		t.Fatalf("python3: %v", err)
 	}
-	return strings.Split(strings.TrimSuffix(string(out), "\n"), "\n")
+	return strings.Split(strings.TrimSuffix(strings.ReplaceAll(string(out), "\r\n", "\n"), "\n"), "\n")
 }
 
 func TestPyDifflibRatioMatchesCPython(t *testing.T) {

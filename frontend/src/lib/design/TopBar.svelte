@@ -195,7 +195,7 @@
 <svelte:window {onkeydown} />
 
 <header
-  class="relative box-border flex h-13 w-full min-w-[1280px] items-stretch gap-3 border-b border-line bg-surface-1 px-5 font-sans text-text max-[1800px]:gap-2.5 max-[1800px]:px-3">
+  class="relative box-border flex h-13 w-full min-w-320 items-stretch gap-3 border-b border-line bg-surface-1 px-5 font-sans text-text max-[1800px]:gap-2.5 max-[1800px]:px-3">
   <div class="flex min-w-0 shrink items-center gap-3 max-[1800px]:gap-2.5">
     <a href={backHref} onclick={onback} class="shrink-0 text-14 whitespace-nowrap text-text-2 no-underline" aria-label="Back to builds"
       >←<span class="max-[1800px]:hidden">&nbsp;Builds</span></a>

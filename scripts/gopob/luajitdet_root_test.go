@@ -10,7 +10,10 @@ import (
 
 func ljWorktreePair(t *testing.T) (string, string) {
 	t.Helper()
-	base := t.TempDir()
+	base, err := filepath.EvalSymlinks(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
 	main := filepath.Join(base, "main")
 	if err := os.MkdirAll(main, 0o750); err != nil {
 		t.Fatal(err)

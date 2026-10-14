@@ -19,6 +19,7 @@
   let focus = $state<number>();
   let roll = $state.raw<{ slot: number; lines: string[] }>();
   let compare = $state.raw<ImpactBlock[]>([]);
+  let dropped = $state.raw<{ base: string; mods: string[] }>();
 
   $effect(() => {
     void craft.sortStats().then((s) => (stats = s));
@@ -56,6 +57,24 @@
 </script>
 
 <div role="group" aria-label="Affixes" class="flex flex-col gap-1.5">
+  {#if affixes.bases && affixes.bases.length > 1 && affixes.base}
+    <FloatingLabel label="Base"
+      ><Dropdown
+        class="block h-7.5 w-full"
+        searchable
+        aria-label="Item base"
+        options={affixes.bases.map((b) => ({ value: b, label: b }))}
+        value={affixes.base}
+        onchange={(v: string) => {
+          void craft.rebase?.(v).then((mods) => (dropped = mods?.length ? { base: v, mods } : undefined));
+        }} /></FloatingLabel>
+    {#if dropped && dropped.base === affixes.base}
+      <div role="status" aria-label="Dropped affixes" class="note flex flex-col">
+        <span>{affixes.base} cannot roll, so they were removed:</span>
+        {#each dropped.mods as m, k (k)}<span>{plainText(m)}</span>{/each}
+      </div>
+    {/if}
+  {/if}
   {#if affixes.sorting}
     <FloatingLabel label="Modifier sorting"
       ><Select

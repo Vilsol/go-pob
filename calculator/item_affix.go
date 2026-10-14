@@ -707,3 +707,95 @@ func (m *MiscCalculator) AffixPowers(raw string, slot int, stat string) []float6
 	}
 	return m.sortValues(item.getPrimarySlot(), texts, found, ps)
 }
+
+func RebaseChoices(raw string) []string {
+	item := ParseItem(raw)
+	if _, ok := itemAffixState(raw, item); !ok {
+		return nil
+	}
+	if _, cluster := data.ClusterJewels.Jewels[item.BaseName]; cluster {
+		return nil
+	}
+	own, ok := data.CraftBaseKnown(item.BaseName)
+	if !ok {
+		return nil
+	}
+	var out []string
+	for _, g := range CraftBaseGroups() {
+		for _, name := range g.Bases {
+			if pb := data.CraftBaseInfo(name); pb.Type == own.Type {
+				if _, cluster := data.ClusterJewels.Jewels[name]; !cluster {
+					out = append(out, name)
+				}
+			}
+		}
+	}
+	return out
+}
+
+type RebaseResult struct {
+	Text    string
+	Dropped []string
+}
+
+func RebaseItemText(raw string, baseName string) (RebaseResult, bool) {
+	item := ParseItem(raw)
+	st, ok := itemAffixState(raw, item)
+	if !ok || baseName == item.BaseName || !slices.Contains(RebaseChoices(raw), baseName) {
+		return RebaseResult{Text: raw}, false
+	}
+	b := craftBlock(raw, item)
+	b.before = slices.Clone(b.before)
+	for k, l := range b.before {
+		t := strings.TrimSpace(l)
+		if t == item.BaseName || (item.Rarity == RarityMagic && k > 0 && strings.HasPrefix(strings.TrimSpace(b.before[k-1]), "Rarity: ")) {
+			b.before[k] = baseName
+			break
+		}
+	}
+	baseLines := func(name string) []string {
+		pb := data.CraftBaseInfo(name)
+		var out []string
+		for k, line := range strings.Split(pb.Implicit, "\n") {
+			if line == "" {
+				continue
+			}
+			if k < len(pb.ImplicitModTypes) && len(pb.ImplicitModTypes[k]) > 0 {
+				line = "{tags:" + strings.Join(pb.ImplicitModTypes[k], ",") + "}" + line
+			}
+			out = append(out, line)
+		}
+		return out
+	}
+	old := map[string]bool{}
+	for _, l := range baseLines(item.BaseName) {
+		old[rawModText(l)] = true
+	}
+	implicits := baseLines(baseName)
+	for _, l := range b.implicits {
+		if !old[rawModText(l)] {
+			implicits = append(implicits, l)
+		}
+	}
+	b.implicits = implicits
+	rebased := b.join()
+	next := ParseItem(rebased)
+	nst, ok := itemAffixState(rebased, next)
+	if !ok {
+		return RebaseResult{Text: raw}, false
+	}
+	var dropped []string
+	for i := range min(st.limit, nst.limit) {
+		was, _, _ := st.slot(i)
+		a, _, _ := nst.slot(i)
+		if was.modID == "None" {
+			continue
+		}
+		if mod := nst.affixes[a.modID]; a.modID == was.modID && mod != nil && modSpawnWeightTags(next, mod, nil, nil) > 0 {
+			continue
+		}
+		dropped = append(dropped, strings.Join(st.affixes[was.modID].Lines, "/"))
+		*a = affixSlot{modID: "None"}
+	}
+	return RebaseResult{Text: craftText(rebased, next, nst), Dropped: dropped}, true
+}

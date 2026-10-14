@@ -225,7 +225,7 @@
           <span role="cell" class={['col-span-4 truncate text-right', hover === r.key ? 'text-text-2' : 'text-text-3']} title={r.col}>{r.col}</span>
           <span role="cell" class="col-span-2 flex justify-end gap-0.5">
             {#if acts.length}
-              <Menu label={r.tip.item} items={acts} class="top-full right-0 z-20 mt-1 w-72">
+              <Menu label={r.tip.item} items={acts} class="top-full right-0 z-20 mt-1 w-max max-w-[calc(100vw-16px)]" itemClass="whitespace-nowrap">
                 {#snippet trigger(a)}
                   <button
                     {...a}

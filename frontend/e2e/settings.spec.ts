@@ -109,3 +109,36 @@ test('appearance options are kept; Export all builds saves a .zip; Clear cached 
   await expect(app.savedBuild(name)).toBeVisible();
   app.assertNoErrors();
 });
+
+test('Show stat bars hides the sidebar and Calcs bars and is kept (0280)', async ({ page }) => {
+  const file = '0280-elementalist-fireball';
+  const xml = buildXml(file);
+  const build = await go.loadXml(xml);
+  const app = await App.open(page, file);
+  await app.importCode(await go.encode(xml), async () => expectedLines(await go.outputs(build)));
+  const sidebarBars = app.statsRegion().locator('[data-gauge]');
+  await expect(sidebarBars.first()).toBeVisible();
+
+  await page.getByRole('button', { name: 'Settings' }).click();
+  const sheet = page.getByRole('dialog', { name: 'Settings' });
+  await sheet.getByRole('checkbox', { name: 'Show stat bars' }).uncheck();
+  await sheet.getByRole('button', { name: 'Save' }).click();
+  await expect(sidebarBars).toHaveCount(0);
+
+  await app.goTo('Calcs');
+  const calcs = page.getByRole('region', { name: 'Calculations' });
+  await expect(calcs.getByRole('region', { name: 'Life' }).getByRole('button', { name: 'Unreserved' })).toBeVisible();
+  await expect(calcs.locator('[data-gauge]')).toHaveCount(0);
+
+  await page.reload();
+  await page.getByRole('button', { name: 'New build', exact: true }).click();
+  await expect(app.statsRegion().getByRole('button', { name: /^Fire Resistance/ })).toBeVisible({ timeout: 120_000 });
+  await expect(page.locator('[data-gauge]')).toHaveCount(0);
+
+  await page.getByRole('button', { name: 'Settings' }).click();
+  await expect(sheet.getByRole('checkbox', { name: 'Show stat bars' })).not.toBeChecked();
+  await sheet.getByRole('checkbox', { name: 'Show stat bars' }).check();
+  await sheet.getByRole('button', { name: 'Save' }).click();
+  await expect(sidebarBars.first()).toBeVisible();
+  app.assertNoErrors();
+});
