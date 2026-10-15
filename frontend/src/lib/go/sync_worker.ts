@@ -25,9 +25,8 @@ import type { CompareCalcsInputs, CompareInfo, CompareItem, CompareJewel, Compar
 import type { MainSkillField } from '$lib/shell/main_skill';
 import { modRowsEqual } from '$lib/display/compare_mods';
 import type { ItemDBFilterInput, ItemDBLists, ItemDBRowPlain } from '$lib/design/item_db';
-import { fs } from '@zenfs/core';
 import { configureStorage } from './storage_config';
-import { initializeStorage } from './storage_init';
+import { initializeStorage, storageFs } from './storage_init';
 import { PowerPool, type PowerPoolRun } from './power_pool';
 import { noteCall, whenIdle } from './idle';
 
@@ -3840,17 +3839,17 @@ class PoBWorker {
   }
 
   async ClearDataCache(): Promise<number> {
-    const names = await fs.promises.readdir('/cache');
-    for (const n of names) await fs.promises.rm(`/cache/${n}`, { recursive: true, force: true });
+    const names = await storageFs.readdir('/cache');
+    for (const n of names) await storageFs.rm(`/cache/${n}`, { recursive: true, force: true });
     return names.length;
   }
 
   async ExportBuilds(dir = ''): Promise<{ path: string; data: Uint8Array }[]> {
     const out: { path: string; data: Uint8Array }[] = [];
-    for (const n of await fs.promises.readdir(`/builds${dir}`)) {
+    for (const n of await storageFs.readdir(`/builds${dir}`)) {
       const p = `${dir}/${n}`;
-      if ((await fs.promises.stat(`/builds${p}`)).isDirectory()) out.push(...(await this.ExportBuilds(p)));
-      else out.push({ path: p.slice(1), data: new Uint8Array(await fs.promises.readFile(`/builds${p}`)) });
+      if ((await storageFs.stat(`/builds${p}`)).isDirectory()) out.push(...(await this.ExportBuilds(p)));
+      else out.push({ path: p.slice(1), data: new Uint8Array(await storageFs.readFile(`/builds${p}`)) });
     }
     return out;
   }

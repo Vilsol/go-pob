@@ -3,6 +3,7 @@ package pob
 import (
 	"encoding/xml"
 	"fmt"
+	"math"
 	"strconv"
 )
 
@@ -89,6 +90,28 @@ func (p *PlayerStat) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error 
 	return nil
 }
 
+func (p PlayerStat) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	start.Attr = []xml.Attr{{Name: xml.Name{Local: "value"}, Value: luaNumber(p.Value)}, {Name: xml.Name{Local: "stat"}, Value: p.Stat}}
+	if err := e.EncodeElement(struct{}{}, start); err != nil {
+		return fmt.Errorf("failed to encode PlayerStat: %w", err)
+	}
+	return nil
+}
+
+func luaNumber(v float64) string {
+	switch {
+	case math.IsInf(v, 1):
+		return "inf"
+	case math.IsInf(v, -1):
+		return "-inf"
+	case math.IsNaN(v) && math.Signbit(v):
+		return "-nan"
+	case math.IsNaN(v):
+		return "nan"
+	}
+	return strconv.FormatFloat(v, 'g', 14, 64)
+}
+
 type FullDPSSkill struct {
 	Stat      string `xml:"stat,attr"`
 	Value     string `xml:"value,attr"`
@@ -114,6 +137,18 @@ type Items struct {
 
 	ItemSets []ItemSet `xml:"ItemSet" crystalline:"not_nil"`
 	Items    []Item    `xml:"Item"`
+
+	TradeSearchWeights *TradeSearchWeights `xml:"TradeSearchWeights"`
+}
+
+type TradeSearchWeights struct {
+	Stats []TradeSearchStat `xml:"Stat"`
+}
+
+type TradeSearchStat struct {
+	Label      string `xml:"label,attr"`
+	Stat       string `xml:"stat,attr"`
+	WeightMult string `xml:"weightMult,attr"`
 }
 
 type Item struct {
@@ -201,7 +236,12 @@ type Party struct {
 }
 
 type Import struct {
-	ExportParty bool `xml:"exportParty,attr"`
+	LastRealm         *string `xml:"lastRealm,attr,omitempty"`
+	LastLeague        *string `xml:"lastLeague,attr,omitempty"`
+	LastAccountHash   *string `xml:"lastAccountHash,attr,omitempty"`
+	LastCharacterHash *string `xml:"lastCharacterHash,attr,omitempty"`
+	ExportParty       bool    `xml:"exportParty,attr"`
+	ImportLink        *string `xml:"importLink,attr,omitempty"`
 }
 
 type PartyMember struct {
@@ -293,6 +333,23 @@ type Input struct {
 	String  *string  `xml:"string,attr"`
 }
 
+func (i Input) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	type plainInput Input
+	out := struct {
+		plainInput
+		Number *string `xml:"number,attr"`
+	}{plainInput: plainInput(i)}
+	out.plainInput.Number = nil
+	if i.Number != nil {
+		n := luaNumber(*i.Number)
+		out.Number = &n
+	}
+	if err := e.EncodeElement(out, start); err != nil {
+		return fmt.Errorf("failed to encode Input: %w", err)
+	}
+	return nil
+}
+
 type Section struct {
 	Collapsed  bool   `xml:"collapsed,attr"`
 	ID         string `xml:"id,attr"`
@@ -304,13 +361,21 @@ type ItemSet struct {
 	Title              *string `xml:"title,attr,omitempty"`
 	UseSecondWeaponSet *bool   `xml:"useSecondWeaponSet,attr,omitempty"`
 
-	Slots []Slot `xml:"Slot"`
+	Slots        []Slot        `xml:"Slot"`
+	SocketIDURLs []SocketIDURL `xml:"SocketIdURL"`
 }
 
 type Slot struct {
-	ItemID int    `xml:"itemId,attr"`
-	Name   string `xml:"name,attr"`
-	Active bool   `xml:"active,attr,omitempty"`
+	ItemID    int     `xml:"itemId,attr"`
+	Name      string  `xml:"name,attr"`
+	Active    bool    `xml:"active,attr,omitempty"`
+	ItemPbURL *string `xml:"itemPbURL,attr,omitempty"`
+}
+
+type SocketIDURL struct {
+	Name      string `xml:"name,attr"`
+	NodeID    int    `xml:"nodeId,attr"`
+	ItemPbURL string `xml:"itemPbURL,attr"`
 }
 
 type SkillSet struct {
@@ -473,6 +538,7 @@ type Override struct {
 	DN                string  `xml:"dn,attr"`
 	Icon              *string `xml:"icon,attr,omitempty"`
 	ActiveEffectImage *string `xml:"activeEffectImage,attr,omitempty"`
+	Lines             string  `xml:",chardata"`
 }
 
 type CustomModifierBlock struct {

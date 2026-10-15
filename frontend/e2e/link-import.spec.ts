@@ -16,6 +16,8 @@ test('a ?import= link opens the build on its Tree as Go does (0280)', async ({ p
   await page.goto(`/?import=${encodeURIComponent(await go.encode(xml))}`);
   await expect(page).toHaveURL(/\/tree$/, { timeout: 60_000 });
   await expect(page).toHaveTitle(/^Imported build \(Elementalist\)/);
+  // Build.lua:89-94
+  await expect(page.getByRole('button', { name: 'Save (unsaved changes)' })).toBeVisible();
   const want = expectedLines(await go.outputs(build));
   expect(want.length).toBeGreaterThan(0);
   await expect.poll(async () => diffLines(want, await app.readStats()), { timeout: 60_000 }).toEqual([]);

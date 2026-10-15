@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=go-pob
+Comment=Path of Building, in Go
+Exec=go-pob %u
+Icon=go-pob
+Terminal=false
+Categories=Game;Utility;
+MimeType=x-scheme-handler/pob;application/xml;
+StartupWMClass=go-pob

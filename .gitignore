@@ -148,5 +148,9 @@ testdata/.testdata-tmp/
 
 /.cache/
 
+/desktop/dist/*
+!/desktop/dist/.gitkeep
+/desktop/bin/
+
 testdata/corpus-[0-9]*/
 testdata/oracle-[0-9]*/

@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"net/url"
@@ -97,7 +98,7 @@ func cmdLadder(args []string) error {
 
 	banner("ladder: %s", *ladders)
 	t0 := time.Now()
-	fetched, skipped, private, failed := 0, 0, 0, 0
+	fetched, skipped, private, gone, failed := 0, 0, 0, 0, 0
 
 	for _, league := range strings.Split(*ladders, ",") {
 		league = strings.TrimSpace(league)
@@ -135,6 +136,14 @@ func cmdLadder(args []string) error {
 					continue
 				}
 				if err := fetchCharacter(ctx, c, charDir, id, e.Account.Name, e.Character.Name, *verbose); err != nil {
+					if errors.Is(err, errFetchNotFound) {
+						gone++
+						ck.done("ladder/" + id)
+						if err := ck.save(); err != nil {
+							fmt.Fprintf(os.Stderr, "  warn: checkpoint save: %v\n", err)
+						}
+						continue
+					}
 					failed++
 					fmt.Fprintf(os.Stderr, "  warn: %s: %v\n", id, err)
 					if failed > 20 && failed > fetched {
@@ -164,6 +173,7 @@ func cmdLadder(args []string) error {
 	fmt.Printf("\nfetched      %d characters in %s\n", fetched, fmtDur(time.Since(t0)))
 	fmt.Printf("skipped      %d (already held, or below -min-level)\n", skipped)
 	fmt.Printf("private      %d (flagged not-public by the ladder — no request spent)\n", private)
+	fmt.Printf("gone         %d (404: deleted or renamed since the ladder listed them)\n", gone)
 	fmt.Printf("failed       %d\n", failed)
 	fmt.Printf("rate-sheds   %d\n", c.shedCount(charKey))
 	fmt.Printf("\ncharacters -> %s\nnext: mise run task -- import-characters IN=%s OUT=<builds dir>\n", charDir, charDir)

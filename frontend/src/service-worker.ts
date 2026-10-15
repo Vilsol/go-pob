@@ -27,10 +27,7 @@ const usableWasm = async (res: Response | undefined) => {
   return (value[0] === 0x00 && value[1] === 0x61 && value[2] === 0x73 && value[3] === 0x6d) || (value[0] === 0x1f && value[1] === 0x8b);
 };
 
-const FONT_CSS = [
-  'https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz@8..144&display=swap',
-  'https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap'
-];
+const FONT_CSS = ['https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap'];
 
 const cacheFonts = async () => {
   const cache = await caches.open(CDN);

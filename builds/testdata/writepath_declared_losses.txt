@@ -10,31 +10,12 @@
 ADDED_ATTR /PathOfBuilding/Skills/SkillSet/Skill/Gem@enableGlobal1
 ADDED_ATTR /PathOfBuilding/Skills/SkillSet/Skill/Gem@enableGlobal2
 ADDED_ATTR /PathOfBuilding/Skills/SkillSet/Skill@label
-LOST_ATTR /PathOfBuilding/Build/TimelessData@searchList
-LOST_ATTR /PathOfBuilding/Build/TimelessData@searchListFallback
 # PoB's own loss: Build.lua:999-1010 writes no characterName, and nothing in the pin reads it
 LOST_ATTR /PathOfBuilding/Build@characterName
-LOST_ATTR /PathOfBuilding/Import@importLink
-LOST_ATTR /PathOfBuilding/Import@lastAccountHash
-LOST_ATTR /PathOfBuilding/Import@lastCharacterHash
-LOST_ATTR /PathOfBuilding/Import@lastLeague
-LOST_ATTR /PathOfBuilding/Import@lastRealm
-LOST_ATTR /PathOfBuilding/Items/ItemSet/Slot@itemPbURL
 # PoB's own loss for active="false": ItemsTab.lua:1382 writes `active and "true"`, and xml.lua:121 skips a false attribute
 LOST_ATTR /PathOfBuilding/Items/ItemSet/Slot@active
-LOST_ATTR /PathOfBuilding/Items/ItemSet/SocketIdURL@itemPbURL
-LOST_ATTR /PathOfBuilding/Items/ItemSet/SocketIdURL@name
-LOST_ATTR /PathOfBuilding/Items/ItemSet/SocketIdURL@nodeId
-LOST_ATTR /PathOfBuilding/Items/TradeSearchWeights/Stat@label
-LOST_ATTR /PathOfBuilding/Items/TradeSearchWeights/Stat@stat
-LOST_ATTR /PathOfBuilding/Items/TradeSearchWeights/Stat@weightMult
-LOST_ELEM /PathOfBuilding/Items/ItemSet/SocketIdURL
-LOST_ELEM /PathOfBuilding/Items/TradeSearchWeights
-LOST_ELEM /PathOfBuilding/Items/TradeSearchWeights/Stat
+# PoB's own reformat: Build.lua:1058, 1068, 1076 write tostring(statVal), so a saved "0.0" (not LuaJIT's spelling) comes back as "0"
 REFORMATTED /PathOfBuilding/Build/PlayerStat@value
-# MinionStat is kept now (Build.lua:1052-1061); its value is a float64 like PlayerStat@value, so Go writes it in its own shortest form
 REFORMATTED /PathOfBuilding/Build/MinionStat@value
-REFORMATTED /PathOfBuilding/Config/ConfigSet/Input@number
 # PoB's own reformat: ConfigTab.lua:935 writes tostring(number), so a saved "3.0" comes back as "3"
 REFORMATTED /PathOfBuilding/Config/ConfigSet/Placeholder@number
-TEXT /PathOfBuilding/Tree/Spec/Overrides/Override

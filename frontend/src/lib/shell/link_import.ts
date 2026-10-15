@@ -1,8 +1,10 @@
 import { syncWrap } from '$lib/go/worker';
-import { currentBuildPath } from '$lib/global.js';
+import { backendLoaded, currentBuildPath } from '$lib/global.js';
 import { downloadUrl, importLink, SITES, type Site } from '$lib/design/share';
-import { unsavedName } from './build_name.svelte';
+import { opening, unsavedName } from './build_name.svelte';
 import { resetAccountSession } from './account_session.svelte';
+import { DESKTOP } from '$lib/pwa/desktop';
+import { addToast } from '$lib/design/toast';
 
 // ImportTab.lua:684-699, BuildSiteTools.lua:88-113
 const DIRECT = new Set(['PoBCodes']);
@@ -32,6 +34,11 @@ export const protocolDownload = (raw: string): Download | undefined => {
   }
   return undefined;
 };
+
+const OPENED = 'gopob-file:';
+
+const openedDownload = (raw: string): Download | undefined =>
+  raw.startsWith(OPENED) ? { site: 'the build file', url: `/desktop/opened/${encodeURIComponent(raw.slice(OPENED.length))}` } : undefined;
 
 const unreadable = (site: string, why: string) => new Error(`could not read the build from ${site}: ${why}. Paste the code instead.`);
 
@@ -101,13 +108,34 @@ export const linkCode = async (text: string) => (downloadUrl(text) ? downloadBui
 
 /* Main.lua:62-85, ImportTab.lua:663-666 */
 export const openImportLink = async (text: string) => {
-  const protocol = protocolDownload(text);
+  const protocol = protocolDownload(text) ?? openedDownload(text);
   const code = protocol ? await download(protocol) : await linkCode(text);
+  opening.modFlag = true;
   await syncWrap?.ImportCode(code);
   currentBuildPath.current = '';
   unsavedName.imported = true;
   resetAccountSession();
 };
+
+/* Build.lua:1421-1448 */
+export const beforeReplace: { ask?: (open: () => void) => void } = {};
+
+if (DESKTOP && typeof window !== 'undefined') {
+  let handedOver: Promise<unknown> = backendLoaded;
+  const handOver = (text: string) => {
+    const open = () =>
+      openImportLink(text)
+        .then(async () => (await import('$app/navigation')).goto('/tree'))
+        .catch((err: Error) => addToast(err.message));
+    handedOver = handedOver.then(() => (beforeReplace.ask ? beforeReplace.ask(() => void open()) : open()));
+  };
+  window.addEventListener('pob:desktop-import', (e) => handOver((e as CustomEvent<string>).detail));
+  window.addEventListener('pob:desktop-toast', (e) => addToast((e as CustomEvent<string>).detail));
+  const host = window as Window & { pobDesktopListening?: boolean; pobDesktopPending?: string[] };
+  host.pobDesktopListening = true;
+  host.pobDesktopPending?.splice(0).forEach(handOver);
+}
+
 /* CompareTab.lua:1485, 1495, 1511 */
 export const compareName = (text: string, name: string) => {
   if (name !== '') return name;

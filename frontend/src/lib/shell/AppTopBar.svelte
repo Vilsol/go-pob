@@ -1,6 +1,7 @@
 <script lang="ts">
-  import { buildName, unsavedName } from './build_name.svelte';
+  import { buildName, opening, unsavedName } from './build_name.svelte';
   import { resetAccountSession } from './account_session.svelte';
+  import { beforeReplace } from './link_import';
   import { goto } from '$app/navigation';
   import { base } from '$app/paths';
   import { page } from '$app/state';
@@ -34,14 +35,19 @@
   const name = $derived(buildName(currentBuildPath.current));
 
   let dirty = $state(false);
-  let seen = 0;
+  let shown: unknown;
   $effect(() => {
-    if (!$currentBuild) {
-      seen = 0;
+    const build = $currentBuild;
+    if (!build) {
+      shown = undefined;
       dirty = false;
       return;
     }
-    if (seen++ > 0) dirty = true;
+    if (build === shown) dirty = true;
+    else {
+      shown = build;
+      dirty = opening.modFlag;
+    }
   });
 
   let undo = $state<UndoView>({ steps: [], undone: 0, max: 50 });
@@ -155,9 +161,9 @@
   let savePrompt = $state(false);
   // Build.lua:2069-2072
   let saveError = $state<string>();
-  let closeAfterSave = false;
+  let leaving: () => void;
+  let afterSave: (() => void) | undefined;
   const closeBuild = () => {
-    closeAfterSave = false;
     void tick().then(() =>
       setTimeout(() => {
         void syncWrap.ClearBuild();
@@ -168,32 +174,46 @@
       }, 100)
     );
   };
+  let saving = $state(false);
   $effect(() => {
-    if (!saveAs && !savePrompt) closeAfterSave = false;
+    if (!saveAs && !savePrompt && !saving) afterSave = undefined;
   });
+  const saved = () => {
+    dirty = false;
+    const next = afterSave;
+    afterSave = undefined;
+    next?.();
+  };
   const onsave = () => {
     const path = currentBuildPath.current;
     if (!path) {
       saveAs = true;
       return;
     }
+    saving = true;
     syncWrap
       .SaveBuildAs(path)
-      .then(() => {
-        dirty = false;
-        if (closeAfterSave) closeBuild();
-      })
+      .then(saved)
       .catch((e: Error) => {
         logError(e);
-        closeAfterSave = false;
+        afterSave = undefined;
         saveError = saveErrorText(path);
-      });
+      })
+      .finally(() => (saving = false));
   };
 
-  const leave = () => {
+  const ask = (then: () => void) => {
+    leaving = then;
     if (dirty) savePrompt = true;
-    else closeBuild();
+    else then();
   };
+  const leave = () => ask(closeBuild);
+  onMount(() => {
+    beforeReplace.ask = ask;
+    return () => {
+      if (beforeReplace.ask === ask) beforeReplace.ask = undefined;
+    };
+  });
   const unload = (e: BeforeUnloadEvent) => {
     if (!dirty) return;
     e.preventDefault();
@@ -235,12 +255,7 @@
   }}
   {version}
   devMode={$devMode} />
-<SaveAsDialog
-  bind:open={saveAs}
-  onsaved={() => {
-    dirty = false;
-    if (closeAfterSave) closeBuild();
-  }} />
+<SaveAsDialog bind:open={saveAs} onsaved={saved} />
 <Dialog bind:open={savePrompt} title="Save Changes" class="w-100 p-4.5">
   <div class="flex flex-col gap-3 text-13">
     <p class="m-0">This build has unsaved changes.<br />Do you want to save them now?</p>
@@ -249,7 +264,7 @@
         size="sm"
         variant="primary"
         onclick={() => {
-          closeAfterSave = true;
+          afterSave = leaving;
           savePrompt = false;
           onsave();
         }}>Save</Button>
@@ -257,7 +272,7 @@
         size="sm"
         onclick={() => {
           savePrompt = false;
-          closeBuild();
+          leaving();
         }}>Don't Save</Button>
       <Button size="sm" variant="ghost" onclick={() => (savePrompt = false)}>Cancel</Button>
     </div>

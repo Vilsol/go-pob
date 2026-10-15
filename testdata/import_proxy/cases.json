@@ -1,0 +1,1583 @@
+{
+  "about": "One contract for both import proxies: frontend/src/lib/import_proxy/proxy.test.ts and internal/importproxy/proxy_test.go each run every case against a faked upstream. A body, path or text is a string or {prefix, repeat+count | b64 | code, suffix}; code is url-safe base64 over the zlib-deflated inner spec. upstream defaults to 200 with an empty body; fetch lists every expected upstream request (omitted: unchecked); fetches and cached are counts after the step; a header value null means absent.",
+  "constants": {
+    "USER_AGENT": "go-pob (+https://pob.gg)",
+    "BUILD_CAP": 1048576,
+    "LINK_CAP": 1024,
+    "POE_CAP": 4194304,
+    "IMMUTABLE_TTL": 604800,
+    "EDITABLE_TTL": 300,
+    "POE_TTL": 60
+  },
+  "cases": [
+    {
+      "name": "build: downloads the pin downloadURL with an honest User-Agent, and serves the second ask from the cache",
+      "upstream": { "body": "eNrtXVtz" },
+      "steps": [
+        {
+          "path": "/api/build?site=POBBin&id=h-M3H3It2fDw",
+          "status": 200,
+          "text": "eNrtXVtz",
+          "headers": {
+            "Cache-Control": "public, max-age=604800, s-maxage=604800",
+            "Content-Type": "text/plain; charset=utf-8"
+          },
+          "fetches": 1,
+          "cached": 1
+        },
+        {
+          "path": "/api/build?site=POBBin&id=h-M3H3It2fDw",
+          "status": 200,
+          "text": "eNrtXVtz",
+          "fetches": 1
+        }
+      ],
+      "fetch": [
+        {
+          "url": "https://pobb.in/pob/h-M3H3It2fDw",
+          "headers": { "User-Agent": "go-pob (+https://pob.gg)" }
+        }
+      ]
+    },
+    {
+      "name": "build: Maxroll's downloadURL, cached for a week",
+      "upstream": { "body": "code" },
+      "steps": [
+        {
+          "path": "/api/build?site=Maxroll&id=m5ui4t0x",
+          "status": 200,
+          "headers": {
+            "Cache-Control": "public, max-age=604800, s-maxage=604800"
+          }
+        }
+      ],
+      "fetch": [
+        {
+          "url": "https://maxroll.gg/poe/api/pob/m5ui4t0x",
+          "headers": { "User-Agent": "go-pob (+https://pob.gg)" }
+        }
+      ]
+    },
+    {
+      "name": "build: pob.codes' downloadURL, cached for a week",
+      "upstream": { "body": "code" },
+      "steps": [
+        {
+          "path": "/api/build?site=PoBCodes&id=abc",
+          "status": 200,
+          "headers": {
+            "Cache-Control": "public, max-age=604800, s-maxage=604800"
+          }
+        }
+      ],
+      "fetch": [
+        {
+          "url": "https://api.pob.codes/abc/raw",
+          "headers": { "User-Agent": "go-pob (+https://pob.gg)" }
+        }
+      ]
+    },
+    {
+      "name": "build: poe.ninja's downloadURL, cached for a week",
+      "upstream": { "body": "code" },
+      "steps": [
+        {
+          "path": "/api/build?site=PoeNinja&id=Abc1",
+          "status": 200,
+          "headers": {
+            "Cache-Control": "public, max-age=604800, s-maxage=604800"
+          }
+        }
+      ],
+      "fetch": [
+        {
+          "url": "https://poe.ninja/poe1/pob/raw/Abc1",
+          "headers": { "User-Agent": "go-pob (+https://pob.gg)" }
+        }
+      ]
+    },
+    {
+      "name": "build: pastebin's downloadURL, cached for minutes",
+      "upstream": { "body": "code" },
+      "steps": [
+        {
+          "path": "/api/build?site=pastebin&id=DsS6Qsxa",
+          "status": 200,
+          "headers": { "Cache-Control": "public, max-age=300, s-maxage=300" }
+        }
+      ],
+      "fetch": [
+        {
+          "url": "https://pastebin.com/raw/DsS6Qsxa",
+          "headers": { "User-Agent": "go-pob (+https://pob.gg)" }
+        }
+      ]
+    },
+    {
+      "name": "build: pastebinp's downloadURL, cached for minutes",
+      "upstream": { "body": "code" },
+      "steps": [
+        {
+          "path": "/api/build?site=pastebinProxy&id=DsS6Qsxa",
+          "status": 200,
+          "headers": { "Cache-Control": "public, max-age=300, s-maxage=300" }
+        }
+      ],
+      "fetch": [
+        {
+          "url": "https://pastebinp.com/raw/DsS6Qsxa",
+          "headers": { "User-Agent": "go-pob (+https://pob.gg)" }
+        }
+      ]
+    },
+    {
+      "name": "build: poedb's downloadURL, cached for minutes",
+      "upstream": { "body": "code" },
+      "steps": [
+        {
+          "path": "/api/build?site=PoEDB&id=abc",
+          "status": 200,
+          "headers": { "Cache-Control": "public, max-age=300, s-maxage=300" }
+        }
+      ],
+      "fetch": [
+        {
+          "url": "https://poedb.tw/pob/abc/raw",
+          "headers": { "User-Agent": "go-pob (+https://pob.gg)" }
+        }
+      ]
+    },
+    {
+      "name": "build: rebuilds poe.ninja's character link from its four fields, cached for minutes",
+      "upstream": { "body": "code" },
+      "steps": [
+        {
+          "path": "/api/build?site=PoeNinja&id=overview%2Fcode&account=Vilsol-3184&name=Some_Char&overview=mercenaries&type=exp",
+          "status": 200,
+          "headers": { "Cache-Control": "public, max-age=300, s-maxage=300" }
+        }
+      ],
+      "fetch": [
+        {
+          "url": "https://poe.ninja/poe1/pob/raw/overview/code?account=Vilsol-3184&name=Some_Char&overview=mercenaries&type=exp",
+          "headers": { "User-Agent": "go-pob (+https://pob.gg)" }
+        }
+      ]
+    },
+    {
+      "name": "build: a poe.ninja field of 64 chars is asked for",
+      "upstream": { "body": "code" },
+      "steps": [
+        {
+          "path": {
+            "prefix": "/api/build?site=PoeNinja&id=overview%2Fcode&account=a&name=b&overview=c&type=",
+            "repeat": "d",
+            "count": 64
+          },
+          "status": 200,
+          "fetches": 1
+        }
+      ]
+    },
+    {
+      "name": "build: refuses a poe.ninja field of 65 chars",
+      "steps": [
+        {
+          "path": {
+            "prefix": "/api/build?site=PoeNinja&id=overview%2Fcode&account=a&name=b&overview=c&type=",
+            "repeat": "d",
+            "count": 65
+          },
+          "status": 400,
+          "text": "malformed PoeNinja character"
+        }
+      ],
+      "fetch": []
+    },
+    {
+      "name": "build: refuses a poe.ninja field with a no-break space (JS \\s is Unicode)",
+      "steps": [
+        {
+          "path": "/api/build?site=PoeNinja&id=overview%2Fcode&account=a%C2%A0b&name=b&overview=c&type=d",
+          "status": 400,
+          "text": "malformed PoeNinja character"
+        }
+      ],
+      "fetch": []
+    },
+    {
+      "name": "build: refuses a missing poe.ninja field",
+      "steps": [
+        {
+          "path": "/api/build?site=PoeNinja&id=overview%2Fcode&account=a&name=b&overview=c",
+          "status": 400,
+          "text": "malformed PoeNinja character"
+        }
+      ],
+      "fetch": []
+    },
+    {
+      "name": "build: refuses a query in a poe.ninja field",
+      "steps": [
+        {
+          "path": "/api/build?site=PoeNinja&id=overview%2Fcode&account=a%26x%3Dy&name=b&overview=c&type=d",
+          "status": 400,
+          "text": "malformed PoeNinja character"
+        }
+      ],
+      "fetch": []
+    },
+    {
+      "name": "build: refuses the character path on another site",
+      "steps": [
+        {
+          "path": "/api/build?site=Maxroll&id=overview%2Fcode&account=a&name=b&overview=c&type=d",
+          "status": 400,
+          "text": "malformed Maxroll id"
+        }
+      ],
+      "fetch": []
+    },
+    {
+      "name": "build: refuses an unknown site",
+      "steps": [
+        {
+          "path": "/api/build?site=evil&id=abc",
+          "status": 400,
+          "text": "unknown site"
+        }
+      ],
+      "fetch": []
+    },
+    {
+      "name": "build: refuses a site go-pob drops",
+      "steps": [
+        {
+          "path": "/api/build?site=rentry&id=abc",
+          "status": 400,
+          "text": "unknown site"
+        }
+      ],
+      "fetch": []
+    },
+    {
+      "name": "build: refuses a missing site",
+      "steps": [
+        { "path": "/api/build?id=abc", "status": 400, "text": "unknown site" }
+      ],
+      "fetch": []
+    },
+    {
+      "name": "build: refuses a missing id",
+      "steps": [
+        {
+          "path": "/api/build?site=POBBin",
+          "status": 400,
+          "text": "malformed pobb.in id"
+        }
+      ],
+      "fetch": []
+    },
+    {
+      "name": "build: refuses a path in a .+ id",
+      "steps": [
+        {
+          "path": "/api/build?site=Maxroll&id=../../admin",
+          "status": 400,
+          "text": "malformed Maxroll id"
+        }
+      ],
+      "fetch": []
+    },
+    {
+      "name": "build: refuses a query in a .+ id",
+      "steps": [
+        {
+          "path": "/api/build?site=POBBin&id=a?b=c",
+          "status": 400,
+          "text": "malformed pobb.in id"
+        }
+      ],
+      "fetch": []
+    },
+    {
+      "name": "build: refuses a host in a .+ id",
+      "steps": [
+        {
+          "path": "/api/build?site=PoBCodes&id=evil.com/x",
+          "status": 400,
+          "text": "malformed pob.codes id"
+        }
+      ],
+      "fetch": []
+    },
+    {
+      "name": "build: refuses a dash in a %w+ id",
+      "steps": [
+        {
+          "path": "/api/build?site=pastebin&id=ab-cd",
+          "status": 400,
+          "text": "malformed Pastebin.com id"
+        }
+      ],
+      "fetch": []
+    },
+    {
+      "name": "build: refuses an id of 129 chars",
+      "steps": [
+        {
+          "path": {
+            "prefix": "/api/build?site=POBBin&id=",
+            "repeat": "a",
+            "count": 129
+          },
+          "status": 400,
+          "text": "malformed pobb.in id"
+        }
+      ],
+      "fetch": []
+    },
+    {
+      "name": "build: an id of 128 chars is asked for",
+      "upstream": { "body": "code" },
+      "steps": [
+        {
+          "path": {
+            "prefix": "/api/build?site=POBBin&id=",
+            "repeat": "a",
+            "count": 128
+          },
+          "status": 200,
+          "fetches": 1
+        }
+      ]
+    },
+    {
+      "name": "build: an escape that is not one stays literal (and is refused)",
+      "steps": [
+        {
+          "path": "/api/build?site=POBBin&id=%zz",
+          "status": 400,
+          "text": "malformed pobb.in id"
+        }
+      ],
+      "fetch": []
+    },
+    {
+      "name": "build: refuses anything but GET",
+      "steps": [
+        {
+          "method": "POST",
+          "path": "/api/build?site=POBBin&id=a",
+          "status": 405,
+          "text": "GET only",
+          "headers": { "Allow": "GET" }
+        }
+      ],
+      "fetch": []
+    },
+    {
+      "name": "build: passes the site's status through and caches nothing",
+      "upstream": { "status": 404, "body": "<html>nope</html>" },
+      "steps": [
+        {
+          "path": "/api/build?site=pastebin&id=gone",
+          "status": 404,
+          "text": "Pastebin.com answered 404",
+          "headers": { "Cache-Control": null },
+          "fetches": 1,
+          "cached": 0
+        },
+        {
+          "path": "/api/build?site=pastebin&id=gone",
+          "status": 404,
+          "fetches": 2
+        }
+      ]
+    },
+    {
+      "name": "build: names a Cloudflare challenge",
+      "upstream": {
+        "status": 403,
+        "headers": { "cf-mitigated": "challenge" },
+        "body": "<html>"
+      },
+      "steps": [
+        {
+          "path": "/api/build?site=Maxroll&id=abc",
+          "status": 403,
+          "text": "Maxroll answered 403 (challenge)"
+        }
+      ]
+    },
+    {
+      "name": "build: answers 502 when the site is unreachable",
+      "upstream": { "unreachable": true },
+      "steps": [
+        {
+          "path": "/api/build?site=Maxroll&id=abc",
+          "status": 502,
+          "text": "Maxroll is unreachable",
+          "cached": 0
+        }
+      ]
+    },
+    {
+      "name": "build: stops at a declared Content-Length past the cap",
+      "upstream": { "headers": { "Content-Length": "1048577" }, "body": "x" },
+      "steps": [
+        {
+          "path": "/api/build?site=Maxroll&id=abc",
+          "status": 502,
+          "text": "Maxroll answered more than 1048576 bytes"
+        }
+      ]
+    },
+    {
+      "name": "build: stops reading one byte past the cap",
+      "upstream": { "body": { "repeat": "x", "count": 1048577 } },
+      "steps": [
+        {
+          "path": "/api/build?site=Maxroll&id=abc",
+          "status": 502,
+          "text": "Maxroll answered more than 1048576 bytes",
+          "cached": 0
+        }
+      ]
+    },
+    {
+      "name": "build: serves a body of exactly the cap",
+      "upstream": { "body": { "repeat": "x", "count": 1048576 } },
+      "steps": [
+        {
+          "path": "/api/build?site=Maxroll&id=abc",
+          "status": 200,
+          "text": { "repeat": "x", "count": 1048576 }
+        }
+      ]
+    },
+    {
+      "name": "build: decodes the body as TextDecoder does (BOM dropped, one U+FFFD per invalid subpart)",
+      "upstream": { "body": { "b64": "77u/YWJj4oJk//CQgA==" } },
+      "steps": [
+        {
+          "path": "/api/build?site=Maxroll&id=abc",
+          "status": 200,
+          "text": "abc�d��"
+        }
+      ]
+    },
+    {
+      "name": "build: works without a cache (the dev server)",
+      "cache": false,
+      "upstream": { "body": "code" },
+      "steps": [
+        {
+          "path": "/api/build?site=POBBin&id=abc",
+          "status": 200,
+          "text": "code",
+          "fetches": 1
+        },
+        {
+          "path": "/api/build?site=POBBin&id=abc",
+          "status": 200,
+          "text": "code",
+          "fetches": 2
+        }
+      ]
+    },
+
+    {
+      "name": "poe: characters asks for ImportTab.lua's URL",
+      "upstream": { "body": "[]" },
+      "steps": [
+        {
+          "path": "/api/poe/characters?realm=pc&account=Vilsol%233184",
+          "status": 200,
+          "text": "[]",
+          "headers": {
+            "Cache-Control": "public, max-age=60, s-maxage=60",
+            "Content-Type": "application/json"
+          }
+        }
+      ],
+      "fetch": [
+        {
+          "url": "https://www.pathofexile.com/character-window/get-characters?accountName=Vilsol%233184&realm=pc",
+          "headers": { "User-Agent": "go-pob (+https://pob.gg)" }
+        }
+      ]
+    },
+    {
+      "name": "poe: profile asks for ImportTab.lua's URL",
+      "upstream": {
+        "body": "<a href=\"/account/view-profile/Vilsol-3184/characters\">"
+      },
+      "steps": [
+        {
+          "path": "/api/poe/profile?realm=pc&account=Vilsol%233184",
+          "status": 200,
+          "headers": { "Cache-Control": "public, max-age=60, s-maxage=60" }
+        }
+      ],
+      "fetch": [
+        {
+          "url": "https://www.pathofexile.com/account/view-profile/Vilsol%233184",
+          "headers": { "User-Agent": "go-pob (+https://pob.gg)" }
+        }
+      ]
+    },
+    {
+      "name": "poe: items asks for ImportTab.lua's URL, a console name's + kept",
+      "upstream": { "body": "[]" },
+      "steps": [
+        {
+          "path": "/api/poe/items?realm=xbox&account=Some%2BName%231234&character=Foo_Bar",
+          "status": 200,
+          "headers": { "Cache-Control": "public, max-age=60, s-maxage=60" }
+        }
+      ],
+      "fetch": [
+        {
+          "url": "https://www.pathofexile.com/character-window/get-items?accountName=Some+Name%231234&character=Foo_Bar&realm=xbox",
+          "headers": { "User-Agent": "go-pob (+https://pob.gg)" }
+        }
+      ]
+    },
+    {
+      "name": "poe: passives asks for ImportTab.lua's URL",
+      "upstream": { "body": "[]" },
+      "steps": [
+        {
+          "path": "/api/poe/passives?realm=sony&account=N%C3%A9e%231234&character=X",
+          "status": 200,
+          "headers": { "Cache-Control": "public, max-age=60, s-maxage=60" }
+        }
+      ],
+      "fetch": [
+        {
+          "url": "https://www.pathofexile.com/character-window/get-passive-skills?accountName=N%C3%A9e%231234&character=X&realm=sony",
+          "headers": { "User-Agent": "go-pob (+https://pob.gg)" }
+        }
+      ]
+    },
+    {
+      "name": "poe: escapes what encodeURIComponent escapes, and only that",
+      "upstream": { "body": "[]" },
+      "steps": [
+        {
+          "path": "/api/poe/characters?realm=pc&account=a!~*'()._-%24%3B%2C%3A%40b",
+          "status": 200
+        }
+      ],
+      "fetch": [
+        {
+          "url": "https://www.pathofexile.com/character-window/get-characters?accountName=a!~*'()._-%24%3B%2C%3A%40b&realm=pc",
+          "headers": { "User-Agent": "go-pob (+https://pob.gg)" }
+        }
+      ]
+    },
+    {
+      "name": "poe: answers the profile page's account name, not the page",
+      "upstream": {
+        "body": "<html>…<a href=\"/account/view-profile/N%C3%A9e-1234/characters\">x</a>…"
+      },
+      "steps": [
+        {
+          "path": "/api/poe/profile?realm=pc&account=nee%231234",
+          "status": 200,
+          "json": { "accountName": "Née-1234" }
+        }
+      ]
+    },
+    {
+      "name": "poe: the profile name is JSON.stringify'd (no HTML escaping)",
+      "upstream": {
+        "body": "<a href=\"/account/view-profile/a%3Cb%3E%26c/characters\">"
+      },
+      "steps": [
+        {
+          "path": "/api/poe/profile?realm=pc&account=a%231",
+          "status": 200,
+          "text": "{\"accountName\":\"a<b>&c\"}"
+        }
+      ]
+    },
+    {
+      "name": "poe: a profile name decodeURIComponent refuses is kept as written",
+      "upstream": {
+        "body": "<a href=\"/account/view-profile/a%E0%A4%A/characters\">"
+      },
+      "steps": [
+        {
+          "path": "/api/poe/profile?realm=pc&account=a%231",
+          "status": 200,
+          "json": { "accountName": "a%E0%A4%A" }
+        }
+      ]
+    },
+    {
+      "name": "poe: answers 502 for a profile page that names no account",
+      "upstream": { "body": "<html>private</html>" },
+      "steps": [
+        {
+          "path": "/api/poe/profile?realm=pc&account=nee%231234",
+          "status": 502,
+          "text": "the profile page names no account"
+        }
+      ]
+    },
+    {
+      "name": "poe: refuses an unknown endpoint",
+      "steps": [
+        {
+          "path": "/api/poe/stash?realm=pc&account=a%231",
+          "status": 404,
+          "text": "unknown endpoint"
+        }
+      ],
+      "fetch": []
+    },
+    {
+      "name": "poe: refuses an inherited name",
+      "steps": [
+        {
+          "path": "/api/poe/constructor?realm=pc&account=a%231",
+          "status": 404,
+          "text": "unknown endpoint"
+        }
+      ],
+      "fetch": []
+    },
+    {
+      "name": "poe: refuses an unknown realm",
+      "steps": [
+        {
+          "path": "/api/poe/characters?realm=ps5&account=a%231",
+          "status": 400,
+          "text": "unknown realm"
+        }
+      ],
+      "fetch": []
+    },
+    {
+      "name": "poe: refuses a missing realm",
+      "steps": [
+        {
+          "path": "/api/poe/characters?account=a%231",
+          "status": 400,
+          "text": "unknown realm"
+        }
+      ],
+      "fetch": []
+    },
+    {
+      "name": "poe: refuses a missing account",
+      "steps": [
+        {
+          "path": "/api/poe/characters?realm=pc",
+          "status": 400,
+          "text": "malformed account name"
+        }
+      ],
+      "fetch": []
+    },
+    {
+      "name": "poe: refuses a query in the account",
+      "steps": [
+        {
+          "path": "/api/poe/characters?realm=pc&account=a%26realm%3Dx",
+          "status": 400,
+          "text": "malformed account name"
+        }
+      ],
+      "fetch": []
+    },
+    {
+      "name": "poe: refuses a path in the account",
+      "steps": [
+        {
+          "path": "/api/poe/profile?realm=pc&account=..%2F..%2Fx",
+          "status": 400,
+          "text": "malformed account name"
+        }
+      ],
+      "fetch": []
+    },
+    {
+      "name": "poe: refuses a no-break space in the account (JS \\s is Unicode)",
+      "steps": [
+        {
+          "path": "/api/poe/characters?realm=pc&account=a%C2%A0b",
+          "status": 400,
+          "text": "malformed account name"
+        }
+      ],
+      "fetch": []
+    },
+    {
+      "name": "poe: an account of 64 chars and an 8-digit discriminator is asked for",
+      "upstream": { "body": "[]" },
+      "steps": [
+        {
+          "path": {
+            "prefix": "/api/poe/characters?realm=pc&account=",
+            "repeat": "é",
+            "count": 64,
+            "suffix": "%2312345678"
+          },
+          "status": 200,
+          "fetches": 1
+        }
+      ]
+    },
+    {
+      "name": "poe: refuses an account of 65 chars",
+      "steps": [
+        {
+          "path": {
+            "prefix": "/api/poe/characters?realm=pc&account=",
+            "repeat": "é",
+            "count": 65
+          },
+          "status": 400,
+          "text": "malformed account name"
+        }
+      ],
+      "fetch": []
+    },
+    {
+      "name": "poe: refuses a 9-digit discriminator",
+      "steps": [
+        {
+          "path": "/api/poe/characters?realm=pc&account=a%23123456789",
+          "status": 400,
+          "text": "malformed account name"
+        }
+      ],
+      "fetch": []
+    },
+    {
+      "name": "poe: refuses a missing character",
+      "steps": [
+        {
+          "path": "/api/poe/items?realm=pc&account=a%231",
+          "status": 400,
+          "text": "malformed character name"
+        }
+      ],
+      "fetch": []
+    },
+    {
+      "name": "poe: refuses a query in the character",
+      "steps": [
+        {
+          "path": "/api/poe/passives?realm=pc&account=a%231&character=x%26y",
+          "status": 400,
+          "text": "malformed character name"
+        }
+      ],
+      "fetch": []
+    },
+    {
+      "name": "poe: refuses anything but GET",
+      "steps": [
+        {
+          "method": "POST",
+          "path": "/api/poe/characters?realm=pc&account=a%231",
+          "status": 405,
+          "text": "GET only",
+          "headers": { "Allow": "GET" }
+        }
+      ],
+      "fetch": []
+    },
+    {
+      "name": "poe: serves a second ask within the minute from the cache",
+      "upstream": { "body": "[{\"name\":\"X\"}]" },
+      "steps": [
+        {
+          "path": "/api/poe/characters?realm=pc&account=a%231",
+          "status": 200,
+          "fetches": 1
+        },
+        {
+          "path": "/api/poe/characters?realm=pc&account=a%231",
+          "status": 200,
+          "text": "[{\"name\":\"X\"}]",
+          "fetches": 1
+        }
+      ]
+    },
+    {
+      "name": "poe: passes GGG's 429 through with Retry-After and its rate-limit headers, never retries, and holds off until Retry-After",
+      "upstream": {
+        "status": 429,
+        "headers": {
+          "Retry-After": "30",
+          "X-Rate-Limit-Ip": "45:60:60",
+          "X-Rate-Limit-Ip-State": "46:60:30"
+        }
+      },
+      "steps": [
+        {
+          "path": "/api/poe/characters?realm=pc&account=a%231",
+          "status": 429,
+          "text": "rate limited by pathofexile.com",
+          "headers": {
+            "Retry-After": "30",
+            "X-Rate-Limit-Ip": "45:60:60",
+            "X-Rate-Limit-Ip-State": "46:60:30",
+            "Cache-Control": "s-maxage=30"
+          },
+          "fetches": 1
+        },
+        {
+          "path": "/api/poe/characters?realm=pc&account=a%231",
+          "status": 429,
+          "fetches": 1
+        }
+      ]
+    },
+    {
+      "name": "poe: a 429 without Retry-After holds off a minute",
+      "upstream": { "status": 429 },
+      "steps": [
+        {
+          "path": "/api/poe/characters?realm=pc&account=a%231",
+          "status": 429,
+          "headers": { "Retry-After": "60", "Cache-Control": "s-maxage=60" }
+        }
+      ]
+    },
+    {
+      "name": "poe: a 429 whose Retry-After is a date holds off a minute and passes the date on",
+      "upstream": {
+        "status": 429,
+        "headers": { "Retry-After": "Wed, 21 Oct 2026 07:28:00 GMT" }
+      },
+      "steps": [
+        {
+          "path": "/api/poe/characters?realm=pc&account=a%231",
+          "status": 429,
+          "headers": {
+            "Retry-After": "Wed, 21 Oct 2026 07:28:00 GMT",
+            "Cache-Control": "s-maxage=60"
+          }
+        }
+      ]
+    },
+    {
+      "name": "poe: a fractional Retry-After is written as Number prints it",
+      "upstream": { "status": 429, "headers": { "Retry-After": " 1.50 " } },
+      "steps": [
+        {
+          "path": "/api/poe/characters?realm=pc&account=a%231",
+          "status": 429,
+          "headers": { "Cache-Control": "s-maxage=1.5" }
+        }
+      ]
+    },
+    {
+      "name": "poe: passes 401 through (ImportTab.lua:918-925 tells them apart) and caches nothing",
+      "upstream": { "status": 401, "body": "{\"error\":{}}" },
+      "steps": [
+        {
+          "path": "/api/poe/characters?realm=pc&account=a%231",
+          "status": 401,
+          "text": "pathofexile.com answered 401",
+          "cached": 0
+        }
+      ]
+    },
+    {
+      "name": "poe: passes 403 through and caches nothing",
+      "upstream": { "status": 403, "body": "{\"error\":{}}" },
+      "steps": [
+        {
+          "path": "/api/poe/characters?realm=pc&account=a%231",
+          "status": 403,
+          "text": "pathofexile.com answered 403",
+          "cached": 0
+        }
+      ]
+    },
+    {
+      "name": "poe: passes 404 through and caches nothing",
+      "upstream": { "status": 404, "body": "{\"error\":{}}" },
+      "steps": [
+        {
+          "path": "/api/poe/characters?realm=pc&account=a%231",
+          "status": 404,
+          "text": "pathofexile.com answered 404",
+          "cached": 0
+        }
+      ]
+    },
+    {
+      "name": "poe: answers 502 when pathofexile.com is unreachable",
+      "upstream": { "unreachable": true },
+      "steps": [
+        {
+          "path": "/api/poe/characters?realm=pc&account=a%231",
+          "status": 502,
+          "text": "pathofexile.com is unreachable",
+          "cached": 0
+        }
+      ]
+    },
+    {
+      "name": "poe: stops at a declared Content-Length past the cap",
+      "upstream": { "headers": { "Content-Length": "67108864" }, "body": "x" },
+      "steps": [
+        {
+          "path": "/api/poe/items?realm=pc&account=a%231&character=b",
+          "status": 502,
+          "text": "pathofexile.com answered more than 4194304 bytes"
+        }
+      ]
+    },
+    {
+      "name": "poe: stops reading one byte past the cap",
+      "upstream": { "body": { "repeat": "x", "count": 4194305 } },
+      "steps": [
+        {
+          "path": "/api/poe/items?realm=pc&account=a%231&character=b",
+          "status": 502,
+          "text": "pathofexile.com answered more than 4194304 bytes",
+          "cached": 0
+        }
+      ]
+    },
+    {
+      "name": "poe: serves a body of exactly the cap",
+      "upstream": { "body": { "repeat": "x", "count": 4194304 } },
+      "steps": [
+        {
+          "path": "/api/poe/items?realm=pc&account=a%231&character=b",
+          "status": 200,
+          "cached": 1
+        }
+      ]
+    },
+
+    {
+      "name": "share: POBBin posts postFields..code to postUrl and answers codeOut..answer",
+      "upstream": { "body": "abc-DEF" },
+      "steps": [
+        {
+          "method": "POST",
+          "path": "/api/share?site=POBBin",
+          "body": {
+            "code": "<?xml version=\"1.0\"?><PathOfBuilding><Build/></PathOfBuilding>",
+            "suffix": "\n"
+          },
+          "status": 200,
+          "text": "https://pobb.in/abc-DEF",
+          "headers": {
+            "Cache-Control": "no-store",
+            "Content-Type": "text/plain; charset=utf-8"
+          }
+        }
+      ],
+      "fetch": [
+        {
+          "url": "https://pobb.in/pob/",
+          "method": "POST",
+          "headers": {
+            "User-Agent": "go-pob (+https://pob.gg)",
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          "body": {
+            "code": "<?xml version=\"1.0\"?><PathOfBuilding><Build/></PathOfBuilding>"
+          }
+        }
+      ]
+    },
+    {
+      "name": "share: Maxroll posts pobCode=..code",
+      "upstream": { "body": "x1y2" },
+      "steps": [
+        {
+          "method": "POST",
+          "path": "/api/share?site=Maxroll",
+          "body": { "code": "<PathOfBuilding/>", "suffix": "\n" },
+          "status": 200,
+          "text": "https://maxroll.gg/poe/pob/x1y2"
+        }
+      ],
+      "fetch": [
+        {
+          "url": "https://maxroll.gg/poe/api/pob",
+          "method": "POST",
+          "headers": {
+            "User-Agent": "go-pob (+https://pob.gg)",
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          "body": { "prefix": "pobCode=", "code": "<PathOfBuilding/>" }
+        }
+      ]
+    },
+    {
+      "name": "share: pob.codes answers its id",
+      "upstream": { "body": "k3" },
+      "steps": [
+        {
+          "method": "POST",
+          "path": "/api/share?site=PoBCodes",
+          "body": { "code": "<PathOfBuilding/>" },
+          "status": 200,
+          "text": "https://pob.codes/b/k3"
+        }
+      ],
+      "fetch": [
+        {
+          "url": "https://api.pob.codes/pob/plain",
+          "method": "POST",
+          "headers": {
+            "User-Agent": "go-pob (+https://pob.gg)",
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          "body": { "code": "<PathOfBuilding/>" }
+        }
+      ]
+    },
+    {
+      "name": "share: poe.ninja posts code=..code and answers a whole link",
+      "upstream": { "body": "https://poe.ninja/poe1/pob/1a2b" },
+      "steps": [
+        {
+          "method": "POST",
+          "path": "/api/share?site=PoeNinja",
+          "body": { "code": "<PathOfBuilding/>" },
+          "status": 200,
+          "text": "https://poe.ninja/poe1/pob/1a2b"
+        }
+      ],
+      "fetch": [
+        {
+          "url": "https://poe.ninja/poe1/pob/api/upload",
+          "method": "POST",
+          "headers": {
+            "User-Agent": "go-pob (+https://pob.gg)",
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          "body": { "prefix": "code=", "code": "<PathOfBuilding/>" }
+        }
+      ]
+    },
+    {
+      "name": "share: poedb's answer is trimmed",
+      "upstream": { "body": "https://poedb.tw/pob/zz9\n" },
+      "steps": [
+        {
+          "method": "POST",
+          "path": "/api/share?site=PoEDB",
+          "body": { "code": "<PathOfBuilding/>" },
+          "status": 200,
+          "text": "https://poedb.tw/pob/zz9"
+        }
+      ],
+      "fetch": [
+        {
+          "url": "https://poedb.tw/pob/api/gen",
+          "method": "POST",
+          "headers": {
+            "User-Agent": "go-pob (+https://pob.gg)",
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          "body": { "code": "<PathOfBuilding/>" }
+        }
+      ]
+    },
+    {
+      "name": "share: refuses anything but POST",
+      "steps": [
+        {
+          "path": "/api/share?site=POBBin",
+          "status": 405,
+          "text": "POST only",
+          "headers": { "Allow": "POST" }
+        }
+      ],
+      "fetch": []
+    },
+    {
+      "name": "share: never uploads to a site PoB only imports from",
+      "steps": [
+        {
+          "method": "POST",
+          "path": "/api/share?site=pastebin",
+          "body": { "code": "<PathOfBuilding/>" },
+          "status": 400,
+          "text": "unknown site"
+        }
+      ],
+      "fetch": []
+    },
+    {
+      "name": "share: never uploads to an unknown site",
+      "steps": [
+        {
+          "method": "POST",
+          "path": "/api/share?site=nope",
+          "body": { "code": "<PathOfBuilding/>" },
+          "status": 400,
+          "text": "unknown site"
+        }
+      ],
+      "fetch": []
+    },
+    {
+      "name": "share: never uploads text that is not base64",
+      "steps": [
+        {
+          "method": "POST",
+          "path": "/api/share?site=POBBin",
+          "body": "hello world",
+          "status": 400,
+          "text": "not a build code"
+        }
+      ],
+      "fetch": []
+    },
+    {
+      "name": "share: never uploads base64 that does not inflate",
+      "steps": [
+        {
+          "method": "POST",
+          "path": "/api/share?site=POBBin",
+          "body": "aGVsbG8",
+          "status": 400,
+          "text": "not a build code"
+        }
+      ],
+      "fetch": []
+    },
+    {
+      "name": "share: never uploads a deflated document that is not a build",
+      "steps": [
+        {
+          "method": "POST",
+          "path": "/api/share?site=POBBin",
+          "body": { "code": "<html/>" },
+          "status": 400,
+          "text": "not a build code"
+        }
+      ],
+      "fetch": []
+    },
+    {
+      "name": "share: never uploads a body past the cap",
+      "steps": [
+        {
+          "method": "POST",
+          "path": "/api/share?site=POBBin",
+          "body": { "repeat": "A", "count": 1048577 },
+          "status": 413,
+          "text": "a build code is at most 1048576 bytes"
+        }
+      ],
+      "fetch": []
+    },
+    {
+      "name": "share: a body of exactly the cap is read (and is no build code)",
+      "steps": [
+        {
+          "method": "POST",
+          "path": "/api/share?site=POBBin",
+          "body": { "repeat": "A", "count": 1048576 },
+          "status": 400,
+          "text": "not a build code"
+        }
+      ],
+      "fetch": []
+    },
+    {
+      "name": "share: a code inflating to exactly 32 MiB is uploaded",
+      "upstream": { "body": "abc" },
+      "steps": [
+        {
+          "method": "POST",
+          "path": "/api/share?site=POBBin",
+          "body": {
+            "code": {
+              "prefix": "<PathOfBuilding>",
+              "repeat": "a",
+              "count": 33554416
+            }
+          },
+          "status": 200,
+          "text": "https://pobb.in/abc"
+        }
+      ]
+    },
+    {
+      "name": "share: never uploads a code inflating past 32 MiB",
+      "steps": [
+        {
+          "method": "POST",
+          "path": "/api/share?site=POBBin",
+          "body": {
+            "code": {
+              "prefix": "<PathOfBuilding>",
+              "repeat": "a",
+              "count": 33554417
+            }
+          },
+          "status": 400,
+          "text": "not a build code"
+        }
+      ],
+      "fetch": []
+    },
+    {
+      "name": "share: trims JS whitespace (a BOM, a no-break space) around the code",
+      "upstream": { "body": "abc" },
+      "steps": [
+        {
+          "method": "POST",
+          "path": "/api/share?site=POBBin",
+          "body": {
+            "prefix": "﻿ ",
+            "code": "<PathOfBuilding/>",
+            "suffix": "　\r\n"
+          },
+          "status": 200,
+          "text": "https://pobb.in/abc"
+        }
+      ],
+      "fetch": [
+        {
+          "url": "https://pobb.in/pob/",
+          "method": "POST",
+          "headers": {
+            "User-Agent": "go-pob (+https://pob.gg)",
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          "body": { "code": "<PathOfBuilding/>" }
+        }
+      ]
+    },
+    {
+      "name": "share: a NEL is not JS whitespace, so never uploads a code ending in one",
+      "steps": [
+        {
+          "method": "POST",
+          "path": "/api/share?site=POBBin",
+          "body": { "code": "<PathOfBuilding/>", "suffix": "\u0085" },
+          "status": 400,
+          "text": "not a build code"
+        }
+      ],
+      "fetch": []
+    },
+    {
+      "name": "share: passes a site's refusal through (BuildSiteTools.lua:74: only a 200 is a link)",
+      "upstream": {
+        "status": 429,
+        "headers": { "cf-mitigated": "challenge" },
+        "body": "slow down"
+      },
+      "steps": [
+        {
+          "method": "POST",
+          "path": "/api/share?site=POBBin",
+          "body": { "code": "<PathOfBuilding/>" },
+          "status": 429,
+          "text": "pobb.in answered 429 (challenge)"
+        }
+      ]
+    },
+    {
+      "name": "share: a 201 is no link either",
+      "upstream": { "status": 201, "body": "abc" },
+      "steps": [
+        {
+          "method": "POST",
+          "path": "/api/share?site=POBBin",
+          "body": { "code": "<PathOfBuilding/>" },
+          "status": 201,
+          "text": "pobb.in answered 201"
+        }
+      ]
+    },
+    {
+      "name": "share: answers 502 for an answer that is no link",
+      "upstream": { "body": "<html>oops</html>" },
+      "steps": [
+        {
+          "method": "POST",
+          "path": "/api/share?site=POBBin",
+          "body": { "code": "<PathOfBuilding/>" },
+          "status": 502,
+          "text": "pobb.in answered no link"
+        }
+      ]
+    },
+    {
+      "name": "share: answers 502 for a link that is not the site's",
+      "upstream": { "body": "https://example.com/x" },
+      "steps": [
+        {
+          "method": "POST",
+          "path": "/api/share?site=PoeNinja",
+          "body": { "code": "<PathOfBuilding/>" },
+          "status": 502,
+          "text": "PoeNinja answered no link"
+        }
+      ]
+    },
+    {
+      "name": "share: an answer of exactly the cap is a link",
+      "upstream": { "body": { "repeat": "a", "count": 1024 } },
+      "steps": [
+        {
+          "method": "POST",
+          "path": "/api/share?site=POBBin",
+          "body": { "code": "<PathOfBuilding/>" },
+          "status": 200,
+          "text": { "prefix": "https://pobb.in/", "repeat": "a", "count": 1024 }
+        }
+      ]
+    },
+    {
+      "name": "share: answers 502 for an answer past the cap",
+      "upstream": { "body": { "repeat": "a", "count": 1025 } },
+      "steps": [
+        {
+          "method": "POST",
+          "path": "/api/share?site=POBBin",
+          "body": { "code": "<PathOfBuilding/>" },
+          "status": 502,
+          "text": "pobb.in answered no link"
+        }
+      ]
+    },
+    {
+      "name": "share: answers 502 when the site is unreachable",
+      "upstream": { "unreachable": true },
+      "steps": [
+        {
+          "method": "POST",
+          "path": "/api/share?site=POBBin",
+          "body": { "code": "<PathOfBuilding/>" },
+          "status": 502,
+          "text": "pobb.in is unreachable"
+        }
+      ]
+    },
+
+    {
+      "name": "poeurl: answers where a PoEURL link redirects, never following it (TreeTab.lua:763-777)",
+      "upstream": {
+        "status": 302,
+        "headers": {
+          "Location": "https://www.pathofexile.com/passive-skill-tree/3.29.0/AAAABgMADI6-HwKSwQ"
+        }
+      },
+      "steps": [
+        {
+          "path": "/api/poeurl?id=dABz",
+          "status": 200,
+          "text": "https://www.pathofexile.com/passive-skill-tree/3.29.0/AAAABgMADI6-HwKSwQ",
+          "headers": {
+            "Cache-Control": "public, max-age=604800, s-maxage=604800"
+          }
+        }
+      ],
+      "fetch": [
+        {
+          "url": "http://poeurl.com/dABz",
+          "headers": { "User-Agent": "go-pob (+https://pob.gg)" },
+          "redirect": "manual"
+        }
+      ]
+    },
+    {
+      "name": "poeurl: fails on no redirect as PoB does",
+      "upstream": { "body": "page" },
+      "steps": [
+        {
+          "path": "/api/poeurl?id=dABz",
+          "status": 502,
+          "text": "Failed to resolve PoEURL link"
+        }
+      ]
+    },
+    {
+      "name": "poeurl: fails on a redirect back to poeurl.com as PoB does",
+      "upstream": {
+        "status": 302,
+        "headers": { "Location": "http://poeurl.com/error" }
+      },
+      "steps": [
+        {
+          "path": "/api/poeurl?id=dABz",
+          "status": 502,
+          "text": "Failed to resolve PoEURL link"
+        }
+      ]
+    },
+    {
+      "name": "poeurl: an id of 32 chars is asked for",
+      "upstream": { "status": 302, "headers": { "Location": "https://x.y/z" } },
+      "steps": [
+        {
+          "path": { "prefix": "/api/poeurl?id=", "repeat": "a", "count": 32 },
+          "status": 200,
+          "fetches": 1
+        }
+      ]
+    },
+    {
+      "name": "poeurl: shrinks a tree link to http://poeurl.com/<answer> (TreeTab.lua:821-826)",
+      "upstream": { "body": "dABz\n" },
+      "steps": [
+        {
+          "path": "/api/poeurl?shrink=https%3A%2F%2Fwww.pathofexile.com%2Fpassive-skill-tree%2F3.29.0%2FAAAABgMADI6-HwKSwQ",
+          "status": 200,
+          "text": "http://poeurl.com/dABz",
+          "headers": { "Cache-Control": "no-store" }
+        }
+      ],
+      "fetch": [
+        {
+          "url": "http://poeurl.com/shrink.php?url=https%3A%2F%2Fwww.pathofexile.com%2Fpassive-skill-tree%2F3.29.0%2FAAAABgMADI6-HwKSwQ",
+          "headers": { "User-Agent": "go-pob (+https://pob.gg)" }
+        }
+      ]
+    },
+    {
+      "name": "poeurl: fails a shrink answered with blanks",
+      "upstream": { "body": "   " },
+      "steps": [
+        {
+          "path": "/api/poeurl?shrink=https%3A%2F%2Fwww.pathofexile.com%2Fpassive-skill-tree%2Fx",
+          "status": 502,
+          "text": "Failed to get PoEURL link"
+        }
+      ]
+    },
+    {
+      "name": "poeurl: fails a shrink answered with a page",
+      "upstream": { "body": "<html>busy</html>" },
+      "steps": [
+        {
+          "path": "/api/poeurl?shrink=https%3A%2F%2Fwww.pathofexile.com%2Fpassive-skill-tree%2Fx",
+          "status": 502,
+          "text": "Failed to get PoEURL link"
+        }
+      ]
+    },
+    {
+      "name": "poeurl: fails a shrink the site refuses",
+      "upstream": { "status": 500, "body": "dABz" },
+      "steps": [
+        {
+          "path": "/api/poeurl?shrink=https%3A%2F%2Fwww.pathofexile.com%2Fpassive-skill-tree%2Fx",
+          "status": 502,
+          "text": "Failed to get PoEURL link"
+        }
+      ]
+    },
+    {
+      "name": "poeurl: shrinks a tree link of 4096 chars past the prefix",
+      "upstream": { "body": "dABz" },
+      "steps": [
+        {
+          "path": {
+            "prefix": "/api/poeurl?shrink=https%3A%2F%2Fwww.pathofexile.com%2Fpassive-skill-tree%2F",
+            "repeat": "a",
+            "count": 4096
+          },
+          "status": 200,
+          "fetches": 1
+        }
+      ]
+    },
+    {
+      "name": "poeurl: refuses a tree link of 4097 chars past the prefix",
+      "steps": [
+        {
+          "path": {
+            "prefix": "/api/poeurl?shrink=https%3A%2F%2Fwww.pathofexile.com%2Fpassive-skill-tree%2F",
+            "repeat": "a",
+            "count": 4097
+          },
+          "status": 400,
+          "text": "not a passive tree link"
+        }
+      ],
+      "fetch": []
+    },
+    {
+      "name": "poeurl: asks nothing for a path in the id",
+      "steps": [
+        {
+          "path": "/api/poeurl?id=a/b",
+          "status": 400,
+          "text": "malformed PoEURL id"
+        }
+      ],
+      "fetch": []
+    },
+    {
+      "name": "poeurl: asks nothing for an empty id",
+      "steps": [
+        {
+          "path": "/api/poeurl?id=",
+          "status": 400,
+          "text": "malformed PoEURL id"
+        }
+      ],
+      "fetch": []
+    },
+    {
+      "name": "poeurl: asks nothing for an id of 33 chars",
+      "steps": [
+        {
+          "path": { "prefix": "/api/poeurl?id=", "repeat": "a", "count": 33 },
+          "status": 400,
+          "text": "malformed PoEURL id"
+        }
+      ],
+      "fetch": []
+    },
+    {
+      "name": "poeurl: asks nothing for a link that is not a tree",
+      "steps": [
+        {
+          "path": "/api/poeurl?shrink=https://example.com/x",
+          "status": 400,
+          "text": "not a passive tree link"
+        }
+      ],
+      "fetch": []
+    },
+    {
+      "name": "poeurl: asks nothing for no question",
+      "steps": [
+        {
+          "path": "/api/poeurl?",
+          "status": 400,
+          "text": "not a passive tree link"
+        }
+      ],
+      "fetch": []
+    },
+    {
+      "name": "poeurl: refuses anything but GET",
+      "steps": [
+        {
+          "method": "POST",
+          "path": "/api/poeurl?id=dABz",
+          "status": 405,
+          "text": "GET only",
+          "headers": { "Allow": "GET" }
+        }
+      ],
+      "fetch": []
+    }
+  ]
+}

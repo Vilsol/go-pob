@@ -138,6 +138,10 @@
         .then((booted) => {
           if (booted) {
             wasmLoading = false;
+            syncWrap
+              ?.loadData(proxy(async () => {}))
+              .then(() => get(markBackendAsLoaded)())
+              .catch(logError);
             return;
           }
 

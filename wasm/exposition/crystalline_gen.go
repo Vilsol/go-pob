@@ -36164,11 +36164,51 @@ func crystallineMarshalPobImport(v *pob.Import) any {
 
 	if crystallineMarshalPobImportShape.IsUndefined() {
 		crystallineMarshalPobImportShape = crystallineShape("pob.Import",
-			[]string{"ExportParty"},
+			[]string{"LastRealm", "LastLeague", "LastAccountHash", "LastCharacterHash", "ExportParty", "ImportLink"},
 			func(v *pob.Import, entry *crystallineEntry, field int) any {
 				switch field {
 				case 0:
+					return func() any {
+						if v.LastRealm == nil {
+							return nil
+						}
+
+						return string((*v.LastRealm))
+					}()
+				case 1:
+					return func() any {
+						if v.LastLeague == nil {
+							return nil
+						}
+
+						return string((*v.LastLeague))
+					}()
+				case 2:
+					return func() any {
+						if v.LastAccountHash == nil {
+							return nil
+						}
+
+						return string((*v.LastAccountHash))
+					}()
+				case 3:
+					return func() any {
+						if v.LastCharacterHash == nil {
+							return nil
+						}
+
+						return string((*v.LastCharacterHash))
+					}()
+				case 4:
 					return bool(v.ExportParty)
+				case 5:
+					return func() any {
+						if v.ImportLink == nil {
+							return nil
+						}
+
+						return string((*v.ImportLink))
+					}()
 				}
 
 				return nil
@@ -36176,6 +36216,50 @@ func crystallineMarshalPobImport(v *pob.Import) any {
 			func(v *pob.Import, field int, value js.Value) {
 				switch field {
 				case 0:
+					(func(value js.Value) {
+						converted, err := crystallineToPtrString(value)
+						if err != nil {
+							crystallineFail(err.Error())
+
+							return
+						}
+
+						v.LastRealm = converted
+					})(value)
+				case 1:
+					(func(value js.Value) {
+						converted, err := crystallineToPtrString(value)
+						if err != nil {
+							crystallineFail(err.Error())
+
+							return
+						}
+
+						v.LastLeague = converted
+					})(value)
+				case 2:
+					(func(value js.Value) {
+						converted, err := crystallineToPtrString(value)
+						if err != nil {
+							crystallineFail(err.Error())
+
+							return
+						}
+
+						v.LastAccountHash = converted
+					})(value)
+				case 3:
+					(func(value js.Value) {
+						converted, err := crystallineToPtrString(value)
+						if err != nil {
+							crystallineFail(err.Error())
+
+							return
+						}
+
+						v.LastCharacterHash = converted
+					})(value)
+				case 4:
 					(func(value js.Value) {
 						converted, err := crystallineToBool(value)
 						if err != nil {
@@ -36185,6 +36269,17 @@ func crystallineMarshalPobImport(v *pob.Import) any {
 						}
 
 						v.ExportParty = converted
+					})(value)
+				case 5:
+					(func(value js.Value) {
+						converted, err := crystallineToPtrString(value)
+						if err != nil {
+							crystallineFail(err.Error())
+
+							return
+						}
+
+						v.ImportLink = converted
 					})(value)
 				}
 			},
@@ -36342,6 +36437,37 @@ func crystallineMarshalPobItemSet(v *pob.ItemSet) any {
 			return out
 		}()
 	}))
+	out.Set("SocketIDURLs", crystallineJSON(func(b []byte, ok *bool) []byte {
+		if items0 := v.SocketIDURLs; items0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '[')
+			for i0 := range items0 {
+				if i0 > 0 {
+					b = append(b, ',')
+				}
+
+				b = crystallineAppendPobSocketIDURL(b, &items0[i0], ok)
+			}
+
+			b = append(b, ']')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			items := v.SocketIDURLs
+			if items == nil {
+				return nil
+			}
+
+			out := make([]any, 0, len(items))
+			for i := range items {
+				out = append(out, crystallineMarshalPobSocketIDURL(&items[i]))
+			}
+
+			return out
+		}()
+	}))
 
 	return out
 }
@@ -36430,6 +36556,12 @@ func crystallineMarshalPobItems(v *pob.Items) any {
 			return out
 		}()
 	}))
+	out.Set("TradeSearchWeights", crystallineJSON(func(b []byte, ok *bool) []byte {
+		b = crystallineAppendPobTradeSearchWeights(b, v.TradeSearchWeights, ok)
+		return b
+	}, func() any {
+		return crystallineMarshalPobTradeSearchWeights(v.TradeSearchWeights)
+	}))
 
 	return out
 }
@@ -36457,6 +36589,7 @@ func crystallineMarshalPobOverride(v *pob.Override) any {
 
 		return string((*v.ActiveEffectImage))
 	}())
+	out.Set("Lines", string(v.Lines))
 
 	return out
 }
@@ -39949,6 +40082,13 @@ func crystallineMarshalPobSlot(v *pob.Slot) any {
 	out.Set("ItemID", float64(v.ItemID))
 	out.Set("Name", string(v.Name))
 	out.Set("Active", bool(v.Active))
+	out.Set("ItemPbURL", func() any {
+		if v.ItemPbURL == nil {
+			return nil
+		}
+
+		return string((*v.ItemPbURL))
+	}())
 
 	return out
 }
@@ -39962,6 +40102,20 @@ func crystallineMarshalPobSocket(v *pob.Socket) any {
 
 	out.Set("ItemID", float64(v.ItemID))
 	out.Set("NodeID", float64(v.NodeID))
+
+	return out
+}
+
+func crystallineMarshalPobSocketIDURL(v *pob.SocketIDURL) any {
+	if v == nil {
+		return nil
+	}
+
+	out := crystallineObjects.New()
+
+	out.Set("Name", string(v.Name))
+	out.Set("NodeID", float64(v.NodeID))
+	out.Set("ItemPbURL", string(v.ItemPbURL))
 
 	return out
 }
@@ -40094,8 +40248,76 @@ func crystallineMarshalPobTimelessData(v *pob.TimelessData) any {
 	out.Set("SocketFilter", string(v.SocketFilter))
 	out.Set("SocketFilterDistance", string(v.SocketFilterDistance))
 	out.Set("SocketAllocate", string(v.SocketAllocate))
-	out.Set("SearchList", string(v.SearchList))
-	out.Set("SearchListFallback", string(v.SearchListFallback))
+	out.Set("SearchList", func() any {
+		if v.SearchList == nil {
+			return nil
+		}
+
+		return string((*v.SearchList))
+	}())
+	out.Set("SearchListFallback", func() any {
+		if v.SearchListFallback == nil {
+			return nil
+		}
+
+		return string((*v.SearchListFallback))
+	}())
+
+	return out
+}
+
+func crystallineMarshalPobTradeSearchStat(v *pob.TradeSearchStat) any {
+	if v == nil {
+		return nil
+	}
+
+	out := crystallineObjects.New()
+
+	out.Set("Label", string(v.Label))
+	out.Set("Stat", string(v.Stat))
+	out.Set("WeightMult", string(v.WeightMult))
+
+	return out
+}
+
+func crystallineMarshalPobTradeSearchWeights(v *pob.TradeSearchWeights) any {
+	if v == nil {
+		return nil
+	}
+
+	out := crystallineObjects.New()
+
+	out.Set("Stats", crystallineJSON(func(b []byte, ok *bool) []byte {
+		if items0 := v.Stats; items0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '[')
+			for i0 := range items0 {
+				if i0 > 0 {
+					b = append(b, ',')
+				}
+
+				b = crystallineAppendPobTradeSearchStat(b, &items0[i0], ok)
+			}
+
+			b = append(b, ']')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			items := v.Stats
+			if items == nil {
+				return nil
+			}
+
+			out := make([]any, 0, len(items))
+			for i := range items {
+				out = append(out, crystallineMarshalPobTradeSearchStat(&items[i]))
+			}
+
+			return out
+		}()
+	}))
 
 	return out
 }
@@ -52095,6 +52317,21 @@ func crystallineAppendPobItemSet(b []byte, v *pob.ItemSet, ok *bool) []byte {
 
 		b = append(b, ']')
 	}
+	b = append(b, ",\"SocketIDURLs\":"...)
+	if items0 := v.SocketIDURLs; items0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '[')
+		for i0 := range items0 {
+			if i0 > 0 {
+				b = append(b, ',')
+			}
+
+			b = crystallineAppendPobSocketIDURL(b, &items0[i0], ok)
+		}
+
+		b = append(b, ']')
+	}
 
 	return append(b, '}')
 }
@@ -52148,6 +52385,8 @@ func crystallineAppendPobItems(b []byte, v *pob.Items, ok *bool) []byte {
 
 		b = append(b, ']')
 	}
+	b = append(b, ",\"TradeSearchWeights\":"...)
+	b = crystallineAppendPobTradeSearchWeights(b, v.TradeSearchWeights, ok)
 
 	return append(b, '}')
 }
@@ -52173,6 +52412,8 @@ func crystallineAppendPobOverride(b []byte, v *pob.Override, ok *bool) []byte {
 	} else {
 		b = crystallineAppendString(b, string((*v.ActiveEffectImage)))
 	}
+	b = append(b, ",\"Lines\":"...)
+	b = crystallineAppendString(b, string(v.Lines))
 
 	return append(b, '}')
 }
@@ -52216,6 +52457,12 @@ func crystallineAppendPobSlot(b []byte, v *pob.Slot, ok *bool) []byte {
 	b = crystallineAppendString(b, string(v.Name))
 	b = append(b, ",\"Active\":"...)
 	b = strconv.AppendBool(b, bool(v.Active))
+	b = append(b, ",\"ItemPbURL\":"...)
+	if v.ItemPbURL == nil {
+		b = append(b, "null"...)
+	} else {
+		b = crystallineAppendString(b, string((*v.ItemPbURL)))
+	}
 
 	return append(b, '}')
 }
@@ -52229,6 +52476,21 @@ func crystallineAppendPobSocket(b []byte, v *pob.Socket, ok *bool) []byte {
 	b = crystallineAppendNumber(b, float64(v.ItemID), ok)
 	b = append(b, ",\"NodeID\":"...)
 	b = crystallineAppendNumber(b, float64(v.NodeID), ok)
+
+	return append(b, '}')
+}
+
+func crystallineAppendPobSocketIDURL(b []byte, v *pob.SocketIDURL, ok *bool) []byte {
+	if v == nil {
+		return append(b, "null"...)
+	}
+
+	b = append(b, "{\"Name\":"...)
+	b = crystallineAppendString(b, string(v.Name))
+	b = append(b, ",\"NodeID\":"...)
+	b = crystallineAppendNumber(b, float64(v.NodeID), ok)
+	b = append(b, ",\"ItemPbURL\":"...)
+	b = crystallineAppendString(b, string(v.ItemPbURL))
 
 	return append(b, '}')
 }
@@ -52337,9 +52599,56 @@ func crystallineAppendPobTimelessData(b []byte, v *pob.TimelessData, ok *bool) [
 	b = append(b, ",\"SocketAllocate\":"...)
 	b = crystallineAppendString(b, string(v.SocketAllocate))
 	b = append(b, ",\"SearchList\":"...)
-	b = crystallineAppendString(b, string(v.SearchList))
+	if v.SearchList == nil {
+		b = append(b, "null"...)
+	} else {
+		b = crystallineAppendString(b, string((*v.SearchList)))
+	}
 	b = append(b, ",\"SearchListFallback\":"...)
-	b = crystallineAppendString(b, string(v.SearchListFallback))
+	if v.SearchListFallback == nil {
+		b = append(b, "null"...)
+	} else {
+		b = crystallineAppendString(b, string((*v.SearchListFallback)))
+	}
+
+	return append(b, '}')
+}
+
+func crystallineAppendPobTradeSearchStat(b []byte, v *pob.TradeSearchStat, ok *bool) []byte {
+	if v == nil {
+		return append(b, "null"...)
+	}
+
+	b = append(b, "{\"Label\":"...)
+	b = crystallineAppendString(b, string(v.Label))
+	b = append(b, ",\"Stat\":"...)
+	b = crystallineAppendString(b, string(v.Stat))
+	b = append(b, ",\"WeightMult\":"...)
+	b = crystallineAppendString(b, string(v.WeightMult))
+
+	return append(b, '}')
+}
+
+func crystallineAppendPobTradeSearchWeights(b []byte, v *pob.TradeSearchWeights, ok *bool) []byte {
+	if v == nil {
+		return append(b, "null"...)
+	}
+
+	b = append(b, "{\"Stats\":"...)
+	if items0 := v.Stats; items0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '[')
+		for i0 := range items0 {
+			if i0 > 0 {
+				b = append(b, ',')
+			}
+
+			b = crystallineAppendPobTradeSearchStat(b, &items0[i0], ok)
+		}
+
+		b = append(b, ']')
+	}
 
 	return append(b, '}')
 }
@@ -61824,7 +62133,7 @@ func crystallineToPobGem(value js.Value) (pob.Gem, error) {
 	return out, nil
 }
 
-var crystallineKnownPobImport = map[string]bool{"ExportParty": true}
+var crystallineKnownPobImport = map[string]bool{"LastRealm": true, "LastLeague": true, "LastAccountHash": true, "LastCharacterHash": true, "ExportParty": true, "ImportLink": true}
 
 func crystallineToPobImport(value js.Value) (pob.Import, error) {
 	var out pob.Import
@@ -61855,6 +62164,42 @@ func crystallineToPobImport(value js.Value) (pob.Import, error) {
 		return out, err
 	}
 
+	if property := value.Get("LastRealm"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToPtrString(property)
+		if err != nil {
+			return out, errors.New("pob.Import.LastRealm: " + err.Error())
+		}
+
+		out.LastRealm = converted
+	}
+
+	if property := value.Get("LastLeague"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToPtrString(property)
+		if err != nil {
+			return out, errors.New("pob.Import.LastLeague: " + err.Error())
+		}
+
+		out.LastLeague = converted
+	}
+
+	if property := value.Get("LastAccountHash"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToPtrString(property)
+		if err != nil {
+			return out, errors.New("pob.Import.LastAccountHash: " + err.Error())
+		}
+
+		out.LastAccountHash = converted
+	}
+
+	if property := value.Get("LastCharacterHash"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToPtrString(property)
+		if err != nil {
+			return out, errors.New("pob.Import.LastCharacterHash: " + err.Error())
+		}
+
+		out.LastCharacterHash = converted
+	}
+
 	if property := value.Get("ExportParty"); !property.IsUndefined() && !property.IsNull() {
 		converted, err := crystallineToBool(property)
 		if err != nil {
@@ -61862,6 +62207,15 @@ func crystallineToPobImport(value js.Value) (pob.Import, error) {
 		}
 
 		out.ExportParty = converted
+	}
+
+	if property := value.Get("ImportLink"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToPtrString(property)
+		if err != nil {
+			return out, errors.New("pob.Import.ImportLink: " + err.Error())
+		}
+
+		out.ImportLink = converted
 	}
 
 	return out, nil
@@ -62043,7 +62397,7 @@ func crystallineToPobItem(value js.Value) (pob.Item, error) {
 	return out, nil
 }
 
-var crystallineKnownPobItemSet = map[string]bool{"ID": true, "Title": true, "UseSecondWeaponSet": true, "Slots": true}
+var crystallineKnownPobItemSet = map[string]bool{"ID": true, "Title": true, "UseSecondWeaponSet": true, "Slots": true, "SocketIDURLs": true}
 
 func crystallineToPobItemSet(value js.Value) (pob.ItemSet, error) {
 	var out pob.ItemSet
@@ -62110,10 +62464,19 @@ func crystallineToPobItemSet(value js.Value) (pob.ItemSet, error) {
 		out.Slots = converted
 	}
 
+	if property := value.Get("SocketIDURLs"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToSliceOfPobSocketIDURL(property)
+		if err != nil {
+			return out, errors.New("pob.ItemSet.SocketIDURLs: " + err.Error())
+		}
+
+		out.SocketIDURLs = converted
+	}
+
 	return out, nil
 }
 
-var crystallineKnownPobItems = map[string]bool{"ActiveItemSet": true, "UseSecondWeaponSet": true, "ShowStatDifferences": true, "ItemSets": true, "Items": true}
+var crystallineKnownPobItems = map[string]bool{"ActiveItemSet": true, "UseSecondWeaponSet": true, "ShowStatDifferences": true, "ItemSets": true, "Items": true, "TradeSearchWeights": true}
 
 func crystallineToPobItems(value js.Value) (pob.Items, error) {
 	var out pob.Items
@@ -62189,6 +62552,15 @@ func crystallineToPobItems(value js.Value) (pob.Items, error) {
 		out.Items = converted
 	}
 
+	if property := value.Get("TradeSearchWeights"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToPtrPobTradeSearchWeights(property)
+		if err != nil {
+			return out, errors.New("pob.Items.TradeSearchWeights: " + err.Error())
+		}
+
+		out.TradeSearchWeights = converted
+	}
+
 	return out, nil
 }
 
@@ -62203,7 +62575,7 @@ func crystallineToPobOilType(value js.Value) (pob.OilType, error) {
 	return pob.OilType(converted), nil
 }
 
-var crystallineKnownPobOverride = map[string]bool{"NodeID": true, "DN": true, "Icon": true, "ActiveEffectImage": true}
+var crystallineKnownPobOverride = map[string]bool{"NodeID": true, "DN": true, "Icon": true, "ActiveEffectImage": true, "Lines": true}
 
 func crystallineToPobOverride(value js.Value) (pob.Override, error) {
 	var out pob.Override
@@ -62268,6 +62640,15 @@ func crystallineToPobOverride(value js.Value) (pob.Override, error) {
 		}
 
 		out.ActiveEffectImage = converted
+	}
+
+	if property := value.Get("Lines"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToString(property)
+		if err != nil {
+			return out, errors.New("pob.Override.Lines: " + err.Error())
+		}
+
+		out.Lines = converted
 	}
 
 	return out, nil
@@ -63162,7 +63543,7 @@ func crystallineToPobSkills(value js.Value) (pob.Skills, error) {
 	return out, nil
 }
 
-var crystallineKnownPobSlot = map[string]bool{"ItemID": true, "Name": true, "Active": true}
+var crystallineKnownPobSlot = map[string]bool{"ItemID": true, "Name": true, "Active": true, "ItemPbURL": true}
 
 func crystallineToPobSlot(value js.Value) (pob.Slot, error) {
 	var out pob.Slot
@@ -63220,6 +63601,15 @@ func crystallineToPobSlot(value js.Value) (pob.Slot, error) {
 		out.Active = converted
 	}
 
+	if property := value.Get("ItemPbURL"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToPtrString(property)
+		if err != nil {
+			return out, errors.New("pob.Slot.ItemPbURL: " + err.Error())
+		}
+
+		out.ItemPbURL = converted
+	}
+
 	return out, nil
 }
 
@@ -63270,6 +63660,67 @@ func crystallineToPobSocket(value js.Value) (pob.Socket, error) {
 		}
 
 		out.NodeID = converted
+	}
+
+	return out, nil
+}
+
+var crystallineKnownPobSocketIDURL = map[string]bool{"Name": true, "NodeID": true, "ItemPbURL": true}
+
+func crystallineToPobSocketIDURL(value js.Value) (pob.SocketIDURL, error) {
+	var out pob.SocketIDURL
+
+	if value.IsUndefined() || value.IsNull() {
+		return out, errors.New("pob.SocketIDURL: expected an object, got null")
+	}
+
+	if handle, ok := crystallineHandleOf(value); ok {
+		resolved, found := crystallineResolve(handle)
+		if !found {
+			return out, errors.New("pob.SocketIDURL: the value behind this handle has been released")
+		}
+
+		typed, ok := resolved.(*pob.SocketIDURL)
+		if !ok {
+			return out, errors.New("pob.SocketIDURL: handle refers to a different type")
+		}
+
+		return *typed, nil
+	}
+
+	if value.Type() != js.TypeObject {
+		return out, errors.New("pob.SocketIDURL: expected an object")
+	}
+
+	if err := crystallineUnknownProperty(value, "pob.SocketIDURL", crystallineKnownPobSocketIDURL); err != nil {
+		return out, err
+	}
+
+	if property := value.Get("Name"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToString(property)
+		if err != nil {
+			return out, errors.New("pob.SocketIDURL.Name: " + err.Error())
+		}
+
+		out.Name = converted
+	}
+
+	if property := value.Get("NodeID"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToInt(property)
+		if err != nil {
+			return out, errors.New("pob.SocketIDURL.NodeID: " + err.Error())
+		}
+
+		out.NodeID = converted
+	}
+
+	if property := value.Get("ItemPbURL"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToString(property)
+		if err != nil {
+			return out, errors.New("pob.SocketIDURL.ItemPbURL: " + err.Error())
+		}
+
+		out.ItemPbURL = converted
 	}
 
 	return out, nil
@@ -63564,7 +64015,7 @@ func crystallineToPobTimelessData(value js.Value) (pob.TimelessData, error) {
 	}
 
 	if property := value.Get("SearchList"); !property.IsUndefined() && !property.IsNull() {
-		converted, err := crystallineToString(property)
+		converted, err := crystallineToPtrString(property)
 		if err != nil {
 			return out, errors.New("pob.TimelessData.SearchList: " + err.Error())
 		}
@@ -63573,12 +64024,116 @@ func crystallineToPobTimelessData(value js.Value) (pob.TimelessData, error) {
 	}
 
 	if property := value.Get("SearchListFallback"); !property.IsUndefined() && !property.IsNull() {
-		converted, err := crystallineToString(property)
+		converted, err := crystallineToPtrString(property)
 		if err != nil {
 			return out, errors.New("pob.TimelessData.SearchListFallback: " + err.Error())
 		}
 
 		out.SearchListFallback = converted
+	}
+
+	return out, nil
+}
+
+var crystallineKnownPobTradeSearchStat = map[string]bool{"Label": true, "Stat": true, "WeightMult": true}
+
+func crystallineToPobTradeSearchStat(value js.Value) (pob.TradeSearchStat, error) {
+	var out pob.TradeSearchStat
+
+	if value.IsUndefined() || value.IsNull() {
+		return out, errors.New("pob.TradeSearchStat: expected an object, got null")
+	}
+
+	if handle, ok := crystallineHandleOf(value); ok {
+		resolved, found := crystallineResolve(handle)
+		if !found {
+			return out, errors.New("pob.TradeSearchStat: the value behind this handle has been released")
+		}
+
+		typed, ok := resolved.(*pob.TradeSearchStat)
+		if !ok {
+			return out, errors.New("pob.TradeSearchStat: handle refers to a different type")
+		}
+
+		return *typed, nil
+	}
+
+	if value.Type() != js.TypeObject {
+		return out, errors.New("pob.TradeSearchStat: expected an object")
+	}
+
+	if err := crystallineUnknownProperty(value, "pob.TradeSearchStat", crystallineKnownPobTradeSearchStat); err != nil {
+		return out, err
+	}
+
+	if property := value.Get("Label"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToString(property)
+		if err != nil {
+			return out, errors.New("pob.TradeSearchStat.Label: " + err.Error())
+		}
+
+		out.Label = converted
+	}
+
+	if property := value.Get("Stat"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToString(property)
+		if err != nil {
+			return out, errors.New("pob.TradeSearchStat.Stat: " + err.Error())
+		}
+
+		out.Stat = converted
+	}
+
+	if property := value.Get("WeightMult"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToString(property)
+		if err != nil {
+			return out, errors.New("pob.TradeSearchStat.WeightMult: " + err.Error())
+		}
+
+		out.WeightMult = converted
+	}
+
+	return out, nil
+}
+
+var crystallineKnownPobTradeSearchWeights = map[string]bool{"Stats": true}
+
+func crystallineToPobTradeSearchWeights(value js.Value) (pob.TradeSearchWeights, error) {
+	var out pob.TradeSearchWeights
+
+	if value.IsUndefined() || value.IsNull() {
+		return out, errors.New("pob.TradeSearchWeights: expected an object, got null")
+	}
+
+	if handle, ok := crystallineHandleOf(value); ok {
+		resolved, found := crystallineResolve(handle)
+		if !found {
+			return out, errors.New("pob.TradeSearchWeights: the value behind this handle has been released")
+		}
+
+		typed, ok := resolved.(*pob.TradeSearchWeights)
+		if !ok {
+			return out, errors.New("pob.TradeSearchWeights: handle refers to a different type")
+		}
+
+		return *typed, nil
+	}
+
+	if value.Type() != js.TypeObject {
+		return out, errors.New("pob.TradeSearchWeights: expected an object")
+	}
+
+	if err := crystallineUnknownProperty(value, "pob.TradeSearchWeights", crystallineKnownPobTradeSearchWeights); err != nil {
+		return out, err
+	}
+
+	if property := value.Get("Stats"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToSliceOfPobTradeSearchStat(property)
+		if err != nil {
+			return out, errors.New("pob.TradeSearchWeights.Stats: " + err.Error())
+		}
+
+		out.Stats = converted
 	}
 
 	return out, nil
@@ -64634,6 +65189,33 @@ func crystallineToPtrPobTimelessData(value js.Value) (*pob.TimelessData, error) 
 	}
 
 	built, err := crystallineToPobTimelessData(value)
+	if err != nil {
+		return nil, err
+	}
+
+	return &built, nil
+}
+
+func crystallineToPtrPobTradeSearchWeights(value js.Value) (*pob.TradeSearchWeights, error) {
+	if value.IsUndefined() || value.IsNull() {
+		return nil, nil
+	}
+
+	if handle, ok := crystallineHandleOf(value); ok {
+		resolved, found := crystallineResolve(handle)
+		if !found {
+			return nil, errors.New("the value behind this handle has been released")
+		}
+
+		typed, ok := resolved.(*pob.TradeSearchWeights)
+		if !ok {
+			return nil, errors.New("handle refers to a different type")
+		}
+
+		return typed, nil
+	}
+
+	built, err := crystallineToPobTradeSearchWeights(value)
 	if err != nil {
 		return nil, err
 	}
@@ -67773,6 +68355,29 @@ func crystallineToSliceOfPobSocket(value js.Value) ([]pob.Socket, error) {
 	return out, nil
 }
 
+func crystallineToSliceOfPobSocketIDURL(value js.Value) ([]pob.SocketIDURL, error) {
+	if value.IsUndefined() || value.IsNull() {
+		return nil, nil
+	}
+
+	if !js.Global().Get("Array").Call("isArray", value).Bool() {
+		return nil, errors.New("expected an array")
+	}
+
+	out := make([]pob.SocketIDURL, 0, value.Length())
+
+	for i := 0; i < value.Length(); i++ {
+		item, err := crystallineToPobSocketIDURL(value.Index(i))
+		if err != nil {
+			return nil, errors.New("[" + strconv.Itoa(i) + "]: " + err.Error())
+		}
+
+		out = append(out, item)
+	}
+
+	return out, nil
+}
+
 func crystallineToSliceOfPobSpec(value js.Value) ([]pob.Spec, error) {
 	if value.IsUndefined() || value.IsNull() {
 		return nil, nil
@@ -67809,6 +68414,29 @@ func crystallineToSliceOfPobSpectre(value js.Value) ([]pob.Spectre, error) {
 
 	for i := 0; i < value.Length(); i++ {
 		item, err := crystallineToPobSpectre(value.Index(i))
+		if err != nil {
+			return nil, errors.New("[" + strconv.Itoa(i) + "]: " + err.Error())
+		}
+
+		out = append(out, item)
+	}
+
+	return out, nil
+}
+
+func crystallineToSliceOfPobTradeSearchStat(value js.Value) ([]pob.TradeSearchStat, error) {
+	if value.IsUndefined() || value.IsNull() {
+		return nil, nil
+	}
+
+	if !js.Global().Get("Array").Call("isArray", value).Bool() {
+		return nil, errors.New("expected an array")
+	}
+
+	out := make([]pob.TradeSearchStat, 0, value.Length())
+
+	for i := 0; i < value.Length(); i++ {
+		item, err := crystallineToPobTradeSearchStat(value.Index(i))
 		if err != nil {
 			return nil, errors.New("[" + strconv.Itoa(i) + "]: " + err.Error())
 		}

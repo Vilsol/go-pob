@@ -1,0 +1,8 @@
+#!/bin/sh
+# The AppImage's entry point. The host provides WebKit2GTK 4.1 and GTK 3; the image adds GLib's TLS module (WebKit fetches
+# https://data.pob.gg through it) and GTK 3's compiled GSettings schemas (the file chooser aborts without them), both
+# searched before the host's own.
+here=$(dirname "$(readlink -f "$0")")
+export GIO_EXTRA_MODULES="$here/usr/lib/gio/modules${GIO_EXTRA_MODULES:+:$GIO_EXTRA_MODULES}"
+export GSETTINGS_SCHEMA_DIR="$here/usr/share/glib-2.0/schemas${GSETTINGS_SCHEMA_DIR:+:$GSETTINGS_SCHEMA_DIR}"
+exec "$here/usr/bin/go-pob" "$@"

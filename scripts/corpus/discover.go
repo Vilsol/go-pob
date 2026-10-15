@@ -445,6 +445,8 @@ func discoverForum(ctx context.Context, c *client, idx *linkIndex, st *discoverS
 	return nil
 }
 
+var errFetchNotFound = errors.New(string(fetchNotFound))
+
 func getWithRetry(ctx context.Context, c *client, host, u string, attempts int, verbose, htmlExpected bool) ([]byte, error) {
 	var lastNote string
 	for i := 1; i <= attempts; i++ {
@@ -454,6 +456,9 @@ func getWithRetry(ctx context.Context, c *client, host, u string, attempts int, 
 		}
 		if r.class == fetchOK {
 			return r.body, nil
+		}
+		if r.class == fetchNotFound {
+			return nil, fmt.Errorf("%w (HTTP %d): %s", errFetchNotFound, r.code, r.note)
 		}
 		if r.class.terminal() {
 			return nil, fmt.Errorf("%s (HTTP %d): %s", r.class, r.code, r.note)

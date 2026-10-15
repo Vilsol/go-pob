@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { unsavedName } from './build_name.svelte';
+  import { opening, unsavedName } from './build_name.svelte';
   import { resetAccountSession } from './account_session.svelte';
   import { onMount } from 'svelte';
   import { goto, pushState } from '$app/navigation';
@@ -153,6 +153,7 @@
     const b = byId(id);
     if (!b) return;
     const path = pathOf(b.folder, b.name);
+    opening.modFlag = false;
     currentBuildPath.current = path;
     unsavedName.imported = false;
     unsavedName.predefined = undefined;
@@ -165,6 +166,7 @@
   $effect(() => saveBuildSort($state.snapshot(sort)));
 
   const newBuild = () => {
+    opening.modFlag = false;
     void syncWrap.NewBuild({ level: get(defaultCharLevel), gemQuality: get(defaultGemQuality) });
     unsavedName.imported = false;
     unsavedName.predefined = undefined;

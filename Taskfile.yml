@@ -49,6 +49,83 @@ tasks:
       - '{{.NICE}} pnpm install'
       - '{{.NICE}} pnpm run dev --clearScreen false'
 
+  build-desktop:
+    desc: "Build the Linux desktop app into desktop/bin/go-pob (TAGS=noimportproxy builds it without the import proxy)"
+    deps: [desktop-dist]
+    cmds:
+      - '{{.NICE}} ./desktop/scripts/build.sh desktop/bin/go-pob production {{.TAGS}}'
+
+  desktop-dist:
+    desc: "The frontend as every desktop build embeds it (VITE_DESKTOP=1, go-pob.wasm.gz only) into desktop/dist"
+    deps: [build-go]
+    cmds:
+      - '{{.NICE}} gzip -kf9 frontend/static/go-pob.wasm'
+      - 'cd frontend && {{.NICE}} env VITE_DESKTOP=1 npx vite build --logLevel warn'
+      - rsync -a --delete --exclude .gitkeep --exclude go-pob.wasm --exclude go-pob.wasm.br --exclude service-worker.js --exclude _headers frontend/build/ desktop/dist/
+
+  dev-desktop:
+    desc: "Run the desktop host (devtools on) over vite dev with VITE_DESKTOP=1; reload with Ctrl+R (PORT=5180, TAGS=)"
+    deps: [build-go]
+    cmds:
+      - ./desktop/scripts/dev.sh {{.TAGS}}
+
+  run-desktop-headless:
+    desc: "Run desktop/bin/go-pob on a private Xvfb display with PROBE=<js> injected (desktop/e2e/); SECS=120, DESK_HOME= keeps state"
+    requires:
+      vars: [PROBE]
+    cmds:
+      - ./desktop/scripts/run-headless.sh desktop/bin/go-pob {{.PROBE}} {{.SECS | default "120"}}
+
+  e2e-desktop:
+    desc: "The desktop end-to-end proof, headless: boot, PoB's Builds folder, New build, open + save three corpus builds, export, relaunch on the disk cache, reopen (build-desktop first)"
+    cmds:
+      - '{{.NICE}} ./desktop/e2e/run.sh'
+
+  package-desktop:
+    desc: "Linux release into desktop/bin/release (OUT=): binary, AppImage, deb, rpm, built in an Ubuntu 24.04 container (VERSION=, UPDATE_URL=, UPDATE_PUBLIC_KEY=)"
+    deps: [build-desktop]
+    cmds:
+      - '{{.NICE}} ./desktop/scripts/package.sh {{.OUT}}'
+
+  package-desktop-windows:
+    desc: "Windows release into desktop/bin/release-windows (OUT=): portable zip and per-user NSIS installer, cross-compiled without cgo, unsigned (VERSION=, UPDATE_URL=, UPDATE_PUBLIC_KEY=)"
+    deps: [desktop-dist]
+    cmds:
+      - '{{.NICE}} ./desktop/scripts/package-windows.sh {{.OUT}}'
+
+  package-desktop-macos:
+    desc: "macOS release into desktop/bin/release-macos (OUT=), on a Mac only: per architecture (ARCHS=) a go-pob.app, ad-hoc signed, in a dmg and a zip (VERSION=, UPDATE_URL=, UPDATE_PUBLIC_KEY=; SIGN_IDENTITY=, NOTARY_PROFILE= sign and notarise)"
+    deps: [desktop-dist]
+    cmds:
+      - '{{.NICE}} ./desktop/build/darwin/package.sh {{.OUT | default "desktop/bin/release-macos"}}'
+
+  e2e-desktop-release:
+    desc: "Each Linux package headless in a clean container: TLS game data, New build, GTK file chooser; the deb/rpm installs (package-desktop first; OUT=, CASES=)"
+    cmds:
+      - '{{.NICE}} ./desktop/release-e2e/run.sh {{.OUT | default "desktop/bin/release"}} {{.CASES}}'
+
+  e2e-desktop-update:
+    desc: "The updater proof: OLD/NEW package-desktop outputs built with UPDATE_URL=http://127.0.0.1:18731/update.json and KEY's public half; signed release installs, tampered/unsigned/other-key refused"
+    requires:
+      vars: [OLD, NEW, KEY]
+    cmds:
+      - '{{.NICE}} ./desktop/release-e2e/update.sh {{.OLD}} {{.NEW}} {{.KEY}}'
+
+  e2e-desktop-update-windows:
+    desc: "The updater proof on Windows, under Wine with no display: the desktop's updater (windowless) swaps its exe for a signed go-pob-windows-amd64.zip and relaunches; tampered/unsigned/other-key refused"
+    cmds:
+      - '{{.NICE}} ./desktop/release-e2e/update-windows.sh'
+
+  test-desktop:
+    desc: "The desktop host's Go tests (no cgo: desktop/host only)"
+    cmds:
+      - '{{.NICE}} env -C desktop go test ./host/...'
+
+  lint-desktop:
+    desc: "golangci-lint over the desktop module (TAGS=noimportproxy lints the build without the import proxy)"
+    cmds:
+      - '{{.NICE}} env -C desktop ./scripts/gtk-env.sh golangci-lint run --build-tags gtk3{{if .TAGS}},{{.TAGS}}{{end}} ./...'
+
   storybook:
     desc: "Storybook for the design-spec components (http://localhost:6006)"
     dir: ./frontend/

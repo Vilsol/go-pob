@@ -1,6 +1,9 @@
 package main
 
 import (
+	"errors"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 	"time"
 )
@@ -48,5 +51,25 @@ func TestCharacterIDIsFilesystemSafe(t *testing.T) {
 		if got := characterID(in[0], in[1]); got != want {
 			t.Errorf("characterID(%q,%q) = %q, want %q", in[0], in[1], got, want)
 		}
+	}
+}
+
+// TestGetWithRetryNamesAGoneCharacter: the ladder checkpoints a 404 instead of retrying it on every restart.
+func TestGetWithRetryNamesAGoneCharacter(t *testing.T) {
+	code := http.StatusNotFound
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(code)
+	}))
+	defer srv.Close()
+	c := newClient(newHostLimiter(0, nil), "test", false)
+
+	_, err := getWithRetry(t.Context(), c, "example.test", srv.URL, 1, false, false)
+	if !errors.Is(err, errFetchNotFound) {
+		t.Errorf("a 404 returned %v, want errFetchNotFound", err)
+	}
+	code = http.StatusForbidden
+	_, err = getWithRetry(t.Context(), c, "example.test", srv.URL, 1, false, false)
+	if err == nil || errors.Is(err, errFetchNotFound) {
+		t.Errorf("a 403 returned %v, want a retryable failure that is not errFetchNotFound", err)
 	}
 }

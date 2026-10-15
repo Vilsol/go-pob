@@ -18,3 +18,21 @@ func TestPlayerStatLoadsANonNumericValue(t *testing.T) {
 		t.Fatalf("got %+v", b.Stats)
 	}
 }
+
+// TestPlayerStatWritesPoBSpelling: PoB's spellings of tostring(statVal).
+func TestPlayerStatWritesPoBSpelling(t *testing.T) {
+	for _, value := range []string{"318063578.78706", "inf", "0.9568", "-730", "1e+15"} {
+		in := `<PlayerStat value="` + value + `" stat="X"></PlayerStat>`
+		var p PlayerStat
+		if err := xml.Unmarshal([]byte(in), &p); err != nil {
+			t.Fatal(err)
+		}
+		out, err := xml.Marshal(p)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if string(out) != in {
+			t.Errorf("%s wrote back as %s", in, out)
+		}
+	}
+}

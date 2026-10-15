@@ -1,0 +1,15 @@
+{
+	"fixed": {
+		"file_version": "0.0.0"
+	},
+	"info": {
+		"0000": {
+			"ProductVersion": "0.0.0",
+			"CompanyName": "go-pob",
+			"FileDescription": "go-pob",
+			"LegalCopyright": "MIT",
+			"ProductName": "go-pob",
+			"Comments": "Path of Building, in Go"
+		}
+	}
+}

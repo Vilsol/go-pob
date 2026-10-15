@@ -3021,7 +3021,12 @@ export declare namespace pob {
     readonly SkillMinionItemSetCalcs?: number;
   }
   interface Import {
+    LastRealm?: string;
+    LastLeague?: string;
+    LastAccountHash?: string;
+    LastCharacterHash?: string;
     ExportParty: boolean;
+    ImportLink?: string;
     /** Releases the Go resources behind this wrapper. */
     release(): void;
     [Symbol.dispose](): void;
@@ -3047,6 +3052,7 @@ export declare namespace pob {
     readonly Title?: string;
     readonly UseSecondWeaponSet?: boolean;
     readonly Slots?: Array<pob.Slot>;
+    readonly SocketIDURLs?: Array<pob.SocketIDURL>;
   }
   interface Items {
     readonly ActiveItemSet: number;
@@ -3054,12 +3060,14 @@ export declare namespace pob {
     readonly ShowStatDifferences?: boolean;
     readonly ItemSets: Array<pob.ItemSet>;
     readonly Items?: Array<pob.Item>;
+    readonly TradeSearchWeights?: pob.TradeSearchWeights;
   }
   interface Override {
     readonly NodeID: number;
     readonly DN: string;
     readonly Icon?: string;
     readonly ActiveEffectImage?: string;
+    readonly Lines: string;
   }
   interface Party {
     Destination: string;
@@ -3310,10 +3318,16 @@ export declare namespace pob {
     readonly ItemID: number;
     readonly Name: string;
     readonly Active: boolean;
+    readonly ItemPbURL?: string;
   }
   interface Socket {
     readonly ItemID: number;
     readonly NodeID: number;
+  }
+  interface SocketIDURL {
+    readonly Name: string;
+    readonly NodeID: number;
+    readonly ItemPbURL: string;
   }
   interface Spec {
     readonly ClassID: pob.ClassID;
@@ -3341,8 +3355,16 @@ export declare namespace pob {
     readonly SocketFilter: string;
     readonly SocketFilterDistance: string;
     readonly SocketAllocate: string;
-    readonly SearchList: string;
-    readonly SearchListFallback: string;
+    readonly SearchList?: string;
+    readonly SearchListFallback?: string;
+  }
+  interface TradeSearchStat {
+    readonly Label: string;
+    readonly Stat: string;
+    readonly WeightMult: string;
+  }
+  interface TradeSearchWeights {
+    readonly Stats?: Array<pob.TradeSearchStat>;
   }
   interface Tree {
     readonly ActiveSpec: number;

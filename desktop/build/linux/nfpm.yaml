@@ -1,0 +1,35 @@
+name: go-pob
+arch: amd64
+platform: linux
+version: ${VERSION}
+release: "1"
+section: games
+priority: optional
+maintainer: ${MAINTAINER}
+description: Path of Building, in Go
+homepage: https://github.com/Vilsol/go-pob
+license: MIT
+
+contents:
+  - src: ${STAGE}/go-pob
+    dst: /usr/bin/go-pob
+    expand: true
+  - src: ./icon.png
+    dst: /usr/share/icons/hicolor/512x512/apps/go-pob.png
+  - src: ./build/linux/go-pob.desktop
+    dst: /usr/share/applications/go-pob.desktop
+
+depends:
+  - libgtk-3-0t64 | libgtk-3-0
+  - libwebkit2gtk-4.1-0
+  - glib-networking
+overrides:
+  rpm:
+    depends:
+      - gtk3
+      - webkit2gtk4.1
+      - glib-networking
+
+scripts:
+  postinstall: ./build/linux/postinstall.sh
+  postremove: ./build/linux/postinstall.sh

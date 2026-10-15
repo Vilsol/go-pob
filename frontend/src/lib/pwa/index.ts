@@ -2,6 +2,8 @@ import { get, readable, writable, type Readable } from 'svelte/store';
 import { base } from '$app/paths';
 import { browser, dev, version } from '$app/environment';
 import { isCdnAsset } from './hosts';
+import { DESKTOP } from './desktop';
+import { applyDesktopUpdate, checkDesktopUpdate } from './desktop_update';
 import { addToast } from '$lib/design/toast';
 import { changesSince, parseChangelog, type ChangeVersion } from '$lib/design/help';
 
@@ -107,12 +109,16 @@ const keepCdn = (entries: PerformanceEntry[]) => keepForOffline(entries.map((e) 
 /* Main.lua:374-381 */
 export const checkForUpdate = async (reg = registration) => {
   if (get(updateCheckRunning)) return;
-  if (!reg) {
+  if (!reg && !DESKTOP) {
     addToast('Update check failed!\nThe service worker is off here (?sw=off, or a development server), so no update can be fetched.');
     return;
   }
   updateCheckRunning.set(true);
   try {
+    if (!reg) {
+      if (await checkDesktopUpdate()) updateAvailable.set(true);
+      return;
+    }
     await reg.update();
     const installing = reg.installing;
     if (installing) {
@@ -131,6 +137,10 @@ export const checkForUpdate = async (reg = registration) => {
 };
 
 export const applyUpdate = () => {
+  if (DESKTOP) {
+    void applyDesktopUpdate();
+    return;
+  }
   const waiting = registration?.waiting;
   if (!waiting) return;
   reloading = true;
@@ -150,7 +160,7 @@ const requestPersistence = async () => {
 export const startPwa = async () => {
   if (!browser) return;
   requestPersistence().catch((e: unknown) => console.warn('persistent storage request failed', e));
-  if (dev || !('serviceWorker' in navigator)) return;
+  if (dev || DESKTOP || !('serviceWorker' in navigator)) return;
 
   const sw = new URL(location.href).searchParams.get('sw');
   if (sw === 'on') storageSet(OFF_KEY, null);

@@ -45,6 +45,26 @@ run = "task dev-go"
 description = "Vite dev server"
 run = "task dev-frontend"
 
+[tasks.build-desktop]
+description = "Build the Linux desktop app into desktop/bin/go-pob (Wails v3, WebKit2GTK 4.1)"
+run = "task build-desktop"
+
+[tasks.dev-desktop]
+description = "Run the desktop host over vite dev (VITE_DESKTOP=1)"
+run = "task dev-desktop"
+
+[tasks.package-desktop]
+description = "Linux release (binary, AppImage, deb, rpm) into desktop/bin/release, built in an Ubuntu 24.04 container"
+run = "task package-desktop"
+
+[tasks.package-desktop-windows]
+description = "Windows release (portable zip, NSIS installer) into desktop/bin/release-windows, cross-compiled without cgo"
+run = "task package-desktop-windows"
+
+[tasks.package-desktop-macos]
+description = "macOS release (universal .app in a dmg, ad-hoc signed) into desktop/bin/release-macos; on a Mac only"
+run = "task package-desktop-macos"
+
 [tasks.storybook]
 description = "Storybook for the design-spec components (http://localhost:6006)"
 run = "task storybook"

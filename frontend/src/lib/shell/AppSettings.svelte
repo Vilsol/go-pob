@@ -6,6 +6,7 @@
   import { allAffixSliders } from '$lib/design/items';
   import { addToast } from '$lib/design/toast';
   import { checkForUpdate } from '$lib/pwa';
+  import { DESKTOP } from '$lib/pwa/desktop';
   import { zipStore } from './zip';
   import { NODE_POWER_THEMES, type NodePowerTheme } from '$lib/skill_tree/heat';
   import { numberFormat, type NumberFormat } from '$lib/display/number_format';
@@ -214,7 +215,13 @@
           danger: true,
           confirm: 'Clear the cached game data? Builds are kept.'
         },
-        { id: 'exportAll', label: 'Export all builds', kind: 'button', value: 'Export .zip', hint: 'Builds live only in this browser' },
+        {
+          id: 'exportAll',
+          label: 'Export all builds',
+          kind: 'button',
+          value: 'Export .zip',
+          hint: DESKTOP ? 'Every build of the builds folder in one .zip' : 'Builds live only in this browser'
+        },
         {
           id: 'resetAll',
           label: 'Reset all settings',
@@ -232,10 +239,14 @@
     Array.isArray(o) ? o : Object.entries(o ?? {}).flatMap(([k, v]) => (/^\d+$/.test(k) ? [v] : []));
   let dataVersion = $state('…');
   let cacheSize = $state('…');
+  const diskCacheSize = async () => {
+    const res = await fetch('/desktop/fs/cache/?size');
+    if (!res.ok) throw new Error(`cache size: ${res.status}`);
+    return ((await res.json()) as { bytes: number }).bytes;
+  };
   const measure = () =>
-    navigator.storage
-      ?.estimate?.()
-      .then((e) => (cacheSize = `${((e.usage ?? 0) / 1048576).toFixed(1)} MB`))
+    (DESKTOP ? diskCacheSize() : navigator.storage?.estimate?.().then((e) => e.usage ?? 0))
+      ?.then((bytes) => (cacheSize = `${(bytes / 1048576).toFixed(1)} MB`))
       .catch(logError);
   $effect(() => {
     if (!open) return;
@@ -349,8 +360,16 @@
     } else if (id === 'exportAll') {
       const files = (await syncWrap?.ExportBuilds()) ?? [];
       const zip = zipStore(files.map((f) => ({ path: /\.xml$/i.test(f.path) ? f.path : `${f.path}.xml`, data: f.data })));
-      download(`go-pob-builds-${new Date().toISOString().slice(0, 10)}.zip`, zip);
-      addToast(`Exported ${files.length} build${files.length === 1 ? '' : 's'}`);
+      const name = `go-pob-builds-${new Date().toISOString().slice(0, 10)}.zip`;
+      const exported = `Exported ${files.length} build${files.length === 1 ? '' : 's'}`;
+      if (DESKTOP) {
+        const res = await fetch(`/desktop/save?${new URLSearchParams({ name })}`, { method: 'POST', body: zip });
+        if (res.status === 200) addToast(`${exported}\n${await res.text()}`);
+        else if (res.status !== 204) addToast(`Export failed\n${await res.text()}`);
+        return;
+      }
+      download(name, zip);
+      addToast(exported);
     } else if (id === 'resetAll') for (const r of sections.flatMap((x) => x.rows)) set(r.id, r.value);
   };
 </script>

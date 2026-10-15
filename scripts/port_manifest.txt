@@ -4,7 +4,34 @@ builds/parsecache/store.go          GO-NATIVE  content-addressed on-disk store f
 builds/parse_over.go                GO-NATIVE  parses an undo step over the open build, reusing the sections whose saved bytes are unchanged; PoB re-parses every undo state (UndoHandler) and has no counterpart
 builds/parser.go                    GO-NATIVE  encoding/xml decoding of the build file into pob.PathOfBuilding; PoB parses XML with its own xml.lua into UI-class tables, so nothing here has a per-function counterpart
 
+desktop/appimage.go                 GO-NATIVE  Help › Add to applications menu when running from an AppImage; PoB has no installer integration
+desktop/dialogs.go                  GO-NATIVE  GTK file choosers behind host.Dialogs; no PoB analogue
+desktop/platform_darwin.go          GO-NATIVE  macOS menu bar and pob:// / build-file Apple Events; PoB has no macOS host
+desktop/platform_other.go           GO-NATIVE  the Linux side of the per-OS webview hooks; no PoB analogue
+desktop/platform_windows.go         GO-NATIVE  WebView2's runtime-ready and probe injection; no PoB analogue
+desktop/host/documents_other.go     GO-NATIVE  the host's Documents folder off Windows ($HOME/Documents, Wine's default link); stands in for SimpleGraphic's GetUserPath
+desktop/host/documents_windows.go   GO-NATIVE  the Documents known folder (OneDrive-redirected included), as SimpleGraphic's GetUserPath asks Windows for it
+desktop/host/files.go               GO-NATIVE  the export save dialog, build files opened from the menu or a launch, and their import codes; PoB has no file association
+desktop/host/appimage.go            GO-NATIVE  writes an AppImage's desktop entry and pob:// handler into the user's XDG folders; PoB has no file association
+desktop/host/update.go              GO-NATIVE  /desktop/update/*: Wails' updater behind the page's Check for update, signed releases only; PoB's updater is its own Lua (UpdateCheck.lua), the webview host's is Go
+desktop/host/config.go              GO-NATIVE  the desktop's own settings file and the builds-folder choice; PoB keeps its build path in Settings.xml, which the desktop only reads
+desktop/host/dirs.go                GO-NATIVE  the desktop host's config / cache / settings / builds folders; PoB keeps its user path in Main.lua but the webview host is our own
+desktop/host/index.go               GO-NATIVE  rewrites the built index.html for the desktop (bundled fonts, no web manifest); a webview-host concern with no PoB analogue
+desktop/host/pobdir.go              GO-NATIVE  finds PoB's Builds folder on Windows and in Wine / Proton prefixes on Linux, following Main.lua's user path and Settings.xml buildPath; a host-side search with no Lua counterpart
+desktop/host/routes.go              GO-NATIVE  routes /api and /desktop in front of the Wails asset server; no PoB analogue
+desktop/host/spa.go                 GO-NATIVE  serves the static frontend build with a single-page fallback; no PoB analogue
+desktop/host/store.go               GO-NATIVE  storage_init.ts's six storage callbacks over folders on disk; PoB reads its Builds folder directly, the webview cannot
+desktop/importproxy.go              GO-NATIVE  mounts internal/importproxy at /api; no PoB analogue
+desktop/importproxy_none.go         GO-NATIVE  the /api stand-in for a host built without the import proxy; no PoB analogue
+desktop/main.go                     GO-NATIVE  the Wails v3 desktop host: window, menu, asset server; PoB's own window is SimpleGraphic's
+desktop/update.go                   GO-NATIVE  build-time version, update manifest URL and public key; configures app.Updater; no PoB analogue
+desktop/release-e2e/winupdate/main.go GO-NATIVE  the desktop's updater without its window, for the Windows updater proof under Wine; no PoB analogue
+desktop/probe.go                    GO-NATIVE  test hook that injects a probe script and logs its reports for headless runs; no PoB analogue
+
 internal/oraclebin/oraclebin.go     GO-NATIVE  the committed oracle blob's binary side-car: a columnar encoding of test fixture data, generated from the JSONL and keyed by its SHA-256. PoB has no oracle and no fixture format, so there is nothing to cite
+internal/importproxy/jscompat.go    GO-NATIVE  the JS runtime semantics proxy.ts relies on (TextDecoder, URLSearchParams, encodeURIComponent, Number), so the Go and TS import proxies answer alike; PoB has no web proxy
+internal/importproxy/proxy.go       GO-NATIVE  the desktop app's /api/* import relay, a port of frontend/src/lib/import_proxy/proxy.ts (TypeScript, not Lua); PoB fetches the sites itself and needs no relay
+internal/importproxy/sites.go       GO-NATIVE  share.ts's SITES table for the relay, checked against the TS source by its test; PoB's own table is BuildSiteTools.lua, which the TS already transcribes
 
 calculator/active_skill_set.go      PORT       src/Classes/SkillsTab.lua
 calculator/breakdown.go             PORT       src/Modules/CalcBreakdown.lua

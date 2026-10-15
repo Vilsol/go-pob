@@ -2,6 +2,9 @@
 // ImportTab.lua:663-666
 export const unsavedName = $state<{ imported: boolean; predefined?: string }>({ imported: false });
 
+// Build.lua:89-100
+export const opening = { modFlag: false };
+
 export const buildName = (path: string | undefined) => path?.split('/').at(-1) || (unsavedName.imported ? 'Imported build' : 'Unnamed build');
 
 // ImportTab.lua:1925-1931

@@ -56,6 +56,13 @@ let other: { code: string; xml: string };
 let tick: MockInstance;
 const writeText = vi.fn((text: string) => Promise.resolve(void text));
 
+/* Build.lua:89-94 */
+const topBar = async () => {
+  const { opening } = await import('$lib/shell/build_name.svelte');
+  opening.modFlag = false;
+  return render((await import('$lib/shell/AppTopBar.svelte')).default);
+};
+
 const mount = async () => {
   const Page = (await import('./+page.svelte')).default;
   const view = render(Page);
@@ -136,10 +143,12 @@ describe('import/+page.svelte', () => {
     expect(serialize(workerInstance.currentBuild), 'typing alone must not write').not.toBe(other.xml);
     tick.mockClear();
     goto.mockClear();
+    const bar = await topBar();
     await fireEvent.click(go);
     expect(serialize(workerInstance.currentBuild), 'nothing before the confirm').not.toBe(other.xml);
     await confirmImport();
     await vi.waitFor(() => expect(serialize(workerInstance.currentBuild)).toBe(other.xml));
+    await bar.findByRole('button', { name: 'Save (unsaved changes)' });
     expect(tick).toHaveBeenCalledWith('ImportCode');
     await vi.waitFor(() => expect(goto).toHaveBeenCalledWith(expect.stringMatching(/\/tree$/)));
   });
@@ -170,9 +179,11 @@ describe('import/+page.svelte', () => {
     const go = box.getByRole<HTMLButtonElement>('button', { name: 'Import' });
     await vi.waitFor(() => expect(go.disabled).toBe(false));
     tick.mockClear();
+    const bar = await topBar();
     await fireEvent.click(go);
     await vi.waitFor(() => expect(serialize(workerInstance.currentBuild)).toBe(other.xml));
     expect(tick).toHaveBeenCalledWith('ImportCode');
+    await bar.findByRole('button', { name: 'Save (unsaved changes)' });
     await vi.waitFor(() => expect(currentBuildPath.current, 'the new build still saves over the old one').toBe(''));
     const { unsavedName } = await import('$lib/shell/build_name.svelte');
     expect(unsavedName.imported, 'named "Imported build" (ImportTab.lua:665)').toBe(true);

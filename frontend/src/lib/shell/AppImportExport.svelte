@@ -11,7 +11,7 @@
   import { REALMS, UNAVAILABLE, loadExportSite, saveExportSite } from './import_export';
   import { identityOf } from './identity';
   import { downloadBuild, shareBuild } from './link_import';
-  import { unsavedName } from './build_name.svelte';
+  import { opening, unsavedName } from './build_name.svelte';
   import Dialog from '$lib/design/Dialog.svelte';
   import Button from '$lib/design/Button.svelte';
   import PobText from '$lib/design/PobText.svelte';
@@ -91,8 +91,9 @@
       return;
     }
     // ImportTab.lua:663-666
-    const run = () =>
-      syncWrap
+    const run = () => {
+      opening.modFlag = true;
+      return syncWrap
         ?.ImportCode(text)
         .then(() => {
           resetAccountSession();
@@ -103,6 +104,7 @@
           return goto(`${base}/tree`);
         })
         .catch(failed);
+    };
     if (how === 'replace') {
       // ImportTab.lua:648-653
       confirmImport = run;

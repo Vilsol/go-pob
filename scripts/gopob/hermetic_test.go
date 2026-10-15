@@ -12,7 +12,37 @@ import (
 func TestMain(m *testing.M) {
 	_ = os.Setenv("GIT_CONFIG_GLOBAL", os.DevNull)
 	_ = os.Setenv("GIT_CONFIG_NOSYSTEM", "1")
+	_ = os.Setenv("GIT_CONFIG_COUNT", "1")
+	_ = os.Setenv("GIT_CONFIG_KEY_0", "maintenance.auto")
+	_ = os.Setenv("GIT_CONFIG_VALUE_0", "false")
 	os.Exit(m.Run())
+}
+
+func TestFixtureCommitsStartNoBackgroundMaintenance(t *testing.T) {
+	if _, err := exec.LookPath("git"); err != nil {
+		t.Skip("git is not on PATH")
+	}
+	dir := t.TempDir()
+	git := func(env []string, args ...string) string {
+		t.Helper()
+		//nolint:gosec // fixed git arguments this test wrote itself, against a temp repo
+		c := exec.CommandContext(t.Context(), "git", append([]string{"-C", dir}, args...)...)
+		c.Env = append(append(os.Environ(), "GIT_AUTHOR_NAME=t", "GIT_AUTHOR_EMAIL=t@t",
+			"GIT_COMMITTER_NAME=t", "GIT_COMMITTER_EMAIL=t@t"), env...)
+		out, err := c.CombinedOutput()
+		if err != nil {
+			t.Fatalf("git %v: %v\n%s", args, err, out)
+		}
+		return string(out)
+	}
+	git(nil, "init", "-q", "-b", "main")
+	trace := git([]string{"GIT_TRACE=1"}, "commit", "-q", "--allow-empty", "-m", "a")
+	if !strings.Contains(trace, "trace: built-in: git commit") {
+		t.Fatalf("GIT_TRACE printed no trace; this check cannot see a spawned command:\n%s", trace)
+	}
+	if strings.Contains(trace, "maintenance run") {
+		t.Errorf("a fixture commit started background maintenance:\n%s", trace)
+	}
 }
 
 const (

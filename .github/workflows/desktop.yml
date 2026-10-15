@@ -1,0 +1,338 @@
+name: desktop
+
+permissions: read-all
+
+on:
+  push:
+    branches: [dev, main]
+    tags: ['v*']
+    paths: ['desktop/**', '.github/workflows/desktop.yml']
+  pull_request:
+    paths: ['desktop/**', '.github/workflows/desktop.yml']
+  workflow_dispatch:
+
+jobs:
+  frontend:
+    name: Desktop frontend
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+
+      - name: Enable corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: cd frontend && pnpm i
+
+      - name: Build frontend
+        run: |
+          GOOS=js GOARCH=wasm go build -trimpath -tags=timetzdata -o frontend/static/go-pob.wasm ./wasm
+          gzip -kf9 frontend/static/go-pob.wasm
+          (cd frontend && VITE_DESKTOP=1 pnpm exec vite build --logLevel warn)
+          rsync -a --delete --exclude .gitkeep --exclude go-pob.wasm --exclude go-pob.wasm.br --exclude service-worker.js --exclude _headers frontend/build/ desktop/dist/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: frontend-desktop
+          path: desktop/dist/
+          if-no-files-found: error
+
+      - name: Cache test data
+        if: vars.DESKTOP_WINDOWS == 'on' || vars.DESKTOP_MACOS == 'on'
+        uses: actions/cache@v4
+        with:
+          path: |
+            testdata/corpus-[0-9]*
+            testdata/oracle-[0-9]*
+            testdata/.installed-release
+          key: testdata-${{ hashFiles('scripts/testdata.json') }}
+
+      - name: Pick the smoke build
+        if: vars.DESKTOP_WINDOWS == 'on' || vars.DESKTOP_MACOS == 'on'
+        run: |
+          go run ./scripts/testdatarelease fetch
+          mkdir -p "$RUNNER_TEMP/smoke"
+          cp "$(find testdata -path 'testdata/corpus-[0-9]*/0001-*.xml' | sort -V | tail -n 1)" "$RUNNER_TEMP/smoke/build.xml"
+
+      - uses: actions/upload-artifact@v4
+        if: vars.DESKTOP_WINDOWS == 'on' || vars.DESKTOP_MACOS == 'on'
+        with:
+          name: smoke-build
+          path: ${{ runner.temp }}/smoke/build.xml
+          if-no-files-found: error
+
+  linux:
+    name: Linux packages
+    needs: [frontend]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libgtk-3-dev libwebkit2gtk-4.1-dev glib-networking libglib2.0-bin
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: frontend-desktop
+          path: desktop/dist
+
+      - name: Package
+        env:
+          UPDATE_PUBLIC_KEY: ${{ startsWith(github.ref, 'refs/tags/v') && vars.UPDATE_PUBLIC_KEY || '' }}
+          MAINTAINER: ${{ vars.PACKAGE_MAINTAINER || github.repository_owner }}
+        run: |
+          if [[ $GITHUB_REF == refs/tags/v* ]]; then
+            export VERSION=${GITHUB_REF_NAME#v}
+          else
+            export VERSION=0.0.0-ci.$GITHUB_RUN_NUMBER
+          fi
+          if [[ -n $UPDATE_PUBLIC_KEY ]]; then
+            export UPDATE_URL="https://github.com/$GITHUB_REPOSITORY/releases/latest/download/update.json"
+          fi
+          desktop/build/linux/package.sh "$RUNNER_TEMP/release"
+          rm -rf "$RUNNER_TEMP/release/.tools"
+
+      - name: Headless run of the AppImage and the deb
+        run: desktop/release-e2e/run.sh "$RUNNER_TEMP/release" appimage appimage-bare deb
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: desktop-linux
+          path: ${{ runner.temp }}/release/
+          if-no-files-found: error
+
+  release:
+    name: Release
+    needs: [linux, windows, windows-smoke, macos]
+    if: always() && startsWith(github.ref, 'refs/tags/v') && needs.linux.result == 'success' && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    env:
+      UPDATE_PRIVATE_KEY: ${{ secrets.UPDATE_PRIVATE_KEY }}
+      UPDATE_PUBLIC_KEY: ${{ vars.UPDATE_PUBLIC_KEY }}
+    steps:
+      - name: Check out code
+        if: env.UPDATE_PRIVATE_KEY != '' && env.UPDATE_PUBLIC_KEY != ''
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        if: env.UPDATE_PRIVATE_KEY != '' && env.UPDATE_PUBLIC_KEY != ''
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: desktop/go.mod
+
+      - uses: actions/download-artifact@v4
+        if: env.UPDATE_PRIVATE_KEY != '' && env.UPDATE_PUBLIC_KEY != ''
+        with:
+          pattern: desktop-*
+          merge-multiple: true
+          path: release
+
+      - name: Sign the update manifest and publish
+        if: env.UPDATE_PRIVATE_KEY != '' && env.UPDATE_PUBLIC_KEY != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          export CGO_ENABLED=0
+          wails=$(cd desktop && go list -m -f '{{.Version}}' github.com/wailsapp/wails/v3)
+          key=$RUNNER_TEMP/update.key
+          (umask 077 && printf '%s\n' "$UPDATE_PRIVATE_KEY" >"$key")
+          page="https://github.com/$GITHUB_REPOSITORY/releases/tag/$GITHUB_REF_NAME"
+          files=(go-pob-linux-amd64)
+          for f in go-pob-windows-amd64.zip go-pob-macos-arm64.zip go-pob-macos-amd64.zip; do
+            [[ ! -f release/$f ]] || files+=("$f")
+          done
+          (cd release && go run "github.com/wailsapp/wails/v3/cmd/wails3@$wails" updater manifest \
+            --version "${GITHUB_REF_NAME#v}" --key "$key" --output update.json \
+            --url-prefix "https://github.com/$GITHUB_REPOSITORY/releases/download/$GITHUB_REF_NAME" "${files[@]}")
+          rm -f "$key"
+          jq --arg page "$page" '.metadata.page = $page' release/update.json >"$RUNNER_TEMP/update.json"
+          mv "$RUNNER_TEMP/update.json" release/update.json
+          (cd release && go run "github.com/wailsapp/wails/v3/cmd/wails3@$wails" updater verify \
+            --manifest update.json --publickey "$UPDATE_PUBLIC_KEY")
+          gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --title "go-pob $GITHUB_REF_NAME" --generate-notes release/*
+
+  windows:
+    name: Windows packages
+    needs: [frontend]
+    if: vars.DESKTOP_WINDOWS == 'on'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      WINDOWS_CERT_PFX_B64: ${{ secrets.WINDOWS_CERT_PFX }}
+      WINDOWS_CERT_PASSWORD: ${{ secrets.WINDOWS_CERT_PASSWORD }}
+      UPDATE_PUBLIC_KEY: ${{ startsWith(github.ref, 'refs/tags/v') && vars.UPDATE_PUBLIC_KEY || '' }}
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends nsis zip
+          if [[ -n $WINDOWS_CERT_PFX_B64 ]]; then sudo apt-get install -y --no-install-recommends osslsigncode; fi
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: frontend-desktop
+          path: desktop/dist
+
+      - name: Package
+        run: |
+          if [[ $GITHUB_REF == refs/tags/v* ]]; then
+            export VERSION=${GITHUB_REF_NAME#v}
+          else
+            export VERSION=0.0.0-ci.$GITHUB_RUN_NUMBER
+          fi
+          if [[ -n $UPDATE_PUBLIC_KEY ]]; then
+            export UPDATE_URL="https://github.com/$GITHUB_REPOSITORY/releases/latest/download/update.json"
+          fi
+          if [[ -n $WINDOWS_CERT_PFX_B64 ]]; then
+            export WINDOWS_CERT_PFX=$RUNNER_TEMP/cert.pfx SIGN_CMD=$GITHUB_WORKSPACE/desktop/build/windows/sign.sh
+            (umask 077 && base64 -d <<<"$WINDOWS_CERT_PFX_B64" >"$WINDOWS_CERT_PFX")
+          fi
+          desktop/build/windows/package.sh "$RUNNER_TEMP/release"
+          rm -f "$RUNNER_TEMP/cert.pfx"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: desktop-windows
+          path: ${{ runner.temp }}/release/
+          if-no-files-found: error
+
+  windows-smoke:
+    name: Windows smoke run
+    needs: [frontend, windows]
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: desktop
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: desktop-windows
+          path: release
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: smoke-build
+          path: smoke
+
+      - name: Smoke run
+        shell: pwsh
+        run: desktop/build/windows/smoke.ps1 -Release release -Build smoke/build.xml
+
+  macos:
+    name: macOS package and smoke run
+    needs: [frontend]
+    if: vars.DESKTOP_MACOS == 'on'
+    runs-on: macos-latest
+    timeout-minutes: 45
+    env:
+      MACOS_CERT_P12: ${{ secrets.MACOS_CERT_P12 }}
+      MACOS_CERT_PASSWORD: ${{ secrets.MACOS_CERT_PASSWORD }}
+      APPLE_ID: ${{ secrets.APPLE_ID }}
+      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+      APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
+      UPDATE_PUBLIC_KEY: ${{ startsWith(github.ref, 'refs/tags/v') && vars.UPDATE_PUBLIC_KEY || '' }}
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: frontend-desktop
+          path: desktop/dist
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: smoke-build
+          path: ${{ runner.temp }}/smoke
+
+      - name: Import the signing certificate
+        if: env.MACOS_CERT_P12 != ''
+        run: |
+          kc=$RUNNER_TEMP/signing.keychain-db
+          pw=$(uuidgen)
+          security create-keychain -p "$pw" "$kc"
+          security set-keychain-settings -lut 3600 "$kc"
+          security unlock-keychain -p "$pw" "$kc"
+          (umask 077 && base64 --decode <<<"$MACOS_CERT_P12" >"$RUNNER_TEMP/cert.p12")
+          security import "$RUNNER_TEMP/cert.p12" -k "$kc" -P "$MACOS_CERT_PASSWORD" -T /usr/bin/codesign
+          rm -f "$RUNNER_TEMP/cert.p12"
+          security set-key-partition-list -S apple-tool:,apple: -s -k "$pw" "$kc" >/dev/null
+          # shellcheck disable=SC2046
+          security list-keychains -d user -s "$kc" $(security list-keychains -d user | tr -d '"')
+          identity=$(security find-identity -v -p codesigning "$kc" | awk -F'"' '/Developer ID Application/ { print $2; exit }')
+          [[ -n $identity ]] || { echo "MACOS_CERT_P12 holds no Developer ID Application identity" >&2; exit 1; }
+          echo "SIGN_IDENTITY=$identity" >>"$GITHUB_ENV"
+          if [[ -n $APPLE_ID && -n $APPLE_TEAM_ID && -n $APPLE_APP_PASSWORD ]]; then
+            xcrun notarytool store-credentials go-pob --apple-id "$APPLE_ID" --team-id "$APPLE_TEAM_ID" \
+              --password "$APPLE_APP_PASSWORD" --keychain "$kc"
+            echo "NOTARY_PROFILE=go-pob" >>"$GITHUB_ENV"
+          fi
+
+      - name: Package
+        run: |
+          if [[ $GITHUB_REF == refs/tags/v* ]]; then
+            export VERSION=${GITHUB_REF_NAME#v}
+          else
+            export VERSION=0.0.0-ci.$GITHUB_RUN_NUMBER
+          fi
+          if [[ -n $UPDATE_PUBLIC_KEY ]]; then
+            export UPDATE_URL="https://github.com/$GITHUB_REPOSITORY/releases/latest/download/update.json"
+          fi
+          desktop/build/darwin/package.sh "$RUNNER_TEMP/release"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: desktop-macos
+          path: ${{ runner.temp }}/release/
+          if-no-files-found: error
+
+      - name: Smoke run
+        run: |
+          arch=$(uname -m)
+          desktop/build/darwin/smoke.sh "$RUNNER_TEMP/release/go-pob-macos-${arch/x86_64/amd64}.dmg" "$RUNNER_TEMP/smoke/build.xml"
