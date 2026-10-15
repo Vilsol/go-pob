@@ -2,6 +2,7 @@
 local outPath = arg[1]
 assert(outPath, "usage: skill_stat_map_global.lua <out.json>")
 
+local loadDataModule = dofile((arg[0]:match("^(.*)[/\\]") or ".") .. "/pob_compat.lua").loadDataModule
 dofile("HeadlessWrapper.lua")
 
 local json = require("dkjson")
@@ -18,7 +19,7 @@ local function makeSkillDataMod(dataKey, dataValue, ...)
 	return makeSkillMod("SkillData", "LIST", { key = dataKey, value = dataValue }, 0, 0, ...)
 end
 
-local statMap = LoadModule("Data/SkillStatMap", makeSkillMod, makeFlagMod, makeSkillDataMod)
+local statMap = loadDataModule("Data/SkillStatMap", makeSkillMod, makeFlagMod, makeSkillDataMod)
 
 assert(statMap, "REFUSING: LoadModule('Data/SkillStatMap') returned nothing")
 assert(next(statMap), "REFUSING: the pinned PoB's global skillStatMap is EMPTY")

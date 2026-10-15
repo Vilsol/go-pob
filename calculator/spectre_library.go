@@ -14,7 +14,7 @@ type SpectreRow struct {
 	Tooltip []string
 }
 
-//pob:block:src/Modules/Build.lua:1455-1465
+//pob:block:src/Modules/Build.lua:1524-1534
 func SpectreLibrary() []SpectreRow {
 	ids := make([]string, 0, len(raw2.Spectres))
 	for id := range raw2.Spectres {
@@ -59,7 +59,7 @@ func spectreRow(id string) SpectreRow {
 	return row
 }
 
-//pob:src/Classes/MinionListControl.lua:48-77
+//pob:src/Classes/MinionListControl.lua:52-81
 func spectreTooltip(minion *raw2.MinionInfo) []string {
 	lines := []string{
 		"^7" + minion.Name,

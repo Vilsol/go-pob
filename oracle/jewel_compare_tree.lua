@@ -1,5 +1,6 @@
 local outPath, corpus = arg[1], arg[2]
 assert(outPath and corpus, "usage: jewel_compare_tree.lua <out.json> <corpus dir>")
+local construct = dofile((arg[0]:match("^(.*)[/\\]") or ".") .. "/pob_compat.lua").construct
 dofile("HeadlessWrapper.lua")
 local json = require("dkjson")
 
@@ -34,7 +35,7 @@ for _, c in ipairs(cases) do
 		end
 		assert(item, "REFUSING: " .. c.build .. " has no socketed " .. name)
 	else
-		item = new("Item", c.jewel)
+		item = construct("Item", c.jewel)
 	end
 	local calls = {}
 	local getMisc = build.calcsTab.GetMiscCalculator
@@ -57,7 +58,7 @@ for _, c in ipairs(cases) do
 			return output
 		end, calcBase
 	end
-	local tooltip = new("Tooltip")
+	local tooltip = construct("Tooltip")
 	build.itemsTab:AddItemTooltip(tooltip, item)
 	build.calcsTab.GetMiscCalculator = getMisc
 	local base = {}

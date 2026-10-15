@@ -8,7 +8,7 @@ import (
 
 // TestRing3SlotModList: Item.lua:2640-2651 builds slotModList[1] and [2] for weapons and rings, and slotModList[3] for RINGS ONLY.
 //
-//pob:block:src/Classes/Item.lua:2640-2651
+//pob:block:src/Classes/Item.lua:2692-2703
 func TestRing3SlotModList(t *testing.T) {
 	const ring = "Rarity: RARE\nTest Band\nIron Ring\nItem Level: 84\n"
 	const amulet = "Rarity: RARE\nTest Pendant\nAmber Amulet\nItem Level: 84\n"

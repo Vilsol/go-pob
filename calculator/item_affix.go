@@ -39,7 +39,7 @@ var (
 	craftNumberRe    = regexp.MustCompile(`\d+`)
 )
 
-//pob:block:src/Classes/Item.lua:776-797,src/Classes/Item.lua:1436-1480
+//pob:block:src/Classes/Item.lua:799-820,src/Classes/Item.lua:1474-1518
 func itemAffixState(raw string, item *Item) (affixState, bool) {
 	if item.Base == nil || !item.Crafted {
 		return affixState{}, false
@@ -120,7 +120,12 @@ func itemAffixState(raw string, item *Item) (affixState, bool) {
 			st.limit = st.prefixLimit + st.suffixLimit
 		}
 	default:
-		return affixState{}, false
+		rl, ok := item.rareLike()
+		if !ok {
+			return affixState{}, false
+		}
+		st.prefixLimit, st.suffixLimit = rl.prefixLimit, rl.suffixLimit
+		st.limit = st.prefixLimit + st.suffixLimit
 	}
 	fix := func(list []affixSlot, limit int) []affixSlot {
 		for len(list) < limit {
@@ -147,6 +152,27 @@ func itemAffixState(raw string, item *Item) (affixState, bool) {
 	return st, true
 }
 
+//pob:block:src/Classes/Item.lua:1810-1817
+func (st *affixState) specLines() []string {
+	var out []string
+	for _, list := range []struct {
+		name  string
+		slots []affixSlot
+	}{{"Prefix", st.prefixes}, {"Suffix", st.suffixes}} {
+		for _, a := range list.slots {
+			s := list.name + ": "
+			if a.fractured {
+				s += "{fractured}"
+			}
+			if a.hasRange {
+				s += "{range:" + strconv.FormatFloat(utils.RoundTo(a.rng, 3), 'f', -1, 64) + "}"
+			}
+			out = append(out, s+a.modID)
+		}
+	}
+	return out
+}
+
 func (st *affixState) slot(index int) (*affixSlot, string, int) {
 	if index < st.prefixLimit {
 		return &st.prefixes[index], "Prefix", index
@@ -154,7 +180,7 @@ func (st *affixState) slot(index int) (*affixSlot, string, int) {
 	return &st.suffixes[index-st.prefixLimit], "Suffix", index - st.prefixLimit
 }
 
-//pob:src/Classes/Item.lua:2016-2079
+//pob:src/Classes/Item.lua:2055-2118
 func craftText(raw string, item *Item, st affixState) string {
 	b := craftBlock(raw, item)
 	type gen struct {
@@ -172,7 +198,8 @@ func craftText(raw string, item *Item, st affixState) string {
 		switch {
 		case slices.Contains(explicitTailLines, t) || strings.HasPrefix(t, "Foil Unique") || strings.Contains(t, "{crucible}"):
 			kept = append(kept, l)
-		case strings.Contains(t, "{crafted}") || strings.Contains(t, "{custom}") || strings.Contains(t, " (crafted)"):
+		case strings.Contains(t, "{crafted}") || strings.Contains(t, "{custom}") || strings.Contains(t, " (crafted)"),
+			item.RareLikeUnique && !strings.Contains(t, "{prefix}") && !strings.Contains(t, "{suffix}"):
 			lines = append(lines, gen{line: l, saved: true})
 		}
 	}
@@ -387,7 +414,7 @@ var affixTierNumRe = regexp.MustCompile(`\d[\d.]*`)
 
 var clusterNotableRe = regexp.MustCompile(`^1 Added Passive Skill is (.*)$`)
 
-//pob:block:src/Classes/ItemsTab.lua:860-914,src/Modules/Data.lua:849-885
+//pob:block:src/Classes/ItemsTab.lua:863-917,src/Modules/Data.lua:876-912
 func clusterNotableTooltip(mod *data.AffixMod) []string {
 	if mod == nil || len(mod.Lines) == 0 {
 		return nil
@@ -480,7 +507,7 @@ func midTier(modList []string) string {
 	return modList[int(math.Floor(float64(float64(len(modList)-1)*(*defaultItemAffixQuality))+0.5))]
 }
 
-//pob:block:src/Classes/ItemsTab.lua:717-722,src/Classes/ItemsTab.lua:2108-2332
+//pob:block:src/Classes/ItemsTab.lua:720-725,src/Classes/ItemsTab.lua:2197-2427
 func ItemAffixControls(raw string) (AffixControls, bool) {
 	item := ParseItem(raw)
 	st, ok := itemAffixState(raw, item)
@@ -489,31 +516,41 @@ func ItemAffixControls(raw string) (AffixControls, bool) {
 	}
 	_, cluster := data.ClusterJewels.Jewels[item.BaseName]
 	out := AffixControls{Sorting: !cluster}
-	//pob:block:src/Classes/ItemsTab.lua:2150-2155
+	//pob:block:src/Classes/ItemsTab.lua:2239-2244
 	extraTags := map[string]bool{}
 	if cj, ok := data.ClusterJewels.Jewels[item.BaseName]; ok {
 		if skill, ok := cj.Skills[clusterJewelSkillOf(raw)]; ok {
 			extraTags[skill.Tag] = true
 		}
 	}
+	rl, _ := item.rareLike()
 	for i := range st.limit {
 		self, affixType, _ := st.slot(i)
+		//pob:block:src/Classes/ItemsTab.lua:2204-2207
+		modType := affixType
+		if affixType == "Prefix" && rl.ignoreModType {
+			modType = ""
+		}
 		excludeGroups := map[string]bool{}
 		for j := range st.limit {
 			if j == i {
 				continue
 			}
-			if other, _, _ := st.slot(j); st.affixes[other.modID] != nil && st.affixes[other.modID].Group != "" {
+			if other, _, _ := st.slot(j); st.affixes[other.modID] != nil && st.affixes[other.modID].Group != "" && !rl.allowDuplicateGroups {
 				excludeGroups[st.affixes[other.modID].Group] = true
 			}
 		}
 		var affixList []string
+		retainedAffixes := map[string]bool{}
 		for id, mod := range st.affixes {
-			if mod.Type != affixType || excludeGroups[mod.Group] || mod.Affix == "Subterranean" || mod.Affix == "of the Underground" {
+			if (modType != "" && mod.Type != modType) || excludeGroups[mod.Group] || mod.Affix == "Subterranean" || mod.Affix == "of the Underground" {
 				continue
 			}
-			if modSpawnWeightTags(item, mod, extraTags, nil) > 0 || id == self.modID {
+			if canHaveMod(item, mod, extraTags) {
 				affixList = append(affixList, id)
+			} else if id == self.modID {
+				affixList = append(affixList, id)
+				retainedAffixes[id] = true
 			}
 		}
 		slices.SortFunc(affixList, func(x, y string) int {
@@ -542,6 +579,10 @@ func ItemAffixControls(raw string) (AffixControls, bool) {
 				label := strings.Join(mod.Lines, "/")
 				c.Series = append(c.Series, AffixSeries{Label: label, HaveRange: affixAnyRangeRe.MatchString(label)})
 				last, lastOrder = &c.Series[len(c.Series)-1], mod.StatOrder
+			}
+			//pob:block:src/Classes/ItemsTab.lua:2297-2300
+			if retainedAffixes[id] && cluster {
+				last.Label = "^8[Retained] " + last.Label
 			}
 			last.ModList = append(last.ModList, id)
 			if len(last.ModList) == 2 {
@@ -579,7 +620,7 @@ func ItemAffixControls(raw string) (AffixControls, bool) {
 	return out, true
 }
 
-//pob:src/Classes/SliderControl.lua:55-63
+//pob:src/Classes/SliderControl.lua:59-67
 func divVal(val float64, divCount int) (int, float64) {
 	if divCount > 1 {
 		div := max(int(math.Ceil(val*float64(divCount))), 1)
@@ -588,7 +629,7 @@ func divVal(val float64, divCount int) (int, float64) {
 	return 1, val
 }
 
-//pob:src/Classes/ItemsTab.lua:756-795
+//pob:src/Classes/ItemsTab.lua:759-798
 func verifyRange(st affixState, modList []string, rng float64, index int) float64 {
 	minMax := func(mod *data.AffixMod) (float64, float64, bool) {
 		for _, line := range mod.Lines {
@@ -645,7 +686,7 @@ func AffixEditText(raw string, slot int, series int, slider float64) (string, bo
 	return craftText(raw, item, st), true
 }
 
-//pob:src/Classes/ItemsTab.lua:943-968
+//pob:src/Classes/ItemsTab.lua:946-971
 func AffixRollTooltip(raw string, slot int, slider float64) []string {
 	item := ParseItem(raw)
 	st, ok := itemAffixState(raw, item)
@@ -675,7 +716,7 @@ func AffixRollTooltip(raw string, slot int, slider float64) []string {
 	return out
 }
 
-//pob:src/Classes/ItemsTab.lua:2219-2297
+//pob:src/Classes/ItemsTab.lua:2308-2392
 func (m *MiscCalculator) AffixPowers(raw string, slot int, stat string) []float64 {
 	ps, ok := powerStatByName(stat)
 	item := ParseItem(raw)
@@ -791,7 +832,7 @@ func RebaseItemText(raw string, baseName string) (RebaseResult, bool) {
 		if was.modID == "None" {
 			continue
 		}
-		if mod := nst.affixes[a.modID]; a.modID == was.modID && mod != nil && modSpawnWeightTags(next, mod, nil, nil) > 0 {
+		if mod := nst.affixes[a.modID]; a.modID == was.modID && mod != nil && modSpawnWeightTags(next, mod, nil, nil, nil) > 0 {
 			continue
 		}
 		dropped = append(dropped, strings.Join(st.affixes[was.modID].Lines, "/"))

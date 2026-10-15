@@ -37,11 +37,13 @@ const w = vi.hoisted(() => {
     GetTimelessOptions: ok(() => ({
       types: [
         { ID: 1, Label: 'Glorious Vanity', Name: 'vaal' },
-        { ID: 2, Label: 'Lethal Pride', Name: 'karui' }
+        { ID: 2, Label: 'Lethal Pride', Name: 'karui' },
+        { ID: 4, Label: 'Militant Faith', Name: 'templar' }
       ],
       conquerors: {
         1: ['Any', 'Doryani (Corrupted Soul)', 'Xibaqua (Divine Flesh)', 'Ahuana (Immortal Ambition)'],
-        2: ['Any', 'Kaom (Strength of Blood)', 'Rakiata (Tempered by War)', 'Akoya (Chainbreaker)']
+        2: ['Any', 'Kaom (Strength of Blood)', 'Rakiata (Tempered by War)', 'Akoya (Chainbreaker)'],
+        4: ['Any', 'Avarius (Power of Purpose)', 'Dominus (Inner Conviction)', 'Maxarius (Transcendence)']
       } as Record<number, string[]>,
       devotion: ['Any', 'Totem Damage'],
       tradeTypes: ['Instant buyout', 'Any (includes offline)'],
@@ -66,7 +68,7 @@ const w = vi.hoisted(() => {
         }
       ]
     })),
-    GetTimelessProtectable: ok(() => []),
+    GetTimelessProtectable: ok(() => [{ Label: 'Herbalism', ID: '', Descriptions: ['20% increased Life Recovery from Flasks'], TotalMod: false }]),
     GetTreeVersion: ok(() => '3_29'),
     GetPassiveNodes: ok(() => [10, 11]),
     GetBuildInfo: ok(() => ({ className: 'Witch' })),
@@ -77,6 +79,7 @@ const w = vi.hoisted(() => {
     CancelTimelessSearch: vi.fn(),
     TimelessRows: ok((start: number, n: number) => [row(10001), row(10002)].slice(start, start + n)),
     AddTimelessResult: ok(() => 'jewel'),
+    TimelessRowCompare: ok(() => ({ blocks: [{ header: 'Equipping this item in Socket #1 will give you:', slot: 'Jewel 10', sections: [] }], calcMs: 1 })),
     TimelessTradeURL: ok(() => ({
       URL: 'https://www.pathofexile.com/trade/search/Standard',
       SelIndex: 1,
@@ -180,12 +183,45 @@ describe('the live timeless wizard (TreeTab.lua:1161-2863)', () => {
     );
     expect(v.getByText('2 results')).toBeTruthy();
     expect(within(v.getByRole('group', { name: 'Result preview' })).getByText('Flesh of the Kaom: Herbalism')).toBeTruthy();
+    await vi.waitFor(() => expect(w.TimelessRowCompare).toHaveBeenCalledWith(0, 1, 1, 'Ghost Dance'));
+    await vi.waitFor(() =>
+      expect(v.container.querySelector('[data-row-impact] [data-header="Equipping this item in Socket #1 will give you:"]')).not.toBeNull()
+    );
     await fireEvent.dblClick(results.getAllByRole('option')[1]);
-    await vi.waitFor(() => expect(w.AddTimelessResult).toHaveBeenCalledWith(1, 1, 1, 'Ghost Dance'));
+    await vi.waitFor(() => expect(w.AddTimelessResult).toHaveBeenCalledWith(1, 1, 1, 'Ghost Dance', undefined));
+    const preview = within(v.getByRole('group', { name: 'Result preview' }));
+    await fireEvent.click(preview.getByRole('checkbox', { name: 'Socket the jewel' }));
+    expect(saved().SocketAllocate).toBe('true');
+    expect(preview.getByText(/^It will be socketed into .*Ghost Dance/)).toBeTruthy();
+    await fireEvent.dblClick(results.getAllByRole('option')[0]);
+    await vi.waitFor(() => expect(w.AddTimelessResult).toHaveBeenCalledWith(0, 1, 1, 'Ghost Dance', 10));
     await fireEvent.click(v.getByRole('button', { name: 'Open Trade URL' }));
     await vi.waitFor(() => expect(w.TimelessTradeURL).toHaveBeenCalledWith(expect.objectContaining({ JewelType: 2, ConquerorType: 3, SelIndex: 1 })));
     await vi.waitFor(() => expect(open).toHaveBeenCalledWith('https://www.pathofexile.com/trade/search/Standard', '_blank', 'noopener'));
     expect(v.getByRole('button', { name: 'Open Next Trade URL' })).toBeTruthy();
     open.mockRestore();
+  });
+});
+
+describe('the protect boxes', () => {
+  it('lists the protectable nodes as boxes, not for All Sockets, unticked again after a socket change', async () => {
+    skillTree.set(tree);
+    skillTreeVersion.set('3_29');
+    const v = render(TimelessDialog, { props: { open: true } });
+    const jewels = within(await v.findByRole('group', { name: 'Jewels' }));
+    await vi.waitFor(() => expect(w.GetPassiveNodes).toHaveBeenCalled());
+    await fireEvent.click(jewels.getByRole('button', { name: /^Militant Faith/ }));
+    await fireEvent.click(v.getByRole('button', { name: 'Next' }));
+    const sockets = within(v.getByRole('region', { name: 'Sockets' }));
+    await fireEvent.click(sockets.getByRole('button', { name: /^# Ghost Dance: 10/ }));
+    const filter = v.getByRole('checkbox', { name: /^Filter nodes/ }) as HTMLInputElement;
+    if (!filter.checked) await fireEvent.click(filter);
+    const box = (await v.findByRole('checkbox', { name: 'Herbalism' })) as HTMLInputElement;
+    await fireEvent.click(box);
+    expect(box.checked).toBe(true);
+    await fireEvent.click(sockets.getByRole('button', { name: /^All sockets/ }));
+    expect(v.queryByRole('checkbox', { name: 'Herbalism' })).toBeNull();
+    await fireEvent.click(sockets.getByRole('button', { name: /^# Ghost Dance: 10/ }));
+    expect(((await v.findByRole('checkbox', { name: 'Herbalism' })) as HTMLInputElement).checked).toBe(false);
   });
 });

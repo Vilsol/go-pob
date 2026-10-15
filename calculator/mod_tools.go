@@ -4,12 +4,12 @@ import (
 	"github.com/Vilsol/go-pob/mod"
 )
 
-//pob:src/Modules/ModParser.lua:2011-2013
+//pob:src/Modules/ModParser.lua:2012-2014
 func FLAG(modName string) mod.Mod {
 	return MOD(modName, mod.TypeFlag, true)
 }
 
-//pob:src/Modules/ModTools.lua:20-46
+//pob:src/Modules/ModTools.lua:33-67
 func MOD(modName string, modType mod.Type, modVal any) mod.Mod {
 	var realMod mod.Mod
 	switch modType {

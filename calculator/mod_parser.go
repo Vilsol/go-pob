@@ -548,8 +548,10 @@ var modNameList = map[string]modNameListType{
 	"damage taken recouped as energy shield":                {names: []string{"EnergyShieldRecoup"}},
 	"damage taken recouped as mana":                         {names: []string{"ManaRecoup"}},
 	"damage taken recouped as life, mana and energy shield": {names: []string{"LifeRecoup", "EnergyShieldRecoup", "ManaRecoup"}},
-	"missing unreserved life before being hit by an enemy":  {names: []string{"MissingLifeBeforeEnemyHit"}},
-	"missing unreserved mana before being hit by an enemy":  {names: []string{"MissingManaBeforeEnemyHit"}},
+	//pob:src/Modules/ModParser.lua:439
+	"recovery from recoup":                                 {names: []string{"RecoupRecoveryAmount"}},
+	"missing unreserved life before being hit by an enemy": {names: []string{"MissingLifeBeforeEnemyHit"}},
+	"missing unreserved mana before being hit by an enemy": {names: []string{"MissingManaBeforeEnemyHit"}},
 
 	// Stun/knockback modifiers
 	"stun recovery":                {names: []string{"StunRecovery"}},
@@ -910,7 +912,7 @@ var modNameList = map[string]modNameListType{
 	"to apply lightning exposure on hit":    {names: []string{"LightningExposureChance"}},
 
 	// Flask and Tincture modifiers
-	//pob:src/Modules/ModParser.lua:855
+	//pob:src/Modules/ModParser.lua:856
 	"effect":              {names: []string{"LocalEffect"}},
 	"effect of flasks":    {names: []string{"FlaskEffect"}},
 	"effect of tinctures": {names: []string{"TinctureEffect"}},
@@ -920,7 +922,7 @@ var modNameList = map[string]modNameListType{
 	"life recovered":                 {names: []string{"FlaskRecovery"}},
 	"life recovery from flasks used": {names: []string{"FlaskLifeRecovery"}},
 	"mana recovered":                 {names: []string{"FlaskRecovery"}},
-	//pob:src/Modules/ModParser.lua:861
+	//pob:src/Modules/ModParser.lua:862
 	"recovery":                                  {names: []string{"FlaskLifeRecoveryLowLife"}},
 	"life recovery from flasks":                 {names: []string{"FlaskLifeRecovery"}},
 	"mana recovery from flasks":                 {names: []string{"FlaskManaRecovery"}},
@@ -1068,7 +1070,7 @@ var modFlagList = map[string]modNameListType{
 	"totem skills that cast an aura":   {tag: mod.SkillType(string(data.SkillTypeAura)), keywordFlags: mod.KeywordFlagTotem},
 	"aura skills that summon totems":   {tag: mod.SkillType(string(data.SkillTypeAura)), keywordFlags: mod.KeywordFlagTotem},
 	"of aura skills":                   {tag: mod.SkillType(string(data.SkillTypeAura))},
-	//pob:block:src/Modules/ModParser.lua:1033-1034
+	//pob:block:src/Modules/ModParser.lua:1034-1035
 	"link skills":                  {tag: mod.SkillType(string(data.SkillTypeLink))},
 	"of link skills":               {tag: mod.SkillType(string(data.SkillTypeLink))},
 	"of curse skills":              {keywordFlags: mod.KeywordFlagCurse},
@@ -1279,7 +1281,7 @@ var preFlagList = map[string]modNameListType{
 	`^socketed projectile spells [hgdf][aei][viar][enl] `: {addToSkill: mod.SocketedIn("{SlotName}"), tagList: []mod.Tag{mod.SkillType(string(data.SkillTypeProjectile)), mod.SkillType(string(data.SkillTypeSpell))}},
 
 	// Enemy modifiers
-	//pob:src/Modules/ModParser.lua:1251
+	//pob:src/Modules/ModParser.lua:1252
 	`^enemies withered by you [th]a[vk]e `: {tag: mod.MultiplierThreshold("WitheredStack").Threshold(1), applyToEnemy: true},
 	`^enemies (\w+) by you take `: {
 		fn: func(caps []string) modNameListType {
@@ -1327,11 +1329,11 @@ var preFlagList = map[string]modNameListType{
 	`^you and nearby allies `:                     {newAura: true},
 	`^you and nearby allies [hgd][ae][via][enl] `: {newAura: true},
 	`^nearby allies [hgd][ae][via][enl] `:         {newAura: true, newAuraOnlyAllies: true},
-	//pob:block:src/Modules/ModParser.lua:1297
+	//pob:block:src/Modules/ModParser.lua:1298
 	`^you and allies affected by auras from your skills [hgd][ae][via][enl] `: {tag: mod.Condition("AffectedByAura")},
-	//pob:block:src/Modules/ModParser.lua:1291
+	//pob:block:src/Modules/ModParser.lua:1292
 	`^banners also grant `: {addToAura: true, onlyAddToBanners: true},
-	//pob:block:src/Modules/ModParser.lua:1283
+	//pob:block:src/Modules/ModParser.lua:1284
 	`^hits against you `: {applyToEnemy: true, flags: mod.MFlagHit},
 
 	`^every rage also grants `: {tag: mod.Multiplier("RageEffect")},
@@ -1381,7 +1383,7 @@ var modTagList = map[string]modNameListType{
 	`for each unlinked socket in equipped two handed weapon`: {tagList: []mod.Tag{
 		mod.Multiplier("UnlinkedSocketInWeapon 1"), mod.Condition("UsingTwoHandedWeapon"),
 	}},
-	//pob:block:src/Modules/ModParser.lua:1319-2008
+	//pob:block:src/Modules/ModParser.lua:1320-2009
 	`per brine charge`:                       {tag: mod.Multiplier("BrineCharge")},
 	`per spirit charge`:                      {tag: mod.Multiplier("SpiritCharge")},
 	`per maximum power charge`:               {tag: mod.Multiplier("PowerChargeMax")},
@@ -1578,7 +1580,7 @@ var modTagList = map[string]modNameListType{
 			return modNameListType{tag: mod.Multiplier("ShockedNonShockedEnemyRecently").Limit(utils.Float(caps[0])).LimitTotal(true)}
 		},
 	},
-	//pob:src/Modules/ModParser.lua:1322
+	//pob:src/Modules/ModParser.lua:1323
 	`for (\d+) seconds`: {},
 	`if you have reserved life and mana`: {tagList: []mod.Tag{
 		mod.StatThreshold("LifeReserved", 1),
@@ -1633,7 +1635,7 @@ var modTagList = map[string]modNameListType{
 	` on critical strike`:   {tag: mod.Condition("CriticalStrike")},
 	`from critical strikes`: {tag: mod.Condition("CriticalStrike")},
 	`with critical strikes`: {tag: mod.Condition("CriticalStrike")},
-	//pob:src/Modules/ModParser.lua:1328
+	//pob:src/Modules/ModParser.lua:1329
 	`while affected by auras you cast`: {tag: mod.Condition("AffectedByAura")},
 	`for you and nearby allies`:        {newAura: true},
 
@@ -1660,7 +1662,7 @@ var modTagList = map[string]modNameListType{
 		},
 	},
 	`while at least (\d+) enemies are nearby`: {
-		//pob:src/Modules/ModParser.lua:1775
+		//pob:src/Modules/ModParser.lua:1776
 		fn: func(caps []string) modNameListType {
 			return modNameListType{tag: mod.MultiplierThreshold("NearbyEnemies").Threshold(utils.Float(caps[0]))}
 		},
@@ -1782,7 +1784,7 @@ var modTagList = map[string]modNameListType{
 	`per blue socket`:                      {tag: mod.Multiplier("BlueSocketIn{SlotName}").Base(0)},
 	`per white socket`:                     {tag: mod.Multiplier("WhiteSocketIn{SlotName}").Base(0)},
 	`for each impale on enemy`:             {tag: mod.Multiplier("ImpaleStacks").Actor("enemy")},
-	//pob:src/Modules/ModParser.lua:1454
+	//pob:src/Modules/ModParser.lua:1455
 	`per impale on enemy`:                 {tag: mod.Multiplier("ImpaleStacks").Actor("enemy")},
 	`per animated weapon`:                 {tag: mod.PerStat(0, "ActiveAnimatedWeaponLimit").Actor("parent")},
 	`per grasping vine`:                   {tag: mod.Multiplier("GraspingVinesCount").Base(0)},
@@ -2129,7 +2131,7 @@ var modTagList = map[string]modNameListType{
 	`w?i?t?h? main hand`:    {tagList: []mod.Tag{mod.Condition("MainHandAttack"), mod.SkillType(string(data.SkillTypeAttack))}},
 	`w?i?t?h? off ?hand`:    {tagList: []mod.Tag{mod.Condition("OffHandAttack"), mod.SkillType(string(data.SkillTypeAttack))}},
 	`[fi]?[rn]?[of]?[ml]?[ i]?[hc]?[it]?[te]?[sd]? ? with this weapon`: {tagList: []mod.Tag{mod.Condition("{Hand}Attack"), mod.SkillType(string(data.SkillTypeAttack))}},
-	//pob:block:src/Modules/ModParser.lua:1593-1594
+	//pob:block:src/Modules/ModParser.lua:1594-1595
 	`if your (?:other|opposite) ring is a shaper item`: {tag: mod.ItemCondition("Ring {OtherSlotNum}").Shaper()},
 	`if your (?:other|opposite) ring is an elder item`: {tag: mod.ItemCondition("Ring {OtherSlotNum}").Elder()},
 	`if you have a (\w+) (\w+) in (\w+) slot`: {
@@ -2264,7 +2266,7 @@ var modTagList = map[string]modNameListType{
 	},
 	`while you have a totem`: {tag: mod.Condition("HaveTotem")},
 	`while you have at least (\d+) nearby all[yi]e?s?`: {
-		//pob:src/Modules/ModParser.lua:1584
+		//pob:src/Modules/ModParser.lua:1585
 		fn: func(caps []string) modNameListType {
 			return modNameListType{tag: mod.MultiplierThreshold("NearbyAlly").Threshold(utils.Float(caps[0]))}
 		},
@@ -2409,7 +2411,7 @@ var modTagList = map[string]modNameListType{
 	`if you[' ]h?a?ve not warcried recently`:          {tag: mod.Condition("UsedWarcryRecently").Neg(true)},
 	`for each time you[' ]h?a?ve warcried recently`:   {tag: mod.Multiplier("WarcryUsedRecently").Base(0)},
 	`if you[' ]h?a?ve warcried in the past 8 seconds`: {tag: mod.Condition("UsedWarcryInPast8Seconds")},
-	//pob:src/Modules/ModParser.lua:1859
+	//pob:src/Modules/ModParser.lua:1860
 	`for each second you've been affected by a warcry buff, up to a maximum of (\d+)%`: {
 		fn: func(caps []string) modNameListType {
 			return modNameListType{tag: mod.Multiplier("AffectedByWarcryBuffDuration").Base(0).Limit(utils.Float(caps[0])).LimitTotal(true)}
@@ -2466,7 +2468,7 @@ var modTagList = map[string]modNameListType{
 		},
 	},
 	`if you[' ]h?a?ve spent life recently`: {tag: mod.MultiplierThreshold("LifeSpentRecently").Threshold(1)},
-	//pob:block:src/Modules/ModParser.lua:1889
+	//pob:block:src/Modules/ModParser.lua:1890
 	`for \d+ seconds after spending a total of (\d+) mana`: {
 		fn: func(caps []string) modNameListType {
 			return modNameListType{tag: mod.MultiplierThreshold("ManaSpentRecently").Threshold(utils.Float(caps[0]))}
@@ -2516,28 +2518,28 @@ var modTagList = map[string]modNameListType{
 
 	// Enemy status conditions
 	`per enemy in close range`: {tagList: []mod.Tag{
-		//pob:src/Modules/ModParser.lua:1430
+		//pob:src/Modules/ModParser.lua:1431
 		mod.Condition("AtCloseRange"), mod.Multiplier("NearbyEnemies"),
 	}},
 	`at close range`:                  {tag: mod.Condition("AtCloseRange")},
 	`not at close range`:              {tag: mod.Condition("AtCloseRange").Neg(true)},
 	`when you hit a unique enemy`:     {tag: mod.ActorCondition("enemy", "RareOrUnique")},
 	`against rare and unique enemies`: {tag: mod.ActorCondition("enemy", "RareOrUnique")},
-	//pob:block:src/Modules/ModParser.lua:1942
+	//pob:block:src/Modules/ModParser.lua:1943
 	`by s?l?a?i?n? rare [ao][nr]d? unique enemies`: {tag: mod.ActorCondition("enemy", "RareOrUnique")},
 	`against unique enemies`:                       {tag: mod.ActorCondition("enemy", "RareOrUnique")},
 	`to enemies which have energy shield`: {
-		//pob:src/Modules/ModParser.lua:1949
+		//pob:src/Modules/ModParser.lua:1950
 		tag:          mod.ActorCondition("enemy", "HaveEnergyShield"),
 		keywordFlags: mod.KeywordFlagHit | mod.KeywordFlagAilment,
 	},
 	`against enemies with (\w+) exposure`: {
-		//pob:src/Modules/ModParser.lua:2000
+		//pob:src/Modules/ModParser.lua:2001
 		fn: func(caps []string) modNameListType {
 			return modNameListType{tag: mod.ActorCondition("enemy", "Has"+utils.Capital(caps[0])+"Exposure")}
 		},
 	},
-	//pob:block:src/Modules/ModParser.lua:2001-2002
+	//pob:block:src/Modules/ModParser.lua:2002-2003
 	`by s?l?a?i?n? ?frozen enemies`:                                             {tag: mod.ActorCondition("enemy", "Frozen")},
 	`by s?l?a?i?n? ?shocked enemies`:                                            {tag: mod.ActorCondition("enemy", "Shocked")},
 	`against enemies on full life`:                                              {tag: mod.ActorCondition("enemy", "FullLife")},
@@ -2635,7 +2637,7 @@ var gemLookup = sync.OnceValue(buildGemLookup)
 
 var gemKeywordWordPattern = regexp.MustCompile(`\S+`)
 
-//pob:block:src/Modules/ModParser.lua:2032-2045
+//pob:block:src/Modules/ModParser.lua:2033-2046
 func buildGemLookup() *gemLookups {
 	lookups := &gemLookups{
 		skillIDForName: map[string]string{"power charge on critical strike": "SupportPowerChargeOnCritical"},
@@ -2673,13 +2675,13 @@ func buildGemLookup() *gemLookups {
 	return lookups
 }
 
-//pob:block:src/Modules/ModParser.lua:1615-1617
+//pob:block:src/Modules/ModParser.lua:1616-1618
 func extraSkillIDForName(name string) string {
 	return gemLookup().skillIDForName[strings.ToLower(name)]
 }
 
-//pob:block:src/Modules/ModParser.lua:2454-2468
-//pob:block:src/Modules/ModParser.lua:2075-2083
+//pob:block:src/Modules/ModParser.lua:2464-2478
+//pob:block:src/Modules/ModParser.lua:2076-2084
 func extraSupportSlotName(slot string) string {
 	switch strings.ToLower(strings.TrimSpace(slot)) {
 	case "main hand", "main hand weapon":
@@ -2736,19 +2738,19 @@ func extraSupportIDsForName(name string) []extraSupportEntry {
 	return entries
 }
 
-func extraSupportMods(entries []extraSupportEntry, level int, slotName string) []mod.Mod {
+func extraSupportMods(entries []extraSupportEntry, level int, slotName string, appliesToGrantedSkills bool) []mod.Mod {
 	mods := make([]mod.Mod, 0, len(entries))
 	for _, entry := range entries {
 		if entry.asSkill {
 			mods = append(mods, MOD("ExtraSkill", "LIST", mod.ExtraSkill{SkillID: entry.skillID, Level: level}))
 			continue
 		}
-		mods = append(mods, MOD("ExtraSupport", "LIST", mod.ExtraSupport{SkillID: entry.skillID, Level: level}).Tag(mod.SocketedIn(slotName)))
+		mods = append(mods, MOD("ExtraSupport", "LIST", mod.ExtraSupport{SkillID: entry.skillID, Level: level, AppliesToGrantedSkills: appliesToGrantedSkills}).Tag(mod.SocketedIn(slotName)))
 	}
 	return mods
 }
 
-//pob:src/Modules/ModParser.lua:2046-2053
+//pob:src/Modules/ModParser.lua:2047-2054
 func grantedExtraSkill(name string, level int, noSupports bool) []mod.Mod {
 	name = strings.ReplaceAll(strings.ToLower(name), " skill", "")
 	id := extraSkillIDForName(name)
@@ -2760,7 +2762,7 @@ func grantedExtraSkill(name string, level int, noSupports bool) []mod.Mod {
 	}
 }
 
-//pob:src/Modules/ModParser.lua:2054-2063
+//pob:src/Modules/ModParser.lua:2055-2064
 func triggerExtraSkill(name string, level int, noSupports bool, sourceSkill string) []mod.Mod {
 	name = strings.ReplaceAll(strings.ToLower(name), " skill", "")
 	sourceSkill = strings.ReplaceAll(strings.ToLower(sourceSkill), " skill", "")
@@ -2781,7 +2783,7 @@ var damageTypeList = []string{"Physical", "Lightning", "Cold", "Fire", "Chaos"}
 
 // Makes the "deal no" modifiers for every damage type except the one being kept.
 //
-//pob:src/Modules/ModParser.lua:2014-2030
+//pob:src/Modules/ModParser.lua:2015-2031
 func dealNoNonDamageType(dmgType string, forMinion bool) []mod.Mod {
 	dmgType = firstToUpper(dmgType)
 	if !slices.Contains(damageTypeList, dmgType) {
@@ -2801,7 +2803,7 @@ func dealNoNonDamageType(dmgType string, forMinion bool) []mod.Mod {
 	return mods
 }
 
-//pob:block:src/Modules/ModParser.lua:2062
+//pob:block:src/Modules/ModParser.lua:2063
 func withTriggerChance(mods []mod.Mod, chance float64) []mod.Mod {
 	if len(mods) == 0 {
 		return mods
@@ -2813,7 +2815,7 @@ func withTriggerChance(mods []mod.Mod, chance float64) []mod.Mod {
 	return mods
 }
 
-//pob:block:src/Modules/ModParser.lua:2067-2069
+//pob:block:src/Modules/ModParser.lua:2068-2070
 func triggerExtraSkillOnCrit(name string, level int, noSupports bool) []mod.Mod {
 	name, _ = strings.CutSuffix(strings.ToLower(name), " skill")
 	mods := triggerExtraSkill(name, level, noSupports, "")
@@ -2838,7 +2840,7 @@ func (e ExplodeMod) Clone(pointer bool) mod.Cloneable {
 	return obj
 }
 
-//pob:src/Modules/ModParser.lua:2106-2117
+//pob:src/Modules/ModParser.lua:2108-2119
 func explodeFunc(chance float64, amount string, typ string, tags ...mod.Tag) ([]mod.Mod, string) {
 	amountNumber, err := strconv.ParseFloat(amount, 64)
 	if err != nil {
@@ -2862,7 +2864,7 @@ type SpecialFuncType func(num float64, captures []string) ([]mod.Mod, string)
 // List of special modifiers
 var specialModListCompiled map[string]CompiledList[interface{}]
 var specialModList = map[string]interface{}{
-	//pob:block:src/Modules/ModParser.lua:2121-2185
+	//pob:block:src/Modules/ModParser.lua:2131-2195
 	`enemies you kill have a (\d+)% chance to explode, dealing a (.+) of their maximum life as (.+) damage`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return explodeFunc(num, captures[1], captures[2])
 	},
@@ -2934,7 +2936,7 @@ var specialModList = map[string]interface{}{
 	`cannot gain life`:                []mod.Mod{mod.NewFlag("CannotGainLife", true)},
 	`cannot gain mana`:                []mod.Mod{mod.NewFlag("CannotGainMana", true)},
 	`cannot have non-abyssal sockets`: []mod.Mod{mod.NewFlag("NoSockets", true)},
-	//pob:block:src/Modules/ModParser.lua:3088-3093
+	//pob:block:src/Modules/ModParser.lua:3132-3137
 	`socketed [a-z]+ abyssal jewels will be consumed`:    []mod.Mod{},
 	"one modifier from consumed jewels will be retained": []mod.Mod{},
 	`cannot inflict multiple poisons in the same hit`:    []mod.Mod{mod.NewFlag("CannotMultiplePoison", true)},
@@ -2943,7 +2945,7 @@ var specialModList = map[string]interface{}{
 	`immun[ei]t?y? to chill`:                             []mod.Mod{mod.NewFlag("ChillImmune", true)},
 	`immun[ei]t?y? to freeze`:                            []mod.Mod{mod.NewFlag("FreezeImmune", true)},
 	`immun[ei]t?y? to ignite`:                            []mod.Mod{mod.NewFlag("IgniteImmune", true)},
-	//pob:block:src/Modules/ModParser.lua:4836-4838
+	//pob:block:src/Modules/ModParser.lua:4883-4885
 	"immune to ignite while affected by purity of fire":                          []mod.Mod{FLAG("IgniteImmune").Tag(mod.Condition("AffectedByPurityofFire"))},
 	"immune to freeze while affected by purity of ice":                           []mod.Mod{FLAG("FreezeImmune").Tag(mod.Condition("AffectedByPurityofIce"))},
 	"immune to shock while affected by purity of lightning":                      []mod.Mod{FLAG("ShockImmune").Tag(mod.Condition("AffectedByPurityofLightning"))},
@@ -2963,29 +2965,29 @@ var specialModList = map[string]interface{}{
 	`inherent effects from having rage are doubled`:                              []mod.Mod{MOD("RageEffect", "MORE", 100)},
 	`maximum rage is halved`:                                                     []mod.Mod{MOD("MaximumRage", "MORE", -50)},
 	`nearby enemies are covered in ash`:                                          []mod.Mod{MOD("CoveredInAshEffect", "BASE", 20)},
-	//pob:src/Modules/ModParser.lua:4293
+	//pob:src/Modules/ModParser.lua:4339
 	`your warcries cover enemies in ash for (\d+) seconds`: []mod.Mod{MOD("CoveredInAshEffect", "BASE", 20).Tag(mod.Condition("UsedWarcryRecently"))},
-	//pob:src/Modules/ModParser.lua:4298
+	//pob:src/Modules/ModParser.lua:4344
 	`debuffs on you expire (\d+)% faster while affected by haste`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("SelfDebuffExpirationRate", "BASE", num).Tag(mod.Condition("AffectedByHaste"))}, ""
 	},
-	//pob:src/Modules/ModParser.lua:4719
+	//pob:src/Modules/ModParser.lua:4765
 	`(\d+)% of damage taken while affected by clarity recouped as mana`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("ManaRecoup", "BASE", num).Tag(mod.Condition("AffectedByClarity"))}, ""
 	},
-	//pob:src/Modules/ModParser.lua:2647
+	//pob:src/Modules/ModParser.lua:2657
 	`([-+]\d+) to maximum number of sacred wisps`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("SacredWispsMaxCount", "BASE", num)}, ""
 	},
-	//pob:src/Modules/ModParser.lua:4309
+	//pob:src/Modules/ModParser.lua:4355
 	`maximum (\d+) eaten souls`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("SoulEaterMax", "OVERRIDE", num)}, ""
 	},
-	//pob:src/Modules/ModParser.lua:4310
+	//pob:src/Modules/ModParser.lua:4356
 	`([+-]\d+) to maximum number of eaten souls`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("SoulEaterMax", "BASE", num)}, ""
 	},
-	//pob:src/Modules/ModParser.lua:3144
+	//pob:src/Modules/ModParser.lua:3188
 	`instant recovery when on low life`: []mod.Mod{
 		MOD("FlaskLowLifeInstantRecovery", "BASE", 100),
 		MOD("Dummy", "DUMMY", 1).Tag(mod.Condition("LowLife")),
@@ -2993,7 +2995,7 @@ var specialModList = map[string]interface{}{
 	`retaliation skills debilitate enemies for (\d+) seconds on hit`: []mod.Mod{MOD("DebilitateChance", "BASE", 100)},
 	`scorch enemies in close range when you block`:                   []mod.Mod{MOD("EnemyScorchChance", "BASE", 100)},
 	`targets are unaffected by your hexes`:                           []mod.Mod{MOD("CurseEffect", "MORE", -100).Tag(mod.SkillType(string(data.SkillTypeHex)))},
-	//pob:block:src/Modules/ModParser.lua:4924-4941
+	//pob:block:src/Modules/ModParser.lua:4971-4988
 	`unaffected by bleeding`:                               []mod.Mod{MOD("SelfBleedEffect", "MORE", -100)},
 	`you are unaffected by bleeding while leeching`:        []mod.Mod{MOD("SelfBleedEffect", "MORE", -100).Tag(mod.Condition("Leeching"))},
 	`unaffected by bleeding while affected by malevolence`: []mod.Mod{MOD("SelfBleedEffect", "MORE", -100).Tag(mod.Condition("AffectedByMalevolence")).Tag(mod.GlobalEffect("Global").Unscalable(true))},
@@ -3025,7 +3027,7 @@ var specialModList = map[string]interface{}{
 	`warcries exert twice as many attacks`:            []mod.Mod{MOD("ExtraExertedAttacks", "MORE", 100)},
 	`you can apply an additional curse during effect`: []mod.Mod{MOD("EnemyCurseLimit", "BASE", 1)},
 	`your hits are always critical strikes`:           []mod.Mod{MOD("CritChance", "OVERRIDE", 100)},
-	//pob:src/Modules/ModParser.lua:3553
+	//pob:src/Modules/ModParser.lua:3599
 	`all hits are critical strikes while holding a fishing rod`: []mod.Mod{MOD("CritChance", "OVERRIDE", 100).Tag(mod.Condition("UsingFishing"))},
 	`when hit during effect, (\d+)% of life loss from damage taken occurs over 4 seconds instead`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("LifeLossPrevented", "BASE", num).Tag(mod.Condition("UsingFlask"))}, ""
@@ -3046,7 +3048,7 @@ var specialModList = map[string]interface{}{
 	`debuffs on you expire (\d+)% faster`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("SelfDebuffExpirationRate", "BASE", num)}, ""
 	},
-	//pob:block:src/Modules/ModParser.lua:3252-3273
+	//pob:block:src/Modules/ModParser.lua:3296-3317
 	`take (\d+) (.+) damage when you ignite an enemy`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("EyeOfInnocenceSelfDamage", "LIST", mod.SelfDamage{BaseDamage: num, DamageType: captures[1]})}, ""
 	},
@@ -3071,7 +3073,7 @@ var specialModList = map[string]interface{}{
 	`debuffs on you expire (\d+)% slower`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("SelfDebuffExpirationRate", "BASE", -num)}, ""
 	},
-	//pob:src/Modules/ModParser.lua:3935
+	//pob:src/Modules/ModParser.lua:3981
 	`poisons on you expire (\d+)% slower`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("SelfPoisonDebuffExpirationRate", "BASE", -num)}, ""
 	},
@@ -3089,7 +3091,7 @@ var specialModList = map[string]interface{}{
 	`hits have (\d+)% chance to ignore enemy physical damage reduction`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("ChanceToIgnoreEnemyPhysicalDamageReduction", "BASE", num)}, ""
 	},
-	//pob:block:src/Modules/ModParser.lua:5632-5637
+	//pob:block:src/Modules/ModParser.lua:5689-5694
 	`(\d+)% chance for hits to ignore enemy physical damage reduction while you have sacrificial zeal`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("ChanceToIgnoreEnemyPhysicalDamageReduction", "BASE", num)}, ""
 	},
@@ -3097,21 +3099,21 @@ var specialModList = map[string]interface{}{
 		return []mod.Mod{MOD("ChanceToIgnoreEnemyPhysicalDamageReduction", "BASE", num)}, ""
 	},
 
-	//pob:block:src/Modules/ModParser.lua:2188-2191
+	//pob:block:src/Modules/ModParser.lua:2198-2201
 	`(\d+) rage regenerated for every (\d+) mana regeneration per second`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
 			MOD("RageRegen", "BASE", num).Tag(mod.PerStat(utils.Float(captures[1]), "ManaRegen")),
 			mod.NewFlag("Condition:CanGainRage", true),
 		}, ""
 	},
-	//pob:src/Modules/ModParser.lua:2192
+	//pob:src/Modules/ModParser.lua:2202
 	`(\w+) recovery from regeneration is not applied`: func(_ float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewFlag("UnaffectedBy"+firstToUpper(captures[0])+"Regen", true)}, ""
 	},
 	`(\d+)% less damage taken for every (\d+)% life recovery per second from leech`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewFloat("DamageTaken", mod.TypeMore, -num).Tag(mod.PerStat(utils.Float(captures[1]), "MaxLifeLeechRatePercent"))}, ""
 	},
-	//pob:block:src/Modules/ModParser.lua:2196-2199
+	//pob:block:src/Modules/ModParser.lua:2206-2209
 	`(\w+) recovery from non-instant leech is not applied`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewFlag("UnaffectedByNonInstant"+firstToUpper(captures[0])+"Leech", true)}, ""
 	},
@@ -3134,7 +3136,7 @@ var specialModList = map[string]interface{}{
 	`never deal critical strikes`:                                 []mod.Mod{mod.NewFlag("NeverCrit", true), mod.NewFlag("Condition:NeverCrit", true)},
 	`no critical strike multiplier`:                               []mod.Mod{mod.NewFlag("NoCritMultiplier", true)},
 	`ailments never count as being from critical strikes`:         []mod.Mod{mod.NewFlag("AilmentsAreNeverFromCrit", true)},
-	//pob:src/Modules/ModParser.lua:3640
+	//pob:src/Modules/ModParser.lua:3686
 	`non-critical strikes cannot inflict ailments`:                                                         []mod.Mod{mod.NewFlag("AilmentsOnlyFromCrit", true)},
 	`the increase to physical damage from strength applies to projectile attacks as well as melee attacks`: []mod.Mod{mod.NewFlag("IronGrip", true)},
 	`strength's damage bonus applies to projectile attack damage as well as melee damage`:                  []mod.Mod{mod.NewFlag("IronGrip", true)},
@@ -3149,7 +3151,7 @@ var specialModList = map[string]interface{}{
 	`(\d+)% increased blind effect`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewList("EnemyModifier", mod.EnemyModifier{Mod: mod.NewFloat("BlindEffect", mod.TypeIncrease, num)})}, ""
 	},
-	//pob:block:src/Modules/ModParser.lua:2239
+	//pob:block:src/Modules/ModParser.lua:2249
 	`(\d+)% increased effect of blind from melee weapons`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewList("EnemyModifier", mod.EnemyModifier{Mod: mod.NewFloat("BlindEffect", mod.TypeIncrease, num)})}, ""
 	},
@@ -3178,7 +3180,7 @@ var specialModList = map[string]interface{}{
 			if !strings.EqualFold(captures[0], "deal no") {
 				return nil, ""
 			}
-			//pob:src/Modules/ModParser.lua:5254
+			//pob:src/Modules/ModParser.lua:5301
 			return []mod.Mod{mod.NewFlag("DealNoPhysical", true), mod.NewFlag("DealNoChaos", true)}, ""
 		}
 		want := data.DamageType(firstToUpper(captures[1]))
@@ -3246,13 +3248,13 @@ var specialModList = map[string]interface{}{
 		mod.NewFlag("CostLifeInsteadOfMana", true),
 	},
 	`removes all mana`: []mod.Mod{mod.NewFloat("Mana", mod.TypeMore, -100)},
-	//pob:block:src/Modules/ModParser.lua:2259-2263
+	//pob:block:src/Modules/ModParser.lua:2269-2273
 	"all elemental damage converted to chaos damage": []mod.Mod{
 		mod.NewFloat("ColdDamageConvertToChaos", mod.TypeBase, 100),
 		mod.NewFloat("FireDamageConvertToChaos", mod.TypeBase, 100),
 		mod.NewFloat("LightningDamageConvertToChaos", mod.TypeBase, 100),
 	},
-	//pob:block:src/Modules/ModParser.lua:2353-2358
+	//pob:block:src/Modules/ModParser.lua:2363-2368
 	"projectiles cannot continue after colliding with targets": []mod.Mod{
 		mod.NewFlag("CannotPierce", true).Flag(mod.MFlagProjectile),
 		mod.NewFlag("CannotChain", true).Flag(mod.MFlagProjectile),
@@ -3262,7 +3264,7 @@ var specialModList = map[string]interface{}{
 	`removes all energy shield`:           []mod.Mod{mod.NewFloat("EnergyShield", mod.TypeMore, -100)},
 	`skills cost life instead of mana`:    []mod.Mod{mod.NewFlag("CostLifeInsteadOfMana", true)},
 	`skills reserve life instead of mana`: []mod.Mod{mod.NewFlag("BloodMagicReserved", true)},
-	//pob:block:src/Modules/ModParser.lua:2269-2271
+	//pob:block:src/Modules/ModParser.lua:2279-2281
 	`your skills that throw mines reserve life instead of mana`: []mod.Mod{
 		mod.NewFlag("BloodMagicReserved", true).KeywordFlag(mod.KeywordFlagMine),
 	},
@@ -3277,15 +3279,15 @@ var specialModList = map[string]interface{}{
 	`skills cost \+(\d+) rage`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewFloat("RageCostBase", mod.TypeBase, num)}, ""
 	},
-	//pob:block:src/Modules/ModParser.lua:5623-5625
+	//pob:block:src/Modules/ModParser.lua:5680-5682
 	`skills cost life instead of (\d+)% of mana cost`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewFloat("HybridManaAndLifeCost_Life", mod.TypeBase, num)}, ""
 	},
-	//pob:block:src/Modules/ModParser.lua:5262-5264
+	//pob:block:src/Modules/ModParser.lua:5309-5311
 	`attack skills cost life instead of (\d+)% of mana cost`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewFloat("HybridManaAndLifeCost_Life", mod.TypeBase, num).Flag(mod.MFlagAttack)}, ""
 	},
-	//pob:block:src/Modules/ModParser.lua:2285
+	//pob:block:src/Modules/ModParser.lua:2295
 	`you cannot gain rage during soul gain prevention`: []mod.Mod{
 		MOD("RageRegen", "MORE", -100).Tag(mod.Condition("SoulGainPrevention")),
 	},
@@ -3297,7 +3299,7 @@ var specialModList = map[string]interface{}{
 			mod.NewList("EnemyModifier", mod.EnemyModifier{Mod: mod.NewFloat("LightningExposure", mod.TypeBase, num).Tag(mod.Condition("HitByFireDamage", "HitByColdDamage"))}),
 		}, ""
 	},
-	//pob:src/Modules/ModParser.lua:3581-3589
+	//pob:src/Modules/ModParser.lua:3627-3635
 	`(\d+)% increased elemental damage with hits and ailments for each type of elemental ailment on enemy`: func(num float64, captures []string) ([]mod.Mod, string) {
 		ailments := []string{"Frozen", "Chilled", "Ignited", "Shocked", "Scorched", "Brittle", "Sapped"}
 		out := make([]mod.Mod, 0, len(ailments))
@@ -3332,7 +3334,7 @@ var specialModList = map[string]interface{}{
 	`modifiers to critical strike multiplier also apply to damage over time multiplier for ailments from critical strikes at (\d+)% of their value`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewFloat("CritMultiplierAppliesToDegen", mod.TypeBase, num)}, ""
 	},
-	//pob:src/Modules/ModParser.lua:2314
+	//pob:src/Modules/ModParser.lua:2324
 	`damage over time multiplier for ailments is equal to critical strike multiplier`: []mod.Mod{mod.NewFlag("DotMultiplierIsCritMultiplier", true)},
 	`your bleeding does not deal extra damage while the enemy is moving`:              []mod.Mod{mod.NewFlag("Condition:NoExtraBleedDamageToMovingEnemy", true)},
 	`you can inflict bleeding on an enemy up to (\d+) times?`: func(num float64, captures []string) ([]mod.Mod, string) {
@@ -3341,7 +3343,7 @@ var specialModList = map[string]interface{}{
 			mod.NewFlag("Condition:HaveCrimsonDance", true),
 		}, ""
 	},
-	//pob:src/Modules/ModParser.lua:2326-2333
+	//pob:src/Modules/ModParser.lua:2336-2343
 	`your minions spread caustic ground on death, dealing (\d+)% of their maximum life as chaos damage per second`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
 			mod.NewList("ExtraMinionSkill", mod.ExtraMinionSkill{SkillID: "SiegebreakerCausticGround"}),
@@ -3384,18 +3386,20 @@ var specialModList = map[string]interface{}{
 		return []mod.Mod{mod.NewFloat("BlockEffect", mod.TypeBase, num)}, ""
 	},
 	`ignore attribute requirements`: []mod.Mod{mod.NewFlag("IgnoreAttributeRequirements", true)},
-	//pob:src/Modules/ModParser.lua:2364-2365
+	//pob:src/Modules/ModParser.lua:2374-2375
 	`ignore attribute requirements of gems socketed in blue sockets`: []mod.Mod{MOD("GemProperty", "LIST", mod.GemProperty{Keyword: utils.Ptr("all"), Key: "req", Value: 0}).Tag(mod.SocketedIn("{SlotName}").SocketColor("B"))},
 	`ignore attribute requirements of socketed gems`:                 []mod.Mod{MOD("GemProperty", "LIST", mod.GemProperty{Keyword: utils.Ptr("all"), Key: "req", Value: 0}).Tag(mod.SocketedIn("{SlotName}"))},
 	`y?o?u?r? ?chance to suppress spell damage is lucky`:             []mod.Mod{mod.NewFlag("SpellSuppressionChanceIsLucky", true)},
 	`corrupted blood cannot be inflicted on you`:                     []mod.Mod{mod.NewFlag("CorruptedBloodImmune", true)},
-	//pob:block:src/Modules/ModParser.lua:2490-2492
+	//pob:block:src/Modules/ModParser.lua:2500-2502
 	`you cannot be hindered`:                           []mod.Mod{mod.NewFlag("HinderImmune", true)},
 	`you cannot be maimed`:                             []mod.Mod{mod.NewFlag("MaimImmune", true)},
 	`you cannot be impaled`:                            []mod.Mod{mod.NewFlag("ImpaleImmune", true)},
 	`recoup effects instead occur over 3 seconds`:      []mod.Mod{mod.NewFlag("3SecondRecoup", true)},
 	`life recoup effects instead occur over 3 seconds`: []mod.Mod{mod.NewFlag("3SecondLifeRecoup", true)},
 	`recoup energy shield instead of life`:             []mod.Mod{mod.NewFlag("EnergyShieldRecoupInsteadOfLife", true)},
+	//pob:src/Modules/ModParser.lua:4770
+	"life recoup also recovers mana": []mod.Mod{FLAG("AddLifeRecoupToManaRecoup")},
 	`(\w+) resistance cannot be penetrated`: func(_ float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewFlag("EnemyCannotPen"+titleCaseAfterNonWord(strings.ToLower(captures[0]))+"Resistance", true)}, ""
 	},
@@ -3425,7 +3429,7 @@ var specialModList = map[string]interface{}{
 	`gain no inherent bonuses from strength`:     []mod.Mod{mod.NewFlag("NoStrengthAttributeBonuses", true)},
 	`gain no inherent bonuses from dexterity`:    []mod.Mod{mod.NewFlag("NoDexterityAttributeBonuses", true)},
 	`gain no inherent bonuses from intelligence`: []mod.Mod{mod.NewFlag("NoIntelligenceAttributeBonuses", true)},
-	//pob:src/Modules/ModParser.lua:2377-2383
+	//pob:src/Modules/ModParser.lua:2387-2393
 	`all damage taken bypasses energy shield`: []mod.Mod{
 		mod.NewFloat("PhysicalEnergyShieldBypass", mod.TypeOverride, 100),
 		mod.NewFloat("LightningEnergyShieldBypass", mod.TypeOverride, 100),
@@ -3460,7 +3464,7 @@ var specialModList = map[string]interface{}{
 			mod.NewFloat("LifeRecovery", mod.TypeBase, 1).Tag(mod.PercentStat("Mana", num)).Tag(mod.Condition("FullLife").Neg(true)),
 		}, ""
 	},
-	//pob:src/Modules/ModParser.lua:2401
+	//pob:src/Modules/ModParser.lua:2411
 	`you are blind`: []mod.Mod{FLAG("Condition:Blinded").Tag(mod.Condition("CannotBeBlinded").Neg(true))},
 	`armour applies to fire, cold and lightning damage taken from hits instead of physical damage`: []mod.Mod{
 		mod.NewFloat("ArmourAppliesToFireDamageTaken", mod.TypeBase, 100),
@@ -3507,7 +3511,7 @@ var specialModList = map[string]interface{}{
 			mod.NewFloat("Damage", mod.TypeMore, num).Source("Damage").Flag(mod.MFlagAttack).Tag(mod.Condition("OffHandAccRatingHigherThanMaxLife")).Tag(mod.Condition("OffHandAttack")),
 		}, ""
 	},
-	//pob:block:src/Modules/ModParser.lua:2445-2453
+	//pob:block:src/Modules/ModParser.lua:2455-2463
 	`(\d+)% chance to defend with double your armour for each time you've been hit by an enemy recently, up to (\d+)%`: func(numChance float64, captures []string) ([]mod.Mod, string) {
 		capPct := utils.Float(captures[1])
 		return []mod.Mod{
@@ -3568,7 +3572,7 @@ var specialModList = map[string]interface{}{
 			mod.NewFloat("ExtraPoints", mod.TypeBase, num),
 		}, ""
 	},
-	//pob:src/Modules/ModParser.lua:2466-2468
+	//pob:src/Modules/ModParser.lua:2476-2478
 	`(\d+)% increased accuracy rating at close range`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("AccuracyVsEnemy", mod.TypeIncrease, num).Tag(mod.Condition("AtCloseRange"))}, ""
 	},
@@ -3578,7 +3582,7 @@ var specialModList = map[string]interface{}{
 	`(\d+)% increased accuracy rating against unique enemies`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("AccuracyVsEnemy", mod.TypeIncrease, num).Tag(mod.ActorCondition("enemy", "RareOrUnique"))}, ""
 	},
-	//pob:src/Modules/ModParser.lua:2469
+	//pob:src/Modules/ModParser.lua:2479
 	`(\d+)% more accuracy rating against unique enemies`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("AccuracyVsEnemy", mod.TypeMore, num).Tag(mod.ActorCondition("enemy", "RareOrUnique"))}, ""
 	},
@@ -3588,13 +3592,13 @@ var specialModList = map[string]interface{}{
 			MOD("Damage", mod.TypeIncrease, num).Flag(mod.MFlagHit).Flag(mod.MFlagProjectile).Tag(mod.DistanceRamp([][]float64{{35, 0}, {70, 1}})),
 		}, ""
 	},
-	//pob:src/Modules/ModParser.lua:4585
+	//pob:src/Modules/ModParser.lua:4631
 	`projectiles deal (\d+)% increased damage with hits to targets at the start of their movement, reducing to (\d+)% as they travel farther`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
 			MOD("Damage", mod.TypeIncrease, num).Flag(mod.MFlagHit).Flag(mod.MFlagProjectile).Tag(mod.DistanceRamp([][]float64{{35, 1}, {70, 0}})),
 		}, ""
 	},
-	//pob:src/Modules/ModParser.lua:2644
+	//pob:src/Modules/ModParser.lua:2654
 	`projectiles gain damage as they travel farther, dealing up to (\d+)% more damage with hits and ailments`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
 			MOD("Damage", mod.TypeMore, num).KeywordFlag(mod.KeywordFlagHit | mod.KeywordFlagAilment).Tag(mod.DistanceRamp([][]float64{{35, 0}, {70, 1}})),
@@ -3603,7 +3607,7 @@ var specialModList = map[string]interface{}{
 	`(\d+)% chance to gain elusive on kill`: []mod.Mod{
 		mod.NewFlag("Condition:CanBeElusive", true),
 	},
-	//pob:src/Modules/ModParser.lua:2503
+	//pob:src/Modules/ModParser.lua:2513
 	`immun[ei]t?y? to elemental ailments while on consecrated ground`: []mod.Mod{FLAG("ElementalAilmentImmune").Tag(mod.Condition("OnConsecratedGround"))},
 	`poison you inflict with critical strikes deals (\d+)% more damage`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
@@ -3636,53 +3640,53 @@ var specialModList = map[string]interface{}{
 	"take no extra damage from critical strikes if you have a magic ring in left slot": []mod.Mod{
 		MOD("ReduceCritExtraDamage", "BASE", 100).Tag(mod.GlobalEffect("Global").Unscalable(true)).Tag(mod.Condition("MagicItemInRing 1")),
 	},
-	//pob:src/Modules/ModParser.lua:3480
+	//pob:src/Modules/ModParser.lua:3526
 	`gain (\d+)% of physical damage as a random element if you've cast (.+?) in the past (\d+) seconds`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("PhysicalDamageGainAsRandom", "BASE", num).Tag(mod.Condition(selfCastCondition(captures[1])))}, ""
 	},
-	//pob:src/Modules/ModParser.lua:4152
+	//pob:src/Modules/ModParser.lua:4198
 	`inflict withered for (\d+) seconds on hit if you've cast (.+?) in the past (\d+) seconds`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{FLAG("Condition:CanWither").Tag(mod.Condition(selfCastCondition(captures[1])))}, ""
 	},
-	//pob:src/Modules/ModParser.lua:4235
+	//pob:src/Modules/ModParser.lua:4281
 	`([a-z]+) exposure on hit if you've cast (.+?) in the past (\d+) seconds`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return selfCastExposure(captures[0], captures[1]), ""
 	},
-	//pob:src/Modules/ModParser.lua:4238
+	//pob:src/Modules/ModParser.lua:4284
 	`inflict ([a-z]+) exposure on hit if you've cast (.+?) in the past (\d+) seconds`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return selfCastExposure(captures[0], captures[1]), ""
 	},
-	//pob:src/Modules/ModParser.lua:4888
+	//pob:src/Modules/ModParser.lua:4935
 	`you are unaffected by (.+) if you've cast (.+?) in the past (\d+) seconds`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("Self"+firstToUpper(captures[0])+"Effect", "MORE", -100).
 			Tag(mod.Condition(selfCastCondition(captures[1]))).
 			Tag(mod.GlobalEffect("Global").Unscalable(true))}, ""
 	},
-	//pob:src/Modules/ModParser.lua:3782-3784
+	//pob:src/Modules/ModParser.lua:3828-3830
 	`hits with prismatic skills always ?i?n?f?l?i?c?t? (\w+)`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("Enemy"+firstToUpper(captures[0])+"Chance", "BASE", 100).
 			Flag(mod.MFlagHit).
 			Tag(mod.SkillType(string(data.SkillTypeRandomElement)))}, ""
 	},
-	//pob:src/Modules/ModParser.lua:4891
+	//pob:src/Modules/ModParser.lua:4938
 	`immun[ei]t?y? to ([a-z]*?)s? if you've cast (.+?) in the past (\d+) seconds`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{FLAG(firstToUpper(captures[0]) + "Immune").Tag(mod.Condition(selfCastCondition(captures[1])))}, ""
 	},
-	//pob:src/Modules/ModParser.lua:4948
+	//pob:src/Modules/ModParser.lua:4995
 	`action speed cannot be slowed below base value if you've cast (.+?) in the past (\d+) seconds`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("MinimumActionSpeed", "MAX", 100).Tag(mod.Condition(selfCastCondition(captures[0])))}, ""
 	},
-	//pob:src/Modules/ModParser.lua:4951
+	//pob:src/Modules/ModParser.lua:4998
 	`action speed cannot be modified to below base value if you've cast (.+?) in the past (\d+) seconds`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("MinimumActionSpeed", "MAX", 100).Tag(mod.Condition(selfCastCondition(captures[0])))}, ""
 	},
-	//pob:src/Modules/ModParser.lua:5025
+	//pob:src/Modules/ModParser.lua:5072
 	`intimidate enemies on hit if you've cast (.+?) in the past (\d+) seconds`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("EnemyModifier", "LIST", mod.EnemyModifier{Mod: FLAG("Condition:Intimidated")}).
 			Flag(mod.MFlagHit).
 			Tag(mod.Condition(selfCastCondition(captures[0])))}, ""
 	},
-	//pob:src/Modules/ModParser.lua:5847
+	//pob:src/Modules/ModParser.lua:5904
 	`take no extra damage from critical strikes if you've cast (.+?) in the past (\d+) seconds`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("ReduceCritExtraDamage", "BASE", 100).
 			Tag(mod.GlobalEffect("Global").Unscalable(true)).
@@ -3740,7 +3744,7 @@ var specialModList = map[string]interface{}{
 		FLAG("Condition:CanGainRage").Tag(mod.ActorCondition("enemy", "PinnacleBoss")),
 	},
 	"inherent effects from having rage are tripled": []mod.Mod{mod.NewFloat("Multiplier:RageEffect", mod.TypeBase, 2)},
-	//pob:block:src/Modules/ModParser.lua:2561-2563
+	//pob:block:src/Modules/ModParser.lua:2571-2573
 	`(\d+)% less damage taken per (\d+) rage, up to a maximum of (\d+)%`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
 			MOD("DamageTaken", "MORE", -num).Tag(
@@ -3785,7 +3789,7 @@ var specialModList = map[string]interface{}{
 	`you have (\d+) fortification`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewFloat("MinimumFortification", mod.TypeBase, num)}, ""
 	},
-	//pob:src/Modules/ModParser.lua:2585
+	//pob:src/Modules/ModParser.lua:2595
 	"nearby allies count as having fortification equal to yours": []mod.Mod{
 		MOD("ExtraAura", "LIST", mod.ExtraAura{
 			OnlyAllies: true,
@@ -3832,7 +3836,7 @@ var specialModList = map[string]interface{}{
 			MOD("StunThresholdEnergyShieldPercent", "BASE", num),
 		}, ""
 	},
-	//pob:src/Modules/ModParser.lua:4985-4988
+	//pob:src/Modules/ModParser.lua:5032-5035
 	`(\d+)% of your energy shield is added to your stun threshold`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
 			FLAG("AddESToStunThreshold"),
@@ -3848,7 +3852,7 @@ var specialModList = map[string]interface{}{
 	`recover energy shield equal to (\d+)% of evasion rating when you block`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("EnergyShieldOnBlock", "BASE", 1).Tag(mod.PercentStat("Evasion", num))}, ""
 	},
-	//pob:src/Modules/ModParser.lua:2589-2594
+	//pob:src/Modules/ModParser.lua:2599-2604
 	`you and allies affected by your placed banners regenerate ([\d\.]+)% of life per second for each stage`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
 			MOD("ExtraAura", "LIST", mod.ExtraAura{Mod: MOD("LifeRegenPercent", "BASE", num).Tag(mod.Condition("AffectedByPlacedBanner")).Tag(mod.Multiplier("BannerValour"))}),
@@ -3883,7 +3887,7 @@ var specialModList = map[string]interface{}{
 	`trigger level (\d+) (.+) when you attack with a non-vaal slam skill near an enemy`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return triggerExtraSkill(captures[1], int(num), false, ""), ""
 	},
-	//pob:block:src/Modules/ModParser.lua:2611-2618
+	//pob:block:src/Modules/ModParser.lua:2621-2628
 	`non-unique jewels cause increases and reductions to other damage types in a ([a-z]+) radius to be transformed to apply to ([a-z]+) damage`: func(_ float64, captures []string) ([]mod.Mod, string) {
 		conv := getSimpleConv([]string{"PhysicalDamage", "FireDamage", "ColdDamage", "LightningDamage", "ChaosDamage", "ElementalDamage"},
 			firstToUpper(captures[1])+"Damage", mod.TypeIncrease, true)
@@ -3986,13 +3990,13 @@ var specialModList = map[string]interface{}{
 	`gain convergence when you hit a unique enemy, no more than once every \d+ seconds`: []mod.Mod{
 		mod.NewFlag("Condition:CanGainConvergence", true),
 	},
-	//pob:src/Modules/ModParser.lua:5574
+	//pob:src/Modules/ModParser.lua:5630
 	`final repeat of spells has (\d+)% increased area of effect`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("RepeatFinalAreaOfEffect", "INC", num).Flag(mod.MFlagSpell).
 			Tag(mod.Condition("CastOnFrostbolt").Neg(true)).
 			Tag(mod.Condition("averageRepeat", "alwaysFinalRepeat"))}, ""
 	},
-	//pob:src/Modules/ModParser.lua:5673
+	//pob:src/Modules/ModParser.lua:5730
 	`final repeat of attack skills deals (\d+)% more damage`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("RepeatFinalDamage", "MORE", num).KeywordFlag(mod.KeywordFlagAttack)}, ""
 	},
@@ -4003,7 +4007,7 @@ var specialModList = map[string]interface{}{
 		return []mod.Mod{mod.NewFloat("ExtraExposure", mod.TypeBase, num)}, ""
 	},
 	"cannot take reflected elemental damage": []mod.Mod{MOD("ElementalReflectedDamageTaken", "MORE", -100).Tag(mod.GlobalEffect("Global").Unscalable(true))},
-	//pob:block:src/Modules/ModParser.lua:4693
+	//pob:block:src/Modules/ModParser.lua:4739
 	`cannot take reflected (\w+) damage if (\d+) (\w+) items are equipped`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD(firstToUpper(captures[0])+"ReflectedDamageTaken", "MORE", -100).Tag(mod.MultiplierThreshold(firstToUpper(captures[2]) + "Item").Threshold(utils.Float(captures[1])))}, ""
 	},
@@ -4045,7 +4049,7 @@ var specialModList = map[string]interface{}{
 		FLAG("ChaosCanIgnite").Tag(mod.Condition("StarsAreAligned")),
 	},
 	`gain chilling, shocking and igniting conflux for \d seconds`: []mod.Mod{},
-	//pob:src/Modules/ModParser.lua:3064-3067
+	//pob:src/Modules/ModParser.lua:3108-3111
 	"while affected by glorious madness, inflict mania on nearby enemies every second": []mod.Mod{
 		FLAG("Condition:CanInflictMania").Tag(mod.Condition("AffectedByGloriousMadness")),
 		MOD("EnemyModifier", "LIST", mod.EnemyModifier{Mod: FLAG("Condition:AfflictedByMania")}).Tag(mod.Condition("AffectedByGloriousMadness")),
@@ -4066,7 +4070,7 @@ var specialModList = map[string]interface{}{
 		FLAG("FireCanShock").Tag(mod.Condition("AffectedByGloriousMadness")),
 		FLAG("ChaosCanShock").Tag(mod.Condition("AffectedByGloriousMadness")),
 	},
-	//pob:src/Modules/ModParser.lua:2761
+	//pob:src/Modules/ModParser.lua:2771
 	`immun[ei]t?y? to elemental ailments while affected by glorious madness`: []mod.Mod{FLAG("ElementalAilmentImmune").Tag(mod.Condition("AffectedByGloriousMadness"))},
 	"summoned golems are immune to elemental damage": []mod.Mod{
 		MOD("MinionModifier", "LIST", mod.MinionModifier{Mod: FLAG("Elemancer")}).Tag(mod.SkillType(string(data.SkillTypeGolem))),
@@ -4077,7 +4081,7 @@ var specialModList = map[string]interface{}{
 			MOD("MinionModifier", "LIST", mod.MinionModifier{Mod: mod.NewFloat("Damage", mod.TypeIncrease, num)}).Tag(mod.SkillType(string(data.SkillTypeGolem))).Tag(mod.PerStat(0, "ActiveGolemLimit")),
 		}, ""
 	},
-	//pob:src/Modules/ModParser.lua:2768
+	//pob:src/Modules/ModParser.lua:2778
 	`shocks from your hits always increase damage taken by at least (\d+)%`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewFloat("ShockMinimum", mod.TypeBase, num)}, ""
 	},
@@ -4138,7 +4142,7 @@ var specialModList = map[string]interface{}{
 		mod.NewFlag("ColdCanShock", true),
 		mod.NewFlag("ChaosCanShock", true),
 	},
-	//pob:src/Modules/ModParser.lua:2824-2827
+	//pob:src/Modules/ModParser.lua:2834-2837
 	"other aegis skills are disabled": func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
 			FLAG("DisableSkill").Tag(mod.SkillType(string(data.SkillTypeAegis))),
@@ -4201,13 +4205,13 @@ var specialModList = map[string]interface{}{
 		}, ""
 	},
 	`vaal skills used during effect have (\d+)% reduced soul gain prevention duration`: func(num float64, captures []string) ([]mod.Mod, string) {
-		//pob:src/Modules/ModParser.lua:2280
+		//pob:src/Modules/ModParser.lua:2290
 		return []mod.Mod{MOD("SoulGainPreventionDuration", "INC", -num).
 			Tag(mod.Condition("UsingFlask")).
 			Tag(mod.SkillType(string(data.SkillTypeVaal)))}, ""
 	},
 	`vaal volcanic fissure and vaal molten strike have (\d+)% reduced soul gain prevention duration`: func(num float64, captures []string) ([]mod.Mod, string) {
-		//pob:src/Modules/ModParser.lua:2281
+		//pob:src/Modules/ModParser.lua:2291
 		return []mod.Mod{MOD("SoulGainPreventionDuration", "INC", -num).
 			Tag(mod.SkillName("Volcanic Fissure", "Molten Strike").Transfigured(true)).
 			Tag(mod.SkillType(string(data.SkillTypeVaal)))}, ""
@@ -4243,7 +4247,7 @@ var specialModList = map[string]interface{}{
 			MOD("EnemyModifier", "LIST", mod.EnemyModifier{Mod: MOD("DamageTaken", "INC", num).Tag(mod.Multiplier("BrandsAttached").Base(0))}),
 		}, ""
 	},
-	//pob:src/Modules/ModParser.lua:2888
+	//pob:src/Modules/ModParser.lua:2898
 	`non-damaging ailments have (\d+)% reduced effect on you while you have arcane surge`: func(num float64, captures []string) ([]mod.Mod, string) {
 		ailments := data.NonDamagingAilment("").Values()
 		mods := make([]mod.Mod, len(ailments))
@@ -4252,9 +4256,9 @@ var specialModList = map[string]interface{}{
 		}
 		return mods, ""
 	},
-	//pob:src/Modules/ModParser.lua:2895
+	//pob:src/Modules/ModParser.lua:2905
 	`immun[ei]t?y? to elemental ailments while you have arcane surge`: []mod.Mod{FLAG("ElementalAilmentImmune").Tag(mod.Condition("AffectedByArcaneSurge"))},
-	//pob:src/Modules/ModParser.lua:2488
+	//pob:src/Modules/ModParser.lua:2498
 	`brands have (\d+)% increased area of effect if (\d+)% of attached duration expired`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("AreaOfEffect", "INC", num).Tag(mod.Condition("BrandLastHalf")).Tag(mod.SkillType(string(data.SkillTypeBrand)))}, ""
 	},
@@ -4273,7 +4277,7 @@ var specialModList = map[string]interface{}{
 		return []mod.Mod{MOD("EnemyModifier", "LIST", mod.EnemyModifier{Mod: MOD("DamageTakenConsecratedGround", "INC", num).Tag(mod.Condition("OnConsecratedGround"))})}, ""
 	},
 	"you have consecrated ground around you while stationary": []mod.Mod{FLAG("Condition:OnConsecratedGround").Tag(mod.Condition("Stationary"))},
-	//pob:src/Modules/ModParser.lua:2903
+	//pob:src/Modules/ModParser.lua:2913
 	`consecrated ground you create grants immun[ei]t?y? to elemental ailments to you and allies`: []mod.Mod{
 		MOD("ExtraAura", "LIST", mod.ExtraAura{Mod: FLAG("ElementalAilmentImmune").Tag(mod.Condition("OnConsecratedGround"))}),
 	},
@@ -4282,7 +4286,7 @@ var specialModList = map[string]interface{}{
 			Mod: MOD("ConsecratedGroundAlsoAccuracy", "INC", num).Tag(mod.Condition("OnConsecratedGround")),
 		})}, ""
 	},
-	//pob:src/Modules/ModParser.lua:2904-2906
+	//pob:src/Modules/ModParser.lua:2914-2916
 	`gain fanaticism for (\d+) seconds on reaching maximum fanatic charges`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
 			mod.NewFlag("Condition:CanGainFanaticism", true),
@@ -4294,7 +4298,7 @@ var specialModList = map[string]interface{}{
 			MOD("CritChance", "INC", num).Tag(mod.PerStat(0, "Int")).Tag(mod.Condition("IntHigherThanStr").Neg(true)),
 		}, ""
 	},
-	//pob:block:src/Modules/ModParser.lua:2911
+	//pob:block:src/Modules/ModParser.lua:2921
 	"consecrated ground you create causes life regeneration to also recover energy shield for you and allies": []mod.Mod{
 		MOD("ExtraAura", "LIST", mod.ExtraAura{Mod: FLAG("LifeRegenerationRecoversEnergyShield").Tag(mod.Condition("OnConsecratedGround"))}),
 	},
@@ -4304,23 +4308,23 @@ var specialModList = map[string]interface{}{
 		}, ""
 	},
 	"armour received from body armour is doubled": []mod.Mod{mod.NewFlag("Unbreakable", true)},
-	//pob:src/Modules/ModParser.lua:2916-2919
+	//pob:src/Modules/ModParser.lua:2926-2929
 	"action speed cannot be modified to below base value":   []mod.Mod{MOD("MinimumActionSpeed", "MAX", 100).Tag(mod.GlobalEffect("Global").Unscalable(true))},
 	"movement speed cannot be modified to below base value": []mod.Mod{mod.NewFlag("MovementSpeedCannotBeBelowBase", true)},
 	"you cannot be slowed to below base speed":              []mod.Mod{MOD("MinimumActionSpeed", "MAX", 100).Tag(mod.GlobalEffect("Global").Unscalable(true))},
 	"cannot be slowed to below base speed":                  []mod.Mod{MOD("MinimumActionSpeed", "MAX", 100).Tag(mod.GlobalEffect("Global").Unscalable(true))},
 	"gain accuracy rating equal to your strength":           []mod.Mod{MOD("Accuracy", "BASE", 1).Tag(mod.PerStat(0, "Str"))},
 	"gain accuracy rating equal to twice your strength":     []mod.Mod{MOD("Accuracy", "BASE", 2).Tag(mod.PerStat(0, "Str"))},
-	//pob:src/Modules/ModParser.lua:5227
+	//pob:src/Modules/ModParser.lua:5274
 	`gain accuracy rating equal to your intelligence`: []mod.Mod{MOD("Accuracy", "BASE", 1).Tag(mod.PerStat(0, "Int"))},
-	//pob:src/Modules/ModParser.lua:5456-5457
+	//pob:src/Modules/ModParser.lua:5512-5513
 	`(\d+)% increased total power counted by warcries`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("WarcryPower", "INC", num)}, ""
 	},
 	`warcries have a minimum of (\d+) power`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("MinimumWarcryPower", "BASE", num)}, ""
 	},
-	//pob:src/Modules/ModParser.lua:3929-3931
+	//pob:src/Modules/ModParser.lua:3975-3977
 	`poisons you inflict on non-poisoned enemies deal (\d+)% increased damage`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("Damage", "INC", num).KeywordFlag(mod.KeywordFlagPoison).Tag(mod.Condition("NonPoisonedOnly"))}, ""
 	},
@@ -4331,7 +4335,7 @@ var specialModList = map[string]interface{}{
 			MOD("LifeOnHit", "BASE", amount).Flag(mod.MFlagAttack | mod.MFlagHit).Tag(mod.Condition("MaxResourceGain")),
 		}, ""
 	},
-	//pob:src/Modules/ModParser.lua:2315
+	//pob:src/Modules/ModParser.lua:2325
 	`\+(\d+)% to cold damage over time multiplier for each (\d+)% overcapped cold resistance`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("ColdDotMultiplier", "BASE", num).Tag(mod.PerStat(utils.Float(captures[1]), "ColdResistOverCap"))}, ""
 	},
@@ -4339,11 +4343,11 @@ var specialModList = map[string]interface{}{
 		MOD("EnemyModifier", "LIST", mod.EnemyModifier{Mod: mod.NewFlag("NeverCrit", true)}).Tag(mod.Condition("StunnedRecently")),
 		MOD("EnemyModifier", "LIST", mod.EnemyModifier{Mod: mod.NewFlag("Condition:NeverCrit", true)}).Tag(mod.Condition("StunnedRecently")),
 	},
-	//pob:src/Modules/ModParser.lua:2419
+	//pob:src/Modules/ModParser.lua:2429
 	`arcane surge also grants (\d+)% increased life regeneration rate to you`: func(num float64, captures []string) ([]mod.Mod, string) {
-		return []mod.Mod{MOD("ArcaneSurgeAlsoLifeRegen", "BASE", num)}, ""
+		return []mod.Mod{MOD("ArcaneSurgeAlsoLifeRegen", "INC", num)}, ""
 	},
-	//pob:src/Modules/ModParser.lua:4865-4866
+	//pob:src/Modules/ModParser.lua:4912-4913
 	`immune to bleeding if equipped helmet has higher armour than evasion rating`: []mod.Mod{
 		mod.NewFlag("BleedImmune", true).Tag(mod.Condition("HelmetArmourHigherThanEvasion")),
 	},
@@ -4369,11 +4373,11 @@ var specialModList = map[string]interface{}{
 			MOD("MinionModifier", "LIST", mod.MinionModifier{Mod: MOD("AreaOfEffect", "INC", num)}).Tag(mod.Condition("ConsumedCorpseRecently")),
 		}, ""
 	},
-	//pob:block:src/Modules/ModParser.lua:2928
+	//pob:block:src/Modules/ModParser.lua:2938
 	`with at least one nearby corpse, nearby enemies deal (\d+)% reduced damage`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewList("EnemyModifier", mod.EnemyModifier{Mod: mod.NewFloat("Damage", mod.TypeIncrease, -num)}).Tag(mod.MultiplierThreshold("NearbyCorpse").Threshold(1))}, ""
 	},
-	//pob:src/Modules/ModParser.lua:2954
+	//pob:src/Modules/ModParser.lua:2964
 	`nearby chilled enemies deal (\d+)% reduced damage with hits`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewList("EnemyModifier", mod.EnemyModifier{Mod: mod.NewFloat("Damage", mod.TypeIncrease, -num)}).Tag(mod.ActorCondition("enemy", "Chilled"))}, ""
 	},
@@ -4387,7 +4391,7 @@ var specialModList = map[string]interface{}{
 		mod.NewList("EnemyModifier", mod.EnemyModifier{Mod: mod.NewFlag("NeverCrit", true)}),
 		mod.NewList("EnemyModifier", mod.EnemyModifier{Mod: mod.NewFlag("Condition:NeverCrit", true)}),
 	},
-	//pob:block:src/Modules/ModParser.lua:3543-3545
+	//pob:block:src/Modules/ModParser.lua:3589-3591
 	`on non-channelling attack, set a life flask with greater than \d+% of maximum charges remaining to (\d+)% for each charge removed this way, that attack gains \+(\d+)% to damage over time multiplier`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("DotMultiplier", "BASE", utils.Float(captures[1])).Tag(mod.PercentStat("LifeFlaskCharges", 100-num).Floor()).
 			Tag(mod.SkillType(string(data.SkillTypeChannel)).Neg(true)).Tag(mod.SkillType(string(data.SkillTypeAttack)))}, ""
@@ -4467,16 +4471,16 @@ var specialModList = map[string]interface{}{
 			MOD("Damage", "MORE", utils.Float(captures[1])*num/100).KeywordFlag(mod.KeywordFlagPoison).Tag(mod.Condition("UsingFlask")),
 		}, ""
 	},
-	//pob:src/Modules/ModParser.lua:2959
+	//pob:src/Modules/ModParser.lua:2969
 	`immun[ei]t?y? to elemental ailments during any flask effect`: []mod.Mod{FLAG("ElementalAilmentImmune").Tag(mod.Condition("UsingFlask"))},
-	//pob:block:src/Modules/ModParser.lua:2960
+	//pob:block:src/Modules/ModParser.lua:2970
 	`grant bonuses to non-channelling skills you use by consuming (\d+) charges from a flask of each of the following types, if possible:`: []mod.Mod{},
 	`nearby enemies have (\d+)% less accuracy rating while you have phasing`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
 			MOD("EnemyModifier", "LIST", mod.EnemyModifier{Mod: MOD("Accuracy", "MORE", -num)}).Tag(mod.Condition("Phasing")),
 		}, ""
 	},
-	//pob:src/Modules/ModParser.lua:2972
+	//pob:src/Modules/ModParser.lua:2982
 	`immun[ei]t?y? to elemental ailments while phasing`: []mod.Mod{FLAG("ElementalAilmentImmune").Tag(mod.Condition("Phasing"))},
 	`nearby enemies have fire, cold and lightning exposure while you have phasing, applying -(\d+)% to those resistances`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
@@ -4490,7 +4494,7 @@ var specialModList = map[string]interface{}{
 			MOD("Damage", "MORE", num*utils.Float(captures[1])/100).Flag(mod.MFlagArea).Flag(mod.MFlagHit),
 		}, ""
 	},
-	//pob:block:src/Modules/ModParser.lua:2987-2990
+	//pob:block:src/Modules/ModParser.lua:2997-3000
 	`immun[ei]t?y? to ignite and shock`: []mod.Mod{
 		FLAG("IgniteImmune"),
 		FLAG("ShockImmune"),
@@ -4514,18 +4518,50 @@ var specialModList = map[string]interface{}{
 	"you are immune to bleeding while leeching":                         []mod.Mod{FLAG("BleedImmune").Tag(mod.Condition("Leeching"))},
 	"life leech effects are not removed at full life":                   []mod.Mod{mod.NewFlag("CanLeechLifeOnFullLife", true)},
 	"life leech effects are not removed when unreserved life is filled": []mod.Mod{mod.NewFlag("CanLeechLifeOnFullLife", true)},
-	//pob:src/Modules/ModParser.lua:5144-5152
+	//pob:src/Modules/ModParser.lua:5191-5199
 	"effect is not removed when unreserved mana is filled":              []mod.Mod{mod.NewFlag("ManaFlaskEffectNotRemoved", true)},
 	"life flask effects are not removed when unreserved life is filled": []mod.Mod{mod.NewFlag("LifeFlaskEffectNotRemoved", true)},
 	"mana flask effects are not removed when unreserved mana is filled": []mod.Mod{mod.NewFlag("ManaFlaskEffectNotRemoved", true)},
-	//pob:src/Modules/ModParser.lua:3057
+	//pob:src/Modules/ModParser.lua:3067
 	"utility flasks are disabled": []mod.Mod{mod.NewFlag("UtilityFlasksDoNotApplyToPlayer", true)},
-	//pob:src/Modules/ModParser.lua:3000
+	// Abyssal Bloodline
+	//pob:block:src/Modules/ModParser.lua:3069-3071
+	`totems have (\d+)% more life per maximum number of summoned totems`: func(n float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{MOD("TotemLife", "MORE", n).Tag(mod.PerStat(0, "ActiveTotemLimit"))}, ""
+	},
+	//pob:block:src/Modules/ModParser.lua:3072-3101
+	`while you have at least (\d+) hypnotic eye jewels socketed: arcane surge also grants (\d+)% of damage taken recouped as mana to you arcane surge also grants (\d+)% increased mana cost efficiency to you`: func(jewels float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{
+			MOD("ArcaneSurgeAlsoManaRecoup", "BASE", utils.Float(captures[1])).Tag(mod.MultiplierThreshold("HypnoticEyeJewel").Threshold(jewels)),
+			MOD("ArcaneSurgeAlsoManaCostEfficiency", "INC", utils.Float(captures[2])).Tag(mod.MultiplierThreshold("HypnoticEyeJewel").Threshold(jewels)),
+		}, ""
+	},
+	`while you have at least (\d+) ghastly eye jewels socketed: unholy might you grant also causes target's damage to penetrate (\d+)% chaos resistance unholy might you grant also applies (\d+)% increased effect of withered`: func(jewels float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{
+			MOD("UnholyMightAlsoChaosPenetration", "BASE", utils.Float(captures[1])).Tag(mod.MultiplierThreshold("GhastlyEyeJewel").Threshold(jewels)),
+			MOD("UnholyMightAlsoWitherEffect", "INC", utils.Float(captures[2])).Tag(mod.MultiplierThreshold("GhastlyEyeJewel").Threshold(jewels)),
+		}, ""
+	},
+	`while you have at least (\d+) searching eye jewels socketed: targets affected by maim you inflict cannot deal critical strikes maim you inflict causes hits against the target to have (\d+)% more critical strike chance`: func(jewels float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{
+			// maim effect increases and decreases should affect this, but none exist yet
+			MOD("EnemyModifier", "LIST", mod.EnemyModifier{Mod: FLAG("NeverCrit").Tag(mod.Condition("Maimed"))}).Tag(mod.MultiplierThreshold("SearchingEyeJewel").Threshold(jewels)),
+			MOD("EnemyModifier", "LIST", mod.EnemyModifier{Mod: MOD("SelfCritChance", "MORE", utils.Float(captures[1])).Tag(mod.Condition("Maimed"))}).Tag(mod.MultiplierThreshold("SearchingEyeJewel").Threshold(jewels)),
+		}, ""
+	},
+	`while you have at least (\d+) murderous eye jewels socketed: intimidate you inflict applies an extra \+(\d+)% increased attack damage taken intimidate you inflict causes targets to deal (\d+)% less damage`: func(jewels float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{
+			// intimidate effect increases and decreases should affect this, but none exist yet
+			MOD("EnemyModifier", "LIST", mod.EnemyModifier{Mod: MOD("DamageTaken", "INC", utils.Float(captures[1])).Flag(mod.MFlagAttack).Tag(mod.Condition("Intimidated"))}).Tag(mod.MultiplierThreshold("MurderousEyeJewel").Threshold(jewels)),
+			MOD("EnemyModifier", "LIST", mod.EnemyModifier{Mod: MOD("Damage", "MORE", -utils.Float(captures[2])).Tag(mod.Condition("Intimidated"))}).Tag(mod.MultiplierThreshold("MurderousEyeJewel").Threshold(jewels)),
+		}, ""
+	},
+	//pob:src/Modules/ModParser.lua:3010
 	"energy shield leech effects from attacks are not removed at full energy shield": []mod.Mod{mod.NewFlag("CanLeechEnergyShieldOnFullEnergyShield", true)},
-	//pob:src/Modules/ModParser.lua:3013
+	//pob:src/Modules/ModParser.lua:3023
 	"energy shield leech effects are not removed when energy shield is filled": []mod.Mod{mod.NewFlag("CanLeechEnergyShieldOnFullEnergyShield", true)},
 	"cannot take reflected physical damage":                                    []mod.Mod{MOD("PhysicalReflectedDamageTaken", "MORE", -100).Tag(mod.GlobalEffect("Global").Unscalable(true))},
-	//pob:block:src/Modules/ModParser.lua:4692
+	//pob:block:src/Modules/ModParser.lua:4738
 	"immune to reflected damage": []mod.Mod{MOD("ReflectedDamageTaken", "MORE", -100).Tag(mod.GlobalEffect("Global").Unscalable(true))},
 	`gain (\d+)% increased movement speed for 20 seconds when you kill an enemy`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
@@ -4575,31 +4611,31 @@ var specialModList = map[string]interface{}{
 	"no block chance":                             []mod.Mod{MOD("ArmourData", "LIST", mod.ArmourData{Key: "BlockChance", Value: 0})},
 	"no chance to block":                          []mod.Mod{MOD("ArmourData", "LIST", mod.ArmourData{Key: "BlockChance", Value: 0})},
 
-	//pob:src/Modules/ModParser.lua:3539
+	//pob:src/Modules/ModParser.lua:3585
 	`(\d+)% chance to gain a flask charge when you deal a critical strike`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewFloat("FlaskChargeOnCritChance", mod.TypeBase, num)}, ""
 	},
 	"gain a flask charge when you deal a critical strike":                                 []mod.Mod{MOD("FlaskChargeOnCritChance", "BASE", 100)},
 	"gain a flask charge when you deal a critical strike while affected by precision":     []mod.Mod{MOD("FlaskChargeOnCritChance", "BASE", 100).Tag(mod.Condition("AffectedByPrecision"))},
 	"gain a flask charge when you deal a critical strike while at maximum frenzy charges": []mod.Mod{MOD("FlaskChargeOnCritChance", "BASE", 100).Tag(mod.StatThresholdStat("FrenzyCharges", "FrenzyChargesMax"))},
-	//pob:src/Modules/ModParser.lua:4677
+	//pob:src/Modules/ModParser.lua:4723
 	`(\d+)% of physical damage is taken from mana before life`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewFloat("PhysicalDamageTakenFromManaBeforeLife", mod.TypeBase, num)}, ""
 	},
-	//pob:src/Modules/ModParser.lua:4092
+	//pob:src/Modules/ModParser.lua:4138
 	"you are at maximum chance to block spell damage if you have not blocked recently": []mod.Mod{
 		FLAG("MaxSpellBlockIfNotBlockedRecently").Tag(mod.Condition("BlockedRecently").Neg(true)),
 	},
-	//pob:src/Modules/ModParser.lua:4981
+	//pob:src/Modules/ModParser.lua:5028
 	`stun threshold is based on (\d+)% of your mana instead of life`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
 			FLAG("StunThresholdBasedOnManaInsteadOfLife"),
 			mod.NewFloat("StunThresholdManaPercent", mod.TypeBase, num),
 		}, ""
 	},
-	//pob:src/Modules/ModParser.lua:4696
+	//pob:src/Modules/ModParser.lua:4742
 	"attacks cannot hit you": []mod.Mod{FLAG("AlwaysEvade")},
-	//pob:src/Modules/ModParser.lua:3800
+	//pob:src/Modules/ModParser.lua:3846
 	"modifiers to ignite duration on you apply to all elemental ailments": []mod.Mod{
 		FLAG("IgniteDurationAppliesToElementalAilments"),
 	},
@@ -4607,30 +4643,30 @@ var specialModList = map[string]interface{}{
 		FLAG("NeverCrit").Flag(mod.MFlagAttack),
 		FLAG("Condition:NeverCrit").Flag(mod.MFlagAttack),
 	},
-	//pob:src/Modules/ModParser.lua:2789
+	//pob:src/Modules/ModParser.lua:2799
 	"always freeze, shock and ignite": []mod.Mod{
 		mod.NewFloat("EnemyFreezeChance", mod.TypeBase, 100),
 		mod.NewFloat("EnemyShockChance", mod.TypeBase, 100),
 		mod.NewFloat("EnemyIgniteChance", mod.TypeBase, 100),
 	},
-	//pob:src/Modules/ModParser.lua:5007
+	//pob:src/Modules/ModParser.lua:5054
 	"melee weapon attacks have culling strike": []mod.Mod{
 		MOD("CullPercent", "MAX", 10).
 			Flag(mod.MFlagAttack | mod.MFlagWeaponMelee).
 			Tag(mod.GlobalEffect("Global").Unscalable(true)),
 	},
-	//pob:src/Modules/ModParser.lua:4044
+	//pob:src/Modules/ModParser.lua:4090
 	"you can apply an additional curse while at maximum power charges": []mod.Mod{
 		MOD("EnemyCurseLimit", "BASE", 1).Tag(mod.StatThresholdStat("PowerCharges", "PowerChargesMax")),
 	},
-	//pob:block:src/Modules/ModParser.lua:4637-4641
+	//pob:block:src/Modules/ModParser.lua:4683-4687
 	`gain (\d+) life per cursed enemy hit with attacks`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
 			MOD("LifeOnHit", "BASE", num).Flag(mod.MFlagAttack | mod.MFlagHit).
 				Tag(mod.ActorCondition("enemy", "Cursed")),
 		}, ""
 	},
-	//pob:block:src/Modules/ModParser.lua:4638
+	//pob:block:src/Modules/ModParser.lua:4684
 	`gain (\d+) life for each ignited enemy hit with attacks`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("LifeOnHit", "BASE", num).Flag(mod.MFlagAttack | mod.MFlagHit).Tag(mod.ActorCondition("enemy", "Ignited"))}, ""
 	},
@@ -4640,19 +4676,19 @@ var specialModList = map[string]interface{}{
 				Tag(mod.ActorCondition("enemy", "Cursed")),
 		}, ""
 	},
-	//pob:src/Modules/ModParser.lua:5257
+	//pob:src/Modules/ModParser.lua:5304
 	"deal no physical or elemental damage": []mod.Mod{
 		FLAG("DealNoPhysical"), FLAG("DealNoCold"), FLAG("DealNoFire"), FLAG("DealNoLightning"),
 	},
-	//pob:src/Modules/ModParser.lua:2217
+	//pob:src/Modules/ModParser.lua:2227
 	"your melee hits can't be evaded while wielding a sword": []mod.Mod{
 		FLAG("CannotBeEvaded").Flag(mod.MFlagMelee | mod.MFlagHit).Tag(mod.Condition("UsingSword")),
 	},
-	//pob:src/Modules/ModParser.lua:3698
+	//pob:src/Modules/ModParser.lua:3744
 	`chill enemies as though dealing (\d+)% more damage`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("ChillAsThoughDealing", "MORE", num)}, ""
 	},
-	//pob:src/Modules/ModParser.lua:4541
+	//pob:src/Modules/ModParser.lua:4587
 	"projectiles pierce all burning enemies": []mod.Mod{
 		FLAG("PierceAllTargets").Tag(mod.ActorCondition("enemy", "Burning")),
 	},
@@ -4661,12 +4697,12 @@ var specialModList = map[string]interface{}{
 			Tag(mod.Condition("{Hand}Attack")).
 			Tag(mod.SkillType(string(data.SkillTypeAttack))),
 	},
-	//pob:src/Modules/ModParser.lua:5454
+	//pob:src/Modules/ModParser.lua:5510
 	"non-instant warcries ignore their cooldown when used": []mod.Mod{
 		MOD("CooldownRecovery", "OVERRIDE", 0).KeywordFlag(mod.KeywordFlagWarcry).
 			Tag(mod.SkillType(string(data.SkillTypeInstant)).Neg(true)),
 	},
-	//pob:src/Modules/ModParser.lua:4058
+	//pob:src/Modules/ModParser.lua:4104
 	`nearby enemy monsters have at least (\d+)% of life reserved`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
 			MOD("EnemyModifier", "LIST", mod.EnemyModifier{Mod: mod.NewFloat("LifeReservationPercent", mod.TypeBase, num)}),
@@ -4684,25 +4720,25 @@ var specialModList = map[string]interface{}{
 			MOD("MinionModifier", "LIST", mod.MinionModifier{Mod: mod.NewFlag("Condition:CanWither", true)}),
 		}, ""
 	},
-	//pob:src/Modules/ModParser.lua:4417
+	//pob:src/Modules/ModParser.lua:4463
 	`raised spectres fire (\d+) additional projectiles`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
 			MOD("MinionModifier", "LIST", mod.MinionModifier{Mod: mod.NewFloat("ProjectileCount", mod.TypeBase, num)}).
 				Tag(mod.SkillName("Raise Spectre").Transfigured(true)),
 		}, ""
 	},
-	//pob:src/Modules/ModParser.lua:4388
+	//pob:src/Modules/ModParser.lua:4434
 	`minions have (\d+)% chance to deal double damage per fortification on you`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
 			MOD("MinionModifier", "LIST", mod.MinionModifier{Mod: MOD("DoubleDamageChance", "BASE", num).
 				Tag(mod.PerStat(0, "FortificationStacks").Actor("parent"))}),
 		}, ""
 	},
-	//pob:src/Modules/ModParser.lua:4502
+	//pob:src/Modules/ModParser.lua:4548
 	"summoned skeleton warriors are permanent and follow you": []mod.Mod{
 		FLAG("RaisedSkeletonPermanentDuration").Tag(mod.SkillName("Summon Skeletons")),
 	},
-	//pob:block:src/Modules/ModParser.lua:5341-5346
+	//pob:block:src/Modules/ModParser.lua:5397-5402
 	"your blessing skills are disabled": []mod.Mod{
 		FLAG("DisableSkill").Tag(mod.SkillType(string(data.SkillTypeBlessing))),
 	},
@@ -4715,7 +4751,7 @@ var specialModList = map[string]interface{}{
 				Tag(mod.SkillName("Bone Offering", "Flesh Offering", "Spirit Offering", "Blood Offering")),
 		}, ""
 	},
-	//pob:src/Modules/ModParser.lua:4911
+	//pob:src/Modules/ModParser.lua:4958
 	"enemies inflict elemental ailments on you instead of nearby allies": []mod.Mod{
 		MOD("ExtraAura", "LIST", mod.ExtraAura{Mod: mod.NewFlag("ElementalAilmentImmune", true), OnlyAllies: true}),
 	},
@@ -4756,9 +4792,9 @@ var specialModList = map[string]interface{}{
 	"life leech from hits with this weapon is instant":          []mod.Mod{mod.NewFloat("InstantLifeLeech", mod.TypeBase, 100).Tag(mod.Condition("{Hand}Attack"))},
 	"mana leech from hits with this weapon is instant":          []mod.Mod{mod.NewFloat("InstantManaLeech", mod.TypeBase, 100).Tag(mod.Condition("{Hand}Attack"))},
 	"gain life from leech instantly from hits with this weapon": []mod.Mod{mod.NewFloat("InstantLifeLeech", mod.TypeBase, 100).Tag(mod.Condition("{Hand}Attack")).Tag(mod.SkillType(string(data.SkillTypeAttack)))},
-	//pob:block:src/Modules/ModParser.lua:3135
+	//pob:block:src/Modules/ModParser.lua:3179
 	"life leech from melee damage is instant": []mod.Mod{mod.NewFloat("InstantLifeLeech", mod.TypeBase, 100).Flag(mod.MFlagMelee)},
-	//pob:block:src/Modules/ModParser.lua:3137-3141
+	//pob:block:src/Modules/ModParser.lua:3181-3185
 	`(\d+)% of leech from hits with this weapon is instant per enemy power`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
 			mod.NewFloat("InstantLifeLeech", mod.TypeBase, num).Flag(mod.MFlagHit).Tag(mod.Condition("{Hand}Attack")).Tag(mod.SkillType(string(data.SkillTypeAttack))).Tag(mod.Multiplier("EnemyPower")),
@@ -4772,11 +4808,11 @@ var specialModList = map[string]interface{}{
 	},
 	"has no attribute requirements": []mod.Mod{mod.NewFlag("NoAttributeRequirements", true)},
 	`trigger a socketed spell when a hit from this weapon freezes a target, with a ([\d\.]+) second cooldown`: []mod.Mod{
-		//pob:src/Modules/ModParser.lua:5282
+		//pob:src/Modules/ModParser.lua:5329
 		MOD("ExtraSupport", "LIST", mod.ExtraSupport{SkillID: "SupportTriggerSpellOnBowAttackFreezeHit", Level: 1}).Tag(mod.SocketedIn("{SlotName}")),
 	},
 	"you cannot cast socketed hex curse skills inflict socketed hexes on enemies that trigger your traps": []mod.Mod{
-		//pob:src/Modules/ModParser.lua:5290
+		//pob:src/Modules/ModParser.lua:5337
 		MOD("ExtraSupport", "LIST", mod.ExtraSupport{SkillID: "SupportCurseOnTrapTriggered", Level: 1}).Tag(mod.SocketedIn("{SlotName}")),
 	},
 	"trigger a socketed spell when you attack with this weapon":                                        []mod.Mod{MOD("ExtraSupport", "LIST", mod.ExtraSupport{SkillID: "SupportTriggerSpellOnAttack", Level: 1}).Tag(mod.SocketedIn("{SlotName}"))},
@@ -4784,7 +4820,7 @@ var specialModList = map[string]interface{}{
 	"trigger a socketed spell when you use a skill":                                                    []mod.Mod{MOD("ExtraSupport", "LIST", mod.ExtraSupport{SkillID: "SupportTriggerSpellOnSkillUse", Level: 1}).Tag(mod.SocketedIn("{SlotName}"))},
 	`trigger a socketed spell when you use a skill, with a (\d+) second cooldown`:                      []mod.Mod{MOD("ExtraSupport", "LIST", mod.ExtraSupport{SkillID: "SupportTriggerSpellOnSkillUse", Level: 1}).Tag(mod.SocketedIn("{SlotName}"))},
 	`trigger a socketed spell when you use a skill, with a (\d+) second cooldown and (\d+)% more cost`: []mod.Mod{MOD("ExtraSupport", "LIST", mod.ExtraSupport{SkillID: "SupportTriggerSpellOnSkillUse", Level: 1}).Tag(mod.SocketedIn("{SlotName}"))},
-	//pob:src/Modules/ModParser.lua:3153-3154
+	//pob:src/Modules/ModParser.lua:3197-3198
 	"trigger socketed spells when you focus":                                                    []mod.Mod{MOD("ExtraSupport", "LIST", mod.ExtraSupport{SkillID: "SupportTriggerSpellFromHelmet", Level: 1}).Tag(mod.SocketedIn("{SlotName}"))},
 	`trigger socketed spells when you focus, with a ([\d\.]+) second cooldown`:                  []mod.Mod{MOD("ExtraSupport", "LIST", mod.ExtraSupport{SkillID: "SupportTriggerSpellFromHelmet", Level: 1}).Tag(mod.SocketedIn("{SlotName}"))},
 	"trigger a socketed spell when you attack with a bow":                                       []mod.Mod{MOD("ExtraSupport", "LIST", mod.ExtraSupport{SkillID: "SupportTriggerSpellOnBowAttack", Level: 1}).Tag(mod.SocketedIn("{SlotName}"))},
@@ -4798,7 +4834,7 @@ var specialModList = map[string]interface{}{
 			MOD("ExtraSupport", "LIST", mod.ExtraSupport{SkillID: "SupportCastOnManaSpent", Level: 1}).Tag(mod.SocketedIn("{SlotName}")),
 		}, ""
 	},
-	//pob:block:src/Modules/ModParser.lua:3166-3175
+	//pob:block:src/Modules/ModParser.lua:3210-3219
 	`(\d+)% chance to [c?t?][a?r?][s?i?][t?g?]g?e?r? socketed spells when you spend at least (\d+) mana on an upfront cost to use or trigger a skill, with a ([\d\.]+) second cooldown`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
 			MOD("KitavaTriggerChance", "BASE", num).Source("Kitava's Thirst"),
@@ -4817,21 +4853,21 @@ var specialModList = map[string]interface{}{
 	`([\+\-]\d+) to level of socketed gems`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("GemProperty", "LIST", mod.GemProperty{Keyword: utils.Ptr("all"), Key: "level", Value: num}).Tag(mod.SocketedIn("{SlotName}"))}, ""
 	},
-	//pob:src/Modules/ModParser.lua:3179-3182
+	//pob:src/Modules/ModParser.lua:3223-3226
 	`([\+\-]\d+) to level of socketed ([a-z\- ]+) gems`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("GemProperty", "LIST", mod.GemProperty{Keyword: utils.Ptr(captures[1]), Key: "level", Value: num}).Tag(mod.SocketedIn("{SlotName}"))}, ""
 	},
 	`\+(\d+)% to quality of socketed gems`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("GemProperty", "LIST", mod.GemProperty{Keyword: utils.Ptr("all"), Key: "quality", Value: num}).Tag(mod.SocketedIn("{SlotName}"))}, ""
 	},
-	//pob:src/Modules/ModParser.lua:3238-3239
+	//pob:src/Modules/ModParser.lua:3282-3283
 	`gems socketed in red sockets have [\+\-](\d+) to level`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("GemProperty", "LIST", mod.GemProperty{Keyword: utils.Ptr("all"), Key: "level", Value: num}).Tag(mod.SocketedIn("{SlotName}").SocketColor("R"))}, ""
 	},
 	`gems socketed in green sockets have [\+\-](\d+)% to quality`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("GemProperty", "LIST", mod.GemProperty{Keyword: utils.Ptr("all"), Key: "quality", Value: num}).Tag(mod.SocketedIn("{SlotName}").SocketColor("G"))}, ""
 	},
-	//pob:src/Modules/ModParser.lua:3240-3242
+	//pob:src/Modules/ModParser.lua:3284-3286
 	`\+(\d+)% to fire resistance when socketed with a red gem`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("SocketProperty", "LIST", mod.SocketProperty{Mod: mod.NewFloat("FireResist", mod.TypeBase, num)}).Tag(mod.SocketedIn("{SlotName}").Keyword("strength").Sockets(1))}, ""
 	},
@@ -4841,11 +4877,11 @@ var specialModList = map[string]interface{}{
 	`\+(\d+)% to lightning resistance when socketed with a blue gem`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("SocketProperty", "LIST", mod.SocketProperty{Mod: mod.NewFloat("LightningResist", mod.TypeBase, num)}).Tag(mod.SocketedIn("{SlotName}").Keyword("intelligence").Sockets(1))}, ""
 	},
-	//pob:src/Modules/ModParser.lua:3244-3245
+	//pob:src/Modules/ModParser.lua:3288-3289
 	`attack skills gain (\d+)% of physical damage as extra fire damage per socketed red gem`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("SocketProperty", "LIST", mod.SocketProperty{Mod: MOD("PhysicalDamageGainAsFire", "BASE", num).Flag(mod.MFlagAttack)}).Tag(mod.SocketedIn("{SlotName}").Keyword("strength").Sockets(1, 2, 3, 4, 5, 6))}, ""
 	},
-	//pob:src/Modules/ModParser.lua:3246-3247
+	//pob:src/Modules/ModParser.lua:3290-3291
 	"you have vaal pact while all socketed gems are red": []mod.Mod{
 		MOD("GroupProperty", "LIST", mod.GroupProperty{Mod: MOD("Keystone", "LIST", "Vaal Pact")}).Tag(mod.SocketedIn("{SlotName}").SocketColor("R").SocketsAll()),
 	},
@@ -4858,19 +4894,19 @@ var specialModList = map[string]interface{}{
 	`([\+\-]\d+)% to quality of all skill gems`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("GemProperty", "LIST", mod.GemProperty{Keyword: utils.Ptr("active_skill"), Key: "quality", Value: num})}, ""
 	},
-	//pob:src/Modules/ModParser.lua:3185
+	//pob:src/Modules/ModParser.lua:3229
 	`([\+\-]\d+) to level of all elemental skill gems if the stars are aligned`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("GemProperty", "LIST", mod.GemProperty{KeywordList: []string{"elemental", "grants_active_skill"}, Key: "level", Value: num}).Tag(mod.Condition("StarsAreAligned"))}, ""
 	},
-	//pob:src/Modules/ModParser.lua:3186
+	//pob:src/Modules/ModParser.lua:3230
 	`([\+\-]\d+) to level of all elemental support gems if the stars are aligned`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("GemProperty", "LIST", mod.GemProperty{KeywordList: []string{"elemental", "support"}, Key: "level", Value: num}).Tag(mod.Condition("StarsAreAligned"))}, ""
 	},
-	//pob:src/Modules/ModParser.lua:3188-3190
+	//pob:src/Modules/ModParser.lua:3232-3234
 	`([\+\-]\d+) to level of all ([a-z]+) skill gems if (\d+) (\w+) items are equipped`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("GemProperty", "LIST", mod.GemProperty{Keyword: utils.Ptr(strings.ToLower(captures[1])), Key: "level", Value: num}).Tag(mod.MultiplierThreshold(firstToUpper(captures[3]) + "Item").Threshold(utils.Float(captures[2])))}, ""
 	},
-	//pob:src/Modules/ModParser.lua:3189
+	//pob:src/Modules/ModParser.lua:3233
 	`([\+\-]\d+) to level of all ([a-z]+) skill gems if a?t? ?l?e?a?s?t? ?(\d+) (\w+) (\w+) items are equipped`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("GemProperty", "LIST", mod.GemProperty{Keyword: utils.Ptr(strings.ToLower(captures[1])), Key: "level", Value: num}).Tag(mod.MultiplierThreshold(firstToUpper(captures[3]) + firstToUpper(captures[4]) + "Item").Threshold(utils.Float(captures[2])))}, ""
 	},
@@ -4886,11 +4922,11 @@ var specialModList = map[string]interface{}{
 	`\+(\d+) to level of socketed active skill gems`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("GemProperty", "LIST", mod.GemProperty{Keyword: utils.Ptr("active_skill"), Key: "level", Value: num}).Tag(mod.SocketedIn("{SlotName}"))}, ""
 	},
-	//pob:src/Modules/ModParser.lua:3187
+	//pob:src/Modules/ModParser.lua:3231
 	`([\+\-]\d+) to level of socketed active skill gems per (\d+) player levels`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("GemProperty", "LIST", mod.GemProperty{Keyword: utils.Ptr("active_skill"), Key: "level", Value: num}).Tag(mod.SocketedIn("{SlotName}")).Tag(mod.Multiplier("Level").Div(utils.Float(captures[1])))}, ""
 	},
-	//pob:src/Modules/ModParser.lua:3183-3191
+	//pob:src/Modules/ModParser.lua:3227-3235
 	`([\+\-]\d+) to level of socketed skill gems per (\d+) player levels`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("GemProperty", "LIST", mod.GemProperty{Keyword: utils.Ptr("active_skill"), Key: "level", Value: num}).Tag(mod.SocketedIn("{SlotName}")).Tag(mod.Multiplier("Level").Div(utils.Float(captures[1])))}, ""
 	},
@@ -4928,7 +4964,7 @@ var specialModList = map[string]interface{}{
 		return []mod.Mod{MOD("ExtraSkillMod", "LIST", mod.ExtraSkillMod{Mod: mod.NewFloat("PhysicalDamageGainAsFire", mod.TypeBase, num)}).Tag(mod.SocketedIn("{SlotName}").Keyword("strength"))}, ""
 	},
 	"socketed non-channelling bow skills are triggered by snipe": []mod.Mod{},
-	//pob:block:src/Modules/ModParser.lua:3214-3217
+	//pob:block:src/Modules/ModParser.lua:3258-3261
 	`grants level (\d+) snipe skill`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
 			MOD("ExtraSkill", "LIST", mod.ExtraSkill{SkillID: "Snipe", Level: int(num)}),
@@ -4938,11 +4974,11 @@ var specialModList = map[string]interface{}{
 	`socketed triggered bow skills deal (\d+)% less damage`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("ExtraSkillMod", "LIST", mod.ExtraSkillMod{Mod: MOD("Damage", "MORE", -num)}).Tag(mod.SocketedIn("{SlotName}").Keyword("bow"), mod.SkillType(string(data.SkillTypeTriggerable)))}, ""
 	},
-	//pob:block:src/Modules/ModParser.lua:3219
+	//pob:block:src/Modules/ModParser.lua:3263
 	`socketed vaal skills require (\d+)% less souls per use`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("ExtraSkillMod", "LIST", mod.ExtraSkillMod{Mod: MOD("SoulCost", "MORE", -num)}).Tag(mod.SocketedIn("{SlotName}"), mod.SkillType(string(data.SkillTypeVaal)))}, ""
 	},
-	//pob:block:src/Modules/ModParser.lua:3220-3224
+	//pob:block:src/Modules/ModParser.lua:3264-3268
 	"hits from socketed vaal skills ignore enemy monster resistances": []mod.Mod{
 		MOD("ExtraSkillMod", "LIST", mod.ExtraSkillMod{Mod: FLAG("IgnoreElementalResistances")}).Tag(mod.SocketedIn("{SlotName}"), mod.SkillType(string(data.SkillTypeVaal))),
 		MOD("ExtraSkillMod", "LIST", mod.ExtraSkillMod{Mod: FLAG("IgnoreChaosResistance")}).Tag(mod.SocketedIn("{SlotName}"), mod.SkillType(string(data.SkillTypeVaal))),
@@ -4950,12 +4986,12 @@ var specialModList = map[string]interface{}{
 	"hits from socketed vaal skills ignore enemy monster physical damage reduction": []mod.Mod{
 		MOD("ExtraSkillMod", "LIST", mod.ExtraSkillMod{Mod: FLAG("IgnoreEnemyPhysicalDamageReduction")}).Tag(mod.SocketedIn("{SlotName}"), mod.SkillType(string(data.SkillTypeVaal))),
 	},
-	//pob:block:src/Modules/ModParser.lua:3226
+	//pob:block:src/Modules/ModParser.lua:3270
 	"damage with hits from socketed vaal skills is lucky": []mod.Mod{
 		MOD("ExtraSkillMod", "LIST", mod.ExtraSkillMod{Mod: FLAG("LuckyHits")}).Tag(mod.SocketedIn("{SlotName}"), mod.SkillType(string(data.SkillTypeVaal))),
 	},
 	// Global gem modifiers
-	//pob:block:src/Modules/ModParser.lua:3228-3237
+	//pob:block:src/Modules/ModParser.lua:3272-3281
 	`([\+\-]\d+)%? to (\w+) of all (.+) gems`: func(num float64, captures []string) ([]mod.Mod, string) {
 		skill := strings.ToLower(captures[2])
 		if _, known := gemLookup().skillIDForName[skill]; known {
@@ -4971,7 +5007,7 @@ var specialModList = map[string]interface{}{
 	`grants level (\d+) (.+)`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return grantedExtraSkill(captures[1], int(num), false), ""
 	},
-	//pob:block:src/Modules/ModParser.lua:3277
+	//pob:block:src/Modules/ModParser.lua:3321
 	`grants level (\d+) (.+), which will be used by shaper memory`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return grantedExtraSkill(captures[1], int(num), false), ""
 	},
@@ -5000,87 +5036,87 @@ var specialModList = map[string]interface{}{
 		return triggerExtraSkill(captures[1], int(num), false, ""), ""
 	},
 	`trigger level (\d+) (.+) when you attack with a non-vaal slam or strike skill near an enemy`: func(num float64, captures []string) ([]mod.Mod, string) {
-		//pob:src/Modules/ModParser.lua:2610
+		//pob:src/Modules/ModParser.lua:2620
 		return triggerExtraSkill(captures[1], int(num), false, ""), ""
 	},
 	`trigger level (\d+) (.+) when you attack with this weapon`: func(num float64, captures []string) ([]mod.Mod, string) {
-		//pob:src/Modules/ModParser.lua:3290
+		//pob:src/Modules/ModParser.lua:3378
 		return triggerExtraSkill(captures[1], int(num), false, ""), ""
 	},
 	`trigger level (\d+) (.+) on melee hit`: func(num float64, captures []string) ([]mod.Mod, string) {
-		//pob:src/Modules/ModParser.lua:3302
+		//pob:src/Modules/ModParser.lua:3346
 		return triggerExtraSkill(captures[1], int(num), false, ""), ""
 	},
 	`trigger level (\d+) (.+) when you take a critical strike from a unique enemy`: func(num float64, captures []string) ([]mod.Mod, string) {
-		//pob:src/Modules/ModParser.lua:3312
+		//pob:src/Modules/ModParser.lua:3356
 		return triggerExtraSkill(captures[1], int(num), false, ""), ""
 	},
 	`trigger level (\d+) (.+) when you suppress spell damage from a unique enemy`: func(num float64, captures []string) ([]mod.Mod, string) {
-		//pob:src/Modules/ModParser.lua:3313
+		//pob:src/Modules/ModParser.lua:3357
 		return triggerExtraSkill(captures[1], int(num), false, ""), ""
 	},
 	`trigger level (\d+) (.+) when you block damage from a unique enemy`: func(num float64, captures []string) ([]mod.Mod, string) {
-		//pob:src/Modules/ModParser.lua:3314
+		//pob:src/Modules/ModParser.lua:3358
 		return triggerExtraSkill(captures[1], int(num), false, ""), ""
 	},
 	`trigger level (\d+) (.+) on taking a savage hit from a unique enemy`: func(num float64, captures []string) ([]mod.Mod, string) {
-		//pob:src/Modules/ModParser.lua:3315
+		//pob:src/Modules/ModParser.lua:3359
 		return triggerExtraSkill(captures[1], int(num), false, ""), ""
 	},
 	`trigger level (\d+) (.+) when a totem dies while a unique enemy is in your presence`: func(num float64, captures []string) ([]mod.Mod, string) {
-		//pob:src/Modules/ModParser.lua:3316
+		//pob:src/Modules/ModParser.lua:3360
 		return triggerExtraSkill(captures[1], int(num), false, ""), ""
 	},
 	`trigger level (\d+) (.+) when you use a travel skill while a unique enemy is in your presence`: func(num float64, captures []string) ([]mod.Mod, string) {
-		//pob:src/Modules/ModParser.lua:3317
+		//pob:src/Modules/ModParser.lua:3361
 		return triggerExtraSkill(captures[1], int(num), false, ""), ""
 	},
 	`trigger level (\d+) (.+) when you reach maximum rage while a unique enemy is in your presence`: func(num float64, captures []string) ([]mod.Mod, string) {
-		//pob:src/Modules/ModParser.lua:3318
+		//pob:src/Modules/ModParser.lua:3362
 		return triggerExtraSkill(captures[1], int(num), false, ""), ""
 	},
 	`trigger level (\d+) (.+) when you reach low life while a unique enemy is in your presence`: func(num float64, captures []string) ([]mod.Mod, string) {
-		//pob:src/Modules/ModParser.lua:3319
+		//pob:src/Modules/ModParser.lua:3363
 		return triggerExtraSkill(captures[1], int(num), false, ""), ""
 	},
 	`trigger level (\d+) (.+) when energy shield recharge starts while a unique enemy is in your presence`: func(num float64, captures []string) ([]mod.Mod, string) {
-		//pob:src/Modules/ModParser.lua:3320
+		//pob:src/Modules/ModParser.lua:3364
 		return triggerExtraSkill(captures[1], int(num), false, ""), ""
 	},
 	`trigger level (\d+) (.+) when your ward breaks`: func(num float64, captures []string) ([]mod.Mod, string) {
-		//pob:src/Modules/ModParser.lua:3321
+		//pob:src/Modules/ModParser.lua:3365
 		return triggerExtraSkill(captures[1], int(num), false, ""), ""
 	},
 	`trigger level (\d+) (.+) once every second`: func(num float64, captures []string) ([]mod.Mod, string) {
-		//pob:src/Modules/ModParser.lua:3322
+		//pob:src/Modules/ModParser.lua:3366
 		return triggerExtraSkill(captures[1], int(num), false, ""), ""
 	},
 	`triggers level (\d+) (.+)`: func(num float64, captures []string) ([]mod.Mod, string) {
-		//pob:src/Modules/ModParser.lua:3323
+		//pob:src/Modules/ModParser.lua:3367
 		return triggerExtraSkill(captures[1], int(num), false, ""), ""
 	},
 	`trigger level (\d+) (.+) on critical strike with cleave or reave`: func(num float64, captures []string) ([]mod.Mod, string) {
-		//pob:src/Modules/ModParser.lua:3308
+		//pob:src/Modules/ModParser.lua:3396
 		return triggerExtraSkillOnCrit(captures[1], int(num), false), ""
 	},
 	`trigger level (\d+) (.+) on melee critical strike`: func(num float64, captures []string) ([]mod.Mod, string) {
-		//pob:src/Modules/ModParser.lua:3309
+		//pob:src/Modules/ModParser.lua:3353
 		return triggerExtraSkillOnCrit(captures[1], int(num), false), ""
 	},
 	`trigger level (\d+) (.+) on critical strike against marked unique enemy`: func(num float64, captures []string) ([]mod.Mod, string) {
-		//pob:src/Modules/ModParser.lua:3310
+		//pob:src/Modules/ModParser.lua:3354
 		return triggerExtraSkillOnCrit(captures[1], int(num), false), ""
 	},
 	`trigger level (\d+) (.+) on critical strike`: func(num float64, captures []string) ([]mod.Mod, string) {
-		//pob:src/Modules/ModParser.lua:3311
+		//pob:src/Modules/ModParser.lua:3355
 		return triggerExtraSkillOnCrit(captures[1], int(num), false), ""
 	},
 	`trigger level (\d+) (.+) on attack critical strike against a rare or unique enemy and y?o?u? ?have no mark`: func(num float64, captures []string) ([]mod.Mod, string) {
-		//pob:src/Modules/ModParser.lua:3324
+		//pob:src/Modules/ModParser.lua:3368
 		return triggerExtraSkillOnCrit(captures[1], int(num), false), ""
 	},
 	`(.+) can trigger level (\d+) (.+)`: func(num float64, captures []string) ([]mod.Mod, string) {
-		//pob:src/Modules/ModParser.lua:3286
+		//pob:src/Modules/ModParser.lua:3330
 		return triggerExtraSkill(captures[2], utils.Int(captures[1]), false, captures[0]), ""
 	},
 	`trigger level (\d+) (.+) when you use a skill while you have a spirit charge`: func(num float64, captures []string) ([]mod.Mod, string) {
@@ -5146,7 +5182,7 @@ var specialModList = map[string]interface{}{
 	`triggers level (\d+) (.+) when equipped`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return triggerExtraSkill(captures[1], int(num), false, ""), ""
 	},
-	//pob:src/Modules/ModParser.lua:2993
+	//pob:src/Modules/ModParser.lua:3003
 	`triggers level (\d+) summon triggerbots when allocated`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewFlag("HaveTriggerBots", true)}, ""
 	},
@@ -5171,15 +5207,15 @@ var specialModList = map[string]interface{}{
 	`(\d+)% chance to trigger level (\d+) (.+) when you gain avian's might or avian's flight`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return withTriggerChance(triggerExtraSkill(captures[2], int(utils.Float(captures[1])), false, ""), num), ""
 	},
-	//pob:src/Modules/ModParser.lua:3334
+	//pob:src/Modules/ModParser.lua:3378
 	`(\d+)% chance to trigger level (\d+) (.+) when you or a nearby ally kill an enemy, or hit a rare or unique enemy`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return withTriggerChance(triggerExtraSkill(captures[2], int(utils.Float(captures[1])), false, ""), num), ""
 	},
-	//pob:block:src/Modules/ModParser.lua:3335
+	//pob:block:src/Modules/ModParser.lua:3379
 	`(\d+)% chance to trigger (.+) when you kill an enemy`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return withTriggerChance(triggerExtraSkill(captures[1], 1, false, ""), num), ""
 	},
-	//pob:src/Modules/ModParser.lua:3333
+	//pob:src/Modules/ModParser.lua:3377
 	`(\d+)% chance to trigger level (\d+) (.+) on critical strike with this weapon`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return withTriggerChance(triggerExtraSkillOnCrit(captures[2], int(utils.Float(captures[1])), false), num), ""
 	},
@@ -5202,7 +5238,7 @@ var specialModList = map[string]interface{}{
 		}, ""
 	},
 	`\d+% chance to curse n?o?n?-?c?u?r?s?e?d? ?enemies with (\D+) on \w+`: func(num float64, captures []string) ([]mod.Mod, string) {
-		//pob:src/Modules/ModParser.lua:3352
+		//pob:src/Modules/ModParser.lua:3396
 		return []mod.Mod{
 			MOD("ExtraSkill", "LIST", mod.ExtraSkill{SkillID: extraSkillIDForName(captures[0]), SkillName: captures[0], Level: 1, NoSupports: true, Triggered: true}),
 		}, ""
@@ -5213,9 +5249,9 @@ var specialModList = map[string]interface{}{
 			MOD("CurseEffect", "INC", utils.Float(captures[1])).Tag(mod.SkillName(utils.CapitalEach(captures[0]))),
 		}, ""
 	},
-	//pob:block:src/Modules/ModParser.lua:3355
+	//pob:block:src/Modules/ModParser.lua:3399
 	`curse enemies with level (\d+) (\D+) on \w+, which can apply to hexproof enemies`: func(num float64, captures []string) ([]mod.Mod, string) {
-		//pob:block:src/Modules/ModParser.lua:2064-2066
+		//pob:block:src/Modules/ModParser.lua:2065-2067
 		return append(triggerExtraSkill(captures[1], int(num), true, ""),
 			MOD("SkillData", "LIST", mod.SkillData{Key: "ignoreHexproof", Value: 1}).Tag(mod.SkillId(extraSkillIDForName(strings.ReplaceAll(strings.ToLower(captures[1]), " skill", ""))))), ""
 	},
@@ -5249,14 +5285,14 @@ var specialModList = map[string]interface{}{
 	"[at][tr][ti][ag][cg][ke]r? with (.+) when you take a critical strike": func(num float64, captures []string) ([]mod.Mod, string) {
 		return triggerExtraSkill(captures[0], 1, true, ""), ""
 	},
-	//pob:block:src/Modules/ModParser.lua:3366-3368
+	//pob:block:src/Modules/ModParser.lua:3410-3412
 	"trigger commandment of inferno on critical strike": []mod.Mod{
 		MOD("ExtraSkill", "LIST", mod.ExtraSkill{SkillID: "UniqueEnchantmentOfInfernoOnCrit", Level: 1, NoSupports: true, Triggered: true}),
 		MOD("ExtraSkillMod", "LIST", mod.ExtraSkillMod{
 			Mod: MOD("SkillData", "LIST", mod.SkillData{Key: "triggerOnCrit", Value: 1}),
 		}).Tag(mod.SkillId("UniqueEnchantmentOfInfernoOnCrit")),
 	},
-	//pob:src/Modules/ModParser.lua:3369
+	//pob:src/Modules/ModParser.lua:3413
 	"trigger (.+) on critical strike": func(num float64, captures []string) ([]mod.Mod, string) {
 		return triggerExtraSkillOnCrit(captures[0], 1, true), ""
 	},
@@ -5268,31 +5304,40 @@ var specialModList = map[string]interface{}{
 		if len(entries) == 0 {
 			return nil, ""
 		}
-		return extraSupportMods(entries, int(num), "{SlotName}"), ""
+		return extraSupportMods(entries, int(num), "{SlotName}", false), ""
 	},
-	//pob:src/Modules/ModParser.lua:3372
+	//pob:src/Modules/ModParser.lua:3416
 	`socketed [\w+]* ?spells a?r?e? ?supported by level (\d+) (.+)`: func(num float64, captures []string) ([]mod.Mod, string) {
 		entries := extraSupportIDsForName(captures[1])
 		if len(entries) == 0 {
 			return nil, ""
 		}
-		return extraSupportMods(entries, int(num), "{SlotName}"), ""
+		return extraSupportMods(entries, int(num), "{SlotName}", false), ""
 	},
-	//pob:src/Modules/ModParser.lua:3373
+	//pob:src/Modules/ModParser.lua:3417
 	`skills from equipped (.+) are supported by level (\d+) (.+)`: func(num float64, captures []string) ([]mod.Mod, string) {
 		entries := extraSupportIDsForName(captures[2])
 		if len(entries) == 0 {
 			return nil, ""
 		}
-		return extraSupportMods(entries, int(utils.Float(captures[1])), extraSupportSlotName(captures[0])), ""
+		return extraSupportMods(entries, int(utils.Float(captures[1])), extraSupportSlotName(captures[0]), false), ""
 	},
-	//pob:src/Modules/ModParser.lua:3374
+	// despite the wording, this can support item granted skills
+	//pob:src/Modules/ModParser.lua:3419
 	`skills socketed in your (.+) are supported by level (\d+) (.+)`: func(num float64, captures []string) ([]mod.Mod, string) {
 		entries := extraSupportIDsForName(captures[2])
 		if len(entries) == 0 {
 			return nil, ""
 		}
-		return extraSupportMods(entries, int(utils.Float(captures[1])), extraSupportSlotName(captures[0])), ""
+		return extraSupportMods(entries, int(utils.Float(captures[1])), extraSupportSlotName(captures[0]), true), ""
+	},
+	//pob:src/Modules/ModParser.lua:3420
+	`skills granted by your passive tree are supported by level (\d+) (.+)`: func(num float64, captures []string) ([]mod.Mod, string) {
+		entries := extraSupportIDsForName(captures[1])
+		if len(entries) == 0 {
+			return nil, ""
+		}
+		return extraSupportMods(entries, int(num), extraSupportSlotName("passive tree"), true), ""
 	},
 	`socketed support gems can also support skills from y?o?u?r? ?e?q?u?i?p?p?e?d? ?([a-z\s]+)`: func(num float64, captures []string) ([]mod.Mod, string) {
 		targetItemSlotName := "Body Armour"
@@ -5303,7 +5348,7 @@ var specialModList = map[string]interface{}{
 			MOD("LinkedSupport", "LIST", mod.LinkedSupport{TargetSlotName: targetItemSlotName}).Tag(mod.SocketedIn("{SlotName}")),
 		}, ""
 	},
-	//pob:src/Modules/ModParser.lua:5276-5283
+	//pob:src/Modules/ModParser.lua:5323-5330
 	`trigger a socketed elemental spell on block, with a ([\d\.]+) second cooldown`: []mod.Mod{
 		MOD("ExtraSupport", "LIST", mod.ExtraSupport{SkillID: "SupportTriggerElementalSpellOnBlock", Level: 1}).Tag(mod.SocketedIn("{SlotName}")),
 	},
@@ -5313,31 +5358,31 @@ var specialModList = map[string]interface{}{
 	`trigger a socketed spell on unarmed melee critical strike, with a ([\d\.]+) second cooldown`: []mod.Mod{
 		MOD("ExtraSupport", "LIST", mod.ExtraSupport{SkillID: "SupportTriggerSpellOnUnarmedMeleeCriticalHit", Level: 1}).Tag(mod.SocketedIn("{SlotName}")),
 	},
-	//pob:src/Modules/ModParser.lua:5411-5413
+	//pob:src/Modules/ModParser.lua:5467-5469
 	`trigger socketed curse spell when you cast a curse spell, with a ([\d\.]+) second cooldown`: []mod.Mod{
 		MOD("ExtraSupport", "LIST", mod.ExtraSupport{SkillID: "SupportUniqueCastCurseOnCurse", Level: 1}).Tag(mod.SocketedIn("{SlotName}")),
 	},
-	//pob:src/Modules/ModParser.lua:3160
+	//pob:src/Modules/ModParser.lua:3204
 	`(\d+)% chance to trigger socketed spell on kill, with a ([\d\.]+) second cooldown`: []mod.Mod{
 		MOD("ExtraSupport", "LIST", mod.ExtraSupport{SkillID: "SupportTriggerSpellOnKill", Level: 1}).Tag(mod.SocketedIn("{SlotName}")),
 	},
-	//pob:src/Modules/ModParser.lua:4304-4305
+	//pob:src/Modules/ModParser.lua:4350-4351
 	"eat a soul when you hit a unique enemy, no more than once every second":                  []mod.Mod{FLAG("Condition:CanHaveSoulEater")},
 	`eat a soul when you hit a rare or unique enemy, no more than once every [\d\.]+ seconds`: []mod.Mod{FLAG("Condition:CanHaveSoulEater")},
-	//pob:src/Modules/ModParser.lua:4306-4308
+	//pob:src/Modules/ModParser.lua:4352-4354
 	`(\d+)% chance to gain soul eater for (\d+) seconds on killing blow against rare and unique enemies with double strike or dual strike`: []mod.Mod{FLAG("Condition:CanHaveSoulEater")},
 	`when (\d+)% of your hex's duration expires on an enemy, eat (\d+) soul per enemy power`:                                               []mod.Mod{FLAG("Condition:CanHaveSoulEater")},
 	`eat (\d+) souls when you kill a rare or unique enemy with this weapon`:                                                                []mod.Mod{FLAG("Condition:CanHaveSoulEater")},
-	//pob:src/Modules/ModParser.lua:5035
+	//pob:src/Modules/ModParser.lua:5082
 	`your hits intimidate enemies for (\d+) seconds while you are using pride`: []mod.Mod{
 		MOD("EnemyModifier", "LIST", mod.EnemyModifier{Mod: FLAG("Condition:Intimidated")}).Tag(mod.Condition("AffectedByPride")),
 	},
-	//pob:src/Modules/ModParser.lua:5438
+	//pob:src/Modules/ModParser.lua:5494
 	"with a hypnotic eye jewel socketed, gain arcane surge on hit with spells": []mod.Mod{
 		FLAG("Condition:ArcaneSurge").Tag(mod.Condition("HitSpellRecently")).Tag(mod.Condition("HaveHypnoticEyeJewelIn{SlotName}")),
 	},
 	"socketed hex curse skills are triggered by doedre's effigy when summoned": []mod.Mod{MOD("ExtraSupport", "LIST", mod.ExtraSupport{SkillID: "SupportCursePillarTriggerCurses", Level: 20}).Tag(mod.SocketedIn("{SlotName}"))},
-	//pob:src/Modules/ModParser.lua:3383-3385
+	//pob:src/Modules/ModParser.lua:3429-3431
 	`socketed projectile spells have \+([\d\.]+) seconds to cooldown`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("CooldownRecovery", "BASE", num).Tag(mod.SocketedIn("{SlotName}"), mod.SkillType(string(data.SkillTypeProjectile)), mod.SkillType(string(data.SkillTypeSpell)))}, ""
 	},
@@ -5374,23 +5419,23 @@ var specialModList = map[string]interface{}{
 	`increases and reductions to minion maximum life also apply to you at (\d+)% of their value`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewFlag("MinionLifeAppliesToPlayer", true), MOD("ImprovedMinionLifeAppliesToPlayer", "MAX", num)}, ""
 	},
-	//pob:src/Modules/ModParser.lua:3406
+	//pob:src/Modules/ModParser.lua:3452
 	"increases and reductions to minion attack speed also affects? you": []mod.Mod{mod.NewFlag("MinionAttackSpeedAppliesToPlayer", true)},
 	`increases and reductions to cast speed apply to attack speed at (\d+)% of their value`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewFlag("CastSpeedAppliesToAttacks", true), MOD("ImprovedCastSpeedAppliesToAttacks", "MAX", num)}, ""
 	},
 	"increases and reductions to spell damage also apply to attacks": []mod.Mod{mod.NewFlag("SpellDamageAppliesToAttacks", true), MOD("ImprovedSpellDamageAppliesToAttacks", "MAX", 100)},
-	//pob:src/Modules/ModParser.lua:3412
+	//pob:src/Modules/ModParser.lua:3458
 	"increases and reductions to your evasion rating also apply to your spell damage": []mod.Mod{mod.NewFlag("EvasionAppliesToSpellDamage", true)},
-	//pob:src/Modules/ModParser.lua:5471
+	//pob:src/Modules/ModParser.lua:5527
 	"rage grants spell damage instead of attack damage": []mod.Mod{mod.NewFlag("Condition:RageSpellDamage", true)},
-	//pob:src/Modules/ModParser.lua:5273-5275
+	//pob:src/Modules/ModParser.lua:5320-5322
 	`spells cost \+(\d+)% of life`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
 			MOD("LifeCostBase", "BASE", 1).Tag(mod.PercentStat("Life", num).Floor()).Tag(mod.SkillType(string(data.SkillTypeSpell))),
 		}, ""
 	},
-	//pob:block:src/Modules/ModParser.lua:3659-3663
+	//pob:block:src/Modules/ModParser.lua:3705-3709
 	`(\d+)% increased damage with damaging ailments you inflict while you are affected by the same ailment`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
 			MOD("Damage", "INC", num).KeywordFlag(mod.KeywordFlagBleed).Tag(mod.ActorCondition("enemy", "Bleeding")).Tag(mod.Condition("Bleeding")),
@@ -5398,7 +5443,7 @@ var specialModList = map[string]interface{}{
 			MOD("Damage", "INC", num).KeywordFlag(mod.KeywordFlagPoison).Tag(mod.ActorCondition("enemy", "Poisoned")).Tag(mod.Condition("Poisoned")),
 		}, ""
 	},
-	//pob:block:src/Modules/ModParser.lua:2436-2438
+	//pob:block:src/Modules/ModParser.lua:2446-2448
 	`adds (\d+) to (\d+) fire damage to attacks for every (\d+)% your light radius is above base value`: func(num float64, captures []string) ([]mod.Mod, string) {
 		div := utils.Float(captures[2])
 		return []mod.Mod{
@@ -5406,7 +5451,7 @@ var specialModList = map[string]interface{}{
 			MOD("FireMax", "BASE", utils.Float(captures[1])).Flag(mod.MFlagAttack).Tag(mod.PerStat(div, "LightRadiusInc")),
 		}, ""
 	},
-	//pob:block:src/Modules/ModParser.lua:2318-2320
+	//pob:block:src/Modules/ModParser.lua:2328-2330
 	"you and enemies in your presence count as moving while affected by elemental ailments": []mod.Mod{
 		MOD("EnemyModifier", "LIST", mod.EnemyModifier{Mod: FLAG("Condition:Moving").Tag(mod.Condition("Frozen", "Chilled", "Shocked", "Ignited", "Scorched", "Brittle", "Sapped"))}),
 		FLAG("Condition:Moving").Tag(mod.Condition("Frozen", "Chilled", "Shocked", "Ignited", "Scorched", "Brittle", "Sapped")),
@@ -5415,7 +5460,7 @@ var specialModList = map[string]interface{}{
 		return []mod.Mod{mod.NewFlag("SpellDamageAppliesToAttacks", true), MOD("ImprovedSpellDamageAppliesToAttacks", "MAX", num)}, ""
 	},
 	"increases and reductions to spell damage also apply to attacks while wielding a wand": []mod.Mod{FLAG("SpellDamageAppliesToAttacks").Tag(mod.Condition("UsingWand"))},
-	//pob:src/Modules/ModParser.lua:3423-3426
+	//pob:src/Modules/ModParser.lua:3469-3472
 	`increases and reductions to spell damage also apply to attack damage with retaliation skills at (\d+)% of their value`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
 			FLAG("SpellDamageAppliesToAttacks").Tag(mod.SkillType(string(data.SkillTypeRetaliation))),
@@ -5484,7 +5529,7 @@ var specialModList = map[string]interface{}{
 		}, ""
 	},
 	`gain (\d+)% of physical damage as extra damage of each element per spirit charge`: func(num float64, captures []string) ([]mod.Mod, string) {
-		//pob:src/Modules/ModParser.lua:3467
+		//pob:src/Modules/ModParser.lua:3513
 		return []mod.Mod{
 			MOD("PhysicalDamageGainAsLightning", "BASE", num).Tag(mod.Multiplier("SpiritCharge")),
 			MOD("PhysicalDamageGainAsCold", "BASE", num).Tag(mod.Multiplier("SpiritCharge")),
@@ -5492,7 +5537,7 @@ var specialModList = map[string]interface{}{
 		}, ""
 	},
 	`gain (\d+)% of physical damage as extra damage of each element if (\d+) (\w+) items are equipped`: func(num float64, captures []string) ([]mod.Mod, string) {
-		//pob:src/Modules/ModParser.lua:3472
+		//pob:src/Modules/ModParser.lua:3518
 		threshold := mod.MultiplierThreshold(firstToUpper(captures[2]) + "Item").Threshold(utils.Float(captures[1]))
 		return []mod.Mod{
 			MOD("PhysicalDamageGainAsLightning", "BASE", num).Tag(threshold),
@@ -5504,7 +5549,7 @@ var specialModList = map[string]interface{}{
 		return []mod.Mod{MOD("PhysicalDamageGainAsRandom", "BASE", num).Flag(mod.MFlagWeapon)}, ""
 	},
 	`(\d+)% chance for hits to deal (\d+)% of physical damage as extra damage of a random element`: func(num float64, captures []string) ([]mod.Mod, string) {
-		//pob:src/Modules/ModParser.lua:3479
+		//pob:src/Modules/ModParser.lua:3525
 		return []mod.Mod{MOD("PhysicalDamageGainAsRandom", "BASE", num*utils.Float(captures[1])/100)}, ""
 	},
 	`gain (\d+)% of physical damage as extra damage of a random element`: func(num float64, captures []string) ([]mod.Mod, string) {
@@ -5515,11 +5560,11 @@ var specialModList = map[string]interface{}{
 			MOD("PhysicalDamageGainAsRandom", "BASE", num).Tag(mod.Condition("Ignited")),
 		}, ""
 	},
-	//pob:src/Modules/ModParser.lua:3482
+	//pob:src/Modules/ModParser.lua:3528
 	`(\d+)% of physical damage from hits with this weapon is converted to a random element`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("PhysicalDamageConvertToRandom", "BASE", num).Tag(mod.Condition("{Hand}Attack"))}, ""
 	},
-	//pob:src/Modules/ModParser.lua:3483
+	//pob:src/Modules/ModParser.lua:3529
 	`(\d+)% of physical damage converted to a random element`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("PhysicalDamageConvertToRandom", "BASE", num)}, ""
 	},
@@ -5535,10 +5580,16 @@ var specialModList = map[string]interface{}{
 	"lightning damage with non-critical strikes is lucky":                                    []mod.Mod{mod.NewFlag("LightningNoCritLucky", true)},
 	"your damage with critical strikes is lucky":                                             []mod.Mod{mod.NewFlag("CritLucky", true)},
 	"critical strikes deal no damage":                                                        []mod.Mod{MOD("Damage", "MORE", -100).Tag(mod.Condition("CriticalStrike"))},
-	//pob:block:src/Modules/ModParser.lua:3525-3527
+	//pob:block:src/Modules/ModParser.lua:3571-3573
 	"critical strike chance is increased by uncapped lightning resistance":   []mod.Mod{FLAG("CritChanceIncreasedByUncappedLightningRes")},
 	"critical strike chance is increased by lightning resistance":            []mod.Mod{FLAG("CritChanceIncreasedByLightningRes")},
 	"critical strike chance is increased by overcapped lightning resistance": []mod.Mod{FLAG("CritChanceIncreasedByOvercappedLightningRes")},
+	//pob:block:src/Modules/ModParser.lua:3574
+	`barrage and frenzy have (\d+)% increased critical strike chance per endurance charge`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{
+			MOD("CritChance", "INC", num).Tag(mod.Multiplier("EnduranceCharge").Base(0)).Tag(mod.SkillName("Barrage", "Frenzy").Transfigured(true)),
+		}, ""
+	},
 	`non-critical strikes deal (\d+)% damage`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
 			MOD("Damage", "MORE", -100+num).Flag(mod.MFlagHit).Tag(mod.Condition("CriticalStrike").Neg(true)),
@@ -5573,18 +5624,18 @@ var specialModList = map[string]interface{}{
 		}, ""
 	},
 	// Elemental Ailments
-	//pob:src/Modules/ModParser.lua:3028
+	//pob:src/Modules/ModParser.lua:3038
 	`maximum effect of shock is (\d+)% increased damage taken`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewFloat("ShockMax", mod.TypeOverride, num)}, ""
 	},
-	//pob:src/Modules/ModParser.lua:3029
+	//pob:src/Modules/ModParser.lua:3039
 	`you can apply up to (\d+) shocks to each enemy`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
 			mod.NewFlag("ShockCanStack", true),
 			mod.NewFloat("ShockStacksMax", mod.TypeOverride, num),
 		}, ""
 	},
-	//pob:src/Modules/ModParser.lua:3031-3036
+	//pob:src/Modules/ModParser.lua:3041-3046
 	"your hits always inflict freeze, shock and ignite while unbound": []mod.Mod{
 		MOD("EnemyFreezeChance", "BASE", 100).Tag(mod.Condition("Unbound")),
 		MOD("EnemyShockChance", "BASE", 100).Tag(mod.Condition("Unbound")),
@@ -5637,7 +5688,7 @@ var specialModList = map[string]interface{}{
 		mod.NewFlag("CannotBrittle", true),
 		mod.NewFlag("CannotSap", true),
 	},
-	//pob:src/Modules/ModParser.lua:3650
+	//pob:src/Modules/ModParser.lua:3696
 	`you can inflict up to (\d+) ignites on an enemy`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
 			mod.NewFlag("IgniteCanStack", true),
@@ -5663,7 +5714,7 @@ var specialModList = map[string]interface{}{
 	`ignited enemies burn (\d+)% faster`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewFloat("IgniteBurnFaster", mod.TypeIncrease, num)}, ""
 	},
-	//pob:src/Modules/ModParser.lua:3667-3673
+	//pob:src/Modules/ModParser.lua:3713-3719
 	`base (\w+) duration is ([\d\.]+) seconds?`: func(num float64, captures []string) ([]mod.Mod, string) {
 		ailmentName := ""
 		switch ailment := strings.ToLower(captures[0]); ailment {
@@ -5716,7 +5767,7 @@ var specialModList = map[string]interface{}{
 			mod.NewFloat("SapAsThoughDealing", mod.TypeMore, num),
 		}, ""
 	},
-	//pob:src/Modules/ModParser.lua:3707-3714
+	//pob:src/Modules/ModParser.lua:3753-3760
 	`non-damaging elemental ailments you inflict have (\d+)% more effect`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
 			mod.NewFloat("EnemyShockEffect", mod.TypeMore, num),
@@ -5728,7 +5779,7 @@ var specialModList = map[string]interface{}{
 		}, ""
 	},
 
-	//pob:src/Modules/ModParser.lua:3715
+	//pob:src/Modules/ModParser.lua:3761
 	`immun[ei]t?y? to elemental ailments while on consecrated ground if you have at least (\d+) devotion`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{FLAG("ElementalAilmentImmune").Tag(mod.Condition("OnConsecratedGround")).Tag(mod.StatThreshold("Devotion", num))}, ""
 	},
@@ -5748,7 +5799,7 @@ var specialModList = map[string]interface{}{
 	`drops scorched ground while moving, lasting (\d+) seconds`: []mod.Mod{MOD("ScorchBase", "BASE", data.NonDamagingAilments[data.AilmentScorch].Default).Tag(mod.ActorCondition("enemy", "OnScorchedGround"))},
 	`drops brittle ground while moving, lasting (\d+) seconds`:  []mod.Mod{MOD("BrittleBase", "BASE", data.NonDamagingAilments[data.AilmentBrittle].Default).Tag(mod.ActorCondition("enemy", "OnBrittleGround"))},
 	`drops sapped ground while moving, lasting (\d+) seconds`:   []mod.Mod{MOD("SapBase", "BASE", data.NonDamagingAilments[data.AilmentSap].Default).Tag(mod.ActorCondition("enemy", "OnSappedGround"))},
-	//pob:src/Modules/ModParser.lua:3740-3747
+	//pob:src/Modules/ModParser.lua:3786-3793
 	`while a unique enemy is in your presence, drops shocked ground while moving, lasting (\d+) seconds`: []mod.Mod{
 		MOD("ShockBase", "BASE", data.NonDamagingAilments[data.AilmentShock].Default).Tag(mod.ActorCondition("enemy", "OnShockedGround"), mod.ActorCondition("enemy", "RareOrUnique")),
 	},
@@ -5773,7 +5824,7 @@ var specialModList = map[string]interface{}{
 	`while a pinnacle atlas boss is in your presence, drops sapped ground while moving, lasting (\d+) seconds`: []mod.Mod{
 		MOD("SapBase", "BASE", data.NonDamagingAilments[data.AilmentSap].Default).Tag(mod.ActorCondition("enemy", "OnSappedGround"), mod.ActorCondition("enemy", "PinnacleBoss")),
 	},
-	//pob:block:src/Modules/ModParser.lua:3749-3752
+	//pob:block:src/Modules/ModParser.lua:3795-3798
 	`\+(\d+)% chance to ignite, freeze, shock, and poison cursed enemies`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
 			MOD("EnemyIgniteChance", "BASE", num).Tag(mod.ActorCondition("enemy", "Cursed")),
@@ -5818,11 +5869,11 @@ var specialModList = map[string]interface{}{
 		}, ""
 	},
 	"attacks always inflict bleeding while you have cat's stealth": []mod.Mod{MOD("BleedChance", "BASE", 100).Flag(mod.MFlagAttack).Tag(mod.Condition("AffectedByCat'sStealth"))},
-	//pob:src/Modules/ModParser.lua:5242
+	//pob:src/Modules/ModParser.lua:5289
 	"you have iron reflexes while at maximum frenzy charges": []mod.Mod{
 		MOD("Keystone", "LIST", "Iron Reflexes").Tag(mod.StatThresholdStat("FrenzyCharges", "FrenzyChargesMax")),
 	},
-	//pob:src/Modules/ModParser.lua:4694
+	//pob:src/Modules/ModParser.lua:4740
 	"you have mind over matter while at maximum power charges": []mod.Mod{
 		MOD("Keystone", "LIST", "Mind Over Matter").Tag(mod.StatThresholdStat("PowerCharges", "PowerChargesMax")),
 	},
@@ -5847,23 +5898,23 @@ var specialModList = map[string]interface{}{
 			MOD("ImpaleEffectOnBleed", "INC", num).KeywordFlag(mod.KeywordFlagHit),
 		}, ""
 	},
-	//pob:src/Modules/ModParser.lua:3857
+	//pob:src/Modules/ModParser.lua:3903
 	`(\d+)% chance for blade vortex and blade blast to impale enemies on hit`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
 			MOD("ImpaleChance", "BASE", num).Tag(mod.SkillName("Blade Vortex", "Blade Blast").Transfigured(true)),
 		}, ""
 	},
-	//pob:src/Modules/ModParser.lua:3858
+	//pob:src/Modules/ModParser.lua:3904
 	`critical strikes with spells inflict impale`: []mod.Mod{
 		MOD("ImpaleChance", "BASE", float64(100)).Flag(mod.MFlagSpell).Tag(mod.Condition("CriticalStrike")),
 	},
-	//pob:src/Modules/ModParser.lua:3859
+	//pob:src/Modules/ModParser.lua:3905
 	`(\d+)% chance on hitting an enemy for all impales on that enemy to last for an additional hit`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
 			MOD("ImpaleAdditionalDurationChance", "BASE", num),
 		}, ""
 	},
-	//pob:src/Modules/ModParser.lua:3862
+	//pob:src/Modules/ModParser.lua:3908
 	`projectiles gain impale effect as they travel farther, causing impales they inflict to have up to (\d+)% increased effect`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
 			MOD("ImpaleEffect", "INC", num).Flag(mod.MFlagProjectile).Tag(mod.DistanceRamp([][]float64{{35, 0}, {70, 1}})),
@@ -5971,20 +6022,20 @@ var specialModList = map[string]interface{}{
 		return []mod.Mod{mod.NewFloat("SpellSuppressionEffect", mod.TypeBase, num).Tag(mod.Multiplier("MissingBarkskinStacks").Base(0))}, ""
 	},
 	`hits that would ignite instead scorch`: []mod.Mod{FLAG("IgniteCanScorch"), FLAG("CannotIgnite")},
-	//pob:src/Modules/ModParser.lua:3027
+	//pob:src/Modules/ModParser.lua:3037
 	`you can inflict an additional scorch on each enemy`: []mod.Mod{FLAG("ScorchCanStack"), MOD("ScorchStacksMax", "BASE", 1)},
-	//pob:block:src/Modules/ModParser.lua:3951-3955
+	//pob:block:src/Modules/ModParser.lua:3997-4001
 	"inflict fire, cold and lightning exposure on enemies when you suppress their spell damage": []mod.Mod{
 		MOD("EnemyModifier", "LIST", mod.EnemyModifier{Mod: MOD("FireExposure", "BASE", -10)}).Tag(mod.Condition("Effective")).Tag(mod.Condition("SuppressedRecently")),
 		MOD("EnemyModifier", "LIST", mod.EnemyModifier{Mod: MOD("ColdExposure", "BASE", -10)}).Tag(mod.Condition("Effective")).Tag(mod.Condition("SuppressedRecently")),
 		MOD("EnemyModifier", "LIST", mod.EnemyModifier{Mod: MOD("LightningExposure", "BASE", -10)}).Tag(mod.Condition("Effective")).Tag(mod.Condition("SuppressedRecently")),
 	},
-	//pob:block:src/Modules/ModParser.lua:3956
+	//pob:block:src/Modules/ModParser.lua:4002
 	"critical strike chance is increased by chance to suppress spell damage": []mod.Mod{FLAG("CritChanceIncreasedBySpellSuppressChance")},
 	`you take (\d+)% reduced extra damage from suppressed critical strikes`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewFloat("ReduceSuppressedCritExtraDamage", mod.TypeBase, num)}, ""
 	},
-	//pob:src/Modules/ModParser.lua:3958
+	//pob:src/Modules/ModParser.lua:4004
 	`\+(\d+)% chance to suppress spell damage if your e?q?u?i?p?p?e?d? ?boots, helmet and gloves have evasion`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
 			MOD("SpellSuppressionChance", "BASE", num).
@@ -6002,10 +6053,10 @@ var specialModList = map[string]interface{}{
 	// Buffs/debuffs
 	"phasing":   []mod.Mod{mod.NewFlag("Condition:Phasing", true)},
 	"onslaught": []mod.Mod{mod.NewFlag("Condition:Onslaught", true)},
-	//pob:src/Modules/ModParser.lua:3974-3975
+	//pob:src/Modules/ModParser.lua:4020-4021
 	"rampage":    []mod.Mod{mod.NewFlag("Condition:Rampage", true)},
 	"soul eater": []mod.Mod{mod.NewFlag("Condition:CanHaveSoulEater", true)},
-	//pob:src/Modules/ModParser.lua:3976
+	//pob:src/Modules/ModParser.lua:4022
 	`g?a?i?n? ?unholy might during f?l?a?s?k? ?effect`: []mod.Mod{
 		FLAG("Condition:UnholyMight").Tag(mod.Condition("UsingFlask")),
 		FLAG("Condition:CanWither").Tag(mod.Condition("UsingFlask")),
@@ -6014,20 +6065,20 @@ var specialModList = map[string]interface{}{
 		mod.NewFlag("Condition:UnholyMight", true),
 		mod.NewFlag("Condition:CanWither", true),
 	},
-	//pob:src/Modules/ModParser.lua:3977-3980
+	//pob:src/Modules/ModParser.lua:4023-4026
 	"chaotic might":                        []mod.Mod{mod.NewFlag("Condition:ChaoticMight", true)},
 	"elusive":                              []mod.Mod{mod.NewFlag("Condition:CanBeElusive", true)},
 	"adrenaline":                           []mod.Mod{mod.NewFlag("Condition:Adrenaline", true)},
 	"arcane surge":                         []mod.Mod{mod.NewFlag("Condition:ArcaneSurge", true)},
 	"your aura buffs do not affect allies": []mod.Mod{mod.NewFlag("SelfAurasCannotAffectAllies", true)},
 	"auras from your skills can only affect you": []mod.Mod{mod.NewFlag("SelfAurasOnlyAffectYou", true)},
-	//pob:src/Modules/ModParser.lua:4328
+	//pob:src/Modules/ModParser.lua:4374
 	"non-curse auras from your skills only apply to you and linked targets": []mod.Mod{
 		FLAG("SelfAurasAffectYouAndLinkedTarget").
 			Tag(mod.SkillType(string(data.SkillTypeAura))).
 			Tag(mod.SkillType(string(data.SkillTypeAppliesCurse)).Neg(true)),
 	},
-	//pob:src/Modules/ModParser.lua:3996
+	//pob:src/Modules/ModParser.lua:4042
 	"auras from your skills which affect allies also affect enemies": []mod.Mod{mod.NewFlag("AurasAffectEnemies", true)},
 	`aura buffs from skills have (\d+)% increased effect on you for each herald affecting you`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
@@ -6044,7 +6095,7 @@ var specialModList = map[string]interface{}{
 			MOD("AreaOfEffect", "INC", num).Tag(mod.Multiplier("PowerCharge").GlobalLimit(utils.Float(captures[1])).GlobalLimitKey("VastPower")),
 		}, ""
 	},
-	//pob:block:src/Modules/ModParser.lua:4007-4009
+	//pob:block:src/Modules/ModParser.lua:4053-4055
 	`(\d+)% increased area of effect per second you've been stationary, up to a maximum of (\d+)%`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
 			MOD("AreaOfEffect", "INC", num).Tag(mod.Multiplier("StationarySeconds").Base(0).GlobalLimit(utils.Float(captures[1])).GlobalLimitKey("ExpansiveMight").LimitTotal(true)),
@@ -6055,7 +6106,7 @@ var specialModList = map[string]interface{}{
 			MOD("ChaosDamage", "INC", num).Tag(mod.PerStat(utils.Float(captures[1]), "Mana").GlobalLimit(utils.Float(captures[2])).GlobalLimitKey("DarkIdeation")),
 		}, ""
 	},
-	//pob:src/Modules/ModParser.lua:4460
+	//pob:src/Modules/ModParser.lua:4506
 	`minions have (\d+)% chance to impale on attack hit per socketed ghastly eye jewel`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
 			MOD("MinionModifier", "LIST", mod.MinionModifier{Mod: MOD("ImpaleChance", "BASE", num)}).Tag(mod.Multiplier("GhastlyEyeJewelIn{SlotName}")),
@@ -6106,7 +6157,7 @@ var specialModList = map[string]interface{}{
 	"enemies can have 1 additional curse":                             []mod.Mod{mod.NewFloat("EnemyCurseLimit", mod.TypeBase, 1)},
 	"you can apply an additional curse":                               []mod.Mod{mod.NewFloat("EnemyCurseLimit", mod.TypeBase, 1)},
 	"you can apply an additional curse while affected by malevolence": []mod.Mod{MOD("EnemyCurseLimit", "BASE", 1).Tag(mod.Condition("AffectedByMalevolence"))},
-	//pob:block:src/Modules/ModParser.lua:4045
+	//pob:block:src/Modules/ModParser.lua:4091
 	`you can apply an additional curse if (\d+) (\w+) items are equipped`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("EnemyCurseLimit", "BASE", 1).Tag(mod.MultiplierThreshold(firstToUpper(captures[1]) + "Item").Threshold(utils.Float(captures[0])))}, ""
 	},
@@ -6117,22 +6168,24 @@ var specialModList = map[string]interface{}{
 	"your warcries inflict hallowing flame":                                          []mod.Mod{FLAG("Condition:CanInflictHallowingFlame").Tag(mod.Condition("UsedWarcryRecently"))},
 	"attacks with this weapon inflict hallowing flame on hit":                        []mod.Mod{FLAG("Condition:CanInflictHallowingFlame")},
 	"inflict hallowing flame on hit while on consecrated ground":                     []mod.Mod{FLAG("Condition:CanInflictHallowingFlame").Tag(mod.Condition("OnConsecratedGround"))},
-	//pob:src/Modules/ModParser.lua:4334
-	"inflict hallowing flame on melee hit":                                             []mod.Mod{FLAG("Condition:CanInflictHallowingFlame")},
-	"your blink and mirror arrow clones use your gloves":                               []mod.Mod{FLAG("BlinkAndMirrorUseGloves")},
-	"socketed vaal skills grant elusive when used":                                     []mod.Mod{FLAG("Condition:CanBeElusive")},
-	"rage grants cast speed instead of attack speed":                                   []mod.Mod{FLAG("Condition:RageCastSpeed")},
-	`gain a random shrine buff every (\d+) seconds`:                                    []mod.Mod{FLAG("Condition:CanHaveRegularShrines")},
+	//pob:src/Modules/ModParser.lua:4380
+	"inflict hallowing flame on melee hit":               []mod.Mod{FLAG("Condition:CanInflictHallowingFlame")},
+	"your blink and mirror arrow clones use your gloves": []mod.Mod{FLAG("BlinkAndMirrorUseGloves")},
+	"socketed vaal skills grant elusive when used":       []mod.Mod{FLAG("Condition:CanBeElusive")},
+	"rage grants cast speed instead of attack speed":     []mod.Mod{FLAG("Condition:RageCastSpeed")},
+	`gain a random shrine buff every (\d+) seconds`:      []mod.Mod{FLAG("Condition:CanHaveRegularShrines")},
+	//pob:src/Modules/ModParser.lua:5664
+	`gain a random blood shrine buff every (\d+) seconds`:                              []mod.Mod{FLAG("Condition:CanHaveBloodShrines")},
 	`gain a random shrine buff for (\d+) seconds when you kill a rare or unique enemy`: []mod.Mod{FLAG("Condition:CanHaveRegularShrines")},
-	//pob:src/Modules/ModParser.lua:4539
+	//pob:src/Modules/ModParser.lua:4631
 	`projectiles pierce (\d+) additional targets if (\d+) (\w+) items are equipped`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("PierceCount", "BASE", num).Tag(mod.MultiplierThreshold(firstToUpper(strings.ToLower(captures[2])) + "Item").Threshold(utils.Float(captures[1])))}, ""
 	},
-	//pob:src/Modules/ModParser.lua:4732-4734
+	//pob:src/Modules/ModParser.lua:4779-4781
 	`([\d\.]+)% of physical damage prevented recently is regenerated as energy shield per second if (\d+) (\w+) items are equipped`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("PhysicalDamageMitigatedEnergyShieldPseudoRecoup", "BASE", num*4).Tag(mod.MultiplierThreshold(firstToUpper(strings.ToLower(captures[2])) + "Item").Threshold(utils.Float(captures[1])))}, ""
 	},
-	//pob:src/Modules/ModParser.lua:5570
+	//pob:src/Modules/ModParser.lua:5626
 	`(\d+)% reduced enemy chance to block sword attacks`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("reduceEnemyBlock", "BASE", num).Flag(mod.MFlagSword)}, ""
 	},
@@ -6157,7 +6210,7 @@ var specialModList = map[string]interface{}{
 			MOD("EnemyModifier", "LIST", mod.EnemyModifier{Mod: MOD("ElementalResist", "BASE", num)}).Tag(mod.ActorCondition("enemy", "Ignited", "Chilled")),
 		}, ""
 	},
-	//pob:src/Modules/ModParser.lua:4060-4065
+	//pob:src/Modules/ModParser.lua:4106-4111
 	`inflict decay on enemies you curse with hex or mark skills, dealing (\d+) chaos damage per second for \d+ seconds`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("SkillData", "LIST", mod.SkillData{Key: "decay", Value: num, Merge: "MAX"}).Tag(mod.ActorCondition("enemy", "Cursed"))}, ""
 	},
@@ -6239,7 +6292,7 @@ var specialModList = map[string]interface{}{
 	`\+(\d+)% chance to block spell damage if you have not blocked recently`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("SpellBlockChance", "BASE", num).Tag(mod.Condition("BlockedRecently").Neg(true))}, ""
 	},
-	//pob:src/Modules/ModParser.lua:4108
+	//pob:src/Modules/ModParser.lua:4154
 	`([\d\.]+)% of evasion rating is regenerated as life per second while focus?sed`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("LifeRegen", "BASE", 1).Tag(mod.PercentStat("Evasion", num)).Tag(mod.Condition("Focused"))}, ""
 	},
@@ -6269,7 +6322,7 @@ var specialModList = map[string]interface{}{
 	`projectiles deal (\d+)% increased damage with hits and ailments for each time they have chained`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("Damage", "INC", num).KeywordFlag(mod.KeywordFlagHit | mod.KeywordFlagAilment).Tag(mod.PerStat(0, "Chain")).Tag(mod.SkillType(string(data.SkillTypeProjectile)))}, ""
 	},
-	//pob:block:src/Modules/ModParser.lua:4587
+	//pob:block:src/Modules/ModParser.lua:4633
 	`projectiles deal (\d+)% increased damage with hits and ailments for each enemy pierced`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("Damage", "INC", num).KeywordFlag(mod.KeywordFlagHit | mod.KeywordFlagAilment).Tag(mod.PerStat(0, "PiercedCount")).Tag(mod.SkillType(string(data.SkillTypeProjectile)))}, ""
 	},
@@ -6337,7 +6390,7 @@ var specialModList = map[string]interface{}{
 		FLAG("Condition:UnholyMight").Tag(mod.Condition("BlockedRecently")),
 		FLAG("Condition:CanWither").Tag(mod.Condition("BlockedRecently")),
 	},
-	//pob:src/Modules/ModParser.lua:4678-4679
+	//pob:src/Modules/ModParser.lua:4724-4725
 	`minions take (\d+)% increased damage`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("MinionModifier", "LIST", mod.MinionModifier{Mod: MOD("DamageTaken", "INC", num)})}, ""
 	},
@@ -6412,12 +6465,12 @@ var specialModList = map[string]interface{}{
 	`your curses have (\d+)% increased effect if (\d+)% of curse duration expired`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("CurseEffect", "INC", num).Tag(mod.MultiplierThreshold("CurseExpired").Actor("enemy").Threshold(utils.Float(captures[1]))).Tag(mod.SkillType(string(data.SkillTypeHex)))}, ""
 	},
-	//pob:block:src/Modules/ModParser.lua:3985-3987
+	//pob:block:src/Modules/ModParser.lua:4031-4033
 	`non-aura hexes expire upon reaching (\d+)% of base effect non-aura hexes gain (\d+)% increased effect per second`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("CurseEffect", "INC", utils.Float(captures[1])).Tag(mod.Multiplier("CurseDurationExpired").Actor("enemy").Limit(num).LimitTotal(true)).
 			Tag(mod.SkillType(string(data.SkillTypeAura)).Neg(true)).Tag(mod.SkillType(string(data.SkillTypeHex)))}, ""
 	},
-	//pob:src/Modules/ModParser.lua:3988-3990
+	//pob:src/Modules/ModParser.lua:4034-4036
 	`enemies cursed by you have malediction if (\d+)% of curse duration expired`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("EnemyModifier", "LIST", mod.EnemyModifier{Mod: FLAG("HasMalediction").Tag(mod.MultiplierThreshold("CurseExpired").Threshold(num)).Tag(&mod.ActorConditionTag{TagType: mod.TypeActorCondition, VariableList: []string{"Cursed"}})})}, ""
 	},
@@ -6439,7 +6492,7 @@ var specialModList = map[string]interface{}{
 	},
 	"your maximum endurance charges is equal to your maximum frenzy charges": []mod.Mod{mod.NewFlag("MaximumEnduranceChargesIsMaximumFrenzyCharges", true)},
 	"your maximum frenzy charges is equal to your maximum power charges":     []mod.Mod{mod.NewFlag("MaximumFrenzyChargesIsMaximumPowerCharges", true)},
-	//pob:src/Modules/ModParser.lua:4120
+	//pob:src/Modules/ModParser.lua:4166
 	"your curse limit is equal to your maximum power charges": []mod.Mod{mod.NewFlag("CurseLimitIsMaximumPowerCharges", true)},
 	`consecrated ground you create while affected by zealotry causes enemies to take (\d+)% increased damage`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
@@ -6452,7 +6505,7 @@ var specialModList = map[string]interface{}{
 		}, ""
 	},
 	"when you warcry, you and nearby allies gain onslaught for 4 seconds": []mod.Mod{MOD("ExtraAura", "LIST", mod.ExtraAura{Mod: mod.NewFlag("Onslaught", true)}).Tag(mod.Condition("UsedWarcryRecently"))},
-	//pob:block:src/Modules/ModParser.lua:4140
+	//pob:block:src/Modules/ModParser.lua:4186
 	`gain onslaught for (\d+) seconds on hit while at maximum frenzy charges`: []mod.Mod{
 		FLAG("Onslaught").Tag(mod.StatThreshold("FrenzyCharges", 0).ThresholdStat("FrenzyChargesMax")).Tag(mod.Condition("HitRecently")),
 	},
@@ -6464,7 +6517,7 @@ var specialModList = map[string]interface{}{
 	`(\d+)% chance to sap enemies in chilling areas`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("EnemySapChance", "BASE", num).Tag(mod.ActorCondition("enemy", "InChillingArea"))}, ""
 	},
-	//pob:src/Modules/ModParser.lua:3796
+	//pob:src/Modules/ModParser.lua:3842
 	`drops burning ground while moving, dealing (\d+) fire damage per second for \d+ seconds`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("DropsBurningGround", "BASE", num)}, ""
 	},
@@ -6487,7 +6540,7 @@ var specialModList = map[string]interface{}{
 	`(\d+)% chance to inflict withered for (\d+) seconds on hit with this weapon`:                                    []mod.Mod{mod.NewFlag("Condition:CanWither", true)},
 	`(\d+)% chance to inflict withered for two seconds on hit if there are (\d+) or fewer withered debuffs on enemy`: []mod.Mod{mod.NewFlag("Condition:CanWither", true)},
 	`inflict withered for (\d+) seconds on hit with this weapon`:                                                     []mod.Mod{mod.NewFlag("Condition:CanWither", true)},
-	//pob:block:src/Modules/ModParser.lua:4150-4157
+	//pob:block:src/Modules/ModParser.lua:4196-4203
 	`melee weapon hits inflict (\d+) withered debuffs for (\d+) seconds`: []mod.Mod{mod.NewFlag("Condition:CanWither", true)},
 	`(\d+)% chance to inflict withered for (\d+) seconds on hit against cursed enemies`: []mod.Mod{
 		FLAG("Condition:CanWither").Tag(mod.ActorCondition("enemy", "Cursed")),
@@ -6500,16 +6553,16 @@ var specialModList = map[string]interface{}{
 	},
 	"your hits cannot penetrate or ignore elemental resistances": []mod.Mod{mod.NewFlag("CannotElePenIgnore", true)},
 	"nearby enemies have malediction":                            []mod.Mod{MOD("EnemyModifier", "LIST", mod.EnemyModifier{Mod: mod.NewFlag("HasMalediction", true)})},
-	//pob:src/Modules/ModParser.lua:5085
+	//pob:src/Modules/ModParser.lua:5132
 	"profane ground you create inflicts malediction on enemies": []mod.Mod{MOD("EnemyModifier", "LIST", mod.EnemyModifier{Mod: FLAG("HasMalediction").Tag(mod.Condition("OnProfaneGround"))})},
-	//pob:src/Modules/ModParser.lua:5086
+	//pob:src/Modules/ModParser.lua:5133
 	"profane ground you create also affects you and your allies, granting chaotic might": []mod.Mod{
 		MOD("ExtraAura", "LIST", mod.ExtraAura{Mod: FLAG("Condition:ChaoticMight").Tag(mod.Condition("OnProfaneGround"))}),
 	},
 	`(\d+)% of damage from hits is taken from your sentinel of radiance's life before you`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("takenFromRadianceSentinelBeforeYou", "BASE", num)}, ""
 	},
-	`(\d+)% of damage from hits is taken from your spectres' life before you`: func(num float64, captures []string) ([]mod.Mod, string) {
+	`(\d+)% of damage from hits is taken from your r?a?i?s?e?d? ?spectres' life before you`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("takenFromSpectresBeforeYou", "BASE", num)}, ""
 	},
 	`(\d+)% of damage from hits is taken from your nearest totem's life before you`: func(num float64, captures []string) ([]mod.Mod, string) {
@@ -6545,7 +6598,7 @@ var specialModList = map[string]interface{}{
 	`lightning skills have a (\d+)% chance to apply lightning exposure on hit`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewFloat("LightningExposureChance", mod.TypeBase, num)}, ""
 	},
-	//pob:src/Modules/ModParser.lua:4194
+	//pob:src/Modules/ModParser.lua:4240
 	`(\d+)% chance to inflict cold exposure on hit with cold damage`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewFloat("ColdExposureChance", mod.TypeBase, num)}, ""
 	},
@@ -6554,7 +6607,7 @@ var specialModList = map[string]interface{}{
 		MOD("ColdExposureChance", "BASE", 100).Tag(mod.Condition("Effective")),
 		MOD("LightningExposureChance", "BASE", 100).Tag(mod.Condition("Effective")),
 	},
-	//pob:block:src/Modules/ModParser.lua:4205-4213
+	//pob:block:src/Modules/ModParser.lua:4251-4259
 	"inflict fire exposure on hit": []mod.Mod{
 		MOD("FireExposureChance", "BASE", 100).Tag(mod.Condition("Effective")),
 	},
@@ -6573,7 +6626,7 @@ var specialModList = map[string]interface{}{
 	"nearby enemies have lightning exposure": []mod.Mod{
 		MOD("EnemyModifier", "LIST", mod.EnemyModifier{Mod: MOD("LightningExposure", "BASE", -10)}).Tag(mod.Condition("Effective")),
 	},
-	//pob:src/Modules/ModParser.lua:4223-4225
+	//pob:src/Modules/ModParser.lua:4269-4271
 	"nearby enemies have fire exposure while at maximum rage": []mod.Mod{
 		MOD("EnemyModifier", "LIST", mod.EnemyModifier{Mod: MOD("FireExposure", "BASE", -10)}).Tag(mod.Condition("Effective")).Tag(mod.Condition("HaveMaximumRage")),
 	},
@@ -6614,7 +6667,7 @@ var specialModList = map[string]interface{}{
 			MOD("EnemyModifier", "LIST", mod.EnemyModifier{Mod: MOD(utils.Capital(captures[2])+"Exposure", "BASE", -utils.Float(captures[1])).Tag(mod.Condition("PinnacleBoss"))}).Tag(mod.Condition("Effective")),
 		}, ""
 	},
-	//pob:block:src/Modules/ModParser.lua:4180-4190
+	//pob:block:src/Modules/ModParser.lua:4226-4236
 	`regenerate (\d+)% of life per second for each different ailment affecting you`: func(num float64, captures []string) ([]mod.Mod, string) {
 		out := make([]mod.Mod, 0, 9)
 		for _, v := range []string{"Bleeding", "Ignited", "Scorched", "Chilled", "Frozen", "Brittle", "Shocked", "Sapped", "Poisoned"} {
@@ -6622,7 +6675,7 @@ var specialModList = map[string]interface{}{
 		}
 		return out, ""
 	},
-	//pob:block:src/Modules/ModParser.lua:4263-4266
+	//pob:block:src/Modules/ModParser.lua:4309-4312
 	`inflict fire exposure on hit against enemies with (\d+) cinderflame, applying -(\d+)% to (\w+) resistance`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
 			MOD("FireExposureChance", "BASE", 100).Tag(mod.Condition("Effective")).Tag(mod.MultiplierThreshold("CinderflameStacks").Threshold(num)),
@@ -6665,7 +6718,7 @@ var specialModList = map[string]interface{}{
 		return []mod.Mod{MOD("BuffEffect", "INC", utils.Float(captures[1])).Tag(mod.SkillId(extraSkillIDForName(captures[0])))}, ""
 	},
 	// This boot enchant gives a buff that applies both stats individually.
-	//pob:block:src/Modules/ModParser.lua:4311-4314
+	//pob:block:src/Modules/ModParser.lua:4357-4360
 	`(\d+)% increased attack and cast speed if you've killed recently`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
 			MOD("Speed", "INC", num).Flag(mod.MFlagCast).Tag(mod.Condition("KilledRecently")),
@@ -6759,9 +6812,9 @@ var specialModList = map[string]interface{}{
 	`totems gain \+(\d+)% to all elemental resistances`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewFloat("TotemElementalResist", mod.TypeBase, num)}, ""
 	},
-	//pob:src/Modules/ModParser.lua:4372
+	//pob:src/Modules/ModParser.lua:4418
 	"your strength is added to your minions": []mod.Mod{MOD("StrengthAddedToMinions", "BASE", float64(100))},
-	//pob:src/Modules/ModParser.lua:4373
+	//pob:src/Modules/ModParser.lua:4419
 	"half of your strength is added to your minions": []mod.Mod{MOD("StrengthAddedToMinions", "BASE", float64(50))},
 	`minions created recently have (\d+)% increased attack and cast speed`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
@@ -6857,20 +6910,20 @@ var specialModList = map[string]interface{}{
 			MOD("MinionModifier", "LIST", mod.MinionModifier{Mod: mod.NewFloat("PhysicalDamageConvertToChaos", mod.TypeBase, num)}).Tag(mod.SkillName("Summon Skeletons").Transfigured(true)),
 		}, ""
 	},
-	//pob:src/Modules/ModParser.lua:4433
+	//pob:src/Modules/ModParser.lua:4479
 	`minions convert (\d+)% of (.+) damage to (.+) damage`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
 			MOD("MinionModifier", "LIST", mod.MinionModifier{Mod: mod.NewFloat(minionConvertKey(captures[1], captures[2]), mod.TypeBase, num)}),
 		}, ""
 	},
-	//pob:src/Modules/ModParser.lua:4448
+	//pob:src/Modules/ModParser.lua:4494
 	`minions convert (\d+)% of (.+) damage to (.+) damage per (.+) socket`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
 			MOD("MinionModifier", "LIST", mod.MinionModifier{Mod: mod.NewFloat(minionConvertKey(captures[1], captures[2]), mod.TypeBase, num)}).
 				Tag(mod.Multiplier(utils.Capital(strings.ToLower(captures[3])) + "SocketIn{SlotName}").Base(0)),
 		}, ""
 	},
-	//pob:src/Modules/ModParser.lua:4451
+	//pob:src/Modules/ModParser.lua:4497
 	`minions convert (\d+)% of (.+) damage to (.+) damage per socketed (\w+) gem`: func(num float64, captures []string) ([]mod.Mod, string) {
 		colour := strings.ToLower(captures[3])
 		switch colour {
@@ -6913,12 +6966,12 @@ var specialModList = map[string]interface{}{
 	`minions have (\d+)% increased attack and cast speed while you are affected by a herald`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("MinionModifier", "LIST", mod.MinionModifier{Mod: MOD("Speed", "INC", num).Tag(mod.ActorCondition("parent", "AffectedByHerald"))})}, ""
 	},
-	//pob:src/Modules/ModParser.lua:4469
+	//pob:src/Modules/ModParser.lua:4515
 	`summoned skeleton warriors a?n?d? ?s?o?l?d?i?e?r?s? ?deal triple damage with this weapon if you've hit with this weapon recently`: []mod.Mod{
 		MOD("Dummy", "DUMMY", 1).Tag(mod.Condition("HitRecentlyWithWeapon")),
 		MOD("MinionModifier", "LIST", mod.MinionModifier{Mod: MOD("TripleDamageChance", "BASE", 100).Tag(mod.ActorCondition("parent", "HitRecentlyWithWeapon"))}).Tag(mod.SkillName("Summon Skeletons"), mod.ItemCondition("Weapon 1").Name("The Iron Mass, Gladius")),
 	},
-	//pob:block:src/Modules/ModParser.lua:4472
+	//pob:block:src/Modules/ModParser.lua:4518
 	`summoned skeleton warriors a?n?d? ?s?o?l?d?i?e?r?s? ?wield a? ?c?o?p?y? ?o?f? ?this weapon while in your main hand`: []mod.Mod{}, // just make the mod blue, handled in CalcSetup
 	"each summoned phantasm grants you phantasmal might":                                                                 []mod.Mod{mod.NewFlag("Condition:PhantasmalMight", true)},
 	`minions have (\d+)% increased critical strike chance per maximum power charge you have`: func(num float64, captures []string) ([]mod.Mod, string) {
@@ -6926,14 +6979,14 @@ var specialModList = map[string]interface{}{
 			MOD("MinionModifier", "LIST", mod.MinionModifier{Mod: MOD("CritChance", "INC", num).Tag(mod.Multiplier("PowerChargeMax").Actor("parent"))})}, ""
 	},
 	"minions' base attack critical strike chance is equal to the critical strike chance of your main hand weapon": []mod.Mod{
-		//pob:src/Modules/ModParser.lua:4475
+		//pob:src/Modules/ModParser.lua:4521
 		MOD("MinionModifier", "LIST", mod.MinionModifier{Mod: FLAG("AttackCritIsEqualToParentMainHand").Flag(mod.MFlagAttack)}),
 	},
 	`non-spectre minions' base attack time is equal to the attack time of your main hand weapon`: []mod.Mod{
-		//pob:src/Modules/ModParser.lua:4476
+		//pob:src/Modules/ModParser.lua:4522
 		FLAG("NonSpectreMinionsUseParentMainHandAttackTime"),
 	},
-	//pob:block:src/Modules/ModParser.lua:4477-4480
+	//pob:block:src/Modules/ModParser.lua:4523-4526
 	"minions can hear the whispers for 5 seconds after they deal a critical strike": func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
 			MOD("ExtraSkillMod", "LIST", mod.ExtraSkillMod{Mod: MOD("Speed", "INC", 50).Tag(mod.GlobalEffect("Global").Unscalable(true)).Tag(mod.Condition("NeverCrit").Neg(true))}),
@@ -6948,7 +7001,7 @@ var specialModList = map[string]interface{}{
 		return []mod.Mod{
 			MOD("MinionModifier", "LIST", mod.MinionModifier{Mod: FLAG("IgnoreElementalResistances").Tag(mod.StatThreshold("EnergyShield", 1))})}, ""
 	},
-	//pob:block:src/Modules/ModParser.lua:4484-4500
+	//pob:block:src/Modules/ModParser.lua:4530-4546
 	`summoned arbalists' projectiles pierce (\d+) additional targets`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("MinionModifier", "LIST", mod.MinionModifier{Mod: MOD("PierceCount", "BASE", num)}).Tag(mod.SkillName("Summon Arbalists"))}, ""
 	},
@@ -7001,7 +7054,7 @@ var specialModList = map[string]interface{}{
 	},
 	"wand attacks fire an additional projectile": []mod.Mod{MOD("ProjectileCount", "BASE", 1).Flag(mod.MFlagWand)},
 	"skills fire an additional projectile":       []mod.Mod{mod.NewFloat("ProjectileCount", mod.TypeBase, 1)},
-	//pob:block:src/Modules/ModParser.lua:4522
+	//pob:block:src/Modules/ModParser.lua:4568
 	`skills fire an additional projectile if (\d+) (\w+) items are equipped`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("ProjectileCount", "BASE", 1).Tag(mod.MultiplierThreshold(firstToUpper(captures[1]) + "Item").Threshold(utils.Float(captures[0])))}, ""
 	},
@@ -7025,7 +7078,7 @@ var specialModList = map[string]interface{}{
 				Tag(mod.SkillType(string(data.SkillTypeVaal)).Neg(true)),
 		}, ""
 	},
-	//pob:src/Modules/ModParser.lua:4533-4534
+	//pob:src/Modules/ModParser.lua:4579-4580
 	"tornado shot fires an additional secondary projectile": []mod.Mod{MOD("tornadoShotSecondaryProjectiles", "BASE", 1).Tag(mod.SkillName("Tornado Shot"))},
 	"tornado shot fires 2 additional secondary projectiles": []mod.Mod{MOD("tornadoShotSecondaryProjectiles", "BASE", 2).Tag(mod.SkillName("Tornado Shot"))},
 	"projectiles pierce an additional target":               []mod.Mod{mod.NewFloat("PierceCount", mod.TypeBase, 1)},
@@ -7039,7 +7092,7 @@ var specialModList = map[string]interface{}{
 		return []mod.Mod{MOD("PierceCount", "BASE", num).Tag(mod.Condition("Phasing"))}, ""
 	},
 	"projectiles pierce all targets while you have phasing": []mod.Mod{FLAG("PierceAllTargets").Tag(mod.Condition("Phasing"))},
-	//pob:block:src/Modules/ModParser.lua:4542-4551
+	//pob:block:src/Modules/ModParser.lua:4588-4597
 	"arrows pierce an additional target": []mod.Mod{MOD("PierceCount", "BASE", 1).KeywordFlag(mod.KeywordFlagArrow)},
 	`arrows pierce (\d+) additional targets`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("PierceCount", "BASE", num).KeywordFlag(mod.KeywordFlagArrow)}, ""
@@ -7085,7 +7138,7 @@ var specialModList = map[string]interface{}{
 	"summoned skitterbots' auras affect you as well as enemies":                               []mod.Mod{FLAG("SkitterbotAffectPlayer")},
 	"projectiles from spells cannot pierce":                                                   []mod.Mod{FLAG("CannotPierce").Flag(mod.MFlagSpell)},
 	"projectiles fork":                                                                        []mod.Mod{FLAG("ForkOnce").Flag(mod.MFlagProjectile), MOD("ForkCountMax", "BASE", 1).Flag(mod.MFlagProjectile)},
-	//pob:block:src/Modules/ModParser.lua:4566-4571
+	//pob:block:src/Modules/ModParser.lua:4612-4617
 	`(\d+)% increased critical strike chance with arrows that fork`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
 			MOD("CritChance", "INC", num).KeywordFlag(mod.KeywordFlagArrow).Tag(mod.StatThreshold("ForkRemaining", 1)).Tag(mod.StatThreshold("PierceCount", 0).Upper(true)),
@@ -7097,7 +7150,7 @@ var specialModList = map[string]interface{}{
 		}, ""
 	},
 	"arrows pierce all targets after forking": []mod.Mod{FLAG("PierceAllTargets").KeywordFlag(mod.KeywordFlagArrow).Tag(mod.StatThreshold("ForkedCount", 1))},
-	//pob:src/Modules/ModParser.lua:4572
+	//pob:src/Modules/ModParser.lua:4618
 	"modifiers to number of projectiles instead apply to the number of targets projectiles split towards": []mod.Mod{
 		mod.NewFlag("NoAdditionalProjectiles", true),
 		mod.NewFlag("AdditionalProjectilesAddSplitsInstead", true),
@@ -7128,30 +7181,30 @@ var specialModList = map[string]interface{}{
 	"cannot leech mana":                       []mod.Mod{mod.NewFlag("CannotLeechMana", true)},
 	"cannot leech when on low life":           []mod.Mod{FLAG("CannotLeechLife").Tag(mod.Condition("LowLife")), FLAG("CannotLeechMana").Tag(mod.Condition("LowLife"))},
 	"cannot leech life from critical strikes": []mod.Mod{FLAG("CannotLeechLife").Tag(mod.Condition("CriticalStrike"))},
-	//pob:src/Modules/ModParser.lua:4600
+	//pob:src/Modules/ModParser.lua:4646
 	"leech applies instantly on critical strike": []mod.Mod{
 		mod.NewFloat("InstantLifeLeech", mod.TypeBase, 100).Tag(mod.Condition("CriticalStrike")),
 		mod.NewFloat("InstantManaLeech", mod.TypeBase, 100).Tag(mod.Condition("CriticalStrike")),
 		mod.NewFloat("InstantEnergyShieldLeech", mod.TypeBase, 100).Tag(mod.Condition("CriticalStrike")),
 	},
-	//pob:src/Modules/ModParser.lua:4605
+	//pob:src/Modules/ModParser.lua:4651
 	"gain life and mana from leech instantly on critical strike": []mod.Mod{
 		mod.NewFloat("InstantLifeLeech", mod.TypeBase, 100).Tag(mod.Condition("CriticalStrike")),
 		mod.NewFloat("InstantManaLeech", mod.TypeBase, 100).Tag(mod.Condition("CriticalStrike")),
 		mod.NewFloat("InstantEnergyShieldLeech", mod.TypeBase, 100).Tag(mod.Condition("CriticalStrike")),
 	},
-	//pob:src/Modules/ModParser.lua:4610
+	//pob:src/Modules/ModParser.lua:4656
 	"leech applies instantly during f?l?a?s?k? ?effect": []mod.Mod{
 		mod.NewFloat("InstantLifeLeech", mod.TypeBase, 100).Tag(mod.Condition("UsingFlask")),
 		mod.NewFloat("InstantManaLeech", mod.TypeBase, 100).Tag(mod.Condition("UsingFlask")),
 		mod.NewFloat("InstantEnergyShieldLeech", mod.TypeBase, 100).Tag(mod.Condition("UsingFlask")),
 	},
-	//pob:src/Modules/ModParser.lua:4615
+	//pob:src/Modules/ModParser.lua:4707
 	"gain life and mana from leech instantly during f?l?a?s?k? ?effect": []mod.Mod{
 		mod.NewFloat("InstantLifeLeech", mod.TypeBase, 100).Tag(mod.Condition("UsingFlask")),
 		mod.NewFloat("InstantManaLeech", mod.TypeBase, 100).Tag(mod.Condition("UsingFlask")),
 	},
-	//pob:src/Modules/ModParser.lua:4619
+	//pob:src/Modules/ModParser.lua:4665
 	"life and mana leech are instant during f?l?a?s?k? ?effect": []mod.Mod{
 		mod.NewFloat("InstantLifeLeech", mod.TypeBase, 100).Tag(mod.Condition("UsingFlask")),
 		mod.NewFloat("InstantManaLeech", mod.TypeBase, 100).Tag(mod.Condition("UsingFlask")),
@@ -7159,18 +7212,18 @@ var specialModList = map[string]interface{}{
 	"life and mana leech from critical strikes are instant":                                   []mod.Mod{mod.NewFloat("InstantLifeLeech", mod.TypeBase, 100).Tag(mod.Condition("CriticalStrike")), mod.NewFloat("InstantManaLeech", mod.TypeBase, 100).Tag(mod.Condition("CriticalStrike"))},
 	"gain life and mana from leech instantly during effect":                                   []mod.Mod{mod.NewFloat("InstantLifeLeech", mod.TypeBase, 100).Tag(mod.Condition("UsingFlask")), mod.NewFloat("InstantManaLeech", mod.TypeBase, 100).Tag(mod.Condition("UsingFlask"))},
 	"with 5 corrupted items equipped: life leech recovers based on your chaos damage instead": []mod.Mod{FLAG("LifeLeechBasedOnChaosDamage").Tag(mod.MultiplierThreshold("CorruptedItem").Threshold(5))},
-	//pob:src/Modules/ModParser.lua:2429-2431
+	//pob:src/Modules/ModParser.lua:2439-2441
 	`you have everlasting sacrifice if at least (\d+) corrupted items are equipped`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{FLAG("Condition:EverlastingSacrifice").Tag(mod.MultiplierThreshold("CorruptedItem").Threshold(num))}, ""
 	},
-	//pob:src/Modules/ModParser.lua:4277
+	//pob:src/Modules/ModParser.lua:4323
 	`(\d+)% chance to gain a brine charge instead of an endurance charge`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{FLAG("CanGainBrineCharges"), MOD("BrineChargeGainChance", "BASE", num)}, ""
 	},
-	//pob:src/Modules/ModParser.lua:3083
+	//pob:src/Modules/ModParser.lua:3127
 	"drop brine ground while moving, lasting 4 seconds": []mod.Mod{FLAG("CanCreateBrineGround")},
 	// Mahuxotl's Machination Steel Kite Shield
-	//pob:src/Modules/ModParser.lua:3249-3251
+	//pob:src/Modules/ModParser.lua:3293-3295
 	"everlasting sacrifice": []mod.Mod{FLAG("Condition:EverlastingSacrifice")},
 	"you have vaal pact if you've dealt a critical strike recently": []mod.Mod{MOD("Keystone", "LIST", "Vaal Pact").Tag(mod.Condition("CritRecently"))},
 	`gain (\d+) energy shield for each enemy you hit which is affected by a spider's web`: func(num float64, captures []string) ([]mod.Mod, string) {
@@ -7250,14 +7303,14 @@ var specialModList = map[string]interface{}{
 	"you cannot regenerate energy shield":                             []mod.Mod{mod.NewFlag("NoEnergyShieldRegen", true)},
 	"cannot recharge or regenerate energy shield":                     []mod.Mod{mod.NewFlag("NoEnergyShieldRecharge", true), mod.NewFlag("NoEnergyShieldRegen", true)},
 	"left ring slot: you cannot recharge or regenerate energy shield": []mod.Mod{FLAG("NoEnergyShieldRecharge").Tag(mod.SlotNumber(1)), FLAG("NoEnergyShieldRegen").Tag(mod.SlotNumber(1))},
-	//pob:src/Modules/ModParser.lua:4741-4743
+	//pob:src/Modules/ModParser.lua:4788-4790
 	"cannot gain energy shield": []mod.Mod{mod.NewFlag("CannotGainEnergyShield", true)},
-	//pob:src/Modules/ModParser.lua:4744-4747
+	//pob:src/Modules/ModParser.lua:4791-4794
 	"cannot recover life other than from leech": []mod.Mod{
 		mod.NewFlag("CannotRecoverLifeOutsideLeech", true),
 		mod.NewFlag("NoLifeRegen", true),
 	},
-	//pob:src/Modules/ModParser.lua:4748-4750
+	//pob:src/Modules/ModParser.lua:4795-4797
 	`cannot gain energy shield during f?l?a?s?k? ?effect`: []mod.Mod{FLAG("CannotGainEnergyShield").Tag(mod.Condition("UsingFlask"))},
 	`cannot gain life during f?l?a?s?k? ?effect`:          []mod.Mod{FLAG("CannotGainLife").Tag(mod.Condition("UsingFlask"))},
 	`cannot gain mana during f?l?a?s?k? ?effect`:          []mod.Mod{FLAG("CannotGainMana").Tag(mod.Condition("UsingFlask"))},
@@ -7286,7 +7339,7 @@ var specialModList = map[string]interface{}{
 	"chaos resistance is zero": []mod.Mod{
 		mod.NewFloat("ChaosResist", mod.TypeOverride, 0),
 	},
-	//pob:block:src/Modules/ModParser.lua:4775-4778
+	//pob:block:src/Modules/ModParser.lua:4822-4825
 	"physical damage reduction is zero": []mod.Mod{
 		mod.NewFloat("PhysicalDamageReduction", mod.TypeOverride, 0),
 		mod.NewFlag("ArmourDoesNotApplyToPhysicalDamageTaken", true),
@@ -7319,7 +7372,7 @@ var specialModList = map[string]interface{}{
 	`y?o?u?r? ?maximum energy shield is equal to (\d+)% of y?o?u?r? ?maximum life`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("EnergyShield", mod.TypeOverride, 1).Tag(mod.PercentStat("Life", num))}, ""
 	},
-	//pob:src/Modules/ModParser.lua:5872
+	//pob:src/Modules/ModParser.lua:5929
 	`mana is increased by (\d+)% of overcapped lightning resistance`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
 			FLAG("ManaIncreasedByOvercappedLightningRes"),
@@ -7333,10 +7386,10 @@ var specialModList = map[string]interface{}{
 	"evasion rating is increased by uncapped cold resistance":                       []mod.Mod{FLAG("EvasionRatingIncreasedByUncappedColdRes")},
 	"evasion rating is increased by overcapped cold resistance":                     []mod.Mod{FLAG("EvasionRatingIncreasedByOvercappedColdRes")},
 	"gain maximum life instead of maximum energy shield from equipped armour items": []mod.Mod{mod.NewFlag("ConvertArmourESToLife", true)},
-	//pob:block:src/Modules/ModParser.lua:3054-3055
+	//pob:block:src/Modules/ModParser.lua:3064-3065
 	"can't use amulets": []mod.Mod{MOD("CanNotUseItem", mod.TypeDisablerFlag, 1).Tag(mod.DisablesItem("Amulet"))},
 	"can't use belts":   []mod.Mod{MOD("CanNotUseItem", mod.TypeDisablerFlag, 1).Tag(mod.DisablesItem("Belt"))},
-	//pob:src/Modules/ModParser.lua:3056
+	//pob:src/Modules/ModParser.lua:3066
 	`\+1 ring slot`: []mod.Mod{FLAG("AdditionalRingSlot")},
 	`reflects (\d+) physical damage to melee attackers`: []mod.Mod{},
 	"ignore all movement penalties from armour":         []mod.Mod{mod.NewFlag("Condition:IgnoreMovementPenalties", true)},
@@ -7346,9 +7399,9 @@ var specialModList = map[string]interface{}{
 			MOD("Armour", "INC", num).Tag(mod.PerStat(utils.Float(captures[1]), "ManaReserved")),
 		}, ""
 	},
-	//pob:src/Modules/ModParser.lua:3080
+	//pob:src/Modules/ModParser.lua:3124
 	"lose all rage on reaching maximum rage and gain wild savagery for 1 second per 10 rage lost this way": []mod.Mod{FLAG("WildSavagery")},
-	//pob:src/Modules/ModParser.lua:4579-4581
+	//pob:src/Modules/ModParser.lua:4625-4627
 	`bow attacks sacrifice a random damageable minion to fire (\d+) additional arrows?`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
 			MOD("ProjectileCount", "BASE", num).KeywordFlag(mod.KeywordFlagArrow).
@@ -7358,18 +7411,18 @@ var specialModList = map[string]interface{}{
 		}, ""
 	},
 	"cannot be stunned": []mod.Mod{FLAG("StunImmune")},
-	//pob:block:src/Modules/ModParser.lua:4823
+	//pob:block:src/Modules/ModParser.lua:4870
 	`cannot be stunned if (\d+) (\w+) items are equipped`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{FLAG("StunImmune").Tag(mod.MultiplierThreshold(firstToUpper(captures[1]) + "Item").Threshold(utils.Float(captures[0])))}, ""
 	},
-	//pob:block:src/Modules/ModParser.lua:4819-4820
+	//pob:block:src/Modules/ModParser.lua:4866-4867
 	"cannot be stunned while bleeding":   []mod.Mod{FLAG("StunImmune").Tag(mod.Condition("Bleeding"))},
 	"cannot be stunned when on low life": []mod.Mod{FLAG("StunImmune").Tag(mod.Condition("LowLife"))},
-	//pob:src/Modules/ModParser.lua:2581
+	//pob:src/Modules/ModParser.lua:2591
 	"you cannot be stunned while at maximum endurance charges": []mod.Mod{
 		FLAG("StunImmune").Tag(mod.StatThresholdStat("EnduranceCharges", "EnduranceChargesMax")),
 	},
-	//pob:block:src/Modules/ModParser.lua:3059-3062
+	//pob:block:src/Modules/ModParser.lua:3103-3106
 	"action speed cannot be modified to below base value if you have equipped boots with no socketed gems": []mod.Mod{
 		MOD("MinimumActionSpeed", "MAX", 100).
 			Tag(mod.GlobalEffect("Global").Unscalable(true)).
@@ -7386,7 +7439,7 @@ var specialModList = map[string]interface{}{
 			Tag(mod.MultiplierThreshold("SocketedGemsInBody Armour").Threshold(0).Upper(true)).
 			Tag(mod.Condition("UsingBody Armour")),
 	},
-	//pob:block:src/Modules/ModParser.lua:5846-5853
+	//pob:block:src/Modules/ModParser.lua:5903-5910
 	"take no extra damage from critical strikes": []mod.Mod{
 		MOD("ReduceCritExtraDamage", "BASE", 100).Tag(mod.GlobalEffect("Global").Unscalable(true)),
 	},
@@ -7399,7 +7452,7 @@ var specialModList = map[string]interface{}{
 			Tag(mod.MultiplierThreshold("SocketedGemsInGloves").Threshold(0).Upper(true)).
 			Tag(mod.Condition("UsingGloves")),
 	},
-	//pob:block:src/Modules/ModParser.lua:3038-3044
+	//pob:block:src/Modules/ModParser.lua:3048-3054
 	"defences from equipped body armour are doubled if it has no socketed gems": []mod.Mod{
 		MOD("Defences", "MORE", 100).
 			Tag(mod.MultiplierThreshold("SocketedGemsInBody Armour").Threshold(0).Upper(true)).
@@ -7429,7 +7482,7 @@ var specialModList = map[string]interface{}{
 				Tag(mod.Condition("UsingBoots")),
 		}, ""
 	},
-	//pob:block:src/Modules/ModParser.lua:5219-5221
+	//pob:block:src/Modules/ModParser.lua:5266-5268
 	"count as having maximum number of power charges":     []mod.Mod{mod.NewFlag("HaveMaximumPowerCharges", true)},
 	"count as having maximum number of frenzy charges":    []mod.Mod{mod.NewFlag("HaveMaximumFrenzyCharges", true)},
 	"count as having maximum number of endurance charges": []mod.Mod{mod.NewFlag("HaveMaximumEnduranceCharges", true)},
@@ -7439,7 +7492,7 @@ var specialModList = map[string]interface{}{
 			FLAG("StunImmune").Tag(mod.StatThreshold("CrabBarriers", num)),
 		}, ""
 	},
-	//pob:block:src/Modules/ModParser.lua:4824-4825
+	//pob:block:src/Modules/ModParser.lua:4871-4872
 	"cannot be blinded": []mod.Mod{FLAG("Condition:CannotBeBlinded"), FLAG("BlindImmune")},
 	"cannot be blinded while affected by precision": []mod.Mod{
 		FLAG("Condition:CannotBeBlinded").Tag(mod.Condition("AffectedByPrecision")),
@@ -7447,10 +7500,10 @@ var specialModList = map[string]interface{}{
 	},
 	"chance to avoid being shocked applies to all elemental ailments":            []mod.Mod{mod.NewFlag("ShockAvoidAppliesToElementalAilments", true)},
 	"modifiers to chance to avoid being shocked apply to all elemental ailments": []mod.Mod{mod.NewFlag("ShockAvoidAppliesToElementalAilments", true)},
-	//pob:block:src/Modules/ModParser.lua:4827-4834
+	//pob:block:src/Modules/ModParser.lua:4874-4881
 	"cannot be shocked": []mod.Mod{FLAG("ShockImmune")},
 	"cannot be frozen":  []mod.Mod{FLAG("FreezeImmune")},
-	//pob:block:src/Modules/ModParser.lua:4830
+	//pob:block:src/Modules/ModParser.lua:4877
 	`cannot be frozen if (\d+) (\w+) items are equipped`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{FLAG("FreezeImmune").Tag(mod.MultiplierThreshold(firstToUpper(captures[1]) + "Item").Threshold(utils.Float(captures[0])))}, ""
 	},
@@ -7468,7 +7521,7 @@ var specialModList = map[string]interface{}{
 	"cannot be ignited if strength is higher than dexterity":          []mod.Mod{FLAG("IgniteImmune").Tag(mod.Condition("StrHigherThanDex"))},
 	"cannot be chilled while burning":                                 []mod.Mod{FLAG("ChillImmune").Tag(mod.Condition("Burning"))},
 	"cannot be chilled while you have onslaught":                      []mod.Mod{FLAG("ChillImmune").Tag(mod.Condition("Onslaught"))},
-	//pob:block:src/Modules/ModParser.lua:4860-4861
+	//pob:block:src/Modules/ModParser.lua:4907-4908
 	"cannot be chilled during onslaught": []mod.Mod{FLAG("ChillImmune").Tag(mod.Condition("Onslaught"))},
 	"cannot be frozen or chilled if you've used a fire skill recently": []mod.Mod{
 		FLAG("FreezeImmune").Tag(mod.Condition("UsedFireSkillRecently")),
@@ -7478,10 +7531,10 @@ var specialModList = map[string]interface{}{
 	"bleeding cannot be inflicted on you": []mod.Mod{FLAG("BleedImmune")},
 	"you are immune to bleeding":          []mod.Mod{FLAG("BleedImmune")},
 	`immun[ei]t?y? to poison`:             []mod.Mod{FLAG("PoisonImmune")},
-	//pob:block:src/Modules/ModParser.lua:4872-4873
+	//pob:block:src/Modules/ModParser.lua:4919-4920
 	"cannot be poisoned":                []mod.Mod{FLAG("PoisonImmune")},
 	"cannot be poisoned while bleeding": []mod.Mod{FLAG("PoisonImmune").Tag(mod.Condition("Bleeding"))},
-	//pob:src/Modules/ModParser.lua:4887
+	//pob:src/Modules/ModParser.lua:4934
 	`immun[ei]t?y? to curses while channelling`:                                    []mod.Mod{FLAG("CurseImmune").Tag(mod.Condition("Channelling"))},
 	`gain spirit infusion every ?(\d?)\.?(\d?) seconds? while channelling a spell`: []mod.Mod{FLAG("Condition:CanGainSpiritInfusion")},
 	`grants immunity to ignite for (\d+) seconds if used while ignited`:            []mod.Mod{FLAG("IgniteImmune").Tag(mod.Condition("UsingFlask"))},
@@ -7507,7 +7560,7 @@ var specialModList = map[string]interface{}{
 		FLAG("FreezeImmune").Tag(mod.Condition("Ignited")),
 		FLAG("ChillImmune").Tag(mod.Condition("Ignited")),
 	},
-	//pob:block:src/Modules/ModParser.lua:4894-4899
+	//pob:block:src/Modules/ModParser.lua:4941-4946
 	`when you kill an enemy affected by a non-aura hex, become immune to curses for remaining hex duration`: []mod.Mod{FLAG("Condition:CanBeCurseImmune")},
 	`when you kill an enemy cursed with a non-aura hex, become immune to curses for remaining hex duration`: []mod.Mod{FLAG("Condition:CanBeCurseImmune")},
 	`immun[ei]t?y? to freeze, chill, curses and stuns during f?l?a?s?k? ?effect`: []mod.Mod{
@@ -7518,7 +7571,7 @@ var specialModList = map[string]interface{}{
 	},
 	"unaffected by curses":                            []mod.Mod{MOD("CurseEffectOnSelf", "MORE", -100).Tag(mod.GlobalEffect("Global").Unscalable(true))},
 	"unaffected by curses while affected by zealotry": []mod.Mod{MOD("CurseEffectOnSelf", "MORE", -100).Tag(mod.Condition("AffectedByZealotry")).Tag(mod.GlobalEffect("Global").Unscalable(true))},
-	//pob:block:src/Modules/ModParser.lua:4915-4921
+	//pob:block:src/Modules/ModParser.lua:4962-4968
 	"unaffected by vulnerability while affected by determination":           []mod.Mod{MOD("CurseEffectOnSelf", "MORE", -100).Tag(mod.SkillName("Vulnerability")).Tag(mod.Condition("AffectedByDetermination")).Tag(mod.GlobalEffect("Global").Unscalable(true))},
 	"unaffected by enfeeble while affected by grace":                        []mod.Mod{MOD("CurseEffectOnSelf", "MORE", -100).Tag(mod.SkillName("Enfeeble")).Tag(mod.Condition("AffectedByGrace")).Tag(mod.GlobalEffect("Global").Unscalable(true))},
 	"unaffected by temporal chains while affected by haste":                 []mod.Mod{MOD("CurseEffectOnSelf", "MORE", -100).Tag(mod.SkillName("Temporal Chains")).Tag(mod.Condition("AffectedByHaste")).Tag(mod.GlobalEffect("Global").Unscalable(true))},
@@ -7531,7 +7584,7 @@ var specialModList = map[string]interface{}{
 			FLAG("CurseImmune").Tag(mod.MultiplierThreshold("Rage").Threshold(num)),
 		}, ""
 	},
-	//pob:src/Modules/ModParser.lua:4945
+	//pob:src/Modules/ModParser.lua:4992
 	"the effect of chill on you is reversed": []mod.Mod{
 		mod.NewFlag("SelfChillEffectIsReversed", true),
 		MOD("Dummy", "DUMMY", 1).Tag(mod.Condition("Chilled")),
@@ -7540,13 +7593,13 @@ var specialModList = map[string]interface{}{
 		return []mod.Mod{MOD("MovementSpeed", "OVERRIDE", num/100)}, ""
 	},
 	"armour also applies to lightning damage taken from hits": []mod.Mod{mod.NewFloat("ArmourAppliesToLightningDamageTaken", mod.TypeBase, 100)},
-	//pob:block:src/Modules/ModParser.lua:2408
+	//pob:block:src/Modules/ModParser.lua:2418
 	`(\d+)% of armour also applies to chaos damage taken from hits`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewFloat("ArmourAppliesToChaosDamageTaken", mod.TypeBase, num)}, ""
 	},
-	//pob:block:src/Modules/ModParser.lua:2409
+	//pob:block:src/Modules/ModParser.lua:2419
 	"armour also applies to chaos damage taken from hits": []mod.Mod{mod.NewFloat("ArmourAppliesToChaosDamageTaken", mod.TypeBase, 100)},
-	//pob:block:src/Modules/ModParser.lua:2384-2386
+	//pob:block:src/Modules/ModParser.lua:2394-2396
 	"physical damage taken bypasses energy shield":                []mod.Mod{mod.NewFloat("PhysicalEnergyShieldBypass", mod.TypeBase, 100)},
 	"lightning resistance does not affect lightning damage taken": []mod.Mod{mod.NewFlag("SelfIgnoreLightningResistance", true)},
 	`(\d+)% increased maximum life and reduced fire resistance`: func(num float64, captures []string) ([]mod.Mod, string) {
@@ -7582,7 +7635,7 @@ var specialModList = map[string]interface{}{
 	"adds knockback during f?l?a?s?k? ?effect":                      []mod.Mod{MOD("EnemyKnockbackChance", "BASE", 100).Tag(mod.Condition("UsingFlask"))},
 	"adds knockback to melee attacks during f?l?a?s?k? ?effect":     []mod.Mod{MOD("EnemyKnockbackChance", "BASE", 100).Flag(mod.MFlagMelee).Tag(mod.Condition("UsingFlask"))},
 	"knockback direction is reversed":                               []mod.Mod{MOD("EnemyKnockbackDistance", "MORE", -200)},
-	//pob:src/Modules/ModParser.lua:5005
+	//pob:src/Modules/ModParser.lua:5052
 	"culling strike": []mod.Mod{MOD("CullPercent", "MAX", 10).Tag(mod.GlobalEffect("Global").Unscalable(true))},
 	"culling strike during f?l?a?s?k? ?effect":                           []mod.Mod{MOD("CullPercent", "MAX", 10).Tag(mod.Condition("UsingFlask")).Tag(mod.GlobalEffect("Global").Unscalable(true))},
 	"hits with this weapon have culling strike against bleeding enemies": []mod.Mod{MOD("CullPercent", "MAX", 10).Tag(mod.ActorCondition("enemy", "Bleeding"))},
@@ -7591,13 +7644,13 @@ var specialModList = map[string]interface{}{
 	"your critical strikes have culling strike":                          []mod.Mod{MOD("CriticalCullPercent", "MAX", 10)},
 	"your spells have culling strike":                                    []mod.Mod{MOD("CullPercent", "MAX", 10).Flag(mod.MFlagSpell)},
 	"culling strike against burning enemies":                             []mod.Mod{MOD("CullPercent", "MAX", 10).Tag(mod.ActorCondition("enemy", "Burning"))},
-	//pob:block:src/Modules/ModParser.lua:5014
+	//pob:block:src/Modules/ModParser.lua:5061
 	"bow attacks have culling strike": []mod.Mod{MOD("CullPercent", "MAX", 10).Flag(mod.MFlagAttack | mod.MFlagBow)},
-	//pob:block:src/Modules/ModParser.lua:5018
+	//pob:block:src/Modules/ModParser.lua:5065
 	"nearby allies have culling strike": []mod.Mod{MOD("ExtraAura", "LIST", mod.ExtraAura{Mod: MOD("CullPercent", "MAX", 10), OnlyAllies: true})},
-	//pob:src/Modules/ModParser.lua:5019
+	//pob:src/Modules/ModParser.lua:5066
 	"hits that stun enemies have culling strike": []mod.Mod{FLAG("Condition:maceMasteryStunCullSpecced")},
-	//pob:block:src/Modules/ModParser.lua:5087-5101
+	//pob:block:src/Modules/ModParser.lua:5134-5148
 	"raised beast spectres have farrul's farric presence": []mod.Mod{
 		MOD("ExtraAura", "LIST", mod.ExtraAura{FromAllies: true, Mod: MOD("Accuracy", "INC", 80)}).Tag(mod.Condition("HaveBeastSpectre")),
 		MOD("ExtraAura", "LIST", mod.ExtraAura{FromAllies: true, Mod: MOD("CritChance", "INC", 120)}).Tag(mod.Condition("HaveBeastSpectre")),
@@ -7613,11 +7666,11 @@ var specialModList = map[string]interface{}{
 		MOD("ExtraAura", "LIST", mod.ExtraAura{FromAllies: true, Mod: MOD("MovementSpeed", "INC", 20)}).Tag(mod.Condition("HaveBeastSpectre")),
 		MOD("ExtraAura", "LIST", mod.ExtraAura{FromAllies: true, Mod: MOD("MinimumActionSpeed", "MAX", 100)}).Tag(mod.Condition("HaveBeastSpectre")),
 	},
-	//pob:block:src/Modules/ModParser.lua:4955
+	//pob:block:src/Modules/ModParser.lua:5002
 	"nearby allies' action speed cannot be modified to below base value": []mod.Mod{MOD("ExtraAura", "LIST", mod.ExtraAura{Mod: MOD("MinimumActionSpeed", "MAX", 100).Tag(mod.GlobalEffect("Global").Unscalable(true)), OnlyAllies: true})},
 	"culling strike against marked enemy":                                []mod.Mod{MOD("CullPercent", "MAX", 10).Tag(mod.ActorCondition("enemy", "Marked"))},
 	"permanently intimidate enemies on block":                            []mod.Mod{MOD("EnemyModifier", "LIST", mod.EnemyModifier{Mod: mod.NewFlag("Condition:Intimidated", true)}).Tag(mod.Condition("BlockedRecently"))},
-	//pob:block:src/Modules/ModParser.lua:2174
+	//pob:block:src/Modules/ModParser.lua:2184
 	"enemies near corpses affected by your curses are blinded": []mod.Mod{MOD("EnemyModifier", "LIST", mod.EnemyModifier{Mod: mod.NewFlag("Condition:Blinded", true)}).Tag(mod.MultiplierThreshold("NearbyCorpse").Threshold(1)).Tag(mod.ActorCondition("enemy", "Cursed"))},
 	`with a murderous eye jewel socketed, intimidate enemies for (\d) seconds on hit with attacks`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
@@ -7721,7 +7774,7 @@ var specialModList = map[string]interface{}{
 	`recover (\d+)% of mana on kill`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("ManaOnKill", "BASE", 1).Tag(mod.PercentStat("Mana", num))}, ""
 	},
-	//pob:src/Modules/ModParser.lua:4661
+	//pob:src/Modules/ModParser.lua:4707
 	`recover (\d+)% of mana on kill while you have a tincture active`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("ManaOnKill", "BASE", 1).Tag(mod.PercentStat("Mana", num)).Tag(mod.Condition("UsingTincture"))}, ""
 	},
@@ -7778,7 +7831,7 @@ var specialModList = map[string]interface{}{
 	"grants eldritch battery during f?l?a?s?k? ?effect":                        []mod.Mod{MOD("Keystone", "LIST", "Eldritch Battery").Tag(mod.Condition("UsingFlask"))},
 	"eldritch battery during f?l?a?s?k? ?effect":                               []mod.Mod{MOD("Keystone", "LIST", "Eldritch Battery").Tag(mod.Condition("UsingFlask"))},
 	"chaos damage t?a?k?e?n? ?does not bypass energy shield during effect":     []mod.Mod{mod.NewFlag("ChaosNotBypassEnergyShield", true)},
-	//pob:src/Modules/ModParser.lua:5083
+	//pob:src/Modules/ModParser.lua:5130
 	`y?o?u?r? ?skills [ch][oa][sv][te] no mana c?o?s?t? ?during f?l?a?s?k? ?effect`:     []mod.Mod{MOD("ManaCost", "MORE", -100).Tag(mod.Condition("UsingFlask"))},
 	"life recovery from flasks also applies to energy shield during f?l?a?s?k? ?effect": []mod.Mod{FLAG("LifeFlaskAppliesToEnergyShield").Tag(mod.Condition("UsingFlask"))},
 	`consecrated ground created during effect applies (\d+)% increased damage taken to enemies`: func(num float64, captures []string) ([]mod.Mod, string) {
@@ -7858,15 +7911,15 @@ var specialModList = map[string]interface{}{
 	`spectres have a base duration of (\d+) seconds`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("SkillData", "LIST", mod.SkillData{Key: "duration", Value: 6}).Tag(mod.SkillName("Raise Spectre").Transfigured(true))}, ""
 	},
-	//pob:block:src/Modules/ModParser.lua:5180-5181
-	//pob:src/Modules/ModParser.lua:5178-5179
+	//pob:block:src/Modules/ModParser.lua:5227-5228
+	//pob:src/Modules/ModParser.lua:5225-5226
 	`while a unique enemy is in your presence, flasks applied to you have (\d+)% increased effect`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("FlaskEffect", "INC", num).Tag(mod.ActorCondition("enemy", "RareOrUnique")).Tag(mod.ActorCondition("player"))}, ""
 	},
 	`while a pinnacle atlas boss is in your presence, flasks applied to you have (\d+)% increased effect`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("FlaskEffect", "INC", num).Tag(mod.ActorCondition("enemy", "PinnacleBoss")).Tag(mod.ActorCondition("player"))}, ""
 	},
-	//pob:src/Modules/ModParser.lua:2420
+	//pob:src/Modules/ModParser.lua:2430
 	`increases and reductions to effect of flasks applied to you also applies to effect of arcane surge on you at (\d+)% of their value`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("FlaskEffectToArcaneSurgeEffect", "BASE", num)}, ""
 	},
@@ -7879,7 +7932,7 @@ var specialModList = map[string]interface{}{
 	`flasks applied to you have (\d+)% reduced effect`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("FlaskEffect", "INC", -num).Tag(mod.ActorCondition("player"))}, ""
 	},
-	//pob:block:src/Modules/ModParser.lua:5182-5193
+	//pob:block:src/Modules/ModParser.lua:5229-5240
 	`tinctures applied to you have (\d+)% increased effect`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewFloat("TinctureEffect", mod.TypeIncrease, num).Tag(mod.ActorCondition("player"))}, ""
 	},
@@ -7891,7 +7944,7 @@ var specialModList = map[string]interface{}{
 		return []mod.Mod{mod.NewFloat("TinctureEffect", mod.TypeIncrease, num).
 			Tag(mod.ActorCondition("player")).Tag(mod.Condition("UsingFlask").Neg(true))}, ""
 	},
-	//pob:block:src/Modules/ModParser.lua:5185
+	//pob:block:src/Modules/ModParser.lua:5232
 	`tinctures have (\d+)% increased effect while at or above (\d+) stacks of mana burn`: func(num float64, captures []string) ([]mod.Mod, string) {
 		threshold, _ := strconv.ParseFloat(captures[1], 64)
 		return []mod.Mod{mod.NewFloat("TinctureEffect", mod.TypeIncrease, num).
@@ -7937,7 +7990,7 @@ var specialModList = map[string]interface{}{
 			MOD("JewelData", "LIST", mod.JewelData{Key: "jewelIncEffectFromClassStart", Value: num}),
 		}, ""
 	},
-	//pob:block:src/Modules/ModParser.lua:5205-5209
+	//pob:block:src/Modules/ModParser.lua:5252-5256
 	"can't use chest armour": []mod.Mod{MOD("CanNotUseItem", mod.TypeDisablerFlag, 1).Tag(mod.DisablesItem("Body Armour"))},
 	`can't use helmets?`:     []mod.Mod{MOD("CanNotUseItem", mod.TypeDisablerFlag, 1).Tag(mod.DisablesItem("Helmet"))},
 	"can't use other rings": []mod.Mod{
@@ -7970,7 +8023,7 @@ var specialModList = map[string]interface{}{
 	`warcries exert (\d+) additional attacks?`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewFloat("ExtraExertedAttacks", mod.TypeBase, num)}, ""
 	},
-	//pob:src/Modules/ModParser.lua:5238
+	//pob:src/Modules/ModParser.lua:5285
 	`warcries have (\d+)% chance to exert (\d+) additional attacks?`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("ExtraExertedAttacks", "BASE", num*utils.Float(captures[1])/100)}, ""
 	},
@@ -7980,7 +8033,7 @@ var specialModList = map[string]interface{}{
 	`(\d+)% chance to inflict an additional poison on the same target when you inflict poison`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewFloat("AdditionalPoisonChance", mod.TypeBase, num)}, ""
 	},
-	//pob:src/Modules/ModParser.lua:3937
+	//pob:src/Modules/ModParser.lua:3983
 	`inflict (\d+) additional poisons? on the same target when you inflict poisons? with this weapon`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("AdditionalPoisonStacks", "BASE", num).Tag(mod.Condition("{Hand}Attack"))}, ""
 	},
@@ -7994,7 +8047,7 @@ var specialModList = map[string]interface{}{
 	"deal no elemental damage":                                []mod.Mod{mod.NewFlag("DealNoLightning", true), mod.NewFlag("DealNoCold", true), mod.NewFlag("DealNoFire", true)},
 	"deal no chaos damage":                                    []mod.Mod{mod.NewFlag("DealNoChaos", true)},
 	"deal no damage":                                          []mod.Mod{mod.NewFlag("DealNoLightning", true), mod.NewFlag("DealNoCold", true), mod.NewFlag("DealNoFire", true), mod.NewFlag("DealNoChaos", true), mod.NewFlag("DealNoPhysical", true)},
-	//pob:block:src/Modules/ModParser.lua:5251-5253
+	//pob:block:src/Modules/ModParser.lua:5298-5300
 	"you can't deal damage with skills yourself": []mod.Mod{
 		FLAG("DealNoDamage").Tag(
 			mod.SkillType(
@@ -8005,25 +8058,25 @@ var specialModList = map[string]interface{}{
 			mod.Condition("usedByMirage").Neg(true),
 		),
 	},
-	//pob:src/Modules/ModParser.lua:4343
+	//pob:src/Modules/ModParser.lua:4389
 	"stormblast, icicle and pyroclast mine deal no damage": []mod.Mod{
 		mod.NewFlag("DealNoDamage", true).Tag(mod.SkillName("Stormblast Mine", "Icicle Mine", "Pyroclast Mine").Transfigured(true)),
 	},
 	"deal no non-elemental damage": []mod.Mod{mod.NewFlag("DealNoPhysical", true), mod.NewFlag("DealNoChaos", true)},
-	//pob:block:src/Modules/ModParser.lua:5259
+	//pob:block:src/Modules/ModParser.lua:5306
 	"spell skills deal no damage": []mod.Mod{FLAG("DealNoDamage").Tag(mod.SkillType(string(data.SkillTypeSpell)))},
-	//pob:block:src/Modules/ModParser.lua:5255-5256
+	//pob:block:src/Modules/ModParser.lua:5302-5303
 	`deal no non-([a-z]+) damage`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return dealNoNonDamageType(captures[0], false), ""
 	},
 	`cannot deal non-([a-z]+) damage`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return dealNoNonDamageType(captures[0], false), ""
 	},
-	//pob:block:src/Modules/ModParser.lua:4432
+	//pob:block:src/Modules/ModParser.lua:4478
 	`minions deal no non-([a-z]+) damage`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return dealNoNonDamageType(captures[0], true), ""
 	},
-	//pob:block:src/Modules/ModParser.lua:2204-2211
+	//pob:block:src/Modules/ModParser.lua:2214-2221
 	`chance to evade hits is based off of (\d+)% of your ward instead of your evasion rating`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
 			FLAG("EvadeChanceBasedOnWard"),
@@ -8036,18 +8089,18 @@ var specialModList = map[string]interface{}{
 			MOD("PhysicalReductionBasedOnWardPercent", "OVERRIDE", num).Source("Black Scythe Training"),
 		}, ""
 	},
-	//pob:block:src/Modules/ModParser.lua:2317
+	//pob:block:src/Modules/ModParser.lua:2327
 	"your bleeding does not deal extra damage while the enemy is moving and cannot be aggravated": []mod.Mod{FLAG("Condition:NoExtraBleedDamageToMovingEnemy"), FLAG("Condition:CannotAggravate")},
-	//pob:block:src/Modules/ModParser.lua:2421
+	//pob:block:src/Modules/ModParser.lua:2431
 	"non-instant mana recovery from flasks is also recovered as life": []mod.Mod{FLAG("ManaFlaskAppliesToLife")},
-	//pob:block:src/Modules/ModParser.lua:2444
+	//pob:block:src/Modules/ModParser.lua:2454
 	"your hexes have infinite duration": []mod.Mod{MOD("Duration", "BASE", math.Inf(1)).Tag(mod.SkillType(string(data.SkillTypeAppliesCurse)))},
-	//pob:block:src/Modules/ModParser.lua:3145-3146
+	//pob:block:src/Modules/ModParser.lua:3189-3190
 	"life flasks used while on low life apply recovery instantly": []mod.Mod{MOD("LifeFlaskInstantRecovery", "BASE", 100).Tag(mod.Condition("LowLife"))},
 	"mana flasks used while on low mana apply recovery instantly": []mod.Mod{MOD("ManaFlaskInstantRecovery", "BASE", 100).Tag(mod.Condition("LowMana"))},
-	//pob:block:src/Modules/ModParser.lua:3407
+	//pob:block:src/Modules/ModParser.lua:3453
 	"increases and reductions to minion cast speed also affects? you": []mod.Mod{FLAG("MinionCastSpeedAppliesToPlayer")},
-	//pob:block:src/Modules/ModParser.lua:3530-3533
+	//pob:block:src/Modules/ModParser.lua:3576-3579
 	"non-critical strikes deal no damage": []mod.Mod{MOD("Damage", "MORE", -100).Flag(mod.MFlagHit).Tag(mod.Condition("CriticalStrike").Neg(true))},
 	`non-critical strikes deal (\d+)% less damage`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("Damage", "MORE", -num).Flag(mod.MFlagHit).Tag(mod.Condition("CriticalStrike").Neg(true))}, ""
@@ -8057,33 +8110,33 @@ var specialModList = map[string]interface{}{
 		FLAG("SpellSkillsCannotDealCriticalStrikesExceptOnFinalRepeat").Flag(mod.MFlagSpell),
 		FLAG("").Tag(mod.Condition("alwaysFinalRepeat")),
 	},
-	//pob:block:src/Modules/ModParser.lua:3938
+	//pob:block:src/Modules/ModParser.lua:3984
 	`cannot poison enemies with at least (\d+) poisons? on them`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("PoisonStackLimit", "MIN", num)}, ""
 	},
-	//pob:block:src/Modules/ModParser.lua:3940
+	//pob:block:src/Modules/ModParser.lua:3986
 	`wither on hit with this weapon against enemies with at least (\d+) poisons on them`: []mod.Mod{FLAG("Condition:CanWither")},
-	//pob:block:src/Modules/ModParser.lua:3945-3947
+	//pob:block:src/Modules/ModParser.lua:3991-3993
 	`prevent \+(\d+)% of suppressed spell damage per hit suppressed recently`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("SpellSuppressionEffect", "BASE", num).Tag(mod.Multiplier("HitsSuppressedRecently").Base(0))}, ""
 	},
-	//pob:block:src/Modules/ModParser.lua:3994
+	//pob:block:src/Modules/ModParser.lua:4040
 	`excommunicate enemies on melee hit for (\d+) seconds`: []mod.Mod{FLAG("Condition:CanExcommunicate")},
-	//pob:block:src/Modules/ModParser.lua:4130-4133
+	//pob:block:src/Modules/ModParser.lua:4176-4179
 	`warcries grant arcane surge to you and allies, with (\d+)% increased effect per (\d+) power, up to (\d+)%`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
 			MOD("ExtraAura", "LIST", mod.ExtraAura{Mod: FLAG("Condition:ArcaneSurge")}).Tag(mod.Condition("UsedWarcryRecently")),
 			MOD("ArcaneSurgeEffect", "INC", num).Tag(mod.PerStat(utils.Float(captures[1]), "WarcryPower").GlobalLimit(utils.Float(captures[2])).GlobalLimitKey("Brinerot Flag")).Tag(mod.Condition("UsedWarcryRecently")),
 		}, ""
 	},
-	//pob:block:src/Modules/ModParser.lua:4316-4317
+	//pob:block:src/Modules/ModParser.lua:4362-4363
 	`with a searching eye jewel socketed, maim enemies for (\d) seconds on hit with attacks`: []mod.Mod{
 		MOD("EnemyModifier", "LIST", mod.EnemyModifier{Mod: FLAG("Condition:Maimed").Flag(mod.MFlagAttack)}).Tag(mod.Condition("HaveSearchingEyeJewelIn{SlotName}")),
 	},
 	`with a searching eye jewel socketed, blind enemies for (\d) seconds on hit with attacks`: []mod.Mod{
 		MOD("EnemyModifier", "LIST", mod.EnemyModifier{Mod: FLAG("Condition:Blinded").Flag(mod.MFlagAttack)}).Tag(mod.Condition("HaveSearchingEyeJewelIn{SlotName}")),
 	},
-	//pob:block:src/Modules/ModParser.lua:4560-4565
+	//pob:block:src/Modules/ModParser.lua:4606-4611
 	"projectiles from attacks fork": []mod.Mod{
 		FLAG("ForkOnce").Flag(mod.MFlagProjectile).Tag(mod.SkillType(string(data.SkillTypeRangedAttack))),
 		MOD("ForkCountMax", "BASE", 1).Flag(mod.MFlagProjectile).Tag(mod.SkillType(string(data.SkillTypeRangedAttack))),
@@ -8098,59 +8151,71 @@ var specialModList = map[string]interface{}{
 			MOD("ForkCountMax", "BASE", num).Flag(mod.MFlagProjectile).Tag(mod.SkillType(string(data.SkillTypeRangedAttack))),
 		}, ""
 	},
-	//pob:block:src/Modules/ModParser.lua:4629
+	//pob:block:src/Modules/ModParser.lua:4675
 	"you have vaal pact while at maximum endurance charges": []mod.Mod{MOD("Keystone", "LIST", "Vaal Pact").Tag(mod.StatThresholdStat("EnduranceCharges", "EnduranceChargesMax"))},
-	//pob:block:src/Modules/ModParser.lua:4852
+	//pob:block:src/Modules/ModParser.lua:4899
 	"you cannot be shocked while frozen": []mod.Mod{FLAG("ShockImmune").Tag(mod.Condition("Frozen"))},
-	//pob:block:src/Modules/ModParser.lua:4954
+	//pob:block:src/Modules/ModParser.lua:5001
 	"action speed cannot be modified to below base value while ignited": []mod.Mod{MOD("MinimumActionSpeed", "MAX", 100).Tag(mod.Condition("Ignited"))},
-	//pob:block:src/Modules/ModParser.lua:5028-5030
+	//pob:block:src/Modules/ModParser.lua:5075-5077
 	`intimidate enemies for (\d+) seconds on hit with attacks while at maximum endurance charges`: []mod.Mod{
 		MOD("EnemyModifier", "LIST", mod.EnemyModifier{Mod: FLAG("Condition:Intimidated")}).Tag(mod.StatThresholdStat("EnduranceCharges", "EnduranceChargesMax")).Tag(mod.Condition("HitRecently")),
 	},
-	//pob:block:src/Modules/ModParser.lua:5126-5128
+	//pob:block:src/Modules/ModParser.lua:5173-5175
 	`iron flasks gain (\d+) charges? when your ward breaks`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("IronFlaskChargesGeneratedOnWardBreak", "BASE", num)}, ""
 	},
-	//pob:block:src/Modules/ModParser.lua:5132-5134
+	//pob:block:src/Modules/ModParser.lua:5179-5181
 	`while on low life, life flasks gain (\d+) charges? every (\d+) seconds`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("LifeFlaskChargesGenerated", "BASE", num/utils.Float(captures[1])).Tag(mod.Condition("LowLife"))}, ""
 	},
-	//pob:block:src/Modules/ModParser.lua:5141-5143
+	//pob:block:src/Modules/ModParser.lua:5188-5190
 	`flasks gain (\d+) charges? per second if you've hit a unique enemy recently`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("FlaskChargesGenerated", "BASE", num).Tag(mod.Condition("HitRecently")).Tag(mod.ActorCondition("enemy", "RareOrUnique"))}, ""
 	},
-	//pob:block:src/Modules/ModParser.lua:5176
+	//pob:block:src/Modules/ModParser.lua:5223
 	`flasks applied to you have (\d+)% increased effect per level`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("FlaskEffect", "INC", num).Tag(mod.ActorCondition("player")).Tag(mod.Multiplier("Level").Base(0))}, ""
 	},
-	//pob:block:src/Modules/ModParser.lua:5216-5218
+	//pob:block:src/Modules/ModParser.lua:5263-5265
 	"minimum power charges equal to maximum while stationary":     []mod.Mod{FLAG("MinimumPowerChargesIsMaximumPowerCharges").Tag(mod.Condition("Stationary"))},
 	"minimum frenzy charges equal to maximum while stationary":    []mod.Mod{FLAG("MinimumFrenzyChargesIsMaximumFrenzyCharges").Tag(mod.Condition("Stationary"))},
 	"minimum endurance charges equal to maximum while stationary": []mod.Mod{FLAG("MinimumEnduranceChargesIsMaximumEnduranceCharges").Tag(mod.Condition("Stationary"))},
-	//pob:block:src/Modules/ModParser.lua:5592-5595
-	`skills gain added chaos damage equal to (\d+)% of mana cost, if mana cost is not higher than the maximum you could spend`: func(num float64, captures []string) ([]mod.Mod, string) {
+	//pob:block:src/Modules/ModParser.lua:5640-5651
+	`arc and crackling lance gains added cold damage equal to (\d+)% of mana cost, if mana cost is not higher than the maximum you could spend`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
-			MOD("ChaosMin", "BASE", 1).Tag(mod.PercentStat("ManaCost", num)),
-			MOD("ChaosMax", "BASE", 1).Tag(mod.PercentStat("ManaCost", num)),
+			MOD("ColdMin", "BASE", 1).Tag(mod.PercentStat("ManaCost", num).Floor()).Tag(mod.StatThresholdStat("ManaCostPayablePool", "ManaCost")).Tag(mod.SkillName("Arc", "Crackling Lance").Transfigured(true)),
+			MOD("ColdMax", "BASE", 1).Tag(mod.PercentStat("ManaCost", num).Floor()).Tag(mod.StatThresholdStat("ManaCostPayablePool", "ManaCost")).Tag(mod.SkillName("Arc", "Crackling Lance").Transfigured(true)),
 		}, ""
 	},
-	//pob:block:src/Modules/ModParser.lua:5674
+	`forbidden rite and dark pact gains added chaos damage equal to (\d+)% of mana cost, if mana cost is not higher than the maximum you could spend`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{
+			MOD("ChaosMin", "BASE", 1).Tag(mod.PercentStat("ManaCost", num).Floor()).Tag(mod.StatThresholdStat("ManaCostPayablePool", "ManaCost")).Tag(mod.SkillName("Forbidden Rite", "Dark Bargain").Transfigured(true)),
+			MOD("ChaosMax", "BASE", 1).Tag(mod.PercentStat("ManaCost", num).Floor()).Tag(mod.StatThresholdStat("ManaCostPayablePool", "ManaCost")).Tag(mod.SkillName("Forbidden Rite", "Dark Bargain").Transfigured(true)),
+		}, ""
+	},
+	`skills gain added chaos damage equal to (\d+)% of mana cost, if mana cost is not higher than the maximum you could spend`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{
+			MOD("ChaosMin", "BASE", 1).Tag(mod.PercentStat("ManaCost", num).Floor()).Tag(mod.StatThresholdStat("ManaCostPayablePool", "ManaCost")),
+			MOD("ChaosMax", "BASE", 1).Tag(mod.PercentStat("ManaCost", num).Floor()).Tag(mod.StatThresholdStat("ManaCostPayablePool", "ManaCost")),
+		}, ""
+	},
+	//pob:block:src/Modules/ModParser.lua:5731
 	"non-travel attack skills repeat an additional time": []mod.Mod{
 		MOD("RepeatCount", "BASE", 1).KeywordFlag(mod.KeywordFlagAttack).Tag(mod.SkillType(string(data.SkillTypeTravel)).Neg(true)).Tag(mod.Condition("averageRepeat", "alwaysFinalRepeat")),
 	},
-	//pob:block:src/Modules/ModParser.lua:5687
+	//pob:block:src/Modules/ModParser.lua:5744
 	`when an enemy hit deals elemental damage to you, their resistance to those elements becomes zero for (\d+) seconds`: []mod.Mod{FLAG("Condition:HaveTrickstersSmile")},
-	//pob:block:src/Modules/ModParser.lua:5749
+	//pob:block:src/Modules/ModParser.lua:5806
 	`\+(\d+) to maximum snipe stages`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("Multiplier:SnipeStagesMax", "BASE", num).Tag(mod.GlobalEffect("Buff").Unscalable(true))}, ""
 	},
-	//pob:src/Modules/ModParser.lua:5258
+	//pob:src/Modules/ModParser.lua:5305
 	"deal no damage when not on low life": []mod.Mod{FLAG("DealNoDamage").Tag(mod.Condition("LowLife").Neg(true))},
-	//pob:block:src/Modules/ModParser.lua:5260-5261
+	//pob:block:src/Modules/ModParser.lua:5307-5308
 	"attacks have blood magic":          []mod.Mod{FLAG("CostLifeInsteadOfMana").Flag(mod.MFlagAttack)},
 	"attacks cost life instead of mana": []mod.Mod{FLAG("CostLifeInsteadOfMana").Flag(mod.MFlagAttack)},
-	//pob:block:src/Modules/ModParser.lua:5269-5272
+	//pob:block:src/Modules/ModParser.lua:5316-5319
 	`spells have added spell damage equal to (\d+)% of physical damage of your equipped two handed weapon`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
 			FLAG("WeaponPhysAppliesToSpells"),
@@ -8169,7 +8234,7 @@ var specialModList = map[string]interface{}{
 	`[ct][ar][si][tg]g?e?r? a socketed cold s[pk][ei]ll on melee critical strike, with a ([\d\.]+) second cooldown`: []mod.Mod{MOD("ExtraSupport", "LIST", mod.ExtraSupport{SkillID: "SupportUniqueCosprisMaliceColdSpellsCastOnMeleeCriticalStrike", Level: 1}).Tag(mod.SocketedIn("{SlotName}"))},
 	"your curses can apply to hexproof enemies":                                                                     []mod.Mod{mod.NewFlag("CursesIgnoreHexproof", true)},
 	"your hexes can affect hexproof enemies":                                                                        []mod.Mod{mod.NewFlag("CursesIgnoreHexproof", true)},
-	//pob:block:src/Modules/ModParser.lua:5293-5295
+	//pob:block:src/Modules/ModParser.lua:5340-5342
 	`([a-z ]+) can affect hexproof enemies`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("SkillData", "LIST", mod.SkillData{Key: "ignoreHexproof", Value: 1}).Tag(mod.SkillId(extraSkillIDForName(captures[0])))}, ""
 	},
@@ -8195,6 +8260,19 @@ var specialModList = map[string]interface{}{
 		return []mod.Mod{
 			MOD("FireDamageFromHitsTakenAsCold", "BASE", num).Tag(mod.Condition("UsingFlask")),
 			MOD("LightningDamageFromHitsTakenAsCold", "BASE", num).Tag(mod.Condition("UsingFlask")),
+		}, ""
+	},
+	//pob:block:src/Modules/ModParser.lua:5355-5363
+	`(\d+)% of (\w+) and (\w+) damage from hits taken as (\w+) damage`: func(num float64, captures []string) ([]mod.Mod, string) {
+		fromType1, ok1 := dmgTypes[strings.ToLower(captures[1])]
+		fromType2, ok2 := dmgTypes[strings.ToLower(captures[2])]
+		toType, ok3 := dmgTypes[strings.ToLower(captures[3])]
+		if !ok1 || !ok2 || !ok3 {
+			return nil, ""
+		}
+		return []mod.Mod{
+			MOD(fromType1+"DamageFromHitsTakenAs"+toType, "BASE", num),
+			MOD(fromType2+"DamageFromHitsTakenAs"+toType, "BASE", num),
 		}, ""
 	},
 	`items and gems have (\d+)% reduced attribute requirements`: func(num float64, captures []string) ([]mod.Mod, string) {
@@ -8249,7 +8327,7 @@ var specialModList = map[string]interface{}{
 		}, ""
 	},
 	"your aura skills are disabled": []mod.Mod{FLAG("DisableSkill").Tag(mod.SkillType(string(data.SkillTypeAura)))},
-	//pob:src/Modules/ModParser.lua:5342
+	//pob:src/Modules/ModParser.lua:5398
 	"your spells are disabled": []mod.Mod{FLAG("DisableSkill").Tag(mod.SkillType(string(data.SkillTypeSpell))), FLAG("ForceEnableCurseApplication")},
 	`aura skills other than ([\w\s]+) are disabled`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
@@ -8318,7 +8396,7 @@ var specialModList = map[string]interface{}{
 			MOD("ChaosMax", "BASE", 1).Tag(mod.PercentStat("Ward", num)),
 		}, ""
 	},
-	//pob:block:src/Modules/ModParser.lua:5391-5398
+	//pob:block:src/Modules/ModParser.lua:5447-5454
 	`while you have unbroken ward, your next non-channelling attack you use yourself breaks your ward to gain added cold damage equal to (\d+)% of ward`: func(num float64, captures []string) ([]mod.Mod, string) {
 		wardTags := func(m mod.Mod) mod.Mod {
 			return m.Tag(mod.PercentStat("Ward", num)).
@@ -8361,7 +8439,7 @@ var specialModList = map[string]interface{}{
 	"blind does not affect your chance to hit":                             []mod.Mod{mod.NewFlag("UnaffectedByBlind", true)},
 	"unaffected by blind": []mod.Mod{mod.NewFlag("UnaffectedByBlind", true)},
 	"enemies blinded by you while you are blinded have malediction": []mod.Mod{MOD("EnemyModifier", "LIST", mod.EnemyModifier{Mod: FLAG("HasMalediction").Tag(mod.Condition("Blinded"))}).Tag(mod.Condition("Blinded"))},
-	//pob:block:src/Modules/ModParser.lua:5428-5429
+	//pob:block:src/Modules/ModParser.lua:5484-5485
 	"skills which throw traps have blood magic":          []mod.Mod{FLAG("CostLifeInsteadOfMana").Tag(mod.SkillType(string(data.SkillTypeTrapped)))},
 	"skills which throw traps cost life instead of mana": []mod.Mod{FLAG("CostLifeInsteadOfMana").Tag(mod.SkillType(string(data.SkillTypeTrapped)))},
 	`lose ([\d\.]+) mana per second`: func(num float64, captures []string) ([]mod.Mod, string) {
@@ -8386,7 +8464,7 @@ var specialModList = map[string]interface{}{
 			MOD("MinionModifier", "LIST", mod.MinionModifier{Mod: mod.NewFloat("Accuracy", mod.TypeBase, num)}).Tag(mod.Condition("HaveGhastlyEyeJewelIn{SlotName}")),
 		}, ""
 	},
-	//pob:src/Modules/ModParser.lua:5435-5437
+	//pob:src/Modules/ModParser.lua:5491-5493
 	`with a ghastly eye jewel socketed, minions have (\d+)% chance to gain unholy might on hit with spells`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
 			MOD("MinionModifier", "LIST", mod.MinionModifier{Mod: FLAG("Condition:UnholyMight").Tag(mod.Condition("HitSpellRecently"))}).Tag(mod.Condition("HaveGhastlyEyeJewelIn{SlotName}")),
@@ -8394,7 +8472,7 @@ var specialModList = map[string]interface{}{
 	},
 	"hits ignore enemy monster chaos resistance if all equipped items are shaper items": []mod.Mod{FLAG("IgnoreChaosResistance").Tag(mod.MultiplierThreshold("NonShaperItem").Threshold(0).Upper(true))},
 	"hits ignore enemy monster chaos resistance if all equipped items are elder items":  []mod.Mod{FLAG("IgnoreChaosResistance").Tag(mod.MultiplierThreshold("NonElderItem").Threshold(0).Upper(true))},
-	//pob:src/Modules/ModParser.lua:5441
+	//pob:src/Modules/ModParser.lua:5497
 	`your hits ignore enemy monster (\w+) resistances? if all equipped rings are (\w+) rings`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{FLAG("Ignore" + firstToUpper(captures[0]) + "Resistance").Tag(mod.MultiplierThreshold(firstToUpper(captures[1]) + "RingEquipped").Threshold(2))}, ""
 	},
@@ -8416,7 +8494,7 @@ var specialModList = map[string]interface{}{
 	`warcry skills have (\+\d+) seconds to cooldown`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("CooldownRecovery", "BASE", num).KeywordFlag(mod.KeywordFlagWarcry)}, ""
 	},
-	//pob:src/Modules/ModParser.lua:5458
+	//pob:src/Modules/ModParser.lua:5514
 	`stance skills have (\+\d+) seconds to cooldown`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("CooldownRecovery", "BASE", num).Tag(mod.SkillType(string(data.SkillTypeStance)))}, ""
 	},
@@ -8424,7 +8502,7 @@ var specialModList = map[string]interface{}{
 	`attacks with axes or swords grant (\d+) rage on hit, no more than once every second`: []mod.Mod{
 		FLAG("Condition:CanGainRage").Tag(mod.Condition("UsingAxe", "UsingSword")),
 	},
-	//pob:block:src/Modules/ModParser.lua:5463-5466
+	//pob:block:src/Modules/ModParser.lua:5519-5522
 	`regenerate (\d+) rage per second for every (\d+) life recovery per second from regeneration`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
 			MOD("RageRegen", "BASE", num).Tag(mod.PercentStat("LifeRegen", num/utils.Float(captures[1])*100)),
@@ -8449,13 +8527,13 @@ var specialModList = map[string]interface{}{
 			MOD("CritChance", "OVERRIDE", num).Flag(mod.MFlagHit).Tag(mod.Condition("{Hand}Attack")).Tag(mod.SkillType(string(data.SkillTypeAttack))),
 		}, ""
 	},
-	//pob:block:src/Modules/ModParser.lua:5480
+	//pob:block:src/Modules/ModParser.lua:5536
 	`hits with this weapon have \+(\d+)% to critical strike multiplier per enemy power`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
 			MOD("CritMultiplier", "BASE", num).Flag(mod.MFlagHit).Tag(mod.Condition("{Hand}Attack")).Tag(mod.SkillType(string(data.SkillTypeAttack))).Tag(mod.Multiplier("EnemyPower").Base(0)),
 		}, ""
 	},
-	//pob:block:src/Modules/ModParser.lua:5481-5483
+	//pob:block:src/Modules/ModParser.lua:5537-5539
 	`maximum critical strike chance is (\d+)%`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("CritChanceCap", "OVERRIDE", num)}, ""
 	},
@@ -8467,7 +8545,7 @@ var specialModList = map[string]interface{}{
 	"allocates (.+)": func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("GrantedPassive", "LIST", captures[0])}, ""
 	},
-	//pob:src/Modules/ModParser.lua:5486
+	//pob:src/Modules/ModParser.lua:5542
 	"battlemage":              []mod.Mod{mod.NewFlag("Battlemage", true), MOD("MainHandWeaponDamageAppliesToSpells", "MAX", 100)},
 	"transfiguration of body": []mod.Mod{mod.NewFlag("TransfigurationOfBody", true)},
 	"transfiguration of mind": []mod.Mod{mod.NewFlag("TransfigurationOfMind", true)},
@@ -8497,7 +8575,7 @@ var specialModList = map[string]interface{}{
 			MOD("EnemyPhysicalDamageReduction", "BASE", -num),
 		}, ""
 	},
-	//pob:block:src/Modules/ModParser.lua:5517-5519
+	//pob:block:src/Modules/ModParser.lua:5573-5575
 	`hits against you overwhelm (\d+)% of physical damage reduction`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("EnemyPhysicalOverwhelm", "BASE", num)}, ""
 	},
@@ -8507,7 +8585,7 @@ var specialModList = map[string]interface{}{
 	`critical strikes against you do not inherently inflict elemental ailments`: []mod.Mod{
 		mod.NewFlag("CritsOnYouDontAlwaysApplyElementalAilments", true),
 	},
-	//pob:src/Modules/ModParser.lua:5523-5525
+	//pob:src/Modules/ModParser.lua:5579-5581
 	"impale damage dealt to enemies impaled by you ignores enemy physical damage reduction": []mod.Mod{FLAG("IgnoreEnemyImpalePhysicalDamageReduction")},
 	`impale damage dealt to enemies impaled by you overwhelms (\d+)% physical damage reduction`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
@@ -8528,25 +8606,25 @@ var specialModList = map[string]interface{}{
 		MOD("EnemyModifier", "LIST", mod.EnemyModifier{Mod: mod.NewFloat("ChaosResist", mod.TypeBase, -10)}).Tag(mod.ActorCondition("enemy", "OnFungalGround", "Stationary")),
 		MOD("EnemyModifier", "LIST", mod.EnemyModifier{Mod: mod.NewFloat("ElementalResist", mod.TypeBase, -10)}).Tag(mod.ActorCondition("enemy", "OnFungalGround", "Stationary")),
 	},
-	//pob:block:src/Modules/ModParser.lua:5538-5540
+	//pob:block:src/Modules/ModParser.lua:5594-5596
 	"create fungal ground instead of consecrated ground": []mod.Mod{
 		mod.NewFlag("Condition:CreateFungalGround", true),
 	},
 	"create profane ground instead of consecrated ground": []mod.Mod{
 		mod.NewFlag("Condition:CreateProfaneGround", true),
 	},
-	//pob:src/Modules/ModParser.lua:5544-5546
+	//pob:src/Modules/ModParser.lua:5600-5602
 	`(\d+)% chance to create profane ground on critical strike if intelligence is your highest attribute`: []mod.Mod{
 		FLAG("Condition:CreateProfaneGround").Tag(mod.Condition("IntHighestAttribute")),
 	},
-	//pob:src/Modules/ModParser.lua:5547-5549
+	//pob:src/Modules/ModParser.lua:5603-5605
 	"consecrated path and purifying flame create profane ground instead of consecrated ground": []mod.Mod{
 		mod.NewFlag("Condition:CreateProfaneGround", true),
 	},
 	"you count as dual wielding while you are unencumbered": []mod.Mod{FLAG("Condition:DualWielding").Tag(mod.Condition("Unencumbered"))},
-	//pob:block:src/Modules/ModParser.lua:5557-5559
+	//pob:block:src/Modules/ModParser.lua:5613-5615
 	"you have consecrated ground around you while stationary if strength is your highest attribute": []mod.Mod{FLAG("Condition:OnConsecratedGround").Tag(mod.Condition("StrHighestAttribute")).Tag(mod.Condition("Stationary"))},
-	//pob:block:src/Modules/ModParser.lua:5560
+	//pob:block:src/Modules/ModParser.lua:5616
 	`consecrated ground around you while stationary if (\d+) (\w+) items are equipped`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{FLAG("Condition:OnConsecratedGround").Tag(mod.MultiplierThreshold(firstToUpper(captures[1]) + "Item").Threshold(utils.Float(captures[0])))}, ""
 	},
@@ -8599,21 +8677,21 @@ var specialModList = map[string]interface{}{
 	`(\d+)% increased critical strike chance with spells which remove the maximum number of seals`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewFloat("MaxSealCrit", mod.TypeIncrease, num)}, ""
 	},
-	//pob:src/Modules/ModParser.lua:3076-3079
+	//pob:src/Modules/ModParser.lua:3120-3123
 	`skills gain added chaos damage equal to (\d+)% of life cost, if life cost is not higher than the maximum you could spend`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
-			MOD("ChaosMin", "BASE", 1).Tag(mod.PercentStat("LifeCost", num)).Tag(mod.StatThresholdStat("LifeUnreserved", "LifeCost").Percent(num)),
-			MOD("ChaosMax", "BASE", 1).Tag(mod.PercentStat("LifeCost", num)).Tag(mod.StatThresholdStat("LifeUnreserved", "LifeCost").Percent(num)),
+			MOD("ChaosMin", "BASE", 1).Tag(mod.PercentStat("LifeCost", num).Floor()).Tag(mod.StatThresholdStat("LifeUnreserved", "LifeCost")),
+			MOD("ChaosMax", "BASE", 1).Tag(mod.PercentStat("LifeCost", num).Floor()).Tag(mod.StatThresholdStat("LifeUnreserved", "LifeCost")),
 		}, ""
 	},
-	//pob:src/Modules/ModParser.lua:3046-3049
+	//pob:src/Modules/ModParser.lua:3056-3059
 	`spells you cast yourself gain added physical damage equal to (\d+)% of life cost, if life cost is not higher than the maximum you could spend`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
-			MOD("PhysicalMin", "BASE", 1).Tag(mod.PercentStat("LifeCost", num)).Tag(mod.StatThresholdStat("LifeUnreserved", "LifeCost").Percent(num)),
-			MOD("PhysicalMax", "BASE", 1).Tag(mod.PercentStat("LifeCost", num)).Tag(mod.StatThresholdStat("LifeUnreserved", "LifeCost").Percent(num)),
+			MOD("PhysicalMin", "BASE", 1).Tag(mod.PercentStat("LifeCost", num).Floor()).Tag(mod.StatThresholdStat("LifeUnreserved", "LifeCost")),
+			MOD("PhysicalMax", "BASE", 1).Tag(mod.PercentStat("LifeCost", num).Floor()).Tag(mod.StatThresholdStat("LifeUnreserved", "LifeCost")),
 		}, ""
 	},
-	//pob:src/Modules/ModParser.lua:3075
+	//pob:src/Modules/ModParser.lua:3119
 	`unsealed spells gain (\d+)% more damage each time their effects reoccur`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewFloat("MaxSealDamage", mod.TypeMore, num)}, ""
 	},
@@ -8626,7 +8704,7 @@ var specialModList = map[string]interface{}{
 	`for each nearby corpse, regenerate ([\d\.]+)% life per second, up to ([\d\.]+)%`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("LifeRegenPercent", "BASE", num).Tag(mod.Multiplier("NearbyCorpse").Limit(utils.Float(captures[1])).LimitTotal(true))}, ""
 	},
-	//pob:block:src/Modules/ModParser.lua:5614-5616
+	//pob:block:src/Modules/ModParser.lua:5671-5673
 	`gain sacrificial zeal when you use a skill, dealing you \d+% of the skill's mana cost as physical damage per second`: []mod.Mod{
 		mod.NewFlag("SacrificialZeal", true),
 	},
@@ -8640,7 +8718,7 @@ var specialModList = map[string]interface{}{
 			MOD("MinionModifier", "LIST", mod.MinionModifier{Mod: MOD("EnemyPhysicalDamageReduction", "BASE", -num).Tag(mod.SkillType(string(data.SkillTypeAttack)))}),
 		}, ""
 	},
-	//pob:src/Modules/ModParser.lua:5641-5643
+	//pob:src/Modules/ModParser.lua:5698-5700
 	`minions hits have (\d+)% chance to ignore enemy physical damage reduction`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
 			MOD("MinionModifier", "LIST", mod.MinionModifier{Mod: MOD("ChanceToIgnoreEnemyPhysicalDamageReduction", "BASE", num)}),
@@ -8663,17 +8741,17 @@ var specialModList = map[string]interface{}{
 	`skills supported by nightblade have (\d+)% increased effect of elusive`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewFloat("NightbladeSupportedElusiveEffect", mod.TypeIncrease, num)}, ""
 	},
-	//pob:src/Modules/ModParser.lua:5608
+	//pob:src/Modules/ModParser.lua:5665
 	`(\d+)% chance to gain elusive when you block while dual wielding`: []mod.Mod{FLAG("Condition:CanBeElusive").Tag(mod.Condition("DualWielding"))},
-	//pob:src/Modules/ModParser.lua:5609
+	//pob:src/Modules/ModParser.lua:5666
 	`elusive on you reduces in effect (\d+)% slower`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewFloat("ElusiveEffectLossSlower", mod.TypeIncrease, num)}, ""
 	},
-	//pob:src/Modules/ModParser.lua:5610
+	//pob:src/Modules/ModParser.lua:5667
 	`elusive's effect on you is increased instead for the first (\d+) seconds`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewFloat("ElusiveEffectIncreaseDuration", mod.TypeBase, num)}, ""
 	},
-	//pob:src/Modules/ModParser.lua:5611
+	//pob:src/Modules/ModParser.lua:5668
 	`elusive is removed from you at (\d+)% effect`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewFloat("ElusiveEffectMinThreshold", mod.TypeOverride, num)}, ""
 	},
@@ -8682,7 +8760,7 @@ var specialModList = map[string]interface{}{
 		mod.NewFloat("ScorchBase", mod.TypeBase, 10),
 	},
 	// Pantheon: Soul of Tukohama support
-	//pob:block:src/Modules/ModParser.lua:5689-5690
+	//pob:block:src/Modules/ModParser.lua:5746-5747
 	`(\d+)% increased quantity of items dropped by slain normal enemies`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("LootQuantityNormalEnemies", "INC", num)}, ""
 	},
@@ -8763,7 +8841,7 @@ var specialModList = map[string]interface{}{
 				Tag(mod.SkillType(string(data.SkillTypeHerald))),
 		}, ""
 	},
-	//pob:src/Modules/ModParser.lua:5713
+	//pob:src/Modules/ModParser.lua:5770
 	`\+(\d+) to maximum virulence`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewFloat("Multiplier:VirulenceStacksMax", mod.TypeBase, num)}, ""
 	},
@@ -8885,7 +8963,7 @@ var specialModList = map[string]interface{}{
 	`\+(\d+) weapon range per 10% quality`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewFloat("AlternateQualityLocalWeaponRangePer10Quality", mod.TypeBase, num)}, ""
 	},
-	//pob:src/Modules/ModParser.lua:5758
+	//pob:src/Modules/ModParser.lua:5815
 	`\+([\d.]+) metres? to weapon range per 10% quality`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewFloat("AlternateQualityLocalWeaponRangePer10Quality", mod.TypeBase, num*10)}, ""
 	},
@@ -9003,12 +9081,21 @@ var specialModList = map[string]interface{}{
 	`\d+% [ir][ne][cd][ru][ec][ae][sd]e?d? ?[a-z\s]* modifier magnitudes`: []mod.Mod{},
 	`\d+% [ir][ne][cd][ru][ec][ae][sd]e?d? effect of [sp][ur][fe]fixes`:   []mod.Mod{},
 	`[a-z\s]* modifier magnitudes are doubled`:                            []mod.Mod{},
-	`reflects your o[tp][hp][eo][rs]i?t?e? ring`:                          []mod.Mod{},
-	"can be allflame crafted as if rare":                                  []mod.Mod{},
-	"cannot gain intangibility":                                           []mod.Mod{},
-	"removes all burning when used":                                       []mod.Mod{},
-	"elemental hit's added damage cannot be replaced this way":            []mod.Mod{},
-	//pob:src/Modules/ModParser.lua:5550-5555
+	// handled in items tab corrupt menu
+	// currently this is not correct, but the
+	// vestigial implicits in-game only contain this line. it is probably safe
+	// to assume that GGG will add a line to the vestigial mod which will
+	// instead say how many implicits the item can have. in that case, the two
+	// below modifiers should be swapped.
+	//pob:block:src/Modules/ModParser.lua:5940-5941
+	"can be modified while corrupted":                                  []mod.Mod{MOD("CorruptImplicitCount", "BASE", 5)},
+	"can have up to 5 implicit modifiers while item has this modifier": []mod.Mod{},
+	`reflects your o[tp][hp][eo][rs]i?t?e? ring`:                       []mod.Mod{},
+	"can be allflame crafted as if rare":                               []mod.Mod{},
+	"cannot gain intangibility":                                        []mod.Mod{},
+	"removes all burning when used":                                    []mod.Mod{},
+	"elemental hit's added damage cannot be replaced this way":         []mod.Mod{},
+	//pob:src/Modules/ModParser.lua:5606-5611
 	"you gain added cold damage instead of added damage of other types if dexterity exceeds both other attributes": []mod.Mod{
 		FLAG("AllAddedDamageAsCold").Tag(mod.Condition("DexSingleHighestAttribute")),
 	},
@@ -9036,7 +9123,7 @@ var specialModList = map[string]interface{}{
 	`gain adrenaline when you become flame\-touched`: []mod.Mod{
 		mod.NewFlag("Condition:Adrenaline", true).Tag(mod.Condition("AffectedByApproachingFlames")),
 	},
-	//pob:block:src/Modules/ModParser.lua:4319-4322
+	//pob:block:src/Modules/ModParser.lua:4365-4368
 	`(\d+)% increased defences while you have at least four linked targets`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("Defences", "INC", num).Tag(mod.MultiplierThreshold("LinkedTargets").Threshold(4))}, ""
 	},
@@ -9079,11 +9166,11 @@ var specialModList = map[string]interface{}{
 			}),
 		}, ""
 	},
-	//pob:src/Modules/ModParser.lua:2877
+	//pob:src/Modules/ModParser.lua:2887
 	`enemies in your link beams cannot apply elemental ailments`: []mod.Mod{
 		FLAG("ElementalAilmentImmune").Tag(mod.ActorCondition("enemy", "BetweenYouAndLinkedTarget")),
 	},
-	//pob:block:src/Modules/ModParser.lua:2879-2881
+	//pob:block:src/Modules/ModParser.lua:2889-2891
 	`you can inflict \+(\d+) hallowing flame on enemies`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("Multiplier:HallowingFlameMax", "BASE", num)}, ""
 	},
@@ -9219,7 +9306,7 @@ var specialModList = map[string]interface{}{
 //
 // end
 //
-//pob:block:src/Modules/ModParser.lua:5878-5880
+//pob:block:src/Modules/ModParser.lua:5943-5945
 func init() {
 	for _, name := range data.Keystones {
 		specialModList[strings.ToLower(name)] = []mod.Mod{
@@ -9228,7 +9315,7 @@ func init() {
 		}
 	}
 
-	//pob:block:src/Modules/ModParser.lua:5881-5883
+	//pob:block:src/Modules/ModParser.lua:5946-5948
 	for _, name := range data.ClusterJewels.Keystones {
 		specialModList[strings.ToLower(name)] = []mod.Mod{
 			MOD("Keystone", "LIST", name),
@@ -9327,7 +9414,7 @@ var baseCostTypes = resourceTypesWithSuffix("CostNoMult")
 
 var resourceTypes = withMaximumResourceTypes(resourceTypesBase)
 
-//pob:block:src/Modules/ModParser.lua:5968-5976
+//pob:block:src/Modules/ModParser.lua:6026-6034
 func withMaximumResourceTypes(base map[string][]string) map[string][]string {
 	out := make(map[string][]string, len(base)*2)
 	for line, names := range base {
@@ -9337,7 +9424,7 @@ func withMaximumResourceTypes(base map[string][]string) map[string][]string {
 	return out
 }
 
-//pob:block:src/Modules/ModParser.lua:5950-5967
+//pob:block:src/Modules/ModParser.lua:6008-6025
 var resourceTypesBase = map[string][]string{
 	"life":                         {"Life"},
 	"mana":                         {"Mana"},
@@ -9357,7 +9444,7 @@ var resourceTypesBase = map[string][]string{
 	"rage":                         {"Rage"},
 }
 
-//pob:src/Modules/ModParser.lua:5977-5990
+//pob:src/Modules/ModParser.lua:6035-6048
 func resourceTypesWithSuffix(suffix string) map[string]modNameListType {
 	out := make(map[string]modNameListType, len(resourceTypes))
 	for line, names := range resourceTypes {
@@ -9416,7 +9503,7 @@ var flagTypes = map[string]modNameListType{
 var skillNameListCompiled map[string]CompiledList[modNameListType]
 var preSkillNameListCompiled map[string]CompiledList[modNameListType]
 
-//pob:block:src/Modules/ModParser.lua:4124-4149
+//pob:block:src/Modules/ModParser.lua:4170-4195
 func initializeSkillNameList() {
 	skillNameListCompiled = make(map[string]CompiledList[modNameListType])
 	skillNameListCompiled[" corpse cremation "] = CompiledList[modNameListType]{
@@ -9554,7 +9641,7 @@ func gemBaseID(gemData *poe.SkillGem) string {
 	return base.ID
 }
 
-//pob:block:src/Modules/ModParser.lua:4153-4176
+//pob:block:src/Modules/ModParser.lua:4199-4222
 func addSkillSpecial(skillNameLower string, tags map[string]bool, skillName string) {
 	add := func(pattern string, value interface{}) {
 		specialModListCompiled[pattern] = CompiledList[interface{}]{
@@ -9604,7 +9691,7 @@ func addSkillSpecial(skillNameLower string, tags map[string]bool, skillName stri
 	}
 }
 
-//pob:src/Modules/ModParser.lua:4181-4200
+//pob:src/Modules/ModParser.lua:4227-4246
 func getSimpleConv(srcList []string, dst string, modType mod.Type, remove bool, factor ...float64) radiusJewelFunc {
 	return getSimpleConvSrc(srcList, dst, modType, remove, "", factor...)
 }
@@ -9643,7 +9730,7 @@ func getSimpleConvSrc(srcList []string, dst string, modType mod.Type, remove boo
 	}
 }
 
-//pob:src/Modules/ModParser.lua:6311-6319
+//pob:src/Modules/ModParser.lua:6369-6377
 func getPerStat(dst string, modType mod.Type, flags mod.MFlag, stat string, factor float64) radiusJewelFunc {
 	return func(node *radiusJewelNode, out *moddb.ModList, d *radiusJewelData) {
 		if node != nil {
@@ -9681,7 +9768,7 @@ var bowTransformUsingConditions = map[string]bool{
 	"UsingMeleeWeapon": true,
 }
 
-//pob:block:src/Modules/ModParser.lua:6144-6172
+//pob:block:src/Modules/ModParser.lua:6202-6230
 func bowTransform(node *radiusJewelNode, out *moddb.ModList, _ *radiusJewelData) {
 	if node == nil {
 		return
@@ -9710,7 +9797,7 @@ func bowTransform(node *radiusJewelNode, out *moddb.ModList, _ *radiusJewelData)
 	}
 }
 
-//pob:block:src/Modules/ModParser.lua:6151-6152
+//pob:block:src/Modules/ModParser.lua:6209-6210
 func bowTransformMerge(out *moddb.ModList, proto mod.Mod, value float64, flags mod.MFlag, tags []mod.Tag) {
 	m := mod.NewFloat(proto.Name(), proto.Type(), value).
 		Source(proto.GetSource()).
@@ -9722,7 +9809,7 @@ func bowTransformMerge(out *moddb.ModList, proto mod.Mod, value float64, flags m
 	mergeMod(out, m)
 }
 
-//pob:block:src/Modules/ModParser.lua:6153-6168
+//pob:block:src/Modules/ModParser.lua:6211-6226
 func rewriteUsingConditionToBow(tags []mod.Tag) ([]mod.Tag, bool) {
 	for i, tag := range tags {
 		cond, ok := tag.(*mod.ConditionTag)
@@ -9767,7 +9854,7 @@ var jewelOtherFuncs = map[string]radiusJewelFunc{
 			out.AddMod(mod.NewFlag("AllocatedPassiveSkillHasNoEffect", true).Source(d.modSource))
 		}
 	},
-	//pob:src/Modules/ModParser.lua:6197
+	//pob:src/Modules/ModParser.lua:6255
 	"Allocated Notable Passive Skills in Radius grant nothing": func(node *radiusJewelNode, out *moddb.ModList, d *radiusJewelData) {
 		if node != nil && node.nodeType == "Notable" {
 			out.AddMod(mod.NewFlag("AllocatedPassiveSkillHasNoEffect", true).Source(d.modSource))
@@ -9825,12 +9912,12 @@ var jewelSelfUnallocFuncs = map[string]radiusJewelFunc{
 	"2% reduced Movement Speed per 10 Dexterity on Unallocated Passives in Radius":             getPerStat("MovementSpeed", mod.TypeIncrease, 0, "Dex", -2.0/10),
 	"+125 to Accuracy Rating per 10 Dexterity on Unallocated Passives in Radius":               getPerStat("Accuracy", mod.TypeBase, 0, "Dex", 125.0/10),
 
-	//pob:block:src/Modules/ModParser.lua:6362-6392
+	//pob:block:src/Modules/ModParser.lua:6420-6450
 	"Grants all bonuses of Unallocated Small Passive Skills in Radius":   grantUnallocatedBonuses("Normal"),
 	"Grants all bonuses of Unallocated Notable Passive Skills in Radius": grantUnallocatedBonuses("Notable"),
 }
 
-//pob:block:src/Modules/ModParser.lua:6362-6392
+//pob:block:src/Modules/ModParser.lua:6420-6450
 func grantUnallocatedBonuses(nodeType string) radiusJewelFunc {
 	return func(node *radiusJewelNode, out *moddb.ModList, d *radiusJewelData) {
 		if node != nil {
@@ -10094,7 +10181,7 @@ var jewelFuncPatternsRaw = []struct {
 				Tag(mod.SkillName("Dual Strike").Transfigured(true), mod.Condition("UsingSword")))
 		},
 	},
-	//pob:block:src/Modules/ModParser.lua:6173-6191
+	//pob:block:src/Modules/ModParser.lua:6231-6249
 	{
 		pattern: `(\d+)% increased effect of non-keystone passive skills in radius`,
 		typ:     "Other",
@@ -10119,7 +10206,7 @@ var jewelFuncPatternsRaw = []struct {
 			}
 		},
 	},
-	//pob:block:src/Modules/ModParser.lua:6283-6307
+	//pob:block:src/Modules/ModParser.lua:6341-6365
 	{
 		pattern: `notable passive skills in radius are transformed to instead grant: (\d+)% increased mana cost of skills and (\d+)% increased spell damage`,
 		typ:     "Other",
@@ -10216,7 +10303,7 @@ var (
 	jewelFuncPatterns []jewelFuncPattern
 )
 
-//pob:block:src/Modules/ModParser.lua:4456-4486
+//pob:block:src/Modules/ModParser.lua:4502-4532
 func init() {
 	jewelFuncList = make(map[string]jewelFuncEntry,
 		len(jewelOtherFuncs)+len(jewelSelfFuncs)+len(jewelSelfUnallocFuncs)+len(jewelThresholdFuncs))
@@ -10232,7 +10319,7 @@ func init() {
 	for line, fn := range jewelThresholdFuncs {
 		jewelFuncList[strings.ToLower(line)] = jewelFuncEntry{Type: "Threshold", Func: fn}
 	}
-	//pob:block:src/Modules/ModParser.lua:6521-6535
+	//pob:block:src/Modules/ModParser.lua:6579-6593
 	for line, fns := range jewelThresholdFuncLists {
 		jewelFuncList[strings.ToLower(line)] = jewelFuncEntry{Type: "Threshold", Func: multiThreshold(fns)}
 	}
@@ -10250,7 +10337,7 @@ func init() {
 	})
 }
 
-//pob:block:src/Modules/ModParser.lua:6496-6513
+//pob:block:src/Modules/ModParser.lua:6554-6571
 func guardConquered(fn radiusJewelFunc) radiusJewelFunc {
 	return func(node *radiusJewelNode, out *moddb.ModList, d *radiusJewelData) {
 		if node != nil && node.conquered {
@@ -10260,7 +10347,7 @@ func guardConquered(fn radiusJewelFunc) radiusJewelFunc {
 	}
 }
 
-//pob:block:src/Modules/ModParser.lua:6586-6589
+//pob:block:src/Modules/ModParser.lua:6649-6652
 func parseJewelFunc(lineLower string) []mod.Mod {
 	for _, pattern := range jewelFuncPatterns {
 		match := pattern.re.FindStringSubmatch(lineLower)
@@ -10281,7 +10368,7 @@ func parseJewelFunc(lineLower string) []mod.Mod {
 	return nil
 }
 
-//pob:src/Modules/ModParser.lua:6397-6421
+//pob:src/Modules/ModParser.lua:6455-6479
 func getThreshold(attribs []string, proto mod.Mod) radiusJewelFunc {
 	return func(node *radiusJewelNode, out *moddb.ModList, d *radiusJewelData) {
 		if node != nil {
@@ -10304,7 +10391,7 @@ func getThreshold(attribs []string, proto mod.Mod) radiusJewelFunc {
 	}
 }
 
-//pob:block:src/Modules/ModParser.lua:6522-6531
+//pob:block:src/Modules/ModParser.lua:6580-6589
 func multiThreshold(fns []radiusJewelFunc) radiusJewelFunc {
 	return func(node *radiusJewelNode, out *moddb.ModList, d *radiusJewelData) {
 		if d.funcData == nil {
@@ -10322,7 +10409,7 @@ func multiThreshold(fns []radiusJewelFunc) radiusJewelFunc {
 	}
 }
 
-//pob:block:src/Modules/ModParser.lua:6486-6489
+//pob:block:src/Modules/ModParser.lua:6544-6547
 var jewelThresholdFuncLists = map[string][]radiusJewelFunc{
 	"With at least 40 Intelligence in Radius, Raised Spectres have a 50% chance to gain Soul Eater for 20 seconds on Kill": {
 		getThreshold([]string{"Int"}, MOD("MinionModifier", "LIST", mod.MinionModifier{
@@ -10334,7 +10421,7 @@ var jewelThresholdFuncLists = map[string][]radiusJewelFunc{
 
 const jewelThresholdMinimum = 40
 
-//pob:block:src/Modules/ModParser.lua:6415-6417
+//pob:block:src/Modules/ModParser.lua:6473-6475
 func setNestedModSource(m mod.Mod, source mod.Source) {
 	value := m.Value()
 	if value == nil || value.Type() != mod.ModValueMultiTypeList {
@@ -10389,7 +10476,7 @@ var jewelThresholdFuncs = map[string]radiusJewelFunc{
 	"With at least 40 Strength in Radius, Heavy Strike has a 20% chance to deal Double Damage.": getThreshold([]string{"Str"}, MOD("DoubleDamageChance", mod.TypeBase, 20).Tag(mod.SkillName("Heavy Strike"))),
 
 	"With at least 40 Strength in Radius, Cleave has +1 to Radius per Nearby Enemy, up to +10": getThreshold([]string{"Str"}, MOD("AreaOfEffect", mod.TypeBase, 1).Tag(mod.Multiplier("NearbyEnemies").Limit(10), mod.SkillName("Cleave").Transfigured(true))),
-	//pob:src/Modules/ModParser.lua:6451
+	//pob:src/Modules/ModParser.lua:6509
 	"With at least 40 Strength in Radius, Cleave has +0.1 metres to Radius per Nearby Enemy, up to a maximum of +1 metre": getThreshold([]string{"Str"}, MOD("AreaOfEffect", mod.TypeBase, 1).Tag(mod.Multiplier("NearbyEnemies").Limit(10), mod.SkillName("Cleave").Transfigured(true))),
 	"With at least 40 Strength in Radius, Cleave grants Fortify on Hit":                                                   getThreshold([]string{"Str"}, MOD("ExtraSkillMod", mod.TypeList, mod.ExtraSkillMod{Mod: FLAG("Condition:Fortified")}).Tag(mod.SkillName("Cleave").Transfigured(true))),
 	"With at least 40 Strength in Radius, Hits with Cleave Fortify":                                                       getThreshold([]string{"Str"}, MOD("ExtraSkillMod", mod.TypeList, mod.ExtraSkillMod{Mod: FLAG("Condition:Fortified")}).Tag(mod.SkillName("Cleave").Transfigured(true))),
@@ -10432,7 +10519,7 @@ var jewelThresholdFuncs = map[string]radiusJewelFunc{
 // Scan a line for the earliest and longest match from the pattern list
 // If a match is found, returns the corresponding value from the pattern list, plus the remainder of the line and a table of captures
 //
-//pob:src/Modules/ModParser.lua:6553-6575
+//pob:src/Modules/ModParser.lua:6616-6638
 func scan[T any](line string, patternList map[string]CompiledList[T], plain bool) (*T, string, []string) {
 	state := newScanState[T](line)
 
@@ -10456,12 +10543,12 @@ type scanState[T any] struct {
 	bestEnd      int
 }
 
-//pob:block:src/Modules/ModParser.lua:6554-6557
+//pob:block:src/Modules/ModParser.lua:6617-6620
 func newScanState[T any](line string) scanState[T] {
 	return scanState[T]{line: line, lineLower: toLowerASCII(line), bestIndex: -1}
 }
 
-//pob:block:src/Modules/ModParser.lua:6559-6568
+//pob:block:src/Modules/ModParser.lua:6622-6631
 func (s *scanState[T]) consider(pattern string, patternVal CompiledList[T]) {
 	indices := patternVal.Regex.FindAllStringSubmatchIndex(s.lineLower, -1)
 	if len(indices) == 0 {
@@ -10494,7 +10581,7 @@ func (s *scanState[T]) consider(pattern string, patternVal CompiledList[T]) {
 	}
 }
 
-//pob:block:src/Modules/ModParser.lua:6570-6574
+//pob:block:src/Modules/ModParser.lua:6633-6637
 func (s *scanState[T]) result() (*T, string, []string) {
 	if s.bestIndex < 0 {
 		return nil, s.line, nil
@@ -10517,7 +10604,7 @@ func toLowerASCII(s string) string {
 	return s
 }
 
-//pob:src/Modules/ModParser.lua:3972-4220
+//pob:src/Modules/ModParser.lua:4018-4266
 func parseMod(line string, order int) ([]mod.Mod, string) {
 	lineLower := strings.ToLower(line)
 
@@ -10531,7 +10618,7 @@ func parseMod(line string, order int) ([]mod.Mod, string) {
 	}
 
 	if _, ok := unsupportedModList[lineLower]; ok {
-		//pob:block:src/Modules/ModParser.lua:6594-6596
+		//pob:block:src/Modules/ModParser.lua:6657-6659
 		return []mod.Mod{}, line
 	}
 
@@ -10601,12 +10688,12 @@ func parseMod(line string, order int) ([]mod.Mod, string) {
 	if *modForm == "PEN" {
 		modName, line, _ = scan(line, penTypesCompiled, true)
 		if modName == nil {
-			//pob:block:src/Modules/ModParser.lua:6659-6661
+			//pob:block:src/Modules/ModParser.lua:6722-6724
 			return []mod.Mod{}, line
 		}
 		_, line, _ = scanAny(line, modNameIndex)
 	} else if *modForm == "BASECOST" || *modForm == "TOTALCOST" {
-		//pob:block:src/Modules/ModParser.lua:6664-6677
+		//pob:block:src/Modules/ModParser.lua:6727-6740
 		types := costTypesCompiled
 		if *modForm == "BASECOST" {
 			types = baseCostTypesCompiled
@@ -10660,15 +10747,15 @@ func parseMod(line string, order int) ([]mod.Mod, string) {
 	case "BASE":
 		modSuffix, line, _ = scanAny(line, suffixTypesIndex)
 	case "LOSE":
-		//pob:block:src/Modules/ModParser.lua:6715-6717
+		//pob:block:src/Modules/ModParser.lua:6779-6781
 		modValue[0] = -modValue[0]
 		modSuffix, line, _ = scanAny(line, suffixTypesIndex)
 	case "GRANTS":
-		//pob:block:src/Modules/ModParser.lua:6719-6723
+		//pob:block:src/Modules/ModParser.lua:6783-6787
 		formTags = []mod.Tag{mod.Condition("{Hand}Attack")}
 		modSuffix, line, _ = scanAny(line, suffixTypesIndex)
 	case "REMOVES":
-		//pob:block:src/Modules/ModParser.lua:6728-6733
+		//pob:block:src/Modules/ModParser.lua:6792-6797
 		modValue[0] = -modValue[0]
 		formTags = []mod.Tag{mod.Condition("{Hand}Attack")}
 		modSuffix, line, _ = scanAny(line, suffixTypesIndex)
@@ -10679,20 +10766,20 @@ func parseMod(line string, order int) ([]mod.Mod, string) {
 	case "REGENFLAT":
 		modName = utils.Ptr(regenTypes[strings.ToLower(formCap[1])])
 	case "DEGENPERCENT":
-		//pob:block:src/Modules/ModParser.lua:6740-6743
+		//pob:block:src/Modules/ModParser.lua:6804-6807
 		if t, ok := degenTypes[strings.ToLower(formCap[1])]; ok {
 			modName = utils.Ptr(t)
 		}
 		modSuffix = utils.Ptr("Percent")
 	case "DEGENFLAT":
-		//pob:block:src/Modules/ModParser.lua:6744-6746
+		//pob:block:src/Modules/ModParser.lua:6808-6810
 		if t, ok := degenTypes[strings.ToLower(formCap[1])]; ok {
 			modName = utils.Ptr(t)
 		}
 	case "DEGEN":
 		damageType := dmgTypes[strings.ToLower(formCap[1])]
 		if damageType == "" {
-			//pob:block:src/Modules/ModParser.lua:6749-6751
+			//pob:block:src/Modules/ModParser.lua:6813-6815
 			return []mod.Mod{}, line
 		}
 		modName = &modNameListType{names: []string{damageType + "Degen"}}
@@ -10700,7 +10787,7 @@ func parseMod(line string, order int) ([]mod.Mod, string) {
 	case "DMG":
 		damageType := dmgTypes[strings.ToLower(formCap[2])]
 		if damageType == "" {
-			//pob:block:src/Modules/ModParser.lua:6755-6758
+			//pob:block:src/Modules/ModParser.lua:6819-6822
 			return []mod.Mod{}, line
 		}
 		modValue = []float64{utils.Float(formCap[0]), utils.Float(formCap[1])}
@@ -10708,7 +10795,7 @@ func parseMod(line string, order int) ([]mod.Mod, string) {
 	case "DMGATTACKS":
 		damageType := dmgTypes[strings.ToLower(formCap[2])]
 		if damageType == "" {
-			//pob:block:src/Modules/ModParser.lua:6755-6758
+			//pob:block:src/Modules/ModParser.lua:6819-6822
 			return []mod.Mod{}, line
 		}
 		modValue = []float64{utils.Float(formCap[0]), utils.Float(formCap[1])}
@@ -10719,7 +10806,7 @@ func parseMod(line string, order int) ([]mod.Mod, string) {
 	case "DMGSPELLS":
 		damageType := dmgTypes[strings.ToLower(formCap[2])]
 		if damageType == "" {
-			//pob:block:src/Modules/ModParser.lua:6755-6758
+			//pob:block:src/Modules/ModParser.lua:6819-6822
 			return []mod.Mod{}, line
 		}
 		modValue = []float64{utils.Float(formCap[0]), utils.Float(formCap[1])}
@@ -10730,7 +10817,7 @@ func parseMod(line string, order int) ([]mod.Mod, string) {
 	case "DMGBOTH":
 		damageType := dmgTypes[strings.ToLower(formCap[2])]
 		if damageType == "" {
-			//pob:block:src/Modules/ModParser.lua:6755-6758
+			//pob:block:src/Modules/ModParser.lua:6819-6822
 			return []mod.Mod{}, line
 		}
 		modValue = []float64{utils.Float(formCap[0]), utils.Float(formCap[1])}
@@ -10741,7 +10828,7 @@ func parseMod(line string, order int) ([]mod.Mod, string) {
 	case "OVERRIDE":
 		modType = "OVERRIDE"
 	case "DOUBLED":
-		//pob:block:src/Modules/ModParser.lua:6791-6806
+		//pob:block:src/Modules/ModParser.lua:6855-6870
 		if modName == nil {
 			break
 		}
@@ -10775,7 +10862,7 @@ func parseMod(line string, order int) ([]mod.Mod, string) {
 	}
 
 	if modName == nil {
-		//pob:block:src/Modules/ModParser.lua:6809-6811
+		//pob:block:src/Modules/ModParser.lua:6873-6875
 		return []mod.Mod{}, line
 	}
 
@@ -10948,7 +11035,7 @@ var (
 	modCache   = make(map[string]*ModCacheEntry)
 )
 
-//pob:src/Modules/ModParser.lua:6935-6954
+//pob:src/Modules/ModParser.lua:6999-7021
 func ParseMod(line string, isComb bool) *ModCacheEntry {
 	modCacheMu.RLock()
 	cached, ok := modCache[line]
@@ -10995,7 +11082,7 @@ func ParseMod(line string, isComb bool) *ModCacheEntry {
 	}
 }
 
-//pob:block:src/Modules/ModParser.lua:5884-5888
+//pob:block:src/Modules/ModParser.lua:5949-5953
 func initializeRegex() {
 	formListCompiled = make(map[string]CompiledList[string])
 	for k, v := range formList {
@@ -11121,7 +11208,7 @@ func titleFirst(s string) string {
 	return strings.ToUpper(s[:1]) + s[1:]
 }
 
-//pob:block:src/Modules/ModParser.lua:2373
+//pob:block:src/Modules/ModParser.lua:2383
 func titleCaseAfterNonWord(s string) string {
 	b := []byte(" " + s)
 	for i := 1; i < len(b); i++ {

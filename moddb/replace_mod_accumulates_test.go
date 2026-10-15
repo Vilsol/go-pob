@@ -8,7 +8,7 @@ import (
 
 // TestReplaceModReplacesOnceThenAccumulates pins ModDB.lua:38-60's `replaced` semantics.
 //
-//pob:src/Classes/ModDB.lua:38-65
+//pob:src/Classes/ModDB.lua:42-69
 func TestReplaceModReplacesOnceThenAccumulates(t *testing.T) {
 	newOverride := func(v float64) mod.Mod {
 		return mod.NewFloat("ChargesMax", mod.TypeOverride, v).Source(mod.Source("Item:1:Badge"))

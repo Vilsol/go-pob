@@ -79,6 +79,8 @@
       Promise.resolve({
         unique: true,
         implicitsCannotBeChanged: false,
+        maxImplicits: 2,
+        glimpse: [],
         corrupted: [
           cmod('A', '(4-6)% increased maximum Life', 'Life'),
           cmod('B', '(5-6)% increased maximum Life', 'Life'),

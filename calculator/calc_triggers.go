@@ -17,7 +17,7 @@ import (
 	"github.com/Vilsol/go-pob/utils"
 )
 
-//pob:src/Modules/CalcTriggers.lua:1592-1617
+//pob:src/Modules/CalcTriggers.lua:1602-1627
 
 type triggerConfig struct {
 	skipEffectiveRate bool
@@ -63,7 +63,7 @@ func grantedEffectFromItem(skill *ActiveSkill) bool {
 	return raw2.PoBSkills[skill.ActiveEffect.GrantedEffect.ID()].FromItem
 }
 
-//pob:block:src/Modules/CalcSetup.lua:1392
+//pob:block:src/Modules/CalcSetup.lua:1494
 func srcInstanceFromItem(skill *ActiveSkill) bool {
 	if skill == nil {
 		return false
@@ -72,7 +72,7 @@ func srcInstanceFromItem(skill *ActiveSkill) bool {
 	return ok && socketGroup != nil && strings.HasPrefix(socketGroup.Source, "Item:")
 }
 
-//pob:src/Modules/CalcTriggers.lua:32-38
+//pob:src/Modules/CalcTriggers.lua:33-39
 func slotMatch(env *Environment, skill *ActiveSkill) bool {
 	if env == nil || env.Player == nil || env.Player.MainSkill == nil || skill == nil {
 		return false
@@ -88,45 +88,45 @@ func slotMatch(env *Environment, skill *ActiveSkill) bool {
 		return true
 	}
 
-	//pob:src/Modules/CalcTriggers.lua:36
+	//pob:src/Modules/CalcTriggers.lua:37
 	return !mainFromItem && skill.SocketGroup == mainSkill.SocketGroup
 }
 
-//pob:src/Modules/CalcTriggers.lua:897-1574
+//pob:src/Modules/CalcTriggers.lua:902-1584
 func triggerConfigFor(env *Environment, key string, mainSkill *ActiveSkill) *triggerConfig {
 	switch key {
-	//pob:src/Modules/CalcTriggers.lua:1290-1293
+	//pob:src/Modules/CalcTriggers.lua:1295-1298
 	case "tempest shield":
 		return &triggerConfig{source: mainSkill}
 
-	//pob:src/Modules/CalcTriggers.lua:1175-1189
+	//pob:src/Modules/CalcTriggers.lua:1180-1194
 	case "cast when damage taken":
 		if mainSkill.SkillData.TriggeredByDamageTaken == 0 {
 			return nil
 		}
 		return &triggerConfig{source: mainSkill}
 
-	//pob:src/Modules/CalcTriggers.lua:1190-1194
+	//pob:src/Modules/CalcTriggers.lua:1200-1204
 	case "cast when stunned":
 		return &triggerConfig{source: mainSkill}
 
-	//pob:src/Modules/CalcTriggers.lua:1195-1199
+	//pob:src/Modules/CalcTriggers.lua:1200-1204
 	case "cast on ward break":
 		return &triggerConfig{source: mainSkill}
 
-	//pob:src/Modules/CalcTriggers.lua:1231-1246
+	//pob:src/Modules/CalcTriggers.lua:1236-1251
 	case "automation":
 		config := triggerCooldownFromActivePart(env, mainSkill, "Automation", false)
 		config.useCastRate = true
 		return config
 
-	//pob:src/Modules/CalcTriggers.lua:1247-1268
+	//pob:src/Modules/CalcTriggers.lua:1252-1273
 	case "autoexertion":
 		config := triggerCooldownFromActivePart(env, mainSkill, "Autoexertion", true)
 		config.useCastRate, config.sourceRateIsFinal = true, true
 		return config
 
-	//pob:src/Modules/CalcTriggers.lua:1151-1154
+	//pob:src/Modules/CalcTriggers.lua:1156-1159
 	case "cast on critical strike":
 		return &triggerConfig{
 			triggerSkillCond: func(skill *ActiveSkill) bool {
@@ -138,25 +138,25 @@ func triggerConfigFor(env *Environment, key string, mainSkill *ActiveSkill) *tri
 			},
 		}
 
-	//pob:src/Modules/CalcTriggers.lua:1321-1341
+	//pob:src/Modules/CalcTriggers.lua:1326-1346
 	case "arcanist brand":
 		return arcanistBrandConfig(env, mainSkill)
 
-	//pob:src/Modules/CalcTriggers.lua:1483-1497
+	//pob:src/Modules/CalcTriggers.lua:1488-1502
 	case "intuitive link":
 		return intuitiveLinkConfig(env, mainSkill)
 
-	//pob:src/Modules/CalcTriggers.lua:1498-1511
+	//pob:src/Modules/CalcTriggers.lua:1503-1516
 	case "svalinn cast on block", "festering resentment cast on block":
 		return &triggerConfig{
 			source: mainSkill,
 			triggeredSkillCond: func(skill *ActiveSkill) bool {
 				return slotMatch(env, skill) && skill.TriggeredBy != nil &&
-					CalcCanGrantedEffectSupportActiveSkill(skill.TriggeredBy.GrantedEffect, skill)
+					CalcCanGrantedEffectSupportActiveSkill(skill.TriggeredBy.GrantedEffect, skill, false)
 			},
 		}
 
-	//pob:src/Modules/CalcTriggers.lua:1167-1174
+	//pob:src/Modules/CalcTriggers.lua:1172-1179
 	case "nova":
 		if env == nil || env.Minion == nil || env.Minion.Actor == nil || env.Minion.MainSkill == nil {
 			return nil
@@ -169,9 +169,9 @@ func triggerConfigFor(env *Environment, key string, mainSkill *ActiveSkill) *tri
 			},
 		}
 
-	//pob:src/Modules/CalcTriggers.lua:1272-1288
+	//pob:src/Modules/CalcTriggers.lua:1277-1293
 
-	//pob:src/Modules/CalcTriggers.lua:1275-1277
+	//pob:src/Modules/CalcTriggers.lua:1280-1282
 	case "mark on hit", "oskarm":
 		return &triggerConfig{
 			triggerSkillCond: func(skill *ActiveSkill) bool {
@@ -180,7 +180,7 @@ func triggerConfigFor(env *Environment, key string, mainSkill *ActiveSkill) *tri
 			sourceRateIsFinal: key == "oskarm",
 		}
 
-	//pob:src/Modules/CalcTriggers.lua:1278-1283
+	//pob:src/Modules/CalcTriggers.lua:1283-1288
 	case "hextouch", "prismatic burst":
 		return &triggerConfig{
 			triggerSkillCond: func(skill *ActiveSkill) bool {
@@ -189,7 +189,7 @@ func triggerConfigFor(env *Environment, key string, mainSkill *ActiveSkill) *tri
 			sourceRateIsFinal: key == "hextouch",
 		}
 
-	//pob:src/Modules/CalcTriggers.lua:1361-1369
+	//pob:src/Modules/CalcTriggers.lua:1366-1374
 	case "shockwave", "void shockwave", "falling crystal":
 		return &triggerConfig{
 			triggerSkillCond: func(skill *ActiveSkill) bool {
@@ -197,7 +197,7 @@ func triggerConfigFor(env *Environment, key string, mainSkill *ActiveSkill) *tri
 			},
 		}
 
-	//pob:src/Modules/CalcTriggers.lua:1040-1045
+	//pob:src/Modules/CalcTriggers.lua:1045-1050
 	case "vixen's entrapment":
 		return &triggerConfig{
 			useCastRate: true,
@@ -206,7 +206,7 @@ func triggerConfigFor(env *Environment, key string, mainSkill *ActiveSkill) *tri
 			},
 		}
 
-	//pob:src/Modules/CalcTriggers.lua:1081-1094
+	//pob:src/Modules/CalcTriggers.lua:1086-1099
 	case "kitava's thirst":
 		requiredManaCost := env.Player.ModDB.Sum(mod.TypeBase, nil, "KitavaRequiredManaCost")
 		return &triggerConfig{
@@ -221,7 +221,7 @@ func triggerConfigFor(env *Environment, key string, mainSkill *ActiveSkill) *tri
 			},
 		}
 
-	//pob:src/Modules/CalcTriggers.lua:1095-1108
+	//pob:src/Modules/CalcTriggers.lua:1100-1113
 	case "foulborn kitava's thirst":
 		requiredLifeCost := env.Player.ModDB.Sum(mod.TypeBase, nil, "FoulbornKitavaRequiredLifeCost")
 		return &triggerConfig{
@@ -236,7 +236,7 @@ func triggerConfigFor(env *Environment, key string, mainSkill *ActiveSkill) *tri
 			},
 		}
 
-	//pob:src/Modules/CalcTriggers.lua:1109-1116
+	//pob:src/Modules/CalcTriggers.lua:1114-1121
 	case "mjolner":
 		return &triggerConfig{
 			triggerSkillCond: func(skill *ActiveSkill) bool {
@@ -255,7 +255,7 @@ func triggerConfigFor(env *Environment, key string, mainSkill *ActiveSkill) *tri
 			},
 		}
 
-	//pob:src/Modules/CalcTriggers.lua:1131-1134
+	//pob:src/Modules/CalcTriggers.lua:1136-1139
 	case "seven teachings":
 		return &triggerConfig{
 			triggerSkillCond: func(skill *ActiveSkill) bool {
@@ -268,7 +268,7 @@ func triggerConfigFor(env *Environment, key string, mainSkill *ActiveSkill) *tri
 			},
 		}
 
-	//pob:src/Modules/CalcTriggers.lua:1269-1271
+	//pob:src/Modules/CalcTriggers.lua:1274-1276
 	case "seize the flesh":
 		return &triggerConfig{
 			triggerSkillCond: func(skill *ActiveSkill) bool {
@@ -276,7 +276,7 @@ func triggerConfigFor(env *Environment, key string, mainSkill *ActiveSkill) *tri
 			},
 		}
 
-	//pob:src/Modules/CalcTriggers.lua:1272-1274
+	//pob:src/Modules/CalcTriggers.lua:1277-1279
 	case "fissure":
 		return &triggerConfig{
 			triggerOnUse: true,
@@ -285,7 +285,7 @@ func triggerConfigFor(env *Environment, key string, mainSkill *ActiveSkill) *tri
 			},
 		}
 
-	//pob:src/Modules/CalcTriggers.lua:1530-1538
+	//pob:src/Modules/CalcTriggers.lua:1535-1543
 	case "ghostly artillery":
 		return &triggerConfig{
 			sourceWeapon: true,
@@ -295,7 +295,7 @@ func triggerConfigFor(env *Environment, key string, mainSkill *ActiveSkill) *tri
 			},
 		}
 
-	//pob:src/Modules/CalcTriggers.lua:1358-1360
+	//pob:src/Modules/CalcTriggers.lua:1363-1365
 	case "voidstorm":
 		return &triggerConfig{
 			triggerOnUse: true,
@@ -305,7 +305,7 @@ func triggerConfigFor(env *Environment, key string, mainSkill *ActiveSkill) *tri
 			},
 		}
 
-	//pob:src/Modules/CalcTriggers.lua:1378-1382
+	//pob:src/Modules/CalcTriggers.lua:1383-1387
 	case "manaforged arrows":
 		return &triggerConfig{
 			triggerOnUse: true,
@@ -317,7 +317,7 @@ func triggerConfigFor(env *Environment, key string, mainSkill *ActiveSkill) *tri
 			},
 		}
 
-	//pob:src/Modules/CalcTriggers.lua:1475-1482
+	//pob:src/Modules/CalcTriggers.lua:1480-1487
 	case "avenging flame":
 		return &triggerConfig{
 			triggerSkillCond: func(skill *ActiveSkill) bool {
@@ -330,7 +330,7 @@ func triggerConfigFor(env *Environment, key string, mainSkill *ActiveSkill) *tri
 			ignoreSourceRate: true,
 		}
 
-	//pob:src/Modules/CalcTriggers.lua:1310-1320
+	//pob:src/Modules/CalcTriggers.lua:1315-1325
 	case "battlemage's cry":
 		if mainSkill.ActiveEffect.GrantedEffect.Name() == "Battlemage's Cry" {
 			return nil
@@ -340,7 +340,7 @@ func triggerConfigFor(env *Environment, key string, mainSkill *ActiveSkill) *tri
 				return skill.SkillTypes[data.SkillTypeMelee]
 			},
 			comparer: func(cached *cachedTriggerSkill, source *ActiveSkill, triggerRate float64) bool {
-				//pob:src/Modules/CalcTriggers.lua:1316
+				//pob:src/Modules/CalcTriggers.lua:1321
 				return defaultTriggerComparer(cached, source, triggerRate) &&
 					cached.battlemageUpTimeRatioSet
 			},
@@ -350,7 +350,7 @@ func triggerConfigFor(env *Environment, key string, mainSkill *ActiveSkill) *tri
 			},
 		}
 
-	//pob:src/Modules/CalcTriggers.lua:1347-1354
+	//pob:src/Modules/CalcTriggers.lua:1352-1359
 	case "combust":
 		return &triggerConfig{
 			triggerSkillCond: func(skill *ActiveSkill) bool {
@@ -362,7 +362,7 @@ func triggerConfigFor(env *Environment, key string, mainSkill *ActiveSkill) *tri
 			},
 		}
 
-	//pob:src/Modules/CalcTriggers.lua:1200-1212
+	//pob:src/Modules/CalcTriggers.lua:1205-1217
 	case "spellslinger":
 		return &triggerConfig{
 			skipEffectiveRate: mainSkill.ActiveEffect.GrantedEffect.Name() == "Spellslinger",
@@ -376,7 +376,7 @@ func triggerConfigFor(env *Environment, key string, mainSkill *ActiveSkill) *tri
 			},
 		}
 
-	//pob:src/Modules/CalcTriggers.lua:1383-1392
+	//pob:src/Modules/CalcTriggers.lua:1388-1397
 	case "doom blast":
 		if triggerConfigInputString(env, "doomBlastSource") == "replacement" {
 			env.Player.ModDB.AddMod(mod.NewFlag("UsesCurseOverlaps", true).Source("Config"))
@@ -395,7 +395,7 @@ func triggerConfigFor(env *Environment, key string, mainSkill *ActiveSkill) *tri
 			},
 		}
 
-	//pob:src/Modules/CalcTriggers.lua:905-923
+	//pob:src/Modules/CalcTriggers.lua:910-928
 	case "the rippling thoughts", "the surging thoughts":
 		if env.Player.MainSkill == nil || env.Player.MainSkill.ActiveEffect.GrantedEffect.Name() != "Storm Cascade" {
 			return nil
@@ -407,7 +407,7 @@ func triggerConfigFor(env *Environment, key string, mainSkill *ActiveSkill) *tri
 			},
 		}
 
-	//pob:src/Modules/CalcTriggers.lua:979-981
+	//pob:src/Modules/CalcTriggers.lua:984-986
 	case "starcaller":
 		return &triggerConfig{
 			triggerName: "Starfall",
@@ -416,7 +416,7 @@ func triggerConfigFor(env *Environment, key string, mainSkill *ActiveSkill) *tri
 			},
 		}
 
-	//pob:src/Modules/CalcTriggers.lua:1370-1377
+	//pob:src/Modules/CalcTriggers.lua:1375-1382
 	case "call the pyre":
 		if env.Enemy == nil || env.Enemy.ModDB == nil || !env.Enemy.ModDB.Flag(nil, "Condition:Ignited") {
 			return nil
@@ -428,7 +428,7 @@ func triggerConfigFor(env *Environment, key string, mainSkill *ActiveSkill) *tri
 			},
 		}
 
-	//pob:src/Modules/CalcTriggers.lua:1147-1150
+	//pob:src/Modules/CalcTriggers.lua:1152-1155
 	case "kinetic flux":
 		return &triggerConfig{
 			triggerSkillCond: func(skill *ActiveSkill) bool {
@@ -440,26 +440,26 @@ func triggerConfigFor(env *Environment, key string, mainSkill *ActiveSkill) *tri
 			},
 		}
 
-	//pob:src/Modules/CalcTriggers.lua:939-946
+	//pob:src/Modules/CalcTriggers.lua:944-951
 	case "replica eternity shroud", "shroud of the lightless":
 		return &triggerConfig{source: mainSkill}
 
-	//pob:src/Modules/CalcTriggers.lua:1393-1395
+	//pob:src/Modules/CalcTriggers.lua:1398-1400
 	case "cast while channelling":
 		return &triggerConfig{customHandler: cwcHandler}
 
-	//pob:src/Modules/CalcTriggers.lua:1396-1398
+	//pob:src/Modules/CalcTriggers.lua:1401-1403
 	case "focus":
 		return &triggerConfig{customHandler: helmetFocusHandler}
 
 	case "snipe":
 		return snipeTriggerConfig(env, mainSkill)
 
-	//pob:src/Modules/CalcTriggers.lua:1058-1080
+	//pob:src/Modules/CalcTriggers.lua:1063-1085
 	case "trigger craft":
 		return triggerCraftConfig(env, mainSkill)
 
-	//pob:src/Modules/CalcTriggers.lua:898-904
+	//pob:src/Modules/CalcTriggers.lua:903-909
 	case "law of the wilds":
 		return &triggerConfig{
 			triggerSkillCond: func(skill *ActiveSkill) bool {
@@ -469,7 +469,7 @@ func triggerConfigFor(env *Environment, key string, mainSkill *ActiveSkill) *tri
 			},
 		}
 
-	//pob:src/Modules/CalcTriggers.lua:956-967
+	//pob:src/Modules/CalcTriggers.lua:961-972
 	case "lioneye's paws", "replica lioneye's paws":
 		mainSkill.SkillData.Cooldown = 1
 		return &triggerConfig{
@@ -479,7 +479,7 @@ func triggerConfigFor(env *Environment, key string, mainSkill *ActiveSkill) *tri
 			},
 		}
 
-	//pob:src/Modules/CalcTriggers.lua:968-972
+	//pob:src/Modules/CalcTriggers.lua:973-977
 	case "moonbender's wing":
 		mainSkill.SkillData.Cooldown = 1
 		return &triggerConfig{
@@ -489,7 +489,7 @@ func triggerConfigFor(env *Environment, key string, mainSkill *ActiveSkill) *tri
 			},
 		}
 
-	//pob:src/Modules/CalcTriggers.lua:947-955,src/Modules/CalcTriggers.lua:973-1008
+	//pob:src/Modules/CalcTriggers.lua:952-960,src/Modules/CalcTriggers.lua:978-1013
 	case "limbsplit", "the cauteriser", "ngamahu's flame":
 		return &triggerConfig{
 			triggerSkillCond: func(skill *ActiveSkill) bool {
@@ -499,7 +499,7 @@ func triggerConfigFor(env *Environment, key string, mainSkill *ActiveSkill) *tri
 	case "duskblight", "cameria's avarice", "uul-netol's embrace", "rigwald's crest",
 		"jorrhast's blacksteel", "ashcaller", "arakaali's fang", "sporeguard", "mark of the elder",
 		"mark of the shaper":
-		//pob:block:src/Modules/CalcTriggers.lua:985-1008
+		//pob:block:src/Modules/CalcTriggers.lua:990-1013
 		return &triggerConfig{
 			triggerSkillCond: func(skill *ActiveSkill) bool {
 				return skill.SkillTypes[data.SkillTypeDamage] || skill.SkillTypes[data.SkillTypeAttack]
@@ -509,7 +509,21 @@ func triggerConfigFor(env *Environment, key string, mainSkill *ActiveSkill) *tri
 			sourceRateIsFinal:     key == "rigwald's crest" || key == "jorrhast's blacksteel" || key == "ashcaller",
 		}
 
-	//pob:src/Modules/CalcTriggers.lua:1539-1545
+	//pob:block:src/Modules/CalcTriggers.lua:1551-1555
+	case "BloodShrineUniqueTriggeredExplodingToad":
+		triggerChance := env.Player.ModDB.Sum(mod.TypeBase, nil, "BloodShrineExplodingToadTriggerChance")
+		if mainSkill.ActiveEffect.triggerChance != nil {
+			triggerChance += *mainSkill.ActiveEffect.triggerChance
+		}
+		return &triggerConfig{
+			assumingEveryHitKills: true,
+			triggerChance:         utils.Ptr(math.Min(triggerChance, 100)),
+			triggerSkillCond: func(skill *ActiveSkill) bool {
+				return skill.SkillTypes[data.SkillTypeDamage] || skill.SkillTypes[data.SkillTypeAttack]
+			},
+		}
+
+	//pob:src/Modules/CalcTriggers.lua:1544-1550
 	case "replica gifts from above":
 		return &triggerConfig{
 			triggerSkillCond: func(skill *ActiveSkill) bool {
@@ -522,7 +536,7 @@ func triggerConfigFor(env *Environment, key string, mainSkill *ActiveSkill) *tri
 	return nil
 }
 
-//pob:block:src/Modules/CalcTriggers.lua:1231-1246
+//pob:block:src/Modules/CalcTriggers.lua:1236-1251
 func triggerCooldownFromActivePart(env *Environment, mainSkill *ActiveSkill, name string, ignoresTickRate bool) *triggerConfig {
 	if mainSkill.ActiveEffect.GrantedEffect.Name() == name {
 		return &triggerConfig{skipEffectiveRate: true, ignoresTickRate: ignoresTickRate, source: mainSkill}
@@ -543,7 +557,7 @@ func triggerCooldownFromActivePart(env *Environment, mainSkill *ActiveSkill, nam
 	return &triggerConfig{ignoresTickRate: ignoresTickRate, source: mainSkill}
 }
 
-//pob:block:src/Modules/CalcTriggers.lua:1602-1606
+//pob:block:src/Modules/CalcTriggers.lua:1612-1616
 func triggerConfigForSkill(env *Environment, mainSkill *ActiveSkill) *triggerConfig {
 	grantedEffect := mainSkill.ActiveEffect.GrantedEffect
 
@@ -565,7 +579,7 @@ func triggerConfigForSkill(env *Environment, mainSkill *ActiveSkill) *triggerCon
 	return triggerConfigFor(env, strings.TrimPrefix(triggerName, "awakened "), mainSkill)
 }
 
-//pob:block:src/Modules/CalcTriggers.lua:1596
+//pob:block:src/Modules/CalcTriggers.lua:1606
 func uniqueTriggerRung(env *Environment, mainSkill *ActiveSkill) *triggerConfig {
 	if !isTriggered(mainSkill) {
 		return nil
@@ -577,7 +591,7 @@ func uniqueTriggerRung(env *Environment, mainSkill *ActiveSkill) *triggerConfig 
 	return triggerConfigFor(env, strings.ToLower(name), mainSkill)
 }
 
-//pob:src/Modules/CalcTriggers.lua:1575-1590
+//pob:src/Modules/CalcTriggers.lua:1585-1600
 func uniqueItemTriggerName(skill *ActiveSkill) string {
 	for _, gemInstance := range skill.SupportList {
 		if gemInstance == nil || gemInstance.GrantedEffect == nil || gemInstance.GrantedEffect.Raw == nil {
@@ -597,7 +611,7 @@ func uniqueItemTriggerName(skill *ActiveSkill) string {
 
 var uniqueTriggerSourceRe = regexp.MustCompile(`^.*:.*:(.*),.*$`)
 
-//pob:src/Modules/CalcTriggers.lua:1321-1341
+//pob:src/Modules/CalcTriggers.lua:1326-1346
 func arcanistBrandConfig(env *Environment, mainSkill *ActiveSkill) *triggerConfig {
 	if mainSkill.ActiveEffect == nil || mainSkill.ActiveEffect.GrantedEffect == nil ||
 		mainSkill.ActiveEffect.GrantedEffect.Name() == "Arcanist Brand" {
@@ -611,7 +625,7 @@ func arcanistBrandConfig(env *Environment, mainSkill *ActiveSkill) *triggerConfi
 		return nil
 	}
 
-	//pob:src/Modules/CalcTriggers.lua:1324-1329
+	//pob:src/Modules/CalcTriggers.lua:1329-1334
 	for _, skill := range env.Player.ActiveSkillList {
 		if skill.ActiveEffect != nil && skill.ActiveEffect.GrantedEffect != nil &&
 			skill.ActiveEffect.GrantedEffect.Name() == "Arcanist Brand" {
@@ -624,7 +638,7 @@ func arcanistBrandConfig(env *Environment, mainSkill *ActiveSkill) *triggerConfi
 		return nil
 	}
 
-	//pob:src/Modules/CalcTriggers.lua:1331-1336
+	//pob:src/Modules/CalcTriggers.lua:1336-1341
 	activationFreqInc := (100 + brand.SkillModList.Sum(mod.TypeIncrease, brand.SkillCfg,
 		"Speed", "BrandActivationFrequency")) / 100
 	activationFreqMore := brand.SkillModList.More(brand.SkillCfg, "BrandActivationFrequency")
@@ -633,7 +647,7 @@ func arcanistBrandConfig(env *Environment, mainSkill *ActiveSkill) *triggerConfi
 	triggeredBy.AttachedBrandCount = brand.SkillData.AttachedBrandCount
 	triggeredBy.IgnoresTickRate = true
 
-	//pob:src/Modules/CalcTriggers.lua:1337-1339
+	//pob:src/Modules/CalcTriggers.lua:1342-1344
 	trigRate := brand.SkillData.RepeatFrequency * activationFreqInc * activationFreqMore *
 		triggeredBy.AttachedBrandCount
 	return &triggerConfig{
@@ -646,7 +660,7 @@ func arcanistBrandConfig(env *Environment, mainSkill *ActiveSkill) *triggerConfi
 	}
 }
 
-//pob:src/Modules/CalcTriggers.lua:1058-1080
+//pob:src/Modules/CalcTriggers.lua:1063-1085
 func triggerCraftConfig(env *Environment, mainSkill *ActiveSkill) *triggerConfig {
 	if !mainSkill.SkillData.TriggeredByCraft {
 		return nil
@@ -659,7 +673,7 @@ func triggerCraftConfig(env *Environment, mainSkill *ActiveSkill) *triggerConfig
 			!skill.SkillFlags[SkillFlag("aura")] && skill != mainSkill && !skill.SkillData.TriggeredByCraft &&
 			!grantedEffectFromItem(skill) && !isTriggered(skill) {
 			source, trigRate = findTriggerSkill(env, skill, source, trigRate, nil, nil)
-			//pob:src/Modules/CalcTriggers.lua:1065-1072
+			//pob:src/Modules/CalcTriggers.lua:1070-1077
 			if skill.SkillFlags[SkillFlagTotem] || skill.SkillFlags[SkillFlag("golem")] ||
 				skill.SkillFlags[SkillFlag("banner")] || skill.SkillFlags[SkillFlagBallista] {
 				grantedEffect := skill.ActiveEffect.GrantedEffect
@@ -681,7 +695,7 @@ func triggerCraftConfig(env *Environment, mainSkill *ActiveSkill) *triggerConfig
 	return &triggerConfig{source: source, trigRate: utils.Ptr(trigRate), useCastRate: useCastRate}
 }
 
-//pob:src/Modules/CalcTriggers.lua:135-217
+//pob:src/Modules/CalcTriggers.lua:136-220
 func helmetFocusHandler(env *Environment) {
 	mainSkill := env.Player.MainSkill
 	if mainSkill == nil || mainSkill.SkillFlags[SkillFlagMinion] || mainSkill.SkillFlags[SkillFlagDisable] ||
@@ -710,23 +724,23 @@ func helmetFocusHandler(env *Environment) {
 	focusCD := *focusLevel.Cooldown / icdrFocus
 	focusTotalCD := focusDuration + focusCD
 
-	//pob:src/Modules/CalcTriggers.lua:156-163
+	//pob:src/Modules/CalcTriggers.lua:159-166
 	modActionCooldown := math.Max(triggeredCD, triggerCD/icdrSkill)
 	rateCapAdjusted := math.Ceil(modActionCooldown*data.ServerTickRate) / data.ServerTickRate
 	if rateCapAdjusted != 0 {
 		output["TriggerRateCap"] = 1 / rateCapAdjusted
 	}
-	//pob:src/Modules/CalcTriggers.lua:164
+	//pob:src/Modules/CalcTriggers.lua:167
 	output["SkillTriggerRate"] = 1 / focusTotalCD
 
-	//pob:src/Modules/CalcTriggers.lua:211-215
+	//pob:src/Modules/CalcTriggers.lua:214-218
 	addTriggerIncMoreMods(mainSkill, mainSkill)
 	mainSkill.infoMessage = "Assuming perfect focus Re-Use"
 	mainSkill.infoTrigger = "Focus"
 	mainSkill.SkillData.TriggerRate = utils.Ptr(output["SkillTriggerRate"])
 }
 
-//pob:src/Modules/CalcTriggers.lua:219-387
+//pob:src/Modules/CalcTriggers.lua:222-391
 func cwcHandler(env *Environment) {
 	mainSkill := env.Player.MainSkill
 	if mainSkill.SkillFlags[SkillFlagMinion] || mainSkill.SkillFlags[SkillFlagDisable] {
@@ -742,7 +756,7 @@ func cwcHandler(env *Environment) {
 			canSupport := false
 			if mainSkill.TriggeredBy != nil && mainSkill.TriggeredBy.GemData != nil {
 				effect := mainSkill.TriggeredBy.GemData.GetGrantedEffect()
-				canSupport = CalcCanGrantedEffectSupportActiveSkill(&GrantedEffect{Raw: effect, fromItem: env.itemSupports[effect.ID]}, skill)
+				canSupport = CalcCanGrantedEffectSupportActiveSkill(&GrantedEffect{Raw: effect, fromItem: env.itemSupports[effect.ID]}, skill, false)
 			}
 			if skill.SkillData.TriggerTime != 0 && canSupport && skill != mainSkill && slotMatch && !isTriggered(skill) {
 				source = skill
@@ -791,7 +805,7 @@ func cwcHandler(env *Environment) {
 	mainSkill.infoMessage = triggerName + "'s Trigger: " + source.ActiveEffect.GrantedEffect.Name()
 }
 
-//pob:src/Modules/CalcTriggers.lua:1483-1497
+//pob:src/Modules/CalcTriggers.lua:1488-1502
 func intuitiveLinkConfig(env *Environment, mainSkill *ActiveSkill) *triggerConfig {
 	if mainSkill.ActiveEffect == nil || mainSkill.ActiveEffect.GrantedEffect == nil ||
 		mainSkill.ActiveEffect.GrantedEffect.Name() == "Intuitive Link" {
@@ -801,7 +815,7 @@ func intuitiveLinkConfig(env *Environment, mainSkill *ActiveSkill) *triggerConfi
 		return nil
 	}
 	triggeredBy := env.Player.MainSkill.TriggeredBy
-	//pob:src/Modules/CalcTriggers.lua:1485-1490
+	//pob:src/Modules/CalcTriggers.lua:1490-1495
 	for _, skill := range env.Player.ActiveSkillList {
 		if skill.ActiveEffect != nil && skill.ActiveEffect.GrantedEffect != nil &&
 			skill.ActiveEffect.GrantedEffect.Name() == "Intuitive Link" {
@@ -821,7 +835,7 @@ func intuitiveLinkConfig(env *Environment, mainSkill *ActiveSkill) *triggerConfi
 	}
 }
 
-//pob:block:src/Modules/CalcTriggers.lua:562
+//pob:block:src/Modules/CalcTriggers.lua:567
 func triggeredByCooldown(mainSkill *ActiveSkill) float64 {
 	triggeredBy := mainSkill.TriggeredBy
 	if triggeredBy == nil || triggeredBy.GrantedEffect == nil || triggeredBy.GrantedEffect.Raw == nil {
@@ -837,7 +851,7 @@ func triggeredByCooldown(mainSkill *ActiveSkill) float64 {
 	return *level.Cooldown
 }
 
-//pob:src/Modules/CalcTriggers.lua:44-61
+//pob:src/Modules/CalcTriggers.lua:45-62
 func processAddedCastTime(skill *ActiveSkill) float64 {
 	if !skill.SkillModList.Flag(skill.SkillCfg, "SpellCastTimeAddedToCooldownIfTriggered") {
 		return 0
@@ -861,7 +875,7 @@ func processAddedCastTime(skill *ActiveSkill) float64 {
 	return baseCastTime / csi
 }
 
-//pob:src/Modules/CalcTriggers.lua:40-42
+//pob:src/Modules/CalcTriggers.lua:41-43
 func isTriggered(skill *ActiveSkill) bool {
 	if skill == nil {
 		return false
@@ -878,7 +892,7 @@ func triggerActionCooldown(mainSkill *ActiveSkill, castTimeSkill *ActiveSkill, c
 	return cd.actionCooldownTickRounded, cd.addsCastTime
 }
 
-//pob:block:src/Modules/CalcTriggers.lua:571,src/Modules/CalcTriggers.lua:616-698
+//pob:block:src/Modules/CalcTriggers.lua:576,src/Modules/CalcTriggers.lua:621-703
 func triggerRateCapBreakdown(env *Environment, actor *Actor, mainSkill *ActiveSkill, breakdown *Breakdown, cd triggerCooldownParts, triggerName string, triggerRateCap float64) {
 	isMinion := env.Minion != nil && actor == env.Minion.Actor
 	triggeredName := "Triggered skill"
@@ -980,7 +994,7 @@ type triggerCooldownParts struct {
 	ignoresTickRate                                                   bool
 }
 
-//pob:block:src/Modules/CalcTriggers.lua:558-581
+//pob:block:src/Modules/CalcTriggers.lua:563-586
 func triggerCooldowns(mainSkill *ActiveSkill, castTimeSkill *ActiveSkill, configIgnoresTickRate bool) triggerCooldownParts {
 	icdr := calclib.Mod(mainSkill.SkillModList, mainSkill.SkillCfg, "CooldownRecovery")
 	if icdr == 0 {
@@ -992,7 +1006,7 @@ func triggerCooldowns(mainSkill *ActiveSkill, castTimeSkill *ActiveSkill, config
 	triggerCD := triggeredByCooldown(mainSkill)
 	triggeredCD := mainSkill.SkillData.Cooldown
 
-	//pob:src/Modules/CalcTriggers.lua:566-569
+	//pob:src/Modules/CalcTriggers.lua:571-574
 	if mainSkill.SkillData.TriggeredByBrand && mainSkill.TriggeredBy != nil &&
 		mainSkill.TriggeredBy.MainSkill != nil && mainSkill.TriggeredBy.MainSkill.SkillData != nil {
 		triggeredBy := mainSkill.TriggeredBy
@@ -1018,7 +1032,7 @@ func triggerCooldowns(mainSkill *ActiveSkill, castTimeSkill *ActiveSkill, config
 		triggerCDTickRounded = math.Ceil(triggerCDAdjusted*data.ServerTickRate) / data.ServerTickRate
 	}
 
-	//pob:src/Modules/CalcTriggers.lua:579-581
+	//pob:src/Modules/CalcTriggers.lua:584-586
 	actionCooldown := math.Max(triggerCD+addsCastTime, triggeredCD+addedCooldown)
 	actionCooldownAdjusted := math.Max(triggerCDAdjusted, triggeredCDAdjusted)
 	actionCooldownTickRounded := math.Max(triggerCDTickRounded, triggeredCDTickRounded)
@@ -1038,14 +1052,14 @@ func triggerCooldowns(mainSkill *ActiveSkill, castTimeSkill *ActiveSkill, config
 	}
 }
 
-//pob:src/Modules/CalcTriggers.lua:390-895
+//pob:src/Modules/CalcTriggers.lua:394-900
 func calcsTriggers(env *Environment, actor *Actor) {
 	if actor == nil || actor.MainSkill == nil || actor.MainSkill.SkillData == nil {
 		return
 	}
 
 	mainSkill := actor.MainSkill
-	//pob:block:src/Modules/CalcTriggers.lua:1593
+	//pob:block:src/Modules/CalcTriggers.lua:1603
 	if mainSkill.SkillFlags[SkillFlagDisable] || mainSkill.mirageCopy {
 		return
 	}
@@ -1063,18 +1077,18 @@ func calcsTriggers(env *Environment, actor *Actor) {
 		return
 	}
 
-	//pob:block:src/Modules/CalcTriggers.lua:1610
+	//pob:block:src/Modules/CalcTriggers.lua:1620
 	if config.triggerChance == nil {
 		config.triggerChance = mainSkill.ActiveEffect.triggerChance
 	}
 
-	//pob:src/Modules/CalcTriggers.lua:1611-1612
+	//pob:src/Modules/CalcTriggers.lua:1621-1622
 	if config.customHandler != nil {
 		config.customHandler(env)
 		return
 	}
 
-	//pob:block:src/Modules/CalcTriggers.lua:1594-1596,src/Modules/CalcTriggers.lua:1609
+	//pob:block:src/Modules/CalcTriggers.lua:1604-1606,src/Modules/CalcTriggers.lua:1619
 	triggerName := config.triggerName
 	if triggerName == "" && mainSkill.TriggeredBy != nil && mainSkill.TriggeredBy.GrantedEffect != nil {
 		triggerName = mainSkill.TriggeredBy.GrantedEffect.Name()
@@ -1121,19 +1135,19 @@ func calcsTriggers(env *Environment, actor *Actor) {
 				(sourceWeaponFlag == "" || skill.SkillFlags[sourceWeaponFlag]) {
 				source, trigRate = findTriggerSkill(env, skill, source, trigRate, nil, config.comparer)
 			}
-			//pob:src/Modules/CalcTriggers.lua:408-410
+			//pob:src/Modules/CalcTriggers.lua:413-415
 			if config.triggeredSkillCond != nil && config.triggeredSkillCond(skill) {
 				triggeredSkills = append(triggeredSkills, packageSkillDataForSimulation(env, skill))
 			}
 		}
 	}
 
-	//pob:src/Modules/CalcTriggers.lua:413
+	//pob:src/Modules/CalcTriggers.lua:418
 	if len(triggeredSkills) == 0 && config.triggeredSkillCond != nil {
 		return
 	}
 
-	//pob:block:src/Modules/CalcTriggers.lua:414-418,src/Modules/CalcTriggers.lua:892
+	//pob:block:src/Modules/CalcTriggers.lua:419-423,src/Modules/CalcTriggers.lua:897
 	if source == nil && config.source == nil {
 		mainSkill.infoMessage2 = "DPS reported assuming Self-Cast"
 		mainSkill.infoMessage = fmt.Sprintf("No %s Triggering Skill Found", triggerName)
@@ -1150,7 +1164,7 @@ func calcsTriggers(env *Environment, actor *Actor) {
 		sourceCached = buildActiveSkillCache(env, source)
 	}
 
-	//pob:block:src/Modules/CalcTriggers.lua:422-439
+	//pob:block:src/Modules/CalcTriggers.lua:427-444
 	breakdown := actor.Breakdown
 	if breakdown != nil {
 		if tb := mainSkill.TriggeredBy; mainSkill.SkillData.TriggeredByBrand && tb != nil && tb.MainSkill != nil {
@@ -1176,7 +1190,7 @@ func calcsTriggers(env *Environment, actor *Actor) {
 		}
 	}
 
-	//pob:block:src/Modules/CalcTriggers.lua:464-470
+	//pob:block:src/Modules/CalcTriggers.lua:469-475
 	if source != nil && sourceCached != nil && source.SkillFlags[SkillFlagProjectile] &&
 		strings.Contains(source.SkillPartName, "All") &&
 		strings.Contains(source.SkillPartName, "Projectiles") && sourceCached.ProjectileCount > 0 {
@@ -1186,7 +1200,7 @@ func calcsTriggers(env *Environment, actor *Actor) {
 		}
 	}
 
-	//pob:src/Modules/CalcTriggers.lua:483-500
+	//pob:src/Modules/CalcTriggers.lua:488-505
 	if mainSkill.SkillData.TriggeredByBattleMageCry && sourceCached != nil && source != nil &&
 		source.SkillTypes[data.SkillTypeMelee] {
 		battleMageDuration := ceilB(sourceCached.BattleMageCryDuration, data.ServerTickTime)
@@ -1201,7 +1215,7 @@ func calcsTriggers(env *Environment, actor *Actor) {
 		trigRate = battleMageHits / (sourceCached.BattleMageCryCastTime + battleMageCooldown)
 	}
 
-	//pob:block:src/Modules/CalcTriggers.lua:502-519
+	//pob:block:src/Modules/CalcTriggers.lua:507-524
 	if mainSkill.ActiveEffect.GrantedEffect.Name() == "Combust" && sourceCached != nil && source != nil &&
 		source.SkillTypes[data.SkillTypeMelee] {
 		infernalCryDuration := ceilB(sourceCached.InfernalCryDuration, data.ServerTickTime)
@@ -1218,7 +1232,7 @@ func calcsTriggers(env *Environment, actor *Actor) {
 		trigRate = infernalCryHits / (sourceCached.InfernalCryCastTime + infernalCryCooldown)
 	}
 
-	//pob:block:src/Modules/CalcTriggers.lua:521-556
+	//pob:block:src/Modules/CalcTriggers.lua:526-561
 	if mainSkill.SkillData.TriggeredByManaforged != nil && trigRate > 0 && sourceCached != nil {
 		if triggeredCache := buildActiveSkillCache(env, mainSkill); triggeredCache != nil {
 			triggeredManaCost := triggeredCache.ManaCostRaw
@@ -1227,13 +1241,13 @@ func calcsTriggers(env *Environment, actor *Actor) {
 				sourceManaCost := sourceCached.ManaCostRaw
 				switch {
 				case sourceManaCost <= 0:
-					//pob:src/Modules/CalcTriggers.lua:550-553
+					//pob:src/Modules/CalcTriggers.lua:555-558
 					if breakdown != nil {
 						breakdown.AddLine("EffectiveSourceRate", "Source skill has no mana cost")
 					}
 					trigRate = 0
 				case manaSpentThreshold > 0:
-					//pob:src/Modules/CalcTriggers.lua:532-548
+					//pob:src/Modules/CalcTriggers.lua:537-553
 					if breakdown != nil {
 						first := ""
 						if lines := breakdown.Data["EffectiveSourceRate"].Lines; len(lines) > 0 {
@@ -1272,7 +1286,7 @@ func calcsTriggers(env *Environment, actor *Actor) {
 		triggerRateCap = 1 / actionCooldownTickRounded
 		output["TriggerRateCap"] = triggerRateCap
 	}
-	//pob:block:src/Modules/CalcTriggers.lua:587-614
+	//pob:block:src/Modules/CalcTriggers.lua:592-619
 	if triggerName == "Doom Blast" && triggerConfigInputString(env, "doomBlastSource") == "expiration" && sourceCached != nil {
 		expirationRate := 1 / sourceCached.Duration
 		if breakdown != nil && len(breakdown.Data["EffectiveSourceRate"].Lines) > 0 {
@@ -1306,7 +1320,7 @@ func calcsTriggers(env *Environment, actor *Actor) {
 		}
 	}
 
-	//pob:block:src/Modules/CalcTriggers.lua:616-698
+	//pob:block:src/Modules/CalcTriggers.lua:621-703
 	if breakdown != nil && breakdown.Data["TriggerRateCap"] == nil {
 		triggerRateCapBreakdown(env, actor, mainSkill, breakdown, cd, triggerName, triggerRateCap)
 	}
@@ -1317,7 +1331,7 @@ func calcsTriggers(env *Environment, actor *Actor) {
 	}
 	if env.Player.MainSkill != nil && env.Player.MainSkill.ActiveEffect.GrantedEffect.Name() == "Doom Blast" &&
 		triggerConfigInputString(env, "doomBlastSource") == "vixen" {
-		//pob:src/Modules/CalcTriggers.lua:700-713
+		//pob:src/Modules/CalcTriggers.lua:705-718
 		if gloves := env.Player.ItemList["Gloves"]; gloves == nil || !strings.Contains(gloves.Name, "Vixen's Entrapment") {
 			output["VixenModeNoVixenGlovesWarn"] = 1
 		}
@@ -1347,16 +1361,16 @@ func calcsTriggers(env *Environment, actor *Actor) {
 	} else if globalTrigger {
 		output["EffectiveSourceRate"] = triggerRateCap
 	} else {
-		//pob:src/Modules/CalcTriggers.lua:715
+		//pob:src/Modules/CalcTriggers.lua:720
 		output["EffectiveSourceRate"] = trigRate
 	}
 
-	//pob:block:src/Modules/CalcTriggers.lua:721-723
+	//pob:block:src/Modules/CalcTriggers.lua:726-728
 	if breakdown != nil && !config.sourceRateIsFinal {
 		breakdown.AddLine("EffectiveSourceRate", fmt.Sprintf("= %.2f ^8(Effective source rate)", output["EffectiveSourceRate"]))
 	}
 
-	//pob:src/Modules/CalcTriggers.lua:725
+	//pob:src/Modules/CalcTriggers.lua:730
 	skillName := mainSkill.ActiveEffect.GrantedEffect.Name()
 	if source != nil {
 		skillName = source.ActiveEffect.GrantedEffect.Name()
@@ -1376,13 +1390,13 @@ func calcsTriggers(env *Environment, actor *Actor) {
 
 		switch {
 		case ignoresTickRate:
-			//pob:src/Modules/CalcTriggers.lua:794
+			//pob:src/Modules/CalcTriggers.lua:799
 			overlaps := float64(1)
 			if config.overlaps != nil {
 				overlaps = *config.overlaps
 			}
 			output["SkillTriggerRate"] = math.Min(triggerRateCap, output["EffectiveSourceRate"]*overlaps)
-			//pob:block:src/Modules/CalcTriggers.lua:795-805
+			//pob:block:src/Modules/CalcTriggers.lua:800-810
 			if breakdown != nil {
 				if config.overlaps != nil {
 					breakdown.Data["SkillTriggerRate"] = &Entry{Lines: []string{fmt.Sprintf("min(%.2f, %.2f *  %d) ^8(%d overlaps)", triggerRateCap, output["EffectiveSourceRate"], luaInt(overlaps), luaInt(overlaps))}}
@@ -1406,7 +1420,7 @@ func calcsTriggers(env *Environment, actor *Actor) {
 			if config.triggeredSkillCond == nil {
 				rotation = []*triggerRotationSkill{packageSkillDataForSimulation(env, mainSkill)}
 			}
-			//pob:src/Modules/CalcTriggers.lua:809
+			//pob:src/Modules/CalcTriggers.lua:814
 			var simBreakdown *triggerSimBreakdown
 			output["SkillTriggerRate"], simBreakdown = calcMultiSpellRotationImpact329(env,
 				rotation, output["EffectiveSourceRate"], simTriggerCD, triggerChance, actor)
@@ -1416,7 +1430,7 @@ func calcsTriggers(env *Environment, actor *Actor) {
 			if triggerBotsEffective {
 				output["SkillTriggerRate"] *= 2
 			}
-			//pob:block:src/Modules/CalcTriggers.lua:818-866
+			//pob:block:src/Modules/CalcTriggers.lua:823-871
 			if breakdown != nil {
 				label := "Effective source rate"
 				if mainSkill.SkillData.TriggeredByBrand && source != nil {
@@ -1464,7 +1478,7 @@ func calcsTriggers(env *Environment, actor *Actor) {
 			}
 		}
 	} else {
-		//pob:src/Modules/CalcTriggers.lua:869-874
+		//pob:src/Modules/CalcTriggers.lua:874-879
 		if breakdown != nil {
 			breakdown.Data["SkillTriggerRate"] = &Entry{Lines: []string{"The trigger needs to be triggered for any skill to be triggered."}}
 		}
@@ -1474,14 +1488,14 @@ func calcsTriggers(env *Environment, actor *Actor) {
 	mainSkill.SkillData.Triggered = true
 	mainSkill.SkillData.TriggerRate = utils.Ptr(output["SkillTriggerRate"])
 
-	//pob:src/Modules/CalcTriggers.lua:880
+	//pob:src/Modules/CalcTriggers.lua:885
 	if source != nil {
 		addTriggerIncMoreMods(mainSkill, source)
 	} else {
 		addTriggerIncMoreMods(mainSkill, mainSkill)
 	}
 
-	//pob:src/Modules/CalcTriggers.lua:881-882
+	//pob:src/Modules/CalcTriggers.lua:886-887
 	if source != nil && source != mainSkill {
 		mainSkill.SkillData.triggerSource = sourceCached
 	}
@@ -1490,7 +1504,7 @@ func calcsTriggers(env *Environment, actor *Actor) {
 	}
 }
 
-//pob:block:src/Modules/CalcTriggers.lua:881-890
+//pob:block:src/Modules/CalcTriggers.lua:886-895
 func triggerInfoMessage(env *Environment, actor *Actor, config *triggerConfig, triggerName string, mainSkill *ActiveSkill, source *ActiveSkill) string {
 	var msg string
 	if source != nil && source != mainSkill {
@@ -1519,7 +1533,7 @@ func triggerInfoMessage(env *Environment, actor *Actor, config *triggerConfig, t
 	return msg
 }
 
-//pob:block:src/Modules/CalcTriggers.lua:728-789
+//pob:block:src/Modules/CalcTriggers.lua:733-794
 func triggerSourceChance(env *Environment, config *triggerConfig, mainSkill *ActiveSkill, source *ActiveSkill, cached *cachedTriggerSkill, breakdownLines *[]string) float64 {
 	addLine := func(format string, args ...any) {
 		if breakdownLines != nil {
@@ -1538,7 +1552,7 @@ func triggerSourceChance(env *Environment, config *triggerConfig, mainSkill *Act
 
 		if hitChance := cached.HitChance; hitChance != 100 {
 			if doubleHits {
-				//pob:src/Modules/CalcTriggers.lua:743
+				//pob:src/Modules/CalcTriggers.lua:748
 				mainHandHit, offHandHit := cached.MainHandHitChance, cached.OffHandHitChance
 				effective := mainHandHit*offHandHit/100 +
 					mainHandHit*(100-offHandHit)/100 +
@@ -1546,7 +1560,7 @@ func triggerSourceChance(env *Environment, config *triggerConfig, mainSkill *Act
 				triggerChance = triggerChance * effective / 100
 				addLine("x %.2f%% ^8(%s effective hit chance for skills that hit with both weapons)", effective, source.ActiveEffect.GrantedEffect.Name())
 			} else {
-				//pob:src/Modules/CalcTriggers.lua:749
+				//pob:src/Modules/CalcTriggers.lua:754
 				triggerChance = triggerChance * hitChance / 100
 				addLine("x %.2f%% ^8(%s hit chance)", hitChance, source.ActiveEffect.GrantedEffect.Name())
 			}
@@ -1565,7 +1579,7 @@ func triggerSourceChance(env *Environment, config *triggerConfig, mainSkill *Act
 
 			if critChance := cached.CritChance; critChance != 100 {
 				if doubleHits {
-					//pob:src/Modules/CalcTriggers.lua:768
+					//pob:src/Modules/CalcTriggers.lua:773
 					mainHandCrit, offHandCrit := cached.MainHandCritChance, cached.OffHandCritChance
 					effective := mainHandCrit*offHandCrit/100 +
 						mainHandCrit*(100-offHandCrit)/100 +
@@ -1573,7 +1587,7 @@ func triggerSourceChance(env *Environment, config *triggerConfig, mainSkill *Act
 					triggerChance = triggerChance * effective / 100
 					addLine("x %.2f%% ^8(%s effective crit chance for skills that hit with both weapons)", effective, source.ActiveEffect.GrantedEffect.Name())
 				} else {
-					//pob:src/Modules/CalcTriggers.lua:774
+					//pob:src/Modules/CalcTriggers.lua:779
 					triggerChance = triggerChance * critChance / 100
 					addLine("x %.2f%% ^8(%s crit chance)", critChance, source.ActiveEffect.GrantedEffect.Name())
 				}
@@ -1581,7 +1595,7 @@ func triggerSourceChance(env *Environment, config *triggerConfig, mainSkill *Act
 		}
 	}
 
-	//pob:src/Modules/CalcTriggers.lua:784-788
+	//pob:src/Modules/CalcTriggers.lua:789-793
 	if config.triggerChance != nil && *config.triggerChance != 100 {
 		triggerChance = triggerChance * *config.triggerChance / 100
 		addLine("x %.2f%% ^8(chance to trigger)", *config.triggerChance)
@@ -1597,7 +1611,7 @@ func triggerConfigInputString(env *Environment, name string) string {
 	return resolvedConfigOption(env.Build, name)
 }
 
-//pob:src/Modules/CalcTriggers.lua:1399-1474
+//pob:src/Modules/CalcTriggers.lua:1404-1479
 func snipeTriggerConfig(env *Environment, mainSkill *ActiveSkill) *triggerConfig {
 	snipeStages := math.Min(env.Player.ModDB.Sum(mod.TypeBase, nil, "Multiplier:SnipeStage"),
 		env.Player.ModDB.Sum(mod.TypeBase, nil, "Multiplier:SnipeStagesMax"))

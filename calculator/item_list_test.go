@@ -3,6 +3,7 @@ package calculator
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 	"os"
 	"slices"
 	"strings"
@@ -339,6 +340,28 @@ func TestCompareAddedMod(t *testing.T) {
 	}
 	if b, a := misc.CompareAddedMod("not an item", nil, ""); b != nil || a != nil {
 		t.Fatal("an item with no base compared")
+	}
+}
+
+// TestCompareReplacedImplicits: ItemsTab.lua:2503-2525 with replaceImplicits.
+func TestCompareReplacedImplicits(t *testing.T) {
+	initItemsTabData(t)
+	build := loadCorpusBuild(t, "0280-elementalist-fireball.xml")
+	misc := GetMiscCalculator(build)
+	_, text := activeSetSlot(build, "Helmet")
+	_, none := misc.CompareReplacedImplicits(text, nil)
+	_, life := misc.CompareReplacedImplicits(text, []string{"+50 to maximum Life"})
+	base, added := misc.CompareAddedMod(text, []string{"+50 to maximum Life"}, "")
+	if none == nil || life == nil || len(ParseItem(text).ImplicitModLines) == 0 {
+		t.Fatal("REFUSING: no comparison, or a helmet with no implicit to replace")
+	}
+	want := added.Player.Output["Life"] - base.Player.Output["Life"]
+	if got := life.Player.Output["Life"] - none.Player.Output["Life"]; want <= 0 || math.Abs(got-want) > 1e-9 {
+		t.Fatalf("Life +%v over no implicits, adding gives +%v", got, want)
+	}
+	big, _ := ImplicitText(text, "CUSTOM", "", "+1000 to maximum Life")
+	if with, without := misc.CompareReplacedImplicits(big, nil); with.Player.Output["Life"]-without.Player.Output["Life"] < 1000 {
+		t.Fatalf("an implicit of +1000 Life kept: %v vs %v", with.Player.Output["Life"], without.Player.Output["Life"])
 	}
 }
 

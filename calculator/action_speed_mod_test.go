@@ -30,8 +30,8 @@ func TestCalcActionSpeedModClamps(t *testing.T) {
 		}
 	})
 
-	//pob:src/Modules/CalcPerform.lua:1109
-	//pob:src/Modules/CalcPerform.lua:1112
+	//pob:src/Modules/CalcPerform.lua:1143
+	//pob:src/Modules/CalcPerform.lua:1146
 	t.Run("MinimumActionSpeed floors the slow", func(t *testing.T) {
 		a := newActor(
 			mod.NewFloat("ActionSpeed", mod.TypeIncrease, -50),
@@ -62,8 +62,8 @@ func TestCalcActionSpeedModClamps(t *testing.T) {
 		}
 	})
 
-	//pob:src/Modules/CalcPerform.lua:1110
-	//pob:src/Modules/CalcPerform.lua:1113-1115
+	//pob:src/Modules/CalcPerform.lua:1144
+	//pob:src/Modules/CalcPerform.lua:1147-1149
 	t.Run("MaximumActionSpeedReduction caps the increase", func(t *testing.T) {
 		a := newActor(
 			mod.NewFloat("ActionSpeed", mod.TypeIncrease, 50),

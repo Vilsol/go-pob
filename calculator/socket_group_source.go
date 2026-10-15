@@ -12,7 +12,7 @@ type GroupSourceName struct {
 	Rarity string
 }
 
-//pob:block:src/Classes/SkillsTab.lua:363-379
+//pob:block:src/Classes/SkillsTab.lua:389-405
 func SocketGroupSourceNames(build *pob.PathOfBuilding, setIndex int, groupIndex int) []GroupSourceName {
 	if setIndex < 0 || setIndex >= len(build.Skills.SkillSets) || groupIndex < 0 || groupIndex >= len(build.Skills.SkillSets[setIndex].Skills) {
 		return nil

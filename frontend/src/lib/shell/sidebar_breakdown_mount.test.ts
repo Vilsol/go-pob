@@ -36,10 +36,12 @@ beforeAll(async () => {
   await loadCorpusBuild('0001-necromancer-unknown.xml');
   vi.spyOn(workerInstance, 'Tick').mockResolvedValue(undefined);
   pass = vi.spyOn(workerInstance as never, 'runSidebarPass').mockImplementation((() => ({
-    Breakdown: (_minion: boolean, stat: string) => {
+    StatBreakdownKey: (_minion: boolean, stat: string) => {
       asked.push(stat);
-      return stat === 'Life' ? LINES : undefined;
+      return [stat, true];
     },
+    Entry: (_minion: boolean, key: string) => (key === 'Life' ? { Lines: LINES, Label: '', Radius: 0 } : undefined),
+    ModSection: () => [],
     release: () => {}
   })) as never);
 }, 120_000);

@@ -236,3 +236,45 @@ func TestImportPassiveTreeExtraPointsFromItems(t *testing.T) {
 		}
 	}
 }
+
+// TestImportedKeystoneClusterNode: PassiveSpec.lua:2055-2057 (#10272): an imported keystone cluster's node is matched by isKeystone, whatever its orbit index.
+func TestImportedKeystoneClusterNode(t *testing.T) {
+	initItemData(t)
+	build := builds.EmptyBuild()
+	tree := data.TreeVersions[data.LatestTreeVersion].Tree()
+	var socketID, proxy string
+	for id, node := range tree.Nodes {
+		if node.ExpansionJewel != nil && node.ExpansionJewel.Size == 2 && (socketID == "" || id < socketID) {
+			socketID, proxy = id, node.ExpansionJewel.Proxy
+		}
+	}
+	itemID := build.AddItem("Rarity: UNIQUE\nOne With Nothing\nSmall Cluster Jewel\nImplicits: 0\nAdds Hollow Palm Technique")
+	build.Tree.Specs[build.ActiveSpecIndex()].NodesAttr = socketID
+	socket, _ := strconv.Atoi(socketID)
+	if ok, err := SocketTreeJewel(build, socket, itemID); !ok || err != nil {
+		t.Fatalf("REFUSING: socketing in %s: %v", socketID, err)
+	}
+	var keystone *calculator.TreeClusterNode
+	for _, n := range calculator.TreeClusterNodes(build) {
+		if n.Type == "Keystone" {
+			keystone = &n
+		}
+	}
+	if keystone == nil {
+		t.Fatal("REFUSING: no keystone node in the subgraph")
+	}
+	for _, c := range []struct {
+		isKeystone bool
+		want       int
+	}{{false, 0}, {true, 1}} {
+		answer := fmt.Sprintf(`{"hashes_ex":[123],"jewel_data":{%q:{"subgraph":{"groups":{"keystone":{"proxy":%q,"nodes":["123"]}},"nodes":{"123":{"group":"keystone","isKeystone":%v,"orbitIndex":%d}}}}}}`,
+			socketID, proxy, c.isKeystone, keystone.OrbitIndex+1)
+		var passives characterPassives
+		if err := json.Unmarshal([]byte(answer), &passives); err != nil {
+			t.Fatal(err)
+		}
+		if got := importedSubgraphNodes(build, tree, passives); len(got) != c.want || (c.want == 1 && got[0] != keystone.ID) {
+			t.Errorf("isKeystone %v: allocated %v, want %d node(s) (keystone %d)", c.isKeystone, got, c.want, keystone.ID)
+		}
+	}
+}

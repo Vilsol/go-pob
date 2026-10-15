@@ -51,17 +51,17 @@ func luaNumber(v float64) string {
 	return fmt.Sprintf("%.14g", v)
 }
 
-//pob:src/Classes/CalcBreakdownControl.lua:500-502
+//pob:src/Classes/CalcBreakdownControl.lua:529-531
 func formatModName(modName string) string {
 	return modNameDigitRe.ReplaceAllString(modNameCaseRe.ReplaceAllString(modName, "$1 $2"), "$1 $2")
 }
 
-//pob:src/Classes/CalcBreakdownControl.lua:504-506
+//pob:src/Classes/CalcBreakdownControl.lua:533-535
 func formatVarNameOrList(varList []string) string {
 	return formatModName(strings.Join(varList, " / "))
 }
 
-//pob:src/Classes/CalcBreakdownControl.lua:508-510
+//pob:src/Classes/CalcBreakdownControl.lua:537-539
 func formatModBase(m mod.Mod, base float64) string {
 	if m.Type() == mod.TypeBase {
 		return luaFormatNumber(math.Abs(base), "g", true)
@@ -69,7 +69,7 @@ func formatModBase(m mod.Mod, base float64) string {
 	return luaNumber(math.Abs(base)) + "%"
 }
 
-//pob:src/Classes/CalcBreakdownControl.lua:512-540
+//pob:src/Classes/CalcBreakdownControl.lua:541-569
 func breakdownModValue(value float64, modType mod.Type) string {
 	switch modType {
 	case mod.TypeBase:
@@ -94,7 +94,7 @@ func breakdownModValue(value float64, modType mod.Type) string {
 	return luaNumber(value)
 }
 
-//pob:block:src/Data/Global.lua:95-132
+//pob:block:src/Data/Global.lua:96-133
 var breakdownModFlagNames = map[string]mod.MFlag{
 	"Attack": mod.MFlagAttack, "Spell": mod.MFlagSpell, "Hit": mod.MFlagHit, "Dot": mod.MFlagDot, "Cast": mod.MFlagCast,
 	"Melee": mod.MFlagMelee, "Area": mod.MFlagArea, "Projectile": mod.MFlagProjectile, "SourceMask": mod.MFlagSourceMask,
@@ -143,7 +143,7 @@ func modRawValue(m mod.Mod) (float64, bool) {
 	return 0, false
 }
 
-//pob:block:src/Classes/CalcBreakdownControl.lua:448
+//pob:block:src/Classes/CalcBreakdownControl.lua:477
 func conditionTagText(neg bool, vars []string) string {
 	if len(vars) == 0 {
 		return ""
@@ -317,7 +317,7 @@ func (a *ActiveSkill) breakdownCfg(name string) *moddb.ListCfg {
 	return nil
 }
 
-//pob:src/Classes/PassiveTree.lua:754-758
+//pob:src/Classes/PassiveTree.lua:779-783
 var tattooIDMap = sync.OnceValue(func() map[string]string {
 	idMap := make(map[string]string, len(data.TattooNodes))
 	for _, node := range data.TattooNodes {
@@ -356,7 +356,7 @@ func (env *Environment) modSourceName(source string) (string, string, string, in
 				return sourceType, *node.Name, "", id
 			}
 		} else if m := tattooSourceRe.FindStringSubmatch(source); m != nil {
-			//pob:block:src/Classes/CalcBreakdownControl.lua:414-415
+			//pob:block:src/Classes/CalcBreakdownControl.lua:443-444
 			return sourceType, tattooIDMap()[m[1]], "", 0
 		}
 	case "Skill":
@@ -369,7 +369,7 @@ func (env *Environment) modSourceName(source string) (string, string, string, in
 	return sourceType, "", "", 0
 }
 
-//pob:src/Classes/CalcBreakdownControl.lua:271-498
+//pob:src/Classes/CalcBreakdownControl.lua:300-527
 //nolint:gocyclo // Mirrors the Lua.
 func (env *Environment) CalcsModSection(sd ModSectionData, showMinion bool) []ModSectionRow {
 	if env == nil || env.Player == nil {
@@ -506,7 +506,7 @@ func (env *Environment) CalcsModSection(sd ModSectionData, showMinion bool) []Mo
 	return rows
 }
 
-//pob:block:src/Classes/CalcBreakdownControl.lua:281-282,src/Classes/CalcBreakdownControl.lua:319-322,src/Classes/CalcBreakdownControl.lua:372-398
+//pob:block:src/Classes/CalcBreakdownControl.lua:310-311,src/Classes/CalcBreakdownControl.lua:348-351,src/Classes/CalcBreakdownControl.lua:401-427
 func (env *Environment) CalcsBreakdownModList(name string, showMinion bool) []ModSectionRow {
 	if env == nil || env.Player == nil {
 		return nil

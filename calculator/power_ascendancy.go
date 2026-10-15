@@ -1,6 +1,6 @@
 package calculator
 
-//pob:block:src/Classes/CalcsTab.lua:530-549
+//pob:block:src/Classes/CalcsTab.lua:537-556
 func (b *PowerBuilder) AscendancyPower() []PowerReportEntry {
 	var out []PowerReportEntry
 	for _, id := range b.nodes {

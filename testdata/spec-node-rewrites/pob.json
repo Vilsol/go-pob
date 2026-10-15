@@ -1372,7 +1372,7 @@
     },
     "19750":{
       "name":"Runegraft of the Warp",
-      "stats":["Defend with 120% of Armour against Projectile Attacks","5% more chance to Evade Melee Attacks","8% increased Evasion Rating per Frenzy Charge","8% increased Armour per Endurance Charge","80% increased Stun and Block Recovery","Every 4 seconds, Regenerate Life equal to 1% of Armour and Evasion Rating over 1 second","40% increased Evasion Rating if you have been Hit Recently","40% increased Armour if you haven't been Hit Recently","Immune to Bleeding if Equipped Helmet has higher Armour than Evasion Rating","Immune to Poison if Equipped Helmet has higher Evasion Rating than Armour"]
+      "stats":["Buffs on you expire 30% slower","Debuffs on you expire 30% faster","Limited to 1 Runegraft of the Warp"]
     },
     "22261":{
       "name":"Dagger Damage and Attack Speed",
@@ -2084,7 +2084,7 @@
     },
     "13712":{
       "name":"Runegraft of the Fortress",
-      "stats":["8% increased Damage for each of your Aura or Herald Skills affecting you","+1% to all maximum Elemental Resistances if you have Reserved Life and Mana","20% increased Life Reservation Efficiency of Skills","30% increased Area of Effect of Aura Skills","Auras from your Skills have 10% increased Effect on you","Non-Curse Aura Skills have 50% increased Duration"]
+      "stats":["10% reduced Attributes","40% increased Defences","Limited to 1 Runegraft of the Fortress"]
     },
     "14151":{
       "name":"Price of Glory",
@@ -2276,7 +2276,7 @@
     },
     "44948":{
       "name":"Runegraft of the Fortress",
-      "stats":["Regenerate 5 Mana per second","Recover 10% of Mana over 1 second when you use a Guard Skill","10% of Damage taken Recouped as Mana","15% increased Mana Cost Efficiency","10% chance to Recover 10% of Mana when you use a Skill","12% increased Mana Reservation Efficiency of Skills"]
+      "stats":["10% reduced Attributes","40% increased Defences","Limited to 1 Runegraft of the Fortress"]
     },
     "45366":{
       "name":"Price of Glory",

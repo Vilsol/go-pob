@@ -447,6 +447,29 @@ func sbmEmitMod(m map[string]any, sid string, fields, stringFields map[string]bo
 			return "", nil, mcUnrep("MinionModifier's nested mod carries tags, which this arm does not emit")
 		}
 		base = "mod.NewList(\"MinionModifier\", mod.MinionModifier{Mod: " + nbase + "})"
+	case mtype == "LIST" && name == "EnemyModifier":
+		vm, _ := val.(map[string]any)
+		nested, _ := vm["mod"].(map[string]any)
+		if nested == nil {
+			return "", nil, mcUnrep("EnemyModifier value carries no nested mod table")
+		}
+		filled := make(map[string]any, len(nested)+3)
+		for k, x := range nested {
+			filled[k] = x
+		}
+		for field, def := range map[string]any{"flags": mustNumber("0"), "keywordFlags": mustNumber("0"), "tags": []any{}} {
+			if _, ok := filled[field]; !ok {
+				filled[field] = def
+			}
+		}
+		nbase, ntags, err := sbmEmitMod(filled, sid, fields, stringFields, v)
+		if err != nil {
+			return "", nil, err
+		}
+		if len(ntags) > 0 {
+			return "", nil, mcUnrep("EnemyModifier's nested mod carries tags, which this arm does not emit")
+		}
+		base = "mod.NewList(\"EnemyModifier\", mod.EnemyModifier{Mod: " + nbase + "})"
 	case mtype == "LIST":
 		return "", nil, mcUnrep("unhandled LIST mod %s", name)
 	case mtype == "FLAG":

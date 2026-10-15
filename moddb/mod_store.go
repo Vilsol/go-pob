@@ -167,7 +167,7 @@ func modMatches(mo mod.Mod, modType mod.Type, cfg *ListCfg) bool {
 		(cfg == nil || cfg.Source == nil || sourcePrefixMatch(mo.GetSource(), *cfg.Source))
 }
 
-//pob:block:src/Classes/ModStore.lua:143-149
+//pob:block:src/Classes/ModStore.lua:154-160
 func cfgFlags(cfg *ListCfg) mod.MFlag {
 	if cfg == nil {
 		return 0
@@ -175,7 +175,7 @@ func cfgFlags(cfg *ListCfg) mod.MFlag {
 	return cfg.Flags.Get()
 }
 
-//pob:block:src/Classes/ModStore.lua:143-149
+//pob:block:src/Classes/ModStore.lua:154-160
 func cfgKeywordFlags(cfg *ListCfg) mod.KeywordFlag {
 	if cfg == nil {
 		return 0
@@ -247,7 +247,7 @@ type ModStore struct {
 	Conditions  map[string]bool
 }
 
-//pob:src/Classes/ModStore.lua:30-35
+//pob:src/Classes/ModStore.lua:38-46
 func NewModStore(parent ModStoreFuncs) *ModStore {
 	return &ModStore{
 		Parent:      parent,
@@ -280,7 +280,7 @@ func (s *ModStore) Clone() *ModStore {
 	return out
 }
 
-//pob:block:src/Classes/ModStore.lua:32
+//pob:block:src/Classes/ModStore.lua:42
 func (s *ModStore) GetActor() Actor {
 	if s.Actor != nil {
 		return s.Actor
@@ -293,7 +293,7 @@ func (s *ModStore) GetActor() Actor {
 	return nil
 }
 
-//pob:block:src/Classes/ModStore.lua:37-43
+//pob:block:src/Classes/ModStore.lua:48-54
 func (s *ModStore) relatedModDB(name string) ModStoreFuncs {
 	links, ok := s.GetActor().(ActorLinks)
 	if !ok {
@@ -306,7 +306,7 @@ type conditionSource interface {
 	GetCondition(variable string, cfg *ListCfg, noMod bool) (bool, bool)
 }
 
-//pob:block:src/Classes/ModStore.lua:349
+//pob:block:src/Classes/ModStore.lua:392
 func tagDiv(div float64) float64 {
 	if div == 0 {
 		return 1
@@ -314,7 +314,7 @@ func tagDiv(div float64) float64 {
 	return div
 }
 
-//pob:block:src/Classes/ModStore.lua:326-400
+//pob:block:src/Classes/ModStore.lua:369-443
 func (s *ModStore) evalMultiplier(value *mod.ModValueMulti, cfg *ListCfg, tag *mod.MultiplierTag) *mod.ModValueMulti {
 	var target multiplierSource = s
 	var limitTarget multiplierSource = s
@@ -401,7 +401,7 @@ func (s *ModStore) evalMultiplier(value *mod.ModValueMulti, cfg *ListCfg, tag *m
 	return value
 }
 
-//pob:block:src/Classes/ModStore.lua:314-334
+//pob:block:src/Classes/ModStore.lua:353-377
 func (s *ModStore) evalMultiplierThresholdTag(value *mod.ModValueMulti, cfg *ListCfg, tag *mod.MultiplierThresholdTag) *mod.ModValueMulti {
 	var target multiplierSource = s
 	if tag.TagActor != "" {
@@ -434,7 +434,7 @@ func (s *ModStore) evalMultiplierThresholdTag(value *mod.ModValueMulti, cfg *Lis
 	return value
 }
 
-//pob:block:src/Classes/ModStore.lua:335-379
+//pob:block:src/Classes/ModStore.lua:378-422
 func (s *ModStore) evalPerStatTag(value *mod.ModValueMulti, cfg *ListCfg, tag *mod.PerStatTag) *mod.ModValueMulti {
 	base := float64(0)
 	var target statSource = s
@@ -488,7 +488,7 @@ func (s *ModStore) evalPerStatTag(value *mod.ModValueMulti, cfg *ListCfg, tag *m
 	return value
 }
 
-//pob:block:src/Classes/ModStore.lua:588-589
+//pob:block:src/Classes/ModStore.lua:631-632
 func (s *ModStore) evalLimitTag(value *mod.ModValueMulti, cfg *ListCfg, tag *mod.LimitTag) *mod.ModValueMulti {
 	limit := tag.TagLimit
 	if tag.LimitVar != "" {
@@ -502,7 +502,7 @@ func (s *ModStore) evalLimitTag(value *mod.ModValueMulti, cfg *ListCfg, tag *mod
 	return value
 }
 
-//pob:block:src/Classes/ModStore.lua:582-620
+//pob:block:src/Classes/ModStore.lua:625-663
 func (s *ModStore) evalConditionTag(value *mod.ModValueMulti, cfg *ListCfg, tag *mod.ConditionTag) *mod.ModValueMulti {
 	match := false
 
@@ -537,7 +537,7 @@ func (s *ModStore) evalConditionTag(value *mod.ModValueMulti, cfg *ListCfg, tag 
 	return value
 }
 
-//pob:block:src/Classes/ModStore.lua:621-641
+//pob:block:src/Classes/ModStore.lua:664-684
 func (s *ModStore) evalActorConditionTag(value *mod.ModValueMulti, cfg *ListCfg, tag *mod.ActorConditionTag) *mod.ModValueMulti {
 	var target conditionSource = s
 
@@ -571,7 +571,7 @@ func (s *ModStore) evalActorConditionTag(value *mod.ModValueMulti, cfg *ListCfg,
 	return value
 }
 
-//pob:block:src/Classes/ModStore.lua:567-585
+//pob:block:src/Classes/ModStore.lua:610-628
 func (s *ModStore) evalSkillNameTag(value *mod.ModValueMulti, cfg *ListCfg, tag *mod.SkillNameTag) *mod.ModValueMulti {
 	matchName := ""
 	if cfg != nil {
@@ -620,7 +620,7 @@ func (s *ModStore) evalSkillNameTag(value *mod.ModValueMulti, cfg *ListCfg, tag 
 	return value
 }
 
-//pob:block:src/Classes/ModStore.lua:795-798
+//pob:block:src/Classes/ModStore.lua:838-841
 func (s *ModStore) evalSkillIDTag(value *mod.ModValueMulti, cfg *ListCfg, tag *mod.SkillIDTag) *mod.ModValueMulti {
 	if cfg == nil || cfg.SkillGrantedEffect == nil {
 		return nil
@@ -632,7 +632,7 @@ func (s *ModStore) evalSkillIDTag(value *mod.ModValueMulti, cfg *ListCfg, tag *m
 	return value
 }
 
-//pob:block:src/Classes/ModStore.lua:799-819
+//pob:block:src/Classes/ModStore.lua:842-862
 func (s *ModStore) evalSkillPartTag(value *mod.ModValueMulti, cfg *ListCfg, tag *mod.SkillPartTag) *mod.ModValueMulti {
 	if cfg == nil {
 		return nil
@@ -660,7 +660,7 @@ func (s *ModStore) evalSkillPartTag(value *mod.ModValueMulti, cfg *ListCfg, tag 
 	return value
 }
 
-//pob:block:src/Classes/ModStore.lua:820-837
+//pob:block:src/Classes/ModStore.lua:863-880
 func (s *ModStore) evalSkillTypeTag(value *mod.ModValueMulti, cfg *ListCfg, tag *mod.SkillTypeTag) *mod.ModValueMulti {
 	match := false
 	if cfg != nil && cfg.SkillTypes != nil {
@@ -680,7 +680,7 @@ func (s *ModStore) evalSkillTypeTag(value *mod.ModValueMulti, cfg *ListCfg, tag 
 	return value
 }
 
-//pob:block:src/Classes/ModStore.lua:847-867
+//pob:block:src/Classes/ModStore.lua:890-910
 func (s *ModStore) evalSlotNameTag(value *mod.ModValueMulti, cfg *ListCfg, tag *mod.SlotNameTag) *mod.ModValueMulti {
 	if cfg == nil {
 		return nil
@@ -698,7 +698,7 @@ func (s *ModStore) evalSlotNameTag(value *mod.ModValueMulti, cfg *ListCfg, tag *
 	return value
 }
 
-//pob:block:src/Classes/ModStore.lua:648-718
+//pob:block:src/Classes/ModStore.lua:691-761
 func (s *ModStore) evalItemConditionTag(value *mod.ModValueMulti, cfg *ListCfg, tag *mod.ItemConditionTag) *mod.ModValueMulti {
 	queries, ok := s.GetActor().(ItemQueries)
 	if !ok {
@@ -763,7 +763,7 @@ func (s *ModStore) evalItemConditionTag(value *mod.ModValueMulti, cfg *ListCfg, 
 				break
 			}
 		}
-		//pob:block:src/Classes/ModStore.lua:688-697
+		//pob:block:src/Classes/ModStore.lua:731-740
 		if tag.ShaperCond || tag.ElderCond {
 			influence, ok := queries.(ItemInfluenceQueries)
 			if !ok || (tag.ShaperCond && influence.ItemShaperIs(slot, true) == tag.Neg) || (tag.ElderCond && influence.ItemElderIs(slot, true) == tag.Neg) {
@@ -828,7 +828,7 @@ func titleCaseSlot(slot string) string {
 
 // elseif tag.socketColor and tag.sockets ~= "all" then
 //
-//pob:block:src/Classes/ModStore.lua:719-760
+//pob:block:src/Classes/ModStore.lua:762-803
 func (s *ModStore) evalSocketedInTag(value *mod.ModValueMulti, cfg *ListCfg, tag *mod.SocketedInTag) *mod.ModValueMulti {
 	if cfg == nil || (tag.SlotName == "" && tag.TagKeyword == "" && tag.TagSocketColor == "") {
 		return nil
@@ -873,7 +873,7 @@ func (s *ModStore) evalSocketedInTag(value *mod.ModValueMulti, cfg *ListCfg, tag
 	return value
 }
 
-//pob:block:src/Classes/ModStore.lua:868-874
+//pob:block:src/Classes/ModStore.lua:911-917
 func (s *ModStore) evalModFlagOrTag(value *mod.ModValueMulti, cfg *ListCfg, tag *mod.ModFlagOrTag) *mod.ModValueMulti {
 	if cfg == nil || cfg.Flags == nil {
 		return nil
@@ -884,7 +884,7 @@ func (s *ModStore) evalModFlagOrTag(value *mod.ModValueMulti, cfg *ListCfg, tag 
 	return value
 }
 
-//pob:block:src/Classes/ModStore.lua:875-881
+//pob:block:src/Classes/ModStore.lua:918-924
 func (s *ModStore) evalKeywordFlagAndTag(value *mod.ModValueMulti, cfg *ListCfg, tag *mod.KeywordFlagAndTag) *mod.ModValueMulti {
 	if cfg == nil || cfg.KeywordFlags == nil {
 		return nil
@@ -895,7 +895,7 @@ func (s *ModStore) evalKeywordFlagAndTag(value *mod.ModValueMulti, cfg *ListCfg,
 	return value
 }
 
-//pob:block:src/Classes/ModStore.lua:419-432
+//pob:block:src/Classes/ModStore.lua:462-475
 func (s *ModStore) evalStatThresholdTag(value *mod.ModValueMulti, cfg *ListCfg, tag *mod.StatThresholdTag) *mod.ModValueMulti {
 	stat := s.getStat(tag.Stat, cfg)
 	threshold := tag.Threshold
@@ -911,7 +911,7 @@ func (s *ModStore) evalStatThresholdTag(value *mod.ModValueMulti, cfg *ListCfg, 
 	return value
 }
 
-//pob:block:src/Classes/ModStore.lua:380-418
+//pob:block:src/Classes/ModStore.lua:423-461
 func (s *ModStore) evalPercentStatTag(value *mod.ModValueMulti, cfg *ListCfg, tag *mod.PercentStatTag) *mod.ModValueMulti {
 	var target statSource = s
 	if tag.TagActor != "" {
@@ -923,7 +923,7 @@ func (s *ModStore) evalPercentStatTag(value *mod.ModValueMulti, cfg *ListCfg, ta
 	base := target.getStat(tag.Stat, cfg)
 	//	local percent = tag.percent or GetMultiplier(self, tag.percentVar, cfg)
 	//	local mult = base * (percent and percent / 100 or 1)
-	//pob:block:src/Classes/ModStore.lua:504-505
+	//pob:block:src/Classes/ModStore.lua:547-548
 	percent := tag.Percent
 	if percent == 0 && tag.PercentVar != "" {
 		percent = s.GetMultiplier(tag.PercentVar, cfg, false)
@@ -937,7 +937,7 @@ func (s *ModStore) evalPercentStatTag(value *mod.ModValueMulti, cfg *ListCfg, ta
 		value = value.Clone()
 		value.ValueFloat = math.Ceil(value.ValueFloat * mult)
 	} else if scalable, ok := value.List().(mod.ScalableValue); ok {
-		//pob:block:src/Classes/ModStore.lua:518-530
+		//pob:block:src/Classes/ModStore.lua:561-573
 		scaled := ceilScaledValue(scalable.ScaleValue(mult, 0, nil))
 
 		if reflect.TypeOf(value.List()).Kind() == reflect.Pointer {
@@ -964,7 +964,7 @@ func ceilScaledValue(scaled mod.Cloneable) mod.Cloneable {
 	return scaled
 }
 
-//pob:block:src/Classes/ModStore.lua:555-571
+//pob:block:src/Classes/ModStore.lua:598-614
 func (s *ModStore) evalDistanceRampTag(value *mod.ModValueMulti, cfg *ListCfg, tag *mod.DistanceRampTag) *mod.ModValueMulti {
 	if cfg == nil || !cfg.SkillDistSet || len(tag.Ramp) == 0 {
 		return nil
@@ -995,7 +995,7 @@ func (s *ModStore) evalDistanceRampTag(value *mod.ModValueMulti, cfg *ListCfg, t
 	return value
 }
 
-//pob:block:src/Classes/ModStore.lua:575-587
+//pob:block:src/Classes/ModStore.lua:618-630
 func (s *ModStore) evalMeleeProximityTag(value *mod.ModValueMulti, cfg *ListCfg, tag *mod.MeleeProximityTag) *mod.ModValueMulti {
 	if cfg == nil || !cfg.SkillDistSet || len(tag.Ramp) == 0 {
 		return nil
@@ -1020,7 +1020,7 @@ func (s *ModStore) evalMeleeProximityTag(value *mod.ModValueMulti, cfg *ListCfg,
 	return value
 }
 
-//pob:block:src/Classes/ModStore.lua:249-603
+//pob:block:src/Classes/ModStore.lua:277-646
 func (s *ModStore) evalTag(raw mod.Tag, value *mod.ModValueMulti, cfg *ListCfg) *mod.ModValueMulti {
 	switch tag := raw.(type) {
 	case *mod.MultiplierTag:
@@ -1068,7 +1068,7 @@ func (s *ModStore) evalTag(raw mod.Tag, value *mod.ModValueMulti, cfg *ListCfg) 
 	return value
 }
 
-//pob:block:src/Classes/ModStore.lua:882-913
+//pob:block:src/Classes/ModStore.lua:925-956
 func (s *ModStore) evalMonsterTagTag(value *mod.ModValueMulti, tag *mod.MonsterTagTag) *mod.ModValueMulti {
 	src, ok := s.GetActor().(MinionMonsterTags)
 	if !ok {
@@ -1104,7 +1104,7 @@ func (s *ModStore) EvalMod(m mod.Mod, cfg *ListCfg) *mod.ModValueMulti {
 	return s.evalMod(m, cfg)
 }
 
-//pob:src/Classes/ModStore.lua:246-606
+//pob:src/Classes/ModStore.lua:274-649
 func (s *ModStore) evalMod(m mod.Mod, cfg *ListCfg) *mod.ModValueMulti {
 	value := m.Value()
 
@@ -1118,7 +1118,7 @@ func (s *ModStore) evalMod(m mod.Mod, cfg *ListCfg) *mod.ModValueMulti {
 	return value
 }
 
-//pob:block:src/Classes/ModStore.lua:916-926
+//pob:block:src/Classes/ModStore.lua:959-969
 func tagGlobalLimits(m mod.Mod) []globalLimitPair {
 	var out []globalLimitPair
 
@@ -1156,7 +1156,7 @@ func applyGlobalLimits(globalLimits *map[string]float64, pairs []globalLimitPair
 	return value
 }
 
-//pob:block:src/Classes/ModDB.lua:268-273
+//pob:block:src/Classes/ModDB.lua:278-283
 func applyGlobalLimit(globalLimits map[string]float64, key string, limit float64, value float64) float64 {
 	if globalLimits[key]+value > limit {
 		value = limit - globalLimits[key]
@@ -1201,7 +1201,7 @@ var (
 	conditionName  = &nameTable{prefix: "Condition:"}
 )
 
-//pob:src/Classes/ModStore.lua:265-267
+//pob:src/Classes/ModStore.lua:301-303
 func (s *ModStore) GetMultiplier(variable string, cfg *ListCfg, noMod bool) float64 {
 	//	return (not noMod and self:Override(cfg, multiplierName[var]))
 	//	    or (self.multipliers[var] or 0) + (parent...) + (not noMod and self:Sum("BASE", ...) or 0)
@@ -1230,7 +1230,7 @@ func (s *ModStore) GetMultiplier(variable string, cfg *ListCfg, noMod bool) floa
 
 var StatReadProbe func(actor any, stat string, value float64, found bool)
 
-//pob:src/Classes/ModStore.lua:269-318
+//pob:src/Classes/ModStore.lua:308-357
 func (s *ModStore) getStat(stat string, cfg *ListCfg) float64 {
 	if stat == "ManaReservedPercent" {
 		reserved := float64(0)
@@ -1291,7 +1291,7 @@ func (s *ModStore) getStat(stat string, cfg *ListCfg) float64 {
 	return 0
 }
 
-//pob:src/Classes/ModStore.lua:261-263
+//pob:src/Classes/ModStore.lua:293-295
 func (s *ModStore) GetCondition(variable string, cfg *ListCfg, noMod bool) (bool, bool) {
 	if cond, ok := s.Conditions[variable]; ok && cond {
 		return true, true
@@ -1315,7 +1315,7 @@ var (
 	gemGameIDByBaseName     map[string]string
 )
 
-//pob:src/Modules/CalcTools.lua:270-283
+//pob:src/Modules/CalcTools.lua:279-292
 func gameIDFromGemName(name string) string {
 	if name == "" {
 		return ""

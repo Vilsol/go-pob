@@ -94,6 +94,7 @@ export type TimelessForm = {
   devotion2: number;
   socket: number;
   filter: boolean;
+  socketAllocate: boolean;
   distance: number;
   protect: string[];
   searchList: string;

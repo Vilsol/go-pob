@@ -8,7 +8,7 @@ import (
 
 // TestGhostlyArtilleryPublishesATriggerRate pins CalcTriggers.lua:1530-1538.
 //
-//pob:src/Modules/CalcTriggers.lua:1530-1538
+//pob:src/Modules/CalcTriggers.lua:1535-1543
 func TestGhostlyArtilleryPublishesATriggerRate(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")

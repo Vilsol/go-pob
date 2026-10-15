@@ -45,7 +45,7 @@ type PassiveSpec struct {
 	DistanceToClassStart map[string]int
 }
 
-//pob:src/Classes/PassiveSpec.lua:19-28,src/Classes/PassiveSpec.lua:30-90
+//pob:src/Classes/PassiveSpec.lua:22-37,src/Classes/PassiveSpec.lua:39-101
 func NewPassiveSpec(build *pob.PathOfBuilding, treeVersion pob.TreeVersion) *PassiveSpec {
 	passiveSpec := &PassiveSpec{
 		Build:       build,
@@ -74,17 +74,17 @@ func NewPassiveSpec(build *pob.PathOfBuilding, treeVersion pob.TreeVersion) *Pas
 	return passiveSpec
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:32
+//pob:block:src/Classes/PassiveSpec.lua:41
 func (p *PassiveSpec) Tree() *data.Tree {
 	return data.TreeVersions[p.TreeVersion].Tree()
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:573-574
+//pob:block:src/Classes/PassiveSpec.lua:584-585
 func (p *PassiveSpec) Class() data.Class {
 	return p.Tree().Classes[p.ClassID]
 }
 
-//pob:src/Classes/PassiveSpec.lua:562-585
+//pob:src/Classes/PassiveSpec.lua:573-596
 func (p *PassiveSpec) SelectClass(classID pob.ClassID) {
 	/*
 		TODO Implement
@@ -110,7 +110,7 @@ func (p *PassiveSpec) SelectClass(classID pob.ClassID) {
 	p.SelectAscendancyClass(pob.ClassAscendancies[p.ClassID][0])
 }
 
-//pob:src/Classes/PassiveSpec.lua:599-617
+//pob:src/Classes/PassiveSpec.lua:610-628
 func (p *PassiveSpec) SelectAscendancyClass(ascendancyID pob.AscendancyID) {
 	p.AscendancyID = ascendancyID
 	p.AscendancyName = pob.AscendancyNameByID[ascendancyID]
@@ -199,7 +199,7 @@ type socketedLegionJewel struct {
 	jewel        mod.LegionJewel
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:1146-1148
+//pob:block:src/Classes/PassiveSpec.lua:1130-1132
 func socketedLegionJewels(env *Environment) []socketedLegionJewel {
 	specs := env.Build.Tree.Specs
 	if len(specs) == 0 {
@@ -252,7 +252,7 @@ func socketedLegionJewels(env *Environment) []socketedLegionJewel {
 	return jewels
 }
 
-//pob:block:src/Classes/Item.lua:2425-2427
+//pob:block:src/Classes/Item.lua:2477-2479
 func itemConqueredBy(item *Item) (mod.LegionJewel, bool) {
 	for _, m := range item.Mods {
 		if m.Name() != "JewelData" {
@@ -269,7 +269,7 @@ func itemConqueredBy(item *Item) (mod.LegionJewel, bool) {
 	return mod.LegionJewel{}, false
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:1185-1192,src/Classes/PassiveSpec.lua:1334-1372
+//pob:block:src/Classes/PassiveSpec.lua:1211-1223,src/Classes/PassiveSpec.lua:1365-1403
 func nodeRewrites(env *Environment) map[string]nodeRewrite {
 	tattoos := tattooedNodes(env)
 
@@ -506,7 +506,7 @@ func abyssSocketConquests(treeVersion pob.TreeVersion, jewelType tjdata.JewelTyp
 	return out
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:1222-1238
+//pob:block:src/Classes/PassiveSpec.lua:1253-1269
 func abyssModification(jewelType tjdata.JewelType, seed int, graphID string, render func(data.LegionNode, tjdata.StatRolls) []string) (*data.LegionNode, []string, bool) {
 	if err := raw.EnsureTimelessSources(); err != nil {
 		return nil, nil, false
@@ -566,7 +566,7 @@ type abyssSocket struct {
 	jewel     mod.LegionJewel
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:1117-1123
+//pob:block:src/Classes/PassiveSpec.lua:1111-1117
 func abyssSockets(env *Environment) []abyssSocket {
 	specs := env.Build.Tree.Specs
 	if len(specs) == 0 {
@@ -604,7 +604,7 @@ func abyssSockets(env *Environment) []abyssSocket {
 	return out
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:991-1032
+//pob:block:src/Classes/PassiveSpec.lua:968-1009
 func shortestPathToClassStart(env *Environment, tree *data.Tree, rootID string) map[string]bool {
 	if _, allocated := env.AllocatedNodes[rootID]; !allocated {
 		return nil
@@ -650,7 +650,7 @@ func shortestPathToClassStart(env *Environment, tree *data.Tree, rootID string) 
 	return nil
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:1203-1220
+//pob:block:src/Classes/PassiveSpec.lua:1234-1251
 func legionStatLine(template string, stat data.LegionStat, value float64) string {
 	if stat.Key == "" {
 		return template
@@ -683,7 +683,7 @@ func luaNum(v float64) string {
 
 // local ward = (isValueInArray(attributes, node.dn) or node.isTattoo) and "1" or "2"
 //
-//pob:block:src/Classes/PassiveSpec.lua:1360-1362
+//pob:block:src/Classes/PassiveSpec.lua:1391-1393
 func legionWardLine(isAttribute bool) string {
 	if isAttribute {
 		return "1% increased Ward"
@@ -693,7 +693,7 @@ func legionWardLine(isAttribute bool) string {
 
 // local str = isValueInArray(attributes, node.dn) and "2" or "4"
 //
-//pob:block:src/Classes/PassiveSpec.lua:1354-1359
+//pob:block:src/Classes/PassiveSpec.lua:1385-1390
 func legionAttributeLine(isAttribute bool, attribute string) string {
 	if isAttribute {
 		return "+2 to " + attribute
@@ -701,7 +701,7 @@ func legionAttributeLine(isAttribute bool, attribute string) string {
 	return "+4 to " + attribute
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:993-1008
+//pob:block:src/Classes/PassiveSpec.lua:970-985
 func buildDistanceToClassStart(allocNodes map[string]data.Node, classStartID string) map[string]int {
 	distances := make(map[string]int)
 	if classStartID == "" {
@@ -753,7 +753,7 @@ func buildDistanceToClassStart(allocNodes map[string]data.Node, classStartID str
 	return distances
 }
 
-//pob:src/Classes/PassiveSpec.lua:558-598
+//pob:src/Classes/PassiveSpec.lua:569-609
 func setNodeDistanceToClassStart(root string, allocNodes map[string]data.Node, classStartID string) int {
 	if _, allocated := allocNodes[root]; !allocated {
 		return 0
@@ -787,7 +787,7 @@ func setNodeDistanceToClassStart(root string, allocNodes map[string]data.Node, c
 	return 0
 }
 
-//pob:block:src/Classes/PassiveTree.lua:521-532
+//pob:block:src/Classes/PassiveTree.lua:546-557
 func isMasteryNode(node data.Node) bool {
 	return node.IsMastery != nil && *node.IsMastery
 }
@@ -800,7 +800,7 @@ func isAscendClassStartNode(node data.Node) bool {
 	return node.IsAscendancyStart != nil && *node.IsAscendancyStart
 }
 
-//pob:block:src/Classes/PassiveTree.lua:592,src/Classes/PassiveTree.lua:395
+//pob:block:src/Classes/PassiveTree.lua:617,src/Classes/PassiveTree.lua:418
 func linkedNodeIDs(node data.Node) []string {
 	linked := make([]string, 0, len(node.Out)+len(node.In))
 	linked = append(linked, node.Out...)
@@ -809,7 +809,7 @@ func linkedNodeIDs(node data.Node) []string {
 
 var classStartIDs sync.Map
 
-//pob:block:src/Classes/PassiveTree.lua:522-525
+//pob:block:src/Classes/PassiveTree.lua:547-550
 func classStartNodeID(tree *data.Tree, classID pob.ClassID) string {
 	starts, ok := classStartIDs.Load(tree)
 	if !ok {

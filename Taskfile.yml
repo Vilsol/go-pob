@@ -251,29 +251,21 @@ tasks:
   oracle:
     desc: "Regenerate EVERY testdata/oracle/ expectation from headless Path of Building (set POB_DIR)"
     vars:
-      POB: '{{.POB_DIR | default .POB_DEFAULT}}'
-      HERE:
-        sh: pwd
-    dir: '{{.POB}}/src'
+      POB:
+        sh: 'realpath "{{.POB_DIR | default .POB_DEFAULT}}"'
     cmds:
-      - '{{.NICE}} mise x -- luajit {{.HERE}}/oracle/item_tools.lua {{.HERE}}/testdata/oracle/item_tools_cases.json {{.HERE}}/testdata/oracle/item_tools_expected.json'
-      - '{{.NICE}} mise x -- luajit {{.HERE}}/oracle/build_stats.lua {{.HERE}}/testdata/many-builds {{.HERE}}/testdata/oracle/many_builds_expected.json'
-      - '{{.NICE}} mise x -- luajit {{.HERE}}/oracle/jewel_radius.lua {{.HERE}}/testdata/oracle/jewel_radius_expected.json'
-      - '{{.NICE}} mise x -- luajit {{.HERE}}/oracle/item_modlist.lua {{.HERE}}/testdata/oracle/item_parse_cases.json {{.HERE}}/testdata/oracle/item_modlist_expected.json'
-      - '{{.NICE}} mise x -- luajit {{.HERE}}/oracle/item_data.lua {{.HERE}}/testdata/oracle/item_parse_cases.json {{.HERE}}/testdata/oracle/item_data_expected.json'
-      - '{{.NICE}} mise x -- luajit {{.HERE}}/oracle/item_bases.lua {{.HERE}}/testdata/oracle/item_bases_cases.json {{.HERE}}/testdata/oracle/item_bases_expected.json'
-      - '{{.NICE}} mise x -- luajit {{.HERE}}/oracle/item_parse.lua {{.HERE}}/testdata/oracle/item_parse_cases.json {{.HERE}}/testdata/oracle/item_parse_expected.json'
-      - '{{.NICE}} mise x -- luajit {{.HERE}}/oracle/mod_parse.lua {{.HERE}}/testdata/oracle/item_parse_cases.json {{.HERE}}/testdata/oracle/mod_parse_expected.json'
+      - 'POB_DIR={{.POB}} {{.NICE}} {{.GOPOB}} regen-fixtures'
+      - 'POB_DIR={{.POB}} {{.NICE}} {{.GOPOB}} regen-fixtures custom_mod_browser'
 
   oracle-mod-scalability:
     desc: "Re-record the ground truth for ApplyRange's data.modScalability arm"
     vars:
-      POB: '{{.POB_DIR | default .POB_DEFAULT}}'
+      POB:
+        sh: 'realpath "{{.POB_DIR | default .POB_DEFAULT}}"'
       HERE:
         sh: pwd
-    dir: '{{.POB}}/src'
     cmds:
-      - '{{.NICE}} mise x -- luajit {{.HERE}}/oracle/mod_scalability_cases.lua {{.HERE}}/testdata/oracle/mod_scalability_cases.json {{.HERE}}/testdata/oracle/mod_scalability_expected.json'
+      - '{{.NICE}} mise x --cd {{.POB}}/src -- luajit {{.HERE}}/oracle/mod_scalability_cases.lua {{.HERE}}/testdata/oracle/mod_scalability_cases.json {{.HERE}}/testdata/oracle/mod_scalability_expected.json'
       - '{{.NICE}} go test {{.HERE}}/data/ -run TestApplyRangeScalabilityAgainstPoB -v'
 
   config-ui-oracles:

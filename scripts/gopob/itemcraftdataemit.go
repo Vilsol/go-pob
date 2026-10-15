@@ -40,6 +40,14 @@ func oracleItemCraftDataEmit(argv []string) int {
 		//go-only: a new emitter, written in Go from the start; there is no original to share the wording with
 		return oeRefuse("the dump carries no Corrupted mods in data.itemMods.Item; Data.lua did not load. Re-run `go run ./scripts/gamedatadump item-craft-mods`.")
 	}
+	if len(oeObject(dump["vestigialModMappings"])) < 50 || len(oeArray(oeObject(dump["affixTables"])["Vestigial"])) < 50 || len(oeArray(dump["specialCorruptionMods"])) < 5 {
+		//go-only: a new emitter, written in Go from the start; there is no original to share the wording with
+		return oeRefuse("the dump carries no vestigial or special corruption mods; Data.lua did not load. Re-run `go run ./scripts/gamedatadump item-craft-mods`.")
+	}
+	if dr := oeObject(dump["dropRestricted"]); len(oeArray(dr["DELVE"])) < 10 || len(oeArray(dr["INCURSION"])) < 10 {
+		//go-only: a new emitter, written in Go from the start; there is no original to share the wording with
+		return oeRefuse("the dump carries no drop-restricted Delve / Incursion mods. Re-run `go run ./scripts/gamedatadump item-craft-mods`.")
+	}
 	if len(oeArray(dump["masterMods"])) < 100 || len(oeArray(dump["essences"])) < 50 {
 		//go-only: a new emitter, written in Go from the start; there is no original to share the wording with
 		return oeRefuse("the dump carries no crafting bench or essence table; Data.lua did not load. Re-run `go run ./scripts/gamedatadump item-craft-mods`.")
@@ -47,7 +55,9 @@ func oracleItemCraftDataEmit(argv []string) int {
 	blob, err := json.Marshal(map[string]any{"sources": dump["sources"], "enchantments": enchantments, "bases": dump["bases"], "affixTables": dump["affixTables"],
 		"masterMods": dump["masterMods"], "essences": dump["essences"], "veiledMods": dump["veiledMods"], "necropolisMods": dump["necropolisMods"],
 		"beastCraft": dump["beastCraft"], "crucible": dump["crucible"], "casterTagCrucibleUniques": dump["casterTagCrucibleUniques"],
-		"minionTagCrucibleUniques": dump["minionTagCrucibleUniques"]})
+		"minionTagCrucibleUniques": dump["minionTagCrucibleUniques"], "vestigialUniqueBaseTypes": dump["vestigialUniqueBaseTypes"],
+		"vestigialModMappings": dump["vestigialModMappings"], "specialCorruptionMods": dump["specialCorruptionMods"],
+		"dropRestricted": dump["dropRestricted"]})
 	if err != nil {
 		//go-only: a new emitter, written in Go from the start; there is no original to share the wording with
 		return oeRefuse("the dump does not re-encode: " + err.Error())

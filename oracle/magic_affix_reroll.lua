@@ -2,6 +2,7 @@
 local buildPath = arg[1]
 assert(buildPath, "usage: magic_affix_reroll.lua <buildXML>")
 
+local construct = dofile((arg[0]:match("^(.*)[/\\]") or ".") .. "/pob_compat.lua").construct
 dofile("HeadlessWrapper.lua")
 
 local RAW = [[
@@ -31,7 +32,7 @@ end
 
 print("")
 print("=== A. standalone parse of the exact text ===")
-report("standalone", new("Item", RAW))
+report("standalone", construct("Item", RAW))
 
 local fh = assert(io.open(buildPath, "r"))
 local xmlText = fh:read("*a")

@@ -238,7 +238,7 @@ type ConfigSet struct {
 	CustomModifierBlocks []CustomModifierBlock `xml:"CustomModifierBlock" crystalline:"not_nil"`
 }
 
-//pob:block:src/Classes/ConfigTab.lua:910-940
+//pob:block:src/Classes/ConfigTab.lua:961-991
 func (c Config) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	type plainConfig Config
 	out := plainConfig(c)
@@ -388,6 +388,7 @@ type Gem struct {
 	explodeSource       string
 	stageCountZero      bool
 	stageCountCalcsZero bool
+	matchesSocket       *bool
 }
 
 type gemXML Gem
@@ -407,7 +408,7 @@ func (g *Gem) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	return nil
 }
 
-//pob:block:src/Classes/SkillsTab.lua:587-588
+//pob:block:src/Classes/SkillsTab.lua:614-615
 func (g Gem) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	if g.stageCountZero && g.SkillStageCount == 0 {
 		start.Attr = append(start.Attr, xml.Attr{Name: xml.Name{Local: "skillStageCount"}, Value: "0"})
@@ -421,12 +422,31 @@ func (g Gem) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	return nil
 }
 
+func (g *Gem) StageCountSet() bool {
+	return g.SkillStageCount != 0 || g.stageCountZero
+}
+
+func (g *Gem) StageCountCalcsSet() bool {
+	return g.SkillStageCountCalcs != 0 || g.stageCountCalcsZero
+}
+
 func (g *Gem) SetExplodeSource(source string) {
 	g.explodeSource = source
 }
 
 func (g *Gem) ExplodeSource() string {
 	return g.explodeSource
+}
+
+func (g *Gem) SetMatchesSocket(matches bool) {
+	g.matchesSocket = &matches
+}
+
+func (g *Gem) KeptMatchesSocket() (bool, bool) {
+	if g.matchesSocket == nil {
+		return false, false
+	}
+	return *g.matchesSocket, true
 }
 
 type Spec struct {

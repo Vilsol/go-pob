@@ -14,7 +14,7 @@ func NewEnvironmentCache() *EnvironmentCache {
 
 var MainOnlyOutputs = []string{"ExtraPoints", "Spec:LifeInc", "Spec:ManaInc", "Spec:ArmourInc", "Spec:EvasionInc", "Spec:EnergyShieldInc"}
 
-//pob:src/Modules/Calcs.lua:343-474
+//pob:src/Modules/Calcs.lua:309-441
 func BuildOutputWithCache(c *Calculator, mode OutputMode, cache *EnvironmentCache) *Environment {
 	env, cachedPlayerDB, cachedEnemyDB, cachedMinionDB := initEnvWith(c.PoB, cache, mode, c.AlignCalcsSkillToMain, nil)
 	PerformCalc(env)
@@ -60,7 +60,7 @@ func BuildOutputWithCache(c *Calculator, mode OutputMode, cache *EnvironmentCach
 	return env
 }
 
-//pob:src/Modules/Calcs.lua:417-420
+//pob:src/Modules/Calcs.lua:384-387
 func (c *Calculator) BuildOutput(mode OutputMode) *Environment {
 	return BuildOutputWithCache(c, mode, envCache)
 }

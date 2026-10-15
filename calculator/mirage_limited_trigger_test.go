@@ -15,7 +15,7 @@ func TestMirageCopySkipsTriggers(t *testing.T) {
 	build := loadCorpusBuild(t, "0597-warden-split-arrow.xml")
 	env := (&Calculator{PoB: build}).BuildOutput(OutputModeMain)
 
-	const want = 4789240.76754969
+	const want = 4788782.1090658
 	if got := env.Player.Output["FullDPS"]; math.Abs(got-want) > want*1e-6 {
 		t.Errorf("FullDPS = %v, want %v (PoB's value, to 1e-6)", got, want)
 	}

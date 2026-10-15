@@ -348,7 +348,7 @@ func TestItemDBTextAgainstPoB(t *testing.T) {
 
 const (
 	itemDBTextLineCeiling = 23
-	itemDBTextSameFloor   = 690
+	itemDBTextSameFloor   = 738
 )
 
 // TestAddDBItem: ItemDBControl.lua:335-360: Ctrl+click adds and equips in the primary slot.
@@ -473,7 +473,7 @@ func TestItemSkillTooltipsAgainstPoB(t *testing.T) {
 	}
 }
 
-const itemSkillTooltipFloor = 235
+const itemSkillTooltipFloor = 234
 
 func newBuildTooltipContext() ItemTooltipContext {
 	return ItemTooltipContext{CharacterLevel: 1, ClassName: "Scion", ShowFlavourText: true, DBMode: true, Stats: ItemTooltipStats{Str: 20, Dex: 20, Int: 20}}

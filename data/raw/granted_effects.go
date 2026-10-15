@@ -48,7 +48,7 @@ func padToStatMapOrder(level *CalculatedLevel, statMapOrder []string, statID str
 	}
 }
 
-//pob:block:src/Modules/Data.lua:967-991
+//pob:block:src/Modules/Data.lua:995-1020
 func GetCalculatedGrantedEffect(grantedEffect *poe.GrantedEffect) *CalculatedGrantedEffect {
 	grantedEffectCacheMutex.RLock()
 	cached, ok := grantedEffectCache[grantedEffect.ID]
@@ -515,7 +515,7 @@ func (g *CalculatedGrantedEffect) GetStatSet() *poe.GrantedEffectStatSet {
 	return g.GetGrantedEffectStatSet()
 }
 
-//pob:src/Modules/Data.lua:1004-1016
+//pob:src/Modules/Data.lua:1033-1045
 func (g *CalculatedGrantedEffect) GetStatMapEntry(key string) *StatMap {
 	g.calculate()
 	if perSkill := SkillStatMaps[g.ID]; perSkill != nil {

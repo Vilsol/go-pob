@@ -269,7 +269,10 @@ var rdGenerators = []rdGenerator{
 		out:      "data/custom_mod_browser_generated.go",
 		emit:     "oracle/custom_mod_browser_emit.py",
 		lua:      "oracle/custom_mod_browser.lua",
+		luaArgs:  modBrowserSearches,
 		needsPob: true,
 		note:     "ADDED 2026-10-09 for the custom modifiers' Add Mod button (ConfigTab.lua:1305-1410): the Mod Browser's list as PoB's own popup builds it, from data.masterMods, every data.itemMods table but Item, data.veiledMods and data.beastCraft. go-pob carries only the craft popups' subset of those tables, so the list is PoB's result rather than a port of its construction. No python ancestor, same as mod-scalability.",
 	},
 }
+
+var modBrowserSearches = []string{"life", "  Fire RES ", "incdmg", "zzzzq", "attack speed while", "+1", "physdam", "crit multi"}

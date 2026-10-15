@@ -2,7 +2,7 @@ package mod
 
 var _ Tag = (*LimitTag)(nil)
 
-//pob:src/Classes/ModStore.lua:588-589
+//pob:src/Classes/ModStore.lua:631-632
 type LimitTag struct {
 	TagType  Type
 	TagLimit float64

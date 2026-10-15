@@ -104,7 +104,7 @@ func TestMiscCalculatorForMatchesFresh(t *testing.T) {
 	}
 }
 
-// TestMiscCalculatorForSeesAStaleEnvironment: The control: a MAIN calculation of the build before an edit does not pass for the edited build's base.
+// TestMiscCalculatorForSeesAStaleEnvironment: The base is a CALCULATOR pass of the build as it stands.
 func TestMiscCalculatorForSeesAStaleEnvironment(t *testing.T) {
 	initItemData(t)
 	build := corpusBuild(t, "0280-elementalist-fireball.xml")
@@ -112,11 +112,21 @@ func TestMiscCalculatorForSeesAStaleEnvironment(t *testing.T) {
 	if MiscCalculatorFor(build, stale) != nil {
 		t.Fatal("a calculator that calculated nothing, yet a base")
 	}
-	stale.BuildOutput(calculator.OutputModeMain)
+	main := stale.BuildOutput(calculator.OutputModeMain)
+	if _, ok := main.Player.Output["TinctureLimit"]; !ok {
+		t.Fatal("CONTROL FAILED: the MAIN pass carries no breakdown-only output to tell it from a CALCULATOR pass")
+	}
+	base := MiscCalculatorFor(build, stale).Base()
+	if _, ok := base.Output["TinctureLimit"]; ok {
+		t.Error("the misc base carries TinctureLimit, a MAIN-only output: it reuses the MAIN pass")
+	}
+	if d := sameStatOutputs(base, GetMiscCalculator(build).Base()); d != "" {
+		t.Errorf("the misc base differs from a fresh CALCULATOR pass: %s", d)
+	}
 	edited := *build
 	edited.Build.Level--
-	if d := sameStatOutputs(MiscCalculatorFor(&edited, stale).Base(), GetMiscCalculator(&edited).Base()); d == "" {
-		t.Fatal("a calculation of level", build.Build.Level, "reads as the base of level", edited.Build.Level)
+	if d := sameStatOutputs(MiscCalculatorFor(&edited, stale).Base(), GetMiscCalculator(&edited).Base()); d != "" {
+		t.Errorf("after an edit the misc base still reads the stale calculation: %s", d)
 	}
 	var b *pob.PathOfBuilding
 	if MiscCalculatorFor(b, stale) != nil {

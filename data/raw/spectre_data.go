@@ -17,7 +17,7 @@ import "github.com/Vilsol/go-pob/mod"
 // The previous revision of this file was a hand transcription of the 13 spectre ids the
 // 3.18 corpus happened to reference, out of PoB's 148.
 var Spectres = map[string]*MinionInfo{
-	// src/Data/Spectres.lua:10
+	// src/Data/Spectres.lua:12
 	"Metadata/Monsters/Axis/AxisCaster": {
 		Name:                         "Blackguard Mage",
 		Life:                         0.9,
@@ -43,7 +43,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewFloat("BlockEffect", mod.TypeBase, 10).Source("Minion:Blackguard Mage"),
 		},
 	},
-	// src/Data/Spectres.lua:39
+	// src/Data/Spectres.lua:41
 	"Metadata/Monsters/Axis/AxisCasterArc": {
 		Name:                         "Blackguard Arcmage",
 		Life:                         0.9,
@@ -69,7 +69,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewFloat("BlockEffect", mod.TypeBase, 10).Source("Minion:Blackguard Arcmage"),
 		},
 	},
-	// src/Data/Spectres.lua:68
+	// src/Data/Spectres.lua:70
 	"Metadata/Monsters/Axis/AxisCasterLunaris": {
 		Name:                         "Lunarsworn Wintermage",
 		Life:                         0.9,
@@ -95,7 +95,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewFloat("BlockEffect", mod.TypeBase, 10).Source("Minion:Lunarsworn Wintermage"),
 		},
 	},
-	// src/Data/Spectres.lua:96
+	// src/Data/Spectres.lua:98
 	"Metadata/Monsters/Axis/AxisEliteSoldier3Champion": {
 		Name:                         "Solaris Champion",
 		Life:                         1.5,
@@ -118,7 +118,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewFloat("PhysicalDamageGainAsFire", mod.TypeBase, 100).Source("Minion:Solaris Champion"),
 		},
 	},
-	// src/Data/Spectres.lua:124
+	// src/Data/Spectres.lua:126
 	"Metadata/Monsters/Axis/AxisExperimenter": {
 		Name:                         "Mortality Experimenter",
 		Life:                         0.96,
@@ -138,7 +138,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"caster", "cursing_monster", "fire_affinity", "has_wand", "human", "humanoid", "light_armour", "medium_height", "not_dex", "not_str", "physical_affinity", "ranged", "red_blood", "very_slow_movement"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "AxisTemporalChains", "MonsterDetonateDeadExperimenter", "ExperimenterEnrageDemon"},
 	},
-	// src/Data/Spectres.lua:150
+	// src/Data/Spectres.lua:152
 	"Metadata/Monsters/Axis/AxisExperimenter2": {
 		Name:                         "Flesh Sculptor",
 		Life:                         0.96,
@@ -158,7 +158,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"caster", "cursing_monster", "fire_affinity", "has_wand", "human", "humanoid", "light_armour", "medium_height", "not_dex", "not_str", "physical_affinity", "ranged", "red_blood", "very_slow_movement"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "AxisEnfeeble", "MonsterProjectileWeakness", "MonsterDetonateDeadExperimenter"},
 	},
-	// src/Data/Spectres.lua:176
+	// src/Data/Spectres.lua:178
 	"Metadata/Monsters/Axis/AxisExperimenterRaiseZombie": {
 		Name:                         "Reanimator",
 		Life:                         0.96,
@@ -178,7 +178,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"caster", "cursing_monster", "has_wand", "human", "humanoid", "light_armour", "medium_height", "not_dex", "not_str", "physical_affinity", "ranged", "red_blood", "summoner", "very_slow_movement"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "AxisEnfeeble", "NecromancerRaiseZombie", "ExperimenterEnrageDemon"},
 	},
-	// src/Data/Spectres.lua:203
+	// src/Data/Spectres.lua:205
 	"Metadata/Monsters/Bandits/BanditBowExplosiveArrow": {
 		Name:                         "Oak's Sniper",
 		Life:                         1.08,
@@ -199,7 +199,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"bandit", "flesh_armour", "has_bow", "human", "humanoid", "medium_height", "not_int", "physical_affinity", "puncturing_weapon", "ranged", "red_blood", "very_slow_movement"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "BanditExplosiveArrowAtAnimationSpeed", "EASBanditTauntBow"},
 	},
-	// src/Data/Spectres.lua:228
+	// src/Data/Spectres.lua:230
 	"Metadata/Monsters/Bandits/BanditBowPoisonArrow": {
 		Name:                         "Alira's Deadeye",
 		Life:                         1.08,
@@ -220,7 +220,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"bandit", "chaos_affinity", "flesh_armour", "has_bow", "human", "humanoid", "medium_height", "not_int", "physical_affinity", "puncturing_weapon", "ranged", "red_blood", "very_slow_movement"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "MonsterCausticArrowAtAnimationSpeed", "EASBanditTauntBow"},
 	},
-	// src/Data/Spectres.lua:253
+	// src/Data/Spectres.lua:255
 	"Metadata/Monsters/Bandits/BanditMeleeWarlordsMarkMaul": {
 		Name:                         "Oak's Devoted",
 		Life:                         1.15,
@@ -240,7 +240,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"bandit", "bludgeoning_weapon", "cursing_monster", "flesh_armour", "has_two_hand_mace", "has_two_handed_melee", "human", "humanoid", "medium_height", "melee", "not_int", "not_str", "physical_affinity", "red_blood", "very_slow_movement"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "MonsterWarlordsMark", "EASBanditTaunt"},
 	},
-	// src/Data/Spectres.lua:278
+	// src/Data/Spectres.lua:280
 	"Metadata/Monsters/Bandit/DockworkerChampion_": {
 		Name:            "Foreman",
 		Life:            2.1,
@@ -259,7 +259,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"bandit_area", "bludgeoning_weapon", "ghost_blood", "has_two_hand_mace", "has_two_handed_melee", "human", "light_armour", "medium_height", "melee", "not_dex", "not_int", "physical_affinity", "slow_movement", "undead"},
 		SkillList:       []string{"MeleeAtAnimationSpeed", "GroundEffectsSlamDockworkerChampion"},
 	},
-	// src/Data/Spectres.lua:301
+	// src/Data/Spectres.lua:303
 	"Metadata/Monsters/Bandits/BanditBowChampion": {
 		Name:            "Kraityn's Sentry",
 		Life:            1.57,
@@ -279,7 +279,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"bandit", "fire_affinity", "flesh_armour", "has_bow", "human", "humanoid", "medium_height", "not_int", "physical_affinity", "puncturing_weapon", "ranged", "red_blood", "slow_movement"},
 		SkillList:       []string{"MeleeAtAnimationSpeed", "BanditExplosiveArrowChampion", "BanditChampionBlastRain", "BanditChampionBlastRainSpectre"},
 	},
-	// src/Data/Spectres.lua:326
+	// src/Data/Spectres.lua:328
 	"Metadata/Monsters/Bandits/BanditRangedTornadoShotPetrified": {
 		Name:                         "Imperial Vanguard",
 		Life:                         1.08,
@@ -300,7 +300,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"bandit", "bone_armour", "bones", "has_bow", "human", "humanoid", "medium_height", "not_int", "physical_affinity", "puncturing_weapon", "ranged", "very_slow_movement"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "SkeletonSoldierTornadoShot"},
 	},
-	// src/Data/Spectres.lua:352
+	// src/Data/Spectres.lua:354
 	"Metadata/Monsters/Beasts/BeastCaveDegenAura": {
 		Name:            "Shaggy Monstrosity",
 		Life:            2.1,
@@ -317,7 +317,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"animal_claw_weapon", "aura_bearer", "beast", "flesh_armour", "has_one_hand_sword", "has_one_handed_melee", "large_model", "mammal_beast", "medium_height", "melee", "physical_affinity", "red_blood", "ursine_beast", "very_slow_movement"},
 		SkillList:       []string{"MeleeAtAnimationSpeed", "ChaosDegenAura", "GroundSlamBeast"},
 	},
-	// src/Data/Spectres.lua:373
+	// src/Data/Spectres.lua:375
 	"Metadata/Monsters/Beasts/BeastVulnerabilityCurse": {
 		Name:            "Armour Cruncher",
 		Life:            2.1,
@@ -334,7 +334,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"animal_claw_weapon", "beast", "flesh_armour", "has_one_hand_sword", "has_one_handed_melee", "large_model", "mammal_beast", "medium_height", "melee", "physical_affinity", "red_blood", "ursine_beast", "very_slow_movement"},
 		SkillList:       []string{"MeleeAtAnimationSpeed", "MonsterVulnerabilityOnHit1"},
 	},
-	// src/Data/Spectres.lua:394
+	// src/Data/Spectres.lua:396
 	"Metadata/Monsters/Beasts/BeastCleaveEnduringCry": {
 		Name:            "Hairy Bonecruncher",
 		Life:            2.1,
@@ -351,7 +351,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"animal_claw_weapon", "beast", "flesh_armour", "has_one_hand_sword", "has_one_handed_melee", "large_model", "mammal_beast", "medium_height", "melee", "physical_affinity", "red_blood", "ursine_beast", "very_slow_movement"},
 		SkillList:       []string{"MeleeAtAnimationSpeed", "BeastEnduringCry", "GABeastCleave", "GroundSlamBeast"},
 	},
-	// src/Data/Spectres.lua:419
+	// src/Data/Spectres.lua:421
 	"Metadata/Monsters/BloodChieftain/MonkeyChiefBloodEnrage": {
 		Name:            "Carnage Chieftain",
 		Life:            2.4,
@@ -369,7 +369,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"beast", "bludgeoning_weapon", "flesh_armour", "has_one_hand_mace", "has_one_handed_melee", "large_model", "mammal_beast", "medium_height", "medium_movement", "melee", "physical_affinity", "primate_beast", "red_blood"},
 		SkillList:       []string{"MeleeAtAnimationSpeed", "BloodChieftainSummonMonkeys", "MassFrenzy", "MonkeyThrow", "TriggeredMonkeyBomb"},
 	},
-	// src/Data/Spectres.lua:443
+	// src/Data/Spectres.lua:445
 	"Metadata/Monsters/BloodChieftain/MonkeyChiefBloodParasite": {
 		Name:            "Host Chieftain",
 		Life:            2.4,
@@ -387,7 +387,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"beast", "bludgeoning_weapon", "flesh_armour", "has_one_hand_mace", "has_one_handed_melee", "large_model", "mammal_beast", "medium_height", "medium_movement", "melee", "physical_affinity", "primate_beast", "red_blood"},
 		SkillList:       []string{"MeleeAtAnimationSpeed", "BloodChieftainSummonParasiteMonkeys", "MassPower"},
 	},
-	// src/Data/Spectres.lua:466
+	// src/Data/Spectres.lua:468
 	"Metadata/Monsters/BoneStalker/BoneStalker": {
 		Name:            "Bone Stalker",
 		Life:            2.1,
@@ -406,7 +406,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"bone_armour", "bones", "has_one_hand_axe", "has_one_handed_melee", "humanoid", "large_height", "medium_movement", "melee", "not_int", "not_str", "physical_affinity", "skeleton", "slashing_weapon", "undead"},
 		SkillList:       []string{"Melee", "BoneStalkerEarthquake", "WalkingDoubleSlash"},
 	},
-	// src/Data/Spectres.lua:490
+	// src/Data/Spectres.lua:492
 	"Metadata/Monsters/Bull/Bull": {
 		Name:                         "Fighting Bull",
 		Life:                         2.38,
@@ -426,7 +426,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"beast", "bludgeoning_weapon", "flesh_armour", "gladiator", "has_one_hand_mace", "has_one_handed_melee", "large_model", "medium_height", "medium_movement", "melee", "not_dex", "not_int", "physical_affinity", "red_blood"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "BullCharge"},
 	},
-	// src/Data/Spectres.lua:514
+	// src/Data/Spectres.lua:516
 	"Metadata/Monster/CageSpider/CageSpider2": {
 		Name:            "Sandworn Slaves",
 		Life:            4.4,
@@ -444,7 +444,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"caster", "flesh_armour", "is_unarmed", "large_height", "melee", "not_dex", "not_int", "physical_affinity", "ranged", "skeleton", "slashing_weapon", "slow_movement", "undead"},
 		SkillList:       []string{"Melee", "CageSpiderCycloneTriggerSandstorms", "CageSpiderSandSpark"},
 	},
-	// src/Data/Spectres.lua:537
+	// src/Data/Spectres.lua:539
 	"Metadata/Monsters/Cannibal/CannibalMaleChampion": {
 		Name:            "Cannibal Fire-eater",
 		Life:            1.44,
@@ -463,7 +463,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"bludgeoning_weapon", "caster", "fast_movement", "fire_affinity", "has_one_hand_mace", "has_one_handed_melee", "human", "humanoid", "light_armour", "medium_height", "melee", "not_int", "not_str", "physical_affinity", "red_blood"},
 		SkillList:       []string{"MeleeAtAnimationSpeed", "MonsterFlameRedCannibal", "GTCannibalFlameBreathe"},
 	},
-	// src/Data/Spectres.lua:561
+	// src/Data/Spectres.lua:563
 	"Metadata/Monsters/Goatman/GoatmanLeapSlam": {
 		Name:                         "Goatman",
 		Life:                         1.1,
@@ -482,7 +482,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"beast", "goatman", "has_one_hand_mace", "has_one_handed_melee", "humanoid", "light_armour", "mammal_beast", "medium_height", "melee", "not_int", "not_str", "physical_affinity", "red_blood", "slow_movement"},
 		SkillList:                    []string{"GoatmanLeapSlam", "MeleeAtAnimationSpeed", "GoatmanWait", "GoatmanWait2", "GAGoatmanLeapSlamDamage"},
 	},
-	// src/Data/Spectres.lua:586
+	// src/Data/Spectres.lua:588
 	"Metadata/Monsters/Goatman/GoatmanLightningLeapSlamMaps": {
 		Name:            "Bearded Devil",
 		Life:            1,
@@ -503,7 +503,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewFloat("PhysicalDamageGainAsLightning", mod.TypeBase, 100).Source("Minion:Bearded Devil"),
 		},
 	},
-	// src/Data/Spectres.lua:611
+	// src/Data/Spectres.lua:613
 	"Metadata/Monsters/Goatman/GoatmanShamanFireball": {
 		Name:                         "Goatman Shaman",
 		Life:                         1,
@@ -523,7 +523,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"beast", "bludgeoning_weapon", "caster", "fire_affinity", "goatman", "has_staff", "has_two_handed_melee", "humanoid", "light_armour", "mammal_beast", "medium_height", "melee", "not_dex", "not_str", "physical_affinity", "ranged", "red_blood", "slow_movement"},
 		SkillList:                    []string{"MonsterFireballContactPos", "GoatmanMoltenShell", "MeleeAtAnimationSpeed"},
 	},
-	// src/Data/Spectres.lua:635
+	// src/Data/Spectres.lua:637
 	"Metadata/Monsters/Goatman/GoatmanShamanFireChampion": {
 		Name:            "Goatman Fire-raiser",
 		Life:            1.4,
@@ -542,7 +542,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"beast", "bludgeoning_weapon", "caster", "fire_affinity", "goatman", "has_staff", "has_two_handed_melee", "humanoid", "light_armour", "mammal_beast", "medium_height", "not_dex", "not_str", "ranged", "red_blood", "slow_movement"},
 		SkillList:       []string{"MonsterFireballContactPos", "GoatmanMoltenShell", "GoatmanFireMagmaOrb", "EASGoatmanShamanTaunt"},
 	},
-	// src/Data/Spectres.lua:659
+	// src/Data/Spectres.lua:661
 	"Metadata/Monsters/Goatman/GoatmanShamanLightning": {
 		Name:                         "Bearded Shaman",
 		Life:                         1,
@@ -565,7 +565,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewFloat("Speed", mod.TypeIncrease, -50).Flag(mod.MFlagCast).Source("Minion:Bearded Shaman"),
 		},
 	},
-	// src/Data/Spectres.lua:684
+	// src/Data/Spectres.lua:686
 	"Metadata/Monsters/Goatman/MountainGoatmanChampion": {
 		Name:                         "Colossus Crusher",
 		Life:                         2.1,
@@ -585,7 +585,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"beast", "bludgeoning_weapon", "goatman", "has_two_hand_mace", "has_two_handed_melee", "humanoid", "light_armour", "mammal_beast", "medium_height", "medium_movement", "melee", "not_int", "not_str", "physical_affinity", "red_blood"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "GoatmanEarthquake", "GoatmanMonsterSlam"},
 	},
-	// src/Data/Spectres.lua:708
+	// src/Data/Spectres.lua:710
 	"Metadata/Monsters/Goatman/MountainGoatmanShamanIceSpear": {
 		Name:                         "Alpine Shaman",
 		Life:                         1,
@@ -605,7 +605,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"beast", "bludgeoning_weapon", "caster", "cold_affinity", "goatman", "has_staff", "has_two_handed_melee", "humanoid", "light_armour", "mammal_beast", "medium_height", "not_dex", "not_str", "ranged", "red_blood", "slow_movement"},
 		SkillList:                    []string{"MountainGoatmanIceSpear"},
 	},
-	// src/Data/Spectres.lua:731
+	// src/Data/Spectres.lua:733
 	"Metadata/Monsters/DemonFemale/DemonFemale": {
 		Name:            "Whipping Miscreation",
 		Life:            0.99,
@@ -622,7 +622,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"animal_claw_weapon", "demon", "fast_movement", "flesh_armour", "has_dagger", "has_one_handed_melee", "medium_height", "melee", "physical_affinity", "red_blood"},
 		SkillList:       []string{"Melee", "MeleeDemonFemale"},
 	},
-	// src/Data/Spectres.lua:752
+	// src/Data/Spectres.lua:754
 	"Metadata/Monsters/DemonModular/DemonFemaleRanged": {
 		Name:                         "Tentacle Miscreation",
 		Life:                         0.96,
@@ -644,7 +644,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewFloat("PhysicalDamageConvertToFire", mod.TypeBase, 50).Source("Minion:Tentacle Miscreation"),
 		},
 	},
-	// src/Data/Spectres.lua:780
+	// src/Data/Spectres.lua:782
 	"Metadata/Monsters/DemonModular/DemonFemaleRanged2": {
 		Name:                         "Lunaris Concubine",
 		Life:                         0.96,
@@ -666,7 +666,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewFloat("PhysicalDamageConvertToCold", mod.TypeBase, 50).Source("Minion:Lunaris Concubine"),
 		},
 	},
-	// src/Data/Spectres.lua:802
+	// src/Data/Spectres.lua:804
 	"Metadata/Monsters/DemonModular/DemonModularBladeVortex": {
 		Name:                         "Slashed Miscreation",
 		Life:                         1.5,
@@ -684,7 +684,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"caster", "cleaving_weapon", "demon", "flesh_armour", "has_one_hand_sword", "has_one_handed_melee", "medium_height", "melee", "physical_affinity", "red_blood", "very_slow_movement"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "DemonModularBladeVortex", "DemonModularBladeVortexSpectre"},
 	},
-	// src/Data/Spectres.lua:825
+	// src/Data/Spectres.lua:827
 	"Metadata/Monsters/DemonModular/DemonModularFire": {
 		Name:                         "Burned Miscreation",
 		Life:                         1,
@@ -702,7 +702,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"cleaving_weapon", "demon", "flesh_armour", "has_one_hand_sword", "has_one_handed_melee", "medium_height", "melee", "physical_affinity", "red_blood", "uses_suicide_explode", "very_slow_movement"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "MonsterRighteousFire", "MonsterRighteousFireWhileSpectred", "ModularDemonFireSuicideExplosion"},
 	},
-	// src/Data/Spectres.lua:850
+	// src/Data/Spectres.lua:852
 	"Metadata/Monsters/Frog/Frog": {
 		Name:            "Fetid Maw",
 		Life:            1,
@@ -720,7 +720,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"amphibian_beast", "beast", "has_one_hand_mace", "has_one_handed_melee", "large_model", "light_armour", "melee", "not_int", "not_str", "physical_affinity", "red_blood", "slow_movement", "small_height"},
 		SkillList:       []string{"MonsterLeapSlam", "Melee"},
 	},
-	// src/Data/Spectres.lua:872
+	// src/Data/Spectres.lua:874
 	"Metadata/Monsters/Frog/Frog2": {
 		Name:            "Murk Fiend",
 		Life:            1,
@@ -738,7 +738,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"amphibian_beast", "beast", "has_one_hand_mace", "has_one_handed_melee", "large_model", "light_armour", "melee", "not_int", "not_str", "physical_affinity", "red_blood", "slow_movement", "small_height"},
 		SkillList:       []string{"MonsterLeapSlam", "Melee"},
 	},
-	// src/Data/Spectres.lua:895
+	// src/Data/Spectres.lua:897
 	"Metadata/Monsters/GemMonster/Iguana": {
 		Name:                         "Plumed Chimeral",
 		Life:                         1.25,
@@ -758,7 +758,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"beast", "has_one_hand_sword", "has_one_handed_melee", "large_model", "light_armour", "melee", "not_str", "physical_affinity", "ranged", "red_blood", "reptile_beast", "slow_movement", "small_height"},
 		SkillList:                    []string{"IguanaProjectile", "MeleeAtAnimationSpeed"},
 	},
-	// src/Data/Spectres.lua:919
+	// src/Data/Spectres.lua:921
 	"Metadata/Monsters/GemMonster/IguanaChrome": {
 		Name:                         "Chrome-infused Chimeral",
 		Life:                         1.54,
@@ -781,7 +781,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewFloat("PhysicalDamageGainAsCold", mod.TypeBase, 100).Source("Minion:Chrome-infused Chimeral"),
 		},
 	},
-	// src/Data/Spectres.lua:946
+	// src/Data/Spectres.lua:948
 	"Metadata/Monsters/GhostPirates/GhostPirateBlackBowMaps": {
 		Name:                         "Spectral Bowman",
 		Life:                         0.96,
@@ -805,7 +805,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewFloat("PhysicalDamageGainAsLightning", mod.TypeBase, 100).Source("Minion:Spectral Bowman"),
 		},
 	},
-	// src/Data/Spectres.lua:973
+	// src/Data/Spectres.lua:975
 	"Metadata/Monsters/GhostPirates/GhostPirateBlackFlickerStrikeMaps": {
 		Name:                         "Cursed Mariner",
 		Life:                         1,
@@ -833,7 +833,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewFloat("BlockEffect", mod.TypeBase, 40).Source("Minion:Cursed Mariner"),
 		},
 	},
-	// src/Data/Spectres.lua:1004
+	// src/Data/Spectres.lua:1006
 	"Metadata/Monsters/GhostPirates/GhostPirateGreenBladeVortex": {
 		Name:                         "Spectral Scoundrel",
 		Life:                         1.5,
@@ -861,7 +861,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewFloat("BlockEffect", mod.TypeBase, 40).Source("Minion:Spectral Scoundrel"),
 		},
 	},
-	// src/Data/Spectres.lua:1036
+	// src/Data/Spectres.lua:1038
 	"Metadata/Monsters/Grappler/Grappler": {
 		Name:                         "Undying Grappler",
 		Life:                         1,
@@ -880,7 +880,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"demon", "flesh_armour", "has_one_hand_sword", "has_one_handed_melee", "humanoid", "medium_height", "medium_movement", "melee", "not_int", "not_str", "physical_affinity", "red_blood", "undying"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "MonsterFlickerStrike", "MonsterDischarge"},
 	},
-	// src/Data/Spectres.lua:1062
+	// src/Data/Spectres.lua:1064
 	"Metadata/Monsters/Grappler/GrapplerLabyrinth": {
 		Name:                         "Shadow Lurker",
 		Life:                         1,
@@ -899,7 +899,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"demon", "flesh_armour", "has_one_hand_sword", "has_one_handed_melee", "humanoid", "medium_height", "medium_movement", "melee", "not_int", "not_str", "physical_affinity", "red_blood", "undying"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "MonsterFlickerStrike", "MonsterDischarge"},
 	},
-	// src/Data/Spectres.lua:1089
+	// src/Data/Spectres.lua:1091
 	"Metadata/Monsters/Guardians/GuardianFire": {
 		Name:                         "Flame Sentinel",
 		Life:                         1.8,
@@ -919,7 +919,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"caster", "construct", "fire_affinity", "ghost_armour", "has_claw", "has_one_handed_melee", "large_height", "large_model", "mud_blood", "not_str", "ranged", "slow_movement"},
 		SkillList:                    []string{"MonsterMultiFireball", "MonsterSplitFireball", "MonsterLesserMultiFireball", "MonsterMultiFireballSpectre", "MonsterSplitFireballSpectre", "MonsterLesserMultiFireballSpectre"},
 	},
-	// src/Data/Spectres.lua:1116
+	// src/Data/Spectres.lua:1118
 	"Metadata/Monsters/Guardians/GuardianFire_BlueMaps": {
 		Name:                         "Frost Sentinel",
 		Life:                         1.8,
@@ -939,7 +939,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"caster", "cold_affinity", "construct", "ghost_armour", "has_claw", "has_one_handed_melee", "large_height", "large_model", "mud_blood", "not_str", "ranged", "slow_movement"},
 		SkillList:                    []string{"MonsterMultiIceSpear", "MonsterSplitIceSpear", "MonsterLesserMultiIceSpear"},
 	},
-	// src/Data/Spectres.lua:1140
+	// src/Data/Spectres.lua:1142
 	"Metadata/Monsters/Guardians/GuardianLightning": {
 		Name:                         "Galvanic Ribbon",
 		Life:                         1.8,
@@ -959,7 +959,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"caster", "construct", "ghost_armour", "has_claw", "has_one_handed_melee", "large_height", "large_model", "lightning_affinity", "mud_blood", "not_str", "slow_movement"},
 		SkillList:                    []string{"GuardianArc"},
 	},
-	// src/Data/Spectres.lua:1163
+	// src/Data/Spectres.lua:1165
 	"Metadata/Monsters/HalfSkeleton/HalfSkeleton": {
 		Name:                         "Gut Flayer",
 		Life:                         1.32,
@@ -979,7 +979,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"demon", "flesh_armour", "has_dagger", "has_one_handed_melee", "humanoid", "medium_height", "medium_movement", "melee", "not_dex", "not_int", "physical_affinity", "puncturing_weapon", "ranged", "red_blood"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "HalfSkeletonPuncture"},
 	},
-	// src/Data/Spectres.lua:1188
+	// src/Data/Spectres.lua:1190
 	"Metadata/Monsters/HolyFireElemental/HolyFireElementalSolarisBeam": {
 		Name:            "Solar Guard",
 		Life:            1.98,
@@ -1001,7 +1001,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewFloat("PhysicalDamageGainAsFire", mod.TypeBase, 60).Source("Minion:Solar Guard"),
 		},
 	},
-	// src/Data/Spectres.lua:1212
+	// src/Data/Spectres.lua:1214
 	"Metadata/Monsters/incaminion/Fragment": {
 		Name:                         "Ancient Construct",
 		Life:                         1.19,
@@ -1020,7 +1020,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"caster", "chaos_affinity", "construct", "ghost_armour", "ghost_blood", "is_unarmed", "medium_height", "medium_movement", "not_dex", "not_str", "puncturing_weapon", "ranged"},
 		SkillList:                    []string{"IncaMinionProjectile", "MonsterWaitVeryShort"},
 	},
-	// src/Data/Spectres.lua:1235
+	// src/Data/Spectres.lua:1237
 	"Metadata/Monsters/InsectSpawner/InsectSpawner": {
 		Name:                         "Carrion Queen",
 		Life:                         2.45,
@@ -1041,7 +1041,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewFloat("PhysicalDamageConvertToFire", mod.TypeBase, 50).Source("Minion:Carrion Queen"),
 		},
 	},
-	// src/Data/Spectres.lua:1258
+	// src/Data/Spectres.lua:1260
 	"Metadata/Monsters/KaomWarrior/KaomWarrior2": {
 		Name:                         "Kaom's Chosen",
 		Life:                         1.43,
@@ -1060,7 +1060,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"demon", "fire_affinity", "has_dual_wield_melee", "has_one_hand_mace", "has_one_handed_melee", "humanoid", "karui", "medium_height", "melee", "not_dex", "not_int", "physical_affinity", "red_blood", "slashing_weapon", "slow_movement", "stone_armour"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "KaomWarriorMoltenStrike"},
 	},
-	// src/Data/Spectres.lua:1280
+	// src/Data/Spectres.lua:1282
 	"Metadata/Monsters/KaomWarrior/KaomWarrior3": {
 		Name:                         "Kaom's Chosen",
 		Life:                         1.43,
@@ -1079,7 +1079,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"demon", "has_dual_wield_melee", "has_one_hand_mace", "has_one_handed_melee", "humanoid", "karui", "medium_height", "melee", "not_dex", "not_int", "physical_affinity", "red_blood", "slashing_weapon", "slow_movement", "stone_armour"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "KaomWarriorGroundSlam"},
 	},
-	// src/Data/Spectres.lua:1302
+	// src/Data/Spectres.lua:1304
 	"Metadata/Monsters/KaomWarrior/KaomWarrior7": {
 		Name:            "Tukohama's Vanguard",
 		Life:            1.43,
@@ -1100,7 +1100,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewFloat("TotemLife", mod.TypeIncrease, 250).Source("Minion:Tukohama's Vanguard"),
 		},
 	},
-	// src/Data/Spectres.lua:1331
+	// src/Data/Spectres.lua:1333
 	"Metadata/Monsters/KitavaCultist/VaalCultistSpearBloodDelve": {
 		Name:            "Risen Vaal Fanatic",
 		Life:            2.88,
@@ -1121,7 +1121,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"caster", "cultist", "delve_monster", "flesh_armour", "has_one_handed_melee", "has_thrusting_one_hand_sword", "human", "humanoid", "medium_height", "medium_movement", "no_pantheon_mod", "not_int", "physical_affinity", "puncturing_weapon", "ranged", "red_blood"},
 		SkillList:       []string{"VaalincursionMortar"},
 	},
-	// src/Data/Spectres.lua:1355
+	// src/Data/Spectres.lua:1357
 	"Metadata/Monsters/KitavaCultist/VaalCultistSpearBloodChampionDelve": {
 		Name:            "Risen Vaal Advocate",
 		Life:            4.05,
@@ -1142,7 +1142,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"caster", "cultist", "delve_monster", "flesh_armour", "has_one_handed_melee", "has_thrusting_one_hand_sword", "human", "humanoid", "medium_height", "medium_movement", "no_pantheon_mod", "not_int", "physical_affinity", "puncturing_weapon", "ranged", "red_blood"},
 		SkillList:       []string{"VaalincursionMortar", "VaalIncursionSpecialBeamCannonBlood"},
 	},
-	// src/Data/Spectres.lua:1380
+	// src/Data/Spectres.lua:1382
 	"Metadata/Monsters/KitavaCultist/VaalCultistSpearChaosDelve": {
 		Name:            "Risen Vaal Fanatic",
 		Life:            2.88,
@@ -1163,7 +1163,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"caster", "chaos_affinity", "cultist", "delve_monster", "flesh_armour", "has_one_handed_melee", "has_thrusting_one_hand_sword", "human", "humanoid", "medium_height", "medium_movement", "no_pantheon_mod", "not_int", "puncturing_weapon", "ranged", "red_blood"},
 		SkillList:       []string{"FireballIncursionChaos"},
 	},
-	// src/Data/Spectres.lua:1404
+	// src/Data/Spectres.lua:1406
 	"Metadata/Monsters/KitavaCultist/VaalCultistSpearChaosChampionDelve": {
 		Name:            "Risen Vaal Advocate",
 		Life:            4.05,
@@ -1184,7 +1184,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"caster", "chaos_affinity", "cultist", "delve_monster", "flesh_armour", "has_one_handed_melee", "has_thrusting_one_hand_sword", "human", "humanoid", "medium_height", "medium_movement", "no_pantheon_mod", "not_int", "puncturing_weapon", "ranged", "red_blood"},
 		SkillList:       []string{"FireballIncursionChaos", "IncursionSummonPhantasms", "IncursionMeteorUpheaval"},
 	},
-	// src/Data/Spectres.lua:1430
+	// src/Data/Spectres.lua:1432
 	"Metadata/Monsters/KitavaCultist/VaalCultistSpearFireDelve": {
 		Name:            "Risen Vaal Fanatic",
 		Life:            2.88,
@@ -1205,7 +1205,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"caster", "cultist", "delve_monster", "fire_affinity", "flesh_armour", "has_one_handed_melee", "has_thrusting_one_hand_sword", "human", "humanoid", "medium_height", "medium_movement", "no_pantheon_mod", "not_int", "puncturing_weapon", "ranged", "red_blood"},
 		SkillList:       []string{"FireballIncusionFire"},
 	},
-	// src/Data/Spectres.lua:1454
+	// src/Data/Spectres.lua:1456
 	"Metadata/Monsters/KitavaCultist/VaalCultistSpearFireChampionDelve_": {
 		Name:            "Risen Vaal Advocate",
 		Life:            4.05,
@@ -1226,7 +1226,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"caster", "cultist", "delve_monster", "fire_affinity", "flesh_armour", "has_one_handed_melee", "has_thrusting_one_hand_sword", "human", "humanoid", "medium_height", "medium_movement", "no_pantheon_mod", "not_int", "puncturing_weapon", "ranged", "red_blood"},
 		SkillList:       []string{"FireballIncusionFire", "VaalIncursionFirestorm"},
 	},
-	// src/Data/Spectres.lua:1479
+	// src/Data/Spectres.lua:1481
 	"Metadata/Monsters/KitavaCultist/VaalCultistSpearLightningDelve": {
 		Name:            "Risen Vaal Fanatic",
 		Life:            2.88,
@@ -1247,7 +1247,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"caster", "cultist", "delve_monster", "flesh_armour", "has_one_handed_melee", "has_thrusting_one_hand_sword", "human", "humanoid", "lightning_affinity", "medium_height", "medium_movement", "no_pantheon_mod", "not_int", "puncturing_weapon", "ranged", "red_blood"},
 		SkillList:       []string{"FireballIncusionLightning"},
 	},
-	// src/Data/Spectres.lua:1503
+	// src/Data/Spectres.lua:1505
 	"Metadata/Monsters/KitavaCultist/VaalCultistSpearLightningChampionDelve_": {
 		Name:            "Risen Vaal Advocate",
 		Life:            4.05,
@@ -1268,7 +1268,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"caster", "cultist", "delve_monster", "flesh_armour", "has_one_handed_melee", "has_thrusting_one_hand_sword", "human", "humanoid", "lightning_affinity", "medium_height", "medium_movement", "no_pantheon_mod", "not_int", "puncturing_weapon", "ranged", "red_blood"},
 		SkillList:       []string{"FireballIncusionLightning", "DelayedLightningSpark", "SummonedSparkDaemonLightning"},
 	},
-	// src/Data/Spectres.lua:1530
+	// src/Data/Spectres.lua:1532
 	"Metadata/Monster/KitavaDemon/KitavaDemon": {
 		Name:            "Kitava's Herald",
 		Life:            3.6,
@@ -1289,7 +1289,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"cannot_be_monolith", "caster", "cleaving_weapon", "cultist", "demon", "fire_affinity", "flesh_armour", "has_one_hand_sword", "has_one_handed_melee", "humanoid", "medium_height", "melee", "not_int", "physical_affinity", "red_blood", "slow_movement"},
 		SkillList:       []string{"KitavaDemonLeapSlam", "KitavaDemonCleave", "KitavaDemonWhirlingBlades", "KitavaDemonXMortar", "Melee"},
 	},
-	// src/Data/Spectres.lua:1560
+	// src/Data/Spectres.lua:1562
 	"Metadata/Monsters/Kiweth/Kiweth": {
 		Name:            "Avian Retch",
 		Life:            1.54,
@@ -1311,7 +1311,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewFloat("Damage", mod.TypeIncrease, 20).Flag(mod.MFlagProjectile).Source("Minion:Avian Retch"),
 		},
 	},
-	// src/Data/Spectres.lua:1586
+	// src/Data/Spectres.lua:1588
 	"Metadata/Monsters/Kiweth/KiwethSeagull": {
 		Name:            "Gluttonous Gull",
 		Life:            1.3,
@@ -1333,7 +1333,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewFloat("Damage", mod.TypeIncrease, 20).Flag(mod.MFlagProjectile).Source("Minion:Gluttonous Gull"),
 		},
 	},
-	// src/Data/Spectres.lua:1613
+	// src/Data/Spectres.lua:1615
 	"Metadata/Monsters/LeagueDelve/ProtoVaalWarriorElite": {
 		Name:            "Stoneskin Flayer",
 		Life:            8,
@@ -1355,7 +1355,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"delve_monster", "fast_movement", "has_dual_wield_melee", "has_one_hand_sword", "has_one_handed_melee", "human", "humanoid", "large_height", "melee", "mud_blood", "no_pantheon_mod", "not_int", "physical_affinity", "slashing_weapon", "stone_armour"},
 		SkillList:       []string{"Melee", "DelveProtovaalWhirlingCharge"},
 	},
-	// src/Data/Spectres.lua:1639
+	// src/Data/Spectres.lua:1641
 	"Metadata/Monsters/Lion/LionDesertSkinPuncture": {
 		Name:                         "Dune Hellion",
 		Life:                         1,
@@ -1374,7 +1374,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"animal_claw_weapon", "beast", "feline_beast", "has_dagger", "has_one_handed_melee", "large_model", "light_armour", "mammal_beast", "medium_movement", "melee", "not_int", "not_str", "physical_affinity", "red_blood", "small_height"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "MonsterPuncture"},
 	},
-	// src/Data/Spectres.lua:1662
+	// src/Data/Spectres.lua:1664
 	"Metadata/Monsters/Lion/LionWolf3Champion": {
 		Name:            "Freezing Wolf",
 		Life:            1.8,
@@ -1396,7 +1396,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewFloat("PhysicalDamageGainAsCold", mod.TypeBase, 100).Source("Minion:Freezing Wolf"),
 		},
 	},
-	// src/Data/Spectres.lua:1686
+	// src/Data/Spectres.lua:1688
 	"Metadata/Monsters/MassSkeleton/MassSkeleton": {
 		Name:                         "Knitted Horror",
 		Life:                         2.25,
@@ -1415,7 +1415,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"bones", "extra_large_height", "humanoid", "is_unarmed", "large_model", "medium_movement", "melee", "not_dex", "not_int", "physical_affinity", "ranged", "skeleton", "slashing_weapon", "stone_armour", "undead"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "SkeletonMassBowProjectile"},
 	},
-	// src/Data/Spectres.lua:1710
+	// src/Data/Spectres.lua:1712
 	"Metadata/Monsters/Miner/MinerLantern": {
 		Name:                         "Pocked Lanternbearer",
 		Life:                         1.21,
@@ -1434,7 +1434,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"cannot_be_monolith", "caster", "fire_affinity", "has_one_hand_sword", "has_one_handed_melee", "humanoid", "medium_height", "mud_blood", "not_int", "not_str", "ranged", "stone_armour", "undead", "very_slow_movement"},
 		SkillList:                    []string{"MinerThrowFire", "MinerThrowFireSpectre"},
 	},
-	// src/Data/Spectres.lua:1733
+	// src/Data/Spectres.lua:1735
 	"Metadata/Monsters/Miner/MinerLanternCrystalVeins": {
 		Name:                         "Pocked Illuminator",
 		Life:                         1.21,
@@ -1453,7 +1453,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"cannot_be_monolith", "caster", "fire_affinity", "has_one_hand_sword", "has_one_handed_melee", "humanoid", "medium_height", "mud_blood", "not_int", "not_str", "ranged", "stone_armour", "undead", "very_slow_movement"},
 		SkillList:                    []string{"MinerThrowFire", "MinerThrowFireSpectre"},
 	},
-	// src/Data/Spectres.lua:1757
+	// src/Data/Spectres.lua:1759
 	"Metadata/Monsters/Monkeys/FlameBearer": {
 		Name:                         "Voidbearer",
 		Life:                         1.1,
@@ -1471,7 +1471,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"animal_claw_weapon", "caster", "demon", "fire_affinity", "is_unarmed", "light_armour", "medium_height", "medium_movement", "melee", "physical_affinity", "red_blood"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "FlamebearerFlameBlue"},
 	},
-	// src/Data/Spectres.lua:1780
+	// src/Data/Spectres.lua:1782
 	"Metadata/Monsters/MossMonster/FireMonster": {
 		Name:                         "Cinder Elemental",
 		Life:                         2.7,
@@ -1490,7 +1490,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"cleaving_weapon", "construct", "earth_elemental", "has_one_hand_sword", "has_one_handed_melee", "large_height", "large_model", "melee", "mud_blood", "not_dex", "not_int", "physical_affinity", "stone_armour", "stone_construct", "very_slow_movement"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "FireMonsterWhirlingBlades"},
 	},
-	// src/Data/Spectres.lua:1804
+	// src/Data/Spectres.lua:1806
 	"Metadata/Monsters/MotherOfFlames/MotherOfFlamesZombie": {
 		Name:            "Kiln Mother",
 		Life:            0.9,
@@ -1508,7 +1508,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"caster", "female", "fire_affinity", "human", "humanoid", "is_unarmed", "light_armour", "medium_height", "melee", "not_dex", "not_str", "physical_affinity", "ranged", "red_blood", "slashing_weapon", "slow_movement", "templar"},
 		SkillList:       []string{"MotherOfFlamesMagmaOrb3", "Melee"},
 	},
-	// src/Data/Spectres.lua:1826
+	// src/Data/Spectres.lua:1828
 	"Metadata/Monsters/Necromancer/NecromancerConductivity": {
 		Name:                         "Sin Lord",
 		Life:                         2.4,
@@ -1527,7 +1527,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"animal_claw_weapon", "cursing_monster", "demon", "flesh_armour", "humanoid", "insect_blood", "is_unarmed", "medium_height", "melee", "not_dex", "not_str", "physical_affinity", "raises_dead", "very_slow_movement"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "NecromancerReviveSkeleton", "NecromancerConductivity"},
 	},
-	// src/Data/Spectres.lua:1852
+	// src/Data/Spectres.lua:1854
 	"Metadata/Monsters/Necromancer/NecromancerEnfeebleCurse": {
 		Name:                         "Diabolist",
 		Life:                         2.4,
@@ -1546,7 +1546,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"animal_claw_weapon", "cursing_monster", "demon", "flesh_armour", "humanoid", "insect_blood", "is_unarmed", "medium_height", "melee", "not_dex", "not_str", "physical_affinity", "raises_dead", "very_slow_movement"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "NecromancerReviveSkeleton", "NecromancerEnfeeble", "AddBuffToTargetNecromancer"},
 	},
-	// src/Data/Spectres.lua:1879
+	// src/Data/Spectres.lua:1881
 	"Metadata/Monsters/Necromancer/NecromancerFlamability": {
 		Name:                         "Ash Prophet",
 		Life:                         2.4,
@@ -1565,7 +1565,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"animal_claw_weapon", "caster", "cursing_monster", "demon", "flesh_armour", "humanoid", "insect_blood", "is_unarmed", "medium_height", "melee", "not_dex", "not_str", "physical_affinity", "raises_dead", "very_slow_movement"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "NecromancerReviveSkeleton", "NecromancerFlammability"},
 	},
-	// src/Data/Spectres.lua:1906
+	// src/Data/Spectres.lua:1908
 	"Metadata/Monsters/Necromancer/NecromancerFrostbite": {
 		Name:                         "Death Bishop",
 		Life:                         2.4,
@@ -1584,7 +1584,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"animal_claw_weapon", "caster", "cursing_monster", "demon", "flesh_armour", "humanoid", "insect_blood", "is_unarmed", "medium_height", "melee", "not_dex", "not_str", "physical_affinity", "raises_dead", "very_slow_movement"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "NecromancerReviveSkeleton", "NecromancerFrostbite"},
 	},
-	// src/Data/Spectres.lua:1932
+	// src/Data/Spectres.lua:1934
 	"Metadata/Monsters/Necromancer/NecromancerElementalWeakness": {
 		Name:                         "Defiler",
 		Life:                         2.4,
@@ -1603,7 +1603,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"animal_claw_weapon", "cursing_monster", "demon", "flesh_armour", "humanoid", "insect_blood", "is_unarmed", "medium_height", "melee", "not_dex", "not_str", "physical_affinity", "raises_dead", "very_slow_movement"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "NecromancerReviveSkeleton", "NecromancerElementalWeakness"},
 	},
-	// src/Data/Spectres.lua:1958
+	// src/Data/Spectres.lua:1960
 	"Metadata/Monsters/Necromancer/NecromancerProjectileWeakness": {
 		Name:                         "Necromancer",
 		Life:                         2.4,
@@ -1622,7 +1622,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"animal_claw_weapon", "caster", "cursing_monster", "demon", "flesh_armour", "humanoid", "insect_blood", "is_unarmed", "medium_height", "melee", "not_dex", "not_str", "physical_affinity", "raises_dead", "very_slow_movement"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "NecromancerReviveSkeleton", "NecromancerEnfeeble"},
 	},
-	// src/Data/Spectres.lua:1984
+	// src/Data/Spectres.lua:1986
 	"Metadata/Monsters/Necromancer/NecromancerVulnerability": {
 		Name:                         "Necromancer",
 		Life:                         2.4,
@@ -1641,7 +1641,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"animal_claw_weapon", "caster", "cursing_monster", "demon", "flesh_armour", "humanoid", "insect_blood", "is_unarmed", "medium_height", "melee", "not_dex", "not_str", "physical_affinity", "raises_dead", "very_slow_movement"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "NecromancerReviveSkeleton", "NecromancerVulnerability"},
 	},
-	// src/Data/Spectres.lua:2011
+	// src/Data/Spectres.lua:2013
 	"Metadata/Monsters/Pyromaniac/PyromaniacFire": {
 		Name:                         "Undying Incinerator",
 		Life:                         1,
@@ -1660,7 +1660,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"caster", "demon", "fire_affinity", "flesh_armour", "humanoid", "is_unarmed", "medium_height", "not_int", "not_str", "ranged", "red_blood", "slashing_weapon", "slow_movement", "undying", "uses_suicide_explode"},
 		SkillList:                    []string{"PyroFireball", "PyroSuicideExplosion", "MonsterFireBomb"},
 	},
-	// src/Data/Spectres.lua:2036
+	// src/Data/Spectres.lua:2038
 	"Metadata/Monsters/Pyromaniac/PyromaniacPoison": {
 		Name:                         "Undying Alchemist",
 		Life:                         1,
@@ -1679,7 +1679,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"caster", "chaos_affinity", "demon", "flesh_armour", "humanoid", "is_unarmed", "medium_height", "not_int", "not_str", "ranged", "red_blood", "slashing_weapon", "slow_movement", "undying"},
 		SkillList:                    []string{"MonsterCausticBomb", "PyroChaosFireball"},
 	},
-	// src/Data/Spectres.lua:2059
+	// src/Data/Spectres.lua:2061
 	"Metadata/Monsters/Revenant/Revenant": {
 		Name:                         "Stygian Revenant",
 		Life:                         1.82,
@@ -1698,7 +1698,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"caster", "demon", "fast_movement", "flesh_armour", "is_unarmed", "large_model", "lightning_affinity", "melee", "not_int", "not_str", "physical_affinity", "raises_dead", "ranged", "red_blood", "slashing_weapon", "small_height"},
 		SkillList:                    []string{"RevenantReviveUndead", "RevenantSpellProjectile", "MeleeAtAnimationSpeed", "RevenantSpellProjectileSpectre"},
 	},
-	// src/Data/Spectres.lua:2084
+	// src/Data/Spectres.lua:2086
 	"Metadata/Monsters/Seawitch/SeaWitchFrostBolt": {
 		Name:                         "Merveil's Blessed",
 		Life:                         1.44,
@@ -1717,7 +1717,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"caster", "cold_affinity", "demon", "flesh_armour", "has_dagger", "has_one_handed_melee", "medium_height", "melee", "not_dex", "not_str", "physical_affinity", "ranged", "red_blood", "slow_movement"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "SeawitchFrostbolt", "SeawitchWaveGeometrySpell"},
 	},
-	// src/Data/Spectres.lua:2107
+	// src/Data/Spectres.lua:2109
 	"Metadata/Monsters/Seawitch/SeaWitchScreech": {
 		Name:                         "Singing Siren",
 		Life:                         1.02,
@@ -1736,7 +1736,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"caster", "cold_affinity", "demon", "flesh_armour", "has_dagger", "has_one_handed_melee", "medium_height", "melee", "not_dex", "not_str", "physical_affinity", "red_blood", "slow_movement"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "SeaWitchScreech", "SeawitchWaveGeometrySpell"},
 	},
-	// src/Data/Spectres.lua:2130
+	// src/Data/Spectres.lua:2132
 	"Metadata/Monsters/Seawitch/SeaWitchSpawnExploding": {
 		Name:                         "Merveil's Attendant",
 		Life:                         1.02,
@@ -1755,7 +1755,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"caster", "cold_affinity", "demon", "flesh_armour", "has_dagger", "has_one_handed_melee", "medium_height", "melee", "not_dex", "not_str", "physical_affinity", "red_blood", "slow_movement"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "SeaWitchScreech", "SeawitchWaveGeometrySpell", "SSMSeawitchSpawnKamikaze"},
 	},
-	// src/Data/Spectres.lua:2154
+	// src/Data/Spectres.lua:2156
 	"Metadata/Monsters/Seawitch/SeaWitchSpawnTemporalChains": {
 		Name:                         "Merveil's Chosen",
 		Life:                         1.02,
@@ -1774,7 +1774,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"caster", "cold_affinity", "cursing_monster", "demon", "flesh_armour", "has_dagger", "has_one_handed_melee", "medium_height", "melee", "not_dex", "not_str", "physical_affinity", "red_blood", "slow_movement"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "SeawitchTemporalChains", "SummonSpawn", "SeawitchWaveGeometrySpell"},
 	},
-	// src/Data/Spectres.lua:2178
+	// src/Data/Spectres.lua:2180
 	"Metadata/Monsters/Seawitch/SeaWitchVulnerabilityCurse": {
 		Name:                         "Merveil's Retainer",
 		Life:                         1.02,
@@ -1793,7 +1793,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"caster", "cold_affinity", "cursing_monster", "demon", "flesh_armour", "has_dagger", "has_one_handed_melee", "medium_height", "melee", "not_dex", "not_str", "physical_affinity", "red_blood", "slow_movement"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "SeawitchVulnerability", "SeawitchWaveGeometrySpell"},
 	},
-	// src/Data/Spectres.lua:2202
+	// src/Data/Spectres.lua:2204
 	"Metadata/Monsters/Skeletons/SkeletonBowPuncture": {
 		Name:                         "Brittle Bleeder",
 		Life:                         0.96,
@@ -1813,7 +1813,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"bone_armour", "bones", "has_bow", "humanoid", "medium_height", "not_int", "not_str", "physical_affinity", "puncturing_weapon", "ranged", "skeleton", "undead", "very_slow_movement"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "MonsterPuncture", "ChangeToStance1", "ChangeToStance2"},
 	},
-	// src/Data/Spectres.lua:2229
+	// src/Data/Spectres.lua:2231
 	"Metadata/Monsters/Skeletons/SkeletonBowLightning": {
 		Name:                         "Brittle Poacher",
 		Life:                         0.96,
@@ -1833,7 +1833,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"bone_armour", "bones", "has_bow", "humanoid", "lightning_affinity", "medium_height", "not_int", "not_str", "physical_affinity", "puncturing_weapon", "ranged", "skeleton", "undead", "very_slow_movement"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "SkeletonArcherLightningArrow", "ChangeToStance1", "ChangeToStance2"},
 	},
-	// src/Data/Spectres.lua:2255
+	// src/Data/Spectres.lua:2257
 	"Metadata/Monsters/Skeletons/SkeletonMeleeLarge": {
 		Name:            "Colossal Bonestalker",
 		Life:            1.98,
@@ -1852,7 +1852,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"bone_armour", "bones", "cleaving_weapon", "has_one_hand_mace", "has_one_handed_melee", "large_height", "melee", "not_dex", "not_int", "physical_affinity", "skeleton", "undead", "very_slow_movement"},
 		SkillList:       []string{"Melee"},
 	},
-	// src/Data/Spectres.lua:2278
+	// src/Data/Spectres.lua:2280
 	"Metadata/Monsters/Skeletons/SkeletonBowLightning3": {
 		Name:                         "Flayed Archer",
 		Life:                         0.96,
@@ -1872,7 +1872,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"bone_armour", "bones", "has_bow", "humanoid", "lightning_affinity", "medium_height", "not_int", "not_str", "physical_affinity", "puncturing_weapon", "ranged", "skeleton", "undead", "very_slow_movement"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "MonsterLightningArrow"},
 	},
-	// src/Data/Spectres.lua:2302
+	// src/Data/Spectres.lua:2304
 	"Metadata/Monsters/Skeletons/SkeletonCasterColdMultipleProjectiles": {
 		Name:            "Frost Harbinger",
 		Life:            0.84,
@@ -1894,7 +1894,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewFloat("ProjectileCount", mod.TypeBase, 2).Source("Minion:Frost Harbinger"),
 		},
 	},
-	// src/Data/Spectres.lua:2325
+	// src/Data/Spectres.lua:2327
 	"Metadata/Monsters/Skeletons/SkeletonCasterFireMultipleProjectiles2": {
 		Name:            "Incinerated Mage",
 		Life:            0.84,
@@ -1916,7 +1916,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewFloat("ProjectileCount", mod.TypeBase, 2).Source("Minion:Incinerated Mage"),
 		},
 	},
-	// src/Data/Spectres.lua:2349
+	// src/Data/Spectres.lua:2351
 	"Metadata/Monsters/Skeletons/SkeletonBowPoison": {
 		Name:                         "Plagued Bowman",
 		Life:                         0.96,
@@ -1936,7 +1936,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"bone_armour", "bones", "chaos_affinity", "has_bow", "humanoid", "medium_height", "not_int", "not_str", "physical_affinity", "puncturing_weapon", "ranged", "skeleton", "undead", "very_slow_movement"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "MonsterCausticArrow"},
 	},
-	// src/Data/Spectres.lua:2374
+	// src/Data/Spectres.lua:2376
 	"Metadata/Monsters/Skeletons/SkeletonBowLightning2": {
 		Name:                         "Restless Archer",
 		Life:                         0.96,
@@ -1956,7 +1956,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"bone_armour", "bones", "has_bow", "humanoid", "lightning_affinity", "medium_height", "not_int", "not_str", "physical_affinity", "puncturing_weapon", "ranged", "skeleton", "undead", "very_slow_movement"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "MonsterLightningArrow"},
 	},
-	// src/Data/Spectres.lua:2398
+	// src/Data/Spectres.lua:2400
 	"Metadata/Monsters/Skeletons/SkeletonBowLightning4": {
 		Name:                         "Sin Archer",
 		Life:                         0.96,
@@ -1976,7 +1976,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"bone_armour", "bones", "has_bow", "humanoid", "lightning_affinity", "medium_height", "not_int", "not_str", "physical_affinity", "puncturing_weapon", "ranged", "skeleton", "undead", "very_slow_movement"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "MonsterLightningArrow"},
 	},
-	// src/Data/Spectres.lua:2422
+	// src/Data/Spectres.lua:2424
 	"Metadata/Monsters/Skeletons/SkeletonCasterLightningSpark": {
 		Name:            "Sparking Mage",
 		Life:            0.84,
@@ -1994,7 +1994,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"bone_armour", "bones", "caster", "is_unarmed", "lightning_affinity", "medium_height", "not_dex", "not_str", "ranged", "skeleton", "slashing_weapon", "undead", "very_slow_movement"},
 		SkillList:       []string{"SkeletonProjectileLightning", "SkeletonSpark"},
 	},
-	// src/Data/Spectres.lua:2445
+	// src/Data/Spectres.lua:2447
 	"Metadata/Monsters/Skeletons/SkeletonBlackCaster1_": {
 		Name:            "Desecrated Saint",
 		Life:            0.84,
@@ -2013,7 +2013,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"bone_armour", "bones", "caster", "has_one_hand_mace", "has_one_handed_melee", "medium_height", "not_str", "physical_affinity", "skeleton", "slashing_weapon", "undead", "very_slow_movement"},
 		SkillList:       []string{"SkeletonProjectileBlack"},
 	},
-	// src/Data/Spectres.lua:2470
+	// src/Data/Spectres.lua:2472
 	"Metadata/Monsters/Skeletons/SkeletonBowProjectileWeaknessCurse": {
 		Name:                         "Vexing Archer",
 		Life:                         0.96,
@@ -2033,7 +2033,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"bone_armour", "bones", "cursing_monster", "has_bow", "humanoid", "medium_height", "not_int", "not_str", "physical_affinity", "puncturing_weapon", "ranged", "skeleton", "undead", "very_slow_movement"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "MonsterProjectileWeakness"},
 	},
-	// src/Data/Spectres.lua:2495
+	// src/Data/Spectres.lua:2497
 	"Metadata/Monsters/Skeletons/SkeletonMeleeKnightElementalSwordIncursionChampion": {
 		Name:                         "Enhanced Vaal Fallen",
 		Life:                         2.25,
@@ -2054,7 +2054,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"bone_armour", "bones", "construct", "has_two_hand_sword", "has_two_handed_melee", "medium_height", "melee", "no_pantheon_mod", "not_dex", "not_int", "physical_affinity", "skeleton", "slashing_weapon", "undead", "very_slow_movement"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "ElementalHitSkeletonKnightIncursion", "IncursionLeapSlamChampion"},
 	},
-	// src/Data/Spectres.lua:2521
+	// src/Data/Spectres.lua:2523
 	"Metadata/Monsters/Skeletons/SkeletonBowKnightElemental": {
 		Name:            "Vaal Slayer",
 		Life:            0.96,
@@ -2074,7 +2074,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"bone_armour", "bones", "construct", "has_bow", "medium_height", "not_int", "physical_affinity", "puncturing_weapon", "ranged", "very_slow_movement"},
 		SkillList:       []string{"Melee", "ElementalHitSkeletonKnight"},
 	},
-	// src/Data/Spectres.lua:2545
+	// src/Data/Spectres.lua:2547
 	"Metadata/Monsters/Skeletons/SkeletonMeleeBlackAbyssBoneLance": {
 		Name:            "Primeval Hunter",
 		Life:            1.7,
@@ -2094,7 +2094,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"abyssal", "caster", "flesh_armour", "has_two_hand_mace", "has_two_handed_melee", "medium_height", "melee", "not_dex", "not_int", "physical_affinity", "puncturing_weapon", "ranged", "red_blood", "slow_movement", "undead"},
 		SkillList:       []string{"Melee", "SkeletonBlackAbyssBoneLance"},
 	},
-	// src/Data/Spectres.lua:2574
+	// src/Data/Spectres.lua:2576
 	"Metadata/Monsters/SkeletonCannon/SkeletonCannon1": {
 		Name:            "Bone Husk",
 		Life:            2.07,
@@ -2113,7 +2113,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"bludgeoning_weapon", "bone_armour", "caster", "extra_small_height", "is_unarmed", "large_model", "medium_movement", "not_int", "physical_affinity", "ranged", "skeleton", "undead"},
 		SkillList:       []string{"SkeletonCannonMortar", "SkeletonCannonBoneMortar", "SkeletonCannonBoneNova"},
 	},
-	// src/Data/Spectres.lua:2599
+	// src/Data/Spectres.lua:2601
 	"Metadata/Monsters/Snake/SnakeMeleeSpit": {
 		Name:                         "Bramble Cobra",
 		Life:                         0.94,
@@ -2135,7 +2135,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewFloat("PhysicalDamageConvertToChaos", mod.TypeBase, 30).Source("Minion:Bramble Cobra"),
 		},
 	},
-	// src/Data/Spectres.lua:2622
+	// src/Data/Spectres.lua:2624
 	"Metadata/Monsters/Snake/SnakeScorpionMultiShot": {
 		Name:                         "Barb Serpent",
 		Life:                         0.94,
@@ -2158,7 +2158,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewFloat("ProjectileCount", mod.TypeBase, 2).Source("Minion:Barb Serpent"),
 		},
 	},
-	// src/Data/Spectres.lua:2647
+	// src/Data/Spectres.lua:2649
 	"Metadata/Monsters/Spiders/SpiderThornFlickerStrike": {
 		Name:                         "Leaping Spider",
 		Life:                         1,
@@ -2176,7 +2176,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"animal_claw_weapon", "beast", "extra_small_height", "flesh_armour", "has_dagger", "has_one_handed_melee", "insect_blood", "melee", "physical_affinity", "slow_movement", "spider"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "MonsterFlickerStrike"},
 	},
-	// src/Data/Spectres.lua:2669
+	// src/Data/Spectres.lua:2671
 	"Metadata/Monsters/Spiders/SpiderThornViperStrikeFlickerStrike": {
 		Name:                         "Deadly Tarantula",
 		Life:                         2.21,
@@ -2194,7 +2194,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"animal_claw_weapon", "beast", "chaos_affinity", "extra_small_height", "flesh_armour", "has_dagger", "has_one_handed_melee", "insect_blood", "melee", "physical_affinity", "slow_movement", "spider"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "MonsterViperStrike", "MonsterFlickerStrike"},
 	},
-	// src/Data/Spectres.lua:2693
+	// src/Data/Spectres.lua:2695
 	"Metadata/Monsters/Statue/DaressoStatueLargeMaleSpear": {
 		Name:            "Towering Figment",
 		Life:            5.76,
@@ -2214,7 +2214,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"construct", "has_one_hand_sword", "has_one_handed_melee", "humanoid", "large_height", "melee", "mud_blood", "not_dex", "not_int", "physical_affinity", "puncturing_weapon", "slow_movement", "stone_armour", "stone_construct"},
 		SkillList:       []string{"Melee", "MonsterPuncture"},
 	},
-	// src/Data/Spectres.lua:2719
+	// src/Data/Spectres.lua:2721
 	"Metadata/Monsters/Statue/StoneStatueMaleBow": {
 		Name:            "Archer Statue",
 		Life:            2.46,
@@ -2235,7 +2235,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"cold_affinity", "construct", "has_bow", "humanoid", "medium_height", "mud_blood", "not_int", "physical_affinity", "puncturing_weapon", "ranged", "stone_armour", "stone_construct", "very_slow_movement"},
 		SkillList:       []string{"Melee", "MonsterIceShot"},
 	},
-	// src/Data/Spectres.lua:2747
+	// src/Data/Spectres.lua:2749
 	"Metadata/Monsters/Taster/Taster": {
 		Name:                         "Noisome Ophidian",
 		Life:                         1,
@@ -2255,7 +2255,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"beast", "caster", "demon", "extra_extra_small_height", "has_dagger", "has_one_handed_melee", "medium_movement", "melee", "metal_armour", "not_int", "not_str", "physical_affinity", "puncturing_weapon", "ranged", "red_blood", "reptile_beast"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "TarMortarTaster"},
 	},
-	// src/Data/Spectres.lua:2771
+	// src/Data/Spectres.lua:2773
 	"Metadata/Monsters/TemplarSlaveDriver/TemplarSlaveDriver": {
 		Name:            "Slave Driver",
 		Life:            1,
@@ -2279,7 +2279,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewFloat("MovementSpeed", mod.TypeIncrease, 20).Source("Minion:Slave Driver"),
 		},
 	},
-	// src/Data/Spectres.lua:2797
+	// src/Data/Spectres.lua:2799
 	"Metadata/Monsters/TemplarSlaveDriver/TemplarSlaveDriverKitava": {
 		Name:            "Crazed Driver",
 		Life:            1,
@@ -2303,7 +2303,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewFloat("MovementSpeed", mod.TypeIncrease, 20).Source("Minion:Crazed Driver"),
 		},
 	},
-	// src/Data/Spectres.lua:2824
+	// src/Data/Spectres.lua:2826
 	"Metadata/Monsters/Undying/CityStalkerMaleCasterArmour": {
 		Name:                         "Undying Evangelist",
 		Life:                         1.2,
@@ -2323,7 +2323,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"caster", "demon", "flesh_armour", "has_one_hand_sword", "has_one_handed_melee", "humanoid", "medium_height", "medium_movement", "melee", "not_int", "physical_affinity", "red_blood", "undying"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "DelayedBlast", "MonsterProximityShield", "DelayedBlastSpectre"},
 	},
-	// src/Data/Spectres.lua:2849
+	// src/Data/Spectres.lua:2851
 	"Metadata/Monsters/Undying/UndyingOutcastPuncture": {
 		Name:            "Undying Impaler",
 		Life:            1,
@@ -2341,7 +2341,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"demon", "extra_small_height", "fast_movement", "has_one_hand_sword", "has_one_handed_melee", "humanoid", "light_armour", "melee", "not_int", "not_str", "physical_affinity", "red_blood", "slashing_weapon", "undying"},
 		SkillList:       []string{"Melee", "MonsterPuncture"},
 	},
-	// src/Data/Spectres.lua:2871
+	// src/Data/Spectres.lua:2873
 	"Metadata/Monsters/Undying/UndyingOutcastWhirlingBlades": {
 		Name:            "Undying Outcast",
 		Life:            1,
@@ -2359,7 +2359,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"demon", "extra_small_height", "fast_movement", "has_one_hand_sword", "has_one_handed_melee", "humanoid", "light_armour", "melee", "not_int", "not_str", "physical_affinity", "red_blood", "slashing_weapon", "undying"},
 		SkillList:       []string{"Melee", "UndyingWhirlingBlades"},
 	},
-	// src/Data/Spectres.lua:2893
+	// src/Data/Spectres.lua:2895
 	"Metadata/Monsters/SpiderPlated/SpiderPlatedUnholyEmerge": {
 		Name:            "Unholy Aberration",
 		Life:            14,
@@ -2376,7 +2376,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"animal_claw_weapon", "beast", "flesh_armour", "insect_blood", "is_unarmed", "medium_height", "medium_movement", "melee", "physical_affinity", "spider"},
 		SkillList:       []string{"Melee"},
 	},
-	// src/Data/Spectres.lua:2920
+	// src/Data/Spectres.lua:2922
 	"Metadata/Monsters/WickerMan/WickerMan": {
 		Name:            "Wicker Man",
 		Life:            2.25,
@@ -2395,7 +2395,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"bludgeoning_weapon", "bone_armour", "construct", "demon", "fire_affinity", "has_one_hand_mace", "has_one_handed_melee", "medium_height", "melee", "not_dex", "not_int", "physical_affinity", "ranged", "slow_movement"},
 		SkillList:       []string{"Melee", "WickerManRighteousFire", "WickerManMoltenStrike", "MonsterRighteousFireWhileSpectred"},
 	},
-	// src/Data/Spectres.lua:2945
+	// src/Data/Spectres.lua:2947
 	"Metadata/Monsters/AtlasExiles/EyrieInfluenceMonsters/EyrieSeraphArcherSpectre": {
 		Name:            "Redemption Sentry",
 		Life:            2.7,
@@ -2415,7 +2415,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"caster", "cold_affinity", "fast_movement", "female", "has_bow", "human", "humanoid", "not_int", "plate_armour", "puncturing_weapon", "ranged", "red_blood"},
 		SkillList:       []string{"WalkEmergeAtlasInfluenceMonster", "MeleeEyrieArrow", "AtlasEyrieArcherMortar", "AtlasEyrieArcherSnipe", "AtlasEyrieArcherSnipeTrickshot", "EmptyActionAttackEyrieArcherTrickshot", "AtlasEyrieArcherGeometryProjectiles", "AtlasExileEyrieArcherSpawnCrystal", "AtlasEyrieArcherCrystalImpact"},
 	},
-	// src/Data/Spectres.lua:2977
+	// src/Data/Spectres.lua:2979
 	"Metadata/Monsters/AtlasExiles/CrusaderInfluenceMonsters/CrusaderMageguardCasterSpectre": {
 		Name:            "Baranite Thaumaturge",
 		Life:            3.6,
@@ -2434,7 +2434,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"caster", "crusader_monster", "fast_movement", "human", "humanoid", "influence_monster", "is_unarmed", "light_armour", "lightning_affinity", "not_dex", "ranged", "water"},
 		SkillList:       []string{"AtlasExilesCrusaderMageguardProjectile", "EmptyActionSpellCrusaderMageguard", "AtlasCrusaderMageguardSpawnBombSpectre", "AtlasExileCrusaderMageguardBombExplodeSpectre", "AtlasCrusaderMageguardBeam", "WalkEmergeAtlasInfluenceMonster"},
 	},
-	// src/Data/Spectres.lua:3005
+	// src/Data/Spectres.lua:3007
 	"Metadata/Monsters/AtlasExiles/CrusaderInfluenceMonsters/CrusaderBlessedSisterSpectre": {
 		Name:            "Baranite Sister",
 		Life:            1.2,
@@ -2452,7 +2452,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"caster", "crusader_monster", "female", "human", "humanoid", "influence_monster", "is_unarmed", "light_armour", "lightning_affinity", "not_dex", "not_str", "ranged", "red_blood", "slashing_weapon", "slow_movement", "templar"},
 		SkillList:       []string{"AtlasCrusaderSisterMortarSpectre", "WalkEmergeAtlasInfluenceMonster"},
 	},
-	// src/Data/Spectres.lua:3028
+	// src/Data/Spectres.lua:3030
 	"Metadata/Monsters/AtlasExiles/CrusaderInfluenceMonsters/CrusaderTemplarJudgeSpectre": {
 		Name:            "Baranite Preacher",
 		Life:            1.68,
@@ -2470,7 +2470,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"bludgeoning_weapon", "caster", "crusader_monster", "flesh_armour", "human", "humanoid", "influence_monster", "is_unarmed", "lightning_affinity", "medium_movement", "not_dex", "not_str", "ranged", "red_blood", "templar"},
 		SkillList:       []string{"AtlasCrusaderJudgeBallLightning", "AtlasCruasderJudgeFadingNova", "WalkEmergeAtlasInfluenceMonster"},
 	},
-	// src/Data/Spectres.lua:3052
+	// src/Data/Spectres.lua:3054
 	"Metadata/Monsters/SandLeaper/SandLeaperBreachSpectre_": {
 		Name:                         "Scale of Esh",
 		Life:                         3,
@@ -2489,7 +2489,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"animal_claw_weapon", "beast", "breach_commander", "caster", "demon", "flesh_armour", "insect", "is_unarmed", "lightning_affinity", "melee", "no_bloodlines", "no_pantheon_mod", "not_int", "not_str", "physical_affinity", "red_blood", "very_fast_movement"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "SandLeaperDodgeLeft", "SandLeaperDodgeRight", "BreachLightningWhip", "BreachArc", "BreachTeamWarp", "BreachLightningOrbsCommander"},
 	},
-	// src/Data/Spectres.lua:3082
+	// src/Data/Spectres.lua:3084
 	"Metadata/Monsters/LeagueSynthesis/SynthesisSoulstealer3Spectre": {
 		Name:            "Scinteel Synthete",
 		Life:            3.6,
@@ -2509,7 +2509,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"caster", "construct", "fast_movement", "humanoid", "is_unarmed", "lightning_affinity", "mud_blood", "not_dex", "ranged", "stone_armour", "synthesised_monster"},
 		SkillList:       []string{"SynthesisSoulstealerProjectileLightning", "EmptyActionSynthesisSoulstealerArc", "SynthesisSoulstealerLaser", "SynthesisSoulstealerBolt", "GeometryTriggerSynthesisSoulstealer3"},
 	},
-	// src/Data/Spectres.lua:3109
+	// src/Data/Spectres.lua:3111
 	"Metadata/Monsters/AtlasExiles/EyrieInfluenceMonsters/EyrieSeraphFighterSpectre_": {
 		Name:            "Redemption Knight",
 		Life:            2.7,
@@ -2530,7 +2530,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"cold_affinity", "fast_movement", "female", "has_one_hand_sword", "has_one_handed_melee", "human", "humanoid", "melee", "not_int", "plate_armour", "red_blood", "slashing_weapon"},
 		SkillList:       []string{"MeleeCold", "WalkEmergeAtlasInfluenceMonster", "AtlasEyrieFighterSlash", "EmptyActionAttackEyrieFighter"},
 	},
-	// src/Data/Spectres.lua:3137
+	// src/Data/Spectres.lua:3139
 	"Metadata/Monsters/LeagueHarvest/Blue/HarvestNessaCrabT3Spectre": {
 		Name:            "Primal Crushclaw",
 		Life:            3.6,
@@ -2549,7 +2549,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"animal_claw_weapon", "beast", "cold_affinity", "crustacean_beast", "hard_armour", "is_unarmed", "large_model", "melee", "not_dex", "not_int", "red_blood", "slow_movement"},
 		SkillList:       []string{"MeleeCold", "HarvestCrabDashSlam", "GAHarvestCrabDashSlam", "HarvestNessaCrabScreech", "HarvestCrabAbyssSlam", "EASHarvestEmerge", "HarvestNessaCrabScreechDebuff"},
 	},
-	// src/Data/Spectres.lua:3168
+	// src/Data/Spectres.lua:3170
 	"Metadata/Monsters/LeagueHarvest/Blue/HarvestRhexT3Spectre": {
 		Name:            "Primal Rhex Matriarch",
 		Life:            3.57,
@@ -2568,7 +2568,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"animal_claw_weapon", "beast", "caster", "fast_movement", "flesh_armour", "is_unarmed", "lightning_affinity", "melee", "not_int", "not_str", "physical_affinity", "red_blood", "reptile_beast"},
 		SkillList:       []string{"Melee", "HarvestRhexLeapSlam", "EAAHarvestRhexDashSlash", "EASHarvestRhexScreech", "GAHarvestRhexDashSlash", "GSHarvestRhexScreech", "EASHarvestEmerge", "HarvestRhexScreechDebuff"},
 	},
-	// src/Data/Spectres.lua:3200
+	// src/Data/Spectres.lua:3202
 	"Metadata/Monsters/LeagueHarvest/Red/HarvestMinerHammerT2Spectre": {
 		Name:                         "Wild Homunculus",
 		Life:                         3.08,
@@ -2587,7 +2587,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"animal_claw_weapon", "caster", "flesh_armour", "is_unarmed", "melee", "physical_affinity", "red_blood", "undead", "very_slow_movement"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "HarvestMinerMelee", "GAHarvestMinerHammerSlam", "EDSHarvestMinerHammerSmoke", "EASHarvestEmerge"},
 	},
-	// src/Data/Spectres.lua:3229
+	// src/Data/Spectres.lua:3231
 	"Metadata/Monsters/LegionLeague/LegionTemplarCaster1Spectre": {
 		Name:            "Templar Tactician",
 		Life:            3.45,
@@ -2606,7 +2606,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"bludgeoning_weapon", "caster", "flesh_armour", "humanoid", "is_unarmed", "legion_monster", "lightning_affinity", "medium_movement", "melee", "no_pantheon_mod", "not_dex", "not_str", "physical_affinity", "ranged", "red_blood"},
 		SkillList:       []string{"Melee", "LegionTemplarJudgeStormCall", "LegionTemplarJudgeBallLightning", "GeometryTriggerLegionTemplarCasterStormCall"},
 	},
-	// src/Data/Spectres.lua:3257
+	// src/Data/Spectres.lua:3259
 	"Metadata/Monsters/LeagueHeist/Robot/RobotClockworkGolemColdSpectre": {
 		Name:            "Frost Auto-Scout",
 		Life:            3.6,
@@ -2625,7 +2625,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"caster", "cold_affinity", "construct", "golem", "is_unarmed", "metal_armour", "no_pantheon_mod", "not_dex", "not_int", "ranged", "slow_movement"},
 		SkillList:       []string{"DoLiterallyNothing", "MPSHeistRobotClockworkGolemBasicProjectile", "MMSHeistRobotClockworkGolemMortarSpectre", "ChangeToStance1Heist"},
 	},
-	// src/Data/Spectres.lua:3282
+	// src/Data/Spectres.lua:3284
 	"Metadata/Monsters/LeagueBetrayal/BetrayalSecretPolice2Spectre_": {
 		Name:            "Syndicate Operative",
 		Life:            2.1,
@@ -2645,7 +2645,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"fast_movement", "flesh_armour", "human", "humanoid", "is_unarmed", "melee", "no_cannot_die_aura", "no_pantheon_mod", "not_str", "physical_affinity", "red_blood", "slashing_weapon", "templar"},
 		SkillList:       []string{"Melee", "WalkEmergeBetrayal", "BetrayalSecretPoliceCurveDagger1", "BetrayalSecretPoliceCurveDagger2", "BetrayalSecretPoliceCurveDagger3", "EmptyActionAttackSecretPoliceDaggers"},
 	},
-	// src/Data/Spectres.lua:3311
+	// src/Data/Spectres.lua:3313
 	"Metadata/Monsters/AtlasExiles/EyrieInfluenceMonsters/EyrieKiwethSpectre": {
 		Name:            "Cloud Retch",
 		Life:            2.52,
@@ -2664,7 +2664,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"animal_claw_weapon", "caster", "cold_affinity", "demon", "eyrie_monster", "flesh_armour", "has_one_hand_mace", "has_one_handed_melee", "influence_monster", "melee", "not_str", "ranged", "red_blood", "slow_movement"},
 		SkillList:       []string{"MeleeCold", "WalkEmergeAtlasInfluenceMonster", "AtlasEyrieKiwethMortarSpectre", "AtlasEyrieKiwethMortarShards"},
 	},
-	// src/Data/Spectres.lua:3337
+	// src/Data/Spectres.lua:3339
 	"Metadata/Monsters/LeagueHeist/Thug/ThugRanged1EliteSpectre": {
 		Name:            "Artless Assassin",
 		Life:            3.58,
@@ -2684,7 +2684,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"fast_movement", "fire_affinity", "has_bow", "human", "humanoid", "light_armour", "no_pantheon_mod", "not_int", "not_str", "physical_affinity", "puncturing_weapon", "ranged", "red_blood"},
 		SkillList:       []string{"MPWHeistThugRangedBurningArrow", "DoLiterallyNothing", "GAHeistThugRangedArrowShotgun", "EAAHeistThugRangedExplosiveArrowBarrage", "HeistThugRangedExplosiveArrow", "GAHeistThugRangedShotgun", "WalkEmergeHeistThug", "EAAHeistThugRangedExplosiveArrowBarrageChokepoint", "ChangeToStance1Heist", "EASHeistMindControlSuicide"},
 	},
-	// src/Data/Spectres.lua:3369
+	// src/Data/Spectres.lua:3371
 	"Metadata/Monsters/LeagueHeist/Robot/RobotPyreKnightEliteSpectre": {
 		Name:            "Ashblessed Warden",
 		Life:            3.6,
@@ -2705,7 +2705,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"caster", "construct", "fire_affinity", "humanoid", "is_unarmed", "medium_movement", "metal_armour", "no_pantheon_mod"},
 		SkillList:       []string{"DoLiterallyNothing", "WalkEmergeHeistRobotElevator", "GSHeistRobotPyreBeamBlast", "GSHeistRobotPyreNukeBeam", "GSHeistRobotPyreNukeBeamChannelled", "EASHeistRobotPyreBeamSweep", "GSHeistRobotPyreBeamSweepBeam", "ChangeToStance1Heist"},
 	},
-	// src/Data/Spectres.lua:3400
+	// src/Data/Spectres.lua:3402
 	"Metadata/Monsters/LeagueHeist/Science/ProjectUnarmedEliteGuardSpectre": {
 		Name:            "Violator",
 		Life:            3.57,
@@ -2726,7 +2726,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"caster", "chaos_affinity", "fast_movement", "has_claw", "has_one_handed_melee", "human", "humanoid", "light_armour", "melee", "no_pantheon_mod", "not_int", "physical_affinity", "red_blood", "slashing_weapon"},
 		SkillList:       []string{"HeistProjectUnarmedMelee1", "HeistProjectUnarmedMelee2", "DoLiterallyNothing", "WalkEmergeHeistScience", "EDSHeistScienceUnarmedGas", "EASHeistScienceUnarmedGasTime", "ChangeToStance1Heist", "HeistCultistUnarmedLeap", "GAHeistCultistUnarmedLeapImpact", "EASHeistMindControlSuicide"},
 	},
-	// src/Data/Spectres.lua:3433
+	// src/Data/Spectres.lua:3435
 	"Metadata/Monsters/AtlasExiles/EyrieInfluenceMonsters/EyrieArmouredBirdSpectre__": {
 		Name:            "Snow Rhex",
 		Life:            3.6,
@@ -2745,7 +2745,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"animal_claw_weapon", "avian_beast", "beast", "caster", "cold_affinity", "eyrie_monster", "fast_movement", "hard_armour", "influence_monster", "is_unarmed", "melee", "not_int", "red_blood", "reptile_beast"},
 		SkillList:       []string{"MeleeCold", "WalkEmergeAtlasInfluenceMonster", "MeleeEyrieBird", "AtlasEyrieBirdBreath", "AtlasEyrieBirdBreathNoEffects"},
 	},
-	// src/Data/Spectres.lua:3459
+	// src/Data/Spectres.lua:3461
 	"Metadata/Monsters/Maligaro/SecretDesecrateMonster": {
 		Name:            "Flickershade",
 		Life:            3,
@@ -2767,7 +2767,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewFloat("PhysicalDamageConvertToChaos", mod.TypeBase, 50).Source("Minion:Flickershade"),
 		},
 	},
-	// src/Data/Spectres.lua:3485
+	// src/Data/Spectres.lua:3487
 	"Metadata/Monsters/LeagueUltimatum/Guard/GuardBowColdWeakSpectre": {
 		Name:            "Trial Galecaller",
 		Life:            2.47,
@@ -2788,7 +2788,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"cold_affinity", "has_bow", "human", "humanoid", "medium_movement", "not_int", "plate_armour", "puncturing_weapon", "ranged", "red_blood", "spawner_cannot_spawn_as_rare"},
 		SkillList:       []string{"UltimatumGuardMeleeCold", "UltimatumGuardConeArrowCold"},
 	},
-	// src/Data/Spectres.lua:3515
+	// src/Data/Spectres.lua:3517
 	"Metadata/Monsters/LeagueUltimatum/Guard/GuardBowColdSpectre": {
 		Name:            "Trial Windchaser",
 		Life:            2.47,
@@ -2809,7 +2809,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"cold_affinity", "has_bow", "human", "humanoid", "medium_movement", "not_int", "plate_armour", "puncturing_weapon", "ranged", "red_blood", "spawner_cannot_spawn_as_rare"},
 		SkillList:       []string{"UltimatumGuardMeleeCold", "EAAVaalGuardBarrage", "MPWVaalGuardBarrage", "UltimatumGuardConeArrowCold"},
 	},
-	// src/Data/Spectres.lua:3547
+	// src/Data/Spectres.lua:3549
 	"Metadata/Monsters/LegionLeague/LegionKaruiArcherSpectre": {
 		Name:            "Hyrri's Watch",
 		Life:            2.25,
@@ -2829,7 +2829,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"cold_affinity", "fast_movement", "flesh_armour", "has_bow", "humanoid", "legion_monster", "no_pantheon_mod", "not_int", "not_str", "puncturing_weapon", "ranged", "red_blood"},
 		SkillList:       []string{"MeleeKaruiArcher", "LegionKaruiArcherSnipe"},
 	},
-	// src/Data/Spectres.lua:3574
+	// src/Data/Spectres.lua:3576
 	"Metadata/Monsters/LeagueHellscape/DemonFaction/HellscapeDemonElite1Spectre": {
 		Name:                         "Demon Harpy",
 		Life:                         2.38,
@@ -2849,7 +2849,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"animal_claw_weapon", "beyond_demon", "caster", "demon", "fast_movement", "fire_affinity", "flesh_armour", "is_unarmed", "melee", "not_int", "not_str", "physical_affinity", "red_blood"},
 		SkillList:                    []string{"MeleeAtAnimationSpeedFire", "DTTHellscapeDemonElite1", "EASHellscapeDemonElite1Screech", "GAHellscapeDemonElite1DashSlash", "GSHellscapeDemonElite1Screech"},
 	},
-	// src/Data/Spectres.lua:3601
+	// src/Data/Spectres.lua:3603
 	"Metadata/Monsters/LeagueHellscape/PaleFaction/HellscapePaleElite1Spectre": {
 		Name:                         "Pale Angel",
 		Life:                         2.55,
@@ -2869,7 +2869,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"animal_claw_weapon", "beyond_demon", "bone_armour", "caster", "demon", "is_unarmed", "lightning_affinity", "medium_movement", "not_dex", "not_str", "red_blood"},
 		SkillList:                    []string{"TBHellscapePaleLightningBoltSpammableLeft", "TBHellscapePaleLightningBoltSpammableRight", "GSHellscapePaleEliteBoltImpact", "GSHellscapePaleEliteOmegaBeam", "TeleportHellscapePaleElite", "TeleportHellscapePaleEliteForwards", "TeleportHellscapePaleEliteToAlly"},
 	},
-	// src/Data/Spectres.lua:3630
+	// src/Data/Spectres.lua:3632
 	"Metadata/Monsters/LeagueHellscape/DemonFaction/HellscapeDemonElite2_Spectre": {
 		Name:                         "Demon Herder",
 		Life:                         2.85,
@@ -2890,7 +2890,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"beyond_demon", "bludgeoning_weapon", "caster", "demon", "fire_affinity", "flesh_armour", "is_unarmed", "not_dex", "not_str", "ranged", "red_blood", "very_fast_movement"},
 		SkillList:                    []string{"GTHellscapeDemonEliteVomit", "MMSHellscapeDemonEliteTripleMortar", "MMSHellscapeDemonEliteVomitMortar", "GSHellscapeDemonEliteBeamNuke"},
 	},
-	// src/Data/Spectres.lua:3657
+	// src/Data/Spectres.lua:3659
 	"Metadata/Monsters/LeagueHellscape/PaleFaction/HellscapePaleElite2Spectre": {
 		Name:                         "Pale Seraphim",
 		Life:                         3.04,
@@ -2910,7 +2910,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"beyond_demon", "bone_armour", "demon", "is_unarmed", "medium_movement", "not_int", "not_str", "physical_affinity", "puncturing_weapon", "red_blood"},
 		SkillList:                    []string{"EAAHellscapeStabbyStab", "DTTHellscapeStabbySkyStab", "DTTHellscapeStabWeb", "GAHellscapeStabbyCleave1", "GAHellscapeStabbyCleave2", "GAHellscapeStabbyCleave3", "GAHellscapeStabbyCleaveStab", "GAHellscapeStabWeb", "GAHellscapePaleEliteSkyStab"},
 	},
-	// src/Data/Spectres.lua:3688
+	// src/Data/Spectres.lua:3690
 	"Metadata/Monsters/LeagueHellscape/FleshFaction/HellscapeFleshFodder4Spectre": {
 		Name:                         "Ravenous Misshapen",
 		Life:                         1.16,
@@ -2930,7 +2930,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"animal_claw_weapon", "beyond_demon", "caster", "demon", "flesh_armour", "is_unarmed", "lightning_affinity", "medium_movement", "melee", "not_dex", "not_str", "physical_affinity", "red_blood"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "HellscapeFleshFodderArc"},
 	},
-	// src/Data/Spectres.lua:3712
+	// src/Data/Spectres.lua:3714
 	"Metadata/Monsters/LeagueHellscape/FleshFaction/HellscapeFleshElite1Spectre": {
 		Name:                         "Ravenous Bloodshaper",
 		Life:                         2.7,
@@ -2951,7 +2951,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"animal_claw_weapon", "beyond_demon", "caster", "demon", "flesh_armour", "is_unarmed", "not_dex", "physical_affinity", "ranged", "red_blood", "very_fast_movement"},
 		SkillList:                    []string{"MPSHellscapeFleshEliteBasicProj", "GPSHellscapeFleshEliteSpikeBarrage", "SOHellscapeFleshEliteBloodOrb", "GSHellscapeFleshEliteBloodOrbExplosion"},
 	},
-	// src/Data/Spectres.lua:3739
+	// src/Data/Spectres.lua:3741
 	"Metadata/Monsters/LeagueSynthesis/SynthesisSoulstealer4Spectre": {
 		Name:            "Aurid Synthete",
 		Life:            3.6,
@@ -2971,7 +2971,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"caster", "construct", "fast_movement", "humanoid", "is_unarmed", "mud_blood", "not_dex", "physical_affinity", "ranged", "stone_armour", "synthesised_monster"},
 		SkillList:       []string{"SynthesisSoulstealerProjectilePhysical", "SynthesisSoulstealerQuicksand", "SynthesisSoulstealerDrones", "EmptyActionSynthesisEnrageDrones", "SynthesisSoulstealerDroneEnrage", "GeometrySpellSynthesisPhysical", "SynthesisPhysicalTripleMortar", "SynthesisSoulstealerBombDetonate", "SynthesisSoulstealerDronesOnSelf", "SynthesisPhysicalVolatileSlam", "SynthesisQuicksandStartEffect"},
 	},
-	// src/Data/Spectres.lua:3772
+	// src/Data/Spectres.lua:3774
 	"Metadata/Monsters/Hellion/Hellion3Spectre": {
 		Name:                         "Ruins Hellion",
 		Life:                         1,
@@ -2990,7 +2990,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"animal_claw_weapon", "beast", "feline_beast", "has_dagger", "has_one_handed_melee", "large_model", "light_armour", "mammal_beast", "medium_movement", "melee", "not_int", "not_str", "physical_affinity", "red_blood"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "HellionRallyingCry"},
 	},
-	// src/Data/Spectres.lua:3795
+	// src/Data/Spectres.lua:3797
 	"Metadata/Monsters/AtlasExiles/AdjudicatorInfluenceMonsters/AdjudicatorGrandMasterSpectre": {
 		Name:            "Arena Master",
 		Life:            3.6,
@@ -3011,7 +3011,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"adjudicator_monster", "fast_movement", "has_one_hand_sword", "has_one_handed_melee", "human", "humanoid", "influence_monster", "melee", "not_int", "physical_affinity", "plate_armour", "red_blood", "slashing_weapon"},
 		SkillList:       []string{"Melee", "WalkEmergeAtlasInfluenceMonster", "AtlasWarlordCascadeSlam", "EmptyActionAttackWarlordGrandmaster", "EmptyActionSpellWarlordGrandmaster", "AtlasExilesWarlordEnrageSpectre"},
 	},
-	// src/Data/Spectres.lua:3825
+	// src/Data/Spectres.lua:3827
 	"Metadata/Monsters/MinerLarge/MinerLargeCommanderBreachSpectre": {
 		Name:                         "They of Tul",
 		Life:                         3,
@@ -3030,7 +3030,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"bludgeoning_weapon", "breach_commander", "caster", "demon", "flesh_armour", "has_one_hand_mace", "has_one_handed_melee", "large_model", "melee", "no_bloodlines", "no_pantheon_mod", "not_dex", "not_int", "physical_affinity", "red_blood", "very_slow_movement"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "BreachBlizzardSpectre", "SummonBreachIceTotem"},
 	},
-	// src/Data/Spectres.lua:3852
+	// src/Data/Spectres.lua:3854
 	"Metadata/Monsters/LeagueDelve/GhostEncounter/WraithPurple": {
 		Name:            "Ancient Suffering",
 		Life:            1.68,
@@ -3051,7 +3051,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewFloat("EnemyCurseLimit", mod.TypeBase, 1).Source("Minion:Ancient Suffering"),
 		},
 	},
-	// src/Data/Spectres.lua:3877
+	// src/Data/Spectres.lua:3879
 	"Metadata/Monsters/LeagueDelve/GhostEncounter/Wraith": {
 		Name:            "Ancient Wraith",
 		Life:            1.68,
@@ -3072,7 +3072,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewFloat("EnemyCurseLimit", mod.TypeBase, 1).Source("Minion:Ancient Wraith"),
 		},
 	},
-	// src/Data/Spectres.lua:3902
+	// src/Data/Spectres.lua:3904
 	"Metadata/Monsters/LeagueCrucible/Cold/Pyromaniac": {
 		Name:                         "Forged Frostbearer",
 		Life:                         1.68,
@@ -3091,7 +3091,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"caster", "demon", "fire_affinity", "flesh_armour", "humanoid", "is_unarmed", "medium_height", "medium_movement", "not_int", "not_str", "ranged", "slashing_weapon", "undying"},
 		SkillList:                    []string{"MMSPyromaniacIceMortar", "CrucibleIceStormTrap"},
 	},
-	// src/Data/Spectres.lua:3929
+	// src/Data/Spectres.lua:3931
 	"Metadata/Monsters/Revenant/RevenantMapBossStandalone_AtlasUber": {
 		Name:                         "Wretched Defiler",
 		Life:                         3.9,
@@ -3110,7 +3110,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"caster", "demon", "fast_movement", "flesh_armour", "is_unarmed", "large_model", "lightning_affinity", "melee", "not_int", "not_str", "physical_affinity", "raises_dead", "ranged", "red_blood", "slashing_weapon", "small_height", "standalone_map_boss"},
 		SkillList:                    []string{"RevenantReviveUndead", "RevenantBossSpellProjectile", "MeleeAtAnimationSpeed", "RevenantMapBossSummon1", "RevenantMapBossSummon2"},
 	},
-	// src/Data/Spectres.lua:3955
+	// src/Data/Spectres.lua:3957
 	"Metadata/Monsters/LegionLeague/LegionKaruiMeleeFireSpectre": {
 		Name:            "Karui Backburner",
 		Life:            3.3,
@@ -3129,7 +3129,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"bludgeoning_weapon", "fast_movement", "fire_affinity", "flesh_armour", "humanoid", "is_unarmed", "legion_monster", "melee", "no_pantheon_mod", "red_blood"},
 		SkillList:       []string{"MeleeFire", "LegionKaruiMeleeLeapSlam", "EmptyActionLegionKaruiMelee", "LegionKaruiMeleeCombo1", "LegionKaruiMeleeCombo2", "LegionKaruiMeleeCombo3"},
 	},
-	// src/Data/Spectres.lua:3985
+	// src/Data/Spectres.lua:3987
 	"Metadata/Monsters/LegionLeague/LegionTemplarMelee2Spectre": {
 		Name:            "Templar Conscript",
 		Life:            2.76,
@@ -3150,7 +3150,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"has_two_hand_sword", "has_two_handed_melee", "humanoid", "legion_monster", "medium_movement", "melee", "metal_armour", "no_pantheon_mod", "not_dex", "physical_affinity", "ranged", "red_blood", "slashing_weapon"},
 		SkillList:       []string{"Melee", "LegionTemplarWeaponThrow", "LegionMonsterProximityShield"},
 	},
-	// src/Data/Spectres.lua:4014
+	// src/Data/Spectres.lua:4016
 	"Metadata/Monsters/Hellion/HellionBreachHowlSpectre": {
 		Name:            "Xoph's Favoured",
 		Life:            3.6,
@@ -3169,7 +3169,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"animal_claw_weapon", "beast", "canine_beast", "demon", "fire_affinity", "has_one_hand_sword", "has_one_handed_melee", "large_model", "light_armour", "medium_movement", "melee", "no_bloodlines", "no_pantheon_mod", "not_int", "not_str", "physical_affinity", "red_blood"},
 		SkillList:       []string{"Melee", "EmpoweringHowlSpectre", "BreachCleave"},
 	},
-	// src/Data/Spectres.lua:4040
+	// src/Data/Spectres.lua:4042
 	"Metadata/Monsters/Spiders/DelveSpiderPacksMediumSpectre": {
 		Name:            "Skitterling",
 		Life:            1.27,
@@ -3189,7 +3189,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"animal_claw_weapon", "beast", "cold_affinity", "delve_monster", "flesh_armour", "has_one_hand_sword", "has_one_handed_melee", "insect_blood", "medium_movement", "melee", "no_pantheon_mod", "not_int", "not_str", "physical_affinity", "spider"},
 		SkillList:       []string{"DelveMelee", "DelveMeleeCold", "DelveSpiderFlickerStrike"},
 	},
-	// src/Data/Spectres.lua:4065
+	// src/Data/Spectres.lua:4067
 	"Metadata/Monsters/LeagueCrucible/Lightning/Vendigo_": {
 		Name:                         "Forged Vendigo",
 		Life:                         2.24,
@@ -3209,7 +3209,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"animal_claw_weapon", "beast", "demon", "fast_movement", "flesh_armour", "has_claw", "has_one_handed_melee", "medium_height", "melee", "not_int", "not_str", "physical_affinity"},
 		SkillList:                    []string{"MeleeAtAnimationSpeedLightning", "CrucibleVendigoFlickerStrike", "EASCrucibleVendigoEnrage"},
 	},
-	// src/Data/Spectres.lua:4096
+	// src/Data/Spectres.lua:4098
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/Hailrake/HailrakeLow": {
 		Name:                         "Imperfect Frozen Cannibal",
 		Life:                         2,
@@ -3229,7 +3229,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"caster", "fast_movement", "human", "humanoid", "not_int", "not_str", "red_blood"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "AzmeriHailrakeGlacialCascade", "AzmeriHailrakeArcticArmour", "AzmeriHailrakeGlacialHammer", "GSAzmeriHailrakeIceNova"},
 	},
-	// src/Data/Spectres.lua:4122
+	// src/Data/Spectres.lua:4124
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/Hailrake/HailrakeMid": {
 		Name:                         "Frozen Cannibal",
 		Life:                         2,
@@ -3249,7 +3249,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"caster", "fast_movement", "human", "humanoid", "not_int", "not_str", "red_blood"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "AzmeriHailrakeGlacialCascade", "AzmeriHailrakeArcticArmour", "AzmeriHailrakeGlacialHammer", "GSAzmeriHailrakeIceNova", "IceCrashAzmeriHailrake"},
 	},
-	// src/Data/Spectres.lua:4149
+	// src/Data/Spectres.lua:4151
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/Hailrake/HailrakeHigh": {
 		Name:                         "Perfect Frozen Cannibal",
 		Life:                         2,
@@ -3269,7 +3269,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"caster", "fast_movement", "human", "humanoid", "not_int", "not_str", "red_blood"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "AzmeriHailrakeGlacialCascade", "AzmeriHailrakeArcticArmour", "AzmeriHailrakeGlacialHammer", "GSAzmeriHailrakeIceNova", "IceCrashAzmeriHailrake", "AzmeriHailrakeColdResistAura"},
 	},
-	// src/Data/Spectres.lua:4178
+	// src/Data/Spectres.lua:4180
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/Firefury/FirefuryLow": {
 		Name:                         "Imperfect Fiery Cannibal",
 		Life:                         2,
@@ -3289,7 +3289,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"caster", "fast_movement", "human", "humanoid", "not_dex", "not_str", "red_blood"},
 		SkillList:                    []string{"MeleeAtAnimationSpeedFire", "FemaleCannibalBossFireStorm", "FemaleCannibalBossFlameDash", "AzmeriFirefuryCremation"},
 	},
-	// src/Data/Spectres.lua:4203
+	// src/Data/Spectres.lua:4205
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/Firefury/FirefuryMid": {
 		Name:                         "Fiery Cannibal",
 		Life:                         2,
@@ -3309,7 +3309,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"caster", "fast_movement", "human", "humanoid", "not_dex", "not_str", "red_blood"},
 		SkillList:                    []string{"MeleeAtAnimationSpeedFire", "AzmeriFireFuryMoltenStrike", "FemaleCannibalBossFireStorm", "FemaleCannibalBossFlameDash", "AzmeriFirefuryCremation"},
 	},
-	// src/Data/Spectres.lua:4229
+	// src/Data/Spectres.lua:4231
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/Firefury/FirefuryHigh_": {
 		Name:                         "Perfect Fiery Cannibal",
 		Life:                         2,
@@ -3329,7 +3329,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"caster", "fast_movement", "human", "humanoid", "not_dex", "not_str", "red_blood"},
 		SkillList:                    []string{"MeleeAtAnimationSpeedFire", "AzmeriFireFuryMoltenStrike", "FemaleCannibalBossFireStorm", "FemaleCannibalBossFlameDash", "AzmeriFirefuryCremation", "AzmeriFirefuryFireResistAura"},
 	},
-	// src/Data/Spectres.lua:4257
+	// src/Data/Spectres.lua:4259
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/Hydra/HydraLow": {
 		Name:                         "Imperfect Hydra",
 		Life:                         0.86,
@@ -3350,7 +3350,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"beast", "cold_affinity", "eldritch", "fast_movement", "flesh_armour", "has_bow", "human", "humanoid", "large_height", "not_int", "physical_affinity", "puncturing_weapon", "ranged", "red_blood"},
 		SkillList:                    []string{"AzmeriHydraDoomArrow", "AzmeriHydraBarrage"},
 	},
-	// src/Data/Spectres.lua:4281
+	// src/Data/Spectres.lua:4283
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/Hydra/HydraMid": {
 		Name:                         "Hydra",
 		Life:                         0.86,
@@ -3371,7 +3371,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"beast", "cold_affinity", "eldritch", "fast_movement", "flesh_armour", "has_bow", "human", "humanoid", "large_height", "not_int", "physical_affinity", "puncturing_weapon", "ranged", "red_blood"},
 		SkillList:                    []string{"AzmeriHydraDoomArrow", "AzmeriHydraBarrage", "AzmeriHydraForkArrow"},
 	},
-	// src/Data/Spectres.lua:4306
+	// src/Data/Spectres.lua:4308
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/Hydra/HydraHigh_": {
 		Name:                         "Perfect Hydra",
 		Life:                         0.86,
@@ -3392,7 +3392,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"beast", "cold_affinity", "eldritch", "fast_movement", "flesh_armour", "has_bow", "human", "humanoid", "large_height", "not_int", "physical_affinity", "puncturing_weapon", "ranged", "red_blood"},
 		SkillList:                    []string{"AzmeriHydraDoomArrow", "AzmeriHydraBarrage", "AzmeriHydraForkArrow", "AzmeriHydraHatred"},
 	},
-	// src/Data/Spectres.lua:4333
+	// src/Data/Spectres.lua:4335
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/Mannequin/MannequinLow": {
 		Name:                         "Imperfect Dark Marionette",
 		Life:                         2.88,
@@ -3411,7 +3411,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"construct", "humanoid", "medium_movement", "not_dex", "not_int"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed"},
 	},
-	// src/Data/Spectres.lua:4355
+	// src/Data/Spectres.lua:4357
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/Mannequin/MannequinMid": {
 		Name:                         "Dark Marionette",
 		Life:                         2.88,
@@ -3430,7 +3430,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"construct", "humanoid", "medium_movement", "not_dex", "not_int"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "DarkMarionetteExplode"},
 	},
-	// src/Data/Spectres.lua:4378
+	// src/Data/Spectres.lua:4380
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/Mannequin/MannequinHigh_": {
 		Name:                         "Perfect Dark Marionette",
 		Life:                         2.88,
@@ -3449,7 +3449,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"construct", "humanoid", "medium_movement", "not_dex", "not_int"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "DarkMarionetteExplodePerfect"},
 	},
-	// src/Data/Spectres.lua:4402
+	// src/Data/Spectres.lua:4404
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/RobotArgusLow": {
 		Name:                         "Imperfect Hulking Miscreation",
 		Life:                         3.75,
@@ -3472,7 +3472,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewFloat("Damage", mod.TypeIncrease, 5).Flag(mod.MFlagAttack).Tag(mod.PerStat(450, "Armour")).Source("Minion:Imperfect Hulking Miscreation"),
 		},
 	},
-	// src/Data/Spectres.lua:4428
+	// src/Data/Spectres.lua:4430
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/RobotArgusMid": {
 		Name:                         "Hulking Miscreation",
 		Life:                         3.75,
@@ -3497,7 +3497,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewList("MinionModifier", mod.MinionModifier{Mod: mod.NewFloat("Damage", mod.TypeIncrease, 100).Tag(mod.GlobalEffect("Buff").Name("HulkingMiscreation").Unscalable(true)).Tag(mod.MonsterTag("Construct"))}).Source("Minion:Hulking Miscreation"),
 		},
 	},
-	// src/Data/Spectres.lua:4457
+	// src/Data/Spectres.lua:4459
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/RobotArgusHigh__": {
 		Name:                         "Perfect Hulking Miscreation",
 		Life:                         3.75,
@@ -3522,7 +3522,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewList("MinionModifier", mod.MinionModifier{Mod: mod.NewFloat("Damage", mod.TypeIncrease, 100).Tag(mod.GlobalEffect("Buff").Name("HulkingMiscreation").Unscalable(true)).Tag(mod.MonsterTag("Construct"))}).Source("Minion:Perfect Hulking Miscreation"),
 		},
 	},
-	// src/Data/Spectres.lua:4488
+	// src/Data/Spectres.lua:4490
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/KudukuLow": {
 		Name:                         "Imperfect Spirit of Fortune",
 		Life:                         3.75,
@@ -3544,7 +3544,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewFlag("CurseImmune", true).Source("Minion:Imperfect Spirit of Fortune"),
 		},
 	},
-	// src/Data/Spectres.lua:4512
+	// src/Data/Spectres.lua:4514
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/KudukuMid": {
 		Name:                         "Spirit of Fortune",
 		Life:                         3.75,
@@ -3566,7 +3566,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewFlag("CurseImmune", true).Source("Minion:Spirit of Fortune"),
 		},
 	},
-	// src/Data/Spectres.lua:4537
+	// src/Data/Spectres.lua:4539
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/KudukuHigh": {
 		Name:                         "Perfect Spirit of Fortune",
 		Life:                         3.75,
@@ -3589,7 +3589,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewList("AllyModifier", mod.AllyModifier{Mod: mod.NewFlag("LightningLuckHits", true)}).Source("Minion:Perfect Spirit of Fortune"),
 		},
 	},
-	// src/Data/Spectres.lua:4564
+	// src/Data/Spectres.lua:4566
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/AdmiralLow": {
 		Name:                         "Imperfect Naval Officer",
 		Life:                         1.69,
@@ -3610,7 +3610,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"caster", "cold_affinity", "fast_movement", "has_one_hand_sword", "has_one_handed_melee", "human", "humanoid", "light_armour", "melee", "not_int", "puncturing_weapon", "red_blood"},
 		SkillList:                    []string{"MeleeAtAnimationSpeedCold", "AzmeriAdmiralDoubleStrike", "AzmeriAdmiralDoubleStrikeTriggered", "AzmeriAdmiralDashThrust", "AzmeriAdmiralDashThrustTriggered", "AzmeriAdmiralDodgeBack", "AzmeriAdmiralDodgeLeft", "AzmeriAdmiralDodgeRight", "AzmeriAdmiralSummonGeysers", "AzmeriAdmiralTidalWave", "AzmeriAdmiralDashMortars", "AzmeriAdmiralGeyserDamage", "AzmeriAdmiralSpawnGeyser", "GTAzmeriAdmiralCannonFire", "GSAzmeriAdmiralCannonball"},
 	},
-	// src/Data/Spectres.lua:4601
+	// src/Data/Spectres.lua:4603
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/AdmiralMid__": {
 		Name:                         "Naval Officer",
 		Life:                         1.69,
@@ -3631,7 +3631,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"caster", "cold_affinity", "fast_movement", "has_one_hand_sword", "has_one_handed_melee", "human", "humanoid", "light_armour", "melee", "not_int", "puncturing_weapon", "red_blood"},
 		SkillList:                    []string{"MeleeAtAnimationSpeedCold", "AzmeriAdmiralDoubleStrike", "AzmeriAdmiralDoubleStrikeTriggered", "AzmeriAdmiralDashThrust", "AzmeriAdmiralDashThrustTriggered", "AzmeriAdmiralDodgeBack", "AzmeriAdmiralDodgeLeft", "AzmeriAdmiralDodgeRight", "AzmeriAdmiralSummonGeysers", "AzmeriAdmiralTidalWave", "AzmeriAdmiralDashMortars", "AzmeriAdmiralGeyserDamage", "AzmeriAdmiralSpawnGeyser", "GTAzmeriAdmiralCannonFire", "AzmeriAdmiralPrecision", "GSAzmeriAdmiralCannonball"},
 	},
-	// src/Data/Spectres.lua:4639
+	// src/Data/Spectres.lua:4641
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/AdmiralHigh_": {
 		Name:                         "Perfect Naval Officer",
 		Life:                         1.69,
@@ -3655,7 +3655,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewList("AllyModifier", mod.AllyModifier{Mod: mod.NewFloat("ColdDamageTaken", mod.TypeIncrease, -5).Tag(mod.GlobalEffect("Buff").Name("PerfectNavalOfficer").Unscalable(true))}).Source("Minion:Perfect Naval Officer"),
 		},
 	},
-	// src/Data/Spectres.lua:4679
+	// src/Data/Spectres.lua:4681
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/AnimatedSwordLow": {
 		Name:                         "Imperfect Dancing Sword",
 		Life:                         1.5,
@@ -3674,7 +3674,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"construct", "medium_movement", "not_int", "not_str"},
 		SkillList:                    []string{"AzmeriSawbladeAnimatedWeaponCyclone", "MeleeAtAnimationSpeed", "AzmeriDoubleSlashAnimatedWeapon", "AzmeriSwordStormCascade"},
 	},
-	// src/Data/Spectres.lua:4703
+	// src/Data/Spectres.lua:4705
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/AnimatedSwordMid": {
 		Name:                         "Dancing Sword",
 		Life:                         1.5,
@@ -3696,7 +3696,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewList("AllyModifier", mod.AllyModifier{Mod: mod.NewFloat("ImpaleChance", mod.TypeBase, 20).Tag(mod.GlobalEffect("Buff").Name("DancingSword").Unscalable(true))}).Source("Minion:Dancing Sword"),
 		},
 	},
-	// src/Data/Spectres.lua:4728
+	// src/Data/Spectres.lua:4730
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/AnimatedSwordHigh_": {
 		Name:                         "Perfect Dancing Sword",
 		Life:                         1.5,
@@ -3719,7 +3719,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewList("AllyModifier", mod.AllyModifier{Mod: mod.NewFloat("ImpaleEffect", mod.TypeIncrease, 30).Tag(mod.GlobalEffect("Buff").Name("DancingSword").Unscalable(true))}).Source("Minion:Perfect Dancing Sword"),
 		},
 	},
-	// src/Data/Spectres.lua:4755
+	// src/Data/Spectres.lua:4757
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/BarrageDemonLow": {
 		Name:                         "Imperfect Needle Horror",
 		Life:                         3,
@@ -3740,7 +3740,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"caster", "demon", "flesh_armour", "has_bow", "medium_height", "medium_movement", "not_int", "physical_affinity", "puncturing_weapon", "ranged", "red_blood", "unique_map_boss"},
 		SkillList:                    []string{"AzmeriBarrageDemonSpineProjectile", "AzmeriBarrageDemonRainOfSpines", "AzmeriBarrageDemonSpinestorm"},
 	},
-	// src/Data/Spectres.lua:4780
+	// src/Data/Spectres.lua:4782
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/BarrageDemonMid": {
 		Name:                         "Needle Horror",
 		Life:                         3,
@@ -3764,7 +3764,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewFloat("ImpaleEffect", mod.TypeIncrease, 100).Source("Minion:Needle Horror"),
 		},
 	},
-	// src/Data/Spectres.lua:4806
+	// src/Data/Spectres.lua:4808
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/BarrageDemonHigh_": {
 		Name:                         "Perfect Needle Horror",
 		Life:                         3,
@@ -3789,7 +3789,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewList("PlayerModifier", mod.PlayerModifier{Mod: mod.NewFloat("ImpaleEffect", mod.TypeIncrease, 10).Tag(mod.GlobalEffect("Buff").Name("NeedleHorror").Unscalable(true))}).Source("Minion:Perfect Needle Horror"),
 		},
 	},
-	// src/Data/Spectres.lua:4834
+	// src/Data/Spectres.lua:4836
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/BasaliskLow": {
 		Name:                         "Imperfect Serpent Warrior",
 		Life:                         1.5,
@@ -3811,7 +3811,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"caster", "chaos_affinity", "eldritch", "energy_armour", "exile", "fast_movement", "human", "humanoid", "is_unarmed", "large_model", "melee", "not_dex", "ranged", "red_blood", "slashing_weapon"},
 		SkillList:                    []string{"MeleeAtAnimationSpeedChaos", "AzmeriBasiliskShoulderMortar", "AzmeriBasiliskComboThrust", "AzmeriBasiliskComboSlam", "AzmeriBasiliskDecapitateRightToLeft", "AzmeriBasiliskDecapitateLeftToRight", "AzmeriBasiliskDecapThrust", "AzmeriBasiliskWyvernFlight", "AzmeriBasiliskDualProjectile", "AzmeriBasiliskDualProjectileImpact", "AzmeriBasiliskDualProjectile2", "AzmeriBasiliskWyvernGroundCollide", "AzmeriBasiliskShoulderMortar2", "EmptyActionAttackBasiliskProjectileBarrageAzmeri", "EmptyActionAttackBasiliskProjectileBarrageLargeAzmeri", "EmptyActionAttackBasiliskProjectileLargeAzmeri", "EmptyActionAttackBasiliskWyvernAzmeri", "EmptyActionAttackBasiliskDecapitateAzmeri", "EmptyActionAttackBasiliskSpinAttackAzmeri"},
 	},
-	// src/Data/Spectres.lua:4876
+	// src/Data/Spectres.lua:4878
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/BasaliskMid": {
 		Name:                         "Serpent Warrior",
 		Life:                         1.5,
@@ -3837,7 +3837,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewList("AllyModifier", mod.AllyModifier{Mod: mod.NewFlag("Condition:CanWither", true)}).Source("Minion:Serpent Warrior"),
 		},
 	},
-	// src/Data/Spectres.lua:4920
+	// src/Data/Spectres.lua:4922
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/BasaliskHigh": {
 		Name:                         "Perfect Serpent Warrior",
 		Life:                         1.5,
@@ -3863,7 +3863,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewList("AllyModifier", mod.AllyModifier{Mod: mod.NewFlag("Condition:CanWither", true)}).Source("Minion:Perfect Serpent Warrior"),
 		},
 	},
-	// src/Data/Spectres.lua:4966
+	// src/Data/Spectres.lua:4968
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/CasterDemonLow": {
 		Name:                         "Imperfect Pain Artist",
 		Life:                         1.44,
@@ -3885,7 +3885,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewFloat("CritMultiplier", mod.TypeBase, 250).Source("Minion:Imperfect Pain Artist"),
 		},
 	},
-	// src/Data/Spectres.lua:4990
+	// src/Data/Spectres.lua:4992
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/CasterDemonMid": {
 		Name:                         "Pain Artist",
 		Life:                         1.44,
@@ -3908,7 +3908,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewList("AllyModifier", mod.AllyModifier{Mod: mod.NewFloat("CritMultiplier", mod.TypeBase, 30).Tag(mod.GlobalEffect("Buff").Name("PainArtist").Unscalable(true))}).Source("Minion:Pain Artist"),
 		},
 	},
-	// src/Data/Spectres.lua:5016
+	// src/Data/Spectres.lua:5018
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/CasterDemonHigh": {
 		Name:                         "Perfect Pain Artist",
 		Life:                         1.44,
@@ -3931,7 +3931,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewList("AllyModifier", mod.AllyModifier{Mod: mod.NewFloat("CritMultiplier", mod.TypeBase, 30).Tag(mod.GlobalEffect("Buff").Name("PainArtist").Unscalable(true))}).Source("Minion:Perfect Pain Artist"),
 		},
 	},
-	// src/Data/Spectres.lua:5044
+	// src/Data/Spectres.lua:5046
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/CycloneDemonLow": {
 		Name:                         "Imperfect Sawblade Horror",
 		Life:                         3.3,
@@ -3952,7 +3952,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"cleaving_weapon", "demon", "flesh_armour", "has_two_hand_axe", "has_two_handed_melee", "medium_height", "melee", "not_int", "physical_affinity", "red_blood", "slow_movement", "unique_map_boss"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "AzmeriCycloneDemonCleave", "AzmeriCycloneDemonDesecratedGroundCyclone"},
 	},
-	// src/Data/Spectres.lua:5069
+	// src/Data/Spectres.lua:5071
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/CycloneDemonMid": {
 		Name:                         "Sawblade Horror",
 		Life:                         3.3,
@@ -3973,7 +3973,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"cleaving_weapon", "demon", "flesh_armour", "has_two_hand_axe", "has_two_handed_melee", "medium_height", "melee", "not_int", "physical_affinity", "red_blood", "slow_movement", "unique_map_boss"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "AzmeriCycloneDemonCleave", "AzmeriCycloneDemonDesecratedGroundCyclone"},
 	},
-	// src/Data/Spectres.lua:5095
+	// src/Data/Spectres.lua:5097
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/CycloneDemonHigh": {
 		Name:                         "Perfect Sawblade Horror",
 		Life:                         3.3,
@@ -3994,7 +3994,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"cleaving_weapon", "demon", "flesh_armour", "has_two_hand_axe", "has_two_handed_melee", "medium_height", "melee", "not_int", "physical_affinity", "red_blood", "slow_movement", "unique_map_boss"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "AzmeriCycloneDemonCleave", "AzmeriCycloneDemonDesecratedGroundCyclone"},
 	},
-	// src/Data/Spectres.lua:5122
+	// src/Data/Spectres.lua:5124
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/DeathKnightLow": {
 		Name:                         "Imperfect Restless Knight",
 		Life:                         3.43,
@@ -4014,7 +4014,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"bludgeoning_weapon", "caster", "cold_affinity", "has_two_hand_mace", "has_two_handed_melee", "humanoid", "melee", "metal_armour", "not_dex", "not_int", "physical_affinity", "undead", "very_slow_movement", "ward_armour"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "GAExpeditionDeathKnightSlam", "GSExpeditionDeathKnightNova", "WalkEmergeExpeditionDeathKnight"},
 	},
-	// src/Data/Spectres.lua:5148
+	// src/Data/Spectres.lua:5150
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/DeathKnightMid": {
 		Name:                         "Restless Knight",
 		Life:                         3.43,
@@ -4034,7 +4034,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"bludgeoning_weapon", "caster", "cold_affinity", "has_two_hand_mace", "has_two_handed_melee", "humanoid", "melee", "metal_armour", "not_dex", "not_int", "physical_affinity", "undead", "very_slow_movement", "ward_armour"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "GAExpeditionDeathKnightSlam", "GSExpeditionDeathKnightNova", "WalkEmergeExpeditionDeathKnight"},
 	},
-	// src/Data/Spectres.lua:5174
+	// src/Data/Spectres.lua:5176
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/DeathKnightHigh": {
 		Name:                         "Perfect Restless Knight",
 		Life:                         3.43,
@@ -4054,7 +4054,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"bludgeoning_weapon", "caster", "cold_affinity", "has_two_hand_mace", "has_two_handed_melee", "humanoid", "melee", "metal_armour", "not_dex", "not_int", "physical_affinity", "undead", "very_slow_movement", "ward_armour"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "GAExpeditionDeathKnightSlam", "GSExpeditionDeathKnightNova", "WalkEmergeExpeditionDeathKnight"},
 	},
-	// src/Data/Spectres.lua:5201
+	// src/Data/Spectres.lua:5203
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/DualstrikeDemonLow": {
 		Name:                         "Imperfect Slashing Horror",
 		Life:                         3.3,
@@ -4076,7 +4076,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"demon", "fire_affinity", "flesh_armour", "has_dual_wield_melee", "has_one_hand_sword", "has_one_handed_melee", "large_height", "medium_movement", "melee", "not_int", "physical_affinity", "red_blood", "slashing_weapon", "unique_map_boss"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "AzmeriDualStrikeDemonFireEnrage", "AzmeriDualStrikeDemonDualStrike"},
 	},
-	// src/Data/Spectres.lua:5227
+	// src/Data/Spectres.lua:5229
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/DualstrikeDemonMid": {
 		Name:                         "Slashing Horror",
 		Life:                         3.3,
@@ -4101,7 +4101,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewList("MinionModifier", mod.MinionModifier{Mod: mod.NewFloat("Damage", mod.TypeMore, 1).Flag(mod.MFlagAttack).Tag(mod.Multiplier("RageEffect").Actor("parent"))}).Source("Minion:Slashing Horror"),
 		},
 	},
-	// src/Data/Spectres.lua:5254
+	// src/Data/Spectres.lua:5256
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/DualstrikeDemonHigh": {
 		Name:                         "Perfect Slashing Horror",
 		Life:                         3.3,
@@ -4127,7 +4127,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewList("MinionModifier", mod.MinionModifier{Mod: mod.NewFloat("Damage", mod.TypeMore, 1).Flag(mod.MFlagAttack).Tag(mod.Multiplier("RageEffect").Actor("parent"))}).Source("Minion:Perfect Slashing Horror"),
 		},
 	},
-	// src/Data/Spectres.lua:5283
+	// src/Data/Spectres.lua:5285
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/FlaskloverLow__": {
 		Name:                         "Imperfect Druidic Alchemist",
 		Life:                         1.75,
@@ -4147,7 +4147,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"bludgeoning_weapon", "has_one_hand_mace", "has_one_handed_melee", "human", "humanoid", "karui", "light_armour", "medium_height", "medium_movement", "melee", "not_str", "physical_affinity", "red_blood"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "MPSAncestralDruidFlask", "GSAncestralDruidFlaskExplode", "EASAncestralHealTotem", "EASAncestralHealAlly", "GSAncestralDruidTotemChannelHeal"},
 	},
-	// src/Data/Spectres.lua:5310
+	// src/Data/Spectres.lua:5312
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/FlaskloverMid": {
 		Name:                         "Druidic Alchemist",
 		Life:                         1.75,
@@ -4170,7 +4170,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewFloat("FlaskEffect", mod.TypeIncrease, 200).Source("Minion:Druidic Alchemist"),
 		},
 	},
-	// src/Data/Spectres.lua:5338
+	// src/Data/Spectres.lua:5340
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/FlaskloverHigh": {
 		Name:                         "Perfect Druidic Alchemist",
 		Life:                         1.75,
@@ -4194,7 +4194,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewList("PlayerModifier", mod.PlayerModifier{Mod: mod.NewFloat("LifeFlaskChargesGenerated", mod.TypeBase, 0.33333333333333).Tag(mod.GlobalEffect("Buff").Name("RestlessKnight").Unscalable(true))}).Source("Minion:Perfect Druidic Alchemist"),
 		},
 	},
-	// src/Data/Spectres.lua:5368
+	// src/Data/Spectres.lua:5370
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/ForgeHoundLow": {
 		Name:            "Imperfect Escaped Prototype",
 		Life:            16,
@@ -4213,7 +4213,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"animal_claw_weapon", "caster", "construct", "fire_affinity", "is_unarmed", "large_model", "medium_movement", "melee", "metal_armour", "not_dex", "not_int", "physical_affinity"},
 		SkillList:       []string{"Melee", "DoLiterallyNothing", "GAHeistRobotHoundStomp", "MDHeistRobotHoundLaserTarget", "GSRoboHoundBellyDamage"},
 	},
-	// src/Data/Spectres.lua:5393
+	// src/Data/Spectres.lua:5395
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/ForgeHoundMid": {
 		Name:            "Escaped Prototype",
 		Life:            16,
@@ -4232,7 +4232,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"animal_claw_weapon", "caster", "construct", "fire_affinity", "is_unarmed", "large_model", "medium_movement", "melee", "metal_armour", "not_dex", "not_int", "physical_affinity"},
 		SkillList:       []string{"Melee", "DoLiterallyNothing", "GAHeistRobotHoundStomp", "MDHeistRobotHoundLaserTarget", "GSRoboHoundBellyDamage"},
 	},
-	// src/Data/Spectres.lua:5418
+	// src/Data/Spectres.lua:5420
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/ForgeHoundHigh_": {
 		Name:            "Perfect Escaped Prototype",
 		Life:            16,
@@ -4251,7 +4251,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"animal_claw_weapon", "caster", "construct", "fire_affinity", "is_unarmed", "large_model", "medium_movement", "melee", "metal_armour", "not_dex", "not_int", "physical_affinity"},
 		SkillList:       []string{"Melee", "DoLiterallyNothing", "GAHeistRobotHoundStomp", "MDHeistRobotHoundLaserTarget", "GSRoboHoundBellyDamage"},
 	},
-	// src/Data/Spectres.lua:5444
+	// src/Data/Spectres.lua:5446
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/GeofriLow": {
 		Name:                         "Imperfect Blasphemer",
 		Life:                         2.25,
@@ -4274,7 +4274,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewFloat("EnemyCurseLimit", mod.TypeBase, 3).Source("Minion:Imperfect Blasphemer"),
 		},
 	},
-	// src/Data/Spectres.lua:5474
+	// src/Data/Spectres.lua:5476
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/GeofriMid_": {
 		Name:                         "Blasphemer",
 		Life:                         2.25,
@@ -4297,7 +4297,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewFloat("EnemyCurseLimit", mod.TypeBase, 3).Source("Minion:Blasphemer"),
 		},
 	},
-	// src/Data/Spectres.lua:5505
+	// src/Data/Spectres.lua:5507
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/GeofriHigh": {
 		Name:                         "Perfect Blasphemer",
 		Life:                         2.25,
@@ -4320,7 +4320,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewFloat("EnemyCurseLimit", mod.TypeBase, 3).Source("Minion:Perfect Blasphemer"),
 		},
 	},
-	// src/Data/Spectres.lua:5537
+	// src/Data/Spectres.lua:5539
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/GoddessLow": {
 		Name:                         "Imperfect Judgemental Spirit",
 		Life:                         2.03,
@@ -4339,7 +4339,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"caster", "fire_affinity", "ghost", "ghost_armour", "ghost_blood", "is_unarmed", "large_height", "medium_movement", "non_unique_map_boss", "not_dex", "not_str", "ranged", "undead"},
 		SkillList:                    []string{"AzmeriGoddessSpiritMortar", "AzmeriGoddessSummonSkeletonGhostflame", "AzmeriGoddessOfferingOfJudgement", "AzmeriGoddessOfferingOfJudgementChaos", "AzmeriGoddessBeam"},
 	},
-	// src/Data/Spectres.lua:5562
+	// src/Data/Spectres.lua:5564
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/GoddessMid": {
 		Name:                         "Judgemental Spirit",
 		Life:                         2.03,
@@ -4358,7 +4358,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"caster", "fire_affinity", "ghost", "ghost_armour", "ghost_blood", "is_unarmed", "large_height", "medium_movement", "non_unique_map_boss", "not_dex", "not_str", "ranged", "undead"},
 		SkillList:                    []string{"AzmeriGoddessSpiritMortar", "AzmeriGoddessSummonSkeletonGhostflame", "AzmeriGoddessOfferingOfJudgement", "AzmeriGoddessOfferingOfJudgementChaos", "AzmeriGoddessBeam", "ABTTAzmeriGoddessAura"},
 	},
-	// src/Data/Spectres.lua:5588
+	// src/Data/Spectres.lua:5590
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/GoddessHigh": {
 		Name:                         "Perfect Judgemental Spirit",
 		Life:                         2.03,
@@ -4377,7 +4377,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"caster", "fire_affinity", "ghost", "ghost_armour", "ghost_blood", "is_unarmed", "large_height", "medium_movement", "non_unique_map_boss", "not_dex", "not_str", "ranged", "undead"},
 		SkillList:                    []string{"AzmeriGoddessSpiritMortar", "AzmeriGoddessSummonSkeletonGhostflame", "AzmeriGoddessOfferingOfJudgement", "AzmeriGoddessOfferingOfJudgementChaos", "AzmeriGoddessBeam", "ABTTAzmeriGoddessAura", "AzmeriGoddessDiscipline"},
 	},
-	// src/Data/Spectres.lua:5616
+	// src/Data/Spectres.lua:5618
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/HarvestBirdLow": {
 		Name:                         "Imperfect Primal Thunderbird",
 		Life:                         1.88,
@@ -4398,7 +4398,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"animal_claw_weapon", "avian_beast", "beast", "caster", "flesh_armour", "has_dagger", "has_one_handed_melee", "large_model", "lightning_affinity", "medium_movement", "melee", "not_str", "red_blood", "small_height", "standalone_map_boss"},
 		SkillList:                    []string{"MeleeAtAnimationSpeedLightning", "AzmeriRavenScreechOfSplendour", "AzmeriRavenDashOfDestruction", "AzmeriBirdBeam", "AzmeriBirdDashGT1", "AzmeriBirdDashGT2", "AzmeriBirdScreech", "GSAzmeriBirdDashZap"},
 	},
-	// src/Data/Spectres.lua:5647
+	// src/Data/Spectres.lua:5649
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/HarvestBirdMid": {
 		Name:                         "Primal Thunderbird",
 		Life:                         1.88,
@@ -4419,7 +4419,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"animal_claw_weapon", "avian_beast", "beast", "caster", "flesh_armour", "has_dagger", "has_one_handed_melee", "large_model", "lightning_affinity", "medium_movement", "melee", "not_str", "red_blood", "small_height", "standalone_map_boss"},
 		SkillList:                    []string{"MeleeAtAnimationSpeedLightning", "AzmeriRavenScreechOfSplendour", "AzmeriRavenDashOfDestruction", "AzmeriBirdBeam", "AzmeriBirdDashGT1", "AzmeriBirdDashGT2", "AzmeriBirdScreechExposure", "GSAzmeriBirdDashZap"},
 	},
-	// src/Data/Spectres.lua:5678
+	// src/Data/Spectres.lua:5680
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/HarvestBirdHigh": {
 		Name:                         "Perfect Primal Thunderbird",
 		Life:                         1.88,
@@ -4440,7 +4440,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"animal_claw_weapon", "avian_beast", "beast", "caster", "flesh_armour", "has_dagger", "has_one_handed_melee", "large_model", "lightning_affinity", "medium_movement", "melee", "not_str", "red_blood", "small_height", "standalone_map_boss"},
 		SkillList:                    []string{"MeleeAtAnimationSpeedLightning", "AzmeriRavenScreechOfSplendour", "AzmeriRavenDashOfDestruction", "AzmeriBirdBeam", "AzmeriBirdDashGT1", "AzmeriBirdDashGT2", "AzmeriBirdScreechExposure", "GSAzmeriBirdDashZap", "AzmeriBirdGrace", "AzmeriBirdGraceHardMode"},
 	},
-	// src/Data/Spectres.lua:5712
+	// src/Data/Spectres.lua:5714
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/ManaPhantasmLow__": {
 		Name:                         "Imperfect Primal Demiurge",
 		Life:                         1.5,
@@ -4459,7 +4459,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"caster", "crusader_monster", "eldritch", "ghost", "ghost_armour", "influence_monster", "is_unarmed", "lightning_affinity", "medium_height", "medium_movement", "melee", "not_dex", "not_str"},
 		SkillList:                    []string{"AzmeriPhantasmExplode", "AzmeriLightningMelee", "AzmeriTeleportPhantasm"},
 	},
-	// src/Data/Spectres.lua:5735
+	// src/Data/Spectres.lua:5737
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/ManaPhantasmMid": {
 		Name:                         "Primal Demiurge",
 		Life:                         1.5,
@@ -4478,7 +4478,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"caster", "crusader_monster", "eldritch", "ghost", "ghost_armour", "influence_monster", "is_unarmed", "lightning_affinity", "medium_height", "medium_movement", "melee", "not_dex", "not_str"},
 		SkillList:                    []string{"AzmeriPhantasmExplode", "AzmeriLightningMelee", "AzmeriTeleportPhantasm", "AzmeriPhantasmClarity"},
 	},
-	// src/Data/Spectres.lua:5759
+	// src/Data/Spectres.lua:5761
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/ManaPhantasmHigh": {
 		Name:                         "Perfect Primal Demiurge",
 		Life:                         1.5,
@@ -4497,7 +4497,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"caster", "crusader_monster", "eldritch", "ghost", "ghost_armour", "influence_monster", "is_unarmed", "lightning_affinity", "medium_height", "medium_movement", "melee", "not_dex", "not_str"},
 		SkillList:                    []string{"AzmeriPhantasmExplodeSap", "AzmeriLightningMelee", "AzmeriTeleportPhantasm", "AzmeriPhantasmClarity"},
 	},
-	// src/Data/Spectres.lua:5784
+	// src/Data/Spectres.lua:5786
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/MegaSkeletonLow": {
 		Name:                         "Imperfect Runic Skeleton",
 		Life:                         3.75,
@@ -4520,7 +4520,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewFloat("PhysicalDamage", mod.TypeIncrease, 20).Flag(mod.MFlagWeapon).Tag(mod.PerStat(10, "Str")).Source("Minion:Imperfect Runic Skeleton"),
 		},
 	},
-	// src/Data/Spectres.lua:5809
+	// src/Data/Spectres.lua:5811
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/MegaSkeletonMid": {
 		Name:                         "Runic Skeleton",
 		Life:                         3.75,
@@ -4543,7 +4543,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewFloat("PhysicalDamage", mod.TypeIncrease, 20).Flag(mod.MFlagWeapon).Tag(mod.PerStat(10, "Str")).Source("Minion:Runic Skeleton"),
 		},
 	},
-	// src/Data/Spectres.lua:5835
+	// src/Data/Spectres.lua:5837
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/MegaSkeletonHigh": {
 		Name:                         "Perfect Runic Skeleton",
 		Life:                         3.75,
@@ -4567,7 +4567,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewList("PlayerModifier", mod.PlayerModifier{Mod: mod.NewFloat("PhysicalDamage", mod.TypeMore, 5).Flag(mod.MFlagAttack).Tag(mod.GlobalEffect("Buff").Name("PrimalDemiurge").Unscalable(true))}).Source("Minion:Perfect Runic Skeleton"),
 		},
 	},
-	// src/Data/Spectres.lua:5863
+	// src/Data/Spectres.lua:5865
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/OakLow": {
 		Name:                         "Imperfect Warlord",
 		Life:                         3,
@@ -4587,7 +4587,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"human", "humanoid", "medium_movement", "not_int", "red_blood"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "AzmeriOakSweep", "AzmeriOakImmortalCall", "AzmeriOakEnduringCry", "AzmeriOakLeapSlam"},
 	},
-	// src/Data/Spectres.lua:5889
+	// src/Data/Spectres.lua:5891
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/OakMid": {
 		Name:                         "Warlord",
 		Life:                         3,
@@ -4607,7 +4607,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"human", "humanoid", "medium_movement", "not_int", "red_blood"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "AzmeriOakSweep", "AzmeriOakImmortalCall", "AzmeriOakEnduringCry", "AzmeriOakLeapSlam", "AzmeriOakVitality"},
 	},
-	// src/Data/Spectres.lua:5916
+	// src/Data/Spectres.lua:5918
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/OakHigh": {
 		Name:                         "Perfect Warlord",
 		Life:                         3,
@@ -4627,7 +4627,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"human", "humanoid", "medium_movement", "not_int", "red_blood"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "AzmeriOakSweep", "AzmeriOakImmortalCall", "AzmeriOakEnduringCry", "AzmeriOakLeapSlam", "AzmeriOakVitality"},
 	},
-	// src/Data/Spectres.lua:5944
+	// src/Data/Spectres.lua:5946
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/ReaperLow": {
 		Name:                         "Imperfect Dark Reaper",
 		Life:                         1.88,
@@ -4653,7 +4653,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewFloat("BleedChance", mod.TypeBase, 100).Source("Minion:Imperfect Dark Reaper"),
 		},
 	},
-	// src/Data/Spectres.lua:5981
+	// src/Data/Spectres.lua:5983
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/ReaperMid": {
 		Name:                         "Dark Reaper",
 		Life:                         1.88,
@@ -4679,7 +4679,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewFloat("BleedChance", mod.TypeBase, 100).Source("Minion:Dark Reaper"),
 		},
 	},
-	// src/Data/Spectres.lua:6019
+	// src/Data/Spectres.lua:6021
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/ReaperHigh": {
 		Name:                         "Perfect Dark Reaper",
 		Life:                         1.88,
@@ -4707,7 +4707,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewFlag("Condition:NoExtraBleedDamageToMovingEnemy", true).Source("Minion:Perfect Dark Reaper"),
 		},
 	},
-	// src/Data/Spectres.lua:6060
+	// src/Data/Spectres.lua:6062
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/ShepherdLow": {
 		Name:                         "Imperfect Sanguimancer Demon",
 		Life:                         2.03,
@@ -4728,7 +4728,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"beyond_demon", "bludgeoning_weapon", "caster", "demon", "fire_affinity", "flesh_armour", "is_unarmed", "not_dex", "not_str", "ranged", "red_blood", "very_fast_movement"},
 		SkillList:                    []string{"GTAzmeriShepherdVomit", "MMSAzmeriShepherdTripleMortar", "MMSAzmeriShepherdVomitMortar", "GSAzmeriShepherdBeamNuke"},
 	},
-	// src/Data/Spectres.lua:6086
+	// src/Data/Spectres.lua:6088
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/ShepherdMid_": {
 		Name:                         "Sanguimancer Demon",
 		Life:                         2.03,
@@ -4749,7 +4749,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"beyond_demon", "bludgeoning_weapon", "caster", "demon", "fire_affinity", "flesh_armour", "is_unarmed", "not_dex", "not_str", "ranged", "red_blood", "very_fast_movement"},
 		SkillList:                    []string{"GTAzmeriShepherdVomit", "MMSAzmeriShepherdTripleMortar", "MMSAzmeriShepherdVomitMortar", "GSAzmeriShepherdBeamNuke"},
 	},
-	// src/Data/Spectres.lua:6112
+	// src/Data/Spectres.lua:6114
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/ShepherdHigh": {
 		Name:                         "Perfect Sanguimancer Demon",
 		Life:                         2.03,
@@ -4770,7 +4770,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"beyond_demon", "bludgeoning_weapon", "caster", "demon", "fire_affinity", "flesh_armour", "is_unarmed", "not_dex", "not_str", "ranged", "red_blood", "very_fast_movement"},
 		SkillList:                    []string{"GTAzmeriShepherdVomit", "MMSAzmeriShepherdTripleMortar", "MMSAzmeriShepherdVomitMortar", "GSAzmeriShepherdBeamNuke", "ABTTAzmeriShepherdSpellDamage"},
 	},
-	// src/Data/Spectres.lua:6140
+	// src/Data/Spectres.lua:6142
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/SpiderLeaderLow": {
 		Name:                         "Imperfect Spider Matriarch",
 		Life:                         1.73,
@@ -4790,7 +4790,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"animal_claw_weapon", "beast", "chaos_affinity", "fast_movement", "flesh_armour", "has_dagger", "has_one_handed_melee", "insect_blood", "large_model", "melee", "not_int", "physical_affinity", "small_height", "spider"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "MonsterViperStrikeAtAnimationSpeed", "AzmeriSpiderLeaderMortar"},
 	},
-	// src/Data/Spectres.lua:6164
+	// src/Data/Spectres.lua:6166
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/SpiderLeaderMid": {
 		Name:                         "Spider Matriarch",
 		Life:                         1.73,
@@ -4810,7 +4810,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"animal_claw_weapon", "beast", "chaos_affinity", "fast_movement", "flesh_armour", "has_dagger", "has_one_handed_melee", "insect_blood", "large_model", "melee", "not_int", "physical_affinity", "small_height", "spider"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "MonsterViperStrikeAtAnimationSpeed", "AzmeriSpiderLeaderMortar", "ABTTAzmeriSpiderLeaderAura"},
 	},
-	// src/Data/Spectres.lua:6189
+	// src/Data/Spectres.lua:6191
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/SpiderLeaderHigh_": {
 		Name:                         "Perfect Spider Matriarch",
 		Life:                         1.73,
@@ -4833,7 +4833,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewList("PlayerModifier", mod.PlayerModifier{Mod: mod.NewFloat("WitherEffect", mod.TypeIncrease, 10).Tag(mod.GlobalEffect("Buff").Name("SpiderMatriarch").Unscalable(true))}).Source("Minion:Perfect Spider Matriarch"),
 		},
 	},
-	// src/Data/Spectres.lua:6216
+	// src/Data/Spectres.lua:6218
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/TankyZombieLow": {
 		Name:                         "Imperfect Meatsack",
 		Life:                         5,
@@ -4852,7 +4852,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"cold_affinity", "flesh_armour", "humanoid", "is_unarmed", "melee", "not_dex", "not_int", "physical_affinity", "red_blood", "undead", "very_fast_movement", "zombie"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed"},
 	},
-	// src/Data/Spectres.lua:6237
+	// src/Data/Spectres.lua:6239
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/TankyZombieMid": {
 		Name:                         "Meatsack",
 		Life:                         6,
@@ -4871,7 +4871,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"cold_affinity", "flesh_armour", "humanoid", "is_unarmed", "melee", "not_dex", "not_int", "physical_affinity", "red_blood", "undead", "very_fast_movement", "zombie"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "AzmeriZombieCausticGroundWhenHit"},
 	},
-	// src/Data/Spectres.lua:6259
+	// src/Data/Spectres.lua:6261
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/TankyZombieHigh": {
 		Name:                         "Perfect Meatsack",
 		Life:                         7,
@@ -4890,7 +4890,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"cold_affinity", "flesh_armour", "humanoid", "is_unarmed", "melee", "not_dex", "not_int", "physical_affinity", "red_blood", "undead", "very_fast_movement", "zombie"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "AzmeriZombieCausticGroundWhenHit"},
 	},
-	// src/Data/Spectres.lua:6283
+	// src/Data/Spectres.lua:6285
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/TentacleMinionLow": {
 		Name:                         "Imperfect Eldritch Eye",
 		Life:                         1.5,
@@ -4912,7 +4912,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewFlag("LightningCannotShock", true).Source("Minion:Imperfect Eldritch Eye"),
 		},
 	},
-	// src/Data/Spectres.lua:6308
+	// src/Data/Spectres.lua:6310
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/TentacleMinionMid": {
 		Name:                         "Eldritch Eye",
 		Life:                         1.5,
@@ -4934,7 +4934,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewFlag("LightningCannotShock", true).Source("Minion:Eldritch Eye"),
 		},
 	},
-	// src/Data/Spectres.lua:6334
+	// src/Data/Spectres.lua:6336
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/TentacleMinionHigh": {
 		Name:                         "Perfect Eldritch Eye",
 		Life:                         1.5,
@@ -4956,7 +4956,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewFlag("LightningCannotShock", true).Source("Minion:Perfect Eldritch Eye"),
 		},
 	},
-	// src/Data/Spectres.lua:6362
+	// src/Data/Spectres.lua:6364
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/TigerLow": {
 		Name:                         "Imperfect Forest Tiger",
 		Life:                         1.8,
@@ -4980,7 +4980,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewFloat("Damage", mod.TypeIncrease, 5).Flag(mod.MFlagAttack).Tag(mod.PerStat(450, "Evasion")).Source("Minion:Imperfect Forest Tiger"),
 		},
 	},
-	// src/Data/Spectres.lua:6393
+	// src/Data/Spectres.lua:6395
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/TigerMid": {
 		Name:                         "Forest Tiger",
 		Life:                         1.8,
@@ -5004,7 +5004,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewFloat("Damage", mod.TypeIncrease, 5).Flag(mod.MFlagAttack).Tag(mod.PerStat(450, "Evasion")).Source("Minion:Forest Tiger"),
 		},
 	},
-	// src/Data/Spectres.lua:6425
+	// src/Data/Spectres.lua:6427
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/TigerHigh": {
 		Name:                         "Perfect Forest Tiger",
 		Life:                         1.8,
@@ -5028,7 +5028,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewFloat("Damage", mod.TypeIncrease, 5).Flag(mod.MFlagAttack).Tag(mod.PerStat(450, "Evasion")).Source("Minion:Perfect Forest Tiger"),
 		},
 	},
-	// src/Data/Spectres.lua:6459
+	// src/Data/Spectres.lua:6461
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/TurtleLow": {
 		Name:                         "Imperfect Guardian Turtle",
 		Life:                         4.5,
@@ -5047,7 +5047,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"beast", "bludgeoning_weapon", "has_one_hand_mace", "has_one_handed_melee", "large_model", "light_armour", "medium_height", "melee", "not_dex", "not_int", "physical_affinity", "red_blood", "reptile_beast", "very_slow_movement"},
 		SkillList:                    []string{"MeleeAtAnimationSpeed", "ABTTAzmeriTurtleInvulnerability"},
 	},
-	// src/Data/Spectres.lua:6481
+	// src/Data/Spectres.lua:6483
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/TurtleMid_": {
 		Name:                         "Guardian Turtle",
 		Life:                         4.5,
@@ -5069,7 +5069,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewList("PlayerModifier", mod.PlayerModifier{Mod: mod.NewFloat("PhysicalDamageReduction", mod.TypeBase, 3).Tag(mod.GlobalEffect("Buff").Name("GuardianTurtle").Unscalable(true))}).Source("Minion:Guardian Turtle"),
 		},
 	},
-	// src/Data/Spectres.lua:6504
+	// src/Data/Spectres.lua:6506
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/TurtleHigh": {
 		Name:                         "Perfect Guardian Turtle",
 		Life:                         4.5,
@@ -5091,7 +5091,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewList("PlayerModifier", mod.PlayerModifier{Mod: mod.NewFloat("PhysicalDamageReduction", mod.TypeBase, 5).Tag(mod.GlobalEffect("Buff").Name("GuardianTurtle").Unscalable(true))}).Source("Minion:Perfect Guardian Turtle"),
 		},
 	},
-	// src/Data/Spectres.lua:6530
+	// src/Data/Spectres.lua:6532
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/VaalOversoulLow": {
 		Name:                         "Imperfect Shadow Construct",
 		Life:                         3.75,
@@ -5110,7 +5110,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"caster", "cold_affinity", "construct", "extra_extra_large_height", "fire_affinity", "hard_armour", "is_unarmed", "large_model", "lightning_affinity", "not_dex", "not_int", "physical_affinity", "ranged", "red_blood", "slashing_weapon", "slow_movement"},
 		SkillList:                    []string{"AzmeriOversoulRocks", "AzmeriOversoulSpray", "AzmeriOversoulExplosion", "AzmeriOversoulLaser", "AzmeriOversoulRocksTriggered", "AzmeriOversoulColdSnapTriggered"},
 	},
-	// src/Data/Spectres.lua:6556
+	// src/Data/Spectres.lua:6558
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/VaalOversoulMid": {
 		Name:                         "Shadow Construct",
 		Life:                         3.75,
@@ -5129,7 +5129,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"caster", "cold_affinity", "construct", "extra_extra_large_height", "fire_affinity", "hard_armour", "is_unarmed", "large_model", "lightning_affinity", "not_dex", "not_int", "physical_affinity", "ranged", "red_blood", "slashing_weapon", "slow_movement"},
 		SkillList:                    []string{"AzmeriOversoulRocks", "AzmeriOversoulSpray", "AzmeriOversoulExplosionIgnite", "AzmeriOversoulLaser", "AzmeriOversoulRocksTriggered", "AzmeriOversoulColdSnapTriggered"},
 	},
-	// src/Data/Spectres.lua:6582
+	// src/Data/Spectres.lua:6584
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/VaalOversoulHigh": {
 		Name:                         "Perfect Shadow Construct",
 		Life:                         3.75,
@@ -5148,7 +5148,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"caster", "cold_affinity", "construct", "extra_extra_large_height", "fire_affinity", "hard_armour", "is_unarmed", "large_model", "lightning_affinity", "not_dex", "not_int", "physical_affinity", "ranged", "red_blood", "slashing_weapon", "slow_movement"},
 		SkillList:                    []string{"AzmeriOversoulRocks", "AzmeriOversoulSpray", "AzmeriOversoulExplosionIgnite", "AzmeriOversoulLaserMaxShock", "AzmeriOversoulRocksTriggered", "AzmeriOversoulColdSnapTriggered"},
 	},
-	// src/Data/Spectres.lua:6609
+	// src/Data/Spectres.lua:6611
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/VikingLow": {
 		Name:                         "Imperfect Forest Warrior",
 		Life:                         3,
@@ -5169,7 +5169,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"cleaving_weapon", "fire_affinity", "flesh_armour", "gladiator", "has_two_hand_axe", "has_two_handed_melee", "humanoid", "large_model", "medium_height", "medium_movement", "melee", "non_unique_map_boss", "not_int", "physical_affinity", "red_blood"},
 		SkillList:                    []string{"MeleeAtAnimationSpeedFire", "AzmeriVikingCyclone", "AzmeriVikingUpheaval"},
 	},
-	// src/Data/Spectres.lua:6634
+	// src/Data/Spectres.lua:6636
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/VikingMid": {
 		Name:                         "Forest Warrior",
 		Life:                         3,
@@ -5193,7 +5193,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewFloat("CullPercent", mod.TypeMAX, 10).Source("Minion:Forest Warrior"),
 		},
 	},
-	// src/Data/Spectres.lua:6660
+	// src/Data/Spectres.lua:6662
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/VikingHigh": {
 		Name:                         "Perfect Forest Warrior",
 		Life:                         3,
@@ -5218,7 +5218,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewList("AllyModifier", mod.AllyModifier{Mod: mod.NewFlag("Condition:Onslaught", true).Tag(mod.GlobalEffect("Buff").Name("ForestWarrior").Unscalable(true))}).Source("Minion:Perfect Forest Warrior"),
 		},
 	},
-	// src/Data/Spectres.lua:6688
+	// src/Data/Spectres.lua:6690
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/SlammerDemonLow": {
 		Name:            "Imperfect Shadow Berserker",
 		Life:            2.02,
@@ -5236,7 +5236,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"demon", "flesh_armour", "is_unarmed", "medium_movement", "melee", "not_dex", "not_int", "physical_affinity"},
 		SkillList:       []string{"Melee", "EmptyActionAttackAfflictionMinionTripleSlam", "AfflictionMinionPhysSlamCircleSmall", "AfflictionMinionPhysSlamCircleBig", "AfflictionMinionPhysSlamCircleRectangle"},
 	},
-	// src/Data/Spectres.lua:6714
+	// src/Data/Spectres.lua:6716
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/SlammerDemonMid": {
 		Name:            "Shadow Berserker",
 		Life:            2.02,
@@ -5254,7 +5254,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"demon", "flesh_armour", "is_unarmed", "medium_movement", "melee", "not_dex", "not_int", "physical_affinity"},
 		SkillList:       []string{"Melee", "EmptyActionAttackAfflictionMinionTripleSlam", "AfflictionMinionPhysSlamCircleSmall", "AfflictionMinionPhysSlamCircleBig", "AfflictionMinionPhysSlamCircleRectangle"},
 	},
-	// src/Data/Spectres.lua:6740
+	// src/Data/Spectres.lua:6742
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/SlammerDemonHigh": {
 		Name:            "Perfect Shadow Berserker",
 		Life:            2.02,
@@ -5272,7 +5272,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:     []string{"demon", "flesh_armour", "is_unarmed", "medium_movement", "melee", "not_dex", "not_int", "physical_affinity"},
 		SkillList:       []string{"Melee", "EmptyActionAttackAfflictionMinionTripleSlam", "AfflictionMinionPhysSlamCircleSmall", "AfflictionMinionPhysSlamCircleBig", "AfflictionMinionPhysSlamCircleRectangle"},
 	},
-	// src/Data/Spectres.lua:6767
+	// src/Data/Spectres.lua:6769
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/FlameblasterLow_": {
 		Name:                         "Imperfect Riftcaster",
 		Life:                         5.6,
@@ -5293,7 +5293,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"bludgeoning_weapon", "caster", "fast_movement", "has_staff", "has_two_handed_melee", "human", "humanoid", "light_armour", "lightning_affinity", "melee", "not_dex", "not_str", "physical_affinity", "ranged", "red_blood"},
 		SkillList:                    []string{"Melee", "DoLiterallyNothing", "WalkEmergeHeistScience", "HeistScienceSpawnLightningVolatile", "GSHeistLightningVolatileExplode", "GTHeistCultistLightningBoltCone", "HeistCultistLightningBolt", "GSHeistLightningWaterfallHit", "HeistScienceSpawnLightningWaterfall", "GTHeistCultistWaterfallCascade", "MPSHeistCultistStaffProjectileGreen", "ChangeToStance1Heist", "EASHeistMindControlSuicide", "TeleportHeistCultistProject", "GSHeistScienceLightningDashImpact"},
 	},
-	// src/Data/Spectres.lua:6804
+	// src/Data/Spectres.lua:6806
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/FlameblasterMid_": {
 		Name:                         "Riftcaster",
 		Life:                         5.6,
@@ -5314,7 +5314,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"bludgeoning_weapon", "caster", "fast_movement", "has_staff", "has_two_handed_melee", "human", "humanoid", "light_armour", "lightning_affinity", "melee", "not_dex", "not_str", "physical_affinity", "ranged", "red_blood"},
 		SkillList:                    []string{"Melee", "DoLiterallyNothing", "WalkEmergeHeistScience", "HeistScienceSpawnLightningVolatile", "GSHeistLightningVolatileExplode", "GTHeistCultistLightningBoltCone", "HeistCultistLightningBolt", "GSHeistLightningWaterfallHit", "HeistScienceSpawnLightningWaterfall", "GTHeistCultistWaterfallCascade", "MPSHeistCultistStaffProjectileGreen", "ChangeToStance1Heist", "EASHeistMindControlSuicide", "TeleportHeistCultistProject", "GSHeistScienceLightningDashImpact"},
 	},
-	// src/Data/Spectres.lua:6841
+	// src/Data/Spectres.lua:6843
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/FlameblasterHigh_": {
 		Name:                         "Perfect Riftcaster",
 		Life:                         5.6,
@@ -5335,7 +5335,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"bludgeoning_weapon", "caster", "fast_movement", "has_staff", "has_two_handed_melee", "human", "humanoid", "light_armour", "lightning_affinity", "melee", "not_dex", "not_str", "physical_affinity", "ranged", "red_blood"},
 		SkillList:                    []string{"Melee", "DoLiterallyNothing", "WalkEmergeHeistScience", "HeistScienceSpawnLightningVolatile", "GSHeistLightningVolatileExplode", "GTHeistCultistLightningBoltCone", "HeistCultistLightningBolt", "GSHeistLightningWaterfallHit", "HeistScienceSpawnLightningWaterfall", "GTHeistCultistWaterfallCascade", "MPSHeistCultistStaffProjectileGreen", "ChangeToStance1Heist", "EASHeistMindControlSuicide", "TeleportHeistCultistProject", "GSHeistScienceLightningDashImpact"},
 	},
-	// src/Data/Spectres.lua:6879
+	// src/Data/Spectres.lua:6881
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/DemonBossLow": {
 		Name:                         "Imperfect Blood Demon",
 		Life:                         3.75,
@@ -5355,7 +5355,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"beyond_demon", "caster", "cleaving_weapon", "demon", "fire_affinity", "flesh_armour", "has_two_hand_axe", "has_two_handed_melee", "hellscape_demon_boss", "large_model", "melee", "not_dex", "not_int", "ranged", "red_blood", "very_fast_movement"},
 		SkillList:                    []string{"MeleeAtAnimationSpeedFire", "AzmeriDemonTeethShot", "DTTAzmeriDemonLeap", "GAAzmeriDemonLeapSlamDamage", "GTAzmeriDemonTeethShot", "MMSAzmeriDemonBloodVomitSmall", "MMSAzmeriDemonBloodVomitMedium", "MMSAzmeriDemonBloodVomitLarge", "GAAzmeriDemonMeleeMiniSlam1", "GAAzmeriDemonMeleeMiniSlam2", "GSAzmeriDemonKnockback", "AzmeriDemonVomitSpraySmall", "AzmeriDemonVomitSprayMedium", "AzmeriDemonVomitSprayLarge"},
 	},
-	// src/Data/Spectres.lua:6914
+	// src/Data/Spectres.lua:6916
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/DemonBossMid": {
 		Name:                         "Blood Demon",
 		Life:                         3.75,
@@ -5375,7 +5375,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"beyond_demon", "caster", "cleaving_weapon", "demon", "fire_affinity", "flesh_armour", "has_two_hand_axe", "has_two_handed_melee", "hellscape_demon_boss", "large_model", "melee", "not_dex", "not_int", "ranged", "red_blood", "very_fast_movement"},
 		SkillList:                    []string{"MeleeAtAnimationSpeedFire", "AzmeriDemonTeethShot", "DTTAzmeriDemonLeap", "GAAzmeriDemonLeapSlamDamage", "GTAzmeriDemonTeethShot", "MMSAzmeriDemonBloodVomitSmall", "MMSAzmeriDemonBloodVomitMedium", "MMSAzmeriDemonBloodVomitLarge", "GAAzmeriDemonMeleeMiniSlam1", "GAAzmeriDemonMeleeMiniSlam2", "GSAzmeriDemonKnockback", "AzmeriDemonVomitSpraySmall", "AzmeriDemonVomitSprayMedium", "AzmeriDemonVomitSprayLarge", "GSAzmeriDemonBossCorruptExplode"},
 	},
-	// src/Data/Spectres.lua:6950
+	// src/Data/Spectres.lua:6952
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/DemonBossHigh": {
 		Name:                         "Perfect Blood Demon",
 		Life:                         3.75,
@@ -5395,7 +5395,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"beyond_demon", "caster", "cleaving_weapon", "demon", "fire_affinity", "flesh_armour", "has_two_hand_axe", "has_two_handed_melee", "hellscape_demon_boss", "large_model", "melee", "not_dex", "not_int", "ranged", "red_blood", "very_fast_movement"},
 		SkillList:                    []string{"MeleeAtAnimationSpeedFire", "AzmeriDemonTeethShot", "DTTAzmeriDemonLeap", "GAAzmeriDemonLeapSlamDamage", "GTAzmeriDemonTeethShot", "MMSAzmeriDemonBloodVomitSmall", "MMSAzmeriDemonBloodVomitMedium", "MMSAzmeriDemonBloodVomitLarge", "GAAzmeriDemonMeleeMiniSlam1", "GAAzmeriDemonMeleeMiniSlam2", "GSAzmeriDemonKnockback", "AzmeriDemonVomitSpraySmall", "AzmeriDemonVomitSprayMedium", "AzmeriDemonVomitSprayLarge", "GSAzmeriDemonBossCorruptExplode", "AzmeriDemonPhysicalDamageAura"},
 	},
-	// src/Data/Spectres.lua:6988
+	// src/Data/Spectres.lua:6990
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/SynthesisGolemLow": {
 		Name:                         "Imperfect Half-remembered Goliath",
 		Life:                         3.75,
@@ -5415,7 +5415,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"bludgeoning_weapon", "caster", "construct", "fast_movement", "golem", "is_unarmed", "large_height", "large_model", "lightning_affinity", "mud_blood", "not_dex", "physical_affinity", "stone_armour"},
 		SkillList:                    []string{"EmptyActionAttackAzmeriGolemVSlam", "GeometryAttackAzmeriGolemCircle", "GeometryAttackAzmeriGolemRectangleLeft", "GeometryAttackAzmeriGolemRectangleRight", "GeometryTriggerSkillAzmeriGolemRectangleLeft", "GeometryTriggerSkillAzmeriGolemRectangleRight", "SpawnObjectAzmeriGolemVTurretLeft", "SpawnObjectAzmeriGolemVTurretRight", "AzmeriGolemVTurretProjectile", "AzmeriGuardian4Slam", "AzmeriGuardian4BeamGun", "EmptyActionAzmeriGuardian4Gun", "AzmeriGolemLeapSlam", "AzmeriGuardian4LeapUp", "EmptyActionAzmeriGolemMinionPhase", "AzmeriGolemBossWhipLeft", "AzmeriGolemBossWhipRight", "EmptyActionAzmeriGolemWhip", "AzmeriBossShockRifleSingle", "AzmeriBossShockRifleMulti", "AzmeriBossShockRifleRotating", "AzmeriGolemRotateZap"},
 	},
-	// src/Data/Spectres.lua:7031
+	// src/Data/Spectres.lua:7033
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/SynthesisGolemMid": {
 		Name:                         "Half-remembered Goliath",
 		Life:                         3.75,
@@ -5438,7 +5438,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewFloat("LinkEffectOnSelf", mod.TypeIncrease, 50).Source("Minion:Half-remembered Goliath"),
 		},
 	},
-	// src/Data/Spectres.lua:7075
+	// src/Data/Spectres.lua:7077
 	"Metadata/Monsters/LeagueAzmeri/SpecialCorpses/SynthesisGolemHigh": {
 		Name:                         "Perfect Half-remembered Goliath",
 		Life:                         3.75,
@@ -5461,7 +5461,7 @@ var Spectres = map[string]*MinionInfo{
 			mod.NewFloat("LinkEffectOnSelf", mod.TypeIncrease, 100).Source("Minion:Perfect Half-remembered Goliath"),
 		},
 	},
-	// src/Data/Spectres.lua:7120
+	// src/Data/Spectres.lua:7122
 	"Metadata/Monsters/FaridunLeague/FaridunWarlock/FaridunWarlockLow": {
 		Name:                         "Imperfect Conjuror of Rot",
 		Life:                         2.04,
@@ -5480,7 +5480,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"caster", "human", "humanoid", "not_dex", "not_str", "ranged", "red_blood", "slow_movement"},
 		SkillList:                    []string{"SSMFaridunWarlockBloodLocust", "SOFaridunWarlockPustule", "GSFaridunWarlockPustuleExplosion", "GTFaridunWarlockPustules", "MPSFaridunWarlockBloodSpray"},
 	},
-	// src/Data/Spectres.lua:7147
+	// src/Data/Spectres.lua:7149
 	"Metadata/Monsters/FaridunLeague/FaridunWarlock/FaridunWarlockMid_": {
 		Name:                         "Conjuror of Rot",
 		Life:                         2.04,
@@ -5499,7 +5499,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"caster", "human", "humanoid", "not_dex", "not_str", "ranged", "red_blood", "slow_movement"},
 		SkillList:                    []string{"SSMFaridunWarlockBloodLocust", "SOFaridunWarlockPustule", "GSFaridunWarlockPustuleExplosion", "GTFaridunWarlockPustules", "CGEFaridunWarlockSwarmGround", "MPSFaridunWarlockBloodSpray"},
 	},
-	// src/Data/Spectres.lua:7175
+	// src/Data/Spectres.lua:7177
 	"Metadata/Monsters/FaridunLeague/FaridunWarlock/FaridunWarlockHigh": {
 		Name:                         "Perfect Conjuror of Rot",
 		Life:                         2.04,
@@ -5518,7 +5518,7 @@ var Spectres = map[string]*MinionInfo{
 		MonsterTags:                  []string{"caster", "human", "humanoid", "not_dex", "not_str", "ranged", "red_blood", "slow_movement"},
 		SkillList:                    []string{"SSMFaridunWarlockBloodLocust", "SOFaridunWarlockPustule", "GSFaridunWarlockPustuleExplosion", "GTFaridunWarlockPustules", "CGEFaridunWarlockSwarmGround", "MPSFaridunWarlockBloodSpray", "FaridunCasterUndeadDamageOverTimeAura"},
 	},
-	// src/Data/Spectres.lua:7205
+	// src/Data/Spectres.lua:7207
 	"Metadata/Monsters/VaalMonsters/VaalOverseer": {
 		Name:                         "Undead Vaal Commander",
 		Life:                         2.59,

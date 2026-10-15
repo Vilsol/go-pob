@@ -2,7 +2,10 @@
 local buildsDir, outDir = arg[1], arg[2]
 assert(buildsDir and outDir, "usage: dump_build.lua <buildsDir> <outDir>")
 
+local selfDir = arg[0]:match("^(.*)[/\\]") or "."
+local construct = dofile(selfDir .. "/pob_compat.lua").construct
 dofile("HeadlessWrapper.lua")
+dofile(selfDir .. "/apply_range_guard.lua").install()
 
 
 if os.getenv("FORCE_CLUSTER_KEY") == "1" then
@@ -38,7 +41,7 @@ if emptyModCacheMode == "1" or emptyModCacheMode == "each" then
 
 	local rebuilt = 0
 	for version in pairs(main.tree) do
-		main.tree[version] = new("PassiveTree", version)
+		main.tree[version] = construct("PassiveTree", version)
 		rebuilt = rebuilt + 1
 	end
 

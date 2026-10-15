@@ -10,7 +10,7 @@ import (
 
 // TestInitModDBMatchesPoBBaseMods: initModDB's name set was diffed against CalcSetup.lua:19-110 entry by entry.
 //
-//pob:block:src/Modules/CalcSetup.lua:19-110
+//pob:block:src/Modules/CalcSetup.lua:20-116
 func TestInitModDBMatchesPoBBaseMods(t *testing.T) {
 	db := moddb.NewModDB()
 	initModDB(&Environment{}, db)

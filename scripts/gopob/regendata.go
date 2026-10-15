@@ -16,6 +16,7 @@ type rdGenerator struct {
 	emit                 string
 	lua                  string
 	dump                 string
+	luaArgs              []string
 	source               rdSource
 	stdinGz              string
 	emitArgs             []string
@@ -67,8 +68,8 @@ func rdRepo() string {
 			if fi, err := os.Stat(pyPathJoin(append([]string{dir}, anchor...)...)); err == nil && !fi.IsDir() { //nolint:gosec // walking up from the CWD
 				return dir
 			}
-			parent := pyPathStr(pyPathJoin(dir, ".."))
-			if parent == dir || dir == "/" {
+			parent := filepath.Dir(dir)
+			if parent == dir {
 				break
 			}
 			dir = parent
@@ -167,6 +168,52 @@ func (r *rdRun) luajitCmd() []string {
 	return []string{"mise", "x", "--", "luajit"}
 }
 
+func (r *rdRun) runLua(script, out, dataPath string, args ...string) error {
+	lj := r.luajitCmd()
+	env := rdLuajitEnv(r.pob)
+	logical := append(append(append([]string{}, lj...), pyPathJoin(r.repo, script), out), args...)
+
+	stage, err := newLuaStage(r.repo)
+	if err != nil {
+		//go-only: the stage has no counterpart in the original, which passed the repo paths through.
+		return rdRefuse("%s", err)
+	}
+	defer stage.remove()
+	if lj[0] == "setarch" {
+		if lj[2], err = stage.link("luajit", lj[2]); err != nil {
+			//go-only: as above, the stage.
+			return rdRefuse("%s", err)
+		}
+	}
+	if dataPath != "" {
+		staged, err := stage.link("data.json", dataPath)
+		if err != nil {
+			//go-only: as above, the stage.
+			return rdRefuse("%s", err)
+		}
+		env = append(env, "GAMEDATA_DUMP="+staged)
+	}
+
+	staged := append(append(append([]string{}, lj...), stage.path(script), stage.path("out.json")), args...)
+	cmd := exec.Command(staged[0], staged[1:]...) //nolint:gosec,noctx // the generator table's own pipeline
+	cmd.Dir = pyPathJoin(r.pob, "src")
+	cmd.Env = env
+	cmd.Stdout, cmd.Stderr, cmd.Stdin = os.Stdout, os.Stderr, os.Stdin
+	if err := cmd.Run(); err != nil {
+		return rdRefuse("command failed (%d): %s", rdExitCode(err),
+			strings.Join(r.redactTmp(logical), " "))
+	}
+	b, err := os.ReadFile(stage.path("out.json")) //nolint:gosec // the stage this run created
+	if err != nil {
+		return nil //nolint:nilerr // see above
+	}
+	if err := os.WriteFile(out, b, 0o600); err != nil { //nolint:gosec // this run's temp tree
+		//go-only: as above, the stage.
+		return rdRefuse("could not write %s: %s", out, errnoText(err))
+	}
+	return nil
+}
+
 func rdGopob() []string {
 	if v := os.Getenv("GOPOB_BIN"); v != "" {
 		return []string{v}
@@ -259,8 +306,7 @@ func (r *rdRun) generate(g rdGenerator, outRoot, tmp string) error {
 		if err := r.runCmd([]string{"go", "run", "./oracle/tree_ours_dump", ours}, r.repo, os.Environ(), nil, nil); err != nil {
 			return err
 		}
-		if err := r.runCmd(append(r.luajitCmd(), pyPathJoin(r.repo, "oracle", "tree_stats.lua"), pobj),
-			pyPathJoin(r.pob, "src"), rdLuajitEnv(r.pob), nil, nil); err != nil {
+		if err := r.runLua("oracle/tree_stats.lua", pobj, ""); err != nil {
 			return err
 		}
 		second := pyPathJoin(outRoot, "calculator", "tree_stat_text_generated.go")
@@ -275,17 +321,15 @@ func (r *rdRun) generate(g rdGenerator, outRoot, tmp string) error {
 	}
 
 	jsonPath := pyPathJoin(tmp, g.name+".json")
-	var overlayEnv []string
+	var dataPath string
 	if g.lua != "" && g.dump != "" {
-		dataPath := pyPathJoin(tmp, g.name+"-data.json")
+		dataPath = pyPathJoin(tmp, g.name+"-data.json")
 		if err := r.runCmd([]string{"go", "run", "./scripts/gamedatadump", g.dump, dataPath}, r.repo, append(os.Environ(), "POB_DIR="+r.pob), nil, nil); err != nil {
 			return err
 		}
-		overlayEnv = []string{"GAMEDATA_DUMP=" + dataPath}
 	}
 	if g.lua != "" {
-		if err := r.runCmd(append(r.luajitCmd(), pyPathJoin(r.repo, g.lua), jsonPath),
-			pyPathJoin(r.pob, "src"), append(rdLuajitEnv(r.pob), overlayEnv...), nil, nil); err != nil {
+		if err := r.runLua(g.lua, jsonPath, dataPath, g.luaArgs...); err != nil {
 			return err
 		}
 	}

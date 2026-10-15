@@ -51,19 +51,19 @@ func loadItemDB() {
 	}
 }
 
-//pob:block:src/Modules/Data.lua:1349-1371
+//pob:block:src/Modules/Data.lua:1456-1478
 func Uniques() []ItemDBEntry {
 	itemDBOnce.Do(loadItemDB)
 	return itemDB.Uniques
 }
 
-//pob:block:src/Modules/Data.lua:1257-1257
+//pob:block:src/Modules/Data.lua:1284-1284
 func Rares() []ItemDBEntry {
 	itemDBOnce.Do(loadItemDB)
 	return itemDB.Rares
 }
 
-//pob:block:src/Modules/Data.lua:1373-1375
+//pob:block:src/Modules/Data.lua:1480-1482
 func FoulbornMap(title string) map[string]string {
 	itemDBOnce.Do(loadItemDB)
 	return itemDB.FoulbornMap[title]

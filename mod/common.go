@@ -25,6 +25,7 @@ const (
 	TypeGlobal              = Type("Global")
 	TypeSkillName           = Type("SkillName")
 	TypeMAX                 = Type("MAX")
+	TypeMIN                 = Type("MIN")
 	TypeChance              = Type("CHANCE")
 	TypeStatThreshold       = Type("StatThreshold")
 	TypeSlotNumber          = Type("SlotNumber")
@@ -138,7 +139,7 @@ var KeywordFlagsByName = map[string]KeywordFlag{
 	"MatchAll":     KeywordFlagMatchAll,
 }
 
-//pob:src/Data/Global.lua:188-213
+//pob:src/Data/Global.lua:189-214
 func MatchKeywordFlags(keywordFlags KeywordFlag, modKeywordFlags KeywordFlag) bool {
 	matchAll := modKeywordFlags&KeywordFlagMatchAll != 0
 

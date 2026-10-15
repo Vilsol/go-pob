@@ -13,7 +13,7 @@ type timelessTradeIDs struct {
 	devotion []string
 }
 
-//pob:block:src/Data/TimelessJewelData/LegionTradeIds.lua:4-68
+//pob:block:src/Data/TimelessJewelData/LegionTradeIds.lua:4-69
 var timelessJewelTradeIDs = map[int]timelessTradeIDs{
 	1: {keystone: []string{"explicit.pseudo_timeless_jewel_doryani", "explicit.pseudo_timeless_jewel_xibaqua", "explicit.pseudo_timeless_jewel_ahuana"}},
 	2: {keystone: []string{"explicit.pseudo_timeless_jewel_kaom", "explicit.pseudo_timeless_jewel_rakiata", "explicit.pseudo_timeless_jewel_akoya"}},
@@ -24,19 +24,19 @@ var timelessJewelTradeIDs = map[int]timelessTradeIDs{
 			"explicit.stat_2566390555", "explicit.stat_2697019412", "explicit.stat_970844066", "explicit.stat_1724614884",
 			"explicit.stat_3103189267", "explicit.stat_1910205563", "explicit.stat_1810368194", "explicit.stat_730530528",
 			"explicit.stat_4235333770", "explicit.stat_3808469650", "explicit.stat_2830135449", "explicit.stat_2042813020",
-			"explicit.stat_3293275880", "explicit.stat_2585926696", "explicit.stat_2803981661",
+			"explicit.stat_3293275880", "explicit.stat_2585926696", "explicit.stat_2803981661", "explicit.stat_1355915086",
 		},
 	},
 	5: {keystone: []string{"explicit.pseudo_timeless_jewel_cadiro", "explicit.pseudo_timeless_jewel_victario", "explicit.pseudo_timeless_jewel_caspiro"}},
 	6: {keystone: []string{"explicit.pseudo_timeless_jewel_vorana", "explicit.pseudo_timeless_jewel_uhtred", "explicit.pseudo_timeless_jewel_medved"}},
 }
 
-//pob:block:src/Classes/TreeTab.lua:2389-2395
+//pob:block:src/Classes/TreeTab.lua:2412-2418
 var TimelessTradeTypes = []string{
 	"Instant buyout", "Instant buyout and in person", "In person (online in league)", "In person (online)", "Any (includes offline)",
 }
 
-//pob:block:src/Classes/TreeTab.lua:2328-2330
+//pob:block:src/Classes/TreeTab.lua:2351-2353
 var TimelessRealms = []string{"PC", "Sony", "Xbox"}
 
 type TimelessTradeQuery struct {
@@ -75,7 +75,7 @@ type timelessTradeSeed struct {
 	Max int `json:"max"`
 }
 
-//pob:block:src/Classes/TreeTab.lua:2198-2310
+//pob:block:src/Classes/TreeTab.lua:2221-2333
 func TimelessTradeURL(q TimelessTradeQuery) TimelessTrade {
 	ids, ok := timelessJewelTradeIDs[q.JewelType]
 	if !ok || len(q.Seeds) == 0 {
@@ -134,7 +134,7 @@ func TimelessTradeURL(q TimelessTradeQuery) TimelessTrade {
 	stats := []any{map[string]any{"filters": seedTrades, "type": "count", "value": map[string]int{"min": 1}}}
 	if ids.devotion != nil {
 		var devotionFilters []timelessTradeFilter
-		for _, v := range []int{q.DevotionVariant1, q.DevotionVariant2} {
+		for _, v := range []int{timelessDevotionID(q.DevotionVariant1), timelessDevotionID(q.DevotionVariant2)} {
 			if v > 1 && v-2 < len(ids.devotion) {
 				devotionFilters = append(devotionFilters, timelessTradeFilter{ID: ids.devotion[v-2]})
 			}
@@ -176,7 +176,15 @@ var timelessItemHeads = map[int]struct {
 	6: {"Heroic Tragedy", "Vorana (Black Scythe Training)|Uhtred (Celestial Mathematics)|Medved (The Unbreaking Circle)", "Remembrancing %d songworthy deeds by the line of %s", "Kalguur", [3]string{"Vorana", "Uhtred", "Medved"}},
 }
 
-//pob:block:src/Classes/TimelessJewelListControl.lua:197-211
+//pob:block:src/Classes/TimelessJewelListControl.lua:150-165
+var timelessDevotionItemVariants = []string{
+	"Totem Damage", "Brand Damage", "Channelling Damage", "Area Damage", "Elemental Damage", "Elemental Resistances",
+	"Effect of non-Damaging Ailments", "Elemental Ailment Duration", "Duration of Curses", "Minion Attack and Cast Speed",
+	"Minions Accuracy Rating", "Mana Regen", "Mana Cost (legacy)", "Non-Curse Aura Effect", "Defences from Shield",
+	"Mana Cost Efficiency",
+}
+
+//pob:block:src/Classes/TimelessJewelListControl.lua:174-189
 var timelessDevotionLines = []string{
 	"4% increased Totem Damage per 10 Devotion", "4% increased Brand Damage per 10 Devotion",
 	"Channelling Skills deal 4% increased Damage per 10 Devotion", "4% increased Area Damage per 10 Devotion",
@@ -185,11 +193,11 @@ var timelessDevotionLines = []string{
 	"4% reduced Duration of Curses on you per 10 Devotion", "1% increased Minion Attack and Cast Speed per 10 Devotion",
 	"Minions have +60 to Accuracy Rating per 10 Devotion", "Regenerate 0.6 Mana per Second per 10 Devotion",
 	"1% reduced Mana Cost of Skills per 10 Devotion", "1% increased effect of Non-Curse Auras per 10 Devotion",
-	"3% increased Defences from Equipped Shield per 10 Devotion",
+	"3% increased Defences from Equipped Shield per 10 Devotion", "3% increased Mana Cost Efficiency per 10 Devotion",
 }
 
-//pob:block:src/Classes/TimelessJewelListControl.lua:98-311
-func TimelessResultItem(jewelType, conquerorType, devotion1, devotion2, seed int, total float64, socketLabel string) string {
+//pob:block:src/Classes/TimelessJewelListControl.lua:73-286
+func TimelessResultItem(jewelType, conquerorType, devotion1, devotion2, seed int, total float64, socketLabel string, rolled *[2]int) string {
 	if socketLabel == "" {
 		socketLabel = "Unknown"
 	}
@@ -199,23 +207,33 @@ func TimelessResultItem(jewelType, conquerorType, devotion1, devotion2, seed int
 		variant = strconv.Itoa(conquerorType-1) + "\n"
 	}
 	if jewelType == 4 {
-		altVariant := devotion1
-		if devotion1 == 1 {
-			altVariant = 2 + rand.IntN(15) //nolint:gosec // PoB's m_random
+		if rolled == nil {
+			rolled = &[2]int{}
 		}
-		altVariant2 := devotion2
-		if devotion2 == 1 {
-			altVariant2 = 2 + rand.IntN(15) //nolint:gosec // PoB's m_random
+		altVariant := timelessDevotionID(devotion1)
+		if altVariant == 1 {
+			altVariant = rolled[0]
+			if altVariant == 0 {
+				altVariant = 2 + rand.IntN(16) //nolint:gosec // PoB's m_random
+			}
+		}
+		altVariant2 := timelessDevotionID(devotion2)
+		if altVariant2 == 1 {
+			altVariant2 = rolled[1]
+			if altVariant2 == 0 {
+				altVariant2 = 2 + rand.IntN(16) //nolint:gosec // PoB's m_random
+			}
 		}
 		if altVariant == altVariant2 {
-			altVariant = altVariant%15 + 2
+			altVariant = altVariant%16 + 2
 		}
+		rolled[0], rolled[1] = altVariant, altVariant2
 		var b strings.Builder
 		b.WriteString("Militant Faith " + label + "Timeless Jewel\nLeague: Legion\nLimited to: 1 Historic\nHas Alt Variant: true\nHas Alt Variant Two: true\n")
 		for _, v := range []string{"Avarius (Power of Purpose)", "Dominus (Inner Conviction)", "Maxarius (Transcendence)"} {
 			b.WriteString("Variant: " + v + "\n")
 		}
-		for _, v := range TimelessDevotionVariants[1:] {
+		for _, v := range timelessDevotionItemVariants {
 			b.WriteString("Variant: " + v + "\n")
 		}
 		b.WriteString("Selected Variant: " + variant + "\n")

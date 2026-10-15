@@ -50,7 +50,7 @@ func TestTriggerSupportRefusesNonPlayerActor(t *testing.T) {
 					Raw: &poe.GrantedEffect{GrantedEffect: raw.GrantedEffect{ID: "PlayerMelee"}},
 				}},
 			}
-			if got := CalcCanGrantedEffectSupportActiveSkill(c.ge, as); got != c.want {
+			if got := CalcCanGrantedEffectSupportActiveSkill(c.ge, as, false); got != c.want {
 				t.Fatalf("CalcCanGrantedEffectSupportActiveSkill = %v, want %v", got, c.want)
 			}
 		})

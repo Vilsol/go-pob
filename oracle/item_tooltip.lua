@@ -20,7 +20,9 @@ if not pcall(require, "lua-utf8") then
 	package.preload["lua-utf8"] = function() return string end
 end
 
+local construct = dofile((selfPath:match("^(.*)[/\\]") or ".") .. "/pob_compat.lua").construct
 dofile("HeadlessWrapper.lua")
+dofile((selfPath:match("^(.*)[/\\]") or ".") .. "/apply_range_guard.lua").install()
 
 local json = require("dkjson")
 
@@ -63,7 +65,7 @@ for _, path in ipairs(files) do
 		for _, id in ipairs(itemsTab.itemOrderList or {}) do
 			local item = itemsTab.items[id]
 			if item then
-				local tooltip = new("Tooltip")
+				local tooltip = construct("Tooltip")
 				itemsTab:AddItemTooltip(tooltip, item)
 				local lines = {}
 				for _, l in ipairs(tooltip.lines) do
@@ -76,7 +78,7 @@ for _, path in ipairs(files) do
 				local entryItem = { id = id, rarity = item.rarity, lines = lines }
 				if item.base and item.base.flask then
 					itemsTab.showStatDifferences = true
-					local full = new("Tooltip")
+					local full = construct("Tooltip")
 					itemsTab:AddItemTooltip(full, item)
 					itemsTab.showStatDifferences = false
 					local effective, on = {}, false

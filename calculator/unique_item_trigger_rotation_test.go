@@ -8,7 +8,7 @@ import (
 
 // TestUniqueItemTriggerRotationCarriesICDR pins the contract stated on triggerRotationSkill.
 //
-//pob:src/Modules/CalcTriggers.lua:90-133
+//pob:src/Modules/CalcTriggers.lua:91-134
 func TestUniqueItemTriggerRotationCarriesICDR(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")

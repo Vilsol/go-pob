@@ -9,7 +9,7 @@ import (
 
 // TestWeaponLocalCritChanceBase: Item.lua:2277 adds a LOCAL `CritChance BASE` to the weapon's base crit before the INC is applied.
 //
-//pob:block:src/Classes/Item.lua:2277
+//pob:block:src/Classes/Item.lua:2325
 func TestWeaponLocalCritChanceBase(t *testing.T) {
 	const claw = "Rarity: RARE\nTest Claw\nImperial Claw\nItem Level: 84\n"
 

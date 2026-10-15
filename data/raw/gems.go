@@ -44,7 +44,7 @@ type PoBGem struct {
 //
 // 608 keys come from PoB's own `gameId` field, which is go-pob-data's BaseItemType.ID --
 // PoB declares it exactly where its metadata id and the game id diverge, so this join is EXACT
-// rather than a prefix heuristic. 213 alternate rows (transfigured/AltX) name a
+// rather than a prefix heuristic. 214 alternate rows (transfigured/AltX) name a
 // gameId their BASE gem already owns, so they cannot live here; they are emitted into
 // `GemVariants` below, keyed by their own granted effect. A further 0
 // keys are rewritten. The rewrite table is NOT
@@ -778,503 +778,503 @@ var Gems = map[string]PoBGem{
 	"Metadata/Items/Gems/SkillGemPerforate": {Name: "Perforate", Tags: map[string]bool{"area": true, "attack": true, "grants_active_skill": true, "melee": true, "slam": true, "strength": true}, GrantedEffectID: "Perforate", ReqStr: 60, ReqDex: 40, NaturalMaxLevel: 20},
 	// src/Data/Gems.lua:10297
 	"Metadata/Items/Gems/SkillGemChainHook": {Name: "Chain Hook", Tags: map[string]bool{"area": true, "attack": true, "grants_active_skill": true, "melee": true, "movement": true, "strength": true}, GrantedEffectID: "ChainHook", ReqStr: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:10336
-	"Metadata/Items/Gems/SupportGemCloseCombat": {Name: "Close Combat", Tags: map[string]bool{"attack": true, "dexterity": true, "duration": true, "melee": true, "support": true}, GrantedEffectID: "SupportCloseCombat", ReqStr: 40, ReqDex: 60, NaturalMaxLevel: 20},
 	// src/Data/Gems.lua:10354
+	"Metadata/Items/Gems/SupportGemCloseCombat": {Name: "Close Combat", Tags: map[string]bool{"attack": true, "dexterity": true, "duration": true, "melee": true, "support": true}, GrantedEffectID: "SupportCloseCombat", ReqStr: 40, ReqDex: 60, NaturalMaxLevel: 20},
+	// src/Data/Gems.lua:10372
 	"Metadata/Items/Gems/SupportGemShockwave": {Name: "Shockwave", Tags: map[string]bool{"area": true, "attack": true, "grants_active_skill": true, "melee": true, "strength": true, "support": true}, GrantedEffectID: "SupportShockwave", SecondaryGrantedEffectID: "SupportBluntWeaponShockwave", ReqStr: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:10374
+	// src/Data/Gems.lua:10392
 	"Metadata/Items/Gems/SkillGemFrostblink": {Name: "Frostblink", Tags: map[string]bool{"area": true, "blink": true, "cold": true, "duration": true, "grants_active_skill": true, "intelligence": true, "movement": true, "spell": true, "travel": true}, GrantedEffectID: "Frostblink", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:10418
+	// src/Data/Gems.lua:10436
 	"Metadata/Items/Gems/SkillGemPrecision": {Name: "Precision", Tags: map[string]bool{"area": true, "aura": true, "critical": true, "dexterity": true, "grants_active_skill": true, "spell": true}, GrantedEffectID: "Precision", ReqDex: 75, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:10438
+	// src/Data/Gems.lua:10456
 	"Metadata/Items/Gems/SkillGemFleshAndStone": {Name: "Flesh and Stone", Tags: map[string]bool{"area": true, "aura": true, "grants_active_skill": true, "physical": true, "spell": true, "stance": true, "strength": true}, GrantedEffectID: "FleshAndStone", ReqStr: 60, ReqDex: 40, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:10459
+	// src/Data/Gems.lua:10477
 	"Metadata/Items/Gems/SupportGemImpale": {Name: "Impale", Tags: map[string]bool{"attack": true, "dexterity": true, "physical": true, "support": true}, GrantedEffectID: "SupportImpale", ReqStr: 40, ReqDex: 60, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:10476
+	// src/Data/Gems.lua:10494
 	"Metadata/Items/Gems/SkillGemPride": {Name: "Pride", Tags: map[string]bool{"area": true, "aura": true, "grants_active_skill": true, "physical": true, "spell": true, "strength": true}, GrantedEffectID: "Pride", ReqStr: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:10496
-	"Metadata/Items/Gems/SupportGemPulverise": {Name: "Pulverise", Tags: map[string]bool{"area": true, "attack": true, "melee": true, "strength": true, "support": true}, GrantedEffectID: "SupportPulverise", ReqStr: 100, NaturalMaxLevel: 20},
 	// src/Data/Gems.lua:10514
+	"Metadata/Items/Gems/SupportGemPulverise": {Name: "Pulverise", Tags: map[string]bool{"area": true, "attack": true, "melee": true, "strength": true, "support": true}, GrantedEffectID: "SupportPulverise", ReqStr: 100, NaturalMaxLevel: 20},
+	// src/Data/Gems.lua:10532
 	"Metadata/Items/Gems/SupportGemRage": {Name: "Rage", Tags: map[string]bool{"attack": true, "melee": true, "strength": true, "support": true}, GrantedEffectID: "SupportRage", ReqStr: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:10531
+	// src/Data/Gems.lua:10549
 	"Metadata/Items/Gems/SkillGemCobraLash": {Name: "Cobra Lash", Tags: map[string]bool{"attack": true, "chaos": true, "dexterity": true, "grants_active_skill": true, "projectile": true}, GrantedEffectID: "CobraLash", ReqDex: 60, ReqInt: 40, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:10550
+	// src/Data/Gems.lua:10568
 	"Metadata/Items/Gems/SkillGemSummonCarrionGolem": {Name: "Summon Carrion Golem", Tags: map[string]bool{"golem": true, "grants_active_skill": true, "intelligence": true, "minion": true, "physical": true, "spell": true}, GrantedEffectID: "SummonCarrionGolem", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:10610
+	// src/Data/Gems.lua:10628
 	"Metadata/Items/Gems/SkillGemWitheringStep": {Name: "Withering Step", Tags: map[string]bool{"area": true, "blink": true, "chaos": true, "dexterity": true, "duration": true, "grants_active_skill": true, "movement": true, "spell": true, "travel": true}, GrantedEffectID: "WitheringStep", ReqDex: 60, ReqInt: 40, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:10633
+	// src/Data/Gems.lua:10651
 	"Metadata/Items/Gems/SkillGemPlagueBearer": {Name: "Plague Bearer", Tags: map[string]bool{"area": true, "chaos": true, "dexterity": true, "grants_active_skill": true, "spell": true}, GrantedEffectID: "PlagueBearer", ReqDex: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:10652
+	// src/Data/Gems.lua:10670
 	"Metadata/Items/Gems/SupportGemFeedingFrenzy": {Name: "Feeding Frenzy", Tags: map[string]bool{"duration": true, "intelligence": true, "minion": true, "support": true}, GrantedEffectID: "SupportFeedingFrenzy", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:10669
+	// src/Data/Gems.lua:10687
 	"Metadata/Items/Gems/SupportGemDeathmark": {Name: "Predator", Tags: map[string]bool{"duration": true, "grants_active_skill": true, "intelligence": true, "minion": true, "spell": true, "support": true}, GrantedEffectID: "SupportPredator", SecondaryGrantedEffectID: "SignalPrey", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:10689
+	// src/Data/Gems.lua:10707
 	"Metadata/Items/Gems/SupportGemNightblade": {Name: "Nightblade", Tags: map[string]bool{"attack": true, "critical": true, "dexterity": true, "support": true}, GrantedEffectID: "SupportNightblade", ReqDex: 60, ReqInt: 40, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:10706
+	// src/Data/Gems.lua:10724
 	"Metadata/Items/Gems/SupportGemMeatShield": {Name: "Meat Shield", Tags: map[string]bool{"intelligence": true, "minion": true, "support": true}, GrantedEffectID: "SupportMeatShield", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:10722
+	// src/Data/Gems.lua:10740
 	"Metadata/Items/Gems/SkillGemStormblastMine": {Name: "Stormblast Mine", Tags: map[string]bool{"area": true, "aura": true, "grants_active_skill": true, "intelligence": true, "lightning": true, "mine": true, "nova": true, "spell": true}, GrantedEffectID: "StormblastMine", ReqDex: 40, ReqInt: 60, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:10744
+	// src/Data/Gems.lua:10762
 	"Metadata/Items/Gems/SkillGemSummonSkitterbots": {Name: "Summon Skitterbots", Tags: map[string]bool{"area": true, "aura": true, "cold": true, "grants_active_skill": true, "intelligence": true, "lightning": true, "mine": true, "minion": true, "spell": true, "trap": true}, GrantedEffectID: "SummonSkitterbots", ReqDex: 40, ReqInt: 60, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:10768
-	"Metadata/Items/Gems/SupportGemHighImpactMineSupport": {Name: "High-Impact Mine", Tags: map[string]bool{"area": true, "aura": true, "intelligence": true, "mine": true, "support": true}, GrantedEffectID: "SupportHighImpactMine", ReqDex: 40, ReqInt: 60, NaturalMaxLevel: 20},
 	// src/Data/Gems.lua:10786
-	"Metadata/Items/Gems/SupportGemInfernalLegion": {Name: "Infernal Legion", Tags: map[string]bool{"area": true, "fire": true, "intelligence": true, "minion": true, "support": true}, GrantedEffectID: "SupportInfernalLegion", ReqStr: 40, ReqInt: 60, NaturalMaxLevel: 20},
+	"Metadata/Items/Gems/SupportGemHighImpactMineSupport": {Name: "High-Impact Mine", Tags: map[string]bool{"area": true, "aura": true, "intelligence": true, "mine": true, "support": true}, GrantedEffectID: "SupportHighImpactMine", ReqDex: 40, ReqInt: 60, NaturalMaxLevel: 20},
 	// src/Data/Gems.lua:10804
+	"Metadata/Items/Gems/SupportGemInfernalLegion": {Name: "Infernal Legion", Tags: map[string]bool{"area": true, "fire": true, "intelligence": true, "minion": true, "support": true}, GrantedEffectID: "SupportInfernalLegion", ReqStr: 40, ReqInt: 60, NaturalMaxLevel: 20},
+	// src/Data/Gems.lua:10822
 	"Metadata/Items/Gems/SkillGemPestilentStrike": {Name: "Pestilent Strike", Tags: map[string]bool{"area": true, "attack": true, "chaos": true, "dexterity": true, "duration": true, "grants_active_skill": true, "melee": true, "strike": true}, GrantedEffectID: "PestilentStrike", ReqDex: 60, ReqInt: 40, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:10826
+	// src/Data/Gems.lua:10844
 	"Metadata/Items/Gems/SkillGemVenomGyre": {Name: "Venom Gyre", Tags: map[string]bool{"attack": true, "chaos": true, "dexterity": true, "duration": true, "grants_active_skill": true, "projectile": true}, GrantedEffectID: "VenomGyre", ReqDex: 60, ReqInt: 40, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:10846
+	// src/Data/Gems.lua:10864
 	"Metadata/Items/Gems/SupportGemSwiftAssembly": {Name: "Swift Assembly", Tags: map[string]bool{"dexterity": true, "mine": true, "support": true, "trap": true}, GrantedEffectID: "SupportSwiftAssembly", ReqDex: 60, ReqInt: 40, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:10863
+	// src/Data/Gems.lua:10881
 	"Metadata/Items/Gems/SkillGemShrapnelBallista": {Name: "Shrapnel Ballista", Tags: map[string]bool{"attack": true, "bow": true, "dexterity": true, "grants_active_skill": true, "projectile": true, "totem": true}, GrantedEffectID: "ShrapnelBallista", ReqDex: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:10904
-	"Metadata/Items/Gems/SupportGemArrowNova": {Name: "Arrow Nova", Tags: map[string]bool{"attack": true, "bow": true, "dexterity": true, "projectile": true, "support": true}, GrantedEffectID: "SupportArrowNova", ReqDex: 100, NaturalMaxLevel: 20},
 	// src/Data/Gems.lua:10922
-	"Metadata/Items/Gems/SupportGemBarrage": {Name: "Barrage Support", Tags: map[string]bool{"attack": true, "bow": true, "dexterity": true, "projectile": true, "support": true}, GrantedEffectID: "SupportBarrage", ReqDex: 100, NaturalMaxLevel: 20},
+	"Metadata/Items/Gems/SupportGemArrowNova": {Name: "Arrow Nova", Tags: map[string]bool{"attack": true, "bow": true, "dexterity": true, "projectile": true, "support": true}, GrantedEffectID: "SupportArrowNova", ReqDex: 100, NaturalMaxLevel: 20},
 	// src/Data/Gems.lua:10940
+	"Metadata/Items/Gems/SupportGemBarrage": {Name: "Barrage Support", Tags: map[string]bool{"attack": true, "bow": true, "dexterity": true, "projectile": true, "support": true}, GrantedEffectID: "SupportBarrage", ReqDex: 100, NaturalMaxLevel: 20},
+	// src/Data/Gems.lua:10958
 	"Metadata/Items/Gems/SkillGemEnsnaringArrow": {Name: "Ensnaring Arrow", Tags: map[string]bool{"area": true, "attack": true, "bow": true, "dexterity": true, "grants_active_skill": true, "projectile": true}, GrantedEffectID: "EnsnaringArrow", ReqDex: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:10960
+	// src/Data/Gems.lua:10978
 	"Metadata/Items/Gems/SkillGemArtilleryBallista": {Name: "Artillery Ballista", Tags: map[string]bool{"area": true, "attack": true, "bow": true, "dexterity": true, "fire": true, "grants_active_skill": true, "projectile": true, "totem": true}, GrantedEffectID: "ArtilleryBallista", ReqDex: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:11026
+	// src/Data/Gems.lua:11044
 	"Metadata/Items/Gems/SupportGemGreaterVolley": {Name: "Greater Volley", Tags: map[string]bool{"dexterity": true, "projectile": true, "support": true}, GrantedEffectID: "SupportGreaterVolley", ReqDex: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:11042
-	"Metadata/Items/Gems/SupportGemAddedFireDamagePlus": {Name: "Awakened Added Fire Damage", Tags: map[string]bool{"awakened": true, "fire": true, "physical": true, "strength": true, "support": true}, GrantedEffectID: "SupportAwakenedAddedFireDamage", ReqStr: 100, NaturalMaxLevel: 5},
 	// src/Data/Gems.lua:11060
+	"Metadata/Items/Gems/SupportGemAddedFireDamagePlus": {Name: "Awakened Added Fire Damage", Tags: map[string]bool{"awakened": true, "fire": true, "physical": true, "strength": true, "support": true}, GrantedEffectID: "SupportAwakenedAddedFireDamage", ReqStr: 100, NaturalMaxLevel: 5},
+	// src/Data/Gems.lua:11078
 	"Metadata/Items/Gems/SupportGemAncestralCallPlus": {Name: "Awakened Ancestral Call", Tags: map[string]bool{"attack": true, "awakened": true, "melee": true, "strength": true, "strike": true, "support": true}, GrantedEffectID: "SupportAwakenedAncestralCall", ReqStr: 100, NaturalMaxLevel: 5},
-	// src/Data/Gems.lua:11079
+	// src/Data/Gems.lua:11097
 	"Metadata/Items/Gems/SupportGemBrutalityPlus": {Name: "Awakened Brutality", Tags: map[string]bool{"awakened": true, "physical": true, "strength": true, "support": true}, GrantedEffectID: "SupportAwakenedBrutality", ReqStr: 100, NaturalMaxLevel: 5},
-	// src/Data/Gems.lua:11096
+	// src/Data/Gems.lua:11114
 	"Metadata/Items/Gems/SupportGemBurningDamagePlus": {Name: "Awakened Burning Damage", Tags: map[string]bool{"awakened": true, "fire": true, "strength": true, "support": true}, GrantedEffectID: "SupportAwakenedBurningDamage", ReqStr: 60, ReqInt: 40, NaturalMaxLevel: 5},
-	// src/Data/Gems.lua:11113
+	// src/Data/Gems.lua:11131
 	"Metadata/Items/Gems/SupportGemWeaponElementalDamagePlus": {Name: "Awakened Elemental Damage with Attacks", Tags: map[string]bool{"attack": true, "awakened": true, "strength": true, "support": true}, GrantedEffectID: "SupportAwakenedElementalDamageWithAttacks", ReqStr: 60, ReqInt: 40, NaturalMaxLevel: 5},
-	// src/Data/Gems.lua:11130
+	// src/Data/Gems.lua:11148
 	"Metadata/Items/Gems/SupportGemFirePenetrationPlus": {Name: "Awakened Fire Penetration", Tags: map[string]bool{"awakened": true, "fire": true, "strength": true, "support": true}, GrantedEffectID: "SupportAwakenedFirePenetration", ReqStr: 100, NaturalMaxLevel: 5},
-	// src/Data/Gems.lua:11147
+	// src/Data/Gems.lua:11165
 	"Metadata/Items/Gems/SupportGemGenerosityPlus": {Name: "Awakened Generosity", Tags: map[string]bool{"aura": true, "awakened": true, "strength": true, "support": true}, GrantedEffectID: "SupportAwakenedGenerosity", ReqStr: 60, ReqInt: 40, NaturalMaxLevel: 5},
-	// src/Data/Gems.lua:11164
+	// src/Data/Gems.lua:11182
 	"Metadata/Items/Gems/SupportGemMeleePhysicalDamagePlus": {Name: "Awakened Melee Physical Damage", Tags: map[string]bool{"attack": true, "awakened": true, "melee": true, "physical": true, "strength": true, "support": true}, GrantedEffectID: "SupportAwakenedMeleePhysicalDamage", ReqStr: 100, NaturalMaxLevel: 5},
-	// src/Data/Gems.lua:11183
+	// src/Data/Gems.lua:11201
 	"Metadata/Items/Gems/SupportGemMeleeSplashPlus": {Name: "Awakened Melee Splash", Tags: map[string]bool{"area": true, "attack": true, "awakened": true, "melee": true, "strength": true, "strike": true, "support": true}, GrantedEffectID: "SupportAwakenedMeleeSplash", ReqStr: 100, NaturalMaxLevel: 5},
-	// src/Data/Gems.lua:11203
-	"Metadata/Items/Gems/SupportGemMultistrikePlus": {Name: "Awakened Multistrike", Tags: map[string]bool{"attack": true, "awakened": true, "melee": true, "strength": true, "support": true}, GrantedEffectID: "SupportAwakenedMultistrike", ReqStr: 60, ReqDex: 40, NaturalMaxLevel: 5},
 	// src/Data/Gems.lua:11221
+	"Metadata/Items/Gems/SupportGemMultistrikePlus": {Name: "Awakened Multistrike", Tags: map[string]bool{"attack": true, "awakened": true, "melee": true, "strength": true, "support": true}, GrantedEffectID: "SupportAwakenedMultistrike", ReqStr: 60, ReqDex: 40, NaturalMaxLevel: 5},
+	// src/Data/Gems.lua:11239
 	"Metadata/Items/Gems/SupportGemAddedColdDamagePlus": {Name: "Awakened Added Cold Damage", Tags: map[string]bool{"awakened": true, "cold": true, "dexterity": true, "support": true}, GrantedEffectID: "SupportAwakenedAddedColdDamage", ReqDex: 100, NaturalMaxLevel: 5},
-	// src/Data/Gems.lua:11238
+	// src/Data/Gems.lua:11256
 	"Metadata/Items/Gems/SupportGemArrowNovaPlus": {Name: "Awakened Arrow Nova", Tags: map[string]bool{"attack": true, "awakened": true, "bow": true, "dexterity": true, "projectile": true, "support": true}, GrantedEffectID: "SupportAwakenedArrowNova", ReqDex: 100, NaturalMaxLevel: 5},
-	// src/Data/Gems.lua:11257
+	// src/Data/Gems.lua:11275
 	"Metadata/Items/Gems/SupportGemCastOnCritPlus": {Name: "Awakened Cast On Critical Strike", Tags: map[string]bool{"awakened": true, "critical": true, "dexterity": true, "spell": true, "support": true, "trigger": true}, GrantedEffectID: "SupportAwakenedCastOnCriticalStrike", SecondaryGrantedEffectID: "SupportCastOnCritTriggeredPlus", ReqDex: 60, ReqInt: 40, NaturalMaxLevel: 5},
-	// src/Data/Gems.lua:11277
-	"Metadata/Items/Gems/SupportGemChainPlus": {Name: "Awakened Chain", Tags: map[string]bool{"awakened": true, "chaining": true, "dexterity": true, "projectile": true, "support": true}, GrantedEffectID: "SupportAwakenedChain", ReqDex: 100, NaturalMaxLevel: 5},
 	// src/Data/Gems.lua:11295
+	"Metadata/Items/Gems/SupportGemChainPlus": {Name: "Awakened Chain", Tags: map[string]bool{"awakened": true, "chaining": true, "dexterity": true, "projectile": true, "support": true}, GrantedEffectID: "SupportAwakenedChain", ReqDex: 100, NaturalMaxLevel: 5},
+	// src/Data/Gems.lua:11313
 	"Metadata/Items/Gems/SupportGemColdPenetrationPlus": {Name: "Awakened Cold Penetration", Tags: map[string]bool{"awakened": true, "cold": true, "dexterity": true, "support": true}, GrantedEffectID: "SupportAwakenedColdPenetration", ReqDex: 100, NaturalMaxLevel: 5},
-	// src/Data/Gems.lua:11312
+	// src/Data/Gems.lua:11330
 	"Metadata/Items/Gems/SupportGemDeadlyAilmentsPlus": {Name: "Awakened Deadly Ailments", Tags: map[string]bool{"awakened": true, "dexterity": true, "support": true}, GrantedEffectID: "SupportAwakenedDeadlyAilments", ReqDex: 60, ReqInt: 40, NaturalMaxLevel: 5},
-	// src/Data/Gems.lua:11328
+	// src/Data/Gems.lua:11346
 	"Metadata/Items/Gems/SupportGemForkPlus": {Name: "Awakened Fork", Tags: map[string]bool{"awakened": true, "dexterity": true, "projectile": true, "support": true}, GrantedEffectID: "SupportAwakenedFork", ReqDex: 100, NaturalMaxLevel: 5},
-	// src/Data/Gems.lua:11345
+	// src/Data/Gems.lua:11363
 	"Metadata/Items/Gems/SupportGemGreaterMultipleProjectilesPlus": {Name: "Awakened Greater Multiple Projectiles", Tags: map[string]bool{"awakened": true, "dexterity": true, "projectile": true, "support": true}, GrantedEffectID: "SupportAwakenedGreaterMultipleProjectiles", ReqDex: 100, NaturalMaxLevel: 5},
-	// src/Data/Gems.lua:11362
+	// src/Data/Gems.lua:11380
 	"Metadata/Items/Gems/SupportGemSwiftAfflictionPlus": {Name: "Awakened Swift Affliction", Tags: map[string]bool{"awakened": true, "dexterity": true, "duration": true, "support": true}, GrantedEffectID: "SupportAwakenedSwiftAffliction", ReqDex: 100, NaturalMaxLevel: 5},
-	// src/Data/Gems.lua:11379
+	// src/Data/Gems.lua:11397
 	"Metadata/Items/Gems/SupportGemVoidManipulationPlus": {Name: "Awakened Void Manipulation", Tags: map[string]bool{"awakened": true, "chaos": true, "dexterity": true, "support": true}, GrantedEffectID: "SupportAwakenedVoidManipulation", ReqDex: 60, ReqInt: 40, NaturalMaxLevel: 5},
-	// src/Data/Gems.lua:11396
+	// src/Data/Gems.lua:11414
 	"Metadata/Items/Gems/SupportGemViciousProjectilesPlus": {Name: "Awakened Vicious Projectiles", Tags: map[string]bool{"attack": true, "awakened": true, "chaos": true, "dexterity": true, "physical": true, "projectile": true, "support": true}, GrantedEffectID: "SupportAwakenedViciousProjectiles", ReqDex: 100, NaturalMaxLevel: 5},
-	// src/Data/Gems.lua:11416
+	// src/Data/Gems.lua:11434
 	"Metadata/Items/Gems/SupportGemAddedChaosDamagePlus": {Name: "Awakened Added Chaos Damage", Tags: map[string]bool{"awakened": true, "chaos": true, "intelligence": true, "support": true}, GrantedEffectID: "SupportAwakenedAddedChaosDamage", ReqInt: 100, NaturalMaxLevel: 5},
-	// src/Data/Gems.lua:11433
+	// src/Data/Gems.lua:11451
 	"Metadata/Items/Gems/SupportGemAddedLightningDamagePlus": {Name: "Awakened Added Lightning Damage", Tags: map[string]bool{"awakened": true, "intelligence": true, "lightning": true, "support": true}, GrantedEffectID: "SupportAwakenedAddedLightningDamage", ReqInt: 100, NaturalMaxLevel: 5},
-	// src/Data/Gems.lua:11450
-	"Metadata/Items/Gems/SupportGemBlasphemyPlus": {Name: "Awakened Blasphemy", Tags: map[string]bool{"aura": true, "awakened": true, "hex": true, "intelligence": true, "support": true}, GrantedEffectID: "SupportAwakenedBlasphemy", ReqInt: 100, NaturalMaxLevel: 5},
 	// src/Data/Gems.lua:11468
+	"Metadata/Items/Gems/SupportGemBlasphemyPlus": {Name: "Awakened Blasphemy", Tags: map[string]bool{"aura": true, "awakened": true, "hex": true, "intelligence": true, "support": true}, GrantedEffectID: "SupportAwakenedBlasphemy", ReqInt: 100, NaturalMaxLevel: 5},
+	// src/Data/Gems.lua:11486
 	"Metadata/Items/Gems/SupportGemCastWhileChannellingPlus": {Name: "Awakened Cast While Channelling", Tags: map[string]bool{"awakened": true, "channelling": true, "intelligence": true, "spell": true, "support": true, "trigger": true}, GrantedEffectID: "SupportAwakenedCastWhileChannelling", SecondaryGrantedEffectID: "SupportCastWhileChannellingTriggeredPlus", ReqDex: 40, ReqInt: 60, NaturalMaxLevel: 5},
-	// src/Data/Gems.lua:11488
-	"Metadata/Items/Gems/SupportGemControlledDestructionPlus": {Name: "Awakened Controlled Destruction", Tags: map[string]bool{"awakened": true, "critical": true, "intelligence": true, "spell": true, "support": true}, GrantedEffectID: "SupportAwakenedControlledDestruction", ReqInt: 100, NaturalMaxLevel: 5},
 	// src/Data/Gems.lua:11506
+	"Metadata/Items/Gems/SupportGemControlledDestructionPlus": {Name: "Awakened Controlled Destruction", Tags: map[string]bool{"awakened": true, "critical": true, "intelligence": true, "spell": true, "support": true}, GrantedEffectID: "SupportAwakenedControlledDestruction", ReqInt: 100, NaturalMaxLevel: 5},
+	// src/Data/Gems.lua:11524
 	"Metadata/Items/Gems/SupportGemCurseOnHitPlus": {Name: "Awakened Hextouch", Tags: map[string]bool{"awakened": true, "hex": true, "intelligence": true, "support": true, "trigger": true}, GrantedEffectID: "SupportAwakenedHextouch", SecondaryGrantedEffectID: "SupportCurseOnHitCursePlus", ReqInt: 100, NaturalMaxLevel: 5},
-	// src/Data/Gems.lua:11525
+	// src/Data/Gems.lua:11543
 	"Metadata/Items/Gems/SupportGemElementalFocusPlus": {Name: "Awakened Elemental Focus", Tags: map[string]bool{"awakened": true, "intelligence": true, "support": true}, GrantedEffectID: "SupportAwakenedElementalFocus", ReqInt: 100, NaturalMaxLevel: 5},
-	// src/Data/Gems.lua:11541
+	// src/Data/Gems.lua:11559
 	"Metadata/Items/Gems/SupportGemIncreasedAreaOfEffectPlus": {Name: "Awakened Increased Area of Effect", Tags: map[string]bool{"area": true, "awakened": true, "intelligence": true, "support": true}, GrantedEffectID: "SupportAwakenedIncreasedAreaofEffect", ReqInt: 100, NaturalMaxLevel: 5},
-	// src/Data/Gems.lua:11558
+	// src/Data/Gems.lua:11576
 	"Metadata/Items/Gems/SupportGemLightningPenetrationPlus": {Name: "Awakened Lightning Penetration", Tags: map[string]bool{"awakened": true, "intelligence": true, "lightning": true, "support": true}, GrantedEffectID: "SupportAwakenedLightningPenetration", ReqInt: 100, NaturalMaxLevel: 5},
-	// src/Data/Gems.lua:11575
+	// src/Data/Gems.lua:11593
 	"Metadata/Items/Gems/SupportGemMinionDamagePlus": {Name: "Awakened Minion Damage", Tags: map[string]bool{"awakened": true, "intelligence": true, "minion": true, "support": true}, GrantedEffectID: "SupportAwakenedMinionDamage", ReqInt: 100, NaturalMaxLevel: 5},
-	// src/Data/Gems.lua:11592
-	"Metadata/Items/Gems/SupportGemSpellCascadePlus": {Name: "Awakened Spell Cascade", Tags: map[string]bool{"area": true, "awakened": true, "intelligence": true, "spell": true, "support": true}, GrantedEffectID: "SupportAwakenedSpellCascade", ReqInt: 100, NaturalMaxLevel: 5},
 	// src/Data/Gems.lua:11610
+	"Metadata/Items/Gems/SupportGemSpellCascadePlus": {Name: "Awakened Spell Cascade", Tags: map[string]bool{"area": true, "awakened": true, "intelligence": true, "spell": true, "support": true}, GrantedEffectID: "SupportAwakenedSpellCascade", ReqInt: 100, NaturalMaxLevel: 5},
+	// src/Data/Gems.lua:11628
 	"Metadata/Items/Gems/SupportGemSpellEchoPlus": {Name: "Awakened Spell Echo", Tags: map[string]bool{"awakened": true, "intelligence": true, "spell": true, "support": true}, GrantedEffectID: "SupportAwakenedSpellEcho", ReqInt: 100, NaturalMaxLevel: 5},
-	// src/Data/Gems.lua:11627
+	// src/Data/Gems.lua:11645
 	"Metadata/Items/Gems/SupportGemUnboundAilmentsPlus": {Name: "Awakened Unbound Ailments", Tags: map[string]bool{"awakened": true, "intelligence": true, "support": true}, GrantedEffectID: "SupportAwakenedUnboundAilments", ReqDex: 40, ReqInt: 60, NaturalMaxLevel: 5},
-	// src/Data/Gems.lua:11643
+	// src/Data/Gems.lua:11661
 	"Metadata/Items/Gems/SupportGemUnleashPlus": {Name: "Awakened Unleash", Tags: map[string]bool{"awakened": true, "intelligence": true, "spell": true, "support": true}, GrantedEffectID: "SupportAwakenedUnleash", ReqInt: 100, NaturalMaxLevel: 5},
-	// src/Data/Gems.lua:11660
-	"Metadata/Items/Gems/SupportGemEmpowerPlus": {Name: "Awakened Empower", Tags: map[string]bool{"awakened": true, "exceptional": true, "low_max_level": true, "strength": true, "support": true}, GrantedEffectID: "SupportAwakenedEmpower", ReqStr: 100, NaturalMaxLevel: 4},
 	// src/Data/Gems.lua:11678
-	"Metadata/Items/Gems/SupportGemEnlightenPlus": {Name: "Awakened Enlighten", Tags: map[string]bool{"awakened": true, "exceptional": true, "intelligence": true, "low_max_level": true, "support": true}, GrantedEffectID: "SupportAwakenedEnlighten", ReqInt: 100, NaturalMaxLevel: 4},
+	"Metadata/Items/Gems/SupportGemEmpowerPlus": {Name: "Awakened Empower", Tags: map[string]bool{"awakened": true, "exceptional": true, "low_max_level": true, "strength": true, "support": true}, GrantedEffectID: "SupportAwakenedEmpower", ReqStr: 100, NaturalMaxLevel: 4},
 	// src/Data/Gems.lua:11696
-	"Metadata/Items/Gems/SupportGemEnhancePlus": {Name: "Awakened Enhance", Tags: map[string]bool{"awakened": true, "dexterity": true, "exceptional": true, "low_max_level": true, "support": true}, GrantedEffectID: "SupportAwakenedEnhance", ReqDex: 100, NaturalMaxLevel: 4},
+	"Metadata/Items/Gems/SupportGemEnlightenPlus": {Name: "Awakened Enlighten", Tags: map[string]bool{"awakened": true, "exceptional": true, "intelligence": true, "low_max_level": true, "support": true}, GrantedEffectID: "SupportAwakenedEnlighten", ReqInt: 100, NaturalMaxLevel: 4},
 	// src/Data/Gems.lua:11714
+	"Metadata/Items/Gems/SupportGemEnhancePlus": {Name: "Awakened Enhance", Tags: map[string]bool{"awakened": true, "dexterity": true, "exceptional": true, "low_max_level": true, "support": true}, GrantedEffectID: "SupportAwakenedEnhance", ReqDex: 100, NaturalMaxLevel: 4},
+	// src/Data/Gems.lua:11732
 	"Metadata/Items/Gems/SkillGemArcaneCloak": {Name: "Arcane Cloak", Tags: map[string]bool{"arcane": true, "duration": true, "grants_active_skill": true, "guard": true, "intelligence": true, "lightning": true, "spell": true}, GrantedEffectID: "ArcaneCloak", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:11735
+	// src/Data/Gems.lua:11753
 	"Metadata/Items/Gems/SkillGemStormBind": {Name: "Stormbind", Tags: map[string]bool{"arcane": true, "area": true, "channelling": true, "duration": true, "grants_active_skill": true, "intelligence": true, "lightning": true, "spell": true}, GrantedEffectID: "Stormbind", SecondaryGrantedEffectID: "RuneBlast", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:11784
+	// src/Data/Gems.lua:11802
 	"Metadata/Items/Gems/SkillGemKineticBolt": {Name: "Kinetic Bolt", Tags: map[string]bool{"attack": true, "grants_active_skill": true, "intelligence": true, "projectile": true}, GrantedEffectID: "KineticBolt", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:11820
+	// src/Data/Gems.lua:11838
 	"Metadata/Items/Gems/SkillGemBladeBlast": {Name: "Blade Blast", Tags: map[string]bool{"area": true, "dexterity": true, "grants_active_skill": true, "physical": true, "spell": true}, GrantedEffectID: "BladeBlast", ReqDex: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:11879
+	// src/Data/Gems.lua:11897
 	"Metadata/Items/Gems/SkillGemSpellslinger": {Name: "Spellslinger", Tags: map[string]bool{"grants_active_skill": true, "intelligence": true, "spell": true, "trigger": true}, GrantedEffectID: "Spellslinger", SecondaryGrantedEffectID: "SupportSpellslinger", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:11899
-	"Metadata/Items/Gems/SupportGemArchmage": {Name: "Archmage", Tags: map[string]bool{"arcane": true, "intelligence": true, "lightning": true, "spell": true, "support": true}, GrantedEffectID: "SupportArchmage", ReqInt: 100, NaturalMaxLevel: 20},
 	// src/Data/Gems.lua:11917
+	"Metadata/Items/Gems/SupportGemArchmage": {Name: "Archmage", Tags: map[string]bool{"arcane": true, "intelligence": true, "lightning": true, "spell": true, "support": true}, GrantedEffectID: "SupportArchmage", ReqInt: 100, NaturalMaxLevel: 20},
+	// src/Data/Gems.lua:11935
 	"Metadata/Items/Gems/SupportGemSecondWind": {Name: "Second Wind", Tags: map[string]bool{"dexterity": true, "support": true}, GrantedEffectID: "SupportSecondWind", ReqDex: 60, ReqInt: 40, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:11932
+	// src/Data/Gems.lua:11950
 	"Metadata/Items/Gems/SkillGemArcanistBrand": {Name: "Arcanist Brand", Tags: map[string]bool{"brand": true, "duration": true, "grants_active_skill": true, "intelligence": true, "spell": true, "trigger": true}, GrantedEffectID: "BrandSupport", SecondaryGrantedEffectID: "SupportBrandSupport", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:11954
+	// src/Data/Gems.lua:11972
 	"Metadata/Items/Gems/SkillGemIntimidatingCry": {Name: "Intimidating Cry", Tags: map[string]bool{"area": true, "duration": true, "grants_active_skill": true, "physical": true, "strength": true, "warcry": true}, GrantedEffectID: "IntimidatingCry", ReqStr: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:11974
+	// src/Data/Gems.lua:11992
 	"Metadata/Items/Gems/SkillGemSeismicCry": {Name: "Seismic Cry", Tags: map[string]bool{"area": true, "duration": true, "grants_active_skill": true, "strength": true, "warcry": true}, GrantedEffectID: "SeismicCry", ReqStr: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:11993
+	// src/Data/Gems.lua:12011
 	"Metadata/Items/Gems/SkillGemAncestralCry": {Name: "Ancestral Cry", Tags: map[string]bool{"area": true, "duration": true, "grants_active_skill": true, "strength": true, "warcry": true}, GrantedEffectID: "AncestralCry", ReqStr: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:12012
+	// src/Data/Gems.lua:12030
 	"Metadata/Items/Gems/SkillGemPenanceBrand": {Name: "Penance Brand", Tags: map[string]bool{"area": true, "brand": true, "duration": true, "grants_active_skill": true, "intelligence": true, "lightning": true, "physical": true, "spell": true}, GrantedEffectID: "PenanceBrand", ReqStr: 40, ReqInt: 60, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:12078
+	// src/Data/Gems.lua:12096
 	"Metadata/Items/Gems/SkillGemWintertideBrand": {Name: "Wintertide Brand", Tags: map[string]bool{"area": true, "brand": true, "cold": true, "duration": true, "grants_active_skill": true, "intelligence": true, "spell": true}, GrantedEffectID: "WintertideBrand", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:12099
+	// src/Data/Gems.lua:12117
 	"Metadata/Items/Gems/SkillGemEarthshatter": {Name: "Earthshatter", Tags: map[string]bool{"area": true, "attack": true, "duration": true, "grants_active_skill": true, "melee": true, "slam": true, "strength": true}, GrantedEffectID: "Earthshatter", ReqStr: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:12162
+	// src/Data/Gems.lua:12180
 	"Metadata/Items/Gems/SkillGemGeneralsCry": {Name: "General's Cry", Tags: map[string]bool{"area": true, "duration": true, "grants_active_skill": true, "strength": true, "warcry": true}, GrantedEffectID: "GeneralsCry", SecondaryGrantedEffectID: "GeneralsCrySupport", ReqStr: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:12183
+	// src/Data/Gems.lua:12201
 	"Metadata/Items/Gems/SupportGemFistOfWar": {Name: "Fist of War", Tags: map[string]bool{"area": true, "attack": true, "melee": true, "slam": true, "strength": true, "support": true}, GrantedEffectID: "SupportFistofWar", ReqStr: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:12202
+	// src/Data/Gems.lua:12220
 	"Metadata/Items/Gems/SupportGemSwiftbrand": {Name: "Swiftbrand", Tags: map[string]bool{"brand": true, "intelligence": true, "support": true}, GrantedEffectID: "SupportSwiftbrand", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:12218
+	// src/Data/Gems.lua:12236
 	"Metadata/Items/Gems/SupportGemUrgentOrders": {Name: "Urgent Orders", Tags: map[string]bool{"strength": true, "support": true, "warcry": true}, GrantedEffectID: "SupportUrgentOrders", ReqStr: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:12234
+	// src/Data/Gems.lua:12252
 	"Metadata/Items/Gems/SkillGemBlazingSalvo": {Name: "Blazing Salvo", Tags: map[string]bool{"area": true, "fire": true, "grants_active_skill": true, "intelligence": true, "projectile": true, "spell": true}, GrantedEffectID: "BlazingSalvo", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:12254
+	// src/Data/Gems.lua:12272
 	"Metadata/Items/Gems/SkillGemVoidSphere": {Name: "Void Sphere", Tags: map[string]bool{"area": true, "chaos": true, "duration": true, "grants_active_skill": true, "intelligence": true, "orb": true, "physical": true, "spell": true}, GrantedEffectID: "VoidSphere", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:12298
+	// src/Data/Gems.lua:12316
 	"Metadata/Items/Gems/SkillGemCracklingLance": {Name: "Crackling Lance", Tags: map[string]bool{"area": true, "grants_active_skill": true, "intelligence": true, "lightning": true, "spell": true}, GrantedEffectID: "CracklingLance", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:12355
+	// src/Data/Gems.lua:12373
 	"Metadata/Items/Gems/SkillGemFrostShield": {Name: "Frost Shield", Tags: map[string]bool{"area": true, "cold": true, "critical": true, "duration": true, "grants_active_skill": true, "intelligence": true, "spell": true}, GrantedEffectID: "FrostShield", ReqDex: 40, ReqInt: 60, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:12376
+	// src/Data/Gems.lua:12394
 	"Metadata/Items/Gems/SkillGemSplittingSteel": {Name: "Splitting Steel", Tags: map[string]bool{"area": true, "attack": true, "dexterity": true, "grants_active_skill": true, "physical": true, "projectile": true}, GrantedEffectID: "SplittingSteel", ReqStr: 40, ReqDex: 60, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:12416
+	// src/Data/Gems.lua:12434
 	"Metadata/Items/Gems/SkillGemSigilOfPower": {Name: "Sigil of Power", Tags: map[string]bool{"arcane": true, "area": true, "duration": true, "grants_active_skill": true, "intelligence": true, "lightning": true, "spell": true}, GrantedEffectID: "SigilOfPower", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:12437
+	// src/Data/Gems.lua:12455
 	"Metadata/Items/Gems/SkillGemFlameWall": {Name: "Flame Wall", Tags: map[string]bool{"area": true, "duration": true, "fire": true, "grants_active_skill": true, "intelligence": true, "spell": true}, GrantedEffectID: "FlameWall", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:12457
+	// src/Data/Gems.lua:12475
 	"Metadata/Items/Gems/SupportGemImpendingDoom": {Name: "Impending Doom", Tags: map[string]bool{"area": true, "chaos": true, "grants_active_skill": true, "hex": true, "intelligence": true, "spell": true, "support": true, "trigger": true}, GrantedEffectID: "SupportImpendingDoom", SecondaryGrantedEffectID: "DoomBlast", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:12479
+	// src/Data/Gems.lua:12497
 	"Metadata/Items/Gems/SkillGemHexblast": {Name: "Hexblast", Tags: map[string]bool{"area": true, "chaos": true, "grants_active_skill": true, "hex": true, "intelligence": true, "spell": true}, GrantedEffectID: "Hexblast", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:12539
+	// src/Data/Gems.lua:12557
 	"Metadata/Items/Gems/SupportGemPinpoint": {Name: "Pinpoint", Tags: map[string]bool{"intelligence": true, "projectile": true, "spell": true, "support": true}, GrantedEffectID: "SupportPinpoint", ReqDex: 40, ReqInt: 60, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:12556
+	// src/Data/Gems.lua:12574
 	"Metadata/Items/Gems/SkillGemHydrosphere": {Name: "Hydrosphere", Tags: map[string]bool{"area": true, "cold": true, "duration": true, "grants_active_skill": true, "intelligence": true, "lightning": true, "orb": true, "physical": true, "spell": true}, GrantedEffectID: "Hydrosphere", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:12579
+	// src/Data/Gems.lua:12597
 	"Metadata/Items/Gems/SupportGemTrinity": {Name: "Trinity", Tags: map[string]bool{"intelligence": true, "support": true}, GrantedEffectID: "SupportTrinity", ReqDex: 40, ReqInt: 60, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:12594
+	// src/Data/Gems.lua:12612
 	"Metadata/Items/Gems/SkillGemExsanguinate": {Name: "Exsanguinate", Tags: map[string]bool{"chaining": true, "duration": true, "grants_active_skill": true, "physical": true, "spell": true, "strength": true}, GrantedEffectID: "Exsanguinate", ReqStr: 60, ReqInt: 40, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:12634
+	// src/Data/Gems.lua:12652
 	"Metadata/Items/Gems/SkillGemCorruptingFever": {Name: "Corrupting Fever", Tags: map[string]bool{"duration": true, "grants_active_skill": true, "physical": true, "spell": true, "strength": true}, GrantedEffectID: "CorruptingFever", ReqStr: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:12653
+	// src/Data/Gems.lua:12671
 	"Metadata/Items/Gems/SupportGemBloodthirst": {Name: "Bloodthirst", Tags: map[string]bool{"attack": true, "physical": true, "strength": true, "support": true}, GrantedEffectID: "SupportBloodthirst", ReqStr: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:12670
+	// src/Data/Gems.lua:12688
 	"Metadata/Items/Gems/SkillGemBloodreap": {Name: "Reap", Tags: map[string]bool{"area": true, "duration": true, "grants_active_skill": true, "physical": true, "spell": true, "strength": true}, GrantedEffectID: "Reap", ReqStr: 60, ReqInt: 40, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:12710
+	// src/Data/Gems.lua:12728
 	"Metadata/Items/Gems/SkillGemPetrifiedBlood": {Name: "Petrified Blood", Tags: map[string]bool{"grants_active_skill": true, "spell": true, "strength": true}, GrantedEffectID: "PetrifiedBlood", ReqStr: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:12727
+	// src/Data/Gems.lua:12745
 	"Metadata/Items/Gems/SupportGemCruelty": {Name: "Cruelty", Tags: map[string]bool{"duration": true, "strength": true, "support": true}, GrantedEffectID: "SupportCruelty", ReqStr: 60, ReqInt: 40, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:12743
+	// src/Data/Gems.lua:12761
 	"Metadata/Items/Gems/SupportGemLifetap": {Name: "Lifetap", Tags: map[string]bool{"duration": true, "strength": true, "support": true}, GrantedEffectID: "SupportLifetap", ReqStr: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:12759
+	// src/Data/Gems.lua:12777
 	"Metadata/Items/Gems/SkillGemDefianceBanner": {Name: "Defiance Banner", Tags: map[string]bool{"area": true, "aura": true, "banner": true, "duration": true, "grants_active_skill": true, "spell": true, "strength": true}, GrantedEffectID: "DefianceBanner", ReqStr: 60, ReqDex: 40, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:12780
+	// src/Data/Gems.lua:12798
 	"Metadata/Items/Gems/SkillGemVoltaxicBurst": {Name: "Voltaxic Burst", Tags: map[string]bool{"area": true, "chaos": true, "duration": true, "grants_active_skill": true, "intelligence": true, "lightning": true, "nova": true, "spell": true}, GrantedEffectID: "VoltaxicBurst", ReqDex: 40, ReqInt: 60, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:12802
+	// src/Data/Gems.lua:12820
 	"Metadata/Items/Gems/SkillGemRageVortex": {Name: "Rage Vortex", Tags: map[string]bool{"area": true, "attack": true, "duration": true, "grants_active_skill": true, "melee": true, "strength": true}, GrantedEffectID: "RageVortex", ReqStr: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:12841
+	// src/Data/Gems.lua:12859
 	"Metadata/Items/Gems/SkillGemSpectralHelix": {Name: "Spectral Helix", Tags: map[string]bool{"attack": true, "dexterity": true, "grants_active_skill": true, "projectile": true}, GrantedEffectID: "SpectralHelix", ReqStr: 40, ReqDex: 60, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:12878
+	// src/Data/Gems.lua:12896
 	"Metadata/Items/Gems/SkillGemBattlemagesCry": {Name: "Battlemage's Cry", Tags: map[string]bool{"area": true, "critical": true, "duration": true, "grants_active_skill": true, "strength": true, "trigger": true, "warcry": true}, GrantedEffectID: "BattlemagesCry", SecondaryGrantedEffectID: "BattlemagesCrySupport", ReqStr: 60, ReqInt: 40, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:12901
+	// src/Data/Gems.lua:12919
 	"Metadata/Items/Gems/SupportGemEarthbreaker": {Name: "Earthbreaker", Tags: map[string]bool{"area": true, "attack": true, "melee": true, "slam": true, "strength": true, "support": true, "totem": true}, GrantedEffectID: "SupportEarthbreaker", ReqStr: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:12921
+	// src/Data/Gems.lua:12939
 	"Metadata/Items/Gems/SkillGemAbsolution": {Name: "Absolution", Tags: map[string]bool{"area": true, "duration": true, "grants_active_skill": true, "lightning": true, "minion": true, "physical": true, "spell": true, "strength": true}, GrantedEffectID: "Absolution", ReqStr: 60, ReqInt: 40, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:12965
+	// src/Data/Gems.lua:12983
 	"Metadata/Items/Gems/SkillGemForbiddenRite": {Name: "Forbidden Rite", Tags: map[string]bool{"area": true, "chaos": true, "grants_active_skill": true, "intelligence": true, "projectile": true, "spell": true}, GrantedEffectID: "ForbiddenRite", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:13005
+	// src/Data/Gems.lua:13023
 	"Metadata/Items/Gems/SkillGemAmbush": {Name: "Ambush", Tags: map[string]bool{"critical": true, "dexterity": true, "duration": true, "grants_active_skill": true, "movement": true, "spell": true, "travel": true}, GrantedEffectID: "Ambush", ReqDex: 60, ReqInt: 40, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:13026
+	// src/Data/Gems.lua:13044
 	"Metadata/Items/Gems/SkillGemManabond": {Name: "Manabond", Tags: map[string]bool{"arcane": true, "area": true, "grants_active_skill": true, "intelligence": true, "lightning": true, "spell": true}, GrantedEffectID: "Manabond", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:13046
+	// src/Data/Gems.lua:13064
 	"Metadata/Items/Gems/SkillGemBladeTrap": {Name: "Blade Trap", Tags: map[string]bool{"area": true, "attack": true, "dexterity": true, "grants_active_skill": true, "trap": true}, GrantedEffectID: "BladeTrap", ReqDex: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:13105
+	// src/Data/Gems.lua:13123
 	"Metadata/Items/Gems/SkillGemStormRain": {Name: "Storm Rain", Tags: map[string]bool{"area": true, "attack": true, "bow": true, "dexterity": true, "grants_active_skill": true, "lightning": true, "projectile": true}, GrantedEffectID: "StormRain", ReqDex: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:13168
+	// src/Data/Gems.lua:13186
 	"Metadata/Items/Gems/SkillGemShieldCrush": {Name: "Shield Crush", Tags: map[string]bool{"area": true, "attack": true, "grants_active_skill": true, "melee": true, "physical": true, "strength": true}, GrantedEffectID: "ShieldCrush", ReqStr: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:13208
+	// src/Data/Gems.lua:13226
 	"Metadata/Items/Gems/SupportGemFocusedBallista": {Name: "Focused Ballista", Tags: map[string]bool{"dexterity": true, "projectile": true, "support": true, "totem": true}, GrantedEffectID: "SupportFocusedBallista", ReqDex: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:13225
+	// src/Data/Gems.lua:13243
 	"Metadata/Items/Gems/SkillGemSummonReaper": {Name: "Summon Reaper", Tags: map[string]bool{"grants_active_skill": true, "intelligence": true, "minion": true, "physical": true, "spell": true}, GrantedEffectID: "SummonReaper", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:13281
-	"Metadata/Items/Gems/SupportGemBehead": {Name: "Behead", Tags: map[string]bool{"attack": true, "melee": true, "strength": true, "strike": true, "support": true}, GrantedEffectID: "SupportBehead", ReqStr: 100, NaturalMaxLevel: 20},
 	// src/Data/Gems.lua:13299
+	"Metadata/Items/Gems/SupportGemBehead": {Name: "Behead", Tags: map[string]bool{"attack": true, "melee": true, "strength": true, "strike": true, "support": true}, GrantedEffectID: "SupportBehead", ReqStr: 100, NaturalMaxLevel: 20},
+	// src/Data/Gems.lua:13317
 	"Metadata/Items/Gems/SkillGemBoneshatter": {Name: "Boneshatter", Tags: map[string]bool{"area": true, "attack": true, "duration": true, "grants_active_skill": true, "melee": true, "physical": true, "strength": true, "strike": true}, GrantedEffectID: "Boneshatter", ReqStr: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:13363
+	// src/Data/Gems.lua:13381
 	"Metadata/Items/Gems/SkillGemExplosiveConcoction": {Name: "Explosive Concoction", Tags: map[string]bool{"area": true, "attack": true, "cold": true, "dexterity": true, "fire": true, "grants_active_skill": true, "lightning": true, "projectile": true}, GrantedEffectID: "ExplosiveConcoction", ReqDex: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:13408
+	// src/Data/Gems.lua:13426
 	"Metadata/Items/Gems/SkillGemEyeOfWinter": {Name: "Eye of Winter", Tags: map[string]bool{"cold": true, "grants_active_skill": true, "intelligence": true, "projectile": true, "spell": true}, GrantedEffectID: "EyeOfWinter", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:13465
+	// src/Data/Gems.lua:13483
 	"Metadata/Items/Gems/SkillGemPoisonousConcoction": {Name: "Poisonous Concoction", Tags: map[string]bool{"area": true, "attack": true, "chaos": true, "dexterity": true, "grants_active_skill": true, "projectile": true}, GrantedEffectID: "PoisonousConcoction", ReqDex: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:13506
+	// src/Data/Gems.lua:13524
 	"Metadata/Items/Gems/SkillGemTemporalRift": {Name: "Temporal Rift", Tags: map[string]bool{"dexterity": true, "grants_active_skill": true, "spell": true}, GrantedEffectID: "TemporalRift", ReqDex: 60, ReqInt: 40, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:13523
+	// src/Data/Gems.lua:13541
 	"Metadata/Items/Gems/SkillGemTornado": {Name: "Tornado", Tags: map[string]bool{"area": true, "dexterity": true, "duration": true, "grants_active_skill": true, "orb": true, "physical": true, "spell": true}, GrantedEffectID: "Tornado", ReqDex: 60, ReqInt: 40, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:13569
-	"Metadata/Items/Gems/SkillGemEnergyBlade": {Name: "Energy Blade", Tags: map[string]bool{"grants_active_skill": true, "intelligence": true, "lightning": true, "spell": true}, GrantedEffectID: "EnergyBlade", ReqInt: 100, NaturalMaxLevel: 20},
 	// src/Data/Gems.lua:13587
+	"Metadata/Items/Gems/SkillGemEnergyBlade": {Name: "Energy Blade", Tags: map[string]bool{"grants_active_skill": true, "intelligence": true, "lightning": true, "spell": true}, GrantedEffectID: "EnergyBlade", ReqInt: 100, NaturalMaxLevel: 20},
+	// src/Data/Gems.lua:13605
 	"Metadata/Items/Gems/SkillGemSoulLink": {Name: "Soul Link", Tags: map[string]bool{"duration": true, "grants_active_skill": true, "intelligence": true, "link": true, "spell": true}, GrantedEffectID: "SoulLink", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:13606
+	// src/Data/Gems.lua:13624
 	"Metadata/Items/Gems/SkillGemFlameLink": {Name: "Flame Link", Tags: map[string]bool{"duration": true, "fire": true, "grants_active_skill": true, "link": true, "spell": true, "strength": true}, GrantedEffectID: "FlameLink", ReqStr: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:13626
+	// src/Data/Gems.lua:13644
 	"Metadata/Items/Gems/SkillGemVampiricLink": {Name: "Vampiric Link", Tags: map[string]bool{"dexterity": true, "duration": true, "grants_active_skill": true, "link": true, "spell": true}, GrantedEffectID: "VampiricLink", ReqStr: 40, ReqDex: 60, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:13645
+	// src/Data/Gems.lua:13663
 	"Metadata/Items/Gems/SkillGemProtectiveLink": {Name: "Protective Link", Tags: map[string]bool{"duration": true, "grants_active_skill": true, "link": true, "spell": true, "strength": true}, GrantedEffectID: "ProtectiveLink", ReqStr: 60, ReqInt: 40, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:13664
+	// src/Data/Gems.lua:13682
 	"Metadata/Items/Gems/SkillGemIntuitiveLink": {Name: "Intuitive Link", Tags: map[string]bool{"dexterity": true, "duration": true, "grants_active_skill": true, "link": true, "spell": true, "trigger": true}, GrantedEffectID: "IntuitiveLink", SecondaryGrantedEffectID: "SupportIntuitiveLink", ReqDex: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:13686
+	// src/Data/Gems.lua:13704
 	"Metadata/Items/Gems/SkillGemDestructiveLink": {Name: "Destructive Link", Tags: map[string]bool{"critical": true, "duration": true, "grants_active_skill": true, "intelligence": true, "link": true, "spell": true}, GrantedEffectID: "DestructiveLink", ReqDex: 40, ReqInt: 60, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:13706
-	"Metadata/Items/Gems/SupportGemDivineBlessing": {Name: "Divine Blessing", Tags: map[string]bool{"aura": true, "blessing": true, "duration": true, "strength": true, "support": true}, GrantedEffectID: "SupportDivineBlessing", ReqStr: 60, ReqInt: 40, NaturalMaxLevel: 20},
 	// src/Data/Gems.lua:13724
+	"Metadata/Items/Gems/SupportGemDivineBlessing": {Name: "Divine Blessing", Tags: map[string]bool{"aura": true, "blessing": true, "duration": true, "strength": true, "support": true}, GrantedEffectID: "SupportDivineBlessing", ReqStr: 60, ReqInt: 40, NaturalMaxLevel: 20},
+	// src/Data/Gems.lua:13742
 	"Metadata/Items/Gems/SupportGemMarkOnHit": {Name: "Mark On Hit", Tags: map[string]bool{"dexterity": true, "mark": true, "support": true, "trigger": true}, GrantedEffectID: "SupportMarkOnHit", ReqDex: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:13741
+	// src/Data/Gems.lua:13759
 	"Metadata/Items/Gems/SupportGemEternalBlessing": {Name: "Eternal Blessing", Tags: map[string]bool{"aura": true, "blessing": true, "strength": true, "support": true}, GrantedEffectID: "SupportEternalBlessing", ReqStr: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:13758
+	// src/Data/Gems.lua:13776
 	"Metadata/Items/Gems/SupportGemOvercharge": {Name: "Overcharge", Tags: map[string]bool{"intelligence": true, "lightning": true, "support": true}, GrantedEffectID: "SupportOvercharge", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:13774
+	// src/Data/Gems.lua:13792
 	"Metadata/Items/Gems/SkillGemLightningConduit": {Name: "Lightning Conduit", Tags: map[string]bool{"area": true, "grants_active_skill": true, "intelligence": true, "lightning": true, "spell": true}, GrantedEffectID: "LightningConduit", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:13812
+	// src/Data/Gems.lua:13830
 	"Metadata/Items/Gems/SkillGemGalvanicField": {Name: "Galvanic Field", Tags: map[string]bool{"area": true, "chaining": true, "duration": true, "grants_active_skill": true, "intelligence": true, "lightning": true, "orb": true, "spell": true}, GrantedEffectID: "GalvanicField", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:13856
+	// src/Data/Gems.lua:13874
 	"Metadata/Items/Gems/SkillGemAlchemistsMark": {Name: "Alchemist's Mark", Tags: map[string]bool{"area": true, "chaos": true, "curse": true, "dexterity": true, "duration": true, "fire": true, "grants_active_skill": true, "mark": true, "spell": true}, GrantedEffectID: "AlchemistsMark", ReqDex: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:13879
+	// src/Data/Gems.lua:13897
 	"Metadata/Items/Gems/SkillGemVolcanicFissure": {Name: "Volcanic Fissure", Tags: map[string]bool{"area": true, "attack": true, "fire": true, "grants_active_skill": true, "melee": true, "projectile": true, "slam": true, "strength": true}, GrantedEffectID: "VolcanicFissure", ReqStr: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:13922
+	// src/Data/Gems.lua:13940
 	"Metadata/Items/Gems/SkillGemVaalVolcanicFissure": {Name: "Vaal Volcanic Fissure", Tags: map[string]bool{"area": true, "attack": true, "fire": true, "grants_active_skill": true, "melee": true, "projectile": true, "slam": true, "strength": true, "vaal": true}, GrantedEffectID: "VaalVolcanicFissure", SecondaryGrantedEffectID: "VolcanicFissure", ReqStr: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:13947
+	// src/Data/Gems.lua:13965
 	"Metadata/Items/Gems/SkillGemFrozenLegion": {Name: "Frozen Legion", Tags: map[string]bool{"area": true, "attack": true, "cold": true, "grants_active_skill": true, "melee": true, "spell": true, "strength": true}, GrantedEffectID: "FrozenLegion", SecondaryGrantedEffectID: "FrozenSweep", ReqStr: 60, ReqInt: 40, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:13991
+	// src/Data/Gems.lua:14009
 	"Metadata/Items/Gems/SkillGemVaalCleave": {Name: "Vaal Cleave", Tags: map[string]bool{"area": true, "attack": true, "duration": true, "grants_active_skill": true, "melee": true, "strength": true, "vaal": true}, GrantedEffectID: "VaalCleave", SecondaryGrantedEffectID: "Cleave", ReqStr: 60, ReqDex: 40, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:14014
+	// src/Data/Gems.lua:14032
 	"Metadata/Items/Gems/SkillGemVaalCausticArrow": {Name: "Vaal Caustic Arrow", Tags: map[string]bool{"area": true, "attack": true, "bow": true, "chaos": true, "dexterity": true, "duration": true, "grants_active_skill": true, "projectile": true, "vaal": true}, GrantedEffectID: "VaalCausticArrow", SecondaryGrantedEffectID: "CausticArrow", ReqDex: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:14039
+	// src/Data/Gems.lua:14057
 	"Metadata/Items/Gems/SkillGemVaalMoltenStrike": {Name: "Vaal Molten Strike", Tags: map[string]bool{"area": true, "attack": true, "chaining": true, "fire": true, "grants_active_skill": true, "melee": true, "projectile": true, "strength": true, "strike": true, "vaal": true}, GrantedEffectID: "VaalMoltenStrike", SecondaryGrantedEffectID: "MoltenStrike", ReqStr: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:14065
-	"Metadata/Items/Gems/SupportGemCursedGround": {Name: "Cursed Ground", Tags: map[string]bool{"area": true, "duration": true, "hex": true, "intelligence": true, "support": true}, GrantedEffectID: "SupportCursedGround", ReqInt: 100, NaturalMaxLevel: 20},
 	// src/Data/Gems.lua:14083
+	"Metadata/Items/Gems/SupportGemCursedGround": {Name: "Cursed Ground", Tags: map[string]bool{"area": true, "duration": true, "hex": true, "intelligence": true, "support": true}, GrantedEffectID: "SupportCursedGround", ReqInt: 100, NaturalMaxLevel: 20},
+	// src/Data/Gems.lua:14101
 	"Metadata/Items/Gems/SupportGemHexBloom": {Name: "Hex Bloom", Tags: map[string]bool{"hex": true, "intelligence": true, "support": true}, GrantedEffectID: "SupportHexBloom", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:14099
+	// src/Data/Gems.lua:14117
 	"Metadata/Items/Gems/SkillGemVaalVenomGyre": {Name: "Vaal Venom Gyre", Tags: map[string]bool{"attack": true, "chaos": true, "dexterity": true, "duration": true, "grants_active_skill": true, "projectile": true, "vaal": true}, GrantedEffectID: "VaalVenomGyre", SecondaryGrantedEffectID: "VenomGyre", ReqDex: 60, ReqInt: 40, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:14122
+	// src/Data/Gems.lua:14140
 	"Metadata/Items/Gems/SkillGemVaalSmite": {Name: "Vaal Smite", Tags: map[string]bool{"area": true, "attack": true, "aura": true, "duration": true, "grants_active_skill": true, "lightning": true, "melee": true, "strength": true, "strike": true, "vaal": true}, GrantedEffectID: "VaalSmite", SecondaryGrantedEffectID: "Smite", ReqStr: 60, ReqInt: 40, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:14148
+	// src/Data/Gems.lua:14166
 	"Metadata/Items/Gems/SkillGemVaalChargedAttack": {Name: "Vaal Blade Flurry", Tags: map[string]bool{"area": true, "attack": true, "channelling": true, "dexterity": true, "grants_active_skill": true, "melee": true, "vaal": true}, GrantedEffectID: "VaalBladeFlurry", SecondaryGrantedEffectID: "BladeFlurry", ReqDex: 60, ReqInt: 40, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:14171
+	// src/Data/Gems.lua:14189
 	"Metadata/Items/Gems/SkillGemVaalReap": {Name: "Vaal Reap", Tags: map[string]bool{"area": true, "duration": true, "grants_active_skill": true, "physical": true, "spell": true, "strength": true, "vaal": true}, GrantedEffectID: "VaalReap", SecondaryGrantedEffectID: "Reap", ReqStr: 60, ReqInt: 40, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:14194
+	// src/Data/Gems.lua:14212
 	"Metadata/Items/Gems/SkillGemVaalAnimateWeapon": {Name: "Vaal Animate Weapon", Tags: map[string]bool{"dexterity": true, "duration": true, "grants_active_skill": true, "minion": true, "physical": true, "spell": true, "vaal": true}, GrantedEffectID: "VaalAnimateWeapon", SecondaryGrantedEffectID: "AnimateWeapon", ReqDex: 60, ReqInt: 40, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:14217
+	// src/Data/Gems.lua:14235
 	"Metadata/Items/Gems/SkillGemVaalLightningArrow": {Name: "Vaal Lightning Arrow", Tags: map[string]bool{"area": true, "attack": true, "bow": true, "dexterity": true, "grants_active_skill": true, "lightning": true, "projectile": true, "vaal": true}, GrantedEffectID: "VaalLightningArrow", SecondaryGrantedEffectID: "LightningArrow", ReqDex: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:14241
+	// src/Data/Gems.lua:14259
 	"Metadata/Items/Gems/SkillGemVaalAbsolution": {Name: "Vaal Absolution", Tags: map[string]bool{"area": true, "duration": true, "grants_active_skill": true, "lightning": true, "minion": true, "physical": true, "spell": true, "strength": true, "vaal": true}, GrantedEffectID: "VaalAbsolution", SecondaryGrantedEffectID: "Absolution", ReqStr: 60, ReqInt: 40, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:14266
+	// src/Data/Gems.lua:14284
 	"Metadata/Items/Gems/SkillGemVaalDomination": {Name: "Vaal Domination", Tags: map[string]bool{"attack": true, "duration": true, "grants_active_skill": true, "melee": true, "minion": true, "spell": true, "strength": true, "strike": true, "vaal": true}, GrantedEffectID: "VaalDomination", SecondaryGrantedEffectID: "DominatingBlow", ReqStr: 60, ReqInt: 40, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:14291
+	// src/Data/Gems.lua:14309
 	"Metadata/Items/Gems/SkillGemVaalIceShot": {Name: "Vaal Ice Shot", Tags: map[string]bool{"area": true, "attack": true, "bow": true, "cold": true, "dexterity": true, "duration": true, "grants_active_skill": true, "projectile": true, "vaal": true}, GrantedEffectID: "VaalIceShot", SecondaryGrantedEffectID: "IceShot", ReqDex: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:14316
+	// src/Data/Gems.lua:14334
 	"Metadata/Items/Gems/SkillGemVaalFirestorm": {Name: "Vaal Firestorm", Tags: map[string]bool{"area": true, "duration": true, "fire": true, "grants_active_skill": true, "intelligence": true, "spell": true, "vaal": true}, GrantedEffectID: "VaalFirestorm", SecondaryGrantedEffectID: "Firestorm", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:14339
+	// src/Data/Gems.lua:14357
 	"Metadata/Items/Gems/SkillGemVaalRejuvenationTotem": {Name: "Vaal Rejuvenation Totem", Tags: map[string]bool{"area": true, "aura": true, "grants_active_skill": true, "spell": true, "strength": true, "totem": true, "vaal": true}, GrantedEffectID: "VaalRejuvenationTotem", SecondaryGrantedEffectID: "RejuvenationTotem", ReqStr: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:14362
+	// src/Data/Gems.lua:14380
 	"Metadata/Items/Gems/SupportGemManaforgedArrows": {Name: "Manaforged Arrows", Tags: map[string]bool{"bow": true, "dexterity": true, "support": true, "trigger": true}, GrantedEffectID: "SupportManaforgedArrows", ReqDex: 60, ReqInt: 40, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:14379
+	// src/Data/Gems.lua:14397
 	"Metadata/Items/Gems/SupportGemPrismaticBurst": {Name: "Prismatic Burst", Tags: map[string]bool{"area": true, "cold": true, "fire": true, "grants_active_skill": true, "intelligence": true, "lightning": true, "random_element": true, "spell": true, "support": true, "trigger": true}, GrantedEffectID: "SupportPrismaticBurst", SecondaryGrantedEffectID: "PrismaticBurst", ReqDex: 40, ReqInt: 60, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:14403
+	// src/Data/Gems.lua:14421
 	"Metadata/Items/Gems/SkillGemChannelledSnipe": {Name: "Snipe", Tags: map[string]bool{"attack": true, "bow": true, "channelling": true, "dexterity": true, "grants_active_skill": true, "physical": true, "projectile": true}, GrantedEffectID: "Snipe", SecondaryGrantedEffectID: "ChannelledSnipeSupport", ReqDex: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:14426
+	// src/Data/Gems.lua:14444
 	"Metadata/Items/Gems/SkillGemConflagration": {Name: "Conflagration", Tags: map[string]bool{"area": true, "attack": true, "bow": true, "dexterity": true, "duration": true, "fire": true, "grants_active_skill": true, "projectile": true}, GrantedEffectID: "Conflagration", ReqDex: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:14448
+	// src/Data/Gems.lua:14466
 	"Metadata/Items/Gems/SkillGemKineticRain": {Name: "Kinetic Rain", Tags: map[string]bool{"area": true, "attack": true, "duration": true, "grants_active_skill": true, "intelligence": true, "projectile": true, "trigger": true}, GrantedEffectID: "KineticRain", SecondaryGrantedEffectID: "KineticRainKineticInstability", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:14489
+	// src/Data/Gems.lua:14507
 	"Metadata/Items/Gems/SkillGemSomaticShell": {Name: "Somatic Shell", Tags: map[string]bool{"area": true, "attack": true, "duration": true, "grants_active_skill": true, "intelligence": true, "physical": true, "projectile": true}, GrantedEffectID: "SomaticShell", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:14510
+	// src/Data/Gems.lua:14528
 	"Metadata/Items/Gems/SkillGemThunderstorm": {Name: "Thunderstorm", Tags: map[string]bool{"area": true, "attack": true, "bow": true, "dexterity": true, "duration": true, "grants_active_skill": true, "lightning": true, "projectile": true, "trigger": true}, GrantedEffectID: "Thunderstorm", SecondaryGrantedEffectID: "ThunderstormMiniTornados", ReqDex: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:14534
+	// src/Data/Gems.lua:14552
 	"Metadata/Items/Gems/SkillGemKineticFusillade": {Name: "Kinetic Fusillade", Tags: map[string]bool{"area": true, "attack": true, "duration": true, "grants_active_skill": true, "intelligence": true, "projectile": true}, GrantedEffectID: "KineticFusillade", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:14574
+	// src/Data/Gems.lua:14592
 	"Metadata/Items/Gems/SkillGemHolyHammers": {Name: "Holy Hammers", Tags: map[string]bool{"area": true, "attack": true, "grants_active_skill": true, "lightning": true, "melee": true, "slam": true, "strength": true}, GrantedEffectID: "HolyHammers", ReqStr: 60, ReqInt: 40, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:14616
+	// src/Data/Gems.lua:14634
 	"Metadata/Items/Gems/SkillGemShieldOfLight": {Name: "Shield of Light", Tags: map[string]bool{"area": true, "attack": true, "grants_active_skill": true, "lightning": true, "melee": true, "physical": true, "retaliation": true, "strength": true}, GrantedEffectID: "ShieldOfLight", ReqStr: 60, ReqInt: 40, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:14638
+	// src/Data/Gems.lua:14656
 	"Metadata/Items/Gems/SkillGemHolyStrike": {Name: "Holy Strike", Tags: map[string]bool{"attack": true, "duration": true, "grants_active_skill": true, "lightning": true, "melee": true, "minion": true, "strength": true, "strike": true}, GrantedEffectID: "HolyStrike", ReqStr: 60, ReqInt: 40, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:14660
+	// src/Data/Gems.lua:14678
 	"Metadata/Items/Gems/SkillGemDivineBlast": {Name: "Divine Blast", Tags: map[string]bool{"area": true, "attack": true, "duration": true, "fire": true, "grants_active_skill": true, "physical": true, "strength": true}, GrantedEffectID: "DivineBlast", ReqStr: 60, ReqInt: 40, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:14703
+	// src/Data/Gems.lua:14721
 	"Metadata/Items/Gems/SkillGemQuickstep": {Name: "Quickstep", Tags: map[string]bool{"blink": true, "grants_active_skill": true, "movement": true, "spell": true, "travel": true}, GrantedEffectID: "QuickstepHardMode", NaturalMaxLevel: 1},
-	// src/Data/Gems.lua:14722
+	// src/Data/Gems.lua:14740
 	"Metadata/Items/Gems/SupportGemTrauma": {Name: "Trauma", Tags: map[string]bool{"attack": true, "duration": true, "melee": true, "physical": true, "strength": true, "strike": true, "support": true}, GrantedEffectID: "SupportTrauma", ReqStr: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:14742
+	// src/Data/Gems.lua:14760
 	"Metadata/Items/Gems/SupportGemSpellblade": {Name: "Spellblade", Tags: map[string]bool{"intelligence": true, "spell": true, "support": true}, GrantedEffectID: "SupportSpellblade", ReqStr: 40, ReqInt: 60, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:14758
+	// src/Data/Gems.lua:14776
 	"Metadata/Items/Gems/SupportGemDevour": {Name: "Devour", Tags: map[string]bool{"intelligence": true, "support": true}, GrantedEffectID: "SupportDevour", ReqDex: 40, ReqInt: 60, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:14773
+	// src/Data/Gems.lua:14791
 	"Metadata/Items/Gems/SupportGemFreshMeat": {Name: "Fresh Meat", Tags: map[string]bool{"critical": true, "intelligence": true, "minion": true, "support": true}, GrantedEffectID: "SupportFreshMeat", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:14790
+	// src/Data/Gems.lua:14808
 	"Metadata/Items/Gems/SupportGemFlamewood": {Name: "Flamewood", Tags: map[string]bool{"area": true, "fire": true, "grants_active_skill": true, "projectile": true, "spell": true, "strength": true, "support": true, "totem": true, "trigger": true}, GrantedEffectID: "SupportFlamewood", SecondaryGrantedEffectID: "AvengingFlame", ReqStr: 60, ReqInt: 40, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:14813
+	// src/Data/Gems.lua:14831
 	"Metadata/Items/Gems/SupportGemCorruptingCry": {Name: "Corrupting Cry", Tags: map[string]bool{"area": true, "duration": true, "physical": true, "strength": true, "support": true, "warcry": true}, GrantedEffectID: "SupportCorruptingCry", ReqStr: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:14832
+	// src/Data/Gems.lua:14850
 	"Metadata/Items/Gems/SupportGemGuardiansBlessing": {Name: "Guardian's Blessing", Tags: map[string]bool{"aura": true, "blessing": true, "minion": true, "strength": true, "support": true}, GrantedEffectID: "SupportGuardiansBlessing", SecondaryGrantedEffectID: "SupportGuardiansBlessingMinion", ReqStr: 60, ReqInt: 40, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:14851
+	// src/Data/Gems.lua:14869
 	"Metadata/Items/Gems/SupportGemSacrifice": {Name: "Sacrifice", Tags: map[string]bool{"chaos": true, "intelligence": true, "spell": true, "support": true}, GrantedEffectID: "SupportSacrifice", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:14868
-	"Metadata/Items/Gems/SupportGemFrigidBond": {Name: "Frigid Bond", Tags: map[string]bool{"cold": true, "duration": true, "intelligence": true, "link": true, "support": true}, GrantedEffectID: "SupportFrigidBond", ReqInt: 100, NaturalMaxLevel: 20},
 	// src/Data/Gems.lua:14886
+	"Metadata/Items/Gems/SupportGemFrigidBond": {Name: "Frigid Bond", Tags: map[string]bool{"cold": true, "duration": true, "intelligence": true, "link": true, "support": true}, GrantedEffectID: "SupportFrigidBond", ReqInt: 100, NaturalMaxLevel: 20},
+	// src/Data/Gems.lua:14904
 	"Metadata/Items/Gems/SupportGemLocusMine": {Name: "Locus Mine", Tags: map[string]bool{"attack": true, "bow": true, "dexterity": true, "mine": true, "projectile": true, "support": true}, GrantedEffectID: "SupportLocusMine", ReqDex: 60, ReqInt: 40, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:14905
+	// src/Data/Gems.lua:14923
 	"Metadata/Items/Gems/SupportGemSadism": {Name: "Sadism", Tags: map[string]bool{"dexterity": true, "support": true}, GrantedEffectID: "SupportSadism", ReqStr: 40, ReqDex: 60, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:14920
-	"Metadata/Items/Gems/SupportGemControlledBlaze": {Name: "Controlled Blaze", Tags: map[string]bool{"attack": true, "fire": true, "melee": true, "strength": true, "support": true}, GrantedEffectID: "SupportControlledBlaze", ReqStr: 100, NaturalMaxLevel: 20},
 	// src/Data/Gems.lua:14938
+	"Metadata/Items/Gems/SupportGemControlledBlaze": {Name: "Controlled Blaze", Tags: map[string]bool{"attack": true, "fire": true, "melee": true, "strength": true, "support": true}, GrantedEffectID: "SupportControlledBlaze", ReqStr: 100, NaturalMaxLevel: 20},
+	// src/Data/Gems.lua:14956
 	"Metadata/Items/Gems/SupportGemVolatility": {Name: "Volatility", Tags: map[string]bool{"attack": true, "strength": true, "support": true}, GrantedEffectID: "SupportVolatility", ReqStr: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:14954
+	// src/Data/Gems.lua:14972
 	"Metadata/Items/Gems/SkillGemAutomation": {Name: "Automation", Tags: map[string]bool{"grants_active_skill": true, "intelligence": true, "spell": true, "trigger": true}, GrantedEffectID: "Automation", SecondaryGrantedEffectID: "SupportAutomation", ReqDex: 40, ReqInt: 60, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:14974
+	// src/Data/Gems.lua:14992
 	"Metadata/Items/Gems/SkillGemCallToArms": {Name: "Autoexertion", Tags: map[string]bool{"grants_active_skill": true, "spell": true, "strength": true, "trigger": true, "warcry": true}, GrantedEffectID: "Autoexertion", SecondaryGrantedEffectID: "SupportAutoexertion", ReqStr: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:14995
+	// src/Data/Gems.lua:15013
 	"Metadata/Items/Gems/SupportGemSacredWisps": {Name: "Sacred Wisps", Tags: map[string]bool{"attack": true, "duration": true, "grants_active_skill": true, "intelligence": true, "spell": true, "support": true, "trigger": true}, GrantedEffectID: "SupportSacredWisps", SecondaryGrantedEffectID: "SummonSacredWisp", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:15016
-	"Metadata/Items/Gems/SupportGemOverexertion": {Name: "Overexertion", Tags: map[string]bool{"attack": true, "melee": true, "strength": true, "support": true, "warcry": true}, GrantedEffectID: "SupportOverexertion", ReqStr: 100, NaturalMaxLevel: 20},
 	// src/Data/Gems.lua:15034
+	"Metadata/Items/Gems/SupportGemOverexertion": {Name: "Overexertion", Tags: map[string]bool{"attack": true, "melee": true, "strength": true, "support": true, "warcry": true}, GrantedEffectID: "SupportOverexertion", ReqStr: 100, NaturalMaxLevel: 20},
+	// src/Data/Gems.lua:15052
 	"Metadata/Items/Gems/SupportGemExpertRetaliation": {Name: "Expert Retaliation", Tags: map[string]bool{"retaliation": true, "strength": true, "support": true}, GrantedEffectID: "SupportExpertRetaliation", ReqStr: 60, ReqDex: 40, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:15050
-	"Metadata/Items/Gems/SupportGemRupture": {Name: "Rupture", Tags: map[string]bool{"attack": true, "critical": true, "dexterity": true, "physical": true, "support": true}, GrantedEffectID: "SupportRupture", ReqStr: 40, ReqDex: 60, NaturalMaxLevel: 20},
 	// src/Data/Gems.lua:15068
+	"Metadata/Items/Gems/SupportGemRupture": {Name: "Rupture", Tags: map[string]bool{"attack": true, "critical": true, "dexterity": true, "physical": true, "support": true}, GrantedEffectID: "SupportRupture", ReqStr: 40, ReqDex: 60, NaturalMaxLevel: 20},
+	// src/Data/Gems.lua:15086
 	"Metadata/Items/Gems/SupportGemGreaterSpellCascade": {Name: "Greater Spell Cascade", Tags: map[string]bool{"area": true, "exceptional": true, "intelligence": true, "low_max_level": true, "spell": true, "support": true}, GrantedEffectID: "SupportGreaterSpellCascade", ReqInt: 100, NaturalMaxLevel: 3},
-	// src/Data/Gems.lua:15087
+	// src/Data/Gems.lua:15105
 	"Metadata/Items/Gems/SupportGemEclipse": {Name: "Eclipse", Tags: map[string]bool{"exceptional": true, "low_max_level": true, "support": true}, GrantedEffectID: "SupportEclipse", ReqStr: 250, ReqDex: 250, ReqInt: 250, NaturalMaxLevel: 3},
-	// src/Data/Gems.lua:15103
+	// src/Data/Gems.lua:15121
 	"Metadata/Items/Gems/SupportGemInvertTheRules": {Name: "Invert the Rules", Tags: map[string]bool{"exceptional": true, "intelligence": true, "low_max_level": true, "support": true}, GrantedEffectID: "SupportInvertTheRules", ReqInt: 100, NaturalMaxLevel: 3},
-	// src/Data/Gems.lua:15120
+	// src/Data/Gems.lua:15138
 	"Metadata/Items/Gems/SupportGemCastOnWardBreak": {Name: "Cast on Ward Break", Tags: map[string]bool{"dexterity": true, "exceptional": true, "low_max_level": true, "spell": true, "support": true, "trigger": true}, GrantedEffectID: "SupportCastOnWardBreak", ReqDex: 60, ReqInt: 40, NaturalMaxLevel: 3},
-	// src/Data/Gems.lua:15139
+	// src/Data/Gems.lua:15157
 	"Metadata/Items/Gems/SupportGemVaalSacrifice": {Name: "Vaal Sacrifice", Tags: map[string]bool{"exceptional": true, "intelligence": true, "low_max_level": true, "spell": true, "support": true, "vaal": true}, GrantedEffectID: "SupportVaalSacrifice", ReqStr: 40, ReqInt: 60, NaturalMaxLevel: 3},
-	// src/Data/Gems.lua:15158
+	// src/Data/Gems.lua:15176
 	"Metadata/Items/Gems/SupportGemGreaterSpellEcho": {Name: "Greater Spell Echo", Tags: map[string]bool{"area": true, "exceptional": true, "intelligence": true, "low_max_level": true, "spell": true, "support": true}, GrantedEffectID: "SupportGreaterSpellEcho", ReqInt: 100, NaturalMaxLevel: 3},
-	// src/Data/Gems.lua:15177
-	"Metadata/Items/Gems/SupportGemVaalTemptation": {Name: "Vaal Temptation", Tags: map[string]bool{"exceptional": true, "low_max_level": true, "strength": true, "support": true, "vaal": true}, GrantedEffectID: "SupportVaalTemptation", ReqStr: 60, ReqInt: 40, NaturalMaxLevel: 3},
 	// src/Data/Gems.lua:15195
+	"Metadata/Items/Gems/SupportGemVaalTemptation": {Name: "Vaal Temptation", Tags: map[string]bool{"exceptional": true, "low_max_level": true, "strength": true, "support": true, "vaal": true}, GrantedEffectID: "SupportVaalTemptation", ReqStr: 60, ReqInt: 40, NaturalMaxLevel: 3},
+	// src/Data/Gems.lua:15213
 	"Metadata/Items/Gems/SupportGemMachinations": {Name: "Machinations", Tags: map[string]bool{"chaos": true, "dexterity": true, "exceptional": true, "low_max_level": true, "physical": true, "support": true}, GrantedEffectID: "SupportMachinations", ReqDex: 60, ReqInt: 40, NaturalMaxLevel: 3},
-	// src/Data/Gems.lua:15214
+	// src/Data/Gems.lua:15232
 	"Metadata/Items/Gems/SupportGemPyre": {Name: "Pyre", Tags: map[string]bool{"area": true, "attack": true, "exceptional": true, "fire": true, "grants_active_skill": true, "low_max_level": true, "melee": true, "strength": true, "support": true, "trigger": true}, GrantedEffectID: "SupportPyre", SecondaryGrantedEffectID: "TriggeredSupportPyre", ReqStr: 100, NaturalMaxLevel: 3},
-	// src/Data/Gems.lua:15238
+	// src/Data/Gems.lua:15256
 	"Metadata/Items/Gems/SupportGemBonespire": {Name: "Bonespire", Tags: map[string]bool{"area": true, "attack": true, "exceptional": true, "grants_active_skill": true, "low_max_level": true, "melee": true, "physical": true, "strength": true, "support": true, "trigger": true, "warcry": true}, GrantedEffectID: "SupportBonespire", SecondaryGrantedEffectID: "TriggeredSupportBonespire", ReqStr: 100, NaturalMaxLevel: 3},
-	// src/Data/Gems.lua:15263
+	// src/Data/Gems.lua:15281
 	"Metadata/Items/Gems/SupportGemFoulgrasp": {Name: "Foulgrasp", Tags: map[string]bool{"area": true, "brand": true, "exceptional": true, "grants_active_skill": true, "intelligence": true, "lightning": true, "low_max_level": true, "spell": true, "support": true, "trigger": true}, GrantedEffectID: "SupportFoulgrasp", SecondaryGrantedEffectID: "TriggeredSupportFoulgrasp", ReqDex: 40, ReqInt: 60, NaturalMaxLevel: 3},
-	// src/Data/Gems.lua:15287
+	// src/Data/Gems.lua:15305
 	"Metadata/Items/Gems/SupportGemHiveborn": {Name: "Hiveborn", Tags: map[string]bool{"cold": true, "exceptional": true, "grants_active_skill": true, "intelligence": true, "low_max_level": true, "minion": true, "spell": true, "support": true, "trigger": true}, GrantedEffectID: "SupportHiveborn", SecondaryGrantedEffectID: "TriggeredSupportHiveborn", ReqInt: 100, NaturalMaxLevel: 3},
-	// src/Data/Gems.lua:15310
+	// src/Data/Gems.lua:15328
 	"Metadata/Items/Gems/SupportGemScornfulHerald": {Name: "Scornful Herald", Tags: map[string]bool{"critical": true, "exceptional": true, "herald": true, "intelligence": true, "low_max_level": true, "support": true}, GrantedEffectID: "SupportScornfulHerald", ReqStr: 40, ReqInt: 60, NaturalMaxLevel: 3},
-	// src/Data/Gems.lua:15329
+	// src/Data/Gems.lua:15347
 	"Metadata/Items/Gems/SupportGemCullTheWeak": {Name: "Cull the Weak", Tags: map[string]bool{"dexterity": true, "exceptional": true, "low_max_level": true, "support": true}, GrantedEffectID: "SupportCullTheWeak", ReqDex: 100, NaturalMaxLevel: 3},
-	// src/Data/Gems.lua:15346
+	// src/Data/Gems.lua:15364
 	"Metadata/Items/Gems/SupportGemGreaterAncestralCall": {Name: "Greater Ancestral Call", Tags: map[string]bool{"attack": true, "exceptional": true, "low_max_level": true, "melee": true, "strength": true, "strike": true, "support": true}, GrantedEffectID: "SupportGreaterAncestralCall", ReqStr: 100, NaturalMaxLevel: 3},
-	// src/Data/Gems.lua:15366
+	// src/Data/Gems.lua:15384
 	"Metadata/Items/Gems/SupportGemFissure": {Name: "Fissure", Tags: map[string]bool{"area": true, "attack": true, "exceptional": true, "fire": true, "grants_active_skill": true, "low_max_level": true, "melee": true, "slam": true, "strength": true, "support": true, "trigger": true}, GrantedEffectID: "SupportFissure", SecondaryGrantedEffectID: "TriggeredSupportFissure", ReqStr: 100, NaturalMaxLevel: 3},
-	// src/Data/Gems.lua:15391
+	// src/Data/Gems.lua:15409
 	"Metadata/Items/Gems/SupportGemHextoad": {Name: "Hextoad", Tags: map[string]bool{"area": true, "chaos": true, "duration": true, "exceptional": true, "grants_active_skill": true, "hex": true, "intelligence": true, "low_max_level": true, "spell": true, "support": true}, GrantedEffectID: "SupportHextoad", SecondaryGrantedEffectID: "TriggeredSupportHextoad", ReqInt: 100, NaturalMaxLevel: 3},
-	// src/Data/Gems.lua:15415
-	"Metadata/Items/Gems/SupportGemHexpass": {Name: "Hexpass", Tags: map[string]bool{"exceptional": true, "hex": true, "intelligence": true, "low_max_level": true, "support": true}, GrantedEffectID: "SupportHexpass", ReqInt: 100, NaturalMaxLevel: 3},
 	// src/Data/Gems.lua:15433
-	"Metadata/Items/Gems/SupportGemGreaterFork": {Name: "Greater Fork", Tags: map[string]bool{"dexterity": true, "exceptional": true, "low_max_level": true, "projectile": true, "support": true}, GrantedEffectID: "SupportGreaterFork", ReqDex: 100, NaturalMaxLevel: 3},
+	"Metadata/Items/Gems/SupportGemHexpass": {Name: "Hexpass", Tags: map[string]bool{"exceptional": true, "hex": true, "intelligence": true, "low_max_level": true, "support": true}, GrantedEffectID: "SupportHexpass", ReqInt: 100, NaturalMaxLevel: 3},
 	// src/Data/Gems.lua:15451
+	"Metadata/Items/Gems/SupportGemGreaterFork": {Name: "Greater Fork", Tags: map[string]bool{"dexterity": true, "exceptional": true, "low_max_level": true, "projectile": true, "support": true}, GrantedEffectID: "SupportGreaterFork", ReqDex: 100, NaturalMaxLevel: 3},
+	// src/Data/Gems.lua:15469
 	"Metadata/Items/Gems/SupportGemGreaterChain": {Name: "Greater Chain", Tags: map[string]bool{"chaining": true, "dexterity": true, "exceptional": true, "low_max_level": true, "projectile": true, "support": true}, GrantedEffectID: "SupportGreaterChain", ReqDex: 100, NaturalMaxLevel: 3},
-	// src/Data/Gems.lua:15470
-	"Metadata/Items/Gems/SupportGemLethalDose": {Name: "Lethal Dose", Tags: map[string]bool{"chaos": true, "dexterity": true, "exceptional": true, "low_max_level": true, "support": true}, GrantedEffectID: "SupportLethalDose", ReqDex: 100, NaturalMaxLevel: 3},
 	// src/Data/Gems.lua:15488
-	"Metadata/Items/Gems/SupportGemCompanionship": {Name: "Companionship", Tags: map[string]bool{"dexterity": true, "exceptional": true, "low_max_level": true, "minion": true, "support": true}, GrantedEffectID: "SupportCompanionship", ReqDex: 60, ReqInt: 40, NaturalMaxLevel: 3},
+	"Metadata/Items/Gems/SupportGemLethalDose": {Name: "Lethal Dose", Tags: map[string]bool{"chaos": true, "dexterity": true, "exceptional": true, "low_max_level": true, "support": true}, GrantedEffectID: "SupportLethalDose", ReqDex: 100, NaturalMaxLevel: 3},
 	// src/Data/Gems.lua:15506
+	"Metadata/Items/Gems/SupportGemCompanionship": {Name: "Companionship", Tags: map[string]bool{"dexterity": true, "exceptional": true, "low_max_level": true, "minion": true, "support": true}, GrantedEffectID: "SupportCompanionship", ReqDex: 60, ReqInt: 40, NaturalMaxLevel: 3},
+	// src/Data/Gems.lua:15524
 	"Metadata/Items/Gems/SupportGemDivineSentinel": {Name: "Divine Sentinel", Tags: map[string]bool{"area": true, "exceptional": true, "low_max_level": true, "minion": true, "strength": true, "support": true}, GrantedEffectID: "SupportDivineSentinel", ReqStr: 60, ReqInt: 40, NaturalMaxLevel: 3},
-	// src/Data/Gems.lua:15525
-	"Metadata/Items/Gems/SupportGemAnnihilation": {Name: "Annihilation", Tags: map[string]bool{"area": true, "exceptional": true, "low_max_level": true, "strength": true, "support": true}, GrantedEffectID: "SupportAnnhilation", ReqStr: 60, ReqInt: 40, NaturalMaxLevel: 3},
 	// src/Data/Gems.lua:15543
+	"Metadata/Items/Gems/SupportGemAnnihilation": {Name: "Annihilation", Tags: map[string]bool{"area": true, "exceptional": true, "low_max_level": true, "strength": true, "support": true}, GrantedEffectID: "SupportAnnhilation", ReqStr: 60, ReqInt: 40, NaturalMaxLevel: 3},
+	// src/Data/Gems.lua:15561
 	"Metadata/Items/Gems/SupportGemInvention": {Name: "Invention", Tags: map[string]bool{"dexterity": true, "exceptional": true, "low_max_level": true, "mine": true, "support": true, "trap": true}, GrantedEffectID: "SupportInvention", ReqDex: 60, ReqInt: 40, NaturalMaxLevel: 3},
-	// src/Data/Gems.lua:15562
+	// src/Data/Gems.lua:15580
 	"Metadata/Items/Gems/SupportGemGreaterKineticInstability": {Name: "Greater Kinetic Instability", Tags: map[string]bool{"area": true, "attack": true, "critical": true, "duration": true, "exceptional": true, "grants_active_skill": true, "intelligence": true, "low_max_level": true, "support": true, "trigger": true}, GrantedEffectID: "SupportGreaterKineticInstability", SecondaryGrantedEffectID: "TriggeredSupportGreaterKineticInstability", ReqInt: 100, NaturalMaxLevel: 3},
-	// src/Data/Gems.lua:15586
+	// src/Data/Gems.lua:15604
 	"Metadata/Items/Gems/SupportGemCooldownRecovery": {Name: "Cooldown Recovery", Tags: map[string]bool{"exceptional": true, "intelligence": true, "low_max_level": true, "support": true}, GrantedEffectID: "SupportCooldownRecovery", ReqDex: 40, ReqInt: 60, NaturalMaxLevel: 3},
-	// src/Data/Gems.lua:15603
+	// src/Data/Gems.lua:15621
 	"Metadata/Items/Gems/SupportGemVoidstorm": {Name: "Voidstorm", Tags: map[string]bool{"area": true, "attack": true, "bow": true, "dexterity": true, "duration": true, "exceptional": true, "grants_active_skill": true, "low_max_level": true, "support": true}, GrantedEffectID: "SupportVoidstorm", SecondaryGrantedEffectID: "TriggeredSupportVoidstorm", ReqDex: 100, NaturalMaxLevel: 3},
-	// src/Data/Gems.lua:15626
+	// src/Data/Gems.lua:15644
 	"Metadata/Items/Gems/SupportGemVoidShockwave": {Name: "Void Shockwave", Tags: map[string]bool{"area": true, "attack": true, "exceptional": true, "grants_active_skill": true, "low_max_level": true, "melee": true, "strength": true, "support": true}, GrantedEffectID: "SupportVoidShockwave", SecondaryGrantedEffectID: "TriggeredSupportVoidShockwave", ReqStr: 100, NaturalMaxLevel: 3},
-	// src/Data/Gems.lua:15648
+	// src/Data/Gems.lua:15666
 	"Metadata/Items/Gems/SupportGemEldritchBlasphemy": {Name: "Eldritch Blasphemy", Tags: map[string]bool{"aura": true, "exceptional": true, "hex": true, "intelligence": true, "low_max_level": true, "support": true}, GrantedEffectID: "SupportEldritchBlasphemy", ReqInt: 100, NaturalMaxLevel: 3},
-	// src/Data/Gems.lua:15667
+	// src/Data/Gems.lua:15685
 	"Metadata/Items/Gems/SupportGemGluttony": {Name: "Gluttony", Tags: map[string]bool{"duration": true, "exceptional": true, "intelligence": true, "low_max_level": true, "projectile": true, "spell": true, "support": true}, GrantedEffectID: "SupportGluttony", ReqDex: 40, ReqInt: 60, NaturalMaxLevel: 3},
-	// src/Data/Gems.lua:15687
+	// src/Data/Gems.lua:15705
 	"Metadata/Items/Gems/SupportGemOverheat": {Name: "Overheat", Tags: map[string]bool{"attack": true, "exceptional": true, "low_max_level": true, "melee": true, "strength": true, "support": true}, GrantedEffectID: "SupportOverheat", ReqStr: 100, NaturalMaxLevel: 3},
-	// src/Data/Gems.lua:15706
+	// src/Data/Gems.lua:15724
 	"Metadata/Items/Gems/SupportGemGreaterMultistrike": {Name: "Greater Multistrike", Tags: map[string]bool{"attack": true, "exceptional": true, "low_max_level": true, "melee": true, "strength": true, "support": true}, GrantedEffectID: "SupportGreaterMultistrike", ReqStr: 60, ReqDex: 40, NaturalMaxLevel: 3},
-	// src/Data/Gems.lua:15725
-	"Metadata/Items/Gems/SupportGemCongregation": {Name: "Congregation", Tags: map[string]bool{"exceptional": true, "intelligence": true, "low_max_level": true, "minion": true, "support": true}, GrantedEffectID: "SupportCongregation", ReqInt: 100, NaturalMaxLevel: 3},
 	// src/Data/Gems.lua:15743
+	"Metadata/Items/Gems/SupportGemCongregation": {Name: "Congregation", Tags: map[string]bool{"exceptional": true, "intelligence": true, "low_max_level": true, "minion": true, "support": true}, GrantedEffectID: "SupportCongregation", ReqInt: 100, NaturalMaxLevel: 3},
+	// src/Data/Gems.lua:15761
 	"Metadata/Items/Gems/SupportGemFrostmage": {Name: "Frostmage", Tags: map[string]bool{"arcane": true, "cold": true, "exceptional": true, "intelligence": true, "low_max_level": true, "spell": true, "support": true}, GrantedEffectID: "SupportFrostmage", ReqInt: 100, NaturalMaxLevel: 3},
-	// src/Data/Gems.lua:15763
+	// src/Data/Gems.lua:15781
 	"Metadata/Items/Gems/SupportGemGreaterDevour": {Name: "Greater Devour", Tags: map[string]bool{"exceptional": true, "intelligence": true, "low_max_level": true, "support": true}, GrantedEffectID: "SupportGreaterDevour", ReqDex: 40, ReqInt: 60, NaturalMaxLevel: 3},
-	// src/Data/Gems.lua:15780
-	"Metadata/Items/Gems/SupportGemGreaterUnleash": {Name: "Greater Unleash", Tags: map[string]bool{"exceptional": true, "intelligence": true, "low_max_level": true, "spell": true, "support": true}, GrantedEffectID: "SupportGreaterUnleash", ReqInt: 100, NaturalMaxLevel: 3},
 	// src/Data/Gems.lua:15798
+	"Metadata/Items/Gems/SupportGemGreaterUnleash": {Name: "Greater Unleash", Tags: map[string]bool{"exceptional": true, "intelligence": true, "low_max_level": true, "spell": true, "support": true}, GrantedEffectID: "SupportGreaterUnleash", ReqInt: 100, NaturalMaxLevel: 3},
+	// src/Data/Gems.lua:15816
 	"Metadata/Items/Gems/SupportGemPacifism": {Name: "Pacifism", Tags: map[string]bool{"dexterity": true, "exceptional": true, "low_max_level": true, "support": true}, GrantedEffectID: "SupportPacifism", ReqDex: 100, NaturalMaxLevel: 3},
-	// src/Data/Gems.lua:15815
+	// src/Data/Gems.lua:15833
 	"Metadata/Items/Gems/SupportGemBloodsoakedBanner": {Name: "Bloodsoaked Banner", Tags: map[string]bool{"banner": true, "duration": true, "exceptional": true, "low_max_level": true, "physical": true, "strength": true, "support": true}, GrantedEffectID: "SupportBloodsoakedBanner", ReqStr: 60, ReqDex: 40, NaturalMaxLevel: 3},
-	// src/Data/Gems.lua:15835
+	// src/Data/Gems.lua:15853
 	"Metadata/Items/Gems/SupportGemMinionPact": {Name: "Communion", Tags: map[string]bool{"exceptional": true, "intelligence": true, "low_max_level": true, "minion": true, "physical": true, "spell": true, "support": true}, GrantedEffectID: "SupportMinionPact", ReqInt: 100, NaturalMaxLevel: 3},
-	// src/Data/Gems.lua:15855
+	// src/Data/Gems.lua:15873
 	"Metadata/Items/Gems/SupportGemUnholyTrinity": {Name: "Unholy Trinity", Tags: map[string]bool{"chaos": true, "dexterity": true, "exceptional": true, "lightning": true, "low_max_level": true, "physical": true, "support": true}, GrantedEffectID: "SupportUnholyTrinity", ReqDex: 60, ReqInt: 40, NaturalMaxLevel: 3},
-	// src/Data/Gems.lua:15875
+	// src/Data/Gems.lua:15893
 	"Metadata/Items/Gems/SupportGemOverloadedIntensity": {Name: "Overloaded Intensity", Tags: map[string]bool{"critical": true, "exceptional": true, "intelligence": true, "low_max_level": true, "spell": true, "support": true}, GrantedEffectID: "SupportOverloadedIntensity", ReqInt: 100, NaturalMaxLevel: 3},
-	// src/Data/Gems.lua:15894
+	// src/Data/Gems.lua:15912
 	"Metadata/Items/Gems/SupportGemTransfusion": {Name: "Transfusion", Tags: map[string]bool{"exceptional": true, "low_max_level": true, "minion": true, "spell": true, "strength": true, "support": true}, GrantedEffectID: "SupportTransfusion", ReqStr: 60, ReqInt: 40, NaturalMaxLevel: 3},
-	// src/Data/Gems.lua:15913
+	// src/Data/Gems.lua:15931
 	"Metadata/Items/Gems/SupportGemCrustaceousGrasp": {Name: "Coursing Current", Tags: map[string]bool{"cold": true, "exceptional": true, "intelligence": true, "lightning": true, "low_max_level": true, "support": true}, GrantedEffectID: "SupportCrustaceousGrasp", ReqInt: 100, NaturalMaxLevel: 3},
-	// src/Data/Gems.lua:15932
+	// src/Data/Gems.lua:15950
 	"Metadata/Items/Gems/SupportGemCrystalfall": {Name: "Crystalfall", Tags: map[string]bool{"area": true, "attack": true, "exceptional": true, "grants_active_skill": true, "low_max_level": true, "melee": true, "slam": true, "strength": true, "support": true}, GrantedEffectID: "SupportCrystalfall", SecondaryGrantedEffectID: "TriggeredSupportCrystalfall", ReqStr: 100, NaturalMaxLevel: 3},
-	// src/Data/Gems.lua:15955
+	// src/Data/Gems.lua:15973
 	"Metadata/Items/Gems/SupportGemFocusedChannelling": {Name: "Focused Channelling", Tags: map[string]bool{"channelling": true, "intelligence": true, "spell": true, "support": true}, GrantedEffectID: "SupportFocusedChannelling", ReqDex: 40, ReqInt: 60, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:15972
+	// src/Data/Gems.lua:15990
 	"Metadata/Items/Gems/SupportGemWindburst": {Name: "Windburst", Tags: map[string]bool{"area": true, "attack": true, "bow": true, "dexterity": true, "duration": true, "grants_active_skill": true, "projectile": true, "support": true, "trigger": true}, GrantedEffectID: "SupportWindburst", SecondaryGrantedEffectID: "TriggeredSupportWindburst", ReqDex: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:15995
+	// src/Data/Gems.lua:16013
 	"Metadata/Items/Gems/SupportGemKineticInstability": {Name: "Kinetic Instability", Tags: map[string]bool{"area": true, "attack": true, "duration": true, "grants_active_skill": true, "intelligence": true, "support": true, "trigger": true}, GrantedEffectID: "SupportKineticInstability", SecondaryGrantedEffectID: "TriggeredSupportKineticInstability", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:16016
+	// src/Data/Gems.lua:16034
 	"Metadata/Items/Gems/SupportGemLivingLightning": {Name: "Living Lightning", Tags: map[string]bool{"duration": true, "grants_active_skill": true, "intelligence": true, "lightning": true, "minion": true, "spell": true, "support": true, "trigger": true}, GrantedEffectID: "SupportLivingLightning", SecondaryGrantedEffectID: "TriggeredSupportLivingLightning", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:16038
+	// src/Data/Gems.lua:16056
 	"Metadata/Items/Gems/SupportGemExcommunicate": {Name: "Excommunicate", Tags: map[string]bool{"attack": true, "duration": true, "fire": true, "lightning": true, "melee": true, "physical": true, "strength": true, "support": true}, GrantedEffectID: "SupportExcommunicate", ReqStr: 60, ReqInt: 40, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:16059
+	// src/Data/Gems.lua:16077
 	"Metadata/Items/Gems/SupportGemExemplar": {Name: "Exemplar", Tags: map[string]bool{"critical": true, "intelligence": true, "minion": true, "support": true}, GrantedEffectID: "SupportExemplar", ReqStr: 40, ReqInt: 60, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:16076
+	// src/Data/Gems.lua:16094
 	"Metadata/Items/Gems/SupportGemBlessedCall": {Name: "Blessed Call", Tags: map[string]bool{"duration": true, "strength": true, "support": true, "warcry": true}, GrantedEffectID: "SupportBlessedCall", ReqStr: 60, ReqInt: 40, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:16093
+	// src/Data/Gems.lua:16111
 	"Metadata/Items/Gems/SupportGemHallow": {Name: "Hallow", Tags: map[string]bool{"attack": true, "fire": true, "melee": true, "physical": true, "strength": true, "support": true}, GrantedEffectID: "SupportHallow", ReqStr: 60, ReqInt: 40, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:16112
+	// src/Data/Gems.lua:16130
 	"Metadata/Items/Gems/SkillGemPactOfBeidat": {Name: "Pact of Beidat", Tags: map[string]bool{"area": true, "chaining": true, "exceptional": true, "grants_active_skill": true, "pact": true, "projectile": true, "spell": true}, GrantedEffectID: "PactOfBeidat", NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:16133
+	// src/Data/Gems.lua:16151
 	"Metadata/Items/Gems/SkillGemPactOfGhorr": {Name: "Pact of Ghorr", Tags: map[string]bool{"area": true, "duration": true, "exceptional": true, "grants_active_skill": true, "pact": true, "physical": true, "projectile": true, "spell": true, "trigger": true}, GrantedEffectID: "PactOfGhorr", SecondaryGrantedEffectID: "TriggeredBloodrend", NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:16157
-	"Metadata/Items/Gems/SkillGemPactOfKtash": {Name: "Pact of K'Tash", Tags: map[string]bool{"exceptional": true, "grants_active_skill": true, "pact": true, "spell": true}, GrantedEffectID: "PactOfKtash", NaturalMaxLevel: 20},
 	// src/Data/Gems.lua:16175
+	"Metadata/Items/Gems/SkillGemPactOfKtash": {Name: "Pact of K'Tash", Tags: map[string]bool{"exceptional": true, "grants_active_skill": true, "pact": true, "spell": true}, GrantedEffectID: "PactOfKtash", NaturalMaxLevel: 20},
+	// src/Data/Gems.lua:16193
 	"Metadata/Items/Gems/SkillGemPactOfLycia": {Name: "Pact of Lycia", Tags: map[string]bool{"area": true, "channelling": true, "exceptional": true, "grants_active_skill": true, "lightning": true, "pact": true, "spell": true, "trigger": true}, GrantedEffectID: "PactOfLycia", SecondaryGrantedEffectID: "TriggeredHeavensScourge", NaturalMaxLevel: 20},
 }
 
@@ -1296,7 +1296,7 @@ var Gems = map[string]PoBGem{
 // pinned file declares one and they are unique across all 821 rows; a shadowed row without one
 // refuses in the emitter, because it would be unreachable by any lookup.
 //
-// 213 rows.
+// 214 rows.
 var GemVariants = map[string]PoBGem{
 	// src/Data/Gems.lua:68
 	"IceNovaAltX": {Name: "Ice Nova of Frostbolts", Tags: map[string]bool{"area": true, "cold": true, "grants_active_skill": true, "intelligence": true, "nova": true, "spell": true}, GrantedEffectID: "IceNovaAltX", ReqInt: 100, NaturalMaxLevel: 20},
@@ -1627,102 +1627,104 @@ var GemVariants = map[string]PoBGem{
 	// src/Data/Gems.lua:10276
 	"PerforateAltY": {Name: "Perforate of Bloodshed", Tags: map[string]bool{"area": true, "attack": true, "grants_active_skill": true, "melee": true, "physical": true, "slam": true, "strength": true}, GrantedEffectID: "PerforateAltY", ReqStr: 60, ReqDex: 40, NaturalMaxLevel: 20},
 	// src/Data/Gems.lua:10317
+	"ChainHookAltX": {Name: "Chain Hook of Angling", Tags: map[string]bool{"attack": true, "grants_active_skill": true, "melee": true, "strength": true}, GrantedEffectID: "ChainHookAltX", ReqStr: 100, NaturalMaxLevel: 20},
+	// src/Data/Gems.lua:10335
 	"ChainHookAltY": {Name: "Chain Hook of Trarthus", Tags: map[string]bool{"area": true, "attack": true, "grants_active_skill": true, "melee": true, "strength": true}, GrantedEffectID: "ChainHookAltY", ReqStr: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:10397
+	// src/Data/Gems.lua:10415
 	"FrostblinkAltX": {Name: "Frostblink of Wintry Blast", Tags: map[string]bool{"area": true, "cold": true, "grants_active_skill": true, "intelligence": true, "movement": true, "spell": true, "travel": true}, GrantedEffectID: "FrostblinkAltX", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:10570
+	// src/Data/Gems.lua:10588
 	"SummonCarrionGolemAltX": {Name: "Summon Carrion Golem of Hordes", Tags: map[string]bool{"golem": true, "grants_active_skill": true, "intelligence": true, "minion": true, "physical": true, "spell": true}, GrantedEffectID: "SummonCarrionGolemAltX", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:10590
+	// src/Data/Gems.lua:10608
 	"SummonCarrionGolemAltY": {Name: "Summon Carrion Golem of Scavenging", Tags: map[string]bool{"golem": true, "grants_active_skill": true, "intelligence": true, "minion": true, "physical": true, "spell": true}, GrantedEffectID: "SummonCarrionGolemAltY", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:10883
+	// src/Data/Gems.lua:10901
 	"ShrapnelBallistaAltX": {Name: "Shrapnel Ballista of Steel", Tags: map[string]bool{"attack": true, "bow": true, "dexterity": true, "grants_active_skill": true, "physical": true, "projectile": true, "totem": true}, GrantedEffectID: "ShrapnelBallistaAltX", ReqDex: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:10982
+	// src/Data/Gems.lua:11000
 	"ArtilleryBallistaAltX": {Name: "Artillery Ballista of Cross Strafe", Tags: map[string]bool{"area": true, "attack": true, "bow": true, "dexterity": true, "fire": true, "grants_active_skill": true, "projectile": true, "totem": true}, GrantedEffectID: "ArtilleryBallistaAltX", ReqDex: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:11004
+	// src/Data/Gems.lua:11022
 	"ArtilleryBallistaAltY": {Name: "Artillery Ballista of Focus Fire", Tags: map[string]bool{"area": true, "attack": true, "bow": true, "dexterity": true, "fire": true, "grants_active_skill": true, "projectile": true, "totem": true}, GrantedEffectID: "ArtilleryBallistaAltY", ReqDex: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:11758
+	// src/Data/Gems.lua:11776
 	"StormbindAltX": {Name: "Stormbind of Teleportation", Tags: map[string]bool{"arcane": true, "area": true, "blink": true, "channelling": true, "duration": true, "grants_active_skill": true, "intelligence": true, "lightning": true, "movement": true, "spell": true, "travel": true}, GrantedEffectID: "StormbindAltX", SecondaryGrantedEffectID: "RuneBlastAltX", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:11802
+	// src/Data/Gems.lua:11820
 	"KineticBoltAltX": {Name: "Kinetic Bolt of Fragmentation", Tags: map[string]bool{"attack": true, "grants_active_skill": true, "intelligence": true, "projectile": true}, GrantedEffectID: "KineticBoltAltX", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:11839
+	// src/Data/Gems.lua:11857
 	"BladeBlastAltX": {Name: "Blade Blast of Unloading", Tags: map[string]bool{"area": true, "dexterity": true, "grants_active_skill": true, "nova": true, "physical": true, "spell": true}, GrantedEffectID: "BladeBlastAltX", ReqDex: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:11859
+	// src/Data/Gems.lua:11877
 	"BladeBlastAltY": {Name: "Blade Blast of Dagger Detonation", Tags: map[string]bool{"area": true, "dexterity": true, "grants_active_skill": true, "nova": true, "physical": true, "spell": true}, GrantedEffectID: "BladeBlastAltY", ReqDex: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:12034
+	// src/Data/Gems.lua:12052
 	"PenanceBrandAltX": {Name: "Penance Brand of Dissipation", Tags: map[string]bool{"area": true, "brand": true, "duration": true, "grants_active_skill": true, "intelligence": true, "lightning": true, "physical": true, "spell": true}, GrantedEffectID: "PenanceBrandAltX", ReqStr: 40, ReqInt: 60, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:12056
+	// src/Data/Gems.lua:12074
 	"PenanceBrandAltY": {Name: "Penance Brand of Conduction", Tags: map[string]bool{"area": true, "brand": true, "duration": true, "grants_active_skill": true, "intelligence": true, "lightning": true, "physical": true, "spell": true}, GrantedEffectID: "PenanceBrandAltY", ReqStr: 40, ReqInt: 60, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:12120
+	// src/Data/Gems.lua:12138
 	"EarthshatterAltX": {Name: "Earthshatter of Fragility", Tags: map[string]bool{"area": true, "attack": true, "duration": true, "grants_active_skill": true, "melee": true, "slam": true, "strength": true}, GrantedEffectID: "EarthshatterAltX", ReqStr: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:12141
+	// src/Data/Gems.lua:12159
 	"EarthshatterAltY": {Name: "Earthshatter of Prominence", Tags: map[string]bool{"area": true, "attack": true, "duration": true, "grants_active_skill": true, "melee": true, "slam": true, "strength": true}, GrantedEffectID: "EarthshatterAltY", ReqStr: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:12276
+	// src/Data/Gems.lua:12294
 	"VoidSphereAltX": {Name: "Void Sphere of Rending", Tags: map[string]bool{"area": true, "chaos": true, "duration": true, "grants_active_skill": true, "intelligence": true, "orb": true, "physical": true, "spell": true}, GrantedEffectID: "VoidSphereAltX", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:12317
+	// src/Data/Gems.lua:12335
 	"CracklingLanceAltX": {Name: "Crackling Lance of Branching", Tags: map[string]bool{"area": true, "grants_active_skill": true, "intelligence": true, "lightning": true, "spell": true}, GrantedEffectID: "CracklingLanceAltX", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:12336
+	// src/Data/Gems.lua:12354
 	"CracklingLanceAltY": {Name: "Crackling Lance of Disintegration", Tags: map[string]bool{"area": true, "grants_active_skill": true, "intelligence": true, "lightning": true, "spell": true}, GrantedEffectID: "CracklingLanceAltY", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:12396
+	// src/Data/Gems.lua:12414
 	"SplittingSteelAltX": {Name: "Splitting Steel of Ammunition", Tags: map[string]bool{"area": true, "attack": true, "dexterity": true, "grants_active_skill": true, "physical": true, "projectile": true}, GrantedEffectID: "SplittingSteelAltX", ReqStr: 40, ReqDex: 60, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:12499
+	// src/Data/Gems.lua:12517
 	"HexblastAltX": {Name: "Hexblast of Contradiction", Tags: map[string]bool{"area": true, "chaos": true, "grants_active_skill": true, "hex": true, "intelligence": true, "spell": true}, GrantedEffectID: "HexblastAltX", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:12519
+	// src/Data/Gems.lua:12537
 	"HexblastAltY": {Name: "Hexblast of Havoc", Tags: map[string]bool{"area": true, "chaos": true, "grants_active_skill": true, "hex": true, "intelligence": true, "spell": true}, GrantedEffectID: "HexblastAltY", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:12614
+	// src/Data/Gems.lua:12632
 	"ExsanguinateAltX": {Name: "Exsanguinate of Transmission", Tags: map[string]bool{"chaining": true, "duration": true, "grants_active_skill": true, "physical": true, "spell": true, "strength": true}, GrantedEffectID: "ExsanguinateAltX", ReqStr: 60, ReqInt: 40, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:12690
+	// src/Data/Gems.lua:12708
 	"ReapAltX": {Name: "Reap of Butchery", Tags: map[string]bool{"area": true, "duration": true, "grants_active_skill": true, "physical": true, "spell": true, "strength": true}, GrantedEffectID: "ReapAltX", ReqStr: 60, ReqInt: 40, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:12822
+	// src/Data/Gems.lua:12840
 	"RageVortexAltX": {Name: "Rage Vortex of Berserking", Tags: map[string]bool{"area": true, "attack": true, "grants_active_skill": true, "melee": true, "strength": true}, GrantedEffectID: "RageVortexAltX", ReqStr: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:12859
+	// src/Data/Gems.lua:12877
 	"SpectralHelixAltY": {Name: "Spectral Helix of Trarthus", Tags: map[string]bool{"attack": true, "dexterity": true, "grants_active_skill": true, "projectile": true, "trap": true}, GrantedEffectID: "SpectralHelixAltY", ReqStr: 40, ReqDex: 60, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:12943
+	// src/Data/Gems.lua:12961
 	"AbsolutionAltX": {Name: "Absolution of Inspiring", Tags: map[string]bool{"area": true, "duration": true, "grants_active_skill": true, "lightning": true, "minion": true, "physical": true, "spell": true, "strength": true}, GrantedEffectID: "AbsolutionAltX", ReqStr: 60, ReqInt: 40, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:12985
+	// src/Data/Gems.lua:13003
 	"ForbiddenRiteAltX": {Name: "Forbidden Rite of Soul Sacrifice", Tags: map[string]bool{"area": true, "chaos": true, "grants_active_skill": true, "intelligence": true, "projectile": true, "spell": true}, GrantedEffectID: "ForbiddenRiteAltX", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:13065
+	// src/Data/Gems.lua:13083
 	"BladeTrapAltX": {Name: "Blade Trap of Greatswords", Tags: map[string]bool{"area": true, "attack": true, "dexterity": true, "duration": true, "grants_active_skill": true, "trap": true}, GrantedEffectID: "BladeTrapAltX", ReqDex: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:13085
+	// src/Data/Gems.lua:13103
 	"BladeTrapAltY": {Name: "Blade Trap of Laceration", Tags: map[string]bool{"area": true, "attack": true, "dexterity": true, "grants_active_skill": true, "physical": true, "trap": true}, GrantedEffectID: "BladeTrapAltY", ReqDex: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:13126
+	// src/Data/Gems.lua:13144
 	"StormRainAltX": {Name: "Storm Rain of the Conduit", Tags: map[string]bool{"area": true, "attack": true, "bow": true, "dexterity": true, "grants_active_skill": true, "lightning": true, "projectile": true}, GrantedEffectID: "StormRainAltX", ReqDex: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:13147
+	// src/Data/Gems.lua:13165
 	"StormRainAltY": {Name: "Storm Rain of the Fence", Tags: map[string]bool{"area": true, "attack": true, "bow": true, "dexterity": true, "grants_active_skill": true, "lightning": true, "projectile": true}, GrantedEffectID: "StormRainAltY", ReqDex: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:13188
+	// src/Data/Gems.lua:13206
 	"ShieldCrushAltX": {Name: "Shield Crush of the Chieftain", Tags: map[string]bool{"area": true, "attack": true, "fire": true, "grants_active_skill": true, "melee": true, "strength": true}, GrantedEffectID: "ShieldCrushAltX", ReqStr: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:13244
-	"SummonReaperAltX": {Name: "Summon Reaper of Revenants", Tags: map[string]bool{"grants_active_skill": true, "intelligence": true, "minion": true, "spell": true}, GrantedEffectID: "SummonReaperAltX", ReqInt: 100, NaturalMaxLevel: 20},
 	// src/Data/Gems.lua:13262
+	"SummonReaperAltX": {Name: "Summon Reaper of Revenants", Tags: map[string]bool{"grants_active_skill": true, "intelligence": true, "minion": true, "spell": true}, GrantedEffectID: "SummonReaperAltX", ReqInt: 100, NaturalMaxLevel: 20},
+	// src/Data/Gems.lua:13280
 	"SummonReaperAltY": {Name: "Summon Reaper of Eviscerating", Tags: map[string]bool{"grants_active_skill": true, "intelligence": true, "minion": true, "physical": true, "spell": true}, GrantedEffectID: "SummonReaperAltY", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:13321
+	// src/Data/Gems.lua:13339
 	"BoneshatterAltX": {Name: "Boneshatter of Complex Trauma", Tags: map[string]bool{"area": true, "attack": true, "duration": true, "grants_active_skill": true, "melee": true, "physical": true, "strength": true, "strike": true}, GrantedEffectID: "BoneshatterAltX", ReqStr: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:13343
+	// src/Data/Gems.lua:13361
 	"BoneshatterAltY": {Name: "Boneshatter of Carnage", Tags: map[string]bool{"area": true, "attack": true, "grants_active_skill": true, "melee": true, "strength": true, "strike": true}, GrantedEffectID: "BoneshatterAltY", ReqStr: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:13385
+	// src/Data/Gems.lua:13403
 	"ExplosiveConcoctionAltX": {Name: "Explosive Concoction of Destruction", Tags: map[string]bool{"area": true, "attack": true, "cold": true, "critical": true, "dexterity": true, "fire": true, "grants_active_skill": true, "lightning": true, "projectile": true}, GrantedEffectID: "ExplosiveConcoctionAltX", ReqDex: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:13427
+	// src/Data/Gems.lua:13445
 	"EyeOfWinterAltX": {Name: "Eye of Winter of Finality", Tags: map[string]bool{"cold": true, "grants_active_skill": true, "intelligence": true, "projectile": true, "spell": true}, GrantedEffectID: "EyeOfWinterAltX", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:13446
+	// src/Data/Gems.lua:13464
 	"EyeOfWinterAltY": {Name: "Eye of Winter of Transience", Tags: map[string]bool{"cold": true, "grants_active_skill": true, "intelligence": true, "projectile": true, "spell": true}, GrantedEffectID: "EyeOfWinterAltY", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:13485
+	// src/Data/Gems.lua:13503
 	"PoisonousConcoctionAltX": {Name: "Poisonous Concoction of Bouncing", Tags: map[string]bool{"area": true, "attack": true, "chaining": true, "chaos": true, "dexterity": true, "grants_active_skill": true, "projectile": true}, GrantedEffectID: "PoisonousConcoctionAltX", ReqDex: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:13544
+	// src/Data/Gems.lua:13562
 	"TornadoAltY": {Name: "Tornado of Elemental Turbulence", Tags: map[string]bool{"area": true, "cold": true, "dexterity": true, "duration": true, "fire": true, "grants_active_skill": true, "lightning": true, "orb": true, "physical": true, "random_element": true, "spell": true}, GrantedEffectID: "TornadoAltY", ReqDex: 60, ReqInt: 40, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:13793
+	// src/Data/Gems.lua:13811
 	"LightningConduitAltX": {Name: "Lightning Conduit of the Heavens", Tags: map[string]bool{"area": true, "grants_active_skill": true, "intelligence": true, "lightning": true, "spell": true}, GrantedEffectID: "LightningConduitAltX", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:13834
+	// src/Data/Gems.lua:13852
 	"GalvanicFieldAltX": {Name: "Galvanic Field of Intensity", Tags: map[string]bool{"area": true, "chaining": true, "duration": true, "grants_active_skill": true, "intelligence": true, "lightning": true, "orb": true, "spell": true}, GrantedEffectID: "GalvanicFieldAltX", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:13901
+	// src/Data/Gems.lua:13919
 	"VolcanicFissureAltX": {Name: "Volcanic Fissure of Snaking", Tags: map[string]bool{"area": true, "attack": true, "fire": true, "grants_active_skill": true, "melee": true, "slam": true, "strength": true}, GrantedEffectID: "VolcanicFissureAltX", ReqStr: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:13969
+	// src/Data/Gems.lua:13987
 	"FrozenLegionAltX": {Name: "Frozen Legion of Rallying", Tags: map[string]bool{"area": true, "attack": true, "cold": true, "grants_active_skill": true, "melee": true, "spell": true, "strength": true}, GrantedEffectID: "FrozenLegionAltX", SecondaryGrantedEffectID: "FrozenSweepAltX", ReqStr: 60, ReqInt: 40, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:14470
+	// src/Data/Gems.lua:14488
 	"KineticRainAltX": {Name: "Kinetic Rain of Impact", Tags: map[string]bool{"area": true, "attack": true, "grants_active_skill": true, "intelligence": true, "projectile": true}, GrantedEffectID: "KineticRainAltX", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:14554
+	// src/Data/Gems.lua:14572
 	"KineticFusilladeAltX": {Name: "Kinetic Fusillade of Detonation", Tags: map[string]bool{"area": true, "attack": true, "duration": true, "grants_active_skill": true, "intelligence": true, "projectile": true}, GrantedEffectID: "KineticFusilladeAltX", ReqInt: 100, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:14595
+	// src/Data/Gems.lua:14613
 	"HolyHammersAltX": {Name: "Holy Hammers of Spirals", Tags: map[string]bool{"area": true, "attack": true, "grants_active_skill": true, "lightning": true, "melee": true, "slam": true, "strength": true}, GrantedEffectID: "HolyHammersAltX", ReqStr: 60, ReqInt: 40, NaturalMaxLevel: 20},
-	// src/Data/Gems.lua:14681
+	// src/Data/Gems.lua:14699
 	"DivineBlastAltX": {Name: "Divine Blast of Radiance", Tags: map[string]bool{"area": true, "attack": true, "duration": true, "fire": true, "grants_active_skill": true, "orb": true, "physical": true, "strength": true}, GrantedEffectID: "DivineBlastAltX", ReqStr: 60, ReqInt: 40, NaturalMaxLevel: 20},
 }
 
@@ -1738,7 +1740,7 @@ var GemVariants = map[string]PoBGem{
 // Keyed on the granted effect rather than the gem, so unlike `Gems` above it is NOT shadowed by
 // gameId: an alternate-quality row declares its own grantedEffectId and must keep it.
 //
-// 867 entries.
+// 868 entries.
 //
 // ⚠️ The nolint is gosec G101, which fires on the "ID" in the name against a
 // map[string]string and reads it as a hardcoded credential. These are GGG metadata paths from
@@ -1825,6 +1827,7 @@ var GemGameIDForGrantedEffectID = map[string]string{
 	"CausticArrow":                         "Metadata/Items/Gems/SkillGemPoisonArrow",
 	"CausticArrowAltX":                     "Metadata/Items/Gems/SkillGemPoisonArrow",
 	"ChainHook":                            "Metadata/Items/Gems/SkillGemChainHook",
+	"ChainHookAltX":                        "Metadata/Items/Gems/SkillGemChainHook",
 	"ChainHookAltY":                        "Metadata/Items/Gems/SkillGemChainHook",
 	"ChannelledSnipeSupport":               "Metadata/Items/Gems/SkillGemChannelledSnipe",
 	"ChargedDash":                          "Metadata/Items/Gems/SkillGemChargedDash",

@@ -215,10 +215,10 @@ func TestPartyCursePickTakesTheOracleOrder(t *testing.T) {
 		t.Fatalf("unpinned walk: want Conductivity + Elemental Weakness (sorted names), got %v", got)
 	}
 	want := loadPairsPicks(t)["1106-luminary-lightning-tendrils-of-eccentricity.xml"][pairsPickPartyCurses]
-	if !slices.Equal(want, []string{"Elemental Weakness", "Enfeeble"}) {
+	if !slices.Equal(want, []string{"Conductivity", "Elemental Weakness"}) {
 		t.Fatalf("1106 pinned to %q, want the oracle's CurseList order — regenerate with TestGeneratePairsPicks", want)
 	}
-	if got := cursed(want); got["Conductivity"] || !got["Elemental Weakness"] || !got["Enfeeble"] {
+	if got := cursed([]string{"Elemental Weakness", "Enfeeble"}); got["Conductivity"] || !got["Elemental Weakness"] || !got["Enfeeble"] {
 		t.Errorf("pinned: want Elemental Weakness + Enfeeble, got %v", got)
 	}
 	if got := cursed([]string{"Despair"}); !got["Conductivity"] || !got["Elemental Weakness"] || got["Enfeeble"] {
@@ -317,9 +317,9 @@ func TestAbyssStatsCrossApplyFirstStat(t *testing.T) {
 	}
 }
 
-// TestAbyssStatPickTakesTheOracleStat red-greens the pin on 8633, whose dump carries 2 on both Tree:6981 speed lines.
+// TestAbyssStatPickTakesTheOracleStat red-greens the pin on 13385, whose dump carries 2 on both Tree:15405 speed lines.
 func TestAbyssStatPickTakesTheOracleStat(t *testing.T) {
-	const b = "8633-ladder-갓시각_4716.CURSE_of_the_PROTEIN.xml"
+	const b = "13385-ladder-dizzy_9404.BRAIN_DAMAGE_SLAM_GUY.xml"
 	file, err := os.ReadFile(filepath.Join(corpusDirForLoadedData(t), b))
 	if err != nil {
 		t.Skipf("fixture build absent: %v", err)
@@ -337,7 +337,7 @@ func TestAbyssStatPickTakesTheOracleStat(t *testing.T) {
 		var out []float64
 		for _, m := range env.ModDB.Mods["MinionModifier"] {
 			if mm, ok := m.Value().List().(mod.MinionModifier); ok && mm.Mod != nil &&
-				strings.HasPrefix(string(m.GetSource()), "Tree:6981") {
+				strings.HasPrefix(string(m.GetSource()), "Tree:15405") {
 				out = append(out, mm.Mod.Value().Float())
 			}
 		}
@@ -348,7 +348,7 @@ func TestAbyssStatPickTakesTheOracleStat(t *testing.T) {
 	}
 	want := loadPairsPicks(t)[b][pairsPickAbyssStats]
 	if !slices.Equal(want, []string{"abyss_special_small_attribute35=minion_cast_speed_+%"}) {
-		t.Fatalf("8633 pinned to %q — regenerate with TestGeneratePairsPicks", want)
+		t.Fatalf("13385 pinned to %q — regenerate with TestGeneratePairsPicks", want)
 	}
 	if got := speeds(want); !slices.Equal(got, []float64{2, 2}) {
 		t.Errorf("pinned: want the dump's 2 on both lines, got %v", got)

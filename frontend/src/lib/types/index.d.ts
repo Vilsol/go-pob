@@ -399,6 +399,8 @@ export declare namespace calculator {
   interface CorruptChoices {
     readonly Unique: boolean;
     readonly ImplicitsCannotBeChanged: boolean;
+    readonly MaxImplicits: number;
+    readonly Glimpse?: Array<calculator.CorruptMod>;
     readonly Corrupted?: Array<calculator.CorruptMod>;
     readonly ScourgeUpside?: Array<calculator.CorruptMod>;
     readonly ScourgeDownside?: Array<calculator.CorruptMod>;
@@ -517,6 +519,7 @@ export declare namespace calculator {
     Label: string;
     DamageTypes?: Array<calculator.BDamageType>;
     Radius: number;
+    BreakdownSource: string;
     /** Releases the Go resources behind this wrapper. */
     release(): void;
     [Symbol.dispose](): void;
@@ -525,6 +528,7 @@ export declare namespace calculator {
     Cache?: calculator.EnvironmentCache;
     Build?: pob.PathOfBuilding;
     Mode: calculator.OutputMode;
+    BuildBreakdown: boolean;
     readonly Spec?: calculator.PassiveSpec;
     JewelRadiusData?: Record<string, Record<string, number> | undefined>;
     readonly ModDB?: moddb.ModDB;
@@ -609,6 +613,7 @@ export declare namespace calculator {
   interface GemEffect {
     readonly GrantedEffect?: calculator.GrantedEffect;
     Level: number;
+    AppliesToGrantedSkills: boolean;
     Quality: number;
     QualityID: string;
     SrcInstance?: pob.Gem;
@@ -698,6 +703,8 @@ export declare namespace calculator {
     UpgradePaths?: Array<string>;
     Corrupted: boolean;
     Mirrored: boolean;
+    IsUnique: boolean;
+    CorruptImplicitCount: number;
     RareLikeUnique: boolean;
     FoilType: string;
     Split: boolean;
@@ -1419,7 +1426,7 @@ export declare namespace calculator {
     release(): void;
     [Symbol.dispose](): void;
   }
-  type SkillFlag = "brand" | "arrow" | "hex" | "curse" | "attack" | "weapon1Attack" | "weapon2Attack" | "selfCast" | "notAverage" | "showAverage" | "hit" | "projectile" | "trap" | "mine" | "totem" | "bothWeaponAttack" | "buffs" | "combat" | "effective" | "spell" | "melee" | "chaining" | "area" | "monsterExplode" | "cast" | "shieldAttack" | "forceMainHand" | "disable" | "bleed" | "duration" | "igniteCanStack" | "igniteToChaos" | "DotCanStack" | "dot" | "dotFromAttack" | "ignite" | "poison" | "decay" | "impale" | "ballista" | "minion" | "permanentMinion" | "randomPhys" | "forking" | "piercing" | "warcry" | "haveMinion" | "minionSkill" | "spectre" | "stages" | "multiPart" | "multiStage" | "triggered" | "focused";
+  type SkillFlag = "brand" | "arrow" | "hex" | "curse" | "attack" | "weapon1Attack" | "weapon2Attack" | "selfCast" | "notAverage" | "showAverage" | "hit" | "projectile" | "trap" | "mine" | "totem" | "bothWeaponAttack" | "buffs" | "combat" | "effective" | "spell" | "melee" | "chaining" | "area" | "monsterExplode" | "cast" | "shieldAttack" | "forceMainHand" | "disable" | "bleed" | "duration" | "igniteCanStack" | "igniteToChaos" | "DotCanStack" | "dot" | "dotFromAttack" | "ignite" | "poison" | "decay" | "impale" | "ballista" | "minion" | "permanentMinion" | "randomPhys" | "forking" | "piercing" | "warcry" | "haveMinion" | "minionSkill" | "spectre" | "stages" | "multiPart" | "multiStage" | "triggered" | "focused" | "guaranteedChill";
   const SkillFlag: {
     readonly SkillFlagBrand: "brand";
     readonly SkillFlagArrow: "arrow";
@@ -1475,6 +1482,7 @@ export declare namespace calculator {
     readonly SkillFlagMultiStage: "multiStage";
     readonly SkillFlagTriggered: "triggered";
     readonly SkillFlagFocused: "focused";
+    readonly SkillFlagGuaranteedChill: "guaranteedChill";
   };
   interface SpecNodeRewrite {
     readonly NodeID: number;
@@ -1675,6 +1683,7 @@ export declare namespace calculator {
     readonly Label: string;
     readonly DamageTypes?: Array<calculator.BDamageTypePlain>;
     readonly Radius: number;
+    readonly BreakdownSource: string;
   }
   interface ItemDataPlain {
     readonly ArmourData?: calculator.ArmourDataPlain;
@@ -2208,6 +2217,7 @@ export declare namespace exposition {
     CompareAddedMod(text: string, lines: Array<string> | undefined, modType: string): [exposition.AddedModCompare, boolean];
     CompareAnoint(text: string, slot: number, id: number): [exposition.AnointCompare, boolean];
     CompareItem(text: string): Promise<Result<(Array<exposition.SlotCompare> | undefined)>>;
+    CompareReplacedImplicits(text: string, lines: Array<string> | undefined): [exposition.AddedModCompare, boolean];
     ConditionalSlots(): (Array<string> | undefined);
     CorruptSortValues(text: string, source: string, modType: string, ids: Array<string> | undefined, stat: string): (Array<number> | undefined);
     CustomModSortValues(text: string, sourceID: string, ids: Array<string> | undefined, stat: string): (Array<number> | undefined);
@@ -2285,7 +2295,9 @@ export declare namespace exposition {
     readonly Tip?: Array<string>;
   }
   interface SidebarPass {
-    Breakdown(minion: boolean, stat: string): (Array<string> | undefined);
+    Entry(minion: boolean, key: string): (calculator.Entry | undefined);
+    ModSection(minion: boolean, sd: calculator.ModSectionData): (Array<calculator.ModSectionRow> | undefined);
+    StatBreakdownKey(minion: boolean, stat: string, childStat: string, override: string, hasOverride: boolean, modNames: boolean): [string, boolean];
     /** Releases the Go resources behind this wrapper. */
     release(): void;
     [Symbol.dispose](): void;
@@ -2349,6 +2361,7 @@ export declare namespace exposition {
     Desired(): (Array<calculator.TimelessDesiredNode> | undefined);
     Item(row: number, devotion1: number, devotion2: number, socketLabel: string): string;
     Rows(start: number, count: number): (Array<calculator.TimelessSearchResult> | undefined);
+    Socket(build: pob.PathOfBuilding | undefined, socketID: number, itemID: number): boolean;
     Step(): number;
     TradeURL(q: calculator.TimelessTradeQuery): calculator.TimelessTrade;
     /** Releases the Go resources behind this wrapper. */
@@ -2476,6 +2489,7 @@ export declare namespace exposition {
   function MiscGemSupportPairs(m: exposition.MiscCalculator | undefined, group: number): (Array<calculator.GemSupportPair> | undefined);
   function MiscSocketGroupTooltip(m: exposition.MiscCalculator | undefined, group: number): (Array<calculator.TooltipLine> | undefined);
   function ModBrowserList(search: string): (Array<string> | undefined);
+  function ModBrowserSources(line: string): (Array<string> | undefined);
   function ModBrowserSupported(line: string): boolean;
   function ModDebugDump(c: calculator.Calculator | undefined): Promise<string>;
   function MoveItemSet(build: pob.PathOfBuilding | undefined, from: number, to: number): Promise<void>;
@@ -2491,6 +2505,7 @@ export declare namespace exposition {
   function NodeSkillTooltips(build: pob.PathOfBuilding | undefined, nodeID: number, stats: calculator.ItemTooltipStats): (Array<Array<calculator.TooltipLine> | undefined> | undefined);
   function NormaliseDisplayItem(build: pob.PathOfBuilding | undefined, text: string, copyEldritchImplicits: boolean): Promise<string>;
   function OptimiseSockets(build: pob.PathOfBuilding | undefined, slotName: string): Promise<boolean>;
+  function OptimiseSocketsUseful(build: pob.PathOfBuilding | undefined, slotName: string): Promise<boolean>;
   function ParseItem(build: pob.PathOfBuilding | undefined, text: string, stats: calculator.ItemTooltipStats): Promise<Result<exposition.ParsedItem>>;
   function ParseModLines(lines: Array<string> | undefined): (Array<exposition.ModLine> | undefined);
   function PowerAscendancy(p: exposition.PowerBuilder | undefined): (Array<calculator.PowerReportEntry> | undefined);
@@ -2666,7 +2681,7 @@ export declare namespace mod {
   interface Tag {
     Type(): mod.Type;
   }
-  type Type = "INC" | "MORE" | "BASE" | "FLAG" | "OVERRIDE" | "LIST" | "SocketedIn" | "PerStat" | "PercentStat" | "Condition" | "ActorCondition" | "Multiplier" | "ModFlag" | "SkillType" | "SkillId" | "Global" | "SkillName" | "MAX" | "CHANCE" | "StatThreshold" | "SlotNumber" | "SlotName" | "ItemCondition" | "DistanceRamp" | "MultiplierThreshold" | "ModFlagOr" | "KeywordFlagAnd" | "InSlot" | "DUMMY" | "GlobalEffect" | "MeleeProximity" | "IgnoreCond" | "SkillPart" | "Limit" | "DisablesItem" | "MonsterTag" | "Flag";
+  type Type = "INC" | "MORE" | "BASE" | "FLAG" | "OVERRIDE" | "LIST" | "SocketedIn" | "PerStat" | "PercentStat" | "Condition" | "ActorCondition" | "Multiplier" | "ModFlag" | "SkillType" | "SkillId" | "Global" | "SkillName" | "MAX" | "MIN" | "CHANCE" | "StatThreshold" | "SlotNumber" | "SlotName" | "ItemCondition" | "DistanceRamp" | "MultiplierThreshold" | "ModFlagOr" | "KeywordFlagAnd" | "InSlot" | "DUMMY" | "GlobalEffect" | "MeleeProximity" | "IgnoreCond" | "SkillPart" | "Limit" | "DisablesItem" | "MonsterTag" | "Flag";
   const Type: {
     readonly TypeIncrease: "INC";
     readonly TypeMore: "MORE";
@@ -2686,6 +2701,7 @@ export declare namespace mod {
     readonly TypeGlobal: "Global";
     readonly TypeSkillName: "SkillName";
     readonly TypeMAX: "MAX";
+    readonly TypeMIN: "MIN";
     readonly TypeChance: "CHANCE";
     readonly TypeStatThreshold: "StatThreshold";
     readonly TypeSlotNumber: "SlotNumber";
@@ -3324,6 +3340,7 @@ export declare namespace pob {
     readonly FallbackWeightModeIdx: string;
     readonly SocketFilter: string;
     readonly SocketFilterDistance: string;
+    readonly SocketAllocate: string;
     readonly SearchList: string;
     readonly SearchListFallback: string;
   }

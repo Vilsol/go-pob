@@ -21,7 +21,7 @@ func TestAverageBurstReadsRepeatsAndSealPenalty(t *testing.T) {
 		hits, burst, avg  float64
 		wantPenaltyActive bool
 	}{
-		{"0046-elementalist-arc.xml", 3, 4839667.3138826, 1613222.4379609, false},
+		{"0046-elementalist-arc.xml", 3, 4839689.8725722, 1613229.9575241, false},
 		{"0040-trickster-exsanguinate-of-transmission.xml", 6, 469039.20459451, 97716.50095719, true},
 	} {
 		t.Run(tc.build, func(t *testing.T) {

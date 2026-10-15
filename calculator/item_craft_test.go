@@ -186,15 +186,21 @@ func TestEnchantAnointPower(t *testing.T) {
 	}
 }
 
-// TestCorruptListsAgainstPoB: ItemsTab.lua:3027-3049 and Item:GetModSpawnWeight.
+// TestCorruptListsAgainstPoB: ItemsTab.lua:3129-3175, 3290-3332.
 func TestCorruptListsAgainstPoB(t *testing.T) {
 	initItemsTabData(t)
 	var fixture struct {
 		Items []string
-		Pob   []map[string][]string
+		Pob   []struct {
+			Corrupted, ScourgeUpside, ScourgeDownside []string
+			Glimpse                                   []string `json:"Glimpse of Chaos"`
+			Max                                       int
+			Source                                    string
+			CorruptedImplicits                        []string
+		}
 	}
 	raw, err := os.ReadFile("../testdata/craft-ui/corrupt_lists.json")
-	if err != nil || json.Unmarshal(raw, &fixture) != nil || len(fixture.Items) != len(fixture.Pob) || len(fixture.Items) < 5 {
+	if err != nil || json.Unmarshal(raw, &fixture) != nil || len(fixture.Items) != len(fixture.Pob) || len(fixture.Items) < 8 {
 		t.Fatalf("REFUSING: testdata/craft-ui/corrupt_lists.json: %v", err)
 	}
 	for k, text := range fixture.Items {
@@ -202,26 +208,40 @@ func TestCorruptListsAgainstPoB(t *testing.T) {
 		if !ok {
 			t.Fatalf("item %d not corruptible", k)
 		}
-		for modType, got := range map[string][]CorruptMod{"Corrupted": c.Corrupted, "ScourgeUpside": c.ScourgeUpside, "ScourgeDownside": c.ScourgeDownside} {
-			mods := map[string]data.AffixMod{}
-			for _, m := range itemAffixes(ParseItem(text)) {
-				mods[m.ID] = m
+		want := fixture.Pob[k]
+		mods := map[string]data.AffixMod{}
+		for _, m := range slices.Concat(itemAffixes(ParseItem(text)), data.SpecialCorruptionMods()) {
+			mods[m.ID] = m
+		}
+		rank := func(ids []string) []string {
+			out := make([]string, len(ids))
+			for i, id := range ids {
+				out[i] = corruptSortKey(mods[id]) + "\x00" + strconv.Itoa(mods[id].Level)
 			}
-			rank := func(ids []string) []string {
-				out := make([]string, len(ids))
-				for i, id := range ids {
-					out[i] = corruptSortKey(mods[id]) + "\x00" + strconv.Itoa(mods[id].Level)
-				}
-				return out
-			}
+			return out
+		}
+		for modType, got := range map[string][]CorruptMod{"Corrupted": c.Corrupted, "ScourgeUpside": c.ScourgeUpside,
+			"ScourgeDownside": c.ScourgeDownside, "Glimpse of Chaos": c.Glimpse} {
 			ids := make([]string, len(got))
 			for i, m := range got {
 				ids[i] = m.ID
 			}
-			want := fixture.Pob[k][modType]
-			if !slices.Equal(slices.Sorted(slices.Values(ids)), slices.Sorted(slices.Values(want))) || !slices.Equal(rank(ids), rank(want)) {
-				t.Errorf("item %d %s:\n got %v\nwant %v", k, modType, ids, want)
+			w := map[string][]string{"Corrupted": want.Corrupted, "ScourgeUpside": want.ScourgeUpside, "ScourgeDownside": want.ScourgeDownside, "Glimpse of Chaos": want.Glimpse}[modType]
+			if !slices.Equal(slices.Sorted(slices.Values(ids)), slices.Sorted(slices.Values(w))) || !slices.Equal(rank(ids), rank(w)) {
+				t.Errorf("item %d %s:\n got %v\nwant %v", k, modType, ids, w)
 			}
+		}
+		if c.MaxImplicits != want.Max {
+			t.Errorf("item %d: %d implicit dropdowns, PoB %d", k, c.MaxImplicits, want.Max)
+		}
+		first := map[string][]string{"Corrupted": want.Corrupted, "Glimpse of Chaos": want.Glimpse}[want.Source]
+		out, _ := CorruptItemText(text, want.Source, first[:min(2, len(first))], nil, nil)
+		var lines []string
+		for _, ml := range ParseItem(out).ImplicitModLines {
+			lines = append(lines, ml.Line)
+		}
+		if !slices.Equal(lines, want.CorruptedImplicits) {
+			t.Errorf("item %d corrupted with %s %v: implicits %q, PoB %q", k, want.Source, first[:min(2, len(first))], lines, want.CorruptedImplicits)
 		}
 	}
 }
@@ -296,7 +316,7 @@ func TestCorruptSortValues(t *testing.T) {
 	}
 }
 
-// TestImplicitListsAgainstPoB: ItemsTab.lua:3795-3919: the Add Implicit popup's Exarch / Eater / Delve types and modifiers for four bases equal the pin's.
+// TestImplicitListsAgainstPoB: AddImplicitPopup.lua:45-181: the Add Implicit popup's Exarch / Eater types and modifiers for four bases.
 func TestImplicitListsAgainstPoB(t *testing.T) {
 	initItemsTabData(t)
 	type group struct {
@@ -305,10 +325,13 @@ func TestImplicitListsAgainstPoB(t *testing.T) {
 	}
 	var fixture struct {
 		Items []string
-		Pob   []map[string][]group
+		Pob   []struct {
+			EXARCH, EATER, VESTIGIAL []group
+			Sources                  []string
+		}
 	}
 	raw, err := os.ReadFile("../testdata/craft-ui/implicit_lists.json")
-	if err != nil || json.Unmarshal(raw, &fixture) != nil || len(fixture.Items) != len(fixture.Pob) || len(fixture.Items) < 4 {
+	if err != nil || json.Unmarshal(raw, &fixture) != nil || len(fixture.Items) != len(fixture.Pob) || len(fixture.Items) < 11 {
 		t.Fatalf("REFUSING: testdata/craft-ui/implicit_lists.json: %v", err)
 	}
 	flat := func(gs []group) []string {
@@ -318,24 +341,41 @@ func TestImplicitListsAgainstPoB(t *testing.T) {
 		}
 		return out
 	}
+	vestigial := 0
 	for k, text := range fixture.Items {
 		item := ParseItem(text)
-		for _, source := range []string{"EXARCH", "EATER", "DelveImplicit"} {
-			var got []group
+		want := fixture.Pob[k]
+		got := map[string][]group{}
+		for _, source := range []string{"EXARCH", "EATER", "VESTIGIAL"} {
 			for _, g := range buildImplicitMods(item, source) {
 				ids := make([]string, len(g.Mods))
 				for i, m := range g.Mods {
 					ids[i] = m.ID
 				}
-				got = append(got, group{g.Label, ids})
+				got[source] = append(got[source], group{g.Label, ids})
 			}
-			a, b := flat(got), flat(fixture.Pob[k][source])
+		}
+		for source, w := range map[string][]group{"EXARCH": want.EXARCH, "EATER": want.EATER} {
+			a, b := flat(got[source]), flat(w)
 			slices.Sort(a)
 			slices.Sort(b)
 			if !slices.Equal(a, b) {
 				t.Errorf("item %d %s:\n got %v\nwant %v", k, source, a, b)
 			}
 		}
+		offered := slices.ContainsFunc(implicitSources(item), func(s ImplicitSource) bool { return s.ID == "VESTIGIAL" })
+		if offered != slices.Contains(want.Sources, "VESTIGIAL") {
+			t.Errorf("item %d: Vestigial offered %v, PoB %v", k, offered, want.Sources)
+		}
+		if offered {
+			vestigial++
+			if a, b := flat(got["VESTIGIAL"]), flat(want.VESTIGIAL); !slices.Equal(a, b) {
+				t.Errorf("item %d VESTIGIAL: %d entries, want %d; first %v, want %v", k, len(a), len(b), a[:min(1, len(a))], b[:min(1, len(b))])
+			}
+		}
+	}
+	if vestigial < 5 {
+		t.Fatalf("REFUSING: only %d items offer Vestigial", vestigial)
 	}
 }
 
@@ -348,7 +388,7 @@ func TestImplicitText(t *testing.T) {
 	for _, s := range c.Sources {
 		ids = append(ids, s.ID)
 	}
-	if !ok || !slices.Equal(ids, []string{"EXARCH", "EATER", "DelveImplicit", "CUSTOM"}) {
+	if !ok || !slices.Equal(ids, []string{"EXARCH", "EATER", "CUSTOM"}) {
 		t.Fatalf("sources %v", ids)
 	}
 	if info, _ := DisplayItem(coat); !info.AddImplicit {
@@ -368,6 +408,14 @@ func TestImplicitText(t *testing.T) {
 	item = ParseItem(out)
 	if last := item.ImplicitModLines[len(item.ImplicitModLines)-1]; last.Line != "+5 to Strength" || !last.Custom {
 		t.Fatalf("custom implicit %+v:\n%s", last, out)
+	}
+	kaom := "Rarity: UNIQUE\nKaom's Heart\nGlorious Plate\nImplicits: 1\n+5 to Strength\nHas no Sockets\n+500 to maximum Life"
+	vc, _ := ItemImplicitChoices(kaom)
+	v := vc.Groups["VESTIGIAL"][0].Mods[0]
+	out, _ = ImplicitText(kaom, "VESTIGIAL", v.ID, "")
+	item = ParseItem(out)
+	if len(item.ImplicitModLines) != len(v.Lines) || item.ImplicitModLines[0].Line != v.Lines[0] || !item.ImplicitModLines[0].Vestigial {
+		t.Fatalf("vestigial implicit %+v:\n%s", item.ImplicitModLines, out)
 	}
 }
 
@@ -397,7 +445,7 @@ func TestImplicitSortValues(t *testing.T) {
 	}
 }
 
-// TestCustomModListsAgainstPoB: ItemsTab.lua:3409-3589: the Add modifier popup's sources and lists for six items.
+// TestCustomModListsAgainstPoB: ItemsTab.lua:3579-3797: the Add modifier popup's sources.
 func TestCustomModListsAgainstPoB(t *testing.T) {
 	initItemsTabData(t)
 	var fixture struct {
@@ -405,7 +453,7 @@ func TestCustomModListsAgainstPoB(t *testing.T) {
 		Pob   []map[string]json.RawMessage
 	}
 	raw, err := os.ReadFile("../testdata/craft-ui/custom_mod_lists.json")
-	if err != nil || json.Unmarshal(raw, &fixture) != nil || len(fixture.Items) != len(fixture.Pob) || len(fixture.Items) < 6 {
+	if err != nil || json.Unmarshal(raw, &fixture) != nil || len(fixture.Items) != len(fixture.Pob) || len(fixture.Items) < 9 {
 		t.Fatalf("REFUSING: testdata/craft-ui/custom_mod_lists.json: %v", err)
 	}
 	for k, text := range fixture.Items {

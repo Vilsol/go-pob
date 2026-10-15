@@ -73,7 +73,7 @@ type ModLine struct {
 	VariantGroupList map[int]bool
 }
 
-//pob:block:src/Classes/Item.lua:1244-1283
+//pob:block:src/Classes/Item.lua:1268-1307
 type ModMagnitudeMod struct {
 	Tags       []string
 	AnyTags    []string
@@ -156,17 +156,19 @@ type Item struct {
 	Unreleased       bool
 	UpgradePaths     []string
 
-	Corrupted      bool
-	Mirrored       bool
-	RareLikeUnique bool
-	FoilType       string
-	Split          bool
-	Fractured      bool
-	Foulborn       bool
-	Synthesised    bool
-	Crafted        bool
-	Scourge        bool
-	CheckSection   bool
+	Corrupted            bool
+	Mirrored             bool
+	IsUnique             bool
+	CorruptImplicitCount float64
+	RareLikeUnique       bool
+	FoilType             string
+	Split                bool
+	Fractured            bool
+	Foulborn             bool
+	Synthesised          bool
+	Crafted              bool
+	Scourge              bool
+	CheckSection         bool
 
 	Influence ItemInfluence
 
@@ -322,7 +324,7 @@ func stripBalancedBraces(s string) string {
 	return out.String()
 }
 
-//pob:block:src/Classes/Item.lua:1028
+//pob:block:src/Classes/Item.lua:1052
 func hasRange(line string) bool {
 	return pairRangeDetectRe.MatchString(line) ||
 		toRangeDetectRe.MatchString(line) ||
@@ -389,13 +391,13 @@ var xmlEntityDecoder = strings.NewReplacer(
 	"&amp;", "&",
 )
 
-//pob:src/Classes/Item.lua:91-95
+//pob:src/Classes/Item.lua:91-99
 func ParseItem(raw string) *Item {
 	i := &Item{}
 	ranges := parseModRangeElements(raw)
 	i.ParseRaw(data.SanitiseItemText(xmlEntityDecoder.Replace(raw)))
 	i.applyModRanges(ranges)
-	//pob:src/Classes/ItemsTab.lua:1258-1259
+	//pob:src/Classes/ItemsTab.lua:1265-1266
 	if i.Base != nil {
 		i.BuildModList()
 	}
@@ -413,7 +415,7 @@ var (
 	modRangeValRE  = regexp.MustCompile(`\brange="([^"]*)"`)
 )
 
-//pob:block:src/Classes/ItemsTab.lua:1242-1244
+//pob:block:src/Classes/ItemsTab.lua:1249-1251
 func parseModRangeElements(raw string) []modRange {
 	if !strings.Contains(raw, "<ModRange") {
 		return nil
@@ -439,7 +441,7 @@ func parseModRangeElements(raw string) []modRange {
 	return out
 }
 
-//pob:block:src/Classes/ItemsTab.lua:1239-1256
+//pob:block:src/Classes/ItemsTab.lua:1246-1263
 func (i *Item) applyModRanges(ranges []modRange) {
 	if len(ranges) == 0 {
 		return
@@ -467,7 +469,7 @@ func (i *Item) applyModRanges(ranges []modRange) {
 	}
 }
 
-//pob:block:src/Classes/Item.lua:1034-1049
+//pob:block:src/Classes/Item.lua:1058-1073
 func (i *Item) buffModLineCount() int {
 	if i.Base == nil || i.Base.Flask == nil {
 		return 0
@@ -479,7 +481,7 @@ func (i *Item) ParseRaw(raw string) {
 	i.parseRaw(raw, "", false)
 }
 
-//pob:src/Classes/Item.lua:67-634
+//pob:src/Classes/Item.lua:67-657
 //nolint:gocyclo,maintidx // Deliberately mirrors the structure of ItemClass:ParseRaw.
 func (i *Item) parseRaw(raw string, rarity ItemRarity, highQuality bool) {
 	i.Raw = raw
@@ -513,7 +515,7 @@ func (i *Item) parseRaw(raw string, rarity ItemRarity, highQuality bool) {
 				if r := strings.ToUpper(m[1]); validRarities[r] {
 					i.Rarity = ItemRarity(r)
 				}
-				//pob:src/Classes/Item.lua:434-444
+				//pob:src/Classes/Item.lua:452-462
 				if i.Rarity == RarityUnique || i.Rarity == RarityRelic {
 					for _, line := range i.rawLines {
 						if strings.Contains(line, "Foil Unique") {
@@ -574,25 +576,25 @@ func (i *Item) parseRaw(raw string, rarity ItemRarity, highQuality bool) {
 			i.Fractured = true
 		case line == "Synthesised Item":
 			i.Synthesised = true
-		//pob:src/Classes/Item.lua:533-535
+		//pob:src/Classes/Item.lua:556-558
 		case strings.Contains(line, "Foil Unique"):
 			i.FoilType = foilTypeOf(line)
 		case line == "Mirrored":
 			i.Mirrored = true
-		//pob:src/Classes/Item.lua:523
+		//pob:src/Classes/Item.lua:546
 		case line == "Split":
 			i.Split = true
 		case processInfluenceLine(line):
 		case line == "Requirements:":
 			// nothing to do
 
-		//pob:src/Classes/Item.lua:540-544
+		//pob:src/Classes/Item.lua:563-567
 		case strings.HasPrefix(line, "(") && reminderTextRe.MatchString(line):
 			for l < len(i.rawLines) && !strings.HasSuffix(i.rawLines[l], ")") {
 				l++
 			}
 
-		//pob:src/Classes/Item.lua:545-549
+		//pob:src/Classes/Item.lua:568-572
 		case i.Base != nil && i.Base.Flask != nil &&
 			(flaskLastsRe.MatchString(line) ||
 				flaskConsumesRe.MatchString(line) ||
@@ -655,7 +657,7 @@ func (i *Item) parseRaw(raw string, rarity ItemRarity, highQuality bool) {
 		}
 	}
 
-	//pob:block:src/Classes/Item.lua:1369-1376
+	//pob:block:src/Classes/Item.lua:1393-1400
 	if luaLower(i.Title) == "cane of kulemak" && (i.Rarity == RarityUnique || i.Rarity == RarityRelic) && i.AdvancedCopy {
 		for k := range i.ExplicitModLines {
 			if !strings.Contains(i.ExplicitModLines[k].Line, "magnitude") {
@@ -666,9 +668,14 @@ func (i *Item) parseRaw(raw string, rarity ItemRarity, highQuality bool) {
 
 	i.applyModMagnitude()
 
-	//pob:src/Classes/Item.lua:1433-1435
+	//pob:src/Classes/Item.lua:1471-1473
 	if i.AdvancedCopy && len(i.ExplicitModLines) > 1 {
 		sortCraftedModLines(i.ExplicitModLines)
+	}
+
+	//pob:block:src/Classes/Item.lua:1475-1499
+	if i.Crafted && (i.Base == nil || i.Rarity != RarityMagic && i.Rarity != RarityRare && !i.RareLikeUnique) {
+		i.Crafted = false
 	}
 
 	if i.Base != nil && i.Base.SocketLimit > 0 && len(i.Sockets) == 0 {
@@ -678,7 +685,7 @@ func (i *Item) parseRaw(raw string, rarity ItemRarity, highQuality bool) {
 		}
 	}
 
-	//pob:block:src/Classes/Item.lua:1493-1511
+	//pob:block:src/Classes/Item.lua:1531-1549
 	if i.UsesVariantGroups {
 		i.normaliseVariantSelections()
 	} else if len(i.VariantList) > 0 {
@@ -700,14 +707,14 @@ func (i *Item) parseRaw(raw string, rarity ItemRarity, highQuality bool) {
 	}
 	i.markMutatedLines()
 
-	//pob:block:src/Classes/Item.lua:1559-1563
+	//pob:block:src/Classes/Item.lua:1597-1601
 	for _, ml := range i.ExplicitModLines {
 		if ml.Mutated {
 			i.Foulborn = true
 		}
 	}
 
-	//pob:block:src/Classes/Item.lua:1564-1570
+	//pob:block:src/Classes/Item.lua:1602-1608
 	if i.Title != "" {
 		hasFoulbornPrefix := titleFoulbornRe.MatchString(i.Title)
 		if i.Foulborn && !hasFoulbornPrefix {
@@ -729,6 +736,8 @@ func (i *Item) parseRaw(raw string, rarity ItemRarity, highQuality bool) {
 	}
 
 	i.BuildModList()
+	//pob:src/Classes/Item.lua:1640
+	i.IsUnique = i.Rarity == RarityUnique || i.Rarity == RarityRelic
 }
 
 var (
@@ -786,7 +795,7 @@ func isLuaSpace(c byte) bool {
 	return c == ' ' || c == '\t' || c == '\n' || c == '\v' || c == '\f' || c == '\r'
 }
 
-//pob:block:src/Classes/Item.lua:1121-1160
+//pob:block:src/Classes/Item.lua:1145-1184
 func advancedCopyRollRanges(line string) (string, *float64) {
 	bestPrecisionDelta := -1.0
 	bestPrecisionRange := -1.0
@@ -856,7 +865,7 @@ var (
 	foulbornAnyRe   = regexp.MustCompile(`[Ff]oulborn `)
 )
 
-//pob:block:src/Classes/Item.lua:998-1005,src/Classes/Item.lua:1513-1558
+//pob:block:src/Classes/Item.lua:1022-1029,src/Classes/Item.lua:1551-1596
 func (i *Item) markMutatedLines() {
 	if i.Rarity != RarityUnique || i.Title == "" || strings.Contains(luaLower(i.Title), "might of the meek") {
 		return
@@ -904,7 +913,7 @@ func (i *Item) markMutatedLines() {
 	}
 }
 
-//pob:src/Classes/Item.lua:1607-1643
+//pob:src/Classes/Item.lua:1646-1682
 func (i *Item) mutateMod(modID, newModID string, mutated bool) bool {
 	newMod, ok := data.FoulbornModOf(newModID, mutated)
 	if !ok {
@@ -957,7 +966,7 @@ func luaLower(s string) string {
 	return string(b)
 }
 
-//pob:block:src/Classes/Item.lua:1336-1353
+//pob:block:src/Classes/Item.lua:1360-1377
 func (i *Item) assignUniqueModStatOrder() {
 	if !i.AdvancedCopy || (i.Rarity != RarityUnique && i.Rarity != RarityRelic) {
 		return
@@ -1008,7 +1017,7 @@ func sortCraftedModLines(modLines []ModLine) {
 	})
 }
 
-//pob:src/Classes/Item.lua:2081-2107
+//pob:src/Classes/Item.lua:2120-2146
 func (i *Item) checkModLineVariant(ml ModLine) bool {
 	if i.UsesVariantGroups {
 		return i.checkModLineVariantGroups(ml)
@@ -1037,7 +1046,7 @@ func (i *Item) checkModLineVariant(ml ModLine) bool {
 	return false
 }
 
-//pob:src/Classes/Item.lua:2482-2652
+//pob:src/Classes/Item.lua:2534-2704
 func (i *Item) BuildModList() {
 	i.Mods = nil
 	i.WeaponData = nil
@@ -1077,7 +1086,7 @@ func (i *Item) BuildModList() {
 		mods := ml.ModList
 		if ml.Range != nil {
 			stripped := strings.ReplaceAll(ml.Line, "\n", " ")
-			//pob:block:src/Classes/Item.lua:2471
+			//pob:block:src/Classes/Item.lua:2523
 			if rangedModLineRe.MatchString(ml.Line) {
 				scalar := ml.ValueScalar
 				if scalar == 0 {
@@ -1115,7 +1124,7 @@ func (i *Item) BuildModList() {
 		processModLine(ml)
 	}
 
-	//pob:block:src/Classes/Item.lua:2588-2635
+	//pob:block:src/Classes/Item.lua:2640-2687
 	socketCount := calcLocal(&baseList, "SocketCount", mod.TypeBase, 0)
 	i.AbyssalSocketCount = calcLocal(&baseList, "AbyssalSocketCount", mod.TypeBase, 0)
 	baseSocketLimit := 0.0
@@ -1160,13 +1169,13 @@ func (i *Item) BuildModList() {
 		i.Sockets = newSockets
 	}
 
-	//pob:src/Classes/Item.lua:2636-2638
+	//pob:src/Classes/Item.lua:2688-2690
 	i.SocketColourAlwaysMatches = len(i.Sockets) > 0 && calcLocalFlag(&baseList, "SocketAlwaysMatches", 0)
 
-	//pob:src/Classes/Item.lua:2639
+	//pob:src/Classes/Item.lua:2691
 	i.SocketedJewelEffectModifier = 1 + calcLocal(&baseList, "SocketedJewelEffect", mod.TypeIncrease, 0)/100
 
-	//pob:block:src/Classes/Item.lua:2561-2565
+	//pob:block:src/Classes/Item.lua:2613-2617
 	if i.Name == "Tabula Rasa, Simple Robe" || i.Name == "Skin of the Loyal, Simple Robe" ||
 		i.Name == "Skin of the Lords, Simple Robe" || i.Name == "The Apostate, Cabalist Regalia" {
 		baseList = append(baseList, mod.NewList("ArmourData", mod.ArmourData{Key: "EnergyShield", Value: 0}))
@@ -1177,7 +1186,7 @@ func (i *Item) BuildModList() {
 		i.WeaponData = map[int]map[string]float64{}
 		i.Mods = i.buildModListForSlotNum(baseList, 1)
 		i.slotModList2 = i.buildModListForSlotNum(baseList, 2)
-		//pob:block:src/Classes/Item.lua:2646-2648
+		//pob:block:src/Classes/Item.lua:2698-2700
 		if i.Type == "Ring" {
 			i.slotModList3 = i.buildModListForSlotNum(baseList, 3)
 		}
@@ -1195,7 +1204,7 @@ func (i *Item) BuildModList() {
 		i.Requirements["intMod"] = math.Floor((i.Requirements["int"] + calcLocal(&baseList, "IntRequirement", mod.TypeBase, 0)) * (1 + calcLocal(&baseList, "IntRequirement", mod.TypeIncrease, 0)/100))
 	}
 
-	//pob:block:src/Classes/Item.lua:1359-1370
+	//pob:block:src/Classes/Item.lua:1383-1394
 	for _, value := range utils.CastSlice[mod.ExtraSkill](asModList(baseList).List(nil, "ExtraSkill")) {
 		if value.SkillID == "" {
 			continue
@@ -1223,7 +1232,7 @@ func (i *Item) modListForSlot(slotNum int) []mod.Mod {
 	return i.Mods
 }
 
-//pob:src/Classes/Item.lua:2148-2175
+//pob:src/Classes/Item.lua:2192-2219
 func calcLocal(modList *[]mod.Mod, name string, modType mod.Type, flags mod.MFlag) float64 {
 	var result float64
 	if modType == mod.TypeMore {
@@ -1247,7 +1256,7 @@ func calcLocal(modList *[]mod.Mod, name string, modType mod.Type, flags mod.MFla
 	return result
 }
 
-//pob:src/Classes/Item.lua:2148-2175
+//pob:src/Classes/Item.lua:2192-2219
 func calcLocalFlag(modList *[]mod.Mod, name string, flags mod.MFlag) bool {
 	result := false
 	kept := (*modList)[:0]
@@ -1262,7 +1271,7 @@ func calcLocalFlag(modList *[]mod.Mod, name string, flags mod.MFlag) bool {
 	return result
 }
 
-//pob:block:src/Classes/Item.lua:2160
+//pob:block:src/Classes/Item.lua:2204
 func isLocalMod(m mod.Mod, name string, modType mod.Type, flags mod.MFlag) bool {
 	if m.Name() != name || m.Type() != modType || m.Flags() != flags || m.KeywordFlags() != 0 {
 		return false
@@ -1271,7 +1280,7 @@ func isLocalMod(m mod.Mod, name string, modType mod.Type, flags mod.MFlag) bool 
 	return len(tags) == 0 || tags[0].Type() == mod.TypeInSlot
 }
 
-//pob:block:src/Classes/Item.lua:2278-2280
+//pob:block:src/Classes/Item.lua:2326-2328
 func listValues(modList []mod.Mod, name string) map[string]float64 {
 	out := map[string]float64{}
 	for _, m := range modList {
@@ -1294,7 +1303,7 @@ const (
 	otherSlotNumPlaceholder = "{OtherSlotNum}"
 )
 
-//pob:src/Classes/Item.lua:2127-2143
+//pob:src/Classes/Item.lua:2166-2182
 func (i *Item) getPrimarySlot() string {
 	switch {
 	case i.Base != nil && i.Base.Weapon != nil:
@@ -1313,7 +1322,7 @@ func (i *Item) getPrimarySlot() string {
 	return i.Type
 }
 
-//pob:block:src/Classes/Item.lua:2196-2198
+//pob:block:src/Classes/Item.lua:2240-2242
 func slotPlaceholderReplacer(slotName string, slotNum int) *strings.Replacer {
 	hand, otherSlotNum := "OffHand", "1"
 	if slotNum == 1 {
@@ -1326,7 +1335,7 @@ func slotPlaceholderReplacer(slotName string, slotNum int) *strings.Replacer {
 	)
 }
 
-//pob:block:src/Classes/Item.lua:2194-2200
+//pob:block:src/Classes/Item.lua:2238-2244
 func substituteSlotPlaceholders(m mod.Mod, r *strings.Replacer) mod.Mod {
 	out := m
 	for idx, tag := range m.Tags() {
@@ -1342,7 +1351,7 @@ func substituteSlotPlaceholders(m mod.Mod, r *strings.Replacer) mod.Mod {
 	return out
 }
 
-//pob:block:src/Classes/Item.lua:2195-2199
+//pob:block:src/Classes/Item.lua:2239-2243
 func rewriteTagStrings(tag mod.Tag, r *strings.Replacer) (mod.Tag, bool) {
 	v := reflect.ValueOf(tag)
 	if v.Kind() != reflect.Pointer || v.IsNil() || v.Elem().Kind() != reflect.Struct {
@@ -1409,10 +1418,10 @@ func rewriteTagStrings(tag mod.Tag, r *strings.Replacer) (mod.Tag, bool) {
 
 var socketColourNames = map[string]string{"R": "Red", "G": "Green", "B": "Blue", "W": "White"}
 
-//pob:src/Classes/Item.lua:2178-2468
+//pob:src/Classes/Item.lua:2222-2520
 //nolint:gocyclo,maintidx // Mirrors the Lua derivation blocks.
 func (i *Item) buildModListForSlotNum(baseList []mod.Mod, slotNum int) []mod.Mod {
-	//pob:block:src/Classes/Item.lua:2179-2181
+	//pob:block:src/Classes/Item.lua:2223-2225
 	slotName := i.getPrimarySlot()
 	if slotNum != 1 {
 		slotName = strings.ReplaceAll(slotName, "1", utils.Ternary(slotNum == 0, "nil", strconv.Itoa(slotNum)))
@@ -1451,7 +1460,10 @@ func (i *Item) buildModListForSlotNum(baseList []mod.Mod, slotNum int) []mod.Mod
 
 	calcLocal(&modList, "Quality", mod.TypeBase, 0)
 
-	//pob:block:src/Classes/Item.lua:2237-2239
+	//pob:block:src/Classes/Item.lua:2281-2284
+	i.CorruptImplicitCount = calcLocal(&modList, "CorruptImplicitCount", mod.TypeBase, 0)
+
+	//pob:block:src/Classes/Item.lua:2285-2287
 	quality := 0.0
 	if i.Quality != nil {
 		quality = float64(*i.Quality)
@@ -1473,7 +1485,7 @@ func (i *Item) buildModListForSlotNum(baseList []mod.Mod, slotNum int) []mod.Mod
 			math.Floor(quality/10*calcLocal(&modList, "AlternateQualityLocalWeaponRangePer10Quality", mod.TypeBase, 0))
 		weaponData["range"] = float64(wb.Range) + weaponData["rangeBonus"]
 
-		//pob:block:src/Classes/Item.lua:2250
+		//pob:block:src/Classes/Item.lua:2298
 		localIncEle := calcLocal(&modList, "LocalElementalDamage", mod.TypeIncrease, 0)
 		for _, dmgType := range dmgTypeList {
 			minVal := weaponBase(wb, dmgType+"Min") + calcLocal(&modList, dmgType+"Min", mod.TypeBase, 0)
@@ -1488,7 +1500,7 @@ func (i *Item) buildModListForSlotNum(baseList []mod.Mod, slotNum int) []mod.Mod
 				minVal = utils.RoundTo(minVal*(1+physInc/100)*(1+qualityScalar/100), 0)
 				maxVal = utils.RoundTo(maxVal*(1+physInc/100)*(1+qualityScalar/100), 0)
 			case dmgType != "Chaos":
-				//pob:block:src/Classes/Item.lua:2262-2265
+				//pob:block:src/Classes/Item.lua:2310-2313
 				localInc := calcLocal(&modList, "Local"+dmgType+"Damage", mod.TypeIncrease, 0) + localIncEle
 				minVal = utils.RoundTo(minVal*(1+localInc/100), 0)
 				maxVal = utils.RoundTo(maxVal*(1+localInc/100), 0)
@@ -1503,11 +1515,11 @@ func (i *Item) buildModListForSlotNum(baseList []mod.Mod, slotNum int) []mod.Mod
 				}
 			}
 		}
-		//pob:block:src/Classes/Item.lua:2277
+		//pob:block:src/Classes/Item.lua:2325
 		weaponData["CritChance"] = utils.RoundTo((wb.CritChanceBase+calcLocal(&modList, "CritChance", mod.TypeBase, 0))*
 			(1+(calcLocal(&modList, "CritChance", mod.TypeIncrease, 0)+
 				math.Floor(quality/4*calcLocal(&modList, "AlternateQualityLocalCritChancePer4Quality", mod.TypeIncrease, 0)))/100), 2)
-		//pob:block:src/Classes/Item.lua:2278-2280
+		//pob:block:src/Classes/Item.lua:2326-2328
 		for _, m := range modList {
 			if m.Name() != "WeaponData" {
 				continue
@@ -1583,12 +1595,17 @@ func (i *Item) buildModListForSlotNum(baseList []mod.Mod, slotNum int) []mod.Mod
 			}
 		}
 
+		//pob:block:src/Classes/Item.lua:2388-2395
+		armourData["ArmourBase"] = utils.RoundTo(float64(ab.ArmourMin)+float64(armourVariance*percentileOr(armourData, "ArmourBasePercentile")), 0)
 		armourData["Armour"] = utils.RoundTo((armourBase+armourEvasionBase+armourEnergyShieldBase+float64(armourVariance*percentileOr(armourData, "ArmourBasePercentile")))*(1+(armourInc+armourEvasionInc+armourEnergyShieldInc+defencesInc)/100)*(1+qualityScalar/100), 0)
+		armourData["EvasionBase"] = utils.RoundTo(float64(ab.EvasionMin)+float64(evasionVariance*percentileOr(armourData, "EvasionBasePercentile")), 0)
 		armourData["Evasion"] = utils.RoundTo((evasionBase+armourEvasionBase+evasionEnergyShieldBase+float64(evasionVariance*percentileOr(armourData, "EvasionBasePercentile")))*(1+(evasionInc+armourEvasionInc+evasionEnergyShieldInc+defencesInc)/100)*(1+qualityScalar/100), 0)
+		armourData["EnergyShieldBase"] = utils.RoundTo(float64(ab.EnergyShieldMin)+float64(energyShieldVariance*percentileOr(armourData, "EnergyShieldBasePercentile")), 0)
 		armourData["EnergyShield"] = utils.RoundTo((energyShieldBase+evasionEnergyShieldBase+armourEnergyShieldBase+float64(energyShieldVariance*percentileOr(armourData, "EnergyShieldBasePercentile")))*(1+(energyShieldInc+armourEnergyShieldInc+evasionEnergyShieldInc+defencesInc)/100)*(1+qualityScalar/100), 0)
+		armourData["WardBase"] = utils.RoundTo(float64(ab.WardMin)+float64(wardVariance*percentileOr(armourData, "WardBasePercentile")), 0)
 		armourData["Ward"] = utils.RoundTo((wardBase+float64(wardVariance*percentileOr(armourData, "WardBasePercentile")))*(1+(wardInc+defencesInc)/100)*(1+qualityScalar/100), 0)
 
-		//pob:block:src/Classes/Item.lua:2345-2356
+		//pob:block:src/Classes/Item.lua:2397-2408
 		for _, k := range []string{"Armour", "Evasion", "EnergyShield", "Ward"} {
 			if _, set := armourData[k+"BasePercentile"]; !set && armourData[k] > 0 {
 				armourData[k+"BasePercentile"] = 1
@@ -1618,7 +1635,7 @@ func (i *Item) buildModListForSlotNum(baseList []mod.Mod, slotNum int) []mod.Mod
 		if fb.Life > 0 || fb.Mana > 0 {
 			// Recovery flask.
 			flaskData["instantPerc"] = calcLocal(&modList, "FlaskInstantRecovery", mod.TypeBase, 0)
-			//pob:block:src/Classes/Item.lua:2374
+			//pob:block:src/Classes/Item.lua:2426
 			flaskData["instantLowLifePerc"] = calcLocal(&modList, "FlaskLowLifeInstantRecovery", mod.TypeBase, 0)
 			recoveryMod := 1 + calcLocal(&modList, "FlaskRecovery", mod.TypeIncrease, 0)/100
 			rateMod := 1 + calcLocal(&modList, "FlaskRecoveryRate", mod.TypeIncrease, 0)/100
@@ -1629,7 +1646,7 @@ func (i *Item) buildModListForSlotNum(baseList []mod.Mod, slotNum int) []mod.Mod
 				flaskData["lifeGradual"] = flaskData["lifeBase"] * (1 - flaskData["instantPerc"]/100)
 				flaskData["lifeTotal"] = flaskData["lifeInstant"] + flaskData["lifeGradual"]
 				flaskData["lifeAdditional"] = calcLocal(&modList, "FlaskAdditionalLifeRecovery", mod.TypeBase, 0)
-				//pob:block:src/Classes/Item.lua:2384
+				//pob:block:src/Classes/Item.lua:2436
 				flaskData["lifeEffectNotRemoved"] = utils.Ternary(calcLocalFlag(&baseList, "LifeFlaskEffectNotRemoved", 0), 1.0, 0.0)
 			}
 			if fb.Mana > 0 {
@@ -1637,23 +1654,23 @@ func (i *Item) buildModListForSlotNum(baseList []mod.Mod, slotNum int) []mod.Mod
 				flaskData["manaInstant"] = flaskData["manaBase"] * flaskData["instantPerc"] / 100
 				flaskData["manaGradual"] = flaskData["manaBase"] * (1 - flaskData["instantPerc"]/100)
 				flaskData["manaTotal"] = flaskData["manaInstant"] + flaskData["manaGradual"]
-				//pob:block:src/Classes/Item.lua:2391
+				//pob:block:src/Classes/Item.lua:2443
 				flaskData["manaEffectNotRemoved"] = utils.Ternary(calcLocalFlag(&baseList, "ManaFlaskEffectNotRemoved", 0), 1.0, 0.0)
 			}
 		} else {
 			// Utility flask.
-			//pob:block:src/Classes/Item.lua:2395
+			//pob:block:src/Classes/Item.lua:2447
 			flaskData["duration"] = utils.RoundTo(fb.Duration*(1+durationInc/100)*(1+quality/100)*durationMore, 1)
 		}
 		flaskData["chargesMax"] = float64(fb.ChargesMax) + calcLocal(&modList, "FlaskCharges", mod.TypeBase, 0)
 		flaskData["chargesUsed"] = math.Floor(float64(fb.ChargesUsed) * (1 + calcLocal(&modList, "FlaskChargesUsed", mod.TypeIncrease, 0)/100))
 		flaskData["gainMod"] = 1 + calcLocal(&modList, "FlaskChargeRecovery", mod.TypeIncrease, 0)/100
-		//pob:block:src/Classes/Item.lua:2400
+		//pob:block:src/Classes/Item.lua:2452
 		flaskData["effectInc"] = calcLocal(&modList, "FlaskEffect", mod.TypeIncrease, 0) +
 			calcLocal(&modList, "LocalEffect", mod.TypeIncrease, 0)
 
 	case i.Base.Tincture != nil:
-		//pob:block:src/Classes/Item.lua:2404-2409
+		//pob:block:src/Classes/Item.lua:2456-2461
 		tinctureData := map[string]float64{}
 		i.TinctureData = tinctureData
 		tb := tinctureBaseOf(i.Base.Name)
@@ -1666,7 +1683,7 @@ func (i *Item) buildModListForSlotNum(baseList []mod.Mod, slotNum int) []mod.Mod
 			calcLocal(&modList, "LocalEffect", mod.TypeIncrease, 0)
 
 	case i.Type == "Jewel":
-		//pob:block:src/Classes/Item.lua:2413-2418
+		//pob:block:src/Classes/Item.lua:2465-2470
 		if strings.Contains(i.Name, "Grand Spectrum") {
 			spectrumMod := mod.NewFloat("Multiplier:GrandSpectrum", mod.TypeBase, 1).
 				Source(mod.Source(i.Name))
@@ -1680,7 +1697,7 @@ func (i *Item) buildModListForSlotNum(baseList []mod.Mod, slotNum int) []mod.Mod
 	return modList
 }
 
-//pob:block:src/Classes/Item.lua:1116-1127
+//pob:block:src/Classes/Item.lua:1140-1151
 func convertWeaponModsToLocal(modList []mod.Mod, slotNum int) {
 	hand := "OffHandAttack"
 	if slotNum == 1 {
@@ -1703,13 +1720,13 @@ func convertWeaponModsToLocal(modList []mod.Mod, slotNum int) {
 	}
 }
 
-//pob:block:src/Classes/Item.lua:1124
+//pob:block:src/Classes/Item.lua:1148
 func isCriticalStrikeCondition(tag mod.Tag) bool {
 	c, ok := tag.(*mod.ConditionTag)
 	return ok && len(c.VarList) == 1 && c.VarList[0] == "CriticalStrike"
 }
 
-//pob:block:src/Classes/Item.lua:2252-2253
+//pob:block:src/Classes/Item.lua:2300-2301
 func weaponBase(wb *ItemBaseWeapon, key string) float64 {
 	switch key {
 	case "PhysicalMin":
@@ -1721,7 +1738,7 @@ func weaponBase(wb *ItemBaseWeapon, key string) float64 {
 	}
 }
 
-//pob:block:src/Classes/Item.lua:1175-1178
+//pob:block:src/Classes/Item.lua:1199-1202
 func percentileOr(armourData map[string]float64, key string) float64 {
 	if v, ok := armourData[key]; ok {
 		return v
@@ -1729,7 +1746,7 @@ func percentileOr(armourData map[string]float64, key string) float64 {
 	return 1
 }
 
-//pob:block:src/Classes/Item.lua:1032-1033
+//pob:block:src/Classes/Item.lua:1056-1057
 func (i *Item) defaultSocketColor() string {
 	str, dex, intel := i.Requirements["str"], i.Requirements["dex"], i.Requirements["int"]
 	maxReq := str
@@ -1750,7 +1767,7 @@ func (i *Item) defaultSocketColor() string {
 	}
 }
 
-//pob:src/Classes/Item.lua:1644-1652
+//pob:src/Classes/Item.lua:1683-1691
 func (i *Item) NormaliseQuality() {
 	if i.Base == nil || !(i.Base.Armour != nil || i.Base.Weapon != nil || i.Base.Flask != nil ||
 		i.Base.Tincture != nil) {
@@ -1767,7 +1784,7 @@ func (i *Item) NormaliseQuality() {
 	}
 }
 
-//pob:block:src/Classes/Item.lua:632-639
+//pob:block:src/Classes/Item.lua:655-662
 func matchSpec(line string) (string, string) {
 	if strings.Contains(line, ": ") {
 		if m := specHexRe.FindStringSubmatch(line); m != nil {
@@ -1803,7 +1820,7 @@ func matchSpec(line string) (string, string) {
 	return "", ""
 }
 
-//pob:block:src/Classes/Item.lua:194-356
+//pob:block:src/Classes/Item.lua:199-361
 //nolint:gocyclo // Mirrors the Lua branch chain.
 func (i *Item) applySpec(specName, specVal string, implicitLines *int, gameModeStage *string, foundExplicit *bool, importedLevelReq **int) bool {
 	num := func() *int {
@@ -1862,7 +1879,7 @@ func (i *Item) applySpec(specName, specVal string, implicitLines *int, gameModeS
 		*importedLevelReq = num()
 	case "Selected Variant":
 		i.Variant = num()
-	//pob:block:src/Classes/Item.lua:682-687,src/Classes/Item.lua:739-747,src/Classes/Item.lua:760-761
+	//pob:block:src/Classes/Item.lua:705-710,src/Classes/Item.lua:762-770,src/Classes/Item.lua:783-784
 	case "Version":
 		i.VersionList = append(i.VersionList, specVal)
 		i.UsesVariantGroups = true
@@ -1947,7 +1964,7 @@ func (i *Item) applySpec(specName, specVal string, implicitLines *int, gameModeS
 		i.MemoryStrands = num()
 	case "Intangibility":
 		i.Intangibility = num()
-	//pob:block:src/Classes/Item.lua:801-805
+	//pob:block:src/Classes/Item.lua:824-828
 	case "Unreleased":
 		i.Unreleased = specVal == "true"
 	case "Upgrade":
@@ -1989,7 +2006,7 @@ func (i *Item) applySpec(specName, specVal string, implicitLines *int, gameModeS
 	return false
 }
 
-//pob:block:src/Classes/Item.lua:847-1331
+//pob:block:src/Classes/Item.lua:870-1355
 //nolint:gocyclo,maintidx // Mirrors the Lua block.
 func (i *Item) parseModLine(line string, l int, mode string, implicitLines int, gameModeStage *string, foundExplicit, foundImplicit *bool) int {
 	var variantList map[int]bool
@@ -2031,7 +2048,7 @@ func (i *Item) parseModLine(line string, l int, mode string, implicitLines int, 
 	if m := modGroupRe.FindStringSubmatch(line); m != nil {
 		modGroup = m[1]
 	}
-	//pob:block:src/Classes/Item.lua:856-870
+	//pob:block:src/Classes/Item.lua:880-894
 	var versionList, variantGroupList map[int]bool
 	if m := versionSpecRe.FindStringSubmatch(line); m != nil {
 		versionList = idSet(m[1])
@@ -2087,7 +2104,7 @@ func (i *Item) parseModLine(line string, l int, mode string, implicitLines int, 
 		}
 	}
 
-	//pob:block:src/Classes/Item.lua:1065-1067
+	//pob:block:src/Classes/Item.lua:1089-1091
 	if strings.Contains(line, "(") {
 		line = advancedCopyBaseValueRe.ReplaceAllString(line, "$1")
 	}
@@ -2159,7 +2176,7 @@ func (i *Item) parseModLine(line string, l int, mode string, implicitLines int, 
 		target2 = &i.ClassRequirementModLines
 	case implicit || (!crafted && len(i.EnchantModLines)+len(i.ScourgeModLines)+len(i.ImplicitModLines) < implicitLines):
 		target2 = &i.ImplicitModLines
-	//pob:block:src/Classes/Item.lua:1293-1294
+	//pob:block:src/Classes/Item.lua:1317-1318
 	case crucible:
 		target2 = &i.CrucibleModLines
 	default:
@@ -2213,7 +2230,7 @@ func (i *Item) parseModLine(line string, l int, mode string, implicitLines int, 
 		} else {
 			*foundExplicit = true
 		}
-	//pob:src/Classes/Item.lua:1317-1325
+	//pob:src/Classes/Item.lua:1341-1349
 	case mode == "GAME":
 		if *gameModeStage == "IMPLICIT" || *gameModeStage == "EXPLICIT" ||
 			(*gameModeStage == "FINDIMPLICIT" && ItemBaseByName(line) == nil && i.Name != line &&
@@ -2232,7 +2249,7 @@ func (i *Item) parseModLine(line string, l int, mode string, implicitLines int, 
 	return l
 }
 
-//pob:block:src/Classes/Item.lua:1318
+//pob:block:src/Classes/Item.lua:1342
 func (i *Item) lineIsBaseType(line string) bool {
 	if i.Base == nil {
 		return false
@@ -2243,7 +2260,7 @@ func (i *Item) lineIsBaseType(line string) bool {
 	return i.Base.SubType != "" && line == i.Base.SubType+" "+i.Base.Type
 }
 
-//pob:block:src/Classes/Item.lua:931-1053
+//pob:block:src/Classes/Item.lua:955-1077
 func (i *Item) resolveBase(line string, variantList map[int]bool) bool {
 	baseName := ""
 
@@ -2288,9 +2305,9 @@ func (i *Item) resolveBase(line string, variantList map[int]bool) bool {
 		}
 		i.Type = base.Type
 		i.Base = base
-		//pob:block:src/Classes/Item.lua:1011-1016
+		//pob:block:src/Classes/Item.lua:1035-1040
 		if i.Title != "" {
-			i.RareLikeUnique = rareLikeUniques[luaLower(i.Title)]
+			_, i.RareLikeUnique = rareLikeUniques[luaLower(i.Title)]
 		}
 		i.Requirements["str"] = float64(base.Req.Str)
 		i.Requirements["dex"] = float64(base.Req.Dex)
@@ -2300,7 +2317,7 @@ func (i *Item) resolveBase(line string, variantList map[int]bool) bool {
 	return true
 }
 
-//pob:block:src/Classes/Item.lua:439-440
+//pob:block:src/Classes/Item.lua:457-458
 func foilTypeOf(line string) string {
 	if m := foilTypeRe.FindStringSubmatch(line); m != nil {
 		return m[1]
@@ -2308,7 +2325,7 @@ func foilTypeOf(line string) string {
 	return "Rainbow"
 }
 
-//pob:block:src/Classes/Item.lua:973
+//pob:block:src/Classes/Item.lua:997
 func stripBaseNamePrefixes(line string) string {
 	for _, p := range []string{"Superior ", "Synthesised ", "Vestigial "} {
 		line = strings.TrimPrefix(line, p)
@@ -2316,7 +2333,7 @@ func stripBaseNamePrefixes(line string) string {
 	return line
 }
 
-//pob:block:src/Classes/Item.lua:2187-2193
+//pob:block:src/Classes/Item.lua:2231-2237
 func modAppliesToSlotNum(m mod.Mod, slotNum int) bool {
 	for _, tag := range m.Tags() {
 		switch t := tag.(type) {
@@ -2333,7 +2350,7 @@ func modAppliesToSlotNum(m mod.Mod, slotNum int) bool {
 	return true
 }
 
-//pob:src/Classes/Item.lua:330-333
+//pob:src/Classes/Item.lua:335-338
 var reSpecLeadingNumber = regexp.MustCompile(`^[+-]?[\d.]+`)
 
 func specToNumber(s string) (float64, bool) {
@@ -2348,6 +2365,8 @@ var (
 	modMagnitudeTagsRe    = regexp.MustCompile(`(\d+)% ([ir][ne][cd][ru][ec][ae][sd]e?d?) ?([a-zA-Z\s]*) modifier magnitudes`)
 	modMagnitudeAffixRe   = regexp.MustCompile(`(\d+)% ([ir][ne][cd][ru][ec][ae][sd]e?d?) effect of ([sp][ur][fe]fix)es`)
 	modMagnitudeDoubledRe = regexp.MustCompile(`([a-zA-Z\s]*) modifier magnitudes are doubled`)
+	grantsLevelSkillRe    = regexp.MustCompile(`^grants level \d+ `)
+	grantsNamedSkillRe    = regexp.MustCompile(`^grants \D+$`)
 )
 
 var modMagnitudeTagMap = map[string]string{
@@ -2369,7 +2388,7 @@ func (i *Item) collectModMagnitude(line, rangedLine string, disabled bool, lineR
 			continue
 		}
 
-		//pob:block:src/Classes/Item.lua:1251
+		//pob:block:src/Classes/Item.lua:1275
 		rangeVal := 1.0
 		switch {
 		case lineRange != nil:
@@ -2457,6 +2476,18 @@ func (i *Item) applyModMagnitude() {
 				if ml.VariantList != nil && !i.checkModLineVariant(*ml) {
 					continue
 				}
+				//pob:block:src/Classes/Item.lua:1417-1428
+				grantsSkill := false
+				for _, m := range ml.ModList {
+					if m.Name() == "ExtraSkill" {
+						grantsSkill = true
+						break
+					}
+				}
+				if ml.Extra != "" && !grantsSkill {
+					line := strings.ToLower(ml.Line)
+					grantsSkill = grantsLevelSkillRe.MatchString(line) || grantsNamedSkillRe.MatchString(line)
+				}
 
 				tagLookup := make(map[string]bool, len(ml.ModTags)+2)
 				for _, t := range ml.ModTags {
@@ -2482,7 +2513,7 @@ func (i *Item) applyModMagnitude() {
 					match = false
 				}
 
-				if match {
+				if match && !grantsSkill {
 					if ml.ValueScalar == 0 {
 						ml.ValueScalar = 1
 					}
@@ -2501,16 +2532,18 @@ func (i *Item) applyModMagnitude() {
 					one := 1.0
 					rolled := data.ApplyRange(ml.Line, rangeVal, &ml.ValueScalar, &one)
 					entry := ParseMod(rolled, false)
-					ml.ModList = entry.ModList
-					ml.Extra = modExtra(entry)
+					if entry.ModList != nil {
+						ml.ModList = entry.ModList
+						ml.Extra = modExtra(entry)
+					}
 				}
 			}
 		}
 	}
 }
 
-//pob:src/Modules/Main.lua:598-600
-//pob:src/Modules/Main.lua:1099-1102
+//pob:src/Modules/Main.lua:635-637
+//pob:src/Modules/Main.lua:1136-1139
 func SetDefaultItemAffixQuality(q float64) {
 	q = math.Min(utils.RoundTo(q, 2), 1)
 	defaultItemAffixQuality = &q

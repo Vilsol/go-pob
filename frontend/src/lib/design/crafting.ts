@@ -10,6 +10,10 @@ export type CorruptMod = { id: string; label: string; lines: string[]; group: st
 export type CorruptChoices = {
   unique: boolean;
   implicitsCannotBeChanged: boolean;
+  /* ItemsTab.lua:3129-3137 */
+  maxImplicits: number;
+  /* ItemsTab.lua:3138-3155 */
+  glimpse: CorruptMod[];
   corrupted: CorruptMod[];
   scourgeUpside: CorruptMod[];
   scourgeDownside: CorruptMod[];
@@ -50,8 +54,8 @@ export type CraftApi = {
   rangeLine?: (index: number, value: number) => Promise<string>;
   corruptText?: (source: string, ids: string[], downside: string[], rolls?: { index: number; value: number }[]) => Promise<string | undefined>;
   corruptSort?: (source: string, modType: string, ids: string[], stat: string) => Promise<number[]>;
-  /* ItemsTab.lua:2408-2422 */
-  modCompare?: (lines: string[]) => Promise<ImpactBlock[]>;
+  /* ItemsTab.lua:2503-2525 */
+  modCompare?: (lines: string[], replaceImplicits?: boolean) => Promise<ImpactBlock[]>;
   implicitChoices?: () => Promise<ImplicitChoices | undefined>;
   implicitText?: (source: string, modId: string, custom: string) => Promise<string | undefined>;
   implicitSort?: (source: string, ids: string[], stat: string) => Promise<number[]>;
@@ -68,10 +72,10 @@ export type CraftApi = {
   settext?: (text: string) => void;
 };
 
-/* ItemsTab.lua:3051-3063 */
-export function corruptOptions(list: CorruptMod[], other: string | undefined): CorruptMod[] {
-  const group = other ? list.find((m) => m.id === other)?.group : undefined;
-  return list.filter((m) => group === undefined || m.group !== group);
+/* ItemsTab.lua:3177-3218 */
+export function corruptOptions(list: CorruptMod[], others: (string | undefined)[]): CorruptMod[] {
+  const groups = new Set(others.flatMap((o) => (o ? (list.find((m) => m.id === o)?.group ?? []) : [])));
+  return list.filter((m) => !groups.has(m.group));
 }
 
 /* ItemsTab.lua:2688-2696 */

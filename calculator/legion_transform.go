@@ -37,7 +37,7 @@ func legionConqueror(jewelType tjdata.JewelType, c mod.ConquerorType) (tjdata.Co
 	return "", false
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:1099-1111
+//pob:block:src/Classes/PassiveSpec.lua:1093-1105
 var timelessJewelTypeByConqueror = map[string]int{
 	"vaal": 1, "karui": 2, "maraketh": 3, "templar": 4, "eternal": 5, "kalguur": 6,
 	"abyss_murderous": 7, "abyss_searching": 8, "abyss_hypnotic": 9,
@@ -165,7 +165,7 @@ func renderTimelessResult(result tjdata.AlternatePassiveSkillInformation, render
 	return replaceWith, added
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:1257-1261
+//pob:block:src/Classes/PassiveSpec.lua:1288-1292
 func substituteRolls(node data.LegionNode, rolls tjdata.StatRolls) []string {
 	if len(node.Stats) == 0 {
 		return nil
@@ -187,7 +187,7 @@ func substituteRolls(node data.LegionNode, rolls tjdata.StatRolls) []string {
 	return out
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:1229-1233
+//pob:block:src/Classes/PassiveSpec.lua:1260-1264
 func substituteAbyssRolls(node data.LegionNode, rolls tjdata.StatRolls, first string) []string {
 	if len(node.Stats) == 0 {
 		return nil

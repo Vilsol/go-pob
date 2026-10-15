@@ -61,7 +61,7 @@ func statDescMatchLimit(variants []raw.StatDescriptionVariant, val []statDescVal
 	return nil
 }
 
-//pob:src/Modules/StatDescriber.lua:53-198
+//pob:src/Modules/StatDescriber.lua:54-205
 //nolint:gocyclo // Mirrors the Lua elseif chain.
 func statDescApplySpecial(val []statDescValue, spec raw.StatDescriptionSpec) {
 	if spec.V < 1 || spec.V > len(val) {
@@ -172,7 +172,7 @@ type DescribedStats struct {
 	LineMap map[string]string
 }
 
-//pob:src/Modules/StatDescriber.lua:200-292
+//pob:src/Modules/StatDescriber.lua:207-299
 func DescribeStats(stats map[string]float64, scopeName string, quality bool) DescribedStats {
 	scopeList := statDescriptionScopeList(scopeName)
 	type described struct {

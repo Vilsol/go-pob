@@ -806,3 +806,21 @@ describe('structural changes', () => {
     expect(goGemLevels().length, 'group 0 is untouched').toBe(6);
   });
 });
+
+// SkillsTab.lua:294-313
+describe('Optimise Sockets enablement', () => {
+  it('is enabled when Go says it would change the item, disabled when not, and asked again after a calculation', async () => {
+    const useful = vi.spyOn(workerInstance, 'OptimiseSocketsUseful').mockResolvedValue(true);
+    try {
+      await mountSkills();
+      const button = () => within(editor()).getByRole<HTMLButtonElement>('button', { name: 'Match item sockets to gems' });
+      await vi.waitFor(() => expect(useful).toHaveBeenCalledWith(goGroup()?.Slot));
+      await vi.waitFor(() => expect(button().disabled).toBe(false));
+      useful.mockResolvedValue(false);
+      outputs.set({ ...get(outputs) });
+      await vi.waitFor(() => expect(button().disabled).toBe(true));
+    } finally {
+      useful.mockRestore();
+    }
+  });
+});

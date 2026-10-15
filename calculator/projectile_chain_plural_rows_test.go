@@ -9,7 +9,7 @@ import (
 
 // TestProjectileAndChainPluralRows pins seven parser rows whose SINGULAR or more general sibling was already here and whose own spelling was not.
 //
-//pob:block:src/Modules/ModParser.lua:4505-4529
+//pob:block:src/Modules/ModParser.lua:4551-4575
 func TestProjectileAndChainPluralRows(t *testing.T) {
 	for _, c := range []struct {
 		line          string

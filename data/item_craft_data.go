@@ -43,6 +43,11 @@ type AffixMod struct {
 	ModTags             []string  `json:"modTags"`
 }
 
+type DropRestrictedMod struct {
+	AffixMod
+	Categories []string `json:"categories"`
+}
+
 type MasterMod struct {
 	AffixMod
 	Types []string `json:"types"`
@@ -65,18 +70,22 @@ type Essence struct {
 var (
 	itemCraftOnce sync.Once
 	itemCraft     struct {
-		Sources        []EnchantmentSource          `json:"sources"`
-		Enchantments   map[string]*EnchantmentTable `json:"enchantments"`
-		Bases          map[string]CraftBase         `json:"bases"`
-		AffixTables    map[string][]AffixMod        `json:"affixTables"`
-		MasterMods     []MasterMod                  `json:"masterMods"`
-		Essences       []Essence                    `json:"essences"`
-		VeiledMods     []AffixMod                   `json:"veiledMods"`
-		NecropolisMods []AffixMod                   `json:"necropolisMods"`
-		BeastCraft     []AffixMod                   `json:"beastCraft"`
-		Crucible       []CrucibleMod                `json:"crucible"`
-		CasterCrucible []string                     `json:"casterTagCrucibleUniques"`
-		MinionCrucible []string                     `json:"minionTagCrucibleUniques"`
+		Sources        []EnchantmentSource            `json:"sources"`
+		Enchantments   map[string]*EnchantmentTable   `json:"enchantments"`
+		Bases          map[string]CraftBase           `json:"bases"`
+		AffixTables    map[string][]AffixMod          `json:"affixTables"`
+		MasterMods     []MasterMod                    `json:"masterMods"`
+		Essences       []Essence                      `json:"essences"`
+		VeiledMods     []AffixMod                     `json:"veiledMods"`
+		NecropolisMods []AffixMod                     `json:"necropolisMods"`
+		BeastCraft     []AffixMod                     `json:"beastCraft"`
+		Crucible       []CrucibleMod                  `json:"crucible"`
+		CasterCrucible []string                       `json:"casterTagCrucibleUniques"`
+		MinionCrucible []string                       `json:"minionTagCrucibleUniques"`
+		VestigialTypes []string                       `json:"vestigialUniqueBaseTypes"`
+		VestigialMods  map[string]string              `json:"vestigialModMappings"`
+		SpecialCorrupt []AffixMod                     `json:"specialCorruptionMods"`
+		DropRestricted map[string][]DropRestrictedMod `json:"dropRestricted"`
 	}
 )
 
@@ -90,13 +99,13 @@ func loadItemCraft() {
 	}
 }
 
-//pob:block:src/Modules/Data.lua:626-637
+//pob:block:src/Modules/Data.lua:632-643
 func EnchantmentSources() []EnchantmentSource {
 	itemCraftOnce.Do(loadItemCraft)
 	return itemCraft.Sources
 }
 
-//pob:block:src/Modules/Data.lua:665-700
+//pob:block:src/Modules/Data.lua:675-710
 func Enchantments(key string) *EnchantmentTable {
 	itemCraftOnce.Do(loadItemCraft)
 	return itemCraft.Enchantments[key]
@@ -105,6 +114,11 @@ func Enchantments(key string) *EnchantmentTable {
 func CraftBaseInfo(name string) CraftBase {
 	b, _ := CraftBaseKnown(name)
 	return b
+}
+
+func CraftBases() map[string]CraftBase {
+	itemCraftOnce.Do(loadItemCraft)
+	return itemCraft.Bases
 }
 
 func CraftBaseKnown(name string) (CraftBase, bool) {
@@ -152,4 +166,28 @@ func CrucibleMods() []CrucibleMod {
 func CrucibleTagUniques() ([]string, []string) {
 	itemCraftOnce.Do(loadItemCraft)
 	return itemCraft.CasterCrucible, itemCraft.MinionCrucible
+}
+
+//pob:block:src/Modules/Data.lua:856-863
+func VestigialUniqueBaseTypes() []string {
+	itemCraftOnce.Do(loadItemCraft)
+	return itemCraft.VestigialTypes
+}
+
+//pob:block:src/Modules/Data.lua:864-872
+func VestigialModMappings() map[string]string {
+	itemCraftOnce.Do(loadItemCraft)
+	return itemCraft.VestigialMods
+}
+
+//pob:block:src/Classes/ItemsTab.lua:3150-3155
+func SpecialCorruptionMods() []AffixMod {
+	itemCraftOnce.Do(loadItemCraft)
+	return itemCraft.SpecialCorrupt
+}
+
+//pob:block:src/Classes/ItemsTab.lua:3513-3514,src/Classes/ItemsTab.lua:3704-3709
+func DropRestricted(source string) []DropRestrictedMod {
+	itemCraftOnce.Do(loadItemCraft)
+	return itemCraft.DropRestricted[source]
 }

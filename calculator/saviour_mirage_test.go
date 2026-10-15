@@ -15,7 +15,7 @@ func TestSaviourMirageCopiesTheSkill(t *testing.T) {
 	build := loadCorpusBuild(t, "1344-slayer-reave-3.xml")
 	env := (&Calculator{PoB: build}).BuildOutput(OutputModeMain)
 
-	const want = 56987034.02939816
+	const want = 56988289.693539
 	if got := env.Player.Output["FullDPS"]; math.Abs(got-want) > want*1e-6 {
 		t.Errorf("FullDPS = %v, want %v (PoB's value, to 1e-6)", got, want)
 	}

@@ -69,7 +69,7 @@ func TestMinionWitherArmApplies(t *testing.T) {
 
 // TestMinionWitherReachesTheEnemy grades the multiplier ITSELF rather than a DPS aggregate downstream of it.
 //
-//pob:block:src/Modules/CalcPerform.lua:2704-2706
+//pob:block:src/Modules/CalcPerform.lua:2756-2763
 func TestMinionWitherReachesTheEnemy(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")

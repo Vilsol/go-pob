@@ -12,7 +12,7 @@ type GemSortRow struct {
 	Pending    bool
 }
 
-//pob:block:src/Classes/GemSelectControl.lua:294-359
+//pob:block:src/Classes/GemSelectControl.lua:305-370
 func (env *Environment) GemSortCache(group int, gems []pob.Gem) []GemSortRow {
 	out := make([]GemSortRow, len(gems))
 	if env == nil || env.Build == nil {
@@ -55,7 +55,7 @@ func (env *Environment) GemSortCache(group int, gems []pob.Gem) []GemSortRow {
 		lists:
 			for _, list := range skillLists {
 				for _, activeSkill := range list {
-					if CalcCanGrantedEffectSupportActiveSkill(wrapped, activeSkill) {
+					if CalcCanGrantedEffectSupportActiveSkill(wrapped, activeSkill, false) {
 						out[i].CanSupport = true
 						break lists
 					}

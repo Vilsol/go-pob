@@ -23,6 +23,7 @@ const (
 	domainTincture     = 34
 	domainCharm        = 35
 	domainGraft        = 38
+	domainMercenary    = 41
 )
 
 // https://www.poewiki.net/wiki/Modifier#Generation_type
@@ -126,7 +127,7 @@ func (x *modsExport) describeMod(m *poe.Mod, stat2 *[2]int) ([]string, []float64
 	return x.describer.describeStats(stats)
 }
 
-//pob:src/Export/Scripts/mods.lua:45-203
+//pob:src/Export/Scripts/mods.lua:46-204
 func (x *modsExport) writeMods(outName string, condFunc func(*poe.Mod) bool) ([]exportMod, error) {
 	hasTag := func(m *poe.Mod, id string) bool {
 		for _, k := range m.SpawnWeightTagsKeys {
@@ -227,7 +228,7 @@ func (x *modsExport) writeMods(outName string, condFunc func(*poe.Mod) bool) ([]
 
 var itemExclusiveExcludeRe = regexp.MustCompile(`Royale|Cowards|Map|Ultimatum|UNUSED`)
 
-//pob:block:src/Export/Scripts/mods.lua:276-286
+//pob:block:src/Export/Scripts/mods.lua:282-292
 func itemExclusive(mod *poe.Mod) bool {
 	return (mod.Domain == domainItem || mod.Domain == domainFlask || mod.Domain == domainJewel || mod.Domain == domainClusterJewel || mod.Domain == domainTincture) &&
 		mod.GenerationType == genIntrinsic &&
@@ -248,7 +249,7 @@ var (
 	modLineRangeRe  = regexp.MustCompile(`\(-?#-#\)`)
 )
 
-//pob:block:src/Classes/Item.lua:1337-1347
+//pob:block:src/Classes/Item.lua:1361-1371
 func dumpItemModStatOrder() (any, error) {
 	x, err := newModsExport()
 	if err != nil {

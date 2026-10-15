@@ -22,7 +22,7 @@ func scaleNestedModValue(m Mod, scale func(Mod, float64) float64) Mod {
 	return scaled
 }
 
-//pob:src/Modules/ModTools.lua:217-223
+//pob:src/Modules/ModTools.lua:239-245
 func SetSource(m Mod, source Source) Mod {
 	m.Source(source)
 	if v := m.Value(); v != nil && v.Type() == ModValueMultiTypeList && v.ValueList != nil {
@@ -453,14 +453,16 @@ func (s ArmourData) Clone(pointer bool) Cloneable {
 }
 
 type ExtraSupport struct {
-	SkillID string
-	Level   int
+	SkillID                string
+	Level                  int
+	AppliesToGrantedSkills bool
 }
 
 func (s ExtraSupport) Clone(pointer bool) Cloneable {
 	obj := ExtraSupport{
-		SkillID: s.SkillID,
-		Level:   s.Level,
+		SkillID:                s.SkillID,
+		Level:                  s.Level,
+		AppliesToGrantedSkills: s.AppliesToGrantedSkills,
 	}
 
 	if pointer {

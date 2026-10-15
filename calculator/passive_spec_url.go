@@ -23,7 +23,7 @@ func specClassIDs(spec pob.Spec) (int, int, int) {
 	return int(spec.ClassID), int(spec.AscendClassID), secondary
 }
 
-//pob:src/Classes/PassiveSpec.lua:514-559
+//pob:src/Classes/PassiveSpec.lua:525-570
 func EncodeTreeURL(build *pob.PathOfBuilding, prefix string) string {
 	i := build.ActiveSpecIndex()
 	if i < 0 {
@@ -90,7 +90,7 @@ func decodeTreeLinkBytes(url string) ([]byte, bool) {
 	return b, err == nil
 }
 
-//pob:src/Classes/PassiveSpec.lua:469-512
+//pob:src/Classes/PassiveSpec.lua:480-523
 func DecodeTreeURL(url string) (DecodedTree, error) {
 	b, ok := decodeTreeLinkBytes(url)
 	if !ok || len(b) < 6 {
@@ -185,7 +185,7 @@ func DecodeTreeURL(url string) (DecodedTree, error) {
 	return out, nil
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:577-580,src/Classes/PassiveSpec.lua:608-613,src/Classes/PassiveSpec.lua:640-650
+//pob:block:src/Classes/PassiveSpec.lua:588-591,src/Classes/PassiveSpec.lua:619-624,src/Classes/PassiveSpec.lua:651-661
 func decodedStarts(tree *data.Tree, d DecodedTree) []int64 {
 	var out []int64
 	if id, err := strconv.ParseInt(classStartNodeID(tree, pob.ClassID(d.ClassID)), 10, 64); err == nil {
@@ -232,7 +232,7 @@ var (
 	treeLinkAlternateRe = regexp.MustCompile(`tree/([a-z]+-?[a-z]*)`)
 )
 
-//pob:block:src/Classes/TreeTab.lua:727-741
+//pob:block:src/Classes/TreeTab.lua:733-747
 func validateTreeVersion(alternate string, major, minor string) pob.TreeVersion {
 	suffix := ""
 	if alternate != "" {
@@ -257,7 +257,7 @@ func submatch(re *regexp.Regexp, s string, i int) string {
 	return ""
 }
 
-//pob:block:src/Classes/TreeTab.lua:796-802
+//pob:block:src/Classes/TreeTab.lua:802-808
 func treeLinkVersion(url string) pob.TreeVersion {
 	return validateTreeVersion(submatch(treeLinkAlternateRe, url, 1), submatch(treeLinkVersionRe, url, 1), submatch(treeLinkVersionRe, url, 2))
 }
@@ -268,7 +268,7 @@ var (
 	skillTreeAlternateRe = regexp.MustCompile(`-([a-z]+-?[a-z]*)#`)
 )
 
-//pob:block:src/GameVersions.lua:228-260
+//pob:block:src/GameVersions.lua:229-261
 var poePlannerVersions = map[int]string{
 	51: "3_29", 50: "3_29_ruthless", 47: "3_28", 46: "3_28_ruthless", 45: "3_28_alternate", 44: "3_28_ruthless_alternate",
 	43: "3_27", 42: "3_27_ruthless", 37: "3_26", 36: "3_26_ruthless", 35: "3_25_alternate", 34: "3_25_ruthless_alternate",
@@ -277,7 +277,7 @@ var poePlannerVersions = map[int]string{
 	16: "3_12", 15: "3_11",
 }
 
-//pob:src/Classes/PassiveSpec.lua:365-466
+//pob:src/Classes/PassiveSpec.lua:376-477
 func DecodePoePlannerURL(url string) (DecodedTree, error) {
 	b, ok := decodeTreeLinkBytes(url)
 	if !ok || len(b) < 15 {
@@ -353,7 +353,7 @@ func DecodePoePlannerURL(url string) (DecodedTree, error) {
 	return out, nil
 }
 
-//pob:block:src/Classes/TreeTab.lua:759-803
+//pob:block:src/Classes/TreeTab.lua:765-809
 func decodeTreeLink(url string) (DecodedTree, error) {
 	switch {
 	case strings.Contains(url, "poeurl.com/"):
@@ -371,7 +371,7 @@ func decodeTreeLink(url string) (DecodedTree, error) {
 	}
 }
 
-//pob:block:src/Classes/TreeTab.lua:708-726,src/Classes/TreeTab.lua:796-803
+//pob:block:src/Classes/TreeTab.lua:714-732,src/Classes/TreeTab.lua:802-809
 func ImportTreeURL(build *pob.PathOfBuilding, title string, url string) error {
 	decoded, err := decodeTreeLink(url)
 	if err != nil {

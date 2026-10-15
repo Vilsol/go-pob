@@ -86,7 +86,7 @@ func craftBlock(raw string, item *Item) implicitBlock {
 	return b
 }
 
-//pob:src/Classes/Item.lua:1803-1888
+//pob:src/Classes/Item.lua:1842-1927
 func writeRawModLine(ml ModLine) string {
 	line := ml.Line
 	if ml.Range != nil && rawRangeLineRe.MatchString(line) {
@@ -152,7 +152,7 @@ func writeRawModLine(ml ModLine) string {
 	return line
 }
 
-//pob:block:src/Classes/Item.lua:1733-2008
+//pob:block:src/Classes/Item.lua:1772-2047
 func buildRawText(item *Item) string {
 	var out []string
 	add := func(s ...string) { out = append(out, s...) }
@@ -178,6 +178,9 @@ func buildRawText(item *Item) string {
 	add(itemInfluenceLines(item.Influence)...)
 	if item.Crafted {
 		add("Crafted: true")
+		if st, ok := itemAffixState(item.Raw, item); ok {
+			add(st.specLines()...)
+		}
 	}
 	if item.Catalyst != nil && *item.Catalyst > 0 && *item.Catalyst <= len(catalystList) {
 		add("Catalyst: " + catalystList[*item.Catalyst-1])
@@ -195,7 +198,7 @@ func buildRawText(item *Item) string {
 		add("Memory Strands: " + itoa(item.MemoryStrands))
 	}
 	add(item.variantGroupRawLines()...)
-	//pob:block:src/Classes/Item.lua:1897-1940
+	//pob:block:src/Classes/Item.lua:1936-1979
 	if len(item.VariantList) > 0 {
 		for _, name := range item.VariantList {
 			add("Variant: " + name)
@@ -275,7 +278,7 @@ func itemInfluenceLines(i ItemInfluence) []string {
 	return out
 }
 
-//pob:block:src/Classes/Item.lua:1017-1025
+//pob:block:src/Classes/Item.lua:1041-1049
 func ItemEnchantments(item *Item) *data.EnchantmentTable {
 	if item == nil || item.Base == nil {
 		return nil
@@ -289,13 +292,13 @@ func ItemEnchantments(item *Item) *data.EnchantmentTable {
 	return data.Enchantments(item.Base.Type)
 }
 
-//pob:src/Classes/ItemsTab.lua:63-67
+//pob:src/Classes/ItemsTab.lua:70-74
 func isAnointable(item *Item) bool {
 	return item != nil && item.Base != nil && !data.CraftBaseInfo(item.Base.Name).CannotBeAnointed && !isTalismanBase(item.Base) &&
 		(item.CanBeAnointed || item.Base.Type == "Amulet")
 }
 
-//pob:src/Classes/ItemsTab.lua:512-520
+//pob:src/Classes/ItemsTab.lua:523-531
 func enchantButtons(item *Item) int {
 	switch {
 	case ItemEnchantments(item) == nil:
@@ -306,7 +309,7 @@ func enchantButtons(item *Item) int {
 	return 1
 }
 
-//pob:src/Classes/ItemsTab.lua:524-553
+//pob:src/Classes/ItemsTab.lua:535-564
 func anointButtons(item *Item) int {
 	if !isAnointable(item) {
 		return 0
@@ -324,7 +327,7 @@ func anointButtons(item *Item) int {
 	return n
 }
 
-//pob:src/Classes/ItemsTab.lua:2729-2753
+//pob:src/Classes/ItemsTab.lua:2832-2856
 func enchantText(raw string, slot int, line string, remove bool) (string, bool) {
 	item := ParseItem(raw)
 	if item.Base == nil || slot < 1 {
@@ -352,7 +355,7 @@ func enchantText(raw string, slot int, line string, remove bool) (string, bool) 
 	return b.join(), true
 }
 
-//pob:src/Classes/ItemsTab.lua:2908-2920
+//pob:src/Classes/ItemsTab.lua:3011-3023
 func anointText(raw string, slot int, name string) (string, bool) {
 	item := ParseItem(raw)
 	if item.Base == nil || slot < 1 {
@@ -368,7 +371,7 @@ func anointText(raw string, slot int, name string) (string, bool) {
 	return b.join(), true
 }
 
-//pob:src/Classes/ItemsTab.lua:2875-2890
+//pob:src/Classes/ItemsTab.lua:2978-2993
 func ItemAnoints(item *Item) []string {
 	var out []string
 	for _, list := range [][]ModLine{item.EnchantModLines, item.ScourgeModLines, item.ImplicitModLines, item.ExplicitModLines} {
@@ -400,7 +403,7 @@ type EnchantChoices struct {
 	Used       []string
 }
 
-//pob:block:src/Classes/ItemsTab.lua:2665-2706
+//pob:block:src/Classes/ItemsTab.lua:2768-2809
 func ItemEnchantChoices(build *pob.PathOfBuilding, raw string) (EnchantChoices, bool) {
 	item := ParseItem(raw)
 	table := ItemEnchantments(item)
@@ -453,7 +456,7 @@ func powerStatByName(stat string) (PowerStat, bool) {
 	return PowerStat{}, false
 }
 
-//pob:src/Classes/ItemsTab.lua:2754-2779
+//pob:src/Classes/ItemsTab.lua:2857-2882
 func (m *MiscCalculator) EnchantSortValues(raw string, slot int, lines []string, stat string) []float64 {
 	ps, ok := powerStatByName(stat)
 	item := ParseItem(raw)
@@ -477,7 +480,7 @@ type AnointNotable struct {
 	Unsupported  []bool
 }
 
-//pob:block:src/Classes/PassiveTree.lua:500-572
+//pob:block:src/Classes/PassiveTree.lua:525-597
 func unsupportedStatLines(stats []string) []bool {
 	out := make([]bool, len(stats))
 	for i := 0; i < len(stats); i++ {
@@ -497,7 +500,7 @@ func unsupportedStatLines(stats []string) []bool {
 	return out
 }
 
-//pob:block:src/Classes/NotableDBControl.lua:17-19,src/Classes/NotableDBControl.lua:119-125
+//pob:block:src/Classes/NotableDBControl.lua:17-19,src/Classes/NotableDBControl.lua:123-129
 func AnointNotables() []AnointNotable {
 	var out []AnointNotable
 	for _, n := range data.TreeVersions[data.LatestTreeVersion].Tree().Nodes {
@@ -532,7 +535,7 @@ func anointNode(id int64) (data.Node, bool) {
 	return n, ok && n.Name != nil
 }
 
-//pob:block:src/Classes/NotableDBControl.lua:113-117,src/Classes/NotableDBControl.lua:127-145
+//pob:block:src/Classes/NotableDBControl.lua:117-121,src/Classes/NotableDBControl.lua:131-149
 func (m *MiscCalculator) AnointPowers(raw string, slot int, ids []int64, stat string) []float64 {
 	ps, ok := powerStatByName(stat)
 	item := ParseItem(raw)
@@ -565,7 +568,7 @@ type AnointCompare struct {
 	New    *Environment
 }
 
-//pob:src/Classes/ItemsTab.lua:2925-2963
+//pob:src/Classes/ItemsTab.lua:3028-3066
 func (m *MiscCalculator) CompareAnoint(raw string, slot int, id int64, actionText string) (AnointCompare, bool) {
 	item := ParseItem(raw)
 	if item.Base == nil {

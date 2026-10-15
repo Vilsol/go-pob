@@ -2,7 +2,7 @@ package calculator
 
 import "github.com/Vilsol/go-pob/pob"
 
-//pob:block:src/Classes/SkillsTab.lua:1462-1464
+//pob:block:src/Classes/SkillsTab.lua:1489-1491
 func activeSkillSetIndex(skills pob.Skills) int {
 	if len(skills.SkillSets) == 0 {
 		return -1

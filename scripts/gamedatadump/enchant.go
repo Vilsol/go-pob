@@ -306,7 +306,7 @@ type craftEnchantments struct {
 	Sources map[string][]string            `json:"sources,omitempty"`
 }
 
-//pob:block:src/Modules/Data.lua:665-701
+//pob:block:src/Modules/Data.lua:675-711
 func dumpEnchantments(weaponTypes []string) (map[string]craftEnchantments, error) {
 	ctx, cache := gameDataContext(), assetCache()
 	if err := poe.InitializeActiveSkills(ctx, raw.LatestVersion, cache); err != nil {

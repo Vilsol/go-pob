@@ -42,7 +42,7 @@ describe('Buy similar', () => {
   });
   it('maps slots to trade categories', () => {
     expect(tradeCategory('Weapon 2', 'Two Handed Claw')).toBe('weapon.twomelee');
-    expect(tradeCategory('Weapon 1', 'Sceptre')).toBe('weapon.onemace');
+    expect(tradeCategory('Weapon 1', 'Sceptre')).toBe('weapon.sceptre');
     expect(tradeCategory('Weapon 1', 'Rune Dagger')).toBe('weapon');
     expect(tradeCategory('Ring 2', 'Ring')).toBe('accessory.ring');
     expect(tradeCategory('Abyssal Socket 1', 'Jewel')).toBe('jewel.abyss');

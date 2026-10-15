@@ -21,7 +21,7 @@ type TattooNodeTip struct {
 	Reminder []string
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:1614-1635
+//pob:block:src/Classes/PassiveSpec.lua:1697-1718
 func TreeTattooNodes(build *pob.PathOfBuilding) []TattooNodeTip {
 	var out []TattooNodeTip
 	i := build.ActiveSpecIndex()

@@ -31,6 +31,13 @@ test('sidebar breakdown: a stat’s tooltip shows the steps the Calcs page shows
     await expect(group).toBeVisible();
     shown.push(await steps(group));
     expect(shown.at(-1)!.length, `${c.sidebar}: no breakdown steps`).toBeGreaterThan(1);
+    // Build.lua:1816-1869
+    if (c.sidebar === 'Total Life') {
+      const tip = page.getByRole('tooltip');
+      await expect(tip.getByText('Total Base', { exact: true })).toBeVisible();
+      await expect(tip.getByText('Base from Gear', { exact: true })).toHaveCount(0);
+      expect(await tip.locator('[data-mod-row]').count()).toBeGreaterThan(0);
+    }
     await page.mouse.move(0, 0);
   }
 

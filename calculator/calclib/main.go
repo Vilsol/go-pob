@@ -36,7 +36,7 @@ func Val(modStore moddb.ModStoreFuncs, name string, cfgs ...*moddb.ListCfg) floa
 
 // Correct the tags on conversion with multipliers so they carry over correctly
 //
-//pob:src/Modules/CalcTools.lua:244-264
+//pob:src/Modules/CalcTools.lua:253-273
 func GetConvertedModTags(m mod.Mod, multiplier float64, minionMods bool) []mod.Tag {
 	modifiers := make([]mod.Tag, len(m.Tags()))
 

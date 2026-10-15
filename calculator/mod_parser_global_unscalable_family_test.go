@@ -9,7 +9,7 @@ import (
 
 // TestGlobalUnscalableFamilyCarriesTheTag: The `GlobalEffect{effectType = "Global", unscalable = true}` family.
 //
-//pob:block:src/Modules/ModParser.lua:4067
+//pob:block:src/Modules/ModParser.lua:4113
 func TestGlobalUnscalableFamilyCarriesTheTag(t *testing.T) {
 	carries := map[string]string{
 		"Unaffected by Temporal Chains":                                                    "ModParser.lua:4067",

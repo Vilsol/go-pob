@@ -154,10 +154,15 @@ func loadSkillStatMap(pobDir string, env luaEnv) (*luaTable, error) {
 		return nil, fmt.Errorf("SkillStatMap.lua: %w", err)
 	}
 	p := &luaParser{toks: toks, env: env}
-	for p.peek().kind != "eof" && !(p.peek().kind == "name" && p.peek().text == "return") {
+	for {
+		for p.peek().kind != "eof" && !(p.peek().kind == "name" && p.peek().text == "return") {
+			p.next()
+		}
 		p.next()
+		if !(p.peek().kind == "name" && p.peek().text == "function") {
+			break
+		}
 	}
-	p.next()
 	v, err := p.expr()
 	if err != nil {
 		return nil, fmt.Errorf("SkillStatMap.lua: %w", err)
@@ -561,6 +566,22 @@ func loadMinionFile(text string, env luaEnv) (map[string]*luaTable, map[string]i
 	for p.peek().kind != "eof" {
 		t := p.next()
 		switch {
+		case t.kind == "name" && t.text == "return" && p.peek().text == "function":
+			for !p.isOp(")") {
+				if p.peek().kind == "eof" {
+					return nil, nil, fmt.Errorf("line %d: unterminated function header", t.line)
+				}
+				p.next()
+			}
+			p.next()
+		case t.kind == "name" && t.text == "return" && p.peek().text == "minions":
+			p.next()
+		case t.kind == "name" && t.text == "end":
+		case t.kind == "name" && t.text == "local" && p.peek().text == "minions" && p.toks[p.pos+2].text == "{":
+			for !p.isOp("}") {
+				p.next()
+			}
+			p.next()
 		case t.kind == "name" && t.text == "local":
 			for !p.isOp("...") {
 				if p.peek().kind == "eof" {
@@ -809,7 +830,7 @@ func (c *minionConverter) convert(id string, minion *luaTable, loc int, file str
 	return out
 }
 
-//pob:block:src/Modules/Data.lua:1126-1138
+//pob:block:src/Modules/Data.lua:1155-1165
 func dumpMinionData() (any, error) {
 	pobDir := os.Getenv("POB_DIR")
 	if pobDir == "" {

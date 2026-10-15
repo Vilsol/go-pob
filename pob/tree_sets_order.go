@@ -2,7 +2,7 @@ package pob
 
 import "slices"
 
-//pob:block:src/Classes/ListControl.lua:428-436,src/Classes/PassiveSpecListControl.lua:82-84
+//pob:block:src/Classes/ListControl.lua:441-449,src/Classes/PassiveSpecListControl.lua:86-88
 func (b *PathOfBuilding) MoveSpec(from, to int) {
 	n := len(b.Tree.Specs)
 	if from < 1 || from > n || to < 1 || to > n || from == to {

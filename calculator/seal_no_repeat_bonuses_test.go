@@ -20,7 +20,7 @@ func TestSealBlockHonoursNoRepeatBonuses(t *testing.T) {
 	if _, ok := out["SealMax"]; ok {
 		t.Errorf("SealMax = %v, want absent (PoB dump has no SealMax)", out["SealMax"])
 	}
-	if got, want := out["TotalDPS"], 8.88913423224e+06; math.Abs(got-want) > 1e-6*want {
+	if got, want := out["TotalDPS"], 9.5486946338958e+06; math.Abs(got-want) > 1e-6*want {
 		t.Errorf("TotalDPS = %v, want %v (PoB)", got, want)
 	}
 }

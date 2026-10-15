@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strconv"
 	"strings"
 )
@@ -129,8 +130,8 @@ func moHere() string {
 		if fi, err := os.Stat(pyPathJoin(dir, "scripts", "modal_oracle.sh")); err == nil && !fi.IsDir() { //nolint:gosec // walking up from the CWD, as the original resolves from $0
 			return dir
 		}
-		parent := pyPathStr(pyPathJoin(dir, ".."))
-		if parent == dir || dir == "/" {
+		parent := filepath.Dir(dir)
+		if parent == dir {
 			return wd
 		}
 		dir = parent

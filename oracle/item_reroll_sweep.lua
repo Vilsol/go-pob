@@ -5,6 +5,7 @@ if not buildPath then
 	os.exit(3)
 end
 
+local construct = dofile((arg[0]:match("^(.*)[/\\]") or ".") .. "/pob_compat.lua").construct
 dofile("HeadlessWrapper.lua")
 
 local function key(m)
@@ -66,7 +67,7 @@ for _, id in ipairs(ids) do
 		skipped = skipped + 1
 	else
 		scanned = scanned + 1
-		local ok, standalone = pcall(function() return totals(new("Item", raw)) end)
+		local ok, standalone = pcall(function() return totals(construct("Item", raw)) end)
 		if not ok then
 			print(string.format("item %s (%s): STANDALONE PARSE FAILED: %s",
 				tostring(id), tostring(item.name), tostring(standalone)))

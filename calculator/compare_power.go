@@ -48,11 +48,11 @@ type ComparePowerBuilder struct {
 //pob:src/Classes/CompareTab.lua:20
 const clusterNodeOffset = 65536
 
-//pob:block:src/Classes/CompareTab.lua:2689
+//pob:block:src/Classes/CompareTab.lua:2718
 var compareBaseSlots = []string{"Weapon 1", "Weapon 2", "Helmet", "Body Armour", "Gloves", "Boots", "Amulet", "Ring 1", "Ring 2", "Belt",
 	"Flask 1", "Flask 2", "Flask 3", "Flask 4", "Flask 5"}
 
-//pob:block:src/Classes/CompareTab.lua:2487-2508,src/Classes/CompareTab.lua:2594-2595
+//pob:block:src/Classes/CompareTab.lua:2516-2537,src/Classes/CompareTab.lua:2623-2624
 func NewComparePowerBuilder(primary, compare *pob.PathOfBuilding, stats []string, categories ComparePowerCategories, config []pob.Input) *ComparePowerBuilder {
 	b := &ComparePowerBuilder{primary: primary, compare: compare}
 	b.baseEnv, b.usedFullDPS = compareMiscBase(primary)
@@ -86,7 +86,7 @@ func NewComparePowerBuilder(primary, compare *pob.PathOfBuilding, stats []string
 	return b
 }
 
-//pob:block:src/Modules/Calcs.lua:123-133
+//pob:block:src/Modules/Calcs.lua:89-99
 func compareMiscBase(build *pob.PathOfBuilding) (*Environment, bool) {
 	env, player, enemy, minion := InitEnvOverride(build, envCache, OutputModeCalculator, nil)
 	PerformCalc(env)
@@ -105,7 +105,7 @@ func compareBaseEnv(build *pob.PathOfBuilding) *Environment {
 	return env
 }
 
-//pob:block:src/Modules/Calcs.lua:134-147
+//pob:block:src/Modules/Calcs.lua:100-113
 func (b *ComparePowerBuilder) calc(override *CalcOverride) *Environment {
 	env, player, enemy, minion := InitEnvOverride(b.primary, envCache, OutputModeCalculator, override)
 	PerformCalc(env)
@@ -130,7 +130,7 @@ func (b *ComparePowerBuilder) valuesOf(env *Environment) []float64 {
 	return out
 }
 
-//pob:src/Classes/CalcsTab.lua:735-739
+//pob:src/Classes/CalcsTab.lua:742-746
 func (b *ComparePowerBuilder) impactOf(env *Environment) []float64 {
 	out := b.valuesOf(env)
 	for i := range out {
@@ -166,7 +166,7 @@ func (b *ComparePowerBuilder) Report() []ComparePowerEntry {
 	return slices.Clone(b.results)
 }
 
-//pob:block:src/Classes/CompareTab.lua:2630-2683
+//pob:block:src/Classes/CompareTab.lua:2659-2712
 func (b *ComparePowerBuilder) treeTasks() {
 	tree := data.TreeVersions[data.LatestTreeVersion].Tree()
 	primaryNodes := map[int64]bool{}
@@ -223,7 +223,7 @@ func (b *ComparePowerBuilder) treeTasks() {
 	}
 }
 
-//pob:src/Classes/CompareTab.lua:3639-3645
+//pob:src/Classes/CompareTab.lua:3668-3674
 func shouldShowRing3(primary, compare *Environment) bool {
 	has := func(env *Environment) bool {
 		return env != nil && env.ModDB != nil && env.ModDB.Flag(nil, "AdditionalRingSlot")
@@ -231,7 +231,7 @@ func shouldShowRing3(primary, compare *Environment) bool {
 	return has(primary) || has(compare)
 }
 
-//pob:src/Classes/CompareTab.lua:3650-3664
+//pob:src/Classes/CompareTab.lua:3679-3693
 func compareAbyssSockets(primary, compare *pob.PathOfBuilding) []string {
 	equipment := []string{"Weapon 1", "Weapon 2", "Weapon 1 Swap", "Weapon 2 Swap", "Helmet", "Body Armour", "Gloves", "Boots", "Belt"}
 	var out []string
@@ -245,7 +245,7 @@ func compareAbyssSockets(primary, compare *pob.PathOfBuilding) []string {
 	return out
 }
 
-//pob:block:src/Classes/CompareTab.lua:2688-2783
+//pob:block:src/Classes/CompareTab.lua:2717-2812
 func (b *ComparePowerBuilder) itemTasks() {
 	slots := slices.Clone(compareBaseSlots)
 	if shouldShowRing3(b.baseEnv, compareBaseEnv(b.compare)) {
@@ -275,7 +275,7 @@ func (b *ComparePowerBuilder) itemTasks() {
 	}
 }
 
-//pob:src/Classes/CompareTab.lua:2439-2444
+//pob:src/Classes/CompareTab.lua:2468-2473
 func compareGemEffect(gem pob.Gem) *poe.GrantedEffect {
 	gemData, effect := resolveGemInstance(gem)
 	if gemData != nil {
@@ -286,7 +286,7 @@ func compareGemEffect(gem pob.Gem) *poe.GrantedEffect {
 	return effect
 }
 
-//pob:block:src/Classes/SkillsTab.lua:1141-1174
+//pob:block:src/Classes/SkillsTab.lua:1168-1201
 func compareGemName(gem pob.Gem) (string, *poe.GrantedEffect) {
 	gemData, effect := resolveGemInstance(gem)
 	if gemData != nil {
@@ -301,7 +301,7 @@ func compareGemName(gem pob.Gem) (string, *poe.GrantedEffect) {
 	return gem.NameSpec, nil
 }
 
-//pob:src/Classes/CompareTab.lua:2447-2457
+//pob:src/Classes/CompareTab.lua:2476-2486
 func CompareSocketGroupSignature(group pob.Skill) string {
 	names := make([]string, 0, len(group.Gems))
 	for _, gem := range group.Gems {
@@ -313,7 +313,7 @@ func CompareSocketGroupSignature(group pob.Skill) string {
 	return strings.Join(names, "+")
 }
 
-//pob:src/Classes/CompareTab.lua:2460-2484
+//pob:src/Classes/CompareTab.lua:2489-2513
 func CompareSocketGroupLabel(group pob.Skill) string {
 	var names []string
 	for _, gem := range group.Gems {
@@ -346,7 +346,7 @@ func cloneSocketGroup(group pob.Skill) pob.Skill {
 	return group
 }
 
-//pob:block:src/Classes/CompareTab.lua:2873-2931
+//pob:block:src/Classes/CompareTab.lua:2902-2960
 func (b *ComparePowerBuilder) skillGemTasks() {
 	cGroups := activeSocketGroups(b.compare)
 	if cGroups == nil {
@@ -358,12 +358,17 @@ func (b *ComparePowerBuilder) skillGemTasks() {
 			pSignatures[CompareSocketGroupSignature(g)] = true
 		}
 	}
-	for _, cGroup := range *cGroups {
+	cMatches := buildMatchesSocket(&Environment{Build: b.compare}, *cGroups)
+	for ci, cGroup := range *cGroups {
 		sig := CompareSocketGroupSignature(cGroup)
 		if sig == "" || pSignatures[sig] {
 			continue
 		}
 		group := cloneSocketGroup(cGroup)
+		//pob:block:src/Classes/CompareEntry.lua:180-181
+		for gi := range group.Gems {
+			group.Gems[gi].SetMatchesSocket(cMatches[ci][gi])
+		}
 		b.tasks = append(b.tasks, func() {
 			pGroups := activeSocketGroups(b.primary)
 			if pGroups == nil {
@@ -387,7 +392,7 @@ func mainSocketGroup(build *pob.PathOfBuilding) (*pob.Skill, int) {
 	return &(*groups)[i], i
 }
 
-//pob:block:src/Classes/CompareTab.lua:2936-3014
+//pob:block:src/Classes/CompareTab.lua:2965-3043
 func (b *ComparePowerBuilder) supportGemTasks() {
 	cMain, _ := mainSocketGroup(b.compare)
 	pMain, _ := mainSocketGroup(b.primary)
@@ -436,7 +441,7 @@ func (b *ComparePowerBuilder) supportGemTasks() {
 	}
 }
 
-//pob:block:src/Classes/CompareTab.lua:3019-3093
+//pob:block:src/Classes/CompareTab.lua:3048-3122
 func (b *ComparePowerBuilder) configTask(in pob.Input) {
 	saved := b.primary.Config.Inputs
 	b.primary.Config.Inputs = cloneInputs(saved)

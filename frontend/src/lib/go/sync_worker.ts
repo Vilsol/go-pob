@@ -11,7 +11,8 @@ import { configRelevanceQuery, reverseConfigOptions } from '../display/configura
 import { autoLevel, estimatePlayerProgress } from '../display/points';
 import { savedStats } from '../display/saved_stats';
 import type { CalcDataColProp } from '$lib/calcs/calc_sections';
-import { colPropsOf } from '$lib/display/calcs';
+import { breakdownOf, colPropsOf } from '$lib/display/calcs';
+import type { SidebarCell, SidebarSection, SidebarStatRef } from '$lib/display/sidebar_breakdown';
 import { addStatCompares, type StatCompareSection } from '$lib/skill_tree/stat_compare';
 import type { ItemStatDiffBlock } from '$lib/components/items/item_diff';
 import type { CraftChoice, DisplayEdit, DisplayInfo } from '$lib/design/items';
@@ -2177,6 +2178,19 @@ class PoBWorker {
     };
   }
 
+  /* ItemsTab.lua:2503-2525 */
+  async ReplacedImplicitsCompare(text: string, lines: string[]): Promise<ItemStatDiffBlock | undefined> {
+    const m = await this.miscCalculator();
+    if (!m) return undefined;
+    const [r, ok] = m.calc.CompareReplacedImplicits(text, lines);
+    if (!ok) return undefined;
+    const flags = (r.Added.SkillFlags ?? {}) as Record<string, boolean>;
+    return {
+      header: '\nAdding this mod will give: ',
+      sections: addStatCompares(flags, { Output: r.Base.Output ?? {}, Minion: r.Base.Minion }, { Output: r.Added.Output ?? {}, Minion: r.Added.Minion })
+    };
+  }
+
   /* ItemsTab.lua:378-715 */
   async GetDisplayItem(text: string): Promise<DisplayInfo | undefined> {
     const [d, ok] = await exposition.DisplayItem(text);
@@ -2604,6 +2618,8 @@ class PoBWorker {
     return {
       unique: c.Unique,
       implicitsCannotBeChanged: c.ImplicitsCannotBeChanged,
+      maxImplicits: c.MaxImplicits,
+      glimpse: mods(c.Glimpse),
       corrupted: mods(c.Corrupted),
       scourgeUpside: mods(c.ScourgeUpside),
       scourgeDownside: mods(c.ScourgeDownside),
@@ -2966,6 +2982,11 @@ class PoBWorker {
   async MoveFolder(from: string, to: string) {
     await this.CopyFolder(from, to);
     await this.Delete(from);
+  }
+
+  /* ConfigModBrowser.lua:243-250 */
+  ModBrowserSources(line: string): string[] {
+    return [...(exposition.ModBrowserSources(line) ?? [])];
   }
 
   /* ConfigTab.lua:1496-1505 */
@@ -3350,10 +3371,18 @@ class PoBWorker {
     return ok ? list : undefined;
   }
 
-  /* TimelessJewelListControl.lua:98-311 */
-  AddTimelessResult(row: number, devotion1: number, devotion2: number, socketLabel: string): number {
+  /* TimelessJewelListControl.lua:330-331 */
+  async TimelessRowCompare(row: number, devotion1: number, devotion2: number, socketLabel: string) {
+    const text = this.timeless?.Item(row, devotion1, devotion2, socketLabel);
+    return text ? this.ItemCompare(text) : undefined;
+  }
+
+  /* TimelessJewelListControl.lua:335-352 */
+  AddTimelessResult(row: number, devotion1: number, devotion2: number, socketLabel: string, socketID?: number): number {
     if (!this.timeless || !this.currentBuild) return 0;
     const id = this.timeless.AddItem(this.currentBuild, row, devotion1, devotion2, socketLabel);
+    // TimelessJewelListControl.lua:340-348
+    if (id && socketID !== undefined) this.timeless.Socket(this.currentBuild, socketID, id);
     if (id) {
       this.updateStore();
       void this.Tick('AddTimelessResult');
@@ -3551,6 +3580,11 @@ class PoBWorker {
   /* SkillsTab.lua:363-379 */
   async GetSocketGroupSourceNames(setIndex: number, groupIndex: number): Promise<calculator.GroupSourceName[]> {
     return this.currentBuild ? ((await exposition.SocketGroupSourceNames(this.currentBuild, setIndex, groupIndex)) ?? []) : [];
+  }
+
+  /* SkillsTab.lua:294-313 */
+  async OptimiseSocketsUseful(slotName: string): Promise<boolean> {
+    return !!this.currentBuild && (await exposition.OptimiseSocketsUseful(this.currentBuild, slotName));
   }
 
   /* SkillsTab.lua:242-288 */
@@ -3955,15 +3989,45 @@ class PoBWorker {
     return this.currentBuild ? exposition.NewSidebarPass(this.currentBuild) : undefined;
   }
 
-  SidebarBreakdown(stat: string, minion: boolean): string[] | undefined {
+  private currentSidebarPass(): exposition.SidebarPass | undefined {
     if (!this.currentBuild) return undefined;
     const tick = this.ticksStarted;
     if (this.sidebarPass?.tick !== tick) {
       releaseWrapper(this.sidebarPass?.pass);
       this.sidebarPass = { tick, pass: this.runSidebarPass() };
     }
-    const lines = this.sidebarPass.pass?.Breakdown(minion, stat);
-    return lines ? [...lines] : undefined;
+    return this.sidebarPass.pass;
+  }
+
+  /* Build.lua:1872-1908 */
+  SidebarBreakdownKey(ref: SidebarStatRef): string | undefined {
+    const pass = this.currentSidebarPass();
+    if (!pass) return undefined;
+    const [key, ok] = pass.StatBreakdownKey(!!ref.minion, ref.stat, ref.childStat ?? '', ref.breakdown ?? '', ref.breakdown !== undefined, !!ref.modNames);
+    return ok ? key : undefined;
+  }
+
+  SidebarBreakdownSections(minion: boolean, cells: SidebarCell[]): SidebarSection[] {
+    const pass = this.currentSidebarPass();
+    if (!pass) return [];
+    return cells.flatMap((cell): SidebarSection[] => {
+      if (cell.breakdown !== undefined) {
+        const entry = pass.Entry(minion, cell.breakdown);
+        const bd = entry ? breakdownOf(dump(entry, true) as calculator.EntryPlain, Infinity) : undefined;
+        return bd ? [{ label: cell.label, bd }] : [];
+      }
+      if (!cell.modName) return [];
+      const rows = pass.ModSection(minion, {
+        ModName: [cell.modName].flat(),
+        Multi: typeof cell.modName !== 'string',
+        ModType: cell.modType ?? '',
+        Cfg: cell.cfg ?? '',
+        ModSource: cell.modSource ?? '',
+        Enemy: !!cell.enemy,
+        Actor: cell.actor ?? ''
+      } as calculator.ModSectionData);
+      return rows?.length ? [{ label: cell.label, mods: [...rows] }] : [];
+    });
   }
 
   /* PassiveTreeView.lua:1755-1762 */

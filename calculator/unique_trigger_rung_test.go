@@ -13,7 +13,7 @@ func TestUniqueItemTriggerRung(t *testing.T) {
 	}
 	requireGameData(t, "3.29")
 	for build, want := range map[string]float64{
-		"0772-slayer-starfall.xml":  4.4689637735792,
+		"0772-slayer-starfall.xml":  4.4689586646463,
 		"0786-saboteur-unknown.xml": 7.9456,
 	} {
 		env := corpusEnvForLoadedData(t, build)

@@ -159,7 +159,7 @@ type applyRangeKey struct {
 	hasBaseScalar bool
 }
 
-//pob:src/Modules/ItemTools.lua:62-111
+//pob:src/Modules/ItemTools.lua:62-115
 func ApplyRange(line string, rangeVal float64, valueScalar, baseValueScalar *float64) string {
 	key := applyRangeKey{line: line, rangeVal: rangeVal}
 	if valueScalar != nil {
@@ -291,7 +291,7 @@ var sanitiseReplacements = []struct{ from, to string }{
 	{"\xf6", "o"},
 }
 
-//pob:src/Modules/Common.lua:248-274
+//pob:src/Modules/Common.lua:303-329
 func SanitiseItemText(text string) string {
 	if !sanitiseNeeded(text) {
 		return text

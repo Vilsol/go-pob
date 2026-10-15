@@ -9,15 +9,28 @@ main.OpenPopup = function(_, _, _, _, controls)
 	controlsOf = controls
 end
 local configTab = build.configTab
-configTab:OpenAddModPopup({ text = "" })
+if configTab.OpenAddModPopup then
+	configTab:OpenAddModPopup({ text = "" })
+else
+	require("Modules.ConfigModBrowser").OpenAddModPopup(configTab, { text = "" })
+end
 assert(controlsOf, "REFUSING: OpenAddModPopup opened no popup")
 controlsOf.search:SetText("")
 list = controlsOf.listControl.list
 assert(#list > 1000, "REFUSING: the Mod Browser lists only " .. #list .. " lines")
 
 local out = { pobVersion = tostring(launch.versionNumber or "unknown"), lines = { } }
+local function entryOf(line)
+	if type(line) == "table" then
+		return { text = line.text, sources = line.sources }
+	end
+	return line
+end
+local function textOf(line)
+	return type(line) == "table" and line.text or line
+end
 for i, line in ipairs(list) do
-	out.lines[i] = line
+	out.lines[i] = entryOf(line)
 end
 if #searches > 0 then
 	out.searches = { }
@@ -25,7 +38,7 @@ if #searches > 0 then
 		controlsOf.search:SetText(search, true)
 		local shown = { }
 		for i, line in ipairs(controlsOf.listControl.list) do
-			shown[i] = line
+			shown[i] = textOf(line)
 		end
 		out.searches[#out.searches + 1] = { search = search, shown = shown }
 	end

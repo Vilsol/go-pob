@@ -6,6 +6,7 @@
   import { syncWrap } from '$lib/go/worker';
   import { classStartNodes, loadSkillTree, skillTree, skillTreeVersion } from '$lib/skill_tree';
   import { logError } from '$lib/utils';
+  import { slotOnlyTooltips } from '$lib/display/item_options';
   import type { calculator, pob } from '$lib/types';
   import { timelessTree } from './timeless_tree';
   import TimelessTreeView from './TimelessTreeView.svelte';
@@ -39,6 +40,7 @@
     devotion2: 1,
     socket: -1,
     filter: false,
+    socketAllocate: false,
     distance: 0,
     protect: [],
     searchList: '',
@@ -115,6 +117,7 @@
       form.socket = num(d?.JewelSocketID, -1);
       form.fallbackMode = num(d?.FallbackWeightModeIdx, 1);
       form.filter = d?.SocketFilter === 'true';
+      form.socketAllocate = d?.SocketAllocate === 'true';
       form.distance = num(d?.SocketFilterDistance, 0);
       form.searchList = d?.SearchList ?? '';
       form.searchListFallback = d?.SearchListFallback ?? '';
@@ -134,6 +137,7 @@
       JewelSocketID: String(form.socket),
       FallbackWeightModeIdx: String(form.fallbackMode),
       SocketFilter: form.filter ? 'true' : '',
+      SocketAllocate: form.socketAllocate ? 'true' : '',
       SocketFilterDistance: String(form.distance),
       SearchList: form.searchList,
       SearchListFallback: form.searchListFallback
@@ -245,8 +249,18 @@
     if (added.has(i) || !syncWrap) return;
     const socket = rows.get(i)?.socket ?? form.socket;
     const keystone = offered.find((s) => s.ID === socket)?.Keystone ?? 'Unknown';
-    const id = await syncWrap.AddTimelessResult(i, form.devotion1, form.devotion2, keystone);
+    const id = await syncWrap.AddTimelessResult(i, form.devotion1, form.devotion2, keystone, form.socketAllocate ? socket : undefined);
     if (id) added = new Set([...added, i]);
+  }
+
+  // TimelessJewelListControl.lua:330-331, ItemsTab.lua:4942-4947
+  async function rowImpact(i: number) {
+    if (!syncWrap) return undefined;
+    const socket = rows.get(i)?.socket ?? form.socket;
+    const keystone = offered.find((s) => s.ID === socket)?.Keystone ?? 'Unknown';
+    const diff = await syncWrap.TimelessRowCompare(i, form.devotion1, form.devotion2, keystone);
+    const blocks = diff?.blocks ?? [];
+    return $slotOnlyTooltips && socket !== -1 ? blocks.filter((b) => b.slot === `Jewel ${socket}`) : blocks;
   }
 
   async function openTrade() {
@@ -291,6 +305,8 @@
         devotion={options.devotion}
         {stats}
         protectable={protects}
+        rowimpact={rowImpact}
+        keystoneStats={(name: string) => Object.values($skillTree?.nodes ?? {}).find((n) => n.isKeystone && n.name === name)?.stats ?? []}
         fallbackModes={fallbackModes.map((m) => m.label)}
         realms={options.realms}
         leagues={LEAGUES}

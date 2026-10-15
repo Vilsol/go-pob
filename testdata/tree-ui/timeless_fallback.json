@@ -255,7 +255,7 @@
     "type":2
   },{
     "build":"0005-occultist-vaal-double-strike.xml",
-    "list":"maraketh_notable_add_aura_effect, 0.342, 0, 0\nmaraketh_notable_add_global_crit_chance, 2.138, 0, 0\nmaraketh_notable_add_speed, 1.815, 0, 0",
+    "list":"maraketh_notable_add_aura_effect, 0.34, 0, 0\nmaraketh_notable_add_global_crit_chance, 2.134, 0, 0\nmaraketh_notable_add_speed, 1.815, 0, 0",
     "modes":[{
         "label":"Sort by Full DPS",
         "stat":"FullDPS"

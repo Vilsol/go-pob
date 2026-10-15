@@ -13,6 +13,7 @@ export const LISTED: [string, string][] = [
   ['Any', 'any']
 ];
 
+/* TradeHelpers.lua:351-387 */
 export function tradeCategory(slotName: string | undefined, itemType: string | undefined): string | undefined {
   if (!slotName) return undefined;
   if (/^Weapon \d/.test(slotName)) {
@@ -29,7 +30,7 @@ export function tradeCategory(slotName: string | undefined, itemType: string | u
       'One Handed Sword': 'weapon.onesword',
       'One Handed Axe': 'weapon.oneaxe',
       'One Handed Mace': 'weapon.onemace',
-      Sceptre: 'weapon.onemace',
+      Sceptre: 'weapon.sceptre',
       Wand: 'weapon.wand',
       Dagger: 'weapon.dagger',
       Claw: 'weapon.claw'

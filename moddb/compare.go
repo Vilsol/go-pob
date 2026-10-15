@@ -6,7 +6,7 @@ import (
 	"github.com/Vilsol/go-pob/mod"
 )
 
-//pob:src/Modules/ModTools.lua:99-112
+//pob:src/Modules/ModTools.lua:121-134
 func CompareModParams(a, b mod.Mod) bool {
 	if a.Name() != b.Name() ||
 		a.Type() != b.Type() ||

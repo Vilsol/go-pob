@@ -4,7 +4,7 @@ import "runtime"
 
 var sortValuesRollUpAll bool
 
-//pob:block:src/Modules/Calcs.lua:134-147
+//pob:block:src/Modules/Calcs.lua:100-113
 func (m *MiscCalculator) sortValues(slotName string, texts []string, ok []bool, ps PowerStat) []float64 {
 	out := make([]float64, len(texts))
 	seen := make(map[string]float64, len(texts))

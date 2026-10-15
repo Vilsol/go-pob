@@ -40,6 +40,8 @@
     socketsLocked?: string;
     /* SkillsTab.lua:242-288 */
     onoptimise?: () => void;
+    /* SkillsTab.lua:294-313 */
+    optimiseEnabled?: boolean;
     slotLocked?: string;
     /* GemSelectControl.lua:573-606 */
     gemwhatif?: (name: string) => Promise<StatCompareSection[] | undefined>;
@@ -81,6 +83,7 @@
     maxLevel,
     socketsLocked,
     onoptimise,
+    optimiseEnabled,
     slotLocked,
     gemwhatif,
     qualitywhatif,
@@ -362,7 +365,7 @@
     <Button
       size="xs"
       class="text-11"
-      disabled={!onoptimise && !!socketsLocked}
+      disabled={(!onoptimise && !!socketsLocked) || optimiseEnabled === false}
       title={onoptimise
         ? "Rebuild the item's sockets to match the groups assigned to it."
         : (socketsLocked ?? "Rebuild the item's sockets to match the socket groups assigned to it")}

@@ -89,7 +89,7 @@ func GetSkillGems() []SkillGem {
 				}
 			}
 			slices.Sort(outGem.Tags)
-			//pob:block:src/Classes/GemSelectControl.lua:115
+			//pob:block:src/Classes/GemSelectControl.lua:126
 			outGem.LevelRequirement = 1
 			if calc := raw.GetCalculatedGrantedEffect(grantedEffect); calc != nil {
 				if first, ok := calc.GetCalculatedLevels()[1]; ok && first.LevelRequirement != 0 {
@@ -106,7 +106,7 @@ func GetSkillGems() []SkillGem {
 				outGem.GemType = GemTypeIntelligence
 			}
 
-			//pob:block:src/Classes/SkillsTab.lua:1021-1048
+			//pob:block:src/Classes/SkillsTab.lua:1048-1075
 			if gem.IsVaalGem {
 				outGem.GlobalEffects = []string{"", ""}
 				for i, id := range []string{pobGem.GrantedEffectID, pobGem.SecondaryGrantedEffectID} {
@@ -152,7 +152,7 @@ func activeSkillDescriptionOf(gem *poe.SkillGem) string {
 	return ""
 }
 
-//pob:block:src/Classes/SkillsTab.lua:1142-1177
+//pob:block:src/Classes/SkillsTab.lua:1169-1204
 func GemError(gemID, skillID, nameSpec string) string {
 	if gemID != "" || skillID != "" || strings.TrimSpace(nameSpec) == "" {
 		return ""

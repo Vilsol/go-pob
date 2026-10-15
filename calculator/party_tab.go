@@ -60,7 +60,7 @@ func newPartyBuffList() *partyBuffList {
 	return &partyBuffList{byType: make(map[string]*partyBuffGroup)}
 }
 
-//pob:block:src/Classes/PartyTab.lua:18-20
+//pob:block:src/Classes/PartyTab.lua:22-24
 func newPartyTab() *partyTab {
 	actor := &partyActor{
 		Aura:         newPartyBuffList(),
@@ -82,7 +82,7 @@ func luaXMLContent(s string) string {
 	return strings.Trim(s, " \t\n\v\f\r")
 }
 
-//pob:src/Classes/PartyTab.lua:511-537
+//pob:src/Classes/PartyTab.lua:516-542
 func loadPartyTab(party pob.Party) *partyTab {
 	t := newPartyTab()
 	for _, node := range party.Applied() {
@@ -124,7 +124,7 @@ var (
 	partySpaceLowerRe  = regexp.MustCompile(` [a-z]`)
 )
 
-//pob:src/Classes/PartyTab.lua:713-891
+//pob:src/Classes/PartyTab.lua:718-896
 func (t *partyTab) parseBuffs(list *partyBuffList, buf string, buffType string) {
 	switch buffType {
 	case "EnemyConditions":
@@ -192,7 +192,7 @@ func (t *partyTab) parseBuffs(list *partyBuffList, buf string, buffType string) 
 	}
 }
 
-//pob:block:src/Classes/PartyTab.lua:788-891
+//pob:block:src/Classes/PartyTab.lua:793-896
 func (t *partyTab) parseNamedBuffs(list *partyBuffList, buf string, buffType string) {
 	mode := "Name"
 	if buffType == "Curse" {
@@ -352,7 +352,7 @@ var partyModFlagByName = map[string]mod.MFlag{
 	"WeaponMask": mod.MFlag(0x2FFF0000),
 }
 
-//pob:src/Modules/ModTools.lua:78-97
+//pob:src/Modules/ModTools.lua:100-119
 func parseFormattedSourceMod(line string) (*partyMod, error) {
 	modStrings := strings.Split(line, "|")
 	if len(modStrings) < 4 {
@@ -399,7 +399,7 @@ func parseFormattedSourceMod(line string) (*partyMod, error) {
 	return pm, nil
 }
 
-//pob:src/Modules/ModTools.lua:50-76
+//pob:src/Modules/ModTools.lua:72-98
 func parseTags(line string) ([]mod.Tag, *float64, error) {
 	if line == "" || line == "-" {
 		return nil, nil, nil
@@ -597,7 +597,7 @@ func buildPartyTag(fields map[string]string, order []string) (mod.Tag, *float64,
 	return tag, warcryPowerBonus, nil
 }
 
-//pob:block:src/Modules/CalcPerform.lua:1275
+//pob:block:src/Modules/CalcPerform.lua:1310
 func (env *Environment) partyMembers() *partyActor {
 	if env.partyTab == nil {
 		env.partyTab = newPartyTab()
@@ -654,7 +654,7 @@ type PartySummaryEntry struct {
 	Value string
 }
 
-//pob:block:src/Classes/PartyTab.lua:892-975
+//pob:block:src/Classes/PartyTab.lua:897-980
 func PartySummaries(party pob.Party) map[string][]PartySummaryEntry {
 	out := map[string][]PartySummaryEntry{}
 	t := newPartyTab()
@@ -699,7 +699,7 @@ func sortPartySummary(entries []PartySummaryEntry) {
 	})
 }
 
-//pob:block:src/Classes/PartyTab.lua:893-940
+//pob:block:src/Classes/PartyTab.lua:898-945
 func partyAuraSummary(list *partyBuffList) []PartySummaryEntry {
 	var out []PartySummaryEntry
 	aura, debuff := list.byType["Aura"], list.byType["AuraDebuff"]
@@ -744,7 +744,7 @@ func partyAuraSummary(list *partyBuffList) []PartySummaryEntry {
 	return out
 }
 
-//pob:block:src/Classes/PartyTab.lua:720-755
+//pob:block:src/Classes/PartyTab.lua:725-760
 func partyEnemyModsSummary(buf string) []PartySummaryEntry {
 	var out []PartySummaryEntry
 	index := map[string]int{}

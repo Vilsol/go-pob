@@ -8,7 +8,7 @@ import (
 
 // TestItemSocketBlock: Item.lua:2588-2635 reshapes self.sockets from the item's own local mods.
 //
-//pob:block:src/Classes/Item.lua:2588-2635
+//pob:block:src/Classes/Item.lua:2640-2687
 func TestItemSocketBlock(t *testing.T) {
 	const gloves = "Rarity: UNIQUE\nTest Gloves\nSorcerer Gloves\n"
 

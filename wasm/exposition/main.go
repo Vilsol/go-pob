@@ -88,6 +88,7 @@ func Exports(r bind.Registry) {
 	r.Func(ParseModLines)
 	r.Func(ModBrowserList)
 	r.Func(ModBrowserSupported)
+	r.Func(ModBrowserSources)
 	r.Func(ConfigPlaceholders)
 
 	r.Type(calculator.ComparePowerCategories{}, bind.Plain())

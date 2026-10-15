@@ -8,7 +8,7 @@ import (
 
 // TestFlaskEffectIncSumsLocalEffect: Item.lua:2400 sums TWO names into flaskData.effectInc: `FlaskEffect` and `LocalEffect`.
 //
-//pob:block:src/Classes/Item.lua:2400
+//pob:block:src/Classes/Item.lua:2452
 func TestFlaskEffectIncSumsLocalEffect(t *testing.T) {
 	const flask = "Rarity: RARE\nTest Flask\nDivine Life Flask\n"
 

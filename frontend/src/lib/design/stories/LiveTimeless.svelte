@@ -35,6 +35,7 @@
     devotion2: 1,
     socket: fx.tree.sockets[0].id,
     filter: false,
+    socketAllocate: false,
     distance: 0,
     protect: [],
     searchList: timelessSample.requirements.map(([label, w, min]) => `${id(label)}, ${Math.min(w, 10)}, 0, ${min * 10}`).join('\n'),

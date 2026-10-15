@@ -242,14 +242,14 @@ const (
 	SkillTypeLink                           = SkillType("Link")
 	SkillTypeBlessing                       = SkillType("Blessing")
 	SkillTypeZeroReservation                = SkillType("ZeroReservation")
-	//pob:block:src/Data/Global.lua:352
+	//pob:block:src/Data/Global.lua:353
 	SkillTypePact = SkillType("Pact")
 
 	SkillTypeRetaliation = SkillType("Retaliation")
 
 	SkillTypeNeverExertable = SkillType("NeverExertable")
 
-	//pob:src/Data/Global.lua:334
+	//pob:src/Data/Global.lua:335
 	SkillTypeMinionsAreUndamagable = SkillType("MinionsAreUndamagable")
 )
 

@@ -64,7 +64,7 @@ var modLineKindColor = map[ModLineKind]string{
 	ModLineScourge: colorScourge, ModLineCustom: colorCustom, ModLineVestigial: colorVestigial, ModLineCrucible: colorCrucible,
 }
 
-//pob:block:src/Classes/ItemsTab.lua:39-52
+//pob:block:src/Classes/ItemsTab.lua:46-59
 var catalystQualityFormat = []string{
 	"^x7F7F7FQuality (Attack Modifiers): " + colorMagic + "+%d%% (augmented)",
 	"^x7F7F7FQuality (Speed Modifiers): " + colorMagic + "+%d%% (augmented)",
@@ -143,14 +143,14 @@ func (env *Environment) ItemTooltipStats() ItemTooltipStats {
 	}
 }
 
-//pob:src/Classes/Tooltip.lua:87-110
+//pob:src/Classes/Tooltip.lua:91-114
 func (t *ItemTooltip) addLine(text string) {
 	for _, line := range strings.Split(text, "\n") {
 		t.Lines = append(t.Lines, TooltipLine{Text: line})
 	}
 }
 
-//pob:src/Classes/Tooltip.lua:116-123
+//pob:src/Classes/Tooltip.lua:120-127
 func (t *ItemTooltip) addSeparator() {
 	if n := len(t.Lines); n > 0 && t.Lines[n-1].Separator {
 		return
@@ -158,7 +158,7 @@ func (t *ItemTooltip) addSeparator() {
 	t.Lines = append(t.Lines, TooltipLine{Separator: true})
 }
 
-//pob:src/Modules/Main.lua:1537-1545
+//pob:src/Modules/Main.lua:1574-1582
 func statColor(stat float64, base *float64, limit *float64) string {
 	if limit != nil && stat > *limit {
 		return colorNegative
@@ -203,7 +203,7 @@ func luaFixed(v float64, prec int) string {
 	return out
 }
 
-//pob:src/Classes/ItemsTab.lua:4149-4218
+//pob:src/Classes/ItemsTab.lua:3993-4062
 func itemTooltipInfluence(item *Item) []string {
 	var header []string
 	add := func(name string) {
@@ -262,7 +262,7 @@ func itemTooltipInfluence(item *Item) []string {
 	return header
 }
 
-//pob:src/Classes/ItemsTab.lua:4339-4367
+//pob:src/Classes/ItemsTab.lua:4185-4213
 func socketDescriptionLine(item *Item) string {
 	var b strings.Builder
 	group := 0
@@ -293,7 +293,7 @@ func socketDescriptionLine(item *Item) string {
 	return b.String()
 }
 
-//pob:src/Modules/Build.lua:1941-1975
+//pob:src/Modules/Build.lua:2185-2219
 func addRequirementsToTooltip(t *ItemTooltip, ctx ItemTooltipContext, level, str, dex, intel, strBase, dexBase, intBase float64) {
 	var req []string
 	if level > 0 {
@@ -329,7 +329,7 @@ func addRequirementsToTooltip(t *ItemTooltip, ctx ItemTooltipContext, level, str
 	}
 }
 
-//pob:src/Modules/ItemTools.lua:357-378
+//pob:src/Modules/ItemTools.lua:361-382
 func formattedModLine(ml ModLine, dbMode bool) (string, bool) {
 	line, kind, ok := formatModLine(ml, dbMode)
 	if !ok {
@@ -351,7 +351,7 @@ var (
 	sourceProphecyRe = regexp.MustCompile(`prophecy\{([^}]+)\}`)
 )
 
-//pob:src/Classes/ItemsTab.lua:4220-4225
+//pob:src/Classes/ItemsTab.lua:4064-4069
 func FormatItemSource(text string) string {
 	text = sourceUniqueRe.ReplaceAllString(text, colorUnique+"${1}"+colorSource)
 	text = sourceNormalRe.ReplaceAllString(text, colorNormal+"${1}"+colorSource)
@@ -359,7 +359,7 @@ func FormatItemSource(text string) string {
 	return sourceProphecyRe.ReplaceAllString(text, colorProphecy+"${1}"+colorSource)
 }
 
-//pob:src/Classes/ItemsTab.lua:4368-4747
+//pob:src/Classes/ItemsTab.lua:4214-4593
 //nolint:gocyclo // Mirrors the Lua branch chain.
 func AddItemTooltip(item *Item, ctx ItemTooltipContext) ItemTooltip {
 	t := ItemTooltip{}
@@ -396,7 +396,7 @@ func AddItemTooltip(item *Item, ctx ItemTooltipContext) ItemTooltip {
 	}
 	t.addSeparator()
 
-	//pob:block:src/Classes/ItemsTab.lua:4406-4444
+	//pob:block:src/Classes/ItemsTab.lua:4252-4290
 	if ctx.DBMode {
 		if item.UsesVariantGroups {
 			if len(item.VersionList) > 0 && item.SelectedVersion != nil {
@@ -489,17 +489,18 @@ func AddItemTooltip(item *Item, ctx ItemTooltipContext) ItemTooltip {
 		if base.Armour.BlockChance != 0 && ad["BlockChance"] > 0 {
 			t.addLine(fmt.Sprintf("^x7F7F7FChance to Block: %s%d%%", statColor(ad["BlockChance"], f64(float64(base.Armour.BlockChance)), nil), luaInt(ad["BlockChance"])))
 		}
+		//pob:block:src/Classes/ItemsTab.lua:4340-4351
 		if ad["Armour"] > 0 {
-			t.addLine(fmt.Sprintf("^x7F7F7FArmour: %s%d", statColor(ad["Armour"], nil, nil), luaInt(ad["Armour"])))
+			t.addLine(fmt.Sprintf("^x7F7F7FArmour: %s%d", statColor(ad["Armour"], f64(ad["ArmourBase"]), nil), luaInt(ad["Armour"])))
 		}
 		if ad["Evasion"] > 0 {
-			t.addLine(fmt.Sprintf("^x7F7F7FEvasion Rating: %s%d", statColor(ad["Evasion"], nil, nil), luaInt(ad["Evasion"])))
+			t.addLine(fmt.Sprintf("^x7F7F7FEvasion Rating: %s%d", statColor(ad["Evasion"], f64(ad["EvasionBase"]), nil), luaInt(ad["Evasion"])))
 		}
 		if ad["EnergyShield"] > 0 {
-			t.addLine(fmt.Sprintf("^x7F7F7FEnergy Shield: %s%d", statColor(ad["EnergyShield"], nil, nil), luaInt(ad["EnergyShield"])))
+			t.addLine(fmt.Sprintf("^x7F7F7FEnergy Shield: %s%d", statColor(ad["EnergyShield"], f64(ad["EnergyShieldBase"]), nil), luaInt(ad["EnergyShield"])))
 		}
 		if ad["Ward"] > 0 {
-			t.addLine(fmt.Sprintf("^x7F7F7FWard: %s%d", statColor(ad["Ward"], nil, nil), luaInt(ad["Ward"])))
+			t.addLine(fmt.Sprintf("^x7F7F7FWard: %s%d", statColor(ad["Ward"], f64(ad["WardBase"]), nil), luaInt(ad["Ward"])))
 		}
 	case base.Flask != nil:
 		fd := item.FlaskData
@@ -563,7 +564,7 @@ func AddItemTooltip(item *Item, ctx ItemTooltipContext) ItemTooltip {
 		if item.JewelRadiusLabel != "" {
 			t.addLine("^x7F7F7FRadius: ^7" + item.JewelRadiusLabel)
 		}
-		//pob:block:src/Classes/ItemsTab.lua:4580-4592
+		//pob:block:src/Classes/ItemsTab.lua:4426-4438
 		if ctx.RadiusData != nil {
 			line := ""
 			for i, stat := range []string{"Str", "Dex", "Int"} {
@@ -696,7 +697,7 @@ func AddItemTooltip(item *Item, ctx ItemTooltipContext) ItemTooltip {
 			t.addSeparator()
 		}
 	}
-	//pob:block:src/Classes/ItemsTab.lua:4756-4769
+	//pob:block:src/Classes/ItemsTab.lua:4602-4615
 	for _, g := range item.GrantedSkills {
 		t.Skills = append(t.Skills, TooltipSkill{SkillID: g.SkillID, Level: g.Level})
 	}
@@ -718,7 +719,7 @@ func AddItemTooltip(item *Item, ctx ItemTooltipContext) ItemTooltip {
 	return t
 }
 
-//pob:block:src/Modules/Data.lua:1062-1065
+//pob:block:src/Modules/Data.lua:1091-1094
 var gemForSkill = sync.OnceValue(func() map[string]string {
 	out := map[string]string{}
 	for _, id := range slices.Sorted(maps.Keys(raw2.Gems)) {
@@ -731,7 +732,7 @@ var gemForSkill = sync.OnceValue(func() map[string]string {
 	return out
 })
 
-//pob:block:src/Classes/ItemsTab.lua:4769-4793
+//pob:block:src/Classes/ItemsTab.lua:4615-4639
 func GrantedSkillTooltips(t ItemTooltip, ctx ItemTooltipContext) [][]TooltipLine {
 	out := make([][]TooltipLine, len(t.Skills))
 	for k, s := range t.Skills {
@@ -752,7 +753,7 @@ func GrantedSkillTooltips(t ItemTooltip, ctx ItemTooltipContext) [][]TooltipLine
 
 var foulbornPrefixRe = regexp.MustCompile(`^Foulborn\s+`)
 
-//pob:block:src/Classes/ItemsTab.lua:4696-4728
+//pob:block:src/Classes/ItemsTab.lua:4542-4574
 func grandSpectrumFlavourID(lines []TooltipLine) string {
 	for _, l := range lines {
 		switch text := l.Text; {
@@ -779,7 +780,7 @@ func grandSpectrumFlavourID(lines []TooltipLine) string {
 	return ""
 }
 
-//pob:block:src/Classes/ItemsTab.lua:4803-5001
+//pob:block:src/Classes/ItemsTab.lua:4666-4864
 //nolint:gocyclo // Mirrors the Lua branch chain.
 func (m *MiscCalculator) EffectiveFlaskStats(item *Item) []string {
 	if item == nil || item.Base == nil || item.Base.Flask == nil || m.base == nil || m.base.ModDB == nil {
@@ -973,7 +974,7 @@ func configInputBool(build *pob.PathOfBuilding, name string) bool {
 	return false
 }
 
-//pob:block:src/Classes/ItemsTab.lua:4943-4948
+//pob:block:src/Classes/ItemsTab.lua:4806-4811
 func emptyFlaskSlots(build *pob.PathOfBuilding) int {
 	if build == nil {
 		return 0
@@ -998,7 +999,7 @@ func emptyFlaskSlots(build *pob.PathOfBuilding) int {
 	return empty
 }
 
-//pob:block:src/Classes/ItemsTab.lua:5011-5038
+//pob:block:src/Classes/ItemsTab.lua:4874-4901
 func (m *MiscCalculator) EffectiveTinctureStats(item *Item) []string {
 	if item == nil || item.Base == nil || item.Base.Tincture == nil || m.base == nil || m.base.ModDB == nil {
 		return nil
@@ -1039,7 +1040,7 @@ func (m *MiscCalculator) SocketJewelTooltip(nodeID int, ctx ItemTooltipContext) 
 	return AddItemTooltip(parseItemGlobal(text), ctx), true
 }
 
-//pob:src/Classes/ItemsTab.lua:2398-2406
+//pob:src/Classes/ItemsTab.lua:2493-2501
 func checkLineForAllocates(line string, nodes map[string]data.Node) string {
 	if nodes != nil && strings.Contains(line, "Allocates") {
 		if id := allocatesIDRe.FindString(line); id != "" {
@@ -1053,7 +1054,7 @@ func checkLineForAllocates(line string, nodes map[string]data.Node) string {
 
 var allocatesIDRe = regexp.MustCompile(`\d+`)
 
-//pob:src/Classes/ItemsTab.lua:2408-2422
+//pob:src/Classes/ItemsTab.lua:2503-2525
 func (m *MiscCalculator) CompareAddedMod(text string, lines []string, modType string) (*Environment, *Environment) {
 	item := ParseItem(text)
 	if item.Base == nil {
@@ -1070,6 +1071,22 @@ func (m *MiscCalculator) CompareAddedMod(text string, lines []string, modType st
 		added += "\n" + prefix + checkLineForAllocates(line, nodes)
 	}
 	return m.Calc(&CalcOverride{RepSlotName: slotName, RepItem: item}), m.Calc(&CalcOverride{RepSlotName: slotName, RepItem: ParseItem(added)})
+}
+
+//pob:src/Classes/ItemsTab.lua:2503-2525
+func (m *MiscCalculator) CompareReplacedImplicits(text string, lines []string) (*Environment, *Environment) {
+	item := ParseItem(text)
+	if item.Base == nil {
+		return nil, nil
+	}
+	slotName := item.getPrimarySlot()
+	nodes := data.TreeVersions[data.LatestTreeVersion].Tree().Nodes
+	b := craftBlock(text, item)
+	b.implicits = nil
+	for _, line := range lines {
+		b.implicits = append(b.implicits, checkLineForAllocates(line, nodes))
+	}
+	return m.Calc(&CalcOverride{RepSlotName: slotName, RepItem: item}), m.Calc(&CalcOverride{RepSlotName: slotName, RepItem: ParseItem(b.join())})
 }
 
 func (m *MiscCalculator) Build() *pob.PathOfBuilding {

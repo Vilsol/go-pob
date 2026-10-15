@@ -19,7 +19,7 @@ type SkillPart struct {
 // Generated from PoB v2.18.1 by oracle/skill_parts.py.
 
 var SkillParts = map[string][]SkillPart{
-	// src/Data/Skills/act_int.lua:1079
+	// src/Data/Skills/act_int.lua:1078
 	"BallLightning": {
 		{Name: "One Bolt"},
 		{Name: "All Bolts in Range"},
@@ -66,12 +66,12 @@ var SkillParts = map[string][]SkillPart{
 		{Name: "5 Blades"},
 		{Name: "10 Blades"},
 	},
-	// src/Data/Skills/act_str.lua:1022
+	// src/Data/Skills/act_str.lua:1021
 	"Bladestorm": {
 		{Name: "Attack"},
 		{Name: "Bladestorm"},
 	},
-	// src/Data/Skills/act_str.lua:1130
+	// src/Data/Skills/act_str.lua:1129
 	"BladestormAltX": {
 		{Name: "Attack"},
 		{Name: "Bladestorm"},
@@ -111,17 +111,17 @@ var SkillParts = map[string][]SkillPart{
 		{Name: "Self Explosion", Flags: map[string]bool{"spell": true, "cast": false}},
 		{Name: "Minion Explosion", Flags: map[string]bool{"spell": false, "cast": true}},
 	},
-	// src/Data/Skills/act_str.lua:1316
+	// src/Data/Skills/act_str.lua:1315
 	"Boneshatter": {
 		{Name: "Attack", Flags: map[string]bool{"area": false}},
 		{Name: "Pulse", Flags: map[string]bool{"area": true}},
 	},
-	// src/Data/Skills/act_str.lua:1426
+	// src/Data/Skills/act_str.lua:1425
 	"BoneshatterAltX": {
 		{Name: "Attack", Flags: map[string]bool{"area": false}},
 		{Name: "Pulse", Flags: map[string]bool{"area": true}},
 	},
-	// src/Data/Skills/act_str.lua:1540
+	// src/Data/Skills/act_str.lua:1539
 	"BoneshatterAltY": {
 		{Name: "Attack", Flags: map[string]bool{"area": false}},
 		{Name: "Pulse", Flags: map[string]bool{"area": true}},
@@ -143,12 +143,12 @@ var SkillParts = map[string][]SkillPart{
 		{Name: "Projectile"},
 		{Name: "Explosion"},
 	},
-	// src/Data/Skills/act_dex.lua:4358
+	// src/Data/Skills/act_dex.lua:4360
 	"Cremation": {
 		{Name: "Spell", Flags: map[string]bool{"spell": true, "cast": false}},
 		{Name: "Corpse Explosion", Flags: map[string]bool{"spell": false, "cast": true, "projectile": false}},
 	},
-	// src/Data/Skills/act_dex.lua:4476
+	// src/Data/Skills/act_dex.lua:4478
 	"CremationAltX": {
 		{Name: "Spell", Flags: map[string]bool{"spell": true, "cast": false}},
 		{Name: "Corpse Explosion", Flags: map[string]bool{"spell": false, "cast": true, "projectile": false}},
@@ -163,27 +163,27 @@ var SkillParts = map[string][]SkillPart{
 		{Name: "Average"},
 		{Name: "Max Ruin"},
 	},
-	// src/Data/Skills/other.lua:1141
+	// src/Data/Skills/other.lua:1269
 	"DeathWish": {
 		{Name: "Channelling", Flags: map[string]bool{"spell": true, "cast": false}},
 		{Name: "Minion Explosion", Flags: map[string]bool{"spell": false, "cast": true, "stages": true}},
 	},
-	// src/Data/Skills/act_dex.lua:5168
+	// src/Data/Skills/act_dex.lua:5171
 	"DetonateDead": {
 		{Name: "Spell", Flags: map[string]bool{"spell": true, "cast": false}},
 		{Name: "Corpse Explosion", Flags: map[string]bool{"spell": false, "cast": true}},
 	},
-	// src/Data/Skills/act_dex.lua:5336
+	// src/Data/Skills/act_dex.lua:5339
 	"DetonateDeadAltY": {
 		{Name: "Spell", Flags: map[string]bool{"spell": true, "cast": false}},
 		{Name: "Corpse Explosion", Flags: map[string]bool{"spell": false, "cast": true}},
 	},
-	// src/Data/Skills/act_str.lua:2748
+	// src/Data/Skills/act_str.lua:2811
 	"DivineBlast": {
 		{Name: "Beam Implosion"},
 		{Name: "Explosion"},
 	},
-	// src/Data/Skills/act_str.lua:2847
+	// src/Data/Skills/act_str.lua:2910
 	"DivineBlastAltX": {
 		{Name: "Beam Implosion"},
 		{Name: "Explosion"},
@@ -198,32 +198,32 @@ var SkillParts = map[string][]SkillPart{
 		{Name: "Channelling", Flags: map[string]bool{"area": false}},
 		{Name: "Release", Flags: map[string]bool{"area": true, "stages": true, "channelRelease": true}},
 	},
-	// src/Data/Skills/act_str.lua:3304
+	// src/Data/Skills/act_str.lua:3367
 	"Earthquake": {
 		{Name: "Initial impact"},
 		{Name: "Aftershock"},
 	},
-	// src/Data/Skills/act_str.lua:3406
+	// src/Data/Skills/act_str.lua:3469
 	"EarthquakeAltX": {
 		{Name: "Initial impact"},
 		{Name: "Aftershock"},
 	},
-	// src/Data/Skills/act_str.lua:3617
+	// src/Data/Skills/act_str.lua:3680
 	"Earthshatter": {
 		{Name: "Initial impact"},
 		{Name: "Spike"},
 	},
-	// src/Data/Skills/act_str.lua:3728
+	// src/Data/Skills/act_str.lua:3791
 	"EarthshatterAltX": {
 		{Name: "Initial impact"},
 		{Name: "Spike"},
 	},
-	// src/Data/Skills/act_str.lua:3836
+	// src/Data/Skills/act_str.lua:3899
 	"EarthshatterAltY": {
 		{Name: "Initial impact"},
 		{Name: "Spike"},
 	},
-	// src/Data/Skills/act_dex.lua:6054
+	// src/Data/Skills/act_dex.lua:6057
 	"ElementalHit": {
 		{Name: "Fire Attack", Flags: map[string]bool{"area": false}},
 		{Name: "Fire AoE", Flags: map[string]bool{"area": true}},
@@ -232,35 +232,35 @@ var SkillParts = map[string][]SkillPart{
 		{Name: "Lightning Attack", Flags: map[string]bool{"area": false}},
 		{Name: "Lightning AoE", Flags: map[string]bool{"area": true}},
 	},
-	// src/Data/Skills/act_dex.lua:6226
+	// src/Data/Skills/act_dex.lua:6229
 	"ElementalHitAltX": {
 		{Name: "Attack", Flags: map[string]bool{"area": false}},
 		{Name: "AoE Explosion", Flags: map[string]bool{"area": true}},
 	},
-	// src/Data/Skills/other.lua:1664
+	// src/Data/Skills/other.lua:1792
 	"ElementalWarding": {
 		{Name: "Convert to fire"},
 		{Name: "Convert to cold"},
 		{Name: "Convert to lightning"},
 	},
-	// src/Data/Skills/other.lua:6065
+	// src/Data/Skills/other.lua:6193
 	"EnemyExplode": {
 		{Name: "This Source Only"},
 		{Name: "This Source Only, Ignoring Chance"},
 		{Name: "Average Of All Sources"},
 	},
-	// src/Data/Skills/act_str.lua:4021
+	// src/Data/Skills/act_str.lua:4084
 	"Eviscerate": {
 		{Name: "1 Wave"},
 		{Name: "Both Waves"},
 	},
-	// src/Data/Skills/act_dex.lua:6681
+	// src/Data/Skills/act_dex.lua:6684
 	"ExplosiveArrow": {
 		{Name: "Explosion (# of fuses)", Flags: map[string]bool{"area": true, "stages": true}},
 		{Name: "Explosion (Maximum Sustainable Fuses)", Flags: map[string]bool{"area": true}},
 		{Name: "Arrow", Flags: map[string]bool{"area": false}},
 	},
-	// src/Data/Skills/act_dex.lua:6893
+	// src/Data/Skills/act_dex.lua:6896
 	"ExplosiveConcoction": {
 		{Name: "No Flasks"},
 		{Name: "Sapphire"},
@@ -271,7 +271,7 @@ var SkillParts = map[string][]SkillPart{
 		{Name: "Topaz + Ruby"},
 		{Name: "All Flasks"},
 	},
-	// src/Data/Skills/act_dex.lua:7019
+	// src/Data/Skills/act_dex.lua:7022
 	"ExplosiveConcoctionAltX": {
 		{Name: "No Flasks"},
 		{Name: "Sapphire"},
@@ -282,7 +282,7 @@ var SkillParts = map[string][]SkillPart{
 		{Name: "Topaz + Ruby"},
 		{Name: "All Flasks"},
 	},
-	// src/Data/Skills/act_dex.lua:7142
+	// src/Data/Skills/act_dex.lua:7145
 	"ExplosiveTrap": {
 		{Name: "One explosion hitting"},
 		{Name: "Average explosions hitting"},
@@ -303,7 +303,7 @@ var SkillParts = map[string][]SkillPart{
 		{Name: "Primary Debuff", Flags: map[string]bool{"area": true}},
 		{Name: "Secondary Debuff", Flags: map[string]bool{"area": false}},
 	},
-	// src/Data/Skills/act_dex.lua:7674
+	// src/Data/Skills/act_dex.lua:7677
 	"FlamethrowerTrap": {
 		{Name: "One trap (good placement)"},
 		{Name: "One trap (bad placement)"},
@@ -320,32 +320,32 @@ var SkillParts = map[string][]SkillPart{
 		{Name: "1 Projectile"},
 		{Name: "All Primary Projectiles"},
 	},
-	// src/Data/Skills/act_dex.lua:8388
+	// src/Data/Skills/act_dex.lua:8391
 	"FrostBlades": {
 		{Name: "Melee hit", Flags: map[string]bool{"melee": true, "projectile": false}},
 		{Name: "Icy blades", Flags: map[string]bool{"melee": false, "projectile": true}},
 	},
-	// src/Data/Skills/act_dex.lua:8491
+	// src/Data/Skills/act_dex.lua:8494
 	"FrostBladesAltX": {
 		{Name: "Melee Hit", Flags: map[string]bool{"attack": true, "melee": true, "projectile": true, "area": false}},
 		{Name: "Ground DoT", Flags: map[string]bool{"attack": false, "hit": false, "melee": false, "projectile": false, "area": true}},
 	},
-	// src/Data/Skills/act_str.lua:4608
+	// src/Data/Skills/act_str.lua:4671
 	"FrozenSweep": {
 		{Name: "1 charge"},
 		{Name: "Wait for max charges"},
 	},
-	// src/Data/Skills/act_str.lua:4726
+	// src/Data/Skills/act_str.lua:4789
 	"FrozenSweepAltX": {
 		{Name: "1 charge"},
 		{Name: "Wait for max charges"},
 	},
-	// src/Data/Skills/act_dex.lua:8596
+	// src/Data/Skills/act_dex.lua:8599
 	"GalvanicArrow": {
 		{Name: "Arrow", Flags: map[string]bool{"area": false}},
 		{Name: "Cone", Flags: map[string]bool{"area": true}},
 	},
-	// src/Data/Skills/act_dex.lua:8760
+	// src/Data/Skills/act_dex.lua:8763
 	"GalvanicArrowAltY": {
 		{Name: "Arrow", Flags: map[string]bool{"area": false}},
 		{Name: "Cone", Flags: map[string]bool{"area": true}},
@@ -380,7 +380,7 @@ var SkillParts = map[string][]SkillPart{
 		{Name: "Target", Flags: map[string]bool{"area": false}},
 		{Name: "Explosion", Flags: map[string]bool{"area": true}},
 	},
-	// src/Data/Skills/act_str.lua:6040
+	// src/Data/Skills/act_str.lua:6103
 	"HolyHammers": {
 		{Name: "Slam"},
 		{Name: "First Hammer"},
@@ -396,18 +396,18 @@ var SkillParts = map[string][]SkillPart{
 		{Name: "Cast (Shocked)"},
 		{Name: "Cast (Frozen & Shocked)"},
 	},
-	// src/Data/Skills/act_str.lua:6518
+	// src/Data/Skills/act_str.lua:6581
 	"IceCrash": {
 		{Name: "First Hit"},
 		{Name: "Second Hit"},
 		{Name: "Third Hit"},
 	},
-	// src/Data/Skills/act_dex.lua:9542
+	// src/Data/Skills/act_dex.lua:9545
 	"IceShot": {
 		{Name: "Arrow", Flags: map[string]bool{"area": false}},
 		{Name: "Cone", Flags: map[string]bool{"area": true}},
 	},
-	// src/Data/Skills/act_dex.lua:9626
+	// src/Data/Skills/act_dex.lua:9629
 	"IceShotAltX": {
 		{Name: "Arrow", Flags: map[string]bool{"area": false}},
 		{Name: "Cone", Flags: map[string]bool{"area": true}},
@@ -436,13 +436,13 @@ var SkillParts = map[string][]SkillPart{
 		{Name: "Channelling", Flags: map[string]bool{"stages": true}},
 		{Name: "Release", Flags: map[string]bool{"stages": true, "channelRelease": true}},
 	},
-	// src/Data/Skills/act_str.lua:7061
+	// src/Data/Skills/act_str.lua:7124
 	"InfernalBlow": {
 		{Name: "Melee Hit", Flags: map[string]bool{"area": false}},
 		{Name: "Debuff Explosion - 1 Stack", Flags: map[string]bool{"area": true}},
 		{Name: "Debuff Explosion - 6 Stacks", Flags: map[string]bool{"area": true}},
 	},
-	// src/Data/Skills/act_str.lua:7187
+	// src/Data/Skills/act_str.lua:7250
 	"InfernalBlowAltX": {
 		{Name: "Melee Hit", Flags: map[string]bool{"area": false}},
 		{Name: "Debuff Explosion - 1 Stack", Flags: map[string]bool{"area": true}},
@@ -468,27 +468,27 @@ var SkillParts = map[string][]SkillPart{
 		{Name: "All Projectiles"},
 		{Name: "1 Projectile"},
 	},
-	// src/Data/Skills/act_dex.lua:9960
+	// src/Data/Skills/act_dex.lua:9963
 	"Lacerate": {
 		{Name: "One slash"},
 		{Name: "Both slashes"},
 	},
-	// src/Data/Skills/act_dex.lua:10053
+	// src/Data/Skills/act_dex.lua:10056
 	"LacerateAltX": {
 		{Name: "One slash"},
 		{Name: "Both slashes"},
 	},
-	// src/Data/Skills/act_dex.lua:10141
+	// src/Data/Skills/act_dex.lua:10144
 	"LacerateAltY": {
 		{Name: "One slash"},
 		{Name: "Both slashes"},
 	},
-	// src/Data/Skills/act_dex.lua:10239
+	// src/Data/Skills/act_dex.lua:10242
 	"LancingSteel": {
 		{Name: "Single Projectile Hit"},
 		{Name: "All Projectiles Hit"},
 	},
-	// src/Data/Skills/act_dex.lua:10342
+	// src/Data/Skills/act_dex.lua:10345
 	"LancingSteelAltX": {
 		{Name: "Single Projectile Hit"},
 		{Name: "All Projectiles Hit"},
@@ -520,12 +520,12 @@ var SkillParts = map[string][]SkillPart{
 		{Name: "Average active traps, average waves"},
 		{Name: "Average active traps, all waves"},
 	},
-	// src/Data/Skills/act_dex.lua:10694
+	// src/Data/Skills/act_dex.lua:10697
 	"LightningStrike": {
 		{Name: "Melee hit", Flags: map[string]bool{"melee": true, "projectile": false}},
 		{Name: "Projectiles", Flags: map[string]bool{"melee": false, "projectile": true}},
 	},
-	// src/Data/Skills/act_dex.lua:10795
+	// src/Data/Skills/act_dex.lua:10798
 	"LightningStrikeAltX": {
 		{Name: "Melee hit", Flags: map[string]bool{"melee": true, "projectile": false}},
 		{Name: "Projectiles", Flags: map[string]bool{"melee": false, "projectile": true}},
@@ -542,13 +542,13 @@ var SkillParts = map[string][]SkillPart{
 		{Name: "Normal pulse"},
 		{Name: "Stronger pulse"},
 	},
-	// src/Data/Skills/act_str.lua:7749
+	// src/Data/Skills/act_str.lua:7812
 	"MoltenStrike": {
 		{Name: "Melee Hit", Flags: map[string]bool{"melee": true, "projectile": false, "area": false}},
 		{Name: "Magma Balls", Flags: map[string]bool{"melee": false, "projectile": true, "area": true}},
 		{Name: "Average Balls Hitting", Flags: map[string]bool{"melee": false, "projectile": true, "area": true}},
 	},
-	// src/Data/Skills/act_str.lua:7910
+	// src/Data/Skills/act_str.lua:7973
 	"MoltenStrikeAltX": {
 		{Name: "Melee Hit", Flags: map[string]bool{"melee": true, "projectile": false, "area": false}},
 		{Name: "Magma Balls", Flags: map[string]bool{"melee": false, "projectile": true, "area": true}},
@@ -567,17 +567,17 @@ var SkillParts = map[string][]SkillPart{
 		{Name: "Energy Pulse", Flags: map[string]bool{"stages": true}},
 		{Name: "Max Pulse per Brand"},
 	},
-	// src/Data/Skills/act_dex.lua:17412
+	// src/Data/Skills/act_dex.lua:17415
 	"PoisonousConcoction": {
 		{Name: "No Flask"},
 		{Name: "Life"},
 	},
-	// src/Data/Skills/act_dex.lua:17513
+	// src/Data/Skills/act_dex.lua:17516
 	"PoisonousConcoctionAltX": {
 		{Name: "No Flask"},
 		{Name: "Life"},
 	},
-	// src/Data/Skills/sup_int.lua:5415
+	// src/Data/Skills/sup_int.lua:5414
 	"PrismaticBurst": {
 		{Name: "Fire"},
 		{Name: "Cold"},
@@ -593,12 +593,12 @@ var SkillParts = map[string][]SkillPart{
 		{Name: "Initial hit"},
 		{Name: "Shockwave"},
 	},
-	// src/Data/Skills/act_str.lua:9029
+	// src/Data/Skills/act_str.lua:9092
 	"RageVortex": {
 		{Name: "Melee"},
 		{Name: "Rage Storm"},
 	},
-	// src/Data/Skills/act_str.lua:9144
+	// src/Data/Skills/act_str.lua:9207
 	"RageVortexAltX": {
 		{Name: "Melee"},
 		{Name: "Rage Storm"},
@@ -613,22 +613,22 @@ var SkillParts = map[string][]SkillPart{
 		{Name: "Manual Stages", Flags: map[string]bool{"stages": true}},
 		{Name: "Maximum Stages"},
 	},
-	// src/Data/Skills/act_dex.lua:12990
+	// src/Data/Skills/act_dex.lua:12993
 	"ScourgeArrow": {
 		{Name: "Release", Flags: map[string]bool{"stages": true}},
 		{Name: "Thorn Arrows", Flags: map[string]bool{"stages": true}},
 	},
-	// src/Data/Skills/act_dex.lua:13089
+	// src/Data/Skills/act_dex.lua:13092
 	"ScourgeArrowAltX": {
 		{Name: "Release"},
 		{Name: "Thorn Arrows"},
 	},
-	// src/Data/Skills/act_str.lua:9581
+	// src/Data/Skills/act_str.lua:9644
 	"SearingBondAltX": {
 		{Name: "Beam"},
 		{Name: "Explosion"},
 	},
-	// src/Data/Skills/act_dex.lua:13494
+	// src/Data/Skills/act_dex.lua:13497
 	"SeismicTrap": {
 		{Name: "One wave hitting"},
 		{Name: "Average waves hitting configured size enemy"},
@@ -637,28 +637,28 @@ var SkillParts = map[string][]SkillPart{
 		{Name: "Average active traps, average waves"},
 		{Name: "Average active traps, all waves"},
 	},
-	// src/Data/Skills/act_dex.lua:13669
+	// src/Data/Skills/act_dex.lua:13672
 	"SeismicTrapAltX": {
 		{Name: "One wave hitting"},
 		{Name: "Average waves hitting configured size enemy"},
 		{Name: "All waves hitting"},
 	},
-	// src/Data/Skills/act_dex.lua:13186
+	// src/Data/Skills/act_dex.lua:13189
 	"ShatteringSteel": {
 		{Name: "Projectile", Flags: map[string]bool{"area": false}},
 		{Name: "Cone AoE"},
 	},
-	// src/Data/Skills/act_dex.lua:13275
+	// src/Data/Skills/act_dex.lua:13278
 	"ShatteringSteelAltX": {
 		{Name: "Projectile", Flags: map[string]bool{"area": false}},
 		{Name: "Cone AoE"},
 	},
-	// src/Data/Skills/act_str.lua:9866
+	// src/Data/Skills/act_str.lua:9929
 	"ShieldCrush": {
 		{Name: "1 Wave"},
 		{Name: "2 Overlapping Waves"},
 	},
-	// src/Data/Skills/act_str.lua:9960
+	// src/Data/Skills/act_str.lua:10023
 	"ShieldCrushAltX": {
 		{Name: "1 Wave"},
 		{Name: "2 Overlapping Waves"},
@@ -674,12 +674,12 @@ var SkillParts = map[string][]SkillPart{
 		{Name: "Ring + Nova"},
 		{Name: "Nova"},
 	},
-	// src/Data/Skills/act_str.lua:10314
+	// src/Data/Skills/act_str.lua:10377
 	"Smite": {
 		{Name: "Melee Hit", Flags: map[string]bool{"area": false}},
 		{Name: "Area Hit", Flags: map[string]bool{"area": true, "melee": false}},
 	},
-	// src/Data/Skills/act_str.lua:10439
+	// src/Data/Skills/act_str.lua:10502
 	"SmiteAltX": {
 		{Name: "Melee Hit", Flags: map[string]bool{"area": false}},
 		{Name: "Area Hit", Flags: map[string]bool{"area": true, "melee": false}},
@@ -704,22 +704,22 @@ var SkillParts = map[string][]SkillPart{
 		{Name: "1 Hit"},
 		{Name: "Maximum Hits"},
 	},
-	// src/Data/Skills/act_dex.lua:14302
+	// src/Data/Skills/act_dex.lua:14305
 	"SpectralShieldThrow": {
 		{Name: "Shield"},
 		{Name: "Shards"},
 	},
-	// src/Data/Skills/act_dex.lua:14402
+	// src/Data/Skills/act_dex.lua:14405
 	"SpectralShieldThrowAltX": {
 		{Name: "Shield"},
 		{Name: "Shards"},
 	},
-	// src/Data/Skills/act_dex.lua:14489
+	// src/Data/Skills/act_dex.lua:14492
 	"SpectralShieldThrowAltY": {
 		{Name: "Shield"},
 		{Name: "Shards"},
 	},
-	// src/Data/Skills/act_str.lua:10668
+	// src/Data/Skills/act_str.lua:10731
 	"StaticStrike": {
 		{Name: "Melee hit", Flags: map[string]bool{"chaining": false}},
 		{Name: "Beams", Flags: map[string]bool{"chaining": true}},
@@ -735,17 +735,17 @@ var SkillParts = map[string][]SkillPart{
 		{Name: "1 Orb Tick"},
 		{Name: "Max Duration Explode"},
 	},
-	// src/Data/Skills/act_dex.lua:11736
+	// src/Data/Skills/act_dex.lua:11739
 	"StormRain": {
 		{Name: "Arrow"},
 		{Name: "Beam"},
 	},
-	// src/Data/Skills/act_dex.lua:11854
+	// src/Data/Skills/act_dex.lua:11857
 	"StormRainAltX": {
 		{Name: "Arrow"},
 		{Name: "Beam"},
 	},
-	// src/Data/Skills/act_dex.lua:11962
+	// src/Data/Skills/act_dex.lua:11965
 	"StormRainAltY": {
 		{Name: "Arrow"},
 		{Name: "Beam"},
@@ -764,70 +764,70 @@ var SkillParts = map[string][]SkillPart{
 		{Name: "2 Improvements"},
 		{Name: "3 Improvements"},
 	},
-	// src/Data/Skills/act_str.lua:11829
+	// src/Data/Skills/act_str.lua:11892
 	"Sunder": {
 		{Name: "First Wave Area"},
 		{Name: "Final Wave Area"},
 		{Name: "Shockwaves"},
 	},
-	// src/Data/Skills/act_str.lua:11940
+	// src/Data/Skills/act_str.lua:12003
 	"SunderAltX": {
 		{Name: "Wave"},
 		{Name: "Shockwaves"},
 	},
-	// src/Data/Skills/act_str.lua:12042
+	// src/Data/Skills/act_str.lua:12105
 	"SunderAltY": {
 		{Name: "First Wave Area"},
 		{Name: "Final Wave Area"},
 		{Name: "Shockwaves"},
 	},
-	// src/Data/Skills/act_str.lua:6314
+	// src/Data/Skills/act_str.lua:6377
 	"Sweep": {
 		{Name: "Melee Hit"},
 		{Name: "Holy Hammer"},
 	},
-	// src/Data/Skills/act_str.lua:6408
+	// src/Data/Skills/act_str.lua:6471
 	"SweepAltX": {
 		{Name: "Melee Hit"},
 		{Name: "Holy Hammer"},
 	},
-	// src/Data/Skills/act_dex.lua:17839
+	// src/Data/Skills/act_dex.lua:17842
 	"Thunderstorm": {
 		{Name: "Projectile"},
 		{Name: "Storm Explosion", Flags: map[string]bool{"stages": true}},
 	},
-	// src/Data/Skills/act_dex.lua:17946
+	// src/Data/Skills/act_dex.lua:17949
 	"ThunderstormMiniTornados": {
 		{Name: "Projectile", Flags: map[string]bool{"projectile": true}},
 		{Name: "Explosion", Flags: map[string]bool{"area": true}},
 	},
-	// src/Data/Skills/act_dex.lua:18128
+	// src/Data/Skills/act_dex.lua:18131
 	"TornadoAltY": {
 		{Name: "Fire", Flags: map[string]bool{"stages": true}},
 		{Name: "Lightning", Flags: map[string]bool{"stages": true}},
 		{Name: "Cold", Flags: map[string]bool{"stages": true}},
 	},
-	// src/Data/Skills/act_dex.lua:16040
+	// src/Data/Skills/act_dex.lua:16043
 	"TornadoShot": {
 		{Name: "Single Projectile"},
 		{Name: "Combined Average Projectiles"},
 	},
-	// src/Data/Skills/sup_str.lua:4981
+	// src/Data/Skills/sup_str.lua:4982
 	"TriggeredSupportVoidShockwave": {
 		{Name: "Maim Shockwave"},
 		{Name: "Shockwave Repeat"},
 	},
-	// src/Data/Skills/sup_dex.lua:4918
+	// src/Data/Skills/sup_dex.lua:4917
 	"TriggeredSupportWindburst": {
 		{Name: "Projectile", Flags: map[string]bool{"projectile": true}},
 		{Name: "Explosion", Flags: map[string]bool{"area": true}},
 	},
-	// src/Data/Skills/act_dex.lua:5433
+	// src/Data/Skills/act_dex.lua:5436
 	"VaalDetonateDead": {
 		{Name: "Spell", Flags: map[string]bool{"spell": true, "cast": false}},
 		{Name: "Corpse Explosion", Flags: map[string]bool{"spell": false, "cast": true}},
 	},
-	// src/Data/Skills/act_str.lua:3512
+	// src/Data/Skills/act_str.lua:3575
 	"VaalEarthquake": {
 		{Name: "Initial impact"},
 		{Name: "Aftershock"},
@@ -837,57 +837,57 @@ var SkillParts = map[string][]SkillPart{
 		{Name: "Projectile", Flags: map[string]bool{"area": false}},
 		{Name: "Explosion", Flags: map[string]bool{"area": true}},
 	},
-	// src/Data/Skills/act_dex.lua:10579
+	// src/Data/Skills/act_dex.lua:10582
 	"VaalLightningArrow": {
 		{Name: "1 Projectile"},
 		{Name: "All Projectiles"},
 	},
-	// src/Data/Skills/act_dex.lua:10898
+	// src/Data/Skills/act_dex.lua:10901
 	"VaalLightningStrike": {
 		{Name: "Melee hit", Flags: map[string]bool{"melee": true, "projectile": false}},
 		{Name: "Projectiles", Flags: map[string]bool{"melee": false, "projectile": true}},
 	},
-	// src/Data/Skills/act_str.lua:8127
+	// src/Data/Skills/act_str.lua:8190
 	"VaalMoltenStrike": {
 		{Name: "Melee Hit", Flags: map[string]bool{"melee": true, "projectile": false, "area": false, "chaining": false}},
 		{Name: "Magma Balls", Flags: map[string]bool{"melee": false, "projectile": true, "area": true, "chaining": true}},
 	},
-	// src/Data/Skills/act_str.lua:10539
+	// src/Data/Skills/act_str.lua:10602
 	"VaalSmite": {
 		{Name: "Melee Hit", Flags: map[string]bool{"area": false}},
 		{Name: "Area Hit", Flags: map[string]bool{"area": true, "melee": false}},
 	},
-	// src/Data/Skills/act_str.lua:12765
+	// src/Data/Skills/act_str.lua:12828
 	"VaalVolcanicFissure": {
 		{Name: "Ground Fissure", Flags: map[string]bool{"melee": true, "projectile": false}},
 		{Name: "Magma Balls", Flags: map[string]bool{"melee": false, "projectile": true}},
 	},
-	// src/Data/Skills/act_dex.lua:16290
+	// src/Data/Skills/act_dex.lua:16293
 	"VenomGyre": {
 		{Name: "Outgoing Projectile"},
 		{Name: "Returning Projectile"},
 	},
-	// src/Data/Skills/act_dex.lua:16654
+	// src/Data/Skills/act_dex.lua:16657
 	"VolatileDead": {
 		{Name: "Spell", Flags: map[string]bool{"spell": true, "cast": false}},
 		{Name: "Corpse Explosion", Flags: map[string]bool{"spell": false, "cast": true}},
 	},
-	// src/Data/Skills/act_dex.lua:16757
+	// src/Data/Skills/act_dex.lua:16760
 	"VolatileDeadAltX": {
 		{Name: "Spell", Flags: map[string]bool{"spell": true, "cast": false}},
 		{Name: "Corpse Explosion", Flags: map[string]bool{"spell": false, "cast": true}},
 	},
-	// src/Data/Skills/act_dex.lua:16861
+	// src/Data/Skills/act_dex.lua:16864
 	"VolatileDeadAltY": {
 		{Name: "Spell", Flags: map[string]bool{"spell": true, "cast": false}},
 		{Name: "Corpse Explosion", Flags: map[string]bool{"spell": false, "cast": true}},
 	},
-	// src/Data/Skills/act_str.lua:12588
+	// src/Data/Skills/act_str.lua:12651
 	"VolcanicFissure": {
 		{Name: "Ground Fissure", Flags: map[string]bool{"melee": true, "projectile": false}},
 		{Name: "Magma Balls", Flags: map[string]bool{"melee": false, "projectile": true}},
 	},
-	// src/Data/Skills/act_dex.lua:17050
+	// src/Data/Skills/act_dex.lua:17053
 	"WildStrike": {
 		{Name: "Fire hit", Flags: map[string]bool{"melee": true, "projectile": false, "chaining": false, "area": false}},
 		{Name: "Fire explosion", Flags: map[string]bool{"melee": false, "projectile": false, "chaining": false, "area": true}},
@@ -896,7 +896,7 @@ var SkillParts = map[string][]SkillPart{
 		{Name: "Cold hit", Flags: map[string]bool{"melee": true, "projectile": false, "chaining": false, "area": false}},
 		{Name: "Icy wave", Flags: map[string]bool{"melee": false, "projectile": true, "chaining": false, "area": false}},
 	},
-	// src/Data/Skills/act_dex.lua:17191
+	// src/Data/Skills/act_dex.lua:17194
 	"WildStrikeAltX": {
 		{Name: "Fire hit", Flags: map[string]bool{"melee": true, "projectile": false, "chaining": false, "area": false}},
 		{Name: "Fire explosion", Flags: map[string]bool{"melee": false, "projectile": false, "chaining": false, "area": true}},

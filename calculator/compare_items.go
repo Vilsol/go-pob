@@ -15,12 +15,12 @@ var (
 	tradeRangeRe  = regexp.MustCompile(`(-?\d+\.?\d*) to (-?\d+\.?\d*)`)
 )
 
-//pob:src/Classes/TradeHelpers.lua:52-55
+//pob:src/Classes/TradeHelpers.lua:82-85
 func tradeModLineTemplate(line string) string {
 	return tradeNumberRe.ReplaceAllString(line, "#")
 }
 
-//pob:src/Classes/TradeHelpers.lua:61-69
+//pob:src/Classes/TradeHelpers.lua:91-99
 func tradeModLineValue(line string) (float64, bool) {
 	if m := tradeRangeRe.FindStringSubmatch(line); m != nil {
 		low, _ := strconv.ParseFloat(m[1], 64)
@@ -44,7 +44,7 @@ func (i *Item) compareModLists() [][]ModLine {
 	return [][]ModLine{i.EnchantModLines, i.ScourgeModLines, i.ImplicitModLines, i.ExplicitModLines, i.CrucibleModLines}
 }
 
-//pob:src/Classes/TradeHelpers.lua:339-354
+//pob:src/Classes/TradeHelpers.lua:401-416
 func tradeBuildModMap(item *Item) map[string]tradeModEntry {
 	out := map[string]tradeModEntry{}
 	if item == nil {
@@ -64,7 +64,7 @@ func tradeBuildModMap(item *Item) map[string]tradeModEntry {
 	return out
 }
 
-//pob:src/Classes/CompareTab.lua:3466-3637
+//pob:src/Classes/CompareTab.lua:3495-3666
 func CompareItemExpanded(raw string, other string) []string {
 	if raw == "" {
 		return []string{"^8(empty)"}
@@ -179,7 +179,7 @@ type CompareJewelSlot struct {
 	CAllocated bool
 }
 
-//pob:src/Classes/CompareTab.lua:1372-1436
+//pob:src/Classes/CompareTab.lua:1377-1441
 func CompareJewelSlots(primary, compare *pob.PathOfBuilding) []CompareJewelSlot {
 	jewels := func(build *pob.PathOfBuilding) map[int]string {
 		out := map[int]string{}

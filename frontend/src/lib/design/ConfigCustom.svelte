@@ -167,7 +167,7 @@
     <ModBrowserDialog
       bind:open={browsing}
       list={ops.modbrowser.list}
-      supported={ops.modbrowser.supported}
+      sources={ops.modbrowser.sources}
       onadd={(line: string) => ops.modbrowser?.onadd(selected, line)} />
   {/if}
   {#if tipCell && tip}

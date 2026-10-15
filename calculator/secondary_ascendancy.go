@@ -18,7 +18,7 @@ type SecondaryAscendancyDropdown struct {
 	Enabled  bool
 }
 
-//pob:src/Modules/Build.lua:1093-1138
+//pob:src/Modules/Build.lua:1113-1158
 func SecondaryAscendancyList(build *pob.PathOfBuilding) SecondaryAscendancyDropdown {
 	out := SecondaryAscendancyDropdown{Entries: []SecondaryAscendOption{{Label: "None"}}}
 	i := build.ActiveSpecIndex()

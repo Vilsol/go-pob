@@ -37,7 +37,7 @@ func TestLightningSpireTrapAltYPreDamage(t *testing.T) {
 // TestSlotSupportListsCarryExtraSupports: an item-granted skill takes every support group in its slot.
 func TestSlotSupportListsCarryExtraSupports(t *testing.T) {
 	assertPlayerOutputs(t, "0786-saboteur-unknown.xml",
-		map[string]float64{"AverageHit": 742013.06112, "TotalDPS": 5895738.9784351})
+		map[string]float64{"AverageHit": 741997.69344, "TotalDPS": 5895616.8729969})
 }
 
 // TestCritOverrideIs100NotBaseCrit: only a CritChance override of 100 skips the accuracy scaling; a 100 base crit does not (CalcOffence.lua:3006-3058).
@@ -54,7 +54,7 @@ func TestSpellDamageAppliesToAttacksSkillScoped(t *testing.T) {
 // TestSkillNameListCarriesTransfiguredGems: the skill-name loop walks every gem, transfigured ones included (ModParser.lua:6042-6050).
 func TestSkillNameListCarriesTransfiguredGems(t *testing.T) {
 	assertPlayerOutputs(t, "0213-occultist-divine-ire-of-disintegration.xml",
-		map[string]float64{"AverageHit": 12277640.18178, "TotalDPS": 9963777.2244445})
+		map[string]float64{"AverageHit": 12277644.827797, "TotalDPS": 9963780.9948664})
 }
 
 // TestInflictExposureOnHitRows: the bare "inflict <element> exposure on hit" rows (ModParser.lua:4205-4213).

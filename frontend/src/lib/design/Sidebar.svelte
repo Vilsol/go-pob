@@ -8,6 +8,9 @@
   import type { Sidebar } from '$lib/display/sidebar';
   import type { StatLine } from '$lib/display/stat_list';
   import BreakdownTooltip from './BreakdownTooltip.svelte';
+  import BreakdownSteps from './BreakdownSteps.svelte';
+  import RadiusVisual from '$lib/components/radius/RadiusVisual.svelte';
+  import type { SidebarSection } from '$lib/display/sidebar_breakdown';
   import Button from './Button.svelte';
   import Select from './Select.svelte';
   import StatGauge from './StatGauge.svelte';
@@ -25,7 +28,8 @@
     collapsed?: boolean;
     pinned?: string[];
     breakdown?: (line: StatLine) => Breakdown | undefined;
-    steps?: (line: StatLine) => Promise<string[] | undefined> | undefined;
+    /* Build.lua:1764-1908 */
+    steps?: (line: StatLine) => Promise<SidebarSection[] | undefined> | undefined;
     onmaingroup?: (index: number) => void;
     oncontrol?: (field: Control, value: number | undefined) => void;
     /* Build.lua:552-554 */
@@ -120,7 +124,7 @@
   };
   const tip = $derived(hover ? { ...(breakdown?.(hover.entry.line) ?? { groups: [] }), line: hover.entry.line } : undefined);
   const STEPS_DELAY = 150;
-  let tipSteps = $state.raw<{ entry: Entry; lines?: string[] }>();
+  let tipSteps = $state.raw<{ entry: Entry; sections?: SidebarSection[] }>();
   $effect(() => {
     const entry = hover?.entry;
     void sidebar;
@@ -128,8 +132,8 @@
     let live = true;
     const timer = setTimeout(() => {
       steps(entry.line)
-        ?.then((lines) => {
-          if (live) tipSteps = { entry, lines };
+        ?.then((shown) => {
+          if (live) tipSteps = { entry, sections: shown };
         })
         .catch(() => {});
     }, STEPS_DELAY);
@@ -384,8 +388,32 @@
           value={tip.line.value + (tip.line.note ?? '')}
           formula={tip.formula}
           groups={tip.groups}
-          lines={tipSteps?.entry === hover.entry ? tipSteps.lines : undefined}
-          footer="Click for the full breakdown on the Calcs page" />
+          footer="Click for the full breakdown on the Calcs page">
+          {#each tipSteps?.entry === hover.entry ? (tipSteps.sections ?? []) : [] as s, i (i)}
+            {#if s.label}<span class="mt-1 text-10 tracking-caps text-text-3">{s.label}</span>{/if}
+            {#if s.bd}
+              {#if s.bd.lines.length}<div class="mt-1 text-12"><BreakdownSteps lines={s.bd.lines} /></div>{/if}
+              {#if s.bd.radius}<RadiusVisual radius={s.bd.radius} />{/if}
+              {#if s.bd.columns && s.bd.rows?.length}
+                <div role="table" aria-label="Sources" class="grid grid-cols-[repeat(var(--n),max-content)] gap-x-2 text-11" style:--n={s.bd.columns.length}>
+                  <div role="row" class="col-span-full grid grid-cols-subgrid border-b border-line text-10 text-text-3">
+                    {#each s.bd.columns as c (c.key)}<span role="columnheader">{c.label}</span>{/each}
+                  </div>
+                  {#each s.bd.rows as r, j (j)}
+                    <div role="row" class="col-span-full grid grid-cols-subgrid">
+                      {#each s.bd.columns as c (c.key)}<span role="cell"><PobText text={r[c.key] ?? ''} /></span>{/each}
+                    </div>
+                  {/each}
+                </div>
+              {/if}
+            {/if}
+            {#each s.mods ?? [] as m, j (j)}
+              <div class="kv gap-2.5 text-11" data-mod-row>
+                <span class="truncate"><PobText text={m.SourceName || m.Source} /></span><span class="font-mono"><PobText text={m.Value} /></span>
+              </div>
+            {/each}
+          {/each}
+        </BreakdownTooltip>
       </div>
     {/if}
   </aside>

@@ -125,7 +125,7 @@ var SkillAddSkillTypes = map[string][]string{
 	"SupportWitheringTouch":                                         {"Duration"},
 }
 
-// SkillTypes is PoB's `grantedEffect.skillTypes`, sorted by name. 1220 entries at this pin.
+// SkillTypes is PoB's `grantedEffect.skillTypes`, sorted by name. 1225 entries at this pin.
 var SkillTypes = map[string][]string{
 	"ABTTAzmeriBasaliskShroud":                       {"Buff", "Duration", "Spell", "Triggerable"},
 	"ABTTAzmeriGoddessAura":                          {"Buff", "Duration", "Spell", "Triggerable"},
@@ -170,7 +170,11 @@ var SkillTypes = map[string][]string{
 	"ArtilleryBallista":                              {"Area", "Attack", "AttackInPlaceIsDefault", "Fire", "Mineable", "ProjectileNumber", "ProjectileSpeed", "RangedAttack", "SummonsTotem", "TotemsAreBallistae", "Trappable"},
 	"ArtilleryBallistaAltX":                          {"Area", "Attack", "AttackInPlaceIsDefault", "Fire", "Mineable", "ProjectileNumber", "ProjectileSpeed", "RangedAttack", "SummonsTotem", "TotemsAreBallistae", "Trappable"},
 	"ArtilleryBallistaAltY":                          {"Area", "Attack", "AttackInPlaceIsDefault", "Fire", "Mineable", "ProjectileNumber", "ProjectileSpeed", "RangedAttack", "SummonsTotem", "TotemsAreBallistae", "Trappable"},
+	"AspectOfArakaali":                               {"Buff", "Chaos", "Cooldown", "HasReservation", "Instant", "InstantNoRepeatWhenHeld", "InstantShiftAttackForLeftMouse", "Spell"},
+	"AspectOfLunaris":                                {"Buff", "Cooldown", "Duration", "HasReservation", "InstantNoRepeatWhenHeld", "InstantShiftAttackForLeftMouse", "Spell"},
+	"AspectOfSolaris":                                {"Buff", "Cooldown", "Duration", "Fire", "HasReservation", "Instant", "InstantNoRepeatWhenHeld", "InstantShiftAttackForLeftMouse", "Spell"},
 	"AspectOfTheAvian":                               {"Buff", "Cooldown", "Duration", "HasReservation", "Instant", "InstantNoRepeatWhenHeld", "InstantShiftAttackForLeftMouse", "Spell"},
+	"AspectOfTheBrineKing":                           {"Buff", "Cold", "Cooldown", "HasReservation", "Instant", "InstantNoRepeatWhenHeld", "InstantShiftAttackForLeftMouse", "Spell"},
 	"AspectOfTheCat":                                 {"Buff", "Cooldown", "Duration", "HasReservation", "Instant", "InstantNoRepeatWhenHeld", "InstantShiftAttackForLeftMouse", "Spell"},
 	"AspectOfTheCrab":                                {"Buff", "Cooldown", "HasReservation", "Instant", "InstantNoRepeatWhenHeld", "InstantShiftAttackForLeftMouse", "Physical", "Spell"},
 	"AspectOfTheSpider":                              {"Buff", "Cooldown", "Duration", "HasReservation", "Instant", "InstantNoRepeatWhenHeld", "InstantShiftAttackForLeftMouse", "Spell"},
@@ -370,6 +374,7 @@ var SkillTypes = map[string][]string{
 	"CausticArrowAltX":                               {"Area", "Attack", "Chaos", "Mineable", "MirageArcherCanUse", "Projectile", "ProjectilesFromUser", "RangedAttack", "Totemable", "Trappable", "Triggerable"},
 	"CeaselessFleshUnique":                           {"CreatesMinion", "Duration", "InbuiltTrigger", "Minion", "MinionsCanExplode", "Spell", "Triggerable", "Triggered"},
 	"ChainHook":                                      {"Area", "Attack", "Damage", "Melee", "Movement", "Multistrikeable"},
+	"ChainHookAltX":                                  {"Attack", "Damage", "Melee", "Multistrikeable"},
 	"ChainHookAltY":                                  {"Area", "Attack", "Damage", "Melee", "Multistrikeable"},
 	"ChaosDegenAura":                                 {"Area", "AreaSpell", "Aura", "Buff", "Chaos", "DamageOverTime", "HasReservation", "Spell"},
 	"ChaosElementalCascadeSummoned":                  {"Area", "AreaSpell", "CanRapidFire", "Cold", "Damage", "Mineable", "Multicastable", "Physical", "Spell", "Totemable", "Trappable", "Triggerable"},

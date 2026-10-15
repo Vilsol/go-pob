@@ -29,7 +29,7 @@ func configString(val interface{}) string {
 	return ""
 }
 
-//pob:block:src/Classes/ConfigTab.lua:1084-1087
+//pob:block:src/Classes/ConfigTab.lua:1140-1143
 func configChecked(val interface{}) bool {
 	if b, ok := val.(bool); ok {
 		return b
@@ -37,7 +37,7 @@ func configChecked(val interface{}) bool {
 	return val != nil
 }
 
-//pob:block:src/Classes/ConfigTab.lua:1089-1090
+//pob:block:src/Classes/ConfigTab.lua:1145-1146
 func configCount(val interface{}) (float64, bool) {
 	f := configFloat(val)
 	return f, f != 0
@@ -57,7 +57,7 @@ var configDefaults = []string{
 	"summonElementalRelicEnableWrathAura",
 }
 
-//pob:block:src/Classes/ConfigTab.lua:1233-1240
+//pob:block:src/Classes/ConfigTab.lua:1289-1296
 var configCountDefaults = map[string]float64{
 	"bloodsoakedBannerStages":      1,
 	"conditionCorruptingCryStages": 1,
@@ -76,7 +76,7 @@ func configDefaultState(name string, val interface{}) (float64, bool) {
 	return configFloat(val), true
 }
 
-//pob:block:src/Modules/ConfigOptions.lua:2060
+//pob:block:src/Modules/ConfigOptions.lua:2086
 var configIndexDefaults = map[string]string{
 	"resourceGainMode":          "AVERAGE",
 	"plagueBearerState":         "INC",
@@ -146,6 +146,9 @@ var configOrder = []string{
 	"EVBypass",
 
 	"targetBrandedEnemy",
+	"aspectOfLunarisLunarProtection",
+	"aspectOfLunarisLunarResistance",
+	"aspectOfSolarisSunscaldStacks",
 	"aspectOfTheAvianAviansMight",
 	"aspectOfTheAvianAviansFlight",
 	"aspectOfTheCatCatsStealth",
@@ -546,6 +549,11 @@ var configOrder = []string{
 	"buffLesserMassiveShrine",
 	"buffLesserReplenishingShrine",
 	"buffLesserResistanceShrine",
+	"buffBloodShrineOfRats",
+	"buffBloodShrineOfLocusts",
+	"buffBloodShrineOfToads",
+	"buffBloodShrineOfCrows",
+	"buffBloodShrineOfBats",
 
 	"critChanceLucky",
 	"skillForkCount",
@@ -704,7 +712,7 @@ var configOrder = []string{
 	"customMods",
 }
 
-//pob:block:src/Classes/ConfigTab.lua:1232-1241
+//pob:block:src/Classes/ConfigTab.lua:1288-1297
 var configDefaultPlaceholders = map[string]float64{
 	"sigilOfPowerStages":                          1,
 	"configSpectralTigerCount":                    5,
@@ -720,9 +728,12 @@ var configDefaultPlaceholders = map[string]float64{
 	"enemyCritChance":                             5,
 	"enemyCritDamage":                             30,
 	"enemyPhysicalDamage":                         7,
+	"aspectOfLunarisLunarProtection":              8,
+	"aspectOfLunarisLunarResistance":              8,
+	"aspectOfSolarisSunscaldStacks":               5,
 }
 
-//pob:block:src/Classes/ConfigTab.lua:1089-1092
+//pob:block:src/Classes/ConfigTab.lua:1145-1148
 var configCountAllowZero = map[string]bool{
 	"overrideCrabBarriers": true, "aspectOfTheSpiderWebStacks": true, "touchedDebuffsCount": true,
 	"sigilOfPowerStages": true, "overrideInspirationCharges": true, "overrideBloodCharges": true,
@@ -734,7 +745,8 @@ var configCountAllowZero = map[string]bool{
 	"enemyArmour": true, "enemySpeed": true, "enemyCritChance": true, "enemyCritDamage": true,
 	"enemyPhysicalDamage": true, "enemyPhysicalOverwhelm": true, "enemyLightningDamage": true,
 	"enemyLightningPen": true, "enemyColdDamage": true, "enemyColdPen": true, "enemyFireDamage": true,
-	"enemyFirePen": true, "enemyChaosDamage": true,
+	"enemyFirePen": true, "enemyChaosDamage": true, "aspectOfLunarisLunarProtection": true,
+	"aspectOfLunarisLunarResistance": true, "aspectOfSolarisSunscaldStacks": true,
 }
 
 // elseif placeholder[var] and (placeholder[var] ~= 0 or type == "countAllowZero") then
@@ -753,9 +765,12 @@ var configPlaceholderVars = []string{
 	"ShockStacks",
 	"multiplierEnemyHallowingFlame",
 	"multiplierHallowingFlameStacksRemovedByAlly",
+	"aspectOfLunarisLunarProtection",
+	"aspectOfLunarisLunarResistance",
+	"aspectOfSolarisSunscaldStacks",
 }
 
-//pob:block:src/Classes/ConfigTab.lua:1091-1092
+//pob:block:src/Classes/ConfigTab.lua:1147-1148
 func applyConfigPlaceholders(env *Environment, modList *moddb.ModList, enemyModList *moddb.ModList, suppliedInputs map[string]bool) int {
 	dispatched := 0
 	for _, name := range configPlaceholderVars {
@@ -769,7 +784,7 @@ func applyConfigPlaceholders(env *Environment, modList *moddb.ModList, enemyModL
 	return dispatched
 }
 
-//pob:block:src/Classes/ConfigTab.lua:1091-1092
+//pob:block:src/Classes/ConfigTab.lua:1147-1148
 func applyConfigPlaceholder(env *Environment, name string, modList *moddb.ModList, enemyModList *moddb.ModList) bool {
 	value := env.ConfigPlaceholder[name]
 	if value == 0 {
@@ -783,7 +798,7 @@ func applyConfigPlaceholder(env *Environment, name string, modList *moddb.ModLis
 	return true
 }
 
-//pob:block:src/Classes/ConfigTab.lua:1089-1093
+//pob:block:src/Classes/ConfigTab.lua:1145-1149
 func isConfigPlaceholderVar(name string) bool {
 	for _, n := range configPlaceholderVars {
 		if n == name {
@@ -793,7 +808,7 @@ func isConfigPlaceholderVar(name string) bool {
 	return false
 }
 
-//pob:block:src/Classes/ConfigTab.lua:1233-1240
+//pob:block:src/Classes/ConfigTab.lua:1289-1296
 func isConfigDefault(name string) bool {
 	if _, ok := configCountDefaults[name]; ok {
 		return true
@@ -989,6 +1004,19 @@ var configurations = map[string]ConfigApplyFunc{
 			return
 		}
 		modList.AddMod(mod.NewFlag("Condition:TargetingBrandedEnemy", true).Source("Config"))
+	},
+	//pob:block:src/Modules/ConfigOptions.lua:261-271
+	"aspectOfLunarisLunarProtection": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
+		v := configFloat(val)
+		modList.AddMod(mod.NewFloat("Multiplier:LunarProtection", mod.TypeBase, v).Source("Config"))
+	},
+	"aspectOfLunarisLunarResistance": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
+		v := configFloat(val)
+		modList.AddMod(mod.NewFloat("Multiplier:LunarResistance", mod.TypeBase, v).Source("Config"))
+	},
+	"aspectOfSolarisSunscaldStacks": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
+		v := configFloat(val)
+		modList.AddMod(mod.NewFloat("Multiplier:SunscaldStack", mod.TypeBase, v).Source("Config").Tag(mod.Condition("Effective")))
 	},
 	"aspectOfTheAvianAviansMight": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
@@ -1213,7 +1241,7 @@ var configurations = map[string]ConfigApplyFunc{
 		}
 		modList.AddMod(mod.NewFlag("Condition:EnergyBladeActive", true).Source("Config"))
 	},
-	//pob:src/Modules/ConfigOptions.lua:423-425
+	//pob:src/Modules/ConfigOptions.lua:434-436
 	"embraceMadnessActive": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
@@ -1644,8 +1672,8 @@ var configurations = map[string]ConfigApplyFunc{
 		}
 		modList.AddMod(mod.NewFloat("Multiplier:Sextant", mod.TypeBase, math.Min(v, 5)).Source("Config"))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:833-841
-	//pob:block:src/Modules/ConfigOptions.lua:843-845
+	//pob:block:src/Modules/ConfigOptions.lua:844-852
+	//pob:block:src/Modules/ConfigOptions.lua:854-856
 	"PvpScaling": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
@@ -2192,7 +2220,7 @@ var configurations = map[string]ConfigApplyFunc{
 		}
 		modList.AddMod(mod.NewFloat("Multiplier:LinkedTargets", mod.TypeBase, v).Source("Config"))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1877-1880
+	//pob:block:src/Modules/ConfigOptions.lua:1903-1906
 	"multiplierChilledByYouSeconds": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		v, ok := configCount(val)
 		if !ok {
@@ -2282,7 +2310,7 @@ var configurations = map[string]ConfigApplyFunc{
 	"multiplierRage": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		modList.AddMod(mod.NewFloat("Multiplier:RageStack", mod.TypeBase, configFloat(val)).Source("Config").Tag(mod.IgnoreCond(), mod.Condition("Combat"), mod.Condition("CanGainRage")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1065-1067
+	//pob:block:src/Modules/ConfigOptions.lua:1076-1078
 	"buffWildSavagery": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
@@ -2368,7 +2396,7 @@ var configurations = map[string]ConfigApplyFunc{
 		}
 		modList.AddMod(mod.NewFloat("Multiplier:NearbyCorpse", mod.TypeBase, v).Source("Config").Tag(mod.Condition("Combat")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1128-1130
+	//pob:block:src/Modules/ConfigOptions.lua:1139-1141
 	"multiplierSummonedMinion": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		v, ok := configCount(val)
 		if !ok {
@@ -2376,7 +2404,7 @@ var configurations = map[string]ConfigApplyFunc{
 		}
 		modList.AddMod(mod.NewFloat("Multiplier:SummonedMinion", mod.TypeOverride, v).Source("Config").Tag(mod.Condition("Combat")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1131-1133
+	//pob:block:src/Modules/ConfigOptions.lua:1142-1144
 	"multiplierNonVaalSummonedMinion": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		v, ok := configCount(val)
 		if !ok {
@@ -2869,7 +2897,7 @@ var configurations = map[string]ConfigApplyFunc{
 		modList.AddMod(mod.NewFlag("Condition:UsedMovementSkillRecently", true).Source("Config").Tag(mod.Condition("Combat")))
 		modList.AddMod(mod.NewFlag("Condition:UsedSkillRecently", true).Source("Config").Tag(mod.Condition("Combat")))
 	},
-	//pob:src/Modules/ConfigOptions.lua:1499-1501
+	//pob:src/Modules/ConfigOptions.lua:1510-1512
 	"conditionLinkedRecently": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
@@ -3120,7 +3148,7 @@ var configurations = map[string]ConfigApplyFunc{
 		modList.AddMod(mod.NewFlag("Condition:HaveAvatarOfFire", true).Source("Config").Tag(mod.Condition("Combat")))
 		modList.AddMod(mod.NewList("Keystone", "Avatar of Fire").Source("Config"))
 	},
-	//pob:src/Modules/ConfigOptions.lua:1676-1679
+	//pob:src/Modules/ConfigOptions.lua:1687-1690
 	"EverlastingSacrifice": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
@@ -3134,7 +3162,7 @@ var configurations = map[string]ConfigApplyFunc{
 		}
 		modList.AddMod(mod.NewFlag("Condition:Fanaticism", true).Source("Config").Tag(mod.Condition("Combat"), mod.Condition("CanGainFanaticism")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1686-1691
+	//pob:block:src/Modules/ConfigOptions.lua:1697-1702
 	"multiplierPvpTvalueOverride": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		v, ok := configCount(val)
 		if !ok {
@@ -3268,6 +3296,37 @@ var configurations = map[string]ConfigApplyFunc{
 			return
 		}
 		modList.AddMod(mod.NewFlag("Condition:LesserResistanceShrine", true).Source("Config").Tag(mod.Condition("Combat")))
+	},
+	//pob:block:src/Modules/ConfigOptions.lua:1763-1777
+	"buffBloodShrineOfRats": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
+		if !configChecked(val) {
+			return
+		}
+		modList.AddMod(mod.NewFlag("Condition:BloodShrineOfRats", true).Source("Config").Tag(mod.Condition("Combat")))
+	},
+	"buffBloodShrineOfLocusts": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
+		if !configChecked(val) {
+			return
+		}
+		modList.AddMod(mod.NewFlag("Condition:BloodShrineOfLocusts", true).Source("Config").Tag(mod.Condition("Combat")))
+	},
+	"buffBloodShrineOfToads": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
+		if !configChecked(val) {
+			return
+		}
+		modList.AddMod(mod.NewFlag("Condition:BloodShrineOfToads", true).Source("Config").Tag(mod.Condition("Combat")))
+	},
+	"buffBloodShrineOfCrows": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
+		if !configChecked(val) {
+			return
+		}
+		modList.AddMod(mod.NewFlag("Condition:BloodShrineOfCrows", true).Source("Config").Tag(mod.Condition("Combat")))
+	},
+	"buffBloodShrineOfBats": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
+		if !configChecked(val) {
+			return
+		}
+		modList.AddMod(mod.NewFlag("Condition:BloodShrineOfBats", true).Source("Config").Tag(mod.Condition("Combat")))
 	},
 	"critChanceLucky": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
@@ -3451,7 +3510,7 @@ var configurations = map[string]ConfigApplyFunc{
 		enemyModList.AddMod(mod.NewFlag("Condition:Chilled", true).Source("Config").Tag(mod.Condition("Effective")))
 		enemyModList.AddMod(mod.NewFlag("Condition:ChilledConfig", true).Source("Config").Tag(mod.Condition("Effective")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1881-1884
+	//pob:block:src/Modules/ConfigOptions.lua:1907-1910
 	"conditionEnemyChilledEffect": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		enemyModList.AddMod(mod.NewFloat("ChillVal", mod.TypeBase, configFloat(val)).Source("Chill").Tag(mod.Condition("ChilledConfig")))
 		enemyModList.AddMod(mod.NewFloat("DesiredChillVal", mod.TypeBase, configFloat(val)).Source("Chill").Tag(mod.Condition("ChilledConfig").Neg(true)))
@@ -3752,7 +3811,7 @@ var configurations = map[string]ConfigApplyFunc{
 	"enemyArmour": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		enemyModList.AddMod(mod.NewFloat("Armour", mod.TypeBase, configFloat(val)).Source("Config"))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:2337-2339
+	//pob:block:src/Modules/ConfigOptions.lua:2363-2365
 	"enemyMultiplierPvpDamage": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		v, ok := configCount(val)
 		if !ok {
@@ -3786,7 +3845,7 @@ var configurations = map[string]ConfigApplyFunc{
 			modList.AddMod(mod.NewFloat("Multiplier:EnemyPower", mod.TypeBase, 20).Source("Boss"))
 		}
 	},
-	//pob:block:src/Classes/ConfigTab.lua:1113-1128
+	//pob:block:src/Classes/ConfigTab.lua:1169-1184
 	"customMods": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		text, ok := val.(string)
 		if !ok {
@@ -3802,7 +3861,7 @@ var configurations = map[string]ConfigApplyFunc{
 			}
 		}
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:2300-2317
+	//pob:block:src/Modules/ConfigOptions.lua:2326-2343
 	//pob:block:src/Modules/ConfigOptions.lua:180-182
 	"conditionFullMana": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
@@ -3817,35 +3876,35 @@ var configurations = map[string]ConfigApplyFunc{
 		}
 		modList.AddMod(mod.NewFlag("Condition:UnbrokenWard", true).Source("Config"))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:316-318
+	//pob:block:src/Modules/ConfigOptions.lua:327-329
 	"bloodSacramentReservationEHP": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
 		}
 		modList.AddMod(mod.NewFlag("Condition:BloodSacramentReservationEHP", true).Source("Config"))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:333-335
+	//pob:block:src/Modules/ConfigOptions.lua:344-346
 	"BrandsInLastHalf": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
 		}
 		modList.AddMod(mod.NewFlag("Condition:BrandLastHalf", true).Source("Config"))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:340-342
+	//pob:block:src/Modules/ConfigOptions.lua:351-353
 	"carrionGolemEqualsChaosGolem": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
 		}
 		modList.AddMod(mod.NewFlag("Condition:CarrionEqualChaosGolem", true).Source("Config"))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:343-345
+	//pob:block:src/Modules/ConfigOptions.lua:354-356
 	"chaosGolemEqualsStoneGolem": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
 		}
 		modList.AddMod(mod.NewFlag("Condition:ChaosEqualStoneGolem", true).Source("Config"))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:346-348
+	//pob:block:src/Modules/ConfigOptions.lua:357-359
 	"cinderflameStacks": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		v, ok := configCount(val)
 		if !ok {
@@ -3853,21 +3912,21 @@ var configurations = map[string]ConfigApplyFunc{
 		}
 		modList.AddMod(mod.NewFloat("Multiplier:CinderflameStacks", mod.TypeBase, v).Source("Config"))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:349-351
+	//pob:block:src/Modules/ConfigOptions.lua:360-362
 	"stoneGolemEqualsCarrionGolem": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
 		}
 		modList.AddMod(mod.NewFlag("Condition:StoneEqualCarrionGolem", true).Source("Config"))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:467-469
+	//pob:block:src/Modules/ConfigOptions.lua:478-480
 	"harbingerOfTimeSlipstream": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
 		}
 		modList.AddMod(mod.NewFlag("Condition:HarbingerOfTime", true).Source("Config"))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:487-489
+	//pob:block:src/Modules/ConfigOptions.lua:498-500
 	"inventionMineTrapPlacedDuration": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		v, ok := configCount(val)
 		if !ok {
@@ -3875,7 +3934,7 @@ var configurations = map[string]ConfigApplyFunc{
 		}
 		modList.AddMod(mod.NewFloat("Multiplier:PlacedDuration", mod.TypeBase, v).Source("Config"))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:524-526
+	//pob:block:src/Modules/ConfigOptions.lua:535-537
 	"minionPactLife": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		v, ok := configCount(val)
 		if !ok {
@@ -3883,14 +3942,14 @@ var configurations = map[string]ConfigApplyFunc{
 		}
 		modList.AddMod(mod.NewFloat("Multiplier:MinionLife", mod.TypeBase, v).Source("Config"))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:536-538
+	//pob:block:src/Modules/ConfigOptions.lua:547-549
 	"enemyHitMistyReflection": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
 		}
 		enemyModList.AddMod(mod.NewFlag("Condition:MistyReflection", true).Source("Config"))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:543-545
+	//pob:block:src/Modules/ConfigOptions.lua:554-556
 	"MomentumSwiftnessStacks": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		v, ok := configCount(val)
 		if !ok {
@@ -3898,28 +3957,28 @@ var configurations = map[string]ConfigApplyFunc{
 		}
 		modList.AddMod(mod.NewFloat("Multiplier:MomentumStacksRemoved", mod.TypeBase, v).Source("Config"))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:559-561
+	//pob:block:src/Modules/ConfigOptions.lua:570-572
 	"physicalAegisDepleted": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
 		}
 		modList.AddMod(mod.NewFlag("Condition:PhysicalAegisDepleted", true).Source("Config"))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:584-586
+	//pob:block:src/Modules/ConfigOptions.lua:595-597
 	"conditionSummonedSpectreInPast8Sec": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
 		}
 		modList.AddMod(mod.NewFlag("Condition:SummonedSpectreInPast8Sec", true).Source("Config").Tag(mod.Condition("Combat")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:609-611
+	//pob:block:src/Modules/ConfigOptions.lua:620-622
 	"conditionSummonedZombieInPast8Sec": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
 		}
 		modList.AddMod(mod.NewFlag("Condition:SummonedZombieInPast8Sec", true).Source("Config").Tag(mod.Condition("Combat")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:688-690
+	//pob:block:src/Modules/ConfigOptions.lua:699-701
 	"weepingBlackStacks": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		v, ok := configCount(val)
 		if !ok {
@@ -3927,14 +3986,14 @@ var configurations = map[string]ConfigApplyFunc{
 		}
 		modList.AddMod(mod.NewFloat("Multiplier:WeepingBlackStacks", mod.TypeBase, v).Source("Config"))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:716-718
+	//pob:block:src/Modules/ConfigOptions.lua:727-729
 	"conditionInsane": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
 		}
 		modList.AddMod(mod.NewFlag("Condition:Insane", true).Source("Config"))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:745-747
+	//pob:block:src/Modules/ConfigOptions.lua:756-758
 	"multiplierWoCExpiredDuration": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		v, ok := configCount(val)
 		if !ok {
@@ -3942,49 +4001,49 @@ var configurations = map[string]ConfigApplyFunc{
 		}
 		modList.AddMod(mod.NewFloat("Multiplier:WoCDurationExpired", mod.TypeBase, min(v, 100)).Source("Config").Tag(mod.Condition("Effective")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:748-750
+	//pob:block:src/Modules/ConfigOptions.lua:759-761
 	"absolutionSkillDamageCountedOnce": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
 		}
 		modList.AddMod(mod.NewFlag("Condition:AbsolutionSkillDamageCountedOnce", true).Source("Config").Tag(mod.Condition("Combat")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:751-753
+	//pob:block:src/Modules/ConfigOptions.lua:773-775
 	"dominatingBlowSkillDamageCountedOnce": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
 		}
 		modList.AddMod(mod.NewFlag("Condition:DominatingBlowSkillDamageCountedOnce", true).Source("Config").Tag(mod.Condition("Combat")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:754-756
+	//pob:block:src/Modules/ConfigOptions.lua:765-767
 	"holyStrikeSkillDamageCountedOnce": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
 		}
 		modList.AddMod(mod.NewFlag("Condition:HolyStrikeSkillDamageCountedOnce", true).Source("Config").Tag(mod.Condition("Combat")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1019-1021
+	//pob:block:src/Modules/ConfigOptions.lua:1030-1032
 	"buffSacrificialZeal": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
 		}
 		modList.AddMod(mod.NewFlag("Condition:SacrificialZeal", true).Source("Config").Tag(mod.Condition("Combat")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1040-1042
+	//pob:block:src/Modules/ConfigOptions.lua:1051-1053
 	"conditionChangedStanceLastSecond": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
 		}
 		modList.AddMod(mod.NewFlag("Condition:StanceChangeLastSecond", true).Source("Config").Tag(mod.Condition("Combat")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1102-1104
+	//pob:block:src/Modules/ConfigOptions.lua:1113-1115
 	"conditionUsingTincture": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
 		}
 		modList.AddMod(mod.NewFlag("Condition:UsingTincture", true).Source("Config").Tag(mod.Condition("Combat")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1134-1136
+	//pob:block:src/Modules/ConfigOptions.lua:1145-1147
 	"multiplierPermanentMinion": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		v, ok := configCount(val)
 		if !ok {
@@ -3992,7 +4051,7 @@ var configurations = map[string]ConfigApplyFunc{
 		}
 		modList.AddMod(mod.NewFloat("Multiplier:PermanentMinion", mod.TypeOverride, v).Source("Config").Tag(mod.Condition("Combat")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1152-1156
+	//pob:block:src/Modules/ConfigOptions.lua:1163-1167
 	"minionConditionOnBrineGround": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
@@ -4001,14 +4060,14 @@ var configurations = map[string]ConfigApplyFunc{
 		modList.AddMod(mod.NewList("MinionModifier", mod.MinionModifier{Mod: mod.NewFloat("PhysicalDamageGainAsCold", mod.TypeBase, 10).Source("Config").Tag(mod.Condition("OnBrineGround"))}).Source("Config"))
 		modList.AddMod(mod.NewList("MinionModifier", mod.MinionModifier{Mod: mod.NewFloat("PhysicalDamageGainAsLightning", mod.TypeBase, 10).Source("Config").Tag(mod.Condition("OnBrineGround"))}).Source("Config"))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1157-1159
+	//pob:block:src/Modules/ConfigOptions.lua:1168-1170
 	"conditionOnCausticGround": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
 		}
 		modList.AddMod(mod.NewFlag("Condition:OnCausticGround", true).Source("Config").Tag(mod.Condition("Combat")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1167-1170
+	//pob:block:src/Modules/ConfigOptions.lua:1178-1181
 	"conditionOnChilledGround": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
@@ -4016,7 +4075,7 @@ var configurations = map[string]ConfigApplyFunc{
 		modList.AddMod(mod.NewFlag("Condition:OnChilledGround", true).Source("Config").Tag(mod.Condition("Combat")))
 		modList.AddMod(mod.NewFlag("Condition:Chilled", true).Source("Config").Tag(mod.Condition("Combat")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1171-1174
+	//pob:block:src/Modules/ConfigOptions.lua:1182-1185
 	"conditionOnShockedGround": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
@@ -4024,49 +4083,49 @@ var configurations = map[string]ConfigApplyFunc{
 		modList.AddMod(mod.NewFlag("Condition:OnShockedGround", true).Source("Config").Tag(mod.Condition("Combat")))
 		modList.AddMod(mod.NewFlag("Condition:Shocked", true).Source("Config").Tag(mod.Condition("Combat")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1184-1186
+	//pob:block:src/Modules/ConfigOptions.lua:1195-1197
 	"conditionScorched": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
 		}
 		modList.AddMod(mod.NewFlag("Condition:Scorched", true).Source("Config").Tag(mod.Condition("Combat")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1193-1195
+	//pob:block:src/Modules/ConfigOptions.lua:1204-1206
 	"conditionFrozen": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
 		}
 		modList.AddMod(mod.NewFlag("Condition:Frozen", true).Source("Config").Tag(mod.Condition("Combat")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1196-1198
+	//pob:block:src/Modules/ConfigOptions.lua:1207-1209
 	"conditionBrittle": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
 		}
 		modList.AddMod(mod.NewFlag("Condition:Brittle", true).Source("Config").Tag(mod.Condition("Combat")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1205-1207
+	//pob:block:src/Modules/ConfigOptions.lua:1216-1218
 	"conditionSapped": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
 		}
 		modList.AddMod(mod.NewFlag("Condition:Sapped", true).Source("Config").Tag(mod.Condition("Combat")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1214-1216
+	//pob:block:src/Modules/ConfigOptions.lua:1225-1227
 	"conditionCanBeCurseImmune": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
 		}
 		modList.AddMod(mod.NewFloat("AvoidCurse", mod.TypeBase, 100).Source("Config").Tag(mod.Condition("Combat"), mod.GlobalEffect("Global").Unscalable(true)))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1283-1285
+	//pob:block:src/Modules/ConfigOptions.lua:1294-1296
 	"conditionKilledTauntedEnemyRecently": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
 		}
 		modList.AddMod(mod.NewFlag("Condition:KilledTauntedEnemyRecently", true).Source("Config").Tag(mod.Condition("Combat")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1337-1339
+	//pob:block:src/Modules/ConfigOptions.lua:1348-1350
 	"multiplierIgniteAppliedRecently": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		v, ok := configCount(val)
 		if !ok {
@@ -4074,14 +4133,14 @@ var configurations = map[string]ConfigApplyFunc{
 		}
 		modList.AddMod(mod.NewFloat("Multiplier:IgniteAppliedRecently", mod.TypeBase, v).Source("Config").Tag(mod.Condition("Combat")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1361-1363
+	//pob:block:src/Modules/ConfigOptions.lua:1372-1374
 	"conditionWardBrokenPast2Seconds": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
 		}
 		modList.AddMod(mod.NewFlag("Condition:WardBrokenPast2Seconds", true).Source("Config").Tag(mod.Condition("Combat")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1390-1393
+	//pob:block:src/Modules/ConfigOptions.lua:1401-1404
 	"conditionHitByFireDamageRecently": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
@@ -4089,7 +4148,7 @@ var configurations = map[string]ConfigApplyFunc{
 		modList.AddMod(mod.NewFlag("Condition:HitByFireDamageRecently", true).Source("Config").Tag(mod.Condition("Combat")))
 		modList.AddMod(mod.NewFlag("Condition:BeenHitRecently", true).Source("Config").Tag(mod.Condition("Combat")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1394-1397
+	//pob:block:src/Modules/ConfigOptions.lua:1405-1408
 	"conditionHitByColdDamageRecently": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
@@ -4097,7 +4156,7 @@ var configurations = map[string]ConfigApplyFunc{
 		modList.AddMod(mod.NewFlag("Condition:HitByColdDamageRecently", true).Source("Config").Tag(mod.Condition("Combat")))
 		modList.AddMod(mod.NewFlag("Condition:BeenHitRecently", true).Source("Config").Tag(mod.Condition("Combat")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1398-1401
+	//pob:block:src/Modules/ConfigOptions.lua:1409-1412
 	"conditionHitByLightningDamageRecently": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
@@ -4105,14 +4164,14 @@ var configurations = map[string]ConfigApplyFunc{
 		modList.AddMod(mod.NewFlag("Condition:HitByLightningDamageRecently", true).Source("Config").Tag(mod.Condition("Combat")))
 		modList.AddMod(mod.NewFlag("Condition:BeenHitRecently", true).Source("Config").Tag(mod.Condition("Combat")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1421-1423
+	//pob:block:src/Modules/ConfigOptions.lua:1432-1434
 	"conditionEnergyShieldRechargeRecently": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
 		}
 		modList.AddMod(mod.NewFlag("Condition:EnergyShieldRechargeRecently", true).Source("Config").Tag(mod.Condition("Combat")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1433-1439
+	//pob:block:src/Modules/ConfigOptions.lua:1444-1450
 	"buffPendulum": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		switch configString(val) {
 		case "AREA":
@@ -4121,14 +4180,14 @@ var configurations = map[string]ConfigApplyFunc{
 			modList.AddMod(mod.NewFlag("Condition:PendulumOfDestructionElementalDamage", true).Source("Config").Tag(mod.Condition("Combat")))
 		}
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1451-1456
+	//pob:block:src/Modules/ConfigOptions.lua:1462-1467
 	"highestDamageType": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if v := configString(val); v != "" && v != "NONE" {
 			modList.AddMod(mod.NewFlag("Condition:"+v+"IsHighestDamageType", true).Source("Config"))
 			modList.AddMod(mod.NewFlag("IsHighestDamageTypeOVERRIDE", true).Source("Config"))
 		}
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1496-1498
+	//pob:block:src/Modules/ConfigOptions.lua:1507-1509
 	"multiplierAppliedAilmentsRecently": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		v, ok := configCount(val)
 		if !ok {
@@ -4136,21 +4195,21 @@ var configurations = map[string]ConfigApplyFunc{
 		}
 		modList.AddMod(mod.NewFloat("Multiplier:AppliedAilmentsRecently", mod.TypeBase, v).Source("Config").Tag(mod.Condition("Combat")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1502-1504
+	//pob:block:src/Modules/ConfigOptions.lua:1513-1515
 	"conditionStunnedWhileCastingRecently": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
 		}
 		modList.AddMod(mod.NewFlag("Condition:StunnedWhileCastingRecently", true).Source("Config").Tag(mod.Condition("Combat")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1505-1507
+	//pob:block:src/Modules/ConfigOptions.lua:1516-1518
 	"conditionCastLast1Seconds": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
 		}
 		modList.AddMod(mod.NewFlag("Condition:CastLast1Seconds", true).Source("Config").Tag(mod.Condition("Combat")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1514-1517
+	//pob:block:src/Modules/ConfigOptions.lua:1525-1528
 	"multiplierHitsSuppressedRecently": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		v, ok := configCount(val)
 		if !ok {
@@ -4159,7 +4218,7 @@ var configurations = map[string]ConfigApplyFunc{
 		modList.AddMod(mod.NewFloat("Multiplier:HitsSuppressedRecently", mod.TypeBase, v).Source("Config").Tag(mod.Condition("Combat")))
 		modList.AddMod(mod.NewFlag("Condition:SuppressedRecently", true).Source("Config").Tag(mod.Condition("Combat")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1518-1521
+	//pob:block:src/Modules/ConfigOptions.lua:1529-1532
 	"conditionUsedFireSkillRecently": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
@@ -4167,7 +4226,7 @@ var configurations = map[string]ConfigApplyFunc{
 		modList.AddMod(mod.NewFlag("Condition:UsedFireSkillRecently", true).Source("Config").Tag(mod.Condition("Combat")))
 		modList.AddMod(mod.NewFlag("Condition:UsedSkillRecently", true).Source("Config").Tag(mod.Condition("Combat")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1522-1525
+	//pob:block:src/Modules/ConfigOptions.lua:1533-1536
 	"conditionUsedColdSkillRecently": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
@@ -4175,7 +4234,7 @@ var configurations = map[string]ConfigApplyFunc{
 		modList.AddMod(mod.NewFlag("Condition:UsedColdSkillRecently", true).Source("Config").Tag(mod.Condition("Combat")))
 		modList.AddMod(mod.NewFlag("Condition:UsedSkillRecently", true).Source("Config").Tag(mod.Condition("Combat")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1535-1540
+	//pob:block:src/Modules/ConfigOptions.lua:1546-1551
 	"conditionUsedDashRecently": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
@@ -4185,28 +4244,28 @@ var configurations = map[string]ConfigApplyFunc{
 		modList.AddMod(mod.NewFlag("Condition:UsedMovementSkillRecently", true).Source("Config").Tag(mod.Condition("Combat")))
 		modList.AddMod(mod.NewFlag("Condition:UsedSkillRecently", true).Source("Config").Tag(mod.Condition("Combat")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1578-1580
+	//pob:block:src/Modules/ConfigOptions.lua:1589-1591
 	"TriggeredTrapsRecently": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
 		}
 		modList.AddMod(mod.NewFlag("Condition:TriggeredTrapsRecently", true).Source("Config").Tag(mod.Condition("Combat")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1593-1595
+	//pob:block:src/Modules/ConfigOptions.lua:1604-1606
 	"conditionCastMarkRecently": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
 		}
 		modList.AddMod(mod.NewFlag("Condition:CastMarkRecently", true).Source("Config").Tag(mod.Condition("Combat")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1609-1611
+	//pob:block:src/Modules/ConfigOptions.lua:1620-1622
 	"conditionRavenousCorpseConsumed": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
 		}
 		modList.AddMod(mod.NewFlag("Condition:RavenousCorpseConsumed", true).Source("Config").Tag(mod.Condition("Combat")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1634-1636
+	//pob:block:src/Modules/ConfigOptions.lua:1645-1647
 	"BlockedPast10Sec": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		v, ok := configCount(val)
 		if !ok {
@@ -4214,7 +4273,7 @@ var configurations = map[string]ConfigApplyFunc{
 		}
 		modList.AddMod(mod.NewFloat("Multiplier:BlockedPast10Sec", mod.TypeBase, v).Source("Config").Tag(mod.Condition("Combat")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1673-1675
+	//pob:block:src/Modules/ConfigOptions.lua:1684-1686
 	"GamblesprintMovementSpeed": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		v := configFloat(val)
 		if text := configString(val); text != "" {
@@ -4225,21 +4284,21 @@ var configurations = map[string]ConfigApplyFunc{
 		}
 		modList.AddMod(mod.NewFloat("MovementSpeed", mod.TypeIncrease, v).Source("Config").Tag(mod.Condition("Combat"), mod.Condition("HaveGamblesprint")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1683-1685
+	//pob:block:src/Modules/ConfigOptions.lua:1694-1696
 	"conditionHitsAlwaysStun": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
 		}
 		modList.AddMod(mod.NewFloat("CullPercent", mod.TypeMAX, 10).Source("Config").Tag(mod.Condition("Combat"), mod.Condition("maceMasteryStunCullSpecced")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1783-1785
+	//pob:block:src/Modules/ConfigOptions.lua:1809-1811
 	"conditionEnemyStunned": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
 		}
 		enemyModList.AddMod(mod.NewFlag("Condition:Stunned", true).Source("Config").Tag(mod.Condition("Effective")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1789-1791
+	//pob:block:src/Modules/ConfigOptions.lua:1815-1817
 	"overrideBleedStackPotential": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		v, ok := configCount(val)
 		if !ok {
@@ -4247,14 +4306,14 @@ var configurations = map[string]ConfigApplyFunc{
 		}
 		modList.AddMod(mod.NewFloat("BleedStackPotentialOverride", mod.TypeOverride, v).Source("Config").Tag(mod.Condition("Effective")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1792-1794
+	//pob:block:src/Modules/ConfigOptions.lua:1818-1820
 	"conditionSingleBleed": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
 		}
 		modList.AddMod(mod.NewFlag("Condition:SingleBleed", true).Source("Config").Tag(mod.Condition("Effective")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1807-1809
+	//pob:block:src/Modules/ConfigOptions.lua:1833-1835
 	"multiplierCurseExpiredOnEnemy": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		v, ok := configCount(val)
 		if !ok {
@@ -4262,7 +4321,7 @@ var configurations = map[string]ConfigApplyFunc{
 		}
 		enemyModList.AddMod(mod.NewFloat("Multiplier:CurseExpired", mod.TypeBase, v).Source("Config").Tag(mod.Condition("Effective")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1810-1812
+	//pob:block:src/Modules/ConfigOptions.lua:1836-1838
 	"multiplierCurseDurationExpiredOnEnemy": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		v, ok := configCount(val)
 		if !ok {
@@ -4270,28 +4329,28 @@ var configurations = map[string]ConfigApplyFunc{
 		}
 		enemyModList.AddMod(mod.NewFloat("Multiplier:CurseDurationExpired", mod.TypeBase, v).Source("Config").Tag(mod.Condition("Effective")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1831-1833
+	//pob:block:src/Modules/ConfigOptions.lua:1857-1859
 	"conditionEnemyExcommunicated": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
 		}
 		enemyModList.AddMod(mod.NewFlag("Condition:Excommunicated", true).Source("Config").Tag(mod.ActorCondition("enemy", "CanExcommunicate")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1846-1848
+	//pob:block:src/Modules/ConfigOptions.lua:1872-1874
 	"conditionEnemyPacified": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
 		}
 		enemyModList.AddMod(mod.NewFlag("Condition:Pacified", true).Source("Config").Tag(mod.Condition("Effective")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1962-1964
+	//pob:block:src/Modules/ConfigOptions.lua:1988-1990
 	"conditionEnemyHallowingFlame": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
 		}
 		enemyModList.AddMod(mod.NewFlag("Condition:HallowingFlame", true).Source("Config").Tag(mod.Condition("Effective")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1965-1967
+	//pob:block:src/Modules/ConfigOptions.lua:1991-1993
 	"multiplierEnemyHallowingFlame": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		v, ok := configCount(val)
 		if !ok {
@@ -4299,61 +4358,61 @@ var configurations = map[string]ConfigApplyFunc{
 		}
 		enemyModList.AddMod(mod.NewFloat("Multiplier:HallowingFlame", mod.TypeBase, v).Source("Config").Tag(mod.Condition("Effective")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1968-1970
+	//pob:block:src/Modules/ConfigOptions.lua:1994-1996
 	"multiplierHallowingFlameStacksRemovedByAlly": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		modList.AddMod(mod.NewFloat("Multiplier:HallowingFlameStacksRemovedByAlly", mod.TypeBase, configFloat(val)).Source("Config"))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:1971-1973
+	//pob:block:src/Modules/ConfigOptions.lua:1997-1999
 	"conditionHallowingFlameMagnitude": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		modList.AddMod(mod.NewFloat("HallowingFlameMagnitude", mod.TypeOverride, configFloat(val)).Source("Config"))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:2019-2021
+	//pob:block:src/Modules/ConfigOptions.lua:2045-2047
 	"conditionEnemyLifeHigherThanPlayer": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
 		}
 		enemyModList.AddMod(mod.NewFlag("Condition:HigherLifePercentThanPlayer", true).Source("Config").Tag(mod.Condition("Effective")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:2031-2033
+	//pob:block:src/Modules/ConfigOptions.lua:2057-2059
 	"enemyInRFOrScorchingRay": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
 		}
 		modList.AddMod(mod.NewFlag("Condition:InRFOrScorchingRay", true).Source("Config"))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:2035-2037
+	//pob:block:src/Modules/ConfigOptions.lua:2061-2063
 	"conditionBetweenYouAndLinkedTarget": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
 		}
 		enemyModList.AddMod(mod.NewFlag("Condition:BetweenYouAndLinkedTarget", true).Source("Config").Tag(mod.Condition("Effective")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:2038-2040
+	//pob:block:src/Modules/ConfigOptions.lua:2064-2066
 	"conditionEnemyFireResZero": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
 		}
 		enemyModList.AddMod(mod.NewFloat("FireResist", mod.TypeOverride, 0).Source("Config").Tag(mod.Condition("Effective"), mod.ActorCondition("enemy", "HaveTrickstersSmile")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:2041-2043
+	//pob:block:src/Modules/ConfigOptions.lua:2067-2069
 	"conditionEnemyColdResZero": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
 		}
 		enemyModList.AddMod(mod.NewFloat("ColdResist", mod.TypeOverride, 0).Source("Config").Tag(mod.Condition("Effective"), mod.ActorCondition("enemy", "HaveTrickstersSmile")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:2044-2046
+	//pob:block:src/Modules/ConfigOptions.lua:2070-2072
 	"conditionEnemyLightningResZero": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
 		}
 		enemyModList.AddMod(mod.NewFloat("LightningResist", mod.TypeOverride, 0).Source("Config").Tag(mod.Condition("Effective"), mod.ActorCondition("enemy", "HaveTrickstersSmile")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:2237-2239
+	//pob:block:src/Modules/ConfigOptions.lua:2263-2265
 	"enemyBlockChance": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		enemyModList.AddMod(mod.NewFloat("BlockChance", mod.TypeBase, configFloat(val)).Source("Config"))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:591-593
+	//pob:block:src/Modules/ConfigOptions.lua:602-604
 	"raiseSpectreKaomFireBeamTotemStage": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		v, ok := configCount(val)
 		if !ok {
@@ -4361,7 +4420,7 @@ var configurations = map[string]ConfigApplyFunc{
 		}
 		modList.AddMod(mod.NewFloat("Multiplier:KaomFireBeamTotemStage", mod.TypeBase, v).Source("Config"))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:659-661
+	//pob:block:src/Modules/ConfigOptions.lua:670-672
 	"stormRainBeamOverlap": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		v, ok := configCount(val)
 		if !ok {
@@ -4369,7 +4428,7 @@ var configurations = map[string]ConfigApplyFunc{
 		}
 		modList.AddMod(mod.NewList("SkillData", mod.SkillData{Key: "beamOverlapMultiplier", Value: v}).Source("Config").Tag(mod.SkillName("Storm Rain")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:479-481
+	//pob:block:src/Modules/ConfigOptions.lua:490-492
 	"hoaOverkill": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		v, ok := configCount(val)
 		if !ok {
@@ -4377,7 +4436,7 @@ var configurations = map[string]ConfigApplyFunc{
 		}
 		modList.AddMod(mod.NewList("SkillData", mod.SkillData{Key: "hoaOverkill", Value: v}).Source("Config").Tag(mod.SkillName("Herald of Ash")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:616-618
+	//pob:block:src/Modules/ConfigOptions.lua:627-629
 	"ShrapnelBallistaProjectileOverlap": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		v, ok := configCount(val)
 		if !ok {
@@ -4385,7 +4444,7 @@ var configurations = map[string]ConfigApplyFunc{
 		}
 		modList.AddMod(mod.NewList("SkillData", mod.SkillData{Key: "ShrapnelBallistaProjectileOverlap", Value: v}).Source("Config").Tag(mod.SkillName("Shrapnel Ballista").Transfigured(true)))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:663-665
+	//pob:block:src/Modules/ConfigOptions.lua:674-676
 	"stormRainActiveArrows": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		v, ok := configCount(val)
 		if !ok {
@@ -4393,7 +4452,7 @@ var configurations = map[string]ConfigApplyFunc{
 		}
 		modList.AddMod(mod.NewList("SkillData", mod.SkillData{Key: "activeArrowMultiplier", Value: v}).Source("Config").Tag(mod.SkillName("Storm Rain of the Conduit")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:696-698
+	//pob:block:src/Modules/ConfigOptions.lua:707-709
 	"tornadoShotSecondaryHitChance": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		v, ok := configCount(val)
 		if !ok {
@@ -4401,7 +4460,7 @@ var configurations = map[string]ConfigApplyFunc{
 		}
 		modList.AddMod(mod.NewList("SkillData", mod.SkillData{Key: "tornadoShotSecondaryHitChance", Value: v}).Source("Config").Tag(mod.SkillName("Tornado Shot")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:758-760
+	//pob:block:src/Modules/ConfigOptions.lua:769-771
 	"MoltenShellDamageMitigated": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		v, ok := configCount(val)
 		if !ok {
@@ -4409,7 +4468,7 @@ var configurations = map[string]ConfigApplyFunc{
 		}
 		modList.AddMod(mod.NewList("SkillData", mod.SkillData{Key: "MoltenShellDamageMitigated", Value: v}).Source("Config").Tag(mod.SkillName("Molten Shell")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:762-764
+	//pob:block:src/Modules/ConfigOptions.lua:773-775
 	"VaalMoltenShellDamageMitigated": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		v, ok := configCount(val)
 		if !ok {
@@ -4417,7 +4476,7 @@ var configurations = map[string]ConfigApplyFunc{
 		}
 		modList.AddMod(mod.NewList("SkillData", mod.SkillData{Key: "VaalMoltenShellDamageMitigated", Value: v}).Source("Config").Tag(mod.SkillName("Molten Shell")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:587-590
+	//pob:block:src/Modules/ConfigOptions.lua:598-601
 	"raiseSpectreBladeVortexBladeCount": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		v, ok := configCount(val)
 		if !ok {
@@ -4426,21 +4485,21 @@ var configurations = map[string]ConfigApplyFunc{
 		modList.AddMod(mod.NewList("SkillData", mod.SkillData{Key: "dpsMultiplier", Value: v}).Source("Config").Tag(mod.SkillId("DemonModularBladeVortexSpectre")))
 		modList.AddMod(mod.NewList("SkillData", mod.SkillData{Key: "dpsMultiplier", Value: v}).Source("Config").Tag(mod.SkillId("GhostPirateBladeVortexSpectre")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:594-596
+	//pob:block:src/Modules/ConfigOptions.lua:605-607
 	"raiseSpectreEnableSummonedUrsaRallyingCry": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
 		}
 		modList.AddMod(mod.NewList("SkillData", mod.SkillData{Key: "enable", Value: 1}).Source("Config").Tag(mod.SkillId("DropBearSummonedRallyingCry")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:597-599
+	//pob:block:src/Modules/ConfigOptions.lua:608-610
 	"raiseSpectreEnableSlashingHorrorEnrage": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
 		}
 		modList.AddMod(mod.NewList("SkillData", mod.SkillData{Key: "enable", Value: 0}).Source("Config").Tag(mod.SkillId("AzmeriDualStrikeDemonFireEnrage")))
 	},
-	//pob:block:src/Modules/ConfigOptions.lua:600-602
+	//pob:block:src/Modules/ConfigOptions.lua:611-613
 	"raiseSpectreEnableSanguimancerDemonLowLife": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
@@ -4672,7 +4731,7 @@ var configurationsWithBuild = map[string]func(val interface{}, modList *moddb.Mo
 	"MapSuffix2": mapAffixDropDownFunction,
 	"MapSuffix3": mapAffixDropDownFunction,
 	"MapSuffix4": mapAffixDropDownFunction,
-	//pob:block:src/Modules/ConfigOptions.lua:2246-2317
+	//pob:block:src/Modules/ConfigOptions.lua:2272-2343
 	"presetBossSkills": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList, build *pob.PathOfBuilding) {
 		preset := configString(val)
 		if preset == "" || preset == "None" {
@@ -4715,7 +4774,7 @@ var configurationsWithBuild = map[string]func(val interface{}, modList *moddb.Mo
 	},
 }
 
-//pob:block:src/Classes/ConfigTab.lua:258-260
+//pob:block:src/Classes/ConfigTab.lua:853-855
 func normalizeEnemyIsBoss(val string) string {
 	words := strings.Fields(strings.ToLower(val))
 	for i, word := range words {
@@ -4738,7 +4797,7 @@ func normalizeEnemyIsBoss(val string) string {
 	}
 }
 
-//pob:src/Classes/ConfigTab.lua:481-491
+//pob:src/Classes/ConfigTab.lua:513-523
 func enemyIsBossLevel(build *pob.PathOfBuilding, placeholder map[string]float64) int {
 	level := build.Build.Level
 	if input := build.GetNumberOption("enemyLevel"); input > 0 {
@@ -4753,7 +4812,7 @@ func ConfigPlaceholders(build *pob.PathOfBuilding) map[string]float64 {
 	return enemyConfigPlaceholders(build)
 }
 
-//pob:block:src/Modules/ConfigOptions.lua:1457-1589
+//pob:block:src/Modules/ConfigOptions.lua:1468-1600
 func enemyConfigPlaceholders(build *pob.PathOfBuilding) map[string]float64 {
 	placeholder := make(map[string]float64, len(configDefaultPlaceholders))
 	for name, value := range configDefaultPlaceholders {
@@ -4876,7 +4935,7 @@ func enemyConfigPlaceholders(build *pob.PathOfBuilding) map[string]float64 {
 	return placeholder
 }
 
-//pob:block:src/Modules/ConfigOptions.lua:1637-1700
+//pob:block:src/Modules/ConfigOptions.lua:1648-1711
 func applyPresetBossSkills(build *pob.PathOfBuilding, placeholder map[string]float64) {
 	preset := build.GetStringOption("presetBossSkills")
 	if preset == "" || preset == "None" {
@@ -4946,7 +5005,7 @@ func applyPresetBossSkills(build *pob.PathOfBuilding, placeholder map[string]flo
 	}
 }
 
-//pob:block:src/Modules/ConfigOptions.lua:2249-2252
+//pob:block:src/Modules/ConfigOptions.lua:2275-2278
 func bossSkillIsUber(build *pob.PathOfBuilding, bossData data.BossSkill) bool {
 	isBoss := normalizeEnemyIsBoss(build.GetStringOption("enemyIsBoss"))
 	return isBoss == "Uber" || (bossData.EarlierUber && isBoss == "Pinnacle")
@@ -4960,7 +5019,7 @@ func summonElementalRelicAura(val interface{}, modList *moddb.ModList, skillID s
 		Tag(mod.SkillId(skillID), mod.SkillName("Summon Elemental Relic").SummonSkill(true)))
 }
 
-//pob:block:src/Classes/ConfigTab.lua:1106-1129
+//pob:block:src/Classes/ConfigTab.lua:1162-1185
 func applyCustomModifierBlocks(build *pob.PathOfBuilding, modList *moddb.ModList) *moddb.ModList {
 	for _, block := range build.GetCustomModifierBlocks() {
 		if !block.IsEnabled() || block.Text == "" {
@@ -4985,12 +5044,12 @@ var (
 	escapeHexPattern   = regexp.MustCompile(`\^x[0-9A-Fa-f]{6}`)
 )
 
-//pob:src/HeadlessWrapper.lua:75-77
+//pob:src/_SimpleGraphic.def.lua:295-298
 func StripEscapes(text string) string {
 	return escapeHexPattern.ReplaceAllString(escapeDigitPattern.ReplaceAllString(text, ""), "")
 }
 
-//pob:block:src/Classes/ConfigTab.lua:1114-1115
+//pob:block:src/Classes/ConfigTab.lua:1170-1171
 func ParseCustomModLine(line string) *ModCacheEntry {
 	return ParseMod(strings.Trim(StripEscapes(line), " \t\n\v\f\r"), false)
 }

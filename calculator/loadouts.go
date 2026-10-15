@@ -74,7 +74,7 @@ func splitLink(title string) ([]string, string, bool) {
 	return strings.Split(m[1], ","), name, true
 }
 
-//pob:block:src/Modules/Build.lua:798-822
+//pob:block:src/Modules/Build.lua:816-840
 func identifyLinks(sets []loadoutSet) (map[string]bool, map[string]loadoutLink) {
 	titles := map[string]bool{}
 	links := map[string]loadoutLink{}
@@ -139,7 +139,7 @@ func activeTitle(sets []loadoutSet, id int) string {
 	return "Default"
 }
 
-//pob:src/Modules/Build.lua:753-878
+//pob:src/Modules/Build.lua:771-896
 func Loadouts(build *pob.PathOfBuilding) LoadoutList {
 	st := loadoutsOf(build)
 	out := LoadoutList{Loadouts: []string{}, Selected: -1}
@@ -181,7 +181,7 @@ func Loadouts(build *pob.PathOfBuilding) LoadoutList {
 	return out
 }
 
-//pob:block:src/Modules/Build.lua:355-369,src/Modules/Build.lua:387-394
+//pob:block:src/Modules/Build.lua:359-373,src/Modules/Build.lua:391-398
 func findLoadoutSet(sets []loadoutSet, links map[string]loadoutLink, value string) (int, bool) {
 	if len(sets) == 1 {
 		return sets[0].id, true
@@ -198,7 +198,7 @@ func findLoadoutSet(sets []loadoutSet, links map[string]loadoutLink, value strin
 	return 0, false
 }
 
-//pob:block:src/Modules/Build.lua:371-414
+//pob:block:src/Modules/Build.lua:375-418
 func SelectLoadout(build *pob.PathOfBuilding, value string) bool {
 	st := loadoutsOf(build)
 	specID, found := 0, false
@@ -246,7 +246,7 @@ func freeSetID(ids []int) int {
 	return id
 }
 
-//pob:block:src/Modules/Build.lua:322-343
+//pob:block:src/Modules/Build.lua:326-347
 func NewLoadout(build *pob.PathOfBuilding, name string) {
 	if len(build.Items.ItemSets) == 0 {
 		build.Items.ItemSets = []pob.ItemSet{{ID: "1"}}

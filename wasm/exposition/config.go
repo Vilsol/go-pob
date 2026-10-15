@@ -92,3 +92,7 @@ func ModBrowserList(search string) []string {
 func ModBrowserSupported(line string) bool {
 	return calculator.ModBrowserSupported(line)
 }
+
+func ModBrowserSources(line string) []string {
+	return calculator.ModBrowserSources(line)
+}

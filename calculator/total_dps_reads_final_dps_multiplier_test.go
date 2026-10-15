@@ -19,7 +19,7 @@ func TestTotalDPSReadsDpsMultiplierAfterPostCritFunc(t *testing.T) {
 		build string
 		want  float64
 	}{
-		{"0479-hierophant-kinetic-fusillade-5.xml", 514890.10232235},
+		{"0479-hierophant-kinetic-fusillade-5.xml", 514887.98029394},
 		{"8300-ladder-tappg_2733.TheStinkyDiver.xml", 3005236.4951818},
 	}
 	for _, c := range cases {

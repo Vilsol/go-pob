@@ -5,6 +5,7 @@ assert(casesPath and outPath, "usage: item_parse.lua <cases.json> <out.json>")
 
 local stable = dofile((selfPath:match("^(.*)[/\\]") or ".") .. "/json_stable.lua")
 
+local construct = dofile((selfPath:match("^(.*)[/\\]") or ".") .. "/pob_compat.lua").construct
 dofile("HeadlessWrapper.lua")
 
 local json = require("dkjson")
@@ -47,7 +48,7 @@ for i, c in ipairs(cases) do
 	local entry = { name = c.name }
 
 	local ok, err = pcall(function()
-		local item = new("Item", c.raw)
+		local item = construct("Item", c.raw)
 
 		local sockets = {}
 		for j, s in ipairs(item.sockets or {}) do

@@ -23,7 +23,7 @@ var (
 
 // Removes GGG string tags used for keyword popups. E.g. "[Critical|Critical Hit]" -> "Critical Hit"
 //
-//pob:src/Modules/Common.lua:1048-1054
+//pob:src/Modules/Common.lua:1110-1116
 func EscapeGGGString(text string) string {
 	line := gggColourTagRegex.ReplaceAllString(text, "${1}")
 	line = gggKeywordRegex.ReplaceAllString(line, "${1}")

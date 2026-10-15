@@ -28,8 +28,8 @@ func TestCriticalCullUsesHitRate(t *testing.T) {
 		stat string
 		want float64
 	}{
-		{"CullPercent", 9.6414169920536},
-		{"CullMultiplier", 1.1067017285033},
+		{"CullPercent", 9.6412075355731},
+		{"CullMultiplier", 1.1066991631099},
 	} {
 		got := env.Player.Output[tc.stat]
 		if math.Abs(got-tc.want) > tc.want*1e-6 {

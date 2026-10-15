@@ -13,7 +13,7 @@ type VariantEvaluator struct {
 	mode  OutputMode
 }
 
-//pob:src/Modules/Calcs.lua:107-116
+//pob:src/Modules/Calcs.lua:89-99
 func NewVariantEvaluator(build *pob.PathOfBuilding, mode OutputMode) *VariantEvaluator {
 	cache := NewEnvironmentCache()
 
@@ -50,7 +50,7 @@ type ItemChange struct {
 	Text string
 }
 
-//pob:src/Modules/Calcs.lua:116-133
+//pob:src/Modules/Calcs.lua:100-113
 func (v *VariantEvaluator) Evaluate(variant Variant) *Environment {
 	restore := v.apply(variant)
 	defer restore()

@@ -12,7 +12,7 @@ func TestBossSkillUberDamageMultiplier(t *testing.T) {
 	if got := env.Player.Output["totalEnemyDamageIn"]; got != 49866 {
 		t.Errorf("totalEnemyDamageIn = %v, want 49866 (PoB)", got)
 	}
-	if got := env.Player.Output["totalEnemyDamage"]; math.Abs(got-96799.3) > 0.1 {
-		t.Errorf("totalEnemyDamage = %v, want 96799.3 (PoB)", got)
+	if got := env.Player.Output["totalEnemyDamage"]; math.Abs(got-107554.73) > 0.1 {
+		t.Errorf("totalEnemyDamage = %v, want 107554.73 (PoB)", got)
 	}
 }

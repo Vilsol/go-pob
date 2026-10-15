@@ -14,7 +14,7 @@ package raw
 // ⚠️ THE PREVIOUS REVISION DERIVED THIS FROM SkillBaseMods AND SkillStatMaps INSTEAD, AND THAT
 // IS WHY IT WAS WRONG. The logic mirrored processMod faithfully; its INPUTS were the 2.18.1-era
 // tables whose 3.20 regeneration is deliberately held (see scripts/regen_data.py). It answered
-// true for 169 ids where the pin flags 263 — a strict subset, 0 ours-only. A derivation
+// true for 169 ids where the pin flags 267 — a strict subset, 0 ours-only. A derivation
 // inherits the staleness of everything it reads, and nothing downstream could tell the
 // difference between a wrong rule and a right rule over old data.
 //
@@ -39,7 +39,11 @@ var skillHasGlobalEffect = map[string]struct{}{
 	"ApproachingFlames":                       {},
 	"ArcaneCloak":                             {},
 	"ArcticArmour":                            {},
+	"AspectOfArakaali":                        {},
+	"AspectOfLunaris":                         {},
+	"AspectOfSolaris":                         {},
 	"AspectOfTheAvian":                        {},
+	"AspectOfTheBrineKing":                    {},
 	"AspectOfTheCat":                          {},
 	"AspectOfTheCrab":                         {},
 	"AspectOfTheSpider":                       {},

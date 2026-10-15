@@ -44,7 +44,7 @@ func clusterNodeCountOf(raw string, cj data.ClusterJewel) (int, bool) {
 	return 0, false
 }
 
-//pob:src/Classes/ItemsTab.lua:2059-2084
+//pob:src/Classes/ItemsTab.lua:2148-2173
 func itemClusterInfo(raw string, item *Item) (ClusterInfo, bool) {
 	cj, ok := data.ClusterJewels.Jewels[item.BaseName]
 	if !ok || !item.Crafted {
@@ -78,7 +78,7 @@ func clusterNodeCount(val float64, cj data.ClusterJewel) int {
 	return int(math.Floor(float64(val*float64(cj.MaxNodes-cj.MinNodes)) + float64(cj.MinNodes) + 0.5))
 }
 
-//pob:block:src/Classes/ItemsTab.lua:700-715,src/Classes/ItemsTab.lua:2086-2105
+//pob:block:src/Classes/ItemsTab.lua:703-718,src/Classes/ItemsTab.lua:2175-2194
 func craftClusterText(raw string, skillID string, nodeCount int) (string, bool) {
 	item := ParseItem(raw)
 	cj, ok := data.ClusterJewels.Jewels[item.BaseName]

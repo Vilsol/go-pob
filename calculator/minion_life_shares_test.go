@@ -53,8 +53,8 @@ func TestMinionLifeSharesFoldsTheSpecificPool(t *testing.T) {
 		key  string
 		want float64
 	}{
-		{"FireTotalHitPool", 6709.1692307692},
-		{"FireMaximumHitTaken", 6371},
+		{"FireTotalHitPool", 6711.2205128205},
+		{"FireMaximumHitTaken", 6373},
 	} {
 		if got := out[tc.key]; math.Abs(got-tc.want) > 1e-6 {
 			t.Errorf("%s = %v, want %v", tc.key, got, tc.want)

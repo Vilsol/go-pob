@@ -10,14 +10,14 @@ func (b *PathOfBuilding) nextSkillSetID() int {
 	return id
 }
 
-//pob:src/Classes/SkillsTab.lua:1425-1435
+//pob:src/Classes/SkillsTab.lua:1452-1462
 func (b *PathOfBuilding) NewSkillSet(title string) int {
 	id := b.nextSkillSetID()
 	b.Skills.SkillSets = append(b.Skills.SkillSets, SkillSet{ID: id, Title: &title, Skills: []Skill{}})
 	return id
 }
 
-//pob:block:src/Classes/SkillSetListControl.lua:14-32,src/Classes/SkillSetListControl.lua:59-66
+//pob:block:src/Classes/SkillSetListControl.lua:20-38,src/Classes/SkillSetListControl.lua:66-73
 func (b *PathOfBuilding) CopySkillSet(skillSetID int, title string) int {
 	i := slices.IndexFunc(b.Skills.SkillSets, func(s SkillSet) bool { return s.ID == skillSetID })
 	if i < 0 {
@@ -33,7 +33,7 @@ func (b *PathOfBuilding) CopySkillSet(skillSetID int, title string) int {
 	return set.ID
 }
 
-//pob:block:src/Classes/SkillSetListControl.lua:59-60
+//pob:block:src/Classes/SkillSetListControl.lua:66-67
 func (b *PathOfBuilding) RenameSkillSet(skillSetID int, title string) {
 	for i := range b.Skills.SkillSets {
 		if b.Skills.SkillSets[i].ID == skillSetID {
@@ -42,7 +42,7 @@ func (b *PathOfBuilding) RenameSkillSet(skillSetID int, title string) {
 	}
 }
 
-//pob:src/Classes/SkillSetListControl.lua:99-110
+//pob:src/Classes/SkillSetListControl.lua:106-117
 func (b *PathOfBuilding) DeleteSkillSet(skillSetID int) {
 	if len(b.Skills.SkillSets) <= 1 {
 		return
@@ -57,7 +57,7 @@ func (b *PathOfBuilding) DeleteSkillSet(skillSetID int) {
 	}
 }
 
-//pob:src/Classes/ImportTab.lua:1900-1910
+//pob:src/Classes/ImportTab.lua:1901-1911
 func (b *PathOfBuilding) GuessMainSocketGroup() int {
 	largestGroupSize, largestGroupIndex := 0, 1
 	if len(b.Skills.SkillSets) == 0 {
@@ -72,7 +72,7 @@ func (b *PathOfBuilding) GuessMainSocketGroup() int {
 	return largestGroupIndex
 }
 
-//pob:block:src/Classes/SkillsTab.lua:296-324
+//pob:block:src/Classes/SkillsTab.lua:322-350
 func (b *PathOfBuilding) SetSocketGroupImbuedSupport(skillSet int, socketGroup int, name string) {
 	group := &b.Skills.SkillSets[skillSet].Skills[socketGroup]
 	if group.Slot == "" {
@@ -85,7 +85,7 @@ func (b *PathOfBuilding) SetSocketGroupImbuedSupport(skillSet int, socketGroup i
 	group.ImbuedSupport = &name
 }
 
-//pob:block:src/Classes/SkillsTab.lua:168-184
+//pob:block:src/Classes/SkillsTab.lua:172-188
 func (b *PathOfBuilding) SetSocketGroupSlot(skillSet int, socketGroup int, slot string) {
 	groups := b.Skills.SkillSets[skillSet].Skills
 	group := &groups[socketGroup]

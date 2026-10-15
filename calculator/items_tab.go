@@ -39,7 +39,7 @@ func setSlotItem(set pob.ItemSet, byID map[int]string, slotName string) *Item {
 
 var slotTypeIDRe = regexp.MustCompile(`^([A-Za-z ]+) (\d+)$`)
 
-//pob:src/Classes/ItemsTab.lua:2457-2503
+//pob:src/Classes/ItemsTab.lua:2560-2606
 func IsItemValidForSlot(build *pob.PathOfBuilding, item *Item, slotName string) bool {
 	return itemValidForSlot(item, slotName, slotTypeOf(slotName), func(weapon1Slot string) *Item {
 		return activeSetSlotItem(build, weapon1Slot)
@@ -109,7 +109,7 @@ func useSecondWeaponSet(set pob.ItemSet) bool {
 	return set.UseSecondWeaponSet != nil && *set.UseSecondWeaponSet
 }
 
-//pob:block:src/Classes/ItemsTab.lua:144-189,src/Classes/ItemSlotControl.lua:98-110
+//pob:block:src/Classes/ItemsTab.lua:156-201,src/Classes/ItemSlotControl.lua:109-121
 func slotShown(build *pob.PathOfBuilding, s itemSlot, additionalRingSlot bool) bool {
 	set, byID := setItems(build)
 	activeWeaponSet := 1
@@ -150,7 +150,7 @@ func (m *MiscCalculator) additionalRingSlot() bool {
 	return m.base.InitialNodeModDB != nil && m.base.InitialNodeModDB.Flag(nil, "AdditionalRingSlot")
 }
 
-//pob:block:src/Classes/ItemsTab.lua:5047-5158
+//pob:block:src/Classes/ItemsTab.lua:4910-5018
 func (m *MiscCalculator) CompareItemSlots(item *Item) []ItemSlotCompare {
 	if item == nil || item.Base == nil || item.Base.Flask != nil || item.Base.Tincture != nil {
 		return nil
@@ -258,7 +258,7 @@ func (m *MiscCalculator) CompareItemSlots(item *Item) []ItemSlotCompare {
 	return out
 }
 
-//pob:block:src/Classes/ItemsTab.lua:5003-5009
+//pob:block:src/Classes/ItemsTab.lua:4866-4872
 func (m *MiscCalculator) FlaskActive(item *Item) bool {
 	active := m.base.Flasks
 	if item.Base != nil && item.Base.Tincture != nil {
@@ -272,7 +272,7 @@ func (m *MiscCalculator) FlaskActive(item *Item) bool {
 	return false
 }
 
-//pob:block:src/Classes/ItemsTab.lua:1645-1649,src/Classes/ItemSlotControl.lua:94-111
+//pob:block:src/Classes/ItemsTab.lua:1652-1656,src/Classes/ItemSlotControl.lua:105-122
 func PopulateSlots(build *pob.PathOfBuilding) {
 	for _, s := range orderedItemSlots {
 		set, byID := setItems(build)
@@ -294,7 +294,7 @@ func PopulateSlots(build *pob.PathOfBuilding) {
 	}
 }
 
-//pob:block:src/Classes/ItemSlotControl.lua:12-19
+//pob:block:src/Classes/ItemSlotControl.lua:22-29
 func EquipItem(build *pob.PathOfBuilding, text, slotName string) int {
 	id := build.AddItem(text)
 	build.SetSlotItem(slotName, id)
@@ -302,7 +302,7 @@ func EquipItem(build *pob.PathOfBuilding, text, slotName string) int {
 	return id
 }
 
-//pob:block:src/Classes/ItemSlotControl.lua:82-93
+//pob:block:src/Classes/ItemSlotControl.lua:93-104
 func SlotItemIDs(build *pob.PathOfBuilding, slotName string) []int {
 	var ids []int
 	for _, it := range build.Items.Items {
@@ -344,7 +344,7 @@ func SlotItemIDsFor(build *pob.PathOfBuilding, names []string) [][]int {
 	return out
 }
 
-//pob:block:src/Classes/ItemSlotControl.lua:12-19
+//pob:block:src/Classes/ItemSlotControl.lua:22-29
 func EquipItemID(build *pob.PathOfBuilding, slotName string, itemID int) bool {
 	set, _ := setItems(build)
 	if itemID == setSlotItemID(set, slotName) || (itemID != 0 && !slices.Contains(SlotItemIDs(build, slotName), itemID)) {
@@ -355,29 +355,102 @@ func EquipItemID(build *pob.PathOfBuilding, slotName string, itemID int) bool {
 	return true
 }
 
-//pob:src/Classes/ItemsTab.lua:1679-1703
+//pob:src/Classes/ItemsTab.lua:1686-1710
 func (m *MiscCalculator) AddItem(text string) (int, string) {
 	item := ParseItem(text)
 	ring := m.additionalRingSlot()
 	set, _ := setItems(m.build)
 	id := m.build.AddItem(text)
+	slotName := ""
 	for _, s := range orderedItemSlots {
 		if setSlotItemID(set, s.name) == 0 && slotShown(m.build, s, ring) && IsItemValidForSlot(m.build, item, s.name) {
 			m.build.SetSlotItem(s.name, id)
-			PopulateSlots(m.build)
-			return id, s.name
+			slotName = s.name
+			break
 		}
 	}
-	return id, ""
+	//pob:block:src/Classes/ItemsTab.lua:1812
+	AddForbiddenJewelCounterpart(m.build, item)
+	PopulateSlots(m.build)
+	return id, slotName
 }
 
-//pob:block:src/Classes/ItemsTab.lua:2626-2629,src/Classes/ItemsTab.lua:1705-1707,src/Classes/ItemsTab.lua:1720-1725
+//pob:block:src/Classes/ItemsTab.lua:2729-2732,src/Classes/ItemsTab.lua:1712-1714,src/Classes/ItemsTab.lua:1804-1814
 func (m *MiscCalculator) ReplaceItem(id int, text string) bool {
-	if !m.build.SetItemText(id, text) {
+	oldText, ok := buildItemText(m.build, id)
+	if !ok || !m.build.SetItemText(id, text) {
 		return false
 	}
+	//pob:block:src/Classes/ItemsTab.lua:1806,src/Classes/ItemsTab.lua:1811-1812
+	item := ParseItem(text)
+	UpdateForbiddenJewelCounterpart(m.build, id, parseItemGlobal(oldText), item)
+	AddForbiddenJewelCounterpart(m.build, item)
 	PopulateSlots(m.build)
 	return true
+}
+
+//pob:block:src/Classes/ItemsTab.lua:37-40
+var forbiddenJewelCounterpart = map[string]string{
+	"Forbidden Flame": "Forbidden Flesh",
+	"Forbidden Flesh": "Forbidden Flame",
+}
+
+func selectedVariantName(item *Item) string {
+	if item == nil || item.Variant == nil || *item.Variant < 1 || *item.Variant > len(item.VariantList) {
+		return ""
+	}
+	return item.VariantList[*item.Variant-1]
+}
+
+//pob:src/Classes/ItemsTab.lua:1728-1771
+func AddForbiddenJewelCounterpart(build *pob.PathOfBuilding, item *Item) int {
+	otherTitle := forbiddenJewelCounterpart[item.Title]
+	variantName := selectedVariantName(item)
+	if otherTitle == "" || variantName == "" {
+		return 0
+	}
+	for _, it := range build.Items.Items {
+		other := parseItemGlobal(it.Text)
+		if other.Title == otherTitle && selectedVariantName(other) == variantName {
+			return 0
+		}
+	}
+	uniques := ItemDB(ItemDBUnique)
+	k := slices.IndexFunc(uniques, func(u *Item) bool { return u.Title == otherTitle })
+	if k < 0 {
+		return 0
+	}
+	newItem := ParseItem(uniques[k].Raw)
+	index := slices.Index(newItem.VariantList, variantName)
+	if index < 0 {
+		return 0
+	}
+	newItem.Variant = new(index + 1)
+	newItem.NormaliseQuality()
+	return build.AddItem(buildRawText(newItem))
+}
+
+//pob:src/Classes/ItemsTab.lua:1774-1801
+func UpdateForbiddenJewelCounterpart(build *pob.PathOfBuilding, id int, oldItem, item *Item) {
+	otherTitle := forbiddenJewelCounterpart[item.Title]
+	if otherTitle == "" || oldItem == nil || oldItem.Title != item.Title {
+		return
+	}
+	oldName, newName := selectedVariantName(oldItem), selectedVariantName(item)
+	if oldName == "" || newName == "" || oldName == newName {
+		return
+	}
+	for _, it := range build.Items.Items {
+		other := parseItemGlobal(it.Text)
+		if it.ID == id || other.Title != otherTitle || selectedVariantName(other) != oldName {
+			continue
+		}
+		if index := slices.Index(other.VariantList, newName); index >= 0 {
+			moved := ParseItem(it.Text)
+			moved.Variant = new(index + 1)
+			build.SetItemText(it.ID, buildRawText(moved))
+		}
+	}
 }
 
 var (
@@ -405,7 +478,7 @@ func FormatModLine(ml ModLine) (string, ModLineKind, bool) {
 	return formatModLine(ml, false)
 }
 
-//pob:src/Modules/ItemTools.lua:357-378
+//pob:src/Modules/ItemTools.lua:361-382
 func formatModLine(ml ModLine, dbMode bool) (string, ModLineKind, bool) {
 	line := ml.Line
 	if !dbMode && (ml.Range != nil || ml.CorruptedRange != nil) {
@@ -460,7 +533,7 @@ func OrderedItemSlotNames() []string {
 	return names
 }
 
-//pob:block:src/Classes/ItemsTab.lua:166-174
+//pob:block:src/Classes/ItemsTab.lua:178-186
 func (m *MiscCalculator) ShownConditionalSlots() []string {
 	ring := m.additionalRingSlot()
 	var out []string

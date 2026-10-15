@@ -211,8 +211,8 @@ func pdmHere() string {
 		if fi, err := os.Stat(pyPathJoin(dir, "oracle", "probe_determinism.sh")); err == nil && !fi.IsDir() { //nolint:gosec // walking up from the CWD, as the original resolves from $0
 			return pyPathJoin(dir, "oracle")
 		}
-		parent := pyPathStr(pyPathJoin(dir, ".."))
-		if parent == dir || dir == "/" {
+		parent := filepath.Dir(dir)
+		if parent == dir {
 			return wd
 		}
 		dir = parent

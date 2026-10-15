@@ -19,7 +19,7 @@ import (
 	"github.com/Vilsol/go-pob/utils"
 )
 
-//pob:src/Classes/ConfigTab.lua:493-524
+//pob:src/Classes/ConfigTab.lua:525-556
 func buildConfigModLists(env *Environment, build *pob.PathOfBuilding) (*moddb.ModList, *moddb.ModList) {
 	modList := moddb.NewModList()
 	enemyModList := moddb.NewModList()
@@ -74,7 +74,7 @@ func buildConfigModLists(env *Environment, build *pob.PathOfBuilding) (*moddb.Mo
 	return applyCustomModifierBlocks(build, modList), enemyModList
 }
 
-//pob:block:src/Modules/CalcSetup.lua:503-506
+//pob:block:src/Modules/CalcSetup.lua:605-608
 func addBaseResistancePenalty(db *moddb.ModDB, build *pob.PathOfBuilding) {
 	penalty := float64(-60)
 	if value, ok := build.GetNumberOptionOK("resistancePenalty"); ok {
@@ -86,17 +86,17 @@ func addBaseResistancePenalty(db *moddb.ModDB, build *pob.PathOfBuilding) {
 	}
 }
 
-//pob:src/Modules/CalcSetup.lua:263-1151
+//pob:src/Modules/CalcSetup.lua:353-1253
 func InitEnv(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode OutputMode) (*Environment, moddb.ModStoreFuncs, moddb.ModStoreFuncs, moddb.ModStoreFuncs) {
 	return initEnvWith(build, envCache, mode, false, nil)
 }
 
-//pob:src/Modules/CalcSetup.lua:376-400
+//pob:src/Modules/CalcSetup.lua:475-502
 func InitEnvOverride(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode OutputMode, override *CalcOverride) (*Environment, moddb.ModStoreFuncs, moddb.ModStoreFuncs, moddb.ModStoreFuncs) {
 	return initEnvWith(build, envCache, mode, false, override)
 }
 
-//pob:block:src/Classes/ConfigTab.lua:1062-1071
+//pob:block:src/Classes/ConfigTab.lua:1118-1127
 func resolveEnemyLevel(input, placeholder, characterLevel float64) int {
 	level := characterLevel
 	switch {
@@ -112,7 +112,7 @@ func initEnvWith(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode Out
 	return initEnvSpec(build, envCache, mode, alignCalcs, override, nil)
 }
 
-//pob:block:src/Modules/Calcs.lua:328-335
+//pob:block:src/Modules/Calcs.lua:294-301
 type calcAccelerate struct {
 	nodeAlloc         bool
 	requirementsItems bool
@@ -121,7 +121,7 @@ type calcAccelerate struct {
 	everything        bool
 }
 
-//pob:block:src/Modules/CalcSetup.lua:379-383
+//pob:block:src/Modules/CalcSetup.lua:478-482
 type calcSpecEnv struct {
 	cachedPlayerDB       moddb.ModStoreFuncs
 	cachedEnemyDB        moddb.ModStoreFuncs
@@ -148,7 +148,7 @@ func copyModDB(dst *moddb.ModDB, src moddb.ModStoreFuncs) {
 	maps.Copy(dst.Conditions, cached.Conditions)
 }
 
-//pob:src/Modules/CalcSetup.lua:216-290
+//pob:src/Modules/CalcSetup.lua:306-380
 func wipeEnv(env *Environment, accelerate calcAccelerate) {
 	env.itemText = nil
 	env.itemsByName = nil
@@ -189,7 +189,7 @@ func wipeEnv(env *Environment, accelerate calcAccelerate) {
 	}
 }
 
-//pob:block:src/Modules/CalcSetup.lua:1607-1610
+//pob:block:src/Modules/CalcSetup.lua:1709-1712
 func countGroupGemColour(groupCfg *moddb.ListCfg, gemData *poe.SkillGem, skillID string) {
 	pobGem, ok := pobGemForVariant(gemData, skillID)
 	if !ok {
@@ -206,7 +206,7 @@ func countGroupGemColour(groupCfg *moddb.ListCfg, gemData *poe.SkillGem, skillID
 	}
 }
 
-//pob:block:src/Modules/CalcSetup.lua:1843-1863
+//pob:block:src/Modules/CalcSetup.lua:1947-1967
 func resetAcceleratedSkillData(env *Environment, activeSkill *ActiveSkill) {
 	old := *activeSkill.SkillData
 	skillData := &old
@@ -234,6 +234,7 @@ type allocatedNodeCounts struct {
 	mastery      int
 	keystone     int
 	masteryTypes map[string]int
+	tattooTypes  map[string]int
 }
 
 func countAllocatedNodes(env *Environment, nodes map[string]data.Node, masteryOverrides map[string]*data.LegionNode) allocatedNodeCounts {
@@ -275,10 +276,21 @@ func countAllocatedNodes(env *Environment, nodes map[string]data.Node, masteryOv
 			counts.masteryTypes[name]++
 		}
 	}
+	//pob:block:src/Classes/PassiveSpec.lua:1460-1466
+	for nodeID := range nodes {
+		if tattoo, ok := masteryOverrides[nodeID]; ok && tattoo != nil {
+			if overrideType := data.TattooOverrideTypes[tattoo.DN]; overrideType != "" {
+				if counts.tattooTypes == nil {
+					counts.tattooTypes = map[string]int{}
+				}
+				counts.tattooTypes[overrideType]++
+			}
+		}
+	}
 	return counts
 }
 
-//pob:src/Modules/CalcSetup.lua:376-460
+//pob:src/Modules/CalcSetup.lua:475-562
 func initEnvSpec(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode OutputMode, alignCalcs bool, override *CalcOverride, specEnv *calcSpecEnv) (*Environment, moddb.ModStoreFuncs, moddb.ModStoreFuncs, moddb.ModStoreFuncs) {
 	return initEnvSpecKeep(build, envCache, mode, alignCalcs, override, specEnv, true)
 }
@@ -364,8 +376,10 @@ func initEnvSpecKeep(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode
 
 		env.AuxSkillList = make([]*ActiveSkill, 0)
 	}
+	//pob:src/Modules/CalcSetup.lua:500
+	env.BuildBreakdown = mode == OutputModeMain || mode == OutputModeCalcs
 
-	//pob:block:src/Modules/CalcSetup.lua:462-468
+	//pob:block:src/Modules/CalcSetup.lua:564-570
 	buffMode := BuffModeEffective
 	if mode == OutputModeCalcs {
 		buffMode = BuffMode(build.CalcsInputString("misc_buffMode", string(BuffModeEffective)))
@@ -386,7 +400,7 @@ func initEnvSpecKeep(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode
 		env.partyTab = loadPartyTab(build.Party)
 	}
 
-	//pob:block:src/Modules/CalcSetup.lua:488-592
+	//pob:block:src/Modules/CalcSetup.lua:590-694
 	if cachedPlayerDB == nil {
 		classStats := env.Spec.Class()
 
@@ -410,16 +424,16 @@ func initEnvSpecKeep(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode
 		env.ModDB.AddMod(mod.NewFloat("TotemColdResist", mod.TypeBase, 40).Source("Base"))
 		env.ModDB.AddMod(mod.NewFloat("TotemLightningResist", mod.TypeBase, 40).Source("Base"))
 		env.ModDB.AddMod(mod.NewFloat("TotemChaosResist", mod.TypeBase, 20).Source("Base"))
-		//pob:block:src/Modules/CalcSetup.lua:511
+		//pob:block:src/Modules/CalcSetup.lua:613
 		env.ModDB.AddMod(mod.NewFloat("CritChance", mod.TypeIncrease, data.CriticalStrikeChancePlusPercentPerPowerCharge).Source("Base").Tag(mod.Multiplier("PowerCharge").Base(0)))
-		//pob:block:src/Modules/CalcSetup.lua:512-513
+		//pob:block:src/Modules/CalcSetup.lua:614-615
 		env.ModDB.AddMod(mod.NewFloat("Speed", mod.TypeIncrease, data.BaseAttackSpeedPlusPercentPerFrenzyCharge).Source("Base").Flag(mod.MFlagAttack).Tag(mod.Multiplier("FrenzyCharge").Base(0)))
 		env.ModDB.AddMod(mod.NewFloat("Speed", mod.TypeIncrease, data.BaseCastSpeedPlusPercentPerFrenzyCharge).Source("Base").Flag(mod.MFlagCast).Tag(mod.Multiplier("FrenzyCharge").Base(0)))
 		env.ModDB.AddMod(mod.NewFloat("Damage", mod.TypeMore, 4).Source("Base").Tag(mod.Multiplier("FrenzyCharge").Base(0)))
-		//pob:block:src/Modules/CalcSetup.lua:515-516
+		//pob:block:src/Modules/CalcSetup.lua:617-618
 		env.ModDB.AddMod(mod.NewFloat("PhysicalDamageReduction", mod.TypeBase, data.PhysicalDamageReductionPercentPerEnduranceCharge).Source("Base").Tag(mod.Multiplier("EnduranceCharge").Base(0)))
 		env.ModDB.AddMod(mod.NewFloat("ElementalDamageReduction", mod.TypeBase, data.ElementalDamageReductionPercentPerEnduranceCharge).Source("Base").Tag(mod.Multiplier("EnduranceCharge").Base(0)))
-		//pob:block:src/Modules/CalcSetup.lua:517
+		//pob:block:src/Modules/CalcSetup.lua:619
 		env.ModDB.AddMod(mod.NewFloat("MaximumRage", mod.TypeBase, data.MaximumRage).Source("Base"))
 		env.ModDB.AddMod(mod.NewFloat("Multiplier:GaleForce", mod.TypeBase, 0).Source("Base"))
 		env.ModDB.AddMod(mod.NewFloat("MaximumGaleForce", mod.TypeBase, 10).Source("Base"))
@@ -430,14 +444,14 @@ func initEnvSpecKeep(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode
 		env.ModDB.AddMod(mod.NewFloat("MovementSpeed", mod.TypeIncrease, 1).Source("Base").Tag(mod.Multiplier("Rampage").Base(0).Limit(50).Div(20)))
 		env.ModDB.AddMod(mod.NewFloat("ActiveTrapLimit", mod.TypeBase, 15).Source("Base"))
 		env.ModDB.AddMod(mod.NewFloat("ActiveMineLimit", mod.TypeBase, 15).Source("Base"))
-		//pob:block:src/Modules/CalcSetup.lua:527-528
+		//pob:block:src/Modules/CalcSetup.lua:629-630
 		env.ModDB.AddMod(mod.NewFloat("MineThrowCount", mod.TypeBase, 1).Source("Base"))
 		env.ModDB.AddMod(mod.NewFloat("TrapThrowCount", mod.TypeBase, 1).Source("Base"))
 		env.ModDB.AddMod(mod.NewFloat("ActiveBrandLimit", mod.TypeBase, 3).Source("Base"))
 		env.ModDB.AddMod(mod.NewFloat("EnemyCurseLimit", mod.TypeBase, 1).Source("Base"))
 		env.ModDB.AddMod(mod.NewFloat("SocketedCursesHexLimitValue", mod.TypeBase, 1).Source("Base"))
 		env.ModDB.AddMod(mod.NewFloat("ProjectileCount", mod.TypeBase, 1).Source("Base"))
-		//pob:block:src/Modules/CalcSetup.lua:533-536
+		//pob:block:src/Modules/CalcSetup.lua:635-638
 		env.ModDB.AddMod(mod.NewFloat("Speed", mod.TypeMore, data.DualWieldInherentAttackSpeedPlusPercentFinal).Source("Base").Flag(mod.MFlagAttack).Tag(mod.Condition("DualWielding")).Tag(mod.Condition("DoubledInherentDualWieldingSpeed").Neg(true)))
 		env.ModDB.AddMod(mod.NewFloat("Speed", mod.TypeMore, 2*data.DualWieldInherentAttackSpeedPlusPercentFinal).Source("Base").Flag(mod.MFlagAttack).Tag(mod.Condition("DualWielding")).Tag(mod.Condition("DoubledInherentDualWieldingSpeed")))
 		env.ModDB.AddMod(mod.NewFloat("BlockChance", mod.TypeBase, data.InherentBlockWhileDualWieldingPercent).Source("Base").Tag(mod.Condition("DualWielding")).Tag(mod.Condition("NoInherentBlock").Neg(true)).Tag(mod.Condition("DoubledInherentDualWieldingBlock").Neg(true)))
@@ -472,7 +486,7 @@ func initEnvSpecKeep(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode
 		if input := build.GetStringOption("pantheonMinorGod"); input != "" {
 			minorGod = input
 		}
-		//pob:block:src/Modules/CalcSetup.lua:550-558
+		//pob:block:src/Modules/CalcSetup.lua:652-660
 		switch bandit {
 		case "Alira":
 			env.ModDB.AddMod(mod.NewFloat("ElementalResist", mod.TypeBase, 15).Source("Bandit"))
@@ -485,13 +499,13 @@ func initEnvSpecKeep(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode
 		}
 
 		// Add Pantheon mods
-		//pob:block:src/Modules/CalcSetup.lua:563-571
+		//pob:block:src/Modules/CalcSetup.lua:665-673
 		applySoulMod(env, majorGod)
 		applySoulMod(env, minorGod)
 
 		// Initialise enemy modifier database
 		initModDB(env, env.EnemyModDB)
-		//pob:block:src/Modules/CalcSetup.lua:575
+		//pob:block:src/Modules/CalcSetup.lua:677
 		env.EnemyModDB.AddMod(mod.NewFloat("Accuracy", mod.TypeBase, data.MonsterAccuracyTable[env.EnemyLevel]).Source("Base"))
 		env.EnemyModDB.AddMod(mod.NewFlag("Condition:AgainstDamageOverTime", true).Source("Base").
 			Flag(mod.MFlagDot).Tag(mod.ActorCondition("player", "Combat")))
@@ -502,7 +516,7 @@ func initEnvSpecKeep(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode
 		env.EnemyModDB.AddList(confEnemyModList)
 
 		// Add mods from the party tab
-		//pob:block:src/Modules/CalcSetup.lua:583
+		//pob:block:src/Modules/CalcSetup.lua:685
 		env.EnemyModDB.AddList(env.partyTab.enemyModList)
 
 		if keepCached {
@@ -526,14 +540,14 @@ func initEnvSpecKeep(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode
 		}
 	}
 
-	//pob:block:src/Modules/CalcSetup.lua:594-598
+	//pob:block:src/Modules/CalcSetup.lua:696-700
 	for _, condition := range override.Conditions {
 		env.ModDB.Conditions[condition] = true
 	}
 
-	//pob:block:src/Modules/CalcSetup.lua:600-605
+	//pob:block:src/Modules/CalcSetup.lua:702-707
 	counts := env.specAllocCounts
-	//pob:block:src/Modules/CalcSetup.lua:609-674
+	//pob:block:src/Modules/CalcSetup.lua:711-776
 	if !accelerate.nodeAlloc {
 		var tree = data.TreeVersions[data.LatestTreeVersion].Tree()
 		env.AllocatedNodes = make(map[string]data.Node, len(env.Build.Build.PassiveNodes)+len(override.AddNodes))
@@ -555,7 +569,7 @@ func initEnvSpecKeep(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode
 			}
 		}
 
-		//pob:block:src/Modules/CalcSetup.lua:612-672
+		//pob:block:src/Modules/CalcSetup.lua:714-774
 		nodeIDs := env.Build.Build.PassiveNodes
 		overridesNodes := len(override.AddNodes) > 0 || len(override.RemoveNodes) > 0
 		if overridesNodes {
@@ -594,7 +608,7 @@ func initEnvSpecKeep(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode
 		}
 	}
 
-	//pob:block:src/Modules/CalcSetup.lua:676-690
+	//pob:block:src/Modules/CalcSetup.lua:778-792
 	if counts.notable > 0 {
 		env.ModDB.AddMod(mod.NewFloat("Multiplier:AllocatedNotable", mod.TypeBase, float64(counts.notable)))
 	}
@@ -609,6 +623,10 @@ func initEnvSpecKeep(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode
 	}
 	if n := counts.masteryTypes["Life Mastery"]; n > 0 {
 		env.ModDB.AddMod(mod.NewFloat("Multiplier:AllocatedLifeMastery", mod.TypeBase, float64(n)))
+	}
+	//pob:block:src/Modules/CalcSetup.lua:793-797
+	for overrideType, count := range counts.tattooTypes {
+		env.ModDB.Multipliers[overrideType] = float64(count)
 	}
 
 	/*
@@ -836,25 +854,26 @@ func initEnvSpecKeep(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode
 	*/
 
 	if !accelerate.nodeAlloc {
-		env.InitialNodeModDB, _ = buildModListForNodeList(env, env.AllocatedNodes, true)
+		env.InitialNodeModDB, _, _ = buildModListForNodeList(env, env.AllocatedNodes, true)
 		for _, m := range override.AddMods {
 			env.InitialNodeModDB.AddMod(m)
 		}
-		//pob:src/Modules/CalcSetup.lua:673
+		//pob:src/Modules/CalcSetup.lua:775
 		mergeKeystones(env, env.InitialNodeModDB)
 	}
 
 	var itemExplodeSources []ExplodeSource
-	//pob:block:src/Modules/CalcSetup.lua:698
+	var itemGrantedSkills []grantedSkill
+	//pob:block:src/Modules/CalcSetup.lua:800
 	if !accelerate.requirementsItems {
 		mergeEquippedItems(env)
 		env.Flasks = toggleItem(env.Flasks, override.ToggleFlask)
 		env.Tinctures = toggleItem(env.Tinctures, override.ToggleTincture)
-		itemExplodeSources = collectItemExplodeSources(env, currentTreeVersion)
+		itemExplodeSources, itemGrantedSkills = collectItemExplodeSources(env, currentTreeVersion)
 	}
 	mergeDB(env.ModDB, env.ItemModDB)
 
-	//pob:block:src/Modules/CalcSetup.lua:1286
+	//pob:block:src/Modules/CalcSetup.lua:1388
 	if !accelerate.nodeAlloc {
 		allocateGrantedPassives(env, currentTreeVersion)
 	}
@@ -862,12 +881,14 @@ func initEnvSpecKeep(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode
 
 	explodeSources := itemExplodeSources
 	if !accelerate.everything || env.nodeModList == nil {
-		nodeModList, nodeExplodeSources := buildModListForNodeList(env, env.AllocatedNodes, true)
+		nodeModList, nodeExplodeSources, nodeGrantedSkills := buildModListForNodeList(env, env.AllocatedNodes, true)
 		for _, m := range override.AddMods {
 			nodeModList.AddMod(m)
 		}
 		env.nodeModList = nodeModList
-		//pob:block:src/Modules/CalcSetup.lua:1321
+		//pob:block:src/Modules/CalcSetup.lua:1437-1446
+		env.grantedSkillsNodes = nodeGrantedSkills
+		//pob:block:src/Modules/CalcSetup.lua:1423
 		explodeSources = append(nodeExplodeSources, itemExplodeSources...)
 	}
 	env.ModDB.AddList(env.nodeModList)
@@ -888,11 +909,13 @@ func initEnvSpecKeep(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode
 		env.grantedSkills = tableConcat(env.grantedSkillsNodes, env.grantedSkillsItems)
 	*/
 
-	//pob:block:src/Modules/CalcSetup.lua:1349
+	//pob:block:src/Modules/CalcSetup.lua:1451
 	if !accelerate.skills {
 		processExplodeSocketGroup(build, explodeSources)
 
 		if env.Mode == OutputModeMain {
+			//pob:block:src/Modules/CalcSetup.lua:1449
+			processGrantedSkillSocketGroups(build, append(slices.Clone(env.grantedSkillsNodes), itemGrantedSkills...))
 			/*
 				TODO -- Process extra skills granted by items or tree nodes
 				local markList = wipeTable(tempTable1)
@@ -968,7 +991,7 @@ func initEnvSpecKeep(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode
 		assignActorWeaponData(env)
 
 		if env.Mode == OutputModeCalcs && !alignCalcs {
-			//pob:block:src/Modules/CalcSetup.lua:1483-1485
+			//pob:block:src/Modules/CalcSetup.lua:1585-1587
 			selectedSkillSet := max(activeSkillSetIndex(build.Skills), 0)
 			skillCount := 0
 			if len(build.Skills.SkillSets) > selectedSkillSet {
@@ -1006,9 +1029,9 @@ func initEnvSpecKeep(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode
 			selectedSkillSet = 0
 		}
 
-		//pob:block:src/Modules/CalcSetup.lua:998-1000
+		//pob:block:src/Modules/CalcSetup.lua:1100-1102
 		crossLinkedSupportGroups := make(map[string]bool)
-		//pob:block:src/Modules/CalcSetup.lua:1492-1496
+		//pob:block:src/Modules/CalcSetup.lua:1594-1598
 		crossLinkedSupportSources := make(map[string][]string)
 		for _, linkedMod := range env.ModDB.Mods["LinkedSupport"] {
 			for _, tag := range linkedMod.Tags() {
@@ -1057,7 +1080,7 @@ func initEnvSpecKeep(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode
 		processedSockets := make(map[*pob.Gem]bool)
 		reqOverride := make(map[*pob.Gem]*int)
 
-		//pob:src/Modules/CalcSetup.lua:996
+		//pob:src/Modules/CalcSetup.lua:1098
 		for _, index := range indexOrder {
 			socketGroupIndex := index
 			socketGroup := &build.Skills.SkillSets[selectedSkillSet].Skills[index]
@@ -1068,19 +1091,16 @@ func initEnvSpecKeep(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode
 				socketGroup.SlotEnabled = ws == activeWeaponSet
 			}
 			if index == env.MainSocketGroup || (socketGroup.Enabled && socketGroup.SlotEnabled) {
-				if socketGroup.Slot != "" {
-					groupCfg.SlotName = strings.Replace(socketGroup.Slot, " Swap", "", -1)
-				} else {
-					groupCfg.SlotName = ""
-				}
+				groupCfg.SlotName = groupSlotName(socketGroup)
 				groupCfg.IntelligenceGems, groupCfg.DexterityGems, groupCfg.StrengthGems = 0, 0, 0
 
 				propertyModList := gemPropertyList(env, groupCfg)
 
 				supportList := make([]*GemEffect, 0)
-				if !socketGroupIsSourced(socketGroup) {
-					// Add extra supports from the item this group is socketed in
-					for _, value := range utils.CastSlice[mod.ExtraSupport](env.ModDB.List(groupCfg, "ExtraSupport")) {
+				//pob:block:src/Modules/CalcSetup.lua:1628-1658
+				// Add extra supports from the item this group is socketed in
+				for _, value := range utils.CastSlice[mod.ExtraSupport](env.ModDB.List(groupCfg, "ExtraSupport")) {
+					if !socketGroupIsSourced(socketGroup) || value.AppliesToGrantedSkills {
 						grantedEffect := poe.GrantedEffectByID(value.SkillID)
 						// Some skill gems share the same name as support gems, e.g. Barrage.
 						// Since a support gem is expected here, if the first lookup returns a skill, then
@@ -1090,19 +1110,20 @@ func initEnvSpecKeep(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode
 						}
 						if grantedEffect != nil {
 							env.markItemSupport(grantedEffect.ID)
-							supportList = append(supportList, &GemEffect{
+							supportList = addBestSupport(&GemEffect{
 								GrantedEffect: &GrantedEffect{
 									Raw:      grantedEffect,
 									fromItem: true,
 								},
-								Level:   value.Level,
-								Quality: 0,
-							})
+								Level:                  value.Level,
+								Quality:                0,
+								AppliesToGrantedSkills: value.AppliesToGrantedSkills,
+							}, supportList, env.Mode)
 						}
 					}
 				}
 
-				//pob:src/Modules/CalcSetup.lua:1557-1565
+				//pob:src/Modules/CalcSetup.lua:1659-1667
 				if socketGroup.ImbuedSupport != nil && groupCfg.SlotName != "" {
 					for _, effect := range imbuedSupportBySlot[groupCfg.SlotName] {
 						supportList = append(supportList, &GemEffect{
@@ -1136,7 +1157,7 @@ func initEnvSpecKeep(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode
 							supportEffect := newSupportEffect(env, gemInstance, gemData, grantedEffect, socketQuality,
 								gemPropertyModListFor(env, groupCfg.SlotName, gemIndex, propertyModList))
 							reqOverride[&socketGroup.Gems[gemIndex]] = supportEffect.req
-							//pob:block:src/Modules/CalcSetup.lua:1592-1595
+							//pob:block:src/Modules/CalcSetup.lua:1694-1697
 							if env.Mode == OutputModeMain {
 								env.setDisplayEffect(socketGroupIndex, gemIndex, supportEffect)
 							}
@@ -1156,19 +1177,19 @@ func initEnvSpecKeep(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode
 							processGrantedEffect(primaryGrantedEffectOf(gemData))
 						}
 
-						//pob:block:src/Modules/CalcSetup.lua:1620-1625
+						//pob:block:src/Modules/CalcSetup.lua:1722-1727
 						processGrantedEffect(secondaryGrantedEffectOf(gemData, gemInstance.SkillID, gemInstance.VariantID))
 					}
 				}
 
-				//pob:block:src/Modules/CalcSetup.lua:1692-1709
+				//pob:block:src/Modules/CalcSetup.lua:1795-1812
 				if socketGroupIsSourced(socketGroup) {
 					for _, slotSupport := range slotSupportLists[groupCfg.SlotName] {
 						supportList = addBestSupport(slotSupport, supportList, env.Mode)
 					}
 				}
 
-				//pob:block:src/Modules/CalcSetup.lua:1711-1730
+				//pob:block:src/Modules/CalcSetup.lua:1814-1833
 				for _, crossLinkedSupportSlot := range crossLinkedSupportSources[groupCfg.SlotName] {
 					for _, supportEffect := range slotSupportLists[crossLinkedSupportSlot] {
 						supportList = addBestSupport(supportEffect, supportList, env.Mode)
@@ -1193,7 +1214,7 @@ func initEnvSpecKeep(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode
 						grantedEffectList = raw2.GrantedEffectsForGem(gemData)
 					}
 
-					//pob:block:src/Modules/Data.lua:1078-1081
+					//pob:block:src/Modules/Data.lua:1107-1110
 					if secondary := secondaryGrantedEffectOf(gemData, gemInstance.SkillID, gemInstance.VariantID); secondary != nil {
 						present := false
 						for _, existing := range grantedEffectList {
@@ -1234,7 +1255,7 @@ func initEnvSpecKeep(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode
 									CostEmptied:   itemGrantedSkillTriggered(env, socketGroup, gemInstance),
 								}
 								activeEffect.triggerChance = itemGrantedSkillTriggerChance(env, socketGroup, gemInstance)
-								//pob:block:src/Modules/CalcSetup.lua:1433-1440
+								//pob:block:src/Modules/CalcSetup.lua:1535-1542
 								if socketGroup.Source == "Explode" && gemIndex < len(explodeSources) {
 									activeEffect.ExplodeSource = &explodeSources[gemIndex]
 									activeEffect.CostEmptied = true
@@ -1247,7 +1268,7 @@ func initEnvSpecKeep(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode
 								}
 
 								if gemData != nil {
-									//pob:block:src/Modules/CalcSetup.lua:1669-1671
+									//pob:block:src/Modules/CalcSetup.lua:1772-1774
 									gemCfg := *groupCfg
 									if item := env.Player.ItemList[groupCfg.SlotName]; item != nil && gemIndex < len(item.SocketColors) {
 										gemCfg.SocketColor = item.SocketColors[gemIndex]
@@ -1270,20 +1291,20 @@ func initEnvSpecKeep(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode
 
 										if match {
 											applyGemProperty(activeEffect, value)
-											//pob:block:src/Modules/CalcSetup.lua:323-324
+											//pob:block:src/Modules/CalcSetup.lua:413-414
 											activeEffect.gemPropertyInfo = append(activeEffect.gemPropertyInfo, value)
 										}
 									}
 									reqOverride[&socketGroup.Gems[gemIndex]] = activeEffect.req
 								}
 
-								//pob:block:src/Modules/CalcSetup.lua:1683-1685
+								//pob:block:src/Modules/CalcSetup.lua:1786-1788
 								if env.Mode == OutputModeMain {
 									env.setDisplayEffect(socketGroupIndex, gemIndex, activeEffect)
 								}
 
 								appliedSupportList := supportList
-								//pob:block:src/Modules/CalcSetup.lua:1686-1688
+								//pob:block:src/Modules/CalcSetup.lua:1789-1791
 								if itemGrantedSkillNoSupports(env, socketGroup) {
 									appliedSupportList = []*GemEffect{}
 								}
@@ -1324,7 +1345,7 @@ func initEnvSpecKeep(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode
 								Dex:       int(getGemStatRequirement(reqLevel, isSupport, reqDex)),
 								Int:       int(getGemStatRequirement(reqLevel, isSupport, reqInt)),
 							}
-							//pob:block:src/Modules/CalcSetup.lua:1745-1747
+							//pob:block:src/Modules/CalcSetup.lua:1848-1850
 							if override := reqOverride[&socketGroup.Gems[gemIndex]]; override != nil {
 								req.Str, req.Dex, req.Int = *override, *override, *override
 							}
@@ -1333,7 +1354,7 @@ func initEnvSpecKeep(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode
 					}
 				}
 
-				//pob:block:src/Modules/CalcSetup.lua:1771-1773
+				//pob:block:src/Modules/CalcSetup.lua:1875-1877
 				for _, value := range env.ModDB.List(groupCfg, "GroupProperty") {
 					env.Player.ModDB.AddMod(value.(mod.GroupProperty).Mod.Clone().Source(mod.Source(groupCfg.SlotName)))
 				}
@@ -1389,7 +1410,7 @@ func initEnvSpecKeep(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode
 			}
 
 			// Check for enabled energy blade to see if we need to regenerate everything.
-			//pob:block:src/Modules/CalcSetup.lua:1812-1822
+			//pob:block:src/Modules/CalcSetup.lua:1916-1926
 			if !env.ModDB.Conditions[conditionAffectedByEnergyBlade] && socketGroup.Enabled && socketGroup.SlotEnabled {
 				for _, gemInstance := range socketGroup.Gems {
 					_, grantedEffect := resolveGemInstance(gemInstance)
@@ -1424,7 +1445,7 @@ func initEnvSpecKeep(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode
 			CalcBuildActiveSkillModList(env, activeSkill)
 		}
 	} else {
-		//pob:block:src/Modules/CalcSetup.lua:1841-1865
+		//pob:block:src/Modules/CalcSetup.lua:1945-1969
 		for _, activeSkill := range env.Player.ActiveSkillList {
 			resetAcceleratedSkillData(env, activeSkill)
 		}
@@ -1441,9 +1462,20 @@ func socketGroupIsSourced(socketGroup *pob.Skill) bool {
 	return socketGroup.SourceAttr != nil
 }
 
+//pob:block:src/Modules/CalcSetup.lua:1609-1610
+func groupSlotName(socketGroup *pob.Skill) string {
+	if socketGroup.Slot != "" {
+		return strings.ReplaceAll(socketGroup.Slot, " Swap", "")
+	}
+	if socketGroupIsSourced(socketGroup) && strings.Contains(strings.ToLower(socketGroup.Source), "tree") {
+		return "Passive Tree"
+	}
+	return ""
+}
+
 // local gemId = data.gemForSkill[gemInstance.skillId]
 //
-//pob:block:src/Classes/SkillsTab.lua:1151-1160
+//pob:block:src/Classes/SkillsTab.lua:1178-1187
 func resolveGemInstance(gemInstance pob.Gem) (*poe.SkillGem, *poe.GrantedEffect) {
 	if gemInstance.SkillID != "" {
 		if grantedEffect := poe.GrantedEffectByID(gemInstance.SkillID); grantedEffect != nil {
@@ -1463,7 +1495,7 @@ func resolveGemInstance(gemInstance pob.Gem) (*poe.SkillGem, *poe.GrantedEffect)
 		return baseItemType.SkillGem(), nil
 	}
 
-	//pob:block:src/Classes/SkillsTab.lua:1166-1174
+	//pob:block:src/Classes/SkillsTab.lua:1193-1201
 	if gemInstance.GemID == "" && gemInstance.SkillID == "" && strings.TrimSpace(gemInstance.NameSpec) != "" {
 		id, isVariant := findSkillGem(gemInstance.NameSpec)
 		switch {
@@ -1484,7 +1516,7 @@ func resolveGemInstance(gemInstance pob.Gem) (*poe.SkillGem, *poe.GrantedEffect)
 	return nil, nil
 }
 
-//pob:src/Classes/SkillsTab.lua:1076-1100
+//pob:src/Classes/SkillsTab.lua:1103-1127
 func findSkillGem(nameSpec string) (string, bool) {
 	r := findSkillGemCached(nameSpec)
 	return r.id, r.variant
@@ -1604,7 +1636,7 @@ func luaPatternToRegexp(p string) string {
 	return b.String()
 }
 
-//pob:block:src/Modules/CalcSetup.lua:1364-1375,src/Modules/CalcSetup.lua:1397
+//pob:block:src/Modules/CalcSetup.lua:1466-1477,src/Modules/CalcSetup.lua:1499
 func itemGrantedSkillNoSupports(env *Environment, socketGroup *pob.Skill) bool {
 	if socketGroup == nil || !strings.HasPrefix(socketGroup.Source, "Item:") || len(socketGroup.Gems) == 0 || socketGroup.Gems[0].SkillID == "" {
 		return false
@@ -1621,7 +1653,7 @@ func itemGrantedSkillNoSupports(env *Environment, socketGroup *pob.Skill) bool {
 	return false
 }
 
-//pob:block:src/Modules/CalcSetup.lua:1364-1398
+//pob:block:src/Modules/CalcSetup.lua:1466-1500
 func itemGrantedSkillTriggered(env *Environment, socketGroup *pob.Skill, gem pob.Gem) bool {
 	if socketGroup == nil || !strings.HasPrefix(socketGroup.Source, "Item:") || gem.SkillID == "" {
 		return false
@@ -1638,7 +1670,7 @@ func itemGrantedSkillTriggered(env *Environment, socketGroup *pob.Skill, gem pob
 	return false
 }
 
-//pob:block:src/Modules/CalcSetup.lua:1399
+//pob:block:src/Modules/CalcSetup.lua:1501
 func itemGrantedSkillTriggerChance(env *Environment, socketGroup *pob.Skill, gem pob.Gem) *float64 {
 	if socketGroup == nil || !strings.HasPrefix(socketGroup.Source, "Item:") || gem.SkillID == "" {
 		return nil
@@ -1655,11 +1687,17 @@ func itemGrantedSkillTriggerChance(env *Environment, socketGroup *pob.Skill, gem
 	return nil
 }
 
-//pob:block:src/Modules/CalcSetup.lua:701-711,src/Modules/CalcSetup.lua:735-737
-func collectItemExplodeSources(env *Environment, treeVersion pob.TreeVersion) []ExplodeSource {
+type grantedSkill struct {
+	ItemGrantedSkill
+	nameSpec string
+	slotName string
+}
+
+//pob:block:src/Modules/CalcSetup.lua:803-813,src/Modules/CalcSetup.lua:826-839
+func collectItemExplodeSources(env *Environment, treeVersion pob.TreeVersion) ([]ExplodeSource, []grantedSkill) {
 	items := env.Build.Items
 	if len(items.ItemSets) == 0 {
-		return nil
+		return nil, nil
 	}
 	set := items.ItemSets[activeItemSetIndex(items)]
 	slotsByName := make(map[string]pob.Slot, len(set.Slots))
@@ -1669,6 +1707,7 @@ func collectItemExplodeSources(env *Environment, treeVersion pob.TreeVersion) []
 	byID := itemTextByID(env)
 
 	var sources []ExplodeSource
+	var granted []grantedSkill
 	for _, s := range orderedItemSlots {
 		if (s.name == "Graft 1" || s.name == "Graft 2") && !strings.Contains(string(treeVersion), "3_27") {
 			continue
@@ -1680,6 +1719,11 @@ func collectItemExplodeSources(env *Environment, treeVersion pob.TreeVersion) []
 		if !ok {
 			continue
 		}
+		itemID := slotsByName[s.name].ItemID
+		if o := env.override; o != nil && o.RepSlotName != "" && s.name == o.RepSlotName {
+			itemID = -1
+		}
+		granted = appendItemGrantedSkills(granted, item, itemID, s.name)
 		sources = appendItemExplodeSource(sources, item)
 	}
 
@@ -1699,14 +1743,91 @@ func collectItemExplodeSources(env *Environment, treeVersion pob.TreeVersion) []
 				continue
 			}
 			if text, ok := socketItems[socket.ItemID]; ok {
-				sources = appendItemExplodeSource(sources, peekItemCached(env.Cache, text))
+				item := peekItemCached(env.Cache, text)
+				granted = appendItemGrantedSkills(granted, item, socket.ItemID, "Jewel "+strconv.Itoa(socket.NodeID))
+				sources = appendItemExplodeSource(sources, item)
 			}
 		}
 	}
-	return sources
+	return sources, granted
 }
 
-//pob:block:src/Modules/CalcSetup.lua:1266-1279
+//pob:block:src/Modules/CalcSetup.lua:826-836
+func appendItemGrantedSkills(granted []grantedSkill, item *Item, itemID int, slotName string) []grantedSkill {
+	if item == nil {
+		return granted
+	}
+	for _, skill := range item.GrantedSkills {
+		g := grantedSkill{ItemGrantedSkill: skill, slotName: slotName}
+		g.Source = "Item:" + strconv.Itoa(itemID) + ":" + item.Name
+		if skillData, ok := raw2.PoBSkills[skill.SkillID]; ok {
+			g.nameSpec = skillData.Name
+		}
+		granted = append(granted, g)
+	}
+	return granted
+}
+
+//pob:block:src/Modules/CalcSetup.lua:1453-1462
+func normalizedGrantedSkillLevel(skill grantedSkill) int {
+	gemData, grantedEffect := resolveGemInstance(pob.Gem{SkillID: skill.SkillID})
+	if grantedEffect == nil {
+		return skill.Level
+	}
+	normalized := &GemEffect{GrantedEffect: &GrantedEffect{Raw: grantedEffect}, GemData: gemData, Level: skill.Level}
+	CalcValidateGemLevel(normalized)
+	return normalized.Level
+}
+
+//pob:block:src/Modules/CalcSetup.lua:1464-1505,src/Modules/CalcSetup.lua:1550-1562
+func processGrantedSkillSocketGroups(build *pob.PathOfBuilding, granted []grantedSkill) {
+	setIndex := activeSkillSetIndex(build.Skills)
+	if setIndex < 0 {
+		return
+	}
+	groups := &build.Skills.SkillSets[setIndex].Skills
+	markList := map[int]bool{}
+	defer func() {
+		kept := (*groups)[:0]
+		for i, socketGroup := range *groups {
+			if socketGroup.Source == "" || socketGroup.Source == "Explode" || markList[i] {
+				kept = append(kept, socketGroup)
+			}
+		}
+		*groups = kept
+	}()
+	for _, skill := range granted {
+		groupIndex := -1
+		for i, socketGroup := range *groups {
+			if socketGroup.Source == skill.Source && socketGroup.Slot == skill.slotName {
+				if len(socketGroup.Gems) > 0 && socketGroup.Gems[0].SkillID == skill.SkillID &&
+					(socketGroup.Gems[0].Level == skill.Level || socketGroup.Gems[0].Level == normalizedGrantedSkillLevel(skill)) {
+					groupIndex = i
+					markList[i] = true
+					break
+				}
+			}
+		}
+		if groupIndex < 0 {
+			source := skill.Source
+			*groups = append(*groups, pob.Skill{Label: "", Enabled: true, Gems: []pob.Gem{}, SourceAttr: &source, Source: source, Slot: skill.slotName})
+			groupIndex = len(*groups) - 1
+			markList[groupIndex] = true
+		}
+		group := &(*groups)[groupIndex]
+
+		activeGemInstance := pob.Gem{SkillID: skill.SkillID, NameSpec: skill.nameSpec, Quality: 0, Enabled: true}
+		if len(group.Gems) > 0 {
+			activeGemInstance = group.Gems[0]
+		}
+		activeGemInstance.GemID = ""
+		activeGemInstance.Level = skill.Level
+		activeGemInstance.EnableGlobal1 = true
+		group.Gems = []pob.Gem{activeGemInstance}
+	}
+}
+
+//pob:block:src/Modules/CalcSetup.lua:1368-1381
 func toggleItem(active []*Item, item *Item) []*Item {
 	if item == nil {
 		return active
@@ -1731,7 +1852,7 @@ func appendItemExplodeSource(sources []ExplodeSource, item *Item) []ExplodeSourc
 	return sources
 }
 
-//pob:block:src/Modules/CalcSetup.lua:1405-1446,src/Modules/CalcSetup.lua:1448-1460
+//pob:block:src/Modules/CalcSetup.lua:1507-1548,src/Modules/CalcSetup.lua:1550-1562
 func processExplodeSocketGroup(build *pob.PathOfBuilding, explodeSources []ExplodeSource) {
 	setIndex := activeSkillSetIndex(build.Skills)
 	if setIndex < 0 {
@@ -1784,7 +1905,7 @@ func processExplodeSocketGroup(build *pob.PathOfBuilding, explodeSources []Explo
 	group.Gems = gems
 }
 
-//pob:block:src/Modules/CalcSetup.lua:1064-1071
+//pob:block:src/Modules/CalcSetup.lua:1166-1173
 func allocateGrantedPassives(env *Environment, treeVersion pob.TreeVersion) {
 	granted := env.ModDB.List(nil, "GrantedPassive")
 	if len(granted) == 0 {
@@ -1803,7 +1924,7 @@ func allocateGrantedPassives(env *Environment, treeVersion pob.TreeVersion) {
 	tree := data.TreeVersions[treeVersion].Tree()
 
 	for _, name := range names {
-		//pob:block:src/Modules/CalcSetup.lua:1288-1290
+		//pob:block:src/Modules/CalcSetup.lua:1390-1392
 		nodeID, ok := notableMap[strings.ToLower(name)]
 		if !ok {
 			nodeID, ok = data.TreeVersions[treeVersion].AscendancyMap()[strings.ToLower(name)]
@@ -1811,7 +1932,7 @@ func allocateGrantedPassives(env *Environment, treeVersion pob.TreeVersion) {
 		if !ok {
 			continue
 		}
-		//pob:block:src/Modules/CalcSetup.lua:1291
+		//pob:block:src/Modules/CalcSetup.lua:1393
 		if env.override.removesNodeKey(nodeID) {
 			continue
 		}
@@ -1826,7 +1947,7 @@ func allocateGrantedPassives(env *Environment, treeVersion pob.TreeVersion) {
 	}
 }
 
-//pob:block:src/Modules/CalcSetup.lua:868-883
+//pob:block:src/Modules/CalcSetup.lua:970-985
 func allocateGrantedAscendancyNodes(env *Environment, treeVersion pob.TreeVersion) {
 	granted := env.ModDB.List(nil, "GrantedAscendancyNode")
 	if len(granted) == 0 {
@@ -1883,7 +2004,7 @@ func allocateGrantedAscendancyNodes(env *Environment, treeVersion pob.TreeVersio
 				continue
 			}
 		}
-		//pob:block:src/Modules/CalcSetup.lua:1306
+		//pob:block:src/Modules/CalcSetup.lua:1408
 		if env.override.removesNodeKey(nodeID) {
 			continue
 		}
@@ -1901,7 +2022,7 @@ func allocateGrantedAscendancyNodes(env *Environment, treeVersion pob.TreeVersio
 
 // local socketedIn = playerItems[groupCfg.slotName] and playerItems[groupCfg.slotName].sockets
 //
-//pob:block:src/Modules/CalcSetup.lua:329-336
+//pob:block:src/Modules/CalcSetup.lua:419-426
 func applySocketMods(env *Environment, gem *poe.SkillGem, groupCfg *moddb.ListCfg, socketNum int) {
 	socketCfg := *groupCfg
 	socketCfg.SkillGem = gem
@@ -1949,7 +2070,7 @@ func gemPropertyList(env *Environment, cfg *moddb.ListCfg) []gemPropertyValue {
 	return out
 }
 
-//pob:block:src/Modules/CalcSetup.lua:307-322
+//pob:block:src/Modules/CalcSetup.lua:397-412
 func applyGemProperty(effect *GemEffect, value gemPropertyValue) {
 	switch value.Key {
 	case "level":
@@ -1970,7 +2091,7 @@ func applyGemProperty(effect *GemEffect, value gemPropertyValue) {
 	}
 }
 
-//pob:src/Modules/PantheonTools.lua:6-19,src/Modules/CalcSetup.lua:563-571
+//pob:src/Modules/PantheonTools.lua:6-19,src/Modules/CalcSetup.lua:665-673
 func applySoulMod(env *Environment, godName string) {
 	if godName == "" || godName == "None" {
 		return
@@ -1995,12 +2116,13 @@ func applySoulMod(env *Environment, godName string) {
 	}
 }
 
-//pob:block:src/Modules/CalcSetup.lua:1502-1630
+//pob:block:src/Modules/CalcSetup.lua:1604-1732
 func collectSlotSupportLists(env *Environment, skills []pob.Skill, indexOrder []int, mainSocketGroup int, activeWeaponSet int, matchesSocket map[int]map[int]bool, imbuedSupportBySlot map[string][]*poe.GrantedEffect) map[string][]*GemEffect {
 	bySlot := map[string][]*GemEffect{}
 	for _, index := range indexOrder {
 		socketGroup := skills[index]
-		if socketGroup.Slot == "" {
+		slotName := groupSlotName(&socketGroup)
+		if slotName == "" {
 			continue
 		}
 		slotEnabled := true
@@ -2011,13 +2133,12 @@ func collectSlotSupportLists(env *Environment, skills []pob.Skill, indexOrder []
 			continue
 		}
 
-		slotName := strings.Replace(socketGroup.Slot, " Swap", "", -1)
 		cfg := &moddb.ListCfg{SlotName: slotName}
 		propertyModList := gemPropertyList(env, cfg)
 
-		//pob:block:src/Modules/CalcSetup.lua:1550-1565
-		if !socketGroupIsSourced(&socketGroup) {
-			for _, value := range utils.CastSlice[mod.ExtraSupport](env.ModDB.List(cfg, "ExtraSupport")) {
+		//pob:block:src/Modules/CalcSetup.lua:1653-1658
+		for _, value := range utils.CastSlice[mod.ExtraSupport](env.ModDB.List(cfg, "ExtraSupport")) {
+			if !socketGroupIsSourced(&socketGroup) || value.AppliesToGrantedSkills {
 				grantedEffect := poe.GrantedEffectByID(value.SkillID)
 				if grantedEffect != nil && !grantedEffect.IsSupport {
 					grantedEffect = poe.GrantedEffectByID("Support" + value.SkillID)
@@ -2025,8 +2146,9 @@ func collectSlotSupportLists(env *Environment, skills []pob.Skill, indexOrder []
 				if grantedEffect != nil {
 					env.markItemSupport(grantedEffect.ID)
 					bySlot[slotName] = addBestSupport(&GemEffect{
-						GrantedEffect: &GrantedEffect{Raw: grantedEffect, fromItem: true},
-						Level:         value.Level,
+						GrantedEffect:          &GrantedEffect{Raw: grantedEffect, fromItem: true},
+						Level:                  value.Level,
+						AppliesToGrantedSkills: value.AppliesToGrantedSkills,
 					}, bySlot[slotName], env.Mode)
 				}
 			}
@@ -2058,7 +2180,7 @@ func collectSlotSupportLists(env *Environment, skills []pob.Skill, indexOrder []
 				}
 				supportEffect := newSupportEffect(env, gemInstance, gemData, grantedEffect, socketQuality,
 					gemPropertyModListFor(env, slotName, gemIndex, propertyModList))
-				//pob:block:src/Modules/CalcSetup.lua:1592-1595
+				//pob:block:src/Modules/CalcSetup.lua:1694-1697
 				if env.Mode == OutputModeMain {
 					env.setDisplayEffect(index, gemIndex, supportEffect)
 				}
@@ -2075,7 +2197,7 @@ func collectSlotSupportLists(env *Environment, skills []pob.Skill, indexOrder []
 	return bySlot
 }
 
-//pob:block:src/Modules/CalcSetup.lua:1596-1620
+//pob:block:src/Modules/CalcSetup.lua:1698-1722
 func newSupportEffect(env *Environment, gemInstance pob.Gem, gemData *poe.SkillGem, grantedEffect *poe.GrantedEffect, socketQuality int, propertyModList []gemPropertyValue) *GemEffect {
 	var temp = gemInstance
 	supportEffect := &GemEffect{
@@ -2124,7 +2246,7 @@ func newSupportEffect(env *Environment, gemInstance pob.Gem, gemData *poe.SkillG
 	return supportEffect
 }
 
-//pob:src/Modules/CalcSetup.lua:338-366
+//pob:src/Modules/CalcSetup.lua:428-456
 func addBestSupport(supportEffect *GemEffect, appliedSupportList []*GemEffect, mode OutputMode) []*GemEffect {
 	grantedEffect := supportEffect.GrantedEffect.Raw
 	add := true
@@ -2158,7 +2280,7 @@ func addBestSupport(supportEffect *GemEffect, appliedSupportList []*GemEffect, m
 	return appliedSupportList
 }
 
-//pob:src/Modules/CalcSetup.lua:18-80
+//pob:src/Modules/CalcSetup.lua:19-81
 func initModDB(env *Environment, modDB *moddb.ModDB) {
 	modDB.AddDB(initModDBBase())
 
@@ -2173,7 +2295,7 @@ var initModDBBase = sync.OnceValue(func() *moddb.ModDB {
 	return modDB
 })
 
-//pob:block:src/Modules/CalcSetup.lua:19-110
+//pob:block:src/Modules/CalcSetup.lua:20-116
 func initModDBMods(modDB *moddb.ModDB) {
 	modDB.AddMod(mod.NewFloat("FireResistMax", mod.TypeBase, data.BaseMaximumAllResistancesPercent).Source("Base"))
 	modDB.AddMod(mod.NewFloat("ColdResistMax", mod.TypeBase, data.BaseMaximumAllResistancesPercent).Source("Base"))
@@ -2272,6 +2394,10 @@ func initModDBMods(modDB *moddb.ModDB) {
 	modDB.AddMod(mod.NewFlag("LesserMassiveShrine", true).Source("Base").Tag(mod.Condition("LesserMassiveShrine"), mod.Condition("MassiveShrine").Neg(true)))
 	modDB.AddMod(mod.NewFlag("LesserReplenishingShrine", true).Source("Base").Tag(mod.Condition("LesserReplenishingShrine"), mod.Condition("ReplenishingShrine").Neg(true)))
 	modDB.AddMod(mod.NewFlag("LesserResistanceShrine", true).Source("Base").Tag(mod.Condition("LesserResistanceShrine"), mod.Condition("ResistanceShrine").Neg(true)))
+	//pob:block:src/Modules/CalcSetup.lua:107-111
+	for _, shrine := range []string{"BloodShrineOfRats", "BloodShrineOfLocusts", "BloodShrineOfToads", "BloodShrineOfCrows", "BloodShrineOfBats"} {
+		modDB.AddMod(mod.NewFlag(shrine, true).Source("Base").Tag(mod.Condition(shrine)))
+	}
 
 	modDB.AddMod(mod.NewFlag("AlchemistsGenius", true).Source("Base").Tag(mod.Condition("AlchemistsGenius")))
 	modDB.AddMod(mod.NewFlag("LuckyHits", true).Source("Base").Tag(mod.Condition("LuckyHits")))
@@ -2281,7 +2407,7 @@ func initModDBMods(modDB *moddb.ModDB) {
 	modDB.AddMod(mod.NewFloat("CritChanceCap", mod.TypeBase, 100).Source("Base"))
 }
 
-//pob:block:src/Modules/CalcSetup.lua:609-639
+//pob:block:src/Modules/CalcSetup.lua:711-741
 func buildRadiusJewelList(env *Environment, extraFuncs *moddb.ModList) ([]*radiusJewel, []string) {
 	if env.Build == nil {
 		return nil, nil
@@ -2409,13 +2535,13 @@ func buildRadiusJewelList(env *Environment, extraFuncs *moddb.ModList) ([]*radiu
 	return jewels, extraIDs
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:42-49
+//pob:block:src/Classes/PassiveSpec.lua:52-60
 func isExpansionSocket(tree *data.Tree, nodeID string) bool {
 	node, ok := tree.Nodes[nodeID]
 	return ok && node.ExpansionJewel != nil && node.ExpansionJewel.Parent != nil
 }
 
-//pob:block:src/Classes/Item.lua:667-679,src/Classes/Item.lua:1599-1601
+//pob:block:src/Classes/Item.lua:690-702,src/Classes/Item.lua:1637-1639
 func itemJewelRadiusIndex(item *Item) (int, bool) {
 	if index, ok := data.JewelRadiusIndexForLabel(item.JewelRadiusLabel); ok {
 		return index, true
@@ -2440,7 +2566,7 @@ func itemJewelRadiusIndex(item *Item) (int, bool) {
 	return 0, false
 }
 
-//pob:block:src/Classes/Item.lua:2421-2424
+//pob:block:src/Classes/Item.lua:2473-2476
 func itemJewelFuncs(item *Item) []jewelFuncEntry {
 	funcs := make([]jewelFuncEntry, 0)
 	for _, m := range item.Mods {
@@ -2458,7 +2584,7 @@ var socketColourIndexNames = []string{"R", "G", "B"}
 
 var socketMatchesFollowOverride = false
 
-//pob:block:src/Classes/SkillsTab.lua:1223-1231
+//pob:block:src/Classes/SkillsTab.lua:1250-1258
 func socketGroupSlotItem(env *Environment, slotName string) *ItemData {
 	if env == nil || env.Build == nil || slotName == "" {
 		return nil
@@ -2507,7 +2633,7 @@ func itemSocketData(item *Item) *ItemData {
 	return id
 }
 
-//pob:src/Classes/SkillsTab.lua:1210-1245
+//pob:src/Classes/SkillsTab.lua:1237-1272
 func buildMatchesSocket(env *Environment, socketGroups []pob.Skill) map[int]map[int]bool {
 	matches := make(map[int]map[int]bool, len(socketGroups))
 	slotSocketedCounts := make(map[string]int, len(socketGroups))
@@ -2520,11 +2646,22 @@ func buildMatchesSocket(env *Environment, socketGroups []pob.Skill) map[int]map[
 		gemOffset := slotSocketedCounts[socketGroup.Slot]
 		item := socketGroupSlotItem(env, socketGroup.Slot)
 
+		for i := range socketGroup.Gems {
+			if matched, kept := socketGroup.Gems[i].KeptMatchesSocket(); kept && matched {
+				if matches[groupIndex] == nil {
+					matches[groupIndex] = map[int]bool{}
+				}
+				matches[groupIndex][i] = true
+			}
+		}
 		if item != nil && len(item.SocketColors) > 0 {
 			for i := range socketGroup.Gems {
 				gemInstance := socketGroup.Gems[i]
 				gemData, bareGrantedEffect := resolveGemInstance(gemInstance)
 				if gemData == nil && bareGrantedEffect == nil {
+					continue
+				}
+				if _, kept := gemInstance.KeptMatchesSocket(); kept {
 					continue
 				}
 				matched := false
@@ -2553,7 +2690,7 @@ func buildMatchesSocket(env *Environment, socketGroups []pob.Skill) map[int]map[
 	return matches
 }
 
-//pob:block:src/Classes/SkillsTab.lua:1221-1222,src/Classes/SkillsTab.lua:1236
+//pob:block:src/Classes/SkillsTab.lua:1248-1249,src/Classes/SkillsTab.lua:1263
 func gemPrimaryColour(gemData *poe.SkillGem, bareGrantedEffect *poe.GrantedEffect) int {
 	grantedEffect := bareGrantedEffect
 	if grantedEffect == nil && gemData != nil {
@@ -2565,7 +2702,7 @@ func gemPrimaryColour(gemData *poe.SkillGem, bareGrantedEffect *poe.GrantedEffec
 	return raw2.PoBSkills[grantedEffect.ID].Color
 }
 
-//pob:src/Classes/SkillsTab.lua:1437-1448
+//pob:src/Classes/SkillsTab.lua:1464-1475
 func buildImbuedSupportBySlot(groups []pob.Skill) map[string][]*poe.GrantedEffect {
 	out := map[string][]*poe.GrantedEffect{}
 	for _, group := range groups {
@@ -2591,7 +2728,7 @@ func buildImbuedSupportBySlot(groups []pob.Skill) map[string][]*poe.GrantedEffec
 	return out
 }
 
-//pob:block:src/Classes/ItemsTab.lua:4309-4325
+//pob:block:src/Classes/ItemsTab.lua:4156-4172
 func overrideSockets(env *Environment, sockets []pob.Socket, byID map[int]string) ([]pob.Socket, map[int]string) {
 	o := env.override
 	if o == nil || o.SocketNodeID == 0 {

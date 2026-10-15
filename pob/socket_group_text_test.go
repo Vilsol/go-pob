@@ -59,7 +59,7 @@ func TestSocketGroupCopyPasteAgainstPoB(t *testing.T) {
 			}
 			groups := build.Skills.SkillSets[build.ActiveSkillSetIndex()].Skills
 			for g, want := range c.Groups {
-				if g < len(groups) && (groups[g].Source != "" || groups[g].SourceAttr != nil) {
+				if g >= len(groups) || groups[g].Source != "" || groups[g].SourceAttr != nil {
 					continue
 				}
 				checked++

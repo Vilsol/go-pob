@@ -21,7 +21,7 @@ func ModDebugExports(r bind.Registry) {
 	r.Func(SetItemModDebug, bind.AsPromise())
 }
 
-//pob:src/Data/Global.lua:101-132
+//pob:src/Data/Global.lua:102-133
 var modFlagNames = map[string]mod.MFlag{
 	"Attack": mod.MFlagAttack, "Spell": mod.MFlagSpell, "Hit": mod.MFlagHit, "Dot": mod.MFlagDot, "Cast": mod.MFlagCast,
 	"Melee": mod.MFlagMelee, "Area": mod.MFlagArea, "Projectile": mod.MFlagProjectile, "SourceMask": mod.MFlagSourceMask,
@@ -32,7 +32,7 @@ var modFlagNames = map[string]mod.MFlag{
 	"Weapon1H": mod.MFlagWeapon1H, "Weapon2H": mod.MFlagWeapon2H, "WeaponMask": mod.MFlagWeaponMask,
 }
 
-//pob:src/Modules/ModTools.lua:114-127
+//pob:src/Modules/ModTools.lua:136-149
 func formatFlags[F ~int](flags F, src map[string]F) string {
 	var flagNames []string
 	for name, val := range src {
@@ -53,7 +53,7 @@ func formatKeywordFlags(flags mod.KeywordFlag) string {
 	return formatFlags(flags, mod.KeywordFlagsByName)
 }
 
-//pob:src/Modules/ModTools.lua:129-164
+//pob:src/Modules/ModTools.lua:151-186
 func formatTag(tag mod.Tag) string {
 	v := reflect.ValueOf(tag)
 	for v.Kind() == reflect.Pointer || v.Kind() == reflect.Interface {
@@ -78,7 +78,7 @@ func formatTag(tag mod.Tag) string {
 	return strings.Join(append([]string{"type=" + string(tag.Type())}, params...), "/")
 }
 
-//pob:src/Modules/ModTools.lua:166-172
+//pob:src/Modules/ModTools.lua:188-194
 func formatTags(tags []mod.Tag) string {
 	if len(tags) == 0 {
 		return "-"
@@ -90,7 +90,7 @@ func formatTags(tags []mod.Tag) string {
 	return strings.Join(out, ",")
 }
 
-//pob:src/Modules/ModTools.lua:174-203
+//pob:src/Modules/ModTools.lua:196-225
 func formatModValue(v *mod.ModValueMulti) string {
 	if v == nil {
 		return "nil"
@@ -105,12 +105,12 @@ func formatModValue(v *mod.ModValueMulti) string {
 	}
 }
 
-//pob:src/Modules/ModTools.lua:205-207
+//pob:src/Modules/ModTools.lua:227-229
 func formatModParams(m mod.Mod) string {
 	return fmt.Sprintf("%s|%s|%s|%s|%s", m.Name(), m.Type(), formatModFlags(m.Flags()), formatKeywordFlags(m.KeywordFlags()), formatTags(m.Tags()))
 }
 
-//pob:src/Modules/ModTools.lua:209-211
+//pob:src/Modules/ModTools.lua:231-233
 func formatMod(m mod.Mod) string {
 	return formatModValue(m.Value()) + " = " + formatModParams(m)
 }
@@ -122,7 +122,7 @@ func modSource(m mod.Mod) string {
 	return "?"
 }
 
-//pob:src/Classes/ModDB.lua:323-358
+//pob:src/Classes/ModDB.lua:336-371
 func printModDB(w io.Writer, db *moddb.ModDB) {
 	fmt.Fprintln(w, "=== Modifiers ===")
 	modNames := make([]string, 0, len(db.Mods))
@@ -160,14 +160,14 @@ func printModDB(w io.Writer, db *moddb.ModDB) {
 	}
 }
 
-//pob:src/Classes/ModList.lua:241-245
+//pob:src/Classes/ModList.lua:245-249
 func printModList(w io.Writer, list *moddb.ModList) {
 	for _, m := range list.Mods() {
 		fmt.Fprintf(w, "%s|%s\n", formatMod(m), modSource(m))
 	}
 }
 
-//pob:src/Modules/Common.lua:528-546
+//pob:src/Modules/Common.lua:590-608
 func prettyPrintTable(w io.Writer, v reflect.Value, pre string) {
 	for v.Kind() == reflect.Pointer || v.Kind() == reflect.Interface {
 		if v.IsNil() {
@@ -224,7 +224,7 @@ func ModDebugDump(c *calculator.Calculator) string {
 	return modDebugDump(c.BuildOutput(calculator.OutputModeMain))
 }
 
-//pob:src/Modules/Calcs.lua:37-70
+//pob:src/Modules/Calcs.lua:38-71
 func modDebugDump(env *calculator.Environment) string {
 	if env == nil || env.ModDB == nil {
 		return ""
@@ -287,7 +287,7 @@ func SetItemModDebug(on bool) {
 	itemModDebug = on
 }
 
-//pob:block:src/Classes/ItemsTab.lua:5160-5166
+//pob:block:src/Classes/ItemsTab.lua:4652-4658
 func appendItemModDebug(t *calculator.ItemTooltip, item *calculator.Item) {
 	if !itemModDebug {
 		return

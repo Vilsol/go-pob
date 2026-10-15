@@ -16,7 +16,7 @@ type partyBuffExport struct {
 	warcryPowerBonus map[mod.Mod]float64
 }
 
-//pob:block:src/Modules/CalcPerform.lua:2328-2332
+//pob:block:src/Modules/CalcPerform.lua:2380-2384
 func warcryPowerBonuses(mods []mod.Mod, warcryPower float64) map[mod.Mod]float64 {
 	out := map[mod.Mod]float64{}
 	for _, m := range mods {
@@ -29,7 +29,7 @@ func warcryPowerBonuses(mods []mod.Mod, warcryPower float64) map[mod.Mod]float64
 	return out
 }
 
-//pob:src/Modules/CalcPerform.lua:2155
+//pob:src/Modules/CalcPerform.lua:2207
 type partyBuffExports struct {
 	aura, curse, warcry, link map[string]*partyBuffExport
 	otherEffects              map[string]*partyBuffExport
@@ -39,7 +39,7 @@ type partyBuffExports struct {
 	curseLimit                float64
 }
 
-//pob:block:src/Modules/CalcPerform.lua:1277
+//pob:block:src/Modules/CalcPerform.lua:1312
 func newPartyBuffExports(env *Environment) *partyBuffExports {
 	if env.Build == nil || !env.Build.ExportParty() || env.Mode == OutputModeCalculator {
 		return nil
@@ -61,7 +61,7 @@ func joinModLists(lists ...*moddb.ModList) []mod.Mod {
 	return out
 }
 
-//pob:block:src/Modules/CalcPerform.lua:2447-2450
+//pob:block:src/Modules/CalcPerform.lua:2499-2502
 func (e *partyBuffExports) setAura(name string, mult float64, mods []mod.Mod) {
 	if old := e.aura[name]; old != nil {
 		e.aura[name+"_Debuff"] = old
@@ -69,7 +69,7 @@ func (e *partyBuffExports) setAura(name string, mult float64, mods []mod.Mod) {
 	e.aura[name] = &partyBuffExport{effectMult: mult, modList: mods}
 }
 
-//pob:block:src/Modules/CalcPerform.lua:2460
+//pob:block:src/Modules/CalcPerform.lua:2512
 func (e *partyBuffExports) setAuraDebuff(name string, mult float64, mods []mod.Mod) {
 	if e.aura[name] != nil {
 		name += "_Debuff"
@@ -77,7 +77,7 @@ func (e *partyBuffExports) setAuraDebuff(name string, mult float64, mods []mod.M
 	e.aura[name] = &partyBuffExport{effectMult: mult, modList: mods}
 }
 
-//pob:block:src/Modules/CalcPerform.lua:3741-3859
+//pob:block:src/Modules/CalcPerform.lua:3812-3930
 func (e *partyBuffExports) collectEnemyAndPlayer(env *Environment, output map[string]float64) {
 	enemyDB := env.EnemyModDB
 	for _, k := range sortedExportNames(enemyDB.Mods) {
@@ -180,7 +180,7 @@ func (e *partyBuffExports) collectEnemyAndPlayer(env *Environment, output map[st
 	}
 }
 
-//pob:block:src/Modules/CalcPerform.lua:3755-3757
+//pob:block:src/Modules/CalcPerform.lua:3826-3828
 func enemyTagHolds(enemyDB *moddb.ModDB, v mod.Mod) bool {
 	tags := v.Tags()
 	if len(tags) == 0 {
@@ -202,7 +202,7 @@ func enemyTagHolds(enemyDB *moddb.ModDB, v mod.Mod) bool {
 	return true
 }
 
-//pob:block:src/Modules/CalcPerform.lua:3806-3814
+//pob:block:src/Modules/CalcPerform.lua:3877-3885
 func stackMineMods(mods []mod.Mod, stackCount float64) []mod.Mod {
 	out := make([]mod.Mod, len(mods))
 	for i, m := range mods {
@@ -255,7 +255,7 @@ func sortedExportNames[T any](m map[string]T) []string {
 	return names
 }
 
-//pob:src/Classes/PartyTab.lua:607-648
+//pob:src/Classes/PartyTab.lua:612-653
 var partyExportNames = [][2]string{
 	{"PlayerMods", "PartyMemberStats"}, {"Aura", "Aura"}, {"Curse", "Curse"}, {"Warcry", "Warcry Skills"},
 	{"Link", "Link Skills"}, {"EnemyConditions", "EnemyConditions"}, {"EnemyMods", "EnemyMods"},
@@ -271,7 +271,7 @@ func (e *partyBuffExports) texts() map[string]string {
 	return out
 }
 
-//pob:src/Classes/PartyTab.lua:987-1038
+//pob:src/Classes/PartyTab.lua:992-1043
 func (e *partyBuffExports) exportBuffs(buffType string) string {
 	var b strings.Builder
 	if buffType == "Curse" {
@@ -353,12 +353,12 @@ func (e *partyBuffExports) exportBuffs(buffType string) string {
 	return b.String()
 }
 
-//pob:src/Modules/ModTools.lua:213-215
+//pob:src/Modules/ModTools.lua:235-237
 func formatSourceMod(m mod.Mod, firstTagExtra map[string]string) string {
 	return formatPartyValue(m.Value()) + "|" + string(m.GetSource()) + "|" + formatPartyModParams(m, firstTagExtra)
 }
 
-//pob:src/Modules/ModTools.lua:174-176
+//pob:src/Modules/ModTools.lua:196-198
 func formatPartyValue(v *mod.ModValueMulti) string {
 	if v == nil {
 		return "nil"
@@ -372,7 +372,7 @@ func formatPartyValue(v *mod.ModValueMulti) string {
 	return luaNumber(v.ValueFloat)
 }
 
-//pob:src/Modules/ModTools.lua:205-207
+//pob:src/Modules/ModTools.lua:227-229
 func formatPartyModParams(m mod.Mod, firstTagExtra map[string]string) string {
 	flags := map[string]mod.MFlag{}
 	for k, v := range partyModFlagByName {
@@ -382,7 +382,7 @@ func formatPartyModParams(m mod.Mod, firstTagExtra map[string]string) string {
 		formatPartyFlags(int64(m.KeywordFlags()), mod.KeywordFlagsByName) + "|" + formatPartyTags(m.Tags(), firstTagExtra)
 }
 
-//pob:src/Modules/ModTools.lua:114-127
+//pob:src/Modules/ModTools.lua:136-149
 func formatPartyFlags[F ~int64 | ~int | ~uint64](flags int64, src map[string]F) string {
 	var names []string
 	for name, val := range src {
@@ -397,7 +397,7 @@ func formatPartyFlags[F ~int64 | ~int | ~uint64](flags int64, src map[string]F) 
 	return strings.Join(names, ",")
 }
 
-//pob:src/Modules/ModTools.lua:129-172
+//pob:src/Modules/ModTools.lua:151-194
 func formatPartyTags(tags []mod.Tag, firstTagExtra map[string]string) string {
 	if len(tags) == 0 {
 		return "-"

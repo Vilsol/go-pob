@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { enchantSkills, finitePowers, maxOf, notableColour, notableMatches, sortByValue, sortNotables, type AnointNotable } from './crafting';
+import { corruptOptions, enchantSkills, finitePowers, maxOf, notableColour, notableMatches, sortByValue, sortNotables, type AnointNotable } from './crafting';
 
 const n = (id: number, name: string, stats: string[] = []): AnointNotable => ({ id, name, stats, reminder: [], recipe: [] });
 
@@ -59,5 +59,14 @@ describe('notable list (NotableDBControl.lua)', () => {
     expect(notableColour(8, 8, true)).toBe('^xFF8080');
     expect(notableColour(0, 8, true)).toBe('^x808080');
     expect(notableColour(4, 8, true)).toBe('^xBF8080');
+  });
+});
+
+describe('corrupt popup lists (ItemsTab.lua:3177-3218)', () => {
+  it('leaves out every group another dropdown chose', () => {
+    const m = (id: string, group: string) => ({ id, label: id, lines: [], group, modTags: [] });
+    const list = [m('a1', 'A'), m('a2', 'A'), m('b1', 'B'), m('c1', 'C')];
+    expect(corruptOptions(list, ['a2', '', 'c1']).map((x) => x.id)).toEqual(['b1']);
+    expect(corruptOptions(list, [undefined]).map((x) => x.id)).toEqual(['a1', 'a2', 'b1', 'c1']);
   });
 });

@@ -9,6 +9,7 @@ type TimelessData struct {
 	FallbackWeightModeIdx string `xml:"fallbackWeightModeIdx,attr,omitempty"`
 	SocketFilter          string `xml:"socketFilter,attr,omitempty"`
 	SocketFilterDistance  string `xml:"socketFilterDistance,attr,omitempty"`
+	SocketAllocate        string `xml:"socketAllocate,attr,omitempty"`
 	SearchList            string `xml:"searchList,attr,omitempty"`
 	SearchListFallback    string `xml:"searchListFallback,attr,omitempty"`
 }

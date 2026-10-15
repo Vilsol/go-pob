@@ -14,7 +14,7 @@ func NewCompareJewelPowerBuilder(primary, compare *pob.PathOfBuilding, stats []s
 	return b
 }
 
-//pob:block:src/Classes/CompareTab.lua:2788-2868
+//pob:block:src/Classes/CompareTab.lua:2817-2897
 func (b *ComparePowerBuilder) jewelTasks() {
 	allocated := ActiveTreeSockets(b.primary)
 	sockets := treeSocketIDs()
@@ -54,7 +54,7 @@ func (b *ComparePowerBuilder) jewelTasks() {
 	}
 }
 
-//pob:block:src/Classes/CompareTab.lua:2706-2735,src/Classes/CompareTab.lua:2742-2750
+//pob:block:src/Classes/CompareTab.lua:2735-2764,src/Classes/CompareTab.lua:2771-2779
 func (b *ComparePowerBuilder) equipCompareAbyssJewels(slotName string, newItem *Item) (int, func()) {
 	if newItem.AbyssalSocketCount <= 0 {
 		return 0, func() {}
@@ -83,7 +83,7 @@ func (b *ComparePowerBuilder) equipCompareAbyssJewels(slotName string, newItem *
 	}
 }
 
-//pob:block:src/Classes/CompareTab.lua:2757-2758
+//pob:block:src/Classes/CompareTab.lua:2786-2787
 func abyssJewelText(n int) string {
 	switch {
 	case n == 0:

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"slices"
 	"strconv"
 	"strings"
 )
@@ -15,20 +16,37 @@ import (
 	"sync"
 )
 
-// The custom modifiers' Mod Browser list (ConfigTab.lua:1305-1410 OpenAddModPopup): every master, item, veiled and
-// beast craft mod line, value ranges collapsed to their lowest roll, one per template, in PoB's sort order.
+// The custom modifiers' Mod Browser list (ConfigModBrowser.lua:153-227 OpenAddModPopup): every tree node, mastery,
+// master, item, veiled and beast craft mod line the parser reads, value ranges at their mid roll, one per template, in
+// PoB's sort order, each with the sources it came from.
 //
 // Regenerate with ` + "`task data-regen -- --only custom-mod-browser`" + ` after a PoB pin bump.
 
 var (
-	modBrowserOnce  sync.Once
-	modBrowserLines []string
+	modBrowserOnce    sync.Once
+	modBrowserLines   []string
+	modBrowserSources map[string][]string
 )
+
+func loadModBrowser() {
+	modBrowserLines = strings.Split(modBrowserBlob, "\x1d")
+	sources := strings.Split(modBrowserSourceBlob, "\x1d")
+	modBrowserSources = make(map[string][]string, len(modBrowserLines))
+	for i, line := range modBrowserLines {
+		modBrowserSources[line] = strings.Split(sources[i], "\x1e")
+	}
+}
 
 // CustomModBrowserLines is the Mod Browser's list in PoB's order; callers only read it.
 func CustomModBrowserLines() []string {
-	modBrowserOnce.Do(func() { modBrowserLines = strings.Split(modBrowserBlob, "\x1d") })
+	modBrowserOnce.Do(loadModBrowser)
 	return modBrowserLines
+}
+
+// CustomModBrowserSources is a listed line's sources ("Notable Node", "Item mod", ...), sorted; nil for another line.
+func CustomModBrowserSources(line string) []string {
+	modBrowserOnce.Do(loadModBrowser)
+	return modBrowserSources[line]
 }
 
 `
@@ -48,16 +66,27 @@ func oracleCustomModBrowserEmit(argv []string) int {
 		return oeRefuse(fmt.Sprintf("the dump carries %d Mod Browser lines; the mod tables did not load. Re-run oracle/custom_mod_browser.lua.", len(rows)))
 	}
 	lines := make([]string, 0, len(rows))
+	sources := make([]string, 0, len(rows))
 	for i, r := range rows {
-		s, ok := r.(string)
-		if !ok || s == "" || strings.Contains(s, "\x1d") {
+		m, isEntry := r.(map[string]any)
+		s, ok := m["text"].(string)
+		src, _ := m["sources"].(map[string]any)
+		if !isEntry || !ok || s == "" || strings.ContainsAny(s, "\x1d\x1e") || len(src) == 0 {
 			//go-only: a new emitter, written in Go from the start; there is no original to share the wording with
-			return oeRefuse(fmt.Sprintf("lines[%d] is not a plain line", i))
+			return oeRefuse(fmt.Sprintf("lines[%d] is not an entry with a text and sources", i))
 		}
+		names := make([]string, 0, len(src))
+		for name := range src {
+			names = append(names, name)
+		}
+		slices.Sort(names)
 		lines = append(lines, s)
+		sources = append(sources, strings.Join(names, "\x1e"))
 	}
 	body := fmt.Sprintf(oeModBrowserHeader, oeVersion(dump)) +
 		"// one line per entry, in PoB's order, separated by \\x1d\n" +
-		"const modBrowserBlob = " + strconv.Quote(strings.Join(lines, "\x1d")) + "\n"
+		"const modBrowserBlob = " + strconv.Quote(strings.Join(lines, "\x1d")) + "\n\n" +
+		"// each line's sources, separated by \\x1e, in the lines' order\n" +
+		"const modBrowserSourceBlob = " + strconv.Quote(strings.Join(sources, "\x1d")) + "\n"
 	return oeWriteGo(argv[1], body)
 }

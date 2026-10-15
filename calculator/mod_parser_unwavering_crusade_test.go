@@ -9,7 +9,7 @@ import (
 
 // TestUnwaveringCrusadeGrantsTheRelic pins ModParser.lua:3334.
 //
-//pob:src/Modules/ModParser.lua:3334
+//pob:src/Modules/ModParser.lua:3378
 func TestUnwaveringCrusadeGrantsTheRelic(t *testing.T) {
 	requireGameData(t, "3.29")
 

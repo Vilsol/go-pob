@@ -213,7 +213,7 @@ func mcRefuse(msg string) int {
 
 var mcModType = map[string]string{
 	"BASE": "mod.TypeBase", "INC": "mod.TypeIncrease", "MORE": "mod.TypeMore",
-	"MAX": "mod.TypeMAX", "FLAG": "mod.TypeFlag", "LIST": "mod.TypeList",
+	"MAX": "mod.TypeMAX", "MIN": "mod.TypeMIN", "FLAG": "mod.TypeFlag", "LIST": "mod.TypeList",
 	"OVERRIDE": "mod.TypeOverride", "DUMMY": "mod.TypeDummy",
 	"CHANCE": "mod.TypeChance",
 }

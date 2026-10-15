@@ -13,7 +13,7 @@ var skillTypeEnumEntry = regexp.MustCompile(`([A-Za-z][A-Za-z0-9]*)\s*=\s*(\d+)`
 
 // TestPobSkillTypeNumberMatchesPin gates tag_canon_test.go's hand-written pobSkillTypeNumber against the pinned PoB's own SkillType table.
 //
-//pob:block:src/Data/Global.lua:217-352
+//pob:block:src/Data/Global.lua:218-353
 func TestPobSkillTypeNumberMatchesPin(t *testing.T) {
 	pobRoot := os.Getenv("POB_DIR")
 	if pobRoot == "" {

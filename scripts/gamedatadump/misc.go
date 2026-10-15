@@ -16,7 +16,7 @@ import (
 
 func f32(v float64) string { return luaNumStr(float64(float32(v))) }
 
-//pob:block:src/Export/Scripts/miscdata.lua:55-71
+//pob:block:src/Export/Scripts/miscdata.lua:56-72
 func otConstants(path string, blocks []string, out *strings.Builder) error {
 	b, err := loader.LoadFile(gameDataContext(), raw.LatestVersion, path, assetCache())
 	if err != nil {
@@ -42,7 +42,7 @@ func otConstants(path string, blocks []string, out *strings.Builder) error {
 	return nil
 }
 
-//pob:block:src/Export/Scripts/miscdata.lua:3-142
+//pob:block:src/Export/Scripts/miscdata.lua:3-143
 func miscLua() (string, error) {
 	var out strings.Builder
 	w := func(s string) { _, _ = out.WriteString(s) }
@@ -154,7 +154,7 @@ func miscLua() (string, error) {
 var bossDirectiveUberRe, bossDirectiveRe = regexp.MustCompile(`([A-Za-z0-9]+) (.+) {([A-Za-z0-9]+)}`), regexp.MustCompile(`([A-Za-z0-9]+) (.+)`)
 
 //pob:block:src/Export/Scripts/bossData.lua:367-385
-//pob:block:src/Export/Scripts/bossData.lua:570
+//pob:block:src/Export/Scripts/bossData.lua:568
 func bossesLua(pobDir string) (string, error) {
 	b, err := os.ReadFile(filepath.Join(pobDir, "src", "Export", "Enemies", "Bosses.txt")) //nolint:gosec // the pinned PoB checkout
 	if err != nil {

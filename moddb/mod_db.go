@@ -10,7 +10,7 @@ import (
 
 var _ ModStoreFuncs = (*ModDB)(nil)
 
-//pob:block:src/Classes/ModDB.lua:308
+//pob:block:src/Classes/ModDB.lua:321
 func sourcePrefixMatch(source mod.Source, cfgSource mod.Source) bool {
 	prefix, _, _ := strings.Cut(string(source), ":")
 	return prefix == string(cfgSource)
@@ -75,7 +75,7 @@ func (m *ModDB) modsNamed(name string) []mod.Mod {
 	return m.Mods[name]
 }
 
-//pob:src/Classes/ModDB.lua:20-23
+//pob:src/Classes/ModDB.lua:21-27
 func NewModDB() *ModDB {
 	m := &ModDB{
 		ModStore: NewModStore(nil),
@@ -104,14 +104,14 @@ func (m *ModDB) Clone() ModStoreFuncs {
 	return out
 }
 
-//pob:src/Classes/ModDB.lua:25-31
+//pob:src/Classes/ModDB.lua:29-35
 func (m *ModDB) AddMod(newMod mod.Mod) {
 	name := newMod.Name()
 	m.names.add(name)
 	m.Mods[name] = append(m.Mods[name], newMod)
 }
 
-//pob:src/Classes/ModStore.lua:250-259, src/Classes/ModDB.lua:302-321
+//pob:src/Classes/ModStore.lua:278-287, src/Classes/ModDB.lua:315-334
 func (m *ModDB) HasMod(modType mod.Type, cfg *ListCfg, names ...string) bool {
 	for _, name := range names {
 		for _, mo := range m.modsNamed(name) {
@@ -130,14 +130,14 @@ func (m *ModDB) HasMod(modType mod.Type, cfg *ListCfg, names ...string) bool {
 	return false
 }
 
-//pob:src/Classes/ModStore.lua:114-119, src/Classes/ModDB.lua:37-65
+//pob:src/Classes/ModStore.lua:125-130, src/Classes/ModDB.lua:41-69
 func (m *ModDB) ReplaceMod(newMod mod.Mod) {
 	if !m.replaceModInternal(newMod) {
 		m.AddMod(newMod)
 	}
 }
 
-//pob:src/Classes/ModDB.lua:37-65
+//pob:src/Classes/ModDB.lua:41-69
 func (m *ModDB) replaceModInternal(newMod mod.Mod) bool {
 	for i, mo := range m.Mods[newMod.Name()] {
 		if mo.Name() == newMod.Name() &&
@@ -161,14 +161,14 @@ func (m *ModDB) replaceModInternal(newMod mod.Mod) bool {
 	return false
 }
 
-//pob:src/Classes/ModStore.lua:127-132
+//pob:src/Classes/ModStore.lua:138-143
 func (m *ModDB) ConvertMod(oldName string, newMod mod.Mod) {
 	if !m.convertModInternal(oldName, newMod) {
 		m.AddMod(newMod)
 	}
 }
 
-//pob:src/Classes/ModDB.lua:76-106
+//pob:src/Classes/ModDB.lua:80-110
 func (m *ModDB) convertModInternal(oldName string, newMod mod.Mod) bool {
 	oldList, ok := m.Mods[oldName]
 	if ok {
@@ -194,7 +194,7 @@ func (m *ModDB) convertModInternal(oldName string, newMod mod.Mod) bool {
 	return false
 }
 
-//pob:src/Classes/ModDB.lua:119-130
+//pob:src/Classes/ModDB.lua:123-134
 func (m *ModDB) AddDB(db *ModDB) {
 	if db == nil {
 		return
@@ -205,14 +205,14 @@ func (m *ModDB) AddDB(db *ModDB) {
 	}
 }
 
-//pob:src/Classes/ModStore.lua:194-205
+//pob:src/Classes/ModStore.lua:218-229
 func (m *ModDB) List(cfg *ListCfg, names ...string) []interface{} {
 	result := make([]interface{}, 0)
 	m.ListInternal(m, &result, cfg, names...)
 	return result
 }
 
-//pob:src/Classes/ModDB.lua:243-266
+//pob:src/Classes/ModDB.lua:253-276
 func (m *ModDB) ListInternal(context ModStoreFuncs, result *[]interface{}, cfg *ListCfg, names ...string) {
 	for _, name := range names {
 		for _, mo := range m.modsNamed(name) {
@@ -231,12 +231,12 @@ func (m *ModDB) ListInternal(context ModStoreFuncs, result *[]interface{}, cfg *
 	}
 }
 
-//pob:src/Classes/ModStore.lua:150-159
+//pob:src/Classes/ModStore.lua:165-174
 func (m *ModDB) Sum(modType mod.Type, cfg *ListCfg, names ...string) float64 {
 	return m.SumInternal(m, modType, cfg, names...)
 }
 
-//pob:src/Classes/ModDB.lua:91-121
+//pob:src/Classes/ModDB.lua:95-125
 func (m *ModDB) SumInternal(context ModStoreFuncs, modType mod.Type, cfg *ListCfg, names ...string) float64 {
 	result := float64(0)
 
@@ -266,12 +266,12 @@ func (m *ModDB) SumInternal(context ModStoreFuncs, modType mod.Type, cfg *ListCf
 	return result
 }
 
-//pob:src/Classes/ModStore.lua:172-181
+//pob:src/Classes/ModStore.lua:190-199
 func (m *ModDB) Flag(cfg *ListCfg, names ...string) bool {
 	return m.FlagInternal(m, cfg, names...)
 }
 
-//pob:src/Classes/ModDB.lua:196-217
+//pob:src/Classes/ModDB.lua:206-227
 func (m *ModDB) FlagInternal(context ModStoreFuncs, cfg *ListCfg, names ...string) bool {
 	for _, name := range names {
 		for _, mo := range m.modsNamed(name) {
@@ -294,7 +294,7 @@ func (m *ModDB) FlagInternal(context ModStoreFuncs, cfg *ListCfg, names ...strin
 	return false
 }
 
-//pob:src/Classes/ModStore.lua:161-170
+//pob:src/Classes/ModStore.lua:179-188
 func (m *ModDB) More(cfg *ListCfg, names ...string) float64 {
 	return m.MoreInternal(m, cfg, names...)
 }
@@ -322,7 +322,7 @@ func luaRound(val float64, dec int) float64 {
 	return math.Floor(float64(val*p)+0.5) / p
 }
 
-//pob:src/Classes/ModDB.lua:157-194
+//pob:src/Classes/ModDB.lua:164-204
 func (m *ModDB) MoreInternal(context ModStoreFuncs, cfg *ListCfg, names ...string) float64 {
 	result := float64(1)
 	modPrecision := 0
@@ -369,12 +369,12 @@ func (m *ModDB) MoreInternal(context ModStoreFuncs, cfg *ListCfg, names ...strin
 	return result
 }
 
-//pob:src/Classes/ModStore.lua:183-192
+//pob:src/Classes/ModStore.lua:204-213
 func (m *ModDB) Override(cfg *ListCfg, names ...string) *mod.ModValueMulti {
 	return m.OverrideInternal(m, cfg, names...)
 }
 
-//pob:src/Classes/ModDB.lua:219-241
+//pob:src/Classes/ModDB.lua:229-251
 func (m *ModDB) OverrideInternal(context ModStoreFuncs, cfg *ListCfg, names ...string) *mod.ModValueMulti {
 	for _, name := range names {
 		for _, mo := range m.modsNamed(name) {
@@ -398,14 +398,14 @@ func (m *ModDB) OverrideInternal(context ModStoreFuncs, cfg *ListCfg, names ...s
 	return nil
 }
 
-//pob:src/Classes/ModDB.lua:108-117
+//pob:src/Classes/ModDB.lua:112-121
 func (m *ModDB) AddList(list *ModList) {
 	for _, newMod := range list.mods {
 		m.AddMod(newMod)
 	}
 }
 
-//pob:block:src/Classes/ModStore.lua:57-71
+//pob:block:src/Classes/ModStore.lua:68-82
 func (m *ModDB) ScaleAddList(list *ModList, scale float64) {
 	if list == nil {
 		return
@@ -430,7 +430,7 @@ type ModResult struct {
 	Mod   mod.Mod
 }
 
-//pob:src/Classes/ModDB.lua:231-263
+//pob:src/Classes/ModDB.lua:241-273
 func (m *ModDB) TabulateInternal(context ModStoreFuncs, result *[]ModResult, modType mod.Type,
 	cfg *ListCfg, flags mod.MFlag, keywordFlags mod.KeywordFlag, source mod.Source, modNames ...string) {
 	var globalLimits map[string]float64
@@ -488,7 +488,7 @@ func (m *ModDB) TabulateInternal(context ModStoreFuncs, result *[]ModResult, mod
 	}
 }
 
-//pob:src/Classes/ModStore.lua:207-218
+//pob:src/Classes/ModStore.lua:235-246
 func (m *ModDB) Tabulate(modType mod.Type, cfg *ListCfg, modNames ...string) []ModResult {
 	var flags *mod.MFlag
 	var keywordFlags *mod.KeywordFlag
@@ -517,7 +517,7 @@ func (m *ModDB) Tabulate(modType mod.Type, cfg *ListCfg, modNames ...string) []M
 	return results
 }
 
-//pob:src/Classes/ModStore.lua:220-229
+//pob:src/Classes/ModStore.lua:248-257
 func (m *ModDB) Max(cfg *ListCfg, modNames ...string) float64 {
 	globalMax := float64(0)
 	for _, value := range m.Tabulate(mod.TypeMAX, cfg, modNames...) {
@@ -532,7 +532,23 @@ func (m *ModDB) Max(cfg *ListCfg, modNames ...string) float64 {
 	return globalMax
 }
 
-//pob:src/Classes/ModStore.lua:134-148
+//pob:src/Classes/ModStore.lua:259-268
+func (m *ModDB) Min(cfg *ListCfg, modNames ...string) (float64, bool) {
+	var globalMin float64
+	found := false
+	for _, value := range m.Tabulate(mod.TypeMIN, cfg, modNames...) {
+		multi := m.evalMod(value.Mod, cfg)
+		if multi == nil {
+			continue
+		}
+		if val := multi.Float(); !found || val < globalMin {
+			globalMin, found = val, true
+		}
+	}
+	return globalMin, found
+}
+
+//pob:src/Classes/ModStore.lua:145-159
 func (m *ModDB) Combine(modType mod.Type, cfg *ListCfg, modNames ...string) *mod.ModValueMulti {
 	switch modType {
 	case mod.TypeMore:

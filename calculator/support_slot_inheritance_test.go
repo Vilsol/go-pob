@@ -13,7 +13,7 @@ import (
 
 // TestSupportSlotInheritance: CalcSetup.lua:1692-1709 — a socket group with a `source`.
 //
-//pob:block:src/Modules/CalcSetup.lua:1692-1709
+//pob:block:src/Modules/CalcSetup.lua:1795-1812
 func TestSupportSlotInheritance(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")

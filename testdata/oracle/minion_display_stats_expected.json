@@ -21,10 +21,10 @@
 {"stat":"ReservationDPS","label":"Reservation DPS","fmt":".1f","condFunc":true},
 {"stat":"CombinedDPS","label":"Combined DPS","fmt":".1f","condFunc":true},
 {"stat":"Cooldown","label":"Skill Cooldown","fmt":".3fs","notFlag":"skipEffectiveRate"},
-{"stat":"Life","label":"Total Life","fmt":".1f","color":"#E05030"},
+{"stat":"Life","label":"Total Life","fmt":".1f","color":"#E05030","modNames":["Life"],"ignoredSections":["Base from Gear","Inc. from Tree"]},
 {"stat":"LifeRegenRecovery","label":"Life Recovery","fmt":".1f","color":"#E05030"},
 {"stat":"LifeLeechGainRate","label":"Life Leech/On Hit Rate","fmt":".1f","color":"#E05030"},
-{"stat":"EnergyShield","label":"Energy Shield","fmt":"d","color":"#88FFFF"},
+{"stat":"EnergyShield","label":"Energy Shield","fmt":"d","color":"#88FFFF","modNames":["EnergyShield","Defences"],"ignoredSections":["Base from Gear","Inc. from Tree"]},
 {"stat":"EnergyShieldRegenRecovery","label":"ES Recovery","fmt":".1f","color":"#88FFFF"},
 {"stat":"EnergyShieldLeechGainRate","label":"ES Leech/On Hit Rate","fmt":".1f","color":"#88FFFF"}
 ]

@@ -11,7 +11,7 @@ type activeTreeSocket struct {
 	item   *Item
 }
 
-//pob:block:src/Classes/ItemsTab.lua:1652-1670
+//pob:block:src/Classes/ItemsTab.lua:1659-1677
 func (m *MiscCalculator) activeTreeSockets() []activeTreeSocket {
 	i := m.build.ActiveSpecIndex()
 	if i < 0 {

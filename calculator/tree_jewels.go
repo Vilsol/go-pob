@@ -8,7 +8,7 @@ import (
 	"github.com/Vilsol/go-pob/pob"
 )
 
-//pob:block:src/Classes/ItemsTab.lua:2463-2483
+//pob:block:src/Classes/ItemsTab.lua:2566-2586
 func IsJewelValidForSocket(item *Item, nodeID int) bool {
 	node, ok := data.TreeVersions[data.LatestTreeVersion].Tree().Nodes[strconv.Itoa(nodeID)]
 	if !ok || item == nil || item.Base == nil || item.Type != "Jewel" {
@@ -28,7 +28,7 @@ func IsJewelValidForSocket(item *Item, nodeID int) bool {
 	}
 }
 
-//pob:block:src/Classes/ItemSlotControl.lua:85-93
+//pob:block:src/Classes/ItemSlotControl.lua:96-104
 func TreeSocketItemIDs(build *pob.PathOfBuilding, nodeID int) []int {
 	var ids []int
 	for _, it := range build.Items.Items {
@@ -40,7 +40,7 @@ func TreeSocketItemIDs(build *pob.PathOfBuilding, nodeID int) []int {
 	return ids
 }
 
-//pob:block:src/Classes/ItemSlotControl.lua:12-19,src/Classes/ItemSlotControl.lua:61-68
+//pob:block:src/Classes/ItemSlotControl.lua:22-29,src/Classes/ItemSlotControl.lua:72-79
 func SocketTreeJewel(build *pob.PathOfBuilding, nodeID int, itemID int) bool {
 	if itemID == build.SocketedJewel(nodeID) || (itemID != 0 && !slices.Contains(TreeSocketItemIDs(build, nodeID), itemID)) {
 		return false

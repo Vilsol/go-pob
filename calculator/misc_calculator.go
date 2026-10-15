@@ -9,7 +9,7 @@ import (
 	"github.com/Vilsol/go-pob/pob"
 )
 
-//pob:src/Modules/CalcSetup.lua:386
+//pob:src/Modules/CalcSetup.lua:485
 type CalcOverride struct {
 	Conditions     []string
 	AddNodes       []int64
@@ -50,7 +50,7 @@ type MiscCalculator struct {
 	usedFullDPS bool
 }
 
-//pob:src/Modules/Calcs.lua:123-133
+//pob:src/Modules/Calcs.lua:89-99
 func GetMiscCalculator(build *pob.PathOfBuilding) *MiscCalculator {
 	m := &MiscCalculator{build: build, cache: envCache}
 	m.base = m.run(nil)
@@ -66,10 +66,10 @@ func MiscCalculatorOver(build *pob.PathOfBuilding, c *Calculator) *MiscCalculato
 	if build == nil || c == nil || c.main == nil {
 		return nil
 	}
-	return &MiscCalculator{build: build, cache: envCache, base: c.main, usedFullDPS: len(c.main.Player.SkillDPS) > 0}
+	return GetMiscCalculator(build)
 }
 
-//pob:src/Modules/Calcs.lua:134-147
+//pob:src/Modules/Calcs.lua:100-113
 func (m *MiscCalculator) Calc(override *CalcOverride) *Environment {
 	if override != nil && override.SocketNodeID != 0 {
 		if orphans := socketOrphans(m.build, override.SocketNodeID, override.SocketItem); len(orphans) > 0 {

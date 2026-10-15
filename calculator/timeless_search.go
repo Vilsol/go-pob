@@ -25,7 +25,7 @@ type TimelessJewelType struct {
 	ID    int
 }
 
-//pob:block:src/Classes/TreeTab.lua:1187-1193
+//pob:block:src/Classes/TreeTab.lua:1196-1202
 var TimelessJewelTypes = []TimelessJewelType{
 	{Label: "Glorious Vanity", Name: "vaal", ID: 1},
 	{Label: "Lethal Pride", Name: "karui", ID: 2},
@@ -35,7 +35,7 @@ var TimelessJewelTypes = []TimelessJewelType{
 	{Label: "Heroic Tragedy", Name: "kalguur", ID: 6},
 }
 
-//pob:block:src/Classes/TreeTab.lua:1211-1247
+//pob:block:src/Classes/TreeTab.lua:1220-1256
 var TimelessConquerorTypes = map[int][]string{
 	1: {"Any", "Doryani (Corrupted Soul)", "Xibaqua (Divine Flesh)", "Ahuana (Immortal Ambition)"},
 	2: {"Any", "Kaom (Strength of Blood)", "Rakiata (Tempered by War)", "Akoya (Chainbreaker)"},
@@ -45,21 +45,31 @@ var TimelessConquerorTypes = map[int][]string{
 	6: {"Any", "Vorana (Black Scythe Training)", "Uhtred (Celestial Mathematics)", "Medved (The Unbreaking Circle)"},
 }
 
-//pob:block:src/Classes/TreeTab.lua:1265-1282
+//pob:block:src/Classes/TreeTab.lua:1274-1292
 var TimelessDevotionVariants = []string{
 	"Any", "Totem Damage", "Brand Damage", "Channelling Damage", "Area Damage", "Elemental Damage",
 	"Elemental Resistances", "Effect of non-Damaging Ailments", "Elemental Ailment Duration", "Duration of Curses",
-	"Minion Attack and Cast Speed", "Minions Accuracy Rating", "Mana Regen", "Skill Cost", "Non-Curse Aura Effect",
-	"Defences from Shield",
+	"Minion Attack and Cast Speed", "Minions Accuracy Rating", "Mana Regen", "Mana Cost (legacy)", "Mana Cost Efficiency",
+	"Non-Curse Aura Effect", "Defences from Shield",
 }
 
-//pob:block:src/Modules/Data.lua:900-925
+//pob:block:src/Classes/TreeTab.lua:1274-1292
+var timelessDevotionIDs = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 17, 15, 16}
+
+func timelessDevotionID(index int) int {
+	if index < 1 || index > len(timelessDevotionIDs) {
+		return 1
+	}
+	return timelessDevotionIDs[index-1]
+}
+
+//pob:block:src/Modules/Data.lua:927-952
 var (
 	timelessJewelSeedMin = map[int]int{1: 100, 2: 10000, 3: 500, 4: 2000, 5: 2000 / 20, 6: 100}
 	timelessJewelSeedMax = map[int]int{1: 8000, 2: 18000, 3: 8000, 4: 10000, 5: 160000 / 20, 6: 8000}
 )
 
-//pob:block:src/Classes/TreeTab.lua:1169-1186
+//pob:block:src/Classes/TreeTab.lua:1178-1195
 var (
 	timelessIgnoredMods = []string{"Might of the Vaal", "Legacy of the Vaal", "Strength", "Add Strength", "Dex", "Add Dexterity", "Devotion", "Price of Glory", "Ward"}
 	timelessTotalMods   = map[int]string{2: "Strength", 3: "Dexterity", 4: "Devotion"}
@@ -81,7 +91,7 @@ type TimelessSocket struct {
 	ID       int64
 }
 
-//pob:block:src/Classes/TreeTab.lua:1295-1336
+//pob:block:src/Classes/TreeTab.lua:1305-1346
 func TimelessSockets(build *pob.PathOfBuilding) []TimelessSocket {
 	tree := specTree()
 	alloc := allocSet(build, tree)
@@ -150,7 +160,7 @@ func timelessLegionFlags() map[string][2]bool {
 	return out
 }
 
-//pob:block:src/Classes/TreeTab.lua:1349-1402
+//pob:block:src/Classes/TreeTab.lua:1359-1412
 func TimelessMods(jewelType int) []TimelessMod {
 	jt, ok := timelessJewelType(jewelType)
 	if !ok || raw.EnsureTimelessSources() != nil {
@@ -220,7 +230,7 @@ func timelessJewelType(id int) (TimelessJewelType, bool) {
 
 var timelessSearchSplit = regexp.MustCompile(`[^,\s]+`)
 
-//pob:block:src/Classes/TreeTab.lua:1420-1444
+//pob:block:src/Classes/TreeTab.lua:1430-1454
 func ParseTimelessSearchList(text string) [][]string {
 	lines := strings.FieldsFunc(text, func(r rune) bool { return r == '\r' || r == '\n' })
 	rows := make([][]string, 0, len(lines))
@@ -307,7 +317,7 @@ func (m *MiscCalculator) NewTimelessSearcher(q TimelessSearchQuery) *TimelessSea
 	return s
 }
 
-//pob:block:src/Classes/TreeTab.lua:2794-2859
+//pob:block:src/Classes/TreeTab.lua:2817-2882
 func (s *TimelessSearcher) Step() float64 {
 	if s.next < len(s.sockets) {
 		socket := s.sockets[s.next]
@@ -413,7 +423,7 @@ func timelessConqueror(jewelType tjdata.JewelType) tjdata.Conqueror {
 	return tjdata.Conqueror(names[0])
 }
 
-//pob:block:src/Classes/TreeTab.lua:2419-2706
+//pob:block:src/Classes/TreeTab.lua:2442-2729
 func (m *MiscCalculator) timelessSearchSocket(q TimelessSearchQuery, socketID int64) *timelessSocketSearch {
 	tree := specTree()
 	socket, ok := tree.Nodes[strconv.FormatInt(socketID, 10)]
@@ -726,7 +736,7 @@ func (m *MiscCalculator) timelessSearchSocket(q TimelessSearchQuery, socketID in
 	return &timelessSocketSearch{resultNodes: resultNodes, seedWeights: seedWeights, desired: desiredNodes}
 }
 
-//pob:block:src/Classes/TreeTab.lua:1558-1588
+//pob:block:src/Classes/TreeTab.lua:1603-1635
 func (m *MiscCalculator) timelessAllocatedNotablesInRadius(socketID int64) int {
 	tree := specTree()
 	alloc := allocSet(m.build, tree)
@@ -741,7 +751,7 @@ func (m *MiscCalculator) timelessAllocatedNotablesInRadius(socketID int64) int {
 	return count
 }
 
-//pob:block:src/Classes/TreeTab.lua:1558-1588
+//pob:block:src/Classes/TreeTab.lua:1603-1635
 func (m *MiscCalculator) TimelessProtectableNodes(socketID int64) []TimelessMod {
 	tree := specTree()
 	if _, ok := tree.Nodes[strconv.FormatInt(socketID, 10)]; !ok || socketID == -1 {
@@ -772,7 +782,7 @@ var (
 	timelessFmtTrailZero = regexp.MustCompile(`\.([0-9])0`)
 )
 
-//pob:block:src/Classes/TreeTab.lua:2708-2722
+//pob:block:src/Classes/TreeTab.lua:2731-2745
 func timelessFormatSearchValue(input float64) string {
 	s := " " + fmt.Sprintf("%06.2f", input)
 	s = timelessFmtZero.ReplaceAllString(s, "   ")
@@ -783,7 +793,7 @@ func timelessFormatSearchValue(input float64) string {
 	return timelessFmtTrailZero.ReplaceAllString(s, ".${1}  ")
 }
 
-//pob:block:src/Classes/TreeTab.lua:2724-2777
+//pob:block:src/Classes/TreeTab.lua:2747-2800
 func timelessFormatResults(q TimelessSearchQuery, r *timelessSocketSearch, socket *TimelessSocket) []TimelessSearchResult {
 	seeds := make([]int, 0, len(r.resultNodes))
 	for seed := range r.resultNodes {
@@ -849,7 +859,7 @@ func timelessFormatResults(q TimelessSearchQuery, r *timelessSocketSearch, socke
 	return out
 }
 
-//pob:block:src/Classes/TreeTab.lua:2097-2106
+//pob:block:src/Classes/TreeTab.lua:2120-2129
 func TimelessFallbackModes() []PowerStat {
 	return PowerStats()
 }
@@ -866,7 +876,7 @@ func timelessLegionOrder() ([]string, []string) {
 	return nodes, additions
 }
 
-//pob:block:src/Classes/TreeTab.lua:1929-2094
+//pob:block:src/Classes/TreeTab.lua:1952-2117
 func (m *MiscCalculator) TimelessFallbackWeights(jewelType int, stat string) (string, bool) {
 	if jewelType == 1 || raw.EnsureTimelessSources() != nil {
 		return "", false
@@ -947,4 +957,19 @@ func (m *MiscCalculator) TimelessFallbackWeights(jewelType int, stat string) (st
 		}
 	}
 	return strings.Join(rows, "\n"), true
+}
+
+//pob:block:src/Classes/TimelessJewelListControl.lua:340-348
+func TimelessSocketJewel(build *pob.PathOfBuilding, socketID int, itemID int) bool {
+	if socketID == -1 || itemID == 0 {
+		return false
+	}
+	tree := specTree()
+	node, ok := tree.Nodes[nodeKey(int64(socketID))]
+	if !ok || node.IsJewelSocket == nil || !*node.IsJewelSocket || !allocSet(build, tree)[int64(socketID)] {
+		return false
+	}
+	build.SocketJewel(socketID, itemID)
+	PopulateSlots(build)
+	return true
 }

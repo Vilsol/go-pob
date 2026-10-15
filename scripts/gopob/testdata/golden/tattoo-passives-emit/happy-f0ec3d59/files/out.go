@@ -43,6 +43,12 @@ var TattooKeystones = map[string]bool{
 	"Tattoo of the Ngamahu Shaman": true,
 }
 
+// TattooOverrideTypes is each row's `overrideType` (PassiveSpec.lua:1428-1434, CalcSetup.lua:691-695),
+// keyed like TattooNodes.
+var TattooOverrideTypes = map[string]string{
+	"Tattoo of the Tawhoa Shaman": "TawhoaTattoo",
+}
+
 // TattooTargets is what the tattoo popup filters and shows (TreeTab.lua:846-878), keyed like TattooNodes.
 var TattooTargets = map[string]TattooTarget{
 	"Tattoo of the Ngamahu Shaman": {

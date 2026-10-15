@@ -7,12 +7,12 @@ import (
 	"strings"
 )
 
-//pob:src/Modules/ModTools.lua:174-203
+//pob:src/Modules/ModTools.lua:196-225
 func FormatValue(v any) string {
 	return formatValue(reflect.ValueOf(v), 0)
 }
 
-//pob:src/Modules/ModTools.lua:129-164, src/Modules/ModTools.lua:174-203
+//pob:src/Modules/ModTools.lua:151-186, src/Modules/ModTools.lua:196-225
 func formatValue(v reflect.Value, depth int) string {
 	if !v.IsValid() {
 		return "nil"

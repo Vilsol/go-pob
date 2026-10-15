@@ -1,7 +1,8 @@
 local outPath = arg[1]
+local construct = dofile((arg[0]:match("^(.*)[/\\]") or ".") .. "/pob_compat.lua").construct
 dofile("HeadlessWrapper.lua")
 local json = require("dkjson")
-local tree = new("PassiveTree", latestTreeVersion)
+local tree = construct("PassiveTree", latestTreeVersion)
 local out = {}
 for id, node in pairs(tree.nodes) do
 	if node.recipe and #node.recipe >= 1 then

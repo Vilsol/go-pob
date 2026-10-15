@@ -16,8 +16,8 @@ func TestTinctureRangedWeapons(t *testing.T) {
 		build string
 		want  map[string]float64
 	}{
-		{"1188-warden-void-shot.xml", map[string]float64{"CritChance": 94.8024, "TotalDPS": 1789348.5041803}},
-		{"0566-warden-ice-shot-of-penetration.xml", map[string]float64{"CritChance": 87.489792, "TotalDPS": 2248239.8398684}},
+		{"1188-warden-void-shot.xml", map[string]float64{"CritChance": 94.8, "TotalDPS": 1789314.028522}},
+		{"0566-warden-ice-shot-of-penetration.xml", map[string]float64{"CritChance": 87.4944, "TotalDPS": 2248327.9942665}},
 	} {
 		env := corpusEnvForLoadedData(t, c.build)
 		if !env.ModDB.Flag(nil, "TinctureRangedWeapons") {

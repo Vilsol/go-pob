@@ -9,12 +9,12 @@
     const shown = q ? LINES.filter((l) => l.toLowerCase().includes(q)) : LINES;
     return Promise.resolve(shown.length ? shown : ['No matching modifiers found']);
   };
-  const supported = (line: string) => Promise.resolve(!line.startsWith('Quux'));
+  const sources = (line: string) => Promise.resolve(line.startsWith('Quux') ? ['Notable Node', 'Item mod'] : ['Item mod']);
 
   const { Story } = defineMeta({
     title: 'Pages/Config/Mod Browser',
     component: ModBrowserDialog,
-    args: { open: true, list, supported, onadd: () => {} }
+    args: { open: true, list, sources, onadd: () => {} }
   });
 </script>
 
@@ -26,7 +26,7 @@
     await userEvent.type(d.getByRole('searchbox', { name: 'Search modifiers' }), 'quux');
     await waitFor(() => expect(d.getAllByRole('option')).toHaveLength(1));
     await userEvent.hover(d.getByRole('option', { name: 'Quux frobnicates' }));
-    await waitFor(() => expect(d.getByRole('status')).toHaveTextContent('Supported: No'));
+    await waitFor(() => expect(d.getByRole('status')).toHaveTextContent('Notable Node · Item mod'));
     await userEvent.clear(d.getByRole('searchbox', { name: 'Search modifiers' }));
     await userEvent.type(d.getByRole('searchbox', { name: 'Search modifiers' }), 'zzz');
     await waitFor(() => expect(d.getByRole('button', { name: 'Add' })).toBeDisabled());

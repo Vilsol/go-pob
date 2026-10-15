@@ -1,3 +1,7 @@
+<script lang="ts" module>
+  const collapsed = $state<Record<string, boolean>>({});
+</script>
+
 <script lang="ts">
   import OptionGroup from './OptionGroup.svelte';
   import OptionRow from './OptionRow.svelte';
@@ -217,6 +221,8 @@
       {#if s.rows.length}
         <OptionGroup
           title={s.name}
+          collapsed={collapsed[s.name] && !/\S/.test(filter.q)}
+          ontoggle={() => (collapsed[s.name] = !collapsed[s.name])}
           count={`${s.total} options${s.modified ? ` · ${s.modified} modified` : ''}`}
           more={!filter.showAll && s.hidden ? `+ ${s.hidden} more (hidden: only shown when the build uses them)` : undefined}>
           {#each s.rows as r, i (r.kind === 'option' ? r.v.var : `h${i}`)}

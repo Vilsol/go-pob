@@ -124,5 +124,5 @@ export type CustomOps = {
   /* ConfigTab.lua:53-68 */
   togglewhatif?: (g: number) => Promise<StatCompareSection[] | undefined>;
   /* ConfigTab.lua:42-44, 1305-1550 */
-  modbrowser?: { list: (search: string) => Promise<string[]>; supported: (line: string) => Promise<boolean>; onadd: (g: number, line: string) => void };
+  modbrowser?: { list: (search: string) => Promise<string[]>; sources: (line: string) => Promise<string[]>; onadd: (g: number, line: string) => void };
 };

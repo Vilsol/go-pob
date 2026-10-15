@@ -9,7 +9,7 @@ import (
 
 // TestSummonedMinionConfigOverrides: ConfigOptions.lua:1128-1133 emits OVERRIDE for both summoned-minion counts.
 //
-//pob:block:src/Modules/ConfigOptions.lua:1128-1133
+//pob:block:src/Modules/ConfigOptions.lua:1139-1144
 func TestSummonedMinionConfigOverrides(t *testing.T) {
 	apply := func(name string, val float64) *moddb.ModDB {
 		db := moddb.NewModDB()

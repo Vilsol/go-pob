@@ -4,6 +4,8 @@
   import ChoiceCard from './ChoiceCard.svelte';
   import NumberInput from './NumberInput.svelte';
   import StatPicker from './StatPicker.svelte';
+  import ImpactBlocks from './ImpactBlocks.svelte';
+  import type { ImpactBlock } from './items';
   import TreeView from './TreeView.svelte';
   import type { TreeFixture, TreeNodeFx } from './fixtures';
   import {
@@ -33,6 +35,8 @@
     devotion: string[];
     stats: TimelessStat[];
     protectable?: TimelessStat[];
+    keystoneStats?: (keystone: string) => string[];
+    rowimpact?: (row: number) => Promise<ImpactBlock[] | undefined>;
     fallbackModes: string[];
     realms: string[];
     leagues: string[];
@@ -69,6 +73,8 @@
     devotion,
     stats,
     protectable = [],
+    keystoneStats,
+    rowimpact,
     fallbackModes,
     realms,
     leagues,
@@ -115,6 +121,26 @@
   const inView = $derived(new Set(tree?.nodes.map((n) => n.id) ?? []));
   const alloc = $derived(Object.fromEntries((tree?.nodes ?? []).filter((n) => n.a).map((n) => [n.id, true])));
   const row = $derived(rows.get(sel - 1));
+  // TimelessJewelListControl.lua:330-331
+  let impact = $state.raw<{ index: number; blocks: ImpactBlock[] }>();
+  $effect(() => {
+    const index = sel - 1;
+    if (!row || !rowimpact) return;
+    void form.devotion1;
+    void form.devotion2;
+    let live = true;
+    const timer = setTimeout(() => {
+      rowimpact(index)
+        .then((blocks) => {
+          if (live) impact = { index, blocks: blocks ?? [] };
+        })
+        .catch(() => {});
+    }, 150);
+    return () => {
+      live = false;
+      clearTimeout(timer);
+    };
+  });
   const focus = $derived(step === 5 ? ((hoverRow !== null ? rows.get(hoverRow)?.socket : undefined) ?? row?.socket ?? null) : hover);
   const picked = $derived(new Set(form.socket === -1 ? sockets.map((s) => s.id) : [form.socket]));
   const ringIds = $derived.by(() => {
@@ -152,6 +178,7 @@
   };
   const changed = () => onchange?.();
   const setSocket = (id: number) => {
+    if (id !== form.socket) form.protect = [];
     form.socket = id;
     changed();
   };
@@ -259,6 +286,7 @@
             form.conqueror = i + 1;
             changed();
           }}
+          title={c === 'Any' ? undefined : keystoneStats?.(keystoneOf(c)).join('\n') || undefined}
           ><span class="font-semibold">{c.split(' (')[0]}</span><span class="text-12 text-text-2">{c === 'Any' ? 'search every conqueror' : keystoneOf(c)}</span
           ></ChoiceCard>
       {/each}
@@ -386,18 +414,23 @@
               class="w-16"
               label="Node Distance"
               onchange={() => changed()} /></label>
-          {#if isMF}
-            <StatPicker
-              stats={protectable.filter((p) => !form.protect.includes(p.label))}
-              label="Protect an allocated node"
-              placeholder="Protect an allocated node from changing…"
-              onpick={(p: TimelessStat) => (form.protect = [...form.protect, p.label])} />
-            {#if form.protect.length}
-              <div class="flex flex-wrap items-center gap-1" aria-label="Protected nodes">
-                {#each form.protect as p (p)}<span class="chip text-12">{p}</span>{/each}
-                <button class="btn btn-sm" onclick={() => (form.protect = [])}>Clear</button>
-              </div>
-            {/if}
+          {#if isMF && form.socket !== -1 && protectable.length}
+            <div class="flex flex-col gap-0.5" role="group" aria-label="Protected nodes">
+              <span
+                class="text-12 text-text-2"
+                title="Protect allocated nodes during search. This can be useful if transforming certain notables would break your build."
+                >Protect allocated nodes:</span>
+              {#each protectable as p (p.label)}
+                <label class="flex items-center gap-2 text-12" title={p.descriptions.join('\n')}
+                  ><input
+                    type="checkbox"
+                    class="check"
+                    checked={form.protect.includes(p.label)}
+                    onchange={(e) => {
+                      form.protect = e.currentTarget.checked ? [...form.protect, p.label] : form.protect.filter((x) => x !== p.label);
+                    }} />{p.label}</label>
+              {/each}
+            </div>
           {/if}
         {/if}
         <div class="note mt-auto">
@@ -594,10 +627,23 @@
             <span class="text-node-conq">{s?.keystones.length ? `${s.keystones.join(', ')} → ${keystone}` : `→ ${keystone}`}</span>
             {#each row.nodes as n, i (i)}<span class="text-text-2">{n.name}: {n.targets.length ? n.targets.join(', ') : 'None'}</span>{/each}
             {#if row.total > 0}<span class="text-text-2">Combined node weight: {row.total}</span>{/if}
-            <div class="mt-1 flex gap-1.5">
+            <!-- TimelessJewelListControl.lua:301-307 -->
+            {#if form.socketAllocate && !added.has(sel - 1)}
+              {#if s?.pts === 0}<span data-socket-note>It will be socketed into {socketLabel(s)}.</span>
+              {:else}<span class="text-worse" data-socket-note>That jewel socket is not allocated, so the jewel will only be added to your items.</span>{/if}
+            {/if}
+            <div class="mt-1 flex items-center gap-3">
               <button class="btn btn-sm btn-primary px-3" disabled={added.has(sel - 1)} onclick={() => onadd?.(sel - 1)}
                 >{added.has(sel - 1) ? 'Added to the build' : 'Add to the build'}</button>
+              <!-- TreeTab.lua:1674-1685 -->
+              <label
+                class="flex items-center gap-1.5"
+                title="Adding a result also equips the jewel in its jewel socket. The socket must be allocated on your current tree; if it isn't, the jewel is only added to your item list. A jewel already in that socket is replaced."
+                ><input type="checkbox" class="check" bind:checked={form.socketAllocate} onchange={() => changed()} />Socket the jewel</label>
             </div>
+            {#if impact?.index === sel - 1 && impact.blocks.length}
+              <div class="mt-1 border-t border-line pt-1.5 text-12" data-row-impact><ImpactBlocks blocks={impact.blocks} /></div>
+            {/if}
           </div>
         {/if}
         <div class="flex flex-wrap items-center gap-2 border-t border-line px-3 py-2.5" role="group" aria-label="Trade search">

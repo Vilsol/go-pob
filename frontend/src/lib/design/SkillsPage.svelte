@@ -53,6 +53,8 @@
       groupCount?: boolean | ((group: number) => boolean);
       /* SkillsTab.lua:242-288 */
       onoptimise?: (group: number) => void;
+      /* SkillsTab.lua:294-313 */
+      optimiseEnabled?: (group: number) => boolean;
       /* SkillsTab.lua:357-391 */
       sourceNote?: (group: number) => string | undefined;
       /* GemSelectControl.lua:620-627 */
@@ -411,6 +413,7 @@
       maxLevel={editor?.maxLevel && ((g: number) => editor.maxLevel!(selected, g))}
       socketsLocked={editor?.socketsLocked}
       onoptimise={editor?.onoptimise && (() => editor.onoptimise!(selected))}
+      optimiseEnabled={editor?.optimiseEnabled?.(selected)}
       slotLocked={editor?.slotLocked?.(selected)}
       gemwhatif={editor?.gemwhatif && ((name: string) => editor.gemwhatif!(selected, name))}
       qualitywhatif={editor?.qualitywhatif && ((g: number) => editor.qualitywhatif!(selected, g))}

@@ -374,6 +374,33 @@ export default [{
     "type":"check",
     "var":"arcaneCloakUsedRecentlyCheck"
   },{
+    "ifSkill":"Aspect of Lunaris",
+    "label":"Aspect of Lunaris:"
+  },{
+    "defaultPlaceholderState":8,
+    "ifSkill":"Aspect of Lunaris",
+    "label":"# of Lunar Protection:",
+    "tooltip":"Gained when you take ^xB97123Physical ^7Damage, up to 8 stacks.",
+    "type":"countAllowZero",
+    "var":"aspectOfLunarisLunarProtection"
+  },{
+    "defaultPlaceholderState":8,
+    "ifSkill":"Aspect of Lunaris",
+    "label":"# of Lunar Resistance:",
+    "tooltip":"Gained when you take Elemental Damage, up to 8 stacks.",
+    "type":"countAllowZero",
+    "var":"aspectOfLunarisLunarResistance"
+  },{
+    "ifSkill":"Aspect of Solaris",
+    "label":"Aspect of Solaris:"
+  },{
+    "defaultPlaceholderState":5,
+    "ifSkill":"Aspect of Solaris",
+    "label":"# of Sunscald Stacks:",
+    "tooltip":"Each Sunscald increases the effect of ^xB97123Fire Exposure ^7on affected enemies by 15%, up to 5 stacks.",
+    "type":"countAllowZero",
+    "var":"aspectOfSolarisSunscaldStacks"
+  },{
     "ifSkill":"Aspect of the Avian",
     "label":"Aspect of the Avian:"
   },{
@@ -1409,12 +1436,12 @@ export default [{
     "type":"count",
     "var":"VaalMoltenShellDamageMitigated"
   },{
-    "ifSkill":["Seismic Trap","Lightning Spire Trap","Explosive Trap","Molten Strike"],
+    "ifSkill":["Seismic Trap","Lightning Spire Trap","Explosive Trap","Molten Strike","Ball Lightning"],
     "includeTransfigured":true,
     "label":"Multi-part area skills:"
   },{
     "defaultIndex":2,
-    "ifSkill":["Seismic Trap","Lightning Spire Trap","Explosive Trap","Molten Strike"],
+    "ifSkill":["Seismic Trap","Lightning Spire Trap","Explosive Trap","Molten Strike","Ball Lightning"],
     "includeTransfigured":true,
     "label":"Enemy size preset:",
     "list":[{
@@ -1434,7 +1461,7 @@ export default [{
     "type":"list",
     "var":"enemySizePreset"
   },{
-    "ifSkill":["Seismic Trap","Lightning Spire Trap","Explosive Trap","Molten Strike"],
+    "ifSkill":["Seismic Trap","Lightning Spire Trap","Explosive Trap","Molten Strike","Ball Lightning"],
     "includeTransfigured":true,
     "label":"Enemy radius:",
     "tooltip":"Configure the radius of an enemy hitbox to calculate some area overlapping (shotgunning) effects.",
@@ -3814,6 +3841,36 @@ export default [{
     "tooltip":"This will enable the Lesser Resistance Shrine buff.\n\t+25% to all Elemental Resistances\n\t+2% to all maximum Resistances",
     "type":"check",
     "var":"buffLesserResistanceShrine"
+  },{
+    "ifFlag":"Condition:CanHaveBloodShrines",
+    "label":"Have Blood Shrine of Rats?",
+    "tooltip":"This will enable the Blood Shrine of Rats buff.\n\tGain 30% of Elemental Damage as Extra Chaos Damage",
+    "type":"check",
+    "var":"buffBloodShrineOfRats"
+  },{
+    "ifFlag":"Condition:CanHaveBloodShrines",
+    "label":"Have Blood Shrine of Locusts?",
+    "tooltip":"This will enable the Blood Shrine of Locusts buff.\n\t+30% to Damage over Time Multiplier",
+    "type":"check",
+    "var":"buffBloodShrineOfLocusts"
+  },{
+    "ifFlag":"Condition:CanHaveBloodShrines",
+    "label":"Have Blood Shrine of Toads?",
+    "tooltip":"This will enable the Blood Shrine of Toads buff.\n\tExplosive Toad has an additional 25% chance to Trigger when you kill an Enemy",
+    "type":"check",
+    "var":"buffBloodShrineOfToads"
+  },{
+    "ifFlag":"Condition:CanHaveBloodShrines",
+    "label":"Have Blood Shrine of Crows?",
+    "tooltip":"This will enable the Blood Shrine of Crows buff.\n\t+50% to Chaos Resistance\n\t10% of Elemental Damage taken as Chaos Damage\n\t10% of Physical Damage taken as Chaos Damage",
+    "type":"check",
+    "var":"buffBloodShrineOfCrows"
+  },{
+    "ifFlag":"Condition:CanHaveBloodShrines",
+    "label":"Have Blood Shrine of Bats?",
+    "tooltip":"This will enable the Blood Shrine of Bats buff.\n\tCurse Enemies with Enfeeble on Hit\n\tYou can apply an additional Curse",
+    "type":"check",
+    "var":"buffBloodShrineOfBats"
   },{
     "col":1,
     "section":"For Effective DPS"

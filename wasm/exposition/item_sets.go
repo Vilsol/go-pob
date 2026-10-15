@@ -114,3 +114,11 @@ func (m *MiscCalculator) CompareAddedMod(text string, lines []string, modType st
 	}
 	return AddedModCompare{Base: statOutputs(base), Added: statOutputs(added)}, true
 }
+
+func (m *MiscCalculator) CompareReplacedImplicits(text string, lines []string) (AddedModCompare, bool) {
+	base, added := m.calc.CompareReplacedImplicits(text, lines)
+	if base == nil || added == nil {
+		return AddedModCompare{}, false
+	}
+	return AddedModCompare{Base: statOutputs(base), Added: statOutputs(added)}, true
+}

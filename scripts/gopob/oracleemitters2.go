@@ -370,64 +370,8 @@ func oracleTattooPassivesEmit(argv []string) int {
 	// legion table, where the concept does not exist; widening it would put a field on 381 rows
 	// that can only ever be false. The keystone rows are a handful.
 	//
-	// ⚠️ `overrideType` AND `name` ARE STILL NOT EMITTED, AND THE MEASUREMENT SAYS DO NOT BOTHER.
-	// CalcSetup.lua:691-695 publishes one multiplier per allocated tattoo TYPE
-	// (`env.modDB.multipliers[type] = count`), which calculator/env.go's mastery-tally comment
-	// points here for. Sized 2026-09-19 over all 15224 corpus builds, and it is worth EXACTLY ZERO
-	// — a zero of the "the consumer can never fire" kind, not "not graded here":
-	//
-	//	17 distinct overrideType values in TattooPassives.lua, enumerated FROM THE FILE
-	//	  7 have NO consumer anywhere in the pin (KeystoneTattoo 48 rows, AlternateMastery 32,
-	//	    UnknownTattoo 29, Honoured{Heart,Mind,Soul}Tattoo, AscendancyTattooShadow)
-	//	 10 tribal types DO have consumers — src/Data/Skills/other.lua, the "Spirit of <X>"
-	//	    buff skills, as {type="Multiplier", var="<Tribe>Tattoo"}. We already carry every one
-	//	    of those statMap entries in data/raw/skill_stat_maps.go, so the CONSUMER half is done
-	//	    and only the producer is absent.
-	//
-	// The gate is what kills it. Each Spirit skill is granted by one specific tattoo, the
-	// "Loyalty Tattoo of <X>" row (or by the Honoured Alliance coral ring, Uniques/ring.lua:666).
-	// Corpus carriers, counted over every <Override dn="..."> in every build:
-	//
-	//	any recognised tattoo override        100 builds
-	//	a TRIBAL-type tattoo                   92
-	//	a Loyalty Tattoo (grants the skill)     0
-	//	Honoured Alliance / "of Akoya"          0
-	//
-	// So all 92 tribal-tattoo builds publish multipliers that nothing on those builds reads.
-	// Adding the field is cheap; it just buys nothing until a build carries the grant. If that
-	// changes, the shape is a SEPARATE `map[string]string` keyed by `dn`, for the same reason the
-	// keystone set above is separate — not a LegionNode field.
-	//
-	// ⚠️ The population is the thing to re-measure, NOT this conclusion: it moves with the corpus,
-	// and a promotion is exactly what would make it non-zero. Re-run the count, do not quote it.
-	//
-	// ⚠️ AND RE-MEASURE IT WITH *THIS* INSTRUMENT, WHICH IS THE WHOLE VALUE OF THE NOTE: enumerate
-	// every `<Override nodeId= dn=>` in every corpus XML and join `dn` against the `dn -> overrideType`
-	// map extracted from TattooPassives.lua, identifying the Loyalty rows by matching
-	// `Summon Spirit of (\w+)` in each row's `sd` lines, with `assert len(loyalty) == 10` as the
-	// control that the enumeration did not silently drop a tribe.
-	//
-	// ⚠️ DO NOT RE-DERIVE IT WITH `task corpus-grep` OR A BARE `grep -rl`. A tattoo is a PASSIVE-TREE
-	// override, and corpus-grep prints its own warning that a 0 there means only "0 in the input XML"
-	// and must not be read as "nothing carries this". The first draft of this note cited such a grep
-	// beside the 0 as if it were corroboration; it is the one instrument that structurally cannot see
-	// the thing being counted, and it was struck. The override enumeration is exhaustive BECAUSE a
-	// tattoo enters a build only as an <Override> — the same element passive_spec.go's tattooedNodes
-	// and PassiveSpec.lua:168 read — so there is no path by which an allocated tattoo is absent from
-	// it. The Honoured Alliance 0 is soundly a text grep, because a unique ring IS item text.
-	//
-	// The counts are counted across EVERY <Overrides> element rather than the active spec alone, so
-	// 100 and 92 are UPPER BOUNDS at the allocation rung. An upper bound of 0 is 0 at every rung
-	// below it, which is why the activation rung was not worth buying here.
-	//
-	// ⚠️ ONE HOLE WAS LEFT OPEN BY THE SWEEP AND IS NOW CLOSED, verified against the pin at pin-3.29:
-	// the search for other granters of TriggerSummonedAncestor* ran with `--exclude-dir=TreeData`, so
-	// a TREE NODE granting a Spirit skill would have been missed. It is a real mechanism —
-	// `Trigger level 20 Summon Spirit of Kaom Skill when a Totem dies ...` appears in 8 tree files —
-	// but ONLY in the `*_alternate` and `*_ruthless_alternate` trees of 3_25 through 3_28.
-	// src/TreeData/3_29/tree.lua and 3_29_ruthless/tree.lua both carry ZERO occurrences, and
-	// "Loyalty Tattoo" appears in no tree file at all. So no 3.29 tree node grants the skill and the
-	// zero is closed on the tree-sourced path too.
+	// `overrideType` is emitted the same way, as a separate map keyed by `dn`: CalcSetup.lua:691-695 publishes
+	// one multiplier per allocated tattoo TYPE, which the "Spirit of <X>" buffs (src/Data/Skills/other.lua) read.
 	var keystones []string
 	for dn, row := range nodes {
 		if oeTruthy(oeObject(row)["isKeystone"]) {
@@ -442,6 +386,17 @@ func oracleTattooPassivesEmit(argv []string) int {
 		"var TattooKeystones = map[string]bool{")
 	for _, dn := range keystones {
 		lines = append(lines, fmt.Sprintf("\t%s: true,", oeGoStr(dn)))
+	}
+	lines = append(lines, "}", "")
+
+	lines = append(lines,
+		"// TattooOverrideTypes is each row's `overrideType` (PassiveSpec.lua:1428-1434, CalcSetup.lua:691-695),",
+		"// keyed like TattooNodes.",
+		"var TattooOverrideTypes = map[string]string{")
+	for _, dn := range oeSortedKeys(nodes) {
+		if t, ok := oeObject(nodes[dn])["overrideType"].(string); ok && t != "" {
+			lines = append(lines, fmt.Sprintf("\t%s: %s,", oeGoStr(dn), oeGoStr(t)))
+		}
 	}
 	lines = append(lines, "}", "")
 

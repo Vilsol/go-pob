@@ -256,6 +256,7 @@ scripts/gopob/corpusdumpref.go                   GO-NATIVE  port of scripts/corp
 scripts/gopob/testcachekey.go                    GO-NATIVE  port of scripts/test_cache_key.sh; the POE_VERSION cache-key gate, porting no Lua
 scripts/gopob/instrumentsrun.go                  GO-NATIVE  port of scripts/instruments.sh; the whole-instrument-chain runner and its cross-instrument invariants, porting no Lua
 scripts/gopob/commentstrip.go                  GO-NATIVE  removes go-pob's own prose comments from source files; reads the pin's Lua only to recognise its comments, porting no Lua
+scripts/gopob/luastage.go                      GO-NATIVE  the fixed-length run directory the deterministic LuaJIT probes run from, porting no Lua
 scripts/gopob/regendata.go                     GO-NATIVE  port of scripts/regen_data.py; regenerates every generated data table from the pinned PoB and gates their staleness, porting no Lua
 scripts/gopob/regendata_tables.go              GO-NATIVE  the GENERATORS table EXTRACTED from scripts/regen_data.py, porting no Lua
 scripts/gopob/internal/difftest/golden.go        GO-NATIVE  records the ORIGINAL's verdict per fixture so the migration's proof survives deleting the scripts; a harness, porting no Lua
@@ -439,3 +440,4 @@ wasm/exposition/import_tab.go       PORT       src/Classes/ImportTab.lua,src/Cla
 wasm/exposition/import_passive_tree.go PORT       src/Classes/ImportTab.lua,src/Classes/PassiveSpec.lua,src/Classes/PassiveTree.lua,src/Modules/Build.lua,src/Modules/ConfigOptions.lua
 wasm/exposition/tree_tattoo_nodes.go PORT       src/Classes/PassiveSpec.lua,src/Classes/PassiveTreeView.lua
 wasm/exposition/tree_compare_jewel.go PORT       src/Classes/PassiveTreeView.lua
+wasm/exposition/optimise_sockets.go GO-NATIVE  crystalline binding surface for the frontend

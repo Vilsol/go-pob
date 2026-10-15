@@ -100,7 +100,10 @@ export function showPowerRows(
   const mult = ds.pc || ds.mod ? 100 : 1;
   const dir = (v: number): ShownPowerRow['dir'] => (v === 0 ? '' : v > 0 !== !!ds.lowerIsBetter ? 'up' : 'down');
   const out = rows
-    .filter((r) => (filter === 'allocated' ? r.Allocated : r.Power > 0 && (filter === 'clusters' || !r.Cluster)) && (masteries || r.Type !== 'Mastery'))
+    .filter(
+      (r) =>
+        (filter === 'allocated' ? r.Allocated : r.Power > 0 && !r.Allocated && (filter === 'clusters' || !r.Cluster)) && (masteries || r.Type !== 'Mastery')
+    )
     .map((r) => ({
       ...r,
       power: format(ds.fmt ?? '.1f', r.Power * mult),

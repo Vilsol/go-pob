@@ -17,7 +17,7 @@ func TestPactDamageStatMapStillEmitsTheNestedMod(t *testing.T) {
 		kw                mod.KeywordFlag
 	}{
 		{"PactOfBeidat", "pact_skill_damage_+%_final_with_hits_and_ailments_to_grant", "BeidatPactDamage",
-			mod.MFlagSpell, mod.KeywordFlagHit | mod.KeywordFlagAilment},
+			0, mod.KeywordFlagHit | mod.KeywordFlagAilment},
 		{"PactOfGhorr", "pact_skill_grant_damage_over_time_+%_final_to_spells", "GhorrPactDamage",
 			mod.MFlagDot, 0},
 		{"PactOfKtash", "pact_skill_grant_damage_+%_final_to_exerted_skills", "KtashPactDamage", 0, 0},

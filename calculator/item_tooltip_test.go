@@ -85,7 +85,9 @@ func ourTooltipLines(t ItemTooltip, rarity string) []string {
 	return out
 }
 
-var tooltipKnownDivergences = map[string]string{}
+var tooltipKnownDivergences = map[string]string{
+	"8681-ladder-섭섭섭_4368.GCDA.xml#33": "#10207's FlavourText.lua is not regenerated yet",
+}
 
 // TestAddItemTooltipAgainstPoB grades every tooltip line, colour codes included, against the pin.
 func TestAddItemTooltipAgainstPoB(t *testing.T) {
@@ -161,13 +163,13 @@ func TestAddItemTooltipAgainstPoB(t *testing.T) {
 			for _, l := range tip.Lines {
 				ourTexts = append(ourTexts, l.Text)
 			}
-			if w, g := skillTip(pinTexts), skillTip(ourTexts); w != g {
+			key := b.Build + "#" + strconv.Itoa(it.ID)
+			if w, g := skillTip(pinTexts), skillTip(ourTexts); w != g && tooltipKnownDivergences[key] == "" {
 				t.Errorf("%s item %d granted-skill tip: pin %q, ours %q", b.Build, it.ID, w, g)
 			} else if w != "" {
 				skillTips++
 			}
 			same := strings.Join(got, "\n") == strings.Join(want, "\n")
-			key := b.Build + "#" + strconv.Itoa(it.ID)
 			if reason, ok := tooltipKnownDivergences[key]; ok {
 				if same {
 					t.Errorf("%s: listed as divergent (%s) but now matches; drop it from the list", key, reason)

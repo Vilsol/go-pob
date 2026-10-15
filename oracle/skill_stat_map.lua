@@ -2,6 +2,7 @@
 local outPath = arg[1]
 assert(outPath, "usage: skill_stat_map.lua <out.json>")
 
+local loadDataModule = dofile((arg[0]:match("^(.*)[/\\]") or ".") .. "/pob_compat.lua").loadDataModule
 dofile("HeadlessWrapper.lua")
 
 local json = require("dkjson")
@@ -60,7 +61,7 @@ end
 
 local freshSkills = {}
 for _, skillType in ipairs({ "act_str", "act_dex", "act_int", "other", "glove", "minion", "spectre", "sup_str", "sup_dex", "sup_int" }) do
-	LoadModule("Data/Skills/" .. skillType, freshSkills, makeSkillMod, makeFlagMod, makeSkillDataMod)
+	loadDataModule("Data/Skills/" .. skillType, freshSkills, makeSkillMod, makeFlagMod, makeSkillDataMod)
 end
 
 local function encodeValue(v)

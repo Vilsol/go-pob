@@ -1,7 +1,8 @@
+local compat = dofile((arg[0]:match("^(.*)[/\\]") or ".") .. "/pob_compat.lua")
 dofile("HeadlessWrapper.lua")
 newBuild()
 
-local displayStats = LoadModule("Modules/BuildDisplayStats")
+local displayStats = compat.loadBuildDisplayStats()
 
 local fmts, seen = { }, { }
 for _, entry in ipairs(displayStats) do

@@ -26,7 +26,7 @@ type radiusJewelData struct {
 	funcData map[int]*radiusJewelData
 }
 
-//pob:block:src/Modules/CalcSetup.lua:176-177
+//pob:block:src/Modules/CalcSetup.lua:262-263
 func newRadiusJewelData(source mod.Source) *radiusJewelData {
 	return &radiusJewelData{modSource: source, stats: make(map[string]float64)}
 }
@@ -82,7 +82,7 @@ type extraJewelFuncEntry struct {
 	Func   radiusJewelFunc
 }
 
-//pob:src/Classes/ModList.lua:69-82
+//pob:src/Classes/ModList.lua:73-86
 func mergeMod(list *moddb.ModList, m mod.Mod) {
 	if t := m.Type(); t == mod.TypeBase || t == mod.TypeIncrease || t == mod.TypeMore {
 		mods := list.Mods()
@@ -105,7 +105,7 @@ func mergeMod(list *moddb.ModList, m mod.Mod) {
 	list.AddMod(m)
 }
 
-//pob:src/Classes/ModList.lua:92-94
+//pob:src/Classes/ModList.lua:96-98
 func mergeNewMod(list *moddb.ModList, name string, modType mod.Type, value float64, proto mod.Mod) {
 	m := mod.NewFloat(name, modType, value).
 		Source(proto.GetSource()).
@@ -117,7 +117,7 @@ func mergeNewMod(list *moddb.ModList, name string, modType mod.Type, value float
 	mergeMod(list, m)
 }
 
-//pob:block:src/Classes/PassiveTree.lua:313-361
+//pob:block:src/Classes/PassiveTree.lua:336-384
 func nodeTypeOf(node data.Node) string {
 	switch {
 	case node.ClassStartIndex != nil:
@@ -145,15 +145,15 @@ func inAnyRadius(jewels []*radiusJewel, nodeID string) bool {
 	return false
 }
 
-//pob:block:src/Modules/CalcSetup.lua:1323-1333
-func buildModListForNodeList(env *Environment, nodes map[string]data.Node, finishJewels bool) (*moddb.ModList, []ExplodeSource) {
+//pob:block:src/Modules/CalcSetup.lua:1425-1435
+func buildModListForNodeList(env *Environment, nodes map[string]data.Node, finishJewels bool) (*moddb.ModList, []ExplodeSource, []grantedSkill) {
 	errorsBefore := len(env.DebugErrors)
 
-	modList, explodeSources := buildModListForNodeListPass(env, nodes, finishJewels, nil)
+	modList, explodeSources, granted := buildModListForNodeListPass(env, nodes, finishJewels, nil)
 
 	extraFuncs := collectExtraJewelFuncs(env, modList)
 	if extraFuncs == nil {
-		return modList, explodeSources
+		return modList, explodeSources, granted
 	}
 
 	env.DebugErrors = env.DebugErrors[:errorsBefore]
@@ -166,7 +166,7 @@ type ExplodeSource struct {
 	Rarity    ItemRarity
 }
 
-//pob:block:src/Modules/CalcSetup.lua:1424
+//pob:block:src/Modules/CalcSetup.lua:1526
 func (s ExplodeSource) key() string {
 	if s.ModSource != "" {
 		return s.ModSource
@@ -174,7 +174,7 @@ func (s ExplodeSource) key() string {
 	return s.NodeID
 }
 
-//pob:block:src/Data/Skills/other.lua:6081
+//pob:block:src/Data/Skills/other.lua:6209
 func (s ExplodeSource) activeEffectSource() string {
 	if s.ModSource != "" {
 		return s.ModSource
@@ -182,7 +182,7 @@ func (s ExplodeSource) activeEffectSource() string {
 	return "Tree:" + s.NodeID
 }
 
-//pob:block:src/Modules/CalcSetup.lua:1323-1329
+//pob:block:src/Modules/CalcSetup.lua:1425-1431
 func collectExtraJewelFuncs(env *Environment, nodeMods *moddb.ModList) *moddb.ModList {
 	prevActor := nodeMods.Actor
 	nodeMods.Actor = env.Player
@@ -201,13 +201,14 @@ func collectExtraJewelFuncs(env *Environment, nodeMods *moddb.ModList) *moddb.Mo
 	return out
 }
 
-//pob:src/Modules/CalcSetup.lua:140-179
-func buildModListForNodeListPass(env *Environment, nodes map[string]data.Node, finishJewels bool, extraFuncs *moddb.ModList) (*moddb.ModList, []ExplodeSource) {
+//pob:src/Modules/CalcSetup.lua:259-304
+func buildModListForNodeListPass(env *Environment, nodes map[string]data.Node, finishJewels bool, extraFuncs *moddb.ModList) (*moddb.ModList, []ExplodeSource, []grantedSkill) {
 	jewels, extraRadiusNodeIDs := buildRadiusJewelList(env, extraFuncs)
 
 	// Add node modifiers
 	var modList = moddb.NewModList()
 	var explodeSources []ExplodeSource
+	var granted []grantedSkill
 	nodeIds := make([]string, 0, len(nodes))
 	for nodeId := range nodes {
 		nodeIds = append(nodeIds, nodeId)
@@ -233,9 +234,16 @@ func buildModListForNodeListPass(env *Environment, nodes map[string]data.Node, f
 		}
 		modList.AddDB(nodeModList)
 
-		//pob:block:src/Modules/CalcSetup.lua:169,src/Modules/CalcSetup.lua:184-185
+		//pob:block:src/Modules/CalcSetup.lua:252,src/Modules/CalcSetup.lua:274-275
 		if nodeModList.Flag(nil, "CanExplode") {
 			explodeSources = append(explodeSources, ExplodeSource{NodeID: nodeId})
+		}
+
+		//pob:block:src/Modules/CalcSetup.lua:236-249
+		for _, value := range nodeModList.List(nil, "ExtraSkill") {
+			if skill, ok := value.(mod.ExtraSkill); ok && skill.SkillName != "Unknown" {
+				granted = append(granted, grantedSkill{ItemGrantedSkill: ItemGrantedSkill{SkillID: skill.SkillID, Level: skill.Level, Source: "Tree:" + nodeId}})
+			}
 		}
 	}
 
@@ -256,7 +264,7 @@ func buildModListForNodeListPass(env *Environment, nodes map[string]data.Node, f
 
 		for _, rad := range jewels {
 			rad.fn(nil, modList, rad.data)
-			//pob:block:src/Modules/CalcSetup.lua:204-209
+			//pob:block:src/Modules/CalcSetup.lua:294-299
 			if env.Mode == OutputModeMain || env.Mode == OutputModeCalculator {
 				if env.JewelRadiusData == nil {
 					env.JewelRadiusData = map[string]map[string]float64{}
@@ -266,10 +274,10 @@ func buildModListForNodeListPass(env *Environment, nodes map[string]data.Node, f
 		}
 	}
 
-	return modList, explodeSources
+	return modList, explodeSources, granted
 }
 
-//pob:src/Classes/PassiveTree.lua:769-846
+//pob:src/Classes/PassiveTree.lua:795-872
 func processStats(env *Environment, modList *moddb.ModList, nodeId string, what string, stats []string) {
 	stats = fixupTreeStatText(stats)
 
@@ -329,7 +337,7 @@ func processStats(env *Environment, modList *moddb.ModList, nodeId string, what 
 
 var keystoneMaps sync.Map
 
-//pob:block:src/Classes/PassiveTree.lua:549-550
+//pob:block:src/Classes/PassiveTree.lua:574-575
 func keystoneMap(version pob.TreeVersion) map[string]data.Node {
 	if cached, ok := keystoneMaps.Load(version); ok {
 		return cached.(map[string]data.Node)
@@ -350,7 +358,7 @@ func keystoneMap(version pob.TreeVersion) map[string]data.Node {
 
 var keystoneModLists sync.Map
 
-//pob:block:src/Classes/PassiveTree.lua:707-716
+//pob:block:src/Classes/PassiveTree.lua:732-741
 func keystoneModList(env *Environment, version pob.TreeVersion, name string) *moddb.ModList {
 	type key struct {
 		version pob.TreeVersion
@@ -404,7 +412,7 @@ var legionKeystonesByName = sync.OnceValue(func() map[string]data.LegionNode {
 	return byName
 })
 
-//pob:block:src/Classes/PassiveTree.lua:712-716
+//pob:block:src/Classes/PassiveTree.lua:737-741
 func legionKeystoneByName(name string) (data.LegionNode, bool) {
 	node, ok := legionKeystonesByName()[name]
 	return node, ok
@@ -412,7 +420,7 @@ func legionKeystoneByName(name string) (data.LegionNode, bool) {
 
 var classStartConnectionMaps sync.Map
 
-//pob:block:src/Classes/PassiveTree.lua:313-361
+//pob:block:src/Classes/PassiveTree.lua:336-384
 func isNormalNode(node data.Node) bool {
 	switch {
 	case node.ClassStartIndex != nil,
@@ -438,7 +446,7 @@ func isNormalNode(node data.Node) bool {
 //
 // end
 //
-//pob:block:src/Classes/PassiveTree.lua:689-697
+//pob:block:src/Classes/PassiveTree.lua:714-722
 func classStartConnections(version pob.TreeVersion) map[string][]pob.ClassName {
 	if cached, ok := classStartConnectionMaps.Load(version); ok {
 		return cached.(map[string][]pob.ClassName)
@@ -482,12 +490,12 @@ func masterySelected(env *Environment, nodeId string) bool {
 	return selected
 }
 
-//pob:src/Modules/CalcSetup.lua:83-136
+//pob:src/Modules/CalcSetup.lua:123-256
 func buildModListForNode(env *Environment, nodeId string, node data.Node) *moddb.ModList {
 	return buildModListForConqueredNode(env, nodeId, node, nodeRewrite{}, nil)
 }
 
-//pob:src/Modules/CalcSetup.lua:83-136,src/Classes/PassiveSpec.lua:1315-1351
+//pob:src/Modules/CalcSetup.lua:123-256,src/Classes/PassiveSpec.lua:1346-1382
 func buildModListForConqueredNode(env *Environment, nodeId string, node data.Node, conquered nodeRewrite, jewels []*radiusJewel) *moddb.ModList {
 	var modList = moddb.NewModList()
 
@@ -510,7 +518,7 @@ func buildModListForConqueredNode(env *Environment, nodeId string, node data.Nod
 		if replacement == conquered.replaceWith && conquered.reparsed {
 			statsSource = nodeId
 		}
-		//pob:block:src/Classes/PassiveSpec.lua:1393-1403
+		//pob:block:src/Classes/PassiveSpec.lua:1425-1435
 		if replacement == conquered.tattoo && node.IsMastery != nil && *node.IsMastery && masterySelected(env, nodeId) {
 			statsSource = nodeId
 		}

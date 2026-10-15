@@ -10,7 +10,7 @@ import (
 	"github.com/Vilsol/go-pob/pob"
 )
 
-//pob:block:src/Modules/Data.lua:300
+//pob:block:src/Modules/Data.lua:306
 var skillColorMap = map[int]string{1: colorStrength, 2: colorDexterity, 3: colorIntelligence, 4: colorNormal}
 
 //pob:block:src/Data/Global.lua:8-12
@@ -65,7 +65,7 @@ func skillEffectLine(effect *GemEffect) string {
 	return fmt.Sprintf("%s%s ^7%d%s/%d%s", color, effect.GrantedEffect.Name(), level, levelBonus, quality, qualityBonus)
 }
 
-//pob:src/Classes/SkillsTab.lua:1283-1368
+//pob:src/Classes/SkillsTab.lua:1310-1395
 //nolint:gocyclo // Mirrors the Lua branch chain.
 func (env *Environment) SocketGroupTooltip(group int) []TooltipLine {
 	if env == nil || env.Build == nil {

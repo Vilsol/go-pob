@@ -116,9 +116,7 @@ func TestGemTooltipAgainstPoB(t *testing.T) {
 	}
 }
 
-var gemTooltipGameDrift = map[string]bool{
-	"Conflagration": true,
-}
+var gemTooltipGameDrift = map[string]bool{}
 
 var gemTooltipKnownDiff = map[string]bool{}
 

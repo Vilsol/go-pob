@@ -38,7 +38,7 @@ func TestModBrowserSearchAgainstPoB(t *testing.T) {
 	}
 }
 
-// TestModBrowserSupported: ConfigTab.lua:1496-1505: a line is supported when the parser reads all of it.
+// TestModBrowserSupported: ConfigModBrowser.lua:89-90: a line is supported when the parser reads all of it.
 func TestModBrowserSupported(t *testing.T) {
 	if !ModBrowserSupported("10% increased Attack Speed while Chilled") {
 		t.Error("a line the parser reads")
@@ -74,5 +74,24 @@ func TestModBrowserFuzzy(t *testing.T) {
 	}
 	if got := ModBrowserListFuzzy("zzzzq"); !slices.Equal(got, []string{ModBrowserEmpty}) {
 		t.Errorf("zzzzq: %d lines, want the empty entry", len(got))
+	}
+}
+
+// TestModBrowserSources: ConfigModBrowser.lua:153-250 (#10168): tree and mastery lines are listed, and a line's tooltip names its sources.
+func TestModBrowserSources(t *testing.T) {
+	for line, want := range map[string][]string{
+		"Action Speed cannot be modified to below Base Value": {"Ascendancy Normal Node", "Ascendancy Notable Node", "Item mod"},
+		"All Damage with Maces and Sceptres inflicts Chill":   {"Mastery Node"},
+		"2% additional Physical Damage Reduction":             {"Crafted mod", "Item mod"},
+	} {
+		if got := ModBrowserSources(line); !slices.Equal(got, want) {
+			t.Errorf("%q: sources %v, want %v", line, got, want)
+		}
+		if !slices.Contains(ModBrowserList(""), line) {
+			t.Errorf("%q is not listed", line)
+		}
+	}
+	if got := ModBrowserSources("Quux the frobnicator"); got != nil {
+		t.Errorf("an unlisted line has sources %v", got)
 	}
 }

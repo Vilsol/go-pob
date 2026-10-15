@@ -46,7 +46,7 @@ var (
 	includeRe   = regexp.MustCompile(`^Metadata/StatDescriptions/(.+)\.txt$`)
 )
 
-//pob:src/Modules/Common.lua:1048-1054
+//pob:src/Modules/Common.lua:1110-1116
 func escapeGGGString(text string) string {
 	text = gggMarkupRe.ReplaceAllString(text, "$1")
 	text = gggLinkRe.ReplaceAllString(text, "$1")

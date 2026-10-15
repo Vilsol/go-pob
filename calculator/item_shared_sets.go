@@ -12,7 +12,7 @@ type SharedItemSet struct {
 	Slots map[string]string `json:"slots"`
 }
 
-//pob:block:src/Classes/SharedItemSetListControl.lua:76-93
+//pob:block:src/Classes/SharedItemSetListControl.lua:80-97
 func ShareItemSet(build *pob.PathOfBuilding, setID int) (SharedItemSet, bool) {
 	for _, set := range build.Items.ItemSets {
 		if id, err := strconv.Atoi(set.ID); err != nil || id != setID {
@@ -32,7 +32,7 @@ func ShareItemSet(build *pob.PathOfBuilding, setID int) (SharedItemSet, bool) {
 	return SharedItemSet{}, false
 }
 
-//pob:block:src/Classes/ItemSetListControl.lua:93-106
+//pob:block:src/Classes/ItemSetListControl.lua:97-110
 func ImportSharedItemSet(build *pob.PathOfBuilding, shared SharedItemSet) int {
 	setID := build.NewItemSet(shared.Title)
 	for _, s := range orderedItemSlots {
@@ -48,7 +48,7 @@ func ImportSharedItemSet(build *pob.PathOfBuilding, shared SharedItemSet) int {
 	return setID
 }
 
-//pob:src/Classes/SharedItemSetListControl.lua:54-66
+//pob:src/Classes/SharedItemSetListControl.lua:58-70
 func SharedItemSetTooltip(shared SharedItemSet) []string {
 	var lines []string
 	for _, s := range orderedItemSlots {
@@ -60,7 +60,7 @@ func SharedItemSetTooltip(shared SharedItemSet) []string {
 	return lines
 }
 
-//pob:block:src/Classes/SharedItemListControl.lua:44-53
+//pob:block:src/Classes/SharedItemListControl.lua:52-61
 func ShareItem(build *pob.PathOfBuilding, id int, kind ItemDBKind, name string) (string, bool) {
 	text, inBuild, ok := dropText(build, id, kind, name)
 	if !ok {
@@ -73,7 +73,7 @@ func ShareItem(build *pob.PathOfBuilding, id int, kind ItemDBKind, name string) 
 	return buildRawText(item), true
 }
 
-//pob:block:src/Classes/ItemListControl.lua:275-284,src/Classes/ItemSlotControl.lua:114-130
+//pob:block:src/Classes/ItemListControl.lua:283-293,src/Classes/ItemSlotControl.lua:125-142
 func AddSharedItem(build *pob.PathOfBuilding, text string, slotName string) (int, bool) {
 	item := ParseItem(text)
 	if slotName != "" && !IsItemValidForSlot(build, item, slotName) {
@@ -84,11 +84,13 @@ func AddSharedItem(build *pob.PathOfBuilding, text string, slotName string) (int
 	if slotName != "" {
 		build.SetSlotItem(slotName, id)
 	}
+	//pob:block:src/Classes/ItemListControl.lua:288,src/Classes/ItemSlotControl.lua:137
+	AddForbiddenJewelCounterpart(build, item)
 	PopulateSlots(build)
 	return id, true
 }
 
-//pob:block:src/Classes/ItemsTab.lua:1817-1856
+//pob:block:src/Classes/ItemsTab.lua:1906-1945
 func CopyAnointsAndEldritchImplicits(build *pob.PathOfBuilding, newItem *Item, copyEldritchImplicits, overwrite bool, sourceSlotName string) {
 	newItemType := sourceSlotName
 	if newItemType == "" {
@@ -129,7 +131,7 @@ func CopyAnointsAndEldritchImplicits(build *pob.PathOfBuilding, newItem *Item, c
 	}
 }
 
-//pob:block:src/Classes/ItemsTab.lua:1859-1869
+//pob:block:src/Classes/ItemsTab.lua:1948-1958
 func NormaliseDisplayItem(build *pob.PathOfBuilding, text string, copyEldritchImplicits bool) string {
 	newItem := ParseItem(text)
 	if newItem.Base == nil {

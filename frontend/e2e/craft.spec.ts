@@ -150,6 +150,13 @@ Implicits: 0
 {range:0.5}+(40-60) to maximum Life
 Cannot be Frozen`;
 
+const GLIMPSE = `Rarity: UNIQUE
+Glimpse of Chaos
+Vaal Mask
+Implicits: 0
+Can be modified while Corrupted
+Can have up to 5 Implicit Modifiers while Item has this Modifier`;
+
 test('corrupt the display item (0280)', async ({ page }) => {
   test.setTimeout(300_000);
   const { app, build } = await setup(page, '0280-elementalist-fireball');
@@ -210,9 +217,34 @@ test('corrupt the display item (0280)', async ({ page }) => {
   await dialog.getByRole('button', { name: 'Corrupted', exact: true }).click();
   await expect(box).toHaveValue(await corrupt(UNIQUE, 'Corrupted', [], [], [[0], [1.22]]));
 
+  // ItemsTab.lua:3129-3155, 3190-3218
+  await box.fill(GLIMPSE);
+  await buttons.getByRole('button', { name: 'Corrupt...' }).click();
+  const [glimpseChoices] = await m.exposition.ItemCorruptChoices(GLIMPSE);
+  const special = glimpseChoices.Glimpse!;
+  expect(glimpseChoices.MaxImplicits).toBe(5);
+  await expect(dialog.getByRole('combobox', { name: 'Source' }).locator('option')).toHaveText(['Glimpse of Chaos', 'Corrupted', 'Scourge']);
+  await expect(dialog.getByRole('combobox', { name: 'Implicit #5' })).toBeVisible();
+  await expect(dialog.getByRole('combobox', { name: 'Implicit #6' })).toHaveCount(0);
+  await choose(first, special[0].Label);
+  await choose(dialog.getByRole('combobox', { name: 'Implicit #3' }), special[1].Label);
+  await expectEntries(dialog.getByRole('combobox', { name: 'Implicit #5' }), [
+    'None',
+    ...special.filter((x) => x.Group !== special[0].Group && x.Group !== special[1].Group).map((x) => x.Label)
+  ]);
+  await dialog.getByRole('button', { name: 'Corrupted', exact: true }).click();
+  await expect(box).toHaveValue(await corrupt(GLIMPSE, 'Glimpse of Chaos', [special[0].ID, special[1].ID], []));
+
   misc.release();
   app.assertNoErrors();
 });
+
+const KAOM = `Rarity: UNIQUE
+Kaom's Heart
+Glorious Plate
+Implicits: 0
+Has no Sockets
++500 to maximum Life`;
 
 const COAT = `Rarity: RARE
 Test Coat
@@ -237,7 +269,7 @@ test('add an implicit to the display item (0280)', async ({ page }) => {
     return t;
   };
 
-  // ItemsTab.lua:3920-3932
+  // AddImplicitPopup.lua:173-181
   await box.fill(COAT);
   await buttons.getByRole('button', { name: 'Add Implicit...' }).click();
   const dialog = page.getByRole('dialog', { name: 'Add Implicit to Item' });
@@ -285,6 +317,20 @@ test('add an implicit to the display item (0280)', async ({ page }) => {
   await dialog.getByRole('textbox', { name: 'Custom implicit' }).fill('+5 to Strength');
   await dialog.getByRole('button', { name: 'Add', exact: true }).click();
   await expect(box).toHaveValue(await text('CUSTOM', '', '+5 to Strength'));
+
+  // AddImplicitPopup.lua:121-172, 186-211, 365-377
+  await box.fill(KAOM);
+  await buttons.getByRole('button', { name: 'Add Implicit...' }).click();
+  const [kaom] = await m.exposition.ItemImplicitChoices(KAOM);
+  const vestigial = kaom.Groups!.VESTIGIAL!;
+  await expect(dialog.getByRole('combobox', { name: 'Source' }).locator('option')).toHaveText(['Vestigial', 'Custom']);
+  await expect(dialog.getByRole('combobox', { name: 'Type' }).locator('option')).toHaveText(vestigial.map((g) => g.Label.replace(/^\^x[0-9A-F]{6}/, '')));
+  await expect(dialog.getByRole('combobox', { name: 'Modifier' })).toHaveCount(0);
+  await dialog.getByRole('combobox', { name: 'Type' }).selectOption({ index: 1 });
+  await expect(dialog.getByRole('group', { name: 'Implicit comparison' })).toContainText('Adding this mod will give');
+  await dialog.getByRole('button', { name: 'Add', exact: true }).click();
+  const [vestigialText] = await m.exposition.ImplicitText(KAOM, 'VESTIGIAL', vestigial[1].Mods![0].ID, '');
+  await expect(box).toHaveValue(vestigialText);
 
   misc.release();
   app.assertNoErrors();

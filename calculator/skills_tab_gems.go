@@ -11,7 +11,7 @@ import (
 //pob:block:src/Classes/SkillsTab.lua:30-58
 var DefaultGemLevelModes = []string{"normalMaximum", "corruptedMaximum", "awakenedMaximum", "characterLevel", "levelOne"}
 
-//pob:block:src/Classes/SkillsTab.lua:500-508
+//pob:block:src/Classes/SkillsTab.lua:527-535
 func DefaultGemLevelMode(skills pob.Skills) string {
 	if skills.MatchGemLevelToCharacterLevel {
 		return "characterLevel"
@@ -28,7 +28,7 @@ func DefaultGemLevelMode(skills pob.Skills) string {
 	return "normalMaximum"
 }
 
-//pob:src/Classes/SkillsTab.lua:1102-1130
+//pob:src/Classes/SkillsTab.lua:1129-1157
 func ProcessGemLevel(build *pob.PathOfBuilding, gemID string, imbued bool) int {
 	gemData, ok := raw2.Gems[gemID]
 	if !ok {

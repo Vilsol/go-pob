@@ -234,6 +234,30 @@ describe('enemy placeholders', () => {
   }, 20_000);
 });
 
+describe('collapsible sections', () => {
+  it("hides a collapsed section's options until it is expanded or a search is typed", async () => {
+    const view = await mount();
+    const general = view.getByRole('region', { name: 'General' });
+    const toggle = within(general).getByRole('button', { name: 'Collapse General' });
+    expect(toggle.getAttribute('aria-expanded')).toBe('true');
+    expect(row(view, check.var)).not.toBeNull();
+
+    await fireEvent.click(toggle);
+    const expand = within(general).getByRole('button', { name: 'Expand General' });
+    expect(expand.getAttribute('aria-expanded')).toBe('false');
+    expect(row(view, check.var)).toBeNull();
+
+    const search = view.getByRole('searchbox', { name: 'Filter options' });
+    await fireEvent.input(search, { target: { value: plain(check.label) } });
+    await vi.waitFor(() => expect(row(view, check.var)).not.toBeNull());
+    await fireEvent.input(search, { target: { value: ' ' } });
+    await vi.waitFor(() => expect(row(view, check.var)).toBeNull());
+
+    await fireEvent.click(expand);
+    expect(row(view, check.var)).not.toBeNull();
+  });
+});
+
 describe('Ctrl+F (ConfigTab.lua:988-989)', () => {
   it('focuses the filter box', async () => {
     const view = await mount();
@@ -299,37 +323,35 @@ describe('the custom group enable checkbox tooltip under a still pointer', () =>
 
 // ConfigTab.lua:42-44, 1305-1550
 describe('the Mod Browser', () => {
-  it('searches, shows Supported and appends the chosen line to the group', async () => {
+  it("searches, shows a line's sources and appends the chosen line to the group", async () => {
     const view = await mount();
+    const MASTERY = 'All Damage with Maces and Sceptres inflicts Chill';
+    const CRAFTED = '2% additional Physical Damage Reduction';
     const list = vi
       .spyOn(workerInstance, 'ModBrowserList')
-      .mockImplementation((s: string) =>
-        s ? ['+10 to maximum Life', 'Quux frobnicates'] : ['+10 to maximum Life', 'Quux frobnicates', '1% increased Area of Effect']
-      );
-    const supported = vi.spyOn(workerInstance, 'ModBrowserSupported').mockImplementation((l: string) => l.startsWith('+'));
+      .mockImplementation((s: string) => (s ? [MASTERY, CRAFTED] : [MASTERY, CRAFTED, '1% increased Area of Effect']));
     try {
       const before = blocks()[0].Text;
       await fireEvent.click(view.getByRole('button', { name: 'Add Mod' }));
       const dialog = within(view.getByRole('dialog', { name: 'Mod Browser' }));
       await vi.waitFor(() => expect(dialog.getAllByRole('option')).toHaveLength(3));
-      await fireEvent.input(dialog.getByRole('searchbox', { name: 'Search modifiers' }), { target: { value: 'life' } });
-      await vi.waitFor(() => expect(list).toHaveBeenLastCalledWith('life'));
+      await fireEvent.input(dialog.getByRole('searchbox', { name: 'Search modifiers' }), { target: { value: 'chill' } });
+      await vi.waitFor(() => expect(list).toHaveBeenLastCalledWith('chill'));
       await vi.waitFor(() => expect(dialog.getAllByRole('option')).toHaveLength(2));
-      await fireEvent.mouseEnter(dialog.getByRole('option', { name: 'Quux frobnicates' }));
-      await vi.waitFor(() => expect(dialog.getByRole('status').textContent).toContain('Supported: No'));
-      await fireEvent.mouseEnter(dialog.getByRole('option', { name: '+10 to maximum Life' }));
-      await vi.waitFor(() => expect(dialog.getByRole('status').textContent).toContain('Supported: Yes'));
-      expect(dialog.getByRole('option', { selected: true }).textContent).toBe('+10 to maximum Life');
+      await fireEvent.mouseEnter(dialog.getByRole('option', { name: CRAFTED }));
+      await vi.waitFor(() => expect(dialog.getByRole('status').textContent).toContain('Crafted mod · Item mod'));
+      await fireEvent.mouseEnter(dialog.getByRole('option', { name: MASTERY }));
+      await vi.waitFor(() => expect(dialog.getByRole('status').textContent).toContain('Mastery Node'));
+      expect(dialog.getByRole('option', { selected: true }).textContent).toBe(MASTERY);
       await fireEvent.click(dialog.getByRole('button', { name: 'Add' }));
       const lines = (t: string) =>
         t
           .split('\n')
           .map((l) => l.trim())
           .filter(Boolean);
-      await vi.waitFor(() => expect(lines(blocks()[0].Text)).toEqual([...lines(before), '+10 to maximum Life']));
+      await vi.waitFor(() => expect(lines(blocks()[0].Text)).toEqual([...lines(before), MASTERY]));
     } finally {
       list.mockRestore();
-      supported.mockRestore();
     }
   });
 });

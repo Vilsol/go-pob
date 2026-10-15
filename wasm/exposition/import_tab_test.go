@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/Vilsol/go-pob/builds"
@@ -193,6 +194,40 @@ func TestImportItemsAndSkillsRefusals(t *testing.T) {
 	} {
 		if _, err := ImportItemsAndSkills(build, text, true, true, false); err == nil || err.Error() != want {
 			t.Errorf("%s: %v, want %q", text, err, want)
+		}
+	}
+}
+
+// TestImportDuplicatedItemIsMirrored: ImportTab.lua:1641 (#10237): the API marks a mirrored copy "duplicated"; it imports as Mirrored.
+func TestImportDuplicatedItemIsMirrored(t *testing.T) {
+	_, char := readImportOracle(t)
+	var doc map[string]any
+	if err := json.Unmarshal([]byte(char), &doc); err != nil {
+		t.Fatal(err)
+	}
+	equipment := doc["character"].(map[string]any)["equipment"].([]any)
+	for _, duplicated := range []bool{false, true} {
+		item := equipment[0].(map[string]any)
+		item["duplicated"] = duplicated
+		delete(item, "mirrored")
+		text, err := json.Marshal(doc)
+		if err != nil {
+			t.Fatal(err)
+		}
+		build := builds.EmptyBuild()
+		if _, err := ImportItemsAndSkills(build, string(text), true, true, false); err != nil {
+			t.Fatal(err)
+		}
+		mirrored := 0
+		for _, it := range build.Items.Items {
+			for _, line := range strings.Split(html.UnescapeString(it.Text), "\n") {
+				if strings.TrimSpace(line) == "Mirrored" {
+					mirrored++
+				}
+			}
+		}
+		if want := map[bool]int{false: 0, true: 1}[duplicated]; mirrored != want {
+			t.Errorf("duplicated %v: %d items Mirrored, want %d", duplicated, mirrored, want)
 		}
 	}
 }

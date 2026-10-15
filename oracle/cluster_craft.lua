@@ -1,4 +1,5 @@
 local inPath, outPath = arg[1], arg[2]
+local construct = dofile((arg[0]:match("^(.*)[/\\]") or ".") .. "/pob_compat.lua").construct
 dofile("HeadlessWrapper.lua")
 local json = require("dkjson")
 local t_insert, m_max = table.insert, math.max
@@ -54,7 +55,7 @@ end
 local cases = json.decode(io.open(inPath):read("*a"))
 local out = {}
 for k, c in ipairs(cases) do
-	local item = new("Item", c.raw)
+	local item = construct("Item", c.raw)
 	item.clusterJewelSkill = c.skill
 	item.clusterJewelNodeCount = c.count
 	wipeTable(item.enchantModLines)

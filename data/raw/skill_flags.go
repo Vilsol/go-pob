@@ -39,94 +39,95 @@ package raw
 // it as the "PoB ships this skill" predicate. The 10 skills PoB declares with
 // `baseFlags = {}` are emitted as `{}` so that predicate stays true for them.
 //
-// 1521 skills, 1220 with baseFlags, 10 with addFlags. The skills without baseFlags
+// 1526 skills, 1225 with baseFlags, 10 with addFlags. The skills without baseFlags
 // are support gems, which are never the active skill.
 // Distinct baseFlag names:
 // arcane, area, attack, aura, ballista, bounce, brand, buff, cast
 // chaining, channelRelease, channelling, cooldown, corpse, curse, dotFromAttack, duration, fire
-// forceInstant, forceMainHand, forceSourceWeapon, golem, hex, hit, mark, melee, mine
-// minion, monsterExplode, movement, nova, pact, permanentMinion, physical, projectile, shieldAttack
-// slam, spectre, spell, totem, trap, travel, triggerable, vaal, warcry
+// forceInstant, forceMainHand, forceSourceWeapon, golem, guaranteedChill, hex, hit, mark, melee
+// mine, minion, monsterExplode, movement, nova, pact, permanentMinion, physical, projectile
+// shieldAttack, slam, spectre, spell, totem, trap, travel, triggerable, vaal
+// warcry
 var SkillBaseFlags = map[string][]string{
-	// src/Data/Skills/spectre.lua:8366
+	// src/Data/Skills/spectre.lua:8365
 	"ABTTAzmeriBasaliskShroud": {"buff", "duration", "spell", "triggerable"},
-	// src/Data/Skills/spectre.lua:9157
+	// src/Data/Skills/spectre.lua:9156
 	"ABTTAzmeriGoddessAura": {"buff", "duration", "spell"},
-	// src/Data/Skills/spectre.lua:9869
+	// src/Data/Skills/spectre.lua:9868
 	"ABTTAzmeriShepherdSpellDamage": {"buff", "duration", "spell"},
-	// src/Data/Skills/spectre.lua:9962
+	// src/Data/Skills/spectre.lua:9961
 	"ABTTAzmeriSpiderLeaderAura": {"buff", "duration", "spell"},
-	// src/Data/Skills/spectre.lua:10324
+	// src/Data/Skills/spectre.lua:10323
 	"ABTTAzmeriTurtleInvulnerability": {"buff", "duration", "spell"},
-	// src/Data/Skills/act_str.lua:9
+	// src/Data/Skills/act_str.lua:8
 	"Absolution": {"area", "duration", "minion", "spell"},
-	// src/Data/Skills/act_str.lua:105
+	// src/Data/Skills/act_str.lua:104
 	"AbsolutionAltX": {"area", "duration", "minion", "spell"},
-	// src/Data/Skills/minion.lua:1183
+	// src/Data/Skills/minion.lua:1182
 	"AbsolutionMinion": {"area", "duration", "spell"},
-	// src/Data/Skills/minion.lua:1215
+	// src/Data/Skills/minion.lua:1214
 	"AbsolutionMinionEmpowered": {"area", "duration", "spell"},
-	// src/Data/Skills/minion.lua:1248
+	// src/Data/Skills/minion.lua:1247
 	"AbsolutionMinionVaal": {"area", "duration", "spell"},
-	// src/Data/Skills/minion.lua:1279
+	// src/Data/Skills/minion.lua:1278
 	"AbsolutionMinionVaalCascade": {"area", "duration", "spell"},
-	// src/Data/Skills/minion.lua:1624
+	// src/Data/Skills/minion.lua:1623
 	"AbyssalFiendEnfeebleAura": {"area", "curse", "duration", "spell"},
-	// src/Data/Skills/minion.lua:1710
+	// src/Data/Skills/minion.lua:1709
 	"AbyssalFiendPunishmentAura": {"area", "curse", "duration", "hex", "spell"},
-	// src/Data/Skills/minion.lua:1667
+	// src/Data/Skills/minion.lua:1666
 	"AbyssalFiendTemporalChainsAura": {"area", "curse", "duration", "spell"},
-	// src/Data/Skills/other.lua:42
+	// src/Data/Skills/other.lua:41
 	"Affliction": {"area", "spell"},
-	// src/Data/Skills/spectre.lua:10632
+	// src/Data/Skills/spectre.lua:10631
 	"AfflictionMinionPhysSlamCircleBig": {"area", "attack"},
-	// src/Data/Skills/spectre.lua:10650
+	// src/Data/Skills/spectre.lua:10649
 	"AfflictionMinionPhysSlamCircleRectangle": {"area", "attack"},
-	// src/Data/Skills/spectre.lua:10614
+	// src/Data/Skills/spectre.lua:10613
 	"AfflictionMinionPhysSlamCircleSmall": {"area", "attack"},
-	// src/Data/Skills/other.lua:202
+	// src/Data/Skills/other.lua:201
 	"AilmentBearer": {"spell"},
-	// src/Data/Skills/act_dex.lua:9
+	// src/Data/Skills/act_dex.lua:8
 	"AlchemistsMark": {"area", "curse", "duration", "mark", "spell"},
-	// src/Data/Skills/act_dex.lua:99
+	// src/Data/Skills/act_dex.lua:98
 	"Ambush": {"duration", "movement", "spell", "travel"},
-	// src/Data/Skills/act_str.lua:281
+	// src/Data/Skills/act_str.lua:280
 	"AncestralCry": {"area", "duration", "warcry"},
-	// src/Data/Skills/act_str.lua:376
+	// src/Data/Skills/act_str.lua:375
 	"Anger": {"area", "aura", "spell"},
-	// src/Data/Skills/act_str.lua:465
+	// src/Data/Skills/act_str.lua:464
 	"AnimateGuardian": {"minion", "permanentMinion", "spell"},
-	// src/Data/Skills/act_str.lua:552
+	// src/Data/Skills/act_str.lua:551
 	"AnimateGuardianAltX": {"minion", "permanentMinion", "spell"},
-	// src/Data/Skills/minion.lua:2150
+	// src/Data/Skills/minion.lua:2149
 	"AnimateGuardianSmite": {"area", "attack", "melee"},
-	// src/Data/Skills/other.lua:67
+	// src/Data/Skills/other.lua:66
 	"AnimateGuardiansWeapon": {"duration", "minion", "spell"},
-	// src/Data/Skills/act_dex.lua:179
+	// src/Data/Skills/act_dex.lua:178
 	"AnimateWeapon": {"duration", "minion", "spell"},
-	// src/Data/Skills/act_dex.lua:282
+	// src/Data/Skills/act_dex.lua:281
 	"AnimateWeaponAltX": {"duration", "minion", "spell"},
 	// src/Data/Skills/act_dex.lua:379
 	"AnimateWeaponAltY": {"duration", "minion", "spell"},
-	// src/Data/Skills/other.lua:5148
+	// src/Data/Skills/other.lua:5276
 	"AnimosityUniqueSkill": {"duration", "spell"},
-	// src/Data/Skills/other.lua:121
+	// src/Data/Skills/other.lua:120
 	"ApproachingFlames": {"spell"},
-	// src/Data/Skills/act_int.lua:9
+	// src/Data/Skills/act_int.lua:8
 	"Arc": {"chaining", "spell"},
-	// src/Data/Skills/act_int.lua:89
+	// src/Data/Skills/act_int.lua:88
 	"ArcAltX": {"chaining", "spell"},
-	// src/Data/Skills/act_int.lua:164
+	// src/Data/Skills/act_int.lua:163
 	"ArcAltY": {"chaining", "spell"},
-	// src/Data/Skills/act_int.lua:332
+	// src/Data/Skills/act_int.lua:331
 	"ArcaneCloak": {"duration", "spell"},
 	// src/Data/Skills/act_dex.lua:578
 	"ArcticArmour": {"duration", "spell"},
-	// src/Data/Skills/act_int.lua:706
+	// src/Data/Skills/act_int.lua:705
 	"ArmageddonBrand": {"area", "brand", "duration", "spell"},
-	// src/Data/Skills/act_int.lua:801
+	// src/Data/Skills/act_int.lua:800
 	"ArmageddonBrandAltX": {"area", "brand", "duration", "spell"},
-	// src/Data/Skills/act_int.lua:886
+	// src/Data/Skills/act_int.lua:885
 	"ArmageddonBrandAltY": {"area", "brand", "duration", "spell"},
 	// src/Data/Skills/act_dex.lua:749
 	"ArtilleryBallista": {"area", "attack", "ballista", "projectile", "totem"},
@@ -134,273 +135,281 @@ var SkillBaseFlags = map[string][]string{
 	"ArtilleryBallistaAltX": {"area", "attack", "ballista", "projectile", "totem"},
 	// src/Data/Skills/act_dex.lua:920
 	"ArtilleryBallistaAltY": {"area", "attack", "ballista", "projectile", "totem"},
-	// src/Data/Skills/other.lua:229
+	// src/Data/Skills/other.lua:228
+	"AspectOfArakaali": {"cast"},
+	// src/Data/Skills/other.lua:259
+	"AspectOfLunaris": {"cast", "duration"},
+	// src/Data/Skills/other.lua:291
+	"AspectOfSolaris": {"cast", "duration"},
+	// src/Data/Skills/other.lua:324
 	"AspectOfTheAvian": {"cast", "duration"},
-	// src/Data/Skills/other.lua:272
+	// src/Data/Skills/other.lua:367
+	"AspectOfTheBrineKing": {"cast", "guaranteedChill"},
+	// src/Data/Skills/other.lua:400
 	"AspectOfTheCat": {"cast", "duration"},
-	// src/Data/Skills/other.lua:316
+	// src/Data/Skills/other.lua:444
 	"AspectOfTheCrab": {"cast"},
-	// src/Data/Skills/other.lua:347
+	// src/Data/Skills/other.lua:475
 	"AspectOfTheSpider": {"cast", "duration"},
-	// src/Data/Skills/act_int.lua:980
+	// src/Data/Skills/act_int.lua:979
 	"AssassinsMark": {"curse", "duration", "mark", "spell"},
-	// src/Data/Skills/spectre.lua:4723
+	// src/Data/Skills/spectre.lua:4722
 	"AtlasCruasderJudgeFadingNova": {"projectile", "spell", "triggerable"},
-	// src/Data/Skills/spectre.lua:4689
+	// src/Data/Skills/spectre.lua:4688
 	"AtlasCrusaderJudgeBallLightning": {"hit", "projectile", "spell", "triggerable"},
-	// src/Data/Skills/spectre.lua:4340
+	// src/Data/Skills/spectre.lua:4339
 	"AtlasCrusaderMageguardBeam": {"hit", "spell", "triggerable"},
-	// src/Data/Skills/spectre.lua:4367
+	// src/Data/Skills/spectre.lua:4366
 	"AtlasCrusaderSisterMortarSpectre": {"area", "hit", "projectile", "spell", "triggerable"},
-	// src/Data/Skills/spectre.lua:4313
+	// src/Data/Skills/spectre.lua:4312
 	"AtlasExileCrusaderMageguardBombExplodeSpectre": {"hit", "spell", "triggerable"},
-	// src/Data/Skills/spectre.lua:4280
+	// src/Data/Skills/spectre.lua:4279
 	"AtlasExilesCrusaderMageguardProjectile": {"projectile", "spell", "triggerable"},
-	// src/Data/Skills/spectre.lua:4253
+	// src/Data/Skills/spectre.lua:4252
 	"AtlasEyrieArcherCrystalImpact": {"hit", "spell", "triggerable"},
-	// src/Data/Skills/spectre.lua:4190
+	// src/Data/Skills/spectre.lua:4189
 	"AtlasEyrieArcherMortar": {"area", "hit", "projectile", "spell", "triggerable"},
-	// src/Data/Skills/spectre.lua:4223
+	// src/Data/Skills/spectre.lua:4222
 	"AtlasEyrieArcherSnipe": {"attack", "hit", "projectile", "triggerable"},
-	// src/Data/Skills/spectre.lua:5683
+	// src/Data/Skills/spectre.lua:5682
 	"AtlasEyrieBirdBreath": {"area", "hit", "spell", "triggerable"},
-	// src/Data/Skills/spectre.lua:5457
+	// src/Data/Skills/spectre.lua:5456
 	"AtlasEyrieKiwethMortarShards": {"hit", "projectile", "spell", "triggerable"},
-	// src/Data/Skills/spectre.lua:5421
+	// src/Data/Skills/spectre.lua:5420
 	"AtlasEyrieKiwethMortarSpectre": {"area", "hit", "projectile", "spell", "triggerable"},
-	// src/Data/Skills/other.lua:1943
+	// src/Data/Skills/other.lua:2071
 	"AtziriUniqueStaffFlameblast": {"area", "spell"},
-	// src/Data/Skills/other.lua:3973
+	// src/Data/Skills/other.lua:4101
 	"AtziriUniqueStaffStormCall": {"area", "spell"},
-	// src/Data/Skills/act_str.lua:638
+	// src/Data/Skills/act_str.lua:637
 	"Autoexertion": {"spell"},
-	// src/Data/Skills/act_int.lua:417
+	// src/Data/Skills/act_int.lua:416
 	"Automation": {"spell"},
-	// src/Data/Skills/sup_str.lua:2531
+	// src/Data/Skills/sup_str.lua:2532
 	"AvengingFlame": {"area", "projectile", "spell", "totem"},
-	// src/Data/Skills/spectre.lua:9
+	// src/Data/Skills/spectre.lua:8
 	"AxisCasterGlacialCascade": {"area", "spell"},
-	// src/Data/Skills/spectre.lua:48
+	// src/Data/Skills/spectre.lua:47
 	"AxisDoubleStrikeTrigger": {"attack", "melee"},
-	// src/Data/Skills/spectre.lua:1969
+	// src/Data/Skills/spectre.lua:1968
 	"AxisEnfeeble": {"area", "curse", "duration", "spell"},
-	// src/Data/Skills/spectre.lua:3675
+	// src/Data/Skills/spectre.lua:3674
 	"AxisTemporalChains": {"area", "curse", "duration", "spell"},
-	// src/Data/Skills/spectre.lua:7720
+	// src/Data/Skills/spectre.lua:7719
 	"AzmeriAdmiralDashMortars": {"area", "projectile", "spell", "triggerable"},
-	// src/Data/Skills/spectre.lua:7649
+	// src/Data/Skills/spectre.lua:7648
 	"AzmeriAdmiralDashThrustTriggered": {"attack"},
-	// src/Data/Skills/spectre.lua:7629
+	// src/Data/Skills/spectre.lua:7628
 	"AzmeriAdmiralDoubleStrikeTriggered": {"attack"},
-	// src/Data/Skills/spectre.lua:7671
+	// src/Data/Skills/spectre.lua:7670
 	"AzmeriAdmiralGeyserDamage": {"area", "hit", "spell"},
-	// src/Data/Skills/spectre.lua:7786
+	// src/Data/Skills/spectre.lua:7785
 	"AzmeriAdmiralPrecision": {"area", "aura", "spell"},
-	// src/Data/Skills/spectre.lua:7703
+	// src/Data/Skills/spectre.lua:7702
 	"AzmeriAdmiralTidalWave": {"spell", "triggerable"},
-	// src/Data/Skills/spectre.lua:7414
+	// src/Data/Skills/spectre.lua:7413
 	"AzmeriArgusMeleeAtAnimationSpeed": {"attack", "melee", "projectile"},
-	// src/Data/Skills/spectre.lua:7973
+	// src/Data/Skills/spectre.lua:7972
 	"AzmeriBarrageDemonRainOfSpines": {"area", "attack", "projectile", "triggerable"},
-	// src/Data/Skills/spectre.lua:7946
+	// src/Data/Skills/spectre.lua:7945
 	"AzmeriBarrageDemonSpineProjectile": {"attack", "projectile", "triggerable"},
-	// src/Data/Skills/spectre.lua:8003
+	// src/Data/Skills/spectre.lua:8002
 	"AzmeriBarrageDemonSpinestorm": {"area", "duration", "spell", "triggerable"},
-	// src/Data/Skills/spectre.lua:8146
+	// src/Data/Skills/spectre.lua:8145
 	"AzmeriBasiliskComboSlam": {"area", "attack", "triggerable"},
-	// src/Data/Skills/spectre.lua:8122
+	// src/Data/Skills/spectre.lua:8121
 	"AzmeriBasiliskComboThrust": {"area", "attack", "triggerable"},
-	// src/Data/Skills/spectre.lua:8196
+	// src/Data/Skills/spectre.lua:8195
 	"AzmeriBasiliskDecapThrust": {"area", "attack", "triggerable"},
-	// src/Data/Skills/spectre.lua:8170
+	// src/Data/Skills/spectre.lua:8169
 	"AzmeriBasiliskDecapitateRightToLeft": {"area", "attack", "triggerable"},
-	// src/Data/Skills/spectre.lua:8249
+	// src/Data/Skills/spectre.lua:8248
 	"AzmeriBasiliskDualProjectile": {"attack", "projectile", "triggerable"},
-	// src/Data/Skills/spectre.lua:8277
+	// src/Data/Skills/spectre.lua:8276
 	"AzmeriBasiliskDualProjectileImpact": {"area", "attack", "triggerable"},
-	// src/Data/Skills/spectre.lua:8083
+	// src/Data/Skills/spectre.lua:8082
 	"AzmeriBasiliskShoulderMortar": {"area", "projectile", "spell", "triggerable"},
-	// src/Data/Skills/spectre.lua:8327
+	// src/Data/Skills/spectre.lua:8326
 	"AzmeriBasiliskShoulderMortar2": {"area", "projectile", "spell", "triggerable"},
-	// src/Data/Skills/spectre.lua:8221
+	// src/Data/Skills/spectre.lua:8220
 	"AzmeriBasiliskWyvernFlight": {"attack", "projectile", "triggerable"},
-	// src/Data/Skills/spectre.lua:8303
+	// src/Data/Skills/spectre.lua:8302
 	"AzmeriBasiliskWyvernGroundCollide": {"area", "attack", "triggerable"},
-	// src/Data/Skills/spectre.lua:9266
+	// src/Data/Skills/spectre.lua:9265
 	"AzmeriBirdBeam": {"hit", "spell"},
-	// src/Data/Skills/spectre.lua:9358
+	// src/Data/Skills/spectre.lua:9357
 	"AzmeriBirdGrace": {"area", "aura", "spell"},
-	// src/Data/Skills/spectre.lua:9296
+	// src/Data/Skills/spectre.lua:9295
 	"AzmeriBirdScreechExposure": {"hit", "spell"},
-	// src/Data/Skills/spectre.lua:11257
+	// src/Data/Skills/spectre.lua:11256
 	"AzmeriBossShockRifleSingle": {"area", "projectile", "spell"},
-	// src/Data/Skills/spectre.lua:8397
+	// src/Data/Skills/spectre.lua:8396
 	"AzmeriCasterDemonProjectile": {"projectile", "spell", "triggerable"},
-	// src/Data/Skills/spectre.lua:8492
+	// src/Data/Skills/spectre.lua:8491
 	"AzmeriCasterDemonSpellDamageAura": {"area", "aura", "spell"},
-	// src/Data/Skills/spectre.lua:8530
+	// src/Data/Skills/spectre.lua:8529
 	"AzmeriCycloneDemonCleave": {"area", "attack", "melee"},
-	// src/Data/Skills/spectre.lua:8555
+	// src/Data/Skills/spectre.lua:8554
 	"AzmeriCycloneDemonDesecratedGroundCyclone": {"area", "attack", "melee", "movement"},
-	// src/Data/Skills/spectre.lua:11050
+	// src/Data/Skills/spectre.lua:11049
 	"AzmeriDemonPhysicalDamageAura": {"area", "aura", "spell"},
-	// src/Data/Skills/spectre.lua:10830
+	// src/Data/Skills/spectre.lua:10829
 	"AzmeriDemonTeethShot": {"projectile", "spell"},
-	// src/Data/Skills/spectre.lua:7866
+	// src/Data/Skills/spectre.lua:7865
 	"AzmeriDoubleSlashAnimatedWeapon": {"area", "attack", "melee"},
-	// src/Data/Skills/spectre.lua:8707
+	// src/Data/Skills/spectre.lua:8706
 	"AzmeriDualStrikeDemonDualStrike": {"attack", "melee"},
-	// src/Data/Skills/spectre.lua:8662
+	// src/Data/Skills/spectre.lua:8661
 	"AzmeriDualStrikeDemonFireEnrage": {"hit", "spell"},
-	// src/Data/Skills/spectre.lua:7042
+	// src/Data/Skills/spectre.lua:7041
 	"AzmeriFireFuryMoltenStrike": {"area", "attack", "melee", "projectile"},
-	// src/Data/Skills/spectre.lua:7166
+	// src/Data/Skills/spectre.lua:7165
 	"AzmeriFirefuryCremation": {"area", "duration", "projectile", "spell"},
-	// src/Data/Skills/spectre.lua:7209
+	// src/Data/Skills/spectre.lua:7208
 	"AzmeriFirefuryFireResistAura": {"area", "aura", "spell"},
-	// src/Data/Skills/spectre.lua:8823
+	// src/Data/Skills/spectre.lua:8822
 	"AzmeriGeofriSlam": {"area", "attack"},
-	// src/Data/Skills/spectre.lua:8978
+	// src/Data/Skills/spectre.lua:8977
 	"AzmeriGeofriSmite": {"area", "attack", "aura", "buff", "duration", "melee"},
-	// src/Data/Skills/spectre.lua:9128
+	// src/Data/Skills/spectre.lua:9127
 	"AzmeriGoddessBeam": {"area", "duration", "spell"},
-	// src/Data/Skills/spectre.lua:9198
+	// src/Data/Skills/spectre.lua:9197
 	"AzmeriGoddessDiscipline": {"area", "aura", "spell"},
-	// src/Data/Skills/spectre.lua:9073
+	// src/Data/Skills/spectre.lua:9072
 	"AzmeriGoddessOfferingOfJudgement": {"area", "duration", "spell"},
-	// src/Data/Skills/spectre.lua:9102
+	// src/Data/Skills/spectre.lua:9101
 	"AzmeriGoddessOfferingOfJudgementChaos": {"area", "duration", "spell"},
-	// src/Data/Skills/spectre.lua:9035
+	// src/Data/Skills/spectre.lua:9034
 	"AzmeriGoddessSpiritMortar": {"area", "hit", "projectile", "spell"},
-	// src/Data/Skills/spectre.lua:11234
+	// src/Data/Skills/spectre.lua:11233
 	"AzmeriGolemBossWhipLeft": {"area", "attack"},
-	// src/Data/Skills/spectre.lua:11196
+	// src/Data/Skills/spectre.lua:11195
 	"AzmeriGolemLeapSlam": {"area", "attack", "melee", "movement"},
-	// src/Data/Skills/spectre.lua:11293
+	// src/Data/Skills/spectre.lua:11292
 	"AzmeriGolemRotateZap": {"area", "hit", "spell"},
-	// src/Data/Skills/spectre.lua:11112
+	// src/Data/Skills/spectre.lua:11111
 	"AzmeriGolemVTurretProjectile": {"hit", "projectile", "spell"},
-	// src/Data/Skills/spectre.lua:11165
+	// src/Data/Skills/spectre.lua:11164
 	"AzmeriGuardian4BeamGun": {"area", "hit", "spell"},
-	// src/Data/Skills/spectre.lua:11142
+	// src/Data/Skills/spectre.lua:11141
 	"AzmeriGuardian4Slam": {"area", "attack"},
-	// src/Data/Skills/spectre.lua:6877
+	// src/Data/Skills/spectre.lua:6876
 	"AzmeriHailrakeArcticArmour": {"duration", "spell"},
-	// src/Data/Skills/spectre.lua:7005
+	// src/Data/Skills/spectre.lua:7004
 	"AzmeriHailrakeColdResistAura": {"area", "aura", "spell"},
-	// src/Data/Skills/spectre.lua:6843
+	// src/Data/Skills/spectre.lua:6842
 	"AzmeriHailrakeGlacialCascade": {"area", "spell"},
-	// src/Data/Skills/spectre.lua:6903
+	// src/Data/Skills/spectre.lua:6902
 	"AzmeriHailrakeGlacialHammer": {"attack", "melee"},
-	// src/Data/Skills/spectre.lua:7271
+	// src/Data/Skills/spectre.lua:7270
 	"AzmeriHydraBarrage": {"attack", "projectile"},
-	// src/Data/Skills/spectre.lua:7246
+	// src/Data/Skills/spectre.lua:7245
 	"AzmeriHydraDoomArrow": {"area", "attack", "projectile"},
-	// src/Data/Skills/spectre.lua:7298
+	// src/Data/Skills/spectre.lua:7297
 	"AzmeriHydraForkArrow": {"attack", "projectile"},
-	// src/Data/Skills/spectre.lua:7323
+	// src/Data/Skills/spectre.lua:7322
 	"AzmeriHydraHatred": {"area", "aura", "spell"},
-	// src/Data/Skills/spectre.lua:7457
+	// src/Data/Skills/spectre.lua:7456
 	"AzmeriKudukuShockNova": {"area", "spell"},
-	// src/Data/Skills/spectre.lua:7490
+	// src/Data/Skills/spectre.lua:7489
 	"AzmeriKudukuSparkExtraProj": {"duration", "projectile", "spell"},
-	// src/Data/Skills/spectre.lua:7524
+	// src/Data/Skills/spectre.lua:7523
 	"AzmeriKudukuWarp": {"area", "duration", "spell"},
-	// src/Data/Skills/spectre.lua:7557
+	// src/Data/Skills/spectre.lua:7556
 	"AzmeriKudukuWrath": {"area", "aura", "spell"},
-	// src/Data/Skills/spectre.lua:9395
+	// src/Data/Skills/spectre.lua:9394
 	"AzmeriLightningMelee": {"attack", "melee", "projectile"},
-	// src/Data/Skills/spectre.lua:9547
+	// src/Data/Skills/spectre.lua:9546
 	"AzmeriMegaSkeletonCleave": {"attack", "melee", "projectile"},
-	// src/Data/Skills/spectre.lua:9521
+	// src/Data/Skills/spectre.lua:9520
 	"AzmeriMegaSkeletonHeavyMelee": {"attack", "melee", "projectile"},
-	// src/Data/Skills/spectre.lua:9606
+	// src/Data/Skills/spectre.lua:9605
 	"AzmeriOakLeapSlam": {"area", "attack", "melee", "movement"},
-	// src/Data/Skills/spectre.lua:9572
+	// src/Data/Skills/spectre.lua:9571
 	"AzmeriOakSweep": {"area", "attack", "melee"},
-	// src/Data/Skills/spectre.lua:9646
+	// src/Data/Skills/spectre.lua:9645
 	"AzmeriOakVitality": {"area", "aura", "spell"},
-	// src/Data/Skills/spectre.lua:10499
+	// src/Data/Skills/spectre.lua:10498
 	"AzmeriOversoulColdSnapTriggered": {"area", "duration", "spell"},
-	// src/Data/Skills/spectre.lua:10433
+	// src/Data/Skills/spectre.lua:10432
 	"AzmeriOversoulExplosionIgnite": {"area", "attack", "hit"},
-	// src/Data/Skills/spectre.lua:10462
+	// src/Data/Skills/spectre.lua:10461
 	"AzmeriOversoulLaserMaxShock": {"area", "hit", "spell"},
-	// src/Data/Skills/spectre.lua:10385
+	// src/Data/Skills/spectre.lua:10384
 	"AzmeriOversoulRocksTriggered": {"area", "spell"},
-	// src/Data/Skills/spectre.lua:9487
+	// src/Data/Skills/spectre.lua:9486
 	"AzmeriPhantasmClarity": {"area", "aura", "spell"},
-	// src/Data/Skills/spectre.lua:9424
+	// src/Data/Skills/spectre.lua:9423
 	"AzmeriPhantasmExplode": {"area", "hit", "spell"},
-	// src/Data/Skills/spectre.lua:9452
+	// src/Data/Skills/spectre.lua:9451
 	"AzmeriPhantasmExplodeSap": {"area", "hit", "spell"},
-	// src/Data/Skills/spectre.lua:9680
+	// src/Data/Skills/spectre.lua:9679
 	"AzmeriReaperMelee": {"attack", "melee", "projectile"},
-	// src/Data/Skills/spectre.lua:7824
+	// src/Data/Skills/spectre.lua:7823
 	"AzmeriSawbladeAnimatedWeaponCyclone": {"area", "attack", "melee", "movement"},
-	// src/Data/Skills/spectre.lua:9925
+	// src/Data/Skills/spectre.lua:9924
 	"AzmeriSpiderLeaderMortar": {"projectile", "spell"},
-	// src/Data/Skills/spectre.lua:10249
+	// src/Data/Skills/spectre.lua:10248
 	"AzmeriStampedeTiger": {"attack"},
-	// src/Data/Skills/spectre.lua:7896
+	// src/Data/Skills/spectre.lua:7895
 	"AzmeriSwordStormCascade": {"area", "spell", "triggerable"},
-	// src/Data/Skills/spectre.lua:10143
+	// src/Data/Skills/spectre.lua:10142
 	"AzmeriTentacleMinionLightningResistAura": {"area", "aura", "spell"},
-	// src/Data/Skills/spectre.lua:10268
+	// src/Data/Skills/spectre.lua:10267
 	"AzmeriTigerGeometryAttackStrafe": {"attack"},
-	// src/Data/Skills/spectre.lua:10285
+	// src/Data/Skills/spectre.lua:10284
 	"AzmeriTigerHaste": {"area", "aura", "spell"},
-	// src/Data/Skills/spectre.lua:10177
+	// src/Data/Skills/spectre.lua:10176
 	"AzmeriTigerSpiritFangs": {"area", "attack"},
-	// src/Data/Skills/spectre.lua:10201
+	// src/Data/Skills/spectre.lua:10200
 	"AzmeriTigerSpiritLacerate": {"area", "attack"},
-	// src/Data/Skills/spectre.lua:10225
+	// src/Data/Skills/spectre.lua:10224
 	"AzmeriTigerSpiritTeleportSlam": {"area", "attack"},
-	// src/Data/Skills/spectre.lua:10347
+	// src/Data/Skills/spectre.lua:10346
 	"AzmeriTurtleDetermination": {"area", "aura", "spell"},
-	// src/Data/Skills/spectre.lua:10537
+	// src/Data/Skills/spectre.lua:10536
 	"AzmeriVikingCyclone": {"area", "attack", "melee", "movement"},
-	// src/Data/Skills/spectre.lua:10586
+	// src/Data/Skills/spectre.lua:10585
 	"AzmeriVikingUpheaval": {"attack"},
-	// src/Data/Skills/spectre.lua:9995
+	// src/Data/Skills/spectre.lua:9994
 	"AzmeriZombieCausticGroundWhenHit": {"area", "duration", "spell"},
-	// src/Data/Skills/act_int.lua:1069
+	// src/Data/Skills/act_int.lua:1068
 	"BallLightning": {"projectile", "spell"},
 	// src/Data/Skills/act_int.lua:1242
 	"BallLightningAltX": {"projectile", "spell"},
 	// src/Data/Skills/act_int.lua:1365
 	"BallLightningAltY": {"spell"},
-	// src/Data/Skills/spectre.lua:136
+	// src/Data/Skills/spectre.lua:135
 	"BanditChampionBlastRainSpectre": {"area", "attack", "projectile"},
-	// src/Data/Skills/spectre.lua:86
+	// src/Data/Skills/spectre.lua:85
 	"BanditExplosiveArrowAtAnimationSpeed": {"area", "cast", "duration", "projectile"},
 	// src/Data/Skills/act_int.lua:1460
 	"Bane": {"area", "duration", "spell"},
 	// src/Data/Skills/act_int.lua:1637
 	"BaneAltX": {"area", "duration", "spell"},
-	// src/Data/Skills/other.lua:164
+	// src/Data/Skills/other.lua:163
 	"Barkskin": {"spell"},
-	// src/Data/Skills/other.lua:385
+	// src/Data/Skills/other.lua:513
 	"BarnacleSnap": {"area", "attack", "shieldAttack"},
 	// src/Data/Skills/act_dex.lua:1006
 	"Barrage": {"attack", "projectile"},
 	// src/Data/Skills/act_dex.lua:1094
 	"BarrageAltX": {"attack", "projectile"},
-	// src/Data/Skills/act_str.lua:777
+	// src/Data/Skills/act_str.lua:776
 	"BattlemagesCry": {"area", "duration", "warcry"},
 	// src/Data/Skills/act_dex.lua:1183
 	"BearTrap": {"cast", "duration", "trap"},
 	// src/Data/Skills/act_dex.lua:1271
 	"BearTrapAltX": {"cast", "duration", "trap"},
-	// src/Data/Skills/act_str.lua:934
+	// src/Data/Skills/act_str.lua:933
 	"Berserk": {"spell"},
-	// src/Data/Skills/spectre.lua:5388
+	// src/Data/Skills/spectre.lua:5387
 	"BetrayalSecretPoliceCurveDagger1": {"attack", "projectile", "triggerable"},
-	// src/Data/Skills/spectre.lua:191
+	// src/Data/Skills/spectre.lua:190
 	"BirdmanBloodProjectileMortar": {"area", "attack", "projectile"},
-	// src/Data/Skills/spectre.lua:219
+	// src/Data/Skills/spectre.lua:218
 	"BirdmanConsumeCorpse": {"spell"},
-	// src/Data/Skills/other.lua:692
+	// src/Data/Skills/other.lua:820
 	"BitingBraidNova": {"area", "spell"},
 	// src/Data/Skills/act_dex.lua:1354
 	"BladeBlast": {"area", "spell"},
@@ -430,9 +439,9 @@ var SkillBaseFlags = map[string][]string{
 	"BladefallAltY": {"area", "spell"},
 	// src/Data/Skills/act_dex.lua:2777
 	"BladefallAltZ": {"area", "spell"},
-	// src/Data/Skills/act_str.lua:1007
+	// src/Data/Skills/act_str.lua:1006
 	"Bladestorm": {"area", "attack", "duration", "melee"},
-	// src/Data/Skills/act_str.lua:1115
+	// src/Data/Skills/act_str.lua:1114
 	"BladestormAltX": {"area", "attack", "duration", "melee"},
 	// src/Data/Skills/act_dex.lua:2874
 	"BlastRain": {"area", "attack", "projectile"},
@@ -452,93 +461,95 @@ var SkillBaseFlags = map[string][]string{
 	"BlinkArrowAltX": {"attack", "duration", "minion", "projectile"},
 	// src/Data/Skills/act_dex.lua:3220
 	"BlinkArrowAltY": {"attack", "duration", "minion", "projectile"},
-	// src/Data/Skills/minion.lua:2054
+	// src/Data/Skills/minion.lua:2053
 	"BlinkMirrorArrowMelee": {"attack", "projectile"},
-	// src/Data/Skills/act_str.lua:1227
+	// src/Data/Skills/act_str.lua:1226
 	"BloodAndSand": {"spell"},
-	// src/Data/Skills/other.lua:479
+	// src/Data/Skills/other.lua:607
 	"BloodOffering": {"duration", "spell"},
 	// src/Data/Skills/act_dex.lua:3305
 	"BloodRage": {"duration", "spell"},
-	// src/Data/Skills/other.lua:531
+	// src/Data/Skills/other.lua:659
 	"BloodSacramentUnique": {"area", "spell"},
-	// src/Data/Skills/other.lua:1780
+	// src/Data/Skills/other.lua:1908
 	"BloodShrineUniqueTriggeredExplodingToad": {"area", "hit"},
 	// src/Data/Skills/act_int.lua:2276
 	"Bodyswap": {"area", "spell"},
 	// src/Data/Skills/act_int.lua:2391
 	"BodyswapAltX": {"area", "spell"},
-	// src/Data/Skills/other.lua:591
+	// src/Data/Skills/other.lua:719
 	"BoneArmour": {"duration", "spell"},
-	// src/Data/Skills/minion.lua:1496
+	// src/Data/Skills/minion.lua:1495
 	"BoneGolemCascade": {"area", "attack", "melee"},
-	// src/Data/Skills/minion.lua:1579
+	// src/Data/Skills/minion.lua:1578
 	"BoneGolemCascadeEmpowered": {"area", "attack", "melee"},
-	// src/Data/Skills/minion.lua:1522
+	// src/Data/Skills/minion.lua:1521
 	"BoneGolemLeapSlam": {"area", "attack", "melee"},
-	// src/Data/Skills/minion.lua:1465
+	// src/Data/Skills/minion.lua:1464
 	"BoneGolemMultiAttack": {"attack", "melee"},
-	// src/Data/Skills/other.lua:631
+	// src/Data/Skills/other.lua:759
 	"BoneNova": {"attack", "projectile"},
 	// src/Data/Skills/act_int.lua:2515
 	"BoneOffering": {"duration", "spell"},
-	// src/Data/Skills/spectre.lua:235
+	// src/Data/Skills/spectre.lua:234
 	"BoneStalkerEarthquake": {"area", "attack", "duration", "melee"},
-	// src/Data/Skills/act_str.lua:1298
+	// src/Data/Skills/act_str.lua:1297
 	"Boneshatter": {"area", "attack", "duration", "melee"},
-	// src/Data/Skills/act_str.lua:1408
+	// src/Data/Skills/act_str.lua:1407
 	"BoneshatterAltX": {"area", "attack", "duration", "melee"},
-	// src/Data/Skills/act_str.lua:1522
+	// src/Data/Skills/act_str.lua:1521
 	"BoneshatterAltY": {"area", "attack", "melee"},
 	// src/Data/Skills/act_int.lua:2595
 	"BrandRecall": {"spell"},
-	// src/Data/Skills/act_int.lua:545
+	// src/Data/Skills/act_int.lua:544
 	"BrandSupport": {"brand", "duration", "spell"},
-	// src/Data/Skills/other.lua:659
+	// src/Data/Skills/other.lua:787
 	"Brandsurge": {"area", "spell"},
-	// src/Data/Skills/spectre.lua:4440
+	// src/Data/Skills/spectre.lua:4439
 	"BreachArc": {"chaining", "spell"},
-	// src/Data/Skills/spectre.lua:6520
+	// src/Data/Skills/spectre.lua:6519
 	"BreachBlizzardSpectre": {"area", "buff", "cooldown", "duration", "spell"},
-	// src/Data/Skills/spectre.lua:270
+	// src/Data/Skills/spectre.lua:269
 	"BreachCleave": {"area", "attack", "melee"},
-	// src/Data/Skills/other.lua:5407
+	// src/Data/Skills/other.lua:5535
 	"BreachHandTrap": {"area", "duration", "spell", "trap"},
-	// src/Data/Skills/spectre.lua:4498
+	// src/Data/Skills/spectre.lua:4497
 	"BreachLightningOrbsCommander": {"spell"},
-	// src/Data/Skills/spectre.lua:4405
+	// src/Data/Skills/spectre.lua:4404
 	"BreachLightningWhip": {"area", "spell"},
-	// src/Data/Skills/spectre.lua:4471
+	// src/Data/Skills/spectre.lua:4470
 	"BreachTeamWarp": {"area", "spell"},
-	// src/Data/Skills/spectre.lua:311
+	// src/Data/Skills/spectre.lua:310
 	"BullCharge": {"attack", "melee"},
 	// src/Data/Skills/act_dex.lua:3398
 	"BurningArrow": {"attack", "projectile"},
 	// src/Data/Skills/act_dex.lua:3466
 	"BurningArrowAltX": {"attack", "projectile"},
-	// src/Data/Skills/spectre.lua:11693
+	// src/Data/Skills/spectre.lua:11692
 	"CGEFaridunWarlockSwarmGround": {"area", "duration", "spell"},
-	// src/Data/Skills/spectre.lua:330
+	// src/Data/Skills/spectre.lua:329
 	"CageSpiderCycloneTriggerSandstorms": {"area", "attack", "melee"},
-	// src/Data/Skills/spectre.lua:371
+	// src/Data/Skills/spectre.lua:370
 	"CageSpiderSandSpark": {"duration", "projectile", "spell"},
 	// src/Data/Skills/act_dex.lua:3883
 	"CallOfSteel": {"area"},
-	// src/Data/Skills/other.lua:2343
+	// src/Data/Skills/other.lua:2471
 	"CatsStealthTriggeredIntimidatingCry": {"area", "duration", "warcry"},
 	// src/Data/Skills/act_dex.lua:3619
 	"CausticArrow": {"area", "attack", "duration", "projectile"},
 	// src/Data/Skills/act_dex.lua:3711
 	"CausticArrowAltX": {"area", "attack", "projectile"},
-	// src/Data/Skills/other.lua:722
+	// src/Data/Skills/other.lua:850
 	"CeaselessFleshUnique": {"duration", "minion", "spell"},
-	// src/Data/Skills/act_str.lua:1611
+	// src/Data/Skills/act_str.lua:1610
 	"ChainHook": {"area", "attack", "melee"},
-	// src/Data/Skills/act_str.lua:1696
+	// src/Data/Skills/act_str.lua:1695
+	"ChainHookAltX": {"attack", "melee"},
+	// src/Data/Skills/act_str.lua:1759
 	"ChainHookAltY": {"area", "attack", "melee"},
-	// src/Data/Skills/spectre.lua:404
+	// src/Data/Skills/spectre.lua:403
 	"ChaosDegenAura": {"area", "aura", "spell"},
-	// src/Data/Skills/minion.lua:9
+	// src/Data/Skills/minion.lua:8
 	"ChaosElementalCascadeSummoned": {"area", "spell"},
 	// src/Data/Skills/act_dex.lua:3906
 	"ChargedDash": {"area", "attack", "melee"},
@@ -546,27 +557,27 @@ var SkillBaseFlags = map[string][]string{
 	"ChargedDashAltX": {"area", "attack", "melee"},
 	// src/Data/Skills/act_int.lua:2654
 	"Clarity": {"area", "aura", "spell"},
-	// src/Data/Skills/act_str.lua:1789
+	// src/Data/Skills/act_str.lua:1852
 	"Cleave": {"area", "attack", "melee"},
-	// src/Data/Skills/act_str.lua:1875
+	// src/Data/Skills/act_str.lua:1938
 	"CleaveAltX": {"area", "attack", "melee"},
 	// src/Data/Skills/act_dex.lua:4156
 	"CobraLash": {"attack", "projectile"},
-	// src/Data/Skills/other.lua:787
+	// src/Data/Skills/other.lua:915
 	"ColdAegis": {"spell"},
 	// src/Data/Skills/act_int.lua:2811
 	"ColdSnap": {"area", "spell"},
 	// src/Data/Skills/act_int.lua:2900
 	"ColdSnapAltX": {"area", "spell"},
-	// src/Data/Skills/act_str.lua:6949
+	// src/Data/Skills/act_str.lua:7012
 	"Combust": {"area", "attack", "melee"},
 	// src/Data/Skills/act_int.lua:3069
 	"Conductivity": {"area", "curse", "duration", "hex", "spell"},
 	// src/Data/Skills/act_dex.lua:4236
 	"Conflagration": {"area", "attack", "duration", "projectile"},
-	// src/Data/Skills/act_str.lua:2065
+	// src/Data/Skills/act_str.lua:2128
 	"ConsecratedPath": {"area", "attack", "duration", "melee"},
-	// src/Data/Skills/act_str.lua:2159
+	// src/Data/Skills/act_str.lua:2222
 	"ConsecratedPathAltX": {"area", "attack", "duration", "melee"},
 	// src/Data/Skills/act_int.lua:3159
 	"Contagion": {"area", "duration", "spell"},
@@ -576,11 +587,11 @@ var SkillBaseFlags = map[string][]string{
 	"ContagionAltY": {"area", "duration", "spell"},
 	// src/Data/Skills/act_int.lua:3382
 	"ConversionTrap": {"duration", "spell", "trap"},
-	// src/Data/Skills/other.lua:907
+	// src/Data/Skills/other.lua:1035
 	"Convocation": {"duration", "spell"},
-	// src/Data/Skills/other.lua:953
+	// src/Data/Skills/other.lua:1081
 	"CorpseWalk": {"area"},
-	// src/Data/Skills/act_str.lua:2256
+	// src/Data/Skills/act_str.lua:2319
 	"CorruptingFever": {"duration", "spell"},
 	// src/Data/Skills/act_int.lua:3455
 	"CracklingLance": {"area", "spell"},
@@ -588,93 +599,93 @@ var SkillBaseFlags = map[string][]string{
 	"CracklingLanceAltX": {"area", "spell"},
 	// src/Data/Skills/act_int.lua:3620
 	"CracklingLanceAltY": {"area", "spell"},
-	// src/Data/Skills/other.lua:882
+	// src/Data/Skills/other.lua:1010
 	"CreateFungalGroundOnKill": {"area", "duration"},
 	// src/Data/Skills/act_int.lua:3696
 	"CreepingFrost": {"area", "duration", "projectile", "spell"},
 	// src/Data/Skills/act_int.lua:3782
 	"CreepingFrostAltX": {"area", "duration", "projectile", "spell"},
-	// src/Data/Skills/act_dex.lua:4343
+	// src/Data/Skills/act_dex.lua:4345
 	"Cremation": {"area", "projectile", "spell"},
-	// src/Data/Skills/act_dex.lua:4461
+	// src/Data/Skills/act_dex.lua:4463
 	"CremationAltX": {"area", "projectile", "spell"},
-	// src/Data/Skills/act_dex.lua:4580
+	// src/Data/Skills/act_dex.lua:4582
 	"CremationAltY": {"area", "projectile", "spell"},
-	// src/Data/Skills/spectre.lua:6754
+	// src/Data/Skills/spectre.lua:6753
 	"CrucibleIceStormTrap": {"area", "duration", "spell"},
-	// src/Data/Skills/spectre.lua:11621
+	// src/Data/Skills/spectre.lua:11620
 	"CrucibleVendigoFlickerStrike": {"attack", "melee", "movement"},
-	// src/Data/Skills/act_str.lua:2330
+	// src/Data/Skills/act_str.lua:2393
 	"CrushingFist": {"area", "attack", "melee"},
-	// src/Data/Skills/act_dex.lua:4679
+	// src/Data/Skills/act_dex.lua:4681
 	"Cyclone": {"area", "attack", "melee"},
-	// src/Data/Skills/act_dex.lua:4785
+	// src/Data/Skills/act_dex.lua:4787
 	"CycloneAltX": {"area", "attack", "melee"},
-	// src/Data/Skills/spectre.lua:6237
+	// src/Data/Skills/spectre.lua:6236
 	"DTTHellscapeStabWeb": {"hit", "movement", "spell"},
-	// src/Data/Skills/minion.lua:806
+	// src/Data/Skills/minion.lua:805
 	"DancingDervishCycloneChannelled": {"area", "attack", "melee"},
-	// src/Data/Skills/spectre.lua:7358
+	// src/Data/Skills/spectre.lua:7357
 	"DarkMarionetteExplode": {"area"},
-	// src/Data/Skills/spectre.lua:7386
+	// src/Data/Skills/spectre.lua:7385
 	"DarkMarionetteExplodePerfect": {"area"},
 	// src/Data/Skills/act_int.lua:3871
 	"DarkPact": {"area", "chaining", "spell"},
 	// src/Data/Skills/act_int.lua:3988
 	"DarkPactAltX": {"area", "spell"},
-	// src/Data/Skills/act_dex.lua:5014
+	// src/Data/Skills/act_dex.lua:5016
 	"Dash": {"spell"},
-	// src/Data/Skills/other.lua:1066
+	// src/Data/Skills/other.lua:1194
 	"DeathAura": {"area", "aura", "spell"},
-	// src/Data/Skills/minion.lua:364
+	// src/Data/Skills/minion.lua:363
 	"DeathExplodeIceElementalSummoned": {"area", "spell"},
-	// src/Data/Skills/other.lua:1097
+	// src/Data/Skills/other.lua:1225
 	"DeathWalk": {"area", "cast"},
-	// src/Data/Skills/other.lua:1130
+	// src/Data/Skills/other.lua:1258
 	"DeathWish": {"area", "spell"},
-	// src/Data/Skills/spectre.lua:8430
+	// src/Data/Skills/spectre.lua:8429
 	"DeceleratingProjectileAzmeriCasterDemon": {"projectile", "spell", "triggerable"},
-	// src/Data/Skills/spectre.lua:8463
+	// src/Data/Skills/spectre.lua:8462
 	"DeceleratingProjectileAzmeriCasterDemonExplode": {"hit", "projectile", "spell", "triggerable"},
-	// src/Data/Skills/act_str.lua:2416
+	// src/Data/Skills/act_str.lua:2479
 	"DecoyTotem": {"area", "duration", "spell", "totem"},
-	// src/Data/Skills/act_str.lua:2492
+	// src/Data/Skills/act_str.lua:2555
 	"DefianceBanner": {"area", "aura", "duration", "spell"},
-	// src/Data/Skills/spectre.lua:425
+	// src/Data/Skills/spectre.lua:424
 	"DelayedBlastSpectre": {"area", "spell"},
-	// src/Data/Skills/spectre.lua:11504
+	// src/Data/Skills/spectre.lua:11503
 	"DelveMelee": {"attack", "melee"},
-	// src/Data/Skills/spectre.lua:11529
+	// src/Data/Skills/spectre.lua:11528
 	"DelveMeleeCold": {"attack", "melee"},
-	// src/Data/Skills/spectre.lua:6669
+	// src/Data/Skills/spectre.lua:6668
 	"DelveMonsterEnfeebleOnHit": {"area", "curse", "duration", "hex", "spell"},
-	// src/Data/Skills/spectre.lua:451
+	// src/Data/Skills/spectre.lua:450
 	"DelveProtovaalWhirlingCharge": {"area", "attack", "hit", "melee"},
-	// src/Data/Skills/spectre.lua:11553
+	// src/Data/Skills/spectre.lua:11552
 	"DelveSpiderFlickerStrike": {"attack", "melee", "movement"},
-	// src/Data/Skills/spectre.lua:6558
+	// src/Data/Skills/spectre.lua:6557
 	"DelveWraithScreechChaos": {"area", "spell"},
-	// src/Data/Skills/spectre.lua:476
+	// src/Data/Skills/spectre.lua:475
 	"DemonFemaleRangedProjectile": {"attack", "projectile"},
-	// src/Data/Skills/spectre.lua:500
+	// src/Data/Skills/spectre.lua:499
 	"DemonFemaleRangedProjectile2": {"attack", "projectile"},
-	// src/Data/Skills/spectre.lua:526
+	// src/Data/Skills/spectre.lua:525
 	"DemonModularBladeVortexSpectre": {"area", "duration", "spell"},
-	// src/Data/Skills/act_dex.lua:5083
+	// src/Data/Skills/act_dex.lua:5085
 	"Desecrate": {"area", "duration", "spell"},
 	// src/Data/Skills/act_int.lua:4102
 	"Despair": {"area", "curse", "duration", "hex", "spell"},
 	// src/Data/Skills/act_int.lua:4188
 	"DestructiveLink": {"duration", "spell"},
-	// src/Data/Skills/act_str.lua:2577
+	// src/Data/Skills/act_str.lua:2640
 	"Determination": {"area", "aura", "spell"},
-	// src/Data/Skills/act_dex.lua:5158
+	// src/Data/Skills/act_dex.lua:5161
 	"DetonateDead": {"area", "spell"},
-	// src/Data/Skills/act_dex.lua:5255
+	// src/Data/Skills/act_dex.lua:5258
 	"DetonateDeadAltX": {"area"},
-	// src/Data/Skills/act_dex.lua:5326
+	// src/Data/Skills/act_dex.lua:5329
 	"DetonateDeadAltY": {"area", "spell"},
-	// src/Data/Skills/act_str.lua:2656
+	// src/Data/Skills/act_str.lua:2719
 	"DevouringTotem": {"duration", "spell", "totem"},
 	// src/Data/Skills/act_int.lua:4267
 	"Discharge": {"area", "spell"},
@@ -682,9 +693,9 @@ var SkillBaseFlags = map[string][]string{
 	"DischargeAltX": {"area", "spell"},
 	// src/Data/Skills/act_int.lua:4431
 	"Discipline": {"area", "aura", "spell"},
-	// src/Data/Skills/act_str.lua:2738
+	// src/Data/Skills/act_str.lua:2801
 	"DivineBlast": {"area", "attack", "shieldAttack"},
-	// src/Data/Skills/act_str.lua:2837
+	// src/Data/Skills/act_str.lua:2900
 	"DivineBlastAltX": {"area", "attack", "shieldAttack"},
 	// src/Data/Skills/act_int.lua:4592
 	"DivineIre": {"area", "spell"},
@@ -694,211 +705,211 @@ var SkillBaseFlags = map[string][]string{
 	"DivineIreAltY": {"area", "channelRelease", "spell"},
 	// src/Data/Skills/act_int.lua:4906
 	"DivineRetribution": {"area", "spell"},
-	// src/Data/Skills/act_str.lua:2933
+	// src/Data/Skills/act_str.lua:2996
 	"DominatingBlow": {"attack", "duration", "melee", "minion"},
-	// src/Data/Skills/act_str.lua:3025
+	// src/Data/Skills/act_str.lua:3088
 	"DominatingBlowAltX": {"attack", "duration", "melee", "minion"},
-	// src/Data/Skills/minion.lua:1082
+	// src/Data/Skills/minion.lua:1081
 	"DominatingBlowMinionCharge": {"attack", "melee"},
-	// src/Data/Skills/sup_int.lua:3507
+	// src/Data/Skills/sup_int.lua:3506
 	"DoomBlast": {"area", "spell"},
-	// src/Data/Skills/other.lua:1367
+	// src/Data/Skills/other.lua:1495
 	"DoryanisTouch": {"area", "attack", "melee"},
-	// src/Data/Skills/act_dex.lua:5521
+	// src/Data/Skills/act_dex.lua:5524
 	"DoubleStrike": {"attack", "melee"},
-	// src/Data/Skills/act_dex.lua:5602
+	// src/Data/Skills/act_dex.lua:5605
 	"DoubleStrikeAltX": {"attack", "melee"},
-	// src/Data/Skills/act_dex.lua:5684
+	// src/Data/Skills/act_dex.lua:5687
 	"DoubleStrikeAltY": {"attack", "melee"},
-	// src/Data/Skills/act_str.lua:3197
+	// src/Data/Skills/act_str.lua:3260
 	"DreadBanner": {"area", "aura", "duration", "spell"},
-	// src/Data/Skills/minion.lua:1401
+	// src/Data/Skills/minion.lua:1400
 	"DropBearSummonedGroundSlam": {"area", "attack", "melee"},
-	// src/Data/Skills/minion.lua:1429
+	// src/Data/Skills/minion.lua:1428
 	"DropBearSummonedRallyingCry": {"area", "duration", "warcry"},
-	// src/Data/Skills/act_dex.lua:5861
+	// src/Data/Skills/act_dex.lua:5864
 	"DualStrike": {"attack", "melee"},
-	// src/Data/Skills/act_dex.lua:5949
+	// src/Data/Skills/act_dex.lua:5952
 	"DualStrikeAltX": {"attack", "melee"},
-	// src/Data/Skills/spectre.lua:5002
+	// src/Data/Skills/spectre.lua:5001
 	"EDSHarvestMinerHammerSmoke": {"area", "hit", "spell", "triggerable"},
-	// src/Data/Skills/spectre.lua:5339
+	// src/Data/Skills/spectre.lua:5338
 	"EDSHeistScienceUnarmedGas": {"area", "hit", "spell", "triggerable"},
-	// src/Data/Skills/minion.lua:1561
+	// src/Data/Skills/minion.lua:1560
 	"EGBoneGolemConsumeCorpse": {},
-	// src/Data/Skills/act_str.lua:3281
+	// src/Data/Skills/act_str.lua:3344
 	"Earthquake": {"area", "attack", "duration", "melee"},
-	// src/Data/Skills/act_str.lua:3387
+	// src/Data/Skills/act_str.lua:3450
 	"EarthquakeAltX": {"area", "attack", "duration", "melee"},
-	// src/Data/Skills/act_str.lua:3600
+	// src/Data/Skills/act_str.lua:3663
 	"Earthshatter": {"area", "attack", "duration", "melee"},
-	// src/Data/Skills/act_str.lua:3711
+	// src/Data/Skills/act_str.lua:3774
 	"EarthshatterAltX": {"area", "attack", "duration", "melee"},
-	// src/Data/Skills/act_str.lua:3819
+	// src/Data/Skills/act_str.lua:3882
 	"EarthshatterAltY": {"area", "attack", "duration", "melee"},
-	// src/Data/Skills/spectre.lua:10024
+	// src/Data/Skills/spectre.lua:10023
 	"ElderTentacleMinionProjectile": {"projectile", "spell"},
-	// src/Data/Skills/minion.lua:2190
+	// src/Data/Skills/minion.lua:2189
 	"ElderTentacleMinionProjectileDeepcaller": {"projectile", "spell"},
-	// src/Data/Skills/spectre.lua:10056
+	// src/Data/Skills/spectre.lua:10055
 	"ElderTentacleMinionProjectileEpic": {"projectile", "spell"},
-	// src/Data/Skills/other.lua:1435
+	// src/Data/Skills/other.lua:1563
 	"ElementalAegis": {"spell"},
-	// src/Data/Skills/act_dex.lua:6030
+	// src/Data/Skills/act_dex.lua:6033
 	"ElementalHit": {"attack", "melee", "projectile"},
-	// src/Data/Skills/act_dex.lua:6212
+	// src/Data/Skills/act_dex.lua:6215
 	"ElementalHitAltX": {"attack", "projectile"},
-	// src/Data/Skills/minion.lua:2107
+	// src/Data/Skills/minion.lua:2106
 	"ElementalHitCloneShot": {"attack", "melee", "projectile"},
-	// src/Data/Skills/spectre.lua:564
+	// src/Data/Skills/spectre.lua:563
 	"ElementalHitSkeletonKnight": {"attack", "melee", "projectile"},
-	// src/Data/Skills/spectre.lua:612
+	// src/Data/Skills/spectre.lua:611
 	"ElementalHitSkeletonKnightIncursion": {"area", "attack", "melee"},
-	// src/Data/Skills/other.lua:1653
+	// src/Data/Skills/other.lua:1781
 	"ElementalWarding": {"duration", "projectile", "spell"},
 	// src/Data/Skills/act_int.lua:4987
 	"ElementalWeakness": {"area", "curse", "duration", "hex", "spell"},
-	// src/Data/Skills/other.lua:1707
+	// src/Data/Skills/other.lua:1835
 	"EmbraceMadness": {"spell"},
-	// src/Data/Skills/spectre.lua:11470
+	// src/Data/Skills/spectre.lua:11469
 	"EmpoweringHowlSpectre": {"area", "buff", "cooldown", "duration", "warcry"},
-	// src/Data/Skills/spectre.lua:11088
+	// src/Data/Skills/spectre.lua:11087
 	"EmptyActionAttackAzmeriGolemVSlam": {"attack"},
-	// src/Data/Skills/spectre.lua:5368
+	// src/Data/Skills/spectre.lua:5367
 	"EmptyActionAttackSecretPoliceDaggers": {"attack"},
-	// src/Data/Skills/spectre.lua:6477
+	// src/Data/Skills/spectre.lua:6476
 	"EmptyActionSpellWarlordGrandmaster": {"area", "buff", "cooldown", "duration", "spell"},
-	// src/Data/Skills/glove.lua:9
+	// src/Data/Skills/glove.lua:8
 	"EnchantmentOfBladesOnHit": {"projectile", "spell"},
-	// src/Data/Skills/glove.lua:45
+	// src/Data/Skills/glove.lua:44
 	"EnchantmentOfBladesOnHit2": {"projectile", "spell"},
-	// src/Data/Skills/glove.lua:81
+	// src/Data/Skills/glove.lua:80
 	"EnchantmentOfBladesOnHit3": {"projectile", "spell"},
-	// src/Data/Skills/glove.lua:117
+	// src/Data/Skills/glove.lua:116
 	"EnchantmentOfBladesOnHit4": {"projectile", "spell"},
-	// src/Data/Skills/glove.lua:153
+	// src/Data/Skills/glove.lua:152
 	"EnchantmentOfFlamesOnHit": {"area", "spell"},
-	// src/Data/Skills/glove.lua:187
+	// src/Data/Skills/glove.lua:186
 	"EnchantmentOfFlamesOnHit2": {"area", "spell"},
-	// src/Data/Skills/glove.lua:221
+	// src/Data/Skills/glove.lua:220
 	"EnchantmentOfFlamesOnHit3": {"area", "spell"},
-	// src/Data/Skills/glove.lua:255
+	// src/Data/Skills/glove.lua:254
 	"EnchantmentOfFlamesOnHit4": {"area", "spell"},
-	// src/Data/Skills/glove.lua:289
+	// src/Data/Skills/glove.lua:288
 	"EnchantmentOfForceOnHit": {"area", "attack"},
-	// src/Data/Skills/glove.lua:314
+	// src/Data/Skills/glove.lua:313
 	"EnchantmentOfForceOnHit2": {"area", "attack"},
-	// src/Data/Skills/glove.lua:339
+	// src/Data/Skills/glove.lua:338
 	"EnchantmentOfForceOnHit3": {"area", "attack"},
-	// src/Data/Skills/glove.lua:364
+	// src/Data/Skills/glove.lua:363
 	"EnchantmentOfForceOnHit4": {"area", "attack"},
-	// src/Data/Skills/glove.lua:389
+	// src/Data/Skills/glove.lua:388
 	"EnchantmentOfFrostOnKill": {"projectile", "spell"},
-	// src/Data/Skills/glove.lua:425
+	// src/Data/Skills/glove.lua:424
 	"EnchantmentOfFrostOnKill2": {"projectile", "spell"},
-	// src/Data/Skills/glove.lua:461
+	// src/Data/Skills/glove.lua:460
 	"EnchantmentOfFrostOnKill3": {"projectile", "spell"},
-	// src/Data/Skills/glove.lua:497
+	// src/Data/Skills/glove.lua:496
 	"EnchantmentOfFrostOnKill4": {"projectile", "spell"},
-	// src/Data/Skills/glove.lua:533
+	// src/Data/Skills/glove.lua:532
 	"EnchantmentOfFuryOnHit": {"attack", "projectile"},
 	// src/Data/Skills/glove.lua:582
 	"EnchantmentOfFuryOnHit2": {"attack", "projectile"},
-	// src/Data/Skills/glove.lua:631
+	// src/Data/Skills/glove.lua:632
 	"EnchantmentOfFuryOnHit3": {"attack", "projectile"},
-	// src/Data/Skills/glove.lua:680
+	// src/Data/Skills/glove.lua:682
 	"EnchantmentOfFuryOnHit4": {"attack", "projectile"},
-	// src/Data/Skills/glove.lua:729
+	// src/Data/Skills/glove.lua:732
 	"EnchantmentOfInfernoOnKill": {"area", "hit", "spell"},
-	// src/Data/Skills/glove.lua:767
+	// src/Data/Skills/glove.lua:770
 	"EnchantmentOfInfernoOnKill2": {"area", "hit", "spell"},
-	// src/Data/Skills/glove.lua:805
+	// src/Data/Skills/glove.lua:808
 	"EnchantmentOfInfernoOnKill3": {"area", "hit", "spell"},
-	// src/Data/Skills/glove.lua:843
+	// src/Data/Skills/glove.lua:846
 	"EnchantmentOfInfernoOnKill4": {"area", "hit", "spell"},
-	// src/Data/Skills/glove.lua:881
+	// src/Data/Skills/glove.lua:884
 	"EnchantmentOfIreWhenHit": {"area", "attack", "duration"},
-	// src/Data/Skills/glove.lua:929
+	// src/Data/Skills/glove.lua:933
 	"EnchantmentOfIreWhenHit2": {"area", "attack", "duration"},
-	// src/Data/Skills/glove.lua:977
+	// src/Data/Skills/glove.lua:982
 	"EnchantmentOfIreWhenHit3": {"area", "attack", "duration"},
-	// src/Data/Skills/glove.lua:1025
+	// src/Data/Skills/glove.lua:1031
 	"EnchantmentOfIreWhenHit4": {"area", "attack", "duration"},
-	// src/Data/Skills/glove.lua:1073
+	// src/Data/Skills/glove.lua:1080
 	"EnchantmentOfLightWhenCrit": {"area", "attack", "duration"},
-	// src/Data/Skills/glove.lua:1101
+	// src/Data/Skills/glove.lua:1108
 	"EnchantmentOfLightWhenCrit2": {"area", "attack", "duration"},
-	// src/Data/Skills/glove.lua:1129
+	// src/Data/Skills/glove.lua:1136
 	"EnchantmentOfLightWhenCrit3": {"area", "attack", "duration"},
-	// src/Data/Skills/glove.lua:1157
+	// src/Data/Skills/glove.lua:1164
 	"EnchantmentOfLightWhenCrit4": {"area", "attack", "duration"},
-	// src/Data/Skills/glove.lua:1185
+	// src/Data/Skills/glove.lua:1192
 	"EnchantmentOfReflectionWhenHit": {"duration", "minion", "spell"},
-	// src/Data/Skills/glove.lua:1223
+	// src/Data/Skills/glove.lua:1230
 	"EnchantmentOfReflectionWhenHit2": {"duration", "minion", "spell"},
-	// src/Data/Skills/glove.lua:1261
+	// src/Data/Skills/glove.lua:1268
 	"EnchantmentOfReflectionWhenHit3": {"duration", "minion", "spell"},
-	// src/Data/Skills/glove.lua:1299
+	// src/Data/Skills/glove.lua:1306
 	"EnchantmentOfReflectionWhenHit4": {"duration", "minion", "spell"},
-	// src/Data/Skills/glove.lua:1337
+	// src/Data/Skills/glove.lua:1344
 	"EnchantmentOfSpiteWhenHit": {"attack", "projectile"},
-	// src/Data/Skills/glove.lua:1386
+	// src/Data/Skills/glove.lua:1394
 	"EnchantmentOfSpiteWhenHit2": {"attack", "projectile"},
-	// src/Data/Skills/glove.lua:1435
+	// src/Data/Skills/glove.lua:1444
 	"EnchantmentOfSpiteWhenHit3": {"attack", "projectile"},
-	// src/Data/Skills/glove.lua:1484
+	// src/Data/Skills/glove.lua:1494
 	"EnchantmentOfSpiteWhenHit4": {"attack", "projectile"},
-	// src/Data/Skills/glove.lua:1533
+	// src/Data/Skills/glove.lua:1544
 	"EnchantmentOfTempestOnHit": {"area", "duration", "spell"},
-	// src/Data/Skills/glove.lua:1568
+	// src/Data/Skills/glove.lua:1579
 	"EnchantmentOfTempestOnHit2": {"area", "duration", "spell"},
-	// src/Data/Skills/glove.lua:1603
+	// src/Data/Skills/glove.lua:1614
 	"EnchantmentOfTempestOnHit3": {"area", "duration", "spell"},
-	// src/Data/Skills/glove.lua:1638
+	// src/Data/Skills/glove.lua:1649
 	"EnchantmentOfTempestOnHit4": {"area", "duration", "spell"},
-	// src/Data/Skills/glove.lua:1673
+	// src/Data/Skills/glove.lua:1684
 	"EnchantmentOfTheGraveOnKill": {"duration", "minion", "spell"},
-	// src/Data/Skills/glove.lua:1707
+	// src/Data/Skills/glove.lua:1718
 	"EnchantmentOfTheGraveOnKill2": {"duration", "minion", "spell"},
-	// src/Data/Skills/glove.lua:1741
+	// src/Data/Skills/glove.lua:1752
 	"EnchantmentOfTheGraveOnKill3": {"duration", "minion", "spell"},
-	// src/Data/Skills/glove.lua:1775
+	// src/Data/Skills/glove.lua:1786
 	"EnchantmentOfTheGraveOnKill4": {"duration", "minion", "spell"},
-	// src/Data/Skills/glove.lua:1809
+	// src/Data/Skills/glove.lua:1820
 	"EnchantmentOfThunderOnKill": {"area", "hit", "spell"},
-	// src/Data/Skills/glove.lua:1843
+	// src/Data/Skills/glove.lua:1854
 	"EnchantmentOfThunderOnKill2": {"area", "hit", "spell"},
-	// src/Data/Skills/glove.lua:1877
+	// src/Data/Skills/glove.lua:1888
 	"EnchantmentOfThunderOnKill3": {"area", "hit", "spell"},
-	// src/Data/Skills/glove.lua:1911
+	// src/Data/Skills/glove.lua:1922
 	"EnchantmentOfThunderOnKill4": {"area", "hit", "spell"},
-	// src/Data/Skills/glove.lua:1945
+	// src/Data/Skills/glove.lua:1956
 	"EnchantmentOfWarOnKill": {"attack", "duration"},
-	// src/Data/Skills/glove.lua:1986
+	// src/Data/Skills/glove.lua:1998
 	"EnchantmentOfWarOnKill2": {"attack", "duration"},
-	// src/Data/Skills/glove.lua:2027
+	// src/Data/Skills/glove.lua:2040
 	"EnchantmentOfWarOnKill3": {"attack", "duration"},
-	// src/Data/Skills/glove.lua:2068
+	// src/Data/Skills/glove.lua:2082
 	"EnchantmentOfWarOnKill4": {"attack", "duration"},
-	// src/Data/Skills/glove.lua:2109
+	// src/Data/Skills/glove.lua:2124
 	"EnchantmentOfWinterWhenHit": {"area", "projectile", "spell"},
-	// src/Data/Skills/glove.lua:2144
+	// src/Data/Skills/glove.lua:2159
 	"EnchantmentOfWinterWhenHit2": {"area", "projectile", "spell"},
-	// src/Data/Skills/glove.lua:2179
+	// src/Data/Skills/glove.lua:2194
 	"EnchantmentOfWinterWhenHit3": {"area", "projectile", "spell"},
-	// src/Data/Skills/glove.lua:2214
+	// src/Data/Skills/glove.lua:2229
 	"EnchantmentOfWinterWhenHit4": {"area", "projectile", "spell"},
-	// src/Data/Skills/act_str.lua:3923
+	// src/Data/Skills/act_str.lua:3986
 	"EnduringCry": {"area", "duration", "warcry"},
-	// src/Data/Skills/other.lua:6059
+	// src/Data/Skills/other.lua:6187
 	"EnemyExplode": {"area", "monsterExplode"},
 	// src/Data/Skills/act_int.lua:5072
 	"EnergyBlade": {"spell"},
 	// src/Data/Skills/act_int.lua:5170
 	"Enfeeble": {"area", "curse", "duration", "hex", "spell"},
-	// src/Data/Skills/act_dex.lua:6360
+	// src/Data/Skills/act_dex.lua:6363
 	"EnsnaringArrow": {"area", "attack", "projectile"},
-	// src/Data/Skills/other.lua:1730
+	// src/Data/Skills/other.lua:1858
 	"Envy": {"area", "aura", "spell"},
 	// src/Data/Skills/act_int.lua:5259
 	"EssenceDrain": {"duration", "projectile", "spell"},
@@ -906,31 +917,31 @@ var SkillBaseFlags = map[string][]string{
 	"EssenceDrainAltX": {"duration", "projectile", "spell"},
 	// src/Data/Skills/act_int.lua:5424
 	"EssenceDrainAltY": {"duration", "projectile", "spell"},
-	// src/Data/Skills/act_dex.lua:6439
+	// src/Data/Skills/act_dex.lua:6442
 	"EtherealKnives": {"projectile", "spell"},
-	// src/Data/Skills/act_dex.lua:6514
+	// src/Data/Skills/act_dex.lua:6517
 	"EtherealKnivesAltX": {"projectile", "spell"},
-	// src/Data/Skills/act_dex.lua:6592
+	// src/Data/Skills/act_dex.lua:6595
 	"EtherealKnivesAltY": {"projectile", "spell"},
-	// src/Data/Skills/act_str.lua:4008
+	// src/Data/Skills/act_str.lua:4071
 	"Eviscerate": {"area", "attack", "melee"},
-	// src/Data/Skills/spectre.lua:643
+	// src/Data/Skills/spectre.lua:642
 	"ExperimenterDetonateDead": {"area", "cast"},
-	// src/Data/Skills/act_dex.lua:6668
+	// src/Data/Skills/act_dex.lua:6671
 	"ExplosiveArrow": {"area", "attack", "duration", "projectile"},
-	// src/Data/Skills/act_dex.lua:6880
+	// src/Data/Skills/act_dex.lua:6883
 	"ExplosiveConcoction": {"area", "attack", "projectile"},
-	// src/Data/Skills/act_dex.lua:7006
+	// src/Data/Skills/act_dex.lua:7009
 	"ExplosiveConcoctionAltX": {"area", "attack", "projectile"},
-	// src/Data/Skills/act_dex.lua:7132
+	// src/Data/Skills/act_dex.lua:7135
 	"ExplosiveTrap": {"area", "spell", "trap"},
-	// src/Data/Skills/act_dex.lua:7311
+	// src/Data/Skills/act_dex.lua:7314
 	"ExplosiveTrapAltX": {"area", "spell", "trap"},
-	// src/Data/Skills/act_dex.lua:7403
+	// src/Data/Skills/act_dex.lua:7406
 	"ExplosiveTrapAltY": {"area", "spell", "trap"},
-	// src/Data/Skills/act_str.lua:4100
+	// src/Data/Skills/act_str.lua:4163
 	"Exsanguinate": {"chaining", "duration", "spell"},
-	// src/Data/Skills/act_str.lua:4189
+	// src/Data/Skills/act_str.lua:4252
 	"ExsanguinateAltX": {"chaining", "duration", "spell"},
 	// src/Data/Skills/act_int.lua:5508
 	"EyeOfWinter": {"projectile", "spell"},
@@ -938,39 +949,39 @@ var SkillBaseFlags = map[string][]string{
 	"EyeOfWinterAltX": {"projectile", "spell"},
 	// src/Data/Skills/act_int.lua:5694
 	"EyeOfWinterAltY": {"projectile", "spell"},
-	// src/Data/Skills/spectre.lua:11722
+	// src/Data/Skills/spectre.lua:11721
 	"FaridunCasterUndeadDamageOverTimeAura": {"area", "aura", "spell"},
-	// src/Data/Skills/spectre.lua:7082
+	// src/Data/Skills/spectre.lua:7081
 	"FemaleCannibalBossFireStorm": {"area", "duration", "spell"},
-	// src/Data/Skills/spectre.lua:7133
+	// src/Data/Skills/spectre.lua:7132
 	"FemaleCannibalBossFlameDash": {"duration", "movement", "spell"},
-	// src/Data/Skills/other.lua:1902
+	// src/Data/Skills/other.lua:2030
 	"FieryImpactHeistMaceImplicit": {"area", "attack", "forceSourceWeapon", "melee"},
-	// src/Data/Skills/other.lua:1807
+	// src/Data/Skills/other.lua:1935
 	"FireAegis": {"spell"},
-	// src/Data/Skills/other.lua:1838
+	// src/Data/Skills/other.lua:1966
 	"FireBurstOnHit": {"area", "spell"},
-	// src/Data/Skills/minion.lua:171
+	// src/Data/Skills/minion.lua:170
 	"FireElementalConeSummoned": {"area", "spell"},
-	// src/Data/Skills/minion.lua:104
+	// src/Data/Skills/minion.lua:103
 	"FireElementalFlameRedSummoned": {"projectile", "spell"},
-	// src/Data/Skills/minion.lua:226
+	// src/Data/Skills/minion.lua:225
 	"FireElementalMeteorSummoned": {"area", "attack"},
-	// src/Data/Skills/minion.lua:138
+	// src/Data/Skills/minion.lua:137
 	"FireElementalMortarSummoned": {"area", "projectile", "spell"},
-	// src/Data/Skills/spectre.lua:773
+	// src/Data/Skills/spectre.lua:772
 	"FireMonsterWhirlingBlades": {"attack", "duration", "melee", "movement"},
-	// src/Data/Skills/act_dex.lua:7485
+	// src/Data/Skills/act_dex.lua:7488
 	"FireTrap": {"area", "duration", "spell", "trap"},
-	// src/Data/Skills/act_dex.lua:7577
+	// src/Data/Skills/act_dex.lua:7580
 	"FireTrapAltX": {"area", "duration", "spell", "trap"},
 	// src/Data/Skills/act_int.lua:5788
 	"Fireball": {"projectile", "spell"},
-	// src/Data/Skills/spectre.lua:677
+	// src/Data/Skills/spectre.lua:676
 	"FireballIncursionChaos": {"area", "projectile", "spell"},
-	// src/Data/Skills/spectre.lua:709
+	// src/Data/Skills/spectre.lua:708
 	"FireballIncusionFire": {"area", "projectile", "spell"},
-	// src/Data/Skills/spectre.lua:741
+	// src/Data/Skills/spectre.lua:740
 	"FireballIncusionLightning": {"area", "projectile", "spell"},
 	// src/Data/Skills/act_int.lua:5960
 	"Firestorm": {"area", "duration", "spell"},
@@ -982,7 +993,7 @@ var SkillBaseFlags = map[string][]string{
 	"FlameDash": {"area", "duration", "spell"},
 	// src/Data/Skills/act_int.lua:6396
 	"FlameDashAltY": {"area", "duration", "spell"},
-	// src/Data/Skills/act_str.lua:4283
+	// src/Data/Skills/act_str.lua:4346
 	"FlameLink": {"duration", "spell"},
 	// src/Data/Skills/act_int.lua:6603
 	"FlameSurge": {"area", "duration", "spell"},
@@ -990,7 +1001,7 @@ var SkillBaseFlags = map[string][]string{
 	"FlameSurgeAltX": {"area", "duration", "spell"},
 	// src/Data/Skills/act_int.lua:6479
 	"FlameWall": {"area", "duration", "spell"},
-	// src/Data/Skills/spectre.lua:815
+	// src/Data/Skills/spectre.lua:814
 	"FlamebearerFlameBlue": {"duration", "projectile", "spell"},
 	// src/Data/Skills/act_int.lua:6790
 	"Flameblast": {"area", "channelRelease", "spell"},
@@ -998,23 +1009,23 @@ var SkillBaseFlags = map[string][]string{
 	"FlameblastAltX": {"area", "channelRelease", "spell"},
 	// src/Data/Skills/act_int.lua:6998
 	"FlameblastAltY": {"area", "channelRelease", "spell"},
-	// src/Data/Skills/act_dex.lua:7664
+	// src/Data/Skills/act_dex.lua:7667
 	"FlamethrowerTrap": {"area", "duration", "spell", "trap"},
-	// src/Data/Skills/act_dex.lua:7796
+	// src/Data/Skills/act_dex.lua:7799
 	"FlamethrowerTrapAltX": {"area", "duration", "spell", "trap"},
 	// src/Data/Skills/act_int.lua:7199
 	"Flammability": {"area", "curse", "duration", "hex", "spell"},
-	// src/Data/Skills/act_str.lua:4368
+	// src/Data/Skills/act_str.lua:4431
 	"FleshAndStone": {"area", "aura", "spell"},
 	// src/Data/Skills/act_int.lua:7289
 	"FleshOffering": {"duration", "spell"},
-	// src/Data/Skills/act_dex.lua:7898
+	// src/Data/Skills/act_dex.lua:7901
 	"FlickerStrike": {"attack", "duration", "melee"},
-	// src/Data/Skills/act_dex.lua:7989
+	// src/Data/Skills/act_dex.lua:7992
 	"FlickerStrikeAltX": {"attack", "duration", "melee"},
-	// src/Data/Skills/other.lua:1982
+	// src/Data/Skills/other.lua:2110
 	"Focus": {},
-	// src/Data/Skills/other.lua:2026
+	// src/Data/Skills/other.lua:2154
 	"FogOfWar": {"spell"},
 	// src/Data/Skills/act_int.lua:7372
 	"ForbiddenRite": {"area", "projectile", "spell"},
@@ -1022,13 +1033,13 @@ var SkillBaseFlags = map[string][]string{
 	"ForbiddenRiteAltX": {"area", "projectile", "spell"},
 	// src/Data/Skills/act_int.lua:7676
 	"FreezingPulse": {"projectile", "spell"},
-	// src/Data/Skills/act_dex.lua:8180
+	// src/Data/Skills/act_dex.lua:8183
 	"Frenzy": {"attack", "melee", "projectile"},
-	// src/Data/Skills/act_dex.lua:8269
+	// src/Data/Skills/act_dex.lua:8272
 	"FrenzyAltX": {"attack", "melee", "projectile"},
-	// src/Data/Skills/act_dex.lua:8367
+	// src/Data/Skills/act_dex.lua:8370
 	"FrostBlades": {"attack", "melee", "projectile"},
-	// src/Data/Skills/act_dex.lua:8468
+	// src/Data/Skills/act_dex.lua:8471
 	"FrostBladesAltX": {"area", "attack", "dotFromAttack", "melee", "projectile"},
 	// src/Data/Skills/act_int.lua:8460
 	"FrostBolt": {"projectile", "spell"},
@@ -1048,209 +1059,209 @@ var SkillBaseFlags = map[string][]string{
 	"Frostblink": {"area", "hit", "spell"},
 	// src/Data/Skills/act_int.lua:8374
 	"FrostblinkAltX": {"area", "hit", "spell"},
-	// src/Data/Skills/act_str.lua:4450
+	// src/Data/Skills/act_str.lua:4513
 	"FrozenLegion": {"spell"},
-	// src/Data/Skills/act_str.lua:4521
+	// src/Data/Skills/act_str.lua:4584
 	"FrozenLegionAltX": {"spell"},
-	// src/Data/Skills/act_str.lua:4592
+	// src/Data/Skills/act_str.lua:4655
 	"FrozenSweep": {"area", "attack", "melee"},
-	// src/Data/Skills/act_str.lua:4710
+	// src/Data/Skills/act_str.lua:4773
 	"FrozenSweepAltX": {"area", "attack", "melee"},
-	// src/Data/Skills/spectre.lua:10867
+	// src/Data/Skills/spectre.lua:10866
 	"GAAzmeriDemonLeapSlamDamage": {"area", "attack"},
-	// src/Data/Skills/spectre.lua:10896
+	// src/Data/Skills/spectre.lua:10895
 	"GAAzmeriDemonMeleeMiniSlam1": {"area", "attack"},
-	// src/Data/Skills/spectre.lua:9727
+	// src/Data/Skills/spectre.lua:9726
 	"GAAzmeriReaperComboRightSlash": {"area", "attack"},
-	// src/Data/Skills/spectre.lua:9747
+	// src/Data/Skills/spectre.lua:9746
 	"GAAzmeriReaperComboWhirl": {"area", "attack"},
-	// src/Data/Skills/spectre.lua:9709
+	// src/Data/Skills/spectre.lua:9708
 	"GAAzmeriReaperLacerate": {"area", "attack"},
-	// src/Data/Skills/spectre.lua:7439
+	// src/Data/Skills/spectre.lua:7438
 	"GAAzmeriRobotArgusSlam": {"area", "attack"},
-	// src/Data/Skills/spectre.lua:171
+	// src/Data/Skills/spectre.lua:170
 	"GABeastCleave": {"area", "attack", "melee"},
-	// src/Data/Skills/spectre.lua:8602
+	// src/Data/Skills/spectre.lua:8601
 	"GAExpeditionDeathKnightSlam": {"area", "attack", "triggerable"},
-	// src/Data/Skills/spectre.lua:4757
+	// src/Data/Skills/spectre.lua:4756
 	"GAHarvestCrabDashSlam": {"area", "attack", "hit", "triggerable"},
-	// src/Data/Skills/spectre.lua:4983
+	// src/Data/Skills/spectre.lua:4982
 	"GAHarvestMinerHammerSlam": {"area", "attack", "triggerable"},
-	// src/Data/Skills/spectre.lua:4901
+	// src/Data/Skills/spectre.lua:4900
 	"GAHarvestRhexDashSlash": {"area", "attack", "hit", "triggerable"},
-	// src/Data/Skills/spectre.lua:5320
+	// src/Data/Skills/spectre.lua:5319
 	"GAHeistCultistUnarmedLeapImpact": {"area", "attack", "triggerable"},
-	// src/Data/Skills/spectre.lua:8769
+	// src/Data/Skills/spectre.lua:8768
 	"GAHeistRobotHoundStomp": {"area", "attack"},
-	// src/Data/Skills/spectre.lua:5486
+	// src/Data/Skills/spectre.lua:5485
 	"GAHeistThugRangedArrowShotgun": {"area", "attack", "hit", "triggerable"},
-	// src/Data/Skills/spectre.lua:5510
+	// src/Data/Skills/spectre.lua:5509
 	"GAHeistThugRangedShotgun": {"area", "attack", "hit", "triggerable"},
-	// src/Data/Skills/spectre.lua:5969
+	// src/Data/Skills/spectre.lua:5968
 	"GAHellscapeDemonElite1DashSlash": {"area", "attack", "hit", "triggerable"},
-	// src/Data/Skills/spectre.lua:6288
+	// src/Data/Skills/spectre.lua:6287
 	"GAHellscapePaleEliteSkyStab": {"area", "attack", "hit", "triggerable"},
-	// src/Data/Skills/spectre.lua:6268
+	// src/Data/Skills/spectre.lua:6267
 	"GAHellscapeStabbyCleave1": {"area", "attack", "hit", "triggerable"},
-	// src/Data/Skills/minion.lua:1983
+	// src/Data/Skills/minion.lua:1982
 	"GASummonReaperComboLeftSlash": {"area", "attack"},
-	// src/Data/Skills/minion.lua:1960
+	// src/Data/Skills/minion.lua:1959
 	"GASummonReaperComboWhirl": {"area", "attack"},
-	// src/Data/Skills/minion.lua:1937
+	// src/Data/Skills/minion.lua:1936
 	"GASummonReaperUltimateLeftSlash": {"area", "attack"},
-	// src/Data/Skills/minion.lua:1162
+	// src/Data/Skills/minion.lua:1161
 	"GAVaalDominationLargeSlam": {"area", "attack"},
-	// src/Data/Skills/minion.lua:750
+	// src/Data/Skills/minion.lua:749
 	"GAZombieCorpseGroundImpact": {"area", "attack", "melee"},
-	// src/Data/Skills/spectre.lua:11790
+	// src/Data/Skills/spectre.lua:11789
 	"GPSHellscapeFleshEliteSpikeBarrage": {"hit", "projectile", "spell", "triggerable"},
-	// src/Data/Skills/spectre.lua:8738
+	// src/Data/Skills/spectre.lua:8737
 	"GSAncestralDruidFlaskExplode": {"area", "projectile", "spell"},
-	// src/Data/Skills/spectre.lua:7759
+	// src/Data/Skills/spectre.lua:7758
 	"GSAzmeriAdmiralCannonball": {"area", "hit", "spell"},
-	// src/Data/Skills/spectre.lua:9331
+	// src/Data/Skills/spectre.lua:9330
 	"GSAzmeriBirdDashZap": {"area", "hit", "spell"},
-	// src/Data/Skills/spectre.lua:11025
+	// src/Data/Skills/spectre.lua:11024
 	"GSAzmeriDemonBossCorruptExplode": {"area", "hit", "spell"},
-	// src/Data/Skills/spectre.lua:6935
+	// src/Data/Skills/spectre.lua:6934
 	"GSAzmeriHailrakeIceNova": {"area", "spell"},
-	// src/Data/Skills/spectre.lua:9838
+	// src/Data/Skills/spectre.lua:9837
 	"GSAzmeriShepherdBeamNuke": {"area", "hit", "spell"},
-	// src/Data/Skills/spectre.lua:10089
+	// src/Data/Skills/spectre.lua:10088
 	"GSAzmeriTentacleMonsterBeam": {"hit", "projectile", "spell"},
-	// src/Data/Skills/spectre.lua:10116
+	// src/Data/Skills/spectre.lua:10115
 	"GSAzmeriTentacleMonsterShockExplode": {"area", "hit", "spell"},
-	// src/Data/Skills/spectre.lua:8630
+	// src/Data/Skills/spectre.lua:8629
 	"GSExpeditionDeathKnightNova": {"area", "hit", "spell", "triggerable"},
-	// src/Data/Skills/spectre.lua:4930
+	// src/Data/Skills/spectre.lua:4929
 	"GSHarvestRhexScreech": {"area", "hit", "spell", "triggerable"},
-	// src/Data/Skills/spectre.lua:10668
+	// src/Data/Skills/spectre.lua:10667
 	"GSHeistLightningVolatileExplode": {"area", "hit", "spell"},
-	// src/Data/Skills/spectre.lua:10734
+	// src/Data/Skills/spectre.lua:10733
 	"GSHeistLightningWaterfallHit": {"area", "hit", "spell"},
-	// src/Data/Skills/spectre.lua:5537
+	// src/Data/Skills/spectre.lua:5536
 	"GSHeistRobotPyreBeamBlast": {"area", "hit", "spell", "triggerable"},
-	// src/Data/Skills/spectre.lua:5624
+	// src/Data/Skills/spectre.lua:5623
 	"GSHeistRobotPyreBeamSweepBeam": {"area", "hit", "spell", "triggerable"},
-	// src/Data/Skills/spectre.lua:5568
+	// src/Data/Skills/spectre.lua:5567
 	"GSHeistRobotPyreNukeBeam": {"area", "hit", "spell", "triggerable"},
-	// src/Data/Skills/spectre.lua:5596
+	// src/Data/Skills/spectre.lua:5595
 	"GSHeistRobotPyreNukeBeamChannelled": {"area", "hit", "spell", "triggerable"},
-	// src/Data/Skills/spectre.lua:10797
+	// src/Data/Skills/spectre.lua:10796
 	"GSHeistScienceLightningDashImpact": {"area", "hit", "spell"},
-	// src/Data/Skills/spectre.lua:5995
+	// src/Data/Skills/spectre.lua:5994
 	"GSHellscapeDemonElite1Screech": {"area", "hit", "spell", "triggerable"},
-	// src/Data/Skills/spectre.lua:6202
+	// src/Data/Skills/spectre.lua:6201
 	"GSHellscapeDemonEliteBeamNuke": {"area", "hit", "spell", "triggerable"},
-	// src/Data/Skills/spectre.lua:11823
+	// src/Data/Skills/spectre.lua:11822
 	"GSHellscapeFleshEliteBloodOrbExplosion": {"area", "hit", "spell", "triggerable"},
-	// src/Data/Skills/spectre.lua:6055
+	// src/Data/Skills/spectre.lua:6054
 	"GSHellscapePaleEliteBoltImpact": {"area", "hit", "spell", "triggerable"},
-	// src/Data/Skills/spectre.lua:6086
+	// src/Data/Skills/spectre.lua:6085
 	"GSHellscapePaleEliteOmegaBeam": {"area", "hit", "spell", "triggerable"},
-	// src/Data/Skills/spectre.lua:8795
+	// src/Data/Skills/spectre.lua:8794
 	"GSRoboHoundBellyDamage": {"area", "hit", "spell"},
-	// src/Data/Skills/act_dex.lua:8585
+	// src/Data/Skills/act_dex.lua:8588
 	"GalvanicArrow": {"area", "attack", "projectile"},
-	// src/Data/Skills/act_dex.lua:8674
+	// src/Data/Skills/act_dex.lua:8677
 	"GalvanicArrowAltX": {"area", "attack"},
-	// src/Data/Skills/act_dex.lua:8749
+	// src/Data/Skills/act_dex.lua:8752
 	"GalvanicArrowAltY": {"area", "attack", "projectile"},
 	// src/Data/Skills/act_int.lua:8533
 	"GalvanicField": {"chaining", "duration", "spell"},
 	// src/Data/Skills/act_int.lua:8653
 	"GalvanicFieldAltX": {"chaining", "duration", "spell"},
-	// src/Data/Skills/other.lua:1261
+	// src/Data/Skills/other.lua:1389
 	"GemDetonateMines": {"spell"},
-	// src/Data/Skills/act_str.lua:4828
+	// src/Data/Skills/act_str.lua:4891
 	"GeneralsCry": {"area", "duration", "warcry"},
-	// src/Data/Skills/other.lua:5944
+	// src/Data/Skills/other.lua:6072
 	"GhostCannons": {"area", "attack", "forceSourceWeapon", "projectile"},
-	// src/Data/Skills/spectre.lua:853
+	// src/Data/Skills/spectre.lua:852
 	"GhostPirateBladeVortexSpectre": {"area", "duration", "spell"},
 	// src/Data/Skills/act_int.lua:8765
 	"GlacialCascade": {"area", "spell"},
 	// src/Data/Skills/act_int.lua:8862
 	"GlacialCascadeAltX": {"area", "spell"},
-	// src/Data/Skills/act_str.lua:4991
+	// src/Data/Skills/act_str.lua:5054
 	"GlacialHammer": {"attack", "melee"},
-	// src/Data/Skills/act_str.lua:5072
+	// src/Data/Skills/act_str.lua:5135
 	"GlacialHammerAltX": {"attack", "melee"},
-	// src/Data/Skills/act_dex.lua:8833
+	// src/Data/Skills/act_dex.lua:8836
 	"GlacialShieldSwipe": {"area", "attack", "melee", "shieldAttack"},
-	// src/Data/Skills/other.lua:2048
+	// src/Data/Skills/other.lua:2176
 	"GluttonyOfElements": {"area", "aura", "duration", "spell"},
-	// src/Data/Skills/spectre.lua:891
+	// src/Data/Skills/spectre.lua:890
 	"GoatmanEarthquake": {"area", "attack", "duration", "melee"},
-	// src/Data/Skills/spectre.lua:925
+	// src/Data/Skills/spectre.lua:924
 	"GoatmanFireMagmaOrb": {"area", "chaining", "projectile", "spell"},
-	// src/Data/Skills/spectre.lua:963
+	// src/Data/Skills/spectre.lua:962
 	"GoatmanMoltenShell": {"area", "duration", "spell"},
-	// src/Data/Skills/spectre.lua:1031
+	// src/Data/Skills/spectre.lua:1030
 	"GoatmanMonsterSlam": {"area", "attack", "melee"},
-	// src/Data/Skills/other.lua:2086
+	// src/Data/Skills/other.lua:2214
 	"GoreShockwave": {"area", "attack", "melee"},
-	// src/Data/Skills/act_dex.lua:8919
+	// src/Data/Skills/act_dex.lua:8922
 	"Grace": {"area", "aura", "spell"},
-	// src/Data/Skills/spectre.lua:1055
+	// src/Data/Skills/spectre.lua:1054
 	"GroundEffectsSlamDockworkerChampion": {"area", "attack", "duration", "melee"},
-	// src/Data/Skills/act_str.lua:5235
+	// src/Data/Skills/act_str.lua:5298
 	"GroundSlam": {"area", "attack", "melee"},
-	// src/Data/Skills/act_str.lua:5329
+	// src/Data/Skills/act_str.lua:5392
 	"GroundSlamAltX": {"area", "attack", "melee"},
-	// src/Data/Skills/spectre.lua:1083
+	// src/Data/Skills/spectre.lua:1082
 	"GuardianArc": {"chaining", "spell"},
-	// src/Data/Skills/minion.lua:1840
+	// src/Data/Skills/minion.lua:1839
 	"GuardianSentinelFireAura": {"area", "spell"},
-	// src/Data/Skills/spectre.lua:1115
+	// src/Data/Skills/spectre.lua:1114
 	"HalfSkeletonPuncture": {"attack", "melee", "projectile"},
-	// src/Data/Skills/spectre.lua:4786
+	// src/Data/Skills/spectre.lua:4785
 	"HarvestCrabAbyssSlam": {"area", "attack", "hit", "triggerable"},
-	// src/Data/Skills/spectre.lua:4818
+	// src/Data/Skills/spectre.lua:4817
 	"HarvestNessaCrabScreech": {"area", "hit", "spell", "triggerable"},
-	// src/Data/Skills/spectre.lua:4837
+	// src/Data/Skills/spectre.lua:4836
 	"HarvestNessaCrabScreechDebuff": {"area", "duration", "spell"},
-	// src/Data/Skills/spectre.lua:4859
+	// src/Data/Skills/spectre.lua:4858
 	"HarvestRhexLeapSlam": {"area", "attack", "melee"},
-	// src/Data/Skills/spectre.lua:4961
+	// src/Data/Skills/spectre.lua:4960
 	"HarvestRhexScreechDebuff": {"area", "duration", "spell"},
-	// src/Data/Skills/act_dex.lua:9080
+	// src/Data/Skills/act_dex.lua:9083
 	"Haste": {"area", "aura", "spell"},
-	// src/Data/Skills/act_dex.lua:9252
+	// src/Data/Skills/act_dex.lua:9255
 	"Hatred": {"area", "aura", "spell"},
-	// src/Data/Skills/act_str.lua:5520
+	// src/Data/Skills/act_str.lua:5583
 	"HeavyStrike": {"attack", "melee"},
-	// src/Data/Skills/act_str.lua:5601
+	// src/Data/Skills/act_str.lua:5664
 	"HeavyStrikeAltY": {"attack", "melee"},
-	// src/Data/Skills/spectre.lua:10702
+	// src/Data/Skills/spectre.lua:10701
 	"HeistCultistLightningBolt": {"area", "hit", "spell"},
-	// src/Data/Skills/spectre.lua:5268
+	// src/Data/Skills/spectre.lua:5267
 	"HeistCultistUnarmedLeap": {"attack", "melee", "movement"},
-	// src/Data/Skills/spectre.lua:5298
+	// src/Data/Skills/spectre.lua:5297
 	"HeistProjectUnarmedMelee1": {"attack", "melee", "projectile"},
-	// src/Data/Skills/spectre.lua:5202
+	// src/Data/Skills/spectre.lua:5201
 	"HeistThugRangedExplosiveArrow": {"area", "attack", "duration", "hit", "projectile", "triggerable"},
-	// src/Data/Skills/spectre.lua:6447
+	// src/Data/Skills/spectre.lua:6446
 	"HellionRallyingCry": {"area", "duration"},
-	// src/Data/Skills/spectre.lua:6308
+	// src/Data/Skills/spectre.lua:6307
 	"HellscapeFleshFodderArc": {"chaining", "spell", "triggerable"},
-	// src/Data/Skills/act_dex.lua:9329
+	// src/Data/Skills/act_dex.lua:9332
 	"HeraldOfAgony": {"cast", "minion", "permanentMinion"},
-	// src/Data/Skills/minion.lua:932
+	// src/Data/Skills/minion.lua:931
 	"HeraldOfAgonyMinionCleave": {"area", "attack", "melee"},
-	// src/Data/Skills/minion.lua:878
+	// src/Data/Skills/minion.lua:877
 	"HeraldOfAgonyMinionMortar": {"area", "attack", "projectile"},
-	// src/Data/Skills/minion.lua:909
+	// src/Data/Skills/minion.lua:908
 	"HeraldOfAgonyMinionTailSpike": {"attack", "projectile"},
-	// src/Data/Skills/act_str.lua:5670
+	// src/Data/Skills/act_str.lua:5733
 	"HeraldOfAsh": {},
-	// src/Data/Skills/act_dex.lua:9436
+	// src/Data/Skills/act_dex.lua:9439
 	"HeraldOfIce": {"area", "cast"},
-	// src/Data/Skills/minion.lua:963
+	// src/Data/Skills/minion.lua:962
 	"HeraldOfLightMinionSlam": {"area", "attack", "melee"},
-	// src/Data/Skills/act_str.lua:5760
+	// src/Data/Skills/act_str.lua:5823
 	"HeraldOfPurity": {"duration", "minion", "spell"},
-	// src/Data/Skills/other.lua:2119
+	// src/Data/Skills/other.lua:2247
 	"HeraldOfTheBreach": {"area", "cast", "duration", "hit"},
 	// src/Data/Skills/act_int.lua:9373
 	"HeraldOfThunder": {"cast", "duration"},
@@ -1260,33 +1271,33 @@ var SkillBaseFlags = map[string][]string{
 	"HexblastAltX": {"area", "spell"},
 	// src/Data/Skills/act_int.lua:9290
 	"HexblastAltY": {"area", "spell"},
-	// src/Data/Skills/spectre.lua:1152
+	// src/Data/Skills/spectre.lua:1151
 	"HolyFireElementalFireball": {"area", "projectile", "spell"},
-	// src/Data/Skills/act_str.lua:5851
+	// src/Data/Skills/act_str.lua:5914
 	"HolyFlameTotem": {"duration", "projectile", "spell", "totem"},
-	// src/Data/Skills/act_str.lua:5940
+	// src/Data/Skills/act_str.lua:6003
 	"HolyFlameTotemAltX": {"duration", "projectile", "spell", "totem"},
-	// src/Data/Skills/act_str.lua:6026
+	// src/Data/Skills/act_str.lua:6089
 	"HolyHammers": {"area", "attack", "melee"},
-	// src/Data/Skills/act_str.lua:6123
+	// src/Data/Skills/act_str.lua:6186
 	"HolyHammersAltX": {"area", "attack", "melee"},
-	// src/Data/Skills/act_str.lua:6207
+	// src/Data/Skills/act_str.lua:6270
 	"HolyStrike": {"attack", "duration", "melee", "minion"},
-	// src/Data/Skills/minion.lua:2277
+	// src/Data/Skills/minion.lua:2276
 	"HolyStrikeMinionAttack": {"attack", "melee"},
 	// src/Data/Skills/act_int.lua:8939
 	"Hydrosphere": {"area", "duration", "spell"},
-	// src/Data/Skills/act_str.lua:6496
+	// src/Data/Skills/act_str.lua:6559
 	"IceCrash": {"area", "attack", "melee"},
-	// src/Data/Skills/act_str.lua:6609
+	// src/Data/Skills/act_str.lua:6672
 	"IceCrashAltX": {"area", "attack", "melee"},
-	// src/Data/Skills/spectre.lua:6964
+	// src/Data/Skills/spectre.lua:6963
 	"IceCrashAzmeriHailrake": {"area", "attack", "melee"},
-	// src/Data/Skills/minion.lua:258
+	// src/Data/Skills/minion.lua:257
 	"IceElementalIceCyclone": {"area", "attack", "melee", "movement"},
-	// src/Data/Skills/minion.lua:303
+	// src/Data/Skills/minion.lua:302
 	"IceElementalSpearSummoned": {"projectile", "spell"},
-	// src/Data/Skills/minion.lua:332
+	// src/Data/Skills/minion.lua:331
 	"IceElementalSpearSummonedDeathNova": {"area", "projectile", "spell"},
 	// src/Data/Skills/act_int.lua:9483
 	"IceNova": {"area", "spell"},
@@ -1294,21 +1305,21 @@ var SkillBaseFlags = map[string][]string{
 	"IceNovaAltX": {"area", "spell"},
 	// src/Data/Skills/act_int.lua:9638
 	"IceNovaAltY": {"area", "spell"},
-	// src/Data/Skills/act_dex.lua:9531
+	// src/Data/Skills/act_dex.lua:9534
 	"IceShot": {"area", "attack", "duration", "projectile"},
-	// src/Data/Skills/act_dex.lua:9615
+	// src/Data/Skills/act_dex.lua:9618
 	"IceShotAltX": {"area", "attack", "duration", "projectile"},
 	// src/Data/Skills/act_int.lua:9795
 	"IceSpear": {"projectile", "spell"},
 	// src/Data/Skills/act_int.lua:9905
 	"IceSpearAltX": {"projectile", "spell"},
-	// src/Data/Skills/act_dex.lua:9777
+	// src/Data/Skills/act_dex.lua:9780
 	"IceTrap": {"area", "spell", "trap"},
-	// src/Data/Skills/act_dex.lua:9862
+	// src/Data/Skills/act_dex.lua:9865
 	"IceTrapAltX": {"area", "spell", "trap"},
-	// src/Data/Skills/other.lua:2241
+	// src/Data/Skills/other.lua:2369
 	"Icestorm": {"area", "duration", "spell"},
-	// src/Data/Skills/other.lua:2287
+	// src/Data/Skills/other.lua:2415
 	"IcicleBurst": {"attack", "projectile"},
 	// src/Data/Skills/act_int.lua:10008
 	"IcicleMine": {"mine", "projectile", "spell"},
@@ -1316,15 +1327,15 @@ var SkillBaseFlags = map[string][]string{
 	"IcicleMineAltX": {"mine", "projectile", "spell"},
 	// src/Data/Skills/act_int.lua:10185
 	"IcicleMineAltY": {"mine", "projectile", "spell"},
-	// src/Data/Skills/spectre.lua:1185
+	// src/Data/Skills/spectre.lua:1184
 	"IguanaProjectile": {"attack", "projectile"},
-	// src/Data/Skills/spectre.lua:1210
+	// src/Data/Skills/spectre.lua:1209
 	"IguanaProjectileChrome": {"attack", "projectile"},
-	// src/Data/Skills/other.lua:2320
+	// src/Data/Skills/other.lua:2448
 	"IllusoryWarp": {"area", "duration", "spell"},
-	// src/Data/Skills/act_str.lua:6695
+	// src/Data/Skills/act_str.lua:6758
 	"ImmortalCall": {"duration", "spell"},
-	// src/Data/Skills/spectre.lua:1236
+	// src/Data/Skills/spectre.lua:1235
 	"IncaMinionProjectile": {"projectile", "spell"},
 	// src/Data/Skills/act_int.lua:10274
 	"Incinerate": {"area", "spell"},
@@ -1332,29 +1343,29 @@ var SkillBaseFlags = map[string][]string{
 	"IncinerateAltX": {"area", "spell"},
 	// src/Data/Skills/act_int.lua:10551
 	"IncinerateAltY": {"area", "spell"},
-	// src/Data/Skills/spectre.lua:1274
+	// src/Data/Skills/spectre.lua:1273
 	"IncursionLeapSlamChampion": {"area", "attack", "melee"},
-	// src/Data/Skills/spectre.lua:1309
+	// src/Data/Skills/spectre.lua:1308
 	"IncursionMeteorUpheaval": {"area", "spell"},
-	// src/Data/Skills/act_str.lua:7032
+	// src/Data/Skills/act_str.lua:7095
 	"InfernalBlow": {"attack", "duration", "melee"},
-	// src/Data/Skills/act_str.lua:7158
+	// src/Data/Skills/act_str.lua:7221
 	"InfernalBlowAltX": {"attack", "duration", "melee"},
-	// src/Data/Skills/act_str.lua:6853
+	// src/Data/Skills/act_str.lua:6916
 	"InfernalCry": {"area", "duration", "warcry"},
-	// src/Data/Skills/minion.lua:1818
+	// src/Data/Skills/minion.lua:1817
 	"InfernalLegion": {"area", "spell"},
-	// src/Data/Skills/spectre.lua:1339
+	// src/Data/Skills/spectre.lua:1338
 	"InsectSpawnerSpit": {"attack", "projectile"},
-	// src/Data/Skills/act_str.lua:7274
+	// src/Data/Skills/act_str.lua:7337
 	"IntimidatingCry": {"area", "duration", "warcry"},
-	// src/Data/Skills/act_dex.lua:18228
+	// src/Data/Skills/act_dex.lua:18231
 	"IntuitiveLink": {"duration", "spell"},
-	// src/Data/Skills/spectre.lua:1366
+	// src/Data/Skills/spectre.lua:1365
 	"KaomFireBeamTotemSpectre": {"duration", "spell", "totem"},
-	// src/Data/Skills/spectre.lua:1414
+	// src/Data/Skills/spectre.lua:1413
 	"KaomWarriorGroundSlam": {"area", "attack", "melee"},
-	// src/Data/Skills/spectre.lua:1438
+	// src/Data/Skills/spectre.lua:1437
 	"KaomWarriorMoltenStrike": {"attack", "melee"},
 	// src/Data/Skills/act_int.lua:10665
 	"KineticBlast": {"area", "attack", "projectile"},
@@ -1374,57 +1385,57 @@ var SkillBaseFlags = map[string][]string{
 	"KineticRainAltX": {"area", "attack", "projectile"},
 	// src/Data/Skills/act_int.lua:11506
 	"KineticRainKineticInstability": {"area", "attack", "duration"},
-	// src/Data/Skills/spectre.lua:1517
+	// src/Data/Skills/spectre.lua:1516
 	"KitavaDemonCleave": {"area", "attack", "melee"},
-	// src/Data/Skills/spectre.lua:1479
+	// src/Data/Skills/spectre.lua:1478
 	"KitavaDemonLeapSlam": {"area", "attack", "melee"},
-	// src/Data/Skills/spectre.lua:1551
+	// src/Data/Skills/spectre.lua:1550
 	"KitavaDemonWhirlingBlades": {"attack", "melee"},
-	// src/Data/Skills/spectre.lua:1587
+	// src/Data/Skills/spectre.lua:1586
 	"KitavaDemonXMortar": {"area", "projectile", "spell"},
-	// src/Data/Skills/spectre.lua:3783
+	// src/Data/Skills/spectre.lua:3782
 	"KitavaSlavedriverFlameWhip": {"area", "spell"},
-	// src/Data/Skills/act_dex.lua:9945
+	// src/Data/Skills/act_dex.lua:9948
 	"Lacerate": {"area", "attack", "melee"},
-	// src/Data/Skills/act_dex.lua:10041
+	// src/Data/Skills/act_dex.lua:10044
 	"LacerateAltX": {"area", "attack", "melee"},
-	// src/Data/Skills/act_dex.lua:10128
+	// src/Data/Skills/act_dex.lua:10131
 	"LacerateAltY": {"area", "attack", "melee"},
-	// src/Data/Skills/act_dex.lua:10216
+	// src/Data/Skills/act_dex.lua:10219
 	"LancingSteel": {"attack", "projectile"},
-	// src/Data/Skills/act_dex.lua:10319
+	// src/Data/Skills/act_dex.lua:10322
 	"LancingSteelAltX": {"attack", "projectile"},
-	// src/Data/Skills/act_str.lua:7365
+	// src/Data/Skills/act_str.lua:7428
 	"LeapSlam": {"area", "attack", "melee"},
-	// src/Data/Skills/act_str.lua:7446
+	// src/Data/Skills/act_str.lua:7509
 	"LeapSlamAltX": {"area", "attack", "melee"},
-	// src/Data/Skills/spectre.lua:5909
+	// src/Data/Skills/spectre.lua:5908
 	"LegionKaruiArcherSnipe": {"attack", "hit", "projectile"},
-	// src/Data/Skills/spectre.lua:11422
+	// src/Data/Skills/spectre.lua:11421
 	"LegionKaruiMeleeCombo2": {"area", "attack", "melee"},
-	// src/Data/Skills/spectre.lua:11383
+	// src/Data/Skills/spectre.lua:11382
 	"LegionKaruiMeleeLeapSlam": {"area", "attack", "melee"},
-	// src/Data/Skills/spectre.lua:11449
+	// src/Data/Skills/spectre.lua:11448
 	"LegionMonsterProximityShield": {"area", "duration", "spell"},
-	// src/Data/Skills/spectre.lua:5030
+	// src/Data/Skills/spectre.lua:5029
 	"LegionTemplarJudgeBallLightning": {"area", "hit", "projectile", "spell", "triggerable"},
-	// src/Data/Skills/spectre.lua:5067
+	// src/Data/Skills/spectre.lua:5066
 	"LegionTemplarJudgeStormCall": {"area", "duration", "spell"},
-	// src/Data/Skills/other.lua:2425
+	// src/Data/Skills/other.lua:2553
 	"LightningAegis": {"spell"},
-	// src/Data/Skills/act_dex.lua:10414
+	// src/Data/Skills/act_dex.lua:10417
 	"LightningArrow": {"attack", "projectile"},
-	// src/Data/Skills/act_dex.lua:10486
+	// src/Data/Skills/act_dex.lua:10489
 	"LightningArrowAltX": {"attack", "projectile"},
-	// src/Data/Skills/other.lua:2457
+	// src/Data/Skills/other.lua:2585
 	"LightningBolt": {"area", "spell"},
 	// src/Data/Skills/act_int.lua:12372
 	"LightningConduit": {"spell"},
 	// src/Data/Skills/act_int.lua:12457
 	"LightningConduitAltX": {"spell"},
-	// src/Data/Skills/minion.lua:390
+	// src/Data/Skills/minion.lua:389
 	"LightningGolemArcSummoned": {"duration", "projectile", "spell"},
-	// src/Data/Skills/minion.lua:450
+	// src/Data/Skills/minion.lua:449
 	"LightningGolemWrath": {"area", "aura", "duration", "spell"},
 	// src/Data/Skills/act_int.lua:11657
 	"LightningSpireTrap": {"area", "duration", "spell", "trap"},
@@ -1432,9 +1443,9 @@ var SkillBaseFlags = map[string][]string{
 	"LightningSpireTrapAltX": {"area", "duration", "spell", "trap"},
 	// src/Data/Skills/act_int.lua:12140
 	"LightningSpireTrapAltY": {"area", "duration", "spell", "trap"},
-	// src/Data/Skills/act_dex.lua:10673
+	// src/Data/Skills/act_dex.lua:10676
 	"LightningStrike": {"attack", "melee", "projectile"},
-	// src/Data/Skills/act_dex.lua:10774
+	// src/Data/Skills/act_dex.lua:10777
 	"LightningStrikeAltX": {"attack", "melee", "projectile"},
 	// src/Data/Skills/act_int.lua:12529
 	"LightningTendrils": {"area", "spell"},
@@ -1448,39 +1459,39 @@ var SkillBaseFlags = map[string][]string{
 	"LightningTrapAltX": {"projectile", "spell", "trap"},
 	// src/Data/Skills/act_int.lua:13102
 	"LightningWarp": {"area", "duration", "spell"},
-	// src/Data/Skills/spectre.lua:10991
+	// src/Data/Skills/spectre.lua:10990
 	"MMSAzmeriDemonBloodVomitLarge": {"hit", "projectile", "spell"},
-	// src/Data/Skills/spectre.lua:10956
+	// src/Data/Skills/spectre.lua:10955
 	"MMSAzmeriDemonBloodVomitMedium": {"hit", "projectile", "spell"},
-	// src/Data/Skills/spectre.lua:10921
+	// src/Data/Skills/spectre.lua:10920
 	"MMSAzmeriDemonBloodVomitSmall": {"hit", "projectile", "spell"},
-	// src/Data/Skills/spectre.lua:9766
+	// src/Data/Skills/spectre.lua:9765
 	"MMSAzmeriShepherdTripleMortar": {"area", "projectile", "spell"},
-	// src/Data/Skills/spectre.lua:9802
+	// src/Data/Skills/spectre.lua:9801
 	"MMSAzmeriShepherdVomitMortar": {"area", "projectile", "spell"},
-	// src/Data/Skills/spectre.lua:5166
+	// src/Data/Skills/spectre.lua:5165
 	"MMSHeistRobotClockworkGolemMortarSpectre": {"area", "hit", "projectile", "spell", "triggerable"},
-	// src/Data/Skills/spectre.lua:6120
+	// src/Data/Skills/spectre.lua:6119
 	"MMSHellscapeDemonEliteTripleMortar": {"area", "hit", "projectile", "spell", "triggerable"},
-	// src/Data/Skills/spectre.lua:6161
+	// src/Data/Skills/spectre.lua:6160
 	"MMSHellscapeDemonEliteVomitMortar": {"area", "hit", "projectile", "spell", "triggerable"},
-	// src/Data/Skills/spectre.lua:6808
+	// src/Data/Skills/spectre.lua:6807
 	"MMSPyromaniacIceMortar": {"area", "projectile", "spell"},
-	// src/Data/Skills/spectre.lua:11657
+	// src/Data/Skills/spectre.lua:11656
 	"MPSFaridunWarlockBloodSpray": {"projectile", "spell"},
-	// src/Data/Skills/spectre.lua:10764
+	// src/Data/Skills/spectre.lua:10763
 	"MPSHeistCultistStaffProjectileGreen": {"projectile", "spell"},
-	// src/Data/Skills/spectre.lua:5133
+	// src/Data/Skills/spectre.lua:5132
 	"MPSHeistRobotClockworkGolemBasicProjectile": {"projectile", "spell", "triggerable"},
-	// src/Data/Skills/spectre.lua:11756
+	// src/Data/Skills/spectre.lua:11755
 	"MPSHellscapeFleshEliteBasicProj": {"projectile", "spell", "triggerable"},
-	// src/Data/Skills/minion.lua:2244
+	// src/Data/Skills/minion.lua:2243
 	"MPSPhantasmBasicBlood": {"projectile", "spell"},
-	// src/Data/Skills/minion.lua:2031
+	// src/Data/Skills/minion.lua:2030
 	"MPWExpeditionSummonedArbalestProjectile": {"attack", "projectile"},
-	// src/Data/Skills/spectre.lua:5101
+	// src/Data/Skills/spectre.lua:5100
 	"MPWHeistThugRangedBurningArrow": {"attack", "hit", "projectile", "triggerable"},
-	// src/Data/Skills/spectre.lua:5828
+	// src/Data/Skills/spectre.lua:5827
 	"MPWVaalGuardBarrage": {"attack", "projectile", "triggerable"},
 	// src/Data/Skills/act_int.lua:13345
 	"Malevolence": {"area", "aura", "spell"},
@@ -1488,159 +1499,159 @@ var SkillBaseFlags = map[string][]string{
 	"ManaInfusedStaff": {"area", "duration", "spell"},
 	// src/Data/Skills/act_int.lua:13517
 	"Manabond": {"arcane", "area", "spell"},
-	// src/Data/Skills/other.lua:2539
+	// src/Data/Skills/other.lua:2667
 	"ManifestDancingDervishes": {"minion", "spell"},
-	// src/Data/Skills/spectre.lua:1623
+	// src/Data/Skills/spectre.lua:1622
 	"MassFrenzy": {"area", "spell"},
-	// src/Data/Skills/spectre.lua:1641
+	// src/Data/Skills/spectre.lua:1640
 	"MassPower": {"area", "spell"},
-	// src/Data/Skills/other.lua:1215
+	// src/Data/Skills/other.lua:1343
 	"Melee": {"attack", "melee", "projectile"},
-	// src/Data/Skills/spectre.lua:5856
+	// src/Data/Skills/spectre.lua:5855
 	"MeleeAtAnimationSpeed": {"attack", "melee", "projectile"},
-	// src/Data/Skills/spectre.lua:8055
+	// src/Data/Skills/spectre.lua:8054
 	"MeleeAtAnimationSpeedChaos": {"attack", "melee", "projectile"},
-	// src/Data/Skills/spectre.lua:7598
+	// src/Data/Skills/spectre.lua:7597
 	"MeleeAtAnimationSpeedCold": {"attack", "melee", "projectile"},
-	// src/Data/Skills/spectre.lua:5938
+	// src/Data/Skills/spectre.lua:5937
 	"MeleeAtAnimationSpeedFire": {"attack", "melee", "projectile"},
-	// src/Data/Skills/spectre.lua:11591
+	// src/Data/Skills/spectre.lua:11590
 	"MeleeAtAnimationSpeedLightning": {"attack", "melee"},
-	// src/Data/Skills/minion.lua:1863
+	// src/Data/Skills/minion.lua:1862
 	"MeleeAtAnimationSpeedUnique": {"attack", "melee", "projectile"},
-	// src/Data/Skills/spectre.lua:4661
+	// src/Data/Skills/spectre.lua:4660
 	"MeleeCold": {"attack", "melee", "projectile"},
-	// src/Data/Skills/minion.lua:2295
+	// src/Data/Skills/minion.lua:2294
 	"MeleeComboCold": {"attack", "melee"},
-	// src/Data/Skills/spectre.lua:4159
+	// src/Data/Skills/spectre.lua:4158
 	"MeleeEyrieArrow": {"attack", "melee", "projectile"},
-	// src/Data/Skills/spectre.lua:5652
+	// src/Data/Skills/spectre.lua:5651
 	"MeleeEyrieBird": {"attack", "melee", "projectile"},
-	// src/Data/Skills/spectre.lua:11356
+	// src/Data/Skills/spectre.lua:11355
 	"MeleeFire": {"attack", "melee"},
-	// src/Data/Skills/spectre.lua:5881
+	// src/Data/Skills/spectre.lua:5880
 	"MeleeKaruiArcher": {"attack", "melee", "projectile"},
-	// src/Data/Skills/minion.lua:2321
+	// src/Data/Skills/minion.lua:2320
 	"MeleePartialChaos": {"attack", "melee"},
-	// src/Data/Skills/other.lua:1237
+	// src/Data/Skills/other.lua:1365
 	"MeleeUseContactPoint": {"attack", "melee", "projectile"},
-	// src/Data/Skills/spectre.lua:1659
+	// src/Data/Skills/spectre.lua:1658
 	"MinerThrowFireSpectre": {"area", "duration", "projectile", "spell"},
-	// src/Data/Skills/minion.lua:1747
+	// src/Data/Skills/minion.lua:1746
 	"MinionInstability": {"area", "cast", "fire"},
-	// src/Data/Skills/act_dex.lua:10982
+	// src/Data/Skills/act_dex.lua:10985
 	"MirrorArrow": {"attack", "duration", "minion", "projectile"},
-	// src/Data/Skills/act_dex.lua:11068
+	// src/Data/Skills/act_dex.lua:11071
 	"MirrorArrowAltX": {"attack", "duration", "minion", "projectile"},
-	// src/Data/Skills/act_dex.lua:11153
+	// src/Data/Skills/act_dex.lua:11156
 	"MirrorArrowAltY": {"attack", "duration", "minion", "projectile"},
-	// src/Data/Skills/other.lua:2587
+	// src/Data/Skills/other.lua:2715
 	"MistyReflection": {"duration", "spell"},
-	// src/Data/Skills/act_str.lua:7526
+	// src/Data/Skills/act_str.lua:7589
 	"MoltenShell": {"area", "duration", "hit"},
-	// src/Data/Skills/act_str.lua:7728
+	// src/Data/Skills/act_str.lua:7791
 	"MoltenStrike": {"area", "attack", "melee", "projectile"},
-	// src/Data/Skills/act_str.lua:7896
+	// src/Data/Skills/act_str.lua:7959
 	"MoltenStrikeAltX": {"area", "attack", "melee", "projectile"},
-	// src/Data/Skills/spectre.lua:1703
+	// src/Data/Skills/spectre.lua:1702
 	"MonsterArc": {"chaining", "spell"},
-	// src/Data/Skills/spectre.lua:1739
+	// src/Data/Skills/spectre.lua:1738
 	"MonsterCausticArrow": {"area", "attack", "duration", "projectile"},
-	// src/Data/Skills/spectre.lua:1788
+	// src/Data/Skills/spectre.lua:1787
 	"MonsterCausticArrowAtAnimationSpeed": {"area", "attack", "duration", "projectile"},
-	// src/Data/Skills/spectre.lua:1826
+	// src/Data/Skills/spectre.lua:1825
 	"MonsterCausticBomb": {"area", "duration", "spell", "trap"},
-	// src/Data/Skills/spectre.lua:6584
+	// src/Data/Skills/spectre.lua:6583
 	"MonsterChanceToTemporalChainsOnHit1": {"area", "curse", "duration", "hex", "spell"},
-	// src/Data/Skills/spectre.lua:1870
+	// src/Data/Skills/spectre.lua:1869
 	"MonsterDischarge": {"area", "spell"},
-	// src/Data/Skills/spectre.lua:1911
+	// src/Data/Skills/spectre.lua:1910
 	"MonsterEnduringCry": {"area", "duration", "warcry"},
-	// src/Data/Skills/spectre.lua:2044
+	// src/Data/Skills/spectre.lua:2043
 	"MonsterFireBomb": {"area", "duration", "spell", "trap"},
-	// src/Data/Skills/spectre.lua:2008
+	// src/Data/Skills/spectre.lua:2007
 	"MonsterFireballContactPos": {"area", "projectile", "spell"},
-	// src/Data/Skills/spectre.lua:2125
+	// src/Data/Skills/spectre.lua:2124
 	"MonsterFlameRedCannibal": {"projectile", "spell"},
-	// src/Data/Skills/spectre.lua:2085
+	// src/Data/Skills/spectre.lua:2084
 	"MonsterFlickerStrike": {"attack", "melee", "movement"},
-	// src/Data/Skills/spectre.lua:2162
+	// src/Data/Skills/spectre.lua:2161
 	"MonsterIceShot": {"area", "attack", "duration", "projectile"},
-	// src/Data/Skills/spectre.lua:2228
+	// src/Data/Skills/spectre.lua:2227
 	"MonsterLeapSlam": {"area", "attack", "melee"},
-	// src/Data/Skills/spectre.lua:2264
+	// src/Data/Skills/spectre.lua:2263
 	"MonsterLeapSlamFoothills": {"area", "attack", "melee"},
-	// src/Data/Skills/spectre.lua:2301
+	// src/Data/Skills/spectre.lua:2300
 	"MonsterLesserMultiFireballSpectre": {"area", "projectile", "spell"},
-	// src/Data/Skills/spectre.lua:2335
+	// src/Data/Skills/spectre.lua:2334
 	"MonsterLesserMultiIceSpear": {"projectile", "spell"},
-	// src/Data/Skills/spectre.lua:2367
+	// src/Data/Skills/spectre.lua:2366
 	"MonsterLightningArrow": {"area", "attack", "projectile"},
-	// src/Data/Skills/spectre.lua:2429
+	// src/Data/Skills/spectre.lua:2428
 	"MonsterLightningThorns": {"duration", "spell"},
-	// src/Data/Skills/spectre.lua:2451
+	// src/Data/Skills/spectre.lua:2450
 	"MonsterMultiFireballSpectre": {"area", "projectile", "spell"},
-	// src/Data/Skills/spectre.lua:2485
+	// src/Data/Skills/spectre.lua:2484
 	"MonsterMultiIceSpear": {"projectile", "spell"},
-	// src/Data/Skills/minion.lua:419
+	// src/Data/Skills/minion.lua:418
 	"MonsterProjectileSpellLightningGolemSummoned": {"projectile", "spell"},
-	// src/Data/Skills/spectre.lua:2517
+	// src/Data/Skills/spectre.lua:2516
 	"MonsterProjectileWeakness": {"area", "curse", "duration", "spell"},
-	// src/Data/Skills/spectre.lua:2554
+	// src/Data/Skills/spectre.lua:2553
 	"MonsterProximityShield": {"area", "duration", "spell"},
-	// src/Data/Skills/spectre.lua:2575
+	// src/Data/Skills/spectre.lua:2574
 	"MonsterPuncture": {"attack", "melee", "projectile"},
-	// src/Data/Skills/spectre.lua:2614
+	// src/Data/Skills/spectre.lua:2613
 	"MonsterRighteousFireWhileSpectred": {"area", "spell"},
-	// src/Data/Skills/spectre.lua:2642
+	// src/Data/Skills/spectre.lua:2641
 	"MonsterShockNova": {"area", "spell"},
-	// src/Data/Skills/spectre.lua:2676
+	// src/Data/Skills/spectre.lua:2675
 	"MonsterSpark": {"duration", "projectile", "spell"},
-	// src/Data/Skills/spectre.lua:2716
+	// src/Data/Skills/spectre.lua:2715
 	"MonsterSplitFireballSpectre": {"area", "projectile", "spell"},
-	// src/Data/Skills/spectre.lua:2750
+	// src/Data/Skills/spectre.lua:2749
 	"MonsterSplitIceSpear": {"projectile", "spell"},
-	// src/Data/Skills/spectre.lua:2782
+	// src/Data/Skills/spectre.lua:2781
 	"MonsterViperStrike": {"attack", "duration", "melee"},
-	// src/Data/Skills/spectre.lua:9889
+	// src/Data/Skills/spectre.lua:9888
 	"MonsterViperStrikeAtAnimationSpeed": {"attack", "duration", "melee"},
-	// src/Data/Skills/spectre.lua:6713
+	// src/Data/Skills/spectre.lua:6712
 	"MonsterVulnerabilityOnHit1": {"area", "curse", "duration", "hex", "spell"},
-	// src/Data/Skills/spectre.lua:2817
+	// src/Data/Skills/spectre.lua:2816
 	"MonsterWarlordsMark": {"area", "curse", "duration", "spell"},
-	// src/Data/Skills/spectre.lua:2857
+	// src/Data/Skills/spectre.lua:2856
 	"MotherOfFlamesMagmaOrb3": {"area", "chaining", "projectile", "spell"},
-	// src/Data/Skills/spectre.lua:2195
+	// src/Data/Skills/spectre.lua:2194
 	"MountainGoatmanIceSpear": {"projectile", "spell"},
-	// src/Data/Skills/spectre.lua:2892
+	// src/Data/Skills/spectre.lua:2891
 	"NecromancerConductivity": {"area", "curse", "duration", "spell"},
-	// src/Data/Skills/spectre.lua:2930
+	// src/Data/Skills/spectre.lua:2929
 	"NecromancerElementalWeakness": {"area", "curse", "duration", "spell"},
-	// src/Data/Skills/spectre.lua:2964
+	// src/Data/Skills/spectre.lua:2963
 	"NecromancerEnfeeble": {"area", "curse", "duration", "spell"},
-	// src/Data/Skills/spectre.lua:3003
+	// src/Data/Skills/spectre.lua:3002
 	"NecromancerFlammability": {"area", "curse", "duration", "spell"},
-	// src/Data/Skills/spectre.lua:3041
+	// src/Data/Skills/spectre.lua:3040
 	"NecromancerFrostbite": {"area", "curse", "duration", "spell"},
-	// src/Data/Skills/spectre.lua:3079
+	// src/Data/Skills/spectre.lua:3078
 	"NecromancerProjectileWeakness": {"area", "curse", "duration", "spell"},
-	// src/Data/Skills/spectre.lua:3116
+	// src/Data/Skills/spectre.lua:3115
 	"NecromancerRaiseZombie": {"minion", "spell"},
-	// src/Data/Skills/spectre.lua:3143
+	// src/Data/Skills/spectre.lua:3142
 	"NecromancerVulnerability": {"area", "curse", "duration", "spell"},
 	// src/Data/Skills/act_int.lua:13611
 	"OrbOfStorms": {"chaining", "duration", "spell"},
 	// src/Data/Skills/act_int.lua:13703
 	"OrbOfStormsAltX": {"chaining", "duration", "spell"},
-	// src/Data/Skills/other.lua:3334
+	// src/Data/Skills/other.lua:3462
 	"Pacify": {"area", "curse", "duration", "hex", "spell"},
-	// src/Data/Skills/other.lua:2773
+	// src/Data/Skills/other.lua:2901
 	"PactOfBeidat": {"pact", "spell"},
-	// src/Data/Skills/other.lua:2863
+	// src/Data/Skills/other.lua:2991
 	"PactOfGhorr": {"duration", "pact", "spell"},
-	// src/Data/Skills/other.lua:3018
+	// src/Data/Skills/other.lua:3146
 	"PactOfKtash": {"pact", "spell"},
-	// src/Data/Skills/other.lua:3104
+	// src/Data/Skills/other.lua:3232
 	"PactOfLycia": {"pact", "spell"},
 	// src/Data/Skills/act_int.lua:13799
 	"PenanceBrand": {"area", "brand", "duration", "spell"},
@@ -1648,51 +1659,51 @@ var SkillBaseFlags = map[string][]string{
 	"PenanceBrandAltX": {"area", "brand", "duration", "spell"},
 	// src/Data/Skills/act_int.lua:14005
 	"PenanceBrandAltY": {"area", "brand", "duration", "spell"},
-	// src/Data/Skills/other.lua:2684
+	// src/Data/Skills/other.lua:2812
 	"PenanceMark": {"curse", "duration", "mark", "spell"},
-	// src/Data/Skills/act_str.lua:8226
+	// src/Data/Skills/act_str.lua:8289
 	"Perforate": {"area", "attack", "melee"},
-	// src/Data/Skills/act_str.lua:8322
+	// src/Data/Skills/act_str.lua:8385
 	"PerforateAltX": {"area", "attack", "melee"},
-	// src/Data/Skills/act_str.lua:8423
+	// src/Data/Skills/act_str.lua:8486
 	"PerforateAltY": {"area", "attack", "melee"},
-	// src/Data/Skills/act_dex.lua:11238
+	// src/Data/Skills/act_dex.lua:11241
 	"PestilentStrike": {"area", "attack", "duration", "melee"},
-	// src/Data/Skills/act_str.lua:8519
+	// src/Data/Skills/act_str.lua:8582
 	"PetrifiedBlood": {},
-	// src/Data/Skills/act_dex.lua:11316
+	// src/Data/Skills/act_dex.lua:11319
 	"PhaseRun": {"duration", "spell"},
-	// src/Data/Skills/other.lua:2722
+	// src/Data/Skills/other.lua:2850
 	"PhysicalAegis": {"spell"},
-	// src/Data/Skills/act_dex.lua:11394
+	// src/Data/Skills/act_dex.lua:11397
 	"PlagueBearer": {"area", "spell"},
-	// src/Data/Skills/act_dex.lua:11476
+	// src/Data/Skills/act_dex.lua:11479
 	"PoachersMark": {"curse", "duration", "mark", "spell"},
-	// src/Data/Skills/act_dex.lua:17399
+	// src/Data/Skills/act_dex.lua:17402
 	"PoisonousConcoction": {"area", "attack", "projectile"},
-	// src/Data/Skills/act_dex.lua:17500
+	// src/Data/Skills/act_dex.lua:17503
 	"PoisonousConcoctionAltX": {"area", "attack", "projectile"},
-	// src/Data/Skills/other.lua:3259
+	// src/Data/Skills/other.lua:3387
 	"Portal": {"spell"},
 	// src/Data/Skills/act_int.lua:14097
 	"PowerSiphon": {"attack", "projectile"},
 	// src/Data/Skills/act_int.lua:14181
 	"PowerSiphonAltX": {"attack", "projectile"},
-	// src/Data/Skills/act_dex.lua:11569
+	// src/Data/Skills/act_dex.lua:11572
 	"Precision": {"area", "aura", "spell"},
-	// src/Data/Skills/act_str.lua:8597
+	// src/Data/Skills/act_str.lua:8660
 	"Pride": {"area", "aura", "spell"},
-	// src/Data/Skills/other.lua:3308
+	// src/Data/Skills/other.lua:3436
 	"PrimalAegis": {},
-	// src/Data/Skills/sup_int.lua:5405
+	// src/Data/Skills/sup_int.lua:5404
 	"PrismaticBurst": {"area", "spell"},
-	// src/Data/Skills/act_str.lua:8676
+	// src/Data/Skills/act_str.lua:8739
 	"ProtectiveLink": {"duration", "spell"},
-	// src/Data/Skills/act_dex.lua:12053
+	// src/Data/Skills/act_dex.lua:12056
 	"Puncture": {"attack", "duration", "melee", "projectile"},
-	// src/Data/Skills/act_dex.lua:12137
+	// src/Data/Skills/act_dex.lua:12140
 	"PunctureAltX": {"attack", "duration", "melee"},
-	// src/Data/Skills/act_str.lua:8753
+	// src/Data/Skills/act_str.lua:8816
 	"Punishment": {"area", "curse", "duration", "hex", "spell"},
 	// src/Data/Skills/act_int.lua:14349
 	"PurifyingFlame": {"area", "duration", "spell"},
@@ -1700,47 +1711,47 @@ var SkillBaseFlags = map[string][]string{
 	"PurifyingFlameAltX": {"area", "duration", "spell"},
 	// src/Data/Skills/act_int.lua:14554
 	"PurityOfElements": {"area", "aura", "spell"},
-	// src/Data/Skills/act_str.lua:8839
+	// src/Data/Skills/act_str.lua:8902
 	"PurityOfFire": {"area", "aura", "spell"},
-	// src/Data/Skills/act_dex.lua:12224
+	// src/Data/Skills/act_dex.lua:12227
 	"PurityOfIce": {"area", "aura", "spell"},
 	// src/Data/Skills/act_int.lua:14633
 	"PurityOfLightning": {"area", "aura", "spell"},
-	// src/Data/Skills/spectre.lua:3178
+	// src/Data/Skills/spectre.lua:3177
 	"PyroChaosFireball": {"area", "projectile", "spell"},
-	// src/Data/Skills/spectre.lua:3214
+	// src/Data/Skills/spectre.lua:3213
 	"PyroFireball": {"area", "projectile", "spell"},
-	// src/Data/Skills/spectre.lua:3247
+	// src/Data/Skills/spectre.lua:3246
 	"PyroSuicideExplosion": {"area", "spell"},
 	// src/Data/Skills/act_int.lua:14798
 	"PyroclastMine": {"area", "mine", "projectile", "spell"},
 	// src/Data/Skills/act_int.lua:14896
 	"PyroclastMineAltX": {"area", "mine", "projectile", "spell"},
-	// src/Data/Skills/other.lua:3290
+	// src/Data/Skills/other.lua:3418
 	"QueensDemand": {},
-	// src/Data/Skills/act_str.lua:10941
+	// src/Data/Skills/act_str.lua:11004
 	"QuickGuard": {"duration", "spell"},
-	// src/Data/Skills/act_dex.lua:18443
+	// src/Data/Skills/act_dex.lua:18446
 	"QuickstepHardMode": {"movement", "travel"},
-	// src/Data/Skills/act_str.lua:9004
+	// src/Data/Skills/act_str.lua:9067
 	"RageVortex": {"area", "attack", "duration", "melee"},
-	// src/Data/Skills/act_str.lua:9129
+	// src/Data/Skills/act_str.lua:9192
 	"RageVortexAltX": {"area", "attack", "duration", "melee"},
-	// src/Data/Skills/minion.lua:530
+	// src/Data/Skills/minion.lua:529
 	"RagingSpiritMeleeAttack": {"attack", "melee"},
-	// src/Data/Skills/act_dex.lua:12393
+	// src/Data/Skills/act_dex.lua:12396
 	"RainOfArrows": {"area", "attack", "projectile"},
-	// src/Data/Skills/act_dex.lua:12468
+	// src/Data/Skills/act_dex.lua:12471
 	"RainOfArrowsAltX": {"area", "attack", "projectile"},
-	// src/Data/Skills/act_dex.lua:12543
+	// src/Data/Skills/act_dex.lua:12546
 	"RainOfArrowsAltY": {"area", "attack", "projectile"},
-	// src/Data/Skills/minion.lua:2074
+	// src/Data/Skills/minion.lua:2073
 	"RainOfArrowsCloneShot": {"area", "attack", "projectile"},
 	// src/Data/Skills/act_int.lua:14998
 	"RaiseSpectre": {"duration", "minion", "permanentMinion", "spectre", "spell"},
 	// src/Data/Skills/act_int.lua:15078
 	"RaiseSpectreAltX": {"duration", "minion", "spectre", "spell"},
-	// src/Data/Skills/other.lua:3397
+	// src/Data/Skills/other.lua:3525
 	"RaiseSpiders": {"duration", "minion", "spell"},
 	// src/Data/Skills/act_int.lua:15163
 	"RaiseZombie": {"minion", "permanentMinion", "spell"},
@@ -1748,41 +1759,41 @@ var SkillBaseFlags = map[string][]string{
 	"RaiseZombieAltX": {"minion", "permanentMinion", "spell"},
 	// src/Data/Skills/act_int.lua:15332
 	"RaiseZombieAltY": {"minion", "spell"},
-	// src/Data/Skills/act_str.lua:9221
+	// src/Data/Skills/act_str.lua:9284
 	"RallyingCry": {"area", "duration", "warcry"},
-	// src/Data/Skills/other.lua:3365
+	// src/Data/Skills/other.lua:3493
 	"Ravenous": {"spell"},
-	// src/Data/Skills/act_str.lua:11022
+	// src/Data/Skills/act_str.lua:11085
 	"Reap": {"area", "duration", "spell"},
-	// src/Data/Skills/act_str.lua:11122
+	// src/Data/Skills/act_str.lua:11185
 	"ReapAltX": {"area", "duration", "spell"},
-	// src/Data/Skills/minion.lua:2006
+	// src/Data/Skills/minion.lua:2005
 	"ReaperConsumeMinionForBuff": {"spell"},
-	// src/Data/Skills/act_dex.lua:12702
+	// src/Data/Skills/act_dex.lua:12705
 	"Reave": {"area", "attack", "melee"},
-	// src/Data/Skills/act_dex.lua:12791
+	// src/Data/Skills/act_dex.lua:12794
 	"ReaveAltX": {"area", "attack", "melee"},
-	// src/Data/Skills/act_str.lua:9318
+	// src/Data/Skills/act_str.lua:9381
 	"RejuvenationTotem": {"area", "aura", "duration", "spell", "totem"},
-	// src/Data/Skills/minion.lua:1010
+	// src/Data/Skills/minion.lua:1009
 	"RelicTriggeredNova": {"spell"},
-	// src/Data/Skills/other.lua:9
+	// src/Data/Skills/other.lua:8
 	"RepeatingShockwave": {"area", "spell"},
-	// src/Data/Skills/minion.lua:1796
+	// src/Data/Skills/minion.lua:1795
 	"ReplicaSiegebreakerBurningGround": {"area", "duration"},
-	// src/Data/Skills/other.lua:755
+	// src/Data/Skills/other.lua:883
 	"ResentmentUniqueSkill": {"duration", "spell"},
-	// src/Data/Skills/spectre.lua:11321
+	// src/Data/Skills/spectre.lua:11320
 	"RevenantBossSpellProjectile": {"projectile", "spell", "triggerable"},
-	// src/Data/Skills/spectre.lua:3279
+	// src/Data/Skills/spectre.lua:3278
 	"RevenantSpellProjectileSpectre": {"projectile", "spell"},
 	// src/Data/Skills/act_int.lua:15418
 	"RighteousFire": {"area", "spell"},
 	// src/Data/Skills/act_int.lua:15523
 	"RighteousFireAltX": {"area", "spell"},
-	// src/Data/Skills/minion.lua:687
+	// src/Data/Skills/minion.lua:686
 	"RockGolemMinionWhirlingBlades": {"attack", "melee", "movement"},
-	// src/Data/Skills/minion.lua:662
+	// src/Data/Skills/minion.lua:661
 	"RockGolemSlam": {"area", "attack", "melee"},
 	// src/Data/Skills/act_int.lua:13261
 	"RollingMagma": {"area", "chaining", "projectile", "spell"},
@@ -1790,139 +1801,139 @@ var SkillBaseFlags = map[string][]string{
 	"RuneBlast": {"spell"},
 	// src/Data/Skills/act_int.lua:17954
 	"RuneBlastAltX": {"spell"},
-	// src/Data/Skills/spectre.lua:4530
+	// src/Data/Skills/spectre.lua:4529
 	"SandLeaperDodgeLeft": {},
-	// src/Data/Skills/spectre.lua:4548
+	// src/Data/Skills/spectre.lua:4547
 	"SandLeaperDodgeRight": {},
-	// src/Data/Skills/minion.lua:41
+	// src/Data/Skills/minion.lua:40
 	"SandstormChaosElementalSummoned": {"area", "duration", "spell"},
-	// src/Data/Skills/minion.lua:71
+	// src/Data/Skills/minion.lua:70
 	"SandstormChaosElementalSummonedEmpowered": {"area", "duration", "spell"},
 	// src/Data/Skills/act_int.lua:15712
 	"ScorchingRay": {"duration", "spell"},
 	// src/Data/Skills/act_int.lua:15814
 	"ScorchingRayAltX": {"duration", "spell"},
-	// src/Data/Skills/act_dex.lua:12976
+	// src/Data/Skills/act_dex.lua:12979
 	"ScourgeArrow": {"attack", "projectile"},
-	// src/Data/Skills/act_dex.lua:13078
+	// src/Data/Skills/act_dex.lua:13081
 	"ScourgeArrowAltX": {"attack", "projectile"},
-	// src/Data/Skills/spectre.lua:3341
+	// src/Data/Skills/spectre.lua:3340
 	"SeaWitchScreech": {"area", "duration", "spell"},
-	// src/Data/Skills/act_str.lua:9494
+	// src/Data/Skills/act_str.lua:9557
 	"SearingBond": {"duration", "spell", "totem"},
-	// src/Data/Skills/act_str.lua:9570
+	// src/Data/Skills/act_str.lua:9633
 	"SearingBondAltX": {"duration", "spell", "totem"},
-	// src/Data/Skills/spectre.lua:3312
+	// src/Data/Skills/spectre.lua:3311
 	"SeawitchFrostbolt": {"projectile", "spell"},
-	// src/Data/Skills/spectre.lua:3373
+	// src/Data/Skills/spectre.lua:3372
 	"SeawitchVulnerability": {"area", "curse", "duration", "spell"},
-	// src/Data/Skills/spectre.lua:5713
+	// src/Data/Skills/spectre.lua:5712
 	"SecretDesecrateMonsterEarthquakeTriggered": {"area", "attack", "duration", "hit", "melee", "triggerable"},
-	// src/Data/Skills/spectre.lua:5749
+	// src/Data/Skills/spectre.lua:5748
 	"SecretDesecrateMonsterMultiSlash": {"area", "attack", "hit", "triggerable"},
-	// src/Data/Skills/act_str.lua:9667
+	// src/Data/Skills/act_str.lua:9730
 	"SeismicCry": {"area", "duration", "warcry"},
-	// src/Data/Skills/act_dex.lua:13368
+	// src/Data/Skills/act_dex.lua:13371
 	"SeismicTrap": {"area", "duration", "spell", "trap"},
-	// src/Data/Skills/act_dex.lua:13609
+	// src/Data/Skills/act_dex.lua:13612
 	"SeismicTrapAltX": {"area", "spell", "trap"},
-	// src/Data/Skills/minion.lua:986
+	// src/Data/Skills/minion.lua:985
 	"SentinelHolySlam": {"area", "attack", "melee"},
-	// src/Data/Skills/other.lua:3504
+	// src/Data/Skills/other.lua:3632
 	"ShadeForm": {"duration", "spell"},
-	// src/Data/Skills/other.lua:3583
+	// src/Data/Skills/other.lua:3711
 	"ShaperApparitionBeam": {"duration", "spell"},
-	// src/Data/Skills/other.lua:3618
+	// src/Data/Skills/other.lua:3746
 	"ShaperApparitionProjectiles": {"projectile", "spell"},
-	// src/Data/Skills/other.lua:3550
+	// src/Data/Skills/other.lua:3678
 	"ShaperApparitionTeleportSlam": {"area", "attack", "melee"},
-	// src/Data/Skills/act_dex.lua:13171
+	// src/Data/Skills/act_dex.lua:13174
 	"ShatteringSteel": {"area", "attack", "projectile"},
-	// src/Data/Skills/act_dex.lua:13260
+	// src/Data/Skills/act_dex.lua:13263
 	"ShatteringSteelAltX": {"area", "attack", "projectile"},
-	// src/Data/Skills/act_str.lua:9767
+	// src/Data/Skills/act_str.lua:9830
 	"ShieldCharge": {"area", "attack", "melee", "shieldAttack"},
-	// src/Data/Skills/act_str.lua:9856
+	// src/Data/Skills/act_str.lua:9919
 	"ShieldCrush": {"area", "attack", "melee", "shieldAttack"},
-	// src/Data/Skills/act_str.lua:9950
+	// src/Data/Skills/act_str.lua:10013
 	"ShieldCrushAltX": {"area", "attack", "melee", "shieldAttack"},
-	// src/Data/Skills/act_str.lua:10039
+	// src/Data/Skills/act_str.lua:10102
 	"ShieldOfLight": {"area", "attack", "melee", "shieldAttack"},
-	// src/Data/Skills/other.lua:3657
+	// src/Data/Skills/other.lua:3785
 	"ShieldShatter": {"area", "spell"},
 	// src/Data/Skills/act_int.lua:15912
 	"ShockNova": {"area", "spell"},
 	// src/Data/Skills/act_int.lua:16005
 	"ShockNovaAltX": {"area", "spell"},
-	// src/Data/Skills/act_str.lua:10131
+	// src/Data/Skills/act_str.lua:10194
 	"ShockwaveTotem": {"area", "duration", "spell", "totem"},
-	// src/Data/Skills/act_str.lua:10211
+	// src/Data/Skills/act_str.lua:10274
 	"ShockwaveTotemAltX": {"area", "duration", "spell", "totem"},
-	// src/Data/Skills/act_dex.lua:13764
+	// src/Data/Skills/act_dex.lua:13767
 	"ShrapnelBallista": {"attack", "ballista", "projectile", "totem"},
-	// src/Data/Skills/act_dex.lua:13852
+	// src/Data/Skills/act_dex.lua:13855
 	"ShrapnelBallistaAltX": {"attack", "ballista", "projectile", "totem"},
-	// src/Data/Skills/act_dex.lua:13949
+	// src/Data/Skills/act_dex.lua:13952
 	"SiegeBallista": {"attack", "ballista", "projectile", "totem"},
-	// src/Data/Skills/act_dex.lua:14034
+	// src/Data/Skills/act_dex.lua:14037
 	"SiegeBallistaAltX": {"attack", "ballista", "projectile", "totem"},
-	// src/Data/Skills/act_dex.lua:14115
+	// src/Data/Skills/act_dex.lua:14118
 	"SiegeBallistaAltY": {"attack", "ballista", "projectile", "totem"},
-	// src/Data/Skills/minion.lua:1774
+	// src/Data/Skills/minion.lua:1773
 	"SiegebreakerCausticGround": {"area", "duration"},
 	// src/Data/Skills/act_int.lua:16091
 	"SigilOfPower": {"area", "duration", "spell"},
-	// src/Data/Skills/sup_int.lua:1738
+	// src/Data/Skills/sup_int.lua:1737
 	"SignalPrey": {},
 	// src/Data/Skills/act_int.lua:16191
 	"SiphoningTrap": {"duration", "spell", "trap"},
 	// src/Data/Skills/act_int.lua:16291
 	"SiphoningTrapAltX": {"duration", "spell", "trap"},
-	// src/Data/Skills/spectre.lua:2398
+	// src/Data/Skills/spectre.lua:2397
 	"SkeletonArcherLightningArrow": {"area", "attack", "projectile"},
-	// src/Data/Skills/spectre.lua:3408
+	// src/Data/Skills/spectre.lua:3407
 	"SkeletonBlackAbyssBoneLance": {"area", "projectile", "spell"},
-	// src/Data/Skills/spectre.lua:3483
+	// src/Data/Skills/spectre.lua:3482
 	"SkeletonCannonBoneMortar": {"area", "duration", "projectile", "spell"},
-	// src/Data/Skills/spectre.lua:3521
+	// src/Data/Skills/spectre.lua:3520
 	"SkeletonCannonBoneNova": {"attack", "projectile"},
-	// src/Data/Skills/spectre.lua:3444
+	// src/Data/Skills/spectre.lua:3443
 	"SkeletonCannonMortar": {"area", "projectile", "spell"},
-	// src/Data/Skills/spectre.lua:3546
+	// src/Data/Skills/spectre.lua:3545
 	"SkeletonMassBowProjectile": {"attack", "projectile"},
-	// src/Data/Skills/minion.lua:575
+	// src/Data/Skills/minion.lua:574
 	"SkeletonMinionProjectileCold": {"projectile", "spell"},
-	// src/Data/Skills/minion.lua:604
+	// src/Data/Skills/minion.lua:603
 	"SkeletonMinionProjectileFire": {"projectile", "spell"},
-	// src/Data/Skills/minion.lua:633
+	// src/Data/Skills/minion.lua:632
 	"SkeletonMinionProjectileLightning": {"projectile", "spell"},
-	// src/Data/Skills/spectre.lua:3574
+	// src/Data/Skills/spectre.lua:3573
 	"SkeletonProjectileBlack": {"projectile", "spell"},
-	// src/Data/Skills/spectre.lua:3604
+	// src/Data/Skills/spectre.lua:3603
 	"SkeletonSoldierTornadoShot": {"attack", "projectile"},
-	// src/Data/Skills/spectre.lua:3636
+	// src/Data/Skills/spectre.lua:3635
 	"SkeletonSpark": {"duration", "projectile", "spell"},
-	// src/Data/Skills/spectre.lua:3714
+	// src/Data/Skills/spectre.lua:3713
 	"SkeletonVulnerability": {"area", "curse", "duration", "spell"},
-	// src/Data/Skills/minion.lua:1605
+	// src/Data/Skills/minion.lua:1604
 	"SkitterbotWait": {"duration"},
-	// src/Data/Skills/spectre.lua:3749
+	// src/Data/Skills/spectre.lua:3748
 	"SlavedriverFlameWhip": {"area", "spell"},
-	// src/Data/Skills/act_str.lua:10292
+	// src/Data/Skills/act_str.lua:10355
 	"Smite": {"area", "attack", "duration", "melee"},
-	// src/Data/Skills/act_str.lua:10419
+	// src/Data/Skills/act_str.lua:10482
 	"SmiteAltX": {"area", "attack", "melee"},
-	// src/Data/Skills/act_dex.lua:14205
+	// src/Data/Skills/act_dex.lua:14208
 	"SmokeMine": {"area", "buff", "mine", "spell"},
-	// src/Data/Skills/spectre.lua:3817
+	// src/Data/Skills/spectre.lua:3816
 	"SnakeSpineProjectile": {"attack", "projectile"},
-	// src/Data/Skills/act_dex.lua:17606
+	// src/Data/Skills/act_dex.lua:17609
 	"Snipe": {"attack", "channelRelease", "projectile"},
-	// src/Data/Skills/act_dex.lua:11648
+	// src/Data/Skills/act_dex.lua:11651
 	"SnipersMark": {"curse", "duration", "mark", "spell"},
-	// src/Data/Skills/spectre.lua:3840
+	// src/Data/Skills/spectre.lua:3839
 	"SolarisChampionFlameVortex": {"duration", "projectile", "spell"},
-	// src/Data/Skills/other.lua:433
+	// src/Data/Skills/other.lua:561
 	"SolartwineBlindingNova": {"area", "spell"},
 	// src/Data/Skills/act_int.lua:16370
 	"SomaticShell": {"attack"},
@@ -1940,47 +1951,47 @@ var SkillBaseFlags = map[string][]string{
 	"SparkAltX": {"duration", "projectile", "spell"},
 	// src/Data/Skills/act_int.lua:16884
 	"SparkAltY": {"duration", "projectile", "spell"},
-	// src/Data/Skills/spectre.lua:3874
+	// src/Data/Skills/spectre.lua:3873
 	"SpecialBeamCannon": {"area", "spell"},
-	// src/Data/Skills/act_dex.lua:15196
+	// src/Data/Skills/act_dex.lua:15199
 	"SpectralHelix": {"attack", "bounce", "projectile"},
-	// src/Data/Skills/act_dex.lua:15287
+	// src/Data/Skills/act_dex.lua:15290
 	"SpectralHelixAltY": {"attack", "bounce", "projectile", "trap"},
-	// src/Data/Skills/act_dex.lua:14292
+	// src/Data/Skills/act_dex.lua:14295
 	"SpectralShieldThrow": {"attack", "projectile", "shieldAttack"},
-	// src/Data/Skills/act_dex.lua:14392
+	// src/Data/Skills/act_dex.lua:14395
 	"SpectralShieldThrowAltX": {"attack", "projectile", "shieldAttack"},
-	// src/Data/Skills/act_dex.lua:14479
+	// src/Data/Skills/act_dex.lua:14482
 	"SpectralShieldThrowAltY": {"attack", "projectile", "shieldAttack"},
-	// src/Data/Skills/minion.lua:493
+	// src/Data/Skills/minion.lua:492
 	"SpectralSkullShieldCharge": {"attack", "melee", "movement"},
-	// src/Data/Skills/other.lua:3734
+	// src/Data/Skills/other.lua:3862
 	"SpectralSpirits": {"minion", "spell"},
-	// src/Data/Skills/act_dex.lua:14577
+	// src/Data/Skills/act_dex.lua:14580
 	"SpectralThrow": {"attack", "projectile"},
-	// src/Data/Skills/act_dex.lua:14657
+	// src/Data/Skills/act_dex.lua:14660
 	"SpectralThrowAltX": {"attack", "projectile"},
-	// src/Data/Skills/act_dex.lua:14738
+	// src/Data/Skills/act_dex.lua:14741
 	"SpectralThrowAltY": {"attack", "projectile", "trap"},
 	// src/Data/Skills/act_int.lua:17052
 	"Spellslinger": {"spell"},
-	// src/Data/Skills/other.lua:3797
+	// src/Data/Skills/other.lua:3925
 	"SpiritBurst": {"projectile", "spell"},
 	// src/Data/Skills/act_int.lua:17284
 	"SpiritOffering": {"duration", "spell"},
-	// src/Data/Skills/act_dex.lua:15386
+	// src/Data/Skills/act_dex.lua:15389
 	"SplitArrow": {"attack", "projectile"},
-	// src/Data/Skills/act_dex.lua:15455
+	// src/Data/Skills/act_dex.lua:15458
 	"SplitArrowAltX": {"attack", "projectile"},
-	// src/Data/Skills/act_dex.lua:15527
+	// src/Data/Skills/act_dex.lua:15530
 	"SplittingSteel": {"area", "attack", "projectile"},
-	// src/Data/Skills/act_dex.lua:15607
+	// src/Data/Skills/act_dex.lua:15610
 	"SplittingSteelAltX": {"area", "attack", "projectile"},
-	// src/Data/Skills/other.lua:3834
+	// src/Data/Skills/other.lua:3962
 	"StalkingPustule": {"spell"},
-	// src/Data/Skills/act_str.lua:10642
+	// src/Data/Skills/act_str.lua:10705
 	"StaticStrike": {"attack", "duration", "melee"},
-	// src/Data/Skills/act_str.lua:10756
+	// src/Data/Skills/act_str.lua:10819
 	"StaticStrikeAltX": {"attack", "duration", "melee"},
 	// src/Data/Skills/act_int.lua:17363
 	"StormBrand": {"area", "brand", "chaining", "duration", "spell"},
@@ -1994,13 +2005,13 @@ var SkillBaseFlags = map[string][]string{
 	"StormCall": {"area", "duration", "spell"},
 	// src/Data/Skills/act_int.lua:18326
 	"StormCallAltX": {"area", "duration", "spell"},
-	// src/Data/Skills/other.lua:3909
+	// src/Data/Skills/other.lua:4037
 	"StormCascadeTriggered": {"area", "spell"},
-	// src/Data/Skills/act_dex.lua:11725
+	// src/Data/Skills/act_dex.lua:11728
 	"StormRain": {"area", "attack", "projectile"},
-	// src/Data/Skills/act_dex.lua:11837
+	// src/Data/Skills/act_dex.lua:11840
 	"StormRainAltX": {"area", "attack", "projectile"},
-	// src/Data/Skills/act_dex.lua:11944
+	// src/Data/Skills/act_dex.lua:11947
 	"StormRainAltY": {"area", "attack", "projectile"},
 	// src/Data/Skills/act_int.lua:17649
 	"Stormbind": {"area", "duration", "spell"},
@@ -2008,15 +2019,15 @@ var SkillBaseFlags = map[string][]string{
 	"StormbindAltX": {"area", "duration", "spell"},
 	// src/Data/Skills/act_int.lua:17557
 	"StormblastMine": {"area", "mine", "spell"},
-	// src/Data/Skills/other.lua:4016
+	// src/Data/Skills/other.lua:4144
 	"SummonAbyssalConstructs": {"minion"},
-	// src/Data/Skills/other.lua:4043
+	// src/Data/Skills/other.lua:4171
 	"SummonArbalists": {"minion", "spell"},
-	// src/Data/Skills/other.lua:4073
+	// src/Data/Skills/other.lua:4201
 	"SummonBeastialRhoa": {"minion", "spell"},
-	// src/Data/Skills/other.lua:4112
+	// src/Data/Skills/other.lua:4240
 	"SummonBeastialSnake": {"minion", "spell"},
-	// src/Data/Skills/other.lua:4152
+	// src/Data/Skills/other.lua:4280
 	"SummonBeastialUrsa": {"minion", "spell"},
 	// src/Data/Skills/act_int.lua:18499
 	"SummonCarrionGolem": {"golem", "minion", "permanentMinion", "spell"},
@@ -2030,63 +2041,63 @@ var SkillBaseFlags = map[string][]string{
 	"SummonChaosGolemAltX": {"golem", "minion", "permanentMinion", "spell"},
 	// src/Data/Skills/act_int.lua:18932
 	"SummonChaosGolemAltY": {"golem", "minion", "permanentMinion", "spell"},
-	// src/Data/Skills/other.lua:4192
-	"SummonDoedresEffigy": {"duration"},
-	// src/Data/Skills/other.lua:4238
-	"SummonElementalRelic": {"duration", "minion", "spell"},
-	// src/Data/Skills/act_str.lua:11320
-	"SummonFlameGolem": {"golem", "minion", "permanentMinion", "spell"},
-	// src/Data/Skills/act_str.lua:11407
-	"SummonFlameGolemAltX": {"golem", "minion", "permanentMinion", "spell"},
-	// src/Data/Skills/act_str.lua:11485
-	"SummonFlameGolemAltY": {"golem", "minion", "permanentMinion", "spell"},
-	// src/Data/Skills/other.lua:4518
-	"SummonHarbingerOfBrutality": {"minion", "spell"},
-	// src/Data/Skills/other.lua:4296
-	"SummonHarbingerOfBrutalityUber": {"minion", "spell"},
-	// src/Data/Skills/other.lua:4542
-	"SummonHarbingerOfDirections": {"minion", "spell"},
 	// src/Data/Skills/other.lua:4320
+	"SummonDoedresEffigy": {"duration"},
+	// src/Data/Skills/other.lua:4366
+	"SummonElementalRelic": {"duration", "minion", "spell"},
+	// src/Data/Skills/act_str.lua:11383
+	"SummonFlameGolem": {"golem", "minion", "permanentMinion", "spell"},
+	// src/Data/Skills/act_str.lua:11470
+	"SummonFlameGolemAltX": {"golem", "minion", "permanentMinion", "spell"},
+	// src/Data/Skills/act_str.lua:11548
+	"SummonFlameGolemAltY": {"golem", "minion", "permanentMinion", "spell"},
+	// src/Data/Skills/other.lua:4646
+	"SummonHarbingerOfBrutality": {"minion", "spell"},
+	// src/Data/Skills/other.lua:4424
+	"SummonHarbingerOfBrutalityUber": {"minion", "spell"},
+	// src/Data/Skills/other.lua:4670
+	"SummonHarbingerOfDirections": {"minion", "spell"},
+	// src/Data/Skills/other.lua:4448
 	"SummonHarbingerOfDirectionsUber": {"minion", "spell"},
-	// src/Data/Skills/other.lua:4566
+	// src/Data/Skills/other.lua:4694
 	"SummonHarbingerOfFocus": {"minion", "spell"},
-	// src/Data/Skills/other.lua:4442
+	// src/Data/Skills/other.lua:4570
 	"SummonHarbingerOfFocusAscendancy": {"minion", "spell"},
-	// src/Data/Skills/other.lua:4344
+	// src/Data/Skills/other.lua:4472
 	"SummonHarbingerOfFocusUber": {"minion", "spell"},
-	// src/Data/Skills/other.lua:4590
+	// src/Data/Skills/other.lua:4718
 	"SummonHarbingerOfStorms": {"minion", "spell"},
-	// src/Data/Skills/other.lua:4368
+	// src/Data/Skills/other.lua:4496
 	"SummonHarbingerOfStormsUber": {"minion", "spell"},
-	// src/Data/Skills/other.lua:4421
+	// src/Data/Skills/other.lua:4549
 	"SummonHarbingerOfTheArcane": {"minion", "spell"},
-	// src/Data/Skills/other.lua:4494
+	// src/Data/Skills/other.lua:4622
 	"SummonHarbingerOfTheArcaneAscendancy": {"minion", "spell"},
-	// src/Data/Skills/other.lua:4272
+	// src/Data/Skills/other.lua:4400
 	"SummonHarbingerOfTheArcaneUber": {"minion", "spell"},
-	// src/Data/Skills/other.lua:4615
+	// src/Data/Skills/other.lua:4743
 	"SummonHarbingerOfTime": {"minion", "spell"},
-	// src/Data/Skills/other.lua:4466
+	// src/Data/Skills/other.lua:4594
 	"SummonHarbingerOfTimeAscendancy": {"minion", "spell"},
-	// src/Data/Skills/other.lua:4393
+	// src/Data/Skills/other.lua:4521
 	"SummonHarbingerOfTimeUber": {"minion", "spell"},
 	// src/Data/Skills/act_int.lua:19018
 	"SummonHolyRelic": {"minion", "permanentMinion", "spell"},
 	// src/Data/Skills/act_int.lua:19105
 	"SummonHolyRelicAltX": {"minion", "permanentMinion", "spell"},
-	// src/Data/Skills/act_dex.lua:15690
+	// src/Data/Skills/act_dex.lua:15693
 	"SummonIceGolem": {"golem", "minion", "permanentMinion", "spell"},
-	// src/Data/Skills/act_dex.lua:15777
+	// src/Data/Skills/act_dex.lua:15780
 	"SummonIceGolemAltX": {"golem", "minion", "permanentMinion", "spell"},
-	// src/Data/Skills/act_dex.lua:15855
+	// src/Data/Skills/act_dex.lua:15858
 	"SummonIceGolemAltY": {"golem", "minion", "permanentMinion", "spell"},
 	// src/Data/Skills/act_int.lua:19183
 	"SummonLightningGolem": {"golem", "minion", "permanentMinion", "spell"},
 	// src/Data/Skills/act_int.lua:19271
 	"SummonLightningGolemAltX": {"golem", "minion", "permanentMinion", "spell"},
-	// src/Data/Skills/other.lua:4939
+	// src/Data/Skills/other.lua:5067
 	"SummonMirageChieftain": {"duration", "spell"},
-	// src/Data/Skills/minion.lua:851
+	// src/Data/Skills/minion.lua:850
 	"SummonPhantasmFadingProjectile": {"projectile", "spell"},
 	// src/Data/Skills/act_int.lua:19349
 	"SummonRagingSpirit": {"duration", "minion", "spell"},
@@ -2098,11 +2109,11 @@ var SkillBaseFlags = map[string][]string{
 	"SummonReaperAltX": {"minion", "spell"},
 	// src/Data/Skills/act_int.lua:19671
 	"SummonReaperAltY": {"minion", "spell"},
-	// src/Data/Skills/sup_int.lua:5813
+	// src/Data/Skills/sup_int.lua:5812
 	"SummonSacredWisp": {},
-	// src/Data/Skills/other.lua:4683
+	// src/Data/Skills/other.lua:4811
 	"SummonSentinelOfRadiance": {"duration", "minion", "spell"},
-	// src/Data/Skills/other.lua:3529
+	// src/Data/Skills/other.lua:3657
 	"SummonShaperApparition": {"spell"},
 	// src/Data/Skills/act_int.lua:19760
 	"SummonSkeletons": {"duration", "minion", "spell"},
@@ -2112,191 +2123,191 @@ var SkillBaseFlags = map[string][]string{
 	"SummonSkeletonsAltY": {"duration", "minion", "spell"},
 	// src/Data/Skills/act_int.lua:20085
 	"SummonSkitterbots": {"minion", "permanentMinion", "spell"},
-	// src/Data/Skills/other.lua:4724
+	// src/Data/Skills/other.lua:4852
 	"SummonSpectralTiger": {"duration", "minion", "spell"},
-	// src/Data/Skills/other.lua:4774
+	// src/Data/Skills/other.lua:4902
 	"SummonSpectralWolf": {"duration", "minion", "spell"},
-	// src/Data/Skills/act_str.lua:11566
+	// src/Data/Skills/act_str.lua:11629
 	"SummonStoneGolem": {"golem", "minion", "permanentMinion", "spell"},
-	// src/Data/Skills/act_str.lua:11654
+	// src/Data/Skills/act_str.lua:11717
 	"SummonStoneGolemAltX": {"golem", "minion", "permanentMinion", "spell"},
-	// src/Data/Skills/act_str.lua:11732
+	// src/Data/Skills/act_str.lua:11795
 	"SummonStoneGolemAltY": {"golem", "minion", "permanentMinion", "spell"},
-	// src/Data/Skills/other.lua:4830
+	// src/Data/Skills/other.lua:4958
 	"SummonTauntingContraption": {"duration", "minion", "spell"},
-	// src/Data/Skills/other.lua:4859
+	// src/Data/Skills/other.lua:4987
 	"SummonVoidSpawn": {"minion", "spell"},
-	// src/Data/Skills/minion.lua:2222
+	// src/Data/Skills/minion.lua:2221
 	"SummonedLivingLightningZap": {"attack", "melee"},
-	// src/Data/Skills/minion.lua:1888
+	// src/Data/Skills/minion.lua:1887
 	"SummonedReaperMelee": {"attack", "melee", "projectile"},
-	// src/Data/Skills/minion.lua:1913
+	// src/Data/Skills/minion.lua:1912
 	"SummonedReaperUltimate": {"area", "attack", "melee"},
-	// src/Data/Skills/minion.lua:1341
+	// src/Data/Skills/minion.lua:1340
 	"SummonedRhoaShieldCharge": {"area", "attack", "melee"},
-	// src/Data/Skills/minion.lua:1379
+	// src/Data/Skills/minion.lua:1378
 	"SummonedSnakeProjectile": {"attack", "projectile"},
-	// src/Data/Skills/minion.lua:773
+	// src/Data/Skills/minion.lua:772
 	"SummonedSpiderViperStrike": {"attack", "melee"},
-	// src/Data/Skills/minion.lua:2132
+	// src/Data/Skills/minion.lua:2131
 	"SumonRagingSpiritMelee": {"attack", "melee"},
-	// src/Data/Skills/act_str.lua:11812
+	// src/Data/Skills/act_str.lua:11875
 	"Sunder": {"area", "attack", "melee"},
-	// src/Data/Skills/act_str.lua:11923
+	// src/Data/Skills/act_str.lua:11986
 	"SunderAltX": {"area", "attack", "melee"},
-	// src/Data/Skills/act_str.lua:12025
+	// src/Data/Skills/act_str.lua:12088
 	"SunderAltY": {"area", "attack", "melee"},
-	// src/Data/Skills/sup_str.lua:4837
+	// src/Data/Skills/sup_str.lua:4838
 	"SupportBluntWeaponShockwave": {"area", "attack", "melee"},
-	// src/Data/Skills/act_str.lua:6302
+	// src/Data/Skills/act_str.lua:6365
 	"Sweep": {"area", "attack", "melee"},
-	// src/Data/Skills/act_str.lua:6396
+	// src/Data/Skills/act_str.lua:6459
 	"SweepAltX": {"area", "attack", "melee"},
-	// src/Data/Skills/act_str.lua:10852
+	// src/Data/Skills/act_str.lua:10915
 	"Swordstorm": {"area", "attack", "melee"},
-	// src/Data/Skills/spectre.lua:6370
+	// src/Data/Skills/spectre.lua:6369
 	"SynthesisPhysicalTripleMortar": {"area", "projectile", "spell"},
-	// src/Data/Skills/spectre.lua:6429
+	// src/Data/Skills/spectre.lua:6428
 	"SynthesisPhysicalVolatileSlam": {"area", "attack"},
-	// src/Data/Skills/spectre.lua:4627
+	// src/Data/Skills/spectre.lua:4626
 	"SynthesisSoulstealerBolt": {"area", "hit", "spell", "triggerable"},
-	// src/Data/Skills/spectre.lua:4598
+	// src/Data/Skills/spectre.lua:4597
 	"SynthesisSoulstealerLaser": {"area", "hit", "spell", "triggerable"},
-	// src/Data/Skills/spectre.lua:4567
+	// src/Data/Skills/spectre.lua:4566
 	"SynthesisSoulstealerProjectileLightning": {"projectile", "spell", "triggerable"},
-	// src/Data/Skills/spectre.lua:6341
+	// src/Data/Skills/spectre.lua:6340
 	"SynthesisSoulstealerProjectilePhysical": {"projectile", "spell"},
-	// src/Data/Skills/spectre.lua:6405
+	// src/Data/Skills/spectre.lua:6404
 	"SynthesisSoulstealerQuicksand": {"area"},
-	// src/Data/Skills/spectre.lua:6026
+	// src/Data/Skills/spectre.lua:6025
 	"TBHellscapePaleLightningBoltSpammableLeft": {"hit", "spell", "triggerable"},
-	// src/Data/Skills/spectre.lua:8932
+	// src/Data/Skills/spectre.lua:8931
 	"TalismanT1TemporalChains": {"area", "curse", "duration", "hex", "spell"},
-	// src/Data/Skills/spectre.lua:8892
+	// src/Data/Skills/spectre.lua:8891
 	"TalismanT1Vulnerability": {"area", "curse", "duration", "hex", "spell"},
-	// src/Data/Skills/spectre.lua:8846
+	// src/Data/Skills/spectre.lua:8845
 	"TalismanT2EnfeebleAura": {"area", "curse", "duration", "hex", "spell"},
-	// src/Data/Skills/spectre.lua:3905
+	// src/Data/Skills/spectre.lua:3904
 	"TarMortarTaster": {"area", "projectile", "spell"},
-	// src/Data/Skills/act_str.lua:12140
+	// src/Data/Skills/act_str.lua:12203
 	"TectonicSlam": {"area", "attack", "melee"},
-	// src/Data/Skills/act_str.lua:12228
+	// src/Data/Skills/act_str.lua:12291
 	"TectonicSlamAltX": {"area", "attack", "melee"},
 	// src/Data/Skills/act_int.lua:20169
 	"TempestShield": {"chaining", "duration", "spell"},
-	// src/Data/Skills/act_dex.lua:15934
+	// src/Data/Skills/act_dex.lua:15937
 	"TemporalChains": {"area", "curse", "duration", "hex", "spell"},
-	// src/Data/Skills/act_dex.lua:17756
+	// src/Data/Skills/act_dex.lua:17759
 	"TemporalRift": {"spell"},
-	// src/Data/Skills/other.lua:4969
+	// src/Data/Skills/other.lua:5097
 	"TentacleSmash": {"area", "attack"},
-	// src/Data/Skills/other.lua:4993
+	// src/Data/Skills/other.lua:5121
 	"ThirstForBlood": {"spell"},
-	// src/Data/Skills/act_dex.lua:17828
+	// src/Data/Skills/act_dex.lua:17831
 	"Thunderstorm": {"area", "attack", "duration", "projectile"},
-	// src/Data/Skills/act_dex.lua:17935
+	// src/Data/Skills/act_dex.lua:17938
 	"ThunderstormMiniTornados": {"attack", "duration"},
-	// src/Data/Skills/act_dex.lua:18021
+	// src/Data/Skills/act_dex.lua:18024
 	"Tornado": {"area", "duration", "physical", "spell"},
-	// src/Data/Skills/act_dex.lua:18114
+	// src/Data/Skills/act_dex.lua:18117
 	"TornadoAltY": {"area", "duration", "physical", "spell"},
-	// src/Data/Skills/act_dex.lua:16029
+	// src/Data/Skills/act_dex.lua:16032
 	"TornadoShot": {"attack", "projectile"},
-	// src/Data/Skills/act_dex.lua:16123
+	// src/Data/Skills/act_dex.lua:16126
 	"TornadoShotAltX": {"attack", "projectile"},
-	// src/Data/Skills/act_dex.lua:14919
+	// src/Data/Skills/act_dex.lua:14922
 	"ToxicRain": {"area", "attack", "duration", "projectile"},
-	// src/Data/Skills/act_dex.lua:15011
+	// src/Data/Skills/act_dex.lua:15014
 	"ToxicRainAltX": {"area", "attack", "duration", "projectile"},
-	// src/Data/Skills/act_dex.lua:15100
+	// src/Data/Skills/act_dex.lua:15103
 	"ToxicRainAltY": {"area", "attack", "duration", "projectile"},
-	// src/Data/Skills/other.lua:5471
+	// src/Data/Skills/other.lua:5599
 	"TriggerSummonedAncestorAhuana": {"duration", "minion", "spell"},
-	// src/Data/Skills/other.lua:5517
+	// src/Data/Skills/other.lua:5645
 	"TriggerSummonedAncestorAkoya": {"duration", "minion", "spell"},
-	// src/Data/Skills/other.lua:5564
+	// src/Data/Skills/other.lua:5692
 	"TriggerSummonedAncestorIkiaho": {"duration", "minion", "spell"},
-	// src/Data/Skills/other.lua:5610
+	// src/Data/Skills/other.lua:5738
 	"TriggerSummonedAncestorKahuturoa": {"duration", "minion", "spell"},
-	// src/Data/Skills/other.lua:5659
+	// src/Data/Skills/other.lua:5787
 	"TriggerSummonedAncestorKaom": {"duration", "minion", "spell"},
-	// src/Data/Skills/other.lua:5705
+	// src/Data/Skills/other.lua:5833
 	"TriggerSummonedAncestorKiloava": {"duration", "minion", "spell"},
-	// src/Data/Skills/other.lua:5756
+	// src/Data/Skills/other.lua:5884
 	"TriggerSummonedAncestorMaata": {"duration", "minion", "spell"},
-	// src/Data/Skills/other.lua:5803
+	// src/Data/Skills/other.lua:5931
 	"TriggerSummonedAncestorRakiata": {"duration", "minion", "spell"},
-	// src/Data/Skills/other.lua:5849
+	// src/Data/Skills/other.lua:5977
 	"TriggerSummonedAncestorTawhanuku": {"duration", "minion", "spell"},
-	// src/Data/Skills/other.lua:5896
+	// src/Data/Skills/other.lua:6024
 	"TriggerSummonedAncestorUtula": {"duration", "minion", "spell"},
-	// src/Data/Skills/other.lua:2942
+	// src/Data/Skills/other.lua:3070
 	"TriggeredBloodrend": {"pact", "projectile", "spell"},
-	// src/Data/Skills/other.lua:856
+	// src/Data/Skills/other.lua:984
 	"TriggeredConsecrate": {"area", "duration", "spell"},
-	// src/Data/Skills/other.lua:3179
+	// src/Data/Skills/other.lua:3307
 	"TriggeredHeavensScourge": {"area", "pact", "spell"},
-	// src/Data/Skills/other.lua:2648
+	// src/Data/Skills/other.lua:2776
 	"TriggeredMoltenStrike": {"area", "attack", "projectile"},
-	// src/Data/Skills/other.lua:3706
+	// src/Data/Skills/other.lua:3834
 	"TriggeredShockedGround": {"area", "duration", "spell"},
-	// src/Data/Skills/other.lua:3880
+	// src/Data/Skills/other.lua:4008
 	"TriggeredStarfall": {"area", "attack", "projectile"},
-	// src/Data/Skills/other.lua:4643
+	// src/Data/Skills/other.lua:4771
 	"TriggeredSummonGhostOnKill": {"minion", "spell"},
-	// src/Data/Skills/other.lua:1038
+	// src/Data/Skills/other.lua:1166
 	"TriggeredSummonLesserShrine": {"duration", "spell"},
-	// src/Data/Skills/sup_str.lua:731
+	// src/Data/Skills/sup_str.lua:730
 	"TriggeredSupportBonespire": {"area", "attack"},
 	// src/Data/Skills/sup_str.lua:1652
 	"TriggeredSupportCrystalfall": {"area", "attack", "melee"},
-	// src/Data/Skills/sup_str.lua:2339
+	// src/Data/Skills/sup_str.lua:2340
 	"TriggeredSupportFissure": {"area", "attack", "melee"},
-	// src/Data/Skills/sup_int.lua:2652
+	// src/Data/Skills/sup_int.lua:2651
 	"TriggeredSupportFoulgrasp": {"area", "duration", "spell"},
-	// src/Data/Skills/sup_int.lua:4375
+	// src/Data/Skills/sup_int.lua:4374
 	"TriggeredSupportGreaterKineticInstability": {"area", "attack", "duration"},
-	// src/Data/Skills/sup_int.lua:3109
+	// src/Data/Skills/sup_int.lua:3108
 	"TriggeredSupportHextoad": {"area", "spell"},
-	// src/Data/Skills/sup_int.lua:3270
+	// src/Data/Skills/sup_int.lua:3269
 	"TriggeredSupportHiveborn": {"duration", "minion", "spell"},
-	// src/Data/Skills/sup_int.lua:4261
+	// src/Data/Skills/sup_int.lua:4260
 	"TriggeredSupportKineticInstability": {"area", "attack", "duration"},
-	// src/Data/Skills/sup_int.lua:4538
+	// src/Data/Skills/sup_int.lua:4537
 	"TriggeredSupportLivingLightning": {"minion", "spell"},
-	// src/Data/Skills/sup_str.lua:4388
+	// src/Data/Skills/sup_str.lua:4389
 	"TriggeredSupportPyre": {"area", "attack"},
-	// src/Data/Skills/sup_str.lua:4964
+	// src/Data/Skills/sup_str.lua:4965
 	"TriggeredSupportVoidShockwave": {"area", "attack", "melee"},
-	// src/Data/Skills/sup_dex.lua:4714
+	// src/Data/Skills/sup_dex.lua:4713
 	"TriggeredSupportVoidstorm": {"area", "attack", "projectile"},
-	// src/Data/Skills/sup_dex.lua:4910
+	// src/Data/Skills/sup_dex.lua:4909
 	"TriggeredSupportWindburst": {"attack", "duration", "projectile"},
-	// src/Data/Skills/other.lua:5181
+	// src/Data/Skills/other.lua:5309
 	"Twister": {"duration", "projectile", "spell"},
-	// src/Data/Skills/spectre.lua:5804
+	// src/Data/Skills/spectre.lua:5803
 	"UltimatumGuardConeArrowCold": {"area", "attack", "hit", "triggerable"},
-	// src/Data/Skills/spectre.lua:5774
+	// src/Data/Skills/spectre.lua:5773
 	"UltimatumGuardMeleeCold": {"attack", "melee", "projectile"},
-	// src/Data/Skills/spectre.lua:3942
+	// src/Data/Skills/spectre.lua:3941
 	"UndyingWhirlingBlades": {"attack", "melee", "movement"},
-	// src/Data/Skills/act_dex.lua:16195
+	// src/Data/Skills/act_dex.lua:16198
 	"Unearth": {"corpse", "projectile", "spell"},
-	// src/Data/Skills/other.lua:5221
+	// src/Data/Skills/other.lua:5349
 	"Unhinge": {"spell"},
-	// src/Data/Skills/other.lua:819
+	// src/Data/Skills/other.lua:947
 	"UniqueEnchantmentOfInfernoOnCrit": {"area", "hit", "spell"},
-	// src/Data/Skills/other.lua:3442
+	// src/Data/Skills/other.lua:3570
 	"UniqueMirageWarriors": {"duration", "minion", "spell"},
-	// src/Data/Skills/other.lua:5240
+	// src/Data/Skills/other.lua:5368
 	"UnseenStrike": {"attack", "forceMainHand", "projectile"},
-	// src/Data/Skills/act_str.lua:202
+	// src/Data/Skills/act_str.lua:201
 	"VaalAbsolution": {"area", "duration", "minion", "spell"},
-	// src/Data/Skills/minion.lua:1312
+	// src/Data/Skills/minion.lua:1311
 	"VaalAbsolutionDelayedBlast": {"area", "spell"},
 	// src/Data/Skills/act_dex.lua:483
 	"VaalAnimateWeapon": {"duration", "minion", "spell"},
-	// src/Data/Skills/act_int.lua:244
+	// src/Data/Skills/act_int.lua:243
 	"VaalArc": {"chaining", "spell"},
 	// src/Data/Skills/act_dex.lua:661
 	"VaalArcticArmour": {"duration", "spell"},
@@ -2306,7 +2317,7 @@ var SkillBaseFlags = map[string][]string{
 	"VaalBladeVortex": {"area", "duration", "spell"},
 	// src/Data/Skills/act_int.lua:2186
 	"VaalBlight": {"area", "duration", "spell"},
-	// src/Data/Skills/other.lua:5272
+	// src/Data/Skills/other.lua:5400
 	"VaalBreach": {"spell"},
 	// src/Data/Skills/act_dex.lua:3541
 	"VaalBurningArrow": {"area", "attack", "projectile", "vaal"},
@@ -2314,25 +2325,25 @@ var SkillBaseFlags = map[string][]string{
 	"VaalCausticArrow": {"area", "attack", "duration", "projectile"},
 	// src/Data/Skills/act_int.lua:2730
 	"VaalClarity": {"area", "aura", "duration", "spell"},
-	// src/Data/Skills/act_str.lua:1961
+	// src/Data/Skills/act_str.lua:2024
 	"VaalCleave": {"area", "attack", "duration", "melee"},
 	// src/Data/Skills/act_int.lua:2978
 	"VaalColdSnap": {"area", "duration", "spell"},
-	// src/Data/Skills/act_dex.lua:4905
+	// src/Data/Skills/act_dex.lua:4907
 	"VaalCyclone": {"area", "attack", "duration", "melee", "vaal"},
-	// src/Data/Skills/act_dex.lua:5423
+	// src/Data/Skills/act_dex.lua:5426
 	"VaalDetonateDead": {"area", "cast"},
 	// src/Data/Skills/act_int.lua:4512
 	"VaalDiscipline": {"area", "aura", "duration", "spell"},
-	// src/Data/Skills/act_str.lua:3118
+	// src/Data/Skills/act_str.lua:3181
 	"VaalDomination": {"attack", "duration", "melee", "minion"},
-	// src/Data/Skills/minion.lua:1119
+	// src/Data/Skills/minion.lua:1118
 	"VaalDominationMelee": {"attack", "melee", "projectile"},
-	// src/Data/Skills/minion.lua:1139
+	// src/Data/Skills/minion.lua:1138
 	"VaalDominationSunder": {"area", "attack", "melee"},
-	// src/Data/Skills/act_dex.lua:5774
+	// src/Data/Skills/act_dex.lua:5777
 	"VaalDoubleStrike": {"attack", "duration", "melee", "vaal"},
-	// src/Data/Skills/act_str.lua:3493
+	// src/Data/Skills/act_str.lua:3556
 	"VaalEarthquake": {"area", "attack", "duration", "melee"},
 	// src/Data/Skills/act_int.lua:5872
 	"VaalFireball": {"projectile", "spell"},
@@ -2340,107 +2351,107 @@ var SkillBaseFlags = map[string][]string{
 	"VaalFirestorm": {"area", "duration", "spell"},
 	// src/Data/Skills/act_int.lua:7106
 	"VaalFlameblast": {"area", "spell"},
-	// src/Data/Skills/act_dex.lua:8081
+	// src/Data/Skills/act_dex.lua:8084
 	"VaalFlickerStrike": {"attack", "duration", "melee"},
-	// src/Data/Skills/act_str.lua:5149
+	// src/Data/Skills/act_str.lua:5212
 	"VaalGlacialHammer": {"area", "attack", "duration", "melee"},
-	// src/Data/Skills/act_dex.lua:8998
+	// src/Data/Skills/act_dex.lua:9001
 	"VaalGrace": {"area", "aura", "duration", "spell", "vaal"},
-	// src/Data/Skills/act_str.lua:5419
+	// src/Data/Skills/act_str.lua:5482
 	"VaalGroundSlam": {"area", "attack", "melee"},
-	// src/Data/Skills/act_dex.lua:9163
+	// src/Data/Skills/act_dex.lua:9166
 	"VaalHaste": {"area", "aura", "duration", "spell", "vaal"},
 	// src/Data/Skills/act_int.lua:9718
 	"VaalIceNova": {"area", "spell"},
-	// src/Data/Skills/act_dex.lua:9702
+	// src/Data/Skills/act_dex.lua:9705
 	"VaalIceShot": {"area", "attack", "duration", "projectile"},
-	// src/Data/Skills/act_str.lua:6781
+	// src/Data/Skills/act_str.lua:6844
 	"VaalImmortalCall": {"duration", "spell"},
-	// src/Data/Skills/act_str.lua:8918
+	// src/Data/Skills/act_str.lua:8981
 	"VaalImpurityOfFire": {"area", "aura", "duration", "spell"},
-	// src/Data/Skills/act_dex.lua:12303
+	// src/Data/Skills/act_dex.lua:12306
 	"VaalImpurityOfIce": {"area", "aura", "duration", "spell"},
 	// src/Data/Skills/act_int.lua:14712
 	"VaalImpurityOfLightning": {"area", "aura", "duration", "spell"},
-	// src/Data/Skills/spectre.lua:4082
+	// src/Data/Skills/spectre.lua:4081
 	"VaalIncursionFirestorm": {"area", "duration", "spell"},
-	// src/Data/Skills/spectre.lua:4130
+	// src/Data/Skills/spectre.lua:4129
 	"VaalIncursionSpecialBeamCannonBlood": {"area", "spell"},
-	// src/Data/Skills/act_dex.lua:10568
+	// src/Data/Skills/act_dex.lua:10571
 	"VaalLightningArrow": {"attack", "projectile"},
-	// src/Data/Skills/act_dex.lua:10877
+	// src/Data/Skills/act_dex.lua:10880
 	"VaalLightningStrike": {"attack", "duration", "melee", "vaal"},
 	// src/Data/Skills/act_int.lua:13009
 	"VaalLightningTrap": {"duration", "projectile", "spell", "trap"},
 	// src/Data/Skills/act_int.lua:13183
 	"VaalLightningWarpInstant": {"area", "duration", "spell"},
-	// src/Data/Skills/act_str.lua:7628
+	// src/Data/Skills/act_str.lua:7691
 	"VaalMoltenShell": {"area", "duration", "hit"},
-	// src/Data/Skills/act_str.lua:8106
+	// src/Data/Skills/act_str.lua:8169
 	"VaalMoltenStrike": {"area", "attack", "chaining", "melee", "projectile"},
-	// src/Data/Skills/spectre.lua:11851
+	// src/Data/Skills/spectre.lua:11850
 	"VaalOverseerHeavyStrike": {"attack", "melee"},
 	// src/Data/Skills/act_int.lua:14261
 	"VaalPowerSiphon": {"attack", "projectile"},
-	// src/Data/Skills/act_dex.lua:12618
+	// src/Data/Skills/act_dex.lua:12621
 	"VaalRainOfArrows": {"area", "attack", "duration", "projectile", "vaal"},
-	// src/Data/Skills/act_str.lua:11221
+	// src/Data/Skills/act_str.lua:11284
 	"VaalReap": {"area", "duration", "spell"},
-	// src/Data/Skills/act_dex.lua:12881
+	// src/Data/Skills/act_dex.lua:12884
 	"VaalReave": {"area", "attack", "melee", "vaal"},
-	// src/Data/Skills/act_str.lua:9402
+	// src/Data/Skills/act_str.lua:9465
 	"VaalRejuvenationTotem": {"area", "aura", "duration", "spell", "totem"},
 	// src/Data/Skills/act_int.lua:15617
 	"VaalRighteousFire": {"area", "spell"},
-	// src/Data/Skills/act_str.lua:10517
+	// src/Data/Skills/act_str.lua:10580
 	"VaalSmite": {"area", "attack", "duration", "melee"},
 	// src/Data/Skills/act_int.lua:16974
 	"VaalSpark": {"duration", "projectile", "spell"},
-	// src/Data/Skills/act_dex.lua:14827
+	// src/Data/Skills/act_dex.lua:14830
 	"VaalSpectralThrow": {"attack", "projectile", "vaal"},
 	// src/Data/Skills/act_int.lua:18414
 	"VaalStormCall": {"area", "duration", "spell"},
 	// src/Data/Skills/act_int.lua:19998
 	"VaalSummonSkeletons": {"duration", "minion", "spell"},
-	// src/Data/Skills/act_dex.lua:16369
+	// src/Data/Skills/act_dex.lua:16372
 	"VaalVenomGyre": {"attack", "duration", "projectile"},
-	// src/Data/Skills/act_str.lua:12748
+	// src/Data/Skills/act_str.lua:12811
 	"VaalVolcanicFissure": {"area", "attack", "melee", "projectile", "slam"},
-	// src/Data/Skills/spectre.lua:4045
+	// src/Data/Skills/spectre.lua:4044
 	"VaalincursionMortar": {"area", "projectile", "spell"},
-	// src/Data/Skills/act_dex.lua:18365
+	// src/Data/Skills/act_dex.lua:18368
 	"VampiricLink": {"duration", "spell"},
-	// src/Data/Skills/act_str.lua:12327
+	// src/Data/Skills/act_str.lua:12390
 	"VengefulCry": {"area", "duration", "warcry"},
-	// src/Data/Skills/act_dex.lua:16278
+	// src/Data/Skills/act_dex.lua:16281
 	"VenomGyre": {"attack", "projectile"},
-	// src/Data/Skills/act_str.lua:12419
+	// src/Data/Skills/act_str.lua:12482
 	"VigilantStrike": {"attack", "melee"},
-	// src/Data/Skills/act_dex.lua:16452
+	// src/Data/Skills/act_dex.lua:16455
 	"ViperStrike": {"attack", "duration", "melee"},
-	// src/Data/Skills/act_dex.lua:16543
+	// src/Data/Skills/act_dex.lua:16546
 	"ViperStrikeAltX": {"attack", "duration", "melee"},
-	// src/Data/Skills/act_str.lua:12495
+	// src/Data/Skills/act_str.lua:12558
 	"Vitality": {"area", "aura", "spell"},
-	// src/Data/Skills/other.lua:5307
+	// src/Data/Skills/other.lua:5435
 	"VoidGaze": {"duration", "spell"},
-	// src/Data/Skills/other.lua:5337
+	// src/Data/Skills/other.lua:5465
 	"VoidShot": {"area", "attack", "projectile"},
 	// src/Data/Skills/act_int.lua:20257
 	"VoidSphere": {"area", "duration", "spell"},
 	// src/Data/Skills/act_int.lua:20346
 	"VoidSphereAltX": {"area", "duration", "spell"},
-	// src/Data/Skills/other.lua:4896
+	// src/Data/Skills/other.lua:5024
 	"VolatileAnomaly": {"area", "duration", "spell"},
-	// src/Data/Skills/act_dex.lua:16644
+	// src/Data/Skills/act_dex.lua:16647
 	"VolatileDead": {"area", "spell"},
-	// src/Data/Skills/act_dex.lua:16747
+	// src/Data/Skills/act_dex.lua:16750
 	"VolatileDeadAltX": {"area", "spell"},
-	// src/Data/Skills/act_dex.lua:16851
+	// src/Data/Skills/act_dex.lua:16854
 	"VolatileDeadAltY": {"area", "spell"},
-	// src/Data/Skills/act_str.lua:12571
+	// src/Data/Skills/act_str.lua:12634
 	"VolcanicFissure": {"area", "attack", "melee", "projectile", "slam"},
-	// src/Data/Skills/act_str.lua:12672
+	// src/Data/Skills/act_str.lua:12735
 	"VolcanicFissureAltX": {"area", "attack", "melee", "slam"},
 	// src/Data/Skills/act_int.lua:20435
 	"VoltaxicBurst": {"area", "duration", "nova", "spell"},
@@ -2448,29 +2459,29 @@ var SkillBaseFlags = map[string][]string{
 	"Vortex": {"area", "duration", "forceInstant", "spell"},
 	// src/Data/Skills/act_int.lua:20619
 	"VortexAltX": {"area", "duration", "forceInstant", "spell"},
-	// src/Data/Skills/act_str.lua:12847
+	// src/Data/Skills/act_str.lua:12910
 	"Vulnerability": {"area", "curse", "duration", "hex", "spell"},
-	// src/Data/Skills/spectre.lua:3974
+	// src/Data/Skills/spectre.lua:3973
 	"WalkingDoubleSlash": {"area", "attack", "melee"},
 	// src/Data/Skills/act_int.lua:20715
 	"WallOfForce": {"duration", "spell"},
-	// src/Data/Skills/act_str.lua:13025
+	// src/Data/Skills/act_str.lua:13088
 	"WarBanner": {"area", "aura", "duration", "spell"},
-	// src/Data/Skills/other.lua:5370
+	// src/Data/Skills/other.lua:5498
 	"WardShatter": {"spell"},
-	// src/Data/Skills/act_str.lua:12937
+	// src/Data/Skills/act_str.lua:13000
 	"WarlordsMark": {"curse", "duration", "mark", "spell"},
 	// src/Data/Skills/act_int.lua:20785
 	"WaveOfConviction": {"area", "duration", "spell"},
 	// src/Data/Skills/act_int.lua:20879
 	"WaveOfConvictionAltY": {"area", "duration", "spell"},
-	// src/Data/Skills/act_dex.lua:16954
+	// src/Data/Skills/act_dex.lua:16957
 	"WhirlingBlades": {"attack", "melee"},
-	// src/Data/Skills/spectre.lua:4004
+	// src/Data/Skills/spectre.lua:4003
 	"WickerManMoltenStrike": {"attack", "melee"},
-	// src/Data/Skills/act_dex.lua:17029
+	// src/Data/Skills/act_dex.lua:17032
 	"WildStrike": {"area", "attack", "chaining", "melee", "projectile"},
-	// src/Data/Skills/act_dex.lua:17170
+	// src/Data/Skills/act_dex.lua:17173
 	"WildStrikeAltX": {"area", "attack", "chaining", "melee", "projectile"},
 	// src/Data/Skills/act_int.lua:20963
 	"WinterOrb": {"area", "duration", "projectile", "spell"},
@@ -2478,15 +2489,15 @@ var SkillBaseFlags = map[string][]string{
 	"WintertideBrand": {"area", "brand", "duration", "spell"},
 	// src/Data/Skills/act_int.lua:21232
 	"Wither": {"area", "duration", "spell"},
-	// src/Data/Skills/act_dex.lua:17312
+	// src/Data/Skills/act_dex.lua:17315
 	"WitheringStep": {"duration", "spell"},
-	// src/Data/Skills/spectre.lua:6632
+	// src/Data/Skills/spectre.lua:6631
 	"WraithEtherealKnives": {"projectile", "spell"},
 	// src/Data/Skills/act_int.lua:21318
 	"Wrath": {"area", "aura", "spell"},
 	// src/Data/Skills/act_int.lua:21403
 	"Zealotry": {"area", "aura", "spell"},
-	// src/Data/Skills/minion.lua:720
+	// src/Data/Skills/minion.lua:719
 	"ZombieSlam": {"area", "attack", "melee"},
 }
 
@@ -2496,25 +2507,25 @@ var SkillBaseFlags = map[string][]string{
 //
 // Distinct addFlag names: ballista, brand, forceMainHand, mine, totem, trap
 var SkillAddFlags = map[string][]string{
-	// src/Data/Skills/act_str.lua:4918
+	// src/Data/Skills/act_str.lua:4981
 	"GeneralsCrySupport": {"forceMainHand"},
-	// src/Data/Skills/sup_str.lua:4513
+	// src/Data/Skills/sup_str.lua:4514
 	"SupportBallistaTotem": {"ballista", "totem"},
-	// src/Data/Skills/sup_int.lua:5660
+	// src/Data/Skills/sup_int.lua:5659
 	"SupportBlastchainMine": {"mine"},
-	// src/Data/Skills/act_int.lua:620
+	// src/Data/Skills/act_int.lua:619
 	"SupportBrandSupport": {"brand"},
-	// src/Data/Skills/other.lua:996
+	// src/Data/Skills/other.lua:1124
 	"SupportCrabTotem": {"totem"},
-	// src/Data/Skills/other.lua:1468
+	// src/Data/Skills/other.lua:1596
 	"SupportEarthbreaker": {"totem"},
-	// src/Data/Skills/sup_int.lua:3156
+	// src/Data/Skills/sup_int.lua:3155
 	"SupportHighImpactMine": {"mine"},
-	// src/Data/Skills/sup_dex.lua:2632
+	// src/Data/Skills/sup_dex.lua:2631
 	"SupportLocusMine": {"mine"},
-	// src/Data/Skills/sup_str.lua:5034
+	// src/Data/Skills/sup_str.lua:5035
 	"SupportSpellTotem": {"totem"},
-	// src/Data/Skills/sup_dex.lua:4083
+	// src/Data/Skills/sup_dex.lua:4082
 	"SupportTrap": {"trap"},
 }
 
@@ -2529,7 +2540,7 @@ var SkillAddFlags = map[string][]string{
 // the item line naming it resolved to nothing at all.
 //
 // And why the SET has to come from here: poe.GrantedEffects holds 10020 rows against PoB's
-// 1521, and the surplus leaks ordinary English words (ignite, backstab, riptide, wildfire,
+// 1526, and the surplus leaks ordinary English words (ignite, backstab, riptide, wildfire,
 // taunt, kill, mortar) into a table matched against item text. That is the same class the
 // skillNameList fix removed from a different lookup.
 //
@@ -2549,8 +2560,8 @@ var SkillAddFlags = map[string][]string{
 // (GemSelectControl.lua:114-151) and what the gem tooltip's "Legacy Gem" warning reads
 // (GemTooltip.lua:242-246).
 //
-// 1521 skills, 653 hidden, 301 support, 179 fromItem, 27
-// fromTree, 1519 with a colour, 1072 admitted by :1609, 36 legacy, 2 hidden from the gem list.
+// 1526 skills, 657 hidden, 301 support, 183 fromItem, 27
+// fromTree, 1524 with a colour, 1077 admitted by :1609, 36 legacy, 2 hidden from the gem list.
 type PoBSkill struct {
 	Name            string
 	Hidden          bool
@@ -2607,7 +2618,11 @@ var PoBSkills = map[string]PoBSkill{
 	"ArtilleryBallista":                              {Name: "Artillery Ballista", Color: 2},
 	"ArtilleryBallistaAltX":                          {Name: "Artillery Ballista of Cross Strafe", Color: 2},
 	"ArtilleryBallistaAltY":                          {Name: "Artillery Ballista of Focus Fire", Color: 2},
+	"AspectOfArakaali":                               {Name: "Aspect of Arakaali", Hidden: true, FromItem: true, Color: 4},
+	"AspectOfLunaris":                                {Name: "Aspect of Lunaris", Hidden: true, FromItem: true, Color: 4},
+	"AspectOfSolaris":                                {Name: "Aspect of Solaris", Hidden: true, FromItem: true, Color: 4},
 	"AspectOfTheAvian":                               {Name: "Aspect of the Avian", Hidden: true, FromItem: true, Color: 4},
+	"AspectOfTheBrineKing":                           {Name: "Aspect of the Brine King", Hidden: true, FromItem: true, Color: 4},
 	"AspectOfTheCat":                                 {Name: "Aspect of the Cat", Hidden: true, FromItem: true, Color: 4},
 	"AspectOfTheCrab":                                {Name: "Aspect of the Crab", Hidden: true, FromItem: true, Color: 4},
 	"AspectOfTheSpider":                              {Name: "Aspect of the Spider", Hidden: true, FromItem: true, Color: 4},
@@ -2808,6 +2823,7 @@ var PoBSkills = map[string]PoBSkill{
 	"CausticArrowAltX":                               {Name: "Caustic Arrow of Poison", Color: 2},
 	"CeaselessFleshUnique":                           {Name: "Ceaseless Flesh", Hidden: true, FromItem: true, Color: 3},
 	"ChainHook":                                      {Name: "Chain Hook", Color: 1},
+	"ChainHookAltX":                                  {Name: "Chain Hook of Angling", Color: 1},
 	"ChainHookAltY":                                  {Name: "Chain Hook of Trarthus", Color: 1},
 	"ChannelledSnipeSupport":                         {Name: "Snipe", Support: true, Color: 2},
 	"ChaosDegenAura":                                 {Name: "Chaos Aura", Hidden: true, Color: 4},

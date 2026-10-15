@@ -1,7 +1,7 @@
 [{
     "base":{
       "Armour":3179,
-      "CombinedDPS":5443794.7591508,
+      "CombinedDPS":5443839.9612703,
       "Dex":163,
       "EnergyShield":473,
       "Evasion":3720,
@@ -18,7 +18,7 @@
         "slot":"Jewel 41263",
         "stats":{
           "Armour":3179,
-          "CombinedDPS":5068162.3395745,
+          "CombinedDPS":5068204.4226599,
           "Dex":163,
           "EnergyShield":486,
           "Evasion":3720,
@@ -26,7 +26,7 @@
           "Life":5696,
           "Mana":1221,
           "Str":594,
-          "TotalEHP":63908.185439933
+          "TotalEHP":63926.089483091
         }
       },{
         "rebuilt":true,
@@ -34,7 +34,7 @@
         "slot":"Jewel 61419",
         "stats":{
           "Armour":3179,
-          "CombinedDPS":5096992.2619588,
+          "CombinedDPS":5097034.5844311,
           "Dex":163,
           "EnergyShield":474,
           "Evasion":3720,
@@ -50,7 +50,7 @@
         "slot":"Jewel 61834",
         "stats":{
           "Armour":2649,
-          "CombinedDPS":4253252.6368736,
+          "CombinedDPS":4253286.9483434,
           "Dex":163,
           "EnergyShield":467,
           "Evasion":3720,
@@ -58,7 +58,7 @@
           "Life":5624,
           "Mana":1159,
           "Str":538,
-          "TotalEHP":60290.13255354
+          "TotalEHP":60298.662724699
         }
       }],
     "item":"Rarity: UNIQUE\nLethal Pride\nTimeless Jewel\nUnique ID: 29c180e77829985ad2189e38946f6cd77270aaac9608cd7ea4d7b3cc6ad9a228\nItem Level: 86\nRadius: Large\nImplicits: 0\nCommanded leadership over 12479 warriors under Kaom\nPassives in radius are Conquered by the Karui\nHistoric",
@@ -66,7 +66,7 @@
   },{
     "base":{
       "Armour":3179,
-      "CombinedDPS":5443794.7591508,
+      "CombinedDPS":5443839.9612703,
       "Dex":163,
       "EnergyShield":473,
       "Evasion":3720,
@@ -83,7 +83,7 @@
         "slot":"Jewel 41263",
         "stats":{
           "Armour":3179,
-          "CombinedDPS":5068162.3395745,
+          "CombinedDPS":5068204.4226599,
           "Dex":163,
           "EnergyShield":486,
           "Evasion":3720,
@@ -91,7 +91,7 @@
           "Life":5696,
           "Mana":1221,
           "Str":594,
-          "TotalEHP":63908.185439933
+          "TotalEHP":63926.089483091
         }
       },{
         "rebuilt":true,
@@ -99,7 +99,7 @@
         "slot":"Jewel 61419",
         "stats":{
           "Armour":3179,
-          "CombinedDPS":5278673.537205,
+          "CombinedDPS":5278717.9275506,
           "Dex":163,
           "EnergyShield":474,
           "Evasion":3720,
@@ -115,7 +115,7 @@
         "slot":"Jewel 61834",
         "stats":{
           "Armour":3179,
-          "CombinedDPS":5055708.7966106,
+          "CombinedDPS":5055749.5815849,
           "Dex":163,
           "EnergyShield":473,
           "Evasion":3720,
@@ -131,7 +131,7 @@
   },{
     "base":{
       "Armour":16485,
-      "CombinedDPS":33269636.10813,
+      "CombinedDPS":33269626.036378,
       "Dex":103,
       "EnergyShield":3311,
       "Evasion":26,
@@ -148,7 +148,7 @@
         "slot":"Jewel 12613",
         "stats":{
           "Armour":16485,
-          "CombinedDPS":33269636.10813,
+          "CombinedDPS":33269626.036378,
           "Dex":103,
           "EnergyShield":3311,
           "Evasion":26,
@@ -164,7 +164,7 @@
         "slot":"Jewel 2311",
         "stats":{
           "Armour":16485,
-          "CombinedDPS":32782437.06698,
+          "CombinedDPS":32782456.15821,
           "Dex":83,
           "EnergyShield":3292,
           "Evasion":26,
@@ -180,7 +180,7 @@
         "slot":"Jewel 26196",
         "stats":{
           "Armour":15765,
-          "CombinedDPS":26940320.555384,
+          "CombinedDPS":26940284.038626,
           "Dex":103,
           "EnergyShield":3149,
           "Evasion":26,
@@ -196,7 +196,7 @@
         "slot":"Jewel 29712",
         "stats":{
           "Armour":16485,
-          "CombinedDPS":33269636.10813,
+          "CombinedDPS":33269626.036378,
           "Dex":103,
           "EnergyShield":3311,
           "Evasion":26,
@@ -212,7 +212,7 @@
         "slot":"Jewel 36634",
         "stats":{
           "Armour":16485,
-          "CombinedDPS":32498585.891537,
+          "CombinedDPS":32498615.846978,
           "Dex":113,
           "EnergyShield":2381,
           "Evasion":25,
@@ -228,7 +228,7 @@
         "slot":"Jewel 61419",
         "stats":{
           "Armour":19004,
-          "CombinedDPS":27178852.176613,
+          "CombinedDPS":27178833.33408,
           "Dex":103,
           "EnergyShield":3021,
           "Evasion":24,
@@ -244,7 +244,7 @@
         "slot":"Jewel 7960",
         "stats":{
           "Armour":16485,
-          "CombinedDPS":33349746.616284,
+          "CombinedDPS":33349729.0283,
           "Dex":103,
           "EnergyShield":3274,
           "Evasion":26,
@@ -260,7 +260,7 @@
         "slot":"Jewel 9408",
         "stats":{
           "Armour":16485,
-          "CombinedDPS":33269636.10813,
+          "CombinedDPS":33269626.036378,
           "Dex":103,
           "EnergyShield":3311,
           "Evasion":26,
@@ -276,7 +276,7 @@
   },{
     "base":{
       "Armour":35152,
-      "CombinedDPS":4265130.4469631,
+      "CombinedDPS":4264994.7538209,
       "Dex":122,
       "EnergyShield":10788,
       "Evasion":907,
@@ -293,7 +293,7 @@
         "slot":"Jewel 12613",
         "stats":{
           "Armour":36162,
-          "CombinedDPS":4282959.6183051,
+          "CombinedDPS":4282823.3579361,
           "Dex":122,
           "EnergyShield":10846,
           "Evasion":907,
@@ -309,7 +309,7 @@
         "slot":"Jewel 21984",
         "stats":{
           "Armour":35427,
-          "CombinedDPS":4256557.0859854,
+          "CombinedDPS":4256421.6656007,
           "Dex":122,
           "EnergyShield":10760,
           "Evasion":907,
@@ -325,7 +325,7 @@
         "slot":"Jewel 26196",
         "stats":{
           "Armour":37759,
-          "CombinedDPS":4297535.925798,
+          "CombinedDPS":4297399.2016906,
           "Dex":122,
           "EnergyShield":10893,
           "Evasion":907,
@@ -341,7 +341,7 @@
         "slot":"Jewel 29712",
         "stats":{
           "Armour":36162,
-          "CombinedDPS":4282959.6183051,
+          "CombinedDPS":4282823.3579361,
           "Dex":122,
           "EnergyShield":10846,
           "Evasion":907,
@@ -373,7 +373,7 @@
         "slot":"Jewel 7960",
         "stats":{
           "Armour":38332,
-          "CombinedDPS":4201591.4749732,
+          "CombinedDPS":4201457.8032939,
           "Dex":122,
           "EnergyShield":10622,
           "Evasion":907,
@@ -389,7 +389,7 @@
         "slot":"Jewel 9408",
         "stats":{
           "Armour":36162,
-          "CombinedDPS":4282959.6183051,
+          "CombinedDPS":4282823.3579361,
           "Dex":122,
           "EnergyShield":10846,
           "Evasion":907,

@@ -27,7 +27,7 @@ import (
 // end
 var clusterJewelSkills = sync.OnceValue(buildClusterJewelSkills)
 
-//pob:block:src/Modules/ModParser.lua:6537-6549
+//pob:block:src/Modules/ModParser.lua:6595-6607
 func buildClusterJewelSkills() map[string][]mod.Mod {
 	skills := make(map[string][]mod.Mod)
 	bases := make([]string, 0, len(data.ClusterJewels.Jewels))
@@ -61,7 +61,7 @@ func buildClusterJewelSkills() map[string][]mod.Mod {
 	return skills
 }
 
-//pob:block:src/Modules/ModParser.lua:6590-6593
+//pob:block:src/Modules/ModParser.lua:6653-6656
 func parseClusterJewelSkill(lineLower string) []mod.Mod {
 	if mods, ok := clusterJewelSkills()[lineLower]; ok {
 		return mod.CloneSlice(mods)

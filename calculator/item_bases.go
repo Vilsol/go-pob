@@ -118,7 +118,7 @@ var itemClassSubTypes = map[string]string{
 	"Thrusting One Hand Swords": "Thrusting",
 }
 
-//pob:block:src/Data/Bases/flask.lua:5-399
+//pob:block:src/Data/Bases/flask.lua:4-398
 var flaskBuffs = map[string][]string{
 	"Diamond Flask":     {"100% increased Global Critical Strike Chance"},
 	"Ruby Flask":        {"+5% to maximum Fire Resistance", "+40% to Fire Resistance"},
@@ -201,7 +201,7 @@ var itemBaseAliases = map[string]string{
 	"Metadata/Items/Rings/Ring14": "Two-Stone Ring (Fire/Cold)",
 }
 
-//pob:block:src/Data/Bases/boots.lua:547,src/Data/Bases/boots.lua:660,src/Data/Bases/boots.lua:795
+//pob:block:src/Data/Bases/boots.lua:546,src/Data/Bases/boots.lua:659,src/Data/Bases/boots.lua:794
 func twoTonedBootsVariant(req ItemBaseReq) string {
 	switch {
 	case req.Str > 0 && req.Int > 0:
@@ -219,7 +219,7 @@ var (
 	itemBases     map[string]*ItemBase
 )
 
-//pob:block:src/Modules/Data.lua:1212-1215
+//pob:block:src/Modules/Data.lua:1239-1242
 func ItemBases() map[string]*ItemBase {
 	itemBasesOnce.Do(buildItemBases)
 	return itemBases

@@ -1,5 +1,6 @@
 local outPath = arg[1]
 assert(outPath, "usage: spectre_library.lua <out.json>")
+local construct = dofile((arg[0]:match("^(.*)[/\\]") or ".") .. "/pob_compat.lua").construct
 dofile("HeadlessWrapper.lua")
 local json = require("dkjson")
 
@@ -15,7 +16,7 @@ table.sort(sourceList, function(a, b)
 		return data.minions[a].name < data.minions[b].name
 	end
 end)
-local list = new("MinionListControl", nil, {0, 0, 10, 10}, data, { })
+local list = construct("MinionListControl", nil, {0, 0, 10, 10}, data, { })
 local out = { }
 for _, id in ipairs(sourceList) do
 	local lines = { }

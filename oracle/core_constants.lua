@@ -12,10 +12,11 @@ do
 	assert(overlay["Data/Misc.lua"] and overlay["Data/Bosses.lua"],
 		"REFUSING: " .. overlayPath .. " carries no Data/Misc.lua or Data/Bosses.lua")
 end
+local compat = dofile((arg[0]:match("^(.*)[/\\]") or ".") .. "/pob_compat.lua")
 local pinLoadfile = loadfile
 function loadfile(fileName, ...)
 	if overlay[fileName] then
-		return loadstring(overlay[fileName], "@" .. fileName)
+		return loadstring(compat.adaptOverlay(fileName, overlay[fileName]), "@" .. fileName)
 	end
 	return pinLoadfile(fileName, ...)
 end

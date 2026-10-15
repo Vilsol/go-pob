@@ -418,7 +418,7 @@ func oeTattooDump() string {
   "scanned": 381,
   "nodes": {
     "Tattoo of the Tawhoa Shaman": {"id": "n1", "dn": "Tattoo of the Tawhoa Shaman",
-      "sd": ["+10 to Strength"], "targetType": "Small Strength", "targetValue": "", "MinimumConnected": 0,
+      "sd": ["+10 to Strength"], "overrideType": "TawhoaTattoo", "targetType": "Small Strength", "targetValue": "", "MinimumConnected": 0,
       "legacy": false, "icon": "Art/a.png", "activeEffectImage": "Art/b.png"},
     "Tattoo of the Ngamahu Shaman": {"id": "n2", "dn": "Tattoo of the Ngamahu Shaman",
       "sd": [], "isKeystone": true, "targetType": "Keystone", "targetValue": "", "MinimumConnected": 0,

@@ -35,12 +35,13 @@ var craftModTables = []struct {
 	{"Explicit", "../Data/ModExplicit.lua", func(mod *poe.Mod) bool {
 		return mod.Domain == domainItem && (mod.GenerationType == genPrefix || mod.GenerationType == genSuffix) &&
 			!strings.Contains(mod.ID, "Royale") && !strings.Contains(mod.ID, "Necropolis") && !strings.HasPrefix(mod.ID, "Synthesis") &&
+			!delveNames[mod.Name] &&
 			!(mod.GenerationType == genSearingExarch || mod.GenerationType == genEaterOfWorlds) && !modHasAuraFlags(mod)
 	}},
 	{"Corrupted", "../Data/ModCorrupted.lua", func(mod *poe.Mod) bool {
 		return mod.GenerationType == genCorrupted && mod.Domain == domainItem
 	}},
-	{"Delve", "../Data/ModDelve.lua", func(mod *poe.Mod) bool { return mod.Domain == domainDelveFossil }},
+	{"Delve", "../Data/ModDelve.lua", func(mod *poe.Mod) bool { return mod.Domain == domainDelveFossil || delveNames[mod.Name] }},
 	{"Synthesis", "../Data/ModSynthesis.lua", func(mod *poe.Mod) bool {
 		return mod.GenerationType == genIntrinsic && mod.Domain == domainItem && strings.HasPrefix(mod.ID, "Synthesis")
 	}},
@@ -79,16 +80,22 @@ var craftModTables = []struct {
 	{"Foulborn", "../Data/ModFoulborn.lua", func(mod *poe.Mod) bool {
 		return (mod.Domain == domainItem || mod.Domain == domainJewel) && mod.GenerationType == genIntrinsic && strings.HasPrefix(mod.ID, "MutatedUnique")
 	}},
+	{"Mercenary", "../Data/ModMercenary.lua", func(mod *poe.Mod) bool {
+		return mod.Domain == domainMercenary && (mod.GenerationType == genPrefix || mod.GenerationType == genSuffix)
+	}},
 }
 
 var hellscapeMapRe = regexp.MustCompile(`^Hellscape[UpDown]+sideMap`)
 
-//pob:block:src/Export/Scripts/mods.lua:216
+//pob:block:src/Export/Scripts/mods.lua:207-210
+var delveNames = map[string]bool{"Subterranean": true, "of the Underground": true}
+
+//pob:block:src/Export/Scripts/mods.lua:222
 func modHasAuraFlags(mod *poe.Mod) bool { return len(mod.AuraFlags) > 0 }
 
-var craftItemTables = []string{"Explicit", "ItemExclusive", "Corrupted", "Delve", "Synthesis", "Scourge", "Eldritch"}
+var craftItemTables = []string{"Explicit", "ItemExclusive", "Corrupted", "Delve", "Synthesis", "Scourge", "Eldritch", "Mercenary"}
 
-//pob:block:src/Modules/Data.lua:646-706
+//pob:block:src/Modules/Data.lua:649-716
 func dumpItemCraftMods() (any, error) {
 	pobDir := os.Getenv("POB_DIR")
 	if pobDir == "" {
@@ -191,8 +198,33 @@ func dumpItemCraftMods() (any, error) {
 	if err != nil {
 		return nil, err
 	}
+	//pob:block:src/Modules/Data.lua:667-673
+	var vestigial []exportMod
+	for _, m := range tables["ItemExclusive"] {
+		if strings.HasPrefix(m.ID, "Divergent") {
+			vestigial = append(vestigial, m)
+		}
+	}
+	affixTables["Vestigial"] = byID(vestigial)
+	//pob:block:src/Classes/ItemsTab.lua:3151-3155
+	var specialCorruption []exportMod
+	for _, m := range tables["ItemExclusive"] {
+		if strings.HasPrefix(m.ID, "UniqueSpecialCorruption") {
+			specialCorruption = append(specialCorruption, m)
+		}
+	}
+	vestigialMappings, err := dumpVestigialModMappings(pobDir)
+	if err != nil {
+		return nil, err
+	}
+	dropRestricted := map[string][]craftDropRestricted{}
+	for _, d := range []struct{ source, file, table string }{{"DELVE", "DelveDropOnly.lua", "Delve"}, {"INCURSION", "IncursionDropOnly.lua", "Explicit"}} {
+		if dropRestricted[d.source], err = dumpDropRestricted(pobDir, d.file, tables[d.table]); err != nil {
+			return nil, err
+		}
+	}
 	literals := map[string]*luaTable{}
-	for _, name := range []string{"data.enchantmentSource", "data.weaponTypeInfo", "data.casterTagCrucibleUniques", "data.minionTagCrucibleUniques"} {
+	for _, name := range []string{"data.enchantmentSource", "data.weaponTypeInfo", "data.casterTagCrucibleUniques", "data.minionTagCrucibleUniques", "data.vestigialUniqueBaseTypes"} {
 		if literals[name], err = dataLuaLiteral(pobDir, name); err != nil {
 			return nil, err
 		}
@@ -217,7 +249,73 @@ func dumpItemCraftMods() (any, error) {
 		"sources": sources, "enchantments": enchantments, "bases": bases,
 		"casterTagCrucibleUniques": sortedKeys(literals["data.casterTagCrucibleUniques"].hash),
 		"minionTagCrucibleUniques": sortedKeys(literals["data.minionTagCrucibleUniques"].hash),
+		"vestigialUniqueBaseTypes": sortedKeys(literals["data.vestigialUniqueBaseTypes"].hash),
+		"vestigialModMappings":     vestigialMappings, "specialCorruptionMods": byID(specialCorruption),
+		"dropRestricted": dropRestricted,
 	}, nil
+}
+
+type craftDropRestricted struct {
+	exportMod
+	Categories []string `json:"categories"`
+}
+
+//pob:block:src/Classes/ItemsTab.lua:3513-3514,src/Classes/ItemsTab.lua:3579-3602
+func dumpDropRestricted(pobDir, file string, table []exportMod) ([]craftDropRestricted, error) {
+	b, err := os.ReadFile(filepath.Join(pobDir, "src", "Data", file)) //nolint:gosec // the pinned PoB checkout
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", file, err)
+	}
+	t, err := luaTableLiteral(string(b), "\nreturn ")
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", file, err)
+	}
+	byID := map[string]exportMod{}
+	for _, m := range table {
+		byID[m.ID] = m
+	}
+	var out []craftDropRestricted
+	for _, id := range sortedKeys(t.hash) {
+		mod, ok := byID[id]
+		entry, isTable := t.hash[id].(*luaTable)
+		if !ok || !isTable {
+			continue
+		}
+		row := craftDropRestricted{exportMod: mod}
+		if cats, ok := entry.hash["categories"].(*luaTable); ok {
+			for _, c := range cats.arr {
+				if s, ok := c.(string); ok {
+					row.Categories = append(row.Categories, s)
+				}
+			}
+		}
+		out = append(out, row)
+	}
+	if len(out) < 10 {
+		return nil, fmt.Errorf("%s: %d of its mods resolve", file, len(out))
+	}
+	return out, nil
+}
+
+//pob:block:src/Modules/Data.lua:866-872
+func dumpVestigialModMappings(pobDir string) (map[string]string, error) {
+	b, err := os.ReadFile(filepath.Join(pobDir, "src", "Data", "Vestigial.lua")) //nolint:gosec // the pinned PoB checkout
+	if err != nil {
+		return nil, fmt.Errorf("Vestigial.lua: %w", err)
+	}
+	t, err := luaTableLiteral(string(b), "\nreturn ")
+	if err != nil {
+		return nil, fmt.Errorf("Vestigial.lua: %w", err)
+	}
+	out := map[string]string{}
+	for id, v := range t.hash {
+		if titles, ok := v.(*luaTable); ok && len(titles.arr) > 0 {
+			if title, ok := titles.arr[0].(string); ok {
+				out[id] = title
+			}
+		}
+	}
+	return out, nil
 }
 
 func sortedKeys[V any](m map[string]V) []string {
@@ -257,7 +355,7 @@ func lastByID(mods []exportMod) []exportMod {
 
 var craftRareAffixRe = regexp.MustCompile(`(?:[Pp]refix|[Ss]uffix): (\w+)`)
 
-var craftSelectable = map[string]bool{"Item": true, "Flask": true, "Tincture": true, "Graft": true, "Jewel": true, "JewelAbyss": true, "JewelCluster": true, "JewelCharm": true}
+var craftSelectable = map[string]bool{"Item": true, "Explicit": true, "Flask": true, "Tincture": true, "Graft": true, "Jewel": true, "JewelAbyss": true, "JewelCluster": true, "JewelCharm": true}
 
 //pob:block:src/Export/Scripts/crucible.lua:1-61
 func dumpCrucible() ([]craftCrucible, error) {

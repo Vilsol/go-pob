@@ -24,7 +24,7 @@ type TreeSpecPoints struct {
 	Sockets    int
 }
 
-//pob:block:src/GameVersions.lua:19-21,src/GameVersions.lua:145-147
+//pob:block:src/GameVersions.lua:20-22,src/GameVersions.lua:146-148
 func treeVersionDisplay(v pob.TreeVersion) string {
 	parts := strings.SplitN(string(v), "_", 3)
 	if len(parts) < 2 {
@@ -37,7 +37,7 @@ func treeVersionDisplay(v pob.TreeVersion) string {
 	return out
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:824-835,src/Classes/PassiveSpec.lua:279-286
+//pob:block:src/Classes/PassiveSpec.lua:848-859,src/Classes/PassiveSpec.lua:290-297
 func specAllocCounts(tree *data.Tree, subgraph map[string]data.Node, spec pob.Spec) (int, int) {
 	selections := make(map[int64]int64)
 	for _, m := range masteryEffectsRegex.FindAllStringSubmatch(spec.MasteryEffects, -1) {
@@ -74,7 +74,7 @@ func specAllocCounts(tree *data.Tree, subgraph map[string]data.Node, spec pob.Sp
 	return used, ascUsed
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:836-838
+//pob:block:src/Classes/PassiveSpec.lua:860-862
 func specSocketCount(tree *data.Tree, subgraph map[string]data.Node, spec pob.Spec) int {
 	n := 0
 	seen := make(map[int64]bool)
@@ -88,7 +88,7 @@ func specSocketCount(tree *data.Tree, subgraph map[string]data.Node, spec pob.Sp
 	return n
 }
 
-//pob:block:src/Classes/TreeTab.lua:486-492,src/Classes/PassiveSpecListControl.lua:72-80
+//pob:block:src/Classes/TreeTab.lua:492-498,src/Classes/PassiveSpecListControl.lua:76-84
 func TreeSpecs(build *pob.PathOfBuilding) []TreeSpecRow {
 	rows := make([]TreeSpecRow, 0, len(build.Tree.Specs))
 	for _, spec := range build.Tree.Specs {
@@ -109,7 +109,7 @@ func TreeSpecs(build *pob.PathOfBuilding) []TreeSpecRow {
 	return rows
 }
 
-//pob:block:src/Classes/PassiveSpecListControl.lua:74
+//pob:block:src/Classes/PassiveSpecListControl.lua:78
 func TreeSpecsPoints(build *pob.PathOfBuilding) []TreeSpecPoints {
 	tree := data.TreeVersions[data.LatestTreeVersion].Tree()
 	out := make([]TreeSpecPoints, 0, len(build.Tree.Specs))
@@ -121,7 +121,7 @@ func TreeSpecsPoints(build *pob.PathOfBuilding) []TreeSpecPoints {
 	return out
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:1652
+//pob:block:src/Classes/PassiveSpec.lua:1735
 func specSubgraph(build *pob.PathOfBuilding, specID int, spec pob.Spec) map[string]data.Node {
 	if !slices.ContainsFunc(pob.SpecNodes(spec), func(id int64) bool { return id >= 1<<16 }) {
 		return nil
@@ -141,7 +141,7 @@ func specOrSubgraphNode(tree *data.Tree, subgraph map[string]data.Node, id int64
 	return n, ok
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:603-613
+//pob:block:src/Classes/PassiveSpec.lua:614-624
 func classAscendancyStartNodeID(tree *data.Tree, classID pob.ClassID, name pob.AscendancyName) string {
 	if int(classID) < 0 || int(classID) >= len(tree.Classes) {
 		return ""
@@ -154,7 +154,7 @@ func classAscendancyStartNodeID(tree *data.Tree, classID pob.ClassID, name pob.A
 	return ""
 }
 
-//pob:block:src/Classes/PassiveTree.lua:527-530
+//pob:block:src/Classes/PassiveTree.lua:552-555
 func ascendancyStartNodeID(tree *data.Tree, name pob.AscendancyName) string {
 	for id, node := range tree.Nodes {
 		if isAscendClassStartNode(node) && node.AscendancyName != nil && *node.AscendancyName == string(name) {
@@ -164,7 +164,7 @@ func ascendancyStartNodeID(tree *data.Tree, name pob.AscendancyName) string {
 	return ""
 }
 
-//pob:block:src/Classes/PassiveSpecListControl.lua:36-41,src/Classes/PassiveSpec.lua:577-580,src/Classes/PassiveSpec.lua:608-613
+//pob:block:src/Classes/PassiveSpecListControl.lua:39-44,src/Classes/PassiveSpec.lua:588-591,src/Classes/PassiveSpec.lua:619-624
 func NewTreeSpec(build *pob.PathOfBuilding, title string) {
 	tree := data.TreeVersions[data.LatestTreeVersion].Tree()
 	var classID pob.ClassID
@@ -197,7 +197,7 @@ func NewTreeSpec(build *pob.PathOfBuilding, title string) {
 	})
 }
 
-//pob:block:src/Modules/Build.lua:1327
+//pob:block:src/Modules/Build.lua:1396
 func CurrentGameVersionLabel() string {
 	return treeVersionDisplay(data.LatestTreeVersion)
 }

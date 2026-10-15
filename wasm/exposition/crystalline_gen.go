@@ -139,6 +139,7 @@ func init() {
 	crystallineNamespace("go-pob", "exposition").Set("ParseModLines", crystallineWrap(js.FuncOf(crystallineFnExpositionParseModLines)))
 	crystallineNamespace("go-pob", "exposition").Set("ModBrowserList", crystallineWrap(js.FuncOf(crystallineFnExpositionModBrowserList)))
 	crystallineNamespace("go-pob", "exposition").Set("ModBrowserSupported", crystallineWrap(js.FuncOf(crystallineFnExpositionModBrowserSupported)))
+	crystallineNamespace("go-pob", "exposition").Set("ModBrowserSources", crystallineWrap(js.FuncOf(crystallineFnExpositionModBrowserSources)))
 	crystallineNamespace("go-pob", "exposition").Set("ConfigPlaceholders", crystallineWrap(js.FuncOf(crystallineFnExpositionConfigPlaceholders)))
 	crystallineNamespace("go-pob", "calculator").Set("NewComparePowerBuilder", crystallineWrap(js.FuncOf(crystallineFnCalculatorNewComparePowerBuilder)))
 	crystallineNamespace("go-pob", "exposition").Set("SetCalcTabElements", crystallineWrap(js.FuncOf(crystallineFnExpositionSetCalcTabElements)))
@@ -150,6 +151,7 @@ func init() {
 	crystallineNamespace("go-pob", "exposition").Set("GetMasterySelections", crystallineWrap(js.FuncOf(crystallineFnExpositionGetMasterySelections)))
 	crystallineNamespace("go-pob", "exposition").Set("ModDebugDump", crystallineWrap(js.FuncOf(crystallineFnExpositionModDebugDump)))
 	crystallineNamespace("go-pob", "exposition").Set("SetItemModDebug", crystallineWrap(js.FuncOf(crystallineFnExpositionSetItemModDebug)))
+	crystallineNamespace("go-pob", "exposition").Set("OptimiseSocketsUseful", crystallineWrap(js.FuncOf(crystallineFnExpositionOptimiseSocketsUseful)))
 	crystallineNamespace("go-pob", "exposition").Set("GetPartySummaries", crystallineWrap(js.FuncOf(crystallineFnExpositionGetPartySummaries)))
 	crystallineNamespace("go-pob", "exposition").Set("MiscGemSupportPairs", crystallineWrap(js.FuncOf(crystallineFnExpositionMiscGemSupportPairs)))
 	crystallineNamespace("go-pob", "exposition").Set("PowerAscendancy", crystallineWrap(js.FuncOf(crystallineFnExpositionPowerAscendancy)))
@@ -325,6 +327,7 @@ func init() {
 		"SkillFlagMultiStage":       "multiStage",
 		"SkillFlagTriggered":        "triggered",
 		"SkillFlagFocused":          "focused",
+		"SkillFlagGuaranteedChill":  "guaranteedChill",
 	})
 	crystallineNamespace("go-pob", "calculator").Set("OutputMode", map[string]any{
 		"OutputModeMain":       "MAIN",
@@ -350,6 +353,7 @@ func init() {
 		"TypeGlobal":              "Global",
 		"TypeSkillName":           "SkillName",
 		"TypeMAX":                 "MAX",
+		"TypeMIN":                 "MIN",
 		"TypeChance":              "CHANCE",
 		"TypeStatThreshold":       "StatThreshold",
 		"TypeSlotNumber":          "SlotNumber",
@@ -838,6 +842,7 @@ func init() {
 	Exports(crystallineRegistry{})
 	MasteryExports(crystallineRegistry{})
 	ModDebugExports(crystallineRegistry{})
+	OptimiseSocketsExports(crystallineRegistry{})
 	PartyExports(crystallineRegistry{})
 	PowerAscendancyExports(crystallineRegistry{})
 	PowerReportExports(crystallineRegistry{})
@@ -5203,6 +5208,53 @@ func crystallineFnExpositionModBrowserSupported(this js.Value, args []js.Value) 
 	return bool(r0)
 }
 
+func crystallineFnExpositionModBrowserSources(this js.Value, args []js.Value) (result any) {
+	defer crystallineRecover(&result)
+
+	if len(args) != 1 {
+		return crystallineFail("ModBrowserSources: expected 1 arguments, got " + strconv.Itoa(len(args)))
+	}
+
+	a0, err := crystallineToString(args[0])
+	if err != nil {
+		return crystallineFail(err.Error())
+	}
+
+	r0 := ModBrowserSources(a0)
+
+	return crystallineJSON(func(b []byte, ok *bool) []byte {
+		if items0 := r0; items0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '[')
+			for i0 := range items0 {
+				if i0 > 0 {
+					b = append(b, ',')
+				}
+
+				b = crystallineAppendString(b, string(items0[i0]))
+			}
+
+			b = append(b, ']')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			items := r0
+			if items == nil {
+				return nil
+			}
+
+			out := make([]any, 0, len(items))
+			for i := range items {
+				out = append(out, string(items[i]))
+			}
+
+			return out
+		}()
+	})
+}
+
 func crystallineFnExpositionConfigPlaceholders(this js.Value, args []js.Value) (result any) {
 	defer crystallineRecover(&result)
 
@@ -5565,6 +5617,30 @@ func crystallineFnExpositionSetItemModDebug(this js.Value, args []js.Value) (res
 		SetItemModDebug(a0)
 
 		return nil
+	})
+}
+
+func crystallineFnExpositionOptimiseSocketsUseful(this js.Value, args []js.Value) (result any) {
+	defer crystallineRecover(&result)
+
+	if len(args) != 2 {
+		return crystallineFail("OptimiseSocketsUseful: expected 2 arguments, got " + strconv.Itoa(len(args)))
+	}
+
+	return crystallinePromise(func() any {
+		a0, err := crystallineToPtrPobPathOfBuilding(args[0])
+		if err != nil {
+			return crystallineFail(err.Error())
+		}
+
+		a1, err := crystallineToString(args[1])
+		if err != nil {
+			return crystallineFail(err.Error())
+		}
+
+		r0 := OptimiseSocketsUseful(a0, a1)
+
+		return bool(r0)
 	})
 }
 
@@ -13120,6 +13196,38 @@ func crystallineMarshalCalculatorCorruptChoices(v *calculator.CorruptChoices) an
 
 	out.Set("Unique", bool(v.Unique))
 	out.Set("ImplicitsCannotBeChanged", bool(v.ImplicitsCannotBeChanged))
+	out.Set("MaxImplicits", float64(v.MaxImplicits))
+	out.Set("Glimpse", crystallineJSON(func(b []byte, ok *bool) []byte {
+		if items0 := v.Glimpse; items0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '[')
+			for i0 := range items0 {
+				if i0 > 0 {
+					b = append(b, ',')
+				}
+
+				b = crystallineAppendCalculatorCorruptMod(b, &items0[i0], ok)
+			}
+
+			b = append(b, ']')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			items := v.Glimpse
+			if items == nil {
+				return nil
+			}
+
+			out := make([]any, 0, len(items))
+			for i := range items {
+				out = append(out, crystallineMarshalCalculatorCorruptMod(&items[i]))
+			}
+
+			return out
+		}()
+	}))
 	out.Set("Corrupted", crystallineJSON(func(b []byte, ok *bool) []byte {
 		if items0 := v.Corrupted; items0 == nil {
 			b = append(b, "null"...)
@@ -14201,7 +14309,7 @@ func crystallineMarshalCalculatorEntry(v *calculator.Entry) any {
 
 	if crystallineMarshalCalculatorEntryShape.IsUndefined() {
 		crystallineMarshalCalculatorEntryShape = crystallineShape("calculator.Entry",
-			[]string{"Columns", "Rows", "Lines", "Slots", "Reservations", "Label", "DamageTypes", "Radius"},
+			[]string{"Columns", "Rows", "Lines", "Slots", "Reservations", "Label", "DamageTypes", "Radius", "BreakdownSource"},
 			func(v *calculator.Entry, entry *crystallineEntry, field int) any {
 				switch field {
 				case 0:
@@ -14356,6 +14464,8 @@ func crystallineMarshalCalculatorEntry(v *calculator.Entry) any {
 					}()
 				case 7:
 					return float64(v.Radius)
+				case 8:
+					return string(v.BreakdownSource)
 				}
 
 				return nil
@@ -14443,6 +14553,17 @@ func crystallineMarshalCalculatorEntry(v *calculator.Entry) any {
 
 						v.Radius = converted
 					})(value)
+				case 8:
+					(func(value js.Value) {
+						converted, err := crystallineToString(value)
+						if err != nil {
+							crystallineFail(err.Error())
+
+							return
+						}
+
+						v.BreakdownSource = converted
+					})(value)
 				}
 			},
 			[]string{},
@@ -14467,7 +14588,7 @@ func crystallineMarshalCalculatorEnvironment(v *calculator.Environment) any {
 
 	if crystallineMarshalCalculatorEnvironmentShape.IsUndefined() {
 		crystallineMarshalCalculatorEnvironmentShape = crystallineShape("calculator.Environment",
-			[]string{"Cache", "Build", "Mode", "Spec", "JewelRadiusData", "ModDB", "EnemyModDB", "ItemModDB", "EnemyLevel", "ConfigPlaceholder", "Player", "Enemy", "Minion", "RequirementsTable", "RequirementsTableItems", "RequirementsTableGems", "Flasks", "Tinctures", "AllocatedNodes", "GrantedAscendancyNodes", "ItemClassRestrictions", "AuxSkillList", "Buffs", "Debuffs", "MinionBuffs", "ModeBuffs", "ModeCombat", "ModeEffective", "MainSocketGroup", "SkillsUsed", "DebugErrors", "CalcProps", "AegisModList", "TheIronMass", "TracePoolWalk", "PoolWalkTrace", "InitialNodeModDB", "WeaponModList1"},
+			[]string{"Cache", "Build", "Mode", "BuildBreakdown", "Spec", "JewelRadiusData", "ModDB", "EnemyModDB", "ItemModDB", "EnemyLevel", "ConfigPlaceholder", "Player", "Enemy", "Minion", "RequirementsTable", "RequirementsTableItems", "RequirementsTableGems", "Flasks", "Tinctures", "AllocatedNodes", "GrantedAscendancyNodes", "ItemClassRestrictions", "AuxSkillList", "Buffs", "Debuffs", "MinionBuffs", "ModeBuffs", "ModeCombat", "ModeEffective", "MainSocketGroup", "SkillsUsed", "DebugErrors", "CalcProps", "AegisModList", "TheIronMass", "TracePoolWalk", "PoolWalkTrace", "InitialNodeModDB", "WeaponModList1"},
 			func(v *calculator.Environment, entry *crystallineEntry, field int) any {
 				switch field {
 				case 0:
@@ -14481,10 +14602,12 @@ func crystallineMarshalCalculatorEnvironment(v *calculator.Environment) any {
 				case 2:
 					return string(v.Mode)
 				case 3:
-					return crystallineCached(entry, 3, v.Spec, func() any {
+					return bool(v.BuildBreakdown)
+				case 4:
+					return crystallineCached(entry, 4, v.Spec, func() any {
 						return crystallineMarshalCalculatorPassiveSpec(v.Spec)
 					})
-				case 4:
+				case 5:
 					return crystallineJSON(func(b []byte, ok *bool) []byte {
 						if entries0 := v.JewelRadiusData; entries0 == nil {
 							b = append(b, "null"...)
@@ -14547,21 +14670,21 @@ func crystallineMarshalCalculatorEnvironment(v *calculator.Environment) any {
 							return out
 						}()
 					})
-				case 5:
-					return crystallineCached(entry, 5, v.ModDB, func() any {
+				case 6:
+					return crystallineCached(entry, 6, v.ModDB, func() any {
 						return crystallineMarshalModdbModDB(v.ModDB)
 					})
-				case 6:
-					return crystallineCached(entry, 6, v.EnemyModDB, func() any {
+				case 7:
+					return crystallineCached(entry, 7, v.EnemyModDB, func() any {
 						return crystallineMarshalModdbModDB(v.EnemyModDB)
 					})
-				case 7:
-					return crystallineCached(entry, 7, v.ItemModDB, func() any {
+				case 8:
+					return crystallineCached(entry, 8, v.ItemModDB, func() any {
 						return crystallineMarshalModdbModDB(v.ItemModDB)
 					})
-				case 8:
-					return float64(v.EnemyLevel)
 				case 9:
+					return float64(v.EnemyLevel)
+				case 10:
 					return crystallineJSON(func(b []byte, ok *bool) []byte {
 						if entries0 := v.ConfigPlaceholder; entries0 == nil {
 							b = append(b, "null"...)
@@ -14596,19 +14719,19 @@ func crystallineMarshalCalculatorEnvironment(v *calculator.Environment) any {
 							return out
 						}()
 					})
-				case 10:
-					return crystallineCached(entry, 10, v.Player, func() any {
+				case 11:
+					return crystallineCached(entry, 11, v.Player, func() any {
 						return crystallineMarshalCalculatorActor(v.Player)
 					})
-				case 11:
-					return crystallineCached(entry, 11, v.Enemy, func() any {
+				case 12:
+					return crystallineCached(entry, 12, v.Enemy, func() any {
 						return crystallineMarshalCalculatorActor(v.Enemy)
 					})
-				case 12:
-					return crystallineCached(entry, 12, v.Minion, func() any {
+				case 13:
+					return crystallineCached(entry, 13, v.Minion, func() any {
 						return crystallineMarshalCalculatorActorMinion(v.Minion)
 					})
-				case 13:
+				case 14:
 					return func() any {
 						items := v.RequirementsTable
 						if items == nil {
@@ -14622,7 +14745,7 @@ func crystallineMarshalCalculatorEnvironment(v *calculator.Environment) any {
 
 						return out
 					}()
-				case 14:
+				case 15:
 					return func() any {
 						items := v.RequirementsTableItems
 						if items == nil {
@@ -14636,7 +14759,7 @@ func crystallineMarshalCalculatorEnvironment(v *calculator.Environment) any {
 
 						return out
 					}()
-				case 15:
+				case 16:
 					return func() any {
 						items := v.RequirementsTableGems
 						if items == nil {
@@ -14650,7 +14773,7 @@ func crystallineMarshalCalculatorEnvironment(v *calculator.Environment) any {
 
 						return out
 					}()
-				case 16:
+				case 17:
 					return func() any {
 						items := v.Flasks
 						if items == nil {
@@ -14664,7 +14787,7 @@ func crystallineMarshalCalculatorEnvironment(v *calculator.Environment) any {
 
 						return out
 					}()
-				case 17:
+				case 18:
 					return func() any {
 						items := v.Tinctures
 						if items == nil {
@@ -14678,7 +14801,7 @@ func crystallineMarshalCalculatorEnvironment(v *calculator.Environment) any {
 
 						return out
 					}()
-				case 18:
+				case 19:
 					return func() any {
 						if v.AllocatedNodes == nil {
 							return nil
@@ -14691,7 +14814,7 @@ func crystallineMarshalCalculatorEnvironment(v *calculator.Environment) any {
 
 						return out
 					}()
-				case 19:
+				case 20:
 					return crystallineJSON(func(b []byte, ok *bool) []byte {
 						if entries0 := v.GrantedAscendancyNodes; entries0 == nil {
 							b = append(b, "null"...)
@@ -14726,7 +14849,7 @@ func crystallineMarshalCalculatorEnvironment(v *calculator.Environment) any {
 							return out
 						}()
 					})
-				case 20:
+				case 21:
 					return crystallineJSON(func(b []byte, ok *bool) []byte {
 						if entries0 := v.ItemClassRestrictions; entries0 == nil {
 							b = append(b, "null"...)
@@ -14761,7 +14884,7 @@ func crystallineMarshalCalculatorEnvironment(v *calculator.Environment) any {
 							return out
 						}()
 					})
-				case 21:
+				case 22:
 					return func() any {
 						items := v.AuxSkillList
 						if items == nil {
@@ -14775,7 +14898,7 @@ func crystallineMarshalCalculatorEnvironment(v *calculator.Environment) any {
 
 						return out
 					}()
-				case 22:
+				case 23:
 					return func() any {
 						if v.Buffs == nil {
 							return nil
@@ -14788,7 +14911,7 @@ func crystallineMarshalCalculatorEnvironment(v *calculator.Environment) any {
 
 						return out
 					}()
-				case 23:
+				case 24:
 					return func() any {
 						if v.Debuffs == nil {
 							return nil
@@ -14801,7 +14924,7 @@ func crystallineMarshalCalculatorEnvironment(v *calculator.Environment) any {
 
 						return out
 					}()
-				case 24:
+				case 25:
 					return func() any {
 						if v.MinionBuffs == nil {
 							return nil
@@ -14814,15 +14937,15 @@ func crystallineMarshalCalculatorEnvironment(v *calculator.Environment) any {
 
 						return out
 					}()
-				case 25:
-					return bool(v.ModeBuffs)
 				case 26:
-					return bool(v.ModeCombat)
+					return bool(v.ModeBuffs)
 				case 27:
-					return bool(v.ModeEffective)
+					return bool(v.ModeCombat)
 				case 28:
-					return float64(v.MainSocketGroup)
+					return bool(v.ModeEffective)
 				case 29:
+					return float64(v.MainSocketGroup)
+				case 30:
 					return crystallineJSON(func(b []byte, ok *bool) []byte {
 						if entries0 := v.SkillsUsed; entries0 == nil {
 							b = append(b, "null"...)
@@ -14857,7 +14980,7 @@ func crystallineMarshalCalculatorEnvironment(v *calculator.Environment) any {
 							return out
 						}()
 					})
-				case 30:
+				case 31:
 					return crystallineJSON(func(b []byte, ok *bool) []byte {
 						if items0 := v.DebugErrors; items0 == nil {
 							b = append(b, "null"...)
@@ -14889,7 +15012,7 @@ func crystallineMarshalCalculatorEnvironment(v *calculator.Environment) any {
 							return out
 						}()
 					})
-				case 31:
+				case 32:
 					return crystallineJSON(func(b []byte, ok *bool) []byte {
 						if entries0 := v.CalcProps; entries0 == nil {
 							b = append(b, "null"...)
@@ -14924,17 +15047,17 @@ func crystallineMarshalCalculatorEnvironment(v *calculator.Environment) any {
 							return out
 						}()
 					})
-				case 32:
-					return crystallineCached(entry, 32, v.AegisModList, func() any {
+				case 33:
+					return crystallineCached(entry, 33, v.AegisModList, func() any {
 						return crystallineMarshalModdbModList(v.AegisModList)
 					})
-				case 33:
-					return crystallineCached(entry, 33, v.TheIronMass, func() any {
+				case 34:
+					return crystallineCached(entry, 34, v.TheIronMass, func() any {
 						return crystallineMarshalModdbModList(v.TheIronMass)
 					})
-				case 34:
-					return bool(v.TracePoolWalk)
 				case 35:
+					return bool(v.TracePoolWalk)
+				case 36:
 					return func() any {
 						items := v.PoolWalkTrace
 						if items == nil {
@@ -14948,12 +15071,12 @@ func crystallineMarshalCalculatorEnvironment(v *calculator.Environment) any {
 
 						return out
 					}()
-				case 36:
-					return crystallineCached(entry, 36, v.InitialNodeModDB, func() any {
+				case 37:
+					return crystallineCached(entry, 37, v.InitialNodeModDB, func() any {
 						return crystallineMarshalModdbModList(v.InitialNodeModDB)
 					})
-				case 37:
-					return crystallineCached(entry, 37, v.WeaponModList1, func() any {
+				case 38:
+					return crystallineCached(entry, 38, v.WeaponModList1, func() any {
 						return crystallineMarshalModdbModList(v.WeaponModList1)
 					})
 				}
@@ -14996,10 +15119,21 @@ func crystallineMarshalCalculatorEnvironment(v *calculator.Environment) any {
 						v.Mode = converted
 					})(value)
 				case 3:
+					(func(value js.Value) {
+						converted, err := crystallineToBool(value)
+						if err != nil {
+							crystallineFail(err.Error())
+
+							return
+						}
+
+						v.BuildBreakdown = converted
+					})(value)
+				case 4:
 					(func(js.Value) {
 						crystallineFail("calculator.Environment.Spec cannot be written from JavaScript: CalculatorPassiveSpec.Nodes: type interface{} cannot be read from JS")
 					})(value)
-				case 4:
+				case 5:
 					(func(value js.Value) {
 						converted, err := crystallineToMapOfStringToMapOfStringToFloat64(value)
 						if err != nil {
@@ -15010,19 +15144,19 @@ func crystallineMarshalCalculatorEnvironment(v *calculator.Environment) any {
 
 						v.JewelRadiusData = converted
 					})(value)
-				case 5:
+				case 6:
 					(func(js.Value) {
 						crystallineFail("calculator.Environment.ModDB cannot be written from JavaScript: ModdbModDB.ModStore: ModdbModStore.Parent: ModStoreFuncs.Combine is variadic, which an object supplied from JavaScript cannot be")
 					})(value)
-				case 6:
+				case 7:
 					(func(js.Value) {
 						crystallineFail("calculator.Environment.EnemyModDB cannot be written from JavaScript: ModdbModDB.ModStore: ModdbModStore.Parent: ModStoreFuncs.Combine is variadic, which an object supplied from JavaScript cannot be")
 					})(value)
-				case 7:
+				case 8:
 					(func(js.Value) {
 						crystallineFail("calculator.Environment.ItemModDB cannot be written from JavaScript: ModdbModDB.ModStore: ModdbModStore.Parent: ModStoreFuncs.Combine is variadic, which an object supplied from JavaScript cannot be")
 					})(value)
-				case 8:
+				case 9:
 					(func(value js.Value) {
 						converted, err := crystallineToInt(value)
 						if err != nil {
@@ -15033,7 +15167,7 @@ func crystallineMarshalCalculatorEnvironment(v *calculator.Environment) any {
 
 						v.EnemyLevel = converted
 					})(value)
-				case 9:
+				case 10:
 					(func(value js.Value) {
 						converted, err := crystallineToMapOfStringToFloat64(value)
 						if err != nil {
@@ -15044,39 +15178,39 @@ func crystallineMarshalCalculatorEnvironment(v *calculator.Environment) any {
 
 						v.ConfigPlaceholder = converted
 					})(value)
-				case 10:
+				case 11:
 					(func(js.Value) {
 						crystallineFail("calculator.Environment.Player cannot be written from JavaScript: CalculatorActor.ModDB: ModdbModDB.ModStore: ModdbModStore.Parent: ModStoreFuncs.Combine is variadic, which an object supplied from JavaScript cannot be")
 					})(value)
-				case 11:
+				case 12:
 					(func(js.Value) {
 						crystallineFail("calculator.Environment.Enemy cannot be written from JavaScript: CalculatorActor.ModDB: ModdbModDB.ModStore: ModdbModStore.Parent: ModStoreFuncs.Combine is variadic, which an object supplied from JavaScript cannot be")
 					})(value)
-				case 12:
+				case 13:
 					(func(js.Value) {
 						crystallineFail("calculator.Environment.Minion cannot be written from JavaScript: CalculatorActorMinion.Actor: CalculatorActor.ModDB: ModdbModDB.ModStore: ModdbModStore.Parent: ModStoreFuncs.Combine is variadic, which an object supplied from JavaScript cannot be")
 					})(value)
-				case 13:
+				case 14:
 					(func(js.Value) {
 						crystallineFail("calculator.Environment.RequirementsTable cannot be written from JavaScript: CalculatorRequirementsTable.SourceItem: type interface{} cannot be read from JS")
 					})(value)
-				case 14:
+				case 15:
 					(func(js.Value) {
 						crystallineFail("calculator.Environment.RequirementsTableItems cannot be written from JavaScript: CalculatorRequirementsTable.SourceItem: type interface{} cannot be read from JS")
 					})(value)
-				case 15:
+				case 16:
 					(func(js.Value) {
 						crystallineFail("calculator.Environment.RequirementsTableGems cannot be written from JavaScript: CalculatorRequirementsTable.SourceItem: type interface{} cannot be read from JS")
 					})(value)
-				case 16:
+				case 17:
 					(func(js.Value) {
 						crystallineFail("calculator.Environment.Flasks cannot be written from JavaScript: CalculatorItem.ImplicitModLines: CalculatorModLine.ModList: Mod.Tag is variadic, which an object supplied from JavaScript cannot be")
 					})(value)
-				case 17:
+				case 18:
 					(func(js.Value) {
 						crystallineFail("calculator.Environment.Tinctures cannot be written from JavaScript: CalculatorItem.ImplicitModLines: CalculatorModLine.ModList: Mod.Tag is variadic, which an object supplied from JavaScript cannot be")
 					})(value)
-				case 18:
+				case 19:
 					(func(value js.Value) {
 						converted, err := crystallineToMapOfStringToDataNode(value)
 						if err != nil {
@@ -15087,7 +15221,7 @@ func crystallineMarshalCalculatorEnvironment(v *calculator.Environment) any {
 
 						v.AllocatedNodes = converted
 					})(value)
-				case 19:
+				case 20:
 					(func(value js.Value) {
 						converted, err := crystallineToMapOfStringToBool(value)
 						if err != nil {
@@ -15098,7 +15232,7 @@ func crystallineMarshalCalculatorEnvironment(v *calculator.Environment) any {
 
 						v.GrantedAscendancyNodes = converted
 					})(value)
-				case 20:
+				case 21:
 					(func(value js.Value) {
 						converted, err := crystallineToMapOfStringToString(value)
 						if err != nil {
@@ -15109,32 +15243,21 @@ func crystallineMarshalCalculatorEnvironment(v *calculator.Environment) any {
 
 						v.ItemClassRestrictions = converted
 					})(value)
-				case 21:
+				case 22:
 					(func(js.Value) {
 						crystallineFail("calculator.Environment.AuxSkillList cannot be written from JavaScript: CalculatorActiveSkill.SkillModList: ModdbModList.ModStore: ModdbModStore.Parent: ModStoreFuncs.Combine is variadic, which an object supplied from JavaScript cannot be")
 					})(value)
-				case 22:
+				case 23:
 					(func(js.Value) {
 						crystallineFail("calculator.Environment.Buffs cannot be written from JavaScript: ModdbModList.ModStore: ModdbModStore.Parent: ModStoreFuncs.Combine is variadic, which an object supplied from JavaScript cannot be")
 					})(value)
-				case 23:
+				case 24:
 					(func(js.Value) {
 						crystallineFail("calculator.Environment.Debuffs cannot be written from JavaScript: ModdbModList.ModStore: ModdbModStore.Parent: ModStoreFuncs.Combine is variadic, which an object supplied from JavaScript cannot be")
 					})(value)
-				case 24:
+				case 25:
 					(func(js.Value) {
 						crystallineFail("calculator.Environment.MinionBuffs cannot be written from JavaScript: ModdbModList.ModStore: ModdbModStore.Parent: ModStoreFuncs.Combine is variadic, which an object supplied from JavaScript cannot be")
-					})(value)
-				case 25:
-					(func(value js.Value) {
-						converted, err := crystallineToBool(value)
-						if err != nil {
-							crystallineFail(err.Error())
-
-							return
-						}
-
-						v.ModeBuffs = converted
 					})(value)
 				case 26:
 					(func(value js.Value) {
@@ -15145,7 +15268,7 @@ func crystallineMarshalCalculatorEnvironment(v *calculator.Environment) any {
 							return
 						}
 
-						v.ModeCombat = converted
+						v.ModeBuffs = converted
 					})(value)
 				case 27:
 					(func(value js.Value) {
@@ -15156,9 +15279,20 @@ func crystallineMarshalCalculatorEnvironment(v *calculator.Environment) any {
 							return
 						}
 
-						v.ModeEffective = converted
+						v.ModeCombat = converted
 					})(value)
 				case 28:
+					(func(value js.Value) {
+						converted, err := crystallineToBool(value)
+						if err != nil {
+							crystallineFail(err.Error())
+
+							return
+						}
+
+						v.ModeEffective = converted
+					})(value)
+				case 29:
 					(func(value js.Value) {
 						converted, err := crystallineToInt(value)
 						if err != nil {
@@ -15169,7 +15303,7 @@ func crystallineMarshalCalculatorEnvironment(v *calculator.Environment) any {
 
 						v.MainSocketGroup = converted
 					})(value)
-				case 29:
+				case 30:
 					(func(value js.Value) {
 						converted, err := crystallineToMapOfStringToBool(value)
 						if err != nil {
@@ -15180,7 +15314,7 @@ func crystallineMarshalCalculatorEnvironment(v *calculator.Environment) any {
 
 						v.SkillsUsed = converted
 					})(value)
-				case 30:
+				case 31:
 					(func(value js.Value) {
 						converted, err := crystallineToSliceOfString(value)
 						if err != nil {
@@ -15191,7 +15325,7 @@ func crystallineMarshalCalculatorEnvironment(v *calculator.Environment) any {
 
 						v.DebugErrors = converted
 					})(value)
-				case 31:
+				case 32:
 					(func(value js.Value) {
 						converted, err := crystallineToMapOfStringToFloat64(value)
 						if err != nil {
@@ -15202,15 +15336,15 @@ func crystallineMarshalCalculatorEnvironment(v *calculator.Environment) any {
 
 						v.CalcProps = converted
 					})(value)
-				case 32:
+				case 33:
 					(func(js.Value) {
 						crystallineFail("calculator.Environment.AegisModList cannot be written from JavaScript: ModdbModList.ModStore: ModdbModStore.Parent: ModStoreFuncs.Combine is variadic, which an object supplied from JavaScript cannot be")
 					})(value)
-				case 33:
+				case 34:
 					(func(js.Value) {
 						crystallineFail("calculator.Environment.TheIronMass cannot be written from JavaScript: ModdbModList.ModStore: ModdbModStore.Parent: ModStoreFuncs.Combine is variadic, which an object supplied from JavaScript cannot be")
 					})(value)
-				case 34:
+				case 35:
 					(func(value js.Value) {
 						converted, err := crystallineToBool(value)
 						if err != nil {
@@ -15221,15 +15355,15 @@ func crystallineMarshalCalculatorEnvironment(v *calculator.Environment) any {
 
 						v.TracePoolWalk = converted
 					})(value)
-				case 35:
+				case 36:
 					(func(js.Value) {
 						crystallineFail("calculator.Environment.PoolWalkTrace cannot be written from JavaScript: CalculatorPoolWalkStep.Actor: CalculatorActor.ModDB: ModdbModDB.ModStore: ModdbModStore.Parent: ModStoreFuncs.Combine is variadic, which an object supplied from JavaScript cannot be")
 					})(value)
-				case 36:
+				case 37:
 					(func(js.Value) {
 						crystallineFail("calculator.Environment.InitialNodeModDB cannot be written from JavaScript: ModdbModList.ModStore: ModdbModStore.Parent: ModStoreFuncs.Combine is variadic, which an object supplied from JavaScript cannot be")
 					})(value)
-				case 37:
+				case 38:
 					(func(js.Value) {
 						crystallineFail("calculator.Environment.WeaponModList1 cannot be written from JavaScript: ModdbModList.ModStore: ModdbModStore.Parent: ModStoreFuncs.Combine is variadic, which an object supplied from JavaScript cannot be")
 					})(value)
@@ -15841,7 +15975,7 @@ func crystallineMarshalCalculatorGemEffect(v *calculator.GemEffect) any {
 
 	if crystallineMarshalCalculatorGemEffectShape.IsUndefined() {
 		crystallineMarshalCalculatorGemEffectShape = crystallineShape("calculator.GemEffect",
-			[]string{"GrantedEffect", "Level", "Quality", "QualityID", "SrcInstance", "GemData", "SocketQuality", "ItemQuality", "GlobalQuality", "SupportQuality", "ActorLevel", "GrantedEffectLevel", "CostEmptied", "ExplodeSource", "Superseded", "Values", "MainSkill", "ActivationFreqInc", "ActivationFreqMore", "AttachedBrandCount", "IgnoresTickRate"},
+			[]string{"GrantedEffect", "Level", "AppliesToGrantedSkills", "Quality", "QualityID", "SrcInstance", "GemData", "SocketQuality", "ItemQuality", "GlobalQuality", "SupportQuality", "ActorLevel", "GrantedEffectLevel", "CostEmptied", "ExplodeSource", "Superseded", "Values", "MainSkill", "ActivationFreqInc", "ActivationFreqMore", "AttachedBrandCount", "IgnoresTickRate"},
 			func(v *calculator.GemEffect, entry *crystallineEntry, field int) any {
 				switch field {
 				case 0:
@@ -15851,11 +15985,13 @@ func crystallineMarshalCalculatorGemEffect(v *calculator.GemEffect) any {
 				case 1:
 					return float64(v.Level)
 				case 2:
-					return float64(v.Quality)
+					return bool(v.AppliesToGrantedSkills)
 				case 3:
-					return string(v.QualityID)
+					return float64(v.Quality)
 				case 4:
-					return crystallineCached(entry, 4, v.SrcInstance, func() any {
+					return string(v.QualityID)
+				case 5:
+					return crystallineCached(entry, 5, v.SrcInstance, func() any {
 						return crystallineJSON(func(b []byte, ok *bool) []byte {
 							b = crystallineAppendPobGem(b, v.SrcInstance, ok)
 							return b
@@ -15863,19 +15999,19 @@ func crystallineMarshalCalculatorGemEffect(v *calculator.GemEffect) any {
 							return crystallineMarshalPobGem(v.SrcInstance)
 						})
 					})
-				case 5:
-					return crystallineCached(entry, 5, v.GemData, func() any {
+				case 6:
+					return crystallineCached(entry, 6, v.GemData, func() any {
 						return crystallineMarshalPoeSkillGem(v.GemData)
 					})
-				case 6:
-					return float64(v.SocketQuality)
 				case 7:
-					return float64(v.ItemQuality)
+					return float64(v.SocketQuality)
 				case 8:
-					return float64(v.GlobalQuality)
+					return float64(v.ItemQuality)
 				case 9:
-					return float64(v.SupportQuality)
+					return float64(v.GlobalQuality)
 				case 10:
+					return float64(v.SupportQuality)
+				case 11:
 					return func() any {
 						if v.ActorLevel == nil {
 							return nil
@@ -15883,19 +16019,19 @@ func crystallineMarshalCalculatorGemEffect(v *calculator.GemEffect) any {
 
 						return float64((*v.ActorLevel))
 					}()
-				case 11:
-					return crystallineCached(entry, 11, v.GrantedEffectLevel, func() any {
+				case 12:
+					return crystallineCached(entry, 12, v.GrantedEffectLevel, func() any {
 						return crystallineMarshalRawCalculatedLevel(v.GrantedEffectLevel)
 					})
-				case 12:
-					return bool(v.CostEmptied)
 				case 13:
-					return crystallineCached(entry, 13, v.ExplodeSource, func() any {
+					return bool(v.CostEmptied)
+				case 14:
+					return crystallineCached(entry, 14, v.ExplodeSource, func() any {
 						return crystallineMarshalCalculatorExplodeSource(v.ExplodeSource)
 					})
-				case 14:
-					return bool(v.Superseded)
 				case 15:
+					return bool(v.Superseded)
+				case 16:
 					return crystallineJSON(func(b []byte, ok *bool) []byte {
 						if entries0 := v.Values; entries0 == nil {
 							b = append(b, "null"...)
@@ -15930,17 +16066,17 @@ func crystallineMarshalCalculatorGemEffect(v *calculator.GemEffect) any {
 							return out
 						}()
 					})
-				case 16:
-					return crystallineCached(entry, 16, v.MainSkill, func() any {
+				case 17:
+					return crystallineCached(entry, 17, v.MainSkill, func() any {
 						return crystallineMarshalCalculatorActiveSkill(v.MainSkill)
 					})
-				case 17:
-					return float64(v.ActivationFreqInc)
 				case 18:
-					return float64(v.ActivationFreqMore)
+					return float64(v.ActivationFreqInc)
 				case 19:
-					return float64(v.AttachedBrandCount)
+					return float64(v.ActivationFreqMore)
 				case 20:
+					return float64(v.AttachedBrandCount)
+				case 21:
 					return bool(v.IgnoresTickRate)
 				}
 
@@ -15965,6 +16101,17 @@ func crystallineMarshalCalculatorGemEffect(v *calculator.GemEffect) any {
 					})(value)
 				case 2:
 					(func(value js.Value) {
+						converted, err := crystallineToBool(value)
+						if err != nil {
+							crystallineFail(err.Error())
+
+							return
+						}
+
+						v.AppliesToGrantedSkills = converted
+					})(value)
+				case 3:
+					(func(value js.Value) {
 						converted, err := crystallineToInt(value)
 						if err != nil {
 							crystallineFail(err.Error())
@@ -15974,7 +16121,7 @@ func crystallineMarshalCalculatorGemEffect(v *calculator.GemEffect) any {
 
 						v.Quality = converted
 					})(value)
-				case 3:
+				case 4:
 					(func(value js.Value) {
 						converted, err := crystallineToString(value)
 						if err != nil {
@@ -15985,7 +16132,7 @@ func crystallineMarshalCalculatorGemEffect(v *calculator.GemEffect) any {
 
 						v.QualityID = converted
 					})(value)
-				case 4:
+				case 5:
 					(func(value js.Value) {
 						converted, err := crystallineToPtrPobGem(value)
 						if err != nil {
@@ -15996,7 +16143,7 @@ func crystallineMarshalCalculatorGemEffect(v *calculator.GemEffect) any {
 
 						v.SrcInstance = converted
 					})(value)
-				case 5:
+				case 6:
 					(func(value js.Value) {
 						converted, err := crystallineToPtrPoeSkillGem(value)
 						if err != nil {
@@ -16007,7 +16154,7 @@ func crystallineMarshalCalculatorGemEffect(v *calculator.GemEffect) any {
 
 						v.GemData = converted
 					})(value)
-				case 6:
+				case 7:
 					(func(value js.Value) {
 						converted, err := crystallineToInt(value)
 						if err != nil {
@@ -16018,7 +16165,7 @@ func crystallineMarshalCalculatorGemEffect(v *calculator.GemEffect) any {
 
 						v.SocketQuality = converted
 					})(value)
-				case 7:
+				case 8:
 					(func(value js.Value) {
 						converted, err := crystallineToInt(value)
 						if err != nil {
@@ -16029,7 +16176,7 @@ func crystallineMarshalCalculatorGemEffect(v *calculator.GemEffect) any {
 
 						v.ItemQuality = converted
 					})(value)
-				case 8:
+				case 9:
 					(func(value js.Value) {
 						converted, err := crystallineToInt(value)
 						if err != nil {
@@ -16040,7 +16187,7 @@ func crystallineMarshalCalculatorGemEffect(v *calculator.GemEffect) any {
 
 						v.GlobalQuality = converted
 					})(value)
-				case 9:
+				case 10:
 					(func(value js.Value) {
 						converted, err := crystallineToInt(value)
 						if err != nil {
@@ -16051,7 +16198,7 @@ func crystallineMarshalCalculatorGemEffect(v *calculator.GemEffect) any {
 
 						v.SupportQuality = converted
 					})(value)
-				case 10:
+				case 11:
 					(func(value js.Value) {
 						converted, err := crystallineToPtrInt(value)
 						if err != nil {
@@ -16062,7 +16209,7 @@ func crystallineMarshalCalculatorGemEffect(v *calculator.GemEffect) any {
 
 						v.ActorLevel = converted
 					})(value)
-				case 11:
+				case 12:
 					(func(value js.Value) {
 						converted, err := crystallineToPtrRawCalculatedLevel(value)
 						if err != nil {
@@ -16073,7 +16220,7 @@ func crystallineMarshalCalculatorGemEffect(v *calculator.GemEffect) any {
 
 						v.GrantedEffectLevel = converted
 					})(value)
-				case 12:
+				case 13:
 					(func(value js.Value) {
 						converted, err := crystallineToBool(value)
 						if err != nil {
@@ -16084,7 +16231,7 @@ func crystallineMarshalCalculatorGemEffect(v *calculator.GemEffect) any {
 
 						v.CostEmptied = converted
 					})(value)
-				case 13:
+				case 14:
 					(func(value js.Value) {
 						converted, err := crystallineToPtrCalculatorExplodeSource(value)
 						if err != nil {
@@ -16095,7 +16242,7 @@ func crystallineMarshalCalculatorGemEffect(v *calculator.GemEffect) any {
 
 						v.ExplodeSource = converted
 					})(value)
-				case 14:
+				case 15:
 					(func(value js.Value) {
 						converted, err := crystallineToBool(value)
 						if err != nil {
@@ -16106,7 +16253,7 @@ func crystallineMarshalCalculatorGemEffect(v *calculator.GemEffect) any {
 
 						v.Superseded = converted
 					})(value)
-				case 15:
+				case 16:
 					(func(value js.Value) {
 						converted, err := crystallineToMapOfStringToFloat64(value)
 						if err != nil {
@@ -16117,20 +16264,9 @@ func crystallineMarshalCalculatorGemEffect(v *calculator.GemEffect) any {
 
 						v.Values = converted
 					})(value)
-				case 16:
+				case 17:
 					(func(js.Value) {
 						crystallineFail("calculator.GemEffect.MainSkill cannot be written from JavaScript: CalculatorActiveSkill.SkillModList: ModdbModList.ModStore: ModdbModStore.Parent: ModStoreFuncs.Combine is variadic, which an object supplied from JavaScript cannot be")
-					})(value)
-				case 17:
-					(func(value js.Value) {
-						converted, err := crystallineToFloat64(value)
-						if err != nil {
-							crystallineFail(err.Error())
-
-							return
-						}
-
-						v.ActivationFreqInc = converted
 					})(value)
 				case 18:
 					(func(value js.Value) {
@@ -16141,7 +16277,7 @@ func crystallineMarshalCalculatorGemEffect(v *calculator.GemEffect) any {
 							return
 						}
 
-						v.ActivationFreqMore = converted
+						v.ActivationFreqInc = converted
 					})(value)
 				case 19:
 					(func(value js.Value) {
@@ -16152,9 +16288,20 @@ func crystallineMarshalCalculatorGemEffect(v *calculator.GemEffect) any {
 							return
 						}
 
-						v.AttachedBrandCount = converted
+						v.ActivationFreqMore = converted
 					})(value)
 				case 20:
+					(func(value js.Value) {
+						converted, err := crystallineToFloat64(value)
+						if err != nil {
+							crystallineFail(err.Error())
+
+							return
+						}
+
+						v.AttachedBrandCount = converted
+					})(value)
+				case 21:
 					(func(value js.Value) {
 						converted, err := crystallineToBool(value)
 						if err != nil {
@@ -16674,7 +16821,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 	if crystallineMarshalCalculatorItemShape.IsUndefined() {
 		crystallineMarshalCalculatorItemShape = crystallineShape("calculator.Item",
-			[]string{"Raw", "Name", "Title", "BaseName", "Rarity", "Type", "Base", "Quality", "ItemLevel", "UniqueID", "League", "Note", "Source", "ClassRestriction", "Unreleased", "UpgradePaths", "Corrupted", "Mirrored", "RareLikeUnique", "FoilType", "Split", "Fractured", "Foulborn", "Synthesised", "Crafted", "Scourge", "CheckSection", "Influence", "Sockets", "Requirements", "ImplicitModLines", "ExplicitModLines", "CrucibleModLines", "EnchantModLines", "ScourgeModLines", "ClassRequirementModLines", "AdvancedCopy", "ModMagnitudeMods", "VariantList", "Variant", "VersionList", "SelectedVersion", "VariantGroups", "VariantGroupSelections", "UsesVariantGroups", "AllowDuplicateVariants", "Catalyst", "CatalystQuality", "HasAltVariant", "HasAltVariant2", "HasAltVariant3", "HasAltVariant4", "HasAltVariant5", "VariantAlt", "VariantAlt2", "VariantAlt3", "VariantAlt4", "VariantAlt5", "NamePrefix", "NameSuffix", "TalismanTier", "MemoryStrands", "Intangibility", "Limit", "JewelRadiusLabel", "CanBeAnointed", "CanHaveTwoEnchants", "CanHaveThreeEnchants", "CanHaveFourEnchants", "GrantedSkills", "AbyssalSocketCount", "SocketedJewelEffectModifier", "SocketColourAlwaysMatches", "WeaponData", "ArmourData", "FlaskData", "TinctureData"},
+			[]string{"Raw", "Name", "Title", "BaseName", "Rarity", "Type", "Base", "Quality", "ItemLevel", "UniqueID", "League", "Note", "Source", "ClassRestriction", "Unreleased", "UpgradePaths", "Corrupted", "Mirrored", "IsUnique", "CorruptImplicitCount", "RareLikeUnique", "FoilType", "Split", "Fractured", "Foulborn", "Synthesised", "Crafted", "Scourge", "CheckSection", "Influence", "Sockets", "Requirements", "ImplicitModLines", "ExplicitModLines", "CrucibleModLines", "EnchantModLines", "ScourgeModLines", "ClassRequirementModLines", "AdvancedCopy", "ModMagnitudeMods", "VariantList", "Variant", "VersionList", "SelectedVersion", "VariantGroups", "VariantGroupSelections", "UsesVariantGroups", "AllowDuplicateVariants", "Catalyst", "CatalystQuality", "HasAltVariant", "HasAltVariant2", "HasAltVariant3", "HasAltVariant4", "HasAltVariant5", "VariantAlt", "VariantAlt2", "VariantAlt3", "VariantAlt4", "VariantAlt5", "NamePrefix", "NameSuffix", "TalismanTier", "MemoryStrands", "Intangibility", "Limit", "JewelRadiusLabel", "CanBeAnointed", "CanHaveTwoEnchants", "CanHaveThreeEnchants", "CanHaveFourEnchants", "GrantedSkills", "AbyssalSocketCount", "SocketedJewelEffectModifier", "SocketColourAlwaysMatches", "WeaponData", "ArmourData", "FlaskData", "TinctureData"},
 			func(v *calculator.Item, entry *crystallineEntry, field int) any {
 				switch field {
 				case 0:
@@ -16758,28 +16905,32 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 				case 17:
 					return bool(v.Mirrored)
 				case 18:
-					return bool(v.RareLikeUnique)
+					return bool(v.IsUnique)
 				case 19:
-					return string(v.FoilType)
+					return float64(v.CorruptImplicitCount)
 				case 20:
-					return bool(v.Split)
+					return bool(v.RareLikeUnique)
 				case 21:
-					return bool(v.Fractured)
+					return string(v.FoilType)
 				case 22:
-					return bool(v.Foulborn)
+					return bool(v.Split)
 				case 23:
-					return bool(v.Synthesised)
+					return bool(v.Fractured)
 				case 24:
-					return bool(v.Crafted)
+					return bool(v.Foulborn)
 				case 25:
-					return bool(v.Scourge)
+					return bool(v.Synthesised)
 				case 26:
-					return bool(v.CheckSection)
+					return bool(v.Crafted)
 				case 27:
-					return crystallineCached(entry, 27, nil, func() any {
+					return bool(v.Scourge)
+				case 28:
+					return bool(v.CheckSection)
+				case 29:
+					return crystallineCached(entry, 29, nil, func() any {
 						return crystallineMarshalCalculatorItemInfluence(&v.Influence)
 					})
-				case 28:
+				case 30:
 					return func() any {
 						items := v.Sockets
 						if items == nil {
@@ -16793,7 +16944,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						return out
 					}()
-				case 29:
+				case 31:
 					return crystallineJSON(func(b []byte, ok *bool) []byte {
 						if entries0 := v.Requirements; entries0 == nil {
 							b = append(b, "null"...)
@@ -16828,7 +16979,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 							return out
 						}()
 					})
-				case 30:
+				case 32:
 					return func() any {
 						items := v.ImplicitModLines
 						if items == nil {
@@ -16842,7 +16993,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						return out
 					}()
-				case 31:
+				case 33:
 					return func() any {
 						items := v.ExplicitModLines
 						if items == nil {
@@ -16856,7 +17007,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						return out
 					}()
-				case 32:
+				case 34:
 					return func() any {
 						items := v.CrucibleModLines
 						if items == nil {
@@ -16870,7 +17021,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						return out
 					}()
-				case 33:
+				case 35:
 					return func() any {
 						items := v.EnchantModLines
 						if items == nil {
@@ -16884,7 +17035,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						return out
 					}()
-				case 34:
+				case 36:
 					return func() any {
 						items := v.ScourgeModLines
 						if items == nil {
@@ -16898,7 +17049,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						return out
 					}()
-				case 35:
+				case 37:
 					return func() any {
 						items := v.ClassRequirementModLines
 						if items == nil {
@@ -16912,9 +17063,9 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						return out
 					}()
-				case 36:
+				case 38:
 					return bool(v.AdvancedCopy)
-				case 37:
+				case 39:
 					return func() any {
 						items := v.ModMagnitudeMods
 						if items == nil {
@@ -16928,7 +17079,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						return out
 					}()
-				case 38:
+				case 40:
 					return crystallineJSON(func(b []byte, ok *bool) []byte {
 						if items0 := v.VariantList; items0 == nil {
 							b = append(b, "null"...)
@@ -16960,7 +17111,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 							return out
 						}()
 					})
-				case 39:
+				case 41:
 					return func() any {
 						if v.Variant == nil {
 							return nil
@@ -16968,7 +17119,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						return float64((*v.Variant))
 					}()
-				case 40:
+				case 42:
 					return crystallineJSON(func(b []byte, ok *bool) []byte {
 						if items0 := v.VersionList; items0 == nil {
 							b = append(b, "null"...)
@@ -17000,7 +17151,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 							return out
 						}()
 					})
-				case 41:
+				case 43:
 					return func() any {
 						if v.SelectedVersion == nil {
 							return nil
@@ -17008,7 +17159,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						return float64((*v.SelectedVersion))
 					}()
-				case 42:
+				case 44:
 					return crystallineJSON(func(b []byte, ok *bool) []byte {
 						if entries0 := v.VariantGroups; entries0 == nil {
 							b = append(b, "null"...)
@@ -17099,7 +17250,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 							return out
 						}()
 					})
-				case 43:
+				case 45:
 					return crystallineJSON(func(b []byte, ok *bool) []byte {
 						if entries0 := v.VariantGroupSelections; entries0 == nil {
 							b = append(b, "null"...)
@@ -17134,11 +17285,11 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 							return out
 						}()
 					})
-				case 44:
-					return bool(v.UsesVariantGroups)
-				case 45:
-					return bool(v.AllowDuplicateVariants)
 				case 46:
+					return bool(v.UsesVariantGroups)
+				case 47:
+					return bool(v.AllowDuplicateVariants)
+				case 48:
 					return func() any {
 						if v.Catalyst == nil {
 							return nil
@@ -17146,7 +17297,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						return float64((*v.Catalyst))
 					}()
-				case 47:
+				case 49:
 					return func() any {
 						if v.CatalystQuality == nil {
 							return nil
@@ -17154,17 +17305,17 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						return float64((*v.CatalystQuality))
 					}()
-				case 48:
-					return bool(v.HasAltVariant)
-				case 49:
-					return bool(v.HasAltVariant2)
 				case 50:
-					return bool(v.HasAltVariant3)
+					return bool(v.HasAltVariant)
 				case 51:
-					return bool(v.HasAltVariant4)
+					return bool(v.HasAltVariant2)
 				case 52:
-					return bool(v.HasAltVariant5)
+					return bool(v.HasAltVariant3)
 				case 53:
+					return bool(v.HasAltVariant4)
+				case 54:
+					return bool(v.HasAltVariant5)
+				case 55:
 					return func() any {
 						if v.VariantAlt == nil {
 							return nil
@@ -17172,7 +17323,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						return float64((*v.VariantAlt))
 					}()
-				case 54:
+				case 56:
 					return func() any {
 						if v.VariantAlt2 == nil {
 							return nil
@@ -17180,7 +17331,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						return float64((*v.VariantAlt2))
 					}()
-				case 55:
+				case 57:
 					return func() any {
 						if v.VariantAlt3 == nil {
 							return nil
@@ -17188,7 +17339,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						return float64((*v.VariantAlt3))
 					}()
-				case 56:
+				case 58:
 					return func() any {
 						if v.VariantAlt4 == nil {
 							return nil
@@ -17196,7 +17347,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						return float64((*v.VariantAlt4))
 					}()
-				case 57:
+				case 59:
 					return func() any {
 						if v.VariantAlt5 == nil {
 							return nil
@@ -17204,11 +17355,11 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						return float64((*v.VariantAlt5))
 					}()
-				case 58:
-					return string(v.NamePrefix)
-				case 59:
-					return string(v.NameSuffix)
 				case 60:
+					return string(v.NamePrefix)
+				case 61:
+					return string(v.NameSuffix)
+				case 62:
 					return func() any {
 						if v.TalismanTier == nil {
 							return nil
@@ -17216,7 +17367,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						return float64((*v.TalismanTier))
 					}()
-				case 61:
+				case 63:
 					return func() any {
 						if v.MemoryStrands == nil {
 							return nil
@@ -17224,7 +17375,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						return float64((*v.MemoryStrands))
 					}()
-				case 62:
+				case 64:
 					return func() any {
 						if v.Intangibility == nil {
 							return nil
@@ -17232,7 +17383,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						return float64((*v.Intangibility))
 					}()
-				case 63:
+				case 65:
 					return func() any {
 						if v.Limit == nil {
 							return nil
@@ -17240,17 +17391,17 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						return float64((*v.Limit))
 					}()
-				case 64:
-					return string(v.JewelRadiusLabel)
-				case 65:
-					return bool(v.CanBeAnointed)
 				case 66:
-					return bool(v.CanHaveTwoEnchants)
+					return string(v.JewelRadiusLabel)
 				case 67:
-					return bool(v.CanHaveThreeEnchants)
+					return bool(v.CanBeAnointed)
 				case 68:
-					return bool(v.CanHaveFourEnchants)
+					return bool(v.CanHaveTwoEnchants)
 				case 69:
+					return bool(v.CanHaveThreeEnchants)
+				case 70:
+					return bool(v.CanHaveFourEnchants)
+				case 71:
 					return func() any {
 						items := v.GrantedSkills
 						if items == nil {
@@ -17264,13 +17415,13 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						return out
 					}()
-				case 70:
-					return float64(v.AbyssalSocketCount)
-				case 71:
-					return float64(v.SocketedJewelEffectModifier)
 				case 72:
-					return bool(v.SocketColourAlwaysMatches)
+					return float64(v.AbyssalSocketCount)
 				case 73:
+					return float64(v.SocketedJewelEffectModifier)
+				case 74:
+					return bool(v.SocketColourAlwaysMatches)
+				case 75:
 					return crystallineJSON(func(b []byte, ok *bool) []byte {
 						if entries0 := v.WeaponData; entries0 == nil {
 							b = append(b, "null"...)
@@ -17333,7 +17484,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 							return out
 						}()
 					})
-				case 74:
+				case 76:
 					return crystallineJSON(func(b []byte, ok *bool) []byte {
 						if entries0 := v.ArmourData; entries0 == nil {
 							b = append(b, "null"...)
@@ -17368,7 +17519,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 							return out
 						}()
 					})
-				case 75:
+				case 77:
 					return crystallineJSON(func(b []byte, ok *bool) []byte {
 						if entries0 := v.FlaskData; entries0 == nil {
 							b = append(b, "null"...)
@@ -17403,7 +17554,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 							return out
 						}()
 					})
-				case 76:
+				case 78:
 					return crystallineJSON(func(b []byte, ok *bool) []byte {
 						if entries0 := v.TinctureData; entries0 == nil {
 							b = append(b, "null"...)
@@ -17651,18 +17802,18 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 							return
 						}
 
-						v.RareLikeUnique = converted
+						v.IsUnique = converted
 					})(value)
 				case 19:
 					(func(value js.Value) {
-						converted, err := crystallineToString(value)
+						converted, err := crystallineToFloat64(value)
 						if err != nil {
 							crystallineFail(err.Error())
 
 							return
 						}
 
-						v.FoilType = converted
+						v.CorruptImplicitCount = converted
 					})(value)
 				case 20:
 					(func(value js.Value) {
@@ -17673,18 +17824,18 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 							return
 						}
 
-						v.Split = converted
+						v.RareLikeUnique = converted
 					})(value)
 				case 21:
 					(func(value js.Value) {
-						converted, err := crystallineToBool(value)
+						converted, err := crystallineToString(value)
 						if err != nil {
 							crystallineFail(err.Error())
 
 							return
 						}
 
-						v.Fractured = converted
+						v.FoilType = converted
 					})(value)
 				case 22:
 					(func(value js.Value) {
@@ -17695,7 +17846,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 							return
 						}
 
-						v.Foulborn = converted
+						v.Split = converted
 					})(value)
 				case 23:
 					(func(value js.Value) {
@@ -17706,7 +17857,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 							return
 						}
 
-						v.Synthesised = converted
+						v.Fractured = converted
 					})(value)
 				case 24:
 					(func(value js.Value) {
@@ -17717,7 +17868,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 							return
 						}
 
-						v.Crafted = converted
+						v.Foulborn = converted
 					})(value)
 				case 25:
 					(func(value js.Value) {
@@ -17728,7 +17879,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 							return
 						}
 
-						v.Scourge = converted
+						v.Synthesised = converted
 					})(value)
 				case 26:
 					(func(value js.Value) {
@@ -17739,9 +17890,31 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 							return
 						}
 
-						v.CheckSection = converted
+						v.Crafted = converted
 					})(value)
 				case 27:
+					(func(value js.Value) {
+						converted, err := crystallineToBool(value)
+						if err != nil {
+							crystallineFail(err.Error())
+
+							return
+						}
+
+						v.Scourge = converted
+					})(value)
+				case 28:
+					(func(value js.Value) {
+						converted, err := crystallineToBool(value)
+						if err != nil {
+							crystallineFail(err.Error())
+
+							return
+						}
+
+						v.CheckSection = converted
+					})(value)
+				case 29:
 					(func(value js.Value) {
 						converted, err := crystallineToCalculatorItemInfluence(value)
 						if err != nil {
@@ -17752,7 +17925,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						v.Influence = converted
 					})(value)
-				case 28:
+				case 30:
 					(func(value js.Value) {
 						converted, err := crystallineToSliceOfCalculatorItemSocket(value)
 						if err != nil {
@@ -17763,7 +17936,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						v.Sockets = converted
 					})(value)
-				case 29:
+				case 31:
 					(func(value js.Value) {
 						converted, err := crystallineToMapOfStringToFloat64(value)
 						if err != nil {
@@ -17774,31 +17947,31 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						v.Requirements = converted
 					})(value)
-				case 30:
+				case 32:
 					(func(js.Value) {
 						crystallineFail("calculator.Item.ImplicitModLines cannot be written from JavaScript: CalculatorModLine.ModList: Mod.Tag is variadic, which an object supplied from JavaScript cannot be")
 					})(value)
-				case 31:
+				case 33:
 					(func(js.Value) {
 						crystallineFail("calculator.Item.ExplicitModLines cannot be written from JavaScript: CalculatorModLine.ModList: Mod.Tag is variadic, which an object supplied from JavaScript cannot be")
 					})(value)
-				case 32:
+				case 34:
 					(func(js.Value) {
 						crystallineFail("calculator.Item.CrucibleModLines cannot be written from JavaScript: CalculatorModLine.ModList: Mod.Tag is variadic, which an object supplied from JavaScript cannot be")
 					})(value)
-				case 33:
+				case 35:
 					(func(js.Value) {
 						crystallineFail("calculator.Item.EnchantModLines cannot be written from JavaScript: CalculatorModLine.ModList: Mod.Tag is variadic, which an object supplied from JavaScript cannot be")
 					})(value)
-				case 34:
+				case 36:
 					(func(js.Value) {
 						crystallineFail("calculator.Item.ScourgeModLines cannot be written from JavaScript: CalculatorModLine.ModList: Mod.Tag is variadic, which an object supplied from JavaScript cannot be")
 					})(value)
-				case 35:
+				case 37:
 					(func(js.Value) {
 						crystallineFail("calculator.Item.ClassRequirementModLines cannot be written from JavaScript: CalculatorModLine.ModList: Mod.Tag is variadic, which an object supplied from JavaScript cannot be")
 					})(value)
-				case 36:
+				case 38:
 					(func(value js.Value) {
 						converted, err := crystallineToBool(value)
 						if err != nil {
@@ -17809,7 +17982,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						v.AdvancedCopy = converted
 					})(value)
-				case 37:
+				case 39:
 					(func(value js.Value) {
 						converted, err := crystallineToSliceOfCalculatorModMagnitudeMod(value)
 						if err != nil {
@@ -17820,7 +17993,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						v.ModMagnitudeMods = converted
 					})(value)
-				case 38:
+				case 40:
 					(func(value js.Value) {
 						converted, err := crystallineToSliceOfString(value)
 						if err != nil {
@@ -17831,7 +18004,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						v.VariantList = converted
 					})(value)
-				case 39:
+				case 41:
 					(func(value js.Value) {
 						converted, err := crystallineToPtrInt(value)
 						if err != nil {
@@ -17842,7 +18015,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						v.Variant = converted
 					})(value)
-				case 40:
+				case 42:
 					(func(value js.Value) {
 						converted, err := crystallineToSliceOfString(value)
 						if err != nil {
@@ -17853,7 +18026,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						v.VersionList = converted
 					})(value)
-				case 41:
+				case 43:
 					(func(value js.Value) {
 						converted, err := crystallineToPtrInt(value)
 						if err != nil {
@@ -17864,7 +18037,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						v.SelectedVersion = converted
 					})(value)
-				case 42:
+				case 44:
 					(func(value js.Value) {
 						converted, err := crystallineToMapOfIntToMapOfIntToMapOfIntToBool(value)
 						if err != nil {
@@ -17875,7 +18048,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						v.VariantGroups = converted
 					})(value)
-				case 43:
+				case 45:
 					(func(value js.Value) {
 						converted, err := crystallineToMapOfIntToInt(value)
 						if err != nil {
@@ -17886,7 +18059,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						v.VariantGroupSelections = converted
 					})(value)
-				case 44:
+				case 46:
 					(func(value js.Value) {
 						converted, err := crystallineToBool(value)
 						if err != nil {
@@ -17897,7 +18070,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						v.UsesVariantGroups = converted
 					})(value)
-				case 45:
+				case 47:
 					(func(value js.Value) {
 						converted, err := crystallineToBool(value)
 						if err != nil {
@@ -17908,7 +18081,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						v.AllowDuplicateVariants = converted
 					})(value)
-				case 46:
+				case 48:
 					(func(value js.Value) {
 						converted, err := crystallineToPtrInt(value)
 						if err != nil {
@@ -17919,7 +18092,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						v.Catalyst = converted
 					})(value)
-				case 47:
+				case 49:
 					(func(value js.Value) {
 						converted, err := crystallineToPtrInt(value)
 						if err != nil {
@@ -17930,7 +18103,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						v.CatalystQuality = converted
 					})(value)
-				case 48:
+				case 50:
 					(func(value js.Value) {
 						converted, err := crystallineToBool(value)
 						if err != nil {
@@ -17941,7 +18114,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						v.HasAltVariant = converted
 					})(value)
-				case 49:
+				case 51:
 					(func(value js.Value) {
 						converted, err := crystallineToBool(value)
 						if err != nil {
@@ -17952,7 +18125,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						v.HasAltVariant2 = converted
 					})(value)
-				case 50:
+				case 52:
 					(func(value js.Value) {
 						converted, err := crystallineToBool(value)
 						if err != nil {
@@ -17963,7 +18136,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						v.HasAltVariant3 = converted
 					})(value)
-				case 51:
+				case 53:
 					(func(value js.Value) {
 						converted, err := crystallineToBool(value)
 						if err != nil {
@@ -17974,7 +18147,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						v.HasAltVariant4 = converted
 					})(value)
-				case 52:
+				case 54:
 					(func(value js.Value) {
 						converted, err := crystallineToBool(value)
 						if err != nil {
@@ -17985,7 +18158,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						v.HasAltVariant5 = converted
 					})(value)
-				case 53:
+				case 55:
 					(func(value js.Value) {
 						converted, err := crystallineToPtrInt(value)
 						if err != nil {
@@ -17996,7 +18169,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						v.VariantAlt = converted
 					})(value)
-				case 54:
+				case 56:
 					(func(value js.Value) {
 						converted, err := crystallineToPtrInt(value)
 						if err != nil {
@@ -18007,7 +18180,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						v.VariantAlt2 = converted
 					})(value)
-				case 55:
+				case 57:
 					(func(value js.Value) {
 						converted, err := crystallineToPtrInt(value)
 						if err != nil {
@@ -18018,7 +18191,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						v.VariantAlt3 = converted
 					})(value)
-				case 56:
+				case 58:
 					(func(value js.Value) {
 						converted, err := crystallineToPtrInt(value)
 						if err != nil {
@@ -18029,7 +18202,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						v.VariantAlt4 = converted
 					})(value)
-				case 57:
+				case 59:
 					(func(value js.Value) {
 						converted, err := crystallineToPtrInt(value)
 						if err != nil {
@@ -18040,7 +18213,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						v.VariantAlt5 = converted
 					})(value)
-				case 58:
+				case 60:
 					(func(value js.Value) {
 						converted, err := crystallineToString(value)
 						if err != nil {
@@ -18051,7 +18224,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						v.NamePrefix = converted
 					})(value)
-				case 59:
+				case 61:
 					(func(value js.Value) {
 						converted, err := crystallineToString(value)
 						if err != nil {
@@ -18062,7 +18235,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						v.NameSuffix = converted
 					})(value)
-				case 60:
+				case 62:
 					(func(value js.Value) {
 						converted, err := crystallineToPtrInt(value)
 						if err != nil {
@@ -18073,7 +18246,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						v.TalismanTier = converted
 					})(value)
-				case 61:
+				case 63:
 					(func(value js.Value) {
 						converted, err := crystallineToPtrInt(value)
 						if err != nil {
@@ -18084,7 +18257,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						v.MemoryStrands = converted
 					})(value)
-				case 62:
+				case 64:
 					(func(value js.Value) {
 						converted, err := crystallineToPtrInt(value)
 						if err != nil {
@@ -18095,7 +18268,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						v.Intangibility = converted
 					})(value)
-				case 63:
+				case 65:
 					(func(value js.Value) {
 						converted, err := crystallineToPtrInt(value)
 						if err != nil {
@@ -18106,7 +18279,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						v.Limit = converted
 					})(value)
-				case 64:
+				case 66:
 					(func(value js.Value) {
 						converted, err := crystallineToString(value)
 						if err != nil {
@@ -18117,7 +18290,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						v.JewelRadiusLabel = converted
 					})(value)
-				case 65:
+				case 67:
 					(func(value js.Value) {
 						converted, err := crystallineToBool(value)
 						if err != nil {
@@ -18128,7 +18301,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						v.CanBeAnointed = converted
 					})(value)
-				case 66:
+				case 68:
 					(func(value js.Value) {
 						converted, err := crystallineToBool(value)
 						if err != nil {
@@ -18139,7 +18312,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						v.CanHaveTwoEnchants = converted
 					})(value)
-				case 67:
+				case 69:
 					(func(value js.Value) {
 						converted, err := crystallineToBool(value)
 						if err != nil {
@@ -18150,7 +18323,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						v.CanHaveThreeEnchants = converted
 					})(value)
-				case 68:
+				case 70:
 					(func(value js.Value) {
 						converted, err := crystallineToBool(value)
 						if err != nil {
@@ -18161,7 +18334,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						v.CanHaveFourEnchants = converted
 					})(value)
-				case 69:
+				case 71:
 					(func(value js.Value) {
 						converted, err := crystallineToSliceOfCalculatorItemGrantedSkill(value)
 						if err != nil {
@@ -18172,7 +18345,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						v.GrantedSkills = converted
 					})(value)
-				case 70:
+				case 72:
 					(func(value js.Value) {
 						converted, err := crystallineToFloat64(value)
 						if err != nil {
@@ -18183,7 +18356,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						v.AbyssalSocketCount = converted
 					})(value)
-				case 71:
+				case 73:
 					(func(value js.Value) {
 						converted, err := crystallineToFloat64(value)
 						if err != nil {
@@ -18194,7 +18367,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						v.SocketedJewelEffectModifier = converted
 					})(value)
-				case 72:
+				case 74:
 					(func(value js.Value) {
 						converted, err := crystallineToBool(value)
 						if err != nil {
@@ -18205,7 +18378,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						v.SocketColourAlwaysMatches = converted
 					})(value)
-				case 73:
+				case 75:
 					(func(value js.Value) {
 						converted, err := crystallineToMapOfIntToMapOfStringToFloat64(value)
 						if err != nil {
@@ -18216,7 +18389,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						v.WeaponData = converted
 					})(value)
-				case 74:
+				case 76:
 					(func(value js.Value) {
 						converted, err := crystallineToMapOfStringToFloat64(value)
 						if err != nil {
@@ -18227,7 +18400,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						v.ArmourData = converted
 					})(value)
-				case 75:
+				case 77:
 					(func(value js.Value) {
 						converted, err := crystallineToMapOfStringToFloat64(value)
 						if err != nil {
@@ -18238,7 +18411,7 @@ func crystallineMarshalCalculatorItem(v *calculator.Item) any {
 
 						v.FlaskData = converted
 					})(value)
-				case 76:
+				case 78:
 					(func(value js.Value) {
 						converted, err := crystallineToMapOfStringToFloat64(value)
 						if err != nil {
@@ -31287,7 +31460,7 @@ func crystallineMarshalExpositionMiscCalculator(v *MiscCalculator) any {
 				switch field {
 				}
 			},
-			[]string{"AddItem", "AffixPowers", "AnointPowers", "Base", "CalcNodes", "CalcToggleFlask", "CalcUnequip", "CompareAddedMod", "CompareAnoint", "CompareItem", "ConditionalSlots", "CorruptSortValues", "CustomModSortValues", "EnchantSortValues", "ImplicitSortValues", "ItemDBRows", "ReplaceItem", "SocketDistanceToClassStart", "SocketJewelTooltip", "SplitPersonalityPath", "TimelessFallbackWeights"},
+			[]string{"AddItem", "AffixPowers", "AnointPowers", "Base", "CalcNodes", "CalcToggleFlask", "CalcUnequip", "CompareAddedMod", "CompareAnoint", "CompareItem", "CompareReplacedImplicits", "ConditionalSlots", "CorruptSortValues", "CustomModSortValues", "EnchantSortValues", "ImplicitSortValues", "ItemDBRows", "ReplaceItem", "SocketDistanceToClassStart", "SocketJewelTooltip", "SplitPersonalityPath", "TimelessFallbackWeights"},
 			func(v *MiscCalculator, method int, args []js.Value) any {
 				switch method {
 				case 0:
@@ -31577,6 +31750,29 @@ func crystallineMarshalExpositionMiscCalculator(v *MiscCalculator) any {
 						}))
 					})
 				case 10:
+					if len(args) != 2 {
+						return crystallineFail("CompareReplacedImplicits: expected 2 arguments, got " + strconv.Itoa(len(args)))
+					}
+
+					a0, err := crystallineToString(args[0])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					a1, err := crystallineToSliceOfString(args[1])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					r0, r1 := v.CompareReplacedImplicits(a0, a1)
+
+					return []any{crystallineJSON(func(b []byte, ok *bool) []byte {
+						b = crystallineAppendExpositionAddedModCompare(b, &r0, ok)
+						return b
+					}, func() any {
+						return crystallineMarshalExpositionAddedModCompare(&r0)
+					}), bool(r1)}
+				case 11:
 					if len(args) != 0 {
 						return crystallineFail("ConditionalSlots: expected 0 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -31614,7 +31810,7 @@ func crystallineMarshalExpositionMiscCalculator(v *MiscCalculator) any {
 							return out
 						}()
 					})
-				case 11:
+				case 12:
 					if len(args) != 5 {
 						return crystallineFail("CorruptSortValues: expected 5 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -31659,7 +31855,7 @@ func crystallineMarshalExpositionMiscCalculator(v *MiscCalculator) any {
 
 						return out
 					}()
-				case 12:
+				case 13:
 					if len(args) != 4 {
 						return crystallineFail("CustomModSortValues: expected 4 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -31699,7 +31895,7 @@ func crystallineMarshalExpositionMiscCalculator(v *MiscCalculator) any {
 
 						return out
 					}()
-				case 13:
+				case 14:
 					if len(args) != 4 {
 						return crystallineFail("EnchantSortValues: expected 4 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -31739,7 +31935,7 @@ func crystallineMarshalExpositionMiscCalculator(v *MiscCalculator) any {
 
 						return out
 					}()
-				case 14:
+				case 15:
 					if len(args) != 4 {
 						return crystallineFail("ImplicitSortValues: expected 4 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -31779,7 +31975,7 @@ func crystallineMarshalExpositionMiscCalculator(v *MiscCalculator) any {
 
 						return out
 					}()
-				case 15:
+				case 16:
 					if len(args) != 7 {
 						return crystallineFail("ItemDBRows: expected 7 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -31852,7 +32048,7 @@ func crystallineMarshalExpositionMiscCalculator(v *MiscCalculator) any {
 							return out
 						}()
 					})
-				case 16:
+				case 17:
 					if len(args) != 2 {
 						return crystallineFail("ReplaceItem: expected 2 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -31876,7 +32072,7 @@ func crystallineMarshalExpositionMiscCalculator(v *MiscCalculator) any {
 
 						return crystallineOk(nil)
 					})
-				case 17:
+				case 18:
 					if len(args) != 1 {
 						return crystallineFail("SocketDistanceToClassStart: expected 1 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -31889,7 +32085,7 @@ func crystallineMarshalExpositionMiscCalculator(v *MiscCalculator) any {
 					r0 := v.SocketDistanceToClassStart(a0)
 
 					return float64(r0)
-				case 18:
+				case 19:
 					if len(args) != 2 {
 						return crystallineFail("SocketJewelTooltip: expected 2 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -31912,7 +32108,7 @@ func crystallineMarshalExpositionMiscCalculator(v *MiscCalculator) any {
 					}, func() any {
 						return crystallineMarshalCalculatorItemTooltip(&r0)
 					}), bool(r1)}
-				case 19:
+				case 20:
 					if len(args) != 0 {
 						return crystallineFail("SplitPersonalityPath: expected 0 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -31932,7 +32128,7 @@ func crystallineMarshalExpositionMiscCalculator(v *MiscCalculator) any {
 
 						return out
 					}()
-				case 20:
+				case 21:
 					if len(args) != 2 {
 						return crystallineFail("TimelessFallbackWeights: expected 2 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -32511,12 +32707,12 @@ func crystallineMarshalExpositionSidebarPass(v *SidebarPass) any {
 				switch field {
 				}
 			},
-			[]string{"Breakdown"},
+			[]string{"Entry", "ModSection", "StatBreakdownKey"},
 			func(v *SidebarPass, method int, args []js.Value) any {
 				switch method {
 				case 0:
 					if len(args) != 2 {
-						return crystallineFail("Breakdown: expected 2 arguments, got " + strconv.Itoa(len(args)))
+						return crystallineFail("Entry: expected 2 arguments, got " + strconv.Itoa(len(args)))
 					}
 
 					a0, err := crystallineToBool(args[0])
@@ -32529,7 +32725,25 @@ func crystallineMarshalExpositionSidebarPass(v *SidebarPass) any {
 						return crystallineFail(err.Error())
 					}
 
-					r0 := v.Breakdown(a0, a1)
+					r0 := v.Entry(a0, a1)
+
+					return crystallineMarshalCalculatorEntry(r0)
+				case 1:
+					if len(args) != 2 {
+						return crystallineFail("ModSection: expected 2 arguments, got " + strconv.Itoa(len(args)))
+					}
+
+					a0, err := crystallineToBool(args[0])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					a1, err := crystallineToCalculatorModSectionData(args[1])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					r0 := v.ModSection(a0, a1)
 
 					return crystallineJSON(func(b []byte, ok *bool) []byte {
 						if items0 := r0; items0 == nil {
@@ -32541,7 +32755,7 @@ func crystallineMarshalExpositionSidebarPass(v *SidebarPass) any {
 									b = append(b, ',')
 								}
 
-								b = crystallineAppendString(b, string(items0[i0]))
+								b = crystallineAppendCalculatorModSectionRow(b, &items0[i0], ok)
 							}
 
 							b = append(b, ']')
@@ -32556,12 +32770,50 @@ func crystallineMarshalExpositionSidebarPass(v *SidebarPass) any {
 
 							out := make([]any, 0, len(items))
 							for i := range items {
-								out = append(out, string(items[i]))
+								out = append(out, crystallineMarshalCalculatorModSectionRow(&items[i]))
 							}
 
 							return out
 						}()
 					})
+				case 2:
+					if len(args) != 6 {
+						return crystallineFail("StatBreakdownKey: expected 6 arguments, got " + strconv.Itoa(len(args)))
+					}
+
+					a0, err := crystallineToBool(args[0])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					a1, err := crystallineToString(args[1])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					a2, err := crystallineToString(args[2])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					a3, err := crystallineToString(args[3])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					a4, err := crystallineToBool(args[4])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					a5, err := crystallineToBool(args[5])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					r0, r1 := v.StatBreakdownKey(a0, a1, a2, a3, a4, a5)
+
+					return []any{string(r0), bool(r1)}
 				}
 
 				return nil
@@ -33022,7 +33274,7 @@ func crystallineMarshalExpositionTimelessSearch(v *TimelessSearch) any {
 				switch field {
 				}
 			},
-			[]string{"AddItem", "Count", "Desired", "Item", "Rows", "Step", "TradeURL"},
+			[]string{"AddItem", "Count", "Desired", "Item", "Rows", "Socket", "Step", "TradeURL"},
 			func(v *TimelessSearch, method int, args []js.Value) any {
 				switch method {
 				case 0:
@@ -33181,6 +33433,29 @@ func crystallineMarshalExpositionTimelessSearch(v *TimelessSearch) any {
 						}()
 					})
 				case 5:
+					if len(args) != 3 {
+						return crystallineFail("Socket: expected 3 arguments, got " + strconv.Itoa(len(args)))
+					}
+
+					a0, err := crystallineToPtrPobPathOfBuilding(args[0])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					a1, err := crystallineToInt(args[1])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					a2, err := crystallineToInt(args[2])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					r0 := v.Socket(a0, a1, a2)
+
+					return bool(r0)
+				case 6:
 					if len(args) != 0 {
 						return crystallineFail("Step: expected 0 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -33188,7 +33463,7 @@ func crystallineMarshalExpositionTimelessSearch(v *TimelessSearch) any {
 					r0 := v.Step()
 
 					return float64(r0)
-				case 6:
+				case 7:
 					if len(args) != 1 {
 						return crystallineFail("TradeURL: expected 1 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -39818,6 +40093,7 @@ func crystallineMarshalPobTimelessData(v *pob.TimelessData) any {
 	out.Set("FallbackWeightModeIdx", string(v.FallbackWeightModeIdx))
 	out.Set("SocketFilter", string(v.SocketFilter))
 	out.Set("SocketFilterDistance", string(v.SocketFilterDistance))
+	out.Set("SocketAllocate", string(v.SocketAllocate))
 	out.Set("SearchList", string(v.SearchList))
 	out.Set("SearchListFallback", string(v.SearchListFallback))
 
@@ -48506,6 +48782,23 @@ func crystallineAppendCalculatorCorruptChoices(b []byte, v *calculator.CorruptCh
 	b = strconv.AppendBool(b, bool(v.Unique))
 	b = append(b, ",\"ImplicitsCannotBeChanged\":"...)
 	b = strconv.AppendBool(b, bool(v.ImplicitsCannotBeChanged))
+	b = append(b, ",\"MaxImplicits\":"...)
+	b = crystallineAppendNumber(b, float64(v.MaxImplicits), ok)
+	b = append(b, ",\"Glimpse\":"...)
+	if items0 := v.Glimpse; items0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '[')
+		for i0 := range items0 {
+			if i0 > 0 {
+				b = append(b, ',')
+			}
+
+			b = crystallineAppendCalculatorCorruptMod(b, &items0[i0], ok)
+		}
+
+		b = append(b, ']')
+	}
 	b = append(b, ",\"Corrupted\":"...)
 	if items0 := v.Corrupted; items0 == nil {
 		b = append(b, "null"...)
@@ -52041,6 +52334,8 @@ func crystallineAppendPobTimelessData(b []byte, v *pob.TimelessData, ok *bool) [
 	b = crystallineAppendString(b, string(v.SocketFilter))
 	b = append(b, ",\"SocketFilterDistance\":"...)
 	b = crystallineAppendString(b, string(v.SocketFilterDistance))
+	b = append(b, ",\"SocketAllocate\":"...)
+	b = crystallineAppendString(b, string(v.SocketAllocate))
 	b = append(b, ",\"SearchList\":"...)
 	b = crystallineAppendString(b, string(v.SearchList))
 	b = append(b, ",\"SearchListFallback\":"...)
@@ -52485,6 +52780,7 @@ func crystallinePlainCalculatorEntry(v *calculator.Entry) any {
 		}()
 	}))
 	out.Set("Radius", float64(v.Radius))
+	out.Set("BreakdownSource", string(v.BreakdownSource))
 
 	return out
 }
@@ -63155,7 +63451,7 @@ func crystallineToPobSpectre(value js.Value) (pob.Spectre, error) {
 	return out, nil
 }
 
-var crystallineKnownPobTimelessData = map[string]bool{"JewelTypeID": true, "ConquerorTypeID": true, "DevotionVariant1": true, "DevotionVariant2": true, "JewelSocketID": true, "FallbackWeightModeIdx": true, "SocketFilter": true, "SocketFilterDistance": true, "SearchList": true, "SearchListFallback": true}
+var crystallineKnownPobTimelessData = map[string]bool{"JewelTypeID": true, "ConquerorTypeID": true, "DevotionVariant1": true, "DevotionVariant2": true, "JewelSocketID": true, "FallbackWeightModeIdx": true, "SocketFilter": true, "SocketFilterDistance": true, "SocketAllocate": true, "SearchList": true, "SearchListFallback": true}
 
 func crystallineToPobTimelessData(value js.Value) (pob.TimelessData, error) {
 	var out pob.TimelessData
@@ -63256,6 +63552,15 @@ func crystallineToPobTimelessData(value js.Value) (pob.TimelessData, error) {
 		}
 
 		out.SocketFilterDistance = converted
+	}
+
+	if property := value.Get("SocketAllocate"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToString(property)
+		if err != nil {
+			return out, errors.New("pob.TimelessData.SocketAllocate: " + err.Error())
+		}
+
+		out.SocketAllocate = converted
 	}
 
 	if property := value.Get("SearchList"); !property.IsUndefined() && !property.IsNull() {

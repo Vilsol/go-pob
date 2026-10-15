@@ -22,7 +22,7 @@ type TreeClusterNode struct {
 	Linked     []int64
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:2225-2268
+//pob:block:src/Classes/PassiveSpec.lua:2313-2356
 func TreeClusterNodes(build *pob.PathOfBuilding) []TreeClusterNode {
 	nodes, layout := buildClusterJewelLayout(&Environment{Build: build}, data.LatestTreeVersion, true)
 	tree := specTree()
@@ -61,7 +61,7 @@ func TreeClusterNodes(build *pob.PathOfBuilding) []TreeClusterNode {
 	return out
 }
 
-//pob:block:src/Classes/PassiveTreeView.lua:1102-1107
+//pob:block:src/Classes/PassiveTreeView.lua:1112-1117
 func TreeSpecClusterNodes(build *pob.PathOfBuilding, specID int) []TreeClusterNode {
 	if specID < 1 || specID > len(build.Tree.Specs) {
 		return nil

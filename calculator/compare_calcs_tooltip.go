@@ -19,7 +19,7 @@ type CompareModRow struct {
 
 var compareItemSourceRe = regexp.MustCompile(`^(Item):-?\d+:`)
 
-//pob:block:src/Classes/CompareCalcsHelpers.lua:77-138
+//pob:block:src/Classes/CompareCalcsHelpers.lua:79-140
 func (env *Environment) CompareModRows(sd ModSectionData, minion bool) []CompareModRow {
 	if env == nil || env.Player == nil {
 		return nil

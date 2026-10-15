@@ -24,7 +24,7 @@ func idSet(spec string) map[int]bool {
 	return out
 }
 
-//pob:block:src/Classes/Item.lua:888-910
+//pob:block:src/Classes/Item.lua:912-934
 func (i *Item) registerVariantGroups(ml ModLine) {
 	if ml.VariantGroupList == nil || ml.VariantList == nil {
 		return
@@ -60,13 +60,13 @@ func (i *Item) registerVariantGroups(ml ModLine) {
 	}
 }
 
-//pob:src/Classes/Item.lua:335-339
+//pob:src/Classes/Item.lua:340-344
 func (i *Item) isVariantGroupOptionEligible(groupID, variantID int) bool {
 	versions := i.VariantGroups[groupID][variantID]
 	return versions != nil && (versions[0] || (i.SelectedVersion != nil && versions[*i.SelectedVersion]))
 }
 
-//pob:src/Classes/Item.lua:341-363
+//pob:src/Classes/Item.lua:346-368
 func (i *Item) VariantGroupOptions(groupID int, excludeSelected bool) []int {
 	var options []int
 	if i.VariantGroups[groupID] == nil {
@@ -91,7 +91,7 @@ func (i *Item) VariantGroupOptions(groupID int, excludeSelected bool) []int {
 	return options
 }
 
-//pob:src/Classes/Item.lua:365-403
+//pob:src/Classes/Item.lua:370-408
 func (i *Item) normaliseVariantSelections() {
 	if len(i.VersionList) > 0 {
 		v := len(i.VersionList)
@@ -134,7 +134,7 @@ func (i *Item) normaliseVariantSelections() {
 	}
 }
 
-//pob:block:src/Classes/Item.lua:2082-2098
+//pob:block:src/Classes/Item.lua:2121-2137
 func (i *Item) checkModLineVariantGroups(ml ModLine) bool {
 	if ml.VersionList != nil && (i.SelectedVersion == nil || !ml.VersionList[*i.SelectedVersion]) {
 		return false
@@ -153,7 +153,7 @@ func (i *Item) checkModLineVariantGroups(ml ModLine) bool {
 	return ml.VariantList == nil
 }
 
-//pob:block:src/Classes/Item.lua:1889-1907
+//pob:block:src/Classes/Item.lua:1928-1946
 func (i *Item) variantGroupRawLines() []string {
 	var out []string
 	for _, name := range i.VersionList {
@@ -175,7 +175,7 @@ func (i *Item) variantGroupSelectionLines() []string {
 	return out
 }
 
-//pob:block:src/Classes/ItemsTab.lua:4412-4421
+//pob:block:src/Classes/ItemsTab.lua:4258-4267
 func (i *Item) selectedGroupVariants() []string {
 	var out []string
 	for _, groupID := range slices.Sorted(maps.Keys(i.VariantGroups)) {

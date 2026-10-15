@@ -42,23 +42,23 @@ func (b *PathOfBuilding) SetMainSocketGroup(mainSocketGroup int) {
 	b.Build.MainSocketGroup = mainSocketGroup
 }
 
-//pob:src/Modules/Build.lua:486-491
+//pob:src/Modules/Build.lua:493-498
 func (b *PathOfBuilding) SetMainActiveSkill(skillSet int, socketGroup int, mainActiveSkill int) {
 	b.Skills.SkillSets[skillSet].Skills[socketGroup].MainActiveSkill = mainActiveSkill
 }
 
-//pob:src/Modules/Build.lua:492-498
+//pob:src/Modules/Build.lua:499-505
 func (b *PathOfBuilding) SetGemSkillPart(skillSet int, socketGroup int, gem int, skillPart int) {
 	b.Skills.SkillSets[skillSet].Skills[socketGroup].Gems[gem].SkillPart = skillPart
 }
 
-//pob:src/Modules/Build.lua:504-510
+//pob:src/Modules/Build.lua:511-517
 func (b *PathOfBuilding) SetGemSkillStageCount(skillSet int, socketGroup int, gem int, stageCount int) {
 	b.Skills.SkillSets[skillSet].Skills[socketGroup].Gems[gem].SkillStageCount = stageCount
 	b.Skills.SkillSets[skillSet].Skills[socketGroup].Gems[gem].stageCountZero = false
 }
 
-//pob:src/Modules/Build.lua:516-522
+//pob:src/Modules/Build.lua:523-529
 func (b *PathOfBuilding) SetGemSkillMineCount(skillSet int, socketGroup int, gem int, mineCount int) {
 	var count *int
 	if mineCount >= 0 {
@@ -67,17 +67,17 @@ func (b *PathOfBuilding) SetGemSkillMineCount(skillSet int, socketGroup int, gem
 	b.Skills.SkillSets[skillSet].Skills[socketGroup].Gems[gem].SkillMineCount = count
 }
 
-//pob:src/Modules/Build.lua:523-533
+//pob:src/Modules/Build.lua:530-540
 func (b *PathOfBuilding) SetGemSkillMinion(skillSet int, socketGroup int, gem int, minionID string) {
 	b.Skills.SkillSets[skillSet].Skills[socketGroup].Gems[gem].SkillMinion = minionID
 }
 
-//pob:src/Modules/Build.lua:523-533
+//pob:src/Modules/Build.lua:530-540
 func (b *PathOfBuilding) SetGemSkillMinionItemSet(skillSet int, socketGroup int, gem int, itemSetID int) {
 	b.Skills.SkillSets[skillSet].Skills[socketGroup].Gems[gem].SkillMinionItemSet = itemSetID
 }
 
-//pob:src/Modules/Build.lua:555-561
+//pob:src/Modules/Build.lua:562-568
 func (b *PathOfBuilding) SetGemSkillMinionSkill(skillSet int, socketGroup int, gem int, minionSkill int) {
 	b.Skills.SkillSets[skillSet].Skills[socketGroup].Gems[gem].SkillMinionSkill = minionSkill
 }
@@ -157,7 +157,7 @@ func (b *PathOfBuilding) SetDefaultGemLevelMode(mode string) {
 	b.Skills.MatchGemLevelToCharacterLevel = false
 }
 
-//pob:block:src/Classes/SkillsTab.lua:148-150
+//pob:block:src/Classes/SkillsTab.lua:152-154
 func (b *PathOfBuilding) SetShowLegacyGems(enabled bool) {
 	b.Skills.ShowLegacyGems = enabled
 }
@@ -219,7 +219,7 @@ func (c *Config) activeConfigSetIndex() int {
 	return 0
 }
 
-//pob:src/Classes/ConfigTab.lua:1278-1303
+//pob:src/Classes/ConfigTab.lua:1337-1362
 func (b *PathOfBuilding) SetActiveConfigSet(configSetID int) {
 	c := &b.Config
 	if len(c.ConfigSets) == 0 {
@@ -254,7 +254,7 @@ func (b *PathOfBuilding) ResetConfigOptions() {
 	})
 }
 
-//pob:block:src/Classes/ConfigTab.lua:873-884
+//pob:block:src/Classes/ConfigTab.lua:924-935
 func (b *PathOfBuilding) GetCustomModifierBlocks() []CustomModifierBlock {
 	blocks := b.Config.CustomModifierBlocks
 	legacyText := b.GetStringOption("customMods")
@@ -266,7 +266,7 @@ func (b *PathOfBuilding) GetCustomModifierBlocks() []CustomModifierBlock {
 	return slices.Clone(blocks)
 }
 
-//pob:block:src/Classes/ConfigTab.lua:24-28, src/Classes/ConfigTab.lua:881-883
+//pob:block:src/Classes/ConfigTab.lua:33-37, src/Classes/ConfigTab.lua:932-934
 func (b *PathOfBuilding) SetCustomModifierBlocks(blocks []CustomModifierBlock) {
 	if len(blocks) == 0 {
 		blocks = []CustomModifierBlock{defaultCustomModifierBlock("")}
@@ -353,7 +353,7 @@ func (b *PathOfBuilding) DeleteAllSocketGroups() {
 	b.Skills.SkillSets[b.ActiveSkillSetIndex()].Skills = make([]Skill, 0)
 }
 
-//pob:block:src/Classes/ListControl.lua:428-436, src/Classes/SkillListControl.lua:123-142
+//pob:block:src/Classes/ListControl.lua:441-449, src/Classes/SkillListControl.lua:130-149
 func (b *PathOfBuilding) MoveSocketGroup(from int, to int) {
 	if len(b.Skills.SkillSets) == 0 {
 		return
@@ -400,7 +400,7 @@ func (b *PathOfBuilding) MoveSocketGroup(from int, to int) {
 	}
 }
 
-//pob:block:src/Classes/SkillsTab.lua:1462-1464
+//pob:block:src/Classes/SkillsTab.lua:1489-1491
 func (b *PathOfBuilding) ActiveSkillSetIndex() int {
 	for i, set := range b.Skills.SkillSets {
 		if set.ID == b.Skills.ActiveSkillSet {
@@ -410,7 +410,7 @@ func (b *PathOfBuilding) ActiveSkillSetIndex() int {
 	return 0
 }
 
-//pob:src/Classes/SkillsTab.lua:1451-1475
+//pob:src/Classes/SkillsTab.lua:1478-1502
 func (b *PathOfBuilding) SetActiveSkillSet(skillSetID int) {
 	if len(b.Skills.SkillSets) == 0 {
 		b.Skills.SkillSets = []SkillSet{{ID: 1}}
@@ -430,7 +430,7 @@ func (b *PathOfBuilding) SetActiveSkillSet(skillSetID int) {
 	b.Skills.ActiveSkillSet = skillSetID
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:572,src/Classes/PassiveSpec.lua:584
+//pob:block:src/Classes/PassiveSpec.lua:583,src/Classes/PassiveSpec.lua:595
 func (b *PathOfBuilding) SetClass(className ClassName) {
 	b.Build.ClassName = className
 	if spec := b.activeSpec(); spec != nil {
@@ -540,7 +540,7 @@ func (s *ItemSet) slot(slotName string) *Slot {
 	return &s.Slots[len(s.Slots)-1]
 }
 
-//pob:src/Classes/ItemsTab.lua:1584-1610
+//pob:src/Classes/ItemsTab.lua:1591-1617
 func (b *PathOfBuilding) SetActiveItemSet(itemSetID int) {
 	b.activeItemSet()
 	found := false

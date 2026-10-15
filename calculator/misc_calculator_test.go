@@ -17,6 +17,9 @@ import (
 var mainOnlyOutputs = map[string]bool{
 	"ExtraPoints": true, "Spec:LifeInc": true, "Spec:ManaInc": true, "Spec:ArmourInc": true,
 	"Spec:EvasionInc": true, "Spec:EnergyShieldInc": true,
+	"FlaskEffect": true, "FlaskChargeGen": true, "LifeFlaskChargeGen": true, "ManaFlaskChargeGen": true,
+	"UtilityFlaskChargeGen": true, "FlaskChargeOnCritChance": true, "TinctureEffect": true, "TinctureLimit": true,
+	"IgniteDotMulti": true, "BleedDotMulti": true, "PoisonDotMulti": true,
 }
 
 func treeRoots(build *pob.PathOfBuilding) []int64 {

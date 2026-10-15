@@ -117,14 +117,15 @@ type BDamageType struct {
 }
 
 type Entry struct {
-	Columns      []BCol
-	Rows         []map[string]string
-	Lines        []string
-	Slots        []BSlot
-	Reservations []BReservation
-	Label        string
-	DamageTypes  []BDamageType
-	Radius       float64
+	Columns         []BCol
+	Rows            []map[string]string
+	Lines           []string
+	Slots           []BSlot
+	Reservations    []BReservation
+	Label           string
+	DamageTypes     []BDamageType
+	Radius          float64
+	BreakdownSource string
 }
 
 type Breakdown struct {
@@ -139,7 +140,7 @@ type Breakdown struct {
 	modStore moddb.ModStoreFuncs
 }
 
-//pob:block:src/Modules/CalcBreakdown.lua:6-15
+//pob:block:src/Modules/CalcBreakdown.lua:13-15
 func NewBreakdown(modDB *moddb.ModDB, output map[string]float64, actor *Actor) *Breakdown {
 	return &Breakdown{
 		ModDB:  modDB,
@@ -205,8 +206,8 @@ func (b *Breakdown) cFloatSpelling() {
 	}
 }
 
-//pob:src/Modules/CalcBreakdown.lua:95-109
-func (b *Breakdown) area(key string, base float64, areaMod float64, total float64, bp *radiusBreakpoints, label string) {
+//pob:src/Modules/CalcBreakdown.lua:95-112
+func (b *Breakdown) area(key string, base float64, areaMod float64, total float64, bp *radiusBreakpoints, label string, radiusMod float64) {
 	var out []string
 	if label != "" {
 		out = append(out, label)
@@ -215,8 +216,11 @@ func (b *Breakdown) area(key string, base float64, areaMod float64, total float6
 		out = append(out,
 			luaSprintf("%.1fm ^8(base radius)", base/10),
 			luaSprintf("x %.2f ^8(square root of area of effect modifier)", math.Floor(100*math.Sqrt(areaMod))/100),
-			luaSprintf("= %.1fm", total/10),
 		)
+		if radiusMod != 1 {
+			out = append(out, luaSprintf("x %.2f ^8(final radius modifier)", radiusMod))
+		}
+		out = append(out, luaSprintf("= %.1fm", total/10))
 	}
 	if bp != nil {
 		out = append(out,
@@ -227,7 +231,7 @@ func (b *Breakdown) area(key string, base float64, areaMod float64, total float6
 	b.Data[key] = &Entry{Lines: out, Radius: total}
 }
 
-//pob:src/Modules/CalcBreakdown.lua:159-170
+//pob:src/Modules/CalcBreakdown.lua:162-173
 func (b *Breakdown) Dot(key string, baseVal, inc, more, mult, rate, aura, effMult, total float64) {
 	b.Data[key] = &Entry{}
 	b.MultiChain(key, BMultiChain{
@@ -244,7 +248,7 @@ func (b *Breakdown) Dot(key string, baseVal, inc, more, mult, rate, aura, effMul
 	})
 }
 
-//pob:src/Modules/CalcBreakdown.lua:172-193
+//pob:src/Modules/CalcBreakdown.lua:175-196
 func breakdownCritDot(dotMulti, critMulti, dotChance, critChance float64) []string {
 	combined := float64(dotMulti*dotChance) + float64(critMulti*critChance)
 	var out []string
@@ -274,7 +278,7 @@ func breakdownCritDot(dotMulti, critMulti, dotChance, critChance float64) []stri
 	return out
 }
 
-//pob:src/Modules/CalcBreakdown.lua:195-249
+//pob:src/Modules/CalcBreakdown.lua:198-252
 func (b *Breakdown) leech(instant, instantRate, instances, pool float64, rate string, maxRate, dur, instantLeechProportion, hitRate float64) []string {
 	var out []string
 	if b.Actor.MainSkill.SkillData.ShowAverage {
@@ -360,7 +364,7 @@ func (b *Breakdown) GetData() map[string]*Entry {
 	return out
 }
 
-//pob:block:src/Modules/CalcOffence.lua:1942,src/Modules/CalcOffence.lua:1959
+//pob:block:src/Modules/CalcOffence.lua:2006,src/Modules/CalcOffence.lua:2023
 func newHandBreakdown(skillModList moddb.ModStoreFuncs, output map[string]float64) *Breakdown {
 	return &Breakdown{Output: output, Data: make(map[string]*Entry), modStore: skillModList}
 }
@@ -478,7 +482,7 @@ func (b *Breakdown) Mod(key string, modList moddb.ModStoreFuncs, cfg *moddb.List
 	delete(b.Data, key)
 }
 
-//pob:src/Modules/CalcBreakdown.lua:111-157
+//pob:src/Modules/CalcBreakdown.lua:114-160
 func (b *Breakdown) EffMult(key string, damageType data.DamageType, resist float64, pen float64, taken float64, mult float64, takenMore float64, sourceRes data.DamageType, useRes bool, invertChance float64, effectiveResist *float64) {
 	b.Data[key] = &Entry{}
 	resistForm := utils.Ternary(damageType == data.DamageTypePhysical, "physical damage reduction", "resistance")
@@ -561,4 +565,14 @@ func (b *Breakdown) DamageType(key string, damageTypes ...BDamageType) {
 func (b *Breakdown) Has(key string) bool {
 	_, ok := b.Data[key]
 	return ok
+}
+
+func setBreakdownEntry(b *Breakdown, key string, entries ...*Entry) {
+	for _, e := range entries {
+		if e != nil {
+			b.Data[key] = e
+			return
+		}
+	}
+	delete(b.Data, key)
 }

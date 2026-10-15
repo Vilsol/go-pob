@@ -1,4 +1,5 @@
 local inPath, outPath = arg[1], arg[2]
+local construct = dofile((arg[0]:match("^(.*)[/\\]") or ".") .. "/pob_compat.lua").construct
 dofile("HeadlessWrapper.lua")
 local json = require("dkjson")
 local tradeHelpers = LoadModule("Classes/TradeHelpers")
@@ -20,8 +21,8 @@ end
 local pairsIn = json.decode(io.open(inPath):read("*a"))
 local out = {}
 for k, p in ipairs(pairsIn) do
-	local a = p[1] ~= "" and new("Item", p[1]) or nil
-	local b = p[2] ~= "" and new("Item", p[2]) or nil
+	local a = p[1] ~= "" and construct("Item", p[1]) or nil
+	local b = p[2] ~= "" and construct("Item", p[2]) or nil
 	out[k] = { card(a, b), card(b, a) }
 end
 DrawString = realDrawString

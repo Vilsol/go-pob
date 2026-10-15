@@ -186,7 +186,7 @@
     // ConfigTab.lua:1524-1536
     modbrowser: {
       list: async (search) => (await syncWrap?.ModBrowserList(search)) ?? [],
-      supported: async (line) => (await syncWrap?.ModBrowserSupported(line)) ?? false,
+      sources: async (line) => (await syncWrap?.ModBrowserSources(line)) ?? [],
       onadd: (g, line) => {
         const cells = groups[g].cells;
         const last = cells[cells.length - 1];

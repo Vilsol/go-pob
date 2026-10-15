@@ -44,7 +44,7 @@ func usedIn[T any](m map[string]T) func(string) bool {
 	}
 }
 
-//pob:src/Classes/ConfigTab.lua:369-630
+//pob:src/Classes/ConfigTab.lua:401-662
 func (env *Environment) ConfigRelevance(query ConfigRelevance) ConfigRelevance {
 	player := env.Player
 	mainSkill := player.MainSkill
@@ -131,7 +131,7 @@ var gemRowForBaseName = sync.OnceValue(func() map[string]raw2.PoBGem {
 	return out
 })
 
-//pob:src/Modules/CalcTools.lua:270-283
+//pob:src/Modules/CalcTools.lua:279-292
 func gameIDFromGemName(gemName string, dropVaal bool) string {
 	row, ok := gemRowForBaseName()[strings.ToLower(gemName)]
 	if !ok {
@@ -143,7 +143,7 @@ func gameIDFromGemName(gemName string, dropVaal bool) string {
 	return raw2.GemGameIDForGrantedEffectID[row.GrantedEffectID]
 }
 
-//pob:src/Modules/CalcTools.lua:290-294
+//pob:src/Modules/CalcTools.lua:299-303
 func isGemIDSame(gemName string, typeName string, dropVaal bool) bool {
 	gemNameID := gameIDFromGemName(gemName, dropVaal)
 	typeID := gameIDFromGemName(typeName, dropVaal)

@@ -35,6 +35,7 @@ type characterPassives struct {
 				Group      string `json:"group"`
 				OrbitIndex int64  `json:"orbitIndex"`
 				IsMastery  bool   `json:"isMastery"`
+				IsKeystone bool   `json:"isKeystone"`
 			} `json:"nodes"`
 		} `json:"subgraph"`
 	} `json:"jewel_data"`
@@ -48,12 +49,12 @@ type characterPassives struct {
 	Items               []importItemData `json:"items"`
 }
 
-//pob:block:src/Modules/Build.lua:711-747
+//pob:block:src/Modules/Build.lua:729-765
 var importActs = []struct{ level, questPoints int }{
 	{1, 0}, {12, 2}, {22, 4}, {32, 6}, {40, 7}, {44, 9}, {50, 12}, {54, 15}, {60, 18}, {64, 20}, {67, 23},
 }
 
-//pob:block:src/Modules/Build.lua:880-891,src/Modules/Build.lua:910
+//pob:block:src/Modules/Build.lua:898-909,src/Modules/Build.lua:928
 func estimatedAct(pointsUsed int, extra int) int {
 	act, level := 0, 1
 	for {
@@ -73,7 +74,7 @@ func estimatedAct(pointsUsed int, extra int) int {
 	return 0
 }
 
-//pob:block:src/Classes/ImportTab.lua:1168-1181
+//pob:block:src/Classes/ImportTab.lua:1169-1182
 func isAscendancyInTree(tree *data.Tree, className string) bool {
 	for _, class := range tree.Classes {
 		if string(class.Name) == className {
@@ -88,7 +89,7 @@ func isAscendancyInTree(tree *data.Tree, className string) bool {
 	return false
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:252-258
+//pob:block:src/Classes/PassiveSpec.lua:263-269
 func importClassIDs(tree *data.Tree, className string) (pob.ClassID, pob.AscendancyID, bool) {
 	for classID, class := range tree.Classes {
 		if string(class.Name) == className {
@@ -105,7 +106,7 @@ func importClassIDs(tree *data.Tree, className string) (pob.ClassID, pob.Ascenda
 	return 0, 0, false
 }
 
-//pob:block:src/Classes/ImportTab.lua:1183-1195,src/Classes/PassiveTree.lua:185-200
+//pob:block:src/Classes/ImportTab.lua:1184-1196,src/Classes/PassiveTree.lua:208-223
 func importSecondaryAscendancy(tree *data.Tree, raw json.RawMessage) int {
 	if len(raw) == 0 || string(raw) == "null" {
 		return 0
@@ -124,10 +125,10 @@ func importSecondaryAscendancy(tree *data.Tree, raw json.RawMessage) int {
 	return id
 }
 
-//pob:block:src/Classes/PassiveTree.lua:111-116
+//pob:block:src/Classes/PassiveTree.lua:134-139
 var legacyAlternateAscendancy = map[string]bool{"Warden": true, "Warlock": true, "Primalist": true}
 
-//pob:block:src/Classes/ImportTab.lua:1228-1234,src/Modules/ConfigOptions.lua:136-150
+//pob:block:src/Classes/ImportTab.lua:1229-1235,src/Modules/ConfigOptions.lua:136-150
 func setSelByVal(build *pob.PathOfBuilding, name string, value string) {
 	valid := value == "None"
 	switch name {
@@ -142,13 +143,14 @@ func setSelByVal(build *pob.PathOfBuilding, name string, value string) {
 	}
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:1747-1760,src/Classes/PassiveSpec.lua:1774-1786,src/Classes/PassiveSpec.lua:1944-1982,src/Classes/PassiveSpec.lua:2255-2260
+//pob:block:src/Classes/PassiveSpec.lua:1832-1845,src/Classes/PassiveSpec.lua:1859-1871,src/Classes/PassiveSpec.lua:2029-2069,src/Classes/PassiveSpec.lua:2342-2347
 func importedSubgraphNodes(build *pob.PathOfBuilding, tree *data.Tree, charPassives characterPassives) []int64 {
 	type importedNode struct {
 		id         string
 		group      string
 		orbitIndex int64
 		isMastery  bool
+		isKeystone bool
 	}
 	importedGroups := map[string][]string{}
 	proxyGroups := map[int64]string{}
@@ -164,7 +166,7 @@ func importedSubgraphNodes(build *pob.PathOfBuilding, tree *data.Tree, charPassi
 			}
 		}
 		for nodeID, nodeValue := range value.Subgraph.Nodes {
-			importedNodes = append(importedNodes, importedNode{nodeID, nodeValue.Group, nodeValue.OrbitIndex, nodeValue.IsMastery})
+			importedNodes = append(importedNodes, importedNode{nodeID, nodeValue.Group, nodeValue.OrbitIndex, nodeValue.IsMastery, nodeValue.IsKeystone})
 		}
 	}
 	slices.SortFunc(importedNodes, func(a, b importedNode) int { return strings.Compare(a.id, b.id) })
@@ -175,7 +177,9 @@ func importedSubgraphNodes(build *pob.PathOfBuilding, tree *data.Tree, charPassi
 			return false
 		}
 		for _, imported := range importedNodes {
-			if proxyGroup == imported.group && node.OrbitIndex == imported.orbitIndex && !imported.isMastery {
+			//pob:block:src/Classes/PassiveSpec.lua:2055-2057
+			matches := node.Type == "Keystone" && imported.isKeystone || (node.OrbitIndex == imported.orbitIndex && !imported.isMastery)
+			if proxyGroup == imported.group && matches {
 				id, err := strconv.ParseInt(imported.id, 10, 64)
 				return err == nil && slices.Contains(importedGroups[proxyGroup], imported.id) && slices.Contains(charPassives.HashesEx, id)
 			}
@@ -191,7 +195,7 @@ func importedSubgraphNodes(build *pob.PathOfBuilding, tree *data.Tree, charPassi
 	return out
 }
 
-//pob:src/Classes/ImportTab.lua:1130-1252
+//pob:src/Classes/ImportTab.lua:1131-1253
 func importPassiveTreeAndJewels(build *pob.PathOfBuilding, charData *characterData, charPassives characterPassives, deleteJewels bool) string {
 	tree := data.TreeVersions[data.LatestTreeVersion].Tree()
 	extra := int(calculator.NewCalculator(*build).BuildOutput(calculator.OutputModeMain).Player.Output["ExtraPoints"])
@@ -240,7 +244,7 @@ func importPassiveTreeAndJewels(build *pob.PathOfBuilding, charData *characterDa
 		phreciaSuffix = ""
 	}
 
-	//pob:block:src/Classes/PassiveSpec.lua:245-301
+	//pob:block:src/Classes/PassiveSpec.lua:256-312
 	two := 2
 	classID, ascendClassID, _ := importClassIDs(tree, charData.Class)
 	spec = &build.Tree.Specs[build.ActiveSpecIndex()]
@@ -271,6 +275,7 @@ func importPassiveTreeAndJewels(build *pob.PathOfBuilding, charData *characterDa
 		}
 		nodes = append(nodes, strconv.FormatInt(id, 10))
 	}
+	spec.NodesAttr = strings.Join(nodes, ",")
 	for _, id := range importedSubgraphNodes(build, tree, charPassives) {
 		if key := strconv.FormatInt(id, 10); !slices.Contains(nodes, key) {
 			nodes = append(nodes, key)
@@ -331,7 +336,7 @@ func ImportPassiveTreeAndJewels(build *pob.PathOfBuilding, characterJSON string,
 	return importPassiveTreeAndJewels(build, charData, passives, deleteJewels), nil
 }
 
-//pob:block:src/Classes/ImportTab.lua:829-847
+//pob:block:src/Classes/ImportTab.lua:830-848
 func ImportAccountPassiveTree(build *pob.PathOfBuilding, characterJSON string, passivesJSON string, deleteJewels bool) (string, error) {
 	if build == nil {
 		return "", fmt.Errorf("no build")
@@ -361,7 +366,7 @@ func ImportAccountPassiveTree(build *pob.PathOfBuilding, characterJSON string, p
 	return importPassiveTreeAndJewels(build, &charData, passives, deleteJewels), nil
 }
 
-//pob:block:src/Classes/ImportTab.lua:867-883
+//pob:block:src/Classes/ImportTab.lua:868-884
 func ImportAccountItems(build *pob.PathOfBuilding, characterJSON string, itemsJSON string, clearItems bool, clearSkills bool, ignoreWeaponSwap bool) (string, error) {
 	if build == nil {
 		return "", fmt.Errorf("no build")

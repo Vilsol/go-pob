@@ -6,11 +6,12 @@ import (
 	"slices"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/Vilsol/go-pob/data"
 )
 
-//pob:src/Classes/ItemsTab.lua:571-576
+//pob:src/Classes/ItemsTab.lua:574-579
 func addImplicitShown(item *Item) bool {
 	t := item.Base.Type
 	corruptible := t != "Flask"
@@ -24,10 +25,24 @@ type ImplicitSource struct {
 	Label string
 }
 
-//pob:block:src/Classes/ItemsTab.lua:3920-3932
+//pob:block:src/Modules/Main.lua:163-174
+var uniqueDBByTitle = sync.OnceValue(func() map[string]*Item {
+	out := map[string]*Item{}
+	for _, item := range ItemDB(ItemDBUnique) {
+		out[luaLower(item.Title)] = item
+	}
+	return out
+})
+
+//pob:block:src/Modules/AddImplicitPopup.lua:161-181
 func implicitSources(item *Item) []ImplicitSource {
 	var out []ImplicitSource
 	t := item.Base.Type
+	titleLower := luaLower(item.Title)
+	if u := uniqueDBByTitle()[titleLower]; item.Rarity == RarityUnique && u != nil && slices.Contains(data.VestigialUniqueBaseTypes(), t) &&
+		(u.Source == "" || titleLower == "stasis prison") {
+		out = append(out, ImplicitSource{"VESTIGIAL", "Vestigial"})
+	}
 	if item.Rarity != RarityUnique && item.Rarity != RarityRelic && (t == "Helmet" || t == "Body Armour" || t == "Gloves" || t == "Boots") {
 		if item.Influence.Cleansing {
 			out = append(out, ImplicitSource{"EXARCH", "Searing Exarch"})
@@ -35,9 +50,6 @@ func implicitSources(item *Item) []ImplicitSource {
 		if item.Influence.Tangle {
 			out = append(out, ImplicitSource{"EATER", "Eater of Worlds"})
 		}
-	}
-	if t != "Flask" && t != "Jewel" && t != "Graft" {
-		out = append(out, ImplicitSource{"DelveImplicit", "Delve"})
 	}
 	return append(out, ImplicitSource{"CUSTOM", "Custom"})
 }
@@ -66,7 +78,7 @@ var (
 	trailingDigitsRe     = regexp.MustCompile(`\d+$`)
 )
 
-//pob:src/Classes/ItemsTab.lua:3795-3919
+//pob:block:src/Modules/AddImplicitPopup.lua:45-120
 func buildImplicitMods(item *Item, sourceID string) []ImplicitGroup {
 	type entry struct {
 		mod  data.AffixMod
@@ -103,6 +115,9 @@ func buildImplicitMods(item *Item, sourceID string) []ImplicitGroup {
 		return 0, false
 	}
 	switch sourceID {
+	//pob:block:src/Modules/AddImplicitPopup.lua:121-157
+	case "VESTIGIAL":
+		return vestigialImplicitMods(item)
 	case "EXARCH", "EATER":
 		for _, mod := range affixes {
 			if modSpawnWeight(item, &mod) > 0 && strings.EqualFold(sourceID, mod.Type) {
@@ -142,12 +157,6 @@ func buildImplicitMods(item *Item, sourceID string) []ImplicitGroup {
 				return b.Level - a.Level
 			})
 		}
-	case "DelveImplicit":
-		for _, mod := range affixes {
-			if modSpawnWeight(item, &mod) > 0 && strings.EqualFold(sourceID, mod.Type) {
-				add(mod.Group, mod, "custom")
-			}
-		}
 	}
 	out := make([]ImplicitGroup, len(groups))
 	for k, g := range groups {
@@ -155,12 +164,30 @@ func buildImplicitMods(item *Item, sourceID string) []ImplicitGroup {
 		for _, e := range g.mods {
 			ig.Mods = append(ig.Mods, ImplicitMod{ID: e.mod.ID, Label: strings.Join(e.mod.Lines, "/"), Lines: e.mod.Lines, Type: e.kind, ModTags: e.mod.ModTags})
 		}
-		ig.Label = ig.Mods[0].Label
-		if sourceID != "DelveImplicit" {
-			ig.Label = implicitGroupNumRe.ReplaceAllString(implicitGroupRangeRe.ReplaceAllString(ig.Label, "#"), "#")
-		}
+		ig.Label = implicitGroupNumRe.ReplaceAllString(implicitGroupRangeRe.ReplaceAllString(ig.Mods[0].Label, "#"), "#")
 		out[k] = ig
 	}
+	return out
+}
+
+func vestigialImplicitMods(item *Item) []ImplicitGroup {
+	table, _ := data.AffixTable("Vestigial")
+	mappings := data.VestigialModMappings()
+	var out []ImplicitGroup
+	for _, mod := range table {
+		uniqueTitle, ok := mappings[mod.ID]
+		if !ok {
+			continue
+		}
+		titleLower := luaLower(uniqueTitle)
+		unique := uniqueDBByTitle()[titleLower]
+		if unique == nil || unique.Base.Type != item.Base.Type || luaLower(item.Title) == titleLower {
+			continue
+		}
+		label := colorVestigial + strings.Join(mod.Lines, "/")
+		out = append(out, ImplicitGroup{Label: label, Mods: []ImplicitMod{{ID: mod.ID, Label: label, Lines: mod.Lines, Type: "vestigial", ModTags: mod.ModTags}}})
+	}
+	slices.SortStableFunc(out, func(a, b ImplicitGroup) int { return strings.Compare(a.Mods[0].ID, b.Mods[0].ID) })
 	return out
 }
 
@@ -178,7 +205,7 @@ func ItemImplicitChoices(raw string) (ImplicitChoices, bool) {
 	return out, true
 }
 
-//pob:block:src/Classes/ItemsTab.lua:3937-3956,src/Classes/ItemsTab.lua:4041-4056
+//pob:block:src/Modules/AddImplicitPopup.lua:186-211,src/Modules/AddImplicitPopup.lua:296-309
 func ImplicitText(raw string, sourceID string, modID string, custom string) (string, bool) {
 	item := ParseItem(raw)
 	if item.Base == nil {
@@ -209,6 +236,10 @@ func implicitText(raw string, item *Item, groups []ImplicitGroup, modID string) 
 					lines[k] = "{tags:" + strings.Join(tags, ",") + "}" + lines[k]
 				}
 			}
+			//pob:block:src/Modules/AddImplicitPopup.lua:186-211
+			if m.Type == "vestigial" {
+				b.implicits = nil
+			}
 			if m.Type == "exarch" || m.Type == "eater" {
 				for k, l := range b.implicits {
 					if strings.Contains(l, "{"+m.Type+"}") {
@@ -230,7 +261,7 @@ func implicitText(raw string, item *Item, groups []ImplicitGroup, modID string) 
 	return raw, false
 }
 
-//pob:src/Classes/ItemsTab.lua:3957-3970
+//pob:src/Modules/AddImplicitPopup.lua:212-225
 func (m *MiscCalculator) ImplicitSortValues(raw string, sourceID string, ids []string, stat string) []float64 {
 	ps, ok := powerStatByName(stat)
 	item := ParseItem(raw)

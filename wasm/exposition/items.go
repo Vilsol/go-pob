@@ -196,7 +196,7 @@ func socketLine(sockets []calculator.ItemSocket) string {
 	return b.String()
 }
 
-//pob:block:src/Classes/ItemsTab.lua:4625-4640
+//pob:block:src/Classes/ItemsTab.lua:4471-4486
 func modLines(item *calculator.Item, lines []calculator.ModLine) []ItemModLine {
 	var out []ItemModLine
 	for _, ml := range lines {
@@ -210,7 +210,7 @@ func modLines(item *calculator.Item, lines []calculator.ModLine) []ItemModLine {
 	return out
 }
 
-//pob:block:src/Classes/ItemsTab.lua:4449-4505
+//pob:block:src/Classes/ItemsTab.lua:4295-4351
 func properties(item *calculator.Item) []ItemProperty {
 	var out []ItemProperty
 	add := func(label, format string, args ...any) {
@@ -322,7 +322,7 @@ type FlaskCompare struct {
 	Effective []string
 }
 
-//pob:block:src/Classes/ItemsTab.lua:5003-5010,src/Classes/ItemsTab.lua:5039-5046
+//pob:block:src/Classes/ItemsTab.lua:4866-4873,src/Classes/ItemsTab.lua:4902-4909
 func (m *MiscCalculator) CalcToggleFlask(text string) (FlaskCompare, error) {
 	item, err := parseItem(text)
 	if err != nil {

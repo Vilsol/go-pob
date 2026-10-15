@@ -9,7 +9,7 @@ import (
 	"github.com/Vilsol/go-pob/utils"
 )
 
-//pob:src/Modules/CalcDefence.lua:44-54
+//pob:src/Modules/CalcDefence.lua:45-55
 type PoolState struct {
 	Remaining float64
 	Percent   float64
@@ -34,7 +34,7 @@ type PoolTable struct {
 	ResourcesLost    map[data.DamageType]map[string]float64
 }
 
-//pob:src/Modules/CalcDefence.lua:44-54
+//pob:src/Modules/CalcDefence.lua:45-55
 func buildAllyLifePools(actor *Actor) map[string]*PoolState {
 	pools := make(map[string]*PoolState, len(allyLifePoolList))
 	for _, ally := range allyLifePoolList {
@@ -64,7 +64,7 @@ func lostSet(m map[data.DamageType]map[string]float64, dt data.DamageType, key s
 	m[dt][key] = v
 }
 
-//pob:block:src/Modules/CalcDefence.lua:188-421
+//pob:block:src/Modules/CalcDefence.lua:190-424
 func ReducePoolsByDamage(poolTable *PoolTable, damageTable map[data.DamageType]float64, actor *Actor) *PoolTable {
 	output := actor.Output
 	modDB := actor.ModDB
@@ -184,7 +184,7 @@ func ReducePoolsByDamage(poolTable *PoolTable, damageTable map[data.DamageType]f
 		}
 	}
 
-	//pob:block:src/Modules/CalcDefence.lua:263-394
+	//pob:block:src/Modules/CalcDefence.lua:266-397
 	for _, dt := range data.DamageType("").Values() {
 		damageRemainder, ok := damageTable[dt]
 		if !ok {
@@ -273,7 +273,7 @@ func ReducePoolsByDamage(poolTable *PoolTable, damageTable map[data.DamageType]f
 			lostTo(resourcesLost, dt, "mana", tempDamage)
 		}
 
-		//pob:block:src/Modules/CalcDefence.lua:348-384
+		//pob:block:src/Modules/CalcDefence.lua:351-387
 		if output["preventedLifeLossTotal"] > 0 {
 			halfLife := float64(output["Life"] * 0.5)
 			lifeOverHalfLife := math.Max(life-halfLife, 0)
@@ -377,7 +377,7 @@ const (
 	colorWard = "^xFFFF77"
 )
 
-//pob:src/Modules/CalcDefence.lua:428-475
+//pob:src/Modules/CalcDefence.lua:431-478
 func incomingDamageBreakdown(breakdownTable []string, poolsRemaining *PoolTable, output map[string]float64) []string {
 	for _, ally := range allyLifePoolList {
 		if pool := poolsRemaining.AlliesTakenBeforeYou[ally.key]; pool != nil {
@@ -423,7 +423,7 @@ func incomingDamageBreakdown(breakdownTable []string, poolsRemaining *PoolTable,
 	return breakdownTable
 }
 
-//pob:block:src/Modules/CalcDefence.lua:149-174
+//pob:block:src/Modules/CalcDefence.lua:150-176
 func TakenHitFromDamage(rawDamage float64, damageType data.DamageType, actor *Actor) (float64, map[data.DamageType]float64) {
 	output := actor.Output
 	modDB := actor.ModDB

@@ -1,15 +1,17 @@
 local inPath, outPath = arg[1], arg[2]
+local construct = dofile((arg[0]:match("^(.*)[/\\]") or ".") .. "/pob_compat.lua").construct
 dofile("HeadlessWrapper.lua")
 local json = require("dkjson")
 local t_insert, m_max = table.insert, math.max
 
 local function controlList(item, affixType, outputTable, outputIndex)
 	local extraTags, excludeGroups = {}, {}
+	local allowDuplicateGroups = item.rareLikeUnique and item.rareLikeUnique.allowDuplicateGroups
 	for _, tbl in ipairs({ "prefixes", "suffixes" }) do
 		for index = 1, (item[tbl].limit or (item.affixLimit / 2)) do
 			if index ~= outputIndex or tbl ~= outputTable then
 				local mod = item.affixes[item[tbl][index] and item[tbl][index].modId]
-				if mod and mod.group then excludeGroups[mod.group] = true end
+				if mod and mod.group and not allowDuplicateGroups then excludeGroups[mod.group] = true end
 			end
 		end
 	end
@@ -50,12 +52,12 @@ end
 local items = json.decode(io.open(inPath):read("*a"))
 local out = {}
 for k, entry in ipairs(items) do
-	local item = new("Item", entry.raw)
+	local item = construct("Item", entry.raw)
 	local prefixLimit = item.prefixes.limit or (item.affixLimit / 2)
 	local slots = {}
 	for i = 1, item.affixLimit do
 		if i <= prefixLimit then
-			slots[i] = controlList(item, "Prefix", "prefixes", i)
+			slots[i] = controlList(item, not (item.rareLikeUnique and item.rareLikeUnique.ignoreModType) and "Prefix" or nil, "prefixes", i)
 		else
 			slots[i] = controlList(item, "Suffix", "suffixes", i - prefixLimit)
 		end

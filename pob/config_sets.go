@@ -20,7 +20,7 @@ func (c *Config) nextConfigSetID() int {
 	return id
 }
 
-//pob:src/Classes/ConfigTab.lua:1224-1244
+//pob:src/Classes/ConfigTab.lua:1280-1300
 func (b *PathOfBuilding) NewConfigSet(title string) int {
 	c := &b.Config
 	if len(c.ConfigSets) == 0 {
@@ -31,7 +31,7 @@ func (b *PathOfBuilding) NewConfigSet(title string) int {
 	return id
 }
 
-//pob:block:src/Classes/ConfigSetListControl.lua:13-22,src/Classes/ConfigSetListControl.lua:49-56
+//pob:block:src/Classes/ConfigSetListControl.lua:16-25,src/Classes/ConfigSetListControl.lua:53-60
 func (b *PathOfBuilding) CopyConfigSet(configSetID int, title string) int {
 	c := &b.Config
 	c.storeActive()
@@ -48,7 +48,7 @@ func (b *PathOfBuilding) CopyConfigSet(configSetID int, title string) int {
 	return set.ID
 }
 
-//pob:block:src/Classes/ConfigSetListControl.lua:49-50
+//pob:block:src/Classes/ConfigSetListControl.lua:53-54
 func (b *PathOfBuilding) RenameConfigSet(configSetID int, title string) {
 	for i := range b.Config.ConfigSets {
 		if b.Config.ConfigSets[i].ID == configSetID {
@@ -57,7 +57,7 @@ func (b *PathOfBuilding) RenameConfigSet(configSetID int, title string) {
 	}
 }
 
-//pob:src/Classes/ConfigSetListControl.lua:85-100
+//pob:src/Classes/ConfigSetListControl.lua:89-104
 func (b *PathOfBuilding) DeleteConfigSet(configSetID int) {
 	c := &b.Config
 	if len(c.ConfigSets) <= 1 {
@@ -79,7 +79,7 @@ func (b *PathOfBuilding) DeleteConfigSet(configSetID int) {
 	}
 }
 
-//pob:block:src/Classes/ListControl.lua:428-436
+//pob:block:src/Classes/ListControl.lua:441-449
 func (b *PathOfBuilding) MoveConfigSet(from int, to int) {
 	sets := b.Config.ConfigSets
 	if from == to || from < 0 || to < 0 || from >= len(sets) || to >= len(sets) {

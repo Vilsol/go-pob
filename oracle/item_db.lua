@@ -5,6 +5,7 @@ assert(outPath, "usage: item_db.lua <out.json>")
 
 local stable = dofile((selfPath:match("^(.*)[/\\]") or ".") .. "/json_stable.lua")
 
+local construct = dofile((selfPath:match("^(.*)[/\\]") or ".") .. "/pob_compat.lua").construct
 dofile("HeadlessWrapper.lua")
 
 local json = require("dkjson")
@@ -40,7 +41,7 @@ local uniques = {}
 for _, itemType in ipairs(uniqueTypes) do
 	for i, raw in ipairs(data.uniques[itemType]) do
 		assert(type(raw) == "string", "REFUSING: data.uniques." .. itemType .. "[" .. i .. "] is not a string")
-		local item = new("Item", raw, "UNIQUE", true)
+		local item = construct("Item", raw, "UNIQUE", true)
 		uniques[#uniques + 1] = { kind = itemType, raw = raw, pob = item.base and graded(item) or nil }
 	end
 end
@@ -48,7 +49,7 @@ end
 local rares = {}
 for i, raw in ipairs(data.rares) do
 	assert(type(raw) == "string", "REFUSING: data.rares[" .. i .. "] is not a string")
-	local item = new("Item", raw, "RARE", true)
+	local item = construct("Item", raw, "RARE", true)
 	if item.base and item.crafted then
 		if item.base.implicit and #item.implicitModLines == 0 then
 			local implicitIndex = 1

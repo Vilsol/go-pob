@@ -11,18 +11,20 @@
   import { corruptOptions, sortByValue, type CorruptChoices, type CorruptMod, type CraftApi } from './crafting';
   import type { ImpactBlock, TipProps } from './items';
 
-  // ItemsTab.lua:3018-3340
+  // ItemsTab.lua:3121-3480
   type Props = { open?: boolean; craft: CraftApi };
   let { open = $bindable(false), craft }: Props = $props();
 
+  const GLIMPSE = 'Glimpse of Chaos';
   let choices = $state.raw<CorruptChoices>();
   let stats = $state.raw<{ stat: string; label: string }[]>([]);
   let tab = $state<'implicits' | 'rolls'>('implicits');
-  let source = $state<'Corrupted' | 'Scourge'>('Corrupted');
+  let source = $state('Corrupted');
   let sort = $state('');
   let values = $state.raw<Record<string, Record<string, number>>>({});
   let sorting = $state(false);
-  let picks = $state<string[]>(['', '', '', '']);
+  const none = () => ['', '', '', '', ''];
+  let picks = $state<string[]>(none());
   let focus = $state(0);
   let rolls = $state<number[]>([]);
   let labels = $state<string[]>([]);
@@ -34,19 +36,29 @@
     tab = 'implicits';
     source = 'Corrupted';
     sort = '';
-    picks = ['', '', '', ''];
+    picks = none();
     void craft.corruptChoices?.().then((c) => {
       choices = c;
+      if (c?.glimpse.length) source = GLIMPSE;
       rolls = (c?.rolls ?? []).map((r) => r.value);
       labels = (c?.rolls ?? []).map((r) => r.line);
     });
     void craft.sortStats().then((s) => (stats = s));
   });
 
-  const count = $derived(source === 'Corrupted' ? (choices?.implicitsCannotBeChanged ? 0 : 2) : choices?.unique ? 4 : 3);
-  const typeOf = (i: number) => (source === 'Corrupted' ? 'Corrupted' : i < 2 ? 'ScourgeUpside' : 'ScourgeDownside');
+  const sources = $derived([...(choices?.glimpse.length ? [GLIMPSE] : []), 'Corrupted', 'Scourge']);
+  const count = $derived(
+    source === 'Scourge' ? (choices?.unique ? 4 : 3) : source === 'Corrupted' && choices?.implicitsCannotBeChanged ? 0 : (choices?.maxImplicits ?? 2)
+  );
+  const typeOf = (i: number) => (source !== 'Scourge' ? source : i < 2 ? 'ScourgeUpside' : 'ScourgeDownside');
   const listOf = (type: string): CorruptMod[] =>
-    (type === 'Corrupted' ? choices?.corrupted : type === 'ScourgeUpside' ? choices?.scourgeUpside : choices?.scourgeDownside) ?? [];
+    (type === GLIMPSE
+      ? choices?.glimpse
+      : type === 'Corrupted'
+        ? choices?.corrupted
+        : type === 'ScourgeUpside'
+          ? choices?.scourgeUpside
+          : choices?.scourgeDownside) ?? [];
   const sorted = (type: string) => {
     const list = listOf(type);
     const v = sort ? values[type] : undefined;
@@ -58,7 +70,7 @@
     const src = source;
     if (!stat || !choices) return;
     sorting = true;
-    const types = src === 'Corrupted' ? ['Corrupted'] : ['ScourgeUpside', 'ScourgeDownside'];
+    const types = src !== 'Scourge' ? [src] : ['ScourgeUpside', 'ScourgeDownside'];
     void Promise.all(
       types.map(async (type) => {
         const ids = listOf(type).map((m) => m.id);
@@ -93,8 +105,8 @@
     const shown = picks.slice(0, count);
     return craft.corruptText?.(
       source,
-      (source === 'Corrupted' ? shown : shown.slice(0, 2)).filter(Boolean),
-      source === 'Corrupted' ? [] : shown.slice(2).filter(Boolean)
+      (source !== 'Scourge' ? shown : shown.slice(0, 2)).filter(Boolean),
+      source !== 'Scourge' ? [] : shown.slice(2).filter(Boolean)
     );
   };
   $effect(() => {
@@ -125,11 +137,11 @@
           ><Select
             class="h-7.5"
             aria-label="Source"
-            options={['Corrupted', 'Scourge']}
+            options={sources}
             value={source}
             onchange={(e: Event & { currentTarget: HTMLSelectElement }) => {
-              source = e.currentTarget.value as 'Corrupted' | 'Scourge';
-              picks = ['', '', '', ''];
+              source = e.currentTarget.value;
+              picks = none();
             }} /></FloatingLabel>
         <FloatingLabel label="Sort by"
           ><Select
@@ -143,13 +155,13 @@
         <p class="note">This Items Implicits Cannot Be Changed</p>
       {/if}
       {#each Array.from({ length: count }, (_, k) => k) as i (i)}
-        {@const other = picks[i % 2 === 0 ? i + 1 : i - 1]}
+        {@const others = source === 'Scourge' ? [picks[i % 2 === 0 ? i + 1 : i - 1]] : picks.slice(0, count).filter((_, k) => k !== i)}
         <FloatingLabel label="Implicit #{i + 1}"
           ><Dropdown
             class="block h-7.5 w-full"
             searchable
             aria-label="Implicit #{i + 1}"
-            options={[{ value: '', label: 'None' }, ...corruptOptions(sorted(typeOf(i)), other).map((m) => ({ value: m.id, label: m.label }))]}
+            options={[{ value: '', label: 'None' }, ...corruptOptions(sorted(typeOf(i)), others).map((m) => ({ value: m.id, label: m.label }))]}
             value={picks[i]}
             onchange={(v: string) => {
               picks[i] = v;

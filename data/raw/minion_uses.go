@@ -17,7 +17,7 @@ package raw
 // granted effect PoB loads and emits each one that declares the field.
 
 var SkillMinionUses = map[string]map[string]bool{
-	// src/Data/Skills/act_str.lua:465
+	// src/Data/Skills/act_str.lua:464
 	"AnimateGuardian": {
 		"Body Armour": true,
 		"Boots":       true,
@@ -26,7 +26,7 @@ var SkillMinionUses = map[string]map[string]bool{
 		"Weapon 1":    true,
 		"Weapon 2":    true,
 	},
-	// src/Data/Skills/act_str.lua:552
+	// src/Data/Skills/act_str.lua:551
 	"AnimateGuardianAltX": {
 		"Body Armour": true,
 		"Boots":       true,
@@ -35,23 +35,23 @@ var SkillMinionUses = map[string]map[string]bool{
 		"Weapon 1":    true,
 		"Weapon 2":    true,
 	},
-	// src/Data/Skills/other.lua:67
+	// src/Data/Skills/other.lua:66
 	"AnimateGuardiansWeapon": {"Weapon 1": true},
-	// src/Data/Skills/act_dex.lua:179
+	// src/Data/Skills/act_dex.lua:178
 	"AnimateWeapon": {"Weapon 1": true},
 	// src/Data/Skills/act_dex.lua:379
 	"AnimateWeaponAltY": {"Weapon 1": true},
-	// src/Data/Skills/glove.lua:1185
+	// src/Data/Skills/glove.lua:1192
 	"EnchantmentOfReflectionWhenHit": {"Weapon 1": true},
-	// src/Data/Skills/glove.lua:1223
+	// src/Data/Skills/glove.lua:1230
 	"EnchantmentOfReflectionWhenHit2": {"Weapon 1": true},
-	// src/Data/Skills/glove.lua:1261
+	// src/Data/Skills/glove.lua:1268
 	"EnchantmentOfReflectionWhenHit3": {"Weapon 1": true},
-	// src/Data/Skills/glove.lua:1299
+	// src/Data/Skills/glove.lua:1306
 	"EnchantmentOfReflectionWhenHit4": {"Weapon 1": true},
-	// src/Data/Skills/act_str.lua:6207
+	// src/Data/Skills/act_str.lua:6270
 	"HolyStrike": {"Weapon 1": true},
-	// src/Data/Skills/other.lua:2539
+	// src/Data/Skills/other.lua:2667
 	"ManifestDancingDervishes": {"Weapon 1": true},
 	// src/Data/Skills/act_dex.lua:483
 	"VaalAnimateWeapon": {"Weapon 1": true},
@@ -60,13 +60,13 @@ var SkillMinionUses = map[string]map[string]bool{
 // SkillMinionHasItemSet selects WHERE the slots named by SkillMinionUses are read from — the
 // build's own item set rather than the skill's.
 var SkillMinionHasItemSet = map[string]bool{
-	// src/Data/Skills/act_str.lua:465
+	// src/Data/Skills/act_str.lua:464
 	"AnimateGuardian": true,
-	// src/Data/Skills/act_str.lua:552
+	// src/Data/Skills/act_str.lua:551
 	"AnimateGuardianAltX": true,
-	// src/Data/Skills/other.lua:67
+	// src/Data/Skills/other.lua:66
 	"AnimateGuardiansWeapon": true,
-	// src/Data/Skills/act_dex.lua:179
+	// src/Data/Skills/act_dex.lua:178
 	"AnimateWeapon": true,
 	// src/Data/Skills/act_dex.lua:379
 	"AnimateWeaponAltY": true,

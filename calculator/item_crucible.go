@@ -1,6 +1,7 @@
 package calculator
 
 import (
+	"maps"
 	"slices"
 	"strconv"
 	"strings"
@@ -8,14 +9,17 @@ import (
 	"github.com/Vilsol/go-pob/data"
 )
 
-//pob:src/Classes/ItemsTab.lua:1002-1004
+//pob:src/Classes/ItemsTab.lua:1008-1010
 func addCrucibleShown(item *Item) bool {
 	return item.getPrimarySlot() == "Weapon 1" || item.Base.Type == "Shield" || itemCraftFlags(item).shieldCrucibleTree
 }
 
-//pob:src/Classes/Item.lua:2654-2684
-func canHaveMod(item *Item, mod *data.AffixMod) bool {
-	include := map[string]bool{}
+//pob:src/Classes/Item.lua:2706-2736
+func canHaveMod(item *Item, mod *data.AffixMod, includeTags map[string]bool) bool {
+	include := maps.Clone(includeTags)
+	if include == nil {
+		include = map[string]bool{}
+	}
 	caster, minion := data.CrucibleTagUniques()
 	if slices.Contains(caster, item.Title) {
 		include["caster_unique_weapon"] = true
@@ -23,17 +27,25 @@ func canHaveMod(item *Item, mod *data.AffixMod) bool {
 	if slices.Contains(minion, item.Title) {
 		include["minion_unique_weapon"] = true
 	}
+	if rl, ok := item.rareLike(); ok && rl.validBases != nil {
+		for _, tags := range rl.validBases() {
+			if modSpawnWeightTags(item, mod, include, nil, tags) > 0 {
+				return true
+			}
+		}
+		return false
+	}
 	flags := itemCraftFlags(item)
 	switch {
 	case flags.supportCrucibleTree:
 		k := slices.Index(mod.WeightKey, "crucible_unique_staff")
 		return k >= 0 && mod.WeightVal[k] != 0
 	case flags.shieldCrucibleTree:
-		return modSpawnWeightTags(item, mod, map[string]bool{"crucible_unique_helmet": true, "shield": true}, nil) > 0
+		return modSpawnWeightTags(item, mod, map[string]bool{"crucible_unique_helmet": true, "shield": true}, nil, nil) > 0
 	case flags.twoHandSwordCrucibleTree:
-		return modSpawnWeightTags(item, mod, map[string]bool{"two_hand_weapon": true}, map[string]bool{"one_hand_weapon": true}) > 0
+		return modSpawnWeightTags(item, mod, map[string]bool{"two_hand_weapon": true}, map[string]bool{"one_hand_weapon": true}, nil) > 0
 	}
-	return modSpawnWeightTags(item, mod, include, nil) > 0
+	return modSpawnWeightTags(item, mod, include, nil, nil) > 0
 }
 
 type CrucibleChoice struct {
@@ -58,7 +70,7 @@ func crucibleLines(raw string) []string {
 	return out
 }
 
-//pob:block:src/Classes/ItemsTab.lua:3664-3709,src/Classes/ItemsTab.lua:3731-3758
+//pob:block:src/Classes/ItemsTab.lua:3872-3917,src/Classes/ItemsTab.lua:3939-3966
 func ItemCrucibleChoices(raw string) (CrucibleChoices, bool) {
 	item := ParseItem(raw)
 	if item.Base == nil || !addCrucibleShown(item) {
@@ -76,7 +88,7 @@ func ItemCrucibleChoices(raw string) (CrucibleChoices, bool) {
 	lists := make([][]entry, 5)
 	selections := map[int]string{}
 	for _, mod := range data.CrucibleMods() {
-		if !canHaveMod(item, &mod.AffixMod) {
+		if !canHaveMod(item, &mod.AffixMod, nil) {
 			continue
 		}
 		lines := make([]string, len(mod.Lines))
@@ -118,7 +130,7 @@ func ItemCrucibleChoices(raw string) (CrucibleChoices, bool) {
 	return out, true
 }
 
-//pob:src/Classes/ItemsTab.lua:3710-3730
+//pob:src/Classes/ItemsTab.lua:3918-3938
 func CrucibleText(raw string, ids []string) (string, bool) {
 	item := ParseItem(raw)
 	c, ok := ItemCrucibleChoices(raw)

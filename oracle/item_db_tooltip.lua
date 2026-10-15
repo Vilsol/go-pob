@@ -1,4 +1,5 @@
 local outPath = arg[1]
+local construct = dofile((arg[0]:match("^(.*)[/\\]") or ".") .. "/pob_compat.lua").construct
 dofile("HeadlessWrapper.lua")
 local json = require("dkjson")
 
@@ -7,7 +8,7 @@ itemsTab.showStatDifferences = false
 local result = {}
 for _, db in ipairs({ main.uniqueDB, main.rareDB }) do
 	for name, item in pairs(db.list) do
-		local tooltip = new("Tooltip")
+		local tooltip = construct("Tooltip")
 		itemsTab:AddItemTooltip(tooltip, item, nil, true)
 		local lines = {}
 		for _, l in ipairs(tooltip.lines) do

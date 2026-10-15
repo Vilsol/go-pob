@@ -23,7 +23,7 @@ func activeMasterySelections(build *pob.PathOfBuilding) []pob.MasterySelection {
 	return nil
 }
 
-//pob:block:src/Classes/TreeTab.lua:1017-1023
+//pob:block:src/Classes/TreeTab.lua:1026-1032
 func MasteryOptions(build *pob.PathOfBuilding, nodeID int64) []MasteryOption {
 	node, ok := data.TreeVersions[data.LatestTreeVersion].Tree().Nodes[strconv.FormatInt(nodeID, 10)]
 	if !ok || !isMasteryNode(node) {
@@ -41,7 +41,7 @@ func MasteryOptions(build *pob.PathOfBuilding, nodeID int64) []MasteryOption {
 	return out
 }
 
-//pob:block:src/Classes/TreeTab.lua:992-1009
+//pob:block:src/Classes/TreeTab.lua:1001-1018
 func SelectMasteryEffect(build *pob.PathOfBuilding, nodeID int64, effectID int64, path []int64) error {
 	if !slices.ContainsFunc(MasteryOptions(build, nodeID), func(o MasteryOption) bool { return o.Effect == effectID }) {
 		return fmt.Errorf("effect %d is not offered for mastery %d", effectID, nodeID)

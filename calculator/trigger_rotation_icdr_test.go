@@ -8,7 +8,7 @@ import (
 
 // TestTriggerRotationEntriesCarryICDR pins CalcTriggers.lua:100's `(skill.icdr or 1)`.
 //
-//pob:block:src/Modules/CalcTriggers.lua:94-100
+//pob:block:src/Modules/CalcTriggers.lua:95-101
 func TestTriggerRotationEntriesCarryICDR(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")

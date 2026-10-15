@@ -71,7 +71,7 @@ func (b *PathOfBuilding) appliedCopy() map[string]string {
 	return out
 }
 
-//pob:src/Classes/PartyTab.lua:570-606
+//pob:src/Classes/PartyTab.lua:575-611
 func (b *PathOfBuilding) setPartyBuffers(bufs map[string]string) {
 	nodes := make([]PartyBuffs, 0, len(PartyBufferNames))
 	for _, name := range PartyBufferNames {
@@ -101,7 +101,7 @@ func (b *PathOfBuilding) PartyOptions() (string, bool, bool) {
 	return destination, b.Party.Append == "true", b.Party.ShowAdvanceTools == "true"
 }
 
-//pob:block:src/Classes/PartyTab.lua:657-661
+//pob:block:src/Classes/PartyTab.lua:662-666
 func (b *PathOfBuilding) SetPartyOptions(destination string, appendMode bool, showAdvanceTools bool) {
 	b.Party.Destination = destination
 	b.Party.Append = "false"
@@ -114,7 +114,7 @@ func (b *PathOfBuilding) SetPartyOptions(destination string, appendMode bool, sh
 	}
 }
 
-//pob:src/Classes/PartyTab.lua:78-114
+//pob:src/Classes/PartyTab.lua:82-118
 func clearPartyText(bufs map[string]string, applied map[string]string, destination string) {
 	for _, name := range PartyBufferNames {
 		if !partyInDestination(destination, name) {
@@ -128,7 +128,7 @@ func clearPartyText(bufs map[string]string, applied map[string]string, destinati
 	}
 }
 
-//pob:src/Classes/PartyTab.lua:335-340
+//pob:src/Classes/PartyTab.lua:339-344
 func (b *PathOfBuilding) ClearParty(destination string) {
 	applied := b.appliedCopy()
 	bufs := b.PartyBuffers()
@@ -139,7 +139,7 @@ func (b *PathOfBuilding) ClearParty(destination string) {
 	b.Party.applied = applied
 }
 
-//pob:src/Classes/PartyTab.lua:349-356
+//pob:src/Classes/PartyTab.lua:353-360
 func (b *PathOfBuilding) DisablePartyEffects() {
 	b.Party.applied = map[string]string{}
 }
@@ -154,7 +154,7 @@ func (b *PathOfBuilding) WithoutPartyEffects() *PathOfBuilding {
 	return &out
 }
 
-//pob:src/Classes/PartyTab.lua:359-373
+//pob:src/Classes/PartyTab.lua:363-377
 func (b *PathOfBuilding) RebuildParty() {
 	b.Party.applied = nil
 }
@@ -169,7 +169,7 @@ type partyExport struct {
 	} `xml:"Party"`
 }
 
-//pob:src/Classes/PartyTab.lua:158-281
+//pob:src/Classes/PartyTab.lua:162-285
 func (b *PathOfBuilding) ImportParty(xmlText string, destination string, appendMode bool) error {
 	applied := b.appliedCopy()
 	bufs := b.PartyBuffers()
@@ -244,12 +244,12 @@ func (b *PathOfBuilding) ImportParty(xmlText string, destination string, appendM
 	return nil
 }
 
-//pob:block:src/Classes/ImportTab.lua:746-747
+//pob:block:src/Classes/ImportTab.lua:747-748
 func (b *PathOfBuilding) ExportParty() bool {
 	return b.Import != nil && b.Import.ExportParty
 }
 
-//pob:src/Classes/ImportTab.lua:506-509
+//pob:src/Classes/ImportTab.lua:507-510
 func (b *PathOfBuilding) SetExportParty(on bool) {
 	if b.Import == nil {
 		b.Import = &Import{}
@@ -260,7 +260,7 @@ func (b *PathOfBuilding) SetExportParty(on bool) {
 	}
 }
 
-//pob:block:src/Classes/PartyTab.lua:607-648
+//pob:block:src/Classes/PartyTab.lua:612-653
 func (b *PathOfBuilding) SetExportedBuffs(texts map[string]string) {
 	b.Party.ExportedBuffs = []PartyBuffs{}
 	for _, name := range []string{"PartyMemberStats", "Aura", "Curse", "Warcry Skills", "Link Skills", "EnemyConditions", "EnemyMods"} {

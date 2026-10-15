@@ -28,7 +28,7 @@ func TestConfigMultiplierBarnacleStacks(t *testing.T) {
 func TestConfigMultiplierUsedVaalSkillInPast8Seconds(t *testing.T) {
 	requireGameData(t, "3.29")
 	env := corpusEnvForLoadedData(t, "15376-trickster-vaal-blade-vortex.xml")
-	if want, got := 16.8, env.Player.Output["SoulCost"]; !oracleClose(got, want, oracleDumpTolerance) {
+	if want, got := 17.0, env.Player.Output["SoulCost"]; !oracleClose(got, want, oracleDumpTolerance) {
 		t.Errorf("SoulCost = %v, want %v (PoB)", got, want)
 	}
 }

@@ -1,4 +1,5 @@
 local inPath, outPath = arg[1], arg[2]
+local construct = dofile((arg[0]:match("^(.*)[/\\]") or ".") .. "/pob_compat.lua").construct
 dofile("HeadlessWrapper.lua")
 local json = require("dkjson")
 local t_insert = table.insert
@@ -41,10 +42,10 @@ local function build(item, treeNodes)
 	return out
 end
 
-local treeNodes = new("PassiveTree", latestTreeVersion).nodes
+local treeNodes = construct("PassiveTree", latestTreeVersion).nodes
 local items = json.decode(io.open(inPath):read("*a"))
 local out = {}
 for k, raw in ipairs(items) do
-	out[k] = build(new("Item", raw), treeNodes)
+	out[k] = build(construct("Item", raw), treeNodes)
 end
 io.open(outPath, "w"):write(json.encode(out))

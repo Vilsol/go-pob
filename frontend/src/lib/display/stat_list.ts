@@ -4,6 +4,7 @@ import { colorCodes } from './colors';
 import { formatStat, SUFFIX_COLOR, VALUE_COLOR } from './format_stat';
 import { statGauge, type Gauge } from './stat_gauge';
 import { displayStats, type Stat, type StatOutput } from './stats';
+import type { SidebarStatRef } from './sidebar_breakdown';
 
 export interface StatLine {
   label: string;
@@ -18,6 +19,8 @@ export interface StatLine {
   gauge?: Gauge;
   stat?: string;
   minion?: boolean;
+  /* Build.lua:1980-2004 */
+  bd?: SidebarStatRef;
 }
 
 export interface SkillDPSEntry {
@@ -145,7 +148,14 @@ export const buildStatList = (input: StatListInput, statList: Stat[] = displaySt
         valueColor: formatted.color,
         note: note || undefined,
         ...(gauge && { gauge }),
-        ...(!statData.childStat && { stat: statData.stat })
+        ...(!statData.childStat && { stat: statData.stat }),
+        bd: {
+          stat: statData.stat,
+          ...(statData.childStat !== undefined && { childStat: statData.childStat }),
+          ...(statData.breakdown !== undefined && { breakdown: statData.breakdown }),
+          ...(statData.modNames && { modNames: statData.modNames }),
+          ...(statData.ignoredSections && { ignoredSections: statData.ignoredSections })
+        }
       });
     }
     // src/Modules/Build.lua:1763-1768

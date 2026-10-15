@@ -74,11 +74,15 @@
   },{
     "armourData":{
       "Armour":492,
+      "ArmourBase":174,
       "ArmourBasePercentile":0.4741,
       "EnergyShield":0,
+      "EnergyShieldBase":0,
       "Evasion":708,
+      "EvasionBase":250,
       "EvasionBasePercentile":0.4908,
-      "Ward":0
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -88,11 +92,15 @@
   },{
     "armourData":{
       "Armour":0,
+      "ArmourBase":0,
       "EnergyShield":54,
+      "EnergyShieldBase":19,
       "EnergyShieldBasePercentile":0.0703,
       "Evasion":258,
+      "EvasionBase":91,
       "EvasionBasePercentile":0.0923,
-      "Ward":0
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -102,11 +110,15 @@
   },{
     "armourData":{
       "Armour":0,
+      "ArmourBase":0,
       "BlockChance":24,
       "EnergyShield":0,
+      "EnergyShieldBase":0,
       "Evasion":1225,
+      "EvasionBase":519,
       "EvasionBasePercentile":0.5809,
-      "Ward":0
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -183,11 +195,15 @@
   },{
     "armourData":{
       "Armour":91,
+      "ArmourBase":41,
       "ArmourBasePercentile":0.6991,
       "EnergyShield":0,
+      "EnergyShieldBase":0,
       "Evasion":91,
+      "EvasionBase":41,
       "EvasionBasePercentile":0.6991,
-      "Ward":0
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -224,10 +240,14 @@
   },{
     "armourData":{
       "Armour":0,
+      "ArmourBase":0,
       "EnergyShield":0,
+      "EnergyShieldBase":20,
       "EnergyShieldBasePercentile":1,
       "Evasion":0,
-      "Ward":0
+      "EvasionBase":0,
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -285,10 +305,14 @@
   },{
     "armourData":{
       "Armour":0,
+      "ArmourBase":0,
       "EnergyShield":0,
+      "EnergyShieldBase":0,
       "Evasion":114,
+      "EvasionBase":114,
       "EvasionBasePercentile":0.3846,
-      "Ward":0
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -331,10 +355,14 @@
   },{
     "armourData":{
       "Armour":0,
+      "ArmourBase":0,
       "EnergyShield":0,
+      "EnergyShieldBase":0,
       "Evasion":237,
+      "EvasionBase":194,
       "EvasionBasePercentile":0.3962,
-      "Ward":0
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -344,10 +372,14 @@
   },{
     "armourData":{
       "Armour":0,
+      "ArmourBase":0,
       "EnergyShield":0,
+      "EnergyShieldBase":0,
       "Evasion":760,
+      "EvasionBase":362,
       "EvasionBasePercentile":0.4544,
-      "Ward":0
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -357,10 +389,14 @@
   },{
     "armourData":{
       "Armour":0,
+      "ArmourBase":0,
       "EnergyShield":0,
+      "EnergyShieldBase":20,
       "EnergyShieldBasePercentile":1,
       "Evasion":0,
-      "Ward":0
+      "EvasionBase":0,
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -446,10 +482,14 @@
   },{
     "armourData":{
       "Armour":0,
+      "ArmourBase":0,
       "EnergyShield":0,
+      "EnergyShieldBase":0,
       "Evasion":114,
+      "EvasionBase":114,
       "EvasionBasePercentile":0.3846,
-      "Ward":0
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -459,10 +499,14 @@
   },{
     "armourData":{
       "Armour":0,
+      "ArmourBase":0,
       "EnergyShield":0,
+      "EnergyShieldBase":0,
       "Evasion":760,
+      "EvasionBase":362,
       "EvasionBasePercentile":0.4544,
-      "Ward":0
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -485,10 +529,14 @@
   },{
     "armourData":{
       "Armour":0,
+      "ArmourBase":0,
       "EnergyShield":0,
+      "EnergyShieldBase":0,
       "Evasion":932,
+      "EvasionBase":742,
       "EvasionBasePercentile":0.0631,
-      "Ward":0
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -498,11 +546,15 @@
   },{
     "armourData":{
       "Armour":225,
+      "ArmourBase":123,
       "ArmourBasePercentile":0.1253,
       "EnergyShield":0,
+      "EnergyShieldBase":0,
       "Evasion":225,
+      "EvasionBase":123,
       "EvasionBasePercentile":0.1253,
-      "Ward":0
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -512,10 +564,14 @@
   },{
     "armourData":{
       "Armour":0,
+      "ArmourBase":0,
       "EnergyShield":0,
+      "EnergyShieldBase":0,
       "Evasion":983,
+      "EvasionBase":369,
       "EvasionBasePercentile":0.6574,
-      "Ward":0
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -621,10 +677,14 @@
   },{
     "armourData":{
       "Armour":0,
+      "ArmourBase":0,
       "EnergyShield":0,
+      "EnergyShieldBase":0,
       "Evasion":102,
+      "EvasionBase":40,
       "EvasionBasePercentile":0.8,
-      "Ward":0
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -667,10 +727,14 @@
   },{
     "armourData":{
       "Armour":0,
+      "ArmourBase":0,
       "EnergyShield":0,
+      "EnergyShieldBase":20,
       "EnergyShieldBasePercentile":1,
       "Evasion":0,
-      "Ward":0
+      "EvasionBase":0,
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -730,11 +794,15 @@
   },{
     "armourData":{
       "Armour":0,
+      "ArmourBase":0,
       "EnergyShield":128,
+      "EnergyShieldBase":22,
       "EnergyShieldBasePercentile":0.2432,
       "Evasion":403,
+      "EvasionBase":110,
       "EvasionBasePercentile":0.3215,
-      "Ward":0
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -744,11 +812,15 @@
   },{
     "armourData":{
       "Armour":392,
+      "ArmourBase":96,
       "ArmourBasePercentile":0.3712,
       "EnergyShield":0,
+      "EnergyShieldBase":0,
       "Evasion":392,
+      "EvasionBase":96,
       "EvasionBasePercentile":0.3712,
-      "Ward":0
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -758,12 +830,16 @@
   },{
     "armourData":{
       "Armour":315,
+      "ArmourBase":160,
       "ArmourBasePercentile":0.6004,
       "BlockChance":24,
       "EnergyShield":63,
+      "EnergyShieldBase":32,
       "EnergyShieldBasePercentile":0.4843,
       "Evasion":0,
-      "Ward":0
+      "EvasionBase":0,
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -852,11 +928,15 @@
   },{
     "armourData":{
       "Armour":0,
+      "ArmourBase":0,
       "EnergyShield":34,
+      "EnergyShieldBase":34,
       "EnergyShieldBasePercentile":0.3333,
       "Evasion":167,
+      "EvasionBase":167,
       "EvasionBasePercentile":0.3571,
-      "Ward":0
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -866,11 +946,15 @@
   },{
     "armourData":{
       "Armour":0,
+      "ArmourBase":0,
       "EnergyShield":116,
+      "EnergyShieldBase":107,
       "EnergyShieldBasePercentile":1,
       "Evasion":528,
+      "EvasionBase":489,
       "EvasionBasePercentile":0.967,
-      "Ward":0
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -915,10 +999,14 @@
   },{
     "armourData":{
       "Armour":196,
+      "ArmourBase":178,
       "ArmourBasePercentile":0.0369,
       "EnergyShield":0,
+      "EnergyShieldBase":0,
       "Evasion":0,
-      "Ward":0
+      "EvasionBase":0,
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -935,10 +1023,14 @@
   },{
     "armourData":{
       "Armour":0,
+      "ArmourBase":0,
       "EnergyShield":0,
+      "EnergyShieldBase":20,
       "EnergyShieldBasePercentile":1,
       "Evasion":0,
-      "Ward":0
+      "EvasionBase":0,
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -948,10 +1040,14 @@
   },{
     "armourData":{
       "Armour":0,
+      "ArmourBase":0,
       "EnergyShield":134,
+      "EnergyShieldBase":14,
       "EnergyShieldBasePercentile":0.6667,
       "Evasion":0,
-      "Ward":0
+      "EvasionBase":0,
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -981,11 +1077,15 @@
   },{
     "armourData":{
       "Armour":83,
+      "ArmourBase":83,
       "ArmourBasePercentile":0.5556,
       "EnergyShield":0,
+      "EnergyShieldBase":0,
       "Evasion":83,
+      "EvasionBase":83,
       "EvasionBasePercentile":0.5556,
-      "Ward":0
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -1035,10 +1135,14 @@
   },{
     "armourData":{
       "Armour":0,
+      "ArmourBase":0,
       "EnergyShield":0,
+      "EnergyShieldBase":0,
       "Evasion":115,
+      "EvasionBase":115,
       "EvasionBasePercentile":0.4615,
-      "Ward":0
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -1048,10 +1152,14 @@
   },{
     "armourData":{
       "Armour":0,
+      "ArmourBase":0,
       "EnergyShield":0,
+      "EnergyShieldBase":20,
       "EnergyShieldBasePercentile":1,
       "Evasion":0,
-      "Ward":0
+      "EvasionBase":0,
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -1099,10 +1207,14 @@
   },{
     "armourData":{
       "Armour":0,
+      "ArmourBase":0,
       "EnergyShield":0,
+      "EnergyShieldBase":0,
       "Evasion":279,
+      "EvasionBase":192,
       "EvasionBasePercentile":0.3404,
-      "Ward":0
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -1112,10 +1224,14 @@
   },{
     "armourData":{
       "Armour":0,
+      "ArmourBase":0,
       "EnergyShield":0,
+      "EnergyShieldBase":0,
       "Evasion":67,
+      "EvasionBase":22,
       "EvasionBasePercentile":0.375,
-      "Ward":0
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -1209,11 +1325,15 @@
   },{
     "armourData":{
       "Armour":243,
+      "ArmourBase":102,
       "ArmourBasePercentile":0.9183,
       "EnergyShield":50,
+      "EnergyShieldBase":21,
       "EnergyShieldBasePercentile":1,
       "Evasion":0,
-      "Ward":0
+      "EvasionBase":0,
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -1282,10 +1402,14 @@
   },{
     "armourData":{
       "Armour":0,
+      "ArmourBase":0,
       "EnergyShield":0,
+      "EnergyShieldBase":20,
       "EnergyShieldBasePercentile":1,
       "Evasion":0,
-      "Ward":0
+      "EvasionBase":0,
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -1308,12 +1432,16 @@
   },{
     "armourData":{
       "Armour":1199,
+      "ArmourBase":239,
       "ArmourBasePercentile":0.7513,
       "BlockChance":32,
       "EnergyShield":240,
+      "EnergyShieldBase":48,
       "EnergyShieldBasePercentile":0.6575,
       "Evasion":0,
-      "Ward":0
+      "EvasionBase":0,
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -1350,11 +1478,15 @@
   },{
     "armourData":{
       "Armour":560,
+      "ArmourBase":181,
       "ArmourBasePercentile":0.8306,
       "EnergyShield":176,
+      "EnergyShieldBase":57,
       "EnergyShieldBasePercentile":0.8335,
       "Evasion":0,
-      "Ward":0
+      "EvasionBase":0,
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -1382,11 +1514,15 @@
   },{
     "armourData":{
       "Armour":0,
+      "ArmourBase":0,
       "EnergyShield":58,
+      "EnergyShieldBase":23,
       "EnergyShieldBasePercentile":0.786,
       "Evasion":278,
+      "EvasionBase":111,
       "EvasionBasePercentile":0.6621,
-      "Ward":0
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -1455,11 +1591,15 @@
   },{
     "armourData":{
       "Armour":80,
+      "ArmourBase":80,
       "ArmourBasePercentile":0.2222,
       "EnergyShield":0,
+      "EnergyShieldBase":0,
       "Evasion":80,
+      "EvasionBase":80,
       "EvasionBasePercentile":0.2222,
-      "Ward":0
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -1507,10 +1647,14 @@
   },{
     "armourData":{
       "Armour":749,
+      "ArmourBase":624,
       "ArmourBasePercentile":0.2574,
       "EnergyShield":0,
+      "EnergyShieldBase":0,
       "Evasion":0,
-      "Ward":0
+      "EvasionBase":0,
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -1547,11 +1691,15 @@
   },{
     "armourData":{
       "Armour":0,
+      "ArmourBase":0,
       "EnergyShield":29,
+      "EnergyShieldBase":29,
       "EnergyShieldBasePercentile":0.75,
       "Evasion":143,
+      "EvasionBase":143,
       "EvasionBasePercentile":0.8947,
-      "Ward":0
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -1594,10 +1742,14 @@
   },{
     "armourData":{
       "Armour":0,
+      "ArmourBase":0,
       "EnergyShield":0,
+      "EnergyShieldBase":0,
       "Evasion":805,
+      "EvasionBase":379,
       "EvasionBasePercentile":0.9482,
-      "Ward":0
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -1607,11 +1759,15 @@
   },{
     "armourData":{
       "Armour":80,
+      "ArmourBase":80,
       "ArmourBasePercentile":0.2222,
       "EnergyShield":0,
+      "EnergyShieldBase":0,
       "Evasion":80,
+      "EvasionBase":80,
       "EvasionBasePercentile":0.2222,
-      "Ward":0
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -1705,10 +1861,14 @@
   },{
     "armourData":{
       "Armour":0,
+      "ArmourBase":0,
       "EnergyShield":148,
+      "EnergyShieldBase":14,
       "EnergyShieldBasePercentile":0.7778,
       "Evasion":0,
-      "Ward":0
+      "EvasionBase":0,
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -1752,11 +1912,15 @@
   },{
     "armourData":{
       "Armour":98,
+      "ArmourBase":82,
       "ArmourBasePercentile":0.4074,
       "EnergyShield":0,
+      "EnergyShieldBase":0,
       "Evasion":98,
+      "EvasionBase":82,
       "EvasionBasePercentile":0.4074,
-      "Ward":0
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -1780,10 +1944,14 @@
   },{
     "armourData":{
       "Armour":0,
+      "ArmourBase":0,
       "EnergyShield":0,
+      "EnergyShieldBase":0,
       "Evasion":2166,
+      "EvasionBase":725,
       "EvasionBasePercentile":0.1972,
-      "Ward":0
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -1793,11 +1961,15 @@
   },{
     "armourData":{
       "Armour":177,
+      "ArmourBase":136,
       "ArmourBasePercentile":0.5344,
       "EnergyShield":36,
+      "EnergyShieldBase":28,
       "EnergyShieldBasePercentile":0.4231,
       "Evasion":0,
-      "Ward":0
+      "EvasionBase":0,
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -1859,10 +2031,14 @@
   },{
     "armourData":{
       "Armour":0,
+      "ArmourBase":0,
       "EnergyShield":0,
+      "EnergyShieldBase":0,
       "Evasion":100,
+      "EvasionBase":37,
       "EvasionBasePercentile":0.4957,
-      "Ward":0
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -1872,11 +2048,15 @@
   },{
     "armourData":{
       "Armour":249,
+      "ArmourBase":138,
       "ArmourBasePercentile":0.9575,
       "EnergyShield":0,
+      "EnergyShieldBase":0,
       "Evasion":249,
+      "EvasionBase":138,
       "EvasionBasePercentile":0.9575,
-      "Ward":0
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -1925,10 +2105,14 @@
   },{
     "armourData":{
       "Armour":886,
+      "ArmourBase":357,
       "ArmourBasePercentile":0.3094,
       "EnergyShield":0,
+      "EnergyShieldBase":0,
       "Evasion":0,
-      "Ward":0
+      "EvasionBase":0,
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -1938,10 +2122,14 @@
   },{
     "armourData":{
       "Armour":838,
+      "ArmourBase":575,
       "ArmourBasePercentile":0.1926,
       "EnergyShield":0,
+      "EnergyShieldBase":0,
       "Evasion":0,
-      "Ward":0
+      "EvasionBase":0,
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -2011,10 +2199,14 @@
   },{
     "armourData":{
       "Armour":736,
+      "ArmourBase":736,
       "ArmourBasePercentile":0.3521,
       "EnergyShield":0,
+      "EnergyShieldBase":0,
       "Evasion":0,
-      "Ward":0
+      "EvasionBase":0,
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -2038,10 +2230,14 @@
   },{
     "armourData":{
       "Armour":766,
+      "ArmourBase":348,
       "ArmourBasePercentile":0.0623,
       "EnergyShield":0,
+      "EnergyShieldBase":0,
       "Evasion":0,
-      "Ward":0
+      "EvasionBase":0,
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -2071,11 +2267,15 @@
   },{
     "armourData":{
       "Armour":161,
+      "ArmourBase":134,
       "ArmourBasePercentile":0.4298,
       "EnergyShield":0,
+      "EnergyShieldBase":0,
       "Evasion":161,
+      "EvasionBase":134,
       "EvasionBasePercentile":0.4298,
-      "Ward":0
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -2136,10 +2336,14 @@
   },{
     "armourData":{
       "Armour":0,
+      "ArmourBase":0,
       "EnergyShield":0,
+      "EnergyShieldBase":0,
       "Evasion":218,
+      "EvasionBase":182,
       "EvasionBasePercentile":0.1333,
-      "Ward":0
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -2321,10 +2525,14 @@
   },{
     "armourData":{
       "Armour":0,
+      "ArmourBase":0,
       "EnergyShield":0,
+      "EnergyShieldBase":20,
       "EnergyShieldBasePercentile":1,
       "Evasion":0,
-      "Ward":0
+      "EvasionBase":0,
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -2334,10 +2542,14 @@
   },{
     "armourData":{
       "Armour":590,
+      "ArmourBase":252,
       "ArmourBasePercentile":0.2816,
       "EnergyShield":0,
+      "EnergyShieldBase":0,
       "Evasion":0,
-      "Ward":0
+      "EvasionBase":0,
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -2347,11 +2559,15 @@
   },{
     "armourData":{
       "Armour":372,
+      "ArmourBase":124,
       "ArmourBasePercentile":0.1667,
       "EnergyShield":78,
+      "EnergyShieldBase":26,
       "EnergyShieldBasePercentile":0.3333,
       "Evasion":0,
-      "Ward":0
+      "EvasionBase":0,
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -2368,10 +2584,14 @@
   },{
     "armourData":{
       "Armour":0,
+      "ArmourBase":0,
       "EnergyShield":0,
+      "EnergyShieldBase":0,
       "Evasion":53,
+      "EvasionBase":21,
       "EvasionBasePercentile":0.25,
-      "Ward":0
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -2501,10 +2721,14 @@
   },{
     "armourData":{
       "Armour":0,
+      "ArmourBase":0,
       "EnergyShield":0,
+      "EnergyShieldBase":0,
       "Evasion":113,
+      "EvasionBase":113,
       "EvasionBasePercentile":0.3077,
-      "Ward":0
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -2521,10 +2745,14 @@
   },{
     "armourData":{
       "Armour":0,
+      "ArmourBase":0,
       "EnergyShield":0,
+      "EnergyShieldBase":0,
       "Evasion":864,
+      "EvasionBase":402,
       "EvasionBasePercentile":0.3835,
-      "Ward":0
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -2547,10 +2775,14 @@
   },{
     "armourData":{
       "Armour":0,
+      "ArmourBase":0,
       "EnergyShield":0,
+      "EnergyShieldBase":20,
       "EnergyShieldBasePercentile":1,
       "Evasion":0,
-      "Ward":0
+      "EvasionBase":0,
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,
@@ -2573,10 +2805,14 @@
   },{
     "armourData":{
       "Armour":0,
+      "ArmourBase":0,
       "EnergyShield":0,
+      "EnergyShieldBase":0,
       "Evasion":273,
+      "EvasionBase":213,
       "EvasionBasePercentile":0.9245,
-      "Ward":0
+      "Ward":0,
+      "WardBase":0
     },
     "flaskData":[],
     "isArmour":true,

@@ -15,8 +15,8 @@ import "github.com/Vilsol/go-pob/mod"
 // and which CalcActiveSkill's global-effect pass compares against to decide whether a
 // buff inherits the skill's buffNotPlayer/buffMinions/buffAllies/allowTotemBuff config.
 //
-// Generated from PoB v2.18.1 (493 skills with baseMods, 982 mods) by
-// oracle/skill_base_mods.lua + oracle/skill_base_mods_emit.py; 977 mods are emitted,
+// Generated from PoB v2.18.1 (495 skills with baseMods, 985 mods) by
+// oracle/skill_base_mods.lua + oracle/skill_base_mods_emit.py; 980 mods are emitted,
 // 5 are not representable and are omitted:
 //   - 3 string-valued skill() entries (triggerSource, corpseMonsterVariety) whose key has
 //     no string field on calculator.SkillData
@@ -39,32 +39,32 @@ import "github.com/Vilsol/go-pob/mod"
 // (src/Data/Skills/act_dex.lua:1838), and ModStore.lua has no "Skill" branch, so upstream
 // the tag gates nothing and the mod always applies. The mod is emitted untagged to match.
 var SkillBaseMods = map[string][]mod.Mod{
-	// src/Data/Skills/spectre.lua:9185
+	// src/Data/Skills/spectre.lua:9184
 	"ABTTAzmeriGoddessAura": {
 		mod.NewList("SkillData", mod.SkillData{Key: "BuffMinions", Value: 1}).Source("Skill:ABTTAzmeriGoddessAura"),
 	},
-	// src/Data/Skills/spectre.lua:9984
+	// src/Data/Skills/spectre.lua:9983
 	"ABTTAzmeriSpiderLeaderAura": {
 		mod.NewList("SkillData", mod.SkillData{Key: "BuffMinions", Value: 1}).Source("Skill:ABTTAzmeriSpiderLeaderAura"),
 	},
-	// src/Data/Skills/act_str.lua:35
+	// src/Data/Skills/act_str.lua:34
 	"Absolution": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 25}).Source("Skill:Absolution"),
 	},
-	// src/Data/Skills/act_str.lua:131
+	// src/Data/Skills/act_str.lua:130
 	"AbsolutionAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 25}).Source("Skill:AbsolutionAltX"),
 	},
-	// src/Data/Skills/act_dex.lua:40
+	// src/Data/Skills/act_dex.lua:39
 	"AlchemistsMark": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Debuff", Value: 1}).Source("Skill:AlchemistsMark"),
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 20}).Source("Skill:AlchemistsMark"),
 	},
-	// src/Data/Skills/act_str.lua:308
+	// src/Data/Skills/act_str.lua:307
 	"AncestralCry": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 60}).Source("Skill:AncestralCry"),
 	},
-	// src/Data/Skills/act_str.lua:405
+	// src/Data/Skills/act_str.lua:404
 	"Anger": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 40}).Source("Skill:Anger"),
 	},
@@ -72,17 +72,17 @@ var SkillBaseMods = map[string][]mod.Mod{
 	"AnimateWeaponAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "MinionUseMainHandWeapon", Value: 1}).Source("Skill:AnimateWeaponAltX"),
 	},
-	// src/Data/Skills/act_int.lua:357
+	// src/Data/Skills/act_int.lua:356
 	"ArcaneCloak": {
 		mod.NewFloat("GuardAbsorbLimit", mod.TypeBase, 100).Tag(mod.PercentStatVar("ManaUnreserved", "ArcaneCloakConsumedMana"), mod.GlobalEffect("Guard").Unscalable(true)).Source("Skill:ArcaneCloak"),
 		mod.NewFloat("Multiplier:ManaSpentRecently", mod.TypeBase, 100).Tag(mod.PercentStatVar("ManaUnreserved", "ArcaneCloakConsumedMana"), mod.Condition("ArcaneCloakUsedRecently"), mod.GlobalEffect("Buff").Unscalable(true)).Source("Skill:ArcaneCloak"),
 	},
-	// src/Data/Skills/act_int.lua:729
+	// src/Data/Skills/act_int.lua:728
 	"ArmageddonBrand": {
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusSecondary", Value: 8}).Source("Skill:ArmageddonBrand"),
 		mod.NewList("SkillData", mod.SkillData{Key: "Debuff", Value: 1}).Source("Skill:ArmageddonBrand"),
 	},
-	// src/Data/Skills/act_int.lua:909
+	// src/Data/Skills/act_int.lua:908
 	"ArmageddonBrandAltY": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Debuff", Value: 1}).Source("Skill:ArmageddonBrandAltY"),
 	},
@@ -98,110 +98,119 @@ var SkillBaseMods = map[string][]mod.Mod{
 	"ArtilleryBallistaAltY": {
 		mod.NewFlag("OneShotProj", true).Source("Skill:ArtilleryBallistaAltY"),
 	},
-	// src/Data/Skills/other.lua:368
+	// src/Data/Skills/other.lua:245
+	"AspectOfArakaali": {
+		mod.NewFlag("Condition:CanWither", true).Tag(mod.GlobalEffect("Buff")).Source("Skill:AspectOfArakaali"),
+		mod.NewFlag("Condition:CanBeWithered", true).Tag(mod.GlobalEffect("Buff")).Source("Skill:AspectOfArakaali"),
+	},
+	// src/Data/Skills/other.lua:309
+	"AspectOfSolaris": {
+		mod.NewList("EnemyModifier", mod.EnemyModifier{Mod: mod.NewFloat("FireExposure", mod.TypeBase, -10)}).Tag(mod.Condition("Effective"), mod.GlobalEffect("Buff")).Source("Skill:AspectOfSolaris"),
+	},
+	// src/Data/Skills/other.lua:496
 	"AspectOfTheSpider": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Debuff", Value: 1}).Source("Skill:AspectOfTheSpider"),
 		mod.NewList("SkillData", mod.SkillData{Key: "StackCount", Value: 1}).Tag(multiplierLimitVar("SpiderWebApplyStack", "SpiderWebApplyStackMax")).Source("Skill:AspectOfTheSpider"),
 	},
-	// src/Data/Skills/act_int.lua:1010
+	// src/Data/Skills/act_int.lua:1009
 	"AssassinsMark": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Debuff", Value: 1}).Source("Skill:AssassinsMark"),
 	},
-	// src/Data/Skills/other.lua:1958
+	// src/Data/Skills/other.lua:2086
 	"AtziriUniqueStaffFlameblast": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 25}).Source("Skill:AtziriUniqueStaffFlameblast"),
 	},
-	// src/Data/Skills/other.lua:3988
+	// src/Data/Skills/other.lua:4116
 	"AtziriUniqueStaffStormCall": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 20}).Source("Skill:AtziriUniqueStaffStormCall"),
 	},
-	// src/Data/Skills/spectre.lua:23
+	// src/Data/Skills/spectre.lua:22
 	"AxisCasterGlacialCascade": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 12}).Source("Skill:AxisCasterGlacialCascade"),
 	},
-	// src/Data/Skills/spectre.lua:74
+	// src/Data/Skills/spectre.lua:73
 	"AxisDoubleStrikeTrigger": {
 		mod.NewList("SkillData", mod.SkillData{Key: "DpsMultiplier", Value: 2}).Source("Skill:AxisDoubleStrikeTrigger"),
 	},
-	// src/Data/Skills/spectre.lua:7809
+	// src/Data/Skills/spectre.lua:7808
 	"AzmeriAdmiralPrecision": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 40}).Source("Skill:AzmeriAdmiralPrecision"),
 	},
-	// src/Data/Skills/spectre.lua:8028
+	// src/Data/Skills/spectre.lua:8027
 	"AzmeriBarrageDemonSpinestorm": {
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusLabel", String: "Spine explosion:"}).Source("Skill:AzmeriBarrageDemonSpinestorm"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusSecondary", Value: 25}).Source("Skill:AzmeriBarrageDemonSpinestorm"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusSecondaryLabel", String: "Area in which Spines fall:"}).Source("Skill:AzmeriBarrageDemonSpinestorm"),
 	},
-	// src/Data/Skills/spectre.lua:9381
+	// src/Data/Skills/spectre.lua:9380
 	"AzmeriBirdGrace": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 40}).Source("Skill:AzmeriBirdGrace"),
 	},
-	// src/Data/Skills/spectre.lua:8513
+	// src/Data/Skills/spectre.lua:8512
 	"AzmeriCasterDemonSpellDamageAura": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 40}).Source("Skill:AzmeriCasterDemonSpellDamageAura"),
 	},
-	// src/Data/Skills/spectre.lua:8584
+	// src/Data/Skills/spectre.lua:8583
 	"AzmeriCycloneDemonDesecratedGroundCyclone": {
 		mod.NewFloat("CooldownRecovery", mod.TypeOverride, 0).Source("Skill:AzmeriCycloneDemonDesecratedGroundCyclone"),
 	},
-	// src/Data/Skills/spectre.lua:11072
+	// src/Data/Skills/spectre.lua:11071
 	"AzmeriDemonPhysicalDamageAura": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 40}).Source("Skill:AzmeriDemonPhysicalDamageAura"),
 	},
-	// src/Data/Skills/spectre.lua:7229
+	// src/Data/Skills/spectre.lua:7228
 	"AzmeriFirefuryFireResistAura": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 40}).Source("Skill:AzmeriFirefuryFireResistAura"),
 	},
-	// src/Data/Skills/spectre.lua:9221
+	// src/Data/Skills/spectre.lua:9220
 	"AzmeriGoddessDiscipline": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 40}).Source("Skill:AzmeriGoddessDiscipline"),
 	},
-	// src/Data/Skills/spectre.lua:7025
+	// src/Data/Skills/spectre.lua:7024
 	"AzmeriHailrakeColdResistAura": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 40}).Source("Skill:AzmeriHailrakeColdResistAura"),
 	},
-	// src/Data/Skills/spectre.lua:7344
+	// src/Data/Skills/spectre.lua:7343
 	"AzmeriHydraHatred": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 40}).Source("Skill:AzmeriHydraHatred"),
 	},
-	// src/Data/Skills/spectre.lua:7583
+	// src/Data/Skills/spectre.lua:7582
 	"AzmeriKudukuWrath": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 40}).Source("Skill:AzmeriKudukuWrath"),
 	},
-	// src/Data/Skills/spectre.lua:9667
+	// src/Data/Skills/spectre.lua:9666
 	"AzmeriOakVitality": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 40}).Source("Skill:AzmeriOakVitality"),
 	},
-	// src/Data/Skills/spectre.lua:10408
+	// src/Data/Skills/spectre.lua:10407
 	"AzmeriOversoulRocksTriggered": {
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusLabel", String: "Rock explosion:"}).Source("Skill:AzmeriOversoulRocksTriggered"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusSecondary", Value: 25}).Source("Skill:AzmeriOversoulRocksTriggered"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusSecondaryLabel", String: "Area in which Rocks fall:"}).Source("Skill:AzmeriOversoulRocksTriggered"),
 	},
-	// src/Data/Skills/spectre.lua:9508
+	// src/Data/Skills/spectre.lua:9507
 	"AzmeriPhantasmClarity": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 40}).Source("Skill:AzmeriPhantasmClarity"),
 	},
-	// src/Data/Skills/spectre.lua:7919
+	// src/Data/Skills/spectre.lua:7918
 	"AzmeriSwordStormCascade": {
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusLabel", String: "Sword explosion:"}).Source("Skill:AzmeriSwordStormCascade"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusSecondary", Value: 25}).Source("Skill:AzmeriSwordStormCascade"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusSecondaryLabel", String: "Area in which Swords fall:"}).Source("Skill:AzmeriSwordStormCascade"),
 	},
-	// src/Data/Skills/spectre.lua:10309
+	// src/Data/Skills/spectre.lua:10308
 	"AzmeriTigerHaste": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 40}).Source("Skill:AzmeriTigerHaste"),
 	},
-	// src/Data/Skills/spectre.lua:10370
+	// src/Data/Skills/spectre.lua:10369
 	"AzmeriTurtleDetermination": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 40}).Source("Skill:AzmeriTurtleDetermination"),
 	},
-	// src/Data/Skills/spectre.lua:10567
+	// src/Data/Skills/spectre.lua:10566
 	"AzmeriVikingCyclone": {
 		mod.NewList("SkillData", mod.SkillData{Key: "DpsMultiplier", Value: 2}).Source("Skill:AzmeriVikingCyclone"),
 	},
-	// src/Data/Skills/spectre.lua:10009
+	// src/Data/Skills/spectre.lua:10008
 	"AzmeriZombieCausticGroundWhenHit": {
 		mod.NewList("SkillData", mod.SkillData{Key: "DotIsArea", Value: 1}).Source("Skill:AzmeriZombieCausticGroundWhenHit"),
 		mod.NewFlag("dotIsCausticGround", true).Source("Skill:AzmeriZombieCausticGroundWhenHit"),
@@ -226,12 +235,12 @@ var SkillBaseMods = map[string][]mod.Mod{
 		mod.NewList("SkillData", mod.SkillData{Key: "StrikeInterval", Value: 0.15}).Source("Skill:BallLightningAltY"),
 		mod.NewList("SkillData", mod.SkillData{Key: "Duration", Value: 2}).Source("Skill:BallLightningAltY"),
 	},
-	// src/Data/Skills/spectre.lua:152
+	// src/Data/Skills/spectre.lua:151
 	"BanditChampionBlastRainSpectre": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 24}).Source("Skill:BanditChampionBlastRainSpectre"),
 		mod.NewList("SkillData", mod.SkillData{Key: "DpsMultiplier", Value: 4}).Source("Skill:BanditChampionBlastRainSpectre"),
 	},
-	// src/Data/Skills/spectre.lua:116
+	// src/Data/Skills/spectre.lua:115
 	"BanditExplosiveArrowAtAnimationSpeed": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 15}).Source("Skill:BanditExplosiveArrowAtAnimationSpeed"),
 		mod.NewList("SkillData", mod.SkillData{Key: "ShowAverage", Value: 1}).Source("Skill:BanditExplosiveArrowAtAnimationSpeed"),
@@ -245,7 +254,7 @@ var SkillBaseMods = map[string][]mod.Mod{
 	"BaneAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Debuff", Value: 1}).Source("Skill:BaneAltX"),
 	},
-	// src/Data/Skills/act_str.lua:802
+	// src/Data/Skills/act_str.lua:801
 	"BattlemagesCry": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 60}).Source("Skill:BattlemagesCry"),
 	},
@@ -292,7 +301,7 @@ var SkillBaseMods = map[string][]mod.Mod{
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusSecondary", Value: 12}).Source("Skill:Bladefall"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusSecondaryLabel", String: "Volley Length:"}).Source("Skill:Bladefall"),
 	},
-	// src/Data/Skills/act_str.lua:1047
+	// src/Data/Skills/act_str.lua:1046
 	"Bladestorm": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 24}).Source("Skill:Bladestorm"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusLabel", String: "Area of initial attack:"}).Source("Skill:Bladestorm"),
@@ -300,7 +309,7 @@ var SkillBaseMods = map[string][]mod.Mod{
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusSecondaryLabel", String: "Area of bladestorms:"}).Source("Skill:Bladestorm"),
 		mod.NewFloat("BleedChance", mod.TypeBase, 100).Flag(mod.MFlagAttack).Tag(mod.Condition("BloodStance"), mod.SkillPart(2)).Source("Skill:Bladestorm"),
 	},
-	// src/Data/Skills/act_str.lua:1155
+	// src/Data/Skills/act_str.lua:1154
 	"BladestormAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 24}).Source("Skill:BladestormAltX"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusLabel", String: "Area of initial attack:"}).Source("Skill:BladestormAltX"),
@@ -353,7 +362,7 @@ var SkillBaseMods = map[string][]mod.Mod{
 	"BlinkArrowAltY": {
 		mod.NewList("SkillData", mod.SkillData{Key: "MinionUseBowAndQuiver", Value: 1}).Source("Skill:BlinkArrowAltY"),
 	},
-	// src/Data/Skills/other.lua:511
+	// src/Data/Skills/other.lua:639
 	"BloodOffering": {
 		mod.NewList("SkillData", mod.SkillData{Key: "BuffMinions", Value: 1}).Source("Skill:BloodOffering"),
 		mod.NewList("SkillData", mod.SkillData{Key: "BuffNotPlayer", Value: 1}).Source("Skill:BloodOffering"),
@@ -362,7 +371,7 @@ var SkillBaseMods = map[string][]mod.Mod{
 	"BloodRage": {
 		mod.NewList("SkillData", mod.SkillData{Key: "ThisIsNotABuff", Value: 1}).Source("Skill:BloodRage"),
 	},
-	// src/Data/Skills/other.lua:566
+	// src/Data/Skills/other.lua:694
 	"BloodSacramentUnique": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 5}).Source("Skill:BloodSacramentUnique"),
 		mod.NewFloat("Multiplier:BloodSacramentMaxStages", mod.TypeBase, 33).Source("Skill:BloodSacramentUnique"),
@@ -378,19 +387,19 @@ var SkillBaseMods = map[string][]mod.Mod{
 		mod.NewList("SkillData", mod.SkillData{Key: "ExplodeCorpse", Value: 1}).Tag(mod.SkillPart(2)).Source("Skill:BodyswapAltX"),
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 14}).Source("Skill:BodyswapAltX"),
 	},
-	// src/Data/Skills/other.lua:614
+	// src/Data/Skills/other.lua:742
 	"BoneArmour": {
 		mod.NewFloat("AvoidBleed", mod.TypeBase, 100).Tag(mod.GlobalEffect("Guard")).Source("Skill:BoneArmour"),
 	},
-	// src/Data/Skills/minion.lua:1508
+	// src/Data/Skills/minion.lua:1507
 	"BoneGolemCascade": {
 		mod.NewList("SkillData", mod.SkillData{Key: "ShowAverage", Value: 1}).Source("Skill:BoneGolemCascade"),
 	},
-	// src/Data/Skills/minion.lua:1591
+	// src/Data/Skills/minion.lua:1590
 	"BoneGolemCascadeEmpowered": {
 		mod.NewList("SkillData", mod.SkillData{Key: "ShowAverage", Value: 1}).Source("Skill:BoneGolemCascadeEmpowered"),
 	},
-	// src/Data/Skills/minion.lua:1546
+	// src/Data/Skills/minion.lua:1545
 	"BoneGolemLeapSlam": {
 		mod.NewList("SkillData", mod.SkillData{Key: "ShowAverage", Value: 1}).Source("Skill:BoneGolemLeapSlam"),
 	},
@@ -399,43 +408,43 @@ var SkillBaseMods = map[string][]mod.Mod{
 		mod.NewList("SkillData", mod.SkillData{Key: "BuffMinions", Value: 1}).Source("Skill:BoneOffering"),
 		mod.NewList("SkillData", mod.SkillData{Key: "BuffNotPlayer", Value: 1}).Source("Skill:BoneOffering"),
 	},
-	// src/Data/Skills/act_str.lua:1344
+	// src/Data/Skills/act_str.lua:1343
 	"Boneshatter": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 14}).Tag(mod.SkillPart(2)).Source("Skill:Boneshatter"),
 		mod.NewFlag("HasTrauma", true).Source("Skill:Boneshatter"),
 	},
-	// src/Data/Skills/act_str.lua:1457
+	// src/Data/Skills/act_str.lua:1456
 	"BoneshatterAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 14}).Tag(mod.SkillPart(2)).Source("Skill:BoneshatterAltX"),
 		mod.NewFlag("HasTrauma", true).Source("Skill:BoneshatterAltX"),
 	},
-	// src/Data/Skills/act_str.lua:1555
+	// src/Data/Skills/act_str.lua:1554
 	"BoneshatterAltY": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 14}).Tag(mod.SkillPart(2)).Source("Skill:BoneshatterAltY"),
 	},
-	// src/Data/Skills/act_int.lua:561
+	// src/Data/Skills/act_int.lua:560
 	"BrandSupport": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Debuff", Value: 1}).Source("Skill:BrandSupport"),
 	},
-	// src/Data/Skills/spectre.lua:6543
+	// src/Data/Skills/spectre.lua:6542
 	"BreachBlizzardSpectre": {
 		mod.NewList("SkillData", mod.SkillData{Key: "BuffAllies", Value: 1}).Source("Skill:BreachBlizzardSpectre"),
 		mod.NewList("SkillData", mod.SkillData{Key: "BuffMinions", Value: 1}).Source("Skill:BreachBlizzardSpectre"),
 	},
-	// src/Data/Skills/spectre.lua:4510
+	// src/Data/Skills/spectre.lua:4509
 	"BreachLightningOrbsCommander": {
 		mod.NewList("SkillData", mod.SkillData{Key: "ShowAverage", Value: 1}).Source("Skill:BreachLightningOrbsCommander"),
 	},
-	// src/Data/Skills/spectre.lua:4419
+	// src/Data/Skills/spectre.lua:4418
 	"BreachLightningWhip": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 30}).Source("Skill:BreachLightningWhip"),
 		mod.NewList("SkillData", mod.SkillData{Key: "ShowAverage", Value: 1}).Source("Skill:BreachLightningWhip"),
 	},
-	// src/Data/Skills/spectre.lua:4482
+	// src/Data/Skills/spectre.lua:4481
 	"BreachTeamWarp": {
 		mod.NewList("SkillData", mod.SkillData{Key: "ShowAverage", Value: 1}).Source("Skill:BreachTeamWarp"),
 	},
-	// src/Data/Skills/other.lua:2365
+	// src/Data/Skills/other.lua:2493
 	"CatsStealthTriggeredIntimidatingCry": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 60}).Source("Skill:CatsStealthTriggeredIntimidatingCry"),
 	},
@@ -451,17 +460,17 @@ var SkillBaseMods = map[string][]mod.Mod{
 	"CausticArrowAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusLabel", String: "AoE Explosion:"}).Source("Skill:CausticArrowAltX"),
 	},
-	// src/Data/Skills/act_str.lua:1640
+	// src/Data/Skills/act_str.lua:1639
 	"ChainHook": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 24}).Source("Skill:ChainHook"),
 	},
-	// src/Data/Skills/act_str.lua:1728
+	// src/Data/Skills/act_str.lua:1791
 	"ChainHookAltY": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 24}).Source("Skill:ChainHookAltY"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusLabel", String: "Strike area:"}).Source("Skill:ChainHookAltY"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusSecondaryLabel", String: "Chain length:"}).Source("Skill:ChainHookAltY"),
 	},
-	// src/Data/Skills/act_dex.lua:17702
+	// src/Data/Skills/act_dex.lua:17705
 	"ChannelledSnipeSupport": {
 		mod.NewFlag("TriggeredBySnipe", true).Source("Skill:ChannelledSnipeSupport"),
 	},
@@ -489,11 +498,11 @@ var SkillBaseMods = map[string][]mod.Mod{
 	"Clarity": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 40}).Source("Skill:Clarity"),
 	},
-	// src/Data/Skills/act_str.lua:1814
+	// src/Data/Skills/act_str.lua:1877
 	"Cleave": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 20}).Source("Skill:Cleave"),
 	},
-	// src/Data/Skills/act_str.lua:1902
+	// src/Data/Skills/act_str.lua:1965
 	"CleaveAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 20}).Source("Skill:CleaveAltX"),
 	},
@@ -504,7 +513,7 @@ var SkillBaseMods = map[string][]mod.Mod{
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusSecondaryLabel", String: "Initial Chilled Ground:"}).Source("Skill:ColdSnap"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusTertiaryLabel", String: "Final Chilled Ground:"}).Source("Skill:ColdSnap"),
 	},
-	// src/Data/Skills/act_str.lua:6979
+	// src/Data/Skills/act_str.lua:7042
 	"Combust": {
 		mod.NewList("SkillData", mod.SkillData{Key: "ShowAverage", Value: 1}).Source("Skill:Combust"),
 	},
@@ -513,11 +522,11 @@ var SkillBaseMods = map[string][]mod.Mod{
 		mod.NewList("SkillData", mod.SkillData{Key: "Debuff", Value: 1}).Source("Skill:Conductivity"),
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 22}).Source("Skill:Conductivity"),
 	},
-	// src/Data/Skills/act_str.lua:2099
+	// src/Data/Skills/act_str.lua:2162
 	"ConsecratedPath": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 23}).Source("Skill:ConsecratedPath"),
 	},
-	// src/Data/Skills/act_str.lua:2193
+	// src/Data/Skills/act_str.lua:2256
 	"ConsecratedPathAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 23}).Source("Skill:ConsecratedPathAltX"),
 	},
@@ -533,12 +542,12 @@ var SkillBaseMods = map[string][]mod.Mod{
 	"ContagionAltY": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Debuff", Value: 1}).Source("Skill:ContagionAltY"),
 	},
-	// src/Data/Skills/other.lua:925
+	// src/Data/Skills/other.lua:1053
 	"Convocation": {
 		mod.NewList("SkillData", mod.SkillData{Key: "BuffMinions", Value: 1}).Source("Skill:Convocation"),
 		mod.NewList("SkillData", mod.SkillData{Key: "BuffNotPlayer", Value: 1}).Source("Skill:Convocation"),
 	},
-	// src/Data/Skills/act_str.lua:2270
+	// src/Data/Skills/act_str.lua:2333
 	"CorruptingFever": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Debuff", Value: 1}).Source("Skill:CorruptingFever"),
 		mod.NewFlag("dotIsCorruptingBlood", true).Source("Skill:CorruptingFever"),
@@ -569,39 +578,39 @@ var SkillBaseMods = map[string][]mod.Mod{
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusLabel", String: "Projectile Impact:"}).Source("Skill:CreepingFrostAltX"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusSecondaryLabel", String: "DoT Area:"}).Source("Skill:CreepingFrostAltX"),
 	},
-	// src/Data/Skills/act_dex.lua:4388
+	// src/Data/Skills/act_dex.lua:4390
 	"Cremation": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 15}).Source("Skill:Cremation"),
 		mod.NewList("SkillData", mod.SkillData{Key: "ExplodeCorpse", Value: 1}).Tag(mod.SkillPart(2)).Source("Skill:Cremation"),
 	},
-	// src/Data/Skills/act_dex.lua:4506
+	// src/Data/Skills/act_dex.lua:4508
 	"CremationAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 15}).Source("Skill:CremationAltX"),
 		mod.NewList("SkillData", mod.SkillData{Key: "ExplodeCorpse", Value: 1}).Tag(mod.SkillPart(2)).Source("Skill:CremationAltX"),
 	},
-	// src/Data/Skills/act_dex.lua:4610
+	// src/Data/Skills/act_dex.lua:4612
 	"CremationAltY": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 15}).Source("Skill:CremationAltY"),
 	},
-	// src/Data/Skills/spectre.lua:6778
+	// src/Data/Skills/spectre.lua:6777
 	"CrucibleIceStormTrap": {
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusLabel", String: "Ice explosion:"}).Source("Skill:CrucibleIceStormTrap"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusSecondary", Value: 25}).Source("Skill:CrucibleIceStormTrap"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusSecondaryLabel", String: "Area in which Ice fall:"}).Source("Skill:CrucibleIceStormTrap"),
 	},
-	// src/Data/Skills/act_dex.lua:4728
+	// src/Data/Skills/act_dex.lua:4730
 	"Cyclone": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 16}).Source("Skill:Cyclone"),
 	},
-	// src/Data/Skills/act_dex.lua:4843
+	// src/Data/Skills/act_dex.lua:4845
 	"CycloneAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 16}).Source("Skill:CycloneAltX"),
 	},
-	// src/Data/Skills/minion.lua:833
+	// src/Data/Skills/minion.lua:832
 	"DancingDervishCycloneChannelled": {
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusIsWeaponRange", Value: 1}).Source("Skill:DancingDervishCycloneChannelled"),
 	},
-	// src/Data/Skills/spectre.lua:7366
+	// src/Data/Skills/spectre.lua:7365
 	"DarkMarionetteExplode": {
 		mod.NewList("SkillData", mod.SkillData{Key: "FireMin", Value: 1}).Tag(mod.PerStat(20, "Life")).Source("Skill:DarkMarionetteExplode"),
 		mod.NewList("SkillData", mod.SkillData{Key: "FireMax", Value: 1}).Tag(mod.PerStat(20, "Life")).Source("Skill:DarkMarionetteExplode"),
@@ -612,7 +621,7 @@ var SkillBaseMods = map[string][]mod.Mod{
 		mod.NewList("SkillData", mod.SkillData{Key: "ShowAverage", Value: 1}).Source("Skill:DarkMarionetteExplode"),
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 22}).Source("Skill:DarkMarionetteExplode"),
 	},
-	// src/Data/Skills/spectre.lua:7394
+	// src/Data/Skills/spectre.lua:7393
 	"DarkMarionetteExplodePerfect": {
 		mod.NewList("SkillData", mod.SkillData{Key: "FireMin", Value: 1}).Tag(mod.PerStat(20, "Life")).Source("Skill:DarkMarionetteExplodePerfect"),
 		mod.NewList("SkillData", mod.SkillData{Key: "FireMax", Value: 1}).Tag(mod.PerStat(20, "Life")).Source("Skill:DarkMarionetteExplodePerfect"),
@@ -633,43 +642,43 @@ var SkillBaseMods = map[string][]mod.Mod{
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 26}).Source("Skill:DarkPactAltX"),
 		mod.NewList("SkillData", mod.SkillData{Key: "ShowAverage", Value: 1}).Tag(mod.SkillPart(2)).Source("Skill:DarkPactAltX"),
 	},
-	// src/Data/Skills/other.lua:1080
+	// src/Data/Skills/other.lua:1208
 	"DeathAura": {
 		mod.NewList("SkillData", mod.SkillData{Key: "DotIsArea", Value: 1}).Source("Skill:DeathAura"),
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 30}).Source("Skill:DeathAura"),
 	},
-	// src/Data/Skills/other.lua:1110
+	// src/Data/Skills/other.lua:1238
 	"DeathWalk": {
 		mod.NewList("SkillData", mod.SkillData{Key: "ExplodeCorpse", Value: 1}).Source("Skill:DeathWalk"),
 		mod.NewList("SkillData", mod.SkillData{Key: "ShowAverage", Value: 1}).Source("Skill:DeathWalk"),
 	},
-	// src/Data/Skills/other.lua:1188
+	// src/Data/Skills/other.lua:1316
 	"DeathWish": {
 		mod.NewList("SkillData", mod.SkillData{Key: "ExplodeCorpse", Value: 1}).Tag(mod.SkillPart(2)).Source("Skill:DeathWish"),
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 10}).Tag(mod.SkillPart(2)).Source("Skill:DeathWish"),
 		mod.NewList("SkillData", mod.SkillData{Key: "BuffMinions", Value: 1}).Source("Skill:DeathWish"),
 		mod.NewList("SkillData", mod.SkillData{Key: "BuffNotPlayer", Value: 1}).Source("Skill:DeathWish"),
 	},
-	// src/Data/Skills/act_str.lua:2431
+	// src/Data/Skills/act_str.lua:2494
 	"DecoyTotem": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 60}).Source("Skill:DecoyTotem"),
 	},
-	// src/Data/Skills/act_str.lua:2514
+	// src/Data/Skills/act_str.lua:2577
 	"DefianceBanner": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 24}).Source("Skill:DefianceBanner"),
 		mod.NewFloat("AuraEffect", mod.TypeMore, -100).Tag(mod.Condition("BannerPlanted").Neg(true)).Source("Skill:DefianceBanner"),
 		mod.NewFlag("Condition:AffectedByPlacedBanner", true).Tag(mod.Condition("BannerPlanted"), mod.GlobalEffect("Buff")).Source("Skill:DefianceBanner"),
 	},
-	// src/Data/Skills/spectre.lua:6696
+	// src/Data/Skills/spectre.lua:6695
 	"DelveMonsterEnfeebleOnHit": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Debuff", Value: 1}).Source("Skill:DelveMonsterEnfeebleOnHit"),
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 22}).Source("Skill:DelveMonsterEnfeebleOnHit"),
 	},
-	// src/Data/Skills/spectre.lua:541
+	// src/Data/Skills/spectre.lua:540
 	"DemonModularBladeVortexSpectre": {
 		mod.NewList("SkillData", mod.SkillData{Key: "HitTimeOverride", Value: 1}).Source("Skill:DemonModularBladeVortexSpectre"),
 	},
-	// src/Data/Skills/act_dex.lua:5098
+	// src/Data/Skills/act_dex.lua:5100
 	"Desecrate": {
 		mod.NewList("SkillData", mod.SkillData{Key: "DotIsArea", Value: 1}).Source("Skill:Desecrate"),
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 12}).Source("Skill:Desecrate"),
@@ -679,19 +688,19 @@ var SkillBaseMods = map[string][]mod.Mod{
 		mod.NewList("SkillData", mod.SkillData{Key: "Debuff", Value: 1}).Source("Skill:Despair"),
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 22}).Source("Skill:Despair"),
 	},
-	// src/Data/Skills/act_str.lua:2598
+	// src/Data/Skills/act_str.lua:2661
 	"Determination": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 40}).Source("Skill:Determination"),
 	},
-	// src/Data/Skills/act_dex.lua:5192
+	// src/Data/Skills/act_dex.lua:5195
 	"DetonateDead": {
 		mod.NewList("SkillData", mod.SkillData{Key: "ExplodeCorpse", Value: 1}).Tag(mod.SkillPart(2)).Source("Skill:DetonateDead"),
 	},
-	// src/Data/Skills/act_dex.lua:5268
+	// src/Data/Skills/act_dex.lua:5271
 	"DetonateDeadAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "ExplodeCorpse", Value: 1}).Source("Skill:DetonateDeadAltX"),
 	},
-	// src/Data/Skills/act_dex.lua:5360
+	// src/Data/Skills/act_dex.lua:5363
 	"DetonateDeadAltY": {
 		mod.NewList("SkillData", mod.SkillData{Key: "ExplodeCorpse", Value: 1}).Tag(mod.SkillPart(2)).Source("Skill:DetonateDeadAltY"),
 	},
@@ -713,60 +722,60 @@ var SkillBaseMods = map[string][]mod.Mod{
 	"DivineIreAltY": {
 		mod.NewFloat("Multiplier:DivineIreofDisintegrationMaxStages", mod.TypeBase, 10).Source("Skill:DivineIreAltY"),
 	},
-	// src/Data/Skills/sup_int.lua:3521
+	// src/Data/Skills/sup_int.lua:3520
 	"DoomBlast": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 20}).Source("Skill:DoomBlast"),
 	},
-	// src/Data/Skills/act_dex.lua:5546
+	// src/Data/Skills/act_dex.lua:5549
 	"DoubleStrike": {
 		mod.NewList("SkillData", mod.SkillData{Key: "DpsMultiplier", Value: 2}).Source("Skill:DoubleStrike"),
 		mod.NewFloat("PvpTvalueMultiplier", mod.TypeMore, -50).Source("Skill:DoubleStrike"),
 	},
-	// src/Data/Skills/act_dex.lua:5627
+	// src/Data/Skills/act_dex.lua:5630
 	"DoubleStrikeAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "DpsMultiplier", Value: 2}).Source("Skill:DoubleStrikeAltX"),
 		mod.NewFloat("PvpTvalueMultiplier", mod.TypeMore, -50).Source("Skill:DoubleStrikeAltX"),
 	},
-	// src/Data/Skills/act_dex.lua:5717
+	// src/Data/Skills/act_dex.lua:5720
 	"DoubleStrikeAltY": {
 		mod.NewList("SkillData", mod.SkillData{Key: "DpsMultiplier", Value: 2}).Source("Skill:DoubleStrikeAltY"),
 		mod.NewFloat("PvpTvalueMultiplier", mod.TypeMore, -50).Source("Skill:DoubleStrikeAltY"),
 	},
-	// src/Data/Skills/act_str.lua:3219
+	// src/Data/Skills/act_str.lua:3282
 	"DreadBanner": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 24}).Source("Skill:DreadBanner"),
 		mod.NewFloat("AuraEffect", mod.TypeMore, -100).Tag(mod.Condition("BannerPlanted").Neg(true)).Source("Skill:DreadBanner"),
 		mod.NewFlag("Condition:AffectedByPlacedBanner", true).Tag(mod.Condition("BannerPlanted"), mod.GlobalEffect("Buff")).Source("Skill:DreadBanner"),
 	},
-	// src/Data/Skills/minion.lua:1447
+	// src/Data/Skills/minion.lua:1446
 	"DropBearSummonedRallyingCry": {
 		mod.NewList("SkillData", mod.SkillData{Key: "BuffAllies", Value: 1}).Source("Skill:DropBearSummonedRallyingCry"),
 	},
-	// src/Data/Skills/act_str.lua:3326
+	// src/Data/Skills/act_str.lua:3389
 	"Earthquake": {
 		mod.NewList("SkillData", mod.SkillData{Key: "ShowAverage", Value: 1}).Tag(mod.SkillPart(2)).Source("Skill:Earthquake"),
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 18}).Tag(mod.SkillPart(1)).Source("Skill:Earthquake"),
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 28}).Tag(mod.SkillPart(2)).Source("Skill:Earthquake"),
 	},
-	// src/Data/Skills/act_str.lua:3431
+	// src/Data/Skills/act_str.lua:3494
 	"EarthquakeAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "ShowAverage", Value: 1}).Tag(mod.SkillPart(2)).Source("Skill:EarthquakeAltX"),
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 18}).Tag(mod.SkillPart(1)).Source("Skill:EarthquakeAltX"),
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 28}).Tag(mod.SkillPart(2)).Source("Skill:EarthquakeAltX"),
 	},
-	// src/Data/Skills/act_str.lua:3645
+	// src/Data/Skills/act_str.lua:3708
 	"Earthshatter": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 18}).Tag(mod.SkillPart(1)).Source("Skill:Earthshatter"),
 	},
-	// src/Data/Skills/act_str.lua:3753
+	// src/Data/Skills/act_str.lua:3816
 	"EarthshatterAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 18}).Tag(mod.SkillPart(1)).Source("Skill:EarthshatterAltX"),
 	},
-	// src/Data/Skills/act_str.lua:3861
+	// src/Data/Skills/act_str.lua:3924
 	"EarthshatterAltY": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 18}).Tag(mod.SkillPart(1)).Source("Skill:EarthshatterAltY"),
 	},
-	// src/Data/Skills/act_dex.lua:6132
+	// src/Data/Skills/act_dex.lua:6135
 	"ElementalHit": {
 		mod.NewFloat("Multiplier:ElementalHitAilmentOnEnemy", mod.TypeBase, 1).Tag(mod.ActorCondition("enemy", "Ignited")).Source("Skill:ElementalHit"),
 		mod.NewFloat("Multiplier:ElementalHitAilmentOnEnemy", mod.TypeBase, 1).Tag(mod.ActorCondition("enemy", "Chilled")).Source("Skill:ElementalHit"),
@@ -776,7 +785,7 @@ var SkillBaseMods = map[string][]mod.Mod{
 		mod.NewFloat("Multiplier:ElementalHitAilmentOnEnemy", mod.TypeBase, 1).Tag(mod.ActorCondition("enemy", "Brittle")).Source("Skill:ElementalHit"),
 		mod.NewFloat("Multiplier:ElementalHitAilmentOnEnemy", mod.TypeBase, 1).Tag(mod.ActorCondition("enemy", "Sapped")).Source("Skill:ElementalHit"),
 	},
-	// src/Data/Skills/act_dex.lua:6279
+	// src/Data/Skills/act_dex.lua:6282
 	"ElementalHitAltX": {
 		mod.NewFloat("Multiplier:ElementalHitAilmentOnEnemy", mod.TypeBase, 1).Tag(mod.ActorCondition("enemy", "Ignited")).Source("Skill:ElementalHitAltX"),
 		mod.NewFloat("Multiplier:ElementalHitAilmentOnEnemy", mod.TypeBase, 1).Tag(mod.ActorCondition("enemy", "Chilled")).Source("Skill:ElementalHitAltX"),
@@ -786,7 +795,7 @@ var SkillBaseMods = map[string][]mod.Mod{
 		mod.NewFloat("Multiplier:ElementalHitAilmentOnEnemy", mod.TypeBase, 1).Tag(mod.ActorCondition("enemy", "Brittle")).Source("Skill:ElementalHitAltX"),
 		mod.NewFloat("Multiplier:ElementalHitAilmentOnEnemy", mod.TypeBase, 1).Tag(mod.ActorCondition("enemy", "Sapped")).Source("Skill:ElementalHitAltX"),
 	},
-	// src/Data/Skills/spectre.lua:579
+	// src/Data/Skills/spectre.lua:578
 	"ElementalHitSkeletonKnight": {
 		mod.NewFlag("DealNoPhysical", true).Source("Skill:ElementalHitSkeletonKnight"),
 		mod.NewFlag("DealNoChaos", true).Source("Skill:ElementalHitSkeletonKnight"),
@@ -802,7 +811,7 @@ var SkillBaseMods = map[string][]mod.Mod{
 		mod.NewFloat("Multiplier:ElementalHitAilmentOnEnemy", mod.TypeBase, 1).Tag(mod.ActorCondition("enemy", "Sapped")).Source("Skill:ElementalHitSkeletonKnight"),
 		mod.NewFloat("Damage", mod.TypeMore, 10).Tag(mod.Multiplier("ElementalHitAilmentOnEnemy")).Source("Skill:ElementalHitSkeletonKnight"),
 	},
-	// src/Data/Skills/other.lua:1680
+	// src/Data/Skills/other.lua:1808
 	"ElementalWarding": {
 		mod.NewFloat("SkillPhysicalDamageConvertToFire", mod.TypeBase, 100).Tag(mod.SkillPart(1)).Source("Skill:ElementalWarding"),
 		mod.NewFloat("SkillPhysicalDamageConvertToCold", mod.TypeBase, 100).Tag(mod.SkillPart(2)).Source("Skill:ElementalWarding"),
@@ -813,21 +822,21 @@ var SkillBaseMods = map[string][]mod.Mod{
 		mod.NewList("SkillData", mod.SkillData{Key: "Debuff", Value: 1}).Source("Skill:ElementalWeakness"),
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 22}).Source("Skill:ElementalWeakness"),
 	},
-	// src/Data/Skills/spectre.lua:11489
+	// src/Data/Skills/spectre.lua:11488
 	"EmpoweringHowlSpectre": {
 		mod.NewList("SkillData", mod.SkillData{Key: "BuffAllies", Value: 1}).Source("Skill:EmpoweringHowlSpectre"),
 		mod.NewList("SkillData", mod.SkillData{Key: "BuffMinions", Value: 1}).Source("Skill:EmpoweringHowlSpectre"),
 	},
-	// src/Data/Skills/spectre.lua:6515
+	// src/Data/Skills/spectre.lua:6514
 	"EmptyActionSpellWarlordGrandmaster": {
 		mod.NewList("SkillData", mod.SkillData{Key: "BuffAllies", Value: 1}).Source("Skill:EmptyActionSpellWarlordGrandmaster"),
 		mod.NewList("SkillData", mod.SkillData{Key: "BuffMinions", Value: 1}).Source("Skill:EmptyActionSpellWarlordGrandmaster"),
 	},
-	// src/Data/Skills/act_str.lua:3943
+	// src/Data/Skills/act_str.lua:4006
 	"EnduringCry": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 60}).Source("Skill:EnduringCry"),
 	},
-	// src/Data/Skills/other.lua:6125
+	// src/Data/Skills/other.lua:6253
 	"EnemyExplode": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 22}).Source("Skill:EnemyExplode"),
 		mod.NewList("SkillData", mod.SkillData{Key: "ShowAverage", Value: 1}).Source("Skill:EnemyExplode"),
@@ -840,7 +849,7 @@ var SkillBaseMods = map[string][]mod.Mod{
 		mod.NewList("SkillData", mod.SkillData{Key: "Debuff", Value: 1}).Source("Skill:Enfeeble"),
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 22}).Source("Skill:Enfeeble"),
 	},
-	// src/Data/Skills/other.lua:1760
+	// src/Data/Skills/other.lua:1888
 	"Envy": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 40}).Source("Skill:Envy"),
 	},
@@ -862,65 +871,65 @@ var SkillBaseMods = map[string][]mod.Mod{
 		mod.NewList("SkillData", mod.SkillData{Key: "ShowAverage", Value: 1}).Source("Skill:EssenceDrainAltY"),
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 8}).Source("Skill:EssenceDrainAltY"),
 	},
-	// src/Data/Skills/act_str.lua:4034
+	// src/Data/Skills/act_str.lua:4097
 	"Eviscerate": {
 		mod.NewList("SkillData", mod.SkillData{Key: "DpsMultiplier", Value: 2}).Tag(mod.SkillPart(2)).Source("Skill:Eviscerate"),
 	},
-	// src/Data/Skills/act_dex.lua:6813
+	// src/Data/Skills/act_dex.lua:6816
 	"ExplosiveArrow": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 15}).Source("Skill:ExplosiveArrow"),
 		mod.NewList("SkillData", mod.SkillData{Key: "ShowAverage", Value: 1}).Tag(mod.SkillPartList(1, 2)).Source("Skill:ExplosiveArrow"),
 		mod.NewFloat("Damage", mod.TypeMore, 100).Tag(mod.SkillPartList(1, 2), mod.Multiplier("ExplosiveArrowStageAfterFirst")).Source("Skill:ExplosiveArrow"),
 	},
-	// src/Data/Skills/act_dex.lua:7232
+	// src/Data/Skills/act_dex.lua:7235
 	"ExplosiveTrap": {
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusLabel", String: "Primary Explosion:"}).Source("Skill:ExplosiveTrap"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusSecondaryLabel", String: "Secondary Area:"}).Source("Skill:ExplosiveTrap"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusTertiaryLabel", String: "Secondary Explosion:"}).Source("Skill:ExplosiveTrap"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusTertiaryBaseMargin", Value: 30}).Source("Skill:ExplosiveTrap"),
 	},
-	// src/Data/Skills/act_dex.lua:7324
+	// src/Data/Skills/act_dex.lua:7327
 	"ExplosiveTrapAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusLabel", String: "Primary Explosion:"}).Source("Skill:ExplosiveTrapAltX"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusSecondaryLabel", String: "Secondary Area:"}).Source("Skill:ExplosiveTrapAltX"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusTertiaryLabel", String: "Secondary Explosion:"}).Source("Skill:ExplosiveTrapAltX"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusTertiaryBaseMargin", Value: 30}).Source("Skill:ExplosiveTrapAltX"),
 	},
-	// src/Data/Skills/act_str.lua:4122
+	// src/Data/Skills/act_str.lua:4185
 	"Exsanguinate": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Debuff", Value: 1}).Source("Skill:Exsanguinate"),
 		mod.NewFloat("Multiplier:ExsanguinateMaxStages", mod.TypeBase, 3).Source("Skill:Exsanguinate"),
 		mod.NewFloat("PhysicalDamage", mod.TypeMore, 100).KeywordFlag(mod.KeywordFlagPhysicalDot).Tag(mod.Multiplier("ExsanguinateStageAfterFirst"), mod.Condition("ExsanguinateDebuffIsFireDamage").Neg(true)).Source("Skill:Exsanguinate"),
 		mod.NewFloat("FireDamage", mod.TypeMore, 100).Flag(mod.MFlagSpell|mod.MFlagDot).Tag(mod.Multiplier("ExsanguinateStageAfterFirst"), mod.Condition("ExsanguinateDebuffIsFireDamage")).Source("Skill:Exsanguinate"),
 	},
-	// src/Data/Skills/act_str.lua:4211
+	// src/Data/Skills/act_str.lua:4274
 	"ExsanguinateAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Debuff", Value: 1}).Source("Skill:ExsanguinateAltX"),
 		mod.NewFloat("Multiplier:ExsanguinateofTransmissionMaxStages", mod.TypeBase, 3).Source("Skill:ExsanguinateAltX"),
 		mod.NewFloat("PhysicalDamage", mod.TypeMore, 100).KeywordFlag(mod.KeywordFlagPhysicalDot).Tag(mod.Multiplier("ExsanguinateofTransmissionStageAfterFirst"), mod.Condition("ExsanguinateDebuffIsFireDamage").Neg(true)).Source("Skill:ExsanguinateAltX"),
 		mod.NewFloat("FireDamage", mod.TypeMore, 100).Flag(mod.MFlagSpell|mod.MFlagDot).Tag(mod.Multiplier("ExsanguinateofTransmissionStageAfterFirst"), mod.Condition("ExsanguinateDebuffIsFireDamage")).Source("Skill:ExsanguinateAltX"),
 	},
-	// src/Data/Skills/spectre.lua:7106
+	// src/Data/Skills/spectre.lua:7105
 	"FemaleCannibalBossFireStorm": {
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusLabel", String: "Fireball explosion:"}).Source("Skill:FemaleCannibalBossFireStorm"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusSecondary", Value: 25}).Source("Skill:FemaleCannibalBossFireStorm"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusSecondaryLabel", String: "Area in which Fireballs fall:"}).Source("Skill:FemaleCannibalBossFireStorm"),
 	},
-	// src/Data/Skills/other.lua:1853
+	// src/Data/Skills/other.lua:1981
 	"FireBurstOnHit": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 24}).Source("Skill:FireBurstOnHit"),
 	},
-	// src/Data/Skills/minion.lua:239
+	// src/Data/Skills/minion.lua:238
 	"FireElementalMeteorSummoned": {
 		mod.NewList("SkillData", mod.SkillData{Key: "ShowAverage", Value: 1}).Source("Skill:FireElementalMeteorSummoned"),
 	},
-	// src/Data/Skills/act_dex.lua:7501
+	// src/Data/Skills/act_dex.lua:7504
 	"FireTrap": {
 		mod.NewList("SkillData", mod.SkillData{Key: "DotIsArea", Value: 1}).Source("Skill:FireTrap"),
 		mod.NewFlag("dotIsBurningGround", true).Source("Skill:FireTrap"),
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 15}).Source("Skill:FireTrap"),
 	},
-	// src/Data/Skills/act_dex.lua:7593
+	// src/Data/Skills/act_dex.lua:7596
 	"FireTrapAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 15}).Source("Skill:FireTrapAltX"),
 	},
@@ -974,11 +983,11 @@ var SkillBaseMods = map[string][]mod.Mod{
 	"FlameblastAltY": {
 		mod.NewFloat("PvpTvalueMultiplier", mod.TypeMore, 100).Tag(mod.Multiplier("FlameblastofContractionStageAfterFirst")).Source("Skill:FlameblastAltY"),
 	},
-	// src/Data/Skills/act_dex.lua:7728
+	// src/Data/Skills/act_dex.lua:7731
 	"FlamethrowerTrap": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 32}).Source("Skill:FlamethrowerTrap"),
 	},
-	// src/Data/Skills/act_dex.lua:7831
+	// src/Data/Skills/act_dex.lua:7834
 	"FlamethrowerTrapAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 32}).Source("Skill:FlamethrowerTrapAltX"),
 	},
@@ -987,7 +996,7 @@ var SkillBaseMods = map[string][]mod.Mod{
 		mod.NewList("SkillData", mod.SkillData{Key: "Debuff", Value: 1}).Source("Skill:Flammability"),
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 22}).Source("Skill:Flammability"),
 	},
-	// src/Data/Skills/act_str.lua:4389
+	// src/Data/Skills/act_str.lua:4452
 	"FleshAndStone": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 28}).Source("Skill:FleshAndStone"),
 	},
@@ -1004,7 +1013,7 @@ var SkillBaseMods = map[string][]mod.Mod{
 	"ForbiddenRiteAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 8}).Source("Skill:ForbiddenRiteAltX"),
 	},
-	// src/Data/Skills/act_dex.lua:8521
+	// src/Data/Skills/act_dex.lua:8524
 	"FrostBladesAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "DotIsArea", Value: 1}).Tag(mod.SkillPart(2)).Source("Skill:FrostBladesAltX"),
 	},
@@ -1033,31 +1042,31 @@ var SkillBaseMods = map[string][]mod.Mod{
 	"FrostblinkAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 20}).Source("Skill:FrostblinkAltX"),
 	},
-	// src/Data/Skills/act_str.lua:4656
+	// src/Data/Skills/act_str.lua:4719
 	"FrozenSweep": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 25}).Source("Skill:FrozenSweep"),
 	},
-	// src/Data/Skills/act_str.lua:4774
+	// src/Data/Skills/act_str.lua:4837
 	"FrozenSweepAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 25}).Source("Skill:FrozenSweepAltX"),
 	},
-	// src/Data/Skills/spectre.lua:4776
+	// src/Data/Skills/spectre.lua:4775
 	"GAHarvestCrabDashSlam": {
 		mod.NewList("SkillData", mod.SkillData{Key: "ShowAverage", Value: 1}).Source("Skill:GAHarvestCrabDashSlam"),
 	},
-	// src/Data/Skills/spectre.lua:4920
+	// src/Data/Skills/spectre.lua:4919
 	"GAHarvestRhexDashSlash": {
 		mod.NewList("SkillData", mod.SkillData{Key: "ShowAverage", Value: 1}).Source("Skill:GAHarvestRhexDashSlash"),
 	},
-	// src/Data/Skills/act_dex.lua:8611
+	// src/Data/Skills/act_dex.lua:8614
 	"GalvanicArrow": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 28}).Source("Skill:GalvanicArrow"),
 	},
-	// src/Data/Skills/act_dex.lua:8689
+	// src/Data/Skills/act_dex.lua:8692
 	"GalvanicArrowAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 28}).Source("Skill:GalvanicArrowAltX"),
 	},
-	// src/Data/Skills/act_dex.lua:8775
+	// src/Data/Skills/act_dex.lua:8778
 	"GalvanicArrowAltY": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 28}).Source("Skill:GalvanicArrowAltY"),
 	},
@@ -1069,11 +1078,11 @@ var SkillBaseMods = map[string][]mod.Mod{
 	"GalvanicFieldAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 19}).Source("Skill:GalvanicFieldAltX"),
 	},
-	// src/Data/Skills/act_str.lua:4851
+	// src/Data/Skills/act_str.lua:4914
 	"GeneralsCry": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 60}).Source("Skill:GeneralsCry"),
 	},
-	// src/Data/Skills/spectre.lua:868
+	// src/Data/Skills/spectre.lua:867
 	"GhostPirateBladeVortexSpectre": {
 		mod.NewList("SkillData", mod.SkillData{Key: "HitTimeOverride", Value: 1}).Source("Skill:GhostPirateBladeVortexSpectre"),
 	},
@@ -1086,57 +1095,57 @@ var SkillBaseMods = map[string][]mod.Mod{
 	"GlacialCascadeAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 12}).Source("Skill:GlacialCascadeAltX"),
 	},
-	// src/Data/Skills/other.lua:2068
+	// src/Data/Skills/other.lua:2196
 	"GluttonyOfElements": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 40}).Source("Skill:GluttonyOfElements"),
 		mod.NewFloat("AvoidCurse", mod.TypeBase, 100).Tag(mod.GlobalEffect("Aura").Unscalable(true)).Source("Skill:GluttonyOfElements"),
 	},
-	// src/Data/Skills/act_dex.lua:8940
+	// src/Data/Skills/act_dex.lua:8943
 	"Grace": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 40}).Source("Skill:Grace"),
 	},
-	// src/Data/Skills/act_str.lua:5267
+	// src/Data/Skills/act_str.lua:5330
 	"GroundSlam": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 35}).Source("Skill:GroundSlam"),
 	},
-	// src/Data/Skills/act_str.lua:5357
+	// src/Data/Skills/act_str.lua:5420
 	"GroundSlamAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 35}).Source("Skill:GroundSlamAltX"),
 	},
-	// src/Data/Skills/minion.lua:1849
+	// src/Data/Skills/minion.lua:1848
 	"GuardianSentinelFireAura": {
 		mod.NewList("SkillData", mod.SkillData{Key: "FireDot", Value: 1}).Tag(mod.Multiplier("GuardianSentinelFireAuraBaseDamage"), mod.PercentStat("Life", 1)).Source("Skill:GuardianSentinelFireAura"),
 		mod.NewList("SkillData", mod.SkillData{Key: "DotIsArea", Value: 1}).Source("Skill:GuardianSentinelFireAura"),
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 1}).Tag(mod.Multiplier("GuardianSentinelFireAuraRadius")).Source("Skill:GuardianSentinelFireAura"),
 	},
-	// src/Data/Skills/spectre.lua:1137
+	// src/Data/Skills/spectre.lua:1136
 	"HalfSkeletonPuncture": {
 		mod.NewFloat("BleedChance", mod.TypeBase, 100).Source("Skill:HalfSkeletonPuncture"),
 	},
-	// src/Data/Skills/spectre.lua:4799
+	// src/Data/Skills/spectre.lua:4798
 	"HarvestCrabAbyssSlam": {
 		mod.NewList("SkillData", mod.SkillData{Key: "ShowAverage", Value: 1}).Source("Skill:HarvestCrabAbyssSlam"),
 	},
-	// src/Data/Skills/spectre.lua:4883
+	// src/Data/Skills/spectre.lua:4882
 	"HarvestRhexLeapSlam": {
 		mod.NewList("SkillData", mod.SkillData{Key: "ShowAverage", Value: 1}).Source("Skill:HarvestRhexLeapSlam"),
 	},
-	// src/Data/Skills/act_dex.lua:9104
+	// src/Data/Skills/act_dex.lua:9107
 	"Haste": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 40}).Source("Skill:Haste"),
 	},
-	// src/Data/Skills/act_dex.lua:9272
+	// src/Data/Skills/act_dex.lua:9275
 	"Hatred": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 40}).Source("Skill:Hatred"),
 	},
-	// src/Data/Skills/spectre.lua:5241
+	// src/Data/Skills/spectre.lua:5240
 	"HeistThugRangedExplosiveArrow": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 15}).Source("Skill:HeistThugRangedExplosiveArrow"),
 		mod.NewList("SkillData", mod.SkillData{Key: "ShowAverage", Value: 1}).Source("Skill:HeistThugRangedExplosiveArrow"),
 		mod.NewFloat("Damage", mod.TypeMore, 100).Tag(mod.Multiplier("ExplosiveArrowFuse").Base(-100)).Source("Skill:HeistThugRangedExplosiveArrow"),
 		mod.NewFloat("Multiplier:ExplosiveArrowFuse", mod.TypeBase, 20).Source("Skill:HeistThugRangedExplosiveArrow"),
 	},
-	// src/Data/Skills/act_str.lua:5700
+	// src/Data/Skills/act_str.lua:5763
 	"HeraldOfAsh": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 10}).Source("Skill:HeraldOfAsh"),
 		mod.NewFlag("dotIsHeraldOfAsh", true).Source("Skill:HeraldOfAsh"),
@@ -1154,7 +1163,7 @@ var SkillBaseMods = map[string][]mod.Mod{
 	"HexblastAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "ShowAverage", Value: 1}).Source("Skill:HexblastAltX"),
 	},
-	// src/Data/Skills/act_str.lua:5868
+	// src/Data/Skills/act_str.lua:5931
 	"HolyFlameTotem": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 16}).Source("Skill:HolyFlameTotem"),
 	},
@@ -1162,21 +1171,21 @@ var SkillBaseMods = map[string][]mod.Mod{
 	"Hydrosphere": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 23}).Source("Skill:Hydrosphere"),
 	},
-	// src/Data/Skills/act_str.lua:6545
+	// src/Data/Skills/act_str.lua:6608
 	"IceCrash": {
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusLabel", String: "First hit:"}).Source("Skill:IceCrash"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusSecondaryLabel", String: "Second hit:"}).Source("Skill:IceCrash"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusTertiaryLabel", String: "Third hit:"}).Source("Skill:IceCrash"),
 	},
-	// src/Data/Skills/minion.lua:287
+	// src/Data/Skills/minion.lua:286
 	"IceElementalIceCyclone": {
 		mod.NewList("SkillData", mod.SkillData{Key: "DpsMultiplier", Value: 2}).Source("Skill:IceElementalIceCyclone"),
 	},
-	// src/Data/Skills/act_dex.lua:9558
+	// src/Data/Skills/act_dex.lua:9561
 	"IceShot": {
 		mod.NewFloat("SkillPhysicalDamageConvertToCold", mod.TypeBase, 40).Tag(mod.SkillPart(2)).Source("Skill:IceShot"),
 	},
-	// src/Data/Skills/act_dex.lua:9642
+	// src/Data/Skills/act_dex.lua:9645
 	"IceShotAltX": {
 		mod.NewFloat("SkillPhysicalDamageConvertToCold", mod.TypeBase, 40).Tag(mod.SkillPart(2)).Source("Skill:IceShotAltX"),
 	},
@@ -1188,24 +1197,24 @@ var SkillBaseMods = map[string][]mod.Mod{
 	"IceSpearAltX": {
 		mod.NewFloat("PierceChance", mod.TypeBase, 100).Tag(mod.SkillPart(1)).Source("Skill:IceSpearAltX"),
 	},
-	// src/Data/Skills/act_dex.lua:9792
+	// src/Data/Skills/act_dex.lua:9795
 	"IceTrap": {
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusLabel", String: "First Explosion:"}).Source("Skill:IceTrap"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusSecondaryLabel", String: "Second Explosion:"}).Source("Skill:IceTrap"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusTertiaryLabel", String: "Third Explosion:"}).Source("Skill:IceTrap"),
 	},
-	// src/Data/Skills/act_dex.lua:9877
+	// src/Data/Skills/act_dex.lua:9880
 	"IceTrapAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusLabel", String: "First Explosion:"}).Source("Skill:IceTrapAltX"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusSecondaryLabel", String: "Second Explosion:"}).Source("Skill:IceTrapAltX"),
 	},
-	// src/Data/Skills/other.lua:2262
+	// src/Data/Skills/other.lua:2390
 	"Icestorm": {
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusSecondary", Value: 22}).Source("Skill:Icestorm"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusLabel", String: "Ice projectile:"}).Source("Skill:Icestorm"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusSecondaryLabel", String: "Target area:"}).Source("Skill:Icestorm"),
 	},
-	// src/Data/Skills/other.lua:2300
+	// src/Data/Skills/other.lua:2428
 	"IcicleBurst": {
 		mod.NewList("SkillData", mod.SkillData{Key: "ShowAverage", Value: 1}).Source("Skill:IcicleBurst"),
 	},
@@ -1230,60 +1239,60 @@ var SkillBaseMods = map[string][]mod.Mod{
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusSecondary", Value: 20}).Source("Skill:IncinerateAltY"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusSecondaryLabel", String: "Flame Width:"}).Source("Skill:IncinerateAltY"),
 	},
-	// src/Data/Skills/act_str.lua:7094
+	// src/Data/Skills/act_str.lua:7157
 	"InfernalBlow": {
 		mod.NewList("SkillData", mod.SkillData{Key: "ShowAverage", Value: 1}).Tag(mod.SkillPart(2)).Source("Skill:InfernalBlow"),
 		mod.NewFloat("Multiplier:DebuffStack", mod.TypeBase, 5).Tag(mod.SkillPart(3)).Source("Skill:InfernalBlow"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusLabel", String: "Hit area:"}).Tag(mod.SkillPart(1)).Source("Skill:InfernalBlow"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusLabel", String: "Explosion area:"}).Tag(mod.SkillPartList(2, 3)).Source("Skill:InfernalBlow"),
 	},
-	// src/Data/Skills/act_str.lua:7214
+	// src/Data/Skills/act_str.lua:7277
 	"InfernalBlowAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "ShowAverage", Value: 1}).Tag(mod.SkillPart(2)).Source("Skill:InfernalBlowAltX"),
 		mod.NewFloat("Multiplier:DebuffStack", mod.TypeBase, 5).Tag(mod.SkillPart(3)).Source("Skill:InfernalBlowAltX"),
 	},
-	// src/Data/Skills/act_str.lua:6877
+	// src/Data/Skills/act_str.lua:6940
 	"InfernalCry": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 60}).Source("Skill:InfernalCry"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusLabel", String: "Warcry area:"}).Source("Skill:InfernalCry"),
 	},
-	// src/Data/Skills/minion.lua:1827
+	// src/Data/Skills/minion.lua:1826
 	"InfernalLegion": {
 		mod.NewList("SkillData", mod.SkillData{Key: "FireDot", Value: 1}).Tag(mod.Multiplier("InfernalLegionBaseDamage")).Source("Skill:InfernalLegion"),
 		mod.NewList("SkillData", mod.SkillData{Key: "DotIsArea", Value: 1}).Source("Skill:InfernalLegion"),
 	},
-	// src/Data/Skills/act_str.lua:7297
+	// src/Data/Skills/act_str.lua:7360
 	"IntimidatingCry": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 60}).Source("Skill:IntimidatingCry"),
 	},
-	// src/Data/Skills/spectre.lua:1386
+	// src/Data/Skills/spectre.lua:1385
 	"KaomFireBeamTotemSpectre": {
 		mod.NewFloat("Damage", mod.TypeMore, 60).Tag(mod.Multiplier("KaomFireBeamTotemStage").Base(-60).Limit(8).Actor("parent")).Source("Skill:KaomFireBeamTotemSpectre"),
 	},
-	// src/Data/Skills/spectre.lua:3797
+	// src/Data/Skills/spectre.lua:3796
 	"KitavaSlavedriverFlameWhip": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 30}).Source("Skill:KitavaSlavedriverFlameWhip"),
 	},
-	// src/Data/Skills/act_dex.lua:9978
+	// src/Data/Skills/act_dex.lua:9981
 	"Lacerate": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 38}).Source("Skill:Lacerate"),
 		mod.NewList("SkillData", mod.SkillData{Key: "DpsMultiplier", Value: 2}).Tag(mod.SkillPart(2)).Source("Skill:Lacerate"),
 	},
-	// src/Data/Skills/act_dex.lua:10066
+	// src/Data/Skills/act_dex.lua:10069
 	"LacerateAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 38}).Source("Skill:LacerateAltX"),
 		mod.NewList("SkillData", mod.SkillData{Key: "DpsMultiplier", Value: 2}).Tag(mod.SkillPart(2)).Source("Skill:LacerateAltX"),
 	},
-	// src/Data/Skills/act_dex.lua:10154
+	// src/Data/Skills/act_dex.lua:10157
 	"LacerateAltY": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 38}).Source("Skill:LacerateAltY"),
 		mod.NewList("SkillData", mod.SkillData{Key: "DpsMultiplier", Value: 2}).Tag(mod.SkillPart(2)).Source("Skill:LacerateAltY"),
 	},
-	// src/Data/Skills/act_dex.lua:10429
+	// src/Data/Skills/act_dex.lua:10432
 	"LightningArrow": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 18}).Source("Skill:LightningArrow"),
 	},
-	// src/Data/Skills/act_dex.lua:10510
+	// src/Data/Skills/act_dex.lua:10513
 	"LightningArrowAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "DpsMultiplier", Value: 1}).Tag(mod.Multiplier("LightningArrowofElectrocutionStage")).Source("Skill:LightningArrowAltX"),
 	},
@@ -1332,42 +1341,42 @@ var SkillBaseMods = map[string][]mod.Mod{
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusSecondary", Value: 23}).Source("Skill:Manabond"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusSecondaryLabel", String: "Rectangle area:"}).Source("Skill:Manabond"),
 	},
-	// src/Data/Skills/other.lua:2567
+	// src/Data/Skills/other.lua:2695
 	"ManifestDancingDervishes": {
 		mod.NewFlag("DisableWeapons", true).Tag(mod.GlobalEffect("Buff")).Source("Skill:ManifestDancingDervishes"),
 		mod.NewFlag("Condition:Onslaught", true).Tag(mod.GlobalEffect("Buff")).Source("Skill:ManifestDancingDervishes"),
 		mod.NewList("SkillData", mod.SkillData{Key: "MinionLevel", Value: 65}).Source("Skill:ManifestDancingDervishes"),
 	},
-	// src/Data/Skills/minion.lua:1760
+	// src/Data/Skills/minion.lua:1759
 	"MinionInstability": {
 		mod.NewList("SkillData", mod.SkillData{Key: "FireMin", Value: 1}).Tag(mod.PerStat(3.030303030303, "Life")).Source("Skill:MinionInstability"),
 		mod.NewList("SkillData", mod.SkillData{Key: "FireMax", Value: 1}).Tag(mod.PerStat(3.030303030303, "Life")).Source("Skill:MinionInstability"),
 		mod.NewList("SkillData", mod.SkillData{Key: "ShowAverage", Value: 1}).Source("Skill:MinionInstability"),
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 22}).Source("Skill:MinionInstability"),
 	},
-	// src/Data/Skills/act_dex.lua:11003
+	// src/Data/Skills/act_dex.lua:11006
 	"MirrorArrow": {
 		mod.NewList("SkillData", mod.SkillData{Key: "MinionUseBowAndQuiver", Value: 1}).Source("Skill:MirrorArrow"),
 	},
-	// src/Data/Skills/act_dex.lua:11089
+	// src/Data/Skills/act_dex.lua:11092
 	"MirrorArrowAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "MinionUseBowAndQuiver", Value: 1}).Source("Skill:MirrorArrowAltX"),
 	},
-	// src/Data/Skills/act_dex.lua:11174
+	// src/Data/Skills/act_dex.lua:11177
 	"MirrorArrowAltY": {
 		mod.NewList("SkillData", mod.SkillData{Key: "MinionUseBowAndQuiver", Value: 1}).Source("Skill:MirrorArrowAltY"),
 	},
-	// src/Data/Skills/other.lua:2600
+	// src/Data/Skills/other.lua:2728
 	"MistyReflection": {
 		mod.NewFloat("DamageTaken", mod.TypeIncrease, 30).Tag(mod.Condition("MistyReflection"), mod.GlobalEffect("Debuff")).Source("Skill:MistyReflection"),
 		mod.NewFloat("Damage", mod.TypeMore, -30).Tag(mod.Condition("MistyReflection"), mod.GlobalEffect("Debuff")).Source("Skill:MistyReflection"),
 		mod.NewList("SkillData", mod.SkillData{Key: "Debuff", Value: 1}).Source("Skill:MistyReflection"),
 	},
-	// src/Data/Skills/act_str.lua:7564
+	// src/Data/Skills/act_str.lua:7627
 	"MoltenShell": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 15}).Source("Skill:MoltenShell"),
 	},
-	// src/Data/Skills/act_str.lua:7831
+	// src/Data/Skills/act_str.lua:7894
 	"MoltenStrike": {
 		mod.NewList("SkillData", mod.SkillData{Key: "ProjectileSpeedAppliesToMSAreaOfEffect", Value: 1}).Source("Skill:MoltenStrike"),
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 9}).Tag(mod.SkillPartList(2, 3)).Source("Skill:MoltenStrike"),
@@ -1378,7 +1387,7 @@ var SkillBaseMods = map[string][]mod.Mod{
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusTertiaryLabel", String: "Chain Maximum Distance:"}).Tag(mod.SkillPartList(2, 3)).Source("Skill:MoltenStrike"),
 		mod.NewFlag("CannotSplit", true).Source("Skill:MoltenStrike"),
 	},
-	// src/Data/Skills/act_str.lua:8039
+	// src/Data/Skills/act_str.lua:8102
 	"MoltenStrikeAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "ProjectileSpeedAppliesToMSAreaOfEffect", Value: 1}).Source("Skill:MoltenStrikeAltX"),
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 9}).Tag(mod.SkillPartList(2, 3, 4, 5, 6)).Source("Skill:MoltenStrikeAltX"),
@@ -1389,12 +1398,12 @@ var SkillBaseMods = map[string][]mod.Mod{
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusTertiaryLabel", String: "Chain Maximum Distance:"}).Tag(mod.SkillPartList(2, 3, 4, 5, 6)).Source("Skill:MoltenStrikeAltX"),
 		mod.NewFlag("CannotSplit", true).Source("Skill:MoltenStrikeAltX"),
 	},
-	// src/Data/Skills/spectre.lua:6614
+	// src/Data/Skills/spectre.lua:6613
 	"MonsterChanceToTemporalChainsOnHit1": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Debuff", Value: 1}).Source("Skill:MonsterChanceToTemporalChainsOnHit1"),
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 22}).Source("Skill:MonsterChanceToTemporalChainsOnHit1"),
 	},
-	// src/Data/Skills/spectre.lua:2597
+	// src/Data/Skills/spectre.lua:2596
 	"MonsterPuncture": {
 		mod.NewFloat("BleedChance", mod.TypeBase, 100).Source("Skill:MonsterPuncture"),
 	},
@@ -1411,7 +1420,7 @@ var SkillBaseMods = map[string][]mod.Mod{
 	"OrbOfStormsAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 28}).Source("Skill:OrbOfStormsAltX"),
 	},
-	// src/Data/Skills/other.lua:3350
+	// src/Data/Skills/other.lua:3478
 	"Pacify": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Debuff", Value: 1}).Source("Skill:Pacify"),
 	},
@@ -1432,65 +1441,65 @@ var SkillBaseMods = map[string][]mod.Mod{
 		mod.NewList("SkillData", mod.SkillData{Key: "ShowAverage", Value: 1}).Source("Skill:PenanceBrandAltY"),
 		mod.NewList("SkillData", mod.SkillData{Key: "Debuff", Value: 1}).Source("Skill:PenanceBrandAltY"),
 	},
-	// src/Data/Skills/other.lua:2707
+	// src/Data/Skills/other.lua:2835
 	"PenanceMark": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Debuff", Value: 1}).Source("Skill:PenanceMark"),
 		mod.NewList("SkillData", mod.SkillData{Key: "MinionLevelIsEnemyLevel", Value: 1}).Source("Skill:PenanceMark"),
 	},
-	// src/Data/Skills/act_str.lua:8260
+	// src/Data/Skills/act_str.lua:8323
 	"Perforate": {
 		mod.NewList("SkillData", mod.SkillData{Key: "DpsMultiplier", Value: 1}).Tag(multiplierLimitVar("PerforateSpikeOverlap", "PerforateMaxSpikes"), mod.Condition("BloodStance")).Source("Skill:Perforate"),
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 11}).Tag(mod.Condition("SandStance")).Source("Skill:Perforate"),
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 8}).Tag(mod.Condition("BloodStance")).Source("Skill:Perforate"),
 	},
-	// src/Data/Skills/act_str.lua:8359
+	// src/Data/Skills/act_str.lua:8422
 	"PerforateAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "DpsMultiplier", Value: 1}).Tag(multiplierLimitVar("PerforateSpikeOverlap", "PerforateofDualityMaxSpikes"), mod.Condition("BloodStance")).Source("Skill:PerforateAltX"),
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 11}).Tag(mod.Condition("SandStance")).Source("Skill:PerforateAltX"),
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 8}).Tag(mod.Condition("BloodStance")).Source("Skill:PerforateAltX"),
 	},
-	// src/Data/Skills/act_str.lua:8454
+	// src/Data/Skills/act_str.lua:8517
 	"PerforateAltY": {
 		mod.NewList("SkillData", mod.SkillData{Key: "DpsMultiplier", Value: 1}).Tag(multiplierLimitVar("PerforateSpikeOverlap", "PerforateofBloodshedMaxSpikes")).Source("Skill:PerforateAltY"),
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 11}).Source("Skill:PerforateAltY"),
 	},
-	// src/Data/Skills/act_dex.lua:11256
+	// src/Data/Skills/act_dex.lua:11259
 	"PestilentStrike": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 27}).Source("Skill:PestilentStrike"),
 	},
-	// src/Data/Skills/act_dex.lua:11413
+	// src/Data/Skills/act_dex.lua:11416
 	"PlagueBearer": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 25}).Source("Skill:PlagueBearer"),
 	},
-	// src/Data/Skills/act_dex.lua:11509
+	// src/Data/Skills/act_dex.lua:11512
 	"PoachersMark": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Debuff", Value: 1}).Source("Skill:PoachersMark"),
 	},
-	// src/Data/Skills/act_dex.lua:17537
+	// src/Data/Skills/act_dex.lua:17540
 	"PoisonousConcoctionAltX": {
 		mod.NewFloat("DPS", mod.TypeMore, 100).Tag(mod.PerStat(1, "ChainMax")).Source("Skill:PoisonousConcoctionAltX"),
 	},
-	// src/Data/Skills/act_dex.lua:11590
+	// src/Data/Skills/act_dex.lua:11593
 	"Precision": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 40}).Source("Skill:Precision"),
 	},
-	// src/Data/Skills/act_str.lua:8618
+	// src/Data/Skills/act_str.lua:8681
 	"Pride": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 40}).Source("Skill:Pride"),
 	},
-	// src/Data/Skills/sup_int.lua:5438
+	// src/Data/Skills/sup_int.lua:5437
 	"PrismaticBurst": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 13}).Source("Skill:PrismaticBurst"),
 	},
-	// src/Data/Skills/act_dex.lua:12075
+	// src/Data/Skills/act_dex.lua:12078
 	"Puncture": {
 		mod.NewList("SkillData", mod.SkillData{Key: "BleedIsSkillEffect", Value: 1}).Source("Skill:Puncture"),
 	},
-	// src/Data/Skills/act_dex.lua:12162
+	// src/Data/Skills/act_dex.lua:12165
 	"PunctureAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "BleedIsSkillEffect", Value: 1}).Source("Skill:PunctureAltX"),
 	},
-	// src/Data/Skills/act_str.lua:8774
+	// src/Data/Skills/act_str.lua:8837
 	"Punishment": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Debuff", Value: 1}).Source("Skill:Punishment"),
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 22}).Source("Skill:Punishment"),
@@ -1514,11 +1523,11 @@ var SkillBaseMods = map[string][]mod.Mod{
 	"PurityOfElements": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 40}).Source("Skill:PurityOfElements"),
 	},
-	// src/Data/Skills/act_str.lua:8860
+	// src/Data/Skills/act_str.lua:8923
 	"PurityOfFire": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 40}).Source("Skill:PurityOfFire"),
 	},
-	// src/Data/Skills/act_dex.lua:12245
+	// src/Data/Skills/act_dex.lua:12248
 	"PurityOfIce": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 40}).Source("Skill:PurityOfIce"),
 	},
@@ -1544,69 +1553,69 @@ var SkillBaseMods = map[string][]mod.Mod{
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusTertiary", Value: 12}).Source("Skill:PyroclastMineAltX"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusTertiaryLabel", String: "Area of projectile explosions:"}).Source("Skill:PyroclastMineAltX"),
 	},
-	// src/Data/Skills/act_str.lua:10963
+	// src/Data/Skills/act_str.lua:11026
 	"QuickGuard": {
 		mod.NewFloat("AvoidBleed", mod.TypeBase, 100).Tag(mod.GlobalEffect("Guard")).Source("Skill:QuickGuard"),
 	},
-	// src/Data/Skills/act_dex.lua:12410
+	// src/Data/Skills/act_dex.lua:12413
 	"RainOfArrows": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 10}).Source("Skill:RainOfArrows"),
 		mod.NewFlag("OneShotProj", true).Source("Skill:RainOfArrows"),
 	},
-	// src/Data/Skills/act_dex.lua:12485
+	// src/Data/Skills/act_dex.lua:12488
 	"RainOfArrowsAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 10}).Source("Skill:RainOfArrowsAltX"),
 		mod.NewFlag("OneShotProj", true).Source("Skill:RainOfArrowsAltX"),
 	},
-	// src/Data/Skills/act_dex.lua:12560
+	// src/Data/Skills/act_dex.lua:12563
 	"RainOfArrowsAltY": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 10}).Source("Skill:RainOfArrowsAltY"),
 		mod.NewFlag("OneShotProj", true).Source("Skill:RainOfArrowsAltY"),
 	},
-	// src/Data/Skills/minion.lua:2090
+	// src/Data/Skills/minion.lua:2089
 	"RainOfArrowsCloneShot": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 10}).Source("Skill:RainOfArrowsCloneShot"),
 		mod.NewFlag("OneShotProj", true).Source("Skill:RainOfArrowsCloneShot"),
 	},
-	// src/Data/Skills/act_str.lua:9250
+	// src/Data/Skills/act_str.lua:9313
 	"RallyingCry": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 60}).Source("Skill:RallyingCry"),
 	},
-	// src/Data/Skills/act_str.lua:11053
+	// src/Data/Skills/act_str.lua:11116
 	"Reap": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 25}).Source("Skill:Reap"),
 		mod.NewList("SkillData", mod.SkillData{Key: "Debuff", Value: 1}).Source("Skill:Reap"),
 	},
-	// src/Data/Skills/act_str.lua:11153
+	// src/Data/Skills/act_str.lua:11216
 	"ReapAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Debuff", Value: 1}).Source("Skill:ReapAltX"),
 	},
-	// src/Data/Skills/minion.lua:2016
+	// src/Data/Skills/minion.lua:2015
 	"ReaperConsumeMinionForBuff": {
 		mod.NewList("MinionModifier", mod.MinionModifier{Mod: mod.NewFloat("Speed", mod.TypeIncrease, 40)}).Tag(mod.SkillName("Summon Reaper").Transfigured(true), mod.GlobalEffect("Buff")).Source("Skill:ReaperConsumeMinionForBuff"),
 		mod.NewList("MinionModifier", mod.MinionModifier{Mod: mod.NewFloat("MovementSpeed", mod.TypeIncrease, 40)}).Tag(mod.SkillName("Summon Reaper").Transfigured(true), mod.GlobalEffect("Buff")).Source("Skill:ReaperConsumeMinionForBuff"),
 		mod.NewList("MinionModifier", mod.MinionModifier{Mod: mod.NewFloat("AreaOfEffect", mod.TypeIncrease, 30)}).Tag(mod.SkillName("Summon Reaper").Transfigured(true), mod.GlobalEffect("Buff")).Source("Skill:ReaperConsumeMinionForBuff"),
 		mod.NewList("SkillData", mod.SkillData{Key: "BuffAllies", Value: 1}).Source("Skill:ReaperConsumeMinionForBuff"),
 	},
-	// src/Data/Skills/act_dex.lua:12729
+	// src/Data/Skills/act_dex.lua:12732
 	"Reave": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 20}).Source("Skill:Reave"),
 		mod.NewFloat("Multiplier:ReaveMaxStages", mod.TypeBase, 8).Source("Skill:Reave"),
 	},
-	// src/Data/Skills/act_dex.lua:12818
+	// src/Data/Skills/act_dex.lua:12821
 	"ReaveAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 20}).Source("Skill:ReaveAltX"),
 		mod.NewFloat("Multiplier:ReaveofRefractionMaxStages", mod.TypeBase, 8).Source("Skill:ReaveAltX"),
 	},
-	// src/Data/Skills/act_str.lua:9342
+	// src/Data/Skills/act_str.lua:9405
 	"RejuvenationTotem": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 40}).Source("Skill:RejuvenationTotem"),
 	},
-	// src/Data/Skills/minion.lua:1022
+	// src/Data/Skills/minion.lua:1021
 	"RelicTriggeredNova": {
 		mod.NewList("SkillData", mod.SkillData{Key: "ShowAverage", Value: 1}).Source("Skill:RelicTriggeredNova"),
 	},
-	// src/Data/Skills/minion.lua:1805
+	// src/Data/Skills/minion.lua:1804
 	"ReplicaSiegebreakerBurningGround": {
 		mod.NewList("SkillData", mod.SkillData{Key: "FireDot", Value: 1}).Tag(mod.PercentStatVar("Life", "SiegebreakerBurningGroundPercent")).Source("Skill:ReplicaSiegebreakerBurningGround"),
 		mod.NewList("SkillData", mod.SkillData{Key: "DotIsArea", Value: 1}).Source("Skill:ReplicaSiegebreakerBurningGround"),
@@ -1625,11 +1634,11 @@ var SkillBaseMods = map[string][]mod.Mod{
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 14}).Source("Skill:RollingMagma"),
 		mod.NewFlag("CannotSplit", true).Source("Skill:RollingMagma"),
 	},
-	// src/Data/Skills/minion.lua:55
+	// src/Data/Skills/minion.lua:54
 	"SandstormChaosElementalSummoned": {
 		mod.NewList("SkillData", mod.SkillData{Key: "DotIsArea", Value: 1}).Source("Skill:SandstormChaosElementalSummoned"),
 	},
-	// src/Data/Skills/minion.lua:85
+	// src/Data/Skills/minion.lua:84
 	"SandstormChaosElementalSummonedEmpowered": {
 		mod.NewList("SkillData", mod.SkillData{Key: "DotIsArea", Value: 1}).Source("Skill:SandstormChaosElementalSummonedEmpowered"),
 	},
@@ -1643,45 +1652,45 @@ var SkillBaseMods = map[string][]mod.Mod{
 		mod.NewFlag("Condition:ScorchingRayofImmolationMaxStages", true).Tag(mod.MultiplierThreshold("ScorchingRayofImmolationStageAfterFirst").Threshold(7)).Source("Skill:ScorchingRayAltX"),
 		mod.NewFlag("DotCanStackAsTotems", true).Source("Skill:ScorchingRayAltX"),
 	},
-	// src/Data/Skills/act_str.lua:9697
+	// src/Data/Skills/act_str.lua:9760
 	"SeismicCry": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 60}).Source("Skill:SeismicCry"),
 	},
-	// src/Data/Skills/act_dex.lua:13536
+	// src/Data/Skills/act_dex.lua:13539
 	"SeismicTrap": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 18}).Source("Skill:SeismicTrap"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusLabel", String: "Large Burst:"}).Source("Skill:SeismicTrap"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusSecondary", Value: 9}).Source("Skill:SeismicTrap"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusSecondaryLabel", String: "Small Burst:"}).Source("Skill:SeismicTrap"),
 	},
-	// src/Data/Skills/act_dex.lua:13694
+	// src/Data/Skills/act_dex.lua:13697
 	"SeismicTrapAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 18}).Source("Skill:SeismicTrapAltX"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusLabel", String: "Large Burst:"}).Source("Skill:SeismicTrapAltX"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusSecondary", Value: 9}).Source("Skill:SeismicTrapAltX"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusSecondaryLabel", String: "Small Burst:"}).Source("Skill:SeismicTrapAltX"),
 	},
-	// src/Data/Skills/other.lua:3598
+	// src/Data/Skills/other.lua:3726
 	"ShaperApparitionBeam": {
 		mod.NewList("SkillData", mod.SkillData{Key: "ShowAverage", Value: 1}).Source("Skill:ShaperApparitionBeam"),
 	},
-	// src/Data/Skills/other.lua:3633
+	// src/Data/Skills/other.lua:3761
 	"ShaperApparitionProjectiles": {
 		mod.NewList("SkillData", mod.SkillData{Key: "ShowAverage", Value: 1}).Source("Skill:ShaperApparitionProjectiles"),
 	},
-	// src/Data/Skills/other.lua:3564
+	// src/Data/Skills/other.lua:3692
 	"ShaperApparitionTeleportSlam": {
 		mod.NewList("SkillData", mod.SkillData{Key: "ShowAverage", Value: 1}).Source("Skill:ShaperApparitionTeleportSlam"),
 	},
-	// src/Data/Skills/act_dex.lua:13200
+	// src/Data/Skills/act_dex.lua:13203
 	"ShatteringSteel": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 28}).Source("Skill:ShatteringSteel"),
 	},
-	// src/Data/Skills/act_dex.lua:13303
+	// src/Data/Skills/act_dex.lua:13306
 	"ShatteringSteelAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 28}).Source("Skill:ShatteringSteelAltX"),
 	},
-	// src/Data/Skills/act_str.lua:9783
+	// src/Data/Skills/act_str.lua:9846
 	"ShieldCharge": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 28}).Source("Skill:ShieldCharge"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusLabel", String: "End Cone area:"}).Source("Skill:ShieldCharge"),
@@ -1690,17 +1699,17 @@ var SkillBaseMods = map[string][]mod.Mod{
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusTertiary", Value: 8}).Source("Skill:ShieldCharge"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusTertiaryLabel", String: "Charging area:"}).Source("Skill:ShieldCharge"),
 	},
-	// src/Data/Skills/act_str.lua:9885
+	// src/Data/Skills/act_str.lua:9948
 	"ShieldCrush": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 29}).Source("Skill:ShieldCrush"),
 		mod.NewList("SkillData", mod.SkillData{Key: "DpsMultiplier", Value: 2}).Tag(mod.SkillPart(2)).Source("Skill:ShieldCrush"),
 	},
-	// src/Data/Skills/act_str.lua:9979
+	// src/Data/Skills/act_str.lua:10042
 	"ShieldCrushAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 29}).Source("Skill:ShieldCrushAltX"),
 		mod.NewList("SkillData", mod.SkillData{Key: "DpsMultiplier", Value: 2}).Tag(mod.SkillPart(2)).Source("Skill:ShieldCrushAltX"),
 	},
-	// src/Data/Skills/other.lua:3686
+	// src/Data/Skills/other.lua:3814
 	"ShieldShatter": {
 		mod.NewList("SkillData", mod.SkillData{Key: "ShowAverage", Value: 1}).Source("Skill:ShieldShatter"),
 	},
@@ -1714,15 +1723,15 @@ var SkillBaseMods = map[string][]mod.Mod{
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 26}).Source("Skill:ShockNovaAltX"),
 		mod.NewList("SkillData", mod.SkillData{Key: "DpsMultiplier", Value: 2}).Tag(mod.SkillPart(1)).Source("Skill:ShockNovaAltX"),
 	},
-	// src/Data/Skills/act_dex.lua:13972
+	// src/Data/Skills/act_dex.lua:13975
 	"SiegeBallista": {
 		mod.NewFlag("ProjectileRain", true).Source("Skill:SiegeBallista"),
 	},
-	// src/Data/Skills/act_dex.lua:14052
+	// src/Data/Skills/act_dex.lua:14055
 	"SiegeBallistaAltX": {
 		mod.NewFlag("ProjectileRain", true).Source("Skill:SiegeBallistaAltX"),
 	},
-	// src/Data/Skills/minion.lua:1783
+	// src/Data/Skills/minion.lua:1782
 	"SiegebreakerCausticGround": {
 		mod.NewList("SkillData", mod.SkillData{Key: "ChaosDot", Value: 1}).Tag(mod.PercentStatVar("Life", "SiegebreakerCausticGroundPercent")).Source("Skill:SiegebreakerCausticGround"),
 		mod.NewList("SkillData", mod.SkillData{Key: "DotIsArea", Value: 1}).Source("Skill:SiegebreakerCausticGround"),
@@ -1741,24 +1750,24 @@ var SkillBaseMods = map[string][]mod.Mod{
 	"SiphoningTrapAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Debuff", Value: 1}).Source("Skill:SiphoningTrapAltX"),
 	},
-	// src/Data/Skills/spectre.lua:3558
+	// src/Data/Skills/spectre.lua:3557
 	"SkeletonMassBowProjectile": {
 		mod.NewFloat("BleedChance", mod.TypeBase, 100).Source("Skill:SkeletonMassBowProjectile"),
 	},
-	// src/Data/Skills/spectre.lua:3763
+	// src/Data/Skills/spectre.lua:3762
 	"SlavedriverFlameWhip": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 30}).Source("Skill:SlavedriverFlameWhip"),
 	},
-	// src/Data/Skills/act_str.lua:10345
+	// src/Data/Skills/act_str.lua:10408
 	"Smite": {
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusLabel", String: "Lightning Strike area:"}).Source("Skill:Smite"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusSecondaryLabel", String: "Aura area:"}).Source("Skill:Smite"),
 	},
-	// src/Data/Skills/act_dex.lua:14224
+	// src/Data/Skills/act_dex.lua:14227
 	"SmokeMine": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 18}).Source("Skill:SmokeMine"),
 	},
-	// src/Data/Skills/act_dex.lua:11671
+	// src/Data/Skills/act_dex.lua:11674
 	"SnipersMark": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Debuff", Value: 1}).Source("Skill:SnipersMark"),
 	},
@@ -1776,29 +1785,29 @@ var SkillBaseMods = map[string][]mod.Mod{
 		mod.NewList("SkillData", mod.SkillData{Key: "Debuff", Value: 1}).Source("Skill:SoulrendAltY"),
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 10}).Source("Skill:SoulrendAltY"),
 	},
-	// src/Data/Skills/act_dex.lua:15227
+	// src/Data/Skills/act_dex.lua:15230
 	"SpectralHelix": {
 		mod.NewFlag("NoAdditionalProjectiles", true).Source("Skill:SpectralHelix"),
 		mod.NewFlag("AdditionalProjectilesAddBouncesInstead", true).Source("Skill:SpectralHelix"),
 	},
-	// src/Data/Skills/act_dex.lua:15319
+	// src/Data/Skills/act_dex.lua:15322
 	"SpectralHelixAltY": {
 		mod.NewFlag("NoAdditionalProjectiles", true).Source("Skill:SpectralHelixAltY"),
 		mod.NewFlag("AdditionalProjectilesAddBouncesInstead", true).Source("Skill:SpectralHelixAltY"),
 	},
-	// src/Data/Skills/act_dex.lua:14602
+	// src/Data/Skills/act_dex.lua:14605
 	"SpectralThrow": {
 		mod.NewFloat("PierceChance", mod.TypeBase, 100).Source("Skill:SpectralThrow"),
 	},
-	// src/Data/Skills/act_dex.lua:14682
+	// src/Data/Skills/act_dex.lua:14685
 	"SpectralThrowAltX": {
 		mod.NewFloat("PierceChance", mod.TypeBase, 100).Source("Skill:SpectralThrowAltX"),
 	},
-	// src/Data/Skills/act_dex.lua:14764
+	// src/Data/Skills/act_dex.lua:14767
 	"SpectralThrowAltY": {
 		mod.NewFloat("PierceChance", mod.TypeBase, 100).Source("Skill:SpectralThrowAltY"),
 	},
-	// src/Data/Skills/other.lua:3812
+	// src/Data/Skills/other.lua:3940
 	"SpiritBurst": {
 		mod.NewList("SkillData", mod.SkillData{Key: "ShowAverage", Value: 1}).Source("Skill:SpiritBurst"),
 	},
@@ -1807,16 +1816,16 @@ var SkillBaseMods = map[string][]mod.Mod{
 		mod.NewList("SkillData", mod.SkillData{Key: "BuffMinions", Value: 1}).Source("Skill:SpiritOffering"),
 		mod.NewList("SkillData", mod.SkillData{Key: "BuffNotPlayer", Value: 1}).Source("Skill:SpiritOffering"),
 	},
-	// src/Data/Skills/other.lua:3853
+	// src/Data/Skills/other.lua:3981
 	"StalkingPustule": {
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusLabel", String: "Orb explosion:"}).Source("Skill:StalkingPustule"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusSecondaryLabel", String: "Corpse explosion:"}).Source("Skill:StalkingPustule"),
 	},
-	// src/Data/Skills/act_str.lua:10695
+	// src/Data/Skills/act_str.lua:10758
 	"StaticStrike": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 20}).Source("Skill:StaticStrike"),
 	},
-	// src/Data/Skills/act_str.lua:10790
+	// src/Data/Skills/act_str.lua:10853
 	"StaticStrikeAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 20}).Source("Skill:StaticStrikeAltX"),
 	},
@@ -1848,7 +1857,7 @@ var SkillBaseMods = map[string][]mod.Mod{
 	"StormCallAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 20}).Source("Skill:StormCallAltX"),
 	},
-	// src/Data/Skills/act_dex.lua:11770
+	// src/Data/Skills/act_dex.lua:11773
 	"StormRain": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 10}).Tag(mod.SkillPart(1)).Source("Skill:StormRain"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusLabel", String: "Arrow Explosion:"}).Tag(mod.SkillPart(1)).Source("Skill:StormRain"),
@@ -1873,17 +1882,17 @@ var SkillBaseMods = map[string][]mod.Mod{
 	"StormblastMine": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 20}).Source("Skill:StormblastMine"),
 	},
-	// src/Data/Skills/other.lua:4095
+	// src/Data/Skills/other.lua:4223
 	"SummonBeastialRhoa": {
 		mod.NewList("SkillData", mod.SkillData{Key: "AllowTotemBuff", Value: 1}).Source("Skill:SummonBeastialRhoa"),
 		mod.NewFlag("Condition:HaveBestialMinion", true).Tag(mod.GlobalEffect("Buff")).Source("Skill:SummonBeastialRhoa"),
 	},
-	// src/Data/Skills/other.lua:4134
+	// src/Data/Skills/other.lua:4262
 	"SummonBeastialSnake": {
 		mod.NewList("SkillData", mod.SkillData{Key: "AllowTotemBuff", Value: 1}).Source("Skill:SummonBeastialSnake"),
 		mod.NewFlag("Condition:HaveBestialMinion", true).Tag(mod.GlobalEffect("Buff")).Source("Skill:SummonBeastialSnake"),
 	},
-	// src/Data/Skills/other.lua:4174
+	// src/Data/Skills/other.lua:4302
 	"SummonBeastialUrsa": {
 		mod.NewList("SkillData", mod.SkillData{Key: "AllowTotemBuff", Value: 1}).Source("Skill:SummonBeastialUrsa"),
 		mod.NewFlag("Condition:HaveBestialMinion", true).Tag(mod.GlobalEffect("Buff")).Source("Skill:SummonBeastialUrsa"),
@@ -1919,47 +1928,47 @@ var SkillBaseMods = map[string][]mod.Mod{
 		mod.NewFlag("Condition:HaveChaosGolem", true).Tag(mod.GlobalEffect("Buff")).Source("Skill:SummonChaosGolemAltY"),
 		mod.NewList("MinionModifier", mod.MinionModifier{Mod: mod.NewFlag("Condition:CanWither", true)}).Source("Skill:SummonChaosGolemAltY"),
 	},
-	// src/Data/Skills/act_str.lua:11346
+	// src/Data/Skills/act_str.lua:11409
 	"SummonFlameGolem": {
 		mod.NewList("SkillData", mod.SkillData{Key: "AllowTotemBuff", Value: 1}).Source("Skill:SummonFlameGolem"),
 		mod.NewFlag("Condition:HaveFireGolem", true).Tag(mod.GlobalEffect("Buff")).Source("Skill:SummonFlameGolem"),
 	},
-	// src/Data/Skills/act_str.lua:11425
+	// src/Data/Skills/act_str.lua:11488
 	"SummonFlameGolemAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "AllowTotemBuff", Value: 1}).Source("Skill:SummonFlameGolemAltX"),
 		mod.NewFlag("Condition:HaveFireGolem", true).Tag(mod.GlobalEffect("Buff")).Source("Skill:SummonFlameGolemAltX"),
 	},
-	// src/Data/Skills/act_str.lua:11503
+	// src/Data/Skills/act_str.lua:11566
 	"SummonFlameGolemAltY": {
 		mod.NewList("SkillData", mod.SkillData{Key: "AllowTotemBuff", Value: 1}).Source("Skill:SummonFlameGolemAltY"),
 		mod.NewFlag("Condition:HaveFireGolem", true).Tag(mod.GlobalEffect("Buff")).Source("Skill:SummonFlameGolemAltY"),
 	},
-	// src/Data/Skills/other.lua:4629
+	// src/Data/Skills/other.lua:4757
 	"SummonHarbingerOfTime": {
 		mod.NewFloat("ActionSpeed", mod.TypeIncrease, 10).Tag(mod.GlobalEffect("Buff").Name("Harbinger of Time").ModCond("HarbingerOfTime")).Source("Skill:SummonHarbingerOfTime"),
 		mod.NewList("SkillData", mod.SkillData{Key: "BuffAllies", Value: 1}).Source("Skill:SummonHarbingerOfTime"),
 	},
-	// src/Data/Skills/other.lua:4480
+	// src/Data/Skills/other.lua:4608
 	"SummonHarbingerOfTimeAscendancy": {
 		mod.NewFloat("ActionSpeed", mod.TypeIncrease, 10).Tag(mod.GlobalEffect("Buff").Name("Harbinger of Time").ModCond("HarbingerOfTime")).Source("Skill:SummonHarbingerOfTimeAscendancy"),
 		mod.NewList("SkillData", mod.SkillData{Key: "BuffAllies", Value: 1}).Source("Skill:SummonHarbingerOfTimeAscendancy"),
 	},
-	// src/Data/Skills/other.lua:4407
+	// src/Data/Skills/other.lua:4535
 	"SummonHarbingerOfTimeUber": {
 		mod.NewFloat("ActionSpeed", mod.TypeIncrease, 10).Tag(mod.GlobalEffect("Buff").Name("Greater Harbinger of Time").ModCond("GreaterHarbingerOfTime")).Source("Skill:SummonHarbingerOfTimeUber"),
 		mod.NewList("SkillData", mod.SkillData{Key: "BuffAllies", Value: 1}).Source("Skill:SummonHarbingerOfTimeUber"),
 	},
-	// src/Data/Skills/act_dex.lua:15716
+	// src/Data/Skills/act_dex.lua:15719
 	"SummonIceGolem": {
 		mod.NewList("SkillData", mod.SkillData{Key: "AllowTotemBuff", Value: 1}).Source("Skill:SummonIceGolem"),
 		mod.NewFlag("Condition:HaveColdGolem", true).Tag(mod.GlobalEffect("Buff")).Source("Skill:SummonIceGolem"),
 	},
-	// src/Data/Skills/act_dex.lua:15795
+	// src/Data/Skills/act_dex.lua:15798
 	"SummonIceGolemAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "AllowTotemBuff", Value: 1}).Source("Skill:SummonIceGolemAltX"),
 		mod.NewFlag("Condition:HaveColdGolem", true).Tag(mod.GlobalEffect("Buff")).Source("Skill:SummonIceGolemAltX"),
 	},
-	// src/Data/Skills/act_dex.lua:15873
+	// src/Data/Skills/act_dex.lua:15876
 	"SummonIceGolemAltY": {
 		mod.NewList("SkillData", mod.SkillData{Key: "AllowTotemBuff", Value: 1}).Source("Skill:SummonIceGolemAltY"),
 		mod.NewFlag("Condition:HaveColdGolem", true).Tag(mod.GlobalEffect("Buff")).Source("Skill:SummonIceGolemAltY"),
@@ -1978,76 +1987,76 @@ var SkillBaseMods = map[string][]mod.Mod{
 	"SummonSkitterbots": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 30}).Source("Skill:SummonSkitterbots"),
 	},
-	// src/Data/Skills/act_str.lua:11593
+	// src/Data/Skills/act_str.lua:11656
 	"SummonStoneGolem": {
 		mod.NewList("SkillData", mod.SkillData{Key: "AllowTotemBuff", Value: 1}).Source("Skill:SummonStoneGolem"),
 		mod.NewFlag("Condition:HavePhysicalGolem", true).Tag(mod.GlobalEffect("Buff")).Source("Skill:SummonStoneGolem"),
 	},
-	// src/Data/Skills/act_str.lua:11672
+	// src/Data/Skills/act_str.lua:11735
 	"SummonStoneGolemAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "AllowTotemBuff", Value: 1}).Source("Skill:SummonStoneGolemAltX"),
 		mod.NewFlag("Condition:HavePhysicalGolem", true).Tag(mod.GlobalEffect("Buff")).Source("Skill:SummonStoneGolemAltX"),
 	},
-	// src/Data/Skills/act_str.lua:11750
+	// src/Data/Skills/act_str.lua:11813
 	"SummonStoneGolemAltY": {
 		mod.NewList("SkillData", mod.SkillData{Key: "AllowTotemBuff", Value: 1}).Source("Skill:SummonStoneGolemAltY"),
 		mod.NewFlag("Condition:HavePhysicalGolem", true).Tag(mod.GlobalEffect("Buff")).Source("Skill:SummonStoneGolemAltY"),
 	},
-	// src/Data/Skills/act_str.lua:11856
+	// src/Data/Skills/act_str.lua:11919
 	"Sunder": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 12}).Source("Skill:Sunder"),
 		mod.NewFloat("Multiplier:SunderWaveArea", mod.TypeBase, 4).Tag(mod.SkillPart(2)).Source("Skill:Sunder"),
 	},
-	// src/Data/Skills/act_str.lua:11961
+	// src/Data/Skills/act_str.lua:12024
 	"SunderAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 12}).Source("Skill:SunderAltX"),
 	},
-	// src/Data/Skills/act_str.lua:12073
+	// src/Data/Skills/act_str.lua:12136
 	"SunderAltY": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 12}).Source("Skill:SunderAltY"),
 	},
-	// src/Data/Skills/sup_int.lua:6870
+	// src/Data/Skills/sup_int.lua:6869
 	"SupportAwakenedUnleash": {
 		mod.NewFlag("HasSeals", true).Source("Skill:SupportAwakenedUnleash"),
 	},
-	// src/Data/Skills/sup_str.lua:582
+	// src/Data/Skills/sup_str.lua:581
 	"SupportBloodsoakedBanner": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Debuff", Value: 1}).Source("Skill:SupportBloodsoakedBanner"),
 		mod.NewFlag("dotIsCorruptingBlood", true).Source("Skill:SupportBloodsoakedBanner"),
 		mod.NewFloat("Damage", mod.TypeMore, 100).KeywordFlag(mod.KeywordFlagPhysicalDot).Tag(mod.Multiplier("BloodsoakedBannerStageAfterFirst")).Source("Skill:SupportBloodsoakedBanner"),
 	},
-	// src/Data/Skills/sup_int.lua:560
+	// src/Data/Skills/sup_int.lua:559
 	"SupportBonechill": {
 		mod.NewList("SkillData", mod.SkillData{Key: "SupportBonechill", Value: 1}).Source("Skill:SupportBonechill"),
 	},
-	// src/Data/Skills/act_int.lua:645
+	// src/Data/Skills/act_int.lua:644
 	"SupportBrandSupport": {
 		mod.NewList("SkillData", mod.SkillData{Key: "TriggeredByBrand", Value: 1}).Source("Skill:SupportBrandSupport"),
 	},
-	// src/Data/Skills/sup_dex.lua:770
+	// src/Data/Skills/sup_dex.lua:769
 	"SupportCastOnDeath": {
 		mod.NewList("SkillData", mod.SkillData{Key: "TriggeredOnDeath", Value: 1}).Source("Skill:SupportCastOnDeath"),
 	},
-	// src/Data/Skills/sup_dex.lua:1187
+	// src/Data/Skills/sup_dex.lua:1186
 	"SupportCloseCombat": {
 		mod.NewFlag("Condition:SupportedByCloseCombat", true).Source("Skill:SupportCloseCombat"),
 	},
-	// src/Data/Skills/sup_str.lua:1459
+	// src/Data/Skills/sup_str.lua:1458
 	"SupportCorruptingCry": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Debuff", Value: 1}).Source("Skill:SupportCorruptingCry"),
 		mod.NewFlag("dotIsCorruptingBlood", true).Source("Skill:SupportCorruptingCry"),
 		mod.NewFloat("Multiplier:CorruptingCryMaxStages", mod.TypeBase, 10).Source("Skill:SupportCorruptingCry"),
 		mod.NewFloat("Damage", mod.TypeMore, 100).KeywordFlag(mod.KeywordFlagPhysicalDot).Tag(mod.Multiplier("CorruptingCryStageAfterFirst")).Source("Skill:SupportCorruptingCry"),
 	},
-	// src/Data/Skills/sup_str.lua:1539
+	// src/Data/Skills/sup_str.lua:1538
 	"SupportCruelty": {
 		mod.NewFlag("Cruelty", true).Source("Skill:SupportCruelty"),
 	},
-	// src/Data/Skills/other.lua:4225
+	// src/Data/Skills/other.lua:4353
 	"SupportCursePillarTriggerCurses": {
 		mod.NewList("SkillData", mod.SkillData{Key: "ManaReservationPercent", Value: 0}).Source("Skill:SupportCursePillarTriggerCurses"),
 	},
-	// src/Data/Skills/sup_str.lua:1783
+	// src/Data/Skills/sup_str.lua:1784
 	"SupportDivineSentinel": {
 		mod.NewFloat("PhysicalDamageGainAsFire", mod.TypeBase, 15).Tag(mod.GlobalEffect("Aura").Name("TemplarAuraPhysAsFire").Unscalable(true), mod.Condition("DivineSentinelPhysAsFire")).Source("Skill:SupportDivineSentinel"),
 		mod.NewFloat("PhysicalDamageGainAsLightning", mod.TypeBase, 15).Tag(mod.GlobalEffect("Aura").Name("TemplarAuraPhysAsLightning").Unscalable(true), mod.Condition("DivineSentinelPhysAsLightning")).Source("Skill:SupportDivineSentinel"),
@@ -2056,33 +2065,33 @@ var SkillBaseMods = map[string][]mod.Mod{
 		mod.NewFloat("ChaosResist", mod.TypeBase, 23).Tag(mod.GlobalEffect("Aura").Name("TemplarAuraChaosResist").Unscalable(true), mod.Condition("DivineSentinelChaosResistance")).Source("Skill:SupportDivineSentinel"),
 		mod.NewFloat("CurseEffectOnSelf", mod.TypeIncrease, -50).Tag(mod.GlobalEffect("Aura").Name("TemplarAuraSelfCurseEffect").Unscalable(true), mod.Condition("DivineSentinelSelfCurseEffect")).Source("Skill:SupportDivineSentinel"),
 	},
-	// src/Data/Skills/sup_str.lua:2075
+	// src/Data/Skills/sup_str.lua:2076
 	"SupportEternalBlessing": {
 		mod.NewList("SkillData", mod.SkillData{Key: "ManaReservationFlat", Value: 0}).Source("Skill:SupportEternalBlessing"),
 		mod.NewList("SkillData", mod.SkillData{Key: "LifeReservationFlat", Value: 0}).Source("Skill:SupportEternalBlessing"),
 		mod.NewList("SkillData", mod.SkillData{Key: "ManaReservationPercent", Value: 0}).Source("Skill:SupportEternalBlessing"),
 		mod.NewList("SkillData", mod.SkillData{Key: "LifeReservationPercent", Value: 0}).Source("Skill:SupportEternalBlessing"),
 	},
-	// src/Data/Skills/sup_int.lua:2724
+	// src/Data/Skills/sup_int.lua:2723
 	"SupportFreshMeat": {
 		mod.NewList("MinionModifier", mod.MinionModifier{Mod: mod.NewFlag("Condition:Adrenaline", true)}).Tag(mod.Condition("FreshMeatActive")).Source("Skill:SupportFreshMeat"),
 	},
-	// src/Data/Skills/sup_int.lua:6931
+	// src/Data/Skills/sup_int.lua:6930
 	"SupportGreaterUnleash": {
 		mod.NewFlag("HasSeals", true).Source("Skill:SupportGreaterUnleash"),
 	},
-	// src/Data/Skills/sup_str.lua:2822
+	// src/Data/Skills/sup_str.lua:2823
 	"SupportGuardiansBlessing": {
 		mod.NewList("SkillData", mod.SkillData{Key: "ManaReservationFlat", Value: 0}).Tag(mod.SkillType("Aura")).Source("Skill:SupportGuardiansBlessing"),
 		mod.NewList("SkillData", mod.SkillData{Key: "LifeReservationFlat", Value: 0}).Tag(mod.SkillType("Aura")).Source("Skill:SupportGuardiansBlessing"),
 		mod.NewList("SkillData", mod.SkillData{Key: "ManaReservationPercent", Value: 0}).Tag(mod.SkillType("Aura")).Source("Skill:SupportGuardiansBlessing"),
 		mod.NewList("SkillData", mod.SkillData{Key: "LifeReservationPercent", Value: 0}).Tag(mod.SkillType("Aura")).Source("Skill:SupportGuardiansBlessing"),
 	},
-	// src/Data/Skills/sup_dex.lua:3136
+	// src/Data/Skills/sup_dex.lua:3135
 	"SupportMomentum": {
 		mod.NewFlag("SupportedByMomentum", true).Source("Skill:SupportMomentum"),
 	},
-	// src/Data/Skills/sup_dex.lua:3349
+	// src/Data/Skills/sup_dex.lua:3348
 	"SupportNightblade": {
 		mod.NewFlag("SupportedByNightblade", true).Source("Skill:SupportNightblade"),
 		mod.NewFlag("Condition:CanBeElusive", true).Tag(mod.GlobalEffect("Buff")).Source("Skill:SupportNightblade"),
@@ -2092,66 +2101,66 @@ var SkillBaseMods = map[string][]mod.Mod{
 		mod.NewFlag("Condition:SupportedBySpellslinger", true).Source("Skill:SupportSpellslinger"),
 		mod.NewList("SkillData", mod.SkillData{Key: "ShowAverage", Value: 1}).Source("Skill:SupportSpellslinger"),
 	},
-	// src/Data/Skills/sup_str.lua:5256
+	// src/Data/Skills/sup_str.lua:5257
 	"SupportTrauma": {
 		mod.NewFlag("HasTrauma", true).Source("Skill:SupportTrauma"),
 	},
-	// src/Data/Skills/sup_int.lua:6788
+	// src/Data/Skills/sup_int.lua:6787
 	"SupportUnleash": {
 		mod.NewFlag("HasSeals", true).Source("Skill:SupportUnleash"),
 	},
-	// src/Data/Skills/act_str.lua:6332
+	// src/Data/Skills/act_str.lua:6395
 	"Sweep": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 24}).Source("Skill:Sweep"),
 		mod.NewFlag("CannotBeEvaded", true).Tag(mod.SkillPart(2)).Source("Skill:Sweep"),
 	},
-	// src/Data/Skills/act_str.lua:6426
+	// src/Data/Skills/act_str.lua:6489
 	"SweepAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 24}).Source("Skill:SweepAltX"),
 		mod.NewFlag("CannotBeEvaded", true).Tag(mod.SkillPart(2)).Source("Skill:SweepAltX"),
 	},
-	// src/Data/Skills/act_str.lua:10879
+	// src/Data/Skills/act_str.lua:10942
 	"Swordstorm": {
 		mod.NewList("SkillData", mod.SkillData{Key: "DoubleHitsWhenDualWielding", Value: 1}).Source("Skill:Swordstorm"),
 	},
-	// src/Data/Skills/spectre.lua:8959
+	// src/Data/Skills/spectre.lua:8958
 	"TalismanT1TemporalChains": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Debuff", Value: 1}).Source("Skill:TalismanT1TemporalChains"),
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 22}).Source("Skill:TalismanT1TemporalChains"),
 		mod.NewFloat("CooldownRecovery", mod.TypeOverride, 15).Source("Skill:TalismanT1TemporalChains"),
 	},
-	// src/Data/Skills/spectre.lua:8916
+	// src/Data/Skills/spectre.lua:8915
 	"TalismanT1Vulnerability": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Debuff", Value: 1}).Source("Skill:TalismanT1Vulnerability"),
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 22}).Source("Skill:TalismanT1Vulnerability"),
 		mod.NewFloat("CooldownRecovery", mod.TypeOverride, 15).Source("Skill:TalismanT1Vulnerability"),
 	},
-	// src/Data/Skills/spectre.lua:8873
+	// src/Data/Skills/spectre.lua:8872
 	"TalismanT2EnfeebleAura": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Debuff", Value: 1}).Source("Skill:TalismanT2EnfeebleAura"),
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 22}).Source("Skill:TalismanT2EnfeebleAura"),
 		mod.NewFloat("CooldownRecovery", mod.TypeOverride, 15).Source("Skill:TalismanT2EnfeebleAura"),
 	},
-	// src/Data/Skills/act_str.lua:12165
+	// src/Data/Skills/act_str.lua:12228
 	"TectonicSlam": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 15}).Source("Skill:TectonicSlam"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusLabel", String: "Fissure Length:"}).Source("Skill:TectonicSlam"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusSecondary", Value: 7}).Source("Skill:TectonicSlam"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusSecondaryLabel", String: "Fissure Width:"}).Source("Skill:TectonicSlam"),
 	},
-	// src/Data/Skills/act_str.lua:12264
+	// src/Data/Skills/act_str.lua:12327
 	"TectonicSlamAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 15}).Source("Skill:TectonicSlamAltX"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusLabel", String: "Fissure Length:"}).Source("Skill:TectonicSlamAltX"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusSecondary", Value: 7}).Source("Skill:TectonicSlamAltX"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusSecondaryLabel", String: "Fissure Width:"}).Source("Skill:TectonicSlamAltX"),
 	},
-	// src/Data/Skills/act_dex.lua:15964
+	// src/Data/Skills/act_dex.lua:15967
 	"TemporalChains": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Debuff", Value: 1}).Source("Skill:TemporalChains"),
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 22}).Source("Skill:TemporalChains"),
 	},
-	// src/Data/Skills/act_dex.lua:14941
+	// src/Data/Skills/act_dex.lua:14944
 	"ToxicRain": {
 		mod.NewList("SkillData", mod.SkillData{Key: "DotIsArea", Value: 1}).Source("Skill:ToxicRain"),
 		mod.NewFlag("DotCanStack", true).Source("Skill:ToxicRain"),
@@ -2159,13 +2168,13 @@ var SkillBaseMods = map[string][]mod.Mod{
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 18}).Source("Skill:ToxicRain"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusLabel", String: "Pod Area:"}).Source("Skill:ToxicRain"),
 	},
-	// src/Data/Skills/act_dex.lua:15033
+	// src/Data/Skills/act_dex.lua:15036
 	"ToxicRainAltX": {
 		mod.NewFlag("OneShotProj", true).Source("Skill:ToxicRainAltX"),
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 18}).Source("Skill:ToxicRainAltX"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusLabel", String: "Pod Area:"}).Source("Skill:ToxicRainAltX"),
 	},
-	// src/Data/Skills/act_dex.lua:15127
+	// src/Data/Skills/act_dex.lua:15130
 	"ToxicRainAltY": {
 		mod.NewList("SkillData", mod.SkillData{Key: "DotIsArea", Value: 1}).Source("Skill:ToxicRainAltY"),
 		mod.NewFlag("DotCanStack", true).Source("Skill:ToxicRainAltY"),
@@ -2173,41 +2182,41 @@ var SkillBaseMods = map[string][]mod.Mod{
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 18}).Source("Skill:ToxicRainAltY"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusLabel", String: "Pod Area:"}).Source("Skill:ToxicRainAltY"),
 	},
-	// src/Data/Skills/other.lua:5731
+	// src/Data/Skills/other.lua:5859
 	"TriggerSummonedAncestorKiloava": {
 		mod.NewFloat("LifeOnBlock", mod.TypeBase, 1).Tag(mod.PercentStatVar("Life", "KiloavaRecoverOnBlock").Floor(), mod.GlobalEffect("Buff").Name("Spirit of Kiloava")).Source("Skill:TriggerSummonedAncestorKiloava"),
 		mod.NewFloat("EnergyShieldOnBlock", mod.TypeBase, 1).Tag(mod.PercentStatVar("EnergyShield", "KiloavaRecoverOnBlock").Floor(), mod.GlobalEffect("Buff").Name("Spirit of Kiloava")).Source("Skill:TriggerSummonedAncestorKiloava"),
 		mod.NewFloat("ManaOnBlock", mod.TypeBase, 1).Tag(mod.PercentStatVar("Mana", "KiloavaRecoverOnBlock").Floor(), mod.GlobalEffect("Buff").Name("Spirit of Kiloava")).Source("Skill:TriggerSummonedAncestorKiloava"),
 	},
-	// src/Data/Skills/other.lua:2662
+	// src/Data/Skills/other.lua:2790
 	"TriggeredMoltenStrike": {
 		mod.NewFlag("CannotSplit", true).Source("Skill:TriggeredMoltenStrike"),
 	},
-	// src/Data/Skills/other.lua:3720
+	// src/Data/Skills/other.lua:3848
 	"TriggeredShockedGround": {
 		mod.NewFloat("ShockedGroundEffect", mod.TypeBase, 15).Source("Skill:TriggeredShockedGround"),
 	},
-	// src/Data/Skills/other.lua:1051
+	// src/Data/Skills/other.lua:1179
 	"TriggeredSummonLesserShrine": {
 		mod.NewFlag("Condition:CanHaveLesserShrines", true).Tag(mod.GlobalEffect("Buff").Name("Shrines")).Source("Skill:TriggeredSummonLesserShrine"),
 	},
-	// src/Data/Skills/sup_int.lua:4392
+	// src/Data/Skills/sup_int.lua:4391
 	"TriggeredSupportGreaterKineticInstability": {
 		mod.NewList("SkillData", mod.SkillData{Key: "ShowAverage", Value: 1}).Source("Skill:TriggeredSupportGreaterKineticInstability"),
 	},
-	// src/Data/Skills/sup_int.lua:4277
+	// src/Data/Skills/sup_int.lua:4276
 	"TriggeredSupportKineticInstability": {
 		mod.NewList("SkillData", mod.SkillData{Key: "ShowAverage", Value: 1}).Source("Skill:TriggeredSupportKineticInstability"),
 	},
-	// src/Data/Skills/sup_dex.lua:4933
+	// src/Data/Skills/sup_dex.lua:4932
 	"TriggeredSupportWindburst": {
 		mod.NewList("SkillData", mod.SkillData{Key: "ShowAverage", Value: 1}).Source("Skill:TriggeredSupportWindburst"),
 	},
-	// src/Data/Skills/other.lua:5197
+	// src/Data/Skills/other.lua:5325
 	"Twister": {
 		mod.NewList("SkillData", mod.SkillData{Key: "ShowAverage", Value: 1}).Source("Skill:Twister"),
 	},
-	// src/Data/Skills/act_int.lua:263
+	// src/Data/Skills/act_int.lua:262
 	"VaalArc": {
 		mod.NewFlag("Condition:CanBeLucky", true).Tag(mod.GlobalEffect("Buff")).Source("Skill:VaalArc"),
 	},
@@ -2237,7 +2246,7 @@ var SkillBaseMods = map[string][]mod.Mod{
 	"VaalClarity": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 40}).Source("Skill:VaalClarity"),
 	},
-	// src/Data/Skills/act_str.lua:1993
+	// src/Data/Skills/act_str.lua:2056
 	"VaalCleave": {
 		mod.NewFloat("CullPercent", mod.TypeMAX, 10).Tag(mod.SkillName("Cleave").Transfigured(true), mod.GlobalEffect("Buff").Name("Vaal Cleave").Unscalable(true)).Source("Skill:VaalCleave"),
 	},
@@ -2248,11 +2257,11 @@ var SkillBaseMods = map[string][]mod.Mod{
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusSecondaryLabel", String: "Initial Chilled Ground:"}).Source("Skill:VaalColdSnap"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusTertiaryLabel", String: "Final Chilled Ground:"}).Source("Skill:VaalColdSnap"),
 	},
-	// src/Data/Skills/act_dex.lua:4953
+	// src/Data/Skills/act_dex.lua:4955
 	"VaalCyclone": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 24}).Source("Skill:VaalCyclone"),
 	},
-	// src/Data/Skills/act_dex.lua:5457
+	// src/Data/Skills/act_dex.lua:5460
 	"VaalDetonateDead": {
 		mod.NewList("SkillData", mod.SkillData{Key: "ExplodeCorpse", Value: 1}).Tag(mod.SkillPart(2)).Source("Skill:VaalDetonateDead"),
 	},
@@ -2260,7 +2269,7 @@ var SkillBaseMods = map[string][]mod.Mod{
 	"VaalDiscipline": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 40}).Source("Skill:VaalDiscipline"),
 	},
-	// src/Data/Skills/act_str.lua:3534
+	// src/Data/Skills/act_str.lua:3597
 	"VaalEarthquake": {
 		mod.NewList("SkillData", mod.SkillData{Key: "ShowAverage", Value: 1}).Tag(mod.SkillPart(2)).Source("Skill:VaalEarthquake"),
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 18}).Tag(mod.SkillPart(1)).Source("Skill:VaalEarthquake"),
@@ -2279,38 +2288,38 @@ var SkillBaseMods = map[string][]mod.Mod{
 		mod.NewFloat("Multiplier:VaalFlameblastMaxStages", mod.TypeBase, 15).Source("Skill:VaalFlameblast"),
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 45}).Source("Skill:VaalFlameblast"),
 	},
-	// src/Data/Skills/act_dex.lua:8117
+	// src/Data/Skills/act_dex.lua:8120
 	"VaalFlickerStrike": {
 		mod.NewFlag("OnlyFinalRepeat", true).Source("Skill:VaalFlickerStrike"),
 		mod.NewFlag("FinalRepeatSumsDamage", true).Source("Skill:VaalFlickerStrike"),
 	},
-	// src/Data/Skills/act_str.lua:5169
+	// src/Data/Skills/act_str.lua:5232
 	"VaalGlacialHammer": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 20}).Source("Skill:VaalGlacialHammer"),
 	},
-	// src/Data/Skills/act_dex.lua:9018
+	// src/Data/Skills/act_dex.lua:9021
 	"VaalGrace": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 40}).Source("Skill:VaalGrace"),
 	},
-	// src/Data/Skills/act_str.lua:5454
+	// src/Data/Skills/act_str.lua:5517
 	"VaalGroundSlam": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 39}).Source("Skill:VaalGroundSlam"),
 	},
-	// src/Data/Skills/act_dex.lua:9189
+	// src/Data/Skills/act_dex.lua:9192
 	"VaalHaste": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 40}).Source("Skill:VaalHaste"),
 	},
-	// src/Data/Skills/act_str.lua:6794
+	// src/Data/Skills/act_str.lua:6857
 	"VaalImmortalCall": {
 		mod.NewFlag("Condition:CannotDie", true).Tag(mod.GlobalEffect("Guard")).Source("Skill:VaalImmortalCall"),
 	},
-	// src/Data/Skills/spectre.lua:4106
+	// src/Data/Skills/spectre.lua:4105
 	"VaalIncursionFirestorm": {
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusLabel", String: "Fireball explosion:"}).Source("Skill:VaalIncursionFirestorm"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusSecondary", Value: 25}).Source("Skill:VaalIncursionFirestorm"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusSecondaryLabel", String: "Area in which Fireballs fall:"}).Source("Skill:VaalIncursionFirestorm"),
 	},
-	// src/Data/Skills/act_dex.lua:10605
+	// src/Data/Skills/act_dex.lua:10608
 	"VaalLightningArrow": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 18}).Source("Skill:VaalLightningArrow"),
 	},
@@ -2318,7 +2327,7 @@ var SkillBaseMods = map[string][]mod.Mod{
 	"VaalLightningWarpInstant": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 16}).Source("Skill:VaalLightningWarpInstant"),
 	},
-	// src/Data/Skills/act_str.lua:8155
+	// src/Data/Skills/act_str.lua:8218
 	"VaalMoltenStrike": {
 		mod.NewList("SkillData", mod.SkillData{Key: "ProjectileSpeedAppliesToMSAreaOfEffect", Value: 1}).Source("Skill:VaalMoltenStrike"),
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 9}).Tag(mod.SkillPart(2)).Source("Skill:VaalMoltenStrike"),
@@ -2333,22 +2342,22 @@ var SkillBaseMods = map[string][]mod.Mod{
 	"VaalPowerSiphon": {
 		mod.NewFlag("OneShotProj", true).Source("Skill:VaalPowerSiphon"),
 	},
-	// src/Data/Skills/act_dex.lua:12636
+	// src/Data/Skills/act_dex.lua:12639
 	"VaalRainOfArrows": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 10}).Source("Skill:VaalRainOfArrows"),
 		mod.NewFlag("OneShotProj", true).Source("Skill:VaalRainOfArrows"),
 	},
-	// src/Data/Skills/act_str.lua:11249
+	// src/Data/Skills/act_str.lua:11312
 	"VaalReap": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 23}).Source("Skill:VaalReap"),
 		mod.NewList("SkillData", mod.SkillData{Key: "DotIsArea", Value: 1}).Source("Skill:VaalReap"),
 	},
-	// src/Data/Skills/act_dex.lua:12909
+	// src/Data/Skills/act_dex.lua:12912
 	"VaalReave": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 12}).Source("Skill:VaalReave"),
 		mod.NewFloat("Multiplier:ReaveMaxStages", mod.TypeBase, 4).Source("Skill:VaalReave"),
 	},
-	// src/Data/Skills/act_str.lua:9427
+	// src/Data/Skills/act_str.lua:9490
 	"VaalRejuvenationTotem": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 40}).Source("Skill:VaalRejuvenationTotem"),
 	},
@@ -2356,7 +2365,7 @@ var SkillBaseMods = map[string][]mod.Mod{
 	"VaalRighteousFire": {
 		mod.NewList("SkillData", mod.SkillData{Key: "DotIsArea", Value: 1}).Source("Skill:VaalRighteousFire"),
 	},
-	// src/Data/Skills/act_str.lua:10567
+	// src/Data/Skills/act_str.lua:10630
 	"VaalSmite": {
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusLabel", String: "Lightning Strike area:"}).Source("Skill:VaalSmite"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusSecondaryLabel", String: "Aura area:"}).Source("Skill:VaalSmite"),
@@ -2368,49 +2377,49 @@ var SkillBaseMods = map[string][]mod.Mod{
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusSecondary", Value: 40}).Source("Skill:VaalStormCall"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusSecondaryLabel", String: "Final Lightning Strike area:"}).Source("Skill:VaalStormCall"),
 	},
-	// src/Data/Skills/act_str.lua:12784
+	// src/Data/Skills/act_str.lua:12847
 	"VaalVolcanicFissure": {
 		mod.NewFlag("CannotSplit", true).Source("Skill:VaalVolcanicFissure"),
 	},
-	// src/Data/Skills/act_dex.lua:16302
+	// src/Data/Skills/act_dex.lua:16305
 	"VenomGyre": {
 		mod.NewFlag("Condition:ReturningProjectile", true).Tag(mod.SkillPart(2)).Source("Skill:VenomGyre"),
 	},
-	// src/Data/Skills/act_dex.lua:16482
+	// src/Data/Skills/act_dex.lua:16485
 	"ViperStrike": {
 		mod.NewList("SkillData", mod.SkillData{Key: "PoisonIsSkillEffect", Value: 1}).Source("Skill:ViperStrike"),
 	},
-	// src/Data/Skills/act_dex.lua:16579
+	// src/Data/Skills/act_dex.lua:16582
 	"ViperStrikeAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "PoisonIsSkillEffect", Value: 1}).Source("Skill:ViperStrikeAltX"),
 	},
-	// src/Data/Skills/act_str.lua:12514
+	// src/Data/Skills/act_str.lua:12577
 	"Vitality": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 40}).Source("Skill:Vitality"),
 	},
-	// src/Data/Skills/other.lua:4912
+	// src/Data/Skills/other.lua:5040
 	"VolatileAnomaly": {
 		mod.NewList("SkillData", mod.SkillData{Key: "DotIsArea", Value: 1}).Source("Skill:VolatileAnomaly"),
 	},
-	// src/Data/Skills/act_dex.lua:16678
+	// src/Data/Skills/act_dex.lua:16681
 	"VolatileDead": {
 		mod.NewList("SkillData", mod.SkillData{Key: "ExplodeCorpse", Value: 1}).Tag(mod.SkillPart(2)).Source("Skill:VolatileDead"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusLabel", String: "Orb Explosion:"}).Source("Skill:VolatileDead"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusSecondaryLabel", String: "Corpse Explosion:"}).Source("Skill:VolatileDead"),
 	},
-	// src/Data/Skills/act_dex.lua:16781
+	// src/Data/Skills/act_dex.lua:16784
 	"VolatileDeadAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "ExplodeCorpse", Value: 1}).Tag(mod.SkillPart(2)).Source("Skill:VolatileDeadAltX"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusLabel", String: "Orb Explosion:"}).Source("Skill:VolatileDeadAltX"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusSecondaryLabel", String: "Corpse Explosion:"}).Source("Skill:VolatileDeadAltX"),
 	},
-	// src/Data/Skills/act_dex.lua:16885
+	// src/Data/Skills/act_dex.lua:16888
 	"VolatileDeadAltY": {
 		mod.NewList("SkillData", mod.SkillData{Key: "ExplodeCorpse", Value: 1}).Tag(mod.SkillPart(2)).Source("Skill:VolatileDeadAltY"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusLabel", String: "Orb Explosion:"}).Source("Skill:VolatileDeadAltY"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusSecondaryLabel", String: "Corpse Explosion:"}).Source("Skill:VolatileDeadAltY"),
 	},
-	// src/Data/Skills/act_str.lua:12612
+	// src/Data/Skills/act_str.lua:12675
 	"VolcanicFissure": {
 		mod.NewFlag("CannotSplit", true).Source("Skill:VolcanicFissure"),
 	},
@@ -2430,30 +2439,30 @@ var SkillBaseMods = map[string][]mod.Mod{
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusLabel", String: "Initial Hit:"}).Source("Skill:VortexAltX"),
 		mod.NewList("SkillData", mod.SkillData{Key: "RadiusSecondaryLabel", String: "Ground Degen:"}).Source("Skill:VortexAltX"),
 	},
-	// src/Data/Skills/act_str.lua:12874
+	// src/Data/Skills/act_str.lua:12937
 	"Vulnerability": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Debuff", Value: 1}).Source("Skill:Vulnerability"),
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 22}).Source("Skill:Vulnerability"),
 	},
-	// src/Data/Skills/act_str.lua:13047
+	// src/Data/Skills/act_str.lua:13110
 	"WarBanner": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 24}).Source("Skill:WarBanner"),
 		mod.NewFloat("AuraEffect", mod.TypeMore, -100).Tag(mod.Condition("BannerPlanted").Neg(true)).Source("Skill:WarBanner"),
 		mod.NewFlag("Condition:AffectedByPlacedBanner", true).Tag(mod.Condition("BannerPlanted"), mod.GlobalEffect("Buff")).Source("Skill:WarBanner"),
 	},
-	// src/Data/Skills/other.lua:5390
+	// src/Data/Skills/other.lua:5518
 	"WardShatter": {
 		mod.NewList("SkillData", mod.SkillData{Key: "ShowAverage", Value: 1}).Source("Skill:WardShatter"),
 	},
-	// src/Data/Skills/act_str.lua:12966
+	// src/Data/Skills/act_str.lua:13029
 	"WarlordsMark": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Debuff", Value: 1}).Source("Skill:WarlordsMark"),
 	},
-	// src/Data/Skills/act_dex.lua:17108
+	// src/Data/Skills/act_dex.lua:17111
 	"WildStrike": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 24}).Tag(mod.SkillPart(2)).Source("Skill:WildStrike"),
 	},
-	// src/Data/Skills/act_dex.lua:17249
+	// src/Data/Skills/act_dex.lua:17252
 	"WildStrikeAltX": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 24}).Tag(mod.SkillPart(2)).Source("Skill:WildStrikeAltX"),
 	},
@@ -2472,7 +2481,7 @@ var SkillBaseMods = map[string][]mod.Mod{
 		mod.NewList("SkillData", mod.SkillData{Key: "Debuff", Value: 1}).Source("Skill:Wither"),
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 18}).Source("Skill:Wither"),
 	},
-	// src/Data/Skills/act_dex.lua:17333
+	// src/Data/Skills/act_dex.lua:17336
 	"WitheringStep": {
 		mod.NewFlag("Condition:CanBeElusive", true).Tag(mod.GlobalEffect("Buff")).Source("Skill:WitheringStep"),
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 26}).Source("Skill:WitheringStep"),
@@ -2485,7 +2494,7 @@ var SkillBaseMods = map[string][]mod.Mod{
 	"Zealotry": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 40}).Source("Skill:Zealotry"),
 	},
-	// src/Data/Skills/minion.lua:732
+	// src/Data/Skills/minion.lua:731
 	"ZombieSlam": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 18}).Source("Skill:ZombieSlam"),
 	},

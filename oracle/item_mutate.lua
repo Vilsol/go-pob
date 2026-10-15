@@ -1,4 +1,5 @@
 local outPath = arg[1]
+local construct = dofile((arg[0]:match("^(.*)[/\\]") or ".") .. "/pob_compat.lua").construct
 dofile("HeadlessWrapper.lua")
 local json = require("dkjson")
 
@@ -13,7 +14,7 @@ local function explicits(item)
 end
 local result = {}
 for name, dbItem in pairs(main.uniqueDB.list) do
-	local item = new("Item", dbItem.raw)
+	local item = construct("Item", dbItem.raw)
 	item:NormaliseQuality()
 	local first
 	for _, l in ipairs(item.explicitModLines) do

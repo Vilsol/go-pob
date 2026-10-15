@@ -32,7 +32,7 @@ func FinalizeCalcTab(env *Environment) map[string]float64 {
 	colProps := existingColProps
 	colPropsMu.RUnlock()
 
-	//pob:block:src/Classes/CalcSectionControl.lua:179
+	//pob:block:src/Classes/CalcSectionControl.lua:190
 	shown := env.Player
 	if env.Mode == OutputModeCalcs && env.Build != nil && env.Build.CalcsInputBool("showMinion") && env.Minion != nil && env.Minion.Actor != nil {
 		shown = env.Minion.Actor
@@ -114,7 +114,7 @@ func mainSkillCfg(skill *ActiveSkill, name string) *moddb.ListCfg {
 	return nil
 }
 
-//pob:block:src/Modules/CalcSections.lua:70-75
+//pob:block:src/Modules/CalcSections.lua:117-122
 func SetColProps(colProps map[string]ColProps) {
 	colPropsMu.Lock()
 	existingColProps = colProps

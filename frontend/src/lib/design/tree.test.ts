@@ -32,6 +32,14 @@ describe('the power report as the list shows it', () => {
     expect(showPowerRows(rows, { fmt: 'd' }, 'unallocated', false, fmt).map((r) => r.ID)).toEqual([3, 1]);
   });
 
+  // PowerReportListControl.lua:113-117
+  it('unallocated and clusters leave out allocated rows with power', () => {
+    const withAlloc = [...rows, row(6, 9, { Allocated: true }), row(7, 4, { Allocated: true, Cluster: true })];
+    expect(showPowerRows(withAlloc, { fmt: 'd' }, 'unallocated', true, fmt).map((r) => r.ID)).toEqual([3, 5, 1]);
+    expect(showPowerRows(withAlloc, { fmt: 'd' }, 'clusters', true, fmt).map((r) => r.ID)).toEqual([3, 5, 1]);
+    expect(showPowerRows(withAlloc, { fmt: 'd' }, 'allocated', true, fmt).map((r) => r.ID)).toEqual([4, 7, 6]);
+  });
+
   it('a percent stat is x100, a stat without a display entry is .1f, lower-is-better flips the colour', () => {
     expect(showPowerRows([row(1, 0.25)], { fmt: '.1f', pc: true }, 'unallocated', true, fmt)[0].power).toBe('25.0');
     expect(showPowerRows([row(1, 2)], undefined, 'unallocated', true, fmt)[0].power).toBe('2.0');

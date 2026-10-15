@@ -9,7 +9,7 @@ import (
 	"github.com/Vilsol/go-pob/data"
 )
 
-// TestSupportWeaponTypesGate pins CalcTools.lua:116-150.
+// TestSupportWeaponTypesGate pins CalcTools.lua:119-159, including the support-granted branch (:127-135, #10287).
 func TestSupportWeaponTypesGate(t *testing.T) {
 	ge := func(id string) *GrantedEffect {
 		return &GrantedEffect{Raw: &poe.GrantedEffect{GrantedEffect: raw.GrantedEffect{ID: id}}}
@@ -26,6 +26,7 @@ func TestSupportWeaponTypesGate(t *testing.T) {
 	player.Enemy, enemy.Enemy, player.Player, enemy.Player = enemy, player, player, player
 
 	varunastra := &Actor{Enemy: enemy, WeaponData1: &SkillData{CountsAsAll1H: true}}
+	clawEquipped := &Actor{Enemy: enemy, WeaponData1: &SkillData{Type: data.Claw}}
 
 	skillOn := func(actor *Actor, activeID string) *ActiveSkill {
 		return &ActiveSkill{
@@ -49,9 +50,16 @@ func TestSupportWeaponTypesGate(t *testing.T) {
 		{"bow support on bow skill, varunastra", "SupportArrowNova", varunastra, "ArtilleryBallista", true},
 		{"claw support on smite, no varunastra", "SupportNightblade", player, "Smite", false},
 		{"claw support on smite, varunastra", "SupportNightblade", varunastra, "Smite", true},
+		{"claw support on support-granted windburst, claw equipped", "SupportNightblade", clawEquipped, "TriggeredSupportWindburst", true},
+		{"wand support on support-granted windburst, claw equipped", "SupportSacredWisps", clawEquipped, "TriggeredSupportWindburst", false},
+		{"claw support on support-granted windburst, unarmed", "SupportNightblade", player, "TriggeredSupportWindburst", false},
 	} {
 		t.Run(c.name, func(t *testing.T) {
-			if got := CalcCanGrantedEffectSupportActiveSkill(ge(c.support), skillOn(c.actor, c.active)); got != c.want {
+			skill := skillOn(c.actor, c.active)
+			if c.active == "TriggeredSupportWindburst" {
+				skill.SkillTypes[data.SkillType("SkillGrantedBySupport")] = true
+			}
+			if got := CalcCanGrantedEffectSupportActiveSkill(ge(c.support), skill, false); got != c.want {
 				t.Fatalf("CalcCanGrantedEffectSupportActiveSkill = %v, want %v", got, c.want)
 			}
 		})

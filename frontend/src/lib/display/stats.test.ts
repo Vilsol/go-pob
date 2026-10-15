@@ -3,12 +3,13 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { displayStats, minionDisplayStats, type Stat } from './stats';
 
-type Entry = Record<string, string | boolean>;
+type Entry = Record<string, string | boolean | string[]>;
 const expected = JSON.parse(
   readFileSync(fileURLToPath(new URL('../../../../testdata/oracle/display_stats_expected.json', import.meta.url)), 'utf8')
 ) as Entry[];
 
 const STRINGS = ['stat', 'childStat', 'label', 'fmt', 'flag', 'notFlag', 'color', 'overCapStat'] as const;
+const LISTS = ['modNames', 'ignoredSections'] as const;
 const BOOLS = ['pc', 'mod', 'hideStat', 'warnColor', 'chaosInoc'] as const;
 const FUNCS = ['condFunc', 'warnFunc', 'suffixCondFunc', 'overCapStatCondFunc'] as const;
 
@@ -18,6 +19,10 @@ const project = (s: Stat): Entry => {
     if (s[k] !== undefined) out[k] = k === 'color' ? s[k].toUpperCase() : s[k];
   }
   if (s.suffix !== undefined) out.suffix = typeof s.suffix === 'function' ? '<function>' : s.suffix;
+  if (s.breakdown !== undefined) out.breakdown = s.breakdown;
+  for (const k of LISTS) {
+    if (s[k]) out[k] = s[k];
+  }
   for (const k of BOOLS) {
     if (s[k]) out[k] = true;
   }

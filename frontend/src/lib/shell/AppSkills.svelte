@@ -637,7 +637,22 @@
       .then((names) => (sourceNames = { group, names: names ?? [] }))
       .catch(logError);
   });
+  // SkillsTab.lua:294-313
+  let optimiseUseful = $state<{ group: number; useful: boolean }>({ group: -1, useful: false });
+  $effect(() => {
+    void $outputs;
+    const group = selected;
+    const slot = view?.groups[group]?.slot;
+    if (!slot) {
+      optimiseUseful = { group, useful: false };
+      return;
+    }
+    void Promise.resolve(syncWrap?.OptimiseSocketsUseful(slot))
+      .then((useful) => (optimiseUseful = { group, useful: !!useful }))
+      .catch(logError);
+  });
   const editor = {
+    optimiseEnabled: (i: number) => optimiseUseful.group === i && optimiseUseful.useful,
     supporting: (i: number) => (supportPairs.group === i ? supportPairs.pairs : []),
     groupCount: (i: number) => !!view?.groups[i]?.source,
     sourceNote: (i: number) => {

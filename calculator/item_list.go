@@ -18,7 +18,7 @@ type listSlot struct {
 	inactive bool
 }
 
-//pob:block:src/Classes/ItemsTab.lua:208-222
+//pob:block:src/Classes/ItemsTab.lua:220-234
 func treeSocketIDs() []int {
 	var ids []int
 	for key, node := range data.TreeVersions[data.LatestTreeVersion].Tree().Nodes {
@@ -76,7 +76,7 @@ func itemSetTitle(set pob.ItemSet) string {
 	return *set.Title
 }
 
-//pob:src/Classes/ItemsTab.lua:2425-2439
+//pob:src/Classes/ItemsTab.lua:2528-2542
 func equippedSlotForItem(build *pob.PathOfBuilding, slots []listSlot, itemID int) (*listSlot, *pob.ItemSet) {
 	active := strconv.Itoa(build.Items.ActiveItemSet)
 	for k := range slots {
@@ -100,7 +100,7 @@ func equippedSlotForItem(build *pob.PathOfBuilding, slots []listSlot, itemID int
 	return nil, nil
 }
 
-//pob:src/Classes/ItemListControl.lua:198-219
+//pob:src/Classes/ItemListControl.lua:206-227
 func findSocketedJewel(build *pob.PathOfBuilding, item *Item, itemID int, excludeActive bool) (string, bool) {
 	if item == nil || item.Type != "Jewel" {
 		return "", false
@@ -126,7 +126,7 @@ func findSocketedJewel(build *pob.PathOfBuilding, item *Item, itemID int, exclud
 	return equipTree, found
 }
 
-//pob:src/Classes/ItemListControl.lua:221-240
+//pob:src/Classes/ItemListControl.lua:229-248
 func findEquippedAbyssJewel(build *pob.PathOfBuilding, item *Item, itemID int, excludeActiveSet bool) (string, bool) {
 	if item == nil || item.Base == nil || item.Base.SubType != "Abyss" {
 		return "", false
@@ -159,7 +159,7 @@ func buildItemText(build *pob.PathOfBuilding, itemID int) (string, bool) {
 	return "", false
 }
 
-//pob:block:src/Classes/ItemListControl.lua:331-369
+//pob:block:src/Classes/ItemListControl.lua:340-378
 func DeleteItemPrompt(build *pob.PathOfBuilding, itemID int) string {
 	text, ok := buildItemText(build, itemID)
 	if !ok {
@@ -184,7 +184,7 @@ func DeleteItemPrompt(build *pob.PathOfBuilding, itemID int) string {
 	return ""
 }
 
-//pob:block:src/Classes/ItemListControl.lua:23-29
+//pob:block:src/Classes/ItemListControl.lua:30-36
 func UnusedItemIDs(build *pob.PathOfBuilding) []int {
 	slots := orderedListSlots(build)
 	var out []int
@@ -223,7 +223,7 @@ type socketCut struct {
 	depends []int64
 }
 
-//pob:block:src/Classes/ItemsTab.lua:1789-1805
+//pob:block:src/Classes/ItemsTab.lua:1878-1894
 func socketCuts(build *pob.PathOfBuilding, itemID int) map[int][]socketCut {
 	cuts := map[int][]socketCut{}
 	for k, spec := range build.Tree.Specs {
@@ -262,7 +262,7 @@ func specShadow(build *pob.PathOfBuilding, k int) (*pob.PathOfBuilding, *data.Tr
 	return &shadow, data.TreeVersions[version].Tree()
 }
 
-//pob:block:src/Classes/ItemListControl.lua:30-41,src/Classes/ItemsTab.lua:1768-1815
+//pob:block:src/Classes/ItemListControl.lua:37-48,src/Classes/ItemsTab.lua:1857-1904
 func DeleteItems(build *pob.PathOfBuilding, itemIDs []int) bool {
 	changed := false
 	for i := len(itemIDs) - 1; i >= 0; i-- {
@@ -288,7 +288,7 @@ func activeSocketed(build *pob.PathOfBuilding, itemID int) bool {
 	return i >= 0 && slices.ContainsFunc(build.Tree.Specs[i].Sockets, func(s pob.Socket) bool { return s.ItemID == itemID })
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:1723-1790
+//pob:block:src/Classes/PassiveSpec.lua:1806-1875
 func dropClusterRemnants(build *pob.PathOfBuilding, socketed bool) {
 	version := data.LatestTreeVersion
 	tree := data.TreeVersions[version].Tree()
@@ -344,13 +344,13 @@ func isClusterNode(tree *data.Tree, id int64) bool {
 	return (!static && id >= clusterNodeIDBase) || (static && node.ExpansionJewel != nil && node.ExpansionJewel.Parent != nil)
 }
 
-//pob:block:src/Classes/ItemListControl.lua:47-63
+//pob:block:src/Classes/ItemListControl.lua:54-70
 func DeleteAllItems(build *pob.PathOfBuilding) {
 	build.DeleteAllItems()
 	PopulateSlots(build)
 }
 
-//pob:src/Classes/ItemsTab.lua:1731-1765
+//pob:src/Classes/ItemsTab.lua:1820-1854
 func SortItems(build *pob.PathOfBuilding) {
 	slots := orderedListSlots(build)
 	slotOrder := make(map[string]int, len(slots))
@@ -421,7 +421,7 @@ func SortItems(build *pob.PathOfBuilding) {
 	}
 }
 
-//pob:block:src/Classes/ItemListControl.lua:290-314
+//pob:block:src/Classes/ItemListControl.lua:299-323
 func ToggleEquipItem(build *pob.PathOfBuilding, itemID int, second bool) bool {
 	text, ok := buildItemText(build, itemID)
 	if !ok {
@@ -454,7 +454,7 @@ func ToggleEquipItem(build *pob.PathOfBuilding, itemID int, second bool) bool {
 	return true
 }
 
-//pob:block:src/Classes/ItemsTab.lua:156-188,src/Classes/ItemSlotControl.lua:98-111
+//pob:block:src/Classes/ItemsTab.lua:168-200,src/Classes/ItemSlotControl.lua:109-122
 func ShownAbyssalSlots(build *pob.PathOfBuilding) []string {
 	var out []string
 	for _, s := range orderedItemSlots {
@@ -465,7 +465,7 @@ func ShownAbyssalSlots(build *pob.PathOfBuilding) []string {
 	return out
 }
 
-//pob:block:src/Classes/ItemsTab.lua:1652-1670
+//pob:block:src/Classes/ItemsTab.lua:1659-1677
 func ActiveTreeSockets(build *pob.PathOfBuilding) []int {
 	var spec pob.Spec
 	if i := build.ActiveSpecIndex(); i >= 0 {
@@ -481,7 +481,7 @@ func ActiveTreeSockets(build *pob.PathOfBuilding) []int {
 	return out
 }
 
-//pob:src/Classes/ItemListControl.lua:77-111
+//pob:src/Classes/ItemListControl.lua:85-119
 func ItemListLoadoutFilters(build *pob.PathOfBuilding) []string {
 	list := []string{"Any Loadout", "Current Loadout", "Unused Items"}
 	seen := map[string]bool{}
@@ -505,7 +505,7 @@ func ItemListLoadoutFilters(build *pob.PathOfBuilding) []string {
 
 var loadoutVersionPrefixRe = regexp.MustCompile(`^\[[^\]]+\]\s*`)
 
-//pob:block:src/Classes/ItemListControl.lua:113-183
+//pob:block:src/Classes/ItemListControl.lua:121-191
 func ItemListFiltered(build *pob.PathOfBuilding, filter string) []int {
 	var out []int
 	switch filter {

@@ -60,7 +60,7 @@ func (b *PathOfBuilding) activeSpec() *Spec {
 
 var specNodeRe = regexp.MustCompile(`\d+`)
 
-//pob:block:src/Classes/PassiveSpec.lua:138-141
+//pob:block:src/Classes/PassiveSpec.lua:149-152
 func SpecNodes(spec Spec) []int64 {
 	out := make([]int64, 0, 100)
 	for _, s := range specNodeRe.FindAllString(spec.NodesAttr, -1) {
@@ -71,7 +71,7 @@ func SpecNodes(spec Spec) []int64 {
 	return out
 }
 
-//pob:block:src/Classes/TreeTab.lua:489
+//pob:block:src/Classes/TreeTab.lua:495
 func SpecTitle(spec Spec) string {
 	if spec.Title == nil {
 		return "Default"
@@ -79,7 +79,7 @@ func SpecTitle(spec Spec) string {
 	return *spec.Title
 }
 
-//pob:src/Classes/TreeTab.lua:543-579
+//pob:src/Classes/TreeTab.lua:549-585
 func (b *PathOfBuilding) SetActiveSpec(specID int) {
 	if len(b.Tree.Specs) == 0 {
 		return
@@ -91,7 +91,7 @@ func (b *PathOfBuilding) SetActiveSpec(specID int) {
 	b.Build.AscendClassName = AscendancyNameOf(spec.ClassID, spec.AscendClassID)
 }
 
-//pob:block:src/Classes/PassiveSpecListControl.lua:52-53
+//pob:block:src/Classes/PassiveSpecListControl.lua:56-57
 func (b *PathOfBuilding) RenameSpec(specID int, title string) {
 	if specID < 1 || specID > len(b.Tree.Specs) {
 		return
@@ -99,7 +99,7 @@ func (b *PathOfBuilding) RenameSpec(specID int, title string) {
 	b.Tree.Specs[specID-1].Title = &title
 }
 
-//pob:block:src/Classes/PassiveSpecListControl.lua:13-20,src/Classes/PassiveSpecListControl.lua:52-59
+//pob:block:src/Classes/PassiveSpecListControl.lua:16-23,src/Classes/PassiveSpecListControl.lua:56-63
 func (b *PathOfBuilding) CopySpec(specID int, title string) {
 	if specID < 1 || specID > len(b.Tree.Specs) {
 		return
@@ -128,12 +128,12 @@ func (b *PathOfBuilding) CopySpec(specID int, title string) {
 	b.Tree.Specs = append(b.Tree.Specs, spec)
 }
 
-//pob:block:src/Classes/PassiveSpecListControl.lua:55-59
+//pob:block:src/Classes/PassiveSpecListControl.lua:59-63
 func (b *PathOfBuilding) AddSpec(spec Spec) {
 	b.Tree.Specs = append(b.Tree.Specs, spec)
 }
 
-//pob:block:src/Classes/PassiveSpecListControl.lua:96-105
+//pob:block:src/Classes/PassiveSpecListControl.lua:100-109
 func (b *PathOfBuilding) DeleteSpec(specID int) {
 	if len(b.Tree.Specs) <= 1 || specID < 1 || specID > len(b.Tree.Specs) {
 		return
@@ -148,7 +148,7 @@ func (b *PathOfBuilding) DeleteSpec(specID int) {
 	}
 }
 
-//pob:block:src/Classes/ItemSlotControl.lua:62-64,src/Classes/PassiveSpec.lua:215-221
+//pob:block:src/Classes/ItemSlotControl.lua:73-75,src/Classes/PassiveSpec.lua:226-232
 func (b *PathOfBuilding) SocketJewel(nodeID int, itemID int) {
 	spec := b.activeSpec()
 	if spec == nil {
@@ -171,7 +171,7 @@ func (b *PathOfBuilding) SocketedJewel(nodeID int) int {
 	return 0
 }
 
-//pob:src/Classes/CompareTab.lua:1331-1368
+//pob:src/Classes/CompareTab.lua:1336-1373
 func (b *PathOfBuilding) CopyCompareSpec(from *PathOfBuilding, andUse bool) {
 	i := from.ActiveSpecIndex()
 	if i < 0 {

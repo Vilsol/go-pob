@@ -14,7 +14,7 @@ var (
 	sanitiseTags = regexp.MustCompile(`<[^<>]*>`)
 )
 
-//pob:src/Classes/SkillsTab.lua:667-679
+//pob:src/Classes/SkillsTab.lua:694-706
 func (b *PathOfBuilding) CopySocketGroup(socketGroup int) string {
 	set := b.Skills.SkillSets[b.ActiveSkillSetIndex()]
 	if socketGroup < 0 || socketGroup >= len(set.Skills) {
@@ -42,7 +42,7 @@ func (b *PathOfBuilding) CopySocketGroup(socketGroup int) string {
 	return skillText
 }
 
-//pob:src/Classes/SkillsTab.lua:681-713
+//pob:src/Classes/SkillsTab.lua:708-740
 func (b *PathOfBuilding) PasteSocketGroup(text string) int {
 	skillText := sanitiseText(text)
 	newGroup := Skill{Enabled: true}
@@ -80,7 +80,7 @@ func (b *PathOfBuilding) PasteSocketGroup(text string) int {
 	return len(set.Skills) - 1
 }
 
-//pob:src/Modules/Common.lua:251-274
+//pob:src/Modules/Common.lua:306-329
 func sanitiseText(text string) string {
 	if !strings.ContainsRune(text, '<') && !hasHighByte(text) {
 		return text
@@ -115,7 +115,7 @@ func hasHighByte(text string) bool {
 	return false
 }
 
-//pob:block:src/Modules/Build.lua:1469-1474
+//pob:block:src/Modules/Build.lua:1538-1543
 func (b *PathOfBuilding) SetSpectres(ids []string) {
 	b.Build.Spectres = make([]Spectre, 0, len(ids))
 	for _, id := range ids {

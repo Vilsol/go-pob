@@ -1,36 +1,36 @@
-Config	Effect of ^xADAA47Shock  (10 -> (not set))	-132596.42049485608
-Config	Exposure Type  (Fire -> (not set))	-167615.75422789552
-Config	Is the enemy ^xADAA47Shocked?  (Yes -> (not set))	-132596.42049485608
-Config	Is the enemy ^xB97123Ignited?  (Yes -> (not set))	-256118.07869202155
-Item	Ambush Twine, Heavy Belt, Belt	38438.745707505848
-Item	Brood Creed, Cobalt Jewel, Socket (best socket)	36146.9520086376
-Item	Dread Paw, Conjurer Gloves, Gloves	8027.004957968602
-Item	Loath Spiral, Iron Ring, Ring 2	10417.906707397429
-Item	Mystic Refractor, Pagan Wand, Weapon 1	-358803.41052160831
-Item	Plague Charm, Amber Amulet, Amulet	-188165.53338649636
-Item	Soul Glance, Sunfire Circlet, Helmet	-593890.11799812305
-Item	Viper Band, Two-Stone Ring, Ring 1	62302.245617328444
-Item	Viper Barrier, Angelic Kite Shield, Weapon 2	-186013.30989126209
-Skill gem	Automation + Steelskin + Frostbite + Arcane Surge	-137480.7191423825
-Skill gem	Flesh and Stone + Arctic Armour + Tempest Shield	36464.990582345519
-Skill gem	Frostblink + Ice Bite + Herald of Ice	4137.8378717191517
-Skill gem	Summon Flame Golem + Summon Stone Golem + Summon Ice Golem + Summon Lightning Golem	5911.2497783366125
-Tree	Amplify	29898.206121355295
-Tree	Arcane Sanctuary	37381.309481582837
-Tree	Area of Effect Damage	14945.344391654478
-Tree	Bitter Frost	-1433296.9791493274
-Tree	Blast Radius	29898.206121355295
-Tree	Cold Damage	10417.906707397429
-Tree	Cold Damage	10417.906707397429
-Tree	Cold Damage	10417.906707397429
-Tree	Cold Damage	7810.0037331713829
-Tree	Coldhearted Calculation	35487.184759248048
-Tree	Disciple of the Forbidden	23656.723685721401
-Tree	Elemental Damage	25294.862829254707
-Tree	Elemental Damage	25294.862829254707
-Tree	Elemental Focus	54264.019166606246
-Tree	Frost Walker	16279.943550159689
-Tree	Heart of Ice	39236.119305189
-Tree	Shield Cast Speed	17821.093498173403
-Tree	Shield Spell Damage	17936.540620386135
-Tree	Trickery	59151.547248878749
+Config	Effect of ^xADAA47Shock  (10 -> (not set))	-132596.07194160437
+Config	Exposure Type  (Fire -> (not set))	-167615.38355175918
+Config	Is the enemy ^xADAA47Shocked?  (Yes -> (not set))	-132596.07194160437
+Config	Is the enemy ^xB97123Ignited?  (Yes -> (not set))	-256116.04597459757
+Item	Ambush Twine, Heavy Belt, Belt	38445.325385533739
+Item	Brood Creed, Cobalt Jewel, Socket (best socket)	36154.065182841849
+Item	Dread Paw, Conjurer Gloves, Gloves	8026.7735034758225
+Item	Loath Spiral, Iron Ring, Ring 2	10420.303746411344
+Item	Mystic Refractor, Pagan Wand, Weapon 1	-358799.2278825941
+Item	Plague Charm, Amber Amulet, Amulet	-188161.35074748215
+Item	Soul Glance, Sunfire Circlet, Helmet	-593886.16980628867
+Item	Viper Band, Two-Stone Ring, Ring 1	62302.081266439054
+Item	Viper Barrier, Angelic Kite Shield, Weapon 2	-186011.75574575481
+Skill gem	Automation + Steelskin + Frostbite + Arcane Surge	-137480.15584224253
+Skill gem	Flesh and Stone + Arctic Armour + Tempest Shield	36464.990582345286
+Skill gem	Frostblink + Ice Bite + Herald of Ice	4140.234910733765
+Skill gem	Summon Flame Golem + Summon Stone Golem + Summon Ice Golem + Summon Lightning Golem	5916.4994423363823
+Tree	Amplify	29903.562921355711
+Tree	Arcane Sanctuary	37388.344745582901
+Tree	Area of Effect Damage	14947.129991655005
+Tree	Bitter Frost	-1433292.7965103132
+Tree	Blast Radius	29903.562921355711
+Tree	Cold Damage	10420.303746411344
+Tree	Cold Damage	10420.303746411344
+Tree	Cold Damage	10420.303746411344
+Tree	Cold Damage	7816.8148656922858
+Tree	Coldhearted Calculation	35491.367398262257
+Tree	Disciple of the Forbidden	23656.029322242364
+Tree	Elemental Damage	25299.045468268916
+Tree	Elemental Damage	25299.045468268916
+Tree	Elemental Focus	54271.773005620344
+Tree	Frost Walker	16282.340589173837
+Tree	Heart of Ice	39243.144709710032
+Tree	Shield Cast Speed	17821.04612613027
+Tree	Shield Spell Damage	17938.326220386429
+Tree	Trickery	59159.30108789308

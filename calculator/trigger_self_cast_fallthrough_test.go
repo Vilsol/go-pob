@@ -43,7 +43,7 @@ func gradeTriggeredBuilds(t *testing.T, builds []string, keys []string) {
 
 // TestTriggerWithNoActionCooldownStillPublishesARate pins CalcTriggers.lua:583-586.
 //
-//pob:block:src/Modules/CalcTriggers.lua:583-586
+//pob:block:src/Modules/CalcTriggers.lua:588-591
 func TestTriggerWithNoActionCooldownStillPublishesARate(t *testing.T) {
 	gradeTriggeredBuilds(t,
 		[]string{"0851-assassin-flicker-strike-of-power.xml"},
@@ -52,7 +52,7 @@ func TestTriggerWithNoActionCooldownStillPublishesARate(t *testing.T) {
 
 // TestUniqueItemTriggersFindTheirSource pins CalcTriggers.lua:898-904 and :997-999.
 //
-//pob:src/Modules/CalcTriggers.lua:898-904,src/Modules/CalcTriggers.lua:997-999
+//pob:src/Modules/CalcTriggers.lua:903-909,src/Modules/CalcTriggers.lua:1002-1004
 func TestUniqueItemTriggersFindTheirSource(t *testing.T) {
 	gradeTriggeredBuilds(t,
 		[]string{"0552-occultist-raise-spiders.xml"},
@@ -64,7 +64,7 @@ func TestUniqueItemTriggersFindTheirSource(t *testing.T) {
 
 // TestBattlemagesCryCapsTheSourceRateByExerts pins CalcTriggers.lua:483-500 — the exerted-hits cap on a Battlemage's Cry source.
 //
-//pob:block:src/Modules/CalcTriggers.lua:483-500
+//pob:block:src/Modules/CalcTriggers.lua:488-505
 func TestBattlemagesCryCapsTheSourceRateByExerts(t *testing.T) {
 	gradeTriggeredBuilds(t,
 		[]string{
@@ -79,7 +79,7 @@ func TestBattlemagesCryCapsTheSourceRateByExerts(t *testing.T) {
 
 // TestKineticFluxAndCallThePyreAreTriggered pins CalcTriggers.lua:1147-1150 and :1370-1377.
 //
-//pob:src/Modules/CalcTriggers.lua:1147-1150,src/Modules/CalcTriggers.lua:1370-1377
+//pob:src/Modules/CalcTriggers.lua:1152-1155,src/Modules/CalcTriggers.lua:1375-1382
 func TestKineticFluxAndCallThePyreAreTriggered(t *testing.T) {
 	gradeTriggeredBuilds(t,
 		[]string{
@@ -92,7 +92,7 @@ func TestKineticFluxAndCallThePyreAreTriggered(t *testing.T) {
 
 // TestFocusTriggerUsesTheFocusCycle pins CalcTriggers.lua:135-217 — ["focus"]'s customHandler.
 //
-//pob:src/Modules/CalcTriggers.lua:135-217
+//pob:src/Modules/CalcTriggers.lua:136-220
 func TestFocusTriggerUsesTheFocusCycle(t *testing.T) {
 	gradeTriggeredBuilds(t,
 		[]string{"4788-ladder-GeordiMcSnuff_1894.GeordiFlameOne.xml"},
@@ -101,7 +101,7 @@ func TestFocusTriggerUsesTheFocusCycle(t *testing.T) {
 
 // TestTriggerCraftAndShroudOfTheLightless pins CalcTriggers.lua:1058-1080 and :943-946.
 //
-//pob:src/Modules/CalcTriggers.lua:943-946,src/Modules/CalcTriggers.lua:1058-1080
+//pob:src/Modules/CalcTriggers.lua:948-951,src/Modules/CalcTriggers.lua:1063-1085
 func TestTriggerCraftAndShroudOfTheLightless(t *testing.T) {
 	gradeTriggeredBuilds(t,
 		[]string{

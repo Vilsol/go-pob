@@ -2,7 +2,7 @@ package data
 
 import "strconv"
 
-//pob:block:src/Classes/PassiveTree.lua:415-436
+//pob:block:src/Classes/PassiveTree.lua:438-459
 func (t *Tree) NodesInRadiusOf(centre int64, radiusIndex int) map[int64]bool {
 	out := map[int64]bool{}
 	if radiusIndex < 0 || radiusIndex >= len(JewelRadius) {

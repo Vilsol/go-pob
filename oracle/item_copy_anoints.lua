@@ -13,6 +13,7 @@ if not pcall(require, "lua-utf8") then
 	package.preload["lua-utf8"] = function() return string end
 end
 
+local construct = dofile((arg[0]:match("^(.*)[/\\]") or ".") .. "/pob_compat.lua").construct
 dofile("HeadlessWrapper.lua")
 local json = require("dkjson")
 
@@ -50,7 +51,7 @@ for _, path in ipairs(files) do
 	assert(ok and build.buildName == name, "REFUSING: " .. name .. ": " .. tostring(err))
 	local entry = {}
 	for k, raw in ipairs(candidates) do
-		local newItem = new("Item", raw)
+		local newItem = construct("Item", raw)
 		assert(newItem.base, "candidate " .. k .. " has no base")
 		build.itemsTab:CopyAnointsAndEldritchImplicits(newItem, true, false)
 		newItem:NormaliseQuality()

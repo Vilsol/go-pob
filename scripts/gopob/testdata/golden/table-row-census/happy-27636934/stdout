@@ -1,4 +1,4 @@
-pin keys 4148   pin keys absent here 789
+pin keys 4160   pin keys absent here 802
 
  MISS   PIN  HAVE  FAMILY  (only families with >= 3 missing, and at least one row ALREADY ported -- that is the partial-port signal)
     8    20    12  trigger level when you
@@ -21,6 +21,10 @@ pin keys 4148   pin keys absent here 789
                      - attacks with this weapon have added fire damage equal to # of player s maximum life
                      - attacks with this weapon have added maximum lightning damage equal to # of player s maximum energy s
                      - attacks with this weapon have added maximum lightning damage equal to # of your energy shield
+    4    10     6  while you have at
+                     - while you have at least # ghastly eye jewels socketed unholy might you grant also causes target s da
+                     - while you have at least # hypnotic eye jewels socketed arcane surge also grants # of damage taken re
+                     - while you have at least # murderous eye jewels socketed intimidate you inflict applies an extra # in
     4     6     2  action speed cannot be
                      - action speed cannot be modified to below # base value
                      - action speed cannot be modified to below base value if you ve cast # in the past # seconds

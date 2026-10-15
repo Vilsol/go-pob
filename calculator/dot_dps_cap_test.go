@@ -10,7 +10,7 @@ import (
 
 // TestDotDpsCapClampsTheMinionActor pins CalcOffence.lua's `m_min(..., data.misc.DotDpsCap)` sites.
 //
-//pob:block:src/Modules/CalcOffence.lua:6127
+//pob:block:src/Modules/CalcOffence.lua:6251
 func TestDotDpsCapClampsTheMinionActor(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")

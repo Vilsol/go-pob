@@ -395,7 +395,7 @@ func canonRampFloat(ramp [][]float64) string {
 	return canonList(steps)
 }
 
-//pob:src/Data/Global.lua:217-352
+//pob:src/Data/Global.lua:218-353
 var pobSkillTypeNumber = func() map[string]int {
 	names := []string{
 		"Attack", "Spell", "Projectile", "DualWieldOnly",

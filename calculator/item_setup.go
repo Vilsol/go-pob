@@ -15,7 +15,7 @@ import (
 	"github.com/Vilsol/go-pob/utils"
 )
 
-//pob:block:src/Classes/ItemsTab.lua:144-152
+//pob:block:src/Classes/ItemsTab.lua:156-164
 func slotWeaponSet(name string) int {
 	if strings.HasSuffix(name, " Swap") {
 		return 2
@@ -33,17 +33,17 @@ type itemSlot struct {
 	weaponSet  int
 }
 
-//pob:src/Classes/ItemsTab.lua:33
+//pob:src/Classes/ItemsTab.lua:35
 var itemSlotBaseNames = []string{
 	"Weapon 1", "Weapon 2", "Helmet", "Body Armour", "Gloves", "Boots", "Amulet",
 	"Ring 1", "Ring 2", "Ring 3", "Belt", "Graft 1", "Graft 2",
 	"Flask 1", "Flask 2", "Flask 3", "Flask 4", "Flask 5",
 }
 
-//pob:src/Classes/ItemsTab.lua:95-136
+//pob:src/Classes/ItemsTab.lua:107-148
 var orderedItemSlots = buildOrderedItemSlots()
 
-//pob:src/Classes/ItemsTab.lua:95-136
+//pob:src/Classes/ItemsTab.lua:107-148
 func buildOrderedItemSlots() []itemSlot {
 	const abyssalSocketsPerItem = 6
 
@@ -83,7 +83,7 @@ func buildOrderedItemSlots() []itemSlot {
 	return slots
 }
 
-//pob:block:src/Classes/ItemSlotControl.lua:31
+//pob:block:src/Classes/ItemSlotControl.lua:41
 func slotNum(name string) int {
 	if m := slotTrailingNumRe.FindStringSubmatch(name); m != nil {
 		n, _ := strconv.Atoi(m[1])
@@ -101,7 +101,7 @@ var (
 	slotFirstNumRe    = regexp.MustCompile(`(\d+)`)
 )
 
-//pob:block:src/Classes/ModStore.lua:688-697
+//pob:block:src/Classes/ModStore.lua:731-740
 func (a *Actor) ItemShaperIs(slot string, shaper bool) bool {
 	item := a.ItemList[slot]
 	return item != nil && item.shaper == shaper
@@ -169,7 +169,7 @@ func itemToItemData(item *Item) *ItemData {
 		}
 	}
 
-	//pob:block:src/Classes/Item.lua:1423-1430
+	//pob:block:src/Classes/Item.lua:2692-2703
 	if item.Base != nil && (item.Base.Weapon != nil || item.Type == "Ring") {
 		id.SlotModList = map[int]*moddb.ModList{
 			1: asModList(item.Mods),
@@ -196,7 +196,7 @@ func newWeaponSkillData(itemType data.ItemClassName, wd map[string]float64) *Ski
 	return sd
 }
 
-//pob:src/Classes/ItemsTab.lua:1584-1590
+//pob:src/Classes/ItemsTab.lua:1591-1597
 func activeItemSetIndex(items pob.Items) int {
 	for i, set := range items.ItemSets {
 		if id, err := strconv.Atoi(set.ID); err == nil && id == items.ActiveItemSet {
@@ -206,7 +206,7 @@ func activeItemSetIndex(items pob.Items) int {
 	return 0
 }
 
-//pob:block:src/Modules/CalcSetup.lua:497-745
+//pob:block:src/Modules/CalcSetup.lua:599-847
 func mergeEquippedItems(env *Environment) {
 	items := env.Build.Items
 	if len(items.ItemSets) == 0 {
@@ -233,14 +233,14 @@ func mergeEquippedItems(env *Environment) {
 
 	itemList := make(map[string]*Item, len(set.Slots))
 
-	//pob:block:src/Modules/CalcSetup.lua:820-839
+	//pob:block:src/Modules/CalcSetup.lua:922-941
 	for _, s := range orderedItemSlots {
 		slotName, item, ok := resolveEquippedSlot(env, s, slotsByName, byID, activeWeaponSet, true)
 		if !ok {
 			continue
 		}
 		if item.Type == "Flask" {
-			//pob:block:src/Modules/CalcSetup.lua:833-835
+			//pob:block:src/Modules/CalcSetup.lua:935-937
 			if item.Base != nil && item.Base.SubType == "Life" &&
 				item.FlaskData["lifeTotal"] > env.ItemModDB.Multipliers["LifeFlaskRecovery"] {
 				env.ItemModDB.Multipliers["LifeFlaskRecovery"] = item.FlaskData["lifeTotal"]
@@ -272,7 +272,7 @@ func mergeEquippedItems(env *Environment) {
 		slot := slotsByName[s.name]
 
 		if item.Type == "Flask" {
-			//pob:block:src/Modules/CalcSetup.lua:927
+			//pob:block:src/Modules/CalcSetup.lua:1029
 			env.ItemModDB.Conditions["Have"+strings.Join(strings.Fields(item.BaseName), "")] = true
 			if slot.Active {
 				env.Flasks = append(env.Flasks, item)
@@ -285,7 +285,7 @@ func mergeEquippedItems(env *Environment) {
 			continue
 		}
 
-		//pob:block:src/Modules/CalcSetup.lua:943-947
+		//pob:block:src/Modules/CalcSetup.lua:1045-1049
 		if item.Type == "Tincture" {
 			if slot.Active {
 				env.Tinctures = append(env.Tinctures, item)
@@ -293,7 +293,7 @@ func mergeEquippedItems(env *Environment) {
 			continue
 		}
 
-		//pob:block:src/Modules/CalcSetup.lua:949-958
+		//pob:block:src/Modules/CalcSetup.lua:1051-1060
 		scale := 1.0
 		if item.Type == "Jewel" && item.Base != nil && item.Base.SubType == "Abyss" && s.parentSlot != "" {
 			parentItem := itemList[s.parentSlot]
@@ -330,7 +330,7 @@ func mergeEquippedItems(env *Environment) {
 				env.ItemModDB.ScaleAddList(asModList(srcList), scale)
 			}
 		} else if mirrored, isKalandra := kalandraMirroredMods(itemList, slotName, item); isKalandra {
-			//pob:block:src/Modules/CalcSetup.lua:1087-1125
+			//pob:block:src/Modules/CalcSetup.lua:1189-1227
 			env.ItemModDB.ScaleAddList(asModList(mirrored), scale)
 			own := make([]mod.Mod, 0)
 			for _, m := range srcList {
@@ -341,7 +341,7 @@ func mergeEquippedItems(env *Environment) {
 			env.ItemModDB.ScaleAddList(asModList(own), scale)
 			kalandraMirrorItemCounts(env, itemList, slotName, item)
 		} else if withheld, isIronMass := splitIronMassMods(item, slotName, srcList); isIronMass {
-			//pob:block:src/Modules/CalcSetup.lua:1051-1068
+			//pob:block:src/Modules/CalcSetup.lua:1153-1170
 			env.TheIronMass = moddb.NewModList()
 			env.TheIronMass.ScaleAddList(asModList(withheld), scale)
 			env.ItemModDB.ScaleAddList(asModList(srcList), scale)
@@ -352,11 +352,11 @@ func mergeEquippedItems(env *Environment) {
 			env.WeaponModList1.ScaleAddList(asModList(withheld), scale)
 			env.ItemModDB.ScaleAddList(asModList(kept), scale)
 		} else if widowHailMod, ok := quiverBonusMultiplier(env, itemList, item); ok {
-			//pob:block:src/Modules/CalcSetup.lua:1126-1134
+			//pob:block:src/Modules/CalcSetup.lua:1228-1236
 			env.ModDB.AddMod(mod.NewFloat("WidowHailMultiplier", mod.TypeBase, widowHailMod).Source("Widowhail"))
 			env.ItemModDB.ScaleAddList(mergedModList(srcList), scale*widowHailMod)
 		} else if bonusScale, ok := slotBonusScale(env, item); ok {
-			//pob:block:src/Modules/CalcSetup.lua:1142-1165
+			//pob:block:src/Modules/CalcSetup.lua:1244-1267
 			combined := mergedModList(srcList)
 			scaled := moddb.NewModList()
 			scaled.ScaleAddList(combined, bonusScale)
@@ -372,7 +372,7 @@ func mergeEquippedItems(env *Environment) {
 		updateItemCounts(env, item, slotName)
 	}
 	// Override empty socket calculation if set in config
-	//pob:block:src/Modules/CalcSetup.lua:1261-1265
+	//pob:block:src/Modules/CalcSetup.lua:1363-1367
 	if env.Build != nil {
 		for _, colour := range []string{"Red", "Green", "Blue", "White"} {
 			if v, ok := env.Build.GetNumberOptionOK("overrideEmpty" + colour + "Sockets"); ok {
@@ -386,7 +386,7 @@ func mergeEquippedItems(env *Environment) {
 
 const necromanticAegisNodeID = "45175"
 
-//pob:block:src/Modules/CalcSetup.lua:998
+//pob:block:src/Modules/CalcSetup.lua:1100
 func necromanticAegisAllocated(env *Environment) bool {
 	node, allocated := env.AllocatedNodes[necromanticAegisNodeID]
 	if !allocated {
@@ -400,7 +400,7 @@ func necromanticAegisAllocated(env *Environment) bool {
 	return node.Name != nil && *node.Name == "Necromantic Aegis"
 }
 
-//pob:block:src/Modules/CalcSetup.lua:1016-1047
+//pob:block:src/Modules/CalcSetup.lua:1118-1149
 func energyBladeReplacement(env *Environment, slotName string, item *Item) (*Item, bool) {
 	if slotName != "Weapon 1" && slotName != "Weapon 2" {
 		return nil, false
@@ -429,7 +429,7 @@ func energyBladeReplacement(env *Environment, slotName string, item *Item) (*Ite
 	return replacement, true
 }
 
-//pob:block:src/Modules/CalcSetup.lua:998-1015
+//pob:block:src/Modules/CalcSetup.lua:1100-1117
 func splitNecromanticAegisMods(env *Environment, item *Item, srcList []mod.Mod) ([]mod.Mod, []mod.Mod, bool) {
 	if item.Type != "Shield" {
 		return nil, nil, false
@@ -457,7 +457,7 @@ func splitNecromanticAegisMods(env *Environment, item *Item, srcList []mod.Mod) 
 	return withheld, kept, true
 }
 
-//pob:block:src/Modules/CalcSetup.lua:1069-1086
+//pob:block:src/Modules/CalcSetup.lua:1171-1188
 func kalandraMirroredMods(itemList map[string]*Item, slotName string, item *Item) ([]mod.Mod, bool) {
 	if item == nil || !strings.Contains(item.Name, "Kalandra's Touch") {
 		return nil, false
@@ -493,7 +493,7 @@ func kalandraMirroredMods(itemList map[string]*Item, slotName string, item *Item
 	return mirrored, true
 }
 
-//pob:block:src/Modules/CalcSetup.lua:1104-1118
+//pob:block:src/Modules/CalcSetup.lua:1206-1220
 func kalandraMirrorItemCounts(env *Environment, itemList map[string]*Item, slotName string, item *Item) {
 	if item == nil || !strings.Contains(item.Name, "Kalandra's Touch") {
 		return
@@ -535,7 +535,7 @@ func kalandraMirrorItemCounts(env *Environment, itemList map[string]*Item, slotN
 	env.ItemModDB.Multipliers[strings.ReplaceAll(other.BaseName, " ", "")+"Equipped"]++
 }
 
-//pob:block:src/Modules/CalcSetup.lua:1051-1068
+//pob:block:src/Modules/CalcSetup.lua:1153-1170
 func splitIronMassMods(item *Item, slotName string, srcList []mod.Mod) ([]mod.Mod, bool) {
 	if slotName != "Weapon 1" || item.Name != "The Iron Mass, Gladius" {
 		return nil, false
@@ -581,8 +581,8 @@ func splitDancingDervishMods(item *Item, slotName string, srcList []mod.Mod) ([]
 	return withheld, kept
 }
 
-//pob:block:src/Modules/CalcSetup.lua:605-608
-//pob:block:src/Modules/CalcSetup.lua:760-771
+//pob:block:src/Modules/CalcSetup.lua:707-710
+//pob:block:src/Modules/CalcSetup.lua:862-873
 func limitDisabledJewelSockets(env *Environment) map[int]bool {
 	if env.Build == nil || env.Build.GetBooleanOption("ignoreJewelLimits") {
 		return nil
@@ -694,7 +694,7 @@ func mergeTreeJewels(env *Environment, byID map[int]string) {
 			continue
 		}
 
-		//pob:block:src/Modules/CalcSetup.lua:959-964
+		//pob:block:src/Modules/CalcSetup.lua:1061-1066
 		scale := 1.0
 		if inc, ok := jewelIncEffectFromClassStart(item); ok {
 			scale += float64(float64(env.Spec.DistanceToClassStart[nodeID]) * (inc / 100))
@@ -719,7 +719,7 @@ func mergeTreeJewels(env *Environment, byID map[int]string) {
 	}
 }
 
-//pob:block:src/Modules/CalcSetup.lua:683-695
+//pob:block:src/Modules/CalcSetup.lua:785-797
 func updateAbyssJewelConditions(env *Environment, item *Item, parentSlot string) {
 	if item.Type != "Jewel" || item.Base == nil || item.Base.SubType != "Abyss" {
 		return
@@ -752,7 +752,7 @@ func updateAbyssJewelConditions(env *Environment, item *Item, parentSlot string)
 	env.ItemModDB.Multipliers[baseName]++
 }
 
-//pob:src/Modules/ModParser.lua:5201
+//pob:src/Modules/ModParser.lua:5248
 func jewelDataNumber(item *Item, key string) (float64, bool) {
 	for _, m := range item.Mods {
 		if m.Name() != "JewelData" {
@@ -785,7 +785,7 @@ func jewelIncEffectFromClassStart(item *Item) (float64, bool) {
 	return 0, false
 }
 
-//pob:block:src/Modules/CalcSetup.lua:1170-1172
+//pob:block:src/Modules/CalcSetup.lua:1272-1274
 func recordClassRestriction(env *Environment, item *Item) {
 	if item.ClassRestriction == "" {
 		return
@@ -796,7 +796,7 @@ func recordClassRestriction(env *Environment, item *Item) {
 	env.ItemClassRestrictions[strings.ReplaceAll(item.Title, " ", "")] = item.ClassRestriction
 }
 
-//pob:block:src/Modules/CalcSetup.lua:976-981
+//pob:block:src/Modules/CalcSetup.lua:1078-1083
 func assignActorWeaponData(env *Environment) {
 	env.Player.WeaponData1 = slotWeaponData(env.Player.ItemList, "Weapon 1", 1)
 	if env.Player.WeaponData1 == nil {
@@ -805,6 +805,17 @@ func assignActorWeaponData(env *Environment) {
 
 	if env.Player.WeaponData1.CountsAsDualWielding {
 		env.Player.WeaponData2 = slotWeaponData(env.Player.ItemList, "Weapon 1", 2)
+	} else if env.Player.ItemList["Weapon 2"] == nil {
+		//pob:block:src/Modules/CalcSetup.lua:1570-1578
+		// Hollow Palm Technique
+		if env.Player.ItemList["Weapon 1"] == nil && env.Player.ItemList["Gloves"] == nil {
+			for _, keystone := range env.ModDB.Mods["Keystone"] {
+				if keystone.Value().ValueList == "Hollow Palm Technique" {
+					env.Player.WeaponData2 = unarmedWeaponData(env.Spec.ClassID)
+					break
+				}
+			}
+		}
 	} else {
 		env.Player.WeaponData2 = slotWeaponData(env.Player.ItemList, "Weapon 2", 2)
 	}
@@ -813,7 +824,7 @@ func assignActorWeaponData(env *Environment) {
 	}
 }
 
-//pob:block:src/Modules/CalcSetup.lua:1464
+//pob:block:src/Modules/CalcSetup.lua:1566
 func slotWeaponData(itemList map[string]*ItemData, slotName string, weaponIdx int) *SkillData {
 	item := itemList[slotName]
 	if item == nil || len(item.WeaponData) < weaponIdx {
@@ -823,7 +834,7 @@ func slotWeaponData(itemList map[string]*ItemData, slotName string, weaponIdx in
 	return sd
 }
 
-//pob:block:src/Modules/Data.lua:567-575
+//pob:block:src/Modules/Data.lua:573-581
 func unarmedWeaponData(classID pob.ClassID) *SkillData {
 	sd := &SkillData{}
 	for k, v := range data.UnarmedWeaponData[classID] {
@@ -832,7 +843,7 @@ func unarmedWeaponData(classID pob.ClassID) *SkillData {
 	return sd
 }
 
-//pob:src/Modules/Common.lua:453-463
+//pob:src/Modules/Common.lua:512-522
 func mergeDB(dst *moddb.ModDB, src *moddb.ModDB) {
 	if src == nil {
 		return
@@ -846,7 +857,7 @@ func mergeDB(dst *moddb.ModDB, src *moddb.ModDB) {
 	}
 }
 
-//pob:block:src/Modules/CalcSetup.lua:807-841
+//pob:block:src/Modules/CalcSetup.lua:909-943
 func updateItemCounts(env *Environment, item *Item, slotName string) {
 	if item.Type == "Jewel" || item.Type == "Flask" || item.Type == "Tincture" || item.Type == "Graft" {
 		return
@@ -855,7 +866,7 @@ func updateItemCounts(env *Environment, item *Item, slotName string) {
 	var key string
 	switch item.Rarity {
 	case RarityUnique, RarityRelic:
-		//pob:block:src/Modules/CalcSetup.lua:1177-1179
+		//pob:block:src/Modules/CalcSetup.lua:1279-1281
 		if item.Foulborn {
 			env.ItemModDB.Multipliers["FoulbornUniqueItem"]++
 		}
@@ -917,7 +928,7 @@ func updateItemCounts(env *Environment, item *Item, slotName string) {
 	updateSocketCounts(env, item, slotName)
 }
 
-//pob:block:src/Modules/CalcSetup.lua:1206-1252
+//pob:block:src/Modules/CalcSetup.lua:1308-1354
 func updateSocketCounts(env *Environment, item *Item, slotName string) {
 	var socketedGems []pob.Gem
 	if env.Build != nil {
@@ -1004,7 +1015,7 @@ func socketedGemTags(gem pob.Gem) map[string]bool {
 	return nil
 }
 
-//pob:block:src/Modules/CalcSetup.lua:1200
+//pob:block:src/Modules/CalcSetup.lua:1302
 func typeItemMultiplierName(itemType string) string {
 	name := strings.ReplaceAll(itemType, " ", "")
 	if i := strings.LastIndex(name, "Handed"); i >= 0 {
@@ -1043,7 +1054,7 @@ func mergedModList(srcList []mod.Mod) *moddb.ModList {
 
 func mergeModSkippingNonAdditive(list *moddb.ModList, m mod.Mod) { mergeModIntoList(list, m, true) }
 
-//pob:src/Classes/ModList.lua:69-82
+//pob:src/Classes/ModList.lua:73-86
 func mergeModIntoList(list *moddb.ModList, m mod.Mod, skipNonAdditive bool) {
 	if t := m.Type(); t == mod.TypeBase || t == mod.TypeIncrease || t == mod.TypeMore {
 		for _, existing := range list.Mods() {
@@ -1064,7 +1075,7 @@ func mergeModIntoList(list *moddb.ModList, m mod.Mod, skipNonAdditive bool) {
 	}
 }
 
-//pob:block:src/Modules/CalcSetup.lua:1126-1128
+//pob:block:src/Modules/CalcSetup.lua:1228-1230
 func quiverBonusMultiplier(env *Environment, itemList map[string]*Item, item *Item) (float64, bool) {
 	if item.Type != "Quiver" || env.InitialNodeModDB == nil {
 		return 0, false
@@ -1081,11 +1092,11 @@ func quiverBonusMultiplier(env *Environment, itemList map[string]*Item, item *It
 	return 1 + percent/100, true
 }
 
-//pob:block:src/Modules/CalcSetup.lua:520-525
+//pob:block:src/Modules/CalcSetup.lua:622-627
 func resolveEquippedSlot(env *Environment, s itemSlot, slotsByName map[string]pob.Slot,
 	byID map[int]string, activeWeaponSet int, peek bool,
 ) (string, *Item, bool) {
-	//pob:block:src/Modules/CalcSetup.lua:708-711
+	//pob:block:src/Modules/CalcSetup.lua:810-813
 	if s.name == "Ring 3" && (env.InitialNodeModDB == nil || !env.InitialNodeModDB.Flag(nil, "AdditionalRingSlot")) {
 		return "", nil, false
 	}
@@ -1115,7 +1126,7 @@ func slotItem(env *Environment, slotName string, slotsByName map[string]pob.Slot
 	return item.Clone(), ok
 }
 
-//pob:block:src/Modules/CalcSetup.lua:712-723
+//pob:block:src/Modules/CalcSetup.lua:814-825
 func peekSlotItem(env *Environment, slotName string, slotsByName map[string]pob.Slot, byID map[int]string) (*Item, bool) {
 	if o := env.override; o != nil && o.RepSlotName != "" {
 		if slotName == o.RepSlotName {
@@ -1139,7 +1150,7 @@ func peekSlotItem(env *Environment, slotName string, slotsByName map[string]pob.
 	return peekItemCached(env.Cache, text), true
 }
 
-//pob:block:src/Modules/CalcSetup.lua:841-905
+//pob:block:src/Modules/CalcSetup.lua:943-1007
 func disabledItemSlots(env *Environment, slotsByName map[string]pob.Slot, byID map[int]string,
 	activeWeaponSet int,
 ) map[string]bool {
@@ -1204,7 +1215,7 @@ func disabledItemSlots(env *Environment, slotsByName map[string]pob.Slot, byID m
 	return resolveDisablerChains(itemDisablers, itemDisabled)
 }
 
-//pob:block:src/Modules/CalcSetup.lua:879-904
+//pob:block:src/Modules/CalcSetup.lua:981-1006
 func resolveDisablerChains(itemDisablers, itemDisabled map[string]string) map[string]bool {
 	starts := make([]string, 0, len(itemDisablers))
 	for k := range itemDisablers {

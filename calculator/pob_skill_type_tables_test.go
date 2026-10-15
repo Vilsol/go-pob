@@ -27,10 +27,10 @@ func TestSupportExcludeTypesComeFromThePin(t *testing.T) {
 			SkillTypes:   st,
 		}
 	}
-	if !CalcCanGrantedEffectSupportActiveSkill(ruthless, active(data.SkillTypeAttack, data.SkillTypeMelee, data.SkillTypeMeleeSingleTarget)) {
+	if !CalcCanGrantedEffectSupportActiveSkill(ruthless, active(data.SkillTypeAttack, data.SkillTypeMelee, data.SkillTypeMeleeSingleTarget), false) {
 		t.Fatal("CONTROL: Ruthless must support an untriggered melee single-target attack")
 	}
-	if CalcCanGrantedEffectSupportActiveSkill(ruthless, active(data.SkillTypeAttack, data.SkillTypeMelee, data.SkillTypeMeleeSingleTarget, data.SkillTypeTriggered)) {
+	if CalcCanGrantedEffectSupportActiveSkill(ruthless, active(data.SkillTypeAttack, data.SkillTypeMelee, data.SkillTypeMeleeSingleTarget, data.SkillTypeTriggered), false) {
 		t.Error("Ruthless supported a Triggered skill; PoB's excludeSkillTypes carries Triggered")
 	}
 }

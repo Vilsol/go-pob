@@ -1,14 +1,14 @@
 {
   "_note": "The identity of the Path of Building working tree that testdata/oracle-3.18/ was generated from. Verified by task pob-pin. content_sha256 is the ASSERTION and covers the working-tree bytes of every git-tracked file under `scope`. `sha` and `describe` are ADVISORY: the two fork commits are local and unpushed, so a fresh clone replaying them as patches has identical content under different commit objects, and asserting the SHA would fail the recovery procedure this pin exists to enable.",
-  "content_sha256": "0730c81085debcce3617bd994ce83acadb9f44f0bc5a29b2ec7ebd7ea9d56995",
-  "describe": "upstream-v2.67.2-4-ge4059337f",
+  "content_sha256": "935b1871ed28d927045825dd90eae164863a4f62cced418b389ab5b6f74ce3c1",
+  "describe": "upstream-v2.67.2-80-gfcf91003c",
   "dirty_when_recorded": false,
-  "file_count": 1351,
+  "file_count": 1361,
   "remote": "git@github.com:Vilsol/PathOfBuilding.git",
   "scope": [
     "src",
     "runtime/lua"
   ],
   "scope_note": "src/ is the calculation. runtime/lua/ holds the vendored xml/dkjson/sha1 libraries the dumper loads over LUA_PATH, so it is load-bearing for the oracle too. Tracked files only: src/Data/TimelessJewelData/ carries five 0-byte untracked .bin files PoB never opens, and hashing them would make the pin unstable for no reason.",
-  "sha": "e4059337f646bbdabad031843b5e804c160e4549"
+  "sha": "fcf91003ca40490332435c7bfaa9c8baf1d64abb"
 }

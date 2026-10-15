@@ -15,7 +15,7 @@ type CompareSkillBreakdownRow struct {
 	SourceName string
 }
 
-//pob:src/Classes/CompareCalcsHelpers.lua:355-394
+//pob:src/Classes/CompareCalcsHelpers.lua:364-403
 func (env *Environment) CompareSkillBreakdown(name string) []CompareSkillBreakdownRow {
 	if env == nil || env.Player == nil {
 		return nil

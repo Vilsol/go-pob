@@ -19,9 +19,8 @@ import (
 // with no other navigation, and sorting the keys would make this file undiffable against the
 // hand transcription it replaces.
 //
-// 714 entries, 772 mods, of which 769 are emitted and 3 are not
+// 714 entries, 772 mods, of which 770 are emitted and 2 are not
 // representable and are omitted rather than mapped lossily:
-//   - 1 unhandled mod type MIN [unverifiable: the mod type is data-dependent]
 //   - 1 mod.flags holds a tag table (upstream arity bug), so the mod has no tags and a nonsense flag set [pob:src/Data/Skills/act_int.lua:2621]
 //   - 1 non-dict tag: a bare int in the tags array, from a skill() call written as if it took flags positionally [pob:Modules/Data.lua:52]
 //
@@ -30,8 +29,8 @@ import (
 //
 // ⚠️ PoB declares these keys TWICE and a Lua table constructor assigns duplicates in
 // order, so the LAST block wins. That is what is emitted here:
-//   triggered_by_kinetic_instability_support (first at :230, again at :233)
-//   mine_throwing_speed_+%_per_frenzy_charge (first at :1826, again at :1835)
+//   triggered_by_kinetic_instability_support (first at :229, again at :232)
+//   mine_throwing_speed_+%_per_frenzy_charge (first at :1825, again at :1834)
 
 func skill(dataKey string, dataValue float64) mod.Mod {
 	// Stored by value, matching every other SkillData mod; consumers cast to
@@ -190,7 +189,10 @@ var SkillStatMap = map[string]*StatMap{
 		Mods: []mod.Mod{skill("poisonDurationIsSkillDuration", 1)},
 	},
 	"cannot_poison_poisoned_enemies": {
-		Mods: []mod.Mod{mod.NewFlag("Condition:NonPoisonedOnly", true)},
+		Mods: []mod.Mod{
+			mod.NewFlag("Condition:NonPoisonedOnly", true),
+			mod.NewFloat("PoisonStackLimit", mod.TypeMIN, 1),
+		},
 	},
 	"cannot_inflict_additional_poisons": {
 		Mods: []mod.Mod{mod.NewFlag("CannotMultiplePoison", true)},
@@ -624,7 +626,7 @@ var SkillStatMap = map[string]*StatMap{
 		Mods: []mod.Mod{mod.NewFloat("AreaOfEffect", mod.TypeMore, 0).Tag(mod.Condition("CastOnFrostbolt"))},
 	},
 	"active_skill_area_of_effect_radius_+%_final": {
-		Mods: []mod.Mod{mod.NewFloat("AreaOfEffect", mod.TypeMore, 0)},
+		Mods: []mod.Mod{mod.NewFloat("AreaOfEffectRadius", mod.TypeMore, 0)},
 	},
 	"active_skill_area_of_effect_+%_final": {
 		Mods: []mod.Mod{mod.NewFloat("AreaOfEffect", mod.TypeMore, 0)},

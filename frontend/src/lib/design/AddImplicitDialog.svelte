@@ -10,7 +10,6 @@
   import { sortByValue, type CraftApi, type ImplicitChoices } from './crafting';
   import type { ImpactBlock, TipProps } from './items';
 
-  // ItemsTab.lua:3774-4136
   type Props = { open?: boolean; craft: CraftApi };
   let { open = $bindable(false), craft }: Props = $props();
 
@@ -59,7 +58,8 @@
     const m = mod;
     compare = [];
     if (!m || !open) return;
-    void craft.modCompare?.(m.lines.map((l) => (m.modTags.length ? `{tags:${m.modTags.join(',')}}` : '') + l)).then((b) => {
+    const lines = m.lines.map((l) => (m.modTags.length ? `{tags:${m.modTags.join(',')}}` : '') + l);
+    void craft.modCompare?.(lines, sourceId === 'VESTIGIAL').then((b) => {
       if (m === mod) compare = b;
     });
   });
@@ -102,22 +102,24 @@
         ><Select
           class="h-7.5"
           aria-label="Type"
-          options={groupOrder.map((k, i) => ({ value: String(i), label: groups[k].label }))}
+          options={groupOrder.map((k, i) => ({ value: String(i), label: groups[k].label.replace(/\^x[0-9A-Fa-f]{6}|\^\d/g, '') }))}
           value={String(group)}
           onchange={(e: Event & { currentTarget: HTMLSelectElement }) => {
             group = Number(e.currentTarget.value);
             pick = 0;
           }} /></FloatingLabel>
-      <FloatingLabel label="Modifier"
-        ><Dropdown
-          class="block h-7.5 w-full"
-          searchable
-          aria-label="Modifier"
-          options={modOrder.map((k, i) => ({ value: String(i), label: current.mods[k].label }))}
-          value={String(pick)}
-          onchange={(v: string) => {
-            pick = Number(v);
-          }} /></FloatingLabel>
+      {#if sourceId !== 'VESTIGIAL'}
+        <FloatingLabel label="Modifier"
+          ><Dropdown
+            class="block h-7.5 w-full"
+            searchable
+            aria-label="Modifier"
+            options={modOrder.map((k, i) => ({ value: String(i), label: current.mods[k].label }))}
+            value={String(pick)}
+            onchange={(v: string) => {
+              pick = Number(v);
+            }} /></FloatingLabel>
+      {/if}
       {#if mod}
         <div role="group" aria-label="Implicit comparison" class="flex flex-col gap-1 font-mono text-13">
           {#each mod.lines as l, k (k)}<span class="font-sans"><PobText text={'^7' + l} /></span>{/each}

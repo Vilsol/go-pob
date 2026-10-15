@@ -53,7 +53,7 @@ type flavourUnique struct {
 }
 
 //pob:block:src/Export/Scripts/flavourText.lua:4-8
-//pob:block:src/Export/Scripts/flavourText.lua:123-197
+//pob:block:src/Export/Scripts/flavourText.lua:123-199
 func dumpFlavourText() (any, error) {
 	pobDir := os.Getenv("POB_DIR")
 	if pobDir == "" {

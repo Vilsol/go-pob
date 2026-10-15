@@ -31,7 +31,7 @@ type OutputMode string
 const (
 	OutputModeMain  = OutputMode("MAIN")
 	OutputModeCalcs = OutputMode("CALCS")
-	//pob:src/Modules/Calcs.lua:125-135
+	//pob:src/Modules/Calcs.lua:91-101
 	OutputModeCalculator = OutputMode("CALCULATOR")
 )
 
@@ -48,6 +48,7 @@ type Environment struct {
 	Cache           *EnvironmentCache
 	Build           *pob.PathOfBuilding
 	Mode            OutputMode
+	BuildBreakdown  bool
 	Spec            *PassiveSpec
 	override        *CalcOverride
 	itemText        map[int]string
@@ -138,8 +139,9 @@ type Environment struct {
 
 	specAllocCounts allocatedNodeCounts
 
-	nodeModList *moddb.ModList
-	accelerated bool
+	nodeModList        *moddb.ModList
+	grantedSkillsNodes []grantedSkill
+	accelerated        bool
 
 	guardCandidates     []string
 	allyCurseCandidates []string
@@ -211,7 +213,7 @@ func (a *Actor) MonsterTags() ([]string, bool) {
 
 var _ moddb.ActorLinks = (*Actor)(nil)
 
-//pob:block:src/Classes/ModStore.lua:592
+//pob:block:src/Classes/ModStore.lua:635
 func (a *Actor) AddedUsingCondition(v string) (bool, bool) {
 	allOneH := (*SkillData)(nil)
 	switch {
@@ -250,7 +252,7 @@ func (a *Actor) RelatedModDB(name string) moddb.ModStoreFuncs {
 	case "parent":
 		related = a.Parent
 	case "player":
-		//pob:block:src/Classes/ModStore.lua:37-43
+		//pob:block:src/Classes/ModStore.lua:48-54
 		switch {
 		case a.Player != nil:
 			related = a.Player
@@ -274,7 +276,7 @@ func (a *Actor) RelatedModDB(name string) moddb.ModStoreFuncs {
 
 var _ moddb.ReservingAuras = (*Actor)(nil)
 
-//pob:block:src/Classes/ModStore.lua:283-289
+//pob:block:src/Classes/ModStore.lua:322-328
 func (a *Actor) reservingSkillData(skillName, summonSkillName string) (*SkillData, bool) {
 	for _, activeSkill := range a.ActiveSkillList {
 		if activeSkill == nil || !activeSkill.SkillTypes[data.SkillTypeHasReservation] || activeSkill.SkillFlags[SkillFlagDisable] {
@@ -525,6 +527,7 @@ const (
 	SkillFlagMultiStage       = SkillFlag("multiStage")
 	SkillFlagTriggered        = SkillFlag("triggered")
 	SkillFlagFocused          = SkillFlag("focused")
+	SkillFlagGuaranteedChill  = SkillFlag("guaranteedChill")
 )
 
 type SkillData struct {
@@ -791,7 +794,7 @@ func (g *GrantedEffect) Name() string {
 	return g.Raw.ID
 }
 
-//pob:block:src/Modules/CalcActiveSkill.lua:287
+//pob:block:src/Modules/CalcActiveSkill.lua:296
 func (g *GrantedEffect) WeaponTypes() []data.ItemClassName {
 	id := g.ID()
 	if alias, aliased := skillFlagIDAliases[id]; aliased {
@@ -854,12 +857,13 @@ type RequirementsTable struct {
 }
 
 type GemEffect struct {
-	GrantedEffect *GrantedEffect
-	Level         int
-	Quality       int
-	QualityID     string
-	SrcInstance   *pob.Gem
-	GemData       *poe.SkillGem
+	GrantedEffect          *GrantedEffect
+	Level                  int
+	AppliesToGrantedSkills bool
+	Quality                int
+	QualityID              string
+	SrcInstance            *pob.Gem
+	GemData                *poe.SkillGem
 
 	SocketQuality   int
 	ItemQuality     int

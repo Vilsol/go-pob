@@ -7,7 +7,7 @@ import (
 
 // TestTriggerCastOnBlockUniqueCalcsPass: The CALCS pass's main skill is the one a Svalinn / Festering Resentment "Cast on Block" support triggers.
 //
-//pob:src/Modules/CalcTriggers.lua:1498-1511
+//pob:src/Modules/CalcTriggers.lua:1503-1516
 func TestTriggerCastOnBlockUniqueCalcsPass(t *testing.T) {
 	requireGameData(t, "3.29")
 	for _, tc := range []struct {

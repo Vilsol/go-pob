@@ -37,7 +37,7 @@ func (m *MiscCalculator) CalcConfig(input pob.Input, remove bool) *Environment {
 	}).Calc(&CalcOverride{})
 }
 
-//pob:block:src/Classes/ConfigTab.lua:53-68
+//pob:block:src/Classes/ConfigTab.lua:62-77
 func (m *MiscCalculator) CalcCustomModGroup(i int) *Environment {
 	return m.over(func(b *pob.PathOfBuilding) {
 		b.Config.Inputs = slices.Clone(b.Config.Inputs)

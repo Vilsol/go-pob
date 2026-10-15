@@ -42,7 +42,7 @@ func gemIsSupport(gem *poe.SkillGem) bool {
 	return pobGem.Tags["support"]
 }
 
-//pob:block:src/Classes/SkillsTab.lua:439-451
+//pob:block:src/Classes/SkillsTab.lua:466-478
 func pobGemForVariant(gem *poe.SkillGem, grantedEffectID string) (raw2.PoBGem, bool) {
 	if grantedEffectID != "" {
 		if row, ok := raw2.GemVariants[grantedEffectID]; ok {
@@ -77,7 +77,7 @@ func primaryGrantedEffectOf(gemData *poe.SkillGem) *poe.GrantedEffect {
 
 var vaalTransfiguredAlts = [...]string{"AltX", "AltY"}
 
-//pob:block:src/Modules/Data.lua:1098-1119
+//pob:block:src/Modules/Data.lua:1127-1148
 func secondaryGrantedEffectOf(gemData *poe.SkillGem, grantedEffectID string, variantID *string) *poe.GrantedEffect {
 	pobGem, ok := pobGemForVariant(gemData, grantedEffectID)
 	if !ok || pobGem.SecondaryGrantedEffectID == "" {
@@ -96,7 +96,7 @@ func secondaryGrantedEffectOf(gemData *poe.SkillGem, grantedEffectID string, var
 	return poe.GrantedEffectByID(pobGem.SecondaryGrantedEffectID)
 }
 
-//pob:src/Modules/CalcTools.lua:154-167
+//pob:src/Modules/CalcTools.lua:163-176
 func CalcGemIsTypeVariant(gem *poe.SkillGem, grantedEffectID string, t string) bool {
 	t = strings.ToLower(t)
 	if t == "all" {
@@ -117,7 +117,7 @@ func CalcGemIsTypeVariant(gem *poe.SkillGem, grantedEffectID string, t string) b
 	return gemRowIsType(pobGem, t, true)
 }
 
-//pob:block:src/Modules/Data.lua:1098-1117
+//pob:block:src/Modules/Data.lua:1127-1146
 func vaalTransfiguredGemRow(gem *poe.SkillGem, secondaryID string) (raw2.PoBGem, bool) {
 	if gem == nil || !gem.IsVaalGem {
 		return raw2.PoBGem{}, false
@@ -151,7 +151,7 @@ func gemIDsAreSame(row raw2.PoBGem, typeName string) bool {
 	return mine != "" && mine == typeID
 }
 
-//pob:block:src/Modules/CalcTools.lua:277-281
+//pob:block:src/Modules/CalcTools.lua:286-290
 func dropVaalGameID(row raw2.PoBGem, gameID string) string {
 	if row.Tags["vaal"] && row.SecondaryGrantedEffectID != "" {
 		return raw2.GemGameIDForGrantedEffectID[row.SecondaryGrantedEffectID]
@@ -159,7 +159,7 @@ func dropVaalGameID(row raw2.PoBGem, gameID string) string {
 	return gameID
 }
 
-//pob:src/Modules/CalcTools.lua:154-167
+//pob:src/Modules/CalcTools.lua:163-176
 func CalcGemIsType(gem *poe.SkillGem, t string) bool {
 	t = strings.ToLower(t)
 
@@ -245,7 +245,7 @@ func supportTypeExpression(pob map[string][]string, grantedEffect *poe.GrantedEf
 // local statType = 0.7
 // local req = round( ( 20 + ( level - 3 ) * 3 ) * ( multi / 100 ) ^ 0.9 * statType )
 //
-//pob:src/Modules/CalcTools.lua:170-180
+//pob:src/Modules/CalcTools.lua:179-189
 func getGemStatRequirement(level float64, isSupport bool, multi float64) float64 {
 	if multi == 0 {
 		return 0
@@ -314,7 +314,7 @@ func CalcValidateGemLevel(gemInstance *GemEffect) {
 	}
 }
 
-//pob:src/Modules/CalcTools.lua:147-206
+//pob:src/Modules/CalcTools.lua:156-215
 func CalcBuildSkillInstanceStats(skillInstance *GemEffect, grantedEffect *GrantedEffect) map[string]float64 {
 	stats := make(map[string]float64)
 	allQualities := grantedEffect.Raw.GetEffectQualityStats()
@@ -348,7 +348,7 @@ func CalcBuildSkillInstanceStats(skillInstance *GemEffect, grantedEffect *Grante
 
 	var availableEffectiveness *float64
 
-	//pob:block:src/Modules/CalcTools.lua:193
+	//pob:block:src/Modules/CalcTools.lua:202
 	actorLevel := float64(level.LevelRequirement)
 	if skillInstance.ActorLevel != nil {
 		actorLevel = float64(*skillInstance.ActorLevel)
@@ -384,7 +384,7 @@ func CalcBuildSkillInstanceStats(skillInstance *GemEffect, grantedEffect *Grante
 				}
 				statValue = math.Round(*availableEffectiveness * level.Values[index])
 			} else if statInterpolation == 2 {
-				//pob:src/Modules/CalcTools.lua:209-215
+				//pob:src/Modules/CalcTools.lua:218-224
 				ordered := make([]int, 0, len(levels))
 				for lvl := range levels {
 					ordered = append(ordered, lvl)
@@ -428,8 +428,8 @@ func CalcBuildSkillInstanceStats(skillInstance *GemEffect, grantedEffect *Grante
 
 // active skill
 //
-//pob:src/Modules/CalcTools.lua:84-152
-func CalcCanGrantedEffectSupportActiveSkill(grantedEffect *GrantedEffect, activeSkill *ActiveSkill) bool {
+//pob:src/Modules/CalcTools.lua:84-161
+func CalcCanGrantedEffectSupportActiveSkill(grantedEffect *GrantedEffect, activeSkill *ActiveSkill, appliesToGrantedSkills bool) bool {
 	if activeSkill.ActiveEffect.GrantedEffect.Raw.CannotBeSupported {
 		return false
 	}
@@ -438,8 +438,8 @@ func CalcCanGrantedEffectSupportActiveSkill(grantedEffect *GrantedEffect, active
 		return false
 	}
 
-	//pob:block:src/Modules/CalcTools.lua:93-96
-	if grantedEffect.FromItem() && grantedEffect.IsSupport() &&
+	//pob:block:src/Modules/CalcTools.lua:94-97
+	if !appliesToGrantedSkills && grantedEffect.FromItem() && grantedEffect.IsSupport() &&
 		(activeSkill.ActiveEffect.GrantedEffect.FromItem() || srcInstanceFromItem(activeSkill)) {
 		return false
 	}
@@ -448,12 +448,27 @@ func CalcCanGrantedEffectSupportActiveSkill(grantedEffect *GrantedEffect, active
 		return false
 	}
 
-	//pob:block:src/Modules/CalcTools.lua:116-150
+	//pob:block:src/Modules/CalcTools.lua:119-159
 	if supportTypes := grantedEffect.WeaponTypes(); len(supportTypes) > 0 {
 		activeTypeLookup := make(map[data.ItemClassName]bool)
+		var activeTypes []data.ItemClassName
 		if activeSkill.ActiveEffect != nil && activeSkill.ActiveEffect.GrantedEffect != nil {
-			for _, activeType := range activeSkill.ActiveEffect.GrantedEffect.WeaponTypes() {
+			activeTypes = activeSkill.ActiveEffect.GrantedEffect.WeaponTypes()
+		}
+		if len(activeTypes) > 0 {
+			for _, activeType := range activeTypes {
 				activeTypeLookup[activeType] = true
+			}
+		} else if activeSkill.SkillTypes[data.SkillType("SkillGrantedBySupport")] {
+			//pob:block:src/Modules/CalcTools.lua:127-135
+			// Skills granted by supports do not have their own weaponTypes, so check the equipped weapons instead.
+			if actor := activeSkill.Actor; actor != nil {
+				if actor.WeaponData1 != nil && actor.WeaponData1.Type != "" {
+					activeTypeLookup[actor.WeaponData1.Type] = true
+				}
+				if actor.WeaponData2 != nil && actor.WeaponData2.Type != "" {
+					activeTypeLookup[actor.WeaponData2.Type] = true
+				}
 			}
 		}
 
@@ -483,7 +498,7 @@ func CalcCanGrantedEffectSupportActiveSkill(grantedEffect *GrantedEffect, active
 	}
 
 	if activeSkill.SummonSkill != nil {
-		return CalcCanGrantedEffectSupportActiveSkill(grantedEffect, activeSkill.SummonSkill)
+		return CalcCanGrantedEffectSupportActiveSkill(grantedEffect, activeSkill.SummonSkill, appliesToGrantedSkills)
 	}
 
 	exclude := supportTypeExpression(raw2.SkillExcludeSkillTypes, grantedEffect.Raw, grantedEffect.Raw.GetExcludeTypes())

@@ -2,23 +2,25 @@
   import Dialog from './Dialog.svelte';
   import Button from './Button.svelte';
 
-  // ConfigTab.lua:1305-1550
   const EMPTY = 'No matching modifiers found';
+  // ConfigModBrowser.lua:271-278
+  const HELP =
+    'This menu currently contains supported mod lines from tree nodes and item modifiers only.\n\nThis menu is not a representation of what PoB can parse, and this is only a limited list of mods. Additionally, some mods might be local to items and might not function in custom modifiers.\n\nA mod being supported does not necessarily mean that it will be included in calculations, and only means that the mod parser accepts it.';
   type Props = {
     open?: boolean;
-    /* ConfigTab.lua:1450-1489 */
+    /* ConfigModBrowser.lua:113-150 */
     list: (search: string) => Promise<string[]>;
-    /* ConfigTab.lua:1496-1505 */
-    supported: (line: string) => Promise<boolean>;
+    /* ConfigModBrowser.lua:243-250 */
+    sources: (line: string) => Promise<string[]>;
     onadd: (line: string) => void;
   };
-  let { open = $bindable(false), list, supported, onadd }: Props = $props();
+  let { open = $bindable(false), list, sources, onadd }: Props = $props();
 
   let search = $state('');
   let lines = $state.raw<string[]>([]);
   let sel = $state(0);
-  let tip = $state<{ line: string; ok?: boolean }>();
-  const known = new Map<string, boolean>();
+  let tip = $state<{ line: string; from?: string[] }>();
+  const known = new Map<string, string[]>();
   let seq = 0;
   $effect(() => {
     if (!open) return;
@@ -37,12 +39,12 @@
   });
   const hover = (line: string) => {
     if (line === EMPTY) return;
-    tip = { line, ok: known.get(line) };
+    tip = { line, from: known.get(line) };
     if (known.has(line)) return;
-    supported(line)
-      .then((ok) => {
-        known.set(line, ok);
-        if (tip?.line === line) tip = { line, ok };
+    sources(line)
+      .then((from) => {
+        known.set(line, from);
+        if (tip?.line === line) tip = { line, from };
       })
       .catch(() => {});
   };
@@ -77,11 +79,13 @@
       <input class="input h-7 grow" type="search" aria-label="Search modifiers" autofocus bind:value={search} />
     </label>
     <p class="m-0 min-h-5 text-12" role="status">
-      {#if tip}Supported: {#if tip.ok === undefined}…{:else if tip.ok}<span class="text-better">Yes</span>{:else}<span class="text-worse">No</span>{/if}{/if}
+      {#if tip}{tip.from ? tip.from.join(' · ') : '…'}{/if}
     </p>
   </div>
   {#snippet actions()}
     <Button variant="primary" disabled={!canAdd} onclick={add}>Add</Button>
     <Button onclick={() => (open = false)}>Cancel</Button>
+    <!-- ConfigModBrowser.lua:267-270 -->
+    <span class="cursor-help px-1 text-13 text-text-2" title={HELP}>?</span>
   {/snippet}
 </Dialog>

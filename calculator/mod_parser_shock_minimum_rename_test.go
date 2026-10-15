@@ -7,7 +7,7 @@ import (
 
 // TestShockMinimumRename pins ModParser.lua:2768, whose output this tree spelled `ShockBase` where upstream spells `ShockMinimum`.
 //
-//pob:src/Modules/ModParser.lua:2768
+//pob:src/Modules/ModParser.lua:2778
 func TestShockMinimumRename(t *testing.T) {
 	requireGameData(t, "3.29")
 

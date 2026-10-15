@@ -8,7 +8,7 @@ import (
 
 // TestWeaponLocalElementalDamageScalesAddedRanges: Item.lua:2262-2265 scales a weapon's LOCAL added elemental ranges by `Local<type>Damage INC` plus a once-hoisted `LocalElementalDamage INC`.
 //
-//pob:block:src/Classes/Item.lua:2250
+//pob:block:src/Classes/Item.lua:2298
 func TestWeaponLocalElementalDamageScalesAddedRanges(t *testing.T) {
 	const claw = "Rarity: RARE\nTest Claw\nImperial Claw\nItem Level: 84\n"
 

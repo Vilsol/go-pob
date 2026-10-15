@@ -67,7 +67,9 @@ func TestCalcsModSectionAgainstPoB(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			env = BuildOutputWithCache(&Calculator{PoB: build}, OutputModeCalcs, NewEnvironmentCache())
+			calc, cache := &Calculator{PoB: build}, NewEnvironmentCache()
+			BuildOutputWithCache(calc, OutputModeMain, cache)
+			env = BuildOutputWithCache(calc, OutputModeCalcs, cache)
 			envs[c.File] = env
 		}
 		want := make([]string, 0, len(c.Rows))

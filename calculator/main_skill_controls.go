@@ -94,7 +94,7 @@ func (env *Environment) CalcsSkillControls() *MainSkillControls {
 	return env.skillSelectControls(true)
 }
 
-//pob:src/Modules/Build.lua:1549-1647
+//pob:src/Modules/Build.lua:1618-1716
 func (env *Environment) skillSelectControls(calcs bool) *MainSkillControls {
 	if env == nil || env.Build == nil {
 		return nil
@@ -126,12 +126,12 @@ func (env *Environment) skillSelectControls(calcs bool) *MainSkillControls {
 		SkillEnabled:    len(displaySkillList) > 1,
 		MainActiveSkill: mainActiveSkill,
 	}
-	//pob:block:src/Modules/Build.lua:1868-1871
+	//pob:block:src/Modules/Build.lua:2112-2115
 	if !calcs && env.Player != nil && env.Player.MainSkill != nil && env.Player.MainSkill.SkillFlags[SkillFlagDisable] {
 		controls.SkillDisabled = true
 		controls.DisableReason = env.Player.MainSkill.DisableReason
 	}
-	//pob:block:src/Modules/Build.lua:1837-1863
+	//pob:block:src/Modules/Build.lua:2081-2107
 	if !calcs && env.Player != nil && env.Player.MainSkill != nil {
 		controls.InfoMessage, controls.InfoMessage2 = env.Player.MainSkill.infoMessage, env.Player.MainSkill.infoMessage2
 	}
@@ -208,7 +208,7 @@ func (env *Environment) skillSelectControls(calcs bool) *MainSkillControls {
 				if itemSet.Title != nil {
 					label = *itemSet.Title
 				}
-				//pob:block:src/Modules/Build.lua:544-551
+				//pob:block:src/Modules/Build.lua:551-558
 				tooltip := append(ItemSetTooltip(env.Build, itemSet), "", colorTip+"Tip: You can drag items from the Items tab onto this dropdown to equip them onto the minion.")
 				controls.Minions = append(controls.Minions, MinionOption{Label: label, ItemSetID: id, Tooltip: tooltip})
 				if id == selected {
@@ -261,7 +261,7 @@ func stageBuf(skillStageCount int, stagesMax float64) string {
 	return "1"
 }
 
-//pob:src/Classes/PassiveSpec.lua:822-842
+//pob:src/Classes/PassiveSpec.lua:846-866
 func (env *Environment) CountAllocNodes() (int, int, int, int) {
 	used, ascUsed, secondaryAscUsed, sockets := 0, 0, 0, 0
 	if env == nil || env.Build == nil {
@@ -281,7 +281,7 @@ func (env *Environment) CountAllocNodes() (int, int, int, int) {
 		if !ok || (node.Name == nil && node.Skill == nil) {
 			continue
 		}
-		//pob:block:src/Classes/PassiveSpec.lua:283,src/Classes/PassiveSpec.lua:1393-1420
+		//pob:block:src/Classes/PassiveSpec.lua:294,src/Classes/PassiveSpec.lua:1425-1452
 		if node.IsMastery != nil && *node.IsMastery && !masteryEffectSelected(env.Spec, id, node) {
 			continue
 		}

@@ -13,6 +13,9 @@
   import { logError } from '$lib/utils';
   import type { calculator } from '$lib/types';
   import type { StatLine } from '$lib/display/stat_list';
+  import { sidebarBreakdown } from '$lib/display/sidebar_breakdown';
+  import { calcSections } from '$lib/calcs/calc_sections';
+  import { checkFlag } from '$lib/calcs/check_flag';
 
   const main = new MainGroup();
 
@@ -21,6 +24,17 @@
   let library = $state.raw<SpectreRow[]>([]);
   let spectres = $state.raw<SpectreRow[]>([]);
   const row = (r: calculator.SpectreRow): SpectreRow => ({ id: r.ID, name: r.Name, skills: [...(r.Skills ?? [])], tooltip: [...(r.Tooltip ?? [])] });
+  // Build.lua:1764-1908
+  // CalcBreakdownControl.lua:75-83
+  const sections = async (line: StatLine) => {
+    if (!line.bd || !syncWrap) return undefined;
+    const minion = !!line.minion;
+    const key = await syncWrap.SidebarBreakdownKey({ ...line.bd, minion });
+    if (key === undefined) return undefined;
+    const actor = minion ? $outputs?.Minion : $outputs;
+    const cells = sidebarBreakdown(calcSections, key, line.bd.modNames, line.bd.ignoredSections).filter((c) => checkFlag(c, actor));
+    return syncWrap.SidebarBreakdownSections(minion, cells);
+  };
   const openSpectres = () => {
     syncWrap
       ?.GetSpectreLibrary()
@@ -42,7 +56,7 @@
     onmaingroup={(i: number) => main.select(i)}
     oncontrol={(field: MainSkillField, v: number | undefined) => writeMainSkill($outputs?.MainSkill, field, v)}
     onspectres={openSpectres}
-    steps={(line: StatLine) => (line.stat ? syncWrap?.SidebarBreakdown(line.stat, !!line.minion) : undefined)}
+    steps={sections}
     onbreakdown={() => void goto(`${base}/calcs`)} />
 {/if}
 <SpectreLibrary bind:open={spectresOpen} {library} {spectres} onsave={(ids: string[]) => syncWrap?.SetSpectres(ids).catch(logError)} />

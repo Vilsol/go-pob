@@ -51,7 +51,7 @@ type MinionInfo struct {
 // spectre_data.go, whose init() merges it in exactly as src/Modules/Data.lua:1019-1022
 // does.
 var Minions = map[string]*MinionInfo{
-	// src/Data/Minions.lua:9
+	// src/Data/Minions.lua:11
 	"RaisedZombie": {
 		Name:            "Raised Zombie",
 		Life:            3.75,
@@ -72,7 +72,7 @@ var Minions = map[string]*MinionInfo{
 			mod.NewFloat("StunThreshold", mod.TypeIncrease, 30).Source("Minion:Raised Zombie"),
 		},
 	},
-	// src/Data/Minions.lua:36
+	// src/Data/Minions.lua:38
 	"SummonedChaosGolem": {
 		Name:            "Chaos Golem",
 		Life:            6.9,
@@ -94,7 +94,7 @@ var Minions = map[string]*MinionInfo{
 			mod.NewFloat("LifeRegenPercent", mod.TypeBase, 1).Source("Minion:Chaos Golem"),
 		},
 	},
-	// src/Data/Minions.lua:70
+	// src/Data/Minions.lua:72
 	"SummonedFlameGolem": {
 		Name:            "Flame Golem",
 		Life:            5.82,
@@ -116,7 +116,7 @@ var Minions = map[string]*MinionInfo{
 			mod.NewFloat("LifeRegenPercent", mod.TypeBase, 1).Source("Minion:Flame Golem"),
 		},
 	},
-	// src/Data/Minions.lua:105
+	// src/Data/Minions.lua:107
 	"SummonedIceGolem": {
 		Name:            "Ice Golem",
 		Life:            5.82,
@@ -137,7 +137,7 @@ var Minions = map[string]*MinionInfo{
 			mod.NewFloat("LifeRegenPercent", mod.TypeBase, 1).Source("Minion:Ice Golem"),
 		},
 	},
-	// src/Data/Minions.lua:139
+	// src/Data/Minions.lua:141
 	"SummonedLightningGolem": {
 		Name:            "Lightning Golem",
 		Life:            5.82,
@@ -159,7 +159,7 @@ var Minions = map[string]*MinionInfo{
 			mod.NewFloat("LifeRegenPercent", mod.TypeBase, 1).Source("Minion:Lightning Golem"),
 		},
 	},
-	// src/Data/Minions.lua:173
+	// src/Data/Minions.lua:175
 	"SummonedStoneGolem": {
 		Name:            "Stone Golem",
 		Life:            7.25,
@@ -182,7 +182,7 @@ var Minions = map[string]*MinionInfo{
 			mod.NewFloat("LifeRegenPercent", mod.TypeBase, 2).Source("Minion:Stone Golem"),
 		},
 	},
-	// src/Data/Minions.lua:200
+	// src/Data/Minions.lua:202
 	"SummonedRagingSpirit": {
 		Name:            "Raging Spirit",
 		Life:            2.16,
@@ -205,7 +205,7 @@ var Minions = map[string]*MinionInfo{
 			mod.NewFloat("Speed", mod.TypeMore, 40).Flag(mod.MFlagAttack).Source("Minion:Raging Spirit"),
 		},
 	},
-	// src/Data/Minions.lua:234
+	// src/Data/Minions.lua:236
 	"SummonedEssenceSpirit": {
 		Name:            "Essence Spirit",
 		Life:            2.25,
@@ -227,7 +227,7 @@ var Minions = map[string]*MinionInfo{
 			mod.NewFlag("Condition:FullLife", true).Source("Minion:Essence Spirit"),
 		},
 	},
-	// src/Data/Minions.lua:263
+	// src/Data/Minions.lua:265
 	"SummonedSpectralWolf": {
 		Name:            "Spectral Wolf Companion",
 		Life:            11,
@@ -248,7 +248,7 @@ var Minions = map[string]*MinionInfo{
 			mod.NewFloat("PhysicalDamageLifeLeech", mod.TypeBase, 100).Flag(mod.MFlagAttack).Source("Minion:Spectral Wolf Companion"),
 		},
 	},
-	// src/Data/Minions.lua:286
+	// src/Data/Minions.lua:288
 	"SummonedSpectralTiger": {
 		Name:            "Spectral Tiger Companion",
 		Life:            12.25,
@@ -269,7 +269,7 @@ var Minions = map[string]*MinionInfo{
 			mod.NewFloat("PhysicalDamageLifeLeech", mod.TypeBase, 100).Flag(mod.MFlagAttack).Source("Minion:Spectral Tiger Companion"),
 		},
 	},
-	// src/Data/Minions.lua:309
+	// src/Data/Minions.lua:311
 	"RaisedSkeleton": {
 		Name:            "Summoned Skeleton",
 		Life:            1.05,
@@ -292,7 +292,7 @@ var Minions = map[string]*MinionInfo{
 			mod.NewFloat("BlockEffect", mod.TypeBase, 15).Source("Minion:Summoned Skeleton"),
 		},
 	},
-	// src/Data/Minions.lua:338
+	// src/Data/Minions.lua:340
 	"RaisedSkeletonCaster": {
 		Name:            "Summoned Skeleton Caster",
 		Life:            1.05,
@@ -310,7 +310,7 @@ var Minions = map[string]*MinionInfo{
 		MonsterTags:     []string{"bone_armour", "bones", "caster", "cold_affinity", "humanoid", "is_unarmed", "medium_height", "not_dex", "not_str", "ranged", "skeleton", "slashing_weapon", "undead", "very_slow_movement"},
 		SkillList:       []string{"SkeletonMinionProjectileCold", "SkeletonMinionProjectileFire", "SkeletonMinionProjectileLightning"},
 	},
-	// src/Data/Minions.lua:365
+	// src/Data/Minions.lua:367
 	"RaisedSkeletonMeleeVaal": {
 		Name:            "Summoned Skeleton Soldier",
 		Life:            1.05,
@@ -334,7 +334,7 @@ var Minions = map[string]*MinionInfo{
 			mod.NewFloat("BlockEffect", mod.TypeBase, 15).Source("Minion:Summoned Skeleton Soldier"),
 		},
 	},
-	// src/Data/Minions.lua:394
+	// src/Data/Minions.lua:396
 	"RaisedSkeletonArcherVaal": {
 		Name:            "Summoned Skeleton Archer",
 		Life:            1.05,
@@ -353,7 +353,7 @@ var Minions = map[string]*MinionInfo{
 		MonsterTags:     []string{"bone_armour", "bones", "has_bow", "humanoid", "medium_height", "not_int", "not_str", "physical_affinity", "puncturing_weapon", "ranged", "skeleton", "undead", "very_slow_movement"},
 		SkillList:       []string{"Melee"},
 	},
-	// src/Data/Minions.lua:419
+	// src/Data/Minions.lua:421
 	"RaisedSkeletonArcher": {
 		Name:            "Summoned Skeleton Archer",
 		Life:            1.05,
@@ -372,7 +372,7 @@ var Minions = map[string]*MinionInfo{
 		MonsterTags:     []string{"bone_armour", "bones", "has_bow", "humanoid", "not_int", "not_str", "physical_affinity", "puncturing_weapon", "ranged", "skeleton", "undead", "very_slow_movement"},
 		SkillList:       []string{"Melee"},
 	},
-	// src/Data/Minions.lua:444
+	// src/Data/Minions.lua:446
 	"Clone": {
 		Name:            "Clone",
 		Life:            1,
@@ -393,7 +393,7 @@ var Minions = map[string]*MinionInfo{
 			mod.NewFloat("DamageTaken", mod.TypeMore, -80).Source("Minion:Clone"),
 		},
 	},
-	// src/Data/Minions.lua:470
+	// src/Data/Minions.lua:472
 	"ArrowClone": {
 		Name:            "Clone",
 		Life:            1.5,
@@ -414,7 +414,7 @@ var Minions = map[string]*MinionInfo{
 			mod.NewFloat("DamageTaken", mod.TypeMore, -80).Source("Minion:Clone"),
 		},
 	},
-	// src/Data/Minions.lua:496
+	// src/Data/Minions.lua:498
 	"ArrowCloneRoA": {
 		Name:            "Clone",
 		Life:            1.5,
@@ -435,7 +435,7 @@ var Minions = map[string]*MinionInfo{
 			mod.NewFloat("DamageTaken", mod.TypeMore, -80).Source("Minion:Clone"),
 		},
 	},
-	// src/Data/Minions.lua:522
+	// src/Data/Minions.lua:524
 	"ArrowCloneEle": {
 		Name:            "Clone",
 		Life:            1.5,
@@ -456,7 +456,7 @@ var Minions = map[string]*MinionInfo{
 			mod.NewFloat("DamageTaken", mod.TypeMore, -80).Source("Minion:Clone"),
 		},
 	},
-	// src/Data/Minions.lua:548
+	// src/Data/Minions.lua:550
 	"SpiderMinion": {
 		Name:            "Spider Minion",
 		Life:            1.8,
@@ -478,7 +478,7 @@ var Minions = map[string]*MinionInfo{
 			mod.NewFloat("Life", mod.TypeOverride, 1).Source("Minion:Spider Minion"),
 		},
 	},
-	// src/Data/Minions.lua:578
+	// src/Data/Minions.lua:580
 	"AnimatedWeapon": {
 		Name:            "Animated Weapon",
 		Life:            4,
@@ -495,7 +495,7 @@ var Minions = map[string]*MinionInfo{
 		MonsterTags:     []string{"construct", "fast_movement", "ghost_armour", "is_unarmed", "medium_height", "melee", "physical_affinity"},
 		SkillList:       []string{"Melee"},
 	},
-	// src/Data/Minions.lua:603
+	// src/Data/Minions.lua:605
 	"AnimatedArmour": {
 		Name:            "Animated Guardian",
 		Life:            5,
@@ -518,7 +518,7 @@ var Minions = map[string]*MinionInfo{
 			mod.NewFloat("PhysicalMax", mod.TypeBase, 6).Flag(mod.MFlagWeapon).KeywordFlag(mod.KeywordFlagAttack).Source("Minion:Animated Guardian"),
 		},
 	},
-	// src/Data/Minions.lua:632
+	// src/Data/Minions.lua:634
 	"IcyRagingSpirit": {
 		Name:            "Grave Spirit",
 		Life:            3.75,
@@ -538,7 +538,7 @@ var Minions = map[string]*MinionInfo{
 			mod.NewFloat("Speed", mod.TypeMore, 40).Flag(mod.MFlagAttack).Source("Minion:Grave Spirit"),
 		},
 	},
-	// src/Data/Minions.lua:657
+	// src/Data/Minions.lua:659
 	"UniqueAnimatedWeapon": {
 		Name:            "Dancing Dervish",
 		Life:            5,
@@ -562,7 +562,7 @@ var Minions = map[string]*MinionInfo{
 			mod.NewFloat("Damage", mod.TypeMore, -33).Flag(mod.MFlagAttack).Source("Minion:Dancing Dervish"),
 		},
 	},
-	// src/Data/Minions.lua:687
+	// src/Data/Minions.lua:689
 	"SummonedPhantasm": {
 		Name:            "Summoned Phantasm",
 		Life:            1.58,
@@ -580,7 +580,7 @@ var Minions = map[string]*MinionInfo{
 		MonsterTags:     []string{"caster", "flesh_armour", "ghost", "is_unarmed", "medium_movement", "melee", "not_dex", "not_str", "physical_affinity", "ranged", "red_blood", "slashing_weapon", "small_height", "undead"},
 		SkillList:       []string{"Melee", "SummonPhantasmFadingProjectile", "SummonPhantasmFadingProjectile2"},
 	},
-	// src/Data/Minions.lua:713
+	// src/Data/Minions.lua:715
 	"HeraldOfAgonySpiderPlated": {
 		Name:            "Agony Crawler",
 		Life:            1.5,
@@ -603,7 +603,7 @@ var Minions = map[string]*MinionInfo{
 			mod.NewFlag("Condition:FullLife", true).Source("Minion:Agony Crawler"),
 		},
 	},
-	// src/Data/Minions.lua:746
+	// src/Data/Minions.lua:748
 	"AxisEliteSoldierHeraldOfLight": {
 		Name:            "Sentinel of Purity",
 		Life:            3.4,
@@ -622,7 +622,7 @@ var Minions = map[string]*MinionInfo{
 		MonsterTags:     []string{"bludgeoning_weapon", "fast_movement", "has_staff", "has_two_handed_melee", "human", "humanoid", "medium_height", "melee", "not_dex", "not_int", "physical_affinity", "plate_armour", "red_blood"},
 		SkillList:       []string{"Melee", "HeraldOfLightMinionSlam", "ChampionTeleport", "SentinelHolySlam"},
 	},
-	// src/Data/Minions.lua:773
+	// src/Data/Minions.lua:775
 	"HolyLivingRelic": {
 		Name:            "Holy Relic",
 		Life:            6,
@@ -640,7 +640,7 @@ var Minions = map[string]*MinionInfo{
 		MonsterTags:     []string{"cannot_be_monolith", "caster", "construct", "extra_extra_small_height", "ghost_armour", "is_unarmed", "medium_movement", "not_dex", "not_str", "physical_affinity", "unusable_corpse"},
 		SkillList:       []string{"RelicTriggeredNova", "RelicTeleport"},
 	},
-	// src/Data/Minions.lua:802
+	// src/Data/Minions.lua:804
 	"AxisEliteSoldierDominatingBlow": {
 		Name:            "Sentinel of Dominance",
 		Life:            4,
@@ -664,7 +664,7 @@ var Minions = map[string]*MinionInfo{
 			mod.NewFloat("BlockEffect", mod.TypeBase, 20).Source("Minion:Sentinel of Dominance"),
 		},
 	},
-	// src/Data/Minions.lua:832
+	// src/Data/Minions.lua:834
 	"AxisEliteSoldierDominatingBlowVaal": {
 		Name:            "Ascended Sentinel of Dominance",
 		Life:            4,
@@ -686,7 +686,7 @@ var Minions = map[string]*MinionInfo{
 			mod.NewFloat("DamageTaken", mod.TypeMore, -70).Source("Minion:Ascended Sentinel of Dominance"),
 		},
 	},
-	// src/Data/Minions.lua:862
+	// src/Data/Minions.lua:864
 	"AbsolutionTemplarJudge": {
 		Name:            "Sentinel of Absolution",
 		Life:            4,
@@ -705,7 +705,7 @@ var Minions = map[string]*MinionInfo{
 		MonsterTags:     []string{"bludgeoning_weapon", "caster", "fast_movement", "flesh_armour", "has_one_hand_mace", "has_one_handed_melee", "human", "humanoid", "melee", "not_dex", "not_str", "physical_affinity", "templar"},
 		SkillList:       []string{"Melee", "AbsolutionMinion", "AbsolutionMinionEmpowered"},
 	},
-	// src/Data/Minions.lua:888
+	// src/Data/Minions.lua:890
 	"AbsolutionTemplarJudgeVaal": {
 		Name:            "Ascended Sentinel of Absolution",
 		Life:            4,
@@ -727,7 +727,7 @@ var Minions = map[string]*MinionInfo{
 			mod.NewFloat("DamageTaken", mod.TypeMore, -70).Source("Minion:Ascended Sentinel of Absolution"),
 		},
 	},
-	// src/Data/Minions.lua:917
+	// src/Data/Minions.lua:919
 	"RhoaUniqueSummoned": {
 		Name:            "Summoned Rhoa",
 		Life:            9,
@@ -748,7 +748,7 @@ var Minions = map[string]*MinionInfo{
 			mod.NewFloat("DamageTaken", mod.TypeMore, -100).Source("Minion:Summoned Rhoa"),
 		},
 	},
-	// src/Data/Minions.lua:946
+	// src/Data/Minions.lua:948
 	"SnakeSpitUniqueSummoned": {
 		Name:                         "Summoned Cobra",
 		Life:                         9,
@@ -771,7 +771,7 @@ var Minions = map[string]*MinionInfo{
 			mod.NewFloat("DamageTaken", mod.TypeMore, -100).Source("Minion:Summoned Cobra"),
 		},
 	},
-	// src/Data/Minions.lua:974
+	// src/Data/Minions.lua:976
 	"DropBearUniqueSummoned": {
 		Name:                         "Summoned Ursa",
 		Life:                         9,
@@ -794,7 +794,7 @@ var Minions = map[string]*MinionInfo{
 			mod.NewFloat("DamageTaken", mod.TypeMore, -100).Source("Minion:Summoned Ursa"),
 		},
 	},
-	// src/Data/Minions.lua:1004
+	// src/Data/Minions.lua:1006
 	"SummonedCarrionGolem": {
 		Name:            "Carrion Golem",
 		Life:            5.82,
@@ -815,7 +815,7 @@ var Minions = map[string]*MinionInfo{
 			mod.NewFloat("LifeRegenPercent", mod.TypeBase, 1).Source("Minion:Carrion Golem"),
 		},
 	},
-	// src/Data/Minions.lua:1038
+	// src/Data/Minions.lua:1040
 	"SkitterbotCold": {
 		Name:            "Chilling Skitterbot",
 		Life:            1,
@@ -840,7 +840,7 @@ var Minions = map[string]*MinionInfo{
 			mod.NewFloat("PowerChargesMax", mod.TypeOverride, 0).Source("Minion:Chilling Skitterbot"),
 		},
 	},
-	// src/Data/Minions.lua:1079
+	// src/Data/Minions.lua:1081
 	"SkitterbotLightning": {
 		Name:            "Shocking Skitterbot",
 		Life:            1,
@@ -865,7 +865,7 @@ var Minions = map[string]*MinionInfo{
 			mod.NewFloat("PowerChargesMax", mod.TypeOverride, 0).Source("Minion:Shocking Skitterbot"),
 		},
 	},
-	// src/Data/Minions.lua:1120
+	// src/Data/Minions.lua:1122
 	"SkitterbotFire": {
 		Name:            "Scorching Skitterbot",
 		Life:            1,
@@ -890,7 +890,7 @@ var Minions = map[string]*MinionInfo{
 			mod.NewFloat("PowerChargesMax", mod.TypeOverride, 0).Source("Minion:Scorching Skitterbot"),
 		},
 	},
-	// src/Data/Minions.lua:1161
+	// src/Data/Minions.lua:1163
 	"AbyssCurseBot": {
 		Name:            "Bone Feeder",
 		Life:            1,
@@ -915,7 +915,7 @@ var Minions = map[string]*MinionInfo{
 			mod.NewFloat("PowerChargesMax", mod.TypeOverride, 0).Source("Minion:Bone Feeder"),
 		},
 	},
-	// src/Data/Minions.lua:1204
+	// src/Data/Minions.lua:1206
 	"AbyssDebuffBot": {
 		Name:            "Bone Feeder",
 		Life:            1,
@@ -940,7 +940,7 @@ var Minions = map[string]*MinionInfo{
 			mod.NewFloat("PowerChargesMax", mod.TypeOverride, 0).Source("Minion:Bone Feeder"),
 		},
 	},
-	// src/Data/Minions.lua:1244
+	// src/Data/Minions.lua:1246
 	"SummonedReaper": {
 		Name:            "Reaper",
 		Life:            3.74,
@@ -961,7 +961,7 @@ var Minions = map[string]*MinionInfo{
 		MonsterTags:     []string{"bone_armour", "bones", "fast_movement", "has_dual_wield_melee", "has_one_hand_sword", "has_one_handed_melee", "melee", "not_int", "physical_affinity", "skeleton", "slashing_weapon", "undead"},
 		SkillList:       []string{"ReaperConsumeMinionForHeal", "ReaperConsumeMinionForBuff", "SummonedReaperMelee", "SummonedReaperDash", "SummonedReaperUltimate", "GASummonReaperUltimateLeftSlash", "GASummonReaperUltimateRightSlash", "EAASummonedReaperComboAttack", "GASummonReaperComboWhirl", "GASummonReaperComboLeftSlash", "GASummonReaperComboRightSlash", "GASummonReaperDashImpactSlash", "GASummonReaperDash"},
 	},
-	// src/Data/Minions.lua:1289
+	// src/Data/Minions.lua:1291
 	"SummonedArbalists": {
 		Name:            "Summoned Arbalist",
 		Life:            7.41,
@@ -984,7 +984,7 @@ var Minions = map[string]*MinionInfo{
 			mod.NewFloat("Life", mod.TypeOverride, 1).Source("Minion:Summoned Arbalist"),
 		},
 	},
-	// src/Data/Minions.lua:1319
+	// src/Data/Minions.lua:1321
 	"GuardianSentinel": {
 		Name:            "Sentinel of Radiance",
 		Life:            12,
@@ -1001,7 +1001,7 @@ var Minions = map[string]*MinionInfo{
 		MonsterTags:     []string{"bludgeoning_weapon", "has_one_hand_mace", "has_one_handed_melee", "human", "humanoid", "medium_height", "melee", "not_dex", "not_int", "physical_affinity", "plate_armour", "very_slow_movement"},
 		SkillList:       []string{"TeleportVaalDomination", "VaalDominationMelee"},
 	},
-	// src/Data/Minions.lua:1343
+	// src/Data/Minions.lua:1345
 	"GuardianRelicAll": {
 		Name:            "All Relics",
 		Life:            4,
@@ -1017,7 +1017,7 @@ var Minions = map[string]*MinionInfo{
 		Accuracy:        1,
 		SkillList:       []string{"RelicTeleport", "Anger", "Hatred", "Wrath"},
 	},
-	// src/Data/Minions.lua:1367
+	// src/Data/Minions.lua:1369
 	"GuardianRelicFire": {
 		Name:            "Fire Relic",
 		Life:            4,
@@ -1034,7 +1034,7 @@ var Minions = map[string]*MinionInfo{
 		MonsterTags:     []string{"cannot_be_monolith", "caster", "construct", "extra_extra_small_height", "ghost_armour", "is_unarmed", "medium_movement", "not_dex", "not_str", "physical_affinity", "unusable_corpse"},
 		SkillList:       []string{"RelicTeleport", "Anger"},
 	},
-	// src/Data/Minions.lua:1395
+	// src/Data/Minions.lua:1397
 	"GuardianRelicCold": {
 		Name:            "Cold Relic",
 		Life:            4,
@@ -1051,7 +1051,7 @@ var Minions = map[string]*MinionInfo{
 		MonsterTags:     []string{"cannot_be_monolith", "caster", "construct", "extra_extra_small_height", "ghost_armour", "is_unarmed", "medium_movement", "not_dex", "not_str", "physical_affinity", "unusable_corpse"},
 		SkillList:       []string{"RelicTeleport", "Hatred"},
 	},
-	// src/Data/Minions.lua:1423
+	// src/Data/Minions.lua:1425
 	"GuardianRelicLightning": {
 		Name:            "Lightning Relic",
 		Life:            4,
@@ -1068,7 +1068,7 @@ var Minions = map[string]*MinionInfo{
 		MonsterTags:     []string{"cannot_be_monolith", "caster", "construct", "extra_extra_small_height", "ghost_armour", "is_unarmed", "medium_movement", "not_dex", "not_str", "physical_affinity", "unusable_corpse"},
 		SkillList:       []string{"RelicTeleport", "Wrath"},
 	},
-	// src/Data/Minions.lua:1451
+	// src/Data/Minions.lua:1453
 	"VoidSpawn": {
 		Name:            "Void Spawn",
 		Life:            6,
@@ -1086,7 +1086,7 @@ var Minions = map[string]*MinionInfo{
 		MonsterTags:     []string{"caster", "construct", "elder_monster", "eldritch", "extra_large_height", "flesh_armour", "influence_monster", "is_unarmed", "lightning_affinity", "medium_movement", "not_dex", "not_str", "ranged", "red_blood"},
 		SkillList:       []string{"ElderTentacleMinionProjectileDeepcaller"},
 	},
-	// src/Data/Minions.lua:1480
+	// src/Data/Minions.lua:1482
 	"AncestralAhuanaMinion": {
 		Name:                         "Spirit of Ahuana",
 		Life:                         0.9,
@@ -1109,7 +1109,7 @@ var Minions = map[string]*MinionInfo{
 			mod.NewFloat("Life", mod.TypeOverride, 1).Source("Minion:Spirit of Ahuana"),
 		},
 	},
-	// src/Data/Minions.lua:1511
+	// src/Data/Minions.lua:1513
 	"AncestralAkoyaMinion": {
 		Name:                         "Spirit of Akoya",
 		Life:                         1.1,
@@ -1133,7 +1133,7 @@ var Minions = map[string]*MinionInfo{
 			mod.NewFloat("Life", mod.TypeOverride, 1).Source("Minion:Spirit of Akoya"),
 		},
 	},
-	// src/Data/Minions.lua:1543
+	// src/Data/Minions.lua:1545
 	"AncestralIkiahoMinion": {
 		Name:                         "Spirit of Ikiaho",
 		Life:                         1,
@@ -1155,7 +1155,7 @@ var Minions = map[string]*MinionInfo{
 			mod.NewFloat("Life", mod.TypeOverride, 1).Source("Minion:Spirit of Ikiaho"),
 		},
 	},
-	// src/Data/Minions.lua:1573
+	// src/Data/Minions.lua:1575
 	"AncestralKahuturoaMinion": {
 		Name:                         "Spirit of Kahuturoa",
 		Life:                         1.2,
@@ -1177,7 +1177,7 @@ var Minions = map[string]*MinionInfo{
 			mod.NewFloat("Life", mod.TypeOverride, 1).Source("Minion:Spirit of Kahuturoa"),
 		},
 	},
-	// src/Data/Minions.lua:1605
+	// src/Data/Minions.lua:1607
 	"AncestralKaomMinion": {
 		Name:                         "Spirit of Kaom",
 		Life:                         2,
@@ -1201,7 +1201,7 @@ var Minions = map[string]*MinionInfo{
 			mod.NewFloat("Life", mod.TypeOverride, 1).Source("Minion:Spirit of Kaom"),
 		},
 	},
-	// src/Data/Minions.lua:1639
+	// src/Data/Minions.lua:1641
 	"AncestralKiloavaMinion": {
 		Name:                         "Spirit of Kiloava",
 		Life:                         1.2,
@@ -1224,7 +1224,7 @@ var Minions = map[string]*MinionInfo{
 			mod.NewFloat("Life", mod.TypeOverride, 1).Source("Minion:Spirit of Kiloava"),
 		},
 	},
-	// src/Data/Minions.lua:1670
+	// src/Data/Minions.lua:1672
 	"AncestralMaataMinion": {
 		Name:                         "Spirit of Maata",
 		Life:                         0.9,
@@ -1248,7 +1248,7 @@ var Minions = map[string]*MinionInfo{
 			mod.NewFloat("Life", mod.TypeOverride, 1).Source("Minion:Spirit of Maata"),
 		},
 	},
-	// src/Data/Minions.lua:1704
+	// src/Data/Minions.lua:1706
 	"AncestralRakiataMinion": {
 		Name:                         "Spirit of Rakiata",
 		Life:                         1,
@@ -1272,7 +1272,7 @@ var Minions = map[string]*MinionInfo{
 			mod.NewFloat("Life", mod.TypeOverride, 1).Source("Minion:Spirit of Rakiata"),
 		},
 	},
-	// src/Data/Minions.lua:1738
+	// src/Data/Minions.lua:1740
 	"AncestralTawhanukuMinion": {
 		Name:                         "Spirit of Tawhanuku",
 		Life:                         2,
@@ -1294,7 +1294,7 @@ var Minions = map[string]*MinionInfo{
 			mod.NewFloat("Life", mod.TypeOverride, 1).Source("Minion:Spirit of Tawhanuku"),
 		},
 	},
-	// src/Data/Minions.lua:1768
+	// src/Data/Minions.lua:1770
 	"AncestralUtulaMinion": {
 		Name:                         "Spirit of Utula",
 		Life:                         1.2,
@@ -1319,7 +1319,7 @@ var Minions = map[string]*MinionInfo{
 			mod.NewFloat("Life", mod.TypeOverride, 1).Source("Minion:Spirit of Utula"),
 		},
 	},
-	// src/Data/Minions.lua:1801
+	// src/Data/Minions.lua:1803
 	"LivingLightningMinion": {
 		Name:                         "Living Lightning",
 		Life:                         1.4,
@@ -1343,7 +1343,7 @@ var Minions = map[string]*MinionInfo{
 			mod.NewFloat("AvoidProjectilesChance", mod.TypeBase, 100).Source("Minion:Living Lightning"),
 		},
 	},
-	// src/Data/Minions.lua:1837
+	// src/Data/Minions.lua:1839
 	"PenanceMarkPhantasm": {
 		Name:            "Shackled Phantasm",
 		Life:            1.3,
@@ -1364,7 +1364,7 @@ var Minions = map[string]*MinionInfo{
 			mod.NewFlag("CurseImmune", true).Source("Minion:Shackled Phantasm"),
 		},
 	},
-	// src/Data/Minions.lua:1870
+	// src/Data/Minions.lua:1872
 	"HolyStrikeMinion": {
 		Name:                         "Holy Armament",
 		Life:                         1,
@@ -1386,7 +1386,7 @@ var Minions = map[string]*MinionInfo{
 			mod.NewFloat("Life", mod.TypeOverride, 1).Source("Minion:Holy Armament"),
 		},
 	},
-	// src/Data/Minions.lua:1902
+	// src/Data/Minions.lua:1904
 	"Hiveborn": {
 		Name:            "It That Crawls",
 		Life:            2,
@@ -1404,7 +1404,7 @@ var Minions = map[string]*MinionInfo{
 		MonsterTags:     []string{"demon", "fast_movement", "insect", "melee", "not_int", "not_str", "red_blood"},
 		SkillList:       []string{"MeleeComboCold"},
 	},
-	// src/Data/Minions.lua:1925
+	// src/Data/Minions.lua:1927
 	"ShamblingUndead": {
 		Name:            "Ceaseless Flesh",
 		Life:            2.7,

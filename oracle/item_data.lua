@@ -5,6 +5,7 @@ assert(casesPath and outPath, "usage: item_data.lua <cases.json> <out.json>")
 
 local stable = dofile((selfPath:match("^(.*)[/\\]") or ".") .. "/json_stable.lua")
 
+local construct = dofile((selfPath:match("^(.*)[/\\]") or ".") .. "/pob_compat.lua").construct
 dofile("HeadlessWrapper.lua")
 
 local json = require("dkjson")
@@ -29,7 +30,7 @@ local results = {}
 for i, c in ipairs(cases) do
 	local entry = { name = c.name }
 	local ok, err = pcall(function()
-		local item = new("Item", c.raw)
+		local item = construct("Item", c.raw)
 		entry.isWeapon = item.base and item.base.weapon ~= nil or false
 		entry.isArmour = item.base and item.base.armour ~= nil or false
 		entry.isFlask = item.base and item.base.flask ~= nil or false

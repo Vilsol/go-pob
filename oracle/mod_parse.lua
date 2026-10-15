@@ -5,6 +5,7 @@ assert(casesPath and outPath, "usage: mod_parse.lua <cases.json> <out.json> [rep
 
 local stable = dofile((selfPath:match("^(.*)[/\\]") or ".") .. "/json_stable.lua")
 
+local construct = dofile((selfPath:match("^(.*)[/\\]") or ".") .. "/pob_compat.lua").construct
 dofile("HeadlessWrapper.lua")
 
 local json = require("dkjson")
@@ -71,7 +72,7 @@ end
 
 for _, c in ipairs(cases) do
 	pcall(function()
-		new("Item", c.raw)
+		construct("Item", c.raw)
 	end)
 end
 

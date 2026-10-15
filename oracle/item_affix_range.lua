@@ -1,4 +1,5 @@
 
+local construct = dofile((arg[0]:match("^(.*)[/\\]") or ".") .. "/pob_compat.lua").construct
 dofile("HeadlessWrapper.lua")
 
 local RAW = [[
@@ -30,7 +31,7 @@ local function lifeValue(item)
 end
 
 local function probe(label, raw)
-	local item = new("Item", raw)
+	local item = construct("Item", raw)
 	local line = item.explicitModLines[1]
 	print(string.format("  %-34s range=%-8s Life BASE=%s",
 		label, tostring(line and line.range), tostring(lifeValue(item))))

@@ -79,6 +79,7 @@ type TimelessSearch struct {
 	s       *calculator.TimelessSearcher
 	q       calculator.TimelessSearchQuery
 	results calculator.TimelessSearchResults
+	rolls   map[int]*[2]int
 }
 
 func NewTimelessSearch(m *MiscCalculator, q calculator.TimelessSearchQuery) *TimelessSearch {
@@ -130,7 +131,13 @@ func (t *TimelessSearch) Item(row int, devotion1, devotion2 int, socketLabel str
 	if r.SocketLabel != "" {
 		socketLabel = r.SocketLabel
 	}
-	return calculator.TimelessResultItem(t.q.JewelType, t.q.ConquerorType, devotion1, devotion2, r.Seed, r.Total, socketLabel)
+	if t.rolls == nil {
+		t.rolls = map[int]*[2]int{}
+	}
+	if t.rolls[row] == nil {
+		t.rolls[row] = &[2]int{}
+	}
+	return calculator.TimelessResultItem(t.q.JewelType, t.q.ConquerorType, devotion1, devotion2, r.Seed, r.Total, socketLabel, t.rolls[row])
 }
 
 func (t *TimelessSearch) AddItem(build *pob.PathOfBuilding, row int, devotion1, devotion2 int, socketLabel string) int {
@@ -141,6 +148,10 @@ func (t *TimelessSearch) AddItem(build *pob.PathOfBuilding, row int, devotion1, 
 	id := build.AddItem(text)
 	calculator.PopulateSlots(build)
 	return id
+}
+
+func (t *TimelessSearch) Socket(build *pob.PathOfBuilding, socketID int, itemID int) bool {
+	return calculator.TimelessSocketJewel(build, socketID, itemID)
 }
 
 func TimelessFallbackModes() []calculator.PowerStat {

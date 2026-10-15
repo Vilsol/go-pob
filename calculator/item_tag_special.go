@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-//pob:block:src/Modules/Data.lua:721-745
+//pob:block:src/Modules/Data.lua:731-755
 var itemTagSpecial = map[string]map[string][]string{
 	"defence": {},
 	"evasion": {
@@ -16,14 +16,14 @@ var itemTagSpecial = map[string]map[string][]string{
 	},
 }
 
-//pob:block:src/Modules/Data.lua:747-843
+//pob:block:src/Modules/Data.lua:757-853
 var itemTagSpecialExclusionPattern = map[string]map[string][]string{
 	"defence": {},
 	"evasion": {
 		"ring": {},
 	},
 	"life": {
-		"amulet":      {"lower Life on Hit", "your Spectres' Life", "when on Full Life", "when on Low Life", "^Allocates"},
+		"amulet":      {"lower Life on Hit", "Spectres' Life", "when on Full Life", "when on Low Life", "^Allocates"},
 		"belt":        {"Life as Extra Maximum Energy Shield", "Life Recovery from Flasks is applied to nearby Allies", "Life Flasks gain", "when on Full Life", "when on Low Life", "^Allocates"},
 		"body armour": {"Life as Physical Damage", "Life as Extra Maximum Energy Shield", "maximum Life as Fire Damage", "while on Full Life", "while you are on Full Life", "when on Full Life", "when on Low Life", "Gain Maximum Life instead of Maximum Energy Shield", "^Socketed Gems are Supported by Level", "^Allocates", "Void Spawns' Life"},
 		"boots":       {"Enemy's Life", "^Enemies Cannot Leech Life", "their Life as Chaos Damage", "when on Full Life", "when on Low Life", "^Allocates"},
@@ -36,7 +36,7 @@ var itemTagSpecialExclusionPattern = map[string]map[string][]string{
 	},
 }
 
-//pob:block:src/Classes/Item.lua:284-328
+//pob:block:src/Classes/Item.lua:289-333
 func findModifierSubstring(explicitLines, otherLines []string, substring, itemSlotName string) bool {
 	lines := explicitLines
 	if trimmed := strings.ReplaceAll(substring, "explicit ", ""); trimmed != substring {
@@ -89,7 +89,7 @@ func luaFindPattern(line, pattern string) bool {
 	}
 }
 
-//pob:block:src/Classes/ModStore.lua:648-702
+//pob:block:src/Classes/ModStore.lua:691-745
 
 func (a *Actor) EquippedSlots() []string {
 	slots := make([]string, 0, len(a.ItemList))
@@ -130,7 +130,7 @@ func (a *Actor) ItemNameIs(slot, name string) bool {
 	return item != nil && strings.EqualFold(item.Name, name)
 }
 
-//pob:block:src/Classes/ModStore.lua:664-702
+//pob:block:src/Classes/ModStore.lua:707-745
 
 func (i *Item) CfgNameIs(name string) bool {
 	return strings.EqualFold(i.Name, name)

@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-//pob:block:src/Classes/ItemsTab.lua:144-165,src/Classes/ItemsTab.lua:175-188
+//pob:block:src/Classes/ItemsTab.lua:156-177,src/Classes/ItemsTab.lua:187-200
 func weaponSetOf(slotName string) int {
 	if !strings.HasPrefix(slotName, "Weapon ") {
 		return 0
@@ -17,7 +17,7 @@ func weaponSetOf(slotName string) int {
 	return 1
 }
 
-//pob:block:src/Classes/ItemsTab.lua:224-263
+//pob:block:src/Classes/ItemsTab.lua:236-275
 func (b *PathOfBuilding) SetUseSecondWeaponSet(second bool) bool {
 	set := b.activeItemSet()
 	if (set.UseSecondWeaponSet != nil && *set.UseSecondWeaponSet) == second {
@@ -61,7 +61,7 @@ func (b *PathOfBuilding) itemSetIndex(itemSetID int) int {
 	})
 }
 
-//pob:block:src/Classes/ItemSetListControl.lua:38-41,src/Classes/ItemSetListControl.lua:50-57
+//pob:block:src/Classes/ItemSetListControl.lua:41-44,src/Classes/ItemSetListControl.lua:54-61
 func (b *PathOfBuilding) NewItemSet(title string) int {
 	b.activeItemSet()
 	id := b.nextItemSetID()
@@ -69,7 +69,7 @@ func (b *PathOfBuilding) NewItemSet(title string) int {
 	return id
 }
 
-//pob:block:src/Classes/ItemSetListControl.lua:14-22,src/Classes/ItemSetListControl.lua:50-57
+//pob:block:src/Classes/ItemSetListControl.lua:17-25,src/Classes/ItemSetListControl.lua:54-61
 func (b *PathOfBuilding) CopyItemSet(itemSetID int, title string) int {
 	i := b.itemSetIndex(itemSetID)
 	if i < 0 {
@@ -86,14 +86,14 @@ func (b *PathOfBuilding) CopyItemSet(itemSetID int, title string) int {
 	return id
 }
 
-//pob:block:src/Classes/ItemSetListControl.lua:50-51
+//pob:block:src/Classes/ItemSetListControl.lua:54-55
 func (b *PathOfBuilding) RenameItemSet(itemSetID int, title string) {
 	if i := b.itemSetIndex(itemSetID); i >= 0 {
 		b.Items.ItemSets[i].Title = &title
 	}
 }
 
-//pob:block:src/Classes/ItemSetListControl.lua:119-134
+//pob:block:src/Classes/ItemSetListControl.lua:123-138
 func (b *PathOfBuilding) DeleteItemSet(itemSetID int) bool {
 	if len(b.Items.ItemSets) <= 1 {
 		return false
@@ -111,7 +111,7 @@ func (b *PathOfBuilding) DeleteItemSet(itemSetID int) bool {
 	return true
 }
 
-//pob:block:src/Classes/ListControl.lua:428-436,src/Classes/ItemSetListControl.lua:108-110
+//pob:block:src/Classes/ListControl.lua:441-449,src/Classes/ItemSetListControl.lua:112-114
 func (b *PathOfBuilding) MoveItemSet(from, to int) {
 	n := len(b.Items.ItemSets)
 	if from < 1 || from > n || to < 1 || to > n || from == to {
@@ -146,7 +146,7 @@ func (b *PathOfBuilding) DeallocateSpecNodes(specIndex int, nodeIDs []int64) {
 	}
 }
 
-//pob:src/Classes/ItemsTab.lua:1768-1815
+//pob:src/Classes/ItemsTab.lua:1857-1904
 func (b *PathOfBuilding) DeleteItem(itemID int) bool {
 	i := slices.IndexFunc(b.Items.Items, func(it Item) bool { return it.ID == itemID })
 	if i < 0 {
@@ -166,7 +166,7 @@ func (b *PathOfBuilding) DeleteItem(itemID int) bool {
 	return true
 }
 
-//pob:block:src/Classes/ItemListControl.lua:47-57
+//pob:block:src/Classes/ItemListControl.lua:54-64
 func (b *PathOfBuilding) DeleteAllItems() {
 	set := b.activeItemSet()
 	for k := range set.Slots {
@@ -186,7 +186,7 @@ func (b *PathOfBuilding) SetShowStatDifferences(on bool) {
 	b.Items.ShowStatDifferences = &on
 }
 
-//pob:block:src/Classes/ListControl.lua:428-436,src/Classes/ItemListControl.lua:286-288
+//pob:block:src/Classes/ListControl.lua:441-449,src/Classes/ItemListControl.lua:295-297
 func (b *PathOfBuilding) MoveItem(id, beforeID int) {
 	from := slices.IndexFunc(b.Items.Items, func(it Item) bool { return it.ID == id })
 	if from < 0 || id == beforeID {

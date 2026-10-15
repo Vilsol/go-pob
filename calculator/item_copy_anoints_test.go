@@ -89,6 +89,11 @@ func TestRareLikeUniqueCustomLines(t *testing.T) {
 		{"Rarity: UNIQUE\nDread Captain's Cutlass\nGhostflame Blade\n{custom}+10 to maximum Life", true},
 		{"Rarity: UNIQUE\nThe Crimson Storm\nSteelwood Bow\n{custom}+10 to maximum Life", true},
 		{"Rarity: UNIQUE\nSubsume the Source\nFaithful Helmet\n{custom}+10 to maximum Life", true},
+		{"Rarity: UNIQUE\nParadoxica\nVaal Rapier\n{custom}+10 to maximum Life", true},
+		{"Rarity: UNIQUE\nCane of Kulemak\nSerpentine Staff\n{custom}+10 to maximum Life", true},
+		{"Rarity: UNIQUE\nReplica Paradoxica\nVaal Rapier\n{custom}+10 to maximum Life", true},
+		{"Rarity: UNIQUE\nThe Queen's Hunger\nVaal Regalia\n{custom}+10 to maximum Life", true},
+		{"Rarity: UNIQUE\nThat Which Was Taken\nCrimson Jewel\n{custom}+10 to maximum Life", true},
 		{"Rarity: UNIQUE\nGoldrim\nLeather Cap\n{custom}+10 to maximum Life", false},
 	} {
 		info, _ := DisplayItem(c.text)

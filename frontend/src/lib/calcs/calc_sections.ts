@@ -86,6 +86,8 @@ export type CalcDataColProp = {
   actor?: 'player';
   modSource?: string;
   gearOnly?: boolean;
+  /* Build.lua:1764-1811 */
+  skipSideBarIndex?: boolean;
   flag?: string;
   notFlag?: string;
   notFlagList?: string[];
@@ -3295,7 +3297,10 @@ export const calcSections: CalcSection[] = [
         label: 'Energy Shield',
         data: {
           extra: '{0:output:EnergyShield}',
-          0: { label: 'Base from Armours', 0: { format: '{0:output:Gear:EnergyShield}', 0: { breakdown: 'EnergyShield', gearOnly: true } } },
+          0: {
+            label: 'Base from Armours',
+            0: { format: '{0:output:Gear:EnergyShield}', 0: { breakdown: 'EnergyShield', gearOnly: true, skipSideBarIndex: true } }
+          },
           1: { label: 'Global Base', 0: { format: '{0:mod:1}', 0: { modName: 'EnergyShield', modType: 'BASE' } } },
           2: { label: 'Inc. from Tree', 0: { format: '{0:mod:1}%', 0: { modName: 'EnergyShield', modType: 'INC', modSource: 'Tree' } } },
           3: { label: 'Total Increased', 0: { format: '{0:mod:1}%', 0: { modName: ['EnergyShield', 'Defences'], modType: 'INC' } } },
@@ -3375,7 +3380,7 @@ export const calcSections: CalcSection[] = [
         label: 'Armour',
         data: {
           extra: '{0:output:Armour}',
-          0: { label: 'Base from Armours', 0: { format: '{0:output:Gear:Armour}', 0: { breakdown: 'Armour', gearOnly: true } } },
+          0: { label: 'Base from Armours', 0: { format: '{0:output:Gear:Armour}', 0: { breakdown: 'Armour', gearOnly: true, skipSideBarIndex: true } } },
           1: { label: 'Global Base', 0: { format: '{0:mod:1}', 0: { modName: ['Armour', 'ArmourAndEvasion'], modType: 'BASE' } } },
           2: { label: 'Inc. from Tree', 0: { format: '{0:mod:1}%', 0: { modName: ['Armour', 'ArmourAndEvasion'], modType: 'INC', modSource: 'Tree' } } },
           3: { label: 'Total Increased', 0: { format: '{0:mod:1}%', 0: { modName: ['Armour', 'ArmourAndEvasion', 'Defences'], modType: 'INC' } } },
@@ -3432,7 +3437,7 @@ export const calcSections: CalcSection[] = [
         label: 'Evasion',
         data: {
           extra: '{0:output:Evasion}',
-          0: { label: 'Base from Armours', 0: { format: '{0:output:Gear:Evasion}', 0: { breakdown: 'Evasion', gearOnly: true } } },
+          0: { label: 'Base from Armours', 0: { format: '{0:output:Gear:Evasion}', 0: { breakdown: 'Evasion', gearOnly: true, skipSideBarIndex: true } } },
           1: { label: 'Global Base', 0: { format: '{0:mod:1}', 0: { modName: ['Evasion', 'ArmourAndEvasion'], modType: 'BASE' } } },
           2: { label: 'Inc. from Tree', 0: { format: '{0:mod:1}%', 0: { modName: ['Evasion', 'ArmourAndEvasion'], modType: 'INC', modSource: 'Tree' } } },
           3: { label: 'Total Increased', 0: { format: '{0:mod:1}%', 0: { modName: ['Evasion', 'ArmourAndEvasion', 'Defences'], modType: 'INC' } } },

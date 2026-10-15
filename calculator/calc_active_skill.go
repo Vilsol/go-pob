@@ -22,7 +22,7 @@ var skillFlagIDAliases = map[string]string{
 	"PlayerMelee": "Melee",
 }
 
-//pob:block:src/Data/Skills/act_dex.lua:11581
+//pob:block:src/Data/Skills/act_dex.lua:11584
 var skillStatKeyAliases = map[string]string{
 	"critical_strike_chance_+%": "skill_buff_grants_critical_strike_chance_+%",
 }
@@ -39,7 +39,7 @@ func skillStatKeyForPoB(id string, key string) string {
 	return alias
 }
 
-//pob:block:src/Modules/CalcActiveSkill.lua:245-246
+//pob:block:src/Modules/CalcActiveSkill.lua:248-249
 func skillPartsFor(id string) []raw2.SkillPart {
 	if alias, aliased := skillFlagIDAliases[id]; aliased {
 		id = alias
@@ -52,12 +52,12 @@ func skillPartsFor(id string) []raw2.SkillPart {
 	return raw2.SkillParts[id]
 }
 
-//pob:block:src/Data/Skills/act_dex.lua:7321-7322
+//pob:block:src/Data/Skills/act_dex.lua:7324-7325
 var skillPartsAndFuncsBorrowedFrom = map[string]string{
 	"ExplosiveTrapAltX": "ExplosiveTrap",
 }
 
-//pob:block:src/Modules/CalcActiveSkill.lua:102-104
+//pob:block:src/Modules/CalcActiveSkill.lua:105-107
 func SkillBaseFlagsFor(id string) (map[SkillFlag]bool, bool) {
 	if alias, aliased := skillFlagIDAliases[id]; aliased {
 		id = alias
@@ -73,7 +73,7 @@ func SkillBaseFlagsFor(id string) (map[SkillFlag]bool, bool) {
 
 // It will determine the base flag set, and check which of the support gems can support this skill
 //
-//pob:src/Modules/CalcActiveSkill.lua:82-125
+//pob:src/Modules/CalcActiveSkill.lua:83-128
 func CreateActiveSkill(activeEffect *GemEffect, supportList []*GemEffect, actor *Actor, socketGroup *pob.Skill, summonSkill *ActiveSkill) *ActiveSkill {
 	activeSkill := &ActiveSkill{
 		ActiveEffect: activeEffect,
@@ -89,7 +89,7 @@ func CreateActiveSkill(activeEffect *GemEffect, supportList []*GemEffect, actor 
 	activeSkill.SkillTypes = utils.CopyMap(activeEffect.GrantedEffect.SkillTypes)
 
 	// Initialise skill types
-	//pob:src/Modules/CalcActiveSkill.lua:97-99
+	//pob:src/Modules/CalcActiveSkill.lua:99-101
 	if as := activeGrantedEffect.Raw.GetActiveSkill(); as != nil && as.MinionActiveSkillTypes != nil {
 		activeSkill.MinionSkillTypes = make(map[data.SkillType]bool)
 
@@ -107,7 +107,7 @@ func CreateActiveSkill(activeEffect *GemEffect, supportList []*GemEffect, actor 
 
 	for _, supportEffect := range supportList {
 		// Pass 1: Add skill types from compatible supports
-		if CalcCanGrantedEffectSupportActiveSkill(supportEffect.GrantedEffect, activeSkill) {
+		if CalcCanGrantedEffectSupportActiveSkill(supportEffect.GrantedEffect, activeSkill, supportEffect.AppliesToGrantedSkills) {
 			if override, ok := raw2.SkillAddSkillTypes[supportEffect.GrantedEffect.ID()]; ok {
 				for _, skillType := range override {
 					activeSkill.SkillTypes[data.SkillType(skillType)] = true
@@ -122,7 +122,7 @@ func CreateActiveSkill(activeEffect *GemEffect, supportList []*GemEffect, actor 
 
 	for _, supportEffect := range supportList {
 		// Pass 2: Add all compatible supports
-		if CalcCanGrantedEffectSupportActiveSkill(supportEffect.GrantedEffect, activeSkill) {
+		if CalcCanGrantedEffectSupportActiveSkill(supportEffect.GrantedEffect, activeSkill, supportEffect.AppliesToGrantedSkills) {
 			activeSkill.EffectList = append(activeSkill.EffectList, supportEffect)
 			if supportEffect.IsSupporting != nil && activeEffect.SrcInstance != nil {
 				supportEffect.IsSupporting[activeEffect.SrcInstance] = true
@@ -139,7 +139,7 @@ func CreateActiveSkill(activeEffect *GemEffect, supportList []*GemEffect, actor 
 	return activeSkill
 }
 
-//pob:block:src/Classes/SkillsTab.lua:1161-1165
+//pob:block:src/Classes/SkillsTab.lua:1188-1192
 func emptyTriggeredGrantedCost(activeEffect *GemEffect) {
 	if !activeEffect.CostEmptied || activeEffect.GrantedEffectLevel == nil {
 		return
@@ -232,7 +232,7 @@ func skillInstanceStats(skillEffect *GemEffect, grantedEffect *GrantedEffect) []
 	return cached.([]skillInstanceStat)
 }
 
-//pob:src/Modules/CalcActiveSkill.lua:52-70
+//pob:src/Modules/CalcActiveSkill.lua:53-71
 func CalcMergeSkillInstanceMods(env *Environment, modList *moddb.ModList, skillEffect *GemEffect, extraStats []interface{}) {
 	CalcValidateGemLevel(skillEffect)
 
@@ -273,7 +273,7 @@ func CalcMergeSkillInstanceMods(env *Environment, modList *moddb.ModList, skillE
 	}
 }
 
-//pob:block:src/Modules/CalcActiveSkill.lua:61-76
+//pob:block:src/Modules/CalcActiveSkill.lua:62-77
 func mergeStatMapEntry(modList *moddb.ModList, statMap *raw2.StatMap, statValue float64) {
 	for _, m := range statMap.Mods {
 		mergeLevelMod(modList, m, statMapScalar(statMap, statValue))
@@ -285,12 +285,12 @@ func mergeStatMapEntry(modList *moddb.ModList, statMap *raw2.StatMap, statValue 
 	}
 }
 
-//pob:block:src/Modules/CalcActiveSkill.lua:68
+//pob:block:src/Modules/CalcActiveSkill.lua:69
 func statMapScalar(m *raw2.StatMap, statValue float64) float64 {
 	return utils.UnwrapOrF(m.Value, statValue)*utils.UnwrapOrF(m.Mult, 1)/utils.UnwrapOrF(m.Div, 1) + utils.UnwrapOrF(m.Base, 0)
 }
 
-//pob:src/Modules/CalcActiveSkill.lua:21-49
+//pob:src/Modules/CalcActiveSkill.lua:22-50
 func mergeLevelMod(modList *moddb.ModList, m mod.Mod, value float64) {
 	newMod := m.Clone()
 
@@ -319,7 +319,7 @@ func mergeLevelMod(modList *moddb.ModList, m mod.Mod, value float64) {
 	modList.AddMod(newMod)
 }
 
-//pob:block:src/Modules/CalcActiveSkill.lua:407
+//pob:block:src/Modules/CalcActiveSkill.lua:416
 func activeSkillCfgName(grantedEffect *GrantedEffect) string {
 	as := grantedEffect.Raw.GetActiveSkill()
 	if as == nil {
@@ -329,7 +329,7 @@ func activeSkillCfgName(grantedEffect *GrantedEffect) string {
 	return strings.TrimPrefix(as.DisplayedName, "Vaal ")
 }
 
-//pob:block:src/Modules/CalcActiveSkill.lua:530-537
+//pob:block:src/Modules/CalcActiveSkill.lua:540-547
 func stageMultiplierName(grantedEffect *GrantedEffect) string {
 	as := grantedEffect.Raw.GetActiveSkill()
 	if as == nil {
@@ -339,7 +339,7 @@ func stageMultiplierName(grantedEffect *GrantedEffect) string {
 	return strings.Join(strings.Fields(as.DisplayedName), "")
 }
 
-//pob:block:src/Modules/Build.lua:969-974
+//pob:block:src/Modules/Build.lua:987-992
 func spectreList(env *Environment) []string {
 	list := make([]string, 0, len(env.Build.Build.Spectres))
 	for _, spectre := range env.Build.Build.Spectres {
@@ -350,7 +350,7 @@ func spectreList(env *Environment) []string {
 	return list
 }
 
-//pob:block:src/Modules/CalcActiveSkill.lua:557,src/Modules/CalcActiveSkill.lua:563
+//pob:block:src/Modules/CalcActiveSkill.lua:567,src/Modules/CalcActiveSkill.lua:573
 func gemPropertyMod(prefix string, key string, value float64, src mod.Mod) mod.Mod {
 	name := prefix + strings.ToUpper(key[:1]) + key[1:]
 	out := mod.NewFloat(name, mod.TypeBase, value)
@@ -364,7 +364,7 @@ func gemPropertyMod(prefix string, key string, value float64, src mod.Mod) mod.M
 	return out
 }
 
-//pob:src/Modules/CalcActiveSkill.lua:178-677
+//pob:src/Modules/CalcActiveSkill.lua:181-687
 func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 	skillTypes := activeSkill.SkillTypes
 	skillFlags := activeSkill.SkillFlags
@@ -418,6 +418,13 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 		activeSkill.DisableReason = "This skill requires a Shield"
 	}
 
+	//pob:block:src/Modules/CalcActiveSkill.lua:278-282
+	if skillTypes[data.SkillType("RequiresStaff")] && activeSkill.SummonSkill == nil && (activeSkill.Actor.ItemList["Weapon 1"] == nil || activeSkill.Actor.ItemList["Weapon 1"].Type != "Staff") {
+		// Skill requires a staff to be equipped
+		skillFlags[SkillFlagDisable] = true
+		activeSkill.DisableReason = "This skill requires a Staff"
+	}
+
 	if skillFlags[SkillFlagShieldAttack] {
 		// Special handling for Spectral Shield Throw
 		skillFlags[SkillFlagWeapon2Attack] = true
@@ -425,7 +432,7 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 	} else {
 		// Set weapon flags
 
-		//pob:src/Modules/CalcActiveSkill.lua:281-286
+		//pob:src/Modules/CalcActiveSkill.lua:290-295
 
 		weaponTypes := [][]data.ItemClassName{activeGrantedEffect.WeaponTypes()}
 		for _, skillEffect := range activeSkill.EffectList {
@@ -461,7 +468,7 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 		if utils.MissingOrFalse(skillTypes, data.SkillTypeMainHandOnly) && utils.MissingOrFalse(skillFlags, SkillFlagForceMainHand) {
 			weapon2Flags, weapon2Info := getWeaponFlags(env, activeSkill.Actor.WeaponData2, weaponTypes)
 			if weapon2Flags != 0 {
-				//pob:src/Modules/CalcActiveSkill.lua:323
+				//pob:src/Modules/CalcActiveSkill.lua:332
 				if skillFlags[SkillFlagAttack] || skillFlags[SkillFlagDotFromAttack] {
 					activeSkill.Weapon2Flags = weapon2Flags
 					skillFlags[SkillFlagWeapon2Attack] = true
@@ -469,7 +476,7 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 			} else if (skillTypes[data.SkillTypeDualWieldOnly] || weapon2Info != nil) && activeSkill.SummonSkill == nil {
 				// Skill requires a compatible off hand weapon
 				skillFlags[SkillFlagDisable] = true
-				//pob:src/Modules/CalcActiveSkill.lua:330
+				//pob:src/Modules/CalcActiveSkill.lua:339
 				if activeSkill.DisableReason == "" {
 					activeSkill.DisableReason = "Off Hand weapon is not usable with this skill"
 				}
@@ -485,7 +492,7 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 	}
 
 	// Apply stat-map flagged skill flags.
-	//pob:block:src/Modules/CalcActiveSkill.lua:341-347
+	//pob:block:src/Modules/CalcActiveSkill.lua:350-356
 	if activeSkill.ActiveEffect != nil && activeSkill.ActiveEffect.GrantedEffect != nil &&
 		activeSkill.ActiveEffect.GrantedEffect.Raw != nil {
 		grantedEffect := activeSkill.ActiveEffect.GrantedEffect
@@ -538,7 +545,7 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 		skillKeywordFlags |= mod.KeywordFlagAura
 	}
 
-	//pob:src/Modules/CalcActiveSkill.lua:379-381
+	//pob:src/Modules/CalcActiveSkill.lua:388-390
 	if skillTypes[data.SkillTypeAppliesCurse] {
 		skillKeywordFlags |= mod.KeywordFlagCurse
 	}
@@ -635,7 +642,7 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 		}
 	}
 
-	//pob:src/Modules/CalcActiveSkill.lua:455
+	//pob:src/Modules/CalcActiveSkill.lua:465
 	weaponCfgFlags := activeSkill.Weapon1Flags
 	if weaponCfgFlags == 0 {
 		weaponCfgFlags = activeSkill.Weapon2Flags
@@ -655,7 +662,7 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 		SkillDistSet:       env.ModeEffective,
 		SlotName:           activeSkill.SlotName,
 	}
-	//pob:block:src/Modules/CalcActiveSkill.lua:465-467
+	//pob:block:src/Modules/CalcActiveSkill.lua:475-477
 	if gemCfg := activeSkill.ActiveEffect.gemCfg; gemCfg != nil {
 		if activeSkill.SkillCfg.SlotName == "" {
 			activeSkill.SkillCfg.SlotName = gemCfg.SlotName
@@ -687,7 +694,7 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 	activeSkill.SkillModList = skillModList
 	activeSkill.BaseSkillModList = skillModList
 
-	//pob:src/Modules/CalcActiveSkill.lua:486-491
+	//pob:src/Modules/CalcActiveSkill.lua:496-501
 	if activeSkill.Actor != nil && activeSkill.Actor.MinionData != nil && activeSkill.Actor.MinionData.DamageFixup != 0 {
 		fixup := activeSkill.Actor.MinionData.DamageFixup
 		skillModList.AddMod(mod.NewFloat("Damage", mod.TypeMore, -100*fixup).Source("Damage Fixup").Flag(mod.MFlagAttack))
@@ -724,12 +731,12 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 			if level.StoredUses != nil {
 				activeSkill.SkillData.StoredUses = utils.Ptr(*level.StoredUses)
 			}
-			//pob:src/Modules/CalcActiveSkill.lua:535-537
+			//pob:src/Modules/CalcActiveSkill.lua:545-547
 			if level.SkillUseStorage != nil && activeSkill.SkillData.StoredUses == nil {
 				activeSkill.SkillData.StoredUses = utils.Ptr(*level.SkillUseStorage)
 			}
 
-			//pob:src/Modules/CalcActiveSkill.lua:519-528
+			//pob:src/Modules/CalcActiveSkill.lua:529-538
 			if !activeSkill.SkillFlags[SkillFlagDisable] && grantedEffectIsTrigger(skillEffect.GrantedEffect) {
 				if activeSkill.TriggeredBy != nil {
 					activeSkill.SkillFlags[SkillFlagDisable] = true
@@ -738,7 +745,7 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 					activeSkill.TriggeredBy = skillEffect
 				}
 			}
-			//pob:block:src/Modules/CalcActiveSkill.lua:529-531
+			//pob:block:src/Modules/CalcActiveSkill.lua:539-541
 			if level.PvPDamageMultiplier != nil {
 				skillModList.AddMod(mod.NewFloat("PvpDamageMultiplier", mod.TypeMore, *level.PvPDamageMultiplier).Source(mod.Source("Skill:" + skillEffect.GrantedEffect.Raw.ID)))
 			}
@@ -746,7 +753,7 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 	}
 
 	// Apply gem/quality modifiers from support gems.
-	//pob:src/Modules/CalcActiveSkill.lua:549-559
+	//pob:src/Modules/CalcActiveSkill.lua:559-569
 	for _, supportProperty := range skillModList.Tabulate(mod.TypeList, activeSkill.SkillCfg, "SupportedGemProperty") {
 		castValue := supportProperty.Mod.Value().List().(mod.SupportedGemProperty)
 		if castValue.Keyword == "grants_active_skill" && activeSkill.ActiveEffect.GemData != nil &&
@@ -756,19 +763,19 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 				activeEffect.Level = activeEffect.Level + castValue.Value
 			case "quality":
 				activeEffect.Quality = activeEffect.Quality + castValue.Value
-				//pob:block:src/Modules/CalcActiveSkill.lua:552-555
+				//pob:block:src/Modules/CalcActiveSkill.lua:562-565
 				activeEffect.SupportQuality += castValue.Value
 			default:
 				panic("unknown key: " + castValue.Key)
 			}
-			//pob:block:src/Modules/CalcActiveSkill.lua:557
+			//pob:block:src/Modules/CalcActiveSkill.lua:577
 			skillModList.AddMod(gemPropertyMod("GemSupport", castValue.Key, float64(castValue.Value), supportProperty.Mod))
 		}
 	}
 
 	// Add active gem modifiers
 
-	//pob:block:src/Modules/CalcActiveSkill.lua:567
+	//pob:block:src/Modules/CalcActiveSkill.lua:577
 	if activeSkill.Actor != nil && activeSkill.Actor.MinionData != nil {
 		actorLevel := activeSkill.Actor.Level
 		activeEffect.ActorLevel = &actorLevel
@@ -784,13 +791,13 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 		activeSkill.SkillData.CritChance = *level.CritChance
 	}
 
-	//pob:src/Modules/CalcActiveSkill.lua:574-576
+	//pob:src/Modules/CalcActiveSkill.lua:584-586
 
 	if level.AttackTime != nil {
 		activeSkill.SkillData.AttackTime = *level.AttackTime
 	}
 
-	//pob:src/Modules/CalcActiveSkill.lua:580-581
+	//pob:src/Modules/CalcActiveSkill.lua:590-591
 	if level.AttackSpeedMultiplier != nil {
 		activeSkill.SkillData.AttackSpeedMultiplier = *level.AttackSpeedMultiplier
 	}
@@ -802,34 +809,34 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 	if level.StoredUses != nil {
 		activeSkill.SkillData.StoredUses = utils.Ptr(*level.StoredUses)
 	}
-	//pob:src/Modules/CalcActiveSkill.lua:589-591
+	//pob:src/Modules/CalcActiveSkill.lua:599-601
 	if level.SkillUseStorage != nil && activeSkill.SkillData.StoredUses == nil {
 		activeSkill.SkillData.StoredUses = utils.Ptr(*level.SkillUseStorage)
 	}
 
-	//pob:block:src/Modules/CalcActiveSkill.lua:592-594
+	//pob:block:src/Modules/CalcActiveSkill.lua:602-604
 	if level.SoulPreventionDuration != nil {
 		activeSkill.SkillData.SoulPreventionDuration = *level.SoulPreventionDuration
 	}
-	//pob:block:src/Modules/CalcActiveSkill.lua:595-597
+	//pob:block:src/Modules/CalcActiveSkill.lua:605-607
 	if level.PvPDamageMultiplier != nil {
 		skillModList.AddMod(mod.NewFloat("PvpDamageMultiplier", mod.TypeMore, *level.PvPDamageMultiplier).Source(mod.Source("Skill:" + activeGrantedEffect.Raw.ID)))
 	}
 
 	// Apply gem/quality modifiers from support gems
-	//pob:block:src/Modules/CalcActiveSkill.lua:542-543
+	//pob:block:src/Modules/CalcActiveSkill.lua:552-553
 	gemLevel, gemQuality := activeEffect.Level, activeEffect.Quality
 	if activeEffect.SrcInstance != nil {
 		gemLevel, gemQuality = activeEffect.SrcInstance.Level, activeEffect.SrcInstance.Quality
 	}
 	skillModList.AddMod(mod.NewFloat("GemLevel", mod.TypeBase, float64(gemLevel)).Source("Max Level"))
 	skillModList.AddMod(mod.NewFloat("GemQuality", mod.TypeBase, float64(gemQuality)).Source("Max Quality"))
-	//pob:block:src/Modules/CalcActiveSkill.lua:545-548
+	//pob:block:src/Modules/CalcActiveSkill.lua:555-558
 	if activeEffect.SocketQuality != 0 {
 		skillModList.AddMod(mod.NewFloat("GemSocketQuality", mod.TypeBase,
 			float64(activeEffect.SocketQuality)).Source("Socket Quality"))
 	}
-	//pob:block:src/Modules/CalcActiveSkill.lua:561-564
+	//pob:block:src/Modules/CalcActiveSkill.lua:571-574
 	for _, gemProperty := range activeEffect.gemPropertyInfo {
 		skillModList.AddMod(gemPropertyMod("GemItem", gemProperty.Key, gemProperty.Value, gemProperty.mod))
 	}
@@ -847,7 +854,7 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 	}
 
 	// Add active mine multiplier
-	//pob:block:src/Modules/CalcActiveSkill.lua:566-572
+	//pob:block:src/Modules/CalcActiveSkill.lua:576-582
 	if skillFlags[SkillFlagMine] && activeEffect.SrcInstance != nil {
 		var mineCount *int
 		if env.Mode == OutputModeCalcs {
@@ -864,23 +871,22 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 		}
 	}
 
-	//pob:block:src/Modules/CalcActiveSkill.lua:635-644
+	//pob:block:src/Modules/CalcActiveSkill.lua:645-654
 	if stageSkillName := stageMultiplierName(activeGrantedEffect); stageSkillName != "" {
 		limit := skillModList.Sum(mod.TypeBase, activeSkill.SkillCfg, "Multiplier:"+stageSkillName+"MaxStages")
 		activeSkill.SkillData.StagesMax = limit
 		if limit > 0 {
 			skillFlags[SkillFlagMultiStage] = true
 
-			stageCount := float64(0)
-			if activeEffect.SrcInstance != nil {
+			stageCount := limit
+			if src := activeEffect.SrcInstance; src != nil {
 				if env.Mode == OutputModeCalcs {
-					stageCount = float64(activeEffect.SrcInstance.SkillStageCountCalcs)
-				} else {
-					stageCount = float64(activeEffect.SrcInstance.SkillStageCount)
+					if src.StageCountCalcsSet() {
+						stageCount = float64(src.SkillStageCountCalcs)
+					}
+				} else if src.StageCountSet() {
+					stageCount = float64(src.SkillStageCount)
 				}
-			}
-			if stageCount == 0 {
-				stageCount = limit
 			}
 
 			activeSkill.ActiveStageCount = max(stageCount,
@@ -905,7 +911,7 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 	}
 
 	// Create minion
-	//pob:src/Modules/CalcActiveSkill.lua:554-573
+	//pob:src/Modules/CalcActiveSkill.lua:564-583
 	var isSpectre bool
 	baseMinionList, hasMinionList := raw2.SkillMinionLists[activeGrantedEffect.Raw.ID]
 	if hasMinionList && len(baseMinionList) == 0 {
@@ -930,11 +936,11 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 	}
 	activeSkill.MinionList = minionList
 
-	//pob:src/Modules/CalcActiveSkill.lua:574-595
+	//pob:src/Modules/CalcActiveSkill.lua:584-605
 	if len(minionList) > 0 && activeSkill.Actor.MinionData == nil {
 		minionType := minionList[0]
 		if activeEffect.SrcInstance != nil {
-			//pob:block:src/Modules/CalcActiveSkill.lua:683-692
+			//pob:block:src/Modules/CalcActiveSkill.lua:693-702
 			selected := activeEffect.SrcInstance.SkillMinion
 			if env.Mode == OutputModeCalcs && env.Player != nil && activeSkill == env.Player.MainSkill {
 				selected = ""
@@ -956,11 +962,11 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 					ItemList:   make(map[string]*ItemData),
 				},
 				Type: minionType,
-				//pob:src/Modules/CalcActiveSkill.lua:717
+				//pob:src/Modules/CalcActiveSkill.lua:727
 				LifeTable: data.MonsterAllyLifeTable,
 				Uses:      raw2.SkillMinionUses[activeGrantedEffect.Raw.ID],
 			}
-			//pob:src/Modules/CalcActiveSkill.lua:699-717
+			//pob:src/Modules/CalcActiveSkill.lua:709-727
 			if minionData.Hostile {
 				minion.Parent = env.Enemy
 				minion.Enemy = env.Player
@@ -987,21 +993,21 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 			minion.Level = min(max(level, 1), 100)
 
 			attackTime := minionData.AttackTime
-			//pob:src/Modules/CalcActiveSkill.lua:720-721
+			//pob:src/Modules/CalcActiveSkill.lua:730-731
 			damageTable := data.MonsterAllyDamageTable
 			if isSpectre || minionData.Hostile {
 				damageTable = data.MonsterDamageTable
 			}
 			damage := damageTable[minion.Level] * minionData.Damage
-			//pob:src/Modules/CalcActiveSkill.lua:722-724
+			//pob:src/Modules/CalcActiveSkill.lua:732-734
 			if !minionData.BaseDamageIgnoresAttackSpeed {
 				damage *= attackTime
 			}
 
-			//pob:block:src/Modules/CalcActiveSkill.lua:554-564
+			//pob:block:src/Modules/CalcActiveSkill.lua:564-574
 			if raw2.SkillMinionHasItemSet[activeGrantedEffect.Raw.ID] && activeEffect.SrcInstance != nil {
 				itemSetID := activeEffect.SrcInstance.SkillMinionItemSet
-				//pob:block:src/Modules/CalcActiveSkill.lua:726-730
+				//pob:block:src/Modules/CalcActiveSkill.lua:736-740
 				if env.Mode == OutputModeCalcs && env.Player != nil && activeSkill == env.Player.MainSkill {
 					itemSetID = 0
 					if activeEffect.SrcInstance.SkillMinionItemSetCalcs != nil {
@@ -1011,7 +1017,7 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 				minion.ItemSet = minionItemSet(env.Build.Items, itemSetID)
 			}
 
-			//pob:src/Modules/CalcActiveSkill.lua:741-744
+			//pob:src/Modules/CalcActiveSkill.lua:751-754
 			switch {
 			case activeSkill.SkillData.MinionUseBowAndQuiver && env.Player.WeaponData1 != nil && env.Player.WeaponData1.Type == "Bow",
 				activeSkill.SkillData.MinionUseMainHandWeapon && env.Player.WeaponData1 != nil:
@@ -1034,7 +1040,7 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 			}
 			minion.WeaponData2 = &SkillData{}
 
-			//pob:block:src/Modules/CalcActiveSkill.lua:756-777
+			//pob:block:src/Modules/CalcActiveSkill.lua:766-787
 			if minion.Uses != nil {
 				if minion.Uses["Weapon 1"] {
 					if minion.ItemSet != nil {
@@ -1057,7 +1063,7 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 					}
 				}
 			}
-			//pob:block:src/Modules/CalcActiveSkill.lua:778-783
+			//pob:block:src/Modules/CalcActiveSkill.lua:788-793
 			if !isSpectre && skillModList.Flag(activeSkill.SkillCfg, "NonSpectreMinionsUseParentMainHandAttackTime") &&
 				env.Player.WeaponData1 != nil && env.Player.WeaponData1.AttackRate > 0 && minion.WeaponData1 != nil {
 				weaponData1 := *minion.WeaponData1
@@ -1157,7 +1163,7 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 	}
 }
 
-//pob:src/Modules/CalcActiveSkill.lua:192-223
+//pob:src/Modules/CalcActiveSkill.lua:195-226
 func getWeaponFlags(env *Environment, weaponData *SkillData, weaponTypes [][]data.ItemClassName) (mod.MFlag, *data.WeaponTypeInfo) {
 	if weaponData.Type == "" {
 		return 0, nil
@@ -1295,7 +1301,7 @@ func DroppedMinionSkillIDs() []string {
 	return out
 }
 
-//pob:src/Modules/CalcActiveSkill.lua:867-919
+//pob:src/Modules/CalcActiveSkill.lua:877-929
 func CalcCreateMinionSkills(env *Environment, activeSkill *ActiveSkill) {
 	activeEffect := activeSkill.ActiveEffect
 	minion := activeSkill.Minion
@@ -1303,7 +1309,7 @@ func CalcCreateMinionSkills(env *Environment, activeSkill *ActiveSkill) {
 
 	minion.ActiveSkillList = nil
 	skillIDList := make([]string, 0, len(minionData.SkillList))
-	//pob:block:src/Modules/CalcActiveSkill.lua:875-879
+	//pob:block:src/Modules/CalcActiveSkill.lua:885-889
 	for _, skillID := range minionData.SkillList {
 		if _, inPoBData := SkillBaseFlagsFor(skillID); inPoBData {
 			skillIDList = append(skillIDList, skillID)
@@ -1379,7 +1385,7 @@ func CalcCreateMinionSkills(env *Environment, activeSkill *ActiveSkill) {
 		minion.ActiveSkillList = append(minion.ActiveSkillList, minionSkill)
 	}
 
-	//pob:src/Modules/CalcActiveSkill.lua:913-921
+	//pob:src/Modules/CalcActiveSkill.lua:923-931
 	skillIndex := 1
 	if env.Mode == OutputModeCalcs {
 		if activeEffect.SrcInstance != nil && activeEffect.SrcInstance.SkillMinionSkillCalcs != nil {
@@ -1394,7 +1400,7 @@ func CalcCreateMinionSkills(env *Environment, activeSkill *ActiveSkill) {
 	}
 }
 
-//pob:block:src/Modules/CalcActiveSkill.lua:732-735
+//pob:block:src/Modules/CalcActiveSkill.lua:742-745
 func minionItemSet(items pob.Items, id int) *pob.ItemSet {
 	if len(items.ItemSets) == 0 {
 		return nil
@@ -1407,7 +1413,7 @@ func minionItemSet(items pob.Items, id int) *pob.ItemSet {
 	return &items.ItemSets[0]
 }
 
-//pob:block:src/Modules/CalcActiveSkill.lua:759
+//pob:block:src/Modules/CalcActiveSkill.lua:769
 func weaponSetSlotName(set *pob.ItemSet, slotName string) string {
 	if set != nil && set.UseSecondWeaponSet != nil && *set.UseSecondWeaponSet {
 		return slotName + " Swap"
@@ -1415,7 +1421,7 @@ func weaponSetSlotName(set *pob.ItemSet, slotName string) string {
 	return slotName
 }
 
-//pob:block:src/Modules/CalcActiveSkill.lua:759
+//pob:block:src/Modules/CalcActiveSkill.lua:769
 func itemSetSlotItem(env *Environment, set *pob.ItemSet, slotName string) *Item {
 	return peekItemSetSlotItem(env, set, slotName).Clone()
 }
@@ -1438,7 +1444,7 @@ func peekItemSetSlotItem(env *Environment, set *pob.ItemSet, slotName string) *I
 	return nil
 }
 
-//pob:block:src/Modules/CalcActiveSkill.lua:717
+//pob:block:src/Modules/CalcActiveSkill.lua:727
 func minionLifeTable(lifeScaling string, isSpectre bool) []float64 {
 	switch lifeScaling {
 	case "AltLife1":
@@ -1452,7 +1458,7 @@ func minionLifeTable(lifeScaling string, isSpectre bool) []float64 {
 	return data.MonsterAllyLifeTable
 }
 
-//pob:block:src/Modules/CalcActiveSkill.lua:446-450
+//pob:block:src/Modules/CalcActiveSkill.lua:455-459
 func skillDistanceOption(b *pob.PathOfBuilding, name string, declaredDefault float64) float64 {
 	if v, ok := b.GetNumberOptionOK(name); ok {
 		return v

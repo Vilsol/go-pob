@@ -21,6 +21,9 @@ export interface Stat {
   compPercent?: boolean;
   lowerIsBetter?: boolean;
   pool?: string;
+  breakdown?: string;
+  modNames?: string[];
+  ignoredSections?: string[];
   condFunc?: (v: number, o: StatOutput) => boolean;
   warnFunc?: (v: number, o: StatOutput, strings?: Record<string, string | undefined>) => string | false;
   suffixCondFunc?: (v: number, o: StatOutput) => boolean;
@@ -32,13 +35,16 @@ export const DOT_DPS_CAP = 35791394;
 const n = (v: number | undefined) => v ?? 0;
 const truthy = (v: number | undefined) => v !== undefined && v !== 0;
 
-// src/Modules/BuildDisplayStats.lua:9-11
+// src/Modules/BuildDisplayStats.lua:12-14
 const maxHitSuffix = (value: number, output: StatOutput) => (value === Infinity ? 'Immune' : truthy(output.GuardSkillActive) && 'Guard');
 
 const reqWarn = (attr: string, key: string) => (_v: number, _o: StatOutput, strings?: Record<string, string | undefined>) =>
   `You do not meet the ${attr} requirement of ${strings?.[key] ?? ''}`;
 
-// src/Modules/BuildDisplayStats.lua:13-208
+// src/Modules/BuildDisplayStats.lua:16
+const defenseIgnoredSections = ['Base from Gear', 'Inc. from Tree'];
+
+// src/Modules/BuildDisplayStats.lua:50-248
 export const displayStats: Stat[] = [
   { stat: 'ActiveMinionLimit', label: 'Active Minion Limit', fmt: 'd' },
   { stat: 'AverageHit', label: 'Average Hit', fmt: '.1f', compactValue: true, compPercent: true },
@@ -62,8 +68,19 @@ export const displayStats: Stat[] = [
     condFunc: (v, o) => truthy(o.AverageBurstHits) && n(o.AverageBurstHits) > 1 && v > 0
   },
   { stat: 'PvpAverageDamage', label: 'PvP Average Damage', fmt: '.1f', compactValue: true, compPercent: true, flag: 'attackPvP' },
-  { stat: 'Speed', label: 'Attack Rate', fmt: '.2f', compPercent: true, flag: 'attack', condFunc: (v, o) => v > 0 && n(o.TriggerTime) === 0 },
-  { stat: 'Speed', label: 'Cast Rate', fmt: '.2f', compPercent: true, flag: 'spell', condFunc: (v, o) => v > 0 && n(o.TriggerTime) === 0 },
+  {
+    stat: 'Speed',
+    label: 'Attack Rate',
+    fmt: '.2f',
+    compPercent: true,
+    flag: 'attack',
+    condFunc: (v, o) => v > 0 && n(o.TriggerTime) === 0,
+    breakdown: 'Speed',
+    modNames: ['Speed'],
+    ignoredSections: ['Inc. Cast Speed', 'More Cast Speed']
+  },
+  { stat: 'KineticFusilladeMaxEffectiveAPS', label: 'Max Eff. KF Attack Rate', fmt: '.2f', compPercent: true, flag: 'attack', condFunc: (v) => v > 0 },
+  { stat: 'Speed', label: 'Cast Rate', fmt: '.2f', compPercent: true, flag: 'spell', condFunc: (v, o) => v > 0 && n(o.TriggerTime) === 0, modNames: ['Speed'] },
   { stat: 'Speed', label: 'Effective Trigger Rate', fmt: '.2f', compPercent: true, notFlag: 'skipEffectiveRate', condFunc: (v, o) => n(o.TriggerTime) !== 0 },
   { stat: 'WarcryCastTime', label: 'Cast Time', fmt: '.2fs', compPercent: true, lowerIsBetter: true, flag: 'warcry' },
   { stat: 'HitSpeed', label: 'Hit Rate', fmt: '.2f', compPercent: true, condFunc: (v, o) => o.TriggerTime === undefined },
@@ -90,10 +107,17 @@ export const displayStats: Stat[] = [
     lowerIsBetter: true,
     condFunc: (v, o) => o.TriggerTime === undefined
   },
-  { stat: 'PreEffectiveCritChance', label: 'Crit Chance', fmt: '.2f%%', flag: 'hit' },
-  { stat: 'CritChance', label: 'Effective Crit Chance', fmt: '.2f%%', flag: 'hit', condFunc: (v, o) => v !== o.PreEffectiveCritChance },
-  { stat: 'CritMultiplier', label: 'Crit Multiplier', fmt: 'd%%', pc: true, condFunc: (v, o) => n(o.CritChance) > 0 },
-  { stat: 'HitChance', label: 'Hit Chance', fmt: '.0f%%', flag: 'attack' },
+  { stat: 'PreEffectiveCritChance', label: 'Crit Chance', fmt: '.2f%%', flag: 'hit', breakdown: 'PreEffectiveCritChance' },
+  {
+    stat: 'CritChance',
+    label: 'Effective Crit Chance',
+    fmt: '.2f%%',
+    flag: 'hit',
+    condFunc: (v, o) => v !== o.PreEffectiveCritChance,
+    breakdown: 'CritChance'
+  },
+  { stat: 'CritMultiplier', label: 'Crit Multiplier', fmt: 'd%%', pc: true, condFunc: (v, o) => n(o.CritChance) > 0, breakdown: 'CritMultiplier' },
+  { stat: 'HitChance', label: 'Hit Chance', fmt: '.0f%%', flag: 'attack', breakdown: 'HitChance' },
   { stat: 'HitChance', label: 'Hit Chance', fmt: '.0f%%', condFunc: (v, o) => truthy(o.enemyHasSpellBlock) },
   { stat: 'TotalDPS', label: 'Hit DPS', fmt: '.1f', compactValue: true, compPercent: true, flag: 'notAverage' },
   { stat: 'PvpTotalDPS', label: 'PvP Hit DPS', fmt: '.1f', compactValue: true, compPercent: true, flag: 'notAveragePvP' },
@@ -276,7 +300,7 @@ export const displayStats: Stat[] = [
   { stat: 'SealCooldown', label: 'Seal Gain Frequency', fmt: '.2fs', lowerIsBetter: true },
   { stat: 'SealMax', label: 'Max Number of Seals', fmt: 'd' },
   { stat: 'TimeMaxSeals', label: 'Time to Gain Max Seals', fmt: '.2fs', lowerIsBetter: true },
-  { stat: 'AreaOfEffectRadiusMetres', label: 'AoE Radius', fmt: '.1fm' },
+  { stat: 'AreaOfEffectRadiusMetres', label: 'AoE Radius', fmt: '.1fm', breakdown: 'AreaOfEffectRadius', modNames: ['AreaOfEffect'] },
   { stat: 'BrandAttachmentRangeMetre', label: 'Attachment Range', fmt: '.1fm', flag: 'brand' },
   { stat: 'BrandTicks', label: 'Activations per Brand', fmt: 'd', flag: 'brand' },
   {
@@ -419,7 +443,7 @@ export const displayStats: Stat[] = [
     condFunc: (v, o) => truthy(o.SoulHasCost)
   },
   {},
-  { stat: 'Str', label: 'Strength', color: colorCodes.STRENGTH, fmt: 'd' },
+  { stat: 'Str', label: 'Strength', color: colorCodes.STRENGTH, fmt: 'd', breakdown: 'Str' },
   {
     stat: 'ReqStr',
     label: 'Strength Required',
@@ -429,7 +453,7 @@ export const displayStats: Stat[] = [
     condFunc: (v, o) => v > n(o.Str),
     warnFunc: reqWarn('Strength', 'ReqStrItem')
   },
-  { stat: 'Dex', label: 'Dexterity', color: colorCodes.DEXTERITY, fmt: 'd' },
+  { stat: 'Dex', label: 'Dexterity', color: colorCodes.DEXTERITY, fmt: 'd', breakdown: 'Dex' },
   {
     stat: 'ReqDex',
     label: 'Dexterity Required',
@@ -439,7 +463,7 @@ export const displayStats: Stat[] = [
     condFunc: (v, o) => v > n(o.Dex),
     warnFunc: reqWarn('Dexterity', 'ReqDexItem')
   },
-  { stat: 'Int', label: 'Intelligence', color: colorCodes.INTELLIGENCE, fmt: 'd' },
+  { stat: 'Int', label: 'Intelligence', color: colorCodes.INTELLIGENCE, fmt: 'd', breakdown: 'Int' },
   {
     stat: 'ReqInt',
     label: 'Intelligence Required',
@@ -533,7 +557,16 @@ export const displayStats: Stat[] = [
     warnFunc: (v, o) => v < n(o.Life) && 'You do not have enough Accuracy for Precise Technique',
     warnColor: true
   },
-  { stat: 'Life', label: 'Total Life', fmt: 'd', compactValue: true, color: colorCodes.LIFE, compPercent: true },
+  {
+    stat: 'Life',
+    label: 'Total Life',
+    fmt: 'd',
+    compactValue: true,
+    color: colorCodes.LIFE,
+    compPercent: true,
+    modNames: ['Life'],
+    ignoredSections: defenseIgnoredSections
+  },
   { stat: 'Spec:LifeInc', label: '%Inc Life from Tree', fmt: 'd%%', color: colorCodes.LIFE, condFunc: (v, o) => v > 0 && n(o.Life) > 1 },
   {
     stat: 'LifeUnreserved',
@@ -551,20 +584,31 @@ export const displayStats: Stat[] = [
     label: 'Life Regen',
     fmt: '.1f',
     color: colorCodes.LIFE,
-    condFunc: (v, o) => n(o.LifeRecovery) <= 0 && o.LifeRegenRecovery !== 0
+    condFunc: (v, o) => n(o.LifeRecovery) <= 0 && o.LifeRegenRecovery !== 0,
+    breakdown: 'LifeRegenRecovery'
   },
   {
     stat: 'LifeRegenRecovery',
     label: 'Life Recovery',
     fmt: '.1f',
     color: colorCodes.LIFE,
-    condFunc: (v, o) => n(o.LifeRecovery) > 0 && o.LifeRegenRecovery !== 0
+    condFunc: (v, o) => n(o.LifeRecovery) > 0 && o.LifeRegenRecovery !== 0,
+    breakdown: 'LifeRegenRecovery'
   },
   { stat: 'LifeRecharge', label: 'Life Recharge', fmt: '.1f', color: colorCodes.LIFE, condFunc: (v) => v > 0 },
-  { stat: 'LifeLeechGainRate', label: 'Life Leech/On Hit Rate', fmt: '.1f', color: colorCodes.LIFE, compPercent: true },
+  { stat: 'LifeLeechGainRate', label: 'Life Leech/On Hit Rate', fmt: '.1f', color: colorCodes.LIFE, compPercent: true, breakdown: 'LifeLeech' },
   { stat: 'LifeLeechGainPerHit', label: 'Life Leech/Gain per Hit', fmt: '.1f', color: colorCodes.LIFE, compPercent: true },
   {},
-  { stat: 'Mana', label: 'Total Mana', fmt: 'd', compactValue: true, color: colorCodes.MANA, compPercent: true },
+  {
+    stat: 'Mana',
+    label: 'Total Mana',
+    fmt: 'd',
+    compactValue: true,
+    color: colorCodes.MANA,
+    compPercent: true,
+    modNames: ['Mana'],
+    ignoredSections: defenseIgnoredSections
+  },
   { stat: 'Spec:ManaInc', label: '%Inc Mana from Tree', color: colorCodes.MANA, fmt: 'd%%' },
   {
     stat: 'ManaUnreserved',
@@ -575,7 +619,7 @@ export const displayStats: Stat[] = [
     compPercent: true,
     warnFunc: (v) => v < 0 && 'Your unreserved Mana is negative'
   },
-  { stat: 'ManaUnreservedPercent', label: 'Unreserved Mana', fmt: 'd%%', color: colorCodes.MANA, condFunc: (v) => v < 100 },
+  { stat: 'ManaUnreservedPercent', label: 'Unreserved Mana', fmt: 'd%%', color: colorCodes.MANA, condFunc: (v) => v < 100, breakdown: 'ManaReserved' },
   {
     stat: 'ManaRegenRecovery',
     label: 'Mana Regen',
@@ -593,7 +637,16 @@ export const displayStats: Stat[] = [
   { stat: 'ManaLeechGainRate', label: 'Mana Leech/On Hit Rate', fmt: '.1f', color: colorCodes.MANA, compPercent: true },
   { stat: 'ManaLeechGainPerHit', label: 'Mana Leech/Gain per Hit', fmt: '.1f', color: colorCodes.MANA, compPercent: true },
   {},
-  { stat: 'EnergyShield', label: 'Energy Shield', fmt: 'd', compactValue: true, color: colorCodes.ES, compPercent: true },
+  {
+    stat: 'EnergyShield',
+    label: 'Energy Shield',
+    fmt: 'd',
+    compactValue: true,
+    color: colorCodes.ES,
+    compPercent: true,
+    modNames: ['EnergyShield', 'Defences'],
+    ignoredSections: defenseIgnoredSections
+  },
   { stat: 'EnergyShieldRecoveryCap', label: 'Recoverable ES', color: colorCodes.ES, fmt: 'd', condFunc: (v, o) => truthy(o.CappingES) },
   { stat: 'Spec:EnergyShieldInc', label: '%Inc ES from Tree', color: colorCodes.ES, fmt: 'd%%' },
   {
@@ -613,7 +666,16 @@ export const displayStats: Stat[] = [
   { stat: 'EnergyShieldLeechGainRate', label: 'ES Leech/On Hit Rate', color: colorCodes.ES, fmt: '.1f', compPercent: true },
   { stat: 'EnergyShieldLeechGainPerHit', label: 'ES Leech/Gain per Hit', color: colorCodes.ES, fmt: '.1f', compPercent: true },
   {},
-  { stat: 'Ward', label: 'Ward', fmt: 'd', compactValue: true, color: colorCodes.WARD, compPercent: true },
+  {
+    stat: 'Ward',
+    label: 'Ward',
+    fmt: 'd',
+    compactValue: true,
+    color: colorCodes.WARD,
+    compPercent: true,
+    modNames: ['Ward'],
+    ignoredSections: defenseIgnoredSections
+  },
   {},
   { stat: 'Rage', label: 'Rage', fmt: 'd', color: colorCodes.RAGE, compPercent: true },
   { stat: 'RageRegenRecovery', label: 'Rage Regen', fmt: '.1f', color: colorCodes.RAGE, compPercent: true },
@@ -624,7 +686,15 @@ export const displayStats: Stat[] = [
   { stat: 'NetManaRegen', label: 'Net Mana Recovery', fmt: '+.1f', color: colorCodes.MANA },
   { stat: 'NetEnergyShieldRegen', label: 'Net ES Recovery', fmt: '+.1f', color: colorCodes.ES },
   {},
-  { stat: 'Evasion', label: 'Evasion rating', fmt: 'd', color: colorCodes.EVASION, compPercent: true },
+  {
+    stat: 'Evasion',
+    label: 'Evasion rating',
+    fmt: 'd',
+    color: colorCodes.EVASION,
+    compPercent: true,
+    modNames: ['Evasion', 'ArmourAndEvasion', 'Defences'],
+    ignoredSections: defenseIgnoredSections
+  },
   { stat: 'Spec:EvasionInc', label: '%Inc Evasion from Tree', color: colorCodes.EVASION, fmt: 'd%%' },
   {
     stat: 'MeleeEvadeChance',
@@ -648,15 +718,29 @@ export const displayStats: Stat[] = [
     condFunc: (v, o) => v > 0 && o.MeleeEvadeChance !== o.ProjectileEvadeChance
   },
   {},
-  { stat: 'Armour', label: 'Armour', fmt: 'd', compPercent: true },
+  {
+    stat: 'Armour',
+    label: 'Armour',
+    fmt: 'd',
+    compPercent: true,
+    modNames: ['Armour', 'ArmourAndEvasion', 'Defences', 'ArmourDefense'],
+    ignoredSections: defenseIgnoredSections
+  },
   { stat: 'Spec:ArmourInc', label: '%Inc Armour from Tree', fmt: 'd%%' },
   { stat: 'PhysicalDamageReduction', label: 'Phys. Damage Reduction', fmt: 'd%%', condFunc: () => true },
   {},
-  { stat: 'EffectiveBlockChance', label: 'Block Chance', fmt: '.3f%%', overCapStat: 'BlockChanceOverCap' },
-  { stat: 'EffectiveSpellBlockChance', label: 'Spell Block Chance', fmt: '.3f%%', overCapStat: 'SpellBlockChanceOverCap' },
+  { stat: 'EffectiveBlockChance', label: 'Block Chance', fmt: '.3f%%', overCapStat: 'BlockChanceOverCap', breakdown: 'BlockChance' },
+  { stat: 'EffectiveSpellBlockChance', label: 'Spell Block Chance', fmt: '.3f%%', overCapStat: 'SpellBlockChanceOverCap', breakdown: 'SpellBlockChance' },
   { stat: 'AttackDodgeChance', label: 'Attack Dodge Chance', fmt: 'd%%', overCapStat: 'AttackDodgeChanceOverCap' },
   { stat: 'SpellDodgeChance', label: 'Spell Dodge Chance', fmt: 'd%%', overCapStat: 'SpellDodgeChanceOverCap' },
-  { stat: 'EffectiveSpellSuppressionChance', label: 'Spell Suppression Chance', fmt: '.2f%%', overCapStat: 'SpellSuppressionChanceOverCap' },
+  {
+    stat: 'EffectiveSpellSuppressionChance',
+    label: 'Spell Suppression Chance',
+    fmt: '.2f%%',
+    overCapStat: 'SpellSuppressionChanceOverCap',
+    breakdown: '',
+    modNames: ['SpellSuppressionChance']
+  },
   {},
   { stat: 'FireResist', label: 'Fire Resistance', fmt: 'd%%', color: colorCodes.FIRE, condFunc: () => true, overCapStat: 'FireResistOverCap' },
   { stat: 'FireResistOverCap', label: 'Fire Res. Over Max', fmt: 'd%%', hideStat: true },
@@ -700,7 +784,7 @@ export const displayStats: Stat[] = [
   { stat: 'SkillDPS', label: 'Skill DPS', compactValue: true, condFunc: () => true }
 ];
 
-// src/Modules/BuildDisplayStats.lua:209-238
+// src/Modules/BuildDisplayStats.lua:250-279
 export const minionDisplayStats: Stat[] = [
   { stat: 'AverageDamage', label: 'Average Damage', fmt: '.1f', compactValue: true, compPercent: true },
   { stat: 'Speed', label: 'Attack/Cast Rate', fmt: '.2f', compPercent: true, condFunc: (v, o) => v > 0 && n(o.TriggerTime) === 0 },
@@ -803,10 +887,28 @@ export const minionDisplayStats: Stat[] = [
     condFunc: (v, o) => v !== n(o.TotalDPS) + n(o.TotalDot) && v !== o.WithImpaleDPS && v !== o.WithPoisonDPS && v !== o.WithIgniteDPS && v !== o.WithBleedDPS
   },
   { stat: 'Cooldown', label: 'Skill Cooldown', fmt: '.3fs', notFlag: 'skipEffectiveRate', lowerIsBetter: true },
-  { stat: 'Life', label: 'Total Life', fmt: '.1f', compactValue: true, color: colorCodes.LIFE, compPercent: true },
+  {
+    stat: 'Life',
+    label: 'Total Life',
+    fmt: '.1f',
+    compactValue: true,
+    color: colorCodes.LIFE,
+    compPercent: true,
+    modNames: ['Life'],
+    ignoredSections: defenseIgnoredSections
+  },
   { stat: 'LifeRegenRecovery', label: 'Life Recovery', fmt: '.1f', color: colorCodes.LIFE },
   { stat: 'LifeLeechGainRate', label: 'Life Leech/On Hit Rate', fmt: '.1f', color: colorCodes.LIFE, compPercent: true },
-  { stat: 'EnergyShield', label: 'Energy Shield', fmt: 'd', compactValue: true, color: colorCodes.ES, compPercent: true },
+  {
+    stat: 'EnergyShield',
+    label: 'Energy Shield',
+    fmt: 'd',
+    compactValue: true,
+    color: colorCodes.ES,
+    compPercent: true,
+    modNames: ['EnergyShield', 'Defences'],
+    ignoredSections: defenseIgnoredSections
+  },
   { stat: 'EnergyShieldRegenRecovery', label: 'ES Recovery', fmt: '.1f', color: colorCodes.ES },
   { stat: 'EnergyShieldLeechGainRate', label: 'ES Leech/On Hit Rate', fmt: '.1f', color: colorCodes.ES, compPercent: true }
 ];

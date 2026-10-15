@@ -1,4 +1,5 @@
 local inPath, outPath = arg[1], arg[2]
+local construct = dofile((arg[0]:match("^(.*)[/\\]") or ".") .. "/pob_compat.lua").construct
 dofile("HeadlessWrapper.lua")
 local json = require("dkjson")
 local t_insert, m_max = table.insert, math.max
@@ -48,20 +49,40 @@ local function buildMods(displayItem, sourceId)
 		for i, _ in pairs(modGroups) do
 			modGroups[i].label = modList[modGroups[i].modListIndex][1].label:gsub("%([%d%.]+%-[%d%.]+%)", "#"):gsub("[%d%.]+", "#")
 		end
-	elseif sourceId == "DelveImplicit" then
-		for i, mod in pairs(displayItem.affixes) do
-			if displayItem:GetModSpawnWeight(mod) > 0 and mod.type and sourceId:lower() == mod.type:lower() then
-				local modLabel = table.concat(mod, "/")
-				if not groupIndexes[mod.group] then
-					t_insert(modList, {})
-					t_insert(modGroups, { label = modLabel, mod = mod, modListIndex = #modList, defaultOrder = i })
-					groupIndexes[mod.group] = #modGroups
-				end
-				t_insert(modList[groupIndexes[mod.group]], { label = modLabel, mod = mod, id = i, defaultOrder = i })
+	elseif sourceId == "VESTIGIAL" then
+		for id, uniqueTitle in pairs(data.vestigialModMappings) do
+			local titleLower = uniqueTitle:lower()
+			local unique = main.uniqueDB.byTitle[titleLower]
+			if not unique
+				or (unique.base.type ~= displayItem.type)
+				or (displayItem.title:lower() == titleLower) then
+				goto vestigialContinue
 			end
+			local mod = copyTable(data.itemMods.Vestigial[id])
+			local modLabel = colorCodes.VESTIGIAL .. table.concat(mod, "/")
+			t_insert(modList, { {
+				label = modLabel,
+				mod = mod,
+				type = "vestigial",
+				uniqueTitle = uniqueTitle,
+				modListIndex = #modList + 1,
+				id = id,
+			} })
+			groupIndexes[mod.group] = #modGroups
+			::vestigialContinue::
 		end
-		for i, _ in pairs(modList) do
-			table.sort(modList[i], function(a, b) return a.defaultOrder < b.defaultOrder end)
+		table.sort(modList, function(a, b)
+			a = a[1]
+			b = b[1]
+			if a.group == b.group then
+				return a.id < b.id
+			end
+			return a.mod.group < b.mod.group
+		end)
+		for i, elem in ipairs(modList) do
+			local group = elem[1]
+			group.modListIndex = i
+			table.insert(modGroups, elem[1])
 		end
 	end
 	local out = {}
@@ -76,7 +97,15 @@ end
 local items = json.decode(io.open(inPath):read("*a"))
 local out = {}
 for k, raw in ipairs(items) do
-	local item = new("Item", raw)
-	out[k] = { EXARCH = buildMods(item, "EXARCH"), EATER = buildMods(item, "EATER"), DelveImplicit = buildMods(item, "DelveImplicit") }
+	local item = construct("Item", raw)
+	local sources = {}
+	local titleLower = item.title and item.title:lower()
+	local displayDBUnique = main.uniqueDB.byTitle[titleLower]
+	if item.rarity == "UNIQUE" and displayDBUnique and data.vestigialUniqueBaseTypes[item.base.type]
+		and (not displayDBUnique.source or titleLower == "stasis prison") then
+		t_insert(sources, "VESTIGIAL")
+	end
+	out[k] = { EXARCH = buildMods(item, "EXARCH"), EATER = buildMods(item, "EATER"), sources = sources,
+		VESTIGIAL = #sources > 0 and buildMods(item, "VESTIGIAL") or {} }
 end
 io.open(outPath, "w"):write(json.encode(out))

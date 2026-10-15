@@ -1,3725 +1,4633 @@
 [{
     "count":1,
     "line":"11% increased Damage over Time",
+    "names":["Damage"],
     "parsed":true
   },{
     "count":1,
     "line":"+7% to Chaos Damage over Time Multiplier",
+    "names":["ChaosDotMultiplier"],
     "parsed":true
   },{
     "count":1,
     "line":"5% increased Attack Speed while holding a Shield",
+    "names":["Speed"],
     "parsed":true
   },{
     "count":1,
     "line":"12% increased Damage over Time",
+    "names":["Damage"],
     "parsed":true
   },{
     "count":1,
     "line":"12% increased Chaos Damage",
+    "names":["ChaosDamage"],
     "parsed":true
   },{
     "count":1,
     "line":"+12% to Critical Strike Multiplier with Elemental Skills",
+    "names":["CritMultiplier"],
     "parsed":true
   },{
     "count":1,
     "line":"9% increased Damage",
+    "names":["Damage"],
     "parsed":true
   },{
     "count":1,
     "line":"10% increased Chaos Damage",
+    "names":["ChaosDamage"],
     "parsed":true
   },{
     "count":1,
     "line":"4% increased Attack Speed while holding a Shield",
+    "names":["Speed"],
     "parsed":true
   },{
     "count":1,
     "line":"+15% to Critical Strike Multiplier with Elemental Skills",
+    "names":["CritMultiplier"],
     "parsed":true
   },{
     "count":1,
     "line":"Onslaught",
+    "names":["Condition:Onslaught"],
     "parsed":true
   },{
     "count":1,
     "line":"+16 to Maximum Charges",
+    "names":["FlaskCharges"],
     "parsed":true
   },{
     "count":1,
     "line":"12% increased Attack Speed during Flask effect",
+    "names":["Speed"],
     "parsed":true
   },{
     "count":1,
     "line":"66% reduced Amount Recovered",
+    "names":["FlaskRecovery"],
     "parsed":true
   },{
     "count":0,
     "extra":"Flask effect is not removed when Unreserved Mana is Filled ",
     "line":"Flask effect is not removed when Unreserved Mana is Filled",
+    "names":[],
     "parsed":false
   },{
     "count":0,
     "extra":"Flask effect is not removed when Unreserved Mana is Filled Flask effect does not Queue ",
     "line":"Flask effect is not removed when Unreserved Mana is Filled Flask effect does not Queue",
+    "names":[],
     "parsed":false
   },{
     "count":0,
     "extra":"Flask effect does not Queue ",
     "line":"Flask effect does not Queue",
+    "names":[],
     "parsed":false
   },{
     "count":0,
     "extra":"Flask effect does not Queue 24% reduced Mana Cost of Skills during Flask Effect ",
     "line":"Flask effect does not Queue 24% reduced Mana Cost of Skills during Flask Effect",
+    "names":[],
     "parsed":false
   },{
     "count":1,
     "line":"24% reduced Mana Cost of Skills during Flask Effect",
+    "names":["ManaCost"],
     "parsed":true
   },{
     "count":1,
     "line":"+30 to maximum Mana",
+    "names":["Mana"],
     "parsed":true
   },{
     "count":1,
     "line":"+55 to maximum Life",
+    "names":["Life"],
     "parsed":true
   },{
     "count":1,
     "line":"+38 to maximum Mana",
+    "names":["Mana"],
     "parsed":true
   },{
     "count":1,
     "line":"+5% to all Elemental Resistances",
+    "names":["ElementalResist"],
     "parsed":true
   },{
     "count":1,
     "line":"+40% to Fire Resistance",
+    "names":["FireResist"],
     "parsed":true
   },{
     "count":1,
     "line":"+45% to Cold Resistance",
+    "names":["ColdResist"],
     "parsed":true
   },{
     "count":2,
     "line":"Adds 13 to 27 Chaos Damage to Attacks",
+    "names":["ChaosMin","ChaosMax"],
     "parsed":true
   },{
     "count":1,
     "line":"+5% to maximum Fire Resistance",
+    "names":["FireResistMax"],
     "parsed":true
   },{
     "count":1,
     "line":"131% increased Charges per use",
+    "names":["FlaskChargesUsed"],
     "parsed":true
   },{
     "count":1,
     "line":"58% less Duration",
+    "names":["Duration"],
     "parsed":true
   },{
     "count":1,
     "line":"18% increased Area of Effect during Flask Effect",
+    "names":["AreaOfEffect"],
     "parsed":true
   },{
     "count":1,
     "line":"Skills fire 2 additional Projectiles during Flask Effect",
+    "names":["ProjectileCount"],
     "parsed":true
   },{
     "count":1,
     "line":"+55 to Dexterity",
+    "names":["Dex"],
     "parsed":true
   },{
     "count":1,
     "line":"10% reduced Global Physical Damage",
+    "names":["PhysicalDamage"],
     "parsed":true
   },{
     "count":1,
     "line":"16% increased Attack Speed",
+    "names":["Speed"],
     "parsed":true
   },{
     "count":1,
     "line":"183% increased Armour and Evasion",
+    "names":["ArmourAndEvasion"],
     "parsed":true
   },{
     "count":1,
     "line":"+23% to Chaos Resistance",
+    "names":["ChaosResist"],
     "parsed":true
   },{
     "count":1,
     "line":"20% increased Movement Speed",
+    "names":["MovementSpeed"],
     "parsed":true
   },{
     "count":0,
     "extra":"Mercury Footprints ",
     "line":"Mercury Footprints",
+    "names":[],
     "parsed":false
   },{
     "count":1,
     "line":"Grants Level 20 Aspect of the Spider Skill",
+    "names":["ExtraSkill"],
     "parsed":true
   },{
     "count":1,
     "line":"136% increased Evasion and Energy Shield",
+    "names":["EvasionAndEnergyShield"],
     "parsed":true
   },{
     "count":1,
     "line":"+45 to maximum Life",
+    "names":["Life"],
     "parsed":true
   },{
     "count":1,
     "line":"8% increased Attack and Cast Speed",
+    "names":["Speed"],
     "parsed":true
   },{
     "count":1,
     "line":"57% increased Damage with Hits and Ailments against Enemies affected by 3 Spider's Webs",
+    "names":["Damage"],
     "parsed":true
   },{
     "count":2,
     "line":"Adds 8 to 15 Chaos Damage for each Spider's Web on the Enemy",
+    "names":["ChaosMin","ChaosMax"],
     "parsed":true
   },{
     "count":1,
     "line":"6% increased Movement Speed",
+    "names":["MovementSpeed"],
     "parsed":true
   },{
     "count":1,
     "line":"+103 to Evasion Rating",
+    "names":["Evasion"],
     "parsed":true
   },{
     "count":1,
     "line":"97% increased Evasion Rating",
+    "names":["Evasion"],
     "parsed":true
   },{
     "count":1,
     "line":"+15% to all Elemental Resistances",
+    "names":["ElementalResist"],
     "parsed":true
   },{
     "count":1,
     "line":"+28% to Cold Resistance",
+    "names":["ColdResist"],
     "parsed":true
   },{
     "count":1,
     "line":"+45% to Lightning Resistance",
+    "names":["LightningResist"],
     "parsed":true
   },{
     "count":1,
     "line":"40% increased Global Accuracy Rating",
+    "names":["Accuracy"],
     "parsed":true
   },{
     "count":1,
     "line":"+10 to Strength",
+    "names":["Str"],
     "parsed":true
   },{
     "count":2,
     "line":"Adds 1 to 3 Physical Damage",
+    "names":["PhysicalMin","PhysicalMax"],
     "parsed":true
   },{
     "count":2,
     "line":"Adds 9 to 16 Fire Damage",
+    "names":["FireMin","FireMax"],
     "parsed":true
   },{
     "count":1,
     "line":"11% increased Critical Strike Chance",
+    "names":["CritChance"],
     "parsed":true
   },{
     "count":1,
     "line":"+25% to Global Critical Strike Multiplier",
+    "names":["CritMultiplier"],
     "parsed":true
   },{
     "count":1,
     "line":"+8 to Dexterity",
+    "names":["Dex"],
     "parsed":true
   },{
     "count":2,
     "line":"Adds 9 to 15 Fire Damage",
+    "names":["FireMin","FireMax"],
     "parsed":true
   },{
     "count":2,
     "line":"Adds 2 to 28 Lightning Damage",
+    "names":["LightningMin","LightningMax"],
     "parsed":true
   },{
     "count":1,
     "line":"6% increased Attack Speed",
+    "names":["Speed"],
     "parsed":true
   },{
     "count":1,
     "line":"16% increased Global Physical Damage",
+    "names":["PhysicalDamage"],
     "parsed":true
   },{
     "count":1,
     "line":"+13 to Strength",
+    "names":["Str"],
     "parsed":true
   },{
     "count":1,
     "line":"+60 to maximum Life",
+    "names":["Life"],
     "parsed":true
   },{
     "count":1,
     "line":"Regenerate 5.3 Mana per second",
+    "names":["ManaRegen"],
     "parsed":true
   },{
     "count":1,
     "line":"+44% to Fire Resistance",
+    "names":["FireResist"],
     "parsed":true
   },{
     "count":1,
     "line":"+43% to Lightning Resistance",
+    "names":["LightningResist"],
     "parsed":true
   },{
     "count":1,
     "line":"Flasks applied to you have 10% increased Effect",
+    "names":["FlaskEffect"],
     "parsed":true
   },{
     "count":1,
     "line":"40% increased Movement Speed",
+    "names":["MovementSpeed"],
     "parsed":true
   },{
     "count":1,
     "line":"34% reduced Duration",
+    "names":["Duration"],
     "parsed":true
   },{
     "count":1,
     "line":"25% increased effect",
+    "names":["LocalEffect"],
     "parsed":true
   },{
     "count":1,
     "line":"9% increased Movement Speed during Flask effect",
+    "names":["MovementSpeed"],
     "parsed":true
   },{
     "count":1,
     "line":"Trigger Level 1 Stalking Pustule on Kill",
+    "names":["ExtraSkill"],
     "parsed":true
   },{
     "count":1,
     "line":"122% increased Armour and Evasion",
+    "names":["ArmourAndEvasion"],
     "parsed":true
   },{
     "count":1,
     "line":"+52 to maximum Life",
+    "names":["Life"],
     "parsed":true
   },{
     "count":1,
     "line":"50% increased Stun and Block Recovery",
+    "names":["StunRecovery"],
     "parsed":true
   },{
     "count":1,
     "line":"20% reduced Light Radius",
+    "names":["LightRadius"],
     "parsed":true
   },{
     "count":1,
     "line":"+50% to Chaos Resistance during any Flask Effect",
+    "names":["ChaosResist"],
     "parsed":true
   },{
     "count":2,
     "line":"Adds 40 to 60 Chaos Damage to Spells and Attacks during any Flask Effect",
+    "names":["ChaosMin","ChaosMax"],
     "parsed":true
   },{
     "count":1,
     "line":"68% increased Amount Recovered",
+    "names":["FlaskRecovery"],
     "parsed":true
   },{
     "count":1,
     "line":"33% reduced Recovery rate",
+    "names":["FlaskRecoveryRate"],
     "parsed":true
   },{
     "count":1,
     "line":"Grants Immunity to Chill for 14 seconds if used while Chilled",
+    "names":["ChillImmune"],
     "parsed":true
   },{
     "count":1,
     "line":"Grants Immunity to Freeze for 14 seconds if used while Frozen",
+    "names":["FreezeImmune"],
     "parsed":true
   },{
     "count":1,
     "line":"Allocates Corruption",
+    "names":["GrantedPassive"],
     "parsed":true
   },{
     "count":4,
     "line":"+10 to all Attributes",
+    "names":["Str","Dex","Int","All"],
     "parsed":true
   },{
     "count":1,
     "line":"38% increased Damage over Time",
+    "names":["Damage"],
     "parsed":true
   },{
     "count":2,
     "line":"Adds 18 to 28 Chaos Damage",
+    "names":["ChaosMin","ChaosMax"],
     "parsed":true
   },{
     "count":1,
     "line":"+59 to maximum Life",
+    "names":["Life"],
     "parsed":true
   },{
     "count":4,
     "line":"Despair has no Reservation if Cast as an Aura",
+    "names":["SkillData","SkillData","SkillData","SkillData"],
     "parsed":true
   },{
     "count":1,
     "line":"Gain Maddening Presence for 10 seconds when you Kill a Rare or Unique Enemy",
+    "names":["EnemyModifier"],
     "parsed":true
   },{
     "count":0,
     "extra":"Sockets cannot be modified ",
     "line":"Sockets cannot be modified",
+    "names":[],
     "parsed":false
   },{
     "count":0,
     "extra":"Sockets cannot be modified +1 to Level of Socketed Gems ",
     "line":"Sockets cannot be modified +1 to Level of Socketed Gems",
+    "names":[],
     "parsed":false
   },{
     "count":1,
     "line":"+1 to Level of Socketed Gems",
+    "names":["GemProperty"],
     "parsed":true
   },{
     "count":1,
     "line":"100% increased Global Defences",
+    "names":["Defences"],
     "parsed":true
   },{
     "count":1,
     "line":"+28% to Lightning Resistance",
+    "names":["LightningResist"],
     "parsed":true
   },{
     "count":1,
     "line":"+47 to Intelligence",
+    "names":["Int"],
     "parsed":true
   },{
     "count":2,
     "line":"Adds 21 to 34 Cold Damage to Attacks",
+    "names":["ColdMin","ColdMax"],
     "parsed":true
   },{
     "count":1,
     "line":"+122 to Evasion Rating",
+    "names":["Evasion"],
     "parsed":true
   },{
     "count":1,
     "line":"+78 to maximum Mana",
+    "names":["Mana"],
     "parsed":true
   },{
     "count":1,
     "line":"+47% to Fire Resistance",
+    "names":["FireResist"],
     "parsed":true
   },{
     "count":1,
     "line":"+46% to Cold Resistance",
+    "names":["ColdResist"],
     "parsed":true
   },{
     "count":1,
     "line":"15% increased Cold Damage",
+    "names":["ColdDamage"],
     "parsed":true
   },{
     "count":0,
     "extra":"With at least 40 Dexterity in Radius, Melee Damage ",
     "line":"With at least 40 Dexterity in Radius, Melee Damage",
+    "names":[],
     "parsed":false
   },{
     "count":1,
     "line":"With at least 40 Dexterity in Radius, Melee Damage dealt by Frost Blades Penetrates 15% Cold Resistance",
+    "names":["JewelFunc"],
     "parsed":true
   },{
     "count":1,
     "line":"With at least 40 Dexterity in Radius, Frost Blades has 25% increased Projectile Speed",
+    "names":["JewelFunc"],
     "parsed":true
   },{
     "count":1,
     "line":"16% increased Cold Damage",
+    "names":["ColdDamage"],
     "parsed":true
   },{
     "count":1,
     "line":"+10% to all Elemental Resistances",
+    "names":["ElementalResist"],
     "parsed":true
   },{
     "count":1,
     "line":"+12% to Cold Resistance",
+    "names":["ColdResist"],
     "parsed":true
   },{
     "count":1,
     "line":"40% increased Damage",
+    "names":["Damage"],
     "parsed":true
   },{
     "count":0,
     "line":"Creates Consecrated Ground on Use",
+    "names":[],
     "parsed":true
   },{
     "count":1,
     "line":"32% reduced Duration",
+    "names":["Duration"],
     "parsed":true
   },{
     "count":1,
     "line":"49% less Duration",
+    "names":["Duration"],
     "parsed":true
   },{
     "count":1,
     "line":"Immunity to Poison during Flask Effect",
+    "names":["PoisonImmune"],
     "parsed":true
   },{
     "count":1,
     "line":"+29 to Dexterity",
+    "names":["Dex"],
     "parsed":true
   },{
     "count":1,
     "line":"22% increased Cold Damage",
+    "names":["ColdDamage"],
     "parsed":true
   },{
     "count":1,
     "line":"+35% to Cold Resistance",
+    "names":["ColdResist"],
     "parsed":true
   },{
     "count":0,
     "extra":"Chill Enemy for 1 second when Hit, reducing their Action Speed by 30% ",
     "line":"Chill Enemy for 1 second when Hit, reducing their Action Speed by 30%",
+    "names":[],
     "parsed":false
   },{
     "count":0,
     "extra":"Chill Enemy for 1 second when Hit, reducing their Action Speed by 30% Blind Chilled Enemies on Hit ",
     "line":"Chill Enemy for 1 second when Hit, reducing their Action Speed by 30% Blind Chilled Enemies on Hit",
+    "names":[],
     "parsed":false
   },{
     "count":0,
     "extra":"Blind Chilled Enemies on Hit ",
     "line":"Blind Chilled Enemies on Hit",
+    "names":[],
     "parsed":false
   },{
     "count":1,
     "extra":"Blind Chilled Enemies      ",
     "line":"Blind Chilled Enemies on Hit Damage Penetrates 20% Cold Resistance against Chilled Enemies",
+    "names":["ColdPenetration"],
     "parsed":true
   },{
     "count":1,
     "line":"Damage Penetrates 20% Cold Resistance against Chilled Enemies",
+    "names":["ColdPenetration"],
     "parsed":true
   },{
     "count":1,
     "line":"Trigger Level 10 Assassin's Mark when you Hit a Rare or Unique Enemy and have no Mark",
+    "names":["ExtraSkill"],
     "parsed":true
   },{
     "count":1,
     "line":"+12% chance to Suppress Spell Damage",
+    "names":["SpellSuppressionChance"],
     "parsed":true
   },{
     "count":1,
     "line":"31% increased Global Accuracy Rating",
+    "names":["Accuracy"],
     "parsed":true
   },{
     "count":1,
     "line":"+49 to maximum Life",
+    "names":["Life"],
     "parsed":true
   },{
     "count":1,
     "line":"-14% to Chaos Resistance",
+    "names":["ChaosResist"],
     "parsed":true
   },{
     "count":1,
     "line":"2% increased Attack Critical Strike Chance per 200 Accuracy Rating",
+    "names":["CritChance"],
     "parsed":true
   },{
     "count":1,
     "line":"14% reduced Charges per use",
+    "names":["FlaskChargesUsed"],
     "parsed":true
   },{
     "count":1,
     "line":"17% increased Attack Speed during Flask effect",
+    "names":["Speed"],
     "parsed":true
   },{
     "count":2,
     "line":"+15% to Fire and Lightning Resistances",
+    "names":["FireResist","LightningResist"],
     "parsed":true
   },{
     "count":1,
     "line":"+41 to Intelligence",
+    "names":["Int"],
     "parsed":true
   },{
     "count":2,
     "line":"Adds 9 to 17 Fire Damage to Attacks",
+    "names":["FireMin","FireMax"],
     "parsed":true
   },{
     "count":1,
     "line":"+16% to all Elemental Resistances",
+    "names":["ElementalResist"],
     "parsed":true
   },{
     "count":1,
     "line":"+38% to Lightning Resistance",
+    "names":["LightningResist"],
     "parsed":true
   },{
     "count":1,
     "line":"100% increased Global Critical Strike Chance",
+    "names":["CritChance"],
     "parsed":true
   },{
     "count":1,
     "line":"20% reduced Charges per use",
+    "names":["FlaskChargesUsed"],
     "parsed":true
   },{
     "count":1,
     "line":"50% increased Evasion Rating during Flask effect",
+    "names":["Evasion"],
     "parsed":true
   },{
     "count":1,
     "line":"6% increased Movement Speed if you haven't been Hit Recently",
+    "names":["MovementSpeed"],
     "parsed":true
   },{
     "count":1,
     "line":"+33 to Dexterity",
+    "names":["Dex"],
     "parsed":true
   },{
     "count":1,
     "line":"22% increased Evasion Rating",
+    "names":["Evasion"],
     "parsed":true
   },{
     "count":1,
     "line":"+58 to maximum Life",
+    "names":["Life"],
     "parsed":true
   },{
     "count":1,
     "line":"25% increased Movement Speed",
+    "names":["MovementSpeed"],
     "parsed":true
   },{
     "count":1,
     "line":"28% increased Elusive Effect",
+    "names":["ElusiveEffect"],
     "parsed":true
   },{
     "count":1,
     "line":"10% increased Movement Speed if you've Hit an Enemy Recently",
+    "names":["MovementSpeed"],
     "parsed":true
   },{
     "count":1,
     "line":"+65 to Dexterity",
+    "names":["Dex"],
     "parsed":true
   },{
     "count":1,
     "line":"50% reduced Damage when on Low Life",
+    "names":["Damage"],
     "parsed":true
   },{
     "count":1,
     "line":"10% increased Attack Speed",
+    "names":["Speed"],
     "parsed":true
   },{
     "count":1,
     "line":"25% increased Global Critical Strike Chance",
+    "names":["CritChance"],
     "parsed":true
   },{
     "count":1,
     "line":"110% increased Evasion Rating",
+    "names":["Evasion"],
     "parsed":true
   },{
     "count":1,
     "line":"+95 to maximum Life",
+    "names":["Life"],
     "parsed":true
   },{
     "count":1,
     "line":"150% increased Global Evasion Rating when on Low Life",
+    "names":["Evasion"],
     "parsed":true
   },{
     "count":1,
     "line":"50% reduced Amount Recovered",
+    "names":["FlaskRecovery"],
     "parsed":true
   },{
     "count":1,
     "line":"135% increased Recovery rate",
+    "names":["FlaskRecoveryRate"],
     "parsed":true
   },{
     "count":1,
     "line":"50% of Recovery applied Instantly",
+    "names":["FlaskInstantRecovery"],
     "parsed":true
   },{
     "count":0,
     "line":"Removes Curses on use",
+    "names":[],
     "parsed":true
   },{
     "count":1,
     "line":"30% increased Global Critical Strike Chance",
+    "names":["CritChance"],
     "parsed":true
   },{
     "count":2,
     "line":"Adds 188 to 316 Cold Damage",
+    "names":["ColdMin","ColdMax"],
     "parsed":true
   },{
     "count":1,
     "line":"15% increased Attack Speed",
+    "names":["Speed"],
     "parsed":true
   },{
     "count":1,
     "line":"+1348 to Evasion Rating",
+    "names":["Evasion"],
     "parsed":true
   },{
     "count":1,
     "line":"196% increased Cold Damage while your Off Hand is empty",
+    "names":["ColdDamage"],
     "parsed":true
   },{
     "count":1,
     "line":"+34% chance to Suppress Spell Damage while your Off Hand is empty",
+    "names":["SpellSuppressionChance"],
     "parsed":true
   },{
     "count":1,
     "line":"16% reduced Charges per use",
+    "names":["FlaskChargesUsed"],
     "parsed":true
   },{
     "count":1,
     "line":"8% increased Movement Speed during Flask effect",
+    "names":["MovementSpeed"],
     "parsed":true
   },{
     "count":2,
     "line":"+14% to Fire and Lightning Resistances",
+    "names":["FireResist","LightningResist"],
     "parsed":true
   },{
     "count":2,
     "line":"Adds 10 to 24 Cold Damage to Attacks",
+    "names":["ColdMin","ColdMax"],
     "parsed":true
   },{
     "count":1,
     "line":"+34 to maximum Energy Shield",
+    "names":["EnergyShield"],
     "parsed":true
   },{
     "count":1,
     "line":"13% increased Rarity of Items found",
+    "names":["LootRarity"],
     "parsed":true
   },{
     "count":1,
     "line":"+31% to Fire Resistance",
+    "names":["FireResist"],
     "parsed":true
   },{
     "count":1,
     "line":"+44% to Lightning Resistance",
+    "names":["LightningResist"],
     "parsed":true
   },{
     "count":1,
     "line":"+31 to maximum Life",
+    "names":["Life"],
     "parsed":true
   },{
     "count":1,
     "line":"+38 to maximum Energy Shield",
+    "names":["EnergyShield"],
     "parsed":true
   },{
     "count":1,
     "line":"+35% to Fire Resistance",
+    "names":["FireResist"],
     "parsed":true
   },{
     "count":1,
     "line":"+41% to Cold Resistance",
+    "names":["ColdResist"],
     "parsed":true
   },{
     "count":2,
     "line":"+16% to Fire and Cold Resistances",
+    "names":["FireResist","ColdResist"],
     "parsed":true
   },{
     "count":1,
     "line":"Allocates Panopticon",
+    "names":["GrantedPassive"],
     "parsed":true
   },{
     "count":2,
     "line":"Curse Enemies with Elemental Weakness on Hit, with 48% increased Effect",
+    "names":["ExtraSkill","CurseEffect"],
     "parsed":true
   },{
     "count":1,
     "line":"+1 to Maximum Frenzy Charges",
+    "names":["FrenzyChargesMax"],
     "parsed":true
   },{
     "count":1,
     "line":"40% increased Frost Blades Damage",
+    "names":["Damage"],
     "parsed":true
   },{
     "count":1,
     "line":"50% increased Duration",
+    "names":["Duration"],
     "parsed":true
   },{
     "count":1,
     "line":"40% increased Duration",
+    "names":["Duration"],
     "parsed":true
   },{
     "count":1,
     "line":"30% reduced Duration",
+    "names":["Duration"],
     "parsed":true
   },{
     "count":0,
     "extra":"Consecrated Ground created by this Flask has Tripled Radius ",
     "line":"Consecrated Ground created by this Flask has Tripled Radius",
+    "names":[],
     "parsed":false
   },{
     "count":0,
     "extra":"Consecrated Ground created by this Flask has Tripled Radius +2% to Critical Strike Chance against Enemies on Consecrated Ground during Effect ",
     "line":"Consecrated Ground created by this Flask has Tripled Radius +2% to Critical Strike Chance against Enemies on Consecrated Ground during Effect",
+    "names":[],
     "parsed":false
   },{
     "count":1,
     "line":"+2% to Critical Strike Chance against Enemies on Consecrated Ground during Effect",
+    "names":["CritChance"],
     "parsed":true
   },{
     "count":1,
     "line":"150% increased Critical Strike Chance against Enemies on Consecrated Ground during Effect",
+    "names":["CritChance"],
     "parsed":true
   },{
     "count":1,
     "line":"Consecrated Ground created during Effect applies 10% increased Damage taken to Enemies",
+    "names":["EnemyModifier"],
     "parsed":true
   },{
     "count":1,
     "line":"3% increased Movement Speed",
+    "names":["MovementSpeed"],
     "parsed":true
   },{
     "count":1,
     "line":"+35 to Evasion Rating",
+    "names":["Evasion"],
     "parsed":true
   },{
     "count":1,
     "line":"+108 to maximum Life",
+    "names":["Life"],
     "parsed":true
   },{
     "count":1,
     "line":"Regenerate 31.7 Life per second",
+    "names":["LifeRegen"],
     "parsed":true
   },{
     "count":0,
     "extra":"a Power Charge ",
     "line":"15% chance to gain a Power Charge on Critical Strike",
+    "names":[],
     "parsed":false
   },{
     "count":0,
     "extra":"a Power Charge You can apply an additional Curse ",
     "line":"15% chance to gain a Power Charge on Critical Strike You can apply an additional Curse",
+    "names":[],
     "parsed":false
   },{
     "count":1,
     "line":"You can apply an additional Curse",
+    "names":["EnemyCurseLimit"],
     "parsed":true
   },{
     "count":1,
     "line":"Attacks have +1.5% to Critical Strike Chance",
+    "names":["CritChance"],
     "parsed":true
   },{
     "count":1,
     "line":"52% increased Armour and Evasion",
+    "names":["ArmourAndEvasion"],
     "parsed":true
   },{
     "count":1,
     "line":"10% increased Evasion Rating per Frenzy Charge",
+    "names":["Evasion"],
     "parsed":true
   },{
     "count":1,
     "line":"+39% to Lightning Resistance",
+    "names":["LightningResist"],
     "parsed":true
   },{
     "count":1,
     "line":"5% increased Movement Speed per Frenzy Charge",
+    "names":["MovementSpeed"],
     "parsed":true
   },{
     "count":1,
     "line":"40% reduced Frenzy Charge Duration",
+    "names":["FrenzyChargesDuration"],
     "parsed":true
   },{
     "count":1,
     "line":"25% reduced Light Radius",
+    "names":["LightRadius"],
     "parsed":true
   },{
     "count":1,
     "line":"+59 to Dexterity",
+    "names":["Dex"],
     "parsed":true
   },{
     "count":1,
     "line":"122% increased Evasion Rating",
+    "names":["Evasion"],
     "parsed":true
   },{
     "count":1,
     "line":"+99 to maximum Life",
+    "names":["Life"],
     "parsed":true
   },{
     "count":2,
     "line":"Adds 14 to 20 Cold Damage",
+    "names":["ColdMin","ColdMax"],
     "parsed":true
   },{
     "count":2,
     "line":"Adds 16 to 20 Lightning Damage",
+    "names":["LightningMin","LightningMax"],
     "parsed":true
   },{
     "count":1,
     "line":"+41% to Fire Resistance",
+    "names":["FireResist"],
     "parsed":true
   },{
     "count":1,
     "line":"+42% to Cold Resistance",
+    "names":["ColdResist"],
     "parsed":true
   },{
     "count":1,
     "line":"+47 to maximum Life",
+    "names":["Life"],
     "parsed":true
   },{
     "count":1,
     "line":"44% increased Evasion Rating during Flask effect",
+    "names":["Evasion"],
     "parsed":true
   },{
     "count":1,
     "line":"+1500 to Evasion Rating",
+    "names":["Evasion"],
     "parsed":true
   },{
     "count":1,
     "line":"33% reduced Duration",
+    "names":["Duration"],
     "parsed":true
   },{
     "count":1,
     "line":"38% increased Critical Strike Chance during Flask Effect",
+    "names":["CritChance"],
     "parsed":true
   },{
     "count":1,
     "line":"1.6% of Physical Attack Damage Leeched as Life",
+    "names":["PhysicalDamageLifeLeech"],
     "parsed":true
   },{
     "count":1,
     "line":"163% increased Physical Damage",
+    "names":["PhysicalDamage"],
     "parsed":true
   },{
     "count":2,
     "line":"Adds 10 to 12 Physical Damage",
+    "names":["PhysicalMin","PhysicalMax"],
     "parsed":true
   },{
     "count":1,
     "line":"5% increased Attack Speed",
+    "names":["Speed"],
     "parsed":true
   },{
     "count":1,
     "line":"1.2% of Physical Attack Damage Leeched as Life",
+    "names":["PhysicalDamageLifeLeech"],
     "parsed":true
   },{
     "count":1,
     "line":"5% increased Movement Speed",
+    "names":["MovementSpeed"],
     "parsed":true
   },{
     "count":1,
     "line":"Life Leech from Hits with this Weapon is instant",
+    "names":["InstantLifeLeech"],
     "parsed":true
   },{
     "count":1,
     "line":"48% reduced Amount Recovered",
+    "names":["FlaskRecovery"],
     "parsed":true
   },{
     "count":1,
     "line":"Triggers Level 20 Reflection when Equipped",
+    "names":["ExtraSkill"],
     "parsed":true
   },{
     "count":1,
     "line":"41% increased Physical Damage",
+    "names":["PhysicalDamage"],
     "parsed":true
   },{
     "count":2,
     "line":"Adds 18 to 44 Physical Damage",
+    "names":["PhysicalMin","PhysicalMax"],
     "parsed":true
   },{
     "count":1,
     "line":"11% increased Attack Speed",
+    "names":["Speed"],
     "parsed":true
   },{
     "count":1,
     "line":"+30% to Fire Resistance",
+    "names":["FireResist"],
     "parsed":true
   },{
     "count":1,
     "line":"+50 to Intelligence",
+    "names":["Int"],
     "parsed":true
   },{
     "count":1,
     "line":"+17 to Evasion Rating",
+    "names":["Evasion"],
     "parsed":true
   },{
     "count":1,
     "line":"+63 to maximum Mana",
+    "names":["Mana"],
     "parsed":true
   },{
     "count":1,
     "line":"+48% to Fire Resistance",
+    "names":["FireResist"],
     "parsed":true
   },{
     "count":1,
     "line":"+30% to Lightning Resistance",
+    "names":["LightningResist"],
     "parsed":true
   },{
     "count":1,
     "line":"+54 to maximum Life",
+    "names":["Life"],
     "parsed":true
   },{
     "count":1,
     "line":"+29 to Strength",
+    "names":["Str"],
     "parsed":true
   },{
     "count":2,
     "line":"Adds 7 to 15 Cold Damage to Spells and Attacks",
+    "names":["ColdMin","ColdMax"],
     "parsed":true
   },{
     "count":1,
     "line":"+45 to Evasion Rating",
+    "names":["Evasion"],
     "parsed":true
   },{
     "count":1,
     "line":"+25% to Cold Resistance",
+    "names":["ColdResist"],
     "parsed":true
   },{
     "count":1,
     "line":"50% of Physical Damage Converted to Cold Damage",
+    "names":["PhysicalDamageConvertToCold"],
     "parsed":true
   },{
     "count":0,
     "extra":"Reflects 10 Cold Damage to Melee Attackers ",
     "line":"Reflects 10 Cold Damage to Melee Attackers",
+    "names":[],
     "parsed":false
   },{
     "count":0,
     "extra":"Reflects 10 Cold Damage to Melee Attackers Your Cold Damage can Ignite ",
     "line":"Reflects 10 Cold Damage to Melee Attackers Your Cold Damage can Ignite",
+    "names":[],
     "parsed":false
   },{
     "count":1,
     "line":"Your Cold Damage can Ignite",
+    "names":["ColdCanIgnite"],
     "parsed":true
   },{
     "count":1,
     "line":"20% more Armour",
+    "names":["Armour"],
     "parsed":true
   },{
     "count":0,
     "extra":"Taunts nearby Enemies on use ",
     "line":"Taunts nearby Enemies on use",
+    "names":[],
     "parsed":false
   },{
     "count":0,
     "extra":"Taunts nearby Enemies on use 24% reduced Duration ",
     "line":"Taunts nearby Enemies on use 24% reduced Duration",
+    "names":[],
     "parsed":false
   },{
     "count":1,
     "line":"24% reduced Duration",
+    "names":["Duration"],
     "parsed":true
   },{
     "count":1,
     "line":"49% increased Armour during Flask effect",
+    "names":["Armour"],
     "parsed":true
   },{
     "count":1,
     "line":"35% reduced Duration",
+    "names":["Duration"],
     "parsed":true
   },{
     "count":1,
     "line":"9% increased Attack Speed during Flask effect",
+    "names":["Speed"],
     "parsed":true
   },{
     "count":1,
     "line":"+25 to Dexterity",
+    "names":["Dex"],
     "parsed":true
   },{
     "count":1,
     "line":"Grants Level 22 Hatred Skill",
+    "names":["ExtraSkill"],
     "parsed":true
   },{
     "count":1,
     "line":"+34 to Dexterity",
+    "names":["Dex"],
     "parsed":true
   },{
     "count":2,
     "line":"Adds 13 to 24 Physical Damage to Attacks",
+    "names":["PhysicalMin","PhysicalMax"],
     "parsed":true
   },{
     "count":2,
     "line":"Adds 13 to 25 Cold Damage to Attacks",
+    "names":["ColdMin","ColdMax"],
     "parsed":true
   },{
     "count":1,
     "line":"+24% to Global Critical Strike Multiplier",
+    "names":["CritMultiplier"],
     "parsed":true
   },{
     "count":1,
     "line":"0.85% of Cold Damage Leeched as Life",
+    "names":["ColdDamageLifeLeech"],
     "parsed":true
   },{
     "count":1,
     "line":"Hatred has 100% increased Mana Reservation Efficiency",
+    "names":["ManaReservationEfficiency"],
     "parsed":true
   },{
     "count":1,
     "line":"+25 to Strength",
+    "names":["Str"],
     "parsed":true
   },{
     "count":1,
     "line":"+53 to Strength",
+    "names":["Str"],
     "parsed":true
   },{
     "count":1,
     "line":"+314 to Armour",
+    "names":["Armour"],
     "parsed":true
   },{
     "count":1,
     "line":"+47 to maximum Mana",
+    "names":["Mana"],
     "parsed":true
   },{
     "count":1,
     "line":"+48% to Lightning Resistance",
+    "names":["LightningResist"],
     "parsed":true
   },{
     "count":1,
     "line":"29% increased Flask Life Recovery rate",
+    "names":["FlaskLifeRecoveryRate"],
     "parsed":true
   },{
     "count":1,
     "line":"18% increased Accuracy Rating",
+    "names":["Accuracy"],
     "parsed":true
   },{
     "count":1,
     "line":"+360 to Accuracy Rating",
+    "names":["Accuracy"],
     "parsed":true
   },{
     "count":1,
     "line":"180% increased Physical Damage",
+    "names":["PhysicalDamage"],
     "parsed":true
   },{
     "count":1,
     "line":"260% increased Physical Damage",
+    "names":["PhysicalDamage"],
     "parsed":true
   },{
     "count":1,
     "line":"220% increased Physical Damage",
+    "names":["PhysicalDamage"],
     "parsed":true
   },{
     "count":1,
     "line":"75% increased Critical Strike Chance",
+    "names":["CritChance"],
     "parsed":true
   },{
     "count":1,
     "line":"20% increased Attack Speed",
+    "names":["Speed"],
     "parsed":true
   },{
     "count":1,
     "extra":"  Gained  ",
     "line":"+10 Mana Gained on Kill",
+    "names":["Mana"],
     "parsed":true
   },{
     "count":1,
     "extra":"  Gained  10% increased Movement Speed ",
     "line":"+10 Mana Gained on Kill 10% increased Movement Speed",
+    "names":["Mana"],
     "parsed":true
   },{
     "count":1,
     "line":"10% increased Movement Speed",
+    "names":["MovementSpeed"],
     "parsed":true
   },{
     "count":0,
     "extra":"a Frenzy Charge ",
     "line":"Gain a Frenzy Charge on Critical Strike",
+    "names":[],
     "parsed":false
   },{
     "count":1,
     "line":"26% increased Elemental Damage",
+    "names":["ElementalDamage"],
     "parsed":true
   },{
     "count":3,
     "line":"18% reduced Attribute Requirements",
+    "names":["StrRequirement","DexRequirement","IntRequirement"],
     "parsed":true
   },{
     "count":1,
     "line":"70% increased Fire Damage",
+    "names":["FireDamage"],
     "parsed":true
   },{
     "count":1,
     "line":"17% increased Attack Speed",
+    "names":["Speed"],
     "parsed":true
   },{
     "count":1,
     "line":"32% increased Burning Damage",
+    "names":["FireDamage"],
     "parsed":true
   },{
     "count":1,
     "line":"21% chance to Ignite",
+    "names":["EnemyIgniteChance"],
     "parsed":true
   },{
     "count":1,
     "line":"28% increased Damage over Time",
+    "names":["Damage"],
     "parsed":true
   },{
     "count":4,
     "line":"+13 to all Attributes",
+    "names":["Str","Dex","Int","All"],
     "parsed":true
   },{
     "count":2,
     "line":"Adds 21 to 35 Fire Damage",
+    "names":["FireMin","FireMax"],
     "parsed":true
   },{
     "count":1,
     "line":"+70 to maximum Life",
+    "names":["Life"],
     "parsed":true
   },{
     "count":1,
     "line":"+23% to Fire Resistance",
+    "names":["FireResist"],
     "parsed":true
   },{
     "count":1,
     "line":"Regenerate 1% of Life per second",
+    "names":["LifeRegenPercent"],
     "parsed":true
   },{
     "count":4,
     "line":"Flammability has no Reservation if Cast as an Aura",
+    "names":["SkillData","SkillData","SkillData","SkillData"],
     "parsed":true
   },{
     "count":1,
     "line":"8% increased Fire Damage",
+    "names":["FireDamage"],
     "parsed":true
   },{
     "count":1,
     "line":"+13 to maximum Energy Shield",
+    "names":["EnergyShield"],
     "parsed":true
   },{
     "count":1,
     "line":"30% increased Damage over Time",
+    "names":["Damage"],
     "parsed":true
   },{
     "count":1,
     "line":"266% increased Evasion and Energy Shield",
+    "names":["EvasionAndEnergyShield"],
     "parsed":true
   },{
     "count":0,
     "extra":"Enemies you kill are Shocked ",
     "line":"Enemies you kill are Shocked",
+    "names":[],
     "parsed":false
   },{
     "count":0,
     "extra":"Enemies you kill are Shocked Shocks you inflict spread to other Enemies within a Radius of 15 ",
     "line":"Enemies you kill are Shocked Shocks you inflict spread to other Enemies within a Radius of 15",
+    "names":[],
     "parsed":false
   },{
     "count":0,
     "extra":"Shocks you inflict spread to other Enemies within a Radius of 15 ",
     "line":"Shocks you inflict spread to other Enemies within a Radius of 15",
+    "names":[],
     "parsed":false
   },{
     "count":1,
     "line":"274% increased Armour and Evasion",
+    "names":["ArmourAndEvasion"],
     "parsed":true
   },{
     "count":1,
     "line":"30% increased Movement Speed",
+    "names":["MovementSpeed"],
     "parsed":true
   },{
     "count":2,
     "line":"Nearby Enemies are Scorched",
+    "names":["EnemyModifier","ScorchBase"],
     "parsed":true
   },{
     "count":1,
     "line":"43% increased Effect of Scorch",
+    "names":["EnemyScorchEffect"],
     "parsed":true
   },{
     "count":0,
     "extra":" when you Kill a Scorched Enemy to Burn Each surrounding ",
     "line":"37% chance when you Kill a Scorched Enemy to Burn Each surrounding",
+    "names":[],
     "parsed":true
   },{
     "count":1,
     "extra":" when you Kill a Scorched Enemy to Burn Each surrounding Enemy , dealing 8% of the Killed Enemy's  as Fire Damage per second ",
     "line":"37% chance when you Kill a Scorched Enemy to Burn Each surrounding Enemy for 4 seconds, dealing 8% of the Killed Enemy's Life as Fire Damage per second",
+    "names":["Life"],
     "parsed":true
   },{
     "count":0,
     "extra":"Enemy for 4 seconds, dealing 8% of the Killed Enemy's Life as Fire Damage per second ",
     "line":"Enemy for 4 seconds, dealing 8% of the Killed Enemy's Life as Fire Damage per second",
+    "names":[],
     "parsed":false
   },{
     "count":1,
     "line":"+8% to all Elemental Resistances",
+    "names":["ElementalResist"],
     "parsed":true
   },{
     "count":1,
     "line":"84% increased Armour and Energy Shield",
+    "names":["ArmourAndEnergyShield"],
     "parsed":true
   },{
     "count":1,
     "line":"+56 to maximum Life",
+    "names":["Life"],
     "parsed":true
   },{
     "count":1,
     "line":"Regenerate 19.5 Life per second",
+    "names":["LifeRegen"],
     "parsed":true
   },{
     "count":1,
     "line":"+24% to Fire Resistance",
+    "names":["FireResist"],
     "parsed":true
   },{
     "count":1,
     "line":"+25% to Fire Resistance while on Low Life",
+    "names":["FireResist"],
     "parsed":true
   },{
     "count":1,
     "line":"10% increased Movement Speed when on Low Life",
+    "names":["MovementSpeed"],
     "parsed":true
   },{
     "count":1,
     "line":"Cannot be Ignited while on Low Life",
+    "names":["IgniteImmune"],
     "parsed":true
   },{
     "count":0,
     "extra":"Taunts nearby Enemies on use 31% reduced Duration ",
     "line":"Taunts nearby Enemies on use 31% reduced Duration",
+    "names":[],
     "parsed":false
   },{
     "count":1,
     "line":"31% reduced Duration",
+    "names":["Duration"],
     "parsed":true
   },{
     "count":1,
     "line":"59% increased Block and Stun Recovery during Flask effect",
+    "names":["StunRecovery"],
     "parsed":true
   },{
     "count":1,
     "line":"41% reduced Amount Recovered",
+    "names":["FlaskRecovery"],
     "parsed":true
   },{
     "count":1,
     "line":"Recover an additional 19% of Flask's Life Recovery Amount over 10 seconds if used while not on Full Life",
+    "names":["FlaskAdditionalLifeRecovery"],
     "parsed":true
   },{
     "count":1,
     "line":"23% increased Duration",
+    "names":["Duration"],
     "parsed":true
   },{
     "count":1,
     "line":"7% increased Movement Speed during Flask effect",
+    "names":["MovementSpeed"],
     "parsed":true
   },{
     "count":1,
     "line":"28% reduced Duration",
+    "names":["Duration"],
     "parsed":true
   },{
     "count":1,
     "line":"31% Chance to Avoid being Stunned during Flask Effect",
+    "names":["AvoidStun"],
     "parsed":true
   },{
     "count":1,
     "line":"+39 to maximum Life",
+    "names":["Life"],
     "parsed":true
   },{
     "count":1,
     "line":"+36 to Strength",
+    "names":["Str"],
     "parsed":true
   },{
     "count":1,
     "line":"10% reduced Enemy Stun Threshold",
+    "names":["EnemyStunThreshold"],
     "parsed":true
   },{
     "count":1,
     "line":"+98 to maximum Life",
+    "names":["Life"],
     "parsed":true
   },{
     "count":1,
     "line":"Regenerate 80.8 Life per second",
+    "names":["LifeRegen"],
     "parsed":true
   },{
     "count":1,
     "line":"+1500 to Armour",
+    "names":["Armour"],
     "parsed":true
   },{
     "count":1,
     "line":"21% reduced Charges per use",
+    "names":["FlaskChargesUsed"],
     "parsed":true
   },{
     "count":1,
     "line":"55% increased Armour during Flask effect",
+    "names":["Armour"],
     "parsed":true
   },{
     "count":1,
     "line":"Socketed Gems are Supported by Level 20 Concentrated Effect",
+    "names":["ExtraSupport"],
     "parsed":true
   },{
     "count":1,
     "line":"+42 to Intelligence",
+    "names":["Int"],
     "parsed":true
   },{
     "count":1,
     "line":"+41 to maximum Life",
+    "names":["Life"],
     "parsed":true
   },{
     "count":1,
     "line":"24% increased Rarity of Items found",
+    "names":["LootRarity"],
     "parsed":true
   },{
     "count":1,
     "line":"24% increased Area Damage",
+    "names":["Damage"],
     "parsed":true
   },{
     "count":1,
     "line":"7% increased Life Regeneration rate",
+    "names":["LifeRegen"],
     "parsed":true
   },{
     "count":1,
     "line":"+78 to maximum Life",
+    "names":["Life"],
     "parsed":true
   },{
     "count":1,
     "line":"49% increased Damage if you have Shocked an Enemy Recently",
+    "names":["Damage"],
     "parsed":true
   },{
     "count":1,
     "line":"16% increased Effect of Shock",
+    "names":["EnemyShockEffect"],
     "parsed":true
   },{
     "count":0,
     "extra":"Shocked Enemies you Kill Explode, dealing 5% of ",
     "line":"Shocked Enemies you Kill Explode, dealing 5% of",
+    "names":[],
     "parsed":false
   },{
     "count":2,
     "line":"Shocked Enemies you Kill Explode, dealing 5% of their Life as Lightning Damage which cannot Shock",
+    "names":["ExplodeMod","CanExplode"],
     "parsed":true
   },{
     "count":1,
     "line":"Unaffected by Shock",
+    "names":["SelfShockEffect"],
     "parsed":true
   },{
     "count":1,
     "line":"23% increased Elemental Damage",
+    "names":["ElementalDamage"],
     "parsed":true
   },{
     "count":1,
     "line":"+23 to Intelligence",
+    "names":["Int"],
     "parsed":true
   },{
     "count":1,
     "line":"+162 to Accuracy Rating",
+    "names":["Accuracy"],
     "parsed":true
   },{
     "count":1,
     "line":"+72 to maximum Life",
+    "names":["Life"],
     "parsed":true
   },{
     "count":1,
     "line":"Regenerate 18.1 Life per second",
+    "names":["LifeRegen"],
     "parsed":true
   },{
     "count":1,
     "line":"+29 to maximum Energy Shield",
+    "names":["EnergyShield"],
     "parsed":true
   },{
     "count":1,
     "line":"+25% to Lightning Resistance",
+    "names":["LightningResist"],
     "parsed":true
   },{
     "count":1,
     "line":"+15 to Strength",
+    "names":["Str"],
     "parsed":true
   },{
     "count":1,
     "line":"+77 to maximum Life",
+    "names":["Life"],
     "parsed":true
   },{
     "count":1,
     "line":"Regenerate 37.7 Life per second",
+    "names":["LifeRegen"],
     "parsed":true
   },{
     "count":1,
     "line":"+26 to maximum Energy Shield",
+    "names":["EnergyShield"],
     "parsed":true
   },{
     "count":1,
     "line":"Overwhelm 2% Physical Damage Reduction",
+    "names":["EnemyPhysicalDamageReduction"],
     "parsed":true
   },{
     "count":1,
     "line":"Melee and Melee Weapon Type modifiers in Radius are Transformed to Bow Modifiers",
+    "names":["JewelFunc"],
     "parsed":true
   },{
     "count":1,
     "line":"5% increased Impale Effect",
+    "names":["ImpaleEffect"],
     "parsed":true
   },{
     "count":0,
     "extra":"Call of Steel deals Reflected Damage with 43% increased Area of Effect ",
     "line":"Call of Steel deals Reflected Damage with 43% increased Area of Effect",
+    "names":[],
     "parsed":false
   },{
     "count":0,
     "extra":"Call of Steel deals Reflected Damage with 43% increased Area of Effect Call of Steel has 97% increased Use Speed ",
     "line":"Call of Steel deals Reflected Damage with 43% increased Area of Effect Call of Steel has 97% increased Use Speed",
+    "names":[],
     "parsed":false
   },{
     "count":0,
     "extra":"Call of Steel has 97% increased Use Speed ",
     "line":"Call of Steel has 97% increased Use Speed",
+    "names":[],
     "parsed":false
   },{
     "count":0,
     "extra":"Call of Steel has 97% increased Use Speed Corrupted ",
     "line":"Call of Steel has 97% increased Use Speed Corrupted",
+    "names":[],
     "parsed":false
   },{
     "count":2,
     "line":"Adds 4 to 10 Physical Damage to Attacks",
+    "names":["PhysicalMin","PhysicalMax"],
     "parsed":true
   },{
     "count":1,
     "line":"11% increased Rarity of Items found",
+    "names":["LootRarity"],
     "parsed":true
   },{
     "count":1,
     "line":"+36% to Fire Resistance",
+    "names":["FireResist"],
     "parsed":true
   },{
     "count":1,
     "line":"+48% to Cold Resistance",
+    "names":["ColdResist"],
     "parsed":true
   },{
     "count":1,
     "line":"+36% to Lightning Resistance",
+    "names":["LightningResist"],
     "parsed":true
   },{
     "count":1,
     "line":"+50 to maximum Life",
+    "names":["Life"],
     "parsed":true
   },{
     "count":1,
     "line":"+42% to Fire Resistance",
+    "names":["FireResist"],
     "parsed":true
   },{
     "count":1,
     "line":"+34% to Cold Resistance",
+    "names":["ColdResist"],
     "parsed":true
   },{
     "count":1,
     "line":"+10% to Lightning Resistance",
+    "names":["LightningResist"],
     "parsed":true
   },{
     "count":1,
     "line":"+62 to maximum Life",
+    "names":["Life"],
     "parsed":true
   },{
     "count":1,
     "line":"Allocates Vanquisher",
+    "names":["GrantedPassive"],
     "parsed":true
   },{
     "count":3,
     "line":"+19 to Dexterity and Intelligence",
+    "names":["Dex","Int","DexInt"],
     "parsed":true
   },{
     "count":1,
     "line":"+52 to Strength",
+    "names":["Str"],
     "parsed":true
   },{
     "count":1,
     "line":"+27 to Intelligence",
+    "names":["Int"],
     "parsed":true
   },{
     "count":2,
     "line":"Adds 15 to 25 Physical Damage to Attacks",
+    "names":["PhysicalMin","PhysicalMax"],
     "parsed":true
   },{
     "count":1,
     "line":"Trigger a Socketed Spell when you Attack with a Bow, with a 0.3 second Cooldown",
+    "names":["ExtraSupport"],
     "parsed":true
   },{
     "count":1,
     "line":"14% increased Cast Speed",
+    "names":["Speed"],
     "parsed":true
   },{
     "count":1,
     "line":"+120 to maximum Energy Shield",
+    "names":["EnergyShield"],
     "parsed":true
   },{
     "count":1,
     "line":"30% increased Mana Regeneration Rate",
+    "names":["ManaRegen"],
     "parsed":true
   },{
     "count":1,
     "line":"36% increased Stun and Block Recovery",
+    "names":["StunRecovery"],
     "parsed":true
   },{
     "count":1,
     "line":"34% increased Charge Recovery",
+    "names":["FlaskChargeRecovery"],
     "parsed":true
   },{
     "count":1,
     "line":"50% increased Critical Strike Chance during Flask Effect",
+    "names":["CritChance"],
     "parsed":true
   },{
     "count":1,
     "line":"23% increased Global Physical Damage",
+    "names":["PhysicalDamage"],
     "parsed":true
   },{
     "count":1,
     "line":"+41 to Strength",
+    "names":["Str"],
     "parsed":true
   },{
     "count":1,
     "line":"+254 to Armour and Evasion Rating",
+    "names":["ArmourAndEvasion"],
     "parsed":true
   },{
     "count":1,
     "line":"+26 to Strength",
+    "names":["Str"],
     "parsed":true
   },{
     "count":1,
     "line":"25% increased Damage over Time",
+    "names":["Damage"],
     "parsed":true
   },{
     "count":1,
     "line":"Attacks have 25% chance to cause Bleeding",
+    "names":["BleedChance"],
     "parsed":true
   },{
     "count":1,
     "line":"38% increased Attack Damage against Bleeding Enemies",
+    "names":["Damage"],
     "parsed":true
   },{
     "count":0,
     "extra":"Bleeding Enemies you Kill Explode, dealing 5% of ",
     "line":"Bleeding Enemies you Kill Explode, dealing 5% of",
+    "names":[],
     "parsed":false
   },{
     "count":2,
     "line":"Bleeding Enemies you Kill Explode, dealing 5% of their Maximum Life as Physical Damage",
+    "names":["ExplodeMod","CanExplode"],
     "parsed":true
   },{
     "count":1,
     "line":"25% reduced Bleeding Duration",
+    "names":["EnemyBleedDuration"],
     "parsed":true
   },{
     "count":0,
     "extra":"Recovers 734 Mana over 7 Seconds ",
     "line":"Recovers 734 Mana over 7 Seconds",
+    "names":[],
     "parsed":false
   },{
     "count":0,
     "extra":"Recovers 734 Mana over 7 Seconds Consumes 8 of 42 Charges on use ",
     "line":"Recovers 734 Mana over 7 Seconds Consumes 8 of 42 Charges on use",
+    "names":[],
     "parsed":false
   },{
     "count":0,
     "extra":"Flask effect does not Queue 20% reduced Mana Cost of Skills during Flask Effect ",
     "line":"Flask effect does not Queue 20% reduced Mana Cost of Skills during Flask Effect",
+    "names":[],
     "parsed":false
   },{
     "count":1,
     "line":"20% reduced Mana Cost of Skills during Flask Effect",
+    "names":["ManaCost"],
     "parsed":true
   },{
     "count":1,
     "line":"4% increased Skill Effect Duration",
+    "names":["Duration"],
     "parsed":true
   },{
     "count":1,
     "line":"+5 to Maximum Rage",
+    "names":["MaximumRage"],
     "parsed":true
   },{
     "count":1,
     "line":"Non-Channelling Skills have -9 to Total Mana Cost",
+    "names":["ManaCost"],
     "parsed":true
   },{
     "count":1,
     "line":"Allocates Overcharge",
+    "names":["GrantedPassive"],
     "parsed":true
   },{
     "count":1,
     "line":"+30 to Dexterity",
+    "names":["Dex"],
     "parsed":true
   },{
     "count":1,
     "line":"28% increased Cold Damage",
+    "names":["ColdDamage"],
     "parsed":true
   },{
     "count":1,
     "line":"+38% to Cold Resistance",
+    "names":["ColdResist"],
     "parsed":true
   },{
     "count":2,
     "line":"Adds 17 to 35 Cold Damage to Spells and Attacks",
+    "names":["ColdMin","ColdMax"],
     "parsed":true
   },{
     "count":1,
     "line":"+251 to Evasion Rating",
+    "names":["Evasion"],
     "parsed":true
   },{
     "count":1,
     "line":"Your Cold Damage cannot Freeze",
+    "names":["ColdCannotFreeze"],
     "parsed":true
   },{
     "count":1,
     "line":"Immune to Chill",
+    "names":["ChillImmune"],
     "parsed":true
   },{
     "count":2,
     "line":"Adds 60 to 80 Cold Damage against Chilled Enemies",
+    "names":["ColdMin","ColdMax"],
     "parsed":true
   },{
     "count":1,
     "line":"37% increased Global Accuracy Rating",
+    "names":["Accuracy"],
     "parsed":true
   },{
     "count":1,
     "line":"+28 to maximum Life",
+    "names":["Life"],
     "parsed":true
   },{
     "count":1,
     "line":"+94 to maximum Life",
+    "names":["Life"],
     "parsed":true
   },{
     "count":1,
     "line":"+32 to maximum Mana",
+    "names":["Mana"],
     "parsed":true
   },{
     "count":1,
     "line":"+43% to Fire Resistance",
+    "names":["FireResist"],
     "parsed":true
   },{
     "count":1,
     "line":"+20% to Cold Resistance",
+    "names":["ColdResist"],
     "parsed":true
   },{
     "count":1,
     "line":"+47% to Lightning Resistance",
+    "names":["LightningResist"],
     "parsed":true
   },{
     "count":1,
     "line":"21% increased Flask Mana Recovery rate",
+    "names":["FlaskManaRecoveryRate"],
     "parsed":true
   },{
     "count":1,
     "line":"141% increased Charges per use",
+    "names":["FlaskChargesUsed"],
     "parsed":true
   },{
     "count":1,
     "line":"60% less Duration",
+    "names":["Duration"],
     "parsed":true
   },{
     "count":1,
     "line":"20% increased Area of Effect during Flask Effect",
+    "names":["AreaOfEffect"],
     "parsed":true
   },{
     "count":1,
     "line":"+475 to Accuracy Rating",
+    "names":["Accuracy"],
     "parsed":true
   },{
     "count":1,
     "line":"199% increased Physical Damage",
+    "names":["PhysicalDamage"],
     "parsed":true
   },{
     "count":1,
     "line":"80% increased Evasion Rating while moving",
+    "names":["Evasion"],
     "parsed":true
   },{
     "count":1,
     "line":"Skills fire 2 additional Projectiles if you've used a Movement Skill Recently",
+    "names":["ProjectileCount"],
     "parsed":true
   },{
     "count":1,
     "line":"Far Shot",
+    "names":["FarShot"],
     "parsed":true
   },{
     "count":1,
     "line":"32% increased Evasion Rating",
+    "names":["Evasion"],
     "parsed":true
   },{
     "count":1,
     "line":"+31% to Lightning Resistance",
+    "names":["LightningResist"],
     "parsed":true
   },{
     "count":1,
     "line":"12% increased Stun and Block Recovery",
+    "names":["StunRecovery"],
     "parsed":true
   },{
     "count":1,
     "line":"+66 to maximum Life",
+    "names":["Life"],
     "parsed":true
   },{
     "count":1,
     "line":"10% increased Rarity of Items found",
+    "names":["LootRarity"],
     "parsed":true
   },{
     "count":1,
     "line":"+40% to all Elemental Resistances",
+    "names":["ElementalResist"],
     "parsed":true
   },{
     "count":0,
     "line":"Reflects 4 Physical Damage to Melee Attackers",
+    "names":[],
     "parsed":true
   },{
     "count":1,
     "line":"212% increased Physical Damage",
+    "names":["PhysicalDamage"],
     "parsed":true
   },{
     "count":1,
     "line":"+21% to Cold Resistance",
+    "names":["ColdResist"],
     "parsed":true
   },{
     "count":2,
     "line":"Adds 18 to 35 Cold Damage to Spells and Attacks",
+    "names":["ColdMin","ColdMax"],
     "parsed":true
   },{
     "count":1,
     "line":"+295 to Evasion Rating",
+    "names":["Evasion"],
     "parsed":true
   },{
     "count":0,
     "extra":"Used when you use a Life Flask ",
     "line":"Used when you use a Life Flask",
+    "names":[],
     "parsed":false
   },{
     "count":0,
     "extra":"Used when you use a Life Flask 28% reduced Duration ",
     "line":"Used when you use a Life Flask 28% reduced Duration",
+    "names":[],
     "parsed":false
   },{
     "count":1,
     "line":"11% increased Movement Speed during Flask effect",
+    "names":["MovementSpeed"],
     "parsed":true
   },{
     "count":1,
     "line":"Grants Immunity to Bleeding for 14 seconds if used while Bleeding",
+    "names":["BleedImmune"],
     "parsed":true
   },{
     "count":1,
     "line":"Grants Immunity to Corrupted Blood for 14 seconds if used while affected by Corrupted Blood",
+    "names":["CorruptedBloodImmune"],
     "parsed":true
   },{
     "count":1,
     "line":"6% increased maximum Energy Shield",
+    "names":["EnergyShield"],
     "parsed":true
   },{
     "count":1,
     "line":"Increases and Reductions to Life in Radius are Transformed to apply to Energy Shield",
+    "names":["JewelFunc"],
     "parsed":true
   },{
     "count":1,
     "line":"+32 to Dexterity",
+    "names":["Dex"],
     "parsed":true
   },{
     "count":1,
     "line":"+33 to Intelligence",
+    "names":["Int"],
     "parsed":true
   },{
     "count":1,
     "line":"138% increased Armour and Energy Shield",
+    "names":["ArmourAndEnergyShield"],
     "parsed":true
   },{
     "count":1,
     "line":"+82 to maximum Life",
+    "names":["Life"],
     "parsed":true
   },{
     "count":1,
     "line":"17% increased Stun and Block Recovery",
+    "names":["StunRecovery"],
     "parsed":true
   },{
     "count":1,
     "line":"46% increased Charge Recovery",
+    "names":["FlaskChargeRecovery"],
     "parsed":true
   },{
     "count":1,
     "line":"25% reduced effect",
+    "names":["LocalEffect"],
     "parsed":true
   },{
     "count":0,
     "extra":"Flask effect does not Queue 21% reduced Mana Cost of Skills during Flask Effect ",
     "line":"Flask effect does not Queue 21% reduced Mana Cost of Skills during Flask Effect",
+    "names":[],
     "parsed":false
   },{
     "count":1,
     "line":"21% reduced Mana Cost of Skills during Flask Effect",
+    "names":["ManaCost"],
     "parsed":true
   },{
     "count":1,
     "line":"Allocates Divine Judgement",
+    "names":["GrantedPassive"],
     "parsed":true
   },{
     "count":1,
     "line":"+30 to Intelligence",
+    "names":["Int"],
     "parsed":true
   },{
     "count":1,
     "line":"16% increased maximum Energy Shield",
+    "names":["EnergyShield"],
     "parsed":true
   },{
     "count":1,
     "line":"+51 to maximum Life",
+    "names":["Life"],
     "parsed":true
   },{
     "count":0,
     "extra":"Hits against Nearby Enemies have 50% increased Critical Strike Chance ",
     "line":"Hits against Nearby Enemies have 50% increased Critical Strike Chance",
+    "names":[],
     "parsed":false
   },{
     "count":0,
     "extra":"Hits against Nearby Enemies have 50% increased Critical Strike Chance Discipline has no Reservation ",
     "line":"Hits against Nearby Enemies have 50% increased Critical Strike Chance Discipline has no Reservation",
+    "names":[],
     "parsed":false
   },{
     "count":4,
     "line":"Discipline has no Reservation",
+    "names":["SkillData","SkillData","SkillData","SkillData"],
     "parsed":true
   },{
     "count":1,
     "line":"+17 to maximum Energy Shield",
+    "names":["EnergyShield"],
     "parsed":true
   },{
     "count":1,
     "line":"+42 to maximum Energy Shield",
+    "names":["EnergyShield"],
     "parsed":true
   },{
     "count":0,
     "extra":"Taunts nearby Enemies on use 32% reduced Duration ",
     "line":"Taunts nearby Enemies on use 32% reduced Duration",
+    "names":[],
     "parsed":false
   },{
     "count":1,
     "line":"14% increased Cast Speed during Flask effect",
+    "names":["Speed"],
     "parsed":true
   },{
     "count":0,
     "extra":"Used when you use a Life Flask 35% reduced Duration ",
     "line":"Used when you use a Life Flask 35% reduced Duration",
+    "names":[],
     "parsed":false
   },{
     "count":1,
     "line":"48% increased Critical Strike Chance during Flask Effect",
+    "names":["CritChance"],
     "parsed":true
   },{
     "count":1,
     "line":"318% increased Armour and Energy Shield",
+    "names":["ArmourAndEnergyShield"],
     "parsed":true
   },{
     "count":1,
     "line":"+5% to maximum Cold Resistance",
+    "names":["ColdResistMax"],
     "parsed":true
   },{
     "count":1,
     "line":"+6% Chance to Block",
+    "names":["BlockChance"],
     "parsed":true
   },{
     "count":1,
     "line":"Replenishes Energy Shield by 2% of Armour when you Block",
+    "names":["EnergyShieldOnBlock"],
     "parsed":true
   },{
     "count":1,
     "line":"17% increased Elemental Damage with Attack Skills",
+    "names":["ElementalDamage"],
     "parsed":true
   },{
     "count":1,
     "line":"+15 to maximum Energy Shield",
+    "names":["EnergyShield"],
     "parsed":true
   },{
     "count":1,
     "line":"+345 to Armour",
+    "names":["Armour"],
     "parsed":true
   },{
     "count":1,
     "line":"+40 to maximum Energy Shield",
+    "names":["EnergyShield"],
     "parsed":true
   },{
     "count":1,
     "line":"+27% to Fire Resistance",
+    "names":["FireResist"],
     "parsed":true
   },{
     "count":1,
     "line":"+52 to maximum Mana",
+    "names":["Mana"],
     "parsed":true
   },{
     "count":1,
     "line":"+20% to Chaos Resistance",
+    "names":["ChaosResist"],
     "parsed":true
   },{
     "count":1,
     "line":"+11% to Fire Damage over Time Multiplier",
+    "names":["FireDotMultiplier"],
     "parsed":true
   },{
     "count":1,
     "line":"50% reduced Ignite Duration on Enemies",
+    "names":["EnemyIgniteDuration"],
     "parsed":true
   },{
     "count":1,
     "line":"13% chance to Ignite",
+    "names":["EnemyIgniteChance"],
     "parsed":true
   },{
     "count":1,
     "line":"Enemies Ignited by you take Chaos Damage instead of Fire Damage from Ignite",
+    "names":["IgniteToChaos"],
     "parsed":true
   },{
     "count":0,
     "extra":"Withered does not expire on Enemies Ignited by you ",
     "line":"Withered does not expire on Enemies Ignited by you",
+    "names":[],
     "parsed":false
   },{
     "count":0,
     "extra":"Withered does not expire on Enemies Ignited by you +25% to Fire and Chaos Resistances ",
     "line":"Withered does not expire on Enemies Ignited by you +25% to Fire and Chaos Resistances",
+    "names":[],
     "parsed":false
   },{
     "count":2,
     "line":"+25% to Fire and Chaos Resistances",
+    "names":["FireResist","ChaosResist"],
     "parsed":true
   },{
     "count":1,
     "line":"+2 to Level of Socketed Gems",
+    "names":["GemProperty"],
     "parsed":true
   },{
     "count":1,
     "line":"158% increased Armour and Energy Shield",
+    "names":["ArmourAndEnergyShield"],
     "parsed":true
   },{
     "count":1,
     "line":"+20% to all Elemental Resistances",
+    "names":["ElementalResist"],
     "parsed":true
   },{
     "count":0,
     "extra":"Damage of Enemies Hitting you is Unlucky while you have a Magic Ring Equipped ",
     "line":"Damage of Enemies Hitting you is Unlucky while you have a Magic Ring Equipped",
+    "names":[],
     "parsed":false
   },{
     "count":0,
     "extra":"Damage of Enemies Hitting you is Unlucky while you have a Magic Ring Equipped You are Hexproof if you have a Magic Ring in right slot ",
     "line":"Damage of Enemies Hitting you is Unlucky while you have a Magic Ring Equipped You are Hexproof if you have a Magic Ring in right slot",
+    "names":[],
     "parsed":false
   },{
     "count":1,
     "line":"You are Hexproof if you have a Magic Ring in right slot",
+    "names":["CurseEffectOnSelf"],
     "parsed":true
   },{
     "count":1,
     "line":"Take no Extra Damage from Critical Strikes if you have a Magic Ring in left slot",
+    "names":["ReduceCritExtraDamage"],
     "parsed":true
   },{
     "count":1,
     "line":"40% increased Elemental Damage",
+    "names":["ElementalDamage"],
     "parsed":true
   },{
     "count":1,
     "line":"45% increased Fire Damage",
+    "names":["FireDamage"],
     "parsed":true
   },{
     "count":2,
     "line":"Adds 44 to 83 Fire Damage to Spells",
+    "names":["FireMin","FireMax"],
     "parsed":true
   },{
     "count":1,
     "line":"42% increased Critical Strike Chance for Spells",
+    "names":["CritChance"],
     "parsed":true
   },{
     "count":1,
     "line":"38% increased Burning Damage",
+    "names":["FireDamage"],
     "parsed":true
   },{
     "count":1,
     "line":"29% increased Damage over Time",
+    "names":["Damage"],
     "parsed":true
   },{
     "count":1,
     "line":"Triggers Level 20 Corpse Walk when Equipped",
+    "names":["ExtraSkill"],
     "parsed":true
   },{
     "count":1,
     "line":"109% increased Evasion and Energy Shield",
+    "names":["EvasionAndEnergyShield"],
     "parsed":true
   },{
     "count":1,
     "line":"34% increased Damage if you have Consumed a corpse Recently",
+    "names":["Damage"],
     "parsed":true
   },{
     "count":1,
     "line":"For each nearby corpse, Regenerate 0.25% Life per second, up to 3%",
+    "names":["LifeRegenPercent"],
     "parsed":true
   },{
     "count":1,
     "line":"10% increased Melee Damage",
+    "names":["Damage"],
     "parsed":true
   },{
     "count":1,
     "line":"6% increased Attack Speed while Dual Wielding",
+    "names":["Speed"],
     "parsed":true
   },{
     "count":1,
     "line":"5% reduced Mana Cost of Skills",
+    "names":["ManaCost"],
     "parsed":true
   },{
     "count":1,
     "line":"10% increased Area Damage",
+    "names":["Damage"],
     "parsed":true
   },{
     "count":1,
     "line":"15% increased Global Physical Damage",
+    "names":["PhysicalDamage"],
     "parsed":true
   },{
     "count":1,
     "line":"4% increased Attack Speed while Dual Wielding",
+    "names":["Speed"],
     "parsed":true
   },{
     "count":1,
     "line":"12% increased Area Damage",
+    "names":["Damage"],
     "parsed":true
   },{
     "count":1,
     "line":"3% increased Attack and Cast Speed",
+    "names":["Speed"],
     "parsed":true
   },{
     "count":2,
     "line":"Adds 61 to 164 Physical Damage",
+    "names":["PhysicalMin","PhysicalMax"],
     "parsed":true
   },{
     "count":1,
     "line":"40% increased Physical Attack Damage while Dual Wielding",
+    "names":["PhysicalDamage"],
     "parsed":true
   },{
     "count":1,
     "line":"12% increased Attack Speed",
+    "names":["Speed"],
     "parsed":true
   },{
     "count":1,
     "line":"+25 to Maximum Rage while wielding a Sword",
+    "names":["MaximumRage"],
     "parsed":true
   },{
     "count":1,
     "line":"Recover an additional 21% of Flask's Life Recovery Amount over 10 seconds if used while not on Full Life",
+    "names":["FlaskAdditionalLifeRecovery"],
     "parsed":true
   },{
     "count":1,
     "line":"+27 to Strength",
+    "names":["Str"],
     "parsed":true
   },{
     "count":1,
     "line":"+33 to maximum Life",
+    "names":["Life"],
     "parsed":true
   },{
     "count":2,
     "line":"Adds 7 to 11 Physical Damage to Attacks",
+    "names":["PhysicalMin","PhysicalMax"],
     "parsed":true
   },{
     "count":1,
     "line":"29% increased Stun Duration on Enemies",
+    "names":["EnemyStunDuration"],
     "parsed":true
   },{
     "count":1,
     "line":"Nearby Enemies are Crushed while you have at least 25 Rage",
+    "names":["EnemyModifier"],
     "parsed":true
   },{
     "count":1,
     "line":"6% increased Physical Damage per 10 Rage",
+    "names":["PhysicalDamage"],
     "parsed":true
   },{
     "count":1,
     "line":"+20 to Maximum Rage",
+    "names":["MaximumRage"],
     "parsed":true
   },{
     "count":1,
     "line":"46% increased Physical Damage",
+    "names":["PhysicalDamage"],
     "parsed":true
   },{
     "count":2,
     "line":"Adds 20 to 44 Physical Damage",
+    "names":["PhysicalMin","PhysicalMax"],
     "parsed":true
   },{
     "count":1,
     "line":"8% increased Critical Strike Chance",
+    "names":["CritChance"],
     "parsed":true
   },{
     "count":1,
     "line":"29% reduced Duration",
+    "names":["Duration"],
     "parsed":true
   },{
     "count":1,
     "line":"14% increased Attack Speed during Flask effect",
+    "names":["Speed"],
     "parsed":true
   },{
     "count":1,
     "line":"+73 to maximum Life",
+    "names":["Life"],
     "parsed":true
   },{
     "count":1,
     "line":"Regenerate 12.4 Life per second",
+    "names":["LifeRegen"],
     "parsed":true
   },{
     "count":0,
     "line":"Reflects 3 Physical Damage to Melee Attackers",
+    "names":[],
     "parsed":true
   },{
     "count":2,
     "line":"+19% to Fire and Lightning Resistances",
+    "names":["FireResist","LightningResist"],
     "parsed":true
   },{
     "count":0,
     "extra":"Knocks Back Enemies in an Area when you use a Flask ",
     "line":"Knocks Back Enemies in an Area when you use a Flask",
+    "names":[],
     "parsed":false
   },{
     "count":0,
     "extra":"Knocks Back Enemies in an Area when you use a Flask 75% chance to cause Enemies to Flee on use ",
     "line":"Knocks Back Enemies in an Area when you use a Flask 75% chance to cause Enemies to Flee on use",
+    "names":[],
     "parsed":false
   },{
     "count":0,
     "extra":" to cause Enemies to Flee on use ",
     "line":"75% chance to cause Enemies to Flee on use",
+    "names":[],
     "parsed":true
   },{
     "count":0,
     "extra":" to cause Enemies to Flee on use Adds Knockback to  Attacks  ",
     "line":"75% chance to cause Enemies to Flee on use Adds Knockback to Melee Attacks during Flask effect",
+    "names":[],
     "parsed":true
   },{
     "count":1,
     "line":"Adds Knockback to Melee Attacks during Flask effect",
+    "names":["EnemyKnockbackChance"],
     "parsed":true
   },{
     "count":1,
     "line":"10% more Melee Physical Damage during effect",
+    "names":["PhysicalDamage"],
     "parsed":true
   },{
     "count":2,
     "line":"+15% to Cold and Lightning Resistances",
+    "names":["ColdResist","LightningResist"],
     "parsed":true
   },{
     "count":1,
     "line":"+46 to Intelligence",
+    "names":["Int"],
     "parsed":true
   },{
     "count":1,
     "line":"+64 to maximum Life",
+    "names":["Life"],
     "parsed":true
   },{
     "count":1,
     "line":"+44% to Cold Resistance",
+    "names":["ColdResist"],
     "parsed":true
   },{
     "count":1,
     "line":"+29% to Lightning Resistance",
+    "names":["LightningResist"],
     "parsed":true
   },{
     "count":2,
     "line":"Adds 6 to 10 Physical Damage to Attacks",
+    "names":["PhysicalMin","PhysicalMax"],
     "parsed":true
   },{
     "count":1,
     "line":"+28 to Intelligence",
+    "names":["Int"],
     "parsed":true
   },{
     "count":1,
     "line":"+61 to maximum Life",
+    "names":["Life"],
     "parsed":true
   },{
     "count":2,
     "line":"+19% to Fire and Chaos Resistances",
+    "names":["FireResist","ChaosResist"],
     "parsed":true
   },{
     "count":2,
     "line":"Adds 7 to 10 Physical Damage to Attacks",
+    "names":["PhysicalMin","PhysicalMax"],
     "parsed":true
   },{
     "count":2,
     "line":"+10% to Cold and Lightning Resistances",
+    "names":["ColdResist","LightningResist"],
     "parsed":true
   },{
     "count":1,
     "line":"Regenerate 43.3 Life per second",
+    "names":["LifeRegen"],
     "parsed":true
   },{
     "count":1,
     "line":"+67 to maximum Life",
+    "names":["Life"],
     "parsed":true
   },{
     "count":1,
     "line":"+39% to Fire Resistance",
+    "names":["FireResist"],
     "parsed":true
   },{
     "count":1,
     "line":"+35% to Lightning Resistance",
+    "names":["LightningResist"],
     "parsed":true
   },{
     "count":1,
     "line":"Allocates Slaughter",
+    "names":["GrantedPassive"],
     "parsed":true
   },{
     "count":4,
     "line":"+15 to all Attributes",
+    "names":["Str","Dex","Int","All"],
     "parsed":true
   },{
     "count":2,
     "line":"Adds 16 to 25 Physical Damage",
+    "names":["PhysicalMin","PhysicalMax"],
     "parsed":true
   },{
     "count":1,
     "line":"+451 to Armour",
+    "names":["Armour"],
     "parsed":true
   },{
     "count":1,
     "line":"35% increased Stun and Block Recovery",
+    "names":["StunRecovery"],
     "parsed":true
   },{
     "count":4,
     "line":"Vulnerability has no Reservation if Cast as an Aura",
+    "names":["SkillData","SkillData","SkillData","SkillData"],
     "parsed":true
   },{
     "count":1,
     "line":"38% reduced Duration",
+    "names":["Duration"],
     "parsed":true
   },{
     "count":1,
     "line":"37% less Duration",
+    "names":["Duration"],
     "parsed":true
   },{
     "count":2,
     "line":"Immunity to Bleeding and Corrupted Blood during Flask Effect",
+    "names":["BleedImmune","CorruptedBloodImmune"],
     "parsed":true
   },{
     "count":1,
     "line":"+24 to Maximum Charges",
+    "names":["FlaskCharges"],
     "parsed":true
   },{
     "count":1,
     "line":"51% increased Armour during Flask effect",
+    "names":["Armour"],
     "parsed":true
   },{
     "count":1,
     "line":"Chain Hook has +1 Radius per 12 Rage",
+    "names":["AreaOfEffect"],
     "parsed":true
   },{
     "count":1,
     "line":"19% increased Attack Damage",
+    "names":["Damage"],
     "parsed":true
   },{
     "count":1,
     "line":"21% reduced Mana Cost of Attacks",
+    "names":["ManaCost"],
     "parsed":true
   },{
     "count":1,
     "line":"77% increased Evasion Rating",
+    "names":["Evasion"],
     "parsed":true
   },{
     "count":1,
     "line":"+27% to Cold Resistance",
+    "names":["ColdResist"],
     "parsed":true
   },{
     "count":1,
     "line":"15% increased Stun and Block Recovery",
+    "names":["StunRecovery"],
     "parsed":true
   },{
     "count":1,
     "line":"Attacks have +0.8% to Critical Strike Chance",
+    "names":["CritChance"],
     "parsed":true
   },{
     "count":1,
     "line":"Allocates Fatal Blade",
+    "names":["GrantedPassive"],
     "parsed":true
   },{
     "count":1,
     "line":"Hits can't be Evaded",
+    "names":["CannotBeEvaded"],
     "parsed":true
   },{
     "count":2,
     "line":"Adds 14 to 20 Physical Damage",
+    "names":["PhysicalMin","PhysicalMax"],
     "parsed":true
   },{
     "count":1,
     "line":"40% chance to cause Bleeding on Hit",
+    "names":["BleedChance"],
     "parsed":true
   },{
     "count":1,
     "line":"69% increased Chaos Damage",
+    "names":["ChaosDamage"],
     "parsed":true
   },{
     "count":1,
     "line":"Chaos Skills have 15% increased Skill Effect Duration",
+    "names":["Duration"],
     "parsed":true
   },{
     "count":1,
     "line":"Attacks with this Weapon Penetrate 16% Chaos Resistance",
+    "names":["ChaosPenetration"],
     "parsed":true
   },{
     "count":1,
     "line":"Gain 10% of Cold Damage as Extra Chaos Damage",
+    "names":["ColdDamageGainAsChaos"],
     "parsed":true
   },{
     "count":1,
     "line":"79% increased Cold Damage",
+    "names":["ColdDamage"],
     "parsed":true
   },{
     "count":1,
     "line":"23% chance to Freeze",
+    "names":["EnemyFreezeChance"],
     "parsed":true
   },{
     "count":1,
     "line":"Attacks with this Weapon Penetrate 16% Elemental Resistances",
+    "names":["ElementalPenetration"],
     "parsed":true
   },{
     "count":1,
     "line":"Gain 10% of Fire Damage as Extra Chaos Damage",
+    "names":["FireDamageGainAsChaos"],
     "parsed":true
   },{
     "count":1,
     "line":"79% increased Fire Damage",
+    "names":["FireDamage"],
     "parsed":true
   },{
     "count":1,
     "line":"23% chance to Ignite",
+    "names":["EnemyIgniteChance"],
     "parsed":true
   },{
     "count":1,
     "line":"139% increased Physical Damage",
+    "names":["PhysicalDamage"],
     "parsed":true
   },{
     "count":1,
     "line":"25% chance to cause Bleeding on Hit",
+    "names":["BleedChance"],
     "parsed":true
   },{
     "count":0,
     "extra":" to Blind Enemies  ",
     "line":"25% chance to Blind Enemies on hit",
+    "names":[],
     "parsed":true
   },{
     "count":1,
     "extra":" to Blind Enemies  139% increased  ",
     "line":"25% chance to Blind Enemies on hit 139% increased Physical Damage",
+    "names":["PhysicalDamage"],
     "parsed":true
   },{
     "count":1,
     "line":"25% chance to Impale Enemies on Hit with Attacks",
+    "names":["ImpaleChance"],
     "parsed":true
   },{
     "count":1,
     "line":"25% chance to Poison on Hit",
+    "names":["PoisonChance"],
     "parsed":true
   },{
     "count":1,
     "line":"Gain 10% of Lightning Damage as Extra Chaos Damage",
+    "names":["LightningDamageGainAsChaos"],
     "parsed":true
   },{
     "count":1,
     "line":"79% increased Lightning Damage",
+    "names":["LightningDamage"],
     "parsed":true
   },{
     "count":1,
     "line":"23% chance to Shock",
+    "names":["EnemyShockChance"],
     "parsed":true
   },{
     "count":1,
     "line":"Minions have 38% increased maximum Life",
+    "names":["MinionModifier"],
     "parsed":true
   },{
     "count":1,
     "line":"Minions deal 38% increased Damage",
+    "names":["MinionModifier"],
     "parsed":true
   },{
     "count":1,
     "line":"Gain 10% of Physical Damage as Extra Chaos Damage",
+    "names":["PhysicalDamageGainAsChaos"],
     "parsed":true
   },{
     "count":1,
     "line":"79% increased Spell Damage",
+    "names":["Damage"],
     "parsed":true
   },{
     "count":1,
     "line":"20% increased Mana Regeneration Rate",
+    "names":["ManaRegen"],
     "parsed":true
   },{
     "count":1,
     "line":"69% increased Spell Damage",
+    "names":["Damage"],
     "parsed":true
   },{
     "count":1,
     "line":"Gain 5% of Non-Chaos Damage as extra Chaos Damage",
+    "names":["NonChaosDamageGainAsChaos"],
     "parsed":true
   },{
     "count":3,
     "line":"+28 to Strength and Dexterity",
+    "names":["Str","Dex","StrDex"],
     "parsed":true
   },{
     "count":1,
     "line":"+350 to Accuracy Rating",
+    "names":["Accuracy"],
     "parsed":true
   },{
     "count":1,
     "line":"15% chance to Trigger Level 1 Blood Rage when you Kill an Enemy",
+    "names":["ExtraSkill"],
     "parsed":true
   },{
     "count":1,
     "line":"22% increased Attack Speed",
+    "names":["Speed"],
     "parsed":true
   },{
     "count":3,
     "line":"+28 to Dexterity and Intelligence",
+    "names":["Dex","Int","DexInt"],
     "parsed":true
   },{
     "count":1,
     "line":"15% increased Attack Speed while a Rare or Unique Enemy is Nearby",
+    "names":["Speed"],
     "parsed":true
   },{
     "count":1,
     "line":"22% increased Cast Speed",
+    "names":["Speed"],
     "parsed":true
   },{
     "count":1,
     "line":"15% chance to gain Arcane Surge when you Kill an Enemy",
+    "names":["Condition:ArcaneSurge"],
     "parsed":true
   },{
     "count":1,
     "line":"20% chance to deal Double Damage while Focused",
+    "names":["DoubleDamageChance"],
     "parsed":true
   },{
     "count":1,
     "line":"+28% to Chaos Damage over Time Multiplier",
+    "names":["ChaosDotMultiplier"],
     "parsed":true
   },{
     "count":1,
     "line":"+28% to Cold Damage over Time Multiplier",
+    "names":["ColdDotMultiplier"],
     "parsed":true
   },{
     "count":3,
     "line":"+28 to Strength and Intelligence",
+    "names":["Str","Int","StrInt"],
     "parsed":true
   },{
     "count":1,
     "line":"32% increased Critical Strike Chance",
+    "names":["CritChance"],
     "parsed":true
   },{
     "count":1,
     "line":"+40% Critical Strike Multiplier while a Rare or Unique Enemy is Nearby",
+    "names":["CritMultiplier"],
     "parsed":true
   },{
     "count":1,
     "line":"6% increased Damage per Endurance Charge",
+    "names":["Damage"],
     "parsed":true
   },{
     "count":1,
     "line":"6% increased Damage per Frenzy Charge",
+    "names":["Damage"],
     "parsed":true
   },{
     "count":1,
     "line":"6% increased Damage per Power Charge",
+    "names":["Damage"],
     "parsed":true
   },{
     "count":1,
     "line":"+28% to Fire Damage over Time Multiplier",
+    "names":["FireDotMultiplier"],
     "parsed":true
   },{
     "count":1,
     "line":"Minions have 20% increased Attack Speed",
+    "names":["MinionModifier"],
     "parsed":true
   },{
     "count":1,
     "line":"Minions have 20% increased Cast Speed",
+    "names":["MinionModifier"],
     "parsed":true
   },{
     "count":1,
     "line":"+28% to Physical Damage over Time Multiplier",
+    "names":["PhysicalDotMultiplier"],
     "parsed":true
   },{
     "count":0,
     "extra":"Trigger a Socketed Spell on Using a Skill, with a 4 second Cooldown ",
     "line":"Trigger a Socketed Spell on Using a Skill, with a 4 second Cooldown",
+    "names":[],
     "parsed":false
   },{
     "count":0,
     "extra":"Trigger a Socketed Spell on Using a Skill, with a 4 second Cooldown Spells Triggered this way have 150% more Cost ",
     "line":"Trigger a Socketed Spell on Using a Skill, with a 4 second Cooldown Spells Triggered this way have 150% more Cost",
+    "names":[],
     "parsed":false
   },{
     "count":0,
     "extra":"Spells Triggered this way have 150% more Cost ",
     "line":"Spells Triggered this way have 150% more Cost",
+    "names":[],
     "parsed":false
   },{
     "count":2,
     "extra":"s Triggered this way have 150% more Cost Attack deal   ",
     "line":"Spells Triggered this way have 150% more Cost Attacks with this Weapon deal Double Damage",
+    "names":["Damage","Multiplier:DamageDoubled"],
     "parsed":true
   },{
     "count":1,
     "line":"Attacks with this Weapon deal Double Damage",
+    "names":["DoubleDamageChance"],
     "parsed":true
   },{
     "count":1,
     "line":"12% increased Melee Damage",
+    "names":["Damage"],
     "parsed":true
   },{
     "count":1,
     "line":"8% increased Attack Speed with Swords",
+    "names":["Speed"],
     "parsed":true
   },{
     "count":1,
     "line":"14% increased Melee Critical Strike Chance",
+    "names":["CritChance"],
     "parsed":true
   },{
     "count":1,
     "line":"7% increased maximum Life",
+    "names":["Life"],
     "parsed":true
   },{
     "count":3,
     "line":"+10 to Strength and Intelligence",
+    "names":["Str","Int","StrInt"],
     "parsed":true
   },{
     "count":1,
     "line":"8% increased Attack Speed with Bows",
+    "names":["Speed"],
     "parsed":true
   },{
     "count":1,
     "line":"6% increased maximum Life",
+    "names":["Life"],
     "parsed":true
   },{
     "count":1,
     "line":"4% increased maximum Energy Shield",
+    "names":["EnergyShield"],
     "parsed":true
   },{
     "count":1,
     "line":"4% increased maximum Life",
+    "names":["Life"],
     "parsed":true
   },{
     "count":1,
     "line":"6% increased maximum Mana",
+    "names":["Mana"],
     "parsed":true
   },{
     "count":1,
     "line":"15% increased Attack Speed while affected by Precision",
+    "names":["Speed"],
     "parsed":true
   },{
     "count":1,
     "line":"60% increased Physical Damage while using Pride",
+    "names":["PhysicalDamage"],
     "parsed":true
   },{
     "count":1,
     "line":"Unaffected by Bleeding while affected by Malevolence",
+    "names":["SelfBleedEffect"],
     "parsed":true
   },{
     "count":1,
     "line":"23% increased Physical Damage",
+    "names":["PhysicalDamage"],
     "parsed":true
   },{
     "count":2,
     "line":"Adds 41 to 73 Physical Damage",
+    "names":["PhysicalMin","PhysicalMax"],
     "parsed":true
   },{
     "count":1,
     "line":"9% increased Attack Speed",
+    "names":["Speed"],
     "parsed":true
   },{
     "count":1,
     "line":"28% increased Critical Strike Chance",
+    "names":["CritChance"],
     "parsed":true
   },{
     "count":1,
     "line":"Bow Attacks fire an additional Arrow",
+    "names":["ProjectileCount"],
     "parsed":true
   },{
     "count":1,
     "line":"+28 to Accuracy Rating",
+    "names":["Accuracy"],
     "parsed":true
   },{
     "count":1,
     "line":"100% increased Physical Damage",
+    "names":["PhysicalDamage"],
     "parsed":true
   },{
     "count":0,
     "extra":" to Blind Enemies  ",
     "line":"20% chance to Blind Enemies on hit",
+    "names":[],
     "parsed":true
   },{
     "count":1,
     "line":"27% increased Duration",
+    "names":["Duration"],
     "parsed":true
   },{
     "count":1,
     "line":"Sniper's Mark has 30% increased Curse Effect",
+    "names":["CurseEffect"],
     "parsed":true
   },{
     "count":1,
     "line":"15% increased Cast Speed",
+    "names":["Speed"],
     "parsed":true
   },{
     "count":1,
     "line":"+109 to maximum Energy Shield",
+    "names":["EnergyShield"],
     "parsed":true
   },{
     "count":1,
     "line":"+36% to Cold Resistance",
+    "names":["ColdResist"],
     "parsed":true
   },{
     "count":1,
     "line":"+79 to maximum Life",
+    "names":["Life"],
     "parsed":true
   },{
     "count":1,
     "line":"+44 to maximum Mana",
+    "names":["Mana"],
     "parsed":true
   },{
     "count":1,
     "line":"+19% to all Elemental Resistances",
+    "names":["ElementalResist"],
     "parsed":true
   },{
     "count":1,
     "line":"+55% to Fire Resistance",
+    "names":["FireResist"],
     "parsed":true
   },{
     "count":1,
     "line":"+50% to Lightning Resistance",
+    "names":["LightningResist"],
     "parsed":true
   },{
     "count":1,
     "line":"Non-Channelling Skills have -6 to Total Mana Cost",
+    "names":["ManaCost"],
     "parsed":true
   },{
     "count":2,
     "line":"Adds 4 to 15 Physical Damage to Attacks",
+    "names":["PhysicalMin","PhysicalMax"],
     "parsed":true
   },{
     "count":1,
     "line":"+45 to Strength",
+    "names":["Str"],
     "parsed":true
   },{
     "count":2,
     "line":"Adds 7 to 18 Physical Damage to Attacks",
+    "names":["PhysicalMin","PhysicalMax"],
     "parsed":true
   },{
     "count":0,
     "extra":"Used when you take a Savage Hit ",
     "line":"Used when you take a Savage Hit",
+    "names":[],
     "parsed":false
   },{
     "count":0,
     "extra":"Used when you take a Savage Hit 19% reduced Charges per use ",
     "line":"Used when you take a Savage Hit 19% reduced Charges per use",
+    "names":[],
     "parsed":false
   },{
     "count":1,
     "line":"19% reduced Charges per use",
+    "names":["FlaskChargesUsed"],
     "parsed":true
   },{
     "count":2,
     "line":"Adds 15 to 26 Physical Damage to Attacks",
+    "names":["PhysicalMin","PhysicalMax"],
     "parsed":true
   },{
     "count":2,
     "line":"Adds 21 to 38 Physical Damage to Attacks",
+    "names":["PhysicalMin","PhysicalMax"],
     "parsed":true
   },{
     "count":2,
     "line":"Adds 1 to 4 Lightning Damage to Attacks",
+    "names":["LightningMin","LightningMax"],
     "parsed":true
   },{
     "count":1,
     "line":"20% increased Global Critical Strike Chance",
+    "names":["CritChance"],
     "parsed":true
   },{
     "count":1,
     "line":"12% increased Projectile Speed",
+    "names":["ProjectileSpeed"],
     "parsed":true
   },{
     "count":0,
     "extra":"a Frenzy Charge ",
     "line":"7% chance to gain a Frenzy Charge on Critical Strike",
+    "names":[],
     "parsed":false
   },{
     "count":1,
     "line":"40% increased Attack Damage against Bleeding Enemies",
+    "names":["Damage"],
     "parsed":true
   },{
     "count":1,
     "line":"Allocates Whispers of Doom",
+    "names":["GrantedPassive"],
     "parsed":true
   },{
     "count":4,
     "line":"+19 to all Attributes",
+    "names":["Str","Dex","Int","All"],
     "parsed":true
   },{
     "count":1,
     "line":"17% increased Evasion Rating",
+    "names":["Evasion"],
     "parsed":true
   },{
     "count":1,
     "line":"+69 to maximum Life",
+    "names":["Life"],
     "parsed":true
   },{
     "count":0,
     "extra":"grant 25% increased Flask Charges ",
     "line":"Nearby Enemies grant 25% increased Flask Charges",
+    "names":[],
     "parsed":false
   },{
     "count":0,
     "extra":"grant 25% increased Flask Charges Grace has no Reservation ",
     "line":"Nearby Enemies grant 25% increased Flask Charges Grace has no Reservation",
+    "names":[],
     "parsed":false
   },{
     "count":4,
     "line":"Grace has no Reservation",
+    "names":["SkillData","SkillData","SkillData","SkillData"],
     "parsed":true
   },{
     "count":1,
     "line":"+40 to maximum Life",
+    "names":["Life"],
     "parsed":true
   },{
     "count":1,
     "line":"+422 to Armour",
+    "names":["Armour"],
     "parsed":true
   },{
     "count":1,
     "line":"30% increased Elemental Damage with Attack Skills",
+    "names":["ElementalDamage"],
     "parsed":true
   },{
     "count":1,
     "line":"Grants Level 20 Summon Bestial Rhoa Skill",
+    "names":["ExtraSkill"],
     "parsed":true
   },{
     "count":1,
     "line":"+334 to Accuracy Rating",
+    "names":["Accuracy"],
     "parsed":true
   },{
     "count":1,
     "line":"149% increased Evasion Rating",
+    "names":["Evasion"],
     "parsed":true
   },{
     "count":1,
     "line":"+90 to maximum Life",
+    "names":["Life"],
     "parsed":true
   },{
     "count":1,
     "line":"Projectile Attack Skills have 47% increased Critical Strike Chance",
+    "names":["CritChance"],
     "parsed":true
   },{
     "count":0,
     "extra":" to Maim  while ",
     "line":"Projectiles from Attacks have 20% chance to Maim on Hit while",
+    "names":[],
     "parsed":true
   },{
     "count":0,
     "extra":" to Maim   ",
     "line":"Projectiles from Attacks have 20% chance to Maim on Hit while you have a Bestial Minion",
+    "names":[],
     "parsed":true
   },{
     "count":0,
     "extra":"a Bestial Minion ",
     "line":"you have a Bestial Minion",
+    "names":[],
     "parsed":false
   },{
     "count":0,
     "extra":"a Bestial Minion 15% increased Attack and Movement Speed  ",
     "line":"you have a Bestial Minion 15% increased Attack and Movement Speed while you have a Bestial Minion",
+    "names":[],
     "parsed":false
   },{
     "count":1,
     "extra":" Attack and   ",
     "line":"15% increased Attack and Movement Speed while you have a Bestial Minion",
+    "names":["MovementSpeed"],
     "parsed":true
   },{
     "count":1,
     "line":"80% chance to Avoid being Stunned if you've Killed Recently",
+    "names":["AvoidStun"],
     "parsed":true
   },{
     "count":2,
     "line":"+12% to Fire and Lightning Resistances",
+    "names":["FireResist","LightningResist"],
     "parsed":true
   },{
     "count":1,
     "line":"Regenerate 7.2 Life per second",
+    "names":["LifeRegen"],
     "parsed":true
   },{
     "count":1,
     "line":"Cannot be Chilled",
+    "names":["ChillImmune"],
     "parsed":true
   },{
     "count":1,
     "line":"10% chance to gain Onslaught for 4 seconds on Kill",
+    "names":["Condition:Onslaught"],
     "parsed":true
   },{
     "count":2,
     "line":"8% increased Attack, Cast and Movement Speed while you have Onslaught",
+    "names":["Speed","MovementSpeed"],
     "parsed":true
   },{
     "count":1,
     "line":"24% increased Effect of Tailwind on you",
+    "names":["TailwindEffectOnSelf"],
     "parsed":true
   },{
     "count":1,
     "line":"You have Tailwind if you have dealt a Critical Strike Recently",
+    "names":["Condition:Tailwind"],
     "parsed":true
   },{
     "count":1,
     "line":"45% reduced Amount Recovered",
+    "names":["FlaskRecovery"],
     "parsed":true
   },{
     "count":0,
     "extra":"Flask effect does not Queue 22% reduced Mana Cost of Skills during Flask Effect ",
     "line":"Flask effect does not Queue 22% reduced Mana Cost of Skills during Flask Effect",
+    "names":[],
     "parsed":false
   },{
     "count":1,
     "line":"22% reduced Mana Cost of Skills during Flask Effect",
+    "names":["ManaCost"],
     "parsed":true
   },{
     "count":1,
     "line":"18% reduced Charges per use",
+    "names":["FlaskChargesUsed"],
     "parsed":true
   },{
     "count":1,
     "line":"47% increased Critical Strike Chance during Flask Effect",
+    "names":["CritChance"],
     "parsed":true
   },{
     "count":1,
     "line":"+30 to Strength",
+    "names":["Str"],
     "parsed":true
   },{
     "count":1,
     "line":"+50 to Evasion Rating",
+    "names":["Evasion"],
     "parsed":true
   },{
     "count":0,
     "extra":"Reflects 10 Cold Damage to Melee Attackers Corrupted ",
     "line":"Reflects 10 Cold Damage to Melee Attackers Corrupted",
+    "names":[],
     "parsed":false
   },{
     "count":1,
     "line":"50% increased Armour and Evasion",
+    "names":["ArmourAndEvasion"],
     "parsed":true
   },{
     "count":1,
     "line":"56% increased Physical Damage",
+    "names":["PhysicalDamage"],
     "parsed":true
   },{
     "count":2,
     "line":"Your Elemental Damage can Shock",
+    "names":["ColdCanShock","FireCanShock"],
     "parsed":true
   },{
     "count":1,
     "line":"Gain 300% of Weapon Physical Damage as Extra Damage of a random Element",
+    "names":["PhysicalDamageGainAsRandom"],
     "parsed":true
   },{
     "count":1,
     "line":"20% increased Area of Effect for Attacks",
+    "names":["AreaOfEffect"],
     "parsed":true
   },{
     "count":2,
     "line":"Deal no Non-Elemental Damage",
+    "names":["DealNoPhysical","DealNoChaos"],
     "parsed":true
   },{
     "count":1,
     "line":"25% increased Cold Damage",
+    "names":["ColdDamage"],
     "parsed":true
   },{
     "count":2,
     "line":"Adds 8 to 15 Physical Damage to Attacks",
+    "names":["PhysicalMin","PhysicalMax"],
     "parsed":true
   },{
     "count":1,
     "line":"+37 to Evasion Rating",
+    "names":["Evasion"],
     "parsed":true
   },{
     "count":1,
     "line":"+270 to Armour",
+    "names":["Armour"],
     "parsed":true
   },{
     "count":1,
     "line":"+25 to maximum Energy Shield",
+    "names":["EnergyShield"],
     "parsed":true
   },{
     "count":1,
     "line":"+88 to maximum Life",
+    "names":["Life"],
     "parsed":true
   },{
     "count":1,
     "line":"Regenerate 25.9 Life per second",
+    "names":["LifeRegen"],
     "parsed":true
   },{
     "count":4,
     "line":"+21 to all Attributes",
+    "names":["Str","Dex","Int","All"],
     "parsed":true
   },{
     "count":2,
     "line":"Adds 40 to 60 Physical Damage to Attacks",
+    "names":["PhysicalMin","PhysicalMax"],
     "parsed":true
   },{
     "count":1,
     "line":"+122% to Melee Critical Strike Multiplier",
+    "names":["CritMultiplier"],
     "parsed":true
   },{
     "count":1,
     "line":"107% increased Armour",
+    "names":["Armour"],
     "parsed":true
   },{
     "count":1,
     "line":"41% increased Physical Damage taken",
+    "names":["PhysicalDamageTaken"],
     "parsed":true
   },{
     "count":1,
     "line":"+41 to Armour",
+    "names":["Armour"],
     "parsed":true
   },{
     "count":1,
     "line":"36% increased Armour",
+    "names":["Armour"],
     "parsed":true
   },{
     "count":1,
     "line":"+13% to Cold Resistance",
+    "names":["ColdResist"],
     "parsed":true
   },{
     "count":1,
     "line":"4% additional Physical Damage Reduction",
+    "names":["PhysicalDamageReduction"],
     "parsed":true
   },{
     "count":1,
     "line":"55% reduced Amount Recovered",
+    "names":["FlaskRecovery"],
     "parsed":true
   },{
     "count":1,
     "line":"Recover an additional 26% of Flask's Life Recovery Amount over 10 seconds if used while not on Full Life",
+    "names":["FlaskAdditionalLifeRecovery"],
     "parsed":true
   },{
     "count":2,
     "line":"Adds 7 to 15 Physical Damage to Attacks",
+    "names":["PhysicalMin","PhysicalMax"],
     "parsed":true
   },{
     "count":1,
     "line":"+11% to all Elemental Resistances",
+    "names":["ElementalResist"],
     "parsed":true
   },{
     "count":1,
     "line":"+34% to Fire Resistance",
+    "names":["FireResist"],
     "parsed":true
   },{
     "count":1,
     "line":"27% increased Charge Recovery",
+    "names":["FlaskChargeRecovery"],
     "parsed":true
   },{
     "count":1,
     "line":"51% increased Evasion Rating during Flask effect",
+    "names":["Evasion"],
     "parsed":true
   },{
     "count":1,
     "line":"36% reduced Duration",
+    "names":["Duration"],
     "parsed":true
   },{
     "count":1,
     "line":"23% increased Damage while Leeching Mana",
+    "names":["Damage"],
     "parsed":true
   },{
     "count":1,
     "line":"12% increased Global Physical Damage",
+    "names":["PhysicalDamage"],
     "parsed":true
   },{
     "count":1,
     "line":"+15% to Global Critical Strike Multiplier",
+    "names":["CritMultiplier"],
     "parsed":true
   },{
     "count":4,
     "line":"+16 to all Attributes",
+    "names":["Str","Dex","Int","All"],
     "parsed":true
   },{
     "count":2,
     "line":"Adds 10 to 14 Physical Damage",
+    "names":["PhysicalMin","PhysicalMax"],
     "parsed":true
   },{
     "count":1,
     "line":"+353 to Armour",
+    "names":["Armour"],
     "parsed":true
   },{
     "count":1,
     "line":"Herald of Purity has 53% increased Buff Effect",
+    "names":["BuffEffect"],
     "parsed":true
   },{
     "count":1,
     "line":"43% increased Physical Damage while affected by Herald of Purity",
+    "names":["PhysicalDamage"],
     "parsed":true
   },{
     "count":1,
     "line":"Quality does not increase Defences",
+    "names":["AlternateQualityArmour"],
     "parsed":true
   },{
     "count":1,
     "line":"Grants +1 to Maximum Life per 2% Quality",
+    "names":["Life"],
     "parsed":true
   },{
     "count":1,
     "line":"+12% to all Elemental Resistances",
+    "names":["ElementalResist"],
     "parsed":true
   },{
     "count":0,
     "extra":"Avoid Interruption from Stuns while using Socketed Attack Skills ",
     "line":"Avoid Interruption from Stuns while using Socketed Attack Skills",
+    "names":[],
     "parsed":false
   },{
     "count":0,
     "extra":"Avoid Interruption from Stuns while using Socketed Attack Skills Socketed Attacks have -20 to Total Mana Cost ",
     "line":"Avoid Interruption from Stuns while using Socketed Attack Skills Socketed Attacks have -20 to Total Mana Cost",
+    "names":[],
     "parsed":false
   },{
     "count":1,
     "line":"Socketed Attacks have -20 to Total Mana Cost",
+    "names":["ExtraSkillMod"],
     "parsed":true
   },{
     "count":1,
     "line":"10% increased maximum Life",
+    "names":["Life"],
     "parsed":true
   },{
     "count":1,
     "line":"10% increased maximum Mana",
+    "names":["Mana"],
     "parsed":true
   },{
     "count":1,
     "line":"Attacks have +1.97% to Critical Strike Chance",
+    "names":["CritChance"],
     "parsed":true
   },{
     "count":1,
     "line":"+75 to maximum Life",
+    "names":["Life"],
     "parsed":true
   },{
     "count":1,
     "line":"28% increased Stun Duration on Enemies",
+    "names":["EnemyStunDuration"],
     "parsed":true
   },{
     "count":1,
     "line":"+39 to Strength",
+    "names":["Str"],
     "parsed":true
   },{
     "count":1,
     "line":"42% more Maximum Physical Attack Damage",
+    "names":["MaxPhysicalDamage"],
     "parsed":true
   },{
     "count":1,
     "line":"36% less Minimum Physical Attack Damage",
+    "names":["MinPhysicalDamage"],
     "parsed":true
   },{
     "count":2,
     "line":"Adds 1 to 22 Physical Damage to Attacks",
+    "names":["PhysicalMin","PhysicalMax"],
     "parsed":true
   },{
     "count":1,
     "extra":"  when you Stun an Enemy ",
     "line":"Gain 50 Life when you Stun an Enemy",
+    "names":["Life"],
     "parsed":true
   },{
     "count":3,
     "line":"+24 to Dexterity and Intelligence",
+    "names":["Dex","Int","DexInt"],
     "parsed":true
   },{
     "count":1,
     "line":"19% increased Melee Damage",
+    "names":["Damage"],
     "parsed":true
   },{
     "count":1,
     "line":"+41% to Global Critical Strike Multiplier",
+    "names":["CritMultiplier"],
     "parsed":true
   },{
     "count":1,
     "line":"+105 to maximum Life",
+    "names":["Life"],
     "parsed":true
   },{
     "count":2,
     "line":"+2 to Melee Strike Range",
+    "names":["MeleeWeaponRange","UnarmedRange"],
     "parsed":true
   },{
     "count":1,
     "line":"Pride has 60% increased Mana Reservation Efficiency",
+    "names":["ManaReservationEfficiency"],
     "parsed":true
   },{
     "count":1,
     "line":"43% increased Damage while Leeching",
+    "names":["Damage"],
     "parsed":true
   },{
     "count":1,
     "line":"Blood and Sand has 40% increased Buff Effect",
+    "names":["BuffEffect"],
     "parsed":true
   },{
     "count":4,
     "line":"+23 to all Attributes",
+    "names":["Str","Dex","Int","All"],
     "parsed":true
   },{
     "count":1,
     "line":"+125% to Melee Critical Strike Multiplier",
+    "names":["CritMultiplier"],
     "parsed":true
   },{
     "count":1,
     "line":"120% increased Armour",
+    "names":["Armour"],
     "parsed":true
   },{
     "count":1,
     "line":"42% increased Physical Damage taken",
+    "names":["PhysicalDamageTaken"],
     "parsed":true
   },{
     "count":1,
     "line":"55% increased Recovery rate",
+    "names":["FlaskRecoveryRate"],
     "parsed":true
   },{
     "count":2,
     "line":"16% increased Attack and Cast Speed if you've Killed Recently",
+    "names":["Speed","Speed"],
     "parsed":true
   },{
     "count":2,
     "line":"+11% to Fire and Cold Resistances",
+    "names":["FireResist","ColdResist"],
     "parsed":true
   },{
     "count":1,
     "line":"+86 to maximum Life",
+    "names":["Life"],
     "parsed":true
   },{
     "count":1,
     "line":"Gain 8% of Physical Damage as Extra Cold Damage",
+    "names":["PhysicalDamageGainAsCold"],
     "parsed":true
   },{
     "count":2,
     "line":"9% increased Attack, Cast and Movement Speed while you have Onslaught",
+    "names":["Speed","MovementSpeed"],
     "parsed":true
   },{
     "count":1,
     "line":"22% increased Effect of Tailwind on you",
+    "names":["TailwindEffectOnSelf"],
     "parsed":true
   },{
     "count":1,
     "line":"9% increased Movement Speed if you haven't been Hit Recently",
+    "names":["MovementSpeed"],
     "parsed":true
   },{
     "count":0,
     "extra":"Your Meteor Towers deal 25% increased Damage ",
     "line":"Your Meteor Towers deal 25% increased Damage",
+    "names":[],
     "parsed":false
   },{
     "count":0,
     "extra":"Your Meteor Towers deal 25% increased Damage +19% to Cold and Lightning Resistances ",
     "line":"Your Meteor Towers deal 25% increased Damage +19% to Cold and Lightning Resistances",
+    "names":[],
     "parsed":false
   },{
     "count":2,
     "line":"+19% to Cold and Lightning Resistances",
+    "names":["ColdResist","LightningResist"],
     "parsed":true
   },{
     "count":1,
     "line":"25% increased Melee Damage",
+    "names":["Damage"],
     "parsed":true
   },{
     "count":2,
     "line":"Curse Enemies with Vulnerability on Hit, with 32% increased Effect",
+    "names":["ExtraSkill","CurseEffect"],
     "parsed":true
   },{
     "count":0,
     "extra":"Used when Charges reach full ",
     "line":"Used when Charges reach full",
+    "names":[],
     "parsed":false
   },{
     "count":0,
     "extra":"Used when Charges reach full 40% increased Duration ",
     "line":"Used when Charges reach full 40% increased Duration",
+    "names":[],
     "parsed":false
   },{
     "count":2,
     "line":"Immunity to Freeze and Chill during Flask Effect",
+    "names":["FreezeImmune","ChillImmune"],
     "parsed":true
   },{
     "count":1,
     "line":"69% increased effect",
+    "names":["LocalEffect"],
     "parsed":true
   },{
     "count":0,
     "extra":"Gains no Charges during Flask Effect ",
     "line":"Gains no Charges during Flask Effect",
+    "names":[],
     "parsed":false
   },{
     "count":0,
     "extra":"Gains no Charges during Flask Effect Creates Consecrated Ground on Use ",
     "line":"Gains no Charges during Flask Effect Creates Consecrated Ground on Use",
+    "names":[],
     "parsed":false
   },{
     "count":1,
     "line":"15% reduced Duration",
+    "names":["Duration"],
     "parsed":true
   },{
     "count":0,
     "extra":"Consecrated Ground created by this Flask has Tripled Radius Consecrated Ground created during Effect applies 9% increased Damage taken to Enemies ",
     "line":"Consecrated Ground created by this Flask has Tripled Radius Consecrated Ground created during Effect applies 9% increased Damage taken to Enemies",
+    "names":[],
     "parsed":false
   },{
     "count":1,
     "line":"Consecrated Ground created during Effect applies 9% increased Damage taken to Enemies",
+    "names":["EnemyModifier"],
     "parsed":true
   },{
     "count":1,
     "line":"143% increased Critical Strike Chance against Enemies on Consecrated Ground during Flask effect",
+    "names":["CritChance"],
     "parsed":true
   },{
     "count":0,
     "extra":"Has no Green Sockets ",
     "line":"Has no Green Sockets",
+    "names":[],
     "parsed":false
   },{
     "count":0,
     "extra":"Has no Green Sockets Physical Modifiers have 8% increased Effect ",
     "line":"Has no Green Sockets Physical Modifiers have 8% increased Effect",
+    "names":[],
     "parsed":false
   },{
     "count":0,
     "extra":"Physical Modifiers have 8% increased Effect ",
     "line":"Physical Modifiers have 8% increased Effect",
+    "names":[],
     "parsed":false
   },{
     "count":0,
     "extra":"Physical Modifiers have 8% increased Effect Item sells for much more to vendors ",
     "line":"Physical Modifiers have 8% increased Effect Item sells for much more to vendors",
+    "names":[],
     "parsed":false
   },{
     "count":0,
     "extra":"Item sells for much more to vendors ",
     "line":"Item sells for much more to vendors",
+    "names":[],
     "parsed":false
   },{
     "count":0,
     "extra":"Item sells for much more to vendors +1 to Maximum Power Charges and Maximum Endurance Charges ",
     "line":"Item sells for much more to vendors +1 to Maximum Power Charges and Maximum Endurance Charges",
+    "names":[],
     "parsed":false
   },{
     "count":2,
     "line":"+1 to Maximum Power Charges and Maximum Endurance Charges",
+    "names":["PowerChargesMax","EnduranceChargesMax"],
     "parsed":true
   },{
     "count":1,
     "line":"278% increased Physical Damage",
+    "names":["PhysicalDamage"],
     "parsed":true
   },{
     "count":1,
     "line":"+207 to Accuracy Rating",
+    "names":["Accuracy"],
     "parsed":true
   },{
     "count":2,
     "line":"Adds 50 to 90 Physical Damage",
+    "names":["PhysicalMin","PhysicalMax"],
     "parsed":true
   },{
     "count":1,
     "line":"30% increased Attack Speed",
+    "names":["Speed"],
     "parsed":true
   },{
     "count":1,
     "line":"+60% Critical Strike Multiplier while a Rare or Unique Enemy is Nearby",
+    "names":["CritMultiplier"],
     "parsed":true
   },{
     "count":3,
     "line":"+23 to Strength and Intelligence",
+    "names":["Str","Int","StrInt"],
     "parsed":true
   },{
     "count":1,
     "line":"25% increased Critical Strike Chance",
+    "names":["CritChance"],
     "parsed":true
   },{
     "count":1,
     "line":"7% increased Effect of your Marks",
+    "names":["CurseEffect"],
     "parsed":true
   },{
     "count":1,
     "line":"+28 to Dexterity",
+    "names":["Dex"],
     "parsed":true
   },{
     "count":2,
     "line":"Adds 6 to 11 Physical Damage to Attacks",
+    "names":["PhysicalMin","PhysicalMax"],
     "parsed":true
   },{
     "count":1,
     "line":"36% increased Damage while Leeching",
+    "names":["Damage"],
     "parsed":true
   },{
     "count":1,
     "line":"+90 to Maximum Charges",
+    "names":["FlaskCharges"],
     "parsed":true
   },{
     "count":0,
     "extra":"Recharges 5 Charges when you Consume an Ignited corpse ",
     "line":"Recharges 5 Charges when you Consume an Ignited corpse",
+    "names":[],
     "parsed":false
   },{
     "count":0,
     "extra":"Recharges 5 Charges when you Consume an Ignited corpse 200% increased Charges per use ",
     "line":"Recharges 5 Charges when you Consume an Ignited corpse 200% increased Charges per use",
+    "names":[],
     "parsed":false
   },{
     "count":1,
     "line":"200% increased Charges per use",
+    "names":["FlaskChargesUsed"],
     "parsed":true
   },{
     "count":1,
     "line":"Regenerate 3% of Life per second during Flask Effect",
+    "names":["LifeRegenPercent"],
     "parsed":true
   },{
     "count":1,
     "line":"Enemies Ignited by you during Flask Effect take 9% increased Damage",
+    "names":["EnemyModifier"],
     "parsed":true
   },{
     "count":1,
     "line":"Recover 3% of Life when you Kill an Enemy during Flask Effect",
+    "names":["LifeOnKill"],
     "parsed":true
   },{
     "count":1,
     "line":"Adds 8 Passive Skills",
+    "names":["JewelData"],
     "parsed":true
   },{
     "count":1,
     "line":"2 Added Passive Skills are Jewel Sockets",
+    "names":["JewelData"],
     "parsed":true
   },{
     "count":0,
     "extra":"Added Small Passive Skills grant: Staff Attacks deal 12% increased Damage with Hits and Ailments ",
     "line":"Added Small Passive Skills grant: Staff Attacks deal 12% increased Damage with Hits and Ailments",
+    "names":[],
     "parsed":false
   },{
     "count":1,
     "line":"Added Small Passive Skills grant: Staff Attacks deal 12% increased Damage with Hits and Ailments Added Small Passive Skills grant: Mace or Sceptre Attacks deal 12% increased Damage with Hits and Ailments",
+    "names":["JewelData"],
     "parsed":true
   },{
     "count":1,
     "line":"Added Small Passive Skills also grant: 1% increased Attack Speed",
+    "names":["AddToClusterJewelNode"],
     "parsed":true
   },{
     "count":1,
     "line":"1 Added Passive Skill is Feed the Fury",
+    "names":["ClusterJewelNotable"],
     "parsed":true
   },{
     "count":1,
     "line":"1 Added Passive Skill is Martial Prowess",
+    "names":["ClusterJewelNotable"],
     "parsed":true
   },{
     "count":1,
     "line":"1 Added Passive Skill is Weight Advantage",
+    "names":["ClusterJewelNotable"],
     "parsed":true
   },{
     "count":1,
     "line":"Adds 5 Passive Skills",
+    "names":["JewelData"],
     "parsed":true
   },{
     "count":1,
     "line":"1 Added Passive Skill is a Jewel Socket",
+    "names":["JewelData"],
     "parsed":true
   },{
     "count":1,
     "line":"Added Small Passive Skills grant: 15% increased Critical Strike Chance",
+    "names":["JewelData"],
     "parsed":true
   },{
     "count":1,
     "line":"Added Small Passive Skills also grant: +4 to All Attributes",
+    "names":["AddToClusterJewelNode"],
     "parsed":true
   },{
     "count":1,
     "line":"Added Small Passive Skills also grant: +2 to Dexterity",
+    "names":["AddToClusterJewelNode"],
     "parsed":true
   },{
     "count":1,
     "line":"1 Added Passive Skill is Basics of Pain",
+    "names":["ClusterJewelNotable"],
     "parsed":true
   },{
     "count":1,
     "line":"1 Added Passive Skill is Pressure Points",
+    "names":["ClusterJewelNotable"],
     "parsed":true
   },{
     "count":1,
     "line":"+18% to Critical Strike Multiplier with Two Handed Melee Weapons",
+    "names":["CritMultiplier"],
     "parsed":true
   },{
     "count":1,
     "line":"+12% to Global Critical Strike Multiplier",
+    "names":["CritMultiplier"],
     "parsed":true
   },{
     "count":1,
     "line":"+15% to Melee Critical Strike Multiplier",
+    "names":["CritMultiplier"],
     "parsed":true
   },{
     "count":1,
     "line":"Added Small Passive Skills also grant: +8 to Dexterity",
+    "names":["AddToClusterJewelNode"],
     "parsed":true
   },{
     "count":1,
     "line":"Allocates Inspirational if you have the matching modifier on Forbidden Flame",
+    "names":["GrantedAscendancyNode"],
     "parsed":true
   },{
     "count":1,
     "line":"Regenerate 0.1% of Life per second",
+    "names":["LifeRegenPercent"],
     "parsed":true
   },{
     "count":1,
     "line":"1 Added Passive Skill is Overlord",
+    "names":["ClusterJewelNotable"],
     "parsed":true
   },{
     "count":1,
     "line":"Allocates Inspirational if you have the matching modifier on Forbidden Flesh",
+    "names":["GrantedAscendancyNode"],
     "parsed":true
   },{
     "count":1,
     "line":"5% increased maximum Life",
+    "names":["Life"],
     "parsed":true
   },{
     "count":1,
     "line":"59% increased Attack Damage while affected by Precision",
+    "names":["Damage"],
     "parsed":true
   },{
     "count":1,
     "line":"1.17% of Fire Damage Leeched as Life while affected by Anger",
+    "names":["FireDamageLifeLeech"],
     "parsed":true
   },{
     "count":1,
     "line":"10% chance to deal Double Damage while using Pride",
+    "names":["DoubleDamageChance"],
     "parsed":true
   },{
     "count":1,
     "line":"16% increased Fire Damage",
+    "names":["FireDamage"],
     "parsed":true
   },{
     "count":1,
     "line":"7% increased Attack Speed with Maces or Sceptres",
+    "names":["Speed"],
     "parsed":true
   },{
     "count":1,
     "line":"11% increased Area Damage",
+    "names":["Damage"],
     "parsed":true
   },{
     "count":1,
     "line":"8% increased Attack Speed with Maces or Sceptres",
+    "names":["Speed"],
     "parsed":true
   },{
     "count":1,
     "line":"+29 to maximum Life",
+    "names":["Life"],
     "parsed":true
   },{
     "count":1,
     "line":"+17 to Strength",
+    "names":["Str"],
     "parsed":true
   },{
     "count":1,
     "line":"Regenerate 0.2% of Life per second per Endurance Charge",
+    "names":["LifeRegenPercent"],
     "parsed":true
   },{
     "count":1,
     "line":"+4 Life gained for each Enemy hit by your Attacks",
+    "names":["LifeOnHit"],
     "parsed":true
   },{
     "count":1,
     "line":"+1 to Maximum Endurance Charges",
+    "names":["EnduranceChargesMax"],
     "parsed":true
   },{
     "count":1,
     "line":"2% increased Area of Effect per Endurance Charge",
+    "names":["AreaOfEffect"],
     "parsed":true
   },{
     "count":1,
     "line":"+19 to Strength",
+    "names":["Str"],
     "parsed":true
   },{
     "count":1,
     "line":"+3 Life gained for each Enemy hit by your Attacks",
+    "names":["LifeOnHit"],
     "parsed":true
   },{
     "count":1,
     "line":"13% increased Attack Speed",
+    "names":["Speed"],
     "parsed":true
   },{
     "count":1,
     "line":"134% increased Armour",
+    "names":["Armour"],
     "parsed":true
   },{
     "count":1,
     "line":"50% increased Stun Duration on you",
+    "names":["StunDuration"],
     "parsed":true
   },{
     "count":1,
     "line":"4% increased Melee Damage per Endurance Charge",
+    "names":["Damage"],
     "parsed":true
   },{
     "count":1,
     "line":"You cannot be Shocked while at maximum Endurance Charges",
+    "names":["ShockImmune"],
     "parsed":true
   },{
     "count":1,
     "line":"200% increased Armour and Energy Shield",
+    "names":["ArmourAndEnergyShield"],
     "parsed":true
   },{
     "count":1,
     "line":"+14% to all Elemental Resistances",
+    "names":["ElementalResist"],
     "parsed":true
   },{
     "count":1,
     "line":"50% increased Elemental Ailment Duration on you",
+    "names":["SelfElementalAilmentDuration"],
     "parsed":true
   },{
     "count":1,
     "line":"Bleeding cannot be inflicted on you",
+    "names":["BleedImmune"],
     "parsed":true
   },{
     "count":1,
     "line":"Prevent +3% of Suppressed Spell Damage",
+    "names":["SpellSuppressionEffect"],
     "parsed":true
   },{
     "count":1,
     "line":"+983 to Accuracy Rating",
+    "names":["Accuracy"],
     "parsed":true
   },{
     "count":1,
     "line":"+871 to Evasion Rating",
+    "names":["Evasion"],
     "parsed":true
   },{
     "count":2,
     "line":"Cannot be Blinded",
+    "names":["Condition:CannotBeBlinded","BlindImmune"],
     "parsed":true
   },{
     "count":1,
     "line":"+32 to Evasion Rating",
+    "names":["Evasion"],
     "parsed":true
   },{
     "count":1,
     "line":"+38% to all Elemental Resistances",
+    "names":["ElementalResist"],
     "parsed":true
   },{
     "count":1,
     "line":"45% reduced Effect of Curses on you during Flask Effect",
+    "names":["CurseEffectOnSelf"],
     "parsed":true
   },{
     "count":1,
     "line":"24% increased Global Physical Damage",
+    "names":["PhysicalDamage"],
     "parsed":true
   },{
     "count":1,
     "line":"You take 30% reduced Extra Damage from Critical Strikes",
+    "names":["ReduceCritExtraDamage"],
     "parsed":true
   },{
     "count":1,
     "line":"+32 to maximum Life",
+    "names":["Life"],
     "parsed":true
   },{
     "count":1,
     "line":"Nearby Enemies are Intimidated",
+    "names":["EnemyModifier"],
     "parsed":true
   },{
     "count":2,
     "line":"Adds 57 to 112 Physical Damage",
+    "names":["PhysicalMin","PhysicalMax"],
     "parsed":true
   },{
     "count":1,
     "line":"Gain 38% of Physical Attack Damage as Extra Fire Damage",
+    "names":["PhysicalDamageGainAsFire"],
     "parsed":true
   },{
     "count":1,
     "line":"+4% to Chaos Resistance per Endurance Charge",
+    "names":["ChaosResist"],
     "parsed":true
   },{
     "count":1,
     "line":"1% reduced Elemental Damage taken from Hits per Endurance Charge",
+    "names":["ElementalDamageTakenWhenHit"],
     "parsed":true
   },{
     "count":2,
     "line":"Adds 5 to 8 Physical Damage per Endurance Charge",
+    "names":["PhysicalMin","PhysicalMax"],
     "parsed":true
   },{
     "count":1,
     "line":"+500 to Armour per Endurance Charge",
+    "names":["Armour"],
     "parsed":true
   },{
     "count":1,
     "line":"200 Fire Damage taken per second per Endurance Charge if you've been Hit Recently",
+    "names":["FireDegen"],
     "parsed":true
   },{
     "count":2,
     "line":"Adds 50 to 117 Physical Damage",
+    "names":["PhysicalMin","PhysicalMax"],
     "parsed":true
   },{
     "count":1,
     "line":"Gain 39% of Physical Attack Damage as Extra Fire Damage",
+    "names":["PhysicalDamageGainAsFire"],
     "parsed":true
   },{
     "count":1,
     "line":"+3 Life gained for each Enemy hit by Attacks",
+    "names":["LifeOnHit"],
     "parsed":true
   },{
     "count":1,
     "line":"25% increased Attack Speed when on Low Life",
+    "names":["Speed"],
     "parsed":true
   },{
     "count":1,
     "line":"95% increased Physical Damage",
+    "names":["PhysicalDamage"],
     "parsed":true
   },{
     "count":1,
     "line":"100% increased Accuracy Rating when on Low Life",
+    "names":["Accuracy"],
     "parsed":true
   },{
     "count":1,
     "line":"200% increased Damage with Claws while on Low Life",
+    "names":["Damage"],
     "parsed":true
   },{
     "count":1,
     "line":"Deal no Damage when not on Low Life",
+    "names":["DealNoDamage"],
     "parsed":true
   },{
     "count":1,
     "line":"55% increased Critical Strike Chance during Flask Effect",
+    "names":["CritChance"],
     "parsed":true
   },{
     "count":2,
     "line":"Adds 16 to 32 Fire Damage to Attacks",
+    "names":["FireMin","FireMax"],
     "parsed":true
   },{
     "count":1,
     "line":"27% reduced Charges per use",
+    "names":["FlaskChargesUsed"],
     "parsed":true
   },{
     "count":1,
     "line":"12% increased Movement Speed during Flask effect",
+    "names":["MovementSpeed"],
     "parsed":true
   },{
     "count":1,
     "line":"34% increased Duration",
+    "names":["Duration"],
     "parsed":true
   },{
     "count":1,
     "line":"+11% chance to Suppress Spell Damage",
+    "names":["SpellSuppressionChance"],
     "parsed":true
   },{
     "count":1,
     "line":"38% increased Global Accuracy Rating",
+    "names":["Accuracy"],
     "parsed":true
   },{
     "count":1,
     "line":"-15% to Chaos Resistance",
+    "names":["ChaosResist"],
     "parsed":true
   },{
     "count":2,
     "line":"+14% to Fire and Cold Resistances",
+    "names":["FireResist","ColdResist"],
     "parsed":true
   },{
     "count":1,
     "line":"+23 to maximum Energy Shield",
+    "names":["EnergyShield"],
     "parsed":true
   },{
     "count":1,
     "line":"+982 to Accuracy Rating",
+    "names":["Accuracy"],
     "parsed":true
   },{
     "count":1,
     "line":"115% increased Evasion Rating",
+    "names":["Evasion"],
     "parsed":true
   },{
     "count":1,
     "line":"1% increased Projectile Attack Damage per 200 Accuracy Rating",
+    "names":["Damage"],
     "parsed":true
   },{
     "count":1,
     "line":"37% reduced Duration",
+    "names":["Duration"],
     "parsed":true
   },{
     "count":1,
     "line":"49% increased Evasion Rating during Flask effect",
+    "names":["Evasion"],
     "parsed":true
   },{
     "count":1,
     "line":"28% increased Evasion Rating",
+    "names":["Evasion"],
     "parsed":true
   },{
     "count":1,
     "line":"29% increased Elusive Effect",
+    "names":["ElusiveEffect"],
     "parsed":true
   },{
     "count":1,
     "line":"+975 to Accuracy Rating",
+    "names":["Accuracy"],
     "parsed":true
   },{
     "count":1,
     "line":"+656 to Evasion Rating",
+    "names":["Evasion"],
     "parsed":true
   },{
     "count":1,
     "line":"22% increased Global Physical Damage",
+    "names":["PhysicalDamage"],
     "parsed":true
   },{
     "count":1,
     "line":"23% increased Damage",
+    "names":["Damage"],
     "parsed":true
   },{
     "count":1,
     "line":"+22 to maximum Energy Shield",
+    "names":["EnergyShield"],
     "parsed":true
   },{
     "count":1,
     "line":"+46 to maximum Life",
+    "names":["Life"],
     "parsed":true
   },{
     "count":1,
     "line":"+37% to Lightning Resistance",
+    "names":["LightningResist"],
     "parsed":true
   }]

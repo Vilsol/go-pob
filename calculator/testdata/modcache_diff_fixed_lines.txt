@@ -16,7 +16,7 @@ If Amethyst Flask Charges are consumed, 37% of Physical Damage as Extra Chaos Da
 If Diamond Flask Charges are consumed, 250% increased Critical Strike Chance
 Mark Skills Cost no Mana
 Minion Life is increased by their Overcapped Fire Resistance
-Minions gain Added Physical Damage equal to 10% of Maximum Energy Shield on your Equipped Helmet
+Minions gain Added Physical Damage equal to 8% of Maximum Energy Shield on your Equipped Helmet
 Nearby Enemies are Covered in Ash if you haven't moved in the past 2 seconds
 Prevent +15% of Suppressed Spell Damage while on Full Energy Shield
 Prevent +6% of Suppressed Spell Damage while on Full Energy Shield
@@ -80,7 +80,6 @@ Projectiles gain Damage as they travel farther, dealing up to 60% increased Dama
 Unaffected by Curses
 You gain Divinity for 10 seconds on reaching maximum Divine Charges
 Grants Level 20 Shaper's Despair, which will be used by Shaper Memory
-Trigger Level 20 Bone Offering, Flesh Offering or Spirit Offering every 5 seconds
 Grants Level 20 Snipe Skill
 Socketed Vaal Skills require 30% less Souls per Use
 Trigger Level 15 Feast of Flesh every 5 seconds

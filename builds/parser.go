@@ -292,7 +292,7 @@ func EmptyBuild() *pob.PathOfBuilding {
 	}
 }
 
-//pob:block:src/Classes/ConfigTab.lua:837-870,src/Classes/ConfigTab.lua:1289-1295
+//pob:block:src/Classes/ConfigTab.lua:888-921,src/Classes/ConfigTab.lua:1348-1354
 func resolveActiveConfigSet(build *pob.PathOfBuilding) {
 	sets := build.Config.ConfigSets
 	if len(sets) == 0 {

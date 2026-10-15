@@ -292,7 +292,7 @@ func AddGemTooltip(t *ItemTooltip, ctx ItemTooltipContext, gem pob.Gem, display 
 	return addGemTooltip(t, ctx, gem, gemData, row, display, skipRequirements)
 }
 
-//pob:block:src/Classes/ItemsTab.lua:4778-4784
+//pob:block:src/Classes/ItemsTab.lua:4624-4630
 func AddSkillTooltip(t *ItemTooltip, ctx ItemTooltipContext, skillID string, level int) bool {
 	return addGemTooltip(t, ctx, pob.Gem{SkillID: skillID, Level: level, Enabled: true}, nil, raw2.PoBGem{GrantedEffectID: skillID, Tags: map[string]bool{}}, nil, true)
 }
@@ -351,7 +351,7 @@ func addGemTooltip(t *ItemTooltip, ctx ItemTooltipContext, gem pob.Gem, gemData 
 	return true
 }
 
-//pob:src/Classes/SkillsTab.lua:868-909
+//pob:src/Classes/SkillsTab.lua:895-936
 func GemQualityTooltip(gem pob.Gem) []TooltipLine {
 	t := &ItemTooltip{}
 	gemData, row, ok := gemTooltipRow(gem)
@@ -427,7 +427,7 @@ type GemSupportPair struct {
 	Active  int
 }
 
-//pob:block:src/Classes/GemSelectControl.lua:620-627
+//pob:block:src/Classes/GemSelectControl.lua:631-638
 func (env *Environment) GemSupportPairs(group int) []GemSupportPair {
 	if env == nil || env.Build == nil {
 		return nil

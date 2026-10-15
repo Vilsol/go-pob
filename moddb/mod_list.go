@@ -35,7 +35,7 @@ func (m *ModList) modsFor(name string) []mod.Mod {
 	return m.mods
 }
 
-//pob:src/Classes/ModList.lua:19-21
+//pob:src/Classes/ModList.lua:20-25
 func NewModList() *ModList {
 	m := &ModList{
 		ModStore: &ModStore{},
@@ -57,20 +57,20 @@ func (m *ModList) Clone() ModStoreFuncs {
 	return out
 }
 
-//pob:src/Classes/ModList.lua:23-25
+//pob:src/Classes/ModList.lua:27-29
 func (m *ModList) AddMod(newMod mod.Mod) {
 	m.names.add(newMod.Name())
 	m.mods = append(m.mods, newMod)
 }
 
-//pob:src/Classes/ModStore.lua:114-119, src/Classes/ModList.lua:32-46
+//pob:src/Classes/ModStore.lua:125-130, src/Classes/ModList.lua:36-50
 func (m *ModList) ReplaceMod(newMod mod.Mod) {
 	if !m.replaceModInternal(newMod) {
 		m.AddMod(newMod)
 	}
 }
 
-//pob:src/Classes/ModList.lua:32-46
+//pob:src/Classes/ModList.lua:36-50
 func (m *ModList) replaceModInternal(newMod mod.Mod) bool {
 	for i, mo := range m.mods {
 		if mo.Name() == newMod.Name() &&
@@ -93,14 +93,14 @@ func (m *ModList) replaceModInternal(newMod mod.Mod) bool {
 	return false
 }
 
-//pob:src/Classes/ModStore.lua:127-132
+//pob:src/Classes/ModStore.lua:138-143
 func (m *ModList) ConvertMod(oldName string, newMod mod.Mod) {
 	if !m.convertModInternal(oldName, newMod) {
 		m.AddMod(newMod)
 	}
 }
 
-//pob:src/Classes/ModList.lua:54-67
+//pob:src/Classes/ModList.lua:58-71
 func (m *ModList) convertModInternal(oldName string, newMod mod.Mod) bool {
 	for i, cur := range m.mods {
 		if cur.Name() == oldName &&
@@ -134,7 +134,7 @@ func (m *ModList) SetMods(mods []mod.Mod) {
 	}
 }
 
-//pob:src/Classes/ModList.lua:84-90
+//pob:src/Classes/ModList.lua:88-94
 func (m *ModList) AddDB(db *ModList) {
 	if db == nil {
 		return
@@ -146,12 +146,12 @@ func (m *ModList) AddDB(db *ModList) {
 	m.mods = append(m.mods, db.mods...)
 }
 
-//pob:src/Classes/ModList.lua:84-90
+//pob:src/Classes/ModList.lua:88-94
 func (m *ModList) AddList(other *ModList) {
 	m.AddDB(other)
 }
 
-//pob:src/Classes/ModStore.lua:98-100
+//pob:src/Classes/ModStore.lua:109-111
 func (m *ModList) NewMod(name string, modType mod.Type, value float64, source mod.Source, tags ...mod.Tag) {
 	newMod := mod.NewFloat(name, modType, value).Source(source)
 	if len(tags) > 0 {
@@ -160,12 +160,12 @@ func (m *ModList) NewMod(name string, modType mod.Type, value float64, source mo
 	m.AddMod(newMod)
 }
 
-//pob:src/Modules/Common.lua:647-653
+//pob:src/Modules/Common.lua:709-715
 func modScaleRound(v float64) float64 {
 	return math.Floor(float64(v*100)+0.5) / 100
 }
 
-//pob:block:src/Classes/ModStore.lua:57-72
+//pob:block:src/Classes/ModStore.lua:68-83
 func (m *ModList) ScaleAddList(src *ModList, scale float64) {
 	if src == nil {
 		return
@@ -185,7 +185,7 @@ func (m *ModList) ScaleAddList(src *ModList, scale float64) {
 	}
 }
 
-//pob:block:src/Classes/ModStore.lua:46-52
+//pob:block:src/Classes/ModStore.lua:57-63
 func modIsUnscalable(m mod.Mod) bool {
 	for _, raw := range m.Tags() {
 		if tag, ok := raw.(*mod.GlobalEffectTag); ok && tag.UnscalableTag {
@@ -195,7 +195,7 @@ func modIsUnscalable(m mod.Mod) bool {
 	return false
 }
 
-//pob:block:src/Classes/ModStore.lua:48-61
+//pob:block:src/Classes/ModStore.lua:59-72
 func scaleModClone(sm mod.Mod, scale float64) mod.Mod {
 	scaled := sm.Clone()
 	value := scaled.Value()
@@ -219,14 +219,14 @@ func scaleModClone(sm mod.Mod, scale float64) mod.Mod {
 	return scaled
 }
 
-//pob:src/Classes/ModStore.lua:194-205
+//pob:src/Classes/ModStore.lua:218-229
 func (m *ModList) List(cfg *ListCfg, names ...string) []interface{} {
 	result := make([]interface{}, 0)
 	m.ListInternal(m, &result, cfg, names...)
 	return result
 }
 
-//pob:src/Classes/ModList.lua:195-216
+//pob:src/Classes/ModList.lua:199-220
 func (m *ModList) ListInternal(context ModStoreFuncs, result *[]interface{}, cfg *ListCfg, names ...string) {
 	for _, name := range names {
 		for _, mo := range m.modsFor(name) {
@@ -248,12 +248,12 @@ func (m *ModList) ListInternal(context ModStoreFuncs, result *[]interface{}, cfg
 	}
 }
 
-//pob:src/Classes/ModStore.lua:150-159
+//pob:src/Classes/ModStore.lua:165-174
 func (m *ModList) Sum(modType mod.Type, cfg *ListCfg, names ...string) float64 {
 	return m.SumInternal(m, modType, cfg, names...)
 }
 
-//pob:src/Classes/ModList.lua:97-116
+//pob:src/Classes/ModList.lua:101-120
 func (m *ModList) SumInternal(context ModStoreFuncs, modType mod.Type, cfg *ListCfg, names ...string) float64 {
 	result := float64(0)
 
@@ -278,12 +278,12 @@ func (m *ModList) SumInternal(context ModStoreFuncs, modType mod.Type, cfg *List
 	return result
 }
 
-//pob:src/Classes/ModStore.lua:161-170
+//pob:src/Classes/ModStore.lua:179-188
 func (m *ModList) More(cfg *ListCfg, names ...string) float64 {
 	return m.MoreInternal(m, cfg, names...)
 }
 
-//pob:src/Classes/ModList.lua:118-150
+//pob:src/Classes/ModList.lua:122-154
 func (m *ModList) MoreInternal(context ModStoreFuncs, cfg *ListCfg, names ...string) float64 {
 	result := float64(1)
 	modPrecision := 0
@@ -326,12 +326,12 @@ func (m *ModList) MoreInternal(context ModStoreFuncs, cfg *ListCfg, names ...str
 	return result
 }
 
-//pob:src/Classes/ModStore.lua:172-181
+//pob:src/Classes/ModStore.lua:190-199
 func (m *ModList) Flag(cfg *ListCfg, names ...string) bool {
 	return m.FlagInternal(m, cfg, names...)
 }
 
-//pob:src/Classes/ModList.lua:152-171
+//pob:src/Classes/ModList.lua:156-175
 func (m *ModList) FlagInternal(context ModStoreFuncs, cfg *ListCfg, names ...string) bool {
 	for _, mo := range m.modsForAny(names) {
 		if !slices.Contains(names, modName(mo)) {
@@ -356,12 +356,12 @@ func (m *ModList) FlagInternal(context ModStoreFuncs, cfg *ListCfg, names ...str
 	return false
 }
 
-//pob:src/Classes/ModStore.lua:183-192
+//pob:src/Classes/ModStore.lua:204-213
 func (m *ModList) Override(cfg *ListCfg, names ...string) *mod.ModValueMulti {
 	return m.OverrideInternal(m, cfg, names...)
 }
 
-//pob:src/Classes/ModList.lua:173-193
+//pob:src/Classes/ModList.lua:177-197
 func (m *ModList) OverrideInternal(context ModStoreFuncs, cfg *ListCfg, names ...string) *mod.ModValueMulti {
 	for _, name := range names {
 		for _, mo := range m.modsFor(name) {
@@ -389,7 +389,7 @@ func (m *ModList) OverrideInternal(context ModStoreFuncs, cfg *ListCfg, names ..
 	return nil
 }
 
-//pob:src/Classes/ModList.lua:218-239
+//pob:src/Classes/ModList.lua:222-243
 func (m *ModList) TabulateInternal(context ModStoreFuncs, result *[]ModResult, modType mod.Type,
 	cfg *ListCfg, flags mod.MFlag, keywordFlags mod.KeywordFlag, source mod.Source, modNames ...string) {
 
@@ -439,7 +439,7 @@ func (m *ModList) TabulateInternal(context ModStoreFuncs, result *[]ModResult, m
 	}
 }
 
-//pob:src/Classes/ModStore.lua:207-218
+//pob:src/Classes/ModStore.lua:235-246
 func (m *ModList) Tabulate(modType mod.Type, cfg *ListCfg, modNames ...string) []ModResult {
 	var flags *mod.MFlag
 	var keywordFlags *mod.KeywordFlag
@@ -468,7 +468,7 @@ func (m *ModList) Tabulate(modType mod.Type, cfg *ListCfg, modNames ...string) [
 	return results
 }
 
-//pob:src/Classes/ModStore.lua:220-229
+//pob:src/Classes/ModStore.lua:248-257
 func (m *ModList) Max(cfg *ListCfg, modNames ...string) float64 {
 	globalMax := float64(0)
 	for _, value := range m.Tabulate(mod.TypeMAX, cfg, modNames...) {
@@ -483,7 +483,23 @@ func (m *ModList) Max(cfg *ListCfg, modNames ...string) float64 {
 	return globalMax
 }
 
-//pob:src/Classes/ModStore.lua:134-148
+//pob:src/Classes/ModStore.lua:259-268
+func (m *ModList) Min(cfg *ListCfg, modNames ...string) (float64, bool) {
+	var globalMin float64
+	found := false
+	for _, value := range m.Tabulate(mod.TypeMIN, cfg, modNames...) {
+		multi := m.evalMod(value.Mod, cfg)
+		if multi == nil {
+			continue
+		}
+		if val := multi.Float(); !found || val < globalMin {
+			globalMin, found = val, true
+		}
+	}
+	return globalMin, found
+}
+
+//pob:src/Classes/ModStore.lua:145-159
 func (m *ModList) Combine(modType mod.Type, cfg *ListCfg, modNames ...string) *mod.ModValueMulti {
 	switch modType {
 	case mod.TypeMore:
@@ -501,7 +517,7 @@ func (m *ModList) Combine(modType mod.Type, cfg *ListCfg, modNames ...string) *m
 	}
 }
 
-//pob:block:src/Modules/Data.lua:430-548
+//pob:block:src/Modules/Data.lua:436-554
 var highPrecisionMods = map[string]map[mod.Type]int{
 	"CritChance": {mod.TypeBase: 2}, "SelfCritChance": {mod.TypeBase: 2},
 	"LifeRegenPercent": {mod.TypeBase: 2}, "ManaRegenPercent": {mod.TypeBase: 2},

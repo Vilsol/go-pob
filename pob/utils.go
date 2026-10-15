@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-//pob:block:src/Classes/ImportTab.lua:504
+//pob:block:src/Classes/ImportTab.lua:505
 func CompressEncode(xml string) (string, error) {
 	var buf bytes.Buffer
 	encoder := base64.NewEncoder(base64.StdEncoding, &buf)
@@ -30,7 +30,7 @@ func CompressEncode(xml string) (string, error) {
 	return code, nil
 }
 
-//pob:block:src/Classes/ImportTab.lua:631
+//pob:block:src/Classes/ImportTab.lua:632
 func DecodeDecompress(code string) (string, error) {
 	code = strings.ReplaceAll(code, "-", "+")
 	code = strings.ReplaceAll(code, "_", "/")

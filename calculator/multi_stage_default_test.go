@@ -42,7 +42,7 @@ func TestMultiStageSkillsDefaultToMaximumStages(t *testing.T) {
 		if stageName == "" {
 			continue
 		}
-		//pob:src/Modules/CalcActiveSkill.lua:635-641
+		//pob:src/Modules/CalcActiveSkill.lua:645-651
 		if !ms.SkillFlags[SkillFlagMultiStage] {
 			continue
 		}

@@ -1,9 +1,12 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 )
 
@@ -12,16 +15,23 @@ var rfOrder = []string{
 	"item_data", "item_bases", "item_parse", "mod_parse",
 }
 
-var rfFixtures = map[string][]string{
-	"item_tools":   {"{OUT}/item_tools_cases.json", "{OUT}/item_tools_expected.json"},
-	"build_stats":  {"{HERE}/testdata/many-builds", "{OUT}/many_builds_expected.json"},
-	"jewel_radius": {"{OUT}/jewel_radius_expected.json"},
-	"item_modlist": {"{OUT}/item_parse_cases.json", "{OUT}/item_modlist_expected.json"},
-	"item_data":    {"{OUT}/item_parse_cases.json", "{OUT}/item_data_expected.json"},
-	"item_bases":   {"{OUT}/item_bases_cases.json", "{OUT}/item_bases_expected.json"},
-	"item_parse":   {"{OUT}/item_parse_cases.json", "{OUT}/item_parse_expected.json"},
-	"mod_parse":    {"{OUT}/item_parse_cases.json", "{OUT}/mod_parse_expected.json"},
+type rfProbe struct {
+	in  []string
+	out string
 }
+
+var rfFixtures = map[string]rfProbe{
+	"item_tools":   {[]string{"{OUT}/item_tools_cases.json"}, "{OUT}/item_tools_expected.json"},
+	"build_stats":  {[]string{"{HERE}/testdata/many-builds"}, "{OUT}/many_builds_expected.json"},
+	"jewel_radius": {nil, "{OUT}/jewel_radius_expected.json"},
+	"item_modlist": {[]string{"{OUT}/item_parse_cases.json"}, "{OUT}/item_modlist_expected.json"},
+	"item_data":    {[]string{"{OUT}/item_parse_cases.json"}, "{OUT}/item_data_expected.json"},
+	"item_bases":   {[]string{"{OUT}/item_bases_cases.json"}, "{OUT}/item_bases_expected.json"},
+	"item_parse":   {[]string{"{OUT}/item_parse_cases.json"}, "{OUT}/item_parse_expected.json"},
+	"mod_parse":    {[]string{"{OUT}/item_parse_cases.json"}, "{OUT}/mod_parse_expected.json"},
+}
+
+const rfModBrowser = "custom_mod_browser"
 
 func rfFatal(format string, args ...any) int {
 	fmt.Fprintf(os.Stderr, "FATAL: "+format+"\n", args...)
@@ -37,11 +47,11 @@ func rfHere() string {
 		return "."
 	}
 	for dir := wd; ; {
-		if fi, err := os.Stat(pyPathJoin(dir, "scripts", "regen_fixtures.sh")); err == nil && !fi.IsDir() { //nolint:gosec // walking up from the CWD, as the original resolves from BASH_SOURCE
+		if fi, err := os.Stat(pyPathJoin(dir, "oracle", "build_stats.lua")); err == nil && !fi.IsDir() { //nolint:gosec // walking up from the CWD, as the original resolves from BASH_SOURCE
 			return dir
 		}
-		parent := pyPathStr(pyPathJoin(dir, ".."))
-		if parent == dir || dir == "/" {
+		parent := filepath.Dir(dir)
+		if parent == dir {
 			return wd
 		}
 		dir = parent
@@ -86,7 +96,7 @@ func rfApplyMiseLuaEnv(pob string) {
 	}
 }
 
-func rfRun(name, pob, here, luajit string, args []string) bool {
+func rfRun(name, pob, here, luajit string, in []string, out string) bool {
 	fmt.Printf("%-14s ", name)
 	errPath := fmt.Sprintf("/tmp/fx-%s.err", name)
 	ef, err := os.Create(errPath) //nolint:gosec // a fixed diagnostic path, as in the original
@@ -94,11 +104,39 @@ func rfRun(name, pob, here, luajit string, args []string) bool {
 		fmt.Printf("FAILED — %s\n", errPath)
 		return false
 	}
-	probe := append([]string{"-R", luajit, pyPathJoin(here, "oracle", name+".lua")}, args...)
+	stage, err := newLuaStage(here)
+	if err != nil {
+		_ = ef.Close()
+		fmt.Printf("FAILED — %s\n", err)
+		return false
+	}
+	defer stage.remove()
+	bin, err := stage.link("luajit", luajit)
+	if err != nil {
+		_ = ef.Close()
+		fmt.Printf("FAILED — %s\n", err)
+		return false
+	}
+	probe := []string{"-R", bin, stage.path(pyPathJoin("oracle", name+".lua"))}
+	for _, p := range in {
+		staged, err := stage.link(filepath.Base(p), p)
+		if err != nil {
+			_ = ef.Close()
+			fmt.Printf("FAILED — %s\n", err)
+			return false
+		}
+		probe = append(probe, staged)
+	}
+	probe = append(probe, stage.path(filepath.Base(out)))
 	cmd := exec.Command("setarch", probe...) //nolint:gosec,noctx // as in the original
 	cmd.Dir = pyPathJoin(pob, "src")
 	cmd.Stdout, cmd.Stderr = nil, ef
 	runErr := cmd.Run()
+	if b, err := os.ReadFile(stage.path(filepath.Base(out))); err == nil { //nolint:gosec // the stage this run created
+		if err := os.WriteFile(out, b, 0o644); err != nil && runErr == nil { //nolint:gosec // a committed fixture
+			runErr = err
+		}
+	}
 	_ = ef.Close()
 	if runErr == nil {
 		fmt.Println("ok")
@@ -117,6 +155,46 @@ func rfRun(name, pob, here, luajit string, args []string) bool {
 		}
 	}
 	return false
+}
+
+func rfRunModBrowser(pob, here, out string) bool {
+	fmt.Printf("%-14s ", rfModBrowser)
+	tmp, err := os.MkdirTemp("", "fx-mod-browser")
+	if err != nil {
+		fmt.Printf("FAILED — %s\n", err)
+		return false
+	}
+	defer func() { _ = os.RemoveAll(tmp) }()
+	dump := pyPathJoin(tmp, "out.json")
+	r := &rdRun{repo: here, pob: pob}
+	if err := r.runLua("oracle/custom_mod_browser.lua", dump, "", modBrowserSearches...); err != nil {
+		fmt.Printf("FAILED — %s\n", err)
+		return false
+	}
+	var d struct {
+		Searches json.RawMessage `json:"searches"`
+	}
+	b, err := os.ReadFile(dump) //nolint:gosec // this run's temp tree
+	if err == nil {
+		err = json.Unmarshal(b, &d)
+	}
+	if err == nil && len(d.Searches) == 0 {
+		err = fmt.Errorf("%s has no searches", dump)
+	}
+	var buf bytes.Buffer
+	if err == nil {
+		err = json.Indent(&buf, []byte(`{"searches":`+string(d.Searches)+`}`), "", "\t")
+	}
+	if err == nil {
+		buf.WriteByte('\n')
+		err = os.WriteFile(pyPathJoin(out, "custom_mod_browser_search.json"), buf.Bytes(), 0o644) //nolint:gosec // a committed fixture
+	}
+	if err != nil {
+		fmt.Printf("FAILED — %s\n", err)
+		return false
+	}
+	fmt.Println("ok")
+	return true
 }
 
 func regenFixtures(argv []string) int {
@@ -151,17 +229,25 @@ func regenFixtures(argv []string) int {
 
 	fail := 0
 	for _, name := range targets {
+		if name == rfModBrowser {
+			if !rfRunModBrowser(pob, here, out) {
+				fail = 1
+			}
+			continue
+		}
 		spec, ok := rfFixtures[name]
 		if !ok {
 			fmt.Fprintf(os.Stderr, "no such fixture: %s\n", name)
 			return 2
 		}
-		args := make([]string, 0, len(spec))
-		for _, a := range spec {
-			a = strings.ReplaceAll(a, "{OUT}", out)
-			args = append(args, strings.ReplaceAll(a, "{HERE}", here))
+		fill := func(a string) string {
+			return strings.ReplaceAll(strings.ReplaceAll(a, "{OUT}", out), "{HERE}", here)
 		}
-		if !rfRun(name, pob, here, luajit, args) {
+		in := make([]string, 0, len(spec.in))
+		for _, a := range spec.in {
+			in = append(in, fill(a))
+		}
+		if !rfRun(name, pob, here, luajit, in, fill(spec.out)) {
 			fail = 1
 		}
 	}

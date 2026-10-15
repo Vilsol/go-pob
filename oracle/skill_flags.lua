@@ -2,6 +2,7 @@
 local outPath = arg[1]
 assert(outPath, "usage: skill_flags.lua <out.json>")
 
+local loadDataModule = dofile((arg[0]:match("^(.*)[/\\]") or ".") .. "/pob_compat.lua").loadDataModule
 dofile("HeadlessWrapper.lua")
 
 local json = require("dkjson")
@@ -79,7 +80,7 @@ end
 
 local freshSkills = {}
 for _, mod in ipairs(skillFiles) do
-	LoadModule("Data/Skills/" .. mod, freshSkills, makeSkillMod, makeFlagMod, makeSkillDataMod)
+	loadDataModule("Data/Skills/" .. mod, freshSkills, makeSkillMod, makeFlagMod, makeSkillDataMod)
 end
 
 assert(next(freshSkills), "REFUSING: LoadModule produced no skills from src/Data/Skills/*.lua")

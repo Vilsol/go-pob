@@ -23,17 +23,22 @@ export machine
 one() {
 	n=${1%.xml}
 	w="$out/.work/$n"
-	mkdir -p "$w/in" "$w/dump"
-	ln -s "$builds/$n.xml" "$w/in/$n.xml"
+	st=/tmp/gopob-lua-$(od -An -N8 -tx8 /dev/urandom | tr -d ' \n')
+	mkdir -p "$w"
+	mkdir -m 700 "$st" "$st/in" "$st/dump"
+	ln -s "$repo/oracle" "$st/oracle"
+	ln -s "$luajit" "$st/luajit"
+	ln -s "$builds/$n.xml" "$st/in/$n.xml"
 	setarch "$machine" -R unshare -rn -- sh -c \
-		"ip link set lo up; cd '$pob/src' && exec '$luajit' '$repo/oracle/dump_build.lua' '$w/in' '$w/dump'" \
+		"ip link set lo up; cd '$pob/src' && exec '$st/luajit' '$st/oracle/dump_build.lua' '$st/in' '$st/dump'" \
 		>"$w/dump.log" 2>&1 || true
-	if [ -s "$w/dump/$n.json" ]; then
-		mv "$w/dump/$n.json" "$out/$n.json"
+	if [ -s "$st/dump/$n.json" ]; then
+		mv "$st/dump/$n.json" "$out/$n.json"
 		rm -rf "$w"
 	else
 		echo "$n" >>"$out/FAILED"
 	fi
+	rm -rf "$st"
 }
 export -f one
 

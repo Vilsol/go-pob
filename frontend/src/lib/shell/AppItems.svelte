@@ -591,8 +591,8 @@
     rangeLine: async (index, value) => (await syncWrap?.CorruptedRangeLine(text, index, value)) ?? '',
     corruptText: async (source, ids, downside, rolls) => syncWrap?.CorruptItemText(text, source, ids, downside, rolls),
     corruptSort: async (source, modType, ids, stat) => (await syncWrap?.CorruptSortValues(text, source, modType, ids, stat)) ?? [],
-    modCompare: async (modLines) => {
-      const b = await syncWrap?.AddedModCompare(text, modLines, '');
+    modCompare: async (modLines, replaceImplicits) => {
+      const b = await (replaceImplicits ? syncWrap?.ReplacedImplicitsCompare(text, modLines) : syncWrap?.AddedModCompare(text, modLines, ''));
       return b ? stamp({ blocks: [b], calcMs: 0 }) : [];
     },
     implicitChoices: async () => syncWrap?.GetImplicitChoices(text),

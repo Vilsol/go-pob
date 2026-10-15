@@ -4,7 +4,7 @@ import "testing"
 
 // TestItemEnergyShieldHackZeroesIntRequirement: Item.lua:2561-2565 zeroes BOTH the energy shield and the base int requirement on four named uniques.
 //
-//pob:block:src/Classes/Item.lua:2561-2565
+//pob:block:src/Classes/Item.lua:2613-2617
 func TestItemEnergyShieldHackZeroesIntRequirement(t *testing.T) {
 	cases := []struct {
 		name string

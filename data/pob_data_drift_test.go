@@ -408,9 +408,7 @@ func TestPoBDataTableDrift(t *testing.T) {
 
 var uncomparedTables = map[string]string{}
 
-var declaredDataDrift = map[string]string{
-	"modScalability: 3 ours-only [#% increased Toughness of Monsters in Area #% reduced Toughness of Monsters in Area Monsters in Area have increased Toughness and Reward], 0 PoB-only [], 0 rows differ []": "game drift: go-pob-data v0.5.0 derives the table from 3.29.3.3's stat_descriptions, which describes these map stats; the pin's export predates them",
-}
+var declaredDataDrift = map[string]string{}
 
 func miscOurs() map[string]float64 {
 	return map[string]float64{

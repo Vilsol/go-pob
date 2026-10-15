@@ -12,7 +12,7 @@ import (
 	"github.com/Vilsol/go-pob/pob"
 )
 
-//pob:src/Modules/Calcs.lua:176-338
+//pob:src/Modules/Calcs.lua:142-304
 func calcFullDPS(c *Calculator, env *Environment, mode OutputMode, cache *EnvironmentCache, override *CalcOverride, specEnv *calcSpecEnv) (float64, float64, []SkillDPS) {
 	build := c.PoB
 	if build == nil || len(build.Skills.SkillSets) == 0 {
@@ -34,7 +34,7 @@ func calcFullDPS(c *Calculator, env *Environment, mode OutputMode, cache *Enviro
 		skills      = []SkillDPS{}
 	)
 
-	//pob:block:src/Modules/Calcs.lua:177
+	//pob:block:src/Modules/Calcs.lua:143
 	fullEnv, cachedPlayerDB, cachedEnemyDB, cachedMinionDB := initEnvSpec(build, cache, mode, false, override, specEnv)
 	fullEnv.triggerCache = env.triggerCache
 	if specEnv != nil && specEnv.spare != nil {
@@ -77,7 +77,7 @@ func calcFullDPS(c *Calculator, env *Environment, mode OutputMode, cache *Enviro
 		if minion := subEnv.Minion; minion != nil {
 			mout := minion.Output
 			if mout["TotalDPS"] > 0 {
-				//pob:block:src/Modules/Calcs.lua:212-213
+				//pob:block:src/Modules/Calcs.lua:178-179
 				haveMinionName = true
 				minionName := ""
 				if activeSkill.Minion != nil && activeSkill.Minion.MinionData != nil {
@@ -112,7 +112,7 @@ func calcFullDPS(c *Calculator, env *Environment, mode OutputMode, cache *Enviro
 				f.CullingMulti = mout["CullMultiplier"]
 			}
 			// This is a fix to prevent skills such as Absolution or Dominating Blow from being counted multiple times when increasing minions count
-			//pob:block:src/Modules/Calcs.lua:240-245
+			//pob:block:src/Modules/Calcs.lua:206-211
 			if (strings.Contains(skillName, "Absolution") && fullEnv.ModDB.Flag(nil, "Condition:AbsolutionSkillDamageCountedOnce")) ||
 				(strings.Contains(skillName, "Dominating Blow") && fullEnv.ModDB.Flag(nil, "Condition:DominatingBlowSkillDamageCountedOnce")) ||
 				(strings.Contains(skillName, "Holy Strike") && fullEnv.ModDB.Flag(nil, "Condition:HolyStrikeSkillDamageCountedOnce")) {
@@ -133,7 +133,7 @@ func calcFullDPS(c *Calculator, env *Environment, mode OutputMode, cache *Enviro
 			mirageCount *= activeSkillCount
 
 			if mout["TotalDPS"] > 0 {
-				//pob:block:src/Modules/Calcs.lua:251
+				//pob:block:src/Modules/Calcs.lua:217
 				skills = append(skills, SkillDPS{Name: mirage.Name + " (Mirage)", DPS: mout["TotalDPS"], Count: mirageCount, SkillPart: mirage.SkillPartName})
 				combinedDPS += float64(mout["TotalDPS"] * mirageCount)
 			}
@@ -177,7 +177,7 @@ func calcFullDPS(c *Calculator, env *Environment, mode OutputMode, cache *Enviro
 		}
 
 		if out["TotalDPS"] > 0 {
-			//pob:block:src/Modules/Calcs.lua:288
+			//pob:block:src/Modules/Calcs.lua:254
 			skillPart := activeSkill.SkillPartName
 			if haveMinionName && activeSkill.infoMessage2 != "" {
 				skillPart = activeSkill.infoMessage2
@@ -263,7 +263,7 @@ func takeSpareOutput(m *map[string]float64) map[string]float64 {
 	return out
 }
 
-//pob:block:src/Modules/Calcs.lua:327-335
+//pob:block:src/Modules/Calcs.lua:293-301
 func reinitFullDPSEnv(fullEnv *Environment, cache *EnvironmentCache, mode OutputMode, cachedPlayerDB, cachedEnemyDB, cachedMinionDB moddb.ModStoreFuncs) *Environment {
 	next, _, _, _ := initEnvSpec(fullEnv.Build, cache, mode, false, fullEnv.override, &calcSpecEnv{
 		cachedPlayerDB: cachedPlayerDB,
@@ -302,7 +302,7 @@ type fullDPSBuckets struct {
 	causticGroundSource   string
 }
 
-//pob:block:src/Modules/Calcs.lua:340-385
+//pob:block:src/Modules/Calcs.lua:306-351
 func (f fullDPSBuckets) rollUp(combinedDPS float64, skills *[]SkillDPS) (float64, float64) {
 	var totalDotDPS float64
 	if f.BleedDPS > 0 {
@@ -352,7 +352,7 @@ func (f fullDPSBuckets) rollUp(combinedDPS float64, skills *[]SkillDPS) (float64
 	return combinedDPS, totalDotDPS
 }
 
-//pob:src/Modules/Calcs.lua:154-178
+//pob:src/Modules/Calcs.lua:120-144
 func getActiveSkillCount(activeSkill *ActiveSkill) (float64, bool) {
 	socketGroup, ok := activeSkill.SocketGroup.(*pob.Skill)
 	if !ok || socketGroup == nil {
@@ -375,7 +375,7 @@ func getActiveSkillCount(activeSkill *ActiveSkill) (float64, bool) {
 		count = float64(*gem.Count)
 	}
 
-	//pob:block:src/Modules/Data.lua:1078-1081
+	//pob:block:src/Modules/Data.lua:1107-1110
 	var effects []*poe.GrantedEffect
 	if _, bare := resolveGemInstance(*gem); bare != nil {
 		effects = []*poe.GrantedEffect{bare}

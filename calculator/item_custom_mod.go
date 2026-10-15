@@ -9,7 +9,7 @@ import (
 	"github.com/Vilsol/go-pob/data"
 )
 
-//pob:block:src/Modules/Data.lua:1342-1346
+//pob:block:src/Modules/Data.lua:1417-1421
 var rareLikeUniqueCustomSources = map[string]map[string]bool{
 	"dread captain's cutlass": {"ESSENCE": true, "VEILED": true, "CUSTOM": true},
 }
@@ -21,13 +21,13 @@ func supportsCustomModifiers(item *Item) map[string]bool {
 	return rareLikeUniqueCustomSources[luaLower(item.Title)]
 }
 
-//pob:src/Classes/ItemsTab.lua:991-993
+//pob:src/Classes/ItemsTab.lua:997-999
 func addCustomShown(item *Item) bool {
 	return item.Rarity == RarityMagic || item.Rarity == RarityRare || supportsCustomModifiers(item) != nil
 }
 
-//pob:block:src/Classes/ItemsTab.lua:3557-3589
-func customModSources(item *Item) []ImplicitSource {
+//pob:block:src/Classes/ItemsTab.lua:3750-3797
+func customModSources(raw string, item *Item) []ImplicitSource {
 	var out []ImplicitSource
 	t := item.Base.Type
 	if t != "Tincture" && t != "Graft" {
@@ -41,7 +41,8 @@ func customModSources(item *Item) []ImplicitSource {
 			out = append(out, ImplicitSource{"NECROPOLIS", "Necropolis"})
 		}
 		if _, cluster := data.ClusterJewels.Jewels[item.BaseName]; !cluster && t != "Flask" && t != "Graft" {
-			out = append(out, ImplicitSource{"DELVE", "Delve"})
+			out = append(out, ImplicitSource{"FOSSIL", "Fossil"}, ImplicitSource{"DELVE", "Delve Drop-restricted"},
+				ImplicitSource{"INCURSION", "Incursion Drop-restricted"})
 		}
 		if !item.Crafted {
 			out = append(out, ImplicitSource{"PREFIX", "Prefix"}, ImplicitSource{"SUFFIX", "Suffix"})
@@ -50,6 +51,7 @@ func customModSources(item *Item) []ImplicitSource {
 	if applicable := supportsCustomModifiers(item); applicable != nil {
 		out = slices.DeleteFunc(out, func(s ImplicitSource) bool { return !applicable[s.ID] })
 	}
+	out = slices.DeleteFunc(out, func(s ImplicitSource) bool { return len(buildCustomMods(raw, item, s.ID)) == 0 })
 	return append(out, ImplicitSource{"CUSTOM", "Custom"})
 }
 
@@ -66,7 +68,7 @@ type CustomModChoices struct {
 	Mods    map[string][]CustomMod
 }
 
-//pob:src/Classes/Item.lua:1715-1726
+//pob:src/Classes/Item.lua:1754-1765
 func necropolisModSpawnWeight(item *Item, mod *data.AffixMod) int {
 	tags := data.CraftBaseInfo(item.Base.Name).Tags
 	for k, key := range mod.WeightKey {
@@ -90,7 +92,7 @@ func prefixFirst(a, b data.AffixMod, ai, bi string) int {
 	return strings.Compare(ai, bi)
 }
 
-//pob:src/Classes/ItemsTab.lua:3409-3556
+//pob:src/Classes/ItemsTab.lua:3612-3749
 func buildCustomMods(raw string, item *Item, sourceID string) []CustomMod {
 	type entry struct {
 		id    string
@@ -167,7 +169,20 @@ func buildCustomMods(raw string, item *Item, sourceID string) []CustomMod {
 			}
 			return b.Level - a.Level
 		})
-	case "VEILED", "NECROPOLIS", "BEASTCRAFT", "DELVE":
+	//pob:block:src/Classes/ItemsTab.lua:3579-3602,src/Classes/ItemsTab.lua:3704-3709
+	case "DELVE", "INCURSION":
+		base := item.Base
+		subTypeName := ""
+		if base.SubType != "" {
+			subTypeName = base.Type + ": " + base.SubType
+		}
+		for _, d := range data.DropRestricted(sourceID) {
+			if slices.ContainsFunc(d.Categories, func(c string) bool { return c == base.Type || c == subTypeName }) {
+				list = append(list, entry{d.ID, lines(d.AffixMod) + " (" + d.Type + ")", d.AffixMod, "custom", d.ID})
+			}
+		}
+		slices.SortStableFunc(list, func(a, b entry) int { return prefixFirst(a.mod, b.mod, a.order, b.order) })
+	case "VEILED", "NECROPOLIS", "BEASTCRAFT", "FOSSIL":
 		var mods []data.AffixMod
 		switch sourceID {
 		case "VEILED":
@@ -176,7 +191,7 @@ func buildCustomMods(raw string, item *Item, sourceID string) []CustomMod {
 			mods = data.NecropolisMods()
 		case "BEASTCRAFT":
 			mods = data.BeastCraftMods()
-		case "DELVE":
+		case "FOSSIL":
 			mods = itemAffixes(item)
 		}
 		for _, mod := range mods {
@@ -186,8 +201,8 @@ func buildCustomMods(raw string, item *Item, sourceID string) []CustomMod {
 				ok = modSpawnWeight(item, &mod) > 0
 			case "NECROPOLIS":
 				ok = necropolisModSpawnWeight(item, &mod) > 0
-			case "DELVE":
-				//pob:block:src/Classes/Item.lua:1728-1730
+			case "FOSSIL":
+				//pob:block:src/Classes/Item.lua:1767-1769
 				ok = (mod.Affix == "Subterranean" || mod.Affix == "of the Underground") && modSpawnWeight(item, &mod) > 0
 			}
 			if ok {
@@ -208,7 +223,7 @@ func ItemCustomModChoices(raw string) (CustomModChoices, bool) {
 	if item.Base == nil {
 		return CustomModChoices{}, false
 	}
-	out := CustomModChoices{Sources: customModSources(item), Mods: map[string][]CustomMod{}}
+	out := CustomModChoices{Sources: customModSources(raw, item), Mods: map[string][]CustomMod{}}
 	for _, s := range out.Sources {
 		if s.ID != "CUSTOM" {
 			out.Mods[s.ID] = buildCustomMods(raw, item, s.ID)
@@ -242,7 +257,7 @@ func customModLines(m CustomMod, nodes map[string]data.Node) []string {
 	return out
 }
 
-//pob:src/Classes/ItemsTab.lua:3591-3609
+//pob:src/Classes/ItemsTab.lua:3799-3817
 func CustomModText(raw string, sourceID string, modID string, custom string) (string, bool) {
 	item := ParseItem(raw)
 	if item.Base == nil {
@@ -264,7 +279,7 @@ func CustomModText(raw string, sourceID string, modID string, custom string) (st
 	return raw, false
 }
 
-//pob:src/Classes/ItemsTab.lua:3356-3371
+//pob:src/Classes/ItemsTab.lua:3528-3543
 func (m *MiscCalculator) CustomModSortValues(raw string, sourceID string, ids []string, stat string) []float64 {
 	ps, ok := powerStatByName(stat)
 	item := ParseItem(raw)

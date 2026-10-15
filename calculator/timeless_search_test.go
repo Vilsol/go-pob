@@ -9,6 +9,7 @@ import (
 	"os"
 	"reflect"
 	"slices"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -261,7 +262,7 @@ func TestTimelessTradeAndItemAgainstPoB(t *testing.T) {
 					socketLabel = s.Label
 				}
 			}
-			if got := TimelessResultItem(c.Type, c.Conqueror, c.Devotion[0], c.Devotion[1], int(first[0]), first[1], socketLabel); got != c.Item {
+			if got := TimelessResultItem(c.Type, c.Conqueror, c.Devotion[0], c.Devotion[1], int(first[0]), first[1], socketLabel, nil); got != c.Item {
 				t.Errorf("item:\nours    %q\nthe pin %q", got, c.Item)
 			}
 		})
@@ -373,4 +374,51 @@ func timelessNodeUnparsed(id string) bool {
 		}
 	}
 	return false
+}
+
+// TestTimelessResultItemKeepsTheRowsRoll: TimelessJewelListControl.lua:133-139: an "Any" devotion is rolled once per row and the row's jewel keeps it.
+func TestTimelessResultItemKeepsTheRowsRoll(t *testing.T) {
+	seen := map[int]bool{}
+	for range 400 {
+		var rolled [2]int
+		first := TimelessResultItem(4, 1, 1, 1, 5000, 10, "x", &rolled)
+		if rolled[0] < 2 || rolled[0] > 17 || rolled[1] < 2 || rolled[1] > 17 || rolled[0] == rolled[1] {
+			t.Fatalf("rolled %v", rolled)
+		}
+		seen[rolled[1]] = true
+		if again := TimelessResultItem(4, 1, 1, 1, 5000, 10, "x", &rolled); again != first {
+			t.Fatalf("the row's jewel changed between two asks:\n%s\n%s", first, again)
+		}
+	}
+	if !seen[17] {
+		t.Errorf("Mana Cost Efficiency (id 17) is never rolled")
+	}
+}
+
+// TestTimelessSocketJewel: TimelessJewelListControl.lua:340-348: Socket Jewel puts the added jewel in an allocated socket, never in another.
+func TestTimelessSocketJewel(t *testing.T) {
+	initItemsTabData(t)
+	build := loadCorpusBuild(t, "0028-occultist-forbidden-rite-of-soul-sacrifice.xml")
+	tree := specTree()
+	alloc := allocSet(build, tree)
+	free := -1
+	for key, n := range tree.Nodes {
+		id, _ := strconv.Atoi(key)
+		if n.IsJewelSocket != nil && *n.IsJewelSocket && !alloc[int64(id)] && (free == -1 || id < free) {
+			free = id
+		}
+	}
+	if !alloc[61419] || free == -1 {
+		t.Fatalf("REFUSING: 61419 allocated %v, a free socket %d", alloc[61419], free)
+	}
+	id := build.AddItem(TimelessResultItem(4, 1, 2, 3, 5000, 10, "x", nil))
+	if TimelessSocketJewel(build, free, id) || build.SocketedJewel(free) != 0 {
+		t.Errorf("socketed into the unallocated socket %d", free)
+	}
+	if TimelessSocketJewel(build, -1, id) {
+		t.Errorf("socketed for All Sockets")
+	}
+	if !TimelessSocketJewel(build, 61419, id) || build.SocketedJewel(61419) != id {
+		t.Errorf("not socketed into the allocated socket 61419: holds %d, want %d", build.SocketedJewel(61419), id)
+	}
 }

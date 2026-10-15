@@ -34,6 +34,9 @@ var calcsCombatFlags = []struct{ flag, label string }{
 	{"LesserBrutalShrine", "Lesser Brutal Shrine"}, {"LesserImpenetrableShrine", "Lesser Impenetrable Shrine"},
 	{"LesserMassiveShrine", "Lesser Massive Shrine"}, {"LesserReplenishingShrine", "Lesser Replenishing Shrine"},
 	{"LesserResistanceShrine", "Lesser Resistance Shrine"},
+	{"BloodShrineOfRats", "Blood Shrine of Rats"}, {"BloodShrineOfLocusts", "Blood Shrine of Locusts"},
+	{"BloodShrineOfToads", "Blood Shrine of Toads"}, {"BloodShrineOfCrows", "Blood Shrine of Crows"},
+	{"BloodShrineOfBats", "Blood Shrine of Bats"},
 }
 
 var calcsMinionCombatFlags = []struct{ flag, label string }{
@@ -54,7 +57,7 @@ func sortedBuffNames(m map[string]*moddb.ModList) []string {
 	return names
 }
 
-//pob:block:src/Modules/Calcs.lua:634-882
+//pob:block:src/Modules/Calcs.lua:601-864
 func calcsBuffLists(env *Environment, multipliersUsed map[string][]mod.Mod) {
 	output := env.Player.Output
 	var combatList []string

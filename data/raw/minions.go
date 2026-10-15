@@ -23,19 +23,19 @@ package raw
 // no value gate able to say why.
 
 var SkillMinionLists = map[string][]string{
-	// src/Data/Skills/act_str.lua:9
+	// src/Data/Skills/act_str.lua:8
 	"Absolution": {"AbsolutionTemplarJudge", "AbsolutionTemplarJudgeVaal"},
-	// src/Data/Skills/act_str.lua:105
+	// src/Data/Skills/act_str.lua:104
 	"AbsolutionAltX": {"AbsolutionTemplarJudge", "AbsolutionTemplarJudgeVaal"},
-	// src/Data/Skills/act_str.lua:465
+	// src/Data/Skills/act_str.lua:464
 	"AnimateGuardian": {"AnimatedArmour"},
-	// src/Data/Skills/act_str.lua:552
+	// src/Data/Skills/act_str.lua:551
 	"AnimateGuardianAltX": {"AnimatedArmour"},
-	// src/Data/Skills/other.lua:67
+	// src/Data/Skills/other.lua:66
 	"AnimateGuardiansWeapon": {"AnimatedWeapon"},
-	// src/Data/Skills/act_dex.lua:179
+	// src/Data/Skills/act_dex.lua:178
 	"AnimateWeapon": {"AnimatedWeapon"},
-	// src/Data/Skills/act_dex.lua:282
+	// src/Data/Skills/act_dex.lua:281
 	"AnimateWeaponAltX": {"AnimatedWeapon"},
 	// src/Data/Skills/act_dex.lua:379
 	"AnimateWeaponAltY": {"AnimatedWeapon"},
@@ -45,49 +45,49 @@ var SkillMinionLists = map[string][]string{
 	"BlinkArrowAltX": {"ArrowCloneRoA"},
 	// src/Data/Skills/act_dex.lua:3220
 	"BlinkArrowAltY": {"ArrowCloneEle"},
-	// src/Data/Skills/other.lua:722
+	// src/Data/Skills/other.lua:850
 	"CeaselessFleshUnique": {"ShamblingUndead"},
-	// src/Data/Skills/act_str.lua:2933
+	// src/Data/Skills/act_str.lua:2996
 	"DominatingBlow": {"AxisEliteSoldierDominatingBlow", "AxisEliteSoldierDominatingBlowVaal"},
-	// src/Data/Skills/act_str.lua:3025
+	// src/Data/Skills/act_str.lua:3088
 	"DominatingBlowAltX": {"AxisEliteSoldierDominatingBlow", "AxisEliteSoldierDominatingBlowVaal"},
-	// src/Data/Skills/glove.lua:1185
+	// src/Data/Skills/glove.lua:1192
 	"EnchantmentOfReflectionWhenHit": {"Clone"},
-	// src/Data/Skills/glove.lua:1223
+	// src/Data/Skills/glove.lua:1230
 	"EnchantmentOfReflectionWhenHit2": {"Clone"},
-	// src/Data/Skills/glove.lua:1261
+	// src/Data/Skills/glove.lua:1268
 	"EnchantmentOfReflectionWhenHit3": {"Clone"},
-	// src/Data/Skills/glove.lua:1299
+	// src/Data/Skills/glove.lua:1306
 	"EnchantmentOfReflectionWhenHit4": {"Clone"},
-	// src/Data/Skills/glove.lua:1673
+	// src/Data/Skills/glove.lua:1684
 	"EnchantmentOfTheGraveOnKill": {"IcyRagingSpirit"},
-	// src/Data/Skills/glove.lua:1707
+	// src/Data/Skills/glove.lua:1718
 	"EnchantmentOfTheGraveOnKill2": {"IcyRagingSpirit"},
-	// src/Data/Skills/glove.lua:1741
+	// src/Data/Skills/glove.lua:1752
 	"EnchantmentOfTheGraveOnKill3": {"IcyRagingSpirit"},
-	// src/Data/Skills/glove.lua:1775
+	// src/Data/Skills/glove.lua:1786
 	"EnchantmentOfTheGraveOnKill4": {"IcyRagingSpirit"},
-	// src/Data/Skills/act_dex.lua:9329
+	// src/Data/Skills/act_dex.lua:9332
 	"HeraldOfAgony": {"HeraldOfAgonySpiderPlated"},
-	// src/Data/Skills/act_str.lua:5760
+	// src/Data/Skills/act_str.lua:5823
 	"HeraldOfPurity": {"AxisEliteSoldierHeraldOfLight"},
-	// src/Data/Skills/act_str.lua:6207
+	// src/Data/Skills/act_str.lua:6270
 	"HolyStrike": {"HolyStrikeMinion"},
-	// src/Data/Skills/other.lua:2539
+	// src/Data/Skills/other.lua:2667
 	"ManifestDancingDervishes": {"UniqueAnimatedWeapon"},
-	// src/Data/Skills/act_dex.lua:10982
+	// src/Data/Skills/act_dex.lua:10985
 	"MirrorArrow": {"ArrowClone"},
-	// src/Data/Skills/act_dex.lua:11068
+	// src/Data/Skills/act_dex.lua:11071
 	"MirrorArrowAltX": {"ArrowCloneRoA"},
-	// src/Data/Skills/act_dex.lua:11153
+	// src/Data/Skills/act_dex.lua:11156
 	"MirrorArrowAltY": {"ArrowCloneEle"},
-	// src/Data/Skills/other.lua:2684
+	// src/Data/Skills/other.lua:2812
 	"PenanceMark": {"PenanceMarkPhantasm"},
 	// src/Data/Skills/act_int.lua:14998 — the only empty one in src/.
 	"RaiseSpectre": {},
 	// src/Data/Skills/act_int.lua:15078 — the only empty one in src/.
 	"RaiseSpectreAltX": {},
-	// src/Data/Skills/other.lua:3397
+	// src/Data/Skills/other.lua:3525
 	"RaiseSpiders": {"SpiderMinion"},
 	// src/Data/Skills/act_int.lua:15163
 	"RaiseZombie": {"RaisedZombie"},
@@ -95,17 +95,17 @@ var SkillMinionLists = map[string][]string{
 	"RaiseZombieAltX": {"RaisedZombie"},
 	// src/Data/Skills/act_int.lua:15332
 	"RaiseZombieAltY": {"RaisedZombie"},
-	// src/Data/Skills/other.lua:3734
+	// src/Data/Skills/other.lua:3862
 	"SpectralSpirits": {"SummonedEssenceSpirit"},
-	// src/Data/Skills/other.lua:4016
+	// src/Data/Skills/other.lua:4144
 	"SummonAbyssalConstructs": {"AbyssCurseBot", "AbyssDebuffBot"},
-	// src/Data/Skills/other.lua:4043
+	// src/Data/Skills/other.lua:4171
 	"SummonArbalists": {"SummonedArbalists"},
-	// src/Data/Skills/other.lua:4073
+	// src/Data/Skills/other.lua:4201
 	"SummonBeastialRhoa": {"RhoaUniqueSummoned"},
-	// src/Data/Skills/other.lua:4112
+	// src/Data/Skills/other.lua:4240
 	"SummonBeastialSnake": {"SnakeSpitUniqueSummoned"},
-	// src/Data/Skills/other.lua:4152
+	// src/Data/Skills/other.lua:4280
 	"SummonBeastialUrsa": {"DropBearUniqueSummoned"},
 	// src/Data/Skills/act_int.lua:18499
 	"SummonCarrionGolem": {"SummonedCarrionGolem"},
@@ -119,23 +119,23 @@ var SkillMinionLists = map[string][]string{
 	"SummonChaosGolemAltX": {"SummonedChaosGolem"},
 	// src/Data/Skills/act_int.lua:18932
 	"SummonChaosGolemAltY": {"SummonedChaosGolem"},
-	// src/Data/Skills/other.lua:4238
+	// src/Data/Skills/other.lua:4366
 	"SummonElementalRelic": {"GuardianRelicAll"},
-	// src/Data/Skills/act_str.lua:11320
+	// src/Data/Skills/act_str.lua:11383
 	"SummonFlameGolem": {"SummonedFlameGolem"},
-	// src/Data/Skills/act_str.lua:11407
+	// src/Data/Skills/act_str.lua:11470
 	"SummonFlameGolemAltX": {"SummonedFlameGolem"},
-	// src/Data/Skills/act_str.lua:11485
+	// src/Data/Skills/act_str.lua:11548
 	"SummonFlameGolemAltY": {"SummonedFlameGolem"},
 	// src/Data/Skills/act_int.lua:19018
 	"SummonHolyRelic": {"HolyLivingRelic"},
 	// src/Data/Skills/act_int.lua:19105
 	"SummonHolyRelicAltX": {"HolyLivingRelic"},
-	// src/Data/Skills/act_dex.lua:15690
+	// src/Data/Skills/act_dex.lua:15693
 	"SummonIceGolem": {"SummonedIceGolem"},
-	// src/Data/Skills/act_dex.lua:15777
+	// src/Data/Skills/act_dex.lua:15780
 	"SummonIceGolemAltX": {"SummonedIceGolem"},
-	// src/Data/Skills/act_dex.lua:15855
+	// src/Data/Skills/act_dex.lua:15858
 	"SummonIceGolemAltY": {"SummonedIceGolem"},
 	// src/Data/Skills/act_int.lua:19183
 	"SummonLightningGolem": {"SummonedLightningGolem"},
@@ -151,7 +151,7 @@ var SkillMinionLists = map[string][]string{
 	"SummonReaperAltX": {"SummonedReaper"},
 	// src/Data/Skills/act_int.lua:19671
 	"SummonReaperAltY": {"SummonedReaper"},
-	// src/Data/Skills/other.lua:4683
+	// src/Data/Skills/other.lua:4811
 	"SummonSentinelOfRadiance": {"GuardianSentinel"},
 	// src/Data/Skills/act_int.lua:19760
 	"SummonSkeletons": {"RaisedSkeleton", "RaisedSkeletonCaster"},
@@ -161,41 +161,41 @@ var SkillMinionLists = map[string][]string{
 	"SummonSkeletonsAltY": {"RaisedSkeletonCaster"},
 	// src/Data/Skills/act_int.lua:20085
 	"SummonSkitterbots": {"SkitterbotCold", "SkitterbotLightning", "SkitterbotFire"},
-	// src/Data/Skills/other.lua:4724
+	// src/Data/Skills/other.lua:4852
 	"SummonSpectralTiger": {"SummonedSpectralTiger"},
-	// src/Data/Skills/other.lua:4774
+	// src/Data/Skills/other.lua:4902
 	"SummonSpectralWolf": {"SummonedSpectralWolf"},
-	// src/Data/Skills/act_str.lua:11566
+	// src/Data/Skills/act_str.lua:11629
 	"SummonStoneGolem": {"SummonedStoneGolem"},
-	// src/Data/Skills/act_str.lua:11654
+	// src/Data/Skills/act_str.lua:11717
 	"SummonStoneGolemAltX": {"SummonedStoneGolem"},
-	// src/Data/Skills/act_str.lua:11732
+	// src/Data/Skills/act_str.lua:11795
 	"SummonStoneGolemAltY": {"SummonedStoneGolem"},
-	// src/Data/Skills/other.lua:4859
+	// src/Data/Skills/other.lua:4987
 	"SummonVoidSpawn": {"VoidSpawn"},
-	// src/Data/Skills/other.lua:5471
+	// src/Data/Skills/other.lua:5599
 	"TriggerSummonedAncestorAhuana": {"AncestralAhuanaMinion"},
-	// src/Data/Skills/other.lua:5517
+	// src/Data/Skills/other.lua:5645
 	"TriggerSummonedAncestorAkoya": {"AncestralAkoyaMinion"},
-	// src/Data/Skills/other.lua:5564
+	// src/Data/Skills/other.lua:5692
 	"TriggerSummonedAncestorIkiaho": {"AncestralIkiahoMinion"},
-	// src/Data/Skills/other.lua:5610
+	// src/Data/Skills/other.lua:5738
 	"TriggerSummonedAncestorKahuturoa": {"AncestralKahuturoaMinion"},
-	// src/Data/Skills/other.lua:5659
+	// src/Data/Skills/other.lua:5787
 	"TriggerSummonedAncestorKaom": {"AncestralKaomMinion"},
-	// src/Data/Skills/other.lua:5705
+	// src/Data/Skills/other.lua:5833
 	"TriggerSummonedAncestorKiloava": {"AncestralKiloavaMinion"},
-	// src/Data/Skills/other.lua:5756
+	// src/Data/Skills/other.lua:5884
 	"TriggerSummonedAncestorMaata": {"AncestralMaataMinion"},
-	// src/Data/Skills/other.lua:5803
+	// src/Data/Skills/other.lua:5931
 	"TriggerSummonedAncestorRakiata": {"AncestralRakiataMinion"},
-	// src/Data/Skills/other.lua:5849
+	// src/Data/Skills/other.lua:5977
 	"TriggerSummonedAncestorTawhanuku": {"AncestralTawhanukuMinion"},
-	// src/Data/Skills/other.lua:5896
+	// src/Data/Skills/other.lua:6024
 	"TriggerSummonedAncestorUtula": {"AncestralUtulaMinion"},
-	// src/Data/Skills/other.lua:4643
+	// src/Data/Skills/other.lua:4771
 	"TriggeredSummonGhostOnKill": {"SummonedPhantasm"},
-	// src/Data/Skills/sup_int.lua:3270
+	// src/Data/Skills/sup_int.lua:3269
 	"TriggeredSupportHiveborn": {"Hiveborn"},
 	// src/Data/Skills/act_dex.lua:483
 	"VaalAnimateWeapon": {"AnimatedWeapon"},
@@ -207,9 +207,9 @@ var SkillMinionLists = map[string][]string{
 // rather than an active skill: the support only ever supplies the chosen minion type when the
 // supported skill summons nothing itself.
 var SupportAddMinionLists = map[string][]string{
-	// src/Data/Skills/sup_int.lua:6430
+	// src/Data/Skills/sup_int.lua:6429
 	"SupportSummonPhantasm": {"SummonedPhantasm"},
-	// src/Data/Skills/sup_int.lua:4538
+	// src/Data/Skills/sup_int.lua:4537
 	"TriggeredSupportLivingLightning": {"LivingLightningMinion"},
 }
 

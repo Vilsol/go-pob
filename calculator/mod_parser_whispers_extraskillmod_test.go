@@ -9,7 +9,7 @@ import (
 
 // TestMinionWhispersEmitsExtraSkillMod pins ModParser.lua:4477-4480.
 //
-//pob:block:src/Modules/ModParser.lua:4477-4480
+//pob:block:src/Modules/ModParser.lua:4523-4526
 func TestMinionWhispersEmitsExtraSkillMod(t *testing.T) {
 	requireGameData(t, "3.29")
 

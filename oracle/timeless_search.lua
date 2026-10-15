@@ -14,6 +14,8 @@ local cases = {
 		list = "templar_notable_minimum_power_charge, 2\ntotal_devotion, 1\ntemplar_notable_fire_conversion, 1, 0, 1", filter = true, distance = 3, protect = 2 },
 	{ name = "mf-plain", build = "0049-hierophant-spark-of-the-nova-2.xml", type = 4, socket = "jewel", devotion = { 5, 5 }, searchMore = true,
 		list = "total_devotion, 1\ntemplar_notable_arcane_surge, 4" },
+	{ name = "mf-efficiency", build = "0049-hierophant-spark-of-the-nova-2.xml", type = 4, socket = "jewel", devotion = { 15, 17 },
+		list = "total_devotion, 1" },
 	{ name = "br-all", build = "0005-occultist-vaal-double-strike.xml", type = 3, socket = -1,
 		list = "maraketh_notable_add_dexterity, 1\nmaraketh_notable_add_movement_speed, 3\ntotal_dexterity, 0.2", minTotal = 40 },
 	{ name = "eh-filter", build = "0005-occultist-vaal-double-strike.xml", type = 5, socket = 61834, filter = true, distance = 4, conqueror = 2, highlight = { 3, 9 }, realm = 3,
@@ -62,12 +64,15 @@ for _, c in ipairs(cases) do
 	build.treeTab:FindTimelessJewel()
 	local controls = main.popups[1].controls
 	local protected = {}
-	local list = controls.protectAllocatedSelect.list
-	assert(not c.protect or list[1], "REFUSING: " .. c.name .. " has no protectable node")
-	for i = 1, math.min(c.protect or 0, #list) do
-		controls.protectAllocatedSelect:SetSel(i)
-		controls.protectAllocatedButtonAdd.onClick()
-		protected[#protected + 1] = list[i].label
+	assert(not c.protect or controls.protectAllocatedBox1, "REFUSING: " .. c.name .. " has no protectable node")
+	for i = 1, c.protect or 0 do
+		local box = controls["protectAllocatedBox" .. i]
+		if not box then
+			break
+		end
+		box.state = true
+		box.changeFunc(true)
+		protected[#protected + 1] = box.label
 	end
 	controls.searchButton.onClick()
 	local urls = {}

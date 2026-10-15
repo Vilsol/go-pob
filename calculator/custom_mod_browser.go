@@ -17,18 +17,18 @@ var (
 	modBrowserWordRe   = regexp.MustCompile(`[A-Za-z0-9]+`)
 )
 
-//pob:block:src/Classes/ConfigTab.lua:1357-1366
+//pob:block:src/Modules/ConfigModBrowser.lua:39-49
 func modBrowserTemplate(modText string) string {
 	return luaLower(modBrowserNumberRe.ReplaceAllString(modBrowserRangeRe.ReplaceAllString(modText, "${1}#"), "#"))
 }
 
-//pob:block:src/Classes/ConfigTab.lua:1367-1376
+//pob:block:src/Modules/ConfigModBrowser.lua:213-221
 func modBrowserSortKey(modText string) string {
 	key := strings.ReplaceAll(modBrowserTemplate(modText), "#", " ")
 	return strings.Trim(modBrowserNotAlpha.ReplaceAllString(key, " "), luaSpace)
 }
 
-//pob:block:src/Classes/ConfigTab.lua:1377-1394
+//pob:block:src/Modules/ConfigModBrowser.lua:102-110
 func modBrowserLess(a, b string) bool {
 	if ak, bk := modBrowserSortKey(a), modBrowserSortKey(b); ak != bk {
 		return ak < bk
@@ -36,13 +36,10 @@ func modBrowserLess(a, b string) bool {
 	if at, bt := modBrowserTemplate(a), modBrowserTemplate(b); at != bt {
 		return at < bt
 	}
-	if al, bl := luaLower(a), luaLower(b); al != bl {
-		return al < bl
-	}
 	return a < b
 }
 
-//pob:block:src/Classes/ConfigTab.lua:1415-1448
+//pob:block:src/Modules/ConfigModBrowser.lua:5-38
 func modBrowserScore(modText, searchStr string, words []string) int {
 	modLower := luaLower(modText)
 	if strings.Contains(modLower, searchStr) {
@@ -74,7 +71,7 @@ func modBrowserScore(modText, searchStr string, words []string) int {
 	return 0
 }
 
-//pob:block:src/Classes/ConfigTab.lua:1450-1483
+//pob:block:src/Modules/ConfigModBrowser.lua:113-150
 func ModBrowserList(search string) []string {
 	all := data.CustomModBrowserLines()
 	searchStr := strings.Trim(luaLower(search), luaSpace)
@@ -108,13 +105,18 @@ func ModBrowserList(search string) []string {
 	return out
 }
 
-//pob:block:src/Classes/ConfigTab.lua:1496-1505
+//pob:block:src/Modules/ConfigModBrowser.lua:89-90
 func ModBrowserSupported(line string) bool {
 	if line == "" || line == ModBrowserEmpty {
 		return false
 	}
 	entry := ParseMod(line, false)
 	return entry != nil && entry.ModList != nil && entry.Extra == ""
+}
+
+//pob:block:src/Modules/ConfigModBrowser.lua:243-250
+func ModBrowserSources(line string) []string {
+	return data.CustomModBrowserSources(line)
 }
 
 func ModBrowserListFuzzy(search string) []string {
@@ -175,7 +177,7 @@ const (
 	fuzzyBoundary    = 8
 	fuzzyConsecutive = 8
 	fuzzyGapOpen     = 3
-	fuzzyGapExtend   = 1
+	fuzzyGapExtend   = 0
 	fuzzyMinPerByte  = 10
 	fuzzyDropped     = 16
 	fuzzyNone        = -1 << 30
