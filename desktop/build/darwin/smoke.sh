@@ -7,17 +7,21 @@ link=${LINK:-pob://pobbin/h-M3H3It2fDw}
 secs=${SECS:-300}
 work=$(mktemp -d)
 mnt=$work/mnt
+mkdir -p "$HOME/Applications"
+apps=$(mktemp -d "$HOME/Applications/go-pob-smoke.XXXXXX")
+lsregister=/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister
 cleanup() {
 	pkill -x go-pob 2>/dev/null || true
 	hdiutil detach -quiet "$mnt" 2>/dev/null || true
-	rm -rf "$work"
+	"$lsregister" -u "$apps/go-pob.app" 2>/dev/null || true
+	rm -rf "$work" "$apps"
 }
 trap cleanup EXIT
 
 hdiutil attach -quiet -nobrowse -readonly -mountpoint "$mnt" "$dmg"
-cp -R "$mnt/go-pob.app" "$work/"
+cp -R "$mnt/go-pob.app" "$apps/"
 hdiutil detach -quiet "$mnt"
-app=$work/go-pob.app
+app=$apps/go-pob.app
 codesign --verify --strict --verbose=2 "$app"
 codesign -dv "$app" 2>&1 | grep -E '^(Identifier|Format|Signature|TeamIdentifier|Runtime)' || true
 lipo -archs "$app/Contents/MacOS/go-pob"
@@ -69,10 +73,18 @@ echo "exit $code; peak RSS, go-pob + WebKit: $(((peak - base) / 1024)) MB above 
 ((code == 0))
 
 echo "--- $link through Launch Services (Apple Event)"
-/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -f "$app"
+"$lsregister" -f "$app"
 home=$work/home-link
 mkdir -p "$home"
-open --env "HOME=$home" --env "GOPOB_DESKTOP_PROBE=$(probe link)" "$link"
+end=$((SECONDS + 15))
+until open --env "HOME=$home" --env "GOPOB_DESKTOP_PROBE=$(probe link)" "$link"; do
+	if ((SECONDS >= end)); then
+		"$lsregister" -dump | grep -iE 'pob:|go-pob' | head -20 >&2 || true
+		echo "Launch Services never bound pob:// to $app" >&2
+		exit 1
+	fi
+	sleep 1
+done
 end=$((SECONDS + 30))
 until pgrep -x go-pob >/dev/null; do
 	((SECONDS < end)) || { echo "$link launched no go-pob" >&2; exit 1; }
