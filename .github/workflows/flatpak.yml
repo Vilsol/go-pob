@@ -4,20 +4,23 @@ permissions: read-all
 
 on:
   push:
-    branches: [dev, main]
-    tags: ['v*']
+    branches: [dev]
     paths: ['desktop/**', '.github/workflows/flatpak.yml']
   pull_request:
     paths: ['desktop/**', '.github/workflows/flatpak.yml']
   workflow_dispatch:
+  workflow_call:
+    inputs:
+      version:
+        description: The release's version, without the v
+        type: string
+        required: true
 
 jobs:
   flatpak:
     name: Flatpak bundle
     runs-on: ubuntu-24.04
     timeout-minutes: 60
-    permissions:
-      contents: write
     steps:
       - name: Check out code
         uses: actions/checkout@v4
@@ -42,6 +45,15 @@ jobs:
           path: desktop/bin/flatpak-state/downloads
           key: flatpak-sources-${{ hashFiles('desktop/build/flatpak/*-sources.json') }}
 
+      - name: Release in the metainfo
+        if: inputs.version
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          metainfo=(desktop/build/flatpak/*.metainfo.xml)
+          sed -i "s|^  <releases>\$|&\n    <release version=\"$VERSION\" date=\"$(date -u +%F)\"/>|" "${metainfo[0]}"
+          grep -F "<release version=\"$VERSION\"" "${metainfo[0]}"
+
       - name: Build
         run: ./desktop/scripts/flatpak.sh
 
@@ -50,10 +62,6 @@ jobs:
         run: |
           manifest=(desktop/build/flatpak/*.yml)
           id=$(basename "${manifest[0]}" .yml)
-          version=$(sed -n 's/.*<release version="\([^"]*\)".*/\1/p' "desktop/build/flatpak/$id.metainfo.xml" | head -n1)
-          if [[ $GITHUB_REF_TYPE == tag && ${GITHUB_REF_NAME#v} != "$version" ]]; then
-            echo "::warning::the metainfo's newest release is $version, the tag is $GITHUB_REF_NAME: add a <release> for it"
-          fi
           mv "desktop/bin/$id.flatpak" desktop/bin/go-pob-x86_64.flatpak
           echo "file=desktop/bin/go-pob-x86_64.flatpak" >>"$GITHUB_OUTPUT"
 
@@ -62,18 +70,3 @@ jobs:
           name: desktop-flatpak
           path: ${{ steps.bundle.outputs.file }}
           if-no-files-found: error
-
-      - name: Attach to the tag's release
-        if: github.ref_type == 'tag'
-        env:
-          GH_TOKEN: ${{ github.token }}
-          FILE: ${{ steps.bundle.outputs.file }}
-        run: |
-          for _ in $(seq 30); do
-            if gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-              gh release upload "$GITHUB_REF_NAME" "$FILE" --repo "$GITHUB_REPOSITORY" --clobber
-              exit 0
-            fi
-            sleep 30
-          done
-          echo "::notice::no release for $GITHUB_REF_NAME after 15 minutes; the bundle is only the workflow artifact"

@@ -8,6 +8,7 @@
 5. [Setting up a development environment](#setting-up-a-development-environment)
 6. [Testing](#testing)
 7. [Linting](#linting)
+8. [Releasing](#releasing)
 
 ## Reporting bugs
 
@@ -188,3 +189,69 @@ If you are using regex, make sure that you precompile it instead of creating a n
 ### Converting Code from PoB
 
 [CONVERSION_EXAMPLES.md](CONVERSION_EXAMPLES.md)
+## Releasing
+
+Releases are made by `.github/workflows/release.yml` on every push to `main`. [semantic-release](https://semantic-release.gitbook.io)
+(`.releaserc.json`, pinned in `.github/release/`) picks the version from the conventional commit subjects since the last
+`v*` tag. In order:
+
+1. **Version**: `semantic-release --dry-run` works out the next version. Nothing is tagged yet.
+2. **Web**: [pob.gg](https://pob.gg) is built and deployed with that version (shown in About go-pob). A push with
+   nothing to release deploys `<last release>+<short sha>`.
+3. **Desktop** and **Flatpak**: `desktop.yml` and `flatpak.yml`, called with the version, build every package as that
+   version, and `update.json` is signed for it.
+4. **Publish**: semantic-release runs again, tags `vX.Y.Z`, creates the GitHub release with its notes and attaches
+   every package, the `.flatpak` and `update.json`. It refuses any version but the one the packages were built as.
+
+A failed build or deploy stops the run before **Publish**, so nothing is tagged. A push to `dev` deploys
+[dev.pob.gg](https://dev.pob.gg) showing the short commit sha, and never tags.
+
+### Version rules
+
+| commit | release |
+|---|---|
+| `feat:` | minor (0.1.0 → 0.2.0) |
+| `fix:`, `perf:` | patch (0.1.0 → 0.1.1) |
+| breaking (`feat!:`, a `BREAKING CHANGE:` footer) | minor while the version is 0.x |
+| anything else (`chore:`, `docs:`, `ci:`, …) | none |
+
+semantic-release has no 0.x mode, so `.releaserc.json` maps a breaking change to a minor release. To release 1.0.0,
+delete that `releaseRules` entry in the same push as a breaking commit.
+
+### The first release (once)
+
+semantic-release starts at 1.0.0 when it finds no tag; go-pob starts at 0.1.0. Before the first push to `main` that
+should release, tag the repository's first commit `v0.0.0`:
+
+```shell
+git fetch origin main
+git tag v0.0.0 "$(git rev-list --max-parents=0 origin/main)"
+git push origin v0.0.0
+```
+
+The next push to `main` then releases 0.1.0 (the history holds `feat:` commits). Until a `v*` tag exists the release
+workflow fails at **Version** rather than release 1.0.0.
+
+### Secrets and variables
+
+| name | kind | for |
+|---|---|---|
+| `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | secrets | deploying pob.gg and dev.pob.gg |
+| `UPDATE_PRIVATE_KEY` | secret | signing `update.json` (the PEM `wails3 updater genkey` writes). Losing it strands every installed desktop build |
+| `UPDATE_PUBLIC_KEY` | variable | the base64 public key built into release packages. Without both keys, releases ship no `update.json` and no updater |
+| `DESKTOP_WINDOWS`, `DESKTOP_MACOS` | variables | `on` builds the Windows and macOS packages |
+| `PACKAGE_MAINTAINER` | variable | the deb / rpm maintainer (`Name <email>`; default: the repository owner) |
+| `WINDOWS_CERT_PFX`, `WINDOWS_CERT_PASSWORD` | secrets | optional Windows code signing |
+| `MACOS_CERT_P12`, `MACOS_CERT_PASSWORD`, `APPLE_ID`, `APPLE_TEAM_ID`, `APPLE_APP_PASSWORD` | secrets | optional macOS Developer ID signing and notarisation |
+
+The tag and the release are made with the workflow's own `GITHUB_TOKEN`; no personal access token is needed.
+
+### After a release, by hand
+
+- **Flathub**: the first submission is a pull request to [flathub/flathub](https://github.com/flathub/flathub) (branch
+  `new-pr`) with `desktop/build/flatpak/io.github.vilsol.go-pob.yml`, its source switched to `type: git` at the tag and
+  commit, and `go-sources.json` / `node-sources.json` regenerated there (`mise run task -- flatpak-sources`). Later
+  releases are pull requests to `flathub/io.github.vilsol.go-pob` with the new tag, commit and sources. Add the
+  release to the metainfo's `<releases>` in the repository too; CI only adds it to the bundle it builds.
+- **nixpkgs**: `mise run task -- nixpkgs-template VERSION=<x.y.z> HASH=<hash>` renders the package for a pull request to
+  nixpkgs; [`nix/nixpkgs/README.md`](nix/nixpkgs/README.md) has the steps.

@@ -47,7 +47,7 @@
     Promise.all([syncWrap.BuildInfo(), syncWrap.GameDataVersion(), syncWrap.GetTreeVersion()])
       .then(([bi, gameData, tree]) => {
         info = {
-          version: bi?.Main?.Version || '(devel)',
+          version: (import.meta.env.VITE_VERSION as string | undefined) || bi?.Main?.Version || '(devel)',
           go: bi?.GoVersion ?? '',
           gameData,
           tree,

@@ -4,12 +4,20 @@ permissions: read-all
 
 on:
   push:
-    branches: [dev, main]
-    tags: ['v*']
+    branches: [dev]
     paths: ['desktop/**', '.github/workflows/desktop.yml']
   pull_request:
     paths: ['desktop/**', '.github/workflows/desktop.yml']
   workflow_dispatch:
+  workflow_call:
+    inputs:
+      version:
+        description: The release's version, without the v
+        type: string
+        required: true
+
+env:
+  VERSION: ${{ inputs.version || format('0.0.0-ci.{0}', github.run_number) }}
 
 jobs:
   frontend:
@@ -41,7 +49,7 @@ jobs:
         run: |
           GOOS=js GOARCH=wasm go build -trimpath -tags=timetzdata -o frontend/static/go-pob.wasm ./wasm
           gzip -kf9 frontend/static/go-pob.wasm
-          (cd frontend && VITE_DESKTOP=1 pnpm exec vite build --logLevel warn)
+          (cd frontend && VITE_DESKTOP=1 VITE_VERSION=$VERSION pnpm exec vite build --logLevel warn)
           rsync -a --delete --exclude .gitkeep --exclude go-pob.wasm --exclude go-pob.wasm.br --exclude service-worker.js --exclude _headers frontend/build/ desktop/dist/
 
       - uses: actions/upload-artifact@v4
@@ -102,14 +110,9 @@ jobs:
 
       - name: Package
         env:
-          UPDATE_PUBLIC_KEY: ${{ startsWith(github.ref, 'refs/tags/v') && vars.UPDATE_PUBLIC_KEY || '' }}
+          UPDATE_PUBLIC_KEY: ${{ inputs.version && vars.UPDATE_PUBLIC_KEY || '' }}
           MAINTAINER: ${{ vars.PACKAGE_MAINTAINER || github.repository_owner }}
         run: |
-          if [[ $GITHUB_REF == refs/tags/v* ]]; then
-            export VERSION=${GITHUB_REF_NAME#v}
-          else
-            export VERSION=0.0.0-ci.$GITHUB_RUN_NUMBER
-          fi
           if [[ -n $UPDATE_PUBLIC_KEY ]]; then
             export UPDATE_URL="https://github.com/$GITHUB_REPOSITORY/releases/latest/download/update.json"
           fi
@@ -125,13 +128,11 @@ jobs:
           path: ${{ runner.temp }}/release/
           if-no-files-found: error
 
-  release:
-    name: Release
+  update-manifest:
+    name: Update manifest
     needs: [linux, windows, windows-smoke, macos]
-    if: always() && startsWith(github.ref, 'refs/tags/v') && needs.linux.result == 'success' && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
+    if: always() && inputs.version && needs.linux.result == 'success' && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
     runs-on: ubuntu-24.04
-    permissions:
-      contents: write
     env:
       UPDATE_PRIVATE_KEY: ${{ secrets.UPDATE_PRIVATE_KEY }}
       UPDATE_PUBLIC_KEY: ${{ vars.UPDATE_PUBLIC_KEY }}
@@ -153,29 +154,34 @@ jobs:
           merge-multiple: true
           path: release
 
-      - name: Sign the update manifest and publish
+      - name: Sign the update manifest
         if: env.UPDATE_PRIVATE_KEY != '' && env.UPDATE_PUBLIC_KEY != ''
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: |
           export CGO_ENABLED=0
           wails=$(cd desktop && go list -m -f '{{.Version}}' github.com/wailsapp/wails/v3)
           key=$RUNNER_TEMP/update.key
           (umask 077 && printf '%s\n' "$UPDATE_PRIVATE_KEY" >"$key")
-          page="https://github.com/$GITHUB_REPOSITORY/releases/tag/$GITHUB_REF_NAME"
+          tag=v$VERSION
+          page="https://github.com/$GITHUB_REPOSITORY/releases/tag/$tag"
           files=(go-pob-linux-amd64)
           for f in go-pob-windows-amd64.zip go-pob-macos-arm64.zip go-pob-macos-amd64.zip; do
             [[ ! -f release/$f ]] || files+=("$f")
           done
           (cd release && go run "github.com/wailsapp/wails/v3/cmd/wails3@$wails" updater manifest \
-            --version "${GITHUB_REF_NAME#v}" --key "$key" --output update.json \
-            --url-prefix "https://github.com/$GITHUB_REPOSITORY/releases/download/$GITHUB_REF_NAME" "${files[@]}")
+            --version "$VERSION" --key "$key" --output update.json \
+            --url-prefix "https://github.com/$GITHUB_REPOSITORY/releases/download/$tag" "${files[@]}")
           rm -f "$key"
           jq --arg page "$page" '.metadata.page = $page' release/update.json >"$RUNNER_TEMP/update.json"
           mv "$RUNNER_TEMP/update.json" release/update.json
           (cd release && go run "github.com/wailsapp/wails/v3/cmd/wails3@$wails" updater verify \
             --manifest update.json --publickey "$UPDATE_PUBLIC_KEY")
-          gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --title "go-pob $GITHUB_REF_NAME" --generate-notes release/*
+
+      - uses: actions/upload-artifact@v4
+        if: env.UPDATE_PRIVATE_KEY != '' && env.UPDATE_PUBLIC_KEY != ''
+        with:
+          name: desktop-update
+          path: release/update.json
+          if-no-files-found: error
 
   windows:
     name: Windows packages
@@ -186,7 +192,7 @@ jobs:
     env:
       WINDOWS_CERT_PFX_B64: ${{ secrets.WINDOWS_CERT_PFX }}
       WINDOWS_CERT_PASSWORD: ${{ secrets.WINDOWS_CERT_PASSWORD }}
-      UPDATE_PUBLIC_KEY: ${{ startsWith(github.ref, 'refs/tags/v') && vars.UPDATE_PUBLIC_KEY || '' }}
+      UPDATE_PUBLIC_KEY: ${{ inputs.version && vars.UPDATE_PUBLIC_KEY || '' }}
     steps:
       - name: Check out code
         uses: actions/checkout@v4
@@ -211,11 +217,6 @@ jobs:
 
       - name: Package
         run: |
-          if [[ $GITHUB_REF == refs/tags/v* ]]; then
-            export VERSION=${GITHUB_REF_NAME#v}
-          else
-            export VERSION=0.0.0-ci.$GITHUB_RUN_NUMBER
-          fi
           if [[ -n $UPDATE_PUBLIC_KEY ]]; then
             export UPDATE_URL="https://github.com/$GITHUB_REPOSITORY/releases/latest/download/update.json"
           fi
@@ -269,7 +270,7 @@ jobs:
       APPLE_ID: ${{ secrets.APPLE_ID }}
       APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
       APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
-      UPDATE_PUBLIC_KEY: ${{ startsWith(github.ref, 'refs/tags/v') && vars.UPDATE_PUBLIC_KEY || '' }}
+      UPDATE_PUBLIC_KEY: ${{ inputs.version && vars.UPDATE_PUBLIC_KEY || '' }}
     steps:
       - name: Check out code
         uses: actions/checkout@v4
@@ -316,11 +317,6 @@ jobs:
 
       - name: Package
         run: |
-          if [[ $GITHUB_REF == refs/tags/v* ]]; then
-            export VERSION=${GITHUB_REF_NAME#v}
-          else
-            export VERSION=0.0.0-ci.$GITHUB_RUN_NUMBER
-          fi
           if [[ -n $UPDATE_PUBLIC_KEY ]]; then
             export UPDATE_URL="https://github.com/$GITHUB_REPOSITORY/releases/latest/download/update.json"
           fi

@@ -18,7 +18,7 @@ tar -xzf pnpm-dist/pnpm-*.tgz -C pnpm-dist
 	cd frontend
 	CI=1 "${pnpm[@]}" install --frozen-lockfile --registry=http://127.0.0.1:48173/ --store-dir="$src/.pnpm-store" \
 		--config.manage-package-manager-versions=false --reporter=append-only
-	VITE_DESKTOP=1 node node_modules/vite/bin/vite.js build --logLevel warn
+	VITE_DESKTOP=1 VITE_VERSION=$version node node_modules/vite/bin/vite.js build --logLevel warn
 )
 kill $registry
 
