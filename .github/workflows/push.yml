@@ -200,7 +200,7 @@ jobs:
         run: go run ./scripts/testdatarelease fetch
 
       - name: Test (race)
-        run: go test -race -timeout 60m ./calculator/... ./moddb/... ./mod/... ./data/...
+        run: ./.github/race_test.sh
 
   test-backend-wasm:
     name: Test Backend (wasm)

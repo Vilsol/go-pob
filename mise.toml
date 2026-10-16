@@ -10,8 +10,8 @@ node = "26"
 "npm:wrangler" = "4.143.1"
 
 [tasks.test-race]
-description = "Run the Go tests under the race detector (cgo via zig cc)"
-run = './scripts/nice.sh env CGO_ENABLED=1 CC="zig cc" go test -race -ldflags=-linkmode=external ./calculator/... ./moddb/... ./mod/... ./data/...'
+description = "Run the concurrent-evaluation tests under the race detector, as CI does (cgo via zig cc)"
+run = 'go run ./scripts/gopob nice env CGO_ENABLED=1 CC="zig cc" GOFLAGS=-ldflags=-linkmode=external ./.github/race_test.sh'
 
 [tasks.repin]
 description = "Re-measure every assertDivergesFromOracle pin on the integrated tree (CHECK=1 dry-runs)"
@@ -22,8 +22,8 @@ description = "Verify every //pob: citation resolves against the pinned PoB, and
 run = "task citations"
 
 [tasks.test-wasm]
-description = "Compile and RUN every package's tests under js/wasm via node (what CI does)"
-run = "./scripts/nice.sh ./.github/wasm_test.sh"
+description = "Run the tests only js/wasm can prove under node, as CI does"
+run = "go run ./scripts/gopob nice ./.github/wasm_test.sh"
 
 [tasks.build-go]
 description = "Build frontend/static/go-pob.wasm (GOOS=js GOARCH=wasm)"
