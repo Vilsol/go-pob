@@ -11,14 +11,16 @@ mkdir -p "$pob/Builds"
 names=()
 for i in "${!picks[@]}"; do names+=("e2e-$((i + 1))"); done
 probe() {
-	printf 'window.__E2E = { phase: "%s", builds: [%s], link: "%s" };\n' "$1" "$(printf '"%s",' "${names[@]}")" "${LINK-pob://pobbin/h-M3H3It2fDw}"
+	local source=pob
+	[[ $1 == first ]] || source=setting
+	printf 'window.__E2E = { phase: "%s", builds: [%s], link: "%s", source: "%s", hint: false, folder: true };\n' "$1" "$(printf '"%s",' "${names[@]}")" "${LINK-pob://pobbin/h-M3H3It2fDw}" "$source"
 	cat desktop/e2e/probe.js
 }
 
 run() {
 	probe "$1" >"$home/probe-$1.js"
 	local t0=$SECONDS
-	DESK_HOME=$home GOPOB_DESKTOP_OPEN=$(realpath "${picks[@]}" | paste -sd:) GOPOB_DESKTOP_SAVE_TO=$home/exports \
+	DESK_HOME=$home GOPOB_DESKTOP_OPEN=$(realpath "${picks[@]}" | paste -sd:) GOPOB_DESKTOP_SAVE_TO=$home/exports GOPOB_DESKTOP_FOLDER=$pob/Builds \
 		desktop/scripts/run-headless.sh "$bin" "$home/probe-$1.js" "${SECS:-240}" 2>&1 | grep -E 'probe: |run-headless' | sed 's/^[0-9/]* [0-9:]* probe: //'
 	echo "launch $1: $((SECONDS - t0)) s wall"
 }
@@ -34,4 +36,6 @@ mkdir -p "$home/exports"
 run second | tee "$home/second.log"
 echo "--- the export's zip:"
 python3 -I -c 'import sys, zipfile; [print(f"{i.filename} {i.file_size}") for p in sys.argv[1:] for i in zipfile.ZipFile(p).infolist()]' "$home"/exports/*.zip
-! grep -q '"fail"' "$home/first.log" "$home/second.log"
+if grep -q '"fail"' "$home/first.log" "$home/second.log"; then exit 1; fi
+grep -q '"done":"first"' "$home/first.log"
+grep -q '"done":"second"' "$home/second.log"

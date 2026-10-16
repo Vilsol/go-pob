@@ -215,7 +215,7 @@
     };
   });
   const unload = (e: BeforeUnloadEvent) => {
-    if (!dirty) return;
+    if (!dirty || beforeReplace.reloading) return;
     e.preventDefault();
   };
 </script>

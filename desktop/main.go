@@ -38,7 +38,7 @@ func main() {
 		log.Fatal(err)
 	}
 	d := &desktop{files: &host.Files{}, dirs: dirs, configPath: filepath.Join(dirs.Config, "desktop.json")}
-	d.dialogs = probeDialogs(wailsDialogs{d})
+	d.dialogs = probeDialogs(d.nativeDialogs())
 	d.files.Dialogs = d.dialogs
 	d.resolveBuilds()
 	dirs.Builds = func() string { return d.builds().Dir }
@@ -56,8 +56,13 @@ func main() {
 		go d.openBuildFile()
 		w.WriteHeader(http.StatusAccepted)
 	})
-	native.HandleFunc("POST /builds-folder", func(w http.ResponseWriter, _ *http.Request) {
-		go d.chooseBuildsFolder()
+	native.HandleFunc("POST /hint", d.hint)
+	native.HandleFunc("POST /builds-folder", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Query().Has("default") {
+			go d.resetBuildsFolder()
+		} else {
+			go d.chooseBuildsFolder()
+		}
 		w.WriteHeader(http.StatusAccepted)
 	})
 	probeJS := probe(native, func() { d.app.Quit() })
@@ -72,10 +77,11 @@ func main() {
 			DisableLogging: true,
 		},
 		Linux: application.LinuxOptions{
-			ProgramName: "go-pob",
+			ProgramName:   programName(),
+			ApplicationID: host.FlatpakID(),
 		},
 		SingleInstance: &application.SingleInstanceOptions{
-			UniqueID: "io.github.Vilsol.go-pob",
+			UniqueID: uniqueID(),
 			OnSecondInstanceLaunch: func(data application.SecondInstanceData) {
 				if text := host.LaunchImport(data.Args[min(1, len(data.Args)):], data.WorkingDir, d.files); text != "" {
 					d.importText(text)
@@ -150,21 +156,41 @@ func (d *desktop) chooseBuildsFolder() {
 	if dir == "" {
 		return
 	}
-	if err := host.SaveConfig(d.configPath, host.Config{BuildsDir: dir}); err != nil {
+	c := host.LoadConfig(d.configPath)
+	c.BuildsDir = dir
+	if err := host.SaveConfig(d.configPath, c); err != nil {
 		d.toast("Builds folder\n" + err.Error())
 		return
 	}
 	d.resolveBuilds()
-	d.window.Reload()
+	d.dispatch("pob:desktop-reload", "")
 }
 
 func (d *desktop) resetBuildsFolder() {
-	if err := host.SaveConfig(d.configPath, host.Config{}); err != nil {
+	c := host.LoadConfig(d.configPath)
+	c.BuildsDir = ""
+	if err := host.SaveConfig(d.configPath, c); err != nil {
 		d.toast("Builds folder\n" + err.Error())
 		return
 	}
 	d.resolveBuilds()
-	d.window.Reload()
+	d.dispatch("pob:desktop-reload", "")
+}
+
+func (d *desktop) hint(w http.ResponseWriter, _ *http.Request) {
+	c := host.LoadConfig(d.configPath)
+	text := host.FlatpakHint(c, d.builds(), host.FlatpakID() != "")
+	if text == "" {
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
+	c.FlatpakHint = true
+	if err := host.SaveConfig(d.configPath, c); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	_, _ = w.Write([]byte(text))
 }
 
 func (d *desktop) menu() *application.Menu {
@@ -173,8 +199,8 @@ func (d *desktop) menu() *application.Menu {
 	file := menu.AddSubmenu("File")
 	file.Add("Open build file…").SetAccelerator("CmdOrCtrl+O").OnClick(func(*application.Context) { d.openBuildFile() })
 	file.AddSeparator()
-	file.Add("Builds folder…").OnClick(func(*application.Context) { d.chooseBuildsFolder() })
-	file.Add("Default builds folder").OnClick(func(*application.Context) { d.resetBuildsFolder() })
+	file.Add("Builds folder…").OnClick(func(*application.Context) { d.dispatch("pob:desktop-builds-folder", "") })
+	file.Add("Default builds folder").OnClick(func(*application.Context) { d.dispatch("pob:desktop-builds-folder", "default") })
 	file.AddSeparator()
 	file.AddRole(application.Quit)
 	menu.AddRole(application.EditMenu)

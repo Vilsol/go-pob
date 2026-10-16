@@ -158,6 +158,17 @@ func TestUpdatesDisabled(t *testing.T) {
 	}
 }
 
+func TestUpdatesManaged(t *testing.T) {
+	mux := http.NewServeMux()
+	(&Updates{Manager: "Nix"}).Register(mux)
+	if code, body := call(t, mux, http.MethodGet, "/update/check"); code != http.StatusOK || strings.TrimSpace(body) != `{"enabled":false,"manager":"Nix","install":false}` {
+		t.Fatalf("check %d %s", code, body)
+	}
+	if code, body := call(t, mux, http.MethodPost, "/update/install"); code != http.StatusConflict || !strings.Contains(body, "updates for this build come from Nix") {
+		t.Fatalf("install %d %s", code, body)
+	}
+}
+
 func TestReplaceDirs(t *testing.T) {
 	for _, c := range []struct {
 		exe, goos string

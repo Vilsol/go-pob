@@ -21,10 +21,12 @@ type Updater interface {
 type Updates struct {
 	Updater    Updater
 	CanRestart bool
+	Manager    string
 }
 
 type UpdateCheck struct {
 	Enabled bool   `json:"enabled"`
+	Manager string `json:"manager,omitempty"`
 	Current string `json:"current,omitempty"`
 	Version string `json:"version,omitempty"`
 	Name    string `json:"name,omitempty"`
@@ -42,7 +44,7 @@ func (u *Updates) Register(mux *http.ServeMux) {
 
 func (u *Updates) check(w http.ResponseWriter, r *http.Request) {
 	if u.Updater == nil {
-		writeJSON(w, http.StatusOK, UpdateCheck{})
+		writeJSON(w, http.StatusOK, UpdateCheck{Manager: u.Manager})
 		return
 	}
 	c := UpdateCheck{Enabled: true, Current: u.Updater.CurrentVersion(), Install: u.CanRestart}
@@ -61,7 +63,11 @@ func (u *Updates) check(w http.ResponseWriter, r *http.Request) {
 
 func (u *Updates) install(w http.ResponseWriter, r *http.Request) {
 	if u.Updater == nil {
-		writeJSON(w, http.StatusConflict, map[string]string{"error": "this build has no update source"})
+		msg := "this build has no update source"
+		if u.Manager != "" {
+			msg = "updates for this build come from " + u.Manager
+		}
+		writeJSON(w, http.StatusConflict, map[string]string{"error": msg})
 		return
 	}
 	if err := u.Updater.DownloadAndInstall(r.Context()); err != nil {

@@ -2,6 +2,7 @@ import { addToast } from '$lib/design/toast';
 
 interface UpdateCheck {
   enabled: boolean;
+  manager?: string;
   current?: string;
   version?: string;
   page?: string;
@@ -15,7 +16,11 @@ export const checkDesktopUpdate = async () => {
   const r = await fetch('/desktop/update/check');
   const c = (await r.json()) as UpdateCheck;
   if (!c.enabled) {
-    addToast('Update check failed!\nThis build has no update source; updates come with the next release.');
+    addToast(
+      c.manager
+        ? `Update check failed!\nUpdates for this build come from ${c.manager}.`
+        : 'Update check failed!\nThis build has no update source; updates come with the next release.'
+    );
     return false;
   }
   if (c.error) {

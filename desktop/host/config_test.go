@@ -30,3 +30,22 @@ func TestConfigAndChoice(t *testing.T) {
 		}
 	}
 }
+
+func TestFlatpakHint(t *testing.T) {
+	app := BuildsChoice{Dir: "/app", Source: "app"}
+	for _, tc := range []struct {
+		c       Config
+		choice  BuildsChoice
+		flatpak bool
+		want    bool
+	}{
+		{Config{}, app, true, true},
+		{Config{}, app, false, false},
+		{Config{FlatpakHint: true}, app, true, false},
+		{Config{BuildsDir: "/chosen"}, BuildsChoice{Dir: "/chosen", Source: "setting"}, true, false},
+	} {
+		if got := FlatpakHint(tc.c, tc.choice, tc.flatpak) != ""; got != tc.want {
+			t.Errorf("%+v %+v flatpak=%v: hint %v, want %v", tc.c, tc.choice, tc.flatpak, got, tc.want)
+		}
+	}
+}

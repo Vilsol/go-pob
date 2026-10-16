@@ -16,11 +16,12 @@ var (
 	version         = "0.0.0-dev"
 	updateURL       string
 	updatePublicKey string
+	updateManager   string
 )
 
 func (d *desktop) updates() *host.Updates {
-	if updateURL == "" || updatePublicKey == "" {
-		return &host.Updates{}
+	if updateManager != "" || updateURL == "" || updatePublicKey == "" {
+		return &host.Updates{Manager: updateManager}
 	}
 	key, err := base64.StdEncoding.DecodeString(updatePublicKey)
 	if err != nil {

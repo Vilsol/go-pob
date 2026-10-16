@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.vilsol.go-pob</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-only AND MIT</project_license>
+  <name>go-pob</name>
+  <summary>Plan Path of Exile character builds</summary>
+  <developer id="io.github.vilsol">
+    <name>Vilsol</name>
+  </developer>
+  <description>
+    <p>
+      go-pob is Path of Building, ported to Go: a character planner for Path of Exile that computes a build's offence
+      and defence from its passive tree, items, skills and configuration, the way Path of Building does.
+    </p>
+    <ul>
+      <li>Opens and saves Path of Building build files, and finds Path of Building's own Builds folder in Wine, Proton,
+        Lutris and Bottles prefixes</li>
+      <li>Imports build codes and pob:// links from build sharing sites</li>
+      <li>Passive tree, items, skills, configuration and calculation pages</li>
+    </ul>
+    <p>
+      go-pob is a fan project and is not affiliated with Grinding Gear Games or the Path of Building Community.
+    </p>
+  </description>
+  <launchable type="desktop-id">io.github.vilsol.go-pob.desktop</launchable>
+  <icon type="stock">io.github.vilsol.go-pob</icon>
+  <url type="homepage">https://github.com/Vilsol/go-pob</url>
+  <url type="bugtracker">https://github.com/Vilsol/go-pob/issues</url>
+  <url type="vcs-browser">https://github.com/Vilsol/go-pob</url>
+  <categories>
+    <category>Game</category>
+  </categories>
+  <keywords>
+    <keyword>Path of Exile</keyword>
+    <keyword>Path of Building</keyword>
+    <keyword>PoB</keyword>
+  </keywords>
+  <provides>
+    <mediatype>x-scheme-handler/pob</mediatype>
+    <binary>go-pob</binary>
+  </provides>
+  <supports>
+    <control>pointing</control>
+    <control>keyboard</control>
+  </supports>
+  <requires>
+    <display_length compare="ge">768</display_length>
+  </requires>
+  <branding>
+    <color type="primary" scheme_preference="light">#d9c9a8</color>
+    <color type="primary" scheme_preference="dark">#3a2f22</color>
+  </branding>
+  <screenshots>
+    <screenshot type="default">
+      <caption>A build's passive tree and calculated stats</caption>
+      <image>https://raw.githubusercontent.com/Vilsol/go-pob/dev/desktop/build/flatpak/screenshots/tree.png</image>
+    </screenshot>
+  </screenshots>
+  <content_rating type="oars-1.1"/>
+  <releases>
+    <release version="0.0.0" date="2026-10-16">
+      <description>
+        <p>First Flatpak release.</p>
+      </description>
+    </release>
+  </releases>
+</component>

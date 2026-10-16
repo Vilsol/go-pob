@@ -6,11 +6,13 @@ builds/parser.go                    GO-NATIVE  encoding/xml decoding of the buil
 
 desktop/appimage.go                 GO-NATIVE  Help › Add to applications menu when running from an AppImage; PoB has no installer integration
 desktop/dialogs.go                  GO-NATIVE  GTK file choosers behind host.Dialogs; no PoB analogue
+desktop/flatpak.go                  GO-NATIVE  inside a Flatpak: the file chooser portal, the single-instance name and WM_CLASS under the app id; PoB has no sandboxed build
 desktop/platform_darwin.go          GO-NATIVE  macOS menu bar and pob:// / build-file Apple Events; PoB has no macOS host
 desktop/platform_other.go           GO-NATIVE  the Linux side of the per-OS webview hooks; no PoB analogue
 desktop/platform_windows.go         GO-NATIVE  WebView2's runtime-ready and probe injection; no PoB analogue
 desktop/host/documents_other.go     GO-NATIVE  the host's Documents folder off Windows ($HOME/Documents, Wine's default link); stands in for SimpleGraphic's GetUserPath
 desktop/host/documents_windows.go   GO-NATIVE  the Documents known folder (OneDrive-redirected included), as SimpleGraphic's GetUserPath asks Windows for it
+desktop/host/flatpak.go             GO-NATIVE  detects the Flatpak sandbox and drives xdg-desktop-portal's FileChooser over D-Bus; PoB has no sandboxed build
 desktop/host/files.go               GO-NATIVE  the export save dialog, build files opened from the menu or a launch, and their import codes; PoB has no file association
 desktop/host/appimage.go            GO-NATIVE  writes an AppImage's desktop entry and pob:// handler into the user's XDG folders; PoB has no file association
 desktop/host/update.go              GO-NATIVE  /desktop/update/*: Wails' updater behind the page's Check for update, signed releases only; PoB's updater is its own Lua (UpdateCheck.lua), the webview host's is Go

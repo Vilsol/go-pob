@@ -8,7 +8,7 @@ priority: optional
 maintainer: ${MAINTAINER}
 description: Path of Building, in Go
 homepage: https://github.com/Vilsol/go-pob
-license: MIT
+license: GPL-3.0-only AND MIT
 
 contents:
   - src: ${STAGE}/go-pob

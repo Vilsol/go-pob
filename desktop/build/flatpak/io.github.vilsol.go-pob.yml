@@ -1,0 +1,37 @@
+id: io.github.vilsol.go-pob
+runtime: org.gnome.Platform
+runtime-version: '51'
+sdk: org.gnome.Sdk
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.golang
+  - org.freedesktop.Sdk.Extension.node24
+command: go-pob
+finish-args:
+  - --share=ipc
+  - --share=network
+  - --socket=fallback-x11
+  - --socket=wayland
+  - --device=dri
+modules:
+  - name: go-pob
+    buildsystem: simple
+    build-options:
+      append-path: /usr/lib/sdk/golang/bin:/usr/lib/sdk/node24/bin
+    build-commands:
+      - desktop/build/flatpak/build.sh io.github.vilsol.go-pob
+    sources:
+      - type: dir
+        path: ../../..
+        skip:
+          - .git
+          - testdata
+          - tree_ours_dump
+          - frontend/node_modules
+          - frontend/build
+          - frontend/.svelte-kit
+          - frontend/static/go-pob.wasm
+          - frontend/static/go-pob.wasm.gz
+          - frontend/static/go-pob.wasm.br
+          - desktop/bin
+      - go-sources.json
+      - node-sources.json

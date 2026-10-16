@@ -49,6 +49,13 @@ describe('desktop mode', () => {
     expect(fetch.mock.calls.map((c) => c[0])).toEqual(['/desktop/update/check']);
   });
 
+  it('names the package manager that updates the build', async () => {
+    const { pwa, toast } = await load(true);
+    stubFetch({ '/desktop/update/check': { enabled: false, manager: 'Nix', install: false } });
+    await pwa.checkForUpdate(undefined);
+    expect(get(toast.toasts).map((t) => t.message)).toEqual(['Update check failed!\nUpdates for this build come from Nix.']);
+  });
+
   it('names a release it cannot install in place', async () => {
     const { pwa, toast } = await load(true);
     stubFetch({ '/desktop/update/check': { enabled: true, current: '1.0.0', version: '1.1.0', page: 'https://example.invalid/v1.1.0', install: false } });

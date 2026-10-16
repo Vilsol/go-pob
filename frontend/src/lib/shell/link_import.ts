@@ -118,7 +118,7 @@ export const openImportLink = async (text: string) => {
 };
 
 /* Build.lua:1421-1448 */
-export const beforeReplace: { ask?: (open: () => void) => void } = {};
+export const beforeReplace: { ask?: (open: () => void) => void; reloading?: boolean } = {};
 
 if (DESKTOP && typeof window !== 'undefined') {
   let handedOver: Promise<unknown> = backendLoaded;
@@ -131,6 +131,18 @@ if (DESKTOP && typeof window !== 'undefined') {
   };
   window.addEventListener('pob:desktop-import', (e) => handOver((e as CustomEvent<string>).detail));
   window.addEventListener('pob:desktop-toast', (e) => addToast((e as CustomEvent<string>).detail));
+  void fetch('/desktop/hint', { method: 'POST' })
+    .then(async (res) => res.status === 200 && addToast(await res.text()))
+    .catch(() => {});
+  window.addEventListener('pob:desktop-builds-folder', (e) => {
+    const pick = () => void fetch(`/desktop/builds-folder${(e as CustomEvent<string>).detail === 'default' ? '?default' : ''}`, { method: 'POST' });
+    if (beforeReplace.ask) beforeReplace.ask(pick);
+    else pick();
+  });
+  window.addEventListener('pob:desktop-reload', () => {
+    beforeReplace.reloading = true;
+    location.reload();
+  });
   const host = window as Window & { pobDesktopListening?: boolean; pobDesktopPending?: string[] };
   host.pobDesktopListening = true;
   host.pobDesktopPending?.splice(0).forEach(handOver);

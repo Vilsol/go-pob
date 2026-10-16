@@ -51,8 +51,25 @@
     });
   };
 
+  const hintText = /To use Path of Building's Builds folder, choose it with File › Builds folder/;
+  const config = async () => {
+    await step('config', async () => {
+      const config = await (await fetch('/desktop/config')).json();
+      if (config.source !== cfg.source) throw new Error(`builds folder source ${config.source}, want ${cfg.source}`);
+      return { config };
+    });
+    if (cfg.hint)
+      await step('the Builds folder hint, dismissed', async () => {
+        const toast = await until('the hint', () => [...document.querySelectorAll('[role=status]')].find((t) => hintText.test(t.textContent)));
+        buttonByText(toast, 'Dismiss').click();
+        await until('the hint gone', () => !hintText.test(document.body.innerText));
+        return { hint: toast.innerText.replace(/\s*Dismiss$/, '') };
+      });
+    else if (hintText.test(document.body.innerText)) throw new Error('the Flatpak hint showed');
+  };
+
   const first = async () => {
-    await step('config', async () => ({ config: await (await fetch('/desktop/config')).json() }));
+    await config();
     await step('New build → tree', async () => {
       buttonByText(document, 'New build').click();
       const title = await until('the new build', () => /^Unnamed build/.test(document.title) && document.title);
@@ -95,9 +112,32 @@
         return { title: document.title };
       });
     }
+    if (cfg.folder) {
+      await step("Builds folder… over unsaved changes → Save Changes, Don't Save", async () => {
+        await until('the unsaved state', () => document.querySelector('button[aria-label="Save (unsaved changes)"]'));
+        dispatchEvent(new CustomEvent('pob:desktop-builds-folder', { detail: '' }));
+        const prompt = await until('Save Changes', () =>
+          [...document.querySelectorAll('dialog[open]')].find((d) => /This build has unsaved changes/.test(d.textContent))
+        );
+        sessionStorage.setItem('e2eResume', 'folder');
+        buttonByText(prompt, "Don't Save").click();
+      });
+      await sleep(60000);
+      throw new Error('the window did not reload onto the chosen folder');
+    }
+  };
+
+  const resumeFolder = async () => {
+    await step('reloaded onto the chosen folder', async () => {
+      const config = await (await fetch('/desktop/config')).json();
+      if (config.source !== 'setting') throw new Error(`builds folder source ${config.source}, want setting`);
+      await until('the list', () => document.querySelector(`[role=row][data-build="${cfg.builds[0]}"]`));
+      return { dir: config.dir, builds: await listing() };
+    });
   };
 
   const second = async () => {
+    await config();
     await step('builds folder listing', async () => ({ builds: await listing() }));
     await step('Settings › Export all builds (save dialog)', async () => {
       document.querySelector('button[aria-label="Settings"]').click();
@@ -145,7 +185,10 @@
     try {
       await until('pob:data-loaded', () => mark('pob:data-loaded'), 120000);
       await say({ step: 'boot', booted: Math.round(mark('pob:wasm-booted')), dataLoaded: Math.round(mark('pob:data-loaded')) });
-      await (cfg.phase === 'first' ? first() : second());
+      if (sessionStorage.getItem('e2eResume') === 'folder') {
+        sessionStorage.removeItem('e2eResume');
+        await resumeFolder();
+      } else await (cfg.phase === 'first' ? first() : second());
       await say({ done: cfg.phase, errors });
     } catch (e) {
       await say({ fail: String(e), errors, title: document.title, path: location.pathname });

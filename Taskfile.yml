@@ -57,9 +57,8 @@ tasks:
 
   desktop-dist:
     desc: "The frontend as every desktop build embeds it (VITE_DESKTOP=1, go-pob.wasm.gz only) into desktop/dist"
-    deps: [build-go]
     cmds:
-      - '{{.NICE}} gzip -kf9 frontend/static/go-pob.wasm'
+      - '{{.NICE}} ./desktop/scripts/wasm.sh'
       - 'cd frontend && {{.NICE}} env VITE_DESKTOP=1 npx vite build --logLevel warn'
       - rsync -a --delete --exclude .gitkeep --exclude go-pob.wasm --exclude go-pob.wasm.br --exclude service-worker.js --exclude _headers frontend/build/ desktop/dist/
 
@@ -116,6 +115,22 @@ tasks:
     cmds:
       - '{{.NICE}} ./desktop/release-e2e/update-windows.sh'
 
+  build-desktop-nix:
+    desc: "Build the desktop app with Nix (nix/package.nix, from the committed and staged tree) into desktop/bin/nix, a store link"
+    cmds:
+      - '{{.NICE}} nix build --out-link desktop/bin/nix .#go-pob'
+
+  e2e-desktop-nix:
+    desc: "task e2e-desktop over the Nix build, with TLS and GTK schemas from its wrapper alone"
+    deps: [build-desktop-nix]
+    cmds:
+      - '{{.NICE}} env GIO_EXTRA_MODULES=/var/empty GSETTINGS_SCHEMA_DIR=/var/empty BIN=desktop/bin/nix/bin/go-pob ./desktop/e2e/run.sh'
+
+  nixpkgs-template:
+    desc: "Regenerate nix/nixpkgs/pkgs/by-name/go/go-pob/package.nix from nix/package.nix (VERSION=, HASH=fake until the tag is pushed)"
+    cmds:
+      - ./nix/nixpkgs/render.sh {{.VERSION | default "0.1.0"}} {{.HASH | default "fake"}} > nix/nixpkgs/pkgs/by-name/go/go-pob/package.nix
+
   test-desktop:
     desc: "The desktop host's Go tests (no cgo: desktop/host only)"
     cmds:
@@ -125,6 +140,26 @@ tasks:
     desc: "golangci-lint over the desktop module (TAGS=noimportproxy lints the build without the import proxy)"
     cmds:
       - '{{.NICE}} env -C desktop ./scripts/gtk-env.sh golangci-lint run --build-tags gtk3{{if .TAGS}},{{.TAGS}}{{end}} ./...'
+
+  flatpak-sources:
+    desc: "Regenerate the Flatpak's offline sources (desktop/build/flatpak/{go,node}-sources.json) after go.sum, desktop/go.sum or frontend/pnpm-lock.yaml change; CHECK=1 only compares"
+    cmds:
+      - python3 -I desktop/build/flatpak/sources.py {{if .CHECK}}--check{{end}}
+
+  build-flatpak:
+    desc: "Build the Flatpak from this checkout offline (flatpak-builder, GNOME runtime from Flathub, --user), install it and write desktop/bin/<app-id>.flatpak (FLATPAK_USER_DIR= moves flatpak's user installation)"
+    cmds:
+      - '{{.NICE}} ./desktop/scripts/flatpak.sh'
+
+  e2e-flatpak:
+    desc: "The desktop end-to-end proof against the installed Flatpak through flatpak run, headless, then a pob:// link through its desktop entry to the running instance (build-flatpak first; xdotool, gio)"
+    cmds:
+      - '{{.NICE}} ./desktop/flatpak-e2e/run.sh'
+
+  e2e-flatpak-portal:
+    desc: "The installed Flatpak's file dialogs through xdg-desktop-portal, headless: open, save and builds folder answered with xdotool outside the sandbox's own view (build-flatpak first)"
+    cmds:
+      - '{{.NICE}} ./desktop/flatpak-e2e/portal.sh'
 
   storybook:
     desc: "Storybook for the design-spec components (http://localhost:6006)"

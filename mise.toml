@@ -57,6 +57,10 @@ run = "task dev-desktop"
 description = "Linux release (binary, AppImage, deb, rpm) into desktop/bin/release, built in an Ubuntu 24.04 container"
 run = "task package-desktop"
 
+[tasks.build-flatpak]
+description = "Build and install the Flatpak from this checkout (flatpak-builder), and its single-file bundle"
+run = "task build-flatpak"
+
 [tasks.package-desktop-windows]
 description = "Windows release (portable zip, NSIS installer) into desktop/bin/release-windows, cross-compiled without cgo"
 run = "task package-desktop-windows"
@@ -64,6 +68,14 @@ run = "task package-desktop-windows"
 [tasks.package-desktop-macos]
 description = "macOS release (universal .app in a dmg, ad-hoc signed) into desktop/bin/release-macos; on a Mac only"
 run = "task package-desktop-macos"
+
+[tasks.build-desktop-nix]
+description = "Build the desktop app with Nix (nix/package.nix) into desktop/bin/nix"
+run = "task build-desktop-nix"
+
+[tasks.e2e-desktop-nix]
+description = "The desktop end-to-end proof over the Nix build, TLS and GTK schemas from its wrapper alone"
+run = "task e2e-desktop-nix"
 
 [tasks.storybook]
 description = "Storybook for the design-spec components (http://localhost:6006)"

@@ -48,7 +48,7 @@ vi.mock('$lib/go/worker', () => ({ syncWrap, syncWorker: undefined }));
 vi.mock('$app/navigation', () => ({ goto }));
 
 vi.stubEnv('VITE_DESKTOP', '1');
-await import('./link_import');
+const { beforeReplace } = await import('./link_import');
 const AppTopBar = (await import('./AppTopBar.svelte')).default;
 const { currentBuild, currentBuildPath, markBackendAsLoaded } = await import('$lib/global');
 get(markBackendAsLoaded)();
@@ -64,6 +64,8 @@ afterEach(() => {
   goto.mockClear();
   currentBuild.set(undefined);
   opening.modFlag = false;
+  beforeReplace.reloading = false;
+  vi.mocked(fetch).mockClear();
 });
 
 const openEdited = async (path: string) => {
@@ -125,4 +127,23 @@ it('Back on unsaved changes, Save: saved, then closed', async () => {
   await waitFor(() => expect(worker.ClearBuild).toHaveBeenCalled());
   expect(worker.SaveBuildAs).toHaveBeenCalledWith('mine');
   expect(worker.ImportCode).not.toHaveBeenCalled();
+});
+
+it("Builds folder… over unsaved changes asks first; Don't Save picks the folder and the reload does not ask again", async () => {
+  const view = await openEdited('mine');
+  const picks = () => vi.mocked(fetch).mock.calls.filter(([url]) => typeof url === 'string' && url.startsWith('/desktop/builds-folder'));
+  const unloadAsks = () => !window.dispatchEvent(new Event('beforeunload', { cancelable: true }));
+  expect(unloadAsks(), 'the guard is off').toBe(true);
+
+  window.dispatchEvent(new CustomEvent('pob:desktop-builds-folder', { detail: '' }));
+  await fireEvent.click(within(await view.findByRole('dialog', { name: 'Save Changes' })).getByRole('button', { name: 'Cancel' }));
+  await new Promise((r) => setTimeout(r, 50));
+  expect(picks(), 'Cancel picked a folder').toEqual([]);
+
+  window.dispatchEvent(new CustomEvent('pob:desktop-builds-folder', { detail: 'default' }));
+  await fireEvent.click(within(await view.findByRole('dialog', { name: 'Save Changes' })).getByRole('button', { name: "Don't Save" }));
+  await waitFor(() => expect(picks()).toEqual([['/desktop/builds-folder?default', { method: 'POST' }]]));
+
+  window.dispatchEvent(new CustomEvent('pob:desktop-reload'));
+  expect(unloadAsks(), 'the reload asked again').toBe(false);
 });

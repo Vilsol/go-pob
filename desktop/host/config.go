@@ -8,7 +8,8 @@ import (
 )
 
 type Config struct {
-	BuildsDir string `json:"buildsDir,omitempty"`
+	BuildsDir   string `json:"buildsDir,omitempty"`
+	FlatpakHint bool   `json:"flatpakHint,omitempty"`
 }
 
 func LoadConfig(path string) Config {
@@ -48,4 +49,13 @@ func ChooseBuilds(c Config, pob []PoBBuilds, appDir string) BuildsChoice {
 	default:
 		return BuildsChoice{Dir: appDir, Source: "app", PoB: pob}
 	}
+}
+
+const flatpakHint = "Builds folder\nBuilds are kept in go-pob's own folder. To use Path of Building's Builds folder, choose it with File › Builds folder…"
+
+func FlatpakHint(c Config, choice BuildsChoice, flatpak bool) string {
+	if !flatpak || c.FlatpakHint || choice.Source != "app" {
+		return ""
+	}
+	return flatpakHint
 }

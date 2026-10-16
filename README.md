@@ -8,6 +8,22 @@ Hosted version: [https://pob.gg](https://pob.gg)
 
 Uses data extracted with https://github.com/Vilsol/go-pob-data
 
+## Desktop app
+
+The same app in a window of its own, with builds in a folder on disk and `pob://` links opening in it. Downloads are on
+the Releases page; [desktop/README.md](desktop/README.md) has the details.
+
+| system | how | needs |
+|---|---|---|
+| Linux, Nix | `nix run github:Vilsol/go-pob` | Nix with flakes |
+| Linux, Flatpak | the release's `go-pob-x86_64.flatpak` (`flatpak install --user go-pob-x86_64.flatpak`); Flathub once listed | Flathub as a remote (the GNOME runtime) |
+| Linux | `go-pob-x86_64.AppImage`, `.deb`, `.rpm` | WebKit2GTK 4.1, GTK 3, glibc 2.39 or later |
+| Windows 10 / 11 | installer or portable zip | WebView2 (part of Windows 11) |
+| macOS 12 or later | dmg (Apple Silicon or Intel) | — |
+
+The Windows and macOS builds are not signed yet, so each warns on first launch: [First launch](desktop/README.md#first-launch)
+has the clicks that get past it.
+
 ## Layout
 
 | path | what |

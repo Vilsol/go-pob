@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=go-pob
+Comment=Plan Path of Exile character builds
+Exec=go-pob %u
+Icon=io.github.vilsol.go-pob
+Terminal=false
+Categories=Game;
+Keywords=Path of Exile;PoE;Path of Building;PoB;build;planner;
+MimeType=x-scheme-handler/pob;application/xml;
+StartupNotify=true
+StartupWMClass=io.github.vilsol.go-pob
