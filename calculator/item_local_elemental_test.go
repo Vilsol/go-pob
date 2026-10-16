@@ -87,16 +87,11 @@ func TestWeaponLocalElementalDamageScalesAddedRanges(t *testing.T) {
 		}
 	})
 
-	t.Run("the measured zero has not expired", func(t *testing.T) {
+	t.Run("the parser produces it (ModParser.lua:3150)", func(t *testing.T) {
 		entry := ParseMod("Has 25% increased Elemental Damage", false)
-		if entry != nil && entry.ModList != nil {
-			for _, m := range entry.ModList {
-				if m.Name() == "LocalElementalDamage" {
-					t.Fatalf("REFUSING: mod_parser.go now produces LocalElementalDamage. " +
-						"The MEASURED ZERO on this port has EXPIRED — re-measure the gate " +
-						"and update the commit's claim rather than deleting this guard.")
-				}
-			}
+		if entry == nil || entry.Extra != "" || len(entry.ModList) != 1 ||
+			entry.ModList[0].Name() != "LocalElementalDamage" || entry.ModList[0].Value().Float() != 25 {
+			t.Fatalf("ParseMod(%q) = %+v, want one LocalElementalDamage INC 25", "Has 25% increased Elemental Damage", entry)
 		}
 	})
 }

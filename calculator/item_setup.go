@@ -43,6 +43,8 @@ var itemSlotBaseNames = []string{
 //pob:src/Classes/ItemsTab.lua:107-148
 var orderedItemSlots = buildOrderedItemSlots()
 
+var flaskSlotNumRe = regexp.MustCompile(`Flask (\d+)`)
+
 //pob:src/Classes/ItemsTab.lua:107-148
 func buildOrderedItemSlots() []itemSlot {
 	const abyssalSocketsPerItem = 6
@@ -261,6 +263,9 @@ func mergeEquippedItems(env *Environment) {
 		delete(itemList, slotName)
 	}
 
+	//pob:block:src/Modules/CalcSetup.lua:1022-1024
+	env.flaskSlotMap = make(map[*Item]int)
+	env.flaskSlotOccupied = make(map[int]bool)
 	for _, s := range orderedItemSlots {
 		slotName, item, ok := resolveEquippedSlot(env, s, slotsByName, byID, activeWeaponSet, false)
 		if !ok {
@@ -276,6 +281,12 @@ func mergeEquippedItems(env *Environment) {
 			env.ItemModDB.Conditions["Have"+strings.Join(strings.Fields(item.BaseName), "")] = true
 			if slot.Active {
 				env.Flasks = append(env.Flasks, item)
+			}
+			//pob:block:src/Modules/CalcSetup.lua:1033-1037
+			if m := flaskSlotNumRe.FindStringSubmatch(slotName); m != nil {
+				flaskNum, _ := strconv.Atoi(m[1])
+				env.flaskSlotMap[item] = flaskNum
+				env.flaskSlotOccupied[flaskNum] = true
 			}
 			if item.Base != nil && item.Base.SubType == "Life" {
 				if item.FlaskData["chargesMax"] > env.ItemModDB.Multipliers["LifeFlaskCharges"] {

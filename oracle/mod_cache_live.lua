@@ -6,7 +6,10 @@ dofile("HeadlessWrapper.lua")
 
 local shipped = {}
 local chunk = assert(loadfile("Data/ModCache.lua"))
-chunk(shipped)
+local returned = chunk(shipped)
+if type(returned) == "table" then
+	shipped = returned
+end
 
 local lines = {}
 for line in pairs(shipped) do

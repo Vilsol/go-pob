@@ -172,3 +172,27 @@ Cannot be Stunned by Attacks if your opposite Ring is an Elder Item
 Cannot be Stunned by Spells if your opposite Ring is a Shaper Item
 Arrows deal 30 to 50 Added Fire Damage for each time they've Pierced
 Arrows deal 50% increased Damage with Hits and Ailments to Targets they Pierce
++6 to Level of Socketed Gems while there is a single Gem Socketed in this Item
+1% chance to deal Double Damage against Enemies for each type of Ailment you have inflicted on them
+18% of Life Regeneration also applies to Energy Shield if no Equipped Items are Corrupted
+2% chance to deal Double Damage against Enemies for each type of Ailment you have inflicted on them
+25% of Damage taken while Frozen Recouped as Life
+30% more Area of Effect with Bow Attacks that fire a single Projectile
+5% increased Attack and Cast Speed for each nearby Enemy, up to a maximum of 30%
+5% increased Movement Speed for each nearby Enemy, up to a maximum of 50%
+50% increased Duration of Ailments of types you haven't inflicted Recently
+70% of Damage taken while Frozen Recouped as Life
+Enemies Shocked by you are Debilitated
+Equipped Magic Flasks have 30% increased effect on you if no Flasks are Adjacent to them
+Freeze Enemies as though dealing 40% more Damage
+Gain 43 Life per Blinded Enemy Hit with this Weapon
+Gain Arcane Surge after Spending a total of 200 Life
+Has 75% increased Elemental Damage
+Immune to Elemental Ailments while Bleeding
+Left ring slot: Skills supported by Unleash have +1 to maximum number of Seals
+Physical Skills have 1% increased Duration per 12 Intelligence
+Prevent +35% of Suppressed Spell Damage if you have not Suppressed Spell Damage Recently
+Projectiles Split towards +1 targets
+Projectiles can Chain from any number of additional targets in Close Range
+Right ring slot: Shockwave has +1 to Cooldown Uses
+Trigger a Socketed Fire Spell on Hit, with a 0.25 second Cooldown

@@ -480,39 +480,46 @@
         {/if}
         {#if live.item}
           {@const it = live.item}
-          <div role="article" aria-label="Item: {live.name ?? it.name}" class={['flex flex-col gap-0.5 text-13', toneClass(it.rarity)]}>
-            <span data-pob-color class="toned font-semibold">{it.name}</span>
-            <span class="text-text-2"
-              >{it.rarity[0].toUpperCase() + it.rarity.slice(1)}
-              <span data-pob-color class={['toned', toneClass(it.rarity)]}>{it.base}</span>
-              → {it.fits.length ? `fits ${it.fits.join(', ')}` : 'fits no slot'}</span>
-          </div>
-          {#if onbuysimilar}<Button size="sm" class="self-start" aria-haspopup="dialog" onclick={onbuysimilar}>Buy similar</Button>{/if}
+          {#snippet itemHead()}
+            <div role="article" aria-label="Item: {live.name ?? it.name}" class={['flex flex-col gap-0.5 text-13', toneClass(it.rarity)]}>
+              <span data-pob-color class="toned font-semibold">{it.name}</span>
+              <span class="text-text-2"
+                >{it.rarity[0].toUpperCase() + it.rarity.slice(1)}
+                <span data-pob-color class={['toned', toneClass(it.rarity)]}>{it.base}</span>
+                → {it.fits.length ? `fits ${it.fits.join(', ')}` : 'fits no slot'}</span>
+            </div>
+            {#if onbuysimilar}<Button size="sm" class="self-start" aria-haspopup="dialog" onclick={onbuysimilar}>Buy similar</Button>{/if}
+          {/snippet}
+          {#snippet itemResult()}
+            <section aria-label="Equip impact" aria-busy={live.pending} class="flex flex-col gap-2.5 font-mono text-13">
+              <ImpactBlocks blocks={live.blocks}>
+                {#snippet action(b: ImpactBlock)}
+                  {#if b.slot}
+                    <Button size="sm" variant="primary" class="shrink-0 font-sans" onclick={() => onsave?.(it, b.slot, true)}
+                      >Equip in {slotLabel(b.slot)}</Button>
+                  {/if}
+                {/snippet}
+              </ImpactBlocks>
+              {#if live.pending}<span class="font-sans text-12 text-text-3">Calculating…</span>
+              {:else if !live.blocks.length}<span class="font-sans text-12 text-text-2">This item fits no slot of the active item set.</span>{/if}
+            </section>
+            <div class="flex flex-wrap items-center gap-2">
+              {#if live.editing}
+                <Button size="md" title="Replace {live.editing} with this text, wherever it is equipped" onclick={() => onsave?.(it, undefined, false)}
+                  >Save</Button>
+              {:else}
+                <Button size="md" title="Add it to the build's items, equipped in the first free slot it fits" onclick={() => onsave?.(it, undefined, false)}
+                  >Save to build</Button>
+              {/if}
+              {#if live.message}<p role="status" class="text-13 text-text-2">{live.message}</p>{/if}
+            </div>
+          {/snippet}
           {#if display && ondisplayedit}
-            <DisplayItemControls info={display} onedit={ondisplayedit} craft={displayCraft} bind:customRequest />
+            <DisplayItemControls info={display} onedit={ondisplayedit} craft={displayCraft} bind:customRequest head={itemHead} result={itemResult} />
+          {:else}
+            {@render itemHead()}
+            <div class="flex flex-col gap-2.5 border-t border-line pt-2.5">{@render itemResult()}</div>
           {/if}
-          <section aria-label="Equip impact" aria-busy={live.pending} class="flex flex-col gap-2.5 border-t border-line pt-2.5 font-mono text-13">
-            <ImpactBlocks blocks={live.blocks}>
-              {#snippet action(b: ImpactBlock)}
-                {#if b.slot}
-                  <Button size="sm" variant="primary" class="shrink-0 font-sans" onclick={() => onsave?.(it, b.slot, true)}
-                    >Equip in {slotLabel(b.slot)}</Button>
-                {/if}
-              {/snippet}
-            </ImpactBlocks>
-            {#if live.pending}<span class="font-sans text-12 text-text-3">Calculating…</span>
-            {:else if !live.blocks.length}<span class="font-sans text-12 text-text-2">This item fits no slot of the active item set.</span>{/if}
-          </section>
-          <div class="flex flex-wrap items-center gap-2">
-            {#if live.editing}
-              <Button size="md" title="Replace {live.editing} with this text, wherever it is equipped" onclick={() => onsave?.(it, undefined, false)}
-                >Save</Button>
-            {:else}
-              <Button size="md" title="Add it to the build's items, equipped in the first free slot it fits" onclick={() => onsave?.(it, undefined, false)}
-                >Save to build</Button>
-            {/if}
-            {#if live.message}<p role="status" class="text-13 text-text-2">{live.message}</p>{/if}
-          </div>
         {:else if live.message}
           <p role="status" class="text-13 text-text-2">{live.message}</p>
         {/if}

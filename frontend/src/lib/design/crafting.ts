@@ -40,6 +40,28 @@ export type AffixControls = {
   bases?: string[];
 };
 
+const RANGE = /\(-?[\d.]+--?[\d.]+\)/g;
+const NUMBER = /-?\d+\.?\d*/g;
+export const statTemplate = (line: string) => plainText(line).replace('[Retained] ', '').replace(RANGE, '#').replace(NUMBER, '#');
+
+/* Item.lua:2085-2093 */
+export const affixLines = (affixes: AffixControls, lines: string[], explicit: number[]) => {
+  const stats = affixes.controls.map((c) => {
+    const want = c.sel > 0 ? c.series[c.sel].label.split('/').map(statTemplate) : [];
+    return explicit.filter((i) => want.includes(statTemplate(lines[i])));
+  });
+  const seen = new Set<number>();
+  const shared = new Set<number>();
+  const slots = stats.map((list) =>
+    list.filter((i) => {
+      if (seen.has(i)) shared.add(i);
+      else seen.add(i);
+      return !shared.has(i);
+    })
+  );
+  return { stats, slots, shared, rest: explicit.filter((i) => !seen.has(i)) };
+};
+
 export type CrucibleChoices = { nodes: { id: string; label: string; lines: string[] }[][]; selected: string[] };
 
 export type CraftApi = {
@@ -66,6 +88,7 @@ export type CraftApi = {
   affixRollTooltip?: (slot: number, slider: number) => Promise<string[]>;
   affixPowers?: (slot: number, stat: string) => Promise<number[]>;
   rebase?: (base: string) => Promise<string[] | undefined>;
+  rebaseTip?: (base: string) => Promise<TipProps | undefined>;
   crucibleChoices?: () => Promise<CrucibleChoices | undefined>;
   crucibleText?: (ids: string[]) => Promise<string | undefined>;
   tipOf?: (text: string) => Promise<TipProps | undefined>;

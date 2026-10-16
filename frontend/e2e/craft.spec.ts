@@ -40,7 +40,7 @@ test('enchant and anoint the display item (0280)', async ({ page }) => {
   // ItemsTab.lua:509-520
   await box.fill(helmet);
   const buttons = controls.getByRole('group', { name: 'Enchant, anoint and corrupt' });
-  await expect(buttons.getByRole('button')).toHaveText(['Change Enchantment...', 'Corrupt...', 'Add Implicit...', 'Add modifier...']);
+  await expect(buttons.getByRole('button')).toHaveText(['Change Enchantment...', 'Corrupt...', 'Add Implicit...']);
 
   // ItemsTab.lua:2815-2839
   await buttons.getByRole('button', { name: 'Change Enchantment...' }).click();
@@ -89,7 +89,7 @@ test('enchant and anoint the display item (0280)', async ({ page }) => {
 
   // ItemsTab.lua:521-526
   await box.fill(AMULET);
-  await expect(buttons.getByRole('button')).toHaveText(['Anoint...', 'Corrupt...', 'Add Implicit...', 'Add modifier...']);
+  await expect(buttons.getByRole('button')).toHaveText(['Anoint...', 'Corrupt...', 'Add Implicit...']);
   await buttons.getByRole('button', { name: 'Anoint...' }).click();
   const anoint = page.getByRole('dialog', { name: 'Anoint Item' });
   await expect(anoint.getByRole('button', { name: 'No Anoint' })).toBeVisible();
@@ -343,7 +343,6 @@ test('add a modifier to the display item (0280)', async ({ page }) => {
   const misc = (await m.exposition.GetMiscCalculator(build))!;
   const box = page.getByRole('textbox', { name: /Item text/ });
   const controls = page.getByRole('region', { name: 'Item controls' });
-  const buttons = controls.getByRole('group', { name: 'Enchant, anoint and corrupt' });
   const helmet = readFileSync(new URL('./fixtures/items/helmet.txt', import.meta.url), 'utf8');
   const [choices] = await m.exposition.ItemCustomModChoices(helmet);
   const text = async (source: string, id: string, custom: string) => {
@@ -354,7 +353,7 @@ test('add a modifier to the display item (0280)', async ({ page }) => {
 
   // ItemsTab.lua:3557-3589
   await box.fill(helmet);
-  await buttons.getByRole('button', { name: 'Add modifier...' }).click();
+  await controls.getByRole('button', { name: 'Add modifier...' }).click();
   const dialog = page.getByRole('dialog', { name: 'Add Modifier to Item' });
   await expect(dialog.getByRole('combobox', { name: 'Source' }).locator('option')).toHaveText(choices.Sources!.map((s) => s.Label));
   const bench = choices.Mods!.MASTER!;
@@ -388,7 +387,7 @@ test('add a modifier to the display item (0280)', async ({ page }) => {
   await expect(box).toHaveValue(await text('PREFIX', prefixes[order[0]].ID, ''));
 
   await box.fill(helmet);
-  await buttons.getByRole('button', { name: 'Add modifier...' }).click();
+  await controls.getByRole('button', { name: 'Add modifier...' }).click();
   await dialog.getByRole('combobox', { name: 'Source' }).selectOption({ label: 'Custom' });
   await dialog.getByRole('textbox', { name: 'Custom modifier' }).fill('+7 to Dexterity');
   await dialog.getByRole('button', { name: 'Add', exact: true }).click();
@@ -499,11 +498,11 @@ test('crucible mods on a weapon (0280)', async ({ page }) => {
   const { app } = await setup(page, '0280-elementalist-fireball');
   const m = await go.model();
   const box = page.getByRole('textbox', { name: /Item text/ });
-  const buttons = page.getByRole('region', { name: 'Item controls' }).getByRole('group', { name: 'Enchant, anoint and corrupt' });
+  const controls = page.getByRole('region', { name: 'Item controls' });
 
   // ItemsTab.lua:997-1004, 3664-3709
   await box.fill(BOW);
-  await buttons.getByRole('button', { name: 'Add Crucible mod...' }).click();
+  await controls.getByRole('button', { name: 'Add Crucible mod...' }).click();
   const dialog = page.getByRole('dialog', { name: 'Add Crucible Modifier to Item' });
   const [choices] = await m.exposition.ItemCrucibleChoices(BOW);
   const node1 = choices.Nodes![0]!;

@@ -163,6 +163,19 @@ describe('AppSettings', () => {
     expect(get(itemsLayout)).toBe('board');
   });
 
+  it('Crafting card layout (Stepped sections / Tabs) is kept for the paste panel’s crafting card', async () => {
+    const { craftCardLayout } = await import('$lib/display/appearance');
+    const s = open();
+    await fireEvent.click(s.getByRole('tab', { name: /^Items/ }));
+    const pick = s.getByRole<HTMLSelectElement>('combobox', { name: 'Crafting card layout' });
+    expect(pick.value).toBe('Stepped sections');
+    await fireEvent.change(pick, { target: { value: 'Tabs' } });
+    expect(get(craftCardLayout)).toBe('tabs');
+    expect(localStorage.getItem('options:craftCardLayout')).toBe('tabs');
+    await fireEvent.click(s.getByRole('button', { name: 'Reset this section' }));
+    expect(get(craftCardLayout)).toBe('stepped');
+  });
+
   it('Default item affix quality (Main.lua:1099-1106) is a 0-1 slider in 0.05 steps, kept, and given to Go', async () => {
     const s = open();
     const slider = s.getByRole<HTMLInputElement>('slider', { name: 'Default item affix quality' });

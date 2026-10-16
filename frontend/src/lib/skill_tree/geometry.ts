@@ -126,3 +126,8 @@ export const secondaryAscendancy = (tree: Tree, id: number): string | undefined 
 /* PassiveSpec.lua:44 */
 export const drawnByPoB = (tree: Tree, node: Node) =>
   !node.isProxy && !(node.group !== undefined && tree.groups[node.group]?.isProxy) && !node.expansionJewel?.parent;
+
+export const MIN_SCALING = 3;
+export const MAX_SCALING = 30;
+
+export const searchRingSize = (scaling: number) => 12.5 + 225 / scaling;

@@ -428,7 +428,7 @@ func (s *ModStore) evalMultiplierThresholdTag(value *mod.ModValueMulti, cfg *Lis
 		threshold = target.GetMultiplier(*tag.ThresholdVariable, cfg, false)
 	}
 
-	if (tag.TagUpper && mult > threshold) || (!tag.TagUpper && mult < threshold) {
+	if (tag.TagUpper && mult > threshold) || (tag.TagEquals && mult != threshold) || (!tag.TagUpper && mult < threshold) {
 		return nil
 	}
 	return value

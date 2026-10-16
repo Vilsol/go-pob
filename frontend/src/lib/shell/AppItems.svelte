@@ -613,6 +613,10 @@
       if (r) text = r.text;
       return r?.dropped;
     },
+    rebaseTip: async (base) => {
+      const r = await syncWrap?.RebaseItemText(text, base);
+      return r ? popupTip(r.text) : undefined;
+    },
     crucibleChoices: async () => syncWrap?.GetCrucibleChoices(text),
     crucibleText: async (ids) => syncWrap?.CrucibleText(text, ids),
     tipOf: popupTip,

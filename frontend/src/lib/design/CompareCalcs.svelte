@@ -1,7 +1,7 @@
 <script lang="ts">
   import PobText from './PobText.svelte';
   import Checkbox from './Checkbox.svelte';
-  import { colorCodes } from '$lib/display/colors';
+  import { sectionTone } from './calcs';
   import { tone as toneClass } from './tone';
   import { pobPlain } from './pob_text';
   import TooltipLines from './TooltipLines.svelte';
@@ -56,11 +56,10 @@
       {#each sections as s, i (i)}
         <div role="table" aria-label={pobPlain(s.blocks[0]?.label ?? s.id)} class="mb-2.5 break-inside-avoid rounded border border-line bg-surface-1 text-11">
           <div role="row" class={['grid gap-2 border-b border-line px-2 py-0.5 text-10 tracking-caps-tight', GRID]}>
-            <span
+            <span role="columnheader" class={['toned font-bold uppercase', toneClass(sectionTone({ color: s.color, applicable: true }))]}>{s.id}</span><span
               role="columnheader"
-              class={['toned font-bold uppercase', toneClass(s.color === colorCodes.OFFENCE ? 'off' : s.color === colorCodes.DEFENCE ? 'def' : 'phys')]}
-              >{s.id}</span
-            ><span role="columnheader" class="text-right text-build-a">A</span><span role="columnheader" class="text-right text-build-b">B</span>
+              class="text-right text-build-a">A</span
+            ><span role="columnheader" class="text-right text-build-b">B</span>
           </div>
           {#each s.blocks as b, j (j)}
             <div role="row" class={['grid gap-2 border-t border-line-faint px-2 pt-1 pb-0.5 font-semibold text-text-3 first:border-t-0', GRID]}>

@@ -76,6 +76,17 @@
   play={async ({ canvasElement }: { canvasElement: HTMLElement }) => expectTopBarFits(canvasElement)}><LiveTopBar fx={novaBuild} /></Story>
 
 <Story
+  name="Layout 960"
+  asChild
+  globals={{ viewport: { value: 'half', isRotated: false } }}
+  play={async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await expect(window.innerWidth).toBeLessThanOrEqual(960);
+    await expect(within(canvasElement).getByRole('button', { name: 'Save As' })).toBeVisible();
+    await loadoutLabel(canvasElement);
+    await expectTopBarFits(canvasElement);
+  }}><LiveTopBar fx={spectreBuild} dirty={false} onsaveas={saveAsSpy} /></Story>
+
+<Story
   name="Layout 1600"
   asChild
   globals={{ viewport: { value: 'mid', isRotated: false } }}

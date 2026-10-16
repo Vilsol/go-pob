@@ -2,7 +2,17 @@
   import SettingsDialog from '$lib/design/SettingsDialog.svelte';
   import type { Setting, SettingsSection } from '$lib/design/fixtures/app';
   import { backendLoaded, devMode, fontScaling, nodePowerTheme, outputs, zoomSensitivity } from '$lib/global.js';
-  import { ITEMS_LAYOUTS, THEMES, itemsLayout, showAnimations, showStatBars, theme, type ItemsLayout, type Theme } from '$lib/display/appearance';
+  import {
+    ITEMS_LAYOUTS,
+    THEMES,
+    craftCardLayout,
+    itemsLayout,
+    showAnimations,
+    showStatBars,
+    theme,
+    type ItemsLayout,
+    type Theme
+  } from '$lib/display/appearance';
   import { allAffixSliders } from '$lib/design/items';
   import { addToast } from '$lib/design/toast';
   import { checkForUpdate } from '$lib/pwa';
@@ -161,6 +171,14 @@
           hint: 'How the Items page lays out the equipped slots when opened'
         },
         {
+          id: 'craftCardLayout',
+          label: 'Crafting card layout',
+          kind: 'select',
+          value: 'Stepped sections',
+          opts: ['Stepped sections', 'Tabs'],
+          hint: 'The paste panel’s item controls: every section as a numbered step, or one section at a time behind tabs'
+        },
+        {
           id: 'slotTooltips',
           label: 'Show tooltips only for affected slots',
           kind: 'check',
@@ -273,6 +291,7 @@
     statBars: $showStatBars,
     affixSliders: $showAllItemAffixes,
     itemsLayout: $itemsLayout === 'list' ? 'List' : 'Board',
+    craftCardLayout: $craftCardLayout === 'tabs' ? 'Tabs' : 'Stepped sections',
     dataVersion,
     cache: cacheSize,
     devMode: $devMode,
@@ -328,6 +347,7 @@
     else if (id === 'affixSliders') showAllItemAffixes.set(!!v);
     else if (id === 'itemsLayout' && (ITEMS_LAYOUTS as readonly string[]).includes(String(v).toLowerCase()))
       itemsLayout.set(String(v).toLowerCase() as ItemsLayout);
+    else if (id === 'craftCardLayout') craftCardLayout.set(v === 'Tabs' ? 'tabs' : 'stepped');
     else if (id === 'devMode') devMode.set(!!v);
     else if (id === 'titleBuild') showTitlebarName.set(!!v);
     else if (id === 'zoomSensitivity') zoomSensitivity.set(Number(v));

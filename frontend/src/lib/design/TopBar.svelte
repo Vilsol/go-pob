@@ -195,7 +195,7 @@
 <svelte:window {onkeydown} />
 
 <header
-  class="relative box-border flex h-13 w-full min-w-320 items-stretch gap-3 border-b border-line bg-surface-1 px-5 font-sans text-text max-[1800px]:gap-2.5 max-[1800px]:px-3">
+  class="relative box-border flex h-13 w-full min-w-0 items-stretch gap-3 border-b border-line bg-surface-1 px-5 font-sans text-text max-[1800px]:gap-2.5 max-[1800px]:px-3 max-[1200px]:gap-2">
   <div class="flex min-w-0 shrink items-center gap-3 max-[1800px]:gap-2.5">
     <a href={backHref} onclick={onback} class="shrink-0 text-14 whitespace-nowrap text-text-2 no-underline" aria-label="Back to builds"
       >←<span class="max-[1800px]:hidden">&nbsp;Builds</span></a>
@@ -267,17 +267,17 @@
     {current}
     {onnavigate}
     label="Build pages"
-    class="shrink-0 [&_.tab]:px-3 max-[1800px]:[&_.tab]:px-2.25 max-[1800px]:[&_.tab]:text-13 max-[1800px]:[&_.tab-key]:hidden" />
+    class="shrink-0 [&_.tab]:px-3 max-[1800px]:[&_.tab]:px-2.25 max-[1800px]:[&_.tab]:text-13 max-[1800px]:[&_.tab-key]:hidden max-[1200px]:[&_.tab]:px-1.25 max-[1200px]:[&_.tab]:text-12" />
 
   <div class="grow"></div>
 
-  <div class="flex shrink-0 items-center gap-3 max-[1800px]:gap-2">
+  <div class="flex shrink-0 items-center gap-3 max-[1800px]:gap-2 max-[1200px]:gap-1.5">
     {#if loadouts.length}
       <FloatingLabel label="Loadout">
         <Select
           options={loadouts}
           value={loadout}
-          class="max-[1800px]:max-w-32"
+          class="max-[1800px]:max-w-32 max-[1200px]:max-w-20"
           title="Switches tree, skill, item and config sets together"
           onchange={(e: Event) => onloadout?.((e.currentTarget as HTMLSelectElement).value)} />
       </FloatingLabel>
@@ -295,7 +295,7 @@
       title="Build issues: problems the calculation found in this build"><span aria-hidden="true">⚠</span>{issues.length}</button>
     <button
       bind:this={logsBtn}
-      class="btn px-3"
+      class="btn px-3 max-[1200px]:px-2"
       onclick={() => toggle('logs')}
       aria-haspopup="dialog"
       aria-expanded={panel === 'logs'}
@@ -311,7 +311,11 @@
       ><span class="hidden max-[1800px]:flex"><Icon name="import-export" /></span><span class="max-[1800px]:hidden">Import / Export</span></a>
     <SaveButton {dirty} {onsave} class="max-[1800px]:size-8 max-[1800px]:p-0 max-[1800px]:[&_.save-icon]:flex max-[1800px]:[&_.save-text]:hidden" />
     {#if onsaveas}
-      <Button onclick={onsaveas} aria-haspopup="dialog" title="Save a copy of this build under a new name" class="max-[1800px]:px-2.5">Save As</Button>
+      <Button
+        onclick={onsaveas}
+        aria-haspopup="dialog"
+        title="Save a copy of this build under a new name"
+        class="max-[1800px]:px-2.5 max-[1200px]:px-1.5 max-[1200px]:text-12">Save As</Button>
     {/if}
     {#if devMode}<span class="text-11 font-semibold whitespace-nowrap text-worse">Dev Mode</span>{/if}
     {#if onabout}<Button

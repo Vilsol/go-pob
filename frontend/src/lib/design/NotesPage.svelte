@@ -226,7 +226,7 @@
 {/snippet}
 {#snippet sep()}<span class="mx-0.5 h-5.5 w-px shrink-0 bg-line" aria-hidden="true"></span>{/snippet}
 
-<div role="toolbar" aria-label="Formatting" class="panel flex items-center gap-0.5 p-1.5">
+<div role="toolbar" aria-label="Formatting" class="panel flex flex-wrap items-center gap-0.5 p-1.5">
   {#each HISTORY as t (t.name)}
     <button
       class="h-7.5 min-w-7.5 rounded border border-transparent bg-transparent px-1.5 font-sans text-15 text-text hover:bg-hover disabled:opacity-45 disabled:hover:bg-transparent"

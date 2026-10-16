@@ -8,7 +8,8 @@
   import CalcsBreakdown, { type BreakdownPart, type ModRow, type ModTable } from './CalcsBreakdown.svelte';
   import { tone as toneClass } from './tone';
   import { pobPlain } from './pob_text';
-  import { isHeaderRow, rowKey, sectionTone } from './calcs';
+  import { damageTone, isHeaderRow, rowKey, sectionTone } from './calcs';
+  import { changeOf, type Change } from '$lib/calcs/change';
   import type { CalcRow, CalcSectionFixture, CalcsFixture, ItemTip } from './fixtures';
   import type { Snippet } from 'svelte';
   import type { calculator } from '$lib/types';
@@ -204,6 +205,28 @@
   });
   const title = $derived(shownList ? shownList.label : shownRow ? `${pobPlain(shownRow.section.title)} · ${pobPlain(shownRow.r.label)}` : undefined);
 
+  const cellKey = (section: string, block: number, label: string, i: number) => `${section}|${block}|${label}|${i}`;
+  let changes = $state.raw(new Map<string, Change>());
+  let lastCells: Map<string, { text: string; stat?: string }> | undefined;
+  $effect(() => {
+    const now = new Map<string, { text: string; stat?: string }>();
+    for (const s of calcs.sections)
+      (s.blocks ?? []).forEach((b, j) => b.rows.forEach((r) => r.cells.forEach((c, i) => now.set(cellKey(s.id, j, r.label, i), { text: c.text, stat: c.bd }))));
+    const prev = lastCells;
+    lastCells = now;
+    if (!prev) return;
+    const moved = new Map<string, Change>();
+    for (const [k, c] of now) {
+      const was = prev.get(k);
+      const change = was && changeOf(was.text, c.text, c.stat);
+      if (change) moved.set(k, change);
+    }
+    changes = moved;
+  });
+  const CHANGE_TONE = { better: 'up', worse: 'down', changed: 'text' } as const;
+  const changeClass = (change: Change | undefined) =>
+    change && ['toned rounded-[2px] bg-[color-mix(in_oklab,var(--tone)_16%,transparent)]', toneClass(CHANGE_TONE[change])];
+
   const enter = (key: string) => () => (hover = key);
   const leave = (key: string) => () => {
     if (hover === key) hover = undefined;
@@ -219,7 +242,7 @@
 
 {#snippet label(key: string, r: CalcRow)}
   <button
-    class="min-w-0 truncate border-0 bg-transparent p-0 text-left font-sans text-11 text-text-2"
+    class="min-w-0 border-0 bg-transparent p-0 text-left font-sans text-11 break-words text-text-2"
     aria-pressed={pinned === key}
     aria-describedby={described(key)}
     onfocus={enter(key)}
@@ -227,10 +250,12 @@
 {/snippet}
 
 {#snippet sectionBody(s: CalcSectionFixture)}
-  <div class="border-t border-line">
+  <!-- CalcSectionControl.lua:497-508 -->
+  <div class="grid grid-cols-[8.5rem_minmax(0,max-content)_1fr] gap-x-2 border-t border-(--tone)">
     {#each s.blocks ?? [] as b, j (j)}
       {#if b.label !== s.title || (s.blocks?.length ?? 0) > 1}
-        <h3 class="m-0 border-t border-line-faint px-2 pt-1 font-sans text-10 font-semibold tracking-caps-tight text-text-3 uppercase first:border-t-0">
+        <h3
+          class="col-span-full m-0 border-t border-line-faint px-2 pt-1 font-sans text-10 font-semibold tracking-caps-tight text-text-3 uppercase first:border-t-0">
           {b.label}{#if b.extra}<span class="ml-1.5 font-mono tracking-normal normal-case"><PobText text={b.extra} /></span>{/if}
         </h3>
       {/if}
@@ -239,15 +264,22 @@
         {#if r.label && matches(r)}
           <div
             data-key={key}
-            class={['relative flex cursor-pointer justify-between gap-1.5 px-2 text-11 leading-[18px] hover:bg-surface-3', shownKey === key && 'bg-surface-3']}
+            class={[
+              'relative col-span-full grid cursor-pointer grid-cols-subgrid pr-2 text-11 leading-[18px] hover:bg-surface-3',
+              shownKey === key && 'bg-surface-3'
+            ]}
             onclick={toggle(key)}
             onmouseenter={enter(key)}
             onmouseleave={leave(key)}
             role="presentation">
             {#if r.gauge}<StatGauge {...r.gauge} />{/if}
-            <span class="relative flex min-w-0">{@render label(key, r)}</span>
-            <span class="relative flex shrink-0 gap-2 font-mono">
-              {#each r.cells as c, i (i)}<span><PobText text={c.text} /></span>{/each}
+            <span class="relative flex min-w-0 pl-2">{@render label(key, r)}</span>
+            <span class="relative flex min-w-0 flex-wrap justify-end gap-x-2 text-right font-mono">
+              {#each r.cells as c, i (i)}
+                {@const change = changes.get(cellKey(s.id, j, r.label, i))}
+                <span class={changeClass(change)} data-change={change}
+                  ><PobText text={c.text} />{#if change}<span class="sr-only"> ({change})</span>{/if}</span>
+              {/each}
             </span>
           </div>
         {/if}
@@ -257,48 +289,61 @@
 {/snippet}
 
 {#snippet wide(s: CalcSectionFixture)}
-  <section aria-label={pobPlain(s.title)} class="rounded border border-line bg-surface-1">
-    <h2 class={['toned block border-b border-line px-2 py-0.75 text-11 font-bold tracking-caps-tight uppercase', toneClass(sectionTone(s))]}>▾ {s.title}</h2>
-    {#each s.blocks ?? [] as b, j (j)}
-      {@const head = b.rows.find(isHeaderRow)}
-      <div role="table" aria-label={pobPlain(b.label)} class="font-mono text-11" style:--rest={(head?.cells.length ?? 6) - 1}>
-        {#if b.label !== s.title || b.extra}
-          <div
-            role="row"
-            class="border-t border-line-faint px-2 pt-1.5 pb-0.5 font-sans text-10 font-semibold tracking-caps-tight text-text-3 uppercase first:border-t-0">
-            <span role="rowheader"
-              >{b.label}{#if b.extra}<span class="ml-1.5 font-mono tracking-normal normal-case"><PobText text={b.extra} /></span>{/if}</span>
-          </div>
-        {/if}
-        {#each b.rows as r, k (k)}
-          {@const key = rowKey(s.id, j, k)}
-          {#if isHeaderRow(r)}
+  <section
+    aria-label={pobPlain(s.title)}
+    class={['rounded border bg-surface-1', 'border-[color-mix(in_oklab,var(--tone)_45%,var(--color-line))]', toneClass(sectionTone(s))]}>
+    <h2 class={['toned block border-b border-(--tone) px-2 py-0.75 text-11 font-bold tracking-caps-tight uppercase', toneClass(sectionTone(s))]}>
+      ▾ {s.title}
+    </h2>
+    <div data-calcs-wide class="overflow-x-auto">
+      {#each s.blocks ?? [] as b, j (j)}
+        <div
+          role="table"
+          aria-label={pobPlain(b.label)}
+          class="grid w-max min-w-full grid-cols-[8.5rem_repeat(var(--n),minmax(max-content,5.5rem))] gap-x-3 font-mono text-11"
+          style:--n={Math.max(1, ...b.rows.map((r) => r.cells.length))}>
+          {#if b.label !== s.title || b.extra}
             <div
               role="row"
-              class="grid grid-cols-[130px_minmax(min-content,2fr)_repeat(var(--rest),minmax(min-content,1fr))] px-2 py-px font-sans text-10 min-[1800px]:grid-cols-[210px_minmax(min-content,2fr)_repeat(var(--rest),minmax(min-content,1fr))]">
-              <span role="columnheader"><span class="sr-only">Stat</span></span>
-              {#each r.cells as c, i (i)}<span role="columnheader" class="truncate text-right"><PobText text={c.text} /></span>{/each}
-            </div>
-          {:else if matches(r)}
-            <!-- eslint-disable-next-line svelte/no-unused-svelte-ignore -- svelte-check warns on both, eslint-plugin-svelte sees one -->
-            <!-- svelte-ignore a11y_interactive_supports_focus, a11y_click_events_have_key_events -->
-            <div
-              role="row"
-              data-key={key}
-              class={[
-                'grid cursor-pointer grid-cols-[130px_minmax(min-content,2fr)_repeat(var(--rest),minmax(min-content,1fr))] px-2 py-px leading-[17px] hover:bg-surface-3 min-[1800px]:grid-cols-[210px_minmax(min-content,2fr)_repeat(var(--rest),minmax(min-content,1fr))]',
-                shownKey === key && 'bg-surface-3'
-              ]}
-              onclick={toggle(key)}
-              onmouseenter={enter(key)}
-              onmouseleave={leave(key)}>
-              <span role="rowheader" class="flex min-w-0">{@render label(key, r)}</span>
-              {#each r.cells as c, i (i)}<span role="cell" class="truncate text-right" title={pobPlain(c.text)}><PobText text={c.text} /></span>{/each}
+              class="col-span-full border-t border-line-faint px-2 pt-1.5 pb-0.5 font-sans text-10 font-semibold tracking-caps-tight text-text-3 uppercase first:border-t-0">
+              <span role="rowheader"
+                >{b.label}{#if b.extra}<span class="ml-1.5 font-mono tracking-normal normal-case"><PobText text={b.extra} /></span>{/if}</span>
             </div>
           {/if}
-        {/each}
-      </div>
-    {/each}
+          {#each b.rows as r, k (k)}
+            {@const key = rowKey(s.id, j, k)}
+            {#if isHeaderRow(r)}
+              <div role="row" class="col-span-full grid grid-cols-subgrid px-2 py-px font-sans text-10">
+                <span role="columnheader"><span class="sr-only">Stat</span></span>
+                {#each r.cells as c, i (i)}
+                  {@const dt = damageTone(pobPlain(c.text))}
+                  {#if dt}<span role="columnheader" class={['toned border-b-2 border-(--tone) text-right font-semibold', toneClass(dt)]}
+                      >{pobPlain(c.text)}</span
+                    >{:else}<span role="columnheader" class="text-right"><PobText text={c.text} /></span>{/if}
+                {/each}
+              </div>
+            {:else if matches(r)}
+              <!-- eslint-disable-next-line svelte/no-unused-svelte-ignore -- svelte-check warns on both, eslint-plugin-svelte sees one -->
+              <!-- svelte-ignore a11y_interactive_supports_focus, a11y_click_events_have_key_events -->
+              <div
+                role="row"
+                data-key={key}
+                class={['col-span-full grid cursor-pointer grid-cols-subgrid px-2 py-px leading-[17px] hover:bg-surface-3', shownKey === key && 'bg-surface-3']}
+                onclick={toggle(key)}
+                onmouseenter={enter(key)}
+                onmouseleave={leave(key)}>
+                <span role="rowheader" class="flex min-w-0">{@render label(key, r)}</span>
+                {#each r.cells as c, i (i)}
+                  {@const change = changes.get(cellKey(s.id, j, r.label, i))}
+                  <span role="cell" class={['text-right', changeClass(change)]} data-change={change} title={pobPlain(c.text)}
+                    ><PobText text={c.text} />{#if change}<span class="sr-only"> ({change})</span>{/if}</span>
+                {/each}
+              </div>
+            {/if}
+          {/each}
+        </div>
+      {/each}
+    </div>
   </section>
 {/snippet}
 
@@ -432,39 +477,44 @@
       </dl>
     {/if}
     {#each wideTop as s (s.id)}{@render wide(s)}{/each}
-    <div class="grid grid-cols-3 items-start gap-1.5">
+    <div class="columns-[17rem] gap-1.5">
       {#each cols as col, ci (ci)}
-        <div class="flex min-w-0 flex-col gap-1.5">
-          {#each col as s (s.id)}
-            {@const open = s.applicable && !closed[s.id]}
-            <section aria-label={pobPlain(s.title)} class={['rounded border border-line bg-surface-1', !s.applicable && 'opacity-55']}>
-              <h2 class="m-0 flex">
-                <button
-                  class={[
-                    'toned box-border flex min-w-0 grow gap-1.25 border-0 bg-transparent px-2 py-0.75 text-left font-sans text-11 font-semibold tracking-caps-tight uppercase',
-                    toneClass(sectionTone(s))
-                  ]}
-                  aria-expanded={open}
-                  disabled={!s.applicable}
-                  onclick={() => {
-                    const collapse = open;
-                    closed = { ...closed, [s.id]: collapse };
-                    oncollapse?.(s.id, collapse);
-                  }}
-                  >{open ? '▾' : '▸'}
-                  {s.title}
-                  {#if !s.applicable}<span class="font-normal text-text-3 normal-case">not applicable</span>{/if}</button>
-                {#if s.applicable}<button
-                    class="border-0 bg-transparent px-1.5 text-11 text-text-3 hover:text-text"
-                    aria-label="Pop out {pobPlain(s.title)}"
-                    title="Pop out"
-                    onclick={(e) => popOut(s.id, e.currentTarget.closest('section'))}>^</button
-                  >{/if}
-              </h2>
-              {#if open}{@render sectionBody(s)}{/if}
-            </section>
-          {/each}
-        </div>
+        {#each col as s (s.id)}
+          {@const open = s.applicable && !closed[s.id]}
+          <section
+            aria-label={pobPlain(s.title)}
+            class={[
+              'mb-1.5 break-inside-avoid rounded border bg-surface-1',
+              'border-[color-mix(in_oklab,var(--tone)_45%,var(--color-line))]',
+              toneClass(sectionTone(s)),
+              !s.applicable && 'opacity-55'
+            ]}>
+            <h2 class="m-0 flex">
+              <button
+                class={[
+                  'toned box-border flex min-w-0 grow gap-1.25 border-0 bg-transparent px-2 py-0.75 text-left font-sans text-11 font-semibold tracking-caps-tight uppercase',
+                  toneClass(sectionTone(s))
+                ]}
+                aria-expanded={open}
+                disabled={!s.applicable}
+                onclick={() => {
+                  const collapse = open;
+                  closed = { ...closed, [s.id]: collapse };
+                  oncollapse?.(s.id, collapse);
+                }}
+                >{open ? '▾' : '▸'}
+                {s.title}
+                {#if !s.applicable}<span class="font-normal text-text-3 normal-case">not applicable</span>{/if}</button>
+              {#if s.applicable}<button
+                  class="border-0 bg-transparent px-1.5 text-11 text-text-3 hover:text-text"
+                  aria-label="Pop out {pobPlain(s.title)}"
+                  title="Pop out"
+                  onclick={(e) => popOut(s.id, e.currentTarget.closest('section'))}>^</button
+                >{/if}
+            </h2>
+            {#if open}{@render sectionBody(s)}{/if}
+          </section>
+        {/each}
       {/each}
     </div>
     {#each wideBottom as s (s.id)}{@render wide(s)}{/each}
@@ -475,7 +525,10 @@
       <div
         role="dialog"
         aria-label="{pobPlain(s.title)} (popped out)"
-        class="fixed z-20 flex max-h-[80vh] w-90 flex-col rounded border border-line bg-surface-1 shadow-lg"
+        class={[
+          'fixed z-20 flex max-h-[80vh] w-90 flex-col rounded border border-[color-mix(in_oklab,var(--tone)_45%,var(--color-line))] bg-surface-1 shadow-lg',
+          toneClass(sectionTone(s))
+        ]}
         style:left="{o.x}px"
         style:top="{o.y}px"
         onpointerdown={() => raise(o.id)}>

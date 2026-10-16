@@ -218,6 +218,46 @@ export const classArt = (tree: Tree, className: string | undefined) => {
   return className && classIndex in tree.extraImages ? tree.extraImages[classIndex] : undefined;
 };
 
+// src/Classes/PassiveTree.lua:446-492
+// PassiveTreeView.lua:852
+const NODE_OVERLAY: Record<string, Record<string, string>> = {
+  Normal: {
+    alloc: 'PSSkillFrameActive',
+    path: 'PSSkillFrameHighlighted',
+    unalloc: 'PSSkillFrame',
+    allocAscend: 'AscendancyFrameSmallAllocated',
+    pathAscend: 'AscendancyFrameSmallCanAllocate',
+    unallocAscend: 'AscendancyFrameSmallNormal'
+  },
+  Notable: {
+    alloc: 'NotableFrameAllocated',
+    path: 'NotableFrameCanAllocate',
+    unalloc: 'NotableFrameUnallocated',
+    allocAscend: 'AscendancyFrameLargeAllocated',
+    pathAscend: 'AscendancyFrameLargeCanAllocate',
+    unallocAscend: 'AscendancyFrameLargeNormal',
+    allocBlighted: 'BlightedNotableFrameAllocated',
+    pathBlighted: 'BlightedNotableFrameCanAllocate',
+    unallocBlighted: 'BlightedNotableFrameUnallocated'
+  },
+  Keystone: {
+    alloc: 'KeystoneFrameAllocated',
+    path: 'KeystoneFrameCanAllocate',
+    unalloc: 'KeystoneFrameUnallocated',
+    allocBlighted: 'KeystoneFrameAllocated',
+    pathBlighted: 'KeystoneFrameCanAllocate',
+    unallocBlighted: 'KeystoneFrameUnallocated'
+  },
+  Socket: {
+    alloc: 'JewelFrameAllocated',
+    path: 'JewelFrameCanAllocate',
+    unalloc: 'JewelFrameUnallocated',
+    allocAlt: 'JewelSocketAltActive',
+    pathAlt: 'JewelSocketAltCanAllocate',
+    unallocAlt: 'JewelSocketAltNormal'
+  }
+};
+
 export const fillScene = (scene: Scene, state: SceneState, sheetReady: (i: number) => boolean, art?: { sheet: number; w: number; h: number }) => {
   const { tree } = scene;
 
@@ -342,8 +382,8 @@ export const fillScene = (scene: Scene, state: SceneState, sheetReady: (i: numbe
   for (const { id, node, at } of [...scene.nodes, ...clusterNodes]) {
     const active = isAlloc(id);
     const lit = active || state.hoverPath.has(id) || state.hovered === id;
-    // PassiveTreeView.lua:831-833
-    const framed = lit || !!state.heatMap;
+    // PassiveTreeView.lua:840-849
+    const overlayState = active || state.hovered === id || state.heatMap ? 'alloc' : state.hoverPath.has(id) ? 'path' : 'unalloc';
     const tint = packTint(state.tint?.get(id));
     // PassiveTreeView.lua:960-963, 972-976
     const frameTint = state.depends?.has(id) && state.hovered !== id ? packTint([1, 0, 0]) : tint;
@@ -366,14 +406,13 @@ export const fillScene = (scene: Scene, state: SceneState, sheetReady: (i: numbe
       ascFrame('AscendancyMiddle');
     } else if (node.isKeystone) {
       icon();
-      frame(framed ? 'KeystoneFrameAllocated' : 'KeystoneFrameUnallocated');
+      frame(NODE_OVERLAY.Keystone[overlayState + (node.isBlighted ? 'Blighted' : '')]);
     } else if (node.isNotable) {
       icon();
-      if (node.ascendancyName) ascFrame(framed ? 'AscendancyFrameLargeAllocated' : 'AscendancyFrameLargeNormal');
-      else frame(framed ? 'NotableFrameAllocated' : 'NotableFrameUnallocated');
+      if (node.ascendancyName) ascFrame(NODE_OVERLAY.Notable[overlayState + 'Ascend']);
+      else frame(NODE_OVERLAY.Notable[overlayState + (node.isBlighted ? 'Blighted' : '')]);
     } else if (node.isJewelSocket) {
-      if (node.expansionJewel) frame(framed ? 'JewelSocketAltActive' : 'JewelSocketAltNormal');
-      else frame(framed ? 'JewelFrameAllocated' : 'JewelFrameUnallocated');
+      frame(NODE_OVERLAY.Socket[overlayState + (node.expansionJewel ? 'Alt' : '')]);
       const jewel = active ? state.socketArt?.get(id) : undefined;
       if (jewel) frame(jewel);
     } else if (node.isMastery && !node.inactiveIcon) {
@@ -386,8 +425,8 @@ export const fillScene = (scene: Scene, state: SceneState, sheetReady: (i: numbe
       put(sp, src[name], name, at.x, at.y, Variant.Plain, false, tint);
     } else {
       icon();
-      if (node.ascendancyName) ascFrame(framed ? 'AscendancyFrameSmallAllocated' : 'AscendancyFrameSmallNormal');
-      else frame(framed ? 'PSSkillFrameActive' : 'PSSkillFrame');
+      if (node.ascendancyName) ascFrame(NODE_OVERLAY.Normal[overlayState + 'Ascend']);
+      else frame(NODE_OVERLAY.Normal[overlayState]);
     }
   }
   scene.counts.sprites = n;

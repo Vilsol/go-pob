@@ -11,14 +11,26 @@
   import AddModifierDialog from './AddModifierDialog.svelte';
   import AffixControls from './AffixControls.svelte';
   import CrucibleDialog from './CrucibleDialog.svelte';
+  import CraftCardStepped from './craft-card/CraftCardStepped.svelte';
+  import CraftCardTabs from './craft-card/CraftCardTabs.svelte';
+  import { craftCardLayout, type CraftCardLayout } from '$lib/display/appearance';
   import { allAffixSliders, modTone, type DisplayEdit, type DisplayInfo } from './items';
-  import type { CraftApi } from './crafting';
+  import { affixLines, statTemplate, type CraftApi } from './crafting';
+  import type { Snippet } from 'svelte';
 
   // ItemsTab.lua:378-715, 1025-1070, 1522-1541, 2335-2382
   // ItemsTab.lua:1025-1089
   // ItemsTab.lua:509-553
-  type Props = { info: DisplayInfo; onedit: (edit: DisplayEdit) => void; craft?: CraftApi; customRequest?: boolean };
-  let { info, onedit, craft, customRequest = $bindable(false) }: Props = $props();
+  type Props = {
+    info: DisplayInfo;
+    onedit: (edit: DisplayEdit) => void;
+    craft?: CraftApi;
+    customRequest?: boolean;
+    layout?: CraftCardLayout;
+    head?: Snippet;
+    result?: Snippet;
+  };
+  let { info, onedit, craft, customRequest = $bindable(false), layout = $craftCardLayout, head, result }: Props = $props();
 
   let enchantSlot = $state(0);
   let anointSlot = $state(0);
@@ -36,6 +48,21 @@
   let rangeLine = $state(0);
   const ranged = $derived(info.mods.flatMap((m, i) => (m.hasRange ? [i] : [])));
   const picked = $derived(ranged.includes(rangeLine) ? rangeLine : ranged[0]);
+  const IMPLICIT = new Set(['enchant', 'scourge', 'implicit']);
+  const implicitMods = $derived(info.mods.flatMap((m, i) => (IMPLICIT.has(m.section ?? '') ? [i] : [])));
+  const explicitMods = $derived(info.mods.flatMap((m, i) => (IMPLICIT.has(m.section ?? '') ? [] : [i])));
+  const slotted = $derived(
+    craft && info.affixes
+      ? affixLines(
+          info.affixes,
+          info.mods.map((m) => m.line),
+          explicitMods
+        )
+      : { stats: [], slots: [], shared: new Set<number>(), rest: explicitMods }
+  );
+  const uid = $props.id();
+  const lineId = (i: number) => `${uid}-line-${i}`;
+  let lineRoll = $state.raw<{ index: number; value: number; from: DisplayInfo }>();
 
   // ItemsTab.lua:580-581
   const INFLUENCES = ['Shaper', 'Elder', 'Warlord', 'Hunter', 'Crusader', 'Redeemer', 'Searing Exarch', 'Eater of Worlds'];
@@ -85,7 +112,66 @@
   };
 </script>
 
-<section aria-label="Item controls" class="flex flex-col gap-2 border-t border-line pt-2.5 text-13">
+{#snippet modRow(i: number, preview?: string[], also = false)}
+  {@const m = info.mods[i]}
+  {#if also}
+    <!-- Item.lua:2085-2093 -->
+    <li class="note">Also adds to {m.line}</li>
+  {:else}
+    <li class="flex flex-col gap-0.5">
+      <div class="flex min-w-0 items-center gap-1.5">
+        <button
+          class={['btn-bare grow text-left font-sans text-13 text-(--tone)', toneClass(m.disabled ? 'muted' : modTone(m.kind)), m.disabled && 'line-through']}
+          aria-pressed={!m.disabled}
+          title={m.disabled ? 'Disabled: click to enable it' : 'Click to disable this modifier'}
+          onclick={() => onedit({ kind: 'disable', index: i })}
+          ><span id={lineId(i)}>{(!slotted.shared.has(i) && preview?.find((l) => statTemplate(l) === statTemplate(m.line))) || m.line}</span></button>
+        {#if m.removable}
+          <span class="text-11 text-text-3">{m.removal}</span>
+          <Button size="xs" aria-label="Remove {m.line}" onclick={() => onedit({ kind: 'remove', index: i })}>Remove</Button>
+        {/if}
+        {#if info.foulborn?.[i]?.mutable}
+          <label class="field field-inline shrink-0 gap-1 text-11 text-text-2" title="Swap this modifier for its Foulborn counterpart, or back"
+            ><input
+              type="checkbox"
+              aria-label="Foulborn: {m.line}"
+              checked={info.foulborn[i].mutated}
+              onchange={() => onedit({ kind: 'mutate', index: i })} />Foulborn</label>
+        {/if}
+      </div>
+      {#if m.hasRange && $allAffixSliders}
+        <div class="flex items-center gap-2">
+          <input
+            type="range"
+            class="min-w-0 grow"
+            min="0"
+            max="1"
+            step="0.01"
+            aria-label="Roll of {m.line}"
+            aria-describedby={lineId(i)}
+            value={m.range}
+            oninput={(e) => (lineRoll = { index: i, value: Number(e.currentTarget.value), from: info })}
+            onchange={(e) => onedit({ kind: 'range', index: i, float: Number(e.currentTarget.value) })} /><output
+            class="w-10 shrink-0 text-right font-mono text-12 text-text-2"
+            >{Math.round((lineRoll?.index === i && lineRoll.from === info ? lineRoll.value : m.range) * 100)}%</output>
+        </div>
+      {/if}
+    </li>
+  {/if}
+{/snippet}
+
+{#snippet modList(list: number[], label: string)}
+  {#if list.length}
+    <ul aria-label={label} class="flex flex-col gap-1">
+      {#each list as i (i)}
+        {@render modRow(i)}
+      {/each}
+    </ul>
+  {/if}
+{/snippet}
+
+{#snippet base()}
+  {@render head?.()}
   {#if info.variants.length > 1}
     {#each selected as sel, i (i)}
       <FloatingLabel label={ALT[i]}
@@ -182,7 +268,33 @@
       {/if}
     </div>
   {/if}
-  {#if craft && ((info.enchants ?? 0) > 0 || (info.anoints ?? 0) > 0 || info.corruptible || info.addImplicit || info.addCustom || info.addCrucible)}
+  {#if info.cluster}
+    {@const cl = info.cluster}
+    <div role="group" aria-label="Cluster jewel" class="flex flex-col gap-1.5">
+      <FloatingLabel label="Cluster skill"
+        ><Select
+          class="h-7.5"
+          aria-label="Cluster skill"
+          options={cl.skills.map((s) => ({ value: s.id, label: s.label }))}
+          value={cl.skill}
+          onchange={(e: Event & { currentTarget: HTMLSelectElement }) => clusterEdit(cl, e.currentTarget.value, clusterNow(cl).count)} /></FloatingLabel>
+      <label class="field field-inline gap-2 text-12"
+        >Added Passives: {cl.nodeCount}<input
+          type="range"
+          class="w-37.5"
+          min={cl.min}
+          max={cl.max}
+          step="1"
+          aria-label="Added Passives"
+          value={cl.nodeCount}
+          onchange={(e) => clusterEdit(cl, clusterNow(cl).skill, Number(e.currentTarget.value))} /></label>
+    </div>
+  {/if}
+{/snippet}
+
+{#snippet implicits()}
+  {@render modList(implicitMods, 'Implicit modifiers')}
+  {#if craft && ((info.enchants ?? 0) > 0 || (info.anoints ?? 0) > 0 || info.corruptible || info.addImplicit)}
     <div role="group" aria-label="Enchant, anoint and corrupt" class="flex flex-wrap gap-1.5">
       {#each Array.from({ length: info.enchants ?? 0 }, (_, k) => k + 1) as slot (slot)}
         <Button
@@ -206,81 +318,15 @@
       {#if info.addImplicit}
         <Button size="xs" onclick={() => (implicitOpen = true)}>Add Implicit...</Button>
       {/if}
-      {#if info.addCustom}
-        <Button size="xs" onclick={() => (customOpen = true)}>Add modifier...</Button>
-      {/if}
-      {#if info.addCrucible}
-        <Button size="xs" onclick={() => (crucibleOpen = true)}>Add Crucible mod...</Button>
-      {/if}
     </div>
   {/if}
-  {#if info.cluster}
-    {@const cl = info.cluster}
-    <div role="group" aria-label="Cluster jewel" class="flex flex-col gap-1.5">
-      <FloatingLabel label="Cluster skill"
-        ><Select
-          class="h-7.5"
-          aria-label="Cluster skill"
-          options={cl.skills.map((s) => ({ value: s.id, label: s.label }))}
-          value={cl.skill}
-          onchange={(e: Event & { currentTarget: HTMLSelectElement }) => clusterEdit(cl, e.currentTarget.value, clusterNow(cl).count)} /></FloatingLabel>
-      <label class="field field-inline gap-2 text-12"
-        >Added Passives: {cl.nodeCount}<input
-          type="range"
-          class="w-37.5"
-          min={cl.min}
-          max={cl.max}
-          step="1"
-          aria-label="Added Passives"
-          value={cl.nodeCount}
-          onchange={(e) => clusterEdit(cl, clusterNow(cl).skill, Number(e.currentTarget.value))} /></label>
-    </div>
-  {/if}
+{/snippet}
+
+{#snippet affixSection()}
   {#if craft && info.affixes}
-    <AffixControls affixes={info.affixes} {craft} />
+    <AffixControls affixes={info.affixes} {craft} slots={slotted.slots} changes={slotted.stats} {lineId} line={modRow} />
   {/if}
-  {#if info.mods.length}
-    <ul aria-label="Modifiers" class="flex flex-col gap-1">
-      {#each info.mods as m, i (i)}
-        <li class="flex flex-col gap-0.5">
-          <div class="flex items-center gap-1.5">
-            <button
-              class={[
-                'btn-bare grow text-left font-sans text-13 text-(--tone)',
-                toneClass(m.disabled ? 'muted' : modTone(m.kind)),
-                m.disabled && 'line-through'
-              ]}
-              aria-pressed={!m.disabled}
-              title={m.disabled ? 'Disabled: click to enable it' : 'Click to disable this modifier'}
-              onclick={() => onedit({ kind: 'disable', index: i })}>{m.line}</button>
-            {#if m.removable}
-              <span class="text-11 text-text-3">{m.removal}</span>
-              <Button size="xs" aria-label="Remove {m.line}" onclick={() => onedit({ kind: 'remove', index: i })}>Remove</Button>
-            {/if}
-            {#if info.foulborn?.[i]?.mutable}
-              <label class="field field-inline shrink-0 gap-1 text-11 text-text-2" title="Swap this modifier for its Foulborn counterpart, or back"
-                ><input
-                  type="checkbox"
-                  aria-label="Foulborn: {m.line}"
-                  checked={info.foulborn[i].mutated}
-                  onchange={() => onedit({ kind: 'mutate', index: i })} />Foulborn</label>
-            {/if}
-          </div>
-          {#if m.hasRange && $allAffixSliders}
-            <input
-              type="range"
-              class="w-full"
-              min="0"
-              max="1"
-              step="0.01"
-              aria-label="Roll of {m.line}"
-              value={m.range}
-              onchange={(e) => onedit({ kind: 'range', index: i, float: Number(e.currentTarget.value) })} />
-          {/if}
-        </li>
-      {/each}
-    </ul>
-  {/if}
+  {@render modList(slotted.rest, craft && info.affixes ? 'Other explicit modifiers' : 'Explicit modifiers')}
   {#if !$allAffixSliders && picked !== undefined}
     {@const m = info.mods[picked]}
     <div class="flex items-center gap-2">
@@ -301,7 +347,26 @@
         onchange={(e) => onedit({ kind: 'range', index: picked, float: Number(e.currentTarget.value) })} />
     </div>
   {/if}
+  {#if craft && (info.addCustom || info.addCrucible)}
+    <div role="group" aria-label="Add modifiers" class="flex flex-wrap gap-1.5">
+      {#if info.addCustom}
+        <Button size="xs" onclick={() => (customOpen = true)}>Add modifier...</Button>
+      {/if}
+      {#if info.addCrucible}
+        <Button size="xs" onclick={() => (crucibleOpen = true)}>Add Crucible mod...</Button>
+      {/if}
+    </div>
+  {/if}
+{/snippet}
+
+<section aria-label="Item controls" class="flex flex-col border-t border-line pt-2.5 text-13">
+  {#if layout === 'tabs'}
+    <CraftCardTabs {base} {implicits} affixes={affixSection} {result} implicitCount={implicitMods.length} explicitCount={explicitMods.length} />
+  {:else}
+    <CraftCardStepped {base} {implicits} affixes={affixSection} {result} />
+  {/if}
 </section>
+
 {#if craft && enchantSlot}
   <EnchantDialog bind:open={enchantOpen} slot={enchantSlot} {craft} {onedit} />
 {/if}

@@ -3205,7 +3205,7 @@ export const calcSections: CalcSection[] = [
     1,
     'Life',
     2,
-    colorCodes.DEFENCE,
+    colorCodes.LIFE,
     [
       {
         defaultCollapsed: false,
@@ -3257,7 +3257,7 @@ export const calcSections: CalcSection[] = [
     1,
     'Mana',
     2,
-    colorCodes.DEFENCE,
+    colorCodes.MANA,
     [
       {
         defaultCollapsed: false,
@@ -3290,7 +3290,7 @@ export const calcSections: CalcSection[] = [
     1,
     'EnergyShield',
     2,
-    colorCodes.DEFENCE,
+    colorCodes.ES,
     [
       {
         defaultCollapsed: false,
@@ -3344,7 +3344,7 @@ export const calcSections: CalcSection[] = [
     1,
     'Ward',
     2,
-    colorCodes.DEFENCE,
+    colorCodes.WARD,
     [
       {
         defaultCollapsed: false,
@@ -3373,7 +3373,7 @@ export const calcSections: CalcSection[] = [
     1,
     'Armour',
     3,
-    colorCodes.DEFENCE,
+    colorCodes.ARMOUR,
     [
       {
         defaultCollapsed: false,
@@ -3430,7 +3430,7 @@ export const calcSections: CalcSection[] = [
     1,
     'Evasion',
     3,
-    colorCodes.DEFENCE,
+    colorCodes.EVASION,
     [
       {
         defaultCollapsed: false,

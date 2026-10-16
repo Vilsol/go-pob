@@ -163,6 +163,27 @@
     return raw === '' ? undefined : parseInt(raw);
   };
   const opts = (names: string[] | undefined) => (names ?? []).map((label, i) => ({ value: String(i + 1), label }));
+
+  const WIDTH_MIN = 240;
+  const WIDTH_MAX = 640;
+  const WIDTH_KEY = 'go-pob:sidebar-width';
+  const storedWidth = () => {
+    try {
+      return Number(localStorage.getItem(WIDTH_KEY)) || 320;
+    } catch {
+      return 320;
+    }
+  };
+  let width = $state(Math.min(WIDTH_MAX, Math.max(WIDTH_MIN, storedWidth())));
+  let resizing: { x: number; w: number } | undefined;
+  const setWidth = (w: number) => {
+    width = Math.round(Math.min(WIDTH_MAX, Math.max(WIDTH_MIN, w)));
+    try {
+      localStorage.setItem(WIDTH_KEY, String(width));
+    } catch {
+      // empty
+    }
+  };
 </script>
 
 {#if collapsed}
@@ -191,7 +212,8 @@
   <aside
     bind:this={aside}
     aria-label="Main skill and stats"
-    class="relative box-border flex h-full max-h-screen w-80 shrink-0 flex-col overflow-visible border-r border-line bg-surface-1 font-sans text-text">
+    class="relative box-border flex h-full max-h-screen max-w-[50vw] shrink-0 flex-col overflow-visible border-r border-line bg-surface-1 font-sans text-text"
+    style:width="{width}px">
     <div class="flex flex-col gap-2.5 border-b border-line px-4 py-3.5">
       <div class="flex items-end gap-2">
         <FloatingLabel label="Main skill" class="min-w-0 grow"
@@ -322,14 +344,14 @@
                   <div class={['group/row stat-row', i % 2 && 'bg-bar']} style:--tone={tick3(e.line)}>
                     {#if e.line.gauge}<StatGauge {...e.line.gauge} />{/if}
                     <button
-                      class="flex min-w-0 grow cursor-default items-center border-0 bg-transparent p-0 text-left [font:inherit] text-inherit"
+                      class="flex min-w-0 grow cursor-default flex-wrap-reverse items-center border-0 bg-transparent p-0 pl-2.25 text-left [font:inherit] text-inherit"
                       aria-describedby={hover?.entry === e ? `${uid}-bd` : undefined}
                       onmouseenter={(ev) => show(e, ev)}
                       onmouseleave={() => hide(e)}
                       onfocus={(ev) => show(e, ev)}
                       onblur={() => hide(e)}
                       onclick={() => onbreakdown?.(e.line)}>
-                      <span class="stat-label"
+                      <span class="stat-label w-auto max-w-39.5 grow pl-0"
                         >{e.line.label}{#if e.line.labelNote}<span class="text-worse">{e.line.labelNote}</span>{/if}</span
                       ><span class="sr-only">: </span>
                       <span class={['stat-value toned', valueTone(e.line) || 'tone-text']}
@@ -416,5 +438,33 @@
         </BreakdownTooltip>
       </div>
     {/if}
+    <!-- eslint-disable-next-line svelte/no-unused-svelte-ignore -->
+    <!-- svelte-ignore a11y_no_noninteractive_tabindex, a11y_no_noninteractive_element_interactions -->
+    <div
+      role="separator"
+      aria-label="Resize the sidebar"
+      aria-orientation="vertical"
+      aria-valuenow={width}
+      aria-valuemin={WIDTH_MIN}
+      aria-valuemax={WIDTH_MAX}
+      tabindex="0"
+      class="absolute top-0 -right-0.75 bottom-0 z-5 w-1.5 cursor-col-resize hover:bg-surface-3 focus-visible:bg-surface-3"
+      onkeydown={(e: KeyboardEvent) => {
+        const d = e.key === 'ArrowLeft' ? -16 : e.key === 'ArrowRight' ? 16 : 0;
+        if (!d) return;
+        e.preventDefault();
+        setWidth(width + d);
+      }}
+      onpointerdown={(e: PointerEvent) => {
+        if (e.button > 0) return;
+        resizing = { x: e.clientX, w: width };
+        (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+      }}
+      onpointermove={(e: PointerEvent) => {
+        if (resizing) setWidth(resizing.w + e.clientX - resizing.x);
+      }}
+      onpointerup={() => (resizing = undefined)}
+      onpointercancel={() => (resizing = undefined)}>
+    </div>
   </aside>
 {/if}

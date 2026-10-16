@@ -1799,6 +1799,8 @@ func performCalc(env *Environment, skipEHP bool) {
 	if env.ModeCombat {
 		flaskMinion.reset(env)
 		effectInc := env.ModDB.Sum(mod.TypeIncrease, playerActorCfg, "FlaskEffect")
+		//pob:block:src/Modules/CalcPerform.lua:1604
+		effectIncMagicNoAdjacent := env.ModDB.Sum(mod.TypeIncrease, playerActorCfg, "MagicFlaskNoAdjacentEffect")
 		flaskBuffs := make(map[string]*moddb.ModList)
 		flaskBuffOrder := make([]string, 0, len(env.Flasks)*2)
 		flaskBuffsNonUtility := make(map[string]*moddb.ModList)
@@ -1827,6 +1829,15 @@ func performCalc(env *Environment, skipEHP bool) {
 			flaskEffectInc := item.FlaskData["effectInc"]
 			if item.Rarity == RarityMagic && !(isLifeFlask || isManaFlask) {
 				flaskEffectInc += env.ModDB.Sum(mod.TypeIncrease, playerActorCfg, "MagicUtilityFlaskEffect")
+			}
+			//pob:block:src/Modules/CalcPerform.lua:1708-1717
+			if item.Rarity == RarityMagic && effectIncMagicNoAdjacent != 0 {
+				if flaskSlotNum, ok := env.flaskSlotMap[item]; ok {
+					hasAdjacent := env.flaskSlotOccupied[flaskSlotNum-1] || env.flaskSlotOccupied[flaskSlotNum+1]
+					if !hasAdjacent {
+						flaskEffectInc += effectIncMagicNoAdjacent
+					}
+				}
 			}
 
 			// Avert thine eyes, lest they be forever scarred

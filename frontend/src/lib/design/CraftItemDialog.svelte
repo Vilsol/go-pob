@@ -5,6 +5,7 @@
   import Select from './Select.svelte';
   import Dropdown from './Dropdown.svelte';
   import ItemTooltip from './ItemTooltip.svelte';
+  import FloatingItemTip from './FloatingItemTip.svelte';
   import type { CraftChoice, TipProps } from './items';
 
   // ItemsTab.lua:2519-2603
@@ -33,6 +34,8 @@
   });
   const choice = $derived({ rarity, title, base: bases[base] ?? '' });
   let hovered = $state<number | null>(null);
+  let hoveredEl = $state<HTMLElement | null>(null);
+  const uid = $props.id();
   $effect(() => {
     const b = hovered === null ? choice.base : (bases[hovered] ?? choice.base);
     if (open && b) onpreview?.({ ...choice, base: b });
@@ -71,11 +74,16 @@
         aria-label="Base"
         options={bases.map((b, i) => ({ value: String(i), label: b }))}
         value={String(base)}
-        onhover={(i: number | null) => (hovered = i)}
+        onhover={(i: number | null, el: HTMLElement | null) => {
+          hovered = i;
+          hoveredEl = el;
+        }}
         onchange={(v: string) => {
           base = Number(v);
         }} /></FloatingLabel>
-    {#if preview}
+    {#if preview && hoveredEl}
+      <div aria-label="Base preview" role="group"><FloatingItemTip anchor={hoveredEl} id="{uid}-tip" {...preview} /></div>
+    {:else if preview}
       <div aria-label="Base preview" role="group" class="self-start"><ItemTooltip {...preview} /></div>
     {/if}
   </div>

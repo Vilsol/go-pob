@@ -305,6 +305,8 @@ func (b *clusterBuilder) buildSubgraph(jewel *clusterJewelData, parentSocketID s
 			IsKeystone: keystoneNode.IsKeystone,
 		}
 		place(strconv.Itoa(nodeID), "Keystone", 0, 1)
+		//pob:block:src/Classes/PassiveSpec.lua:2094
+		b.linkNodes(strconv.Itoa(nodeID), parentSocketID)
 		return
 	}
 

@@ -508,6 +508,22 @@ tasks:
         "cd '{{.POB}}/src' && exec '{{.MAIN}}/.luajit-det/bin/luajit' '{{.HERE}}/oracle/mod_cache_live.lua' '{{.OUT}}/ModCacheLive.lua' '{{.OUT}}/extra.txt'"
       - '{{.NICE}} env CORPUS=true MCD_RANK=1 MCD_CACHE={{.OUT}}/ModCacheLive.lua MCD_WL={{.WL}} MCD_OUT={{.OUT}}/worklist.tsv go test ./calculator/ -run "TestModCacheDifferential$" -count=1 -v'
 
+  mod-census:
+    desc: "Support census over every ModCache key — both / pob-only / go-only / neither (range text split) — OUT=<dir> [SHIPPED=1 to skip the live re-parse]"
+    vars:
+      POB:
+        sh: 'realpath "{{.POB_DIR | default .POB_DEFAULT}}"'
+      OUT: '{{.OUT | default "/tmp/pob-mod-census"}}'
+      HERE:
+        sh: pwd
+      MAIN:
+        sh: dirname "$(git rev-parse --path-format=absolute --git-common-dir)"
+    cmds:
+      - mkdir -p {{.OUT}}
+      - |
+        {{if not .SHIPPED}}{{.GOPOB}} require-det-luajit mod-census && {{.NICE}} env LUA_CPATH="{{.POB}}/.luarocks/lib/lua/5.1/?.so;;" LUA_PATH="{{.POB}}/runtime/lua/?.lua;{{.POB}}/runtime/lua/?/init.lua;{{.POB}}/.luarocks/share/lua/5.1/?.lua;{{.POB}}/.luarocks/share/lua/5.1/?/init.lua;;" setarch "$(uname -m)" -R sh -c "cd '{{.POB}}/src' && exec '{{.MAIN}}/.luajit-det/bin/luajit' '{{.HERE}}/oracle/mod_cache_live.lua' '{{.OUT}}/ModCacheLive.lua'"{{end}}
+      - '{{.NICE}} env {{if not .SHIPPED}}MCD_CACHE={{.OUT}}/ModCacheLive.lua {{end}}MCD_CENSUS_OUT={{.OUT}} go test ./calculator/ -run "TestModCacheCensus$" -count=1 -v'
+
   pool-walk:
     desc: "WHERE the EHP pool walk first diverges, per build and hit — dumps PoB's per-hit trajectory and grades ours against it (LIST= a build-list file, OUT= dump dir)"
     vars:
@@ -881,6 +897,19 @@ tasks:
         sh: realpath -m "{{.B}}"
     cmds:
       - '{{.NICE}} env DIFF_A={{.ABS_A}} DIFF_B={{.ABS_B}} go test -count=1 -v ./calculator/ -run TestCorpusDiff'
+
+  gate-ext:
+    desc: "What the mod-parser extension layer moves: the gate and a corpus dump with it OFF and ON, diffed — OUT=<dir>"
+    vars:
+      OUT: '{{.OUT | default "/tmp/pob-gate-ext"}}'
+      ABS:
+        sh: realpath -m "{{.OUT | default "/tmp/pob-gate-ext"}}"
+    cmds:
+      - mkdir -p {{.ABS}}
+      - '{{.NICE}} env DUMP={{.ABS}}/off.txt.gz go test -count=1 ./calculator/ -run TestCorpusDump > {{.ABS}}/off.log 2>&1'
+      - '{{.NICE}} env GOPOB_MOD_EXT=1 DUMP={{.ABS}}/on.txt.gz go test -count=1 ./calculator/ -run TestCorpusDump > {{.ABS}}/on.log 2>&1'
+      - '{{.NICE}} env DIFF_A={{.ABS}}/off.txt.gz DIFF_B={{.ABS}}/on.txt.gz go test -count=1 -v ./calculator/ -run TestCorpusDiff'
+      - '{{.NICE}} env GOPOB_MOD_EXT=1 CORPUS=true go test ./calculator/ -run TestCorpus3_29VsOracle -count=1 -v -timeout 60m 2>&1 | grep -E "mod-ext:|matched [0-9]+ / [0-9]+|below floor|^(ok|FAIL|---)"; true'
 
   pre-commit:
     desc: "Convenience script that should be run before committing"

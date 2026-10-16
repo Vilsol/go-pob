@@ -433,28 +433,28 @@ type mcdRow struct {
 	line, class, pob, ours string
 }
 
-func mcdDiff(t *testing.T) ([]mcdRow, int, map[string]bool) {
+func mcdCachePath(t *testing.T) string {
 	t.Helper()
-	path := os.Getenv("MCD_CACHE")
-	if path == "" {
-		pobRoot := os.Getenv("POB_DIR")
-		if pobRoot == "" {
-			home, err := os.UserHomeDir()
-			if err != nil {
-				t.Skipf("NOT-RUN: no $HOME: %v", err)
-			}
-			pobRoot = filepath.Join(home, "Projects", "Vilsol", "PathOfBuilding")
-		}
-		path = filepath.Join(pobRoot, "src", "Data", "ModCache.lua")
+	if path := os.Getenv("MCD_CACHE"); path != "" {
+		return path
 	}
-	raw, err := os.ReadFile(path)
+	pobRoot := os.Getenv("POB_DIR")
+	if pobRoot == "" {
+		home, err := os.UserHomeDir()
+		if err != nil {
+			t.Skipf("NOT-RUN: no $HOME: %v", err)
+		}
+		pobRoot = filepath.Join(home, "Projects", "Vilsol", "PathOfBuilding")
+	}
+	return filepath.Join(pobRoot, "src", "Data", "ModCache.lua")
+}
+
+func mcdEach(t *testing.T, fn func(key string, pob []mcdMod, pobWhole bool)) {
+	t.Helper()
+	raw, err := os.ReadFile(mcdCachePath(t))
 	if err != nil {
 		t.Skipf("NOT-RUN: %v", err)
 	}
-	only := strings.ToLower(os.Getenv("MCD_ONLY"))
-	var rows []mcdRow
-	n := 0
-	keys := map[string]bool{}
 	for _, ln := range strings.Split(string(raw), "\n") {
 		ln = strings.TrimPrefix(ln, "local c=...")
 		if !strings.HasPrefix(ln, `c["`) {
@@ -466,15 +466,10 @@ func mcdDiff(t *testing.T) ([]mcdRow, int, map[string]bool) {
 			t.Fatalf("REFUSING: unparseable ModCache key in %q", ln)
 		}
 		p.i += 2
-		keys[key] = true
-		if only != "" && !strings.Contains(strings.ToLower(key), only) {
-			continue
-		}
 		rhs := p.value()
 		if rhs.kind != 't' || len(rhs.pos) < 1 {
 			t.Fatalf("REFUSING: unparseable ModCache row %q", ln)
 		}
-		n++
 		var pob []mcdMod
 		pobWhole := rhs.pos[0].kind == 't' && (len(rhs.pos) < 2 || rhs.pos[1].kind == 'z')
 		if rhs.pos[0].kind == 't' {
@@ -482,6 +477,22 @@ func mcdDiff(t *testing.T) ([]mcdRow, int, map[string]bool) {
 				pob = append(pob, mcdPobMod(m))
 			}
 		}
+		fn(key, pob, pobWhole)
+	}
+}
+
+func mcdDiff(t *testing.T) ([]mcdRow, int, map[string]bool) {
+	t.Helper()
+	only := strings.ToLower(os.Getenv("MCD_ONLY"))
+	var rows []mcdRow
+	n := 0
+	keys := map[string]bool{}
+	mcdEach(t, func(key string, pob []mcdMod, pobWhole bool) {
+		keys[key] = true
+		if only != "" && !strings.Contains(strings.ToLower(key), only) {
+			return
+		}
+		n++
 		e := ParseMod(key, false)
 		var ours []mcdMod
 		oursWhole := false
@@ -494,7 +505,7 @@ func mcdDiff(t *testing.T) ([]mcdRow, int, map[string]bool) {
 		if c := mcdClassify(pob, pobWhole, ours, oursWhole); c != "" {
 			rows = append(rows, mcdRow{key, c, mcdField(pob, mcdMod.full), mcdField(ours, mcdMod.full)})
 		}
-	}
+	})
 	return rows, n, keys
 }
 
@@ -851,5 +862,128 @@ func TestModCacheDifferentialFixedLinesStayFixed(t *testing.T) {
 		if want[r.line] {
 			t.Errorf("[%s] %q diverges from the pin again\n    pob:  %s\n    ours: %s", r.class, r.line, r.pob, r.ours)
 		}
+	}
+}
+
+var mcdRangeRe = regexp.MustCompile(`\(-?[0-9.]+-[0-9.]+\)`)
+
+type mcdCensus struct {
+	keys                                           int
+	both, pobOnly, goOnly, neitherReal, neitherRng []string
+}
+
+func mcdTakeCensus(t *testing.T) mcdCensus {
+	t.Helper()
+	var c mcdCensus
+	mcdEach(t, func(key string, _ []mcdMod, pobWhole bool) {
+		c.keys++
+		e := ParseMod(key, false)
+		goWhole := e != nil && e.ModList != nil && e.Extra == ""
+		switch {
+		case pobWhole && goWhole:
+			c.both = append(c.both, key)
+		case pobWhole:
+			c.pobOnly = append(c.pobOnly, key)
+		case goWhole:
+			c.goOnly = append(c.goOnly, key)
+		case mcdRangeRe.MatchString(key):
+			c.neitherRng = append(c.neitherRng, key)
+		default:
+			c.neitherReal = append(c.neitherReal, key)
+		}
+	})
+	if c.keys < 10000 {
+		t.Fatalf("REFUSING: only %d ModCache keys read — the reader is broken, not the tree", c.keys)
+	}
+	in := func(list []string, s string) bool {
+		for _, l := range list {
+			if l == s {
+				return true
+			}
+		}
+		return false
+	}
+	for _, ctl := range []struct {
+		line string
+		list []string
+		want string
+	}{
+		{"+10 to maximum Life", c.both, "both"},
+		{" Wolf Alpha Talisman", c.neitherReal, "neither-real"},
+		{"Grants Call of Steel", c.neitherReal, "neither-real"},
+		{"(10-15)% increased Energy Shield Recharge Rate", c.neitherRng, "neither-range"},
+	} {
+		if !in(ctl.list, ctl.line) {
+			t.Fatalf("REFUSING: control %q did not land in %s — the classifier is broken", ctl.line, ctl.want)
+		}
+	}
+	for _, l := range [][]string{c.both, c.pobOnly, c.goOnly, c.neitherReal, c.neitherRng} {
+		sort.Strings(l)
+	}
+	return c
+}
+
+// TestModCacheCensus writes the four support lists to MCD_CENSUS_OUT (task mod-census).
+func TestModCacheCensus(t *testing.T) {
+	c := mcdTakeCensus(t)
+	t.Logf("ModCache keys %d: both %d · pob-only %d · go-only %d · neither %d (range text %d, real %d)",
+		c.keys, len(c.both), len(c.pobOnly), len(c.goOnly), len(c.neitherReal)+len(c.neitherRng), len(c.neitherRng), len(c.neitherReal))
+	out := os.Getenv("MCD_CENSUS_OUT")
+	if out == "" {
+		return
+	}
+	for name, list := range map[string][]string{
+		"both.txt": c.both, "pobonly.txt": c.pobOnly, "goonly.txt": c.goOnly,
+		"neither-real.txt": c.neitherReal, "neither-range.txt": c.neitherRng,
+	} {
+		var sb strings.Builder
+		for _, l := range list {
+			sb.WriteString(strings.ReplaceAll(l, "\n", `\n`) + "\n")
+		}
+		if err := os.WriteFile(filepath.Join(out, name), []byte(sb.String()), 0o600); err != nil {
+			t.Fatalf("MCD_CENSUS_OUT: %v", err)
+		}
+	}
+}
+
+const mcdPobOnlyCeiling = 0
+
+func TestModCacheCensusPobOnlyCeiling(t *testing.T) {
+	c := mcdTakeCensus(t)
+	if len(c.pobOnly) > mcdPobOnlyCeiling {
+		for _, l := range c.pobOnly {
+			t.Logf("pob-only: %q", l)
+		}
+		t.Fatalf("%d ModCache lines PoB parses whole and we do not, ceiling %d", len(c.pobOnly), mcdPobOnlyCeiling)
+	}
+	if len(c.pobOnly) < mcdPobOnlyCeiling {
+		t.Logf("pob-only %d is below the ceiling %d — lower mcdPobOnlyCeiling", len(c.pobOnly), mcdPobOnlyCeiling)
+	}
+}
+
+// TestModCacheLiveCorpusRowsMatchThePin: Corpus lines outside ModCache.lua that the pin's live grammar parses.
+func TestModCacheLiveCorpusRowsMatchThePin(t *testing.T) {
+	raw, err := os.ReadFile(filepath.Join("testdata", "modcache_live_corpus_rows.tsv"))
+	if err != nil {
+		t.Fatalf("REFUSING: %v", err)
+	}
+	n := 0
+	for _, ln := range strings.Split(strings.TrimSpace(string(raw)), "\n") {
+		line, want, ok := strings.Cut(ln, "\t")
+		if !ok {
+			t.Fatalf("REFUSING: malformed fixture row %q", ln)
+		}
+		n++
+		e := ParseMod(line, false)
+		var ours []mcdMod
+		for _, m := range e.ModList {
+			ours = append(ours, mcdOurMod(m))
+		}
+		if got := mcdField(ours, mcdMod.full); got != want || e.Extra != "" {
+			t.Errorf("%q\n    pob:  %s\n    ours: %s (extra %q)", line, want, got, e.Extra)
+		}
+	}
+	if n == 0 {
+		t.Fatal("REFUSING: empty fixture")
 	}
 }

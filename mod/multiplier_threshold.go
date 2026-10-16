@@ -9,6 +9,7 @@ type MultiplierThresholdTag struct {
 	TagThreshold      *float64
 	ThresholdVariable *string
 	TagUpper          bool
+	TagEquals         bool
 	TagActor          string
 }
 
@@ -42,6 +43,11 @@ func (m *MultiplierThresholdTag) ThresholdVar(thresholdVar string) *MultiplierTh
 
 func (m *MultiplierThresholdTag) Upper(upper bool) *MultiplierThresholdTag {
 	m.TagUpper = upper
+	return m
+}
+
+func (m *MultiplierThresholdTag) Equals(equals bool) *MultiplierThresholdTag {
+	m.TagEquals = equals
 	return m
 }
 

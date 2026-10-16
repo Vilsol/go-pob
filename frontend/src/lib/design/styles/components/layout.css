@@ -1,6 +1,6 @@
 @layer components {
   .page {
-    @apply box-border flex h-screen min-h-180 w-full min-w-320 flex-col overflow-hidden bg-ground font-sans text-text;
+    @apply box-border flex h-screen min-h-180 w-full min-w-0 flex-col overflow-hidden bg-ground font-sans text-text;
   }
   .page-body {
     @apply flex min-h-0 w-full min-w-0 flex-[1_1_0];

@@ -52,9 +52,10 @@ for (const [width, height] of [
     await page.setViewportSize({ width, height });
     await setup(page);
     await page.getByRole('textbox', { name: /Item text/ }).fill(helmet);
-    const buttons = page.getByRole('region', { name: 'Item controls' }).getByRole('group', { name: 'Enchant, anoint and corrupt' });
+    const controls = page.getByRole('region', { name: 'Item controls' });
+    const buttons = controls.getByRole('group', { name: 'Enchant, anoint and corrupt' });
 
-    await buttons.getByRole('button', { name: 'Add modifier...' }).click();
+    await controls.getByRole('button', { name: 'Add modifier...' }).click();
     const add = page.getByRole('dialog', { name: 'Add Modifier to Item' });
     await expectUnclipped(add.getByRole('combobox', { name: 'Modifier' }));
     await add.getByRole('button', { name: 'Cancel' }).click();

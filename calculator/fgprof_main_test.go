@@ -10,6 +10,11 @@ import (
 
 // TestMain optionally wraps the whole package run in an fgprof profile.
 func TestMain(m *testing.M) {
+	extOn := os.Getenv("GOPOB_MOD_EXT") == "1"
+	SetModParserExtensions(extOn)
+	if extOn {
+		os.Stderr.WriteString("mod-ext: the extension layer is ON (GOPOB_MOD_EXT=1) — results are not PoB parity\n")
+	}
 	path := os.Getenv("FGPROF")
 	if path == "" {
 		os.Exit(m.Run())

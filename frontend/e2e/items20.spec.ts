@@ -494,7 +494,12 @@ test('item controls and craft (0280)', async ({ page }) => {
   await expect(box).toHaveValue(shaped);
 
   const disabled = await edit(shaped, { Kind: 'disable', Index: 0 });
-  await controls.getByRole('list', { name: 'Modifiers' }).getByRole('button').first().click();
+  await controls
+    .getByRole('list', { name: /modifiers$/ })
+    .first()
+    .getByRole('button')
+    .first()
+    .click();
   await expect(box).toHaveValue(disabled);
 
   const removed = await edit(disabled, { Kind: 'remove', Index: (await m.exposition.DisplayItem(disabled))[0].Mods!.findIndex((x) => x.Removable) });

@@ -24,6 +24,8 @@ const TONES = {
   fractured: 'tone-fractured',
   flask: 'tone-crafted',
   lightning: 'tone-lightning',
+  ward: 'tone-code-ward',
+  evasion: 'tone-code-evasion',
   off: 'tone-calc-off',
   def: 'tone-calc-def',
   phys: 'tone-normal',

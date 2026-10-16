@@ -216,6 +216,7 @@ func canonOurTag(t mod.Tag) canonTag {
 		setNumPtr("threshold", tag.TagThreshold)
 		setStrPtr("thresholdVar", tag.ThresholdVariable)
 		setBool("upper", tag.TagUpper)
+		setBool("equals", tag.TagEquals)
 		set("actor", tag.TagActor)
 	case *mod.PerStatTag:
 		set("stats", strings.Join(tag.StatList, ","))

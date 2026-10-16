@@ -126,7 +126,16 @@ export function besideAnchor(tip: HTMLElement, anchor: HTMLElement | undefined) 
 }
 
 /* ItemsTab.lua:378-715 */
-export type DisplayMod = { line: string; kind: string; hasRange: boolean; range: number; disabled: boolean; removable: boolean; removal: string };
+export type DisplayMod = {
+  line: string;
+  kind: string;
+  section?: string;
+  hasRange: boolean;
+  range: number;
+  disabled: boolean;
+  removable: boolean;
+  removal: string;
+};
 export type DisplayInfo = {
   quality: number;
   hasQuality: boolean;

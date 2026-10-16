@@ -7,6 +7,7 @@
   import ItemTooltip from './ItemTooltip.svelte';
   import ImpactBlocks from './ImpactBlocks.svelte';
   import PobText from './PobText.svelte';
+  import FloatingModTip from './FloatingModTip.svelte';
   import { plainText, sortByValue, type CraftApi, type CustomModChoices } from './crafting';
   import type { ImpactBlock, TipProps } from './items';
 
@@ -61,6 +62,28 @@
     });
   });
 
+  // ItemsTab.lua:3842-3849
+  const uid = $props.id();
+  let hover = $state.raw<{ el: HTMLElement; lines: string[]; blocks: ImpactBlock[]; pending: boolean }>();
+  let hoverSeq = 0;
+  const hoverMod = (index: number | null, el: HTMLElement | null) => {
+    const seq = ++hoverSeq;
+    const m = index === null ? undefined : mods[order[index]];
+    if (!el || !m) {
+      hover = undefined;
+      return;
+    }
+    hover = { el, lines: m.lines.map((l) => '^7' + l), blocks: [], pending: !!craft.modCompare };
+    craft
+      .modCompare?.(m.lines.map((l) => (m.modTags.length ? `{tags:${m.modTags.join(',')}}` : '') + l))
+      .then((blocks) => {
+        if (seq === hoverSeq && hover) hover = { ...hover, blocks, pending: false };
+      })
+      .catch(() => {
+        if (seq === hoverSeq && hover) hover = { ...hover, pending: false };
+      });
+  };
+
   const result = () => (sourceId === 'CUSTOM' ? craft.customModText?.('CUSTOM', '', custom) : mod ? craft.customModText?.(sourceId, mod.id, '') : undefined);
   $effect(() => {
     void [sourceId, mod, custom, choices];
@@ -102,6 +125,7 @@
           aria-label="Modifier"
           options={order.map((k, i) => ({ value: String(i), label: plainText(mods[k].label) }))}
           value={String(pick)}
+          onhover={hoverMod}
           onchange={(v: string) => {
             pick = Number(v);
           }} /></FloatingLabel>
@@ -114,6 +138,9 @@
     {/if}
     {#if preview}
       <div aria-label="New item" role="group" class="self-start"><ItemTooltip {...preview} /></div>
+    {/if}
+    {#if hover}
+      <FloatingModTip anchor={hover.el} id="{uid}-tip" label="Modifier tooltip" lines={hover.lines} blocks={hover.blocks} pending={hover.pending} />
     {/if}
   </div>
   {#snippet actions()}

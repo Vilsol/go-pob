@@ -82,6 +82,8 @@ type Environment struct {
 	GrantedSkillsItems  map[string]interface{}
 	Flasks              []*Item
 	Tinctures           []*Item
+	flaskSlotMap        map[*Item]int
+	flaskSlotOccupied   map[int]bool
 
 	GrantedPassives map[string]interface{}
 	AllocatedNodes  map[string]data.Node

@@ -2211,6 +2211,7 @@ class PoBWorker {
       mods: (d.Mods ?? []).map((m) => ({
         line: m.Line,
         kind: m.Kind.toLowerCase(),
+        section: m.Section,
         hasRange: m.HasRange,
         range: m.Range,
         disabled: m.Disabled,

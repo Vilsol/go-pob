@@ -14,7 +14,7 @@
   import { clusterNodeAsTreeNode } from '$lib/components/skill-tree/scene';
   import JewelRing from '$lib/components/skill-tree/JewelRing.svelte';
   import { drawnNodes, loadSkillTree, skillTree, skillTreeVersion } from '$lib/skill_tree';
-  import { ascendancyOffsets, drawnByPoB, nodeCentre, toScreen, type Point } from '$lib/skill_tree/geometry';
+  import { ascendancyOffsets, drawnByPoB, nodeCentre, searchRingSize, toScreen, type Point } from '$lib/skill_tree/geometry';
   import type { Node, TreeClusterNode } from '$lib/skill_tree/types';
   import type { NodeStatDiff, StatDiffBlock } from '$lib/skill_tree/stat_compare';
   import { estimatePlayerProgress } from '$lib/display/points';
@@ -1379,8 +1379,8 @@
                 data-search-match={id}
                 style:left="{p.x}px"
                 style:top="{p.y}px"
-                style:width="{Math.max(20, 350 / view.scaling)}px"
-                style:height="{Math.max(20, 350 / view.scaling)}px"
+                style:width="{searchRingSize(view.scaling)}px"
+                style:height="{searchRingSize(view.scaling)}px"
                 style:border-color={hexColour($colorHighlight) ?? '#ff0000'}>
               </div>
             {/if}

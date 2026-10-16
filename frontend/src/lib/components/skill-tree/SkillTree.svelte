@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Node, Tree, TreeClusterNode } from '$lib/skill_tree/types';
   import { classStartNodes } from '../../skill_tree';
-  import { secondaryAscendancy } from '$lib/skill_tree/geometry';
+  import { MAX_SCALING, MIN_SCALING, secondaryAscendancy } from '$lib/skill_tree/geometry';
   import type { Point } from '$lib/skill_tree/geometry';
   import { onMount } from 'svelte';
   import { currentBuild, devMode, nodePowerTheme, outputs, zoomSensitivity } from '$lib/global.js';
@@ -512,8 +512,6 @@
     view = { offsetX, offsetY, scaling, width: canvasWidth, height: canvasHeight };
   });
 
-  const MIN_SCALING = 3;
-  const MAX_SCALING = 30;
   const scaleAbout = (x: number, y: number, newScaling: number) => {
     offsetX += x * (newScaling - scaling);
     offsetY += y * (newScaling - scaling);

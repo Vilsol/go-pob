@@ -75,6 +75,7 @@ calculator/mastery.go               PORT       src/Classes/TreeTab.lua
 calculator/legion_transform.go      PORT       src/Classes/PassiveSpec.lua
 calculator/misc_calculator.go       PORT       src/Modules/Calcs.lua,src/Modules/CalcSetup.lua
 calculator/mod_parser.go            PORT       src/Modules/ModParser.lua
+calculator/mod_parser_ext.go        GO-NATIVE  the extension layer: go-pob's own parser rows, tried only when the pin's grammar leaves a line unsupported; every row carries a //gopob:ext marker and has no ModParser.lua counterpart by definition
 calculator/mod_parser_index.go      GO-NATIVE  candidate-set prefilter for Go's regexp engine, which has no literal-prefix skip on anchored patterns; LuaJIT's pattern scan has no equivalent cost and PoB has no equivalent code
 calculator/mod_tools.go             PORT       src/Modules/ModParser.lua
 calculator/output.go                PORT       src/Modules/Calcs.lua

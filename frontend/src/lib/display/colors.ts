@@ -65,6 +65,7 @@ export const colorCodes = {
   MANA: withStatsColorCodes.WITCH,
   ES: withStatsColorCodes.SOURCE,
   WARD: withStatsColorCodes.RARE,
+  ARMOUR: withStatsColorCodes.NORMAL,
   EVASION: withStatsColorCodes.POSITIVE,
   RAGE: withStatsColorCodes.WARNING,
   PHYS: withStatsColorCodes.NORMAL

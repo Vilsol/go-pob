@@ -199,6 +199,59 @@ describe('the tree scene', () => {
     expect(frame({ heatMap: true }, mastery.at)).toEqual(frame({}, mastery.at));
   });
 
+  // PassiveTree.lua:446-492, PassiveTreeView.lua:840-852
+  it("frames every node with PoB's overlay for its type and state", () => {
+    const t = tree!;
+    const scene = buildScene(t);
+    const overlay: Record<string, Record<string, string>> = {
+      Normal: { alloc: 'PSSkillFrameActive', path: 'PSSkillFrameHighlighted', unalloc: 'PSSkillFrame' },
+      Notable: { alloc: 'NotableFrameAllocated', path: 'NotableFrameCanAllocate', unalloc: 'NotableFrameUnallocated' },
+      Keystone: { alloc: 'KeystoneFrameAllocated', path: 'KeystoneFrameCanAllocate', unalloc: 'KeystoneFrameUnallocated' },
+      Socket: { alloc: 'JewelFrameAllocated', path: 'JewelFrameCanAllocate', unalloc: 'JewelFrameUnallocated' }
+    };
+    for (const s of ['alloc', 'path', 'unalloc']) {
+      const cap = s === 'alloc' ? 'Allocated' : s === 'path' ? 'CanAllocate' : 'Normal';
+      overlay.Normal[s + 'Ascend'] = 'AscendancyFrameSmall' + cap;
+      overlay.Notable[s + 'Ascend'] = 'AscendancyFrameLarge' + cap;
+      overlay.Notable[s + 'Blighted'] = 'BlightedNotableFrame' + (s === 'unalloc' ? 'Unallocated' : cap);
+      overlay.Keystone[s + 'Blighted'] = overlay.Keystone[s];
+      overlay.Socket[s + 'Alt'] = 'JewelSocketAlt' + (s === 'alloc' ? 'Active' : s === 'path' ? 'CanAllocate' : 'Normal');
+    }
+    const framed = scene.nodes.filter(({ node }) => !node.isMastery && !node.isAscendancyStart && node.classStartIndex === undefined);
+    const ids = new Set(framed.map((n) => n.id));
+    const wrong: string[] = [];
+    for (const s of ['alloc', 'path', 'unalloc']) {
+      fillScene(scene, { ...empty(), active: s === 'alloc' ? ids : new Set(), hoverPath: s === 'path' ? ids : new Set() }, () => true);
+      const at = new Map<string, { x: number; y: number; sprite: string }[]>();
+      for (const i of sceneDrawList(scene, 1, undefined) as { k: string; src: string; s: number[]; q: number[] }[]) {
+        if (i.k !== 'sprite') continue;
+        const c = { x: i.q[0] + i.q[2] / 2, y: i.q[1] + i.q[5] / 2, sprite: `${i.src} ${i.s.join(',')}` };
+        const key = `${Math.round(c.x)},${Math.round(c.y)}`;
+        at.set(key, [...(at.get(key) ?? []), c]);
+      }
+      const drawnAt = (p: { x: number; y: number }) =>
+        [-1, 0, 1].flatMap((dx) =>
+          [-1, 0, 1].flatMap((dy) =>
+            (at.get(`${Math.round(p.x) + dx},${Math.round(p.y) + dy}`) ?? [])
+              .filter((c) => Math.abs(c.x - p.x) < 0.1 && Math.abs(c.y - p.y) < 0.1)
+              .map((c) => c.sprite)
+          )
+        );
+      for (const { id, node, at: p } of framed) {
+        const type = node.isJewelSocket ? 'Socket' : node.isKeystone ? 'Keystone' : node.isNotable ? 'Notable' : 'Normal';
+        const key =
+          type === 'Socket' ? s + (node.expansionJewel ? 'Alt' : '') : s + (node.ascendancyName ? 'Ascend' : '') + (node.isBlighted ? 'Blighted' : '');
+        const name = (node.name === 'Charm Socket' ? 'Azmeri' : '') + overlay[type][key];
+        const sprite = (node.ascendancyName && st.bloodlineSprites[node.ascendancyName]?.[name]) || st.inverseSpritesOther[name];
+        const c = sprite?.coords[name];
+        const want = c && `${scene.sheets[scene.sheetOfUrl.get(sprite.filename)!]} ${[c.x, c.y, c.w, c.h].join(',')}`;
+        if (!want || !drawnAt(p).includes(want)) wrong.push(`${s} ${type} ${id} ${node.name}: ${name}`);
+      }
+    }
+    expect(framed.length).toBeGreaterThan(1000);
+    expect(wrong).toEqual([]);
+  });
+
   // PassiveTreeView.lua:663-699
   it('styles a connector by both trees', () => {
     const scene = buildScene(tree!);
