@@ -5,7 +5,7 @@ set -ex
 export GOOS=js
 export GOARCH=wasm
 
-test_files=$(find . -name "*_test.go" -not -path './scripts/*' -not -path '*/testdata/*' -not -path '*/node_modules/*' | grep -v 'go-pob-data')
+test_files=$(find . -name "*_test.go" -not -path './scripts/*' -not -path './desktop/*' -not -path '*/testdata/*' -not -path '*/node_modules/*' | grep -v 'go-pob-data')
 
 dirs=()
 for f in $test_files; do
