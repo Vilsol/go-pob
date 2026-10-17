@@ -330,6 +330,7 @@ tasks:
     desc: "Lint all Go code"
     cmds:
       - 'GOLANGCI_LINT_CACHE="{{.ROOT_DIR}}/.cache/golangci-lint" {{.NICE}} golangci-lint run'
+      - '{{.GOPOB}} fma-census'
 
   lint-frontend:
     desc: "Lint frontend"

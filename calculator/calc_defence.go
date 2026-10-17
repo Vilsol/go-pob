@@ -926,8 +926,8 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 				conversion := math.Min(modDB.Sum(mod.TypeBase, nil, "LifeRegenAppliesToEnergyShield"), 100) / 100
 				lifeBase := modDB.Sum(mod.TypeBase, nil, "LifeRegen")
 				lifePercent := modDB.Sum(mod.TypeBase, nil, "LifeRegenPercent")
-				modDB.AddMod(mod.NewFloat("EnergyShieldRegen", mod.TypeBase, math.Floor(lifeBase*conversion*100+0.0001)/100).Source("Life Regen to ES Regen"))
-				modDB.AddMod(mod.NewFloat("EnergyShieldRegenPercent", mod.TypeBase, math.Floor(lifePercent*conversion*100+0.0001)/100).Source("Life Regen to ES Regen"))
+				modDB.AddMod(mod.NewFloat("EnergyShieldRegen", mod.TypeBase, math.Floor(float64(lifeBase*conversion*100)+0.0001)/100).Source("Life Regen to ES Regen"))
+				modDB.AddMod(mod.NewFloat("EnergyShieldRegenPercent", mod.TypeBase, math.Floor(float64(lifePercent*conversion*100)+0.0001)/100).Source("Life Regen to ES Regen"))
 			}
 			baseRegen = modDB.Sum(mod.TypeBase, nil, n.regen) + pool*modDB.Sum(mod.TypeBase, nil, n.regenPercent)/100
 			regen = baseRegen * (1 + inc/100) * more
