@@ -34,7 +34,7 @@ var csClassNames = map[csClass]string{
 }
 
 var (
-	csMarkerRE           = regexp.MustCompile(`^//(go:|nolint|pob:|crystalline:|go-only:|fold-dead-ok:|lint:|export |\+build| ?retired-version-ok:)`)
+	csMarkerRE           = regexp.MustCompile(`^//(go:|nolint|pob:|gopob:|crystalline:|go-only:|fold-dead-ok:|lint:|export |\+build| ?retired-version-ok:)`)
 	csCodeStartRE        = regexp.MustCompile(`^(local [A-Za-z_]|if .* then$|elseif .* then$|else$|end[,)]?$|for .* do$|t_insert\()`)
 	csLuaTokRE           = regexp.MustCompile(`~=|\bthen\b|\blocal [A-Za-z_]|\belseif\b|[~=]= nil\b|= nil\b|:[A-Z][A-Za-z]*\(|[A-Za-z_\])"]\s*\.\.\s*[A-Za-z_"(]|\bipairs\(|\bpairs\(|\bm_[a-z]+\(|\bt_insert\(|^end$|^else$|\bfunction\s*\(`)
 	csNormRE             = regexp.MustCompile(`[^a-z0-9]+`)

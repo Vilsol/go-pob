@@ -26,6 +26,7 @@ type modParserExt struct {
 }
 
 var modParserExtList = []modParserExt{
+	//gopob:ext adrenaline-on-kill-singular-second the pin parses "for N seconds on kill" but leaves the singular "second" over, with the same mods
 	{
 		id:      "adrenaline-on-kill-singular-second",
 		pattern: regexp.MustCompile(`^gain adrenaline for (\d+) second on kill$`),

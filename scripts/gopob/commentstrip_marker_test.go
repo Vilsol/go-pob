@@ -26,3 +26,9 @@ func TestCommentStripKeepsFoldDeadMarker(t *testing.T) {
 		t.Errorf("fold-dead-ok classified %s, want marker", csClassNames[got])
 	}
 }
+
+func TestCommentStripKeepsModParserExtMarker(t *testing.T) {
+	if got := csClassify("//gopob:ext adrenaline-on-kill-singular-second PoB's row needs the plural", nil); got != csMarker {
+		t.Errorf("gopob:ext classified %s, want marker", csClassNames[got])
+	}
+}
