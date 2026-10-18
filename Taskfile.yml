@@ -314,6 +314,15 @@ tasks:
       - '{{.NICE}} env {{if eq .APP_HOST "cf"}}VITE_WASM_FILE=go-pob.wasm.br{{end}} npx vite build --logLevel warn'
       - '{{.NICE}} env APP_HOST={{.APP_HOST}} PROFILES={{.PROFILES | default "local,broadband,mobile"}} RUNS={{.RUNS | default "1"}} npx playwright test -c e2e/load/playwright.load.config.ts {{.CLI_ARGS}}'
 
+  unlighthouse:
+    desc: "Lighthouse on every route at 390x769 with a corpus build loaded (UNLIGHTHOUSE_BUILD=<corpus file>, SITE=https://pob.gg scans a deployment instead of a local build); report in frontend/e2e/.results/unlighthouse"
+    dir: ./frontend/
+    cmds:
+      - '{{if not .SITE}}task build-go{{else}}true{{end}}'
+      - '{{if not .SITE}}{{.NICE}} gzip -kf9 static/go-pob.wasm{{else}}true{{end}}'
+      - '{{if not .SITE}}{{.NICE}} npx vite build --logLevel warn{{else}}true{{end}}'
+      - '{{.NICE}} env UNLIGHTHOUSE_SITE={{.SITE}} node harness/unlighthouse.mjs'
+
   encoding-compat:
     desc: "Which decompression each engine (Chromium, Firefox, WebKit) does natively, over HTTP and HTTPS; rows in frontend/e2e/.results/encoding-compat.jsonl"
     dir: ./frontend/

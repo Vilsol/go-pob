@@ -103,6 +103,15 @@ export const downloadBuild = async (text: string) => {
 /* Main.lua:56-85 */
 export const importParam = (url: URL) => url.searchParams.get('import') ?? undefined;
 
+export const importLanding = (url: URL, base: string) => {
+  const path = url.pathname.slice(base.length).replace(/\/+$/, '');
+  if (!path) return `${base}/tree`;
+  const params = new URLSearchParams(url.search);
+  params.delete('import');
+  const query = params.toString();
+  return `${url.pathname}${query ? `?${query}` : ''}`;
+};
+
 /* ImportTab.lua:590-606, 684-699 */
 export const linkCode = async (text: string) => (downloadUrl(text) ? downloadBuild(text) : importLink(text));
 

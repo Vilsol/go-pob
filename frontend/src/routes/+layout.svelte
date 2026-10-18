@@ -24,7 +24,7 @@
   import GameVersionDialog from '$lib/design/GameVersionDialog.svelte';
   import { buildName } from '$lib/shell/build_name.svelte';
   import { goto } from '$app/navigation';
-  import { importParam, openImportLink } from '$lib/shell/link_import';
+  import { importLanding, importParam, openImportLink } from '$lib/shell/link_import';
   import Dialog from '$lib/design/Dialog.svelte';
   import Button from '$lib/design/Button.svelte';
 
@@ -86,7 +86,7 @@
     const text = linkText;
     if (!text) return;
     openImportLink(text)
-      .then(() => goto(`${base}/tree`, { replaceState: true }))
+      .then(() => goto(importLanding(new URL(location.href), base), { replaceState: true }))
       .catch((e: Error) => {
         logError(e);
         linkError = e.message;

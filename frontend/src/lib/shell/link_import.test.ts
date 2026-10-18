@@ -5,7 +5,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 const worker = vi.hoisted(() => ({ ImportCode: vi.fn((code: string) => Promise.resolve(void code)) }));
 vi.mock('$lib/go/worker', () => ({ syncWrap: worker, syncWorker: undefined }));
 
-const { compareName, importParam, openImportLink } = await import('./link_import');
+const { compareName, importLanding, importParam, openImportLink } = await import('./link_import');
 const { currentBuildPath } = await import('$lib/global');
 const { unsavedName } = await import('./build_name.svelte');
 
@@ -19,6 +19,13 @@ describe('opening a build from a link', () => {
     expect(importParam(new URL('https://pob.gg/?import=eNrtXVtz'))).toBe('eNrtXVtz');
     expect(importParam(new URL('https://pob.gg/?import=https%3A%2F%2Fpobb.in%2Fabc'))).toBe('https://pobb.in/abc');
     expect(importParam(new URL('https://pob.gg/tree'))).toBeUndefined();
+  });
+
+  it('lands on the requested page, or the tree from the root', () => {
+    expect(importLanding(new URL('https://pob.gg/?import=eNrt'), '')).toBe('/tree');
+    expect(importLanding(new URL('https://pob.gg/items?import=eNrt&sw=off'), '')).toBe('/items?sw=off');
+    expect(importLanding(new URL('https://x.io/pob/?import=eNrt'), '/pob')).toBe('/pob/tree');
+    expect(importLanding(new URL('https://x.io/pob/calcs/?import=eNrt'), '/pob')).toBe('/pob/calcs/');
   });
 
   it('downloads a site link and opens it as an imported build', async () => {

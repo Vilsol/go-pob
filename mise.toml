@@ -7,6 +7,7 @@ task = "3.41.0"
 zig = "0.13.0"
 luajit = "2.1.1744318430"
 node = "26"
+pnpm = "10.6.3"
 "npm:wrangler" = "4.143.1"
 
 [tasks.test-race]
@@ -84,6 +85,10 @@ run = "task storybook"
 [tasks.storybook-tests]
 description = "Every story as a browser test: renders, play function, a11y (axe)"
 run = "task storybook-tests"
+
+[tasks.unlighthouse]
+description = "Lighthouse on every route at phone size with a corpus build loaded; report in frontend/e2e/.results/unlighthouse"
+run = "task unlighthouse"
 
 [tasks.design-fixtures]
 description = "Regenerate the Storybook shell's sample data from real corpus builds (CHECK=1 fails on drift)"

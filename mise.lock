@@ -241,6 +241,39 @@ url = "https://nodejs.org/dist/v26.10.0/node-v26.10.0-win-x64.zip"
 version = "4.143.1"
 backend = "npm:wrangler"
 
+[[tools.pnpm]]
+version = "10.6.3"
+backend = "aqua:pnpm/pnpm"
+
+[tools.pnpm."platforms.linux-arm64"]
+url = "https://github.com/pnpm/pnpm/releases/download/v10.6.3/pnpm-linux-arm64"
+url_api = "https://api.github.com/repos/pnpm/pnpm/releases/assets/237146819"
+
+[tools.pnpm."platforms.linux-arm64-musl"]
+url = "https://github.com/pnpm/pnpm/releases/download/v10.6.3/pnpm-linux-arm64"
+url_api = "https://api.github.com/repos/pnpm/pnpm/releases/assets/237146819"
+
+[tools.pnpm."platforms.linux-x64"]
+checksum = "blake3:c8762d65a75fbd81a48bbe41082869f8e1dae3a47e1c92674c676557e90bb307"
+url = "https://github.com/pnpm/pnpm/releases/download/v10.6.3/pnpm-linux-x64"
+url_api = "https://api.github.com/repos/pnpm/pnpm/releases/assets/237146822"
+
+[tools.pnpm."platforms.linux-x64-musl"]
+url = "https://github.com/pnpm/pnpm/releases/download/v10.6.3/pnpm-linux-x64"
+url_api = "https://api.github.com/repos/pnpm/pnpm/releases/assets/237146822"
+
+[tools.pnpm."platforms.macos-arm64"]
+url = "https://github.com/pnpm/pnpm/releases/download/v10.6.3/pnpm-macos-arm64"
+url_api = "https://api.github.com/repos/pnpm/pnpm/releases/assets/237146818"
+
+[tools.pnpm."platforms.macos-x64"]
+url = "https://github.com/pnpm/pnpm/releases/download/v10.6.3/pnpm-macos-x64"
+url_api = "https://api.github.com/repos/pnpm/pnpm/releases/assets/237146820"
+
+[tools.pnpm."platforms.windows-x64"]
+url = "https://github.com/pnpm/pnpm/releases/download/v10.6.3/pnpm-win-x64.exe"
+url_api = "https://api.github.com/repos/pnpm/pnpm/releases/assets/237146817"
+
 [[tools.task]]
 version = "3.41.0"
 backend = "aqua:go-task/task"
