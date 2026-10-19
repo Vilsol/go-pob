@@ -73,7 +73,7 @@
 <dialog
   bind:this={el}
   aria-labelledby="{uid}-title"
-  class={['dialog m-auto text-text not-open:hidden backdrop:bg-[rgb(8_9_10/0.72)]', sheet && 'dialog-sheet', isSmall && 'dialog-small', extra]}
+  class={['dialog m-auto text-text not-open:hidden backdrop:bg-backdrop', sheet && 'dialog-sheet', isSmall && 'dialog-small', extra]}
   onclose={closed}
   onclick={clicked}
   onkeydown={(e) => {

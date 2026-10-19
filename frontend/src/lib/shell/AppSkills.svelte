@@ -1,4 +1,5 @@
 <script lang="ts">
+  import EmptyState from '$lib/design/EmptyState.svelte';
   import { phoneMedia } from '$lib/design/mobile/mobile';
   import SkillsPanes from '$lib/design/mobile/SkillsPanes.svelte';
   import { onMount, untrack } from 'svelte';
@@ -761,5 +762,5 @@
       revision={$outputs} />
   </SkillsPanes>
 {:else}
-  <p class="note" role="status">Loading the skills…</p>
+  <EmptyState busy text="Loading the skills…" />
 {/if}

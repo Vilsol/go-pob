@@ -431,7 +431,7 @@
       onpick={(b: SavedBuild) => load(() => syncWrap?.LoadCompareSaved(pathOf(b.folder, b.name)))} />
     {#if adding}<button class="btn btn-sm self-start" onclick={() => (adding = false)}>Cancel</button>{/if}
     {#if loading}<span role="status" class="note">Loading…</span>{/if}
-    {#if loadError}<div role="alert" class="toned tone-down text-12">Comparison failed: {loadError}</div>{/if}
+    {#if loadError}<div role="alert" class="toned tone-worse text-12">Comparison failed: {loadError}</div>{/if}
   </section>
 {:else if compare && m}
   <div class="flex shrink-0 items-center gap-2 text-12">

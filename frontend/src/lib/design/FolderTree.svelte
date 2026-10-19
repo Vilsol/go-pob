@@ -1,5 +1,6 @@
 <script lang="ts">
   import { childrenOf, countIn, leaf, type Drag } from './builds';
+  import { dropZone } from './reorder';
   import type { SavedBuild } from './fixtures/app';
 
   type Props = {
@@ -68,18 +69,17 @@
           'relative flex h-7.5 items-center gap-1 rounded pr-2 pl-1',
           hot ? 'drop-target shadow-none' : cur ? 'bg-surface-2 shadow-[inset_2px_0_0_var(--color-accent)]' : 'hover:bg-bar'
         ]}
-        ondragover={(e) => {
-          if (!drag || r.path === '') return;
-          e.preventDefault();
-          if (drag.over !== r.path || drag.where !== 'tree') ondrag({ ...drag, over: r.path, where: 'tree' });
-        }}
-        ondragleave={() => {
-          if (drag?.over === r.path) ondrag({ ...drag, over: null, where: null });
-        }}
-        ondrop={(e) => {
-          if (!drag || r.path === '') return;
-          e.preventDefault();
-          onmove(drag.id, r.path);
+        use:dropZone={{
+          accepts: () => !!drag && r.path !== '',
+          over: () => {
+            if (drag && (drag.over !== r.path || drag.where !== 'tree')) ondrag({ ...drag, over: r.path, where: 'tree' });
+          },
+          leave: () => {
+            if (drag?.over === r.path) ondrag({ ...drag, over: null, where: null });
+          },
+          drop: () => {
+            if (drag) onmove(drag.id, r.path);
+          }
         }}>
         {#each r.lasts.map((_l, i) => guide(r.lasts, i)) as g, i (i)}<span aria-hidden="true" class={g}></span>{/each}
         <button
@@ -106,7 +106,7 @@
           <span class="grow truncate">{r.name}</span>
           <span
             class={[
-              'box-border flex h-4.5 min-w-4.5 shrink-0 items-center justify-center rounded-[9px] px-1.5',
+              'box-border flex h-4.5 min-w-4.5 shrink-0 items-center justify-center rounded-pill px-1.5',
               hot
                 ? 'bg-accent font-sans text-10 font-semibold text-accent-ink'
                 : ['font-mono text-11', cur ? 'bg-line' : 'bg-bar', total ? 'text-text-2' : 'text-text-3']

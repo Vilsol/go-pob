@@ -11,7 +11,7 @@
   role="tooltip"
   {id}
   aria-label="Item set {title}"
-  class="tooltip pointer-events-none fixed top-(--y) left-(--x) z-30 flex flex-col gap-0.5 rounded-md px-3 py-2 text-12 shadow-tip"
+  class="tooltip pointer-events-none fixed top-(--y) left-(--x) z-float flex flex-col gap-0.5 rounded-md px-3 py-2 text-12 shadow-tip"
   use:besideAnchor={anchor}>
   {#each lines as l, i (i)}<span><PobText text={l} /></span>{:else}<span class="text-text-3">No items</span>{/each}
 </div>

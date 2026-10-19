@@ -84,13 +84,13 @@
   onDestroy(() => renderer?.destroy());
 </script>
 
-<div role="img" aria-label="Node location" class="relative bg-black" style:width="{SIZE}px" style:height="{SIZE}px" data-node={nodeId}>
+<div role="img" aria-label="Node location" class="relative bg-tree-ground" style:width="{SIZE}px" style:height="{SIZE}px" data-node={nodeId}>
   <canvas bind:this={canvas} width={SIZE} height={SIZE} class="block size-full"></canvas>
   {#if found && mark === 'cross'}
-    <span class="pointer-events-none absolute top-0 left-[149px] h-full w-[2px] bg-white/20"></span>
-    <span class="pointer-events-none absolute top-[149px] left-0 h-[2px] w-full bg-white/20"></span>
+    <span class="pointer-events-none absolute top-0 left-[149px] h-full w-[2px] bg-text/20"></span>
+    <span class="pointer-events-none absolute top-[149px] left-0 h-[2px] w-full bg-text/20"></span>
   {:else if found}
-    <span class="pointer-events-none absolute top-[135px] left-[135px] size-[30px] rounded-full border-2 border-[#f00]"></span>
+    <span class="pointer-events-none absolute top-[135px] left-[135px] size-[30px] rounded-full border-2 border-code-red"></span>
   {:else}
     <span class="absolute inset-0 grid place-items-center text-11 text-text-3">This node has no place on the tree</span>
   {/if}

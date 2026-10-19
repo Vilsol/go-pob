@@ -1,4 +1,5 @@
 <script lang="ts">
+  import EmptyState from './EmptyState.svelte';
   import FloatingLabel from './FloatingLabel.svelte';
   import Dialog from './Dialog.svelte';
   import Button from './Button.svelte';
@@ -75,7 +76,7 @@
           <span class="col-span-5 text-right font-mono text-better max-phone:col-span-1">{r.impact}</span>
         </button>
       {:else}
-        <div class="note px-5 py-3">No modifier matches.</div>
+        <EmptyState inset="row" text="No modifier matches." />
       {/each}
     </div>
   </div>

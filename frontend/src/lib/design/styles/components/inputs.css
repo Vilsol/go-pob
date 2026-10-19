@@ -53,7 +53,7 @@
     @apply h-auto resize-none p-2.5;
   }
   .check {
-    @apply m-0 box-border size-4.5 shrink-0 cursor-pointer appearance-none rounded-[3px] border border-line-strong bg-surface-2 bg-center bg-no-repeat align-middle hover:border-line-bright checked:border-accent checked:bg-accent checked:hover:border-accent-hi checked:hover:bg-accent-hi disabled:cursor-default disabled:opacity-45 disabled:hover:border-line-strong;
+    @apply m-0 box-border size-4.5 shrink-0 cursor-pointer appearance-none rounded-tight border border-line-strong bg-surface-2 bg-center bg-no-repeat align-middle hover:border-line-bright checked:border-accent checked:bg-accent checked:hover:border-accent-hi checked:hover:bg-accent-hi disabled:cursor-default disabled:opacity-45 disabled:hover:border-line-strong;
     background-size: 80% 80%;
   }
   .check:checked {
@@ -82,7 +82,7 @@
     @apply border-0 bg-transparent px-3.25 py-1.75 font-sans text-13 font-medium text-text-2 hover:enabled:bg-hover hover:enabled:text-text aria-pressed:bg-surface-3 aria-pressed:font-semibold aria-pressed:text-text aria-selected:bg-surface-3 aria-selected:font-semibold aria-selected:text-text;
   }
   .chip {
-    @apply h-7.5 rounded-[15px] border border-line bg-transparent px-3 font-sans text-12 font-medium text-text-2 hover:enabled:border-line-bright hover:enabled:text-text aria-pressed:border-accent aria-pressed:bg-surface-3 aria-pressed:text-text aria-selected:border-accent aria-selected:bg-surface-3 aria-selected:text-text;
+    @apply h-7.5 rounded-pill border border-line bg-transparent px-3 font-sans text-12 font-medium text-text-2 hover:enabled:border-line-bright hover:enabled:text-text aria-pressed:border-accent aria-pressed:bg-surface-3 aria-pressed:text-text aria-selected:border-accent aria-selected:bg-surface-3 aria-selected:text-text;
   }
   .choice-card {
     @apply box-border flex rounded border border-line bg-ground text-left font-sans text-13 text-text hover:enabled:border-line-bright aria-pressed:border-accent aria-pressed:bg-surface-2 aria-selected:border-accent aria-selected:bg-surface-2;

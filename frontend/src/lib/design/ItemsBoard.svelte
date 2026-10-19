@@ -1,11 +1,13 @@
 <script lang="ts">
+  import EmptyState from './EmptyState.svelte';
   import FloatingLabel from './FloatingLabel.svelte';
   import FloatingItemTip from './FloatingItemTip.svelte';
   import SlotMenu from './SlotMenu.svelte';
   import Select from './Select.svelte';
   import { tone as toneClass, type Tone } from './tone';
   import { BOARD_SLOTS, itemTip, type TipProps, type WhatIf } from './items';
-  import { acceptItemDrag, readItemDrag, type ItemDrag } from './item_drag';
+  import { draggedItem, type ItemDrag } from './item_drag';
+  import { dropZone, type DropZone } from './reorder';
   import SocketPreview from './SocketPreview.svelte';
   import type { Tree } from '$lib/skill_tree/types';
   import type { ItemSummary, ItemTip, StatDiff } from './fixtures';
@@ -69,16 +71,15 @@
     socketView
   }: Props = $props();
   let dropOver = $state<string | null>(null);
-  const dropTarget = (slot: string) =>
+  const dropTarget = (slot: string): DropZone | undefined =>
     ondropitem && {
-      ondragover: (ev: DragEvent) => {
-        if (acceptItemDrag(ev)) dropOver = slot;
-      },
-      ondragleave: () => (dropOver = null),
-      ondrop: (ev: DragEvent) => {
+      accepts: (d) => !!draggedItem(d),
+      over: () => (dropOver = slot),
+      leave: () => (dropOver = null),
+      drop: (d) => {
         dropOver = null;
-        const d = readItemDrag(ev);
-        if (d) ondropitem(slot, d);
+        const item = draggedItem(d);
+        if (item) ondropitem(slot, item);
       }
     };
   const abyssalLabel = (slot: string) => slot.replace(/ Swap/, '').replace(/ Abyssal Socket (\d+)$/, ' Abyssal #$1');
@@ -125,7 +126,7 @@
     aria-label="{b.slot} slot"
     class={[placed ? 'absolute top-(--y) left-(--x)' : 'relative shrink-0', 'h-(--h) w-(--w)', !placed && flask && 'mb-5.5']}
     style="--x: {b.x / 16}rem; --y: {b.y / 16}rem; --w: {b.w / 16}rem; --h: {b.h / 16}rem"
-    {...dropTarget(k) ?? {}}>
+    use:dropZone={dropTarget(k)}>
     <button
       bind:this={els[k]}
       class={[
@@ -197,7 +198,7 @@
       {/each}
     </div>
   {:else}
-    <span class="note">No jewel sockets allocated on the tree.</span>
+    <EmptyState text="No jewel sockets allocated on the tree." />
   {/if}
   {#if socketView && hover === `Jewel ${socketView.node}`}
     {@const n = jewels.findIndex((j) => j.node === socketView.node)}
@@ -248,7 +249,7 @@
         dropOver === slot ? 'border-text' : 'border-line',
         toneClass(e?.item.rarity ?? 'muted')
       ]}
-      {...dropTarget(slot) ?? {}}>
+      use:dropZone={dropTarget(slot)}>
       <button
         bind:this={els[slot]}
         class="min-w-0 grow truncate border-0 bg-transparent p-0 text-left font-sans text-12"

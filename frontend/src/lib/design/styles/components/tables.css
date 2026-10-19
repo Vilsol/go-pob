@@ -10,7 +10,7 @@
   }
 
   .menu {
-    @apply absolute right-0 z-40 box-border flex flex-col rounded-md border border-line-strong bg-surface-2 p-1.5 text-13 shadow-menu;
+    @apply absolute right-0 z-dropdown box-border flex flex-col rounded-md border border-line-strong bg-surface-2 p-1.5 text-13 shadow-menu;
   }
   .menu-item {
     @apply flex h-7.5 items-center gap-2 rounded border-0 bg-transparent px-2 text-left font-sans text-13 text-(--tone,var(--color-text)) hover:bg-hover focus:bg-hover disabled:text-text-4;
@@ -25,7 +25,7 @@
     @apply flex items-center gap-2.5 border-b border-line bg-bar px-4.5 py-3.5;
   }
   .drag-ghost {
-    @apply pointer-events-none absolute z-30 flex -rotate-2 items-center gap-2 rounded-md border border-line-strong bg-surface-2 px-2.5 py-1.5 text-12 font-semibold whitespace-nowrap shadow-ghost;
+    @apply pointer-events-none absolute z-float flex -rotate-2 items-center gap-2 rounded-md border border-line-strong bg-surface-2 px-2.5 py-1.5 text-12 font-semibold whitespace-nowrap shadow-ghost;
   }
   .grip {
     @apply tracking-[-2px] text-text-4;
@@ -55,8 +55,16 @@
   [data-reorder-source] {
     @apply opacity-40 outline-1 -outline-offset-1 outline-accent outline-dashed;
   }
+  [data-drag-source] {
+    -webkit-touch-callout: none;
+    user-select: none;
+  }
+  :root[data-dragging],
+  :root[data-dragging] * {
+    cursor: grabbing !important;
+  }
   .reorder-ghost {
-    @apply pointer-events-none fixed z-50 m-0 box-border rounded-md border border-line-strong bg-surface-2 opacity-95 shadow-ghost;
+    @apply pointer-events-none fixed z-toast m-0 box-border rounded-md border border-line-strong bg-surface-2 opacity-95 shadow-ghost;
     transform: rotate(-1deg) scale(1.02);
   }
   .reorder-ghost[data-settling] {

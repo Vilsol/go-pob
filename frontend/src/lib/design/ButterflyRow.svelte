@@ -62,7 +62,7 @@
   <div
     role="tooltip"
     id="{uid}-diff"
-    class="tooltip pointer-events-none fixed top-(--y) left-(--x) z-30 rounded-md px-2.5 py-1.5 text-12 shadow-tip"
+    class="tooltip pointer-events-none fixed top-(--y) left-(--x) z-float rounded-md px-2.5 py-1.5 text-12 shadow-tip"
     use:besideAnchor={row}>
     {label} · B − A: <span class={['font-mono', diffBetter ? 'text-better' : 'text-worse']} data-better={diffBetter}>{diff}</span>
   </div>

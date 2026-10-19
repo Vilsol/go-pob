@@ -1,4 +1,6 @@
 <script lang="ts">
+  import EmptyState from './EmptyState.svelte';
+  import Segmented from './Segmented.svelte';
   import type { Snippet } from 'svelte';
   import FloatingLabel from './FloatingLabel.svelte';
   import ChoiceCard from './ChoiceCard.svelte';
@@ -319,9 +321,9 @@
     {/if}
   {/snippet}
   {#snippet legend()}
-    <span><span class="inline-block size-2.5 rounded-[5px] bg-accent align-[-1px]"></span> allocated</span>
-    <span><span class="box-border inline-block size-2.5 rounded-[5px] border-2 border-node-jewel align-[-1px]"></span> jewel socket</span>
-    <span><span class="box-border inline-block size-2.5 rounded-[5px] border-2 border-node-conq align-[-1px]"></span> conquered in radius</span>
+    <span><span class="inline-block size-2.5 rounded-soft bg-accent align-[-1px]"></span> allocated</span>
+    <span><span class="box-border inline-block size-2.5 rounded-soft border-2 border-node-jewel align-[-1px]"></span> jewel socket</span>
+    <span><span class="box-border inline-block size-2.5 rounded-soft border-2 border-node-conq align-[-1px]"></span> conquered in radius</span>
   {/snippet}
   <div class="flex items-start gap-3 max-phone:flex-col max-phone:items-stretch">
     {#if treeView}
@@ -358,7 +360,7 @@
             <div
               role="tooltip"
               id="{uid}-tip"
-              class="tooltip pointer-events-none absolute top-(--y) left-(--x) z-3 flex w-65.5 flex-col gap-0.75 rounded-md px-2.5 py-2 text-12 shadow-pop"
+              class="tooltip pointer-events-none absolute top-(--y) left-(--x) z-map flex w-65.5 flex-col gap-0.75 rounded-md px-2.5 py-2 text-12 shadow-pop"
               style:--x="{tipOf.x}px"
               style:--y="{tipOf.y}px">
               {@render socketTip(tipOf.s.id)}
@@ -497,7 +499,7 @@
               </div>
             </div>
           {:else}
-            <span class="note">No required nodes yet: pick the stats the jewel should give.</span>
+            <EmptyState text="No required nodes yet: pick the stats the jewel should give." />
           {/each}
         </div>
         <details class="text-12">
@@ -524,17 +526,17 @@
               : 'Weighs every node of the list by how much it changes the chosen stat when added to the build'}
             onclick={() => ongenerate?.()}>{generating ? 'Generating…' : 'Generate'}</button>
         </div>
-        <div class="flex gap-1">
-          <button class={['btn btn-sm', !showFallback && 'btn-primary']} aria-pressed={!showFallback} onclick={() => (showFallback = false)}
-            >Desired Nodes</button>
-          <button
-            class={['btn btn-sm', showFallback && 'btn-primary']}
-            aria-pressed={showFallback}
-            onclick={() => {
-              showFallback = true;
-              fallbackFresh = false;
-            }}><span class={fallbackFresh ? 'text-accent' : ''}>Fallback Nodes</span></button>
-        </div>
+        <Segmented
+          label="Node list"
+          options={[
+            { id: 'desired', label: 'Desired Nodes' },
+            { id: 'fallback', label: 'Fallback Nodes', class: fallbackFresh ? 'text-accent' : '' }
+          ]}
+          value={showFallback ? 'fallback' : 'desired'}
+          onchange={(id) => {
+            showFallback = id === 'fallback';
+            if (showFallback) fallbackFresh = false;
+          }} />
         {#if showFallback}
           <textarea class="input h-40 font-mono text-12" aria-label="Fallback nodes" bind:value={form.searchListFallback} onchange={changed}></textarea>
         {:else}
@@ -590,8 +592,8 @@
                 class={[
                   'absolute inset-x-0 grid cursor-default grid-cols-[72px_minmax(0,150px)_64px_minmax(0,1fr)] items-center gap-2 px-2 whitespace-nowrap hover:bg-hover data-[on=true]:bg-surface-3 data-[on=true]:shadow-[inset_2px_0_0_var(--color-node-conq)]',
                   i % 2 && 'bg-bar',
-                  highlighted(i) && (sel === i + 1 || highlight === i + 1 ? 'text-[#ff8000]' : 'text-[#ffff00]'),
-                  added.has(i) && 'text-[#b2b2b2]'
+                  highlighted(i) && (sel === i + 1 || highlight === i + 1 ? 'text-code-amber' : 'text-code-yellow'),
+                  added.has(i) && 'text-code-grey'
                 ]}
                 style:top="{i * ROW}px"
                 style:height="{ROW}px"

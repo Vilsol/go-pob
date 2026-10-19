@@ -99,7 +99,7 @@
         >New build</a
       >{/if}
     {#if update?.ready}
-      <button class="btn btn-md text-[#50e050]" title="Switch to the new version (reloads the page)" onclick={update.onapply}>Update Ready</button>
+      <button class="btn btn-md text-code-green" title="Switch to the new version (reloads the page)" onclick={update.onapply}>Update Ready</button>
     {:else if update}
       <button class="btn btn-md" disabled={update.running} onclick={update.oncheck}>{update.running ? 'Checking...' : 'Check for Update'}</button>
     {/if}

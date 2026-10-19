@@ -62,7 +62,12 @@
     onblur={() => (open = false)}
     {onkeydown} />
   {#if open}
-    <div bind:this={list} id="{uid}-list" role="listbox" aria-label="{label} options" class="menu absolute top-full z-40 mt-1 max-h-80 w-full overflow-y-auto">
+    <div
+      bind:this={list}
+      id="{uid}-list"
+      role="listbox"
+      aria-label="{label} options"
+      class="menu absolute top-full z-dropdown mt-1 max-h-80 w-full overflow-y-auto">
       {#each shown as s, i (i)}
         <div
           id="{uid}-o{i}"

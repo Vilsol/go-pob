@@ -16,7 +16,8 @@
   import StatGauge from './StatGauge.svelte';
   import StatGroup from './StatGroup.svelte';
   import type { Tone } from './tone';
-  import { MINION_ITEM_DROP, acceptItemDrag, readItemDrag } from './item_drag';
+  import { MINION_ITEM_DROP, draggedItem } from './item_drag';
+  import { dropZone } from './reorder';
 
   type Control = 'MainActiveSkill' | 'SkillPart' | 'StageCount' | 'MineCount' | 'Minion' | 'MinionSkill';
   type Breakdown = { formula?: string; groups: { title?: string; rows: { src: string; val: string; tone?: Tone }[] }[] };
@@ -115,6 +116,7 @@
   };
   // Build.lua:544-551
   let minionTipY = $state<number>();
+  let minionEl = $state<HTMLElement>();
   const minionTip = $derived(controls?.Minions?.[controls.Minion - 1]?.Tooltip ?? []);
   // Build.lua:534-543
   const minionSetId = (c: calculator.MainSkillControls | undefined) => (c ? (c.Minions?.[c.Minion - 1]?.ItemSetID ?? 0) : 0);
@@ -210,7 +212,7 @@
           style:--tone={tick3(p.line)}
           title="{p.line.label}: {p.line.value}">
           <span class="sr-only">{p.line.label}: {p.line.value}</span>
-          <span class="h-0.75 w-5 rounded-[2px] bg-(--tone,var(--color-line-strong))" aria-hidden="true"></span>
+          <span class="h-0.75 w-5 rounded-xs bg-(--tone,var(--color-line-strong))" aria-hidden="true"></span>
           <span class="text-10 text-text-3" aria-hidden="true">{short(p.line.label)}</span>
           <span class={['font-mono text-11 toned', valueTone(p.line) || 'tone-text']} aria-hidden="true">{compact(p.line.value)}</span>
         </div>
@@ -291,22 +293,23 @@
               <!-- svelte-ignore a11y_no_static_element_interactions -->
               <div
                 class="min-w-0"
+                bind:this={minionEl}
                 data-minion-select
                 onmouseenter={showMinionTip}
                 onmouseleave={() => (minionTipY = undefined)}
                 onfocusin={showMinionTip}
                 onfocusout={() => (minionTipY = undefined)}
-                ondragover={(e: DragEvent) => {
-                  if (minionSetId(controls)) acceptItemDrag(e);
-                }}
-                ondrop={(e: DragEvent) => {
-                  const setId = minionSetId(controls);
-                  const drag = setId ? readItemDrag(e) : undefined;
-                  // Build.lua:541-543
-                  if (drag)
-                    e.currentTarget?.dispatchEvent(
-                      new CustomEvent(MINION_ITEM_DROP, { bubbles: true, detail: { setId, drag, second: e.shiftKey, uses: controls?.MinionUses ?? [] } })
-                    );
+                use:dropZone={{
+                  accepts: (d) => !!minionSetId(controls) && !!draggedItem(d),
+                  drop: (d, _hit, e) => {
+                    const setId = minionSetId(controls);
+                    const drag = draggedItem(d);
+                    // Build.lua:541-543
+                    if (setId && drag)
+                      minionEl?.dispatchEvent(
+                        new CustomEvent(MINION_ITEM_DROP, { bubbles: true, detail: { setId, drag, second: e.shiftKey, uses: controls?.MinionUses ?? [] } })
+                      );
+                  }
                 }}>
                 <FloatingLabel label="Minion" class="min-w-0"
                   ><Select
@@ -369,7 +372,7 @@
                         >{e.line.value}{#if e.line.note}<span class="text-11 text-text-2">{e.line.note}</span>{/if}</span>
                     </button>
                     <button
-                      class="relative z-1 mr-1 ml-auto shrink-0 border-0 bg-transparent p-0 text-12 leading-none text-text-3 opacity-0 group-hover/row:opacity-100 group-focus-within/row:opacity-100 focus-visible:opacity-100 aria-pressed:text-accent aria-pressed:opacity-100 max-phone:opacity-100"
+                      class="relative z-raised mr-1 ml-auto shrink-0 border-0 bg-transparent p-0 text-12 leading-none text-text-3 opacity-0 group-hover/row:opacity-100 group-focus-within/row:opacity-100 focus-visible:opacity-100 aria-pressed:text-accent aria-pressed:opacity-100 max-phone:opacity-100"
                       aria-pressed={on}
                       onclick={() => togglePin(e.id)}
                       aria-label={on ? `Unpin ${e.line.label}` : `Pin ${e.line.label} to the collapsed rail`}
@@ -407,14 +410,14 @@
       <div
         id="{uid}-minion"
         role="tooltip"
-        class="tooltip-float tooltip z-60 flex flex-col gap-0.5 rounded-lg px-3 py-2.5 text-12 whitespace-nowrap shadow-bd"
+        class="tooltip-float tooltip z-drag flex flex-col gap-0.5 rounded-lg px-3 py-2.5 text-12 whitespace-nowrap shadow-bd"
         style:--x="calc(100% + 6px)"
         style:--y="{minionTipY}px">
         {#each minionTip as line, i (i)}{#if line}<span><PobText text={line} /></span>{:else}<hr class="my-1 border-line" />{/if}{/each}
       </div>
     {/if}
     {#if hover && tip}
-      <div class="tooltip-float z-60 shadow-bd" style:--x="calc(100% + 6px)" style:--y="{tipTop}px" bind:clientHeight={tipH}>
+      <div class="tooltip-float z-drag shadow-bd" style:--x="calc(100% + 6px)" style:--y="{tipTop}px" bind:clientHeight={tipH}>
         <BreakdownTooltip
           id="{uid}-bd"
           title={tip.line.label}
@@ -459,7 +462,7 @@
       aria-valuemin={WIDTH_MIN}
       aria-valuemax={WIDTH_MAX}
       tabindex="0"
-      class="absolute top-0 -right-0.75 bottom-0 z-5 w-1.5 cursor-col-resize hover:bg-surface-3 focus-visible:bg-surface-3"
+      class="absolute top-0 -right-0.75 bottom-0 z-overlay w-1.5 cursor-col-resize hover:bg-surface-3 focus-visible:bg-surface-3"
       onkeydown={(e: KeyboardEvent) => {
         const d = e.key === 'ArrowLeft' ? -16 : e.key === 'ArrowRight' ? 16 : 0;
         if (!d) return;

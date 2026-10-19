@@ -47,7 +47,7 @@
     @apply text-text-4 line-through decoration-current decoration-solid;
   }
   .mod-cell-badge {
-    @apply rounded-lg bg-surface-2 px-1.5 py-px font-sans text-10 font-semibold text-text-3;
+    @apply rounded-pill bg-surface-2 px-1.5 py-px font-sans text-10 font-semibold text-text-3;
   }
   .mod-cell[data-k='ok'] .mod-cell-badge {
     @apply bg-info-bg text-better;

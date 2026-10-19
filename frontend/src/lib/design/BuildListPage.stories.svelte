@@ -169,13 +169,16 @@
   play={async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     const { c, grid, tree } = page(canvasElement);
     const row = grid.querySelector<HTMLElement>('[data-build="Spectre Necro – mapping"]')!;
-    const dt = new DataTransfer();
-    await fireEvent.dragStart(row, { dataTransfer: dt });
+    const at = (el: HTMLElement) => {
+      const r = el.getBoundingClientRect();
+      return { clientX: r.left + r.width / 2, clientY: r.top + r.height / 2, pointerId: 1, isPrimary: true, button: 0, pointerType: 'mouse' };
+    };
+    await fireEvent.pointerDown(row, at(row));
     const target = treeRow(tree, 'Imported');
-    await fireEvent.dragOver(target, { dataTransfer: dt });
+    await fireEvent.pointerMove(target, at(target));
     await waitFor(() => expect(target.className).toContain('drop-target'));
     await expect(within(target).getByText('drop here')).toBeVisible();
-    await fireEvent.drop(target, { dataTransfer: dt });
+    await fireEvent.pointerUp(target, at(target));
     await waitFor(() => expect(names(grid)).not.toContain('Spectre Necro – mapping'));
     await expect(c.getByText('Spectre Necro – mapping moved to Imported')).toBeVisible();
     await expect(names(grid)).toEqual([]);
@@ -184,11 +187,11 @@
     await expect(next).toBeNull();
     await userEvent.click(folderButton(tree, 'League starters'));
     const winter = page(canvasElement).grid.querySelector<HTMLElement>('[data-build="Winter Orb Elementalist"]')!;
-    await fireEvent.dragStart(winter, { dataTransfer: dt });
+    await fireEvent.pointerDown(winter, at(winter));
     const sub = page(canvasElement).grid.querySelector<HTMLElement>('[data-folder="League starters/Necromancer"]')!;
-    await fireEvent.dragOver(sub, { dataTransfer: dt });
+    await fireEvent.pointerMove(sub, at(sub));
     await waitFor(() => expect(within(sub).getByText('Drop to move into Necromancer')).toBeVisible());
-    await fireEvent.drop(sub, { dataTransfer: dt });
+    await fireEvent.pointerUp(sub, at(sub));
     await waitFor(() => expect(names(page(canvasElement).grid)).toEqual([]));
     await userEvent.click(folderButton(tree, 'Necromancer'));
     await waitFor(() => expect(names(page(canvasElement).grid)).toEqual(['Winter Orb Elementalist']));

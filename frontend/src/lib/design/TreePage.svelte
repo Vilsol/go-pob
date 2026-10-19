@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { pressedOutside } from './floating';
+  import { isTypingTarget, rovingIndex } from './keys';
   import FloatingLabel from './FloatingLabel.svelte';
   import Dropdown from './Dropdown.svelte';
   import Dialog from './Dialog.svelte';
@@ -340,8 +342,7 @@
       return;
     }
     if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey || selectHovered) return;
-    if (t && (t.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(t.tagName) || t.closest('[role="menu"], [role="listbox"], [role="combobox"]')))
-      return;
+    if (isTypingTarget(t, { widgets: true })) return;
     if (k === 'p' && onnodepower) {
       e.preventDefault();
       onnodepower(!nodePower);
@@ -494,7 +495,7 @@
   function menuKey(e: KeyboardEvent) {
     const list = [...(menuEl?.querySelectorAll<HTMLElement>('[role="menuitem"]:not(:disabled)') ?? [])];
     const i = list.indexOf(document.activeElement as HTMLElement);
-    const to = { ArrowDown: (i + 1) % list.length, ArrowUp: (i - 1 + list.length) % list.length, Home: 0, End: list.length - 1 }[e.key];
+    const to = rovingIndex(e, i, list.length, { orientation: 'vertical' });
     if (to !== undefined) {
       e.preventDefault();
       list[to]?.focus();
@@ -504,7 +505,7 @@
     } else if (e.key === 'Tab') closeMenu(false);
   }
   const outside = (e: PointerEvent) => {
-    if (menu && menuEl && !menuEl.contains(e.target as Node)) closeMenu(false);
+    if (menu && menuEl && pressedOutside(e, menuEl)) closeMenu(false);
   };
 
   const api: CanvasApi = {
@@ -657,7 +658,7 @@
       <div
         role="status"
         aria-label="Convert older tree"
-        class="absolute top-2.5 left-1/2 z-4 flex -translate-x-1/2 items-center gap-2 rounded-md border border-line bg-surface-1/95 px-3 py-1.5 text-12">
+        class="absolute top-2.5 left-1/2 z-map-tip flex -translate-x-1/2 items-center gap-2 rounded-md border border-line bg-surface-1/95 px-3 py-1.5 text-12">
         <span>This is an older tree version, which may not be fully compatible with the current game version.</span>
         <Button size="sm" variant="primary" onclick={() => void convert(tree.version, false, true)}>Convert to {versionLabel(tree.version)}</Button>
         {#if onconvertall}<Button size="sm" onclick={() => (convertingAll = true)}>Convert all trees to {versionLabel(tree.version)}</Button>{/if}
@@ -668,7 +669,7 @@
         role="note"
         aria-label="{m.count} search matches off screen to the {m.side}"
         class={[
-          'pointer-events-none absolute z-3 flex items-center gap-1 rounded-full border border-stat-light bg-surface-1/90 px-2 py-0.5 font-mono text-11 text-stat-light',
+          'pointer-events-none absolute z-map flex items-center gap-1 rounded-full border border-stat-light bg-surface-1/90 px-2 py-0.5 font-mono text-11 text-stat-light',
           MARK_CLS[m.side]
         ]}
         style:--p="{m.at}px"
@@ -676,22 +677,22 @@
         <span aria-hidden="true">{ARROW[m.side]}</span>{m.count}
       </div>
     {/each}
-    <div class="absolute top-2.5 right-2.5 z-3 flex flex-col gap-1" data-zoom>
+    <div class="absolute top-2.5 right-2.5 z-map flex flex-col gap-1" data-zoom>
       <button class="btn btn-icon size-7.5 bg-surface-1 text-16 font-normal" aria-label="Zoom in" onclick={() => onzoom?.('in')}>+</button>
       <button class="btn btn-icon size-7.5 bg-surface-1 text-16 font-normal" aria-label="Zoom out" onclick={() => onzoom?.('out')}>−</button>
       <button class="btn btn-icon size-7.5 bg-surface-1 text-11 font-normal" aria-label="Fit tree" onclick={() => onzoom?.('fit')}>fit</button>
     </div>
-    <div class="map-note pointer-events-none top-2.5 left-2.5 z-3">
+    <div class="map-note pointer-events-none top-2.5 left-2.5 z-map">
       <output aria-label="Tree version"
         >Tree {tree.version.replace('_', '.')}{recordedVersion && recordedVersion !== tree.version
           ? ` (build records ${recordedVersion.replace('_', '.')})`
           : ''}</output>
       · {allocCount} allocated{whole ? '' : ' in view'}
     </div>
-    <div class="map-note pointer-events-none bottom-2.5 left-2.5 z-3 max-phone:hidden">{hint}</div>
+    <div class="map-note pointer-events-none bottom-2.5 left-2.5 z-map max-phone:hidden">{hint}</div>
     {#if tip && tipPos}
       <div
-        class="pointer-events-none absolute top-(--y) left-(--x) z-4 max-phone:inset-x-2 max-phone:top-auto max-phone:bottom-16 max-phone:[&>*]:max-w-full"
+        class="pointer-events-none absolute top-(--y) left-(--x) z-map-tip max-phone:inset-x-2 max-phone:top-auto max-phone:bottom-16 max-phone:[&>*]:max-w-full"
         style:--x="{tipPos.x}px"
         style:--y="{tipPos.y}px"
         bind:this={tipEl}
@@ -719,7 +720,7 @@
         role="menu"
         aria-label="Actions for {menuNode.name}"
         tabindex="-1"
-        class="menu top-(--y) right-auto left-(--x) z-5 w-56"
+        class="menu top-(--y) right-auto left-(--x) z-overlay w-56"
         style:--x="{menu.x}px"
         style:--y="{menu.y}px"
         onkeydown={menuKey}>
@@ -750,7 +751,7 @@
       aria-valuemin={DETAILS_MIN}
       aria-valuemax={DETAILS_MAX}
       tabindex="0"
-      class="relative z-5 -mr-1.5 w-1.5 shrink-0 cursor-col-resize hover:bg-surface-3 focus-visible:bg-surface-3"
+      class="relative z-overlay -mr-1.5 w-1.5 shrink-0 cursor-col-resize hover:bg-surface-3 focus-visible:bg-surface-3"
       onkeydown={(e: KeyboardEvent) => {
         const d = e.key === 'ArrowLeft' ? 16 : e.key === 'ArrowRight' ? -16 : 0;
         if (!d) return;
@@ -856,7 +857,7 @@
   data-tree-bar
   class="box-border flex h-13 shrink-0 items-center gap-2.5 border-t border-line bg-surface-1 px-4 max-phone:h-auto max-phone:overflow-x-auto max-phone:px-3 max-phone:pt-3 max-phone:pb-2 max-phone:[&>*]:shrink-0">
   <div
-    class="relative flex items-center gap-1.5"
+    class="relative flex min-w-0 shrink items-center gap-1.5"
     role="group"
     aria-label="Tree search"
     onmouseenter={() => (helpHover = true)}
@@ -865,7 +866,7 @@
     onfocusout={() => (helpFocus = false)}>
     <input
       type="search"
-      class="input h-8.5 w-60 px-2.5 text-14 max-[1800px]:w-48"
+      class="input h-8.5 w-60 min-w-24 shrink px-2.5 text-14 max-wide:w-48"
       bind:value={q}
       placeholder="Search nodes and stats"
       aria-label="Search the tree"
@@ -875,7 +876,7 @@
     <div
       role="tooltip"
       id="{uid}-help"
-      class={['tooltip tooltip-info top-auto bottom-10.5 left-0 z-20 w-100 flex-col gap-1.5', helpHover || helpFocus ? 'flex' : 'hidden']}>
+      class={['tooltip tooltip-info top-auto bottom-10.5 left-0 z-dock w-100 flex-col gap-1.5', helpHover || helpFocus ? 'flex' : 'hidden']}>
       <span class="font-semibold">Search syntax</span>
       {#each SEARCH_HELP as [k, v] (k)}<span class="grid grid-cols-[130px_minmax(0,1fr)] gap-2"
           ><code class="font-mono text-accent">{k}</code><span class="text-text-2">{v}</span></span
@@ -883,14 +884,14 @@
       <span class="note-sm border-t border-line pt-1.5">The search is saved with the build and comes back when you reopen it.</span>
     </div>
   </div>
-  <span class="note whitespace-nowrap max-[1800px]:hidden">{matchList.length} matches</span>
+  <span class="note whitespace-nowrap max-wide:hidden">{matchList.length} matches</span>
   <FloatingLabel label="Filter"
     ><select class="select h-8.5" bind:value={filter}
       >{#each Object.keys(KIND_FILTER) as o (o)}<option>{o}</option>{/each}</select
     ></FloatingLabel>
   {#if onpathmode}
     <FloatingLabel label="Path"
-      ><select class="select h-8.5 max-[1800px]:max-w-32" onchange={(e) => onpathmode(e.currentTarget.value)}
+      ><select class="select h-8.5 max-wide:max-w-32" onchange={(e) => onpathmode(e.currentTarget.value)}
         ><option>Shortest</option><option>Best DPS pp</option></select
       ></FloatingLabel>
   {/if}
@@ -904,11 +905,11 @@
     {#if nodePower}{@render nodePowerControls?.()}{/if}
   {/if}
   {#if onpowerreport}
-    <button class="btn btn-md px-3 whitespace-nowrap" onclick={onpowerreport}>Power<span class="max-[1800px]:hidden"> report</span></button>
+    <button class="btn btn-md px-3 whitespace-nowrap" onclick={onpowerreport}>Power<span class="max-wide:hidden"> report</span></button>
   {/if}
   {#if ontimeless}
     <button class="btn btn-md px-3 whitespace-nowrap" title="Timeless jewel search" onclick={ontimeless}
-      >Timeless<span class="max-[1800px]:hidden"> search</span></button>
+      >Timeless<span class="max-wide:hidden"> search</span></button>
   {/if}
   {#if tree.specs.length}
     <!-- TreeTab.lua:51-104 -->
@@ -939,7 +940,7 @@
             onspec?.(n);
           }} />
         {#if specTip && !managing && specTip.index < tree.specs.length}
-          <div class="pointer-events-none absolute right-full bottom-0 z-40 mr-2" aria-label="Tree tooltip">
+          <div class="pointer-events-none absolute right-full bottom-0 z-dropdown mr-2" aria-label="Tree tooltip">
             <WhatIfTooltip
               title={specTip.title}
               info={specTip.lines}

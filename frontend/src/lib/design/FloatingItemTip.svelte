@@ -11,7 +11,7 @@
 </script>
 
 <svelte:window onkeydown={(e: KeyboardEvent) => (shift = e.shiftKey)} onkeyup={(e: KeyboardEvent) => (shift = e.shiftKey)} onblur={() => (shift = false)} />
-<div class="pointer-events-none fixed top-(--y) left-(--x) z-30 flex items-start gap-1" use:besideAnchor={anchor}>
+<div class="pointer-events-none fixed top-(--y) left-(--x) z-float flex items-start gap-1" use:besideAnchor={anchor}>
   <div class="rounded-md shadow-tip"><ItemTooltip {id} {...tip} /></div>
   {#if shift || tip.tooltip?.childrenShown}
     {#each children as c, i (i)}

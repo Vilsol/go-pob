@@ -1,6 +1,6 @@
 @layer components {
   .pill {
-    @apply rounded-lg border border-(--tone)/53 bg-(--tone)/8 px-1.75 font-mono text-11 leading-4 font-semibold whitespace-nowrap text-(--tone);
+    @apply rounded-pill border border-(--tone)/53 bg-(--tone)/8 px-1.75 font-mono text-11 leading-4 font-semibold whitespace-nowrap text-(--tone);
   }
   .pill-even {
     @apply border-line bg-transparent text-text-3;
@@ -22,7 +22,7 @@
     background: linear-gradient(270deg, rgba(224, 168, 74, 0) 0%, rgba(141, 138, 131, 0.35) 55%, rgba(224, 168, 74, 0.75) 100%);
   }
   .tag {
-    @apply w-11.5 shrink-0 rounded-[3px] bg-(--tone)/14 py-px text-center text-[9px] font-semibold tracking-[0.04em] text-(--tone);
+    @apply w-11.5 shrink-0 rounded-tight bg-(--tone)/14 py-px text-center text-[9px] font-semibold tracking-[0.04em] text-(--tone);
   }
   .tag-same {
     @apply bg-surface-2 text-text-3;
@@ -31,7 +31,7 @@
     @apply bg-hover text-text;
   }
   .butterfly-row {
-    @apply box-border grid min-h-11 grid-cols-[7rem_minmax(0,1fr)_11.875rem_minmax(0,1fr)_7rem] items-center gap-2.5 px-4 py-0.75 hover:bg-hover-soft;
+    @apply box-border grid min-h-11 grid-cols-[minmax(0,7rem)_minmax(0,1fr)_minmax(0,11.875rem)_minmax(0,1fr)_minmax(0,7rem)] items-center gap-2.5 px-4 py-0.75 hover:bg-hover-soft;
   }
   .butterfly-value {
     @apply font-mono text-14 text-text data-[win=true]:font-semibold;
@@ -75,20 +75,20 @@
   }
   .bf-a .bf-bed,
   .bf-a .bf-frame {
-    @apply rounded-l-[3px] border-r-0;
+    @apply rounded-l-tight border-r-0;
   }
   .bf-b .bf-bed,
   .bf-b .bf-frame {
-    @apply rounded-r-[3px] border-l-0;
+    @apply rounded-r-tight border-l-0;
   }
   .bf-bar {
     @apply absolute inset-y-0 w-(--w) bg-(--tone);
   }
   .bf-a .bf-bar {
-    @apply right-(--from) rounded-l-[3px];
+    @apply right-(--from) rounded-l-tight;
   }
   .bf-b .bf-bar {
-    @apply left-(--from) rounded-r-[3px];
+    @apply left-(--from) rounded-r-tight;
   }
   .bf-gap {
     background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--tone) 21.96%, transparent) 0 2px, transparent 2px 7px), var(--color-inset);

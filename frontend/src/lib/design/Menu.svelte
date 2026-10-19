@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { float, pressedOutside, raise } from './floating';
+  import { rovingIndex } from './keys';
   import { tick, type Snippet } from 'svelte';
   import { tone as toneClass, type Tone } from './tone';
 
@@ -54,7 +56,7 @@
   function onMenuKey(e: KeyboardEvent) {
     const list = entries();
     const i = list.indexOf(document.activeElement as HTMLElement);
-    const to = { ArrowDown: (i + 1) % list.length, ArrowUp: (i - 1 + list.length) % list.length, Home: 0, End: list.length - 1 }[e.key];
+    const to = rovingIndex(e, i, list.length, { orientation: 'vertical' });
     if (to !== undefined) {
       e.preventDefault();
       list[to].focus();
@@ -66,42 +68,19 @@
   }
 
   const outside = (e: PointerEvent) => {
-    if (open && !root.contains(e.target as Node)) close(false);
+    if (open && pressedOutside(e, root)) close(false);
   };
 
+  // the class places the panel first; its offset from the trigger is kept once it is fixed
   const placed = (panel: HTMLElement) => {
-    const pad = 8;
     const host = panel.parentElement!;
     const r0 = host.getBoundingClientRect();
     const p0 = panel.getBoundingClientRect();
-    const dx = p0.left - r0.left;
+    const along = p0.left - r0.left;
     const gap = Math.max(0, p0.top - r0.bottom);
     Object.assign(panel.style, { position: 'fixed', right: 'auto', bottom: 'auto', margin: '0' });
-    const place = () => {
-      const r = host.getBoundingClientRect();
-      panel.style.maxHeight = '';
-      const natural = panel.offsetHeight;
-      const below = innerHeight - r.bottom - gap - pad;
-      const above = r.top - gap - pad;
-      const down = below >= natural || below >= above;
-      const h = Math.min(natural, Math.max(0, down ? below : above));
-      if (h < natural) Object.assign(panel.style, { maxHeight: `${h}px`, overflowY: 'auto' });
-      const x = Math.min(r.left + dx, innerWidth - pad - panel.offsetWidth);
-      panel.style.left = `${Math.max(pad, x)}px`;
-      panel.style.top = `${down ? r.bottom + gap : r.top - gap - h}px`;
-    };
-    place();
-    const moved = (e: Event) => {
-      if (!panel.contains(e.target as Node)) place();
-    };
-    addEventListener('scroll', moved, true);
-    addEventListener('resize', place);
-    return {
-      destroy: () => {
-        removeEventListener('scroll', moved, true);
-        removeEventListener('resize', place);
-      }
-    };
+    raise(panel);
+    return { destroy: float(panel, host, { gap, along, fit: true }) };
   };
 
   const attrs: TriggerAttrs = {

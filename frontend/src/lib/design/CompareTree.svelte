@@ -57,7 +57,7 @@
             aria-label={side.label}
             class={[
               'relative shrink-0 overflow-hidden rounded-md border border-line bg-tree-ground',
-              overlay ? 'size-140 max-[1500px]:size-90' : 'size-90 max-[1500px]:size-70',
+              overlay ? 'size-140 max-desk:size-90' : 'size-90 max-desk:size-70',
               'max-phone:box-border max-phone:aspect-square max-phone:size-auto max-phone:w-full'
             ]}>
             {#each edges as e, i (i)}
@@ -75,7 +75,7 @@
               {#if n.px !== null && n.py !== null && side.owners.includes(n.owner)}
                 {@const z = SIZE[n.kind] ?? 6}
                 <span
-                  class={['tree-node bg-(--tone)', OWNER[n.owner], hit(n.name, q[side.key]) && 'outline-2 outline-offset-2 outline-[#f00]']}
+                  class={['tree-node bg-(--tone)', OWNER[n.owner], hit(n.name, q[side.key]) && 'outline-2 outline-offset-2 outline-code-red']}
                   data-kind={['n', 'k', 'm', 'j', 'c'].includes(n.kind) ? n.kind : 's'}
                   data-match={hit(n.name, q[side.key]) || undefined}
                   title="{n.name} ({n.owner === 'both' ? 'both' : `only ${n.owner.toUpperCase()}`})"

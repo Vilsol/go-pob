@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import '$lib/design/pointer_event_polyfill';
 
 import { describe, expect, it, beforeAll, afterEach, onTestFinished, vi, type MockInstance } from 'vitest';
 import { render, fireEvent, cleanup, within } from '@testing-library/svelte';
@@ -306,9 +307,17 @@ describe('items page keys', () => {
 
 // ItemListControl.lua:275-284
 describe('shared items', () => {
-  const drag = (payload: object) => ({
-    dataTransfer: { types: ['application/x-gopob-item'], getData: () => JSON.stringify(payload), effectAllowed: '' }
-  });
+  const ptr = (x: number) => ({ pointerId: 1, isPrimary: true, button: 0, pointerType: 'mouse', clientX: x, clientY: 0 });
+  const dragOnto = async (from: HTMLElement, tab: RegExp, region: string, find: (role: string, o: object) => Promise<HTMLElement>) => {
+    await fireEvent.pointerDown(from, ptr(0));
+    await fireEvent.pointerMove(from, ptr(20));
+    await fireEvent.click(await find('tab', { name: tab }));
+    const to = await find('region', { name: region });
+    await fireEvent.pointerMove(to, ptr(30));
+    await fireEvent.pointerUp(to, ptr(30));
+    // a browser delivers the drag's own click in the same task as the pointerup
+    await new Promise((r) => setTimeout(r, 0));
+  };
   const sharedMount = async () => {
     vi.spyOn(workerInstance, 'GetSharedItems').mockResolvedValue([NEW_GLOVES]);
     const del = vi.spyOn(workerInstance, 'DeleteSharedItem').mockResolvedValue(true);
@@ -336,11 +345,13 @@ describe('shared items', () => {
 
   it('shares a build item dropped on it, and adds a shared item dropped on the stash', async () => {
     const { findByRole, share, add } = await sharedMount();
-    const id = goSlot('Gloves')?.ItemID ?? 0;
-    await fireEvent.drop(await findByRole('region', { name: 'Shared items' }), drag({ id }));
-    await vi.waitFor(() => expect(share).toHaveBeenCalledWith(id, '', '', Number.MAX_SAFE_INTEGER));
+    const find = (role: string, o: object) => findByRole(role, o);
     await fireEvent.click(await findByRole('tab', { name: /^Stash/ }));
-    await fireEvent.drop(await findByRole('region', { name: 'Stash items' }), drag({ shared: 0 }));
+    const id = goSlot('Gloves')?.ItemID ?? 0;
+    const stash = await findByRole('region', { name: 'Stash items' });
+    await dragOnto(await within(stash).findByRole('button', { name: `item ${id}` }), /^Shared/, 'Shared items', find);
+    await vi.waitFor(() => expect(share).toHaveBeenCalledWith(id, '', '', Number.MAX_SAFE_INTEGER));
+    await dragOnto(await findByRole('button', { name: 'Edited Grip' }), /^Stash/, 'Stash items', find);
     await vi.waitFor(() => expect(add).toHaveBeenCalledWith(0, '', 0));
   });
 });

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import EmptyState from './EmptyState.svelte';
   import type { TattooChoiceFx } from '$lib/skill_tree/tattoo';
   import Dialog from './Dialog.svelte';
   import Button from './Button.svelte';
@@ -53,7 +54,7 @@
         {#each chosen?.descriptions ?? [] as l, i (i)}<span>{l}</span>{/each}
       </div>
     {:else}
-      <span class="note">No {showLegacy ? '' : 'current '}tattoo fits this node{showLegacy ? '' : '; legacy ones may'}.</span>
+      <EmptyState text="No {showLegacy ? '' : 'current '}tattoo fits this node{showLegacy ? '' : '; legacy ones may'}." />
     {/if}
     <div class="flex gap-1.5">
       <Button size="sm" variant="primary" disabled={!chosen} onclick={() => chosen && onadd(chosen.dn)}>Add</Button>

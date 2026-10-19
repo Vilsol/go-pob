@@ -22,7 +22,7 @@
 <div
   role="tooltip"
   aria-label="Node tooltip"
-  class="pointer-events-none absolute z-20 max-w-[36rem] min-w-[18rem] rounded-md border border-line-strong bg-ground/90 text-13 text-text shadow-tip"
+  class="pointer-events-none absolute z-dock max-w-[36rem] min-w-[18rem] rounded-md border border-line-strong bg-ground/90 text-13 text-text shadow-tip"
   style="left: {at.x}px; top: {at.y}px; transform: translate({flipX ? 'calc(-100% - 12px)' : '12px'}, {flipY ? 'calc(-100% - 12px)' : '12px'})">
   <h2 class="bg-warn-bg px-3 py-2 text-center text-15 font-semibold">{name}</h2>
   {#if node.stats?.length}

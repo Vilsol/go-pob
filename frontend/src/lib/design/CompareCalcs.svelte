@@ -1,4 +1,5 @@
 <script lang="ts">
+  import EmptyState from './EmptyState.svelte';
   import PobText from './PobText.svelte';
   import Checkbox from './Checkbox.svelte';
   import { sectionTone } from './calcs';
@@ -48,9 +49,9 @@
     <Checkbox bind:checked={onlyDifferences}>Show only differences</Checkbox>
   </div>
   {#if !sections}
-    <span class="note">Calculating…</span>
+    <EmptyState text="Calculating…" />
   {:else if !sections.length}
-    <span class="note">No section differs.</span>
+    <EmptyState text="No section differs." />
   {:else}
     <div class="columns-[21.25rem] gap-2.5">
       {#each sections as s, i (i)}
@@ -95,7 +96,7 @@
   <div
     id="compare-calcs-tip"
     role="tooltip"
-    class="tooltip pointer-events-none fixed top-(--y) left-(--x) z-30 max-w-[640px] rounded-md px-3 py-1.5 whitespace-pre shadow-tip"
+    class="tooltip pointer-events-none fixed top-(--y) left-(--x) z-float max-w-[640px] rounded-md px-3 py-1.5 whitespace-pre shadow-tip"
     use:besideAnchor={hover.anchor}>
     <TooltipLines lines={hover.lines} />
   </div>

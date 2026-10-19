@@ -212,7 +212,7 @@
   <div
     id="compare-equip-tip"
     role="tooltip"
-    class="tooltip pointer-events-none fixed top-(--y) left-(--x) z-30 max-w-[600px] rounded-md px-3 py-1.5 shadow-tip"
+    class="tooltip pointer-events-none fixed top-(--y) left-(--x) z-float max-w-[600px] rounded-md px-3 py-1.5 shadow-tip"
     use:besideAnchor={equipHover.anchor}>
     <TooltipLines lines={equipLines(equipHover.row)} />
   </div>

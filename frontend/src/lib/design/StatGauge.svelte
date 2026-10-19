@@ -24,10 +24,10 @@
     style:--res={(res ?? 0) + '%'}
     style:--seg={seg ?? 1}>
     {#if pct != null}
-      <div data-fill class="absolute top-px bottom-px left-0 w-(--pct) rounded-[2px] bg-(--fill)" aria-hidden="true"></div>
+      <div data-fill class="absolute top-px bottom-px left-0 w-(--pct) rounded-xs bg-(--fill)" aria-hidden="true"></div>
     {/if}
     {#if res != null}
-      <div data-res class="absolute top-px right-0 bottom-px w-(--res) border-l border-line-bright bg-[rgba(141,138,131,0.14)]" title="{res}% reserved"></div>
+      <div data-res class="absolute top-px right-0 bottom-px w-(--res) border-l border-line-bright bg-text-3/14" title="{res}% reserved"></div>
     {/if}
     {#if seg != null}
       <div

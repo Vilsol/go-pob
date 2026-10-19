@@ -1,4 +1,5 @@
 <script lang="ts">
+  import EmptyState from './EmptyState.svelte';
   import PobText from './PobText.svelte';
   import Button from './Button.svelte';
   import { pobPlain } from './pob_text';
@@ -110,7 +111,7 @@
   aria-valuemin={WIDTH_MIN}
   aria-valuemax={WIDTH_MAX}
   tabindex="0"
-  class="relative z-5 -mr-1.5 w-1.5 shrink-0 cursor-col-resize hover:bg-surface-3 focus-visible:bg-surface-3"
+  class="relative z-overlay -mr-1.5 w-1.5 shrink-0 cursor-col-resize hover:bg-surface-3 focus-visible:bg-surface-3"
   onkeydown={(e: KeyboardEvent) => {
     const d = e.key === 'ArrowLeft' ? 16 : e.key === 'ArrowRight' ? -16 : 0;
     if (!d) return;
@@ -147,7 +148,7 @@
     {#if !title}
       <p class="m-0 text-12 text-text-3">Hover a row (or focus it) to preview its breakdown here; click it to pin the breakdown while you scan.</p>
     {:else if !parts.length}
-      <p class="m-0 text-12 text-text-3">No breakdown for this row.</p>
+      <EmptyState text="No breakdown for this row." />
     {/if}
     {#each parts as p, i (i)}
       <div class="flex flex-col gap-2 rounded border border-line-faint bg-surface-2 px-2.5 py-2" data-part>
@@ -242,7 +243,7 @@
   </div>
 </aside>
 {#if nodeHover && nodeview}
-  <div class="pointer-events-none fixed z-50 border-2 border-white" style:left="{nodeHover.x}px" style:top="{nodeHover.y}px">
+  <div class="pointer-events-none fixed z-toast border-2 border-text" style:left="{nodeHover.x}px" style:top="{nodeHover.y}px">
     {@render nodeview(nodeHover.node)}
   </div>
 {/if}

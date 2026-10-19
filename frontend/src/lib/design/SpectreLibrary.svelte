@@ -1,11 +1,10 @@
 <script lang="ts">
   import Dialog from './Dialog.svelte';
-  import { dragLabel } from './drag_label';
   import Button from './Button.svelte';
   import Select from './Select.svelte';
   import PobText from './PobText.svelte';
   import { spectreMatches, type SpectreRow } from './spectres';
-  import { Reorder, reorderState } from './reorder';
+  import { Reorder, dragSource, dropZone, reorderState, type DropZone } from './reorder';
 
   // Build.lua:1453-1482
   // MinionListControl.lua:79-89
@@ -47,27 +46,26 @@
     }
   });
   // MinionListControl.lua:83-89
-  let dragging: string | undefined;
-  const takes = (e: DragEvent) => {
-    if (!dragging || has(dragging)) return;
-    e.preventDefault();
-    if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy';
-  };
-  const drop = (e: DragEvent) => {
-    const row = library.find((r) => r.id === dragging);
-    dragging = undefined;
-    if (!row || has(row.id)) return;
-    e.preventDefault();
-    const rows = [...(destBox?.querySelectorAll<HTMLElement>('[data-reorder-item]') ?? [])];
-    let at = rows.findIndex((el) => el.contains(e.target as Node));
-    if (at < 0) at = dest.length;
-    else {
-      const r = rows[at].getBoundingClientRect();
-      if (r.height && e.clientY > r.top + r.height / 2) at++;
+  const spectreOf = (d: unknown) => (d && typeof d === 'object' && 'spectre' in d ? String(d.spectre) : undefined);
+  const destZone: DropZone = {
+    accepts: (d) => {
+      const id = spectreOf(d);
+      return !!id && !has(id);
+    },
+    drop: (d, hit, e) => {
+      const row = library.find((r) => r.id === spectreOf(d));
+      if (!row || has(row.id)) return;
+      const rows = [...(destBox?.querySelectorAll<HTMLElement>('[data-reorder-item]') ?? [])];
+      let at = rows.findIndex((el) => el.contains(hit));
+      if (at < 0) at = dest.length;
+      else {
+        const r = rows[at].getBoundingClientRect();
+        if (r.height && e.clientY > r.top + r.height / 2) at++;
+      }
+      dest = [...dest.slice(0, at), row, ...dest.slice(at)];
+      destSel = at;
+      srcSel = undefined;
     }
-    dest = [...dest.slice(0, at), row, ...dest.slice(at)];
-    destSel = at;
-    srcSel = undefined;
   };
 </script>
 
@@ -90,8 +88,7 @@
         tabindex="-1"
         class="scroll flex h-62.5 flex-col border border-line"
         bind:this={destBox}
-        ondragover={takes}
-        ondrop={drop}>
+        use:dropZone={destZone}>
         {#each dest as r, i (i)}
           <div {...reorder.row(i)}>
             <button
@@ -140,13 +137,7 @@
               destSel = -1;
             }}
             ondblclick={() => add(r.id)}
-            draggable="true"
-            ondragstart={(e) => {
-              dragging = r.id;
-              e.dataTransfer?.setData('text/plain', r.name);
-              dragLabel(e, r.name);
-            }}
-            ondragend={() => (dragging = undefined)}
+            use:dragSource={{ data: () => ({ spectre: r.id }), label: r.name }}
             onmouseenter={() => (hover = r)}
             onmouseleave={() => (hover = undefined)}>{r.name}</button>
         {/each}

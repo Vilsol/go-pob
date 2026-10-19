@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { pressedOutside } from './floating';
   import { onDestroy, onMount, tick, untrack } from 'svelte';
   import { Editor } from '@tiptap/core';
   import { colorCodes } from '$lib/display/colors';
@@ -179,8 +180,8 @@
   onDestroy(() => editor?.destroy());
 
   const outside = (e: PointerEvent) => {
-    if (paletteOpen && paletteRoot && !paletteRoot.contains(e.target as Node)) paletteOpen = false;
-    if (linkOpen && linkRoot && !linkRoot.contains(e.target as Node)) linkOpen = false;
+    if (paletteOpen && paletteRoot && pressedOutside(e, paletteRoot)) paletteOpen = false;
+    if (linkOpen && linkRoot && pressedOutside(e, linkRoot)) linkOpen = false;
   };
 </script>
 
@@ -252,10 +253,10 @@
       onclick={() => (paletteOpen = !paletteOpen)}
       onkeydown={(e) => {
         if (e.key === 'Escape') paletteOpen = false;
-      }}>A<span class="toned h-1 w-3.5 rounded-[1px] bg-(--tone,var(--color-text))" style:--tone={codeToCss(currentCode)} data-pob-color></span>▾</button>
+      }}>A<span class="toned h-1 w-3.5 rounded-hair bg-(--tone,var(--color-text))" style:--tone={codeToCss(currentCode)} data-pob-color></span>▾</button>
     {#if paletteOpen}
       <div
-        class="absolute top-9 left-0 z-5 flex w-82.5 flex-col gap-1.5 rounded-md border border-line-strong bg-surface-2 p-2 shadow-pop"
+        class="absolute top-9 left-0 z-overlay flex w-82.5 flex-col gap-1.5 rounded-md border border-line-strong bg-surface-2 p-2 shadow-pop"
         role="presentation"
         onkeydown={(e) => {
           if (e.key === 'Escape') {
@@ -271,13 +272,13 @@
               data-pob-color
               class="toned flex h-6.5 items-center gap-1.5 rounded border border-line bg-surface-1 px-1.5 font-sans text-11 font-semibold aria-selected:border-accent"
               style:--tone={codeToCss(s.code)}
-              onclick={() => setColor(s.code)}><span class="size-2.5 rounded-[2px] bg-(--tone)"></span>{s.name}</button>
+              onclick={() => setColor(s.code)}><span class="size-2.5 rounded-xs bg-(--tone)"></span>{s.name}</button>
           {/each}
           <button
             role="option"
             aria-selected={currentCode === DEFAULT_CODE}
             class="flex h-6.5 items-center gap-1.5 rounded border border-line bg-surface-1 px-1.5 font-sans text-11 font-semibold text-text aria-selected:border-accent"
-            onclick={() => setColor(DEFAULT_CODE)}><span class="size-2.5 rounded-[2px] bg-text"></span>DEFAULT</button>
+            onclick={() => setColor(DEFAULT_CODE)}><span class="size-2.5 rounded-xs bg-text"></span>DEFAULT</button>
         </div>
         <label class="flex items-center gap-2 text-12 text-text-2"
           >Custom<input
@@ -300,7 +301,7 @@
         role="dialog"
         aria-label="Link"
         tabindex="-1"
-        class="absolute top-9 left-0 z-5 w-80 rounded-md border border-line-strong bg-surface-2 p-2 shadow-pop"
+        class="absolute top-9 left-0 z-overlay w-80 rounded-md border border-line-strong bg-surface-2 p-2 shadow-pop"
         onkeydown={(e) => {
           if (e.key !== 'Escape') return;
           e.preventDefault();

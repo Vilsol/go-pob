@@ -78,7 +78,7 @@
             <div class={['kv', j % 2 && 'bg-bar']} data-line>
               <span
                 class={l.color &&
-                  "relative pl-2 before:absolute before:top-0.75 before:bottom-0.75 before:left-0 before:w-0.75 before:rounded-[2px] before:bg-(--tone) before:content-['']"}
+                  "relative pl-2 before:absolute before:top-0.75 before:bottom-0.75 before:left-0 before:w-0.75 before:rounded-xs before:bg-(--tone) before:content-['']"}
                 style:--tone={l.color}>{l.label}</span
               ><span class={['toned', toneClass(l.dir)]}
                 >{l.perPoint ? l.text + ' ' : l.text}{#if l.perPoint}<span class="text-11 text-text-3">{l.perPoint}</span>{/if}</span>

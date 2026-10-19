@@ -14,7 +14,7 @@
     await expect(canvasElement.querySelectorAll('[data-step]').length).toBe(9);
     await expect(canvasElement.querySelector('[role="separator"]')).not.toBeNull();
   }}>
-  <div class="flex h-[720px] justify-end bg-surface-0">
+  <div class="flex h-[720px] justify-end bg-ground">
     <CalcsBreakdown
       id="bd-story"
       title="Skill Hit Damage · Total Increased"

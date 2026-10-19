@@ -227,7 +227,7 @@
   });
   const CHANGE_TONE = { better: 'up', worse: 'down', changed: 'text' } as const;
   const changeClass = (change: Change | undefined) =>
-    change && ['toned rounded-[2px] bg-[color-mix(in_oklab,var(--tone)_16%,transparent)]', toneClass(CHANGE_TONE[change])];
+    change && ['toned rounded-xs bg-[color-mix(in_oklab,var(--tone)_16%,transparent)]', toneClass(CHANGE_TONE[change])];
 
   const enter = (key: string) => () => (hover = key);
   const leave = (key: string) => () => {
@@ -362,7 +362,7 @@
         value={String(mainSocketGroup)}
         onchange={(e: Event) => onmaingroup(num(e))} /></FloatingLabel>
     {#if groupTip?.length}
-      <div role="tooltip" aria-label="Socket group tooltip" class="tooltip absolute top-full left-0 z-10 mt-1 w-80 rounded-md px-3 py-2.5">
+      <div role="tooltip" aria-label="Socket group tooltip" class="tooltip absolute top-full left-0 z-sticky mt-1 w-80 rounded-md px-3 py-2.5">
         <TooltipLines lines={groupTip} />
       </div>
     {/if}
@@ -530,7 +530,7 @@
         role="dialog"
         aria-label="{pobPlain(s.title)} (popped out)"
         class={[
-          'fixed z-20 flex max-h-[80vh] w-90 flex-col rounded border border-[color-mix(in_oklab,var(--tone)_45%,var(--color-line))] bg-surface-1 shadow-lg',
+          'fixed z-dock flex max-h-[80vh] w-90 flex-col rounded border border-[color-mix(in_oklab,var(--tone)_45%,var(--color-line))] bg-surface-1 shadow-pop',
           toneClass(sectionTone(s))
         ]}
         style:left="{o.x}px"

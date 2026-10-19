@@ -77,7 +77,7 @@
               <div
                 role="tooltip"
                 aria-label="Group toggle what-if"
-                class="tooltip fixed top-(--y) left-(--x) z-30 w-80 rounded-md px-3 py-2.5"
+                class="tooltip fixed top-(--y) left-(--x) z-float w-80 rounded-md px-3 py-2.5"
                 use:besideAnchor={toggleTip.anchor}>
                 {#if toggleTip.sections}<ImpactBlocks blocks={[{ header: toggleTip.header, sections: toggleTip.sections }]} />{:else}<span class="note"
                     >Calculating…</span
@@ -177,7 +177,7 @@
     <div
       role="tooltip"
       id="custom-mod-tip"
-      class="tooltip pointer-events-none fixed top-(--y) left-(--x) z-30 flex w-81.5 flex-col gap-1.5 rounded-lg px-3 py-2.5 shadow-tip"
+      class="tooltip pointer-events-none fixed top-(--y) left-(--x) z-float flex w-81.5 flex-col gap-1.5 rounded-lg px-3 py-2.5 shadow-tip"
       use:besideAnchor={tip.anchor}>
       <div class="text-13 font-semibold">{tipCell.text}</div>
       <div class="font-mono text-11 break-all text-text-3">parsed as: {tipCell.parsed}</div>

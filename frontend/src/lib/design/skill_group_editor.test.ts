@@ -67,15 +67,19 @@ describe('SkillGroupEditor', () => {
   // GemSelectControl.lua:629-646
   it('hovering anywhere on a gem row floats its gem tooltip beside the row', async () => {
     const gemtip = () => Promise.resolve([{ Text: 'Spell Echo tip', Separator: false }]);
+    // jsdom lays nothing out: give the positioning a viewport
+    Object.defineProperty(document.documentElement, 'clientWidth', { configurable: true, value: 1024 });
+    Object.defineProperty(document.documentElement, 'clientHeight', { configurable: true, value: 768 });
     const { container } = mount({ gemtip });
     const rows = [...container.querySelectorAll<HTMLElement>('[role="group"][aria-label="Gems"] > div.relative')];
     rows[1].getBoundingClientRect = () => ({ left: 100, right: 400, top: 200, bottom: 230, width: 300, height: 30, x: 100, y: 200 }) as DOMRect;
     await fireEvent.mouseEnter(rows[1]);
     const tip = await screen.findByRole('status', { name: 'What-if' });
     await vi.waitFor(() => expect(tip.textContent).toContain('Spell Echo tip'));
-    expect(tip.closest('[data-floating]')?.getAttribute('style')).toMatch(/--x: 410px.*--y: 200px/);
+    await vi.waitFor(() => expect(tip.closest('[data-floating]')?.getAttribute('style')).toMatch(/--x: 410px.*--y: 200px/));
     await fireEvent.mouseLeave(rows[1]);
     await vi.waitFor(() => expect(screen.queryByRole('status', { name: 'What-if' })).toBeNull());
+    for (const k of ['clientWidth', 'clientHeight']) delete (document.documentElement as unknown as Record<string, unknown>)[k];
   });
 
   // GemSelectControl.lua:651-681, 732-741

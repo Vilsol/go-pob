@@ -238,6 +238,27 @@
   },
   {
     "type": "file",
+    "url": "https://registry.npmjs.org/@floating-ui/core/-/core-1.8.0.tgz",
+    "sha512": "d02219e62b69b3ff31ec11bc744221b39dc1bc2507d8f0a8a20b5a930453badf80ae6e7cb09a2827402e6612f0d87258211e5c30b34f0524bbdbcb0f868da485",
+    "dest": "npm-registry/@floating-ui/core/-",
+    "dest-filename": "core-1.8.0.tgz"
+  },
+  {
+    "type": "file",
+    "url": "https://registry.npmjs.org/@floating-ui/dom/-/dom-1.8.0.tgz",
+    "sha512": "c974abcde1d905365a74b3a57f28429091cd78b2671d19d1227c1d678d0bed989a02dac1c28625b03ad7defe7307552d93b08b7f370e5675555a85c4932ec27a",
+    "dest": "npm-registry/@floating-ui/dom/-",
+    "dest-filename": "dom-1.8.0.tgz"
+  },
+  {
+    "type": "file",
+    "url": "https://registry.npmjs.org/@floating-ui/utils/-/utils-0.2.12.tgz",
+    "sha512": "1e90a8f2d996ccb55a779b36775f44840cf9ceaaeb43ab3af6a77a9a83cc42f90eb92c034f562045f59256e7387a79eaae0bf7387a6988e18c43ba02d77c88c3",
+    "dest": "npm-registry/@floating-ui/utils/-",
+    "dest-filename": "utils-0.2.12.tgz"
+  },
+  {
+    "type": "file",
     "url": "https://registry.npmjs.org/@humanfs/core/-/core-0.19.1.tgz",
     "sha512": "e43c90e3ed49114cde8de2b524620272275ec9f51b1a2c604bd8cd81ec799ea916f9c63b59987106282689e379427c3d668b123550bd2902b26fe194686c8a50",
     "dest": "npm-registry/@humanfs/core/-",

@@ -8,7 +8,7 @@
   let { anchor, id, label, lines, blocks, pending }: Props = $props();
 </script>
 
-<div class="pointer-events-none fixed top-(--y) left-(--x) z-30" use:besideAnchor={anchor}>
+<div class="pointer-events-none fixed top-(--y) left-(--x) z-float" use:besideAnchor={anchor}>
   <div {id} role="tooltip" aria-label={label} aria-busy={pending} class="tooltip flex w-max max-w-110 flex-col gap-0.5 rounded-md px-3 py-2 text-12 shadow-tip">
     {#each lines as l, k (k)}
       {#if l === '--'}<hr class="my-1 border-line" />{:else}<span class="min-h-2"><PobText text={l} /></span>{/if}

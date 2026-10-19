@@ -1,6 +1,7 @@
 <script lang="ts">
   import { ascendancyOffsets, groupCentre, nodeCentre, type Point } from '$lib/skill_tree/geometry';
   import type { Node, Tree } from '$lib/skill_tree/types';
+  import { float, raise } from './floating';
 
   // ItemSlotControl.lua:132-149
   // ItemSlotControl.lua:139-146
@@ -55,22 +56,20 @@
   });
 
   function overAnchor(panel: HTMLElement, to: HTMLElement | undefined) {
+    raise(panel);
+    let stop: (() => void) | undefined;
     const place = (a: HTMLElement | undefined) => {
       if (!a) return;
-      const r = a.getBoundingClientRect();
-      const pad = 8;
-      const h = panel.offsetHeight;
-      const y = r.top - h - 4 >= pad ? r.top - h - 4 : Math.min(r.bottom + 4, innerHeight - pad - h);
-      panel.style.setProperty('--x', `${Math.max(pad, Math.min(r.left, innerWidth - pad - panel.offsetWidth))}px`);
-      panel.style.setProperty('--y', `${Math.max(pad, y)}px`);
+      stop?.();
+      stop = float(panel, a, { placement: 'top-start', fallback: ['bottom-start'], gap: 4, vars: true });
     };
     place(to);
-    return { update: place };
+    return { update: place, destroy: () => stop?.() };
   }
 </script>
 
 {#if view}
-  <div data-socket-preview class="tooltip pointer-events-none fixed top-(--y) left-(--x) z-30 rounded-lg p-1 shadow-tip" use:overAnchor={anchor}>
+  <div data-socket-preview class="tooltip pointer-events-none fixed top-(--y) left-(--x) z-float rounded-lg p-1 shadow-tip" use:overAnchor={anchor}>
     <svg role="img" aria-label={label} width={W} height={H} viewBox="0 0 {W} {H}" class="block rounded-md bg-well">
       {#each view.rings as r, i (i)}
         <circle cx={W / 2} cy={H / 2} r={r.outer} fill="none" stroke={r.col} stroke-opacity="0.7" />

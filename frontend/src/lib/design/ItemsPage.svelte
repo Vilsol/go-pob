@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { isTypingTarget } from './keys';
   import FloatingLabel from './FloatingLabel.svelte';
   import Segmented from './Segmented.svelte';
   import Tabs from './Tabs.svelte';
@@ -16,7 +17,8 @@
   import DisplayItemControls from './DisplayItemControls.svelte';
   import CraftItemDialog from './CraftItemDialog.svelte';
   import ItemSetTip from './ItemSetTip.svelte';
-  import { acceptItemDrag, type ItemDrag } from './item_drag';
+  import { draggedItem, type ItemDrag } from './item_drag';
+  import { dropZone, type DropZone } from './reorder';
   import { tone as toneClass } from './tone';
   import {
     BOARD_SLOTS,
@@ -298,10 +300,13 @@
     ...(onadd || itemDB ? [{ id: 'browse', label: 'Browse items' }] : [])
   ]);
 
-  const tabDragOver = (e: DragEvent) => {
-    const tab = (e.target as HTMLElement | null)?.closest('[role="tab"]');
-    const to = tab ? tabs.find((t) => tab.textContent?.trim().startsWith(t.label)) : undefined;
-    if (to && (to.id === 'equipped' || to.id === 'stash') && to.id !== view && acceptItemDrag(e)) view = to.id;
+  const tabDragOver: DropZone = {
+    accepts: (d) => !!draggedItem(d),
+    over: (_d, hit) => {
+      const tab = hit.closest('[role="tab"]');
+      const to = tab ? tabs.find((t) => tab.textContent?.trim().startsWith(t.label)) : undefined;
+      if (to && (to.id === 'equipped' || to.id === 'stash') && to.id !== view) view = to.id;
+    }
   };
 
   let note = $state('');
@@ -315,8 +320,7 @@
   // ItemsTab.lua:1459-1464
   const onkeydown = (e: KeyboardEvent) => {
     if (e.key !== 'e' || e.ctrlKey || e.metaKey || e.altKey) return;
-    const t = e.target as HTMLElement | null;
-    if (t && (t.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(t.tagName))) return;
+    if (isTypingTarget(e.target)) return;
     if (hover && slots[hover]) editSlot(hover);
   };
   const editStash = (key: string) => {
@@ -344,7 +348,7 @@
 
 <svelte:window {onkeydown} />
 <div class="flex flex-wrap items-center gap-2.5">
-  <div role="presentation" ondragover={tabDragOver}>
+  <div role="presentation" use:dropZone={tabDragOver}>
     <Tabs id={pageUid} variant="segmented" label="Item views" {tabs} selected={view} onchange={(id) => (view = id as View)} />
   </div>
   <FloatingLabel label="Item set" class="[--float-bg:var(--color-surface-1)]"

@@ -53,7 +53,7 @@
     @apply border-2 border-(--ring,var(--color-line-bright));
   }
   .tree-node[data-kind='k'] {
-    @apply rounded-[5px];
+    @apply rounded-soft;
   }
   .tree-node[data-kind='m'] {
     @apply border-2 border-line-strong bg-transparent;
@@ -92,7 +92,7 @@
     @apply outline-2 outline-offset-2 outline-better/80 outline-solid;
   }
   .radius-ring {
-    @apply pointer-events-none absolute top-(--y) left-(--x) box-border size-(--z) rounded-[50%] border-2 border-dashed border-better/55 bg-better/4;
+    @apply pointer-events-none absolute top-(--y) left-(--x) box-border size-(--z) rounded-full border-2 border-dashed border-better/55 bg-better/4;
   }
   .radius-ring[data-hot='true'] {
     @apply border-solid border-better bg-better/8;
@@ -134,7 +134,7 @@
     @apply text-text-3 line-through;
   }
   .notes-doc ul[data-type='taskList'] input[type='checkbox'] {
-    @apply m-0 box-border size-4 shrink-0 cursor-pointer appearance-none rounded-[3px] border border-line-strong bg-surface-2 bg-center bg-no-repeat checked:border-accent checked:bg-accent;
+    @apply m-0 box-border size-4 shrink-0 cursor-pointer appearance-none rounded-tight border border-line-strong bg-surface-2 bg-center bg-no-repeat checked:border-accent checked:bg-accent;
     background-size: 80% 80%;
   }
   .notes-doc ul[data-type='taskList'] input[type='checkbox']:checked {
@@ -144,7 +144,7 @@
     @apply my-1 border-l-2 border-line-strong pl-3 text-text-2;
   }
   .notes-doc code {
-    @apply rounded-[3px] bg-surface-3 px-1 font-mono text-[0.9em];
+    @apply rounded-tight bg-surface-3 px-1 font-mono text-[0.9em];
   }
   .notes-doc pre {
     @apply my-1 rounded border border-line bg-ground px-3 py-2 font-mono text-13 whitespace-pre-wrap;

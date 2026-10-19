@@ -4,16 +4,16 @@
   }
 
   .gem-row {
-    @apply box-border grid h-10.5 grid-cols-[1.125rem_2.75rem_repeat(24,minmax(0,1fr))] items-center gap-1.5 border-b border-line-faint px-1.5 hover:bg-hover-soft max-phone:grid-cols-[2.75rem_repeat(24,minmax(0,1fr))];
+    @apply box-border grid h-10.5 grid-cols-[1.125rem_2.75rem_minmax(1rem,1fr)_repeat(23,minmax(0,1fr))] items-center gap-1.5 border-b border-line-faint px-1.5 hover:bg-hover-soft max-phone:grid-cols-[2.75rem_repeat(24,minmax(0,1fr))];
   }
   .socket {
-    @apply relative z-1 box-border flex size-6 items-center justify-center rounded-full border-3 border-(--tone) bg-ground;
+    @apply relative z-raised box-border flex size-6 items-center justify-center rounded-full border-3 border-(--tone) bg-ground;
   }
   .socket-gem {
     @apply size-3 rounded-full bg-(--tone) shadow-[inset_-2px_-2px_0_rgba(0,0,0,0.25)];
   }
   .socket-link {
-    @apply absolute -top-2.25 left-1/2 z-2 -ml-1.75 h-4 w-3.5 border-0 p-0;
+    @apply absolute -top-2.25 left-1/2 z-above -ml-1.75 h-4 w-3.5 border-0 p-0;
     background: linear-gradient(to bottom, var(--color-text-4) 0 4px, transparent 4px 12px, var(--color-text-4) 12px 16px) no-repeat center / 6px 16px;
   }
   .socket-link[aria-pressed='true'] {

@@ -51,7 +51,7 @@
 
 <section
   aria-label="Passive tree around the build"
-  class="relative h-[560px] min-w-0 flex-[0_1_1000px] overflow-hidden rounded-md border border-line bg-black"
+  class="relative h-[560px] min-w-0 flex-[0_1_1000px] overflow-hidden rounded-md border border-line bg-tree-ground"
   data-live-tree>
   <SkillTree
     bind:this={canvas}
@@ -101,7 +101,7 @@
         {#if p}
           <div
             role="tooltip"
-            class="tooltip absolute z-3 flex w-65.5 flex-col gap-0.75 rounded-md px-2.5 py-2 text-12 shadow-pop"
+            class="tooltip absolute z-map flex w-65.5 flex-col gap-0.75 rounded-md px-2.5 py-2 text-12 shadow-pop"
             style:left="{p.x + 18 + TIP_W <= v.width ? p.x + 18 : Math.max(p.x - 18 - TIP_W, 0)}px"
             style:top="{Math.max(Math.min(p.y - 30, v.height - 120), 6)}px">
             {@render tip(hovered)}

@@ -36,7 +36,7 @@
     const v = text.trim() === '' ? undefined : Number(text);
     return v === undefined || Number.isInteger(v) ? { ok: true, v } : { ok: false, v };
   };
-  const TONE = ['text-[#33ff77]', 'text-[#ff9922]'];
+  const TONE = ['text-code-evasion', 'text-code-orange'];
 </script>
 
 <div role="group" aria-label="Calcs skill controls" class="grid grid-cols-2 gap-4 border-b border-line pb-2 text-12">
@@ -135,7 +135,7 @@
           <span
             role="button"
             tabindex="0"
-            class="break-words hover:bg-[#263f26]"
+            class="break-words hover:bg-code-highlight-bg"
             aria-label={l.label}
             aria-describedby={panel?.key === `${side}:${l.label}` && panel.rows ? 'compare-skill-breakdown' : undefined}
             onmouseenter={(e) => void showPanel(side, l.label, e.currentTarget)}
@@ -151,7 +151,7 @@
   <div
     id="compare-skill-breakdown"
     role="tooltip"
-    class="tooltip pointer-events-none fixed top-(--y) left-(--x) z-30 rounded-md border-2 border-[#54a854] px-1 py-0.5 text-12 shadow-tip"
+    class="tooltip pointer-events-none fixed top-(--y) left-(--x) z-float rounded-md border-2 border-code-highlight px-1 py-0.5 text-12 shadow-tip"
     use:besideAnchor={panel.anchor}>
     <table>
       <thead

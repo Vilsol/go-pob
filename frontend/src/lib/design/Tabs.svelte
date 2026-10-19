@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { rovingIndex } from './keys';
   import type { Snippet } from 'svelte';
   import { tone as toneClass, type Tone } from './tone';
   import { panelId, tabId } from './tab_ids';
@@ -39,9 +40,7 @@
   };
 
   function onkeydown(e: KeyboardEvent, i: number) {
-    const n = tabs.length;
-    const [next, prev] = variant === 'vertical' ? ['ArrowDown', 'ArrowUp'] : ['ArrowRight', 'ArrowLeft'];
-    const to = { [next]: (i + 1) % n, [prev]: (i - 1 + n) % n, Home: 0, End: n - 1 }[e.key];
+    const to = rovingIndex(e, i, tabs.length, { orientation: variant === 'vertical' ? 'vertical' : 'horizontal' });
     if (to === undefined) return;
     e.preventDefault();
     pick(tabs[to].id);

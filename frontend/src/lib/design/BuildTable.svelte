@@ -1,8 +1,12 @@
 <script lang="ts">
+  import EmptyState from './EmptyState.svelte';
+  import Segmented from './Segmented.svelte';
+  import { pressedOutside } from './floating';
+  import { isTypingTarget } from './keys';
   import { COLS, DEFAULT_COLS, buildId, childrenOf, countIn, leaf, nextSort, subpath, visibleRows, type ColKey, type Drag, type Sort } from './builds';
   import type { SavedBuild } from './fixtures/app';
   import Menu from './Menu.svelte';
-  import { dragLabel } from './drag_label';
+  import { dragSource, dropZone, type DropZone } from './reorder';
   import { tone as toneClass } from './tone';
 
   type Recalc = { done: number; total: number; name: string };
@@ -76,8 +80,7 @@
   };
   const pasteKey = (e: KeyboardEvent) => {
     if (!marked || !onpaste || !(e.ctrlKey || e.metaKey) || e.altKey || e.shiftKey || e.key.toLowerCase() !== 'v') return;
-    const t = e.target as HTMLElement | null;
-    if (t && (t.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(t.tagName))) return;
+    if (isTypingTarget(e.target)) return;
     if (document.querySelector('dialog[open]')) return;
     e.preventDefault();
     const m = marked;
@@ -117,22 +120,19 @@
   ];
 
   const outside = (e: PointerEvent) => {
-    if (colMenuOpen && pickerRoot && !pickerRoot.contains(e.target as Node)) colMenuOpen = false;
+    if (colMenuOpen && pickerRoot && pressedOutside(e, pickerRoot)) colMenuOpen = false;
   };
 
-  const dropOn = (path: string) => ({
-    ondragover: (e: DragEvent) => {
-      if (!drag) return;
-      e.preventDefault();
-      if (drag.over !== path || drag.where !== 'list') ondrag({ ...drag, over: path, where: 'list' });
+  const dropOn = (path: string): DropZone => ({
+    accepts: () => !!drag,
+    over: () => {
+      if (drag && (drag.over !== path || drag.where !== 'list')) ondrag({ ...drag, over: path, where: 'list' });
     },
-    ondragleave: () => {
+    leave: () => {
       if (drag?.over === path) ondrag({ ...drag, over: null, where: null });
     },
-    ondrop: (e: DragEvent) => {
-      if (!drag) return;
-      e.preventDefault();
-      onmove(drag.id, path);
+    drop: () => {
+      if (drag) onmove(drag.id, path);
     }
   });
 </script>
@@ -146,7 +146,7 @@
         class="border-0 bg-transparent p-0 font-sans text-13 text-accent aria-[current=page]:font-semibold aria-[current=page]:text-text"
         aria-current={i === crumbs.length - 1 ? 'page' : undefined}
         onclick={() => onfolder(c.path)}
-        {...dropOn(c.path)}>{c.name}</button
+        use:dropZone={dropOn(c.path)}>{c.name}</button
       >{#if i < crumbs.length - 1}<span class="text-text-3" aria-hidden="true">/</span>{/if}
     {/each}
   </nav>
@@ -158,9 +158,7 @@
       placeholder={folder ? `Search in ${leaf(folder)} and its subfolders` : 'Search builds'}
       aria-label="Search builds"
       title="Words match name, folder, class, ascendancy and skill; class:witch matches class or ascendancy only" />
-    <div role="group" aria-label="Filter by class" class="flex flex-wrap gap-1">
-      {#each classes as c (c)}<button class="chip px-2.5" aria-pressed={c === cls} onclick={() => (cls = c)}>{c}</button>{/each}
-    </div>
+    <Segmented chip label="Filter by class" options={classes.map((c) => ({ id: c, label: c }))} bind:value={cls} class="flex-wrap" itemClass="px-2.5" />
     <div class="grow max-phone:hidden"></div>
     {#if staleCount || recalc}
       <button
@@ -254,7 +252,7 @@
             hot ? 'drop-target bg-accent/14' : 'bg-alt',
             cut && 'opacity-50'
           ]}
-          {...dropOn(c)}>
+          use:dropZone={dropOn(c)}>
           <span role="gridcell"
             ><button
               class="flex items-center gap-2 border-0 bg-transparent p-0 text-left font-sans text-13 font-semibold text-accent"
@@ -285,7 +283,12 @@
           aria-selected={selected === id}
           data-cut={marked?.cut && marked.id === id ? '' : undefined}
           data-build={b.name}
-          draggable="true"
+          use:dragSource={{
+            data: () => ({ build: id }),
+            label: b.name,
+            onstart: () => ondrag({ id, name: b.name, over: null, where: null }),
+            onend: () => ondrag(null)
+          }}
           class={[
             'group data-row cursor-default grid-cols-(--tracks) gap-2 px-3.5 py-1.25 text-13 hover:bg-bar focus-visible:-outline-offset-2',
             dragged
@@ -309,16 +312,7 @@
               e.preventDefault();
               selected = id;
             }
-          }}
-          ondragstart={(e) => {
-            if (e.dataTransfer) {
-              e.dataTransfer.effectAllowed = 'move';
-              e.dataTransfer.setData('text/plain', b.name);
-              dragLabel(e, b.name);
-            }
-            ondrag({ id, name: b.name, over: null, where: null });
-          }}
-          ondragend={() => ondrag(null)}>
+          }}>
           <span role="gridcell" data-phone-hide
             ><button
               class="drag-handle group-hover:opacity-100 group-focus-within:opacity-100"
@@ -366,7 +360,7 @@
           </span>
         </div>
       {/each}
-      {#if !rows.length && !subs.length}<div class="p-6 text-center text-13 text-text-3">No builds match. Clear the search or pick another class.</div>{/if}
+      {#if !rows.length && !subs.length}<EmptyState inset="page" text="No builds match. Clear the search or pick another class." />{/if}
     </div>
   </div>
   <div class="note">

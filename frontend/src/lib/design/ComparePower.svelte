@@ -81,7 +81,7 @@
       <span class="note">Include</span>
       {#each CATS as c (c.id)}
         <label
-          class="flex h-7 cursor-pointer items-center gap-1.5 rounded-[14px] border border-line px-2.5 text-12 text-text-2 has-checked:border-accent has-checked:bg-surface-3 has-checked:text-text"
+          class="flex h-7 cursor-pointer items-center gap-1.5 rounded-pill border border-line px-2.5 text-12 text-text-2 has-checked:border-accent has-checked:bg-surface-3 has-checked:text-text"
           ><input type="checkbox" class="check size-3.5" bind:checked={on[c.id]} />{c.label}
           <span class="font-mono text-text-3">{nonzero.filter((p) => p.cat === c.id).length}</span></label>
       {/each}
@@ -122,7 +122,7 @@
           aria-hidden="true"
           class="relative h-4 max-phone:hidden before:absolute before:top-0 before:bottom-0 before:left-1/2 before:w-px before:bg-line-strong before:content-['']"
           ><span
-            class={['absolute top-1 left-(--x) h-2 w-(--w) rounded-[1px] bg-(--tone)', toneClass(dirTone(v))]}
+            class={['absolute top-1 left-(--x) h-2 w-(--w) rounded-hair bg-(--tone)', toneClass(dirTone(v))]}
             style:--x={v >= 0 ? '50%' : `${(50 - w).toFixed(1)}%`}
             style:--w={`${w.toFixed(1)}%`}></span
           ></span>

@@ -212,11 +212,11 @@
 </div>
 <div class="scroll flex grow flex-col gap-2.5">
   <OptionGroup title="Most used" count="the same options as in their sections below · edit either" class="mb-0 shrink-0">
-    <div class="grid grid-cols-4 gap-x-4 max-[1800px]:grid-cols-2 max-phone:grid-cols-1">
+    <div class="grid grid-cols-4 gap-x-4 max-wide:grid-cols-2 max-phone:grid-cols-1">
       {#each view.most as o (o.v.var)}{@render option(o, 'most')}{/each}
     </div>
   </OptionGroup>
-  <div class="columns-3 gap-2.5 max-[1500px]:columns-2 max-phone:columns-1">
+  <div class="columns-3 gap-2.5 max-desk:columns-2 max-phone:columns-1">
     {#each view.sections as s (s.name)}
       {#if s.rows.length}
         <OptionGroup
@@ -243,7 +243,7 @@
   <div
     role="tooltip"
     id="config-option-tip"
-    class="tooltip pointer-events-none fixed top-(--y) left-(--x) z-30 flex max-w-90 flex-col gap-1 rounded-md px-2.5 py-2 text-12 whitespace-pre-line shadow-tip"
+    class="tooltip pointer-events-none fixed top-(--y) left-(--x) z-float flex max-w-90 flex-col gap-1 rounded-md px-2.5 py-2 text-12 whitespace-pre-line shadow-tip"
     use:besideAnchor={tip.anchor}>
     <span class="font-semibold">{pobPlain(tipOption.v.label)}</span>
     {#if tooltipOf(tipOption)}<span class="text-text-2"><PobText text={tooltipOf(tipOption)!} /></span>{/if}

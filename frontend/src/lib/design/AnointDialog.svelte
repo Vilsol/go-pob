@@ -1,4 +1,5 @@
 <script lang="ts">
+  import EmptyState from './EmptyState.svelte';
   import Dialog from './Dialog.svelte';
   import Button from './Button.svelte';
   import Select from './Select.svelte';
@@ -89,7 +90,7 @@
       {#if progress !== undefined}
         <span class="note px-2 py-0.5">Sorting... ({progress}%)</span>
       {:else if !list.length}
-        <span class="note px-2 py-0.5">No notables found that match those filters.</span>
+        <EmptyState class="px-2 py-0.5" text="No notables found that match those filters." />
       {:else}
         {#each list as n (n.id)}
           <button

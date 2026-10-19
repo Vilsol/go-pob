@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { isTypingTarget } from './keys';
   import { untrack } from 'svelte';
   import TooltipLines from './TooltipLines.svelte';
   import FloatingLabel from './FloatingLabel.svelte';
@@ -201,8 +202,7 @@
 
 <svelte:window
   onpaste={(e: ClipboardEvent) => {
-    const t = e.target as HTMLElement | null;
-    if (!onpastegroup || (t && (t.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(t.tagName)))) return;
+    if (!onpastegroup || isTypingTarget(e.target)) return;
     const text = e.clipboardData?.getData('text/plain');
     if (text) onpastegroup(text);
   }} />
@@ -263,7 +263,7 @@
         <span class="max-w-full truncate text-11 text-text-2">{g.gems.map((m) => m.name.replace(/ Support$/, '')).join(', ') || 'No gems'}</span>
       </button>
       {#if groupTip?.i === i && groupTip.lines?.length}
-        <div role="tooltip" aria-label="Socket group tooltip" class="tooltip absolute top-0 left-full z-10 ml-2 w-80 rounded-md px-3 py-2.5">
+        <div role="tooltip" aria-label="Socket group tooltip" class="tooltip absolute top-0 left-full z-sticky ml-2 w-80 rounded-md px-3 py-2.5">
           <TooltipLines lines={groupTip.lines} />
         </div>
       {/if}

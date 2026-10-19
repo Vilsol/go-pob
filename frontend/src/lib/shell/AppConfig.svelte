@@ -1,4 +1,5 @@
 <script lang="ts">
+  import EmptyState from '$lib/design/EmptyState.svelte';
   import { resource } from 'runed';
   import { buildRevision, currentBuild, outputs } from '$lib/global.js';
   import { syncWrap } from '$lib/go/worker';
@@ -221,7 +222,7 @@
     revision={$outputs}
     onreset={() => (confirming = true)} />
 {:else}
-  <p class="note" role="status">Loading the configuration…</p>
+  <EmptyState busy text="Loading the configuration…" />
 {/if}
 
 <Dialog bind:open={confirming} title="Reset to defaults?">

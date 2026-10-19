@@ -7,7 +7,8 @@
   import Button from './Button.svelte';
   import { tone as toneClass, type Tone } from './tone';
   import type { TipProps } from './items';
-  import { startItemDrag } from './item_drag';
+  import { itemSource } from './item_drag';
+  import { dragSource } from './reorder';
   import { itemWikiName } from './wiki';
   import type { ItemDBFilterInput, ItemDBKind, ItemDBLists, ItemDBRowPlain } from './item_db';
 
@@ -125,7 +126,7 @@
       aria-busy={busy}
       class="panel relative min-w-0 grow self-start overflow-hidden text-12 max-phone:shrink-0 max-phone:self-stretch">
       <div role="table" aria-label="{unique ? 'Unique' : 'Template'} list" class="max-h-[70vh] overflow-y-auto max-phone:max-h-none">
-        <div role="row" class="data-row data-head sticky top-0 z-1 grid-cols-24 py-2 max-phone:hidden">
+        <div role="row" class="data-row data-head sticky top-0 z-raised grid-cols-24 py-2 max-phone:hidden">
           <span role="columnheader" class="col-span-9">ITEM</span><span role="columnheader" class="col-span-5">TYPE</span><span
             role="columnheader"
             class="col-span-3 text-right">{sort ? 'STAT' : 'REQ.'}</span
@@ -153,8 +154,7 @@
                   if (e.ctrlKey || e.metaKey) onadd(r.name, true, e.shiftKey);
                 }}
                 ondblclick={() => onopen(r.name)}
-                draggable="true"
-                ondragstart={(e) => startItemDrag(e, { db: kind, name: r.name }, r.name)}
+                use:dragSource={itemSource({ db: kind, name: r.name }, r.name)}
                 onkeydown={(e) => {
                   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'c') {
                     e.preventDefault();

@@ -1,4 +1,5 @@
 import { writable } from 'svelte/store';
+import { float, raise } from './floating';
 import type { Tone } from './tone';
 import type { ItemSummary, ItemTip, StatDiff } from './fixtures';
 import type { StatCompareSection } from '$lib/skill_tree/stat_compare';
@@ -103,26 +104,15 @@ export function itemTip(it: ItemSummary, diff: StatDiff | undefined, kind: 'equi
 }
 
 export function besideAnchor(tip: HTMLElement, anchor: HTMLElement | undefined) {
+  raise(tip);
+  let stop: (() => void) | undefined;
   const place = (to: HTMLElement | undefined) => {
     if (!to) return;
-    const a = to.getBoundingClientRect();
-    const t = tip.getBoundingClientRect();
-    const gap = 10;
-    const pad = 8;
-    let x = a.right + gap;
-    if (x + t.width > innerWidth - pad) x = a.left - gap - t.width;
-    const y = Math.min(Math.max(pad, a.top), innerHeight - pad - t.height);
-    tip.style.setProperty('--x', `${Math.max(pad, x)}px`);
-    tip.style.setProperty('--y', `${Math.max(pad, y)}px`);
+    stop?.();
+    stop = float(tip, to, { placement: 'right-start', fallback: ['left-start'], gap: 10, vars: true });
   };
   place(anchor);
-  let current = anchor;
-  const ro = typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(() => place(current));
-  ro?.observe(tip);
-  return {
-    update: (to: HTMLElement | undefined) => place((current = to)),
-    destroy: () => ro?.disconnect()
-  };
+  return { update: place, destroy: () => stop?.() };
 }
 
 /* ItemsTab.lua:378-715 */

@@ -1009,8 +1009,8 @@
   {#if compared && n.k === 'm' && theirs && theirs.effect !== selections[n.id]}
     <!-- PassiveTreeView.lua:1550-1576 -->
     <div class="flex flex-col gap-0.5 text-12" aria-label="Compared mastery">
-      {#each n.effect !== undefined && n.effect >= 0 ? (n.effects?.[n.effect] ?? []) : [] as l (l)}<span class="text-[#ff7f7f]">&lt;- {l}</span>{/each}
-      {#each theirs.stats as l (l)}<span class="text-[#7fff7f]">-&gt; {l}</span>{/each}
+      {#each n.effect !== undefined && n.effect >= 0 ? (n.effects?.[n.effect] ?? []) : [] as l (l)}<span class="text-code-remove">&lt;- {l}</span>{/each}
+      {#each theirs.stats as l (l)}<span class="text-code-add">-&gt; {l}</span>{/each}
     </div>
   {/if}
   {#if tipExtra?.id === n.id && tipExtra.jewel}
@@ -1023,7 +1023,7 @@
     <!-- PassiveTreeView.lua:1490-1497 -->
     {#if compared?.nodes.includes(n.id) && !socketed.some((j) => j.NodeID === n.id)}
       <div class="border-t border-line pt-2 text-12" aria-label="Compared socket">
-        <span class="text-[#ff9922]">Compared build:</span> (empty socket)
+        <span class="text-code-orange">Compared build:</span> (empty socket)
       </div>
     {/if}
     {#if tipExtra?.id === n.id && tipExtra.distance}
@@ -1047,23 +1047,23 @@
   {/if}
   {@const reminder = tattooTips.has(n.id) ? tattooTips.get(n.id)!.reminder : conqueredTips.get(n.id)?.replaced ? [] : node?.reminderText}
   {#if reminder?.length}
-    <div class="flex flex-col gap-0.5 border-t border-line pt-2 text-12 text-[#a0a080]" aria-label="Reminder text">
+    <div class="flex flex-col gap-0.5 border-t border-line pt-2 text-12 text-code-reminder" aria-label="Reminder text">
       {#each reminder as l, i (i)}<span>{l}</span>{/each}
     </div>
   {/if}
   {#if node?.flavourText?.length}
-    <div class="flex flex-col gap-0.5 border-t border-line pt-2 italic text-[#af6025]" aria-label="Flavour text">
+    <div class="flex flex-col gap-0.5 border-t border-line pt-2 italic text-unique" aria-label="Flavour text">
       {#each node.flavourText as l, i (i)}<span>{l}</span>{/each}
     </div>
   {/if}
   {@const editKind = tattooEditKind(n, !!treeTattoos.tattoos[n.id])}
   {#if editKind}
     <!-- PassiveTreeView.lua:1646-1656 -->
-    <div class="border-t border-line pt-2 text-12 text-[#80a080]" aria-label="Tattoo tip">Tip: Right click to edit the {editKind} for this node</div>
+    <div class="border-t border-line pt-2 text-12 text-code-tip" aria-label="Tattoo tip">Tip: Right click to edit the {editKind} for this node</div>
   {/if}
   {#if compareOnly.has(n.id)}
     <!-- PassiveTreeView.lua:1804-1805 -->
-    <div class="border-t border-line pt-2 text-12 text-[#70ff70]" aria-label="Compared build">This node is only in the compared build</div>
+    <div class="border-t border-line pt-2 text-12 text-code-positive" aria-label="Compared build">This node is only in the compared build</div>
   {/if}
 {/snippet}
 {#snippet nodeTipCost(n: TreeNodeFx)}
@@ -1084,9 +1084,9 @@
       {/if}
       {#if depends > 1}
         <span>{depends} points gained from unallocating these nodes</span>
-        <span><span class="text-[#ffd700]">{formatNumSep(String(depends * cost))} Gold</span> required to unallocate these nodes</span>
+        <span><span class="text-code-gold">{formatNumSep(String(depends * cost))} Gold</span> required to unallocate these nodes</span>
       {:else if depends === 1}
-        <span><span class="text-[#ffd700]">{formatNumSep(String(cost))} Gold</span> required to unallocate this node</span>
+        <span><span class="text-code-gold">{formatNumSep(String(cost))} Gold</span> required to unallocate this node</span>
       {/if}
       {#if n.k !== 'j'}<span class="text-text-3">Tip: Press Ctrl+C to copy this node's text.</span>
       {:else if alloc[n.id]}
@@ -1256,7 +1256,7 @@
             aria-label="Node power"
             class="scroll grid min-h-0 grid-cols-[minmax(0,auto)_minmax(0,1fr)_auto_auto_auto] content-start gap-x-3 text-12"
             onmouseleave={() => (powerHover = undefined)}>
-            <div role="row" class="sticky top-0 z-1 col-span-5 grid grid-cols-subgrid border-b border-line bg-surface-1 px-1.5 pb-0.5 text-11 text-text-3">
+            <div role="row" class="sticky top-0 z-raised col-span-5 grid grid-cols-subgrid border-b border-line bg-surface-1 px-1.5 pb-0.5 text-11 text-text-3">
               {#each [['type', 'Type'], ['name', 'Node Name'], ['power', powerLabel], ['points', 'Points'], ['perPoint', 'pp']] as [col, label] (col)}
                 <span role="columnheader" class={col === 'type' || col === 'name' ? '' : 'text-right'} aria-sort={col === powerSort ? 'descending' : undefined}
                   >{#if col === 'name'}{label}{:else}<button
@@ -1304,7 +1304,7 @@
   {#snippet canvas(api: CanvasApi)}
     <div class="absolute inset-0">
       {#if view}
-        <div class="pointer-events-none absolute inset-0 z-2 overflow-hidden" aria-hidden="true">
+        <div class="pointer-events-none absolute inset-0 z-above overflow-hidden" aria-hidden="true">
           {#each rings as r, i (`${r.nodeId}:${i}`)}
             {@const p = project(r.nodeId)}
             {#if p}

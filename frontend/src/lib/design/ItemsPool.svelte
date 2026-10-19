@@ -5,7 +5,8 @@
   import Menu from './Menu.svelte';
   import { tone as toneClass } from './tone';
   import { besideAnchor, type TipProps, type WhatIf } from './items';
-  import { acceptItemDrag, readItemDrag, startItemDrag, type ItemDrag } from './item_drag';
+  import { draggedItem, itemSource, type ItemDrag } from './item_drag';
+  import { dragSource, dropZone } from './reorder';
   import { itemWikiName } from './wiki';
 
   // ItemListControl.lua:23-75
@@ -115,19 +116,20 @@
   <section
     aria-label="{title} items"
     class={['panel w-175 max-w-full self-start text-12', dropOver && 'outline-1 outline-accent']}
-    ondragover={(e) => {
-      if (ondropitem && acceptItemDrag(e)) dropOver = true;
-    }}
-    ondragleave={() => {
-      dropOver = false;
-      dropBefore = null;
-    }}
-    ondrop={(e) => {
-      dropOver = false;
-      const before = dropBefore ?? undefined;
-      dropBefore = null;
-      const d = ondropitem && readItemDrag(e);
-      if (d) ondropitem?.(d, before);
+    use:dropZone={ondropitem && {
+      accepts: (d) => !!draggedItem(d),
+      over: () => (dropOver = true),
+      leave: () => {
+        dropOver = false;
+        dropBefore = null;
+      },
+      drop: (d) => {
+        dropOver = false;
+        const before = dropBefore ?? undefined;
+        dropBefore = null;
+        const item = draggedItem(d);
+        if (item) ondropitem?.(item, before);
+      }
     }}>
     <div class="flex items-center gap-2 border-b border-line px-3 py-2.5">
       <span class="flex items-center gap-1.5 text-13 font-semibold whitespace-nowrap"
@@ -186,9 +188,7 @@
             hover === r.key ? 'bg-surface-3' : i % 2 && 'bg-alt',
             dropBefore === r.key && 'shadow-[inset_0_2px_0_var(--color-accent)]'
           ]}
-          ondragover={(e) => {
-            if (dropAt && ondropitem && /^\d+$/.test(r.key) && acceptItemDrag(e)) dropBefore = r.key;
-          }}
+          use:dropZone={dropAt && ondropitem && /^\d+$/.test(r.key) && { accepts: (d) => !!draggedItem(d), over: () => (dropBefore = r.key) }}
           onmouseenter={() => (hover = r.key)}
           onmouseleave={() => (hover = null)}>
           <span role="cell" class="col-span-7 min-w-0">
@@ -201,8 +201,7 @@
               aria-describedby={hover === r.key ? `${uid}-tip` : undefined}
               onclick={(e) => click(e, r.key)}
               ondblclick={() => dblclick(r.key)}
-              draggable={/^\d+$/.test(r.key) ? 'true' : undefined}
-              ondragstart={(e) => /^\d+$/.test(r.key) && startItemDrag(e, title === 'Shared' ? { shared: Number(r.key) } : { id: Number(r.key) }, r.tip.item)}
+              use:dragSource={/^\d+$/.test(r.key) && itemSource(title === 'Shared' ? { shared: Number(r.key) } : { id: Number(r.key) }, r.tip.item)}
               onkeydown={(e) => {
                 if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'c' && oncopy) {
                   e.preventDefault();
@@ -225,7 +224,7 @@
           <span role="cell" class={['col-span-4 truncate text-right', hover === r.key ? 'text-text-2' : 'text-text-3']} title={r.col}>{r.col}</span>
           <span role="cell" class="col-span-2 flex justify-end gap-0.5">
             {#if acts.length}
-              <Menu label={r.tip.item} items={acts} class="top-full right-0 z-20 mt-1 w-max max-w-[calc(100vw-16px)]" itemClass="whitespace-nowrap">
+              <Menu label={r.tip.item} items={acts} class="top-full right-0 z-dock mt-1 w-max max-w-[calc(100vw-16px)]" itemClass="whitespace-nowrap">
                 {#snippet trigger(a)}
                   <button
                     {...a}
@@ -257,7 +256,7 @@
   <div
     role="tooltip"
     id="{uid}-info"
-    class="tooltip pointer-events-none fixed top-(--y) left-(--x) z-30 w-70 rounded-md px-2.5 py-2 text-12 shadow-pop"
+    class="tooltip pointer-events-none fixed top-(--y) left-(--x) z-float w-70 rounded-md px-2.5 py-2 text-12 shadow-pop"
     use:besideAnchor={infoBtn}>
     Shared items are a library kept across all your builds. Copy one into this build’s stash or equip it directly.
   </div>

@@ -1,4 +1,6 @@
 import { tick } from 'svelte';
+import { DRAG_LABEL_Y, dragLabel } from './drag_label';
+import { raise } from './floating';
 
 export type ReorderState = {
   grabbed: number;
@@ -320,4 +322,202 @@ export class Reorder {
     await tick();
     this.#items()[i]?.focus();
   }
+}
+
+// Cross-container drag and drop on the same pointer events: a drag source carries data, drop zones
+// under the pointer take it. Unlike HTML5 drag and drop it works on touch (after a short hold, so a
+// swipe still scrolls) and in webviews that hand HTML drags to the host.
+export type DropZone = {
+  accepts?: (data: unknown) => boolean;
+  over?: (data: unknown, hit: Element, e: PointerEvent) => void;
+  leave?: () => void;
+  drop?: (data: unknown, hit: Element, e: PointerEvent) => void;
+};
+export type DragSource = { data: () => unknown; label?: string; onstart?: () => void; onend?: () => void };
+
+const TOUCH_HOLD = 300;
+const TOUCH_SLOP = 8;
+const zones = new WeakMap<Element, DropZone>();
+
+export function dropZone(node: HTMLElement, zone: DropZone | undefined | false) {
+  const set = (z: DropZone | undefined | false) => {
+    if (z) {
+      zones.set(node, z);
+      node.setAttribute('data-drop-zone', '');
+    } else {
+      zones.delete(node);
+      node.removeAttribute('data-drop-zone');
+    }
+  };
+  set(zone);
+  return { update: set, destroy: () => set(false) };
+}
+
+const zoneChain = (hit: Element | null, data: unknown) => {
+  const out: DropZone[] = [];
+  for (let el = hit?.closest('[data-drop-zone]'); el; el = el.parentElement?.closest('[data-drop-zone]')) {
+    const z = zones.get(el);
+    if (z && (z.accepts?.(data) ?? true)) out.push(z);
+  }
+  return out;
+};
+
+type Press = { id: number; x: number; y: number; touch: boolean; held: boolean; timer?: ReturnType<typeof setTimeout> };
+
+class PointerDrag {
+  opts: DragSource | undefined | false;
+  #node: HTMLElement;
+  #press: Press | null = null;
+  #data: unknown;
+  #label: HTMLElement | undefined;
+  #chain: DropZone[] = [];
+
+  constructor(node: HTMLElement, opts: DragSource | undefined | false) {
+    this.#node = node;
+    this.opts = opts;
+    node.addEventListener('pointerdown', this.#down);
+  }
+
+  get pending() {
+    return !!this.#press && !this.#label;
+  }
+
+  destroy() {
+    this.#node.removeEventListener('pointerdown', this.#down);
+    if (this.pending) this.#finish();
+  }
+
+  #block = (e: Event) => e.preventDefault();
+  #blockTouch = (e: Event) => {
+    if (this.#label && e.cancelable) e.preventDefault();
+  };
+
+  #listen(on: boolean) {
+    const f = on ? addEventListener : removeEventListener;
+    f('pointermove', this.#move);
+    f('pointerup', this.#up);
+    f('pointercancel', this.#cancel);
+    f('keydown', this.#key, true);
+    f('selectstart', this.#block, true);
+    f('dragstart', this.#block, true);
+    f('contextmenu', this.#block, true);
+    // touch events stay with the touched node even after it leaves the document (a tab switch mid-drag)
+    for (const t of [window, this.#node]) {
+      if (on) t.addEventListener('touchmove', this.#blockTouch, { passive: false });
+      else t.removeEventListener('touchmove', this.#blockTouch);
+    }
+  }
+
+  #hitAt(e: PointerEvent) {
+    return document.elementFromPoint?.(e.clientX, e.clientY) ?? (e.target instanceof Element ? e.target : null);
+  }
+
+  #place(e: PointerEvent) {
+    if (!this.#label) return;
+    this.#label.style.left = `${e.clientX}px`;
+    this.#label.style.top = `${e.clientY - DRAG_LABEL_Y - (this.#press?.touch ? 32 : 0)}px`;
+  }
+
+  #start(e: PointerEvent) {
+    if (!this.opts) return;
+    this.#data = this.opts.data();
+    const label = (this.#label = dragLabel(this.opts.label ?? ''));
+    if (!this.opts.label) label.style.visibility = 'hidden';
+    document.body.append(label);
+    raise(label);
+    getSelection()?.removeAllRanges();
+    document.documentElement.setAttribute('data-dragging', '');
+    this.opts.onstart?.();
+    this.#track(e);
+  }
+
+  #track(e: PointerEvent) {
+    this.#place(e);
+    const hit = this.#hitAt(e);
+    const next = zoneChain(hit, this.#data);
+    for (const z of this.#chain) if (!next.includes(z)) z.leave?.();
+    this.#chain = next;
+    if (hit) for (const z of next) z.over?.(this.#data, hit, e);
+  }
+
+  #finish() {
+    if (this.#press?.timer) clearTimeout(this.#press.timer);
+    this.#press = null;
+    this.#listen(false);
+    if (!this.#label) return;
+    this.#label.remove();
+    this.#label = undefined;
+    this.#chain = [];
+    document.documentElement.removeAttribute('data-dragging');
+    if (this.opts) this.opts.onend?.();
+  }
+
+  #down = (e: PointerEvent) => {
+    if (!this.opts || e.button || !e.isPrimary || this.#press) return;
+    const touch = e.pointerType === 'touch';
+    const p: Press = { id: e.pointerId, x: e.clientX, y: e.clientY, touch, held: !touch };
+    this.#press = p;
+    if (touch) {
+      // a touch pointer is captured by the node it went down on; hit-test instead, so its pointerup still
+      // reaches the window once the source unmounts
+      if (this.#node.hasPointerCapture?.(e.pointerId)) this.#node.releasePointerCapture(e.pointerId);
+      p.timer = setTimeout(() => {
+        p.held = true;
+        navigator.vibrate?.(10);
+      }, TOUCH_HOLD);
+    }
+    this.#listen(true);
+  };
+
+  #move = (e: PointerEvent) => {
+    const p = this.#press;
+    if (!p || e.pointerId !== p.id) return;
+    if (this.#label) return this.#track(e);
+    const far = Math.hypot(e.clientX - p.x, e.clientY - p.y);
+    if (!p.held) {
+      if (far >= TOUCH_SLOP) this.#finish();
+      return;
+    }
+    if (far >= THRESHOLD) this.#start(e);
+  };
+
+  #up = (e: PointerEvent) => {
+    const p = this.#press;
+    if (!p || e.pointerId !== p.id) return;
+    if (this.#label) {
+      const hit = this.#hitAt(e);
+      const at = hit ? zoneChain(hit, this.#data) : [];
+      for (const z of new Set([...this.#chain, ...at])) if (!(hit && z.drop && at.includes(z))) z.leave?.();
+      if (hit) for (const z of at) z.drop?.(this.#data, hit, e);
+      const stop = (c: Event) => c.stopPropagation();
+      addEventListener('click', stop, { capture: true, once: true });
+      setTimeout(() => removeEventListener('click', stop, { capture: true }), 0);
+    }
+    this.#finish();
+  };
+
+  #cancel = () => {
+    for (const z of this.#chain) z.leave?.();
+    this.#finish();
+  };
+
+  #key = (e: KeyboardEvent) => {
+    if (e.key !== 'Escape' || !this.#label) return;
+    e.preventDefault();
+    e.stopPropagation();
+    this.#cancel();
+  };
+}
+
+export function dragSource(node: HTMLElement, source: DragSource | undefined | false) {
+  const drag = new PointerDrag(node, source);
+  const mark = () => (drag.opts ? node.setAttribute('data-drag-source', '') : node.removeAttribute('data-drag-source'));
+  mark();
+  return {
+    update: (next: DragSource | undefined | false) => {
+      drag.opts = next;
+      mark();
+    },
+    destroy: () => drag.destroy()
+  };
 }

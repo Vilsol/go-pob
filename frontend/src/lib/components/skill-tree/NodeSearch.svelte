@@ -26,7 +26,7 @@
   const active = $derived(new Set(activeNodes));
 </script>
 
-<div class="absolute top-2 left-2 z-10 flex max-w-xs flex-col gap-1 rounded-md border border-line-strong bg-surface-1/90 p-2">
+<div class="absolute top-2 left-2 z-sticky flex max-w-xs flex-col gap-1 rounded-md border border-line-strong bg-surface-1/90 p-2">
   <input type="search" class="input" placeholder="Search passives" aria-label="Search passive nodes" bind:value={query} />
   {#if matches.length > 0}
     <ul aria-label="Matching passive nodes" class="m-0 flex max-h-80 list-none flex-col overflow-y-auto p-0">

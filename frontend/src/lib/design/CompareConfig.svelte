@@ -161,7 +161,7 @@
             {#each col.sections as s (s.name)}
               <div role="rowgroup" aria-label={s.name} class="mx-1.5 my-2.5 rounded-sm border border-line-strong">
                 <!-- CompareTab.lua:4953-4964 -->
-                <div aria-hidden="true" class="-mt-2 ml-1.5 w-fit bg-surface px-1 text-13 text-text">{s.name}{s.diffs ? `  (${s.diffs} diff)` : ''}</div>
+                <div aria-hidden="true" class="-mt-2 ml-1.5 w-fit bg-surface-1 px-1 text-13 text-text">{s.name}{s.diffs ? `  (${s.diffs} diff)` : ''}</div>
                 {#each s.rows as c (c.key)}
                   {@const va = c.impactA[mi]}
                   {@const vb = c.impactB[mi]}

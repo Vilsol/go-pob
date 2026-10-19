@@ -763,7 +763,7 @@
 <div class="relative w-full h-full max-w-full max-h-full overflow-hidden" bind:this={parentContainer}>
   {#if chrome}
     <NodeSearch {activeNodes} onselect={clickNode} />
-    <p class="pointer-events-none absolute right-2 bottom-1 z-10 m-0 text-11 text-text-2" aria-label="Tree version">
+    <p class="pointer-events-none absolute right-2 bottom-1 z-sticky m-0 text-11 text-text-2" aria-label="Tree version">
       Tree {skillTreeVersion.replace('_', '.')}{recordedTreeVersion && recordedTreeVersion !== skillTreeVersion
         ? ` (build records ${recordedTreeVersion.replace('_', '.')})`
         : ''}
@@ -788,7 +788,7 @@
         width={canvasWidth * devicePixelRatio}
         height={canvasHeight * devicePixelRatio}></canvas>
       {#if $devMode}
-        <output aria-label="Render time" class="pointer-events-none absolute right-1.5 bottom-1 font-mono text-12 text-white">{lastDrawMs.toFixed(1)}ms</output>
+        <output aria-label="Render time" class="pointer-events-none absolute right-1.5 bottom-1 font-mono text-12 text-text">{lastDrawMs.toFixed(1)}ms</output>
       {/if}
       {#if chrome && $hoveredNode}
         <NodeTooltip node={$hoveredNode} at={mousePos} width={canvasWidth} height={canvasHeight} devMode={$devMode} diff={statDiff} />

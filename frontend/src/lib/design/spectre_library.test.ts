@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import './pointer_event_polyfill';
 // Build.lua:1453-1482, MinionListControl.lua:11-103, MinionSearchListControl.lua:16-67
 // Build.lua:552-554, 1621
 
@@ -82,18 +83,19 @@ describe('SpectreLibrary', () => {
       within(dest)
         .getAllByRole('option')
         .map((o) => o.textContent);
-    await fireEvent.dragStart(within(src).getByRole('option', { name: 'Bone Husk' }));
-    const target = within(dest).getByRole('option', { name: 'Cannibal' });
-    const over = new Event('dragover', { bubbles: true, cancelable: true });
-    target.dispatchEvent(over);
-    expect(over.defaultPrevented, 'the build list takes a spectre it does not hold').toBe(true);
-    await fireEvent.drop(target);
-    expect(names()).toEqual(['Arena Master', 'Bone Husk', 'Cannibal']);
+    const ptr = (x: number) => ({ pointerId: 1, isPrimary: true, button: 0, pointerType: 'mouse', clientX: x, clientY: 0 });
+    const drag = async (name: string, onto: HTMLElement) => {
+      await fireEvent.pointerDown(within(src).getByRole('option', { name }), ptr(0));
+      await fireEvent.pointerMove(onto, ptr(20));
+      await fireEvent.pointerUp(onto, ptr(20));
+      // a browser delivers the drag's own click in the same task as the pointerup
+      await new Promise((r) => setTimeout(r, 0));
+    };
+    await drag('Bone Husk', within(dest).getByRole('option', { name: 'Cannibal' }));
+    expect(names(), 'the build list takes a spectre it does not hold').toEqual(['Arena Master', 'Bone Husk', 'Cannibal']);
 
-    await fireEvent.dragStart(within(src).getByRole('option', { name: 'Cannibal' }));
-    const again = new Event('dragover', { bubbles: true, cancelable: true });
-    within(dest).getByRole('option', { name: 'Arena Master' }).dispatchEvent(again);
-    expect(again.defaultPrevented, 'nor one it holds').toBe(false);
+    await drag('Cannibal', within(dest).getByRole('option', { name: 'Arena Master' }));
+    expect(names(), 'nor one it holds').toEqual(['Arena Master', 'Bone Husk', 'Cannibal']);
 
     await fireEvent.keyDown(within(dest).getAllByRole('group')[0], { key: 'ArrowDown', altKey: true });
     expect(names()).toEqual(['Bone Husk', 'Arena Master', 'Cannibal']);

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import EmptyState from './EmptyState.svelte';
   import ButterflyRow from './ButterflyRow.svelte';
   import Ruler from './Ruler.svelte';
   import Button from './Button.svelte';
@@ -57,7 +58,7 @@
           class={['toned text-right font-mono', toneClass(dirTone(p.impact[mi]))]}>{arrowed(p.impact[mi], signed(p.impact[mi]))}</span>
       </div>
     {:else}
-      <span class="note">No single difference moves this metric.</span>
+      <EmptyState text="No single difference moves this metric." />
     {/each}
     <Button size="sm" class="h-7 self-start" onclick={onpower}>Full power report ({nonzero.length} differences) →</Button>
   </aside>

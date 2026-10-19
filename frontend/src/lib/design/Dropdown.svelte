@@ -1,5 +1,6 @@
 <script lang="ts">
   import { tick } from 'svelte';
+  import { float, pressedOutside, raise } from './floating';
 
   type Option = { value: string; label: string; title?: string };
   type Props = {
@@ -116,41 +117,12 @@
     } else if (e.key === 'Tab') close();
   };
   const outside = (e: PointerEvent) => {
-    if (open && !root.contains(e.target as Node)) close();
+    if (open && pressedOutside(e, root)) close();
   };
 
   const placed = (panel: HTMLElement) => {
-    const pad = 8;
-    const gap = 4;
-    const place = () => {
-      const r = root.getBoundingClientRect();
-      panel.style.maxHeight = '';
-      const natural = panel.offsetHeight;
-      const below = innerHeight - r.bottom - gap - pad;
-      const above = r.top - gap - pad;
-      const down = below >= natural || below >= above;
-      const h = Math.min(natural, Math.max(0, down ? below : above));
-      panel.style.maxHeight = `${h}px`;
-      panel.style.minWidth = `${Math.min(r.width, innerWidth - 2 * pad)}px`;
-      const x = Math.min(r.left, innerWidth - pad - panel.offsetWidth);
-      panel.style.setProperty('--x', `${Math.max(pad, x)}px`);
-      panel.style.setProperty('--y', `${down ? r.bottom + gap : r.top - gap - h}px`);
-    };
-    place();
-    const ro = typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(place);
-    ro?.observe(panel);
-    const moved = (e: Event) => {
-      if (!panel.contains(e.target as Node)) place();
-    };
-    addEventListener('scroll', moved, true);
-    addEventListener('resize', place);
-    return {
-      destroy: () => {
-        ro?.disconnect();
-        removeEventListener('scroll', moved, true);
-        removeEventListener('resize', place);
-      }
-    };
+    raise(panel);
+    return { destroy: float(panel, root, { gap: 4, fit: true, matchWidth: true, vars: true }) };
   };
 </script>
 

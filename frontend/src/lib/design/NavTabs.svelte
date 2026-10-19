@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { isTypingTarget, rovingIndex } from './keys';
   type Tab = { label: string; href: string; key?: string };
   type Props = { tabs: Tab[]; current: string; label?: string; class?: string; onnavigate?: (tab: Tab, e: Event) => void };
   let { tabs, current, label, class: extra = 'h-10 border-b border-line', onnavigate }: Props = $props();
@@ -7,9 +8,7 @@
     if (e.ctrlKey || e.metaKey || e.repeat || !onnavigate) return;
     const digit = /^(?:Digit|Numpad)([0-9])$/.exec(e.code)?.[1];
     if (!digit) return;
-    const t = e.target as HTMLElement | null;
-    const typing = !!t && (t.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(t.tagName));
-    if (typing && !e.altKey) return;
+    if (isTypingTarget(e.target) && !e.altKey) return;
     const tab = tabs.find((x) => x.key === digit);
     if (!tab) return;
     e.preventDefault();
@@ -21,10 +20,10 @@
     const links = [...nav.querySelectorAll<HTMLAnchorElement>('a.tab')];
     const i = links.indexOf(document.activeElement as HTMLAnchorElement);
     if (i < 0) return;
-    const to = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: links.length - 1 }[e.key];
+    const to = rovingIndex(e, i, links.length);
     if (to === undefined) return;
     e.preventDefault();
-    links[(to + links.length) % links.length].focus();
+    links[to].focus();
   }
 </script>
 

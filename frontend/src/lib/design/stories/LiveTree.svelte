@@ -87,7 +87,7 @@
           onmenu={api.menu} />
       </div>
       <span
-        class="pointer-events-none absolute top-2.5 left-1/2 z-2 -translate-x-1/2 rounded border border-dashed border-line-strong bg-surface-1/90 px-2 py-1 text-11 text-text-2"
+        class="pointer-events-none absolute top-2.5 left-1/2 z-above -translate-x-1/2 rounded border border-dashed border-line-strong bg-surface-1/90 px-2 py-1 text-11 text-text-2"
         >Canvas placeholder: the WebGL tree draws here; these DOM nodes stand in for its hit-testing</span>
     </div>
   {/snippet}
