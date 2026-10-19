@@ -35,4 +35,13 @@ describe('the phone stats strip', () => {
     expect(shown(['|Nothing|0', 'Minion|Hit DPS|0'])).toEqual(['Minion:Hit DPS']);
     expect(shown(['|Nothing|0'])).toEqual(['Player:Total Life', 'Player:Total Mana', 'Player:Energy Shield', 'Player:Full DPS']);
   });
+
+  it('puts each delta line on the cell of its own section', () => {
+    const delta = [
+      { label: 'Total Life', value: '+60', better: true, section: 'Minion' },
+      { label: 'Total Mana', value: '-5', better: false }
+    ];
+    const d = headlines(sb, ['|Total Life|0', 'Minion|Total Life|1', '|Total Mana|1'], delta).map((h) => h.delta?.value);
+    expect(d).toEqual([undefined, '+60', '-5']);
+  });
 });

@@ -2,6 +2,7 @@ import { tick } from 'svelte';
 import type { Outputs, TickMeta } from './custom_types';
 import { outputs } from './global';
 import { epochNow } from './utils';
+import { trackEditDelta } from './display/stat_delta';
 
 export type CalcTiming = TickMeta & {
   receivedAt: number;
@@ -20,6 +21,7 @@ export const onTick = (out: Outputs | undefined, meta: TickMeta) => {
   if (out) {
     outputs.set(out);
   }
+  trackEditDelta(out, meta);
 
   void tick().then(() =>
     requestAnimationFrame(() => {

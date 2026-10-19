@@ -28,6 +28,7 @@
   import AppSidebar from './AppSidebar.svelte';
   import TimelessDialog from './TimelessDialog.svelte';
   import { statPins } from './stat_pins.svelte';
+  import { editDelta } from '$lib/display/stat_delta';
 
   // phone: this bar becomes the phone frame around the page, with the sidebar in its stats sheet
   type Props = { phone?: boolean; label?: string; mainClass?: string; children?: Snippet };
@@ -273,7 +274,7 @@
     {onsave}
     onaction={phoneAction}>
     {#snippet strip(open: () => void)}
-      {#if $sidebar}<StatsStrip sidebar={$sidebar} pinned={statPins.ids} onopen={open} />{/if}
+      {#if $sidebar}<StatsStrip sidebar={$sidebar} pinned={statPins.ids} delta={$editDelta} onopen={open} />{/if}
     {/snippet}
     {#snippet stats()}<AppSidebar />{/snippet}
     {@render children?.()}

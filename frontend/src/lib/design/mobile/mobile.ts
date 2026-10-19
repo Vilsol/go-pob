@@ -31,7 +31,9 @@ export const routeTabs = (tabs: MobileTab[], base: string): MobileTab[] =>
     return route ? { ...t, href: `${base}/${route}` } : t;
   });
 
-export type Headline = { section: string; line: StatLine; delta?: StatCompareLine };
+// a delta line with no section (a story's hover diff) matches either section
+type DeltaLine = StatCompareLine & { section?: string };
+export type Headline = { section: string; line: StatLine; delta?: DeltaLine };
 
 const dps = ['Full DPS', 'Combined DPS', 'Total DPS inc. Ignite', 'Total DPS', 'Hit DPS', 'Average Damage'];
 const defaults = ['Total Life', 'Total Mana', 'Energy Shield'];
@@ -40,7 +42,7 @@ const defaults = ['Total Life', 'Total Mana', 'Energy Shield'];
 const lines = (sb: Sidebar) => sb.sections.flatMap((s) => s.groups.flat().map((line) => ({ section: s.header ?? 'Player', key: s.header ?? '', line })));
 
 // every pinned stat of the Sidebar (ids `${header}|${label}|${n}`), or Life, Mana, ES and Full DPS when nothing is pinned
-export const headlines = (sb: Sidebar, pinned: string[] = [], delta: StatCompareLine[] = []): Headline[] => {
+export const headlines = (sb: Sidebar, pinned: string[] = [], delta: DeltaLine[] = []): Headline[] => {
   const all = lines(sb);
   const picked: { section: string; line: StatLine }[] = [];
   const add = (x?: { section: string; line: StatLine }) => {
@@ -54,7 +56,7 @@ export const headlines = (sb: Sidebar, pinned: string[] = [], delta: StatCompare
     for (const l of defaults) add(all.find((x) => x.section === 'Player' && x.line.label === l));
     add(dps.map((l) => all.find((x) => x.line.label === l && x.line.value !== '0')).find(Boolean));
   }
-  return picked.map((p) => ({ ...p, delta: delta.find((d) => d.label === p.line.label) }));
+  return picked.map((p) => ({ ...p, delta: delta.find((d) => d.label === p.line.label && (d.section === undefined || d.section === p.section)) }));
 };
 
 // matches --breakpoint-phone; for the few layouts that need a different DOM, not just different CSS

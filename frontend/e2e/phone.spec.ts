@@ -8,6 +8,16 @@ import { diffLines, expectedLines } from './support/stats';
 import * as tree from './support/tree_model';
 import { frameCount, lastFrame, waitFrame, waitLastFrame } from './support/tree_probe';
 import { canvasBox, hitTest, placedNodes, screenOf } from './support/tree_view';
+import { buildSidebar } from '../src/lib/display/sidebar';
+import { editDiff } from '../src/lib/display/stat_delta';
+import { headlines } from '../src/lib/design/mobile/mobile';
+import type { Page } from '@playwright/test';
+
+// each strip cell's delta as Go's outputs before and after an edit give it, and as the strip shows it
+const wantDelta = (before: go.ModelOutputs, after: go.ModelOutputs) =>
+  headlines(buildSidebar(after), [], editDiff(before, after)).map((h) => h.delta?.value ?? '');
+const shownDelta = (page: Page) =>
+  page.locator('[data-stats-strip] [data-strip-cell]').evaluateAll((cs) => cs.map((c) => c.querySelector('[data-delta]')?.textContent?.trim() ?? ''));
 
 test.describe('phone shell at 390×769', () => {
   test.use(PHONE);
@@ -101,7 +111,8 @@ test.describe('phone shell at 390×769', () => {
     const active = go.fresh(build, (b) => [...(b.Build.PassiveNodes ?? [])]);
     await bar(page).getByRole('link', { name: 'Tree' }).click();
     await waitLastFrame(page, `(f) => f.className !== undefined && f.active === ${active.length}`, 60_000);
-    const before = expectedLines(await go.outputs(build));
+    const beforeOut = await go.outputs(build);
+    const before = expectedLines(beforeOut);
 
     const t = tree.rawTree();
     const state = tree.treeState(build);
@@ -125,7 +136,9 @@ test.describe('phone shell at 390×769', () => {
     await page.waitForTimeout(400);
     expect((await lastFrame(page))!.active, 'a single tap allocates nothing').toBe(active.length);
     await expect(page.locator('[data-stats-strip]')).toContainText(before.find((l) => l.label === 'Total Life')!.value);
+    expect(await shownDelta(page), 'no edit yet, so no delta').toEqual(['', '', '', '']);
 
+    let afterOut!: go.ModelOutputs;
     await app.act(
       'phone-double-tap',
       async () => {
@@ -134,9 +147,13 @@ test.describe('phone shell at 390×769', () => {
       },
       async () => {
         state.allocate(id);
-        return expectedLines(await go.outputs(build));
+        afterOut = await go.outputs(build);
+        return expectedLines(afterOut);
       }
     );
+    const allocated = wantDelta(beforeOut, afterOut);
+    expect(allocated.some(Boolean), 'the allocation moves a strip stat, so the delta check is not vacuous').toBe(true);
+    await expect.poll(() => shownDelta(page), { message: 'the strip shows Go’s change from the allocation' }).toEqual(allocated);
     const toast = page.getByRole('status').filter({ hasText: `Allocated ${target!.p.node.name}` });
     await expect(toast).toBeVisible();
     await app.act(
@@ -145,6 +162,7 @@ test.describe('phone shell at 390×769', () => {
       () => Promise.resolve(before)
     );
     await waitLastFrame(page, `(f) => f.active === ${active.length}`);
+    await expect.poll(() => shownDelta(page), { message: 'Undo replaces the delta with Go’s change back' }).toEqual(wantDelta(afterOut, beforeOut));
     await expect(page.getByRole('banner').getByRole('button', { name: 'Redo' }), 'the frame’s Redo follows the worker’s undo history').toBeEnabled();
     await (await openMore(page)).getByRole('button', { name: /^Undo history/ }).click();
     await expect(page.getByRole('dialog', { name: 'Undo history' }).getByRole('list', { name: 'Undo history' }).getByRole('listitem')).not.toHaveCount(0);

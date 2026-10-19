@@ -57,7 +57,7 @@
   asChild
   play={async ({ canvasElement }) => {
     const c = within(canvasElement);
-    await userEvent.click(c.getByRole('button', { name: 'Show all stats' }));
+    await userEvent.click(c.getByRole('button', { name: /Show all stats$/ }));
     const sheet = await waitFor(() => within(document.body).getByRole('dialog', { name: 'Stats' }));
     await expect(sheet).toBeVisible();
     await expect(Math.round(sheet.getBoundingClientRect().bottom)).toBe(769);
@@ -84,7 +84,7 @@
   asChild
   play={async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     const c = within(canvasElement);
-    const strip = c.getByRole('button', { name: 'Show all stats' });
+    const strip = c.getByRole('button', { name: /Show all stats$/ });
     const labels = () => [...strip.querySelectorAll('.truncate.text-text-3')].map((x) => x.textContent?.trim());
     await expect(labels()).toEqual(['Life', 'Energy Shield']);
     await userEvent.click(strip);
@@ -102,7 +102,7 @@
   name="Many pinned stats scroll"
   asChild
   play={async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-    const strip = within(canvasElement).getByRole('button', { name: 'Show all stats' });
+    const strip = within(canvasElement).getByRole('button', { name: /Show all stats$/ });
     const cells = [...strip.querySelectorAll<HTMLElement>('[data-strip-cell]')];
     await expect(cells).toHaveLength(6);
     await expect(strip.scrollWidth).toBeGreaterThan(strip.clientWidth);
