@@ -5,6 +5,8 @@
   import LiveMobile from '../stories/LiveMobile.svelte';
   import Dialog from '../Dialog.svelte';
   import Button from '../Button.svelte';
+  import Toasts from '../Toasts.svelte';
+  import { addToast, clearToasts } from '../toast';
   import { spectreBuild, fireballBuild } from '../fixtures';
   import { phone, phoneTall, treeDelta, expectPhoneFits } from '../stories/mobile_checks';
 
@@ -114,6 +116,21 @@
     current="#tree"
     label="Tree"
     pinned={['|Total Life|0', '|Energy Shield|0', '|Total Mana|0', '|Strength|0', '|Dexterity|0', '|Intelligence|0']}>{@render placeholder()}</LiveMobile>
+</Story>
+
+<Story
+  name="Toast clears the tab bar"
+  asChild
+  play={async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    clearToasts();
+    addToast('Power builder\nCalculating node power: 40%');
+    const toast = await waitFor(() => within(document.body).getByRole('status', { name: 'Power builder' }));
+    const tabs = within(canvasElement).getByRole('navigation', { name: 'Pages' });
+    await expect(toast.getBoundingClientRect().bottom).toBeLessThanOrEqual(tabs.getBoundingClientRect().top);
+    clearToasts();
+  }}>
+  <LiveMobile fx={fireballBuild} current="#tree" label="Tree">{@render placeholder()}</LiveMobile>
+  <Toasts />
 </Story>
 
 <Story

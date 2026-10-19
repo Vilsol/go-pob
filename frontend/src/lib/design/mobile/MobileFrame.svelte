@@ -2,7 +2,7 @@
   import type { Snippet } from 'svelte';
   import Icon from '../Icon.svelte';
   import Sheet from './Sheet.svelte';
-  import { moreTabs, primaryTabs } from './mobile';
+  import { moreTabs, primaryTabs, type MobileTab } from './mobile';
 
   type Action = { key: string; label: string; note?: string };
   type Props = {
@@ -16,6 +16,8 @@
     statsOpen?: boolean;
     moreOpen?: boolean;
     mainClass?: string;
+    tabs?: MobileTab[];
+    more?: MobileTab[];
     strip: Snippet<[() => void]>;
     stats: Snippet;
     children: Snippet;
@@ -37,6 +39,8 @@
     statsOpen = $bindable(false),
     moreOpen = $bindable(false),
     mainClass = '',
+    tabs = primaryTabs,
+    more = moreTabs,
     strip,
     stats,
     children,
@@ -48,7 +52,7 @@
     onaction
   }: Props = $props();
 
-  const inMore = $derived(moreTabs.some((t) => t.href === current));
+  const inMore = $derived(more.some((t) => t.href === current));
   const go = (href: string) => (e: Event) => {
     e.preventDefault();
     moreOpen = false;
@@ -56,7 +60,9 @@
   };
 </script>
 
-<div class="box-border flex h-dvh w-full min-w-0 flex-col overflow-hidden bg-ground font-sans text-text" data-mobile-frame>
+<div
+  class="box-border flex h-dvh w-full min-w-0 flex-col overflow-hidden bg-ground pt-[env(safe-area-inset-top)] pr-[env(safe-area-inset-right)] pl-[env(safe-area-inset-left)] font-sans text-text"
+  data-mobile-frame>
   <header class="flex h-11 shrink-0 items-center gap-1 border-b border-line bg-bar px-2">
     <button type="button" class="btn btn-ghost h-10 shrink-0 px-2 text-14" aria-label="Back to builds" onclick={onback}>‹</button>
     <span class="min-w-0 flex-1 truncate text-14 font-semibold">{name}</span>
@@ -75,7 +81,7 @@
     {@render children()}
   </main>
   <nav class="flex shrink-0 border-t border-line bg-bar pb-[env(safe-area-inset-bottom)]" aria-label="Pages">
-    {#each primaryTabs as t (t.href)}
+    {#each tabs as t (t.href)}
       <a
         href={t.href}
         class={['flex h-14 min-w-0 flex-1 items-center justify-center text-12 no-underline', t.href === current ? 'font-semibold text-accent' : 'text-text-2']}
@@ -95,12 +101,15 @@
 </div>
 
 <Sheet bind:open={statsOpen} title="Stats">
-  {@render stats()}
+  <div
+    class="flex min-h-0 flex-1 flex-col [&_[aria-label^='Collapse']]:hidden [&_[role=separator]]:hidden [&>aside]:w-full! [&>aside]:max-w-none! [&>aside]:border-r-0">
+    {@render stats()}
+  </div>
 </Sheet>
 
 <Sheet bind:open={moreOpen} title="More">
   <nav aria-label="More pages" class="grid grid-cols-2 gap-2 p-3">
-    {#each moreTabs as t (t.href)}
+    {#each more as t (t.href)}
       <a
         href={t.href}
         class={['btn h-12 justify-center text-14 no-underline', t.href === current && 'btn-primary']}

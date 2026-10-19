@@ -36,6 +36,8 @@
   import TooltipLines from '$lib/design/TooltipLines.svelte';
   import PobText from '$lib/design/PobText.svelte';
   import { colorHighlight, edgeSearchHighlight, hexColour } from '$lib/skill_tree/options';
+  import { phoneMedia } from '$lib/design/mobile/mobile';
+  import UndoToast from '$lib/design/mobile/UndoToast.svelte';
 
   const POWER_SETTLE_MS = 1000;
   const CLASSES = ['Scion', 'Marauder', 'Ranger', 'Witch', 'Duelist', 'Templar', 'Shadow'];
@@ -741,10 +743,20 @@
     focus: (id: number) => void;
     pobView: () => PobView;
     setPobView: (v: PobView) => void;
+    fitActive: () => void;
   }>();
   const fxById = $derived(new Map(nodes.map((n) => [n.id, n])));
   const fxOf = (n: Node) => (n.skill === undefined ? undefined : fxById.get(n.skill));
   let hoveredFx: TreeNodeFx | undefined;
+  // phone: a double tap allocates straight away, so it offers an undo
+  const phone = phoneMedia();
+  let undoToast = $state<string>();
+  let undoTimer: ReturnType<typeof setTimeout> | undefined;
+  const offerUndo = (fx: TreeNodeFx) => {
+    clearTimeout(undoTimer);
+    undoToast = `${alloc[fx.id] ? 'Unallocated' : 'Allocated'} ${fx.name}`;
+    undoTimer = setTimeout(() => (undoToast = undefined), 5000);
+  };
   const hover = (api: CanvasApi, n: Node | undefined) => {
     if (hoveredFx) api.leave(hoveredFx);
     hoveredFx = n ? fxOf(n) : undefined;
@@ -870,7 +882,8 @@
         viewRestored = b;
         if (t.ShowHeatMap) setHeat(true);
         showDiff = t.ShowStatDifferences ?? true;
-        if (t.ZoomLevel || t.ZoomX || t.ZoomY) el.setPobView({ zoomLevel: t.ZoomLevel, zoomX: t.ZoomX, zoomY: t.ZoomY });
+        if (phone.current) el.fitActive();
+        else if (t.ZoomLevel || t.ZoomX || t.ZoomY) el.setPobView({ zoomLevel: t.ZoomLevel, zoomX: t.ZoomX, zoomY: t.ZoomY });
         else {
           const p = el.pobView();
           savedView = { ...t, ZoomLevel: p.zoomLevel, ZoomX: p.zoomX, ZoomY: p.zoomY };
@@ -901,8 +914,9 @@
     if (!el || viewRestored !== $currentBuild) return;
     clearTimeout(viewSave);
     viewSave = setTimeout(() => {
-      const p = el.pobView();
       const was = savedView;
+      // phone: the fitted view stays off the build's saved view
+      const p = phone.current && was ? { zoomLevel: was.ZoomLevel, zoomX: was.ZoomX, zoomY: was.ZoomY } : el.pobView();
       const same =
         was &&
         was.ZoomLevel === p.zoomLevel &&
@@ -1398,9 +1412,12 @@
             bind:statDiff
             bind:dependents
             onhover={(n: Node | undefined) => hover(api, n)}
+            gestures={phone.current}
             onpick={(n: Node) => {
               const fx = fxOf(n);
-              if (fx) api.pick(fx);
+              if (!fx) return;
+              if (phone.current) offerUndo(fx);
+              api.pick(fx);
             }}
             onmenu={(n: Node, at: Point) => {
               const fx = fxOf(n);
@@ -1423,6 +1440,14 @@
         {/key}
       {/if}
     </div>
+    {#if undoToast}
+      <UndoToast
+        text={undoToast}
+        onundo={() => {
+          undoToast = undefined;
+          void syncWrap?.Undo().catch(logError);
+        }} />
+    {/if}
   {/snippet}
 </TreePage>
 

@@ -11,24 +11,13 @@
   import LiveImportExport from './LiveImportExport.svelte';
   import LiveTimeless from './LiveTimeless.svelte';
   import { notesSamples, type BuildFixture } from '../fixtures';
+  import { PHONE_PAGES, moreTabs, primaryTabs } from '../mobile/mobile';
 
   type Props = { fx: BuildFixture; current?: string };
   let { fx, current: start = '#tree' }: Props = $props();
   let current = $state(start);
 
-  const pages: Record<string, { label: string; main: string }> = {
-    '#tree': { label: 'Tree', main: '' },
-    '#skills': { label: 'Skills', main: 'overflow-hidden' },
-    '#items': { label: 'Items', main: 'gap-3 p-3' },
-    '#calcs': { label: 'Calcs', main: 'overflow-hidden' },
-    '#config': { label: 'Config', main: 'gap-2.5 overflow-hidden p-3' },
-    '#notes': { label: 'Notes', main: 'gap-2.5 p-3' },
-    '#party': { label: 'Party', main: 'gap-4 p-3' },
-    '#compare': { label: 'Compare', main: 'gap-2.5 overflow-hidden p-3' },
-    '#import': { label: 'Import / Export', main: 'gap-4 p-3' },
-    '#timeless': { label: 'Timeless search', main: 'gap-2.5 bg-tree-ground p-3' }
-  };
-  const page = $derived(pages[current] ?? pages['#tree']);
+  const page = $derived(PHONE_PAGES[[...primaryTabs, ...moreTabs].find((t) => t.href === current)?.label ?? 'Tree']);
 </script>
 
 <LiveMobile {fx} current={start} label={page.label} mainClass={page.main} onnavigate={(href: string) => (current = href)}>

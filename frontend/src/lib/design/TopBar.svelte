@@ -1,6 +1,7 @@
 <script lang="ts">
   import { tick } from 'svelte';
-  import type { BuildWarning, WarningKind } from '$lib/display/sidebar';
+  import type { BuildWarning } from '$lib/display/sidebar';
+  import { issueKinds } from './issue_kinds';
   import Button from './Button.svelte';
   import FloatingLabel from './FloatingLabel.svelte';
   import Icon from './Icon.svelte';
@@ -130,14 +131,6 @@
     }
   }
 
-  const kindLabel: Record<WarningKind, [string, string]> = {
-    stat: ['Stat', 'Sidebar'],
-    cost: ['Cost', 'Main skill'],
-    skill: ['Skill', 'Skills'],
-    item: ['Item', 'Items'],
-    points: ['Passives', 'Tree']
-  };
-
   const errors = $derived(logs.filter((l) => l.level === 'error').length);
   const panelTabs = $derived([
     { id: 'issues', label: 'Build issues', badge: { text: String(issues.length), tone: 'warn' as const } },
@@ -174,7 +167,7 @@
     {#if issues.length}
       <ul aria-label="Build issues" class="scroll m-0 max-h-130 list-none p-0">
         {#each issues as it, i (i)}
-          <li><IssueRow text={it.text} kind={kindLabel[it.kind][0]} where={kindLabel[it.kind][1]} /></li>
+          <li><IssueRow text={it.text} kind={issueKinds[it.kind][0]} where={issueKinds[it.kind][1]} /></li>
         {/each}
       </ul>
     {:else}

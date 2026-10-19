@@ -35,12 +35,12 @@
 </script>
 
 <Dialog bind:open title="Settings" sheet note="Saved in this browser as you change them" class="h-170 max-h-[calc(100vh-24px)] w-195">
-  <div class="flex min-h-0 flex-[1_1_0]">
+  <div class="flex min-h-0 flex-[1_1_0] max-phone:flex-col">
     <Tabs
       id={uid}
       variant="vertical"
       label="Settings sections"
-      class="w-47.5 shrink-0 border-r border-line bg-inset px-2 py-2.5"
+      class="w-47.5 shrink-0 border-r border-line bg-inset px-2 py-2.5 max-phone:w-full max-phone:flex-row max-phone:overflow-x-auto max-phone:border-r-0 max-phone:border-b max-phone:[scrollbar-width:none] max-phone:[&>*]:shrink-0 max-phone:[&>*]:gap-1.5"
       tabs={sections.map((s) => ({ id: s.id, label: s.label, count: String(s.rows.length) }))}
       selected={cur.id}
       onchange={(id: string) => (section = id)} />
@@ -48,7 +48,9 @@
       {#each cur.rows as r (r.id)}
         {@const x = val(r)}
         {@const id = `${uid}-${r.id}`}
-        <div class="data-row grid-cols-[minmax(0,1fr)_15rem] gap-3 rounded px-2 py-2.25 hover:bg-bar" data-setting={r.id}>
+        <div
+          class="data-row grid-cols-[minmax(0,1fr)_15rem] gap-3 rounded max-phone:grid-cols-1 max-phone:gap-1.5 px-2 py-2.25 hover:bg-bar"
+          data-setting={r.id}>
           <span class="flex min-w-0 flex-col gap-0.5"
             >{#if r.kind === 'number' || r.kind === 'info'}<span class="text-13">{r.label}</span>{:else}<label for={id} class="text-13">{r.label}</label
               >{/if}{#if r.hint}<span class="note-sm">{r.hint}</span>{/if}</span>

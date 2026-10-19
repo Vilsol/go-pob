@@ -853,6 +853,7 @@
 </Dialog>
 
 <div
+  data-tree-bar
   class="box-border flex h-13 shrink-0 items-center gap-2.5 border-t border-line bg-surface-1 px-4 max-phone:h-auto max-phone:overflow-x-auto max-phone:px-3 max-phone:pt-3 max-phone:pb-2 max-phone:[&>*]:shrink-0">
   <div
     class="relative flex items-center gap-1.5"

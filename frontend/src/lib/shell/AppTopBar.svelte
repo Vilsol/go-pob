@@ -20,6 +20,18 @@
   import Dialog from '$lib/design/Dialog.svelte';
   import Button from '$lib/design/Button.svelte';
   import { WIKI_KEY, hoveredWikiName, openWiki } from '$lib/design/wiki';
+  import type { Snippet } from 'svelte';
+  import MobileFrame from '$lib/design/mobile/MobileFrame.svelte';
+  import StatsStrip from '$lib/design/mobile/StatsStrip.svelte';
+  import BuildSheets, { type BuildSheet } from '$lib/design/mobile/BuildSheets.svelte';
+  import { moreTabs, primaryTabs, routeTabs } from '$lib/design/mobile/mobile';
+  import AppSidebar from './AppSidebar.svelte';
+  import TimelessDialog from './TimelessDialog.svelte';
+  import { statPins } from './stat_pins.svelte';
+
+  // phone: this bar becomes the phone frame around the page, with the sidebar in its stats sheet
+  type Props = { phone?: boolean; label?: string; mainClass?: string; children?: Snippet };
+  let { phone = false, label = '', mainClass = '', children }: Props = $props();
 
   const tabs = [
     ['Tree', 'tree'],
@@ -30,7 +42,7 @@
     ['Notes', 'notes'],
     ['Party', 'party'],
     ['Compare', 'compare']
-  ].map(([label, path], i) => ({ label, href: `${base}/${path}`, key: String(i + 1) }));
+  ].map(([text, path], i) => ({ label: text, href: `${base}/${path}`, key: String(i + 1) }));
 
   const name = $derived(buildName(currentBuildPath.current));
 
@@ -214,47 +226,105 @@
       if (beforeReplace.ask === ask) beforeReplace.ask = undefined;
     };
   });
+  let phoneSheet = $state<BuildSheet>();
+  let timelessOpen = $state(false);
+  const phoneActions = $derived([
+    { key: 'history', label: 'Undo history', note: `${undo.steps.length - undo.undone} steps` },
+    { key: 'loadout', label: 'Loadout', note: loadoutShown === HEADER ? 'None' : loadoutShown },
+    ...(currentBuildPath.current ? [{ key: 'saveas', label: 'Save as…' }] : []),
+    { key: 'issues', label: 'Build issues', note: String($showWarnings ? ($sidebar?.warnings.length ?? 0) : 0) },
+    { key: 'settings', label: 'Settings' },
+    { key: 'about', label: 'About' }
+  ]);
+  const phoneAction = (key: string) => {
+    if (key === 'history' || key === 'loadout' || key === 'issues') phoneSheet = key;
+    else if (key === 'saveas') saveAs = true;
+    else if (key === 'settings') settings = true;
+    else if (key === 'about') {
+      aboutTab = 'about';
+      about = true;
+    }
+  };
   const unload = (e: BeforeUnloadEvent) => {
     if (!dirty || beforeReplace.reloading) return;
     e.preventDefault();
   };
 </script>
 
-<TopBar
-  {name}
-  {tabs}
-  current={page.url.pathname}
-  backHref="{base}/"
-  importHref="{base}/import"
-  {history}
-  undone={undo.undone}
-  historyMax={undo.max}
-  onundo={() => showUndo(syncWrap?.Undo())}
-  onredo={() => showUndo(syncWrap?.Redo())}
-  onhistory={(i: number) => showUndo(syncWrap?.UndoTo(i))}
-  loadouts={loadoutOptions}
-  loadout={loadoutShown}
-  onloadout={chooseLoadout}
-  issues={$showWarnings ? ($sidebar?.warnings ?? []) : []}
-  logs={[]}
-  {dirty}
-  onnavigate={(t: { href: string }, e: Event) => {
-    if (e instanceof KeyboardEvent) void goto(t.href);
-  }}
-  onback={(e: MouseEvent) => {
-    e.preventDefault();
-    leave();
-  }}
-  {onsave}
-  onimport={() => void goto(`${base}/import`, { state: { focusImport: true } })}
-  onsaveas={currentBuildPath.current ? () => (saveAs = true) : undefined}
-  onsettings={() => (settings = true)}
-  onabout={() => {
-    aboutTab = 'about';
-    about = true;
-  }}
-  {version}
-  devMode={$devMode} />
+{#if phone}
+  <MobileFrame
+    {name}
+    current={page.url.pathname}
+    {label}
+    {mainClass}
+    tabs={routeTabs(primaryTabs, base)}
+    more={routeTabs(moreTabs, base)}
+    {dirty}
+    canUndo={undo.undone < undo.steps.length}
+    canRedo={undo.undone > 0}
+    actions={phoneActions}
+    onnavigate={(href: string) => {
+      if (href === '#timeless') timelessOpen = true;
+      else void goto(href);
+    }}
+    onback={leave}
+    onundo={() => showUndo(syncWrap?.Undo())}
+    onredo={() => showUndo(syncWrap?.Redo())}
+    {onsave}
+    onaction={phoneAction}>
+    {#snippet strip(open: () => void)}
+      {#if $sidebar}<StatsStrip sidebar={$sidebar} pinned={statPins.ids} onopen={open} />{/if}
+    {/snippet}
+    {#snippet stats()}<AppSidebar />{/snippet}
+    {@render children?.()}
+  </MobileFrame>
+  <BuildSheets
+    bind:open={phoneSheet}
+    {history}
+    undone={undo.undone}
+    loadouts={loadoutOptions.filter((o) => o !== HEADER)}
+    loadout={loadoutShown}
+    issues={$showWarnings ? ($sidebar?.warnings ?? []) : []}
+    onhistory={(i: number) => showUndo(syncWrap?.UndoTo(i))}
+    onloadout={chooseLoadout} />
+  <TimelessDialog bind:open={timelessOpen} />
+{:else}
+  <TopBar
+    {name}
+    {tabs}
+    current={page.url.pathname}
+    backHref="{base}/"
+    importHref="{base}/import"
+    {history}
+    undone={undo.undone}
+    historyMax={undo.max}
+    onundo={() => showUndo(syncWrap?.Undo())}
+    onredo={() => showUndo(syncWrap?.Redo())}
+    onhistory={(i: number) => showUndo(syncWrap?.UndoTo(i))}
+    loadouts={loadoutOptions}
+    loadout={loadoutShown}
+    onloadout={chooseLoadout}
+    issues={$showWarnings ? ($sidebar?.warnings ?? []) : []}
+    logs={[]}
+    {dirty}
+    onnavigate={(t: { href: string }, e: Event) => {
+      if (e instanceof KeyboardEvent) void goto(t.href);
+    }}
+    onback={(e: MouseEvent) => {
+      e.preventDefault();
+      leave();
+    }}
+    {onsave}
+    onimport={() => void goto(`${base}/import`, { state: { focusImport: true } })}
+    onsaveas={currentBuildPath.current ? () => (saveAs = true) : undefined}
+    onsettings={() => (settings = true)}
+    onabout={() => {
+      aboutTab = 'about';
+      about = true;
+    }}
+    {version}
+    devMode={$devMode} />
+{/if}
 <SaveAsDialog bind:open={saveAs} onsaved={saved} />
 <Dialog small bind:open={savePrompt} title="Save Changes" class="w-100 p-4.5">
   <div class="flex flex-col gap-3 text-13">

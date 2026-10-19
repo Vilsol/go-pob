@@ -34,11 +34,13 @@ export class App {
 
   private constructor(
     readonly page: Page,
-    public build: string
+    public build: string,
+    readonly phone = false
   ) {}
 
-  static async open(page: Page, build: string): Promise<App> {
-    const app = new App(page, build);
+  // phone: the page is below the phone breakpoint, so the stats live in the closed stats sheet behind the strip
+  static async open(page: Page, build: string, { phone = false } = {}): Promise<App> {
+    const app = new App(page, build, phone);
 
     await page.context().route(`${DATA_HOST}**`, async (route) => {
       const url = route.request().url();
@@ -89,7 +91,8 @@ export class App {
     const t0 = await app.now();
     await newBuild.click();
     await app.waitSettled(before);
-    await expect(app.statsRegion().getByRole('button').first()).toBeVisible();
+    if (phone) await expect(page.locator('[data-stats-strip] [data-strip-cell]').first()).toBeVisible();
+    else await expect(app.statsRegion().getByRole('button').first()).toBeVisible();
     const last = (await app.timingsSince(before)).at(-1)!;
 
     record({ kind: 'cold-start', build, navToBootMs: marks.boot, navToDataMs: marks.data, newBuildToStatsMs: last.renderedAt - t0 });
@@ -98,7 +101,7 @@ export class App {
   }
 
   statsRegion() {
-    return this.page.getByRole('region', { name: 'Build stats' });
+    return this.page.getByRole('region', { name: 'Build stats', includeHidden: this.phone });
   }
 
   savedBuild(name: string) {

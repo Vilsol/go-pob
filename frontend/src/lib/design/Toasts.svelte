@@ -7,7 +7,8 @@
 </script>
 
 {#if $toasts.length}
-  <div class="pointer-events-none fixed bottom-3 left-3 z-50 flex w-80 max-w-[calc(100vw-24px)] flex-col gap-2">
+  <div
+    class="pointer-events-none fixed bottom-3 left-3 z-toast flex max-phone:bottom-[calc(3.5rem+env(safe-area-inset-bottom)+0.75rem)] w-80 max-w-[calc(100vw-24px)] flex-col gap-2">
     {#each $toasts as t, i (t.id)}
       {@const [title, ...body] = t.message.split('\n')}
       <div role="status" aria-labelledby="{uid}-{i}" class="panel pointer-events-auto flex flex-col gap-1 px-3 py-2.5 text-12 shadow-lg">

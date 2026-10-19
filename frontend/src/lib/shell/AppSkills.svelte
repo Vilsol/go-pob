@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { phoneMedia } from '$lib/design/mobile/mobile';
+  import SkillsPanes from '$lib/design/mobile/SkillsPanes.svelte';
   import { onMount, untrack } from 'svelte';
   import SkillsPage from '$lib/design/SkillsPage.svelte';
   import type { GemOptions, SkillSetOp } from '$lib/design/skills';
@@ -717,44 +719,47 @@
         : undefined;
     }
   };
+  const phone = phoneMedia();
 </script>
 
 {#if view && options}
-  <SkillsPage
-    {sets}
-    set={view.activeSet}
-    {selected}
-    mainGroup={view.main}
-    {catalogue}
-    deltas={gemDeltas}
-    slots={SLOTS}
-    bind:sortOn
-    bind:sortStat
-    {onset}
-    {onsets}
-    {onreordergroups}
-    oncopygroup={(i: number) => void oncopygroup(i).catch(logError)}
-    grouptip={async (i: number) => syncWrap?.SocketGroupTooltip(i)}
-    groupicon={(slot: string) => {
-      const file = slotIcon(slot, Object.fromEntries(Object.entries(itemBySlot).map(([s, it]) => [s, it.type])));
-      return file && `${base}/slot-icons/${file}`;
-    }}
-    onpastegroup={(text: string) => void onpastegroup(text).catch(logError)}
-    onselect={(i: number) => (selected = i)}
-    {ongroup}
-    {ongem}
-    onaddgem={(i: number, gem: SkillGemFixture) => void onaddgem(i, gem).catch(logError)}
-    {onremovegem}
-    onnewgroup={() => void onnewgroup().catch(logError)}
-    {onreordergems}
-    onmain={commitMainSocketGroup}
-    ondeletegroup={(i: number) => void ondeletegroup(i).catch(logError)}
-    ondeleteall={() => void ondeleteall().catch(logError)}
-    {onsort}
-    {options}
-    {onoption}
-    {editor}
-    revision={$outputs} />
+  <SkillsPanes on={phone.current}>
+    <SkillsPage
+      {sets}
+      set={view.activeSet}
+      {selected}
+      mainGroup={view.main}
+      {catalogue}
+      deltas={gemDeltas}
+      slots={SLOTS}
+      bind:sortOn
+      bind:sortStat
+      {onset}
+      {onsets}
+      {onreordergroups}
+      oncopygroup={(i: number) => void oncopygroup(i).catch(logError)}
+      grouptip={async (i: number) => syncWrap?.SocketGroupTooltip(i)}
+      groupicon={(slot: string) => {
+        const file = slotIcon(slot, Object.fromEntries(Object.entries(itemBySlot).map(([s, it]) => [s, it.type])));
+        return file && `${base}/slot-icons/${file}`;
+      }}
+      onpastegroup={(text: string) => void onpastegroup(text).catch(logError)}
+      onselect={(i: number) => (selected = i)}
+      {ongroup}
+      {ongem}
+      onaddgem={(i: number, gem: SkillGemFixture) => void onaddgem(i, gem).catch(logError)}
+      {onremovegem}
+      onnewgroup={() => void onnewgroup().catch(logError)}
+      {onreordergems}
+      onmain={commitMainSocketGroup}
+      ondeletegroup={(i: number) => void ondeletegroup(i).catch(logError)}
+      ondeleteall={() => void ondeleteall().catch(logError)}
+      {onsort}
+      {options}
+      {onoption}
+      {editor}
+      revision={$outputs} />
+  </SkillsPanes>
 {:else}
   <p class="note" role="status">Loading the skills…</p>
 {/if}

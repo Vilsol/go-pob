@@ -27,6 +27,7 @@
   import { importLanding, importParam, openImportLink } from '$lib/shell/link_import';
   import Dialog from '$lib/design/Dialog.svelte';
   import Button from '$lib/design/Button.svelte';
+  import { phoneMedia, phonePage } from '$lib/design/mobile/mobile';
 
   let {
     children
@@ -34,6 +35,9 @@
     children?: Snippet;
   } = $props();
 
+  // one shell at a time, so the page, the sidebar and their worker reads never run twice; crossing the breakpoint
+  // remounts the page
+  const phone = phoneMedia();
   const FRAMES = import.meta.glob<{ mainClass: string }>('./*/frame.ts', { eager: true });
   const MAIN_CLASS = Object.fromEntries(Object.entries(FRAMES).map(([path, m]) => [path.split('/')[1], m.mainClass]));
   const route = $derived(page.url.pathname.slice(base.length).replace(/^\/+|\/+$/g, ''));
@@ -184,7 +188,9 @@
 
 <svelte:head><title>{title}</title></svelte:head>
 
-{#if $currentBuild && !wasmLoading}
+{#if $currentBuild && !wasmLoading && phone.current}
+  <AppTopBar phone label={phonePage(route)?.label ?? LABELS[route]} mainClass={phonePage(route)?.main}>{@render children?.()}</AppTopBar>
+{:else if $currentBuild && !wasmLoading}
   <PageFrame label={LABELS[route]} mainClass={MAIN_CLASS[route]}>
     {#snippet topbar()}<AppTopBar />{/snippet}
     {#snippet sidebar()}<AppSidebar />{/snippet}

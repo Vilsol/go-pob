@@ -63,12 +63,7 @@
   onsave={() => (s.dirty = false)}
   onaction={(k: string) => (s.log = `action ${k}`)}>
   {#snippet strip(open: () => void)}<StatsStrip sidebar={fx.sidebar} pinned={pins} {delta} onopen={open} />{/snippet}
-  {#snippet stats()}
-    <div
-      class="flex min-h-0 flex-1 flex-col [&_[aria-label^='Collapse']]:hidden [&_[role=separator]]:hidden [&>aside]:w-full! [&>aside]:max-w-none! [&>aside]:border-r-0">
-      <LiveSidebar {fx} bind:pinned={pins} />
-    </div>
-  {/snippet}
+  {#snippet stats()}<LiveSidebar {fx} bind:pinned={pins} />{/snippet}
   {@render children()}
 </MobileFrame>
 <span class="sr-only" data-log>{s.log}</span>

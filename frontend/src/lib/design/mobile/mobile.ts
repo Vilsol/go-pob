@@ -10,6 +10,27 @@ const tab = (label: string, href = `#${label.toLowerCase()}`): MobileTab => ({ l
 export const primaryTabs: MobileTab[] = ['Tree', 'Skills', 'Items', 'Calcs', 'Config'].map((l) => tab(l));
 export const moreTabs: MobileTab[] = [tab('Notes'), tab('Party'), tab('Compare'), tab('Import/Export', '#import'), tab('Timeless')];
 
+// each tab's page: its route segment (Timeless is a dialog, not a route), main landmark name and phone <main> classes
+export const PHONE_PAGES: Record<string, { route?: string; label: string; main: string }> = {
+  Tree: { route: 'tree', label: 'Tree', main: '' },
+  Skills: { route: 'skills', label: 'Skills', main: 'overflow-hidden' },
+  Items: { route: 'items', label: 'Items', main: 'gap-3 p-3' },
+  Calcs: { route: 'calcs', label: 'Calcs', main: 'overflow-hidden' },
+  Config: { route: 'configuration', label: 'Config', main: 'gap-2.5 overflow-hidden p-3' },
+  Notes: { route: 'notes', label: 'Notes', main: 'gap-2.5 p-3' },
+  Party: { route: 'party', label: 'Party', main: 'gap-4 p-3' },
+  Compare: { route: 'compare', label: 'Compare', main: 'gap-2.5 overflow-hidden p-3' },
+  'Import/Export': { route: 'import', label: 'Import / Export', main: 'gap-4 p-3' },
+  Timeless: { label: 'Timeless search', main: 'gap-2.5 bg-tree-ground p-3' }
+};
+export const phonePage = (route: string) => Object.values(PHONE_PAGES).find((p) => p.route === route);
+// the tabs as links to the app's routes under `base`; a tab with no route keeps its #fragment
+export const routeTabs = (tabs: MobileTab[], base: string): MobileTab[] =>
+  tabs.map((t) => {
+    const route = PHONE_PAGES[t.label]?.route;
+    return route ? { ...t, href: `${base}/${route}` } : t;
+  });
+
 export type Headline = { section: string; line: StatLine; delta?: StatCompareLine };
 
 const dps = ['Full DPS', 'Combined DPS', 'Total DPS inc. Ignite', 'Total DPS', 'Hit DPS', 'Average Damage'];

@@ -16,6 +16,7 @@
   import { sidebarBreakdown } from '$lib/display/sidebar_breakdown';
   import { calcSections } from '$lib/calcs/calc_sections';
   import { checkFlag } from '$lib/calcs/check_flag';
+  import { statPins } from './stat_pins.svelte';
 
   const main = new MainGroup();
 
@@ -52,6 +53,7 @@
     sidebar={$showWarnings ? $sidebar : { ...$sidebar, warnings: [] }}
     socketGroups={main.groups.length ? main.groups : ['<No skills added yet>']}
     mainSocketGroup={Math.max(0, main.index)}
+    bind:pinned={statPins.ids}
     controls={$outputs?.MainSkill}
     onmaingroup={(i: number) => main.select(i)}
     oncontrol={(field: MainSkillField, v: number | undefined) => writeMainSkill($outputs?.MainSkill, field, v)}

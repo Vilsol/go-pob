@@ -18,6 +18,7 @@
   import type { NodeStatDiff, StatDiffBlock } from '$lib/skill_tree/stat_compare';
   import type { ClassChangeResult } from '$lib/skill_tree/class_change';
   import { heatMixColour, heatSingleColour } from '$lib/skill_tree/heat';
+  import { gestureDriver } from '$lib/design/mobile/tree_gestures';
 
   let currentClass: string | undefined = $state();
   let currentAscendancy: string | undefined = $state();
@@ -57,6 +58,8 @@
     /* PassiveTreeView.lua:474-490 */
     onclassconfirm?: (className: string, answer: (decision: 1 | 2) => Promise<ClassChangeResult> | undefined) => void;
     whatIf?: boolean;
+    // phone: tap = hover, double tap = pick, hold = menu, one finger pans, two pinch
+    gestures?: boolean;
   }
 
   let {
@@ -78,6 +81,7 @@
     cluster,
     compareCluster,
     whatIf = true,
+    gestures = false,
     view = $bindable(),
     statDiff = $bindable(),
     dependents = $bindable()
@@ -545,6 +549,22 @@
     offsetY = (v.zoomY + canvasHeight / 2) * scaling - Math.abs(skillTree.min_y);
   };
 
+  // phone: a view saved on a desktop-sized window points off a phone's canvas, so it opens on the allocated nodes
+  let fitPending = $state(false);
+  export const fitActive = () => (fitPending = true);
+  $effect(() => {
+    if (!fitPending || !canvasWidth || !canvasHeight || !activeNodes.length) return;
+    fitPending = false;
+    const ids = new Set(activeNodes);
+    const at = scene.nodes.filter((n) => ids.has(n.id) && !n.node.ascendancyName).map((n) => n.at);
+    if (!at.length) return;
+    const [x0, x1] = [Math.min(...at.map((p) => p.x)), Math.max(...at.map((p) => p.x))];
+    const [y0, y1] = [Math.min(...at.map((p) => p.y)), Math.max(...at.map((p) => p.y))];
+    scaling = Math.min(MAX_SCALING, Math.max(MIN_SCALING, Math.max((x1 - x0) / (canvasWidth * 0.9), (y1 - y0) / (canvasHeight * 0.9))));
+    offsetX = (canvasWidth / 2) * scaling - Math.abs(skillTree.min_x) - (x0 + x1) / 2;
+    offsetY = (canvasHeight / 2) * scaling - Math.abs(skillTree.min_y) - (y0 + y1) / 2;
+  });
+
   /* PassiveTreeView.lua:1312-1321 */
   export const focus = (id: number, to = MIN_SCALING) => {
     const n = scene.nodes.find((s) => s.node.skill === id) ?? clusterLayer.nodes.find((s) => s.id === id);
@@ -661,6 +681,41 @@
     mousePos = event.target === glCanvas || down ? (p ?? NOWHERE) : NOWHERE;
   };
 
+  // the node under each press, by the id the gesture classifier carries
+  const pressed = new Map<number, Node>();
+  const canvasAt = (p: Point): Point => {
+    const r = glCanvas?.getBoundingClientRect();
+    return r ? { x: p.x - r.left, y: p.y - r.top } : NOWHERE;
+  };
+  const touch = gestureDriver({
+    gesture: (g, at) => {
+      const node = g.node !== undefined ? pressed.get(g.node) : undefined;
+      if (g.kind === 'tap') mousePos = canvasAt(at);
+      else if (g.kind === 'double' && node) {
+        if (onpick) onpick(node);
+        else clickNode(node);
+      } else if (g.kind === 'hold' && node && onmenu) {
+        navigator.vibrate?.(15);
+        mousePos = NOWHERE;
+        onmenu(node, canvasAt(at));
+      }
+    },
+    pan: (dx, dy) => {
+      offsetX += dx * scaling;
+      offsetY += dy * scaling;
+    },
+    pinch: (f, mid) => {
+      const p = canvasAt(mid);
+      scaleAbout(p.x, p.y, Math.min(MAX_SCALING, Math.max(MIN_SCALING, scaling / f)));
+    }
+  });
+  const touchDown = (event: PointerEvent) => {
+    const p = canvasPoint(event);
+    const node = p && nodeAt(p.x * scaling - Math.abs(skillTree.min_x) - offsetX, p.y * scaling - Math.abs(skillTree.min_y) - offsetY);
+    if (node?.skill !== undefined) pressed.set(node.skill, node);
+    touch.down(event, node?.skill);
+  };
+
   const onScroll = (event: Event) => {
     if (event instanceof WheelEvent) {
       const scalingAdjustment = Math.pow(2, $zoomSensitivity - 5) * (event.deltaY / 100);
@@ -696,8 +751,9 @@
 </script>
 
 <svelte:window
-  onpointerup={mouseUp}
-  onpointermove={mouseMove}
+  onpointerup={gestures ? touch.up : mouseUp}
+  onpointercancel={gestures ? touch.up : undefined}
+  onpointermove={gestures ? touch.move : mouseMove}
   onresize={resize}
   onkeydown={onShift}
   onkeyup={onShift}
@@ -720,7 +776,12 @@
       data-heat={heat ? heat.values.size : undefined}
       class="relative"
       style="touch-action: none; cursor: {cursor}; width: {canvasWidth}px; height: {canvasHeight}px">
-      <canvas bind:this={glCanvas} class="absolute inset-0 w-full h-full" onpointerdown={mouseDown} onwheel={onScroll} oncontextmenu={contextMenu}></canvas>
+      <canvas
+        bind:this={glCanvas}
+        class="absolute inset-0 w-full h-full"
+        onpointerdown={gestures ? touchDown : mouseDown}
+        onwheel={onScroll}
+        oncontextmenu={gestures ? (e) => e.preventDefault() : contextMenu}></canvas>
       <canvas
         bind:this={overlay}
         class="absolute inset-0 w-full h-full pointer-events-none"
