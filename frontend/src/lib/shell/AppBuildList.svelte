@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { phoneTables } from '$lib/display/appearance';
   import { opening, unsavedName } from './build_name.svelte';
   import { resetAccountSession } from './account_session.svelte';
   import { onMount } from 'svelte';
@@ -176,6 +177,7 @@
 </script>
 
 <BuildListPage
+  phoneLayout={$phoneTables}
   update={$devMode ? undefined : { running: $updateCheckRunning, ready: $updateAvailable, oncheck: () => void checkForUpdate(), onapply: applyUpdate }}
   bind:sort
   {builds}

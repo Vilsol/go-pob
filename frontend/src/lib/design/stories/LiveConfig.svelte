@@ -38,7 +38,16 @@
       cells(g).splice(to, 0, x);
     },
     onremove: (g, c) => cells(g).splice(c, 1),
-    onaddcell: (g) => cells(g).push({ text: '', k: 'empty', parsed: '' })
+    onaddcell: (g) => cells(g).push({ text: '', k: 'empty', parsed: '' }),
+    modbrowser: {
+      list: (search) => {
+        const q = search.trim().toLowerCase();
+        const shown = Object.keys(modVerdicts).filter((l) => l.toLowerCase().includes(q));
+        return Promise.resolve(shown.length ? shown : ['No matching modifiers found']);
+      },
+      sources: () => Promise.resolve(['Item mod']),
+      onadd: (g, line) => cells(g).push(verdict(line))
+    }
   };
 </script>
 

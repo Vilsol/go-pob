@@ -1457,7 +1457,7 @@
   onreset={() => tattooNode && void resetTattoo(tattooNode).catch(logError)}
   onclose={() => (tattooNode = undefined)} />
 
-<Dialog open={classConfirm !== undefined} onclose={() => (classConfirm = undefined)} title="Class Change" class="w-105 p-4.5">
+<Dialog small open={classConfirm !== undefined} onclose={() => (classConfirm = undefined)} title="Class Change" class="w-105 p-4.5">
   {#if classConfirm}
     <div class="flex flex-col gap-3 text-13">
       <p class="m-0">Changing class to {classConfirm.className} will reset your passive tree.</p>

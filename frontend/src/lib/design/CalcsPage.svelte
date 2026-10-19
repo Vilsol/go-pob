@@ -102,6 +102,8 @@
   };
 
   let pinned = $state<string | undefined>(pin);
+  // phones: the docked breakdown folds down to a bar above the tab bar
+  let docked = $state(false);
   let hover = $state<string>();
   let closed = $state<Record<string, boolean>>({});
   $effect(() => {
@@ -238,6 +240,8 @@
   const described = (key: string) => (shownKey === key ? 'calcs-breakdown' : undefined);
   const opts = (names: string[] | undefined) => (names ?? []).map((label, i) => ({ value: String(i + 1), label }));
   const num = (e: Event) => Number((e.currentTarget as HTMLSelectElement).value);
+  // phones: the stat label stays while the damage-type columns scroll sideways
+  const STICKY = 'max-phone:sticky max-phone:left-0 max-phone:z-raised max-phone:bg-surface-1 max-phone:shadow-[1px_0_0_var(--color-line)]';
 </script>
 
 {#snippet label(key: string, r: CalcRow)}
@@ -314,7 +318,7 @@
             {@const key = rowKey(s.id, j, k)}
             {#if isHeaderRow(r)}
               <div role="row" class="col-span-full grid grid-cols-subgrid px-2 py-px font-sans text-10">
-                <span role="columnheader"><span class="sr-only">Stat</span></span>
+                <span role="columnheader" class={STICKY}><span class="sr-only">Stat</span></span>
                 {#each r.cells as c, i (i)}
                   {@const dt = damageTone(pobPlain(c.text))}
                   {#if dt}<span role="columnheader" class={['toned border-b-2 border-(--tone) text-right font-semibold', toneClass(dt)]}
@@ -332,7 +336,7 @@
                 onclick={toggle(key)}
                 onmouseenter={enter(key)}
                 onmouseleave={leave(key)}>
-                <span role="rowheader" class="flex min-w-0">{@render label(key, r)}</span>
+                <span role="rowheader" class={['flex min-w-0', STICKY]}>{@render label(key, r)}</span>
                 {#each r.cells as c, i (i)}
                   {@const change = changes.get(cellKey(s.id, j, r.label, i))}
                   <span role="cell" class={['text-right', changeClass(change)]} data-change={change} title={pobPlain(c.text)}
@@ -554,16 +558,41 @@
       </div>
     {/if}
   {/each}
-  <CalcsBreakdown
-    id="calcs-breakdown"
-    {title}
-    {parts}
-    pinned={!!pinned && shownKey === pinned}
-    pinnedTitle={pinned && shownKey !== pinned ? pobPlain(rows.get(pinned)?.r.label ?? lists.find((l) => LIST + l.bd === pinned)?.label ?? '') : undefined}
-    {itemtip}
-    {nodeview}
-    onunpin={() => {
-      pinned = undefined;
-      hover = undefined;
-    }} />
+  <div
+    class={[
+      'contents',
+      pinned
+        ? 'max-phone:fixed max-phone:inset-x-0 max-phone:z-dock max-phone:flex max-phone:flex-col max-phone:border-t max-phone:border-line-strong max-phone:bg-surface-1 max-phone:shadow-sheet max-phone:transition-[height,bottom] max-phone:[&>[role=separator]]:hidden max-phone:[&>aside]:min-h-0 max-phone:[&>aside]:w-full! max-phone:[&>aside]:max-w-none max-phone:[&>aside]:flex-1 max-phone:[&>aside]:border-l-0'
+        : 'max-phone:hidden',
+      pinned &&
+        (docked
+          ? 'max-phone:bottom-[calc(3.5rem+env(safe-area-inset-bottom))] max-phone:h-11 max-phone:[&>aside]:hidden'
+          : 'max-phone:bottom-0 max-phone:h-[55dvh]')
+    ]}
+    data-breakdown-dock
+    data-docked={pinned && docked ? '' : undefined}>
+    {#if pinned}
+      <button
+        type="button"
+        class="flex h-11 w-full shrink-0 items-center gap-2 border-0 border-b border-line bg-bar px-3 text-left font-sans text-13 text-text phone:hidden"
+        aria-expanded={!docked}
+        aria-controls="calcs-breakdown"
+        onclick={() => (docked = !docked)}
+        ><span class="min-w-0 flex-1 truncate">{title ?? 'Breakdown'}</span><span aria-hidden="true" class="text-text-3">{docked ? '▴' : '▾'}</span><span
+          class="sr-only">{docked ? 'Show the breakdown' : 'Fold the breakdown down'}</span
+        ></button>
+    {/if}
+    <CalcsBreakdown
+      id="calcs-breakdown"
+      {title}
+      {parts}
+      pinned={!!pinned && shownKey === pinned}
+      pinnedTitle={pinned && shownKey !== pinned ? pobPlain(rows.get(pinned)?.r.label ?? lists.find((l) => LIST + l.bd === pinned)?.label ?? '') : undefined}
+      {itemtip}
+      {nodeview}
+      onunpin={() => {
+        pinned = undefined;
+        hover = undefined;
+      }} />
+  </div>
 </div>

@@ -7,6 +7,7 @@
     THEMES,
     craftCardLayout,
     itemsLayout,
+    phoneTables,
     showAnimations,
     showStatBars,
     theme,
@@ -73,6 +74,14 @@
         // Main.lua:1027-1029
         { id: 'animations', label: 'Show animations', kind: 'check', value: true, hint: 'Off also honours the system “reduce motion” setting' },
         { id: 'statBars', label: 'Show stat bars', kind: 'check', value: true, hint: 'The value bars behind the sidebar and Calcs stats' },
+        {
+          id: 'phoneTables',
+          label: 'Wide lists on a phone',
+          kind: 'select',
+          value: 'Cards',
+          opts: ['Cards', 'Table'],
+          hint: 'The build list and the Items list on a narrow screen: one card per row, or a table that scrolls sideways under its name column'
+        },
         { id: 'titleBuild', label: 'Show build name in window title', kind: 'check', value: true, hint: 'The tab title becomes “<build> (<class>) - go-pob”' },
         { id: 'devMode', label: 'Dev mode', kind: 'check', value: false, hint: 'Passive tooltips show the node id' },
         // Main.lua:1085-1096
@@ -291,6 +300,7 @@
     statBars: $showStatBars,
     affixSliders: $showAllItemAffixes,
     itemsLayout: $itemsLayout === 'list' ? 'List' : 'Board',
+    phoneTables: $phoneTables === 'table' ? 'Table' : 'Cards',
     craftCardLayout: $craftCardLayout === 'tabs' ? 'Tabs' : 'Stepped sections',
     dataVersion,
     cache: cacheSize,
@@ -347,6 +357,7 @@
     else if (id === 'affixSliders') showAllItemAffixes.set(!!v);
     else if (id === 'itemsLayout' && (ITEMS_LAYOUTS as readonly string[]).includes(String(v).toLowerCase()))
       itemsLayout.set(String(v).toLowerCase() as ItemsLayout);
+    else if (id === 'phoneTables') phoneTables.set(v === 'Table' ? 'table' : 'cards');
     else if (id === 'craftCardLayout') craftCardLayout.set(v === 'Tabs' ? 'tabs' : 'stepped');
     else if (id === 'devMode') devMode.set(!!v);
     else if (id === 'titleBuild') showTitlebarName.set(!!v);

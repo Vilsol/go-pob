@@ -573,7 +573,9 @@
 
 <svelte:window onpointerdown={outside} onkeydown={pageKey} />
 
-<div class="box-border flex min-h-13 shrink-0 flex-wrap items-center gap-2.5 border-b border-line px-4 py-0.5" data-toolbar>
+<div
+  class="box-border flex min-h-13 shrink-0 flex-wrap items-center gap-2.5 border-b border-line px-4 py-0.5 max-phone:gap-2 max-phone:px-3 max-phone:py-2"
+  data-toolbar>
   <FloatingLabel label="Class" class="[--float-bg:var(--color-surface-1)]"
     ><select class="select h-8.5 bg-surface-1" value={className} onchange={(e) => onclass?.(e.currentTarget.value)}
       >{#each tree.classes as o (o)}<option>{o}</option>{/each}</select
@@ -686,10 +688,10 @@
           : ''}</output>
       · {allocCount} allocated{whole ? '' : ' in view'}
     </div>
-    <div class="map-note pointer-events-none bottom-2.5 left-2.5 z-3">{hint}</div>
+    <div class="map-note pointer-events-none bottom-2.5 left-2.5 z-3 max-phone:hidden">{hint}</div>
     {#if tip && tipPos}
       <div
-        class="pointer-events-none absolute top-(--y) left-(--x) z-4"
+        class="pointer-events-none absolute top-(--y) left-(--x) z-4 max-phone:inset-x-2 max-phone:top-auto max-phone:bottom-16 max-phone:[&>*]:max-w-full"
         style:--x="{tipPos.x}px"
         style:--y="{tipPos.y}px"
         bind:this={tipEl}
@@ -850,7 +852,8 @@
   {/if}
 </Dialog>
 
-<div class="box-border flex h-13 shrink-0 items-center gap-2.5 border-t border-line bg-surface-1 px-4">
+<div
+  class="box-border flex h-13 shrink-0 items-center gap-2.5 border-t border-line bg-surface-1 px-4 max-phone:h-auto max-phone:overflow-x-auto max-phone:px-3 max-phone:pt-3 max-phone:pb-2 max-phone:[&>*]:shrink-0">
   <div
     class="relative flex items-center gap-1.5"
     role="group"
@@ -1131,6 +1134,7 @@
 {/if}
 
 <Dialog
+  small
   open={converting !== null}
   onclose={cancelConvert}
   title={converting ? `Convert to Version ${versionLabel(converting.version)}` : 'Convert'}
@@ -1149,7 +1153,7 @@
   {/if}
 </Dialog>
 
-<Dialog bind:open={convertingAll} title="Convert all to Version {versionLabel(tree.version)}" class="w-115 p-4.5">
+<Dialog small bind:open={convertingAll} title="Convert all to Version {versionLabel(tree.version)}" class="w-115 p-4.5">
   <div class="flex flex-col gap-3 text-13">
     <p class="m-0">Warning: some or all of the passives may be de-allocated due to changes in the tree.</p>
     <p class="m-0">Convert will replace all trees that are not Version {versionLabel(tree.version)}.<br />This action cannot be undone.</p>
@@ -1167,6 +1171,7 @@
 </Dialog>
 
 <Dialog
+  small
   open={converted !== null || !!convertMsg}
   onclose={() => ((converted = null), (convertMsg = ''))}
   title={convertMsg ? 'Convert' : 'Tree Converted'}
@@ -1183,7 +1188,7 @@
   </div>
 </Dialog>
 
-<Dialog bind:open={resetting} title="Reset Tree/Tattoos" class="w-115 p-4.5">
+<Dialog small bind:open={resetting} title="Reset Tree/Tattoos" class="w-115 p-4.5">
   <div class="flex flex-col gap-3 text-13">
     <p class="m-0">Warning: resetting your passive tree or removing all tattoos cannot be undone.</p>
     <div class="flex gap-1.5">

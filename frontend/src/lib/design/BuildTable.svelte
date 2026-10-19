@@ -8,6 +8,7 @@
   type Recalc = { done: number; total: number; name: string };
   type Props = {
     builds: SavedBuild[];
+    phoneLayout?: 'cards' | 'table';
     folders: string[];
     folder: string;
     classes: string[];
@@ -35,6 +36,7 @@
   };
   let {
     builds,
+    phoneLayout = 'cards',
     folders,
     folder,
     classes,
@@ -137,7 +139,7 @@
 
 <svelte:window onpointerdown={outside} onkeydown={pasteKey} />
 
-<main class="scroll flex min-w-0 grow flex-col gap-3 px-6 py-4" aria-label="Builds in {folder ? leaf(folder) : 'all folders'}">
+<main class="scroll flex min-w-0 grow flex-col gap-3 px-6 py-4 max-phone:px-3" aria-label="Builds in {folder ? leaf(folder) : 'all folders'}">
   <nav aria-label="Breadcrumb" class="flex items-center gap-1.5 text-13">
     {#each crumbs as c, i (c.path)}
       <button
@@ -148,9 +150,9 @@
       >{#if i < crumbs.length - 1}<span class="text-text-3" aria-hidden="true">/</span>{/if}
     {/each}
   </nav>
-  <div class="flex items-center gap-2.5">
+  <div class="flex items-center gap-2.5 max-phone:flex-wrap">
     <input
-      class="input input-lg w-75 bg-surface-1"
+      class="input input-lg w-75 bg-surface-1 max-phone:w-full"
       type="search"
       bind:value={q}
       placeholder={folder ? `Search in ${leaf(folder)} and its subfolders` : 'Search builds'}
@@ -159,7 +161,7 @@
     <div role="group" aria-label="Filter by class" class="flex flex-wrap gap-1">
       {#each classes as c (c)}<button class="chip px-2.5" aria-pressed={c === cls} onclick={() => (cls = c)}>{c}</button>{/each}
     </div>
-    <div class="grow"></div>
+    <div class="grow max-phone:hidden"></div>
     {#if staleCount || recalc}
       <button
         class="btn h-9 px-3 whitespace-nowrap"
@@ -215,152 +217,157 @@
       <span class="note ml-auto">the list stays usable</span>
     </div>
   {/if}
-  <div role="grid" aria-label="Builds" class="panel" style="--tracks: {tracks}">
-    <div role="row" class="data-row data-head grid-cols-(--tracks) gap-2 px-3.5 py-1.5 tracking-caps-tight">
-      <span role="columnheader"><span class="sr-only">Drag</span></span>
-      {#each shown as c (c.key)}
-        {@const on = sort.key === c.key}
-        <span
-          role="columnheader"
-          aria-sort={on ? (sort.dir === 'asc' ? 'ascending' : 'descending') : 'none'}
-          class={['flex min-w-0', c.right && 'justify-end']}>
-          <button
-            class={[
-              'flex h-6 items-center gap-1 border-0 bg-transparent p-0 font-sans text-11 font-medium tracking-caps-tight whitespace-nowrap',
-              on ? 'text-text' : 'text-text-3 hover:text-text'
-            ]}
-            title="Sort by {c.label}"
-            onclick={() => (sort = nextSort(sort, c))}
-            >{c.label.toUpperCase()}<span aria-hidden="true" class="min-w-2 text-[9px] text-accent">{on ? (sort.dir === 'asc' ? '▲' : '▼') : ''}</span></button>
-        </span>
-      {/each}
-      <span role="columnheader"><span class="sr-only">Actions</span></span>
-    </div>
-    {#each subs as c (c)}
-      {@const hot = !!drag && drag.where === 'list' && drag.over === c}
-      {@const n = childrenOf(folders, c).length}
-      {@const cut = marked?.cut && marked.id === `folder:${c}`}
-      <div
-        role="row"
-        data-folder={c}
-        data-cut={cut ? '' : undefined}
-        class={[
-          'relative flex items-center gap-3 border-b border-surface-2 py-2 pr-3.5 pl-10.5 text-13',
-          hot ? 'drop-target bg-accent/14' : 'bg-alt',
-          cut && 'opacity-50'
-        ]}
-        {...dropOn(c)}>
-        <span role="gridcell"
-          ><button
-            class="flex items-center gap-2 border-0 bg-transparent p-0 text-left font-sans text-13 font-semibold text-accent"
-            onclick={() => onfolder(c)}
-            onkeydown={(e) => {
-              const k = e.key.toLowerCase();
-              if (!onpaste || !(e.ctrlKey || e.metaKey) || e.altKey || e.shiftKey || (k !== 'c' && k !== 'x')) return;
-              e.preventDefault();
-              marked = { id: `folder:${c}`, cut: k === 'x' };
-            }}
-            ><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" class="shrink-0"
-              ><path d="M1.5 3.5h4.5l1.5 1.5h7v7.5h-13z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"></path></svg
-            >{leaf(c)}</button
-          ></span>
-        <span role="gridcell" class="text-text-3">folder · {countIn(builds, c)} builds{n ? ` · ${n} subfolder${n > 1 ? 's' : ''}` : ''}</span>
-        {#if hot}
-          <span role="gridcell" class="ml-auto text-12 font-semibold text-accent">Drop to move into {leaf(c)}</span>
-          <div aria-hidden="true" class="drag-ghost top-5 left-65"><span class="grip">⋮⋮</span><span>{drag?.name}</span></div>
-        {/if}
-      </div>
-    {/each}
-    {#each rows as b (buildId(b))}
-      {@const id = buildId(b)}
-      {@const dragged = drag?.id === id}
-      <div
-        role="row"
-        tabindex="0"
-        aria-selected={selected === id}
-        data-cut={marked?.cut && marked.id === id ? '' : undefined}
-        data-build={b.name}
-        draggable="true"
-        class={[
-          'group data-row cursor-default grid-cols-(--tracks) gap-2 px-3.5 py-1.25 text-13 hover:bg-bar focus-visible:-outline-offset-2',
-          dragged
-            ? 'opacity-40 outline-1 -outline-offset-1 outline-accent outline-dashed'
-            : 'aria-selected:bg-sel aria-selected:shadow-[inset_3px_0_0_var(--color-accent)]',
-          marked?.cut && marked.id === id && 'opacity-50'
-        ]}
-        onclick={(e: MouseEvent) => {
-          if (!(e.target as HTMLElement).closest('button, a, [role="menu"]')) selected = id;
-        }}
-        ondblclick={(e: MouseEvent) => {
-          if (!(e.target as HTMLElement).closest('button, [role="menu"]')) onopen?.(id);
-        }}
-        onkeydown={(e) => {
-          if (e.target !== e.currentTarget) return;
-          if (rowKey(e, id)) return;
-          if (e.key === 'Enter') {
-            e.preventDefault();
-            onopen?.(id);
-          } else if (e.key === ' ') {
-            e.preventDefault();
-            selected = id;
-          }
-        }}
-        ondragstart={(e) => {
-          if (e.dataTransfer) {
-            e.dataTransfer.effectAllowed = 'move';
-            e.dataTransfer.setData('text/plain', b.name);
-            dragLabel(e, b.name);
-          }
-          ondrag({ id, name: b.name, over: null, where: null });
-        }}
-        ondragend={() => ondrag(null)}>
-        <span role="gridcell"
-          ><button
-            class="drag-handle group-hover:opacity-100 group-focus-within:opacity-100"
-            aria-label="Drag {b.name} to a folder"
-            title="Drag onto a folder to move it (keyboard: ⋯ → Move to…)">⋮⋮</button
-          ></span>
+  <div class="max-phone:@container max-phone:relative max-phone:overflow-x-auto">
+    <div role="grid" aria-label="Builds" data-phone={phoneLayout} class="phone-grid panel max-phone:w-max max-phone:min-w-full" style="--tracks: {tracks}">
+      <div role="row" class="data-row data-head grid-cols-(--tracks) gap-2 px-3.5 py-1.5 tracking-caps-tight">
+        <span role="columnheader" data-phone-hide><span class="sr-only">Drag</span></span>
         {#each shown as c (c.key)}
-          {#if c.key === 'name'}
-            <span role="gridcell" class="truncate font-semibold" data-col="name"
-              >{#if ql && subpath(b, folder)}<span class="font-normal text-text-3" data-subpath>{subpath(b, folder)}</span>{/if}<a
-                class="text-inherit no-underline hover:underline"
-                href={href(b)}
-                title="Open {b.name}"
-                onclick={(e) => {
-                  if (!onopen) return;
-                  e.preventDefault();
-                  onopen(id);
-                }}>{b.name}</a
-              ></span>
-          {:else}
-            {@const old = !!c.stat && stale(b)}
-            <span
-              role="gridcell"
-              data-col={c.key}
-              data-stale={old || undefined}
-              class={['toned truncate', toneClass(old ? 'muted' : c.tone(b)), c.right && 'text-right font-mono']}
-              title={old ? `Saved with ${b.version} data · Recalculate all refreshes it` : undefined}>{old ? '↻ ' : ''}{c.text(b)}</span>
-          {/if}
+          {@const on = sort.key === c.key}
+          <span
+            role="columnheader"
+            data-col-head={c.key === 'name' ? 'name' : undefined}
+            aria-sort={on ? (sort.dir === 'asc' ? 'ascending' : 'descending') : 'none'}
+            class={['flex min-w-0', c.right && 'justify-end']}>
+            <button
+              class={[
+                'flex h-6 items-center gap-1 border-0 bg-transparent p-0 font-sans text-11 font-medium tracking-caps-tight whitespace-nowrap',
+                on ? 'text-text' : 'text-text-3 hover:text-text'
+              ]}
+              title="Sort by {c.label}"
+              onclick={() => (sort = nextSort(sort, c))}
+              >{c.label.toUpperCase()}<span aria-hidden="true" class="min-w-2 text-[9px] text-accent">{on ? (sort.dir === 'asc' ? '▲' : '▼') : ''}</span
+              ></button>
+          </span>
         {/each}
-        <span role="gridcell" class="relative flex items-center justify-end gap-1">
-          <button class="btn btn-icon btn-xs" aria-label="Copy {b.name}" title="Copy" onclick={() => oncopy?.(id)}>⧉</button>
-          <Menu label="Actions for {b.name}" items={moveItems(b)} class="top-8 w-57.5" bind:open={() => menuFor === id, (v) => (menuFor = v ? id : null)}>
-            {#snippet trigger(attrs)}
-              <button
-                class="btn btn-icon btn-xs"
-                aria-label="Actions for {b.name}"
-                title={onrename || ondelete ? 'Open, rename, delete, move' : 'Open, move'}
-                {...attrs}>⋯</button>
-            {/snippet}
-            {#snippet row(it: { label: string; indent?: string })}<span class="pl-(--indent)" style={it.indent ? `--indent: ${it.indent}` : undefined}
-                >{it.label}</span
-              >{/snippet}
-          </Menu>
-        </span>
+        <span role="columnheader" data-phone-hide><span class="sr-only">Actions</span></span>
       </div>
-    {/each}
-    {#if !rows.length && !subs.length}<div class="p-6 text-center text-13 text-text-3">No builds match. Clear the search or pick another class.</div>{/if}
+      {#each subs as c (c)}
+        {@const hot = !!drag && drag.where === 'list' && drag.over === c}
+        {@const n = childrenOf(folders, c).length}
+        {@const cut = marked?.cut && marked.id === `folder:${c}`}
+        <div
+          role="row"
+          data-folder={c}
+          data-cut={cut ? '' : undefined}
+          class={[
+            'relative box-border flex items-center gap-3 border-b border-surface-2 py-2 pr-3.5 pl-10.5 text-13 max-phone:in-data-[phone=cards]:pl-3.5 max-phone:in-data-[phone=table]:sticky max-phone:in-data-[phone=table]:left-0 max-phone:in-data-[phone=table]:z-raised max-phone:in-data-[phone=table]:w-[100cqw] max-phone:in-data-[phone=table]:pl-3.5',
+            hot ? 'drop-target bg-accent/14' : 'bg-alt',
+            cut && 'opacity-50'
+          ]}
+          {...dropOn(c)}>
+          <span role="gridcell"
+            ><button
+              class="flex items-center gap-2 border-0 bg-transparent p-0 text-left font-sans text-13 font-semibold text-accent"
+              onclick={() => onfolder(c)}
+              onkeydown={(e) => {
+                const k = e.key.toLowerCase();
+                if (!onpaste || !(e.ctrlKey || e.metaKey) || e.altKey || e.shiftKey || (k !== 'c' && k !== 'x')) return;
+                e.preventDefault();
+                marked = { id: `folder:${c}`, cut: k === 'x' };
+              }}
+              ><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" class="shrink-0"
+                ><path d="M1.5 3.5h4.5l1.5 1.5h7v7.5h-13z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"></path></svg
+              >{leaf(c)}</button
+            ></span>
+          <span role="gridcell" class="text-text-3">folder · {countIn(builds, c)} builds{n ? ` · ${n} subfolder${n > 1 ? 's' : ''}` : ''}</span>
+          {#if hot}
+            <span role="gridcell" class="ml-auto text-12 font-semibold text-accent">Drop to move into {leaf(c)}</span>
+            <div aria-hidden="true" class="drag-ghost top-5 left-65"><span class="grip">⋮⋮</span><span>{drag?.name}</span></div>
+          {/if}
+        </div>
+      {/each}
+      {#each rows as b (buildId(b))}
+        {@const id = buildId(b)}
+        {@const dragged = drag?.id === id}
+        <div
+          role="row"
+          tabindex="0"
+          aria-selected={selected === id}
+          data-cut={marked?.cut && marked.id === id ? '' : undefined}
+          data-build={b.name}
+          draggable="true"
+          class={[
+            'group data-row cursor-default grid-cols-(--tracks) gap-2 px-3.5 py-1.25 text-13 hover:bg-bar focus-visible:-outline-offset-2',
+            dragged
+              ? 'opacity-40 outline-1 -outline-offset-1 outline-accent outline-dashed'
+              : 'aria-selected:bg-sel aria-selected:shadow-[inset_3px_0_0_var(--color-accent)]',
+            marked?.cut && marked.id === id && 'opacity-50'
+          ]}
+          onclick={(e: MouseEvent) => {
+            if (!(e.target as HTMLElement).closest('button, a, [role="menu"]')) selected = id;
+          }}
+          ondblclick={(e: MouseEvent) => {
+            if (!(e.target as HTMLElement).closest('button, [role="menu"]')) onopen?.(id);
+          }}
+          onkeydown={(e) => {
+            if (e.target !== e.currentTarget) return;
+            if (rowKey(e, id)) return;
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              onopen?.(id);
+            } else if (e.key === ' ') {
+              e.preventDefault();
+              selected = id;
+            }
+          }}
+          ondragstart={(e) => {
+            if (e.dataTransfer) {
+              e.dataTransfer.effectAllowed = 'move';
+              e.dataTransfer.setData('text/plain', b.name);
+              dragLabel(e, b.name);
+            }
+            ondrag({ id, name: b.name, over: null, where: null });
+          }}
+          ondragend={() => ondrag(null)}>
+          <span role="gridcell" data-phone-hide
+            ><button
+              class="drag-handle group-hover:opacity-100 group-focus-within:opacity-100"
+              aria-label="Drag {b.name} to a folder"
+              title="Drag onto a folder to move it (keyboard: ⋯ → Move to…)">⋮⋮</button
+            ></span>
+          {#each shown as c (c.key)}
+            {#if c.key === 'name'}
+              <span role="gridcell" class="truncate font-semibold" data-col="name"
+                >{#if ql && subpath(b, folder)}<span class="font-normal text-text-3" data-subpath>{subpath(b, folder)}</span>{/if}<a
+                  class="text-inherit no-underline hover:underline"
+                  href={href(b)}
+                  title="Open {b.name}"
+                  onclick={(e) => {
+                    if (!onopen) return;
+                    e.preventDefault();
+                    onopen(id);
+                  }}>{b.name}</a
+                ></span>
+            {:else}
+              {@const old = !!c.stat && stale(b)}
+              <span
+                role="gridcell"
+                data-col={c.key}
+                data-label={c.right && c.key !== 'level' ? c.label : c.key === 'level' ? 'Lv' : undefined}
+                data-stale={old || undefined}
+                class={['toned truncate', toneClass(old ? 'muted' : c.tone(b)), c.right && 'text-right font-mono']}
+                title={old ? `Saved with ${b.version} data · Recalculate all refreshes it` : undefined}>{old ? '↻ ' : ''}{c.text(b)}</span>
+            {/if}
+          {/each}
+          <span role="gridcell" data-col="aside" class="relative flex items-center justify-end gap-1">
+            <button class="btn btn-icon btn-xs" aria-label="Copy {b.name}" title="Copy" onclick={() => oncopy?.(id)}>⧉</button>
+            <Menu label="Actions for {b.name}" items={moveItems(b)} class="top-8 w-57.5" bind:open={() => menuFor === id, (v) => (menuFor = v ? id : null)}>
+              {#snippet trigger(attrs)}
+                <button
+                  class="btn btn-icon btn-xs"
+                  aria-label="Actions for {b.name}"
+                  title={onrename || ondelete ? 'Open, rename, delete, move' : 'Open, move'}
+                  {...attrs}>⋯</button>
+              {/snippet}
+              {#snippet row(it: { label: string; indent?: string })}<span class="pl-(--indent)" style={it.indent ? `--indent: ${it.indent}` : undefined}
+                  >{it.label}</span
+                >{/snippet}
+            </Menu>
+          </span>
+        </div>
+      {/each}
+      {#if !rows.length && !subs.length}<div class="p-6 text-center text-13 text-text-3">No builds match. Clear the search or pick another class.</div>{/if}
+    </div>
   </div>
   <div class="note">
     {rows.length} builds in {folder || 'all folders'}{ql && folder ? ' and its subfolders' : folder ? ' (subfolders listed above)' : ''} · click selects, double-click

@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
 
+  const DEFAULT_CLASS = 'w-95 p-4';
   type Props = {
     open?: boolean;
     title: string;
@@ -12,19 +13,23 @@
     actions?: Snippet;
     head?: Snippet;
     backdrop?: boolean;
+    /* a short confirm or prompt: stays a centred dialog on a phone instead of filling the screen */
+    small?: boolean;
   };
   let {
     open = $bindable(false),
     title,
     sheet = false,
     note,
-    class: extra = sheet ? 'w-100' : 'w-95 p-4',
+    class: extra = sheet ? 'w-100' : DEFAULT_CLASS,
     onclose,
     children,
     actions,
     head,
-    backdrop = false
+    backdrop = false,
+    small
   }: Props = $props();
+  const isSmall = $derived(small ?? (!sheet && extra === DEFAULT_CLASS));
 
   const uid = $props.id();
   let el: HTMLDialogElement;
@@ -68,7 +73,7 @@
 <dialog
   bind:this={el}
   aria-labelledby="{uid}-title"
-  class={['dialog m-auto text-text not-open:hidden backdrop:bg-[rgb(8_9_10/0.72)]', sheet && 'dialog-sheet', extra]}
+  class={['dialog m-auto text-text not-open:hidden backdrop:bg-[rgb(8_9_10/0.72)]', sheet && 'dialog-sheet', isSmall && 'dialog-small', extra]}
   onclose={closed}
   onclick={clicked}
   onkeydown={(e) => {

@@ -269,6 +269,8 @@
     await waitFor(() => expect(d.getByRole('group', { name: 'Implicit comparison' })).toHaveTextContent('Adding this mod will give:'));
     await userEvent.click(d.getByRole('tab', { name: 'Roll Ranges' }));
     await expect(d.getByRole('group', { name: 'Roll Ranges' })).toHaveTextContent('+50 to maximum Life');
+    const tab = d.getByRole('tab', { name: 'Roll Ranges' });
+    await expect(d.getByRole('tabpanel', { name: 'Roll Ranges' })).toHaveAttribute('id', tab.getAttribute('aria-controls'));
   }}>
   <div class="h-150"><CorruptDialog open craft={corruptApi} /></div>
 </Story>

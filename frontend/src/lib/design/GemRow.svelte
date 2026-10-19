@@ -72,7 +72,7 @@
 </script>
 
 <div class={['gem-row', from && 'bg-info-bg', (error || shownGlobals.length) && 'h-auto py-1']} data-wiki={name ? gemWikiName(name, support) : undefined}>
-  <span class="flex">{@render grip?.()}</span>
+  <span class="flex max-phone:hidden">{@render grip?.()}</span>
   <div class="relative flex h-full items-center justify-center">
     {#if linked !== undefined}
       <button
@@ -86,9 +86,20 @@
           onlinkchange?.(linked);
         }}></button>
     {/if}
-    <Socket {socket} gem={from ? 'flask' : tone} />
+    {#if enabled !== undefined}
+      <!-- phones: the socket bubble is the on/off switch; an empty middle means disabled -->
+      <span class="max-phone:hidden"><Socket {socket} gem={from ? 'flask' : tone} /></span>
+      <button
+        type="button"
+        class="btn-bare flex size-9 items-center justify-center phone:hidden"
+        aria-pressed={enabled}
+        aria-label="{name} enabled"
+        onclick={() => onenabled?.(!enabled)}><Socket {socket} gem={enabled ? (from ? 'flask' : tone) : undefined} /></button>
+    {:else}
+      <Socket {socket} gem={from ? 'flask' : tone} />
+    {/if}
   </div>
-  <span
+  <span class="max-phone:hidden"
     >{#if enabled !== undefined}<input
         type="checkbox"
         class="check size-3.75"

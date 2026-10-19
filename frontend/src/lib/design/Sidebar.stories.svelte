@@ -15,6 +15,8 @@
     globals: { viewport: { value: 'target', isRotated: false } }
   });
 
+  const manyPins = [...new Set(spectreBuild.sidebar.sections[1].groups.flat().map((l) => l.label))].slice(0, 12).map((l) => `Player|${l}|1`);
+
   type Want = { tone?: Tone; cap?: string; pool?: string; cost?: string; free?: boolean };
   const GAUGED: Record<string, Want> = {
     'Fire Resistance': { tone: 'fire', cap: 'Fire Resist' },
@@ -203,6 +205,29 @@
 </Story>
 
 <Story
+  name="Rail with many pins"
+  asChild
+  play={async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    const rail = canvasElement.querySelector<HTMLElement>('aside')!;
+    const pins = rail.querySelector<HTMLElement>('[data-rail-pins]')!;
+    await expect(pins.children).toHaveLength(12);
+    await expect(rail.getBoundingClientRect().bottom).toBeLessThanOrEqual(canvasElement.querySelector('div')!.getBoundingClientRect().bottom + 1);
+    await expect(pins.scrollHeight).toBeGreaterThan(pins.clientHeight);
+    await expectInset(
+      rail,
+      [...rail.querySelectorAll<HTMLElement>('button, span:not(.sr-only)')].filter(
+        (x) => x.getBoundingClientRect().bottom <= rail.getBoundingClientRect().bottom
+      ),
+      8,
+      ['left', 'right']
+    );
+  }}>
+  <div class="h-120">
+    <LiveSidebar fx={spectreBuild} collapsed pinned={manyPins} />
+  </div>
+</Story>
+
+<Story
   name="Minion item sets"
   asChild
   play={async ({ canvasElement }) => {
@@ -260,7 +285,7 @@
   asChild
   play={async ({ canvasElement }) => {
     const c = within(canvasElement);
-    await userEvent.click(c.getByRole('button', { name: 'Pin Strength to the collapsed rail (up to 3)' }));
+    await userEvent.click(c.getByRole('button', { name: 'Pin Strength to the collapsed rail' }));
     await expect(c.getByRole('button', { name: 'Unpin Strength' })).toHaveAttribute('aria-pressed', 'true');
 
     await userEvent.click(c.getByRole('button', { name: 'Collapse the sidebar to a rail' }));

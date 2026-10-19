@@ -199,12 +199,15 @@
     The stored rich notes could not be read; the PoB text is shown.
   </div>
 {:else if converted && !importDismissed}
-  <div role="status" class="flex items-center gap-2.5 rounded border border-info-line bg-info-bg px-3 py-2 text-13">
+  <div
+    role="status"
+    class="flex items-center gap-2.5 rounded border border-info-line bg-info-bg px-3 py-2 text-13 max-phone:grid max-phone:grid-cols-[minmax(0,1fr)_auto] max-phone:gap-y-1">
     <span class="text-11 font-semibold tracking-caps whitespace-nowrap text-better">IMPORTED FROM POB</span>
-    <span>Colour codes converted: {converted} ^xRRGGBB / ^0–^9 codes became text colours. Export writes them back as caret codes.</span>
-    <div class="grow"></div>
+    <span class="max-phone:col-span-2 max-phone:row-start-2"
+      >Colour codes converted: {converted} ^xRRGGBB / ^0–^9 codes became text colours. Export writes them back as caret codes.</span>
+    <div class="grow max-phone:hidden"></div>
     <button
-      class="btn btn-sm btn-ghost"
+      class="btn btn-sm btn-ghost max-phone:col-start-2 max-phone:row-start-1"
       onclick={() => {
         importDismissed = true;
         ondismissimport?.();
@@ -226,7 +229,7 @@
 {/snippet}
 {#snippet sep()}<span class="mx-0.5 h-5.5 w-px shrink-0 bg-line" aria-hidden="true"></span>{/snippet}
 
-<div role="toolbar" aria-label="Formatting" class="panel flex flex-wrap items-center gap-0.5 p-1.5">
+<div role="toolbar" aria-label="Formatting" class="panel relative flex flex-wrap items-center gap-0.5 p-1.5 max-phone:pr-8">
   {#each HISTORY as t (t.name)}
     <button
       class="h-7.5 min-w-7.5 rounded border border-transparent bg-transparent px-1.5 font-sans text-15 text-text hover:bg-hover disabled:opacity-45 disabled:hover:bg-transparent"
@@ -322,7 +325,7 @@
     title="Clear formatting (the selection, or the whole block)"
     disabled={pobView}
     onclick={clearFormatting}>T<sub>×</sub></button>
-  <span class="relative ml-1 inline-flex">
+  <span class="relative ml-1 inline-flex max-phone:absolute max-phone:top-2.5 max-phone:right-1.5">
     <button
       class="info-btn size-5.5 text-12"
       aria-label="How notes export to PoB"
@@ -330,8 +333,15 @@
       onmouseenter={() => (infoShown = true)}
       onmouseleave={() => (infoShown = false)}
       onfocus={() => (infoShown = true)}
+      onclick={() => (infoShown = true)}
       onblur={() => (infoShown = false)}>i</button>
-    <span role="tooltip" id="notes-info" class={['tooltip tooltip-info -top-1.5 right-7 left-auto w-85.5', !infoShown && 'hidden']}
+    <span
+      role="tooltip"
+      id="notes-info"
+      class={[
+        'tooltip tooltip-info -top-1.5 right-7 left-auto w-85.5 max-phone:fixed max-phone:inset-x-3 max-phone:top-auto max-phone:bottom-18 max-phone:z-tooltip max-phone:w-auto',
+        !infoShown && 'hidden'
+      ]}
       >Rich text (formatting, colours, lists, links) is stored in the build. PoB export flattens it to plain text with ^xRRGGBB colour codes: formatting and
       links export as their text, list items as “• ” / “1. ” / “☐ ” lines, a rule as a line of dashes.</span>
   </span>

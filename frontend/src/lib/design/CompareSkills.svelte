@@ -55,7 +55,7 @@
     {#if sec.groups.length}
       <div class="flex flex-col gap-1.5">
         <h3 class={['subhead mt-1', sec.tc]}>{sec.title}</h3>
-        <div class="grid grid-cols-2 gap-2.5">
+        <div class="grid grid-cols-2 gap-2.5 max-phone:grid-cols-1">
           {#each sec.groups as g, i (i)}
             <div role="table" aria-label={g.name} class="panel min-w-0 text-12">
               <div role="row" class="flex items-baseline justify-between gap-2 border-b border-line px-3 py-1.75">

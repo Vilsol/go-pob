@@ -56,7 +56,7 @@
   };
 </script>
 
-<Dialog bind:open title="Mod Browser" class="w-180 p-4">
+<Dialog bind:open title="Mod browser" class="w-180 p-4">
   <div class="flex flex-col gap-2">
     <div role="listbox" aria-label="Modifiers" class="scroll flex h-113.5 flex-col border border-line">
       {#each lines as l, i (i)}

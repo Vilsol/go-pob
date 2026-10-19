@@ -96,6 +96,9 @@
   .tab-sm {
     @apply h-9.5 gap-1.5 px-2.5 text-13;
   }
+  .tab-v {
+    @apply flex h-8.5 items-center justify-between rounded border-0 bg-transparent px-2.5 text-left font-sans text-13 text-text-2 aria-selected:bg-surface-3 aria-selected:font-semibold aria-selected:text-text aria-selected:shadow-[inset_2px_0_0_var(--color-accent)];
+  }
   .tab-key {
     @apply font-mono text-11 text-text-4;
   }

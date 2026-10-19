@@ -82,3 +82,86 @@
     @apply grid grid-cols-[58px_44px_58px_minmax(0,1fr)] gap-1.5 border-b border-sel px-3 py-0.75;
   }
 }
+
+/* phones: every dialog but a bottom sheet or a small confirm fills the screen */
+.dialog-small {
+  @variant max-phone {
+    width: calc(100vw - 2rem) !important;
+    max-width: none !important;
+  }
+}
+.dialog:not(.sheet-bottom, .dialog-small) {
+  @variant max-phone {
+    margin: 0;
+    width: 100% !important;
+    max-width: none !important;
+    height: 100dvh !important;
+    max-height: none !important;
+    border-radius: 0;
+  }
+}
+.sheet-head {
+  @variant max-phone {
+    flex-wrap: wrap;
+  }
+}
+
+/* phones: a wide grid is either cards or a table whose name column stays while the rest scrolls sideways */
+.phone-grid[data-phone='table'] {
+  @variant max-phone {
+    & [role='row'] > :is([data-col='name'], [data-col-head='name']) {
+      position: sticky;
+      left: 0;
+      z-index: var(--z-index-raised);
+      background: var(--color-surface-1);
+      box-shadow: 1px 0 0 var(--color-line);
+    }
+  }
+}
+.phone-grid[data-phone='cards'] {
+  @variant max-phone {
+    width: 100% !important;
+    min-width: 0;
+    & [data-phone-head],
+    & [data-phone-hide],
+    & [role='row'] > :empty {
+      display: none;
+    }
+    & > * {
+      width: auto;
+    }
+    & [role='row']:has(> [data-col='name'], > [data-col-head='name']) {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      column-gap: 0.75rem;
+      row-gap: 0.125rem;
+      width: auto;
+      height: auto;
+      padding-block: 0.5rem;
+    }
+    & [role='row'] > * {
+      flex: 0 0 auto;
+      order: 1;
+    }
+    /* the name and its aside on the first line, everything else from the second */
+    & [role='row']:has(> [data-col='name'], > [data-col-head='name'])::before {
+      content: '';
+      order: 0;
+      flex-basis: 100%;
+    }
+    & [role='row'] > :is([data-col='name'], [data-col-head='name']) {
+      order: -2;
+      flex: 1 1 60%;
+      font-size: var(--text-14);
+    }
+    & [role='row'] > [data-col='aside'] {
+      order: -1;
+    }
+    & [role='row'] > [data-label]::before {
+      content: attr(data-label) ' ';
+      color: var(--color-text-3);
+      font-family: var(--font-sans);
+    }
+  }
+}

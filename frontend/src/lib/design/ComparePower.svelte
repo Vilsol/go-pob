@@ -57,7 +57,10 @@
   const max = $derived(Math.max(1, ...rows.map((p) => Math.abs(p.impact[mi]))));
   const total = $derived(rows.reduce((s, p) => s + p.impact[mi], 0));
   const diff = $derived(b - a);
-  const GRID = 'grid-cols-[4.375rem_minmax(0,1fr)_7.5rem_11.875rem_3.5rem_6.25rem_4.375rem]';
+  const GRID =
+    'grid-cols-[4.375rem_minmax(0,1fr)_7.5rem_11.875rem_3.5rem_6.25rem_4.375rem] max-phone:grid-cols-[4rem_minmax(0,1fr)_2.5rem_3.5rem_auto] max-phone:gap-y-0.5';
+  // phones: the thing on its own line, the numbers on the line below
+  const TOP = 'max-phone:col-span-full max-phone:row-start-1';
 </script>
 
 <section aria-label="Compare power report" class="panel text-13">
@@ -87,8 +90,9 @@
   </div>
   <div role="table" aria-label="Power report rows">
     <div role="row" class={['data-row data-head gap-2.5 px-3.5 py-1.5 tracking-caps-tight', GRID]}>
-      <span role="columnheader">CATEGORY</span><span role="columnheader">B’S VERSION → INTO A</span><span role="columnheader"
-        ><span class="sr-only">Bar</span></span>
+      <span role="columnheader">CATEGORY</span><span role="columnheader" class="max-phone:hidden">B’S VERSION → INTO A</span><span
+        role="columnheader"
+        class="max-phone:hidden"><span class="sr-only">Bar</span></span>
       <span role="columnheader" aria-sort={sort === 'impact' ? 'descending' : 'none'} class="flex justify-end"
         ><button class="head-btn" onclick={() => (sort = 'impact')}>{label.toUpperCase()} ON A {sort === 'impact' ? '▼' : ''}</button></span>
       <span role="columnheader" class="text-right">POINTS</span>
@@ -101,7 +105,7 @@
       {@const w = (Math.abs(v) / max) * 50}
       <div role="row" class={['data-row gap-2.5 px-3.5 py-1.25 hover:bg-hover-soft', GRID]}>
         <span role="cell" class="text-12 text-text-2">{CATS.find((c) => c.id === p.cat)?.label}</span>
-        <span role="cell" class="flex min-w-0 flex-col"
+        <span role="cell" class={['flex min-w-0 flex-col', TOP]}
           ><span
             data-pob-color={p.cat === 'items' ? '' : undefined}
             role="button"
@@ -116,7 +120,7 @@
         <span
           role="cell"
           aria-hidden="true"
-          class="relative h-4 before:absolute before:top-0 before:bottom-0 before:left-1/2 before:w-px before:bg-line-strong before:content-['']"
+          class="relative h-4 max-phone:hidden before:absolute before:top-0 before:bottom-0 before:left-1/2 before:w-px before:bg-line-strong before:content-['']"
           ><span
             class={['absolute top-1 left-(--x) h-2 w-(--w) rounded-[1px] bg-(--tone)', toneClass(dirTone(v))]}
             style:--x={v >= 0 ? '50%' : `${(50 - w).toFixed(1)}%`}
@@ -132,11 +136,11 @@
     {/each}
     <div role="row" class={['data-row gap-2.5 border-b-0 bg-bar px-3.5 py-2 font-semibold', GRID]}>
       <span role="cell" class="text-12 text-text-2">TOTAL</span>
-      <span role="cell" class="flex flex-col"
+      <span role="cell" class={['flex flex-col', TOP]}
         ><span>Sum of the {rows.length} rows shown</span><span class="note-sm font-normal"
           >Not additive: each row is measured alone. Adopting all of B gives exactly B’s {label}.</span
         ></span>
-      <span role="cell"></span>
+      <span role="cell" class="max-phone:hidden"></span>
       <span role="cell" class={['toned text-right font-mono', toneClass(dirTone(total))]}>{arrowed(total, signed(total))}</span>
       <span role="cell"></span><span role="cell"></span><span role="cell"></span>
     </div>

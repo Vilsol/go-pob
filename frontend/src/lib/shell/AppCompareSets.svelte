@@ -273,6 +273,7 @@
 {/if}
 {#if convertMsg}<div role="alert" class="note text-12">{convertMsg}</div>{/if}
 <Dialog
+  small
   open={converting !== null}
   onclose={() => (converting = null)}
   title={converting ? `Convert to Version ${versionList.find((o) => o.value === converting?.version)?.label ?? converting.version}` : 'Convert'}

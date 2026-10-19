@@ -163,6 +163,19 @@ describe('AppSettings', () => {
     expect(get(itemsLayout)).toBe('board');
   });
 
+  it('Wide lists on a phone (Cards / Table) is kept for the build list and the Items list', async () => {
+    const { phoneTables } = await import('$lib/display/appearance');
+    const s = open();
+    await fireEvent.click(s.getByRole('tab', { name: /^General/ }));
+    const pick = s.getByRole<HTMLSelectElement>('combobox', { name: 'Wide lists on a phone' });
+    expect(pick.value).toBe('Cards');
+    await fireEvent.change(pick, { target: { value: 'Table' } });
+    expect(get(phoneTables)).toBe('table');
+    expect(localStorage.getItem('options:phoneTables')).toBe('table');
+    await fireEvent.click(s.getByRole('button', { name: 'Reset this section' }));
+    expect(get(phoneTables)).toBe('cards');
+  });
+
   it('Crafting card layout (Stepped sections / Tabs) is kept for the paste panel’s crafting card', async () => {
     const { craftCardLayout } = await import('$lib/display/appearance');
     const s = open();

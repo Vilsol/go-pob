@@ -7,9 +7,9 @@
   type Control = 'MainActiveSkill' | 'SkillPart' | 'StageCount' | 'MineCount' | 'Minion' | 'MinionSkill';
 
   type Props = { fx: BuildFixture; collapsed?: boolean; pinned?: string[] };
-  let { fx, collapsed = false, pinned = [] }: Props = $props();
+  let { fx, collapsed = false, pinned = $bindable([]) }: Props = $props();
 
-  let s = $state({ collapsed, pinned, group: fx.mainSocketGroup, controls: { ...fx.mainSkill } });
+  let s = $state({ collapsed, group: fx.mainSocketGroup, controls: { ...fx.mainSkill } });
 </script>
 
 <Sidebar
@@ -18,7 +18,7 @@
   mainSocketGroup={s.group}
   controls={s.controls}
   bind:collapsed={s.collapsed}
-  bind:pinned={s.pinned}
+  bind:pinned
   breakdown={(l: StatLine) => breakdowns[l.label]}
   onmaingroup={(i: number) => (s.group = i)}
   oncontrol={(field: Control, v: number | undefined) => {

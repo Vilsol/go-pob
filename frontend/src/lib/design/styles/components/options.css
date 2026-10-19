@@ -25,7 +25,7 @@
   }
 
   .mod-cell {
-    @apply box-border flex h-7.5 items-center gap-1 rounded border border-line bg-ground px-1.5 font-mono text-12;
+    @apply box-border flex h-7.5 items-center gap-1 rounded border border-line bg-ground px-1.5 font-mono text-12 max-phone:max-w-full;
   }
   .mod-cell[data-hover='true'] {
     @apply border-better;

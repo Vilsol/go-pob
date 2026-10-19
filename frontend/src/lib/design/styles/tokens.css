@@ -2,6 +2,8 @@
   --color-*: initial;
   --text-*: initial;
   --shadow-*: initial;
+  --breakpoint-*: initial;
+  --z-index-*: initial;
   --font-sans: 'IBM Plex Sans', sans-serif;
   --font-mono: 'IBM Plex Mono', monospace;
 
@@ -119,6 +121,17 @@
   --shadow-sheet: 0 24px 60px rgba(0, 0, 0, 0.7);
   --shadow-panel: 0 18px 44px rgba(0, 0, 0, 0.65);
   --shadow-ghost: 0 10px 24px rgba(0, 0, 0, 0.6);
+
+  --breakpoint-phone: 40rem;
+
+  --z-index-raised: 1;
+  --z-index-overlay: 5;
+  --z-index-sticky: 10;
+  --z-index-dock: 20;
+  --z-index-dropdown: 40;
+  --z-index-tooltip: 45;
+  --z-index-toast: 50;
+  --z-index-drag: 60;
 }
 
 @utility tone-* {

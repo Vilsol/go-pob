@@ -39,6 +39,30 @@
   .butterfly-label {
     @apply flex flex-col items-center justify-center gap-0.5 text-center text-13 leading-4 text-text-2;
   }
+  /* phones: the label and pill on top, A / bars / B on the line below */
+  .butterfly-row {
+    @variant max-phone {
+      grid-template-columns: minmax(4.5rem, auto) minmax(0, 1fr) minmax(0, 1fr) minmax(4.5rem, auto);
+      row-gap: 0.25rem;
+      column-gap: 0.375rem;
+      padding-inline: 0.75rem;
+      padding-block: 0.375rem;
+    }
+  }
+  .butterfly-label {
+    @variant max-phone {
+      grid-column: 1 / -1;
+      grid-row: 1;
+      flex-direction: row;
+      justify-content: space-between;
+      text-align: left;
+    }
+  }
+  .butterfly-value {
+    @variant max-phone {
+      font-size: var(--text-13);
+    }
+  }
   .bf-track {
     @apply relative h-4.5;
   }

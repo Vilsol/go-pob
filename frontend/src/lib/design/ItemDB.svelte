@@ -1,7 +1,8 @@
 <script lang="ts">
   import FloatingLabel from './FloatingLabel.svelte';
   import FloatingItemTip from './FloatingItemTip.svelte';
-  import Segmented from './Segmented.svelte';
+  import Tabs from './Tabs.svelte';
+  import { panelId, tabId } from './tab_ids';
   import Select from './Select.svelte';
   import Button from './Button.svelte';
   import { tone as toneClass, type Tone } from './tone';
@@ -56,22 +57,26 @@
   const hovered = $derived(rows.find((r) => r.name === hover));
 </script>
 
-<div class="flex min-h-0 grow flex-col gap-2.5">
-  <Segmented
-    tabs
-    chip
+<div class="flex min-h-0 grow flex-col gap-2.5 max-phone:shrink-0">
+  <Tabs
+    id={uid}
+    variant="chip"
     label="Item database"
-    options={[
+    tabs={[
       { id: 'UNIQUE', label: 'Uniques' },
       { id: 'RARE', label: 'Templates' }
     ]}
-    value={kind}
+    selected={kind}
     onchange={(id) => {
       kind = id as ItemDBKind;
       hover = null;
     }} />
-  <div class="flex min-h-0 grow flex-wrap gap-3.5">
-    <aside aria-label="Filters" class="panel flex w-62.5 shrink-0 flex-col gap-2.5 self-start p-3 text-12">
+  <div
+    role="tabpanel"
+    id={panelId(uid)}
+    aria-labelledby={tabId(uid, kind)}
+    class="flex min-h-0 grow flex-wrap gap-3.5 max-phone:shrink-0 max-phone:flex-col max-phone:flex-nowrap">
+    <aside aria-label="Filters" class="panel flex w-62.5 shrink-0 flex-col gap-2.5 self-start p-3 text-12 max-phone:w-auto max-phone:self-stretch">
       <input
         class="input"
         type="search"
@@ -115,9 +120,12 @@
             onchange={pick('obtainable')} /></FloatingLabel>
       {/if}
     </aside>
-    <section aria-label={unique ? 'Uniques' : 'Templates'} aria-busy={busy} class="panel relative min-w-0 grow self-start overflow-hidden text-12">
-      <div role="table" aria-label="{unique ? 'Unique' : 'Template'} list" class="max-h-[70vh] overflow-y-auto">
-        <div role="row" class="data-row data-head sticky top-0 z-1 grid-cols-24 py-2">
+    <section
+      aria-label={unique ? 'Uniques' : 'Templates'}
+      aria-busy={busy}
+      class="panel relative min-w-0 grow self-start overflow-hidden text-12 max-phone:shrink-0 max-phone:self-stretch">
+      <div role="table" aria-label="{unique ? 'Unique' : 'Template'} list" class="max-h-[70vh] overflow-y-auto max-phone:max-h-none">
+        <div role="row" class="data-row data-head sticky top-0 z-1 grid-cols-24 py-2 max-phone:hidden">
           <span role="columnheader" class="col-span-9">ITEM</span><span role="columnheader" class="col-span-5">TYPE</span><span
             role="columnheader"
             class="col-span-3 text-right">{sort ? 'STAT' : 'REQ.'}</span
@@ -127,10 +135,13 @@
           <div
             role="row"
             tabindex="-1"
-            class={['data-row grid-cols-24 py-1', hover === r.name ? 'bg-surface-3' : i % 2 && 'bg-alt']}
+            class={[
+              'data-row grid-cols-24 py-1 max-phone:grid-cols-[minmax(0,1fr)_auto] max-phone:gap-y-0.5',
+              hover === r.name ? 'bg-surface-3' : i % 2 && 'bg-alt'
+            ]}
             onmouseenter={() => (hover = r.name)}
             onmouseleave={() => (hover = null)}>
-            <span role="cell" class="col-span-9 min-w-0">
+            <span role="cell" class="col-span-9 min-w-0 max-phone:col-span-1 max-phone:col-start-1 max-phone:row-start-1">
               <button
                 bind:this={els[r.name]}
                 data-pob-color
@@ -153,9 +164,11 @@
                 onfocus={() => (hover = r.name)}
                 onblur={() => (hover = null)}>{unique ? r.title || r.name : r.name}</button>
             </span>
-            <span role="cell" class="col-span-5 truncate text-text-2" title={r.base}>{r.type}</span>
-            <span role="cell" class="col-span-3 text-right font-mono text-text-2">{sort ? fmt(r.power) : r.level || ''}</span>
-            <span role="cell" class="col-span-7 flex justify-end gap-1">
+            <span role="cell" class="col-span-5 truncate text-text-2 max-phone:col-span-1 max-phone:col-start-1 max-phone:row-start-2" title={r.base}
+              >{r.type}</span>
+            <span role="cell" class="col-span-3 text-right font-mono text-text-2 max-phone:col-span-1 max-phone:col-start-2 max-phone:row-start-2"
+              >{sort ? fmt(r.power) : r.level || ''}</span>
+            <span role="cell" class="col-span-7 flex justify-end gap-1 max-phone:col-span-1 max-phone:col-start-2 max-phone:row-start-1">
               {#if oncraft && r.base}<Button
                   size="xs"
                   variant="ghost"

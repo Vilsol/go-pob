@@ -240,13 +240,13 @@
   };
 </script>
 
-<div class="panel flex shrink-0 items-center gap-3.5 px-3.5 py-2.5">
+<div class="panel flex shrink-0 items-center gap-3.5 px-3.5 py-2.5 max-phone:flex-wrap max-phone:gap-2">
   <div class="flex flex-col">
     <span class="text-11 tracking-caps text-text-3">TIMELESS JEWEL SEARCH</span>
     <span class="text-15 font-semibold"><span class="toned tone-unique" data-pob-color>{J.name}</span> · {conqName}</span>
   </div>
   <div class="grow"></div>
-  <ol aria-label="Steps" class="m-0 flex list-none gap-1 p-0">
+  <ol aria-label="Steps" class="m-0 flex list-none gap-1 p-0 max-phone:order-last max-phone:w-full max-phone:overflow-x-auto max-phone:[&>li]:shrink-0">
     {#each STEPS as label, i (label)}
       <li>
         <button
@@ -260,8 +260,8 @@
 </div>
 
 {#if step === 1}
-  <div class="flex gap-3.5">
-    <div role="group" aria-label="Jewels" class="grid grow grid-cols-4 content-start gap-2">
+  <div class="flex gap-3.5 max-phone:flex-col">
+    <div role="group" aria-label="Jewels" class="grid grow grid-cols-4 content-start gap-2 max-phone:grid-cols-2">
       {#each jewels as j, i (j.name)}
         <ChoiceCard
           pressed={i === form.jewelType - 1}
@@ -276,7 +276,7 @@
           ><span class="font-mono text-11 text-text-3">seeds {j.seeds}</span></ChoiceCard>
       {/each}
     </div>
-    <section aria-label="Conqueror" class="panel flex w-80 shrink-0 flex-col gap-2.5 p-3.5">
+    <section aria-label="Conqueror" class="panel flex w-80 shrink-0 flex-col gap-2.5 p-3.5 max-phone:box-border max-phone:w-full">
       <h2 class="subhead text-12">CONQUEROR</h2>
       {#each J.conquerors as c, i (c)}
         <ChoiceCard
@@ -323,7 +323,7 @@
     <span><span class="box-border inline-block size-2.5 rounded-[5px] border-2 border-node-jewel align-[-1px]"></span> jewel socket</span>
     <span><span class="box-border inline-block size-2.5 rounded-[5px] border-2 border-node-conq align-[-1px]"></span> conquered in radius</span>
   {/snippet}
-  <div class="flex items-start gap-3">
+  <div class="flex items-start gap-3 max-phone:flex-col max-phone:items-stretch">
     {#if treeView}
       {@render treeView({
         rings: ringIds,

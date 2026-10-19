@@ -4,7 +4,8 @@
   import FloatingLabel from './FloatingLabel.svelte';
   import Select from './Select.svelte';
   import Dropdown from './Dropdown.svelte';
-  import Segmented from './Segmented.svelte';
+  import Tabs from './Tabs.svelte';
+  import { panelId, tabId } from './tab_ids';
   import ItemTooltip from './ItemTooltip.svelte';
   import ImpactBlocks from './ImpactBlocks.svelte';
   import PobText from './PobText.svelte';
@@ -18,6 +19,7 @@
   const GLIMPSE = 'Glimpse of Chaos';
   let choices = $state.raw<CorruptChoices>();
   let stats = $state.raw<{ stat: string; label: string }[]>([]);
+  const uid = $props.id();
   let tab = $state<'implicits' | 'rolls'>('implicits');
   let source = $state('Corrupted');
   let sort = $state('');
@@ -121,81 +123,88 @@
 <Dialog bind:open title="Corrupted Item" class="w-150 p-4.5">
   <div class="flex flex-col gap-2.5 text-13">
     {#if choices?.unique}
-      <Segmented
+      <Tabs
+        id={uid}
+        variant="segmented"
         label="Corruption"
-        tabs
-        options={[
+        tabs={[
           { id: 'implicits', label: 'Implicits' },
           { id: 'rolls', label: 'Roll Ranges' }
         ]}
-        value={tab}
+        selected={tab}
         onchange={(id) => (tab = id as 'implicits' | 'rolls')} />
     {/if}
-    {#if tab === 'implicits'}
-      <div class="grid grid-cols-2 gap-3">
-        <FloatingLabel label="Source"
-          ><Select
-            class="h-7.5"
-            aria-label="Source"
-            options={sources}
-            value={source}
-            onchange={(e: Event & { currentTarget: HTMLSelectElement }) => {
-              source = e.currentTarget.value;
-              picks = none();
-            }} /></FloatingLabel>
-        <FloatingLabel label="Sort by"
-          ><Select
-            class="h-7.5"
-            aria-label="Sort by"
-            aria-busy={sorting}
-            options={[{ value: '', label: 'Default' }, ...stats.map((s) => ({ value: s.stat, label: s.label }))]}
-            bind:value={sort} /></FloatingLabel>
-      </div>
-      {#if source === 'Corrupted' && choices?.implicitsCannotBeChanged}
-        <p class="note">This Items Implicits Cannot Be Changed</p>
-      {/if}
-      {#each Array.from({ length: count }, (_, k) => k) as i (i)}
-        {@const others = source === 'Scourge' ? [picks[i % 2 === 0 ? i + 1 : i - 1]] : picks.slice(0, count).filter((_, k) => k !== i)}
-        <FloatingLabel label="Implicit #{i + 1}"
-          ><Dropdown
-            class="block h-7.5 w-full"
-            searchable
-            aria-label="Implicit #{i + 1}"
-            options={[{ value: '', label: 'None' }, ...corruptOptions(sorted(typeOf(i)), others).map((m) => ({ value: m.id, label: m.label }))]}
-            value={picks[i]}
-            onchange={(v: string) => {
-              picks[i] = v;
-              focus = i;
-            }} /></FloatingLabel>
-      {/each}
-      {#if focused}
-        <div role="group" aria-label="Implicit comparison" class="flex flex-col gap-1 font-mono text-13">
-          {#each focused.lines as l, k (k)}<span class="font-sans"><PobText text={'^7' + l} /></span>{/each}
-          <ImpactBlocks blocks={compare} />
+    <div
+      role={choices?.unique ? 'tabpanel' : undefined}
+      id={choices?.unique ? panelId(uid) : undefined}
+      aria-labelledby={choices?.unique ? tabId(uid, tab) : undefined}
+      class="flex flex-col gap-2.5">
+      {#if tab === 'implicits'}
+        <div class="grid grid-cols-2 gap-3">
+          <FloatingLabel label="Source"
+            ><Select
+              class="h-7.5"
+              aria-label="Source"
+              options={sources}
+              value={source}
+              onchange={(e: Event & { currentTarget: HTMLSelectElement }) => {
+                source = e.currentTarget.value;
+                picks = none();
+              }} /></FloatingLabel>
+          <FloatingLabel label="Sort by"
+            ><Select
+              class="h-7.5"
+              aria-label="Sort by"
+              aria-busy={sorting}
+              options={[{ value: '', label: 'Default' }, ...stats.map((s) => ({ value: s.stat, label: s.label }))]}
+              bind:value={sort} /></FloatingLabel>
+        </div>
+        {#if source === 'Corrupted' && choices?.implicitsCannotBeChanged}
+          <p class="note">This Items Implicits Cannot Be Changed</p>
+        {/if}
+        {#each Array.from({ length: count }, (_, k) => k) as i (i)}
+          {@const others = source === 'Scourge' ? [picks[i % 2 === 0 ? i + 1 : i - 1]] : picks.slice(0, count).filter((_, k) => k !== i)}
+          <FloatingLabel label="Implicit #{i + 1}"
+            ><Dropdown
+              class="block h-7.5 w-full"
+              searchable
+              aria-label="Implicit #{i + 1}"
+              options={[{ value: '', label: 'None' }, ...corruptOptions(sorted(typeOf(i)), others).map((m) => ({ value: m.id, label: m.label }))]}
+              value={picks[i]}
+              onchange={(v: string) => {
+                picks[i] = v;
+                focus = i;
+              }} /></FloatingLabel>
+        {/each}
+        {#if focused}
+          <div role="group" aria-label="Implicit comparison" class="flex flex-col gap-1 font-mono text-13">
+            {#each focused.lines as l, k (k)}<span class="font-sans"><PobText text={'^7' + l} /></span>{/each}
+            <ImpactBlocks blocks={compare} />
+          </div>
+        {/if}
+      {:else}
+        <div role="group" aria-label="Roll Ranges" class="flex flex-col gap-1.5">
+          {#each choices?.rolls ?? [] as r, k (k)}
+            <div class="flex items-center gap-2">
+              <span class="w-9 font-mono text-12">{rolls[k].toFixed(2)}</span>
+              <input
+                type="range"
+                class="w-20"
+                min="0.78"
+                max="1.22"
+                step="0.01"
+                aria-label="Roll of {r.line}"
+                value={rolls[k]}
+                onchange={async (e) => {
+                  rolls[k] = Number(e.currentTarget.value);
+                  labels[k] = (await craft.rangeLine?.(r.index, rolls[k])) ?? labels[k];
+                }} />
+              <span class="grow">{labels[k]}</span>
+            </div>
+          {/each}
         </div>
       {/if}
-    {:else}
-      <div role="group" aria-label="Roll Ranges" class="flex flex-col gap-1.5">
-        {#each choices?.rolls ?? [] as r, k (k)}
-          <div class="flex items-center gap-2">
-            <span class="w-9 font-mono text-12">{rolls[k].toFixed(2)}</span>
-            <input
-              type="range"
-              class="w-20"
-              min="0.78"
-              max="1.22"
-              step="0.01"
-              aria-label="Roll of {r.line}"
-              value={rolls[k]}
-              onchange={async (e) => {
-                rolls[k] = Number(e.currentTarget.value);
-                labels[k] = (await craft.rangeLine?.(r.index, rolls[k])) ?? labels[k];
-              }} />
-            <span class="grow">{labels[k]}</span>
-          </div>
-        {/each}
-      </div>
-    {/if}
+    </div>
     {#if preview}
       <div aria-label="Corrupted item" role="group" class="self-start"><ItemTooltip {...preview} /></div>
     {/if}

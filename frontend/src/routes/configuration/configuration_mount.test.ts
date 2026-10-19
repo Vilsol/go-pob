@@ -322,7 +322,7 @@ describe('the custom group enable checkbox tooltip under a still pointer', () =>
 });
 
 // ConfigTab.lua:42-44, 1305-1550
-describe('the Mod Browser', () => {
+describe('the Mod browser', () => {
   it("searches, shows a line's sources and appends the chosen line to the group", async () => {
     const view = await mount();
     const MASTERY = 'All Damage with Maces and Sceptres inflicts Chill';
@@ -332,8 +332,8 @@ describe('the Mod Browser', () => {
       .mockImplementation((s: string) => (s ? [MASTERY, CRAFTED] : [MASTERY, CRAFTED, '1% increased Area of Effect']));
     try {
       const before = blocks()[0].Text;
-      await fireEvent.click(view.getByRole('button', { name: 'Add Mod' }));
-      const dialog = within(view.getByRole('dialog', { name: 'Mod Browser' }));
+      await fireEvent.click(view.getByRole('button', { name: 'Mod browser' }));
+      const dialog = within(view.getByRole('dialog', { name: 'Mod browser' }));
       await vi.waitFor(() => expect(dialog.getAllByRole('option')).toHaveLength(3));
       await fireEvent.input(dialog.getByRole('searchbox', { name: 'Search modifiers' }), { target: { value: 'chill' } });
       await vi.waitFor(() => expect(list).toHaveBeenLastCalledWith('chill'));

@@ -58,6 +58,11 @@ export const ITEMS_LAYOUTS = ['board', 'list'] as const;
 export type ItemsLayout = (typeof ITEMS_LAYOUTS)[number];
 export const itemsLayout = persisted<ItemsLayout>('options:itemsLayout', 'board', (s) => ITEMS_LAYOUTS.find((l) => l === s));
 
+// how the build list and the Items list show on a phone
+export const PHONE_TABLES = ['cards', 'table'] as const;
+export type PhoneTables = (typeof PHONE_TABLES)[number];
+export const phoneTables = persisted<PhoneTables>('options:phoneTables', 'cards', (s) => PHONE_TABLES.find((l) => l === s));
+
 export const CRAFT_CARD_LAYOUTS = ['stepped', 'tabs'] as const;
 export type CraftCardLayout = (typeof CRAFT_CARD_LAYOUTS)[number];
 export const craftCardLayout = persisted<CraftCardLayout>('options:craftCardLayout', 'stepped', (s) => CRAFT_CARD_LAYOUTS.find((l) => l === s));

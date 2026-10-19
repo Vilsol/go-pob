@@ -180,7 +180,7 @@
         ></span>
     </div>
     {#if unavailable.characters}<p class="note">{unavailable.characters}</p>{/if}
-    <div class="flex items-end gap-2.5">
+    <div class="flex items-end gap-2.5 max-phone:flex-wrap">
       <label class="field"
         >Account name <input
           class="input h-8.5 w-55 px-2.5"
@@ -199,8 +199,8 @@
         onclick={() => onfetch?.(account.trim(), realm)}>Fetch characters</button>
     </div>
     {#if characters}
-      <div class="flex items-start gap-4">
-        <div class="flex w-105 shrink-0 flex-col gap-2">
+      <div class="flex items-start gap-4 max-phone:flex-col max-phone:items-stretch">
+        <div class="flex w-105 shrink-0 flex-col gap-2 max-phone:w-auto">
           <FloatingLabel label="League"
             ><select
               class="select h-8.5"
@@ -221,7 +221,7 @@
             {/each}
           </div>
         </div>
-        <div class="grid min-w-0 grow grid-cols-2 gap-3">
+        <div class="grid min-w-0 grow grid-cols-2 gap-3 max-phone:grid-cols-1">
           <div class="flex flex-col gap-2 rounded-md border border-line bg-ground p-3 text-13">
             <h3 class="text-13 font-bold">Passive Tree and Jewels</h3>
             <span class="text-12 text-worse">Importing the passive tree will overwrite your current tree.</span>

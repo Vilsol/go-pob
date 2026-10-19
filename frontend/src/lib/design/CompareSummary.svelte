@@ -26,7 +26,7 @@
   const CATS = { items: 'Item', tree: 'Tree', config: 'Config', gems: 'Gem', supports: 'Support' };
 </script>
 
-<div class="flex min-w-0 shrink-0 items-start gap-3">
+<div class="flex min-w-0 shrink-0 items-start gap-3 max-phone:flex-col max-phone:items-stretch">
   <section aria-label="Stat comparison" class="panel min-w-0 flex-[1_1_0]">
     {#each groups as g (g.title + g.rows[0].key)}
       <div role="group" aria-label={g.title}>
@@ -44,7 +44,9 @@
       equal. The winner is the better build, not the larger number: for costs, lower wins.
     </div>
   </section>
-  <aside aria-label="Biggest differences" class="panel flex max-h-full min-w-65 flex-[0_1_25rem] flex-col gap-1.5 px-3 py-2.5 text-12">
+  <aside
+    aria-label="Biggest differences"
+    class="panel flex max-h-full min-w-65 flex-[0_1_25rem] flex-col max-phone:min-w-0 max-phone:flex-none gap-1.5 px-3 py-2.5 text-12">
     <div class="flex items-center justify-between gap-2">
       <h3 class="subhead">WHY B IS {better ? 'BETTER' : 'WORSE'}: TOP 5</h3>
       <MetricSelect value={metric} onchange={onmetric} {metrics} />

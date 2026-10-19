@@ -16,12 +16,27 @@
     jewels: { node: number; id: number; item?: ItemSummary }[];
     hover?: string | null;
     whatIf?: WhatIf;
+    phoneLayout?: 'cards' | 'table';
     onedit: (slot: string) => void;
     onflask: (slot: string, on: boolean) => void;
     onequip: (slot: string, id: number | null) => void;
     ondelete?: (id: number) => void;
   };
-  let { order, slots, flasks, calcFlasks, fitting, jewels, hover = $bindable(null), whatIf, onedit, onflask, onequip, ondelete }: Props = $props();
+  let {
+    order,
+    slots,
+    flasks,
+    calcFlasks,
+    fitting,
+    jewels,
+    hover = $bindable(null),
+    whatIf,
+    phoneLayout = 'cards',
+    onedit,
+    onflask,
+    onequip,
+    ondelete
+  }: Props = $props();
 
   const uid = $props.id();
   const els: Record<string, HTMLButtonElement> = $state({});
@@ -57,8 +72,8 @@
           aria-label="{key} active"
           onchange={(ev) => onflask(key, ev.currentTarget.checked)} />{/if}
     </span>
-    <span role="cell" class={['col-span-5', hover === key ? 'text-text-2' : 'text-text-3']}>{key}</span>
-    <span role="cell" class="col-span-10 flex min-w-0 items-center gap-1">
+    <span role="cell" data-col="aside" class={['col-span-5', hover === key ? 'text-text-2' : 'text-text-3']}>{key}</span>
+    <span role="cell" data-col="name" class="col-span-10 flex min-w-0 items-center gap-1">
       {#if e?.item}
         <button
           bind:this={els[key]}
@@ -82,13 +97,19 @@
         >{/if}
     </span>
     <span role="cell" class="col-span-4 truncate text-text-2">{e?.item?.base ?? ''}</span>
-    <span role="cell" class={['col-span-3 text-right font-mono whitespace-nowrap', hover === key ? 'text-text-2' : 'text-text-3']}
-      >{e?.item?.sockets ?? ''}</span>
+    <span
+      role="cell"
+      data-label={e?.item?.sockets ? 'Sockets' : undefined}
+      class={['col-span-3 text-right font-mono whitespace-nowrap', hover === key ? 'text-text-2' : 'text-text-3']}>{e?.item?.sockets ?? ''}</span>
   </div>
 {/snippet}
 
-<div role="table" aria-label="Equipped items" class="panel w-217 shrink-0 self-start overflow-hidden text-12">
-  <div role="row" class="data-row data-head grid-cols-24 px-2.5">
+<div
+  role="table"
+  aria-label="Equipped items"
+  data-phone={phoneLayout}
+  class="phone-grid panel w-217 shrink-0 self-start overflow-hidden text-12 max-phone:relative max-phone:w-full max-phone:overflow-x-auto max-phone:[&>*]:w-217">
+  <div role="row" data-phone-head class="data-row data-head grid-cols-24 px-2.5">
     <span role="columnheader" class="col-span-2">ON</span><span role="columnheader" class="col-span-5">SLOT</span><span role="columnheader" class="col-span-10"
       >ITEM</span
     ><span role="columnheader" class="col-span-4">BASE</span><span role="columnheader" class="col-span-3 text-right">SOCK.</span>

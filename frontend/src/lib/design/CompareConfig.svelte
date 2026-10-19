@@ -93,7 +93,8 @@
     return cols.filter((c, i) => i === 0 || c.sections.length);
   });
   const GRID = $derived(
-    columns.length > 1 ? 'grid-cols-[minmax(0,1fr)_88px_88px_160px_160px_88px]' : 'grid-cols-[minmax(0,1fr)_110px_110px_170px_170px_110px]'
+    (columns.length > 1 ? 'grid-cols-[minmax(0,1fr)_88px_88px_160px_160px_88px]' : 'grid-cols-[minmax(0,1fr)_110px_110px_170px_170px_110px]') +
+      ' max-phone:grid-cols-2 max-phone:gap-y-1'
   );
   const numberOf = (text: string) => (text.trim() === '' || Number.isNaN(Number(text)) ? null : Number(text));
 </script>
@@ -140,14 +141,14 @@
           <div class={['min-w-0 flex-1', k > 0 && 'border-l border-line']}>
             {#if k === 0}
               <div role="row" class={['data-row data-head gap-2.5 py-1.5 text-10 tracking-caps', GRID]}>
-                <span role="columnheader">OPTION</span><span role="columnheader" class="text-build-a">A’S VALUE</span><span
+                <span role="columnheader" class="max-phone:hidden">OPTION</span><span role="columnheader" class="text-build-a">A’S VALUE</span><span
                   role="columnheader"
                   class="text-build-b">B’S VALUE</span>
                 <span role="columnheader" aria-sort={sort === 'a' ? 'descending' : 'none'} class="flex justify-end"
                   ><button class="head-btn text-right" onclick={() => (sort = 'a')}>A WITH B’S VALUE {sort === 'a' ? '▼' : ''}</button></span>
                 <span role="columnheader" aria-sort={sort === 'b' ? 'descending' : 'none'} class="flex justify-end"
                   ><button class="head-btn text-right" onclick={() => (sort = 'b')}>B WITH A’S VALUE {sort === 'b' ? '▼' : ''}</button></span>
-                <span role="columnheader"><span class="sr-only">Action</span></span>
+                <span role="columnheader" class="max-phone:hidden"><span class="sr-only">Action</span></span>
               </div>
             {:else}
               <div aria-hidden="true" class={['data-row data-head gap-2.5 py-1.5 text-10 tracking-caps', GRID]}>
@@ -168,18 +169,21 @@
                     role="row"
                     data-diff={c.diff !== false}
                     class={['data-row gap-2.5 py-1.25', GRID, c.diff !== false ? 'border-l-2 border-warn-line bg-alt' : 'border-l-2 border-transparent']}>
-                    <span role="cell" class="min-w-0"><span class="sr-only">{c.section} ·</span> <PobText text={c.label} /></span>
+                    <span role="cell" class="min-w-0 max-phone:col-start-1 max-phone:row-start-1"
+                      ><span class="sr-only">{c.section} ·</span> <PobText text={c.label} /></span>
                     <span role="cell" class="min-w-0">{@render control(c, 'a')}</span>
                     <span role="cell" class="min-w-0">{@render control(c, 'b')}</span>
                     {#if c.diff === false}
-                      <span role="cell" class="text-right text-text-3">same</span><span role="cell" class="text-right text-text-3">same</span><span role="cell"
-                      ></span>
+                      <span role="cell" class="text-right text-text-3 max-phone:hidden">same</span><span
+                        role="cell"
+                        class="text-right text-text-3 max-phone:hidden">same</span
+                      ><span role="cell" class="max-phone:hidden"></span>
                     {:else}
                       <span role="cell" class={['toned text-right font-mono', toneClass(dirTone(va))]}
                         >{arrowed(va, `${signed(va)} (${pctOf(va, baseA)})`)}</span>
                       <span role="cell" class={['toned text-right font-mono', toneClass(dirTone(vb))]}
                         >{arrowed(vb, `${signed(vb)} (${pctOf(vb, baseB)})`)}</span>
-                      <span role="cell" class="flex justify-end"
+                      <span role="cell" class="flex justify-end max-phone:col-start-2 max-phone:row-start-1"
                         >{#if canApply}<Button size="2xs" onclick={() => onuse(c.key)}>Use B’s value</Button>{/if}</span>
                     {/if}
                   </div>

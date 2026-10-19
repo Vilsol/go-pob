@@ -1,6 +1,8 @@
 <script lang="ts">
   import Dialog from './Dialog.svelte';
   import NumberInput from './NumberInput.svelte';
+  import Tabs from './Tabs.svelte';
+  import { panelId, tabId } from './tab_ids';
   import type { Setting, SettingsSection } from './fixtures/app';
 
   // Main.lua:1166-1225
@@ -19,7 +21,6 @@
   let { open = $bindable(false), sections, values, sample, section = $bindable(sections[0]?.id), onchange, onreset, oncancel, onaction }: Props = $props();
 
   const uid = $props.id();
-  const tabs = $state<HTMLButtonElement[]>([]);
   let asking = $state<string>();
   const drafts = $state<Record<string, number>>({});
   const val = (r: Setting) => values[r.id] ?? r.value;
@@ -31,38 +32,19 @@
     const s = sep ? String(val(sep)) : ',';
     return String(sample).replace(/\B(?=(\d{3})+(?!\d))/g, on && val(on) ? (s === 'space' ? ' ' : s) : '');
   });
-
-  function onkeydown(e: KeyboardEvent, i: number) {
-    const n = sections.length;
-    const to = { ArrowDown: (i + 1) % n, ArrowUp: (i - 1 + n) % n, Home: 0, End: n - 1 }[e.key];
-    if (to === undefined) return;
-    e.preventDefault();
-    section = sections[to].id;
-    tabs[to]?.focus();
-  }
 </script>
 
 <Dialog bind:open title="Settings" sheet note="Saved in this browser as you change them" class="h-170 max-h-[calc(100vh-24px)] w-195">
   <div class="flex min-h-0 flex-[1_1_0]">
-    <div
-      role="tablist"
-      aria-orientation="vertical"
-      aria-label="Settings sections"
-      class="flex w-47.5 shrink-0 flex-col gap-0.5 border-r border-line bg-inset px-2 py-2.5">
-      {#each sections as s, i (s.id)}
-        <button
-          bind:this={tabs[i]}
-          role="tab"
-          id="{uid}-tab-{s.id}"
-          aria-selected={s.id === cur.id}
-          aria-controls="{uid}-panel"
-          tabindex={s.id === cur.id ? 0 : -1}
-          class="flex h-8.5 items-center justify-between rounded border-0 bg-transparent px-2.5 text-left font-sans text-13 text-text-2 aria-selected:bg-surface-3 aria-selected:font-semibold aria-selected:text-text aria-selected:shadow-[inset_2px_0_0_var(--color-accent)]"
-          onclick={() => (section = s.id)}
-          onkeydown={(e) => onkeydown(e, i)}>{s.label}<span class="font-mono text-11 font-normal text-text-3">{s.rows.length}</span></button>
-      {/each}
-    </div>
-    <div role="tabpanel" id="{uid}-panel" aria-labelledby="{uid}-tab-{cur.id}" class="scroll flex min-w-0 flex-[1_1_0] flex-col px-4.5 pt-2 pb-4">
+    <Tabs
+      id={uid}
+      variant="vertical"
+      label="Settings sections"
+      class="w-47.5 shrink-0 border-r border-line bg-inset px-2 py-2.5"
+      tabs={sections.map((s) => ({ id: s.id, label: s.label, count: String(s.rows.length) }))}
+      selected={cur.id}
+      onchange={(id: string) => (section = id)} />
+    <div role="tabpanel" id={panelId(uid)} aria-labelledby={tabId(uid, cur.id)} class="scroll flex min-w-0 flex-[1_1_0] flex-col px-4.5 pt-2 pb-4">
       {#each cur.rows as r (r.id)}
         {@const x = val(r)}
         {@const id = `${uid}-${r.id}`}

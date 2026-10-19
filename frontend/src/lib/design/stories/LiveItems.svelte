@@ -15,8 +15,9 @@
     app?: boolean;
     onedittext?: () => void;
     trees?: boolean;
+    phoneLayout?: 'cards' | 'table';
   };
-  let { fx, view = 'equipped', layout = 'board', manage = false, edit, hover, app = false, onedittext, trees = false }: Props = $props();
+  let { fx, view = 'equipped', layout = 'board', manage = false, edit, hover, app = false, onedittext, trees = false, phoneLayout }: Props = $props();
   let treeSpec = $state(1);
   let treeManageAsks = $state(0);
   const treeProps = $derived(
@@ -80,6 +81,7 @@
 
 {#if app}
   <ItemsPage
+    {phoneLayout}
     data={d}
     sets={s.sets}
     setId={s.setId}
@@ -103,6 +105,7 @@
     onedittext={() => onedittext?.()} />
 {:else}
   <ItemsPage
+    {phoneLayout}
     data={d}
     sets={s.sets}
     setId={s.setId}

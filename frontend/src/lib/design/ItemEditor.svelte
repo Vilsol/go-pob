@@ -140,7 +140,7 @@
     {/if}
   {/snippet}
   <!-- svelte-ignore a11y_no_static_element_interactions -->
-  <div class="scroll flex gap-4 p-4" {onkeydown}>
+  <div class="scroll flex gap-4 p-4 max-phone:flex-1 max-phone:flex-col max-phone:p-3" {onkeydown}>
     <div class="flex min-w-0 flex-[1_1_0] flex-col gap-3">
       <section aria-label="Item" class={['overflow-hidden rounded-md border border-(--tone)/33 bg-inset text-13', toneClass(item.rarity)]}>
         <div class="item-head px-3.5 py-2.5">
@@ -197,7 +197,7 @@
         {/if}
       </section>
     </div>
-    <section aria-label="Item properties" class="flex flex-[0_0_300px] flex-col gap-2.5">
+    <section aria-label="Item properties" class="flex flex-[0_0_300px] flex-col gap-2.5 max-phone:flex-none">
       <h3 class="caps">Properties</h3>
       {#if readonly}
         <div class="flex flex-col gap-1 text-13">
@@ -225,8 +225,8 @@
       {/if}
     </section>
   </div>
-  <div class="flex items-center gap-2 border-t border-line bg-bar px-4 py-3">
-    <span class="note">{readonly ? 'Esc closes' : 'Esc closes · Ctrl+Z / Ctrl+Shift+Z undo and redo inside the editor only'}</span>
+  <div class="flex items-center gap-2 border-t border-line bg-bar px-4 py-3 max-phone:flex-wrap max-phone:px-3">
+    <span class="note max-phone:hidden">{readonly ? 'Esc closes' : 'Esc closes · Ctrl+Z / Ctrl+Shift+Z undo and redo inside the editor only'}</span>
     <div class="grow"></div>
     <Button size="lg" variant="ghost" class="px-3.5" onclick={() => (open = false)}>{readonly ? 'Close' : 'Cancel'}</Button>
     {#if !readonly}

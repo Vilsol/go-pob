@@ -12,7 +12,7 @@
   const sources = (line: string) => Promise.resolve(line.startsWith('Quux') ? ['Notable Node', 'Item mod'] : ['Item mod']);
 
   const { Story } = defineMeta({
-    title: 'Pages/Config/Mod Browser',
+    title: 'Pages/Config/Mod browser',
     component: ModBrowserDialog,
     args: { open: true, list, sources, onadd: () => {} }
   });
@@ -21,7 +21,7 @@
 <Story
   name="Search and hover"
   play={async () => {
-    const d = within(await screen.findByRole('dialog', { name: 'Mod Browser' }));
+    const d = within(await screen.findByRole('dialog', { name: 'Mod browser' }));
     await waitFor(() => expect(d.getAllByRole('option')).toHaveLength(4));
     await userEvent.type(d.getByRole('searchbox', { name: 'Search modifiers' }), 'quux');
     await waitFor(() => expect(d.getAllByRole('option')).toHaveLength(1));

@@ -1,6 +1,8 @@
 <script lang="ts">
   import FloatingLabel from './FloatingLabel.svelte';
   import Segmented from './Segmented.svelte';
+  import Tabs from './Tabs.svelte';
+  import { panelId, tabId } from './tab_ids';
   import Select from './Select.svelte';
   import Button from './Button.svelte';
   import ItemsBoard from './ItemsBoard.svelte';
@@ -51,6 +53,7 @@
   };
   type Props = {
     data: Omit<ItemsFixture, 'paste'> & { paste?: ItemsFixture['paste'] };
+    phoneLayout?: 'cards' | 'table';
     sets: ItemSet[];
     setId: string;
     flasks: Record<string, boolean>;
@@ -133,6 +136,7 @@
   };
   let {
     data,
+    phoneLayout,
     sets,
     setId,
     flasks,
@@ -340,7 +344,9 @@
 
 <svelte:window {onkeydown} />
 <div class="flex flex-wrap items-center gap-2.5">
-  <div role="presentation" ondragover={tabDragOver}><Segmented tabs label="Item views" options={tabs} bind:value={view} /></div>
+  <div role="presentation" ondragover={tabDragOver}>
+    <Tabs id={pageUid} variant="segmented" label="Item views" {tabs} selected={view} onchange={(id) => (view = id as View)} />
+  </div>
   <FloatingLabel label="Item set" class="[--float-bg:var(--color-surface-1)]"
     ><Select
       class="bg-surface-1"
@@ -406,197 +412,200 @@
   {/if}
 </div>
 
-{#if view === 'equipped'}
-  <div class="flex flex-wrap items-start gap-4.5">
-    {#if layout === 'board'}
-      <ItemsBoard
-        {slots}
-        {flasks}
-        {calcFlasks}
-        {fitting}
-        jewels={jewelRows}
-        {jewelOptions}
-        bind:hover
-        {whatIf}
-        swap={!!set?.swap}
-        onedit={editSlot}
-        {onflask}
-        {onequip}
-        {onjewel}
-        {abyssal}
-        extra={extraSlots}
-        {socketTip}
-        {tipFor}
-        {onhoveritem}
-        ondelete={ondelete && deleteItem}
-        ondropitem={ondropslot}
-        {socketView} />
-    {:else}
-      <ItemsList
-        {order}
-        {slots}
-        {flasks}
-        {calcFlasks}
-        {fitting}
-        jewels={jewelRows}
-        bind:hover
-        {whatIf}
-        onedit={editSlot}
-        {onflask}
-        {onequip}
-        ondelete={ondelete && deleteItem} />
-    {/if}
-    <section aria-label={craft ? 'Paste or craft an item' : 'Paste an item'} class="panel flex min-w-75 flex-[1_1_0] flex-col gap-2.5 p-3.5">
-      <div class="flex items-center justify-between">
-        <h2 class="caps">{live?.editing ? `Editing ${live.editing}` : craft ? 'Paste or craft an item' : 'Paste an item'}</h2>
-        {#if live?.editing}
-          <Button size="sm" variant="ghost" title="Discard the edit; the build keeps the item as it was" onclick={() => oncancelpaste?.()}>Cancel</Button>
-        {:else if craft && sample}
-          <button
-            class="btn-bare text-12 text-accent"
-            aria-haspopup="dialog"
-            onclick={() => (editing = { item: sample.item, slot: pasteSlot, impact: sample.impact, isNew: true })}>Craft item…</button>
-        {/if}
-      </div>
-      <textarea
-        class="input h-27.5 font-mono text-12 whitespace-pre text-text-2"
-        aria-label="Item text"
-        title="Copy an item in game with Ctrl+C, or from Path of Building"
-        spellcheck="false"
-        onpaste={(e) => {
-          const t = e.clipboardData?.getData('text');
-          if (!onpasteitem || !t) return;
-          e.preventDefault();
-          onpasteitem(t);
-        }}
-        bind:value={pasteText}></textarea>
-      {#if live}
-        <!-- ItemsTab.lua:2635-2653 -->
-        {#if live.error}
-          <p role="alert" class="text-13 text-error">
-            The item is invalid. For Rare and Unique items, the first 2 lines must be the title and base name (e.g. "Abberath's Horn" then "Goat's Horn"). For
-            Normal and Magic items, the base name must be somewhere in the first line.
-          </p>
-        {/if}
-        {#if live.item}
-          {@const it = live.item}
-          {#snippet itemHead()}
-            <div role="article" aria-label="Item: {live.name ?? it.name}" class={['flex flex-col gap-0.5 text-13', toneClass(it.rarity)]}>
-              <span data-pob-color class="toned font-semibold">{it.name}</span>
-              <span class="text-text-2"
-                >{it.rarity[0].toUpperCase() + it.rarity.slice(1)}
-                <span data-pob-color class={['toned', toneClass(it.rarity)]}>{it.base}</span>
-                → {it.fits.length ? `fits ${it.fits.join(', ')}` : 'fits no slot'}</span>
-            </div>
-            {#if onbuysimilar}<Button size="sm" class="self-start" aria-haspopup="dialog" onclick={onbuysimilar}>Buy similar</Button>{/if}
-          {/snippet}
-          {#snippet itemResult()}
-            <section aria-label="Equip impact" aria-busy={live.pending} class="flex flex-col gap-2.5 font-mono text-13">
-              <ImpactBlocks blocks={live.blocks}>
-                {#snippet action(b: ImpactBlock)}
-                  {#if b.slot}
-                    <Button size="sm" variant="primary" class="shrink-0 font-sans" onclick={() => onsave?.(it, b.slot, true)}
-                      >Equip in {slotLabel(b.slot)}</Button>
-                  {/if}
-                {/snippet}
-              </ImpactBlocks>
-              {#if live.pending}<span class="font-sans text-12 text-text-3">Calculating…</span>
-              {:else if !live.blocks.length}<span class="font-sans text-12 text-text-2">This item fits no slot of the active item set.</span>{/if}
-            </section>
-            <div class="flex flex-wrap items-center gap-2">
-              {#if live.editing}
-                <Button size="md" title="Replace {live.editing} with this text, wherever it is equipped" onclick={() => onsave?.(it, undefined, false)}
-                  >Save</Button>
-              {:else}
-                <Button size="md" title="Add it to the build's items, equipped in the first free slot it fits" onclick={() => onsave?.(it, undefined, false)}
-                  >Save to build</Button>
-              {/if}
-              {#if live.message}<p role="status" class="text-13 text-text-2">{live.message}</p>{/if}
-            </div>
-          {/snippet}
-          {#if display && ondisplayedit}
-            <DisplayItemControls info={display} onedit={ondisplayedit} craft={displayCraft} bind:customRequest head={itemHead} result={itemResult} />
-          {:else}
-            {@render itemHead()}
-            <div class="flex flex-col gap-2.5 border-t border-line pt-2.5">{@render itemResult()}</div>
+<div role="tabpanel" id={panelId(pageUid)} aria-labelledby={tabId(pageUid, view)} class="contents">
+  {#if view === 'equipped'}
+    <div class="flex flex-wrap items-start gap-4.5 max-phone:flex-col max-phone:flex-nowrap max-phone:items-stretch">
+      {#if layout === 'board'}
+        <ItemsBoard
+          {slots}
+          {flasks}
+          {calcFlasks}
+          {fitting}
+          jewels={jewelRows}
+          {jewelOptions}
+          bind:hover
+          {whatIf}
+          swap={!!set?.swap}
+          onedit={editSlot}
+          {onflask}
+          {onequip}
+          {onjewel}
+          {abyssal}
+          extra={extraSlots}
+          {socketTip}
+          {tipFor}
+          {onhoveritem}
+          ondelete={ondelete && deleteItem}
+          ondropitem={ondropslot}
+          {socketView} />
+      {:else}
+        <ItemsList
+          {order}
+          {slots}
+          {flasks}
+          {calcFlasks}
+          {fitting}
+          jewels={jewelRows}
+          bind:hover
+          {whatIf}
+          {phoneLayout}
+          onedit={editSlot}
+          {onflask}
+          {onequip}
+          ondelete={ondelete && deleteItem} />
+      {/if}
+      <section aria-label={craft ? 'Paste or craft an item' : 'Paste an item'} class="panel flex min-w-75 flex-[1_1_0] flex-col gap-2.5 p-3.5">
+        <div class="flex items-center justify-between">
+          <h2 class="caps">{live?.editing ? `Editing ${live.editing}` : craft ? 'Paste or craft an item' : 'Paste an item'}</h2>
+          {#if live?.editing}
+            <Button size="sm" variant="ghost" title="Discard the edit; the build keeps the item as it was" onclick={() => oncancelpaste?.()}>Cancel</Button>
+          {:else if craft && sample}
+            <button
+              class="btn-bare text-12 text-accent"
+              aria-haspopup="dialog"
+              onclick={() => (editing = { item: sample.item, slot: pasteSlot, impact: sample.impact, isNew: true })}>Craft item…</button>
           {/if}
-        {:else if live.message}
-          <p role="status" class="text-13 text-text-2">{live.message}</p>
-        {/if}
-      {:else if sample}
-        <div class="text-13 text-text-2">
-          {sample.item.rarity[0].toUpperCase() + sample.item.rarity.slice(1)}
-          <span data-pob-color class={['toned', toneClass(sample.item.rarity)]}>{sample.item.base}</span>
-          → {pasteSlot ? `fits ${pasteSlot}` : 'fits no slot'}
         </div>
-        {#if sample.impact}
-          <div class="flex flex-col gap-1 border-t border-line pt-2.5 font-mono text-13">
-            <div class="font-sans text-12 text-text-2">
-              Equip impact{pasteSlot ? ` (in ${pasteSlot}${replacing(sample.impact) ? `, ${replacing(sample.impact)}` : ''})` : ''}
+        <textarea
+          class="input h-27.5 font-mono text-12 whitespace-pre text-text-2"
+          aria-label="Item text"
+          title="Copy an item in game with Ctrl+C, or from Path of Building"
+          spellcheck="false"
+          onpaste={(e) => {
+            const t = e.clipboardData?.getData('text');
+            if (!onpasteitem || !t) return;
+            e.preventDefault();
+            onpasteitem(t);
+          }}
+          bind:value={pasteText}></textarea>
+        {#if live}
+          <!-- ItemsTab.lua:2635-2653 -->
+          {#if live.error}
+            <p role="alert" class="text-13 text-error">
+              The item is invalid. For Rare and Unique items, the first 2 lines must be the title and base name (e.g. "Abberath's Horn" then "Goat's Horn"). For
+              Normal and Magic items, the base name must be somewhere in the first line.
+            </p>
+          {/if}
+          {#if live.item}
+            {@const it = live.item}
+            {#snippet itemHead()}
+              <div role="article" aria-label="Item: {live.name ?? it.name}" class={['flex flex-col gap-0.5 text-13', toneClass(it.rarity)]}>
+                <span data-pob-color class="toned font-semibold">{it.name}</span>
+                <span class="text-text-2"
+                  >{it.rarity[0].toUpperCase() + it.rarity.slice(1)}
+                  <span data-pob-color class={['toned', toneClass(it.rarity)]}>{it.base}</span>
+                  → {it.fits.length ? `fits ${it.fits.join(', ')}` : 'fits no slot'}</span>
+              </div>
+              {#if onbuysimilar}<Button size="sm" class="self-start" aria-haspopup="dialog" onclick={onbuysimilar}>Buy similar</Button>{/if}
+            {/snippet}
+            {#snippet itemResult()}
+              <section aria-label="Equip impact" aria-busy={live.pending} class="flex flex-col gap-2.5 font-mono text-13">
+                <ImpactBlocks blocks={live.blocks}>
+                  {#snippet action(b: ImpactBlock)}
+                    {#if b.slot}
+                      <Button size="sm" variant="primary" class="shrink-0 font-sans" onclick={() => onsave?.(it, b.slot, true)}
+                        >Equip in {slotLabel(b.slot)}</Button>
+                    {/if}
+                  {/snippet}
+                </ImpactBlocks>
+                {#if live.pending}<span class="font-sans text-12 text-text-3">Calculating…</span>
+                {:else if !live.blocks.length}<span class="font-sans text-12 text-text-2">This item fits no slot of the active item set.</span>{/if}
+              </section>
+              <div class="flex flex-wrap items-center gap-2">
+                {#if live.editing}
+                  <Button size="md" title="Replace {live.editing} with this text, wherever it is equipped" onclick={() => onsave?.(it, undefined, false)}
+                    >Save</Button>
+                {:else}
+                  <Button size="md" title="Add it to the build's items, equipped in the first free slot it fits" onclick={() => onsave?.(it, undefined, false)}
+                    >Save to build</Button>
+                {/if}
+                {#if live.message}<p role="status" class="text-13 text-text-2">{live.message}</p>{/if}
+              </div>
+            {/snippet}
+            {#if display && ondisplayedit}
+              <DisplayItemControls info={display} onedit={ondisplayedit} craft={displayCraft} bind:customRequest head={itemHead} result={itemResult} />
+            {:else}
+              {@render itemHead()}
+              <div class="flex flex-col gap-2.5 border-t border-line pt-2.5">{@render itemResult()}</div>
+            {/if}
+          {:else if live.message}
+            <p role="status" class="text-13 text-text-2">{live.message}</p>
+          {/if}
+        {:else if sample}
+          <div class="text-13 text-text-2">
+            {sample.item.rarity[0].toUpperCase() + sample.item.rarity.slice(1)}
+            <span data-pob-color class={['toned', toneClass(sample.item.rarity)]}>{sample.item.base}</span>
+            → {pasteSlot ? `fits ${pasteSlot}` : 'fits no slot'}
+          </div>
+          {#if sample.impact}
+            <div class="flex flex-col gap-1 border-t border-line pt-2.5 font-mono text-13">
+              <div class="font-sans text-12 text-text-2">
+                Equip impact{pasteSlot ? ` (in ${pasteSlot}${replacing(sample.impact) ? `, ${replacing(sample.impact)}` : ''})` : ''}
+              </div>
+              {#each impactRows(sample.impact, 6) as d, i (i)}
+                <div class="kv"><span>{d.label}</span><span class={['toned', toneClass(d.dir)]}>{d.text}</span></div>
+              {/each}
             </div>
-            {#each impactRows(sample.impact, 6) as d, i (i)}
-              <div class="kv"><span>{d.label}</span><span class={['toned', toneClass(d.dir)]}>{d.text}</span></div>
-            {/each}
+          {/if}
+          <div class="flex flex-wrap gap-2">
+            {#if pasteSlot}<Button size="md" variant="primary" onclick={() => onsave?.(sample.item, pasteSlot, true)}>Equip in {pasteSlot}</Button>{/if}
+            <Button size="md" onclick={() => onsave?.(sample.item, undefined, false)}>Save to stash</Button>
           </div>
         {/if}
-        <div class="flex flex-wrap gap-2">
-          {#if pasteSlot}<Button size="md" variant="primary" onclick={() => onsave?.(sample.item, pasteSlot, true)}>Equip in {pasteSlot}</Button>{/if}
-          <Button size="md" onclick={() => onsave?.(sample.item, undefined, false)}>Save to stash</Button>
-        </div>
-      {/if}
-    </section>
-  </div>
-{:else if view === 'stash'}
-  <ItemsPool
-    title="Stash"
-    rows={stashRows}
-    col="USED"
-    footer={equipFromList ? 'Hover an item for its equip impact; ⋯ on a slot equips it.' : 'Hover an item for its equip impact in each slot it fits.'}
-    empty={stashFilter && stashFilter !== 'Any Loadout' ? `No item is in ${stashFilter}.` : 'This build has no items yet.'}
-    bind:hover
-    {whatIf}
-    onedit={editStash}
-    ondelete={ondelete && ((key: string) => void deleteItem(Number(key)))}
-    ondeleteunused={hasItems ? ondeleteunused : undefined}
-    {onsort}
-    ontoggle={ontoggle && ((key: string, second: boolean) => /^\d+$/.test(key) && ontoggle(Number(key), second))}
-    onopen={onedittext && openStash}
-    oncopy={oncopy && ((key: string) => /^\d+$/.test(key) && oncopy(Number(key)))}
-    onclone={onclone && ((key: string) => data.items[key] && onclone({ item: data.items[key], key }))}
-    onshare={ondropshared && ((key: string) => ondropshared({ id: Number(key) }))}
-    ondropitem={ondropstash && ((d: ItemDrag, before?: string) => ondropstash(d, before === undefined ? undefined : Number(before)))}
-    dropAt={!stashFilter || stashFilter === 'Any Loadout'}
-    filters={stashFilters}
-    filter={stashFilter}
-    onfilter={onstashfilter}
-    ondeleteall={hasItems && ondeleteall
-      ? () => (confirm = { title: 'Delete All', message: 'Are you sure you want to delete all items in this build?', run: ondeleteall })
-      : undefined} />
-{:else if view === 'shared'}
-  <ItemsPool
-    title="Shared"
-    rows={sharedRows}
-    col="SCOPE"
-    footer="Hover for its equip impact; copy one to this build’s stash to equip it."
-    empty="This is a list of items that will be shared between all of your builds. You can add items to this list by dragging them from one of the other lists."
-    onedit={() => {}}
-    ondelete={onshareditem &&
-      ((key: string) => {
-        const index = Number(key);
-        confirm = {
-          title: 'Delete Item',
-          message: `Are you sure you want to remove '${shared[index]?.name}' from the shared item list?`,
-          run: () => onshareditem({ op: 'delete', index })
-        };
-      })}
-    oncopy={onshareditem && ((key: string) => onshareditem({ op: 'copy', index: Number(key) }))}
-    onopen={onshareditem && ((key: string) => onshareditem({ op: 'open', index: Number(key) }))}
-    ondropitem={ondropshared} />
-{:else if itemDB}
-  {@render itemDB()}
-{:else}
-  <ItemsBrowse kinds={browse} {added} {note} onadd={addRow} oncraft={(r: BrowseRow) => (editing = blank(`New ${r.name}`, r.name, r.type))} />
-{/if}
+      </section>
+    </div>
+  {:else if view === 'stash'}
+    <ItemsPool
+      title="Stash"
+      rows={stashRows}
+      col="USED"
+      footer={equipFromList ? 'Hover an item for its equip impact; ⋯ on a slot equips it.' : 'Hover an item for its equip impact in each slot it fits.'}
+      empty={stashFilter && stashFilter !== 'Any Loadout' ? `No item is in ${stashFilter}.` : 'This build has no items yet.'}
+      bind:hover
+      {whatIf}
+      onedit={editStash}
+      ondelete={ondelete && ((key: string) => void deleteItem(Number(key)))}
+      ondeleteunused={hasItems ? ondeleteunused : undefined}
+      {onsort}
+      ontoggle={ontoggle && ((key: string, second: boolean) => /^\d+$/.test(key) && ontoggle(Number(key), second))}
+      onopen={onedittext && openStash}
+      oncopy={oncopy && ((key: string) => /^\d+$/.test(key) && oncopy(Number(key)))}
+      onclone={onclone && ((key: string) => data.items[key] && onclone({ item: data.items[key], key }))}
+      onshare={ondropshared && ((key: string) => ondropshared({ id: Number(key) }))}
+      ondropitem={ondropstash && ((d: ItemDrag, before?: string) => ondropstash(d, before === undefined ? undefined : Number(before)))}
+      dropAt={!stashFilter || stashFilter === 'Any Loadout'}
+      filters={stashFilters}
+      filter={stashFilter}
+      onfilter={onstashfilter}
+      ondeleteall={hasItems && ondeleteall
+        ? () => (confirm = { title: 'Delete All', message: 'Are you sure you want to delete all items in this build?', run: ondeleteall })
+        : undefined} />
+  {:else if view === 'shared'}
+    <ItemsPool
+      title="Shared"
+      rows={sharedRows}
+      col="SCOPE"
+      footer="Hover for its equip impact; copy one to this build’s stash to equip it."
+      empty="This is a list of items that will be shared between all of your builds. You can add items to this list by dragging them from one of the other lists."
+      onedit={() => {}}
+      ondelete={onshareditem &&
+        ((key: string) => {
+          const index = Number(key);
+          confirm = {
+            title: 'Delete Item',
+            message: `Are you sure you want to remove '${shared[index]?.name}' from the shared item list?`,
+            run: () => onshareditem({ op: 'delete', index })
+          };
+        })}
+      oncopy={onshareditem && ((key: string) => onshareditem({ op: 'copy', index: Number(key) }))}
+      onopen={onshareditem && ((key: string) => onshareditem({ op: 'open', index: Number(key) }))}
+      ondropitem={ondropshared} />
+  {:else if itemDB}
+    {@render itemDB()}
+  {:else}
+    <ItemsBrowse kinds={browse} {added} {note} onadd={addRow} oncraft={(r: BrowseRow) => (editing = blank(`New ${r.name}`, r.name, r.type))} />
+  {/if}
+</div>
 
 {#if setTip && set?.tip}
   <ItemSetTip anchor={setSelect} id="{pageUid}-set-tip" title={set.title} lines={set.tip} />

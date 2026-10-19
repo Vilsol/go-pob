@@ -13,7 +13,9 @@ const preview: Preview = {
         half: { name: '960×1080 (half a 1920 screen)', styles: { width: '960px', height: '1080px' }, type: 'desktop' },
         min: { name: '1280×720 (minimum)', styles: { width: '1280px', height: '720px' }, type: 'desktop' },
         mid: { name: '1600×900', styles: { width: '1600px', height: '900px' }, type: 'desktop' },
-        target: { name: '1920×1080 (target)', styles: { width: '1920px', height: '1080px' }, type: 'desktop' }
+        target: { name: '1920×1080 (target)', styles: { width: '1920px', height: '1080px' }, type: 'desktop' },
+        phone: { name: '390×769 (phone, browser toolbar shown)', styles: { width: '390px', height: '769px' }, type: 'mobile' },
+        phoneTall: { name: '390×834 (phone, toolbar hidden or installed)', styles: { width: '390px', height: '834px' }, type: 'mobile' }
       }
     }
   }

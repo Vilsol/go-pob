@@ -59,7 +59,7 @@
   const diffLabel = (r: Row) =>
     !r.a && !r.b ? '^8(both empty)' : same(r) ? '^x33FF77(match)' : !r.a ? '^xDD0022(missing)' : !r.b ? '^x80A080(extra)' : '^xFF9922(different)';
   const WARN = '^xFF9922  (tree missing allocated node)';
-  const GRID = 'grid-cols-[120px_minmax(0,1fr)_minmax(0,1fr)_minmax(0,320px)]';
+  const GRID = 'grid-cols-[120px_minmax(0,1fr)_minmax(0,1fr)_minmax(0,320px)] max-phone:grid-cols-2 max-phone:gap-y-1';
 
   let shown = $state.raw<Record<string, [string[], string[]]>>({});
   $effect(() => {
@@ -100,7 +100,7 @@
 {#snippet compactRow(r: Row, jewel?: JewelRow)}
   <div role="row" class={['data-row items-start gap-2.5 py-1.5', GRID]}>
     {#if jewel}
-      <span role="cell" class="text-text-3"
+      <span role="cell" class="text-text-3 max-phone:col-span-full"
         ><span
           role="button"
           tabindex="0"
@@ -111,7 +111,7 @@
           onblur={() => (socket = undefined)}>{jewel.label}</span
         ></span>
     {:else}
-      <span role="cell" class="text-text-3">{r.slot}</span>
+      <span role="cell" class="text-text-3 max-phone:col-span-full">{r.slot}</span>
     {/if}
     {#each [r.a, r.b] as it, i (i)}
       <span role="cell" class="flex min-w-0 flex-col">
@@ -133,7 +133,7 @@
         {/if}
       </span>
     {/each}
-    <span role="cell" class="flex flex-col items-end font-mono">
+    <span role="cell" class="flex flex-col items-end font-mono max-phone:col-span-full max-phone:items-start">
       {#if same(r)}
         <span class="text-text-3">identical</span>
       {:else if !r.b}
@@ -181,9 +181,10 @@
   {:else}
     <div role="table" aria-label="Items by slot">
       <div role="row" class={['data-row data-head gap-2.5 py-1.5 text-10 tracking-caps', GRID]}>
-        <span role="columnheader">SLOT</span><span role="columnheader" class="text-build-a">A</span><span role="columnheader" class="text-build-b">B</span><span
+        <span role="columnheader" class="max-phone:hidden">SLOT</span><span role="columnheader" class="text-build-a">A</span><span
           role="columnheader"
-          class="text-right">EQUIPPING B’S ITEM IN A GIVES</span>
+          class="text-build-b">B</span
+        ><span role="columnheader" class="text-right max-phone:col-span-full max-phone:text-left">EQUIPPING B’S ITEM IN A GIVES</span>
       </div>
       {#each items as r (r.slot)}{@render compactRow(r)}{/each}
       {#if jewels.length}

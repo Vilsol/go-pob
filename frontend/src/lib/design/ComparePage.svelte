@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { ComponentProps } from 'svelte';
-  import Segmented from './Segmented.svelte';
+  import Tabs from './Tabs.svelte';
+  import { panelId, tabId } from './tab_ids';
   import CompareSummary from './CompareSummary.svelte';
   import ComparePower from './ComparePower.svelte';
   import CompareTree from './CompareTree.svelte';
@@ -91,6 +92,7 @@
     onconfigset
   }: Props = $props();
 
+  const viewsId = $props.id();
   const VIEWS: { id: CompareView; label: string }[] = [
     { id: 'summary', label: 'Summary' },
     { id: 'power', label: 'Power report' },
@@ -112,26 +114,33 @@
   <div
     class="flex min-w-0 flex-col gap-0.5 px-3.5 py-2.5 [background:linear-gradient(90deg,_color-mix(in_srgb,_var(--color-build-a)_22%,_transparent),_color-mix(in_srgb,_var(--color-build-a)_4%,_transparent))]">
     <span class="text-11 font-semibold tracking-[0.08em] text-build-a">A · {swapped ? 'COMPARISON' : 'THIS BUILD'}</span>
-    <span class="max-w-full min-w-0 truncate text-18 leading-6 font-semibold" title={s.A.name}>{s.A.name}</span>
-    <span class="max-w-full text-12 leading-[1.0625rem] text-text-2 [overflow-wrap:anywhere]">{line(s.A)}</span>
+    <span class="max-w-full min-w-0 truncate text-18 leading-6 font-semibold max-phone:text-14" title={s.A.name}>{s.A.name}</span>
+    <span class="max-w-full text-12 leading-[1.0625rem] text-text-2 [overflow-wrap:anywhere] max-phone:text-11">{line(s.A)}</span>
   </div>
-  <div class="flex flex-col items-center justify-center gap-1 bg-surface-1 px-3.5">
+  <div class="flex flex-col items-center justify-center gap-1 bg-surface-1 px-3.5 max-phone:px-1.5">
     <span class="text-[1.25rem] font-bold tracking-[0.04em] text-text">VS</span>
     <button class="btn btn-2xs" aria-label="Swap A and B" title="Swap A and B" onclick={onswap}>⇄ Swap</button>
   </div>
   <div
     class="flex min-w-0 flex-col items-end gap-0.5 px-3.5 py-2.5 text-right [background:linear-gradient(270deg,_color-mix(in_srgb,_var(--color-build-b)_22%,_transparent),_color-mix(in_srgb,_var(--color-build-b)_4%,_transparent))]">
     <span class="text-11 font-semibold tracking-[0.08em] text-build-b">B · {swapped ? 'THIS BUILD' : 'COMPARISON'}</span>
-    <span class="max-w-full min-w-0 truncate text-18 leading-6 font-semibold" title={s.B.name}>{s.B.name}</span>
-    <span class="max-w-full text-12 leading-[1.0625rem] text-text-2 [overflow-wrap:anywhere]">{line(s.B)}</span>
+    <span class="max-w-full min-w-0 truncate text-18 leading-6 font-semibold max-phone:text-14" title={s.B.name}>{s.B.name}</span>
+    <span class="max-w-full text-12 leading-[1.0625rem] text-text-2 [overflow-wrap:anywhere] max-phone:text-11">{line(s.B)}</span>
   </div>
 </section>
 <div class="flex min-w-0 shrink-0 flex-wrap items-center gap-2.5">
-  <Segmented tabs label="Compare views" options={VIEWS} bind:value={view} />
+  <div class="max-phone:w-full max-phone:overflow-x-auto">
+    <Tabs id={viewsId} variant="segmented" label="Compare views" tabs={VIEWS} selected={view} onchange={(id) => (view = id as CompareView)} />
+  </div>
   <div class="grow"></div>
   <span class="note min-w-0 truncate" title={summary.tally}>{summary.tally}</span>
 </div>
-<div role="tabpanel" tabindex="0" aria-label={VIEWS.find((v) => v.id === view)?.label} class="scroll flex flex-[1_1_0] flex-col gap-2.5">
+<div
+  role="tabpanel"
+  tabindex="0"
+  id={panelId(viewsId)}
+  aria-labelledby={tabId(viewsId, view)}
+  class="scroll flex flex-[1_1_0] flex-col gap-2.5 max-phone:overflow-x-auto">
   {#if view === 'summary'}
     <CompareSummary
       groups={summary.groups}

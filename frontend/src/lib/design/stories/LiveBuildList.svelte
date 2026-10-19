@@ -7,8 +7,16 @@
   import { buildId, type ColKey } from '../builds';
   import { aboutInfo } from '../fixtures';
 
-  type Props = { folder?: string; about?: boolean; settings?: boolean; step?: number; app?: boolean };
-  let { folder: start = '', about = false, settings = false, step = 120, app = false }: Props = $props();
+  type Props = {
+    folder?: string;
+    about?: boolean;
+    settings?: boolean;
+    step?: number;
+    app?: boolean;
+    phoneLayout?: 'cards' | 'table';
+    onnewfolder?: () => void;
+  };
+  let { folder: start = '', about = false, settings = false, step = 120, app = false, phoneLayout, onnewfolder }: Props = $props();
   let actions = $state<string[]>([]);
   const log = (a: string) => () => actions.push(a);
   const appProps = $derived(
@@ -73,6 +81,7 @@
 </script>
 
 <BuildListPage
+  {phoneLayout}
   builds={s.builds}
   folders={buildList.folders}
   classes={buildList.classes}
@@ -90,6 +99,7 @@
   onrecalc={recalc}
   onabout={() => (s.about = true)}
   onsettings={() => (s.settings = true)}
+  {onnewfolder}
   {...appProps}>
   {#snippet dialogs()}
     <AboutDialog bind:open={s.about} info={aboutInfo} />

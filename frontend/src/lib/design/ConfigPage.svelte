@@ -181,7 +181,7 @@
 <div class="flex shrink-0 flex-wrap items-center gap-x-3 gap-y-2">
   <input
     type="search"
-    class="input h-8.5 w-60 bg-surface-1 px-2.5 text-14"
+    class="input h-8.5 w-60 bg-surface-1 px-2.5 text-14 max-phone:w-full"
     placeholder="Filter options"
     aria-label="Filter options"
     bind:this={searchBox}
@@ -189,7 +189,7 @@
   <label class="check-label gap-2 text-13"><input type="checkbox" class="check" bind:checked={filter.modOnly} /> Modified only</label>
   <label class="check-label gap-2 text-13"
     ><input type="checkbox" class="check" bind:checked={filter.showAll} /> Show options that don’t affect this build</label>
-  <div class="grow"></div>
+  <div class="grow max-phone:hidden"></div>
   <span class="note" aria-live="polite">{view.summary}</span>
   <label class="field field-inline"
     >Config set
@@ -212,11 +212,11 @@
 </div>
 <div class="scroll flex grow flex-col gap-2.5">
   <OptionGroup title="Most used" count="the same options as in their sections below · edit either" class="mb-0 shrink-0">
-    <div class="grid grid-cols-4 gap-x-4 max-[1800px]:grid-cols-2">
+    <div class="grid grid-cols-4 gap-x-4 max-[1800px]:grid-cols-2 max-phone:grid-cols-1">
       {#each view.most as o (o.v.var)}{@render option(o, 'most')}{/each}
     </div>
   </OptionGroup>
-  <div class="columns-3 gap-2.5 max-[1500px]:columns-2">
+  <div class="columns-3 gap-2.5 max-[1500px]:columns-2 max-phone:columns-1">
     {#each view.sections as s (s.name)}
       {#if s.rows.length}
         <OptionGroup

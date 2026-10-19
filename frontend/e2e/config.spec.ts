@@ -165,10 +165,10 @@ test('switch the config set and back (0063)', async ({ page }) => {
   app.assertNoErrors();
 });
 
-test('the Mod Browser finds a misspelt search (0280)', async ({ page }) => {
+test('the Mod browser finds a misspelt search (0280)', async ({ page }) => {
   const { app } = await open(page, '0280-elementalist-fireball');
-  await page.getByRole('button', { name: 'Add Mod', exact: true }).click();
-  const dialog = page.getByRole('dialog', { name: 'Mod Browser' });
+  await page.getByRole('button', { name: 'Mod browser', exact: true }).click();
+  const dialog = page.getByRole('dialog', { name: 'Mod browser' });
   await dialog.getByRole('searchbox', { name: 'Search modifiers' }).fill('lightnign res');
   const first = dialog.getByRole('option').first();
   await expect(first).toContainText('Lightning');

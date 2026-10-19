@@ -70,7 +70,7 @@
   const live = (c: PartyCategory, name: string) => !disabled && byId[giver(c, name)]?.active !== false;
 </script>
 
-<section aria-label="Party import" class="flex w-90 shrink-0 flex-col gap-2.5">
+<section aria-label="Party import" class="flex w-90 shrink-0 flex-col gap-2.5 max-phone:w-full">
   <p class="note m-0">
     To import a build it must be exported with “Export support” enabled on the Import / Export page. Auras with the highest effect take priority; your curses
     take priority over a support’s. All of these effects can be found on the Calcs page.
@@ -133,7 +133,9 @@
   </div>
 </section>
 
-<section aria-label="Party effects" class="scroll grid min-w-0 flex-[1_1_0] grid-cols-3 content-start gap-3">
+<section
+  aria-label="Party effects"
+  class="scroll grid min-w-0 flex-[1_1_0] grid-cols-3 content-start gap-3 max-phone:flex-none max-phone:grid-cols-1 max-phone:overflow-visible">
   {#each PARTY_CATEGORIES as c (c.id)}
     {@const entries = view(c.id)}
     <section class="panel flex flex-col" aria-label={c.label}>

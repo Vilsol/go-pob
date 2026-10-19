@@ -46,10 +46,10 @@
   );
 </script>
 
-<div class="flex min-w-0 gap-3">
+<div class="flex min-w-0 gap-3 max-phone:flex-col">
   <div class="flex shrink-0 flex-col gap-1.5">
     <label class="field field-inline gap-1 text-12"><input class="check" type="checkbox" bind:checked={overlay} /><span>Overlay comparison</span></label>
-    <div class="flex gap-2">
+    <div class="flex gap-2 max-phone:flex-col">
       {#each sides as side (side.key)}
         <div class="flex flex-col gap-1">
           <input class="input h-7 text-12" type="search" aria-label="Search {side.label}" placeholder="Search" bind:value={q[side.key]} />
@@ -57,7 +57,8 @@
             aria-label={side.label}
             class={[
               'relative shrink-0 overflow-hidden rounded-md border border-line bg-tree-ground',
-              overlay ? 'size-140 max-[1500px]:size-90' : 'size-90 max-[1500px]:size-70'
+              overlay ? 'size-140 max-[1500px]:size-90' : 'size-90 max-[1500px]:size-70',
+              'max-phone:box-border max-phone:aspect-square max-phone:size-auto max-phone:w-full'
             ]}>
             {#each edges as e, i (i)}
               {#if side.owners.includes(e.on)}
@@ -99,10 +100,16 @@
       <span class="text-text-3">A {aPoints} pts · B {bPoints} pts · {shared} shared · {small.length} small nodes differ</span>
     </div>
     {#each diffs as d (d.id)}
-      <div class="grid grid-cols-[1.75rem_minmax(0,1fr)_7.5rem_4rem] items-center gap-1.5 border-b border-surface-2 py-1">
+      <div
+        class="grid grid-cols-[1.75rem_minmax(0,1fr)_4rem] items-center gap-1.5 border-b border-surface-2 py-1 phone:grid-cols-[1.75rem_minmax(0,1fr)_7.5rem_4rem]"
+        data-node-diff>
         <span class={['toned font-semibold', OWNER[d.owner]]}>{d.owner.toUpperCase()}</span>
-        <span class="truncate" title={d.name}>{d.name}</span>
-        <span class="text-text-3">{KIND[d.kind]}</span>
+        <span class="flex min-w-0 items-center gap-1.5"
+          ><span class="truncate" title={d.name}>{d.name}</span><span
+            class="shrink-0 rounded-full border border-line px-1.5 text-10 text-text-2 phone:hidden"
+            data-kind-badge>{KIND[d.kind]}</span
+          ></span>
+        <span class="text-text-3 max-phone:hidden">{KIND[d.kind]}</span>
         {#if canApply}<Button size="2xs" class="px-0" onclick={() => onnode(d.id, d.owner === 'a' ? 'Drop' : 'Take')}
             >{d.owner === 'a' ? 'Drop' : 'Take'}</Button
           >{:else}<span></span>{/if}

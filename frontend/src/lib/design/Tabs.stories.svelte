@@ -2,6 +2,7 @@
   import { defineMeta } from '@storybook/addon-svelte-csf';
   import { expect, userEvent, within } from 'storybook/test';
   import Tabs from './Tabs.svelte';
+  import { panelId, tabId } from './tab_ids';
   import IssueRow from './IssueRow.svelte';
   import LogList from './LogList.svelte';
 
@@ -15,6 +16,10 @@
     { time: '12:04:01', level: 'info' as const, src: 'worker', msg: 'Calculation worker started (wasm 21.3 MB)' },
     { time: '12:11:15', level: 'error' as const, src: 'save', msg: 'Save failed: browser storage quota exceeded (retrying after cleanup)' }
   ];
+</script>
+
+<script lang="ts">
+  let segSel = $state('groups');
 </script>
 
 <Story
@@ -45,5 +50,31 @@
         {/if}
       {/snippet}
     </Tabs>
+  </div>
+</Story>
+
+<Story
+  name="Segmented, panel elsewhere"
+  asChild
+  play={async ({ canvasElement }) => {
+    const c = within(canvasElement);
+    const b = c.getByRole('tab', { name: 'Selected group' });
+    await userEvent.click(b);
+    await expect(b).toHaveAttribute('aria-selected', 'true');
+    await expect(c.getByRole('tabpanel')).toHaveAccessibleName('Selected group');
+    await expect(b).toHaveAttribute('aria-controls', c.getByRole('tabpanel').id);
+  }}>
+  <div class="panel flex w-90 flex-col gap-2 p-3">
+    <Tabs
+      id="seg-demo"
+      variant="segmented"
+      fill
+      label="Skills view"
+      tabs={[
+        { id: 'groups', label: 'Socket groups' },
+        { id: 'group', label: 'Selected group' }
+      ]}
+      bind:selected={segSel} />
+    <div role="tabpanel" id={panelId('seg-demo')} aria-labelledby={tabId('seg-demo', segSel)} class="note">{segSel}</div>
   </div>
 </Story>

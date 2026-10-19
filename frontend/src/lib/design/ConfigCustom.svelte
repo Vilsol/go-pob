@@ -67,8 +67,8 @@
     </h2>
     <span class="note">Each mod group has a title, an on/off switch and its lines · one modifier per cell · hover a parsed cell</span>
   </div>
-  <div class="flex min-w-0">
-    <div class="flex flex-[0_0_240px] flex-col gap-1 border-r border-line p-2">
+  <div class="flex min-w-0 max-phone:flex-col">
+    <div class="flex flex-[0_0_240px] flex-col gap-1 border-r border-line p-2 max-phone:flex-none max-phone:border-r-0 max-phone:border-b">
       <div role="list" aria-label="Mod groups" class="flex flex-col gap-1">
         {#each groups as x, i (i)}
           <!-- svelte-ignore a11y_mouse_events_have_key_events -->
@@ -110,9 +110,12 @@
         <div class="flex flex-wrap items-center gap-2 px-3 pt-2">
           <label class="field field-inline"
             >Group name
-            <input class="input input-xs h-7 w-55 px-2" value={g.title} oninput={(e) => ops.onrename(selected, e.currentTarget.value)} />
+            <input
+              class="input input-xs h-7 w-55 px-2 max-phone:w-full max-phone:min-w-0"
+              value={g.title}
+              oninput={(e) => ops.onrename(selected, e.currentTarget.value)} />
           </label>
-          {#if ops.modbrowser}<Button size="sm" class="h-7" onclick={() => (browsing = true)}>Add Mod</Button>{/if}
+          {#if ops.modbrowser}<Button size="sm" class="h-7" onclick={() => (browsing = true)}>Mod browser</Button>{/if}
           <span class={['text-12', g.enabled ? 'text-text-3' : 'text-worse']} aria-live="polite"
             >{g.enabled ? `${ok} applied${bad ? ` · ${bad} not recognised` : ''}` : 'Group disabled — its lines are not applied'}</span>
         </div>

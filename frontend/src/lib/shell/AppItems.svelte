@@ -26,7 +26,7 @@
   import { itemUsage, type UsageContext } from '$lib/design/item_usage';
   import { buildRevision, currentBuild, outputs } from '$lib/global.js';
   import { migrateEldritchImplicits, slotOnlyTooltips } from '$lib/display/item_options';
-  import { itemsLayout } from '$lib/display/appearance';
+  import { itemsLayout, phoneTables } from '$lib/display/appearance';
   import { syncWrap } from '$lib/go/worker';
   import { logError } from '$lib/utils';
   import type { calculator, exposition, pob } from '$lib/types';
@@ -936,6 +936,7 @@
 {#if view}
   <ItemsPage
     bind:layout
+    phoneLayout={$phoneTables}
     data={{ activeSet: view.activeSet, items: view.items, sets: view.sets, impact: {}, jewels: view.jewels, stash: view.stash }}
     sets={view.sets}
     setId={view.activeSet}

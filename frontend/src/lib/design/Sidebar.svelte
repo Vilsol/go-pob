@@ -85,7 +85,7 @@
   const valueTone = (l: StatLine) => (l.valueColor === colorCodes.NEGATIVE ? 'tone-worse' : l.valueColor === VALUE_COLOR ? '' : 'tone-text-3');
   const tick3 = (l: StatLine) => (l.labelColor === VALUE_COLOR ? undefined : l.labelColor);
 
-  const togglePin = (id: string) => (pinned = pinned.includes(id) ? pinned.filter((p) => p !== id) : [...pinned, id].slice(-3));
+  const togglePin = (id: string) => (pinned = pinned.includes(id) ? pinned.filter((p) => p !== id) : [...pinned, id]);
 
   const short = (label: string) =>
     label
@@ -197,16 +197,27 @@
       aria-label="Expand the sidebar"
       title="Expand the sidebar"
       aria-expanded="false">›</button>
-    {#each pins as p (p.id)}
-      <div class="flex w-full flex-col items-center gap-0.5 border-t border-line pt-2" style:--tone={tick3(p.line)} title="{p.line.label}: {p.line.value}">
-        <span class="sr-only">{p.line.label}: {p.line.value}</span>
-        <span class="h-0.75 w-5 rounded-[2px] bg-(--tone,var(--color-line-strong))" aria-hidden="true"></span>
-        <span class="text-10 text-text-3" aria-hidden="true">{short(p.line.label)}</span>
-        <span class={['font-mono text-11 toned', valueTone(p.line) || 'tone-text']} aria-hidden="true">{compact(p.line.value)}</span>
-      </div>
-    {:else}
-      <span class="text-14 text-text-3" title="Star a stat in the full sidebar to pin it here" aria-hidden="true">☆</span>
-    {/each}
+    <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+    <div
+      class="flex min-h-0 w-full flex-1 flex-col items-center gap-3 overflow-y-auto [scrollbar-width:none]"
+      role="group"
+      aria-label="Pinned stats"
+      tabindex="0"
+      data-rail-pins>
+      {#each pins as p (p.id)}
+        <div
+          class="flex w-full shrink-0 flex-col items-center gap-0.5 border-t border-line pt-2"
+          style:--tone={tick3(p.line)}
+          title="{p.line.label}: {p.line.value}">
+          <span class="sr-only">{p.line.label}: {p.line.value}</span>
+          <span class="h-0.75 w-5 rounded-[2px] bg-(--tone,var(--color-line-strong))" aria-hidden="true"></span>
+          <span class="text-10 text-text-3" aria-hidden="true">{short(p.line.label)}</span>
+          <span class={['font-mono text-11 toned', valueTone(p.line) || 'tone-text']} aria-hidden="true">{compact(p.line.value)}</span>
+        </div>
+      {:else}
+        <span class="text-14 text-text-3" title="Star a stat in the full sidebar to pin it here" aria-hidden="true">☆</span>
+      {/each}
+    </div>
   </aside>
 {:else}
   <aside
@@ -358,11 +369,11 @@
                         >{e.line.value}{#if e.line.note}<span class="text-11 text-text-2">{e.line.note}</span>{/if}</span>
                     </button>
                     <button
-                      class="relative z-1 mr-1 ml-auto shrink-0 border-0 bg-transparent p-0 text-12 leading-none text-text-3 opacity-0 group-hover/row:opacity-100 group-focus-within/row:opacity-100 focus-visible:opacity-100 aria-pressed:text-accent aria-pressed:opacity-100"
+                      class="relative z-1 mr-1 ml-auto shrink-0 border-0 bg-transparent p-0 text-12 leading-none text-text-3 opacity-0 group-hover/row:opacity-100 group-focus-within/row:opacity-100 focus-visible:opacity-100 aria-pressed:text-accent aria-pressed:opacity-100 max-phone:opacity-100"
                       aria-pressed={on}
                       onclick={() => togglePin(e.id)}
-                      aria-label={on ? `Unpin ${e.line.label}` : `Pin ${e.line.label} to the collapsed rail (up to 3)`}
-                      title={on ? `Unpin ${e.line.label}` : `Pin ${e.line.label} to the collapsed rail (up to 3)`}>{on ? '★' : '☆'}</button>
+                      aria-label={on ? `Unpin ${e.line.label}` : `Pin ${e.line.label} to the collapsed rail`}
+                      title={on ? `Unpin ${e.line.label}` : `Pin ${e.line.label} to the collapsed rail`}>{on ? '★' : '☆'}</button>
                   </div>
                   {#if e.skills}
                     <button

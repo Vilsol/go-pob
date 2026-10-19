@@ -256,7 +256,7 @@
   {version}
   devMode={$devMode} />
 <SaveAsDialog bind:open={saveAs} onsaved={saved} />
-<Dialog bind:open={savePrompt} title="Save Changes" class="w-100 p-4.5">
+<Dialog small bind:open={savePrompt} title="Save Changes" class="w-100 p-4.5">
   <div class="flex flex-col gap-3 text-13">
     <p class="m-0">This build has unsaved changes.<br />Do you want to save them now?</p>
     <div class="flex gap-1.5">
@@ -278,7 +278,7 @@
     </div>
   </div>
 </Dialog>
-<Dialog open={!!saveError} title="Error" class="w-100 p-4.5" onclose={() => (saveError = undefined)}>
+<Dialog small open={!!saveError} title="Error" class="w-100 p-4.5" onclose={() => (saveError = undefined)}>
   <p role="alert" class="m-0 text-13 whitespace-pre-line">{saveError}</p>
   {#snippet actions()}<Button onclick={() => (saveError = undefined)}>OK</Button>{/snippet}
 </Dialog>
