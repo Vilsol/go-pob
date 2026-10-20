@@ -19,7 +19,7 @@
 # The full CSP is report-only until the import, share and account flows have run under it. 'unsafe-eval': the
 # generated Go bindings build their wrappers with eval. Nothing frames the app; it opens other sites with noopener.
 /*
-  Strict-Transport-Security: max-age=31536000
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
   X-Frame-Options: DENY
   Cross-Origin-Opener-Policy: same-origin
   Content-Security-Policy: frame-ancestors 'none'; object-src 'none'; base-uri 'self'
