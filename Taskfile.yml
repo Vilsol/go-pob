@@ -655,7 +655,7 @@ tasks:
   pob-pin:
     desc: "Assert the pinned PoB checkout is the exact tree the oracle was built from (RECORD=1 to re-record)"
     vars:
-      POB_DIR: '{{.POB_DIR | default "$HOME/PathOfBuilding"}}'
+      POB_DIR: '{{.POB_DIR | default .POB_DEFAULT}}'
     cmds:
       - 'env POB_DIR={{.POB_DIR}} {{.GOPOB}} pob-pin {{if .RECORD}}--record{{end}}{{if .SELFTEST}} --selftest{{end}}'
 
