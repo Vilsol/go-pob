@@ -82,11 +82,13 @@
   const WIDTH_MIN = 260;
   const WIDTH_MAX = 960;
   const WIDTH_KEY = 'go-pob:calcs-breakdown-width';
+  // 400px on a wide window, never narrower than 320px, so the Calcs columns keep their room on a small one
+  const widthDefault = () => Math.max(320, Math.min(400, Math.round(window.innerWidth / 4)));
   const storedWidth = () => {
     try {
-      return Number(localStorage.getItem(WIDTH_KEY)) || 320;
+      return Number(localStorage.getItem(WIDTH_KEY)) || widthDefault();
     } catch {
-      return 320;
+      return widthDefault();
     }
   };
   let width = $state(Math.min(WIDTH_MAX, Math.max(WIDTH_MIN, storedWidth())));

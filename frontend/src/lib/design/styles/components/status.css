@@ -18,6 +18,19 @@
   .stat-value {
     @apply relative font-mono whitespace-nowrap text-(--tone,var(--color-text));
   }
+  /* a value too wide for its row covers the end of the label, which fades out under it */
+  .stat-fit {
+    --row-bg: var(--color-surface-1);
+  }
+  .stat-fit.bg-bar {
+    --row-bg: var(--color-bar);
+  }
+  .stat-row.stat-fit:hover {
+    --row-bg: var(--color-hover);
+  }
+  .stat-fade {
+    @apply relative z-raised shrink-0 bg-(--row-bg) before:pointer-events-none before:absolute before:inset-y-0 before:right-full before:w-3 before:bg-linear-to-r before:from-transparent before:to-(--row-bg) before:content-[''];
+  }
 
   .count-badge {
     @apply box-border inline-flex h-4.5 min-w-4.5 items-center justify-center rounded-pill bg-(--tone) px-1.25 font-mono text-11 font-semibold text-accent-ink;

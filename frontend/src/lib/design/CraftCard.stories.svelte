@@ -43,13 +43,20 @@
 <Story
   name="A · Stepped sections"
   asChild
-  play={async ({ canvasElement }) => {
+  play={async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     const card = within(canvasElement).getByRole('group', { name: 'Crafting card' });
     await expect(headings(card)).toEqual(['Base', 'Implicits', 'Affixes', 'Result']);
     const sections = ['Base', 'Implicits', 'Affixes', 'Result'].map((n) => within(card).getByRole('region', { name: n }));
     for (let i = 1; i < sections.length; i++) await expect(top(sections[i])).toBeGreaterThan(sections[i - 1].getBoundingClientRect().bottom);
     await expect(within(sections[1]).getByRole('list', { name: 'Implicit modifiers' })).toHaveTextContent('10% increased maximum Life');
     await expect(within(sections[2]).getByRole('combobox', { name: 'Affix 1' })).toBeVisible();
+    const sub = (s: HTMLElement) =>
+      within(s)
+        .getAllByRole('heading', { level: 4 })
+        .map((h) => h.textContent?.trim());
+    await expect(sub(sections[0])).toEqual(['Sockets and links', 'Properties']);
+    await expect(sub(sections[1])).toEqual(['Change']);
+    await expect(sub(sections[2])).toEqual(['Prefixes', 'Suffixes', 'Other modifiers', 'Add']);
   }}>
   <div class="w-115"><DisplayItemControls info={sample.info} craft={sample.craft} onedit={() => {}} layout="stepped" {head} {result} /></div>
 </Story>

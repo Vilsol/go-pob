@@ -241,6 +241,8 @@
   const opts = (names: string[] | undefined) => (names ?? []).map((label, i) => ({ value: String(i + 1), label }));
   const num = (e: Event) => Number((e.currentTarget as HTMLSelectElement).value);
   // phones: the stat label stays while the damage-type columns scroll sideways
+  // phones and touch screens: section toggles reach the 24px target size
+  const TOUCH_TARGET = 'max-phone:min-h-6 max-phone:min-w-6 [@media(pointer:coarse)]:min-h-6 [@media(pointer:coarse)]:min-w-6';
   const STICKY = 'max-phone:sticky max-phone:left-0 max-phone:z-raised max-phone:bg-surface-1 max-phone:shadow-[1px_0_0_var(--color-line)]';
 </script>
 
@@ -496,7 +498,8 @@
             <h2 class="m-0 flex">
               <button
                 class={[
-                  'toned box-border flex min-w-0 grow gap-1.25 border-0 bg-transparent px-2 py-0.75 text-left font-sans text-11 font-semibold tracking-caps-tight uppercase',
+                  'toned box-border flex min-w-0 grow items-center gap-1.25 border-0 bg-transparent px-2 py-0.75 text-left font-sans text-11 font-semibold tracking-caps-tight uppercase',
+                  TOUCH_TARGET,
                   toneClass(sectionTone(s))
                 ]}
                 aria-expanded={open}
@@ -510,7 +513,7 @@
                 {s.title}
                 {#if !s.applicable}<span class="font-normal text-text-3 normal-case">not applicable</span>{/if}</button>
               {#if s.applicable}<button
-                  class="border-0 bg-transparent px-1.5 text-11 text-text-3 hover:text-text"
+                  class={['border-0 bg-transparent px-1.5 text-11 text-text-3 hover:text-text', TOUCH_TARGET]}
                   aria-label="Pop out {pobPlain(s.title)}"
                   title="Pop out"
                   onclick={(e) => popOut(s.id, e.currentTarget.closest('section'))}>^</button

@@ -355,20 +355,20 @@
               <div data-stat-group class="flex flex-col">
                 {#each g as e, i (e.id)}
                   {@const on = pinned.includes(e.id)}
-                  <div class={['group/row stat-row', i % 2 && 'bg-bar']} style:--tone={tick3(e.line)}>
+                  <div class={['group/row stat-row stat-fit', i % 2 && 'bg-bar']} style:--tone={tick3(e.line)}>
                     {#if e.line.gauge}<StatGauge {...e.line.gauge} />{/if}
                     <button
-                      class="flex min-w-0 grow cursor-default flex-wrap-reverse items-center border-0 bg-transparent p-0 pl-2.25 text-left [font:inherit] text-inherit"
+                      class="flex min-w-0 grow cursor-default items-center border-0 bg-transparent p-0 pl-2.25 text-left [font:inherit] text-inherit"
                       aria-describedby={hover?.entry === e ? `${uid}-bd` : undefined}
                       onmouseenter={(ev) => show(e, ev)}
                       onmouseleave={() => hide(e)}
                       onfocus={(ev) => show(e, ev)}
                       onblur={() => hide(e)}
                       onclick={() => onbreakdown?.(e.line)}>
-                      <span class="stat-label w-auto max-w-39.5 grow pl-0"
+                      <span class="stat-label w-auto max-w-39.5 grow pl-0 text-clip"
                         >{e.line.label}{#if e.line.labelNote}<span class="text-worse">{e.line.labelNote}</span>{/if}</span
                       ><span class="sr-only">: </span>
-                      <span class={['stat-value toned', valueTone(e.line) || 'tone-text']}
+                      <span class={['stat-value stat-fade toned', valueTone(e.line) || 'tone-text']}
                         >{e.line.value}{#if e.line.note}<span class="text-11 text-text-2">{e.line.note}</span>{/if}</span>
                     </button>
                     <button
@@ -388,10 +388,10 @@
                       <ul class="m-0 flex list-none flex-col p-0 pl-4.5 text-12" aria-label="Full DPS by skill">
                         {#each e.skills as k, ki (ki)}
                           <li class="flex flex-col leading-5">
-                            <span class="flex justify-between gap-2"
-                              ><span class="truncate text-text-2"
+                            <span class="stat-fit flex justify-between"
+                              ><span class="min-w-0 grow overflow-hidden pr-2 whitespace-nowrap text-text-2"
                                 >{k.line.label}{#if k.line.labelNote}<span class="text-worse">{k.line.labelNote}</span>{/if}</span
-                              ><span class="sr-only">:&nbsp;</span><span class="font-mono">{k.line.value}</span></span>
+                              ><span class="sr-only">:&nbsp;</span><span class="stat-fade font-mono">{k.line.value}</span></span>
                             {#each k.details as d, di (di)}<span class="note-sm pl-2">{d.value}</span>{/each}
                           </li>
                         {/each}

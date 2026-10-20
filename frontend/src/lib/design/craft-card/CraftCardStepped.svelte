@@ -20,7 +20,7 @@
       <section
         aria-labelledby="{uid}-{s.id}"
         class={[
-          'flex min-w-0 flex-col gap-2.5 rounded-md border bg-surface-1 p-3',
+          'flex min-w-0 flex-col gap-3 rounded-md border bg-surface-1 p-3',
           s.id === 'result' ? 'border-l-3 border-line border-l-accent' : 'border-line'
         ]}>
         <header class="flex items-baseline gap-2 border-b border-line-faint pb-2">

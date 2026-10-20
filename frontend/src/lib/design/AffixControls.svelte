@@ -129,7 +129,7 @@
   });
 </script>
 
-<div role="group" aria-label="Affixes" class="flex flex-col gap-1.5">
+<div role="group" aria-label="Affixes" class="flex flex-col gap-2.5">
   {#if affixes.bases && affixes.bases.length > 1 && affixes.base}
     <FloatingLabel label="Base"
       ><Dropdown
@@ -159,7 +159,7 @@
         bind:value={sort} /></FloatingLabel>
   {/if}
   {#each groups as g (g.type)}
-    <div role="group" aria-label={g.label} class="flex flex-col gap-2">
+    <div role="group" aria-label={g.label} class="flex flex-col gap-2 border-t border-line-faint pt-2.5">
       <h4 class="caps text-11 text-text-3">{g.label}</h4>
       {#each g.slots as i, n (i)}
         {@const c = affixes.controls[i]}
@@ -209,7 +209,7 @@
             {/if}
           {/if}
           {#if line && (changes ?? slots)?.[i]?.length}
-            <ul aria-label="Lines of affix {i + 1}" class="flex flex-col gap-1">
+            <ul aria-label="Lines of affix {i + 1}" class="ml-1 flex flex-col gap-1 border-l-2 border-line-strong pl-2.5">
               {#each (changes ?? slots)?.[i] ?? [] as k (k)}{@render line(
                   k,
                   preview?.slot === i && preview.from === affixes ? preview.lines : undefined,

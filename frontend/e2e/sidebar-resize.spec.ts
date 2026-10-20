@@ -14,18 +14,20 @@ const NAME = `sidebar resize ${BUILD}`;
 const rows = (page: Page) =>
   page.getByRole('region', { name: 'Build stats' }).evaluate((root) =>
     [...root.querySelectorAll('.stat-row')].map((row) => {
-      const [label, value] = [row.querySelector('.stat-label')!, row.querySelector('.stat-value')!].map((e) => e.getBoundingClientRect());
+      const [labelEl, valueEl] = [row.querySelector('.stat-label')!, row.querySelector('.stat-value')!];
+      const [label, value] = [labelEl, valueEl].map((e) => e.getBoundingClientRect());
       const r = row.getBoundingClientRect();
       return {
         text: row.textContent?.trim() ?? '',
         oneLine: Math.abs(label.top - value.top) < 4 && value.left >= label.right - 1,
-        stacked: value.bottom <= label.top + 1,
+        labelCut: labelEl.scrollWidth > labelEl.clientWidth,
+        valueCut: valueEl.scrollWidth > valueEl.clientWidth,
         inside: label.left >= r.left - 1 && value.right <= r.right + 1 && label.right <= r.right + 1
       };
     })
   );
 
-test('sidebar: dragged narrower and wider, rows stack per row, the width survives a reload', async ({ page }) => {
+test('sidebar: dragged narrower and wider, a value too wide covers the end of its label, the width survives a reload', async ({ page }) => {
   test.setTimeout(10 * 60_000);
   const xml = buildXml(BUILD);
   const build = await go.loadXml(xml);
@@ -56,12 +58,16 @@ test('sidebar: dragged narrower and wider, rows stack per row, the width survive
   await page.mouse.up();
   expect(await width()).toBe(240);
   const narrow = await rows(page);
-  const stacked = narrow.filter((r) => r.stacked);
-  expect(stacked.length, 'some rows stack at 240 px').toBeGreaterThan(0);
-  expect(stacked.length, 'not every row stacks: the choice is per row').toBeLessThan(narrow.length);
   expect(
-    narrow.filter((r) => !r.oneLine && !r.stacked),
-    'a row is either one line or stacked'
+    narrow.filter((r) => !r.oneLine),
+    'at 240 px every row still fits one line'
+  ).toEqual([]);
+  const cut = narrow.filter((r) => r.labelCut);
+  expect(cut.length, 'some labels run under their value at 240 px').toBeGreaterThan(0);
+  expect(cut.length, 'not every label is cut: the choice is per row').toBeLessThan(narrow.length);
+  expect(
+    narrow.filter((r) => r.valueCut),
+    'no value is cut'
   ).toEqual([]);
   expect(
     narrow.filter((r) => !r.inside),

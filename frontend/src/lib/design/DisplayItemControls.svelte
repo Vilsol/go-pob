@@ -160,6 +160,14 @@
   {/if}
 {/snippet}
 
+{#snippet sub(title: string)}
+  <h4 class="caps text-11 text-text-3">{title}</h4>
+{/snippet}
+
+{#snippet actionsHead(title: string)}
+  <div class="mt-1 border-t border-line-faint pt-2.5">{@render sub(title)}</div>
+{/snippet}
+
 {#snippet modList(list: number[], label: string)}
   {#if list.length}
     <ul aria-label={label} class="flex flex-col gap-1">
@@ -170,8 +178,7 @@
   {/if}
 {/snippet}
 
-{#snippet base()}
-  {@render head?.()}
+{#snippet variants()}
   {#if info.variants.length > 1}
     {#each selected as sel, i (i)}
       <FloatingLabel label={ALT[i]}
@@ -207,6 +214,9 @@
             onedit({ kind: 'variantGroup', index: g.group, value: Number(e.currentTarget.value) })} /></FloatingLabel>
     {/each}
   {/if}
+{/snippet}
+
+{#snippet socketRow()}
   {#if info.socketLimit > 0}
     <div role="group" aria-label="Sockets" class="flex flex-wrap items-center gap-1.5">
       {#each sockets as s, i (i)}
@@ -231,6 +241,9 @@
       {/if}
     </div>
   {/if}
+{/snippet}
+
+{#snippet properties()}
   {#if info.canInfluence}
     <div class="grid grid-cols-2 gap-2">
       {#each [0, 1] as const as slot (slot)}
@@ -268,6 +281,9 @@
       {/if}
     </div>
   {/if}
+{/snippet}
+
+{#snippet clusterControls()}
   {#if info.cluster}
     {@const cl = info.cluster}
     <div role="group" aria-label="Cluster jewel" class="flex flex-col gap-1.5">
@@ -292,9 +308,42 @@
   {/if}
 {/snippet}
 
+{#snippet base()}
+  {@render head?.()}
+  {#if info.variants.length > 1 || (info.variantGroups && (info.variantGroups.versions.length > 1 || info.variantGroups.groups.length))}
+    <div class="flex flex-col gap-2 border-t border-line-faint pt-2.5">
+      {@render sub('Variant')}
+      {@render variants()}
+    </div>
+  {/if}
+  {#if info.socketLimit > 0}
+    <div class="flex flex-col gap-1.5 border-t border-line-faint pt-2.5">
+      {@render sub('Sockets and links')}
+      {@render socketRow()}
+    </div>
+  {/if}
+  {#if info.canInfluence || info.hasQuality || info.showsCatalyst}
+    <div class="flex flex-col gap-2 border-t border-line-faint pt-2.5">
+      {@render sub('Properties')}
+      {@render properties()}
+    </div>
+  {/if}
+  {#if info.cluster}
+    <div class="flex flex-col gap-2 border-t border-line-faint pt-2.5">
+      {@render sub('Cluster jewel')}
+      {@render clusterControls()}
+    </div>
+  {/if}
+{/snippet}
+
 {#snippet implicits()}
-  {@render modList(implicitMods, 'Implicit modifiers')}
+  {#if implicitMods.length}
+    {@render modList(implicitMods, 'Implicit modifiers')}
+  {:else}
+    <p class="note">No implicit modifiers.</p>
+  {/if}
   {#if craft && ((info.enchants ?? 0) > 0 || (info.anoints ?? 0) > 0 || info.corruptible || info.addImplicit)}
+    {@render actionsHead('Change')}
     <div role="group" aria-label="Enchant, anoint and corrupt" class="flex flex-wrap gap-1.5">
       {#each Array.from({ length: info.enchants ?? 0 }, (_, k) => k + 1) as slot (slot)}
         <Button
@@ -326,7 +375,14 @@
   {#if craft && info.affixes}
     <AffixControls affixes={info.affixes} {craft} slots={slotted.slots} changes={slotted.stats} {lineId} line={modRow} />
   {/if}
-  {@render modList(slotted.rest, craft && info.affixes ? 'Other explicit modifiers' : 'Explicit modifiers')}
+  {#if craft && info.affixes && slotted.rest.length}
+    <div class="flex flex-col gap-1.5 border-t border-line-faint pt-2.5">
+      {@render sub('Other modifiers')}
+      {@render modList(slotted.rest, 'Other explicit modifiers')}
+    </div>
+  {:else}
+    {@render modList(slotted.rest, craft && info.affixes ? 'Other explicit modifiers' : 'Explicit modifiers')}
+  {/if}
   {#if !$allAffixSliders && picked !== undefined}
     {@const m = info.mods[picked]}
     <div class="flex items-center gap-2">
@@ -348,6 +404,7 @@
     </div>
   {/if}
   {#if craft && (info.addCustom || info.addCrucible)}
+    {@render actionsHead('Add')}
     <div role="group" aria-label="Add modifiers" class="flex flex-wrap gap-1.5">
       {#if info.addCustom}
         <Button size="xs" onclick={() => (customOpen = true)}>Add modifier...</Button>

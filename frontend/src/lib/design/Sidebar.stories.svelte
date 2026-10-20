@@ -153,6 +153,45 @@
 </Story>
 
 <Story
+  name="Narrowest width"
+  asChild
+  play={async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    const c = within(canvasElement);
+    const handle = c.getByRole('separator', { name: 'Resize the sidebar' });
+    handle.focus();
+    for (let i = 0; i < 10; i++) await userEvent.keyboard('{ArrowLeft}');
+    await expect(handle).toHaveAttribute('aria-valuenow', '240');
+    localStorage.removeItem('go-pob:sidebar-width');
+    await expect(c.getByRole('list', { name: 'Full DPS by skill' })).toBeVisible();
+    const rows: [HTMLElement, HTMLElement][] = [
+      ...[...canvasElement.querySelectorAll<HTMLElement>('.stat-row')].map((r): [HTMLElement, HTMLElement] => [
+        r.querySelector<HTMLElement>('.stat-label')!,
+        r.querySelector<HTMLElement>('.stat-value')!
+      ]),
+      ...[...canvasElement.querySelectorAll<HTMLElement>('[aria-label="Full DPS by skill"] li > span:first-child')].map((r): [HTMLElement, HTMLElement] => [
+        r.firstElementChild as HTMLElement,
+        r.lastElementChild as HTMLElement
+      ])
+    ];
+    await expect(rows.length).toBeGreaterThan(20);
+    for (const [label, value] of rows) {
+      const l = label.getBoundingClientRect();
+      const v = value.getBoundingClientRect();
+      const row = value.parentElement!.getBoundingClientRect();
+      const name = `${label.textContent} | ${value.textContent}`;
+      await expect(Math.abs(l.top - v.top), `${name}: the value stays on the label's line`).toBeLessThanOrEqual(2);
+      await expect(value.scrollWidth, `${name}: the value is cut`).toBeLessThanOrEqual(value.clientWidth);
+      await expect(v.right, `${name}: the value runs past its row`).toBeLessThanOrEqual(row.right + 0.5);
+      await expect(l.left, `${name}: the label starts before the value`).toBeLessThan(v.left);
+    }
+    const cut = rows.filter(([label]) => label.scrollWidth > label.clientWidth);
+    await expect(cut.length, 'at 240px some labels run under their value').toBeGreaterThan(0);
+    for (const [, value] of cut) await expect(getComputedStyle(value, '::before').backgroundImage).toContain('gradient');
+  }}>
+  <div class="h-[1028px]"><LiveSidebar fx={fireballBuild} /></div>
+</Story>
+
+<Story
   name="Collapse a stat group"
   asChild
   play={async ({ canvasElement }: { canvasElement: HTMLElement }) => {
