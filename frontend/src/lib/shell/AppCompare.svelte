@@ -5,6 +5,9 @@
 </script>
 
 <script lang="ts">
+  import Select from '$lib/design/Select.svelte';
+  import Input from '$lib/design/Input.svelte';
+  import Button from '$lib/design/Button.svelte';
   import Field from '$lib/design/Field.svelte';
   import InlineMessage from '$lib/design/InlineMessage.svelte';
   import SectionHeading from '$lib/design/SectionHeading.svelte';
@@ -408,18 +411,20 @@
   <section aria-label="Choose a build to compare" class="panel flex max-w-180 flex-col gap-3 p-3.5">
     <SectionHeading size="lg">COMPARE WITH</SectionHeading>
     <Field label="Import a build code or a build site link as the comparison:">
-      <input class="input input-lg font-mono text-13" bind:value={code} aria-label="Comparison build code" /></Field>
+      <Input size="lg" class="font-mono text-13" bind:value={code} aria-label="Comparison build code" /></Field>
     <Field label="Name (optional)">
-      <input class="input input-md text-13" maxlength="100" bind:value={codeName} aria-label="Comparison name" /></Field>
+      <Input size="md" class="text-13" maxlength={100} bind:value={codeName} aria-label="Comparison name" /></Field>
     <!-- CompareTab.lua:1462-1525 -->
-    <button
-      class="btn btn-md btn-primary self-start"
+    <Button
+      size="md"
+      variant="primary"
+      class="self-start"
       disabled={!code.trim() || loading}
       onclick={() => load(async () => syncWrap?.LoadCompareCode(await linkCode(code), compareName(code, codeName)) ?? Promise.reject(new Error('no worker')))}
-      >Compare</button>
+      >Compare</Button>
     <SectionHeading level={3} class="mt-1">OR A SAVED BUILD</SectionHeading>
     <!-- CompareTab.lua:1529-1640 -->
-    <button class="btn btn-md self-start" aria-haspopup="dialog" disabled={loading} onclick={() => (picking = true)}>Choose a saved build…</button>
+    <Button size="md" class="self-start" aria-haspopup="dialog" disabled={loading} onclick={() => (picking = true)}>Choose a saved build…</Button>
     <BuildPicker
       bind:open={picking}
       title="Compare with a saved build"
@@ -428,7 +433,7 @@
       builds={saved.current?.builds}
       folders={saved.current?.folders ?? []}
       onpick={(b: SavedBuild) => load(() => syncWrap?.LoadCompareSaved(pathOf(b.folder, b.name)))} />
-    {#if adding}<button class="btn btn-sm self-start" onclick={() => (adding = false)}>Cancel</button>{/if}
+    {#if adding}<Button size="sm" class="self-start" onclick={() => (adding = false)}>Cancel</Button>{/if}
     {#if loading}<span role="status" class="note">Loading…</span>{/if}
     {#if loadError}<InlineMessage kind="error">Comparison failed: {loadError}</InlineMessage>{/if}
   </section>
@@ -436,17 +441,16 @@
   <div class="flex shrink-0 items-center gap-2 text-12">
     <!-- CompareTab.lua:227-237 -->
     <Field label="Compare with:" inline>
-      <select
-        class="select input-xs"
+      <Select
+        size="xs"
         aria-label="Compare with"
         value={String(info.active)}
-        onchange={(e) => void syncWrap?.SetActiveCompare(Number(e.currentTarget.value)).then((i) => (info = i))}
-        >{#each info.names as n, i (i)}<option value={String(i)}>{n}</option>{/each}</select
+        onchange={(e: Event & { currentTarget: HTMLSelectElement }) => void syncWrap?.SetActiveCompare(Number(e.currentTarget.value)).then((i) => (info = i))}
+        >{#each info.names as n, i (i)}<option value={String(i)}>{n}</option>{/each}</Select
       ></Field>
-    <button class="btn btn-2xs" onclick={() => (adding = true)}>Import…</button>
-    <button class="btn btn-2xs" disabled={!canReimport()} title={reimportTip} onclick={() => reimportPrimary((run) => (confirmTree = run))}
-      >Re-import Current</button>
-    <button class="btn btn-2xs" onclick={remove}>Remove comparison</button>
+    <Button size="2xs" onclick={() => (adding = true)}>Import…</Button>
+    <Button size="2xs" disabled={!canReimport()} title={reimportTip} onclick={() => reimportPrimary((run) => (confirmTree = run))}>Re-import Current</Button>
+    <Button size="2xs" onclick={remove}>Remove comparison</Button>
   </div>
   <AppCompareSets bind:info />
   <ComparePage

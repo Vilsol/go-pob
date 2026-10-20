@@ -1,4 +1,8 @@
 <script lang="ts">
+  import Textarea from './Textarea.svelte';
+  import Select from './Select.svelte';
+  import Input from './Input.svelte';
+  import Button from './Button.svelte';
   import Field from './Field.svelte';
   import Badge from './Badge.svelte';
   import InlineMessage from './InlineMessage.svelte';
@@ -80,8 +84,9 @@
     take priority over a support’s. All of these effects can be found on the Calcs page.
   </p>
   <Field label="Enter a build code/URL below:">
-    <input
-      class="input input-lg bg-surface-1 text-13"
+    <Input
+      size="lg"
+      class="bg-surface-1 text-13"
       bind:value={importText}
       placeholder="https://pobb.in/… or a build code"
       aria-describedby="{uid}-state" /></Field>
@@ -90,20 +95,21 @@
   {#if importError}<InlineMessage kind="error" tag="span">{importError}</InlineMessage>{/if}
   <div class="flex items-center gap-1.5">
     <FloatingLabel label="Destination"
-      ><select class="select input-md" bind:value={destination} title="Destination for Import / Clear">
+      ><Select size="md" bind:value={destination} title="Destination for Import / Clear">
         {#each PARTY_DESTINATIONS as d (d)}<option>{d}</option>{/each}
-      </select></FloatingLabel>
-    <button class="btn btn-primary px-3 text-12" disabled={!verdict?.valid} onclick={() => onimport?.(importText.trim(), destination, append)}>Import</button>
+      </Select></FloatingLabel>
+    <Button variant="primary" class="px-3 text-12" disabled={!verdict?.valid} onclick={() => onimport?.(importText.trim(), destination, append)}>Import</Button>
     <Checkbox compact bind:checked={append}>Append</Checkbox>
-    <button class="btn btn-ghost px-3 text-12" onclick={() => onclear?.(destination)}>Clear</button>
+    <Button variant="ghost" class="px-3 text-12" onclick={() => onclear?.(destination)}>Clear</Button>
   </div>
   <div class="flex flex-wrap items-center gap-x-3 gap-y-1.5">
     <Checkbox compact class="text-13" bind:checked={advanced}>Show Advanced Info</Checkbox>
     <Checkbox compact class="text-13" bind:checked={disabled}>Disable Party Effects</Checkbox>
-    <button
-      class="btn btn-sm px-3"
+    <Button
+      size="sm"
+      class="px-3"
       title="Reparse all the inputs in case they have been disabled or they have changed since loading the build or importing"
-      onclick={onrebuild}>Rebuild All</button>
+      onclick={onrebuild}>Rebuild All</Button>
   </div>
   {#if stale}<span class="note" role="status">A buffer changed since the effects were applied: Rebuild All applies it.</span>{/if}
   {#if members.length}
@@ -114,11 +120,12 @@
           <span class="truncate font-semibold">{m.name}</span>
           <span class="flex shrink-0 items-center gap-2">
             <Checkbox compact checked={m.active} onchange={() => onmember?.(m.id, !m.active)} aria-label="{m.name} active">active</Checkbox>
-            {#if onremove}<button
-                class="btn btn-ghost btn-2xs"
+            {#if onremove}<Button
+                size="2xs"
+                variant="ghost"
                 aria-label="Remove {m.name}"
                 title="Remove this member and what it gives"
-                onclick={() => onremove(m.id)}>Remove</button
+                onclick={() => onremove(m.id)}>Remove</Button
               >{/if}
           </span>
         </div>
@@ -149,12 +156,12 @@
         {c.label.toUpperCase()}<span class="font-mono font-normal">{entries.length}</span>
       </h3>
       {#if advanced}
-        <textarea
-          class="input m-2 h-28 font-mono text-11"
+        <Textarea
+          class="m-2 h-28 font-mono text-11"
           aria-label="{c.label} buffer"
           spellcheck="false"
           value={buffers[c.id]}
-          oninput={(e) => onbuffer?.(c.id, e.currentTarget.value)}></textarea>
+          oninput={(e: Event & { currentTarget: HTMLTextAreaElement }) => onbuffer?.(c.id, e.currentTarget.value)} />
       {:else if !entries.length}
         <span class="px-3 py-2 text-12 text-text-3">nothing imported</span>
       {:else}

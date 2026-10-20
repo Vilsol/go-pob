@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Button from './Button.svelte';
   import Tooltip from './Tooltip.svelte';
   import Checkbox from './Checkbox.svelte';
   import FloatingItemTip from './FloatingItemTip.svelte';
@@ -81,17 +82,17 @@
 {#snippet buttons(r: Row)}
   {#if (onitem || onbuy) && r.b}
     <span class="mt-1 flex gap-1 font-sans">
-      {#if onbuy}<button class="btn btn-2xs" title="Search the trade site for items like B's" onclick={() => onbuy(r.slot)}>Buy</button>{/if}
+      {#if onbuy}<Button size="2xs" title="Search the trade site for items like B's" onclick={() => onbuy(r.slot)}>Buy</Button>{/if}
       {#if onitem && !same(r)}
-        <button class="btn btn-2xs" title="Add B's item to this build without equipping it" onclick={() => onitem(r.slot, false)}>Copy</button>
-        <button
-          class="btn btn-2xs"
+        <Button size="2xs" title="Add B's item to this build without equipping it" onclick={() => onitem(r.slot, false)}>Copy</Button>
+        <Button
+          size="2xs"
           aria-describedby={equipHover?.row === r ? 'compare-equip-tip' : undefined}
-          onmouseenter={(e) => (equipHover = { row: r, anchor: e.currentTarget })}
-          onfocus={(e) => (equipHover = { row: r, anchor: e.currentTarget })}
+          onmouseenter={(e: MouseEvent & { currentTarget: HTMLElement }) => (equipHover = { row: r, anchor: e.currentTarget })}
+          onfocus={(e: FocusEvent & { currentTarget: HTMLElement }) => (equipHover = { row: r, anchor: e.currentTarget })}
           onmouseleave={() => (equipHover = undefined)}
           onblur={() => (equipHover = undefined)}
-          onclick={() => onitem(r.slot, true)}>Equip</button>
+          onclick={() => onitem(r.slot, true)}>Equip</Button>
       {/if}
     </span>
   {/if}

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Checkbox from './Checkbox.svelte';
   import FloatingItemTip from './FloatingItemTip.svelte';
   import SlotMenu from './SlotMenu.svelte';
   import { tone as toneClass, type Tone } from './tone';
@@ -65,12 +66,11 @@
     onmouseenter={e?.item ? enter(key) : undefined}
     onmouseleave={leave}>
     <span role="cell" class="col-span-2">
-      {#if flask && e}<input
-          class="check size-3.5"
-          type="checkbox"
+      {#if flask && e}<Checkbox
+          class="size-3.5"
           checked={flasks[key]}
           aria-label="{key} active"
-          onchange={(ev) => onflask(key, ev.currentTarget.checked)} />{/if}
+          onchange={(ev: Event & { currentTarget: HTMLInputElement }) => onflask(key, ev.currentTarget.checked)} />{/if}
     </span>
     <span role="cell" data-col="aside" class={['col-span-5', hover === key ? 'text-text-2' : 'text-text-3']}>{key}</span>
     <span role="cell" data-col="name" class="col-span-10 flex min-w-0 items-center gap-1">

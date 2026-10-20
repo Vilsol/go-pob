@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Input from './Input.svelte';
   import Dialog from './Dialog.svelte';
   import DialogActions from './DialogActions.svelte';
   import Select from './Select.svelte';
@@ -30,7 +31,7 @@
     <div class="flex flex-col gap-3 text-13">
       <div class="grid grid-cols-3 gap-2">
         <FloatingLabel label="Realm"><Select options={REALMS.map(([label, value]) => ({ label, value }))} bind:value={realm} /></FloatingLabel>
-        <FloatingLabel label="League"><input class="input" aria-label="League" bind:value={league} /></FloatingLabel>
+        <FloatingLabel label="League"><Input aria-label="League" bind:value={league} /></FloatingLabel>
         <FloatingLabel label="Listed"><Select options={LISTED.map(([label, value]) => ({ label, value }))} bind:value={listed} /></FloatingLabel>
       </div>
       {#if unique}
@@ -40,15 +41,15 @@
         <Checkbox compact bind:checked={baseType}>Use specific base: {item.baseName || 'Unknown'}</Checkbox>
         <div class="flex items-center gap-2">
           <span class="grow text-text-2">Item Level:</span>
-          <input class="input w-20" aria-label="Item level min" placeholder="Min" inputmode="numeric" bind:value={ilvlMin} />
-          <input class="input w-20" aria-label="Item level max" placeholder="Max" inputmode="numeric" bind:value={ilvlMax} />
+          <Input class="w-20" aria-label="Item level min" placeholder="Min" inputmode="numeric" bind:value={ilvlMin} />
+          <Input class="w-20" aria-label="Item level max" placeholder="Max" inputmode="numeric" bind:value={ilvlMax} />
         </div>
         {#each defences as d, i (d.tradeKey)}
           {#if defenceRows[i]}
             <div class="flex items-center gap-2">
               <span class="grow"><Checkbox compact bind:checked={defenceRows[i].on}>{d.label}</Checkbox></span>
-              <input class="input w-20" aria-label="{d.label} min" placeholder="Min" inputmode="numeric" bind:value={defenceRows[i].min} />
-              <input class="input w-20" aria-label="{d.label} max" placeholder="Max" inputmode="numeric" bind:value={defenceRows[i].max} />
+              <Input class="w-20" aria-label="{d.label} min" placeholder="Min" inputmode="numeric" bind:value={defenceRows[i].min} />
+              <Input class="w-20" aria-label="{d.label} max" placeholder="Max" inputmode="numeric" bind:value={defenceRows[i].max} />
             </div>
           {/if}
         {/each}

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Select from '$lib/design/Select.svelte';
   import InlineMessage from '$lib/design/InlineMessage.svelte';
   import Dialog from '$lib/design/Dialog.svelte';
   import Field from '$lib/design/Field.svelte';
@@ -86,10 +87,10 @@
   </Field>
   <div class="flex items-end gap-2">
     <Field label="Folder" class="min-w-0 grow">
-      <select class="select w-full" bind:value={folder}>
+      <Select class="w-full" bind:value={folder}>
         <option value="">All builds</option>
         {#each folders as f (f)}<option value={f}>{'  '.repeat(f.split('/').length) + leaf(f)}</option>{/each}
-      </select>
+      </Select>
     </Field>
     <Button size="md" title="Make a folder in {folder ? leaf(folder) : 'All builds'}" onclick={() => (asking = true)}>New folder</Button>
   </div>

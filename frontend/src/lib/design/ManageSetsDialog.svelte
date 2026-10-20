@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Input from './Input.svelte';
   import Button from './Button.svelte';
   import InlineConfirm from './InlineConfirm.svelte';
   import SetManager from './SetManager.svelte';
@@ -93,7 +94,7 @@
             if (sharedNaming && /\S/.test(sharedNaming)) onshared({ op: 'rename', index: row, title: sharedNaming });
             sharedNaming = null;
           }}>
-          <input class="input input-sm grow" aria-label="Name for this shared set" bind:value={sharedNaming} maxlength="100" />
+          <Input size="sm" class="grow" aria-label="Name for this shared set" bind:value={sharedNaming} maxlength={100} />
           <Button size="sm" variant="primary" type="submit" disabled={!/\S/.test(sharedNaming)}>Save</Button>
           <Button size="sm" type="button" onclick={() => (sharedNaming = null)}>Cancel</Button>
         </form>

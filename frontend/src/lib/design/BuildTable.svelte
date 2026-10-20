@@ -1,4 +1,6 @@
 <script lang="ts">
+  import Checkbox from './Checkbox.svelte';
+  import Button from './Button.svelte';
   import Popover from './Popover.svelte';
   import SortHeader from './SortHeader.svelte';
   import SearchField from './SearchField.svelte';
@@ -161,22 +163,22 @@
     <Segmented chip label="Filter by class" options={classes.map((c) => ({ id: c, label: c }))} bind:value={cls} class="flex-wrap" itemClass="px-2.5" />
     <div class="grow max-phone:hidden"></div>
     {#if staleCount || recalc}
-      <button
-        class="btn h-9 px-3 whitespace-nowrap"
+      <Button
+        class="h-9 px-3 whitespace-nowrap"
         disabled={!!recalc}
         onclick={onrecalc}
         title="Builds saved with older game data show muted stats until they are recalculated with {gameVersion} data"
-        >↻ Recalculate all · {staleCount} stale</button>
+        >↻ Recalculate all · {staleCount} stale</Button>
     {/if}
     <div class="relative" bind:this={pickerRoot}>
-      <button
-        class="btn h-9 px-3 whitespace-nowrap"
+      <Button
+        class="h-9 px-3 whitespace-nowrap"
         aria-expanded={colMenuOpen}
         aria-controls="build-cols"
         onclick={() => (colMenuOpen = !colMenuOpen)}
-        onkeydown={(e) => {
+        onkeydown={(e: KeyboardEvent) => {
           if (e.key === 'Escape') colMenuOpen = false;
-        }}>Columns · {shown.length} / {avail.length} ▾</button>
+        }}>Columns · {shown.length} / {avail.length} ▾</Button>
       <Popover
         id="build-cols"
         open={colMenuOpen}
@@ -190,12 +192,7 @@
         <span class="px-2 py-1 text-11 tracking-caps text-text-3">SHOW COLUMNS</span>
         {#each avail as c (c.key)}
           <label class={['menu-item', c.key === 'name' ? 'text-text-3' : 'text-text']}
-            ><input
-              class="check size-4"
-              type="checkbox"
-              checked={cols.includes(c.key)}
-              disabled={c.key === 'name'}
-              onchange={() => toggleCol(c.key)} />{c.label}</label>
+            ><Checkbox class="size-4" checked={cols.includes(c.key)} disabled={c.key === 'name'} onchange={() => toggleCol(c.key)} />{c.label}</label>
         {/each}
         <div class="my-1 border-t border-line"></div>
         <button class="menu-item h-7 text-12 font-medium text-accent" onclick={() => (cols = columns ? [...columns] : [...DEFAULT_COLS])}
@@ -328,14 +325,11 @@
             {/if}
           {/each}
           <span role="gridcell" data-col="aside" class="relative flex items-center justify-end gap-1">
-            <button class="btn btn-icon btn-xs" aria-label="Copy {b.name}" title="Copy" onclick={() => oncopy?.(id)}><Icon name="copy" size={14} /></button>
+            <Button size="xs" icon aria-label="Copy {b.name}" title="Copy" onclick={() => oncopy?.(id)}><Icon name="copy" size={14} /></Button>
             <Menu label="Actions for {b.name}" items={moveItems(b)} class="top-8 w-57.5" bind:open={() => menuFor === id, (v) => (menuFor = v ? id : null)}>
               {#snippet trigger(attrs)}
-                <button
-                  class="btn btn-icon btn-xs"
-                  aria-label="Actions for {b.name}"
-                  title={onrename || ondelete ? 'Open, rename, delete, move' : 'Open, move'}
-                  {...attrs}><Icon name="more" /></button>
+                <Button size="xs" icon aria-label="Actions for {b.name}" title={onrename || ondelete ? 'Open, rename, delete, move' : 'Open, move'} {...attrs}
+                  ><Icon name="more" /></Button>
               {/snippet}
               {#snippet row(it: { label: string; indent?: string })}<span class="pl-(--indent)" style={it.indent ? `--indent: ${it.indent}` : undefined}
                   >{it.label}</span

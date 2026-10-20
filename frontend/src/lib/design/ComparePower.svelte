@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Checkbox from './Checkbox.svelte';
   import SortHeader from './SortHeader.svelte';
   import MetricSelect from './MetricSelect.svelte';
   import Button from './Button.svelte';
@@ -83,7 +84,7 @@
       {#each CATS as c (c.id)}
         <label
           class="flex h-7 cursor-pointer items-center gap-1.5 rounded-pill border border-line px-2.5 text-12 text-text-2 has-checked:border-accent has-checked:bg-surface-3 has-checked:text-text"
-          ><input type="checkbox" class="check size-3.5" bind:checked={on[c.id]} />{c.label}
+          ><Checkbox class="size-3.5" bind:checked={on[c.id]} />{c.label}
           <span class="font-mono text-text-3">{nonzero.filter((p) => p.cat === c.id).length}</span></label>
       {/each}
       {#if busy}<span role="status" class="note">Calculating…</span>{/if}

@@ -1,4 +1,7 @@
 <script lang="ts">
+  import Select from './Select.svelte';
+  import Input from './Input.svelte';
+  import Checkbox from './Checkbox.svelte';
   import SortHeader from './SortHeader.svelte';
   import SearchField from './SearchField.svelte';
   import MetricSelect from './MetricSelect.svelte';
@@ -107,24 +110,26 @@
   {#if !onset || !c.kind}
     <span class="truncate font-mono" title={side === 'a' ? c.a : c.b}>{side === 'a' ? c.a : c.b}</span>
   {:else if c.kind === 'check'}
-    <input class="check" type="checkbox" aria-label={name} checked={!!value} onchange={(e) => onset(side, c.key, e.currentTarget.checked)} />
+    <Checkbox aria-label={name} checked={!!value} onchange={(e: Event & { currentTarget: HTMLInputElement }) => onset(side, c.key, e.currentTarget.checked)} />
   {:else if c.kind === 'number'}
-    <input
-      class="input input-xs h-6 w-full px-1.5 font-mono"
+    <Input
+      size="xs"
+      class="h-6 w-full px-1.5 font-mono"
       inputmode="decimal"
       aria-label={name}
-      value={value ?? ''}
-      onchange={(e) => onset(side, c.key, numberOf(e.currentTarget.value))} />
+      value={(value ?? '') as string | number}
+      onchange={(e: Event & { currentTarget: HTMLInputElement }) => onset(side, c.key, numberOf(e.currentTarget.value))} />
   {:else}
-    <select
-      class="select input-xs h-6 w-full"
+    <Select
+      size="xs"
+      class="h-6 w-full"
       aria-label={name}
       value={String(value ?? c.options?.[0]?.value ?? '')}
-      onchange={(e) => {
+      onchange={(e: Event & { currentTarget: HTMLSelectElement }) => {
         const o = c.options?.find((x) => String(x.value) === e.currentTarget.value);
         if (o) onset(side, c.key, o.value);
       }}
-      >{#each c.options ?? [] as o (o.value)}<option value={String(o.value)}>{pobPlain(o.label)}</option>{/each}</select>
+      >{#each c.options ?? [] as o (o.value)}<option value={String(o.value)}>{pobPlain(o.label)}</option>{/each}</Select>
   {/if}
 {/snippet}
 

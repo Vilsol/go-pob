@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Input from './Input.svelte';
   import Dialog from './Dialog.svelte';
   import DialogActions from './DialogActions.svelte';
   import FloatingLabel from './FloatingLabel.svelte';
@@ -53,7 +54,7 @@
           value={String(rarity)}
           onchange={(e: Event & { currentTarget: HTMLSelectElement }) => (rarity = Number(e.currentTarget.value))} /></FloatingLabel>
       {#if rarity >= 2}
-        <input class="input input-sm" aria-label="Name" placeholder="Name" bind:value={title} />
+        <Input size="sm" aria-label="Name" placeholder="Name" bind:value={title} />
       {/if}
     </div>
     <FloatingLabel label="Type"

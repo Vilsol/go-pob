@@ -249,6 +249,12 @@ tasks:
     cmds:
       - '{{.NICE}} pnpm run test'
 
+  raw-controls:
+    desc: "List raw .btn / .input / <select> / checkbox controls outside the design primitives, file:line (the ceiling and allow-list are in frontend/harness/raw_controls.json)"
+    dir: ./frontend/
+    cmds:
+      - 'node harness/raw_controls.ts'
+
   write-path:
     desc: "Assert a mutation through the JS surface reaches Go, and a no-op load/save changes nothing"
     deps: [build-go]

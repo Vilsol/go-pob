@@ -1,4 +1,7 @@
 <script lang="ts">
+  import Checkbox from './Checkbox.svelte';
+  import Input from './Input.svelte';
+  import Select from './Select.svelte';
   import Tooltip from './Tooltip.svelte';
   import Field from './Field.svelte';
   import PobText from './PobText.svelte';
@@ -47,43 +50,47 @@
     <div class="flex min-w-0 flex-col gap-1" aria-label="{s.name} calcs controls" role="group">
       <span class={['text-14 font-semibold', TONE[i]]}>{s.name}</span>
       <Field label="Socket Group:" inline>
-        <select
-          class="select input-xs max-w-60"
+        <Select
+          size="xs"
+          class="max-w-60"
           aria-label="Socket Group"
           value={String(Math.max(0, Math.min(s.skillNumber, s.groups.length) - 1))}
-          onchange={(e) => oncontrol(side, 'group', Number(e.currentTarget.value) + 1)}
-          >{#each s.groups.length ? s.groups : ['<No skills added yet>'] as g, k (k)}<option value={String(k)}>{g}</option>{/each}</select
+          onchange={(e: Event & { currentTarget: HTMLSelectElement }) => oncontrol(side, 'group', Number(e.currentTarget.value) + 1)}
+          >{#each s.groups.length ? s.groups : ['<No skills added yet>'] as g, k (k)}<option value={String(k)}>{g}</option>{/each}</Select
         ></Field>
       {#if c?.Skills?.length}
         <Field label="Active Skill:" inline>
-          <select
-            class="select input-xs max-w-60"
+          <Select
+            size="xs"
+            class="max-w-60"
             aria-label="Active Skill"
             disabled={!c.SkillEnabled}
             value={String(c.MainActiveSkill - 1)}
-            onchange={(e) => oncontrol(side, 'MainActiveSkill', Number(e.currentTarget.value) + 1)}
-            >{#each c.Skills as l, k (k)}<option value={String(k)}>{l}</option>{/each}</select
+            onchange={(e: Event & { currentTarget: HTMLSelectElement }) => oncontrol(side, 'MainActiveSkill', Number(e.currentTarget.value) + 1)}
+            >{#each c.Skills as l, k (k)}<option value={String(k)}>{l}</option>{/each}</Select
           ></Field>
       {/if}
       {#if c?.PartShown}
         <Field label="Skill Part:" inline>
-          <select
-            class="select input-xs max-w-60"
+          <Select
+            size="xs"
+            class="max-w-60"
             aria-label="Skill Part"
             value={String(c.SkillPart - 1)}
-            onchange={(e) => oncontrol(side, 'SkillPart', Number(e.currentTarget.value) + 1)}
-            >{#each c.Parts ?? [] as l, k (k)}<option value={String(k)}>{l}</option>{/each}</select
+            onchange={(e: Event & { currentTarget: HTMLSelectElement }) => oncontrol(side, 'SkillPart', Number(e.currentTarget.value) + 1)}
+            >{#each c.Parts ?? [] as l, k (k)}<option value={String(k)}>{l}</option>{/each}</Select
           ></Field>
       {/if}
       {#each [{ shown: c?.StageShown, field: 'StageCount' as const, label: 'Stages', value: c?.StageCount }, { shown: c?.MineShown, field: 'MineCount' as const, label: 'Mines', value: c?.MineCount }] as box (box.field)}
         {#if box.shown}
           <Field label={`${box.label}:`} inline>
-            <input
-              class="input input-xs w-13"
+            <Input
+              size="xs"
+              class="w-13"
               inputmode="numeric"
               aria-label={box.label}
               value={box.value}
-              onchange={(e) => {
+              onchange={(e: Event & { currentTarget: HTMLInputElement }) => {
                 const r = count(e.currentTarget.value);
                 if (r.ok) oncontrol(side, box.field, r.v);
               }} /></Field>
@@ -91,38 +98,42 @@
       {/each}
       {#if s.showMinion !== undefined}
         <label class="field field-inline"
-          ><input
-            class="check"
-            type="checkbox"
+          ><Checkbox
             aria-label="Show Minion Stats"
             checked={s.showMinion}
-            onchange={(e) => oncontrol(side, 'showMinion', e.currentTarget.checked)} />Show Minion Stats</label>
+            onchange={(e: Event & { currentTarget: HTMLInputElement }) => oncontrol(side, 'showMinion', e.currentTarget.checked)} />Show Minion Stats</label>
       {/if}
       {#if c?.MinionShown}
         <Field label="Minion:" inline>
-          <select
-            class="select input-xs max-w-60"
+          <Select
+            size="xs"
+            class="max-w-60"
             aria-label="Minion"
             disabled={!c.MinionEnabled}
             value={String(c.Minion - 1)}
-            onchange={(e) => oncontrol(side, 'Minion', Number(e.currentTarget.value) + 1)}
-            >{#each c.Minions ?? [] as o, k (k)}<option value={String(k)}>{o.Label}</option>{/each}</select
+            onchange={(e: Event & { currentTarget: HTMLSelectElement }) => oncontrol(side, 'Minion', Number(e.currentTarget.value) + 1)}
+            >{#each c.Minions ?? [] as o, k (k)}<option value={String(k)}>{o.Label}</option>{/each}</Select
           ></Field>
       {/if}
       {#if c?.MinionSkillShown}
         <Field label="Minion Skill:" inline>
-          <select
-            class="select input-xs max-w-60"
+          <Select
+            size="xs"
+            class="max-w-60"
             aria-label="Minion Skill"
             disabled={!c.MinionSkillEnabled}
             value={String(c.MinionSkill - 1)}
-            onchange={(e) => oncontrol(side, 'MinionSkill', Number(e.currentTarget.value) + 1)}
-            >{#each c.MinionSkills ?? [] as l, k (k)}<option value={String(k)}>{l}</option>{/each}</select
+            onchange={(e: Event & { currentTarget: HTMLSelectElement }) => oncontrol(side, 'MinionSkill', Number(e.currentTarget.value) + 1)}
+            >{#each c.MinionSkills ?? [] as l, k (k)}<option value={String(k)}>{l}</option>{/each}</Select
           ></Field>
       {/if}
       <Field label="Calc Mode:" inline>
-        <select class="select input-xs" aria-label="Calc Mode" value={s.buffMode} onchange={(e) => oncontrol(side, 'mode', e.currentTarget.value)}
-          >{#each MODES as m (m.buffMode)}<option value={m.buffMode}>{m.label}</option>{/each}</select
+        <Select
+          size="xs"
+          aria-label="Calc Mode"
+          value={s.buffMode}
+          onchange={(e: Event & { currentTarget: HTMLSelectElement }) => oncontrol(side, 'mode', e.currentTarget.value)}
+          >{#each MODES as m (m.buffMode)}<option value={m.buffMode}>{m.label}</option>{/each}</Select
         ></Field>
       {#each s.info as l (l.label)}
         {#if l.text && breakdown && BREAKDOWN[l.label]}

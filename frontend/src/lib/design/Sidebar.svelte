@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Input from './Input.svelte';
   import Disclosure from './Disclosure.svelte';
   import Notice from './Notice.svelte';
   import FloatingLabel from './FloatingLabel.svelte';
@@ -197,13 +198,15 @@
   <aside
     aria-label="Main skill and stats (collapsed)"
     class="relative box-border flex h-full max-h-screen w-15 shrink-0 flex-col items-center gap-3 border-r border-line bg-surface-1 px-1.5 py-3 font-sans text-text">
-    <button
-      bind:this={expandBtn}
-      class="btn btn-icon btn-sm size-7.5"
+    <Button
+      bind:ref={expandBtn}
+      size="sm"
+      icon
+      class="size-7.5"
       onclick={() => setCollapsed(false)}
       aria-label="Expand the sidebar"
       title="Expand the sidebar"
-      aria-expanded="false">›</button>
+      aria-expanded="false">›</Button>
     <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
     <div
       class="flex min-h-0 w-full flex-1 flex-col items-center gap-3 overflow-y-auto [scrollbar-width:none]"
@@ -244,13 +247,15 @@
             options={socketGroups.map((label, i) => ({ value: String(i), label }))}
             value={String(mainSocketGroup)}
             onchange={(e: Event) => onmaingroup?.(selected(e))} /></FloatingLabel>
-        {#if !fill}<button
-            bind:this={collapseBtn}
-            class="btn btn-icon btn-md shrink-0"
+        {#if !fill}<Button
+            bind:ref={collapseBtn}
+            size="md"
+            icon
+            class="shrink-0"
             onclick={() => setCollapsed(true)}
             aria-label="Collapse the sidebar to a rail"
             title="Collapse to a rail of pinned stats"
-            aria-expanded="true">‹</button
+            aria-expanded="true">‹</Button
           >{/if}
       </div>
       {#if controls}
@@ -276,8 +281,9 @@
           <div class="grid grid-cols-2 gap-2">
             {#if controls.StageShown}
               <label class="field"
-                >Stages<input
-                  class="input input-md font-mono"
+                >Stages<Input
+                  size="md"
+                  class="font-mono"
                   inputmode="numeric"
                   value={controls.StageCount}
                   disabled={!gemWritable}
@@ -285,8 +291,9 @@
             {/if}
             {#if controls.MineShown}
               <label class="field"
-                >Active mines<input
-                  class="input input-md font-mono"
+                >Active mines<Input
+                  size="md"
+                  class="font-mono"
                   inputmode="numeric"
                   value={controls.MineCount}
                   disabled={!gemWritable}

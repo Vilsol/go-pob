@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Button from './Button.svelte';
   import type { ComponentProps } from 'svelte';
   import Tabs from './Tabs.svelte';
   import { panelId, tabId } from './tab_ids';
@@ -119,7 +120,7 @@
   </div>
   <div class="flex flex-col items-center justify-center gap-1 bg-surface-1 px-3.5 max-phone:px-1.5">
     <span class="text-20 font-bold tracking-caps text-text">VS</span>
-    <button class="btn btn-2xs" aria-label="Swap A and B" title="Swap A and B" onclick={onswap}>⇄ Swap</button>
+    <Button size="2xs" aria-label="Swap A and B" title="Swap A and B" onclick={onswap}>⇄ Swap</Button>
   </div>
   <div
     class="flex min-w-0 flex-col items-end gap-0.5 px-3.5 py-2.5 text-right [background:linear-gradient(270deg,_color-mix(in_srgb,_var(--color-build-b)_22%,_transparent),_color-mix(in_srgb,_var(--color-build-b)_4%,_transparent))]">

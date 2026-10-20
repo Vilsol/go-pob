@@ -8,6 +8,7 @@
 </script>
 
 <script lang="ts">
+  import Button from './Button.svelte';
   let anchor = $state<HTMLElement>();
   let shown = $state(false);
   let at = $state<{ x: number; y: number }>();
@@ -30,7 +31,7 @@
     await waitFor(() => expect(near.getBoundingClientRect().left).toBeGreaterThan(map.getBoundingClientRect().left + 100));
   }}>
   <div class="flex flex-col items-start gap-4">
-    <button class="btn btn-sm" bind:this={anchor} onmouseenter={() => (shown = true)} onmouseleave={() => (shown = false)}>Life</button>
+    <Button size="sm" bind:ref={anchor} onmouseenter={() => (shown = true)} onmouseleave={() => (shown = false)}>Life</Button>
     {#if shown}<Tooltip placement="beside" {anchor} label="Life breakdown">Life: 4,512 · 128% increased</Tooltip>{/if}
     <div
       role="presentation"

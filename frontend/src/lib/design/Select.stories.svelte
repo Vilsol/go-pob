@@ -1,5 +1,6 @@
 <script module lang="ts">
   import { defineMeta } from '@storybook/addon-svelte-csf';
+  import { expect } from 'storybook/test';
   import Select from './Select.svelte';
   import { expectSelectArrowRoom } from './stories/layout_checks';
 
@@ -28,4 +29,23 @@
     <Select class="w-28" options={['Stormblast Mine of the long name']} aria-label="default" />
     <Select size="lg" class="w-32" options={['Raise Spectre with a long name']} aria-label="lg" />
   </div>
+</Story>
+
+<Story
+  name="Cancelled change"
+  asChild
+  play={async ({ canvasElement }) => {
+    const { userEvent } = await import('storybook/test');
+    const select = (canvasElement as HTMLElement).querySelector('select')!;
+    await userEvent.selectOptions(select, 'b');
+    await new Promise((r) => setTimeout(r, 50));
+    await expect(select.value).toBe('a');
+  }}>
+  <Select
+    aria-label="Cancelled"
+    options={['a', 'b']}
+    value="a"
+    onchange={(e: Event & { currentTarget: HTMLSelectElement }) => {
+      e.currentTarget.value = 'a';
+    }} />
 </Story>

@@ -1,4 +1,10 @@
 <script lang="ts">
+  import Input from './Input.svelte';
+  import Textarea from './Textarea.svelte';
+  import Disclosure from './Disclosure.svelte';
+  import Checkbox from './Checkbox.svelte';
+  import Select from './Select.svelte';
+  import Button from './Button.svelte';
   import Tooltip from './Tooltip.svelte';
   import Icon from './Icon.svelte';
   import SectionHeading from './SectionHeading.svelte';
@@ -117,6 +123,7 @@
   let width = $state(0);
   let scrollTop = $state(0);
   let showFallback = $state(false);
+  let desiredOpen = $state(false);
 
   const J = $derived(jewels[form.jewelType - 1] ?? jewels[0]);
   const conqName = $derived(J.conquerors[form.conqueror - 1] ?? J.conquerors[0]);
@@ -260,7 +267,7 @@
       </li>
     {/each}
   </ol>
-  {#if onclose}<button class="btn-close" aria-label="Close timeless search" onclick={onclose}><Icon name="close" size={14} /></button>{/if}
+  {#if onclose}<Button variant="close" aria-label="Close timeless search" onclick={onclose}><Icon name="close" size={14} /></Button>{/if}
 </div>
 
 {#if step === 1}
@@ -297,16 +304,16 @@
       {#if isMF}
         {#each [1, 2] as k (k)}
           <FloatingLabel label="Devotion modifier {k}"
-            ><select
-              class="select input-md"
+            ><Select
+              size="md"
               aria-label="Devotion modifier {k}"
               value={k === 1 ? form.devotion1 : form.devotion2}
-              onchange={(e) => {
+              onchange={(e: Event & { currentTarget: HTMLSelectElement }) => {
                 if (k === 1) form.devotion1 = Number(e.currentTarget.value);
                 else form.devotion2 = Number(e.currentTarget.value);
                 changed();
               }}
-              >{#each devotion as o, i (i)}<option value={i + 1}>{o}</option>{/each}</select
+              >{#each devotion as o, i (i)}<option value={i + 1}>{o}</option>{/each}</Select
             ></FloatingLabel>
         {/each}
       {/if}
@@ -395,9 +402,7 @@
         {/each}
         <SectionHeading size="md" class="mt-1.5">NODES</SectionHeading>
         <label class="flex items-center gap-2" title="Exclude nodes that you do not have allocated on your active passive skill tree."
-          ><input
-            type="checkbox"
-            class="check"
+          ><Checkbox
             bind:checked={form.filter}
             onchange={() => {
               if (!form.filter) form.protect = [];
@@ -421,11 +426,9 @@
                 >Protect allocated nodes:</span>
               {#each protectable as p (p.label)}
                 <label class="flex items-center gap-2 text-12" title={p.descriptions.join('\n')}
-                  ><input
-                    type="checkbox"
-                    class="check"
+                  ><Checkbox
                     checked={form.protect.includes(p.label)}
-                    onchange={(e) => {
+                    onchange={(e: Event & { currentTarget: HTMLInputElement }) => {
                       form.protect = e.currentTarget.checked ? [...form.protect, p.label] : form.protect.filter((x) => x !== p.label);
                     }} />{p.label}</label>
               {/each}
@@ -450,7 +453,7 @@
                   ><span class="font-semibold">{name}</span>{#if s?.descriptions.length}<span class="note-sm whitespace-pre-line"
                       >{s.descriptions.join('\n')}</span
                     >{/if}</span>
-                <button class="btn-close" aria-label="Remove {name}" onclick={() => dropReq(r.id)}><Icon name="close" size={14} /></button>
+                <Button variant="close" aria-label="Remove {name}" onclick={() => dropReq(r.id)}><Icon name="close" size={14} /></Button>
               </div>
               <div class="flex flex-wrap items-center gap-3 text-11 text-text-3">
                 <label class="flex items-center gap-1"
@@ -487,22 +490,24 @@
                     label="{name} minimum"
                     onchange={(v: number) => setReq(r.id, { ...r, w3: v })} /></label>
                 <label class="flex items-center gap-1"
-                  ><input
-                    type="checkbox"
-                    class="check"
+                  ><Checkbox
                     aria-label="{name} required"
                     checked={r.w3 >= 500}
-                    onchange={(e) => setReq(r.id, { ...r, w3: e.currentTarget.checked ? 500 : 0 })} />required</label>
+                    onchange={(e: Event & { currentTarget: HTMLInputElement }) =>
+                      setReq(r.id, { ...r, w3: e.currentTarget.checked ? 500 : 0 })} />required</label>
               </div>
             </div>
           {:else}
             <EmptyState text="No required nodes yet: pick the stats the jewel should give." />
           {/each}
         </div>
-        <details class="text-12">
-          <summary class="cursor-pointer text-text-2">Edit as text (PoB's desired nodes list)</summary>
-          <textarea class="input mt-1 h-32 w-full font-mono text-12" aria-label="Desired nodes" bind:value={form.searchList} onchange={changed}></textarea>
-        </details>
+        <div class="text-12">
+          <Disclosure class="btn-bare flex items-center gap-1 text-left text-12 text-text-2" bind:open={desiredOpen} controls="{uid}-desired"
+            >Edit as text (PoB's desired nodes list)</Disclosure>
+          <div id="{uid}-desired" hidden={!desiredOpen}>
+            <Textarea class="mt-1 h-32 w-full font-mono text-12" aria-label="Desired nodes" bind:value={form.searchList} onchange={changed} />
+          </div>
+        </div>
       </section>
     {:else if step === 4}
       <section aria-label="Ranking" class="panel flex min-w-0 grow flex-col gap-2.5 p-3 text-13">
@@ -512,16 +517,16 @@
         </div>
         <div class="flex items-end gap-2">
           <FloatingLabel label="Fallback weight mode" class="grow"
-            ><select class="select input-md" aria-label="Fallback Weight Mode" bind:value={form.fallbackMode} onchange={changed}
-              >{#each fallbackModes as m, i (i)}<option value={i + 1}>{m}</option>{/each}</select
+            ><Select size="md" aria-label="Fallback Weight Mode" bind:value={form.fallbackMode} onchange={changed}
+              >{#each fallbackModes as m, i (i)}<option value={i + 1}>{m}</option>{/each}</Select
             ></FloatingLabel>
-          <button
-            class="btn btn-md"
+          <Button
+            size="md"
             disabled={form.jewelType === 1 || generating}
             title={form.jewelType === 1
               ? "Glorious Vanity's rolled stats are not weighed yet"
               : 'Weighs every node of the list by how much it changes the chosen stat when added to the build'}
-            onclick={() => ongenerate?.()}>{generating ? 'Generating…' : 'Generate'}</button>
+            onclick={() => ongenerate?.()}>{generating ? 'Generating…' : 'Generate'}</Button>
         </div>
         <Segmented
           label="Node list"
@@ -535,13 +540,14 @@
             if (showFallback) fallbackFresh = false;
           }} />
         {#if showFallback}
-          <textarea class="input h-40 font-mono text-12" aria-label="Fallback nodes" bind:value={form.searchListFallback} onchange={changed}></textarea>
+          <Textarea class="h-40 font-mono text-12" aria-label="Fallback nodes" bind:value={form.searchListFallback} onchange={changed} />
         {:else}
-          <textarea class="input h-40 font-mono text-12" aria-label="Desired nodes list" bind:value={form.searchList} onchange={changed}></textarea>
+          <Textarea class="h-40 font-mono text-12" aria-label="Desired nodes list" bind:value={form.searchList} onchange={changed} />
         {/if}
         <label class="flex items-center justify-between gap-2"
-          >Minimum total weight<input
-            class="input input-sm w-24"
+          >Minimum total weight<Input
+            size="sm"
+            class="w-24"
             inputmode="numeric"
             aria-label="Total Minimum Weight"
             title="Optional: only show results whose total weight meets this"
@@ -554,8 +560,8 @@
         <div class="flex items-center justify-between gap-2 px-3 py-2">
           <span class="note-sm" aria-live="polite">{searching ? `Searching… ${Math.round(progress * 100)}%` : `${count} results`}</span>
           <span class="flex gap-1.5">
-            <button class="btn btn-sm" disabled={searching} onclick={() => onsearch?.()}>Search again</button>
-            <button class="btn btn-sm" onclick={() => onreset?.()}>Reset</button>
+            <Button size="sm" disabled={searching} onclick={() => onsearch?.()}>Search again</Button>
+            <Button size="sm" onclick={() => onreset?.()}>Reset</Button>
           </span>
         </div>
         <div
@@ -632,13 +638,13 @@
               {:else}<span class="text-worse" data-socket-note>That jewel socket is not allocated, so the jewel will only be added to your items.</span>{/if}
             {/if}
             <div class="mt-1 flex items-center gap-3">
-              <button class="btn btn-sm btn-primary px-3" disabled={added.has(sel - 1)} onclick={() => onadd?.(sel - 1)}
-                >{added.has(sel - 1) ? 'Added to the build' : 'Add to the build'}</button>
+              <Button size="sm" variant="primary" class="px-3" disabled={added.has(sel - 1)} onclick={() => onadd?.(sel - 1)}
+                >{added.has(sel - 1) ? 'Added to the build' : 'Add to the build'}</Button>
               <!-- TreeTab.lua:1674-1685 -->
               <label
                 class="flex items-center gap-1.5"
                 title="Adding a result also equips the jewel in its jewel socket. The socket must be allocated on your current tree; if it isn't, the jewel is only added to your item list. A jewel already in that socket is replaced."
-                ><input type="checkbox" class="check" bind:checked={form.socketAllocate} onchange={() => changed()} />Socket the jewel</label>
+                ><Checkbox bind:checked={form.socketAllocate} onchange={() => changed()} />Socket the jewel</label>
             </div>
             {#if impact?.index === sel - 1 && impact.blocks.length}
               <div class="mt-1 border-t border-line pt-1.5 text-12" data-row-impact><ImpactBlocks blocks={impact.blocks} /></div>
@@ -646,18 +652,18 @@
           </div>
         {/if}
         <div class="flex flex-wrap items-center gap-2 border-t border-line px-3 py-2.5" role="group" aria-label="Trade search">
-          <select class="select input-sm" aria-label="Realm" bind:value={form.realm}
-            >{#each realms as r (r)}<option>{r}</option>{/each}</select>
-          <input class="input input-sm w-36" list="{uid}-leagues" aria-label="League" bind:value={form.league} />
+          <Select size="sm" aria-label="Realm" bind:value={form.realm}
+            >{#each realms as r (r)}<option>{r}</option>{/each}</Select>
+          <Input size="sm" class="w-36" list="{uid}-leagues" aria-label="League" bind:value={form.league} />
           <datalist id="{uid}-leagues"
             >{#each leagues as l (l)}<option value={l}></option>{/each}</datalist>
-          <select class="select input-sm" aria-label="Buyout" bind:value={form.tradeType}
-            >{#each tradeTypes as t, i (i)}<option value={i + 1}>{t}</option>{/each}</select>
+          <Select size="sm" aria-label="Buyout" bind:value={form.tradeType}
+            >{#each tradeTypes as t, i (i)}<option value={i + 1}>{t}</option>{/each}</Select>
           <label
             class="flex items-center gap-1"
             title="By default, this tool only searches for 4 or 10 (depending on conqueror) seeds at once to preserve sorting. This option searches up to 180 or 60 seeds at once if you don't care about the sorting."
-            ><input type="checkbox" class="check" bind:checked={form.searchMore} /><span>Search maximum amount</span></label>
-          <button class="btn btn-sm" disabled={count === 0} onclick={() => ontrade?.()}>{tradeLabel}</button>
+            ><Checkbox bind:checked={form.searchMore} /><span>Search maximum amount</span></label>
+          <Button size="sm" disabled={count === 0} onclick={() => ontrade?.()}>{tradeLabel}</Button>
         </div>
         <div class="note-sm px-3 pb-2">Click selects, shift+click marks a range for the trade search; double-click or Enter adds the jewel to the build.</div>
       </section>
@@ -667,6 +673,7 @@
 
 <div class="grow"></div>
 <div class="flex shrink-0 justify-end gap-2">
-  <button class="btn btn-md" disabled={step === 1} onclick={() => (step = Math.max(1, step - 1))}>Back</button>
-  <button class="btn btn-md btn-primary px-4" disabled={step === 4 && searching} onclick={next}>{step === 4 ? 'Search' : step === 5 ? 'Done' : 'Next'}</button>
+  <Button size="md" disabled={step === 1} onclick={() => (step = Math.max(1, step - 1))}>Back</Button>
+  <Button size="md" variant="primary" class="px-4" disabled={step === 4 && searching} onclick={next}
+    >{step === 4 ? 'Search' : step === 5 ? 'Done' : 'Next'}</Button>
 </div>

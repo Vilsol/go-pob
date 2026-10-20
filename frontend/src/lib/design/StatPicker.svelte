@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Input from './Input.svelte';
   import { statMatches, type TimelessStat } from './timeless';
 
   type Props = { stats: TimelessStat[]; label: string; placeholder?: string; class?: string; onpick: (s: TimelessStat) => void };
@@ -45,8 +46,8 @@
 </script>
 
 <div class={['relative', extra]}>
-  <input
-    class="input h-8 w-full px-2.5"
+  <Input
+    class="h-8 w-full px-2.5"
     type="text"
     role="combobox"
     aria-label={label}

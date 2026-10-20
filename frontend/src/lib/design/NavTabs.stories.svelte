@@ -14,6 +14,7 @@
 </script>
 
 <script lang="ts">
+  import Input from './Input.svelte';
   let current = $state('#tree');
   const go = (t: { href: string }, e: Event) => {
     e.preventDefault();
@@ -51,6 +52,6 @@
   }}>
   <div class="flex flex-col gap-3">
     <NavTabs {tabs} {current} label="Build pages" onnavigate={go} />
-    <input class="input w-60" aria-label="Search" placeholder="Search (digits type here; Alt+digit switches)" />
+    <Input class="w-60" aria-label="Search" placeholder="Search (digits type here; Alt+digit switches)" />
   </div>
 </Story>

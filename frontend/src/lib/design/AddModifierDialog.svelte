@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Input from './Input.svelte';
   import Dialog from './Dialog.svelte';
   import DialogActions from './DialogActions.svelte';
   import FloatingLabel from './FloatingLabel.svelte';
@@ -116,7 +117,7 @@
       {/if}
     </div>
     {#if sourceId === 'CUSTOM'}
-      <input class="input input-sm" aria-label="Custom modifier" bind:value={custom} />
+      <Input size="sm" aria-label="Custom modifier" bind:value={custom} />
     {:else}
       <FloatingLabel label="Modifier"
         ><Dropdown

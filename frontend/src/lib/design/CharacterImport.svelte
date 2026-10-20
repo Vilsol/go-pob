@@ -1,4 +1,7 @@
 <script lang="ts">
+  import Input from './Input.svelte';
+  import Select from './Select.svelte';
+  import Button from './Button.svelte';
   import SectionHeading from './SectionHeading.svelte';
   import { untrack } from 'svelte';
   import FloatingLabel from './FloatingLabel.svelte';
@@ -75,34 +78,38 @@
     <span class="text-12 text-text-2">To start importing a character, enter the character's account name:</span>
     <div class="flex flex-wrap items-end gap-2.5">
       <FloatingLabel label="Realm"
-        ><select class="select input-md" value={realm.id} onchange={(e) => (realm = realms.find((r) => r.id === e.currentTarget.value) ?? realms[0])}
-          >{#each realms as r (r.id)}<option value={r.id}>{r.label}</option>{/each}</select
+        ><Select
+          size="md"
+          value={realm.id}
+          onchange={(e: Event & { currentTarget: HTMLSelectElement }) => (realm = realms.find((r) => r.id === e.currentTarget.value) ?? realms[0])}
+          >{#each realms as r (r.id)}<option value={r.id}>{r.label}</option>{/each}</Select
         ></FloatingLabel>
       <label class="field"
-        >Account name <input
-          class="input input-md w-55 px-2.5"
+        >Account name <Input
+          size="md"
+          class="w-55 px-2.5"
           bind:value={account}
           placeholder="AccountName#0000"
           aria-describedby="{uid}-discriminator"
-          onkeydown={(e) => {
+          onkeydown={(e: KeyboardEvent & { currentTarget: HTMLInputElement }) => {
             if (e.key === 'Enter' && !startOff) onstart?.(realm, account);
           }} /></label>
-      <button class="btn btn-md btn-primary" disabled={!!startOff || stage !== 'GETACCOUNTNAME'} title={startOff} onclick={() => onstart?.(realm, account)}
-        >Start</button>
+      <Button size="md" variant="primary" disabled={!!startOff || stage !== 'GETACCOUNTNAME'} title={startOff} onclick={() => onstart?.(realm, account)}
+        >Start</Button>
       {#if history.length > 0}
         <FloatingLabel label="Account history"
-          ><select class="select input-md" bind:value={historyPick} onchange={() => (account = historyPick)}
-            ><option value="" disabled>—</option>{#each history as a (a)}<option>{a}</option>{/each}</select
+          ><Select size="md" bind:value={historyPick} onchange={() => (account = historyPick)}
+            ><option value="" disabled>—</option>{#each history as a (a)}<option>{a}</option>{/each}</Select
           ></FloatingLabel>
-        <button
-          class="btn btn-md"
+        <Button
+          size="md"
           aria-label="Remove account from history"
           disabled={!historyPick}
           title={historyPick ? 'Removes account from the dropdown list' : 'Pick an account in the history first'}
           onclick={() => {
             onremoveaccount?.(historyPick);
             historyPick = '';
-          }}>X</button>
+          }}>X</Button>
       {/if}
     </div>
     <div id="{uid}-discriminator" class="text-12">
@@ -113,38 +120,41 @@
     <span class="text-12 text-text-2">Choose character to import data from:</span>
     <div class="flex flex-wrap items-end gap-2.5">
       <FloatingLabel label="League"
-        ><select class="select input-md" value={league ?? ''} onchange={(e) => (league = e.currentTarget.value || undefined)}
-          >{#each leagues as l (l)}<option value={l}>{l}</option>{/each}<option value="">All</option></select
+        ><Select size="md" value={league ?? ''} onchange={(e: Event & { currentTarget: HTMLSelectElement }) => (league = e.currentTarget.value || undefined)}
+          >{#each leagues as l (l)}<option value={l}>{l}</option>{/each}<option value="">All</option></Select
         ></FloatingLabel>
       <FloatingLabel label="Character"
-        ><select
-          class="select input-md w-100"
+        ><Select
+          size="md"
+          class="w-100"
           value={chosen?.char.name ?? ''}
           disabled={!selecting}
           title={selecting ? undefined : 'Importing…'}
-          onchange={(e) => (picked = e.currentTarget.value)}
-          >{#each list as e (e.char.name)}<option value={e.char.name}>{e.label} — {e.detail}</option>{/each}</select
+          onchange={(e: Event & { currentTarget: HTMLSelectElement }) => (picked = e.currentTarget.value)}
+          >{#each list as e (e.char.name)}<option value={e.char.name}>{e.label} — {e.detail}</option>{/each}</Select
         ></FloatingLabel>
     </div>
     <div class="flex flex-wrap items-center gap-3 text-13">
-      <button
-        class="btn btn-md btn-primary"
+      <Button
+        size="md"
+        variant="primary"
         disabled={!selecting || !chosen}
         title={selecting ? undefined : 'Importing…'}
-        onclick={() => chosen && onimporttree?.(chosen.char, deleteJewels)}>Passive Tree and Jewels</button>
+        onclick={() => chosen && onimporttree?.(chosen.char, deleteJewels)}>Passive Tree and Jewels</Button>
       <Checkbox compact bind:checked={deleteJewels} title="Delete all equipped jewels when importing.">Delete jewels</Checkbox>
     </div>
     <div class="flex flex-wrap items-center gap-3 text-13">
-      <button
-        class="btn btn-md btn-primary"
+      <Button
+        size="md"
+        variant="primary"
         disabled={!selecting || !chosen}
         title={selecting ? undefined : 'Importing…'}
-        onclick={() => chosen && onimportitems?.(chosen.char, items)}>Items and Skills</button>
+        onclick={() => chosen && onimportitems?.(chosen.char, items)}>Items and Skills</Button>
       <Checkbox compact bind:checked={items.clearSkills} title="Delete all existing skills when importing.">Delete skills</Checkbox>
       <Checkbox compact bind:checked={items.clearItems} title="Delete all equipped items when importing.">Delete equipment</Checkbox>
       <Checkbox compact bind:checked={items.ignoreWeaponSwap} title="Ignore items and skills in weapon swap.">Ignore weapon swap</Checkbox>
     </div>
     <p class="note">Tip: After you finish importing a character, make sure you update the bandit choice, as it can only be imported by logging in.</p>
-    <button class="btn btn-md self-start" onclick={() => onclose?.()}>Close</button>
+    <Button size="md" class="self-start" onclick={() => onclose?.()}>Close</Button>
   {/if}
 </section>

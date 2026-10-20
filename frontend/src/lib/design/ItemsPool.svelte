@@ -230,11 +230,13 @@
             {#if acts.length}
               <Menu label={r.tip.item} items={acts} class="top-full right-0 z-dock mt-1 w-max max-w-[calc(100vw-16px)]" itemClass="whitespace-nowrap">
                 {#snippet trigger(a)}
-                  <button
+                  <Button
                     {...a}
-                    class="btn btn-2xs btn-ghost px-1 font-mono"
+                    size="2xs"
+                    variant="ghost"
+                    class="px-1 font-mono"
                     aria-label="Actions for {r.tip.item}"
-                    title="Equip, edit, clone, copy, share or delete"><Icon name="more" size={14} /></button>
+                    title="Equip, edit, clone, copy, share or delete"><Icon name="more" size={14} /></Button>
                 {/snippet}
               </Menu>
             {/if}

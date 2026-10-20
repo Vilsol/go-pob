@@ -148,7 +148,7 @@
   ]);
 
   let issuesBtn: HTMLButtonElement;
-  let logsBtn: HTMLButtonElement;
+  let logsBtn = $state<HTMLElement>();
   let closeBtn = $state<HTMLButtonElement>();
   async function toggle(lane: Panel) {
     panel = panel === lane ? null : lane;
@@ -248,7 +248,9 @@
     {current}
     {onnavigate}
     label="Build pages"
-    class="shrink-0 [&_.tab]:px-3 max-wide:[&_.tab]:px-2.25 max-wide:[&_.tab]:text-13 max-wide:[&_.tab-key]:hidden max-narrow:[&_.tab]:px-1.25 max-narrow:[&_.tab]:text-12" />
+    class="shrink-0"
+    tabClass="px-3 max-wide:px-2.25 max-wide:text-13 max-narrow:px-1.25 max-narrow:text-12"
+    keyClass="max-wide:hidden" />
 
   <div class="grow"></div>
 
@@ -274,22 +276,23 @@
       aria-expanded={panel === 'issues'}
       aria-label="{issues.length} build issues"
       title="Build issues: problems the calculation found in this build"><span aria-hidden="true">⚠</span>{issues.length}</button>
-    <button
-      bind:this={logsBtn}
-      class="btn px-3 max-narrow:px-2"
+    <Button
+      bind:ref={logsBtn}
+      class="px-3 max-narrow:px-2"
       onclick={() => toggle('logs')}
       aria-haspopup="dialog"
       aria-expanded={panel === 'logs'}
       aria-label={errors ? `Logs, ${errors} error${errors > 1 ? 's' : ''}` : 'Logs'}
       title="Application logs: data, worker, save and import"
-      >Logs{#if errors}<Dot tone="error" class="size-1.75" />{/if}</button>
-    <a
+      >Logs{#if errors}<Dot tone="error" class="size-1.75" />{/if}</Button>
+    <Button
       href={importHref}
-      class="btn max-wide:size-8 max-wide:p-0"
+      class="max-wide:size-8 max-wide:p-0"
       aria-current={current === importHref ? 'page' : undefined}
       aria-label="Import / Export"
-      title="Import / Export"><span class="hidden max-wide:flex"><Icon name="import-export" /></span><span class="max-wide:hidden">Import / Export</span></a>
-    <SaveButton {dirty} {onsave} class="max-wide:size-8 max-wide:p-0 max-wide:[&_.save-icon]:flex max-wide:[&_.save-text]:hidden" />
+      title="Import / Export"
+      ><span class="hidden max-wide:flex"><Icon name="import-export" /></span><span class="max-wide:hidden">Import / Export</span></Button>
+    <SaveButton {dirty} {onsave} class="max-wide:size-8 max-wide:p-0" iconClass="max-wide:flex" textClass="max-wide:hidden" />
     {#if onsaveas}
       <Button
         onclick={onsaveas}
@@ -321,7 +324,7 @@
       }}>
       <div class="flex items-center gap-2 pt-2.5 pr-3 pl-4">
         <h2 id="{uid}-panel-title" class="grow text-15">{panel === 'issues' ? 'Build issues' : 'Logs'}</h2>
-        <button bind:this={closeBtn} class="btn-close" onclick={closePanel} aria-label="Close panel (Esc)"><Icon name="close" size={14} /></button>
+        <Button bind:ref={closeBtn} variant="close" onclick={closePanel} aria-label="Close panel (Esc)"><Icon name="close" size={14} /></Button>
       </div>
       <Tabs tabs={panelTabs} bind:selected={() => panel ?? 'issues', (v) => (panel = v as Panel)} label="Panels" panel={lanePanel} />
     </div>

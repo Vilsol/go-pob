@@ -3,6 +3,8 @@
 </script>
 
 <script lang="ts">
+  import Input from './Input.svelte';
+  import Checkbox from './Checkbox.svelte';
   import Tooltip from './Tooltip.svelte';
   import SearchField from './SearchField.svelte';
   import OptionGroup from './OptionGroup.svelte';
@@ -143,12 +145,11 @@
     {#snippet label()}<PobText text={o.v.label} plain={!o.relevant} />{/snippet}
     {#snippet control()}
       {#if o.v.type === 'check'}
-        <input
-          type="checkbox"
-          class="check size-4 shrink-0"
+        <Checkbox
+          class="size-4 shrink-0"
           checked={o.value === true}
           aria-describedby={described}
-          onchange={(e) => onset(o.v.var, e.currentTarget.checked)} />
+          onchange={(e: Event & { currentTarget: HTMLInputElement }) => onset(o.v.var, e.currentTarget.checked)} />
       {:else if o.v.type === 'list'}
         {@const list = o.v.list}
         <Dropdown
@@ -160,11 +161,12 @@
           onchange={(v: string) => onset(o.v.var, list[Number(v)].value as ConfigValue)}
           onhover={hoverEntry(o, id)} />
       {:else if o.v.type === 'text'}
-        <input
-          class="input input-xs w-37.5 shrink-0"
+        <Input
+          size="xs"
+          class="w-37.5 shrink-0"
           value={String(o.value ?? '')}
           aria-describedby={described}
-          onchange={(e) => onset(o.v.var, e.currentTarget.value)} />
+          onchange={(e: Event & { currentTarget: HTMLInputElement }) => onset(o.v.var, e.currentTarget.value)} />
       {:else}
         <NumberInput
           size="xs"
@@ -187,9 +189,8 @@
     label="Filter options"
     bind:ref={searchBox}
     bind:value={filter.q} />
-  <label class="check-label gap-2 text-13"><input type="checkbox" class="check" bind:checked={filter.modOnly} /> Modified only</label>
-  <label class="check-label gap-2 text-13"
-    ><input type="checkbox" class="check" bind:checked={filter.showAll} /> Show options that don’t affect this build</label>
+  <label class="check-label gap-2 text-13"><Checkbox bind:checked={filter.modOnly} /> Modified only</label>
+  <label class="check-label gap-2 text-13"><Checkbox bind:checked={filter.showAll} /> Show options that don’t affect this build</label>
   <div class="grow max-phone:hidden"></div>
   <span class="note" aria-live="polite">{view.summary}</span>
   <label class="field field-inline"

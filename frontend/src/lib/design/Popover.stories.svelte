@@ -8,6 +8,8 @@
 </script>
 
 <script lang="ts">
+  import Checkbox from './Checkbox.svelte';
+  import Button from './Button.svelte';
   let open = $state(false);
   let root = $state<HTMLElement>();
 </script>
@@ -37,10 +39,10 @@
   }}>
   <div class="flex h-80 flex-col items-start gap-4">
     <div class="relative" bind:this={root}>
-      <button class="btn btn-sm" aria-expanded={open} onclick={() => (open = !open)}>Columns</button>
+      <Button size="sm" aria-expanded={open} onclick={() => (open = !open)}>Columns</Button>
       <Popover {open} anchor={root} role="group" label="Visible columns" onclose={() => (open = false)} class="flex w-55 flex-col p-1.5 text-13">
-        <label class="menu-item"><input class="check size-4" type="checkbox" />Level</label>
-        <label class="menu-item"><input class="check size-4" type="checkbox" />Life</label>
+        <label class="menu-item"><Checkbox class="size-4" />Level</label>
+        <label class="menu-item"><Checkbox class="size-4" />Life</label>
       </Popover>
     </div>
     <p class="note">Elsewhere</p>

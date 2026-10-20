@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Button from './Button.svelte';
   import type { Snippet } from 'svelte';
   import BuildTable from './BuildTable.svelte';
   import FolderTree from './FolderTree.svelte';
@@ -94,28 +95,27 @@
     <span class="text-18 font-semibold">go-pob</span>
     <span class="note max-phone:hidden">game data {gameVersion}</span>
     <div class="grow"></div>
-    {#if onimport}<button class="btn btn-md" onclick={onimport}>Import build</button>{:else}<a href={importHref} class="btn btn-md">Import build</a>{/if}
-    {#if onnew}<button class="btn btn-md btn-primary px-4" onclick={onnew}>New build</button>{:else}<a href={newHref} class="btn btn-md btn-primary px-4"
-        >New build</a
+    {#if onimport}<Button size="md" onclick={onimport}>Import build</Button>{:else}<Button href={importHref} size="md">Import build</Button>{/if}
+    {#if onnew}<Button size="md" variant="primary" class="px-4" onclick={onnew}>New build</Button>{:else}<Button
+        href={newHref}
+        size="md"
+        variant="primary"
+        class="px-4">New build</Button
       >{/if}
     {#if update?.ready}
-      <button class="btn btn-md text-code-green" title="Switch to the new version (reloads the page)" onclick={update.onapply}>Update Ready</button>
+      <Button size="md" class="text-code-green" title="Switch to the new version (reloads the page)" onclick={update.onapply}>Update Ready</Button>
     {:else if update}
-      <button class="btn btn-md" disabled={update.running} onclick={update.oncheck}>{update.running ? 'Checking...' : 'Check for Update'}</button>
+      <Button size="md" disabled={update.running} onclick={update.oncheck}>{update.running ? 'Checking...' : 'Check for Update'}</Button>
     {/if}
-    <button
-      class="btn btn-icon btn-md"
-      aria-haspopup="dialog"
-      aria-label="About go-pob"
-      title="About: version, game data, build settings, dependencies"
-      onclick={onabout}><Icon name="info" /></button>
-    <button class="btn btn-icon btn-md" aria-haspopup="dialog" aria-label="Settings" title="Settings" onclick={onsettings}><Icon name="gear" /></button>
+    <Button size="md" icon aria-haspopup="dialog" aria-label="About go-pob" title="About: version, game data, build settings, dependencies" onclick={onabout}
+      ><Icon name="info" /></Button>
+    <Button size="md" icon aria-haspopup="dialog" aria-label="Settings" title="Settings" onclick={onsettings}><Icon name="gear" /></Button>
   </header>
   <div class="flex h-11 shrink-0 items-center gap-2 border-b border-line pr-3 phone:hidden">
-    <button type="button" class="btn h-full min-w-0 grow justify-start rounded-none border-0 px-3" aria-haspopup="dialog" onclick={() => (foldersOpen = true)}
-      ><span class="truncate">Folders · {folder || 'All builds'} ▾</span></button>
-    {#if onnewfolder && phone.current}<button class="btn btn-sm shrink-0" title="Make a folder in {folder ? leaf(folder) : 'All builds'}" onclick={onnewfolder}
-        >New folder</button
+    <Button type="button" class="h-full min-w-0 grow justify-start rounded-none border-0 px-3" aria-haspopup="dialog" onclick={() => (foldersOpen = true)}
+      ><span class="truncate">Folders · {folder || 'All builds'} ▾</span></Button>
+    {#if onnewfolder && phone.current}<Button size="sm" class="shrink-0" title="Make a folder in {folder ? leaf(folder) : 'All builds'}" onclick={onnewfolder}
+        >New folder</Button
       >{/if}
   </div>
   <div class="flex min-h-0 grow">

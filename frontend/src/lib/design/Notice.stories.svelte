@@ -7,11 +7,15 @@
   const { Story } = defineMeta({ title: 'Spec/Notice', component: Notice });
 </script>
 
+<script lang="ts">
+  import Button from './Button.svelte';
+</script>
+
 <Story
   name="Kinds"
   asChild
   play={async ({ canvasElement }) => {
-    const c = within(canvasElement);
+    const c = within(canvasElement as HTMLElement);
     await expect(c.getAllByRole('alert')).toHaveLength(1);
     await expect(c.getByRole('button', { name: 'Restore rich version' })).toBeTruthy();
     const float = c.getAllByRole('status').find((e) => e.textContent?.includes('Loading game data'))!;
@@ -20,11 +24,12 @@
   <div class="flex w-180 flex-col gap-2">
     <Notice>Recalculating 3 / 40 in the background · Build name…</Notice>
     <Notice kind="info" title="IMPORTED FROM POB"
-      >Colour codes converted: 4 ^xRRGGBB / ^0–^9 codes became text colours.{#snippet actions()}<button class="btn btn-sm btn-ghost">Dismiss</button
+      >Colour codes converted: 4 ^xRRGGBB / ^0–^9 codes became text colours.{#snippet actions()}<Button size="sm" variant="ghost">Dismiss</Button
         >{/snippet}</Notice>
     <Notice kind="warn" title="CHANGED OUTSIDE GO-POB"
-      >These notes were edited as PoB text, so that text is shown.{#snippet actions()}<button class="btn btn-sm btn-primary">Restore rich version</button
-        ><button class="btn btn-sm">Keep PoB text</button>{/snippet}</Notice>
+      >These notes were edited as PoB text, so that text is shown.{#snippet actions()}<Button size="sm" variant="primary">Restore rich version</Button><Button
+          size="sm">Keep PoB text</Button
+        >{/snippet}</Notice>
     <Notice kind="warn" size="sm" class="text-worse">⚠ You have 2 unallocated passive points</Notice>
     <Notice kind="error">The build file could not be read.</Notice>
     <Notice float>Loading game data: items</Notice>

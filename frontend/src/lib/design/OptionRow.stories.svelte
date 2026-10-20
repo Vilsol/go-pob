@@ -6,6 +6,10 @@
   const { Story } = defineMeta({ title: 'Spec/OptionRow', component: OptionRow });
 </script>
 
+<script lang="ts">
+  import Checkbox from './Checkbox.svelte';
+</script>
+
 <Story name="States" asChild>
   <div class="flex w-110 flex-col rounded-md border border-line bg-surface-1">
     <OptionRow label="# of Power Charges (if not maximum):" modified>
@@ -15,7 +19,7 @@
       {#snippet control()}<NumberInput size="xs" class="w-16 font-mono" placeholder="84" min={1} max={100} />{/snippet}
     </OptionRow>
     <OptionRow label="Do you use Ghost Shrouds?" inactive>
-      {#snippet control()}<input class="check size-3.75" type="checkbox" />{/snippet}
+      {#snippet control()}<Checkbox class="size-3.75" />{/snippet}
     </OptionRow>
   </div>
 </Story>

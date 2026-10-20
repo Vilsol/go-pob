@@ -174,7 +174,7 @@
               </div>
             {/each}
             {#if sec.key === 'explicits' && !readonly}
-              <button class="btn-bare self-start py-1 text-12 text-accent" aria-haspopup="dialog" onclick={() => (picker = true)}>+ Add modifier</button>
+              <Button variant="bare" class="self-start py-1 text-12 text-accent" aria-haspopup="dialog" onclick={() => (picker = true)}>+ Add modifier</Button>
             {/if}
           </div>
         {/each}

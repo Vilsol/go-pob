@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Button from './Button.svelte';
   import Icon from './Icon.svelte';
   import { childrenOf, countIn, leaf, type Drag } from './builds';
   import { dropZone } from './reorder';
@@ -51,7 +52,7 @@
 <nav aria-label="Folders" class="box-border flex w-65 shrink-0 flex-col gap-1 border-r border-line bg-inset p-4">
   <div class="mb-1.5 flex items-center justify-between">
     <h2 class="caps">Folders</h2>
-    {#if onnewfolder}<button class="btn btn-xs" title="Make a folder in {folder ? leaf(folder) : 'All builds'}" onclick={onnewfolder}>New folder</button>{/if}
+    {#if onnewfolder}<Button size="xs" title="Make a folder in {folder ? leaf(folder) : 'All builds'}" onclick={onnewfolder}>New folder</Button>{/if}
   </div>
   <div role="tree" aria-label="Folder tree" class="flex flex-col">
     {#each rows as r (r.path)}

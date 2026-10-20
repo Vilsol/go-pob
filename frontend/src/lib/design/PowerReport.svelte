@@ -1,4 +1,8 @@
 <script lang="ts">
+  import Input from './Input.svelte';
+  import Checkbox from './Checkbox.svelte';
+  import Select from './Select.svelte';
+  import Button from './Button.svelte';
   import Icon from './Icon.svelte';
   import SortHeader from './SortHeader.svelte';
   import type { PowerFilter, PowerSort, ShownPowerRow } from './tree';
@@ -56,37 +60,38 @@
 <section aria-label="Power report" class="flex max-h-[45%] min-h-0 flex-col gap-1.5 border-b border-line px-4 py-3">
   <div class="flex items-baseline justify-between">
     <h2 class="text-14 font-bold">Power report</h2>
-    <button class="btn-close" aria-label="Close power report" onclick={onclose}><Icon name="close" size={14} /></button>
+    <Button variant="close" aria-label="Close power report" onclick={onclose}><Icon name="close" size={14} /></Button>
   </div>
   <div class="flex items-center gap-1.5">
     {#await stats then list}
-      <select class="select input-sm grow text-12" aria-label="Power stat" bind:value={stat}
-        >{#each list as s (s.Stat)}<option value={s.Stat}>{s.Label}</option>{/each}</select>
+      <Select size="sm" class="grow text-12" aria-label="Power stat" bind:value={stat}
+        >{#each list as s (s.Stat)}<option value={s.Stat}>{s.Label}</option>{/each}</Select>
     {/await}
-    <select class="select input-sm text-12" aria-label="Power report depth" title="Limit of node distance to search (lower = faster)" bind:value={depth}
-      >{#each [0, 5, 10, 15, -1] as d (d)}<option value={d}>{d === 0 ? 'All' : d === -1 ? 'Custom' : d}</option>{/each}</select>
-    <select class="select input-sm text-12" aria-label="Power report filter" bind:value={filter} onchange={() => (sort = 'power')}
+    <Select size="sm" class="text-12" aria-label="Power report depth" title="Limit of node distance to search (lower = faster)" bind:value={depth}
+      >{#each [0, 5, 10, 15, -1] as d (d)}<option value={d}>{d === 0 ? 'All' : d === -1 ? 'Custom' : d}</option>{/each}</Select>
+    <Select size="sm" class="text-12" aria-label="Power report filter" bind:value={filter} onchange={() => (sort = 'power')}
       ><option value="unallocated">Show Unallocated</option><option value="clusters">Show Unallocated & Clusters</option><option value="allocated"
         >Show Allocated</option
-      ></select>
-    <label class="field field-inline gap-1 text-11"
-      ><input class="check" type="checkbox" bind:checked={masteries} onchange={() => (sort = 'power')} /><span>Show Masteries</span></label>
+      ></Select>
+    <label class="field field-inline gap-1 text-11"><Checkbox bind:checked={masteries} onchange={() => (sort = 'power')} /><span>Show Masteries</span></label>
   </div>
   {#if depth === -1}
-    <input
-      class="input input-sm w-17.5 font-mono text-12"
+    <Input
+      size="sm"
+      class="w-17.5 font-mono text-12"
       inputmode="numeric"
       aria-label="Custom node power depth"
       value={custom}
-      onchange={(e) => (custom = e.currentTarget.value.replace(/\D/g, ''))} />
+      onchange={(e: Event & { currentTarget: HTMLInputElement }) => (custom = e.currentTarget.value.replace(/\D/g, ''))} />
   {/if}
   <div class="flex items-center gap-2">
     <label class="field field-inline gap-1 text-12" title="An estimate of each unallocated passive's power for the chosen stat"
-      ><input class="check" type="checkbox" checked={heat} onchange={(e) => onheat(e.currentTarget.checked)} /><span>Show node power</span></label>
+      ><Checkbox checked={heat} onchange={(e: Event & { currentTarget: HTMLInputElement }) => onheat(e.currentTarget.checked)} /><span>Show node power</span
+      ></label>
     {#if !started}
-      <button class="btn btn-sm ml-auto px-3" onclick={onstart}>Start</button>
+      <Button size="sm" class="ml-auto px-3" onclick={onstart}>Start</Button>
     {:else if !rows}
-      <button class="btn btn-sm ml-auto px-3" onclick={onstop}>Stop</button>
+      <Button size="sm" class="ml-auto px-3" onclick={onstop}>Stop</Button>
     {/if}
   </div>
   {#if !started}

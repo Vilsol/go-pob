@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Input from './Input.svelte';
   import Badge from './Badge.svelte';
   import type { Snippet } from 'svelte';
   import { untrack } from 'svelte';
@@ -162,7 +163,7 @@
           e.preventDefault();
           save();
         }}>
-        <input class="input input-sm grow" aria-label={`Name for this ${noun}`} bind:value={naming.title} maxlength="100" />
+        <Input size="sm" class="grow" aria-label={`Name for this ${noun}`} bind:value={naming.title} maxlength={100} />
         <Button size="sm" variant="primary" type="submit" disabled={!/\S/.test(naming.title)}>Save</Button>
         <Button size="sm" type="button" onclick={() => (naming = null)}>Cancel</Button>
       </form>

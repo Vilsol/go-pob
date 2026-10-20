@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Input from './Input.svelte';
   import Field from './Field.svelte';
   import EmptyState from './EmptyState.svelte';
   import { tick } from 'svelte';
@@ -194,7 +195,7 @@
       if (listEl) listEl.scrollTop = scrollTop;
     });
   };
-  let boxEl = $state<HTMLElement>();
+  let boxEl = $state<HTMLInputElement>();
   function dropFrom(list: HTMLElement, field: HTMLElement | undefined) {
     const place = () => {
       if (!field) return;
@@ -307,7 +308,7 @@
 <section aria-label="Selected group" class="panel scroll relative flex max-h-full min-w-0 flex-[0_1_1000px] flex-col gap-2.25 self-start p-3">
   <div class="flex flex-wrap items-end gap-2">
     <Field label="Label" class="w-42.5 gap-0.5 text-11">
-      <input class="input input-sm" value={group.label} onchange={(e) => onchange({ label: e.currentTarget.value })} /></Field>
+      <Input size="sm" value={group.label} onchange={(e: Event & { currentTarget: HTMLInputElement }) => onchange({ label: e.currentTarget.value })} /></Field>
     <FloatingLabel label="Socketed in"
       ><Dropdown
         class="h-7.5 min-w-32"
@@ -427,11 +428,12 @@
     <span id={drag.hint} class="sr-only">{drag.hintText}</span>
   </div>
   <div class="relative">
-    <input
+    <Input
       type="text"
-      bind:this={boxEl}
+      bind:ref={boxEl}
       role="combobox"
-      class="input input-md w-full border-dashed border-accent px-2.5"
+      size="md"
+      class="w-full border-dashed border-accent px-2.5"
       placeholder="Add a gem — type to filter, Esc to close"
       aria-label="Add a gem"
       aria-controls="{uid}-results"

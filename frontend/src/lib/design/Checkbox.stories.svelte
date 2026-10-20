@@ -1,5 +1,6 @@
 <script module lang="ts">
   import { defineMeta } from '@storybook/addon-svelte-csf';
+  import { expect } from 'storybook/test';
   import Checkbox from './Checkbox.svelte';
   import { expectDarkCheckboxes } from './stories/layout_checks';
 
@@ -21,4 +22,16 @@
     <Checkbox disabled>Enemy is a Boss</Checkbox>
     <Checkbox checked disabled>Enemy is a Boss</Checkbox>
   </div>
+</Story>
+
+<Story
+  name="Bare box"
+  asChild
+  play={async ({ canvasElement }) => {
+    await expectDarkCheckboxes(canvasElement as HTMLElement);
+    const box = (canvasElement as HTMLElement).querySelector('input')!;
+    await expect(box.className.split(' ')).toEqual(['check', 'size-3.5']);
+    await expect(box.parentElement!.dataset.owner).toBe('caller');
+  }}>
+  <label data-owner="caller" class="flex items-center gap-1.5 text-12"><Checkbox class="size-3.5" checked aria-label="Flask 1 active" />on</label>
 </Story>

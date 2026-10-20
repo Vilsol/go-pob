@@ -1,4 +1,6 @@
 <script lang="ts">
+  import Input from './Input.svelte';
+  import Button from './Button.svelte';
   import Popover from './Popover.svelte';
   import Toolbar from './Toolbar.svelte';
   import Notice from './Notice.svelte';
@@ -185,20 +187,21 @@
 {#if banner === 'mismatch'}
   <Notice kind="warn" title="CHANGED OUTSIDE GO-POB"
     >These notes were edited as PoB text, so that text is shown. The earlier rich version (formatting and colours) is still stored.{#snippet actions()}
-      <button class="btn btn-sm btn-primary whitespace-nowrap" onclick={onrestore}>Restore rich version</button>
-      <button class="btn btn-sm whitespace-nowrap" onclick={ondismiss}>Keep PoB text</button>
+      <Button size="sm" variant="primary" class="whitespace-nowrap" onclick={onrestore}>Restore rich version</Button>
+      <Button size="sm" class="whitespace-nowrap" onclick={ondismiss}>Keep PoB text</Button>
     {/snippet}</Notice>
 {:else if banner === 'unreadable'}
   <Notice kind="warn">The stored rich notes could not be read; the PoB text is shown.</Notice>
 {:else if converted && !importDismissed}
   <Notice kind="info" title="IMPORTED FROM POB"
     >Colour codes converted: {converted} ^xRRGGBB / ^0–^9 codes became text colours. Export writes them back as caret codes.{#snippet actions()}
-      <button
-        class="btn btn-sm btn-ghost"
+      <Button
+        size="sm"
+        variant="ghost"
         onclick={() => {
           importDismissed = true;
           ondismissimport?.();
-        }}>Dismiss</button>
+        }}>Dismiss</Button>
     {/snippet}</Notice>
 {/if}
 
@@ -232,18 +235,19 @@
   {@render sep()}
   {#each INLINE as t (t.name)}{@render tool(t)}{/each}
   <div class="relative" bind:this={paletteRoot}>
-    <button
-      class="btn btn-sm gap-1.5"
+    <Button
+      size="sm"
+      class="gap-1.5"
       aria-label="Text colour"
       aria-expanded={paletteOpen}
       title="Text colour: PoB's colours or a custom one"
       disabled={pobView}
       onclick={() => (paletteOpen = !paletteOpen)}
-      onkeydown={(e) => {
+      onkeydown={(e: KeyboardEvent) => {
         if (e.key === 'Escape') paletteOpen = false;
       }}
       >{@render glyph('A')}<span class="toned h-1 w-3.5 rounded-hair bg-(--tone,var(--color-text))" style:--tone={codeToCss(currentCode)} data-pob-color></span
-      >▾</button>
+      >▾</Button>
     <Popover open={paletteOpen} anchor={paletteRoot} onclose={() => (paletteOpen = false)} class="flex w-82.5 flex-col gap-1.5 p-2">
       <div role="listbox" aria-label="PoB colours" tabindex="-1" class="grid grid-cols-3 gap-1">
         {#each SWATCHES as s (s.name)}
@@ -290,9 +294,9 @@
           e.preventDefault();
           applyLink();
         }}>
-        <input bind:this={linkInput} type="url" class="input input-xs min-w-0 grow" aria-label="Address" placeholder="https://…" bind:value={linkHref} />
-        <button class="btn btn-sm btn-primary" type="submit">Apply</button>
-        {#if active('link')}<button class="btn btn-sm" type="button" onclick={removeLink}>Remove link</button>{/if}
+        <Input bind:ref={linkInput} type="url" size="xs" class="min-w-0 grow" aria-label="Address" placeholder="https://…" bind:value={linkHref} />
+        <Button size="sm" variant="primary" type="submit">Apply</Button>
+        {#if active('link')}<Button size="sm" type="button" onclick={removeLink}>Remove link</Button>{/if}
       </form>
     </Popover>
   </div>
@@ -336,5 +340,5 @@
   <span data-word-count aria-live="polite">{countText}</span>
   <div class="grow"></div>
   <Checkbox compact class="gap-2 text-13" bind:checked={pobView}>View as PoB text</Checkbox>
-  <button class="btn btn-sm" onclick={() => oncopy?.(pobText)}>Copy as PoB text</button>
+  <Button size="sm" onclick={() => oncopy?.(pobText)}>Copy as PoB text</Button>
 </div>

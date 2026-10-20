@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Button from './Button.svelte';
   import Icon from './Icon.svelte';
   import type { Snippet } from 'svelte';
 
@@ -104,14 +105,14 @@
       <h3 id="{uid}-title" class="text-15 font-semibold">{title}</h3>
       {#if note}<span class="note">{note}</span>{/if}
       {@render head?.()}
-      <button class="btn-close ml-auto" aria-label="Close" onclick={() => (open = false)}><Icon name="close" size={14} /></button>
+      <Button variant="close" class="ml-auto" aria-label="Close" onclick={() => (open = false)}><Icon name="close" size={14} /></Button>
     </div>
     {@render children()}
     {#if footer}<div class="sheet-foot">{@render footer()}</div>{/if}
   {:else}
     <div class="flex items-center justify-between">
       <h3 id="{uid}-title" class="text-15 font-semibold">{title}</h3>
-      <button class="btn-close" aria-label="Close" onclick={() => (open = false)}><Icon name="close" size={14} /></button>
+      <Button variant="close" aria-label="Close" onclick={() => (open = false)}><Icon name="close" size={14} /></Button>
     </div>
     {@render children()}
     {#if actions}<div class="flex justify-end gap-2">{@render actions()}</div>{/if}

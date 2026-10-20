@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Input from './Input.svelte';
   import Tooltip from './Tooltip.svelte';
   import Field from './Field.svelte';
   import SectionHeading from './SectionHeading.svelte';
@@ -105,10 +106,11 @@
       <div class="flex min-w-0 flex-[1_1_0] flex-col">
         <div class="flex flex-wrap items-center gap-2 px-3 pt-2">
           <Field label="Group name" inline>
-            <input
-              class="input input-xs h-7 w-55 px-2 max-phone:w-full max-phone:min-w-0"
+            <Input
+              size="xs"
+              class="h-7 w-55 px-2 max-phone:w-full max-phone:min-w-0"
               value={g.title}
-              oninput={(e) => ops.onrename(selected, e.currentTarget.value)} /></Field>
+              oninput={(e: Event & { currentTarget: HTMLInputElement }) => ops.onrename(selected, e.currentTarget.value)} /></Field>
           {#if ops.modbrowser}<Button size="sm" class="h-7" onclick={() => (browsing = true)}>Mod browser</Button>{/if}
           <span class={['text-12', g.enabled ? 'text-text-3' : 'text-worse']} aria-live="polite"
             >{g.enabled ? `${ok} applied${bad ? ` · ${bad} not recognised` : ''}` : 'Group disabled — its lines are not applied'}</span>
@@ -139,12 +141,18 @@
                       }
                     }
                   }}>
-                  {#snippet before()}<button class="btn-bare px-0.5 text-11" aria-label="Move line {i + 1} earlier" onclick={() => ops.onmove(selected, i, -1)}
-                      >◂</button
+                  {#snippet before()}<Button
+                      variant="bare"
+                      class="px-0.5 text-11"
+                      aria-label="Move line {i + 1} earlier"
+                      onclick={() => ops.onmove(selected, i, -1)}>◂</Button
                     >{/snippet}
-                  {#snippet after()}<button class="btn-bare px-0.5 text-11" aria-label="Move line {i + 1} later" onclick={() => ops.onmove(selected, i, 1)}
-                      >▸</button
-                    ><button class="btn-bare px-0.5" aria-label="Remove line {i + 1}" onclick={() => ops.onremove(selected, i)}>×</button>{/snippet}
+                  {#snippet after()}<Button
+                      variant="bare"
+                      class="px-0.5 text-11"
+                      aria-label="Move line {i + 1} later"
+                      onclick={() => ops.onmove(selected, i, 1)}>▸</Button
+                    ><Button variant="bare" class="px-0.5" aria-label="Remove line {i + 1}" onclick={() => ops.onremove(selected, i)}>×</Button>{/snippet}
                 </ModCell>
               </div>
             {/each}

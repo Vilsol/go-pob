@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Button from '$lib/design/Button.svelte';
   // Main.lua:1300-1320
   import Notice from '$lib/design/Notice.svelte';
   import { applyUpdate, online, updateAvailable, updateChanges } from '$lib/pwa';
@@ -23,9 +24,9 @@
       {/if}
       <div class="flex items-center gap-2">
         <span>A new version of go-pob is available. Reloading discards unsaved changes.</span>
-        <button type="button" class="btn btn-sm btn-primary" onclick={applyUpdate}>Reload</button>
+        <Button type="button" size="sm" variant="primary" onclick={applyUpdate}>Reload</Button>
         {#if $updateChanges.length}
-          <button type="button" class="btn btn-sm" aria-expanded={changes} aria-controls="pwa-changes" onclick={() => (changes = !changes)}>Changes…</button>
+          <Button type="button" size="sm" aria-expanded={changes} aria-controls="pwa-changes" onclick={() => (changes = !changes)}>Changes…</Button>
         {/if}
       </div>
     </div>

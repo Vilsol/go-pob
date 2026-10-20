@@ -1,4 +1,8 @@
 <script lang="ts">
+  import Input from './Input.svelte';
+  import Select from './Select.svelte';
+  import Textarea from './Textarea.svelte';
+  import Button from './Button.svelte';
   import Field from './Field.svelte';
   import InlineMessage from './InlineMessage.svelte';
   import SectionHeading from './SectionHeading.svelte';
@@ -115,23 +119,24 @@
 
 <section aria-label="Build sharing" class="panel flex flex-col gap-2.5 p-3.5">
   <SectionHeading size="lg">BUILD SHARING</SectionHeading>
-  <textarea readonly aria-label="Build code" class="input h-27 p-2 font-mono text-11 break-all text-text-3" value={code}></textarea>
+  <Textarea readonly aria-label="Build code" class="h-27 p-2 font-mono text-11 break-all text-text-3" value={code} />
   <div class="flex flex-wrap items-center gap-2">
-    <button class="btn btn-md px-3" disabled={!code} onclick={() => oncopy?.(code)}>Copy code</button>
+    <Button size="md" class="px-3" disabled={!code} onclick={() => oncopy?.(code)}>Copy code</Button>
     {#if copied}<InlineMessage kind="success" tag="span" class="whitespace-nowrap">✓ Copied</InlineMessage>{/if}
     <FloatingLabel label="Share via"
-      ><select class="select input-md" bind:value={site} disabled={!!unavailable.share} title={unavailable.share}>
+      ><Select size="md" bind:value={site} disabled={!!unavailable.share} title={unavailable.share}>
         {#each EXPORT_SITES as s (s.label)}<option value={s.label}>{s.label}</option>{/each}
-      </select></FloatingLabel>
-    <button class="btn btn-md btn-primary" disabled={!code || sharing || !!unavailable.share} title={unavailable.share} onclick={() => onshare?.(site)}
-      >{sharing ? 'Creating link...' : 'Share'}</button>
+      </Select></FloatingLabel>
+    <Button size="md" variant="primary" disabled={!code || sharing || !!unavailable.share} title={unavailable.share} onclick={() => onshare?.(site)}
+      >{sharing ? 'Creating link...' : 'Share'}</Button>
   </div>
   {#if shareError}<InlineMessage kind="error">Error creating link: {shareError}</InlineMessage>{/if}
   {#if link}
     <div class="flex items-center gap-2 text-12">
-      <span class="whitespace-nowrap text-better">✓ Link created</span><input
+      <span class="whitespace-nowrap text-better">✓ Link created</span><Input
         readonly
-        class="input input-sm grow font-mono text-12"
+        size="sm"
+        class="grow font-mono text-12"
         value={link}
         aria-label="Share link" />
     </div>
@@ -148,12 +153,13 @@
 <section aria-label="Build import" class="panel flex flex-col gap-2.5 p-3.5">
   <SectionHeading size="lg">BUILD IMPORT</SectionHeading>
   <Field label="To import a build, enter URL or code here:">
-    <input
-      class="input input-lg font-mono text-13"
-      bind:this={codeInput}
+    <Input
+      size="lg"
+      class="font-mono text-13"
+      bind:ref={codeInput}
       bind:value={importText}
       aria-describedby="{uid}-verdict"
-      onkeydown={(e) => {
+      onkeydown={(e: KeyboardEvent & { currentTarget: HTMLInputElement }) => {
         // ImportTab.lua:671-675
         if (e.key === 'Enter' && canImport) onimport?.(importText.trim(), mode);
       }} /></Field>
@@ -166,8 +172,8 @@
         ></label>
     {/each}
   </div>
-  <button class="btn btn-md btn-primary self-start" disabled={!canImport} onclick={() => onimport?.(importText.trim(), mode)}
-    >{fetching ? 'Retrieving paste..' : 'Import'}</button>
+  <Button size="md" variant="primary" class="self-start" disabled={!canImport} onclick={() => onimport?.(importText.trim(), mode)}
+    >{fetching ? 'Retrieving paste..' : 'Import'}</Button>
   {#if importError}<InlineMessage kind="error">Import failed: {importError}</InlineMessage>{/if}
   {#if imported}<InlineMessage kind="success">{imported}</InlineMessage>{/if}
 </section>
@@ -183,34 +189,32 @@
     {#if unavailable.characters}<p class="note">{unavailable.characters}</p>{/if}
     <div class="flex items-end gap-2.5 max-phone:flex-wrap">
       <label class="field"
-        >Account name <input
-          class="input input-md w-55 px-2.5"
+        >Account name <Input
+          size="md"
+          class="w-55 px-2.5"
           bind:value={account}
           placeholder="AccountName#0000"
           disabled={!!unavailable.characters}
           title={unavailable.characters} /></label>
       <FloatingLabel label="Realm"
-        ><select class="select input-md" bind:value={realm} disabled={!!unavailable.characters} title={unavailable.characters}
-          >{#each realms as r (r)}<option>{r}</option>{/each}</select
+        ><Select size="md" bind:value={realm} disabled={!!unavailable.characters} title={unavailable.characters}
+          >{#each realms as r (r)}<option>{r}</option>{/each}</Select
         ></FloatingLabel>
-      <button
-        class="btn btn-md"
-        disabled={!account.trim() || !!unavailable.characters}
-        title={unavailable.characters}
-        onclick={() => onfetch?.(account.trim(), realm)}>Fetch characters</button>
+      <Button size="md" disabled={!account.trim() || !!unavailable.characters} title={unavailable.characters} onclick={() => onfetch?.(account.trim(), realm)}
+        >Fetch characters</Button>
     </div>
     {#if characters}
       <div class="flex items-start gap-4 max-phone:flex-col max-phone:items-stretch">
         <div class="flex w-105 shrink-0 flex-col gap-2 max-phone:w-auto">
           <FloatingLabel label="League"
-            ><select
-              class="select input-md"
+            ><Select
+              size="md"
               value={league || leagues[0]}
-              onchange={(e) => {
+              onchange={(e: Event & { currentTarget: HTMLSelectElement }) => {
                 league = e.currentTarget.value;
                 picked = 0;
               }}
-              >{#each leagues as l (l)}<option>{l}</option>{/each}</select
+              >{#each leagues as l (l)}<option>{l}</option>{/each}</Select
             ></FloatingLabel>
           <span class="text-12 text-text-2">Choose character to import data from:</span>
           <div role="group" aria-label="Characters" class="flex flex-col gap-2">
@@ -227,14 +231,14 @@
             <h3 class="text-13 font-bold">Passive Tree and Jewels</h3>
             <span class="text-12 text-worse">Importing the passive tree will overwrite your current tree.</span>
             <Checkbox compact bind:checked={opts.deleteJewels}>Delete jewels: delete all equipped jewels when importing</Checkbox>
-            <button class="btn btn-primary self-start px-3 text-12" onclick={() => chosen && onimporttree?.(chosen, opts)}>Import tree</button>
+            <Button variant="primary" class="self-start px-3 text-12" onclick={() => chosen && onimporttree?.(chosen, opts)}>Import tree</Button>
           </div>
           <div class="flex flex-col gap-2 rounded-md border border-line bg-ground p-3 text-13">
             <h3 class="text-13 font-bold">Items and Skills</h3>
             <Checkbox compact bind:checked={opts.deleteSkills}>Delete skills: delete all existing skills</Checkbox>
             <Checkbox compact bind:checked={opts.deleteEquipment}>Delete equipment: delete all equipped items</Checkbox>
             <Checkbox compact bind:checked={opts.ignoreSwap}>Ignore weapon swap: skip items and skills in weapon swap</Checkbox>
-            <button class="btn btn-primary self-start px-3 text-12" onclick={() => chosen && onimportitems?.(chosen, opts)}>Import items and skills</button>
+            <Button variant="primary" class="self-start px-3 text-12" onclick={() => chosen && onimportitems?.(chosen, opts)}>Import items and skills</Button>
           </div>
         </div>
       </div>

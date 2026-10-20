@@ -9,11 +9,14 @@
     /** underline: the page tabs; bar: the phone's bottom bar */
     variant?: 'underline' | 'bar';
     class?: string;
+    /** extra classes on each underline tab, and on its shortcut key */
+    tabClass?: string;
+    keyClass?: string;
     /** after the tabs, inside the bar (the phone's More button) */
     trailing?: Snippet;
     onnavigate?: (tab: Tab, e: Event) => void;
   };
-  let { tabs, current, label, variant = 'underline', class: extra, trailing, onnavigate }: Props = $props();
+  let { tabs, current, label, variant = 'underline', class: extra, tabClass, keyClass, trailing, onnavigate }: Props = $props();
   const navClass = $derived(
     extra ?? (variant === 'bar' ? 'flex shrink-0 border-t border-line bg-bar pb-[env(safe-area-inset-bottom)]' : 'h-10 border-b border-line')
   );
@@ -49,11 +52,11 @@
       href={t.href}
       class={variant === 'bar'
         ? ['flex h-14 min-w-0 flex-1 items-center justify-center text-12 no-underline', t.href === current ? 'font-semibold text-accent' : 'text-text-2']
-        : 'tab'}
+        : ['tab', tabClass]}
       aria-current={t.href === current ? 'page' : undefined}
       onclick={(e) => onnavigate?.(t, e)}
       onkeydown={onnavkey}>
-      {t.label}{#if t.key}<span class="tab-key">{t.key}</span>{/if}
+      {t.label}{#if t.key}<span class={['tab-key', keyClass]}>{t.key}</span>{/if}
     </a>
   {/each}
   {@render trailing?.()}

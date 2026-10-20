@@ -1,4 +1,7 @@
 <script lang="ts">
+  import Input from './Input.svelte';
+  import Checkbox from './Checkbox.svelte';
+  import Select from './Select.svelte';
   import Toolbar from './Toolbar.svelte';
   import SearchField from './SearchField.svelte';
   import ChoiceCard from './ChoiceCard.svelte';
@@ -552,22 +555,27 @@
 
 <Toolbar edge="bottom" wrap class="box-border min-h-13 shrink-0 gap-2.5 px-4 py-0.5 max-phone:gap-2 max-phone:px-3 max-phone:py-2" data-toolbar>
   <FloatingLabel label="Class" class="[--float-bg:var(--color-surface-1)]"
-    ><select class="select input-md bg-surface-1" value={className} onchange={(e) => onclass?.(e.currentTarget.value)}
-      >{#each tree.classes as o (o)}<option>{o}</option>{/each}</select
+    ><Select size="md" class="bg-surface-1" value={className} onchange={(e: Event & { currentTarget: HTMLSelectElement }) => onclass?.(e.currentTarget.value)}
+      >{#each tree.classes as o (o)}<option>{o}</option>{/each}</Select
     ></FloatingLabel>
   <FloatingLabel label="Ascendancy" class="[--float-bg:var(--color-surface-1)]"
-    ><select class="select input-md bg-surface-1" value={ascendancy} onchange={(e) => onascendancy?.(e.currentTarget.value)}
-      >{#each tree.ascendancies as o (o)}<option>{o}</option>{/each}</select
+    ><Select
+      size="md"
+      class="bg-surface-1"
+      value={ascendancy}
+      onchange={(e: Event & { currentTarget: HTMLSelectElement }) => onascendancy?.(e.currentTarget.value)}
+      >{#each tree.ascendancies as o (o)}<option>{o}</option>{/each}</Select
     ></FloatingLabel>
   {#if secondary}
     <!-- Build.lua:285 -->
     <FloatingLabel label="Bloodline" class="[--float-bg:var(--color-surface-1)]"
-      ><select
-        class="select input-md max-w-40 bg-surface-1"
+      ><Select
+        size="md"
+        class="max-w-40 bg-surface-1"
         value={String(secondary.selected)}
         disabled={!secondary.enabled}
-        onchange={(e) => onsecondary?.(Number(e.currentTarget.value))}
-        >{#each secondary.entries as o (o.id)}<option value={String(o.id)}>{o.label}</option>{/each}</select
+        onchange={(e: Event & { currentTarget: HTMLSelectElement }) => onsecondary?.(Number(e.currentTarget.value))}
+        >{#each secondary.entries as o (o.id)}<option value={String(o.id)}>{o.label}</option>{/each}</Select
       ></FloatingLabel>
   {/if}
   {#if onlevel}
@@ -591,11 +599,12 @@
           }} />
       </div></FloatingLabel>
     {#if onlevelauto}
-      <button
-        class="btn btn-md px-3"
+      <Button
+        size="md"
+        class="px-3"
         aria-pressed={levelAuto}
         title="Auto: the level follows the passive points used; Manual: the level you type"
-        onclick={() => onlevelauto(!levelAuto)}>{levelAuto ? 'Auto' : 'Manual'}</button>
+        onclick={() => onlevelauto(!levelAuto)}>{levelAuto ? 'Auto' : 'Manual'}</Button>
     {/if}
   {/if}
   <div class="grow"></div>
@@ -607,17 +616,18 @@
       <span class="font-mono text-text">{progress.ascUsed} / {progress.ascMax}</span></output>
   {/if}
   <FloatingLabel label="Tree" class="[--float-bg:var(--color-surface-1)]"
-    ><select
-      class="select input-md bg-surface-1"
+    ><Select
+      size="md"
+      class="bg-surface-1"
       aria-label="Version"
-      bind:this={versionSelect}
+      bind:ref={versionSelect}
       value={shownVersion}
       disabled={!onconvert}
-      onchange={(e) => {
+      onchange={(e: Event & { currentTarget: HTMLSelectElement }) => {
         const v = e.currentTarget.value;
         if (v !== shownVersion) converting = { version: v };
       }}
-      >{#each versionOptions as o (o.value)}<option value={o.value}>{o.label}</option>{/each}</select
+      >{#each versionOptions as o (o.value)}<option value={o.value}>{o.label}</option>{/each}</Select
     ></FloatingLabel>
 </Toolbar>
 
@@ -653,9 +663,9 @@
       </div>
     {/each}
     <div class="absolute top-2.5 right-2.5 z-map flex flex-col gap-1" data-zoom>
-      <button class="btn btn-icon size-7.5 bg-surface-1 text-16 font-normal" aria-label="Zoom in" onclick={() => onzoom?.('in')}>+</button>
-      <button class="btn btn-icon size-7.5 bg-surface-1 text-16 font-normal" aria-label="Zoom out" onclick={() => onzoom?.('out')}>−</button>
-      <button class="btn btn-icon size-7.5 bg-surface-1 text-11 font-normal" aria-label="Fit tree" onclick={() => onzoom?.('fit')}>fit</button>
+      <Button icon class="size-7.5 bg-surface-1 text-16 font-normal" aria-label="Zoom in" onclick={() => onzoom?.('in')}>+</Button>
+      <Button icon class="size-7.5 bg-surface-1 text-16 font-normal" aria-label="Zoom out" onclick={() => onzoom?.('out')}>−</Button>
+      <Button icon class="size-7.5 bg-surface-1 text-11 font-normal" aria-label="Fit tree" onclick={() => onzoom?.('fit')}>fit</Button>
     </div>
     <div class="map-note pointer-events-none top-2.5 left-2.5 z-map">
       <output aria-label="Tree version"
@@ -801,12 +811,13 @@
           {/each}
         </div>
         {#if alloc[M.id] && onpick}
-          <button
-            class="btn btn-sm self-start"
+          <Button
+            size="sm"
+            class="self-start"
             onclick={() => {
               onpick(M);
               closeMastery();
-            }}>Deallocate</button>
+            }}>Deallocate</Button>
         {/if}
       </div>
       <div class="scroll">
@@ -863,30 +874,32 @@
   </div>
   <span class="note whitespace-nowrap max-wide:hidden">{matchList.length} matches</span>
   <FloatingLabel label="Filter"
-    ><select class="select input-md" bind:value={filter}
-      >{#each Object.keys(KIND_FILTER) as o (o)}<option>{o}</option>{/each}</select
+    ><Select size="md" bind:value={filter}
+      >{#each Object.keys(KIND_FILTER) as o (o)}<option>{o}</option>{/each}</Select
     ></FloatingLabel>
   {#if onpathmode}
     <FloatingLabel label="Path"
-      ><select class="select input-md max-wide:max-w-32" onchange={(e) => onpathmode(e.currentTarget.value)}
-        ><option>Shortest</option><option>Best DPS pp</option></select
+      ><Select size="md" class="max-wide:max-w-32" onchange={(e: Event & { currentTarget: HTMLSelectElement }) => onpathmode(e.currentTarget.value)}
+        ><option>Shortest</option><option>Best DPS pp</option></Select
       ></FloatingLabel>
   {/if}
   <div class="grow"></div>
   {#if onresettree}
-    <button class="btn btn-md px-3 whitespace-nowrap" onclick={() => (resetting = true)}>Reset Tree/Tattoos</button>
+    <Button size="md" class="px-3 whitespace-nowrap" onclick={() => (resetting = true)}>Reset Tree/Tattoos</Button>
   {/if}
   {#if onnodepower && nodePowerBar}
     <label class="field field-inline gap-1 text-12 whitespace-nowrap" title="An estimate of each unallocated passive's power for the chosen stat"
-      ><input class="check" type="checkbox" checked={nodePower} onchange={(e) => onnodepower(e.currentTarget.checked)} /><span>Show Node Power</span></label>
+      ><Checkbox checked={nodePower} onchange={(e: Event & { currentTarget: HTMLInputElement }) => onnodepower(e.currentTarget.checked)} /><span
+        >Show Node Power</span
+      ></label>
     {#if nodePower}{@render nodePowerControls?.()}{/if}
   {/if}
   {#if onpowerreport}
-    <button class="btn btn-md px-3 whitespace-nowrap" onclick={onpowerreport}>Power<span class="max-wide:hidden"> report</span></button>
+    <Button size="md" class="px-3 whitespace-nowrap" onclick={onpowerreport}>Power<span class="max-wide:hidden"> report</span></Button>
   {/if}
   {#if ontimeless}
-    <button class="btn btn-md px-3 whitespace-nowrap" title="Timeless jewel search" onclick={ontimeless}
-      >Timeless<span class="max-wide:hidden"> search</span></button>
+    <Button size="md" class="px-3 whitespace-nowrap" title="Timeless jewel search" onclick={ontimeless}
+      >Timeless<span class="max-wide:hidden"> search</span></Button>
   {/if}
   {#if tree.specs.length}
     <!-- TreeTab.lua:51-104 -->
@@ -932,18 +945,18 @@
       </div></FloatingLabel>
     {#if oncompare}
       <label class="field field-inline gap-1 text-12 whitespace-nowrap"
-        ><input
-          class="check"
-          type="checkbox"
+        ><Checkbox
           checked={compareSpec >= 0}
-          onchange={(e) => oncompare(e.currentTarget.checked ? (tree.specs.length > 1 ? (spec === 0 ? 1 : 0) : 0) : -1)} /><span>Compare:</span></label>
+          onchange={(e: Event & { currentTarget: HTMLInputElement }) =>
+            oncompare(e.currentTarget.checked ? (tree.specs.length > 1 ? (spec === 0 ? 1 : 0) : 0) : -1)} /><span>Compare:</span></label>
       {#if compareSpec >= 0}
-        <select
-          class="select input-md max-w-48 text-12"
+        <Select
+          size="md"
+          class="max-w-48 text-12"
           aria-label="Compared tree"
           value={String(compareSpec)}
-          onchange={(e) => oncompare(Number(e.currentTarget.value))}
-          >{#each tree.specs as o, i (i)}<option value={String(i)}>{o}</option>{/each}</select>
+          onchange={(e: Event & { currentTarget: HTMLSelectElement }) => oncompare(Number(e.currentTarget.value))}
+          >{#each tree.specs as o, i (i)}<option value={String(i)}>{o}</option>{/each}</Select>
       {/if}
     {/if}
   {/if}
@@ -958,9 +971,9 @@
         e.preventDefault();
         void importTree();
       }}>
-      <input class="input input-sm" aria-label="Enter name for this passive tree" placeholder="Name" bind:value={linkForm.title} maxlength="100" />
-      <input
-        class="input input-sm"
+      <Input size="sm" aria-label="Enter name for this passive tree" placeholder="Name" bind:value={linkForm.title} maxlength={100} />
+      <Input
+        size="sm"
         aria-label="Enter passive tree link"
         placeholder="https://www.pathofexile.com/passive-skill-tree/…"
         bind:value={linkForm.link}
@@ -974,7 +987,13 @@
   {:else if linkForm?.op === 'export'}
     <div class="flex flex-col gap-1.5" role="group" aria-label="Export Tree">
       <span class="text-12 text-text-2">Passive tree link:</span>
-      <input class="input input-sm font-mono text-12" aria-label="Passive tree link" readonly value={linkForm.link} onfocus={(e) => e.currentTarget.select()} />
+      <Input
+        size="sm"
+        class="font-mono text-12"
+        aria-label="Passive tree link"
+        readonly
+        value={linkForm.link}
+        onfocus={(e: FocusEvent & { currentTarget: HTMLInputElement }) => e.currentTarget.select()} />
       {#if linkForm.msg}<InlineMessage kind="error" tag="span">{linkForm.msg}</InlineMessage>{/if}
       <div class="flex gap-1.5">
         {#if onshrinktree}<Button size="sm" disabled={linkForm.shrink !== 'idle'} onclick={() => void shrinkTree()}

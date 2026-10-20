@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Button from './Button.svelte';
   import Dialog from './Dialog.svelte';
   import Tabs from './Tabs.svelte';
   import type { AboutInfo } from './fixtures';
@@ -71,13 +72,14 @@
 <Dialog bind:open title="About go-pob" sheet backdrop class="h-160 max-h-[calc(100vh-24px)] w-205" onclose={() => (copied = false)}>
   {#snippet head()}
     <span class="font-mono text-12 text-text-2">{info.version}</span>
-    <button
-      class="btn btn-sm ml-auto"
+    <Button
+      size="sm"
+      class="ml-auto"
       title="Copies version, build settings and dependencies as text for a bug report"
       onclick={() => {
         oncopy?.(text);
         copied = true;
-      }}>{copied ? 'Copied ✓' : 'Copy diagnostics'}</button>
+      }}>{copied ? 'Copied ✓' : 'Copy diagnostics'}</Button>
   {/snippet}
   <Tabs
     label="About sections"

@@ -1,4 +1,7 @@
 <script lang="ts">
+  import Input from './Input.svelte';
+  import Select from './Select.svelte';
+  import Button from './Button.svelte';
   import Dialog from './Dialog.svelte';
   import Disclosure from './Disclosure.svelte';
   import Field from './Field.svelte';
@@ -58,19 +61,20 @@
 
 {#snippet loadout(side: 'a' | 'b', l: Loadouts)}
   <Field label="Loadout:" inline>
-    <select
-      class="select input-xs max-w-60"
+    <Select
+      size="xs"
+      class="max-w-60"
       aria-label={side === 'a' ? 'Primary loadout' : 'Comparison loadout'}
       disabled={!l.loadouts.length}
       value={String(l.selected)}
-      onchange={(e) => {
+      onchange={(e: Event & { currentTarget: HTMLSelectElement }) => {
         const name = l.loadouts[Number(e.currentTarget.value)];
         e.currentTarget.value = String(l.selected);
         if (name !== undefined) onloadout(side, name);
       }}>
       {#if l.selected < 0}<option value="-1" disabled>{l.loadouts.length ? 'Custom sets' : 'No loadouts'}</option>{/if}
       {#each l.loadouts as n, i (i)}<option value={String(i)}>{n}</option>{/each}
-    </select></Field>
+    </Select></Field>
   <Disclosure class="btn btn-2xs" indicator="caret" bind:open={open[side]} controls="{uid}-sets-{side}"
     >{side === 'a' ? "This build's sets" : 'Comparison sets'}</Disclosure>
 {/snippet}
@@ -87,48 +91,52 @@
         {#if primarySets}
           {@const ps = primarySets}
           <Field label="Tree set:" inline>
-            <select
-              class="select input-xs max-w-50"
+            <Select
+              size="xs"
+              class="max-w-50"
               aria-label="Primary tree set"
               disabled={ps.tree.labels.length < 2}
               value={String(ps.tree.active)}
-              onchange={(e) => onprimary('tree', Number(e.currentTarget.value))}
-              >{#each ps.tree.labels as l, i (i)}<option value={String(i)}>{l}</option>{/each}</select
+              onchange={(e: Event & { currentTarget: HTMLSelectElement }) => onprimary('tree', Number(e.currentTarget.value))}
+              >{#each ps.tree.labels as l, i (i)}<option value={String(i)}>{l}</option>{/each}</Select
             ></Field>
           <Field label="Item set:" inline>
-            <select
-              class="select input-xs max-w-50"
+            <Select
+              size="xs"
+              class="max-w-50"
               aria-label="Primary item set"
               disabled={ps.item.labels.length < 2}
               value={String(ps.item.active)}
-              onchange={(e) => onprimary('item', Number(e.currentTarget.value))}
-              >{#each ps.item.labels as l, i (i)}<option value={String(i)}>{l}</option>{/each}</select
+              onchange={(e: Event & { currentTarget: HTMLSelectElement }) => onprimary('item', Number(e.currentTarget.value))}
+              >{#each ps.item.labels as l, i (i)}<option value={String(i)}>{l}</option>{/each}</Select
             ></Field>
         {/if}
         <Field label="Config set:" inline>
-          <select
-            class="select input-xs max-w-50"
+          <Select
+            size="xs"
+            class="max-w-50"
             aria-label="Primary config set"
             disabled={aConfigSets.sets.length < 2}
             value={String(aConfigSets.active)}
-            onchange={(e) => {
+            onchange={(e: Event & { currentTarget: HTMLSelectElement }) => {
               onprimary('config', Number(e.currentTarget.value));
             }}
-            >{#each aConfigSets.sets as c, i (i)}<option value={String(i)}>{c.title || 'Default'}</option>{/each}</select
+            >{#each aConfigSets.sets as c, i (i)}<option value={String(i)}>{c.title || 'Default'}</option>{/each}</Select
           ></Field>
         {#if primarySets}
           {@const ps = primarySets}
           <Field label="Tree version:" inline>
-            <select
-              class="select input-xs max-w-50"
+            <Select
+              size="xs"
+              class="max-w-50"
               aria-label="Primary tree version"
               value={ps.versions.a}
-              onchange={(e) => {
+              onchange={(e: Event & { currentTarget: HTMLSelectElement }) => {
                 const version = e.currentTarget.value;
                 e.currentTarget.value = ps.versions.a;
                 if (version !== ps.versions.a) converting = { side: 'a', version };
               }}
-              >{#each versionList as o (o.value)}<option value={o.value}>{o.label}</option>{/each}</select
+              >{#each versionList as o (o.value)}<option value={o.value}>{o.label}</option>{/each}</Select
             ></Field>
         {/if}
       </div>
@@ -143,29 +151,31 @@
           {@const list = cur[sel.kind]}
           {#if list}
             <Field label={`${sel.label}:`} inline>
-              <select
-                class="select input-xs max-w-50"
+              <Select
+                size="xs"
+                class="max-w-50"
                 aria-label="Comparison {sel.label.toLowerCase()}"
                 disabled={list.labels.length < 2}
                 value={String(list.active)}
-                onchange={(e) => onset(sel.kind, Number(e.currentTarget.value))}
-                >{#each list.labels as l, i (i)}<option value={String(i)}>{l}</option>{/each}</select
+                onchange={(e: Event & { currentTarget: HTMLSelectElement }) => onset(sel.kind, Number(e.currentTarget.value))}
+                >{#each list.labels as l, i (i)}<option value={String(i)}>{l}</option>{/each}</Select
               ></Field>
           {/if}
         {/each}
         {#if primarySets}
           {@const ps = primarySets}
           <Field label="Tree version:" inline>
-            <select
-              class="select input-xs max-w-50"
+            <Select
+              size="xs"
+              class="max-w-50"
               aria-label="Comparison tree version"
               value={ps.versions.b}
-              onchange={(e) => {
+              onchange={(e: Event & { currentTarget: HTMLSelectElement }) => {
                 const version = e.currentTarget.value;
                 e.currentTarget.value = ps.versions.b;
                 if (version !== ps.versions.b) converting = { side: 'b', version };
               }}
-              >{#each versionList as o (o.value)}<option value={o.value}>{o.label}</option>{/each}</select
+              >{#each versionList as o (o.value)}<option value={o.value}>{o.label}</option>{/each}</Select
             ></Field>
         {/if}
       </div>
@@ -174,27 +184,29 @@
           {@const list = cur[sel.kind]}
           {#if list}
             <Field label={`${sel.label}:`} inline>
-              <select
-                class="select input-xs max-w-50"
+              <Select
+                size="xs"
+                class="max-w-50"
                 aria-label="Comparison {sel.label.toLowerCase()}"
                 disabled={list.labels.length < 2 ||
                   (sel.kind === 'skills' && !cur.skills.enabled) ||
                   ((sel.kind === 'minion' || sel.kind === 'minionSkill') && !cur[sel.kind]?.enabled)}
                 value={String(list.active)}
-                onchange={(e) => onset(sel.kind, Number(e.currentTarget.value))}
-                >{#each list.labels as l, i (i)}<option value={String(i)}>{l}</option>{/each}</select
+                onchange={(e: Event & { currentTarget: HTMLSelectElement }) => onset(sel.kind, Number(e.currentTarget.value))}
+                >{#each list.labels as l, i (i)}<option value={String(i)}>{l}</option>{/each}</Select
               ></Field>
           {/if}
         {/each}
         {#each [{ kind: 'stage' as const, label: 'Stages' }, { kind: 'mine' as const, label: 'Mines' }] as box (box.kind)}
           {#if cur[box.kind] !== undefined}
             <Field label={`${box.label}:`} inline>
-              <input
-                class="input input-xs w-13"
+              <Input
+                size="xs"
+                class="w-13"
                 inputmode="numeric"
                 aria-label="Comparison {box.label.toLowerCase()}"
                 value={cur[box.kind]}
-                onchange={(e) => oncount(box.kind, e.currentTarget.value)} /></Field>
+                onchange={(e: Event & { currentTarget: HTMLInputElement }) => oncount(box.kind, e.currentTarget.value)} /></Field>
           {/if}
         {/each}
       </div>
@@ -212,9 +224,9 @@
     <p class="m-0">Warning: some or all of the passives may be de-allocated due to changes in the tree.</p>
     <p class="m-0">Convert will replace your current tree.<br />Copy + Convert will backup your current tree.</p>
     <div class="flex gap-1.5">
-      <button class="btn btn-sm btn-primary" onclick={() => convert(true)}>Convert</button>
-      <button class="btn btn-sm" onclick={() => convert(false)}>Copy + Convert</button>
-      <button class="btn btn-sm" onclick={() => (converting = null)}>Cancel</button>
+      <Button size="sm" variant="primary" onclick={() => convert(true)}>Convert</Button>
+      <Button size="sm" onclick={() => convert(false)}>Copy + Convert</Button>
+      <Button size="sm" onclick={() => (converting = null)}>Cancel</Button>
     </div>
   </div>
 </Dialog>

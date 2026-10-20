@@ -6,6 +6,11 @@
   const { Story } = defineMeta({ title: 'Spec/Toolbar', component: Toolbar });
 </script>
 
+<script lang="ts">
+  import Input from './Input.svelte';
+  import Button from './Button.svelte';
+</script>
+
 <Story
   name="Arrow keys"
   asChild
@@ -28,11 +33,11 @@
   }}>
   <div class="flex w-120 flex-col gap-3">
     <Toolbar label="Formatting" class="panel gap-1 p-1.5">
-      <button class="btn btn-sm">Bold</button>
-      <button class="btn btn-sm">Italic</button>
-      <button class="btn btn-sm" disabled>Underline</button>
-      <input class="input input-sm w-24" aria-label="Colour" />
-      <button class="btn btn-sm">Clear</button>
+      <Button size="sm">Bold</Button>
+      <Button size="sm">Italic</Button>
+      <Button size="sm" disabled>Underline</Button>
+      <Input size="sm" class="w-24" aria-label="Colour" />
+      <Button size="sm">Clear</Button>
     </Toolbar>
     <Toolbar edge="top" surface="bar" class="gap-2 px-3 py-2"><span class="note">An unlabelled strip is only styling</span></Toolbar>
   </div>

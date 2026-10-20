@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Input from '$lib/design/Input.svelte';
   import { buildName, opening, unsavedName } from './build_name.svelte';
   import { resetAccountSession } from './account_session.svelte';
   import { beforeReplace } from './link_import';
@@ -364,11 +365,7 @@
       saveLoadout();
     }}>
     <label class="flex flex-col gap-1"
-      ><span>Enter name for this loadout:</span><input
-        class="input input-sm"
-        aria-label="Enter name for this loadout"
-        bind:value={loadoutName}
-        maxlength="100" /></label>
+      ><span>Enter name for this loadout:</span><Input size="sm" aria-label="Enter name for this loadout" bind:value={loadoutName} maxlength={100} /></label>
     <div class="flex gap-1.5">
       <Button size="sm" variant="primary" type="submit" disabled={!/\S/.test(loadoutName)}>Save</Button>
       <Button size="sm" type="button" variant="ghost" onclick={() => (naming = false)}>Cancel</Button>

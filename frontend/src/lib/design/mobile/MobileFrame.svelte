@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Button from '../Button.svelte';
   import type { Snippet } from 'svelte';
   import Icon from '../Icon.svelte';
   import { rovingIndex } from '../keys';
@@ -75,17 +76,18 @@
   class="box-border flex h-dvh w-full min-w-0 flex-col overflow-hidden bg-ground pt-[env(safe-area-inset-top)] pr-[env(safe-area-inset-right)] pl-[env(safe-area-inset-left)] font-sans text-text"
   data-mobile-frame>
   <header class="flex h-11 shrink-0 items-center gap-1 border-b border-line bg-bar px-2">
-    <button type="button" class="btn btn-ghost h-10 shrink-0 px-2 text-14" aria-label="Back to builds" onclick={onback}>‹</button>
+    <Button type="button" variant="ghost" class="h-10 shrink-0 px-2 text-14" aria-label="Back to builds" onclick={onback}>‹</Button>
     <span class="min-w-0 flex-1 truncate text-14 font-semibold">{name}</span>
-    <button type="button" class="btn btn-ghost size-10 shrink-0 p-0" aria-label="Undo" disabled={!canUndo} onclick={onundo}>↶</button>
-    <button type="button" class="btn btn-ghost size-10 shrink-0 p-0" aria-label="Redo" disabled={!canRedo} onclick={onredo}>↷</button>
-    <button
+    <Button type="button" variant="ghost" class="size-10 shrink-0 p-0" aria-label="Undo" disabled={!canUndo} onclick={onundo}>↶</Button>
+    <Button type="button" variant="ghost" class="size-10 shrink-0 p-0" aria-label="Redo" disabled={!canRedo} onclick={onredo}>↷</Button>
+    <Button
       type="button"
-      class={['btn size-10 shrink-0 p-0', dirty ? 'btn-primary' : 'btn-ghost']}
+      variant={dirty ? 'primary' : 'ghost'}
+      class="size-10 shrink-0 p-0"
       aria-label={dirty ? 'Save (unsaved changes)' : 'Saved'}
       onclick={onsave}>
       <Icon name="save" />
-    </button>
+    </Button>
   </header>
   {@render strip(() => (statsOpen = true))}
   <main class={['relative box-border flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto', mainClass]} aria-label={label}>
@@ -114,11 +116,12 @@
 <Sheet bind:open={moreOpen} title="More">
   <nav aria-label="More pages" class="grid grid-cols-2 gap-2 p-3">
     {#each more as t (t.href)}
-      <a
+      <Button
         href={t.href}
-        class={['btn h-12 justify-center text-14 no-underline', t.href === current && 'btn-primary']}
+        variant={t.href === current ? 'primary' : 'default'}
+        class="h-12 justify-center text-14 no-underline"
         aria-current={t.href === current ? 'page' : undefined}
-        onclick={go(t.href)}>{t.label}</a>
+        onclick={go(t.href)}>{t.label}</Button>
     {/each}
   </nav>
   {#if actions.length}

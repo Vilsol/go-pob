@@ -1,4 +1,6 @@
 <script lang="ts">
+  import Checkbox from './Checkbox.svelte';
+  import Button from './Button.svelte';
   import type { Snippet } from 'svelte';
   import Socket from './Socket.svelte';
   import NumberInput from './NumberInput.svelte';
@@ -89,27 +91,27 @@
     {#if enabled !== undefined}
       <!-- phones: the socket bubble is the on/off switch; an empty middle means disabled -->
       <span class="max-phone:hidden"><Socket {socket} gem={from ? 'flask' : tone} /></span>
-      <button
+      <Button
         type="button"
-        class="btn-bare flex size-9 items-center justify-center phone:hidden"
+        variant="bare"
+        class="flex size-9 items-center justify-center phone:hidden"
         aria-pressed={enabled}
         aria-label="{name} enabled"
-        onclick={() => onenabled?.(!enabled)}><Socket {socket} gem={enabled ? (from ? 'flask' : tone) : undefined} /></button>
+        onclick={() => onenabled?.(!enabled)}><Socket {socket} gem={enabled ? (from ? 'flask' : tone) : undefined} /></Button>
     {:else}
       <Socket {socket} gem={from ? 'flask' : tone} />
     {/if}
   </div>
   <span class="max-phone:hidden"
-    >{#if enabled !== undefined}<input
-        type="checkbox"
-        class="check size-3.75"
+    >{#if enabled !== undefined}<Checkbox
+        class="size-3.75"
         checked={enabled}
         aria-label="{name} enabled"
         onmouseenter={() => onenabledhover?.(true)}
         onmouseleave={() => onenabledhover?.(false)}
         onfocus={() => onenabledhover?.(true)}
         onblur={() => onenabledhover?.(false)}
-        onchange={(e) => onenabled?.(e.currentTarget.checked)} />{/if}</span>
+        onchange={(e: Event & { currentTarget: HTMLInputElement }) => onenabled?.(e.currentTarget.checked)} />{/if}</span>
   {#if onlevel}
     <!-- svelte-ignore a11y_no_static_element_interactions -->
     <span
@@ -128,7 +130,7 @@
     {#if oncount}<span class="col-span-3"><NumberInput size="xs" value={count} min={1} max={99} label="{name} count" class="w-full" onchange={oncount} /></span
       >{/if}
     <span class="col-span-2 flex justify-end">
-      {#if onremove}<button class="btn-bare size-5.5 text-13" aria-label="Remove {name}" title="Remove this gem" onclick={onremove}>×</button>{/if}
+      {#if onremove}<Button variant="bare" class="size-5.5 text-13" aria-label="Remove {name}" title="Remove this gem" onclick={onremove}>×</Button>{/if}
     </span>
   {:else}
     <span class={['toned col-span-14', toneClass(tone), !support && 'font-semibold']}
@@ -140,12 +142,11 @@
     <span class="col-span-full flex flex-wrap gap-x-4 pl-8 text-12">
       {#each shownGlobals as g (g.i)}
         <label class="flex items-center gap-1.5"
-          >Enable {g.label}:<input
-            type="checkbox"
-            class="check size-3.5"
+          >Enable {g.label}:<Checkbox
+            class="size-3.5"
             checked={g.on}
             aria-label="Enable {g.label}"
-            onchange={(e) => onglobal?.(g.i, e.currentTarget.checked)} /></label>
+            onchange={(e: Event & { currentTarget: HTMLInputElement }) => onglobal?.(g.i, e.currentTarget.checked)} /></label>
       {/each}
     </span>
   {/if}

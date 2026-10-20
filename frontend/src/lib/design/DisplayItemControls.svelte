@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Checkbox from './Checkbox.svelte';
   import FloatingLabel from './FloatingLabel.svelte';
   import Select from './Select.svelte';
   import NumberInput from './NumberInput.svelte';
@@ -120,20 +121,20 @@
   {:else}
     <li class="flex flex-col gap-0.5">
       <div class="flex min-w-0 items-center gap-1.5">
-        <button
-          class={['btn-bare grow text-left font-sans text-13 text-(--tone)', toneClass(m.disabled ? 'muted' : modTone(m.kind)), m.disabled && 'line-through']}
+        <Button
+          variant="bare"
+          class={['grow text-left font-sans text-13 text-(--tone)', toneClass(m.disabled ? 'muted' : modTone(m.kind)), m.disabled && 'line-through']}
           aria-pressed={!m.disabled}
           title={m.disabled ? 'Disabled: click to enable it' : 'Click to disable this modifier'}
           onclick={() => onedit({ kind: 'disable', index: i })}
-          ><span id={lineId(i)}>{(!slotted.shared.has(i) && preview?.find((l) => statTemplate(l) === statTemplate(m.line))) || m.line}</span></button>
+          ><span id={lineId(i)}>{(!slotted.shared.has(i) && preview?.find((l) => statTemplate(l) === statTemplate(m.line))) || m.line}</span></Button>
         {#if m.removable}
           <span class="text-11 text-text-3">{m.removal}</span>
           <Button size="xs" aria-label="Remove {m.line}" onclick={() => onedit({ kind: 'remove', index: i })}>Remove</Button>
         {/if}
         {#if info.foulborn?.[i]?.mutable}
           <label class="field field-inline shrink-0 gap-1 text-11 text-text-2" title="Swap this modifier for its Foulborn counterpart, or back"
-            ><input
-              type="checkbox"
+            ><Checkbox
               aria-label="Foulborn: {m.line}"
               checked={info.foulborn[i].mutated}
               onchange={() => onedit({ kind: 'mutate', index: i })} />Foulborn</label>
@@ -229,12 +230,11 @@
           onchange={(e: Event & { currentTarget: HTMLSelectElement }) =>
             writeSockets(sockets.map((x, k) => (k === i ? { ...x, colour: e.currentTarget.value } : x)))} />
         {#if i < sockets.length - 1}
-          <input
-            class="check"
-            type="checkbox"
+          <Checkbox
             aria-label="Link sockets {i + 1} and {i + 2}"
             checked={s.linked}
-            onchange={(e) => writeSockets(sockets.map((x, k) => (k === i ? { ...x, linked: e.currentTarget.checked } : x)))} />
+            onchange={(e: Event & { currentTarget: HTMLInputElement }) =>
+              writeSockets(sockets.map((x, k) => (k === i ? { ...x, linked: e.currentTarget.checked } : x)))} />
         {/if}
       {/each}
       {#if sockets.length < info.socketLimit}

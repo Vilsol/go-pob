@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Textarea from './Textarea.svelte';
   import InlineMessage from './InlineMessage.svelte';
   import { isTypingTarget } from './keys';
   import FloatingLabel from './FloatingLabel.svelte';
@@ -466,24 +467,25 @@
           {#if live?.editing}
             <Button size="sm" variant="ghost" title="Discard the edit; the build keeps the item as it was" onclick={() => oncancelpaste?.()}>Cancel</Button>
           {:else if craft && sample}
-            <button
-              class="btn-bare text-12 text-accent"
+            <Button
+              variant="bare"
+              class="text-12 text-accent"
               aria-haspopup="dialog"
-              onclick={() => (editing = { item: sample.item, slot: pasteSlot, impact: sample.impact, isNew: true })}>Craft item…</button>
+              onclick={() => (editing = { item: sample.item, slot: pasteSlot, impact: sample.impact, isNew: true })}>Craft item…</Button>
           {/if}
         </div>
-        <textarea
-          class="input h-27.5 font-mono text-12 whitespace-pre text-text-2"
+        <Textarea
+          class="h-27.5 font-mono text-12 whitespace-pre text-text-2"
           aria-label="Item text"
           title="Copy an item in game with Ctrl+C, or from Path of Building"
           spellcheck="false"
-          onpaste={(e) => {
+          onpaste={(e: ClipboardEvent & { currentTarget: HTMLTextAreaElement }) => {
             const t = e.clipboardData?.getData('text');
             if (!onpasteitem || !t) return;
             e.preventDefault();
             onpasteitem(t);
           }}
-          bind:value={pasteText}></textarea>
+          bind:value={pasteText} />
         {#if live}
           <!-- ItemsTab.lua:2635-2653 -->
           {#if live.error}

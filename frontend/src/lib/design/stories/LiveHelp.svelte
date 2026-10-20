@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Button from '../Button.svelte';
   import AboutDialog from '../AboutDialog.svelte';
   import { aboutInfo } from '../fixtures';
   import { parseHelp } from '../help';
@@ -11,10 +12,10 @@
   const help = parseHelp(helpText, false);
 </script>
 
-<button
-  class="btn m-4"
+<Button
+  class="m-4"
   onclick={() => {
     tab = 'help';
     open = true;
-  }}>Help</button>
+  }}>Help</Button>
 <AboutDialog bind:open bind:tab info={aboutInfo} {help} helpSection={section} />

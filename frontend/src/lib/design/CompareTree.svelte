@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Checkbox from './Checkbox.svelte';
   import SearchField from './SearchField.svelte';
   import Badge from './Badge.svelte';
   import SectionHeading from './SectionHeading.svelte';
@@ -51,7 +52,7 @@
 
 <div class="flex min-w-0 gap-3 max-phone:flex-col">
   <div class="flex shrink-0 flex-col gap-1.5">
-    <label class="field field-inline gap-1 text-12"><input class="check" type="checkbox" bind:checked={overlay} /><span>Overlay comparison</span></label>
+    <label class="field field-inline gap-1 text-12"><Checkbox bind:checked={overlay} /><span>Overlay comparison</span></label>
     <div class="flex gap-2 max-phone:flex-col">
       {#each sides as side (side.key)}
         <div class="flex flex-col gap-1">

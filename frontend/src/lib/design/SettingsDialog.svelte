@@ -1,4 +1,7 @@
 <script lang="ts">
+  import Select from './Select.svelte';
+  import Checkbox from './Checkbox.svelte';
+  import Button from './Button.svelte';
   import Dialog from './Dialog.svelte';
   import DialogActions from './DialogActions.svelte';
   import NumberInput from './NumberInput.svelte';
@@ -73,11 +76,16 @@
                 }} />
               <span class="w-11 text-right font-mono text-12 text-text-2">{drafts[r.id] ?? x}{r.unit}</span>
             {:else if r.kind === 'check'}
-              <input {id} type="checkbox" class="check" checked={!!x} onchange={() => onchange(r.id, !x)} />
+              <Checkbox {id} checked={!!x} onchange={() => onchange(r.id, !x)} />
             {:else if r.kind === 'select'}
-              <select {id} class="select input-sm w-full px-1.5 text-12" value={x} onchange={(e) => onchange(r.id, e.currentTarget.value)}>
+              <Select
+                {id}
+                size="sm"
+                class="w-full px-1.5 text-12"
+                value={x as string}
+                onchange={(e: Event & { currentTarget: HTMLSelectElement }) => onchange(r.id, e.currentTarget.value)}>
                 {#each r.opts ?? [] as o (o)}<option value={o}>{o}</option>{/each}
-              </select>
+              </Select>
             {:else if r.kind === 'number'}
               <NumberInput value={Number(x)} min={r.min} max={r.max} label={r.label} class="w-24" onchange={(v: number) => onchange(r.id, v)} />
             {:else if r.kind === 'color'}
@@ -92,16 +100,17 @@
               <span {id} class="font-mono text-12 text-text-2">{x}</span>
             {:else if asking === r.id}
               <span role="alert" class="note-sm min-w-0">{r.confirm}</span>
-              <button class="btn btn-sm" onclick={() => (asking = undefined)}>Keep</button>
-              <button
-                class={['btn btn-sm', r.danger && 'border-warn-line text-worse']}
+              <Button size="sm" onclick={() => (asking = undefined)}>Keep</Button>
+              <Button
+                size="sm"
+                class={[r.danger && 'border-warn-line text-worse']}
                 onclick={() => {
                   asking = undefined;
                   onaction?.(r.id);
-                }}>{r.label}</button>
+                }}>{r.label}</Button>
             {:else}
-              <button {id} class={['btn btn-sm', r.danger && 'border-warn-line text-worse']} onclick={() => (r.confirm ? (asking = r.id) : onaction?.(r.id))}
-                >{x}</button>
+              <Button {id} size="sm" class={[r.danger && 'border-warn-line text-worse']} onclick={() => (r.confirm ? (asking = r.id) : onaction?.(r.id))}
+                >{x}</Button>
             {/if}
           </span>
         </div>
@@ -120,7 +129,7 @@
       confirm={oncancel ? 'Save' : 'Done'}
       onconfirm={() => (open = false)}>
       {#snippet extra()}
-        <button class="btn btn-md bg-transparent px-3 text-text-2" onclick={() => onreset(cur.id)}>Reset this section</button>
+        <Button size="md" class="bg-transparent px-3 text-text-2" onclick={() => onreset(cur.id)}>Reset this section</Button>
       {/snippet}
     </DialogActions>
   {/snippet}

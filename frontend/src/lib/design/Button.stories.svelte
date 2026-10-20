@@ -9,12 +9,16 @@
     component: Button,
     argTypes: {
       size: { control: 'inline-radio', options: ['2xs', 'xs', 'sm', 'default', 'md', 'lg'] },
-      variant: { control: 'inline-radio', options: ['default', 'primary', 'ghost', 'danger', 'danger-solid', 'dashed'] },
+      variant: { control: 'inline-radio', options: ['default', 'primary', 'ghost', 'danger', 'danger-solid', 'dashed', 'close', 'bare'] },
       icon: { control: 'boolean' },
       disabled: { control: 'boolean' }
     },
     args: { size: 'default', variant: 'default', icon: false, disabled: false }
   });
+</script>
+
+<script lang="ts">
+  import Select from './Select.svelte';
 </script>
 
 <Story name="Playground">Import / Export</Story>
@@ -28,6 +32,26 @@
     <Button variant="danger-solid">Delete</Button>
     <Button variant="dashed">+ Add group</Button>
     <Button disabled>Disabled</Button>
+  </div>
+</Story>
+
+<Story
+  name="Links and standalone variants"
+  asChild
+  play={async ({ canvasElement }) => {
+    const root = canvasElement as HTMLElement;
+    const link = root.querySelector('a[href="#import"]')!;
+    await expect(link.className.split(' ')).toEqual(expect.arrayContaining(['btn', 'btn-md', 'btn-primary']));
+    for (const name of ['Close', 'Bare']) {
+      const el = root.querySelector(`[data-standalone="${name}"]`)!;
+      await expect(el.tagName, name).toBe('BUTTON');
+      await expect(el.classList.contains('btn'), name).toBe(false);
+    }
+  }}>
+  <div class="flex items-center gap-2">
+    <Button href="#import" size="md" variant="primary">Import build</Button>
+    <Button variant="close" data-standalone="Close" aria-label="Close">×</Button>
+    <Button variant="bare" data-standalone="Bare">Bare</Button>
   </div>
 </Story>
 
@@ -60,8 +84,8 @@
     <Button data-hover-case="icon" icon aria-label="Settings"><Icon name="gear" /></Button>
     <Button data-hover-case="icon xs" icon size="xs" aria-label="Info"><Icon name="info" /></Button>
     <Button data-hover-case="disabled" disabled>Disabled</Button>
-    <button data-hover-case="close" class="btn-close" aria-label="Close">×</button>
-    <button data-hover-case="bare" class="btn-bare">Bare</button>
+    <Button data-hover-case="close" variant="close" aria-label="Close">×</Button>
+    <Button data-hover-case="bare" variant="bare">Bare</Button>
     <button data-hover-case="chip" class="chip">Chip</button>
     <button data-hover-case="chip pressed" class="chip" aria-pressed="true">Pressed chip</button>
     <div class="seg"><button data-hover-case="seg" class="seg-btn">Seg</button><button class="seg-btn" aria-pressed="true">On</button></div>
@@ -69,7 +93,7 @@
     <button data-hover-case="cell link" class="cell-link">Link</button>
     <button data-hover-case="menu item" class="menu-item">Menu item</button>
     <a data-hover-case="tab" class="tab h-9" href="#tab">Tab</a>
-    <select data-hover-case="select" class="select w-30" aria-label="Select"><option>Select</option></select>
+    <Select data-hover-case="select" class="w-30" aria-label="Select"><option>Select</option></Select>
   </div>
 </Story>
 

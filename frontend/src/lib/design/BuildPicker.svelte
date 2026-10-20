@@ -1,4 +1,6 @@
 <script lang="ts">
+  import Select from './Select.svelte';
+  import Button from './Button.svelte';
   import SearchField from './SearchField.svelte';
   import Field from './Field.svelte';
   import Icon from './Icon.svelte';
@@ -109,16 +111,16 @@
         }
       }} />
     <Field label="Sort by" inline class="text-12">
-      <select
-        class="select input-xs"
+      <Select
+        size="xs"
         aria-label="Sort by"
         value={sort.key}
-        onchange={(e) => {
+        onchange={(e: Event & { currentTarget: HTMLSelectElement }) => {
           const s = SORTS.find((x) => x.key === e.currentTarget.value);
           if (s) sort = { key: s.key, dir: s.dir };
         }}>
         {#each SORTS as s (s.key)}<option value={s.key}>{s.label}</option>{/each}
-      </select></Field>
+      </Select></Field>
   </div>
   <div
     bind:this={list}
@@ -155,7 +157,7 @@
     {#if !n}<p class="note p-3">{!builds ? 'Loading…' : ql ? 'No build matches.' : 'No saved builds here.'}</p>{/if}
   </div>
   <div class="flex justify-end gap-2">
-    <button class="btn btn-sm" onclick={() => (open = false)}>Cancel</button>
-    <button class="btn btn-sm btn-primary" disabled={!curBuild} onclick={() => pick(at)}>{action}</button>
+    <Button size="sm" onclick={() => (open = false)}>Cancel</Button>
+    <Button size="sm" variant="primary" disabled={!curBuild} onclick={() => pick(at)}>{action}</Button>
   </div>
 </Dialog>

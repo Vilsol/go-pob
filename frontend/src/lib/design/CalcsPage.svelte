@@ -1,4 +1,7 @@
 <script lang="ts">
+  import Checkbox from './Checkbox.svelte';
+  import Disclosure from './Disclosure.svelte';
+  import Input from './Input.svelte';
   import Dock from './mobile/Dock.svelte';
   import Tooltip from './Tooltip.svelte';
   import SearchField from './SearchField.svelte';
@@ -246,6 +249,10 @@
   const num = (e: Event) => Number((e.currentTarget as HTMLSelectElement).value);
   // phones: the stat label stays while the damage-type columns scroll sideways
   // phones and touch screens: section toggles reach the 24px target size
+  function collapse(id: string, shut: boolean) {
+    closed = { ...closed, [id]: shut };
+    oncollapse?.(id, shut);
+  }
   const TOUCH_TARGET = 'max-phone:min-h-6 max-phone:min-w-6 [@media(pointer:coarse)]:min-h-6 [@media(pointer:coarse)]:min-w-6';
   const STICKY = 'max-phone:sticky max-phone:left-0 max-phone:z-raised max-phone:bg-surface-1 max-phone:shadow-[1px_0_0_var(--color-line)]';
 </script>
@@ -390,8 +397,8 @@
   {/if}
   {#if controls?.StageShown}
     <label class="check-label h-6.5 text-12 text-text-2"
-      >Skill Stages<input
-        class="input h-6.5 w-13 font-mono"
+      >Skill Stages<Input
+        class="h-6.5 w-13 font-mono"
         inputmode="numeric"
         aria-label="Skill Stages"
         value={controls.StageCount}
@@ -399,8 +406,8 @@
   {/if}
   {#if controls?.MineShown}
     <label class="check-label h-6.5 text-12 text-text-2"
-      >Active Mines<input
-        class="input h-6.5 w-13 font-mono"
+      >Active Mines<Input
+        class="h-6.5 w-13 font-mono"
         inputmode="numeric"
         aria-label="Active Mines"
         value={controls.MineCount}
@@ -429,12 +436,11 @@
   {/if}
   {#if showMinion !== undefined}
     <label class="check-label h-6.5 text-text-2"
-      ><input
-        type="checkbox"
-        class="check size-3.75"
+      ><Checkbox
+        class="size-3.75"
         checked={showMinion}
         title="Show stats for the minion instead of the player."
-        onchange={(e) => onshowminion?.(e.currentTarget.checked)} /> Show Minion Stats</label>
+        onchange={(e: Event & { currentTarget: HTMLInputElement }) => onshowminion?.(e.currentTarget.checked)} /> Show Minion Stats</label>
   {/if}
   {#if onmode}
     <FloatingLabel label="Calculation Mode"
@@ -445,7 +451,7 @@
         value={mode}
         onchange={(e: Event) => onmode((e.currentTarget as HTMLSelectElement).value)} /></FloatingLabel>
   {/if}
-  <label class="check-label h-6.5 text-text-2"><input type="checkbox" class="check size-3.75" bind:checked={showAll} /> Show all panels</label>
+  <label class="check-label h-6.5 text-text-2"><Checkbox class="size-3.75" bind:checked={showAll} /> Show all panels</label>
   {#if moddebug}
     <Button size="xs" class="h-6.5 text-12" aria-expanded={debugText !== undefined} onclick={toggleDebug}>Mod Debug</Button>
   {/if}
@@ -497,22 +503,17 @@
               !s.applicable && 'opacity-55'
             ]}>
             <h2 class="m-0 flex">
-              <button
+              <Disclosure
                 class={[
                   'toned box-border flex min-w-0 grow items-center gap-1.25 border-0 bg-transparent px-2 py-0.75 text-left eyebrow font-sans',
                   TOUCH_TARGET,
                   toneClass(sectionTone(s))
                 ]}
-                aria-expanded={open}
+                {open}
                 disabled={!s.applicable}
-                onclick={() => {
-                  const collapse = open;
-                  closed = { ...closed, [s.id]: collapse };
-                  oncollapse?.(s.id, collapse);
-                }}
-                >{open ? '▾' : '▸'}
-                {s.title}
-                {#if !s.applicable}<span class="font-normal text-text-3 normal-case">not applicable</span>{/if}</button>
+                ontoggle={(isOpen) => collapse(s.id, !isOpen)}
+                >{s.title}
+                {#if !s.applicable}<span class="font-normal text-text-3 normal-case">not applicable</span>{/if}</Disclosure>
               {#if s.applicable}<button
                   class={['border-0 bg-transparent px-1.5 text-11 text-text-3 hover:text-text', TOUCH_TARGET]}
                   aria-label="Pop out {pobPlain(s.title)}"
@@ -541,14 +542,13 @@
         style:top="{o.y}px"
         onpointerdown={() => raise(o.id)}>
         <h2 class="m-0 flex cursor-move items-center" onpointerdown={drag(o.id)}>
-          <button
-            class={['toned box-border flex min-w-0 grow gap-1.25 border-0 bg-transparent px-2 py-0.75 text-left eyebrow font-sans', toneClass(sectionTone(s))]}
-            aria-expanded={open}
-            onclick={() => {
-              const collapse = open;
-              closed = { ...closed, [s.id]: collapse };
-              oncollapse?.(s.id, collapse);
-            }}>{open ? '▾' : '▸'} {s.title}</button>
+          <Disclosure
+            class={[
+              'toned box-border flex min-w-0 grow items-center gap-1.25 border-0 bg-transparent px-2 py-0.75 text-left eyebrow font-sans',
+              toneClass(sectionTone(s))
+            ]}
+            {open}
+            ontoggle={(isOpen) => collapse(s.id, !isOpen)}>{s.title}</Disclosure>
           <button
             class="border-0 bg-transparent px-1.5 text-13 text-text-3 hover:text-text"
             aria-label="Close {pobPlain(s.title)}"

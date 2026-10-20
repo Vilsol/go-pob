@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Checkbox from './Checkbox.svelte';
   import EmptyState from './EmptyState.svelte';
   import FloatingLabel from './FloatingLabel.svelte';
   import FloatingItemTip from './FloatingItemTip.svelte';
@@ -164,7 +165,11 @@
     {/if}
     {#if flask && e}
       <label class="absolute -bottom-5.5 left-1 flex items-center gap-0.75 text-10 text-text-2" title="Flask active in calculations">
-        <input class="check size-3.5" type="checkbox" checked={flasks[k]} aria-label="{k} active" onchange={(ev) => onflask(k, ev.currentTarget.checked)} />
+        <Checkbox
+          class="size-3.5"
+          checked={flasks[k]}
+          aria-label="{k} active"
+          onchange={(ev: Event & { currentTarget: HTMLInputElement }) => onflask(k, ev.currentTarget.checked)} />
         on
       </label>
     {/if}
