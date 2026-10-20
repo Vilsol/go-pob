@@ -31,7 +31,7 @@
     @apply bg-hover text-text;
   }
   .butterfly-row {
-    @apply box-border grid min-h-11 grid-cols-[minmax(0,7rem)_minmax(0,1fr)_minmax(0,11.875rem)_minmax(0,1fr)_minmax(0,7rem)] items-center gap-2.5 px-4 py-0.75 hover:bg-hover-soft;
+    @apply box-border grid min-h-11 grid-cols-[minmax(min-content,7rem)_minmax(0,1fr)_minmax(min-content,11.875rem)_minmax(0,1fr)_minmax(min-content,7rem)] items-center gap-2.5 px-4 py-0.75 hover:bg-hover-soft;
   }
   .butterfly-value {
     @apply font-mono text-14 text-text data-[win=true]:font-semibold;

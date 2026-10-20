@@ -26,7 +26,7 @@
   import { goto } from '$app/navigation';
   import { importLanding, importParam, openImportLink } from '$lib/shell/link_import';
   import Dialog from '$lib/design/Dialog.svelte';
-  import Button from '$lib/design/Button.svelte';
+  import DialogActions from '$lib/design/DialogActions.svelte';
   import { phoneMedia, phonePage } from '$lib/design/mobile/mobile';
 
   let {
@@ -229,7 +229,9 @@
 
 <Dialog open={!!linkError} title="Build import" class="w-110 p-4.5" onclose={() => (linkError = undefined)}>
   <p role="alert" class="m-0 text-13">The linked build could not be opened: {linkError}</p>
-  {#snippet actions()}<Button onclick={() => (linkError = undefined)}>OK</Button>{/snippet}
+  {#snippet actions()}
+    <DialogActions confirm="OK" cancel={false} onconfirm={() => (linkError = undefined)} />
+  {/snippet}
 </Dialog>
 
 <svelte:window onkeydown={updateKey} />

@@ -148,7 +148,7 @@
       <span
         data-pob-color={e && (!flask || flasks[k]) ? '' : undefined}
         class={['text-12 leading-[0.9375rem] font-semibold', e && (!flask || flasks[k]) ? 'text-(--tone)' : 'text-text-3']}>{e ? e.item.name : 'Empty'}</span>
-      <span class="note-sm font-mono">{e?.item.sockets ?? ''}</span>
+      <span class="note-sm font-mono before:content-[attr(data-sockets)]" data-sockets={e?.item.sockets ?? ''}></span>
     </button>
     {#if e || fitting(k).length}
       <div class="absolute top-1 right-1">

@@ -13,7 +13,7 @@
   import { downloadBuild, shareBuild } from './link_import';
   import { opening, unsavedName } from './build_name.svelte';
   import Dialog from '$lib/design/Dialog.svelte';
-  import Button from '$lib/design/Button.svelte';
+  import DialogActions from '$lib/design/DialogActions.svelte';
   import PobText from '$lib/design/PobText.svelte';
   import CharacterImport from '$lib/design/CharacterImport.svelte';
   import { REALM_LIST, type AccountCharacter } from '$lib/design/account';
@@ -163,19 +163,18 @@
     }}>
     <p class="m-0 text-13">Importing the passive tree will overwrite your current tree.</p>
     {#snippet actions()}
-      <Button
-        variant="primary"
-        onclick={() => {
+      <DialogActions
+        confirm="Import"
+        oncancel={() => {
+          confirmTreeOpen = false;
+          confirmTree = undefined;
+        }}
+        onconfirm={() => {
           const run = confirmTree;
           confirmTreeOpen = false;
           confirmTree = undefined;
           run?.();
-        }}>Import</Button>
-      <Button
-        onclick={() => {
-          confirmTreeOpen = false;
-          confirmTree = undefined;
-        }}>Cancel</Button>
+        }} />
     {/snippet}
   </Dialog>{/if}
 
@@ -188,19 +187,18 @@
     }}>
     <p class="m-0 text-13"><PobText text="^xFF9922Warning:^7 Importing to the current build will erase ALL existing data for this build." /></p>
     {#snippet actions()}
-      <Button
-        variant="primary"
-        onclick={() => {
+      <DialogActions
+        confirm="Import"
+        oncancel={() => {
+          confirmOpen = false;
+          confirmImport = undefined;
+        }}
+        onconfirm={() => {
           const run = confirmImport;
           confirmOpen = false;
           confirmImport = undefined;
           run?.();
-        }}>Import</Button>
-      <Button
-        onclick={() => {
-          confirmOpen = false;
-          confirmImport = undefined;
-        }}>Cancel</Button>
+        }} />
     {/snippet}
   </Dialog>{/if}
 

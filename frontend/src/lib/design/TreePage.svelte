@@ -5,13 +5,14 @@
   import Dropdown from './Dropdown.svelte';
   import Dialog from './Dialog.svelte';
   import Button from './Button.svelte';
+  import SetManager from './SetManager.svelte';
+  import DialogActions from './DialogActions.svelte';
   import NumberInput from './NumberInput.svelte';
   import { tick, untrack, type Snippet } from 'svelte';
   import type { PlayerProgress } from '$lib/display/points';
   import type { TreeFixture, TreeNodeFx } from './fixtures';
   import { KIND_NAME, SEARCH_HELP, nodeMatches, searchWords, type CanvasApi, type SpecOp } from './tree';
   import WhatIfTooltip from './WhatIfTooltip.svelte';
-  import { Reorder, reorderState } from './reorder';
   import { progressTooltip } from '$lib/display/points';
   import type { StatCompareSection } from '$lib/skill_tree/stat_compare';
 
@@ -188,8 +189,6 @@
   // TreeTab.lua:629-647
   let managing = $state(false);
   let selRow = $state(0);
-  let naming = $state<{ op: 'new' | 'copy' | 'rename'; title: string } | null>(null);
-  let confirmDelete = $state(false);
   // TreeTab.lua:156-175, 322-340, 588-680
   const versionLabel = (v: string) => versions.find((o) => o.value === v)?.label ?? v.replace('_', '.');
   const shownVersion = $derived(specVersion ?? tree.version);
@@ -246,10 +245,7 @@
   };
 
   const openManage = () => {
-    selRow = spec;
-    naming = null;
     linkForm = null;
-    confirmDelete = false;
     managing = true;
     onspecsopen?.();
     onspechover?.(spec);
@@ -259,36 +255,11 @@
     manage = false;
     untrack(openManage);
   });
-  // PassiveSpecListControl.lua:82-87
-  let specBox = $state<HTMLElement>();
-  const specDragState = $state(reorderState());
-  const specDrag = new Reorder(specDragState, {
-    box: () => specBox,
-    name: (i) => tree.specs[i] ?? '',
-    onmove: (from, to) => {
-      onspecs?.({ op: 'move', from, to });
-      selRow = to;
-    },
-    onactivate: (i) => {
-      if (i !== spec) {
-        spec = i;
-        onspec?.(i);
-      }
-    }
-  });
-
   // TreeTab.lua:367-383
   let searchEl = $state<HTMLInputElement>();
   let selectHovered = false;
 
   const bareTitle = (i: number) => (tree.specs[i] ?? '').replace(/^\[[^\]]*\] /, '');
-  const saveName = () => {
-    if (!naming || !/\S/.test(naming.title)) return;
-    const { op, title } = naming;
-    if (op === 'new') onspecs?.({ op, title });
-    else onspecs?.({ op, index: selRow, title });
-    naming = null;
-  };
 
   const uid = $props.id();
   const byId = $derived(new Map(tree.nodes.map((n) => [n.id, n])));
@@ -972,60 +943,74 @@
   {/if}
 </div>
 
-{#if onspecs}
-  <Dialog bind:open={managing} title="Manage passive trees" class="w-105 p-4.5" onclose={() => onspechover?.(null)}>
-    <div class="flex flex-col gap-2">
-      <!-- PassiveSpecListControl.lua:95-117 -->
-      <div
-        role="listbox"
-        aria-label="Passive trees"
-        tabindex="-1"
-        class="flex max-h-75 flex-col gap-1 overflow-y-auto"
-        bind:this={specBox}
-        onkeydown={(e: KeyboardEvent) => {
-          if (e.key !== 'Delete' && e.key !== 'F2') return;
-          const i = [...(specBox?.querySelectorAll('[data-reorder-item]') ?? [])].indexOf((e.target as HTMLElement).closest('[data-reorder-item]')!);
-          if (i < 0) return;
-          e.preventDefault();
-          selRow = i;
-          linkForm = null;
-          if (e.key === 'F2') {
-            confirmDelete = false;
-            naming = { op: 'rename', title: bareTitle(i) };
-          } else if (tree.specs.length > 1) {
-            naming = null;
-            confirmDelete = true;
-          }
-        }}>
-        {#each tree.specs as o, i (i)}
-          <div {...specDrag.row(i)} class="relative">
-            <button
-              data-reorder-press
-              tabindex="-1"
-              role="option"
-              aria-selected={i === selRow}
-              class="choice-card justify-between gap-2 px-2.5 py-1.5 text-left text-13 aria-selected:border-accent aria-selected:bg-surface-3"
-              onclick={() => {
-                selRow = i;
-                naming = null;
-                confirmDelete = false;
-              }}
-              ondblclick={() => {
-                if (i !== spec) {
-                  spec = i;
-                  onspec?.(i);
-                }
-              }}
-              onmouseenter={() => onspechover?.(i)}
-              onfocus={() => onspechover?.(i)}
-              ><span class="truncate"
-                >{o}{#if specDetails[i]}<span class="text-text-3">{` (${specDetails[i]})`}</span>{/if}</span
-              >{#if i === spec}<span class="font-mono text-11 text-accent">current</span>{/if}</button>
-          </div>
-        {/each}
+{#snippet linkPanel()}
+  {#if linkForm?.op === 'import'}
+    <form
+      class="flex flex-col gap-1.5"
+      aria-label="Import Tree"
+      onsubmit={(e) => {
+        e.preventDefault();
+        void importTree();
+      }}>
+      <input class="input h-7.5" aria-label="Enter name for this passive tree" placeholder="Name" bind:value={linkForm.title} maxlength="100" />
+      <input
+        class="input h-7.5"
+        aria-label="Enter passive tree link"
+        placeholder="https://www.pathofexile.com/passive-skill-tree/…"
+        bind:value={linkForm.link}
+        oninput={() => linkForm?.op === 'import' && (linkForm.msg = '')} />
+      {#if linkForm.msg}<span role="alert" class="text-12 text-worse">{linkForm.msg}</span>{/if}
+      <div class="flex gap-1.5">
+        <Button size="sm" variant="primary" type="submit" disabled={linkForm.busy || !/\S/.test(linkForm.title) || !/\S/.test(linkForm.link)}>Import</Button>
+        <Button size="sm" type="button" onclick={() => (linkForm = null)}>Cancel</Button>
       </div>
-      <div aria-live="assertive" class="sr-only">{specDragState.message}</div>
-      <span id={specDrag.hint} class="sr-only">{specDrag.hintText}; Enter switches to the tree</span>
+    </form>
+  {:else if linkForm?.op === 'export'}
+    <div class="flex flex-col gap-1.5" role="group" aria-label="Export Tree">
+      <span class="text-12 text-text-2">Passive tree link:</span>
+      <input class="input h-7.5 font-mono text-12" aria-label="Passive tree link" readonly value={linkForm.link} onfocus={(e) => e.currentTarget.select()} />
+      {#if linkForm.msg}<span role="alert" class="text-12 text-worse">{linkForm.msg}</span>{/if}
+      <div class="flex gap-1.5">
+        {#if onshrinktree}<Button size="sm" disabled={linkForm.shrink !== 'idle'} onclick={() => void shrinkTree()}
+            >{linkForm.shrink === 'busy' ? 'Shrinking...' : linkForm.shrink === 'done' ? 'Done' : 'Shrink with PoEURL'}</Button
+          >{/if}
+        <Button
+          size="sm"
+          onclick={() => {
+            if (linkForm?.op !== 'export') return;
+            const f = linkForm;
+            void navigator.clipboard?.writeText(f.link).then(() => (f.copied = true));
+          }}>{linkForm.copied ? 'Copied' : 'Copy'}</Button>
+        <Button size="sm" onclick={() => (linkForm = null)}>Done</Button>
+      </div>
+    </div>
+  {/if}
+{/snippet}
+{#if onspecs}
+  <SetManager
+    bind:open={managing}
+    bind:sel={selRow}
+    title="Manage passive trees"
+    noun="passive tree"
+    sets={tree.specs}
+    current={spec}
+    nameOf={bareTitle}
+    deleteMessage={(i: number) => `Delete '${tree.specs[i] ?? ''}'?`}
+    note="Double-click a tree to switch to it; drag to reorder."
+    activateHint="Enter switches to the tree"
+    rowProps={(i: number) => ({ onmouseenter: () => onspechover?.(i), onfocus: () => onspechover?.(i) })}
+    panel={linkForm ? linkPanel : undefined}
+    onselect={() => (linkForm = null)}
+    onclose={() => onspechover?.(null)}
+    onactivate={(i: number) => {
+      spec = i;
+      onspec?.(i);
+    }}
+    onop={onspecs}>
+    {#snippet row(i: number)}<span class="truncate"
+        >{tree.specs[i]}{#if specDetails[i]}<span class="text-text-3">{` (${specDetails[i]})`}</span>{/if}</span
+      >{/snippet}
+    {#snippet aside()}
       <div class="scroll h-64 shrink-0">
         {#if managing && specTip && specTip.index < tree.specs.length}
           <div aria-label="Tree tooltip">
@@ -1041,98 +1026,18 @@
           </div>
         {/if}
       </div>
-      {#if linkForm?.op === 'import'}
-        <form
-          class="flex flex-col gap-1.5"
-          aria-label="Import Tree"
-          onsubmit={(e) => {
-            e.preventDefault();
-            void importTree();
-          }}>
-          <input class="input h-7.5" aria-label="Enter name for this passive tree" placeholder="Name" bind:value={linkForm.title} maxlength="100" />
-          <input
-            class="input h-7.5"
-            aria-label="Enter passive tree link"
-            placeholder="https://www.pathofexile.com/passive-skill-tree/…"
-            bind:value={linkForm.link}
-            oninput={() => linkForm?.op === 'import' && (linkForm.msg = '')} />
-          {#if linkForm.msg}<span role="alert" class="text-12 text-worse">{linkForm.msg}</span>{/if}
-          <div class="flex gap-1.5">
-            <Button size="sm" variant="primary" type="submit" disabled={linkForm.busy || !/\S/.test(linkForm.title) || !/\S/.test(linkForm.link)}
-              >Import</Button>
-            <Button size="sm" type="button" onclick={() => (linkForm = null)}>Cancel</Button>
-          </div>
-        </form>
-      {:else if linkForm?.op === 'export'}
-        <div class="flex flex-col gap-1.5" role="group" aria-label="Export Tree">
-          <span class="text-12 text-text-2">Passive tree link:</span>
-          <input
-            class="input h-7.5 font-mono text-12"
-            aria-label="Passive tree link"
-            readonly
-            value={linkForm.link}
-            onfocus={(e) => e.currentTarget.select()} />
-          {#if linkForm.msg}<span role="alert" class="text-12 text-worse">{linkForm.msg}</span>{/if}
-          <div class="flex gap-1.5">
-            {#if onshrinktree}<Button size="sm" disabled={linkForm.shrink !== 'idle'} onclick={() => void shrinkTree()}
-                >{linkForm.shrink === 'busy' ? 'Shrinking...' : linkForm.shrink === 'done' ? 'Done' : 'Shrink with PoEURL'}</Button
-              >{/if}
-            <Button
-              size="sm"
-              onclick={() => {
-                if (linkForm?.op !== 'export') return;
-                const f = linkForm;
-                void navigator.clipboard?.writeText(f.link).then(() => (f.copied = true));
-              }}>{linkForm.copied ? 'Copied' : 'Copy'}</Button>
-            <Button size="sm" onclick={() => (linkForm = null)}>Done</Button>
-          </div>
-        </div>
-      {:else if naming}
-        <form
-          class="flex items-center gap-1.5"
-          onsubmit={(e) => {
-            e.preventDefault();
-            saveName();
-          }}>
-          <input class="input h-7.5 grow" aria-label="Name for this passive tree" bind:value={naming.title} maxlength="100" />
-          <Button size="sm" variant="primary" type="submit" disabled={!/\S/.test(naming.title)}>Save</Button>
-          <Button size="sm" type="button" onclick={() => (naming = null)}>Cancel</Button>
-        </form>
-      {:else if confirmDelete}
-        <div class="flex items-center gap-1.5 text-13" role="group" aria-label="Confirm delete">
-          <span class="grow">Delete '{tree.specs[selRow]}'?</span>
-          <Button
-            size="sm"
-            variant="danger"
-            onclick={() => {
-              onspecs({ op: 'delete', index: selRow });
-              confirmDelete = false;
-              selRow = Math.max(0, selRow - 1);
-            }}>Delete</Button>
-          <Button size="sm" onclick={() => (confirmDelete = false)}>Cancel</Button>
-        </div>
-      {:else}
-        <div class="flex gap-1.5">
-          <Button size="sm" class="bg-surface-1" onclick={() => (naming = { op: 'new', title: '' })}>New</Button>
-          <Button size="sm" class="bg-surface-1" onclick={() => (naming = { op: 'copy', title: bareTitle(selRow) })}>Copy</Button>
-          <Button size="sm" class="bg-surface-1" onclick={() => (naming = { op: 'rename', title: bareTitle(selRow) })}>Rename</Button>
-          <Button size="sm" variant="danger" disabled={tree.specs.length < 2} onclick={() => (confirmDelete = true)}>Delete</Button>
-        </div>
-        {#if onimporttree || onexporttree}
-          <div class="flex gap-1.5">
-            {#if onimporttree}<Button size="sm" class="bg-surface-1" onclick={() => (linkForm = { op: 'import', title: '', link: '', msg: '', busy: false })}
-                >Import Tree</Button
-              >{/if}
-            {#if onexporttree}<Button size="sm" class="bg-surface-1" onclick={() => void exportTree()}>Export Tree</Button>{/if}
-          </div>
-        {/if}
-      {/if}
-      <span class="note">Double-click a tree to switch to it; drag to reorder.</span>
-    </div>
-    {#snippet actions()}
-      <Button size="md" variant="primary" class="px-4" onclick={() => (managing = false)}>Done</Button>
     {/snippet}
-  </Dialog>
+    {#snippet tools()}
+      {#if onimporttree || onexporttree}
+        <div class="flex gap-1.5">
+          {#if onimporttree}<Button size="sm" class="bg-surface-1" onclick={() => (linkForm = { op: 'import', title: '', link: '', msg: '', busy: false })}
+              >Import Tree</Button
+            >{/if}
+          {#if onexporttree}<Button size="sm" class="bg-surface-1" onclick={() => void exportTree()}>Export Tree</Button>{/if}
+        </div>
+      {/if}
+    {/snippet}
+  </SetManager>
 {/if}
 
 <Dialog
@@ -1142,34 +1047,35 @@
   title={converting ? `Convert to Version ${versionLabel(converting.version)}` : 'Convert'}
   class="w-115 p-4.5">
   {#if converting}
-    {@const v = converting.version}
     <div class="flex flex-col gap-3 text-13">
       <p class="m-0">Warning: some or all of the passives may be de-allocated due to changes in the tree.</p>
       <p class="m-0">Convert will replace your current tree.<br />Copy + Convert will backup your current tree.</p>
-      <div class="flex gap-1.5">
-        <Button size="sm" variant="primary" onclick={() => void convert(v, true, false)}>Convert</Button>
-        <Button size="sm" onclick={() => void convert(v, false, false)}>Copy + Convert</Button>
-        <Button size="sm" variant="ghost" onclick={cancelConvert}>Cancel</Button>
-      </div>
     </div>
   {/if}
+  {#snippet actions()}
+    {#if converting}
+      {@const v = converting.version}
+      <DialogActions confirm="Convert" oncancel={cancelConvert} onconfirm={() => void convert(v, true, false)}>
+        {#snippet extra()}<Button size="md" onclick={() => void convert(v, false, false)}>Copy + Convert</Button>{/snippet}
+      </DialogActions>
+    {/if}
+  {/snippet}
 </Dialog>
 
 <Dialog small bind:open={convertingAll} title="Convert all to Version {versionLabel(tree.version)}" class="w-115 p-4.5">
   <div class="flex flex-col gap-3 text-13">
     <p class="m-0">Warning: some or all of the passives may be de-allocated due to changes in the tree.</p>
     <p class="m-0">Convert will replace all trees that are not Version {versionLabel(tree.version)}.<br />This action cannot be undone.</p>
-    <div class="flex gap-1.5">
-      <Button
-        size="sm"
-        variant="primary"
-        onclick={async () => {
-          convertingAll = false;
-          convertMsg = (await onconvertall?.(tree.version)) ?? '';
-        }}>Convert</Button>
-      <Button size="sm" variant="ghost" onclick={() => (convertingAll = false)}>Cancel</Button>
-    </div>
   </div>
+  {#snippet actions()}
+    <DialogActions
+      confirm="Convert"
+      oncancel={() => (convertingAll = false)}
+      onconfirm={async () => {
+        convertingAll = false;
+        convertMsg = (await onconvertall?.(tree.version)) ?? '';
+      }} />
+  {/snippet}
 </Dialog>
 
 <Dialog
@@ -1186,31 +1092,36 @@
       <p class="m-0">Note that some or all of the passives may have been de-allocated due to changes in the tree.</p>
       <p class="m-0">You can switch back to the old tree using the Tree set select.</p>
     {/if}
-    <div class="flex"><Button size="sm" onclick={() => ((converted = null), (convertMsg = ''))}>OK</Button></div>
   </div>
+  {#snippet actions()}
+    <DialogActions confirm="OK" cancel={false} onconfirm={() => ((converted = null), (convertMsg = ''))} />
+  {/snippet}
 </Dialog>
 
 <Dialog small bind:open={resetting} title="Reset Tree/Tattoos" class="w-115 p-4.5">
   <div class="flex flex-col gap-3 text-13">
     <p class="m-0">Warning: resetting your passive tree or removing all tattoos cannot be undone.</p>
-    <div class="flex gap-1.5">
-      <Button
-        size="sm"
-        variant="danger"
-        onclick={() => {
-          resetting = false;
-          onresettree?.();
-        }}>Reset Tree</Button>
-      {#if onremovetattoos}<Button
-          size="sm"
-          onclick={() => {
-            resetting = false;
-            onremovetattoos?.();
-          }}>Remove All Tattoos</Button
-        >{/if}
-      <Button size="sm" variant="ghost" onclick={() => (resetting = false)}>Cancel</Button>
-    </div>
   </div>
+  {#snippet actions()}
+    <DialogActions
+      confirm="Reset Tree"
+      tone="danger"
+      oncancel={() => (resetting = false)}
+      onconfirm={() => {
+        resetting = false;
+        onresettree?.();
+      }}>
+      {#snippet extra()}
+        {#if onremovetattoos}<Button
+            size="md"
+            onclick={() => {
+              resetting = false;
+              onremovetattoos?.();
+            }}>Remove All Tattoos</Button
+          >{/if}
+      {/snippet}
+    </DialogActions>
+  {/snippet}
 </Dialog>
 
 <style>

@@ -56,7 +56,7 @@
 
 <Menu label={slot} {items} bind:open class="top-full mt-1 max-h-80 w-64 overflow-y-auto">
   {#snippet trigger(a)}
-    <button {...a} class={['btn btn-2xs btn-ghost px-1.5 font-mono', extra]} aria-label="Change {slot}" title="Equip or unequip">⋯</button>
+    <button {...a} class={['btn btn-2xs btn-ghost min-w-6 px-1.5 font-mono', extra]} aria-label="Change {slot}" title="Equip or unequip">⋯</button>
   {/snippet}
 </Menu>
 {#if tip && hovered}

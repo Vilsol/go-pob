@@ -101,7 +101,7 @@ describe('Manage config sets', () => {
   const titles = () => workerInstance.GetConfigSets().sets.map((s) => s.title ?? 'Default');
   const open = async () => {
     await fireEvent.change(setSelect(), { target: { value: '-1' } });
-    return screen.getByRole('listbox', { name: 'config sets' });
+    return screen.getByRole('listbox', { name: 'Config sets' });
   };
   const nameAndSave = async (title: string) => {
     await fireEvent.input(screen.getByRole('textbox', { name: 'Name for this config set' }), { target: { value: title } });
@@ -112,7 +112,7 @@ describe('Manage config sets', () => {
     await mount();
     expect(titles()).toEqual(['Final', 'Swap on Spark Nova (70 lvl)']);
     const list = await open();
-    expect(within(list).getAllByRole('option')[0].textContent).toContain('(Current)');
+    expect(within(list).getAllByRole('option')[0].textContent).toContain('current');
 
     await fireEvent.click(screen.getByRole('button', { name: 'New' }));
     await nameAndSave('Boss');

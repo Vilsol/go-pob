@@ -1,6 +1,6 @@
 <script lang="ts">
   import Dialog from './Dialog.svelte';
-  import Button from './Button.svelte';
+  import DialogActions from './DialogActions.svelte';
   import FloatingLabel from './FloatingLabel.svelte';
   import Select from './Select.svelte';
   import ItemTooltip from './ItemTooltip.svelte';
@@ -71,14 +71,13 @@
     {/if}
   </div>
   {#snippet actions()}
-    <Button
-      size="md"
-      variant="primary"
-      onclick={async () => {
+    <DialogActions
+      confirm="Add"
+      oncancel={() => (open = false)}
+      onconfirm={async () => {
         const t = await craft.crucibleText?.([...picks]);
         if (t !== undefined) craft.settext?.(t);
         open = false;
-      }}>Add</Button>
-    <Button size="md" onclick={() => (open = false)}>Cancel</Button>
+      }} />
   {/snippet}
 </Dialog>

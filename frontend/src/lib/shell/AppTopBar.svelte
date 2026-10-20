@@ -19,6 +19,7 @@
   import AppAbout from './AppAbout.svelte';
   import Dialog from '$lib/design/Dialog.svelte';
   import Button from '$lib/design/Button.svelte';
+  import DialogActions from '$lib/design/DialogActions.svelte';
   import { WIKI_KEY, hoveredWikiName, openWiki } from '$lib/design/wiki';
   import type { Snippet } from 'svelte';
   import MobileFrame from '$lib/design/mobile/MobileFrame.svelte';
@@ -351,7 +352,9 @@
 </Dialog>
 <Dialog small open={!!saveError} title="Error" class="w-100 p-4.5" onclose={() => (saveError = undefined)}>
   <p role="alert" class="m-0 text-13 whitespace-pre-line">{saveError}</p>
-  {#snippet actions()}<Button onclick={() => (saveError = undefined)}>OK</Button>{/snippet}
+  {#snippet actions()}
+    <DialogActions confirm="OK" cancel={false} onconfirm={() => (saveError = undefined)} />
+  {/snippet}
 </Dialog>
 <Dialog bind:open={naming} title="Set Name" class="w-100 p-4.5">
   <form

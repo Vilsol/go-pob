@@ -1,6 +1,6 @@
 <script lang="ts">
   import Dialog from './Dialog.svelte';
-  import Button from './Button.svelte';
+  import DialogActions from './DialogActions.svelte';
   import Select from './Select.svelte';
   import Checkbox from './Checkbox.svelte';
   import FloatingLabel from './FloatingLabel.svelte';
@@ -56,11 +56,11 @@
     </div>
   {/if}
   {#snippet actions()}
-    <Button variant="ghost" onclick={() => (open = false)}>Cancel</Button>
-    <Button
-      variant="primary"
+    <DialogActions
+      confirm="Search"
       disabled={!item}
-      onclick={() => {
+      oncancel={() => (open = false)}
+      onconfirm={() => {
         if (!item) return;
         const ticked = defences.flatMap((d, i) =>
           defenceRows[i]?.on ? [[d.tradeKey, { min: num(defenceRows[i].min), max: num(defenceRows[i].max) }] as const] : []
@@ -69,6 +69,6 @@
           tradeSearchUrl(item, slot, { realm, league, listed, baseType, ilvlMin: num(ilvlMin), ilvlMax: num(ilvlMax), defences: Object.fromEntries(ticked) })
         );
         open = false;
-      }}>Search</Button>
+      }} />
   {/snippet}
 </Dialog>

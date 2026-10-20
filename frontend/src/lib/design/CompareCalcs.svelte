@@ -66,9 +66,9 @@
             <div role="row" class={['grid gap-2 border-t border-line-faint px-2 pt-1 pb-0.5 font-semibold text-text-3 first:border-t-0', GRID]}>
               <span role="rowheader"><PobText text={b.label} />:</span>
               {#if b.extra}
-                <span role="cell" class="text-right font-mono font-normal"><PobText text={b.extra.a} /></span><span
+                <span role="cell" class="text-right font-mono font-normal [overflow-wrap:anywhere]"><PobText text={b.extra.a} /></span><span
                   role="cell"
-                  class="text-right font-mono font-normal"><PobText text={b.extra.b} /></span>
+                  class="text-right font-mono font-normal [overflow-wrap:anywhere]"><PobText text={b.extra.b} /></span>
               {/if}
             </div>
             {#each b.rows as r, k (k)}

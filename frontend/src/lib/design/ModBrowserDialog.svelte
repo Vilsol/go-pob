@@ -1,6 +1,6 @@
 <script lang="ts">
   import Dialog from './Dialog.svelte';
-  import Button from './Button.svelte';
+  import DialogActions from './DialogActions.svelte';
 
   const EMPTY = 'No matching modifiers found';
   // ConfigModBrowser.lua:271-278
@@ -83,9 +83,11 @@
     </p>
   </div>
   {#snippet actions()}
-    <Button variant="primary" disabled={!canAdd} onclick={add}>Add</Button>
-    <Button onclick={() => (open = false)}>Cancel</Button>
-    <!-- ConfigModBrowser.lua:267-270 -->
-    <span class="cursor-help px-1 text-13 text-text-2" title={HELP}>?</span>
+    <DialogActions confirm="Add" disabled={!canAdd} oncancel={() => (open = false)} onconfirm={add}>
+      {#snippet extra()}
+        <!-- ConfigModBrowser.lua:267-270 -->
+        <span class="cursor-help px-1 text-13 text-text-2" title={HELP}>?</span>
+      {/snippet}
+    </DialogActions>
   {/snippet}
 </Dialog>

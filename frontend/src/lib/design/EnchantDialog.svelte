@@ -1,6 +1,7 @@
 <script lang="ts">
   import Dialog from './Dialog.svelte';
   import Button from './Button.svelte';
+  import DialogActions from './DialogActions.svelte';
   import FloatingLabel from './FloatingLabel.svelte';
   import Select from './Select.svelte';
   import Dropdown from './Dropdown.svelte';
@@ -122,20 +123,22 @@
     {/if}
   </div>
   {#snippet actions()}
-    <Button
-      size="md"
-      variant="primary"
+    <DialogActions
+      confirm="Enchant"
       disabled={!line}
-      onclick={() => {
+      oncancel={() => (open = false)}
+      onconfirm={() => {
         onedit({ kind: 'enchant', index: slot, text: line });
         open = false;
-      }}>Enchant</Button>
-    <Button
-      size="md"
-      onclick={() => {
-        onedit({ kind: 'enchant', index: slot, value: 1 });
-        open = false;
-      }}>Remove</Button>
-    <Button size="md" onclick={() => (open = false)}>Cancel</Button>
+      }}>
+      {#snippet extra()}
+        <Button
+          size="md"
+          onclick={() => {
+            onedit({ kind: 'enchant', index: slot, value: 1 });
+            open = false;
+          }}>Remove</Button>
+      {/snippet}
+    </DialogActions>
   {/snippet}
 </Dialog>

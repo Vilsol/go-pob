@@ -7,9 +7,11 @@
   import NumberInput from './NumberInput.svelte';
   import Checkbox from './Checkbox.svelte';
   import Button from './Button.svelte';
+  import SetManager from './SetManager.svelte';
+  import SetSelect from './SetSelect.svelte';
+  import type { SetListOp } from './set_list';
   import SkillGroupEditor from './SkillGroupEditor.svelte';
   import Icon from './Icon.svelte';
-  import Dialog from './Dialog.svelte';
   import { Reorder, reorderState } from './reorder';
   import { socketLine } from './items';
   import type { GemAttr, ItemTip, SkillGemFixture, SocketGroupFixture } from './fixtures';
@@ -164,22 +166,6 @@
   const reorderable = $derived(!!onreordergroups);
 
   let managing = $state(false);
-  let selRow = $state(0);
-  let naming = $state<{ op: 'new' | 'copy' | 'rename'; title: string } | null>(null);
-  let confirmDelete = $state(false);
-  const openManage = () => {
-    selRow = set;
-    naming = null;
-    confirmDelete = false;
-    managing = true;
-  };
-  const saveName = () => {
-    if (!naming || !/\S/.test(naming.title)) return;
-    const { op, title } = naming;
-    if (op === 'new') onsets?.({ op, title });
-    else onsets?.({ op, index: selRow, title });
-    naming = null;
-  };
   const groups = $derived(sets[set]?.groups ?? []);
   const group = $derived(groups[selected]);
   const offset = $derived(
@@ -208,21 +194,15 @@
   }} />
 <section aria-label="Socket groups" class="scroll flex w-72.5 shrink-0 flex-col gap-1.5 pr-1" bind:this={groupBox}>
   <FloatingLabel label="Skill set" class="[--float-bg:var(--color-surface-1)]"
-    ><Select
+    ><SetSelect
       class="h-7.5 bg-surface-1"
-      options={[...sets.map((s, i) => ({ value: String(i), label: s.title })), ...(onsets ? [{ value: '-1', label: 'Manage skill sets…' }] : [])]}
-      value={String(set)}
+      sets={sets.map((s) => s.title)}
+      value={set}
+      manage="Manage skill sets…"
       disabled={!onset}
       title={onset ? undefined : setLocked}
-      onchange={(e: Event & { currentTarget: HTMLSelectElement }) => {
-        const v = Number(e.currentTarget.value);
-        if (v === -1) {
-          e.currentTarget.value = String(set);
-          openManage();
-          return;
-        }
-        onset?.(v);
-      }} /></FloatingLabel>
+      onmanage={onsets && (() => (managing = true))}
+      onchange={(i: number) => onset?.(i)} /></FloatingLabel>
   <div class="mt-0.5 flex items-baseline justify-between"><h2 class="subhead uppercase">Socket groups</h2></div>
   {#each groups as g, i (i)}
     <div {...reorderable ? drag.row(i) : {}} class="relative flex items-stretch gap-1" title={reorderable ? undefined : groupsLocked}>
@@ -331,63 +311,16 @@
   </section>
 </section>
 {#if onsets}
-  <Dialog bind:open={managing} title="Manage skill sets" class="w-105 p-4.5">
-    <div class="flex flex-col gap-2">
-      <div role="listbox" aria-label="Skill sets" class="flex max-h-75 flex-col gap-1 overflow-y-auto">
-        {#each sets as s, i (i)}
-          <button
-            role="option"
-            aria-selected={i === selRow}
-            class="choice-card justify-between gap-2 px-2.5 py-1.5 text-left text-13 aria-selected:border-accent aria-selected:bg-surface-3"
-            onclick={() => {
-              selRow = i;
-              naming = null;
-              confirmDelete = false;
-            }}
-            ondblclick={() => {
-              if (i !== set) onset?.(i);
-            }}
-            ><span class="truncate">{s.title}</span>{#if i === set}<span class="font-mono text-11 text-accent">current</span>{/if}</button>
-        {/each}
-      </div>
-      {#if naming}
-        <form
-          class="flex items-center gap-1.5"
-          onsubmit={(e) => {
-            e.preventDefault();
-            saveName();
-          }}>
-          <input class="input h-7.5 grow" aria-label="Name for this skill set" bind:value={naming.title} maxlength="100" />
-          <Button size="sm" variant="primary" type="submit" disabled={!/\S/.test(naming.title)}>Save</Button>
-          <Button size="sm" type="button" onclick={() => (naming = null)}>Cancel</Button>
-        </form>
-      {:else if confirmDelete}
-        <div class="flex items-center gap-1.5 text-13" role="group" aria-label="Confirm delete">
-          <span class="grow">Are you sure you want to delete '{sets[selRow]?.title}'?</span>
-          <Button
-            size="sm"
-            variant="danger"
-            onclick={() => {
-              onsets({ op: 'delete', index: selRow });
-              confirmDelete = false;
-              selRow = Math.max(0, selRow - 1);
-            }}>Delete</Button>
-          <Button size="sm" onclick={() => (confirmDelete = false)}>Cancel</Button>
-        </div>
-      {:else}
-        <div class="flex gap-1.5">
-          <Button size="sm" class="bg-surface-1" onclick={() => (naming = { op: 'new', title: '' })}>New</Button>
-          <Button size="sm" class="bg-surface-1" onclick={() => (naming = { op: 'copy', title: sets[selRow]?.title ?? '' })}>Copy</Button>
-          <Button size="sm" class="bg-surface-1" onclick={() => (naming = { op: 'rename', title: sets[selRow]?.title ?? '' })}>Rename</Button>
-          <Button size="sm" variant="danger" disabled={sets.length < 2} onclick={() => (confirmDelete = true)}>Delete</Button>
-        </div>
-      {/if}
-      <span class="note">Double-click a skill set to switch to it.</span>
-    </div>
-    {#snippet actions()}
-      <Button size="md" variant="primary" class="px-4" onclick={() => (managing = false)}>Done</Button>
-    {/snippet}
-  </Dialog>
+  <SetManager
+    bind:open={managing}
+    title="Manage skill sets"
+    noun="skill set"
+    sets={sets.map((s) => s.title)}
+    current={set}
+    reorderable={false}
+    note="Double-click a skill set to switch to it."
+    onactivate={(i: number) => onset?.(i)}
+    onop={(op: SetListOp) => op.op !== 'move' && onsets(op)} />
 {/if}
 {#if group}
   {#key `${set}:${selected}`}

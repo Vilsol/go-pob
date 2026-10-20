@@ -19,6 +19,8 @@ const CONTROLS = 'input, select, textarea, button, a[href], [contenteditable], [
 const THRESHOLD = 4;
 const SETTLE = 150;
 const EDGE = 40;
+const TOUCH_HOLD = 300;
+const TOUCH_SLOP = 8;
 let uid = 0;
 
 type Drag = {
@@ -38,6 +40,9 @@ type Drag = {
   scroller?: HTMLElement;
   scroll0: number;
   frame: number;
+  touch: boolean;
+  held: boolean;
+  timer?: ReturnType<typeof setTimeout>;
 };
 
 const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches || document.documentElement.dataset.motion === 'off';
@@ -83,7 +88,8 @@ export class Reorder {
     const ctrl = (e.target as Element).closest(CONTROLS);
     if (ctrl && ctrl !== row && row.contains(ctrl) && !ctrl.hasAttribute('data-reorder-press')) return;
     e.preventDefault();
-    this.#d = {
+    const touch = e.pointerType === 'touch';
+    const d: Drag = {
       from: i,
       to: i,
       row,
@@ -97,13 +103,31 @@ export class Reorder {
       dx: 0,
       dy: 0,
       scroll0: 0,
-      frame: 0
+      frame: 0,
+      touch,
+      held: !touch
     };
+    this.#d = d;
+    // a touch drags only after a hold, so a swipe over the list still scrolls it
+    if (touch)
+      d.timer = setTimeout(() => {
+        d.held = true;
+        navigator.vibrate?.(10);
+      }, TOUCH_HOLD);
     addEventListener('pointermove', this.#onmove);
     addEventListener('pointerup', this.#onup);
     addEventListener('pointercancel', this.#oncancel);
     addEventListener('keydown', this.#onkey, true);
+    addEventListener('touchmove', this.#blockTouch, { passive: false });
+    addEventListener('contextmenu', this.#blockHeld, true);
   }
+
+  #blockTouch = (e: Event) => {
+    if (this.#d?.held && e.cancelable) e.preventDefault();
+  };
+  #blockHeld = (e: Event) => {
+    if (this.#d?.touch) e.preventDefault();
+  };
 
   #onmove = (e: PointerEvent) => {
     const d = this.#d;
@@ -112,6 +136,14 @@ export class Reorder {
     d.x = e.clientX;
     d.y = e.clientY;
     if (!d.started) {
+      if (!d.held) {
+        if (Math.hypot(d.x - from.x, d.y - from.y) >= TOUCH_SLOP) this.#release();
+        else {
+          d.x = from.x;
+          d.y = from.y;
+        }
+        return;
+      }
       if (Math.hypot(d.x - from.x, d.y - from.y) < THRESHOLD) {
         d.x = from.x;
         d.y = from.y;
@@ -275,6 +307,9 @@ export class Reorder {
     removeEventListener('pointerup', this.#onup);
     removeEventListener('pointercancel', this.#oncancel);
     removeEventListener('keydown', this.#onkey, true);
+    removeEventListener('touchmove', this.#blockTouch);
+    removeEventListener('contextmenu', this.#blockHeld, true);
+    clearTimeout(d.timer);
     this.#d = null;
   }
 
@@ -335,8 +370,6 @@ export type DropZone = {
 };
 export type DragSource = { data: () => unknown; label?: string; onstart?: () => void; onend?: () => void };
 
-const TOUCH_HOLD = 300;
-const TOUCH_SLOP = 8;
 const zones = new WeakMap<Element, DropZone>();
 
 export function dropZone(node: HTMLElement, zone: DropZone | undefined | false) {

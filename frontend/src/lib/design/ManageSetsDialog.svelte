@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { untrack } from 'svelte';
-  import Dialog from './Dialog.svelte';
   import Button from './Button.svelte';
-  import { Reorder, reorderState } from './reorder';
+  import InlineConfirm from './InlineConfirm.svelte';
+  import SetManager from './SetManager.svelte';
+  import type { SetListOp } from './set_list';
   import type { ItemSetOp } from './items';
   import type { ItemSet } from './fixtures';
   import ItemSetTip from './ItemSetTip.svelte';
@@ -24,122 +24,42 @@
   const sharedSel = $derived(sharedRow === null ? undefined : shared[sharedRow]);
 
   let selRow = $state(0);
-  let naming = $state<{ op: 'new' | 'copy' | 'rename'; title: string } | null>(null);
-  let confirmDelete = $state(false);
   const selected = $derived(sets[selRow]);
-  $effect(() => {
-    if (!open) return;
-    untrack(() => {
-      selRow = Math.max(
-        0,
-        sets.findIndex((s) => s.id === setId)
-      );
-      naming = null;
-      confirmDelete = false;
-    });
-  });
-
-  const saveName = () => {
-    if (!naming || !/\S/.test(naming.title)) return;
-    const { op, title } = naming;
-    if (op === 'new') {
-      onsets({ op, title });
-      selRow = sets.length;
-    } else if (selected) {
-      onsets({ op, id: selected.id, title });
-      if (op === 'copy') selRow = sets.length;
-    }
-    naming = null;
+  const idAt = (i: number) => sets[i]?.id ?? '';
+  const onop = (op: SetListOp) => {
+    if (op.op === 'new' || op.op === 'move') onsets(op);
+    else if (op.op === 'delete') onsets({ op: 'delete', id: idAt(op.index) });
+    else onsets({ op: op.op, id: idAt(op.index), title: op.title });
   };
 
   // ItemSetListControl.lua:80-83
   const uid = $props.id();
-  let tipRow = $state<number | null>(null);
-  const rowEls: HTMLElement[] = $state([]);
+  let tipRow = $state<{ i: number; el: HTMLElement } | null>(null);
   const sharedEls: HTMLElement[] = $state([]);
   let sharedTip = $state<number | null>(null);
-  const tipSet = $derived(tipRow === null ? undefined : sets[tipRow]);
-
-  let box = $state<HTMLElement>();
-  const dragState = $state(reorderState());
-  const drag = new Reorder(dragState, {
-    box: () => box,
-    name: (i) => sets[i]?.title ?? '',
-    onmove: (from, to) => {
-      onsets({ op: 'move', from, to });
-      selRow = to;
-    },
-    onactivate: (i) => {
-      if (sets[i] && sets[i].id !== setId) onpick(sets[i].id);
-    }
+  const tipSet = $derived(tipRow === null ? undefined : sets[tipRow.i]);
+  const rowProps = (i: number) => ({
+    'aria-describedby': tipRow?.i === i && sets[i]?.tip ? `${uid}-tip` : undefined,
+    onmouseenter: (e: MouseEvent) => (tipRow = { i, el: e.currentTarget as HTMLElement }),
+    onmouseleave: () => (tipRow = null),
+    onfocus: (e: FocusEvent) => (tipRow = { i, el: e.currentTarget as HTMLElement }),
+    onblur: () => (tipRow = null)
   });
 </script>
 
-<Dialog bind:open title="Manage item sets" class="w-105 p-4.5">
-  <div class="flex flex-col gap-2">
-    <div role="listbox" aria-label="Item sets" class="flex max-h-75 flex-col gap-1 overflow-y-auto" bind:this={box}>
-      {#each sets as s, i (i)}
-        <div {...drag.row(i)} class="relative">
-          <button
-            bind:this={rowEls[i]}
-            data-reorder-press
-            tabindex="-1"
-            role="option"
-            aria-selected={i === selRow}
-            aria-describedby={tipRow === i && s.tip ? `${uid}-tip` : undefined}
-            onmouseenter={() => (tipRow = i)}
-            onmouseleave={() => (tipRow = null)}
-            onfocus={() => (tipRow = i)}
-            onblur={() => (tipRow = null)}
-            class="choice-card justify-between gap-2 px-2.5 py-1.5 text-left text-13 aria-selected:border-accent aria-selected:bg-surface-3"
-            onclick={() => {
-              selRow = i;
-              naming = null;
-              confirmDelete = false;
-            }}
-            ondblclick={() => {
-              if (s.id !== setId) onpick(s.id);
-            }}
-            ><span class="truncate">{s.title}</span>{#if s.id === setId}<span class="font-mono text-11 text-accent">current</span>{/if}</button>
-        </div>
-      {/each}
-    </div>
-    <div aria-live="assertive" class="sr-only">{dragState.message}</div>
-    <span id={drag.hint} class="sr-only">{drag.hintText}; Enter switches to the set</span>
-    {#if naming}
-      <form
-        class="flex items-center gap-1.5"
-        onsubmit={(e) => {
-          e.preventDefault();
-          saveName();
-        }}>
-        <input class="input h-7.5 grow" aria-label="Name for this item set" bind:value={naming.title} maxlength="100" />
-        <Button size="sm" variant="primary" type="submit" disabled={!/\S/.test(naming.title)}>Save</Button>
-        <Button size="sm" type="button" onclick={() => (naming = null)}>Cancel</Button>
-      </form>
-    {:else if confirmDelete && selected}
-      <div class="flex items-center gap-1.5 text-13" role="group" aria-label="Confirm delete">
-        <span class="grow">Are you sure you want to delete '{selected.title}'? This will not delete any items used by the set.</span>
-        <Button
-          size="sm"
-          variant="danger"
-          onclick={() => {
-            onsets({ op: 'delete', id: selected.id });
-            confirmDelete = false;
-            selRow = Math.max(0, selRow - 1);
-          }}>Delete</Button>
-        <Button size="sm" onclick={() => (confirmDelete = false)}>Cancel</Button>
-      </div>
-    {:else}
-      <div class="flex gap-1.5">
-        <Button size="sm" class="bg-surface-1" onclick={() => (naming = { op: 'new', title: '' })}>New</Button>
-        <Button size="sm" class="bg-surface-1" disabled={!selected} onclick={() => (naming = { op: 'copy', title: selected?.title ?? '' })}>Copy</Button>
-        <Button size="sm" class="bg-surface-1" disabled={!selected} onclick={() => (naming = { op: 'rename', title: selected?.title ?? '' })}>Rename</Button>
-        <Button size="sm" variant="danger" disabled={!selected || sets.length < 2} onclick={() => (confirmDelete = true)}>Delete</Button>
-      </div>
-    {/if}
-    <span class="note">Double-click an item set to switch to it; drag to reorder.</span>
-  </div>
+<SetManager
+  bind:open
+  bind:sel={selRow}
+  title="Manage item sets"
+  noun="item set"
+  sets={sets.map((s) => s.title)}
+  current={sets.findIndex((s) => s.id === setId)}
+  deleteMessage={(i: number) => `Are you sure you want to delete '${sets[i]?.title ?? ''}'? This will not delete any items used by the set.`}
+  note="Double-click an item set to switch to it; drag to reorder."
+  activateHint="Enter switches to the set"
+  {rowProps}
+  onactivate={(i: number) => sets[i] && onpick(sets[i].id)}
+  {onop}>
   {#if onshared}
     <section aria-label="Shared item sets" class="mt-3 flex flex-col gap-2 border-t border-line pt-3">
       <h3 class="caps">Shared item sets</h3>
@@ -179,18 +99,15 @@
         </form>
       {:else if sharedConfirm && sharedSel && sharedRow !== null}
         {@const row = sharedRow}
-        <div class="flex items-center gap-1.5 text-13" role="group" aria-label="Confirm shared delete">
-          <span class="grow">Are you sure you want to delete '{sharedSel.title}' from the shared item set list?</span>
-          <Button
-            size="sm"
-            variant="danger"
-            onclick={() => {
-              onshared({ op: 'delete', index: row });
-              sharedConfirm = false;
-              sharedRow = null;
-            }}>Delete</Button>
-          <Button size="sm" onclick={() => (sharedConfirm = false)}>Cancel</Button>
-        </div>
+        <InlineConfirm
+          label="Confirm shared delete"
+          message={`Are you sure you want to delete '${sharedSel.title}' from the shared item set list?`}
+          onconfirm={() => {
+            onshared({ op: 'delete', index: row });
+            sharedConfirm = false;
+            sharedRow = null;
+          }}
+          oncancel={() => (sharedConfirm = false)} />
       {:else}
         <div class="flex flex-wrap gap-1.5">
           <Button size="sm" class="bg-surface-1" disabled={!selected} onclick={() => selected && onshared({ op: 'share', id: selected.id })}>Share set</Button>
@@ -209,9 +126,6 @@
     <ItemSetTip anchor={sharedEls[sharedTip]} id="{uid}-shared-tip" title={shared[sharedTip].title} lines={shared[sharedTip].tip} />
   {/if}
   {#if open && tipRow !== null && tipSet?.tip}
-    <ItemSetTip anchor={rowEls[tipRow]} id="{uid}-tip" title={tipSet.title} lines={tipSet.tip} />
+    <ItemSetTip anchor={tipRow.el} id="{uid}-tip" title={tipSet.title} lines={tipSet.tip} />
   {/if}
-  {#snippet actions()}
-    <Button size="md" variant="primary" class="px-4" onclick={() => (open = false)}>Done</Button>
-  {/snippet}
-</Dialog>
+</SetManager>

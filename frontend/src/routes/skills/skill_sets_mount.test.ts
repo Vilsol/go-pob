@@ -163,6 +163,9 @@ describe('managing skill sets', () => {
     expect(goTitles()[2]).toBe('Bossing');
     await vi.waitFor(() => expect(rows().map((r) => r.textContent)).toEqual(['Finalcurrent', 'Swap on Spark Nova (70 lvl)', 'Bossing']));
 
+    // SkillSetListControl.lua:70-72: a new set becomes the selection
+    expect(rows()[2].getAttribute('aria-selected')).toBe('true');
+    await fireEvent.click(rows()[0]);
     await fireEvent.click(within(dialog()).getByRole('button', { name: 'Copy' }));
     await name('Final copy');
     await vi.waitFor(() => expect(goIds()).toEqual([3, 2, 1, 4]));

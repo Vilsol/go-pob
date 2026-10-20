@@ -1,5 +1,6 @@
 <script lang="ts">
   import Dialog from './Dialog.svelte';
+  import DialogActions from './DialogActions.svelte';
   import NumberInput from './NumberInput.svelte';
   import Tabs from './Tabs.svelte';
   import { panelId, tabId } from './tab_ids';
@@ -110,15 +111,17 @@
   <div class="flex items-center gap-2 border-t border-line bg-bar px-4.5 py-3">
     {#if sample !== undefined}<span aria-live="polite" class="font-mono text-11 text-text-3">Preview: Full DPS {preview}</span>{/if}
     <div class="grow"></div>
-    <button class="btn btn-md bg-transparent px-3 text-text-2" onclick={() => onreset(cur.id)}>Reset this section</button>
-    {#if oncancel}
-      <button
-        class="btn btn-md px-3"
-        onclick={() => {
-          oncancel();
-          open = false;
-        }}>Cancel</button>
-    {/if}
-    <button class="btn btn-md btn-primary px-4" onclick={() => (open = false)}>{oncancel ? 'Save' : 'Done'}</button>
+    <DialogActions
+      cancel={oncancel ? 'Cancel' : false}
+      oncancel={() => {
+        oncancel?.();
+        open = false;
+      }}
+      confirm={oncancel ? 'Save' : 'Done'}
+      onconfirm={() => (open = false)}>
+      {#snippet extra()}
+        <button class="btn btn-md bg-transparent px-3 text-text-2" onclick={() => onreset(cur.id)}>Reset this section</button>
+      {/snippet}
+    </DialogActions>
   </div>
 </Dialog>

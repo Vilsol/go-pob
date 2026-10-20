@@ -6,7 +6,6 @@
   import OptionGroup from './OptionGroup.svelte';
   import OptionRow from './OptionRow.svelte';
   import NumberInput from './NumberInput.svelte';
-  import Select from './Select.svelte';
   import Dropdown from './Dropdown.svelte';
   import Button from './Button.svelte';
   import PobText from './PobText.svelte';
@@ -19,7 +18,8 @@
   import type { calculator } from '$lib/types';
   import type { CustomGroup } from './fixtures';
   import ImpactBlocks from './ImpactBlocks.svelte';
-  import SetListDialog from './SetListDialog.svelte';
+  import SetManager from './SetManager.svelte';
+  import SetSelect from './SetSelect.svelte';
   import type { SetListOp } from './set_list';
   import type { StatCompareSection } from '$lib/skill_tree/stat_compare';
 
@@ -193,20 +193,14 @@
   <span class="note" aria-live="polite">{view.summary}</span>
   <label class="field field-inline"
     >Config set
-    <Select
+    <SetSelect
       class="h-8.5 bg-surface-1"
       disabled={(sets.length < 2 && !onconfigsets) || !onconfigset}
-      options={[...sets.map((s, i) => ({ value: String(i), label: s })), ...(onconfigsets ? [{ value: '-1', label: 'Manage config sets…' }] : [])]}
-      value={String(activeSet)}
-      onchange={(e: Event & { currentTarget: HTMLSelectElement }) => {
-        const v = Number(e.currentTarget.value);
-        if (v === -1) {
-          e.currentTarget.value = String(activeSet);
-          managing = true;
-          return;
-        }
-        onconfigset?.(v);
-      }} />
+      {sets}
+      value={activeSet}
+      manage="Manage config sets…"
+      onmanage={onconfigsets && (() => (managing = true))}
+      onchange={(i: number) => onconfigset?.(i)} />
   </label>
   <Button size="md" variant="ghost" class="px-2.5" onclick={onreset}>Reset to defaults</Button>
 </div>
@@ -262,12 +256,13 @@
   </div>
 {/if}
 {#if onconfigsets}
-  <SetListDialog
+  <SetManager
     bind:open={managing}
     title="Manage Config Sets"
     noun="config set"
     {sets}
     current={activeSet}
+    movable
     onactivate={(i: number) => onconfigset?.(i)}
     onop={onconfigsets} />
 {/if}

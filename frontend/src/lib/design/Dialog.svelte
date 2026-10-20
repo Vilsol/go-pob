@@ -88,7 +88,7 @@
   }}>
   {#if sheet}
     <div class="sheet-head">
-      <h3 id="{uid}-title" class="text-16 font-semibold">{title}</h3>
+      <h3 id="{uid}-title" class="text-15 font-semibold">{title}</h3>
       {#if note}<span class="note">{note}</span>{/if}
       {@render head?.()}
       <button class="btn-close ml-auto" aria-label="Close" onclick={() => (open = false)}>×</button>
@@ -96,7 +96,7 @@
     {@render children()}
   {:else}
     <div class="flex items-center justify-between">
-      <h3 id="{uid}-title" class="text-15">{title}</h3>
+      <h3 id="{uid}-title" class="text-15 font-semibold">{title}</h3>
       <button class="btn-close" aria-label="Close" onclick={() => (open = false)}>×</button>
     </div>
     {@render children()}

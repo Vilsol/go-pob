@@ -216,6 +216,8 @@
   </div>
 {/if}
 
+<!-- drawn as generated content, so the glyph reads as an icon and the name need not contain it -->
+{#snippet glyph(text: string)}<span aria-hidden="true" class="before:content-[attr(data-glyph)]" data-glyph={text}></span>{/snippet}
 {#snippet tool(t: Tool)}
   <button
     class={[
@@ -226,7 +228,7 @@
     aria-pressed={t.is?.()}
     title={tip(t)}
     disabled={pobView}
-    onclick={t.run}>{t.label}</button>
+    onclick={t.run}>{@render glyph(t.label)}</button>
 {/snippet}
 {#snippet sep()}<span class="mx-0.5 h-5.5 w-px shrink-0 bg-line" aria-hidden="true"></span>{/snippet}
 
@@ -237,7 +239,7 @@
       aria-label={t.name}
       title={tip(t)}
       disabled={pobView || !t.can()}
-      onclick={t.run}>{t.label}</button>
+      onclick={t.run}>{@render glyph(t.label)}</button>
   {/each}
   {@render sep()}
   {#each HEADINGS as t (t.name)}{@render tool(t)}{/each}
@@ -253,7 +255,9 @@
       onclick={() => (paletteOpen = !paletteOpen)}
       onkeydown={(e) => {
         if (e.key === 'Escape') paletteOpen = false;
-      }}>A<span class="toned h-1 w-3.5 rounded-hair bg-(--tone,var(--color-text))" style:--tone={codeToCss(currentCode)} data-pob-color></span>▾</button>
+      }}
+      >{@render glyph('A')}<span class="toned h-1 w-3.5 rounded-hair bg-(--tone,var(--color-text))" style:--tone={codeToCss(currentCode)} data-pob-color></span
+      >▾</button>
     {#if paletteOpen}
       <div
         class="absolute top-9 left-0 z-overlay flex w-82.5 flex-col gap-1.5 rounded-md border border-line-strong bg-surface-2 p-2 shadow-pop"
@@ -325,7 +329,7 @@
     aria-label="Clear formatting"
     title="Clear formatting (the selection, or the whole block)"
     disabled={pobView}
-    onclick={clearFormatting}>T<sub>×</sub></button>
+    onclick={clearFormatting}>{@render glyph('T')}<sub>×</sub></button>
   <span class="relative ml-1 inline-flex max-phone:absolute max-phone:top-2.5 max-phone:right-1.5">
     <button
       class="info-btn size-5.5 text-12"

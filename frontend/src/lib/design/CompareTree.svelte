@@ -99,22 +99,22 @@
       <h3 class="subhead text-12">NODE DIFFERENCES</h3>
       <span class="text-text-3">A {aPoints} pts · B {bPoints} pts · {shared} shared · {small.length} small nodes differ</span>
     </div>
-    {#each diffs as d (d.id)}
-      <div
-        class="grid grid-cols-[1.75rem_minmax(0,1fr)_4rem] items-center gap-1.5 border-b border-surface-2 py-1 phone:grid-cols-[1.75rem_minmax(0,1fr)_7.5rem_4rem]"
-        data-node-diff>
-        <span class={['toned font-semibold', OWNER[d.owner]]}>{d.owner.toUpperCase()}</span>
-        <span class="flex min-w-0 items-center gap-1.5"
-          ><span class="truncate" title={d.name}>{d.name}</span><span
-            class="shrink-0 rounded-full border border-line px-1.5 text-10 text-text-2 phone:hidden"
-            data-kind-badge>{KIND[d.kind]}</span
-          ></span>
-        <span class="text-text-3 max-phone:hidden">{KIND[d.kind]}</span>
-        {#if canApply}<Button size="2xs" class="px-0" onclick={() => onnode(d.id, d.owner === 'a' ? 'Drop' : 'Take')}
-            >{d.owner === 'a' ? 'Drop' : 'Take'}</Button
-          >{:else}<span></span>{/if}
-      </div>
-    {/each}
+    <div class="grid grid-cols-[1.75rem_minmax(0,1fr)_4rem] gap-1.5 phone:grid-cols-[1.75rem_minmax(0,1fr)_auto_4rem]">
+      {#each diffs as d (d.id)}
+        <div class="col-span-full grid grid-cols-subgrid items-center border-b border-surface-2 py-1" data-node-diff>
+          <span class={['toned font-semibold', OWNER[d.owner]]}>{d.owner.toUpperCase()}</span>
+          <span class="flex min-w-0 items-center gap-1.5"
+            ><span class="truncate" title={d.name}>{d.name}</span><span
+              class="shrink-0 rounded-full border border-line px-1.5 text-10 text-text-2 phone:hidden"
+              data-kind-badge>{KIND[d.kind]}</span
+            ></span>
+          <span class="text-text-3 max-phone:hidden">{KIND[d.kind]}</span>
+          {#if canApply}<Button size="2xs" class="px-0" onclick={() => onnode(d.id, d.owner === 'a' ? 'Drop' : 'Take')}
+              >{d.owner === 'a' ? 'Drop' : 'Take'}</Button
+            >{:else}<span></span>{/if}
+        </div>
+      {/each}
+    </div>
     <span class="text-text-3">“Take” copies B’s node into A (with its path); “Drop” removes A’s node. Each is one undoable step on this build.</span>
     {#if canApply && oncopytree}
       <div class="flex flex-wrap items-center gap-1.5">

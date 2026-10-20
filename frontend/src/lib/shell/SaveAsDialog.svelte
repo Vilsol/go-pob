@@ -3,6 +3,7 @@
   import Field from '$lib/design/Field.svelte';
   import Input from '$lib/design/Input.svelte';
   import Button from '$lib/design/Button.svelte';
+  import DialogActions from '$lib/design/DialogActions.svelte';
   import PromptDialog from './PromptDialog.svelte';
   import { syncWrap } from '$lib/go/worker';
   import { currentBuildPath } from '$lib/global.js';
@@ -93,8 +94,7 @@
   </div>
   {#if failed}<p role="alert" class="m-0 text-13 whitespace-pre-line text-worse">{failed}</p>{/if}
   {#snippet actions()}
-    <Button size="md" variant="ghost" class="px-3" onclick={() => (open = false)}>Cancel</Button>
-    <Button size="md" variant="primary" class="px-4" disabled={!name} onclick={save}>Save</Button>
+    <DialogActions confirm="Save" disabled={!name} oncancel={() => (open = false)} onconfirm={save} />
   {/snippet}
 </Dialog>
 
@@ -102,14 +102,14 @@
   <span class="text-13 text-text-2"
     >{folder ? leaf(folder) : 'All builds'} already holds a build named {name}. It is replaced, and cannot be brought back.</span>
   {#snippet actions()}
-    <Button size="md" variant="ghost" class="px-3" onclick={() => (replacing = false)}>Cancel</Button>
-    <Button
-      size="md"
-      variant="danger-solid"
-      onclick={() => {
+    <DialogActions
+      confirm="Replace"
+      tone="danger"
+      oncancel={() => (replacing = false)}
+      onconfirm={() => {
         replacing = false;
         write();
-      }}>Replace</Button>
+      }} />
   {/snippet}
 </Dialog>
 

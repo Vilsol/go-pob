@@ -6,6 +6,7 @@
   import { panelId, tabId } from './tab_ids';
   import Select from './Select.svelte';
   import Button from './Button.svelte';
+  import DialogActions from './DialogActions.svelte';
   import ItemsBoard from './ItemsBoard.svelte';
   import ItemsList from './ItemsList.svelte';
   import ItemsPool from './ItemsPool.svelte';
@@ -622,15 +623,15 @@
   <Dialog open title={c.title} onclose={() => (confirm = null)}>
     <p class="text-13 whitespace-pre-line">{c.message}</p>
     {#snippet actions()}
-      <Button
-        size="md"
-        variant="danger"
-        onclick={() => {
+      <DialogActions
+        confirm="Delete"
+        tone="danger"
+        oncancel={() => (confirm = null)}
+        onconfirm={() => {
           const run = c.run;
           confirm = null;
           run();
-        }}>Delete</Button>
-      <Button size="md" onclick={() => (confirm = null)}>Cancel</Button>
+        }} />
     {/snippet}
   </Dialog>
 {/if}

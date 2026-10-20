@@ -24,6 +24,7 @@
   import { logError } from '$lib/utils';
   import Dialog from '$lib/design/Dialog.svelte';
   import Button from '$lib/design/Button.svelte';
+  import DialogActions from '$lib/design/DialogActions.svelte';
   import TattooPopup from '$lib/design/TattooPopup.svelte';
   import { tattooEditKind, type TattooChoiceFx } from '$lib/skill_tree/tattoo';
   import { tone, type Tone } from '$lib/design/tone';
@@ -1487,11 +1488,11 @@
     <div class="flex flex-col gap-3 text-13">
       <p class="m-0">Changing class to {classConfirm.className} will reset your passive tree.</p>
       <p class="m-0">This can be avoided by connecting one of the {classConfirm.className} starting nodes to your tree.</p>
-      <div class="flex gap-1.5">
-        <Button size="sm" variant="danger" onclick={() => void answerClass(1).catch(logError)}>Continue</Button>
-        <Button size="sm" onclick={() => void answerClass(2).catch(logError)}>Connect Path</Button>
-        <Button size="sm" variant="ghost" onclick={() => (classConfirm = undefined)}>Cancel</Button>
-      </div>
     </div>
   {/if}
+  {#snippet actions()}
+    <DialogActions confirm="Continue" tone="danger" oncancel={() => (classConfirm = undefined)} onconfirm={() => void answerClass(1).catch(logError)}>
+      {#snippet extra()}<Button size="md" onclick={() => void answerClass(2).catch(logError)}>Connect Path</Button>{/snippet}
+    </DialogActions>
+  {/snippet}
 </Dialog>

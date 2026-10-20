@@ -2,6 +2,7 @@
   import FloatingLabel from './FloatingLabel.svelte';
   import Dialog from './Dialog.svelte';
   import Button from './Button.svelte';
+  import DialogActions from './DialogActions.svelte';
   import Select from './Select.svelte';
   import NumberInput from './NumberInput.svelte';
   import Checkbox from './Checkbox.svelte';
@@ -228,25 +229,25 @@
   <div class="flex items-center gap-2 border-t border-line bg-bar px-4 py-3 max-phone:flex-wrap max-phone:px-3">
     <span class="note max-phone:hidden">{readonly ? 'Esc closes' : 'Esc closes · Ctrl+Z / Ctrl+Shift+Z undo and redo inside the editor only'}</span>
     <div class="grow"></div>
-    <Button size="lg" variant="ghost" class="px-3.5" onclick={() => (open = false)}>{readonly ? 'Close' : 'Cancel'}</Button>
-    {#if !readonly}
-      <Button
-        size="lg"
-        class="px-3.5"
-        onclick={() => {
-          onsave?.(saved(), false);
-          open = false;
-        }}>Save to stash</Button>
-      {#if slot}
-        <Button
-          size="lg"
-          variant="primary"
-          onclick={() => {
-            onsave?.(saved(), true);
-            open = false;
-          }}>Save and equip in {slot}</Button>
-      {/if}
-    {/if}
+    <DialogActions
+      cancel={readonly ? 'Close' : 'Cancel'}
+      oncancel={() => (open = false)}
+      confirm={readonly ? undefined : slot ? `Save and equip in ${slot}` : 'Save to stash'}
+      onconfirm={() => {
+        onsave?.(saved(), !!slot);
+        open = false;
+      }}>
+      {#snippet extra()}
+        {#if !readonly && slot}
+          <Button
+            size="md"
+            onclick={() => {
+              onsave?.(saved(), false);
+              open = false;
+            }}>Save to stash</Button>
+        {/if}
+      {/snippet}
+    </DialogActions>
   </div>
   <ModPicker bind:open={picker} base={item.base} {affixes} onadd={(text) => commit({ ...cur, explicits: [...cur.explicits, { text, kind: 'magic' }] })} />
 </Dialog>

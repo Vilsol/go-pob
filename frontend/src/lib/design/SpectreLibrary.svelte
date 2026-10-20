@@ -1,6 +1,7 @@
 <script lang="ts">
   import Dialog from './Dialog.svelte';
   import Button from './Button.svelte';
+  import DialogActions from './DialogActions.svelte';
   import Select from './Select.svelte';
   import PobText from './PobText.svelte';
   import { spectreMatches, type SpectreRow } from './spectres';
@@ -151,11 +152,12 @@
     </div>
   {/if}
   {#snippet actions()}
-    <Button
-      onclick={() => {
+    <DialogActions
+      confirm="Save"
+      oncancel={() => (open = false)}
+      onconfirm={() => {
         onsave(dest.map((d) => d.id));
         open = false;
-      }}>Save</Button>
-    <Button onclick={() => (open = false)}>Cancel</Button>
+      }} />
   {/snippet}
 </Dialog>

@@ -8,7 +8,7 @@
   import { page } from '$app/state';
   import BuildListPage from '$lib/design/BuildListPage.svelte';
   import Dialog from '$lib/design/Dialog.svelte';
-  import Button from '$lib/design/Button.svelte';
+  import DialogActions from '$lib/design/DialogActions.svelte';
   import { buildId, leaf } from '$lib/design/builds';
   import type { SavedBuild } from '$lib/design/fixtures/app';
   import { syncWrap } from '$lib/go/worker';
@@ -241,14 +241,14 @@
     <Dialog bind:open={asking} title={ask.title}>
       <span class="text-13 text-text-2">{ask.body}</span>
       {#snippet actions()}
-        <Button size="md" variant="ghost" class="px-3" onclick={() => (asking = false)}>Cancel</Button>
-        <Button
-          size="md"
-          variant="danger-solid"
-          onclick={() => {
+        <DialogActions
+          confirm={ask.confirm}
+          tone="danger"
+          oncancel={() => (asking = false)}
+          onconfirm={() => {
             asking = false;
             ask.run();
-          }}>{ask.confirm}</Button>
+          }} />
       {/snippet}
     </Dialog>
   {/snippet}

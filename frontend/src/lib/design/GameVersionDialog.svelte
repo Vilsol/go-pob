@@ -1,6 +1,6 @@
 <script lang="ts">
   import Dialog from './Dialog.svelte';
-  import Button from './Button.svelte';
+  import DialogActions from './DialogActions.svelte';
   import PobText from './PobText.svelte';
 
   // Build.lua:1325-1350
@@ -30,18 +30,17 @@ You should create a backup copy of the build before proceeding.`;
     <p class="m-0"><PobText text={WARNING} /></p>
   </div>
   {#snippet actions()}
-    <Button
-      variant="primary"
-      onclick={() => {
-        decided = true;
-        open = false;
-        onconvert();
-      }}>Convert to {version}</Button>
-    <Button
-      onclick={() => {
+    <DialogActions
+      confirm={`Convert to ${version}`}
+      oncancel={() => {
         decided = true;
         open = false;
         oncancel();
-      }}>Cancel</Button>
+      }}
+      onconfirm={() => {
+        decided = true;
+        open = false;
+        onconvert();
+      }} />
   {/snippet}
 </Dialog>

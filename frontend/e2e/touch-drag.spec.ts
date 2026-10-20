@@ -68,3 +68,26 @@ test(`touch: a held drag reorders the stash and drops a DB item into it; a quick
   await expect(names(page)).toContainText(["Kaom's Heart"]);
   app.assertNoErrors();
 });
+
+test(`touch: a held drag reorders socket groups in the list; a quick swipe scrolls instead (${BUILD})`, async ({ page }) => {
+  test.setTimeout(300_000);
+  const xml = buildXml(BUILD);
+  const build = await go.loadXml(xml);
+  const app = await App.open(page, BUILD);
+  await app.importCode(await go.encode(xml), async () => expectedLines(await go.outputs(build)));
+  await app.goTo('Skills');
+  const groups = page.getByRole('region', { name: 'Socket groups' }).locator('button[aria-current]');
+  await expect(groups.first()).toBeVisible();
+  const before = await groups.allTextContents();
+  expect(before.length, 'vacuity: 0339 needs three socket groups').toBeGreaterThanOrEqual(3);
+  const cdp = await page.context().newCDPSession(page);
+
+  await touchDrag(page, cdp, groups.nth(2), [groups.nth(0)], 50);
+  await page.waitForTimeout(400);
+  await expect(groups, 'a swipe without the hold is a scroll, not a drag').toHaveText(before);
+  await expect(page.locator('[data-reorder-ghost]')).toHaveCount(0);
+
+  await touchDrag(page, cdp, groups.nth(2), [groups.nth(0)]);
+  await expect(groups).toHaveText([before[2], before[0], before[1], ...before.slice(3)]);
+  app.assertNoErrors();
+});

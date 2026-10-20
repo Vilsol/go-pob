@@ -1,6 +1,6 @@
 <script lang="ts">
   import Dialog from './Dialog.svelte';
-  import Button from './Button.svelte';
+  import DialogActions from './DialogActions.svelte';
   import FloatingLabel from './FloatingLabel.svelte';
   import Select from './Select.svelte';
   import Dropdown from './Dropdown.svelte';
@@ -88,14 +88,13 @@
     {/if}
   </div>
   {#snippet actions()}
-    <Button
-      size="md"
-      variant="primary"
+    <DialogActions
+      confirm="Create"
       disabled={!choice.base}
-      onclick={() => {
+      oncancel={() => (open = false)}
+      onconfirm={() => {
         oncreate(choice);
         open = false;
-      }}>Create</Button>
-    <Button size="md" onclick={() => (open = false)}>Cancel</Button>
+      }} />
   {/snippet}
 </Dialog>

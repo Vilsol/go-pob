@@ -2,7 +2,7 @@
   import EmptyState from './EmptyState.svelte';
   import FloatingLabel from './FloatingLabel.svelte';
   import Dialog from './Dialog.svelte';
-  import Button from './Button.svelte';
+  import DialogActions from './DialogActions.svelte';
   import Select from './Select.svelte';
   import NumberInput from './NumberInput.svelte';
   import { tone as toneClass } from './tone';
@@ -83,15 +83,14 @@
   <div class="flex items-center justify-between gap-2 border-t border-line px-5 py-3 max-phone:px-3">
     <span class="note truncate">{picked ? `Selected: ${picked.text}` : 'Nothing selected'}</span>
     <div class="flex gap-2">
-      <Button size="md" variant="ghost" class="px-3" onclick={() => (open = false)}>Cancel</Button>
-      <Button
-        size="md"
-        variant="primary"
+      <DialogActions
+        confirm="Add modifier"
         disabled={!picked}
-        onclick={() => {
+        oncancel={() => (open = false)}
+        onconfirm={() => {
           onadd(picked.text);
           open = false;
-        }}>Add modifier</Button>
+        }} />
     </div>
   </div>
 </Dialog>

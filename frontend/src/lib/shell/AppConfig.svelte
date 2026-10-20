@@ -9,7 +9,7 @@
   import type { calculator, exposition, pob } from '$lib/types';
   import ConfigPage from '$lib/design/ConfigPage.svelte';
   import Dialog from '$lib/design/Dialog.svelte';
-  import Button from '$lib/design/Button.svelte';
+  import DialogActions from '$lib/design/DialogActions.svelte';
   import type { ConfigFilter, CustomOps, Inputs } from '$lib/design/config';
   import type { CustomGroup } from '$lib/design/fixtures';
   import type { SetListOp } from '$lib/design/set_list';
@@ -228,7 +228,6 @@
 <Dialog bind:open={confirming} title="Reset to defaults?">
   <p class="m-0 text-13 text-text-2">Every config option goes back to its default. Custom modifiers are kept.</p>
   {#snippet actions()}
-    <Button onclick={() => (confirming = false)}>Cancel</Button>
-    <Button variant="danger" onclick={reset}>Confirm reset</Button>
+    <DialogActions confirm="Confirm reset" tone="danger" oncancel={() => (confirming = false)} onconfirm={reset} />
   {/snippet}
 </Dialog>

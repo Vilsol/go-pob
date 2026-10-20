@@ -1,7 +1,7 @@
 <script lang="ts">
   import EmptyState from './EmptyState.svelte';
   import Dialog from './Dialog.svelte';
-  import Button from './Button.svelte';
+  import DialogActions from './DialogActions.svelte';
   import Select from './Select.svelte';
   import PobText from './PobText.svelte';
   import ImpactBlocks from './ImpactBlocks.svelte';
@@ -117,13 +117,12 @@
     {/if}
   </div>
   {#snippet actions()}
-    <Button
-      size="md"
-      variant="primary"
-      onclick={() => {
+    <DialogActions
+      confirm={saveLabel}
+      oncancel={() => (open = false)}
+      onconfirm={() => {
         onedit({ kind: 'anoint', index: slot, text: selected?.name ?? '' });
         open = false;
-      }}>{saveLabel}</Button>
-    <Button size="md" onclick={() => (open = false)}>Cancel</Button>
+      }} />
   {/snippet}
 </Dialog>

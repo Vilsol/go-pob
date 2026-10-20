@@ -18,7 +18,7 @@
   import ComparePage from '$lib/design/ComparePage.svelte';
   import BuySimilarDialog from '$lib/design/BuySimilarDialog.svelte';
   import Dialog from '$lib/design/Dialog.svelte';
-  import Button from '$lib/design/Button.svelte';
+  import DialogActions from '$lib/design/DialogActions.svelte';
   import { accountSession, canReimport, reimportPrimary } from './account_session.svelte';
   import BuildPicker from '$lib/design/BuildPicker.svelte';
   import AppCompareSets from './AppCompareSets.svelte';
@@ -388,14 +388,14 @@
 {#if confirmTree}<Dialog open title="Character Import" onclose={() => (confirmTree = undefined)}>
     <p class="m-0 text-13">Importing the passive tree will overwrite your current tree.</p>
     {#snippet actions()}
-      <Button
-        variant="primary"
-        onclick={() => {
+      <DialogActions
+        confirm="Import"
+        oncancel={() => (confirmTree = undefined)}
+        onconfirm={() => {
           const run = confirmTree;
           confirmTree = undefined;
           run?.();
-        }}>Import</Button>
-      <Button onclick={() => (confirmTree = undefined)}>Cancel</Button>
+        }} />
     {/snippet}
   </Dialog>{/if}
 
