@@ -27,7 +27,9 @@ export const overflowing = (page: Page, root: string, skip: string[] = []): Prom
         const cs = getComputedStyle(el);
         if (cs.visibility === 'hidden') continue;
         if (cs.position === 'absolute' && (el.clientWidth <= 1 || el.clientHeight <= 1)) continue;
-        const scrollX = /auto|scroll/.test(cs.overflowX) || cs.textOverflow === 'ellipsis';
+        // a label clipped under its row's fading value is cut on purpose, like an ellipsis
+        const fadesUnder = !!el.parentElement?.querySelector(':scope > .stat-fade') && !el.classList.contains('stat-fade');
+        const scrollX = /auto|scroll/.test(cs.overflowX) || cs.textOverflow === 'ellipsis' || fadesUnder;
         const scrollY = /auto|scroll/.test(cs.overflowY);
         const dx = scrollX ? 0 : el.scrollWidth - el.clientWidth;
         const dy = scrollY ? 0 : el.scrollHeight - el.clientHeight;

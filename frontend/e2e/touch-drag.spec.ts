@@ -78,7 +78,9 @@ test(`touch: a held drag reorders socket groups in the list; a quick swipe scrol
   await app.goTo('Skills');
   const groups = page.getByRole('region', { name: 'Socket groups' }).locator('button[aria-current]');
   await expect(groups.first()).toBeVisible();
-  const before = await groups.allTextContents();
+  // a group's socket count reads "–" until its item has loaded
+  let before: string[] = [];
+  await expect.poll(async () => (before = await groups.allTextContents()).some((t) => t.includes(' · ') && t.includes('/–'))).toBe(false);
   expect(before.length, 'vacuity: 0339 needs three socket groups').toBeGreaterThanOrEqual(3);
   const cdp = await page.context().newCDPSession(page);
 

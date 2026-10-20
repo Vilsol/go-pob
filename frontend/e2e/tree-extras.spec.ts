@@ -82,7 +82,7 @@ test("the timeless search lists the Go model's rows, opens the trade search and 
 
   // TimelessJewelListControl.lua:98-311
   await options.first().dblclick();
-  await expect(options.first()).toHaveClass(/b2b2b2/);
+  await expect(options.first()).toHaveClass(/text-code-grey/);
   await page.keyboard.press('Escape');
   const saved = await go.decode(await app.exportCode());
   expect(saved).toContain(`Lethal Pride [${want.rows[0].Seed}; ${want.rows[0].Total}; Ghost Dance]`);
