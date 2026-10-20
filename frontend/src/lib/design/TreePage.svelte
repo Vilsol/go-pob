@@ -1,4 +1,9 @@
 <script lang="ts">
+  import Toolbar from './Toolbar.svelte';
+  import SearchField from './SearchField.svelte';
+  import ChoiceCard from './ChoiceCard.svelte';
+  import InlineMessage from './InlineMessage.svelte';
+  import SectionHeading from './SectionHeading.svelte';
   import { pressedOutside } from './floating';
   import { isTypingTarget, rovingIndex } from './keys';
   import FloatingLabel from './FloatingLabel.svelte';
@@ -545,22 +550,20 @@
 
 <svelte:window onpointerdown={outside} onkeydown={pageKey} />
 
-<div
-  class="box-border flex min-h-13 shrink-0 flex-wrap items-center gap-2.5 border-b border-line px-4 py-0.5 max-phone:gap-2 max-phone:px-3 max-phone:py-2"
-  data-toolbar>
+<Toolbar edge="bottom" wrap class="box-border min-h-13 shrink-0 gap-2.5 px-4 py-0.5 max-phone:gap-2 max-phone:px-3 max-phone:py-2" data-toolbar>
   <FloatingLabel label="Class" class="[--float-bg:var(--color-surface-1)]"
-    ><select class="select h-8.5 bg-surface-1" value={className} onchange={(e) => onclass?.(e.currentTarget.value)}
+    ><select class="select input-md bg-surface-1" value={className} onchange={(e) => onclass?.(e.currentTarget.value)}
       >{#each tree.classes as o (o)}<option>{o}</option>{/each}</select
     ></FloatingLabel>
   <FloatingLabel label="Ascendancy" class="[--float-bg:var(--color-surface-1)]"
-    ><select class="select h-8.5 bg-surface-1" value={ascendancy} onchange={(e) => onascendancy?.(e.currentTarget.value)}
+    ><select class="select input-md bg-surface-1" value={ascendancy} onchange={(e) => onascendancy?.(e.currentTarget.value)}
       >{#each tree.ascendancies as o (o)}<option>{o}</option>{/each}</select
     ></FloatingLabel>
   {#if secondary}
     <!-- Build.lua:285 -->
     <FloatingLabel label="Bloodline" class="[--float-bg:var(--color-surface-1)]"
       ><select
-        class="select h-8.5 max-w-40 bg-surface-1"
+        class="select input-md max-w-40 bg-surface-1"
         value={String(secondary.selected)}
         disabled={!secondary.enabled}
         onchange={(e) => onsecondary?.(Number(e.currentTarget.value))}
@@ -577,7 +580,8 @@
           if (Number.isFinite(v)) onlevel(Math.min(100, Math.max(1, v)));
         }}>
         <NumberInput
-          class="h-8.5 w-20 bg-surface-1 font-mono"
+          size="md"
+          class="w-20 bg-surface-1 font-mono"
           label="Character level"
           min={1}
           max={100}
@@ -604,7 +608,7 @@
   {/if}
   <FloatingLabel label="Tree" class="[--float-bg:var(--color-surface-1)]"
     ><select
-      class="select h-8.5 bg-surface-1"
+      class="select input-md bg-surface-1"
       aria-label="Version"
       bind:this={versionSelect}
       value={shownVersion}
@@ -615,7 +619,7 @@
       }}
       >{#each versionOptions as o (o.value)}<option value={o.value}>{o.label}</option>{/each}</select
     ></FloatingLabel>
-</div>
+</Toolbar>
 
 <div class="flex min-h-0 flex-[1_1_0]">
   <section
@@ -743,17 +747,17 @@
     <aside aria-label="Tree details" class="box-border flex shrink-0 flex-col overflow-hidden border-l border-line bg-surface-1" style:width="{detailsWidth}px">
       {@render details?.()}
       <section aria-label="Search results" class="scroll flex grow flex-col gap-1.5 px-4 py-3">
-        <div class="flex justify-between gap-2">
-          <h2 class="subhead text-12">SEARCH{q.trim() ? ` “${q.trim()}”` : ''}</h2>
-          <span class="note whitespace-nowrap">{matchList.length} matches · {matchList.filter((n) => alloc[n.id]).length} allocated</span>
-        </div>
+        <SectionHeading size="md"
+          >SEARCH{q.trim() ? ` “${q.trim()}”` : ''}{#snippet actions()}<span class="note whitespace-nowrap"
+              >{matchList.length} matches · {matchList.filter((n) => alloc[n.id]).length} allocated</span
+            >{/snippet}</SectionHeading>
         {#if !q.trim()}<span class="note">Type in the search below; matches light up on the tree.</span>{/if}
         {#each listed as n (n.id)}
-          <button
-            class="choice-card flex-col items-start gap-px px-2 py-1.25 text-12"
+          <ChoiceCard
+            class="flex-col items-start gap-px px-2 py-1.25 text-12"
             data-result={n.id}
             aria-label="{n.name} #{n.id}"
-            aria-pressed={!!alloc[n.id]}
+            pressed={!!alloc[n.id]}
             onclick={() => api.pick(n)}
             onmouseenter={() => (hovered = n.id)}
             onfocus={() => (hovered = n.id)}
@@ -763,7 +767,7 @@
               ><span class="truncate font-semibold">{n.name}</span><span class={['whitespace-nowrap', alloc[n.id] ? 'text-accent' : 'text-text-3']}
                 >{alloc[n.id] ? 'allocated' : n.pts ? `${n.pts} pts` : '—'}</span
               ></span
-            ><span class="max-w-75 truncate text-text-3">{n.stats?.[0] ?? (n.k === 'm' ? 'Mastery — choose an effect' : '')}</span></button>
+            ><span class="max-w-75 truncate text-text-3">{n.stats?.[0] ?? (n.k === 'm' ? 'Mastery — choose an effect' : '')}</span></ChoiceCard>
         {/each}
       </section>
     </aside>
@@ -781,9 +785,9 @@
         <span class="note">{alloc[M.id] ? 'Choose one effect' : 'Choose one effect to allocate it'}</span>
         <div role="group" aria-label="Mastery effects" class="flex flex-col gap-1.5">
           {#each M.effects ?? [] as e, i (i)}
-            <button
-              class={['choice-card items-center justify-between gap-2.5 px-2.25 py-1.75 text-12 aria-pressed:bg-surface-3', i === M.picked && 'border-accent']}
-              aria-pressed={i === M.effect}
+            <ChoiceCard
+              class={['items-center justify-between gap-2.5 px-2.25 py-1.75 text-12', i === M.picked && 'border-accent']}
+              pressed={i === M.effect}
               data-power-pick={i === M.picked || undefined}
               onclick={() => {
                 onmastery?.(M.id, i);
@@ -793,7 +797,7 @@
               onfocus={() => M && onmasteryhover?.(M.id, i)}
               onblur={() => M && onmasteryhover?.(M.id, null)}
               ><span class="text-magic">{e.join(' / ')}</span>{#if i === M.effect}<span class="font-mono text-11 text-accent">selected</span
-                >{:else if i === M.picked}<span class="font-mono text-11 text-accent">power pick</span>{/if}</button>
+                >{:else if i === M.picked}<span class="font-mono text-11 text-accent">power pick</span>{/if}</ChoiceCard>
           {/each}
         </div>
         {#if alloc[M.id] && onpick}
@@ -824,9 +828,11 @@
   {/if}
 </Dialog>
 
-<div
+<Toolbar
   data-tree-bar
-  class="box-border flex h-13 shrink-0 items-center gap-2.5 border-t border-line bg-surface-1 px-4 max-phone:h-auto max-phone:overflow-x-auto max-phone:px-3 max-phone:pt-3 max-phone:pb-2 max-phone:[&>*]:shrink-0">
+  edge="top"
+  surface="surface-1"
+  class="box-border h-13 shrink-0 gap-2.5 px-4 max-phone:h-auto max-phone:overflow-x-auto max-phone:px-3 max-phone:pt-3 max-phone:pb-2 max-phone:[&>*]:shrink-0">
   <div
     class="relative flex min-w-0 shrink items-center gap-1.5"
     role="group"
@@ -835,13 +841,13 @@
     onmouseleave={() => (helpHover = false)}
     onfocusin={() => (helpFocus = true)}
     onfocusout={() => (helpFocus = false)}>
-    <input
-      type="search"
-      class="input h-8.5 w-60 min-w-24 shrink px-2.5 text-14 max-wide:w-48"
+    <SearchField
+      size="md"
+      class="w-60 min-w-24 shrink px-2.5 text-14 max-wide:w-48"
       bind:value={q}
       placeholder="Search nodes and stats"
-      aria-label="Search the tree"
-      bind:this={searchEl}
+      label="Search the tree"
+      bind:ref={searchEl}
       aria-describedby="{uid}-help" />
     <button class="info-btn" aria-label="Search syntax" aria-describedby="{uid}-help">?</button>
     <div
@@ -857,12 +863,12 @@
   </div>
   <span class="note whitespace-nowrap max-wide:hidden">{matchList.length} matches</span>
   <FloatingLabel label="Filter"
-    ><select class="select h-8.5" bind:value={filter}
+    ><select class="select input-md" bind:value={filter}
       >{#each Object.keys(KIND_FILTER) as o (o)}<option>{o}</option>{/each}</select
     ></FloatingLabel>
   {#if onpathmode}
     <FloatingLabel label="Path"
-      ><select class="select h-8.5 max-wide:max-w-32" onchange={(e) => onpathmode(e.currentTarget.value)}
+      ><select class="select input-md max-wide:max-w-32" onchange={(e) => onpathmode(e.currentTarget.value)}
         ><option>Shortest</option><option>Best DPS pp</option></select
       ></FloatingLabel>
   {/if}
@@ -933,7 +939,7 @@
           onchange={(e) => oncompare(e.currentTarget.checked ? (tree.specs.length > 1 ? (spec === 0 ? 1 : 0) : 0) : -1)} /><span>Compare:</span></label>
       {#if compareSpec >= 0}
         <select
-          class="select h-8.5 max-w-48 text-12"
+          class="select input-md max-w-48 text-12"
           aria-label="Compared tree"
           value={String(compareSpec)}
           onchange={(e) => oncompare(Number(e.currentTarget.value))}
@@ -941,7 +947,7 @@
       {/if}
     {/if}
   {/if}
-</div>
+</Toolbar>
 
 {#snippet linkPanel()}
   {#if linkForm?.op === 'import'}
@@ -952,14 +958,14 @@
         e.preventDefault();
         void importTree();
       }}>
-      <input class="input h-7.5" aria-label="Enter name for this passive tree" placeholder="Name" bind:value={linkForm.title} maxlength="100" />
+      <input class="input input-sm" aria-label="Enter name for this passive tree" placeholder="Name" bind:value={linkForm.title} maxlength="100" />
       <input
-        class="input h-7.5"
+        class="input input-sm"
         aria-label="Enter passive tree link"
         placeholder="https://www.pathofexile.com/passive-skill-tree/…"
         bind:value={linkForm.link}
         oninput={() => linkForm?.op === 'import' && (linkForm.msg = '')} />
-      {#if linkForm.msg}<span role="alert" class="text-12 text-worse">{linkForm.msg}</span>{/if}
+      {#if linkForm.msg}<InlineMessage kind="error" tag="span">{linkForm.msg}</InlineMessage>{/if}
       <div class="flex gap-1.5">
         <Button size="sm" variant="primary" type="submit" disabled={linkForm.busy || !/\S/.test(linkForm.title) || !/\S/.test(linkForm.link)}>Import</Button>
         <Button size="sm" type="button" onclick={() => (linkForm = null)}>Cancel</Button>
@@ -968,8 +974,8 @@
   {:else if linkForm?.op === 'export'}
     <div class="flex flex-col gap-1.5" role="group" aria-label="Export Tree">
       <span class="text-12 text-text-2">Passive tree link:</span>
-      <input class="input h-7.5 font-mono text-12" aria-label="Passive tree link" readonly value={linkForm.link} onfocus={(e) => e.currentTarget.select()} />
-      {#if linkForm.msg}<span role="alert" class="text-12 text-worse">{linkForm.msg}</span>{/if}
+      <input class="input input-sm font-mono text-12" aria-label="Passive tree link" readonly value={linkForm.link} onfocus={(e) => e.currentTarget.select()} />
+      {#if linkForm.msg}<InlineMessage kind="error" tag="span">{linkForm.msg}</InlineMessage>{/if}
       <div class="flex gap-1.5">
         {#if onshrinktree}<Button size="sm" disabled={linkForm.shrink !== 'idle'} onclick={() => void shrinkTree()}
             >{linkForm.shrink === 'busy' ? 'Shrinking...' : linkForm.shrink === 'done' ? 'Done' : 'Shrink with PoEURL'}</Button
@@ -1041,11 +1047,11 @@
 {/if}
 
 <Dialog
-  small
+  phone="centred"
   open={converting !== null}
   onclose={cancelConvert}
   title={converting ? `Convert to Version ${versionLabel(converting.version)}` : 'Convert'}
-  class="w-115 p-4.5">
+  size="md">
   {#if converting}
     <div class="flex flex-col gap-3 text-13">
       <p class="m-0">Warning: some or all of the passives may be de-allocated due to changes in the tree.</p>
@@ -1062,7 +1068,7 @@
   {/snippet}
 </Dialog>
 
-<Dialog small bind:open={convertingAll} title="Convert all to Version {versionLabel(tree.version)}" class="w-115 p-4.5">
+<Dialog phone="centred" bind:open={convertingAll} title="Convert all to Version {versionLabel(tree.version)}" size="md">
   <div class="flex flex-col gap-3 text-13">
     <p class="m-0">Warning: some or all of the passives may be de-allocated due to changes in the tree.</p>
     <p class="m-0">Convert will replace all trees that are not Version {versionLabel(tree.version)}.<br />This action cannot be undone.</p>
@@ -1079,11 +1085,11 @@
 </Dialog>
 
 <Dialog
-  small
+  phone="centred"
   open={converted !== null || !!convertMsg}
   onclose={() => ((converted = null), (convertMsg = ''))}
   title={convertMsg ? 'Convert' : 'Tree Converted'}
-  class="w-115 p-4.5">
+  size="md">
   <div class="flex flex-col gap-3 text-13">
     {#if convertMsg}
       <p class="m-0" role="alert">{convertMsg}</p>
@@ -1098,7 +1104,7 @@
   {/snippet}
 </Dialog>
 
-<Dialog small bind:open={resetting} title="Reset Tree/Tattoos" class="w-115 p-4.5">
+<Dialog phone="centred" bind:open={resetting} title="Reset Tree/Tattoos" size="md">
   <div class="flex flex-col gap-3 text-13">
     <p class="m-0">Warning: resetting your passive tree or removing all tattoos cannot be undone.</p>
   </div>

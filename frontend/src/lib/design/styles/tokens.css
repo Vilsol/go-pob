@@ -114,6 +114,10 @@
   --color-code-red: #ff0000;
   --color-code-link: #54ff54;
   --color-backdrop: rgb(8 9 10 / 0.72);
+  --color-row-hover: var(--color-hover-soft);
+  --color-row-selected: var(--color-surface-3);
+  --color-row-current: var(--color-surface-2);
+  --color-card-selected: var(--color-surface-2);
 
   --text-10: 0.625rem;
   --text-11: 0.6875rem;
@@ -122,11 +126,16 @@
   --text-14: 0.875rem;
   --text-15: 0.9375rem;
   --text-16: 1rem;
-  --text-17: 1.0625rem;
   --text-18: 1.125rem;
+  --text-20: 1.25rem;
   --tracking-caps: 0.06em;
-  --tracking-caps-wide: 0.07em;
-  --tracking-caps-tight: 0.05em;
+
+  --spacing-control-2xs: 1.5rem;
+  --spacing-control-xs: 1.625rem;
+  --spacing-control-sm: 1.875rem;
+  --spacing-control: 2rem;
+  --spacing-control-md: 2.125rem;
+  --spacing-control-lg: 2.25rem;
 
   --radius-hair: 1px;
   --radius-xs: 2px;
@@ -142,6 +151,7 @@
   --shadow-sheet: 0 24px 60px rgba(0, 0, 0, 0.7);
   --shadow-panel: 0 18px 44px rgba(0, 0, 0, 0.65);
   --shadow-ghost: 0 10px 24px rgba(0, 0, 0, 0.6);
+  --shadow-sel-bar: inset 2px 0 0 var(--color-accent);
 
   --breakpoint-phone: 40rem;
   --breakpoint-narrow: 75rem;

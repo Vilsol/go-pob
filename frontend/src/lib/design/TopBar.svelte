@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Dot from './Dot.svelte';
   import EmptyState from './EmptyState.svelte';
   import Segmented from './Segmented.svelte';
   import { isTypingTarget } from './keys';
@@ -219,29 +220,11 @@
             disabled={undone >= history.length}
             aria-label={undoLabel}
             title={undoLabel}>
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 16 16"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.6"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              aria-hidden="true"><path d="M5 3 2 6l3 3"></path><path d="M2 6h8a4 4 0 0 1 0 8H7"></path></svg>
+            <Icon name="undo" />
           </Button>
           <Button icon size="xs" class="h-8 w-4 border-0" {...attrs} aria-label="Undo history (right-click or long-press Undo)" title="Undo history">▾</Button>
           <Button icon onclick={onredo} disabled={undone === 0} aria-label={redoLabel} title={redoLabel}>
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 16 16"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.6"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              aria-hidden="true"><path d="m11 3 3 3-3 3"></path><path d="M14 6H6a4 4 0 0 0 0 8h3"></path></svg>
+            <Icon name="redo" />
           </Button>
         </div>
       {/snippet}
@@ -299,7 +282,7 @@
       aria-expanded={panel === 'logs'}
       aria-label={errors ? `Logs, ${errors} error${errors > 1 ? 's' : ''}` : 'Logs'}
       title="Application logs: data, worker, save and import"
-      >Logs{#if errors}<span aria-hidden="true" class="dot tone-error size-1.75"></span>{/if}</button>
+      >Logs{#if errors}<Dot tone="error" class="size-1.75" />{/if}</button>
     <a
       href={importHref}
       class="btn max-wide:size-8 max-wide:p-0"
@@ -338,7 +321,7 @@
       }}>
       <div class="flex items-center gap-2 pt-2.5 pr-3 pl-4">
         <h2 id="{uid}-panel-title" class="grow text-15">{panel === 'issues' ? 'Build issues' : 'Logs'}</h2>
-        <button bind:this={closeBtn} class="btn-close" onclick={closePanel} aria-label="Close panel (Esc)">×</button>
+        <button bind:this={closeBtn} class="btn-close" onclick={closePanel} aria-label="Close panel (Esc)"><Icon name="close" size={14} /></button>
       </div>
       <Tabs tabs={panelTabs} bind:selected={() => panel ?? 'issues', (v) => (panel = v as Panel)} label="Panels" panel={lanePanel} />
     </div>

@@ -74,12 +74,12 @@
   });
 </script>
 
-<Dialog bind:open title="Add Implicit to Item" class="w-160 p-4.5">
+<Dialog bind:open title="Add Implicit to Item" size="lg">
   <div class="flex flex-col gap-2.5 text-13">
     <div class="grid grid-cols-2 gap-3">
       <FloatingLabel label="Source"
         ><Select
-          class="h-7.5"
+          size="sm"
           aria-label="Source"
           disabled={(choices?.sources.length ?? 0) <= 1}
           options={(choices?.sources ?? []).map((s, i) => ({ value: String(i), label: s.label }))}
@@ -88,7 +88,7 @@
       {#if sourceId !== 'CUSTOM'}
         <FloatingLabel label="Sort by"
           ><Select
-            class="h-7.5"
+            size="sm"
             aria-label="Sort by"
             aria-busy={sorting}
             options={[{ value: '', label: 'Default' }, ...stats.map((s) => ({ value: s.stat, label: s.label }))]}
@@ -96,11 +96,11 @@
       {/if}
     </div>
     {#if sourceId === 'CUSTOM'}
-      <input class="input h-7.5" aria-label="Custom implicit" bind:value={custom} />
+      <input class="input input-sm" aria-label="Custom implicit" bind:value={custom} />
     {:else}
       <FloatingLabel label="Type"
         ><Select
-          class="h-7.5"
+          size="sm"
           aria-label="Type"
           options={groupOrder.map((k, i) => ({ value: String(i), label: groups[k].label.replace(/\^x[0-9A-Fa-f]{6}|\^\d/g, '') }))}
           value={String(group)}

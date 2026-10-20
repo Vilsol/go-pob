@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Icon from './Icon.svelte';
   import type { Snippet } from 'svelte';
 
   const DEFAULT_CLASS = 'w-95 p-4';
@@ -11,25 +12,37 @@
     onclose?: () => void;
     children: Snippet;
     actions?: Snippet;
+    /** a sheet's footer bar (a note on the left, actions on the right) */
+    footer?: Snippet;
     head?: Snippet;
     backdrop?: boolean;
-    /* a short confirm or prompt: stays a centred dialog on a phone instead of filling the screen */
-    small?: boolean;
+    size?: 'sm' | 'md' | 'lg' | 'xl';
+    /** on a phone: fill the screen (the default), stay a centred box (a short confirm or prompt), or keep the caller's sheet placement */
+    phone?: 'fullscreen' | 'centred' | 'sheet';
   };
   let {
     open = $bindable(false),
     title,
     sheet = false,
     note,
-    class: extra = sheet ? 'w-100' : DEFAULT_CLASS,
+    class: extra,
     onclose,
     children,
     actions,
+    footer,
     head,
     backdrop = false,
-    small
+    size,
+    phone
   }: Props = $props();
-  const isSmall = $derived(small ?? (!sheet && extra === DEFAULT_CLASS));
+  const SIZES = { sm: 'w-105', md: 'w-120', lg: 'w-160', xl: 'w-180' };
+  const PHONE = {
+    fullscreen: 'max-phone:m-0 max-phone:h-dvh! max-phone:max-h-none! max-phone:w-full! max-phone:max-w-none! max-phone:rounded-none',
+    centred: 'max-phone:w-[calc(100vw-2rem)]! max-phone:max-w-none!',
+    sheet: ''
+  };
+  const cls = $derived(extra ?? (size ? '' : sheet ? 'w-100' : DEFAULT_CLASS));
+  const onPhone = $derived(phone ?? (!sheet && !size && extra === undefined ? 'centred' : 'fullscreen'));
 
   const uid = $props.id();
   let el: HTMLDialogElement;
@@ -73,7 +86,7 @@
 <dialog
   bind:this={el}
   aria-labelledby="{uid}-title"
-  class={['dialog m-auto text-text not-open:hidden backdrop:bg-backdrop', sheet && 'dialog-sheet', isSmall && 'dialog-small', extra]}
+  class={['dialog m-auto text-text not-open:hidden backdrop:bg-backdrop', sheet && 'dialog-sheet', size && SIZES[size], cls, PHONE[onPhone]]}
   onclose={closed}
   onclick={clicked}
   onkeydown={(e) => {
@@ -91,13 +104,14 @@
       <h3 id="{uid}-title" class="text-15 font-semibold">{title}</h3>
       {#if note}<span class="note">{note}</span>{/if}
       {@render head?.()}
-      <button class="btn-close ml-auto" aria-label="Close" onclick={() => (open = false)}>×</button>
+      <button class="btn-close ml-auto" aria-label="Close" onclick={() => (open = false)}><Icon name="close" size={14} /></button>
     </div>
     {@render children()}
+    {#if footer}<div class="sheet-foot">{@render footer()}</div>{/if}
   {:else}
     <div class="flex items-center justify-between">
       <h3 id="{uid}-title" class="text-15 font-semibold">{title}</h3>
-      <button class="btn-close" aria-label="Close" onclick={() => (open = false)}>×</button>
+      <button class="btn-close" aria-label="Close" onclick={() => (open = false)}><Icon name="close" size={14} /></button>
     </div>
     {@render children()}
     {#if actions}<div class="flex justify-end gap-2">{@render actions()}</div>{/if}

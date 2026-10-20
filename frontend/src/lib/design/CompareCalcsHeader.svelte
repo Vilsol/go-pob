@@ -1,6 +1,7 @@
 <script lang="ts">
+  import Tooltip from './Tooltip.svelte';
+  import Field from './Field.svelte';
   import PobText from './PobText.svelte';
-  import { besideAnchor } from './items';
   import type { CalcsHeaderField, CalcsHeaderSide } from './compare';
   import type { calculator } from '$lib/types';
 
@@ -45,18 +46,16 @@
     {@const c = s.controls}
     <div class="flex min-w-0 flex-col gap-1" aria-label="{s.name} calcs controls" role="group">
       <span class={['text-14 font-semibold', TONE[i]]}>{s.name}</span>
-      <label class="field field-inline"
-        >Socket Group:
+      <Field label="Socket Group:" inline>
         <select
           class="select input-xs max-w-60"
           aria-label="Socket Group"
           value={String(Math.max(0, Math.min(s.skillNumber, s.groups.length) - 1))}
           onchange={(e) => oncontrol(side, 'group', Number(e.currentTarget.value) + 1)}
           >{#each s.groups.length ? s.groups : ['<No skills added yet>'] as g, k (k)}<option value={String(k)}>{g}</option>{/each}</select
-        ></label>
+        ></Field>
       {#if c?.Skills?.length}
-        <label class="field field-inline"
-          >Active Skill:
+        <Field label="Active Skill:" inline>
           <select
             class="select input-xs max-w-60"
             aria-label="Active Skill"
@@ -64,23 +63,21 @@
             value={String(c.MainActiveSkill - 1)}
             onchange={(e) => oncontrol(side, 'MainActiveSkill', Number(e.currentTarget.value) + 1)}
             >{#each c.Skills as l, k (k)}<option value={String(k)}>{l}</option>{/each}</select
-          ></label>
+          ></Field>
       {/if}
       {#if c?.PartShown}
-        <label class="field field-inline"
-          >Skill Part:
+        <Field label="Skill Part:" inline>
           <select
             class="select input-xs max-w-60"
             aria-label="Skill Part"
             value={String(c.SkillPart - 1)}
             onchange={(e) => oncontrol(side, 'SkillPart', Number(e.currentTarget.value) + 1)}
             >{#each c.Parts ?? [] as l, k (k)}<option value={String(k)}>{l}</option>{/each}</select
-          ></label>
+          ></Field>
       {/if}
       {#each [{ shown: c?.StageShown, field: 'StageCount' as const, label: 'Stages', value: c?.StageCount }, { shown: c?.MineShown, field: 'MineCount' as const, label: 'Mines', value: c?.MineCount }] as box (box.field)}
         {#if box.shown}
-          <label class="field field-inline"
-            >{box.label}:
+          <Field label={`${box.label}:`} inline>
             <input
               class="input input-xs w-13"
               inputmode="numeric"
@@ -89,7 +86,7 @@
               onchange={(e) => {
                 const r = count(e.currentTarget.value);
                 if (r.ok) oncontrol(side, box.field, r.v);
-              }} /></label>
+              }} /></Field>
         {/if}
       {/each}
       {#if s.showMinion !== undefined}
@@ -102,8 +99,7 @@
             onchange={(e) => oncontrol(side, 'showMinion', e.currentTarget.checked)} />Show Minion Stats</label>
       {/if}
       {#if c?.MinionShown}
-        <label class="field field-inline"
-          >Minion:
+        <Field label="Minion:" inline>
           <select
             class="select input-xs max-w-60"
             aria-label="Minion"
@@ -111,11 +107,10 @@
             value={String(c.Minion - 1)}
             onchange={(e) => oncontrol(side, 'Minion', Number(e.currentTarget.value) + 1)}
             >{#each c.Minions ?? [] as o, k (k)}<option value={String(k)}>{o.Label}</option>{/each}</select
-          ></label>
+          ></Field>
       {/if}
       {#if c?.MinionSkillShown}
-        <label class="field field-inline"
-          >Minion Skill:
+        <Field label="Minion Skill:" inline>
           <select
             class="select input-xs max-w-60"
             aria-label="Minion Skill"
@@ -123,13 +118,12 @@
             value={String(c.MinionSkill - 1)}
             onchange={(e) => oncontrol(side, 'MinionSkill', Number(e.currentTarget.value) + 1)}
             >{#each c.MinionSkills ?? [] as l, k (k)}<option value={String(k)}>{l}</option>{/each}</select
-          ></label>
+          ></Field>
       {/if}
-      <label class="field field-inline"
-        >Calc Mode:
+      <Field label="Calc Mode:" inline>
         <select class="select input-xs" aria-label="Calc Mode" value={s.buffMode} onchange={(e) => oncontrol(side, 'mode', e.currentTarget.value)}
           >{#each MODES as m (m.buffMode)}<option value={m.buffMode}>{m.label}</option>{/each}</select
-        ></label>
+        ></Field>
       {#each s.info as l (l.label)}
         {#if l.text && breakdown && BREAKDOWN[l.label]}
           <span
@@ -148,11 +142,7 @@
   {/each}
 </div>
 {#if panel?.rows}
-  <div
-    id="compare-skill-breakdown"
-    role="tooltip"
-    class="tooltip pointer-events-none fixed top-(--y) left-(--x) z-float rounded-md border-2 border-code-highlight px-1 py-0.5 text-12 shadow-tip"
-    use:besideAnchor={panel.anchor}>
+  <Tooltip id="compare-skill-breakdown" placement="beside" anchor={panel.anchor} size="none" class="border-2 border-code-highlight px-1 py-0.5">
     <table>
       <thead
         ><tr class="text-14"
@@ -167,5 +157,5 @@
         {/each}
       </tbody>
     </table>
-  </div>
+  </Tooltip>
 {/if}

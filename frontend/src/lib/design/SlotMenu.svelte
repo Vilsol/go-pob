@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Icon from './Icon.svelte';
   import Menu from './Menu.svelte';
   import FloatingItemTip from './FloatingItemTip.svelte';
   import type { TipProps } from './items';
@@ -56,7 +57,8 @@
 
 <Menu label={slot} {items} bind:open class="top-full mt-1 max-h-80 w-64 overflow-y-auto">
   {#snippet trigger(a)}
-    <button {...a} class={['btn btn-2xs btn-ghost min-w-6 px-1.5 font-mono', extra]} aria-label="Change {slot}" title="Equip or unequip">⋯</button>
+    <button {...a} class={['btn btn-2xs btn-ghost min-w-6 px-1.5 font-mono', extra]} aria-label="Change {slot}" title="Equip or unequip"
+      ><Icon name="more" size={14} /></button>
   {/snippet}
 </Menu>
 {#if tip && hovered}

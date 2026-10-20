@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { float, pressedOutside, raise } from './floating';
+import { besidePoint, float, pressedOutside, raise } from './floating';
 
 const W = 1000;
 const H = 800;
@@ -110,5 +110,19 @@ describe('pressedOutside', () => {
     expect(pressedOutside(ev(b), a)).toBe(true);
     expect(pressedOutside(ev(b), a, b)).toBe(false);
     expect(pressedOutside(ev(b), undefined)).toBe(true);
+  });
+});
+
+describe('besidePoint', () => {
+  it("places a tip beside a point in its parent's box, and flips left near the right edge", async () => {
+    const parent = box(200, 100, 700, 500);
+    const tip = parent.appendChild(box(0, 0, 260, 120));
+    const act = besidePoint(tip, { x: 50, y: 80 });
+    await settle();
+    expect([tip.style.getPropertyValue('--x'), tip.style.getPropertyValue('--y')]).toEqual(['268px', '150px']);
+    act.update({ x: 650, y: 80 });
+    await settle();
+    expect(tip.style.getPropertyValue('--x')).toBe(`${200 + 650 - 18 - 260}px`);
+    act.destroy();
   });
 });

@@ -25,7 +25,7 @@
   const unique = $derived(!!item && isTradeUnique(item));
 </script>
 
-<Dialog bind:open title="Buy Similar" class="w-120 p-4.5">
+<Dialog bind:open title="Buy Similar" size="md">
   {#if item}
     <div class="flex flex-col gap-3 text-13">
       <div class="grid grid-cols-3 gap-2">

@@ -46,12 +46,12 @@
   });
 </script>
 
-<Dialog bind:open title="Add Crucible Modifier to Item" class="w-160 p-4.5">
+<Dialog bind:open title="Add Crucible Modifier to Item" size="lg">
   <div class="flex flex-col gap-2.5 text-13">
     {#each choices?.nodes ?? [] as list, i (i)}
       <FloatingLabel label="Node {i + 1}"
         ><Select
-          class="h-7.5"
+          size="sm"
           aria-label="Node {i + 1}"
           options={[{ value: '', label: 'None' }, ...list.map((e) => ({ value: e.id, label: e.label }))]}
           value={picks[i]}

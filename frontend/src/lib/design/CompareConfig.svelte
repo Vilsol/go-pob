@@ -1,4 +1,6 @@
 <script lang="ts">
+  import SortHeader from './SortHeader.svelte';
+  import SearchField from './SearchField.svelte';
   import MetricSelect from './MetricSelect.svelte';
   import Button from './Button.svelte';
   import PobText from './PobText.svelte';
@@ -131,7 +133,7 @@
     {#if canApply}<Button size="sm" onclick={oncopy}>Copy Config from Compare Build</Button>{/if}
     {#if onshowall}<Button size="sm" onclick={onshowall}>{showAll ? 'Hide Ineligible Configurations' : 'Show All Configurations'}</Button>{/if}
     <MetricSelect value={metric} onchange={onmetric} {metrics} />
-    <input type="search" class="input input-xs h-7.5 w-55 px-2" placeholder="Search options" aria-label="Search config options" bind:value={q} />
+    <SearchField size="sm" class="w-55 px-2 text-12" placeholder="Search options" label="Search config options" bind:value={q} />
     <span class="note">A config set: {setA} · B config set: {setB} · differences first, then the options either build uses</span>
   </div>
   <section aria-label="Config differences" class="panel text-12">
@@ -144,10 +146,8 @@
                 <span role="columnheader" class="max-phone:hidden">OPTION</span><span role="columnheader" class="text-build-a">A’S VALUE</span><span
                   role="columnheader"
                   class="text-build-b">B’S VALUE</span>
-                <span role="columnheader" aria-sort={sort === 'a' ? 'descending' : 'none'} class="flex justify-end"
-                  ><button class="head-btn text-right" onclick={() => (sort = 'a')}>A WITH B’S VALUE {sort === 'a' ? '▼' : ''}</button></span>
-                <span role="columnheader" aria-sort={sort === 'b' ? 'descending' : 'none'} class="flex justify-end"
-                  ><button class="head-btn text-right" onclick={() => (sort = 'b')}>B WITH A’S VALUE {sort === 'b' ? '▼' : ''}</button></span>
+                <SortHeader label="A WITH B’S VALUE" active={sort === 'a'} align="end" onsort={() => (sort = 'a')} />
+                <SortHeader label="B WITH A’S VALUE" active={sort === 'b'} align="end" onsort={() => (sort = 'b')} />
                 <span role="columnheader" class="max-phone:hidden"><span class="sr-only">Action</span></span>
               </div>
             {:else}

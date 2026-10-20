@@ -1,4 +1,5 @@
 <script lang="ts">
+  import SectionHeading from './SectionHeading.svelte';
   import Tag from './Tag.svelte';
   import type { GemDiff, GroupPair } from './compare';
 
@@ -54,14 +55,14 @@
   {#each sections as sec (sec.title)}
     {#if sec.groups.length}
       <div class="flex flex-col gap-1.5">
-        <h3 class={['subhead mt-1', sec.tc]}>{sec.title}</h3>
+        <SectionHeading level={3} class={['mt-1', sec.tc]}>{sec.title}</SectionHeading>
         <div class="grid grid-cols-2 gap-2.5 max-phone:grid-cols-1">
           {#each sec.groups as g, i (i)}
             <div role="table" aria-label={g.name} class="panel min-w-0 text-12">
               <div role="row" class="flex items-baseline justify-between gap-2 border-b border-line px-3 py-1.75">
                 <span role="rowheader" class="truncate text-13 font-semibold">{g.name}</span><span role="cell" class="shrink-0 text-text-3">{g.where}</span>
               </div>
-              <div role="row" class={['grid gap-2 px-3 py-1 text-10 tracking-caps-tight text-text-3', GRID]}>
+              <div role="row" class={['grid gap-2 px-3 py-1 text-10 tracking-caps text-text-3', GRID]}>
                 <span role="columnheader">GEM</span><span role="columnheader" class="text-build-a">A LVL/Q</span><span role="columnheader" class="text-build-b"
                   >B LVL/Q</span>
               </div>

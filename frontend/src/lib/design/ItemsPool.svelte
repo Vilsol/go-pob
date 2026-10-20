@@ -1,10 +1,13 @@
 <script lang="ts">
+  import Tooltip from './Tooltip.svelte';
+  import SearchField from './SearchField.svelte';
+  import Icon from './Icon.svelte';
   import FloatingItemTip from './FloatingItemTip.svelte';
   import Select from './Select.svelte';
   import Button from './Button.svelte';
   import Menu from './Menu.svelte';
   import { tone as toneClass } from './tone';
-  import { besideAnchor, type TipProps, type WhatIf } from './items';
+  import { type TipProps, type WhatIf } from './items';
   import { draggedItem, itemSource, type ItemDrag } from './item_drag';
   import { dragSource, dropZone } from './reorder';
   import { itemWikiName } from './wiki';
@@ -146,10 +149,11 @@
             onblur={() => (info = false)}>i</button>
         {/if}
       </span>
-      <input class="input h-7.5 grow" type="search" placeholder="Search {title.toLowerCase()} items" aria-label="Search {title}" bind:value={q} />
+      <SearchField size="sm" class="grow" placeholder="Search {title.toLowerCase()} items" label="Search {title}" bind:value={q} />
       {#if filters.length && onfilter}
         <Select
-          class="h-7.5 max-w-45 text-12"
+          size="sm"
+          class="max-w-45 text-12"
           aria-label="Loadout filter"
           title="Show the items of a loadout, or those nothing uses"
           options={filters}
@@ -160,7 +164,7 @@
         <Button size="sm" variant="ghost" class="shrink-0 px-2 text-12" title="Sort the build's items by slot, equipped state, set and name" onclick={onsort}
           >Sort</Button>
       {:else}
-        <Select class="h-7.5 text-12" aria-label="Sort" options={['Sort by build impact', 'Sort by slot', 'Sort by name']} />
+        <Select size="sm" class="text-12" aria-label="Sort" options={['Sort by build impact', 'Sort by slot', 'Sort by name']} />
       {/if}
       {#if ondeleteunused}
         <Button size="sm" variant="ghost" class="shrink-0 px-2 text-12" title="Delete every item no set or tree uses" onclick={ondeleteunused}
@@ -230,7 +234,7 @@
                     {...a}
                     class="btn btn-2xs btn-ghost px-1 font-mono"
                     aria-label="Actions for {r.tip.item}"
-                    title="Equip, edit, clone, copy, share or delete">⋯</button>
+                    title="Equip, edit, clone, copy, share or delete"><Icon name="more" size={14} /></button>
                 {/snippet}
               </Menu>
             {/if}
@@ -241,7 +245,7 @@
                 class="px-1"
                 aria-label="Delete {r.tip.item}"
                 title={title === 'Shared' ? 'Remove this item from the shared item list' : 'Delete this item from the build'}
-                onclick={() => ondelete?.(r.key)}>×</Button>
+                onclick={() => ondelete?.(r.key)}><Icon name="close" size={12} /></Button>
             {/if}
           </span>
         </div>
@@ -253,13 +257,9 @@
   </section>
 </div>
 {#if info}
-  <div
-    role="tooltip"
-    id="{uid}-info"
-    class="tooltip pointer-events-none fixed top-(--y) left-(--x) z-float w-70 rounded-md px-2.5 py-2 text-12 shadow-pop"
-    use:besideAnchor={infoBtn}>
+  <Tooltip id="{uid}-info" placement="beside" anchor={infoBtn} class="w-70">
     Shared items are a library kept across all your builds. Copy one into this build’s stash or equip it directly.
-  </div>
+  </Tooltip>
 {/if}
 {#if hovered && hoveredTip}
   <FloatingItemTip anchor={rowEls[hovered.key]} id="{uid}-tip" {...hoveredTip} />

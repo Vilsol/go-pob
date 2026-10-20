@@ -1,4 +1,6 @@
 <script lang="ts">
+  import Tooltip from './Tooltip.svelte';
+  import SectionHeading from './SectionHeading.svelte';
   import { isTypingTarget } from './keys';
   import { untrack } from 'svelte';
   import TooltipLines from './TooltipLines.svelte';
@@ -203,7 +205,7 @@
       title={onset ? undefined : setLocked}
       onmanage={onsets && (() => (managing = true))}
       onchange={(i: number) => onset?.(i)} /></FloatingLabel>
-  <div class="mt-0.5 flex items-baseline justify-between"><h2 class="subhead uppercase">Socket groups</h2></div>
+  <SectionHeading class="mt-0.5 uppercase">Socket groups</SectionHeading>
   {#each groups as g, i (i)}
     <div {...reorderable ? drag.row(i) : {}} class="relative flex items-stretch gap-1" title={reorderable ? undefined : groupsLocked}>
       <span aria-hidden="true" class={['flex w-4 shrink-0 items-center text-text-3', !reorderable && 'invisible']}><Icon name="grip" /></span>
@@ -211,7 +213,7 @@
         data-reorder-press
         tabindex={reorderable ? -1 : undefined}
         class={[
-          'flex min-w-0 grow flex-col items-start gap-0.5 rounded-md border border-line bg-surface-1 px-2.5 py-2 text-left font-sans text-13 text-text aria-[current=true]:border-accent aria-[current=true]:bg-surface-2',
+          'flex min-w-0 grow flex-col items-start gap-0.5 rounded-md border border-line bg-surface-1 px-2.5 py-2 text-left font-sans text-13 text-text aria-[current=true]:border-accent aria-[current=true]:bg-row-current',
           reorderable && 'cursor-grab'
         ]}
         aria-current={i === selected}
@@ -238,14 +240,14 @@
           ><span class={['font-semibold', !g.enabled && 'text-text-2 line-through']}
             >{#if g.slot && groupicon?.(g.slot)}<img src={groupicon(g.slot)} alt="" data-slot-icon class="mr-1 inline size-4 align-[-2px]" />{/if}{groupLabel(
               g
-            )}{#if i === mainGroup}<span class="text-10 font-semibold tracking-[0.04em] text-accent"> ★ MAIN</span>{/if}</span
+            )}{#if i === mainGroup}<span class="text-10 font-semibold tracking-caps text-accent"> ★ MAIN</span>{/if}</span
           ><span class="font-mono text-11 text-text-2">{g.gems.length}/{socketCount(g) || '–'}{g.slot ? ' · ' + g.slot : ''}</span></span>
         <span class="max-w-full truncate text-11 text-text-2">{g.gems.map((m) => m.name.replace(/ Support$/, '')).join(', ') || 'No gems'}</span>
       </button>
       {#if groupTip?.i === i && groupTip.lines?.length}
-        <div role="tooltip" aria-label="Socket group tooltip" class="tooltip absolute top-0 left-full z-sticky ml-2 w-80 rounded-md px-3 py-2.5">
+        <Tooltip label="Socket group tooltip" size="lg" interactive textSize={11} class="absolute top-0 left-full z-sticky ml-2 w-80">
           <TooltipLines lines={groupTip.lines} />
-        </div>
+        </Tooltip>
       {/if}
     </div>
   {/each}
@@ -262,7 +264,7 @@
     </div>
   {/if}
   <section aria-label="Gem options" class="panel mt-1 flex flex-col gap-1.75 p-2.5 text-12">
-    <h3 class="subhead">GEM OPTIONS</h3>
+    <SectionHeading level={3}>GEM OPTIONS</SectionHeading>
     <div class="flex items-center justify-between gap-1.5">
       <Checkbox compact bind:checked={sortOn} onchange={(e: Event & { currentTarget: HTMLInputElement }) => onsort?.(e.currentTarget.checked, sortStat)}
         >Sort gems by DPS</Checkbox>

@@ -1,4 +1,6 @@
 <script lang="ts">
+  import Tooltip from './Tooltip.svelte';
+  import SearchField from './SearchField.svelte';
   import Dialog from './Dialog.svelte';
   import Button from './Button.svelte';
   import DialogActions from './DialogActions.svelte';
@@ -70,7 +72,7 @@
   };
 </script>
 
-<Dialog bind:open title="Spectre Library" class="w-160 p-4">
+<Dialog bind:open title="Spectre Library" size="lg">
   <div class="grid grid-cols-2 gap-3 text-13">
     <div class="flex flex-col gap-1.5">
       <div class="flex items-center justify-between">
@@ -97,7 +99,7 @@
               tabindex="-1"
               role="option"
               aria-selected={i === destSel}
-              class="border-0 bg-transparent px-2 py-0.5 text-left font-sans text-13 text-text aria-selected:bg-surface-3"
+              class="border-0 bg-transparent px-2 py-0.5 text-left font-sans text-13 text-text aria-selected:bg-row-selected"
               onclick={() => {
                 destSel = i;
                 srcSel = undefined;
@@ -116,7 +118,7 @@
         <Button size="xs" disabled={!srcSel || has(srcSel)} onclick={() => add(srcSel)}>Add</Button>
       </div>
       <div class="flex gap-1">
-        <input class="input h-7 grow" placeholder="Search" aria-label="Search spectres" bind:value={search} />
+        <SearchField size="sm" class="grow" placeholder="Search" label="Search spectres" bind:value={search} />
         <Select
           size="xs"
           aria-label="Search in"
@@ -132,7 +134,7 @@
           <button
             role="option"
             aria-selected={r.id === srcSel}
-            class="border-0 bg-transparent px-2 py-0.5 text-left font-sans text-13 text-text aria-selected:bg-surface-3"
+            class="border-0 bg-transparent px-2 py-0.5 text-left font-sans text-13 text-text aria-selected:bg-row-selected"
             onclick={() => {
               srcSel = r.id;
               destSel = -1;
@@ -147,9 +149,9 @@
   </div>
   <p class="note mt-1.5">Spectres in your Library must be assigned to an active Raise Spectre gem for their buffs and curses to activate</p>
   {#if tip}
-    <div role="tooltip" class="tooltip mt-1.5 flex flex-col gap-0.5 rounded-md px-3 py-2 text-12">
+    <Tooltip interactive flat class="mt-1.5 flex flex-col gap-0.5">
       {#each tip.tooltip as line, i (i)}<span><PobText text={line} /></span>{/each}
-    </div>
+    </Tooltip>
   {/if}
   {#snippet actions()}
     <DialogActions

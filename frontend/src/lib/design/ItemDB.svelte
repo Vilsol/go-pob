@@ -1,4 +1,5 @@
 <script lang="ts">
+  import SearchField from './SearchField.svelte';
   import FloatingLabel from './FloatingLabel.svelte';
   import FloatingItemTip from './FloatingItemTip.svelte';
   import Tabs from './Tabs.svelte';
@@ -78,43 +79,45 @@
     aria-labelledby={tabId(uid, kind)}
     class="flex min-h-0 grow flex-wrap gap-3.5 max-phone:shrink-0 max-phone:flex-col max-phone:flex-nowrap">
     <aside aria-label="Filters" class="panel flex w-62.5 shrink-0 flex-col gap-2.5 self-start p-3 text-12 max-phone:w-auto max-phone:self-stretch">
-      <input
-        class="input"
-        type="search"
+      <SearchField
         placeholder="Search"
-        aria-label="Search {unique ? 'uniques' : 'templates'}"
+        label="Search {unique ? 'uniques' : 'templates'}"
         value={filter.search}
-        oninput={(e) => (filter = { ...filter, search: e.currentTarget.value })} />
+        oninput={(e: Event & { currentTarget: HTMLInputElement }) => (filter = { ...filter, search: e.currentTarget.value })} />
       <FloatingLabel label="Search in"
         ><Select
-          class="h-7.5 text-12"
+          size="sm"
+          class="text-12"
           aria-label="Search in"
           options={opts(lists?.searchModes)}
           value={String(filter.searchMode)}
           onchange={pick('searchMode')} /></FloatingLabel>
       <FloatingLabel label="Slot"
-        ><Select class="h-7.5 text-12" aria-label="Slot" options={opts(lists?.slots)} value={String(filter.slot)} onchange={pick('slot')} /></FloatingLabel>
+        ><Select size="sm" class="text-12" aria-label="Slot" options={opts(lists?.slots)} value={String(filter.slot)} onchange={pick('slot')} /></FloatingLabel>
       <FloatingLabel label="Type"
-        ><Select class="h-7.5 text-12" aria-label="Type" options={opts(lists?.types)} value={String(filter.type)} onchange={pick('type')} /></FloatingLabel>
+        ><Select size="sm" class="text-12" aria-label="Type" options={opts(lists?.types)} value={String(filter.type)} onchange={pick('type')} /></FloatingLabel>
       {#if unique}
-        <FloatingLabel label="Sort"><Select class="h-7.5 text-12" aria-label="Sort" options={sortOptions} bind:value={sort} /></FloatingLabel>
+        <FloatingLabel label="Sort"><Select size="sm" class="text-12" aria-label="Sort" options={sortOptions} bind:value={sort} /></FloatingLabel>
         <FloatingLabel label="League"
           ><Select
-            class="h-7.5 text-12"
+            size="sm"
+            class="text-12"
             aria-label="League"
             options={opts(lists?.leagues)}
             value={String(filter.league)}
             onchange={pick('league')} /></FloatingLabel>
         <FloatingLabel label="Requirements"
           ><Select
-            class="h-7.5 text-12"
+            size="sm"
+            class="text-12"
             aria-label="Requirements"
             options={opts(lists?.requirements)}
             value={String(filter.requirement)}
             onchange={pick('requirement')} /></FloatingLabel>
         <FloatingLabel label="Source"
           ><Select
-            class="h-7.5 text-12"
+            size="sm"
+            class="text-12"
             aria-label="Source"
             options={opts(lists?.obtainable)}
             value={String(filter.obtainable)}

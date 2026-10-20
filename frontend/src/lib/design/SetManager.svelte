@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Badge from './Badge.svelte';
   import type { Snippet } from 'svelte';
   import { untrack } from 'svelte';
   import Dialog from './Dialog.svelte';
@@ -129,12 +130,11 @@
     tabindex={reorderable ? -1 : undefined}
     role="option"
     aria-selected={i === sel}
-    class="choice-card justify-between gap-2 px-2.5 py-1.5 text-left text-13 aria-selected:border-accent aria-selected:bg-surface-3"
+    class="choice-card justify-between gap-2 px-2.5 py-1.5 text-left text-13"
     {...rowProps?.(i)}
     onclick={() => select(i)}
     ondblclick={() => activate(i)}
-    >{#if row}{@render row(i)}{:else}<span class="truncate">{label}</span>{/if}{#if i === current}<span class="font-mono text-11 text-accent">current</span
-      >{/if}</button>
+    >{#if row}{@render row(i)}{:else}<span class="truncate">{label}</span>{/if}{#if i === current}<Badge tone="accent">current</Badge>{/if}</button>
 {/snippet}
 
 <Dialog bind:open {title} class={extra} {onclose}>
@@ -162,7 +162,7 @@
           e.preventDefault();
           save();
         }}>
-        <input class="input h-7.5 grow" aria-label={`Name for this ${noun}`} bind:value={naming.title} maxlength="100" />
+        <input class="input input-sm grow" aria-label={`Name for this ${noun}`} bind:value={naming.title} maxlength="100" />
         <Button size="sm" variant="primary" type="submit" disabled={!/\S/.test(naming.title)}>Save</Button>
         <Button size="sm" type="button" onclick={() => (naming = null)}>Cancel</Button>
       </form>

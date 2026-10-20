@@ -1,4 +1,5 @@
 <script lang="ts">
+  import SectionHeading from './SectionHeading.svelte';
   import { untrack } from 'svelte';
   import FloatingLabel from './FloatingLabel.svelte';
   import Checkbox from './Checkbox.svelte';
@@ -68,18 +69,18 @@
 </script>
 
 <section aria-label="Character import" class="panel col-span-2 flex flex-col gap-3 p-3.5">
-  <h2 class="subhead text-13">IMPORT CHARACTER BY ACCOUNT NAME</h2>
+  <SectionHeading size="lg">IMPORT CHARACTER BY ACCOUNT NAME</SectionHeading>
   <div role="status" class="text-12"><PobText text={`^7Character import status: ${status}`} /></div>
   {#if stage === 'GETACCOUNTNAME' || stage === 'DOWNLOADCHARLIST'}
     <span class="text-12 text-text-2">To start importing a character, enter the character's account name:</span>
     <div class="flex flex-wrap items-end gap-2.5">
       <FloatingLabel label="Realm"
-        ><select class="select h-8.5" value={realm.id} onchange={(e) => (realm = realms.find((r) => r.id === e.currentTarget.value) ?? realms[0])}
+        ><select class="select input-md" value={realm.id} onchange={(e) => (realm = realms.find((r) => r.id === e.currentTarget.value) ?? realms[0])}
           >{#each realms as r (r.id)}<option value={r.id}>{r.label}</option>{/each}</select
         ></FloatingLabel>
       <label class="field"
         >Account name <input
-          class="input h-8.5 w-55 px-2.5"
+          class="input input-md w-55 px-2.5"
           bind:value={account}
           placeholder="AccountName#0000"
           aria-describedby="{uid}-discriminator"
@@ -90,7 +91,7 @@
         >Start</button>
       {#if history.length > 0}
         <FloatingLabel label="Account history"
-          ><select class="select h-8.5" bind:value={historyPick} onchange={() => (account = historyPick)}
+          ><select class="select input-md" bind:value={historyPick} onchange={() => (account = historyPick)}
             ><option value="" disabled>—</option>{#each history as a (a)}<option>{a}</option>{/each}</select
           ></FloatingLabel>
         <button
@@ -112,12 +113,12 @@
     <span class="text-12 text-text-2">Choose character to import data from:</span>
     <div class="flex flex-wrap items-end gap-2.5">
       <FloatingLabel label="League"
-        ><select class="select h-8.5" value={league ?? ''} onchange={(e) => (league = e.currentTarget.value || undefined)}
+        ><select class="select input-md" value={league ?? ''} onchange={(e) => (league = e.currentTarget.value || undefined)}
           >{#each leagues as l (l)}<option value={l}>{l}</option>{/each}<option value="">All</option></select
         ></FloatingLabel>
       <FloatingLabel label="Character"
         ><select
-          class="select h-8.5 w-100"
+          class="select input-md w-100"
           value={chosen?.char.name ?? ''}
           disabled={!selecting}
           title={selecting ? undefined : 'Importing…'}

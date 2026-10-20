@@ -1,4 +1,5 @@
 <script lang="ts">
+  import SortHeader from './SortHeader.svelte';
   import MetricSelect from './MetricSelect.svelte';
   import Button from './Button.svelte';
   import { tone as toneClass, type Tone } from './tone';
@@ -89,21 +90,19 @@
     </div>
   </div>
   <div role="table" aria-label="Power report rows">
-    <div role="row" class={['data-row data-head gap-2.5 px-3.5 py-1.5 tracking-caps-tight', GRID]}>
+    <div role="row" class={['data-row data-head gap-2.5 px-3.5 py-1.5 tracking-caps', GRID]}>
       <span role="columnheader">CATEGORY</span><span role="columnheader" class="max-phone:hidden">B’S VERSION → INTO A</span><span
         role="columnheader"
         class="max-phone:hidden"><span class="sr-only">Bar</span></span>
-      <span role="columnheader" aria-sort={sort === 'impact' ? 'descending' : 'none'} class="flex justify-end"
-        ><button class="head-btn" onclick={() => (sort = 'impact')}>{label.toUpperCase()} ON A {sort === 'impact' ? '▼' : ''}</button></span>
+      <SortHeader label="{label.toUpperCase()} ON A" active={sort === 'impact'} align="end" onsort={() => (sort = 'impact')} />
       <span role="columnheader" class="text-right">POINTS</span>
-      <span role="columnheader" aria-sort={sort === 'per' ? 'descending' : 'none'} class="flex justify-end"
-        ><button class="head-btn" onclick={() => (sort = 'per')}>PP {sort === 'per' ? '▼' : ''}</button></span>
+      <SortHeader label="PP" active={sort === 'per'} align="end" onsort={() => (sort = 'per')} />
       <span role="columnheader"><span class="sr-only">Action</span></span>
     </div>
     {#each rows as p, i (p.cat + p.what + i)}
       {@const v = p.impact[mi]}
       {@const w = (Math.abs(v) / max) * 50}
-      <div role="row" class={['data-row gap-2.5 px-3.5 py-1.25 hover:bg-hover-soft', GRID]}>
+      <div role="row" class={['data-row gap-2.5 px-3.5 py-1.25 hover:bg-row-hover', GRID]}>
         <span role="cell" class="text-12 text-text-2">{CATS.find((c) => c.id === p.cat)?.label}</span>
         <span role="cell" class={['flex min-w-0 flex-col', TOP]}
           ><span

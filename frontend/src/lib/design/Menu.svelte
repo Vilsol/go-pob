@@ -2,20 +2,10 @@
   import { float, pressedOutside, raise } from './floating';
   import { rovingIndex } from './keys';
   import { tick, type Snippet } from 'svelte';
-  import { tone as toneClass, type Tone } from './tone';
+  import MenuItems from './MenuItems.svelte';
+  import type { MenuItem } from './menu';
 
-  // ItemTools.lua:380-409
-  type Item = {
-    label: string;
-    tone?: Tone;
-    separator?: boolean;
-    caption?: string;
-    current?: boolean;
-    disabled?: boolean;
-    onselect?: () => void;
-    onhover?: (el: HTMLElement | null) => void;
-    wiki?: string;
-  };
+  type Item = MenuItem;
   type TriggerAttrs = {
     'aria-haspopup': 'menu';
     'aria-expanded': boolean;
@@ -106,26 +96,14 @@
   {#if open}
     <div bind:this={menu} id="{uid}-menu" role="menu" aria-label={label} tabindex="-1" class={['menu', extra]} onkeydown={onMenuKey} use:placed>
       {@render head?.()}
-      {#each items as it, i (i)}
-        {#if it.separator}<div role="separator" class="my-1 border-t border-line"></div>{/if}
-        {#if it.caption}<span class="px-2 pt-1.5 pb-0.5 text-11 tracking-caps-tight text-text-3">{it.caption}</span>{/if}
-        <button
-          role="menuitem"
-          tabindex="-1"
-          class={['menu-item', toneClass(it.tone), itemClass]}
-          aria-current={it.current ? 'true' : undefined}
-          data-wiki={it.wiki}
-          disabled={it.disabled}
-          onmouseenter={it.onhover && ((e) => it.onhover?.(e.currentTarget))}
-          onmouseleave={it.onhover && (() => it.onhover?.(null))}
-          onfocus={it.onhover && ((e) => it.onhover?.(e.currentTarget))}
-          onblur={it.onhover && (() => it.onhover?.(null))}
-          onclick={() => {
-            it.onselect?.();
-            close();
-          }}
-          >{#if row}{@render row(it, i)}{:else}{it.label}{/if}</button>
-      {/each}
+      <MenuItems
+        {items}
+        {itemClass}
+        {row}
+        onpick={(it: MenuItem) => {
+          it.onselect?.();
+          close();
+        }} />
     </div>
   {/if}
 </div>

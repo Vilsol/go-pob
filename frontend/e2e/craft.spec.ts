@@ -96,7 +96,7 @@ test('enchant and anoint the display item (0280)', async ({ page }) => {
   const list = anoint.getByRole('listbox', { name: 'Notables' });
 
   // NotableDBControl.lua:50-79, 113-182
-  await anoint.getByRole('textbox', { name: 'Search notables' }).fill('maximum life');
+  await anoint.getByRole('searchbox', { name: 'Search notables' }).fill('maximum life');
   await anoint.getByRole('combobox', { name: 'Search in' }).selectOption('Modifiers');
   await expect(list.getByRole('option').first()).toBeVisible();
   const names = await list.getByRole('option').allTextContents();
@@ -129,7 +129,7 @@ test('enchant and anoint the display item (0280)', async ({ page }) => {
   const odd = all.find((n) => n.Unsupported?.some(Boolean))!;
   await buttons.getByRole('button', { name: 'Anoint...' }).click();
   await anoint.getByRole('combobox', { name: 'Search in' }).selectOption('Names');
-  await anoint.getByRole('textbox', { name: 'Search notables' }).fill(odd.Name);
+  await anoint.getByRole('searchbox', { name: 'Search notables' }).fill(odd.Name);
   await list.getByRole('option', { name: odd.Name, exact: true }).click();
   await expect(anoint.getByRole('tooltip', { name: 'Notable' }).locator('[data-unsupported]')).toHaveCount(odd.Unsupported!.filter(Boolean).length);
   await anoint.getByRole('button', { name: 'Cancel' }).click();

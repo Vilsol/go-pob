@@ -7,7 +7,7 @@
 
 <button
   class={[
-    'flex justify-between rounded border-0 bg-transparent px-1.5 py-1.25 text-left font-sans text-13 text-(--tone) aria-[current=true]:bg-surface-3',
+    'flex justify-between rounded border-0 bg-transparent px-1.5 py-1.25 text-left font-sans text-13 text-(--tone) aria-[current=true]:bg-row-selected',
     toneClass(tone)
   ]}
   aria-current={current || undefined}

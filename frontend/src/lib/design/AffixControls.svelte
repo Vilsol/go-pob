@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Tooltip from './Tooltip.svelte';
   import FloatingLabel from './FloatingLabel.svelte';
   import Select from './Select.svelte';
   import Dropdown from './Dropdown.svelte';
@@ -152,7 +153,7 @@
   {#if affixes.sorting}
     <FloatingLabel label="Modifier sorting"
       ><Select
-        class="h-7.5"
+        size="sm"
         aria-label="Modifier sorting"
         aria-busy={sorting}
         options={[{ value: '', label: 'Default' }, ...stats.map((s) => ({ value: s.stat, label: s.label }))]}
@@ -203,9 +204,9 @@
                 >{percent(dragged?.slot === i && dragged.from === affixes ? dragged.value : c.sliderVal)}</output
               ></label>
             {#if roll?.slot === i}
-              <div role="tooltip" aria-label="Roll of affix {i + 1}" class="tooltip flex flex-col gap-0.5 rounded-md px-3 py-2 text-12">
+              <Tooltip label="Roll of affix {i + 1}" interactive flat class="flex flex-col gap-0.5">
                 {#each roll.lines as l, k (k)}<span><PobText text={l} /></span>{/each}
-              </div>
+              </Tooltip>
             {/if}
           {/if}
           {#if line && (changes ?? slots)?.[i]?.length}

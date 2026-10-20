@@ -1,5 +1,6 @@
 <script lang="ts">
   // Main.lua:1300-1320
+  import Notice from '$lib/design/Notice.svelte';
   import { applyUpdate, online, updateAvailable, updateChanges } from '$lib/pwa';
 
   let changes = $state(false);
@@ -7,9 +8,7 @@
 
 <div class="fixed bottom-2 left-2 z-toast flex flex-col items-start gap-1">
   {#if !$online}
-    <div role="status" class="rounded-md border border-line bg-surface-2 px-3 py-1 text-13 text-text-2 shadow-pop">
-      Offline — saved builds and calculations work; importing from links needs the network
-    </div>
+    <Notice float>Offline — saved builds and calculations work; importing from links needs the network</Notice>
   {/if}
   {#if $updateAvailable}
     <div role="alert" class="flex max-w-150 flex-col gap-1 rounded-md border border-line bg-surface-2 px-3 py-1 text-13 text-text-2 shadow-pop">

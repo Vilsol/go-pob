@@ -212,3 +212,20 @@ export type CalcsHeaderSide = {
   controls?: calculator.MainSkillControls;
   info: { label: string; text: string }[];
 };
+
+/* CompareTab.lua:290-478 */
+export type CompareSets = {
+  tree: { labels: string[]; active: number };
+  skill: { labels: string[]; active: number };
+  item: { labels: string[]; active: number };
+  config: { labels: string[]; active: number };
+  group: { labels: string[]; active: number };
+  skills: { labels: string[]; active: number; enabled: boolean };
+  parts?: { labels: string[]; active: number };
+  /* CompareTab.lua:395-478 */
+  stage?: string;
+  mine?: string;
+  minion?: { labels: string[]; active: number; enabled: boolean };
+  minionSkill?: { labels: string[]; active: number; enabled: boolean };
+};
+export type CompareSetKind = 'tree' | 'skill' | 'item' | 'config' | 'group' | 'skills' | 'parts' | 'minion' | 'minionSkill';

@@ -133,7 +133,7 @@
             <div class="grid grid-cols-2 gap-2.5">
               {#each facts as [k, v] (k)}
                 <div class="flex flex-col gap-0.75 rounded-md border border-line bg-inset px-3 py-2.5">
-                  <span class="text-11 tracking-caps-tight text-text-3">{k}</span><span class="font-mono text-14">{v}</span>
+                  <span class="text-11 tracking-caps text-text-3">{k}</span><span class="font-mono text-14">{v}</span>
                 </div>
               {/each}
             </div>
@@ -157,11 +157,11 @@
             {@const t = tables[id]}
             <span class="note">{t.note}</span>
             <div role="table" aria-label={t.title} class="overflow-hidden rounded-md border border-line">
-              <div role="row" class="data-row data-head grid-cols-2 gap-3 bg-inset py-1.5 tracking-caps-tight">
+              <div role="row" class="data-row data-head grid-cols-2 gap-3 bg-inset py-1.5 tracking-caps">
                 <span role="columnheader">{t.k}</span><span role="columnheader">{t.v}</span>
               </div>
               {#each t.rows as [k, v] (k)}
-                <div role="row" class="data-row grid-cols-2 gap-3 py-1.25 font-mono text-12 hover:bg-bar">
+                <div role="row" class="data-row grid-cols-2 gap-3 py-1.25 font-mono text-12 hover:bg-row-hover">
                   <span role="cell" class="[overflow-wrap:anywhere] text-text-2">{k}</span><span role="cell" class="[overflow-wrap:anywhere]">{v || '—'}</span>
                 </div>
               {/each}

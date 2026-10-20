@@ -1,4 +1,5 @@
 <script lang="ts">
+  import SectionHeading from './SectionHeading.svelte';
   import EmptyState from './EmptyState.svelte';
   import ButterflyRow from './ButterflyRow.svelte';
   import Ruler from './Ruler.svelte';
@@ -49,7 +50,7 @@
     aria-label="Biggest differences"
     class="panel flex max-h-full min-w-65 flex-[0_1_25rem] flex-col max-phone:min-w-0 max-phone:flex-none gap-1.5 px-3 py-2.5 text-12">
     <div class="flex items-center justify-between gap-2">
-      <h3 class="subhead">WHY B IS {better ? 'BETTER' : 'WORSE'}: TOP 5</h3>
+      <SectionHeading level={3}>WHY B IS {better ? 'BETTER' : 'WORSE'}: TOP 5</SectionHeading>
       <MetricSelect value={metric} onchange={onmetric} {metrics} />
     </div>
     {#each top as p, i (i)}

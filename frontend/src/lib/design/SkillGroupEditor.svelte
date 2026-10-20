@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Field from './Field.svelte';
   import EmptyState from './EmptyState.svelte';
   import { tick } from 'svelte';
   import FloatingLabel from './FloatingLabel.svelte';
@@ -305,10 +306,8 @@
 
 <section aria-label="Selected group" class="panel scroll relative flex max-h-full min-w-0 flex-[0_1_1000px] flex-col gap-2.25 self-start p-3">
   <div class="flex flex-wrap items-end gap-2">
-    <label class="field w-42.5 gap-0.5 text-11"
-      >Label
-      <input class="input h-7.5" value={group.label} onchange={(e) => onchange({ label: e.currentTarget.value })} />
-    </label>
+    <Field label="Label" class="w-42.5 gap-0.5 text-11">
+      <input class="input input-sm" value={group.label} onchange={(e) => onchange({ label: e.currentTarget.value })} /></Field>
     <FloatingLabel label="Socketed in"
       ><Dropdown
         class="h-7.5 min-w-32"
@@ -376,7 +375,7 @@
   <div role="group" aria-label="Gems" class="relative flex flex-col text-13" bind:this={gemBox}>
     <div
       aria-hidden="true"
-      class="grid grid-cols-[1.125rem_2.75rem_minmax(1rem,1fr)_repeat(23,minmax(0,1fr))] gap-1.5 border-b border-line px-1.5 py-1 text-10 tracking-[0.04em] text-text-2 max-phone:grid-cols-[2.75rem_repeat(24,minmax(0,1fr))]">
+      class="grid grid-cols-[1.125rem_2.75rem_minmax(1rem,1fr)_repeat(23,minmax(0,1fr))] gap-1.5 border-b border-line px-1.5 py-1 text-10 tracking-caps text-text-2 max-phone:grid-cols-[2.75rem_repeat(24,minmax(0,1fr))]">
       <span class="max-phone:hidden"></span><span>SOCKET</span><span class="max-phone:hidden">ON</span><span class={ongemcount ? 'col-span-10' : 'col-span-13'}
         >GEM</span
       ><span class="col-span-4">LEVEL</span><span class="col-span-4">QUAL.</span>{#if ongemcount}<span class="col-span-3">COUNT</span>{/if}<span
@@ -432,7 +431,7 @@
       type="text"
       bind:this={boxEl}
       role="combobox"
-      class="input h-8.5 w-full border-dashed border-accent px-2.5"
+      class="input input-md w-full border-dashed border-accent px-2.5"
       placeholder="Add a gem — type to filter, Esc to close"
       aria-label="Add a gem"
       aria-controls="{uid}-results"
@@ -491,7 +490,7 @@
             tabindex="-1"
             aria-selected={i === active}
             aria-disabled={r.socketed}
-            class="grid grid-cols-12 gap-1.5 border-b border-surface-3 px-2.5 py-1.25 text-13 aria-disabled:opacity-55 aria-selected:bg-surface-3"
+            class="grid grid-cols-12 gap-1.5 border-b border-surface-3 px-2.5 py-1.25 text-13 aria-disabled:opacity-55 aria-selected:bg-row-selected"
             onmouseenter={() => (hoverGem = r.name)}
             onmouseleave={() => (hoverGem = hoverGem === r.name ? undefined : hoverGem)}
             onmousedown={(e) => {

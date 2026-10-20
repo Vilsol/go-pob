@@ -1,5 +1,7 @@
 <script lang="ts">
-  import { pressedOutside } from './floating';
+  import Popover from './Popover.svelte';
+  import Toolbar from './Toolbar.svelte';
+  import Notice from './Notice.svelte';
   import { onDestroy, onMount, tick, untrack } from 'svelte';
   import { Editor } from '@tiptap/core';
   import { colorCodes } from '$lib/display/colors';
@@ -178,42 +180,26 @@
     });
   });
   onDestroy(() => editor?.destroy());
-
-  const outside = (e: PointerEvent) => {
-    if (paletteOpen && paletteRoot && pressedOutside(e, paletteRoot)) paletteOpen = false;
-    if (linkOpen && linkRoot && pressedOutside(e, linkRoot)) linkOpen = false;
-  };
 </script>
 
-<svelte:window onpointerdown={outside} />
-
 {#if banner === 'mismatch'}
-  <div role="status" class="flex items-center gap-2.5 rounded border border-warn-line bg-warn-bg-2 px-3 py-2 text-13">
-    <span class="text-11 font-semibold tracking-caps whitespace-nowrap text-worse">CHANGED OUTSIDE GO-POB</span>
-    <span>These notes were edited as PoB text, so that text is shown. The earlier rich version (formatting and colours) is still stored.</span>
-    <div class="grow"></div>
-    <button class="btn btn-sm btn-primary whitespace-nowrap" onclick={onrestore}>Restore rich version</button>
-    <button class="btn btn-sm whitespace-nowrap" onclick={ondismiss}>Keep PoB text</button>
-  </div>
+  <Notice kind="warn" title="CHANGED OUTSIDE GO-POB"
+    >These notes were edited as PoB text, so that text is shown. The earlier rich version (formatting and colours) is still stored.{#snippet actions()}
+      <button class="btn btn-sm btn-primary whitespace-nowrap" onclick={onrestore}>Restore rich version</button>
+      <button class="btn btn-sm whitespace-nowrap" onclick={ondismiss}>Keep PoB text</button>
+    {/snippet}</Notice>
 {:else if banner === 'unreadable'}
-  <div role="status" class="rounded border border-warn-line bg-warn-bg-2 px-3 py-2 text-13">
-    The stored rich notes could not be read; the PoB text is shown.
-  </div>
+  <Notice kind="warn">The stored rich notes could not be read; the PoB text is shown.</Notice>
 {:else if converted && !importDismissed}
-  <div
-    role="status"
-    class="flex items-center gap-2.5 rounded border border-info-line bg-info-bg px-3 py-2 text-13 max-phone:grid max-phone:grid-cols-[minmax(0,1fr)_auto] max-phone:gap-y-1">
-    <span class="text-11 font-semibold tracking-caps whitespace-nowrap text-better">IMPORTED FROM POB</span>
-    <span class="max-phone:col-span-2 max-phone:row-start-2"
-      >Colour codes converted: {converted} ^xRRGGBB / ^0–^9 codes became text colours. Export writes them back as caret codes.</span>
-    <div class="grow max-phone:hidden"></div>
-    <button
-      class="btn btn-sm btn-ghost max-phone:col-start-2 max-phone:row-start-1"
-      onclick={() => {
-        importDismissed = true;
-        ondismissimport?.();
-      }}>Dismiss</button>
-  </div>
+  <Notice kind="info" title="IMPORTED FROM POB"
+    >Colour codes converted: {converted} ^xRRGGBB / ^0–^9 codes became text colours. Export writes them back as caret codes.{#snippet actions()}
+      <button
+        class="btn btn-sm btn-ghost"
+        onclick={() => {
+          importDismissed = true;
+          ondismissimport?.();
+        }}>Dismiss</button>
+    {/snippet}</Notice>
 {/if}
 
 <!-- drawn as generated content, so the glyph reads as an icon and the name need not contain it -->
@@ -221,7 +207,7 @@
 {#snippet tool(t: Tool)}
   <button
     class={[
-      'h-7.5 min-w-7.5 rounded border border-transparent bg-transparent px-1.5 font-sans text-13 text-text hover:bg-hover disabled:opacity-45 disabled:hover:bg-transparent aria-pressed:border-accent aria-pressed:bg-surface-3',
+      'h-7.5 min-w-7.5 rounded border border-transparent bg-transparent px-1.5 font-sans text-13 text-text hover:bg-hover disabled:opacity-45 disabled:hover:bg-transparent aria-pressed:border-accent aria-pressed:bg-row-selected',
       t.cls
     ]}
     aria-label={t.name}
@@ -232,7 +218,7 @@
 {/snippet}
 {#snippet sep()}<span class="mx-0.5 h-5.5 w-px shrink-0 bg-line" aria-hidden="true"></span>{/snippet}
 
-<div role="toolbar" aria-label="Formatting" class="panel relative flex flex-wrap items-center gap-0.5 p-1.5 max-phone:pr-8">
+<Toolbar label="Formatting" wrap class="panel relative gap-0.5 p-1.5 max-phone:pr-8">
   {#each HISTORY as t (t.name)}
     <button
       class="h-7.5 min-w-7.5 rounded border border-transparent bg-transparent px-1.5 font-sans text-15 text-text hover:bg-hover disabled:opacity-45 disabled:hover:bg-transparent"
@@ -258,71 +244,57 @@
       }}
       >{@render glyph('A')}<span class="toned h-1 w-3.5 rounded-hair bg-(--tone,var(--color-text))" style:--tone={codeToCss(currentCode)} data-pob-color></span
       >▾</button>
-    {#if paletteOpen}
-      <div
-        class="absolute top-9 left-0 z-overlay flex w-82.5 flex-col gap-1.5 rounded-md border border-line-strong bg-surface-2 p-2 shadow-pop"
-        role="presentation"
-        onkeydown={(e) => {
-          if (e.key === 'Escape') {
-            paletteOpen = false;
-            paletteRoot?.querySelector('button')?.focus();
-          }
-        }}>
-        <div role="listbox" aria-label="PoB colours" tabindex="-1" class="grid grid-cols-3 gap-1">
-          {#each SWATCHES as s (s.name)}
-            <button
-              role="option"
-              aria-selected={currentCode === s.code}
-              data-pob-color
-              class="toned flex h-6.5 items-center gap-1.5 rounded border border-line bg-surface-1 px-1.5 font-sans text-11 font-semibold aria-selected:border-accent"
-              style:--tone={codeToCss(s.code)}
-              onclick={() => setColor(s.code)}><span class="size-2.5 rounded-xs bg-(--tone)"></span>{s.name}</button>
-          {/each}
+    <Popover open={paletteOpen} anchor={paletteRoot} onclose={() => (paletteOpen = false)} class="flex w-82.5 flex-col gap-1.5 p-2">
+      <div role="listbox" aria-label="PoB colours" tabindex="-1" class="grid grid-cols-3 gap-1">
+        {#each SWATCHES as s (s.name)}
           <button
             role="option"
-            aria-selected={currentCode === DEFAULT_CODE}
-            class="flex h-6.5 items-center gap-1.5 rounded border border-line bg-surface-1 px-1.5 font-sans text-11 font-semibold text-text aria-selected:border-accent"
-            onclick={() => setColor(DEFAULT_CODE)}><span class="size-2.5 rounded-xs bg-text"></span>DEFAULT</button>
-        </div>
-        <label class="flex items-center gap-2 text-12 text-text-2"
-          >Custom<input
-            type="color"
-            aria-label="Custom colour"
-            class="h-6.5 w-9 cursor-pointer rounded border border-line-strong bg-ground p-0"
-            value={customHex}
-            onchange={(e) => setColor('^x' + e.currentTarget.value.slice(1).toUpperCase())} /></label>
-        <span class="note-sm">Colours are PoB’s colour codes, so export maps each back to its ^x code.</span>
+            aria-selected={currentCode === s.code}
+            data-pob-color
+            class="toned flex h-6.5 items-center gap-1.5 rounded border border-line bg-surface-1 px-1.5 font-sans text-11 font-semibold aria-selected:border-accent"
+            style:--tone={codeToCss(s.code)}
+            onclick={() => setColor(s.code)}><span class="size-2.5 rounded-xs bg-(--tone)"></span>{s.name}</button>
+        {/each}
+        <button
+          role="option"
+          aria-selected={currentCode === DEFAULT_CODE}
+          class="flex h-6.5 items-center gap-1.5 rounded border border-line bg-surface-1 px-1.5 font-sans text-11 font-semibold text-text aria-selected:border-accent"
+          onclick={() => setColor(DEFAULT_CODE)}><span class="size-2.5 rounded-xs bg-text"></span>DEFAULT</button>
       </div>
-    {/if}
+      <label class="flex items-center gap-2 text-12 text-text-2"
+        >Custom<input
+          type="color"
+          aria-label="Custom colour"
+          class="h-6.5 w-9 cursor-pointer rounded border border-line-strong bg-ground p-0"
+          value={customHex}
+          onchange={(e) => setColor('^x' + e.currentTarget.value.slice(1).toUpperCase())} /></label>
+      <span class="note-sm">Colours are PoB’s colour codes, so export maps each back to its ^x code.</span>
+    </Popover>
   </div>
   {@render sep()}
   {#each BLOCKS as t (t.name)}{@render tool(t)}{/each}
   {@render sep()}
   <div class="relative" bind:this={linkRoot}>
     {@render tool({ name: 'Link', label: 'Link', keys: 'Ctrl+K', is: () => active('link'), run: () => void openLink(), cls: 'text-12 underline' })}
-    {#if linkOpen}
-      <div
-        role="dialog"
-        aria-label="Link"
-        tabindex="-1"
-        class="absolute top-9 left-0 z-overlay w-80 rounded-md border border-line-strong bg-surface-2 p-2 shadow-pop"
-        onkeydown={(e) => {
-          if (e.key !== 'Escape') return;
+    <Popover
+      open={linkOpen}
+      anchor={linkRoot}
+      role="dialog"
+      label="Link"
+      refocus={false}
+      onclose={(via) => (via === 'escape' ? closeLink() : (linkOpen = false))}
+      class="w-80 p-2">
+      <form
+        class="flex items-center gap-1.5"
+        onsubmit={(e) => {
           e.preventDefault();
-          closeLink();
+          applyLink();
         }}>
-        <form
-          class="flex items-center gap-1.5"
-          onsubmit={(e) => {
-            e.preventDefault();
-            applyLink();
-          }}>
-          <input bind:this={linkInput} type="url" class="input input-xs min-w-0 grow" aria-label="Address" placeholder="https://…" bind:value={linkHref} />
-          <button class="btn btn-sm btn-primary" type="submit">Apply</button>
-          {#if active('link')}<button class="btn btn-sm" type="button" onclick={removeLink}>Remove link</button>{/if}
-        </form>
-      </div>
-    {/if}
+        <input bind:this={linkInput} type="url" class="input input-xs min-w-0 grow" aria-label="Address" placeholder="https://…" bind:value={linkHref} />
+        <button class="btn btn-sm btn-primary" type="submit">Apply</button>
+        {#if active('link')}<button class="btn btn-sm" type="button" onclick={removeLink}>Remove link</button>{/if}
+      </form>
+    </Popover>
   </div>
   <button
     class="h-7.5 min-w-7.5 rounded border border-transparent bg-transparent px-1.5 font-sans text-12 text-text hover:bg-hover disabled:opacity-45"
@@ -350,7 +322,7 @@
       >Rich text (formatting, colours, lists, links) is stored in the build. PoB export flattens it to plain text with ^xRRGGBB colour codes: formatting and
       links export as their text, list items as “• ” / “1. ” / “☐ ” lines, a rule as a line of dashes.</span>
   </span>
-</div>
+</Toolbar>
 
 <section aria-label="Notes editor" class={['panel scroll min-h-0 grow', pobView && 'hidden']}>
   <div bind:this={element} class="h-full"></div>

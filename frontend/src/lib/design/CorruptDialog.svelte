@@ -120,7 +120,7 @@
   });
 </script>
 
-<Dialog bind:open title="Corrupted Item" class="w-150 p-4.5">
+<Dialog bind:open title="Corrupted Item" size="lg">
   <div class="flex flex-col gap-2.5 text-13">
     {#if choices?.unique}
       <Tabs
@@ -143,7 +143,7 @@
         <div class="grid grid-cols-2 gap-3">
           <FloatingLabel label="Source"
             ><Select
-              class="h-7.5"
+              size="sm"
               aria-label="Source"
               options={sources}
               value={source}
@@ -153,7 +153,7 @@
               }} /></FloatingLabel>
           <FloatingLabel label="Sort by"
             ><Select
-              class="h-7.5"
+              size="sm"
               aria-label="Sort by"
               aria-busy={sorting}
               options={[{ value: '', label: 'Default' }, ...stats.map((s) => ({ value: s.stat, label: s.label }))]}

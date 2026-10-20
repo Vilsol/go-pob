@@ -1,4 +1,6 @@
 <script lang="ts">
+  import PowerReport from '$lib/design/PowerReport.svelte';
+  import NodeTipSections from '$lib/design/NodeTipSections.svelte';
   import { untrack } from 'svelte';
   import { get } from 'svelte/store';
   import { goto as gotoPage } from '$app/navigation';
@@ -6,7 +8,17 @@
   import TreePage from '$lib/design/TreePage.svelte';
   import { treeManageRequest } from './tree_manage';
   import type { TreeFixture, TreeNodeFx } from '$lib/design/fixtures';
-  import { showPowerRows, type CanvasApi, type PowerFilter, type PowerRow, type PowerSort, type SpecOp } from '$lib/design/tree';
+  import {
+    showPowerRows,
+    type CanvasApi,
+    type PowerFilter,
+    type PowerRow,
+    type PowerSort,
+    type ShownPowerRow,
+    type SpecOp,
+    type NodeTip,
+    type NodeTipCost
+  } from '$lib/design/tree';
   import { displayStats } from '$lib/display/stats';
   import { formatNumSep, luaFormat } from '$lib/display/format_stat';
   import SkillTree from '$lib/components/skill-tree/SkillTree.svelte';
@@ -34,8 +46,6 @@
   import TimelessDialog from './TimelessDialog.svelte';
   import { PowerFlashes, powerRingSize } from './power_flash';
   import { resolvePoeUrl, shrinkTreeLink } from './link_import';
-  import TooltipLines from '$lib/design/TooltipLines.svelte';
-  import PobText from '$lib/design/PobText.svelte';
   import { colorHighlight, edgeSearchHighlight, hexColour } from '$lib/skill_tree/options';
   import { phoneMedia } from '$lib/design/mobile/mobile';
   import UndoToast from '$lib/design/mobile/UndoToast.svelte';
@@ -999,103 +1009,52 @@
       .catch(logError);
   });
 
+  // PassiveTreeView.lua:1478-1513, 1550-1576, 1601-1656, 1712-1746, 1804-1805
+  const nodeTip = (n: TreeNodeFx): NodeTip => {
+    const node = base.byId.get(n.id);
+    const theirs = comparedMastery.get(n.id);
+    const extra = tipExtra?.id === n.id ? tipExtra : undefined;
+    const socket = n.k === 'j' && !!alloc[n.id];
+    return {
+      pick: n.k === 'm' && n.picked !== undefined && n.effects?.[n.picked] ? { index: n.picked, text: n.effects[n.picked].join(' / ') } : undefined,
+      comparedMastery:
+        compared && n.k === 'm' && theirs && theirs.effect !== selections[n.id]
+          ? { remove: n.effect !== undefined && n.effect >= 0 ? (n.effects?.[n.effect] ?? []) : [], add: theirs.stats }
+          : undefined,
+      jewel: extra?.jewel
+        ? [...(extra.jewel.Title ?? []).map((t) => ({ Text: t, Separator: false })), { Text: '', Separator: true }, ...(extra.jewel.Lines ?? [])]
+        : undefined,
+      comparedEmptySocket: socket && !!compared?.nodes.includes(n.id) && !socketed.some((j) => j.NodeID === n.id),
+      distance: socket ? extra?.distance : undefined,
+      affecting: extra?.affecting?.map((a) => ({ socket: a.socket, title: a.title[0] ?? '', lines: a.lines })),
+      skills: extra?.skills,
+      reminder: tattooTips.has(n.id) ? tattooTips.get(n.id)!.reminder : conqueredTips.get(n.id)?.replaced ? [] : node?.reminderText,
+      flavour: node?.flavourText,
+      tattooKind: tattooEditKind(n, !!treeTattoos.tattoos[n.id]) || undefined,
+      compareOnly: compareOnly.has(n.id)
+    };
+  };
+  const nodeCost = (n: TreeNodeFx): NodeTipCost | undefined => {
+    if (compareOnly.has(n.id)) return undefined;
+    const path = alloc[n.id] ? 0 : (n.pts ?? 0);
+    const depends = alloc[n.id] ? (n.lose ?? 0) + 1 : 0;
+    const cost = gold * (base.byId.get(n.id)?.ascendancyName ? 5 : 1);
+    return {
+      traced: path > 0 && tracePath.includes(n.id) ? tracePath.length : undefined,
+      path,
+      leap: leapHeld.has(n.id),
+      depends,
+      gold: formatNumSep(String(cost)),
+      dependsGold: formatNumSep(String(depends * cost)),
+      socket: n.k === 'j',
+      allocated: !!alloc[n.id]
+    };
+  };
+
   const copy = (n: TreeNodeFx) => {
     navigator.clipboard?.writeText([n.name, ...(n.stats ?? [])].join('\n')).catch(logError);
   };
 </script>
-
-{#snippet nodeTipBody(n: TreeNodeFx)}
-  {@const node = base.byId.get(n.id)}
-  {@const theirs = comparedMastery.get(n.id)}
-  {#if compared && n.k === 'm' && theirs && theirs.effect !== selections[n.id]}
-    <!-- PassiveTreeView.lua:1550-1576 -->
-    <div class="flex flex-col gap-0.5 text-12" aria-label="Compared mastery">
-      {#each n.effect !== undefined && n.effect >= 0 ? (n.effects?.[n.effect] ?? []) : [] as l (l)}<span class="text-code-remove">&lt;- {l}</span>{/each}
-      {#each theirs.stats as l (l)}<span class="text-code-add">-&gt; {l}</span>{/each}
-    </div>
-  {/if}
-  {#if tipExtra?.id === n.id && tipExtra.jewel}
-    <div class="border-t border-line pt-2" aria-label="Socketed jewel">
-      <TooltipLines
-        lines={[...(tipExtra.jewel.Title ?? []).map((t) => ({ Text: t, Separator: false })), { Text: '', Separator: true }, ...(tipExtra.jewel.Lines ?? [])]} />
-    </div>
-  {/if}
-  {#if n.k === 'j' && alloc[n.id]}
-    <!-- PassiveTreeView.lua:1490-1497 -->
-    {#if compared?.nodes.includes(n.id) && !socketed.some((j) => j.NodeID === n.id)}
-      <div class="border-t border-line pt-2 text-12" aria-label="Compared socket">
-        <span class="text-code-orange">Compared build:</span> (empty socket)
-      </div>
-    {/if}
-    {#if tipExtra?.id === n.id && tipExtra.distance}
-      <div class="border-t border-line pt-2 text-12" aria-label="Distance to start">Distance to start: {tipExtra.distance}</div>
-    {/if}
-  {/if}
-  {#if tipExtra?.id === n.id && tipExtra.affecting?.length}
-    <div class="flex flex-col gap-1.5 border-t border-line pt-2 text-12" aria-label="Jewels affecting this node">
-      {#each tipExtra.affecting as a (a.socket)}
-        <div class="flex flex-col gap-0.5" data-affecting-socket={a.socket}>
-          <span class="text-text-2">In radius of <PobText text={a.title[0] ?? ''} /></span>
-          {#if a.lines.length}<div class="pl-2"><TooltipLines lines={a.lines} /></div>{/if}
-        </div>
-      {/each}
-    </div>
-  {/if}
-  {#if tipExtra?.id === n.id}
-    {#each tipExtra.skills as lines, i (i)}
-      <div class="border-t border-line pt-2" aria-label="Granted skill"><TooltipLines {lines} center /></div>
-    {/each}
-  {/if}
-  {@const reminder = tattooTips.has(n.id) ? tattooTips.get(n.id)!.reminder : conqueredTips.get(n.id)?.replaced ? [] : node?.reminderText}
-  {#if reminder?.length}
-    <div class="flex flex-col gap-0.5 border-t border-line pt-2 text-12 text-code-reminder" aria-label="Reminder text">
-      {#each reminder as l, i (i)}<span>{l}</span>{/each}
-    </div>
-  {/if}
-  {#if node?.flavourText?.length}
-    <div class="flex flex-col gap-0.5 border-t border-line pt-2 italic text-unique" aria-label="Flavour text">
-      {#each node.flavourText as l, i (i)}<span>{l}</span>{/each}
-    </div>
-  {/if}
-  {@const editKind = tattooEditKind(n, !!treeTattoos.tattoos[n.id])}
-  {#if editKind}
-    <!-- PassiveTreeView.lua:1646-1656 -->
-    <div class="border-t border-line pt-2 text-12 text-code-tip" aria-label="Tattoo tip">Tip: Right click to edit the {editKind} for this node</div>
-  {/if}
-  {#if compareOnly.has(n.id)}
-    <!-- PassiveTreeView.lua:1804-1805 -->
-    <div class="border-t border-line pt-2 text-12 text-code-positive" aria-label="Compared build">This node is only in the compared build</div>
-  {/if}
-{/snippet}
-{#snippet nodeTipCost(n: TreeNodeFx)}
-  {@const node = base.byId.get(n.id)}
-  {@const pathLen = alloc[n.id] ? 0 : (n.pts ?? 0)}
-  {@const depends = alloc[n.id] ? (n.lose ?? 0) + 1 : 0}
-  {@const cost = gold * (node?.ascendancyName ? 5 : 1)}
-  {#if !compareOnly.has(n.id)}
-    <div class="flex flex-col gap-0.5 border-t border-line pt-2 text-12" aria-label="Points and gold">
-      {#if pathLen > 0 && tracePath.includes(n.id)}
-        <span>{tracePath.length} nodes in trace path</span>
-      {:else if pathLen > 0}
-        <span
-          >{pathLen} points to node{#if leapHeld.has(n.id)}<span class="text-text-3"> (Can be allocated without pathing to it)</span>{/if}</span>
-        {#if pathLen > 1 && !leapHeld.has(n.id)}<span class="text-text-3"
-            >Tip: To reach this node by a different path, hold Shift, then trace the path and click this node</span
-          >{/if}
-      {/if}
-      {#if depends > 1}
-        <span>{depends} points gained from unallocating these nodes</span>
-        <span><span class="text-code-gold">{formatNumSep(String(depends * cost))} Gold</span> required to unallocate these nodes</span>
-      {:else if depends === 1}
-        <span><span class="text-code-gold">{formatNumSep(String(cost))} Gold</span> required to unallocate this node</span>
-      {/if}
-      {#if n.k !== 'j'}<span class="text-text-3">Tip: Press Ctrl+C to copy this node's text.</span>
-      {:else if alloc[n.id]}
-        <!-- PassiveTreeView.lua:1499-1501 -->
-        <span class="text-text-3">Tip: Right click this socket to choose the jewel for this socket.</span>{/if}
-    </div>
-  {/if}
-{/snippet}
 
 <TreePage
   {tree}
@@ -1197,111 +1156,34 @@
       .catch(logError)}>
   {#snippet details()}
     {#if powerOpen}
-      <section aria-label="Power report" class="flex max-h-[45%] min-h-0 flex-col gap-1.5 border-b border-line px-4 py-3">
-        <div class="flex items-baseline justify-between">
-          <h2 class="text-14 font-bold">Power report</h2>
-          <button class="btn-close" aria-label="Close power report" onclick={closePower}>×</button>
-        </div>
-        <div class="flex items-center gap-1.5">
-          {#await heatOn ? nodePowerStats : powerStats then stats}
-            <select class="select h-7.5 grow text-12" aria-label="Power stat" bind:value={powerStat}
-              >{#each stats as s (s.Stat)}<option value={s.Stat}>{s.Label}</option>{/each}</select>
-          {/await}
-          <select
-            class="select h-7.5 text-12"
-            aria-label="Power report depth"
-            title="Limit of node distance to search (lower = faster)"
-            bind:value={depthChoice}
-            >{#each [0, 5, 10, 15, -1] as d (d)}<option value={d}>{d === 0 ? 'All' : d === -1 ? 'Custom' : d}</option>{/each}</select>
-          <select class="select h-7.5 text-12" aria-label="Power report filter" bind:value={powerFilter} onchange={() => (powerSort = 'power')}
-            ><option value="unallocated">Show Unallocated</option><option value="clusters">Show Unallocated & Clusters</option><option value="allocated"
-              >Show Allocated</option
-            ></select>
-          <label class="field field-inline gap-1 text-11"
-            ><input class="check" type="checkbox" bind:checked={powerMasteries} onchange={() => (powerSort = 'power')} /><span>Show Masteries</span></label>
-        </div>
-        {#if depthChoice === -1}
-          <input
-            class="input h-7.5 w-17.5 font-mono text-12"
-            inputmode="numeric"
-            aria-label="Custom node power depth"
-            value={powerCustom}
-            onchange={(e) => (powerCustom = e.currentTarget.value.replace(/\D/g, ''))} />
-        {/if}
-        <div class="flex items-center gap-2">
-          <label class="field field-inline gap-1 text-12" title="An estimate of each unallocated passive's power for the chosen stat"
-            ><input class="check" type="checkbox" checked={heatOn} onchange={(e) => setHeat(e.currentTarget.checked)} /><span>Show node power</span></label>
-          {#if !powerStarted}
-            <button class="btn btn-sm ml-auto px-3" onclick={() => (powerStarted = true)}>Start</button>
-          {:else if !powerRows}
-            <button class="btn btn-sm ml-auto px-3" onclick={stopPower}>Stop</button>
-          {/if}
-        </div>
-        {#if !powerStarted}
-          <span class="note">Choose the stat and depth, then Start: the report calculates every node for it.</span>
-        {:else if !powerRows}
-          <div
-            role="progressbar"
-            aria-label="Building the power report"
-            aria-valuemin="0"
-            aria-valuemax="100"
-            aria-valuenow={Math.round(powerProgress * 100)}
-            class="note">
-            Building Power Report... ({Math.round(powerProgress * 100)}%)
-          </div>
-        {:else}
-          <span class="note" data-power-ms={powerMs !== undefined ? Math.round(powerMs) : undefined}
-            >{shownPower.length} nodes · Click to focus node on tree</span>
-          <div
-            role="table"
-            aria-label="Node power"
-            class="scroll grid min-h-0 grid-cols-[minmax(0,auto)_minmax(0,1fr)_auto_auto_auto] content-start gap-x-3 text-12"
-            onmouseleave={() => (powerHover = undefined)}>
-            <div role="row" class="sticky top-0 z-raised col-span-5 grid grid-cols-subgrid border-b border-line bg-surface-1 px-1.5 pb-0.5 text-11 text-text-3">
-              {#each [['type', 'Type'], ['name', 'Node Name'], ['power', powerLabel], ['points', 'Points'], ['perPoint', 'pp']] as [col, label] (col)}
-                <span role="columnheader" class={col === 'type' || col === 'name' ? '' : 'text-right'} aria-sort={col === powerSort ? 'descending' : undefined}
-                  >{#if col === 'name'}{label}{:else}<button
-                      class="border-0 bg-transparent p-0 font-sans text-11 text-text-3 hover:text-text aria-pressed:text-text"
-                      aria-pressed={col === powerSort}
-                      onclick={() => (powerSort = col as PowerSort)}>{label}</button
-                    >{/if}</span>
-              {/each}
-            </div>
-            {#each shownPower as r (`${r.ID}:${r.Name}`)}
-              <button
-                role="row"
-                class={[
-                  'col-span-5 grid grid-cols-subgrid border-0 bg-transparent px-1.5 py-1 text-left font-sans text-12 text-text even:bg-bar hover:bg-surface-3',
-                  r.ID === powerFocus && 'bg-surface-3'
-                ]}
-                data-power-node={r.ID}
-                title={r.Stats?.join('\n')}
-                onmouseenter={() => (powerHover = r.ID)}
-                onfocus={() => (powerHover = r.ID)}
-                onclick={() => {
-                  powerFocus = r.ID;
-                  if (!r.Cluster) canvasEl?.focus(r.ID);
-                }}
-                ><span role="cell" class="truncate text-text-2">{r.Type}</span><span role="cell" class="truncate">{r.Name}</span><span
-                  role="cell"
-                  class={['text-right font-mono', r.dir === 'up' ? 'text-better' : r.dir === 'down' ? 'text-worse' : '']}>{r.power}</span
-                ><span role="cell" class="text-right font-mono">{r.points}</span><span role="cell" class="text-right font-mono text-text-2">{r.perPoint}</span
-                ></button>
-            {/each}
-          </div>
-        {/if}
-      </section>
+      <PowerReport
+        stats={heatOn ? nodePowerStats : powerStats}
+        bind:stat={powerStat}
+        bind:depth={depthChoice}
+        bind:custom={powerCustom}
+        bind:filter={powerFilter}
+        bind:masteries={powerMasteries}
+        bind:sort={powerSort}
+        statLabel={powerLabel}
+        heat={heatOn}
+        started={powerStarted}
+        rows={powerRows ? shownPower : undefined}
+        progress={powerProgress}
+        ms={powerMs}
+        focus={powerFocus}
+        onheat={setHeat}
+        onstart={() => (powerStarted = true)}
+        onstop={stopPower}
+        onclose={closePower}
+        onhover={(id: number | undefined) => (powerHover = id)}
+        onpick={(r: ShownPowerRow) => {
+          powerFocus = r.ID;
+          if (!r.Cluster) canvasEl?.focus(r.ID);
+        }} />
     {/if}
   {/snippet}
-  {#snippet nodeTipExtra(n: TreeNodeFx)}
-    {#if n.k === 'm' && n.picked !== undefined && n.effects?.[n.picked]}
-      <div class="text-12 text-accent" data-power-pick={n.picked}>Power report picks: {n.effects[n.picked].join(' / ')}</div>
-    {/if}
-    {@render nodeTipBody(n)}
-  {/snippet}
-  {#snippet nodeTipTail(n: TreeNodeFx)}
-    {@render nodeTipCost(n)}
-  {/snippet}
+  {#snippet nodeTipExtra(n: TreeNodeFx)}<NodeTipSections tip={nodeTip(n)} />{/snippet}
+  {#snippet nodeTipTail(n: TreeNodeFx)}<NodeTipSections cost={nodeCost(n)} />{/snippet}
   {#snippet canvas(api: CanvasApi)}
     <div class="absolute inset-0">
       {#if view}
@@ -1454,12 +1336,12 @@
 
 <TimelessDialog bind:open={timelessOpen} />
 
-<Dialog bind:open={socketOpen} title={socketing ? `Socket a jewel: ${socketing.node.name}` : 'Socket a jewel'} class="w-105 p-4.5">
+<Dialog bind:open={socketOpen} title={socketing ? `Socket a jewel: ${socketing.node.name}` : 'Socket a jewel'} size="sm">
   {#if socketing}
     <div role="group" aria-label="Jewels for this socket" class="flex max-h-90 flex-col gap-1 overflow-y-auto">
       {#each [{ ItemID: 0, Name: 'None', Rarity: '' }, ...socketing.choices] as j (j.ItemID)}
         <button
-          class="choice-card justify-between gap-2 px-2.5 py-1.5 text-left text-13 aria-pressed:border-accent aria-pressed:bg-surface-3"
+          class="choice-card justify-between gap-2 px-2.5 py-1.5 text-left text-13"
           aria-pressed={j.ItemID === socketing.current}
           onclick={() => void chooseJewel(j.ItemID).catch(logError)}
           ><span class={['truncate text-(--tone)', j.Rarity ? tone(j.Rarity.toLowerCase() as Tone) : '']}>{j.Name}</span
@@ -1483,7 +1365,7 @@
   onreset={() => tattooNode && void resetTattoo(tattooNode).catch(logError)}
   onclose={() => (tattooNode = undefined)} />
 
-<Dialog small open={classConfirm !== undefined} onclose={() => (classConfirm = undefined)} title="Class Change" class="w-105 p-4.5">
+<Dialog phone="centred" open={classConfirm !== undefined} onclose={() => (classConfirm = undefined)} title="Class Change" size="sm">
   {#if classConfirm}
     <div class="flex flex-col gap-3 text-13">
       <p class="m-0">Changing class to {classConfirm.className} will reset your passive tree.</p>

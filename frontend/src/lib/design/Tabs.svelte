@@ -1,7 +1,8 @@
 <script lang="ts">
+  import Badge from './Badge.svelte';
   import { rovingIndex } from './keys';
   import type { Snippet } from 'svelte';
-  import { tone as toneClass, type Tone } from './tone';
+  import type { Tone } from './tone';
   import { panelId, tabId } from './tab_ids';
 
   type Tab = { id: string; label: string; count?: string; badge?: { text: string; tone: Tone } };
@@ -66,7 +67,7 @@
       onkeydown={(e) => onkeydown(e, i)}>
       {t.label}{#if t.count}<span class={variant === 'vertical' ? 'font-mono text-11 font-normal text-text-3' : 'ml-1 font-mono text-11 text-text-2'}
           >{t.count}</span
-        >{/if}{#if t.badge}<span class={['count-badge', toneClass(t.badge.tone)]}>{t.badge.text}</span>{/if}
+        >{/if}{#if t.badge}<Badge variant="solid" size="sm" mono tone={t.badge.tone}>{t.badge.text}</Badge>{/if}
     </button>
   {/each}
 </div>

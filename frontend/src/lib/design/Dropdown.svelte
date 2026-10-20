@@ -1,4 +1,5 @@
 <script lang="ts">
+  import SearchField from './SearchField.svelte';
   import { tick } from 'svelte';
   import { float, pressedOutside, raise } from './floating';
 
@@ -145,16 +146,16 @@
   {#if open}
     <div class="menu fixed top-(--y) right-auto left-(--x) w-max max-w-[min(40rem,calc(100vw-16px))] gap-1" use:placed>
       {#if searchable}
-        <input
-          type="search"
-          class="input input-xs w-full shrink-0"
-          aria-label="Filter {aria['aria-label'] ?? ''}"
+        <SearchField
+          size="xs"
+          class="w-full shrink-0"
+          label="Filter {aria['aria-label'] ?? ''}"
           aria-controls="{uid}-list"
           placeholder="Type to filter…"
           autocomplete="off"
           value={q}
-          oninput={(e) => void filter(e.currentTarget.value)}
-          onkeydown={(e) => onkeydown(e, true)} />
+          oninput={(e: Event & { currentTarget: HTMLInputElement }) => void filter(e.currentTarget.value)}
+          onkeydown={(e: KeyboardEvent) => onkeydown(e, true)} />
       {/if}
       <ul
         bind:this={list}

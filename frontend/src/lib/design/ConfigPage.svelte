@@ -3,6 +3,8 @@
 </script>
 
 <script lang="ts">
+  import Tooltip from './Tooltip.svelte';
+  import SearchField from './SearchField.svelte';
   import OptionGroup from './OptionGroup.svelte';
   import OptionRow from './OptionRow.svelte';
   import NumberInput from './NumberInput.svelte';
@@ -10,7 +12,6 @@
   import Button from './Button.svelte';
   import PobText from './PobText.svelte';
   import ConfigCustom from './ConfigCustom.svelte';
-  import { besideAnchor } from './items';
   import { pobPlain } from './pob_text';
   import { configView, listIndex, INVALID, type ConfigFilter, type CustomOps, type Inputs, type OptionView } from './config';
   import { optionTooltip } from '$lib/display/configurations';
@@ -179,12 +180,12 @@
 {/snippet}
 
 <div class="flex shrink-0 flex-wrap items-center gap-x-3 gap-y-2">
-  <input
-    type="search"
-    class="input h-8.5 w-60 bg-surface-1 px-2.5 text-14 max-phone:w-full"
+  <SearchField
+    size="md"
+    class="w-60 bg-surface-1 px-2.5 text-14 max-phone:w-full"
     placeholder="Filter options"
-    aria-label="Filter options"
-    bind:this={searchBox}
+    label="Filter options"
+    bind:ref={searchBox}
     bind:value={filter.q} />
   <label class="check-label gap-2 text-13"><input type="checkbox" class="check" bind:checked={filter.modOnly} /> Modified only</label>
   <label class="check-label gap-2 text-13"
@@ -234,11 +235,7 @@
 </div>
 
 {#if tip && tipOption}
-  <div
-    role="tooltip"
-    id="config-option-tip"
-    class="tooltip pointer-events-none fixed top-(--y) left-(--x) z-float flex max-w-90 flex-col gap-1 rounded-md px-2.5 py-2 text-12 whitespace-pre-line shadow-tip"
-    use:besideAnchor={tip.anchor}>
+  <Tooltip id="config-option-tip" placement="beside" anchor={tip.anchor} class="flex max-w-90 flex-col gap-1 whitespace-pre-line">
     <span class="font-semibold">{pobPlain(tipOption.v.label)}</span>
     {#if tooltipOf(tipOption)}<span class="text-text-2"><PobText text={tooltipOf(tipOption)!} /></span>{/if}
     {#each tipLines(tipOption) as l, k (k)}<span class={tipOption.invalid ? 'text-worse' : 'text-text-3'}>{l}</span>{/each}
@@ -253,7 +250,7 @@
           ]} />
       </div>
     {/if}
-  </div>
+  </Tooltip>
 {/if}
 {#if onconfigsets}
   <SetManager

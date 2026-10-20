@@ -24,6 +24,9 @@
   .sheet-head {
     @apply flex items-center gap-2.5 border-b border-line bg-bar px-4.5 py-3.5;
   }
+  .sheet-foot {
+    @apply flex items-center gap-2 border-t border-line bg-bar px-4.5 py-3 max-phone:flex-wrap max-phone:px-3;
+  }
   .drag-ghost {
     @apply pointer-events-none absolute z-float flex -rotate-2 items-center gap-2 rounded-md border border-line-strong bg-surface-2 px-2.5 py-1.5 text-12 font-semibold whitespace-nowrap shadow-ghost;
   }
@@ -91,23 +94,6 @@
   }
 }
 
-/* phones: every dialog but a bottom sheet or a small confirm fills the screen */
-.dialog-small {
-  @variant max-phone {
-    width: calc(100vw - 2rem) !important;
-    max-width: none !important;
-  }
-}
-.dialog:not(.sheet-bottom, .dialog-small) {
-  @variant max-phone {
-    margin: 0;
-    width: 100% !important;
-    max-width: none !important;
-    height: 100dvh !important;
-    max-height: none !important;
-    border-radius: 0;
-  }
-}
 .sheet-head {
   @variant max-phone {
     flex-wrap: wrap;

@@ -277,7 +277,7 @@
     {#snippet strip(open: () => void)}
       {#if $sidebar}<StatsStrip sidebar={$sidebar} pinned={statPins.ids} delta={$editDelta} onopen={open} />{/if}
     {/snippet}
-    {#snippet stats()}<AppSidebar />{/snippet}
+    {#snippet stats()}<AppSidebar fill />{/snippet}
     {@render children?.()}
   </MobileFrame>
   <BuildSheets
@@ -328,7 +328,7 @@
     devMode={$devMode} />
 {/if}
 <SaveAsDialog bind:open={saveAs} onsaved={saved} />
-<Dialog small bind:open={savePrompt} title="Save Changes" class="w-100 p-4.5">
+<Dialog phone="centred" bind:open={savePrompt} title="Save Changes" size="sm">
   <div class="flex flex-col gap-3 text-13">
     <p class="m-0">This build has unsaved changes.<br />Do you want to save them now?</p>
     <div class="flex gap-1.5">
@@ -350,13 +350,13 @@
     </div>
   </div>
 </Dialog>
-<Dialog small open={!!saveError} title="Error" class="w-100 p-4.5" onclose={() => (saveError = undefined)}>
+<Dialog phone="centred" open={!!saveError} title="Error" size="sm" onclose={() => (saveError = undefined)}>
   <p role="alert" class="m-0 text-13 whitespace-pre-line">{saveError}</p>
   {#snippet actions()}
     <DialogActions confirm="OK" cancel={false} onconfirm={() => (saveError = undefined)} />
   {/snippet}
 </Dialog>
-<Dialog bind:open={naming} title="Set Name" class="w-100 p-4.5">
+<Dialog bind:open={naming} title="Set Name" size="sm">
   <form
     class="flex flex-col gap-2 text-13"
     onsubmit={(e) => {
@@ -365,7 +365,7 @@
     }}>
     <label class="flex flex-col gap-1"
       ><span>Enter name for this loadout:</span><input
-        class="input h-7.5"
+        class="input input-sm"
         aria-label="Enter name for this loadout"
         bind:value={loadoutName}
         maxlength="100" /></label>

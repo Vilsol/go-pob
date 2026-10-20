@@ -78,7 +78,7 @@ test.describe('phone shell at 390×769', () => {
       ['Build issues', 'Build issues'],
       ['Loadout', 'Loadout']
     ]) {
-      await (await openMore(page)).getByRole('button', { name: new RegExp(`^${action}`) }).click();
+      await (await openMore(page)).getByRole('menuitem', { name: new RegExp(`^${action}`) }).click();
       const sheet = page.getByRole('dialog', { name: dialog });
       await expect(sheet).toBeVisible();
       await sheet.getByRole('button', { name: 'Close' }).click();
@@ -164,7 +164,7 @@ test.describe('phone shell at 390×769', () => {
     await waitLastFrame(page, `(f) => f.active === ${active.length}`);
     await expect.poll(() => shownDelta(page), { message: 'Undo replaces the delta with Go’s change back' }).toEqual(wantDelta(afterOut, beforeOut));
     await expect(page.getByRole('banner').getByRole('button', { name: 'Redo' }), 'the frame’s Redo follows the worker’s undo history').toBeEnabled();
-    await (await openMore(page)).getByRole('button', { name: /^Undo history/ }).click();
+    await (await openMore(page)).getByRole('menuitem', { name: /^Undo history/ }).click();
     await expect(page.getByRole('dialog', { name: 'Undo history' }).getByRole('list', { name: 'Undo history' }).getByRole('listitem')).not.toHaveCount(0);
     await page.getByRole('dialog', { name: 'Undo history' }).getByRole('button', { name: 'Close' }).click();
 
@@ -199,7 +199,7 @@ test.describe('phone shell at 390×769', () => {
     await page.getByRole('group', { name: 'Layout' }).getByRole('button', { name: 'List' }).click();
     const list = page.getByRole('table', { name: 'Equipped items' });
     await expect(list).toHaveAttribute('data-phone', 'cards');
-    await (await openMore(page)).getByRole('button', { name: 'Settings' }).click();
+    await (await openMore(page)).getByRole('menuitem', { name: 'Settings' }).click();
     const sheet = page.getByRole('dialog', { name: 'Settings' });
     await sheet.getByRole('combobox', { name: 'Wide lists on a phone' }).selectOption('Table');
     await sheet.getByRole('button', { name: 'Save' }).click();

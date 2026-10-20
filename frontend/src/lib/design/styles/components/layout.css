@@ -30,6 +30,12 @@
   .subhead {
     @apply text-11 font-bold tracking-caps text-text-2;
   }
+  .eyebrow {
+    @apply text-11 font-semibold tracking-caps uppercase;
+  }
+  .eyebrow-xs {
+    @apply text-10;
+  }
   .kv {
     @apply flex justify-between gap-2;
   }
@@ -101,7 +107,7 @@
     @apply box-border min-h-full px-5.5 py-4.5 text-14 leading-[1.6] text-text outline-none;
   }
   .notes-doc h1 {
-    @apply mb-1 text-[1.25rem] font-semibold;
+    @apply mb-1 text-20 font-semibold;
   }
   .notes-doc h2 {
     @apply mt-1 text-16 font-semibold;

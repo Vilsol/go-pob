@@ -1,10 +1,10 @@
 <script lang="ts">
+  import Tooltip from './Tooltip.svelte';
   import Checkbox from './Checkbox.svelte';
   import FloatingItemTip from './FloatingItemTip.svelte';
   import PobText from './PobText.svelte';
   import SocketPreview from './SocketPreview.svelte';
   import TooltipLines from './TooltipLines.svelte';
-  import { besideAnchor } from './items';
   import { tone as toneClass } from './tone';
   import type { ItemTip } from './fixtures';
   import type { StatCompareSection } from '$lib/skill_tree/stat_compare';
@@ -209,13 +209,9 @@
     tooltip={hover.tip} />
 {/if}
 {#if equipHover && equipHover.row.impact}
-  <div
-    id="compare-equip-tip"
-    role="tooltip"
-    class="tooltip pointer-events-none fixed top-(--y) left-(--x) z-float max-w-[600px] rounded-md px-3 py-1.5 shadow-tip"
-    use:besideAnchor={equipHover.anchor}>
+  <Tooltip id="compare-equip-tip" placement="beside" anchor={equipHover.anchor} textSize={11} class="max-w-[600px]">
     <TooltipLines lines={equipLines(equipHover.row)} />
-  </div>
+  </Tooltip>
 {/if}
 {#if socket?.view}
   <SocketPreview

@@ -1,4 +1,7 @@
 <script lang="ts">
+  import Field from './Field.svelte';
+  import InlineMessage from './InlineMessage.svelte';
+  import SectionHeading from './SectionHeading.svelte';
   import type { Snippet } from 'svelte';
   import FloatingLabel from './FloatingLabel.svelte';
   import Checkbox from './Checkbox.svelte';
@@ -111,24 +114,24 @@
 </script>
 
 <section aria-label="Build sharing" class="panel flex flex-col gap-2.5 p-3.5">
-  <h2 class="subhead text-13">BUILD SHARING</h2>
+  <SectionHeading size="lg">BUILD SHARING</SectionHeading>
   <textarea readonly aria-label="Build code" class="input h-27 p-2 font-mono text-11 break-all text-text-3" value={code}></textarea>
   <div class="flex flex-wrap items-center gap-2">
     <button class="btn btn-md px-3" disabled={!code} onclick={() => oncopy?.(code)}>Copy code</button>
-    {#if copied}<span role="status" class="text-12 whitespace-nowrap text-better">✓ Copied</span>{/if}
+    {#if copied}<InlineMessage kind="success" tag="span" class="whitespace-nowrap">✓ Copied</InlineMessage>{/if}
     <FloatingLabel label="Share via"
-      ><select class="select h-8.5" bind:value={site} disabled={!!unavailable.share} title={unavailable.share}>
+      ><select class="select input-md" bind:value={site} disabled={!!unavailable.share} title={unavailable.share}>
         {#each EXPORT_SITES as s (s.label)}<option value={s.label}>{s.label}</option>{/each}
       </select></FloatingLabel>
     <button class="btn btn-md btn-primary" disabled={!code || sharing || !!unavailable.share} title={unavailable.share} onclick={() => onshare?.(site)}
       >{sharing ? 'Creating link...' : 'Share'}</button>
   </div>
-  {#if shareError}<div role="alert" class={['toned text-12', toneClass('down')]}>Error creating link: {shareError}</div>{/if}
+  {#if shareError}<InlineMessage kind="error">Error creating link: {shareError}</InlineMessage>{/if}
   {#if link}
     <div class="flex items-center gap-2 text-12">
       <span class="whitespace-nowrap text-better">✓ Link created</span><input
         readonly
-        class="input h-7.5 grow font-mono text-12"
+        class="input input-sm grow font-mono text-12"
         value={link}
         aria-label="Share link" />
     </div>
@@ -143,9 +146,8 @@
 </section>
 
 <section aria-label="Build import" class="panel flex flex-col gap-2.5 p-3.5">
-  <h2 class="subhead text-13">BUILD IMPORT</h2>
-  <label class="field"
-    >To import a build, enter URL or code here:
+  <SectionHeading size="lg">BUILD IMPORT</SectionHeading>
+  <Field label="To import a build, enter URL or code here:">
     <input
       class="input input-lg font-mono text-13"
       bind:this={codeInput}
@@ -154,8 +156,7 @@
       onkeydown={(e) => {
         // ImportTab.lua:671-675
         if (e.key === 'Enter' && canImport) onimport?.(importText.trim(), mode);
-      }} />
-  </label>
+      }} /></Field>
   <div id="{uid}-verdict" aria-live="polite" class={['toned text-12', toneClass(verdictTone)]}>{verdict?.text ?? HINT}</div>
   <div role="radiogroup" aria-label="Import as" class="flex flex-col gap-1.5 text-13">
     {#each MODES as [id, label, hint] (id)}
@@ -167,13 +168,13 @@
   </div>
   <button class="btn btn-md btn-primary self-start" disabled={!canImport} onclick={() => onimport?.(importText.trim(), mode)}
     >{fetching ? 'Retrieving paste..' : 'Import'}</button>
-  {#if importError}<div role="alert" class={['toned text-12', toneClass('down')]}>Import failed: {importError}</div>{/if}
-  {#if imported}<div role="status" class={['toned text-12', toneClass('up')]}>{imported}</div>{/if}
+  {#if importError}<InlineMessage kind="error">Import failed: {importError}</InlineMessage>{/if}
+  {#if imported}<InlineMessage kind="success">{imported}</InlineMessage>{/if}
 </section>
 
 {#if characterImport}{@render characterImport()}{:else}<section aria-label="Character import" class="panel col-span-2 flex flex-col gap-3 p-3.5">
     <div class="flex items-baseline justify-between">
-      <h2 class="subhead text-13">CHARACTER IMPORT</h2>
+      <SectionHeading size="lg">CHARACTER IMPORT</SectionHeading>
       <span class="note"
         >Character import status: <span class={['toned', toneClass(characters ? 'up' : 'muted')]}
           >{characters ? `Fetched ${characters.length} characters` : unavailable.characters ? 'Not available' : 'Not fetched'}</span
@@ -183,13 +184,13 @@
     <div class="flex items-end gap-2.5 max-phone:flex-wrap">
       <label class="field"
         >Account name <input
-          class="input h-8.5 w-55 px-2.5"
+          class="input input-md w-55 px-2.5"
           bind:value={account}
           placeholder="AccountName#0000"
           disabled={!!unavailable.characters}
           title={unavailable.characters} /></label>
       <FloatingLabel label="Realm"
-        ><select class="select h-8.5" bind:value={realm} disabled={!!unavailable.characters} title={unavailable.characters}
+        ><select class="select input-md" bind:value={realm} disabled={!!unavailable.characters} title={unavailable.characters}
           >{#each realms as r (r)}<option>{r}</option>{/each}</select
         ></FloatingLabel>
       <button
@@ -203,7 +204,7 @@
         <div class="flex w-105 shrink-0 flex-col gap-2 max-phone:w-auto">
           <FloatingLabel label="League"
             ><select
-              class="select h-8.5"
+              class="select input-md"
               value={league || leagues[0]}
               onchange={(e) => {
                 league = e.currentTarget.value;

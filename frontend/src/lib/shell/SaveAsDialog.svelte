@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InlineMessage from '$lib/design/InlineMessage.svelte';
   import Dialog from '$lib/design/Dialog.svelte';
   import Field from '$lib/design/Field.svelte';
   import Input from '$lib/design/Input.svelte';
@@ -72,7 +73,7 @@
   };
 </script>
 
-<Dialog bind:open title="Save build as" class="w-110">
+<Dialog bind:open title="Save build as" size="md">
   <Field label="Build name">
     <Input
       bind:value={name}
@@ -92,7 +93,7 @@
     </Field>
     <Button size="md" title="Make a folder in {folder ? leaf(folder) : 'All builds'}" onclick={() => (asking = true)}>New folder</Button>
   </div>
-  {#if failed}<p role="alert" class="m-0 text-13 whitespace-pre-line text-worse">{failed}</p>{/if}
+  {#if failed}<InlineMessage kind="error" size="md" tag="p" class="whitespace-pre-line">{failed}</InlineMessage>{/if}
   {#snippet actions()}
     <DialogActions confirm="Save" disabled={!name} oncancel={() => (open = false)} onconfirm={save} />
   {/snippet}

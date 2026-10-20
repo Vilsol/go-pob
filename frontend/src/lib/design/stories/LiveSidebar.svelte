@@ -6,13 +6,14 @@
 
   type Control = 'MainActiveSkill' | 'SkillPart' | 'StageCount' | 'MineCount' | 'Minion' | 'MinionSkill';
 
-  type Props = { fx: BuildFixture; collapsed?: boolean; pinned?: string[] };
-  let { fx, collapsed = false, pinned = $bindable([]) }: Props = $props();
+  type Props = { fx: BuildFixture; collapsed?: boolean; fill?: boolean; pinned?: string[] };
+  let { fx, collapsed = false, fill = false, pinned = $bindable([]) }: Props = $props();
 
   let s = $state({ collapsed, group: fx.mainSocketGroup, controls: { ...fx.mainSkill } });
 </script>
 
 <Sidebar
+  {fill}
   sidebar={fx.sidebar}
   socketGroups={fx.socketGroups}
   mainSocketGroup={s.group}

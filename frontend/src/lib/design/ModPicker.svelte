@@ -1,4 +1,5 @@
 <script lang="ts">
+  import SearchField from './SearchField.svelte';
   import EmptyState from './EmptyState.svelte';
   import FloatingLabel from './FloatingLabel.svelte';
   import Dialog from './Dialog.svelte';
@@ -36,17 +37,17 @@
 
 <Dialog bind:open title="Add a modifier" note="{base} · item level {ilvl}" sheet class="h-190 max-h-[calc(100vh-48px)] w-225 max-w-[calc(100vw-48px)]">
   <div class="flex items-end gap-2.5 border-b border-line px-5 py-3 max-phone:flex-wrap max-phone:px-3">
-    <input
-      type="search"
-      class="input h-8.5 grow px-2.5 text-14 max-phone:basis-full"
+    <SearchField
+      size="md"
+      class="grow px-2.5 text-14 max-phone:basis-full"
       placeholder="Search modifier text"
-      aria-label="Search modifiers"
+      label="Search modifiers"
       bind:value={q}
       oninput={() => (sel = 0)} />
     <label class="field gap-0.75 text-11 text-text-3">Max item level<NumberInput bind:value={ilvl} min={1} max={100} class="w-20" /></label>
-    <FloatingLabel label="Tier" class="max-phone:flex-1"><Select class="h-8.5" options={affixes.tiers} bind:value={tier} /></FloatingLabel>
-    <FloatingLabel label="Source" class="max-phone:flex-1"><Select class="h-8.5" options={affixes.sources} bind:value={source} /></FloatingLabel>
-    <FloatingLabel label="Sort by" class="max-phone:flex-1"><Select class="h-8.5" options={affixes.sorts} /></FloatingLabel>
+    <FloatingLabel label="Tier" class="max-phone:flex-1"><Select size="md" options={affixes.tiers} bind:value={tier} /></FloatingLabel>
+    <FloatingLabel label="Source" class="max-phone:flex-1"><Select size="md" options={affixes.sources} bind:value={source} /></FloatingLabel>
+    <FloatingLabel label="Sort by" class="max-phone:flex-1"><Select size="md" options={affixes.sorts} /></FloatingLabel>
   </div>
   <div class="scroll grow text-13">
     <div aria-hidden="true" class="data-row data-head grid-cols-24 gap-2 px-5 py-2 tracking-caps max-phone:hidden">
@@ -58,7 +59,7 @@
       {#each rows as r, i (r.text + r.tier)}
         <button
           role="option"
-          class="data-row w-full grid-cols-24 gap-2 border-0 max-phone:grid-cols-4 max-phone:gap-y-0.5 max-phone:px-3 border-b border-surface-3 bg-transparent px-5 py-1.75 text-left font-sans text-13 text-text aria-selected:bg-surface-3 aria-selected:shadow-[inset_2px_0_0_var(--color-accent)]"
+          class="data-row w-full grid-cols-24 gap-2 border-0 max-phone:grid-cols-4 max-phone:gap-y-0.5 max-phone:px-3 border-b border-surface-3 bg-transparent px-5 py-1.75 text-left font-sans text-13 text-text aria-selected:bg-row-selected aria-selected:shadow-sel-bar"
           aria-selected={r === picked}
           onclick={() => (sel = i)}
           ondblclick={() => {
@@ -80,8 +81,8 @@
       {/each}
     </div>
   </div>
-  <div class="flex items-center justify-between gap-2 border-t border-line px-5 py-3 max-phone:px-3">
-    <span class="note truncate">{picked ? `Selected: ${picked.text}` : 'Nothing selected'}</span>
+  {#snippet footer()}
+    <span class="note min-w-0 grow truncate">{picked ? `Selected: ${picked.text}` : 'Nothing selected'}</span>
     <div class="flex gap-2">
       <DialogActions
         confirm="Add modifier"
@@ -92,5 +93,5 @@
           open = false;
         }} />
     </div>
-  </div>
+  {/snippet}
 </Dialog>

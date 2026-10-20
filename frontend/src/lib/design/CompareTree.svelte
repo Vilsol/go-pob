@@ -1,4 +1,7 @@
 <script lang="ts">
+  import SearchField from './SearchField.svelte';
+  import Badge from './Badge.svelte';
+  import SectionHeading from './SectionHeading.svelte';
   import Button from './Button.svelte';
   import type { CompareFixture } from './fixtures';
 
@@ -52,7 +55,7 @@
     <div class="flex gap-2 max-phone:flex-col">
       {#each sides as side (side.key)}
         <div class="flex flex-col gap-1">
-          <input class="input h-7 text-12" type="search" aria-label="Search {side.label}" placeholder="Search" bind:value={q[side.key]} />
+          <SearchField size="sm" class="text-12" label="Search {side.label}" placeholder="Search" bind:value={q[side.key]} />
           <section
             aria-label={side.label}
             class={[
@@ -96,7 +99,7 @@
   </div>
   <section aria-label="Node differences" class="panel flex min-w-0 grow flex-col gap-1.5 px-3 py-2.5 text-12">
     <div class="flex flex-wrap justify-between gap-2">
-      <h3 class="subhead text-12">NODE DIFFERENCES</h3>
+      <SectionHeading level={3} size="md">NODE DIFFERENCES</SectionHeading>
       <span class="text-text-3">A {aPoints} pts · B {bPoints} pts · {shared} shared · {small.length} small nodes differ</span>
     </div>
     <div class="grid grid-cols-[1.75rem_minmax(0,1fr)_4rem] gap-1.5 phone:grid-cols-[1.75rem_minmax(0,1fr)_auto_4rem]">
@@ -104,10 +107,7 @@
         <div class="col-span-full grid grid-cols-subgrid items-center border-b border-surface-2 py-1" data-node-diff>
           <span class={['toned font-semibold', OWNER[d.owner]]}>{d.owner.toUpperCase()}</span>
           <span class="flex min-w-0 items-center gap-1.5"
-            ><span class="truncate" title={d.name}>{d.name}</span><span
-              class="shrink-0 rounded-full border border-line px-1.5 text-10 text-text-2 phone:hidden"
-              data-kind-badge>{KIND[d.kind]}</span
-            ></span>
+            ><span class="truncate" title={d.name}>{d.name}</span><Badge variant="outline" class="phone:hidden" data-kind-badge>{KIND[d.kind]}</Badge></span>
           <span class="text-text-3 max-phone:hidden">{KIND[d.kind]}</span>
           {#if canApply}<Button size="2xs" class="px-0" onclick={() => onnode(d.id, d.owner === 'a' ? 'Drop' : 'Take')}
               >{d.owner === 'a' ? 'Drop' : 'Take'}</Button

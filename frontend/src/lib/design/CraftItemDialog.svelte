@@ -42,18 +42,18 @@
   });
 </script>
 
-<Dialog bind:open title="Craft Item" class="w-110 p-4.5">
+<Dialog bind:open title="Craft Item" size="md">
   <div class="flex flex-col gap-2.5">
     <div class="grid grid-cols-[120px_1fr] gap-2">
       <FloatingLabel label="Rarity"
         ><Select
-          class="h-7.5"
+          size="sm"
           aria-label="Rarity"
           options={RARITIES.map((r, i) => ({ value: String(i), label: r }))}
           value={String(rarity)}
           onchange={(e: Event & { currentTarget: HTMLSelectElement }) => (rarity = Number(e.currentTarget.value))} /></FloatingLabel>
       {#if rarity >= 2}
-        <input class="input h-7.5" aria-label="Name" placeholder="Name" bind:value={title} />
+        <input class="input input-sm" aria-label="Name" placeholder="Name" bind:value={title} />
       {/if}
     </div>
     <FloatingLabel label="Type"

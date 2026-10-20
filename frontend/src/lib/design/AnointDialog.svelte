@@ -1,5 +1,6 @@
 <script lang="ts">
-  import EmptyState from './EmptyState.svelte';
+  import Tooltip from './Tooltip.svelte';
+  import SearchList from './SearchList.svelte';
   import Dialog from './Dialog.svelte';
   import DialogActions from './DialogActions.svelte';
   import Select from './Select.svelte';
@@ -75,40 +76,36 @@
   const saveLabel = $derived(selected ? `Anoint ${selected.name}` : anointed.length >= slot ? `Remove ${anointed[slot - 1]}` : 'No Anoint');
 </script>
 
-<Dialog bind:open title="Anoint Item" class="w-110 p-4">
+<Dialog bind:open title="Anoint Item" size="md">
   <div class="flex flex-col gap-1.5 text-13">
     <Select
-      class="h-7.5"
+      size="sm"
       aria-label="Sort notables"
       options={[{ value: '', label: 'Sort by Name' }, ...stats.map((s) => ({ value: s.stat, label: `Sort by ${s.label}` }))]}
       bind:value={sort} />
-    <div class="flex gap-1">
-      <input class="input h-7 grow" placeholder="Search" aria-label="Search notables" bind:value={search} />
-      <Select size="xs" aria-label="Search in" options={[...MODES]} bind:value={mode} />
-    </div>
-    <div role="listbox" aria-label="Notables" aria-busy={progress !== undefined} class="scroll flex h-70 flex-col border border-line">
-      {#if progress !== undefined}
-        <span class="note px-2 py-0.5">Sorting... ({progress}%)</span>
-      {:else if !list.length}
-        <EmptyState class="px-2 py-0.5" text="No notables found that match those filters." />
-      {:else}
-        {#each list as n (n.id)}
-          <button
-            role="option"
-            aria-selected={n.id === selected?.id}
-            class="border-0 bg-transparent px-2 py-0.5 text-left font-sans text-13 aria-selected:bg-surface-3"
-            onclick={() => (selected = n)}><PobText text={notableColour(power?.get(n.id), power && maxOf(power), !!sort && !!power) + n.name} /></button>
-        {/each}
-      {/if}
-    </div>
+    <SearchList
+      bind:query={search}
+      searchLabel="Search notables"
+      items={list}
+      key={(n: AnointNotable) => n.id}
+      label="Notables"
+      busy={progress !== undefined}
+      selected={selected ? list.findIndex((n: AnointNotable) => n.id === selected?.id) : -1}
+      emptyText="No notables found that match those filters."
+      listClass="h-70"
+      onselect={(n: AnointNotable) => (selected = n)}>
+      {#snippet filters()}<Select size="xs" aria-label="Search in" options={[...MODES]} bind:value={mode} />{/snippet}
+      {#snippet busyNote()}<span class="note px-2 py-0.5">Sorting... ({progress}%)</span>{/snippet}
+      {#snippet row(n: AnointNotable)}<PobText text={notableColour(power?.get(n.id), power && maxOf(power), !!sort && !!power) + n.name} />{/snippet}
+    </SearchList>
     {#if selected}
-      <div role="tooltip" aria-label="Notable" class="tooltip flex flex-col gap-0.5 rounded-md px-3 py-2 text-12">
+      <Tooltip label="Notable" interactive flat class="flex flex-col gap-0.5">
         <span class="font-semibold">{selected.name}</span>
         {#each selected.stats as line, i (i)}<span data-unsupported={selected.unsupported?.[i] || undefined}
             ><PobText text={(selected.unsupported?.[i] ? '^xF05050' : '^x8888FF') + line} /></span
           >{/each}
         {#each selected.reminder as line, i (i)}<span><PobText text={'^xA0A080' + line} /></span>{/each}
-      </div>
+      </Tooltip>
     {/if}
     {#if comparison?.note}
       <p class="note" role="status"><PobText text={comparison.note} /></p>

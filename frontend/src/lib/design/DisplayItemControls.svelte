@@ -183,7 +183,7 @@
     {#each selected as sel, i (i)}
       <FloatingLabel label={ALT[i]}
         ><Select
-          class="h-7.5"
+          size="sm"
           aria-label={ALT[i]}
           options={info.variants.map((v, k) => ({ value: String(k + 1), label: v }))}
           value={String(sel)}
@@ -196,7 +196,7 @@
     {#if vg.versions.length > 1}
       <FloatingLabel label="Version"
         ><Select
-          class="h-7.5"
+          size="sm"
           aria-label="Version"
           options={vg.versions.map((v, k) => ({ value: String(k + 1), label: v }))}
           value={String(vg.version)}
@@ -205,7 +205,7 @@
     {#each vg.groups as g, i (i)}
       <FloatingLabel label={ALT[i]}
         ><Select
-          class="h-7.5"
+          size="sm"
           aria-label={ALT[i]}
           disabled={!g.enabled}
           options={g.options.map((o) => ({ value: String(o.variant), label: o.label }))}
@@ -221,7 +221,8 @@
     <div role="group" aria-label="Sockets" class="flex flex-wrap items-center gap-1.5">
       {#each sockets as s, i (i)}
         <Select
-          class="h-7 w-14"
+          size="sm"
+          class="w-14"
           aria-label="Socket {i + 1} colour"
           options={COLOURS}
           value={s.colour}
@@ -249,7 +250,7 @@
       {#each [0, 1] as const as slot (slot)}
         <FloatingLabel label="Influence {slot + 1}"
           ><Select
-            class="h-7.5"
+            size="sm"
             aria-label="Influence {slot + 1}"
             title="Selecting an influence here will also allow the modifier dropdowns to contain influenced mods."
             options={[{ value: '', label: 'Influence' }, ...INFLUENCES.map((n) => ({ value: n, label: n }))]}
@@ -266,7 +267,7 @@
     <div class="flex items-end gap-2">
       <FloatingLabel label="Catalyst" class="grow"
         ><Select
-          class="h-7.5"
+          size="sm"
           aria-label="Catalyst"
           options={CATALYSTS.map((c, k) => ({ value: String(k), label: c }))}
           value={String(info.catalyst)}
@@ -289,7 +290,7 @@
     <div role="group" aria-label="Cluster jewel" class="flex flex-col gap-1.5">
       <FloatingLabel label="Cluster skill"
         ><Select
-          class="h-7.5"
+          size="sm"
           aria-label="Cluster skill"
           options={cl.skills.map((s) => ({ value: s.id, label: s.label }))}
           value={cl.skill}
@@ -387,7 +388,8 @@
     {@const m = info.mods[picked]}
     <div class="flex items-center gap-2">
       <Select
-        class="h-7.5 min-w-0 grow"
+        size="sm"
+        class="min-w-0 grow"
         aria-label="Modifier range"
         options={ranged.map((i) => ({ value: String(i), label: info.mods[i].line }))}
         value={String(picked)}

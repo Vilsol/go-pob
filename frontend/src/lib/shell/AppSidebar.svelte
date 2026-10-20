@@ -18,6 +18,8 @@
   import { checkFlag } from '$lib/calcs/check_flag';
   import { statPins } from './stat_pins.svelte';
 
+  let { fill = false }: { fill?: boolean } = $props();
+
   const main = new MainGroup();
 
   // Build.lua:1453-1482
@@ -50,6 +52,7 @@
 
 {#if $sidebar}
   <Sidebar
+    {fill}
     sidebar={$showWarnings ? $sidebar : { ...$sidebar, warnings: [] }}
     socketGroups={main.groups.length ? main.groups : ['<No skills added yet>']}
     mainSocketGroup={Math.max(0, main.index)}

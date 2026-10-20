@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Tooltip from './Tooltip.svelte';
   import EmptyState from './EmptyState.svelte';
   import PobText from './PobText.svelte';
   import Checkbox from './Checkbox.svelte';
@@ -6,7 +7,6 @@
   import { tone as toneClass } from './tone';
   import { pobPlain } from './pob_text';
   import TooltipLines from './TooltipLines.svelte';
-  import { besideAnchor } from './items';
   import { modTipLines, type CompareCalcRow, type CompareCalcSection } from '$lib/display/compare_calcs';
   import type { calculator } from '$lib/types';
 
@@ -56,7 +56,7 @@
     <div class="columns-[21.25rem] gap-2.5">
       {#each sections as s, i (i)}
         <div role="table" aria-label={pobPlain(s.blocks[0]?.label ?? s.id)} class="mb-2.5 break-inside-avoid rounded border border-line bg-surface-1 text-11">
-          <div role="row" class={['grid gap-2 border-b border-line px-2 py-0.5 text-10 tracking-caps-tight', GRID]}>
+          <div role="row" class={['grid gap-2 border-b border-line px-2 py-0.5 text-10 tracking-caps', GRID]}>
             <span role="columnheader" class={['toned font-bold uppercase', toneClass(sectionTone({ color: s.color, applicable: true }))]}>{s.id}</span><span
               role="columnheader"
               class="text-right text-build-a">A</span
@@ -93,11 +93,7 @@
   {/if}
 </section>
 {#if hover}
-  <div
-    id="compare-calcs-tip"
-    role="tooltip"
-    class="tooltip pointer-events-none fixed top-(--y) left-(--x) z-float max-w-[640px] rounded-md px-3 py-1.5 whitespace-pre shadow-tip"
-    use:besideAnchor={hover.anchor}>
+  <Tooltip id="compare-calcs-tip" placement="beside" anchor={hover.anchor} textSize={11} class="max-w-[640px] whitespace-pre">
     <TooltipLines lines={hover.lines} />
-  </div>
+  </Tooltip>
 {/if}

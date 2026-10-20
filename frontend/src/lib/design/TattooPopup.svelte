@@ -38,7 +38,7 @@
   const chosen = $derived(choices[selected]);
 </script>
 
-<Dialog {open} {onclose} title="Replace modifier of {nodeName}" class="w-150 p-4.5">
+<Dialog {open} {onclose} title="Replace modifier of {nodeName}" size="lg">
   <div class="flex flex-col gap-2.5 text-13">
     {#if tattoo}<span>Replaced by <strong>{tattoo}</strong></span>{/if}
     {#if choices.length}

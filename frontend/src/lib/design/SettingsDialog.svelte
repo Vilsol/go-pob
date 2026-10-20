@@ -50,7 +50,7 @@
         {@const x = val(r)}
         {@const id = `${uid}-${r.id}`}
         <div
-          class="data-row grid-cols-[minmax(0,1fr)_15rem] gap-3 rounded max-phone:grid-cols-1 max-phone:gap-1.5 px-2 py-2.25 hover:bg-bar"
+          class="data-row grid-cols-[minmax(0,1fr)_15rem] gap-3 rounded max-phone:grid-cols-1 max-phone:gap-1.5 px-2 py-2.25 hover:bg-row-hover"
           data-setting={r.id}>
           <span class="flex min-w-0 flex-col gap-0.5"
             >{#if r.kind === 'number' || r.kind === 'info'}<span class="text-13">{r.label}</span>{:else}<label for={id} class="text-13">{r.label}</label
@@ -75,7 +75,7 @@
             {:else if r.kind === 'check'}
               <input {id} type="checkbox" class="check" checked={!!x} onchange={() => onchange(r.id, !x)} />
             {:else if r.kind === 'select'}
-              <select {id} class="select h-7.5 w-full px-1.5 text-12" value={x} onchange={(e) => onchange(r.id, e.currentTarget.value)}>
+              <select {id} class="select input-sm w-full px-1.5 text-12" value={x} onchange={(e) => onchange(r.id, e.currentTarget.value)}>
                 {#each r.opts ?? [] as o (o)}<option value={o}>{o}</option>{/each}
               </select>
             {:else if r.kind === 'number'}
@@ -108,7 +108,7 @@
       {/each}
     </div>
   </div>
-  <div class="flex items-center gap-2 border-t border-line bg-bar px-4.5 py-3">
+  {#snippet footer()}
     {#if sample !== undefined}<span aria-live="polite" class="font-mono text-11 text-text-3">Preview: Full DPS {preview}</span>{/if}
     <div class="grow"></div>
     <DialogActions
@@ -123,5 +123,5 @@
         <button class="btn btn-md bg-transparent px-3 text-text-2" onclick={() => onreset(cur.id)}>Reset this section</button>
       {/snippet}
     </DialogActions>
-  </div>
+  {/snippet}
 </Dialog>

@@ -1,6 +1,6 @@
 @layer components {
   .btn {
-    @apply box-border inline-flex h-8 items-center justify-center gap-1.5 rounded border border-line-strong bg-surface-2 px-3.5 font-sans text-13 font-medium whitespace-nowrap text-text no-underline;
+    @apply box-border inline-flex h-control items-center justify-center gap-1.5 rounded border border-line-strong bg-surface-2 px-3.5 font-sans text-13 font-medium whitespace-nowrap text-text no-underline;
   }
   .btn:disabled:not(.btn-quiet) {
     @apply border-line bg-surface-1 text-text-4;
@@ -9,16 +9,16 @@
     @apply bg-surface-3;
   }
   .btn-xs {
-    @apply h-6.5 px-2 text-12;
+    @apply h-control-xs px-2 text-12;
   }
   .btn-sm {
-    @apply h-7.5 px-2.5 text-12;
+    @apply h-control-sm px-2.5 text-12;
   }
   .btn-md {
-    @apply h-8.5;
+    @apply h-control-md;
   }
   .btn-lg {
-    @apply h-9 px-4 text-14;
+    @apply h-control-lg px-4 text-14;
   }
   .btn-primary {
     @apply border-0 bg-accent font-semibold text-accent-ink;
@@ -36,13 +36,13 @@
     @apply opacity-45;
   }
   .btn-icon {
-    @apply size-8 p-0;
+    @apply size-control p-0;
   }
   .btn-icon.btn-md {
-    @apply size-8.5;
+    @apply size-control-md;
   }
   .btn-icon.btn-lg {
-    @apply size-9;
+    @apply size-control-lg;
   }
   .btn-icon.btn-xs {
     @apply size-7 bg-transparent font-normal text-text-2;
@@ -51,7 +51,7 @@
     @apply size-7 border-0 bg-transparent p-0 text-18 leading-none text-text-2;
   }
   .btn-2xs {
-    @apply h-6 px-2 text-11 font-normal;
+    @apply h-control-2xs px-2 text-11 font-normal;
   }
   .btn-dashed {
     @apply border-dashed border-accent bg-transparent text-accent;

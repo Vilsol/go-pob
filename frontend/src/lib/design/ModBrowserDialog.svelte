@@ -1,4 +1,6 @@
 <script lang="ts">
+  import Listbox from './Listbox.svelte';
+  import SearchField from './SearchField.svelte';
   import Dialog from './Dialog.svelte';
   import DialogActions from './DialogActions.svelte';
 
@@ -56,27 +58,25 @@
   };
 </script>
 
-<Dialog bind:open title="Mod browser" class="w-180 p-4">
+<Dialog bind:open title="Mod browser" size="xl">
   <div class="flex flex-col gap-2">
-    <div role="listbox" aria-label="Modifiers" class="scroll flex h-113.5 flex-col border border-line">
-      {#each lines as l, i (i)}
-        <button
-          role="option"
-          aria-selected={i === sel}
-          class="border-0 bg-transparent px-2 py-0.5 text-left font-sans text-13 text-text aria-selected:bg-surface-3"
-          onclick={() => (sel = i)}
-          ondblclick={() => {
-            sel = i;
-            add();
-          }}
-          onmouseenter={() => hover(l)}
-          onmouseleave={() => (tip = undefined)}>{l}</button>
-      {/each}
-    </div>
+    <Listbox
+      items={lines}
+      key={(_: string, i: number) => i}
+      label="Modifiers"
+      selected={sel}
+      class="h-113.5"
+      onselect={(_: string, i: number) => (sel = i)}
+      onactivate={(_: string, i: number) => {
+        sel = i;
+        add();
+      }}
+      onhover={(i: number) => (i < 0 ? (tip = undefined) : hover(lines[i]))}>
+      {#snippet row(l: string)}{l}{/snippet}
+    </Listbox>
     <label class="field field-inline text-13"
       >Search:
-      <!-- svelte-ignore a11y_autofocus -->
-      <input class="input h-7 grow" type="search" aria-label="Search modifiers" autofocus bind:value={search} />
+      <SearchField size="sm" class="grow" label="Search modifiers" autofocus bind:value={search} />
     </label>
     <p class="m-0 min-h-5 text-12" role="status">
       {#if tip}{tip.from ? tip.from.join(' · ') : '…'}{/if}

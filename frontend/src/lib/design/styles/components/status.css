@@ -1,13 +1,10 @@
 @layer components {
-  .badge-warn {
-    @apply inline-flex h-4 items-center rounded-pill bg-warn-bg px-1.5 font-sans text-10 font-semibold tracking-normal text-worse normal-case;
-  }
   .dot {
     @apply size-2 shrink-0 rounded-full bg-(--tone,var(--color-accent));
   }
 
   .stat-group-head {
-    @apply flex items-center gap-1.5 border-0 bg-transparent py-0.5 text-left font-sans text-11 font-semibold tracking-caps-wide text-text-2 uppercase;
+    @apply flex items-center gap-1.5 border-0 bg-transparent py-0.5 text-left font-sans text-11 font-semibold tracking-caps text-text-2 uppercase;
   }
   .stat-row {
     @apply relative flex cursor-default items-center overflow-hidden rounded-xs text-13 leading-[1.3125rem] hover:bg-hover! before:absolute before:top-0.75 before:bottom-0.75 before:left-0 before:z-raised before:w-0.75 before:rounded-xs before:bg-(--tone,transparent) before:content-[''];
@@ -30,9 +27,5 @@
   }
   .stat-fade {
     @apply relative z-raised shrink-0 bg-(--row-bg) before:pointer-events-none before:absolute before:inset-y-0 before:right-full before:w-3 before:bg-linear-to-r before:from-transparent before:to-(--row-bg) before:content-[''];
-  }
-
-  .count-badge {
-    @apply box-border inline-flex h-4.5 min-w-4.5 items-center justify-center rounded-pill bg-(--tone) px-1.25 font-mono text-11 font-semibold text-accent-ink;
   }
 }

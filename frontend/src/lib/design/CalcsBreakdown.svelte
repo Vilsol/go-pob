@@ -35,8 +35,10 @@
     itemtip?: (name: string) => Promise<ItemTip | undefined>;
     /* CalcBreakdownControl.lua:405-413, 594-612 */
     nodeview?: Snippet<[number]>;
+    /** in a phone dock: full width, no resize handle; folded hides the body */
+    dock?: 'open' | 'folded';
   };
-  let { id, title, parts, pinned, pinnedTitle, onunpin, itemtip, nodeview }: Props = $props();
+  let { id, title, parts, pinned, pinnedTitle, onunpin, itemtip, nodeview, dock }: Props = $props();
   let itemHover = $state<{ anchor: HTMLElement; name: string; tip?: ItemTip }>();
   const showItem = (name: string | undefined) => (e: MouseEvent) => {
     if (!name || !itemtip) return;
@@ -113,7 +115,7 @@
   aria-valuemin={WIDTH_MIN}
   aria-valuemax={WIDTH_MAX}
   tabindex="0"
-  class="relative z-overlay -mr-1.5 w-1.5 shrink-0 cursor-col-resize hover:bg-surface-3 focus-visible:bg-surface-3"
+  class={['relative z-overlay -mr-1.5 w-1.5 shrink-0 cursor-col-resize hover:bg-surface-3 focus-visible:bg-surface-3', dock && 'max-phone:hidden']}
   onkeydown={(e: KeyboardEvent) => {
     const d = e.key === 'ArrowLeft' ? 16 : e.key === 'ArrowRight' ? -16 : 0;
     if (!d) return;
@@ -132,10 +134,18 @@
   onpointercancel={() => (resizing = undefined)}>
 </div>
 
-<aside {id} aria-label="Breakdown" class="box-border flex max-w-[60vw] shrink-0 flex-col border-l border-line bg-surface-1" style:width="{width}px">
+<aside
+  {id}
+  aria-label="Breakdown"
+  class={[
+    'box-border flex max-w-[60vw] shrink-0 flex-col border-l border-line bg-surface-1',
+    dock && 'max-phone:min-h-0 max-phone:w-full! max-phone:max-w-none max-phone:flex-1 max-phone:border-l-0',
+    dock === 'folded' && 'max-phone:hidden'
+  ]}
+  style:width="{width}px">
   <div class="flex min-h-11 items-center gap-2 border-b border-line px-3 py-2">
     <h2 class="m-0 flex min-w-0 grow flex-col text-13 leading-tight font-semibold" aria-label={title ?? 'Breakdown'}>
-      {#if heading.section}<span class="truncate text-10 font-semibold tracking-caps-tight text-text-3 uppercase">{heading.section}</span>
+      {#if heading.section}<span class="truncate eyebrow eyebrow-xs text-text-3">{heading.section}</span>
         <span class="sr-only">·</span>{/if}
       <span class="break-words">{heading.row}</span>
     </h2>
@@ -155,7 +165,7 @@
     {#each parts as p, i (i)}
       <div class="flex flex-col gap-2 rounded border border-line-faint bg-surface-2 px-2.5 py-2" data-part>
         <div class="flex items-baseline justify-between gap-2">
-          <span class="text-10 font-semibold tracking-caps-tight text-text-2 uppercase"
+          <span class="eyebrow eyebrow-xs text-text-2"
             >{#if p.head}<PobText text={p.head.replace(/:$/, '')} />{:else}Value{/if}</span>
           <span class="font-mono text-15 font-semibold" data-part-value><PobText text={p.text} /></span>
         </div>
@@ -205,7 +215,7 @@
             {@const t = { rows: s.rows, cols: colsOf(s.rows) }}
             {#if t.rows.length}
               <div role="table" aria-label={s.label ?? 'Modifiers'} class="flex flex-col">
-                {#if s.label}<div class="pb-0.5 text-10 font-semibold tracking-caps-tight text-text-2 uppercase">{s.label}</div>{/if}
+                {#if s.label}<div class="pb-0.5 eyebrow eyebrow-xs text-text-2">{s.label}</div>{/if}
                 <div role="row" class="sr-only">
                   {#each t.cols as c (c.key)}<span role="columnheader">{c.label}</span>{/each}
                 </div>

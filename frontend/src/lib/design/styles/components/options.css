@@ -15,7 +15,7 @@
     @apply px-2.5 py-1.25 text-11 text-text-3;
   }
   .list-option {
-    @apply flex items-center gap-2 rounded border border-transparent px-2 py-1.5 aria-selected:border-accent aria-selected:bg-surface-3;
+    @apply flex items-center gap-2 rounded border border-transparent px-2 py-1.5 aria-selected:border-accent aria-selected:bg-row-selected;
   }
   .list-option:has(> [aria-current='true']) {
     @apply border-accent bg-surface-3;

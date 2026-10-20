@@ -2,10 +2,10 @@
   import type { HTMLSelectAttributes } from 'svelte/elements';
 
   type Option = string | { value: string; label: string; title?: string };
-  type Props = Omit<HTMLSelectAttributes, 'size'> & { options: Option[]; size?: 'xs' | 'default' | 'lg'; value?: string };
+  type Props = Omit<HTMLSelectAttributes, 'size'> & { options: Option[]; size?: 'xs' | 'sm' | 'default' | 'md' | 'lg'; value?: string };
   let { options, size = 'default', value = $bindable(), class: extra = '', ...rest }: Props = $props();
 
-  const sizes = { xs: 'input-xs', default: '', lg: 'input-lg' };
+  const sizes = { xs: 'input-xs', sm: 'input-sm', default: '', md: 'input-md', lg: 'input-lg' };
   const norm = $derived(options.map((o): { value: string; label: string; title?: string } => (typeof o === 'string' ? { value: o, label: o } : o)));
 </script>
 

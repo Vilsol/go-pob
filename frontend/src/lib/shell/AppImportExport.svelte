@@ -155,7 +155,7 @@
 </script>
 
 {#if confirmTree}<Dialog
-    small
+    phone="centred"
     bind:open={confirmTreeOpen}
     title="Character Import"
     onclose={() => {
@@ -179,7 +179,7 @@
   </Dialog>{/if}
 
 {#if confirmImport}<Dialog
-    small
+    phone="centred"
     bind:open={confirmOpen}
     title="Build Import"
     onclose={() => {

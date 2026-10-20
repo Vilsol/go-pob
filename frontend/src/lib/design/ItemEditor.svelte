@@ -209,7 +209,7 @@
           {#if item.sockets}<div class="kv"><span class="text-text-2">Sockets</span><span class="font-mono">{item.sockets}</span></div>{/if}
         </div>
       {:else}
-        <FloatingLabel label="Base type"><Select class="h-8.5" options={[item.base]} /></FloatingLabel>
+        <FloatingLabel label="Base type"><Select size="md" options={[item.base]} /></FloatingLabel>
         <div class="grid grid-cols-2 gap-2">
           <label class="field">Item level<NumberInput bind:value={ilvl} min={1} max={100} /></label>
           <label class="field">Quality<NumberInput bind:value={quality} min={0} max={30} /></label>
@@ -220,13 +220,12 @@
             class={['h-8.5', toneClass(rarity.toLowerCase() as ItemSummary['rarity'])]}
             options={RARITIES}
             bind:value={rarity} /></FloatingLabel>
-        <FloatingLabel label="Influence"
-          ><Select class="h-8.5" options={['None', 'Shaper', 'Elder', 'Crusader', 'Redeemer', 'Hunter', 'Warlord']} /></FloatingLabel>
+        <FloatingLabel label="Influence"><Select size="md" options={['None', 'Shaper', 'Elder', 'Crusader', 'Redeemer', 'Hunter', 'Warlord']} /></FloatingLabel>
         <Checkbox>Corrupted</Checkbox>
       {/if}
     </section>
   </div>
-  <div class="flex items-center gap-2 border-t border-line bg-bar px-4 py-3 max-phone:flex-wrap max-phone:px-3">
+  {#snippet footer()}
     <span class="note max-phone:hidden">{readonly ? 'Esc closes' : 'Esc closes · Ctrl+Z / Ctrl+Shift+Z undo and redo inside the editor only'}</span>
     <div class="grow"></div>
     <DialogActions
@@ -248,6 +247,6 @@
         {/if}
       {/snippet}
     </DialogActions>
-  </div>
+  {/snippet}
   <ModPicker bind:open={picker} base={item.base} {affixes} onadd={(text) => commit({ ...cur, explicits: [...cur.explicits, { text, kind: 'magic' }] })} />
 </Dialog>

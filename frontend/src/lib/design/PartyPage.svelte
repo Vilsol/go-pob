@@ -1,4 +1,8 @@
 <script lang="ts">
+  import Field from './Field.svelte';
+  import Badge from './Badge.svelte';
+  import InlineMessage from './InlineMessage.svelte';
+  import SectionHeading from './SectionHeading.svelte';
   import FloatingLabel from './FloatingLabel.svelte';
   import Checkbox from './Checkbox.svelte';
   import { PARTY_CATEGORIES, PARTY_DESTINATIONS, summarize, type PartyCategory, type PartyEntry, type PartyMember } from './party';
@@ -75,16 +79,18 @@
     To import a build it must be exported with “Export support” enabled on the Import / Export page. Auras with the highest effect take priority; your curses
     take priority over a support’s. All of these effects can be found on the Calcs page.
   </p>
-  <label class="field"
-    >Enter a build code/URL below:
-    <input class="input input-lg bg-surface-1 text-13" bind:value={importText} placeholder="https://pobb.in/… or a build code" aria-describedby="{uid}-state" />
-  </label>
+  <Field label="Enter a build code/URL below:">
+    <input
+      class="input input-lg bg-surface-1 text-13"
+      bind:value={importText}
+      placeholder="https://pobb.in/… or a build code"
+      aria-describedby="{uid}-state" /></Field>
   <span id="{uid}-state" aria-live="polite" class={['toned min-h-4 text-12', toneClass(!verdict ? 'muted' : verdict.valid ? 'up' : 'down')]}
     >{verdict?.text ?? ''}</span>
-  {#if importError}<span role="alert" class={['toned text-12', toneClass('down')]}>{importError}</span>{/if}
+  {#if importError}<InlineMessage kind="error" tag="span">{importError}</InlineMessage>{/if}
   <div class="flex items-center gap-1.5">
     <FloatingLabel label="Destination"
-      ><select class="select h-8.5" bind:value={destination} title="Destination for Import / Clear">
+      ><select class="select input-md" bind:value={destination} title="Destination for Import / Clear">
         {#each PARTY_DESTINATIONS as d (d)}<option>{d}</option>{/each}
       </select></FloatingLabel>
     <button class="btn btn-primary px-3 text-12" disabled={!verdict?.valid} onclick={() => onimport?.(importText.trim(), destination, append)}>Import</button>
@@ -101,7 +107,7 @@
   </div>
   {#if stale}<span class="note" role="status">A buffer changed since the effects were applied: Rebuild All applies it.</span>{/if}
   {#if members.length}
-    <h2 class="subhead mt-1.5 text-12">MEMBERS</h2>
+    <SectionHeading size="md" class="mt-1.5">MEMBERS</SectionHeading>
     {#each members as m (m.id)}
       <div class="panel flex flex-col gap-1 px-3 py-2.5" data-member={m.id} data-active={m.active}>
         <div class="flex justify-between gap-2">
@@ -157,8 +163,7 @@
           {@const who = byId[giver(c.id, e.name)]}
           <div class={['flex items-center gap-2 border-b border-surface-2 px-3 py-1.75 text-12', !on && 'bg-inset']} data-entry={e.name} data-live={on}>
             <span class={['truncate font-semibold', on ? 'text-text' : 'text-text-3 line-through']}>{e.name}</span>
-            {#if who}<span class="shrink-0 rounded-full border border-line px-1.5 text-10 text-text-2" title="from {who.name}">{who.name.split(' ')[0]}</span
-              >{/if}
+            {#if who}<Badge variant="outline" title="from {who.name}">{who.name.split(' ')[0]}</Badge>{/if}
             <span class={['ml-auto font-mono whitespace-nowrap', on ? 'text-text-2' : 'text-text-3']}>{e.value}</span>
           </div>
         {/each}

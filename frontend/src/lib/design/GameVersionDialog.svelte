@@ -20,7 +20,7 @@ You should create a backup copy of the build before proceeding.`;
 <Dialog
   bind:open
   title="Game Version"
-  class="w-145 p-4"
+  size="lg"
   onclose={() => {
     if (!decided) oncancel();
     decided = false;

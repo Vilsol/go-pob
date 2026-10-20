@@ -1,6 +1,10 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
   import Icon from '../Icon.svelte';
+  import { rovingIndex } from '../keys';
+  import type { MenuItem } from '../menu';
+  import MenuItems from '../MenuItems.svelte';
+  import NavTabs from '../NavTabs.svelte';
   import Sheet from './Sheet.svelte';
   import { moreTabs, primaryTabs, type MobileTab } from './mobile';
 
@@ -53,6 +57,13 @@
   }: Props = $props();
 
   const inMore = $derived(more.some((t) => t.href === current));
+  const actionKey = (e: KeyboardEvent) => {
+    const list = [...(e.currentTarget as HTMLElement).querySelectorAll<HTMLElement>('[role="menuitem"]:not(:disabled)')];
+    const to = rovingIndex(e, list.indexOf(document.activeElement as HTMLElement), list.length, { orientation: 'vertical' });
+    if (to === undefined) return;
+    e.preventDefault();
+    list[to].focus();
+  };
   const go = (href: string) => (e: Event) => {
     e.preventDefault();
     moreOpen = false;
@@ -80,29 +91,22 @@
   <main class={['relative box-border flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto', mainClass]} aria-label={label}>
     {@render children()}
   </main>
-  <nav class="flex shrink-0 border-t border-line bg-bar pb-[env(safe-area-inset-bottom)]" aria-label="Pages">
-    {#each tabs as t (t.href)}
-      <a
-        href={t.href}
-        class={['flex h-14 min-w-0 flex-1 items-center justify-center text-12 no-underline', t.href === current ? 'font-semibold text-accent' : 'text-text-2']}
-        aria-current={t.href === current ? 'page' : undefined}
-        onclick={go(t.href)}>{t.label}</a>
-    {/each}
-    <button
-      type="button"
-      class={[
-        'flex h-14 min-w-0 flex-1 items-center justify-center border-0 bg-transparent font-sans text-12',
-        inMore ? 'font-semibold text-accent' : 'text-text-2'
-      ]}
-      aria-haspopup="dialog"
-      aria-expanded={moreOpen}
-      onclick={() => (moreOpen = true)}>More</button>
-  </nav>
+  <NavTabs variant="bar" {tabs} {current} label="Pages" onnavigate={(t: MobileTab, e: Event) => go(t.href)(e)}>
+    {#snippet trailing()}<button
+        type="button"
+        class={[
+          'flex h-14 min-w-0 flex-1 items-center justify-center border-0 bg-transparent font-sans text-12',
+          inMore ? 'font-semibold text-accent' : 'text-text-2'
+        ]}
+        aria-haspopup="dialog"
+        aria-expanded={moreOpen}
+        onclick={() => (moreOpen = true)}>More</button
+      >{/snippet}
+  </NavTabs>
 </div>
 
 <Sheet bind:open={statsOpen} title="Stats">
-  <div
-    class="flex min-h-0 flex-1 flex-col [&_[aria-label^='Collapse']]:hidden [&_[role=separator]]:hidden [&>aside]:w-full! [&>aside]:max-w-none! [&>aside]:border-r-0">
+  <div class="flex min-h-0 flex-1 flex-col">
     {@render stats()}
   </div>
 </Sheet>
@@ -119,21 +123,14 @@
   </nav>
   {#if actions.length}
     <h4 class="caps px-4 pt-2 pb-1">Build</h4>
-    <ul class="m-0 flex list-none flex-col p-0 pb-3" aria-label="Build actions">
-      {#each actions as a (a.key)}
-        <li>
-          <button
-            type="button"
-            class="flex h-12 w-full items-center gap-2 border-0 border-b border-line bg-transparent px-4 text-left font-sans text-14 text-text"
-            onclick={() => {
-              moreOpen = false;
-              onaction?.(a.key);
-            }}>
-            <span class="flex-1">{a.label}</span>
-            {#if a.note}<span class="note">{a.note}</span>{/if}
-          </button>
-        </li>
-      {/each}
-    </ul>
+    <div role="menu" aria-label="Build actions" tabindex="-1" class="flex flex-col pb-3" onkeydown={actionKey}>
+      <MenuItems
+        items={actions.map((a) => ({ label: a.label, note: a.note, onselect: () => onaction?.(a.key) }))}
+        itemClass="h-12 w-full rounded-none border-b border-line px-4 text-14"
+        onpick={(it: MenuItem) => {
+          moreOpen = false;
+          it.onselect?.();
+        }} />
+    </div>
   {/if}
 </Sheet>

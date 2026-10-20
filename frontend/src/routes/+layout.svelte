@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Notice from '$lib/design/Notice.svelte';
   import '$lib/design/styles/spec.css';
   import '$lib/display/appearance';
   import PageFrame from '$lib/design/PageFrame.svelte';
@@ -222,12 +223,10 @@
 {/if}
 
 {#if dataLoading}
-  <div role="status" class="fixed right-2 bottom-2 rounded-md border border-line bg-surface-2 px-3 py-1 text-13 text-text-2 shadow-pop">
-    Loading game data{loadingStage ? `: ${loadingStage}` : '...'}
-  </div>
+  <Notice float class="fixed right-2 bottom-2">Loading game data{loadingStage ? `: ${loadingStage}` : '...'}</Notice>
 {/if}
 
-<Dialog open={!!linkError} title="Build import" class="w-110 p-4.5" onclose={() => (linkError = undefined)}>
+<Dialog open={!!linkError} title="Build import" size="md" onclose={() => (linkError = undefined)}>
   <p role="alert" class="m-0 text-13">The linked build could not be opened: {linkError}</p>
   {#snippet actions()}
     <DialogActions confirm="OK" cancel={false} onconfirm={() => (linkError = undefined)} />

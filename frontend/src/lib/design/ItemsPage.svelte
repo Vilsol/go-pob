@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InlineMessage from './InlineMessage.svelte';
   import { isTypingTarget } from './keys';
   import FloatingLabel from './FloatingLabel.svelte';
   import Segmented from './Segmented.svelte';
@@ -486,10 +487,10 @@
         {#if live}
           <!-- ItemsTab.lua:2635-2653 -->
           {#if live.error}
-            <p role="alert" class="text-13 text-error">
+            <InlineMessage kind="error" size="md" tag="p" class="my-3.25">
               The item is invalid. For Rare and Unique items, the first 2 lines must be the title and base name (e.g. "Abberath's Horn" then "Goat's Horn"). For
               Normal and Magic items, the base name must be somewhere in the first line.
-            </p>
+            </InlineMessage>
           {/if}
           {#if live.item}
             {@const it = live.item}

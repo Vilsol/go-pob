@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Disclosure from './Disclosure.svelte';
   import type { Snippet } from 'svelte';
 
   type Props = { title: string; count?: string; more?: string; class?: string; collapsed?: boolean; ontoggle?: () => void; children: Snippet };
@@ -9,13 +10,13 @@
   <h3 class="option-head">
     <span>{title}</span>
     <span class="flex items-center gap-1.5"
-      >{#if count}<span class="option-count tone-accent">{count}</span>{/if}{#if ontoggle}<button
-          class="btn-bare px-1 font-mono text-13 text-text-2"
-          aria-expanded={!collapsed}
+      >{#if count}<span class="option-count tone-accent">{count}</span>{/if}{#if ontoggle}<Disclosure
+          class="btn-bare px-1 text-13 text-text-2"
+          indicator="plusminus"
+          open={!collapsed}
           aria-label={`${collapsed ? 'Expand' : 'Collapse'} ${title}`}
           title={collapsed ? 'Expand' : 'Collapse'}
-          onclick={ontoggle}>{collapsed ? '+' : '−'}</button
-        >{/if}</span>
+          ontoggle={() => ontoggle()} />{/if}</span>
   </h3>
   {#if !collapsed}
     {@render children()}

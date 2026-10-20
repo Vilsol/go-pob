@@ -1,4 +1,5 @@
 <script lang="ts">
+  import SearchField from './SearchField.svelte';
   import FloatingLabel from './FloatingLabel.svelte';
   import FloatingItemTip from './FloatingItemTip.svelte';
   import Tabs from './Tabs.svelte';
@@ -38,9 +39,9 @@
     onchange={() => (hover = null)} />
   <div role="tabpanel" id={panelId(uid)} aria-labelledby={tabId(uid, b.id)} class="flex min-h-0 grow gap-3.5 max-phone:shrink-0 max-phone:flex-col">
     <aside aria-label="Filters" class="panel flex w-62.5 shrink-0 flex-col gap-2.5 self-start p-3 text-12 max-phone:w-auto max-phone:self-stretch">
-      <input class="input" type="search" placeholder={b.search} aria-label="Search {b.title}" bind:value={q} />
+      <SearchField placeholder={b.search} label="Search {b.title}" bind:value={q} />
       {#each b.filters as f (f.label)}
-        <FloatingLabel label={f.label}><Select class="h-7.5 text-12" options={f.options} /></FloatingLabel>
+        <FloatingLabel label={f.label}><Select size="sm" class="text-12" options={f.options} /></FloatingLabel>
       {/each}
       {#each b.checks as c (c.label)}
         <Checkbox compact checked={c.on}>{c.label}</Checkbox>
@@ -61,7 +62,7 @@
           <!-- svelte-ignore a11y_interactive_supports_focus -->
           <div
             role="row"
-            class={['data-row grid-cols-24 py-1.5 max-phone:grid-cols-[minmax(0,1fr)_auto] max-phone:gap-y-0.5', hover === i && 'bg-hl']}
+            class={['data-row grid-cols-24 py-1.5 max-phone:grid-cols-[minmax(0,1fr)_auto] max-phone:gap-y-0.5', hover === i && 'bg-row-hover']}
             onmouseenter={() => (hover = i)}
             onmouseleave={() => (hover = null)}
             onfocusin={() => (hover = i)}

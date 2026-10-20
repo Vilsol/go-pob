@@ -121,3 +121,30 @@ export function showPowerRows(
   };
   return out.sort(sorters[sort]);
 }
+
+type TipLine = { Text: string; Separator: boolean };
+/* PassiveTreeView.lua:1478-1513, 1550-1576, 1601-1656, 1712-1746, 1804-1805: the node tooltip's sections below its stats */
+export type NodeTip = {
+  pick?: { index: number; text: string };
+  comparedMastery?: { remove: string[]; add: string[] };
+  jewel?: TipLine[];
+  comparedEmptySocket?: boolean;
+  distance?: number;
+  affecting?: { socket: number; title: string; lines: TipLine[] }[];
+  skills?: TipLine[][];
+  reminder?: string[];
+  flavour?: string[];
+  tattooKind?: string;
+  compareOnly?: boolean;
+};
+/* the points-and-gold section; absent for a node only the compared build has */
+export type NodeTipCost = {
+  traced?: number;
+  path: number;
+  leap: boolean;
+  depends: number;
+  gold: string;
+  dependsGold: string;
+  socket: boolean;
+  allocated: boolean;
+};

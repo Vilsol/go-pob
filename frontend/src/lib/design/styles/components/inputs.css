@@ -1,7 +1,7 @@
 @layer components {
   .input,
   .select {
-    @apply box-border h-8 min-w-0 rounded border border-line-strong bg-ground px-2 py-0 font-sans text-13 text-(--tone,var(--color-text));
+    @apply box-border h-control min-w-0 rounded border border-line-strong bg-ground px-2 py-0 font-sans text-13 text-(--tone,var(--color-text));
   }
   .select {
     @apply appearance-none bg-no-repeat pr-7.5 hover:enabled:border-line-bright;
@@ -10,19 +10,25 @@
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%238d8a83' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
   }
   .input-xs {
-    @apply h-6.5 px-1.5 text-12;
+    @apply h-control-xs px-1.5 text-12;
+  }
+  .input-sm {
+    @apply h-control-sm;
+  }
+  .input-md {
+    @apply h-control-md;
   }
   .select.input-xs {
     @apply pr-6.5 pl-1;
   }
   .input-lg {
-    @apply h-9 px-2.5 text-14;
+    @apply h-control-lg px-2.5 text-14;
   }
   .select.input-lg {
     @apply pr-8;
   }
   .number-input {
-    @apply box-border inline-flex h-8 min-w-0 items-stretch overflow-hidden rounded border border-line-strong bg-ground text-13 text-(--tone,var(--color-text)) focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-accent aria-disabled:text-text-4;
+    @apply box-border inline-flex h-control min-w-0 items-stretch overflow-hidden rounded border border-line-strong bg-ground text-13 text-(--tone,var(--color-text)) focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-accent aria-disabled:text-text-4;
   }
   .number-input > input {
     @apply m-0 w-0 min-w-0 flex-1 cursor-ew-resize border-0 bg-transparent px-2 text-inherit outline-none focus:cursor-text disabled:cursor-default;
@@ -38,13 +44,19 @@
     @apply border-t border-line;
   }
   .number-input-xs {
-    @apply h-6.5 text-12;
+    @apply h-control-xs text-12;
+  }
+  .number-input-sm {
+    @apply h-control-sm;
+  }
+  .number-input-md {
+    @apply h-control-md;
   }
   .number-input-xs > input {
     @apply px-1.5;
   }
   .number-input-lg {
-    @apply h-9 text-14;
+    @apply h-control-lg text-14;
   }
   .number-input-lg > input {
     @apply px-2.5;
@@ -79,13 +91,13 @@
     @apply flex overflow-hidden rounded border border-line;
   }
   .seg-btn {
-    @apply border-0 bg-transparent px-3.25 py-1.75 font-sans text-13 font-medium text-text-2 hover:enabled:bg-hover hover:enabled:text-text aria-pressed:bg-surface-3 aria-pressed:font-semibold aria-pressed:text-text aria-selected:bg-surface-3 aria-selected:font-semibold aria-selected:text-text;
+    @apply border-0 bg-transparent px-3.25 py-1.75 font-sans text-13 font-medium text-text-2 hover:enabled:bg-hover hover:enabled:text-text aria-pressed:bg-row-selected aria-pressed:font-semibold aria-pressed:text-text aria-selected:bg-row-selected aria-selected:font-semibold aria-selected:text-text;
   }
   .chip {
-    @apply h-7.5 rounded-pill border border-line bg-transparent px-3 font-sans text-12 font-medium text-text-2 hover:enabled:border-line-bright hover:enabled:text-text aria-pressed:border-accent aria-pressed:bg-surface-3 aria-pressed:text-text aria-selected:border-accent aria-selected:bg-surface-3 aria-selected:text-text;
+    @apply h-7.5 rounded-pill border border-line bg-transparent px-3 font-sans text-12 font-medium text-text-2 hover:enabled:border-line-bright hover:enabled:text-text aria-pressed:border-accent aria-pressed:bg-row-selected aria-pressed:text-text aria-selected:border-accent aria-selected:bg-row-selected aria-selected:text-text;
   }
   .choice-card {
-    @apply box-border flex rounded border border-line bg-ground text-left font-sans text-13 text-text hover:enabled:border-line-bright aria-pressed:border-accent aria-pressed:bg-surface-2 aria-selected:border-accent aria-selected:bg-surface-2;
+    @apply box-border flex rounded border border-line bg-ground text-left font-sans text-13 text-text hover:enabled:border-line-bright aria-pressed:border-accent aria-pressed:bg-card-selected aria-selected:border-accent aria-selected:bg-card-selected;
   }
   .tabs {
     @apply flex items-stretch gap-0.5;
@@ -97,7 +109,7 @@
     @apply h-9.5 gap-1.5 px-2.5 text-13;
   }
   .tab-v {
-    @apply flex h-8.5 items-center justify-between rounded border-0 bg-transparent px-2.5 text-left font-sans text-13 text-text-2 aria-selected:bg-surface-3 aria-selected:font-semibold aria-selected:text-text aria-selected:shadow-[inset_2px_0_0_var(--color-accent)];
+    @apply flex h-8.5 items-center justify-between rounded border-0 bg-transparent px-2.5 text-left font-sans text-13 text-text-2 aria-selected:bg-row-selected aria-selected:font-semibold aria-selected:text-text aria-selected:shadow-sel-bar;
   }
   .tab-key {
     @apply font-mono text-11 text-text-4;

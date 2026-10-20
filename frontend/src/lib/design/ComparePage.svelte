@@ -113,17 +113,17 @@
 <section aria-label="A versus B" class="grid shrink-0 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-stretch overflow-hidden rounded-lg border border-line">
   <div
     class="flex min-w-0 flex-col gap-0.5 px-3.5 py-2.5 [background:linear-gradient(90deg,_color-mix(in_srgb,_var(--color-build-a)_22%,_transparent),_color-mix(in_srgb,_var(--color-build-a)_4%,_transparent))]">
-    <span class="text-11 font-semibold tracking-[0.08em] text-build-a">A · {swapped ? 'COMPARISON' : 'THIS BUILD'}</span>
+    <span class="text-11 font-semibold tracking-caps text-build-a">A · {swapped ? 'COMPARISON' : 'THIS BUILD'}</span>
     <span class="max-w-full min-w-0 truncate text-18 leading-6 font-semibold max-phone:text-14" title={s.A.name}>{s.A.name}</span>
     <span class="max-w-full text-12 leading-[1.0625rem] text-text-2 [overflow-wrap:anywhere] max-phone:text-11">{line(s.A)}</span>
   </div>
   <div class="flex flex-col items-center justify-center gap-1 bg-surface-1 px-3.5 max-phone:px-1.5">
-    <span class="text-[1.25rem] font-bold tracking-[0.04em] text-text">VS</span>
+    <span class="text-20 font-bold tracking-caps text-text">VS</span>
     <button class="btn btn-2xs" aria-label="Swap A and B" title="Swap A and B" onclick={onswap}>⇄ Swap</button>
   </div>
   <div
     class="flex min-w-0 flex-col items-end gap-0.5 px-3.5 py-2.5 text-right [background:linear-gradient(270deg,_color-mix(in_srgb,_var(--color-build-b)_22%,_transparent),_color-mix(in_srgb,_var(--color-build-b)_4%,_transparent))]">
-    <span class="text-11 font-semibold tracking-[0.08em] text-build-b">B · {swapped ? 'THIS BUILD' : 'COMPARISON'}</span>
+    <span class="text-11 font-semibold tracking-caps text-build-b">B · {swapped ? 'THIS BUILD' : 'COMPARISON'}</span>
     <span class="max-w-full min-w-0 truncate text-18 leading-6 font-semibold max-phone:text-14" title={s.B.name}>{s.B.name}</span>
     <span class="max-w-full text-12 leading-[1.0625rem] text-text-2 [overflow-wrap:anywhere] max-phone:text-11">{line(s.B)}</span>
   </div>

@@ -1,4 +1,7 @@
 <script lang="ts">
+  import Tooltip from './Tooltip.svelte';
+  import Icon from './Icon.svelte';
+  import SectionHeading from './SectionHeading.svelte';
   import EmptyState from './EmptyState.svelte';
   import Segmented from './Segmented.svelte';
   import type { Snippet } from 'svelte';
@@ -166,8 +169,7 @@
     const nx = n.x * width;
     return {
       s,
-      x: nx + 18 + 262 <= width ? nx + 18 : Math.max(nx - 18 - 262, 0),
-      y: Math.max(Math.min(n.y * h - 30, h - 120), 6)
+      at: { x: nx, y: n.y * h }
     };
   });
 
@@ -258,7 +260,7 @@
       </li>
     {/each}
   </ol>
-  {#if onclose}<button class="btn-close" aria-label="Close timeless search" onclick={onclose}>×</button>{/if}
+  {#if onclose}<button class="btn-close" aria-label="Close timeless search" onclick={onclose}><Icon name="close" size={14} /></button>{/if}
 </div>
 
 {#if step === 1}
@@ -267,7 +269,7 @@
       {#each jewels as j, i (j.name)}
         <ChoiceCard
           pressed={i === form.jewelType - 1}
-          class="flex-col items-start gap-0.75 rounded-md bg-surface-1 px-3 py-2.5 aria-pressed:bg-surface-2"
+          class="flex-col items-start gap-0.75 rounded-md bg-surface-1 px-3 py-2.5 aria-pressed:bg-card-selected"
           onclick={() => setJewel(i)}
           ><span class="toned tone-unique font-semibold" data-pob-color>{j.name}</span><span class="text-11 tracking-caps text-text-3">{j.kind}</span><span
             class="text-12 text-text-2"
@@ -279,7 +281,7 @@
       {/each}
     </div>
     <section aria-label="Conqueror" class="panel flex w-80 shrink-0 flex-col gap-2.5 p-3.5 max-phone:box-border max-phone:w-full">
-      <h2 class="subhead text-12">CONQUEROR</h2>
+      <SectionHeading size="md">CONQUEROR</SectionHeading>
       {#each J.conquerors as c, i (c)}
         <ChoiceCard
           pressed={i === form.conqueror - 1}
@@ -296,7 +298,7 @@
         {#each [1, 2] as k (k)}
           <FloatingLabel label="Devotion modifier {k}"
             ><select
-              class="select h-8.5"
+              class="select input-md"
               aria-label="Devotion modifier {k}"
               value={k === 1 ? form.devotion1 : form.devotion2}
               onchange={(e) => {
@@ -357,14 +359,9 @@
         onpick={(n: TreeNodeFx) => setSocket(n.id)}>
         {#snippet overlay()}
           {#if tipOf}
-            <div
-              role="tooltip"
-              id="{uid}-tip"
-              class="tooltip pointer-events-none absolute top-(--y) left-(--x) z-map flex w-65.5 flex-col gap-0.75 rounded-md px-2.5 py-2 text-12 shadow-pop"
-              style:--x="{tipOf.x}px"
-              style:--y="{tipOf.y}px">
+            <Tooltip id="{uid}-tip" placement="point" at={tipOf.at} class="flex w-65.5 flex-col gap-0.75">
               {@render socketTip(tipOf.s.id)}
-            </div>
+            </Tooltip>
           {/if}
           <div class="map-note bottom-2.5 left-2.5 flex flex-wrap gap-3 text-text-2">
             {@render legend()}
@@ -379,13 +376,13 @@
     {#if step === 2}
       <section aria-label="Sockets" class="panel flex max-h-[70vh] min-w-0 grow flex-col gap-2 overflow-y-auto p-3 text-13">
         <div class="flex items-center justify-between">
-          <h2 class="subhead text-12">JEWEL SOCKET</h2>
+          <SectionHeading size="md">JEWEL SOCKET</SectionHeading>
           <ChoiceCard pressed={form.socket === -1} class="h-6.5 px-2.5" onclick={() => setSocket(-1)}>All sockets</ChoiceCard>
         </div>
         {#each sockets as s (s.id)}
           <ChoiceCard
             pressed={form.socket === s.id}
-            class="flex-col items-start gap-0.5 bg-surface-1 px-2.5 py-2 aria-pressed:border-better aria-pressed:bg-surface-2"
+            class="flex-col items-start gap-0.5 bg-surface-1 px-2.5 py-2 aria-pressed:border-better aria-pressed:bg-card-selected"
             onclick={() => setSocket(s.id)}
             onmouseenter={() => (hover = s.id)}
             onmouseleave={() => (hover = null)}
@@ -396,7 +393,7 @@
               ></span
             ><span class="note">{socketCovers(s)}{s.jewel ? ` · holds ${s.jewel}` : ''}{inView.has(s.id) ? '' : ' · off the view'}</span></ChoiceCard>
         {/each}
-        <h2 class="subhead mt-1.5 text-12">NODES</h2>
+        <SectionHeading size="md" class="mt-1.5">NODES</SectionHeading>
         <label class="flex items-center gap-2" title="Exclude nodes that you do not have allocated on your active passive skill tree."
           ><input
             type="checkbox"
@@ -441,7 +438,7 @@
       </section>
     {:else if step === 3}
       <section aria-label="Requirements" class="panel flex min-w-0 grow flex-col gap-2.5 p-3 text-13">
-        <h2 class="subhead text-12">REQUIRED NODES</h2>
+        <SectionHeading size="md">REQUIRED NODES</SectionHeading>
         <StatPicker stats={unpicked} label="Add a required stat" placeholder="+ Add a required stat — type to search" onpick={addReq} />
         <div class="flex max-h-[50vh] flex-col gap-2 overflow-y-auto">
           {#each reqs as r, i (`${i}:${r.id}`)}
@@ -453,7 +450,7 @@
                   ><span class="font-semibold">{name}</span>{#if s?.descriptions.length}<span class="note-sm whitespace-pre-line"
                       >{s.descriptions.join('\n')}</span
                     >{/if}</span>
-                <button class="btn-close" aria-label="Remove {name}" onclick={() => dropReq(r.id)}>×</button>
+                <button class="btn-close" aria-label="Remove {name}" onclick={() => dropReq(r.id)}><Icon name="close" size={14} /></button>
               </div>
               <div class="flex flex-wrap items-center gap-3 text-11 text-text-3">
                 <label class="flex items-center gap-1"
@@ -509,13 +506,13 @@
       </section>
     {:else if step === 4}
       <section aria-label="Ranking" class="panel flex min-w-0 grow flex-col gap-2.5 p-3 text-13">
-        <h2 class="subhead text-12">FALLBACK NODES</h2>
+        <SectionHeading size="md">FALLBACK NODES</SectionHeading>
         <div class="note">
           Seeds that tie on the required nodes are ranked by the fallback list: generate it from how much each node changes a stat of the build.
         </div>
         <div class="flex items-end gap-2">
           <FloatingLabel label="Fallback weight mode" class="grow"
-            ><select class="select h-8.5" aria-label="Fallback Weight Mode" bind:value={form.fallbackMode} onchange={changed}
+            ><select class="select input-md" aria-label="Fallback Weight Mode" bind:value={form.fallbackMode} onchange={changed}
               >{#each fallbackModes as m, i (i)}<option value={i + 1}>{m}</option>{/each}</select
             ></FloatingLabel>
           <button
@@ -544,7 +541,7 @@
         {/if}
         <label class="flex items-center justify-between gap-2"
           >Minimum total weight<input
-            class="input h-7 w-24"
+            class="input input-sm w-24"
             inputmode="numeric"
             aria-label="Total Minimum Weight"
             title="Optional: only show results whose total weight meets this"
@@ -562,7 +559,7 @@
           </span>
         </div>
         <div
-          class="grid grid-cols-[72px_minmax(0,150px)_64px_minmax(0,1fr)] gap-2 border-t border-line px-2 py-1 text-11 tracking-caps text-text-3 uppercase"
+          class="grid grid-cols-[72px_minmax(0,150px)_64px_minmax(0,1fr)] gap-2 border-t border-line px-2 py-1 eyebrow font-normal text-text-3"
           aria-hidden="true">
           <span>Seed</span><span>Socket</span><span class="text-right">Weight</span><span>Matched nodes</span>
         </div>
@@ -590,7 +587,7 @@
                 data-on={sel === i + 1}
                 data-seed={r?.seed}
                 class={[
-                  'absolute inset-x-0 grid cursor-default grid-cols-[72px_minmax(0,150px)_64px_minmax(0,1fr)] items-center gap-2 px-2 whitespace-nowrap hover:bg-hover data-[on=true]:bg-surface-3 data-[on=true]:shadow-[inset_2px_0_0_var(--color-node-conq)]',
+                  'absolute inset-x-0 grid cursor-default grid-cols-[72px_minmax(0,150px)_64px_minmax(0,1fr)] items-center gap-2 px-2 whitespace-nowrap hover:bg-hover data-[on=true]:bg-row-selected data-[on=true]:shadow-[inset_2px_0_0_var(--color-node-conq)]',
                   i % 2 && 'bg-bar',
                   highlighted(i) && (sel === i + 1 || highlight === i + 1 ? 'text-code-amber' : 'text-code-yellow'),
                   added.has(i) && 'text-code-grey'
@@ -649,12 +646,12 @@
           </div>
         {/if}
         <div class="flex flex-wrap items-center gap-2 border-t border-line px-3 py-2.5" role="group" aria-label="Trade search">
-          <select class="select h-7" aria-label="Realm" bind:value={form.realm}
+          <select class="select input-sm" aria-label="Realm" bind:value={form.realm}
             >{#each realms as r (r)}<option>{r}</option>{/each}</select>
-          <input class="input h-7 w-36" list="{uid}-leagues" aria-label="League" bind:value={form.league} />
+          <input class="input input-sm w-36" list="{uid}-leagues" aria-label="League" bind:value={form.league} />
           <datalist id="{uid}-leagues"
             >{#each leagues as l (l)}<option value={l}></option>{/each}</datalist>
-          <select class="select h-7" aria-label="Buyout" bind:value={form.tradeType}
+          <select class="select input-sm" aria-label="Buyout" bind:value={form.tradeType}
             >{#each tradeTypes as t, i (i)}<option value={i + 1}>{t}</option>{/each}</select>
           <label
             class="flex items-center gap-1"

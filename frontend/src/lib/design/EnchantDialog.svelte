@@ -66,13 +66,13 @@
   });
 </script>
 
-<Dialog bind:open title="Enchant Item" class="w-150 p-4.5">
+<Dialog bind:open title="Enchant Item" size="lg">
   <div class="flex flex-col gap-2.5 text-13">
     {#if choices?.haveSkills}
       <div class="flex items-end gap-3">
         <FloatingLabel label="Skill" class="grow"
           ><Select
-            class="h-7.5"
+            size="sm"
             aria-label="Skill"
             options={skillNames.map((s, i) => ({ value: String(i), label: s }))}
             value={String(skill)}
@@ -94,14 +94,14 @@
     <div class="grid grid-cols-2 gap-3">
       <FloatingLabel label="Source"
         ><Select
-          class="h-7.5"
+          size="sm"
           aria-label="Source"
           options={sources.map((s, i) => ({ value: String(i), label: s.label }))}
           value={String(Math.min(source, Math.max(0, sources.length - 1)))}
           onchange={(e: Event & { currentTarget: HTMLSelectElement }) => (source = Number(e.currentTarget.value))} /></FloatingLabel>
       <FloatingLabel label="Sort by"
         ><Select
-          class="h-7.5"
+          size="sm"
           aria-label="Sort by"
           options={[{ value: '', label: 'Default' }, ...stats.map((s) => ({ value: s.stat, label: s.label }))]}
           bind:value={sort} /></FloatingLabel>

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Icon from './Icon.svelte';
   import { childrenOf, countIn, leaf, type Drag } from './builds';
   import { dropZone } from './reorder';
   import type { SavedBuild } from './fixtures/app';
@@ -67,7 +68,7 @@
         data-folder={r.path}
         class={[
           'relative flex h-7.5 items-center gap-1 rounded pr-2 pl-1',
-          hot ? 'drop-target shadow-none' : cur ? 'bg-surface-2 shadow-[inset_2px_0_0_var(--color-accent)]' : 'hover:bg-bar'
+          hot ? 'drop-target shadow-none' : cur ? 'bg-row-current shadow-sel-bar' : 'hover:bg-row-hover'
         ]}
         use:dropZone={{
           accepts: () => !!drag && r.path !== '',
@@ -95,14 +96,7 @@
           aria-current={cur ? 'page' : undefined}
           title="{direct} {direct === 1 ? 'build' : 'builds'} here, {total} including subfolders"
           onclick={() => onfolder(r.path)}>
-          <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" class={['shrink-0', cur || hot ? 'text-accent' : 'text-text-3']}>
-            {#if r.kids && r.isOpen}
-              <path d="M1.5 12.5v-9h4.5l1.5 1.5h5.5v2 M1.5 12.5l2-5.5h11l-2 5.5z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"
-              ></path>
-            {:else}
-              <path d="M1.5 3.5h4.5l1.5 1.5h7v7.5h-13z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"></path>
-            {/if}
-          </svg>
+          <Icon name={r.kids && r.isOpen ? 'folder-open' : 'folder'} class={cur || hot ? 'text-accent' : 'text-text-3'} />
           <span class="grow truncate">{r.name}</span>
           <span
             class={[

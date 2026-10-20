@@ -1,4 +1,8 @@
 <script lang="ts">
+  import Dock from './mobile/Dock.svelte';
+  import Tooltip from './Tooltip.svelte';
+  import SearchField from './SearchField.svelte';
+  import Icon from './Icon.svelte';
   import FloatingLabel from './FloatingLabel.svelte';
   import Select from './Select.svelte';
   import StatGauge from './StatGauge.svelte';
@@ -260,8 +264,7 @@
   <div class="grid grid-cols-[8.5rem_minmax(0,max-content)_1fr] gap-x-2 border-t border-(--tone)">
     {#each s.blocks ?? [] as b, j (j)}
       {#if b.label !== s.title || (s.blocks?.length ?? 0) > 1}
-        <h3
-          class="col-span-full m-0 border-t border-line-faint px-2 pt-1 font-sans text-10 font-semibold tracking-caps-tight text-text-3 uppercase first:border-t-0">
+        <h3 class="col-span-full m-0 border-t border-line-faint px-2 pt-1 eyebrow eyebrow-xs font-sans text-text-3 first:border-t-0">
           {b.label}{#if b.extra}<span class="ml-1.5 font-mono tracking-normal normal-case"><PobText text={b.extra} /></span>{/if}
         </h3>
       {/if}
@@ -298,7 +301,7 @@
   <section
     aria-label={pobPlain(s.title)}
     class={['rounded border bg-surface-1', 'border-[color-mix(in_oklab,var(--tone)_45%,var(--color-line))]', toneClass(sectionTone(s))]}>
-    <h2 class={['toned block border-b border-(--tone) px-2 py-0.75 text-11 font-bold tracking-caps-tight uppercase', toneClass(sectionTone(s))]}>
+    <h2 class={['toned block border-b border-(--tone) px-2 py-0.75 text-11 font-bold tracking-caps uppercase', toneClass(sectionTone(s))]}>
       ▾ {s.title}
     </h2>
     <div data-calcs-wide class="overflow-x-auto">
@@ -309,9 +312,7 @@
           class="grid w-max min-w-full grid-cols-[8.5rem_repeat(var(--n),minmax(max-content,5.5rem))] gap-x-3 font-mono text-11"
           style:--n={Math.max(1, ...b.rows.map((r) => r.cells.length))}>
           {#if b.label !== s.title || b.extra}
-            <div
-              role="row"
-              class="col-span-full border-t border-line-faint px-2 pt-1.5 pb-0.5 font-sans text-10 font-semibold tracking-caps-tight text-text-3 uppercase first:border-t-0">
+            <div role="row" class="col-span-full border-t border-line-faint px-2 pt-1.5 pb-0.5 eyebrow eyebrow-xs font-sans text-text-3 first:border-t-0">
               <span role="rowheader"
                 >{b.label}{#if b.extra}<span class="ml-1.5 font-mono tracking-normal normal-case"><PobText text={b.extra} /></span>{/if}</span>
             </div>
@@ -364,9 +365,9 @@
         value={String(mainSocketGroup)}
         onchange={(e: Event) => onmaingroup(num(e))} /></FloatingLabel>
     {#if groupTip?.length}
-      <div role="tooltip" aria-label="Socket group tooltip" class="tooltip absolute top-full left-0 z-sticky mt-1 w-80 rounded-md px-3 py-2.5">
+      <Tooltip label="Socket group tooltip" size="lg" interactive textSize={11} class="absolute top-full left-0 z-sticky mt-1 w-80">
         <TooltipLines lines={groupTip} />
-      </div>
+      </Tooltip>
     {/if}
   </div>
   {#if controls && (controls.Skills?.length ?? 0) > 0}
@@ -448,7 +449,7 @@
   {#if moddebug}
     <Button size="xs" class="h-6.5 text-12" aria-expanded={debugText !== undefined} onclick={toggleDebug}>Mod Debug</Button>
   {/if}
-  <input type="search" placeholder="Search stats" aria-label="Search stats" class="input input-xs ml-auto w-42.5 px-2" bind:value={q} />
+  <SearchField placeholder="Search stats" label="Search stats" size="xs" class="ml-auto w-42.5 px-2" bind:value={q} />
 </div>
 <div class="flex min-h-0 grow">
   <div aria-label="Calculations" role="region" class="scroll flex min-w-0 grow flex-col gap-1.5 px-2.5 pt-2 pb-10">
@@ -498,7 +499,7 @@
             <h2 class="m-0 flex">
               <button
                 class={[
-                  'toned box-border flex min-w-0 grow items-center gap-1.25 border-0 bg-transparent px-2 py-0.75 text-left font-sans text-11 font-semibold tracking-caps-tight uppercase',
+                  'toned box-border flex min-w-0 grow items-center gap-1.25 border-0 bg-transparent px-2 py-0.75 text-left eyebrow font-sans',
                   TOUCH_TARGET,
                   toneClass(sectionTone(s))
                 ]}
@@ -541,10 +542,7 @@
         onpointerdown={() => raise(o.id)}>
         <h2 class="m-0 flex cursor-move items-center" onpointerdown={drag(o.id)}>
           <button
-            class={[
-              'toned box-border flex min-w-0 grow gap-1.25 border-0 bg-transparent px-2 py-0.75 text-left font-sans text-11 font-semibold tracking-caps-tight uppercase',
-              toneClass(sectionTone(s))
-            ]}
+            class={['toned box-border flex min-w-0 grow gap-1.25 border-0 bg-transparent px-2 py-0.75 text-left eyebrow font-sans', toneClass(sectionTone(s))]}
             aria-expanded={open}
             onclick={() => {
               const collapse = open;
@@ -555,36 +553,13 @@
             class="border-0 bg-transparent px-1.5 text-13 text-text-3 hover:text-text"
             aria-label="Close {pobPlain(s.title)}"
             title="Close"
-            onclick={() => (overlays = overlays.filter((x) => x.id !== o.id))}>×</button>
+            onclick={() => (overlays = overlays.filter((x) => x.id !== o.id))}><Icon name="close" size={12} /></button>
         </h2>
         {#if open}<div class="scroll min-h-0">{@render sectionBody(s)}</div>{/if}
       </div>
     {/if}
   {/each}
-  <div
-    class={[
-      'contents',
-      pinned
-        ? 'max-phone:fixed max-phone:inset-x-0 max-phone:z-dock max-phone:flex max-phone:flex-col max-phone:border-t max-phone:border-line-strong max-phone:bg-surface-1 max-phone:shadow-sheet max-phone:transition-[height,bottom] max-phone:[&>[role=separator]]:hidden max-phone:[&>aside]:min-h-0 max-phone:[&>aside]:w-full! max-phone:[&>aside]:max-w-none max-phone:[&>aside]:flex-1 max-phone:[&>aside]:border-l-0'
-        : 'max-phone:hidden',
-      pinned &&
-        (docked
-          ? 'max-phone:bottom-[calc(3.5rem+env(safe-area-inset-bottom))] max-phone:h-11 max-phone:[&>aside]:hidden'
-          : 'max-phone:bottom-0 max-phone:h-[55dvh]')
-    ]}
-    data-breakdown-dock
-    data-docked={pinned && docked ? '' : undefined}>
-    {#if pinned}
-      <button
-        type="button"
-        class="flex h-11 w-full shrink-0 items-center gap-2 border-0 border-b border-line bg-bar px-3 text-left font-sans text-13 text-text phone:hidden"
-        aria-expanded={!docked}
-        aria-controls="calcs-breakdown"
-        onclick={() => (docked = !docked)}
-        ><span class="min-w-0 flex-1 truncate">{title ?? 'Breakdown'}</span><span aria-hidden="true" class="text-text-3">{docked ? '▴' : '▾'}</span><span
-          class="sr-only">{docked ? 'Show the breakdown' : 'Fold the breakdown down'}</span
-        ></button>
-    {/if}
+  <Dock active={!!pinned} bind:folded={docked} title={title ?? 'Breakdown'} controls="calcs-breakdown">
     <CalcsBreakdown
       id="calcs-breakdown"
       {title}
@@ -593,9 +568,10 @@
       pinnedTitle={pinned && shownKey !== pinned ? pobPlain(rows.get(pinned)?.r.label ?? lists.find((l) => LIST + l.bd === pinned)?.label ?? '') : undefined}
       {itemtip}
       {nodeview}
+      dock={pinned ? (docked ? 'folded' : 'open') : undefined}
       onunpin={() => {
         pinned = undefined;
         hover = undefined;
       }} />
-  </div>
+  </Dock>
 </div>

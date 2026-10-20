@@ -119,7 +119,7 @@
   {/each}
   {#if jewels.length}
     <div role="rowgroup" aria-label="Tree jewels">
-      <div role="row" class="border-b border-line bg-inset px-2.5 pt-2.5 pb-1 text-11 font-semibold tracking-caps text-text-2 uppercase">
+      <div role="row" class="border-b border-line bg-inset px-2.5 pt-2.5 pb-1 eyebrow text-text-2">
         <span role="columnheader">Tree jewels</span>
       </div>
       {#each jewels as j, i (j.node)}

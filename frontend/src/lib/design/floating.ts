@@ -73,3 +73,18 @@ export const pressedOutside = (e: Event, ...roots: (Element | null | undefined)[
   const t = e.target;
   return t instanceof Node && roots.every((r) => !r?.contains(t));
 };
+
+/** Action: floats `tip` beside a point given in its parent's box (map and canvas overlays), in the top layer; flips to the left near the edge. */
+export function besidePoint(tip: HTMLElement, at: Point | undefined) {
+  const origin = tip.parentElement;
+  raise(tip);
+  let stop: (() => void) | undefined;
+  const place = (p: Point | undefined) => {
+    stop?.();
+    if (!p || !origin) return;
+    const r = origin.getBoundingClientRect();
+    stop = float(tip, { x: r.left + p.x, y: r.top + p.y }, { placement: 'right-start', fallback: ['left-start'], gap: 18, along: -30, vars: true });
+  };
+  place(at);
+  return { update: place, destroy: () => stop?.() };
+}

@@ -5,6 +5,9 @@
 </script>
 
 <script lang="ts">
+  import Field from '$lib/design/Field.svelte';
+  import InlineMessage from '$lib/design/InlineMessage.svelte';
+  import SectionHeading from '$lib/design/SectionHeading.svelte';
   import { resource } from 'runed';
   import { get } from 'svelte/store';
   import { buildRevision, currentBuild, currentBuildPath, outputs } from '$lib/global.js';
@@ -403,22 +406,18 @@
   <p class="note p-5" role="status">Open a build to compare it.</p>
 {:else if info.seq === 0 || adding}
   <section aria-label="Choose a build to compare" class="panel flex max-w-180 flex-col gap-3 p-3.5">
-    <h2 class="subhead text-13">COMPARE WITH</h2>
-    <label class="field"
-      >Import a build code or a build site link as the comparison:
-      <input class="input input-lg font-mono text-13" bind:value={code} aria-label="Comparison build code" />
-    </label>
-    <label class="field"
-      >Name (optional)
-      <input class="input input-md text-13" maxlength="100" bind:value={codeName} aria-label="Comparison name" />
-    </label>
+    <SectionHeading size="lg">COMPARE WITH</SectionHeading>
+    <Field label="Import a build code or a build site link as the comparison:">
+      <input class="input input-lg font-mono text-13" bind:value={code} aria-label="Comparison build code" /></Field>
+    <Field label="Name (optional)">
+      <input class="input input-md text-13" maxlength="100" bind:value={codeName} aria-label="Comparison name" /></Field>
     <!-- CompareTab.lua:1462-1525 -->
     <button
       class="btn btn-md btn-primary self-start"
       disabled={!code.trim() || loading}
       onclick={() => load(async () => syncWrap?.LoadCompareCode(await linkCode(code), compareName(code, codeName)) ?? Promise.reject(new Error('no worker')))}
       >Compare</button>
-    <h3 class="subhead mt-1">OR A SAVED BUILD</h3>
+    <SectionHeading level={3} class="mt-1">OR A SAVED BUILD</SectionHeading>
     <!-- CompareTab.lua:1529-1640 -->
     <button class="btn btn-md self-start" aria-haspopup="dialog" disabled={loading} onclick={() => (picking = true)}>Choose a saved build…</button>
     <BuildPicker
@@ -431,20 +430,19 @@
       onpick={(b: SavedBuild) => load(() => syncWrap?.LoadCompareSaved(pathOf(b.folder, b.name)))} />
     {#if adding}<button class="btn btn-sm self-start" onclick={() => (adding = false)}>Cancel</button>{/if}
     {#if loading}<span role="status" class="note">Loading…</span>{/if}
-    {#if loadError}<div role="alert" class="toned tone-worse text-12">Comparison failed: {loadError}</div>{/if}
+    {#if loadError}<InlineMessage kind="error">Comparison failed: {loadError}</InlineMessage>{/if}
   </section>
 {:else if compare && m}
   <div class="flex shrink-0 items-center gap-2 text-12">
     <!-- CompareTab.lua:227-237 -->
-    <label class="field field-inline"
-      >Compare with:
+    <Field label="Compare with:" inline>
       <select
         class="select input-xs"
         aria-label="Compare with"
         value={String(info.active)}
         onchange={(e) => void syncWrap?.SetActiveCompare(Number(e.currentTarget.value)).then((i) => (info = i))}
         >{#each info.names as n, i (i)}<option value={String(i)}>{n}</option>{/each}</select
-      ></label>
+      ></Field>
     <button class="btn btn-2xs" onclick={() => (adding = true)}>Import…</button>
     <button class="btn btn-2xs" disabled={!canReimport()} title={reimportTip} onclick={() => reimportPrimary((run) => (confirmTree = run))}
       >Re-import Current</button>

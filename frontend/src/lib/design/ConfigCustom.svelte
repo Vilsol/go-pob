@@ -1,9 +1,11 @@
 <script lang="ts">
+  import Tooltip from './Tooltip.svelte';
+  import Field from './Field.svelte';
+  import SectionHeading from './SectionHeading.svelte';
   import { untrack } from 'svelte';
   import ListOption from './ListOption.svelte';
   import ModCell from './ModCell.svelte';
   import Button from './Button.svelte';
-  import { besideAnchor } from './items';
   import type { CustomGroup } from './fixtures';
   import type { CustomOps } from './config';
   import ImpactBlocks from './ImpactBlocks.svelte';
@@ -61,10 +63,8 @@
 
 <section aria-label="Custom modifiers" class="panel relative mb-1 shrink-0">
   <div class="flex flex-wrap items-center justify-between gap-x-3 border-b border-line px-3 py-1.5">
-    <h2 class="subhead text-12 uppercase">
-      Custom Modifiers <span class="font-normal tracking-normal text-text-3 normal-case"
-        >· {groups.length} groups · {groups.filter((x) => x.enabled).length} enabled</span>
-    </h2>
+    <SectionHeading size="md" class="uppercase" count={`· ${groups.length} groups · ${groups.filter((x) => x.enabled).length} enabled`}
+      >Custom Modifiers</SectionHeading>
     <span class="note">Each mod group has a title, an on/off switch and its lines · one modifier per cell · hover a parsed cell</span>
   </div>
   <div class="flex min-w-0 max-phone:flex-col">
@@ -74,15 +74,11 @@
           <!-- svelte-ignore a11y_mouse_events_have_key_events -->
           <div role="listitem" class="relative" onmouseover={ontoggleover(i)} onmouseout={ontoggleout(i)}>
             {#if toggleTip?.i === i}
-              <div
-                role="tooltip"
-                aria-label="Group toggle what-if"
-                class="tooltip fixed top-(--y) left-(--x) z-float w-80 rounded-md px-3 py-2.5"
-                use:besideAnchor={toggleTip.anchor}>
+              <Tooltip label="Group toggle what-if" placement="beside" anchor={toggleTip.anchor} size="lg" interactive textSize={11} class="w-80">
                 {#if toggleTip.sections}<ImpactBlocks blocks={[{ header: toggleTip.header, sections: toggleTip.sections }]} />{:else}<span class="note"
                     >Calculating…</span
                   >{/if}
-              </div>
+              </Tooltip>
             {/if}
             <ListOption
               label={x.title}
@@ -108,13 +104,11 @@
     {#if g}
       <div class="flex min-w-0 flex-[1_1_0] flex-col">
         <div class="flex flex-wrap items-center gap-2 px-3 pt-2">
-          <label class="field field-inline"
-            >Group name
+          <Field label="Group name" inline>
             <input
               class="input input-xs h-7 w-55 px-2 max-phone:w-full max-phone:min-w-0"
               value={g.title}
-              oninput={(e) => ops.onrename(selected, e.currentTarget.value)} />
-          </label>
+              oninput={(e) => ops.onrename(selected, e.currentTarget.value)} /></Field>
           {#if ops.modbrowser}<Button size="sm" class="h-7" onclick={() => (browsing = true)}>Mod browser</Button>{/if}
           <span class={['text-12', g.enabled ? 'text-text-3' : 'text-worse']} aria-live="polite"
             >{g.enabled ? `${ok} applied${bad ? ` · ${bad} not recognised` : ''}` : 'Group disabled — its lines are not applied'}</span>
@@ -174,13 +168,9 @@
       onadd={(line: string) => ops.modbrowser?.onadd(selected, line)} />
   {/if}
   {#if tipCell && tip}
-    <div
-      role="tooltip"
-      id="custom-mod-tip"
-      class="tooltip pointer-events-none fixed top-(--y) left-(--x) z-float flex w-81.5 flex-col gap-1.5 rounded-lg px-3 py-2.5 shadow-tip"
-      use:besideAnchor={tip.anchor}>
+    <Tooltip id="custom-mod-tip" placement="beside" anchor={tip.anchor} size="lg" class="flex w-81.5 flex-col gap-1.5">
       <div class="text-13 font-semibold">{tipCell.text}</div>
       <div class="font-mono text-11 break-all text-text-3">parsed as: {tipCell.parsed}</div>
-    </div>
+    </Tooltip>
   {/if}
 </section>

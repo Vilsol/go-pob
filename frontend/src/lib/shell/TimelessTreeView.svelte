@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Tooltip from '$lib/design/Tooltip.svelte';
   import SkillTree from '$lib/components/skill-tree/SkillTree.svelte';
   import type { TimelessTreeArgs } from '$lib/design/timeless';
   import { ascendancyOffsets, nodeCentre, toScreen, type Point } from '$lib/skill_tree/geometry';
@@ -9,7 +10,6 @@
 
   // Data.lua:609-613
   const LARGE_RADIUS = 1800;
-  const TIP_W = 262;
 
   let view = $state<{ offsetX: number; offsetY: number; scaling: number; width: number; height: number }>();
   let canvas = $state<{ focus: (id: number, scaling?: number) => void }>();
@@ -99,13 +99,9 @@
       {#if hovered !== null}
         {@const p = project(hovered)}
         {#if p}
-          <div
-            role="tooltip"
-            class="tooltip absolute z-map flex w-65.5 flex-col gap-0.75 rounded-md px-2.5 py-2 text-12 shadow-pop"
-            style:left="{p.x + 18 + TIP_W <= v.width ? p.x + 18 : Math.max(p.x - 18 - TIP_W, 0)}px"
-            style:top="{Math.max(Math.min(p.y - 30, v.height - 120), 6)}px">
+          <Tooltip placement="point" at={p} class="flex w-65.5 flex-col gap-0.75">
             {@render tip(hovered)}
-          </div>
+          </Tooltip>
         {/if}
       {/if}
       <div class="map-note bottom-2.5 left-2.5 flex flex-wrap gap-3 text-text-2">

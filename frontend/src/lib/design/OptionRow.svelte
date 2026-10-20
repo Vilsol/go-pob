@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Dot from './Dot.svelte';
   import type { Snippet } from 'svelte';
   import type { HTMLLabelAttributes } from 'svelte/elements';
 
@@ -8,7 +9,7 @@
 
 <label class={['option-row', inactive && 'text-text-3', extra]} {...rest}>
   <span class="flex items-center gap-1.5">
-    <span class={['dot size-1.5', !modified && 'invisible']} aria-hidden="true"></span>
+    <Dot class={modified ? 'size-1.5' : 'invisible size-1.5'} />
     {#if typeof label === 'string'}{label}{:else}<span>{@render label()}</span>{/if}
     {#if modified}<span class="sr-only">(changed)</span>{/if}
   </span>

@@ -48,7 +48,7 @@ describe('SpectreLibrary', () => {
         .map((o) => o.textContent)
     ).toEqual(['Cannibal']);
 
-    await fireEvent.input(getByRole('textbox', { name: 'Search spectres' }), { target: { value: 'nova' } });
+    await fireEvent.input(getByRole('searchbox', { name: 'Search spectres' }), { target: { value: 'nova' } });
     expect(within(src).queryAllByRole('option')).toHaveLength(0);
     await fireEvent.change(getByRole('combobox', { name: 'Search in' }), { target: { value: '2' } });
     expect(

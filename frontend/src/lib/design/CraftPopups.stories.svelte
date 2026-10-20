@@ -239,7 +239,7 @@
     const list = d.getByRole('listbox', { name: 'Notables' });
     await waitFor(() => expect(within(list).getAllByRole('option')).toHaveLength(3));
     await userEvent.selectOptions(d.getByRole('combobox', { name: 'Search in' }), 'Modifiers');
-    await userEvent.type(d.getByRole('textbox', { name: 'Search notables' }), 'life');
+    await userEvent.type(d.getByRole('searchbox', { name: 'Search notables' }), 'life');
     await userEvent.selectOptions(d.getByRole('combobox', { name: 'Sort notables' }), 'Sort by Life');
     await waitFor(() =>
       expect(

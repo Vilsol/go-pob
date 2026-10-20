@@ -487,7 +487,7 @@ test('power report: the panel lists Go’s report for the chosen stat, built off
   const dists = points.map((p) => (p === 'Anoint' ? 1000 : Number(p)));
   expect(dists, 'sorted by points').toEqual([...dists].sort((a, b) => a - b));
   await panel.getByRole('combobox', { name: 'Power report filter' }).selectOption('clusters');
-  await expect(table.getByRole('button', { name: 'Life' })).toHaveAttribute('aria-pressed', 'true');
+  await expect(table.getByRole('columnheader', { name: 'Life' })).toHaveAttribute('aria-sort', 'descending');
   await expect(table.locator('[data-power-node] [role="cell"]:nth-child(4)', { hasText: 'Cluster' }).first()).toBeVisible();
   app.assertNoErrors();
 });

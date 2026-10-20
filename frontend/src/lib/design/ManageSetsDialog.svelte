@@ -70,7 +70,7 @@
             role="option"
             aria-selected={i === sharedRow}
             aria-describedby={sharedTip === i && s.tip.length ? `${uid}-shared-tip` : undefined}
-            class="choice-card px-2.5 py-1.5 text-left text-13 aria-selected:border-accent aria-selected:bg-surface-3"
+            class="choice-card px-2.5 py-1.5 text-left text-13"
             onclick={() => {
               sharedRow = i;
               sharedNaming = null;
@@ -93,7 +93,7 @@
             if (sharedNaming && /\S/.test(sharedNaming)) onshared({ op: 'rename', index: row, title: sharedNaming });
             sharedNaming = null;
           }}>
-          <input class="input h-7.5 grow" aria-label="Name for this shared set" bind:value={sharedNaming} maxlength="100" />
+          <input class="input input-sm grow" aria-label="Name for this shared set" bind:value={sharedNaming} maxlength="100" />
           <Button size="sm" variant="primary" type="submit" disabled={!/\S/.test(sharedNaming)}>Save</Button>
           <Button size="sm" type="button" onclick={() => (sharedNaming = null)}>Cancel</Button>
         </form>

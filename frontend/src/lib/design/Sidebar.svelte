@@ -1,4 +1,6 @@
 <script lang="ts">
+  import Disclosure from './Disclosure.svelte';
+  import Notice from './Notice.svelte';
   import FloatingLabel from './FloatingLabel.svelte';
   import PobText from './PobText.svelte';
   import { tick } from 'svelte';
@@ -27,6 +29,8 @@
     mainSocketGroup: number;
     controls?: calculator.MainSkillControls;
     collapsed?: boolean;
+    /** fills its container (the phone stats sheet): no rail, no resize */
+    fill?: boolean;
     pinned?: string[];
     breakdown?: (line: StatLine) => Breakdown | undefined;
     /* Build.lua:1764-1908 */
@@ -43,6 +47,7 @@
     mainSocketGroup,
     controls,
     collapsed = $bindable(false),
+    fill = false,
     pinned = $bindable([]),
     breakdown,
     steps,
@@ -188,7 +193,7 @@
   };
 </script>
 
-{#if collapsed}
+{#if collapsed && !fill}
   <aside
     aria-label="Main skill and stats (collapsed)"
     class="relative box-border flex h-full max-h-screen w-15 shrink-0 flex-col items-center gap-3 border-r border-line bg-surface-1 px-1.5 py-3 font-sans text-text">
@@ -225,29 +230,34 @@
   <aside
     bind:this={aside}
     aria-label="Main skill and stats"
-    class="relative box-border flex h-full max-h-screen max-w-[50vw] shrink-0 flex-col overflow-visible border-r border-line bg-surface-1 font-sans text-text"
-    style:width="{width}px">
+    class={[
+      'relative box-border flex h-full max-h-screen shrink-0 flex-col overflow-visible bg-surface-1 font-sans text-text',
+      fill ? 'w-full max-w-none' : 'max-w-[50vw] border-r border-line'
+    ]}
+    style:width={fill ? undefined : `${width}px`}>
     <div class="flex flex-col gap-2.5 border-b border-line px-4 py-3.5">
       <div class="flex items-end gap-2">
         <FloatingLabel label="Main skill" class="min-w-0 grow"
           ><Select
-            class="h-8.5 w-full min-w-0 text-14"
+            size="md"
+            class="w-full min-w-0 text-14"
             options={socketGroups.map((label, i) => ({ value: String(i), label }))}
             value={String(mainSocketGroup)}
             onchange={(e: Event) => onmaingroup?.(selected(e))} /></FloatingLabel>
-        <button
-          bind:this={collapseBtn}
-          class="btn btn-icon btn-md shrink-0"
-          onclick={() => setCollapsed(true)}
-          aria-label="Collapse the sidebar to a rail"
-          title="Collapse to a rail of pinned stats"
-          aria-expanded="true">‹</button>
+        {#if !fill}<button
+            bind:this={collapseBtn}
+            class="btn btn-icon btn-md shrink-0"
+            onclick={() => setCollapsed(true)}
+            aria-label="Collapse the sidebar to a rail"
+            title="Collapse to a rail of pinned stats"
+            aria-expanded="true">‹</button
+          >{/if}
       </div>
       {#if controls}
         {#if (controls.Skills?.length ?? 0) > 1}
           <FloatingLabel label="Active skill"
             ><Select
-              class="h-8.5"
+              size="md"
               options={opts(controls.Skills)}
               value={String(controls.MainActiveSkill)}
               disabled={!controls.SkillEnabled}
@@ -256,7 +266,7 @@
         {#if controls.PartShown}
           <FloatingLabel label="Skill part"
             ><Select
-              class="h-8.5"
+              size="md"
               options={opts(controls.Parts)}
               value={String(controls.SkillPart)}
               disabled={!gemWritable}
@@ -267,7 +277,7 @@
             {#if controls.StageShown}
               <label class="field"
                 >Stages<input
-                  class="input h-8.5 font-mono"
+                  class="input input-md font-mono"
                   inputmode="numeric"
                   value={controls.StageCount}
                   disabled={!gemWritable}
@@ -276,7 +286,7 @@
             {#if controls.MineShown}
               <label class="field"
                 >Active mines<input
-                  class="input h-8.5 font-mono"
+                  class="input input-md font-mono"
                   inputmode="numeric"
                   value={controls.MineCount}
                   disabled={!gemWritable}
@@ -313,7 +323,8 @@
                 }}>
                 <FloatingLabel label="Minion" class="min-w-0"
                   ><Select
-                    class="h-8.5 min-w-0"
+                    size="md"
+                    class="min-w-0"
                     options={(controls.Minions ?? []).map((m, i) => ({ value: String(i + 1), label: m.Label }))}
                     value={String(controls.Minion)}
                     disabled={!controls.MinionEnabled}
@@ -324,7 +335,8 @@
             {#if controls.MinionSkillShown}
               <FloatingLabel label="Minion skill" class="min-w-0"
                 ><Select
-                  class="h-8.5 min-w-0"
+                  size="md"
+                  class="min-w-0"
                   options={opts(controls.MinionSkills)}
                   value={String(controls.MinionSkill)}
                   disabled={!controls.MinionSkillEnabled}
@@ -334,10 +346,10 @@
         {/if}
       {/if}
       {#each statuses as w, i (i)}
-        <div role="status" class="rounded border border-warn-line bg-warn-bg-2 px-2.5 py-1.5 text-12 leading-4 text-worse">
+        <Notice kind="warn" size="sm" class="text-worse">
           <span aria-hidden="true">⚠</span>
           {w.text}
-        </div>
+        </Notice>
       {/each}
     </div>
 
@@ -379,11 +391,8 @@
                       title={on ? `Unpin ${e.line.label}` : `Pin ${e.line.label} to the collapsed rail`}>{on ? '★' : '☆'}</button>
                   </div>
                   {#if e.skills}
-                    <button
-                      class="stat-group-head pl-2.25 font-normal tracking-normal normal-case"
-                      onclick={() => (fullDpsOpen = !fullDpsOpen)}
-                      aria-expanded={fullDpsOpen}
-                      ><span class="w-2.5" aria-hidden="true">{fullDpsOpen ? '▾' : '▸'}</span>Full DPS by skill ({e.skills.length})</button>
+                    <Disclosure class="stat-group-head pl-2.25 font-normal tracking-normal normal-case" bind:open={fullDpsOpen}
+                      >Full DPS by skill ({e.skills.length})</Disclosure>
                     {#if fullDpsOpen}
                       <ul class="m-0 flex list-none flex-col p-0 pl-4.5 text-12" aria-label="Full DPS by skill">
                         {#each e.skills as k, ki (ki)}
@@ -452,33 +461,35 @@
         </BreakdownTooltip>
       </div>
     {/if}
-    <!-- eslint-disable-next-line svelte/no-unused-svelte-ignore -->
-    <!-- svelte-ignore a11y_no_noninteractive_tabindex, a11y_no_noninteractive_element_interactions -->
-    <div
-      role="separator"
-      aria-label="Resize the sidebar"
-      aria-orientation="vertical"
-      aria-valuenow={width}
-      aria-valuemin={WIDTH_MIN}
-      aria-valuemax={WIDTH_MAX}
-      tabindex="0"
-      class="absolute top-0 -right-0.75 bottom-0 z-overlay w-1.5 cursor-col-resize hover:bg-surface-3 focus-visible:bg-surface-3"
-      onkeydown={(e: KeyboardEvent) => {
-        const d = e.key === 'ArrowLeft' ? -16 : e.key === 'ArrowRight' ? 16 : 0;
-        if (!d) return;
-        e.preventDefault();
-        setWidth(width + d);
-      }}
-      onpointerdown={(e: PointerEvent) => {
-        if (e.button > 0) return;
-        resizing = { x: e.clientX, w: width };
-        (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
-      }}
-      onpointermove={(e: PointerEvent) => {
-        if (resizing) setWidth(resizing.w + e.clientX - resizing.x);
-      }}
-      onpointerup={() => (resizing = undefined)}
-      onpointercancel={() => (resizing = undefined)}>
-    </div>
+    {#if !fill}
+      <!-- eslint-disable-next-line svelte/no-unused-svelte-ignore -->
+      <!-- svelte-ignore a11y_no_noninteractive_tabindex, a11y_no_noninteractive_element_interactions -->
+      <div
+        role="separator"
+        aria-label="Resize the sidebar"
+        aria-orientation="vertical"
+        aria-valuenow={width}
+        aria-valuemin={WIDTH_MIN}
+        aria-valuemax={WIDTH_MAX}
+        tabindex="0"
+        class="absolute top-0 -right-0.75 bottom-0 z-overlay w-1.5 cursor-col-resize hover:bg-surface-3 focus-visible:bg-surface-3"
+        onkeydown={(e: KeyboardEvent) => {
+          const d = e.key === 'ArrowLeft' ? -16 : e.key === 'ArrowRight' ? 16 : 0;
+          if (!d) return;
+          e.preventDefault();
+          setWidth(width + d);
+        }}
+        onpointerdown={(e: PointerEvent) => {
+          if (e.button > 0) return;
+          resizing = { x: e.clientX, w: width };
+          (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+        }}
+        onpointermove={(e: PointerEvent) => {
+          if (resizing) setWidth(resizing.w + e.clientX - resizing.x);
+        }}
+        onpointerup={() => (resizing = undefined)}
+        onpointercancel={() => (resizing = undefined)}>
+      </div>
+    {/if}
   </aside>
 {/if}

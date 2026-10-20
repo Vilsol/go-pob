@@ -39,7 +39,7 @@
   play={async ({ canvasElement }) => {
     const c = within(canvasElement.ownerDocument.body);
     const src = c.getByRole('listbox', { name: 'Available Spectres' });
-    await userEvent.type(c.getByRole('textbox', { name: 'Search spectres' }), 'fire');
+    await userEvent.type(c.getByRole('searchbox', { name: 'Search spectres' }), 'fire');
     await expect(
       within(src)
         .getAllByRole('option')

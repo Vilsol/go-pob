@@ -5,7 +5,7 @@
     max?: number;
     step?: number;
     label?: string;
-    size?: 'xs' | 'default' | 'lg';
+    size?: 'xs' | 'sm' | 'default' | 'md' | 'lg';
     disabled?: boolean;
     placeholder?: string;
     format?: (v: number) => string;
@@ -31,7 +31,7 @@
   const PX_PER_STEP = 4;
   const DRAG_START = 3;
 
-  const sizes = { xs: 'number-input-xs', default: '', lg: 'number-input-lg' };
+  const sizes = { xs: 'number-input-xs', sm: 'number-input-sm', default: '', md: 'number-input-md', lg: 'number-input-lg' };
   const decimals = (n: number) => (String(n).split('.')[1] ?? '').length;
   const fractional = $derived(!Number.isInteger(step));
   const show = (v: number | null | undefined) => (v == null ? '' : format ? format(v) : String(v));

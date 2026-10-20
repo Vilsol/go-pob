@@ -1,4 +1,7 @@
 <script lang="ts">
+  import SearchField from './SearchField.svelte';
+  import Field from './Field.svelte';
+  import Icon from './Icon.svelte';
   import Dialog from './Dialog.svelte';
   import { buildId, childrenOf, countIn, leaf, subpath, visibleRows, type ColKey, type Sort } from './builds';
   import type { SavedBuild } from './fixtures/app';
@@ -46,7 +49,7 @@
   const curBuild = $derived(at >= subs.length ? found[at - subs.length] : undefined);
   const rowId = (i: number) => `${uid}-row-${i}`;
   const ROW =
-    'flex w-full cursor-default border-x-0 border-t-0 bg-transparent text-left font-sans text-13 text-text items-center gap-3 border-b border-surface-2 px-3 py-1.5 hover:bg-bar aria-selected:bg-sel aria-selected:shadow-[inset_3px_0_0_var(--color-accent)]';
+    'flex w-full cursor-default border-x-0 border-t-0 bg-transparent text-left font-sans text-13 text-text items-center gap-3 border-b border-surface-2 px-3 py-1.5 hover:bg-row-hover aria-selected:bg-row-selected aria-selected:shadow-sel-bar';
 
   $effect(() => {
     if (active >= n) active = Math.max(0, n - 1);
@@ -92,21 +95,20 @@
     {/each}
   </nav>
   <div class="flex items-center gap-2">
-    <input
-      class="input input-md min-w-0 grow text-13"
-      type="search"
+    <SearchField
+      size="md"
+      class="min-w-0 grow text-13"
       placeholder="Search {folder ? leaf(folder) : 'all builds'}"
-      aria-label="Search builds"
+      label="Search builds"
       bind:value={q}
       oninput={() => (active = 0)}
-      onkeydown={(e) => {
+      onkeydown={(e: KeyboardEvent) => {
         if (e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'Enter') {
           key(e);
           list?.focus();
         }
       }} />
-    <label class="field field-inline text-12"
-      >Sort by
+    <Field label="Sort by" inline class="text-12">
       <select
         class="select input-xs"
         aria-label="Sort by"
@@ -116,7 +118,7 @@
           if (s) sort = { key: s.key, dir: s.dir };
         }}>
         {#each SORTS as s (s.key)}<option value={s.key}>{s.label}</option>{/each}
-      </select></label>
+      </select></Field>
   </div>
   <div
     bind:this={list}
@@ -129,8 +131,7 @@
     onkeydown={key}>
     {#each subs as path, i (path)}
       <button id={rowId(i)} tabindex="-1" role="option" aria-selected={i === at} data-folder={path} class={ROW} onclick={() => go(path)}>
-        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" class="shrink-0 text-accent"
-          ><path d="M1.5 3.5h4.5l1.5 1.5h7v7.5h-13z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"></path></svg>
+        <Icon name="folder" class="text-accent" />
         <span class="font-semibold text-accent">{leaf(path)}</span>
         <span class="note ml-auto">{countIn(builds ?? [], path)} builds</span>
       </button>
