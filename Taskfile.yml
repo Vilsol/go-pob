@@ -643,7 +643,7 @@ tasks:
   dataraw-mirror:
     desc: "Grade every hand-transcribed data/raw table against PoB's Lua (ROWS=n, SELFTEST=1)"
     vars:
-      POB_DIR: '{{.POB_DIR | default "$HOME/PathOfBuilding"}}'
+      POB_DIR: '{{.POB_DIR | default .POB_DEFAULT}}'
     cmds:
       - 'env POB_DIR={{.POB_DIR}} {{.GOPOB}} dataraw-mirror{{if .ROWS}} --rows {{.ROWS}}{{end}}{{if .SELFTEST}} --selftest{{end}}'
 
@@ -662,8 +662,8 @@ tasks:
   citations:
     desc: "Verify every //pob: citation resolves and cites a Lua function line, and report coverage over the PORT files (REPORT=1 to never fail, SELFTEST=1 to prove the checks can fail)"
     cmds:
-      - 'env REPORT={{.REPORT | default ""}} POB_DIR={{.POB_DIR | default "$HOME/PathOfBuilding"}} {{.GOPOB}} pob-citations'
-      - 'env SWEEP=1 POB_DIR={{.POB_DIR | default "$HOME/PathOfBuilding"}} {{.GOPOB}} citation-audit {{if .SELFTEST}}--selftest{{end}}'
+      - 'env REPORT={{.REPORT | default ""}} POB_DIR={{.POB_DIR | default .POB_DEFAULT}} {{.GOPOB}} pob-citations'
+      - 'env SWEEP=1 POB_DIR={{.POB_DIR | default .POB_DEFAULT}} {{.GOPOB}} citation-audit {{if .SELFTEST}}--selftest{{end}}'
 
   stat-ratios:
     desc: "Cluster one stat's got/PoB ratio across the corpus — STAT=MainHand.PhysicalMinBase (PRECISION, MEMBERS)"
@@ -774,7 +774,7 @@ tasks:
   citations-audit:
     desc: "Print the first+last Lua line of every //pob: range in a file — FILE=calculator/item.go [CONTEXT=2]"
     cmds:
-      - 'env FILE={{.FILE}} CONTEXT={{.CONTEXT | default "0"}} POB_DIR={{.POB_DIR | default "$HOME/PathOfBuilding"}} {{.GOPOB}} citation-audit'
+      - 'env FILE={{.FILE}} CONTEXT={{.CONTEXT | default "0"}} POB_DIR={{.POB_DIR | default .POB_DEFAULT}} {{.GOPOB}} citation-audit'
 
   corpus-grep:
     desc: "How many corpus builds contain a mod line — PATTERN='...' or PATTERNS_FILE=<one per line, from the repo root> (one corpus pass, a block per pattern) [LUA=1] [NAMES=1]"
@@ -860,7 +860,7 @@ tasks:
   omissions:
     desc: "Verify every omission reason in a generated data table still holds (SELFTEST=1 to prove the checks can fail)"
     cmds:
-      - 'env REPORT={{.REPORT | default ""}} POB_DIR={{.POB_DIR | default "$HOME/PathOfBuilding"}} {{.GOPOB}} omission-reasons {{if .SELFTEST}}--selftest{{end}}'
+      - 'env REPORT={{.REPORT | default ""}} POB_DIR={{.POB_DIR | default .POB_DEFAULT}} {{.GOPOB}} omission-reasons {{if .SELFTEST}}--selftest{{end}}'
 
   instruments:
     desc: "Run EVERY instrument sequentially and print one consolidated report (COVERAGE=1 adds the coverage census, ~4 min)"
