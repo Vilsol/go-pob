@@ -10,8 +10,8 @@
 <label class={['option-row', inactive && 'text-text-3', extra]} {...rest}>
   <span class="flex items-center gap-1.5">
     <Dot class={modified ? 'size-1.5' : 'invisible size-1.5'} />
-    {#if typeof label === 'string'}{label}{:else}<span>{@render label()}</span>{/if}
-    {#if modified}<span class="sr-only">(changed)</span>{/if}
+    <!-- eslint-disable-next-line svelte/no-useless-mustaches -- Svelte trims a plain space at a block edge -->
+    {#if typeof label === 'string'}{label}{:else}<span>{@render label()}</span>{/if}{#if modified}{' '}<span class="sr-only">(changed)</span>{/if}
   </span>
   {@render control()}
 </label>

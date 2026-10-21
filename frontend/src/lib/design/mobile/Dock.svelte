@@ -37,6 +37,5 @@
       ><span class="min-w-0 flex-1 truncate">{title}</span><span aria-hidden="true" class="inline-flex text-text-3"
         ><Icon name={folded ? 'chevron-up' : 'chevron-down'} size={12} /></span
       ><span class="sr-only">{folded ? 'Show the breakdown' : 'Fold the breakdown down'}</span></button>
-  {/if}
-  {@render children()}
+  {/if}{@render children()}
 </div>

@@ -107,14 +107,12 @@
       {@render head?.()}
       <Button variant="close" class="ml-auto" aria-label="Close" onclick={() => (open = false)}><Icon name="close" size={14} /></Button>
     </div>
-    {@render children()}
-    {#if footer}<div class="sheet-foot">{@render footer()}</div>{/if}
+    {@render children()}{#if footer}<div class="sheet-foot">{@render footer()}</div>{/if}
   {:else}
     <div class="flex items-center justify-between">
       <h3 id="{uid}-title" class="text-15 font-semibold">{title}</h3>
       <Button variant="close" aria-label="Close" onclick={() => (open = false)}><Icon name="close" size={14} /></Button>
     </div>
-    {@render children()}
-    {#if actions}<div class="flex justify-end gap-2">{@render actions()}</div>{/if}
+    {@render children()}{#if actions}<div class="flex justify-end gap-2">{@render actions()}</div>{/if}
   {/if}
 </dialog>

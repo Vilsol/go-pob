@@ -511,9 +511,10 @@
                 ]}
                 {open}
                 disabled={!s.applicable}
-                ontoggle={(isOpen) => collapse(s.id, !isOpen)}
-                >{s.title}
-                {#if !s.applicable}<span class="font-normal text-text-3 normal-case">not applicable</span>{/if}</Disclosure>
+                ontoggle={(isOpen) => collapse(s.id, !isOpen)}>
+                <!-- eslint-disable-next-line svelte/no-useless-mustaches -- Svelte trims a plain space at a block edge -->
+                {s.title}{#if !s.applicable}{' '}<span class="font-normal text-text-3 normal-case">not applicable</span>{/if}
+              </Disclosure>
               {#if s.applicable}<button
                   class={['border-0 bg-transparent px-1.5 text-11 text-text-3 hover:text-text', TOUCH_TARGET]}
                   aria-label="Pop out {pobPlain(s.title)}"

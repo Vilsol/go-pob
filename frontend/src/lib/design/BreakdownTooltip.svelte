@@ -38,12 +38,10 @@
   </div>
   {#if formula}<span class="font-mono text-text-2">{formula}</span>{/if}
   {#if lines?.length}<div class="mt-1 text-12"><BreakdownSteps {lines} /></div>{/if}
-  {@render children?.()}
-  {#each groups as g, i (i)}
+  {@render children?.()}{#each groups as g, i (i)}
     {#if g.title}<span class="mt-1 text-10 tracking-caps text-text-3">{g.title}</span>{/if}
     {#each g.rows as x, j (j)}
       <div class={['kv', compact ? 'gap-2' : 'gap-2.5']}><span class={['toned', toneClass(x.tone)]}>{x.src}</span><span class="font-mono">{x.val}</span></div>
     {/each}
-  {/each}
-  {#if footer}<span class={['text-text-3', compact ? 'mt-0' : 'mt-0.75']}>{footer}</span>{/if}
+  {/each}{#if footer}<span class={['text-text-3', compact ? 'mt-0' : 'mt-0.75']}>{footer}</span>{/if}
 </div>

@@ -133,6 +133,23 @@
     customModText: () => Promise.resolve('Rarity: RARE'),
     customModSort: (_s, ids) => Promise.resolve(ids.map((id) => ({ m1: 1, m2: 2 })[id] ?? 0))
   };
+  // the preview arrives only when the play function releases it
+  let releasePreview = () => {};
+  const latePreviewApi: CraftApi = {
+    ...customApi,
+    tipOf: () =>
+      new Promise((done) => {
+        releasePreview = () =>
+          done({
+            item: 'Test Crown',
+            base: 'Hubris Circlet',
+            rarity: 'rare',
+            mods: Array.from({ length: 12 }, (_, i) => `+${i} to maximum Life`),
+            impactTitle: '',
+            impact: []
+          });
+      })
+  };
   const series = (label: string, tiers: number) => ({ label, tiers, haveRange: tiers > 0, tooltip: [`^7${tiers} Tiers`, label], mid: [label] });
   const affixData: AffixData = {
     sorting: true,
@@ -315,6 +332,29 @@
     await expect(d.getByRole('textbox', { name: 'Custom modifier' })).toBeVisible();
   }}>
   <div class="h-150"><AddModifierDialog open craft={customApi} /></div>
+</Story>
+
+<Story
+  name="Add modifier: a late preview leaves the open list in place"
+  asChild
+  play={async ({ canvasElement }) => {
+    const c = within(canvasElement.ownerDocument.body);
+    const dialog = await c.findByRole('dialog', { name: 'Add Modifier to Item' });
+    const mod = await within(dialog).findByRole('combobox', { name: 'Modifier' });
+    const list = await openList(mod);
+    await waitFor(() => expect(within(list).getAllByRole('option')).toHaveLength(2));
+    const option = within(list).getAllByRole('option')[1];
+    await userEvent.hover(option);
+    const before = [mod.getBoundingClientRect().top, option.getBoundingClientRect().top];
+    const height = dialog.getBoundingClientRect().height;
+    releasePreview();
+    await within(dialog).findByRole('group', { name: 'New item' });
+    await waitFor(() => expect(dialog.getBoundingClientRect().height).toBeGreaterThan(height + 100));
+    await new Promise((r) => setTimeout(r, 300));
+    await expect([mod.getBoundingClientRect().top, option.getBoundingClientRect().top], 'the hovered option moved out from under the pointer').toEqual(before);
+    await expect(c.getByRole('tooltip', { name: 'Modifier tooltip' })).toBeVisible();
+  }}>
+  <div class="h-150"><AddModifierDialog open craft={latePreviewApi} /></div>
 </Story>
 
 <Story

@@ -9,9 +9,9 @@
 </script>
 
 <div class="flex flex-col">
-  <Disclosure class="stat-group-head" bind:open controls={id}
-    >{title}
-    {#if warn}<Badge tone="warn" class="tracking-normal normal-case">⚠ {warn}</Badge>{/if}
+  <Disclosure class="stat-group-head" bind:open controls={id}>
+    <!-- eslint-disable-next-line svelte/no-useless-mustaches -- Svelte trims a plain space at a block edge -->
+    {title}{#if warn}{' '}<Badge tone="warn" class="tracking-normal normal-case">⚠ {warn}</Badge>{/if}
   </Disclosure>
   <div {id} class="flex flex-col" hidden={!open}>{@render children()}</div>
 </div>

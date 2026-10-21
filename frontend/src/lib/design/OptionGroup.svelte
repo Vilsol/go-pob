@@ -19,7 +19,6 @@
           ontoggle={() => ontoggle()} />{/if}</span>
   </h3>
   {#if !collapsed}
-    {@render children()}
-    {#if more}<div class="option-more">{more}</div>{/if}
+    {@render children()}{#if more}<div class="option-more">{more}</div>{/if}
   {/if}
 </section>

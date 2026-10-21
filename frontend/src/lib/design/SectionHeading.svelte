@@ -15,9 +15,10 @@
 </script>
 
 {#snippet heading(cls: ClassValue)}
-  <svelte:element this={`h${level}`} class={['subhead', sizes[size], cls]}
-    >{@render children()}
-    {#if count}<span class="font-normal tracking-normal text-text-3 normal-case">{count}</span>{/if}</svelte:element>
+  <svelte:element this={`h${level}`} class={['subhead', sizes[size], cls]}>
+    <!-- eslint-disable-next-line svelte/no-useless-mustaches -- Svelte trims a plain space at a block edge -->
+    {@render children()}{#if count}{' '}<span class="font-normal tracking-normal text-text-3 normal-case">{count}</span>{/if}
+  </svelte:element>
 {/snippet}
 
 {#if actions}

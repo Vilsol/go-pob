@@ -135,10 +135,9 @@
       }
     }}>
     <div class="flex items-center gap-2 border-b border-line px-3 py-2.5">
-      <span class="flex items-center gap-1.5 text-13 font-semibold whitespace-nowrap"
-        >{title}
-        {#if title === 'Shared'}
-          <button
+      <span class="flex items-center gap-1.5 text-13 font-semibold whitespace-nowrap">
+        <!-- eslint-disable-next-line svelte/no-useless-mustaches -- Svelte trims a plain space at a block edge -->
+        {title}{#if title === 'Shared'}{' '}<button
             bind:this={infoBtn}
             class="info-btn"
             aria-label="About shared items"

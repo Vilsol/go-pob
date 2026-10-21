@@ -95,7 +95,8 @@
   });
 </script>
 
-<Dialog bind:open title="Add Modifier to Item" size="lg">
+<!-- its comparison and preview arrive after it opens: grow downward, so the open list stays under the pointer -->
+<Dialog bind:open title="Add Modifier to Item" size="lg" class="mt-4 mb-auto max-h-[calc(100dvh-2rem)]">
   <div class="flex flex-col gap-2.5 text-13">
     <div class="grid grid-cols-2 gap-3">
       <FloatingLabel label="Source"
