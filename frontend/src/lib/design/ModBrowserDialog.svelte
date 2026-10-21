@@ -58,7 +58,7 @@
   };
 </script>
 
-<Dialog bind:open title="Mod browser" size="xl">
+<Dialog bind:open title="Mod browser" size="xl" anchor="top">
   <div class="flex flex-col gap-2">
     <Listbox
       items={lines}

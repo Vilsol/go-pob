@@ -10,6 +10,7 @@
 <script lang="ts">
   let confirm = $state(false);
   let sheet = $state(false);
+  let grown = $state(false);
 </script>
 
 <Story
@@ -55,5 +56,48 @@
   <Button onclick={() => (sheet = true)}>Open sheet</Button>
   <Dialog bind:open={sheet} sheet title="Sheet" note=".dialog.dialog-sheet + .sheet-head">
     <div class="note px-4.5 py-3">Settings, About and the item editor: a full-size overlay whose sections carry their own padding.</div>
+  </Dialog>
+</Story>
+
+<Story
+  name="Top anchor keeps its top while content grows"
+  asChild
+  play={async ({ canvasElement }) => {
+    const c = within(canvasElement);
+    const top = async (name: string) => {
+      grown = false;
+      const dlg = c.getByRole('dialog', { name, hidden: true });
+      await waitFor(() => expect(dlg).toHaveAttribute('open'));
+      const before = dlg.getBoundingClientRect().top;
+      grown = true;
+      await waitFor(() => expect(dlg.getBoundingClientRect().height).toBeGreaterThan(300));
+      return [before, dlg.getBoundingClientRect().top];
+    };
+    const [a, b] = await top('Top anchored');
+    await expect(Math.abs(a - b), 'a top-anchored dialog does not move as it grows').toBeLessThanOrEqual(1);
+    c.getByRole('dialog', { name: 'Top anchored', hidden: true }).querySelector<HTMLButtonElement>('button')?.click();
+  }}>
+  <Dialog open title="Top anchored" size="md" anchor="top">
+    <span class="text-13">Results arrive after the dialog opens.</span>
+    {#if grown}<div class="h-80">Late preview</div>{/if}
+  </Dialog>
+</Story>
+
+<Story
+  name="Centred dialog re-centres as content grows"
+  asChild
+  play={async ({ canvasElement }) => {
+    const c = within(canvasElement);
+    grown = false;
+    const dlg = c.getByRole('dialog', { name: 'Centred', hidden: true });
+    await waitFor(() => expect(dlg).toHaveAttribute('open'));
+    const before = dlg.getBoundingClientRect().top;
+    grown = true;
+    await waitFor(() => expect(dlg.getBoundingClientRect().height).toBeGreaterThan(300));
+    await expect(before - dlg.getBoundingClientRect().top, 'control: a centred dialog moves up as it grows').toBeGreaterThan(50);
+  }}>
+  <Dialog open title="Centred" size="md">
+    <span class="text-13">Results arrive after the dialog opens.</span>
+    {#if grown}<div class="h-80">Late preview</div>{/if}
   </Dialog>
 </Story>

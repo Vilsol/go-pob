@@ -20,6 +20,8 @@
     size?: 'sm' | 'md' | 'lg' | 'xl';
     /** on a phone: fill the screen (the default), stay a centred box (a short confirm or prompt), or keep the caller's sheet placement */
     phone?: 'fullscreen' | 'centred' | 'sheet';
+    /** top: stays near the top and grows downward, for content that arrives after it opens */
+    anchor?: 'centre' | 'top';
   };
   let {
     open = $bindable(false),
@@ -34,7 +36,8 @@
     head,
     backdrop = false,
     size,
-    phone
+    phone,
+    anchor = 'centre'
   }: Props = $props();
   const SIZES = { sm: 'w-105', md: 'w-120', lg: 'w-160', xl: 'w-180' };
   const PHONE = {
@@ -42,6 +45,7 @@
     centred: 'max-phone:w-[calc(100vw-2rem)]! max-phone:max-w-none!',
     sheet: ''
   };
+  const ANCHOR = { centre: '', top: 'mt-4 mb-auto max-h-[calc(100dvh-2rem)]' };
   const cls = $derived(extra ?? (size ? '' : sheet ? 'w-100' : DEFAULT_CLASS));
   const onPhone = $derived(phone ?? (!sheet && !size && extra === undefined ? 'centred' : 'fullscreen'));
 
@@ -87,7 +91,7 @@
 <dialog
   bind:this={el}
   aria-labelledby="{uid}-title"
-  class={['dialog m-auto text-text not-open:hidden backdrop:bg-backdrop', sheet && 'dialog-sheet', size && SIZES[size], cls, PHONE[onPhone]]}
+  class={['dialog m-auto text-text not-open:hidden backdrop:bg-backdrop', sheet && 'dialog-sheet', size && SIZES[size], cls, ANCHOR[anchor], PHONE[onPhone]]}
   onclose={closed}
   onclick={clicked}
   onkeydown={(e) => {

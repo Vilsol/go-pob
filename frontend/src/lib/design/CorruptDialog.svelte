@@ -120,7 +120,7 @@
   });
 </script>
 
-<Dialog bind:open title="Corrupted Item" size="lg">
+<Dialog bind:open title="Corrupted Item" size="lg" anchor="top">
   <div class="flex flex-col gap-2.5 text-13">
     {#if choices?.unique}
       <Tabs

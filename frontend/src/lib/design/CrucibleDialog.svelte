@@ -46,7 +46,7 @@
   });
 </script>
 
-<Dialog bind:open title="Add Crucible Modifier to Item" size="lg">
+<Dialog bind:open title="Add Crucible Modifier to Item" size="lg" anchor="top">
   <div class="flex flex-col gap-2.5 text-13">
     {#each choices?.nodes ?? [] as list, i (i)}
       <FloatingLabel label="Node {i + 1}"

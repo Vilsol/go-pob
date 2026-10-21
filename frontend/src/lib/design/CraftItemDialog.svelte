@@ -43,7 +43,7 @@
   });
 </script>
 
-<Dialog bind:open title="Craft Item" size="md">
+<Dialog bind:open title="Craft Item" size="md" anchor="top">
   <div class="flex flex-col gap-2.5">
     <div class="grid grid-cols-[120px_1fr] gap-2">
       <FloatingLabel label="Rarity"

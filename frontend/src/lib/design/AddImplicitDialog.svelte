@@ -75,7 +75,7 @@
   });
 </script>
 
-<Dialog bind:open title="Add Implicit to Item" size="lg">
+<Dialog bind:open title="Add Implicit to Item" size="lg" anchor="top">
   <div class="flex flex-col gap-2.5 text-13">
     <div class="grid grid-cols-2 gap-3">
       <FloatingLabel label="Source"

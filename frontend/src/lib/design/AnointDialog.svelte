@@ -76,7 +76,7 @@
   const saveLabel = $derived(selected ? `Anoint ${selected.name}` : anointed.length >= slot ? `Remove ${anointed[slot - 1]}` : 'No Anoint');
 </script>
 
-<Dialog bind:open title="Anoint Item" size="md">
+<Dialog bind:open title="Anoint Item" size="md" anchor="top">
   <div class="flex flex-col gap-1.5 text-13">
     <Select
       size="sm"
