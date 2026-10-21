@@ -287,9 +287,22 @@ func (b *clusterBuilder) buildSubgraph(jewel *clusterJewelData, parentSocketID s
 		return
 	}
 	proxyGroup := b.tree.Groups[strconv.FormatInt(*proxyNode.Group, 10)]
+	subNodes := make(map[string]data.Node)
+	subLayout := make(map[string]*clusterNodeLayout)
+	var subOrder []string
 	place := func(id, kind string, orbit, orbitIndex int) {
-		if b.layout != nil {
-			b.layout[id] = &clusterNodeLayout{kind: kind, group: *proxyNode.Group, orbit: orbit, orbitIndex: orbitIndex}
+		subOrder = append(subOrder, id)
+		subLayout[id] = &clusterNodeLayout{kind: kind, group: *proxyNode.Group, orbit: orbit, orbitIndex: orbitIndex}
+	}
+	//pob:block:src/Classes/PassiveSpec.lua:2018-2020
+	linkNodes := func(a, c string) {
+		for _, pair := range [2][2]string{{a, c}, {c, a}} {
+			if node, ok := subNodes[pair[0]]; ok {
+				node.Out = append(append(make([]string, 0, len(node.Out)+1), node.Out...), pair[1])
+				subNodes[pair[0]] = node
+			} else {
+				b.addLink(pair[0], pair[1])
+			}
 		}
 	}
 
@@ -304,7 +317,9 @@ func (b *clusterBuilder) buildSubgraph(jewel *clusterJewelData, parentSocketID s
 			Icon:       keystoneNode.Icon,
 			IsKeystone: keystoneNode.IsKeystone,
 		}
-		place(strconv.Itoa(nodeID), "Keystone", 0, 1)
+		if b.layout != nil {
+			b.layout[strconv.Itoa(nodeID)] = &clusterNodeLayout{kind: "Keystone", group: *proxyNode.Group, orbit: 0, orbitIndex: 1}
+		}
 		//pob:block:src/Classes/PassiveSpec.lua:2094
 		b.linkNodes(strconv.Itoa(nodeID), parentSocketID)
 		return
@@ -360,17 +375,16 @@ func (b *clusterBuilder) buildSubgraph(jewel *clusterJewelData, parentSocketID s
 
 	//pob:block:src/Classes/PassiveSpec.lua:2109,src/Classes/PassiveSpec.lua:2138-2151
 	nodeOrbit := clusterJewel.SizeIndex + 1
-	if skill.MasteryIcon != "" && b.layout != nil {
+	if skill.MasteryIcon != "" {
 		masteryID := strconv.Itoa(nodeID + 12)
 		place(masteryID, "Mastery", 0, 0)
 		name, icon := "Nothingness", skill.MasteryIcon
-		b.layout[masteryID].mastery = &data.Node{Name: &name, Icon: &icon}
+		subLayout[masteryID].mastery = &data.Node{Name: &name, Icon: &icon}
 	}
 
 	indicies := make(map[int]string)
 
 	//pob:src/Classes/PassiveSpec.lua:1334-1353
-	sockets := make([]clusterSocket, 0, 3)
 	makeJewel := func(nodeIndex, jewelIndex int) {
 		socket := b.findSocket(proxyGroup, int64(jewelIndex))
 		if socket == nil {
@@ -378,13 +392,12 @@ func (b *clusterBuilder) buildSubgraph(jewel *clusterJewelData, parentSocketID s
 		}
 		indicies[nodeIndex] = socket.id
 		place(socket.id, "Socket", nodeOrbit, nodeIndex)
-		b.nodes[socket.id] = data.Node{
+		subNodes[socket.id] = data.Node{
 			Name:           socket.node.Name,
 			Icon:           socket.node.Icon,
 			IsJewelSocket:  socket.node.IsJewelSocket,
 			ExpansionJewel: socket.node.ExpansionJewel,
 		}
-		sockets = append(sockets, *socket)
 	}
 	if clusterJewel.Size == "Large" && socketCount == 1 {
 		// Large clusters always have the single jewel at index 6.
@@ -433,7 +446,7 @@ func (b *clusterBuilder) buildSubgraph(jewel *clusterJewelData, parentSocketID s
 			break
 		}
 		nodeIndex := notableIndexList[index]
-		b.nodes[strconv.Itoa(nodeID+nodeIndex)] = data.Node{
+		subNodes[strconv.Itoa(nodeID+nodeIndex)] = data.Node{
 			Name:      baseNode.Name,
 			Stats:     baseNode.Stats,
 			Icon:      baseNode.Icon,
@@ -477,7 +490,7 @@ func (b *clusterBuilder) buildSubgraph(jewel *clusterJewelData, parentSocketID s
 		}
 		nodeIndex := smallIndexList[index]
 		skillName := skill.Name
-		b.nodes[strconv.Itoa(nodeID+nodeIndex)] = data.Node{
+		subNodes[strconv.Itoa(nodeID+nodeIndex)] = data.Node{
 			Name:                  &skillName,
 			Stats:                 smallStats,
 			Icon:                  &skill.Icon,
@@ -488,12 +501,12 @@ func (b *clusterBuilder) buildSubgraph(jewel *clusterJewelData, parentSocketID s
 	}
 
 	//pob:block:src/Classes/PassiveSpec.lua:2306-2309
-	if b.layout != nil && len(b.tree.Constants.SkillsPerOrbit) > nodeOrbit {
+	if len(b.tree.Constants.SkillsPerOrbit) > nodeOrbit {
 		skillsPerOrbit := int(b.tree.Constants.SkillsPerOrbit[nodeOrbit])
 		proxyID, _ := strconv.Atoi(expansionJewel.Proxy)
 		startOidx := data.ClusterJewels.OrbitOffsets[proxyID][clusterJewel.SizeIndex]
 		for _, id := range indicies {
-			if l := b.layout[id]; l != nil {
+			if l := subLayout[id]; l != nil {
 				l.orbitIndex = translateClusterOrbitIndex((l.orbitIndex+startOidx)%clusterJewel.TotalIndicies, clusterJewel.TotalIndicies, skillsPerOrbit)
 			}
 		}
@@ -514,20 +527,29 @@ func (b *clusterBuilder) buildSubgraph(jewel *clusterJewelData, parentSocketID s
 			firstNode = thisNode
 		}
 		if lastNode != "" {
-			b.linkNodes(thisNode, lastNode)
+			linkNodes(thisNode, lastNode)
 		}
 		lastNode = thisNode
 	}
 	if firstNode != lastNode && clusterJewel.Size != "Small" {
-		b.linkNodes(firstNode, lastNode)
+		linkNodes(firstNode, lastNode)
 	}
-	b.linkNodes(entrance, parentSocketID)
+	linkNodes(entrance, parentSocketID)
 
-	for i := range sockets {
-		nested, socketed := b.jewels[sockets[i].id]
-		//pob:block:src/Classes/PassiveSpec.lua:2351-2352
-		if b.allocated[sockets[i].id] && socketed && nested.valid() {
-			b.buildSubgraph(nested, sockets[i].id, b.nodes[sockets[i].id], id, depth+1)
+	//pob:block:src/Classes/PassiveSpec.lua:2342-2356
+	for _, subID := range subOrder {
+		if node, ok := subNodes[subID]; ok {
+			b.nodes[subID] = node
+		}
+		if b.layout != nil {
+			b.layout[subID] = subLayout[subID]
+		}
+		if subLayout[subID].kind == "Socket" {
+			nested, socketed := b.jewels[subID]
+			//pob:block:src/Classes/PassiveSpec.lua:2351-2352
+			if b.allocated[subID] && socketed && nested.valid() {
+				b.buildSubgraph(nested, subID, b.nodes[subID], id, depth+1)
+			}
 		}
 	}
 }

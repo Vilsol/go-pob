@@ -6,6 +6,7 @@ import (
 	"math"
 	"os"
 	"slices"
+	"strings"
 	"testing"
 )
 
@@ -98,5 +99,68 @@ func TestTreeSpecClusterNodes(t *testing.T) {
 	build.Tree.ActiveSpec = len(build.Tree.Specs)
 	if got := TreeSpecClusterNodes(build, active); len(got) != len(own) || build.Tree.ActiveSpec != len(build.Tree.Specs) {
 		t.Fatalf("the jewelled tree while another is active: %d nodes, want %d", len(got), len(own))
+	}
+}
+
+// TestTreeSpecClusterNodesMatchPoB: each listed tree's cluster nodes as PoB keeps them in spec.nodes, stats included.
+// A Medium jewel in a large socket with a Medium in its socket gives both subgraphs the same node ids; the outer one's nodes after the socket win.
+func TestTreeSpecClusterNodesMatchPoB(t *testing.T) {
+	f, err := os.Open("../testdata/cluster-subgraph/spec-nodes.jsonl")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer f.Close()
+	scanner := bufio.NewScanner(f)
+	scanner.Buffer(make([]byte, 1<<20), 1<<22)
+	rows := 0
+	tree := specTree()
+	for scanner.Scan() {
+		var want struct {
+			File  string `json:"file"`
+			Spec  int    `json:"spec"`
+			Nodes []struct {
+				clusterOracleNode
+				Sd []string `json:"sd"`
+			} `json:"nodes"`
+		}
+		if err := json.Unmarshal(scanner.Bytes(), &want); err != nil {
+			t.Fatal(err)
+		}
+		rows++
+		got := TreeSpecClusterNodes(parseCorpusBuild(t, want.File), want.Spec)
+		byID := make(map[int64]TreeClusterNode, len(got))
+		for _, n := range got {
+			byID[n.ID] = n
+		}
+		if len(got) != len(want.Nodes) {
+			t.Errorf("%s spec %d: %d nodes, PoB %d", want.File, want.Spec, len(got), len(want.Nodes))
+		}
+		for _, w := range want.Nodes {
+			g, ok := byID[w.ID]
+			if !ok {
+				t.Errorf("%s spec %d: node %d (%s %s) missing", want.File, want.Spec, w.ID, w.Type, w.Name)
+				continue
+			}
+			linked := slices.Clone(g.Linked)
+			slices.Sort(linked)
+			var stats []string
+			for _, line := range g.Stats {
+				stats = append(stats, strings.Split(line, "\n")...)
+			}
+			proxyGroup := tree.Nodes[nodeKey(w.Proxy)].Group
+			if proxyGroup == nil || g.Group != *proxyGroup || g.Icon != w.Icon {
+				t.Errorf("%s spec %d: node %d group %d icon %q, PoB proxy %d icon %q", want.File, want.Spec, w.ID, g.Group, g.Icon, w.Proxy, w.Icon)
+			}
+			if g.Type != w.Type || g.Name != w.Name || g.Orbit != w.O || g.OrbitIndex != w.Oidx ||
+				math.Abs(g.X-w.X) > 0.01 || math.Abs(g.Y-w.Y) > 0.01 || !slices.Equal(linked, w.Linked) ||
+				(w.Type != "Socket" && w.Type != "Mastery" && !slices.Equal(stats, w.Sd)) {
+				t.Errorf("%s spec %d: node %d\n got  %s %q o%d/%d (%.2f, %.2f) %v %q\n want %s %q o%d/%d (%.2f, %.2f) %v %q",
+					want.File, want.Spec, w.ID, g.Type, g.Name, g.Orbit, g.OrbitIndex, g.X, g.Y, linked, stats,
+					w.Type, w.Name, w.O, w.Oidx, w.X, w.Y, w.Linked, w.Sd)
+			}
+		}
+	}
+	if rows == 0 {
+		t.Fatal("REFUSING: no oracle rows")
 	}
 }
