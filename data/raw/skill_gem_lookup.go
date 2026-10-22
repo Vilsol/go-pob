@@ -5,7 +5,19 @@ import (
 	"sync"
 
 	"github.com/Vilsol/go-pob-data/poe"
+
+	"github.com/Vilsol/go-pob/builds"
 )
+
+func init() {
+	builds.GemGrantedEffectID = func(gemID string) (string, bool) {
+		row, ok := Gems[gemID]
+		if !ok || row.GrantedEffectID == "" {
+			return "", false
+		}
+		return row.GrantedEffectID, true
+	}
+}
 
 var (
 	gemLookupMutex   sync.Mutex

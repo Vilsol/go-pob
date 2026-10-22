@@ -87,6 +87,9 @@ func ParseBuild(rawXML []byte) (*pob.PathOfBuilding, error) {
 	return finishPassiveNodes(&build)
 }
 
+// GemGrantedEffectID answers a gem id's grantedEffectId; set by data/raw, which builds cannot import.
+var GemGrantedEffectID func(gemID string) (string, bool)
+
 func finishSkills(build *pob.PathOfBuilding) {
 	for i, set := range build.Skills.SkillSets {
 		for j, skill := range set.Skills {
@@ -94,10 +97,24 @@ func finishSkills(build *pob.PathOfBuilding) {
 				if gameID, ok := pobGemIDtoGameGemIDs[gem.GemID]; ok {
 					build.Skills.SkillSets[i].Skills[j].Gems[k].GemID = gameID
 				}
+				repairGemSkillID(&build.Skills.SkillSets[i].Skills[j].Gems[k])
 			}
 		}
 	}
 	resolveSkillSources(build)
+}
+
+// PoB matches skillId against the variants' grantedEffectId; a gem id there loads the gem empty.
+// Older go-pob saves wrote the gem id into skillId.
+//
+//pob:block:src/Classes/SkillsTab.lua:472-479
+func repairGemSkillID(gem *pob.Gem) {
+	if GemGrantedEffectID == nil || gem.SkillID == "" || (gem.GemID != "" && gem.GemID != gem.SkillID) {
+		return
+	}
+	if id, ok := GemGrantedEffectID(gem.SkillID); ok {
+		gem.SkillID = id
+	}
 }
 
 func finishPassiveNodes(build *pob.PathOfBuilding) (*pob.PathOfBuilding, error) {
