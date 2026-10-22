@@ -56,7 +56,7 @@ func (a *Art) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	if err := os.MkdirAll(filepath.Dir(file), 0o755); err == nil {
 		tmp := file + ".part"
-		if os.WriteFile(tmp, b, 0o644) == nil {
+		if os.WriteFile(tmp, b, 0o600) == nil {
 			_ = os.Rename(tmp, file)
 		}
 		a.prune()
@@ -115,7 +115,7 @@ func (a *Art) Clear() int {
 func (a *Art) fetch(ctx context.Context, rel string) ([]byte, bool) {
 	ctx, cancel := context.WithTimeout(ctx, 15*time.Second)
 	defer cancel()
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, a.Upstream+rel, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, a.Upstream+rel, nil) //nolint:gosec // fixed upstream; rel is a local Art/*.png path
 	if err != nil {
 		return nil, false
 	}
@@ -123,7 +123,7 @@ func (a *Art) fetch(ctx context.Context, rel string) ([]byte, bool) {
 	if client == nil {
 		client = http.DefaultClient
 	}
-	res, err := client.Do(req)
+	res, err := client.Do(req) //nolint:gosec // fixed upstream; rel is a local Art/*.png path
 	if err != nil {
 		return nil, false
 	}
@@ -141,5 +141,5 @@ func (a *Art) fetch(ctx context.Context, rel string) ([]byte, bool) {
 func serveArt(w http.ResponseWriter, b []byte) {
 	w.Header().Set("Content-Type", "image/png")
 	w.Header().Set("Cache-Control", "public, max-age=86400")
-	_, _ = w.Write(b)
+	_, _ = w.Write(b) //nolint:gosec // image bytes served as image/png
 }

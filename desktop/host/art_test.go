@@ -1,6 +1,7 @@
 package host
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -28,7 +29,7 @@ func TestArt(t *testing.T) {
 	art := &Art{Dir: dir, Upstream: upstream.URL + "/image/"}
 	get := func(p string) *httptest.ResponseRecorder {
 		rec := httptest.NewRecorder()
-		art.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, p, nil))
+		art.ServeHTTP(rec, httptest.NewRequestWithContext(context.Background(), http.MethodGet, p, nil))
 		return rec
 	}
 
@@ -64,7 +65,7 @@ func TestArtRefuses(t *testing.T) {
 	art := &Art{Dir: dir, Upstream: upstream.URL + "/image/"}
 	for _, p := range []string{"/Art/Missing.png", "/Art/Page.png", "/Other/x.png", "/Art/x.jpg", "/Art/../../etc/passwd.png", "/../Art/x.png"} {
 		rec := httptest.NewRecorder()
-		art.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, p, nil))
+		art.ServeHTTP(rec, httptest.NewRequestWithContext(context.Background(), http.MethodGet, p, nil))
 		if rec.Code != 404 {
 			t.Errorf("%s: %d, want 404", p, rec.Code)
 		}
