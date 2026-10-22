@@ -104,7 +104,12 @@ func GemArtPath(name string) string {
 	if !ensureItemArt() {
 		return ""
 	}
-	gameID := gemGameIDByArt[strings.ToLower(name)]
+	key := strings.ToLower(name)
+	gameID, ok := gemGameIDByArt[key]
+	if !ok {
+		// supports are shown with "Support" after their name
+		gameID = gemGameIDByArt[strings.TrimSuffix(key, " support")]
+	}
 	if gameID == "" {
 		return ""
 	}

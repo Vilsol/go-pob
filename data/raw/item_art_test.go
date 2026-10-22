@@ -49,6 +49,11 @@ func TestItemArtPaths(t *testing.T) {
 		"Added Fire Damage": "Art/2DItems/Gems/Support/AddedFireDamage",
 		"Energy Blade":      "Art/2DItems/Gems/StormBladeGem",
 		"Nope":              "",
+		// supports are shown with "Support" after their name
+		"Added Fire Damage Support":   "Art/2DItems/Gems/Support/AddedFireDamage",
+		"Life Leech Support":          "Art/2DItems/Gems/Support/LifeLeech",
+		"Awakened Spell Echo Support": GemArtPath("Awakened Spell Echo"),
+		"Nope Support":                "",
 	} {
 		if got := GemArtPath(name); got != want {
 			t.Errorf("GemArtPath(%q) = %q, want %q", name, got, want)
