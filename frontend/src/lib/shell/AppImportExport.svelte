@@ -6,6 +6,7 @@
   import { buildRevision, currentBuild, currentBuildPath, outputs, UITick } from '$lib/global.js';
   import { syncWrap } from '$lib/go/worker';
   import { logError } from '$lib/utils';
+  import { addToast } from '$lib/design/toast';
   import ImportExportPage from '$lib/design/ImportExportPage.svelte';
   import { EXPORT_SITES, downloadUrl, jsonVerdict, type ImportMode } from '$lib/design/share';
   import { REALMS, UNAVAILABLE, loadExportSite, saveExportSite } from './import_export';
@@ -63,7 +64,13 @@
     const shared = code;
     shareBuild(shared, to)
       .then((l) => {
-        if (shared === code) shareLink = l;
+        if (shared !== code) return;
+        shareLink = l;
+        copied = false;
+        navigator.clipboard
+          .writeText(l)
+          .then(() => addToast(`Link copied\n${l}`))
+          .catch(logError);
       })
       .catch((err: unknown) => (shareError = err instanceof Error ? err.message : String(err)))
       .finally(() => (sharing = false));

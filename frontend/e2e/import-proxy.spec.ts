@@ -158,7 +158,8 @@ test("Re-import Current on the Compare page re-imports the selected character as
 });
 
 // ImportTab.lua:534-554, BuildSiteTools.lua:47-82
-test('Share uploads the build code through /api/share and shows the link (0280)', async ({ page }) => {
+test('Share uploads the build code through /api/share, shows the link and copies it (0280)', async ({ page }) => {
+  await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
   const posted: { search: string; body: string }[] = [];
   await page.route('**/api/share?*', (route) => {
     posted.push({ search: new URL(route.request().url()).search, body: route.request().postData() ?? '' });
@@ -172,6 +173,8 @@ test('Share uploads the build code through /api/share and shows the link (0280)'
   await sharing.getByRole('combobox', { name: 'Share via' }).selectOption('pobb.in');
   await sharing.getByRole('button', { name: 'Share' }).click();
   await expect(sharing.getByRole('textbox', { name: 'Share link' })).toHaveValue('https://pobb.in/Ab-12');
+  await expect(page.getByRole('status').filter({ hasText: 'Link copied' })).toBeVisible();
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe('https://pobb.in/Ab-12');
   expect(posted).toEqual([{ search: '?site=POBBin', body: code }]);
   expect(await go.decode(posted[0].body)).toContain('<PathOfBuilding');
   app.assertNoErrors();

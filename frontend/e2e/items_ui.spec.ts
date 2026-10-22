@@ -325,6 +325,15 @@ test('Craft item… picks the type and base by typing, previews each hovered bas
   await craft.getByRole('button', { name: 'Create' }).click();
   const [crafted, ok] = await m.exposition.CraftItemText(2, 'Test Crown', 'Hubris Circlet');
   expect(ok).toBe(true);
+  await expect(page.getByRole('article', { name: 'Item: Test Crown' })).toBeVisible();
+  await expect(box).toBeHidden();
+  await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
+  await page.getByRole('button', { name: 'Copy item' }).click();
+  await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(crafted.replace(/\r?\n/g, '\r\n'));
+  const asText = page.getByRole('button', { name: 'Edit as text' });
+  await expect(asText).toHaveAttribute('aria-pressed', 'false');
+  await asText.click();
+  await expect(asText).toHaveAttribute('aria-pressed', 'true');
   await expect(box).toHaveValue(crafted);
   await app.act(
     'craft-equip',

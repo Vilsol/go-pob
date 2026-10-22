@@ -17,6 +17,8 @@
     onchange?: (value: string) => boolean | void;
     onhover?: (index: number | null, el: HTMLElement | null) => void;
     searchable?: boolean;
+    /* a touch has no hover: the first tap on an entry reports it to onhover, the second picks it */
+    previewOnTap?: boolean;
   };
   let {
     options,
@@ -28,6 +30,7 @@
     onchange,
     onhover,
     searchable = false,
+    previewOnTap = false,
     ...aria
   }: Props = $props();
 
@@ -39,6 +42,9 @@
   let list = $state<HTMLElement>();
   const chosen = $derived(options.findIndex((o) => o.value === value));
   let q = $state('');
+  let tapPreviews = false;
+  // a tap also fires mouse events, which would move the preview off the tapped entry
+  let touched = false;
   const shown = $derived.by(() => {
     const words = q.toLowerCase().split(/\s+/).filter(Boolean);
     return options.flatMap((o, i) => (words.every((w) => o.label.toLowerCase().includes(w)) ? [i] : []));
@@ -162,7 +168,10 @@
         id="{uid}-list"
         role="listbox"
         aria-label={aria['aria-label']}
-        class="m-0 flex max-h-80 min-h-0 list-none flex-col overflow-x-hidden overflow-y-auto p-0">
+        class="m-0 flex max-h-80 min-h-0 list-none flex-col overflow-x-hidden overflow-y-auto p-0"
+        onpointermove={(e) => {
+          if (e.pointerType === 'mouse') touched = false;
+        }}>
         {#each shown as i (i)}
           {@const o = options[i]}
           <!-- svelte-ignore a11y_click_events_have_key_events -->
@@ -172,12 +181,23 @@
             aria-selected={i === chosen}
             class={['menu-item shrink-0 cursor-pointer aria-selected:font-semibold', i === active && 'bg-hover']}
             title={o.title ?? o.label}
-            onmouseenter={() => void moveTo(i)}
+            onmouseenter={() => {
+              if (!(previewOnTap && touched)) void moveTo(i);
+            }}
             onmouseleave={() => {
-              if (active === i) onhover?.(null, null);
+              if (active === i && !(previewOnTap && touched)) onhover?.(null, null);
+            }}
+            onpointerdown={(e) => {
+              touched = e.pointerType === 'touch';
+              tapPreviews = previewOnTap && touched && active !== i;
             }}
             onclick={(e) => {
               e.preventDefault();
+              if (tapPreviews) {
+                tapPreviews = false;
+                void moveTo(i);
+                return;
+              }
               choose(i);
             }}>
             <span class="min-w-0 truncate">{o.label}</span>

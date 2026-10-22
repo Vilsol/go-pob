@@ -392,19 +392,39 @@ test('slots: abyssal sockets, menu entry tooltips, tree socket slots (0339)', as
   const k = sockets.findIndex((s) => s.NodeID === 10532);
   expect(k, 'vacuity: 10532 is not a socket slot').toBeGreaterThanOrEqual(0);
   const select = page.getByRole('region', { name: 'Tree jewels' }).getByRole('combobox', { name: `Socket #${k + 1}` });
-  await expect(select).toHaveValue(String(sockets[k].ItemID));
-  await expect(select.locator('option')).toHaveCount(1 + (sockets[k].Choices ?? []).length);
+  const jewelName = async (id: number) => {
+    const text = go.fresh(build, (b) => (b.Items.Items ?? []).find((it) => it.ID === id)?.Text ?? '');
+    const p = (await m.exposition.ParseItem(build, text.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&'), go.NO_TIP_STATS)).unwrap();
+    return p.Title || p.Name;
+  };
+  const name22 = await jewelName(22);
+  expect(await entries(select)).toHaveLength(1 + (sockets[k].Choices ?? []).length);
   await app.act(
     'socket-jewel',
-    () => select.selectOption('0'),
+    () => choose(select, 'None'),
     async () => (expect((await m.exposition.SocketTreeJewel(build, 10532, 0)).unwrap()).toBe(true), lines())
   );
+  await expect(select).toHaveText('None');
+
+  await select.click();
+  const list = page.locator(`[id="${await select.getAttribute('aria-controls')}"]`);
+  await list.getByRole('option', { name: name22 }).first().hover();
+  await expect(page.getByRole('tooltip').filter({ hasText: name22 })).toBeVisible();
+  await expect(select).toBeFocused();
+  await page.mouse.move(0, 0);
+  await select.press('Home');
+  await expect(page.getByRole('tooltip').filter({ hasText: name22 })).toHaveCount(0);
+  const order = (await list.getByRole('option').allTextContents()).map((t) => t.trim());
+  for (let n = 0; n < order.indexOf(name22); n++) await select.press('ArrowDown');
+  await expect(page.getByRole('tooltip').filter({ hasText: name22 })).toBeVisible();
+  await expect(select).toBeFocused();
   await app.act(
     'socket-jewel',
-    () => select.selectOption('22'),
+    () => select.press('Enter'),
     async () => (expect((await m.exposition.SocketTreeJewel(build, 10532, 22)).unwrap()).toBe(true), lines())
   );
-  await expect(select).toHaveValue('22');
+  await expect(select).toHaveText(name22);
+  await expect(page.getByRole('tooltip').filter({ hasText: name22 })).toHaveCount(0);
   app.assertNoErrors();
 });
 
@@ -526,7 +546,161 @@ test('item controls and craft (0280)', async ({ page }) => {
   await craft.getByRole('button', { name: 'Create' }).click();
   const [crafted, ok] = await m.exposition.CraftItemText(2, 'Test Crown', base);
   expect(ok).toBe(true);
-  await expect(box).toHaveValue(crafted);
   await expect(page.getByRole('article', { name: 'Item: Test Crown' })).toBeVisible();
+  await expect(box).toBeHidden();
+  await page.getByRole('button', { name: 'Edit as text' }).click();
+  await expect(box).toHaveValue(crafted);
   app.assertNoErrors();
+});
+
+// ItemsTab.lua:2519-2605
+test('an empty slot opens Craft Item offering only the types that fit it, on the board and in the list (0280)', async ({ page }) => {
+  const file = '0280-elementalist-fireball';
+  const xml = buildXml(file).replace(/<Slot name="Gloves" itemId="\d+"/, '<Slot name="Gloves" itemId="0"');
+  expect(xml, 'vacuity: the fixture still names a Gloves slot').toContain('<Slot name="Gloves" itemId="0"');
+  const build = await go.loadXml(xml);
+  const app = await App.open(page, file);
+  await app.importCode(await go.encode(xml), async () => expectedLines(await go.outputs(build)));
+  await app.goTo('Items');
+  await expect(tile(page, 'Gloves')).toHaveAccessibleName('Gloves: Empty');
+
+  await tile(page, 'Gloves').click();
+  const craft = page.getByRole('dialog', { name: 'Craft Item for Gloves' });
+  await expect(craft).toBeVisible();
+  const m = await go.model();
+  const gloves = ((await m.exposition.CraftBaseGroups()) ?? []).filter((g) => g.Type.split(': ')[0] === 'Gloves').map((g) => g.Type);
+  expect(gloves.length, 'vacuity: there are glove bases to craft').toBeGreaterThan(0);
+  expect(await entries(craft.getByRole('combobox', { name: 'Type' }))).toEqual(gloves);
+  await craft.getByRole('textbox', { name: 'Name' }).fill('Test Grip');
+  await craft.getByRole('button', { name: 'Create' }).click();
+  await expect(page.getByRole('article', { name: 'Item: Test Grip' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Equip in Gloves' })).toBeVisible();
+
+  await page.getByRole('group', { name: 'Layout' }).getByRole('button', { name: 'List' }).click();
+  await page.getByRole('table', { name: 'Equipped items' }).getByRole('button', { name: 'Gloves: Empty' }).click();
+  await expect(page.getByRole('dialog', { name: 'Craft Item for Gloves' })).toBeVisible();
+  app.assertNoErrors();
+});
+
+// ItemsTab.lua:2519-2603, ItemDBControl.lua:361-367
+test('Craft Item’s Unique rarity picks from the unique database, filtered to the slot, and creates it as Browse items opens it (0280)', async ({ page }) => {
+  const file = '0280-elementalist-fireball';
+  const xml = buildXml(file).replace(/<Slot name="Gloves" itemId="\d+"/, '<Slot name="Gloves" itemId="0"');
+  const build = await go.loadXml(xml);
+  const app = await App.open(page, file);
+  await app.importCode(await go.encode(xml), async () => expectedLines(await go.outputs(build)));
+  await app.goTo('Items');
+
+  await tile(page, 'Gloves').click();
+  let craft = page.getByRole('dialog', { name: 'Craft Item for Gloves' });
+  await craft.getByRole('combobox', { name: 'Rarity' }).selectOption('Unique');
+  await expect(craft.getByRole('textbox', { name: 'Name' })).toHaveCount(0);
+  const gloves = await entries(craft.getByRole('combobox', { name: 'Unique' }));
+  expect(gloves).toContain("Shaper's Touch");
+  expect(gloves).not.toContain("Kaom's Heart");
+  await craft.getByRole('button', { name: 'Cancel' }).click();
+
+  await page.getByRole('button', { name: 'Craft item…' }).click();
+  craft = page.getByRole('dialog', { name: 'Craft Item' });
+  await craft.getByRole('combobox', { name: 'Rarity' }).selectOption('Unique');
+  const unique = craft.getByRole('combobox', { name: 'Unique' });
+  await unique.click();
+  await page.getByRole('searchbox', { name: 'Filter Unique' }).fill("kaom's heart");
+  await page.getByRole('option', { name: "Kaom's Heart", exact: true }).click();
+  await expect(craft.getByRole('group', { name: 'Base preview' })).toContainText("Kaom's Heart");
+  await craft.getByRole('button', { name: 'Create' }).click();
+  await expect(page.getByRole('article', { name: "Item: Kaom's Heart" })).toBeVisible();
+  await page.getByRole('button', { name: 'Edit as text' }).click();
+  await expect(page.getByRole('textbox', { name: /Item text/ })).toHaveValue(/^Rarity: UNIQUE\nKaom's Heart\nGlorious Plate\n/);
+  app.assertNoErrors();
+});
+
+// ItemsTab.lua:2655, Item.lua:960-991, 1772-1780
+test('an unnamed crafted item is named after its rarity and base, numbered when the build has that name, and keeps it through a save (0280)', async ({
+  page
+}) => {
+  const file = '0280-elementalist-fireball';
+  const xml = buildXml(file).replace(/<Slot name="Gloves" itemId="\d+"/, '<Slot name="Gloves" itemId="0"');
+  const build = await go.loadXml(xml);
+  const app = await App.open(page, file);
+  await app.importCode(await go.encode(xml), async () => expectedLines(await go.outputs(build)));
+  await app.goTo('Items');
+  const m = await go.model();
+  const box = page.getByRole('textbox', { name: /Item text/ });
+  const asText = page.getByRole('button', { name: 'Edit as text' });
+
+  await tile(page, 'Gloves').click();
+  let craft = page.getByRole('dialog', { name: 'Craft Item for Gloves' });
+  const base = (await craft.getByRole('combobox', { name: 'Base' }).textContent())!.trim();
+  await craft.getByRole('button', { name: 'Create' }).click();
+  await expect(page.getByRole('article', { name: `Item: Rare ${base}` })).toBeVisible();
+  await asText.click();
+  const rare = await box.inputValue();
+  expect(rare.split('\n').slice(0, 3)).toEqual(['Rarity: RARE', `Rare ${base}`, base]);
+  await app.act(
+    'craft-equip',
+    () => page.getByRole('button', { name: 'Equip in Gloves' }).click(),
+    async () => {
+      (await m.exposition.EquipItem(build, rare, 'Gloves')).unwrap();
+      return expectedLines(await go.outputs(build));
+    }
+  );
+  await expect(tile(page, 'Gloves')).toHaveAccessibleName(`Gloves: Rare ${base}`);
+  const saved = (await m.exposition.EquippedItems(build))?.find((e) => e.SlotName === 'Gloves')?.Text ?? '';
+  expect((await m.exposition.ParseItem(build, saved, go.NO_TIP_STATS)).unwrap().Title).toBe(`Rare ${base}`);
+
+  await page.getByRole('button', { name: 'Craft item…' }).click();
+  craft = page.getByRole('dialog', { name: 'Craft Item' });
+  await choose(craft.getByRole('combobox', { name: 'Type' }), 'Gloves');
+  await choose(craft.getByRole('combobox', { name: 'Base' }), base);
+  await craft.getByRole('button', { name: 'Create' }).click();
+  await expect(page.getByRole('article', { name: `Item: Rare ${base} 2` })).toBeVisible();
+
+  await page.getByRole('button', { name: 'Craft item…' }).click();
+  await craft.getByRole('combobox', { name: 'Rarity' }).selectOption('Magic');
+  await choose(craft.getByRole('combobox', { name: 'Type' }), 'Gloves');
+  await choose(craft.getByRole('combobox', { name: 'Base' }), base);
+  await craft.getByRole('button', { name: 'Create' }).click();
+  await expect(page.getByRole('article', { name: `Item: Magic ${base}` })).toBeVisible();
+  await asText.click();
+  const magic = await box.inputValue();
+  const parsed = (await m.exposition.ParseItem(build, magic, go.NO_TIP_STATS)).unwrap();
+  expect([parsed.Name, parsed.BaseName]).toEqual([`Magic ${base}`, base]);
+  app.assertNoErrors();
+});
+
+test.describe('touch', () => {
+  test.use({ hasTouch: true });
+  // ItemSlotControl.lua:48-56
+  test("a tree socket's jewel list previews the tapped entry and picks it on a second tap (0339)", async ({ page }) => {
+    const file = '0339-reliquarian-shield-crush-of-the-chieftain-2';
+    const { app, build } = await setup(page, file);
+    const m = await go.model();
+    const sockets = (await m.exposition.ItemsTabSlots(build)).Sockets ?? [];
+    const k = sockets.findIndex((s) => s.NodeID === 10532);
+    expect(k, 'vacuity: 10532 is not a socket slot').toBeGreaterThanOrEqual(0);
+    const text = go.fresh(build, (b) => (b.Items.Items ?? []).find((it) => it.ID === 22)?.Text ?? '');
+    const p = (await m.exposition.ParseItem(build, text.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&'), go.NO_TIP_STATS)).unwrap();
+    const name22 = p.Title || p.Name;
+    const select = page.getByRole('region', { name: 'Tree jewels' }).getByRole('combobox', { name: `Socket #${k + 1}` });
+    await app.act(
+      'socket-jewel',
+      () => choose(select, 'None'),
+      async () => (expect((await m.exposition.SocketTreeJewel(build, 10532, 0)).unwrap()).toBe(true), expectedLines(await go.outputs(build)))
+    );
+
+    await select.tap();
+    const list = page.locator(`[id="${await select.getAttribute('aria-controls')}"]`);
+    const entry = list.getByRole('option', { name: name22 }).first();
+    await entry.tap();
+    await expect(page.getByRole('tooltip').filter({ hasText: name22 })).toBeVisible();
+    await expect(select).toHaveText('None');
+    await app.act(
+      'socket-jewel',
+      () => entry.tap(),
+      async () => (expect((await m.exposition.SocketTreeJewel(build, 10532, 22)).unwrap()).toBe(true), expectedLines(await go.outputs(build)))
+    );
+    await expect(select).toHaveText(name22);
+    app.assertNoErrors();
+  });
 });

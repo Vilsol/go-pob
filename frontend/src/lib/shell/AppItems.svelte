@@ -16,6 +16,7 @@
   import {
     itemTip as tipOf,
     type CraftChoice,
+    type UniqueChoice,
     type DisplayEdit,
     type DisplayInfo,
     type ImpactBlock,
@@ -31,7 +32,7 @@
   import { logError } from '$lib/utils';
   import type { calculator, exposition, pob } from '$lib/types';
   import type { ItemStatDiffBlock } from '$lib/components/items/item_diff';
-  import type { CraftApi } from '$lib/design/crafting';
+  import { nameUnnamedItem, type CraftApi } from '$lib/design/crafting';
   import BuySimilarDialog from '$lib/design/BuySimilarDialog.svelte';
   import { tradeDefences, type TradeDefence, type TradeItem } from '$lib/design/trade';
 
@@ -347,13 +348,9 @@
     socketAsked = true;
     pageView = 'equipped';
     void tick().then(() => {
-      const select = document.querySelector<HTMLSelectElement>(`[data-socket-node="${CSS.escape(node)}"] select`);
+      const select = document.querySelector<HTMLElement>(`[data-socket-node="${CSS.escape(node)}"] [role="combobox"]`);
       select?.focus();
-      try {
-        select?.showPicker();
-      } catch {
-        // empty
-      }
+      if (select?.getAttribute('aria-expanded') === 'false') select.click();
     });
   });
 
@@ -643,9 +640,18 @@
   });
   // ItemsTab.lua:2582-2587
   let craftSeq = 0;
-  const oncraftpreview = async (c: CraftChoice) => {
-    const mine = ++craftSeq;
+  const craftText = async (c: CraftChoice) => {
     const t = await syncWrap?.CraftItemText(c);
+    return t !== undefined && !c.title.trim()
+      ? nameUnnamedItem(
+          t,
+          Object.values(view?.items ?? {}).map((i) => i.name)
+        )
+      : t;
+  };
+  const previewCraft = async (made: () => Promise<string | undefined> | undefined) => {
+    const mine = ++craftSeq;
+    const t = await made();
     const p = t ? await syncWrap?.ParseItem(t) : undefined;
     if (mine !== craftSeq) return;
     if (!t || !p?.item) {
@@ -657,8 +663,10 @@
     const r = await syncWrap?.ItemCompare(t);
     if (mine === craftSeq) craftPreview = { ...tip, whatIf: { key: 'craft', pending: false, blocks: r ? stamp(r) : [] } };
   };
+  const oncraftpreview = (c: CraftChoice) => previewCraft(() => craftText(c));
+  const oncraftpreviewunique = (name: string) => previewCraft(() => syncWrap?.GetItemDBText('UNIQUE', name));
   const oncraftcreate = async (c: CraftChoice) => {
-    const t = await syncWrap?.CraftItemText(c);
+    const t = await craftText(c);
     if (t === undefined) return;
     edited = undefined;
     text = t;
@@ -756,6 +764,16 @@
     edited = undefined;
     text = await normalise(t);
     dbHover = null;
+    pageView = 'equipped';
+  };
+  const craftUniques = async (): Promise<UniqueChoice[]> =>
+    ((await syncWrap?.GetItemDBRows('UNIQUE', defaultItemDBFilter(), '')) ?? []).map((r) => ({ name: r.name, title: r.title, base: r.base, type: r.type }));
+  // ItemDBControl.lua:361-367
+  const oncraftunique = async (name: string) => {
+    const t = await syncWrap?.GetItemDBText('UNIQUE', name);
+    if (t === undefined) return;
+    edited = undefined;
+    text = await normalise(t);
     pageView = 'equipped';
   };
   // ItemDBControl.lua:371-373
@@ -996,6 +1014,13 @@
     bind:craftFrom
     oncraftcreate={(c: CraftChoice) => {
       oncraftcreate(c).catch(logError);
+    }}
+    {craftUniques}
+    oncraftpreviewunique={(name: string) => {
+      oncraftpreviewunique(name).catch(logError);
+    }}
+    oncraftunique={(name: string) => {
+      oncraftunique(name).catch(logError);
     }}
     {stashFilters}
     {stashFilter}

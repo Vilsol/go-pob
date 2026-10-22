@@ -1,5 +1,17 @@
 import { describe, expect, it } from 'vitest';
-import { corruptOptions, enchantSkills, finitePowers, maxOf, notableColour, notableMatches, sortByValue, sortNotables, type AnointNotable } from './crafting';
+import {
+  corruptOptions,
+  nameUnnamedItem,
+  craftFitsSlot,
+  enchantSkills,
+  finitePowers,
+  maxOf,
+  notableColour,
+  notableMatches,
+  sortByValue,
+  sortNotables,
+  type AnointNotable
+} from './crafting';
 
 const n = (id: number, name: string, stats: string[] = []): AnointNotable => ({ id, name, stats, reminder: [], recipe: [] });
 
@@ -68,5 +80,47 @@ describe('corrupt popup lists (ItemsTab.lua:3177-3218)', () => {
     const list = [m('a1', 'A'), m('a2', 'A'), m('b1', 'B'), m('c1', 'C')];
     expect(corruptOptions(list, ['a2', '', 'c1']).map((x) => x.id)).toEqual(['b1']);
     expect(corruptOptions(list, [undefined]).map((x) => x.id)).toEqual(['a1', 'a2', 'b1', 'c1']);
+  });
+});
+
+describe('craftFitsSlot', () => {
+  const GROUPS = [
+    'Amulet',
+    'Belt',
+    'Body Armour',
+    'Bow',
+    'Dagger: Rune',
+    'Flask: Life',
+    'Jewel',
+    'Jewel: Abyss',
+    'Quiver',
+    'Ring',
+    'Shield: Armour',
+    'Staff: Warstaff',
+    'Tincture',
+    'Wand'
+  ];
+  const fits = (slot: string) => GROUPS.filter((g) => craftFitsSlot(slot, g));
+  it('offers the types each slot takes', () => {
+    expect(fits('Ring 2')).toEqual(['Ring']);
+    expect(fits('Body Armour')).toEqual(['Body Armour']);
+    expect(fits('Flask 3')).toEqual(['Flask: Life', 'Tincture']);
+    expect(fits('Weapon 1')).toEqual(['Bow', 'Dagger: Rune', 'Staff: Warstaff', 'Wand']);
+    expect(fits('Weapon 2 Swap')).toEqual(['Dagger: Rune', 'Quiver', 'Shield: Armour', 'Wand']);
+    expect(fits('Belt Abyssal Socket 1')).toEqual(['Jewel: Abyss']);
+  });
+});
+
+describe('nameUnnamedItem', () => {
+  it('names an unnamed rare after its rarity and base, numbered past the names in use', () => {
+    const rare = 'Rarity: RARE\nNew Item\nCobalt Jewel\nCrafted: true';
+    expect(nameUnnamedItem(rare, [])).toBe('Rarity: RARE\nRare Cobalt Jewel\nCobalt Jewel\nCrafted: true');
+    expect(nameUnnamedItem(rare, ['Rare Cobalt Jewel'])).toBe('Rarity: RARE\nRare Cobalt Jewel 2\nCobalt Jewel\nCrafted: true');
+    expect(nameUnnamedItem(rare, ['Rare Cobalt Jewel', 'Rare Cobalt Jewel 2'])).toContain('\nRare Cobalt Jewel 3\n');
+  });
+  it('puts the rarity in front of a magic base and leaves normal items and chosen names alone', () => {
+    expect(nameUnnamedItem('Rarity: MAGIC\nLeather Belt\nCrafted: true', ['Rare Leather Belt'])).toBe('Rarity: MAGIC\nMagic Leather Belt\nCrafted: true');
+    expect(nameUnnamedItem('Rarity: NORMAL\nIron Hat\nQuality: 20', [])).toBe('Rarity: NORMAL\nIron Hat\nQuality: 20');
+    expect(nameUnnamedItem('Rarity: RARE\nDoom Crown\nIron Hat', [])).toBe('Rarity: RARE\nDoom Crown\nIron Hat');
   });
 });

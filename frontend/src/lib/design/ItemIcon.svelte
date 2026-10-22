@@ -10,13 +10,15 @@
     gem?: boolean;
     /* box edge in px; the box never changes size, whatever loads */
     size?: number;
+    /* rem: the size is read at the default font size and scales with the root font, for icons inside rem-sized boxes */
+    unit?: 'px' | 'rem';
     /* the name is already next to the icon: no alt text, hidden from assistive tech */
     decorative?: boolean;
     /* an image URL that skips the art lookup */
     src?: string;
     class?: ClassValue;
   };
-  let { name, base = '', rarity = '', gem = false, size = 32, decorative = false, src, class: extra = '' }: Props = $props();
+  let { name, base = '', rarity = '', gem = false, size = 32, unit = 'px', decorative = false, src, class: extra = '' }: Props = $props();
 
   const unique = $derived(rarity === 'unique' || rarity === 'relic');
   let path = $state<string | undefined>();
@@ -48,12 +50,13 @@
       .join('')
   );
   const showImg = $derived(!!url && !failed);
+  const len = (px: number) => (unit === 'rem' ? `${px / 16}rem` : `${px}px`);
 </script>
 
 <span
   class={['relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-tight', !loaded && 'bg-surface-2', extra]}
-  style:width="{size}px"
-  style:height="{size}px"
+  style:width={len(size)}
+  style:height={len(size)}
   aria-hidden={decorative ? 'true' : undefined}
   data-item-icon={loaded ? 'loaded' : showImg ? 'loading' : 'fallback'}>
   {#if !loaded}
@@ -63,7 +66,7 @@
         'font-mono leading-none font-semibold text-(--tone,var(--color-text-3)) select-none before:content-[attr(data-initials)]',
         tone((gem ? 'gem' : rarity || 'normal') as Tone)
       ]}
-      style:font-size="{Math.max(8, Math.round(size * 0.34))}px"
+      style:font-size={len(Math.max(8, Math.round(size * 0.34)))}
       role={showImg || decorative ? undefined : 'img'}
       aria-label={showImg || decorative ? undefined : name}
       aria-hidden={showImg || decorative ? 'true' : undefined}></span>

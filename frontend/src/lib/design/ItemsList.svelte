@@ -20,6 +20,8 @@
     whatIf?: WhatIf;
     phoneLayout?: 'cards' | 'table';
     onedit: (slot: string) => void;
+    /* an empty slot opens Craft Item for it */
+    oncraft?: (slot: string) => void;
     onflask: (slot: string, on: boolean) => void;
     onequip: (slot: string, id: number | null) => void;
     ondelete?: (id: number) => void;
@@ -35,6 +37,7 @@
     whatIf,
     phoneLayout = 'cards',
     onedit,
+    oncraft,
     onflask,
     onequip,
     ondelete
@@ -86,6 +89,13 @@
           onclick={() => onedit(key)}
           onfocus={enter(key)}
           onblur={leave}>{e.item.name}</button>
+      {:else if oncraft && menu}
+        <button
+          class={['cell-link', hover === key ? 'text-text-2' : 'text-text-3']}
+          aria-label="{key}: Empty"
+          aria-haspopup="dialog"
+          title="Craft an item for {key}"
+          onclick={() => oncraft(key)}>Empty</button>
       {:else}
         <span class={hover === key ? 'text-text-2' : 'text-text-3'}>Empty</span>
       {/if}

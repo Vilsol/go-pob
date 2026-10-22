@@ -6,6 +6,7 @@ import { App } from './support/app';
 import { buildXml } from './support/builds';
 import * as go from './support/go_model';
 import { expectedLines } from './support/stats';
+import { choose } from './support/dropdown';
 import { plainText } from '../src/lib/design/crafting';
 import * as tree from './support/tree_model';
 import { frameCount, installTreeProbe, lastFrame, waitFrame } from './support/tree_probe';
@@ -380,8 +381,10 @@ test('the Tree socket jump lands on the Items socket slot (0008)', async ({ page
   await page.mouse.click(box.x + at.x, box.y + at.y, { button: 'right' });
   await page.getByRole('menu').getByRole('menuitem', { name: 'Socket a jewel…' }).click();
   await expect(page).toHaveURL(new RegExp(`/items\\?socket=${socket}$`));
-  const select = page.locator(`[data-socket-node="${socket}"] select`);
+  const select = page.locator(`[data-socket-node="${socket}"] [role="combobox"]`);
   await expect(select).toBeFocused();
+  await expect(select).toHaveAttribute('aria-expanded', 'true');
+  await select.press('Escape');
   // ItemSlotControl.lua:132-149
   await page.locator(`[data-socket-node="${socket}"]`).hover();
   await expect(page.getByRole('img', { name: /^Passive tree around socket #/ })).toBeVisible();
@@ -394,7 +397,7 @@ test('the Tree socket jump lands on the Items socket slot (0008)', async ({ page
   expect(viewBox.y).toBeGreaterThanOrEqual(0);
   await app.act(
     'unsocket-jewel',
-    () => select.selectOption('0'),
+    () => choose(select, 'None'),
     async () => {
       (await m.exposition.SocketTreeJewel(build, socket, 0)).unwrap();
       return expectedLines(await go.outputs(build));
@@ -402,7 +405,16 @@ test('the Tree socket jump lands on the Items socket slot (0008)', async ({ page
   );
   await app.act(
     'socket-jewel',
-    () => select.selectOption('12'),
+    async () => {
+      const text = go.fresh(build, (b) => (b.Items.Items ?? []).find((it) => it.ID === 12)?.Text ?? '');
+      const p = (await m.exposition.ParseItem(build, text.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&'), go.NO_TIP_STATS)).unwrap();
+      const list = page.locator(`[id="${await select.getAttribute('aria-controls')}"]`);
+      await select.click();
+      await list
+        .getByRole('option', { name: p.Title || p.Name, exact: true })
+        .first()
+        .click();
+    },
     async () => {
       (await m.exposition.SocketTreeJewel(build, socket, 12)).unwrap();
       return expectedLines(await go.outputs(build));

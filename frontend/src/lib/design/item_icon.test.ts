@@ -55,6 +55,14 @@ describe('ItemIcon', () => {
     expect([box.style.width, box.style.height]).toEqual(['40px', '40px']);
   });
 
+  it('sizes in rem when asked, so it scales with the root font like a rem-sized box around it', () => {
+    setArtResolver((qs) => Promise.resolve(qs.map(() => '')));
+    const { container } = render(ItemIcon, { name: 'Doom Grip', base: 'Leather Belt', size: 40, unit: 'rem' });
+    const box = container.querySelector('[data-item-icon]') as HTMLElement;
+    expect([box.style.width, box.style.height]).toEqual(['2.5rem', '2.5rem']);
+    expect((box.firstElementChild as HTMLElement).style.fontSize).toBe('0.875rem');
+  });
+
   it("names the image after the item and uses a unique's own name for its fallback", async () => {
     setArtResolver((qs) => Promise.resolve(qs.map(() => 'Art/2DItems/Belts/Headhunter')));
     const { container } = render(ItemIcon, { name: 'Headhunter', base: 'Leather Belt', rarity: 'unique' });

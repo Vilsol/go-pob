@@ -162,3 +162,58 @@ export function notableColour(power: number | undefined, maxPower: number | unde
   }
   return '^x808080';
 }
+
+/* Data.lua:556-572 */
+const WEAPON_HANDS: Record<string, boolean> = {
+  Bow: false,
+  Claw: true,
+  Dagger: true,
+  Staff: false,
+  Wand: true,
+  'One Handed Axe': true,
+  'One Handed Mace': true,
+  'One Handed Sword': true,
+  Sceptre: true,
+  'Fishing Rod': false,
+  'Two Handed Axe': false,
+  'Two Handed Mace': false,
+  'Two Handed Sword': false
+};
+
+/* ItemsTab.lua:2560-2605, over a craft base group's "Type" or "Type: SubType"; Weapon 2 offers every
+   off-hand, whatever Weapon 1 holds */
+export function craftFitsSlot(slot: string, group: string): boolean {
+  const type = group.split(': ')[0];
+  const sub = group.split(': ')[1];
+  const name = slot.replace(/ Swap$/, '');
+  const slotType = name.replace(/ \d+$/, '');
+  if (/Abyssal Socket/.test(slot)) return type === 'Jewel' && sub === 'Abyss';
+  if (type === slotType) return true;
+  if (type === 'Tincture' && slotType === 'Flask') return true;
+  if (name === 'Weapon 1' || name === 'Weapon') return type in WEAPON_HANDS;
+  if (name === 'Weapon 2') return type === 'Shield' || type === 'Quiver' || WEAPON_HANDS[type] === true;
+  return false;
+}
+
+/* rarity + base, numbered past the names the build already uses */
+export function defaultItemName(rarity: string, base: string, taken: Iterable<string>): string {
+  const used = new Set(taken);
+  const name = `${rarity} ${base}`;
+  if (!used.has(name)) return name;
+  let n = 2;
+  while (used.has(`${name} ${n}`)) n++;
+  return `${name} ${n}`;
+}
+
+/* ItemsTab.lua:2655 titles an unnamed rare "New Item"; Item.lua:960-991 reads a magic item's name as prefix + base +
+   suffix, so "Magic Leather Belt" keeps "Magic " as its prefix through a save and PoB, until its affixes rename it */
+export function nameUnnamedItem(text: string, taken: Iterable<string>): string {
+  const lines = text.split('\n');
+  const rarity = /^Rarity: (\w+)/.exec(lines[0] ?? '')?.[1];
+  const label = rarity && rarity[0] + rarity.slice(1).toLowerCase();
+  if (!label) return text;
+  if ((rarity === 'RARE' || rarity === 'UNIQUE' || rarity === 'RELIC') && lines[1] === 'New Item' && lines[2])
+    lines[1] = defaultItemName(label, lines[2], taken);
+  else if (rarity === 'MAGIC' && lines[1]) lines[1] = defaultItemName(label, lines[1], taken);
+  return lines.join('\n');
+}

@@ -170,6 +170,8 @@ export type DisplayEdit = { kind: string; index?: number; value?: number; second
 
 /* ItemsTab.lua:2566-2581 */
 export type CraftChoice = { rarity: number; title: string; base: string };
+/* a row of the unique database, as Browse items lists it */
+export type UniqueChoice = { name: string; title: string; base: string; type: string };
 
 const SOCKET_CODE: Record<string, string> = { R: '^xE05030', G: '^x70FF70', B: '^x7070FF', W: '^xFFF0F0', A: '^xB0B0B0' };
 export function socketDescription(line: string) {

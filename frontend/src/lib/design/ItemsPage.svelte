@@ -30,6 +30,7 @@
     itemTip,
     replacing,
     type CraftChoice,
+    type UniqueChoice,
     type DisplayEdit,
     type DisplayInfo,
     type ImpactBlock,
@@ -116,6 +117,9 @@
     craftPreview?: TipProps;
     oncraftpreview?: (c: CraftChoice) => void;
     oncraftcreate?: (c: CraftChoice) => void;
+    craftUniques?: () => Promise<UniqueChoice[]>;
+    oncraftpreviewunique?: (name: string) => void;
+    oncraftunique?: (name: string) => void;
     craftFrom?: string;
     itemDB?: Snippet;
     /* ItemSlotControl.lua:114-130, ItemListControl.lua:275-284 */
@@ -194,6 +198,9 @@
     craftPreview,
     oncraftpreview,
     oncraftcreate,
+    craftUniques,
+    oncraftpreviewunique,
+    oncraftunique,
     itemDB,
     craftFrom = $bindable(),
     ondropslot,
@@ -215,9 +222,31 @@
   $effect(() => {
     if (craftFrom) crafting = true;
   });
+  let craftSlot = $state<string>();
   $effect(() => {
-    if (!crafting) craftFrom = undefined;
+    if (!crafting) {
+      craftFrom = undefined;
+      craftSlot = undefined;
+    }
   });
+  const craftFor = (slot: string) => {
+    craftSlot = slot;
+    crafting = true;
+  };
+  // a pasted or created item shows as its result; its text stays one click away
+  let textHidden = $state(false);
+  let copiedText = $state(false);
+  $effect(() => {
+    void pasteText;
+    copiedText = false;
+    if (!pasteText) textHidden = false;
+  });
+  const copyText = () => {
+    navigator.clipboard
+      ?.writeText(pasteText.replace(/\r?\n/g, '\r\n'))
+      .then(() => (copiedText = true))
+      .catch(() => {});
+  };
   // ItemsTab.lua:105-112
   const pageUid = $props.id();
   let setTip = $state(false);
@@ -434,6 +463,7 @@
           {whatIf}
           swap={!!set?.swap}
           onedit={editSlot}
+          oncraft={oncraftcreate && craftFor}
           {onflask}
           {onequip}
           {onjewel}
@@ -457,6 +487,7 @@
           {whatIf}
           {phoneLayout}
           onedit={editSlot}
+          oncraft={oncraftcreate && craftFor}
           {onflask}
           {onequip}
           ondelete={ondelete && deleteItem} />
@@ -474,7 +505,15 @@
               onclick={() => (editing = { item: sample.item, slot: pasteSlot, impact: sample.impact, isNew: true })}>Craft item…</Button>
           {/if}
         </div>
+        {#if live?.item}
+          <div class="flex flex-wrap items-center gap-2">
+            <Button size="sm" title="Copy the item's text, for the game's trade site or Path of Building" onclick={copyText}>Copy item</Button>
+            <Button size="sm" aria-pressed={!textHidden} onclick={() => (textHidden = !textHidden)}>Edit as text</Button>
+            {#if copiedText}<InlineMessage kind="success" tag="span" class="whitespace-nowrap">✓ Copied</InlineMessage>{/if}
+          </div>
+        {/if}
         <Textarea
+          hidden={textHidden && !!live?.item}
           class="h-27.5 font-mono text-12 whitespace-pre text-text-2"
           aria-label="Item text"
           title="Copy an item in game with Ctrl+C, or from Path of Building"
@@ -483,6 +522,7 @@
             const t = e.clipboardData?.getData('text');
             if (!onpasteitem || !t) return;
             e.preventDefault();
+            textHidden = true;
             onpasteitem(t);
           }}
           bind:value={pasteText} />
@@ -619,7 +659,24 @@
   <ItemSetTip anchor={setSelect} id="{pageUid}-set-tip" title={set.title} lines={set.tip} />
 {/if}
 {#if oncraftcreate}
-  <CraftItemDialog bind:open={crafting} groups={craftBases} start={craftFrom} preview={craftPreview} onpreview={oncraftpreview} oncreate={oncraftcreate} />
+  <CraftItemDialog
+    bind:open={crafting}
+    groups={craftBases}
+    start={craftFrom}
+    slot={craftSlot}
+    preview={craftPreview}
+    onpreview={oncraftpreview}
+    oncreate={(c: CraftChoice) => {
+      textHidden = true;
+      oncraftcreate(c);
+    }}
+    uniques={craftUniques}
+    onpreviewunique={oncraftpreviewunique}
+    oncreateunique={oncraftunique &&
+      ((name: string) => {
+        textHidden = true;
+        oncraftunique(name);
+      })} />
 {/if}
 {#if confirm}
   {@const c = confirm}

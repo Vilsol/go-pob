@@ -4,7 +4,7 @@
   import FloatingLabel from './FloatingLabel.svelte';
   import FloatingItemTip from './FloatingItemTip.svelte';
   import SlotMenu from './SlotMenu.svelte';
-  import Select from './Select.svelte';
+  import Dropdown from './Dropdown.svelte';
   import { tone as toneClass, type Tone } from './tone';
   import { BOARD_SLOTS, itemTip, type TipProps, type WhatIf } from './items';
   import { draggedItem, type ItemDrag } from './item_drag';
@@ -37,6 +37,8 @@
     hover?: string | null;
     whatIf?: WhatIf;
     onedit: (slot: string) => void;
+    /* an empty slot opens Craft Item for it */
+    oncraft?: (slot: string) => void;
     onflask: (slot: string, on: boolean) => void;
     onequip: (slot: string, id: number | null) => void;
     onjewel?: (node: number, id: number | null) => void;
@@ -59,6 +61,7 @@
     hover = $bindable(null),
     whatIf,
     onedit,
+    oncraft,
     onflask,
     onequip,
     onjewel,
@@ -113,6 +116,20 @@
   };
   const bySlot = new Map(BOARD_SLOTS.map((b) => [b.slot, b]));
 
+  // ItemSlotControl.lua:48-56: an entry under the pointer or the arrow keys shows its tooltip beside the open list
+  let jewelPick = $state<{ id: number; slot: string; el: HTMLElement } | null>(null);
+  const pickTip = $derived(jewelPick ? tipFor?.(jewelPick.id, jewelPick.slot) : undefined);
+  const pickJewel = (node: number, value: string | undefined, el: HTMLElement | null) => {
+    const slot = `Jewel ${node}`;
+    const id = Number(value);
+    if (!el || !id) {
+      jewelPick = null;
+      hover = els[slot]?.contains(document.activeElement) ? slot : null;
+      return;
+    }
+    jewelPick = { id, slot, el };
+    onhoveritem?.(id, slot);
+  };
   const jewelChoices = (choices?: number[]) => [
     { value: '0', label: 'None' },
     ...jewelOptions.filter((o) => !choices || choices.includes(o.id)).map((o) => ({ value: String(o.id), label: o.label }))
@@ -138,22 +155,26 @@
         flask && e && !flasks[k] && 'border-dashed'
       ]}
       aria-label="{b.slot}: {e ? e.item.name : 'Empty'}"
-      aria-haspopup={e ? 'dialog' : undefined}
+      aria-haspopup={e || oncraft ? 'dialog' : undefined}
+      title={e || !oncraft ? undefined : `Craft an item for ${b.slot}`}
       aria-describedby={hover === k && tip ? `${uid}-tip` : undefined}
       data-off={flask && e && !flasks[k] ? 'true' : undefined}
-      onclick={() => e && onedit(k)}
+      onclick={() => (e ? onedit(k) : oncraft?.(k))}
       onmouseenter={() => (hover = k)}
       onmouseleave={() => (hover = null)}
       onfocus={() => (hover = k)}
       onblur={() => (hover = null)}>
       {#if e}
-        <ItemIcon
-          name={e.item.name}
-          base={e.item.base}
-          rarity={e.item.rarity}
-          size={Math.min(b.w, b.h) - 40}
-          decorative
-          class={['pointer-events-none absolute top-1/2 left-1/2 -translate-1/2', flask && !flasks[k] && 'opacity-50']} />
+        <span class="pointer-events-none absolute inset-0 flex items-center justify-center">
+          <ItemIcon
+            name={e.item.name}
+            base={e.item.base}
+            rarity={e.item.rarity}
+            size={Math.min(b.w, b.h) - 40}
+            unit="rem"
+            decorative
+            class={[flask && !flasks[k] && 'opacity-50']} />
+        </span>
       {/if}
       <span class="eyebrow eyebrow-xs relative font-normal text-text-3">{flask ? '' : b.slot}</span>
       <span
@@ -191,6 +212,7 @@
   {#if jewels.length}
     <div class={['grid gap-2', cols]}>
       {#each jewels as j, i (j.node)}
+        {@const choices = jewelChoices(j.choices)}
         <div
           role="group"
           aria-label="Socket #{i + 1}"
@@ -204,14 +226,16 @@
           <div class="flex items-center gap-1.5">
             {#if j.item}<ItemIcon name={j.item.name} base={j.item.base} rarity={j.item.rarity} size={30} decorative />{/if}
             <FloatingLabel label="Socket #{i + 1}" class="min-w-0 grow [--float-bg:var(--color-surface-1)]"
-              ><Select
-                data-pob-color
+              ><Dropdown
+                aria-label="Socket #{i + 1}"
                 title={onjewel ? `Passive node ${j.node}` : `Passive node ${j.node} · socketed on the tree (changing it here is not in the app yet)`}
-                class={['h-7.5 bg-surface-1 px-1.5', toneClass(j.item?.rarity)]}
-                options={jewelChoices(j.choices)}
+                class="block h-7.5 w-full {toneClass(j.item?.rarity)} [&>button]:bg-surface-1 [&>button]:px-1.5"
+                options={choices}
                 value={String(j.id)}
                 disabled={!onjewel}
-                onchange={(ev: Event & { currentTarget: HTMLSelectElement }) => onjewel?.(j.node, Number(ev.currentTarget.value) || null)} /></FloatingLabel>
+                previewOnTap
+                onhover={(k: number | null, el: HTMLElement | null) => pickJewel(j.node, k === null ? undefined : choices[k]?.value, el)}
+                onchange={(v: string) => onjewel?.(j.node, Number(v) || null)} /></FloatingLabel>
           </div>
         </div>
       {/each}
@@ -219,7 +243,7 @@
   {:else}
     <EmptyState text="No jewel sockets allocated on the tree." />
   {/if}
-  {#if socketView && hover === `Jewel ${socketView.node}`}
+  {#if socketView && (hover === `Jewel ${socketView.node}` || hover?.endsWith(`@Jewel ${socketView.node}`))}
     {@const n = jewels.findIndex((j) => j.node === socketView.node)}
     <SocketPreview
       tree={socketView.tree}
@@ -273,7 +297,9 @@
         bind:this={els[slot]}
         class="min-w-0 grow truncate border-0 bg-transparent p-0 text-left font-sans text-12"
         aria-label="{label}: {e ? e.item.name : 'Empty'}"
-        onclick={() => e && onedit(slot)}
+        aria-haspopup={!e && oncraft ? 'dialog' : undefined}
+        title={e || !oncraft ? undefined : `Craft an item for ${label}`}
+        onclick={() => (e ? onedit(slot) : oncraft?.(slot))}
         onmouseenter={() => (hover = slot)}
         onmouseleave={() => (hover = null)}
         onfocus={() => (hover = slot)}
@@ -317,4 +343,7 @@
 </div>
 {#if tip && hover}
   <FloatingItemTip anchor={els[hover]} id="{uid}-tip" {...tip} />
+{/if}
+{#if jewelPick && pickTip}
+  <FloatingItemTip anchor={jewelPick.el} id="{uid}-pick-tip" {...pickTip} />
 {/if}

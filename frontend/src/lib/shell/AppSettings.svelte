@@ -402,7 +402,10 @@
     if (id === 'checkData') await checkForUpdate();
     else if (id === 'clearCache') {
       const n = (await syncWrap?.ClearDataCache()) ?? 0;
-      addToast(`Cached data cleared\n${n} game data files removed; they download again on the next start.`);
+      const art = DESKTOP ? await fetch('/desktop/art/', { method: 'DELETE' }).then((r) => (r.ok ? r.text() : '0')) : '0';
+      addToast(
+        `Cached data cleared\n${n} game data files removed; they download again on the next start.${Number(art) ? `\n${art} item images removed.` : ''}`
+      );
       void measure();
     } else if (id === 'exportAll') {
       const files = (await syncWrap?.ExportBuilds()) ?? [];
