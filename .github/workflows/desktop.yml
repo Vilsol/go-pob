@@ -20,6 +20,38 @@ env:
   VERSION: ${{ inputs.version || format('0.0.0-ci.{0}', github.run_number) }}
 
 jobs:
+  check:
+    name: Tests and lint
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: desktop/go.mod
+
+      - name: Install dependencies
+        timeout-minutes: 10
+        run: |
+          sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 update
+          sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 install -y --no-install-recommends libgtk-3-dev libwebkit2gtk-4.1-dev glib-networking libglib2.0-bin
+
+      - name: Test
+        working-directory: desktop
+        run: go test -tags gtk3 ./...
+
+      - name: Lint
+        uses: golangci/golangci-lint-action@v8
+        with:
+          version: v2.12.2
+          working-directory: desktop
+          args: --build-tags gtk3 --timeout 5m
+
   frontend:
     name: Desktop frontend
     runs-on: ubuntu-24.04
