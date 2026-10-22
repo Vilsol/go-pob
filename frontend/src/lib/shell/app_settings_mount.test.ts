@@ -4,6 +4,7 @@
 import { describe, expect, it, beforeAll, afterEach, vi } from 'vitest';
 import { render, fireEvent, cleanup, within, waitFor } from '@testing-library/svelte';
 import { get } from 'svelte/store';
+import { toasts } from '$lib/design/toast';
 
 afterEach(cleanup);
 
@@ -55,7 +56,7 @@ const fake = {
   )
 };
 vi.mock('$lib/go/worker', () => ({ syncWrap: fake, syncWorker: undefined }));
-const pwa = vi.hoisted(() => ({ checkForUpdate: vi.fn(() => Promise.resolve()) }));
+const pwa = vi.hoisted(() => ({ checkForUpdate: vi.fn(() => Promise.resolve()), clearArtCache: vi.fn(() => Promise.resolve(3)) }));
 vi.mock('$lib/pwa', () => pwa);
 
 const { fontScaling, zoomSensitivity, markBackendAsLoaded } = await import('$lib/global');
@@ -231,6 +232,8 @@ describe('AppSettings', () => {
     await fireEvent.click(s.getByRole('button', { name: 'Clear cached data' }));
     await fireEvent.click(s.getByRole('button', { name: 'Clear cached data' }));
     expect(fake.ClearDataCache).toHaveBeenCalledTimes(1);
+    expect(pwa.clearArtCache).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(get(toasts).at(-1)?.message).toMatch(/\n3 item images removed\.$/));
 
     await fireEvent.click(s.getByRole('button', { name: 'Export all builds' }));
     await waitFor(() => expect(saved.length).toBe(1));

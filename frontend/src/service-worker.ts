@@ -3,7 +3,7 @@
 
 import { base, build, files, version } from '$service-worker';
 import { WASM_FALLBACK, WASM_FILE } from '$lib/go/wasm_file';
-import { isCdnAsset } from '$lib/pwa/hosts';
+import { ART_CACHE, isCdnAsset } from '$lib/pwa/hosts';
 
 const sw = self as unknown as ServiceWorkerGlobalScope;
 
@@ -133,7 +133,7 @@ const cacheFirst = async (cacheName: string, request: Request, key: Request | st
   return res;
 };
 
-const ART = 'pob-art-v1';
+const ART = ART_CACHE;
 const ART_MAX = 200;
 const isArt = (url: URL) => url.hostname === 'web.poecdn.com' && url.pathname.startsWith('/image/Art/');
 

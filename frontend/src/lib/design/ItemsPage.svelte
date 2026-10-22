@@ -116,10 +116,11 @@
     craftBases?: { type: string; bases: string[] }[];
     craftPreview?: TipProps;
     oncraftpreview?: (c: CraftChoice) => void;
-    oncraftcreate?: (c: CraftChoice) => void;
+    /* slot: Craft Item was opened from that empty slot, so the item is equipped there */
+    oncraftcreate?: (c: CraftChoice, slot?: string) => void;
     craftUniques?: () => Promise<UniqueChoice[]>;
     oncraftpreviewunique?: (name: string) => void;
-    oncraftunique?: (name: string) => void;
+    oncraftunique?: (name: string, slot?: string) => void;
     craftFrom?: string;
     itemDB?: Snippet;
     /* ItemSlotControl.lua:114-130, ItemListControl.lua:275-284 */
@@ -667,15 +668,15 @@
     preview={craftPreview}
     onpreview={oncraftpreview}
     oncreate={(c: CraftChoice) => {
-      textHidden = true;
-      oncraftcreate(c);
+      textHidden = !craftSlot;
+      oncraftcreate(c, craftSlot);
     }}
     uniques={craftUniques}
     onpreviewunique={oncraftpreviewunique}
     oncreateunique={oncraftunique &&
       ((name: string) => {
-        textHidden = true;
-        oncraftunique(name);
+        textHidden = !craftSlot;
+        oncraftunique(name, craftSlot);
       })} />
 {/if}
 {#if confirm}

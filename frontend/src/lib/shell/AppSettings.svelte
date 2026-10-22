@@ -19,7 +19,7 @@
   } from '$lib/display/appearance';
   import { allAffixSliders } from '$lib/design/items';
   import { addToast } from '$lib/design/toast';
-  import { checkForUpdate } from '$lib/pwa';
+  import { checkForUpdate, clearArtCache } from '$lib/pwa';
   import { DESKTOP } from '$lib/pwa/desktop';
   import { zipStore } from './zip';
   import { NODE_POWER_THEMES, type NodePowerTheme } from '$lib/skill_tree/heat';
@@ -402,7 +402,7 @@
     if (id === 'checkData') await checkForUpdate();
     else if (id === 'clearCache') {
       const n = (await syncWrap?.ClearDataCache()) ?? 0;
-      const art = DESKTOP ? await fetch('/desktop/art/', { method: 'DELETE' }).then((r) => (r.ok ? r.text() : '0')) : '0';
+      const art = DESKTOP ? await fetch('/desktop/art/', { method: 'DELETE' }).then((r) => (r.ok ? r.text() : '0')) : await clearArtCache().catch(() => 0);
       addToast(
         `Cached data cleared\n${n} game data files removed; they download again on the next start.${Number(art) ? `\n${art} item images removed.` : ''}`
       );

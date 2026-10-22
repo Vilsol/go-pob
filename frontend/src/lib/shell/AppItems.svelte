@@ -665,9 +665,14 @@
   };
   const oncraftpreview = (c: CraftChoice) => previewCraft(() => craftText(c));
   const oncraftpreviewunique = (name: string) => previewCraft(() => syncWrap?.GetItemDBText('UNIQUE', name));
-  const oncraftcreate = async (c: CraftChoice) => {
+  const equipCrafted = async (t: string, slot: string) => {
+    const error = await syncWrap?.EquipItem(t, slot);
+    say(error ?? `Equipped in ${slotLabel(slot)}.`);
+  };
+  const oncraftcreate = async (c: CraftChoice, slot?: string) => {
     const t = await craftText(c);
     if (t === undefined) return;
+    if (slot) return equipCrafted(t, slot);
     edited = undefined;
     text = t;
     pageView = 'equipped';
@@ -769,9 +774,10 @@
   const craftUniques = async (): Promise<UniqueChoice[]> =>
     ((await syncWrap?.GetItemDBRows('UNIQUE', defaultItemDBFilter(), '')) ?? []).map((r) => ({ name: r.name, title: r.title, base: r.base, type: r.type }));
   // ItemDBControl.lua:361-367
-  const oncraftunique = async (name: string) => {
+  const oncraftunique = async (name: string, slot?: string) => {
     const t = await syncWrap?.GetItemDBText('UNIQUE', name);
     if (t === undefined) return;
+    if (slot) return equipCrafted(await normalise(t), slot);
     edited = undefined;
     text = await normalise(t);
     pageView = 'equipped';
@@ -1012,15 +1018,15 @@
       oncraftpreview(c).catch(logError);
     }}
     bind:craftFrom
-    oncraftcreate={(c: CraftChoice) => {
-      oncraftcreate(c).catch(logError);
+    oncraftcreate={(c: CraftChoice, slot?: string) => {
+      oncraftcreate(c, slot).catch(logError);
     }}
     {craftUniques}
     oncraftpreviewunique={(name: string) => {
       oncraftpreviewunique(name).catch(logError);
     }}
-    oncraftunique={(name: string) => {
-      oncraftunique(name).catch(logError);
+    oncraftunique={(name: string, slot?: string) => {
+      oncraftunique(name, slot).catch(logError);
     }}
     {stashFilters}
     {stashFilter}

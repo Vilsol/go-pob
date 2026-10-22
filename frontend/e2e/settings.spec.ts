@@ -97,9 +97,16 @@ test('appearance options are kept; Export all builds saves a .zip; Clear cached 
   await expect(sheet.getByRole('alert')).toHaveText('Clear the cached game data? Builds are kept.');
   await sheet.getByRole('button', { name: 'Keep' }).click();
   await expect(sheet.getByRole('alert')).toHaveCount(0);
+  await page.evaluate(async () => {
+    const art = await caches.open('pob-art-v1');
+    await art.put('https://web.poecdn.com/image/Art/2DItems/e2e-a.png', new Response('a'));
+    await art.put('https://web.poecdn.com/image/Art/2DItems/e2e-b.png', new Response('b'));
+  });
   await sheet.getByRole('button', { name: 'Clear cached data' }).click();
   await sheet.getByRole('button', { name: 'Clear cached data' }).click();
   await expect(page.getByText(/^Cached data cleared/)).toBeVisible();
+  await expect(page.getByText(/\b[1-9]\d* item images removed\./)).toBeVisible();
+  expect(await page.evaluate(() => caches.has('pob-art-v1')), 'the web art cache is emptied').toBe(false);
   await sheet.getByRole('button', { name: 'Reset all settings' }).click();
   await sheet.getByRole('button', { name: 'Reset all settings' }).click();
   await expect(html).toHaveAttribute('data-theme', 'dark');

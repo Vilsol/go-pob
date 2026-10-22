@@ -565,16 +565,44 @@ test('an empty slot opens Craft Item offering only the types that fit it, on the
   await expect(tile(page, 'Gloves')).toHaveAccessibleName('Gloves: Empty');
 
   await tile(page, 'Gloves').click();
-  const craft = page.getByRole('dialog', { name: 'Craft Item for Gloves' });
+  let craft = page.getByRole('dialog', { name: 'Craft Item for Gloves' });
   await expect(craft).toBeVisible();
   const m = await go.model();
   const gloves = ((await m.exposition.CraftBaseGroups()) ?? []).filter((g) => g.Type.split(': ')[0] === 'Gloves').map((g) => g.Type);
   expect(gloves.length, 'vacuity: there are glove bases to craft').toBeGreaterThan(0);
   expect(await entries(craft.getByRole('combobox', { name: 'Type' }))).toEqual(gloves);
   await craft.getByRole('textbox', { name: 'Name' }).fill('Test Grip');
+  const base = (await craft.getByRole('combobox', { name: 'Base' }).textContent())!.trim();
+  const before = expectedLines(await go.outputs(build));
+  await app.act(
+    'craft-into-empty-slot',
+    () => craft.getByRole('button', { name: 'Create' }).click(),
+    async () => {
+      const [text, ok] = await m.exposition.CraftItemText(2, 'Test Grip', base);
+      expect(ok, `vacuity: Go crafts a ${base}`).toBe(true);
+      (await m.exposition.EquipItem(build, text, 'Gloves')).unwrap();
+      return expectedLines(await go.outputs(build));
+    }
+  );
+  await expect(tile(page, 'Gloves')).toHaveAccessibleName('Gloves: Test Grip');
+  await expect(page.getByRole('button', { name: 'Equip in Gloves' }), 'it is equipped, not left in the paste panel').toHaveCount(0);
+  const undo = page.getByRole('button', { name: 'Undo: Equipped Test Grip in Gloves (Ctrl+Z)' });
+  await app.act(
+    'undo',
+    () => undo.click(),
+    async () => before
+  );
+  await expect(tile(page, 'Gloves'), 'one undo step takes the crafted item back out').toHaveAccessibleName('Gloves: Empty');
+
+  await page.getByRole('button', { name: 'Craft item…' }).click();
+  craft = page.getByRole('dialog', { name: 'Craft Item' });
+  await craft.getByRole('textbox', { name: 'Name' }).fill('Loose Grip');
+  await choose(craft.getByRole('combobox', { name: 'Type' }), 'Gloves');
+  await choose(craft.getByRole('combobox', { name: 'Base' }), base);
   await craft.getByRole('button', { name: 'Create' }).click();
-  await expect(page.getByRole('article', { name: 'Item: Test Grip' })).toBeVisible();
+  await expect(page.getByRole('article', { name: 'Item: Loose Grip' }), 'Craft item… still opens the item in the paste panel').toBeVisible();
   await expect(page.getByRole('button', { name: 'Equip in Gloves' })).toBeVisible();
+  await expect(tile(page, 'Gloves')).toHaveAccessibleName('Gloves: Empty');
 
   await page.getByRole('group', { name: 'Layout' }).getByRole('button', { name: 'List' }).click();
   await page.getByRole('table', { name: 'Equipped items' }).getByRole('button', { name: 'Gloves: Empty' }).click();
@@ -598,7 +626,23 @@ test('Craft Item’s Unique rarity picks from the unique database, filtered to t
   const gloves = await entries(craft.getByRole('combobox', { name: 'Unique' }));
   expect(gloves).toContain("Shaper's Touch");
   expect(gloves).not.toContain("Kaom's Heart");
-  await craft.getByRole('button', { name: 'Cancel' }).click();
+  const touch = craft.getByRole('combobox', { name: 'Unique' });
+  await touch.click();
+  await page.getByRole('searchbox', { name: 'Filter Unique' }).fill("shaper's touch");
+  await page.getByRole('option', { name: "Shaper's Touch", exact: true }).click();
+  const m = await go.model();
+  await app.act(
+    'craft-unique-into-empty-slot',
+    () => craft.getByRole('button', { name: 'Create' }).click(),
+    async () => {
+      const [raw, ok] = await m.exposition.ItemDBText('UNIQUE', "Shaper's Touch, Crusader Gloves");
+      expect(ok).toBe(true);
+      (await m.exposition.EquipItem(build, await m.exposition.NormaliseDisplayItem(build, raw, true), 'Gloves')).unwrap();
+      return expectedLines(await go.outputs(build));
+    }
+  );
+  await expect(tile(page, 'Gloves')).toHaveAccessibleName("Gloves: Shaper's Touch");
+  await expect(page.getByRole('button', { name: "Undo: Equipped Shaper's Touch in Gloves (Ctrl+Z)" })).toBeEnabled();
 
   await page.getByRole('button', { name: 'Craft item…' }).click();
   craft = page.getByRole('dialog', { name: 'Craft Item' });
@@ -632,22 +676,23 @@ test('an unnamed crafted item is named after its rarity and base, numbered when 
   await tile(page, 'Gloves').click();
   let craft = page.getByRole('dialog', { name: 'Craft Item for Gloves' });
   const base = (await craft.getByRole('combobox', { name: 'Base' }).textContent())!.trim();
-  await craft.getByRole('button', { name: 'Create' }).click();
-  await expect(page.getByRole('article', { name: `Item: Rare ${base}` })).toBeVisible();
-  await asText.click();
-  const rare = await box.inputValue();
-  expect(rare.split('\n').slice(0, 3)).toEqual(['Rarity: RARE', `Rare ${base}`, base]);
   await app.act(
     'craft-equip',
-    () => page.getByRole('button', { name: 'Equip in Gloves' }).click(),
+    () => craft.getByRole('button', { name: 'Create' }).click(),
     async () => {
+      const [rare, ok] = await m.exposition.CraftItemText(2, `Rare ${base}`, base);
+      expect(ok).toBe(true);
       (await m.exposition.EquipItem(build, rare, 'Gloves')).unwrap();
       return expectedLines(await go.outputs(build));
     }
   );
   await expect(tile(page, 'Gloves')).toHaveAccessibleName(`Gloves: Rare ${base}`);
-  const saved = (await m.exposition.EquippedItems(build))?.find((e) => e.SlotName === 'Gloves')?.Text ?? '';
-  expect((await m.exposition.ParseItem(build, saved, go.NO_TIP_STATS)).unwrap().Title).toBe(`Rare ${base}`);
+  await expect(page.getByRole('button', { name: `Undo: Equipped Rare ${base} in Gloves (Ctrl+Z)` })).toBeEnabled();
+  const pageXml = await go.decode(await app.exportCode());
+  await app.goTo('Items');
+  expect(pageXml, 'the equipped item is titled after its rarity and base').toMatch(
+    new RegExp(`Rarity: RARE\\s*\\n\\s*Rare ${escapeRe(base)}\\s*\\n\\s*${escapeRe(base)}\\s*\\n`)
+  );
 
   await page.getByRole('button', { name: 'Craft item…' }).click();
   craft = page.getByRole('dialog', { name: 'Craft Item' });

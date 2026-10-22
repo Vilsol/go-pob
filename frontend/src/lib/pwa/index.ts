@@ -1,7 +1,7 @@
 import { get, readable, writable, type Readable } from 'svelte/store';
 import { base } from '$app/paths';
 import { browser, dev, version } from '$app/environment';
-import { isCdnAsset } from './hosts';
+import { ART_CACHE, isCdnAsset } from './hosts';
 import { DESKTOP } from './desktop';
 import { applyDesktopUpdate, checkDesktopUpdate } from './desktop_update';
 import { addToast } from '$lib/design/toast';
@@ -61,6 +61,13 @@ const storageSet = (key: string, value: string | null) => {
   } catch {
     // empty
   }
+};
+
+export const clearArtCache = async () => {
+  if (typeof caches === 'undefined' || !(await caches.has(ART_CACHE))) return 0;
+  const n = (await (await caches.open(ART_CACHE)).keys()).length;
+  await caches.delete(ART_CACHE);
+  return n;
 };
 
 export const disableServiceWorker = async () => {
