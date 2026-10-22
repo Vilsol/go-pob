@@ -6,7 +6,7 @@ import type { Outputs, TickCallback, TickMeta, TickWarnings } from '../custom_ty
 import type { BuildChannel } from '../global.js';
 import type { PartyMemberView, PartyView } from './party_view';
 import { dump, releaseWrapper, type ProxiedRemote } from '../type_utils';
-import { epochNow } from '../utils';
+import { epochNow, logInfo } from '../utils';
 import { configRelevanceQuery, reverseConfigOptions } from '../display/configurations';
 import { autoLevel, estimatePlayerProgress } from '../display/points';
 import { savedStats } from '../display/saved_stats';
@@ -19,7 +19,21 @@ import type { CraftChoice, DisplayEdit, DisplayInfo } from '$lib/design/items';
 import type { AffixControls, AnointNotable, CorruptChoices, CrucibleChoices, CustomModChoices, EnchantChoices, ImplicitChoices } from '$lib/design/crafting';
 import type { ClassChangeResult } from '$lib/skill_tree/class_change';
 import type { TreeClusterNode } from '$lib/skill_tree/types';
-import { NOT_A_CHANGE, OPEN_SOURCES, UNRECORDED, UndoHistory, stepLabel, unrecordedLabel, type Snapshot, type UndoView } from './undo';
+import { DIFF_LABELS, NOT_A_CHANGE, OPEN_SOURCES, UNRECORDED, UndoHistory, stepLabel, unrecordedLabel, type Snapshot, type UndoView } from './undo';
+import {
+  activeSpecNodes,
+  configChangeLabel,
+  configLabel,
+  itemTextName,
+  nodeRank,
+  skillsChangeLabel,
+  treeChangeLabel,
+  type StepDelta,
+  type StepLabel,
+  type TreeNodeInfo
+} from './step_labels';
+import { editDiff } from '$lib/display/stat_delta';
+import type { Node as TreeNode } from '$lib/skill_tree/types';
 import { TickCache, type TickCacheEntry } from './tick_cache';
 import type { CompareCalcsInputs, CompareInfo, CompareItem, CompareJewel, CompareSetKind, CompareSets, CompareSideData } from '$lib/shell/compare_types';
 import type { MainSkillField } from '$lib/shell/main_skill';
@@ -37,6 +51,8 @@ type WarningsEnv = { out: calculator.Environment; calc: calculator.Calculator };
 const WARNINGS_QUIET_MS = 300;
 const NO_TIP_STATS: calculator.ItemTooltipStats = { Str: 0, Dex: 0, Int: 0, Omni: 0, OmniscienceRequirements: false, OmniAttributeRequirements: 0 };
 const WARNINGS_STEP = 'pob:warnings-step';
+/* CalcsTab.lua:12-17 */
+const CALCS_MODES: Record<string, string> = { UNBUFFED: 'Unbuffed', BUFFED: 'Buffed', COMBAT: 'In Combat', EFFECTIVE: 'Effective DPS' };
 
 const yieldToQueue = () =>
   new Promise<void>((resolve) => {
@@ -142,7 +158,7 @@ class PoBWorker {
       performance.mark(`pob:data:${stage}`);
       return updates(stage);
     });
-    console.log('Initialization took', Date.now() - start, 'ms');
+    logInfo('data', `game data ${raw.GameDataVersion()} loaded in ${Date.now() - start} ms`);
     if (!result.ok) {
       console.error(result.error);
     }
@@ -150,8 +166,10 @@ class PoBWorker {
 
   async ImportCode(code: string) {
     if (this.dataReady) await this.dataReady;
+    const start = performance.now();
     const xml = pob.DecodeDecompress(code).unwrap();
     const build = builds.ParseBuildStr(xml).unwrap();
+    logInfo('import', `imported a build code (${Math.round(xml.length / 1024)} KB of XML) in ${Math.round(performance.now() - start)} ms`);
     this.openBuild(build, 'ImportCode');
   }
 
@@ -210,9 +228,125 @@ class PoBWorker {
   private history = new UndoHistory();
   private writeSeq = 0;
   private pendingWrite?: string;
+  private pendingAction?: string;
+  private stepAction?: string;
   private openPending = false;
 
+  // a write with its undo label; the label of the first write before the history records names the step
+  private edit(source: string, action?: string) {
+    this.stepAction = action;
+    return this.Tick(source);
+  }
+
+  Edit(source: string, action?: string) {
+    return this.edit(source, action);
+  }
+
+  private describeStep(source: string, action: string | undefined, before: Snapshot, after: string): StepLabel {
+    const label = stepLabel(source);
+    if (action) {
+      return { ...label, action };
+    }
+    const diff = DIFF_LABELS[source];
+    const text =
+      diff === 'tree'
+        ? treeChangeLabel(activeSpecNodes(this.history.table.decode(before)), activeSpecNodes(after), (id) => this.treeNames?.nodes.get(id))
+        : diff === 'skills'
+          ? skillsChangeLabel(this.history.table.decode(before), after)
+          : undefined;
+    return text ? { ...label, action: text } : label;
+  }
+
+  // the step's change to the headline stats, from the calculation kept for the state before it
+  private stepDelta(before: Snapshot): StepDelta[] | undefined {
+    const prev = this.tickCache.get(this.history.table.decode(before))?.payload;
+    const now = this.lastOutputs;
+    if (!prev || !now) {
+      return undefined;
+    }
+    return editDiff(prev, now).map(({ label, value, better, section }) => ({ label, value, better, section }));
+  }
+
+  private treeNames?: { version: string; nodes: Map<number, TreeNodeInfo>; effects: Map<number, string> };
+  private treeNamesLoading?: Promise<void>;
+
+  // the tree's node and mastery names, for undo labels; loaded once per tree version
+  private loadTreeNames() {
+    const version = this.fresh((b) => b.Tree.Specs?.[b.ActiveSpecIndex()]?.TreeVersion);
+    if (!version || this.treeNames?.version === version || this.treeNamesLoading) {
+      return;
+    }
+    this.treeNamesLoading = Promise.resolve()
+      .then(() => exposition.GetRawTree(version))
+      .then((bytes) => {
+        if (!bytes) return;
+        const tree = JSON.parse(new TextDecoder().decode(bytes)) as { nodes?: Record<string, TreeNode> };
+        const nodes = new Map<number, TreeNodeInfo>();
+        const effects = new Map<number, string>();
+        for (const [id, n] of Object.entries(tree.nodes ?? {})) {
+          if (n.name) nodes.set(Number(id), { name: n.name, rank: nodeRank(n) });
+          for (const e of n.masteryEffects ?? []) effects.set(e.effect, e.stats.join(' / '));
+        }
+        this.treeNames = { version, nodes, effects };
+      })
+      .catch((e: unknown) => console.warn('undo labels: failed loading the tree names', e))
+      .finally(() => (this.treeNamesLoading = undefined));
+  }
+
+  private nodeName(id: number) {
+    return this.treeNames?.nodes.get(id)?.name ?? 'a passive';
+  }
+
+  private itemName(id: number) {
+    const text = this.fresh((b) => b.Items.Items?.find((i) => i.ID === id)?.Text);
+    return text ? itemTextName(text) : 'an item';
+  }
+
+  private activeSlotItem(read: (slots: pob.Slot[]) => number | undefined) {
+    return this.fresh((b) => {
+      const sets = b.Items.ItemSets ?? [];
+      const set = sets.find((s) => Number(s.ID) === b.Items.ActiveItemSet) ?? sets[0];
+      return read(set?.Slots ?? []);
+    });
+  }
+
+  private slotItemName(slot: string) {
+    const id = this.activeSlotItem((slots) => slots.find((s) => s.Name === slot)?.ItemID);
+    return id ? this.itemName(id) : undefined;
+  }
+
+  private specTitle(i: number) {
+    return this.fresh((b) => b.Tree.Specs?.[i - 1]?.Title) || 'Default';
+  }
+
+  private activeSpecTitle() {
+    return this.fresh((b) => b.Tree.Specs?.[b.ActiveSpecIndex()]?.Title) || 'Default';
+  }
+
+  private skillSetTitle(id: number) {
+    return this.fresh((b) => b.Skills.SkillSets?.find((s) => s.ID === id)?.Title) || 'Default';
+  }
+
+  private configSetTitle(id: number) {
+    return this.fresh((b) => b.Config.ConfigSets?.find((s) => s.ID === id)?.Title) || 'Default';
+  }
+
+  private itemSetTitle(id: number) {
+    return this.fresh((b) => b.Items.ItemSets?.find((s) => Number(s.ID) === id)?.Title) || 'Default';
+  }
+
+  private groupName(n: number) {
+    return (
+      this.fresh((b) => {
+        const g = b.Skills.SkillSets?.[b.ActiveSkillSetIndex()]?.Skills?.[n - 1];
+        return g?.DisplayLabel || g?.Label;
+      }) || `socket group ${n}`
+    );
+  }
+
   private undoTicket(source: string): { kind: 'open' | 'write' | 'none'; seq: number } {
+    const action = this.stepAction;
+    this.stepAction = undefined;
     if (OPEN_SOURCES.has(source)) {
       this.openPending = true;
       return { kind: 'open', seq: ++this.writeSeq };
@@ -220,7 +354,10 @@ class PoBWorker {
     if (NOT_A_CHANGE.has(source)) {
       return { kind: 'none', seq: 0 };
     }
-    this.pendingWrite ??= source;
+    if (this.pendingWrite === undefined) {
+      this.pendingWrite = source;
+      this.pendingAction = action;
+    }
     return { kind: 'write', seq: ++this.writeSeq };
   }
 
@@ -231,7 +368,9 @@ class PoBWorker {
     if (this.openPending) {
       this.openPending = false;
       this.pendingWrite = undefined;
+      this.pendingAction = undefined;
       const saved = this.saved();
+      this.loadTreeNames();
       if (saved) {
         this.history.reset(saved.snap);
         if (payload) {
@@ -245,10 +384,17 @@ class PoBWorker {
         return;
       }
       const source = this.pendingWrite ?? 'Edit';
+      const action = this.pendingAction;
       this.pendingWrite = undefined;
+      this.pendingAction = undefined;
       const saved = this.saved();
       if (saved && this.history.open) {
-        this.history.record(source, stepLabel(source), saved.snap, Date.now());
+        this.history.record(
+          source,
+          (before) => ({ ...this.describeStep(source, action, before, saved.xml), delta: this.stepDelta(before) }),
+          saved.snap,
+          Date.now()
+        );
       }
       if (saved && payload) {
         this.rememberTick(saved.xml, payload, tickSeq);
@@ -265,7 +411,7 @@ class PoBWorker {
     clearTimeout(this.idleTimer);
     this.idleDone ??= new Promise((resolve) => (this.idleResolve = resolve));
     const check = () => {
-      if (this.ticksInFlight > 0 || this.warningsInFlight) {
+      if (this.ticksInFlight > 0 || this.warningsInFlight || this.treeNamesLoading) {
         this.idleTimer = setTimeout(check, 50);
         return;
       }
@@ -358,9 +504,13 @@ class PoBWorker {
       return { recorded: false, now };
     }
     const pending = this.pendingWrite;
+    const action = this.pendingAction;
     this.pendingWrite = undefined;
+    this.pendingAction = undefined;
     this.writeSeq++;
-    const label = pending ? stepLabel(pending) : unrecordedLabel(this.history.table.decode(before), this.history.table.decode(now));
+    const label = pending
+      ? this.describeStep(pending, action, before, this.history.table.decode(now))
+      : unrecordedLabel(this.history.table.decode(before), this.history.table.decode(now));
     return { recorded: this.history.record(pending ?? UNRECORDED, label, now, Date.now(), false), now };
   }
 
@@ -463,6 +613,7 @@ class PoBWorker {
     const calcStart = performance.now();
     const out = await calc.BuildOutput('MAIN');
     meta.calcMs = performance.now() - calcStart;
+    logInfo('calc', `calculated in ${Math.round(meta.calcMs)} ms (${source})`);
 
     const player = out?.Player;
     const mainSkill = player?.MainSkill;
@@ -639,7 +790,7 @@ class PoBWorker {
     if (remove) {
       this.currentBuild.RemoveConfigOption(key);
       this.updateStore();
-      void this.Tick('SetConfigOption: remove');
+      void this.edit('SetConfigOption: remove', configChangeLabel(key, value, true, v));
       return;
     }
 
@@ -648,7 +799,7 @@ class PoBWorker {
 
     this.currentBuild.SetConfigOption(newValue);
     this.updateStore();
-    void this.Tick('SetConfigOption: change');
+    void this.edit('SetConfigOption: change', configChangeLabel(key, value, false, v));
   }
 
   GetConfigOption(name: string): boolean | number | string | undefined {
@@ -745,7 +896,7 @@ class PoBWorker {
 
   SetMainSocketGroup(mainSocketGroup: number) {
     this.currentBuild?.SetMainSocketGroup(mainSocketGroup);
-    void this.Tick('SetMainSocketGroup');
+    void this.edit('SetMainSocketGroup', `Set the main skill to ${this.groupName(mainSocketGroup)}`);
   }
 
   DefaultGem(gemID: string, nameSpec: string, skillID: string, level: number, quality: number): pob.Gem {
@@ -770,35 +921,37 @@ class PoBWorker {
 
   SetClass(value: string) {
     this.currentBuild?.SetClass(value);
-    void this.Tick('SetClass');
+    void this.edit('SetClass', `Changed class to ${value}`);
   }
 
   SetAscendancy(value: string) {
     this.currentBuild?.SetAscendancy(value);
-    void this.Tick('SetAscendancy');
+    void this.edit('SetAscendancy', `Changed ascendancy to ${value}`);
   }
 
   SetLevel(value: number) {
     // Build.lua:218-224
     this.currentBuild?.SetCharacterLevelAutoMode(false);
     this.currentBuild?.SetLevel(value);
-    void this.Tick('SetLevel');
+    void this.edit('SetLevel', `Set the character level to ${value}`);
   }
 
   /* Build.lua:211-215 */
   SetCharacterLevelAutoMode(auto: boolean) {
     this.currentBuild?.SetCharacterLevelAutoMode(auto);
-    void this.Tick('SetCharacterLevelAutoMode');
+    void this.edit('SetCharacterLevelAutoMode', auto ? 'Switched the character level to automatic' : 'Switched the character level to manual');
   }
 
   AllocateNodes(nodeIds: number[]) {
+    this.loadTreeNames();
     this.currentBuild?.AllocateNodes(nodeIds);
-    void this.Tick('AllocateNode');
+    void this.edit('AllocateNode');
   }
 
   DeallocateNodes(nodeIds: number[]) {
+    this.loadTreeNames();
     this.currentBuild?.DeallocateNodes(nodeIds);
-    void this.Tick('DeallocateNodes');
+    void this.edit('DeallocateNodes');
   }
 
   CalculateAllocationPaths(version: string, activeNodes: number[], rootNodes: number[]) {
@@ -964,21 +1117,21 @@ class PoBWorker {
   SetCalcsSkillNumber(skillNumber: number) {
     this.currentBuild?.SetCalcsInputNumber('skill_number', skillNumber);
     this.updateStore();
-    void this.Tick('SetCalcsSkillNumber');
+    void this.edit('SetCalcsSkillNumber', `Showed ${this.groupName(skillNumber)} in Calcs`);
   }
 
   /* CalcsTab.lua:120-125 */
   SetCalcsBuffMode(buffMode: string) {
     this.currentBuild?.SetCalcsInputString('misc_buffMode', buffMode);
     this.updateStore();
-    void this.Tick('SetCalcsBuffMode');
+    void this.edit('SetCalcsBuffMode', `Set the Calcs mode to ${CALCS_MODES[buffMode] ?? buffMode}`);
   }
 
   /* CalcsTab.lua:87-91 */
   SetCalcsShowMinion(show: boolean) {
     this.currentBuild?.SetCalcsInputBool('showMinion', show);
     this.updateStore();
-    void this.Tick('SetCalcsShowMinion');
+    void this.edit('SetCalcsShowMinion', show ? 'Showed minion stats in Calcs' : 'Showed player stats in Calcs');
   }
 
   calcDetail = false;
@@ -1026,6 +1179,7 @@ class PoBWorker {
     if (this.dataReady) await this.dataReady;
     const build = builds.EmptyBuild();
     if (defaults) build?.ApplyNewBuildDefaults(defaults.level, defaults.gemQuality);
+    logInfo('build', 'started a new build');
     this.openBuild(build, 'NewBuild');
   }
 
@@ -1062,19 +1216,24 @@ class PoBWorker {
 
     const build = new TextDecoder().decode(result.value);
 
+    const start = performance.now();
     (await storage.SetBuild(path, build)).unwrap();
+    logInfo('save', `saved ${path} (${Math.round(build.length / 1024)} KB) in ${Math.round(performance.now() - start)} ms`);
   }
 
   async OpenBuild(path: string) {
     if (this.dataReady) await this.dataReady;
+    const start = performance.now();
     const result = await storage.GetBuild(path);
 
     if (!result.ok) {
-      console.error(dump(result.error));
+      console.error(`failed loading ${path}:`, dump(result.error));
       return;
     }
 
-    this.openBuild(builds.ParseBuildStr(result.value).unwrap(), 'OpenBuild');
+    const build = builds.ParseBuildStr(result.value).unwrap();
+    logInfo('load', `loaded ${path} in ${Math.round(performance.now() - start)} ms`);
+    this.openBuild(build, 'OpenBuild');
   }
 
   ClearBuild() {
@@ -1103,7 +1262,7 @@ class PoBWorker {
     }
     this.currentBuild.SetCustomModifierBlocks(blocks);
     this.updateStore();
-    void this.Tick('SetCustomModifierBlocks');
+    void this.edit('SetCustomModifierBlocks', `Edited custom modifiers (${blocks.length} block${blocks.length === 1 ? '' : 's'})`);
   }
 
   ResetConfigOptions() {
@@ -1112,7 +1271,7 @@ class PoBWorker {
     }
     this.currentBuild.ResetConfigOptions();
     this.updateStore();
-    void this.Tick('ResetConfigOptions');
+    void this.edit('ResetConfigOptions', 'Reset every config option');
   }
 
   GetConfigSets(): { sets: { id: number; title?: string }[]; active: number } {
@@ -1127,7 +1286,7 @@ class PoBWorker {
     }
     this.currentBuild.SetActiveConfigSet(configSetId);
     this.updateStore();
-    void this.Tick('SetActiveConfigSet');
+    void this.edit('SetActiveConfigSet', `Switched config set → ${this.configSetTitle(configSetId)}`);
   }
 
   /* ConfigOptions.lua:1457-1589, 2246-2286 */
@@ -1172,37 +1331,40 @@ class PoBWorker {
     }
     this.currentBuild.SetActiveSkillSet(skillSetId);
     this.updateStore();
-    void this.Tick('SetActiveSkillSet');
+    void this.edit('SetActiveSkillSet', `Switched skill set → ${this.skillSetTitle(skillSetId)}`);
   }
 
   /* SkillSetListControl.lua:48-50, SkillsTab.lua:1425-1435 */
   NewSkillSet(title: string) {
     const id = this.currentBuild?.NewSkillSet(title);
     this.updateStore();
-    void this.Tick('NewSkillSet');
+    void this.edit('NewSkillSet', `Added skill set ${title || 'Default'}`);
     return id;
   }
 
   /* SkillSetListControl.lua:14-32 */
   CopySkillSet(skillSetId: number, title: string) {
+    const from = this.skillSetTitle(skillSetId);
     const id = this.currentBuild?.CopySkillSet(skillSetId, title);
     this.updateStore();
-    void this.Tick('CopySkillSet');
+    void this.edit('CopySkillSet', `Copied skill set ${from} as ${title || 'Default'}`);
     return id;
   }
 
   /* SkillSetListControl.lua:53-79 */
   RenameSkillSet(skillSetId: number, title: string) {
+    const from = this.skillSetTitle(skillSetId);
     this.currentBuild?.RenameSkillSet(skillSetId, title);
     this.updateStore();
-    void this.Tick('RenameSkillSet');
+    void this.edit('RenameSkillSet', `Renamed skill set ${from} to ${title || 'Default'}`);
   }
 
   /* SkillSetListControl.lua:99-110 */
   DeleteSkillSet(skillSetId: number) {
+    const title = this.skillSetTitle(skillSetId);
     this.currentBuild?.DeleteSkillSet(skillSetId);
     this.updateStore();
-    void this.Tick('DeleteSkillSet');
+    void this.edit('DeleteSkillSet', `Deleted skill set ${title}`);
   }
 
   /* ListControl.lua:428-436, SkillListControl.lua:123-142 */
@@ -1212,7 +1374,7 @@ class PoBWorker {
     }
     this.currentBuild.MoveSocketGroup(from, to);
     this.updateStore();
-    void this.Tick('MoveSocketGroup');
+    void this.edit('MoveSocketGroup');
   }
 
   private itemTipStats: calculator.ItemTooltipStats = NO_TIP_STATS;
@@ -1318,7 +1480,7 @@ class PoBWorker {
       return String(result.error);
     }
     this.updateStore();
-    void this.Tick('EquipItem');
+    void this.edit('EquipItem', `Equipped ${itemTextName(text)} in ${slotName}`);
     return undefined;
   }
 
@@ -1333,7 +1495,8 @@ class PoBWorker {
       return { error: String(result.error) };
     }
     this.updateStore();
-    void this.Tick('SaveItem');
+    const slot = result.value.SlotName;
+    void this.edit('SaveItem', `Added ${itemTextName(text)}${slot ? ` in ${slot}` : ''}`);
     return { slotName: result.value.SlotName || undefined };
   }
 
@@ -1348,14 +1511,15 @@ class PoBWorker {
       return String(result.error);
     }
     this.updateStore();
-    void this.Tick('ReplaceItem');
+    void this.edit('ReplaceItem', `Edited ${itemTextName(text)}`);
     return undefined;
   }
 
   UnequipSlot(slotName: string) {
+    const name = this.slotItemName(slotName);
     this.currentBuild?.SetSlotItem(slotName, 0);
     this.updateStore();
-    void this.Tick('UnequipSlot');
+    void this.edit('UnequipSlot', name ? `Unequipped ${name} from ${slotName}` : `Emptied ${slotName}`);
   }
 
   /* ItemsTab.lua:99-102 */
@@ -1365,7 +1529,7 @@ class PoBWorker {
     }
     await exposition.SetActiveItemSet(this.currentBuild, itemSetId);
     this.updateStore();
-    void this.Tick('SetActiveItemSet');
+    void this.edit('SetActiveItemSet', `Switched item set → ${this.itemSetTitle(itemSetId)}`);
   }
 
   /* ItemSlotControl.lua:82-93 */
@@ -1388,7 +1552,7 @@ class PoBWorker {
     }
     if (result.value) {
       this.updateStore();
-      void this.Tick('EquipItemID');
+      void this.edit('EquipItemID', itemId ? `Equipped ${this.itemName(itemId)} in ${slotName}` : `Emptied ${slotName}`);
     }
     return undefined;
   }
@@ -1397,7 +1561,8 @@ class PoBWorker {
   SetFlaskActive(slotName: string, active: boolean) {
     this.currentBuild?.SetFlaskActive(slotName, active);
     this.updateStore();
-    void this.Tick('SetFlaskActive');
+    const name = this.slotItemName(slotName);
+    void this.edit('SetFlaskActive', `${active ? 'Activated' : 'Deactivated'} ${slotName}${name ? ` (${name})` : ''}`);
   }
 
   async GetTreeSpecs(): Promise<{ active: number; specs: calculator.TreeSpecRow[] } | undefined> {
@@ -1420,7 +1585,7 @@ class PoBWorker {
     }
     await exposition.SetActiveTreeSpec(this.currentBuild, specId);
     this.updateStore();
-    void this.Tick('SetActiveTreeSpec');
+    void this.edit('SetActiveTreeSpec', `Switched passive tree → ${this.specTitle(specId)}`);
   }
 
   /* PassiveSpecListControl.lua:36-42 */
@@ -1430,21 +1595,23 @@ class PoBWorker {
     }
     await exposition.NewTreeSpec(this.currentBuild, title);
     this.updateStore();
-    void this.Tick('NewTreeSpec');
+    void this.edit('NewTreeSpec', `Added passive tree ${title || 'Default'}`);
   }
 
   /* PassiveSpecListControl.lua:13-20 */
   CopyTreeSpec(specId: number, title: string) {
+    const from = this.specTitle(specId);
     this.currentBuild?.CopySpec(specId, title);
     this.updateStore();
-    void this.Tick('CopyTreeSpec');
+    void this.edit('CopyTreeSpec', `Copied passive tree ${from} as ${title || 'Default'}`);
   }
 
   /* PassiveSpecListControl.lua:46-70 */
   RenameTreeSpec(specId: number, title: string) {
+    const from = this.specTitle(specId);
     this.currentBuild?.RenameSpec(specId, title);
     this.updateStore();
-    void this.Tick('RenameTreeSpec');
+    void this.edit('RenameTreeSpec', `Renamed passive tree ${from} to ${title || 'Default'}`);
   }
 
   // TreeTab.lua:841-991
@@ -1459,9 +1626,10 @@ class PoBWorker {
   }
 
   RemoveTattoo(nodeId: number) {
+    this.loadTreeNames();
     if (this.currentBuild?.RemoveTattoo(nodeId)) {
       this.updateStore();
-      void this.Tick('RemoveTattoo');
+      void this.edit('RemoveTattoo', `Removed the tattoo from ${this.nodeName(nodeId)}`);
     }
   }
 
@@ -1534,12 +1702,14 @@ class PoBWorker {
     if (!this.currentBuild) {
       return 'no build';
     }
+    this.loadTreeNames();
     const result = await exposition.SelectMasteryEffect(this.currentBuild, nodeId, effectId, [...path]);
     if (!result.ok) {
       return String(result.error);
     }
     this.updateStore();
-    void this.Tick('SelectMasteryEffect');
+    const effect = this.treeNames?.effects.get(effectId);
+    void this.edit('SelectMasteryEffect', effect ? `Chose ${effect} (${this.nodeName(nodeId)})` : `Chose a mastery effect on ${this.nodeName(nodeId)}`);
     return undefined;
   }
 
@@ -1563,7 +1733,7 @@ class PoBWorker {
     }
     if (result.value) {
       this.updateStore();
-      void this.Tick('SocketTreeJewel');
+      void this.edit('SocketTreeJewel', itemId ? `Socketed ${this.itemName(itemId)} in ${this.nodeName(nodeId)}` : `Emptied ${this.nodeName(nodeId)}`);
     }
     return undefined;
   }
@@ -1573,9 +1743,10 @@ class PoBWorker {
     if (!this.currentBuild) {
       return;
     }
+    const title = this.specTitle(specId);
     await exposition.DeleteTreeSpec(this.currentBuild, specId);
     this.updateStore();
-    void this.Tick('DeleteTreeSpec');
+    void this.edit('DeleteTreeSpec', `Deleted passive tree ${title}`);
   }
 
   private compareB?: { build: pob.PathOfBuilding; name: string; seq: number; side: CompareSideData };
@@ -1824,7 +1995,7 @@ class PoBWorker {
       this.currentBuild.SetConfigOption(input);
     }
     this.updateStore();
-    void this.Tick('CopyCompareConfig');
+    void this.edit('CopyCompareConfig', `Copied the config of ${b.name}`);
   }
 
   UseCompareConfig(key: string) {
@@ -1837,7 +2008,7 @@ class PoBWorker {
       this.currentBuild.RemoveConfigOption(key);
     }
     this.updateStore();
-    void this.Tick('UseCompareConfig');
+    void this.edit('UseCompareConfig', `Used ${configLabel(key, reverseConfigOptions[key])} from ${b.name}`);
   }
 
   /* Build.lua:255-278 */
@@ -1845,7 +2016,8 @@ class PoBWorker {
     const out = { changed: !!c?.Changed, needsConfirm: !!c?.NeedsConfirm, className: c?.ClassName ?? '', handled: !!c?.Handled };
     if (out.changed) {
       this.updateStore();
-      void this.Tick(label);
+      const ascendancy = this.fresh((b) => b.Build.AscendClassName);
+      void this.edit(label, ascendancy && ascendancy !== 'None' ? `Changed class to ${out.className} (${ascendancy})` : `Changed class to ${out.className}`);
     }
     return out;
   }
@@ -1861,7 +2033,7 @@ class PoBWorker {
     if (!this.currentBuild) return;
     await exposition.ChangeTreeAscendancy(this.currentBuild, ascendancy);
     this.updateStore();
-    void this.Tick('ChangeTreeAscendancy');
+    void this.edit('ChangeTreeAscendancy', `Changed ascendancy to ${ascendancy}`);
   }
 
   /* PassiveMasteryControl.lua:37-43, PassiveTreeView.lua:1671-1694 */
@@ -1925,9 +2097,10 @@ class PoBWorker {
   /* PassiveSpecListControl.lua:82-87 */
   async MoveTreeSpec(from: number, to: number) {
     if (!this.currentBuild) return;
+    const title = this.specTitle(from);
     await exposition.MoveTreeSpec(this.currentBuild, from, to);
     this.updateStore();
-    void this.Tick('MoveTreeSpec');
+    void this.edit('MoveTreeSpec', `Moved passive tree ${title}`);
   }
 
   /* TreeTab.lua:812-839 */
@@ -1941,7 +2114,7 @@ class PoBWorker {
     const msg = (await exposition.ImportTreeLink(this.currentBuild, title, link)) ?? '';
     if (!msg) {
       this.updateStore();
-      void this.Tick('ImportTreeLink');
+      void this.edit('ImportTreeLink', `Imported a tree link as ${title || 'Default'}`);
     }
     return msg;
   }
@@ -1956,7 +2129,7 @@ class PoBWorker {
     if (!this.currentBuild) return '';
     const msg = (await exposition.ConvertTreeSpec(this.currentBuild, version, replace)) ?? '';
     this.updateStore();
-    void this.Tick('ConvertTreeSpec');
+    void this.edit('ConvertTreeSpec', `Converted passive tree ${this.activeSpecTitle()} to ${version.replace('_', '.')}`);
     return msg;
   }
 
@@ -1965,7 +2138,7 @@ class PoBWorker {
     if (!this.currentBuild) return '';
     const msg = (await exposition.ConvertAllTreeSpecs(this.currentBuild, version)) ?? '';
     this.updateStore();
-    void this.Tick('ConvertAllTreeSpecs');
+    void this.edit('ConvertAllTreeSpecs', `Converted all passive trees to ${version.replace('_', '.')}`);
     return msg;
   }
 
@@ -2002,7 +2175,7 @@ class PoBWorker {
     if (!this.currentBuild) return;
     await exposition.ResetTreeNodes(this.currentBuild);
     this.updateStore();
-    void this.Tick('ResetTreeNodes');
+    void this.edit('ResetTreeNodes', `Reset passive tree ${this.activeSpecTitle()}`);
   }
 
   /* TreeTab.lua:140-149 */
@@ -2010,7 +2183,7 @@ class PoBWorker {
     if (!this.currentBuild) return;
     await exposition.RemoveAllTreeTattoos(this.currentBuild);
     this.updateStore();
-    void this.Tick('RemoveAllTreeTattoos');
+    void this.edit('RemoveAllTreeTattoos', `Removed all tattoos from ${this.activeSpecTitle()}`);
   }
 
   /* TreeTab.lua:946-973 */
@@ -2032,7 +2205,7 @@ class PoBWorker {
     const ok = !!(await exposition.SelectLoadout(this.currentBuild, name));
     if (ok) {
       this.updateStore();
-      void this.Tick('SelectLoadout');
+      void this.edit('SelectLoadout', `Switched loadout → ${name}`);
     }
     return ok;
   }
@@ -2042,7 +2215,7 @@ class PoBWorker {
     if (!this.currentBuild) return;
     await exposition.NewLoadout(this.currentBuild, name);
     this.updateStore();
-    void this.Tick('NewLoadout');
+    void this.edit('NewLoadout', `Added loadout ${name}`);
   }
 
   /* Build.lua:211-217 */
@@ -2061,7 +2234,7 @@ class PoBWorker {
     if (!this.currentBuild) return;
     if (await exposition.SetWeaponSet(this.currentBuild, second)) {
       this.updateStore();
-      void this.Tick('SetWeaponSet');
+      void this.edit('SetWeaponSet', `Switched to weapon set ${second ? 2 : 1}`);
     }
   }
 
@@ -2075,30 +2248,36 @@ class PoBWorker {
     const b = this.currentBuild;
     if (!b) return;
     let source: string;
+    let action: string;
     switch (op.op) {
       case 'new':
         await exposition.NewItemSet(b, op.title);
         source = 'NewItemSet';
+        action = `Added item set ${op.title || 'Default'}`;
         break;
       case 'copy':
+        action = `Copied item set ${this.itemSetTitle(op.id)} as ${op.title || 'Default'}`;
         await exposition.CopyItemSet(b, op.id, op.title);
         source = 'CopyItemSet';
         break;
       case 'rename':
+        action = `Renamed item set ${this.itemSetTitle(op.id)} to ${op.title || 'Default'}`;
         await exposition.RenameItemSet(b, op.id, op.title);
         source = 'RenameItemSet';
         break;
       case 'delete':
+        action = `Deleted item set ${this.itemSetTitle(op.id)}`;
         await exposition.DeleteItemSet(b, op.id);
         source = 'DeleteItemSet';
         break;
       case 'move':
+        action = `Moved item set ${this.fresh((x) => x.Items.ItemSets?.[op.from]?.Title) || 'Default'}`;
         await exposition.MoveItemSet(b, op.from + 1, op.to + 1);
         source = 'MoveItemSet';
         break;
     }
     this.updateStore();
-    void this.Tick(source);
+    void this.edit(source, action);
   }
 
   /* ItemListControl.lua:331-369 */
@@ -2108,9 +2287,10 @@ class PoBWorker {
 
   /* ItemsTab.lua:1768-1815 */
   async DeleteItem(itemId: number) {
+    const name = this.itemName(itemId);
     if (this.currentBuild && (await exposition.DeleteItem(this.currentBuild, itemId))) {
       this.updateStore();
-      void this.Tick('DeleteItem');
+      void this.edit('DeleteItem', `Deleted ${name}`);
     }
   }
 
@@ -2118,7 +2298,7 @@ class PoBWorker {
   async DeleteUnusedItems() {
     if (this.currentBuild && (await exposition.DeleteUnusedItems(this.currentBuild))) {
       this.updateStore();
-      void this.Tick('DeleteUnusedItems');
+      void this.edit('DeleteUnusedItems', 'Deleted the unused items');
     }
   }
 
@@ -2127,7 +2307,7 @@ class PoBWorker {
     if (!this.currentBuild) return;
     await exposition.DeleteAllItems(this.currentBuild);
     this.updateStore();
-    void this.Tick('DeleteAllItems');
+    void this.edit('DeleteAllItems', 'Deleted every item');
   }
 
   /* ItemsTab.lua:1731-1765 */
@@ -2135,14 +2315,16 @@ class PoBWorker {
     if (!this.currentBuild) return;
     await exposition.SortItems(this.currentBuild);
     this.updateStore();
-    void this.Tick('SortItems');
+    void this.edit('SortItems', 'Sorted the item list');
   }
 
   /* ItemListControl.lua:290-314 */
   async ToggleEquipItem(itemId: number, second: boolean) {
+    const name = this.itemName(itemId);
     if (this.currentBuild && (await exposition.ToggleEquipItem(this.currentBuild, itemId, second))) {
       this.updateStore();
-      void this.Tick('ToggleEquipItem');
+      const slot = this.activeSlotItem((slots) => slots.find((s) => s.ItemID === itemId)?.ItemID);
+      void this.edit('ToggleEquipItem', slot ? `Equipped ${name}` : `Unequipped ${name}`);
     }
   }
 
@@ -2306,7 +2488,7 @@ class PoBWorker {
     if (!this.currentBuild) return;
     this.currentBuild.SetSpectres(ids);
     this.updateStore();
-    void this.Tick('SetSpectres');
+    void this.edit('SetSpectres', `Set the spectre library to ${ids.length} spectre${ids.length === 1 ? '' : 's'}`);
   }
 
   /* ConfigTab.lua:721-766 */
@@ -2348,25 +2530,31 @@ class PoBWorker {
   ) {
     const b = this.currentBuild;
     if (!b) return;
+    let action: string;
     switch (op.op) {
       case 'new':
+        action = `Added config set ${op.title || 'Default'}`;
         b.NewConfigSet(op.title);
         break;
       case 'copy':
+        action = `Copied config set ${this.configSetTitle(op.id)} as ${op.title || 'Default'}`;
         b.CopyConfigSet(op.id, op.title);
         break;
       case 'rename':
+        action = `Renamed config set ${this.configSetTitle(op.id)} to ${op.title || 'Default'}`;
         b.RenameConfigSet(op.id, op.title);
         break;
       case 'delete':
+        action = `Deleted config set ${this.configSetTitle(op.id)}`;
         b.DeleteConfigSet(op.id);
         break;
       case 'move':
+        action = `Moved config set ${this.fresh((x) => x.Config.ConfigSets?.[op.from]?.Title) || 'Default'}`;
         b.MoveConfigSet(op.from, op.to);
         break;
     }
     this.updateStore();
-    void this.Tick(`EditConfigSets: ${op.op}`);
+    void this.edit(`EditConfigSets: ${op.op}`, action);
   }
 
   /* SkillsTab.lua:185-198 */
@@ -2851,7 +3039,7 @@ class PoBWorker {
   async DropItemOnSlot(slotName: string, id: number, kind: string, name: string): Promise<boolean> {
     if (!this.currentBuild || !(await exposition.DropItemOnSlot(this.currentBuild, slotName, id, kind, name))) return false;
     this.updateStore();
-    void this.Tick('DropItemOnSlot');
+    void this.edit('DropItemOnSlot', `Equipped ${kind === 'build' ? this.itemName(id) : name || this.itemName(id)} in ${slotName}`);
     return true;
   }
 
@@ -2859,7 +3047,7 @@ class PoBWorker {
   async EquipItemInSet(setId: number, id: number, kind: string, name: string, second: boolean): Promise<boolean> {
     if (!this.currentBuild || !(await exposition.EquipItemInSet(this.currentBuild, setId, id, kind, name, second))) return false;
     this.updateStore();
-    void this.Tick('EquipItemInSet');
+    void this.edit('EquipItemInSet', `Equipped ${kind === 'build' ? this.itemName(id) : name || this.itemName(id)} in item set ${this.itemSetTitle(setId)}`);
     return true;
   }
 
@@ -2885,7 +3073,7 @@ class PoBWorker {
     const id = await exposition.ImportSharedItemSet(this.currentBuild, index);
     if (id) {
       this.updateStore();
-      void this.Tick('ImportSharedItemSet');
+      void this.edit('ImportSharedItemSet', `Imported shared item set ${this.itemSetTitle(id)}`);
     }
     return id;
   }
@@ -2911,7 +3099,7 @@ class PoBWorker {
     const [, ok] = await exposition.AddDBItem(this.currentBuild, kind, name, equip, second);
     if (!ok) return false;
     this.updateStore();
-    void this.Tick('AddDBItem');
+    void this.edit('AddDBItem', equip ? `Equipped ${name}` : `Added ${name}`);
     return true;
   }
 
@@ -2958,7 +3146,7 @@ class PoBWorker {
     if (!b || !this.currentBuild) return;
     this.currentBuild.CopyCompareSpec(b.build, andUse);
     this.updateStore();
-    void this.Tick('CopyCompareSpec');
+    void this.edit('CopyCompareSpec', andUse ? `Copied and switched to the passive tree of ${b.name}` : `Copied the passive tree of ${b.name}`);
   }
 
   /* CompareTab.lua:1439-1459 */
@@ -2966,7 +3154,7 @@ class PoBWorker {
     if (!this.currentBuild) return;
     this.currentBuild.AddItem(text);
     this.updateStore();
-    void this.Tick('CopyCompareItem');
+    void this.edit('CopyCompareItem', `Copied ${itemTextName(text)}${this.compareB ? ` from ${this.compareB.name}` : ''}`);
   }
 
   /* BuildList.lua:145 */
@@ -3027,26 +3215,26 @@ class PoBWorker {
     return stats.map((stat) => ({ stat, with: a[stat] ?? 0, without: z[stat] ?? 0 }));
   }
 
-  private partyWrite(source: string, write: (b: pob.PathOfBuilding) => void) {
+  private partyWrite(source: string, action: string, write: (b: pob.PathOfBuilding) => void) {
     if (!this.currentBuild) return;
     write(this.currentBuild);
     this.updateStore();
-    void this.Tick(source);
+    void this.edit(source, action);
   }
 
   SetPartyBuffer(name: string, text: string) {
-    this.partyWrite('SetPartyBuffer', (b) => b.SetPartyBuffer(name, text));
+    this.partyWrite('SetPartyBuffer', `Edited the party ${name}`, (b) => b.SetPartyBuffer(name, text));
   }
 
   SetPartyOptions(destination: string, append: boolean, advanced: boolean) {
-    this.partyWrite('SetPartyOptions', (b) => b.SetPartyOptions(destination, append, advanced));
+    this.partyWrite('SetPartyOptions', 'Changed the party options', (b) => b.SetPartyOptions(destination, append, advanced));
   }
 
   /* PartyTab.lua:298-325 */
   ImportParty(code: string, destination: string, append: boolean) {
     const xml = pob.DecodeDecompress(code).unwrap();
     let err: Error | undefined;
-    this.partyWrite('ImportParty', (b) => {
+    this.partyWrite('ImportParty', `Imported a party member into ${destination}`, (b) => {
       try {
         b.ImportParty(xml, destination, append).unwrap();
       } catch (e) {
@@ -3057,15 +3245,15 @@ class PoBWorker {
   }
 
   ClearParty(destination: string) {
-    this.partyWrite('ClearParty', (b) => b.ClearParty(destination));
+    this.partyWrite('ClearParty', `Cleared the party ${destination}`, (b) => b.ClearParty(destination));
   }
 
   DisablePartyEffects() {
-    this.partyWrite('DisablePartyEffects', (b) => b.DisablePartyEffects());
+    this.partyWrite('DisablePartyEffects', 'Disabled the party effects', (b) => b.DisablePartyEffects());
   }
 
   RebuildParty() {
-    this.partyWrite('RebuildParty', (b) => b.RebuildParty());
+    this.partyWrite('RebuildParty', 'Rebuilt the party', (b) => b.RebuildParty());
   }
 
   /* GemSelectControl.lua:620-627 */
@@ -3093,7 +3281,7 @@ class PoBWorker {
     const on = !b.StatDifferencesShown();
     b.SetShowStatDifferences(on);
     this.updateStore();
-    void this.Tick('ToggleStatDifferences');
+    void this.edit('ToggleStatDifferences', on ? 'Showed stat differences' : 'Hid stat differences');
     return on;
   }
 
@@ -3132,7 +3320,7 @@ class PoBWorker {
     if (!id) return false;
     if (before) this.currentBuild?.MoveItem(id, before);
     this.updateStore();
-    void this.Tick('AddSharedItem');
+    void this.edit('AddSharedItem', `Added shared item ${this.itemName(id)}`);
     return true;
   }
 
@@ -3143,7 +3331,7 @@ class PoBWorker {
     if (!ok) return false;
     if (before) this.currentBuild.MoveItem(id, before);
     this.updateStore();
-    void this.Tick('AddDBItem');
+    void this.edit('AddDBItem', `Added ${name}`);
     return true;
   }
 
@@ -3151,7 +3339,7 @@ class PoBWorker {
   MoveItem(id: number, before: number) {
     this.currentBuild?.MoveItem(id, before);
     this.updateStore();
-    void this.Tick('MoveItem');
+    void this.edit('MoveItem', `Moved ${this.itemName(id)}`);
   }
 
   /* ItemsTab.lua:1817-1869 */
@@ -3385,7 +3573,7 @@ class PoBWorker {
     if (id && socketID !== undefined) this.timeless.Socket(this.currentBuild, socketID, id);
     if (id) {
       this.updateStore();
-      void this.Tick('AddTimelessResult');
+      void this.edit('AddTimelessResult', `Added ${this.itemName(id)}${socketID !== undefined ? ` in ${this.nodeName(socketID)}` : ''}`);
     }
     return id;
   }
@@ -3423,7 +3611,7 @@ class PoBWorker {
   ImportPartyMember(code: string, destination: string, append: boolean) {
     const xml = pob.DecodeDecompress(code).unwrap();
     let err: Error | undefined;
-    this.partyWrite('ImportParty', (b) => {
+    this.partyWrite('ImportParty', `Imported a party member into ${destination}`, (b) => {
       try {
         b.AddPartyMember(xml, destination, append).unwrap();
       } catch (e) {
@@ -3434,11 +3622,14 @@ class PoBWorker {
   }
 
   SetPartyMemberActive(i: number, active: boolean) {
-    this.partyWrite('SetPartyMemberActive', (b) => b.SetPartyMemberActive(i, active));
+    this.partyWrite('SetPartyMemberActive', `${active ? 'Enabled' : 'Disabled'} party member ${this.GetPartyMembers()[i]?.name ?? i + 1}`, (b) =>
+      b.SetPartyMemberActive(i, active)
+    );
   }
 
   RemovePartyMember(i: number) {
-    this.partyWrite('RemovePartyMember', (b) => b.RemovePartyMember(i));
+    const name = this.GetPartyMembers()[i]?.name ?? String(i + 1);
+    this.partyWrite('RemovePartyMember', `Removed party member ${name}`, (b) => b.RemovePartyMember(i));
   }
 
   private livePower?: exposition.PowerBuilder;
@@ -3591,7 +3782,7 @@ class PoBWorker {
   async OptimiseSockets(slotName: string): Promise<boolean> {
     if (!this.currentBuild || !(await exposition.OptimiseSockets(this.currentBuild, slotName))) return false;
     this.updateStore();
-    void this.Tick('OptimiseSockets');
+    void this.edit('OptimiseSockets', `Optimised the sockets of ${slotName}`);
     return true;
   }
 
@@ -3605,7 +3796,7 @@ class PoBWorker {
     if (!this.currentBuild) return;
     await exposition.ChangeSecondaryAscendancy(this.currentBuild, ascendClassId);
     this.updateStore();
-    void this.Tick('ChangeSecondaryAscendancy');
+    void this.edit('ChangeSecondaryAscendancy', ascendClassId ? 'Chose a secondary ascendancy' : 'Removed the secondary ascendancy');
   }
 
   private compareCalcsEnvs: calculator.Environment[] = [];
@@ -3822,7 +4013,7 @@ class PoBWorker {
     const id = this.currentBuild.AddItem(text);
     await exposition.SocketTreeJewel(this.currentBuild, nodeId, id);
     this.updateStore();
-    void this.Tick('EquipCompareJewel');
+    void this.edit('EquipCompareJewel', `Socketed ${itemTextName(text)}${this.compareB ? ` from ${this.compareB.name}` : ''} in ${this.nodeName(nodeId)}`);
   }
 
   /* Calcs.lua:37-70 */
@@ -3883,7 +4074,7 @@ class PoBWorker {
     const result = exposition.AddTattoo(this.currentBuild, nodeId, dn);
     if (!result.ok) return String(result.error);
     this.updateStore();
-    void this.Tick('AddTattoo');
+    void this.edit('AddTattoo', `Tattooed ${this.nodeName(nodeId)} with ${dn}`);
     return undefined;
   }
 
@@ -3894,7 +4085,7 @@ class PoBWorker {
     const result = await exposition.ImportItemsAndSkills(this.currentBuild, json, true, true, false);
     if (!result.ok) return { ok: false, text: result.error.message };
     this.updateStore();
-    void this.Tick('ImportItemsAndSkills');
+    void this.edit('ImportItemsAndSkills', 'Imported items and skills');
     return { ok: true, text: result.value };
   }
 
@@ -3905,7 +4096,7 @@ class PoBWorker {
     const result = await exposition.ImportPassiveTreeAndJewels(this.currentBuild, json, true);
     if (!result.ok) return { ok: false, text: result.error.message };
     this.updateStore();
-    void this.Tick('ImportPassiveTreeAndJewels');
+    void this.edit('ImportPassiveTreeAndJewels', 'Imported the passive tree and jewels');
     return { ok: true, text: result.value };
   }
 
@@ -3916,7 +4107,7 @@ class PoBWorker {
     const result = await exposition.ImportAccountPassiveTree(this.currentBuild, character, passives, deleteJewels);
     if (!result.ok) return { ok: false, text: result.error.message };
     this.updateStore();
-    void this.Tick('ImportAccountPassiveTree');
+    void this.edit('ImportAccountPassiveTree', `Imported the passive tree of ${character}`);
     return { ok: true, text: result.value };
   }
 
@@ -3933,7 +4124,7 @@ class PoBWorker {
     const result = await exposition.ImportAccountItems(this.currentBuild, character, items, clearItems, clearSkills, ignoreWeaponSwap);
     if (!result.ok) return { ok: false, text: result.error.message };
     this.updateStore();
-    void this.Tick('ImportAccountItems');
+    void this.edit('ImportAccountItems', `Imported the items and skills of ${character}`);
     return { ok: true, text: result.value };
   }
 

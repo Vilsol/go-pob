@@ -47,7 +47,9 @@ export const currentBuildPath = new PersistedState<string | undefined>('currentB
 let uiTickLock = false;
 let uiTickAfter = false;
 let uiTickAfterSource = '';
-export const UITick = (source: string) => {
+let uiTickAfterAction: string | undefined;
+// action: the undo history's label for this write; without one the worker names it from what changed
+export const UITick = (source: string, action?: string) => {
   if (!syncWrap) {
     return;
   }
@@ -55,18 +57,19 @@ export const UITick = (source: string) => {
   if (uiTickLock) {
     uiTickAfter = true;
     uiTickAfterSource = source;
+    uiTickAfterAction = action;
     return;
   }
   uiTickLock = true;
 
   syncWrap
-    .Tick(source)
+    .Edit(source, action)
     .catch(logError)
     .then(() => {
       uiTickLock = false;
       if (uiTickAfter) {
         uiTickAfter = false;
-        UITick(uiTickAfterSource);
+        UITick(uiTickAfterSource, uiTickAfterAction);
       }
     })
     .catch(logError);

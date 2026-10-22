@@ -31,6 +31,7 @@
   import TimelessDialog from './TimelessDialog.svelte';
   import { statPins } from './stat_pins.svelte';
   import { editDelta } from '$lib/display/stat_delta';
+  import { appLog, bugReport, logTime } from '$lib/app_log';
 
   // phone: this bar becomes the phone frame around the page, with the sidebar in its stats sheet
   type Props = { phone?: boolean; label?: string; mainClass?: string; children?: Snippet };
@@ -93,7 +94,7 @@
     const min = Math.floor((now - at) / 60_000);
     return min < 1 ? 'just now' : min < 60 ? `${min} min ago` : new Date(at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
-  const history = $derived(undo.steps.map((s) => ({ action: s.action, page: s.page, when: ago(s.at) })));
+  const history = $derived(undo.steps.map((s) => ({ action: s.action, page: s.page, kind: s.kind, delta: s.delta, when: ago(s.at) })));
   let saveAs = $state(false);
   let settings = $state(false);
   let about = $state(false);
@@ -121,6 +122,25 @@
       .then((bi) => (version = bi?.Main?.Version || '(devel)'))
       .catch(logError);
   });
+
+  const logs = $derived($appLog.map((l) => ({ time: logTime(l.at), level: l.level, src: l.src, msg: l.msg })));
+  const copyLogs = async () => {
+    const [bi, gameData] = await Promise.all([syncWrap?.BuildInfo(), syncWrap?.GameDataVersion()]).catch(() => [undefined, undefined]);
+    const vcs = Object.values(bi?.Settings ?? {}) as { Key: string; Value: string }[];
+    const setting = (k: string) => vcs.find((s) => s?.Key === k)?.Value;
+    const revision = setting('vcs.revision');
+    const nav = navigator as Navigator & { userAgentData?: { platform?: string } };
+    const text = bugReport($appLog, {
+      version: (import.meta.env.VITE_VERSION as string | undefined) || bi?.Main?.Version || '(devel)',
+      commit: revision && `${revision}${setting('vcs.modified') === 'true' ? ' (modified)' : ''}`,
+      built: setting('vcs.time'),
+      gameData,
+      userAgent: nav.userAgent,
+      platform: nav.userAgentData?.platform || nav.platform,
+      language: nav.language
+    });
+    await navigator.clipboard?.writeText(text).catch(logError);
+  };
 
   // Build.lua:301-415, 753-878
   const HEADER = 'Loadouts:';
@@ -308,7 +328,8 @@
     loadout={loadoutShown}
     onloadout={chooseLoadout}
     issues={$showWarnings ? ($sidebar?.warnings ?? []) : []}
-    logs={[]}
+    {logs}
+    oncopylogs={copyLogs}
     {dirty}
     onnavigate={(t: { href: string }, e: Event) => {
       if (e instanceof KeyboardEvent) void goto(t.href);

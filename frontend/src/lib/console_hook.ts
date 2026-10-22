@@ -1,3 +1,5 @@
+import { captureUncaught, emitLog, goLogLine, inWorker, log } from './app_log';
+
 const ansiRegex = new RegExp(
   [
     '[\\u001B\\u009B][[\\]()#;?]*(?:(?:(?:(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]+)*|[a-zA-Z\\d]+(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?\\u0007)',
@@ -33,9 +35,18 @@ const cssMap: Record<string, string> = {
   '99m': 'color:unset;'
 };
 
+const forward = inWorker();
+const src = forward ? (self as { name?: string }).name || 'worker' : 'worker';
+
 const oldLog = console.log;
 console.log = (...args) => {
   if (args.length == 1 && typeof args[0] === 'string' && args[0].match(ansiRegex)?.length) {
+    if (forward) {
+      for (const line of args[0].split('\n')) {
+        const go = goLogLine(line);
+        if (go) emitLog({ at: Date.now(), level: go.level, src: 'go', msg: go.msg });
+      }
+    }
     const allAnsiCodes = args[0].matchAll(ansiRegex);
     const cssMapped = [...allAnsiCodes].map((c) => cssMap[c[1]] || '');
     return oldLog('%c[go] ' + args[0].replaceAll(ansiRegex, '%c'), ...['color: gray', ...cssMapped]);
@@ -48,3 +59,17 @@ console.log = (...args) => {
 
   return oldLog('%c%s%c', 'color: gray', `[${location}]`, 'color: inherit', ...args);
 };
+
+if (forward) {
+  const oldError = console.error;
+  const oldWarn = console.warn;
+  console.error = (...args) => {
+    log('error', src, ...args);
+    oldError(...args);
+  };
+  console.warn = (...args) => {
+    log('warn', src, ...args);
+    oldWarn(...args);
+  };
+  captureUncaught(self, src);
+}

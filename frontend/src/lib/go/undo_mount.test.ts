@@ -5,6 +5,8 @@ import { render, fireEvent, cleanup, within } from '@testing-library/svelte';
 import { get } from 'svelte/store';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
+import { brotliDecompressSync } from 'node:zlib';
+import { cachedAsset } from '../../../e2e/support/data_cache';
 
 afterEach(cleanup);
 
@@ -79,7 +81,7 @@ describe('the worker records a step per write and restores it', () => {
     later();
     workerInstance.SetConfigOption('enemyLevel', 70);
     await settle();
-    expect(actions()).toEqual(['change a config option', 'change level']);
+    expect(actions()).toEqual(['Set Enemy Level to 70', `Set the character level to ${level0 + 1}`]);
     expect(workerInstance.GetUndoHistory().steps.map((s) => s.page)).toEqual(['Config', 'Tree']);
 
     const object = workerInstance.currentBuild;
@@ -108,7 +110,7 @@ describe('the worker records a step per write and restores it', () => {
     workerInstance.SetConfigOption('enemyLevel', 60);
     await settle();
     expect(workerInstance.GetUndoHistory().undone).toBe(0);
-    expect(actions()).toEqual(['change a config option', 'change level']);
+    expect(actions()).toEqual(['Set Enemy Level to 60', `Set the character level to ${level0 + 1}`]);
     expect(workerInstance.Redo().undone).toBe(0);
     expect(enemyLevel()).toBe(60);
   }, 60_000);
@@ -135,7 +137,7 @@ describe('the worker records a step per write and restores it', () => {
       workerInstance.SetLevel(level0 + n);
       await settle();
     }
-    expect(actions()).toEqual(['change level']);
+    expect(actions(), 'the joined step is named by its last write').toEqual([`Set the character level to ${level0 + 3}`]);
     workerInstance.Undo();
     await settle();
     expect(level()).toBe(level0);
@@ -157,7 +159,7 @@ describe('the worker records a step per write and restores it', () => {
     later();
     await workerInstance.DeleteTreeSpec(3);
     await settle();
-    expect(actions()[0]).toBe('delete a passive tree');
+    expect(actions()[0]).toBe(`Deleted passive tree ${before.titles[2]}`);
     const after = await trees();
     expect(after.active).toBe(2);
     expect(after.titles).toEqual(before.titles.filter((_, i) => i !== 2));
@@ -178,7 +180,7 @@ describe('the worker records a step per write and restores it', () => {
     workerInstance.currentBuild!.SetNotes('typed after the level change');
     const view = workerInstance.Undo();
     await settle();
-    expect(view.steps.map((s) => s.action)).toEqual(['edit notes', 'change level']);
+    expect(view.steps.map((s) => s.action)).toEqual(['Edited the notes', `Set the character level to ${level1}`]);
     expect(view.undone).toBe(1);
     expect(workerInstance.currentBuild!.Notes).toBe(notes0);
     expect(level()).toBe(level1);
@@ -194,7 +196,7 @@ describe('the worker records a step per write and restores it', () => {
     expect(actions()).toEqual([]);
     later();
     await workerInstance.Tick('SetLevel');
-    await vi.waitFor(() => expect(actions(), 'the control: a write Tick records the same change').toEqual(['change level']));
+    await vi.waitFor(() => expect(actions(), 'the control: a write Tick records the same change').toEqual(['Changed the character level']));
   }, 60_000);
 
   it('a write made while the opened build is still calculating does not leave the build without a history', async () => {
@@ -208,7 +210,7 @@ describe('the worker records a step per write and restores it', () => {
     later();
     workerInstance.SetLevel(level1 + 1);
     await settle();
-    expect(actions()).toEqual(['change level']);
+    expect(actions()).toEqual([`Set the character level to ${level1 + 1}`]);
     workerInstance.Undo();
     await settle();
     expect(level()).toBe(level1);
@@ -224,6 +226,53 @@ describe('the worker records a step per write and restores it', () => {
     expect(actions()).toEqual([]);
     workerInstance.ClearBuild();
     expect(workerInstance.Undo()).toEqual({ steps: [], undone: 0, max: 50 });
+  }, 60_000);
+});
+
+describe('each step is named from what it changed', () => {
+  it('a deallocation names the most notable node, a relabel names the group, an unequip names the item', async () => {
+    const rawTree = (v: string) => {
+      const a = cachedAsset(`https://data.pob.gg/data/${v.replace('_', '.')}/tree/data.json.br`);
+      if (a.status !== 200) throw new Error(`REFUSING: no ${v} tree in the bundle cache`);
+      return brotliDecompressSync(a.body).toString('utf8');
+    };
+    vi.spyOn(types.exposition, 'GetRawTree').mockImplementation((v) => Promise.resolve(new TextEncoder().encode(rawTree(v))));
+    await importBuild('0280-elementalist-fireball.xml');
+    const xml0 = serialize();
+    const version = /<Spec(?=\s)[^>]*treeVersion="([^"]+)"/.exec(xml0.slice(xml0.indexOf('<Tree')))![1];
+    const tree = JSON.parse(rawTree(version)) as { nodes: Record<string, { name?: string; isNotable?: boolean; isKeystone?: boolean }> };
+    const allocated = workerInstance.GetPassiveNodes();
+    const notable = allocated.find((id) => tree.nodes[id]?.isNotable && !tree.nodes[id]?.isKeystone)!;
+    const small = allocated.find((id) => tree.nodes[id]?.name && !tree.nodes[id]?.isNotable && !tree.nodes[id]?.isKeystone && id !== notable)!;
+    expect(notable && small, 'the build has a notable and a small passive').toBeTruthy();
+
+    later();
+    workerInstance.DeallocateNodes([small, notable]);
+    await settle();
+    expect(actions()[0]).toBe(`Deallocated ${tree.nodes[notable].name} (+1 dependent node)`);
+
+    const skillSet = workerInstance.currentBuild!.ActiveSkillSetIndex();
+    later();
+    workerInstance.currentBuild!.Skills.SkillSets[skillSet].Skills[0].Label = 'Opening';
+    await workerInstance.Edit('socketGroupLabel');
+    await settle();
+    expect(actions()[0]).toMatch(/^Renamed .+ to Opening$/);
+
+    const items = workerInstance.currentBuild!.Items.Items ?? [];
+    const sets = workerInstance.currentBuild!.Items.ItemSets;
+    const slot = (sets.find((s) => Number(s.ID) === workerInstance.currentBuild!.Items.ActiveItemSet) ?? sets[0]).Slots!.find(
+      (sl) => sl.Name === 'Body Armour'
+    )!;
+    const text = items.find((i) => i.ID === slot.ItemID)!.Text;
+    const name = text
+      .split('\n')
+      .find((l) => l.trim() && !/^(Item Class|Rarity):/.test(l.trim()))!
+      .trim();
+    later();
+    workerInstance.UnequipSlot('Body Armour');
+    await settle();
+    expect(actions()[0]).toBe(`Unequipped ${name} from Body Armour`);
+    expect(workerInstance.GetUndoHistory().steps.map((s) => s.kind)).toEqual(['item', 'gem', 'tree']);
   }, 60_000);
 });
 
@@ -246,9 +295,10 @@ describe('the top bar shows the history and drives it', () => {
     await settle();
     tickEnded();
 
-    const undo = await view.findByRole('button', { name: 'Undo: change a config option (Ctrl+Z)' });
+    const levelStep = `Set the character level to ${level0 + 1}`;
+    const undo = await view.findByRole('button', { name: 'Undo: Set Enemy Level to 70 (Ctrl+Z)' });
     await fireEvent.click(undo);
-    await view.findByRole('button', { name: 'Undo: change level (Ctrl+Z)' });
+    await view.findByRole('button', { name: `Undo: ${levelStep} (Ctrl+Z)` });
     expect(enemyLevel()).toBe(enemy0);
 
     await fireEvent.keyDown(window, { key: 'z', ctrlKey: true });
@@ -256,9 +306,9 @@ describe('the top bar shows the history and drives it', () => {
     expect(level()).toBe(level0);
 
     await fireEvent.keyDown(window, { key: 'y', ctrlKey: true });
-    await view.findByRole('button', { name: 'Undo: change level (Ctrl+Z)' });
+    await view.findByRole('button', { name: `Undo: ${levelStep} (Ctrl+Z)` });
     expect(level()).toBe(level0 + 1);
-    expect(view.getByRole('button', { name: 'Redo: change a config option (Ctrl+Y / Ctrl+Shift+Z)' })).toBeDefined();
+    expect(view.getByRole('button', { name: 'Redo: Set Enemy Level to 70 (Ctrl+Y / Ctrl+Shift+Z)' })).toBeDefined();
   }, 60_000);
 
   // Main.lua:209-211, 230-241
@@ -315,7 +365,7 @@ describe('the top bar shows the history and drives it', () => {
       await settle();
     }
     tickEnded();
-    await view.findByRole('button', { name: 'Undo: change level (Ctrl+Z)' });
+    await view.findByRole('button', { name: `Undo: Set the character level to ${level0 + 3} (Ctrl+Z)` });
     await fireEvent.click(view.getByRole('button', { name: /^Undo history/ }));
     await vi.waitFor(() => expect(view.getAllByRole('menuitem')).toHaveLength(3));
     const items = view.getAllByRole('menuitem');
@@ -408,7 +458,7 @@ describe('the Calcs inputs and the party buffers are steps', () => {
     later();
     workerInstance.ImportParty(types.pob.CompressEncode(exporter).unwrap(), 'All', false);
     await settle();
-    expect(actions().slice(0, 2)).toEqual(['import a party member', 'change the calculation mode']);
+    expect(actions().slice(0, 2)).toEqual(['Imported a party member into All', `Set the Calcs mode to ${mode0 === 'BUFFED' ? 'In Combat' : 'Buffed'}`]);
     expect(workerInstance.GetUndoHistory().steps[0].page).toBe('Party');
     expect(workerInstance.GetParty()!.buffers.Curse).toContain('Frostbite');
 

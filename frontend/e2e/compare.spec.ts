@@ -252,7 +252,11 @@ test('the tree, items, skills and config views read both builds; Use and Take wr
       return expectedLines(await go.outputs(a));
     }
   );
-  await expect(page.getByRole('button', { name: 'Undo: use a compared config option (Ctrl+Z)' })).toBeEnabled();
+  await expect(
+    page.getByRole('button', {
+      name: new RegExp(`^Undo: Used ${label.replace(/[\s:?]+$/, '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&')} from .+ \\(Ctrl\\+Z\\)$`)
+    })
+  ).toBeEnabled();
 
   await page.getByRole('tab', { name: 'Tree' }).click();
   const diffs = page.getByRole('region', { name: 'Node differences' });

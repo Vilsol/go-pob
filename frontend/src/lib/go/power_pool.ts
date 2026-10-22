@@ -1,5 +1,6 @@
 import type { calculator } from '../types';
 import PowerWorker from './power_worker?worker';
+import { emitLog, isLogMessage, log } from '$lib/app_log';
 
 export type PowerPoolRequest =
   | { type: 'boot'; module: WebAssembly.Module }
@@ -44,7 +45,7 @@ export class PowerPool {
   private spawn(): Slot {
     const module = this.module();
     if (!module) throw new Error('the wasm module is not compiled yet');
-    const worker = new PowerWorker();
+    const worker = new PowerWorker({ name: 'power' });
     let ready!: () => void;
     let failed!: (err: Error) => void;
     const slot: Slot = {
@@ -63,10 +64,14 @@ export class PowerPool {
       this.drop(slot);
     };
     worker.onmessage = (e: MessageEvent<PowerPoolReply>) => {
+      if (isLogMessage(e.data)) {
+        emitLog(e.data.pobLog);
+        return;
+      }
       const m = e.data;
       if (m.type === 'ready') {
         slot.bootMs = performance.now() - slot.spawned;
-        console.log(`power worker booted in ${Math.round(slot.bootMs)} ms (wasm + data ${Math.round(m.ms)} ms)`);
+        log('info', 'power', `power worker booted in ${Math.round(slot.bootMs)} ms (wasm + data ${Math.round(m.ms)} ms)`);
         ready();
         return;
       }

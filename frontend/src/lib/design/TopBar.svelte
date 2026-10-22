@@ -16,9 +16,13 @@
   import SaveButton from './SaveButton.svelte';
   import Select from './Select.svelte';
   import Tabs from './Tabs.svelte';
+  import Tooltip from './Tooltip.svelte';
+  import StepDelta from './StepDelta.svelte';
+  import { STEP_ICONS, STEP_KINDS, deltaText } from './step_kinds';
+  import type { StepDelta as Delta, StepKind } from '$lib/go/step_labels';
 
   type Tab = { label: string; href: string; key?: string };
-  type HistoryEntry = { action: string; page: string; when: string };
+  type HistoryEntry = { action: string; page: string; when: string; kind?: StepKind; delta?: Delta[] };
   type LogLine = { time: string; level: 'info' | 'warn' | 'error'; src: string; msg: string };
   type Panel = 'issues' | 'logs';
   type Props = {
@@ -42,6 +46,7 @@
     onundo?: () => void;
     onredo?: () => void;
     onhistory?: (i: number) => void;
+    oncopylogs?: () => Promise<void> | void;
     onloadout?: (name: string) => void;
     onsave?: () => void;
     /* Build.lua:1160-1162 */
@@ -75,6 +80,7 @@
     onundo,
     onredo,
     onhistory,
+    oncopylogs,
     onloadout,
     onsave,
     onimport,
@@ -90,9 +96,21 @@
   const undoLabel = $derived(undone < history.length ? `Undo: ${history[undone].action} (Ctrl+Z)` : 'Nothing to undo');
   const redoLabel = $derived(undone > 0 ? `Redo: ${history[undone - 1].action} (Ctrl+Y / Ctrl+Shift+Z)` : 'Nothing to redo');
   type HistoryItem = { label: string; current?: boolean };
+  // the entry under the pointer or the keyboard focus, whose stat change shows beside it
+  let hovered = $state<{ el: HTMLElement; i: number }>();
   const historyItems = $derived(
-    history.map((h, i) => ({ label: h.action, current: i === undone, tone: i < undone ? ('muted' as const) : undefined, onselect: () => onhistory?.(i) }))
+    history.map((h, i) => ({
+      label: h.action,
+      current: i === undone,
+      tone: i < undone ? ('muted' as const) : undefined,
+      onselect: () => onhistory?.(i),
+      onhover: (el: HTMLElement | null) => (hovered = el ? { el, i } : hovered?.i === i ? undefined : hovered)
+    }))
   );
+  $effect(() => {
+    if (!historyOpen) hovered = undefined;
+  });
+  const hoveredDelta = $derived(hovered && history[hovered.i]?.delta);
 
   let pressTimer: ReturnType<typeof setTimeout> | undefined;
   let longPressed = false;
@@ -147,6 +165,13 @@
     { id: 'error' as const, label: 'Error' }
   ]);
 
+  let copied = $state(false);
+  const copyLogs = async () => {
+    await oncopylogs?.();
+    copied = true;
+    setTimeout(() => (copied = false), 2000);
+  };
+
   let issuesBtn: HTMLButtonElement;
   let logsBtn = $state<HTMLElement>();
   let closeBtn = $state<HTMLButtonElement>();
@@ -177,17 +202,20 @@
       <EmptyState inset="row" text="No build issues." />
     {/if}
   {:else}
-    <Segmented
-      chip
-      label="Level"
-      options={levels}
-      value={level}
-      onchange={(id) => (level = id as typeof level)}
-      class="border-b border-surface-3 px-3 py-2"
-      itemClass="h-6.5 px-2.5" />
-    <div class="scroll max-h-130">
-      <LogList lines={logs.filter((l) => level === 'all' || l.level === level)} />
+    <div class="flex items-center justify-between gap-2 border-b border-surface-3 px-3 py-2">
+      <Segmented chip label="Level" options={levels} value={level} onchange={(id) => (level = id as typeof level)} itemClass="h-6.5 px-2.5" />
+      {#if oncopylogs}<Button size="sm" onclick={copyLogs} title="Copy the whole log with the app version, build and browser, to paste into a bug report"
+          >{copied ? 'Copied' : 'Copy for bug reports'}</Button
+        >{/if}
     </div>
+    {@const shown = logs.filter((l) => level === 'all' || l.level === level)}
+    {#if shown.length}
+      <div class="scroll max-h-130">
+        <LogList lines={shown} />
+      </div>
+    {:else}
+      <EmptyState inset="row" text={level === 'all' ? 'Nothing logged yet.' : `No ${level} lines.`} />
+    {/if}
   {/if}
 {/snippet}
 
@@ -230,17 +258,27 @@
       {/snippet}
       {#snippet head()}
         <div class="flex justify-between px-2 pt-0.5 pb-1 text-11 text-text-3">
-          <span>Undo history · last {historyMax} actions, all pages</span><span>click = go back to</span>
+          <span>Undo history · last {historyMax} actions, all pages</span><span>click or Enter = go back to</span>
         </div>
       {/snippet}
       {#snippet row(it: HistoryItem, i: number)}
+        {@const kind = history[i].kind ?? 'other'}
         <span class="flex min-w-0 items-center gap-1.5"
-          ><span class="w-3 shrink-0 text-accent" aria-hidden="true">{it.current ? '●' : ''}</span><span class={['truncate', i < undone && 'line-through']}
-            >{it.label}</span
-          ></span
+          ><span class="w-3 shrink-0 text-accent" aria-hidden="true">{it.current ? '●' : ''}</span><span
+            class="flex shrink-0 text-text-3"
+            title={STEP_KINDS[kind]}><Icon name={STEP_ICONS[kind]} size={14} /></span
+          ><span class={['truncate', i < undone && 'line-through']}>{it.label}</span>{#if history[i].delta}<span class="sr-only"
+              >. {deltaText(history[i].delta)}</span
+            >{/if}</span
         ><span class="shrink-0 text-11 text-text-3">{history[i].page} · {history[i].when}</span>
       {/snippet}
     </Menu>
+    {#if historyOpen && hovered && hoveredDelta}
+      <Tooltip placement="beside" anchor={hovered.el} size="sm" label="Stat change" class="w-64">
+        <div class="mb-1 text-11 text-text-3">Stat change</div>
+        <StepDelta delta={hoveredDelta} />
+      </Tooltip>
+    {/if}
   </div>
 
   <NavTabs

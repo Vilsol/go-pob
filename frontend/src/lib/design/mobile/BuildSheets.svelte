@@ -7,11 +7,15 @@
   import IssueRow from '../IssueRow.svelte';
   import { issueKinds } from '../issue_kinds';
   import Sheet from './Sheet.svelte';
+  import Icon from '../Icon.svelte';
+  import StepDelta from '../StepDelta.svelte';
+  import { STEP_ICONS, STEP_KINDS } from '../step_kinds';
+  import type { StepDelta as Delta, StepKind } from '$lib/go/step_labels';
 
   // the TopBar's undo history, loadout picker and build issues, as phone sheets
   type Props = {
     open?: BuildSheet;
-    history: { action: string; page: string; when: string }[];
+    history: { action: string; page: string; when: string; kind?: StepKind; delta?: Delta[] }[];
     undone: number;
     loadouts: string[];
     loadout?: string;
@@ -25,25 +29,44 @@
     if (!v && open === which) open = undefined;
   };
   const row = 'flex min-h-12 w-full items-center gap-2 border-0 border-b border-line bg-transparent px-4 py-1 text-left font-sans text-14 text-text';
+  // the step whose stat change is shown under it; a tap on its stats button shows it, a tap on the step goes there
+  let expanded = $state<number>();
 </script>
 
 <Sheet bind:open={() => open === 'history', (v: boolean) => close('history', v)} title="Undo history" note="Tap a step to go back to it">
   {#if history.length}
     <ul class="m-0 flex list-none flex-col p-0" aria-label="Undo history">
       {#each history as h, i (i)}
-        <li>
-          <button
-            type="button"
-            class={row}
-            aria-current={i === undone ? 'step' : undefined}
-            onclick={() => {
-              open = undefined;
-              onhistory?.(i);
-            }}>
-            <span class="w-3 shrink-0 text-accent" aria-hidden="true">{i === undone ? '●' : ''}</span>
-            <span class={['min-w-0 flex-1 truncate', i < undone && 'line-through']}>{h.action}</span>
-            <span class="shrink-0 text-11 text-text-3">{h.page} · {h.when}</span>
-          </button>
+        {@const kind = h.kind ?? 'other'}
+        <li class="flex flex-col border-b border-line">
+          <div class="flex items-stretch">
+            <button
+              type="button"
+              class={[row, 'min-w-0 flex-1 border-b-0']}
+              aria-current={i === undone ? 'step' : undefined}
+              onclick={() => {
+                open = undefined;
+                onhistory?.(i);
+              }}>
+              <span class="w-3 shrink-0 text-accent" aria-hidden="true">{i === undone ? '●' : ''}</span>
+              <span class="flex shrink-0 text-text-3" title={STEP_KINDS[kind]}><Icon name={STEP_ICONS[kind]} size={16} /></span>
+              <span class={['min-w-0 flex-1 truncate', i < undone && 'line-through']}>{h.action}</span>
+              <span class="shrink-0 text-11 text-text-3">{h.page} · {h.when}</span>
+            </button>
+            {#if h.delta}
+              <button
+                type="button"
+                class="flex w-12 shrink-0 items-center justify-center border-0 bg-transparent text-text-3"
+                aria-expanded={expanded === i}
+                aria-label="Stat change of {h.action}"
+                onclick={() => (expanded = expanded === i ? undefined : i)}><Icon name={expanded === i ? 'chevron-up' : 'chevron-down'} /></button>
+            {/if}
+          </div>
+          {#if h.delta && expanded === i}
+            <div class="px-4 pb-2 pl-12 text-12">
+              <StepDelta delta={h.delta} />
+            </div>
+          {/if}
         </li>
       {/each}
     </ul>

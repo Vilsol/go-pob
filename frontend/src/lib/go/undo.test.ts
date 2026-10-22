@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { readdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { LineTable, NOT_A_CHANGE, OPEN_SOURCES, STEP_LABELS, UndoHistory, sameSnapshot, unrecordedLabel } from './undo';
+import { DIFF_LABELS, LineTable, NOT_A_CHANGE, OPEN_SOURCES, STEP_LABELS, UndoHistory, sameSnapshot, unrecordedLabel } from './undo';
 
 const L = { action: 'a', page: 'p' };
 
@@ -174,28 +174,40 @@ describe('sameSnapshot / unrecordedLabel', () => {
   it('names a notes-only change, and anything else generically', () => {
     const xml = (notes: string, level: number) =>
       `<PathOfBuilding>\n<Build level="${level}"/>\n<Notes>${notes}</Notes>\n<Items/>\n<RichNotes v="1">${notes}</RichNotes>\n</PathOfBuilding>`;
-    expect(unrecordedLabel(xml('a', 1), xml('b', 1))).toEqual({ action: 'edit notes', page: 'Notes' });
-    expect(unrecordedLabel(xml('a', 1), xml('a', 2)).action).toBe('other changes');
-    expect(unrecordedLabel(xml('a', 1), xml('b', 2)).action).toBe('other changes');
+    expect(unrecordedLabel(xml('a', 1), xml('b', 1))).toEqual({ action: 'Edited the notes', page: 'Notes', kind: 'notes' });
+    expect(unrecordedLabel(xml('a', 1), xml('a', 2)).action).toBe('Other changes');
+    expect(unrecordedLabel(xml('a', 1), xml('b', 2)).action).toBe('Other changes');
   });
 });
 
 describe('STEP_LABELS', () => {
-  const tickSources = () => {
+  const files = () => {
     const src = resolve(process.cwd(), 'src');
-    const found = new Set<string>();
-    for (const file of readdirSync(src, { recursive: true, encoding: 'utf8' })) {
-      if (!/\.(ts|svelte)$/.test(file) || /\.test\.ts$/.test(file)) continue;
-      for (const m of readFileSync(resolve(src, file), 'utf8').matchAll(/Tick\('([^']+)'/g)) found.add(m[1]);
-    }
-    return found;
+    return readdirSync(src, { recursive: true, encoding: 'utf8' })
+      .filter((f) => /\.(ts|svelte)$/.test(f) && !/\.test\.ts$/.test(f))
+      .map((f) => ({ file: f, text: readFileSync(resolve(src, f), 'utf8').replace(/^\s*\/\/.*$/gm, '') }));
   };
+  const WRITE = /\b(?:Tick|edit|UITick|partyWrite)\(\s*'([^']+)'(\s*\))?/g;
+  const writes = () => files().flatMap(({ file, text }) => [...text.matchAll(WRITE)].map((m) => ({ file, source: m[1], bare: !!m[2] })));
 
-  it('names every step a Tick can record, so the top bar never shows a source name', () => {
-    const sources = tickSources();
+  it('names every step a write can record, so the top bar never shows a source name', () => {
+    const sources = new Set(writes().map((w) => w.source));
     expect(sources, 'the scan found the worker’s mutators').toContain('SetLevel');
     expect(sources, 'the scan found the pages’ UITick calls').toContain('socketGroups');
     const unlabelled = [...sources].filter((s) => !STEP_LABELS[s] && !NOT_A_CHANGE.has(s) && !OPEN_SOURCES.has(s));
     expect(unlabelled).toEqual([]);
+  });
+
+  it('gives every write a label built from its arguments, or names it from what changed', () => {
+    const all = writes();
+    expect(all.filter((w) => w.file.endsWith('sync_worker.ts')).length, 'the scan found the worker’s writes').toBeGreaterThan(80);
+    const generic = all.filter((w) => w.bare && !DIFF_LABELS[w.source] && !NOT_A_CHANGE.has(w.source) && !OPEN_SOURCES.has(w.source));
+    expect(generic.map((w) => `${w.file}: ${w.source}`)).toEqual([]);
+  });
+
+  it('records every worker write through the labelled path', () => {
+    const worker = files().find((f) => f.file.endsWith('go/sync_worker.ts'))!.text;
+    const ticks = [...worker.matchAll(/this\.Tick\(([^)]*)\)/g)].map((m) => m[1]);
+    expect(ticks.sort()).toEqual(["'EstimatePlayerProgress'", "'setCalcTabElements'", 'source', 'source', 'source, xml']);
   });
 });

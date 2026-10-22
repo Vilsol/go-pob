@@ -108,12 +108,37 @@
     await expect(c.getByRole('list', { name: 'Application log' })).toBeVisible();
     await userEvent.click(c.getByRole('button', { name: 'Error' }));
     await expect(within(c.getByRole('list', { name: 'Application log' })).getAllByRole('listitem')).toHaveLength(1);
+    await userEvent.click(c.getByRole('button', { name: 'Copy for bug reports' }));
+    await expect(c.getByRole('button', { name: 'Copied' })).toBeVisible();
     await userEvent.keyboard('{Escape}');
     await expect(c.queryByRole('dialog')).toBeNull();
     await expect(c.getByRole('button', { name: /^Logs/ })).toHaveFocus();
   }}><LiveTopBar fx={novaBuild} panel="issues" /></Story>
 
-<Story name="History open" asChild><LiveTopBar fx={spectreBuild} historyOpen /></Story>
+<Story
+  name="History open"
+  asChild
+  play={async ({ canvasElement }) => {
+    const c = within(canvasElement);
+    const menu = c.getByRole('menu', { name: 'Undo history' });
+    const entries = within(menu).getAllByRole('menuitem');
+    await expect(entries[0].querySelector('svg')).not.toBeNull();
+    await userEvent.hover(entries[0]);
+    const tip = await within(document.body).findByRole('tooltip', { name: 'Stat change' });
+    await expect(tip).toHaveTextContent('Life');
+    await expect(tip).toHaveTextContent('+212 (+4.1%)');
+    await expect(within(menu).getByText('Allocated Heart and Soul (+2 path nodes)')).toBeVisible();
+
+    // the keyboard reaches each entry, shows its change and jumps there
+    entries[3].focus();
+    await waitFor(() => expect(within(document.body).getByRole('tooltip', { name: 'Stat change' })).toHaveTextContent('Spectre DPS'));
+    await userEvent.keyboard('{ArrowDown}');
+    await expect(entries[4]).toHaveFocus();
+    await waitFor(() => expect(within(document.body).queryByRole('tooltip', { name: 'Stat change' })).toBeNull());
+    await userEvent.keyboard('{ArrowUp}{Enter}');
+    await waitFor(() => expect(c.queryByRole('menu')).toBeNull());
+    await expect(c.getByRole('button', { name: 'Undo: Switched item set → Endgame (Ctrl+Z)' })).toBeEnabled();
+  }}><LiveTopBar fx={spectreBuild} historyOpen /></Story>
 
 <Story
   name="Compact 1280"
@@ -143,18 +168,18 @@
     await userEvent.click(save);
     await expect(c.getByRole('button', { name: 'Save (no unsaved changes)' })).toBeInTheDocument();
     await expect(c.getByRole('button', { name: 'Nothing to redo' })).toBeDisabled();
-    await userEvent.click(c.getByRole('button', { name: 'Undo: allocate Heart and Soul (Ctrl+Z)' }));
-    await expect(c.getByRole('button', { name: 'Undo: toggle Flask 2 (Quicksilver Flask) (Ctrl+Z)' })).toBeEnabled();
-    await expect(c.getByRole('button', { name: 'Redo: allocate Heart and Soul (Ctrl+Y / Ctrl+Shift+Z)' })).toBeEnabled();
+    await userEvent.click(c.getByRole('button', { name: 'Undo: Allocated Heart and Soul (+2 path nodes) (Ctrl+Z)' }));
+    await expect(c.getByRole('button', { name: 'Undo: Activated Flask 2 (Quicksilver Flask) (Ctrl+Z)' })).toBeEnabled();
+    await expect(c.getByRole('button', { name: 'Redo: Allocated Heart and Soul (+2 path nodes) (Ctrl+Y / Ctrl+Shift+Z)' })).toBeEnabled();
     await expect(c.getByRole('button', { name: 'Save (unsaved changes)' })).toBeInTheDocument();
 
     await userEvent.click(c.getByRole('button', { name: /^Undo history/ }));
     const menu = c.getByRole('menu', { name: 'Undo history' });
-    await expect(within(menu).getByRole('menuitem', { current: true })).toHaveTextContent('toggle Flask 2 (Quicksilver Flask)');
-    await userEvent.click(within(menu).getByRole('menuitem', { name: /switch item set/ }));
+    await expect(within(menu).getByRole('menuitem', { current: true })).toHaveTextContent('Activated Flask 2 (Quicksilver Flask)');
+    await userEvent.click(within(menu).getByRole('menuitem', { name: /Switched item set/ }));
     await waitFor(() => expect(c.queryByRole('menu')).toBeNull());
-    await expect(c.getByRole('button', { name: 'Undo: switch item set → Endgame (Ctrl+Z)' })).toBeEnabled();
-    await expect(c.getByRole('button', { name: 'Redo: main skill → Raise Spectre (Ctrl+Y / Ctrl+Shift+Z)' })).toBeEnabled();
+    await expect(c.getByRole('button', { name: 'Undo: Switched item set → Endgame (Ctrl+Z)' })).toBeEnabled();
+    await expect(c.getByRole('button', { name: 'Redo: Set the main active skill to Raise Spectre (Ctrl+Y / Ctrl+Shift+Z)' })).toBeEnabled();
 
     await userEvent.pointer({ keys: '[MouseRight]', target: c.getByRole('button', { name: /^Undo: / }) });
     await expect(c.getByRole('menu', { name: 'Undo history' })).toBeVisible();

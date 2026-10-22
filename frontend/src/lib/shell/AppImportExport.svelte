@@ -37,7 +37,7 @@
   const onexportparty = (on: boolean) => {
     $currentBuild
       ?.SetExportParty(on)
-      .then(() => UITick('exportParty'))
+      .then(() => UITick('exportParty', on ? 'Turned on Export support' : 'Turned off Export support'))
       .catch(logError);
   };
 

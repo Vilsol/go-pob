@@ -26,6 +26,7 @@
   loadout={s.loadout}
   issues={fx.sidebar.warnings}
   logs={appLog}
+  oncopylogs={() => {}}
   dirty={s.dirty}
   bind:panel={s.panel}
   bind:historyOpen={s.historyOpen}

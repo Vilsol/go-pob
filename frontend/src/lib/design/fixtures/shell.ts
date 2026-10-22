@@ -1,4 +1,5 @@
 import type { Tone } from '../tone';
+import type { StepDelta, StepKind } from '$lib/go/step_labels';
 
 export type PageTab = { label: string; href: string; key: string };
 
@@ -8,15 +9,46 @@ export const pageTabs: PageTab[] = ['Tree', 'Skills', 'Items', 'Calcs', 'Config'
   key: String(i + 1)
 }));
 
-export type HistoryEntry = { action: string; page: string; when: string };
+export type HistoryEntry = { action: string; page: string; when: string; kind?: StepKind; delta?: StepDelta[] };
 
 export const undoHistory: HistoryEntry[] = [
-  { action: 'allocate Heart and Soul', page: 'Tree', when: 'just now' },
-  { action: 'toggle Flask 2 (Quicksilver Flask)', page: 'Items', when: '1 min ago' },
-  { action: 'main skill → Raise Spectre', page: 'Sidebar', when: '2 min ago' },
-  { action: 'switch item set → Endgame', page: 'Items', when: '4 min ago' },
-  { action: 'socket Glorious Vanity in Socket #2', page: 'Items', when: '6 min ago' },
-  { action: 'set Config → Pinnacle boss', page: 'Config', when: '9 min ago' }
+  {
+    action: 'Allocated Heart and Soul (+2 path nodes)',
+    page: 'Tree',
+    when: 'just now',
+    kind: 'tree',
+    delta: [
+      { label: 'Life', value: '+212 (+4.1%)', better: true },
+      { label: 'Life Regen', value: '+18.4', better: true },
+      { label: 'Mana', value: '-35', better: false }
+    ]
+  },
+  {
+    action: 'Activated Flask 2 (Quicksilver Flask)',
+    page: 'Items',
+    when: '1 min ago',
+    kind: 'item',
+    delta: [{ label: 'Movement Speed Modifier', value: '+40%', better: true }]
+  },
+  { action: 'Set the main active skill to Raise Spectre', page: 'Sidebar', when: '2 min ago', kind: 'gem', delta: [] },
+  {
+    action: 'Switched item set → Endgame',
+    page: 'Items',
+    when: '4 min ago',
+    kind: 'set',
+    delta: [
+      { label: 'Total DPS', value: '+48,210 (+31.0%)', better: true },
+      { label: 'Spectre DPS', value: '+12,004', better: true, section: 'Minion' }
+    ]
+  },
+  { action: 'Socketed Glorious Vanity in Jewel Socket', page: 'Tree', when: '6 min ago', kind: 'item' },
+  {
+    action: 'Set Is the enemy a Boss to Pinnacle Boss',
+    page: 'Config',
+    when: '9 min ago',
+    kind: 'config',
+    delta: [{ label: 'Total DPS', value: '-9,120', better: false }]
+  }
 ];
 
 export const loadouts = ['Endgame', 'Leveling (act 5)', 'Budget'];
