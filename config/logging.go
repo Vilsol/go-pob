@@ -38,8 +38,11 @@ func LogLevel() slog.Level {
 	case "trace":
 		return utils.LevelTrace
 	}
-	if runtime.GOOS == "js" || (len(os.Args) > 0 && strings.HasSuffix(os.Args[0], ".test")) {
+	if len(os.Args) > 0 && strings.HasSuffix(os.Args[0], ".test") {
 		return slog.LevelError
+	}
+	if runtime.GOOS == "js" {
+		return slog.LevelWarn
 	}
 	return utils.LevelTrace
 }

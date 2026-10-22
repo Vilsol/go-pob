@@ -49,6 +49,8 @@ const storageConfigurationPromise = configureStorage();
 type WarningsEnv = { out: calculator.Environment; calc: calculator.Calculator };
 
 const WARNINGS_QUIET_MS = 300;
+// only calculations slower than this reach the log
+const SLOW_CALC_MS = 100;
 const NO_TIP_STATS: calculator.ItemTooltipStats = { Str: 0, Dex: 0, Int: 0, Omni: 0, OmniscienceRequirements: false, OmniAttributeRequirements: 0 };
 const WARNINGS_STEP = 'pob:warnings-step';
 /* CalcsTab.lua:12-17 */
@@ -613,7 +615,7 @@ class PoBWorker {
     const calcStart = performance.now();
     const out = await calc.BuildOutput('MAIN');
     meta.calcMs = performance.now() - calcStart;
-    logInfo('calc', `calculated in ${Math.round(meta.calcMs)} ms (${source})`);
+    if (meta.calcMs > SLOW_CALC_MS) logInfo('calc', `calculated in ${Math.round(meta.calcMs)} ms (${source})`);
 
     const player = out?.Player;
     const mainSkill = player?.MainSkill;

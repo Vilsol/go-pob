@@ -63,6 +63,8 @@
     slottip?: (slot: string) => Promise<ItemTip | undefined>;
     /* SkillsTab.lua:357-391 */
     sourceNote?: string;
+    /* SkillsTab.lua:411-413, CalcSetup.lua:1502: a granted group keeps only its granted gem */
+    gemsLocked?: boolean;
     supporting?: [number, number][];
     /* SkillsTab.lua:294-343 */
     imbued?: { value: string; options: string[]; enabled: boolean };
@@ -97,6 +99,7 @@
     onpicker,
     slottip,
     sourceNote,
+    gemsLocked = false,
     supporting = [],
     imbued,
     onimbued,
@@ -405,7 +408,7 @@
           onenabled={(enabled) => ongem(i, { enabled })}
           onlevel={(level) => ongem(i, { level })}
           onquality={(quality) => ongem(i, { quality })}
-          onremove={() => onremove(i)}
+          onremove={gemsLocked ? undefined : () => onremove(i)}
           count={gem.count}
           oncount={ongemcount && ((count: number) => ongemcount(i, count))}
           maxLevel={maxLevel?.(i)}
@@ -428,90 +431,90 @@
     <div data-reorder-live aria-live="assertive" class="sr-only">{dragState.message}</div>
     <span id={drag.hint} class="sr-only">{drag.hintText}</span>
   </div>
-  <div class="relative">
-    <Input
-      type="text"
-      bind:ref={boxEl}
-      role="combobox"
-      size="md"
-      class="w-full border-dashed border-accent px-2.5"
-      placeholder="Add a gem — type to filter, Esc to close"
-      aria-label="Add a gem"
-      aria-controls="{uid}-results"
-      aria-autocomplete="list"
-      aria-expanded={open}
-      aria-activedescendant={open && active >= 0 ? `${uid}-opt-${active}` : undefined}
-      data-wiki={open && results.length ? gemWikiName(results[Math.max(active, 0)].name, results[Math.max(active, 0)].support) : undefined}
-      bind:value={q}
-      oninput={() => {
-        open = true;
-        active = -1;
-      }}
-      onfocus={() => (open = true)}
-      onblur={() => (open = false)}
-      {onkeydown} />
-    <div class="absolute top-1 right-1 flex gap-0.5">
-      {#each [['grants_active_skill', 'A', 'Only show Active gems'], ['support', 'S', 'Only show Support gems']] as [tag, letter, tip] (tag)}
-        <button
-          type="button"
-          class={['h-6.5 w-5 rounded border border-line bg-surface-1 font-mono text-11', only === tag ? 'text-text' : 'text-text-3']}
-          title={tip}
-          aria-label={tip}
-          aria-pressed={only === tag}
-          onmousedown={(e) => e.preventDefault()}
-          onclick={() => {
-            only = only === tag ? undefined : (tag as typeof only);
-            open = true;
-            active = -1;
-          }}>{letter}</button>
-      {/each}
-    </div>
-    {#if open}
-      <div
-        role="listbox"
-        id="{uid}-results"
-        aria-label="Gem results"
-        bind:this={listEl}
-        use:dropFrom={boxEl}
-        onscroll={(e) => (scrollTop = e.currentTarget.scrollTop)}
-        class="fixed z-dock overflow-y-auto overscroll-contain rounded-md border border-line-strong bg-surface-2 shadow-pop">
-        <div bind:this={headEl} class="sticky top-0 z-raised border-b border-line bg-surface-2 px-2.5 py-1.5 text-11 text-text-2">
-          {results.length} gems{sortOn ? ` · sorted by ${sortStat}` : ''}{#if sortCache?.progress !== undefined && sortCache.progress < 100}<span
-              class="float-right"
-              role="status"
-              aria-label="Sort progress">Sorting {sortCache.progress}%</span
-            >{/if}
-        </div>
-        {#if span.from}<div aria-hidden="true" style:height="{span.from * rowH}px"></div>{/if}
-        {#each shown as r, k (r.name)}
-          {@const i = span.from + k}
-          <div
-            bind:this={optEls[i]}
-            role="option"
-            id="{uid}-opt-{i}"
-            data-wiki={gemWikiName(r.name, r.support)}
-            tabindex="-1"
-            aria-selected={i === active}
-            aria-disabled={r.socketed}
-            class="grid grid-cols-12 gap-1.5 border-b border-surface-3 px-2.5 py-1.25 text-13 aria-disabled:opacity-55 aria-selected:bg-row-selected"
-            onmouseenter={() => (hoverGem = r.name)}
-            onmouseleave={() => (hoverGem = hoverGem === r.name ? undefined : hoverGem)}
-            onmousedown={(e) => {
-              e.preventDefault();
-              add(i);
-            }}>
-            <span class={['toned col-span-6 truncate', toneClass(r.attr)]}
-              ><GemIcon name={r.name} size={16} decorative class="mr-1 align-[-3px]" />{r.name}</span>
-            <span class="col-span-2 text-11 text-text-2">{r.support ? 'Support' : 'Active'}</span>
-            <span class={['col-span-4 text-right font-mono text-12', deltas[r.name] > 0 && !r.socketed ? 'text-better' : 'text-text-2']}>{deltaText(r)}</span>
-          </div>
-        {:else}
-          <EmptyState inset="row" text="No gems match “{q}”." />
+  {#if !gemsLocked}<div class="relative">
+      <Input
+        type="text"
+        bind:ref={boxEl}
+        role="combobox"
+        size="md"
+        class="w-full border-dashed border-accent px-2.5"
+        placeholder="Add a gem — type to filter, Esc to close"
+        aria-label="Add a gem"
+        aria-controls="{uid}-results"
+        aria-autocomplete="list"
+        aria-expanded={open}
+        aria-activedescendant={open && active >= 0 ? `${uid}-opt-${active}` : undefined}
+        data-wiki={open && results.length ? gemWikiName(results[Math.max(active, 0)].name, results[Math.max(active, 0)].support) : undefined}
+        bind:value={q}
+        oninput={() => {
+          open = true;
+          active = -1;
+        }}
+        onfocus={() => (open = true)}
+        onblur={() => (open = false)}
+        {onkeydown} />
+      <div class="absolute top-1 right-1 flex gap-0.5">
+        {#each [['grants_active_skill', 'A', 'Only show Active gems'], ['support', 'S', 'Only show Support gems']] as [tag, letter, tip] (tag)}
+          <button
+            type="button"
+            class={['h-6.5 w-5 rounded border border-line bg-surface-1 font-mono text-11', only === tag ? 'text-text' : 'text-text-3']}
+            title={tip}
+            aria-label={tip}
+            aria-pressed={only === tag}
+            onmousedown={(e) => e.preventDefault()}
+            onclick={() => {
+              only = only === tag ? undefined : (tag as typeof only);
+              open = true;
+              active = -1;
+            }}>{letter}</button>
         {/each}
-        {#if span.to < results.length}<div aria-hidden="true" style:height="{(results.length - span.to) * rowH}px"></div>{/if}
       </div>
-    {/if}
-  </div>
+      {#if open}
+        <div
+          role="listbox"
+          id="{uid}-results"
+          aria-label="Gem results"
+          bind:this={listEl}
+          use:dropFrom={boxEl}
+          onscroll={(e) => (scrollTop = e.currentTarget.scrollTop)}
+          class="fixed z-dock overflow-y-auto overscroll-contain rounded-md border border-line-strong bg-surface-2 shadow-pop">
+          <div bind:this={headEl} class="sticky top-0 z-raised border-b border-line bg-surface-2 px-2.5 py-1.5 text-11 text-text-2">
+            {results.length} gems{sortOn ? ` · sorted by ${sortStat}` : ''}{#if sortCache?.progress !== undefined && sortCache.progress < 100}<span
+                class="float-right"
+                role="status"
+                aria-label="Sort progress">Sorting {sortCache.progress}%</span
+              >{/if}
+          </div>
+          {#if span.from}<div aria-hidden="true" style:height="{span.from * rowH}px"></div>{/if}
+          {#each shown as r, k (r.name)}
+            {@const i = span.from + k}
+            <div
+              bind:this={optEls[i]}
+              role="option"
+              id="{uid}-opt-{i}"
+              data-wiki={gemWikiName(r.name, r.support)}
+              tabindex="-1"
+              aria-selected={i === active}
+              aria-disabled={r.socketed}
+              class="grid grid-cols-12 gap-1.5 border-b border-surface-3 px-2.5 py-1.25 text-13 aria-disabled:opacity-55 aria-selected:bg-row-selected"
+              onmouseenter={() => (hoverGem = r.name)}
+              onmouseleave={() => (hoverGem = hoverGem === r.name ? undefined : hoverGem)}
+              onmousedown={(e) => {
+                e.preventDefault();
+                add(i);
+              }}>
+              <span class={['toned col-span-6 truncate', toneClass(r.attr)]}
+                ><GemIcon name={r.name} size={16} decorative class="mr-1 align-[-3px]" />{r.name}</span>
+              <span class="col-span-2 text-11 text-text-2">{r.support ? 'Support' : 'Active'}</span>
+              <span class={['col-span-4 text-right font-mono text-12', deltas[r.name] > 0 && !r.socketed ? 'text-better' : 'text-text-2']}>{deltaText(r)}</span>
+            </div>
+          {:else}
+            <EmptyState inset="row" text="No gems match “{q}”." />
+          {/each}
+          {#if span.to < results.length}<div aria-hidden="true" style:height="{(results.length - span.to) * rowH}px"></div>{/if}
+        </div>
+      {/if}
+    </div>{/if}
   {#if whatIf && !(whatIf.done && !whatIf.head?.length && !whatIf.sections)}
     <div data-floating class="pointer-events-none fixed top-(--y) left-(--x) z-float w-max max-w-[480px]" use:besideAnchor={tipAnchor}>
       <div role="status" aria-label="What-if" class="tooltip rounded-md px-3 py-2.5 shadow-tip" data-whatif={whatIf.key}>

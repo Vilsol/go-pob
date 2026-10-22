@@ -66,3 +66,8 @@ export const phoneTables = persisted<PhoneTables>('options:phoneTables', 'cards'
 export const CRAFT_CARD_LAYOUTS = ['stepped', 'tabs'] as const;
 export type CraftCardLayout = (typeof CRAFT_CARD_LAYOUTS)[number];
 export const craftCardLayout = persisted<CraftCardLayout>('options:craftCardLayout', 'stepped', (s) => CRAFT_CARD_LAYOUTS.find((l) => l === s));
+
+export const socketLetters = persisted('options:socketLetters', false, (s) => s === 'true');
+export const SOCKET_STYLES = ['None', 'Small', 'Ornate'] as const;
+export type SocketStyle = (typeof SOCKET_STYLES)[number];
+export const socketStyle = persisted<SocketStyle>('options:socketStyle', 'None', (s) => SOCKET_STYLES.find((v) => v === s));

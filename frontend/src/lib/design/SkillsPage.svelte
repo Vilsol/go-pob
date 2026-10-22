@@ -63,6 +63,7 @@
       optimiseEnabled?: (group: number) => boolean;
       /* SkillsTab.lua:357-391 */
       sourceNote?: (group: number) => string | undefined;
+      gemsLocked?: (group: number) => boolean;
       /* GemSelectControl.lua:620-627 */
       supporting?: (group: number) => [number, number][];
       /* SkillsTab.lua:294-343 */
@@ -351,6 +352,7 @@
       onreorder={onreordergems}
       groupCount={typeof editor?.groupCount === 'function' ? editor.groupCount(selected) : editor?.groupCount}
       sourceNote={editor?.sourceNote?.(selected)}
+      gemsLocked={editor?.gemsLocked?.(selected)}
       supporting={editor?.supporting?.(selected)}
       imbued={editor?.imbued?.(selected)}
       onimbued={editor?.onimbued && ((name: string) => editor.onimbued!(selected, name))}

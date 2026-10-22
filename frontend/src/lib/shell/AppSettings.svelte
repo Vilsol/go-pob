@@ -10,6 +10,9 @@
     phoneTables,
     showAnimations,
     showStatBars,
+    SOCKET_STYLES,
+    socketLetters,
+    socketStyle,
     theme,
     type ItemsLayout,
     type Theme
@@ -74,6 +77,15 @@
         // Main.lua:1027-1029
         { id: 'animations', label: 'Show animations', kind: 'check', value: true, hint: 'Off also honours the system “reduce motion” setting' },
         { id: 'statBars', label: 'Show stat bars', kind: 'check', value: true, hint: 'The value bars behind the sidebar and Calcs stats' },
+        { id: 'socketLetters', label: 'Show socket colour letters', kind: 'check', value: false, hint: 'R, G, B or W in the middle of every gem socket' },
+        {
+          id: 'socketStyle',
+          label: 'Socket style',
+          kind: 'select',
+          value: 'None',
+          opts: [...SOCKET_STYLES],
+          hint: 'Ornate gives each socket colour its own shape, so colour reads without hue'
+        },
         {
           id: 'phoneTables',
           label: 'Wide lists on a phone',
@@ -298,6 +310,8 @@
     theme: $theme,
     animations: $showAnimations,
     statBars: $showStatBars,
+    socketLetters: $socketLetters,
+    socketStyle: $socketStyle,
     affixSliders: $showAllItemAffixes,
     itemsLayout: $itemsLayout === 'list' ? 'List' : 'Board',
     phoneTables: $phoneTables === 'table' ? 'Table' : 'Cards',
@@ -354,6 +368,8 @@
     else if (id === 'theme' && (THEMES as readonly string[]).includes(String(v))) theme.set(String(v) as Theme);
     else if (id === 'animations') showAnimations.set(!!v);
     else if (id === 'statBars') showStatBars.set(!!v);
+    else if (id === 'socketLetters') socketLetters.set(!!v);
+    else if (id === 'socketStyle') socketStyle.set(SOCKET_STYLES.find((x) => x === v) ?? 'None');
     else if (id === 'affixSliders') showAllItemAffixes.set(!!v);
     else if (id === 'itemsLayout' && (ITEMS_LAYOUTS as readonly string[]).includes(String(v).toLowerCase()))
       itemsLayout.set(String(v).toLowerCase() as ItemsLayout);

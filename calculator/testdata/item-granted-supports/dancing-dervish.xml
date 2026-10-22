@@ -1,0 +1,126 @@
+<PathOfBuilding><Build pantheonMinorGod="None" pantheonMajorGod="None" bandit="None" viewMode="SKILLS" className="Witch" ascendClassName="Necromancer" level="1" characterLevelAutoMode="false" mainSocketGroup="2" targetVersion="3_0"><PlayerStat value="0" stat="ActiveMinionLimit"></PlayerStat><PlayerStat value="0" stat="AverageHit"></PlayerStat><PlayerStat value="0" stat="AverageBurstDamage"></PlayerStat><PlayerStat value="1.2" stat="Speed"></PlayerStat><PlayerStat value="1.77" stat="CritMultiplier"></PlayerStat><PlayerStat value="100" stat="HitChance"></PlayerStat><PlayerStat value="0" stat="TotalDPS"></PlayerStat><PlayerStat value="0" stat="TotalDot"></PlayerStat><PlayerStat value="0" stat="WithBleedDPS"></PlayerStat><PlayerStat value="0" stat="WithIgniteDPS"></PlayerStat><PlayerStat value="0" stat="WithPoisonDPS"></PlayerStat><PlayerStat value="0" stat="TotalDotDPS"></PlayerStat><PlayerStat value="0" stat="CullingDPS"></PlayerStat><PlayerStat value="0" stat="ReservationDPS"></PlayerStat><PlayerStat value="0" stat="CombinedDPS"></PlayerStat><PlayerStat value="0.528" stat="Cooldown"></PlayerStat><PlayerStat value="0" stat="ManaCost"></PlayerStat><PlayerStat value="0" stat="ManaPercentCost"></PlayerStat><PlayerStat value="0" stat="ManaPerSecondCost"></PlayerStat><PlayerStat value="0" stat="ManaPercentPerSecondCost"></PlayerStat><PlayerStat value="0" stat="LifeCost"></PlayerStat><PlayerStat value="0" stat="LifePercentCost"></PlayerStat><PlayerStat value="0" stat="LifePerSecondCost"></PlayerStat><PlayerStat value="0" stat="LifePercentPerSecondCost"></PlayerStat><PlayerStat value="0" stat="ESCost"></PlayerStat><PlayerStat value="0" stat="ESPerSecondCost"></PlayerStat><PlayerStat value="0" stat="ESPercentPerSecondCost"></PlayerStat><PlayerStat value="0" stat="RageCost"></PlayerStat><PlayerStat value="0" stat="SoulCost"></PlayerStat><PlayerStat value="64" stat="Str"></PlayerStat><PlayerStat value="155" stat="ReqStr"></PlayerStat><PlayerStat value="24" stat="Dex"></PlayerStat><PlayerStat value="119" stat="ReqDex"></PlayerStat><PlayerStat value="302" stat="Int"></PlayerStat><PlayerStat value="293" stat="ReqInt"></PlayerStat><PlayerStat value="0" stat="Devotion"></PlayerStat><PlayerStat value="15990.722718509" stat="TotalEHP"></PlayerStat><PlayerStat value="7477" stat="PhysicalMaximumHitTaken"></PlayerStat><PlayerStat value="18067" stat="LightningMaximumHitTaken"></PlayerStat><PlayerStat value="17578" stat="FireMaximumHitTaken"></PlayerStat><PlayerStat value="18583" stat="ColdMaximumHitTaken"></PlayerStat><PlayerStat value="inf" stat="ChaosMaximumHitTaken"></PlayerStat><PlayerStat value="1" stat="Life"></PlayerStat><PlayerStat value="0" stat="Spec:LifeInc"></PlayerStat><PlayerStat value="1" stat="LifeUnreserved"></PlayerStat><PlayerStat value="1" stat="LifeRecoverable"></PlayerStat><PlayerStat value="100" stat="LifeUnreservedPercent"></PlayerStat><PlayerStat value="189" stat="LifeRegenRecovery"></PlayerStat><PlayerStat value="0" stat="LifeLeechGainRate"></PlayerStat><PlayerStat value="304" stat="Mana"></PlayerStat><PlayerStat value="34" stat="Spec:ManaInc"></PlayerStat><PlayerStat value="-23" stat="ManaUnreserved"></PlayerStat><PlayerStat value="-7.5657894736842" stat="ManaUnreservedPercent"></PlayerStat><PlayerStat value="5.3" stat="ManaRegenRecovery"></PlayerStat><PlayerStat value="0" stat="ManaLeechGainRate"></PlayerStat><PlayerStat value="6503" stat="EnergyShield"></PlayerStat><PlayerStat value="6503" stat="EnergyShieldRecoveryCap"></PlayerStat><PlayerStat value="123" stat="Spec:EnergyShieldInc"></PlayerStat><PlayerStat value="0" stat="EnergyShieldRegenRecovery"></PlayerStat><PlayerStat value="0" stat="EnergyShieldLeechGainRate"></PlayerStat><PlayerStat value="0" stat="Ward"></PlayerStat><PlayerStat value="0" stat="RageRegenRecovery"></PlayerStat><PlayerStat value="21" stat="Evasion"></PlayerStat><PlayerStat value="0" stat="Spec:EvasionInc"></PlayerStat><PlayerStat value="0" stat="MeleeEvadeChance"></PlayerStat><PlayerStat value="0" stat="ProjectileEvadeChance"></PlayerStat><PlayerStat value="4628" stat="Armour"></PlayerStat><PlayerStat value="77" stat="Spec:ArmourInc"></PlayerStat><PlayerStat value="31" stat="PhysicalDamageReduction"></PlayerStat><PlayerStat value="0" stat="EffectiveBlockChance"></PlayerStat><PlayerStat value="0" stat="EffectiveSpellBlockChance"></PlayerStat><PlayerStat value="0" stat="AttackDodgeChance"></PlayerStat><PlayerStat value="0" stat="SpellDodgeChance"></PlayerStat><PlayerStat value="0" stat="EffectiveSpellSuppressionChance"></PlayerStat><PlayerStat value="66" stat="FireResist"></PlayerStat><PlayerStat value="0" stat="FireResistOverCap"></PlayerStat><PlayerStat value="68" stat="ColdResist"></PlayerStat><PlayerStat value="0" stat="ColdResistOverCap"></PlayerStat><PlayerStat value="67" stat="LightningResist"></PlayerStat><PlayerStat value="0" stat="LightningResistOverCap"></PlayerStat><PlayerStat value="-60" stat="ChaosResist"></PlayerStat><PlayerStat value="0" stat="ChaosResistOverCap"></PlayerStat><PlayerStat value="1.22" stat="EffectiveMovementSpeedMod"></PlayerStat><PlayerStat value="0" stat="FullDPS"></PlayerStat><PlayerStat value="0" stat="FullDotDPS"></PlayerStat><PlayerStat value="0" stat="PowerCharges"></PlayerStat><PlayerStat value="3" stat="PowerChargesMax"></PlayerStat><PlayerStat value="0" stat="FrenzyCharges"></PlayerStat><PlayerStat value="3" stat="FrenzyChargesMax"></PlayerStat><PlayerStat value="0" stat="EnduranceCharges"></PlayerStat><PlayerStat value="3" stat="EnduranceChargesMax"></PlayerStat><PlayerStat value="0" stat="ActiveMinionLimit"></PlayerStat><MinionStat value="93290.4764288" stat="AverageDamage"></MinionStat><MinionStat value="20.2752" stat="Speed"></MinionStat><MinionStat value="20.2752" stat="Speed"></MinionStat><MinionStat value="1891483.0676892" stat="TotalDPS"></MinionStat><MinionStat value="0" stat="TotalDot"></MinionStat><MinionStat value="1891483.0676892" stat="WithBleedDPS"></MinionStat><MinionStat value="1891483.0676892" stat="WithIgniteDPS"></MinionStat><MinionStat value="1891483.0676892" stat="WithPoisonDPS"></MinionStat><MinionStat value="0" stat="TotalDotDPS"></MinionStat><MinionStat value="0" stat="CullingDPS"></MinionStat><MinionStat value="0" stat="ReservationDPS"></MinionStat><MinionStat value="1891483.0676892" stat="CombinedDPS"></MinionStat><MinionStat value="78770" stat="Life"></MinionStat><MinionStat value="1575.4" stat="LifeRegenRecovery"></MinionStat><MinionStat value="0" stat="LifeLeechGainRate"></MinionStat><MinionStat value="31790" stat="EnergyShield"></MinionStat><MinionStat value="0" stat="EnergyShieldRegenRecovery"></MinionStat><MinionStat value="0" stat="EnergyShieldLeechGainRate"></MinionStat></Build><Tree activeSpec="1"><Spec classId="3" ascendClassId="3" treeVersion="3_29" nodes="1652,1722,4367,4432,5296,5935,7388,7444,7503,7898,7960,8948,9408,9567,10904,10992,11455,12143,12250,13009,13232,13753,14505,14603,15046,15117,15167,17735,18767,19103,19501,20987,21678,21929,21974,22535,23027,23659,24872,25332,25831,26196,26270,26298,26481,26620,26712,27137,27929,28859,29106,29353,29712,30767,31973,32210,32932,33310,33864,34171,34506,34880,35288,35685,35791,35958,36634,36678,36915,38176,38701,38836,39818,39841,41190,42668,42760,42795,43647,43689,44169,44184,44202,44362,46340,46897,47949,48298,48713,49080,49605,49651,50029,51219,52502,54159,54447,55190,55230,55571,55646,56671,57226,60398,60440,60472,60791,61419,63447,64210,65153,65568,65569,65570,65571,65573,65574,65575,65577,65578,65579,65696,65697,65698,65699,65701,65702,65703,65705,65706,65707,48719,18309" masteryEffects="{14505,41544},{43647,57179},{55230,62252}"><Sockets><Socket itemId="6" nodeId="7960"></Socket><Socket itemId="6" nodeId="55190"></Socket><Socket itemId="2" nodeId="9408"></Socket><Socket itemId="2" nodeId="26196"></Socket><Socket itemId="2" nodeId="29712"></Socket><Socket itemId="2" nodeId="36634"></Socket><Socket itemId="2" nodeId="44169"></Socket><Socket itemId="2" nodeId="61419"></Socket><Socket itemId="2" nodeId="49080"></Socket></Sockets><Overrides></Overrides></Spec></Tree><Calcs><Input name="skill_number" number="2"></Input><Input name="showMinion" boolean="true"></Input></Calcs><Notes></Notes><Items activeItemSet="1"><ItemSet id="1"><Slot itemId="7" name="Body Armour"></Slot><Slot itemId="0" name="Body Armour Abyssal Socket 6"></Slot><Slot itemId="0" name="Body Armour Abyssal Socket 5"></Slot><Slot itemId="0" name="Body Armour Abyssal Socket 3"></Slot><Slot itemId="0" name="Body Armour Abyssal Socket 2"></Slot><Slot itemId="0" name="Body Armour Abyssal Socket 1"></Slot><Slot itemId="0" name="Body Armour Abyssal Socket 4"></Slot><Slot itemId="5" name="Weapon 1"></Slot><Slot itemId="4" name="Belt"></Slot><Slot itemId="2" name="Belt Abyssal Socket 1"></Slot><Slot itemId="2" name="Belt Abyssal Socket 2"></Slot><Slot itemId="8" name="Helmet"></Slot></ItemSet><Item id="1">Rarity: UNIQUE
+Replica Shroud of the Lightless
+Carnal Armour
+League: Heist
+Quality: 20
+Sockets: A A A A A A
+LevelReq: 71
+Implicits: 1
+{range:0.5}+(20-25) to maximum Mana
+Has 6 Abyssal Sockets</Item><Item id="2">Rarity: RARE
+New Item
+Ghastly Eye Jewel
+Crafted: true
+Prefix: {range:0.936}AbyssFlatEnergyShieldJewel3
+Prefix: {range:0.59}AbyssMinionAddedChaosDamageJewel5_
+Suffix: {range:0.779}AbyssMinionAttackAndCastSpeedJewel1
+Suffix: {range:0.858}AbyssMinionDamageIfMinionSkillUsedRecentlyJewel1
+LevelReq: 60
+Implicits: 0
+{tags:defences,energy_shield}{prefix}+35 to maximum Energy Shield
+{tags:damage,minion}{suffix}Minions deal 19% increased Damage if you've used a Minion Skill Recently
+{tags:attack,caster,speed,minion}{suffix}Minions have 6% increased Attack Speed
+{tags:attack,caster,speed,minion}{suffix}Minions have 6% increased Cast Speed
+{tags:chaos_damage,damage,chaos,minion}{prefix}Minions deal 20 to 26 additional Chaos Damage</Item><Item id="5">Rarity: UNIQUE
+The Dancing Dervish
+Reaver Sword
+Variant: Pre 2.6.0
+Variant: Pre 3.11.0
+Variant: Pre 3.17.0
+Variant: Current
+Selected Variant: 4
+Quality: 20
+Sockets: G-G-G-G-G-G
+LevelReq: 59
+Implicits: 3
+{variant:1}18% increased Global Accuracy Rating
+{variant:2}40% increased Global Accuracy Rating
+{variant:3,4}60% increased Global Accuracy Rating
+{variant:1,2}{range:0.5}(160-190)% increased Physical Damage
+{variant:3,4}{range:0.5}(130-160)% increased Physical Damage
+{range:0.5}(25-30)% increased Attack Speed
+5% increased Movement Speed
+Triggers Level 15 Manifest Dancing Dervishes on Rampage
+Manifested Dancing Dervishes disables both weapon slots
+Manifested Dancing Dervishes die when Rampage ends
+Melee Hits count as Rampage Kills
+Rampage</Item><Item id="6">Rarity: RARE
+New Item
+Large Cluster Jewel
+Crafted: true
+Prefix: {range:1}AfflictionJewelSmallPassivesHaveIncreasedEffect2
+Prefix: {range:0.562}AfflictionJewelSmallPassivesGrantES3
+Suffix: {range:1}AfflictionJewelSmallPassivesGrantMinionAttackAndCastSpeed3
+Suffix: {range:0.797}AfflictionJewelSmallPassivesGrantElementalRes2
+Cluster Jewel Skill: affliction_minion_damage
+Cluster Jewel Node Count: 12
+LevelReq: 67
+Implicits: 3
+{crafted}Adds 12 Passive Skills
+{crafted}2 Added Passive Skills are Jewel Sockets
+{crafted}Added Small Passive Skills grant: Minions deal 10% increased Damage
+{tags:elemental,resistance}{suffix}Added Small Passive Skills also grant: +3% to all Elemental Resistances
+{tags:defences,energy_shield}{prefix}Added Small Passive Skills also grant: +11 to Maximum Energy Shield
+{tags:attack,caster,speed,minion}{suffix}Added Small Passive Skills also grant: Minions have 3% increased Attack and Cast Speed
+{prefix}Added Small Passive Skills have 35% increased Effect</Item><Item id="3">Rarity: UNIQUE
+Darkness Enthroned
+Stygian Vise
+League: Abyss
+Variant: Pre 3.11.0
+Variant: Pre 3.21.0
+Variant: Current
+Selected Variant: 3
+Sockets: A A
+Implicits: 1
+Has 1 Abyssal Socket
+Has 1 Abyssal Socket
+{variant:1}50% increased Effect of Socketed Abyss Jewels
+{variant:2}75% increased Effect of Socketed Abyss Jewels
+{variant:3}{range:0.5}(50-100)% increased Effect of Socketed Abyss Jewels</Item><Item id="4">Rarity: UNIQUE
+Darkness Enthroned
+Stygian Vise
+League: Abyss
+Variant: Pre 3.11.0
+Variant: Pre 3.21.0
+Variant: Current
+Selected Variant: 3
+Sockets: A A
+Implicits: 1
+Has 1 Abyssal Socket
+Has 1 Abyssal Socket
+{variant:1}50% increased Effect of Socketed Abyss Jewels
+{variant:2}75% increased Effect of Socketed Abyss Jewels
+{range:1}{variant:3}(50-100)% increased Effect of Socketed Abyss Jewels</Item><Item id="7">Rarity: RARE
+New Item
+Twilight Regalia
+Crafted: true
+Prefix: {range:0.339}LocalIncreasedEnergyShield10
+Prefix: {range:0.784}LocalIncreasedEnergyShieldPercent7_
+Prefix: None
+Suffix: {range:0.424}FireResist6
+Suffix: {range:0.76}ColdResist6
+Suffix: None
+Quality: 20
+LevelReq: 84
+Implicits: 0
+{tags:defences,energy_shield}{prefix}+81 to maximum Energy Shield
+{tags:defences,energy_shield}{prefix}98% increased Energy Shield
+{tags:elemental,fire,resistance}{suffix}+38% to Fire Resistance
+{tags:elemental,cold,resistance}{suffix}+40% to Cold Resistance</Item><Item id="8">Rarity: RARE
+New Item
+Lich's Circlet
+Hunter Item
+Crafted: true
+Prefix: {range:0.893}LocalIncreasedEnergyShieldPercent5
+Prefix: {range:0.472}LocalIncreasedEnergyShield6
+Prefix: None
+Suffix: {range:0.528}LightningResist6
+Suffix: None
+Suffix: {range:0.576}EnemyChaosResistanceAuraInfluence1_
+Quality: 20
+LevelReq: 84
+Implicits: 0
+{tags:defences,energy_shield}{prefix}+34 to maximum Energy Shield
+{tags:defences,energy_shield}{prefix}78% increased Energy Shield
+{tags:elemental,lightning,resistance}{suffix}+39% to Lightning Resistance
+{tags:chaos_damage,damage,chaos,resistance}{suffix}Nearby Enemies have -9% to Chaos Resistance</Item></Items><Skills sortGemsByDPSField="CombinedDPS" showSupportGemTypes="ALL" defaultGemQuality="0" activeSkillSet="1" sortGemsByDPS="true" showLegacyGems="false"><SkillSet id="1"><Skill label="" enabled="true"></Skill><Skill mainActiveSkillCalcs="1" mainActiveSkill="1" label="" enabled="true" slot="Weapon 1" source="Item:5:The Dancing Dervish, Reaver Sword"><Gem quality="0" enableGlobal2="false" enabled="true" enableGlobal1="true" nameSpec="Manifest Dancing Dervishes" level="15" skillId="ManifestDancingDervishes" skillMinionSkill="2" skillMinionSkillCalcs="2"></Gem></Skill><Skill label="" enabled="true" slot="Weapon 1"><Gem quality="0" enableGlobal2="true" qualityId="Default" gemId="Metadata/Items/Gems/SupportGemMinionDamage" enabled="true" count="1" enableGlobal1="true" nameSpec="Minion Damage Support" level="20" skillId="Metadata/Items/Gems/SupportGemMinionDamage"></Gem><Gem quality="0" enableGlobal2="true" qualityId="Default" gemId="Metadata/Items/Gems/SupportGemConcentratedEffect" enabled="true" count="1" enableGlobal1="true" nameSpec="Concentrated Effect Support" level="20" skillId="Metadata/Items/Gems/SupportGemConcentratedEffect"></Gem><Gem quality="0" enableGlobal2="true" qualityId="Default" gemId="Metadata/Items/Gems/SupportGemVoidManipulation" enabled="true" count="1" enableGlobal1="true" nameSpec="Void Manipulation Support" level="20" skillId="Metadata/Items/Gems/SupportGemVoidManipulation"></Gem><Gem quality="0" enableGlobal2="true" qualityId="Default" gemId="Metadata/Items/Gems/SupportGemAddedChaosDamage" enabled="true" count="1" enableGlobal1="true" nameSpec="Added Chaos Damage Support" level="20" skillId="Metadata/Items/Gems/SupportGemAddedChaosDamage"></Gem><Gem quality="0" enableGlobal2="true" qualityId="Default" gemId="Metadata/Items/Gems/SupportGemPulverise" enabled="true" count="1" enableGlobal1="true" nameSpec="Pulverise Support" level="20" skillId="Metadata/Items/Gems/SupportGemPulverise"></Gem><Gem quality="0" enableGlobal2="true" qualityId="Default" gemId="Metadata/Items/Gems/SupportGemDeathmark" enabled="true" count="1" enableGlobal1="true" nameSpec="Predator Support" level="20" skillId="Metadata/Items/Gems/SupportGemDeathmark"></Gem></Skill><Skill label="" enabled="true"><Gem quality="0" enableGlobal2="true" qualityId="Default" gemId="Metadata/Items/Gems/SkillGemVulnerability" enabled="true" count="1" enableGlobal1="true" nameSpec="Despair" level="20" skillId="Metadata/Items/Gems/SkillGemVulnerability"></Gem><Gem quality="0" enableGlobal2="true" qualityId="Default" gemId="Metadata/Items/Gems/SkillGemTemporalChains" enabled="true" count="1" enableGlobal1="true" nameSpec="Temporal Chains" level="20" skillId="Metadata/Items/Gems/SkillGemTemporalChains"></Gem></Skill><Skill label="" enabled="true"><Gem quality="0" enableGlobal2="true" qualityId="Default" gemId="Metadata/Items/Gems/SkillGemSpiritOffering" enabled="true" count="1" enableGlobal1="true" nameSpec="Spirit Offering" level="20" skillId="Metadata/Items/Gems/SkillGemSpiritOffering"></Gem></Skill><Skill label="" enabled="true"><Gem quality="0" enableGlobal2="true" qualityId="Default" gemId="Metadata/Items/Gems/SkillGemSummonCarrionGolem" enabled="true" count="1" enableGlobal1="true" nameSpec="Summon Carrion Golem" level="20" skillId="Metadata/Items/Gems/SkillGemSummonCarrionGolem"></Gem><Gem quality="0" enableGlobal2="true" qualityId="Default" gemId="Metadata/Items/Gems/SkillGemSummonRockGolem" enabled="true" count="1" enableGlobal1="true" nameSpec="Summon Stone Golem" level="20" skillId="Metadata/Items/Gems/SkillGemSummonRockGolem"></Gem></Skill><Skill label="" enabled="true"><Gem quality="0" enableGlobal2="true" qualityId="Default" gemId="Metadata/Items/Gems/SkillGemDiscipline" enabled="true" count="1" enableGlobal1="true" nameSpec="Discipline" level="20" skillId="Metadata/Items/Gems/SkillGemDiscipline"></Gem><Gem quality="0" enableGlobal2="true" qualityId="Default" gemId="Metadata/Items/Gems/SkillGemDetermination" enabled="true" count="1" enableGlobal1="true" nameSpec="Determination" level="20" skillId="Metadata/Items/Gems/SkillGemDetermination"></Gem></Skill><Skill label="" enabled="true"><Gem quality="0" enableGlobal2="true" qualityId="Default" gemId="Metadata/Items/Gems/SkillGemPrecision" enabled="true" count="1" enableGlobal1="true" nameSpec="Precision" level="20" skillId="Metadata/Items/Gems/SkillGemPrecision"></Gem><Gem quality="0" enableGlobal2="true" qualityId="Default" gemId="Metadata/Items/Gems/SupportGemGenerosity" enabled="true" count="1" enableGlobal1="true" nameSpec="Generosity Support" level="20" skillId="Metadata/Items/Gems/SupportGemGenerosity"></Gem></Skill></SkillSet></Skills><TreeView zoomLevel="6" zoomX="553.0910396812376" zoomY="-218.6161961436928" searchStr="" showHeatMap="false" showStatDifferences="false"></TreeView><Config activeConfigSet="0"><Input name="multiplierWitheredStackCount" number="15"></Input><Input name="minionsUseFrenzyCharges" boolean="true"></Input><Input name="minionbuffChaoticMight" boolean="true"></Input><Input name="conditionUsedMinionSkillRecently" boolean="true"></Input><Input name="carrionGolemNearbyMinion" number="7"></Input><Input name="deathmarkDeathmarkActive" boolean="true"></Input></Config><Party></Party></PathOfBuilding>

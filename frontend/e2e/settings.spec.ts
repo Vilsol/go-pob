@@ -142,3 +142,35 @@ test('Show stat bars hides the sidebar and Calcs bars and is kept (0280)', async
   await expect(sidebarBars.first()).toBeVisible();
   app.assertNoErrors();
 });
+
+test('socket letters and socket style draw on the Skills page’s sockets and are kept (0280)', async ({ page }) => {
+  const file = '0280-elementalist-fireball';
+  const xml = buildXml(file);
+  const build = await go.loadXml(xml);
+  const app = await App.open(page, file);
+  await app.importCode(await go.encode(xml), async () => expectedLines(await go.outputs(build)));
+  await app.goTo('Skills');
+  const editor = page.getByRole('region', { name: 'Selected group' });
+  const sockets = editor.getByRole('img', { name: /^(Red|Green|Blue|White) socket$/ });
+  await expect(sockets.first()).toBeVisible();
+  await expect(editor.locator('.socket-letter:visible')).toHaveCount(0);
+  await expect(editor.locator('svg[data-ornament]:visible')).toHaveCount(0);
+
+  await page.getByRole('button', { name: 'Settings' }).click();
+  const sheet = page.getByRole('dialog', { name: 'Settings' });
+  await sheet.getByRole('checkbox', { name: 'Show socket colour letters' }).check();
+  await sheet.getByRole('combobox', { name: 'Socket style' }).selectOption('Ornate');
+  await sheet.getByRole('button', { name: 'Save' }).click();
+  const n = await sockets.count();
+  await expect(editor.locator('.socket-letter:visible')).toHaveCount(n);
+  await expect(editor.locator('svg[data-ornament]:visible')).toHaveCount(n);
+  const letters = await editor.locator('.socket-letter:visible').allTextContents();
+  const names = await sockets.evaluateAll((els) => els.map((e) => e.getAttribute('aria-label')!.slice(0, 1)));
+  expect(letters).toEqual(names);
+
+  await page.reload();
+  await page.getByRole('button', { name: 'Settings' }).click();
+  await expect(sheet.getByRole('checkbox', { name: 'Show socket colour letters' })).toBeChecked();
+  await expect(sheet.getByRole('combobox', { name: 'Socket style' })).toHaveValue('Ornate');
+  app.assertNoErrors();
+});

@@ -658,6 +658,7 @@
     optimiseEnabled: (i: number) => optimiseUseful.group === i && optimiseUseful.useful,
     supporting: (i: number) => (supportPairs.group === i ? supportPairs.pairs : []),
     groupCount: (i: number) => !!view?.groups[i]?.source,
+    gemsLocked: (i: number) => !!view?.groups[i]?.source,
     sourceNote: (i: number) => {
       const g = view?.groups[i];
       const rarityColor = (r: string) => (colorCodesX as Record<string, string>)[r] ?? colorCodesX.NORMAL;

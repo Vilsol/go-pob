@@ -105,7 +105,11 @@ func Exports(r bind.Registry) {
 	r.Value("BuildInfo", info, bind.InNamespace("pob"))
 }
 
+//pob:block:src/Classes/GemSelectControl.lua:89-91
 func DefaultGem(gemID string, nameSpec string, skillID string, level int, quality int) pob.Gem {
+	if row, ok := raw.Gems[gemID]; ok && (skillID == "" || skillID == gemID) {
+		skillID = row.GrantedEffectID
+	}
 	count := 1
 	return pob.Gem{
 		GemID:         gemID,

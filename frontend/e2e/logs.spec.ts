@@ -5,8 +5,8 @@ import { buildXml } from './support/builds';
 import * as go from './support/go_model';
 import { expectedLines } from './support/stats';
 
-test('the Logs panel lists a page error, the worker’s calculation timings, and copies the log for a bug report', async ({ page, context }) => {
-  const file = '0280-elementalist-fireball';
+test('the Logs panel lists a page error, the worker’s slow-calculation timings, and copies the log for a bug report', async ({ page, context }) => {
+  const file = '1591-necromancer-summon-holy-relic-of-conviction-15';
   const xml = buildXml(file);
   const build = await go.loadXml(xml);
   await context.grantPermissions(['clipboard-read', 'clipboard-write']);
