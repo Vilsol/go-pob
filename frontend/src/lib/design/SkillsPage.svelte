@@ -1,4 +1,5 @@
 <script lang="ts">
+  import GemIcon from './GemIcon.svelte';
   import Tooltip from './Tooltip.svelte';
   import SectionHeading from './SectionHeading.svelte';
   import { isTypingTarget } from './keys';
@@ -207,6 +208,7 @@
       onchange={(i: number) => onset?.(i)} /></FloatingLabel>
   <SectionHeading class="mt-0.5 uppercase">Socket groups</SectionHeading>
   {#each groups as g, i (i)}
+    {@const lead = g.gems.find((m) => !m.support && m.name)}
     <div {...reorderable ? drag.row(i) : {}} class="relative flex items-stretch gap-1" title={reorderable ? undefined : groupsLocked}>
       <span aria-hidden="true" class={['flex w-4 shrink-0 items-center text-text-3', !reorderable && 'invisible']}><Icon name="grip" /></span>
       <button
@@ -238,9 +240,17 @@
         }}>
         <span class="flex w-full justify-between gap-1.5"
           ><span class={['font-semibold', !g.enabled && 'text-text-2 line-through']}
-            >{#if g.slot && groupicon?.(g.slot)}<img src={groupicon(g.slot)} alt="" data-slot-icon class="mr-1 inline size-4 align-[-2px]" />{/if}{groupLabel(
-              g
-            )}{#if i === mainGroup}<span class="text-10 font-semibold tracking-caps text-accent"> ★ MAIN</span>{/if}</span
+            >{#if g.slot && groupicon?.(g.slot)}<img
+                src={groupicon(g.slot)}
+                alt=""
+                data-slot-icon
+                class="mr-1 inline size-4 align-[-2px]" />{/if}{#if lead}<GemIcon
+                name={lead.name}
+                size={16}
+                decorative
+                class="mr-1 align-[-3px]" />{/if}{groupLabel(g)}{#if i === mainGroup}<span class="text-10 font-semibold tracking-caps text-accent">
+                ★ MAIN</span
+              >{/if}</span
           ><span class="font-mono text-11 text-text-2">{g.gems.length}/{socketCount(g) || '–'}{g.slot ? ' · ' + g.slot : ''}</span></span>
         <span class="max-w-full truncate text-11 text-text-2">{g.gems.map((m) => m.name.replace(/ Support$/, '')).join(', ') || 'No gems'}</span>
       </button>

@@ -2,6 +2,7 @@
   import Tooltip from './Tooltip.svelte';
   import SearchField from './SearchField.svelte';
   import Icon from './Icon.svelte';
+  import ItemIcon from './ItemIcon.svelte';
   import FloatingItemTip from './FloatingItemTip.svelte';
   import Select from './Select.svelte';
   import Button from './Button.svelte';
@@ -194,12 +195,13 @@
           use:dropZone={dropAt && ondropitem && /^\d+$/.test(r.key) && { accepts: (d) => !!draggedItem(d), over: () => (dropBefore = r.key) }}
           onmouseenter={() => (hover = r.key)}
           onmouseleave={() => (hover = null)}>
-          <span role="cell" class="col-span-7 min-w-0">
+          <span role="cell" class="col-span-7 flex min-w-0 items-center gap-1.5">
+            <ItemIcon name={r.tip.item} base={r.tip.base} rarity={r.tip.rarity} size={20} decorative />
             <button
               bind:this={els[r.key]}
               data-pob-color
               data-wiki={itemWikiName(r.tip.rarity, r.tip.item, r.tip.base) || undefined}
-              class={['cell-link max-w-full truncate', toneClass(r.tip.rarity)]}
+              class={['cell-link min-w-0 max-w-full truncate', toneClass(r.tip.rarity)]}
               aria-haspopup="dialog"
               aria-describedby={hover === r.key ? `${uid}-tip` : undefined}
               onclick={(e) => click(e, r.key)}

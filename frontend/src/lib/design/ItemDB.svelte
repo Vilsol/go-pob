@@ -6,6 +6,7 @@
   import { panelId, tabId } from './tab_ids';
   import Select from './Select.svelte';
   import Button from './Button.svelte';
+  import ItemIcon from './ItemIcon.svelte';
   import { tone as toneClass, type Tone } from './tone';
   import type { TipProps } from './items';
   import { itemSource } from './item_drag';
@@ -145,12 +146,13 @@
             ]}
             onmouseenter={() => (hover = r.name)}
             onmouseleave={() => (hover = null)}>
-            <span role="cell" class="col-span-9 min-w-0 max-phone:col-span-1 max-phone:col-start-1 max-phone:row-start-1">
+            <span role="cell" class="col-span-9 flex min-w-0 items-center gap-1.5 max-phone:col-span-1 max-phone:col-start-1 max-phone:row-start-1">
+              <ItemIcon name={r.title || r.name} base={r.base} rarity={r.rarity.toLowerCase()} size={20} decorative />
               <button
                 bind:this={els[r.name]}
                 data-pob-color
                 data-wiki={itemWikiName(r.rarity, r.title || r.name, r.base)}
-                class={['cell-link max-w-full truncate font-semibold', toneClass(r.rarity.toLowerCase() as Tone)]}
+                class={['cell-link min-w-0 max-w-full truncate font-semibold', toneClass(r.rarity.toLowerCase() as Tone)]}
                 title="Ctrl+click: add and equip (Shift: the second slot) · double-click: open in the paste panel · Ctrl+C: copy · drag onto a slot or the stash"
                 aria-describedby={hover === r.name ? `${uid}-tip` : undefined}
                 onclick={(e) => {

@@ -161,6 +161,7 @@ export const initializeCrystalline = () => {
     ImportSharedItemSet: wrap('exposition.ImportSharedItemSet', globalThis['go']['go-pob']['exposition']['ImportSharedItemSet']),
     ImportTreeLink: wrap('exposition.ImportTreeLink', globalThis['go']['go-pob']['exposition']['ImportTreeLink']),
     ItemAffixControls: wrap('exposition.ItemAffixControls', globalThis['go']['go-pob']['exposition']['ItemAffixControls']),
+    ItemArtPaths: wrap('exposition.ItemArtPaths', globalThis['go']['go-pob']['exposition']['ItemArtPaths']),
     ItemCorruptChoices: wrap('exposition.ItemCorruptChoices', globalThis['go']['go-pob']['exposition']['ItemCorruptChoices']),
     ItemCrucibleChoices: wrap('exposition.ItemCrucibleChoices', globalThis['go']['go-pob']['exposition']['ItemCrucibleChoices']),
     ItemCustomModChoices: wrap('exposition.ItemCustomModChoices', globalThis['go']['go-pob']['exposition']['ItemCustomModChoices']),

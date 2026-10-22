@@ -3,6 +3,7 @@
   import Button from './Button.svelte';
   import type { Snippet } from 'svelte';
   import Socket from './Socket.svelte';
+  import GemIcon from './GemIcon.svelte';
   import NumberInput from './NumberInput.svelte';
   import { tone as toneClass, type Tone } from './tone';
   import PobText from './PobText.svelte';
@@ -117,7 +118,8 @@
     <span
       class={['toned truncate', oncount ? 'col-span-10' : 'col-span-13', toneClass(tone), !support && 'font-semibold', enabled === false && 'line-through']}
       onmouseenter={() => onnamehover?.(true)}
-      onmouseleave={() => onnamehover?.(false)}>{name}</span>
+      onmouseleave={() => onnamehover?.(false)}
+      >{#if name}<GemIcon {name} size={20} decorative class="mr-1 align-middle" />{/if}{name}</span>
     <span class="col-span-4"><NumberInput size="xs" value={level} min={1} max={maxLevel} label="{name} level" class="w-full" onchange={onlevel} /></span>
     <!-- svelte-ignore a11y_no_static_element_interactions -->
     <span
@@ -134,7 +136,9 @@
     </span>
   {:else}
     <span class={['toned col-span-14', toneClass(tone), !support && 'font-semibold']}
-      >{name}{#if from}<span class="note-sm font-normal">{'  from ' + from}</span>{/if}</span>
+      >{#if name}<GemIcon {name} size={20} decorative class="mr-1 align-middle" />{/if}{name}{#if from}<span class="note-sm font-normal"
+          >{'  from ' + from}</span
+        >{/if}</span>
     <span class="col-span-5 font-mono">{level} / {quality}</span>
     <span class="col-span-4"></span>
   {/if}

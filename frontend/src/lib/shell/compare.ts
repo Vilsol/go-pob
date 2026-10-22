@@ -274,7 +274,7 @@ export const itemRows = (
 ) => {
   const slots = [...new Set([...a.map((i) => i.slot), ...b.map((i) => i.slot)])];
   const brief = (it: CompareItem | undefined): CompareItemSide =>
-    it ? { name: it.name, rarity: it.rarity.toLowerCase() as NonNullable<CompareItemSide>['rarity'], line: it.line } : null;
+    it ? { name: it.name, rarity: it.rarity.toLowerCase() as NonNullable<CompareItemSide>['rarity'], line: it.line, base: it.base } : null;
   return slots.map((slot) => ({
     slot,
     a: brief(a.find((i) => i.slot === slot)),
@@ -287,7 +287,7 @@ export const itemRows = (
 // CompareTab.lua:3933-3938
 export const jewelRows = (jewels: CompareJewel[]) => {
   const brief = (it: CompareItem | undefined): CompareItemSide =>
-    it ? { name: it.name, rarity: it.rarity.toLowerCase() as NonNullable<CompareItemSide>['rarity'], line: it.line } : null;
+    it ? { name: it.name, rarity: it.rarity.toLowerCase() as NonNullable<CompareItemSide>['rarity'], line: it.line, base: it.base } : null;
   return jewels.map((j) => ({
     slot: j.slot,
     label: j.label,

@@ -43,6 +43,7 @@ func init() {
 	crystallineNamespace("go-pob", "exposition").Set("ImportAccountPassiveTree", crystallineWrap(js.FuncOf(crystallineFnExpositionImportAccountPassiveTree)))
 	crystallineNamespace("go-pob", "exposition").Set("ImportAccountItems", crystallineWrap(js.FuncOf(crystallineFnExpositionImportAccountItems)))
 	crystallineNamespace("go-pob", "exposition").Set("ImportItemsAndSkills", crystallineWrap(js.FuncOf(crystallineFnExpositionImportItemsAndSkills)))
+	crystallineNamespace("go-pob", "exposition").Set("ItemArtPaths", crystallineWrap(js.FuncOf(crystallineFnExpositionItemArtPaths)))
 	crystallineNamespace("go-pob", "exposition").Set("ItemDBLists", crystallineWrap(js.FuncOf(crystallineFnExpositionItemDBLists)))
 	crystallineNamespace("go-pob", "exposition").Set("ItemDBTooltip", crystallineWrap(js.FuncOf(crystallineFnExpositionItemDBTooltip)))
 	crystallineNamespace("go-pob", "exposition").Set("ItemDBText", crystallineWrap(js.FuncOf(crystallineFnExpositionItemDBText)))
@@ -832,6 +833,7 @@ func init() {
 	Core30Exports(crystallineRegistry{})
 	ImportPassiveTreeExports(crystallineRegistry{})
 	ImportTabExports(crystallineRegistry{})
+	ItemArtExports(crystallineRegistry{})
 	ItemDBExports(crystallineRegistry{})
 	ItemEditExports(crystallineRegistry{})
 	ItemRebaseExports(crystallineRegistry{})
@@ -2306,6 +2308,55 @@ func crystallineFnExpositionImportItemsAndSkills(this js.Value, args []js.Value)
 		}
 
 		return crystallineOk(string(r0))
+	})
+}
+
+func crystallineFnExpositionItemArtPaths(this js.Value, args []js.Value) (result any) {
+	defer crystallineRecover(&result)
+
+	if len(args) != 1 {
+		return crystallineFail("ItemArtPaths: expected 1 arguments, got " + strconv.Itoa(len(args)))
+	}
+
+	return crystallinePromise(func() any {
+		a0, err := crystallineToSliceOfExpositionArtQuery(args[0])
+		if err != nil {
+			return crystallineFail(err.Error())
+		}
+
+		r0 := ItemArtPaths(a0)
+
+		return crystallineJSON(func(b []byte, ok *bool) []byte {
+			if items0 := r0; items0 == nil {
+				b = append(b, "null"...)
+			} else {
+				b = append(b, '[')
+				for i0 := range items0 {
+					if i0 > 0 {
+						b = append(b, ',')
+					}
+
+					b = crystallineAppendString(b, string(items0[i0]))
+				}
+
+				b = append(b, ']')
+			}
+			return b
+		}, func() any {
+			return func() any {
+				items := r0
+				if items == nil {
+					return nil
+				}
+
+				out := make([]any, 0, len(items))
+				for i := range items {
+					out = append(out, string(items[i]))
+				}
+
+				return out
+			}()
+		})
 	})
 }
 
@@ -30893,6 +30944,21 @@ func crystallineMarshalExpositionAnointCompare(v *AnointCompare) any {
 	}, func() any {
 		return crystallineMarshalExpositionStatOutputs(&v.New)
 	}))
+
+	return out
+}
+
+func crystallineMarshalExpositionArtQuery(v *ArtQuery) any {
+	if v == nil {
+		return nil
+	}
+
+	out := crystallineObjects.New()
+
+	out.Set("Name", string(v.Name))
+	out.Set("Base", string(v.Base))
+	out.Set("Unique", bool(v.Unique))
+	out.Set("Gem", bool(v.Gem))
 
 	return out
 }
@@ -60191,6 +60257,76 @@ func crystallineToDebugModule(value js.Value) (debug.Module, error) {
 	return out, nil
 }
 
+var crystallineKnownExpositionArtQuery = map[string]bool{"Name": true, "Base": true, "Unique": true, "Gem": true}
+
+func crystallineToExpositionArtQuery(value js.Value) (ArtQuery, error) {
+	var out ArtQuery
+
+	if value.IsUndefined() || value.IsNull() {
+		return out, errors.New("exposition.ArtQuery: expected an object, got null")
+	}
+
+	if handle, ok := crystallineHandleOf(value); ok {
+		resolved, found := crystallineResolve(handle)
+		if !found {
+			return out, errors.New("exposition.ArtQuery: the value behind this handle has been released")
+		}
+
+		typed, ok := resolved.(*ArtQuery)
+		if !ok {
+			return out, errors.New("exposition.ArtQuery: handle refers to a different type")
+		}
+
+		return *typed, nil
+	}
+
+	if value.Type() != js.TypeObject {
+		return out, errors.New("exposition.ArtQuery: expected an object")
+	}
+
+	if err := crystallineUnknownProperty(value, "exposition.ArtQuery", crystallineKnownExpositionArtQuery); err != nil {
+		return out, err
+	}
+
+	if property := value.Get("Name"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToString(property)
+		if err != nil {
+			return out, errors.New("exposition.ArtQuery.Name: " + err.Error())
+		}
+
+		out.Name = converted
+	}
+
+	if property := value.Get("Base"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToString(property)
+		if err != nil {
+			return out, errors.New("exposition.ArtQuery.Base: " + err.Error())
+		}
+
+		out.Base = converted
+	}
+
+	if property := value.Get("Unique"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToBool(property)
+		if err != nil {
+			return out, errors.New("exposition.ArtQuery.Unique: " + err.Error())
+		}
+
+		out.Unique = converted
+	}
+
+	if property := value.Get("Gem"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToBool(property)
+		if err != nil {
+			return out, errors.New("exposition.ArtQuery.Gem: " + err.Error())
+		}
+
+		out.Gem = converted
+	}
+
+	return out, nil
+}
+
 var crystallineKnownExpositionElementWrapper = map[string]bool{"Elements": true}
 
 func crystallineToExpositionElementWrapper(value js.Value) (ElementWrapper, error) {
@@ -67839,6 +67975,29 @@ func crystallineToSliceOfDebugBuildSetting(value js.Value) ([]debug.BuildSetting
 
 	for i := 0; i < value.Length(); i++ {
 		item, err := crystallineToDebugBuildSetting(value.Index(i))
+		if err != nil {
+			return nil, errors.New("[" + strconv.Itoa(i) + "]: " + err.Error())
+		}
+
+		out = append(out, item)
+	}
+
+	return out, nil
+}
+
+func crystallineToSliceOfExpositionArtQuery(value js.Value) ([]ArtQuery, error) {
+	if value.IsUndefined() || value.IsNull() {
+		return nil, nil
+	}
+
+	if !js.Global().Get("Array").Call("isArray", value).Bool() {
+		return nil, errors.New("expected an array")
+	}
+
+	out := make([]ArtQuery, 0, value.Length())
+
+	for i := 0; i < value.Length(); i++ {
+		item, err := crystallineToExpositionArtQuery(value.Index(i))
 		if err != nil {
 			return nil, errors.New("[" + strconv.Itoa(i) + "]: " + err.Error())
 		}

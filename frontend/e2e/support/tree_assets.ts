@@ -12,6 +12,10 @@ const DIR = resolve(RESULTS_DIR, 'tree-assets');
 export const FONT_ASSET_PATTERN = '^https://fonts\\.(googleapis|gstatic)\\.com/';
 const isFontAsset = (url: string) => new RegExp(FONT_ASSET_PATTERN).test(url);
 
+const ITEM_ART_PATTERN = /^https:\/\/web\.poecdn\.com\//;
+// a 1×1 transparent PNG: item and gem icons load without reaching the CDN
+const ITEM_ART = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==', 'base64');
+
 const failed = new Set<string>();
 
 const localCopy = async (url: string): Promise<{ file: string; type: string } | undefined> => {
@@ -36,6 +40,7 @@ const localCopy = async (url: string): Promise<{ file: string; type: string } | 
 };
 
 export const routeTreeAssets = async (page: Page) => {
+  await page.context().route(ITEM_ART_PATTERN, (route) => route.fulfill({ status: 200, body: ITEM_ART, headers: { 'content-type': 'image/png' } }));
   await page.context().route(isTreeAsset, async (route) => {
     const url = route.request().url();
     const type = url.endsWith('.png') ? 'image/png' : url.endsWith('.webp') ? 'image/webp' : 'image/jpeg';

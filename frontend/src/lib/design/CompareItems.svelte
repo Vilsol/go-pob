@@ -6,6 +6,7 @@
   import PobText from './PobText.svelte';
   import SocketPreview from './SocketPreview.svelte';
   import TooltipLines from './TooltipLines.svelte';
+  import ItemIcon from './ItemIcon.svelte';
   import { tone as toneClass } from './tone';
   import type { ItemTip } from './fixtures';
   import type { StatCompareSection } from '$lib/skill_tree/stat_compare';
@@ -37,10 +38,10 @@
     (r.impact ?? []).flatMap((s) =>
       s.lines.map((l) => ({ text: `${s.actor === 'Minion' ? 'Minion ' : ''}${l.label} ${l.value}${l.percent ? ` ${l.percent}` : ''}`, up: l.better }))
     );
-  let hover = $state.raw<{ key: string; anchor: HTMLElement; name: string; tip?: ItemTip }>();
-  const showItem = async (side: 'a' | 'b', name: string, anchor: HTMLElement) => {
+  let hover = $state.raw<{ key: string; anchor: HTMLElement; name: string; base?: string; rarity?: string; tip?: ItemTip }>();
+  const showItem = async (side: 'a' | 'b', name: string, anchor: HTMLElement, base?: string, rarity?: string) => {
     const key = `${side}:${name}`;
-    hover = { key, anchor, name };
+    hover = { key, anchor, name, base, rarity };
     const tip = await itemtip?.(side, name);
     if (hover?.key === key && tip) hover = { ...hover, tip };
   };
@@ -123,10 +124,11 @@
             tabindex="0"
             class={['toned truncate font-semibold', toneClass(it.rarity)]}
             aria-describedby={hover?.key === `${i ? 'b' : 'a'}:${it.name}` ? 'compare-item-tip' : undefined}
-            onmouseenter={(e) => itemtip && void showItem(i ? 'b' : 'a', it.name, e.currentTarget)}
-            onfocus={(e) => itemtip && void showItem(i ? 'b' : 'a', it.name, e.currentTarget)}
+            onmouseenter={(e) => itemtip && void showItem(i ? 'b' : 'a', it.name, e.currentTarget, it.base, it.rarity)}
+            onfocus={(e) => itemtip && void showItem(i ? 'b' : 'a', it.name, e.currentTarget, it.base, it.rarity)}
             onmouseleave={() => (hover = undefined)}
-            onblur={() => (hover = undefined)}>{it.name}</span>
+            onblur={() => (hover = undefined)}
+            ><ItemIcon name={it.name} base={it.base} rarity={it.rarity} size={20} decorative class="mr-1 align-middle" />{it.name}</span>
           <span class="truncate text-text-3" title={it.line}>{it.line}</span>
           {#if jewel && (i ? jewel.bWarn : jewel.aWarn)}<span class="text-11"><PobText text={WARN} /></span>{/if}
         {:else}
@@ -202,8 +204,9 @@
     anchor={hover.anchor}
     id="compare-item-tip"
     item={hover.name}
-    base=""
+    base={hover.base ?? ''}
     rarity="normal"
+    iconRarity={hover.rarity}
     mods={[]}
     impactTitle=""
     impact={[]}

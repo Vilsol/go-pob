@@ -7,6 +7,7 @@
   import Select from './Select.svelte';
   import Checkbox from './Checkbox.svelte';
   import Button from './Button.svelte';
+  import ItemIcon from './ItemIcon.svelte';
   import { tone as toneClass } from './tone';
   import type { BrowseKind, BrowseRow } from './fixtures/items';
 
@@ -72,7 +73,13 @@
               role="cell"
               data-pob-color
               class={['toned col-span-7 truncate font-semibold max-phone:col-span-1 max-phone:col-start-1 max-phone:row-start-1', toneClass(r.rarity)]}
-              >{r.name}</span>
+              ><ItemIcon
+                name={r.name}
+                base={r.action === 'craft' ? r.name : r.note}
+                rarity={r.rarity}
+                size={20}
+                decorative
+                class="mr-1.5 align-middle" />{r.name}</span>
             <span role="cell" class="col-span-4 truncate text-text-2 max-phone:col-span-1 max-phone:col-start-1 max-phone:row-start-2">{r.type}</span>
             <span role="cell" class="col-span-6 truncate text-text-3 max-phone:col-span-2 max-phone:row-start-3"
               >{r.note}{#if r.impact}&nbsp;·&#32;<span class={['toned', toneClass(r.impact.dir)]}>{r.impact.text}</span>{/if}</span>

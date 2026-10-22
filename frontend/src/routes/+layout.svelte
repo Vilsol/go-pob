@@ -11,7 +11,8 @@
   import { browser } from '$app/environment';
   import { syncWrap } from '$lib/go/worker';
   import { proxy, transfer } from 'comlink';
-  import { currentBuild, currentBuildPath, buildChannel, devMode, markBackendAsLoaded, outputs } from '$lib/global.js';
+  import { currentBuild, currentBuildPath, buildChannel, devMode, markBackendAsLoaded, outputs, backendLoaded } from '$lib/global.js';
+  import { setArtResolver } from '$lib/design/item_art';
   import { showTitlebarName, windowTitle } from '$lib/display/window_title';
   import { onTick } from '$lib/calc_state';
   import { logError } from '$lib/utils';
@@ -139,6 +140,11 @@
     if (!syncWrap || syncWrap === null) {
       loadingMessage = 'Failed to initialize worker';
     } else {
+      const worker = syncWrap;
+      setArtResolver(async (queries) => {
+        await backendLoaded;
+        return worker.ItemArtPaths(queries);
+      });
       syncWrap.booted
         .then((booted) => {
           if (booted) {

@@ -127,7 +127,7 @@ export type CompareSide = {
   power: PowerRow[];
 };
 export type ConfigKind = 'check' | 'number' | 'list';
-export type CompareItemSide = { name: string; rarity: ItemSummary['rarity']; line: string } | null;
+export type CompareItemSide = { name: string; rarity: ItemSummary['rarity']; line: string; base?: string } | null;
 export type CompareFixture = {
   a: CompareSide;
   b: CompareSide & { skills: SkillsFixture };

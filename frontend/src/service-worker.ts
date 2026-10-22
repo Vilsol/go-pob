@@ -133,6 +133,31 @@ const cacheFirst = async (cacheName: string, request: Request, key: Request | st
   return res;
 };
 
+const ART = 'pob-art-v1';
+const ART_MAX = 200;
+const isArt = (url: URL) => url.hostname === 'web.poecdn.com' && url.pathname.startsWith('/image/Art/');
+
+// An <img> fetches the CDN's art without CORS, so the response is opaque: its status is unknown and
+// browsers count it far above its size against the quota, hence the small cap.
+const keepArt = async (request: Request, res: Response) => {
+  try {
+    const cache = await caches.open(ART);
+    await cache.put(request, res);
+    const keys = await cache.keys();
+    for (const key of keys.slice(0, Math.max(0, keys.length - ART_MAX))) await cache.delete(key);
+  } catch (e) {
+    console.warn('service worker: art not cached', e);
+  }
+};
+
+const cachedArt = async (event: FetchEvent) => {
+  const hit = await caches.match(event.request, { cacheName: ART }).catch(() => undefined);
+  if (hit) return hit;
+  const res = await fetch(event.request);
+  if (res.ok || res.type === 'opaque') event.waitUntil(keepArt(event.request, res.clone()));
+  return res;
+};
+
 sw.addEventListener('fetch', (event) => {
   const { request } = event;
   if (request.method !== 'GET') return;
@@ -160,5 +185,7 @@ sw.addEventListener('fetch', (event) => {
 
   if (isCdnAsset(url)) {
     event.respondWith(cacheFirst(CDN, request));
+    return;
   }
+  if (isArt(url)) event.respondWith(cachedArt(event));
 });

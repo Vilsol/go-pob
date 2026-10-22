@@ -21,6 +21,7 @@ desktop/host/dirs.go                GO-NATIVE  the desktop host's config / cache
 desktop/host/index.go               GO-NATIVE  rewrites the built index.html for the desktop (bundled fonts, no web manifest); a webview-host concern with no PoB analogue
 desktop/host/pobdir.go              GO-NATIVE  finds PoB's Builds folder on Windows and in Wine / Proton prefixes on Linux, following Main.lua's user path and Settings.xml buildPath; a host-side search with no Lua counterpart
 desktop/host/routes.go              GO-NATIVE  routes /api and /desktop in front of the Wails asset server; no PoB analogue
+desktop/host/art.go                 GO-NATIVE  serves the CDN's item art to the webview from a disk copy it fills on first use; PoB draws no item art
 desktop/host/spa.go                 GO-NATIVE  serves the static frontend build with a single-page fallback; no PoB analogue
 desktop/host/store.go               GO-NATIVE  storage_init.ts's six storage callbacks over folders on disk; PoB reads its Builds folder directly, the webview cannot
 desktop/importproxy.go              GO-NATIVE  mounts internal/importproxy at /api; no PoB analogue
@@ -131,6 +132,7 @@ data/raw/has_global_effect.go       GENERATED  scripts/gopob/oracleemitters.go
 data/raw/skill_gem_lookup.go         GO-NATIVE  reverse index from a gem's GAME id to its poe.SkillGem, rebuilt because go-pob-data never populates SkillGem.GrantedEffect; PoB reads its own Gems.lua table and has no lookup to port
 data/raw/main.go                    GO-NATIVE  go-pob-data asset loading over the storage interface; PoB ships its data in-tree and has nothing to load
 data/raw/prefetch.go                GO-NATIVE  concurrent read-ahead of the go-pob-data assets InitializeAll then walks one at a time; PoB ships its data in-tree and has nothing to load
+data/raw/item_art.go                GO-NATIVE  game art paths of items and gems from the visual identity tables, for the item and gem icons; PoB draws no item art
 data/raw/deferred_tables.go         GO-NATIVE  first-use loading of the go-pob-data tables no first calculation needs; PoB ships its data in-tree and has nothing to load
 data/raw/minion_data.go             GENERATED  scripts/gopob/miniondataemit.go
 data/raw/minion_uses.go             GENERATED  scripts/gopob/oracleemitters.go
@@ -407,6 +409,7 @@ calculator/item_db.go               PORT       src/Modules/Main.lua,src/Classes/
 data/item_db.go                     PORT       src/Modules/Data.lua
 data/item_db_generated.go           GENERATED  scripts/gopob/itemdbemit.go
 scripts/gopob/itemdbemit.go                      GO-NATIVE  emits data/item_db_generated.go from oracle/item_db.lua; ports no Lua logic
+wasm/exposition/item_art.go         GO-NATIVE  crystalline binding surface for the frontend
 wasm/exposition/item_db.go          GO-NATIVE  crystalline binding surface for the frontend
 calculator/item_variant_groups.go   PORT       src/Classes/Item.lua,src/Classes/ItemsTab.lua
 wasm/exposition/items_exports.go          GO-NATIVE  crystalline binding surface for the frontend

@@ -40,7 +40,7 @@ func Exports(r bind.Registry) {
 	r.Type(pob.Skills{}, bind.Without("UnmarshalXML"))
 
 	r.Type(poe.SkillGem{}, bind.Without("GetGemVariants", "GetLevelProgression"))
-	r.Type(poe.BaseItemType{}, bind.Without("GetEnchantMods"))
+	r.Type(poe.BaseItemType{}, bind.Without("GetEnchantMods", "GetItemVisualIdentity"))
 	r.Type(poe.ActiveSkill{}, bind.Without("GetSkillSpecificStats", "GetSecondarySkillSpecificStats"))
 
 	r.Type(pob.Build{}, bind.Plain())

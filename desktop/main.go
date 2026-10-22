@@ -50,6 +50,7 @@ func main() {
 		_ = json.NewEncoder(w).Encode(d.builds())
 	})
 	native.Handle("/fonts/", http.FileServerFS(fonts))
+	native.Handle("/art/", http.StripPrefix("/art", &host.Art{Dir: filepath.Join(filepath.Dir(dirs.Cache), "art"), Upstream: "https://web.poecdn.com/image/"}))
 	native.HandleFunc("POST /save", d.files.Save)
 	native.HandleFunc("GET /opened/{token}", d.files.Opened)
 	native.HandleFunc("POST /open", func(w http.ResponseWriter, _ *http.Request) {

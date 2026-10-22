@@ -10,6 +10,7 @@
   import { draggedItem, type ItemDrag } from './item_drag';
   import { dropZone, type DropZone } from './reorder';
   import SocketPreview from './SocketPreview.svelte';
+  import ItemIcon from './ItemIcon.svelte';
   import type { Tree } from '$lib/skill_tree/types';
   import type { ItemSummary, ItemTip, StatDiff } from './fixtures';
   import Tabs from './Tabs.svelte';
@@ -131,7 +132,7 @@
     <button
       bind:this={els[k]}
       class={[
-        'box-border flex size-full flex-col items-start justify-between overflow-hidden rounded border border-(--tone)/60 bg-tile p-1.5 pr-6 text-left font-sans',
+        'relative box-border flex size-full flex-col items-start justify-between overflow-hidden rounded border border-(--tone)/60 bg-tile p-1.5 pr-6 text-left font-sans',
         toneClass(e ? e.item.rarity : 'muted'),
         (hover === k || dropOver === k) && 'border-text',
         flask && e && !flasks[k] && 'border-dashed'
@@ -145,11 +146,21 @@
       onmouseleave={() => (hover = null)}
       onfocus={() => (hover = k)}
       onblur={() => (hover = null)}>
-      <span class="eyebrow eyebrow-xs font-normal text-text-3">{flask ? '' : b.slot}</span>
+      {#if e}
+        <ItemIcon
+          name={e.item.name}
+          base={e.item.base}
+          rarity={e.item.rarity}
+          size={Math.min(b.w, b.h) - 40}
+          decorative
+          class={['pointer-events-none absolute top-1/2 left-1/2 -translate-1/2', flask && !flasks[k] && 'opacity-50']} />
+      {/if}
+      <span class="eyebrow eyebrow-xs relative font-normal text-text-3">{flask ? '' : b.slot}</span>
       <span
         data-pob-color={e && (!flask || flasks[k]) ? '' : undefined}
-        class={['text-12 leading-[0.9375rem] font-semibold', e && (!flask || flasks[k]) ? 'text-(--tone)' : 'text-text-3']}>{e ? e.item.name : 'Empty'}</span>
-      <span class="note-sm font-mono before:content-[attr(data-sockets)]" data-sockets={e?.item.sockets ?? ''}></span>
+        class={['relative rounded-tight bg-tile/80 text-12 leading-[0.9375rem] font-semibold', e && (!flask || flasks[k]) ? 'text-(--tone)' : 'text-text-3']}
+        >{e ? e.item.name : 'Empty'}</span>
+      <span class="note-sm relative font-mono before:content-[attr(data-sockets)]" data-sockets={e?.item.sockets ?? ''}></span>
     </button>
     {#if e || fitting(k).length}
       <div class="absolute top-1 right-1">
@@ -190,15 +201,18 @@
           onmouseleave={() => (hover = null)}
           onfocusin={() => (hover = `Jewel ${j.node}`)}
           onfocusout={() => (hover = null)}>
-          <FloatingLabel label="Socket #{i + 1}" class="[--float-bg:var(--color-surface-1)]"
-            ><Select
-              data-pob-color
-              title={onjewel ? `Passive node ${j.node}` : `Passive node ${j.node} · socketed on the tree (changing it here is not in the app yet)`}
-              class={['h-7.5 bg-surface-1 px-1.5', toneClass(j.item?.rarity)]}
-              options={jewelChoices(j.choices)}
-              value={String(j.id)}
-              disabled={!onjewel}
-              onchange={(ev: Event & { currentTarget: HTMLSelectElement }) => onjewel?.(j.node, Number(ev.currentTarget.value) || null)} /></FloatingLabel>
+          <div class="flex items-center gap-1.5">
+            {#if j.item}<ItemIcon name={j.item.name} base={j.item.base} rarity={j.item.rarity} size={30} decorative />{/if}
+            <FloatingLabel label="Socket #{i + 1}" class="min-w-0 grow [--float-bg:var(--color-surface-1)]"
+              ><Select
+                data-pob-color
+                title={onjewel ? `Passive node ${j.node}` : `Passive node ${j.node} · socketed on the tree (changing it here is not in the app yet)`}
+                class={['h-7.5 bg-surface-1 px-1.5', toneClass(j.item?.rarity)]}
+                options={jewelChoices(j.choices)}
+                value={String(j.id)}
+                disabled={!onjewel}
+                onchange={(ev: Event & { currentTarget: HTMLSelectElement }) => onjewel?.(j.node, Number(ev.currentTarget.value) || null)} /></FloatingLabel>
+          </div>
         </div>
       {/each}
     </div>

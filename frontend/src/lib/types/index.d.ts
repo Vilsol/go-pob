@@ -2132,6 +2132,12 @@ export declare namespace exposition {
     readonly Base: exposition.StatOutputs;
     readonly New: exposition.StatOutputs;
   }
+  interface ArtQuery {
+    readonly Name: string;
+    readonly Base: string;
+    readonly Unique: boolean;
+    readonly Gem: boolean;
+  }
   interface ElementWrapper {
     readonly Elements?: Record<string, Readonly<calculator.ColProps>>;
   }
@@ -2464,6 +2470,7 @@ export declare namespace exposition {
   function ImportSharedItemSet(build: pob.PathOfBuilding | undefined, index: number): Promise<number>;
   function ImportTreeLink(build: pob.PathOfBuilding | undefined, title: string, link: string): Promise<string>;
   function ItemAffixControls(text: string): Promise<[calculator.AffixControls, boolean]>;
+  function ItemArtPaths(queries: Array<exposition.ArtQuery> | undefined): Promise<(Array<string> | undefined)>;
   function ItemCorruptChoices(text: string): Promise<[calculator.CorruptChoices, boolean]>;
   function ItemCrucibleChoices(text: string): Promise<[calculator.CrucibleChoices, boolean]>;
   function ItemCustomModChoices(text: string): Promise<[calculator.CustomModChoices, boolean]>;

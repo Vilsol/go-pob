@@ -5,7 +5,7 @@ go 1.26.2
 require (
 	github.com/MarvinJWendt/testza v0.5.2
 	github.com/Vilsol/crystalline v0.2.0
-	github.com/Vilsol/go-pob-data v0.5.6
+	github.com/Vilsol/go-pob-data v0.5.7
 	github.com/andybalholm/brotli v1.1.1
 	github.com/dominikbraun/graph v0.23.0
 	github.com/felixge/fgprof v0.9.5
@@ -16,7 +16,11 @@ require (
 
 require (
 	github.com/google/pprof v0.0.0-20240227163752-401108e1b7e7 // indirect
+	github.com/mcuadros/go-version v0.0.0-20190830083331-035f6764e8d2 // indirect
+	github.com/oriath-net/gooz v1.0.1 // indirect
+	github.com/oriath-net/pogo v0.0.0-20230425190806-78985d9ea758 // indirect
 	golang.org/x/text v0.13.0 // indirect
+	gopkg.in/gographics/imagick.v3 v3.5.3 // indirect
 )
 
 require (

@@ -64,7 +64,6 @@ var poeOwnReads = map[string][]string{
 	"GemEffects":                    {"GemTags", "GrantedEffect", "GrantedEffect2", "ID"},
 	"GemTags":                       {"ID"},
 	"ItemExperiencePerLevel":        {"ItemExperienceType"},
-	"ItemVisualIdentity":            {"ID"},
 	"ModFamily":                     {"ID"},
 	"ModType":                       {"Stats"},
 	"DefaultMonsterStats":           {"AltDamage1", "AltDamage2", "AltLife1", "AltLife2", "Armour", "EvasiveEvasion", "MinionDamage", "MinionLife", "MonsterLife"},
@@ -79,7 +78,6 @@ var poeOwnReads = map[string][]string{
 	"PassiveSkillTattoos":           {"Override", "OverrideType", "Set", "Tattoo"},
 	"PassiveSkillTreeConnectionArt": {"ID"},
 	"PassiveSkillTreeNodeFrameArt":  {"ID"},
-	"UniqueStashLayout":             {"ItemVisualIdentityKey", "UniqueStashTypesKey", "WordsKey"},
 	"UniqueStashTypes":              {"ID"},
 	"VirtualStatContextFlags":       {"ID"},
 	"WeaponPassiveSkillTypes":       {"ID"},
@@ -96,8 +94,8 @@ var aheadOfPort = map[string][]string{
 func TestUnreadTablesStayUnread(t *testing.T) {
 	globals := poeGlobals(t)
 
-	loaded := make([]string, 0, len(tables)+len(deferredTables))
-	for _, tb := range slices.Concat(tables, deferredTables) {
+	loaded := make([]string, 0, len(tables)+len(deferredTables)+len(itemArtTables))
+	for _, tb := range slices.Concat(tables, deferredTables, itemArtTables) {
 		loaded = append(loaded, tb.Name)
 	}
 	for name := range globals {

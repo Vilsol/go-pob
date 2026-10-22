@@ -4,6 +4,7 @@
   import type { WhatIf } from './items';
   import type { ItemTip } from './fixtures';
   import PobText from './PobText.svelte';
+  import ItemIcon from './ItemIcon.svelte';
 
   type Impact = { label: string; text: string; dir: 'up' | 'down' };
   type Props = {
@@ -19,8 +20,11 @@
     whatIf?: WhatIf;
     tooltip?: ItemTip;
     id?: string;
+    /* the item's art above its name; iconRarity when the tooltip's own tone is not the item's rarity */
+    icon?: boolean;
+    iconRarity?: string;
   };
-  let { item, base, rarity, baseTone, mods = [], flask, impactTitle, impactSub, impact, whatIf, tooltip, id }: Props = $props();
+  let { item, base, rarity, baseTone, mods = [], flask, impactTitle, impactSub, impact, whatIf, tooltip, id, icon = false, iconRarity }: Props = $props();
   const lines = $derived.by(() => {
     const all = tooltip?.lines ?? [];
     let a = 0;
@@ -36,6 +40,7 @@
   {id}
   class={['tooltip relative overflow-hidden', tooltip ? 'w-[360px]' : 'w-[290px]', 'rounded-md border-(--tone) text-13', toneClass(rarity)]}>
   <div class="item-head">
+    {#if icon}<ItemIcon name={item} {base} rarity={iconRarity ?? rarity} size={48} decorative class="mb-1 self-center" />{/if}
     {#if tooltip}
       {#if tooltip.influence.length}<span data-influence class="text-11 text-text-2">{tooltip.influence[0]}</span>{/if}
       {#each tooltip.title as t, i (i)}<span data-pob-color class={['toned', i === 0 && 'font-semibold']}>{t}</span>{/each}

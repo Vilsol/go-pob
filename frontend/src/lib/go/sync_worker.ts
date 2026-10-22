@@ -1932,7 +1932,14 @@ class PoBWorker {
         ((await exposition.EquippedItems(build)) ?? []).map(async (e) => {
           const parsed = await exposition.ParseItem(build, e.Text, NO_TIP_STATS);
           const it = parsed.ok ? parsed.value : undefined;
-          return { slot: e.SlotName, name: e.Name, rarity: e.Rarity, text: e.Text, line: it?.Explicits?.[0]?.Line ?? it?.BaseName ?? '' };
+          return {
+            slot: e.SlotName,
+            name: e.Name,
+            rarity: e.Rarity,
+            text: e.Text,
+            line: it?.Explicits?.[0]?.Line ?? it?.BaseName ?? '',
+            base: it?.BaseName ?? ''
+          };
         })
       );
     return { a: await of(this.currentBuild), b: await of(b.build) };
@@ -3138,6 +3145,10 @@ class PoBWorker {
   /* ConfigTab.lua:1450-1489 */
   ModBrowserList(search: string): string[] {
     return [...(exposition.ModBrowserList(search) ?? [])];
+  }
+
+  async ItemArtPaths(queries: exposition.ArtQuery[]): Promise<string[]> {
+    return [...((await exposition.ItemArtPaths(queries)) ?? [])];
   }
 
   /* CompareTab.lua:1331-1368 */

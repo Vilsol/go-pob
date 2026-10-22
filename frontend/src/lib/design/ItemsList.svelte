@@ -2,6 +2,7 @@
   import Checkbox from './Checkbox.svelte';
   import FloatingItemTip from './FloatingItemTip.svelte';
   import SlotMenu from './SlotMenu.svelte';
+  import ItemIcon from './ItemIcon.svelte';
   import { tone as toneClass, type Tone } from './tone';
   import { itemTip, type WhatIf } from './items';
   import type { ItemSummary, StatDiff } from './fixtures';
@@ -75,6 +76,7 @@
     <span role="cell" data-col="aside" class={['col-span-5', hover === key ? 'text-text-2' : 'text-text-3']}>{key}</span>
     <span role="cell" data-col="name" class="col-span-10 flex min-w-0 items-center gap-1">
       {#if e?.item}
+        <ItemIcon name={e.item.name} base={e.item.base} rarity={e.item.rarity} size={20} decorative />
         <button
           bind:this={els[key]}
           data-pob-color
