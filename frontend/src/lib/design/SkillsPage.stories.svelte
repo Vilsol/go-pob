@@ -170,13 +170,14 @@
     const on = within(ed).getByRole('checkbox', { name: `${gem} enabled` });
     await userEvent.click(on);
     await expect(on).not.toBeChecked();
-    const link = within(ed).getAllByRole('button', { name: /^Sockets 1–2/ })[0];
-    const was = link.getAttribute('aria-pressed');
-    const summary = within(ed).getByText(/^Links: /);
-    const before = summary.textContent;
-    await userEvent.click(link);
-    await expect(link.getAttribute('aria-pressed')).not.toBe(was);
-    await expect(summary.textContent).not.toBe(before);
+    const links = within(ed).getAllByRole('button', { name: /^Sockets \d+–\d+: linked/ });
+    await expect(links.length).toBeGreaterThan(0);
+    for (const link of links) {
+      await expect(link).toHaveAttribute('aria-pressed', 'true');
+      await expect(link).toBeDisabled();
+    }
+    await expect(within(ed).queryAllByRole('button', { name: /^Sockets \d+–\d+: not linked/ })).toHaveLength(0);
+    await expect(within(ed).getByText(/^Links: /).textContent).toMatch(/^Links: all \d+ linked$/);
     const last = g.gems[g.gems.length - 1].name;
     await userEvent.click(within(ed).getByRole('button', { name: `Remove ${last}` }));
     await expect(within(ed).queryByRole('checkbox', { name: `${last} enabled` })).toBeNull();

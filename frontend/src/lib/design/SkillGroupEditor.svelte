@@ -135,10 +135,12 @@
   const drag = new Reorder(dragState, { box: () => gemBox, name: (i) => group.gems[i]?.name ?? '', onmove: (f, t) => onreorder(f, t) });
   const line = $derived(socketLine(group.sockets));
   const sockAt = (i: number) => line.colours[offset + i];
-  const linkAt = (i: number) => (i > 0 && sockAt(i) && sockAt(i - 1) ? line.links[offset + i - 1] : undefined);
+  // links are always connected for now; flip to let users break them again
+  const LINKS_EDITABLE = false;
+  const linkAt = (i: number) => (!LINKS_EDITABLE ? (i > 0 ? true : undefined) : i > 0 && sockAt(i) && sockAt(i - 1) ? line.links[offset + i - 1] : undefined);
   const summary = $derived.by(() => {
     // SkillsTab.lua:1210-1246
-    if (!group.sockets) return `Links: all ${group.gems.length} linked`;
+    if (!LINKS_EDITABLE || !group.sockets) return `Links: all ${group.gems.length} linked`;
     const links = group.gems.slice(1).map((_, i) => linkAt(i + 1) ?? false);
     const broken = links.filter((l) => !l).length;
     return broken ? `Links: ${broken + 1} link groups (${broken} broken)` : `Links: all ${group.gems.length} linked`;
@@ -417,7 +419,7 @@
           onqualityhover={(qualitywhatif || gemtip) && ((on: boolean) => (hoverQuality = on ? i : hoverQuality === i ? undefined : hoverQuality))}
           onenabledhover={enabledwhatif && ((on: boolean) => (hoverEnabled = on ? i : hoverEnabled === i ? undefined : hoverEnabled))}
           onglobal={(index, on) => ongem(i, { globals: (gem.globals ?? []).map((g, k) => (k === index ? { ...g, on } : g)) })}
-          linkLocked={socketsLocked}>
+          linkLocked={LINKS_EDITABLE ? socketsLocked : 'every gem in a group supports the others'}>
           {#snippet grip()}<span aria-hidden="true" class="flex text-text-3"><Icon name="grip" /></span>{/snippet}
         </GemRow>
       </div>
