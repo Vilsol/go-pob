@@ -3,7 +3,7 @@
 import { describe, expect, it, afterEach, vi } from 'vitest';
 import { render, cleanup, waitFor } from '@testing-library/svelte';
 import ItemIcon from './ItemIcon.svelte';
-import { ART_CDN, artPath, artUrl, setArtResolver, type ArtQuery } from './item_art';
+import { ART_CDN, FLASK_SPRITE, GEM_SPRITE, artPath, artUrl, setArtResolver, spriteOf, type ArtQuery } from './item_art';
 
 afterEach(() => {
   cleanup();
@@ -88,5 +88,73 @@ describe('ItemIcon', () => {
     expect((container.querySelector('img') as HTMLImageElement).alt).toBe('');
     container.querySelector('img')?.dispatchEvent(new Event('load'));
     await waitFor(() => expect(container.querySelector('[data-item-icon]')?.getAttribute('data-item-icon')).toBe('loaded'));
+  });
+});
+
+describe('spriteOf', () => {
+  it('cuts only the sheet shapes identified for flasks and gems', () => {
+    expect(spriteOf('flask', 234, 156)).toBe(FLASK_SPRITE);
+    expect(spriteOf('gem', 234, 78)).toBe(GEM_SPRITE);
+    expect(spriteOf('gem', 78, 78)).toBeUndefined();
+    expect(spriteOf('flask', 78, 156)).toBeUndefined();
+    expect(spriteOf(undefined, 234, 156)).toBeUndefined();
+    expect(spriteOf(undefined, 234, 78)).toBeUndefined();
+    expect(spriteOf('gem', 234, 156)).toBeUndefined();
+    expect(spriteOf('flask', 234, 78)).toBeUndefined();
+    expect(spriteOf('flask', 0, 0)).toBeUndefined();
+    expect(spriteOf('gem', 0, 0)).toBeUndefined();
+  });
+});
+
+describe('ItemIcon sprite sheets', () => {
+  const loadAs = (img: HTMLImageElement, w: number, h: number) => {
+    Object.defineProperty(img, 'naturalWidth', { value: w });
+    Object.defineProperty(img, 'naturalHeight', { value: h });
+    img.dispatchEvent(new Event('load'));
+  };
+  const layers = (c: HTMLElement) =>
+    [...c.querySelectorAll<HTMLElement>('[data-sprite-frame]')].map((l) => ({
+      frame: l.dataset.spriteFrame,
+      width: l.style.width,
+      height: l.style.height,
+      left: (l.firstElementChild as HTMLElement).style.left
+    }));
+
+  it('stacks a flask sheet back, liquid, front, each cropped to one 1x2 frame', async () => {
+    const { container } = render(ItemIcon, { name: 'Divine Life Flask', base: 'Divine Life Flask', src: '/Art/2DItems/Flasks/lifeflask10.png' });
+    loadAs(container.querySelector('img') as HTMLImageElement, 234, 156);
+    await waitFor(() => expect(layers(container)).toHaveLength(3));
+    expect(layers(container)).toEqual([
+      { frame: '1', width: '50%', height: '100%', left: '-100%' },
+      { frame: '2', width: '50%', height: '100%', left: '-200%' },
+      { frame: '0', width: '50%', height: '100%', left: '0%' }
+    ]);
+    const sheet = container.querySelector('img') as HTMLImageElement;
+    expect([sheet.alt, sheet.classList.contains('opacity-0')]).toEqual(['Divine Life Flask', true]);
+    expect([...container.querySelectorAll('[data-sprite-frame] img')].every((i) => (i as HTMLImageElement).alt === '')).toBe(true);
+  });
+
+  it('stacks a gem sheet gem then symbol, and shows a single-frame gem whole', async () => {
+    const { container } = render(ItemIcon, { name: 'Fireball', gem: true, src: '/g.png' });
+    loadAs(container.querySelector('img') as HTMLImageElement, 234, 78);
+    await waitFor(() =>
+      expect(layers(container).map((l) => [l.frame, l.width, l.height])).toEqual([
+        ['2', '100%', '100%'],
+        ['0', '100%', '100%']
+      ])
+    );
+    cleanup();
+    const single = render(ItemIcon, { name: 'Added Fire Damage Support', gem: true, src: '/s.png' }).container;
+    loadAs(single.querySelector('img') as HTMLImageElement, 78, 78);
+    await waitFor(() => expect(single.querySelector('[data-item-icon]')?.getAttribute('data-item-icon')).toBe('loaded'));
+    expect(layers(single)).toEqual([]);
+    expect(single.querySelector('img')?.classList.contains('opacity-0')).toBe(false);
+  });
+
+  it('shows a sheet-shaped image whole when it is not flask or gem art', async () => {
+    const { container } = render(ItemIcon, { name: 'Doom Grip', base: 'Leather Belt', rarity: 'rare', src: '/Art/2DItems/Belts/x.png' });
+    loadAs(container.querySelector('img') as HTMLImageElement, 234, 156);
+    await waitFor(() => expect(container.querySelector('[data-item-icon]')?.getAttribute('data-item-icon')).toBe('loaded'));
+    expect(layers(container)).toEqual([]);
   });
 });

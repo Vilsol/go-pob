@@ -49,3 +49,16 @@ export function artPath(query: ArtQuery): Promise<string> {
   pending.set(key, p);
   return p;
 }
+
+/* Some CDN art is a sheet of equal frames side by side; layers are the frames to stack, bottom first */
+export type Sprite = { frames: number; layers: number[] };
+export const FLASK_SPRITE: Sprite = { frames: 3, layers: [1, 2, 0] };
+export const GEM_SPRITE: Sprite = { frames: 3, layers: [2, 0] };
+export type ArtKind = 'flask' | 'gem' | undefined;
+
+/* Only a shape we have identified for that kind of art is cut up; anything else is shown whole */
+export function spriteOf(kind: ArtKind, width: number, height: number): Sprite | undefined {
+  if (kind === 'flask' && width > 0 && width * 2 === height * 3) return FLASK_SPRITE;
+  if (kind === 'gem' && height > 0 && width === height * 3) return GEM_SPRITE;
+  return undefined;
+}

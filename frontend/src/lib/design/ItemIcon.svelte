@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { ClassValue } from 'svelte/elements';
   import { tone, type Tone } from './tone';
-  import { artPath, artUrl } from './item_art';
+  import { artPath, artUrl, spriteOf, type ArtKind, type Sprite } from './item_art';
 
   type Props = {
     name: string;
@@ -24,11 +24,13 @@
   let path = $state<string | undefined>();
   let loaded = $state(false);
   let failed = $state(false);
+  let sprite = $state<{ sheet: Sprite; aspect: number } | undefined>();
 
   $effect(() => {
     const query = { Name: name, Base: base, Unique: unique, Gem: gem };
     loaded = false;
     failed = false;
+    sprite = undefined;
     path = undefined;
     if (src !== undefined) return;
     let live = true;
@@ -50,6 +52,12 @@
       .join('')
   );
   const showImg = $derived(!!url && !failed);
+  const kind: ArtKind = $derived(gem ? 'gem' : /\/Flasks\//.test(url ?? '') || /\bFlask$/.test(base) ? 'flask' : undefined);
+  const onload = (img: HTMLImageElement) => {
+    const sheet = spriteOf(kind, img.naturalWidth, img.naturalHeight);
+    sprite = sheet && { sheet, aspect: img.naturalWidth / sheet.frames / img.naturalHeight };
+    loaded = true;
+  };
   const len = (px: number) => (unit === 'rem' ? `${px / 16}rem` : `${px}px`);
 </script>
 
@@ -78,8 +86,26 @@
       loading="lazy"
       decoding="async"
       draggable="false"
-      class={['absolute inset-0 size-full object-contain', !loaded && 'opacity-0']}
-      onload={() => (loaded = true)}
+      class={['absolute inset-0 size-full object-contain', (!loaded || sprite) && 'opacity-0']}
+      onload={(e) => onload(e.currentTarget as HTMLImageElement)}
       onerror={() => (failed = true)} />
+    {#if loaded && sprite}
+      {#each sprite.sheet.layers as frame (frame)}
+        <span
+          data-sprite-frame={frame}
+          aria-hidden="true"
+          class="absolute inset-0 m-auto overflow-hidden"
+          style:width="{Math.min(1, sprite.aspect) * 100}%"
+          style:height="{Math.min(1, 1 / sprite.aspect) * 100}%">
+          <img
+            src={url}
+            alt=""
+            draggable="false"
+            class="absolute top-0 h-full max-w-none"
+            style:width="{sprite.sheet.frames * 100}%"
+            style:left="{-frame * 100}%" />
+        </span>
+      {/each}
+    {/if}
   {/if}
 </span>
