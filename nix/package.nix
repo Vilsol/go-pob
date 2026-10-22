@@ -39,7 +39,7 @@ buildGoModule (finalAttrs: {
     sourceRoot = "${finalAttrs.src.name}/frontend";
     pnpm = pnpm_10;
     fetcherVersion = 4;
-    hash = "sha256-KKXEyMdaItIa7xkqfqzVRzQXTYhUzzpA0qL/jaLIwCY=";
+    hash = "sha256-00n2kf465A5S3mFaCiQJ4hqOYhswVded1VOPscEcvCc=";
   };
   # relative to modRoot, where configurePhase leaves the build
   pnpmRoot = "../frontend";

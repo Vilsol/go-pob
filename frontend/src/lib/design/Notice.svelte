@@ -35,8 +35,7 @@
     extra
   ]}>
   {#if title}<span class={['eyebrow whitespace-nowrap', titles[kind]]}>{title}</span>{/if}{#if actions}<span
-      class={[grid && 'max-phone:col-span-2 max-phone:row-start-2']}>{@render children()}</span
-    >
+      class={[grid && 'max-phone:col-span-2 max-phone:row-start-2']}>{@render children()}</span>
     <div class="grow max-phone:hidden"></div>
     <div class={['flex items-center gap-2.5', grid && 'max-phone:col-start-2 max-phone:row-start-1']}>
       {@render actions()}
