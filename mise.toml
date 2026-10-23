@@ -31,8 +31,20 @@ description = "Build frontend/static/go-pob.wasm (GOOS=js GOARCH=wasm)"
 run = "task build-go"
 
 [tasks.e2e]
-description = "Playwright e2e journeys + model-based sequences + perf baseline (Chromium)"
+description = "Playwright e2e journeys + model-based sequences + perf baseline (Chromium); skips @slow tests"
 run = "task e2e --"
+
+[tasks.e2e-smoke]
+description = "The @smoke e2e tests: every page and the main journeys"
+run = "task e2e-smoke --"
+
+[tasks.e2e-affected]
+description = "The e2e specs a change since BASE (default dev) reaches, plus @smoke: mise run e2e-affected, or task e2e-affected BASE=<sha>"
+run = "task e2e-affected --"
+
+[tasks.e2e-full]
+description = "task e2e including the @slow tests (benchmarks, WebGL draw lists, random sequences), as CI runs it"
+run = "task e2e SLOW=1 --"
 
 [tasks.build-frontend]
 description = "Build the SvelteKit frontend"

@@ -1,6 +1,6 @@
 // CompareTab.lua:290-389, 2199-2230
 
-import { test, expect } from '@playwright/test';
+import { test, expect } from './support/test';
 
 import { App } from './support/app';
 import { buildXml } from './support/builds';

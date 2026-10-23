@@ -16,12 +16,12 @@ const open = async (page: import('@playwright/test').Page, file: string, xml = b
   return { app, build, want };
 };
 
-test('import a build code: the sidebar shows what Go computes for it', async ({ page }) => {
+test('import a build code: the sidebar shows what Go computes for it', { tag: '@smoke' }, async ({ page }) => {
   const { app } = await open(page, '0280-elementalist-fireball');
   app.assertNoErrors();
 });
 
-test('change the character level, up and back down', async ({ page }) => {
+test('change the character level, up and back down', { tag: '@smoke' }, async ({ page }) => {
   const { app, build, want } = await open(page, '0516-reliquarian-kinetic-fusillade');
   await app.openBuildControls();
   const level = page.getByRole('spinbutton', { name: 'Character level' });
@@ -43,7 +43,7 @@ test('change the character level, up and back down', async ({ page }) => {
   app.assertNoErrors();
 });
 
-test('change class, then ascendancy', async ({ page }) => {
+test('change class, then ascendancy', { tag: '@smoke' }, async ({ page }) => {
   const { app, build, want } = await open(page, '0037-ascendant-fire-trap-of-blasting-2');
   await app.openBuildControls();
 
@@ -107,7 +107,7 @@ test('choose a bloodline, then none', async ({ page }) => {
   app.assertNoErrors();
 });
 
-test('change the main skill from the sidebar', async ({ page }) => {
+test('change the main skill from the sidebar', { tag: '@smoke' }, async ({ page }) => {
   const { app, build, want } = await open(page, '0339-reliquarian-shield-crush-of-the-chieftain-2');
   await go.outputs(build);
   const set = build.ActiveSkillSetIndex();
@@ -129,7 +129,7 @@ test('change the main skill from the sidebar', async ({ page }) => {
   app.assertNoErrors();
 });
 
-test('toggle a config checkbox on and off', async ({ page }) => {
+test('toggle a config checkbox on and off', { tag: '@smoke' }, async ({ page }) => {
   const { app, build, want } = await open(page, '0444-reliquarian-static-strike-2');
   await app.goTo('Config');
 
@@ -194,7 +194,7 @@ test('the model edits gems in the active skill set, whatever position it has (02
   expect(level(0), 'the first set in order (id 2) was edited').toBe(first);
 });
 
-test('edit a gem level on the skills page', async ({ page }) => {
+test('edit a gem level on the skills page', { tag: '@smoke' }, async ({ page }) => {
   const { app, build, want } = await open(page, '0008-necromancer-vaal-summon-skeletons');
   await app.goTo('Skills');
 
@@ -344,7 +344,7 @@ test('on the skills page: drag a socket group down, switch the skill set and bac
   app.assertNoErrors();
 });
 
-test('save a build: the build list shows its ascendancy and main skill', async ({ page }) => {
+test('save a build: the build list shows its ascendancy and main skill', { tag: '@smoke' }, async ({ page }) => {
   const file = '0280-elementalist-fireball';
   const { app, build } = await open(page, file);
   const m = await go.model();
@@ -366,7 +366,7 @@ test('save a build: the build list shows its ascendancy and main skill', async (
   app.assertNoErrors();
 });
 
-test('export the code, import it back: Go holds the identical build', async ({ page }) => {
+test('export the code, import it back: Go holds the identical build', { tag: '@smoke' }, async ({ page }) => {
   const file = '0977-luminary-purity-of-ice-2';
   const { app, build, want } = await open(page, file);
   const code = await app.exportCode();
@@ -377,7 +377,7 @@ test('export the code, import it back: Go holds the identical build', async ({ p
   app.assertNoErrors();
 });
 
-test('allocate a passive node from the tree search, then deallocate it', async ({ page }) => {
+test('allocate a passive node from the tree search, then deallocate it', { tag: '@smoke' }, async ({ page }) => {
   const { app, build, want } = await open(page, '0339-reliquarian-shield-crush-of-the-chieftain-2');
   await tree.prepareTree();
   await app.openTree(tree.treeVersion());

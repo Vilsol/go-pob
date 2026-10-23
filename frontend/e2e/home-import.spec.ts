@@ -45,7 +45,7 @@ test('Import build on the homepage opens Import, with slow chunks, once the data
   expect(errors).toEqual([]);
 });
 
-test('Import build on the homepage opens Import, with slow chunks, while the data loads', async ({ page }) => {
+test('Import build on the homepage opens Import, with slow chunks, while the data loads', { tag: '@smoke' }, async ({ page }) => {
   const errors = await start(page);
   await slowChunks(page, 1_500);
   await page.getByRole('button', { name: 'Import build', exact: true }).click();

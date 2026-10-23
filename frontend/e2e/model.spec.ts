@@ -210,7 +210,7 @@ const commands = [
 ];
 
 for (const file of ['0339-reliquarian-shield-crush-of-the-chieftain-2', '0444-reliquarian-static-strike-2']) {
-  test(`random action sequences stay equal to the Go model — ${file}`, async ({ page }) => {
+  test(`random action sequences stay equal to the Go model — ${file}`, { tag: '@slow' }, async ({ page }) => {
     const xml = buildXml(file);
     const code = await go.encode(xml);
     executed = 0;

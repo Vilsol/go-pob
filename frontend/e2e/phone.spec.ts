@@ -22,7 +22,7 @@ const shownDelta = (page: Page) =>
 test.describe('phone shell at 390×769', () => {
   test.use(PHONE);
 
-  test('every tab, the More sheet and the stats sheet, on the real build state', async ({ page }) => {
+  test('every tab, the More sheet and the stats sheet, on the real build state', { tag: '@smoke' }, async ({ page }) => {
     test.setTimeout(10 * 60_000);
     const { app, build } = await openPhoneBuild(page);
     await expect(page.getByRole('navigation', { name: 'Build pages' }), 'the desktop top bar is not mounted on a phone').toHaveCount(0);

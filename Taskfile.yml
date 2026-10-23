@@ -270,13 +270,28 @@ tasks:
       - '{{.NICE}} npx vitest run harness/component _mount.test.ts'
 
   e2e:
-    desc: "Playwright journeys, properties and model-based sequences on a targeted build set, with a perf baseline"
+    desc: "Playwright journeys, properties and model-based sequences on a targeted build set, with a perf baseline; tests tagged @slow (benchmarks, WebGL draw lists, random sequences, the largest-build power report, font scaling) run only with SLOW=1"
     dir: ./frontend/
     cmds:
       - '{{if eq .REUSE "1"}}node e2e/serve.mjs port > /dev/null{{else}}{{.TASK_EXE}} -d {{.ROOT_DIR}} build-go{{end}}'
       - '{{if ne .REUSE "1"}}{{.NICE}} gzip -kf9 static/go-pob.wasm{{end}}'
       - '{{if ne .REUSE "1"}}{{.NICE}} npx vite build --logLevel warn{{end}}'
-      - '{{.NICE}} env E2E_BASELINE={{.E2E_BASELINE | default "0"}} {{if eq .REUSE "1"}}E2E_REUSE=1 E2E_PORT=$(node e2e/serve.mjs port){{end}} npx playwright test -c e2e/playwright.config.ts {{.SPECS}} {{.CLI_ARGS}}'
+      - '{{.NICE}} env E2E_BASELINE={{.E2E_BASELINE | default "0"}} E2E_SLOW={{.SLOW | default "0"}} {{if eq .REUSE "1"}}E2E_REUSE=1 E2E_PORT=$(node e2e/serve.mjs port){{end}} npx playwright test -c e2e/playwright.config.ts {{if .GREP}}--grep {{shellQuote .GREP}} {{end}}{{.SPECS}} {{.CLI_ARGS}}'
+
+  e2e-smoke:
+    desc: "The @smoke e2e tests alone: every page and the main journeys (REUSE=1 serves a warm build)"
+    cmds:
+      - task: e2e
+        vars: {GREP: "@smoke", REUSE: "{{.REUSE}}", CLI_ARGS: "{{.CLI_ARGS}}"}
+
+  e2e-affected:
+    desc: "The e2e specs a change since BASE (default dev, plus the working tree) can reach, and every @smoke test; frontend/e2e/affected.mjs says why, and names what it could not map"
+    vars:
+      GREP:
+        sh: node {{.ROOT_DIR}}/frontend/e2e/affected.mjs grep {{.BASE | default "dev"}}
+    cmds:
+      - task: e2e
+        vars: {GREP: "{{.GREP}}", SLOW: "{{.SLOW}}", REUSE: "{{.REUSE}}", CLI_ARGS: "{{.CLI_ARGS}}"}
 
   e2e-serve:
     desc: "Build the wasm and the frontend, then keep one vite preview warm on a free port for `task e2e REUSE=1`; re-run after a code change (it rebuilds, the server stays)"
@@ -300,13 +315,13 @@ tasks:
     cmds:
       - '{{.NICE}} gzip -kf9 static/go-pob.wasm'
       - '{{.NICE}} npx vite build --logLevel warn'
-      - '{{.NICE}} npx playwright test -c e2e/playwright.config.ts e2e/tree {{.CLI_ARGS}}'
+      - '{{.NICE}} env E2E_SLOW=1 npx playwright test -c e2e/playwright.config.ts e2e/tree {{.CLI_ARGS}}'
 
   e2e-baseline:
     desc: "Run task e2e and rewrite the committed frontend/e2e/perf-baseline.json (a deliberate, reviewed change)"
     cmds:
       - task: e2e
-        vars: {E2E_BASELINE: "1"}
+        vars: {E2E_BASELINE: "1", SLOW: "1"}
 
   load-waterfall:
     desc: "Page-load waterfall, cold and warm, per network profile (PROFILES=local,broadband,mobile RUNS=n APP_HOST=gh|cf); rows in frontend/e2e/.results/load-waterfall.jsonl"

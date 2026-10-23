@@ -1,6 +1,6 @@
 // BuildSiteTools.lua:88-113, ImportTab.lua:321-472, 813-1020
 
-import { test, expect } from '@playwright/test';
+import { test, expect } from './support/test';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 

@@ -219,7 +219,7 @@ test('paste, equip, hover, save/reload: 0280 (spell, small)', async ({ page }) =
   app.assertNoErrors();
 });
 
-test('minion build: paste and equip a helmet (0008)', async ({ page }) => {
+test('minion build: paste and equip a helmet (0008)', { tag: '@smoke' }, async ({ page }) => {
   const file = '0008-necromancer-vaal-summon-skeletons';
   const { app, build } = await setup(page, file);
   const shown = await paste(page, app, build, file, 'helmet', ITEMS.helmet);

@@ -3,6 +3,8 @@ import { execFileSync } from 'node:child_process';
 import { resolve } from 'node:path';
 
 const chromium = (() => {
+  // `bundled` runs the Chromium `playwright install` fetched, whatever `chromium` is on PATH
+  if (process.env.E2E_CHROMIUM === 'bundled') return undefined;
   if (process.env.E2E_CHROMIUM) return process.env.E2E_CHROMIUM;
   try {
     return execFileSync('which', ['chromium'], { encoding: 'utf8' }).trim() || undefined;
@@ -21,6 +23,8 @@ export default defineConfig({
   testMatch: '**/*.spec.ts',
   workers: process.env.E2E_PERF === '1' || process.env.E2E_BASELINE === '1' ? 1 : WORKERS,
   fullyParallel: process.env.E2E_FULLY_PARALLEL !== '0',
+  // @slow tests run with E2E_SLOW=1 (task e2e SLOW=1, CI); a SPECS or -g selection does not lift the filter
+  grepInvert: process.env.E2E_SLOW === '1' ? undefined : /@slow/,
   retries: 0,
   timeout: 10 * 60_000,
   expect: { timeout: 30_000 },

@@ -7,7 +7,7 @@ import { buildXml } from './support/builds';
 import * as go from './support/go_model';
 import { diffLines, expectedLines } from './support/stats';
 
-test('a ?import= link opens the build on its Tree as Go does (0280)', async ({ page }) => {
+test('a ?import= link opens the build on its Tree as Go does (0280)', { tag: '@smoke' }, async ({ page }) => {
   const file = '0280-elementalist-fireball';
   const xml = buildXml(file);
   const build = await go.loadXml(xml);

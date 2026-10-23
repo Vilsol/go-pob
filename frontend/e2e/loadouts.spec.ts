@@ -1,6 +1,6 @@
 // Build.lua:301-415, 753-878
 
-import { test, expect } from '@playwright/test';
+import { test, expect } from './support/test';
 
 import { App } from './support/app';
 import { buildXml } from './support/builds';

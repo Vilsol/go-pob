@@ -3,7 +3,8 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-import { test, expect, type Page } from '@playwright/test';
+import { type Page } from '@playwright/test';
+import { test, expect } from './support/test';
 
 import { App } from './support/app';
 import { buildXml } from './support/builds';

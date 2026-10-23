@@ -1,0 +1,115 @@
+name: e2e
+
+permissions: read-all
+
+# Every Playwright test, @slow included, split over four shards. To re-run one shard, use "Re-run failed jobs" on the
+# run, or locally: `task e2e SLOW=1 -- --shard 2/4` (the same split, given the same test files).
+
+on:
+  push:
+    branches: [dev]
+  pull_request:
+
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  e2e:
+    name: E2E (shard ${{ matrix.shard }}/4)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Setup nodejs
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+
+      - name: Enable corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm i
+        working-directory: frontend
+
+      - name: Cache test data
+        uses: actions/cache@v4
+        with:
+          path: |
+            testdata/corpus-[0-9]*
+            testdata/oracle-[0-9]*
+            testdata/.installed-release
+          key: testdata-${{ hashFiles('scripts/testdata.json') }}
+
+      - name: Fetch test data
+        run: go run ./scripts/testdatarelease fetch
+
+      - name: Cache the Go bundle cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/go-pob/bundle-cache
+          key: bundle-cache-${{ hashFiles('data/raw/cache_namespace.go', 'go.sum', 'data/tree_versions.go') }}
+
+      # every table, deferred table and tree version the wasm can ask for, from Go's own lists
+      - name: Populate the bundle cache
+        run: go run ./frontend/e2e/populate_cache.go
+
+      - name: Cache Playwright's Chromium
+        id: chromium
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('frontend/pnpm-lock.yaml') }}
+
+      - name: Install Chromium
+        if: steps.chromium.outputs.cache-hit != 'true'
+        run: pnpm exec playwright install --with-deps chromium
+        working-directory: frontend
+
+      - name: Install Chromium's system libraries
+        if: steps.chromium.outputs.cache-hit == 'true'
+        run: pnpm exec playwright install-deps chromium
+        working-directory: frontend
+
+      - name: Build wasm
+        run: go build -o frontend/static/go-pob.wasm ./wasm && gzip -kf9 frontend/static/go-pob.wasm
+        env:
+          GOOS: js
+          GOARCH: wasm
+
+      - name: Build frontend
+        run: pnpm exec vite build --logLevel warn
+        working-directory: frontend
+
+      - name: E2E
+        run: pnpm exec playwright test -c e2e/playwright.config.ts --shard ${{ matrix.shard }}/4 --reporter=list,github
+        working-directory: frontend
+        env:
+          E2E_SLOW: '1'
+          E2E_CHROMIUM: bundled
+          E2E_WORKERS: '2'
+
+      - name: Upload failure context
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-shard-${{ matrix.shard }}
+          path: |
+            frontend/e2e/.results/test-output
+            frontend/e2e/.results/shared-boot.log
+          if-no-files-found: ignore
+          retention-days: 7

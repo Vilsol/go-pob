@@ -72,7 +72,7 @@ const settledDrawList = async (page: Page, pending: Set<string>, at: { x: number
 
 for (const b of BUILDS)
   for (const renderer of ['webgl', 'canvas'] as const) {
-    test(`tree draw list matches the reference: ${b.name} build, ${renderer}`, async ({ page }) => {
+    test(`tree draw list matches the reference: ${b.name} build, ${renderer}`, { tag: renderer === 'webgl' ? '@slow' : [] }, async ({ page }) => {
       await installDrawRecorder(page);
       await page.addInitScript((r) => ((globalThis as unknown as { __treeProbe: { renderer: string } }).__treeProbe.renderer = r), renderer);
       const pending = trackAssetRequests(page);

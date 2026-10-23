@@ -373,7 +373,7 @@ test('items, Equip and Calcs controls show and write each build’s own, as the 
 });
 
 // CompareTab.lua:766-773, 3466-3637, 3926-3940
-test('Items: Expanded mode cards and the Jewels section are the model’s', async ({ page }) => {
+test('Items: Expanded mode cards and the Jewels section are the model’s', { tag: '@smoke' }, async ({ page }) => {
   const { app, a } = await openCompare(page);
   await importComparison(app);
   const bModel = await go.loadXml(buildXml(B));

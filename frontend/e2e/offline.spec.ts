@@ -36,7 +36,7 @@ const goOffline = async (context: BrowserContext, origin: string) => {
   return refused;
 };
 
-test('offline after one online visit: reload, open a saved build, edit it', async ({ page, context, baseURL }) => {
+test('offline after one online visit: reload, open a saved build, edit it', { tag: '@smoke' }, async ({ page, context, baseURL }) => {
   const file = '0280-elementalist-fireball';
   const name = `e2e-offline-${file}`;
   const xml = buildXml(file);
@@ -151,7 +151,7 @@ test('offline after one online visit: reload, open a saved build, edit it', asyn
   expect(app.errors, `console errors / unhandled exceptions on ${file}`).toEqual([]);
 });
 
-test('installable: Chrome finds the manifest and reports no installability error', async ({ baseURL }, testInfo) => {
+test('installable: Chrome finds the manifest and reports no installability error', { tag: '@smoke' }, async ({ baseURL }, testInfo) => {
   const profile = mkdtempSync(join(tmpdir(), 'pob-install-'));
   const context = await chromium.launchPersistentContext(profile, { executablePath: testInfo.project.use.launchOptions?.executablePath, baseURL });
   try {

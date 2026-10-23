@@ -17,7 +17,7 @@ const MAIN = '.page-main';
 const SIDEBAR = '.page-body > aside';
 const TOPBAR = '.page > :first-child';
 
-test('font scaling: no page lets more boxes overflow than its baseline (0339)', async ({ page }) => {
+test('font scaling: no page lets more boxes overflow than its baseline (0339)', { tag: '@slow' }, async ({ page }) => {
   test.setTimeout(20 * 60_000);
   const xml = buildXml(BUILD);
   const build = await go.loadXml(xml);
@@ -27,6 +27,8 @@ test('font scaling: no page lets more boxes overflow than its baseline (0339)', 
   const found: Record<string, Map<string, Overflow & { pt: number[] }>> = {};
   const census = async (name: string, root: string, skip: string[] = []) => {
     const seen = (found[name] ??= new Map());
+    // a tooltip under the pointer the last click left behind is not the page's overflow
+    await page.mouse.move(0, 0);
     for (const pt of POINTS) {
       await setFontScaling(page, pt);
       for (const o of await overflowing(page, root, skip)) {
@@ -61,8 +63,10 @@ test('font scaling: no page lets more boxes overflow than its baseline (0339)', 
     Calcs: () => expect(page.getByRole('region', { name: 'Calculations' })).toBeVisible()
   };
   for (const link of ['Tree', 'Skills', 'Items', 'Calcs', 'Config', 'Party', 'Notes', 'Import / Export']) {
+    const t0 = await app.now();
     await app.goTo(link);
-    await ready[link]?.();
+    // the page fills from the worker, which may still be on its idle job (the item DBs) when the tab opens
+    if (ready[link]) await app.followWorker(t0, ready[link]);
     await settle();
     if (link === 'Tree') {
       await census('Topbar', TOPBAR);

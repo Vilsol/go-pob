@@ -1,6 +1,6 @@
 // CalcOffence.lua:1942,1959
 
-import { test, expect } from '@playwright/test';
+import { test, expect } from './support/test';
 
 import { App } from './support/app';
 import { buildXml } from './support/builds';
@@ -20,7 +20,7 @@ const shownAs = (line: string) => {
   return 'prose' in st ? plain(st.prose) : plain((st.op ?? '') + st.value + (st.note ?? ''));
 };
 
-test('calcs: a dual-wield attack shows each hand its own breakdown', async ({ page }) => {
+test('calcs: a dual-wield attack shows each hand its own breakdown', { tag: '@smoke' }, async ({ page }) => {
   test.setTimeout(5 * 60_000);
   const xml = buildXml(FILE);
   const build = await go.loadXml(xml);

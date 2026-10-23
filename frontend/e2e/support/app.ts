@@ -4,6 +4,7 @@ import { DATA_HOST, cachedAsset } from './data_cache';
 import { PERF, record } from './perf';
 import { routeTreeAssets } from './tree_assets';
 import { diffLines, type StatLine } from './stats';
+import { sharedBoot, storageFingerprint, type Pristine } from './test';
 
 type Timing = { seq: number; pending: number; startedAt: number; calcMs: number; dumpMs: number; sentAt: number; receivedAt: number; renderedAt: number };
 
@@ -29,6 +30,7 @@ const ACTION_TIMEOUT = 30_000;
 const FOLLOW_UP_TIMEOUT = 5_000;
 
 export class App {
+  private static current = new WeakMap<Page, App>();
   readonly errors: string[] = [];
   private served404 = new Set<string>();
 
@@ -41,23 +43,29 @@ export class App {
   // phone: the page is below the phone breakpoint, so the stats live in the closed stats sheet behind the strip
   static async open(page: Page, build: string, { phone = false } = {}): Promise<App> {
     const app = new App(page, build, phone);
+    const pristine = sharedBoot.pristine(page);
+    // a reused page keeps its context's routes, which report to the App of the test now running
+    App.current.set(page, app);
 
-    await page.context().route(`${DATA_HOST}**`, async (route) => {
-      const url = route.request().url();
-      let asset;
-      try {
-        asset = cachedAsset(url);
-      } catch (e) {
-        app.errors.push(String(e));
-        return route.abort();
-      }
-      if (asset.status === 404) {
-        app.served404.add(url);
-        return route.fulfill({ status: 404, headers: { 'access-control-allow-origin': '*' } });
-      }
-      return route.fulfill({ status: 200, body: asset.body, headers: { 'access-control-allow-origin': '*', 'content-type': 'application/octet-stream' } });
-    });
-    await routeTreeAssets(page);
+    if (pristine === undefined) {
+      await page.context().route(`${DATA_HOST}**`, async (route) => {
+        const now = App.current.get(page)!;
+        const url = route.request().url();
+        let asset;
+        try {
+          asset = cachedAsset(url);
+        } catch (e) {
+          now.errors.push(String(e));
+          return route.abort();
+        }
+        if (asset.status === 404) {
+          now.served404.add(url);
+          return route.fulfill({ status: 404, headers: { 'access-control-allow-origin': '*' } });
+        }
+        return route.fulfill({ status: 200, body: asset.body, headers: { 'access-control-allow-origin': '*', 'content-type': 'application/octet-stream' } });
+      });
+      await routeTreeAssets(page);
+    }
 
     page.on('console', (m) => {
       if (process.env.E2E_DEBUG === '1') console.log(`[browser ${m.type()}] ${m.text().slice(0, 300)}`);
@@ -67,6 +75,11 @@ export class App {
       app.errors.push(`console.error: ${m.text().slice(0, 500)}${what}`);
     });
     page.on('pageerror', (e) => app.errors.push(`pageerror: ${e.message.slice(0, 500)}`));
+
+    if (pristine !== undefined) {
+      await app.reset(pristine);
+      return app;
+    }
 
     await page.addInitScript(initPerf);
     await page.goto('/');
@@ -97,7 +110,45 @@ export class App {
 
     record({ kind: 'cold-start', build, navToBootMs: marks.boot, navToDataMs: marks.data, newBuildToStatsMs: last.renderedAt - t0 });
     await app.flushPerf('cold-start');
+    await app.landed();
+    await page.waitForFunction(() => document.title !== 'go-pob', undefined, { timeout: ACTION_TIMEOUT });
+    await sharedBoot.booted(page);
     return app;
+  }
+
+  // a cold boot opens a new build on the tree (the root page sends it there); a test that navigates before that lands
+  // is sent back to it. Back to builds keeps the route, so a reset build opens where the previous test left off.
+  private async landed(reset = false) {
+    const tree = this.page.getByRole('main', { name: 'Tree' });
+    if (reset && !(await tree.isVisible())) await this.page.getByRole('navigation', { name: 'Build pages' }).getByRole('link', { name: 'Tree' }).click();
+    await expect(tree).toBeVisible({ timeout: SETTLE_TIMEOUT });
+  }
+
+  // a page the previous test left clean (support/test.ts): back to the build list and a New build, as a user starts over
+  private async reset(pristine: Pristine) {
+    const page = this.page;
+    await expect(page.getByRole('dialog'), 'the previous test left a dialog open').toHaveCount(0);
+    expect(await storageFingerprint(page), 'the previous test left settings or saved builds behind').toBe(pristine.storage);
+    const back = page.getByRole('link', { name: 'Back to builds' });
+    if (await back.isVisible()) {
+      await back.click();
+      const prompt = page.getByRole('dialog', { name: 'Save Changes' });
+      await expect(prompt.or(page.getByRole('button', { name: 'New build', exact: true }))).toBeVisible();
+      if (await prompt.isVisible()) await prompt.getByRole('button', { name: "Don't Save" }).click();
+    }
+    const newBuild = page.getByRole('button', { name: 'New build', exact: true });
+    await newBuild.waitFor({ timeout: SETTLE_TIMEOUT });
+    await page.waitForFunction(() => document.title === 'go-pob', undefined, { timeout: ACTION_TIMEOUT });
+    const before = await this.seq();
+    await newBuild.click();
+    await this.waitSettled(before);
+    if (this.phone) await expect(page.locator('[data-stats-strip] [data-strip-cell]').first()).toBeVisible();
+    else await expect(this.statsRegion().getByRole('button').first()).toBeVisible();
+    await this.landed(true);
+    await expect(page.getByRole('button', { name: 'Nothing to undo' }), 'the new build carries the previous undo history').toBeDisabled();
+    await expect(page.getByRole('button', { name: 'Nothing to redo' }), 'the new build carries the previous redo history').toBeDisabled();
+    await expect(page, 'the new build is not the one a fresh boot starts').toHaveTitle(pristine.title);
+    await this.flushPerf('reuse');
   }
 
   statsRegion() {
@@ -308,6 +359,8 @@ export class App {
       },
       want
     );
+    // ImportTab.lua:663-666: the import opens the tree; a test navigating before it lands is sent back there
+    await this.page.waitForURL((u) => u.pathname.endsWith('/tree'));
   }
 
   async openTree(version?: string) {

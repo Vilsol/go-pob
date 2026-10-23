@@ -493,7 +493,7 @@ Thicket Bow
 Implicits: 0
 +40 to maximum Life`;
 
-test('crucible mods on a weapon (0280)', async ({ page }) => {
+test('crucible mods on a weapon (0280)', { tag: '@smoke' }, async ({ page }) => {
   test.setTimeout(300_000);
   const { app } = await setup(page, '0280-elementalist-fireball');
   const m = await go.model();

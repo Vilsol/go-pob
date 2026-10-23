@@ -17,6 +17,8 @@ import { displayStats } from '../src/lib/display/stats';
 import { formatNumSep, luaFormat } from '../src/lib/display/format_stat';
 
 const FRAME_MS = 1000 / 60;
+// the report's depth limit keeps the node set small enough to grade per test; the 0001 timing test runs it whole
+const POWER_DEPTH = 5;
 
 const gpuName = (page: Page) =>
   page.evaluate(() => {
@@ -134,7 +136,7 @@ const zoomTo = async (page: Page, scaling: number) => {
   if (steps) await wheelAt(page, { x: box.width / 2, y: box.height / 2 }, steps);
 };
 
-test('passive tree benchmark: pan, zoom, hover, allocate', async ({ page }) => {
+test('passive tree benchmark: pan, zoom, hover, allocate', { tag: '@slow' }, async ({ page }) => {
   const file = '0339-reliquarian-shield-crush-of-the-chieftain-2';
   const opened = await setup(page, file);
   const { app, build, active } = opened;
@@ -205,7 +207,7 @@ test('passive tree benchmark: pan, zoom, hover, allocate', async ({ page }) => {
   app.assertNoErrors();
 });
 
-test('passive tree benchmark: large allocation with cluster jewels', async ({ page }) => {
+test('passive tree benchmark: large allocation with cluster jewels', { tag: '@slow' }, async ({ page }) => {
   const file = '13276-ladder-cuba_5717.cubamrc';
   const opened = await setup(page, file);
   const gpu = await firstPaint(page, opened.app, file, opened.active, opened.gpu);
@@ -422,7 +424,7 @@ test('power report: the panel lists Go’s report for the chosen stat, built off
   const m = await go.model();
 
   const misc = (await m.exposition.GetMiscCalculator(build))!;
-  const builder = m.exposition.NewPowerBuilder(misc, 'Life', 0)!;
+  const builder = m.exposition.NewPowerBuilder(misc, 'Life', 8)!;
   while (builder.Step(1000) < 1);
   const rows = (builder.Report() ?? []) as PowerRow[];
   builder.release();
@@ -439,6 +441,9 @@ test('power report: the panel lists Go’s report for the chosen stat, built off
   await page.getByRole('button', { name: /^Power/ }).click();
   const panel = page.getByRole('region', { name: 'Power report' });
   await expect(panel.getByRole('combobox', { name: 'Power stat' })).toHaveValue('Life');
+  await panel.getByRole('combobox', { name: 'Power report depth' }).selectOption('Custom');
+  await panel.getByRole('textbox', { name: 'Custom node power depth' }).fill('8');
+  await panel.getByRole('textbox', { name: 'Custom node power depth' }).press('Tab');
   await expect(panel.getByRole('progressbar')).toHaveCount(0);
   await panel.getByRole('button', { name: 'Start' }).click();
   const table = panel.getByRole('table', { name: 'Node power' });
@@ -492,7 +497,7 @@ test('power report: the panel lists Go’s report for the chosen stat, built off
   app.assertNoErrors();
 });
 
-test('power report: its time on the largest build (0001), Life', async ({ page }) => {
+test('power report: its time on the largest build (0001), Life', { tag: '@slow' }, async ({ page }) => {
   test.setTimeout(8 * 60_000);
   const file = '0001-necromancer-unknown';
   const { app } = await openOnTree(page, file);
@@ -744,7 +749,7 @@ test('power report: a mastery shows the effect the report picks', async ({ page 
   const { app, build } = await openOnTree(page, '0280-elementalist-fireball');
   const m = await go.model();
   const misc = (await m.exposition.GetMiscCalculator(build))!;
-  const builder = m.exposition.NewPowerBuilder(misc, 'Life', 0)!;
+  const builder = m.exposition.NewPowerBuilder(misc, 'Life', POWER_DEPTH)!;
   while (builder.Step(1000) < 1);
   const rows = (builder.Report() ?? []) as PowerRow[];
   builder.release();
@@ -758,6 +763,7 @@ test('power report: a mastery shows the effect the report picks', async ({ page 
 
   await page.getByRole('button', { name: /^Power/ }).click();
   const panel = page.getByRole('region', { name: 'Power report' });
+  await panel.getByRole('combobox', { name: 'Power report depth' }).selectOption(String(POWER_DEPTH));
   await panel.getByRole('button', { name: 'Start' }).click();
   await expect(panel.getByRole('table', { name: 'Node power' })).toBeVisible({ timeout: 10 * 60_000 });
 
@@ -1056,7 +1062,7 @@ test('node power: the heat map colours nodes by Go’s power for the stat', asyn
       if (probe) probe.renderer = 'webgl';
     })
   );
-  const file = '0280-elementalist-fireball';
+  const file = '6071-ladder-ShiroSamada_6288.RFDansleFiondeLevons';
   const { build } = await openOnTree(page, file);
   const m = await go.model();
   const misc = (await m.exposition.GetMiscCalculator(build))!;

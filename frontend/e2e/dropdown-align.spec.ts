@@ -1,4 +1,5 @@
-import { test, expect, type Locator, type Page } from '@playwright/test';
+import { type Locator, type Page } from '@playwright/test';
+import { test, expect } from './support/test';
 
 import { App } from './support/app';
 import { boxes, type Box } from './support/align';

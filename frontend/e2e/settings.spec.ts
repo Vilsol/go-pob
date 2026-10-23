@@ -9,7 +9,7 @@ import { buildXml } from './support/builds';
 import * as go from './support/go_model';
 import { expectedLines } from './support/stats';
 
-test('number options rewrite the sidebar and are kept; the window title names the build (0280)', async ({ page }) => {
+test('number options rewrite the sidebar and are kept; the window title names the build (0280)', { tag: '@smoke' }, async ({ page }) => {
   const file = '0280-elementalist-fireball';
   const xml = buildXml(file);
   const build = await go.loadXml(xml);

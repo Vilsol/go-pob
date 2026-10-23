@@ -1,4 +1,5 @@
-import { test, expect, type Page } from '@playwright/test';
+import { type Page } from '@playwright/test';
+import { test, expect } from './support/test';
 
 import { App } from './support/app';
 import { buildXml } from './support/builds';
@@ -36,7 +37,7 @@ const exported = async (app: App) => {
 };
 
 for (const file of BUILDS) {
-  test(`rich notes on ${file}`, async ({ page }) => {
+  test(`rich notes on ${file}`, { tag: '@smoke' }, async ({ page }) => {
     const source = buildXml(file);
     const notes = (await go.loadXml(source)).Notes;
     expect(notes.match(TOKEN)?.length ?? 0, 'the build carries no colour codes, so the colour checks are vacuous').toBeGreaterThan(0);
