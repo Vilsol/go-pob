@@ -93,7 +93,7 @@
   <span id="{uid}-state" aria-live="polite" class={['toned min-h-4 text-12', toneClass(!verdict ? 'muted' : verdict.valid ? 'up' : 'down')]}
     >{verdict?.text ?? ''}</span>
   {#if importError}<InlineMessage kind="error" tag="span">{importError}</InlineMessage>{/if}
-  <div class="flex items-center gap-1.5">
+  <div class="flex flex-wrap items-center gap-1.5">
     <FloatingLabel label="Destination"
       ><Select size="md" bind:value={destination} title="Destination for Import / Clear">
         {#each PARTY_DESTINATIONS as d (d)}<option>{d}</option>{/each}
