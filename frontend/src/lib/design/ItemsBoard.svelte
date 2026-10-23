@@ -6,7 +6,7 @@
   import SlotMenu from './SlotMenu.svelte';
   import Dropdown from './Dropdown.svelte';
   import { tone as toneClass, type Tone } from './tone';
-  import { BOARD_SLOTS, besideAnchor, itemTip, type TipProps, type WhatIf } from './items';
+  import { BOARD_CELL, BOARD_SLOTS, besideAnchor, itemTip, type TipProps, type WhatIf } from './items';
   import { draggedItem, type ItemDrag } from './item_drag';
   import { dropZone, type DropZone } from './reorder';
   import SocketPreview from './SocketPreview.svelte';
@@ -221,7 +221,7 @@
         overlays[k].focusGem(ev.key === 'ArrowLeft' || ev.key === 'ArrowUp');
       }}>
       {#if e}
-        {@const art = artBox(e.item.cells, b.w - 24, b.h - 24)}
+        {@const art = artBox(e.item.cells, b.w - 24, b.h - 24, BOARD_CELL)}
         <span class="pointer-events-none absolute inset-0 flex items-center justify-center">
           <span class="relative flex">
             <ItemIcon
@@ -249,7 +249,7 @@
       {/if}
     </button>
     {#if e && hover === k && e.item.sockets}
-      {@const art = artBox(e.item.cells, b.w - 24, b.h - 24)}
+      {@const art = artBox(e.item.cells, b.w - 24, b.h - 24, BOARD_CELL)}
       {@const abyss = abyssalSlots(e.item.sockets, k)}
       <span class="pointer-events-none absolute inset-0 flex items-center justify-center">
         <span class="relative" style:width="{art.w / 16}rem" style:height="{art.h / 16}rem"

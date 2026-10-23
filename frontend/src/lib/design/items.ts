@@ -60,6 +60,21 @@ export const BOARD_SLOTS: { slot: string; x: number; y: number; w: number; h: nu
   ...[210, 302, 395, 487, 580].map((x, i) => ({ slot: `Flask ${i + 1}`, x, y: 588, w: 78, h: 120 }))
 ];
 
+/* one inventory cell for every item on the board, as in game: the largest cell at which a 2×4 weapon, a 2×3 body
+   armour and a 2×2 helmet each fit their slot (inside the slot's 12px padding) */
+export const BOARD_CELL = Math.min(
+  ...(
+    [
+      ['Weapon 1', 2, 4],
+      ['Body Armour', 2, 3],
+      ['Helmet', 2, 2]
+    ] as const
+  ).map(([slot, cw, ch]) => {
+    const b = BOARD_SLOTS.find((s) => s.slot === slot)!;
+    return Math.min((b.w - 24) / cw, (b.h - 24) / ch);
+  })
+);
+
 export type ImpactBlock = { header: string; slot?: string; lines?: string[]; sections: StatCompareSection[]; readyAt?: number; calcMs?: number };
 export type WhatIf = { key: string; pending: boolean; blocks: ImpactBlock[]; tip?: string };
 

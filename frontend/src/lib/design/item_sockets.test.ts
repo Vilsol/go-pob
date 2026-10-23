@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { abyssalSlots, artBox, placeGems, socketGrid } from './item_sockets';
+import { BOARD_CELL } from './items';
 
 describe('artBox', () => {
   it('draws the art in its inventory proportions at the largest size that fits', () => {
@@ -50,5 +51,15 @@ describe('abyssalSlots', () => {
     expect(abyssalSlots('G-W-W-W-R A', 'Body Armour')).toEqual([undefined, undefined, undefined, undefined, undefined, 'Body Armour Abyssal Socket 1']);
     expect(abyssalSlots('A R-G A', 'Weapon 1 Swap')).toEqual(['Weapon 1 Swap Abyssal Socket 1', undefined, undefined, 'Weapon 1 Swap Abyssal Socket 2']);
     expect(abyssalSlots('', 'Belt')).toEqual([]);
+  });
+});
+
+describe('artBox on the board', () => {
+  it('draws every item at the board cell, never stretched to fill a larger slot', () => {
+    expect(BOARD_CELL).toBe(72);
+    expect(artBox([1, 3], 144, 298, BOARD_CELL)).toEqual({ w: 72, h: 216, cell: 72, cols: 1, rows: 3 });
+    expect(artBox([2, 4], 144, 298, BOARD_CELL)).toEqual({ w: 144, h: 288, cell: 72, cols: 2, rows: 4 });
+    // a slot smaller than the board cell still shrinks the item to fit
+    expect(artBox([1, 1], 60, 60, BOARD_CELL).cell).toBe(60);
   });
 });

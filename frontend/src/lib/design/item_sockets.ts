@@ -1,9 +1,9 @@
 export type Cells = [number, number];
 
-/* the largest box in the item's inventory proportions that fits w×h; an unknown size is one cell */
-export function artBox(cells: Cells | undefined, w: number, h: number) {
+/* the item in its inventory proportions, no larger than `max` per cell, fitted to w×h; an unknown size is one cell */
+export function artBox(cells: Cells | undefined, w: number, h: number, max = Infinity) {
   const [cw, ch] = cells && cells[0] > 0 && cells[1] > 0 ? cells : [1, 1];
-  const cell = Math.min(w / cw, h / ch);
+  const cell = Math.min(w / cw, h / ch, max);
   return { w: cell * cw, h: cell * ch, cell, cols: cw, rows: ch };
 }
 

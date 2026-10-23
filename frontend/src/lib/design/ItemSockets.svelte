@@ -82,9 +82,11 @@
 
   const parsed = $derived(socketLine(line));
   const grid = $derived(socketGrid(parsed.colours.length, cols));
-  // the game's item popup, per 47.4645px inventory cell: 35px sockets, 38x15 links centred between two sockets
-  const CELL = 47.4645;
-  const size = $derived((cell * 35) / CELL);
+  // sockets sit one inventory cell apart, centred on the art (on a cell's centre, or on the edge between two rows when
+  // the item is taller than its socket rows); they keep one size on every item (the drawn socket is 24px, shown at
+  // 1.8×). The game's popup draws 35px sockets and 38x15 links: a link reaches 12.77 of those units under each rim.
+  const size = 24 * 1.8;
+  const K = size / 35;
   const centre = (i: number) => {
     const p = grid.at[i];
     return { x: w / 2 + (p.col - (grid.cols - 1) / 2) * cell, y: h / 2 + (p.row - (grid.rows - 1) / 2) * cell };
@@ -94,9 +96,11 @@
     const a = centre(i);
     const b = centre(i + 1);
     const across = a.y === b.y;
-    const long = (cell * 38) / CELL;
-    const thick = (cell * 15) / CELL;
-    return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, w: across ? long : thick, h: across ? thick : long, across };
+    const long = cell - size + 2 * ((38 - (47.4645 - 35)) / 2) * K;
+    const thick = 15 * K * 1.5;
+    // viewBox units: the link is always 15 units thick, so its length in units follows its pixel length
+    const units = (long * 15) / thick;
+    return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, w: across ? long : thick, h: across ? thick : long, across, units };
   };
 </script>
 
@@ -171,15 +175,15 @@
         aria-hidden="true"
         data-socket-link={i}
         class="socket-bar absolute -translate-1/2"
-        viewBox={l.across ? '-19 -7.5 38 15' : '-7.5 -19 15 38'}
+        viewBox={l.across ? `${-l.units / 2} -7.5 ${l.units} 15` : `-7.5 ${-l.units / 2} 15 ${l.units}`}
         style:left={rem(l.x)}
         style:top={rem(l.y)}
         style:width={rem(l.w)}
         style:height={rem(l.h)}
         ><g transform={l.across ? undefined : 'rotate(90)'}
-          ><rect x="-11.6" y="-1.2" width="23.2" height="2.4" rx="0.6" /><path d="M-7.5,0 L0,-3.1 L7.5,0 L0,3.1 Z" /><path
+          ><rect x={-(l.units / 2 - 7.4)} y="-1.5" width={l.units - 14.8} height="3" rx="0.75" /><path d="M-5.625,0 L0,-2.325 L5.625,0 L0,2.325 Z" /><path
             class="glint"
-            d="M-5.5,0 L0,-1.9 L5.5,0" /></g
+            d="M-4.125,0 L0,-1.425 L4.125,0" /></g
         ></svg>
     {/if}
   {/each}

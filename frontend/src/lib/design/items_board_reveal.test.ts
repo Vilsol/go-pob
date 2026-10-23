@@ -88,31 +88,35 @@ describe('ItemsBoard socket overlay', () => {
     expect(tile.parentElement!.querySelector('[data-item-sockets]')).toBeNull();
     await fireEvent.mouseEnter(tile);
     const overlay = tile.parentElement!.querySelector('[data-item-sockets]')!;
-    // Weapon 1 is 168x322; a 1x3 wand fits 144x298 at 99.3 per cell
+    // every item uses the board's 72px cell, so a 1x3 wand is 72x216 in Weapon 1's 144x298, not stretched to fit
     expect(at(overlay)).toEqual([
-      [50, 50],
-      [50, 149],
-      [50, 248]
+      [36, 36],
+      [36, 108],
+      [36, 180]
     ]);
     expect([...overlay.querySelectorAll('[data-socket-link]')].map((l) => l.getAttribute('data-socket-link'))).toEqual(['0', '1']);
     expect([...overlay.querySelectorAll('[role="img"]')].map((s) => s.getAttribute('aria-label'))).toEqual(['Blue socket', 'Blue socket', 'Red socket']);
   });
 
-  it('sizes sockets and links as the game does per inventory cell: 35px sockets, 15x38 links between them', async () => {
+  it('keeps one socket size on every item, and its links span the rims the way the game draws them', async () => {
     const { tile } = setup();
     await fireEvent.mouseEnter(tile);
     const overlay = tile.parentElement!.querySelector('[data-item-sockets]')!;
-    const cell = 298 / 3;
+    const cell = 72;
     const px = (v: string) => Math.round(parseFloat(v) * 160) / 10;
     const links = [...overlay.querySelectorAll<SVGElement>('[data-socket-link]')].map((l) =>
       [l.style.left, l.style.top, l.style.width, l.style.height].map(px)
     );
+    // 43.2px sockets; a link is 1.5 × 15/35 of a socket thick and reaches 12.77/35 of one under each rim
+    const size = 24 * 1.8;
+    const reach = ((38 - (47.4645 - 35)) / 2) * (size / 35);
+    const long = Math.round((cell - size + 2 * reach) * 10) / 10;
     expect(links).toEqual([
-      [49.7, 99.3, 31.4, 79.5],
-      [49.7, 198.7, 31.4, 79.5]
+      [36, 72, 27.8, long],
+      [36, 144, 27.8, long]
     ]);
     const scale = /scale\(([\d.]+)\)/.exec(overlay.querySelector<HTMLElement>('[data-socket] > span')!.style.transform)![1];
-    expect(Number(scale) * 24).toBeCloseTo((cell * 35) / 47.4645, 3);
+    expect(Number(scale)).toBe(1.8);
   });
 
   it('snakes a 2-wide item’s sockets in rows of two, centred on the art', async () => {
@@ -141,6 +145,8 @@ describe('ItemsBoard socket overlay', () => {
       [108, 180]
     ]);
     expect([...overlay.querySelectorAll('[data-socket-link]')].map((l) => l.getAttribute('data-socket-link'))).toEqual(['0', '1', '2', '4']);
+    // the same socket size as the wand's, though the coat's cells are smaller
+    expect(/scale\(([\d.]+)\)/.exec(overlay.querySelector<HTMLElement>('[data-socket] > span')!.style.transform)![1]).toBe('1.8');
   });
 });
 

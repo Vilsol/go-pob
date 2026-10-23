@@ -3,6 +3,7 @@
   import { expect, fn, userEvent, waitFor } from 'storybook/test';
   import ItemsBoard from './ItemsBoard.svelte';
   import type { ItemSummary } from './fixtures';
+  import { BOARD_CELL } from './items';
 
   const item = (name: string, base: string, cells: [number, number], sockets = '', rarity: ItemSummary['rarity'] = 'rare'): ItemSummary => ({
     name,
@@ -79,10 +80,11 @@
       const box = rect(t.querySelector('[data-item-icon]')!);
       const [w, h] = it.cells!;
       await expect(Math.abs(box.width / box.height - w / h), slot).toBeLessThan(0.02);
-      // centred in the slot, as large as fits with the slot's margin
+      // centred in the slot, at the board's one cell size (72px a cell), smaller only where the slot cannot fit that
       const s = rect(t);
       await expect(Math.abs(box.left + box.width / 2 - (s.left + s.width / 2)), slot).toBeLessThan(1);
-      await expect(Math.min(s.width - box.width, s.height - box.height), slot).toBeLessThan(25);
+      const cell = Math.min((s.width - 24) / w, (s.height - 24) / h, BOARD_CELL);
+      await expect(Math.abs(box.width - cell * w), slot).toBeLessThan(1);
       await expect(t.querySelector('[data-slot-caption]'), slot).toBeNull();
     }
   }} />
