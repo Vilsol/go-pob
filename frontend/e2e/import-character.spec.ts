@@ -36,6 +36,7 @@ test("a pasted character JSON imports its items, skills and passive tree into th
   // ImportTab.lua:1396-1402, 1424-1460
   await expect(page.getByRole('combobox', { name: 'Main skill' }).locator('option').first()).toHaveText('Kinetic Blast');
   await app.goTo('Items');
-  await expect(page.getByText('Chimeric Guardian').first()).toBeVisible();
+  // the board shows item names on hover; the slot's accessible name always carries it
+  await expect(page.getByLabel(/^[^:]+: Chimeric Guardian$/).first()).toBeVisible();
   app.assertNoErrors();
 });
