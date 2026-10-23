@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { artBox, placeGems, socketGrid } from './item_sockets';
+import { abyssalSlots, artBox, placeGems, socketGrid } from './item_sockets';
 
 describe('artBox', () => {
   it('draws the art in its inventory proportions at the largest size that fits', () => {
@@ -42,5 +42,13 @@ describe('placeGems', () => {
   it('skips abyssal sockets and groups granted by an item', () => {
     const at = placeGems('A R-G', [g(0, ['Curse on Hit'], 'Item:Doedre'), g(1, ['Cleave', 'Ruthless'])]);
     expect(at.map((x) => x?.name)).toEqual([undefined, 'Cleave', 'Ruthless']);
+  });
+});
+
+describe('abyssalSlots', () => {
+  it("names the slot each abyssal socket's jewel is equipped in, counting abyssal sockets only", () => {
+    expect(abyssalSlots('G-W-W-W-R A', 'Body Armour')).toEqual([undefined, undefined, undefined, undefined, undefined, 'Body Armour Abyssal Socket 1']);
+    expect(abyssalSlots('A R-G A', 'Weapon 1 Swap')).toEqual(['Weapon 1 Swap Abyssal Socket 1', undefined, undefined, 'Weapon 1 Swap Abyssal Socket 2']);
+    expect(abyssalSlots('', 'Belt')).toEqual([]);
   });
 });

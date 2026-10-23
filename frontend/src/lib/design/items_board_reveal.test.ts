@@ -98,6 +98,23 @@ describe('ItemsBoard socket overlay', () => {
     expect([...overlay.querySelectorAll('[role="img"]')].map((s) => s.getAttribute('aria-label'))).toEqual(['Blue socket', 'Blue socket', 'Red socket']);
   });
 
+  it('sizes sockets and links as the game does per inventory cell: 35px sockets, 15x38 links between them', async () => {
+    const { tile } = setup();
+    await fireEvent.mouseEnter(tile);
+    const overlay = tile.parentElement!.querySelector('[data-item-sockets]')!;
+    const cell = 298 / 3;
+    const px = (v: string) => Math.round(parseFloat(v) * 160) / 10;
+    const links = [...overlay.querySelectorAll<SVGElement>('[data-socket-link]')].map((l) =>
+      [l.style.left, l.style.top, l.style.width, l.style.height].map(px)
+    );
+    expect(links).toEqual([
+      [49.7, 99.3, 31.4, 79.5],
+      [49.7, 198.7, 31.4, 79.5]
+    ]);
+    const scale = /scale\(([\d.]+)\)/.exec(overlay.querySelector<HTMLElement>('[data-socket] > span')!.style.transform)![1];
+    expect(Number(scale) * 24).toBeCloseTo((cell * 35) / 47.4645, 3);
+  });
+
   it('snakes a 2-wide item’s sockets in rows of two, centred on the art', async () => {
     const chest: ItemSummary = { ...wand, name: 'Carcass Jack', base: 'Varnished Coat', sockets: 'R-R-G-G B-B', cells: [2, 3] };
     const r = render(ItemsBoard, {
@@ -198,5 +215,33 @@ describe('ItemsBoard socketed gems', () => {
     expect(tipText()).toBeUndefined();
     tile.blur();
     await vi.waitFor(() => expect(tile.parentElement!.querySelector('[data-item-sockets]')).toBeNull());
+  });
+});
+
+describe('ItemsBoard abyss jewels', () => {
+  it("shows the jewel equipped in the item's abyssal socket there; a first tap shows its tooltip, the second opens it", async () => {
+    const onedit = vi.fn();
+    const belt: ItemSummary = { ...wand, name: 'Dire Cord', base: 'Stygian Vise', sockets: 'A', cells: [2, 1] };
+    const eye: ItemSummary = { ...wand, name: 'Dread Gaze', base: 'Murderous Eye Jewel', sockets: '', cells: [1, 1] };
+    const r = render(ItemsBoard, {
+      slots: { Belt: { id: 1, item: belt }, 'Belt Abyssal Socket 1': { id: 2, item: eye } },
+      flasks: {},
+      calcFlasks: {},
+      fitting: () => [],
+      jewels: [],
+      jewelOptions: [],
+      onedit,
+      onflask: () => {},
+      onequip: () => {}
+    });
+    const tile = r.getByRole('button', { name: 'Belt: Dire Cord' });
+    await fireEvent.mouseEnter(tile);
+    const jewel = r.getByRole('button', { name: 'Dread Gaze' });
+    expect(jewel.closest('[data-socket]')?.querySelector('[aria-label="Abyssal socket"]')).not.toBeNull();
+    await tap(jewel);
+    expect(onedit).not.toHaveBeenCalled();
+    expect(document.getElementById(jewel.getAttribute('aria-describedby') ?? '')?.textContent).toContain('Dread Gaze');
+    await tap(jewel);
+    expect(onedit).toHaveBeenCalledWith('Belt Abyssal Socket 1');
   });
 });

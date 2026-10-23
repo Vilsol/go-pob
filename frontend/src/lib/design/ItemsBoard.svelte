@@ -12,7 +12,7 @@
   import SocketPreview from './SocketPreview.svelte';
   import ItemIcon from './ItemIcon.svelte';
   import ItemSockets from './ItemSockets.svelte';
-  import { artBox, placeGems, type SocketedGem, type SocketedGroup } from './item_sockets';
+  import { abyssalSlots, artBox, placeGems, type SocketedGem, type SocketedGroup } from './item_sockets';
   import TooltipLines from './TooltipLines.svelte';
   import type { Tree } from '$lib/skill_tree/types';
   import type { ItemSummary, ItemTip, StatDiff } from './fixtures';
@@ -116,6 +116,14 @@
     });
   };
 
+  // an abyss jewel in a board item's abyssal socket, and the slot it is equipped in
+  let jewelHover = $state<{ slot: string; socket: number; abyss: string; el: HTMLElement } | null>(null);
+  const jewelShown = $derived(jewelHover && jewelHover.slot === hover ? jewelHover : null);
+  const jewelTip = $derived.by(() => {
+    const e = jewelShown && slots[jewelShown.abyss];
+    return e ? itemTip(e.item, e.impact, 'equipped') : undefined;
+  });
+
   const uid = $props.id();
   const els: Record<string, HTMLElement> = $state({});
   const overlays: Record<string, { focusGem: (last?: boolean) => void } | undefined> = $state({});
@@ -126,6 +134,7 @@
     if (inSlot(k, to)) return;
     if (hover === k) hover = null;
     gemHover = null;
+    jewelHover = null;
   };
   const tip = $derived.by(() => {
     const jewel = hover ? /^Jewel (\d+)$/.exec(hover) : null;
@@ -241,6 +250,7 @@
     </button>
     {#if e && hover === k && e.item.sockets}
       {@const art = artBox(e.item.cells, b.w - 24, b.h - 24)}
+      {@const abyss = abyssalSlots(e.item.sockets, k)}
       <span class="pointer-events-none absolute inset-0 flex items-center justify-center">
         <span class="relative" style:width="{art.w / 16}rem" style:height="{art.h / 16}rem"
           ><ItemSockets
@@ -254,6 +264,11 @@
             shown={gemShown?.slot === k ? gemShown.gem : undefined}
             tipId="{uid}-gem-tip"
             ongem={(g: SocketedGem | null, el: HTMLElement | null) => hoverGem(k, g, el)}
+            jewels={abyss.map((a) => (a ? slots[a]?.item : undefined))}
+            shownJewel={jewelShown?.slot === k ? jewelShown.socket : undefined}
+            jewelTipId="{uid}-jewel-tip"
+            onjewel={(i: number | null, el: HTMLElement | null) => (jewelHover = i === null || !el ? null : { slot: k, socket: i, abyss: abyss[i]!, el })}
+            onopenjewel={(i: number) => onedit(abyss[i]!)}
             onleave={(to: EventTarget | null) => leaveSlot(k, to)}
             onescape={() => els[k]?.focus()}
             onopen={() => onedit(k)} /></span>
@@ -423,6 +438,8 @@
       <div class="tooltip rounded-md px-3 py-2.5 shadow-tip"><TooltipLines lines={gemShown.lines} center label="Gem tooltip" /></div>
     </div>
   {/if}
+{:else if jewelShown && jewelTip}
+  <FloatingItemTip anchor={jewelShown.el} id="{uid}-jewel-tip" {...jewelTip} />
 {:else if tip && hover}
   <FloatingItemTip anchor={els[hover]} id="{uid}-tip" {...tip} />
 {/if}

@@ -37,3 +37,11 @@ export function placeGems(line: string, groups: SocketedGroup[]): (SocketedGem |
   }
   return out;
 }
+
+// the item in `slot` holds in its n-th abyssal socket what is equipped in the slot "<slot> Abyssal Socket n"
+//pob:src/Classes/ItemsTab.lua:168-177,187-200
+//pob:src/Classes/ItemSlotControl.lua:109-122
+export function abyssalSlots(line: string, slot: string): (string | undefined)[] {
+  let n = 0;
+  return [...line].filter((ch) => ch !== '-' && ch !== ' ').map((c) => (c === 'A' ? `${slot} Abyssal Socket ${++n}` : undefined));
+}

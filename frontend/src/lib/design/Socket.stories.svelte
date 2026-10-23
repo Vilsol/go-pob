@@ -17,7 +17,15 @@
 
 <Story name="Matching gem" />
 
-<Story name="States" asChild>
+<Story
+  name="States"
+  asChild
+  play={async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    // a coloured ring around a gold rim and a brown centre, drawn without a border
+    const red = canvasElement.querySelector<HTMLElement>('.socket.tone-sock-r')!;
+    await expect(getComputedStyle(red).backgroundImage.match(/radial-gradient/g)).toHaveLength(2);
+    await expect(getComputedStyle(red).borderTopWidth).toBe('0px');
+  }}>
   <div class="flex items-center gap-3">
     <Socket socket="R" gem="str" />
     <Socket socket="G" gem="dex" />
@@ -33,7 +41,7 @@
 <Story
   name="Styles"
   asChild
-  play={async ({ canvasElement }) => {
+  play={async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     const shapes = [...canvasElement.querySelectorAll('svg[data-ornament]')].map((s) => s.getAttribute('data-ornament'));
     await expect(shapes).toEqual([...Array(10).fill('small'), 'R', 'G', 'B', 'W', 'A', 'R', 'G', 'B', 'W', 'A']);
     await expect(canvasElement.querySelectorAll('[role="img"][aria-label$=" socket"]')).toHaveLength(30);
@@ -50,7 +58,7 @@
 <Story
   name="Letters"
   asChild
-  play={async ({ canvasElement }) => {
+  play={async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     const letters = [...canvasElement.querySelectorAll('.socket-letter')];
     await expect(letters.map((l) => l.textContent)).toEqual(['R', 'G', 'B', 'W', 'A', 'R', 'G', 'B', 'W', 'A']);
     await expect(letters.every((l) => l.getAttribute('aria-hidden') === 'true')).toBe(true);
@@ -64,12 +72,21 @@
 <Story
   name="Abyssal"
   asChild
-  play={async ({ canvasElement }) => {
+  play={async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     const sockets = [...canvasElement.querySelectorAll('.socket')];
     await expect(sockets.map((s) => s.getAttribute('aria-label'))).toEqual(Array(3).fill('Abyssal socket'));
     await expect(sockets.every((s) => s.classList.contains('tone-sock-a') && !s.querySelector('.socket-gem'))).toBe(true);
     await expect([...canvasElement.querySelectorAll('svg[data-ornament]')].map((s) => s.getAttribute('data-ornament'))).toEqual(['small', 'A']);
     await expect([...canvasElement.querySelectorAll('.socket-letter')].map((l) => l.textContent)).toEqual(['A', 'A', 'A']);
+    // round stone: a ring and a pit, and the ornate outline is circles only
+    await expect(sockets.every((s) => s.querySelectorAll('.socket-stone circle').length === 2)).toBe(true);
+    const ornate = canvasElement.querySelector('svg[data-ornament="A"]')!;
+    await expect([ornate.querySelectorAll('circle').length, ornate.querySelectorAll('path').length]).toEqual([2, 0]);
+    for (const s of sockets) {
+      const r = s.getBoundingClientRect();
+      await expect(r.width).toBe(r.height);
+      await expect(getComputedStyle(s).borderRadius).not.toBe('0px');
+    }
   }}>
   <div class="flex items-center gap-6 p-4">
     {#each SOCKET_STYLES as style (style)}<Socket socket="A" ornament={style} letters />{/each}

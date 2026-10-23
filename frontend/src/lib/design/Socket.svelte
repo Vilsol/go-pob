@@ -6,6 +6,7 @@
   /* children: what sits in the socket in place of the gem dot */
   type Props = { socket: Tone; gem?: Tone; letters?: boolean; ornament?: SocketStyle; children?: Snippet };
   let { socket, gem, letters, ornament, children }: Props = $props();
+  const uid = $props.id();
 
   const COLOURS: Partial<Record<Tone, string>> = { R: 'Red', G: 'Green', B: 'Blue', W: 'White', A: 'Abyssal' };
   const colour = $derived(COLOURS[socket]);
@@ -15,14 +16,31 @@
   // one spike pointing up from the rim, rotated into place
   const spike = (w: number, len: number) => `M${-w},-11 L0,${-11 - len} L${w},-11 Z`;
   const turns = (n: number, from = 0) => Array.from({ length: n }, (_, i) => from + (360 / n) * i);
-  // an abyss socket sits in broken rock
-  const ROCK = 'M0,-16 L8.9,-10.2 L14.4,-5.8 L11.9,4.6 L9.7,13.3 L1.4,13.1 L-9.2,11.8 L-13.4,3.3 L-15.6,-4.2 L-7.2,-10.3 Z';
 </script>
 
 <span
   class={['socket', socket === 'A' && 'socket-abyss', toneClass(socket)]}
   role={colour ? (children ? 'group' : 'img') : undefined}
   aria-label={colour ? `${colour} socket` : undefined}>
+  {#if socket === 'A'}
+    <!-- a ring of rough stone around a dark pit -->
+    <svg aria-hidden="true" class="socket-stone" viewBox="-12 -12 24 24">
+      <defs>
+        <filter id="{uid}-rock" x="-25%" y="-25%" width="150%" height="150%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.5" numOctaves="2" seed="7" result="noise" />
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.4" xChannelSelector="R" yChannelSelector="G" result="rough" />
+          <feDiffuseLighting in="noise" surfaceScale="1.6" lighting-color="#fff" result="light"
+            ><feDistantLight azimuth="225" elevation="50" /></feDiffuseLighting>
+          <feComposite in="light" in2="rough" operator="arithmetic" k1="1.3" result="lit" />
+          <feComposite in="lit" in2="rough" operator="in" />
+        </filter>
+        <radialGradient id="{uid}-pit"
+          ><stop offset="0" stop-color="#020203" /><stop offset="0.7" stop-color="#0d0b10" /><stop offset="1" stop-color="#25222a" /></radialGradient>
+      </defs>
+      <circle class="stone" r="9" stroke-width="5.6" filter="url(#{uid}-rock)" />
+      <circle r="6.6" fill="url(#{uid}-pit)" />
+    </svg>
+  {/if}
   {#if style !== 'None'}
     <svg aria-hidden="true" class="socket-ornament" viewBox="-20 -20 40 40" data-ornament={style === 'Small' ? 'small' : socket}>
       {#if style === 'Small'}
@@ -32,7 +50,8 @@
       {:else if socket === 'R'}
         {#each turns(8) as r (r)}<path d={spike(2, 7.5)} transform="rotate({r})" />{/each}
       {:else if socket === 'A'}
-        <path d={ROCK} />
+        <circle class="swirl" r="14" />
+        <circle class="swirl rubble" r="16.5" />
       {:else if socket === 'B'}
         {#each turns(3, 20) as r (r)}<path class="swirl" d="M0,-12.5 C7,-14.5 13,-11 15.5,-4" transform="rotate({r})" />{/each}
       {:else}
@@ -47,7 +66,19 @@
 
 <style>
   .socket-abyss {
-    background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--tone) 55%, #000) 0 15%, #000 70%);
+    background: none;
+  }
+  .socket-stone {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+  }
+  .socket-stone .stone {
+    fill: none;
+    stroke: var(--tone);
   }
   .socket-ornament {
     position: absolute;
@@ -67,6 +98,10 @@
     stroke: var(--color-text-2);
     stroke-width: 2;
     stroke-linecap: round;
+  }
+  .socket-ornament .rubble {
+    stroke-width: 1.5;
+    stroke-dasharray: 2.5 1.8;
   }
   .socket-letter {
     position: absolute;

@@ -7,7 +7,20 @@
     @apply box-border grid h-10.5 grid-cols-[1.125rem_2.75rem_minmax(1rem,1fr)_repeat(23,minmax(0,1fr))] items-center gap-1.5 border-b border-line-faint px-1.5 hover:bg-row-hover max-phone:grid-cols-[2.75rem_repeat(24,minmax(0,1fr))];
   }
   .socket {
-    @apply relative z-raised box-border flex size-6 items-center justify-center rounded-full border-3 border-(--tone) bg-ground;
+    @apply relative z-raised box-border flex size-6 items-center justify-center rounded-full;
+    background:
+      radial-gradient(
+        circle closest-side,
+        var(--color-sock-core-hi) 0,
+        var(--color-sock-core) 50%,
+        #160f09 63%,
+        var(--color-sock-rim-lo) 64%,
+        var(--color-sock-rim) 68.5%,
+        var(--color-sock-rim-lo) 73%,
+        transparent 74.5%
+      ),
+      radial-gradient(circle at 34% 28%, color-mix(in srgb, var(--tone) 55%, #fff) 0, var(--tone) 38%, color-mix(in srgb, var(--tone) 45%, #000) 100%);
+    box-shadow: 0 0 0 0.5px rgb(0 0 0 / 0.55);
   }
   .socket-gem {
     @apply size-3 rounded-full bg-(--tone) shadow-[inset_-2px_-2px_0_rgba(0,0,0,0.25)];

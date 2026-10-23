@@ -159,6 +159,47 @@
       [...boots.parentElement!.querySelectorAll('[data-socket] [role="img"][aria-label$=" socket"]')].map((s) => s.getAttribute('aria-label'))
     ).toEqual(['Red socket', 'Green socket', 'Abyssal socket']);
     await expect(boots.parentElement!.querySelectorAll('[data-socket-link]')).toHaveLength(2);
+    await expect(boots.parentElement!.querySelectorAll('[data-socket-jewel]')).toHaveLength(0);
+  }} />
+
+<Story
+  name="In-game reference"
+  args={{
+    slots: {
+      ...slots,
+      'Body Armour': { id: 20, item: item('Vaal Regalia', 'Vaal Regalia', [2, 3], 'G-W-W-W-R A') },
+      'Body Armour Abyssal Socket 1': { id: 21, item: item('Dread Gaze', 'Murderous Eye Jewel', [1, 1]) }
+    }
+  }}
+  play={async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    onedit.mockClear();
+    const body = tile(canvasElement, 'Body Armour');
+    await userEvent.hover(body);
+    const jewel = body.parentElement!.querySelector<HTMLElement>('[data-socket="5"] [data-socket-jewel]')!;
+    await expect(jewel.getAttribute('data-socket-jewel')).toBe('Dread Gaze');
+    await expect(jewel.querySelector('[data-item-icon]')).not.toBeNull();
+    await userEvent.hover(jewel);
+    await waitFor(() => expect(document.getElementById(jewel.getAttribute('aria-describedby')!)?.textContent).toContain('Dread Gaze'));
+    await userEvent.click(jewel);
+    await expect(onedit).toHaveBeenCalledWith('Body Armour Abyssal Socket 1');
+    // the keyboard reaches it after the gems
+    body.focus();
+    await userEvent.keyboard('{ArrowLeft}');
+    await expect(document.activeElement?.getAttribute('data-socket-jewel')).toBe('Dread Gaze');
+    await waitFor(() => expect(document.getElementById(jewel.getAttribute('aria-describedby')!)?.textContent).toContain('Dread Gaze'));
+    await userEvent.keyboard('{Home}');
+    await expect(document.activeElement?.getAttribute('data-socket-gem')).toBe('Cyclone');
+    await userEvent.keyboard('{Escape}');
+    await expect(document.activeElement).toBe(body);
+    await expect([...body.parentElement!.querySelectorAll('[data-socket-link]')].map((l) => l.getAttribute('data-socket-link'))).toEqual(['0', '1', '2', '3']);
+    await expect([...body.parentElement!.querySelectorAll('[data-socket] .socket')].map((s) => s.getAttribute('aria-label'))).toEqual([
+      'Green socket',
+      'White socket',
+      'White socket',
+      'White socket',
+      'Red socket',
+      'Abyssal socket'
+    ]);
   }} />
 
 <Story
