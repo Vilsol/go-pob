@@ -31,8 +31,7 @@ func refuse(a ...any) {
 }
 
 func fetch(url string) (fetched bool) {
-	key := raw.CacheKey(url)
-	if storage.Get().ExistsInCache(key) {
+	if storage.Get().ExistsInCache(raw.CacheKey(url)) {
 		return false
 	}
 	resp, err := http.Get(url) //nolint:gosec,noctx // a one-shot fetch of a URL Go's own lists name
@@ -47,7 +46,7 @@ func fetch(url string) (fetched bool) {
 	if err != nil {
 		refuse(url, err)
 	}
-	if err := storage.Get().SetCache(key, b); err != nil {
+	if err := storage.Get().SetCache(raw.CacheKey(url), b); err != nil {
 		refuse(url, err)
 	}
 	return true
