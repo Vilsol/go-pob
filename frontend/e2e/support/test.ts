@@ -8,7 +8,7 @@ import { RESULTS_DIR } from './perf';
 // through the app (Back to builds, New build) instead of reloading. After each test the page is kept only if the test
 // passed and left nothing behind (`leftovers`); otherwise the next test boots a fresh context. Specs that need a cold
 // boot (load, offline, service worker, persistence across reload, init scripts, their own viewport, context routes)
-// import `@playwright/test` instead.
+// import `@playwright/test` instead. E2E_SHARED=0 (CI) gives every test a fresh context.
 
 type Shared = { context?: BrowserContext; page?: Page; hasTouch?: boolean };
 export type Pristine = { storage: string; title: string; workers: number };
@@ -123,7 +123,11 @@ export const test = base.extend<object, { shared: Shared }>({
     await use(page);
 
     const failed = testInfo.status !== testInfo.expectedStatus;
-    const why = failed ? 'the test failed' : await leftovers(page, booted.get(page)).catch((e: unknown) => `the check threw: ${String(e).slice(0, 200)}`);
+    const why = failed
+      ? 'the test failed'
+      : process.env.E2E_SHARED === '0'
+        ? 'E2E_SHARED=0'
+        : await leftovers(page, booted.get(page)).catch((e: unknown) => `the check threw: ${String(e).slice(0, 200)}`);
     // the test's own routes go; the context's are App.open's data and asset routes, kept for the next test
     await page.unrouteAll({ behavior: 'ignoreErrors' }).catch(() => {});
     await shared.context!.clearPermissions().catch(() => {});

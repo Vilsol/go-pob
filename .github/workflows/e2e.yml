@@ -131,6 +131,8 @@ jobs:
           E2E_SLOW: '1'
           E2E_CHROMIUM: bundled
           E2E_WORKERS: '2'
+          # a fresh context per test: on CI's slower runners a reused page fails in ways no local run reproduces
+          E2E_SHARED: '0'
 
       - name: Count fetched assets
         id: assets-after
