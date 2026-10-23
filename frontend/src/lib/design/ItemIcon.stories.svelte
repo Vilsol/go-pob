@@ -50,7 +50,15 @@
   </div>
 </Story>
 
-<Story name="Missing" asChild>
+<Story
+  name="Missing"
+  asChild
+  play={async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await document.fonts.ready;
+    const initials = [...canvasElement.querySelectorAll<HTMLElement>('[data-initials]')];
+    await expect(initials.length).toBe(4);
+    for (const i of initials) await expect(i.scrollHeight, i.dataset.initials).toBeLessThanOrEqual(i.clientHeight);
+  }}>
   <div class="flex items-end gap-3">
     <ItemIcon name="Headhunter" base="Leather Belt" rarity="unique" size={48} />
     <ItemIcon name="Doom Grip" base="Leather Belt" rarity="rare" />

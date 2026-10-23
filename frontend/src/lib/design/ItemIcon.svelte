@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onDestroy } from 'svelte';
   import type { ClassValue } from 'svelte/elements';
   import { tone, type Tone } from './tone';
   import { artPath, artUrl, spriteOf, type ArtKind, type Sprite } from './item_art';
@@ -55,7 +56,11 @@
   );
   const showImg = $derived(!!url && !failed);
   const kind: ArtKind = $derived(gem ? 'gem' : /\/Flasks\//.test(url ?? '') || /\bFlask$/.test(base) ? 'flask' : undefined);
+  // an image still loading when its icon unmounts fires load afterwards, and the parent's props for it may be gone
+  let gone = false;
+  onDestroy(() => (gone = true));
   const onload = (img: HTMLImageElement) => {
+    if (gone) return;
     const sheet = spriteOf(kind, img.naturalWidth, img.naturalHeight);
     sprite = sheet && { sheet, aspect: img.naturalWidth / sheet.frames / img.naturalHeight };
     loaded = true;
@@ -74,7 +79,7 @@
     <span
       data-initials={initials}
       class={[
-        'font-mono leading-none font-semibold text-(--tone,var(--color-text-3)) select-none before:content-[attr(data-initials)]',
+        'font-mono leading-tight font-semibold text-(--tone,var(--color-text-3)) select-none before:content-[attr(data-initials)]',
         tone((gem ? 'gem' : rarity || 'normal') as Tone)
       ]}
       style:font-size={len(Math.max(8, Math.round(Math.min(size, height ?? size) * 0.34)))}

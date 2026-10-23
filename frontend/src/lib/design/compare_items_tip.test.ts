@@ -3,8 +3,12 @@
 import { describe, expect, it, afterEach } from 'vitest';
 import { render, cleanup, fireEvent, waitFor } from '@testing-library/svelte';
 import CompareItems from './CompareItems.svelte';
+import { setArtResolver } from './item_art';
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  setArtResolver(undefined);
+});
 
 const rows = [
   {
@@ -40,5 +44,29 @@ describe('Compare › Items tooltips', () => {
       '(replacing Mine Hood)',
       'Life +12'
     ]);
+  });
+
+  it("an item's art that finishes loading after its tooltip closed reads nothing from the closed tooltip", async () => {
+    setArtResolver((qs) => Promise.resolve(qs.map(() => 'Art/2DItems/Helmets/Crown')));
+    const errors: unknown[] = [];
+    const onerror = (e: ErrorEvent) => errors.push(e.error ?? e.message);
+    window.addEventListener('error', onerror);
+    try {
+      const { getByText, container } = render(CompareItems, {
+        items: rows,
+        itemtip: (_side: 'a' | 'b', name: string) => Promise.resolve({ influence: [], title: [name], lines: [{ text: 'Quality: +20%', sep: false }] })
+      });
+      const name = getByText('Their Crown');
+      await fireEvent.mouseEnter(name);
+      const doc = container.ownerDocument;
+      await waitFor(() => expect(doc.querySelector('#compare-item-tip img')).not.toBeNull());
+      const art = doc.querySelector('#compare-item-tip img') as HTMLImageElement;
+      await fireEvent.mouseLeave(name);
+      await waitFor(() => expect(doc.querySelector('#compare-item-tip')).toBeNull());
+      art.dispatchEvent(new Event('load'));
+      expect(errors).toEqual([]);
+    } finally {
+      window.removeEventListener('error', onerror);
+    }
   });
 });
