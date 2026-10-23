@@ -133,7 +133,7 @@
                 onleave?.(ev.relatedTarget);
               }}
               onclick={() => onopen?.()}
-              onkeydown={(ev) => onkey(ev, i)}><GemIcon name={g.name} size={18} decorative /></span
+              onkeydown={(ev) => onkey(ev, i)}><GemIcon name={g.name} size={18} decorative lastFrame /></span
             ></Socket
           >{:else if j}<Socket socket={c}
             ><span

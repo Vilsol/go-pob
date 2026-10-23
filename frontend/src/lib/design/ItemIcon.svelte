@@ -19,9 +19,23 @@
     decorative?: boolean;
     /* an image URL that skips the art lookup */
     src?: string;
+    /* a sprite sheet draws only its last frame instead of stacking its layers */
+    lastFrame?: boolean;
     class?: ClassValue;
   };
-  let { name, base = '', rarity = '', gem = false, size = 32, height, unit = 'px', decorative = false, src, class: extra = '' }: Props = $props();
+  let {
+    name,
+    base = '',
+    rarity = '',
+    gem = false,
+    size = 32,
+    height,
+    unit = 'px',
+    decorative = false,
+    src,
+    lastFrame = false,
+    class: extra = ''
+  }: Props = $props();
 
   const unique = $derived(rarity === 'unique' || rarity === 'relic');
   let path = $state<string | undefined>();
@@ -98,7 +112,7 @@
       onload={(e: Event) => onload(e.currentTarget as HTMLImageElement)}
       onerror={() => (failed = true)} />
     {#if loaded && sprite}
-      {#each sprite.sheet.layers as frame (frame)}
+      {#each lastFrame ? [sprite.sheet.frames - 1] : sprite.sheet.layers as frame (frame)}
         <span
           data-sprite-frame={frame}
           aria-hidden="true"

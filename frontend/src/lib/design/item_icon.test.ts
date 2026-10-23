@@ -134,6 +134,13 @@ describe('ItemIcon sprite sheets', () => {
     expect([...container.querySelectorAll('[data-sprite-frame] img')].every((i) => (i as HTMLImageElement).alt === '')).toBe(true);
   });
 
+  it('draws only the last frame of a gem sheet when asked, as in a socket', async () => {
+    const { container } = render(ItemIcon, { name: 'Fireball', gem: true, lastFrame: true, src: '/Art/2DItems/Gems/Fireball.png' });
+    loadAs(container.querySelector('img') as HTMLImageElement, 234, 78);
+    await waitFor(() => expect(layers(container)).toHaveLength(1));
+    expect(layers(container)[0]).toMatchObject({ frame: '2', left: '-200%' });
+  });
+
   it("fills a box drawn in the flask's own 1x2 proportions with each frame", async () => {
     const { container } = render(ItemIcon, {
       name: 'Divine Life Flask',
