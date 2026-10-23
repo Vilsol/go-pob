@@ -2,8 +2,9 @@ name: e2e
 
 permissions: read-all
 
-# Every Playwright test, @slow included, split over four shards. To re-run one shard, use "Re-run failed jobs" on the
-# run, or locally: `task e2e SLOW=1 -- --shard 2/4` (the same split, given the same test files).
+# Every Playwright test, @slow included, split over four shards by the durations in frontend/e2e/durations.json
+# (`task e2e-durations` records them from a run). To re-run one shard, use "Re-run failed jobs" on the run, or
+# locally: `task e2e SLOW=1 SHARD=2/4` (the same split, given the same tests and durations).
 
 on:
   push:
@@ -117,8 +118,14 @@ jobs:
         id: assets-before
         run: echo "count=$(find frontend/e2e/.results/tree-assets -type f 2>/dev/null | wc -l)" >> "$GITHUB_OUTPUT"
 
+      - name: Pick this shard's tests
+        run: node e2e/shard.mjs plan ${{ matrix.shard }}/4 e2e/.results/shard-tests.txt
+        working-directory: frontend
+        env:
+          E2E_SLOW: '1'
+
       - name: E2E
-        run: pnpm exec playwright test -c e2e/playwright.config.ts --shard ${{ matrix.shard }}/4 --reporter=list,github
+        run: pnpm exec playwright test -c e2e/playwright.config.ts --test-list e2e/.results/shard-tests.txt --reporter=list,github
         working-directory: frontend
         env:
           E2E_SLOW: '1'
@@ -145,5 +152,6 @@ jobs:
           path: |
             frontend/e2e/.results/test-output
             frontend/e2e/.results/shared-boot.log
+            frontend/e2e/.results/font-overflow.json
           if-no-files-found: ignore
           retention-days: 7

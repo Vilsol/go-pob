@@ -33,7 +33,7 @@ const localCopy = async (url: string): Promise<{ file: string; type: string } | 
       renameSync(tmp, file);
       return { file, type };
     } catch {
-      if (attempt === 3) return undefined;
+      if (attempt === 5) return undefined;
       await new Promise((r) => setTimeout(r, 1_000 * attempt));
     }
   }

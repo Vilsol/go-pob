@@ -42,6 +42,10 @@ run = "task e2e-smoke --"
 description = "The e2e specs a change since BASE (default dev) reaches, plus @smoke: mise run e2e-affected, or task e2e-affected BASE=<sha>"
 run = "task e2e-affected --"
 
+[tasks.e2e-durations]
+description = "Record e2e test durations from a CI run into frontend/e2e/durations.json (CI splits its shards by them): task e2e-durations RUN=<id>"
+run = "task e2e-durations --"
+
 [tasks.e2e-full]
 description = "task e2e including the @slow tests (benchmarks, WebGL draw lists, random sequences), as CI runs it"
 run = "task e2e SLOW=1 --"

@@ -121,6 +121,7 @@ test('font scaling: no page lets more boxes overflow than its baseline (0339)', 
   }
   const ceiling = JSON.parse(readFileSync(BASELINE, 'utf8')) as Record<string, number>;
   expect(Object.keys(counts).sort(), 'the census covers the pages its baseline names').toEqual(Object.keys(ceiling).sort());
-  for (const [name, n] of Object.entries(counts)) expect(n, `${name}: overflowing boxes (lower the baseline when it falls)`).toBeLessThanOrEqual(ceiling[name]);
+  for (const [name, n] of Object.entries(counts))
+    expect(n, `${name}: overflowing boxes (lower the baseline when it falls): ${[...found[name].keys()].join(', ')}`).toBeLessThanOrEqual(ceiling[name]);
   app.assertNoErrors();
 });

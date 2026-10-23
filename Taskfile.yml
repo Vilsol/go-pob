@@ -270,13 +270,23 @@ tasks:
       - '{{.NICE}} npx vitest run harness/component _mount.test.ts'
 
   e2e:
-    desc: "Playwright journeys, properties and model-based sequences on a targeted build set, with a perf baseline; tests tagged @slow (benchmarks, WebGL draw lists, random sequences, the largest-build power report, font scaling) run only with SLOW=1"
+    desc: "Playwright journeys, properties and model-based sequences on a targeted build set, with a perf baseline; tests tagged @slow (benchmarks, WebGL draw lists, random sequences, the largest-build power report, font scaling) run only with SLOW=1; SHARD=<i>/<n> runs CI's shard i"
     dir: ./frontend/
     cmds:
       - '{{if eq .REUSE "1"}}node e2e/serve.mjs port > /dev/null{{else}}{{.TASK_EXE}} -d {{.ROOT_DIR}} build-go{{end}}'
       - '{{if ne .REUSE "1"}}{{.NICE}} gzip -kf9 static/go-pob.wasm{{end}}'
       - '{{if ne .REUSE "1"}}{{.NICE}} npx vite build --logLevel warn{{end}}'
-      - '{{.NICE}} env E2E_BASELINE={{.E2E_BASELINE | default "0"}} E2E_SLOW={{.SLOW | default "0"}} {{if eq .REUSE "1"}}E2E_REUSE=1 E2E_PORT=$(node e2e/serve.mjs port){{end}} npx playwright test -c e2e/playwright.config.ts {{if .GREP}}--grep {{shellQuote .GREP}} {{end}}{{.SPECS}} {{.CLI_ARGS}}'
+      - '{{if .SHARD}}env E2E_SLOW={{.SLOW | default "0"}} node e2e/shard.mjs plan {{.SHARD}} e2e/.results/shard-tests.txt{{end}}'
+      - '{{.NICE}} env E2E_BASELINE={{.E2E_BASELINE | default "0"}} E2E_SLOW={{.SLOW | default "0"}} {{if eq .REUSE "1"}}E2E_REUSE=1 E2E_PORT=$(node e2e/serve.mjs port){{end}} npx playwright test -c e2e/playwright.config.ts {{if .GREP}}--grep {{shellQuote .GREP}} {{end}}{{if .SHARD}}--test-list e2e/.results/shard-tests.txt {{end}}{{.SPECS}} {{.CLI_ARGS}}'
+
+  e2e-durations:
+    desc: "Record each e2e test's duration from a CI run (RUN=<id>, default the latest finished e2e run on dev) into frontend/e2e/durations.json, which CI's shards split by"
+    dir: ./frontend/
+    vars:
+      RUN:
+        sh: '{{if .RUN}}echo {{.RUN}}{{else}}gh run list --workflow e2e --branch dev --status completed --limit 1 --json databaseId -q ".[0].databaseId"{{end}}'
+    cmds:
+      - gh run view {{.RUN}} --log | node e2e/shard.mjs record
 
   e2e-smoke:
     desc: "The @smoke e2e tests alone: every page and the main journeys (REUSE=1 serves a warm build)"
