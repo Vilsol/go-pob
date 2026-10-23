@@ -8,10 +8,9 @@ import { RESULTS_DIR } from './perf';
 // through the app (Back to builds, New build) instead of reloading. After each test the page is kept only if the test
 // passed and left nothing behind (`leftovers`); otherwise the next test boots a fresh context. Specs that need a cold
 // boot (load, offline, service worker, persistence across reload, init scripts, their own viewport, context routes)
-// import `@playwright/test` instead, and so do the Items, crafting and Compare specs: the item editor, the crafting
-// lists and the Compare view keep what the previous test left in them across a New build.
+// import `@playwright/test` instead.
 
-type Shared = { context?: BrowserContext; page?: Page };
+type Shared = { context?: BrowserContext; page?: Page; hasTouch?: boolean };
 export type Pristine = { storage: string; title: string; workers: number };
 
 const booted = new WeakMap<Page, Pristine>();
@@ -106,11 +105,18 @@ export const test = base.extend<object, { shared: Shared }>({
     },
     { scope: 'worker' }
   ],
-  page: async ({ shared, browser, viewport, baseURL, locale, colorScheme, reducedMotion, acceptDownloads, serviceWorkers }, use, testInfo) => {
+  page: async ({ shared, browser, viewport, baseURL, locale, colorScheme, reducedMotion, acceptDownloads, serviceWorkers, hasTouch }, use, testInfo) => {
+    if (shared.page && shared.hasTouch !== hasTouch) {
+      // touch support is fixed when a context is created
+      await shared.context!.close().catch(() => {});
+      shared.context = undefined;
+      shared.page = undefined;
+    }
     if (!shared.page) {
       // the options Playwright's own context fixture would pass for this config
-      shared.context = await browser.newContext({ viewport, baseURL, locale, colorScheme, reducedMotion, acceptDownloads, serviceWorkers });
+      shared.context = await browser.newContext({ viewport, baseURL, locale, colorScheme, reducedMotion, acceptDownloads, serviceWorkers, hasTouch });
       shared.page = await shared.context.newPage();
+      shared.hasTouch = hasTouch;
     }
     const page = shared.page;
     if (viewport) await page.setViewportSize(viewport);

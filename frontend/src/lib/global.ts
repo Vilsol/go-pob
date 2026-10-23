@@ -12,6 +12,9 @@ export const outputs = writable<Outputs | undefined>();
 
 export const buildRevision = writable(0);
 
+// counts builds opened (new, loaded or imported over the open one); a page's per-build view state keys on it
+export const buildOpens = writable(0);
+
 const currentBuildInner = writable<ProxiedRemote<pob.PathOfBuilding> | undefined>();
 
 const setCurrentBuild = (value: ProxiedRemote<pob.PathOfBuilding> | undefined) => {

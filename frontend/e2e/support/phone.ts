@@ -1,4 +1,6 @@
-import { expect, type Page } from '@playwright/test';
+import { expect, type Locator, type Page } from '@playwright/test';
+
+import { HOLD_MS } from '../../src/lib/design/mobile/tree_gestures';
 
 import { App } from './app';
 import { buildXml } from './builds';
@@ -17,11 +19,13 @@ export const openMore = async (page: Page) => {
 };
 export const routeOf = (page: Page) => new URL(page.url()).pathname.split('/').filter(Boolean).at(-1);
 
-// a press held past the hold time; Playwright's touchscreen only taps
-export const hold = async (page: Page, x: number, y: number) => {
+// a press held until `opened` shows, at least past the hold time; Playwright's touchscreen only taps. A slow machine
+// runs the hold timer late, so a fixed hold can lift the finger first.
+export const hold = async (page: Page, x: number, y: number, opened: Locator) => {
   const cdp = await page.context().newCDPSession(page);
   await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y }] });
-  await page.waitForTimeout(700);
+  await page.waitForTimeout(HOLD_MS + 100);
+  await opened.waitFor({ timeout: 20 * HOLD_MS }).catch(() => {});
   await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
   await cdp.detach();
 };

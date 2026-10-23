@@ -1,4 +1,5 @@
-import { test, expect, type Page } from '@playwright/test';
+import { type Page } from '@playwright/test';
+import { test, expect } from './support/test';
 import { readFileSync } from 'node:fs';
 
 import { App } from './support/app';

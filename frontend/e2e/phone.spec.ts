@@ -167,8 +167,9 @@ test.describe('phone shell at 390×769', () => {
     await (await openMore(page)).getByRole('menuitem', { name: /^Undo history/ }).click();
     await expect(page.getByRole('dialog', { name: 'Undo history' }).getByRole('list', { name: 'Undo history' }).getByRole('listitem')).not.toHaveCount(0);
     await page.getByRole('dialog', { name: 'Undo history' }).getByRole('button', { name: 'Close' }).click();
+    await expect(page.getByRole('dialog', { name: 'Undo history' })).toHaveCount(0);
 
-    await hold(page, at.x, at.y);
+    await hold(page, at.x, at.y, page.getByRole('menu'));
     await expect(page.getByRole('menu')).toBeVisible();
     app.assertNoErrors();
   });

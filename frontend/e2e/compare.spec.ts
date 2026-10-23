@@ -1,4 +1,5 @@
-import { test, expect, type Page } from '@playwright/test';
+import { type Page } from '@playwright/test';
+import { test, expect } from './support/test';
 
 import { App } from './support/app';
 import { buildXml } from './support/builds';
@@ -428,4 +429,30 @@ test('Config: editing B’s option through its control writes B', async ({ page 
   await page.getByRole('tab', { name: 'Config' }).click();
   await expect(options.getByRole('checkbox', { name: label, exact: true })).toBeChecked({ checked: !was });
   expect(app.errors).toEqual([]);
+});
+
+// CompareTab.lua is created with each build: its view lasts while the build is open
+test('the Compare view stays on its tab while the build is open, and a New build opens it on the summary', async ({ page }) => {
+  const { app } = await openCompare(page);
+  await importComparison(app);
+  const tab = (name: string) => page.getByRole('tab', { name });
+  await tab('Items').click();
+  await expect(tab('Items')).toHaveAttribute('aria-selected', 'true');
+  await app.goTo('Tree');
+  await app.goTo('Compare');
+  await expect(tab('Items'), 'the view left a moment ago').toHaveAttribute('aria-selected', 'true');
+
+  await page.getByRole('link', { name: 'Back to builds' }).click();
+  const prompt = page.getByRole('dialog', { name: 'Save Changes' });
+  await expect(prompt.or(page.getByRole('button', { name: 'New build', exact: true }))).toBeVisible();
+  if (await prompt.isVisible()) await prompt.getByRole('button', { name: "Don't Save" }).click();
+  await page.getByRole('button', { name: 'New build', exact: true }).click();
+  await app.goTo('Import / Export');
+  const region = page.getByRole('region', { name: 'Build import' });
+  await region.getByRole('textbox', { name: /^To import a build/ }).fill(await go.encode(buildXml(B)));
+  await region.getByRole('radio', { name: /Import as a comparison/ }).click();
+  await region.getByRole('button', { name: 'Import', exact: true }).click();
+  await page.waitForURL((u) => u.pathname.endsWith('/compare'));
+  await expect(tab('Summary'), 'a new build opened Compare on the previous build’s tab').toHaveAttribute('aria-selected', 'true');
+  app.assertNoErrors();
 });

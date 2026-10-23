@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './support/test';
 
 import { App } from './support/app';
 import { buildXml } from './support/builds';
@@ -91,6 +91,7 @@ test(
     await app.importCode(await go.encode(xml0), async () => expectedLines(await go.outputs(build)));
     const outs = [await go.outputs(build)];
     const saved: string[] = [];
+    const undo = (name: string) => page.getByRole('button', { name: `Undo: ${name} (Ctrl+Z)` });
 
     await app.openBuildControls();
     const level = page.getByRole('spinbutton', { name: 'Character level' });
@@ -106,6 +107,8 @@ test(
           return expectedLines(await go.outputs(build));
         }
       );
+      // the history records a step once the worker is idle; a write before that joins this step
+      await expect(undo(`Set the character level to ${to}`)).toBeEnabled();
       outs.push(await go.outputs(build));
       saved.push(await go.serializeSaved(build));
     };
@@ -123,6 +126,7 @@ test(
         return expectedLines(await go.outputs(build));
       }
     );
+    await expect(undo(`${was ? 'Turned off' : 'Turned on'} ${check.name.replace(/[\s:?]+$/, '')}`)).toBeEnabled();
     outs.push(await go.outputs(build));
     saved.push(await go.serializeSaved(build));
 

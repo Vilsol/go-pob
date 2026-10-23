@@ -31,6 +31,12 @@ test('font scaling: no page lets more boxes overflow than its baseline (0339)', 
     await page.mouse.move(0, 0);
     for (const pt of POINTS) {
       await setFontScaling(page, pt);
+      // a weight first used at this size loads now (display=swap); measure the face, not its fallback
+      const failed = await page.evaluate(async () => {
+        await document.fonts.ready;
+        return [...document.fonts].filter((f) => f.status === 'error').map((f) => `${f.family} ${f.weight}`);
+      });
+      expect(failed, `${name} at ${pt}pt: font faces failed to load`).toEqual([]);
       for (const o of await overflowing(page, root, skip)) {
         const had = seen.get(o.key);
         if (had) had.pt.push(pt);

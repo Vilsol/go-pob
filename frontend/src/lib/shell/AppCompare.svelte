@@ -1,7 +1,9 @@
 <script module lang="ts">
   import type { CompareView, MetricId } from '$lib/design/compare';
 
-  let kept: { view: CompareView; metric: MetricId; swapped: boolean } = { view: 'summary', metric: 'dps', swapped: false };
+  // CompareTab.lua is created with each build: the view is kept while the build stays open
+  const fresh = (opens: number) => ({ view: 'summary' as CompareView, metric: 'dps' as MetricId, swapped: false, opens });
+  let kept = fresh(0);
 </script>
 
 <script lang="ts">
@@ -12,8 +14,9 @@
   import InlineMessage from '$lib/design/InlineMessage.svelte';
   import SectionHeading from '$lib/design/SectionHeading.svelte';
   import { resource } from 'runed';
+  import { untrack } from 'svelte';
   import { get } from 'svelte/store';
-  import { buildRevision, currentBuild, currentBuildPath, outputs } from '$lib/global.js';
+  import { buildOpens, buildRevision, currentBuild, currentBuildPath, outputs } from '$lib/global.js';
   import { syncWrap } from '$lib/go/worker';
   import type { CalcsHeaderField, CalcsHeaderSide } from '$lib/design/compare';
   import { writeMainSkill } from './main_skill';
@@ -62,9 +65,12 @@
   import { compareCalcsView, modEntries, modKey } from '$lib/display/compare_calcs';
   import type { calculator } from '$lib/types';
 
-  let ui = $state(kept);
+  let ui = $state(kept.opens === get(buildOpens) ? kept : fresh(get(buildOpens)));
   $effect(() => {
-    kept = { view: ui.view, metric: ui.metric, swapped: ui.swapped };
+    if ($buildOpens !== untrack(() => ui.opens)) ui = fresh($buildOpens);
+  });
+  $effect(() => {
+    kept = { view: ui.view, metric: ui.metric, swapped: ui.swapped, opens: ui.opens };
   });
 
   let info = $state<CompareInfo>({ name: '', seq: 0, names: [], active: -1 });

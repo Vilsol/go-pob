@@ -1,6 +1,7 @@
 import { tick } from 'svelte';
 import type { Outputs, TickMeta } from './custom_types';
-import { outputs } from './global';
+import { buildOpens, outputs } from './global';
+import { OPEN_SOURCES } from './go/undo';
 import { epochNow } from './utils';
 import { trackEditDelta } from './display/stat_delta';
 
@@ -18,6 +19,9 @@ const MAX_TIMINGS = 5000;
 
 export const onTick = (out: Outputs | undefined, meta: TickMeta) => {
   const receivedAt = epochNow();
+  if (OPEN_SOURCES.has(meta.source)) {
+    buildOpens.update((n) => n + 1);
+  }
   if (out) {
     outputs.set(out);
   }

@@ -68,9 +68,10 @@ jobs:
       - name: Populate the bundle cache
         run: go run ./frontend/e2e/populate_cache.go
 
-      - name: Cache Playwright's Chromium
+      # restored and saved in two steps so a run whose tests fail still keeps the download
+      - name: Restore Playwright's Chromium
         id: chromium
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ hashFiles('frontend/pnpm-lock.yaml') }}
@@ -79,6 +80,13 @@ jobs:
         if: steps.chromium.outputs.cache-hit != 'true'
         run: pnpm exec playwright install --with-deps chromium
         working-directory: frontend
+
+      - name: Save Playwright's Chromium
+        if: steps.chromium.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ steps.chromium.outputs.cache-primary-key }}
 
       - name: Install Chromium's system libraries
         if: steps.chromium.outputs.cache-hit == 'true'
@@ -95,6 +103,20 @@ jobs:
         run: pnpm exec vite build --logLevel warn
         working-directory: frontend
 
+      # tree art and the Google Fonts files the specs route from a local copy (frontend/e2e/support/tree_assets.ts),
+      # one cache per shard since each shard asks for its own set; a run that fetched something new saves a new copy
+      - name: Restore tree assets and fonts
+        id: assets
+        uses: actions/cache/restore@v4
+        with:
+          path: frontend/e2e/.results/tree-assets
+          key: e2e-assets-${{ hashFiles('go.sum', 'data/tree_versions.go', 'frontend/src/app.html', 'frontend/e2e/support/tree_assets.ts') }}-${{ matrix.shard }}-${{ github.run_id }}
+          restore-keys: e2e-assets-${{ hashFiles('go.sum', 'data/tree_versions.go', 'frontend/src/app.html', 'frontend/e2e/support/tree_assets.ts') }}-${{ matrix.shard }}-
+
+      - name: Count cached assets
+        id: assets-before
+        run: echo "count=$(find frontend/e2e/.results/tree-assets -type f 2>/dev/null | wc -l)" >> "$GITHUB_OUTPUT"
+
       - name: E2E
         run: pnpm exec playwright test -c e2e/playwright.config.ts --shard ${{ matrix.shard }}/4 --reporter=list,github
         working-directory: frontend
@@ -102,6 +124,18 @@ jobs:
           E2E_SLOW: '1'
           E2E_CHROMIUM: bundled
           E2E_WORKERS: '2'
+
+      - name: Count fetched assets
+        id: assets-after
+        if: always()
+        run: echo "count=$(find frontend/e2e/.results/tree-assets -type f 2>/dev/null | wc -l)" >> "$GITHUB_OUTPUT"
+
+      - name: Save tree assets and fonts
+        if: always() && steps.assets-after.outputs.count != steps.assets-before.outputs.count
+        uses: actions/cache/save@v4
+        with:
+          path: frontend/e2e/.results/tree-assets
+          key: ${{ steps.assets.outputs.cache-primary-key }}
 
       - name: Upload failure context
         if: failure()

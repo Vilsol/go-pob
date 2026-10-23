@@ -1,6 +1,7 @@
 // ItemsTab.lua:273-296
 
-import { test, expect, type Page } from '@playwright/test';
+import { test as coldTest, type Page } from '@playwright/test';
+import { test, expect } from './support/test';
 
 import { App } from './support/app';
 import { buildXml } from './support/builds';
@@ -362,7 +363,8 @@ const nodeOnScreen = async (page: Page, id: number, build: Awaited<ReturnType<ty
 };
 
 // PassiveTreeView.lua:511-519
-test('the Tree socket jump lands on the Items socket slot (0008)', async ({ page }) => {
+// a cold page: the tree probe is an init script
+coldTest('the Tree socket jump lands on the Items socket slot (0008)', async ({ page }) => {
   test.setTimeout(300_000);
   await installTreeProbe(page);
   const file = '0008-necromancer-vaal-summon-skeletons';

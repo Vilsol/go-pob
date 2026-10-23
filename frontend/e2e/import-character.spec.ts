@@ -1,6 +1,6 @@
 // ImportTab.lua:609-628, 701-705
 
-import { test, expect } from '@playwright/test';
+import { test, expect } from './support/test';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
