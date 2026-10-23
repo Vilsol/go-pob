@@ -140,6 +140,8 @@
     sharedSets?: { title: string; tip: string[] }[];
     /* ItemSlotControl.lua:132-149 */
     socketView?: import('svelte').ComponentProps<typeof ItemsBoard>['socketView'];
+    socketed?: import('svelte').ComponentProps<typeof ItemsBoard>['socketed'];
+    gemtip?: import('svelte').ComponentProps<typeof ItemsBoard>['gemtip'];
     onshared?: (op: { op: 'share'; id: string } | { op: 'import' | 'delete'; index: number } | { op: 'rename'; index: number; title: string }) => void;
     onshareditem?: (op: { op: 'delete' | 'copy' | 'open'; index: number }) => void;
     ondropshared?: (drag: ItemDrag) => void;
@@ -217,7 +219,9 @@
     onshared,
     onshareditem,
     ondropshared,
-    socketView
+    socketView,
+    socketed,
+    gemtip
   }: Props = $props();
   let crafting = $state(false);
   $effect(() => {
@@ -475,7 +479,9 @@
           {onhoveritem}
           ondelete={ondelete && deleteItem}
           ondropitem={ondropslot}
-          {socketView} />
+          {socketView}
+          {socketed}
+          {gemtip} />
       {:else}
         <ItemsList
           {order}

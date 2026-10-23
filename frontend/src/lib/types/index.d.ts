@@ -2279,6 +2279,8 @@ export declare namespace exposition {
     readonly FitSlots?: Array<string>;
     readonly Tooltip: calculator.ItemTooltip;
     readonly ArmourData?: Record<string, number>;
+    readonly Width: number;
+    readonly Height: number;
   }
   interface ParsedMod {
     readonly Name: string;

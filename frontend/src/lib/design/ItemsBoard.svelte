@@ -6,11 +6,14 @@
   import SlotMenu from './SlotMenu.svelte';
   import Dropdown from './Dropdown.svelte';
   import { tone as toneClass, type Tone } from './tone';
-  import { BOARD_SLOTS, itemTip, type TipProps, type WhatIf } from './items';
+  import { BOARD_SLOTS, besideAnchor, itemTip, type TipProps, type WhatIf } from './items';
   import { draggedItem, type ItemDrag } from './item_drag';
   import { dropZone, type DropZone } from './reorder';
   import SocketPreview from './SocketPreview.svelte';
   import ItemIcon from './ItemIcon.svelte';
+  import ItemSockets from './ItemSockets.svelte';
+  import { artBox, placeGems, type SocketedGem, type SocketedGroup } from './item_sockets';
+  import TooltipLines from './TooltipLines.svelte';
   import type { Tree } from '$lib/skill_tree/types';
   import type { ItemSummary, ItemTip, StatDiff } from './fixtures';
   import Tabs from './Tabs.svelte';
@@ -50,6 +53,10 @@
     ondropitem?: (slot: string, drag: ItemDrag) => void;
     /* ItemSlotControl.lua:132-149 */
     socketView?: { node: number; tree: Tree; radii: { inner: number; outer: number; col: string; nodes: number[] }[]; alloc: Set<number> };
+    /* the skill groups socketed in each slot, in the skill list's order */
+    socketed?: Record<string, SocketedGroup[]>;
+    /* GemSelectControl.lua:629-646 */
+    gemtip?: (group: number, gem: number) => Promise<{ Text: string; Separator: boolean }[] | undefined>;
   };
   let {
     slots,
@@ -73,7 +80,9 @@
     socketTip,
     swap = false,
     ondropitem,
-    socketView
+    socketView,
+    socketed = {},
+    gemtip
   }: Props = $props();
   let dropOver = $state<string | null>(null);
   const dropTarget = (slot: string): DropZone | undefined =>
@@ -89,6 +98,23 @@
     };
   const abyssalLabel = (slot: string) => slot.replace(/ Swap/, '').replace(/ Abyssal Socket (\d+)$/, ' Abyssal #$1');
   const key = (slot: string) => (swap && slot.startsWith('Weapon') ? `${slot} Swap` : slot);
+  // a touch has no hover: the first tap on an item shows its name, sockets and tooltip, the second opens it
+  let tap: { touch: boolean; shown: boolean } = { touch: false, shown: false };
+
+  let gemHover = $state<{ slot: string; gem: SocketedGem; el: HTMLElement; lines?: { Text: string; Separator: boolean }[] } | null>(null);
+  // a pointer that leaves while the overlay redraws can miss mouseleave; the tip only shows for the slot still hovered
+  const gemShown = $derived(gemHover && gemHover.slot === hover ? gemHover : null);
+  const hoverGem = (slot: string, gem: SocketedGem | null, el: HTMLElement | null) => {
+    if (!gem || !el) {
+      gemHover = null;
+      return;
+    }
+    const at = { slot, gem, el };
+    gemHover = at;
+    void gemtip?.(gem.group, gem.gem).then((lines) => {
+      if (gemHover?.el === el) gemHover = { ...at, lines };
+    });
+  };
 
   const uid = $props.id();
   const els: Record<string, HTMLElement> = $state({});
@@ -159,29 +185,56 @@
       title={e || !oncraft ? undefined : `Craft an item for ${b.slot}`}
       aria-describedby={hover === k && tip ? `${uid}-tip` : undefined}
       data-off={flask && e && !flasks[k] ? 'true' : undefined}
-      onclick={() => (e ? onedit(k) : oncraft?.(k))}
+      onpointerdown={(ev: PointerEvent) => (tap = { touch: ev.pointerType === 'touch', shown: hover === k })}
+      onclick={() => {
+        const first = tap.touch && !tap.shown;
+        tap = { touch: false, shown: false };
+        if (e && first) hover = k;
+        else if (e) onedit(k);
+        else oncraft?.(k);
+      }}
       onmouseenter={() => (hover = k)}
-      onmouseleave={() => (hover = null)}
+      onmouseleave={() => {
+        hover = null;
+        gemHover = null;
+      }}
       onfocus={() => (hover = k)}
       onblur={() => (hover = null)}>
       {#if e}
+        {@const art = artBox(e.item.cells, b.w - 24, b.h - 24)}
         <span class="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <ItemIcon
-            name={e.item.name}
-            base={e.item.base}
-            rarity={e.item.rarity}
-            size={Math.min(b.w, b.h) - 40}
-            unit="rem"
-            decorative
-            class={[flask && !flasks[k] && 'opacity-50']} />
+          <span class="relative flex">
+            <ItemIcon
+              name={e.item.name}
+              base={e.item.base}
+              rarity={e.item.rarity}
+              size={art.w}
+              height={art.h}
+              unit="rem"
+              decorative
+              class={[flask && !flasks[k] && 'opacity-50']} />
+            {#if hover === k && e.item.sockets}<ItemSockets
+                line={e.item.sockets}
+                w={art.w}
+                h={art.h}
+                cell={art.cell}
+                cols={art.cols}
+                gems={placeGems(e.item.sockets, socketed[k] ?? [])}
+                ongem={(g: SocketedGem | null, el: HTMLElement | null) => hoverGem(k, g, el)} />{/if}
+          </span>
         </span>
       {/if}
       <span class="eyebrow eyebrow-xs relative font-normal text-text-3">{flask ? '' : b.slot}</span>
-      <span
-        data-pob-color={e && (!flask || flasks[k]) ? '' : undefined}
-        class={['relative rounded-tight bg-tile/80 text-12 leading-[0.9375rem] font-semibold', e && (!flask || flasks[k]) ? 'text-(--tone)' : 'text-text-3']}
-        >{e ? e.item.name : 'Empty'}</span>
-      <span class="note-sm relative font-mono before:content-[attr(data-sockets)]" data-sockets={e?.item.sockets ?? ''}></span>
+      {#if !e || hover === k}
+        <span data-slot-caption class="relative flex flex-col items-start">
+          <span
+            data-pob-color={e && (!flask || flasks[k]) ? '' : undefined}
+            class={['rounded-tight bg-tile/80 text-12 leading-[0.9375rem] font-semibold', e && (!flask || flasks[k]) ? 'text-(--tone)' : 'text-text-3']}
+            >{e ? e.item.name : 'Empty'}</span>
+          {#if e?.item.sockets}<span class="note-sm rounded-tight bg-tile/80 font-mono before:content-[attr(data-sockets)]" data-sockets={e.item.sockets}></span
+            >{/if}
+        </span>
+      {/if}
     </button>
     {#if e || fitting(k).length}
       <div class="absolute top-1 right-1">
@@ -341,7 +394,13 @@
     </section>
   {/if}
 </div>
-{#if tip && hover}
+{#if gemShown}
+  {#if gemShown.lines?.length}
+    <div data-floating class="pointer-events-none fixed top-(--y) left-(--x) z-float w-max max-w-[480px]" use:besideAnchor={gemShown.el}>
+      <div class="tooltip rounded-md px-3 py-2.5 shadow-tip"><TooltipLines lines={gemShown.lines} center label="Gem tooltip" /></div>
+    </div>
+  {/if}
+{:else if tip && hover}
   <FloatingItemTip anchor={els[hover]} id="{uid}-tip" {...tip} />
 {/if}
 {#if jewelPick && pickTip}

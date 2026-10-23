@@ -134,6 +134,21 @@ describe('ItemIcon sprite sheets', () => {
     expect([...container.querySelectorAll('[data-sprite-frame] img')].every((i) => (i as HTMLImageElement).alt === '')).toBe(true);
   });
 
+  it("fills a box drawn in the flask's own 1x2 proportions with each frame", async () => {
+    const { container } = render(ItemIcon, {
+      name: 'Divine Life Flask',
+      base: 'Divine Life Flask',
+      size: 48,
+      height: 96,
+      src: '/Art/2DItems/Flasks/lifeflask10.png'
+    });
+    const box = container.querySelector('[data-item-icon]') as HTMLElement;
+    expect([box.style.width, box.style.height]).toEqual(['48px', '96px']);
+    loadAs(container.querySelector('img') as HTMLImageElement, 234, 156);
+    await waitFor(() => expect(layers(container)).toHaveLength(3));
+    expect(layers(container).map((l) => [l.width, l.height])).toEqual(Array(3).fill(['100%', '100%']));
+  });
+
   it('stacks a gem sheet gem then symbol, and shows a single-frame gem whole', async () => {
     const { container } = render(ItemIcon, { name: 'Fireball', gem: true, src: '/g.png' });
     loadAs(container.querySelector('img') as HTMLImageElement, 234, 78);

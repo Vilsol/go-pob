@@ -1,9 +1,11 @@
 <script lang="ts">
   import { socketLetters, socketStyle, type SocketStyle } from '$lib/display/appearance';
+  import type { Snippet } from 'svelte';
   import { tone as toneClass, type Tone } from './tone';
 
-  type Props = { socket: Tone; gem?: Tone; letters?: boolean; ornament?: SocketStyle };
-  let { socket, gem, letters, ornament }: Props = $props();
+  /* children: what sits in the socket in place of the gem dot */
+  type Props = { socket: Tone; gem?: Tone; letters?: boolean; ornament?: SocketStyle; children?: Snippet };
+  let { socket, gem, letters, ornament, children }: Props = $props();
 
   const COLOURS: Partial<Record<Tone, string>> = { R: 'Red', G: 'Green', B: 'Blue', W: 'White' };
   const colour = $derived(COLOURS[socket]);
@@ -32,7 +34,7 @@
       {/if}
     </svg>
   {/if}
-  {#if gem}<span aria-hidden="true" class={['socket-gem', toneClass(gem)]}></span>{/if}
+  {#if children}<span class="contents">{@render children()}</span>{:else if gem}<span aria-hidden="true" class={['socket-gem', toneClass(gem)]}></span>{/if}
   {#if showLetter}<span aria-hidden="true" class="socket-letter">{socket}</span>{/if}
 </span>
 

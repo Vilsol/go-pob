@@ -1312,6 +1312,24 @@ class PoBWorker {
     return this.fresh((b) => dump(b.Items));
   }
 
+  /* SkillsTab.lua:268-278: the active set's groups with a slot, and their gems that resolve to a skill */
+  GetSocketedGems(): { slot: string; group: number; source?: string; gems: { index: number; name: string }[] }[] {
+    const build = this.currentBuild;
+    const groups = build?.Skills?.SkillSets?.[build.ActiveSkillSetIndex()]?.Skills ?? [];
+    return groups.flatMap((g, group) =>
+      g.Slot
+        ? [
+            {
+              slot: g.Slot,
+              group,
+              source: g.SourceAttr || g.Source || undefined,
+              gems: (g.Gems ?? []).flatMap((gem, index) => (gem.GemID || gem.SkillID ? [{ index, name: gem.NameSpec }] : []))
+            }
+          ]
+        : []
+    );
+  }
+
   GetSocketGroupSummaries(skillSet: number) {
     const sets = this.currentBuild?.Skills?.SkillSets;
     const groups = sets?.[skillSet]?.Skills;

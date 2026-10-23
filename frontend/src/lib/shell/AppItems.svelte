@@ -25,6 +25,7 @@
     type WhatIf
   } from '$lib/design/items';
   import { itemUsage, type UsageContext } from '$lib/design/item_usage';
+  import type { SocketedGroup } from '$lib/design/item_sockets';
   import { buildRevision, currentBuild, outputs } from '$lib/global.js';
   import { migrateEldritchImplicits, slotOnlyTooltips } from '$lib/display/item_options';
   import { itemsLayout, phoneTables } from '$lib/display/appearance';
@@ -58,6 +59,7 @@
     stash: { item: number; used: string }[];
     equipped: exposition.EquippedSlot[];
     slotItems: Record<string, number[]>;
+    socketed: Record<string, SocketedGroup[]>;
   };
 
   const READONLY = 'Edit as text to change it in the paste panel, under its controls';
@@ -85,7 +87,8 @@
     explicits: lines(p.Explicits),
     flask: p.Flask,
     fits: p.FitSlots ?? [],
-    tooltip: itemTip(p.Tooltip)
+    tooltip: itemTip(p.Tooltip),
+    cells: p.Width && p.Height ? [p.Width, p.Height] : undefined
   });
   const fromSlot = (e: exposition.EquippedSlot): ItemSummary => ({
     name: e.Name,
@@ -147,7 +150,7 @@
       loaded = { revision, epoch: at, items, sockets: spec?.Sockets ?? [], usage: { specs, activeSpec: Math.max(0, (tree?.ActiveSpec ?? 1) - 1) } };
       saved = [];
     }
-    const [equipped, slotItems, tabSlots, setTips, extraSlots, filterInfo, specList] = await Promise.all([
+    const [equipped, slotItems, tabSlots, setTips, extraSlots, filterInfo, specList, socketedGroups] = await Promise.all([
       syncWrap.GetEquippedItems().then((e) => e ?? []),
       syncWrap.GetSlotItemLists().then((l) => l ?? {}),
       syncWrap.GetItemsTabSlots(),
@@ -166,6 +169,10 @@
       syncWrap.GetTreeSpecs().catch((e: Error) => {
         logError(e);
         return undefined;
+      }),
+      syncWrap.GetSocketedGems().catch((e: Error) => {
+        logError(e);
+        return [];
       })
     ]);
     stashFilters = filterInfo.filters;
@@ -219,7 +226,9 @@
       : [...new Set([...(raw?.Items ?? []).map((it) => it.ID), ...Object.keys(items).map(Number)])]
           .filter((item) => items[item])
           .map((item) => ({ item, used: usage(item) || 'Equipped' }));
-    view = { activeSet, items, texts, sets, jewels, abyssal: tabSlots.abyssal, extraSlots, stash, equipped, slotItems };
+    const socketed: Record<string, SocketedGroup[]> = {};
+    for (const g of socketedGroups) (socketed[g.slot] ??= []).push(g);
+    view = { activeSet, items, texts, sets, jewels, abyssal: tabSlots.abyssal, extraSlots, stash, equipped, slotItems, socketed };
   };
 
   $effect(() => {
@@ -1032,6 +1041,8 @@
     {stashFilter}
     {sharedSets}
     {socketView}
+    socketed={view.socketed}
+    gemtip={(group: number, gem: number) => syncWrap?.GemTooltip(group, gem) ?? Promise.resolve(undefined)}
     onshared={(op: Parameters<typeof onshared>[0]) => {
       onshared(op).catch(logError);
     }}

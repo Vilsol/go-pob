@@ -34,6 +34,8 @@ export type ItemSummary = {
   flask: boolean;
   fits: string[];
   tooltip?: ItemTip;
+  /* inventory width × height of the base */
+  cells?: [number, number];
 };
 
 export type StatDiff = { header: string; slot?: string; sections: StatCompareSection[] };

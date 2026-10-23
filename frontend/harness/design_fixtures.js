@@ -86,7 +86,8 @@ async function itemSummary(worker, text) {
       influence: [...(item.Tooltip.Influence ?? [])],
       title: [...(item.Tooltip.Title ?? [])],
       lines: (item.Tooltip.Lines ?? []).map((l) => ({ text: l.Text, sep: l.Separator }))
-    }
+    },
+    ...(item.Width && item.Height ? { cells: [item.Width, item.Height] } : {})
   };
 }
 

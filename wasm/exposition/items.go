@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/Vilsol/crystalline/bind"
+	"github.com/Vilsol/go-pob-data/poe"
 
 	"github.com/Vilsol/go-pob/calculator"
 	"github.com/Vilsol/go-pob/data"
@@ -73,6 +74,9 @@ type ParsedItem struct {
 	FitSlots    []string
 	Tooltip     calculator.ItemTooltip
 	ArmourData  map[string]float64
+	// inventory cells of the base type; 0 when the base is unknown to the game data
+	Width  int
+	Height int
 }
 
 var errInvalidItem = fmt.Errorf("invalid item: no base type resolved")
@@ -140,6 +144,9 @@ func parsedItem(build *pob.PathOfBuilding, item *calculator.Item, stats calculat
 	}
 	if item.Base.Armour != nil {
 		p.ArmourData = item.ArmourData
+	}
+	if b := poe.BaseItemTypeByNameMap[item.BaseName]; b != nil {
+		p.Width, p.Height = b.Width, b.Height
 	}
 	ctx := calculator.ItemTooltipContext{ShowFlavourText: showFlavourText, Stats: stats}
 	if build != nil {

@@ -32548,6 +32548,8 @@ func crystallineMarshalExpositionParsedItem(v *ParsedItem) any {
 			return out
 		}()
 	}))
+	out.Set("Width", float64(v.Width))
+	out.Set("Height", float64(v.Height))
 
 	return out
 }
@@ -51453,6 +51455,10 @@ func crystallineAppendExpositionParsedItem(b []byte, v *ParsedItem, ok *bool) []
 
 		b = append(b, '}')
 	}
+	b = append(b, ",\"Width\":"...)
+	b = crystallineAppendNumber(b, float64(v.Width), ok)
+	b = append(b, ",\"Height\":"...)
+	b = crystallineAppendNumber(b, float64(v.Height), ok)
 
 	return append(b, '}')
 }

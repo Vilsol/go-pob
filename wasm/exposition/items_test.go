@@ -77,6 +77,16 @@ func TestParseItemPaste(t *testing.T) {
 	if !slices.Equal(p.FitSlots, []string{"Helmet"}) {
 		t.Errorf("fits %v", p.FitSlots)
 	}
+	if p.Width != 2 || p.Height != 2 {
+		t.Errorf("helmet cells %dx%d, want 2x2", p.Width, p.Height)
+	}
+	wand, err := ParseItem(build, "Rarity: Normal\nImbued Wand\n", calculator.ItemTooltipStats{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if wand.Width != 1 || wand.Height != 3 {
+		t.Errorf("wand cells %dx%d, want 1x3", wand.Width, wand.Height)
+	}
 
 	if _, err := ParseItem(build, "Rarity: Rare\nNot A Thing\nNor A Base\n", calculator.ItemTooltipStats{}); err == nil {
 		t.Error("an item with no base parsed")
