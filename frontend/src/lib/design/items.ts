@@ -24,14 +24,14 @@ export function impactRows(diff: StatDiff | undefined, max = 4): Impact[] {
 
 export const replacing = (diff: StatDiff | undefined) => diff?.header.split('\n')[1];
 
-export type SocketColour = 'R' | 'G' | 'B' | 'W';
+export type SocketColour = 'R' | 'G' | 'B' | 'W' | 'A';
 export function socketLine(line: string) {
   const colours: SocketColour[] = [];
   const links: boolean[] = [];
   for (const ch of line) {
     if (ch === '-') links[colours.length - 1] = true;
     else if (ch === ' ') links[colours.length - 1] = false;
-    else colours.push(ch === 'R' || ch === 'G' || ch === 'B' ? ch : 'W');
+    else colours.push(ch === 'R' || ch === 'G' || ch === 'B' || ch === 'A' ? ch : 'W');
   }
   return { colours, links: colours.slice(1).map((_, i) => links[i] ?? false) };
 }

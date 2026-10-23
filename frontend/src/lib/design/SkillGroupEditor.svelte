@@ -134,10 +134,14 @@
   const dragState = $state(reorderState());
   const drag = new Reorder(dragState, { box: () => gemBox, name: (i) => group.gems[i]?.name ?? '', onmove: (f, t) => onreorder(f, t) });
   const line = $derived(socketLine(group.sockets));
-  const sockAt = (i: number) => line.colours[offset + i];
+  // a gem takes the next socket that is not abyssal
+  const gemSockets = $derived(line.colours.flatMap((c, i) => (c === 'A' ? [] : [i])));
+  const at = (i: number) => gemSockets[offset + i];
+  const sockAt = (i: number) => line.colours[at(i)];
   // links are always connected for now; flip to let users break them again
   const LINKS_EDITABLE = false;
-  const linkAt = (i: number) => (!LINKS_EDITABLE ? (i > 0 ? true : undefined) : i > 0 && sockAt(i) && sockAt(i - 1) ? line.links[offset + i - 1] : undefined);
+  const linkAt = (i: number) =>
+    !LINKS_EDITABLE ? (i > 0 ? true : undefined) : i > 0 && sockAt(i) && sockAt(i - 1) && at(i) === at(i - 1) + 1 ? line.links[at(i - 1)] : undefined;
   const summary = $derived.by(() => {
     // SkillsTab.lua:1210-1246
     if (!LINKS_EDITABLE || !group.sockets) return `Links: all ${group.gems.length} linked`;
@@ -405,7 +409,7 @@
           socket={sockAt(i) ?? 'W'}
           support={gem.support}
           linked={linkAt(i)}
-          onlinkchange={(linked: boolean) => onchange({ sockets: setLink(group.sockets, offset + i - 1, linked) })}
+          onlinkchange={(linked: boolean) => onchange({ sockets: setLink(group.sockets, at(i - 1), linked) })}
           enabled={gem.enabled}
           onenabled={(enabled) => ongem(i, { enabled })}
           onlevel={(level) => ongem(i, { level })}

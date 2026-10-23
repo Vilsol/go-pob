@@ -90,7 +90,7 @@
       decoding="async"
       draggable="false"
       class={['absolute inset-0 size-full object-contain', (!loaded || sprite) && 'opacity-0']}
-      onload={(e) => onload(e.currentTarget as HTMLImageElement)}
+      onload={(e: Event) => onload(e.currentTarget as HTMLImageElement)}
       onerror={() => (failed = true)} />
     {#if loaded && sprite}
       {#each sprite.sheet.layers as frame (frame)}

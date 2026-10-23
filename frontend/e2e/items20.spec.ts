@@ -749,3 +749,32 @@ test.describe('touch', () => {
     app.assertNoErrors();
   });
 });
+
+test('keyboard users reach the gems socketed in a focused slot and see their gem tooltips (0111)', async ({ page }) => {
+  await setup(page, '0111-berserker-earthshatter');
+  const body = tile(page, 'Body Armour');
+  const slot = board(page).getByRole('group', { name: 'Body Armour slot' });
+  await body.focus();
+  const gems = slot.locator('[data-socket-gem]');
+  await expect(gems.first(), 'vacuity: 0111 socketed no gem in its body armour').toBeVisible();
+  const names = await gems.evaluateAll((els) => els.map((e) => e.getAttribute('data-socket-gem')));
+  await page.keyboard.press('ArrowDown');
+  await expect(gems.first()).toBeFocused();
+  const tip = page.getByLabel('Gem tooltip');
+  await expect(tip).toContainText(names[0]!);
+  if (names.length > 1) {
+    await page.keyboard.press('ArrowRight');
+    await expect(gems.nth(1)).toBeFocused();
+    await expect(tip).toContainText(names[1]!);
+  }
+  await page.keyboard.press('Escape');
+  await expect(body).toBeFocused();
+  await expect(tip).toHaveCount(0);
+  await page.keyboard.press('Tab');
+  // the roving stop is the gem focused last
+  await expect(gems.nth(names.length > 1 ? 1 : 0)).toBeFocused();
+  await expect(tip).toBeVisible();
+  await page.keyboard.press('Shift+Tab');
+  await expect(body).toBeFocused();
+  await expect(tip).toHaveCount(0);
+});

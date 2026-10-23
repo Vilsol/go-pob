@@ -46,7 +46,8 @@ const TONES = {
   R: 'tone-sock-r',
   G: 'tone-sock-g',
   B: 'tone-sock-b',
-  W: 'tone-sock-w'
+  W: 'tone-sock-w',
+  A: 'tone-sock-a'
 } as const;
 
 export type Tone = keyof typeof TONES;

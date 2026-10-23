@@ -3,6 +3,7 @@
 import './pointer_event_polyfill';
 import { describe, expect, it, afterEach, vi } from 'vitest';
 import { render, cleanup, fireEvent } from '@testing-library/svelte';
+import { tick } from 'svelte';
 import ItemsBoard from './ItemsBoard.svelte';
 import type { ItemSummary } from './fixtures';
 
@@ -84,9 +85,9 @@ describe('ItemsBoard socket overlay', () => {
 
   it('draws a 1-wide item’s sockets down one column with its links, only on hover', async () => {
     const { tile } = setup();
-    expect(tile.querySelector('[data-item-sockets]')).toBeNull();
+    expect(tile.parentElement!.querySelector('[data-item-sockets]')).toBeNull();
     await fireEvent.mouseEnter(tile);
-    const overlay = tile.querySelector('[data-item-sockets]')!;
+    const overlay = tile.parentElement!.querySelector('[data-item-sockets]')!;
     // Weapon 1 is 168x322; a 1x3 wand fits 144x298 at 99.3 per cell
     expect(at(overlay)).toEqual([
       [50, 50],
@@ -112,7 +113,7 @@ describe('ItemsBoard socket overlay', () => {
     });
     const tile = r.getByRole('button', { name: 'Body Armour: Carcass Jack' });
     await fireEvent.mouseEnter(tile);
-    const overlay = tile.querySelector('[data-item-sockets]')!;
+    const overlay = tile.parentElement!.querySelector('[data-item-sockets]')!;
     // Body Armour is 168x252; a 2x3 coat fits 144x228 at 72 per cell
     expect(at(overlay)).toEqual([
       [36, 36],
@@ -149,12 +150,53 @@ describe('ItemsBoard socketed gems', () => {
     });
     const tile = r.getByRole('button', { name: 'Weapon 1: Doom Twig' });
     await fireEvent.mouseEnter(tile);
-    const gems = [...tile.querySelectorAll<HTMLElement>('[data-socket]')].map((s) => s.querySelector('[data-socket-gem]')?.getAttribute('data-socket-gem'));
+    const gems = [...tile.parentElement!.querySelectorAll<HTMLElement>('[data-socket]')].map((s) =>
+      s.querySelector('[data-socket-gem]')?.getAttribute('data-socket-gem')
+    );
     expect(gems).toEqual(['Fireball', 'Spell Echo', undefined]);
-    await fireEvent.mouseEnter(tile.querySelector('[data-socket-gem="Spell Echo"]')!);
+    await fireEvent.mouseEnter(tile.parentElement!.querySelector('[data-socket-gem="Spell Echo"]')!);
     expect(gemtip).toHaveBeenCalledWith(5, 1);
     await vi.waitFor(() => expect(document.querySelector('[aria-label="Gem tooltip"]')?.textContent).toContain('tip 5.1'));
-    await fireEvent.mouseLeave(tile.querySelector('[data-socket-gem="Spell Echo"]')!);
+    await fireEvent.mouseLeave(tile.parentElement!.querySelector('[data-socket-gem="Spell Echo"]')!);
     expect(document.querySelector('[aria-label="Gem tooltip"]')).toBeNull();
+  });
+
+  it('reaches the gems from the focused slot with the arrow keys, showing each gem tooltip, and Escape returns to the slot', async () => {
+    const gemtip = vi.fn((group: number, gem: number) => Promise.resolve([{ Text: `tip ${group}.${gem}`, Separator: false }]));
+    const r = render(ItemsBoard, {
+      slots: { 'Weapon 1': { id: 1, item: wand } },
+      flasks: {},
+      calcFlasks: {},
+      fitting: () => [],
+      jewels: [],
+      jewelOptions: [],
+      onedit: () => {},
+      onflask: () => {},
+      onequip: () => {},
+      socketed: {
+        'Weapon 1': [
+          { group: 3, gems: [{ index: 0, name: 'Fireball' }] },
+          { group: 5, gems: [{ index: 1, name: 'Spell Echo' }] }
+        ]
+      },
+      gemtip
+    });
+    const tile = r.getByRole('button', { name: 'Weapon 1: Doom Twig' });
+    const tipText = () => document.querySelector('[aria-label="Gem tooltip"]')?.textContent;
+    tile.focus();
+    await tick();
+    await fireEvent.keyDown(tile, { key: 'ArrowDown' });
+    const fireball = tile.parentElement!.querySelector<HTMLElement>('[data-socket-gem="Fireball"]')!;
+    expect(document.activeElement).toBe(fireball);
+    await vi.waitFor(() => expect(tipText()).toContain('tip 3.0'));
+    expect(fireball.getAttribute('aria-describedby')).toBe(document.querySelector('[aria-label="Gem tooltip"]')!.closest('[id]')!.id);
+    await fireEvent.keyDown(fireball, { key: 'ArrowDown' });
+    expect(document.activeElement?.getAttribute('data-socket-gem')).toBe('Spell Echo');
+    await vi.waitFor(() => expect(tipText()).toContain('tip 5.1'));
+    await fireEvent.keyDown(document.activeElement!, { key: 'Escape' });
+    expect(document.activeElement).toBe(tile);
+    expect(tipText()).toBeUndefined();
+    tile.blur();
+    await vi.waitFor(() => expect(tile.parentElement!.querySelector('[data-item-sockets]')).toBeNull());
   });
 });

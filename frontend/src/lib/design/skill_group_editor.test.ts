@@ -45,6 +45,12 @@ describe('SkillGroupEditor', () => {
     expect(screen.getByText(/Item sockets:/).textContent).toBe('Item sockets: B=B=G  R');
   });
 
+  it('puts gems in the sockets that are not abyssal', () => {
+    const { container } = mount({ group: { ...group, sockets: 'A B-G' } });
+    const rows = [...container.querySelectorAll<HTMLElement>('[role="group"][aria-label="Gems"] > div.relative')];
+    expect(rows.map((r) => r.querySelector('[aria-label$=" socket"]')?.getAttribute('aria-label'))).toEqual(['Blue socket', 'Green socket', 'White socket']);
+  });
+
   // SkillsTab.lua:1210-1246
   it('a group with no item sockets is all linked, not broken', () => {
     mount({ group: { ...group, slot: '', sockets: '' } });

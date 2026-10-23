@@ -118,6 +118,15 @@
 
   const uid = $props.id();
   const els: Record<string, HTMLElement> = $state({});
+  const overlays: Record<string, { focusGem: (last?: boolean) => void } | undefined> = $state({});
+  // the pointer or focus moving between a slot and its socket overlay keeps the slot shown
+  const inSlot = (k: string, to: EventTarget | null) =>
+    to instanceof Element && (to === els[k] || (!!els[k]?.parentElement?.contains(to) && !!to.closest('[data-item-sockets]')));
+  const leaveSlot = (k: string, to: EventTarget | null) => {
+    if (inSlot(k, to)) return;
+    if (hover === k) hover = null;
+    gemHover = null;
+  };
   const tip = $derived.by(() => {
     const jewel = hover ? /^Jewel (\d+)$/.exec(hover) : null;
     if (jewel) {
@@ -194,12 +203,14 @@
         else oncraft?.(k);
       }}
       onmouseenter={() => (hover = k)}
-      onmouseleave={() => {
-        hover = null;
-        gemHover = null;
-      }}
+      onmouseleave={(ev: MouseEvent) => leaveSlot(k, ev.relatedTarget)}
       onfocus={() => (hover = k)}
-      onblur={() => (hover = null)}>
+      onblur={(ev: FocusEvent) => leaveSlot(k, ev.relatedTarget)}
+      onkeydown={(ev: KeyboardEvent) => {
+        if (!overlays[k] || !['ArrowRight', 'ArrowDown', 'ArrowLeft', 'ArrowUp'].includes(ev.key)) return;
+        ev.preventDefault();
+        overlays[k].focusGem(ev.key === 'ArrowLeft' || ev.key === 'ArrowUp');
+      }}>
       {#if e}
         {@const art = artBox(e.item.cells, b.w - 24, b.h - 24)}
         <span class="pointer-events-none absolute inset-0 flex items-center justify-center">
@@ -213,14 +224,6 @@
               unit="rem"
               decorative
               class={[flask && !flasks[k] && 'opacity-50']} />
-            {#if hover === k && e.item.sockets}<ItemSockets
-                line={e.item.sockets}
-                w={art.w}
-                h={art.h}
-                cell={art.cell}
-                cols={art.cols}
-                gems={placeGems(e.item.sockets, socketed[k] ?? [])}
-                ongem={(g: SocketedGem | null, el: HTMLElement | null) => hoverGem(k, g, el)} />{/if}
           </span>
         </span>
       {/if}
@@ -236,6 +239,26 @@
         </span>
       {/if}
     </button>
+    {#if e && hover === k && e.item.sockets}
+      {@const art = artBox(e.item.cells, b.w - 24, b.h - 24)}
+      <span class="pointer-events-none absolute inset-0 flex items-center justify-center">
+        <span class="relative" style:width="{art.w / 16}rem" style:height="{art.h / 16}rem"
+          ><ItemSockets
+            bind:this={overlays[k]}
+            line={e.item.sockets}
+            w={art.w}
+            h={art.h}
+            cell={art.cell}
+            cols={art.cols}
+            gems={placeGems(e.item.sockets, socketed[k] ?? [])}
+            shown={gemShown?.slot === k ? gemShown.gem : undefined}
+            tipId="{uid}-gem-tip"
+            ongem={(g: SocketedGem | null, el: HTMLElement | null) => hoverGem(k, g, el)}
+            onleave={(to: EventTarget | null) => leaveSlot(k, to)}
+            onescape={() => els[k]?.focus()}
+            onopen={() => onedit(k)} /></span>
+      </span>
+    {/if}
     {#if e || fitting(k).length}
       <div class="absolute top-1 right-1">
         <SlotMenu
@@ -396,7 +419,7 @@
 </div>
 {#if gemShown}
   {#if gemShown.lines?.length}
-    <div data-floating class="pointer-events-none fixed top-(--y) left-(--x) z-float w-max max-w-[480px]" use:besideAnchor={gemShown.el}>
+    <div id="{uid}-gem-tip" data-floating class="pointer-events-none fixed top-(--y) left-(--x) z-float w-max max-w-[480px]" use:besideAnchor={gemShown.el}>
       <div class="tooltip rounded-md px-3 py-2.5 shadow-tip"><TooltipLines lines={gemShown.lines} center label="Gem tooltip" /></div>
     </div>
   {/if}

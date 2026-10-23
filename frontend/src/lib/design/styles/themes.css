@@ -81,6 +81,7 @@
   --color-sock-g: #2b822b;
   --color-sock-b: #4652c4;
   --color-sock-w: #77715f;
+  --color-sock-a: #2e2b27;
   --color-gem-w: #6a665c;
   --color-code-life: #b83b26;
   --color-code-mana: #4646c0;
@@ -151,6 +152,7 @@
   --color-info-line: #5585b8;
   --color-bad-line: #c47442;
   --color-link: #ffffff;
+  --color-sock-a: #9a948a;
 }
 
 :root[data-motion='off'] *,

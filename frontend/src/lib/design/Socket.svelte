@@ -7,7 +7,7 @@
   type Props = { socket: Tone; gem?: Tone; letters?: boolean; ornament?: SocketStyle; children?: Snippet };
   let { socket, gem, letters, ornament, children }: Props = $props();
 
-  const COLOURS: Partial<Record<Tone, string>> = { R: 'Red', G: 'Green', B: 'Blue', W: 'White' };
+  const COLOURS: Partial<Record<Tone, string>> = { R: 'Red', G: 'Green', B: 'Blue', W: 'White', A: 'Abyssal' };
   const colour = $derived(COLOURS[socket]);
   const showLetter = $derived(!!colour && (letters ?? $socketLetters));
   const style = $derived(colour ? (ornament ?? $socketStyle) : 'None');
@@ -15,9 +15,14 @@
   // one spike pointing up from the rim, rotated into place
   const spike = (w: number, len: number) => `M${-w},-11 L0,${-11 - len} L${w},-11 Z`;
   const turns = (n: number, from = 0) => Array.from({ length: n }, (_, i) => from + (360 / n) * i);
+  // an abyss socket sits in broken rock
+  const ROCK = 'M0,-16 L8.9,-10.2 L14.4,-5.8 L11.9,4.6 L9.7,13.3 L1.4,13.1 L-9.2,11.8 L-13.4,3.3 L-15.6,-4.2 L-7.2,-10.3 Z';
 </script>
 
-<span class={['socket', toneClass(socket)]} role={colour ? 'img' : undefined} aria-label={colour ? `${colour} socket` : undefined}>
+<span
+  class={['socket', socket === 'A' && 'socket-abyss', toneClass(socket)]}
+  role={colour ? (children ? 'group' : 'img') : undefined}
+  aria-label={colour ? `${colour} socket` : undefined}>
   {#if style !== 'None'}
     <svg aria-hidden="true" class="socket-ornament" viewBox="-20 -20 40 40" data-ornament={style === 'Small' ? 'small' : socket}>
       {#if style === 'Small'}
@@ -26,6 +31,8 @@
         {#each turns(4, 45) as r (r)}<path d={spike(3.5, 5.5)} transform="rotate({r})" />{/each}
       {:else if socket === 'R'}
         {#each turns(8) as r (r)}<path d={spike(2, 7.5)} transform="rotate({r})" />{/each}
+      {:else if socket === 'A'}
+        <path d={ROCK} />
       {:else if socket === 'B'}
         {#each turns(3, 20) as r (r)}<path class="swirl" d="M0,-12.5 C7,-14.5 13,-11 15.5,-4" transform="rotate({r})" />{/each}
       {:else}
@@ -39,6 +46,9 @@
 </span>
 
 <style>
+  .socket-abyss {
+    background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--tone) 55%, #000) 0 15%, #000 70%);
+  }
   .socket-ornament {
     position: absolute;
     inset: -11px;
