@@ -892,7 +892,6 @@
         savedView = t;
         viewRestored = b;
         if (t.ShowHeatMap) setHeat(true);
-        showDiff = t.ShowStatDifferences ?? true;
         if (phone.current) el.fitActive();
         else if (t.ZoomLevel || t.ZoomX || t.ZoomY) el.setPobView({ zoomLevel: t.ZoomLevel, zoomX: t.ZoomX, zoomY: t.ZoomY });
         else {
@@ -908,10 +907,13 @@
     if (!b || searchRestored === b) return;
     searchRestored = b;
     const typed = untrack(() => q);
+    // restored when the build opens, not once the canvas is up: a Ctrl+D pressed before it arrives wins over it
+    const shown = untrack(() => showDiff);
     syncWrap
       ?.GetTreeViewState()
       .then((t) => {
         if (t && q === typed) q = t.SearchStr ?? '';
+        if (t && showDiff === shown) showDiff = t.ShowStatDifferences ?? true;
       })
       .catch(logError);
   });

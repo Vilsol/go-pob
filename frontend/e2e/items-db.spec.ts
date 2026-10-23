@@ -294,7 +294,8 @@ test('the passive tree select and the Tree page socket jump (0280)', async ({ pa
   app.assertNoErrors();
 });
 
-test('shared item sets: share, import, rename, delete (0339)', async ({ page }) => {
+// a cold page: on a reused one CI saw Share set add nothing, which no local run reproduces
+coldTest('shared item sets: share, import, rename, delete (0339)', async ({ page }) => {
   test.setTimeout(300_000);
   const { app, build } = await setup(page, '0339-reliquarian-shield-crush-of-the-chieftain-2');
   await page.getByRole('tablist', { name: 'Item views' }).getByRole('tab', { name: 'Equipped' }).click();
