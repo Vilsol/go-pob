@@ -202,7 +202,8 @@ func run(ctx context.Context, dir string, env, unset []string, argv []string, st
 	//nolint:gosec // the argv is the harness's own fixture invocation
 	cmd := exec.CommandContext(ctx, argv[0], argv[1:]...)
 	cmd.Dir = dir
-	cmd.Env = dropEnv(append(dropEnv(os.Environ(), tierEnv), env...), unset)
+	// git words "not a git repository" by whether the sandbox sits on another mount; the recorded verdicts must not
+	cmd.Env = dropEnv(append(append(dropEnv(os.Environ(), tierEnv), "GIT_DISCOVERY_ACROSS_FILESYSTEM=1"), env...), unset)
 	if stdin != nil {
 		cmd.Stdin = bytes.NewReader(stdin)
 	}
