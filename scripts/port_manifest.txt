@@ -158,6 +158,9 @@ data/raw/skill_weapon_types.go      GENERATED  scripts/gopob/oracleemitters2.go
 data/raw/timeless_sources.go        GO-NATIVE  loads the five go-pob-data assets poe.InitializeAll omits (AlternateTreeVersions, PassiveSkills, AlternatePassiveSkills, AlternatePassiveAdditions, stat_descriptions). PoB gets the same rows from LoadModule of its own in-tree Lua, so there is no per-function counterpart to cite
 data/raw/spectre_data.go            GENERATED  scripts/gopob/miniondataemit.go
 
+data/tree2/spec.go                  PORT       src/Classes/PassiveSpec.lua
+data/tree2/tree.go                  PORT       src/Classes/PassiveTree.lua
+
 mod/actor_condition.go              GO-NATIVE  tag struct + builder; evaluated in moddb/mod_store.go
 mod/base_mod.go                     GO-NATIVE  the mod struct and its builder methods; PoB uses modLib.createMod on a plain table
 mod/common.go                       GO-NATIVE  flag/keyword-flag bitmask constants and matching
