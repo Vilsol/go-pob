@@ -285,6 +285,7 @@ scripts/gopob/pobpin.go                          GO-NATIVE  port of scripts/pob_
 scripts/gopob/pobdatatablesstamp.go              GO-NATIVE  port of oracle/pob_data_tables_stamp.py; stamps a DATA-table reference with the pin, porting no Lua
 scripts/gopob/dumpparallel.go                    GO-NATIVE  port of scripts/dump_parallel.sh; concurrent PoB dump runner, porting no Lua
 scripts/gopob/dumpalone.go                       GO-NATIVE  one build per PoB process, diffed against a committed dump; names the oracle floor, porting no Lua
+scripts/gopob/poe2corpus.go                      GO-NATIVE  the PoE2 corpus runner: one PoB-PoE2 process per character for the import and each dump, porting no Lua
 scripts/gopob/dumpshard.go                       GO-NATIVE  port of scripts/dump_shard.sh; the sharded corpus dumper, porting no Lua
 scripts/gopob/corpusdumpref.go                   GO-NATIVE  port of scripts/corpus_dump_ref.sh; dumps a ref via a throwaway worktree, porting no Lua
 scripts/gopob/testcachekey.go                    GO-NATIVE  port of scripts/test_cache_key.sh; the POE_VERSION cache-key gate, porting no Lua

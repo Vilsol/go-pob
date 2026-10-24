@@ -134,6 +134,9 @@ const usage = `gopob <subcommand> [flags]
   dump-alone <pob-dir> <repo-root> <builds-dir> <committed-dir> <out-dir> <list-file>
                         dump each listed build ALONE, one process each, and diff its output
                         against a committed dump — names the oracle's order-dependent floor
+  poe2-corpus <pob2-dir> <repo-root> <characters.zip> <out-root> <version>
+                        converts every character JSON to PoB-PoE2 XML and dumps it skills-on and
+                        skills-off, one process each under a memory cap, into an oracle
   dump-parallel <pob-src-parent> <repo-root> <builds-dir> <out-base> <runs>
                         N independent full-corpus PoB dumps at once, each in its own netns.
                         REFUSES before creating anything if a target directory is non-empty
@@ -288,6 +291,8 @@ func main() {
 		os.Exit(dumpParallel(os.Args[2:]))
 	case "dump-alone":
 		os.Exit(dumpAlone(os.Args[2:]))
+	case "poe2-corpus":
+		os.Exit(poe2Corpus(os.Args[2:]))
 	case "dump-shard":
 		os.Exit(dumpShard(os.Args[2:]))
 	case "corpus-dump-ref":

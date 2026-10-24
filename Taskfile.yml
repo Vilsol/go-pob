@@ -657,6 +657,24 @@ tasks:
         vars: {V: '{{.V}}'}
       - ls -la {{.HERE}}/testdata/oracle-{{.V}}/
 
+  oracle-poe2:
+    desc: "Rebuild the local-only PoE2 corpus and oracle from the character zip (ZIP=, OUT=, JOBS=, LIMIT=; resumes an OUT it built, refuses a failed pin check, a missing zip or an OUT built by another converter or pin)"
+    vars:
+      POB2:
+        sh: 'realpath "{{.POB2_DIR | default .POB2_DEFAULT}}"'
+      HERE:
+        sh: pwd
+      MAIN:
+        sh: dirname "$(git rev-parse --path-format=absolute --git-common-dir)"
+      ZIP: '{{.ZIP | default "~/Downloads/poe2-builds-0.5.zip"}}'
+      OUT: '{{.OUT | default "~/go-pob-corpus/poe2-0.5"}}'
+    cmds:
+      - task: pob-pin
+        vars: {GAME: poe2}
+      - 'env LUAJIT={{.MAIN}}/.luajit-det/bin/luajit JOBS={{.JOBS | default "4"}} LIMIT={{.LIMIT | default "0"}} {{.GOPOB}} poe2-corpus {{.POB2}} {{.HERE}} {{.ZIP}} {{.OUT}} poe2-0.5'
+      - ln -sfn {{.OUT}}/corpus {{.HERE}}/testdata/corpus-poe2-0.5
+      - ln -sfn {{.OUT}}/oracle {{.HERE}}/testdata/oracle-poe2-0.5
+
   oracle-bin:
     desc: "Rebuild the .orb side-car from the committed oracle blob (CHECK=1 reports staleness)"
     vars:
