@@ -332,8 +332,8 @@
       <FloatingItemTip
         anchor={slotHover.anchor}
         id="{uid}-slot-tip"
-        item={slotHover.slot}
-        base=""
+        item={slotHover.tip.title[0] ?? slotHover.slot}
+        base={slotHover.tip.title.at(-1) ?? ''}
         rarity="normal"
         mods={[]}
         impactTitle=""

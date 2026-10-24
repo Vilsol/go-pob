@@ -29,6 +29,8 @@ func TestItemArtPaths(t *testing.T) {
 		{"Energy Blade", "Energy Blade", false, ""},
 		{"x", "Crimson Jewel", false, "Art/2DItems/Jewels/basicstr"},
 		{"x", "No Such Base", false, ""},
+		// a query with no base (the Skills page's "Socketed in" slot tooltip) has no art, not a nameless base's
+		{"Body Armour", "", false, ""},
 	} {
 		got := ItemArtPath(c.name, c.base, c.unique)
 		if c.base == "Energy Blade" {

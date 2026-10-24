@@ -51,7 +51,7 @@ var (
 func buildArtLookups() {
 	baseTypeByName = make(map[string]*poe.BaseItemType, len(poe.BaseItemTypes))
 	for _, b := range poe.BaseItemTypes {
-		if strings.HasPrefix(b.ID, "Metadata/Items/Gems/") {
+		if b.Name == "" || strings.HasPrefix(b.ID, "Metadata/Items/Gems/") {
 			continue
 		}
 		if _, ok := baseTypeByName[b.Name]; !ok {
