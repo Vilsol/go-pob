@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PathOfBuilding2>
+	<Build ascendClassName="Oracle" characterLevelAutoMode="false" className="Druid" futureAttr="kept" level="12" mainSocketGroup="2" targetVersion="0_1" viewMode="TREE">
+		<PlayerStat stat="Life" value="250"/>
+		<PlayerStat stat="Speed" value="1.25"/>
+		<Buffs buffList="" combatList="" curseList=""/>
+		<TimelessData devotionVariant1="1" devotionVariant2="1" searchList="" searchListFallback=""/>
+	</Build>
+	<Calcs>
+		<Input name="misc_buffMode" string="EFFECTIVE"/>
+		<Section collapsed="false" id="Life" subsection="Life"/>
+	</Calcs>
+	<Config activeConfigSet="1">
+		<ConfigSet id="1" title="Default">
+			<Input name="questBonus" string="+5 to Strength
+	+1 Charm Slot"/>
+			<Input boolean="true" name="conditionFullLife"/>
+			<Placeholder name="enemyLevel" number="82"/>
+			<CustomModifierBlock enabled="true" title="Default">
+				
+			</CustomModifierBlock>
+		</ConfigSet>
+	</Config>
+	<Import exportParty="false" useGeneratedItemText="true"/>
+	<Items activeItemSet="1" showStatDifferences="true" useSecondWeaponSet="nil">
+		<Item id="1">
+			Rarity: RARE
+Hand Made
+Vile Robe
+Sockets: S S
+Rune: Desert Rune
+Implicits: 0
++20 to maximum Life
++10% to Fire Resistance
+			<ModRange id="1" range="0.5"/>
+			<ModRange id="2" range="0.25"/>
+		</Item>
+		<ItemSet id="1" title="Default" useSecondWeaponSet="nil">
+			<Slot itemId="0" itemPbURL="" name="Weapon 1"/>
+			<Slot itemId="1" itemPbURL="" name="Body Armour"/>
+			<SocketIdURL itemPbURL="" name="Jewel 7960" nodeId="7960"/>
+			<RuneSlot runeName="None" slotName="Body Armour Rune #1"/>
+			<RuneSlot runeName="Desert Rune" slotName="Body Armour Rune #2"/>
+		</ItemSet>
+	</Items>
+	<Notes>
+		line one
+	line two &amp; &lt;three&gt;
+	</Notes>
+	<Party ShowAdvanceTools="false" append="false" destination="All"/>
+	<Skills activeSkillSet="1" defaultGemLevel="normalMaximum" defaultGemQuality="nil" showLegacyGems="false" showSupportGemTypes="ALL" sortGemsByDPS="true" sortGemsByDPSField="CombinedDPS">
+		<SkillSet id="1">
+			<Skill enabled="true" includeInFullDPS="nil" label="" mainActiveSkill="1" mainActiveSkillCalcs="nil" set1="true" set2="true">
+				<Gem corruptLevel="0" corrupted="false" count="1" enableGlobal1="true" enableGlobal2="true" enabled="true" gemId="Metadata/Items/Gems/SkillGemFrostBomb" level="10" nameSpec="Frost Bomb" quality="0" skillId="FrostBombPlayer" variantId="FrostBomb"/>
+				<Gem corruptLevel="0" corrupted="nil" count="1" enableGlobal1="true" enableGlobal2="true" enabled="true" gemId="Metadata/Items/Gems/SupportGemLivingLightning" level="20" nameSpec="Living Lightning" quality="0" skillId="SupportLivingLightningPlayer" skillMinion="LivingLightning" skillMinionSkill="1" variantId="LivingLightningSupport"/>
+			</Skill>
+		</SkillSet>
+	</Skills>
+	<Tree activeSpec="1">
+		<Spec ascendClassId="1" ascendancyInternalId="Druid1" classId="11" classInternalId="11" masteryEffects="" nodes="378,1433,2244" secondaryAscendClassId="nil" treeVersion="0_5">
+			<URL>
+				https://www.pathofexile.com/passive-skill-tree/AAAABgsBAAA=
+			</URL>
+			<WeaponSet2 nodes="1433,2244"/>
+			<Sockets>
+				<Socket itemId="0" nodeId="7960"/>
+			</Sockets>
+			<Overrides>
+				<AttributeOverride dexNodes="" intNodes="1433" strNodes=""/>
+			</Overrides>
+			<FutureElement value="kept"/>
+		</Spec>
+	</Tree>
+	<TreeView searchStr="" showStatDifferences="true" zoomLevel="3" zoomX="0" zoomY="0"/>
+</PathOfBuilding2>

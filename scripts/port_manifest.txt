@@ -3,6 +3,7 @@ builds/parsecache/fingerprint.go    GO-NATIVE  hashes the parser's own source so
 builds/parsecache/store.go          GO-NATIVE  content-addressed on-disk store for parsed builds, keyed by XML SHA-256 plus the parser fingerprint; PoB re-parses every time and has no cache
 builds/parse_over.go                GO-NATIVE  parses an undo step over the open build, reusing the sections whose saved bytes are unchanged; PoB re-parses every undo state (UndoHandler) and has no counterpart
 builds/parser.go                    GO-NATIVE  encoding/xml decoding of the build file into pob.PathOfBuilding; PoB parses XML with its own xml.lua into UI-class tables, so nothing here has a per-function counterpart
+builds/parser_poe2.go               PORT       src/Modules/Build.lua,src/GameVersions.lua
 
 desktop/appimage.go                 GO-NATIVE  Help › Add to applications menu when running from an AppImage; PoB has no installer integration
 desktop/dialogs.go                  GO-NATIVE  GTK file choosers behind host.Dialogs; no PoB analogue
@@ -212,6 +213,10 @@ pob/types_custom.go                 GO-NATIVE  go-pob's own enums (game version,
 pob/types_runtime.go                GO-NATIVE  go-pob's result struct handed to the frontend
 pob/types_saved.go                  GO-NATIVE  Go struct mirror of PoB's build XML schema; the per-field provenance is cited inline and the one method is an encoding/xml unmarshaler
 pob/utils.go                        PORT       src/Classes/ImportTab.lua
+pob2/build.go                       PORT       src/Modules/Build.lua,src/Classes/PassiveSpec.lua
+pob2/codec.go                       GO-NATIVE  reflection codec between xml.lua's node tree and the typed PoE2 build structs, keeping what they do not name; PoB's tabs read the node tables directly
+pob2/types_saved.go                 GO-NATIVE  Go struct mirror of PoB-PoE2's build XML schema; each type cites the tab Load/Save it mirrors
+pob2/xml.go                         GO-NATIVE  a port of runtime/lua/xml.lua (ParseXML / ComposeXML), cited per function with //pob2: markers; the manifest only takes src/ paths, and xml.lua lives outside src/
 
 oracle/tree_ours_dump/main.go       GO-NATIVE  dumps go-pob-data's tree so the two-tree diff can be produced offline; no PoB counterpart by construction
 scripts/pobdata_asset_audit/main.go GO-NATIVE  audits go-pob-data's published assets for a version (does each exist, does each DECODE); a separate Go module so it adds no production dependency, and no PoB analogue
