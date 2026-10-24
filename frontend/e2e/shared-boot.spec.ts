@@ -9,6 +9,7 @@ import { expectedLines } from './support/stats';
 // The harness behind support/test.ts: a test on a page the previous test left clean starts from what a cold boot
 // shows, and a test that changed browser storage hands the next one a fresh page.
 test.describe.configure({ mode: 'serial' });
+test.skip(process.env.E2E_SHARED === '0', 'every test gets a fresh context (E2E_SHARED=0)');
 
 const FILE = '0280-elementalist-fireball';
 
