@@ -152,7 +152,7 @@ testdata/.testdata-tmp/
 !/desktop/dist/.gitkeep
 /desktop/bin/
 
-testdata/corpus-[0-9]*/
-testdata/oracle-[0-9]*/
+testdata/corpus-[0-9]*
+testdata/oracle-[0-9]*
 testdata/corpus-poe2-*
 testdata/oracle-poe2-*
