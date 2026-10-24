@@ -42,7 +42,7 @@ func (d desktopStorage) GetCache(key string) ([]byte, error) {
 		slog.String("key", key),
 	)
 
-	b, err := os.ReadFile(cachePath(key))
+	b, err := readFileRobust(cachePath(key))
 	if err != nil {
 		if os.IsNotExist(err) {
 			return nil, nil
@@ -78,7 +78,7 @@ func (d desktopStorage) SetCache(key string, value []byte) error {
 		return fmt.Errorf("failed to close cache temporary file: %w", err)
 	}
 
-	if err := os.Rename(tmp.Name(), cachePath(key)); err != nil {
+	if err := renameRobust(tmp.Name(), cachePath(key)); err != nil {
 		_ = os.Remove(tmp.Name())
 		return fmt.Errorf("failed to set key on cache: %s: %w", key, err)
 	}

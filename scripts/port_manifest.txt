@@ -233,6 +233,8 @@ scripts/corpus/validate.go          GO-NATIVE  applies the criteria, dedups by c
 
 storage/desktop.go                  GO-NATIVE  filesystem-backed asset cache; PoB has no equivalent layer
 storage/types.go                    GO-NATIVE  the storage interface both build tags implement
+storage/robust_other.go             GO-NATIVE  cache file reads and renames, as the OS does them
+storage/robust_windows.go           GO-NATIVE  cache file reads and renames retried past Windows' transient sharing errors
 storage/wasm.go                     GO-NATIVE  ZenFS/IndexedDB-backed asset cache; PoB has no equivalent layer
 
 utils/data.go                       GO-NATIVE  Ternary/Or/Ptr and friends -- Go stand-ins for Lua's `a or b`, `a and b or c` and implicit nil

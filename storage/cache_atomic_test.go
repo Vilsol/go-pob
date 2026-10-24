@@ -159,7 +159,7 @@ func TestSetCacheIsAtomicAcrossProcesses(t *testing.T) {
 			seen[result]++
 
 			switch result {
-			case "torn", "corrupt":
+			case "torn", "corrupt", "error":
 				t.Errorf("reader process %d observed a %s value: %s", i, result, line)
 			case "hang":
 				t.Errorf("reader process %d blocked forever on a key that exists", i)
