@@ -1,0 +1,14 @@
+{
+  "_note": "The identity of the Path of Building (PoE2) working tree that PoE2 oracle dumps are generated from and that every //pob2: citation resolves against. Verified by `task pob-pin GAME=poe2`. content_sha256 is the ASSERTION and covers the working-tree bytes of every git-tracked file under `scope`. `sha` and `describe` are ADVISORY: the fork commits are fork-local, so a fresh clone replaying them as patches has identical content under different commit objects.",
+  "content_sha256": "308a13ec5c11c78623d455109cd22296c0187bc23072f6a791c637571b23811b",
+  "describe": "v0.23.1-110-g360654ac6",
+  "dirty_when_recorded": false,
+  "file_count": 1679,
+  "remote": "git@github.com:Vilsol/PathOfBuilding-PoE2.git",
+  "scope": [
+    "src",
+    "runtime/lua"
+  ],
+  "scope_note": "src/ is the calculation. runtime/lua/ holds the vendored xml/dkjson/sha1 libraries the dumper loads over LUA_PATH, so it is load-bearing for the oracle too. Tracked files only.",
+  "sha": "360654ac68fd4d714434682882a78ffd513de769"
+}

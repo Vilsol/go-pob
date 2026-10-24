@@ -1,0 +1,3 @@
+function calcs.firstGameSetup(env)
+	env.first = true
+end

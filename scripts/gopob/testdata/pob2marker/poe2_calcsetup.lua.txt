@@ -1,0 +1,7 @@
+-- the second game's setup lives further down
+-- than the first game's does
+--
+
+function calcs.secondGameSetup(env)
+	env.second = true
+end

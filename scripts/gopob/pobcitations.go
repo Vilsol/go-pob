@@ -16,6 +16,7 @@ import (
 
 const (
 	pcDefaultPoBRel       = "PathOfBuilding"
+	pcDefaultPoB2Rel      = "PathOfBuilding-PoE2"
 	pcManifest            = "scripts/port_manifest.txt"
 	pcRefusalExit         = 3
 	pcCitedFloor          = 16
@@ -37,6 +38,7 @@ var pcFuncLineGrandfather = map[string]bool{
 var (
 	pcCiteRE        = regexp.MustCompile(`([A-Za-z][\w.\-]*(?:/[\w.\-]+)*\.lua):(\d+)(?:\s*-\s*(\d+))?`)
 	pcMarkerRE      = regexp.MustCompile(`^\s*//pob:(.+?)\s*$`)
+	pcMarker2RE     = regexp.MustCompile(`^\s*//pob2:(.+?)\s*$`)
 	pcEntryRE       = regexp.MustCompile(`^([\w.\-/]+\.lua)(?::(\d+)(?:-(\d+))?)?$`)
 	pcLuaFunctionRE = regexp.MustCompile(`\bfunction\b`)
 	pcBacktickRE    = regexp.MustCompile("`([^`]+)`")
@@ -95,6 +97,18 @@ func pcGit(dir string, args ...string) (string, bool) {
 		return "", false
 	}
 	return string(out), true
+}
+
+// pcPoB2Dir is the PoE2 pin that every //pob2: marker resolves against; //pob: stays on POB_DIR.
+func pcPoB2Dir() string {
+	if v := os.Getenv("POB2_DIR"); v != "" {
+		return v
+	}
+	home, ok := pyPathHome()
+	if !ok {
+		pcRefuse("cannot resolve the home directory to find the pinned PoE2 PoB")
+	}
+	return pyPathJoin(home, pcDefaultPoB2Rel)
 }
 
 func pcRepoRoot() string {
@@ -365,16 +379,21 @@ type pcCite struct {
 	detail string
 	text   string
 	drift  string
+	pob2   bool
 }
 
 func (c *pcCite) where() string {
+	path := c.path
+	if c.pob2 {
+		path = "pob2:" + path
+	}
 	if c.start < 0 {
-		return c.path
+		return path
 	}
 	if c.start == c.end {
-		return fmt.Sprintf("%s:%d", c.path, c.start)
+		return fmt.Sprintf("%s:%d", path, c.start)
 	}
-	return fmt.Sprintf("%s:%d-%d", c.path, c.start, c.end)
+	return fmt.Sprintf("%s:%d-%d", path, c.start, c.end)
 }
 
 func (c *pcCite) String() string {
@@ -502,6 +521,8 @@ type pcScan struct {
 	cited      map[string]map[int]string
 	attached   map[string]map[int][]int
 	order      []string
+	pob2       string
+	lines2     map[string]int
 }
 
 func pcCollect(repo, pob string) *pcScan {
@@ -523,6 +544,15 @@ func pcCollect(repo, pob string) *pcScan {
 		markerLines := map[int]bool{}
 
 		for _, ct := range comments {
+			if m := pcMarker2RE.FindStringSubmatch(ct.text); m != nil {
+				cs := pcParseMarker(rel, ct.line, m[1])
+				for _, c := range cs {
+					c.pob2 = true
+				}
+				sc.formal = append(sc.formal, cs...)
+				markerLines[ct.line] = true
+				continue
+			}
 			if m := pcMarkerRE.FindStringSubmatch(ct.text); m != nil {
 				sc.formal = append(sc.formal, pcParseMarker(rel, ct.line, m[1])...)
 				markerLines[ct.line] = true
@@ -569,13 +599,21 @@ func pcCollect(repo, pob string) *pcScan {
 	}
 
 	for _, c := range append(append([]*pcCite{}, sc.formal...), sc.informal...) {
-		pcResolve(c, lines, pob)
+		cpob, clines := pob, lines
+		if c.pob2 {
+			if sc.pob2 == "" {
+				sc.pob2 = pcPoB2Dir()
+				sc.lines2 = pcIndexPoB(sc.pob2)
+			}
+			cpob, clines = sc.pob2, sc.lines2
+		}
+		pcResolve(c, clines, cpob)
 		if (c.status == "OK" || c.status == "EMPTY") && c.start >= 0 && c.text != "" {
 			var bestTok string
 			var bestNear, bestHits int
 			have := false
 			for _, tok := range pcDriftTokens(c.text) {
-				inside, near, hits := pcFindToken(pob, c.path, tok, c.start, c.end)
+				inside, near, hits := pcFindToken(cpob, c.path, tok, c.start, c.end)
 				if !inside && (!have || hits < bestHits) {
 					bestTok, bestNear, bestHits, have = tok, near, hits, true
 				}
@@ -657,7 +695,11 @@ func pcFuncLineFailures(pob string, sc *pcScan) []pcFLFail {
 			}
 			ok := false
 			for _, c := range ranged {
-				if pcLuaRangeHasFunction(pob, c.path, c.start, c.end) {
+				cpob := pob
+				if c.pob2 {
+					cpob = sc.pob2
+				}
+				if pcLuaRangeHasFunction(cpob, c.path, c.start, c.end) {
 					ok = true
 					break
 				}
@@ -981,6 +1023,9 @@ func pobCitations(args []string) int {
 	}
 
 	fmt.Printf("PoB checkout: %s\n", pob)
+	if sc.pob2 != "" {
+		fmt.Printf("PoE2 PoB checkout (//pob2:): %s\n", sc.pob2)
+	}
 	fmt.Println()
 	fmt.Println("=== MARKERS  //pob:<path>[:range] ===")
 	fmt.Printf("  %d citation(s) on %d symbol(s), %d whole-file marker(s), across %d file(s)\n",
@@ -1194,6 +1239,9 @@ func pobCitations(args []string) int {
 	fail := 0
 	if len(broken) > 0 {
 		fmt.Printf("FAIL: %d marker(s) do not resolve against %s\n", len(broken), pob)
+		if sc.pob2 != "" {
+			fmt.Printf("      (//pob2: markers resolve against %s)\n", sc.pob2)
+		}
 		fail = 1
 	}
 	if nCited < pcCitedFloor {

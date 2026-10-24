@@ -8,6 +8,8 @@ env:
 vars:
   POB_DEFAULT:
     sh: 'realpath "$(git rev-parse --git-common-dir)/../../PathOfBuilding" 2>/dev/null || echo ../PathOfBuilding'
+  POB2_DEFAULT:
+    sh: 'realpath "$(git rev-parse --git-common-dir)/../../PathOfBuilding-PoE2" 2>/dev/null || echo ../PathOfBuilding-PoE2'
   GOPOB: 'go run {{.ROOT_DIR}}/scripts/gopob'
   NICE: '{{.GOPOB}} nice'
 
@@ -680,17 +682,18 @@ tasks:
       - '{{.NICE}} go run ./scripts/gopob fold-progress'
 
   pob-pin:
-    desc: "Assert the pinned PoB checkout is the exact tree the oracle was built from (RECORD=1 to re-record)"
+    desc: "Assert the pinned PoB checkout is the exact tree the oracle was built from (RECORD=1 to re-record, GAME=poe2 for the PoE2 pin)"
     vars:
       POB_DIR: '{{.POB_DIR | default .POB_DEFAULT}}'
+      POB2_DIR: '{{.POB2_DIR | default .POB2_DEFAULT}}'
     cmds:
-      - 'env POB_DIR={{.POB_DIR}} {{.GOPOB}} pob-pin {{if .RECORD}}--record{{end}}{{if .SELFTEST}} --selftest{{end}}'
+      - 'env POB_DIR={{.POB_DIR}} POB2_DIR={{.POB2_DIR}} {{.GOPOB}} pob-pin {{if .RECORD}}--record{{end}}{{if .SELFTEST}} --selftest{{end}}{{if .GAME}} --game {{.GAME}}{{end}}'
 
   citations:
     desc: "Verify every //pob: citation resolves and cites a Lua function line, and report coverage over the PORT files (REPORT=1 to never fail, SELFTEST=1 to prove the checks can fail)"
     cmds:
-      - 'env REPORT={{.REPORT | default ""}} POB_DIR={{.POB_DIR | default .POB_DEFAULT}} {{.GOPOB}} pob-citations'
-      - 'env SWEEP=1 POB_DIR={{.POB_DIR | default .POB_DEFAULT}} {{.GOPOB}} citation-audit {{if .SELFTEST}}--selftest{{end}}'
+      - 'env REPORT={{.REPORT | default ""}} POB_DIR={{.POB_DIR | default .POB_DEFAULT}} POB2_DIR={{.POB2_DIR | default .POB2_DEFAULT}} {{.GOPOB}} pob-citations'
+      - 'env SWEEP=1 POB_DIR={{.POB_DIR | default .POB_DEFAULT}} POB2_DIR={{.POB2_DIR | default .POB2_DEFAULT}} {{.GOPOB}} citation-audit {{if .SELFTEST}}--selftest{{end}}'
 
   stat-ratios:
     desc: "Cluster one stat's got/PoB ratio across the corpus — STAT=MainHand.PhysicalMinBase (PRECISION, MEMBERS)"
@@ -801,7 +804,7 @@ tasks:
   citations-audit:
     desc: "Print the first+last Lua line of every //pob: range in a file — FILE=calculator/item.go [CONTEXT=2]"
     cmds:
-      - 'env FILE={{.FILE}} CONTEXT={{.CONTEXT | default "0"}} POB_DIR={{.POB_DIR | default .POB_DEFAULT}} {{.GOPOB}} citation-audit'
+      - 'env FILE={{.FILE}} CONTEXT={{.CONTEXT | default "0"}} POB_DIR={{.POB_DIR | default .POB_DEFAULT}} POB2_DIR={{.POB2_DIR | default .POB2_DEFAULT}} {{.GOPOB}} citation-audit'
 
   corpus-grep:
     desc: "How many corpus builds contain a mod line — PATTERN='...' or PATTERNS_FILE=<one per line, from the repo root> (one corpus pass, a block per pattern) [LUA=1] [NAMES=1]"
@@ -814,9 +817,12 @@ tasks:
       - '{{.NICE}} env PREDICATE=true CORPUS=true go test ./calculator/ -run TestCorpusPredicate -v -count=1'
 
   port-diff:
-    desc: "OUR Go beside the PINNED PoB's Lua — NAME=<modName> | SYMBOL= | FUNC= | LUA= | GREP="
+    desc: "OUR Go beside the PINNED PoB's Lua — NAME=<modName> | SYMBOL= | FUNC= | LUA= | GREP= (a pob2: value prefix reads the PoE2 pin)"
+    vars:
+      POB: '{{.POB_DIR | default .POB_DEFAULT}}'
+      POB2: '{{.POB2_DIR | default .POB2_DEFAULT}}'
     cmds:
-      - 'env NAME="{{.NAME | default ""}}" SYMBOL="{{.SYMBOL | default ""}}" FUNC="{{.FUNC | default ""}}" LUA="{{.LUA | default ""}}" GREP=''{{.GREP | default ""}}'' CONTEXT="{{.CONTEXT | default "6"}}" MAX_HITS="{{.MAX_HITS | default "8"}}" POB_DIR="{{.POB_DIR | default .POB_DEFAULT}}" {{.GOPOB}} port-diff'
+      - 'env NAME="{{.NAME | default ""}}" SYMBOL="{{.SYMBOL | default ""}}" FUNC="{{.FUNC | default ""}}" LUA="{{.LUA | default ""}}" GREP=''{{.GREP | default ""}}'' CONTEXT="{{.CONTEXT | default "6"}}" MAX_HITS="{{.MAX_HITS | default "8"}}" POB_DIR="{{.POB}}" POB2_DIR="{{.POB2}}" {{.GOPOB}} port-diff'
 
   residual-matrix:
     desc: "Dump the FULL (build,stat) mismatch matrix in one corpus pass — OUT=<file>"

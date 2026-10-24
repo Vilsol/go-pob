@@ -656,12 +656,17 @@ func pySplitKeepEnds(s string) []string {
 
 func pbdLoadCites(repo string, pin *pbdCheckout) []*pcCite {
 	sc := pcCollect(repo, pin.path)
-	var broken []*pcCite
+	var broken, formal []*pcCite
 	for _, c := range sc.formal {
+		if c.pob2 {
+			continue
+		}
+		formal = append(formal, c)
 		if c.status != "OK" {
 			broken = append(broken, c)
 		}
 	}
+	sc.formal = formal
 	if len(broken) > 0 {
 		pbdRefuse(fmt.Sprintf("%d of %d marker(s) do not resolve against the PIN %s.\n"+
 			"  The pin is wrong, or the tree is. Fix `mise run citations` first -- every\n"+

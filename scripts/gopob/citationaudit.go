@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	reAuditMarker = regexp.MustCompile(`//pob:(block:)?(.+?)\s*$`)
+	reAuditMarker = regexp.MustCompile(`//pob(2)?:(block:)?(.+?)\s*$`)
 	reAuditRange  = regexp.MustCompile(`^(src/[^\s:,]+?\.lua):([1-9][0-9]*)(?:-([1-9][0-9]*))?$`)
 	reCloser      = regexp.MustCompile(`^\s*(end\b|end\)|end,|end;|until\b)`)
 	reComment     = regexp.MustCompile(`^\s*--`)
@@ -45,6 +45,18 @@ func danglingTail(lines []string, end int) string {
 type auditCtx struct {
 	pob   string
 	cache map[string][]string
+	poe2  *auditCtx
+}
+
+// pin is the checkout a marker resolves against: //pob2: on the PoE2 pin, //pob: on POB_DIR.
+func (a *auditCtx) pin(m []string) *auditCtx {
+	if m[1] == "" {
+		return a
+	}
+	if a.poe2 == nil {
+		a.poe2 = &auditCtx{pob: pcPoB2Dir(), cache: map[string][]string{}}
+	}
+	return a.poe2
 }
 
 func (a *auditCtx) luaLines(path string) []string {
@@ -125,7 +137,7 @@ func auditSweep(a *auditCtx, repo string) int {
 			if m == nil {
 				continue
 			}
-			for _, spec := range strings.Split(m[2], ",") {
+			for _, spec := range strings.Split(m[3], ",") {
 				rm := reAuditRange.FindStringSubmatch(strings.TrimSpace(spec))
 				if rm == nil {
 					continue
@@ -136,9 +148,12 @@ func auditSweep(a *auditCtx, repo string) int {
 				if rm[3] != "" {
 					end, _ = strconv.Atoi(rm[3])
 				}
-				lines := a.luaLines(path)
+				lines := a.pin(m).luaLines(path)
 				if lines == nil || start < 1 || start > len(lines) {
 					continue
+				}
+				if m[1] != "" {
+					path = "pob2:" + path
 				}
 				total++
 				first := lines[start-1]
@@ -191,7 +206,7 @@ func auditOne(a *auditCtx, gofile string, ctx int) int {
 		if m == nil {
 			continue
 		}
-		for _, spec := range strings.Split(m[2], ",") {
+		for _, spec := range strings.Split(m[3], ",") {
 			spec = strings.TrimSpace(spec)
 			rm := reAuditRange.FindStringSubmatch(spec)
 			if rm == nil {
@@ -204,15 +219,18 @@ func auditOne(a *auditCtx, gofile string, ctx int) int {
 			if rm[3] != "" {
 				end, _ = strconv.Atoi(rm[3])
 			}
-			lines := a.luaLines(path)
+			lines := a.pin(m).luaLines(path)
 			seen++
 			blockPrefix := ""
 			if m[1] != "" {
-				blockPrefix = "block:"
+				blockPrefix = "pob2:"
+			}
+			if m[2] != "" {
+				blockPrefix += "block:"
 			}
 			fmt.Printf("\n%s:%d  %s%s:%d-%d\n", gofile, i+1, blockPrefix, path, start, end)
 			if lines == nil {
-				fmt.Printf("    !! file not found under %s\n", a.pob)
+				fmt.Printf("    !! file not found under %s\n", a.pin(m).pob)
 				flagged++
 				continue
 			}

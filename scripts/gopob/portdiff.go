@@ -25,7 +25,7 @@ const pdUsage = `Show OUR Go and the PINNED PoB's Lua for the same thing, side b
     task port-diff GREP='output%.Rage'          # FIND it in the Lua when you do not know the range`
 
 var (
-	pdMarker = regexp.MustCompile(`//pob:(block:)?(.+?)\s*$`)
+	pdMarker = regexp.MustCompile(`//pob(2)?:(block:)?(.+?)\s*$`)
 	pdRange  = regexp.MustCompile(`^(src/[^\s:,]+?\.lua):(\d+)(?:-(\d+))?$`)
 	pdGoFunc = regexp.MustCompile(`^func (?:\([^)]*\)\s*)?([A-Za-z_][A-Za-z0-9_]*)\(`)
 )
@@ -115,7 +115,7 @@ func pdCitationAbove(lines []string, idx int) [][3]any {
 		if m == nil {
 			continue
 		}
-		for _, spec := range strings.Split(m[2], ",") {
+		for _, spec := range strings.Split(m[3], ",") {
 			rm := pdRange.FindStringSubmatch(strings.TrimSpace(spec))
 			if rm == nil {
 				continue
@@ -125,7 +125,11 @@ func pdCitationAbove(lines []string, idx int) [][3]any {
 			if rm[3] != "" {
 				en, _ = strconv.Atoi(rm[3])
 			}
-			out = append(out, [3]any{rm[1], s, en})
+			path := rm[1]
+			if m[1] != "" {
+				path = "pob2:" + path
+			}
+			out = append(out, [3]any{path, s, en})
 		}
 	}
 	return out
@@ -181,10 +185,14 @@ func pdByFunc(e *pdEnv, name string) error {
 			continue
 		}
 		for _, c := range cites {
-			lua := filepath.Join(e.pob, c[0].(string))
+			pob, rel := e.pob, c[0].(string)
+			if after, ok := strings.CutPrefix(rel, "pob2:"); ok {
+				pob, rel = pcPoB2Dir(), after
+			}
+			lua := filepath.Join(pob, rel)
 			if _, err := os.Stat(lua); err != nil {
 				fmt.Printf("\n  ⚠️ cited %s does not exist under %s — the pin may be wrong "+
-					"(run `task pob-pin`).\n", c[0].(string), e.pob)
+					"(run `task pob-pin`).\n", rel, pob)
 				continue
 			}
 			if err := pdShow(e, lua, c[1].(int), c[2].(int), "PoB (cited)"); err != nil {
@@ -583,6 +591,13 @@ func pdMain() error {
 
 	sym, fn, lua := os.Getenv("SYMBOL"), os.Getenv("FUNC"), os.Getenv("LUA")
 	grep, name := os.Getenv("GREP"), os.Getenv("NAME")
+	// A value written like a //pob2: marker payload ("pob2:src/...") reads the PoE2 pin.
+	for _, v := range []*string{&sym, &lua, &grep, &name} {
+		if after, ok := strings.CutPrefix(*v, "pob2:"); ok {
+			*v, pob = after, pcPoB2Dir()
+			e.pob = pob
+		}
+	}
 	given := 0
 	for _, v := range []string{sym, fn, lua, grep, name} {
 		if v != "" {

@@ -60,7 +60,10 @@ func ppRepoRoot() string {
 	return wd
 }
 
-func ppRecordPath() string { return pyPathJoin(ppRepoRoot(), "scripts", "pob_pin.json") }
+// ppRecordName is the pin record for the game being checked: PoE1 unless --game poe2.
+var ppRecordName = "pob_pin.json"
+
+func ppRecordPath() string { return pyPathJoin(ppRepoRoot(), "scripts", ppRecordName) }
 
 func ppTrackedFiles(pob string, scope []string) ([]string, error) {
 	args := append([]string{"-C", pob, "ls-files", "-z", "--"}, scope...)
@@ -87,12 +90,20 @@ func ppTrackedFiles(pob string, scope []string) ([]string, error) {
 }
 
 func ppContentHash(root string, files []string) (string, error) {
+	return ppContentHashTampered(root, files, "")
+}
+
+// ppContentHashTampered hashes as if one more byte were appended to the file `tamper`.
+func ppContentHashTampered(root string, files []string, tamper string) (string, error) {
 	h := sha256.New()
 	for _, rel := range files {
 		full := pyPathJoin(root, rel)
 		blob, err := os.ReadFile(full) //nolint:gosec // a git-tracked path inside the checkout
 		if err != nil {
 			return "", ppRefuseErr(ppUnreadable, "cannot read %s: %s", full, ppOSErr(full, err))
+		}
+		if rel == tamper {
+			blob = append(blob, ' ')
 		}
 		h.Write([]byte(rel))
 		h.Write([]byte(fmt.Sprintf("\x00%d\x00", len(blob))))
@@ -349,14 +360,34 @@ func ppDoRecord(pob string) (int, error) {
 }
 
 func pobPin(args []string) int {
-	for _, a := range args {
-		if a == "--selftest" {
-			return ppSelftest()
-		}
-	}
 	pobDir := os.Getenv("POB_DIR")
 	if pobDir == "" {
 		pobDir = pyExpandUser("~/PathOfBuilding")
+	}
+	game := ""
+	for i, a := range args {
+		if a == "--game" && i+1 < len(args) {
+			game = args[i+1]
+		}
+	}
+	switch game {
+	case "", "poe1":
+	case "poe2":
+		ppRecordName = "pob_pin_poe2.json"
+		if pobDir = os.Getenv("POB2_DIR"); pobDir == "" {
+			pobDir = pyExpandUser("~/" + pcDefaultPoB2Rel)
+		}
+	default:
+		fmt.Printf("REFUSING (NO-RECORD): --game %s is not poe1 or poe2\n", pyRepr(game))
+		return ppNoRecord
+	}
+	for _, a := range args {
+		if a == "--selftest" {
+			if game == "" {
+				return ppSelftest("")
+			}
+			return ppSelftest(pobDir)
+		}
 	}
 	record := false
 	for _, a := range args {
@@ -389,8 +420,10 @@ func pobPin(args []string) int {
 	return code
 }
 
-func ppSelftest() int {
-	bad := 0
+// ppSelftest proves the checks can fail; given a checkout (--game), it also proves that
+// checkout's own record catches a one-byte change to one of its tracked files.
+func ppSelftest(pin string) int {
+	bad, total := 0, 9
 	report := func(name string, ok bool, want, got string) {
 		if !ok {
 			bad++
@@ -471,7 +504,15 @@ func ppSelftest() int {
 	report("an empty tracked set refuses rather than hashing nothing", emptyCode == ppUnreadable,
 		"UNREADABLE", ppCodeName(emptyCode))
 
-	fmt.Printf("\nSELFTEST: %d of %d checks behave as declared\n", 9-bad, 9)
+	if pin != "" {
+		total += 2
+		got, want, tampered := ppSelftestPin(pin)
+		report("the recorded checkout matches its record", got == want, "matches", ppShort(got))
+		report("one tampered byte in a tracked file moves the hash", tampered != "" && tampered != want,
+			"differs", ppShort(tampered))
+	}
+
+	fmt.Printf("\nSELFTEST: %d of %d checks behave as declared\n", total-bad, total)
 	if bad > 0 {
 		return 1
 	}
@@ -483,4 +524,31 @@ func ppCodeName(code int) string {
 		ppOK: "OK", ppMismatch: "MISMATCH", ppNoCheckout: "NO-CHECKOUT",
 		ppNotACheckout: "NOT-A-CHECKOUT", ppUnreadable: "UNREADABLE", ppNoRecord: "NO-RECORD",
 	}[code]
+}
+
+func ppSelftestPin(pin string) (string, string, string) {
+	pob, err := ppLocate(pin)
+	if err != nil {
+		return err.Error(), "", ""
+	}
+	rec, err := ppLoadRecord()
+	if err != nil {
+		return err.Error(), "", ""
+	}
+	files, got, err := ppMeasure(pob, ppScope(rec))
+	if err != nil {
+		return err.Error(), "", ""
+	}
+	tampered, err := ppContentHashTampered(pob, files, files[len(files)/2])
+	if err != nil {
+		return got, oeStr(rec["content_sha256"]), ""
+	}
+	return got, oeStr(rec["content_sha256"]), tampered
+}
+
+func ppShort(s string) string {
+	if len(s) > 16 {
+		return s[:16]
+	}
+	return s
 }

@@ -1,0 +1,7 @@
+package calculator
+
+//pob:src/Modules/CalcSetup.lua:1-3
+func SetupFirstGame() {}
+
+//pob2:src/Modules/CalcSetup.lua:5-7
+func SetupSecondGame() {}
