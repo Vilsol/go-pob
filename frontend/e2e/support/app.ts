@@ -2,7 +2,7 @@ import { expect, type Page } from '@playwright/test';
 
 import { DATA_HOST, cachedAsset } from './data_cache';
 import { PERF, record } from './perf';
-import { routeTreeAssets } from './tree_assets';
+import { isTreeAsset, routeTreeAssets, treeAssetFailure } from './tree_assets';
 import { diffLines, type StatLine } from './stats';
 import { sharedBoot, storageFingerprint, type Pristine } from './test';
 
@@ -46,6 +46,7 @@ export class App {
     const pristine = sharedBoot.pristine(page);
     // a reused page keeps its context's routes, which report to the App of the test now running
     App.current.set(page, app);
+    sharedBoot.errors(page, app.errors);
 
     if (pristine === undefined) {
       await page.context().route(`${DATA_HOST}**`, async (route) => {
@@ -71,7 +72,9 @@ export class App {
       if (process.env.E2E_DEBUG === '1') console.log(`[browser ${m.type()}] ${m.text().slice(0, 300)}`);
       if (m.type() !== 'error') return;
       if (m.text().startsWith('Failed to load resource') && app.served404.has(m.location().url)) return;
-      const what = m.text().startsWith('Failed to load resource') ? ` (${m.location().url})` : '';
+      const url = m.location().url;
+      const harness = treeAssetFailure(url) ?? (isTreeAsset(url) ? 'the harness did not abort it, so the browser or the service worker failed it' : undefined);
+      const what = m.text().startsWith('Failed to load resource') ? ` (${url}${harness ? `; ${harness}` : ''})` : '';
       app.errors.push(`console.error: ${m.text().slice(0, 500)}${what}`);
     });
     page.on('pageerror', (e) => app.errors.push(`pageerror: ${e.message.slice(0, 500)}`));

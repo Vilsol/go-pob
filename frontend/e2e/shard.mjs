@@ -31,12 +31,13 @@ export const testKey = (t) => [t.file, ...t.titles].join(SEP);
 
 // the lines a shard's --test-list can hold, each with the tests it selects. A line matches every test whose title path
 // starts with it, and it splits on '›', so a test with '›' in a title goes under the titles before that one, and a
-// line that is a prefix of another takes that one's tests with it.
-export function units(tests) {
+// line that is a prefix of another takes that one's tests with it. A serial file's tests depend on running in order on
+// one worker, so the file is one line.
+export function units(tests, serial = new Set()) {
   const lines = new Map();
   for (const t of tests) {
     const cut = t.titles.findIndex((x) => x.includes('›'));
-    const line = [t.file, ...(cut < 0 ? t.titles : t.titles.slice(0, cut))].join(SEP);
+    const line = serial.has(t.file) ? t.file : [t.file, ...(cut < 0 ? t.titles : t.titles.slice(0, cut))].join(SEP);
     lines.set(line, [...(lines.get(line) ?? []), testKey(t)]);
   }
   const out = new Map();
@@ -91,7 +92,9 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   if (cmd === 'plan') {
     const [i, n] = (arg ?? '').split('/').map(Number);
     if (!(Number.isInteger(i) && Number.isInteger(n) && i >= 1 && i <= n) || !file) throw new Error('usage: shard.mjs plan <i>/<n> <file>');
-    const { shards, unknown } = plan(units(listTests()), readDurations(), n);
+    const tests = listTests();
+    const serial = new Set(tests.map((t) => t.file).filter((f) => /mode:\s*'serial'/.test(readFileSync(join(FRONTEND, 'e2e', f), 'utf8'))));
+    const { shards, unknown } = plan(units(tests, serial), readDurations(), n);
     shards.forEach((s, j) => console.error(`shard ${j + 1}/${n}: ${s.tests} tests, ~${Math.round(s.seconds / 60)} min of test time`));
     if (unknown.length) console.error(`${unknown.length} tests have no recorded duration and count as the median (task e2e-durations records them)`);
     mkdirSync(dirname(resolve(file)), { recursive: true });

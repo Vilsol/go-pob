@@ -16,9 +16,10 @@ const ITEM_ART_PATTERN = /^https:\/\/web\.poecdn\.com\//;
 // a 1×1 transparent PNG: item and gem icons load without reaching the CDN
 const ITEM_ART = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==', 'base64');
 
-const failed = new Set<string>();
+// url -> why the harness could not serve it, so a page's net::ERR_FAILED names its cause
+const failed = new Map<string, string>();
 
-const localCopy = async (url: string): Promise<{ file: string; type: string } | undefined> => {
+const localCopy = async (url: string): Promise<{ file: string; type: string } | string> => {
   const file = resolve(DIR, createHash('sha256').update(url).digest('hex'));
   if (existsSync(file)) return { file, type: existsSync(`${file}.type`) ? readFileSync(`${file}.type`, 'utf8') : '' };
   for (let attempt = 1; ; attempt++) {
@@ -32,8 +33,8 @@ const localCopy = async (url: string): Promise<{ file: string; type: string } | 
       writeFileSync(`${file}.type`, type);
       renameSync(tmp, file);
       return { file, type };
-    } catch {
-      if (attempt === 5) return undefined;
+    } catch (e) {
+      if (attempt === 5) return `the harness could not fetch it after ${attempt} attempts: ${String(e)}`;
       await new Promise((r) => setTimeout(r, 1_000 * attempt));
     }
   }
@@ -45,8 +46,8 @@ export const routeTreeAssets = async (page: Page) => {
     const url = route.request().url();
     const type = url.endsWith('.png') ? 'image/png' : url.endsWith('.webp') ? 'image/webp' : 'image/jpeg';
     const copy = await localCopy(url);
-    if (!copy) {
-      failed.add(url);
+    if (typeof copy === 'string') {
+      failed.set(url, copy);
       return route.abort();
     }
     return route.fulfill({ status: 200, body: readFileSync(copy.file), headers: { 'access-control-allow-origin': '*', 'content-type': type } });
@@ -54,12 +55,13 @@ export const routeTreeAssets = async (page: Page) => {
   await page.context().route(isFontAsset, async (route) => {
     const url = route.request().url();
     const copy = await localCopy(url);
-    if (!copy) {
-      failed.add(url);
+    if (typeof copy === 'string') {
+      failed.set(url, copy);
       return route.abort();
     }
     return route.fulfill({ status: 200, body: readFileSync(copy.file), headers: { 'access-control-allow-origin': '*', 'content-type': copy.type } });
   });
 };
 
-export const treeAssetsFailed = () => [...failed];
+export const treeAssetsFailed = () => [...failed.keys()];
+export const treeAssetFailure = (url: string) => failed.get(url);

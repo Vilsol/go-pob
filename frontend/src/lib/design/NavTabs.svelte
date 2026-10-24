@@ -29,7 +29,8 @@
     const tab = tabs.find((x) => x.key === digit);
     if (!tab) return;
     e.preventDefault();
-    onnavigate(tab, e);
+    // Build.lua:442-458: the open page's button is locked
+    if (tab.href !== current) onnavigate(tab, e);
   }
 
   let nav: HTMLElement;
@@ -54,7 +55,11 @@
         ? ['flex h-14 min-w-0 flex-1 items-center justify-center text-12 no-underline', t.href === current ? 'font-semibold text-accent' : 'text-text-2']
         : ['tab', tabClass]}
       aria-current={t.href === current ? 'page' : undefined}
-      onclick={(e) => onnavigate?.(t, e)}
+      onclick={(e) => {
+        // a plain click on the open page's tab would navigate to it again, and the navigation moves the focus
+        if (variant === 'underline' && t.href === current && e.button === 0 && !e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey) e.preventDefault();
+        else onnavigate?.(t, e);
+      }}
       onkeydown={onnavkey}>
       {t.label}{#if t.key}<span class={['tab-key', keyClass]}>{t.key}</span>{/if}
     </a>

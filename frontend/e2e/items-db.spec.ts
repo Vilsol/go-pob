@@ -123,7 +123,10 @@ test('Equip, Add, open and the tooltip of a DB item (0280)', async ({ page }) =>
   expect(items()).toBe(n + 1);
   await list.getByRole('button', { name: `Add ${name}` }).click();
   await page.getByRole('tablist', { name: 'Item views' }).getByRole('tab', { name: 'Stash' }).click();
-  await expect(page.getByRole('table', { name: 'Stash' }).getByRole('button', { name: "Kaom's Heart", exact: true })).toHaveCount(1);
+  // the equipped one and the added one; a count of 1 only held until the Add landed
+  const kaoms = go.fresh(build, (b) => b.Items.Items.filter((i) => i.Text.split('\n').some((l) => l.trim() === "Kaom's Heart")).length);
+  expect(kaoms).toBe(2);
+  await expect(page.getByRole('table', { name: 'Stash' }).getByRole('button', { name: "Kaom's Heart", exact: true })).toHaveCount(kaoms);
 
   // ItemsTab.lua:4748-4794
   await page.getByRole('tablist', { name: 'Item views' }).getByRole('tab', { name: 'Browse items' }).click();

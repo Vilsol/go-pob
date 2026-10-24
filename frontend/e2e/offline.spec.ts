@@ -288,3 +288,27 @@ test('a chunk the host answers with the HTML shell is a 404, and not kept', asyn
   }, gone);
   expect(got).toEqual({ status: 404, kept: false });
 });
+
+test('a tree image the full storage cannot keep still loads', async ({ page, context, baseURL }) => {
+  for (const host of [DATA_HOST]) await context.route(`${host}**`, (route) => route.abort());
+  await page.goto(`${BASE}/`);
+  await page.evaluate(() => navigator.serviceWorker.ready.then(() => undefined));
+  await expect.poll(() => page.evaluate(() => !!navigator.serviceWorker.controller), { timeout: 120_000 }).toBe(true);
+  const art = `${DATA_HOST}data/3.29/raw/Art/2DArt/BaseClassIllustrations/Full.png`;
+  expect(isTreeAsset(art)).toBe(true);
+  await context.route(art, (route) =>
+    route.fulfill({ status: 200, body: Buffer.alloc(2_000_000), headers: { 'access-control-allow-origin': '*', 'content-type': 'image/png' } })
+  );
+  const usage = await page.evaluate(async () => (await navigator.storage.estimate()).usage ?? 0);
+  const cdp = await context.newCDPSession(page);
+  await cdp.send('Storage.overrideQuotaForOrigin', { origin: new URL(baseURL!).origin, quotaSize: usage + 100_000 });
+  const got = await page.evaluate(async (url) => {
+    try {
+      const res = await fetch(url, { mode: 'cors' });
+      return { status: res.status, bytes: (await res.arrayBuffer()).byteLength };
+    } catch (e) {
+      return { error: String(e) };
+    }
+  }, art);
+  expect(got).toEqual({ status: 200, bytes: 2_000_000 });
+});

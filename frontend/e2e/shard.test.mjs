@@ -43,3 +43,11 @@ test('the log gives each result its duration, without the tags the reporter prin
     'w.spec.ts › workers › at 1, 2 and 4': 0
   });
 });
+
+test("a serial file's tests stay on one line, so one shard runs them in order", () => {
+  const u = units([t('s.spec.ts', 'first'), t('s.spec.ts', 'second'), t('a.spec.ts', 'other')], new Set(['s.spec.ts']));
+  expect([...u]).toEqual([
+    ['s.spec.ts', ['s.spec.ts › first', 's.spec.ts › second']],
+    ['a.spec.ts › other', ['a.spec.ts › other']]
+  ]);
+});

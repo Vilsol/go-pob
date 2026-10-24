@@ -75,6 +75,26 @@ test('change class, then ascendancy', { tag: '@smoke' }, async ({ page }) => {
 
 // Build.lua:285-299
 // Build.lua:1093-1138, PassiveSpec.lua:619-655
+// Build.lua:442-458: the open page's button is locked, so clicking its tab neither navigates nor takes the focus away
+test('clicking the open page’s tab starts no navigation; another tab’s does', async ({ page }) => {
+  const app = await App.open(page, 'new build');
+  await expect(page).toHaveURL(/\/tree$/);
+  await page.evaluate(() => {
+    const w = window as unknown as { __navigations: string[]; navigation: EventTarget };
+    w.__navigations = [];
+    w.navigation.addEventListener('navigate', (e) =>
+      w.__navigations.push(new URL((e as unknown as { destination: { url: string } }).destination.url).pathname)
+    );
+  });
+  const tabs = page.getByRole('navigation', { name: 'Build pages' });
+  await tabs.getByRole('link', { name: 'Tree' }).click();
+  await expect(tabs.getByRole('link', { name: 'Tree' })).toBeFocused();
+  await tabs.getByRole('link', { name: 'Notes' }).click();
+  await expect(page).toHaveURL(/\/notes$/);
+  expect(await page.evaluate(() => (window as unknown as { __navigations: string[] }).__navigations.map((p) => p.split('/').at(-1)))).toEqual(['notes']);
+  app.assertNoErrors();
+});
+
 test('choose a bloodline, then none', async ({ page }) => {
   const { app, build, want } = await open(page, '0037-ascendant-fire-trap-of-blasting-2');
   await app.openBuildControls();

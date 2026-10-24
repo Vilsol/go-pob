@@ -105,8 +105,13 @@ const keepCdn = async (urls: string[]): Promise<string[]> => {
   for (const url of urls) {
     if (!isCdnAsset(new URL(url)) || (await cache.match(url))) continue;
     const res = await fetch(url, { mode: 'cors' }).catch(() => undefined);
-    if (res?.ok) await cache.put(url, res);
-    else missing.push(url);
+    const kept =
+      res?.ok &&
+      (await cache.put(url, res).then(
+        () => true,
+        () => false
+      ));
+    if (!kept) missing.push(url);
   }
   return missing;
 };
@@ -129,7 +134,9 @@ const cacheFirst = async (cacheName: string, request: Request, key: Request | st
   if (hit) await cache?.delete(key);
   const res = await fetch(request);
   if (misrouted(path, res)) return notFound();
-  if (cache && (res.ok || res.type === 'opaque')) await cache.put(key, res.clone());
+  // a full storage keeps nothing more, but the response still reaches the page
+  if (cache && (res.ok || res.type === 'opaque'))
+    await cache.put(key, res.clone()).catch((e: unknown) => console.warn('service worker: not cached', request.url, e));
   return res;
 };
 

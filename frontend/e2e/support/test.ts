@@ -8,12 +8,15 @@ import { RESULTS_DIR } from './perf';
 // through the app (Back to builds, New build) instead of reloading. After each test the page is kept only if the test
 // passed and left nothing behind (`leftovers`); otherwise the next test boots a fresh context. Specs that need a cold
 // boot (load, offline, service worker, persistence across reload, init scripts, their own viewport, context routes)
-// import `@playwright/test` instead. E2E_SHARED=0 (CI) gives every test a fresh context.
+// import `@playwright/test` instead. E2E_SHARED=0 (CI) gives every test a fresh context. E2E_QUOTA=<bytes> caps the
+// app origin's storage quota in each context, as a small disk or a low-memory runner does.
 
 type Shared = { context?: BrowserContext; page?: Page; hasTouch?: boolean };
 export type Pristine = { storage: string; title: string; workers: number };
 
 const booted = new WeakMap<Page, Pristine>();
+// the console errors and page errors App.open collects for the test running on a page
+const pageErrors = new WeakMap<Page, string[]>();
 
 export const storageFingerprint = (page: Page): Promise<string> =>
   page.evaluate(async () => {
@@ -63,6 +66,7 @@ export const storageFingerprint = (page: Page): Promise<string> =>
   });
 
 export const sharedBoot = {
+  errors: (page: Page, errors: string[]) => pageErrors.set(page, errors),
   // what App.open saw right after this page's first New build, or undefined on a page that has not booted
   pristine: (page: Page) => booted.get(page),
   booted: async (page: Page) => {
@@ -116,6 +120,11 @@ export const test = base.extend<object, { shared: Shared }>({
       // the options Playwright's own context fixture would pass for this config
       shared.context = await browser.newContext({ viewport, baseURL, locale, colorScheme, reducedMotion, acceptDownloads, serviceWorkers, hasTouch });
       shared.page = await shared.context.newPage();
+      if (process.env.E2E_QUOTA) {
+        const cdp = await shared.context.newCDPSession(shared.page);
+        await cdp.send('Storage.overrideQuotaForOrigin', { origin: new URL(baseURL!).origin, quotaSize: Number(process.env.E2E_QUOTA) });
+        await cdp.detach();
+      }
       shared.hasTouch = hasTouch;
     }
     const page = shared.page;
@@ -123,6 +132,16 @@ export const test = base.extend<object, { shared: Shared }>({
     await use(page);
 
     const failed = testInfo.status !== testInfo.expectedStatus;
+    // a failed assertion often names a symptom; what the page logged names the cause
+    const logged = pageErrors.get(page) ?? [];
+    if (failed && logged.length) console.log(`errors the page logged before "${testInfo.title}" failed:\n${logged.join('\n')}`);
+    // the origin's storage use: a page reused by many tests fills it, and a full storage refuses writes
+    const storage = await page
+      .evaluate(async () => {
+        const { usage = 0, quota = 0 } = await navigator.storage.estimate();
+        return `storage ${(usage / 2 ** 20).toFixed(0)} of ${(quota / 2 ** 20).toFixed(0)} MB`;
+      })
+      .catch(() => 'storage unknown');
     const why = failed
       ? 'the test failed'
       : process.env.E2E_SHARED === '0'
@@ -132,7 +151,7 @@ export const test = base.extend<object, { shared: Shared }>({
     await page.unrouteAll({ behavior: 'ignoreErrors' }).catch(() => {});
     await shared.context!.clearPermissions().catch(() => {});
     page.removeAllListeners();
-    note(`${testInfo.workerIndex}\t${why ? 'recycle' : 'keep'}\t${testInfo.titlePath.slice(1).join(' › ')}${why ? `\t${why}` : ''}`);
+    note(`${testInfo.workerIndex}\t${why ? 'recycle' : 'keep'}\t${testInfo.titlePath.slice(1).join(' › ')}\t${storage}${why ? `\t${why}` : ''}`);
     if (why) {
       await shared.context!.close().catch(() => {});
       shared.context = undefined;
