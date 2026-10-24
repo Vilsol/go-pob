@@ -27,11 +27,11 @@ const COMPARE_VIEWS = ['Summary', 'Power report', 'Tree', 'Items', 'Skills', 'Ca
 
 const FIXME: Record<string, { owner: string; finding: string; builds?: string[] }> = {
   Tree: {
-    owner: 'ui-tree-items',
+    owner: 'unowned, Tree page',
     finding: 'the tree toolbar does not fit 960: Timeless search cut 25px, the tree-version picker (160px) and a checkbox cut whole'
   },
   Items: {
-    owner: 'ui-tree-items',
+    owner: 'unowned, Items page',
     finding:
       'once the board has filled in, the equipped-items board is wider than 960: Weapon 2 cut whole, Boots and Flask 5 cut by half, the tree-jewel socket selects cut'
   },
