@@ -715,7 +715,7 @@ tasks:
   dropped-keys:
     desc: "Rank the SILENTLY-dropped skill-data keys by the builds they are dropped on [CENSUS_LIMIT=n]"
     cmds:
-      - '{{.NICE}} env CORPUS=true CENSUS_LIMIT={{.CENSUS_LIMIT}} go test ./calculator/ -run TestDroppedSkillDataKeyCensus -v -count=1 -timeout 60m'
+      - '{{.NICE}} env CORPUS=true OPERATOR=true CENSUS_LIMIT={{.CENSUS_LIMIT}} go test ./calculator/ -run TestDroppedSkillDataKeyCensus -v -count=1 -timeout 60m'
 
   corpus-vs-oracle:
     desc: "Which BUILDS make one stat wrong, by class — STAT=<name> CLASS=miss|wrong|extra|ok [LIMIT=n]"
@@ -760,7 +760,7 @@ tasks:
   overapplied-census:
     desc: "Which stats do we make TOO LARGE — the class every other instrument here is blind to"
     cmds:
-      - '{{.NICE}} env CORPUS=true go test ./calculator/ -run TestOverAppliedCensus -v -count=1'
+      - '{{.NICE}} env CORPUS=true OPERATOR=true go test ./calculator/ -run TestOverAppliedCensus -v -count=1'
 
   breakdown-diff:
     desc: "Diff OUR per-slot defence breakdown against PoB's — BUILD=<name without .xml> [STAT=Armour]"
