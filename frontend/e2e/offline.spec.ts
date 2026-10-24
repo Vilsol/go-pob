@@ -312,3 +312,32 @@ test('a tree image the full storage cannot keep still loads', async ({ page, con
   }, art);
   expect(got).toEqual({ status: 200, bytes: 2_000_000 });
 });
+
+test('item art is not kept by the service worker, and an art cache from before is dropped', async ({ page, context }) => {
+  await context.route('https://web.poecdn.com/**', (route) =>
+    route.fulfill({
+      status: 200,
+      body: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==', 'base64'),
+      headers: { 'content-type': 'image/png' }
+    })
+  );
+  // an art cache an earlier service worker left, there before this one activates
+  await context.addInitScript(() => {
+    if (!navigator.serviceWorker.controller)
+      void caches.open('pob-art-v1').then((c) => c.put('https://web.poecdn.com/image/Art/2DItems/old.png', new Response('x')));
+  });
+  await page.goto(`${BASE}/`);
+  await expect.poll(() => page.evaluate(() => !!navigator.serviceWorker.controller), { timeout: 120_000 }).toBe(true);
+  const loaded = await page.evaluate(
+    () =>
+      new Promise<boolean>((done) => {
+        const img = new Image();
+        img.onload = () => done(true);
+        img.onerror = () => done(false);
+        img.src = 'https://web.poecdn.com/image/Art/2DItems/Rings/VermillionRing.png';
+      })
+  );
+  expect(loaded).toBe(true);
+  await page.waitForTimeout(500);
+  expect(await page.evaluate(() => caches.has('pob-art-v1'))).toBe(false);
+});
