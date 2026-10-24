@@ -122,7 +122,7 @@ const usage = `gopob <subcommand> [flags]
                         END, by observing go test's own cached/uncached verdict over three runs
   instruments           EVERY instrument, in order, one consolidated report. NOT-RUN is its own
                         class; INSTRUMENT_TIMINGS=0 keeps the clock out of stdout
-  regen-data [--check] [--pob DIR] [--only NAME]
+  regen-data [--check] [--game poe1|poe2] [--pob DIR] [--only NAME]
                         regenerate every generated data table from the PINNED PoB. --check
                         regenerates to a temp tree and FAILS if a committed artifact differs
   corpus-dump-ref <ref> <out>
@@ -146,6 +146,8 @@ const usage = `gopob <subcommand> [flags]
   pob-data-tables-stamp <reference.json|reference-dir>
                         stamp a DATA-table reference with the pin it was dumped from, so the
                         drift gate finds it by CONTENT rather than by a hardcoded filename
+  poe2-data-emit <dump.json> <out.go> <bases|runes|constants|gems>
+                        data/poe2/*_generated.go from scripts/gopob/regendata_poe2.lua's dump
   core-constants-emit <dump.json> <out.go>
                         data/constants_generated.go — the VALUES PoB owns; constants.go keeps the
                         TYPES and the Go-native remainder
@@ -315,6 +317,8 @@ func main() {
 		os.Exit(modalOracle(os.Args[2:]))
 	case "regen-fixtures":
 		os.Exit(regenFixtures(os.Args[2:]))
+	case "poe2-data-emit":
+		os.Exit(poe2DataEmit(os.Args[2:]))
 	case "core-constants-emit":
 		os.Exit(coreConstantsEmit(os.Args[2:]))
 	case "minion-data-emit":

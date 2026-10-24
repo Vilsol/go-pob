@@ -97,6 +97,7 @@ func rdExpandUser(p string) string {
 
 type rdRun struct {
 	repo, pob string
+	game      string
 	check     bool
 	only      string
 	exitCode  int
@@ -194,7 +195,14 @@ func (r *rdRun) runLua(script, out, dataPath string, args ...string) error {
 		env = append(env, "GAMEDATA_DUMP="+staged)
 	}
 
-	staged := append(append(append([]string{}, lj...), stage.path(script), stage.path("out.json")), args...)
+	scriptPath := stage.path(script)
+	if !strings.HasPrefix(script, "oracle/") {
+		//go-only: a dumper kept beside its emitter rather than under oracle/.
+		if scriptPath, err = stage.link(filepath.Base(script), pyPathJoin(r.repo, script)); err != nil {
+			return rdRefuse("%s", err)
+		}
+	}
+	staged := append(append(append([]string{}, lj...), scriptPath, stage.path("out.json")), args...)
 	cmd := exec.Command(staged[0], staged[1:]...) //nolint:gosec,noctx // the generator table's own pipeline
 	cmd.Dir = pyPathJoin(r.pob, "src")
 	cmd.Env = env
@@ -234,18 +242,21 @@ func rdSub(emit string) string {
 }
 
 func (r *rdRun) verifyPin() (string, error) {
-	argv := append(rdGopob(), "pob-pin")
+	argv, pinEnv, pinFile := append(rdGopob(), "pob-pin"), "POB_DIR=", "pob_pin.json"
+	if r.game == "poe2" {
+		argv, pinEnv, pinFile = append(argv, "--game", "poe2"), "POB2_DIR=", "pob_pin_poe2.json"
+	}
 	cmd := exec.Command(argv[0], argv[1:]...) //nolint:gosec,noctx
 	cmd.Dir = r.repo
-	cmd.Env = append(os.Environ(), "POB_DIR="+r.pob)
+	cmd.Env = append(os.Environ(), pinEnv+r.pob)
 	var buf bytes.Buffer
 	cmd.Stdout, cmd.Stderr = &buf, &buf
 	if err := cmd.Run(); err != nil {
-		return "", rdRefuse("the PoB checkout does not match scripts/pob_pin.json:\n%s\n\n"+
+		return "", rdRefuse("the PoB checkout does not match scripts/%s:\n%s\n\n"+
 			"Regenerating against the wrong checkout rewrites every table with plausible wrong "+
-			"data. Fix the checkout, or re-pin deliberately.", strings.TrimSpace(buf.String()))
+			"data. Fix the checkout, or re-pin deliberately.", pinFile, strings.TrimSpace(buf.String()))
 	}
-	b, err := os.ReadFile(pyPathJoin(r.repo, "scripts", "pob_pin.json")) //nolint:gosec // this repo's own pin
+	b, err := os.ReadFile(pyPathJoin(r.repo, "scripts", pinFile)) //nolint:gosec // this repo's own pin
 	if err != nil {
 		return "unknown", nil //nolint:nilerr // "unknown" is the original's fallback, not an error
 	}
@@ -392,7 +403,7 @@ func (r *rdRun) manifestCoverage() ([]string, [][2]string) {
 	var uncovered []string
 	var handwritten [][2]string
 	produced := map[string]bool{}
-	for _, g := range rdGenerators {
+	for _, g := range append(append([]rdGenerator{}, rdGenerators...), rdGeneratorsPoE2...) {
 		produced[g.out] = true
 	}
 	b, err := os.ReadFile(pyPathJoin(r.repo, "scripts", "port_manifest.txt")) //nolint:gosec // this repo's own manifest
@@ -434,10 +445,13 @@ func rdParseArgs(r *rdRun, argv []string, pobArg string) (string, bool) {
 			r.only = argv[i]
 		case strings.HasPrefix(argv[i], "--only="):
 			r.only = strings.TrimPrefix(argv[i], "--only=")
+		case argv[i] == "--game" && i+1 < len(argv) && (argv[i+1] == "poe1" || argv[i+1] == "poe2"):
+			i++
+			r.game = argv[i]
 		default:
 			//go-only: the original's argparse rejects an unknown option itself; this loop is a
 			fmt.Fprintf(rdStderr, "REFUSING: unknown option %q\n\n"+
-				"usage: regen-data [--check] [--pob DIR] [--only NAME]\n\n"+
+				"usage: regen-data [--check] [--game poe1|poe2] [--pob DIR] [--only NAME]\n\n"+
 				"⚠️  Without --check this REGENERATES every committed data table.\n", argv[i])
 			return pobArg, false
 		}
@@ -447,10 +461,15 @@ func rdParseArgs(r *rdRun, argv []string, pobArg string) (string, bool) {
 
 func regenData(argv []string) int {
 	r := &rdRun{repo: rdRepo()}
-	pobArg := pobPinDir()
-	pobArg, ok := rdParseArgs(r, argv, pobArg)
+	pobArg, ok := rdParseArgs(r, argv, "")
 	if !ok {
 		return 3
+	}
+	if pobArg == "" {
+		pobArg = pobPinDir()
+		if r.game == "poe2" {
+			pobArg = pob2PinDir()
+		}
 	}
 	r.pob = cdrRealpathM(rdExpandUser(pobArg))
 
@@ -484,17 +503,21 @@ func (r *rdRun) main() error {
 	}
 	fmt.Printf("pin OK  content_sha256=%s…  %s\n", short, r.pob)
 
-	gens := rdGenerators
+	all := rdGenerators
+	if r.game == "poe2" {
+		all = rdGeneratorsPoE2
+	}
+	gens := all
 	if r.only != "" {
 		var picked []rdGenerator
-		for _, g := range rdGenerators {
+		for _, g := range all {
 			if g.name == r.only {
 				picked = append(picked, g)
 			}
 		}
 		if len(picked) == 0 {
-			names := make([]string, 0, len(rdGenerators))
-			for _, g := range rdGenerators {
+			names := make([]string, 0, len(all))
+			for _, g := range all {
 				names = append(names, g.name)
 			}
 			return rdRefuse("no generator named %s; have: %s", "'"+r.only+"'", strings.Join(names, ", "))

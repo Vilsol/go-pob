@@ -460,10 +460,10 @@ tasks:
       - '{{.GOPOB}} data-fields {{.CLI_ARGS}}'
 
   data-regen:
-    desc: "Regenerate EVERY generated data file from the pinned PoB (--check to gate on staleness)"
+    desc: "Regenerate EVERY generated data file from the pinned PoB (--check to gate on staleness, GAME=poe2 for the PoE2 pin)"
     cmds:
       - '{{.GOPOB}} kw-bits-parity'
-      - '{{.GOPOB}} regen-data {{.CLI_ARGS}}'
+      - '{{.GOPOB}} regen-data --game {{.GAME | default "poe1"}} {{.CLI_ARGS}}'
       - task: data-fields-guard
 
   data-fields-guard:
