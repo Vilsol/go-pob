@@ -50,10 +50,12 @@ vi.mock('$lib/go/worker', () => {
 });
 
 const states: SceneState[] = [];
+type View = { offsetX: number; offsetY: number; scaling: number; width: number; height: number };
+const views: View[] = [];
 vi.mock('./renderer', () => ({
   createRenderer: () => ({
     kind: 'canvas',
-    setView: () => {},
+    setView: (v: View) => views.push(v),
     setState: (s: SceneState) => states.push(s),
     complete: () => true,
     drawListArt: () => undefined,
@@ -73,7 +75,7 @@ globalThis.ResizeObserver ??= class {
 globalThis.PointerEvent ??= class extends MouseEvent {} as typeof PointerEvent;
 
 const W = 800;
-const H = 600;
+let H = 600;
 
 let tree: Tree;
 beforeAll(async () => {
@@ -91,7 +93,7 @@ const mount = async (props: Record<string, unknown> = {}) => {
     if (!c) throw new Error('no canvas yet');
     return c;
   });
-  return { view, canvas, component: view.component as unknown as { focus: (id: number) => void } };
+  return { view, canvas, component: view.component as unknown as { focus: (id: number) => void; fitActive: () => void } };
 };
 
 const someNotable = () => Object.values(tree.nodes).find((n) => n.isNotable && !n.ascendancyName && n.group !== undefined)!;
@@ -221,5 +223,58 @@ describe('a cluster subgraph’s centre', () => {
     await fireEvent.pointerUp(canvas, { clientX: W / 2, clientY: H / 2, button: 0 });
     expect(onhover.mock.calls.map((c) => c[0]?.skill)).not.toContain(id);
     expect(onpick).not.toHaveBeenCalled();
+  });
+});
+
+describe('the phone’s fit on the allocated nodes', () => {
+  // the tree point a view puts at the canvas centre
+  const centre = (v: View) => ({
+    x: (v.width / 2) * v.scaling - Math.abs(tree.min_x) - v.offsetX,
+    y: (v.height / 2) * v.scaling - Math.abs(tree.min_y) - v.offsetY
+  });
+  const settled = async (h: number) => {
+    await vi.waitFor(() => expect(views.at(-1)?.height).toBe(h));
+    await new Promise((r) => setTimeout(r, 20));
+    return views.at(-1)!;
+  };
+  const resize = async (h: number) => {
+    H = h;
+    await fireEvent(window, new Event('resize'));
+    return settled(h);
+  };
+  // the first fit lands before the layout settles: a phone's canvas starts taller than it ends
+  const fitted = async () => {
+    const nodes = Object.values(tree.nodes).filter((n) => n.isNotable && !n.ascendancyName && n.group !== undefined);
+    worker.active = [nodes[0].skill!, nodes[nodes.length - 1].skill!];
+    H = 454;
+    views.length = 0;
+    states.length = 0;
+    const { canvas, component } = await mount();
+    await vi.waitFor(() => expect([...(states.at(-1)?.active ?? [])]).toHaveLength(2));
+    component.fitActive();
+    await vi.waitFor(() => expect(views.at(-1)?.scaling).not.toBe(10));
+    return { canvas, first: await settled(454) };
+  };
+  afterEach(() => {
+    worker.active = [];
+    H = 600;
+  });
+
+  it('is redone on the canvas’s settled size', async () => {
+    const { first } = await fitted();
+    const after = await resize(405);
+    expect(centre(after).x).toBeCloseTo(centre(first).x, 6);
+    expect(centre(after).y, 'the allocated nodes stay at the canvas centre').toBeCloseTo(centre(first).y, 6);
+  });
+
+  it('is not redone once the user moved the view', async () => {
+    const { canvas, first } = await fitted();
+    await fireEvent.pointerDown(canvas, { clientX: 100, clientY: 100, button: 0 });
+    await fireEvent.pointerMove(canvas, { clientX: 100, clientY: 160 });
+    await fireEvent.pointerUp(canvas, { clientX: 100, clientY: 160, button: 0 });
+    const panned = await settled(454);
+    expect(panned.offsetY, 'the drag panned the view').not.toBe(first.offsetY);
+    const after = await resize(405);
+    expect([after.offsetX, after.offsetY, after.scaling], 'the user’s pan stands').toEqual([panned.offsetX, panned.offsetY, panned.scaling]);
   });
 });

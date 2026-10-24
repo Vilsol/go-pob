@@ -16,6 +16,34 @@ import type { Page } from '@playwright/test';
 // each strip cell's delta as Go's outputs before and after an edit give it, and as the strip shows it
 const wantDelta = (before: go.ModelOutputs, after: go.ModelOutputs) =>
   headlines(buildSidebar(after), [], editDiff(before, after)).map((h) => h.delta?.value ?? '');
+// answers from the calc worker that arrive before `__calcHeldUntil` are delivered then, in order: a slow recalculation
+const holdCalcWorker = (page: Page) =>
+  page.addInitScript(() => {
+    const g = globalThis as unknown as { __calcHeldUntil: number };
+    g.__calcHeldUntil = 0;
+    const held: (() => void)[] = [];
+    const release = () => {
+      const wait = g.__calcHeldUntil - Date.now();
+      if (wait > 0) return void setTimeout(release, wait);
+      for (const deliver of held.splice(0)) deliver();
+    };
+    for (const proto of [Worker.prototype, MessagePort.prototype]) {
+      const add = proto.addEventListener as (this: EventTarget, type: string, fn: (e: Event) => void, o?: unknown) => void;
+      proto.addEventListener = function (this: EventTarget, type: string, fn: unknown, o?: unknown) {
+        if (type !== 'message' || typeof fn !== 'function') return add.call(this, type, fn as (e: Event) => void, o);
+        const handle = fn as (e: Event) => void;
+        add.call(
+          this,
+          type,
+          (e: Event) => {
+            if (!held.length && g.__calcHeldUntil <= Date.now()) return handle.call(this, e);
+            if (held.push(() => handle.call(this, e)) === 1) release();
+          },
+          o
+        );
+      } as typeof proto.addEventListener;
+    }
+  });
 const shownDelta = (page: Page) =>
   page.locator('[data-stats-strip] [data-strip-cell]').evaluateAll((cs) => cs.map((c) => c.querySelector('[data-delta]')?.textContent?.trim() ?? ''));
 
@@ -106,6 +134,7 @@ test.describe('phone shell at 390×769', () => {
 
   test('tree: tap shows the tooltip, double tap allocates and Undo reverts, hold opens the node menu', async ({ page }) => {
     test.setTimeout(10 * 60_000);
+    await holdCalcWorker(page);
     const { app, build } = await openPhoneBuild(page);
     await tree.prepareTree();
     const active = go.fresh(build, (b) => [...(b.Build.PassiveNodes ?? [])]);
@@ -144,6 +173,7 @@ test.describe('phone shell at 390×769', () => {
     await app.act(
       'phone-double-tap',
       async () => {
+        await page.evaluate(() => ((globalThis as unknown as { __calcHeldUntil: number }).__calcHeldUntil = Date.now() + 6000));
         await page.touchscreen.tap(at.x, at.y);
         await page.touchscreen.tap(at.x, at.y);
       },
@@ -157,7 +187,7 @@ test.describe('phone shell at 390×769', () => {
     expect(allocated.some(Boolean), 'the allocation moves a strip stat, so the delta check is not vacuous').toBe(true);
     await expect.poll(() => shownDelta(page), { message: 'the strip shows Go’s change from the allocation' }).toEqual(allocated);
     const toast = page.getByRole('status').filter({ hasText: `Allocated ${target!.p.node.name}` });
-    await expect(toast).toBeVisible();
+    await expect(toast, 'a recalculation slower than the toast’s time still leaves the Undo to click').toBeVisible();
     await app.act(
       'phone-undo-toast',
       () => toast.getByRole('button', { name: 'Undo' }).click(),

@@ -763,11 +763,20 @@
   const phone = phoneMedia();
   let undoToast = $state<string>();
   let undoTimer: ReturnType<typeof setTimeout> | undefined;
+  // the toast waits for the tree to show the change, so a slow recalculation does not use up its time
+  let undoOffer = $state.raw<{ id: number; was: boolean; text: string }>();
   const offerUndo = (fx: TreeNodeFx) => {
     clearTimeout(undoTimer);
-    undoToast = `${alloc[fx.id] ? 'Unallocated' : 'Allocated'} ${fx.name}`;
-    undoTimer = setTimeout(() => (undoToast = undefined), 5000);
+    undoToast = undefined;
+    undoOffer = { id: fx.id, was: !!alloc[fx.id], text: `${alloc[fx.id] ? 'Unallocated' : 'Allocated'} ${fx.name}` };
   };
+  $effect(() => {
+    const o = undoOffer;
+    if (!o || !!alloc[o.id] === o.was) return;
+    undoOffer = undefined;
+    undoToast = o.text;
+    undoTimer = setTimeout(() => (undoToast = undefined), 5000);
+  });
   const hover = (api: CanvasApi, n: Node | undefined) => {
     if (hoveredFx) api.leave(hoveredFx);
     hoveredFx = n ? fxOf(n) : undefined;

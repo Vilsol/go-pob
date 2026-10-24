@@ -3,7 +3,7 @@
   import { classStartNodes } from '../../skill_tree';
   import { MAX_SCALING, MIN_SCALING, secondaryAscendancy } from '$lib/skill_tree/geometry';
   import type { Point } from '$lib/skill_tree/geometry';
-  import { onMount } from 'svelte';
+  import { onMount, untrack } from 'svelte';
   import { currentBuild, devMode, nodePowerTheme, outputs, zoomSensitivity } from '$lib/global.js';
   import { syncWrap } from '$lib/go/worker';
   import { get, writable } from 'svelte/store';
@@ -222,10 +222,18 @@
 
   let canvasWidth = $state(0);
   let canvasHeight = $state(0);
+  let fitPending = $state(false);
+  let fitted: { scaling: number; offsetX: number; offsetY: number } | undefined;
   const resize = () => {
     if (parentContainer) {
-      canvasWidth = parentContainer.offsetWidth;
-      canvasHeight = parentContainer.offsetHeight;
+      const [w, h] = [parentContainer.offsetWidth, parentContainer.offsetHeight];
+      // a fit made before the layout settled is redone on the new size while the user has not moved the view
+      const refit = untrack(
+        () => (w !== canvasWidth || h !== canvasHeight) && fitted?.scaling === scaling && fitted.offsetX === offsetX && fitted.offsetY === offsetY
+      );
+      canvasWidth = w;
+      canvasHeight = h;
+      if (refit) fitPending = true;
     }
   };
 
@@ -550,7 +558,6 @@
   };
 
   // phone: a view saved on a desktop-sized window points off a phone's canvas, so it opens on the allocated nodes
-  let fitPending = $state(false);
   export const fitActive = () => (fitPending = true);
   $effect(() => {
     if (!fitPending || !canvasWidth || !canvasHeight || !activeNodes.length) return;
@@ -563,6 +570,7 @@
     scaling = Math.min(MAX_SCALING, Math.max(MIN_SCALING, Math.max((x1 - x0) / (canvasWidth * 0.9), (y1 - y0) / (canvasHeight * 0.9))));
     offsetX = (canvasWidth / 2) * scaling - Math.abs(skillTree.min_x) - (x0 + x1) / 2;
     offsetY = (canvasHeight / 2) * scaling - Math.abs(skillTree.min_y) - (y0 + y1) / 2;
+    fitted = { scaling, offsetX, offsetY };
   });
 
   /* PassiveTreeView.lua:1312-1321 */
