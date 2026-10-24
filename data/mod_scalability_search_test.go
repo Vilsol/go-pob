@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
 
@@ -85,8 +86,15 @@ func TestFindScalableLineMatchesTheEnumeration(t *testing.T) {
 			"nothing and report agreement", len(names))
 	}
 
+	stride := 5
+	if os.Getenv("CORPUS") == "true" {
+		stride = 1
+	}
+	slices.Sort(names)
+
 	bodies := map[string]bool{}
-	for _, name := range names {
+	for i := 0; i < len(names); i += stride {
+		name := names[i]
 		if !strings.HasSuffix(name, ".xml") {
 			continue
 		}

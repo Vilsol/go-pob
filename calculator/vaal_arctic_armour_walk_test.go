@@ -3,6 +3,7 @@ package calculator
 import (
 	"fmt"
 	"os"
+	"sync"
 	"testing"
 )
 
@@ -10,6 +11,37 @@ const (
 	vaalArcticWalkAgreeFloor    = 76
 	vaalArcticControlAgreeFloor = 7948
 )
+
+var _ = registerCorpusCheck("TestVaalArcticArmourWalkAgrees", func() corpusCheck { return &vaalArcticArmourWalkCheck{} })
+
+type vaalArcticArmourWalkCheck struct {
+	mu                                             sync.Mutex
+	carrierSeen, carrierOK, controlSeen, controlOK int
+}
+
+func (c *vaalArcticArmourWalkCheck) visit(_ string, rec oracleRecord, graded bool, env *Environment) {
+	if !graded {
+		return
+	}
+	want, has := rec.Output["NumberOfDamagingHits"]
+	if !has {
+		return
+	}
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	agrees := oracleClose(env.Player.Output["NumberOfDamagingHits"], want, oracleDumpTolerance)
+	if env.Player.Output["VaalArcticArmourLife"] > 0 {
+		c.carrierSeen++
+		if agrees {
+			c.carrierOK++
+		}
+	} else {
+		c.controlSeen++
+		if agrees {
+			c.controlOK++
+		}
+	}
+}
 
 // TestVaalArcticArmourWalkAgrees pins CalcDefence.lua:2627-2630 and :2640-2644.
 func TestVaalArcticArmourWalkAgrees(t *testing.T) {
@@ -20,36 +52,8 @@ func TestVaalArcticArmourWalkAgrees(t *testing.T) {
 	}
 	requireGameData(t, "3.29")
 
-	oracle, err := oracleForLoadedData()
-	if err != nil {
-		t.Fatalf("REFUSING: cannot load the oracle blob: %v", err)
-	}
-	_, names := corpusNamesForLoadedData(t)
-
-	var carrierSeen, carrierOK, controlSeen, controlOK int
-	for _, name := range names {
-		rec, ok := oracle[name]
-		if !ok || rec.TreeSources < oracleMinTreeSources {
-			continue
-		}
-		want, has := rec.Output["NumberOfDamagingHits"]
-		if !has {
-			continue
-		}
-		env := corpusEnvForLoadedData(t, name)
-		agrees := oracleClose(env.Player.Output["NumberOfDamagingHits"], want, oracleDumpTolerance)
-		if env.Player.Output["VaalArcticArmourLife"] > 0 {
-			carrierSeen++
-			if agrees {
-				carrierOK++
-			}
-		} else {
-			controlSeen++
-			if agrees {
-				controlOK++
-			}
-		}
-	}
+	c := corpusWalkCheck[*vaalArcticArmourWalkCheck](t)
+	carrierSeen, carrierOK, controlSeen, controlOK := c.carrierSeen, c.carrierOK, c.controlSeen, c.controlOK
 
 	if carrierSeen == 0 || controlSeen == 0 {
 		t.Fatalf("REFUSING: carrier population %d, control population %d — a floor over an empty "+

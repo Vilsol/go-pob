@@ -2,8 +2,38 @@ package calculator
 
 import (
 	"os"
+	"sync"
 	"testing"
 )
+
+var _ = registerCorpusCheck("TestVaalStoredUsesFeedsStoredUses", func() corpusCheck { return &vaalStoredUsesCheck{} })
+
+type vaalStoredUsesCheck struct {
+	mu                            sync.Mutex
+	graded, starved, wrongNonzero int
+}
+
+func (c *vaalStoredUsesCheck) visit(_ string, rec oracleRecord, _ bool, env *Environment) {
+	want, has := rec.Output["StoredUses"]
+	if !has || want == 0 {
+		return
+	}
+	if env == nil || env.Player == nil {
+		return
+	}
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.graded++
+	got := env.Player.Output["StoredUses"]
+	if oracleClose(got, want, oracleDumpTolerance) {
+		return
+	}
+	if got == 0 {
+		c.starved++
+	} else {
+		c.wrongNonzero++
+	}
+}
 
 // TestVaalStoredUsesFeedsStoredUses: `StoredUses` is STARVED, not mis-factored, and that is what names its cause.
 //
@@ -17,37 +47,8 @@ func TestVaalStoredUsesFeedsStoredUses(t *testing.T) {
 	}
 	requireGameData(t, "3.29")
 
-	oracle, err := oracleForLoadedData()
-	if err != nil {
-		t.Fatalf("REFUSING: cannot load the oracle blob: %v", err)
-	}
-	_, names := corpusNamesForLoadedData(t)
-
-	graded, starved, wrongNonzero := 0, 0, 0
-	for _, b := range names {
-		rec, ok := oracle[b]
-		if !ok {
-			continue
-		}
-		want, has := rec.Output["StoredUses"]
-		if !has || want == 0 {
-			continue
-		}
-		env := corpusEnvForLoadedData(t, b)
-		if env == nil || env.Player == nil {
-			continue
-		}
-		graded++
-		got := env.Player.Output["StoredUses"]
-		if oracleClose(got, want, oracleDumpTolerance) {
-			continue
-		}
-		if got == 0 {
-			starved++
-		} else {
-			wrongNonzero++
-		}
-	}
+	c := corpusWalkCheck[*vaalStoredUsesCheck](t)
+	graded, starved, wrongNonzero := c.graded, c.starved, c.wrongNonzero
 
 	if graded == 0 {
 		t.Fatal("REFUSING: no build carries a nonzero StoredUses in the oracle, so this sweep is " +

@@ -14,26 +14,23 @@ import (
 const offenceCostSample = 20
 
 var offenceCostRareBuilds = []string{
-	"0801-hierophant-consecrated-path.xml",
-	"1713-raider-lightning-trap.xml",
-	"1714-raider-lightning-trap-2.xml",
-	"3813-berserker-vaal-ground-slam-2.xml",
+	"0295-berserker-vaal-lightning-strike.xml",
 }
 
 var offenceCostKeyFloor = map[string]int{
-	"LifeOnKill":         104,
-	"EnergyShieldOnKill": 34,
-	"ManaOnKill":         17,
+	"LifeOnKill":         238,
+	"EnergyShieldOnKill": 124,
+	"ManaOnKill":         117,
 
-	"ManaCost": 196,
-	"LifeCost": 32,
+	"ManaCost": 347,
+	"LifeCost": 248,
 
-	"SoulCost": 9,
+	"SoulCost": 55,
 
-	"ManaPerSecondCost": 90,
-	"ESPerSecondCost":   54,
-	"LifePerSecondCost": 28,
-	"SoulPerSecondCost": 6,
+	"ManaPerSecondCost": 323,
+	"ESPerSecondCost":   52,
+	"LifePerSecondCost": 256,
+	"SoulPerSecondCost": 55,
 	"RagePerSecondCost": 1,
 }
 
@@ -42,7 +39,7 @@ func TestOffenceCost3_20(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.SkipNow()
 	}
-	requireGameData(t, "3.20")
+	requireGameData(t, "3.29")
 
 	oracle, err := oracleForLoadedData()
 	if err != nil {
@@ -62,8 +59,8 @@ func TestOffenceCost3_20(t *testing.T) {
 			sample = append(sample, name)
 		}
 	}
-	if len(sample) < 250 {
-		t.Fatalf("REFUSING: %d sampled builds of %d in the corpus, expected ~306. "+
+	if len(sample) < 700 {
+		t.Fatalf("REFUSING: %d sampled builds of %d in the corpus, expected ~790. "+
 			"The floors below were measured against the full corpus and mean nothing on a short one.",
 			len(sample), len(names))
 	}
@@ -131,7 +128,7 @@ func TestOffenceCost3_20(t *testing.T) {
 	}
 	sort.Strings(keys)
 
-	fmt.Printf("\n=== CalcOffence 3.20 cost / on-kill pins (%d sampled builds, NONZERO only) ===\n", len(sample))
+	fmt.Printf("\n=== CalcOffence cost / on-kill pins (%d sampled builds, NONZERO only) ===\n", len(sample))
 	for _, k := range keys {
 		c := total[k]
 		fmt.Printf("  %-24s ok %4d / graded %4d   floor %4d\n", k, c.ok, c.graded, offenceCostKeyFloor[k])

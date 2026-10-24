@@ -16,9 +16,9 @@ func TestPrecisionAuraCritReachesThePlayer(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.SkipNow()
 	}
-	requireGameData(t, "3.20")
+	requireGameData(t, "3.29")
 
-	const name = "2147-ascendant-flicker-strike-2.xml"
+	const name = "15350-juggernaut-sunder.xml"
 
 	oracle, err := oracleForLoadedData()
 	if err != nil {
@@ -26,7 +26,7 @@ func TestPrecisionAuraCritReachesThePlayer(t *testing.T) {
 	}
 	rec, ok := oracle[name]
 	if !ok {
-		t.Fatalf("REFUSING: %s is not in the 3.20 blob", name)
+		t.Fatalf("REFUSING: %s is not in the oracle blob", name)
 	}
 
 	file, err := os.ReadFile(filepath.Join(corpusDirForLoadedData(t), name))

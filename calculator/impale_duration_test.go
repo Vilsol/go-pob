@@ -3,6 +3,7 @@ package calculator
 import (
 	"math"
 	"os"
+	"sync"
 	"testing"
 
 	"github.com/Vilsol/go-pob/data"
@@ -96,6 +97,26 @@ func TestImpaleDurationBaseIsARuntimeDivision(t *testing.T) {
 	}
 }
 
+var _ = registerCorpusCheck("TestImpaleDurationIsExactOnMostBuilds", func() corpusCheck { return &impaleDurationCheck{} })
+
+type impaleDurationCheck struct {
+	mu          sync.Mutex
+	seen, exact int
+}
+
+func (c *impaleDurationCheck) visit(_ string, rec oracleRecord, _ bool, env *Environment) {
+	want, has := rec.Output["ImpaleDuration"]
+	if !has || want == 0 || env == nil {
+		return
+	}
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.seen++
+	if env.Player.Output["ImpaleDuration"] == want {
+		c.exact++
+	}
+}
+
 // TestImpaleDurationIsExactOnMostBuilds is the evidence shape the operator asked for: landing on PoB's value for builds the gate never flagged.
 func TestImpaleDurationIsExactOnMostBuilds(t *testing.T) {
 	t.Parallel()
@@ -105,26 +126,8 @@ func TestImpaleDurationIsExactOnMostBuilds(t *testing.T) {
 	}
 	requireGameData(t, "3.29")
 
-	oracle, err := oracleForLoadedData()
-	if err != nil {
-		t.Fatalf("REFUSING: cannot load the oracle blob: %v", err)
-	}
-	_, names := corpusNamesForLoadedData(t)
-	seen, exact := 0, 0
-	for _, b := range names {
-		rec, ok := oracle[b]
-		if !ok {
-			continue
-		}
-		want, has := rec.Output["ImpaleDuration"]
-		if !has || want == 0 {
-			continue
-		}
-		seen++
-		if env := corpusEnvForLoadedData(t, b); env.Player.Output["ImpaleDuration"] == want {
-			exact++
-		}
-	}
+	c := corpusWalkCheck[*impaleDurationCheck](t)
+	seen, exact := c.seen, c.exact
 	if seen == 0 {
 		t.Fatal("REFUSING: no build reports a nonzero ImpaleDuration, so this sweep measured nothing")
 	}

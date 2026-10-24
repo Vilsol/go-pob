@@ -14,8 +14,8 @@ func TestSoulGainPreventionDuration(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("CORPUS!=true")
 	}
-	if raw.LatestVersion != "3.20" {
-		t.Skipf("SKIP: this test pins 3.20 values but the process loaded %s game data", raw.LatestVersion)
+	if raw.LatestVersion != "3.29" {
+		t.Skipf("SKIP: this test pins 3.29 values but the process loaded %s game data", raw.LatestVersion)
 	}
 
 	oracle, err := oracleForLoadedData()
@@ -24,10 +24,9 @@ func TestSoulGainPreventionDuration(t *testing.T) {
 	}
 
 	builds3 := []string{
-		"0016-berserker-vaal-reave.xml",
-		"0219-pathfinder-vaal-blade-flurry.xml",
-		"0329-deadeye-vaal-venom-gyre.xml",
-		"1918-pathfinder-vaal-caustic-arrow-7.xml",
+		"12671-ladder-WcEendVis_5386.dkfljgjkdfhg.xml",
+		"0430-reliquarian-vaal-cold-snap.xml",
+		"6919-ladder-borpasnorpglorpin_6384.deletiiiiiiii.xml",
 	}
 
 	for _, build := range builds3 {

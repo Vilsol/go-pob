@@ -5,10 +5,52 @@ import (
 	"math"
 	"os"
 	"sort"
+	"sync"
 	"testing"
 )
 
 const maxHitSolverAgreeFloor = 46017
+
+var _ = registerCorpusCheck("TestMaxHitSolverAgrees", func() corpusCheck {
+	return &maxHitSolverCheck{perStat: map[string][2]int{}}
+})
+
+type maxHitSolverCheck struct {
+	mu                     sync.Mutex
+	builds                 int
+	nonzeroSeen, nonzeroOK int
+	perStat                map[string][2]int
+	nanBuilds              []string
+}
+
+func (c *maxHitSolverCheck) visit(name string, rec oracleRecord, graded bool, env *Environment) {
+	if !graded {
+		return
+	}
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.builds++
+	for _, stat := range maxHitSolverStats {
+		want, has := rec.Output[stat]
+		if !has || want == 0 {
+			continue
+		}
+		got := env.Player.Output[stat]
+		if math.IsNaN(got) || math.IsInf(got, 0) {
+			if len(c.nanBuilds) < 8 {
+				c.nanBuilds = append(c.nanBuilds, fmt.Sprintf("%s %s=%v", name, stat, got))
+			}
+		}
+		c.nonzeroSeen++
+		pc := c.perStat[stat]
+		pc[0]++
+		if oracleClose(got, want, oracleDumpTolerance) {
+			c.nonzeroOK++
+			pc[1]++
+		}
+		c.perStat[stat] = pc
+	}
+}
 
 var maxHitSolverStats = []string{
 	"PhysicalMaximumHitTaken", "LightningMaximumHitTaken", "ColdMaximumHitTaken",
@@ -24,45 +66,8 @@ func TestMaxHitSolverAgrees(t *testing.T) {
 	}
 	requireGameData(t, "3.29")
 
-	oracle, err := oracleForLoadedData()
-	if err != nil {
-		t.Fatalf("REFUSING: cannot load the oracle blob: %v", err)
-	}
-	_, names := corpusNamesForLoadedData(t)
-
-	var nonzeroSeen, nonzeroOK int
-	perStat := map[string][2]int{}
-	var nanBuilds []string
-	for _, name := range names {
-		rec, ok := oracle[name]
-		if !ok || rec.TreeSources < oracleMinTreeSources {
-			continue
-		}
-		var env *Environment
-		for _, stat := range maxHitSolverStats {
-			want, has := rec.Output[stat]
-			if !has || want == 0 {
-				continue
-			}
-			if env == nil {
-				env = corpusEnvForLoadedData(t, name)
-			}
-			got := env.Player.Output[stat]
-			if math.IsNaN(got) || math.IsInf(got, 0) {
-				if len(nanBuilds) < 8 {
-					nanBuilds = append(nanBuilds, fmt.Sprintf("%s %s=%v", name, stat, got))
-				}
-			}
-			nonzeroSeen++
-			c := perStat[stat]
-			c[0]++
-			if oracleClose(got, want, oracleDumpTolerance) {
-				nonzeroOK++
-				c[1]++
-			}
-			perStat[stat] = c
-		}
-	}
+	c := corpusWalkCheck[*maxHitSolverCheck](t)
+	nonzeroSeen, nonzeroOK, perStat, nanBuilds := c.nonzeroSeen, c.nonzeroOK, c.perStat, c.nanBuilds
 
 	keys := make([]string, 0, len(perStat))
 	for k := range perStat {
@@ -76,7 +81,7 @@ func TestMaxHitSolverAgrees(t *testing.T) {
 
 	if nonzeroSeen == 0 {
 		t.Fatalf("REFUSING: 0 nonzero max-hit pairs across %d builds and %d stats",
-			len(names), len(maxHitSolverStats))
+			c.builds, len(maxHitSolverStats))
 	}
 	for _, s := range maxHitSolverStats {
 		if perStat[s][0] == 0 {

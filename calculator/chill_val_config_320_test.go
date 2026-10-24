@@ -42,18 +42,18 @@ func TestChillValConfigIsBaseNotOverride(t *testing.T) {
 	}
 }
 
-// TestChillValSelfChillMatchesPoB is the corpus-anchored half: the enemy's summed INC ActionSpeed on the build that produced the +Inf must be PoB's -95, not -100.
+// TestChillValSelfChillMatchesPoB is the corpus-anchored half: the enemy's summed INC ActionSpeed on a chilled-and-frozen build must be PoB's dumped total.
 func TestChillValSelfChillMatchesPoB(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.20")
-	env := corpusEnvForLoadedData(t, "3143-occultist-reap.xml")
+	requireGameData(t, "3.29")
+	env := corpusEnvForLoadedData(t, "0180-elementalist-winter-orb-11.xml")
 	got := env.Enemy.ModDB.Sum(mod.TypeIncrease, nil, "ActionSpeed")
 	const want = -95.0
 	if math.Abs(got-want) > 1e-9 {
-		t.Errorf("enemy INC ActionSpeed = %v, want %v (PoB's dumped total: Chill -10, Chill -15, "+
-			"Freeze -70). At exactly -100 CalcDefence.lua:2085's unguarded division yields +Inf.",
+		t.Errorf("enemy INC ActionSpeed = %v, want %v (PoB's dumped rows: Chill -25, Chill 0, "+
+			"Freeze -70, and Mania -30 behind an unset Condition:AfflictedByMania).",
 			got, want)
 	}
 }

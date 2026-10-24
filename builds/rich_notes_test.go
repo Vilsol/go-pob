@@ -95,7 +95,7 @@ func TestRichNotesCorpusRoundTrip(t *testing.T) {
 	}
 
 	withNotes := 0
-	for _, e := range entries {
+	for _, e := range corpusSample(entries, 8) {
 		if !strings.HasSuffix(e.Name(), ".xml") {
 			continue
 		}
@@ -211,7 +211,7 @@ func TestSerializeBuildPoBEntitiesAreInvisibleToGo(t *testing.T) {
 	}
 
 	rewritten := 0
-	for _, e := range entries {
+	for _, e := range corpusSample(entries, 25) {
 		if !strings.HasSuffix(e.Name(), ".xml") {
 			continue
 		}

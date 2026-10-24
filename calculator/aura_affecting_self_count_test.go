@@ -4,8 +4,57 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"sync"
 	"testing"
 )
+
+var _ = registerCorpusCheck("TestAuraAffectingSelfMatchesPoB", func() corpusCheck {
+	dir, skip := dumpsDirCandidate()
+	if skip != "" {
+		dir = ""
+	}
+	return &auraAffectingSelfCheck{dir: dir}
+})
+
+type auraAffectingSelfCheck struct {
+	mu                               sync.Mutex
+	dir                              string
+	graded, agree, oursHigh, oursLow int
+}
+
+func (c *auraAffectingSelfCheck) visit(b string, _ oracleRecord, _ bool, env *Environment) {
+	if c.dir == "" {
+		return
+	}
+	raw, err := os.ReadFile(filepath.Join(c.dir, b[:len(b)-len(".xml")]+".json"))
+	if err != nil {
+		return
+	}
+	var d struct {
+		Multipliers map[string]float64 `json:"multipliers"`
+	}
+	if json.Unmarshal(raw, &d) != nil || d.Multipliers == nil {
+		return
+	}
+	want, ok := d.Multipliers["AuraAffectingSelf"]
+	if !ok {
+		return
+	}
+	if env == nil || env.Player == nil {
+		return
+	}
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.graded++
+	switch got := env.Player.ModDB.Multipliers["AuraAffectingSelf"]; {
+	case got == want:
+		c.agree++
+	case got > want:
+		c.oursHigh++
+	default:
+		c.oursLow++
+	}
+}
 
 // TestAuraAffectingSelfMatchesPoB: `Multiplier:AuraAffectingSelf` is a COUNT, and it was over-counted on a third of the corpus.
 //
@@ -20,38 +69,11 @@ func TestAuraAffectingSelfMatchesPoB(t *testing.T) {
 	}
 	requireGameData(t, "3.29")
 	dir := dumpsDirForLoadedData(t)
-	_, names := corpusNamesForLoadedData(t)
-
-	graded, agree, oursHigh, oursLow := 0, 0, 0, 0
-	for _, b := range names {
-		raw, err := os.ReadFile(filepath.Join(dir, b[:len(b)-len(".xml")]+".json"))
-		if err != nil {
-			continue
-		}
-		var d struct {
-			Multipliers map[string]float64 `json:"multipliers"`
-		}
-		if json.Unmarshal(raw, &d) != nil || d.Multipliers == nil {
-			continue
-		}
-		want, ok := d.Multipliers["AuraAffectingSelf"]
-		if !ok {
-			continue
-		}
-		env := corpusEnvForLoadedData(t, b)
-		if env == nil || env.Player == nil {
-			continue
-		}
-		graded++
-		switch got := env.Player.ModDB.Multipliers["AuraAffectingSelf"]; {
-		case got == want:
-			agree++
-		case got > want:
-			oursHigh++
-		default:
-			oursLow++
-		}
+	c := corpusWalkCheck[*auraAffectingSelfCheck](t)
+	if c.dir != dir {
+		t.Fatalf("REFUSING: the shared walk read dumps from %s, this test resolved %s", c.dir, dir)
 	}
+	graded, agree, oursHigh, oursLow := c.graded, c.agree, c.oursHigh, c.oursLow
 
 	if graded == 0 {
 		t.Fatal("REFUSING: no dump carries an AuraAffectingSelf multiplier, so this sweep is not " +

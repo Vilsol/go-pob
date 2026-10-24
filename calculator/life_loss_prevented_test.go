@@ -2,6 +2,8 @@ package calculator
 
 import (
 	"os"
+	"sort"
+	"sync"
 	"testing"
 
 	"github.com/Vilsol/go-pob/mod"
@@ -32,6 +34,42 @@ func TestLifeLossPreventedIsParsed(t *testing.T) {
 	}
 }
 
+var _ = registerCorpusCheck("TestLifeLossPreventedReachesTheHitPool", func() corpusCheck { return &lifeLossPreventedCheck{} })
+
+type lifeLossPreventedCarrier struct {
+	name               string
+	exceedsRecoverable bool
+	seen, wrong        int
+}
+
+type lifeLossPreventedCheck struct {
+	mu       sync.Mutex
+	carriers []lifeLossPreventedCarrier
+}
+
+func (c *lifeLossPreventedCheck) visit(name string, rec oracleRecord, graded bool, env *Environment) {
+	if !graded || env.Player.ModDB.Sum(mod.TypeBase, nil, "LifeLossPrevented") <= 0 {
+		return
+	}
+	carrier := lifeLossPreventedCarrier{
+		name:               name,
+		exceedsRecoverable: env.Player.Output["LifeHitPool"] > env.Player.Output["LifeRecoverable"],
+	}
+	for _, key := range []string{"LifeHitPool", "sharedMoMHitPool"} {
+		want, has := rec.Output[key]
+		if !has || want == 0 {
+			continue
+		}
+		carrier.seen++
+		if !oracleClose(env.Player.Output[key], want, oracleDumpTolerance) {
+			carrier.wrong++
+		}
+	}
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.carriers = append(c.carriers, carrier)
+}
+
 // TestLifeLossPreventedReachesTheHitPool is the activation half: the mod must be live on real builds and LifeHitPool must move with it.
 func TestLifeLossPreventedReachesTheHitPool(t *testing.T) {
 	t.Parallel()
@@ -41,37 +79,16 @@ func TestLifeLossPreventedReachesTheHitPool(t *testing.T) {
 	}
 	requireGameData(t, "3.29")
 
-	oracle, err := oracleForLoadedData()
-	if err != nil {
-		t.Fatalf("REFUSING: cannot load the oracle blob: %v", err)
-	}
-	_, names := corpusNamesForLoadedData(t)
-
+	c := corpusWalkCheck[*lifeLossPreventedCheck](t)
+	sort.Slice(c.carriers, func(i, j int) bool { return c.carriers[i].name < c.carriers[j].name })
 	var live, exceedsRecoverable, seen, wrong int
-
-	for _, name := range names {
-		rec, ok := oracle[name]
-		if !ok || rec.TreeSources < oracleMinTreeSources {
-			continue
-		}
-		env := corpusEnvForLoadedData(t, name)
-		if env.Player.ModDB.Sum(mod.TypeBase, nil, "LifeLossPrevented") <= 0 {
-			continue
-		}
+	for _, carrier := range c.carriers {
 		live++
-		if env.Player.Output["LifeHitPool"] > env.Player.Output["LifeRecoverable"] {
+		if carrier.exceedsRecoverable {
 			exceedsRecoverable++
 		}
-		for _, key := range []string{"LifeHitPool", "sharedMoMHitPool"} {
-			want, has := rec.Output[key]
-			if !has || want == 0 {
-				continue
-			}
-			seen++
-			if !oracleClose(env.Player.Output[key], want, oracleDumpTolerance) {
-				wrong++
-			}
-		}
+		seen += carrier.seen
+		wrong += carrier.wrong
 		if live >= 60 {
 			break
 		}

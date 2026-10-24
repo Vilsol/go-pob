@@ -14,8 +14,8 @@ func TestMinionBaseModsMatch3_20(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("CORPUS!=true")
 	}
-	if raw.LatestVersion != "3.20" {
-		t.Skipf("SKIP: this test pins 3.20 values but the process loaded %s game data", raw.LatestVersion)
+	if raw.LatestVersion != "3.29" {
+		t.Skipf("SKIP: this test pins 3.29 values but the process loaded %s game data", raw.LatestVersion)
 	}
 
 	oracle, err := oracleForLoadedData()
@@ -29,12 +29,12 @@ func TestMinionBaseModsMatch3_20(t *testing.T) {
 		why   string
 	}{
 		{
-			build: "1163-occultist-raise-spiders.xml",
+			build: "3665-ladder-nonghoop_1966.NongHoop_ALLF.xml",
 			keys:  []string{"PoisonDPS", "PoisonDamage", "TotalPoisonDPS"},
 			why:   "Damage MORE -50 Poison, deleted upstream",
 		},
 		{
-			build: "1650-necromancer-summon-raging-spirit-29.xml",
+			build: "12696-ladder-Willipoa_7609.Hypetrains.xml",
 			keys:  []string{"IgniteDPS", "IgniteDamage"},
 			why:   "Damage MORE -50 Ignite, deleted upstream",
 		},

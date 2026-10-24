@@ -19,10 +19,8 @@ func TestParseBuild(t *testing.T) {
 
 // TestParseBuildOldSkillLayout: PoB's SkillsTab:Load accepts <Skill> nodes sitting directly under <Skills>.
 func TestParseBuildOldSkillLayout(t *testing.T) {
-	file, err := os.ReadFile(filepath.Join(corpusDirForLoadedData(t), "0001-juggernaut-molten-strike.xml"))
-	if err != nil {
-		t.Skipf("corpus unavailable: %v", err)
-	}
+	file, err := os.ReadFile("../testdata/builds/Fireball-old-skill-layout.xml")
+	testza.AssertNoError(t, err)
 
 	build, err := ParseBuild(file)
 	testza.AssertNoError(t, err)

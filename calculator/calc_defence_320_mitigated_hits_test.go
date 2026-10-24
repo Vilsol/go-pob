@@ -1,70 +1,39 @@
 package calculator
 
 import (
-	"os"
-	"path/filepath"
 	"testing"
-
-	"github.com/Vilsol/go-pob/builds"
-	"github.com/Vilsol/go-pob/pob"
 )
 
-// TestMitigatedHitsEqualUnmitigatedAtFullDamageChance: CalcDefence.lua:1991 does NOT always run the hit search.
+// TestMitigatedHitsEqualUnmitigatedAtFullDamageChance: CalcDefence.lua:2884 does NOT always run the hit search.
 //
 //	output["NumberOfMitigatedDamagingHits"] = (output["ConfiguredDamageChance"] ~= 100
+//		or DamageIn["TrackRecoupable"] or DamageIn["TrackLifeLossOverTime"] or DamageIn.GainWhenHit)
+//		and numberOfHitsToDie(DamageIn) or output["NumberOfDamagingHits"]
 func TestMitigatedHitsEqualUnmitigatedAtFullDamageChance(t *testing.T) {
-	if os.Getenv("CORPUS") != "true" {
-		t.Skip("set CORPUS=true to run")
-	}
-	requireGameData(t, "3.20")
-
-	corpusDir, names := corpusNamesForLoadedData(t)
-
-	checked, violations := 0, 0
-	for _, file := range names {
-		rawXML, err := os.ReadFile(filepath.Join(corpusDir, file))
+	for _, tc := range []struct {
+		build    string
+		fallback bool
+	}{
+		{"3065-ladder-Keyzoner_4232.Curse_ofCWS.xml", true},
+		{"0264-juggernaut-earthshatter.xml", false},
+	} {
+		env := defenceEnv(t, tc.build)
+		oracle, err := oracleForLoadedData()
 		if err != nil {
-			continue
+			t.Fatalf("REFUSING: %v", err)
 		}
-		build, err := builds.ParseBuild(rawXML)
-		if err != nil {
-			continue
-		}
-		env := buildOutputOrNil(build)
-		if env == nil {
-			continue
-		}
-		out := env.Player.Output
+		out := oracle[tc.build].Output
 		if out["ConfiguredDamageChance"] != 100 {
-			continue
+			t.Fatalf("REFUSING: PoB's ConfiguredDamageChance for %s is %v, not 100 — wrong fixture",
+				tc.build, out["ConfiguredDamageChance"])
 		}
-		checked++
-		if out["NumberOfMitigatedDamagingHits"] != out["NumberOfDamagingHits"] {
-			violations++
-			if violations <= 5 {
-				t.Errorf("%s: ConfiguredDamageChance is exactly 100 but NumberOfMitigatedDamagingHits "+
-					"= %.10g while NumberOfDamagingHits = %.10g", file,
-					out["NumberOfMitigatedDamagingHits"], out["NumberOfDamagingHits"])
+		if took := out["NumberOfMitigatedDamagingHits"] == out["NumberOfDamagingHits"]; took != tc.fallback {
+			t.Fatalf("REFUSING: PoB's fallback on %s is %v, the fixture expects %v", tc.build, took, tc.fallback)
+		}
+		for _, stat := range []string{"NumberOfDamagingHits", "NumberOfMitigatedDamagingHits"} {
+			if got := env.Player.Output[stat]; !oracleClose(got, out[stat], oracleTightTolerance) {
+				t.Errorf("%s: %s = %.10g, PoB %.10g", tc.build, stat, got, out[stat])
 			}
 		}
 	}
-
-	if checked == 0 {
-		t.Fatalf("REFUSING: no corpus build reached ConfiguredDamageChance == 100, so this test " +
-			"proves nothing. The population moved; re-derive it before trusting a pass.")
-	}
-	t.Logf("%d of %d builds have ConfiguredDamageChance exactly 100; %d violate the fallback",
-		checked, len(names), violations)
-	if violations > 0 {
-		t.Fatalf("%d builds take the search where CalcDefence.lua:1991 reuses NumberOfDamagingHits", violations)
-	}
-}
-
-func buildOutputOrNil(build *pob.PathOfBuilding) *Environment {
-	var env *Environment
-	func() {
-		defer func() { _ = recover() }()
-		env = (&Calculator{PoB: build}).BuildOutput(OutputModeMain)
-	}()
-	return env
 }

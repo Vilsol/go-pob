@@ -18,9 +18,9 @@ func TestElementalAilmentAvoidanceReadsTheAggregateMods(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.SkipNow()
 	}
-	requireGameData(t, "3.20")
+	requireGameData(t, "3.29")
 
-	const name = "2412-guardian-herald-of-agony-3.xml"
+	const name = "2204-ladder-Ntkiy_hach_1026.Torchlight_Tourist.xml"
 
 	want, got := ailmentAvoidance(t, name)
 
@@ -39,7 +39,7 @@ func ailmentAvoidance(t *testing.T, name string) (map[string]float64, map[string
 	}
 	rec, ok := oracle[name]
 	if !ok {
-		t.Fatalf("REFUSING: %s is not in the 3.20 blob", name)
+		t.Fatalf("REFUSING: %s is not in the oracle blob", name)
 	}
 
 	file, err := os.ReadFile(filepath.Join(corpusDirForLoadedData(t), name))

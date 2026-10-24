@@ -3,6 +3,7 @@ package calculator
 import (
 	"fmt"
 	"os"
+	"sync"
 	"testing"
 )
 
@@ -10,6 +11,37 @@ const (
 	preventedWalkAgreeFloor   = 500
 	unpreventedWalkAgreeFloor = 6202
 )
+
+var _ = registerCorpusCheck("TestPreventedLifeLossWalkAgrees", func() corpusCheck { return &preventedLifeLossWalkCheck{} })
+
+type preventedLifeLossWalkCheck struct {
+	mu                                                 sync.Mutex
+	preventedSeen, preventedOK, controlSeen, controlOK int
+}
+
+func (c *preventedLifeLossWalkCheck) visit(_ string, rec oracleRecord, graded bool, env *Environment) {
+	if !graded {
+		return
+	}
+	want, has := rec.Output["NumberOfDamagingHits"]
+	if !has {
+		return
+	}
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	agrees := oracleClose(env.Player.Output["NumberOfDamagingHits"], want, oracleDumpTolerance)
+	if env.Player.Output["preventedLifeLossTotal"] > 0 {
+		c.preventedSeen++
+		if agrees {
+			c.preventedOK++
+		}
+	} else {
+		c.controlSeen++
+		if agrees {
+			c.controlOK++
+		}
+	}
+}
 
 // TestPreventedLifeLossWalkAgrees pins CalcDefence.lua:348-392, the prevented-life-loss arm of calcs.reducePoolsByDamage, as it is threaded through the EHP walk.
 func TestPreventedLifeLossWalkAgrees(t *testing.T) {
@@ -20,36 +52,8 @@ func TestPreventedLifeLossWalkAgrees(t *testing.T) {
 	}
 	requireGameData(t, "3.29")
 
-	oracle, err := oracleForLoadedData()
-	if err != nil {
-		t.Fatalf("REFUSING: cannot load the oracle blob: %v", err)
-	}
-	_, names := corpusNamesForLoadedData(t)
-
-	var preventedSeen, preventedOK, controlSeen, controlOK int
-	for _, name := range names {
-		rec, ok := oracle[name]
-		if !ok || rec.TreeSources < oracleMinTreeSources {
-			continue
-		}
-		want, has := rec.Output["NumberOfDamagingHits"]
-		if !has {
-			continue
-		}
-		env := corpusEnvForLoadedData(t, name)
-		agrees := oracleClose(env.Player.Output["NumberOfDamagingHits"], want, oracleDumpTolerance)
-		if env.Player.Output["preventedLifeLossTotal"] > 0 {
-			preventedSeen++
-			if agrees {
-				preventedOK++
-			}
-		} else {
-			controlSeen++
-			if agrees {
-				controlOK++
-			}
-		}
-	}
+	c := corpusWalkCheck[*preventedLifeLossWalkCheck](t)
+	preventedSeen, preventedOK, controlSeen, controlOK := c.preventedSeen, c.preventedOK, c.controlSeen, c.controlOK
 
 	if preventedSeen == 0 || controlSeen == 0 {
 		t.Fatalf("REFUSING: prevented population %d, control population %d — a floor over an empty "+

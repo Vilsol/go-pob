@@ -14,6 +14,7 @@ func TestLatestTreeVersionFollowsGameData(t *testing.T) {
 	want := map[string]pob.TreeVersion{
 		"3.18": TreeVersion3_18,
 		"3.20": TreeVersion3_20,
+		"3.29": TreeVersion3_29,
 	}[raw.LatestVersion]
 
 	if want == "" {

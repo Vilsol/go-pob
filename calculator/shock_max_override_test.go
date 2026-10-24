@@ -2,7 +2,9 @@ package calculator
 
 import (
 	"os"
+	"sort"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/Vilsol/go-pob/mod"
@@ -79,6 +81,29 @@ func modNamesOf(mods []mod.Mod) []string {
 	return out
 }
 
+var _ = registerCorpusCheck("TestOathOfSpringShockCapReachesTheOutput", func() corpusCheck { return &shockMaxOverrideCheck{} })
+
+type shockMaxOverrideCarrier struct {
+	name  string
+	wrong bool
+}
+
+type shockMaxOverrideCheck struct {
+	mu       sync.Mutex
+	carriers []shockMaxOverrideCarrier
+}
+
+func (c *shockMaxOverrideCheck) visit(name string, rec oracleRecord, graded bool, env *Environment) {
+	if !graded || env.Player.ModDB.Override(nil, "ShockMax") == nil {
+		return
+	}
+	want, has := rec.Output["MaximumShock"]
+	wrong := has && !oracleClose(env.Player.Output["MaximumShock"], want, oracleDumpTolerance)
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.carriers = append(c.carriers, shockMaxOverrideCarrier{name: name, wrong: wrong})
+}
+
 // TestOathOfSpringShockCapReachesTheOutput is the end-to-end half: a row that parses is not a row that ARRIVES.
 func TestOathOfSpringShockCapReachesTheOutput(t *testing.T) {
 	t.Parallel()
@@ -88,29 +113,16 @@ func TestOathOfSpringShockCapReachesTheOutput(t *testing.T) {
 	}
 	requireGameData(t, "3.29")
 
-	oracle, err := oracleForLoadedData()
-	if err != nil {
-		t.Fatalf("REFUSING: cannot load the oracle blob: %v", err)
-	}
-	_, names := corpusNamesForLoadedData(t)
-
+	c := corpusWalkCheck[*shockMaxOverrideCheck](t)
+	sort.Slice(c.carriers, func(i, j int) bool { return c.carriers[i].name < c.carriers[j].name })
 	var seen, wrong int
 	var wrongNames []string
-	for _, name := range names {
-		rec, ok := oracle[name]
-		if !ok || rec.TreeSources < oracleMinTreeSources {
-			continue
-		}
-		env := corpusEnvForLoadedData(t, name)
-		if env.Player.ModDB.Override(nil, "ShockMax") == nil {
-			continue
-		}
+	for _, carrier := range c.carriers {
 		seen++
-		if want, has := rec.Output["MaximumShock"]; has &&
-			!oracleClose(env.Player.Output["MaximumShock"], want, oracleDumpTolerance) {
+		if carrier.wrong {
 			wrong++
 			if len(wrongNames) < 5 {
-				wrongNames = append(wrongNames, name)
+				wrongNames = append(wrongNames, carrier.name)
 			}
 		}
 		if seen >= 40 {

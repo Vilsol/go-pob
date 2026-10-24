@@ -18,6 +18,7 @@ func TestAuraSourceReachCensus(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.SkipNow()
 	}
+	requireOperatorRun(t, "report-only census")
 	dir := diagDumpsDir(t)
 	source := os.Getenv("SOURCE")
 	if source == "" {

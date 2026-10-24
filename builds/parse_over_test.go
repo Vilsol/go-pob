@@ -62,6 +62,7 @@ func TestParseBuildOverMatchesParseBuild(t *testing.T) {
 	for i := 7; i < len(files); i += 211 {
 		picked = append(picked, filepath.Base(files[i]))
 	}
+	picked = corpusSample(picked, 2)
 	edits := []struct {
 		name string
 		edit func(b *pob.PathOfBuilding)

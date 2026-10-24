@@ -14,8 +14,8 @@ func TestExtraAuraAppliesToTotems(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("CORPUS!=true")
 	}
-	if raw.LatestVersion != "3.20" {
-		t.Skipf("SKIP: this test pins 3.20 values but the process loaded %s game data", raw.LatestVersion)
+	if raw.LatestVersion != "3.29" {
+		t.Skipf("SKIP: this test pins 3.29 values but the process loaded %s game data", raw.LatestVersion)
 	}
 
 	oracle, err := oracleForLoadedData()
@@ -23,7 +23,7 @@ func TestExtraAuraAppliesToTotems(t *testing.T) {
 		t.Fatalf("REFUSING: %v", err)
 	}
 
-	const build = "0226-deadeye-lightning-arrow.xml"
+	const build = "12649-ladder-WaAaFeLeK_6460.WaAaFeLdEdUwA.xml"
 
 	rec, ok := oracle[build]
 	if !ok {

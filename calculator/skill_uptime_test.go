@@ -14,8 +14,8 @@ func TestSkillUptime(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("CORPUS!=true")
 	}
-	if raw.LatestVersion != "3.20" {
-		t.Skipf("SKIP: this test pins 3.20 values but the process loaded %s game data", raw.LatestVersion)
+	if raw.LatestVersion != "3.29" {
+		t.Skipf("SKIP: this test pins 3.29 values but the process loaded %s game data", raw.LatestVersion)
 	}
 
 	oracle, err := oracleForLoadedData()
@@ -27,9 +27,9 @@ func TestSkillUptime(t *testing.T) {
 		build string
 		why   string
 	}{
-		{"1595-trickster-frost-bomb-2.xml", "plain arm: 2.013 / 2.508 = 80.26%"},
-		{"0192-inquisitor-molten-shell.xml", "NoCooldownRecoveryInDuration: 3.63 / (3.663 + 3.63) = 49.77%"},
-		{"0002-slayer-flicker-strike.xml", "capped at 100%"},
+		{"2747-ladder-sunruin_4840.allurenb.xml", "plain arm"},
+		{"13701-ladder-hgffgh1337_4350.PodvodniyDebik.xml", "uncapped"},
+		{"2204-ladder-Ntkiy_hach_1026.Torchlight_Tourist.xml", "capped at 100%"},
 	}
 
 	for _, c := range cases {

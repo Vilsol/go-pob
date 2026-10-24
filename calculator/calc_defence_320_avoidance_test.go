@@ -4,35 +4,35 @@ import (
 	"testing"
 )
 
-const avoidance320Build = "1268-assassin-cyclone-2.xml"
+const avoidance320Build = "0149-warden-frost-blades-2.xml"
 
 func TestAvoidAllDamageFromHitsChanceIsExposed(t *testing.T) {
-	env := defence320Env(t, avoidance320Build)
-	assertMatches320Oracle(t, env, avoidance320Build, "AvoidAllDamageFromHitsChance")
+	env := defenceEnv(t, avoidance320Build)
+	assertMatchesOracle(t, env, avoidance320Build, "AvoidAllDamageFromHitsChance")
 }
 
 func TestNotHitChanceIncludesAvoidAllDamageFromHits(t *testing.T) {
-	env := defence320Env(t, avoidance320Build)
+	env := defenceEnv(t, avoidance320Build)
 	for _, category := range []string{"Melee", "Projectile", "Spell", "SpellProjectile", "Average"} {
-		assertMatches320Oracle(t, env, avoidance320Build, category+"NotHitChance")
+		assertMatchesOracle(t, env, avoidance320Build, category+"NotHitChance")
 	}
 }
 
 const (
-	avoidanceProjectileOnlyBuild = "0005-trickster-vaal-flicker-strike.xml"
-	avoidanceSpecificTypeBuild   = "0804-elementalist-frostblink-2.xml"
+	avoidanceProjectileOnlyBuild = "0101-champion-lancing-steel.xml"
+	avoidanceSpecificTypeBuild   = "1549-luminary-animate-guardian-of-smiting-5.xml"
 )
 
 func TestProjectileAvoidanceEntersNotHitChanceWithoutSpecificTypeAvoidance(t *testing.T) {
-	env := defence320Env(t, avoidanceProjectileOnlyBuild)
+	env := defenceEnv(t, avoidanceProjectileOnlyBuild)
 	for _, stat := range []string{"ProjectileNotHitChance", "SpellProjectileNotHitChance", "AverageNotHitChance", "ConfiguredNotHitChance", "ConfiguredDamageChance"} {
-		assertMatches320Oracle(t, env, avoidanceProjectileOnlyBuild, stat)
+		assertMatchesOracle(t, env, avoidanceProjectileOnlyBuild, stat)
 	}
 }
 
 func TestSpecificTypeAvoidanceSuppressesTheProjectileNotHitFactor(t *testing.T) {
-	env := defence320Env(t, avoidanceSpecificTypeBuild)
+	env := defenceEnv(t, avoidanceSpecificTypeBuild)
 	for _, stat := range []string{"ProjectileNotHitChance", "SpellProjectileNotHitChance", "AverageNotHitChance", "ConfiguredDamageChance"} {
-		assertMatches320Oracle(t, env, avoidanceSpecificTypeBuild, stat)
+		assertMatchesOracle(t, env, avoidanceSpecificTypeBuild, stat)
 	}
 }

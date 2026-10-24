@@ -3,12 +3,45 @@ package calculator
 import (
 	"math"
 	"os"
-	"path/filepath"
-	"strings"
+	"sync"
 	"testing"
-
-	"github.com/Vilsol/go-pob/builds"
 )
+
+const ailmentMaxPerSkillStat = "MaximumShock"
+
+var _ = registerCorpusCheck("TestAilmentMaximumIsMaxOverActiveSkills", func() corpusCheck {
+	return &ailmentMaxPerSkillCheck{ours: map[float64]bool{}, theirs: map[float64]bool{}}
+})
+
+type ailmentMaxPerSkillCheck struct {
+	mu           sync.Mutex
+	seen, agreed int
+	ours, theirs map[float64]bool
+	log          corpusCheckLog
+}
+
+func (c *ailmentMaxPerSkillCheck) visit(name string, rec oracleRecord, _ bool, env *Environment) {
+	const stat = ailmentMaxPerSkillStat
+	if rec.Output[stat] == 0 {
+		return
+	}
+	if env == nil || env.Player == nil {
+		return
+	}
+	got, want := env.Player.Output[stat], rec.Output[stat]
+	if math.IsNaN(got) || math.IsInf(got, 0) {
+		c.log.fatalf(name, "%s: %s is %v", name, stat, got)
+		return
+	}
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.seen++
+	c.ours[math.Round(got*1e6)/1e6] = true
+	c.theirs[math.Round(want*1e6)/1e6] = true
+	if math.Abs(got-want) <= 0.005*math.Abs(want) {
+		c.agreed++
+	}
+}
 
 // TestAilmentMaximumIsMaxOverActiveSkills pins CalcPerform.lua:3532-3539.
 func TestAilmentMaximumIsMaxOverActiveSkills(t *testing.T) {
@@ -18,53 +51,10 @@ func TestAilmentMaximumIsMaxOverActiveSkills(t *testing.T) {
 		t.Skip("set CORPUS=true")
 	}
 	requireGameData(t, "3.29")
-	oracle, err := oracleForLoadedData()
-	if err != nil {
-		t.Fatalf("oracle: %v", err)
-	}
-	corpusDir, _ := corpusNamesForLoadedData(t)
-	entries, err := os.ReadDir(corpusDir)
-	if err != nil {
-		t.Fatalf("%v", err)
-	}
-
-	const stat = "MaximumShock"
-	seen, agreed := 0, 0
-	ours := map[float64]bool{}
-	theirs := map[float64]bool{}
-
-	for _, e := range entries {
-		name := e.Name()
-		if !strings.HasSuffix(name, ".xml") {
-			continue
-		}
-		rec, ok := oracle[name]
-		if !ok || rec.Output[stat] == 0 {
-			continue
-		}
-		raw, err := os.ReadFile(filepath.Join(corpusDir, name))
-		if err != nil {
-			continue
-		}
-		build, err := builds.ParseBuild(raw)
-		if err != nil {
-			continue
-		}
-		env := BuildOutputWithCache(&Calculator{PoB: build}, OutputModeMain, NewEnvironmentCache())
-		if env == nil || env.Player == nil {
-			continue
-		}
-		got, want := env.Player.Output[stat], rec.Output[stat]
-		if math.IsNaN(got) || math.IsInf(got, 0) {
-			t.Fatalf("%s: %s is %v", name, stat, got)
-		}
-		seen++
-		ours[math.Round(got*1e6)/1e6] = true
-		theirs[math.Round(want*1e6)/1e6] = true
-		if math.Abs(got-want) <= 0.005*math.Abs(want) {
-			agreed++
-		}
-	}
+	c := corpusWalkCheck[*ailmentMaxPerSkillCheck](t)
+	c.log.report(t)
+	const stat = ailmentMaxPerSkillStat
+	seen, agreed, ours, theirs := c.seen, c.agreed, c.ours, c.theirs
 
 	if seen < 1000 {
 		t.Fatalf("REFUSING: only %d builds publish %s; the population has moved", seen, stat)

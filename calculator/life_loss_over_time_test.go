@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"sort"
+	"sync"
 	"testing"
 )
 
@@ -11,6 +12,33 @@ var lifeLossOverTimeFloors = map[string]int{
 	"LifeBelowHalfLossLostOverTime": 456,
 	"LifeLossLostAvg":               337,
 	"LifeLossLostMax":               438,
+}
+
+var _ = registerCorpusCheck("TestLifeLossOverTimeTrackersAgree", func() corpusCheck {
+	return &lifeLossOverTimeCheck{seen: map[string]int{}, agree: map[string]int{}}
+})
+
+type lifeLossOverTimeCheck struct {
+	mu          sync.Mutex
+	seen, agree map[string]int
+}
+
+func (c *lifeLossOverTimeCheck) visit(_ string, rec oracleRecord, graded bool, env *Environment) {
+	if !graded || env.Player.Output["preventedLifeLossTotal"] <= 0 {
+		return
+	}
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	for key := range lifeLossOverTimeFloors {
+		want, has := rec.Output[key]
+		if !has {
+			continue
+		}
+		c.seen[key]++
+		if oracleClose(env.Player.Output[key], want, oracleDumpTolerance) {
+			c.agree[key]++
+		}
+	}
 }
 
 // TestLifeLossOverTimeTrackersAgree pins the three sites that carry prevented life loss OUT of the EHP walk and into the outputs that read it.
@@ -22,34 +50,8 @@ func TestLifeLossOverTimeTrackersAgree(t *testing.T) {
 	}
 	requireGameData(t, "3.29")
 
-	oracle, err := oracleForLoadedData()
-	if err != nil {
-		t.Fatalf("REFUSING: cannot load the oracle blob: %v", err)
-	}
-	_, names := corpusNamesForLoadedData(t)
-
-	seen := map[string]int{}
-	agree := map[string]int{}
-	for _, name := range names {
-		rec, ok := oracle[name]
-		if !ok || rec.TreeSources < oracleMinTreeSources {
-			continue
-		}
-		env := corpusEnvForLoadedData(t, name)
-		if env.Player.Output["preventedLifeLossTotal"] <= 0 {
-			continue
-		}
-		for key := range lifeLossOverTimeFloors {
-			want, has := rec.Output[key]
-			if !has {
-				continue
-			}
-			seen[key]++
-			if oracleClose(env.Player.Output[key], want, oracleDumpTolerance) {
-				agree[key]++
-			}
-		}
-	}
+	c := corpusWalkCheck[*lifeLossOverTimeCheck](t)
+	seen, agree := c.seen, c.agree
 
 	keys := make([]string, 0, len(lifeLossOverTimeFloors))
 	for k := range lifeLossOverTimeFloors {

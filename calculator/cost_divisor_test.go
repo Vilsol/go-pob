@@ -17,9 +17,9 @@ func TestSkillCostsAreFinite(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.SkipNow()
 	}
-	requireGameData(t, "3.20")
+	requireGameData(t, "3.29")
 
-	const name = "0033-hierophant-storm-burst-2.xml"
+	const name = "15226-ladder-zelltran0303_7154.ADBZ_SungJinWo.xml"
 
 	oracle, err := oracleForLoadedData()
 	if err != nil {
@@ -27,7 +27,7 @@ func TestSkillCostsAreFinite(t *testing.T) {
 	}
 	rec, ok := oracle[name]
 	if !ok {
-		t.Fatalf("REFUSING: %s is not in the 3.20 blob", name)
+		t.Fatalf("REFUSING: %s is not in the oracle blob", name)
 	}
 	want, ok := rec.Output["ManaCost"]
 	if !ok {

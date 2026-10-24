@@ -6,8 +6,10 @@ import (
 
 // TestSocketGroupOrderHoistsOnlyCrossLinkedSlots: CalcSetup.lua:998-1009 hoists a socket group to the front of the processing order only when the group's slot is the SOURCE SLOT of a live LinkedSupport mod.
 func TestSocketGroupOrderHoistsOnlyCrossLinkedSlots(t *testing.T) {
+	requireGameData(t, "3.20")
+
 	t.Run("no linked support keeps file order", func(t *testing.T) {
-		env := defence320Env(t, "0277-juggernaut-righteous-fire.xml")
+		env := defenceEnv(t, "0277-juggernaut-righteous-fire.xml")
 		skitterbots := indexOfActiveSkill(t, env, "Summon Skitterbots")
 		frostblink := indexOfActiveSkill(t, env, "Frostblink")
 		if skitterbots > frostblink {
@@ -18,7 +20,7 @@ func TestSocketGroupOrderHoistsOnlyCrossLinkedSlots(t *testing.T) {
 	})
 
 	t.Run("linked support still hoists its source slot", func(t *testing.T) {
-		env := defence320Env(t, "4783-elementalist-ethereal-knives-118.xml")
+		env := defenceEnv(t, "4783-elementalist-ethereal-knives-118.xml")
 		knives := env.Player.ActiveSkillList[indexOfActiveSkill(t, env, "Ethereal Knives")]
 		const want = "SupportSwiftAfflictionPlus"
 		for _, support := range knives.SupportList {

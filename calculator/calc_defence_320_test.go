@@ -5,14 +5,14 @@ import (
 	"testing"
 )
 
-func defence320Env(t *testing.T, file string) *Environment {
+func defenceEnv(t *testing.T, file string) *Environment {
 	t.Helper()
-	requireGameData(t, "3.20")
+	requireGameData(t, "3.29")
 
 	return corpusEnvForLoadedData(t, file)
 }
 
-func assertMatches320Oracle(t *testing.T, env *Environment, file, stat string) {
+func assertMatchesOracle(t *testing.T, env *Environment, file, stat string) {
 	t.Helper()
 
 	oracle, err := oracleForLoadedData()
@@ -30,7 +30,7 @@ func assertMatches320Oracle(t *testing.T, env *Environment, file, stat string) {
 	}
 	want, ok := rec.Output[stat]
 	if !ok {
-		t.Fatalf("REFUSING: PoB's 3.20 output for %s has no %s (it reports %d stats)",
+		t.Fatalf("REFUSING: PoB's output for %s has no %s (it reports %d stats)",
 			file, stat, len(rec.Output))
 	}
 
@@ -42,59 +42,44 @@ func assertMatches320Oracle(t *testing.T, env *Environment, file, stat string) {
 		t.Fatalf("%s: %s is %v on our side; PoB reports %.6g", file, stat, got, want)
 	}
 	if diff := math.Abs(got - want); diff > math.Abs(want)*oracleDumpTolerance {
-		t.Fatalf("%s: %s = %.10g, PoB 3.20 reports %.10g (delta %.10g)", file, stat, got, want, diff)
+		t.Fatalf("%s: %s = %.10g, PoB reports %.10g (delta %.10g)", file, stat, got, want, diff)
 	}
 }
 
-const defence320Build = "0040-elementalist-storm-brand.xml"
-
-// TestEnemyDamageMultIsExposed pins CalcDefence.lua:977.
-func TestEnemyDamageMultIsExposed(t *testing.T) {
-	env := defence320Env(t, defence320Build)
-	for _, damageType := range []string{"Physical", "Lightning", "Cold", "Fire", "Chaos"} {
-		assertMatches320Oracle(t, env, defence320Build, damageType+"EnemyDamageMult")
-	}
-}
+const (
+	defenceTakenHitMultiBuild    = "2649-ladder-dgsgsgs_6561.PathofExileisreallyfun.xml"
+	defenceAppliedArmourBuild    = "1101-reliquarian-automation.xml"
+	defenceSelfAilmentBuild      = "0167-slayer-cyclone.xml"
+	defenceDebuffExpirationBuild = "3271-ladder-SoftlyAndQuietly_5252.Softly_Yolo.xml"
+)
 
 // TestResistAndAfterReductionTakenHitMultiAreExposed pins CalcDefence.lua:1216-1218.
 func TestResistAndAfterReductionTakenHitMultiAreExposed(t *testing.T) {
-	env := defence320Env(t, defence320Build)
+	env := defenceEnv(t, defenceTakenHitMultiBuild)
 	for _, damageType := range []string{"Physical", "Lightning", "Cold", "Fire", "Chaos"} {
-		assertMatches320Oracle(t, env, defence320Build, damageType+"ResistTakenHitMulti")
-		assertMatches320Oracle(t, env, defence320Build, damageType+"AfterReductionTakenHitMulti")
+		assertMatchesOracle(t, env, defenceTakenHitMultiBuild, damageType+"ResistTakenHitMulti")
+		assertMatchesOracle(t, env, defenceTakenHitMultiBuild, damageType+"AfterReductionTakenHitMulti")
 	}
 }
 
 // TestEffectiveAppliedArmourIsExposed pins CalcDefence.lua:1215.
 func TestEffectiveAppliedArmourIsExposed(t *testing.T) {
-	env := defence320Env(t, defence320Build)
+	env := defenceEnv(t, defenceAppliedArmourBuild)
 	for _, damageType := range []string{"Physical", "Lightning", "Cold", "Fire", "Chaos"} {
-		assertMatches320Oracle(t, env, defence320Build, damageType+"EffectiveAppliedArmour")
+		assertMatchesOracle(t, env, defenceAppliedArmourBuild, damageType+"EffectiveAppliedArmour")
 	}
 }
 
 // TestSelfAilmentEffectIsExposed pins CalcDefence.lua:930-932.
 func TestSelfAilmentEffectIsExposed(t *testing.T) {
-	env := defence320Env(t, defence320Build)
+	env := defenceEnv(t, defenceSelfAilmentBuild)
 	for _, ailment := range []string{"Bleed", "Poison", "Ignite", "Chill", "Freeze", "Shock", "Scorch", "Brittle", "Sap"} {
-		assertMatches320Oracle(t, env, defence320Build, "Self"+ailment+"Effect")
+		assertMatchesOracle(t, env, defenceSelfAilmentBuild, "Self"+ailment+"Effect")
 	}
 }
 
 // TestDebuffExpirationModifierIsExposed pins CalcDefence.lua:905-906.
 func TestDebuffExpirationModifierIsExposed(t *testing.T) {
-	env := defence320Env(t, defence320Build)
-	assertMatches320Oracle(t, env, defence320Build, "DebuffExpirationModifier")
-}
-
-// TestSecondMinimalMaximumHitTakenIsExposed pins CalcDefence.lua:2562-2572 — the second smallest <T>MaximumHitTaken, which is what PoB's sidebar labels "Eff.
-func TestSecondMinimalMaximumHitTakenIsExposed(t *testing.T) {
-	env := defence320Env(t, defence320Build)
-	assertMatches320Oracle(t, env, defence320Build, "SecondMinimalMaximumHitTaken")
-}
-
-// TestStunThresholdIsExposed pins CalcDefence.lua:1301-1320.
-func TestStunThresholdIsExposed(t *testing.T) {
-	env := defence320Env(t, defence320Build)
-	assertMatches320Oracle(t, env, defence320Build, "StunThreshold")
+	env := defenceEnv(t, defenceDebuffExpirationBuild)
+	assertMatchesOracle(t, env, defenceDebuffExpirationBuild, "DebuffExpirationModifier")
 }

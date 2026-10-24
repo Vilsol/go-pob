@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"sort"
+	"sync"
 	"testing"
 )
 
@@ -14,21 +15,7 @@ var takenHitExonerated = []string{
 
 const takenHitArisesHereCeiling = 150
 
-// TestTakenHitChainCensus answers "where in the incoming-damage chain does <type>TakenHit go wrong".
-func TestTakenHitChainCensus(t *testing.T) {
-	t.Parallel()
-
-	if os.Getenv("CORPUS") != "true" {
-		t.Skip("set CORPUS=true")
-	}
-	requireGameData(t, "3.29")
-
-	oracle, err := oracleForLoadedData()
-	if err != nil {
-		t.Fatalf("REFUSING: cannot load the oracle blob: %v", err)
-	}
-	_, names := corpusNamesForLoadedData(t)
-
+func takenHitChainRungs() []string {
 	rungs := []string{
 		"PhysicalTakenDamage", "PhysicalEnemyDamage", "totalEnemyDamage", "PhysicalDamageReduction",
 		"Armour", "Evasion", "ConfiguredEvadeChance", "EnemyCritChance", "EnemyCritEffect",
@@ -44,43 +31,65 @@ func TestTakenHitChainCensus(t *testing.T) {
 			rungs = append(rungs, k)
 		}
 	}
+	return rungs
+}
 
-	wrongAt := func(env *Environment, rec *oracleRecord, key string) (bool, bool) {
+var _ = registerCorpusCheck("TestTakenHitChainCensus", func() corpusCheck {
+	return &takenHitChainCheck{rungs: takenHitChainRungs(), counts: map[string]int{}}
+})
+
+type takenHitChainCheck struct {
+	mu                      sync.Mutex
+	rungs                   []string
+	counts                  map[string]int
+	seen, wrong, arisesHere int
+}
+
+func (c *takenHitChainCheck) visit(_ string, rec oracleRecord, graded bool, env *Environment) {
+	if !graded {
+		return
+	}
+	wrongAt := func(key string) (bool, bool) {
 		want, has := rec.Output[key]
 		if !has {
 			return false, false
 		}
 		return !oracleClose(env.Player.Output[key], want, oracleDumpTolerance), true
 	}
-
-	counts := map[string]int{}
-	var seen, wrong, arisesHere int
-	for _, name := range names {
-		rec, ok := oracle[name]
-		if !ok || rec.TreeSources < oracleMinTreeSources {
-			continue
-		}
-		env := corpusEnvForLoadedData(t, name)
-		bad, present := wrongAt(env, &rec, "PhysicalTakenHit")
-		if !present {
-			continue
-		}
-		seen++
-		if !bad {
-			continue
-		}
-		wrong++
-		for _, k := range rungs {
-			if w, p := wrongAt(env, &rec, k); p && w {
-				counts[k]++
-			}
-		}
-		dmgBad, _ := wrongAt(env, &rec, "PhysicalTakenDamage")
-		drBad, _ := wrongAt(env, &rec, "PhysicalDamageReduction")
-		if !dmgBad && !drBad {
-			arisesHere++
+	bad, present := wrongAt("PhysicalTakenHit")
+	if !present {
+		return
+	}
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.seen++
+	if !bad {
+		return
+	}
+	c.wrong++
+	for _, k := range c.rungs {
+		if w, p := wrongAt(k); p && w {
+			c.counts[k]++
 		}
 	}
+	dmgBad, _ := wrongAt("PhysicalTakenDamage")
+	drBad, _ := wrongAt("PhysicalDamageReduction")
+	if !dmgBad && !drBad {
+		c.arisesHere++
+	}
+}
+
+// TestTakenHitChainCensus answers "where in the incoming-damage chain does <type>TakenHit go wrong".
+func TestTakenHitChainCensus(t *testing.T) {
+	t.Parallel()
+
+	if os.Getenv("CORPUS") != "true" {
+		t.Skip("set CORPUS=true")
+	}
+	requireGameData(t, "3.29")
+
+	c := corpusWalkCheck[*takenHitChainCheck](t)
+	rungs, counts, seen, wrong, arisesHere := takenHitChainRungs(), c.counts, c.seen, c.wrong, c.arisesHere
 
 	if seen == 0 || wrong == 0 {
 		t.Fatalf("REFUSING: PhysicalTakenHit graded on %d builds, %d wrong — a census over an empty "+

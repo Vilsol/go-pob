@@ -14,8 +14,8 @@ func TestAilmentCritChanceIsStackWeighted(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("CORPUS!=true")
 	}
-	if raw.LatestVersion != "3.20" {
-		t.Skipf("SKIP: this test pins 3.20 values but the process loaded %s game data", raw.LatestVersion)
+	if raw.LatestVersion != "3.29" {
+		t.Skipf("SKIP: this test pins 3.29 values but the process loaded %s game data", raw.LatestVersion)
 	}
 
 	oracle, err := oracleForLoadedData()
@@ -28,8 +28,8 @@ func TestAilmentCritChanceIsStackWeighted(t *testing.T) {
 		minion bool
 		keys   []string
 	}{
-		{"1650-necromancer-summon-raging-spirit-29.xml", true, []string{"IgniteChance"}},
-		{"3416-trickster-frost-blades-75.xml", false, []string{"BleedChance"}},
+		{"0653-scion-none-mirror-arrow-of-bombarding-clones.xml", true, []string{"IgniteChance"}},
+		{"15671-gladiator-dual-strike-of-ambidexterity.xml", false, []string{"BleedChance"}},
 	}
 
 	for _, c := range cases {

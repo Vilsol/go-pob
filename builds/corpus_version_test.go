@@ -51,3 +51,15 @@ func TestCorpusVersionResolutionTracksDefaultVersion(t *testing.T) {
 	}
 	t.Logf("DefaultVersion = %s", m[1])
 }
+
+// corpusSample keeps a whole-corpus walk out of the per-fix tier: without CORPUS=true it keeps every stride-th entry.
+func corpusSample[T any](entries []T, stride int) []T {
+	if os.Getenv("CORPUS") == "true" {
+		return entries
+	}
+	out := make([]T, 0, len(entries)/stride+1)
+	for i := 0; i < len(entries); i += stride {
+		out = append(out, entries[i])
+	}
+	return out
+}

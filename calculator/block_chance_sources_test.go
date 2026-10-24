@@ -3,6 +3,7 @@ package calculator
 import (
 	"fmt"
 	"os"
+	"sync"
 	"testing"
 )
 
@@ -11,6 +12,35 @@ const (
 	effectiveAvgBlockAgreeFloor      = 8601
 	configuredDamageChanceAgreeFloor = 8596
 )
+
+var blockChanceSourcesStats = []string{"BlockChance", "EffectiveAverageBlockChance", "ConfiguredDamageChance"}
+
+var _ = registerCorpusCheck("TestBlockChanceSourcesAgree", func() corpusCheck {
+	return &blockChanceSourcesCheck{seen: map[string]int{}, agree: map[string]int{}}
+})
+
+type blockChanceSourcesCheck struct {
+	mu          sync.Mutex
+	seen, agree map[string]int
+}
+
+func (c *blockChanceSourcesCheck) visit(_ string, rec oracleRecord, graded bool, env *Environment) {
+	if !graded {
+		return
+	}
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	for _, s := range blockChanceSourcesStats {
+		want, has := rec.Output[s]
+		if !has {
+			continue
+		}
+		c.seen[s]++
+		if oracleClose(env.Player.Output[s], want, oracleDumpTolerance) {
+			c.agree[s]++
+		}
+	}
+}
 
 // TestBlockChanceSourcesAgree pins the two producers of baseBlockChance/BlockChance that this tree had no row for at all.
 func TestBlockChanceSourcesAgree(t *testing.T) {
@@ -21,32 +51,8 @@ func TestBlockChanceSourcesAgree(t *testing.T) {
 	}
 	requireGameData(t, "3.29")
 
-	oracle, err := oracleForLoadedData()
-	if err != nil {
-		t.Fatalf("REFUSING: cannot load the oracle blob: %v", err)
-	}
-	_, names := corpusNamesForLoadedData(t)
-
-	stats := []string{"BlockChance", "EffectiveAverageBlockChance", "ConfiguredDamageChance"}
-	seen := map[string]int{}
-	agree := map[string]int{}
-	for _, name := range names {
-		rec, ok := oracle[name]
-		if !ok || rec.TreeSources < oracleMinTreeSources {
-			continue
-		}
-		env := corpusEnvForLoadedData(t, name)
-		for _, s := range stats {
-			want, has := rec.Output[s]
-			if !has {
-				continue
-			}
-			seen[s]++
-			if oracleClose(env.Player.Output[s], want, oracleDumpTolerance) {
-				agree[s]++
-			}
-		}
-	}
+	c := corpusWalkCheck[*blockChanceSourcesCheck](t)
+	stats, seen, agree := blockChanceSourcesStats, c.seen, c.agree
 	for _, s := range stats {
 		if seen[s] == 0 {
 			t.Fatalf("REFUSING: %s has no graded builds — a floor over an empty set asserts nothing", s)

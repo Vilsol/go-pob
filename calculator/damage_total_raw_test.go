@@ -3,10 +3,47 @@ package calculator
 import (
 	"math"
 	"os"
+	"sync"
 	"testing"
 
 	"github.com/Vilsol/go-pob/data"
 )
+
+var _ = registerCorpusCheck("TestDamageTotalSumsTheRawHit", func() corpusCheck { return &damageTotalRawCheck{} })
+
+type damageTotalRawCheck struct {
+	mu                                             sync.Mutex
+	shortSeen, shortOK, allSeen, allOK, fractional int
+}
+
+func (c *damageTotalRawCheck) visit(_ string, rec oracleRecord, graded bool, env *Environment) {
+	if !graded {
+		return
+	}
+	want, has := rec.Output["NumberOfDamagingHits"]
+	if !has {
+		return
+	}
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	for _, dt := range data.DamageType("").Values() {
+		if v := rec.Output[string(dt)+"TakenHit"]; v > 0 && v != math.Trunc(v) {
+			c.fractional++
+			break
+		}
+	}
+	agrees := oracleClose(env.Player.Output["NumberOfDamagingHits"], want, oracleDumpTolerance)
+	c.allSeen++
+	if agrees {
+		c.allOK++
+	}
+	if want <= 1 {
+		c.shortSeen++
+		if agrees {
+			c.shortOK++
+		}
+	}
+}
 
 // TestDamageTotalSumsTheRawHit is the red-green for CalcDefence.lua:2643-2645.
 //
@@ -19,41 +56,8 @@ func TestDamageTotalSumsTheRawHit(t *testing.T) {
 	}
 	requireGameData(t, "3.29")
 
-	oracle, err := oracleForLoadedData()
-	if err != nil {
-		t.Fatalf("REFUSING: cannot load the oracle blob: %v", err)
-	}
-	_, names := corpusNamesForLoadedData(t)
-
-	var shortSeen, shortOK, allSeen, allOK, fractional int
-	for _, name := range names {
-		rec, ok := oracle[name]
-		if !ok || rec.TreeSources < oracleMinTreeSources {
-			continue
-		}
-		want, has := rec.Output["NumberOfDamagingHits"]
-		if !has {
-			continue
-		}
-		for _, dt := range data.DamageType("").Values() {
-			if v := rec.Output[string(dt)+"TakenHit"]; v > 0 && v != math.Trunc(v) {
-				fractional++
-				break
-			}
-		}
-		env := corpusEnvForLoadedData(t, name)
-		agrees := oracleClose(env.Player.Output["NumberOfDamagingHits"], want, oracleDumpTolerance)
-		allSeen++
-		if agrees {
-			allOK++
-		}
-		if want <= 1 {
-			shortSeen++
-			if agrees {
-				shortOK++
-			}
-		}
-	}
+	c := corpusWalkCheck[*damageTotalRawCheck](t)
+	shortSeen, shortOK, allSeen, allOK, fractional := c.shortSeen, c.shortOK, c.allSeen, c.allOK, c.fractional
 
 	t.Logf("=== damageTotal === all: %d of %d agree | single-pass slice: %d of %d | "+
 		"builds with fractional incoming damage: %d of %d",

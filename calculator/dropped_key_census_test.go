@@ -18,6 +18,7 @@ func TestDroppedSkillDataKeyCensus(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
+	requireOperatorRun(t, "report-only census; `task dropped-keys`")
 	requireGameData(t, "3.29")
 
 	dir := corpusDirForLoadedData(t)

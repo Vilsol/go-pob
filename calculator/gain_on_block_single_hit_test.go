@@ -3,6 +3,7 @@ package calculator
 import (
 	"fmt"
 	"os"
+	"sync"
 	"testing"
 )
 
@@ -10,6 +11,49 @@ const (
 	singleHitGainAgreeFloor = 171
 	multiHitGainAgreeFloor  = 1970
 )
+
+var gainOnBlockKeys = []string{"LifeOnBlock", "ManaOnBlock", "EnergyShieldOnBlock",
+	"EnergyShieldOnSpellBlock", "EnergyShieldOnSuppress", "LifeOnSuppress"}
+
+var _ = registerCorpusCheck("TestGainOnBlockNeedsMoreThanOneHit", func() corpusCheck { return &gainOnBlockSingleHitCheck{} })
+
+type gainOnBlockSingleHitCheck struct {
+	mu                                       sync.Mutex
+	singleSeen, singleOK, multiSeen, multiOK int
+}
+
+func (c *gainOnBlockSingleHitCheck) visit(_ string, rec oracleRecord, graded bool, env *Environment) {
+	if !graded {
+		return
+	}
+	want, has := rec.Output["NumberOfMitigatedDamagingHits"]
+	if !has {
+		return
+	}
+	gains := false
+	for _, k := range gainOnBlockKeys {
+		if env.Player.Output[k] != 0 {
+			gains = true
+		}
+	}
+	if !gains {
+		return
+	}
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	agrees := oracleClose(env.Player.Output["NumberOfMitigatedDamagingHits"], want, oracleDumpTolerance)
+	if rec.Output["NumberOfDamagingHits"] <= 1 {
+		c.singleSeen++
+		if agrees {
+			c.singleOK++
+		}
+	} else {
+		c.multiSeen++
+		if agrees {
+			c.multiOK++
+		}
+	}
+}
 
 // TestGainOnBlockNeedsMoreThanOneHit pins the second conjunct of CalcDefence.lua:2760 and :2793, which this port dropped from both.
 //
@@ -22,48 +66,8 @@ func TestGainOnBlockNeedsMoreThanOneHit(t *testing.T) {
 	}
 	requireGameData(t, "3.29")
 
-	oracle, err := oracleForLoadedData()
-	if err != nil {
-		t.Fatalf("REFUSING: cannot load the oracle blob: %v", err)
-	}
-	_, names := corpusNamesForLoadedData(t)
-
-	gainKeys := []string{"LifeOnBlock", "ManaOnBlock", "EnergyShieldOnBlock",
-		"EnergyShieldOnSpellBlock", "EnergyShieldOnSuppress", "LifeOnSuppress"}
-
-	var singleSeen, singleOK, multiSeen, multiOK int
-	for _, name := range names {
-		rec, ok := oracle[name]
-		if !ok || rec.TreeSources < oracleMinTreeSources {
-			continue
-		}
-		want, has := rec.Output["NumberOfMitigatedDamagingHits"]
-		if !has {
-			continue
-		}
-		env := corpusEnvForLoadedData(t, name)
-		gains := false
-		for _, k := range gainKeys {
-			if env.Player.Output[k] != 0 {
-				gains = true
-			}
-		}
-		if !gains {
-			continue
-		}
-		agrees := oracleClose(env.Player.Output["NumberOfMitigatedDamagingHits"], want, oracleDumpTolerance)
-		if rec.Output["NumberOfDamagingHits"] <= 1 {
-			singleSeen++
-			if agrees {
-				singleOK++
-			}
-		} else {
-			multiSeen++
-			if agrees {
-				multiOK++
-			}
-		}
-	}
+	c := corpusWalkCheck[*gainOnBlockSingleHitCheck](t)
+	singleSeen, singleOK, multiSeen, multiOK := c.singleSeen, c.singleOK, c.multiSeen, c.multiOK
 
 	if singleSeen == 0 || multiSeen == 0 {
 		t.Fatalf("REFUSING: single-hit population %d, multi-hit control %d — a floor over an empty "+

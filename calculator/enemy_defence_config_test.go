@@ -15,16 +15,16 @@ func TestEnemyCritEffectMatchesPoB(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.SkipNow()
 	}
-	requireGameData(t, "3.20")
+	requireGameData(t, "3.29")
 
 	cases := []struct {
 		build string
 		note  string
 		want  float64
 	}{
-		{"0001-juggernaut-molten-strike", "no <Input>", 1},
-		{"0287-occultist-frostbite-2", "<Input> 0", 1},
-		{"0973-raider-cyclone", "<Input> -7 + INC", 0.99118},
+		{"4243-ladder-BoBricek_5410.BoBricekScion", "no <Input>", 1.0105},
+		{"0549-guardian-tempest-shield", "<Input> 0", 1},
+		{"1496-elementalist-winter-orb-34", "<Input> 6", 1.018},
 	}
 
 	dir := corpusDirForLoadedData(t)
@@ -52,13 +52,13 @@ func TestBossAddsNoCurseEffectOnSelf(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.SkipNow()
 	}
-	requireGameData(t, "3.20")
+	requireGameData(t, "3.29")
 
 	dir := corpusDirForLoadedData(t)
 	for _, tc := range []struct{ build, isBoss string }{
-		{"0001-juggernaut-molten-strike", "Boss"},
-		{"0002-slayer-flicker-strike", "Pinnacle"},
-		{"0020-deadeye-fireball", "Uber"},
+		{"15363-pathfinder-caustic-arrow", "Boss"},
+		{"0005-occultist-vaal-double-strike", "Pinnacle"},
+		{"1550-chieftain-ethereal-knives-4", "Uber"},
 	} {
 		t.Run(tc.build, func(t *testing.T) {
 			file, err := os.ReadFile(filepath.Join(dir, tc.build+".xml"))
@@ -82,7 +82,7 @@ func TestEnemyArmourEvasionMatchesPoB(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.SkipNow()
 	}
-	requireGameData(t, "3.20")
+	requireGameData(t, "3.29")
 
 	cases := []struct {
 		build   string
@@ -90,10 +90,10 @@ func TestEnemyArmourEvasionMatchesPoB(t *testing.T) {
 		armour  float64
 		evasion float64
 	}{
-		{"0007-ascendant-hexblast", "None", 17268, 8388},
-		{"0001-juggernaut-molten-strike", "Boss", 17268, 8388},
-		{"0002-slayer-flicker-strike", "Pinnacle", 24752, 10143},
-		{"0020-deadeye-fireball", "Uber", 23830, 11575},
+		{"0061-trickster-spark-of-the-nova-3", "None", 44591, 8388},
+		{"15363-pathfinder-caustic-arrow", "Boss", 44591, 8388},
+		{"0005-occultist-vaal-double-strike", "Pinnacle", 61989, 10143},
+		{"1550-chieftain-ethereal-knives-4", "Uber", 55739, 9778},
 	}
 
 	dir := corpusDirForLoadedData(t)

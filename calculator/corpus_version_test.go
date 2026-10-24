@@ -123,22 +123,31 @@ func corpusEnvForLoadedData(t *testing.T, file string) *Environment {
 	return BuildOutputWithCache(&Calculator{PoB: build}, OutputModeMain, corpusCacheForTest(t))
 }
 
-func dumpsDirForLoadedData(t *testing.T) string {
-	t.Helper()
+// dumpsDirCandidate resolves DUMPS without a test; a non-empty second value says why there is no dump set.
+func dumpsDirCandidate() (string, string) {
 	home, homeErr := os.UserHomeDir()
 	dir := os.Getenv("DUMPS")
 	switch {
 	case dir == "":
 		if homeErr != nil {
-			t.Skipf("DUMPS unset and no home directory: %v", homeErr)
+			return "", fmt.Sprintf("DUMPS unset and no home directory: %v", homeErr)
 		}
 		dir = filepath.Join(home, "go-pob-corpus", "dumps-"+raw.LatestVersion)
 	case strings.HasPrefix(dir, "~/") && homeErr == nil:
 		dir = filepath.Join(home, dir[2:])
 	}
 	if info, err := os.Stat(dir); err != nil || !info.IsDir() {
-		t.Skipf("no dump set at %s — set DUMPS to a dump of the %s corpus "+
+		return dir, fmt.Sprintf("no dump set at %s — set DUMPS to a dump of the %s corpus "+
 			"(scripts/dump_shard.sh), or leave it unset to skip", dir, raw.LatestVersion)
+	}
+	return dir, ""
+}
+
+func dumpsDirForLoadedData(t *testing.T) string {
+	t.Helper()
+	dir, skip := dumpsDirCandidate()
+	if skip != "" {
+		t.Skip(skip)
 	}
 
 	_, names := corpusNamesForLoadedData(t)

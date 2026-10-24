@@ -14,8 +14,8 @@ func TestTotemActionSpeedIsWritten(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("CORPUS!=true")
 	}
-	if raw.LatestVersion != "3.20" {
-		t.Skipf("SKIP: this test pins 3.20 values but the process loaded %s game data", raw.LatestVersion)
+	if raw.LatestVersion != "3.29" {
+		t.Skipf("SKIP: this test pins 3.29 values but the process loaded %s game data", raw.LatestVersion)
 	}
 
 	oracle, err := oracleForLoadedData()
@@ -27,8 +27,8 @@ func TestTotemActionSpeedIsWritten(t *testing.T) {
 		build    string
 		mainHand bool
 	}{
-		{"0207-hierophant-shockwave-totem.xml", false},
-		{"0070-hierophant-shrapnel-ballista.xml", true},
+		{"1043-hierophant-winter-orb-2.xml", false},
+		{"4104-ladder-AsidFlung_6035.ApusGotDownFoReal.xml", true},
 	}
 
 	for _, c := range cases {

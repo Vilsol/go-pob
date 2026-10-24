@@ -15,19 +15,19 @@ import (
 const pins320Sample = 20
 
 var pins320KeyFloor = map[string]int{
-	"HexDoomLimit": 185,
+	"HexDoomLimit": 429,
 
-	"SelfStunChance":           259,
-	"StunAvoidChance":          273,
-	"InterruptStunAvoidChance": 278,
+	"SelfStunChance":           791,
+	"StunAvoidChance":          791,
+	"InterruptStunAvoidChance": 791,
 }
 
-// TestPins3_20Outputs pins CalcPerform.lua and CalcDefence.lua outputs against the 3.20 blob.
+// TestPins3_20Outputs pins CalcPerform.lua and CalcDefence.lua outputs against the oracle blob.
 func TestPins3_20Outputs(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.SkipNow()
 	}
-	requireGameData(t, "3.20")
+	requireGameData(t, "3.29")
 
 	oracle, err := oracleForLoadedData()
 	if err != nil {
@@ -40,8 +40,8 @@ func TestPins3_20Outputs(t *testing.T) {
 	for i := 0; i < len(names); i += pins320Sample {
 		sample = append(sample, names[i])
 	}
-	if len(sample) < 250 {
-		t.Fatalf("REFUSING: %d sampled builds of %d in the corpus, expected ~306. "+
+	if len(sample) < 700 {
+		t.Fatalf("REFUSING: %d sampled builds of %d in the corpus, expected ~790. "+
 			"The floors below were measured against the full corpus and mean nothing on a short one.",
 			len(sample), len(names))
 	}
@@ -110,7 +110,7 @@ func TestPins3_20Outputs(t *testing.T) {
 	}
 	sort.Strings(keys)
 
-	fmt.Printf("\n=== 3.20 output key pins (%d sampled builds) ===\n", len(sample))
+	fmt.Printf("\n=== output key pins (%d sampled builds) ===\n", len(sample))
 	for _, k := range keys {
 		c := total[k]
 		fmt.Printf("  %-32s ok %4d / graded %4d   floor %4d\n", k, c.ok, c.graded, pins320KeyFloor[k])

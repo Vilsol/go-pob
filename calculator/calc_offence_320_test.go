@@ -15,15 +15,15 @@ import (
 const offence320Sample = 20
 
 var offence320KeyFloor = map[string]int{
-	"AccuracyHitChance":           231,
-	"MainHand.AccuracyHitChance":  69,
-	"AverageBurstHits":            278,
-	"DoubleDamageEffect":          154,
-	"TripleDamageEffect":          155,
-	"MainHand.DoubleDamageEffect": 108,
-	"MainHand.TripleDamageEffect": 117,
-	"StoredUses":                  59,
-	"IgniteChancePerHit":          145,
+	"AccuracyHitChance":           791,
+	"MainHand.AccuracyHitChance":  186,
+	"AverageBurstHits":            791,
+	"DoubleDamageEffect":          592,
+	"TripleDamageEffect":          592,
+	"MainHand.DoubleDamageEffect": 186,
+	"MainHand.TripleDamageEffect": 186,
+	"StoredUses":                  314,
+	"IgniteChancePerHit":          262,
 }
 
 // TestOffence3_20NewOutputs pins the CalcOffence.lua outputs this port gained for PoB 3.20.
@@ -31,7 +31,7 @@ func TestOffence3_20NewOutputs(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.SkipNow()
 	}
-	requireGameData(t, "3.20")
+	requireGameData(t, "3.29")
 
 	oracle, err := oracleForLoadedData()
 	if err != nil {
@@ -44,8 +44,8 @@ func TestOffence3_20NewOutputs(t *testing.T) {
 	for i := 0; i < len(names); i += offence320Sample {
 		sample = append(sample, names[i])
 	}
-	if len(sample) < 250 {
-		t.Fatalf("REFUSING: %d sampled builds of %d in the corpus, expected ~306. "+
+	if len(sample) < 700 {
+		t.Fatalf("REFUSING: %d sampled builds of %d in the corpus, expected ~790. "+
 			"The floors below were measured against the full corpus and mean nothing on a short one.",
 			len(sample), len(names))
 	}
@@ -114,7 +114,7 @@ func TestOffence3_20NewOutputs(t *testing.T) {
 	}
 	sort.Strings(keys)
 
-	fmt.Printf("\n=== CalcOffence 3.20 output pins (%d sampled builds) ===\n", len(sample))
+	fmt.Printf("\n=== CalcOffence output pins (%d sampled builds) ===\n", len(sample))
 	for _, k := range keys {
 		c := total[k]
 		fmt.Printf("  %-32s ok %4d / graded %4d   floor %4d\n", k, c.ok, c.graded, offence320KeyFloor[k])

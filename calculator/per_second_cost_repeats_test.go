@@ -2,6 +2,7 @@ package calculator
 
 import (
 	"os"
+	"sync"
 	"testing"
 )
 
@@ -57,6 +58,31 @@ func TestPerSecondCostUsesOutputRepeats(t *testing.T) {
 	}
 }
 
+var _ = registerCorpusCheck("TestPerSecondCostFamilyAgreementFloor", func() corpusCheck { return &perSecondCostFamilyCheck{} })
+
+type perSecondCostFamilyCheck struct {
+	mu            sync.Mutex
+	graded, agree int
+}
+
+func (c *perSecondCostFamilyCheck) visit(_ string, rec oracleRecord, _ bool, env *Environment) {
+	if env == nil || env.Player == nil {
+		return
+	}
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	for _, s := range []string{"ManaPerSecondCost", "LifePerSecondCost", "ESPerSecondCost"} {
+		want, has := rec.Output[s]
+		if !has || want == 0 {
+			continue
+		}
+		c.graded++
+		if oracleClose(env.Player.Output[s], want, oracleDumpTolerance) {
+			c.agree++
+		}
+	}
+}
+
 // TestPerSecondCostFamilyAgreementFloor is the sweep behind the five named builds above.
 func TestPerSecondCostFamilyAgreementFloor(t *testing.T) {
 	t.Parallel()
@@ -66,36 +92,8 @@ func TestPerSecondCostFamilyAgreementFloor(t *testing.T) {
 	}
 	requireGameData(t, "3.29")
 
-	oracle, err := oracleForLoadedData()
-	if err != nil {
-		t.Fatalf("REFUSING: cannot load the oracle blob: %v", err)
-	}
-	_, names := corpusNamesForLoadedData(t)
-
-	stats := []string{"ManaPerSecondCost", "LifePerSecondCost", "ESPerSecondCost"}
-	graded, agree := 0, 0
-	for _, b := range names {
-		rec, ok := oracle[b]
-		if !ok {
-			continue
-		}
-		var env *Environment
-		for _, s := range stats {
-			want, has := rec.Output[s]
-			if !has || want == 0 {
-				continue
-			}
-			if env == nil {
-				if env = corpusEnvForLoadedData(t, b); env == nil || env.Player == nil {
-					break
-				}
-			}
-			graded++
-			if oracleClose(env.Player.Output[s], want, oracleDumpTolerance) {
-				agree++
-			}
-		}
-	}
+	c := corpusWalkCheck[*perSecondCostFamilyCheck](t)
+	graded, agree := c.graded, c.agree
 
 	if graded == 0 {
 		t.Fatal("REFUSING: no build carries a nonzero <resource>PerSecondCost in the oracle, so " +

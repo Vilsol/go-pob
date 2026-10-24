@@ -4,9 +4,9 @@ import (
 	"testing"
 )
 
-const maximumAilment320Build = "0025-elementalist-lightning-conduit.xml"
+const maximumAilment320Build = "0307-ascendant-lightning-tendrils-of-escalation.xml"
 
 func TestMaximumAilmentIncludesBaseSkillModListTerm(t *testing.T) {
-	env := defence320Env(t, maximumAilment320Build)
-	assertMatches320Oracle(t, env, maximumAilment320Build, "MaximumShock")
+	env := defenceEnv(t, maximumAilment320Build)
+	assertMatchesOracle(t, env, maximumAilment320Build, "MaximumShock")
 }
