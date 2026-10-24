@@ -35,6 +35,7 @@ func atPicked(sel atSelection) map[string]string {
 
 // TestAffectedTestsModChangeMatchesGoListDepsTest grades the selection against an independent reach: `go list -deps -test <pkg>` per package.
 func TestAffectedTestsModChangeMatchesGoListDepsTest(t *testing.T) {
+	t.Parallel()
 	sel := atRealSelect(t, "mod/base_mod.go")
 	got := atPicked(sel)
 	repo, _ := root.Resolve()
@@ -81,6 +82,7 @@ func atListedForTest(t *testing.T) []string {
 }
 
 func TestAffectedTestsFrontendAndRootTestdataSelectNone(t *testing.T) {
+	t.Parallel()
 	layout := "frontend/src/routes/+layout" + ".svelte"
 	sel := atRealSelect(t, layout, "frontend/e2e/load/cert.go", "testdata/corpus-x/1"+".xml")
 	if len(sel.picked) != 0 {
@@ -92,6 +94,7 @@ func TestAffectedTestsFrontendAndRootTestdataSelectNone(t *testing.T) {
 }
 
 func TestAffectedTestsDeletedFileAndDirectoryStillResolve(t *testing.T) {
+	t.Parallel()
 	sel := atRealSelect(t, "utils/no_such_file_deleted.go", "storage/gone/deeper/x.go", "calculator/testdata/gone.json")
 	for f, want := range map[string]string{
 		"utils/no_such_file_deleted.go": root.Module + "/utils",
@@ -105,6 +108,7 @@ func TestAffectedTestsDeletedFileAndDirectoryStillResolve(t *testing.T) {
 }
 
 func TestAffectedTestsUnownedFileSelectsThePackagesThatNameIt(t *testing.T) {
+	t.Parallel()
 	got := atPicked(atRealSelect(t, "mise.toml"))
 	if r := got["scripts/gopob/internal/toolchain"]; !strings.Contains(r, "mise.toml") {
 		t.Fatalf("toolchain reads mise.toml in its tests; got %v", got)
@@ -115,6 +119,7 @@ func TestAffectedTestsUnownedFileSelectsThePackagesThatNameIt(t *testing.T) {
 }
 
 func TestAffectedTestsGoModSelectsEverything(t *testing.T) {
+	t.Parallel()
 	sel := atRealSelect(t, "go.sum")
 	if len(sel.picked) != sel.allPkgs || sel.allPkgs < 10 {
 		t.Fatalf("picked %d of %d", len(sel.picked), sel.allPkgs)

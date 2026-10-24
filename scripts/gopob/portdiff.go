@@ -572,15 +572,7 @@ func pdMain() error {
 	if err != nil {
 		return pdRefuse("%v", err)
 	}
-	pob := os.Getenv("POB_DIR")
-	if pob == "" {
-		home, ok := pyPathHome()
-		if !ok {
-			//go-only: Path.home() RAISES RuntimeError; unreachable without both an
-			return pdRefuse("cannot resolve the home directory to find the pinned PoB")
-		}
-		pob = filepath.Join(home, "PathOfBuilding")
-	}
+	pob := pobPinDir()
 	e := &pdEnv{root: r, pob: pob}
 	if e.context, err = pdIntEnv("CONTEXT", "6"); err != nil {
 		return err

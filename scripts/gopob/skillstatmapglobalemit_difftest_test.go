@@ -158,6 +158,7 @@ func ssgSpec(bin string, args ...string) difftest.Spec {
 }
 
 func TestSkillStatMapGlobalEmit(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := ssgSandbox(t, repo, ssgDump(true))
@@ -250,6 +251,7 @@ func TestSkillStatMapGlobalEmit(t *testing.T) {
 
 // TestSkillStatMapGlobalEmitWithoutDuplicateKeys: THE EMPTY-LIST HALF OF duplicateKeys.
 func TestSkillStatMapGlobalEmitWithoutDuplicateKeys(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := ssgSandbox(t, repo, ssgDump(false))
@@ -259,6 +261,7 @@ func TestSkillStatMapGlobalEmitWithoutDuplicateKeys(t *testing.T) {
 
 // TestSkillStatMapGlobalEmitWithNoOmissions: THE "(none)" FALLBACK.
 func TestSkillStatMapGlobalEmitWithNoOmissions(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := ssgSandbox(t, repo, ssgCleanDump())
@@ -267,6 +270,7 @@ func TestSkillStatMapGlobalEmitWithNoOmissions(t *testing.T) {
 }
 
 func TestSkillStatMapGlobalEmitOrderIsStableAcrossRuns(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := ssgSandbox(t, repo, ssgDump(true))

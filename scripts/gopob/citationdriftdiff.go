@@ -243,15 +243,7 @@ func citationDriftDiff(args []string) int {
 	if err != nil {
 		pcRefuse(fmt.Sprintf("%v", err))
 	}
-	pin := os.Getenv("POB_DIR")
-	if pin == "" {
-		home, ok := pyPathHome()
-		if !ok {
-			//go-only: Path.home() RAISES RuntimeError; unreachable without both an
-			pcRefuse("cannot resolve the home directory to find the pinned PoB")
-		}
-		pin = pyPathJoin(home, "PathOfBuilding")
-	}
+	pin := pobPinDir()
 	old := os.Getenv("OLD")
 	if old == "" {
 		old = "v2.18.1"

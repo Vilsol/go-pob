@@ -61,6 +61,7 @@ func cgSandbox(t *testing.T, repo string) func() (string, error) {
 }
 
 func TestCorpusGrepPortIsIndistinguishable(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := cgSandbox(t, repo)
@@ -166,6 +167,7 @@ func TestCorpusGrepPortIsIndistinguishable(t *testing.T) {
 
 // TestCorpusGrepFindsWhatALineGrepMisses: THE TWO TRAPS ARE THE TOOL, and the default PATTERN exercises neither.
 func TestCorpusGrepFindsWhatALineGrepMisses(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := cgSandbox(t, repo)
@@ -188,6 +190,7 @@ func TestCorpusGrepFindsWhatALineGrepMisses(t *testing.T) {
 }
 
 func TestCorpusGrepPythonIsStableAcrossHashSeeds(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	mk := cgSandbox(t, repo)
 	difftest.SelfIdentity(t, t.Context(), difftest.Spec{

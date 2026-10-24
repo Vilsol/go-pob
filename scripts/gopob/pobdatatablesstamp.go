@@ -120,10 +120,7 @@ func pobDataTablesStamp(args []string) int {
 		path = pending[0]
 	}
 
-	pobDir := os.Getenv("POB_DIR")
-	if pobDir == "" {
-		pobDir = pyExpandUser("~/PathOfBuilding")
-	}
+	pobDir := pobPinDir()
 	pob, err := ppLocate(pobDir)
 	var rec map[string]any
 	var files []string

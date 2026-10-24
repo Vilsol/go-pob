@@ -93,6 +93,7 @@ func pddSandbox(t *testing.T, repo string, bulk int) func() (string, error) {
 }
 
 func TestPobDumpDiffPortIsIndistinguishable(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := pddSandbox(t, repo, 31)
@@ -168,6 +169,7 @@ func TestPobDumpDiffPortIsIndistinguishable(t *testing.T) {
 
 // TestPobDumpDiffTruncationBoundary: THE 30-ROW TRUNCATION IS A THRESHOLD AND NEEDS BOTH SIDES.
 func TestPobDumpDiffTruncationBoundary(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	for _, tc := range []struct {
@@ -198,6 +200,7 @@ func TestPobDumpDiffTruncationBoundary(t *testing.T) {
 }
 
 func TestPobDumpDiffPythonIsStableAcrossHashSeeds(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	mk := pddSandbox(t, repo, 31)
 	difftest.SelfIdentity(t, t.Context(), difftest.Spec{

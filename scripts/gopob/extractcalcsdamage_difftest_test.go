@@ -86,6 +86,7 @@ func ecdPut(sb, rel, body string) error {
 }
 
 func TestExtractCalcsDamage(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := ecdSandbox(t, repo)
@@ -181,6 +182,7 @@ func TestExtractCalcsDamage(t *testing.T) {
 }
 
 func TestExtractCalcsDamagePythonIsStableAcrossHashSeeds(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	mk := ecdSandbox(t, repo)
 	difftest.SelfIdentity(t, t.Context(), difftest.Spec{

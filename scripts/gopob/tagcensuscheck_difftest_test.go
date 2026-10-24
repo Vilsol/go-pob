@@ -128,6 +128,7 @@ func tcSandbox(t *testing.T, repo string) func() (string, error) {
 
 // TestTagCensusCheckCleanExtractionMatches: THE SUCCESS BRANCH, WHICH THE MAIN FIXTURE STRUCTURALLY CANNOT REACH.
 func TestTagCensusCheckCleanExtractionMatches(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := tcSandboxFrom(t, repo, tcCleanFiles())
@@ -146,6 +147,7 @@ func TestTagCensusCheckCleanExtractionMatches(t *testing.T) {
 }
 
 func TestTagCensusCheckPortIsIndistinguishable(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := tcSandbox(t, repo)
@@ -191,6 +193,7 @@ func TestTagCensusCheckPortIsIndistinguishable(t *testing.T) {
 }
 
 func TestTagCensusCheckPythonIsStableAcrossHashSeeds(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	mk := tcSandboxFrom(t, repo, tcCleanFiles())
 	difftest.SelfIdentity(t, t.Context(), difftest.Spec{

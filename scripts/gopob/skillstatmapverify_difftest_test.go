@@ -84,6 +84,7 @@ func ssvSpec(bin string, args ...string) difftest.Spec {
 }
 
 func TestSkillStatMapVerify(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := ssvSandbox(t, repo, ssvLuaDump(), ssvGoDump())
@@ -1336,6 +1337,7 @@ func TestSkillStatMapVerify(t *testing.T) {
 
 // TestSkillStatMapVerifyReportsFindings: THE FINDING PATH IS A SEPARATE OUTCOME FROM THE REFUSAL PATH AND NEEDS ITS OWN FIXTURE.
 func TestSkillStatMapVerifyReportsFindings(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := ssvSandbox(t, repo, `{"skillCount": 1, "entryCount": 1, "modCount": 6, "skillTypeNames": {"1": "Attack", "7": "Trap"},
@@ -1400,6 +1402,7 @@ func TestSkillStatMapVerifyReportsFindings(t *testing.T) {
 
 // TestSkillStatMapVerifyCapsTheErrorList: THE 40-ERROR CAP.
 func TestSkillStatMapVerifyCapsTheErrorList(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := ssvSandbox(t, repo,
@@ -1458,6 +1461,7 @@ func TestSkillStatMapVerifyCapsTheErrorList(t *testing.T) {
 
 // TestSkillStatMapVerifyEmptySkillPartList: A PRESENT-BUT-EMPTY skillPartList, WHICH IS NOT A REFUSAL ON EITHER SIDE.
 func TestSkillStatMapVerifyEmptySkillPartList(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := ssvSandbox(t, repo, `{
@@ -1528,6 +1532,7 @@ func TestSkillStatMapVerifyEmptySkillPartList(t *testing.T) {
 
 // TestSkillStatMapVerifyEntryKeysAreSorted: FOURTEEN ENTRY KEYS ON ONE SIDE ONLY, BECAUSE THE HAPPY FIXTURE HAS ZERO.
 func TestSkillStatMapVerifyEntryKeysAreSorted(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := ssvSandbox(t, repo, `{
@@ -1625,6 +1630,7 @@ func TestSkillStatMapVerifyEntryKeysAreSorted(t *testing.T) {
 
 // TestSkillStatMapVerifyGoTotalsWalkTheWholeDump: A SKILL THE LUA DUMP NEVER MENTIONS.
 func TestSkillStatMapVerifyGoTotalsWalkTheWholeDump(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := ssvSandbox(t, repo, `{"skillCount": 2, "entryCount": 2, "modCount": 3, "skillTypeNames": {"1": "Attack"},
@@ -1722,6 +1728,7 @@ func TestSkillStatMapVerifyGoTotalsWalkTheWholeDump(t *testing.T) {
 
 // TestSkillStatMapVerifyNestedModRepr: THE NESTED MOD MUST **MISMATCH** OR ITS REPR NEVER REACHES THE OUTPUT — and the mutation control is what proved it.
 func TestSkillStatMapVerifyNestedModRepr(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := ssvSandbox(t, repo, `{"skillCount": 1, "entryCount": 1, "modCount": 6, "skillTypeNames": {"1": "Attack", "7": "Trap"},
@@ -1915,6 +1922,7 @@ func TestSkillStatMapVerifyNestedModRepr(t *testing.T) {
 
 // TestSkillStatMapVerifyKeyDeletion: THE **REVERSE** DIRECTION OF THE ONE-SIDED-REFUSAL CLASS, WHICH NO LEXICAL CHECK CAN SEE.
 func TestSkillStatMapVerifyKeyDeletion(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := ssvSandbox(t, repo, ssvLuaDump(), ssvGoDump())

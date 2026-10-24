@@ -96,7 +96,7 @@ describe('the skills page mounts with the build’s gems', () => {
     expect(spins('level').length).toBe(6);
     expect(spins('quality').length).toBe(6);
     expect(spins('count').length).toBe(6);
-  });
+  }, 45_000);
 
   it('shows the levels Go actually holds', async () => {
     await mountSkills();

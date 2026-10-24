@@ -192,6 +192,7 @@ func scSpec(bin string, args ...string) difftest.Spec {
 
 // TestSourceCensusPortIsIndistinguishable: THE OPTION SWEEP IS THE POINT: every flag changes a BRANCH, not a format.
 func TestSourceCensusPortIsIndistinguishable(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := scSandbox(t, repo, nil)
@@ -221,6 +222,7 @@ func TestSourceCensusPortIsIndistinguishable(t *testing.T) {
 }
 
 func TestSourceCensusRefusals(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := scSandbox(t, repo, nil)
@@ -388,6 +390,7 @@ func TestSourceCensusRefusals(t *testing.T) {
 
 // TestSourceCensusRefusesAStatOutsideTheOutputTable: THE WRONG-TABLE REFUSAL IS THE ONE THIS TOOL EXISTS TO AVOID GETTING WRONG.
 func TestSourceCensusRefusesAStatOutsideTheOutputTable(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := scSandbox(t, repo, nil)
@@ -406,6 +409,7 @@ func TestSourceCensusRefusesAStatOutsideTheOutputTable(t *testing.T) {
 
 // TestSourceCensusArgumentErrors: ARGUMENT ERRORS NEED THEIR OWN SPECS BECAUSE ARGS LIVE ON THE SPEC.
 func TestSourceCensusArgumentErrors(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 
@@ -458,6 +462,7 @@ func TestSourceCensusArgumentErrors(t *testing.T) {
 
 // TestSourceCensusScansOnlyTheFirst200CoveredBuilds: THE "It IS present in:" SCAN READS ONLY THE FIRST 200 COVERED BUILDS.
 func TestSourceCensusScansOnlyTheFirst200CoveredBuilds(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 
@@ -494,6 +499,7 @@ func TestSourceCensusScansOnlyTheFirst200CoveredBuilds(t *testing.T) {
 
 // TestSourceCensusSpellsNanAndInfLikePython: THIS FIXTURE FOUND A REAL BUG IN THE ORIGINAL, not a porting slip.
 func TestSourceCensusSpellsNanAndInfLikePython(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 
@@ -521,6 +527,7 @@ func TestSourceCensusSpellsNanAndInfLikePython(t *testing.T) {
 }
 
 func TestSourceCensusIsStableAcrossHashSeeds(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	mk := scSandbox(t, repo, nil)
 	difftest.SelfIdentity(t, t.Context(), difftest.Spec{

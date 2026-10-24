@@ -114,6 +114,7 @@ func cdrSpec(bin, binDir string, env []string, args ...string) difftest.Spec {
 }
 
 func TestCorpusDumpRefPortIsIndistinguishable(t *testing.T) {
+	t.Parallel()
 	requirePOSIX(t)
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
@@ -189,6 +190,7 @@ func TestCorpusDumpRefPortIsIndistinguishable(t *testing.T) {
 
 // TestCorpusDumpRefLeavesNoWorktreeBehind: THE WORKTREE MUST BE GONE AFTERWARDS, AND NO OUTPUT SHOWS THAT.
 func TestCorpusDumpRefLeavesNoWorktreeBehind(t *testing.T) {
+	t.Parallel()
 	requirePOSIX(t)
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
@@ -237,6 +239,7 @@ func countWorktrees(porcelain string) int {
 }
 
 func TestCorpusDumpRefIsStableAcrossLocales(t *testing.T) {
+	t.Parallel()
 	requirePOSIX(t)
 	repo := repoRoot(t)
 	mk, binDir := cdrSandbox(t, repo)

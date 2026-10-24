@@ -17,7 +17,7 @@ var (
 type treePair struct{ build, id string }
 
 func classifyTreeSources(args []string) int {
-	pobData := filepath.Join(expandUser(envOr("POB_DIR", "~/PathOfBuilding")), "src", "Data")
+	pobData := filepath.Join(expandUser(pobPinDir()), "src", "Data")
 	var dumps string
 	if len(args) > 0 {
 		dumps = args[0]

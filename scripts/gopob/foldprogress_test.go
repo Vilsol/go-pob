@@ -11,6 +11,7 @@ import (
 
 // TestFoldProgressCountsSpecsNotMentions: THE CONTROL THAT MATTERS IS THE NEGATIVE ONE.
 func TestFoldProgressCountsSpecsNotMentions(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	ported, err := portedScripts(filepath.Join(repo, "scripts", "gopob"))
 	if err != nil {
@@ -68,6 +69,7 @@ var spec = difftest.Spec{Tool: "reader", PythonScript: "oracle/the_real_port.py"
 
 // TestFoldProgressResolvesConstantsAcrossFiles: A CONSTANT IS PACKAGE-SCOPED AND THIS SCANNER RESOLVED IT PER FILE.
 func TestFoldProgressResolvesConstantsAcrossFiles(t *testing.T) {
+	t.Parallel()
 	dir := t.TempDir()
 
 	specFile := `package main
@@ -113,6 +115,7 @@ var specs = map[string]difftest.Spec{
 
 // TestFoldProgressFallsWhenADifftestIsRemoved: AND IT MUST GO DOWN.
 func TestFoldProgressFallsWhenADifftestIsRemoved(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	dir := t.TempDir()
 	entries, err := filepath.Glob(filepath.Join(repo, "scripts", "gopob", "*.go"))
@@ -155,6 +158,7 @@ func TestFoldProgressFallsWhenADifftestIsRemoved(t *testing.T) {
 
 // TestShellRefusalSitesAreCounted: THE SHELL COUNT WAS ZERO UNTIL 2026-08-19, AND ZERO LOOKED LIKE A MEASUREMENT.
 func TestShellRefusalSitesAreCounted(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	paths, err := filepath.Glob(filepath.Join(repo, "scripts", "*.sh"))
 	if err != nil {
@@ -180,6 +184,7 @@ func TestShellRefusalSitesAreCounted(t *testing.T) {
 
 // TestShellRefusalDefinition: The definition, pinned by example so a future widening is a deliberate edit rather than drift.
 func TestShellRefusalDefinition(t *testing.T) {
+	t.Parallel()
 	dir := t.TempDir()
 	for body, want := range map[string]int{
 		"exit 1\n":                1,

@@ -170,6 +170,7 @@ func dmSpecFor(bin string, env []string, args ...string) difftest.Spec {
 
 // TestDataRawMirrorAgainstPython is the sweep plus every refusal a sandbox state can reach.
 func TestDataRawMirrorAgainstPython(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := dmSandbox(t, repo)
@@ -234,6 +235,7 @@ func dmReadPy(t *testing.T, repo string) []byte {
 
 // TestDataRawMirrorModes sweeps --rows on BOTH sides of the truncation boundary.
 func TestDataRawMirrorModes(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := dmSandbox(t, repo)
@@ -261,6 +263,7 @@ func TestDataRawMirrorModes(t *testing.T) {
 }
 
 func TestDataRawMirrorArgumentGrammar(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := dmSandbox(t, repo)
@@ -285,6 +288,7 @@ func TestDataRawMirrorArgumentGrammar(t *testing.T) {
 
 // TestDataRawMirrorPythonIsStableAcrossHashSeeds guards against a source of nondeterminism a differential run cannot see.
 func TestDataRawMirrorPythonIsStableAcrossHashSeeds(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	mk := dmSandbox(t, repo)
 	s := difftest.Spec{
@@ -298,6 +302,7 @@ func TestDataRawMirrorPythonIsStableAcrossHashSeeds(t *testing.T) {
 
 // TestDataRawMirrorGoDumpIsActuallyRun is the control on the sandbox, not on the tool.
 func TestDataRawMirrorGoDumpIsActuallyRun(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := dmSandbox(t, repo)

@@ -100,6 +100,7 @@ func eooSandbox(t *testing.T, repo string) func() (string, error) {
 }
 
 func TestExtractOutputOraclePortIsIndistinguishable(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := eooSandbox(t, repo)
@@ -189,6 +190,7 @@ func TestExtractOutputOraclePortIsIndistinguishable(t *testing.T) {
 }
 
 func TestExtractOutputOraclePythonIsStableAcrossHashSeeds(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	mk := eooSandbox(t, repo)
 	difftest.SelfIdentity(t, t.Context(), difftest.Spec{

@@ -89,6 +89,7 @@ func dpSpec(bin string, args ...string) difftest.Spec {
 
 // TestDumpParallelPortIsIndistinguishable: THE HAPPY PATH REALLY LAUNCHES `setarch -R unshare -rn`.
 func TestDumpParallelPortIsIndistinguishable(t *testing.T) {
+	t.Parallel()
 	requireWorks(t, probeNamespaces)
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
@@ -170,6 +171,7 @@ func TestDumpParallelPortIsIndistinguishable(t *testing.T) {
 
 // TestDumpParallelRefusesBeforeCreatingAnything: AGREEMENT IS NOT THE WHOLE TEST HERE.
 func TestDumpParallelRefusesBeforeCreatingAnything(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := dpSandbox(t, repo)
@@ -216,6 +218,7 @@ func TestDumpParallelRefusesBeforeCreatingAnything(t *testing.T) {
 
 // TestDumpParallelCapturesEachRunsLog: THE PER-RUN LOG IS DECLARED AS A COMPARED FILE, AND IT CAUGHT A REAL DIVERGENCE.
 func TestDumpParallelCapturesEachRunsLog(t *testing.T) {
+	t.Parallel()
 	requireWorks(t, probeNamespaces)
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
@@ -229,6 +232,7 @@ func TestDumpParallelCapturesEachRunsLog(t *testing.T) {
 }
 
 func TestDumpParallelIsStableAcrossLocales(t *testing.T) {
+	t.Parallel()
 	requireWorks(t, probeNamespaces)
 	repo := repoRoot(t)
 	mk := dpSandbox(t, repo)

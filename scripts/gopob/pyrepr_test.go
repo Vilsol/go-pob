@@ -9,6 +9,7 @@ import (
 
 // TestPyReprMatchesCPython: pyRepr HAS SEVEN CALLERS AND ITS OUTPUT IS COMPARED BYTE FOR BYTE.
 func TestPyReprMatchesCPython(t *testing.T) {
+	t.Parallel()
 	cases := []string{
 		"plain",
 		"",
@@ -49,6 +50,7 @@ func TestPyReprMatchesCPython(t *testing.T) {
 
 // TestPyNumberReprMatchesCPython: THE FLOAT SIDE HAS A BOUNDARY NO REAL CORPUS REACHES.
 func TestPyNumberReprMatchesCPython(t *testing.T) {
+	t.Parallel()
 	cases := []string{
 		"5", "-5", "0", "-0", "5.0", "-0.0", "1.5000", "123456789012345678901234567890",
 		"1e15", "1e16", "9.9e15", "1.5e16", "2e9", "1e-4", "1e-5", "2.674e-4",

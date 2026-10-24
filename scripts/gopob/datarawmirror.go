@@ -11,9 +11,8 @@ import (
 )
 
 const (
-	dmSkillGlob     = "src/Data/Skills/*.lua"
-	dmRefusalExit   = 3
-	dmDefaultPoBRel = "PathOfBuilding"
+	dmSkillGlob   = "src/Data/Skills/*.lua"
+	dmRefusalExit = 3
 )
 
 func dmRefuse(msg string) {

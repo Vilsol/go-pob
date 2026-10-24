@@ -134,6 +134,7 @@ func pbdWriteIn(sb, rel, body string) error {
 
 // TestPobDriftAgainstPython is the report path plus every refusal a SANDBOX STATE can reach.
 func TestPobDriftAgainstPython(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := pbdSandbox(t, repo)
@@ -175,6 +176,7 @@ func pbdReadPy(t *testing.T, repo string) []byte {
 
 // TestPobDriftModes sweeps the reporting shapes.
 func TestPobDriftModes(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := pbdSandbox(t, repo)
@@ -204,6 +206,7 @@ func TestPobDriftModes(t *testing.T) {
 
 // TestPobDriftFixWrites is the only path that MUTATES the tree, so the contract is the FILE, not stdout.
 func TestPobDriftFixWrites(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := pbdSandbox(t, repo)
@@ -214,6 +217,7 @@ func TestPobDriftFixWrites(t *testing.T) {
 
 // TestPobDriftArgumentGrammar is the hand-rolled parser, which exists precisely because argparse and Go's flag package word every one of these differently.
 func TestPobDriftArgumentGrammar(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := pbdSandbox(t, repo)
@@ -243,6 +247,7 @@ func TestPobDriftArgumentGrammar(t *testing.T) {
 
 // TestPobDriftSandboxRefusals covers the refusals that need a broken TREE rather than a bad flag.
 func TestPobDriftSandboxRefusals(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := pbdSandbox(t, repo)
@@ -317,6 +322,7 @@ func TestPobDriftSandboxRefusals(t *testing.T) {
 
 // TestPobDriftPythonIsStableAcrossHashSeeds guards the port against a source of nondeterminism a differential run cannot see.
 func TestPobDriftPythonIsStableAcrossHashSeeds(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	mk := pbdSandbox(t, repo)
 	s := difftest.Spec{

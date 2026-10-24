@@ -311,7 +311,7 @@ func csStrip(path string, src []byte, pob map[string]bool, drop map[csClass]bool
 func commentStrip(args []string) int {
 	apply := false
 	nSamples := 0
-	pobSrc := filepath.Join(os.Getenv("HOME"), "PathOfBuilding/src")
+	pobSrc := filepath.Join(pobPinDir(), "src")
 	drop := map[csClass]bool{csProse: true, csGoCode: true}
 	var dirs []string
 	show := ""

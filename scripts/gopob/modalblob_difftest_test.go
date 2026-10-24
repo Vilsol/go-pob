@@ -139,6 +139,7 @@ func mbArgs(extra ...string) []string {
 }
 
 func TestModalBlobPortIsIndistinguishable(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := mbSandbox(t, repo)
@@ -239,6 +240,7 @@ func TestModalBlobPortIsIndistinguishable(t *testing.T) {
 
 // TestModalBlobMinFractionSweep: --min-fraction IS A THRESHOLD AND ONE VALUE PINS NOTHING.
 func TestModalBlobMinFractionSweep(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := mbSandbox(t, repo)
@@ -259,6 +261,7 @@ func TestModalBlobMinFractionSweep(t *testing.T) {
 }
 
 func TestModalBlobPythonIsStableAcrossHashSeeds(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	mk := mbSandbox(t, repo)
 	difftest.SelfIdentity(t, t.Context(), difftest.Spec{
@@ -271,6 +274,7 @@ func TestModalBlobPythonIsStableAcrossHashSeeds(t *testing.T) {
 
 // TestModalBlobManyRunsTieOrder: FOURTEEN RUNS, BECAUSE THE CLUSTER SORT CANNOT BE UNSTABLE WITH FOUR.
 func TestModalBlobManyRunsTieOrder(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	const runs = 15

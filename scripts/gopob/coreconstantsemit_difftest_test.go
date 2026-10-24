@@ -981,6 +981,7 @@ func ccnSpec(bin string, args ...string) difftest.Spec {
 }
 
 func TestCoreConstantsEmit(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := ccnSandbox(t, repo)
@@ -1035,6 +1036,7 @@ func TestCoreConstantsEmit(t *testing.T) {
 
 // TestCoreConstantsEmitKeyDeletion: THE REVERSE DIRECTION: delete each key of the input in turn and require agreement.
 func TestCoreConstantsEmitKeyDeletion(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	difftest.AssertKeyDeletionAgrees(t, t.Context(), ccnSpec(bin, "dump.json", "out.go"),

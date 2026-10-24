@@ -6,6 +6,7 @@ import (
 )
 
 func TestCommentStripKeepsWhatItMustAndDropsProse(t *testing.T) {
+	t.Parallel()
 	pob := map[string]bool{csNorm("Merge keystone modifiers"): true}
 	src := `package x
 
@@ -49,6 +50,7 @@ func A() int {
 }
 
 func TestCommentStripMaxProseFlagsLongRunsOnly(t *testing.T) {
+	t.Parallel()
 	src := `package x
 
 // one
@@ -73,6 +75,7 @@ func B() {}
 }
 
 func TestCommentStripTestsKeepsOneDocLinePerTest(t *testing.T) {
+	t.Parallel()
 	src := `package x
 
 // helper prose goes.

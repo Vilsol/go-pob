@@ -132,6 +132,7 @@ func cdSandbox(t *testing.T, tmpl string) func() (string, error) {
 }
 
 func TestCitationDriftPortIsIndistinguishable(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := cdSandbox(t, cdTemplate(t, repo))
@@ -191,6 +192,7 @@ func TestCitationDriftPortIsIndistinguishable(t *testing.T) {
 
 // TestCitationDriftFixtureReachesEveryVerdict: THE HAPPY FIXTURE MUST REACH EVERY VERDICT OR IT IS A ONE-BRANCH TEST WEARING A SIX-BRANCH COSTUME.
 func TestCitationDriftFixtureReachesEveryVerdict(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := cdSandbox(t, cdTemplate(t, repo))
@@ -235,6 +237,7 @@ func parseTally(out string) map[string]int {
 }
 
 func TestCitationDriftPythonIsStableAcrossHashSeeds(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	mk := cdSandbox(t, cdTemplate(t, repo))
 	difftest.SelfIdentity(t, t.Context(), difftest.Spec{

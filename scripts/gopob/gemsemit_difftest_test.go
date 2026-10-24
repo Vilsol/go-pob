@@ -105,6 +105,7 @@ func gemsOneRow(row string) string {
 }
 
 func TestOracleGemsEmit(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := gemsSandbox(t, repo, gemsDump())
@@ -246,6 +247,7 @@ func TestOracleGemsEmit(t *testing.T) {
 }
 
 func TestOracleGemsEmitUsage(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := gemsSandbox(t, repo, gemsDump())
@@ -267,6 +269,7 @@ func TestOracleGemsEmitUsage(t *testing.T) {
 
 // TestOracleGemsEmitOrderIsStableAcrossRuns: THE ORDER CONTROL, REPEATED.
 func TestOracleGemsEmitOrderIsStableAcrossRuns(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := gemsSandbox(t, repo, gemsDump())

@@ -64,6 +64,7 @@ func rmSandbox(t *testing.T, repo string) func() (string, error) {
 }
 
 func TestResidualMapPortIsIndistinguishable(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := rmSandbox(t, repo)
@@ -141,6 +142,7 @@ func TestResidualMapPortIsIndistinguishable(t *testing.T) {
 }
 
 func TestResidualMapPythonIsStableAcrossHashSeeds(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	mk := rmSandbox(t, repo)
 	difftest.SelfIdentity(t, t.Context(), difftest.Spec{

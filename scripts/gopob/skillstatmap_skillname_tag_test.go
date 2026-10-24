@@ -4,6 +4,7 @@ import "testing"
 
 // TestEmitTagSkillNameCarriesEveryEvaluatedField pins the SkillName arm of ssmRun.emitTag against the fields moddb actually evaluates.
 func TestEmitTagSkillNameCarriesEveryEvaluatedField(t *testing.T) {
+	t.Parallel()
 	r := &ssmRun{}
 	for _, tc := range []struct {
 		name string

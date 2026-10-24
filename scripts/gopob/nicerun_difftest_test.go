@@ -60,6 +60,7 @@ func nrSpec(bin string, env []string, unset []string, args ...string) difftest.S
 
 // TestNiceRunPortIsIndistinguishable: GOPOB_NICED MUST BE **UNSET**, NOT MERELY EMPTY, OR THIS TEST IS VACUOUS.
 func TestNiceRunPortIsIndistinguishable(t *testing.T) {
+	t.Parallel()
 	requirePOSIX(t)
 	nrPinBaseNiceness(t)
 	repo := repoRoot(t)
@@ -143,6 +144,7 @@ func nrPinBaseNiceness(t *testing.T) {
 }
 
 func TestNiceRunIsStableAcrossLocales(t *testing.T) {
+	t.Parallel()
 	requirePOSIX(t)
 	repo := repoRoot(t)
 	mk := nrSandbox(t, repo)
@@ -158,6 +160,7 @@ func TestNiceRunIsStableAcrossLocales(t *testing.T) {
 
 // TestNiceRunTargetNicenessDecodesGetpriority: THIS TABLE EXISTS BECAUSE THE DIFFERENTIAL IS BLIND HERE, NOT AS BELT AND BRACES.
 func TestNiceRunTargetNicenessDecodesGetpriority(t *testing.T) {
+	t.Parallel()
 	for _, tc := range []struct{ raw, inc, want int }{
 		{20, 10, 10},
 		{10, 10, 20},

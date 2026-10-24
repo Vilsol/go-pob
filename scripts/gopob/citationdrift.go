@@ -47,11 +47,7 @@ func citationDrift(args []string) int {
 		fmt.Fprintln(os.Stderr, err.Error())
 		return root.RefusalCode
 	}
-	pob := os.Getenv("POB_DIR")
-	if pob == "" {
-		pob = "~/PathOfBuilding"
-	}
-	pob = expandUser(pob)
+	pob := expandUser(pobPinDir())
 	old := os.Getenv("OLD")
 	if old == "" {
 		old = "v2.18.1"

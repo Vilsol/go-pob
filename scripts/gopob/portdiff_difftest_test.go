@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"os/user"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -126,6 +125,7 @@ func pdSandbox(t *testing.T, repo string) func() (string, error) {
 }
 
 func TestPortDiffPortIsIndistinguishable(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := pdSandbox(t, repo)
@@ -210,18 +210,18 @@ func TestPortDiffPortIsIndistinguishable(t *testing.T) {
 	}
 }
 
-// TestPortDiffResolvesHomeLikePython: EVERY MODE, AND THE TRUNCATION FROM BOTH SIDES.
-//
-//	HOME EMPTY    deterministic — python resolves "/" and the tool then refuses on
+// TestPortDiffResolvesHomeLikePython: HOME no longer picks the default PoB; with or without it the tool looks
+// beside the repository (none here: GIT_DIR hides the sandbox repo, so the path is stable) and refuses.
 func TestPortDiffResolvesHomeLikePython(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	for _, tc := range []struct {
 		name string
 		env  []string
 	}{
-		{"home-empty", []string{"HOME=", "NAME=pdSharedName"}},
-		{"home-absent", []string{"NAME=pdSharedName"}},
+		{"home-empty", []string{"HOME=", "NAME=pdSharedName", "GIT_DIR=no-git"}},
+		{"home-absent", []string{"NAME=pdSharedName", "GIT_DIR=no-git"}},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			s := difftest.Spec{
@@ -232,13 +232,6 @@ func TestPortDiffResolvesHomeLikePython(t *testing.T) {
 			}
 			if tc.name == "home-absent" {
 				s.EnvUnset = append(s.EnvUnset, "HOME")
-				u, err := user.Current()
-				if err != nil {
-					t.Skipf("no passwd entry to resolve the default PoB path: %v", err)
-				}
-				if _, err := os.Stat(filepath.Join(u.HomeDir, "PathOfBuilding")); err != nil {
-					t.Skipf("the recorded verdict needs a PoB checkout at the default path: %v", err)
-				}
 			}
 			difftest.RunFixture(t, t.Context(), s, difftest.Fixture{Name: tc.name},
 				pdSandbox(t, repo))
@@ -247,6 +240,7 @@ func TestPortDiffResolvesHomeLikePython(t *testing.T) {
 }
 
 func TestPortDiffModes(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := pdSandbox(t, repo)
@@ -284,6 +278,7 @@ func TestPortDiffModes(t *testing.T) {
 }
 
 func TestPortDiffPythonIsStableAcrossHashSeeds(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	mk := pdSandbox(t, repo)
 	difftest.SelfIdentity(t, t.Context(), difftest.Spec{

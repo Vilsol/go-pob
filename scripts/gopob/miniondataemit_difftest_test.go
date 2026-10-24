@@ -424,6 +424,7 @@ func mdSpec(bin string, args ...string) difftest.Spec {
 }
 
 func TestMinionDataEmit(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := mdSandbox(t, repo)
@@ -496,6 +497,7 @@ func TestMinionDataEmit(t *testing.T) {
 
 // TestMinionDataEmitSpectres: THE SPECTRES SIDE IS A SEPARATE RUN, NOT A FIXTURE.
 func TestMinionDataEmitSpectres(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	difftest.RunFixture(t, t.Context(), mdSpec(bin, "dump.json", "out.go", "spectres"),
@@ -504,6 +506,7 @@ func TestMinionDataEmitSpectres(t *testing.T) {
 
 // TestMinionDataEmitKeyDeletion: THE REVERSE DIRECTION: delete each key of the input in turn and require the two implementations to still agree.
 func TestMinionDataEmitKeyDeletion(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	difftest.AssertKeyDeletionAgrees(t, t.Context(), mdSpec(bin, "dump.json", "out.go", "spectres"),

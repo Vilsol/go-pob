@@ -18,11 +18,7 @@ var (
 )
 
 func citationTriage(args []string) int {
-	pob := os.Getenv("POB_DIR")
-	if pob == "" {
-		pob = "~/PathOfBuilding"
-	}
-	pob = expandUser(pob)
+	pob := expandUser(pobPinDir())
 	flags := os.Getenv("FLAGS")
 	if flags == "" {
 		flags = "/tmp/flags.txt"

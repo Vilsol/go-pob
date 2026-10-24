@@ -124,6 +124,7 @@ func tckSpec(bin, binDir string) difftest.Spec {
 }
 
 func TestTestCacheKeyPortIsIndistinguishable(t *testing.T) {
+	t.Parallel()
 	requirePOSIX(t)
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
@@ -166,6 +167,7 @@ func TestTestCacheKeyPortIsIndistinguishable(t *testing.T) {
 }
 
 func TestTestCacheKeyIsStableAcrossLocales(t *testing.T) {
+	t.Parallel()
 	requirePOSIX(t)
 	repo := repoRoot(t)
 	mk, binDir := tckSandbox(t, repo)
@@ -183,6 +185,7 @@ func TestTestCacheKeyIsStableAcrossLocales(t *testing.T) {
 
 // TestTestCacheKeyPassesTheRightArgumentsToEachRun: WHAT THE TOOL HANDS EACH RUN IS THE PRODUCT; the one summary line is the label.
 func TestTestCacheKeyPassesTheRightArgumentsToEachRun(t *testing.T) {
+	t.Parallel()
 	requirePOSIX(t)
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)

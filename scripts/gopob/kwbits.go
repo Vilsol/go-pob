@@ -29,11 +29,7 @@ func kwBitsParity() int {
 		return root.RefusalCode
 	}
 
-	pob := os.Getenv("POB_DIR")
-	if pob == "" {
-		home, _ := pyPathHome()
-		pob = filepath.Join(home, "PathOfBuilding")
-	}
+	pob := pobPinDir()
 	lua := filepath.Join(pob, "src/Data/Global.lua")
 	luaSrc, readErr := os.ReadFile(lua) //nolint:gosec // an operator-supplied checkout path
 	if readErr != nil {

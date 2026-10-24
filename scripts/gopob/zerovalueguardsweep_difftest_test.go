@@ -113,6 +113,7 @@ func zvSandbox(t *testing.T, repo string) func() (string, error) {
 }
 
 func TestZeroValueGuardSweepPortIsIndistinguishable(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := zvSandbox(t, repo)
@@ -161,6 +162,7 @@ func TestZeroValueGuardSweepPortIsIndistinguishable(t *testing.T) {
 }
 
 func TestZeroValueGuardSweepPythonIsStableAcrossHashSeeds(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	mk := zvSandbox(t, repo)
 	difftest.SelfIdentity(t, t.Context(), difftest.Spec{

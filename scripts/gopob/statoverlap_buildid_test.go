@@ -4,6 +4,7 @@ import "testing"
 
 // TestBuildIDRegexKeepsNonASCIINames pins a silent data loss in a tool that reports and never asserts.
 func TestBuildIDRegexKeepsNonASCIINames(t *testing.T) {
+	t.Parallel()
 	for _, tc := range []struct{ name, in, want string }{
 		{"CJK display name", "3767-ladder-Foo_4542.\u67da\u67da\u67da\u59b9\u4e0d\u958b\u639b",
 			"3767-ladder-Foo_4542.\u67da\u67da\u67da\u59b9\u4e0d\u958b\u639b"},

@@ -58,6 +58,7 @@ func TestRegenFixturesRootTerminatesWithoutAnchor(t *testing.T) {
 
 // TestRegenFixturesLuaArgvLengthIsPathIndependent: The probe sees the same argv lengths whatever the checkout's and the fixture's paths.
 func TestRegenFixturesLuaArgvLengthIsPathIndependent(t *testing.T) {
+	t.Parallel()
 	requireWorks(t, probeSetarch)
 	stub := filepath.Join(t.TempDir(), "luajit")
 	if err := os.WriteFile(stub, []byte("#!/bin/sh\nprintf '%s %s %s\\n' \"${#1}\" \"${#2}\" \"${#3}\" > \"$3\"\n"), 0o700); err != nil { //nolint:gosec // a probe stub

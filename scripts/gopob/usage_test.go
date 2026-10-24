@@ -54,6 +54,7 @@ func uDispatchCases(t *testing.T) []string {
 }
 
 func TestEverySubcommandAppearsInTheUsageText(t *testing.T) {
+	t.Parallel()
 	var missing []string
 	for _, name := range uDispatchCases(t) {
 		if !regexp.MustCompile(`(?m)^  ` + regexp.QuoteMeta(name) + `( |$)`).MatchString(usage) {
@@ -68,6 +69,7 @@ func TestEverySubcommandAppearsInTheUsageText(t *testing.T) {
 
 // TestEveryUsageEntryNamesALiveSubcommand: THE REVERSE DIRECTION IS THE `-run NoSuchTest` CLASS.
 func TestEveryUsageEntryNamesALiveSubcommand(t *testing.T) {
+	t.Parallel()
 	live := map[string]bool{}
 	for _, name := range uDispatchCases(t) {
 		live[name] = true

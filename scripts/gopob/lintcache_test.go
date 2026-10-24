@@ -10,6 +10,7 @@ import (
 
 // TestLintGoCacheIsPerWorktree: a shared golangci-lint cache replays findings from other worktrees.
 func TestLintGoCacheIsPerWorktree(t *testing.T) {
+	t.Parallel()
 	task, err := exec.LookPath("task")
 	if err != nil {
 		t.Skip("no task binary")

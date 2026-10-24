@@ -199,11 +199,7 @@ func rfRunModBrowser(pob, here, out string) bool {
 
 func regenFixtures(argv []string) int {
 	here := rfHere()
-	pob := os.Getenv("POB_DIR")
-	if pob == "" {
-		home, _ := pyUserHome()
-		pob = pyPathJoin(home, "PathOfBuilding")
-	}
+	pob := pobPinDir()
 	luajit := os.Getenv("LUAJIT")
 	if luajit == "" {
 		luajit = detLuajitBin()

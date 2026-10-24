@@ -1035,10 +1035,9 @@ type pbdArgs struct {
 }
 
 func pbdParseArgs(argv []string) pbdArgs {
-	home, _ := pyPathHome()
 	a := pbdArgs{
 		candidate: os.Getenv("CANDIDATE"),
-		pin:       pyPathJoin(home, pcDefaultPoBRel),
+		pin:       pobPinDir(),
 		details:   os.Getenv("DETAILS") == "1",
 		fix:       os.Getenv("FIX") == "1",
 		dryRun:    os.Getenv("DRYRUN") == "1",

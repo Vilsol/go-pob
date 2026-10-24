@@ -138,6 +138,7 @@ func pdmCollapseMiseErrors(b []byte) []byte {
 }
 
 func TestProbeDeterminismPortIsIndistinguishable(t *testing.T) {
+	t.Parallel()
 	requireWorks(t, probeSetarch)
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
@@ -218,6 +219,7 @@ func TestProbeDeterminismPortIsIndistinguishable(t *testing.T) {
 }
 
 func TestProbeDeterminismIsStableAcrossLocales(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	mk, luajit := pdmSandbox(t, repo)
 	difftest.SelfIdentity(t, t.Context(), difftest.Spec{

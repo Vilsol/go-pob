@@ -121,6 +121,7 @@ func rpSpec(bin, binDir string, env ...string) difftest.Spec {
 }
 
 func TestRepinPortIsIndistinguishable(t *testing.T) {
+	t.Parallel()
 	requirePOSIX(t)
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
@@ -191,6 +192,7 @@ func TestRepinPortIsIndistinguishable(t *testing.T) {
 
 // TestRepinRewritesTheRightLiterals: THE REWRITTEN SOURCE IS THE PRODUCT.
 func TestRepinRewritesTheRightLiterals(t *testing.T) {
+	t.Parallel()
 	requirePOSIX(t)
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
@@ -208,6 +210,7 @@ func TestRepinRewritesTheRightLiterals(t *testing.T) {
 }
 
 func TestRepinIsStableAcrossHashSeeds(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	mk, binDir := rpSandbox(t, repo)
 	difftest.SelfIdentity(t, t.Context(), difftest.Spec{

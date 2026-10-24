@@ -8,6 +8,7 @@ import (
 
 // TestResidualMapReadsTotalsWhenPresent pins the fix for the 1.755x pp inflation.
 func TestResidualMapReadsTotalsWhenPresent(t *testing.T) {
+	t.Parallel()
 	dir := t.TempDir()
 
 	if _, _, ok := rmReadTotals(dir); ok {

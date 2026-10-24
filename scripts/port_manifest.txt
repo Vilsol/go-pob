@@ -378,6 +378,7 @@ scripts/gopob/extractcalcsdamage.go              GO-NATIVE  port of oracle/extra
 scripts/gopob/treedivergence.go                  GO-NATIVE  port of oracle/tree_divergence.py; compares two tree dumps, porting no Lua
 scripts/gopob/configtools.go                     GO-NATIVE  port of scripts/config_tools.py; parses PoB Lua to drive OUR configs.go slices, ports no Lua
 scripts/gopob/pypath.go                          GO-NATIVE  python os.path.join semantics for the folded tools; emulates CPython, ports no Lua
+scripts/gopob/pobpath.go                         GO-NATIVE  where the tools find the pinned PoB checkouts, mirroring the Taskfile's POB_DEFAULT; ports no Lua
 scripts/gopob/internal/difftest/difftest.go      GO-NATIVE  the differential-migration harness that grades each port against its Python original
 scripts/gopob/internal/difftest/keydeletion.go   GO-NATIVE  the key-deletion sweep: the REVERSE direction of the one-sided-refusal class, porting no Lua
 scripts/gopob/internal/gateversions/gateversions.go  GO-NATIVE  the gate/version table, formerly scripts/gate_versions.sh

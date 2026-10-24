@@ -62,6 +62,7 @@ func put(sb, rel, body string) error {
 }
 
 func TestTableRowCensusPortIsIndistinguishable(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	pob := pobDir(t)
 	bin := buildPort(t, repo)
@@ -149,6 +150,7 @@ func TestTableRowCensusPortIsIndistinguishable(t *testing.T) {
 
 // TestTableRowCensusPythonIsStableAcrossHashSeeds: THE SEED SWEEP MATTERS MORE HERE THAN ANYWHERE ELSE IN THE FOLD.
 func TestTableRowCensusPythonIsStableAcrossHashSeeds(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	pob := pobDir(t)
 	mk := trcSandbox(t, repo, pob)

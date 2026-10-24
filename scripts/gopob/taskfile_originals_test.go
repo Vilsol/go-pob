@@ -12,6 +12,7 @@ import (
 
 // TestNoTaskfileCommandRunsADeletedOriginal refuses any `task` command that still invokes a script the fold deleted.
 func TestNoTaskfileCommandRunsADeletedOriginal(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	body, err := os.ReadFile(filepath.Join(repo, "Taskfile.yml"))
 	if err != nil {

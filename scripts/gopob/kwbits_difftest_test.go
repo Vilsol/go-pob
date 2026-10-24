@@ -2,12 +2,15 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/Vilsol/go-pob/scripts/gopob/internal/difftest"
@@ -34,24 +37,37 @@ func repoRoot(t *testing.T) string {
 
 func pobDir(t *testing.T) string {
 	t.Helper()
-	if d := os.Getenv("POB_DIR"); d != "" {
-		return d
-	}
-	home, err := os.UserHomeDir()
-	if err != nil {
-		t.Skip("no home directory, so the pinned PoB cannot be located")
-	}
-	return filepath.Join(home, "PathOfBuilding")
+	return pobPinDir()
 }
 
+var (
+	portBinMu  sync.Mutex
+	portBins   = map[string]string{}
+	portBinDir string
+)
+
+// buildPort builds the tool once per repo per test process; every test then runs that binary.
 func buildPort(t *testing.T, repo string) string {
 	t.Helper()
-	bin := filepath.Join(t.TempDir(), difftest.ExeName("gopob"))
-	cmd := exec.CommandContext(t.Context(), "go", "build", "-o", bin, "./scripts/gopob")
+	portBinMu.Lock()
+	defer portBinMu.Unlock()
+	if bin, ok := portBins[repo]; ok {
+		return bin
+	}
+	if portBinDir == "" {
+		dir, err := os.MkdirTemp("", "gopob-port-") //nolint:usetesting // shared by every test in the process; TestMain removes it
+		if err != nil {
+			t.Fatalf("building the port: %v", err)
+		}
+		portBinDir = dir
+	}
+	bin := filepath.Join(portBinDir, strconv.Itoa(len(portBins)), difftest.ExeName("gopob"))
+	cmd := exec.CommandContext(context.Background(), "go", "build", "-o", bin, "./scripts/gopob")
 	cmd.Dir = repo
 	if out, err := cmd.CombinedOutput(); err != nil {
 		t.Fatalf("building the port: %v\n%s", err, out)
 	}
+	portBins[repo] = bin
 	return bin
 }
 
@@ -135,6 +151,7 @@ func keepRows(s string, n int) string {
 }
 
 func TestKwBitsParityPortIsIndistinguishable(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	pob := pobDir(t)
 	if _, err := os.Stat(filepath.Join(pob, "src/Data/Global.lua")); err != nil {
@@ -225,6 +242,7 @@ func TestKwBitsParityPortIsIndistinguishable(t *testing.T) {
 
 // TestKwBitsParityPythonIsStableAcrossHashSeeds: THE PYTHON MUST BE STABLE AGAINST ITSELF BEFORE IT IS COMPARED TO ANYTHING.
 func TestKwBitsParityPythonIsStableAcrossHashSeeds(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	pob := pobDir(t)
 	if _, err := os.Stat(filepath.Join(pob, "src/Data/Global.lua")); err != nil {

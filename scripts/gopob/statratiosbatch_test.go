@@ -36,6 +36,7 @@ ok  	github.com/Vilsol/go-pob/calculator	34.812s
 
 // TestSplitBatchedStatRatiosAttributesBySection is the cheap half of the equivalence argument: it pins WHICH ids land in WHICH set, without a corpus.
 func TestSplitBatchedStatRatiosAttributesBySection(t *testing.T) {
+	t.Parallel()
 	got, missing := splitBatchedStatRatios(batchedFixture, []string{"Alpha", "Beta"})
 	if len(missing) != 0 {
 		t.Fatalf("both sections are present, got missing %v", missing)
@@ -56,6 +57,7 @@ func TestSplitBatchedStatRatiosAttributesBySection(t *testing.T) {
 
 // TestSplitBatchedStatRatiosNamesAMissingSection is the "empty must never mean I did not look" half.
 func TestSplitBatchedStatRatiosNamesAMissingSection(t *testing.T) {
+	t.Parallel()
 	sets, missing := splitBatchedStatRatios(batchedFixture, []string{"Alpha", "Gamma"})
 	if !reflect.DeepEqual(missing, []string{"Gamma"}) {
 		t.Fatalf("expected Gamma named as missing, got %v", missing)
@@ -69,8 +71,9 @@ var equivStats = []string{"CombinedDPS", "TotalDPS"}
 
 // TestStatRatiosBatchEqualsSingleRuns is the whole licence for batching.
 func TestStatRatiosBatchEqualsSingleRuns(t *testing.T) {
-	if os.Getenv("CORPUS") != "true" {
-		t.Skip("set CORPUS=true — this compares K+1 real corpus passes")
+	t.Parallel()
+	if os.Getenv("OPERATOR") != "true" || os.Getenv("CORPUS") != "true" {
+		t.Skip("set OPERATOR=true CORPUS=true (task test-operator-slow) — this compares K+1 real corpus passes")
 	}
 	repo := repoRoot(t)
 	ctx := t.Context()

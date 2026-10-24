@@ -16,6 +16,7 @@ var reTITestFunc = regexp.MustCompile(`(?m)^func ((?:Test|Fuzz)\w*)\(`)
 
 // TestTestTiersSlowListNamesExistingTests: a renamed or deleted test left on the list would leave its successor in the fast tier unnoticed.
 func TestTestTiersSlowListNamesExistingTests(t *testing.T) {
+	t.Parallel()
 	repo, err := root.Resolve()
 	if err != nil {
 		t.Fatal(err)
@@ -52,6 +53,7 @@ func TestTestTiersSlowListNamesExistingTests(t *testing.T) {
 }
 
 func TestTestTiersScanKeepsTopLevelTimesAndPrintsOnlyFailures(t *testing.T) {
+	t.Parallel()
 	log := strings.Join([]string{
 		`{"Action":"build-output","ImportPath":"m/broken","Output":"broken.go:1: syntax\n"}`,
 		`{"Action":"run","Package":"github.com/Vilsol/go-pob/a","Test":"TestA"}`,
@@ -89,6 +91,7 @@ func TestTestTiersScanKeepsTopLevelTimesAndPrintsOnlyFailures(t *testing.T) {
 }
 
 func TestTestTiersRecordKeepsOnlyTestsOverTheLine(t *testing.T) {
+	t.Parallel()
 	dir := t.TempDir()
 	logPath := filepath.Join(dir, "run.jsonl")
 	log := `{"Action":"pass","Package":"github.com/Vilsol/go-pob/a","Test":"TestSlow","Elapsed":10}
@@ -115,6 +118,7 @@ func TestTestTiersRecordKeepsOnlyTestsOverTheLine(t *testing.T) {
 
 // TestTestTiersAffectedRunsTheOperatorTierOfChangedPackagesOnly: in a sandbox module, pkg/a's test passes only under the operator env.
 func TestTestTiersAffectedRunsTheOperatorTierOfChangedPackagesOnly(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	sb := t.TempDir()

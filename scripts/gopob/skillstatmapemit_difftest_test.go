@@ -423,6 +423,7 @@ const ssmMinimal = `{"skillCount": 1, "entryCount": 1, "modCount": 1, "groupCoun
      "keywordFlags": 0, "tags": []}]}}}}}`
 
 func TestSkillStatMapEmit(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := ssmSandbox(t, repo, ssmDump())
@@ -538,6 +539,7 @@ func TestSkillStatMapEmit(t *testing.T) {
 }
 
 func TestSkillStatMapEmitTallyOrderIsStableAcrossRuns(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := ssmSandbox(t, repo, ssmDump())
@@ -556,6 +558,7 @@ func TestSkillStatMapEmitTallyOrderIsStableAcrossRuns(t *testing.T) {
 }
 
 func TestSkillStatMapEmitPythonIsStableAcrossHashSeeds(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	mk := ssmSandbox(t, repo, ssmDump())
 	difftest.SelfIdentity(t, t.Context(), difftest.Spec{

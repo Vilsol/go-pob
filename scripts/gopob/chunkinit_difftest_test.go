@@ -57,6 +57,7 @@ func ckSandbox(t *testing.T, repo string) func() (string, error) {
 }
 
 func TestChunkInitPortIsIndistinguishable(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := ckSandbox(t, repo)
@@ -138,6 +139,7 @@ func TestChunkInitPortIsIndistinguishable(t *testing.T) {
 
 // TestChunkInitChunkSizesMatch: CHUNK SIZE CHANGES THE OUTPUT STRUCTURE, and one value exercises one shape.
 func TestChunkInitChunkSizesMatch(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := ckSandbox(t, repo)
@@ -159,6 +161,7 @@ func TestChunkInitChunkSizesMatch(t *testing.T) {
 
 // TestChunkInitCheckModeMatchesAndWritesNothing: --check EXITS 1 FOR "THE FILE WOULD CHANGE".
 func TestChunkInitCheckModeMatchesAndWritesNothing(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := ckSandbox(t, repo)
@@ -208,6 +211,7 @@ func TestChunkInitCheckModeMatchesAndWritesNothing(t *testing.T) {
 }
 
 func TestChunkInitPythonIsStableAcrossHashSeeds(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	mk := ckSandbox(t, repo)
 	difftest.SelfIdentity(t, t.Context(), difftest.Spec{

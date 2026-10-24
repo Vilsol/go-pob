@@ -98,6 +98,7 @@ func spPutLua(sb, name, body string) error {
 }
 
 func TestSkillParts(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := spSandbox(t, repo)
@@ -189,6 +190,7 @@ func TestSkillParts(t *testing.T) {
 }
 
 func TestSkillPartsPythonIsStableAcrossHashSeeds(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	mk := spSandbox(t, repo)
 	difftest.SelfIdentity(t, t.Context(), difftest.Spec{

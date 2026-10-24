@@ -317,6 +317,7 @@ func rdSpec(bin, binDir string, args ...string) difftest.Spec {
 }
 
 func TestRegenDataPortIsIndistinguishable(t *testing.T) {
+	t.Parallel()
 	requirePOSIX(t)
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
@@ -348,6 +349,7 @@ func TestRegenDataPortIsIndistinguishable(t *testing.T) {
 
 // TestRegenDataRefusesAnUnknownGenerator: THE REMAINING REFUSALS NEED DIFFERENT ARGV AND SO CANNOT SHARE ONE FIXTURE TABLE: Spec.PythonArgs is per-SPEC.
 func TestRegenDataRefusesAnUnknownGenerator(t *testing.T) {
+	t.Parallel()
 	requirePOSIX(t)
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
@@ -361,6 +363,7 @@ func TestRegenDataRefusesAnUnknownGenerator(t *testing.T) {
 
 // TestRegenDataRefusesWhenADumperFails: A DUMPER FAILING IS A DIFFERENT MESSAGE FROM AN EMITTER FAILING.
 func TestRegenDataRefusesWhenADumperFails(t *testing.T) {
+	t.Parallel()
 	requirePOSIX(t)
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
@@ -374,6 +377,7 @@ func TestRegenDataRefusesWhenADumperFails(t *testing.T) {
 
 // TestRegenDataRefusesWhenThePostProcessorFails: THE POST-PROCESSOR IS ITS OWN STEP AND ITS OWN REFUSAL.
 func TestRegenDataRefusesWhenThePostProcessorFails(t *testing.T) {
+	t.Parallel()
 	requirePOSIX(t)
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
@@ -387,6 +391,7 @@ func TestRegenDataRefusesWhenThePostProcessorFails(t *testing.T) {
 
 // TestRegenDataCheckFailsOnADriftedArtifact: THIS IS WHAT THE TOOL IS FOR, AND IT IS A FINDING RATHER THAN A REFUSAL.
 func TestRegenDataCheckFailsOnADriftedArtifact(t *testing.T) {
+	t.Parallel()
 	requirePOSIX(t)
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
@@ -399,6 +404,7 @@ func TestRegenDataCheckFailsOnADriftedArtifact(t *testing.T) {
 
 // TestRegenDataWarnsWithoutTheDeterministicLuajit: WITHOUT .luajit-det THE TOOL FALLS BACK TO STOCK LuaJIT AND SAYS SO.
 func TestRegenDataWarnsWithoutTheDeterministicLuajit(t *testing.T) {
+	t.Parallel()
 	requirePOSIX(t)
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
@@ -413,6 +419,7 @@ func TestRegenDataWarnsWithoutTheDeterministicLuajit(t *testing.T) {
 
 // TestRegenDataRunsTheWholeTableAndReportsCoverage: THE WHOLE TABLE IN ONE RUN, which is the only way the manifest-coverage report.
 func TestRegenDataRunsTheWholeTableAndReportsCoverage(t *testing.T) {
+	t.Parallel()
 	requirePOSIX(t)
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
@@ -425,6 +432,7 @@ func TestRegenDataRunsTheWholeTableAndReportsCoverage(t *testing.T) {
 }
 
 func TestRegenDataIsStableAcrossSeeds(t *testing.T) {
+	t.Parallel()
 	requirePOSIX(t)
 	repo := repoRoot(t)
 	mk, binDir := rdSandbox(t, repo)
@@ -442,6 +450,7 @@ func TestRegenDataIsStableAcrossSeeds(t *testing.T) {
 
 // TestRegenDataTableMatchesTheOriginal: THE GO TABLE AND THE PYTHON TABLE MUST NAME THE SAME GENERATORS.
 func TestRegenDataTableMatchesTheOriginal(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 
 	rdAssertSubcommandsAreLive(t)
@@ -509,6 +518,7 @@ func rdGzip(b []byte) ([]byte, error) {
 
 // TestRegenDataProducesAReproducibleGzip: `gzip -9 -n`, ASSERTED ON THE HEADER RATHER THAN BY COMPARISON.
 func TestRegenDataProducesAReproducibleGzip(t *testing.T) {
+	t.Parallel()
 	requirePOSIX(t)
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
@@ -562,6 +572,7 @@ func TestRegenDataProducesAReproducibleGzip(t *testing.T) {
 
 // TestRegenDataCheckLeavesTheRepositoryAlone: --check MUST NOT TOUCH THE REPOSITORY.
 func TestRegenDataCheckLeavesTheRepositoryAlone(t *testing.T) {
+	t.Parallel()
 	requirePOSIX(t)
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)

@@ -163,6 +163,7 @@ func cfgBase(extra ...string) []string {
 }
 
 func TestConfigToolsPortIsIndistinguishable(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := cfgSandbox(t, repo)
@@ -240,6 +241,7 @@ func TestConfigToolsPortIsIndistinguishable(t *testing.T) {
 }
 
 func TestConfigToolsModes(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := cfgSandbox(t, repo)
@@ -281,6 +283,7 @@ func TestConfigToolsModes(t *testing.T) {
 }
 
 func TestConfigToolsPythonIsStableAcrossHashSeeds(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	mk := cfgSandbox(t, repo)
 	difftest.SelfIdentity(t, t.Context(), difftest.Spec{

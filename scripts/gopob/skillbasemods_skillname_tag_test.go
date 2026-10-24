@@ -4,6 +4,7 @@ import "testing"
 
 // TestSbmEmitTagSkillName pins the SkillName arm of sbmEmitTag, which was ABSENT.
 func TestSbmEmitTagSkillName(t *testing.T) {
+	t.Parallel()
 	for _, tc := range []struct {
 		name string
 		tag  map[string]any

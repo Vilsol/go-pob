@@ -61,14 +61,7 @@ func probeDeterminism(argv []string) int {
 	here := pdmHere()
 	repo := pyPathStr(pyPathJoin(here, ".."))
 
-	pob := os.Getenv("POB_DIR")
-	if pob == "" {
-		common, _, _ := awGit(repo, "rev-parse", "--git-common-dir")
-		pob = cdrRealpathM(pyPathJoin(repo, common, "..", "..", "PathOfBuilding"))
-		if filepath.IsAbs(common) {
-			pob = cdrRealpathM(pyPathJoin(common, "..", "..", "PathOfBuilding"))
-		}
-	}
+	pob := pobPinDir()
 	if fi, err := os.Stat(pyPathJoin(pob, "src")); err != nil || !fi.IsDir() { //nolint:gosec // an operator-supplied checkout path, as in the original
 		return pdmRefuse(fmt.Sprintf("no PoB checkout at %s (set POB_DIR)", pob))
 	}

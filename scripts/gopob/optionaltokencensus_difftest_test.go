@@ -43,6 +43,7 @@ func otcSandbox(t *testing.T, repo, pob string) func() (string, error) {
 }
 
 func TestOptionalTokenCensusPortIsIndistinguishable(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	pob := pobDir(t)
 	bin := buildPort(t, repo)
@@ -113,6 +114,7 @@ func TestOptionalTokenCensusPortIsIndistinguishable(t *testing.T) {
 
 // TestMaximalExpandMatchesPythonOnEveryPinKey: THE ONE CONSTRUCT IN THE PILOT THAT COULD NOT BE PORTED CHARACTER FOR CHARACTER, SO IT OWES THE STRONGEST CONTROL.
 func TestMaximalExpandMatchesPythonOnEveryPinKey(t *testing.T) {
+	t.Parallel()
 	pob := pobDir(t)
 	pin, err := os.ReadFile(filepath.Join(pob, "src/Modules/ModParser.lua"))
 	if err != nil {

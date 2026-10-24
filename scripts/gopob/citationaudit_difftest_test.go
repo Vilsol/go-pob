@@ -53,6 +53,7 @@ func caSandbox(t *testing.T, repo string) func() (string, error) {
 }
 
 func TestCitationAuditPortIsIndistinguishable(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := caSandbox(t, repo)
@@ -119,6 +120,7 @@ func TestCitationAuditPortIsIndistinguishable(t *testing.T) {
 
 // TestCitationAuditContextWidthsMatch: CONTEXT IS THE ONLY KNOB AND THE FIXTURES ABOVE USE ONE VALUE.
 func TestCitationAuditContextWidthsMatch(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := caSandbox(t, repo)
@@ -138,6 +140,7 @@ func TestCitationAuditContextWidthsMatch(t *testing.T) {
 
 // TestCitationAuditSweepMatchesTheRealTree: THE COMPILED BINARY, NEVER `go run`.
 func TestCitationAuditSweepMatchesTheRealTree(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	if _, err := os.Stat(pobDir(t)); err != nil {
 		t.Skip("pinned PoB not available")

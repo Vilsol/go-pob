@@ -360,23 +360,19 @@ func ppDoRecord(pob string) (int, error) {
 }
 
 func pobPin(args []string) int {
-	pobDir := os.Getenv("POB_DIR")
-	if pobDir == "" {
-		pobDir = pyExpandUser("~/PathOfBuilding")
-	}
 	game := ""
 	for i, a := range args {
 		if a == "--game" && i+1 < len(args) {
 			game = args[i+1]
 		}
 	}
+	var pobDir string
 	switch game {
 	case "", "poe1":
+		pobDir = pobPinDir()
 	case "poe2":
 		ppRecordName = "pob_pin_poe2.json"
-		if pobDir = os.Getenv("POB2_DIR"); pobDir == "" {
-			pobDir = pyExpandUser("~/" + pcDefaultPoB2Rel)
-		}
+		pobDir = pob2PinDir()
 	default:
 		fmt.Printf("REFUSING (NO-RECORD): --game %s is not poe1 or poe2\n", pyRepr(game))
 		return ppNoRecord

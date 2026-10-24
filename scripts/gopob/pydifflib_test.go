@@ -105,6 +105,7 @@ func ddAsk(t *testing.T, script string, cases []ddCase) []string {
 }
 
 func TestPyDifflibRatioMatchesCPython(t *testing.T) {
+	t.Parallel()
 	cases := ddCases()
 	for _, autojunk := range []bool{true, false} {
 		aj := "True"
@@ -130,6 +131,7 @@ func TestPyDifflibRatioMatchesCPython(t *testing.T) {
 }
 
 func TestPyDifflibOpcodesMatchCPython(t *testing.T) {
+	t.Parallel()
 	cases := ddCases()
 	for _, autojunk := range []bool{true, false} {
 		aj := "True"
@@ -157,6 +159,7 @@ func TestPyDifflibOpcodesMatchCPython(t *testing.T) {
 
 // TestPyDifflibUnifiedDiffMatchesCPython: n IS SWEPT, because get_grouped_opcodes trims the first and last EQUAL run to n and splits any interior run longer than 2n.
 func TestPyDifflibUnifiedDiffMatchesCPython(t *testing.T) {
+	t.Parallel()
 	cases := ddCases()
 	for _, n := range []int{0, 1, 3, 6} {
 		want := ddAsk(t, fmt.Sprintf(

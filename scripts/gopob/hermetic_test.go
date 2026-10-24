@@ -15,10 +15,15 @@ func TestMain(m *testing.M) {
 	_ = os.Setenv("GIT_CONFIG_COUNT", "1")
 	_ = os.Setenv("GIT_CONFIG_KEY_0", "maintenance.auto")
 	_ = os.Setenv("GIT_CONFIG_VALUE_0", "false")
-	os.Exit(m.Run())
+	code := m.Run()
+	if portBinDir != "" {
+		_ = os.RemoveAll(portBinDir)
+	}
+	os.Exit(code)
 }
 
 func TestFixtureCommitsStartNoBackgroundMaintenance(t *testing.T) {
+	t.Parallel()
 	if _, err := exec.LookPath("git"); err != nil {
 		t.Skip("git is not on PATH")
 	}

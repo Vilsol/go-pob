@@ -707,11 +707,7 @@ func dataRawMirror(argv []string) int {
 	if selftestOnly {
 		return dmSelftest()
 	}
-	pob := os.Getenv("POB_DIR")
-	if pob == "" {
-		home, _ := pyPathHome()
-		pob = pyPathJoin(home, dmDefaultPoBRel)
-	}
+	pob := pobPinDir()
 	pob = dmExpandUser(pob)
 	if !pbdIsDir(pyPathJoin(pob, "src")) {
 		dmRefuse(fmt.Sprintf("%s has no src/ -- set POB_DIR", pob))

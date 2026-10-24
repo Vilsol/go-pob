@@ -10,6 +10,7 @@ import (
 
 // TestResidualClustersGradedOverride pins the denominator every percentage in residual-clusters is computed against.
 func TestResidualClustersGradedOverride(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	sb := t.TempDir()

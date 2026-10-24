@@ -50,6 +50,7 @@ func cgMultiSandbox(t *testing.T) (string, string) {
 }
 
 func TestCorpusGrepPatternsFileIsTheSingleRunsConcatenated(t *testing.T) {
+	t.Parallel()
 	bin, sb := cgMultiSandbox(t)
 	patterns := []string{
 		"commontoken",
@@ -82,6 +83,7 @@ func TestCorpusGrepPatternsFileIsTheSingleRunsConcatenated(t *testing.T) {
 }
 
 func TestCorpusGrepLiteralCountsWhatTheRegexCounts(t *testing.T) {
+	t.Parallel()
 	bin, sb := cgMultiSandbox(t)
 	matched := func(p string) string {
 		out, errOut, rc := cgRun(t, bin, sb, "PATTERN="+p)
@@ -101,6 +103,7 @@ func TestCorpusGrepLiteralCountsWhatTheRegexCounts(t *testing.T) {
 }
 
 func TestCorpusGrepPatternsFileRefusals(t *testing.T) {
+	t.Parallel()
 	bin, sb := cgMultiSandbox(t)
 	dir := t.TempDir()
 	write := func(name, body string) string {

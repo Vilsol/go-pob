@@ -79,6 +79,7 @@ func tfParse(t *testing.T) []tfTask {
 }
 
 func TestTaskfileCmdsBlocksStaySmall(t *testing.T) {
+	t.Parallel()
 	tasks := tfParse(t)
 
 	var wide []string
@@ -97,6 +98,7 @@ func TestTaskfileCmdsBlocksStaySmall(t *testing.T) {
 }
 
 func TestTaskfileCommandsStayShort(t *testing.T) {
+	t.Parallel()
 	var long []string
 	for _, tk := range tfParse(t) {
 		if tk.longest > tfMaxLineLen {
@@ -114,6 +116,7 @@ func TestTaskfileCommandsStayShort(t *testing.T) {
 
 // TestTaskfileCommandsDoNotBranch: AND THE SHAPE THAT MATTERS MOST IS NOT LENGTH AT ALL: it is a cmds entry that BRANCHES.
 func TestTaskfileCommandsDoNotBranch(t *testing.T) {
+	t.Parallel()
 	branch := regexp.MustCompile(`\|\||\bif\b.*;\s*then\b|\bfor\b.*;\s*do\b|\bwhile\b|\bcase\b.*\bin\b`)
 	exempt := map[string]bool{
 		"import-characters": true,

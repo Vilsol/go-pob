@@ -211,6 +211,7 @@ func cddSandbox(t *testing.T, repo string) func() (string, error) {
 
 // TestCitationDriftDiffPortIsIndistinguishable: OLD IS A DIRECTORY HERE, NOT A GIT REF.
 func TestCitationDriftDiffPortIsIndistinguishable(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := cddSandbox(t, repo)
@@ -262,6 +263,7 @@ func TestCitationDriftDiffPortIsIndistinguishable(t *testing.T) {
 }
 
 func TestCitationDriftDiffModes(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := cddSandbox(t, repo)
@@ -292,6 +294,7 @@ func TestCitationDriftDiffModes(t *testing.T) {
 }
 
 func TestCitationDriftDiffPythonIsStableAcrossHashSeeds(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	mk := cddSandbox(t, repo)
 	difftest.SelfIdentity(t, t.Context(), difftest.Spec{

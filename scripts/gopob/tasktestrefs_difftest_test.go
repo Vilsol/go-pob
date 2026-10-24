@@ -176,6 +176,7 @@ func ttSpecFor(t *testing.T, bin string, extraEnv []string, args ...string) diff
 }
 
 func TestTaskTestRefsAgainstPython(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := ttSandbox(t, repo)
@@ -219,6 +220,7 @@ func ttReadPy(t *testing.T, repo string) []byte {
 
 // TestTaskTestRefsGateEmitterRefusal points GOPOB_BIN at a binary that exits non-zero, which is the only way to reach the bridge's refusal.
 func TestTaskTestRefsGateEmitterRefusal(t *testing.T) {
+	t.Parallel()
 	requirePOSIX(t)
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
@@ -237,6 +239,7 @@ func TestTaskTestRefsGateEmitterRefusal(t *testing.T) {
 
 // TestTaskTestRefsModes sweeps the paths that are FINDINGS rather than refusals — exit 1 — plus the selftest and the name-set guard's two refusals.
 func TestTaskTestRefsModes(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := ttSandbox(t, repo)
@@ -303,6 +306,7 @@ func TestTaskTestRefsModes(t *testing.T) {
 
 // TestTaskTestRefsUpdateNames declares the FILE.
 func TestTaskTestRefsUpdateNames(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := ttSandbox(t, repo)
@@ -312,6 +316,7 @@ func TestTaskTestRefsUpdateNames(t *testing.T) {
 }
 
 func TestTaskTestRefsPythonIsStableAcrossHashSeeds(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := ttSandbox(t, repo)
@@ -325,6 +330,7 @@ func TestTaskTestRefsPythonIsStableAcrossHashSeeds(t *testing.T) {
 
 // TestTaskTestRefsFixtureReachesTheCode is the control on the SANDBOX rather than the tool.
 func TestTaskTestRefsFixtureReachesTheCode(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := ttSandbox(t, repo)

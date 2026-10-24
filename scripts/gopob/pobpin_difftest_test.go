@@ -83,6 +83,7 @@ func ppSpec(t *testing.T, bin, sbPobRel string, args ...string) difftest.Spec {
 }
 
 func TestPobPin(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := ppSandbox(t, repo)
@@ -139,6 +140,7 @@ func TestPobPin(t *testing.T) {
 
 // TestPobPinMismatch: THE MISMATCH PATH IS THE GATE'S VERDICT.
 func TestPobPinMismatch(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	s := ppSpec(t, bin, "pob")
@@ -154,6 +156,7 @@ func TestPobPinMismatch(t *testing.T) {
 
 // TestPobPinSelftest: THE SELFTEST IS PORTED RATHER THAN DROPPED.
 func TestPobPinSelftest(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	s := ppSpec(t, bin, "pob", "--selftest")

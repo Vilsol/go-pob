@@ -28,6 +28,12 @@ jobs:
       - name: FMA census
         run: go run ./scripts/gopob fma-census
 
+      - name: Taskfile shape
+        run: go test ./scripts/gopob/ -run 'TestTaskfile|TestNoTaskfileCommandRunsADeletedOriginal' -v
+
+      - name: Data fields guard
+        run: OPERATOR=true go test ./scripts/gopob/internal/datafields/ -run '^TestReadFieldsAreInTheCommittedList$' -v
+
   lint-frontend:
     name: Lint Frontend
     runs-on: ubuntu-latest

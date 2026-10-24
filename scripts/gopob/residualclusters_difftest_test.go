@@ -83,6 +83,7 @@ func rcSandbox(t *testing.T, repo string) func() (string, error) {
 }
 
 func TestResidualClustersPortIsIndistinguishable(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := rcSandbox(t, repo)
@@ -143,6 +144,7 @@ func TestResidualClustersPortIsIndistinguishable(t *testing.T) {
 
 // TestResidualClustersParametersMatch: THE TWO PARAMETERS DECIDE THE CLUSTERING, and the default value of each hides the other's edges.
 func TestResidualClustersParametersMatch(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := rcSandbox(t, repo)
@@ -164,6 +166,7 @@ func TestResidualClustersParametersMatch(t *testing.T) {
 }
 
 func TestResidualClustersPythonIsStableAcrossHashSeeds(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	mk := rcSandbox(t, repo)
 	difftest.SelfIdentity(t, t.Context(), difftest.Spec{

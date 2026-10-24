@@ -206,7 +206,7 @@ tasks:
       - '{{.NICE}} go test -v ./...'
 
   test-fast:
-    desc: "Tier 1: every test that does NOT need the corpus (~1m44s, 12 red at base, measured 2026-09-08). Run this per fix."
+    desc: "Tier 1: every test that does NOT need the corpus (~2m20s, 0 red at base, measured 2026-10-24). Run this per fix."
     cmds:
       - 'env -u CORPUS {{.NICE}} go test ./...'
 
@@ -375,6 +375,12 @@ tasks:
     cmds:
       - 'GOLANGCI_LINT_CACHE="{{.ROOT_DIR}}/.cache/golangci-lint" {{.NICE}} golangci-lint run'
       - '{{.GOPOB}} fma-census'
+      - task: lint-taskfile
+
+  lint-taskfile:
+    desc: "The Taskfile's shape rules (line length, cmds size, no branching, no deleted originals)"
+    cmds:
+      - "{{.NICE}} go test ./scripts/gopob/ -run 'TestTaskfile|TestNoTaskfileCommandRunsADeletedOriginal'"
 
   lint-frontend:
     desc: "Lint frontend"
@@ -458,6 +464,12 @@ tasks:
     cmds:
       - '{{.GOPOB}} kw-bits-parity'
       - '{{.GOPOB}} regen-data {{.CLI_ARGS}}'
+      - task: data-fields-guard
+
+  data-fields-guard:
+    desc: "Fail when go-pob reads a go-pob-data field the published list drops (TestReadFieldsAreInTheCommittedList)"
+    cmds:
+      - '{{.NICE}} env OPERATOR=true go test ./scripts/gopob/internal/datafields/ -run "^TestReadFieldsAreInTheCommittedList$"'
 
   pob-data-tables:
     desc: "Regenerate the PoB DATA-table reference that TestPoBDataTableDrift grades against"

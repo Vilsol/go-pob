@@ -232,7 +232,7 @@ func ldRunPy(t *testing.T, repo, mode, arg string) string {
 
 	if difftest.OriginalsDeleted(repo) {
 		if !haveFrozen {
-			t.Skipf("no frozen CPython answer for %s, and scripts/lua_data.py is gone — this case "+
+			t.Fatalf("no frozen CPython answer for %s, and scripts/lua_data.py is gone — this case "+
 				"was added after the freeze and has no oracle. Assert it against a hand-derived "+
 				"expectation or delete it; do not compare the parser against itself.", mode)
 		}
@@ -297,6 +297,7 @@ string]] }`,
 }
 
 func TestLuaDataMatchesCPython(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	for _, src := range ldCases {
 		t.Run(ldCaseName(src), func(t *testing.T) {
@@ -334,6 +335,7 @@ var ldScanCases = []struct{ name, prefix, text string }{
 }
 
 func TestLuaDataScanAssignmentsSynthetic(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	for _, tc := range ldScanCases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -355,59 +357,88 @@ func TestLuaDataScanAssignmentsSynthetic(t *testing.T) {
 	}
 }
 
+// The pinned files never had a frozen CPython answer; these expectations are read off the pin with grep, so a pin
+// bump that moves them is re-derived there, never from this parser.
 func TestLuaDataScanAssignmentsMatchesCPython(t *testing.T) {
+	t.Parallel()
 	pob := ldPinDir(t)
-	repo := repoRoot(t)
-	for _, tc := range []struct{ rel, prefix string }{
-		{"src/Data/Minions.lua", "minions"},
-		{"src/Data/Spectres.lua", "minions"},
-		{"src/Data/Skills/act_dex.lua", "skills"},
-		{"src/Data/Skills/act_int.lua", "skills"},
-		{"src/Data/Skills/act_str.lua", "skills"},
-		{"src/Data/Skills/sup_dex.lua", "skills"},
-		{"src/Data/Skills/other.lua", "skills"},
+	for _, tc := range []struct {
+		rel, prefix         string
+		rows                int
+		firstKey, firstName string
+		firstLine           int
+		lastKey             string
+		lastLine            int
+	}{
+		{"src/Data/Minions.lua", "minions", 64, "RaisedZombie", "Raised Zombie", 11, "ShamblingUndead", 1927},
+		{"src/Data/Spectres.lua", "minions", 268, "Metadata/Monsters/Axis/AxisCaster", "Blackguard Mage", 12,
+			"Metadata/Monsters/VaalMonsters/VaalOverseer", 7207},
+		{"src/Data/Skills/act_dex.lua", "skills", 198, "AlchemistsMark", "Alchemist's Mark", 8, "QuickstepHardMode", 18446},
+		{"src/Data/Skills/act_int.lua", "skills", 229, "Arc", "Arc", 8, "Zealotry", 21403},
+		{"src/Data/Skills/act_str.lua", "skills", 142, "Absolution", "Absolution", 8, "WarBanner", 13088},
+		{"src/Data/Skills/sup_dex.lua", "skills", 82, "SupportAddedColdDamage", "Added Cold Damage", 8,
+			"SupportWitheringTouch", 4991},
+		{"src/Data/Skills/other.lua", "skills", 166, "RepeatingShockwave", "Abberath's Fury", 8, "EnemyExplode", 6187},
 	} {
 		t.Run(filepath.Base(tc.rel), func(t *testing.T) {
-			path := filepath.Join(pob, tc.rel)
-			body, err := os.ReadFile(path)
+			body, err := os.ReadFile(filepath.Join(pob, tc.rel))
 			if err != nil {
-				t.Skipf("%s: %v", tc.rel, err)
+				t.Fatalf("%s: %v", tc.rel, err)
 			}
-			want := ldRunPy(t, repo, tc.prefix, path)
 			rows, err := ldScanAssignments(string(body), tc.prefix)
-			var got strings.Builder
 			if err != nil {
-				got.WriteString("LuaParseError: " + err.Error() + "\n")
-			} else {
-				for _, r := range rows {
-					key, _ := r.key.(string)
-					got.WriteString(key + "\t" + intToStr(r.line) + "\t" + ldDumpGo(r.table) + "\n")
-				}
+				t.Fatalf("%s: %v", tc.rel, err)
 			}
-			ldCompareLines(t, tc.rel, want, got.String())
+			if len(rows) != tc.rows {
+				t.Fatalf("%s: %d rows, the pin has %d", tc.rel, len(rows), tc.rows)
+			}
+			first, last := rows[0], rows[len(rows)-1]
+			if first.key != tc.firstKey || first.line != tc.firstLine || last.key != tc.lastKey || last.line != tc.lastLine {
+				t.Fatalf("%s: rows run %v@%d .. %v@%d, the pin has %s@%d .. %s@%d", tc.rel,
+					first.key, first.line, last.key, last.line, tc.firstKey, tc.firstLine, tc.lastKey, tc.lastLine)
+			}
+			if name := first.table.hash["name"]; name != tc.firstName {
+				t.Fatalf("%s: %s.name = %v, the pin has %q", tc.rel, tc.firstKey, name, tc.firstName)
+			}
 		})
 	}
 }
 
 func TestLuaDataReturnTableMatchesCPython(t *testing.T) {
+	t.Parallel()
 	pob := ldPinDir(t)
-	repo := repoRoot(t)
-	for _, rel := range []string{"src/Data/Gems.lua", "src/Data/SkillStatMap.lua"} {
-		t.Run(filepath.Base(rel), func(t *testing.T) {
-			path := filepath.Join(pob, rel)
-			body, err := os.ReadFile(path)
+	for _, tc := range []struct {
+		rel         string
+		keys        int
+		first, last string
+		alsoHas     []string
+	}{
+		{"src/Data/Gems.lua", 822, "Metadata/Items/Gems/SkillGemFireball", "Metadata/Items/Gems/SkillGemPactOfLycia", nil},
+		// 716 entries, two keys assigned twice: a Lua table keeps 714.
+		{"src/Data/SkillStatMap.lua", 714, "base_skill_effect_duration", "pact_empower_limitation_specifier_for_stat_description",
+			[]string{"mine_throwing_speed_+%_per_frenzy_charge", "triggered_by_kinetic_instability_support"}},
+	} {
+		t.Run(filepath.Base(tc.rel), func(t *testing.T) {
+			body, err := os.ReadFile(filepath.Join(pob, tc.rel))
 			if err != nil {
-				t.Skipf("%s: %v", rel, err)
+				t.Fatalf("%s: %v", tc.rel, err)
 			}
-			want := ldRunPy(t, repo, "return-table", path)
 			tbl, err := ldParseReturnTable(string(body))
-			got := ""
 			if err != nil {
-				got = "LuaParseError: " + err.Error() + "\n"
-			} else {
-				got = ldDumpGo(tbl) + "\n"
+				t.Fatalf("%s: %v", tc.rel, err)
 			}
-			ldCompareLines(t, rel, want, got)
+			keys := tbl.keys()
+			if len(keys) != tc.keys || len(tbl.array) != 0 {
+				t.Fatalf("%s: %d keys and %d array items, the pin has %d keys", tc.rel, len(keys), len(tbl.array), tc.keys)
+			}
+			if keys[0] != tc.first || keys[len(keys)-1] != tc.last {
+				t.Fatalf("%s: keys run %v .. %v, the pin has %s .. %s", tc.rel, keys[0], keys[len(keys)-1], tc.first, tc.last)
+			}
+			for _, k := range tc.alsoHas {
+				if _, ok := tbl.hash[k]; !ok {
+					t.Fatalf("%s: no key %s", tc.rel, k)
+				}
+			}
 		})
 	}
 }
@@ -472,14 +503,7 @@ func ldCaseName(src string) string {
 
 func ldPinDir(t *testing.T) string {
 	t.Helper()
-	if v := os.Getenv("POB_DIR"); v != "" {
-		return v
-	}
-	home, err := os.UserHomeDir()
-	if err != nil {
-		t.Skip("no home directory")
-	}
-	p := filepath.Join(home, pcDefaultPoBRel)
+	p := pobPinDir()
 	if _, err := os.Stat(filepath.Join(p, "src")); err != nil {
 		t.Skipf("no pinned PoB at %s", p)
 	}
@@ -506,6 +530,7 @@ func sortRows[T any](rows []T, less func(a, b T) bool) {
 
 // TestLuaDataFreezeIsComplete writes the frozen answers under LUADATA_RECORD=1 and otherwise asserts that every synthetic case has one.
 func TestLuaDataFreezeIsComplete(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	if ldRecording() {
 		ldRecordMu.Lock()

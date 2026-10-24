@@ -76,6 +76,7 @@ func soSandbox(t *testing.T, repo string) func() (string, error) {
 }
 
 func TestStatOverlapPortIsIndistinguishable(t *testing.T) {
+	t.Parallel()
 	requirePOSIX(t)
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
@@ -158,6 +159,7 @@ func TestStatOverlapPortIsIndistinguishable(t *testing.T) {
 
 // TestStatOverlapIsStableAcrossLocales: LC_ALL, NOT PYTHONHASHSEED.
 func TestStatOverlapIsStableAcrossLocales(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	mk := soSandbox(t, repo)
 	difftest.SelfIdentity(t, t.Context(), difftest.Spec{

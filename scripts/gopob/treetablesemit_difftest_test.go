@@ -80,6 +80,7 @@ func tteOneNode(id, node string) string {
 }
 
 func TestTreeTablesEmit(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := tteSandbox(t, repo)
@@ -157,6 +158,7 @@ func TestTreeTablesEmit(t *testing.T) {
 
 // TestTreeTablesEmitOrderIsStableAcrossRuns: REPEATED, BECAUSE Go MAP ORDER VARIES PER PROCESS AND THE DIVERGENCE IS IN THE DATA.
 func TestTreeTablesEmitOrderIsStableAcrossRuns(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := tteSandbox(t, repo)

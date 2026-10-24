@@ -57,6 +57,7 @@ func mkSandbox(t *testing.T, repo string) func() (string, error) {
 }
 
 func TestMkDropCasesPortIsIndistinguishable(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := mkSandbox(t, repo)
@@ -132,6 +133,7 @@ func TestMkDropCasesPortIsIndistinguishable(t *testing.T) {
 
 // TestMkDropCasesTopValuesMatch: `top` DECIDES WHAT IS WRITTEN.
 func TestMkDropCasesTopValuesMatch(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := mkSandbox(t, repo)
@@ -152,6 +154,7 @@ func TestMkDropCasesTopValuesMatch(t *testing.T) {
 }
 
 func TestMkDropCasesPythonIsStableAcrossHashSeeds(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	mk := mkSandbox(t, repo)
 	difftest.SelfIdentity(t, t.Context(), difftest.Spec{

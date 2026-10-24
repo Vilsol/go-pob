@@ -2,5 +2,5 @@ tool     port-diff
 fixture  home-absent
 original scripts/port_diff.py
 args     
-env      NAME=pdSharedName
+env      GIT_DIR=no-git NAME=pdSharedName
 unset    POB_DIR HOME

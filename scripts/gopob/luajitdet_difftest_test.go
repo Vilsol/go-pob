@@ -86,6 +86,7 @@ func ljSpec(bin, binDir string) difftest.Spec {
 
 // TestBuildLuajitDetPortIsIndistinguishable: ONLY `--verify` IS EXERCISED, AND THE SPEC SAYS SO.
 func TestBuildLuajitDetPortIsIndistinguishable(t *testing.T) {
+	t.Parallel()
 	requireWorks(t, probeSetarch)
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
@@ -145,6 +146,7 @@ func TestBuildLuajitDetPortIsIndistinguishable(t *testing.T) {
 
 // TestBuildLuajitDetWarnsWhenTheProbeStopsDiscriminating: THE NEGATIVE CONTROL HAS TWO OUTCOMES AND THE SECOND IS A WARNING, NOT A FAILURE.
 func TestBuildLuajitDetWarnsWhenTheProbeStopsDiscriminating(t *testing.T) {
+	t.Parallel()
 	requireWorks(t, probeSetarch)
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
@@ -159,6 +161,7 @@ func TestBuildLuajitDetWarnsWhenTheProbeStopsDiscriminating(t *testing.T) {
 
 // TestBuildLuajitDetSkipsTheControlWithNoStockLuajit: AND THE CONTROL IS SKIPPED ENTIRELY WHEN THERE IS NO STOCK luajit ON PATH.
 func TestBuildLuajitDetSkipsTheControlWithNoStockLuajit(t *testing.T) {
+	t.Parallel()
 	requireWorks(t, probeSetarch)
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)

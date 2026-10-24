@@ -184,6 +184,7 @@ func sbvSpec(bin string, args ...string) difftest.Spec {
 }
 
 func TestSkillBaseModsVerify(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := sbvSandbox(t, repo, sbvLuaDump(), sbvGoDump(true))
@@ -381,6 +382,7 @@ func TestSkillBaseModsVerify(t *testing.T) {
 
 // TestSkillBaseModsVerifyReportsFindings: THE FINDING PATH IS A SEPARATE OUTCOME FROM THE REFUSAL PATH AND NEEDS ITS OWN FIXTURE.
 func TestSkillBaseModsVerifyReportsFindings(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := sbvSandbox(t, repo, sbvLuaDump(), sbvGoDump(false))
@@ -390,6 +392,7 @@ func TestSkillBaseModsVerifyReportsFindings(t *testing.T) {
 
 // TestSkillBaseModsVerifyBooleanFlags: NEITHER A REFUSAL NOR A SUCCESS.
 func TestSkillBaseModsVerifyBooleanFlags(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := sbvSandbox(t, repo,
@@ -404,6 +407,7 @@ func TestSkillBaseModsVerifyBooleanFlags(t *testing.T) {
 
 // TestSkillBaseModsVerifyCapsTheErrorList: THE 40-ERROR CAP.
 func TestSkillBaseModsVerifyCapsTheErrorList(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := sbvSandbox(t, repo,
@@ -459,6 +463,7 @@ func TestSkillBaseModsVerifyCapsTheErrorList(t *testing.T) {
 
 // TestSkillBaseModsVerifyExtraGoSkill: A skill the Go table carries and the Lua does not — its own arm, and sorted independently.
 func TestSkillBaseModsVerifyExtraGoSkill(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := sbvSandbox(t, repo, `{"skillCount": 0, "modCount": 0, "skillTypeNames": {}, "skills": {}}`,
@@ -469,6 +474,7 @@ func TestSkillBaseModsVerifyExtraGoSkill(t *testing.T) {
 
 // TestSkillBaseModsVerifyKeyDeletion: THE **REVERSE** DIRECTION OF THE ONE-SIDED-REFUSAL CLASS, WHICH NO LEXICAL CHECK CAN SEE.
 func TestSkillBaseModsVerifyKeyDeletion(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := sbvSandbox(t, repo, sbvLuaDump(), sbvGoDump(true))

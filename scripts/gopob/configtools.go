@@ -423,8 +423,7 @@ type ctArgs struct {
 func ctParseArgs(argv []string) ctArgs {
 	valued := map[string]bool{"--pob": true, "--repo": true, "--corpus": true, "--var": true}
 	cmds := []string{"extract", "inventory", "compare", "splice"}
-	home, _ := pyPathHome()
-	a := ctArgs{pob: pyPathJoin(home, "PathOfBuilding")}
+	a := ctArgs{pob: pobPinDir()}
 	for i := 0; i < len(argv); {
 		x := argv[i]
 		switch {

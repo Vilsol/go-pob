@@ -114,6 +114,7 @@ func orSandbox(t *testing.T, repo string) func() (string, error) {
 }
 
 func TestOmissionReasonsPortIsIndistinguishable(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := orSandbox(t, repo)
@@ -174,6 +175,7 @@ func TestOmissionReasonsPortIsIndistinguishable(t *testing.T) {
 
 // TestOmissionReasonsReportValues: REPORT SUPPRESSES ON ANY NON-EMPTY VALUE.
 func TestOmissionReasonsReportValues(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := orSandbox(t, repo)
@@ -192,6 +194,7 @@ func TestOmissionReasonsReportValues(t *testing.T) {
 }
 
 func TestOmissionReasonsSelftest(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := orSandbox(t, repo)
@@ -207,6 +210,7 @@ func TestOmissionReasonsSelftest(t *testing.T) {
 }
 
 func TestOmissionReasonsPythonIsStableAcrossHashSeeds(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	mk := orSandbox(t, repo)
 	difftest.SelfIdentity(t, t.Context(), difftest.Spec{
@@ -218,6 +222,7 @@ func TestOmissionReasonsPythonIsStableAcrossHashSeeds(t *testing.T) {
 
 // TestOmissionReasonsEmitterWithNoReasons: AN EMITTER WITH NO Unrepresentable SITES AT ALL.
 func TestOmissionReasonsEmitterWithNoReasons(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := orSandbox(t, repo)

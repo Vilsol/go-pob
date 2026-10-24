@@ -15,8 +15,6 @@ import (
 )
 
 const (
-	pcDefaultPoBRel       = "PathOfBuilding"
-	pcDefaultPoB2Rel      = "PathOfBuilding-PoE2"
 	pcManifest            = "scripts/port_manifest.txt"
 	pcRefusalExit         = 3
 	pcCitedFloor          = 16
@@ -100,16 +98,7 @@ func pcGit(dir string, args ...string) (string, bool) {
 }
 
 // pcPoB2Dir is the PoE2 pin that every //pob2: marker resolves against; //pob: stays on POB_DIR.
-func pcPoB2Dir() string {
-	if v := os.Getenv("POB2_DIR"); v != "" {
-		return v
-	}
-	home, ok := pyPathHome()
-	if !ok {
-		pcRefuse("cannot resolve the home directory to find the pinned PoE2 PoB")
-	}
-	return pyPathJoin(home, pcDefaultPoB2Rel)
-}
+func pcPoB2Dir() string { return pob2PinDir() }
 
 func pcRepoRoot() string {
 	out, ok := pcGit("", "rev-parse", "--show-toplevel")
@@ -977,15 +966,7 @@ func pcDedup(cs []*pcCite) []*pcCite {
 }
 
 func pobCitations(args []string) int {
-	pob := os.Getenv("POB_DIR")
-	if pob == "" {
-		home, ok := pyPathHome()
-		if !ok {
-			//go-only: Path.home() RAISES RuntimeError; unreachable without both an
-			pcRefuse("cannot resolve the home directory to find the pinned PoB")
-		}
-		pob = pyPathJoin(home, pcDefaultPoBRel)
-	}
+	pob := pobPinDir()
 	if len(args) > 0 && args[0] == "--selftest" {
 		return pcSelftest(pob)
 	}

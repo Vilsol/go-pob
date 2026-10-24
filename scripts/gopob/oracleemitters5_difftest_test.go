@@ -36,6 +36,7 @@ func oeSkillFlagsDump() string {
 }
 
 func TestOracleSkillFlagsEmit(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := oeSandbox(t, repo, oeSkillFlagsPy, oeSkillFlagsDump())
@@ -126,5 +127,6 @@ func TestOracleSkillFlagsEmit(t *testing.T) {
 }
 
 func TestOracleSkillFlagsEmitUsage(t *testing.T) {
+	t.Parallel()
 	oeUsageSweep(t, oeSkillFlagsPy, "skill-flags-emit", oeSkillFlagsDump())
 }

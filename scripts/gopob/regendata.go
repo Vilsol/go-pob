@@ -447,10 +447,7 @@ func rdParseArgs(r *rdRun, argv []string, pobArg string) (string, bool) {
 
 func regenData(argv []string) int {
 	r := &rdRun{repo: rdRepo()}
-	pobArg := os.Getenv("POB_DIR")
-	if pobArg == "" {
-		pobArg = rdExpandUser("~/PathOfBuilding")
-	}
+	pobArg := pobPinDir()
 	pobArg, ok := rdParseArgs(r, argv, pobArg)
 	if !ok {
 		return 3

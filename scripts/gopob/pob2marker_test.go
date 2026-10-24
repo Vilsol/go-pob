@@ -64,6 +64,7 @@ func pob2Run(t *testing.T, bin, sb string, env []string, args ...string) string 
 }
 
 func TestPob2MarkersResolveAgainstThePoE2Pin(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	sb := pob2Sandbox(t, repo)

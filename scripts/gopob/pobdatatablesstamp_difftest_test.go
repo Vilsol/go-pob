@@ -99,6 +99,7 @@ func pdtsSpec(bin string, args ...string) difftest.Spec {
 
 // TestPobDataTablesStampWritesIdenticalStamps: THE SUCCESS PATH IS ITS OWN TEST BECAUSE IT IS THE ONLY ONE THAT WRITES ANYTHING.
 func TestPobDataTablesStampWritesIdenticalStamps(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := pdtsSandbox(t, repo, nil)
@@ -120,6 +121,7 @@ func TestPobDataTablesStampWritesIdenticalStamps(t *testing.T) {
 }
 
 func TestPobDataTablesStampPortIsIndistinguishable(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := pdtsSandbox(t, repo, nil)
@@ -177,6 +179,7 @@ func TestPobDataTablesStampPortIsIndistinguishable(t *testing.T) {
 
 // TestPobDataTablesStampUsage: THE ARGUMENT-COUNT PATH NEEDS ITS OWN SPEC BECAUSE ARGS LIVE ON THE SPEC, NOT THE FIXTURE.
 func TestPobDataTablesStampUsage(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := pdtsSandbox(t, repo, nil)
@@ -201,6 +204,7 @@ func TestPobDataTablesStampUsage(t *testing.T) {
 
 // TestPobDataTablesStampNormalisesItsArgumentLikePathlib: THE ARGUMENT IS NORMALISED BY pathlib BEFORE IT IS EVER PRINTED, AND NOTHING ELSE HERE CAN SEE THAT.
 func TestPobDataTablesStampNormalisesItsArgumentLikePathlib(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 
@@ -225,6 +229,7 @@ func TestPobDataTablesStampNormalisesItsArgumentLikePathlib(t *testing.T) {
 
 // TestPobDataTablesStampIsIdempotent: EXIT 0 WITH A MESSAGE IS A THIRD OUTCOME AND IT IS THE RE-RUN CASE.
 func TestPobDataTablesStampIsIdempotent(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	stamped, _ := json.Marshal(map[string]any{
@@ -241,6 +246,7 @@ func TestPobDataTablesStampIsIdempotent(t *testing.T) {
 }
 
 func TestPobDataTablesStampIsStableAcrossHashSeeds(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	mk := pdtsSandbox(t, repo, nil)
 	difftest.SelfIdentity(t, t.Context(), difftest.Spec{

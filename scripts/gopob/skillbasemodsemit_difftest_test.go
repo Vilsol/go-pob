@@ -270,6 +270,7 @@ const sbmMinimal = `{"skillCount": 1, "modCount": 1, "skillTypeNames": {},
                             "flags": 0, "keywordFlags": 0, "tags": []}]}}}`
 
 func TestSkillBaseModsEmit(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := sbmSandbox(t, repo, sbmDump())
@@ -370,6 +371,7 @@ func TestSkillBaseModsEmit(t *testing.T) {
 
 // TestSkillBaseModsEmitTallyOrderIsStableAcrossRuns: REPEATED: the omission tally is a Counter and the header prints most_common().
 func TestSkillBaseModsEmitTallyOrderIsStableAcrossRuns(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := sbmSandbox(t, repo, sbmDump())
@@ -388,6 +390,7 @@ func TestSkillBaseModsEmitTallyOrderIsStableAcrossRuns(t *testing.T) {
 }
 
 func TestSkillBaseModsEmitPythonIsStableAcrossHashSeeds(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	mk := sbmSandbox(t, repo, sbmDump())
 	difftest.SelfIdentity(t, t.Context(), difftest.Spec{

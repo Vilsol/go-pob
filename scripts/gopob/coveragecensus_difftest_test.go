@@ -168,6 +168,7 @@ func ccCensusSandbox(t *testing.T, repo string) func() (string, error) {
 }
 
 func TestCoverageCensusPortIsIndistinguishable(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := ccCensusSandbox(t, repo)
@@ -253,6 +254,7 @@ func TestCoverageCensusPortIsIndistinguishable(t *testing.T) {
 
 // TestCoverageCensusOverlayAndJSONMatch: THE OVERLAY AND THE JSON ARE SEPARATE PROGRAMS AS FAR AS COVERAGE GOES.
 func TestCoverageCensusOverlayAndJSONMatch(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := ccCensusSandbox(t, repo)
@@ -285,6 +287,7 @@ func TestCoverageCensusOverlayAndJSONMatch(t *testing.T) {
 }
 
 func TestCoverageCensusPythonIsStableAcrossHashSeeds(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	mk := ccCensusSandbox(t, repo)
 	difftest.SelfIdentity(t, t.Context(), difftest.Spec{

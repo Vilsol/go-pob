@@ -73,6 +73,7 @@ func ctsSandbox(t *testing.T, repo string) func() (string, error) {
 }
 
 func TestClassifyTreeSourcesPortIsIndistinguishable(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := ctsSandbox(t, repo)
@@ -133,6 +134,7 @@ func TestClassifyTreeSourcesPortIsIndistinguishable(t *testing.T) {
 }
 
 func TestClassifyTreeSourcesIsStableAcrossLocales(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	mk := ctsSandbox(t, repo)
 	difftest.SelfIdentity(t, t.Context(), difftest.Spec{

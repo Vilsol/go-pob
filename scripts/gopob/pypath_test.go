@@ -9,6 +9,7 @@ import (
 
 // TestPyPathJoinMatchesCPython: ASKS CPython RATHER THAN ENCODING WHAT CPython IS REMEMBERED TO DO.
 func TestPyPathJoinMatchesCPython(t *testing.T) {
+	t.Parallel()
 	cases := [][]string{
 		{".", "x/y"}, {"", "x"}, {"a/", "b"}, {"a", "b"}, {"a//", "b"},
 		{"/abs", "b"}, {"a", "/abs"}, {".", "."}, {"..", "x"}, {"./a", "b"},

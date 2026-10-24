@@ -9,6 +9,7 @@ import (
 
 // TestDumpAloneOutputDiffCountsBothSidesAndNestedValues: A KEY ON ONE SIDE ONLY IS A DIFFERENCE.
 func TestDumpAloneOutputDiffCountsBothSidesAndNestedValues(t *testing.T) {
+	t.Parallel()
 	committed := map[string]any{"Life": 100.0, "Same": "x", "OnlyCommitted": 1.0,
 		"Nested": map[string]any{"a": 1.0}}
 	alone := map[string]any{"Life": 101.0, "Same": "x", "OnlyAlone": true,
@@ -24,6 +25,7 @@ func TestDumpAloneOutputDiffCountsBothSidesAndNestedValues(t *testing.T) {
 }
 
 func TestDumpAloneListDropsExtensionsBlanksAndComments(t *testing.T) {
+	t.Parallel()
 	p := filepath.Join(t.TempDir(), "list")
 	if err := os.WriteFile(p, []byte("# suspects\n1037-a.xml\n\n/abs/1190-b.json\n1211-c\n"), 0o600); err != nil {
 		t.Fatal(err)

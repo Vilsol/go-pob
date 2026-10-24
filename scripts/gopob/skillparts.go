@@ -153,10 +153,7 @@ func skillParts(args []string) int {
 	}
 	outPath := args[0]
 
-	pobDir := os.Getenv("POB_DIR")
-	if pobDir == "" {
-		pobDir = "~/PathOfBuilding"
-	}
+	pobDir := pobPinDir()
 	skillsDir := filepath.Join(pbdRealpath(pobDir), "src", "Data", "Skills")
 
 	all := []spSkill{}

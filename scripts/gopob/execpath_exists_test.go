@@ -14,6 +14,7 @@ import (
 
 // TestShelledScriptsStillExist is the harness for the shape "A PORT THAT SHELLS ITS OWN ORIGINAL IS NOT A PORT; IT IS A WRAPPER".
 func TestShelledScriptsStillExist(t *testing.T) {
+	t.Parallel()
 	root := repoRootForExecScan(t)
 
 	type finding struct{ file, path string }

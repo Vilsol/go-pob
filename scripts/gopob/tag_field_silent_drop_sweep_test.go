@@ -121,6 +121,7 @@ func tfCopy(base map[string]any, field string, value any) map[string]any {
 
 // TestNoTagFieldIsSilentlyDropped is the whole sweep.
 func TestNoTagFieldIsSilentlyDropped(t *testing.T) {
+	t.Parallel()
 	types := make([]string, 0, len(modStoreTagFields))
 	for tt := range modStoreTagFields {
 		types = append(types, tt)

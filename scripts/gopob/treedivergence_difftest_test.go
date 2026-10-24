@@ -74,6 +74,7 @@ func tdPut(sb, rel, body string) error {
 }
 
 func TestTreeDivergence(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := tdSandbox(t, repo)
@@ -144,6 +145,7 @@ func TestTreeDivergence(t *testing.T) {
 
 // TestTreeDivergenceOrderIsStableAcrossRuns: THE ORDERING CONTROL, AND IT IS THE ONE THAT MUST REPEAT.
 func TestTreeDivergenceOrderIsStableAcrossRuns(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := tdSandbox(t, repo)
@@ -165,6 +167,7 @@ func TestTreeDivergenceOrderIsStableAcrossRuns(t *testing.T) {
 }
 
 func TestTreeDivergencePythonIsStableAcrossHashSeeds(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	mk := tdSandbox(t, repo)
 	difftest.SelfIdentity(t, t.Context(), difftest.Spec{

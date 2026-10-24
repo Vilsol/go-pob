@@ -17,6 +17,7 @@ var gameDataDumperRe = regexp.MustCompile(`(?m)^\t"([a-z0-9-]+)": +dump[A-Za-z]+
 
 // TestRawGameDataIsNotReadFromPoB: a table classified as raw game data comes from go-pob-data through scripts/gamedatadump.
 func TestRawGameDataIsNotReadFromPoB(t *testing.T) {
+	t.Parallel()
 	b, err := os.ReadFile(filepath.Join(repoRoot(t), "scripts", "gamedatadump", "main.go"))
 	if err != nil {
 		t.Fatal(err)

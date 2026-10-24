@@ -82,10 +82,7 @@ func citationAudit(args []string) int {
 		fmt.Fprintln(os.Stderr, err.Error())
 		return root.RefusalCode
 	}
-	pob := os.Getenv("POB_DIR")
-	if pob == "" {
-		pob = expandUser("~/PathOfBuilding")
-	}
+	pob := expandUser(pobPinDir())
 	a := &auditCtx{pob: pob, cache: map[string][]string{}}
 	if os.Getenv("SWEEP") == "1" {
 		return auditSweep(a, repo)

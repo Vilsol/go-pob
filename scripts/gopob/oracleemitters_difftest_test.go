@@ -227,6 +227,7 @@ func oeReadPy(t *testing.T, rel string) []byte {
 }
 
 func TestOracleSkillMinionUsesEmit(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := oeSandbox(t, repo, oeMinionUsesPy, oeMinionUsesDump())
@@ -252,11 +253,13 @@ func TestOracleSkillMinionUsesEmit(t *testing.T) {
 }
 
 func TestOracleSkillMinionUsesEmitUsage(t *testing.T) {
+	t.Parallel()
 	oeUsageSweep(t, oeMinionUsesPy, "skill-minion-uses-emit", oeMinionUsesDump())
 }
 
 // TestOracleSkillMinionUsesEmitNonBoolFlag: A FLAG THAT IS NOT A BOOL, WHICH NO REAL DUMP CARRIES.
 func TestOracleSkillMinionUsesEmitNonBoolFlag(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := oeSandbox(t, repo, oeMinionUsesPy, `{
@@ -271,6 +274,7 @@ func TestOracleSkillMinionUsesEmitNonBoolFlag(t *testing.T) {
 }
 
 func TestOracleSkillAddSkillTypesEmit(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := oeSandbox(t, repo, oeAddSkillTypesPy, oeAddSkillTypesDump(true))
@@ -299,6 +303,7 @@ func TestOracleSkillAddSkillTypesEmit(t *testing.T) {
 
 // TestOracleSkillAddSkillTypesEmitWithoutDuplicates: THE NO-DUPLICATES BRANCH IS THE ONE THE REAL DUMP CANNOT REACH TODAY.
 func TestOracleSkillAddSkillTypesEmitWithoutDuplicates(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := oeSandbox(t, repo, oeAddSkillTypesPy, oeAddSkillTypesDump(false))
@@ -308,10 +313,12 @@ func TestOracleSkillAddSkillTypesEmitWithoutDuplicates(t *testing.T) {
 }
 
 func TestOracleSkillAddSkillTypesEmitUsage(t *testing.T) {
+	t.Parallel()
 	oeUsageSweep(t, oeAddSkillTypesPy, "skill-add-skill-types-emit", oeAddSkillTypesDump(true))
 }
 
 func TestOracleSkillHasGlobalEffectEmit(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := oeSandbox(t, repo, oeHasGlobalEffectPy, oeHasGlobalEffectDump())
@@ -352,6 +359,7 @@ func TestOracleSkillHasGlobalEffectEmit(t *testing.T) {
 }
 
 func TestOracleSkillHasGlobalEffectEmitUsage(t *testing.T) {
+	t.Parallel()
 	oeUsageSweep(t, oeHasGlobalEffectPy, "skill-has-global-effect-emit", oeHasGlobalEffectDump())
 }
 
@@ -446,6 +454,7 @@ func oeWeaponTypesDump(unknownName bool) string {
 }
 
 func TestOracleSkillMinionListsEmit(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := oeSandbox(t, repo, oeMinionListsPy, oeMinionListsDump())
@@ -471,10 +480,12 @@ func TestOracleSkillMinionListsEmit(t *testing.T) {
 }
 
 func TestOracleSkillMinionListsEmitUsage(t *testing.T) {
+	t.Parallel()
 	oeUsageSweep(t, oeMinionListsPy, "skill-minion-lists-emit", oeMinionListsDump())
 }
 
 func TestOracleSkillHiddenLevelsEmit(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := oeSandbox(t, repo, oeHiddenLevelsPy, oeHiddenLevelsDump())
@@ -505,10 +516,12 @@ func TestOracleSkillHiddenLevelsEmit(t *testing.T) {
 }
 
 func TestOracleSkillHiddenLevelsEmitUsage(t *testing.T) {
+	t.Parallel()
 	oeUsageSweep(t, oeHiddenLevelsPy, "skill-hidden-levels-emit", oeHiddenLevelsDump())
 }
 
 func TestOracleTattooPassivesEmit(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := oeSandbox(t, repo, oeTattooPy, oeTattooDump())
@@ -566,11 +579,13 @@ func TestOracleTattooPassivesEmit(t *testing.T) {
 }
 
 func TestOracleTattooPassivesEmitUsage(t *testing.T) {
+	t.Parallel()
 	oeUsageSweep(t, oeTattooPy, "tattoo-passives-emit", oeTattooDump())
 }
 
 // TestOracleSkillWeaponTypesEmit is the pipe-fed member of the family.
 func TestOracleSkillWeaponTypesEmit(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := oeSandbox(t, repo, oeWeaponTypesPy, "{}")
@@ -678,6 +693,7 @@ func oeBossSkillsDump() string {
 }
 
 func TestOraclePantheonsEmit(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := oeSandbox(t, repo, oePantheonsPy, oePantheonsDump())
@@ -709,10 +725,12 @@ func TestOraclePantheonsEmit(t *testing.T) {
 }
 
 func TestOraclePantheonsEmitUsage(t *testing.T) {
+	t.Parallel()
 	oeUsageSweep(t, oePantheonsPy, "pantheons-emit", oePantheonsDump())
 }
 
 func TestOracleClusterJewelsEmit(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := oeSandbox(t, repo, oeClusterJewelsPy, oeClusterJewelsDump())
@@ -736,10 +754,12 @@ func TestOracleClusterJewelsEmit(t *testing.T) {
 }
 
 func TestOracleClusterJewelsEmitUsage(t *testing.T) {
+	t.Parallel()
 	oeUsageSweep(t, oeClusterJewelsPy, "cluster-jewels-emit", oeClusterJewelsDump())
 }
 
 func TestOracleLegionPassivesEmit(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := oeSandbox(t, repo, oeLegionPy, oeLegionDump())
@@ -796,10 +816,12 @@ func TestOracleLegionPassivesEmit(t *testing.T) {
 }
 
 func TestOracleLegionPassivesEmitUsage(t *testing.T) {
+	t.Parallel()
 	oeUsageSweep(t, oeLegionPy, "legion-passives-emit", oeLegionDump())
 }
 
 func TestOracleBossSkillsEmit(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := oeSandbox(t, repo, oeBossSkillsPy, oeBossSkillsDump())
@@ -857,5 +879,6 @@ func TestOracleBossSkillsEmit(t *testing.T) {
 }
 
 func TestOracleBossSkillsEmitUsage(t *testing.T) {
+	t.Parallel()
 	oeUsageSweep(t, oeBossSkillsPy, "boss-skills-emit", oeBossSkillsDump())
 }

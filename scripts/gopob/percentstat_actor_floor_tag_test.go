@@ -4,6 +4,7 @@ import "testing"
 
 // TestEmitTagPercentStatCarriesActorAndFloor pins BOTH PercentStat arms — ssmRun.emitTag and sbmEmitTag — against the fields ModStore.lua actually evaluates.
 func TestEmitTagPercentStatCarriesActorAndFloor(t *testing.T) {
+	t.Parallel()
 	for _, tc := range []struct {
 		name string
 		tag  map[string]any

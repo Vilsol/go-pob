@@ -210,15 +210,7 @@ func orTemplateToRE(reason string) *regexp.Regexp {
 }
 
 func omissionReasons(args []string) int {
-	pob := os.Getenv("POB_DIR")
-	if pob == "" {
-		home, ok := pyPathHome()
-		if !ok {
-			//go-only: Path.home() RAISES RuntimeError; unreachable without both an
-			pcRefuse("cannot resolve the home directory to find the pinned PoB")
-		}
-		pob = pyPathJoin(home, pcDefaultPoBRel)
-	}
+	pob := pobPinDir()
 	if len(args) > 0 && args[0] == "--selftest" {
 		return orSelftest(pob)
 	}

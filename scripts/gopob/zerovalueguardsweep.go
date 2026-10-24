@@ -32,7 +32,7 @@ func zeroValueGuardSweep(args []string) int {
 		fmt.Fprintln(os.Stderr, err.Error())
 		return root.RefusalCode
 	}
-	pob := filepath.Join(expandUser(envOr("POB_DIR", "~/PathOfBuilding")), "src")
+	pob := filepath.Join(expandUser(pobPinDir()), "src")
 
 	luaPresence := map[string]map[string]bool{}
 	for _, pat := range []string{

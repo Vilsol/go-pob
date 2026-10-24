@@ -3,6 +3,7 @@
 package datafields
 
 import (
+	"os"
 	"strings"
 	"testing"
 
@@ -18,6 +19,9 @@ func committedList(version string) (*List, error) {
 
 // TestReadFieldsAreInTheCommittedList fails, naming asset and key path, when go-pob reads a go-pob-data field the published list would drop from the .min assets.
 func TestReadFieldsAreInTheCommittedList(t *testing.T) {
+	if os.Getenv("OPERATOR") != "true" {
+		t.Skip("set OPERATOR=true (task data-fields-guard, run by data-regen and CI's lint job) — a whole-module analysis")
+	}
 	res, err := Analyze(repoRoot)
 	if err != nil {
 		t.Fatal(err)

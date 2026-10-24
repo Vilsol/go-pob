@@ -78,6 +78,7 @@ func moSpec(bin string, env []string, args ...string) difftest.Spec {
 var moDefaultArgs = []string{"dumps", "2", "out.jsonl.gz", "work"}
 
 func TestModalOraclePortIsIndistinguishable(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := moSandbox(t, repo, 2)
@@ -173,6 +174,7 @@ func TestModalOraclePortIsIndistinguishable(t *testing.T) {
 
 // TestModalOracleWritesTheBlobAndReport: THE BLOB AND ITS REPORT ARE THE PRODUCT; the six progress lines are the label.
 func TestModalOracleWritesTheBlobAndReport(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := moSandbox(t, repo, 2)
@@ -186,6 +188,7 @@ func TestModalOracleWritesTheBlobAndReport(t *testing.T) {
 }
 
 func TestModalOracleIsStableAcrossLocales(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	mk := moSandbox(t, repo, 2)
 	difftest.SelfIdentity(t, t.Context(), difftest.Spec{

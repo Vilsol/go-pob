@@ -216,6 +216,7 @@ func insSpec(bin, binDir string) difftest.Spec {
 }
 
 func TestInstrumentsPortIsIndistinguishable(t *testing.T) {
+	t.Parallel()
 	requirePOSIX(t)
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
@@ -274,6 +275,7 @@ func TestInstrumentsPortIsIndistinguishable(t *testing.T) {
 
 // TestInstrumentsReportsNotRunWhenTheDumpsAreAbsent: NOT-RUN IS THE CLASS THIS WHOLE CHAIN WAS BUILT AROUND.
 func TestInstrumentsReportsNotRunWhenTheDumpsAreAbsent(t *testing.T) {
+	t.Parallel()
 	requirePOSIX(t)
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
@@ -286,6 +288,7 @@ func TestInstrumentsReportsNotRunWhenTheDumpsAreAbsent(t *testing.T) {
 
 // TestInstrumentsReportsAFailingInstrument: A failing instrument must reach the FAILURES section with its assertion text.
 func TestInstrumentsReportsAFailingInstrument(t *testing.T) {
+	t.Parallel()
 	requirePOSIX(t)
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
@@ -298,6 +301,7 @@ func TestInstrumentsReportsAFailingInstrument(t *testing.T) {
 
 // TestInstrumentsRendersTheDivergentDeterminismHeadline: THE DETERMINISM HEADLINE HAS TWO SHAPES AND THE HAPPY PATH ONLY EVER SHOWS ONE.
 func TestInstrumentsRendersTheDivergentDeterminismHeadline(t *testing.T) {
+	t.Parallel()
 	requirePOSIX(t)
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
@@ -310,6 +314,7 @@ func TestInstrumentsRendersTheDivergentDeterminismHeadline(t *testing.T) {
 
 // TestInstrumentsWritesTheSameReportsAndDrivesTheSameChildren: THE FILES IN $RUNDIR ARE THE PRODUCT; the consolidated table is the label.
 func TestInstrumentsWritesTheSameReportsAndDrivesTheSameChildren(t *testing.T) {
+	t.Parallel()
 	requirePOSIX(t)
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
@@ -331,6 +336,7 @@ func TestInstrumentsWritesTheSameReportsAndDrivesTheSameChildren(t *testing.T) {
 
 // TestInstrumentsHonoursTheOnlyFilter: ONLY= SELECTS, AND AN UNSELECTED INSTRUMENT MUST LEAVE NO ROW AT ALL — not a row reading SKIP.
 func TestInstrumentsHonoursTheOnlyFilter(t *testing.T) {
+	t.Parallel()
 	requirePOSIX(t)
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
@@ -346,6 +352,7 @@ func TestInstrumentsHonoursTheOnlyFilter(t *testing.T) {
 
 // TestInstrumentsFailsTheCorpusInvariantWhenABuildPanics: THE CORPUS INVARIANT'S WHOLE JOB IS COMPARING TWO COUNTS.
 func TestInstrumentsFailsTheCorpusInvariantWhenABuildPanics(t *testing.T) {
+	t.Parallel()
 	requirePOSIX(t)
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
@@ -358,6 +365,7 @@ func TestInstrumentsFailsTheCorpusInvariantWhenABuildPanics(t *testing.T) {
 
 // TestInstrumentsExpandsATildeInDumps: A LEADING ~/ IS EXPANDED BY THE SCRIPT.
 func TestInstrumentsExpandsATildeInDumps(t *testing.T) {
+	t.Parallel()
 	requirePOSIX(t)
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
@@ -383,6 +391,7 @@ func insReplaceEnv(env []string, key, val string) []string {
 
 // TestInstrumentsAddsTheCoverageStepWhenAskedTo: COVERAGE=1 adds a step AND removes the "coverage skipped" line from the header.
 func TestInstrumentsAddsTheCoverageStepWhenAskedTo(t *testing.T) {
+	t.Parallel()
 	requirePOSIX(t)
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
@@ -397,6 +406,7 @@ func TestInstrumentsAddsTheCoverageStepWhenAskedTo(t *testing.T) {
 }
 
 func TestInstrumentsIsStableAcrossLocales(t *testing.T) {
+	t.Parallel()
 	requirePOSIX(t)
 	repo := repoRoot(t)
 	mk, binDir := insSandbox(t, repo)
@@ -415,6 +425,7 @@ func TestInstrumentsIsStableAcrossLocales(t *testing.T) {
 
 // TestInsMMSSMatchesThePrintfFormat: THE ONE PIECE OF ARITHMETIC THE DIFFERENTIAL CANNOT SEE, table-tested instead.
 func TestInsMMSSMatchesThePrintfFormat(t *testing.T) {
+	t.Parallel()
 	for _, c := range []struct {
 		secs int
 		want string

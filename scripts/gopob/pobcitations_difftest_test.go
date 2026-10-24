@@ -178,6 +178,7 @@ func pcSandbox(t *testing.T, repo string) func() (string, error) {
 }
 
 func TestPobCitationsPortIsIndistinguishable(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := pcSandbox(t, repo)
@@ -246,6 +247,7 @@ func TestPobCitationsPortIsIndistinguishable(t *testing.T) {
 
 // TestPobCitationsShowModes: --show IS A SEPARATE ENTRY POINT AND ITS OWN FAILURE MODES.
 func TestPobCitationsShowModes(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := pcSandbox(t, repo)
@@ -275,6 +277,7 @@ func TestPobCitationsShowModes(t *testing.T) {
 
 // TestPobCitationsReportMode: REPORT=1 must never exit nonzero, which is the mode a ratchet measurement runs in.
 func TestPobCitationsReportMode(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := pcSandbox(t, repo)
@@ -289,6 +292,7 @@ func TestPobCitationsReportMode(t *testing.T) {
 }
 
 func TestPobCitationsPythonIsStableAcrossHashSeeds(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	mk := pcSandbox(t, repo)
 	difftest.SelfIdentity(t, t.Context(), difftest.Spec{

@@ -137,6 +137,7 @@ func rewriteJSON(sb, rel string, v any) error {
 }
 
 func TestTriageDropsPortIsIndistinguishable(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	bin := buildPort(t, repo)
 	mk := triageSandbox(t, repo)
@@ -227,6 +228,7 @@ func TestTriageDropsPortIsIndistinguishable(t *testing.T) {
 }
 
 func TestTriageDropsPythonIsStableAcrossHashSeeds(t *testing.T) {
+	t.Parallel()
 	repo := repoRoot(t)
 	mk := triageSandbox(t, repo)
 	difftest.SelfIdentity(t, t.Context(), difftest.Spec{
