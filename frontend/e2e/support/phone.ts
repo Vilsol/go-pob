@@ -30,6 +30,15 @@ export const hold = async (page: Page, x: number, y: number, opened: Locator) =>
   await cdp.detach();
 };
 
+// one finger dragged by (dx, dy) in steps, as a user pans the tree
+export const pan = async (page: Page, x: number, y: number, dx: number, dy: number) => {
+  const cdp = await page.context().newCDPSession(page);
+  await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y }] });
+  for (let k = 1; k <= 6; k++) await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: x + (dx * k) / 6, y: y + (dy * k) / 6 }] });
+  await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  await cdp.detach();
+};
+
 export const openPhoneBuild = async (page: Page, file = BUILD) => {
   await installTreeProbe(page);
   const xml = buildXml(file);

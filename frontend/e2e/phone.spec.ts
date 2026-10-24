@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 import { App } from './support/app';
 import * as go from './support/go_model';
-import { BUILD, PHONE, bar, hold, openMore, openPhoneBuild, routeOf } from './support/phone';
+import { BUILD, PHONE, bar, hold, openMore, openPhoneBuild, pan, routeOf } from './support/phone';
 import { buildXml } from './support/builds';
 import { diffLines, expectedLines } from './support/stats';
 import * as tree from './support/tree_model';
@@ -117,7 +117,10 @@ test.describe('phone shell at 390×769', () => {
     const t = tree.rawTree();
     const state = tree.treeState(build);
     await page.waitForTimeout(1000);
-    const view = (await lastFrame(page))!.view;
+    const fitted = (await lastFrame(page))!.view;
+    const box = await canvasBox(page);
+    await pan(page, box.x + box.width / 2, box.y + box.height / 2, 0, 60);
+    const view = (await waitLastFrame(page, `(f) => Math.abs(f.view.offsetY - ${fitted.offsetY + 60 * fitted.scaling}) < 1e-6`)).view;
     const placed = placedNodes(t);
     const target = placed
       .map((p) => ({ p, s: screenOf(t, view, p.at) }))
@@ -125,7 +128,6 @@ test.describe('phone shell at 390×769', () => {
       .filter(({ s }) => s.x > 40 && s.y > 40 && s.x < view.width - 60 && s.y < view.height - 40)
       .find(({ p, s }) => hitTest(t, placed, view, s) === p);
     expect(target, 'an unallocated node next to the tree, on screen').toBeDefined();
-    const box = await canvasBox(page);
     const at = { x: box.x + target!.s.x, y: box.y + target!.s.y };
     const id = target!.p.node.skill!;
 
@@ -170,6 +172,7 @@ test.describe('phone shell at 390×769', () => {
     await expect(page.getByRole('dialog', { name: 'Undo history' })).toHaveCount(0);
 
     await hold(page, at.x, at.y, page.getByRole('menu'));
+    expect((await lastFrame(page))!.view, 'Undo leaves the tree where the user panned it').toEqual(view);
     await expect(page.getByRole('menu')).toBeVisible();
     app.assertNoErrors();
   });

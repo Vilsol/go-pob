@@ -206,7 +206,11 @@ try {
 
   let last;
   const wasm = readFileSync(WASM);
-  await workerInstance.boot(wasm.buffer.slice(wasm.byteOffset, wasm.byteOffset + wasm.byteLength), (out) => (last = out), { set: () => {}, touch: () => {} });
+  await workerInstance.boot(wasm.buffer.slice(wasm.byteOffset, wasm.byteOffset + wasm.byteLength), (out) => (last = out), {
+    set: () => {},
+    touch: () => {},
+    restore: () => {}
+  });
   await workerInstance.loadData(async () => {});
   console.log = quiet;
   say(`game data: ${cacheStats.hits} cached, ${cacheStats.misses} fetched`);

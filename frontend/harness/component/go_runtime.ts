@@ -94,7 +94,8 @@ export const bootWorker = async (store: typeof currentBuildStore): Promise<typeo
 
     const proxyingChannel: BuildChannel = {
       set: (value) => store.set(value === undefined ? undefined : asRemote(value)),
-      touch: () => store.set(get(store))
+      touch: () => store.set(get(store)),
+      restore: (value) => store.set(asRemote(value))
     };
 
     const wasm = await readFile(WASM);

@@ -97,7 +97,7 @@ class PoBWorker {
 
   private publishedBuild?: pob.PathOfBuilding;
 
-  private updateStore() {
+  private updateStore(restored = false) {
     if (!this.currentBuildStore) {
       return;
     }
@@ -114,7 +114,9 @@ class PoBWorker {
     }
 
     this.publishedBuild = this._currentBuild;
-    this.currentBuildStore.set(proxy(this._currentBuild) as unknown as ProxiedRemote<pob.PathOfBuilding>);
+    const published = proxy(this._currentBuild) as unknown as ProxiedRemote<pob.PathOfBuilding>;
+    if (restored) this.currentBuildStore.restore(published);
+    else this.currentBuildStore.set(published);
   }
 
   boot(wasm: ArrayBuffer, callback: TickCallback, currentBuildStore: BuildChannel) {
@@ -542,7 +544,7 @@ class PoBWorker {
     }
     this.dropMiscCalculator();
     this.publishedBuild = undefined;
-    this.updateStore();
+    this.updateStore(true);
     void this.Tick(source, xml);
   }
 

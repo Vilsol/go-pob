@@ -30,7 +30,7 @@
   import type { Node, TreeClusterNode } from '$lib/skill_tree/types';
   import type { NodeStatDiff, StatDiffBlock } from '$lib/skill_tree/stat_compare';
   import { estimatePlayerProgress } from '$lib/display/points';
-  import { currentBuild, devMode, outputs } from '$lib/global.js';
+  import { currentBuild, devMode, outputs, restoredBuilds } from '$lib/global.js';
   import { syncWrap } from '$lib/go/worker';
   import { powerWorkers } from '$lib/go/power_workers';
   import { logError } from '$lib/utils';
@@ -884,6 +884,12 @@
     const b = $currentBuild;
     const el = canvasEl;
     if (!b || !el || !view || viewRequested === b) return;
+    // PassiveSpec.lua:2361-2388: an undo step restores the allocations, not the view
+    if (viewRequested && restoredBuilds.has(b)) {
+      if (viewRestored === viewRequested) viewRestored = b;
+      viewRequested = b;
+      return;
+    }
     viewRequested = b;
     syncWrap
       ?.GetTreeViewState()

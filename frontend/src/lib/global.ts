@@ -30,14 +30,22 @@ export const currentBuild: Writable<ProxiedRemote<pob.PathOfBuilding> | undefine
   update: (fn) => setCurrentBuild(fn(get(currentBuildInner)))
 };
 
+// builds the worker republished after an undo step: still the build that was open, so a page keeps its view of it
+export const restoredBuilds = new WeakSet<object>();
+
 export type BuildChannel = {
   set: (value: ProxiedRemote<pob.PathOfBuilding> | undefined) => void;
   touch: () => void;
+  restore: (value: ProxiedRemote<pob.PathOfBuilding>) => void;
 };
 
 export const buildChannel: BuildChannel = {
   set: (value) => currentBuild.set(value),
-  touch: () => currentBuild.set(get(currentBuild))
+  touch: () => currentBuild.set(get(currentBuild)),
+  restore: (value) => {
+    restoredBuilds.add(value);
+    currentBuild.set(value);
+  }
 };
 export const currentBuildPath = new PersistedState<string | undefined>('currentBuildPath', undefined, {
   syncTabs: false,
