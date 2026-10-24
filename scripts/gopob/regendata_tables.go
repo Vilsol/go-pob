@@ -126,7 +126,7 @@ var rdGenerators = []rdGenerator{
 		post:                 "scripts/chunk_init.py",
 		postArgs:             []string{"SkillStatMaps"},
 		needsPob:             true,
-		note:                 "ADOPTED 2026-08-09, worth +2840 on the authoritative gate. It used to panic on 304 builds and cost 8752 pairs; both causes are fixed and named in the commit. The panic WAS an emitter bug after all -- this branch dropped `thresholdVar` silently, unlike its Multiplier neighbour it had no key whitelist -- and the 8752 was a PoB/go-pob-data stat-name skew now bridged by calculator.skillStatKeyAliases.",
+		note:                 "ADOPTED 2026-08-09, worth +2840 on the authoritative gate. It used to panic on 304 builds and cost 8752 pairs; both causes are fixed and named in the commit. The panic WAS an emitter bug after all -- this branch dropped `thresholdVar` silently, unlike its Multiplier neighbour it had no key whitelist -- and the 8752 was a PoB/go-pob-data stat-name skew since adopted by go-pob-data.",
 	},
 	{
 		name:     "skill-add-skill-types",

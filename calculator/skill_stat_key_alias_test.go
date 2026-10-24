@@ -5,13 +5,11 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/Vilsol/go-pob-data/poe"
-
 	"github.com/Vilsol/go-pob/builds"
-	"github.com/Vilsol/go-pob/data/raw"
 )
 
-// TestPrecisionAuraCritReachesThePlayer is the end-to-end pin on the stat-key skew that skillStatKeyAliases exists for.
+// TestPrecisionAuraCritReachesThePlayer pins the Precision crit stat-key skew (act_dex.lua:11584) end to end; go-pob-data
+// now emits the key PoB reads, so no alias bridges it.
 func TestPrecisionAuraCritReachesThePlayer(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.SkipNow()
@@ -53,62 +51,4 @@ func TestPrecisionAuraCritReachesThePlayer(t *testing.T) {
 			t.Errorf("%s: got %v, PoB %v", key, got, want)
 		}
 	}
-}
-
-// TestSkillStatKeyAliasesAreAllLive keeps the alias table from rotting into a list of renames nobody needs any more.
-func TestSkillStatKeyAliasesAreAllLive(t *testing.T) {
-	if raw.LatestVersion != "3.20" {
-		t.Skipf("SKIP: the alias population is measured against 3.20 data, process loaded %s",
-			raw.LatestVersion)
-	}
-
-	live := map[string]int{}
-	for _, ge := range poe.GrantedEffects {
-		perSkill := raw.SkillStatMaps[ge.ID]
-		if perSkill == nil {
-			continue
-		}
-		for _, dataKey := range reachableStatKeys(ge) {
-			pobKey, aliased := skillStatKeyAliases[dataKey]
-			if !aliased {
-				continue
-			}
-			if perSkill[dataKey] == nil && perSkill[pobKey] != nil {
-				live[dataKey]++
-			}
-		}
-	}
-
-	for dataKey, pobKey := range skillStatKeyAliases {
-		if live[dataKey] == 0 {
-			t.Errorf("alias %q -> %q is DEAD: no granted effect has go-pob-data emitting %q "+
-				"while its PoB statMap declares only %q. Either go-pob-data adopted the rename "+
-				"(delete the alias) or the PoB pin moved (re-measure).", dataKey, pobKey, dataKey, pobKey)
-		}
-	}
-	t.Logf("alias population: %v", live)
-}
-
-func reachableStatKeys(ge *poe.GrantedEffect) []string {
-	c := raw.GetCalculatedGrantedEffect(ge)
-	seen := map[string]bool{}
-	for _, s := range c.GetCalculatedStats() {
-		seen[s] = true
-	}
-	for k := range c.GetCalculatedConstantStats() {
-		seen[k] = true
-	}
-	for _, qs := range ge.GetEffectQualityStats() {
-		if qs == nil {
-			continue
-		}
-		for _, s := range qs.GetStats() {
-			seen[s.ID] = true
-		}
-	}
-	keys := make([]string, 0, len(seen))
-	for k := range seen {
-		keys = append(keys, k)
-	}
-	return keys
 }

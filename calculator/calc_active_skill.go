@@ -22,23 +22,6 @@ var skillFlagIDAliases = map[string]string{
 	"PlayerMelee": "Melee",
 }
 
-//pob:block:src/Data/Skills/act_dex.lua:11584
-var skillStatKeyAliases = map[string]string{
-	"critical_strike_chance_+%": "skill_buff_grants_critical_strike_chance_+%",
-}
-
-func skillStatKeyForPoB(id string, key string) string {
-	alias, aliased := skillStatKeyAliases[key]
-	if !aliased {
-		return key
-	}
-	perSkill := raw2.SkillStatMaps[id]
-	if perSkill == nil || perSkill[key] != nil || perSkill[alias] == nil {
-		return key
-	}
-	return alias
-}
-
 //pob:block:src/Modules/CalcActiveSkill.lua:248-249
 func skillPartsFor(id string) []raw2.SkillPart {
 	if alias, aliased := skillFlagIDAliases[id]; aliased {
@@ -226,7 +209,7 @@ func skillInstanceStats(skillEffect *GemEffect, grantedEffect *GrantedEffect) []
 	slices.SortFunc(out, func(a, b skillInstanceStat) int { return strings.Compare(a.name, b.name) })
 	calculated := raw2.GetCalculatedGrantedEffect(grantedEffect.Raw)
 	for i := range out {
-		out[i].statMap = calculated.GetStatMapEntry(skillStatKeyForPoB(grantedEffect.Raw.ID, out[i].name))
+		out[i].statMap = calculated.GetStatMapEntry(out[i].name)
 	}
 	cached, _ := skillInstanceStatsCache.LoadOrStore(key, out)
 	return cached.([]skillInstanceStat)
@@ -253,7 +236,7 @@ func CalcMergeSkillInstanceMods(env *Environment, modList *moddb.ModList, skillE
 		for _, stat := range statNames {
 			statValue := stats[stat]
 			statMap := raw2.GetCalculatedGrantedEffect(grantedEffect.Raw).
-				GetStatMapEntry(skillStatKeyForPoB(grantedEffect.Raw.ID, stat))
+				GetStatMapEntry(stat)
 			if statMap != nil {
 				mergeStatMapEntry(modList, statMap, statValue)
 			}

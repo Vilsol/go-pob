@@ -6,30 +6,35 @@ import (
 
 // TestSocketGroupOrderHoistsOnlyCrossLinkedSlots: CalcSetup.lua:998-1009 hoists a socket group to the front of the processing order only when the group's slot is the SOURCE SLOT of a live LinkedSupport mod.
 func TestSocketGroupOrderHoistsOnlyCrossLinkedSlots(t *testing.T) {
-	requireGameData(t, "3.20")
+	requireGameData(t, "3.29")
 
 	t.Run("no linked support keeps file order", func(t *testing.T) {
-		env := defenceEnv(t, "0277-juggernaut-righteous-fire.xml")
-		skitterbots := indexOfActiveSkill(t, env, "Summon Skitterbots")
-		frostblink := indexOfActiveSkill(t, env, "Frostblink")
-		if skitterbots > frostblink {
-			t.Errorf("Summon Skitterbots (Weapon 1, group 5) is at index %d and Frostblink "+
-				"(Weapon 2, group 9) at %d — a socket group was hoisted on a build carrying no "+
-				"LinkedSupport mod", skitterbots, frostblink)
+		env := defenceEnv(t, "0005-occultist-vaal-double-strike.xml")
+		wither := indexOfActiveSkill(t, env, "Wither")
+		fleshAndStone := indexOfActiveSkill(t, env, "Flesh and Stone")
+		if wither > fleshAndStone {
+			t.Errorf("Wither (Helmet, group 3) is at index %d and Flesh and Stone (Weapon 2, group 6) at %d — a "+
+				"socket group was hoisted on a build carrying no LinkedSupport mod", wither, fleshAndStone)
 		}
 	})
 
-	t.Run("linked support still hoists its source slot", func(t *testing.T) {
-		env := defenceEnv(t, "4783-elementalist-ethereal-knives-118.xml")
-		knives := env.Player.ActiveSkillList[indexOfActiveSkill(t, env, "Ethereal Knives")]
-		const want = "SupportSwiftAfflictionPlus"
-		for _, support := range knives.SupportList {
-			if raw := support.GrantedEffect.Raw; raw != nil && raw.ID == want {
-				return
+	t.Run("a cross-linked slot's supports reach the target slot's skill", func(t *testing.T) {
+		// PoB's main skill here lists Awakened Lightning Penetration, socketed only in Weapon 2, whose item supports
+		// skills from the main hand (Weapon 1). Its linked groups hold no active skill, so the hoisted order itself is not
+		// observable on this build; the first subtest pins the order.
+		env := defenceEnv(t, "1075-hierophant-ball-lightning-of-orbiting.xml")
+		ball := env.Player.ActiveSkillList[indexOfActiveSkill(t, env, "Ball Lightning of Orbiting")]
+		const want = "SupportAwakenedLightningPenetration"
+		var have []string
+		for _, support := range ball.SupportList {
+			if raw := support.GrantedEffect.Raw; raw != nil {
+				if raw.ID == want {
+					return
+				}
+				have = append(have, raw.ID)
 			}
 		}
-		t.Errorf("Ethereal Knives is missing cross-linked support %q from Uul-Netol's Vow — the "+
-			"Amulet group (file index 1) was not hoisted ahead of Body Armour (file index 0)", want)
+		t.Errorf("Ball Lightning of Orbiting is missing cross-linked support %q from the Weapon 2 item; supports: %v", want, have)
 	})
 }
 

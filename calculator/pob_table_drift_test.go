@@ -155,7 +155,6 @@ var unsupportedTables = map[string]string{
 	"itemBaseAliases":                "NOT YET SWEPT — go-pob-data id aliases, declared per port_manifest",
 	"itemGrantedSupportNames":        "NOT YET SWEPT — the Lua side is two lines of src/Data/Skills/other.lua",
 	"skillFlagIDAliases":             "NOT YET SWEPT",
-	"skillStatKeyAliases":            "NOT YET SWEPT",
 	"unsupportedModList":             "go-native: lines this port deliberately refuses",
 	"bowTransformUsingConditions":    "go-native helper set",
 	"jewelOtherFuncs":                "registries of Go funcs; no literal Lua table",
