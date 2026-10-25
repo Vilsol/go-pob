@@ -232,8 +232,6 @@ func (env *Environment) nodeModList(node *tree2.SpecNode) *moddb.ModList {
 	return l
 }
 
-// Radius jewels are not run: until items exist env.radiusJewelList is empty.
-//
 //pob2:src/Modules/CalcSetup.lua:200-412
 func buildModListForNode(env *Environment, node *tree2.SpecNode, incSmallPassiveSkill float64, includeKeystoneMods bool) *moddb.ModList {
 	localSmallIncEffect := 0.0
@@ -247,6 +245,8 @@ func buildModListForNode(env *Environment, node *tree2.SpecNode, incSmallPassive
 	} else {
 		modList.AddList(env.nodeModList(node))
 	}
+
+	radiusFirstPass(env, node, modList)
 
 	var hasNoEffect, hasAllocNoEffect, hasScale, hasOtherEffect bool
 	for _, m := range modList.Mods() {
@@ -275,6 +275,15 @@ func buildModListForNode(env *Environment, node *tree2.SpecNode, incSmallPassive
 			scaledList := newModList()
 			scaledList.ScaleAddList(modList, scale)
 			modList = scaledList
+		}
+	}
+
+	if radiusSecondPass(env, node, modList) {
+		hasOtherEffect = false
+		for _, m := range modList.Mods() {
+			if m.Name() == "PassiveSkillHasOtherEffect" {
+				hasOtherEffect = true
+			}
 		}
 	}
 
@@ -377,6 +386,8 @@ func sortedNodeIDs(nodes map[int]*tree2.SpecNode) []int {
 //
 //pob2:src/Modules/CalcSetup.lua:415-464
 func buildModListForNodeList(env *Environment, nodeList map[int]*tree2.SpecNode, includeKeystoneMods bool) *moddb.ModList {
+	initRadiusJewels(env)
+
 	inc := 0.0
 	ids := sortedNodeIDs(nodeList)
 	for _, id := range ids {
@@ -387,6 +398,8 @@ func buildModListForNodeList(env *Environment, nodeList map[int]*tree2.SpecNode,
 	for _, id := range ids {
 		modList.AddList(buildModListForNode(env, nodeList[id], inc, includeKeystoneMods))
 	}
+
+	finishRadiusJewels(env, modList, inc)
 	return modList
 }
 

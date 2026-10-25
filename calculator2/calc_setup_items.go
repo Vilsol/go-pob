@@ -424,7 +424,7 @@ func multAdd(db *moddb.ModDB, name string, delta float64) {
 
 // mergeItems is initEnv's item build and merge, with the jewel sockets items grant. Left out: override paths (repSlotName, toggleFlask),
 // weaponFlagState (read only by those overrides and by ValidateWeaponSlots, which a first calc skips),
-// granted skills and explode sources, radius jewel functions, the requirements
+// granted skills and explode sources, the requirements
 // table, the Energy Blade swap, and item warnings.
 //
 //pob2:block:src/Modules/CalcSetup.lua:1164-1754
@@ -519,10 +519,13 @@ func mergeItems(env *Environment, nodesModsList *moddb.ModList, canUseBonded boo
 					}
 					jewelLimits[limitKey]++
 				}
+				addRadiusJewels(env, slot.NodeID, item)
 			}
 		}
 		items[slotName] = item
 	}
+
+	scaleRadiusJewels(env)
 
 	//pob2:block:src/Modules/CalcSetup.lua:1358-1410
 	if v := env.ConfigInput["ignoreItemDisablers"]; !v.Boolean {

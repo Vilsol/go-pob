@@ -96,6 +96,10 @@ func flagValue(modList []mod.Mod, name string) bool {
 
 // keyValue reads a { key = ..., value = ... } list value.
 func keyValue(v any) (string, any, bool) {
+	if lt, ok := v.(LuaTable); ok {
+		k, ok := lt["key"].(string)
+		return k, lt["value"], ok
+	}
 	rv := reflect.ValueOf(v)
 	if rv.Kind() == reflect.Pointer {
 		if rv.IsNil() {

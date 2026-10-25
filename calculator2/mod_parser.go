@@ -4049,8 +4049,9 @@ var specialModList = map[string]interface{}{
 	`has (\d+) sockets?`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("SocketCount", "BASE", num)}, ""
 	},
-	"no physical damage":             []mod.Mod{MOD("WeaponData", "LIST", mod.WeaponData{Key: "PhysicalMin"}), MOD("WeaponData", "LIST", mod.WeaponData{Key: "PhysicalMax"}), MOD("WeaponData", "LIST", mod.WeaponData{Key: "PhysicalDPS"})},
-	"cannot load or fire ammunition": []mod.Mod{MOD("WeaponData", "LIST", mod.WeaponData{Key: "cannotUseGemTag", Value: utils.Float("ammunition")})},
+	"no physical damage": []mod.Mod{MOD("WeaponData", "LIST", mod.WeaponData{Key: "PhysicalMin"}), MOD("WeaponData", "LIST", mod.WeaponData{Key: "PhysicalMax"}), MOD("WeaponData", "LIST", mod.WeaponData{Key: "PhysicalDPS"})},
+	// PoB's value is the string "ammunition"; WeaponData holds numbers, so it reads as unset, as the shipped ModCache row does.
+	"cannot load or fire ammunition": []mod.Mod{MOD("WeaponData", "LIST", mod.WeaponData{Key: "cannotUseGemTag", Unset: true})},
 	`has (\d+)% increased elemental damage`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("LocalElementalDamage", "INC", num)}, ""
 	},
@@ -7763,6 +7764,7 @@ var jewelSelfFuncs = map[string]radiusJewelFunc{
 	"3% increased Life Recovery Rate per 10 Strength on Allocated Passives in Radius":                        getPerStat("LifeRecoveryRate", mod.TypeIncrease, 0, "Str", 3.0/10),
 	"-1 Intelligence per 1 Intelligence on Allocated Passives in Radius":                                     getPerStat("Int", mod.TypeBase, 0, "Int", -1),
 	"0.4% of Energy Shield Regenerated per Second for every 10 Intelligence on Allocated Passives in Radius": getPerStat("EnergyShieldRegenPercent", mod.TypeBase, 0, "Int", 0.4/10),
+	"regenerate 0.4% of energy shield per second for every 10 Intelligence on Allocated Passives in Radius":  getPerStat("EnergyShieldRegenPercent", mod.TypeBase, 0, "Int", 0.4/10),
 	"2% increased Mana Recovery Rate per 10 Intelligence on Allocated Passives in Radius":                    getPerStat("ManaRecoveryRate", mod.TypeIncrease, 0, "Int", 2.0/10),
 	"3% increased Mana Recovery Rate per 10 Intelligence on Allocated Passives in Radius":                    getPerStat("ManaRecoveryRate", mod.TypeIncrease, 0, "Int", 3.0/10),
 	"-1 Dexterity per 1 Dexterity on Allocated Passives in Radius":                                           getPerStat("Dex", mod.TypeBase, 0, "Dex", -1),
@@ -7862,7 +7864,139 @@ var jewelFuncPatternsRaw = []struct {
 	pattern string
 	typ     string
 	build   func(captures []string) radiusJewelFunc
-}{}
+}{
+	//pob2:block:src/Modules/ModParser.lua:7094-7099
+	{`increases and reductions to energy shield in radius are transformed to apply to armour at (\d+)% of their value`, "Other", simpleConvFactor([]string{"EnergyShield"}, "Armour", mod.TypeIncrease, true)},
+	{`increases and reductions to life in radius are transformed to apply to mana at (\d+)% of their value`, "Other", simpleConvFactor([]string{"Life"}, "Mana", mod.TypeIncrease, true)},
+	//pob2:block:src/Modules/ModParser.lua:7103-7123
+	{`passives granting lightning resistance or all elemental resistances in radius also grant chance to block spells at (\d+)% of its value`, "Other", simpleConvFactor([]string{"LightningResist", "ElementalResist"}, "SpellBlockChance", mod.TypeBase, false)},
+	{`passives granting lightning resistance or all elemental resistances in radius also grant chance to block spell damage at (\d+)% of its value`, "Other", simpleConvFactor([]string{"LightningResist", "ElementalResist"}, "SpellBlockChance", mod.TypeBase, false)},
+	{`passives granting cold resistance or all elemental resistances in radius also grant chance to dodge attacks at (\d+)% of its value`, "Other", simpleConvFactor([]string{"ColdResist", "ElementalResist"}, "AttackDodgeChance", mod.TypeBase, false)},
+	{`passives granting cold resistance or all elemental resistances in radius also grant chance to dodge attack hits at (\d+)% of its value`, "Other", simpleConvFactor([]string{"ColdResist", "ElementalResist"}, "AttackDodgeChance", mod.TypeBase, false)},
+	{`passives granting cold resistance or all elemental resistances in radius also grant chance to suppress spell damage at (\d+)% of its value`, "Other", simpleConvFactor([]string{"ColdResist", "ElementalResist"}, "SpellSuppressionChance", mod.TypeBase, false)},
+	{`passives granting fire resistance or all elemental resistances in radius also grant chance to block attack damage at (\d+)% of its value`, "Other", simpleConvFactor([]string{"FireResist", "ElementalResist"}, "BlockChance", mod.TypeBase, false)},
+	{`passives granting fire resistance or all elemental resistances in radius also grant chance to block at (\d+)% of its value`, "Other", simpleConvFactor([]string{"FireResist", "ElementalResist"}, "BlockChance", mod.TypeBase, false)},
+	//pob2:block:src/Modules/ModParser.lua:7154-7169
+	{`(\d+)% increased effect of small passive skills in radius$`, "Other", func(captures []string) radiusJewelFunc {
+		num := tonumber(captures[0])
+		return func(node *radiusJewelNode, out *moddb.ModList, d *radiusJewelData) {
+			if node != nil && node.nodeType == "Normal" && !node.isAttribute {
+				out.AddMod(mod.NewFloat("JewelSmallPassiveSkillEffect", mod.TypeIncrease, num).Source(d.modSource).Tag(mod.GlobalEffect("Global").Unscalable(true)))
+			}
+		}
+	}},
+	{`(\d+)% increased effect of notable passive skills in radius$`, "Other", func(captures []string) radiusJewelFunc {
+		num := tonumber(captures[0])
+		return func(node *radiusJewelNode, out *moddb.ModList, d *radiusJewelData) {
+			if node != nil && node.nodeType == "Notable" {
+				out.AddMod(mod.NewFloat("JewelNotablePassiveSkillEffect", mod.TypeIncrease, num).Source(d.modSource).Tag(mod.GlobalEffect("Global").Unscalable(true)))
+			}
+		}
+	}},
+	//pob2:block:src/Modules/ModParser.lua:7170-7187
+	{`^(\w+) passive skills in radius also grant (.*)$`, "Other", func(captures []string) radiusJewelFunc {
+		passiveType := firstToUpper(captures[0])
+		line := captures[1]
+		return func(node *radiusJewelNode, out *moddb.ModList, d *radiusJewelData) {
+			if node != nil && (node.nodeType == passiveType || (node.nodeType == "Normal" && !node.isAttribute && passiveType == "Small")) {
+				radiusAlsoGrant(line, out, d)
+			}
+		}
+	}},
+	//pob2:block:src/Modules/ModParser.lua:7188-7205
+	{`conquered (\w+) passive skills also grant (.*)$`, "Other", func(captures []string) radiusJewelFunc {
+		passiveType := firstToUpper(captures[0])
+		line := captures[1]
+		return func(node *radiusJewelNode, out *moddb.ModList, d *radiusJewelData) {
+			if node != nil && (node.nodeType == passiveType || (node.nodeType == "Normal" && !node.isAttribute && passiveType == "Small") || (node.nodeType == "Normal" && node.isAttribute && passiveType == "Attribute")) {
+				radiusAlsoGrant(line, out, d)
+			}
+		}
+	}},
+	//pob2:block:src/Modules/ModParser.lua:7207-7213
+	{`(\d+)% increased effect of non-keystone passive skills in radius`, "Other", func(captures []string) radiusJewelFunc {
+		num := tonumber(captures[0])
+		return func(node *radiusJewelNode, out *moddb.ModList, d *radiusJewelData) {
+			if node != nil && node.nodeType != "Keystone" && node.nodeType != "ClassStart" {
+				out.AddMod(mod.NewFloat("PassiveSkillEffect", mod.TypeIncrease, num).Source(d.modSource))
+			}
+		}
+	}},
+	//pob2:block:src/Modules/ModParser.lua:7224-7248
+	{`notable passive skills in radius are transformed to instead grant: (\d+)% increased mana cost of skills and (\d+)% increased spell damage`, "Other", func(captures []string) radiusJewelFunc {
+		num1, num2 := tonumber(captures[0]), tonumber(captures[1])
+		return func(node *radiusJewelNode, out *moddb.ModList, d *radiusJewelData) {
+			if node != nil && node.nodeType == "Notable" {
+				out.AddMod(mod.NewFlag("PassiveSkillHasOtherEffect", true).Source(d.modSource))
+				out.AddMod(mod.NewList("NodeModifier", nodeModifier{Mod: mod.NewFloat("ManaCost", mod.TypeIncrease, num1).Source(d.modSource)}).Source(d.modSource))
+				out.AddMod(mod.NewList("NodeModifier", nodeModifier{Mod: mod.NewFloat("Damage", mod.TypeIncrease, num2).Source(d.modSource).Flag(ModFlagSpell)}).Source(d.modSource))
+			}
+		}
+	}},
+	{`notable passive skills in radius are transformed to instead grant: minions take (\d+)% increased damage`, "Other", func(captures []string) radiusJewelFunc {
+		num := tonumber(captures[0])
+		return func(node *radiusJewelNode, out *moddb.ModList, d *radiusJewelData) {
+			if node != nil && node.nodeType == "Notable" {
+				out.AddMod(mod.NewFlag("PassiveSkillHasOtherEffect", true).Source(d.modSource))
+				out.AddMod(mod.NewList("NodeModifier", nodeModifier{Mod: mod.NewList("MinionModifier", mod.MinionModifier{Mod: mod.NewFloat("DamageTaken", mod.TypeIncrease, num).Source(d.modSource)})}).Source(d.modSource))
+			}
+		}
+	}},
+	{`notable passive skills in radius are transformed to instead grant: minions have (\d+)% reduced movement speed`, "Other", func(captures []string) radiusJewelFunc {
+		num := tonumber(captures[0])
+		return func(node *radiusJewelNode, out *moddb.ModList, d *radiusJewelData) {
+			if node != nil && node.nodeType == "Notable" {
+				out.AddMod(mod.NewFlag("PassiveSkillHasOtherEffect", true).Source(d.modSource))
+				out.AddMod(mod.NewList("NodeModifier", nodeModifier{Mod: mod.NewList("MinionModifier", mod.MinionModifier{Mod: mod.NewFloat("MovementSpeed", mod.TypeIncrease, -num).Source(d.modSource)})}).Source(d.modSource))
+			}
+		}
+	}},
+	//pob2:block:src/Modules/ModParser.lua:7372-7374
+	{`with at least 40 dexterity in radius, dual strike has (\d+)% increased attack speed while wielding a claw`, "Threshold", func(captures []string) radiusJewelFunc {
+		return getThreshold([]string{"Dex"}, MOD("Speed", mod.TypeIncrease, tonumber(captures[0])).Tag(mod.SkillName("Dual Strike").Transfigured(true), mod.Condition("UsingClaw")))
+	}},
+	{`with at least 40 dexterity in radius, dual strike has \+(\d+)% to critical strike multiplier while wielding a dagger`, "Threshold", func(captures []string) radiusJewelFunc {
+		return getThreshold([]string{"Dex"}, MOD("CritMultiplier", mod.TypeBase, tonumber(captures[0])).Tag(mod.SkillName("Dual Strike").Transfigured(true), mod.Condition("UsingDagger")))
+	}},
+	{`with at least 40 dexterity in radius, dual strike has (\d+)% increased accuracy rating while wielding a sword`, "Threshold", func(captures []string) radiusJewelFunc {
+		return getThreshold([]string{"Dex"}, MOD("Accuracy", mod.TypeIncrease, tonumber(captures[0])).Tag(mod.SkillName("Dual Strike").Transfigured(true), mod.Condition("UsingSword")))
+	}},
+	//pob2:block:src/Modules/ModParser.lua:7396
+	{`with at least 40 intelligence in radius, fireball has \+(\d+)% chance to inflict scorch`, "Threshold", func(captures []string) radiusJewelFunc {
+		return getThreshold([]string{"Int"}, MOD("EnemyScorchChance", mod.TypeBase, tonumber(captures[0])).Tag(mod.SkillName("Fireball")))
+	}},
+	//pob2:block:src/Modules/ModParser.lua:7400-7402
+	{`with at least 40 intelligence in radius, (\d+)% of damage taken recouped as mana if you've warcried recently`, "Threshold", func(captures []string) radiusJewelFunc {
+		return getThreshold([]string{"Int"}, MOD("ManaRecoup", mod.TypeBase, tonumber(captures[0])).Tag(mod.Condition("UsedWarcryRecently")))
+	}},
+	{`with at least 40 intelligence in radius, fireball projectiles gain radius as they travel farther, up to \+(\d+) radius`, "Threshold", func(captures []string) radiusJewelFunc {
+		return getThreshold([]string{"Int"}, MOD("AreaOfEffect", mod.TypeBase, tonumber(captures[0])).Tag(mod.DistanceRamp([][]float64{{0, 0}, {50, 1}})))
+	}},
+	{`with at least 40 intelligence in radius, projectiles gain radius as they travel farther, up to a maximum of \+([\d.]+) metres? to radius`, "Threshold", func(captures []string) radiusJewelFunc {
+		return getThreshold([]string{"Int"}, MOD("AreaOfEffect", mod.TypeBase, tonumber(captures[0])*10).Tag(mod.DistanceRamp([][]float64{{0, 0}, {50, 1}})))
+	}},
+}
+
+func simpleConvFactor(srcList []string, dst string, modType mod.Type, remove bool) func([]string) radiusJewelFunc {
+	return func(captures []string) radiusJewelFunc {
+		return getSimpleConv(srcList, dst, modType, remove, tonumber(captures[0])/100)
+	}
+}
+
+// radiusAlsoGrant is the "also grant" body: the granted line is parsed when the func runs, as PoB does.
+//
+//pob2:block:src/Modules/ModParser.lua:7173-7184
+func radiusAlsoGrant(line string, out *moddb.ModList, d *radiusJewelData) {
+	modList, extra := parseMod(line, 0)
+	if extra != "" || len(modList) == 0 {
+		return
+	}
+	for _, m := range modList {
+		m = m.Clone().Source(d.modSource)
+		setNestedModSource(m, d.modSource)
+		out.AddMod(m)
+	}
+}
 
 var (
 	jewelFuncList     map[string]jewelFuncEntry
@@ -8148,7 +8282,7 @@ func parseMod(line string, order int) ([]mod.Mod, string) {
 			if len(captures) == 0 {
 				return specialFunc(0, captures)
 			}
-			return specialFunc(utils.Float(captures[0]), captures)
+			return specialFunc(tonumber(captures[0]), captures)
 		}
 		return mod.CloneSlice((*specialMod).([]mod.Mod)), ""
 	}
@@ -8242,7 +8376,7 @@ func parseMod(line string, order int) ([]mod.Mod, string) {
 	// Find modifier value and type according to form
 	modValue := []float64{0.0}
 	if len(formCap) > 0 {
-		modValue[0] = utils.Float(formCap[0])
+		modValue[0] = tonumber(formCap[0])
 	}
 
 	modType := "BASE"

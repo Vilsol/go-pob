@@ -40,8 +40,14 @@ type Environment struct {
 
 	// nodeModLists holds each tree node's ProcessStats modList, keyed by node id.
 	nodeModLists map[int]*moddb.ModList
-	modSource    ModSource
-	items        *ItemsTab
+
+	// radiusJewelList, extraRadiusNodeList and radiusJewelData (PoB's GlobalCache radius cache) are
+	// the radius jewel state CalcSetup keeps.
+	radiusJewelList     []*radiusJewel
+	extraRadiusNodeList map[int]*tree2.SpecNode
+	radiusJewelData     map[int]*radiusJewelCacheEntry
+	modSource           ModSource
+	items               *ItemsTab
 
 	// Flasks and Charms are env.flasks / env.charms: the active ones.
 	Flasks        map[*Item]bool

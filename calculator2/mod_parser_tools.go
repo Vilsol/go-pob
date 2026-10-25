@@ -1,6 +1,9 @@
 package calculator2
 
 import (
+	"strconv"
+	"strings"
+
 	"github.com/Vilsol/go-pob/data/poe2"
 	"github.com/Vilsol/go-pob/mod"
 	"github.com/Vilsol/go-pob/moddb"
@@ -45,9 +48,10 @@ type radiusJewelData struct {
 }
 
 type radiusJewelNode struct {
-	id       string
-	nodeType string
-	modList  *moddb.ModList
+	id          int
+	nodeType    string
+	isAttribute bool
+	modList     *moddb.ModList
 
 	conquered bool
 
@@ -150,4 +154,13 @@ func (l LuaTable) Clone(pointer bool) mod.Cloneable {
 		return &out
 	}
 	return out
+}
+
+// tonumber is Lua's tonumber for a capture: 0 where Lua gives nil, without the warning utils.Float logs.
+func tonumber(s string) float64 {
+	n, err := strconv.ParseFloat(strings.TrimSpace(s), 64)
+	if err != nil {
+		return 0
+	}
+	return n
 }
