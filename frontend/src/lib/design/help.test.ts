@@ -40,7 +40,7 @@ describe('parseHelp', () => {
 
 // Main.lua:1338-1358
 describe('parseChangelog', () => {
-  const log = readFileSync(resolve(__dirname, '../../../static/changelog.txt'), 'utf8');
+  const log = readFileSync(resolve(__dirname, '../../../static/pob-changelog.txt'), 'utf8');
   it('reads a version per VERSION[ver][date] line, its "---" sub-titles and every other line', () => {
     const versions = parseChangelog(log);
     const heads = log.split('\n').filter((l) => /^VERSION\[.+\]\[.+\]\r?$/.test(l));

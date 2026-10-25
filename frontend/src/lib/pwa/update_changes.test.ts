@@ -4,6 +4,9 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render } from '@testing-library/svelte';
 import { get } from 'svelte/store';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { parseChangelog } from '$lib/design/help';
 
 vi.mock('$app/environment', () => ({ browser: true, dev: false, version: 'old' }));
 vi.mock('$app/paths', () => ({ base: '' }));
@@ -46,5 +49,22 @@ describe('the update’s changes', () => {
     expect(view.getByRole('alert').textContent).not.toContain('Version');
     expect(view.queryByRole('button', { name: 'Changes…' })).toBeNull();
     updateAvailable.set(false);
+  });
+
+  it("an update between two go-pob releases lists go-pob's changes, not Path of Building's", async () => {
+    const shipped = readFileSync(resolve(__dirname, '../../../static/changelog.txt'), 'utf8');
+    const pob = readFileSync(resolve(__dirname, '../../../static/pob-changelog.txt'), 'utf8');
+    const [newest, previous] = parseChangelog(shipped);
+    const before = { old: files['pob-app-old'], next: files['pob-app-new'] };
+    files['pob-app-old'] = { '/changelog.txt': shipped.slice(shipped.indexOf(`VERSION[${previous.version}]`)), '/pob-changelog.txt': pob };
+    files['pob-app-new'] = { '/changelog.txt': shipped, '/pob-changelog.txt': pob };
+    try {
+      await readUpdateChanges();
+      expect(get(updateChanges).map((v) => v.version)).toEqual([newest.version]);
+      expect(parseChangelog(shipped).at(-1)?.version, "go-pob's history starts at its first release").toBe('0.1.0');
+    } finally {
+      files['pob-app-old'] = before.old;
+      files['pob-app-new'] = before.next;
+    }
   });
 });

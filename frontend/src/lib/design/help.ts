@@ -39,6 +39,14 @@ export const parseChangelog = (text: string): ChangeVersion[] => {
   return out;
 };
 
+// go-pob's history, then Path of Building's under its own sub-title
+export const joinChangelogs = (own: string, pob: string): ChangeVersion[] => {
+  const mine = parseChangelog(own);
+  const theirs = parseChangelog(pob);
+  if (mine.length && theirs.length) mine[mine.length - 1].lines.push({ text: '' }, { text: '--- Path of Building ---', sub: true });
+  return [...mine, ...theirs];
+};
+
 /* Main.lua:1306-1319 */
 export const changesSince = (text: string, running: string): ChangeVersion[] => {
   const all = parseChangelog(text);

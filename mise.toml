@@ -26,6 +26,10 @@ run = "task citations"
 description = "Run the tests only js/wasm can prove under node, as CI does"
 run = "go run ./scripts/gopob nice ./.github/wasm_test.sh"
 
+[tasks.changelog]
+description = "Write go-pob's version history (frontend/static/changelog.txt) from the v* tags and commit subjects; commit it before merging to main"
+run = "task changelog"
+
 [tasks.build-go]
 description = "Build frontend/static/go-pob.wasm (GOOS=js GOARCH=wasm)"
 run = "task build-go"

@@ -459,6 +459,18 @@ tasks:
     cmds:
       - '{{.GOPOB}} data-fields {{.CLI_ARGS}}'
 
+  changelog:
+    desc: "Write go-pob's version history to frontend/static/changelog.txt from the v* tags, their commit subjects and the version semantic-release cuts next; commit it before merging to main"
+    cmds:
+      - '{{.NICE}} go run ./scripts/changelog {{.CLI_ARGS}}'
+
+  pob-changelog:
+    desc: "Copy the pinned PoB's changelog.txt to frontend/static/pob-changelog.txt (the About dialog's Path of Building history); run after a PoB pin bump"
+    vars:
+      POB_DIR: '{{.POB_DIR | default .POB_DEFAULT}}'
+    cmds:
+      - 'cp {{.POB_DIR}}/changelog.txt frontend/static/pob-changelog.txt'
+
   data-regen:
     desc: "Regenerate EVERY generated data file from the pinned PoB (--check to gate on staleness, GAME=poe2 for the PoE2 pin)"
     cmds:

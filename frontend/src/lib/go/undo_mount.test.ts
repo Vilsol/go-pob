@@ -332,10 +332,10 @@ describe('the top bar shows the history and drives it', () => {
     await vi.waitFor(() => expect(about().getAttribute('title')).toMatch(/ · Dev Mode$/));
     devMode.set(false);
     const help = await readFile(resolve(__dirname, '../../../static/help.txt'), 'utf8');
-    const changelog = await readFile(resolve(__dirname, '../../../static/changelog.txt'), 'utf8');
+    const changelog = await readFile(resolve(__dirname, '../../../static/pob-changelog.txt'), 'utf8');
     vi.stubGlobal(
       'fetch',
-      vi.fn((url: string) => Promise.resolve(new Response(String(url).endsWith('/changelog.txt') ? changelog : help)))
+      vi.fn((url: string) => Promise.resolve(new Response(String(url).endsWith('/pob-changelog.txt') ? changelog : help)))
     );
     try {
       await fireEvent.click(view.getByRole('button', { name: 'About go-pob' }));

@@ -5,7 +5,7 @@
   import { logError } from '$lib/utils';
   import { base } from '$app/paths';
   import { devMode } from '$lib/global.js';
-  import { parseChangelog, parseHelp } from '$lib/design/help';
+  import { joinChangelogs, parseHelp } from '$lib/design/help';
 
   // Build.lua:311-315
   type Props = { open?: boolean; tab?: string; helpSection?: string };
@@ -27,15 +27,15 @@
   );
 
   // Main.lua:1338-1358
-  let changelogText = $state<string>();
+  let changelogText = $state<[string, string]>();
   $effect(() => {
     if (!open || changelogText !== undefined) return;
-    fetch(`${base}/changelog.txt`)
-      .then((r) => (r.ok ? r.text() : ''))
+    const text = (file: string) => fetch(`${base}/${file}`).then((r) => (r.ok ? r.text() : ''));
+    Promise.all([text('changelog.txt'), text('pob-changelog.txt')])
       .then((t) => (changelogText = t))
       .catch(logError);
   });
-  const changelog = $derived(changelogText ? parseChangelog(changelogText) : undefined);
+  const changelog = $derived(changelogText?.some(Boolean) ? joinChangelogs(...changelogText) : undefined);
 
   const list = <T,>(o: T[] | Record<string, T> | undefined): T[] =>
     Array.isArray(o) ? o : Object.entries(o ?? {}).flatMap(([k, v]) => (/^\d+$/.test(k) ? [v] : []));
