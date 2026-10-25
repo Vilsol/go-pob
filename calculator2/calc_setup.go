@@ -11,6 +11,7 @@ import (
 	"github.com/Vilsol/go-pob/data/tree2"
 	"github.com/Vilsol/go-pob/mod"
 	"github.com/Vilsol/go-pob/moddb"
+	"github.com/Vilsol/go-pob/pob2"
 )
 
 // newModList is new("ModList"):ModList() carrying PoB-PoE2's kernel rules, as every list here evaluates PoE2 mods.
@@ -490,7 +491,7 @@ func countAllocated(spec *tree2.PassiveSpec) allocatedCounts {
 }
 
 // initEnv is calcs.initEnv for a build's player and enemy databases, tree and config. Skills are not
-// set up (env.player.mainSkill stays nil), and items come only through the Items interface.
+// set up (env.player.mainSkill stays nil).
 //
 //pob2:src/Modules/CalcSetup.lua:842-2604
 func initEnv(env *Environment) {
@@ -516,6 +517,8 @@ func initEnv(env *Environment) {
 	env.Player.Player = env.Player
 
 	env.GrantedPassives = map[int]bool{}
+	env.Flasks = map[*Item]bool{}
+	env.Charms = map[*Item]bool{}
 
 	//pob2:block:src/Modules/CalcSetup.lua:928-951
 	env.ModeBuffs, env.ModeCombat, env.ModeEffective = true, true, true
@@ -625,7 +628,7 @@ func initEnv(env *Environment) {
 	}
 
 	nodesModsList := buildModListForNodeList(env, env.AllocNodes, true)
-	_ = nodesModsList
+	canUseBonded := nodesModsList.Flag(nil, "CanUseBonded")
 
 	//pob2:block:src/Modules/CalcSetup.lua:1145-1162
 	if counts.notable > 0 {
@@ -645,14 +648,7 @@ func initEnv(env *Environment) {
 	}
 	modDB.AddMod(newFlagMod("Condition:WeaponSet"+strconv.Itoa(env.WeaponSet), "Weapon Set"))
 
-	if env.items != nil {
-		for _, eq := range env.items.Equipped(env.WeaponSet) {
-			env.Player.ItemList[eq.SlotName] = eq.Item
-			for _, m := range eq.ModList {
-				env.ItemModDB.AddMod(m)
-			}
-		}
-	}
+	mergeItems(env, nodesModsList, canUseBonded)
 
 	//pob2:block:src/Modules/CalcSetup.lua:1756-1757
 	mergeDB(env.ModDB, env.ItemModDB)
@@ -681,6 +677,8 @@ func initEnv(env *Environment) {
 	//pob2:block:src/Modules/CalcSetup.lua:1788-1789
 	env.ModDB.AddList(buildModListForNodeList(env, env.AllocNodes, false))
 
+	addSlotBonusEffects(env, canUseBonded)
+
 	//pob2:block:src/Modules/CalcSetup.lua:2535-2538
 	env.ModDB.Multipliers["StrengthMoteSkillCount"] = 3
 	env.ModDB.Multipliers["DexterityMoteSkillCount"] = 3
@@ -705,13 +703,58 @@ func mergeDB(srcDB, modDB *moddb.ModDB) {
 	}
 }
 
-//pob2:block:src/Classes/ConfigTab.lua:1160-1166
+// configEnemyLevel is configTab.enemyLevel after BuildModList: UpdateLevel once more after the
+// enemyIsBoss option (default "Pinnacle") sets the enemyLevel placeholder.
+//
+//pob2:block:src/Classes/ConfigTab.lua:1157-1167
+//pob2:block:src/Modules/ConfigOptions.lua:1994-1996
+//pob2:block:src/Modules/ConfigOptions.lua:2077-2079
 func configEnemyLevel(env *Environment) int {
-	level := float64(env.Build.Build.Level)
+	characterLevel := float64(env.Build.Build.Level)
+	placeholder, hasPlaceholder := configPlaceholderEnemyLevel(env.Build)
+	boss := "Pinnacle"
+	if v, ok := env.ConfigInput["enemyIsBoss"]; ok && v.IsString {
+		boss = enemyIsBossInput(v.String)
+	}
+	switch boss {
+	case "None", "Boss":
+		placeholder, hasPlaceholder = characterLevel, true
+	case "Pinnacle", "Uber":
+		placeholder, hasPlaceholder = 82, true
+	}
+	level := characterLevel
 	if v, ok := env.ConfigInput["enemyLevel"]; ok && v.IsNumber && v.Number > 0 {
 		level = v.Number
+	} else if hasPlaceholder && placeholder > 0 {
+		level = placeholder
 	}
 	return int(math.Min(miscConstant("MaxEnemyLevel"), level))
+}
+
+var capitaliseWordsRE = regexp.MustCompile(`[a-z][a-zA-Z0-9]*`)
+
+//pob2:block:src/Classes/ConfigTab.lua:892-894
+func enemyIsBossInput(s string) string {
+	s = capitaliseWordsRE.ReplaceAllStringFunc(strings.ToLower(s), func(w string) string { return strings.ToUpper(w[:1]) + w[1:] })
+	s = strings.ReplaceAll(s, "Uber Atziri", "Boss")
+	s = strings.ReplaceAll(s, "Shaper", "Pinnacle")
+	return strings.ReplaceAll(s, "Sirus", "Pinnacle")
+}
+
+//pob2:block:src/Classes/ConfigTab.lua:907-913
+func configPlaceholderEnemyLevel(build *pob2.PathOfBuilding2) (float64, bool) {
+	placeholders := build.Config.Placeholders
+	for _, set := range build.Config.ConfigSets {
+		if set.ID == activeConfigSetID(build) {
+			placeholders = set.Placeholders
+		}
+	}
+	for _, p := range placeholders {
+		if p.Name == "enemyLevel" && p.Number != nil {
+			return *p.Number, true
+		}
+	}
+	return 0, false
 }
 
 //pob2:src/Classes/SkillsTab.lua:1398-1405

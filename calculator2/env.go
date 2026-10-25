@@ -41,7 +41,16 @@ type Environment struct {
 	// nodeModLists holds each tree node's ProcessStats modList, keyed by node id.
 	nodeModLists map[int]*moddb.ModList
 	modSource    ModSource
-	items        Items
+	items        *ItemsTab
+
+	// Flasks and Charms are env.flasks / env.charms: the active ones.
+	Flasks        map[*Item]bool
+	Charms        map[*Item]bool
+	ItemSlotIndex map[*Item]int
+
+	TalismanModList *moddb.ModList
+	TheIronMass     *moddb.ModList
+	WeaponModList1  *moddb.ModList
 }
 
 // Actor is env.player / env.enemy.

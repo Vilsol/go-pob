@@ -12,31 +12,16 @@ import (
 	"github.com/Vilsol/go-pob/pob2"
 )
 
-// EquippedItem is one build.itemsTab.orderedSlots entry with its selected item.
-type EquippedItem struct {
-	SlotName string
-	Item     *Item
-	// ModList is the item's mod list as CalcSetup merges it for this slot (item.modList, or
-	// item.slotModList[slotNum] for a multi-slot item, after any slot scaling).
-	ModList []mod.Mod
-}
-
-// Items stands in for build.itemsTab: the items equipped for a weapon set, in orderedSlots order.
-// No implementation reads the build's items yet, so BuildOutput callers pass nil.
-type Items interface {
-	Equipped(weaponSet int) []EquippedItem
-}
-
 // Options carries what BuildOutput needs beside the build file.
 type Options struct {
 	// Tree is the build's passive tree, loaded by tree2.Load for the spec's treeVersion.
 	Tree *tree2.PassiveTree
 	// ModSource parses a mod line; nil is WithParser(ParseMod), PoB's modLib.parseMod.
 	ModSource ModSource
-	// Items is the build's items; nil means items contribute nothing.
-	Items Items
+	// Items is build.itemsTab, from NewItemsTab; nil means the build has no items.
+	Items *ItemsTab
 	// SpecItems is the passive spec's view of build.itemsTab.items (jewel radius and jewelData) that
-	// allocation reads; nil means no item changes the allocation.
+	// allocation reads; nil is Items.SpecItem, or no item when Items is nil too.
 	SpecItems func(itemID int) *tree2.Item
 }
 
@@ -72,11 +57,18 @@ func BuildOutput(build *pob2.PathOfBuilding2, opts Options) (*Environment, error
 	if env.modSource == nil {
 		env.modSource = WithParser(ParseMod)
 	}
-	spec, err := loadSpec(build, opts.Tree, env.modSource, opts.SpecItems)
+	specItems := opts.SpecItems
+	if specItems == nil && opts.Items != nil {
+		specItems = opts.Items.SpecItem
+	}
+	spec, err := loadSpec(build, opts.Tree, env.modSource, specItems)
 	if err != nil {
 		return nil, err
 	}
 	env.Spec = spec
+	if opts.Items != nil {
+		opts.Items.SetActiveSpec(spec)
+	}
 	env.ClassID = spec.CurClassID
 	if spec.Tree.Classes[env.ClassID] == nil {
 		return nil, fmt.Errorf("class %d is not in the tree", env.ClassID)
