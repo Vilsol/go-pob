@@ -130,7 +130,7 @@
 
   // Launch.lua:158-161
   const updateKey = (e: KeyboardEvent) => {
-    if (!(e.ctrlKey || e.metaKey) || e.altKey || e.shiftKey || e.key.toLowerCase() !== 'u' || get(devMode)) return;
+    if (e.defaultPrevented || !(e.ctrlKey || e.metaKey) || e.altKey || e.shiftKey || e.key.toLowerCase() !== 'u' || get(devMode)) return;
     e.preventDefault();
     checkForUpdate().catch(logError);
   };

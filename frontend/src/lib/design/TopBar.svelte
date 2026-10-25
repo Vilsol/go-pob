@@ -133,7 +133,7 @@
   };
 
   function onkeydown(e: KeyboardEvent) {
-    if (!(e.ctrlKey || e.metaKey) || e.altKey) return;
+    if (e.defaultPrevented || !(e.ctrlKey || e.metaKey) || e.altKey) return;
     const typing = isTypingTarget(e.target);
     const k = e.key.toLowerCase();
     if (k === 's') {

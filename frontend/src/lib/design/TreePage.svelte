@@ -288,6 +288,12 @@
   const path = $derived(H && !alloc[H.id] && H.k !== 'c' ? pathOf(H) : []);
   const lose = $derived(H && alloc[H.id] && H.a ? (H.loseIds ?? []).filter((id) => alloc[id]) : []);
 
+  // Main.lua:476-485: captured, so the top bar's help key sees it handled whichever listener came first
+  function wikiKey(e: KeyboardEvent) {
+    if (e.key !== 'F1' || !H || document.querySelector('dialog[open]')) return;
+    e.preventDefault();
+    window.open(`https://www.poewiki.net/wiki/${H.name.replace(/ /g, '_')}`, '_blank', 'noopener');
+  }
   function pageKey(e: KeyboardEvent) {
     if (document.querySelector('dialog[open]')) return;
     const t = e.target as HTMLElement | null;
@@ -296,11 +302,6 @@
     if (e.key === 'PageUp' || e.key === 'PageDown') {
       e.preventDefault();
       for (let i = 0; i < (e.shiftKey ? 3 : 1); i++) onzoom?.(e.key === 'PageUp' ? 'in' : 'out');
-      return;
-    }
-    if (e.key === 'F1' && H) {
-      e.preventDefault();
-      window.open(`https://www.poewiki.net/wiki/${H.name.replace(/ /g, '_')}`, '_blank', 'noopener');
       return;
     }
     if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey) {
@@ -551,7 +552,7 @@
 {#snippet tipExtra()}{#if H}{@render nodeTipExtra?.(H)}{/if}{/snippet}
 {#snippet tipTail()}{#if H}{@render nodeTipTail?.(H)}{/if}{/snippet}
 
-<svelte:window onpointerdown={outside} onkeydown={pageKey} />
+<svelte:window onpointerdown={outside} onkeydowncapture={wikiKey} onkeydown={pageKey} />
 
 <Toolbar edge="bottom" wrap class="box-border min-h-13 shrink-0 gap-2.5 px-4 py-0.5 max-phone:gap-2 max-phone:px-3 max-phone:py-2" data-toolbar>
   <FloatingLabel label="Class" class="[--float-bg:var(--color-surface-1)]"

@@ -1,199 +1,241 @@
----[Help File Introduction]
+---[Introduction]
 
-This file contains a list of shortcuts and other misc information about PoB functionality
-While holding shift scroll bars in the help section and version history will jump to the previous/next section while scrolling
+go-pob is a port of Path of Building (PoB) to Go. It runs in a web browser, as a desktop app (Windows, macOS, Linux) and on phones.
+go-pob's website is https://pob.gg, where the web version runs.
+The calculations are ported from PoB's own code and checked against PoB's results build by build, so a build should show the same numbers in both.
+The interface is its own: pages, menus and shortcuts differ from PoB's, and this help describes go-pob's.
+Builds are PoB builds: go-pob opens PoB build codes, links and .xml files, and its exports open in PoB.
 
 ---[Contents]
 
----[FAQ]
+---[Getting started]
 
----[Hotkeys]
+The build list is the first screen. From there:
+New build	Starts an empty build. It has no name until you save it (Ctrl+S asks for one).
+Import build	Opens the Import / Export page.
+Open a build	Double-click it, or select it and press Enter. Folders, search and sorting are at the top of the list.
 
-General Shortcuts:
+Importing (Import / Export page, "Build import"):
+Build code	A PoB export code.
+Links	pobb.in, poe.ninja, pob.codes, Maxroll, Pastebin.com, PastebinP.com and poedb.tw. Links wrapped by YouTube or Google redirects work too.
+Character JSON	A character's JSON (with "equipment" and "passives") imports its items, skills, tree and jewels.
+Rentry.co	Not supported: paste the build code instead.
+Choose "Import as a new build", "Import to this build" (asks first, and replaces everything in the current build) or "Import as a comparison" (opens it on the Compare page).
 
-Ctrl + 1	Jump to tree tab
-Ctrl + 2	Jump to skills tab
-Ctrl + 3	Jump to items tab
-Ctrl + 4	Jump to calcs tab
-Ctrl + 5	Jump to config tab
-Ctrl + 6	Jump to notes tab
-Ctrl + 7	Jump to party tab
-Ctrl + I	Jump to import tab
-Ctrl + A	Select all
-Ctrl + C	Copy
-Ctrl + D	Toggle stat diff display (Passive Tree tab / Items tab)
-Ctrl + F	Show find / search box (e.g. unique item / tree)
-Ctrl + M	Manage Trees (Tree tab only)
-Ctrl + N	New build (in build selection menu)
-Ctrl + S	Save build to file
-Ctrl + U	Check for update
-Ctrl + V or RMB	Paste
-Ctrl + W or
-Mouse 4	Close Build (gives save prompt if unsaved)
-Ctrl + X	Cut
-Ctrl + Y	Redo
-Ctrl + Z	Undo
-Ctrl + BSP / DEL	Faster text delete
-Ctrl + + /-/0	Zoom in / Out / Reset
-F1	Open item/gem/etc in poewiki.net, or if nothing to open, opens help file
-F2	Rename item, set, etc.
-E	On an equipped item will open it on the edit menu on the right.
-Ctrl + LMB	Enable / disable gems
-Ctrl + RMB	Enable / disable gems from Full DPS
-Mouse 4/5	Undo / Redo path respectively (in build selection menu)
-Shift	While scrolling on a slider makes it 5* times faster
-Ctrl	While scrolling on a slider makes it 5* times slower
-* default of 5, some scroll bars have more or less extreme modifiers to scroll speed
-  and scroll bars in help section and version history will jump to the previous/next section
+Character import: enter an account name and realm, press "Fetch characters", pick a league and a character, then import its passive tree and jewels, or its items and skills.
+Other ways in: a passive tree link on the Tree page (Import Tree), a build code or link on the Party page, an ?import= link to the site, and on the desktop pob:// links and build files.
 
-When creating an item either through item creator or adding an item pressing ctrl will add it to the first slot
-    and ctrl+shift will add it to the second slot e.g. offhand for a weapon.
+Where builds are stored:
+Web	In this browser's own storage for the site. Other browsers and devices do not see them, and clearing the site's data deletes them.
+Desktop	In a builds folder on disk, as .xml files. If Path of Building's Builds folder is found (including PoB's own "Build save path" setting, and Wine, Proton, Lutris and Bottles prefixes on Linux), go-pob uses it; otherwise it uses its own folder. File > Builds folder... picks another one, File > Default builds folder goes back.
 
-Passive Tree Shortcuts:
+Backups:
+Export all builds	Settings > Data and storage > "Export .zip" saves every build as .xml files in one .zip. On the web this is the only copy outside the browser, so export regularly.
+One build	Import / Export page: "Copy code", or "Share" to make a link on the chosen site.
 
-Ctrl	Hide tooltips while held
-P	Toggle node power
-PgUp/PgDn/MWheel	Zoom in / out (hold with shift to increase the amount of zoom x 3)
-Ctrl + LMB	Zoom in on mouse cursor position
-Hold Shift	Enable "path trace mode"
-	(highlighted nodes will stay highlighted, and will be allocated when a node is clicked on the tree)
-Up/Down arrow	Select previous/next tree respectively
+---[Tree tab]
 
-Developer Use
+Click a node to allocate it and the path to it; click an allocated node to remove it and everything that depended on it. Hovering shows the path and the stat changes.
+Right-click a node for its menu: tattoo or runegraft, socket a jewel, copy the node text, show it in the power report.
+The bar under the tree has the search ("?" explains the syntax; the search is saved with the build), the Filter and Path choices, Reset Tree/Tattoos, Show Node Power, the Power report and the Timeless jewel search.
+The tree selector manages several trees per build (Ctrl+M), imports and exports tree links, compares two trees and converts older tree versions.
 
-General Shortcuts:
+---[Skills tab]
 
-Ctrl + `	Toggle console (console supports most standard editing shortcuts)
-Pause	Toggle profiling
-DEV[ ]
-DEV[Developer Mode Shortcuts:]
-DEV[ ]
-DEV[Ctrl	Rebuild mod cache (hold key during reload / refresh)]
-DEV[Ctrl + Shift	Allow tree download]
-DEV[Alt	Show advanced mod breakdown / passing]
-DEV[F5	Restart]
-DEV[F6	Run garbage collector]
-DEV[Shift	Copy export xml to clipboard (hold key during export)]
+The left column lists the socket groups of the current skill set; the skill set selector and its Manage button are above it.
+Click a group to edit it on the right: slot, gems, level, quality, enabled and "Include in Full DPS".
+Ctrl+click a group enables or disables it; right-click makes it the main skill; Ctrl+right-click toggles it in Full DPS.
+Gem options (default level and quality, sorting gems by DPS, legacy gems) are under the groups. Drag a group to reorder it.
 
----[Other Notable Things]
+---[Items tab]
 
-Adding ^ and then a number or hex code before text will change the colour of the text, eg ^^77 will make the following text white until the next colour marker is set.
+Click a slot to edit its item; an empty slot offers to craft one. Hover a slot and press E to open the equipped item.
+Paste an item copied in game (Ctrl+C there) or from PoB into the item text box. "Craft item..." and "New item" build one from scratch.
+Drag items between the stash, the shared items and the slots. In the item lists, Ctrl+click equips (Ctrl+Shift+click uses the second slot), double-click opens the item as text, and the row menu has clone, copy, share with all builds and delete.
+Item sets and the board/list layout are at the top. "Buy similar" builds a trade-site search from the item being edited.
 
----[Timeless Jewels]
+---[Calcs tab]
 
-DEV[Developer Information:]
-DEV[The Timeless jewels determine what effect they have on a node based on the "Look up Tables" in \src\Data\TimelessJewelData]
-DEV[The LuTs for the timeless jewels come from https://github.com/Regisle/TimelessJewelData]
-DEV[ ]
-DEV[These can be generated if that repo is out of date (see RELEASE.md)]
-DEV[ ]
-Timeless jewels modify nodes in a radius based on their seed, the same seed will apply the same changes to the same small/notable nodes so that is the number you look for. The Conqueror (name on the jewel) only affects the keystone.
+Choose the skill to calculate (socket group, active skill, skill part, minion) at the top.
+Hover a stat to preview its breakdown; click it to pin the breakdown. A breakdown section can be popped out.
+"Mod Debug" lists the modifiers behind the calculation; "Manage Spectres..." edits the spectre library.
 
-Path of Building has an inbuilt tool in the tree tab to search through seeds to find stats that would be good for your build.
-Clicking the "Find Timeless Jewel" button on the bottom bar in the tree tab will open a UI that lets you:
-Select which jewel type, which jewel socket to search for, and which conqueror from that jewel
-    ("Any" will just use the first conqueror if you add it to build, more on that later)
+---[Config tab]
 
-The filter nodes option makes it only check nodes that are allocated when searching a jewel socket.
-Next, a node change/addition can be selected with the "search for node" dropdown,
-    The values for the stats added are controlled by primary/secondary (in the case of 2 stats from 1 node) node weights
-    If that type has already been added, then moving those sliders will change the values
-    These values can also be edited directly in the "Desired Nodes" box
-    A minimum weight can be added for a node. This will filter results to only seeds with at least that much weight from those nodes.
-    If the minimum weight bar is at max, it will turn it into "required", this just means the node needs to show up at least once
+Sets the conditions the calculation assumes: enemy, charges, buffs and so on. Ctrl+F jumps to the search box.
+Config sets have their own selector. "Reset to defaults" clears the options.
 
-There are 2 different boxes these weights can be entered into, a basic one, and the "fallback" weights.
-    If a node is in both it will only use the value from desired. The fallback weights can automatically be populated by using
-    the fallback weight mode, selecting a method of determining the weights (a stat to sort by) and clicking generate.
-    These can then be copied from the fallback nodes box to the desired nodes box if you want to generate a different type
-        eg. If you want to sort by combined dps and ehp, you generate one, copy it over and then generate the other
+---[Party tab]
 
-Lastly is the search results box. This will list seeds from the best to the worst based on your search parameters.
-    Double-clicking one will add the jewel with that seed and keystone to your build.
-    Clicking "Copy Trade URL" will copy a few results to a trade link which can be pasted into your browser.
-    Doing this multiple times will copy later results in case the first one didn't show results.
-    If you click 1 result and shift-click another it will highlight multiple, you can then click "Copy trade URL" to search all of them
+Adds support characters whose auras, curses and link skills apply to your build.
+Paste a build code or link, pick a destination (or All), and press Import; tick Append to add to a section instead of replacing it. Clear empties the chosen destination.
+The supporting build must be exported with "Export support" turned on (Import / Export page) for its auras and curses to come across.
 
-Militant Faith jewels also have the option to select the other mods on the jewel
+---[Notes tab]
 
-Advanced tricks:
-    For Militant Faith, if you don't want any nodes to change, you can just sort by devotion. As unchanged nodes add devotion, the ones with the most devotion will be the ones with unchanged nodes
+A rich-text editor for the build's notes, with headings, lists, task lists, quotes, code, links (Ctrl+K) and PoB's text colours.
+The rich text is stored in the build; the PoB export flattens it to plain text with PoB colour codes. "Copy as PoB text" copies what PoB will get. Notes imported from PoB, or changed outside go-pob, show a banner with the choices.
+
+---[Import tab]
+
+Build sharing: "Copy code" copies the export code; "Share" uploads it to the chosen site and copies the link. "Export support" adds party data for the Party tab.
+Build import and Character import are described under Getting started.
+
+---[Compare tab]
+
+Shows the current build (A) next to another build (B): a saved build, or one imported "as a comparison".
+Views: Summary, Power report, Tree, Items, Skills, Calcs and Config. "Swap A and B" exchanges them; on Config, "Use B's value" copies a setting across.
 
 ---[Loadouts]
 
-Loadouts can be selected from the dropdown in the top middle of the screen. Selecting a Loadout will load all four sets at once. These are automatically registered based on one of three conditions:
+The Loadout selector in the top bar switches the tree, skill, item and config sets together. A loadout is formed when:
+    1) all four sets have the same name (including colour codes), or
+    2) all four sets end in the same identifier in braces, e.g. "Leveling Tree {1}". One set can join several loadouts: "Early Game {1,2}".
+    3) a set type (other than the tree) with only one set joins every loadout.
+"New Loadout" creates all four sets at once. "Sync" re-reads the loadouts.
 
-    1) All four sets share the same name and colour formatting, e.g. "Leveling"
-        - If you have a set named ^4Leveling^7, it will not match to other sets named Leveling
+---[Hotkeys]
 
-    2) All four sets have the same alphanumeric identifier inside of braces { } at the end of the name, e.g. "Leveling Tree {1}", "Leveling Items {1}", "Leveling Skills {1}", "Leveling Config {1}"
-        - If you would like a single set to be used in multiple Loadouts, you can put the identifiers in the braces separated by commas. For example, an Item Set could be named "Early Game {1,2}" and there could be Tree, Skill, and Config Sets with {1} and {2}, resulting in two loadouts linked to the same Item Set
-        - The name of the Loadout in the dropdown is based on the name of the Tree Set, identifiers are shown for clarity when using sets multiple times
-        - These sets can have differing colour formatting so long as the identifier texts match
+On macOS, Cmd works wherever Ctrl is listed, except Ctrl+click and Ctrl+right-click on the tree and on socket groups, and Ctrl+C on a socket group.
 
-    3) If there is only one set for a set type (except passive tree), e.g. "Default" config set, it will be assigned to all existing loadouts.
+Everywhere in an open build:
+1 - 8	Go to Tree, Skills, Items, Calcs, Config, Notes, Party, Compare (hold Alt while typing in a text box). PoB uses Ctrl+1 - 7.
+Ctrl+S	Save the build (asks for a name the first time)
+Ctrl+I	Open the Import / Export page
+Ctrl+Z	Undo (every page shares one undo history)
+Ctrl+Y or Ctrl+Shift+Z	Redo
+F1	Open the hovered item or gem on poewiki.net; with nothing hovered, open this help
+Ctrl+U	Check for an update
+Esc	Close the open dialog, menu or panel
 
-The "New Loadout" option allows the user to create all four sets from a single popup for convenience.
-The "Sync" option is a backup option to force the UI to update in case the user has changed this data behind the scenes.
+Passive tree:
+Ctrl+F	Jump to the tree search
+Ctrl+M	Manage trees
+Ctrl+D	Show or hide the stat changes in the node tooltip
+Ctrl+C	Copy the hovered node's name and stats
+P	Show or hide Node Power
+Up / Down	Switch to the previous / next tree
+PgUp / PgDn	Zoom in / out (with Shift: three steps)
+F1	Open the hovered node on poewiki.net
+Hold Shift	Path trace: hover nodes to build a path, then click the last one to allocate the whole path
 
+Items:
+E	Open the hovered equipped item in the editor
+Ctrl+F	Jump to the unique search (pressed there: the rare template search)
+Ctrl+D	Show or hide stat differences in tooltips
+Ctrl+C	Copy the focused item
+Delete	Delete the focused item from its list
+Up / Down	Move between items in a list
+Ctrl+Z / Ctrl+Y	Undo / redo inside the item editor
+Hold Shift	Show the skills an item grants next to its tooltip
 
----[Party Tab]
+Skills:
+Ctrl+C	Copy the focused socket group
+Ctrl+V	Paste a copied socket group
+Space	Pick up the focused group; Up / Down move it; Space drops it; Esc puts it back
+Alt+Up / Alt+Down	Move the focused group up or down
 
-The Party tab Allows you to import support characters and have their auras and curses apply
+Config:
+Ctrl+F	Jump to the search box
 
-To import a build it must be exported with "Export support" enabled in the import/export tab and must be imported in the party tab
-You can import a specific type like aura or curse, or import to all
-You can also set it to append to a section rather than replace it (curses and links are always replaced if new one has a curse/link)
+Notes (while typing):
+Ctrl+B / Ctrl+I / Ctrl+U	Bold / italic / underline
+Ctrl+Shift+S	Strikethrough
+Ctrl+E	Inline code
+Ctrl+Alt+1 - 3	Heading 1 - 3
+Ctrl+Shift+7 / 8 / 9	Numbered list / bulleted list / task list
+Ctrl+Shift+B	Quote
+Ctrl+Alt+C	Code block
+Ctrl+K	Add or edit a link
+Ctrl+Z / Ctrl+Shift+Z	Undo / redo in the text
 
-This does not add the auras, curses or links into the skills tab, but they do show up on calcs tab under "aura and buff skills" as well as "curses and debuffs" respectively
-They also show other effects they add, like when physical damage reduction is applied by an aurabot with the Guardian node
+Build list:
+Enter	Open the selected build
+F2	Rename
+Delete	Delete
+Ctrl+C / Ctrl+X	Mark a build or folder to copy / move
+Ctrl+V	Paste it into the open folder
 
-Auras with the highest effect will take priority
-Your curses will take priority over a support's
+Lists, menus and fields:
+Arrow keys, Home, End	Move through menus, tabs, toolbars and lists
+Enter	Confirm a dialog, import the pasted code, pick the highlighted entry
+Up / Down in a number box	Change the value by one step (Shift: 10 steps, Alt: a tenth)
+PgUp / PgDn in a number box	Change the value by 10 steps
+Shift+F10 or the Menu key	Open a node's menu on the Timeless jewel tree
+F2 / Delete in a set list	Rename / delete the selected tree, skill, item or config set (Manage...)
 
-Links skills use stats from party members if they are exported
-Some Enemy conditions and Modifiers may not be properly exported, please let us know if something is broken
-Some auras like Mines which use a stack value for their effect will not apply as their stack value is missing
+Desktop app only:
+Ctrl+O	Open a build file
+Ctrl+R	Reload the window
 
----[Skills Tab]
+DEV[Dev mode (Settings > General) shows node ids in passive tooltips. Ctrl+U does nothing in Dev mode.]
 
-The skills tab allows you to plan out the skills you will use for your character. To access this tab, click on "Skills" in the tab at the top left of the screen next to "Tree" and "Items".
+---[Mouse and touch]
 
-From here, you can view all of the skills in your build. There are a few different UI elements that you can use to group your skills and make DPS calculations easier.
+Passive tree with a mouse:
+Drag	Pan
+Wheel	Zoom (the speed is in Settings > Passive tree)
+Ctrl+click / Ctrl+right-click	Zoom in / out at the pointer
+Click	Allocate the node and its path, or remove an allocated node
+Right-click	Node menu
+The +, - and "fit" buttons zoom as well.
 
-The top left window lets you view Socket Groups. Skills can be organized into Socket Groups to show which support gems are applied to certain skills. You can add a socket group by clicking New and selecting a skill from the drop-down.
-For example, you could add a socket group for Vitality and then attach Arrogance to the group as a support.
-You can also add labels and organize your skills by type (auras, mobility, damage, etc). This is a great way to keep track of skill changes across skill sets as you level.
+Passive tree on a phone:
+Tap	Show the node's tooltip
+Double tap	Allocate or remove the node. An Undo button appears for a few seconds.
+Hold	Open the node menu
+One finger / two fingers	Pan / pinch to zoom
 
-Skill sets can be thought of as collections of socket groups. There is a select box above the socket groups window that will let you switch between them.
-A great way to use these is to create skill sets for different level gaps, allowing you to plan out which skills you can run at certain points in your levelling progression.
-They are also a nice way to showcase different skill options for your build. One set could show the skills you run to maximize DPS, while another could show a better setup for survivability or maybe mapping. Click Manage next to the select box to add, remove, rename, and copy skill sets.
+Items:
+Drag	Move an item onto a slot, into the stash or into the shared items. Drop onto the minion selector in the sidebar (Shift for the second slot) to give it to a minion.
+On a phone, the first tap on an equipped item shows its tooltip; the second opens it.
 
-If you click on a skill in one of your socket groups, a table will appear on the right showing you the details of that group. You can set which piece of gear the skills are socketed in, as well as the level of each skill, the variant, quality, and count.
-Hovering over a skill will display a full description of that skill and toggling the "Enabled" checkbox will enable or disable that skill from your build. You can also use the "Include in Full DPS" checkbox to include or exclude that skill from the Full DPS calculation displayed on the left panel.
-This can be useful for seeing how much damage you are getting from specific skills as well as specific groups of skills in your gear. You may also want to make a socket group simply for display purposes and then you can exclude that from DPS calculations.
+Elsewhere:
+Drag a socket group	Reorder groups (Skills)
+Drag a build	Move it into a folder (build list)
+Right-click or long-press Undo	Open the undo history (top bar); click an entry to go back to it
+Shift+click	Select a range of Timeless jewel results
 
-Finally, underneath the Socket Groups window is the Gem Options box. This will let you configure the level of your skills gems as well as sort them by different types of DPS. Really useful for viewing total potential damage vs damage at different levels.
+On a phone, five pages are in the bottom bar and the others (Notes, Party, Compare, Import/Export, Timeless) are under More, with Undo history, Loadout, Save as, Build issues, Settings and About. Tap the stats strip under the header to see all stats.
 
+---[Desktop app]
 
----[Items Tab]
+The desktop app is the same app in its own window, with these differences:
+Builds	Kept as .xml files in a builds folder (see Getting started), so PoB and go-pob can share one folder.
+Opening files	File > Open build file... (Ctrl+O) opens a .xml build or a .txt build code. pob:// links and build files opened with go-pob from the system open in the running app.
+Saving	"Export all builds" asks where to save the .zip.
+Offline	The app is built in; game data and item images are downloaded once and kept on disk. Settings > Data and storage shows the size and clears it.
+Updates	Ctrl+U (or Settings > "Check now") checks for a signed new version. Where go-pob can replace itself it downloads the update and restarts into it; the AppImage, .deb, .rpm and copies in a folder you cannot write to only name the new version and its release page. The Flathub and Nix builds are updated by Flathub and Nix.
+Linux AppImage	Help > Add to applications menu adds a menu entry and the pob:// handler.
 
-The Item Tab in Path of Building allows you to plan out the gear you will use for your character. To access the Item Tab, click on the "Items" tab located at the top of the screen.
+---[Offline and updates]
 
-From here, you can view all of the gear slots for your character, such as your weapon, chest armour, and boots. To add an item to a slot, click on the arrow button on the right side of the slot. This will bring up a list of all the items available in your build, which are visible in the "All items" window.
-If you wish to add more items, you can copy and paste items using CTRL+C (from the game or trade website) and CTRL+V into the "Shared items" window. Additionally, you can craft items using the "Craft item..." button on the top or create completely customizable items using the "Create custom..." option.
+On the web, go-pob installs itself in the browser for offline use after the first visit. Offline, saved builds and calculations work; importing from links needs the network. A notice shows while you are offline.
+The site checks for a new version every 30 minutes and when the tab becomes visible again. When one is ready, a notice offers "Reload" (unsaved changes are lost) and "Changes..." for what is new. Ctrl+U checks right away.
+Opening the site with ?sw=off turns offline use off (and removes the offline copy); ?sw=on turns it back on.
 
-The item sets section located at the top of the screen can be used to save multiple sets of items and easily switch between them. You can add, remove, rename, and copy new sets using the "Manage..." button.
+---[FAQ]
 
-If you want to search for item upgrades, you can use the "Trade for these items" button to quickly search for items that can improve your gear.
+Why does a number differ from Path of Building?
+go-pob is checked against a fixed version of PoB, so a newer or older PoB can differ. Check that both use the same tree version, config and main skill. If they match and the number still differs, please report it with the build code.
 
----[Similar Builds Popup]
+Some mods say "(Not supported in PoB yet)". Is that go-pob?
+That label comes from PoB: the mod is not handled by PoB's calculations either. Settings > Items can hide it.
 
-The Similar Builds Popup allows you to search for builds similar to your current character.
+Where are my builds?
+On the web, in this browser's storage for the site; on the desktop, in the builds folder (see Getting started). Settings > Data and storage > "Export .zip" makes a backup.
 
-To access the Similar Builds Popup, click on the "Similar Builds" button located at the top of the screen.
+Can I use my PoB builds folder?
+On the desktop, yes: go-pob finds PoB's Builds folder by itself, or File > Builds folder... picks it. On the web, import builds by code or link.
 
-It will fetch the builds most similar to your character and sort them by the latest league and match score.
+Does clearing cached data delete my builds?
+No. Settings > "Clear cached data" removes game data and item images, which download again. Clearing the site's data in the browser does delete web builds.
 
-For best results, make sure to select your main item set, tree, and skills before opening the popup.
-If you are using leveling gear/tree, it will match with other leveling builds.
+Why can a Rentry link not be imported?
+Rentry only serves a paste with its owner's access code. Paste the build code instead.
+
+Does it work offline?
+Yes, after the first visit on the web, and always on the desktop once the game data is downloaded. Importing from links needs the network.
+
+How do I report a bug?
+Open an issue at https://github.com/Vilsol/go-pob/issues with the build code, what you expected and what you saw. Logs (top bar) has a button that copies the whole log with the app version and browser, to paste into the report.

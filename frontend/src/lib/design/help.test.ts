@@ -10,31 +10,38 @@ describe('parseHelp', () => {
   it("reads PoB's sections, key / text lines and dev lines", () => {
     const sections = parseHelp(text, false);
     expect(sections.map((s) => s.title)).toEqual([
-      'Help File Introduction',
+      'Introduction',
       'Contents',
-      'FAQ',
-      'Hotkeys',
-      'Other Notable Things',
-      'Timeless Jewels',
+      'Getting started',
+      'Tree tab',
+      'Skills tab',
+      'Items tab',
+      'Calcs tab',
+      'Config tab',
+      'Party tab',
+      'Notes tab',
+      'Import tab',
+      'Compare tab',
       'Loadouts',
-      'Party Tab',
-      'Skills Tab',
-      'Items Tab',
-      'Similar Builds Popup'
+      'Hotkeys',
+      'Mouse and touch',
+      'Desktop app',
+      'Offline and updates',
+      'FAQ'
     ]);
     const hotkeys = sections.find((s) => s.title === 'Hotkeys')!;
-    expect(hotkeys.lines).toContainEqual({ key: 'Ctrl + 1', text: 'Jump to tree tab' });
+    expect(hotkeys.lines).toContainEqual({ key: 'Ctrl+M', text: 'Manage trees' });
     expect(hotkeys.lines.some((l) => l.dev)).toBe(false);
     const dev = parseHelp(text, true).find((s) => s.title === 'Hotkeys')!;
-    expect(dev.lines).toContainEqual({ text: 'Developer Mode Shortcuts:', dev: true });
-    expect(sections.find((s) => s.title === 'Loadouts')!.lines.some((l) => l.text.startsWith('Loadouts can be selected'))).toBe(true);
+    expect(dev.lines).toContainEqual({ text: 'Dev mode (Settings > General) shows node ids in passive tooltips. Ctrl+U does nothing in Dev mode.', dev: true });
+    expect(sections.find((s) => s.title === 'Loadouts')!.lines.some((l) => l.text.startsWith('The Loadout selector'))).toBe(true);
   });
 
   // Main.lua:1398-1411
   it('lists the sections, numbered, under Contents', () => {
     const contents = parseHelp(text, false).find((s) => s.title === 'Contents')!;
-    expect(contents.lines.slice(0, 3)).toEqual([{ text: ' ' }, { text: '1. Help File Introduction' }, { text: '2. Contents' }]);
-    expect(contents.lines[11]).toEqual({ text: '11. Similar Builds Popup' });
+    expect(contents.lines.slice(0, 3)).toEqual([{ text: ' ' }, { text: '1. Introduction' }, { text: '2. Contents' }]);
+    expect(contents.lines[18]).toEqual({ text: '18. FAQ' });
   });
 });
 

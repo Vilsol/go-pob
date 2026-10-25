@@ -103,7 +103,7 @@
   // Main.lua:439-448, ItemTools.lua:380-409
   const VIEW_MODES: Record<string, string> = { configuration: 'config' };
   const onhelpkey = (e: KeyboardEvent) => {
-    if (e.key !== WIKI_KEY || e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
+    if (e.key !== WIKI_KEY || e.defaultPrevented || e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
     e.preventDefault();
     const wiki = hoveredWikiName();
     if (wiki) {

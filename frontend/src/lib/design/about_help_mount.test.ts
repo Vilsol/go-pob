@@ -54,7 +54,7 @@ describe('Help', () => {
 
   it('closes by a click on the backdrop, not inside', async () => {
     const { opener, dlg } = await openHelp();
-    await fireEvent.click(within(dlg).getByRole('heading', { name: 'Hotkeys (4)' }));
+    await fireEvent.click(within(dlg).getByRole('heading', { name: 'Hotkeys (14)' }));
     expect(dlg.open).toBe(true);
     await fireEvent.click(dlg, { clientX: 5000, clientY: 5000 });
     expect(dlg.open).toBe(false);
@@ -65,9 +65,9 @@ describe('Help', () => {
     const { dlg } = await openHelp();
     const nav = within(dlg).getByRole('navigation', { name: 'Help sections' });
     const links = within(nav).getAllByRole('button');
-    expect(links.map((b) => b.textContent?.trim())).toContain('7. Loadouts');
-    await fireEvent.click(within(nav).getByRole('button', { name: '7. Loadouts' }));
+    expect(links.map((b) => b.textContent?.trim())).toContain('13. Loadouts');
+    await fireEvent.click(within(nav).getByRole('button', { name: '13. Loadouts' }));
     await new Promise((r) => setTimeout(r, 0));
-    expect(within(nav).getByRole('button', { name: '7. Loadouts' }).getAttribute('aria-current')).toBe('true');
+    expect(within(nav).getByRole('button', { name: '13. Loadouts' }).getAttribute('aria-current')).toBe('true');
   });
 });

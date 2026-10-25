@@ -35,14 +35,14 @@
   play={async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     let { opener, dlg, d } = await open(canvasElement);
     const nav = d.getByRole('navigation', { name: 'Help sections' });
-    await expect(within(nav).getByRole('button', { name: '7. Loadouts' })).toHaveAttribute('aria-current', 'true');
+    await expect(within(nav).getByRole('button', { name: '13. Loadouts' })).toHaveAttribute('aria-current', 'true');
     const text = d.getByRole('region', { name: 'Help text' });
-    const heading = d.getByRole('heading', { name: 'Loadouts (7)' });
+    const heading = d.getByRole('heading', { name: 'Loadouts (13)' });
     await waitFor(() => expect(Math.abs(heading.getBoundingClientRect().top - text.getBoundingClientRect().top)).toBeLessThan(24));
     await headStays(dlg);
     const para = [...text.querySelectorAll('p')].find((p) => (p.textContent ?? '').length > 200)!;
     await expect(para.getBoundingClientRect().width).toBeLessThanOrEqual(760);
-    await userEvent.click(within(nav).getByRole('button', { name: '11. Similar Builds Popup' }));
+    await userEvent.click(within(nav).getByRole('button', { name: '18. FAQ' }));
     await headStays(dlg);
     await userEvent.click(d.getByRole('button', { name: 'Close' }));
     await waitFor(() => expect(dlg).not.toBeVisible());
@@ -69,5 +69,5 @@
     const { dlg } = await open(canvasElement);
     await headStays(dlg);
   }}>
-  <LiveHelp section="Items Tab" />
+  <LiveHelp section="Items tab" />
 </Story>

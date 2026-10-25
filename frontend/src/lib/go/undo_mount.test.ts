@@ -348,7 +348,7 @@ describe('the top bar shows the history and drives it', () => {
       await fireEvent.change(view.getByRole('combobox', { name: 'Loadout' }), { target: { value: 'Help >>' } });
       const helpDialog = await view.findByRole('dialog', { name: 'About go-pob' });
       await vi.waitFor(() => expect(helpDialog.querySelector('[data-help-section="Loadouts"]')).not.toBeNull());
-      expect(helpDialog.textContent).toContain('Loadouts can be selected from the dropdown');
+      expect(helpDialog.textContent).toContain('The Loadout selector in the top bar switches');
     } finally {
       vi.unstubAllGlobals();
     }
