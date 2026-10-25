@@ -193,9 +193,12 @@ If you are using regex, make sure that you precompile it instead of creating a n
 
 Releases are made by `.github/workflows/release.yml` on every push to `main`. [semantic-release](https://semantic-release.gitbook.io)
 (`.releaserc.json`, pinned in `.github/release/`) picks the version from the conventional commit subjects since the last
-`v*` tag. In order:
+`v*` tag. Before merging `dev` into `main`, run `task changelog` on `dev` and commit the result: it writes the next
+version into `frontend/static/changelog.txt` (the in-app version history and update notice), and the release refuses
+to publish without it. In order:
 
-1. **Version**: `semantic-release --dry-run` works out the next version. Nothing is tagged yet.
+1. **Version**: `semantic-release --dry-run` works out the next version, and checks the version history lists it.
+   Nothing is tagged yet.
 2. **Web**: [pob.gg](https://pob.gg) is built and deployed with that version (shown in About go-pob). A push with
    nothing to release deploys `<last release>+<short sha>`.
 3. **Desktop** and **Flatpak**: `desktop.yml` and `flatpak.yml`, called with the version, build every package as that
