@@ -651,9 +651,6 @@ func compareOracleItem(row *oracleItem, item *Item, src *oracleModSource) map[st
 // knownItemCause names the cause of an item's disagreement when it is one already diagnosed outside
 // the item code, or "" when it is not.
 func knownItemCause(row *oracleItem, item *Item, src *oracleModSource, bad map[string]string) string {
-	if item.Base != nil && item.Base.Armour == nil && row.ArmourData != nil {
-		return "data: the base's empty armour table reads as no armour"
-	}
 	if len(src.unlogged) > 0 {
 		logged := map[string]bool{}
 		for line := range row.ParseLog {

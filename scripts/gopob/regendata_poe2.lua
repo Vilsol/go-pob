@@ -46,6 +46,10 @@ function encode(v, path)
 	elseif ty == "table" then
 		local parts = {}
 		if next(v) == nil then
+			-- a base's `armour = { }` is still an armour base (0 of each defence), unlike a missing one
+			if path:sub(-7) == ".armour" then
+				return "{}"
+			end
 			return "null"
 		end
 		if isArray(v) then
