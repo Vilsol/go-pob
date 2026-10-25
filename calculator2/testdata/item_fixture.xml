@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PathOfBuilding2>
+	<Build className="Warrior" ascendClassName="None" level="80" targetVersion="0_1"/>
+	<Items activeItemSet="1">
+		<Item id="1">
+			Rarity: RARE
+Storm Shell
+Vaal Cuirass
+Armour: 900
+Item Level: 80
+Quality: 20
+Sockets: S S
+Rune: Greater Iron Rune
+Rune: Iron Rune
+LevelReq: 60
+Implicits: 3
+{enchant}{rune}34% increased Armour, Evasion and Energy Shield
+{enchant}{rune}Bonded: +40 to maximum Life
+{enchant}{rune}Bonded: +40 to maximum Mana
++120 to Armour
+85% increased Armour
++90 to maximum Life
++35% to Fire Resistance
+{crafted}+20 to Strength
+			<ModRange id="1" range="0.5"/>
+			<ModRange id="2" range="0.5"/>
+		</Item>
+		<Item id="2">
+			Rarity: MAGIC
+Reinforced Vaal Tower Shield of the Lynx
+Item Level: 70
+Quality: 12
+LevelReq: 65
+Implicits: 1
+Grants Skill: Raise Shield
+45% increased Armour
++18 to Dexterity
++8% to Block chance
+		</Item>
+		<Item id="3">
+			Rarity: RARE
+Gloom Grasp
+Utility Wraps
+Item Level: 75
+Quality: 5
+Sockets: S
+LevelReq: 65
+Implicits: 0
+{enchant}{rune}+12% to Lightning Resistance
++40 to Evasion Rating
++20 to maximum Energy Shield
+40% increased Evasion and Energy Shield
++(60-80) to maximum Life
+		</Item>
+		<Item id="4">
+			Rarity: RARE
+Doom Knuckle
+Bandit Mace
+Item Level: 70
+Quality: 20
+Sockets: S S
+Rune: Greater Iron Rune
+Rune: None
+LevelReq: 50
+Implicits: 0
+{enchant}{rune}18% increased Physical Damage
+120% increased Physical Damage
+Adds 10 to 20 Physical Damage
+Adds 5 to 50 Lightning Damage
+12% increased Attack Speed
++1.5% to Critical Hit Chance
++150 to Accuracy Rating
+		</Item>
+		<Item id="5">
+			Rarity: RARE
+Vortex Loop
+Two-Stone Ring
+Item Level: 60
+LevelReq: 40
+Implicits: 1
++14% to Cold and Lightning Resistances
++60 to maximum Life
++25 to Intelligence
+10% increased Mana Regeneration Rate
+		</Item>
+		<Item id="6">
+			Rarity: MAGIC
+Ultimate Life Flask of the Rainbow
+Item Level: 65
+Quality: 20
+LevelReq: 60
+Implicits: 0
+30% increased Amount Recovered
+		</Item>
+		<Item id="7">
+			Rarity: NORMAL
+Antidote Charm
+Item Level: 40
+Quality: 10
+LevelReq: 30
+Implicits: 0
+		</Item>
+		<Item id="8">
+			Rarity: RARE
+Sol Spark
+Ruby
+Item Level: 80
+LevelReq: 0
+Implicits: 0
+10% increased maximum Life
++8% to Fire Resistance
+		</Item>
+		<Item id="9">
+			Rarity: RARE
+Mind Song
+Twisted Wand
+Item Level: 70
+Quality: 10
+Sockets: S
+Rune: Greater Iron Rune
+LevelReq: 60
+Implicits: 1
+{enchant}{rune}30% increased Spell Damage
+{enchant}{rune}Bonded: Break Armour on Critical Hit with Spells equal to 12% of Physical Damage dealt
+Grants Skill: Level 15 Coiling Bolts
+80% increased Spell Damage
++2 to Level of all Lightning Spell Skills
+		</Item>
+		<Item id="10">
+			Rarity: RARE
+Hollow Stride
+Vaal Greaves
+Item Level: 81
+Quality: 0
+Sockets: S
+LevelReq: 75
+Implicits: 0
+{enchant}{rune}+12% to Lightning Resistance
+25% increased Movement Speed
++90 to Armour
+		</Item>
+	</Items>
+</PathOfBuilding2>

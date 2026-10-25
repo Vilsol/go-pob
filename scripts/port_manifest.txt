@@ -37,6 +37,11 @@ internal/importproxy/jscompat.go    GO-NATIVE  the JS runtime semantics proxy.ts
 internal/importproxy/proxy.go       GO-NATIVE  the desktop app's /api/* import relay, a port of frontend/src/lib/import_proxy/proxy.ts (TypeScript, not Lua); PoB fetches the sites itself and needs no relay
 internal/importproxy/sites.go       GO-NATIVE  share.ts's SITES table for the relay, checked against the TS source by its test; PoB's own table is BuildSiteTools.lua, which the TS already transcribes
 
+calculator2/item.go                 PORT       src/Classes/Item.lua,src/Classes/ItemsTab.lua,src/Modules/Common.lua
+calculator2/item_luapattern.go      GO-NATIVE  compiles the Lua patterns Item.lua builds at runtime from item and data text into Go regexps; Lua's pattern engine itself is C, not Lua
+calculator2/item_modlist.go         PORT       src/Classes/Item.lua,src/Classes/ModStore.lua,src/Modules/ModTools.lua
+calculator2/item_runes.go           PORT       src/Classes/Item.lua
+calculator2/item_tools.go           PORT       src/Modules/ItemTools.lua,src/Modules/Common.lua,src/Modules/Data.lua
 calculator/active_skill_set.go      PORT       src/Classes/SkillsTab.lua
 calculator/breakdown.go             PORT       src/Modules/CalcBreakdown.lua
 calculator/calc_active_skill.go     PORT       src/Modules/CalcActiveSkill.lua
