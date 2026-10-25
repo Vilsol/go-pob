@@ -276,7 +276,7 @@ func scaleAddMod(list *[]mod.Mod, m mod.Mod, scale float64) {
 		}
 		v := sub.Value().Float()
 		var precision *int
-		if p, ok := highPrecisionMods[sub.Name()][string(sub.Type())]; ok {
+		if p, ok := highPrecisionMods[sub.Name()][sub.Type()]; ok {
 			precision = &p
 		} else if math.Floor(v) != v {
 			p := defaultHighPrecision

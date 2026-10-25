@@ -43,8 +43,8 @@ func TestPoE2GeneratorsAreOwnedAndClassified(t *testing.T) {
 		if !strings.HasPrefix(g.out, "data/poe2/") {
 			t.Errorf("%s writes %s, outside the PoE2 data package", g.name, g.out)
 		}
-		if g.source != rdGameDataFromPoB {
-			t.Errorf("%s is not classified as game data read from the PoE2 pin", g.name)
+		if g.source != rdGameDataFromPoB && g.source != rdPoBAuthored {
+			t.Errorf("%s is not classified as game data or a PoB-authored table read from the PoE2 pin", g.name)
 		}
 	}
 }

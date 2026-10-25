@@ -177,12 +177,18 @@ func (m *ModList) ScaleAddList(src *ModList, scale float64) {
 	}
 
 	for _, sm := range src.mods {
-		if modIsUnscalable(sm) {
-			m.AddMod(sm)
-			continue
-		}
-		m.AddMod(scaleModClone(sm, scale))
+		m.ScaleAddMod(sm, scale, false)
 	}
+}
+
+//pob:block:src/Classes/ModStore.lua:56-91
+//pob2:block:src/Classes/ModStore.lua:82-119
+func (m *ModList) ScaleAddMod(sm mod.Mod, scale float64, roundToNearest bool) {
+	if scale == 1 || modIsUnscalable(sm) {
+		m.AddMod(sm)
+		return
+	}
+	m.AddMod(scaleModClone(m.gameRules(), sm, scale, roundToNearest))
 }
 
 //pob:block:src/Classes/ModStore.lua:57-63
@@ -196,7 +202,7 @@ func modIsUnscalable(m mod.Mod) bool {
 }
 
 //pob:block:src/Classes/ModStore.lua:59-72
-func scaleModClone(sm mod.Mod, scale float64) mod.Mod {
+func scaleModClone(r *Rules, sm mod.Mod, scale float64, roundToNearest bool) mod.Mod {
 	scaled := sm.Clone()
 	value := scaled.Value()
 	if value == nil {
@@ -204,10 +210,26 @@ func scaleModClone(sm mod.Mod, scale float64) mod.Mod {
 	}
 	switch value.Type() {
 	case mod.ModValueMultiTypeFloat:
-		value.SetFloat(scaleValuePrec(scaled.Name(), scaled.Type(), value.Float(), scale))
+		value.SetFloat(scaleValuePrec(r, scaled.Name(), scaled.Type(), value.Float(), scale, roundToNearest))
 	case mod.ModValueMultiTypeList:
+		//pob2:block:src/Classes/ModStore.lua:98-103
+		if keyed, ok := value.ValueList.(mod.KeyScaledValue); ok && r != nil && r.ScaleLevelFloor {
+			scaledValue := keyed.ScaleKeyOfScaledMod(func(key string, v float64) float64 {
+				if key == "level" {
+					return math.Floor(v * scale)
+				}
+				return modScaleRound(v * scale)
+			})
+			if reflect.TypeOf(value.ValueList).Kind() == reflect.Pointer {
+				scaledValue = scaledValue.Clone(true)
+			}
+			value.ValueList = scaledValue
+			break
+		}
 		if inner, ok := value.ValueList.(mod.ScalableNestedMod); ok {
-			scaled := inner.ScaleNestedMod(func(m mod.Mod, v float64) float64 { return scaleValuePrec(m.Name(), m.Type(), v, scale) })
+			scaled := inner.ScaleNestedMod(func(m mod.Mod, v float64) float64 {
+				return scaleValuePrec(r, m.Name(), m.Type(), v, scale, roundToNearest)
+			})
 
 			if reflect.TypeOf(value.ValueList).Kind() == reflect.Pointer {
 				scaled = scaled.Clone(true)
@@ -288,6 +310,7 @@ func (m *ModList) MoreInternal(context ModStoreFuncs, cfg *ListCfg, names ...str
 	result := float64(1)
 	modPrecision := 0
 	havePrecision := false
+	rules := m.gameRules()
 
 	for _, name := range names {
 		modResult := float64(1)
@@ -302,7 +325,7 @@ func (m *ModList) MoreInternal(context ModStoreFuncs, cfg *ListCfg, names ...str
 				if value != nil && value.Type() == mod.ModValueMultiTypeFloat {
 					modResult = modResult * (1 + value.Float()/100)
 				}
-				if p, ok := moreHighPrecisionFor(mo.Name()); ok {
+				if p, ok := moreHighPrecisionFor(rules, mo.Name()); ok {
 					if havePrecision {
 						modPrecision = max(modPrecision, p)
 					} else {
@@ -556,9 +579,17 @@ var highPrecisionMods = map[string]map[mod.Type]int{
 
 const defaultHighPrecision = 1
 
-func scaleValuePrec(name string, modType mod.Type, orig, scale float64) float64 {
+//pob2:src/Modules/Common.lua:744-758
+func roundSymmetric(val float64) float64 {
+	if val >= 0 {
+		return math.Floor(val + 0.5)
+	}
+	return math.Ceil(val - 0.5)
+}
+
+func scaleValuePrec(r *Rules, name string, modType mod.Type, orig, scale float64, roundToNearest bool) float64 {
 	precision, ok := 0, false
-	if byType, hit := highPrecisionMods[name]; hit {
+	if byType, hit := r.highPrecision()[name]; hit {
 		precision, ok = byType[modType]
 		if precision == 0 {
 			ok = false
@@ -570,6 +601,10 @@ func scaleValuePrec(name string, modType mod.Type, orig, scale float64) float64 
 	if ok {
 		power := math.Pow(10, float64(precision))
 		return math.Floor(orig*scale*power) / power
+	}
+	//pob2:block:src/Classes/ModStore.lua:111-112
+	if roundToNearest {
+		return roundSymmetric(float64(orig * scale))
 	}
 	return math.Trunc(modScaleRound(orig * scale))
 }

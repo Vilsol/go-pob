@@ -53,6 +53,36 @@ type Rules struct {
 	LimitNeg bool
 	//pob2:block:src/Classes/ModDB.lua:144
 	SumWholeSource bool
+	// PoE2 dropped PoE1's `replaced` mark.
+	//pob2:block:src/Classes/ModDB.lua:53-59
+	ReplaceIgnoresReplaced bool
+	//pob2:block:src/Classes/ModStore.lua:98-103
+	ScaleLevelFloor bool
+	//pob2:block:src/Classes/ModStore.lua:464
+	ManaUnreservedNegativeDead bool
+	// nil uses PoE1's gem table.
+	//pob2:block:src/Classes/ModStore.lua:895-905
+	GameIDFromGemName func(name string) string
+	// gem is cfg.GemData.
+	//pob2:block:src/Classes/ModStore.lua:868
+	GemIsType func(gem any, keyword string) bool
+	// nil uses PoE1's table.
+	//pob2:block:src/Modules/Data.lua:482-603
+	HighPrecisionMods map[string]map[mod.Type]int
+}
+
+func (r *Rules) highPrecision() map[string]map[mod.Type]int {
+	if r != nil && r.HighPrecisionMods != nil {
+		return r.HighPrecisionMods
+	}
+	return highPrecisionMods
+}
+
+func (r *Rules) gameIDFromGemName(name string) string {
+	if r != nil && r.GameIDFromGemName != nil {
+		return r.GameIDFromGemName(name)
+	}
+	return gameIDFromGemName(name)
 }
 
 type BaseFlagSource interface {
@@ -631,12 +661,13 @@ func (s *ModStore) evalSkillNameTag(value *mod.ModValueMulti, cfg *ListCfg, tag 
 	}
 
 	if tag.IncludeTransfigured {
-		matchGameID := gameIDFromGemName(matchName)
+		rules := s.gameRules()
+		matchGameID := rules.gameIDFromGemName(matchName)
 
 		match := false
 		if matchGameID != "" {
 			for _, name := range tag.SkillNameList {
-				if gameIDFromGemName(name) == matchGameID {
+				if rules.gameIDFromGemName(name) == matchGameID {
 					match = true
 					break
 				}
@@ -892,7 +923,11 @@ func (s *ModStore) evalSocketedInTag(value *mod.ModValueMulti, cfg *ListCfg, tag
 	}
 	switch {
 	case tag.TagKeyword != "":
-		match = append(match, cfg.SkillGem != nil && GemIsType != nil && GemIsType(cfg.SkillGem, tag.TagKeyword))
+		if r := s.gameRules(); r != nil && r.GemIsType != nil {
+			match = append(match, cfg.GemData != nil && r.GemIsType(cfg.GemData, tag.TagKeyword))
+		} else {
+			match = append(match, cfg.SkillGem != nil && GemIsType != nil && GemIsType(cfg.SkillGem, tag.TagKeyword))
+		}
 	case tag.TagSocketColor != "" && !tag.TagSocketsAll:
 		match = append(match, tag.TagSocketColor == cfg.SocketColor)
 	}
@@ -1372,7 +1407,7 @@ func (s *ModStore) getStat(stat string, cfg *ListCfg) float64 {
 					return mana
 				}
 			}
-			if stat == "ManaUnreserved" && v < 0 {
+			if stat == "ManaUnreserved" && v < 0 && (s.gameRules() == nil || !s.gameRules().ManaUnreservedNegativeDead) {
 				mana, hasMana := actor.GetOutput("Mana")
 				pct, _ := actor.GetOutput("ManaUnreservedPercent")
 				eff, _ := actor.GetOutput("ManaEfficiency")

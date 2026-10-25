@@ -144,11 +144,16 @@ func (m *ModDB) replaceModInternal(newMod mod.Mod) bool {
 			mo.Type() == newMod.Type() &&
 			mo.Flags() == newMod.Flags() &&
 			mo.KeywordFlags() == newMod.KeywordFlags() &&
-			mo.GetSource() == newMod.GetSource() &&
-			!mo.Replaced() {
-			newMod.SetReplaced(true)
-			m.Mods[newMod.Name()][i] = newMod
-			return true
+			mo.GetSource() == newMod.GetSource() {
+			if r := m.gameRules(); r != nil && r.ReplaceIgnoresReplaced {
+				m.Mods[newMod.Name()][i] = newMod
+				return true
+			}
+			if !mo.Replaced() {
+				newMod.SetReplaced(true)
+				m.Mods[newMod.Name()][i] = newMod
+				return true
+			}
 		}
 	}
 
@@ -310,8 +315,8 @@ func (m *ModDB) More(cfg *ListCfg, names ...string) float64 {
 	return m.MoreInternal(m, cfg, names...)
 }
 
-func moreHighPrecisionFor(name string) (int, bool) {
-	byType, ok := highPrecisionMods[name]
+func moreHighPrecisionFor(r *Rules, name string) (int, bool) {
+	byType, ok := r.highPrecision()[name]
 	if !ok {
 		return 0, false
 	}
@@ -340,6 +345,7 @@ func (m *ModDB) MoreInternal(context ModStoreFuncs, cfg *ListCfg, names ...strin
 	havePrecision := false
 
 	var globalLimits map[string]float64
+	rules := m.gameRules()
 
 	for _, name := range names {
 		modResult := float64(1)
@@ -356,7 +362,7 @@ func (m *ModDB) MoreInternal(context ModStoreFuncs, cfg *ListCfg, names ...strin
 
 				modResult = modResult * (1 + value/100)
 
-				if p, ok := moreHighPrecisionFor(mo.Name()); ok {
+				if p, ok := moreHighPrecisionFor(rules, mo.Name()); ok {
 					if havePrecision {
 						modPrecision = max(modPrecision, p)
 					} else {
@@ -428,12 +434,18 @@ func (m *ModDB) ScaleAddList(list *ModList, scale float64) {
 	}
 
 	for _, newMod := range list.mods {
-		if modIsUnscalable(newMod) {
-			m.AddMod(newMod)
-			continue
-		}
-		m.AddMod(scaleModClone(newMod, scale))
+		m.ScaleAddMod(newMod, scale, false)
 	}
+}
+
+//pob:block:src/Classes/ModStore.lua:56-91
+//pob2:block:src/Classes/ModStore.lua:82-119
+func (m *ModDB) ScaleAddMod(newMod mod.Mod, scale float64, roundToNearest bool) {
+	if scale == 1 || modIsUnscalable(newMod) {
+		m.AddMod(newMod)
+		return
+	}
+	m.AddMod(scaleModClone(m.gameRules(), newMod, scale, roundToNearest))
 }
 
 type ModResult struct {

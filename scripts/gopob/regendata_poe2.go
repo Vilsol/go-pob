@@ -58,6 +58,8 @@ var rdGeneratorsPoE2 = []rdGenerator{
 		needsPob: true,
 		note:     "data.gems after setupGem (src/Data/Gems.lua), with each granted effect's name and support flag",
 	},
+	rdGeneratorPoE2ModCache,
+	rdGeneratorPoE2Quests,
 }
 
 const p2eUsage = "usage: poe2-data-emit <dump.json> <out.go> <bases|runes|constants|gems>"

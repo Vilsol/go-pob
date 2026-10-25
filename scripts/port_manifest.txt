@@ -136,6 +136,9 @@ data/poe2/bases_generated.go        GENERATED  scripts/gopob/regendata_poe2.go
 data/poe2/constants_generated.go    GENERATED  scripts/gopob/regendata_poe2.go
 data/poe2/gems_generated.go         GENERATED  scripts/gopob/regendata_poe2.go
 data/poe2/lookup.go                 GO-NATIVE  binary searches over the generated PoE2 tables standing in for PoB-PoE2's data.itemBases[name], data.itemMods.Runes[name][slot] and data.gems[id] indexing; each cites the Lua lookup it replaces
+data/poe2/modcache.go               GO-NATIVE  Go struct declarations and a binary search over the generated ModCache and QuestRewards tables, standing in for PoB-PoE2's modLib.parseModCache[line] lookup; each cites the Lua it replaces
+data/poe2/modcache_generated.go     GENERATED  scripts/gopob/regendata_poe2_modcache.go
+data/poe2/quests_generated.go       GENERATED  scripts/gopob/regendata_poe2_modcache.go
 data/poe2/runes_generated.go        GENERATED  scripts/gopob/regendata_poe2.go
 data/poe2/types.go                  GO-NATIVE  Go struct declarations for the rows PoB-PoE2's Data.lua builds (item bases, rune mods, gems); the values are generated
 
@@ -317,6 +320,7 @@ scripts/gopob/commentstrip.go                  GO-NATIVE  removes go-pob's own p
 scripts/gopob/luastage.go                      GO-NATIVE  the fixed-length run directory the deterministic LuaJIT probes run from, porting no Lua
 scripts/gopob/regendata.go                     GO-NATIVE  port of scripts/regen_data.py; regenerates every generated data table from the pinned PoB and gates their staleness, porting no Lua
 scripts/gopob/regendata_poe2.go                GO-NATIVE  regen-data --game poe2's generator table and the poe2-data-emit emitter for data/poe2/; reads PoB-PoE2's loaded tables through regendata_poe2.lua, porting no Lua
+scripts/gopob/regendata_poe2_modcache.go GO-NATIVE  regen-data --game poe2's ModCache and QuestRewards generators and the poe2-modcache-emit emitter; reads PoB-PoE2's Data/ModCache.lua and data.questRewards through regendata_poe2_modcache.lua, porting no Lua
 scripts/gopob/regendata_tables.go              GO-NATIVE  the GENERATORS table EXTRACTED from scripts/regen_data.py, porting no Lua
 scripts/gopob/internal/difftest/golden.go        GO-NATIVE  records the ORIGINAL's verdict per fixture so the migration's proof survives deleting the scripts; a harness, porting no Lua
 scripts/gopob/internal/difftest/originals.go     GO-NATIVE  what the harness becomes once the originals are deleted: golden-only fixtures, and the class check that keeps a typo from silently retiring the differential; a harness, porting no Lua
@@ -494,6 +498,13 @@ scripts/gamedatadump/bases.go       PORT       src/Export/Scripts/bases.lua
 scripts/gamedatadump/flavour.go     PORT       src/Export/Scripts/flavourText.lua
 wasm/exposition/ui_exports.go           GO-NATIVE  crystalline binding surface for the frontend
 calculator/party_export.go         PORT       src/Modules/CalcPerform.lua,src/Classes/PartyTab.lua,src/Modules/ModTools.lua
+calculator2/calc_defence.go         PORT       src/Modules/CalcDefence.lua
+calculator2/calc_perform.go         PORT       src/Modules/CalcPerform.lua
+calculator2/calc_setup.go           PORT       src/Modules/CalcSetup.lua,src/Classes/PassiveTree.lua,src/Classes/ConfigTab.lua,src/Modules/ConfigOptions.lua
+calculator2/calc_tools.go           PORT       src/Modules/CalcTools.lua
+calculator2/calculator.go           PORT       src/Modules/Calcs.lua,src/Classes/PassiveSpec.lua,src/Classes/ConfigTab.lua,src/Classes/SkillsTab.lua
+calculator2/env.go                  PORT       src/Modules/CalcSetup.lua,src/Classes/ModStore.lua
+calculator2/mod_cache.go            PORT       src/Modules/ModParser.lua
 data/tattoo_passives.go              GO-NATIVE  TattooTarget type; the data is in tattoo_passives_generated.go
 wasm/exposition/tree_tattoo_edit.go PORT       src/Classes/TreeTab.lua,src/Classes/PassiveTreeView.lua,src/Classes/PassiveTree.lua
 scripts/gamedatadump/skills.go       PORT       src/Export/Scripts/skills.lua,src/Export/Main.lua

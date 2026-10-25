@@ -2802,6 +2802,10 @@ export declare namespace moddb {
   interface Rules {
     LimitNeg: boolean;
     SumWholeSource: boolean;
+    ReplaceIgnoresReplaced: boolean;
+    ScaleLevelFloor: boolean;
+    ManaUnreservedNegativeDead: boolean;
+    HighPrecisionMods?: Record<string, Record<mod.Type, number> | undefined>;
     /** Releases the Go resources behind this wrapper. */
     release(): void;
     [Symbol.dispose](): void;
@@ -2817,6 +2821,10 @@ export declare namespace moddb {
   interface RulesPlain {
     readonly LimitNeg: boolean;
     readonly SumWholeSource: boolean;
+    readonly ReplaceIgnoresReplaced: boolean;
+    readonly ScaleLevelFloor: boolean;
+    readonly ManaUnreservedNegativeDead: boolean;
+    readonly HighPrecisionMods?: Record<string, Record<mod.Type, number> | undefined>;
   }
 }
 export declare namespace msgp {

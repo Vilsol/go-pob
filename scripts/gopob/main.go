@@ -148,6 +148,8 @@ const usage = `gopob <subcommand> [flags]
                         drift gate finds it by CONTENT rather than by a hardcoded filename
   poe2-data-emit <dump.json> <out.go> <bases|runes|constants|gems>
                         data/poe2/*_generated.go from scripts/gopob/regendata_poe2.lua's dump
+  poe2-modcache-emit <dump.json> <out.go> <modcache|quests>
+                        data/poe2/{modcache,quests}_generated.go from scripts/gopob/regendata_poe2_modcache.lua's dump
   core-constants-emit <dump.json> <out.go>
                         data/constants_generated.go — the VALUES PoB owns; constants.go keeps the
                         TYPES and the Go-native remainder
@@ -319,6 +321,8 @@ func main() {
 		os.Exit(regenFixtures(os.Args[2:]))
 	case "poe2-data-emit":
 		os.Exit(poe2DataEmit(os.Args[2:]))
+	case "poe2-modcache-emit":
+		os.Exit(poe2ModCacheEmit(os.Args[2:]))
 	case "core-constants-emit":
 		os.Exit(coreConstantsEmit(os.Args[2:]))
 	case "minion-data-emit":

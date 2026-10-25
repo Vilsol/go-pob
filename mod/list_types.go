@@ -14,6 +14,11 @@ type ScalableNestedMod interface {
 	ScaleNestedMod(scale func(Mod, float64) float64) Cloneable
 }
 
+// KeyScaledValue is a list value that carries PoB's `keyOfScaledMod`.
+type KeyScaledValue interface {
+	ScaleKeyOfScaledMod(scale func(key string, v float64) float64) Cloneable
+}
+
 func scaleNestedModValue(m Mod, scale func(Mod, float64) float64) Mod {
 	scaled := m.Clone()
 	if v := scaled.Value(); v != nil && v.Type() == ModValueMultiTypeFloat {
@@ -53,6 +58,12 @@ func (g GemProperty) ScaleValue(mult, base float64, limitTotal *float64) Cloneab
 
 	scaled := g.Clone(false).(GemProperty)
 	scaled.Value = out
+	return scaled
+}
+
+func (g GemProperty) ScaleKeyOfScaledMod(scale func(key string, v float64) float64) Cloneable {
+	scaled := g.Clone(false).(GemProperty)
+	scaled.Value = scale(g.Key, g.Value)
 	return scaled
 }
 

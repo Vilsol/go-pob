@@ -34671,13 +34671,82 @@ func crystallineMarshalModdbRules(v *moddb.Rules) any {
 
 	if crystallineMarshalModdbRulesShape.IsUndefined() {
 		crystallineMarshalModdbRulesShape = crystallineShape("moddb.Rules",
-			[]string{"LimitNeg", "SumWholeSource"},
+			[]string{"LimitNeg", "SumWholeSource", "ReplaceIgnoresReplaced", "ScaleLevelFloor", "ManaUnreservedNegativeDead", "HighPrecisionMods"},
 			func(v *moddb.Rules, entry *crystallineEntry, field int) any {
 				switch field {
 				case 0:
 					return bool(v.LimitNeg)
 				case 1:
 					return bool(v.SumWholeSource)
+				case 2:
+					return bool(v.ReplaceIgnoresReplaced)
+				case 3:
+					return bool(v.ScaleLevelFloor)
+				case 4:
+					return bool(v.ManaUnreservedNegativeDead)
+				case 5:
+					return crystallineJSON(func(b []byte, ok *bool) []byte {
+						if entries0 := v.HighPrecisionMods; entries0 == nil {
+							b = append(b, "null"...)
+						} else {
+							b = append(b, '{')
+							first0 := true
+							for k0, v0 := range entries0 {
+								if !first0 {
+									b = append(b, ',')
+								}
+
+								first0 = false
+								b = crystallineAppendString(b, string(k0))
+								b = append(b, ':')
+								if entries2 := v0; entries2 == nil {
+									b = append(b, "null"...)
+								} else {
+									b = append(b, '{')
+									first2 := true
+									for k2, v2 := range entries2 {
+										if !first2 {
+											b = append(b, ',')
+										}
+
+										first2 = false
+										b = crystallineAppendString(b, string(k2))
+										b = append(b, ':')
+										b = crystallineAppendNumber(b, float64(v2), ok)
+									}
+
+									b = append(b, '}')
+								}
+							}
+
+							b = append(b, '}')
+						}
+						return b
+					}, func() any {
+						return func() any {
+							if v.HighPrecisionMods == nil {
+								return nil
+							}
+
+							out := crystallineObjects.New()
+							for k, v := range v.HighPrecisionMods {
+								out.Set(string(k), func() any {
+									if v == nil {
+										return nil
+									}
+
+									out := crystallineObjects.New()
+									for k, v := range v {
+										out.Set(string(k), float64(v))
+									}
+
+									return out
+								}())
+							}
+
+							return out
+						}()
+					})
 				}
 
 				return nil
@@ -34705,6 +34774,50 @@ func crystallineMarshalModdbRules(v *moddb.Rules) any {
 						}
 
 						v.SumWholeSource = converted
+					})(value)
+				case 2:
+					(func(value js.Value) {
+						converted, err := crystallineToBool(value)
+						if err != nil {
+							crystallineFail(err.Error())
+
+							return
+						}
+
+						v.ReplaceIgnoresReplaced = converted
+					})(value)
+				case 3:
+					(func(value js.Value) {
+						converted, err := crystallineToBool(value)
+						if err != nil {
+							crystallineFail(err.Error())
+
+							return
+						}
+
+						v.ScaleLevelFloor = converted
+					})(value)
+				case 4:
+					(func(value js.Value) {
+						converted, err := crystallineToBool(value)
+						if err != nil {
+							crystallineFail(err.Error())
+
+							return
+						}
+
+						v.ManaUnreservedNegativeDead = converted
+					})(value)
+				case 5:
+					(func(value js.Value) {
+						converted, err := crystallineToMapOfStringToMapOfModTypeToInt(value)
+						if err != nil {
+							crystallineFail(err.Error())
+
+							return
+						}
+
+						v.HighPrecisionMods = converted
 					})(value)
 				}
 			},
@@ -53603,6 +53716,71 @@ func crystallinePlainModdbRules(v *moddb.Rules) any {
 
 	out.Set("LimitNeg", bool(v.LimitNeg))
 	out.Set("SumWholeSource", bool(v.SumWholeSource))
+	out.Set("ReplaceIgnoresReplaced", bool(v.ReplaceIgnoresReplaced))
+	out.Set("ScaleLevelFloor", bool(v.ScaleLevelFloor))
+	out.Set("ManaUnreservedNegativeDead", bool(v.ManaUnreservedNegativeDead))
+	out.Set("HighPrecisionMods", crystallineJSON(func(b []byte, ok *bool) []byte {
+		if entries0 := v.HighPrecisionMods; entries0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '{')
+			first0 := true
+			for k0, v0 := range entries0 {
+				if !first0 {
+					b = append(b, ',')
+				}
+
+				first0 = false
+				b = crystallineAppendString(b, string(k0))
+				b = append(b, ':')
+				if entries2 := v0; entries2 == nil {
+					b = append(b, "null"...)
+				} else {
+					b = append(b, '{')
+					first2 := true
+					for k2, v2 := range entries2 {
+						if !first2 {
+							b = append(b, ',')
+						}
+
+						first2 = false
+						b = crystallineAppendString(b, string(k2))
+						b = append(b, ':')
+						b = crystallineAppendNumber(b, float64(v2), ok)
+					}
+
+					b = append(b, '}')
+				}
+			}
+
+			b = append(b, '}')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			if v.HighPrecisionMods == nil {
+				return nil
+			}
+
+			out := crystallineObjects.New()
+			for k, v := range v.HighPrecisionMods {
+				out.Set(string(k), func() any {
+					if v == nil {
+						return nil
+					}
+
+					out := crystallineObjects.New()
+					for k, v := range v {
+						out.Set(string(k), float64(v))
+					}
+
+					return out
+				}())
+			}
+
+			return out
+		}()
+	}))
 
 	return out
 }
@@ -61100,6 +61278,34 @@ func crystallineToMapOfIntToMapOfStringToFloat64(value js.Value) (map[int]map[st
 	return out, nil
 }
 
+func crystallineToMapOfModTypeToInt(value js.Value) (map[mod.Type]int, error) {
+	if value.IsUndefined() || value.IsNull() {
+		return nil, nil
+	}
+
+	if value.Type() != js.TypeObject {
+		return nil, errors.New("expected an object")
+	}
+
+	keys := js.Global().Get("Object").Call("keys", value)
+	out := make(map[mod.Type]int, keys.Length())
+
+	for i := 0; i < keys.Length(); i++ {
+		key := keys.Index(i).String()
+
+		converted := mod.Type(key)
+
+		item, err := crystallineToInt(value.Get(key))
+		if err != nil {
+			return nil, errors.New("[" + key + "]: " + err.Error())
+		}
+
+		out[converted] = item
+	}
+
+	return out, nil
+}
+
 func crystallineToMapOfStringToBool(value js.Value) (map[string]bool, error) {
 	if value.IsUndefined() || value.IsNull() {
 		return nil, nil
@@ -61342,6 +61548,34 @@ func crystallineToMapOfStringToInt(value js.Value) (map[string]int, error) {
 		converted := string(key)
 
 		item, err := crystallineToInt(value.Get(key))
+		if err != nil {
+			return nil, errors.New("[" + key + "]: " + err.Error())
+		}
+
+		out[converted] = item
+	}
+
+	return out, nil
+}
+
+func crystallineToMapOfStringToMapOfModTypeToInt(value js.Value) (map[string]map[mod.Type]int, error) {
+	if value.IsUndefined() || value.IsNull() {
+		return nil, nil
+	}
+
+	if value.Type() != js.TypeObject {
+		return nil, errors.New("expected an object")
+	}
+
+	keys := js.Global().Get("Object").Call("keys", value)
+	out := make(map[string]map[mod.Type]int, keys.Length())
+
+	for i := 0; i < keys.Length(); i++ {
+		key := keys.Index(i).String()
+
+		converted := string(key)
+
+		item, err := crystallineToMapOfModTypeToInt(value.Get(key))
 		if err != nil {
 			return nil, errors.New("[" + key + "]: " + err.Error())
 		}
