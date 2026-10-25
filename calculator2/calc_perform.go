@@ -199,6 +199,27 @@ func doActorAttribsConditions(env *Environment, actor *Actor) {
 	condList["Surrounded"] = surroundedMinimum == 1 && output["SurroundedRadius"] >= enemyDistance
 }
 
+//pob2:src/Modules/CalcPerform.lua:1021-1043
+func actionSpeedMod(actor *Actor) float64 {
+	modDB := actor.ModDB
+	minimumActionSpeed := modDB.Max(nil, "MinimumActionSpeed")
+	maximumActionSpeedReduction := modDB.Max(nil, "MaximumActionSpeedReduction")
+	var actionSpeedSum, tempChainsSum float64
+	if modDB.Flag(nil, "UnaffectedBySlows") {
+		actionSpeedSum = modDB.SumPositiveValues(mod.TypeIncrease, nil, "ActionSpeed")
+		tempChainsSum = modDB.SumPositiveValues(mod.TypeIncrease, nil, "TemporalChainsActionSpeed")
+	} else {
+		actionSpeedSum = modDB.Sum(mod.TypeIncrease, nil, "ActionSpeed")
+		tempChainsSum = modDB.Sum(mod.TypeIncrease, nil, "TemporalChainsActionSpeed")
+	}
+	speedMod := 1 + (math.Max(-miscConstant("TemporalChainsEffectCap"), tempChainsSum)+actionSpeedSum)/100
+	speedMod = math.Max(minimumActionSpeed/100, speedMod)
+	if maximumActionSpeedReduction > 0 {
+		speedMod = math.Min((100-maximumActionSpeedReduction)/100, speedMod)
+	}
+	return speedMod
+}
+
 // perform is calcs.perform as far as the defence slice's inputs: keystones, attributes and the
 // life/mana/spirit pools. Minions, flasks, buffs, charges and the rest of the pass are not ported.
 //
@@ -235,4 +256,7 @@ func perform(env *Environment) {
 
 	//pob2:block:src/Modules/CalcPerform.lua:3320
 	doActorLifeManaSpirit(env.Player)
+
+	//pob2:block:src/Modules/CalcPerform.lua:3456
+	defence(env, env.Player)
 }
