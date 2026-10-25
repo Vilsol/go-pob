@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PathOfBuilding2>
+	<Build ascendClassName="None" characterLevelAutoMode="false" className="Warrior" level="30" mainSocketGroup="1" targetVersion="0_1" viewMode="TREE">
+	</Build>
+	<Config activeConfigSet="1">
+		<ConfigSet id="1" title="Default">
+			<CustomModifierBlock enabled="true" title="Default">30% increased bonuses gained from left Equipped Ring
+10% increased bonuses gained from right Equipped Ring</CustomModifierBlock>
+		</ConfigSet>
+	</Config>
+	<Items activeItemSet="1" useSecondWeaponSet="false">
+		<Item id="1">
+			Rarity: RARE
+Woe Loop
+Iron Ring
+Item Level: 50
+LevelReq: 1
+Implicits: 0
++5 to Strength
++5 to Strength
++33 to maximum Life
++21% to Fire Resistance
+10% increased Evasion Rating
+		</Item>
+		<Item id="2">
+			Rarity: UNIQUE
+Kalandra&apos;s Touch
+Ring
+Item Level: 79
+LevelReq: 0
+Implicits: 0
+Reflects opposite Ring
+Mirrored
+		</Item>
+		<Item id="3">
+			Rarity: UNIQUE
+Mageblood
+Utility Belt
+Charm Slots: 2
+Item Level: 82
+LevelReq: 30
+Implicits: 2
+Has 2 Charm Slots
+20% of Flask Recovery applied Instantly
+Legacy of Ruby
+Legacy of Ruby
+Legacy of Jade
+Legacy of Bismuth
+All Mage&apos;s Legacies have 25% increased effect per duplicate Mage&apos;s Legacy you have
+		</Item>
+		<ItemSet id="1" title="Default" useSecondWeaponSet="false">
+			<Slot itemId="1" name="Ring 1"/>
+			<Slot itemId="2" name="Ring 2"/>
+			<Slot itemId="3" name="Belt"/>
+		</ItemSet>
+	</Items>
+	<Skills activeSkillSet="1" defaultGemLevel="normalMaximum" defaultGemQuality="0">
+		<SkillSet id="1">
+		</SkillSet>
+	</Skills>
+	<Tree activeSpec="1">
+		<Spec ascendClassId="0" classId="6" masteryEffects="" nodes="47175,3936,38646,13397,46325,1913,23570,1207,33556,39581,4665,36709,41031,38323,55473,6839,61534,63393,54232,5710" secondaryAscendClassId="nil" treeVersion="0_5">
+			<Overrides>
+				<AttributeOverride dexNodes="1207" intNodes="41031" strNodes="13397,23570"/>
+			</Overrides>
+		</Spec>
+	</Tree>
+</PathOfBuilding2>

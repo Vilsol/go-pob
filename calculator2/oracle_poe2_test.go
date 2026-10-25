@@ -36,7 +36,7 @@ func poe2OracleClose(got, want, tolerance float64) bool {
 	return math.Abs(got-want)/math.Abs(want) <= tolerance
 }
 
-const poe2MatchedFloor = 160654
+const poe2MatchedFloor = 168973
 
 const poe2NaNCeiling = 0
 
