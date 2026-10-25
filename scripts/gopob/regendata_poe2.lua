@@ -1,7 +1,7 @@
 -- Dumps one of PoB-PoE2's loaded data tables as JSON for `gopob poe2-data-emit`.
--- usage: regendata_poe2.lua <out.json> <bases|runes|constants|gems>
+-- usage: regendata_poe2.lua <out.json> <bases|runes|constants|gems|legion>
 local outPath, which = arg[1], arg[2]
-assert(outPath and which, "usage: regendata_poe2.lua <out.json> <bases|runes|constants|gems>")
+assert(outPath and which, "usage: regendata_poe2.lua <out.json> <bases|runes|constants|gems|legion>")
 
 dofile("HeadlessWrapper.lua")
 
@@ -143,6 +143,15 @@ function dumpers.gems()
 		row.support = effect.support == true
 		row.grantedEffectName = effect.name
 		rows[#rows + 1] = row
+	end
+	return rows
+end
+
+function dumpers.legion()
+	local legion = LoadModule("Data/TimelessJewelData/LegionPassives")
+	local rows = {}
+	for i, node in ipairs(legion.nodes) do
+		rows[i] = { id = node.id, dn = node.dn, sd = node.sd, ks = node.ks, ["not"] = node["not"], m = node.m }
 	end
 	return rows
 end

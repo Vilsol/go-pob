@@ -104,3 +104,15 @@ type Gem struct {
 	Tier                       float64
 	NaturalMaxLevel            float64
 }
+
+// LegionNode is one tree.legion.nodes entry: a node a timeless jewel can put in place of a tree node.
+//
+//pob2:src/Classes/PassiveTree.lua:438-452
+type LegionNode struct {
+	ID  string
+	Dn  string
+	Sd  []string
+	Ks  bool
+	Not bool
+	M   bool
+}

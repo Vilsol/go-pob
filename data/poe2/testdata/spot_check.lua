@@ -74,3 +74,15 @@ for id, gem in pairs(data.gems) do
 	out("gem", id, "naturalMaxLevel", gem.naturalMaxLevel)
 end
 out("count", "gem", "rows", n)
+
+n = 0
+for i, node in ipairs(LoadModule("Data/TimelessJewelData/LegionPassives").nodes) do
+	n = n + 1
+	out("legion", tostring(i), "id", node.id)
+	out("legion", tostring(i), "dn", node.dn)
+	out("legion", tostring(i), "sd", table.concat(node.sd, "|"))
+	out("legion", tostring(i), "ks", node.ks == true)
+	out("legion", tostring(i), "not", node["not"] == true)
+	out("legion", tostring(i), "m", node.m == true)
+end
+out("count", "legion", "rows", n)

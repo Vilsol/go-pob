@@ -9,6 +9,8 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+
+	"github.com/Vilsol/go-pob/data/poe2"
 )
 
 type Connection struct {
@@ -89,6 +91,9 @@ type Node struct {
 	// AttributeOptions is set on isAttribute nodes, SwitchOptions on isSwitchable ones.
 	AttributeOptions []AttributeOption
 	SwitchOptions    map[string]SwitchOption
+
+	// LegionID is a tree.legion node's string id; tree nodes leave it empty.
+	LegionID string
 }
 
 type Group struct {
@@ -175,6 +180,9 @@ type PassiveTree struct {
 
 	// MissingConnections lists connection targets absent from the node table, which PoB prints and skips.
 	MissingConnections []int
+
+	// Legion is tree.legion.nodes in PoB's order: Legion[i] is the Lua's legion.nodes[i+1].
+	Legion []*Node
 }
 
 type treeJSON struct {
@@ -478,6 +486,7 @@ func Load(treeVersion string, raw []byte) (*PassiveTree, error) {
 
 	t.JewelRadius, t.MaxJewelRadius = setJewelRadii(treeVersion)
 	t.buildNodesInRadius(ids)
+	t.loadLegion()
 	return t, nil
 }
 
@@ -607,4 +616,30 @@ func inherit(name string, stats []string, node *Node) (string, []string) {
 		stats = node.Sd
 	}
 	return name, stats
+}
+
+// loadLegion is PassiveTree's legion load and node typing; the stats are processed where the calc
+// reads them, as for tree nodes.
+//
+//pob2:block:src/Classes/PassiveTree.lua:64
+//pob2:block:src/Classes/PassiveTree.lua:438-452
+func (t *PassiveTree) loadLegion() {
+	t.Legion = make([]*Node, len(poe2.LegionNodes))
+	for i, l := range poe2.LegionNodes {
+		node := &Node{LegionID: l.ID, Dn: l.Dn, Sd: l.Sd}
+		switch {
+		case l.M:
+			node.Type = "Mastery"
+		case l.Ks:
+			node.Type = "Keystone"
+			if _, ok := t.KeystoneMap[node.Dn]; !ok {
+				t.KeystoneMap[node.Dn] = node
+			}
+		case l.Not:
+			node.Type = "Notable"
+		default:
+			node.Type = "Normal"
+		}
+		t.Legion[i] = node
+	}
 }

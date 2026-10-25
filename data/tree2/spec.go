@@ -23,6 +23,7 @@ type SpecNode struct {
 	IsGrantedPassive            bool
 	// IsFreeAllocate shadows the tree node's flag, which SetGrantedPassiveNodes overwrites per spec.
 	IsFreeAllocate bool
+	ConqueredBy    *ConqueredBy
 }
 
 // Item is the part of build.itemsTab.items[id] the spec reads.
@@ -39,6 +40,19 @@ type JewelData struct {
 	FromNothingKeystones map[string]bool
 	AlternateClassStart  string
 	LimitDisabled        bool
+	ConqueredBy          *ConqueredBy
+}
+
+// ConqueredBy is jewelData.conqueredBy: a timeless jewel's seed and conqueror.
+type ConqueredBy struct {
+	ID        int
+	Conqueror Conqueror
+}
+
+// Conqueror is a ModParser conquerorList entry.
+type Conqueror struct {
+	ID   string
+	Type string
 }
 
 // NodeRadius is an AllocateFromNodeRadius LIST mod's value.
@@ -456,6 +470,7 @@ func (s *PassiveSpec) BuildAllDependsAndPaths() {
 		node := s.Nodes[id]
 		node.Depends = node.Depends[:0]
 		node.IntuitiveLeapLikesAffecting = node.IntuitiveLeapLikesAffecting[:0]
+		node.ConqueredBy = nil
 		treeNode, ok := s.Tree.Nodes[id]
 		if ok {
 			dn, sd := treeNode.Dn, treeNode.Sd
@@ -471,7 +486,6 @@ func (s *PassiveSpec) BuildAllDependsAndPaths() {
 			s.ReplaceNode(node, dn, sd)
 		}
 		if node.Type != "ClassStart" && node.Type != "Socket" && node.AscendancyName == "" {
-			// conqueredBy (timeless jewels) is not ported.
 			//pob2:block:src/Classes/PassiveSpec.lua:1530-1559
 			for _, nodeID := range jewelIDs {
 				itemID := s.Jewels[nodeID]
@@ -480,8 +494,13 @@ func (s *PassiveSpec) BuildAllDependsAndPaths() {
 					continue
 				}
 				radiusIndex := item.JewelRadiusIndex
-				if inRadius(s.Nodes[nodeID].Node, radiusIndex, node.ID) && itemID != 0 && item.JewelData.IntuitiveLeapLike {
-					node.IntuitiveLeapLikesAffecting = append(node.IntuitiveLeapLikesAffecting, s.Nodes[nodeID])
+				if inRadius(s.Nodes[nodeID].Node, radiusIndex, node.ID) && itemID != 0 {
+					if item.JewelData.IntuitiveLeapLike {
+						node.IntuitiveLeapLikesAffecting = append(node.IntuitiveLeapLikesAffecting, s.Nodes[nodeID])
+					}
+					if item.JewelData.ConqueredBy != nil {
+						node.ConqueredBy = item.JewelData.ConqueredBy
+					}
 				}
 				if item.JewelData.FromNothingKeystone != "" {
 					for _, keyName := range keystoneNames {
@@ -525,6 +544,9 @@ func (s *PassiveSpec) BuildAllDependsAndPaths() {
 		//pob2:block:src/Classes/PassiveSpec.lua:1604-1606
 		if o, ok := s.HashOverrides[id]; ok {
 			s.ReplaceNode(node, o.Dn, o.Sd)
+		}
+		if node.ConqueredBy != nil && node.Type != "Socket" {
+			s.conquerNode(node)
 		}
 	}
 	//pob2:block:src/Classes/PassiveSpec.lua:1798-1838
@@ -722,6 +744,54 @@ func (s *PassiveSpec) DeallocSingleNode(node *SpecNode) {
 func (s *PassiveSpec) ReplaceNode(old *SpecNode, dn string, sd []string) {
 	old.Dn = dn
 	old.Sd = sd
+}
+
+// conquerNode is the conquered-node branch of BuildAllDependsAndPaths. PoB-PoE2 has no seed data
+// yet, so only keystones and the abyss's small passives change; ReconnectNodeToClassStart's
+// Condition:ConnectedTo<Class>Start mod is not ported, as for unconquered nodes.
+//
+//pob2:block:src/Classes/PassiveSpec.lua:1478
+//pob2:block:src/Classes/PassiveSpec.lua:1608-1789
+func (s *PassiveSpec) conquerNode(node *SpecNode) {
+	conqueredBy := node.ConqueredBy
+	legionNodes := s.Tree.Legion
+	switch node.Type {
+	case "Keystone":
+		matchStr := conqueredBy.Conqueror.Type + "_keystone_" + conqueredBy.Conqueror.ID
+		for _, legionNode := range legionNodes {
+			if legionNode.LegionID == matchStr {
+				s.ReplaceNode(node, legionNode.Dn, legionNode.Sd)
+				break
+			}
+		}
+	case "Normal":
+		if conqueredBy.Conqueror.Type == "abyss" {
+			if containsString([]string{"Dexterity", "Intelligence", "Strength", "Attribute"}, node.Dn) {
+				s.nodeAdditionOrReplacementFromString(node, " \n+3 to Tribute", false)
+			} else if len(legionNodes) >= 201 {
+				legionNode := legionNodes[200] // abyss_small_tribute
+				s.ReplaceNode(node, legionNode.Dn, legionNode.Sd)
+			}
+		}
+	}
+}
+
+// nodeAdditionOrReplacementFromString splits sd into lines and adds them to the node's, or replaces
+// them; the node's mod list is built from its lines where the calc reads it.
+//
+//pob2:src/Classes/PassiveSpec.lua:2656-2737
+func (s *PassiveSpec) nodeAdditionOrReplacementFromString(node *SpecNode, sd string, replacement bool) {
+	var lines []string
+	for _, l := range strings.Split(sd, "\n") {
+		if l != "" {
+			lines = append(lines, l)
+		}
+	}
+	if replacement {
+		node.Sd = lines
+		return
+	}
+	node.Sd = append(append([]string(nil), node.Sd...), lines...)
 }
 
 //pob2:src/Classes/PassiveSpec.lua:2751-2762

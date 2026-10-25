@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PathOfBuilding2>
+	<Build ascendClassName="None" characterLevelAutoMode="false" className="Warrior" level="60" mainSocketGroup="1" targetVersion="0_1" viewMode="TREE">
+	</Build>
+	<Config activeConfigSet="1">
+		<ConfigSet id="1" title="Default">
+		</ConfigSet>
+	</Config>
+	<Items activeItemSet="1" useSecondWeaponSet="false">
+		<Item id="1">
+			Rarity: UNIQUE
+Undying Hate
+Timeless Jewel
+Item Level: 86
+LevelReq: 0
+Radius: Very Large
+Implicits: 0
+Glorifying the defilement of 19567 souls in tribute to Amanamu
+Passives in radius are Conquered by the Abyssals
+Historic
+		</Item>
+		<ItemSet id="1" title="Default" useSecondWeaponSet="false">
+		</ItemSet>
+	</Items>
+	<Skills activeSkillSet="1" defaultGemLevel="normalMaximum" defaultGemQuality="0">
+		<SkillSet id="1">
+		</SkillSet>
+	</Skills>
+	<Tree activeSpec="1">
+		<Spec ascendClassId="0" classId="6" masteryEffects="" nodes="47175,3936,38646,13397,46325,1913,23570,1207,33556,39581,4665,36709,41031,38323,55473,6839,61534,63393,54232,5710,22928,27373,16725,54811,57703,26725" secondaryAscendClassId="nil" treeVersion="0_5">
+			<Overrides>
+				<AttributeOverride dexNodes="1207" intNodes="41031" strNodes="13397,23570,22928,27373,16725,54811,57703"/>
+			</Overrides>
+			<Sockets>
+				<Socket itemId="1" nodeId="26725"/>
+			</Sockets>
+		</Spec>
+	</Tree>
+</PathOfBuilding2>

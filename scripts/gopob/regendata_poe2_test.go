@@ -58,6 +58,9 @@ func TestPoE2DataEmitRefuses(t *testing.T) {
 		{"empty implicit", "bases", `[{"name":"A","type":"Ring","implicit":""}]`, `implicit = ""`},
 		{"unsorted", "bases", `[{"name":"B","type":"Ring"},{"name":"A","type":"Ring"}]`, "not sorted"},
 		{"empty", "gems", `[]`, "no gems"},
+		{"empty legion", "legion", `[]`, "no legion nodes"},
+		{"legion unknown field", "legion", `[{"id":"a","dn":"A","sa":1}]`, "sa"},
+		{"legion no id", "legion", `[{"dn":"A"}]`, "no id"},
 		{"gem id gap", "gems", `[{"id":"g","additionalGrantedEffectId2":"x"}]`, "gap"},
 		{"rune unsorted slot", "runes", `[{"rune":"R","slot":"b"},{"rune":"R","slot":"a"}]`, "not sorted"},
 		{"constants string", "constants", `{"misc":{"a":"x"}}`, "holds 1 tables"},
@@ -73,6 +76,8 @@ func TestPoE2DataEmitRefuses(t *testing.T) {
 				_, err = p2eRunes([]byte(tc.body))
 			case "constants":
 				_, err = p2eConstants([]byte(tc.body))
+			case "legion":
+				_, err = p2eLegion([]byte(tc.body))
 			}
 			if err == nil || !strings.Contains(err.Error(), tc.want) {
 				t.Fatalf("got %v, want an error containing %q", err, tc.want)

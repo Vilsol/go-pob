@@ -406,6 +406,9 @@ func (tab *ItemsTab) SpecItem(itemID int) *tree2.Item {
 		jd.FromNothingKeystone, _ = item.JewelData["fromNothingKeystone"].(string)
 		jd.AlternateClassStart, _ = item.JewelData["alternateClassStart"].(string)
 		jd.LimitDisabled, _ = item.JewelData["limitDisabled"].(bool)
+		if c, ok := item.JewelData["conqueredBy"].(mod.LegionJewel); ok {
+			jd.ConqueredBy = &tree2.ConqueredBy{ID: c.ID, Conqueror: tree2.Conqueror{ID: c.Conqueror.ID, Type: c.Conqueror.Type}}
+		}
 		if fn, ok := item.JewelData["fromNothingKeystones"].(map[string]any); ok {
 			for k, v := range fn {
 				if b, ok := v.(bool); ok && b {

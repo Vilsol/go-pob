@@ -8249,7 +8249,7 @@ func (s *scanState[T]) result() (*T, string, []string) {
 
 	captures := make([]string, (len(s.bestGroups)-2)/2)
 	for i := range captures {
-		captures[i] = s.line[s.bestGroups[2+i*2]:s.bestGroups[2+i*2+1]]
+		captures[i] = s.lineLower[s.bestGroups[2+i*2]:s.bestGroups[2+i*2+1]]
 	}
 
 	return utils.Ptr(s.bestValue), s.line[:s.bestStart] + s.line[s.bestEnd:], captures

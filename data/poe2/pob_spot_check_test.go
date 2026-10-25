@@ -80,7 +80,16 @@ func spotGoSide() (map[spotKey]string, map[string]int) {
 		num("gem", g.ID, "reqInt", g.ReqInt)
 		num("gem", g.ID, "naturalMaxLevel", g.NaturalMaxLevel)
 	}
-	return m, map[string]int{"base": len(ItemBases), "rune": len(RuneMods), "const": consts, "gem": len(Gems)}
+	for i, l := range LegionNodes {
+		key := strconv.Itoa(i + 1)
+		str("legion", key, "id", l.ID)
+		str("legion", key, "dn", l.Dn)
+		str("legion", key, "sd", strings.Join(l.Sd, "|"))
+		m[spotKey{"legion", key, "ks"}] = strconv.FormatBool(l.Ks)
+		m[spotKey{"legion", key, "not"}] = strconv.FormatBool(l.Not)
+		m[spotKey{"legion", key, "m"}] = strconv.FormatBool(l.M)
+	}
+	return m, map[string]int{"base": len(ItemBases), "rune": len(RuneMods), "const": consts, "gem": len(Gems), "legion": len(LegionNodes)}
 }
 
 // spotDiff compares PoB's rows against ours. A Lua nil prints no row and our absent field reads 0,
@@ -167,11 +176,11 @@ func spotPoB(t *testing.T) (map[spotKey]string, map[string]int) {
 				t.Fatalf("bad count row %q", sc.Text())
 			}
 			counts[f[1]] = n
-		case "base", "rune", "const", "gem":
+		case "base", "rune", "const", "gem", "legion":
 			rows[spotKey{f[0], f[1], f[2]}] = v
 		}
 	}
-	if len(counts) != 4 || len(rows) == 0 {
+	if len(counts) != 5 || len(rows) == 0 {
 		t.Fatalf("the probe printed %d count rows and %d value rows; it stopped early\n%s", len(counts), len(rows), stderr.String())
 	}
 	return rows, counts

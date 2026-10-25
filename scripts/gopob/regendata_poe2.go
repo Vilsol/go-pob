@@ -58,11 +58,22 @@ var rdGeneratorsPoE2 = []rdGenerator{
 		needsPob: true,
 		note:     "data.gems after setupGem (src/Data/Gems.lua), with each granted effect's name and support flag",
 	},
+	{
+		name:     "poe2-legion",
+		source:   rdGameDataFromPoB,
+		out:      "data/poe2/legion_generated.go",
+		lua:      "scripts/gopob/regendata_poe2.lua",
+		luaArgs:  []string{"legion"},
+		emit:     "poe2-data-emit",
+		emitArgs: []string{"legion"},
+		needsPob: true,
+		note:     "the nodes of src/Data/TimelessJewelData/LegionPassives.lua, which PassiveTree loads as tree.legion: id, name, stat lines and type flags, in the file's order",
+	},
 	rdGeneratorPoE2ModCache,
 	rdGeneratorPoE2Quests,
 }
 
-const p2eUsage = "usage: poe2-data-emit <dump.json> <out.go> <bases|runes|constants|gems>"
+const p2eUsage = "usage: poe2-data-emit <dump.json> <out.go> <bases|runes|constants|gems|legion>"
 
 func poe2DataEmit(args []string) int {
 	if len(args) != 3 {
@@ -82,6 +93,8 @@ func poe2DataEmit(args []string) int {
 		out, err = p2eConstants(body)
 	case "gems":
 		out, err = p2eGems(body)
+	case "legion":
+		out, err = p2eLegion(body)
 	default:
 		return oeUsage(p2eUsage)
 	}
@@ -609,6 +622,44 @@ func p2eGems(body []byte) (string, error) {
 		f.num("ReqInt", r.ReqInt)
 		f.num("Tier", r.Tier)
 		f.num("NaturalMaxLevel", r.NaturalMaxLevel)
+		b.WriteString("\t" + f.String() + ",\n")
+	}
+	b.WriteString("}\n")
+	return b.String(), nil
+}
+
+type p2eLegionJSON struct {
+	ID  string   `json:"id"`
+	Dn  string   `json:"dn"`
+	Sd  []string `json:"sd"`
+	Ks  bool     `json:"ks"`
+	Not bool     `json:"not"`
+	M   bool     `json:"m"`
+}
+
+func p2eLegion(body []byte) (string, error) {
+	var rows []p2eLegionJSON
+	if err := p2eDecode(body, &rows); err != nil {
+		return "", err
+	}
+	if len(rows) == 0 {
+		return "", fmt.Errorf("no legion nodes")
+	}
+	var b strings.Builder
+	p2eHeader(&b, "legion", "src/Data/TimelessJewelData/LegionPassives.lua")
+	b.WriteString("// LegionNodes is tree.legion.nodes, " + strconv.Itoa(len(rows)) + " nodes in PoB's order (legionNodes[i] is LegionNodes[i-1]).\n")
+	b.WriteString("var LegionNodes = []LegionNode{\n")
+	for i, r := range rows {
+		if r.ID == "" {
+			return "", fmt.Errorf("legion node %d has no id", i+1)
+		}
+		f := &p2eFields{}
+		f.str("ID", r.ID)
+		f.str("Dn", r.Dn)
+		f.raw("Sd", p2eStrings(r.Sd))
+		f.flag("Ks", r.Ks)
+		f.flag("Not", r.Not)
+		f.flag("M", r.M)
 		b.WriteString("\t" + f.String() + ",\n")
 	}
 	b.WriteString("}\n")
