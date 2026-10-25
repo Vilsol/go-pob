@@ -162,6 +162,7 @@ data/tree2/spec.go                  PORT       src/Classes/PassiveSpec.lua
 data/tree2/tree.go                  PORT       src/Classes/PassiveTree.lua
 
 mod/actor_condition.go              GO-NATIVE  tag struct + builder; evaluated in moddb/mod_store.go
+mod/base_flag.go                    GO-NATIVE  tag struct + builder; evaluated in moddb/mod_store.go
 mod/base_mod.go                     GO-NATIVE  the mod struct and its builder methods; PoB uses modLib.createMod on a plain table
 mod/common.go                       GO-NATIVE  flag/keyword-flag bitmask constants and matching
 mod/condition.go                    GO-NATIVE  tag struct + builder; evaluated in moddb/mod_store.go
@@ -169,6 +170,7 @@ mod/distance_ramp.go                GO-NATIVE  tag struct + builder; evaluated i
 mod/disables_item.go                GO-NATIVE  tag struct + builder; read by calculator/item_setup.go (CalcSetup.lua:841-905), never by EvalMod
 mod/flag.go                         GO-NATIVE  the boolean-mod variant of the mod struct
 mod/format.go                       PORT       src/Modules/ModTools.lua
+mod/gem_tag.go                      GO-NATIVE  tag struct + builder; evaluated in moddb/mod_store.go
 mod/global.go                       GO-NATIVE  tag struct + builder; evaluated in moddb/mod_store.go
 mod/item_condition.go               GO-NATIVE  tag struct + builder; evaluated in moddb/mod_store.go (evalItemConditionTag, ModStore.lua:648-718)
 mod/global_effect.go                GO-NATIVE  tag struct + builder; consumed in calculator/calc_active_skill.go

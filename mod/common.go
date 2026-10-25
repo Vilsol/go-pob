@@ -44,6 +44,8 @@ const (
 	TypeLimit               = Type("Limit")
 	TypeDisablesItem        = Type("DisablesItem")
 	TypeMonsterTag          = Type("MonsterTag")
+	TypeGemTag              = Type("GemTag")
+	TypeBaseFlag            = Type("BaseFlag")
 	TypeDisablerFlag        = Type("Flag")
 )
 

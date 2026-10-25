@@ -127,6 +127,14 @@ func traceCoverageCases(t *testing.T) (map[string]map[string]mod.Mod, *ModDB, *L
 			"admits": base().Tag(mod.MonsterTag("Construct")),
 			"gates":  base().Tag(mod.MonsterTag("Skeleton")),
 		},
+		"GemTagTag": {
+			"admits": base().Tag(mod.GemTag("Fire").Neg(true)),
+			"gates":  base().Tag(mod.GemTag("Fire")),
+		},
+		"BaseFlagTag": {
+			"admits": base().Tag(mod.BaseFlag("duration").Neg(true)),
+			"gates":  base().Tag(mod.BaseFlag("duration")),
+		},
 	}, playerDB, cfg
 }
 

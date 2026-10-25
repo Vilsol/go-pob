@@ -8,6 +8,7 @@ type SkillNameTag struct {
 	Negative            bool
 	TagSummonSkill      bool
 	IncludeTransfigured bool
+	TagPartialMatch     bool
 }
 
 func SkillName(names ...string) *SkillNameTag {
@@ -28,6 +29,12 @@ func (t *SkillNameTag) Neg(negative bool) *SkillNameTag {
 
 func (t *SkillNameTag) SummonSkill(summonSkill bool) *SkillNameTag {
 	t.TagSummonSkill = summonSkill
+	return t
+}
+
+//pob2:block:src/Classes/ModStore.lua:912
+func (t *SkillNameTag) PartialMatch(partialMatch bool) *SkillNameTag {
+	t.TagPartialMatch = partialMatch
 	return t
 }
 

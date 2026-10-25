@@ -373,6 +373,8 @@ func init() {
 		"TypeLimit":               "Limit",
 		"TypeDisablesItem":        "DisablesItem",
 		"TypeMonsterTag":          "MonsterTag",
+		"TypeGemTag":              "GemTag",
+		"TypeBaseFlag":            "BaseFlag",
 		"TypeDisablerFlag":        "Flag",
 	})
 	crystallineNamespace("go-pob", "mod").Set("MFlag", map[string]any{
@@ -33922,7 +33924,7 @@ func crystallineMarshalModdbListCfg(v *moddb.ListCfg) any {
 
 	if crystallineMarshalModdbListCfgShape.IsUndefined() {
 		crystallineMarshalModdbListCfgShape = crystallineShape("moddb.ListCfg",
-			[]string{"Actor", "Flags", "KeywordFlags", "Source", "SkillStats", "SkillCond", "SlotName", "SkillName", "SummonSkillName", "SkillGem", "SkillPart", "SkillTypes", "SkillDist", "SkillDistSet", "SocketColor", "SocketNum", "IntelligenceGems", "DexterityGems", "StrengthGems"},
+			[]string{"Actor", "Flags", "KeywordFlags", "Source", "SkillStats", "SkillCond", "SlotName", "SkillName", "SummonSkillName", "SkillGem", "SkillPart", "SkillTypes", "SkillDist", "SkillDistSet", "SocketColor", "SocketNum", "IntelligenceGems", "DexterityGems", "StrengthGems", "BaseFlags", "OverrideCond"},
 			func(v *moddb.ListCfg, entry *crystallineEntry, field int) any {
 				switch field {
 				case 0:
@@ -34082,6 +34084,76 @@ func crystallineMarshalModdbListCfg(v *moddb.ListCfg) any {
 					return float64(v.DexterityGems)
 				case 18:
 					return float64(v.StrengthGems)
+				case 19:
+					return crystallineJSON(func(b []byte, ok *bool) []byte {
+						if entries0 := v.BaseFlags; entries0 == nil {
+							b = append(b, "null"...)
+						} else {
+							b = append(b, '{')
+							first0 := true
+							for k0, v0 := range entries0 {
+								if !first0 {
+									b = append(b, ',')
+								}
+
+								first0 = false
+								b = crystallineAppendString(b, string(k0))
+								b = append(b, ':')
+								b = strconv.AppendBool(b, bool(v0))
+							}
+
+							b = append(b, '}')
+						}
+						return b
+					}, func() any {
+						return func() any {
+							if v.BaseFlags == nil {
+								return nil
+							}
+
+							out := crystallineObjects.New()
+							for k, v := range v.BaseFlags {
+								out.Set(string(k), bool(v))
+							}
+
+							return out
+						}()
+					})
+				case 20:
+					return crystallineJSON(func(b []byte, ok *bool) []byte {
+						if entries0 := v.OverrideCond; entries0 == nil {
+							b = append(b, "null"...)
+						} else {
+							b = append(b, '{')
+							first0 := true
+							for k0, v0 := range entries0 {
+								if !first0 {
+									b = append(b, ',')
+								}
+
+								first0 = false
+								b = crystallineAppendString(b, string(k0))
+								b = append(b, ':')
+								b = strconv.AppendBool(b, bool(v0))
+							}
+
+							b = append(b, '}')
+						}
+						return b
+					}, func() any {
+						return func() any {
+							if v.OverrideCond == nil {
+								return nil
+							}
+
+							out := crystallineObjects.New()
+							for k, v := range v.OverrideCond {
+								out.Set(string(k), bool(v))
+							}
+
+							return out
+						}()
+					})
 				}
 
 				return nil
@@ -34297,6 +34369,28 @@ func crystallineMarshalModdbListCfg(v *moddb.ListCfg) any {
 
 						v.StrengthGems = converted
 					})(value)
+				case 19:
+					(func(value js.Value) {
+						converted, err := crystallineToMapOfStringToBool(value)
+						if err != nil {
+							crystallineFail(err.Error())
+
+							return
+						}
+
+						v.BaseFlags = converted
+					})(value)
+				case 20:
+					(func(value js.Value) {
+						converted, err := crystallineToMapOfStringToBool(value)
+						if err != nil {
+							crystallineFail(err.Error())
+
+							return
+						}
+
+						v.OverrideCond = converted
+					})(value)
 				}
 			},
 			[]string{},
@@ -34436,10 +34530,14 @@ func crystallineMarshalModdbModStore(v *moddb.ModStore) any {
 
 	if crystallineMarshalModdbModStoreShape.IsUndefined() {
 		crystallineMarshalModdbModStoreShape = crystallineShape("moddb.ModStore",
-			[]string{"Multipliers", "Conditions"},
+			[]string{"Rules", "Multipliers", "Conditions"},
 			func(v *moddb.ModStore, entry *crystallineEntry, field int) any {
 				switch field {
 				case 0:
+					return crystallineCached(entry, 0, v.Rules, func() any {
+						return crystallineMarshalModdbRules(v.Rules)
+					})
+				case 1:
 					return crystallineJSON(func(b []byte, ok *bool) []byte {
 						if entries0 := v.Multipliers; entries0 == nil {
 							b = append(b, "null"...)
@@ -34474,7 +34572,7 @@ func crystallineMarshalModdbModStore(v *moddb.ModStore) any {
 							return out
 						}()
 					})
-				case 1:
+				case 2:
 					return crystallineJSON(func(b []byte, ok *bool) []byte {
 						if entries0 := v.Conditions; entries0 == nil {
 							b = append(b, "null"...)
@@ -34516,6 +34614,10 @@ func crystallineMarshalModdbModStore(v *moddb.ModStore) any {
 			func(v *moddb.ModStore, field int, value js.Value) {
 				switch field {
 				case 0:
+					(func(js.Value) {
+						crystallineFail("moddb.ModStore.Rules cannot be written from JavaScript: ModdbRules.BaseFlags: type func(cfg *github.com/Vilsol/go-pob/moddb.ListCfg) map[string]bool cannot be read from JS")
+					})(value)
+				case 1:
 					(func(value js.Value) {
 						converted, err := crystallineToMapOfStringToFloat64(value)
 						if err != nil {
@@ -34526,7 +34628,7 @@ func crystallineMarshalModdbModStore(v *moddb.ModStore) any {
 
 						v.Multipliers = converted
 					})(value)
-				case 1:
+				case 2:
 					(func(value js.Value) {
 						converted, err := crystallineToMapOfStringToBool(value)
 						if err != nil {
@@ -34558,6 +34660,65 @@ func crystallineMarshalModdbModStore(v *moddb.ModStore) any {
 	}
 
 	return crystallineMarshalModdbModStoreShape.Invoke(crystallineRetain(v))
+}
+
+var crystallineMarshalModdbRulesShape js.Value
+
+func crystallineMarshalModdbRules(v *moddb.Rules) any {
+	if v == nil {
+		return nil
+	}
+
+	if crystallineMarshalModdbRulesShape.IsUndefined() {
+		crystallineMarshalModdbRulesShape = crystallineShape("moddb.Rules",
+			[]string{"LimitNeg", "SumWholeSource"},
+			func(v *moddb.Rules, entry *crystallineEntry, field int) any {
+				switch field {
+				case 0:
+					return bool(v.LimitNeg)
+				case 1:
+					return bool(v.SumWholeSource)
+				}
+
+				return nil
+			},
+			func(v *moddb.Rules, field int, value js.Value) {
+				switch field {
+				case 0:
+					(func(value js.Value) {
+						converted, err := crystallineToBool(value)
+						if err != nil {
+							crystallineFail(err.Error())
+
+							return
+						}
+
+						v.LimitNeg = converted
+					})(value)
+				case 1:
+					(func(value js.Value) {
+						converted, err := crystallineToBool(value)
+						if err != nil {
+							crystallineFail(err.Error())
+
+							return
+						}
+
+						v.SumWholeSource = converted
+					})(value)
+				}
+			},
+			[]string{},
+			func(v *moddb.Rules, method int, args []js.Value) any {
+				switch method {
+				}
+
+				return nil
+			},
+		)
+	}
+
+	return crystallineMarshalModdbRulesShape.Invoke(crystallineRetain(v))
 }
 
 var crystallineMarshalMsgpReaderShape js.Value
@@ -53360,6 +53521,7 @@ func crystallinePlainModdbModStore(v *moddb.ModStore) any {
 
 	out := crystallineObjects.New()
 
+	out.Set("Rules", crystallinePlainModdbRules(v.Rules))
 	out.Set("Multipliers", crystallineJSON(func(b []byte, ok *bool) []byte {
 		if entries0 := v.Multipliers; entries0 == nil {
 			b = append(b, "null"...)
@@ -53428,6 +53590,19 @@ func crystallinePlainModdbModStore(v *moddb.ModStore) any {
 			return out
 		}()
 	}))
+
+	return out
+}
+
+func crystallinePlainModdbRules(v *moddb.Rules) any {
+	if v == nil {
+		return nil
+	}
+
+	out := crystallineObjects.New()
+
+	out.Set("LimitNeg", bool(v.LimitNeg))
+	out.Set("SumWholeSource", bool(v.SumWholeSource))
 
 	return out
 }

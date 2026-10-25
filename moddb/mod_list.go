@@ -468,6 +468,16 @@ func (m *ModList) Tabulate(modType mod.Type, cfg *ListCfg, modNames ...string) [
 	return results
 }
 
+//pob2:src/Classes/ModStore.lua:228-237
+func (m *ModList) SumPositiveValues(modType mod.Type, cfg *ListCfg, modName string, _ ...string) float64 {
+	return sumPositiveValues(m.Tabulate(modType, cfg, modName))
+}
+
+//pob2:src/Classes/ModStore.lua:247-256
+func (m *ModList) SumNegativeValues(modType mod.Type, cfg *ListCfg, modName string, _ ...string) float64 {
+	return sumNegativeValues(m.Tabulate(modType, cfg, modName))
+}
+
 //pob:src/Classes/ModStore.lua:248-257
 func (m *ModList) Max(cfg *ListCfg, modNames ...string) float64 {
 	globalMax := float64(0)

@@ -262,11 +262,18 @@ func canonOurTag(t mod.Tag) canonTag {
 	case *mod.MonsterTagTag:
 		set("monsterTag", strings.Join(tag.MonsterTagList, ","))
 		setBool("neg", tag.Negative)
+	case *mod.GemTagTag:
+		set("gemTags", strings.Join(tag.GemTagList, ","))
+		setBool("neg", tag.Negative)
+	case *mod.BaseFlagTag:
+		set("baseFlag", tag.BaseFlag)
+		setBool("neg", tag.Negative)
 	case *mod.SkillNameTag:
 		set("skillNames", strings.Join(tag.SkillNameList, ","))
 		setBool("neg", tag.Negative)
 		setBool("summonSkill", tag.TagSummonSkill)
 		setBool("includeTransfigured", tag.IncludeTransfigured)
+		setBool("partialMatch", tag.TagPartialMatch)
 	case *mod.SkillIDTag:
 		set("skillId", tag.ID())
 	case *mod.SkillPartTag:
@@ -282,6 +289,7 @@ func canonOurTag(t mod.Tag) canonTag {
 		setBool("neg", tag.Negative)
 	case *mod.SocketedInTag:
 		set("slotName", tag.SlotName)
+		set("slotType", tag.TagSlotType)
 		set("keyword", tag.TagKeyword)
 		set("socketColor", tag.TagSocketColor)
 		if len(tag.TagSockets) > 0 {
@@ -367,6 +375,7 @@ func canonOurTag(t mod.Tag) canonTag {
 		} else {
 			setNum("limit", tag.TagLimit)
 		}
+		setBool("neg", tag.Negative)
 	case *mod.InSlotTag:
 		setNum("num", float64(tag.N))
 	case mod.InSlotTag:

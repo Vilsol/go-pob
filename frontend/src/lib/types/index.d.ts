@@ -2690,7 +2690,7 @@ export declare namespace mod {
   interface Tag {
     Type(): mod.Type;
   }
-  type Type = "INC" | "MORE" | "BASE" | "FLAG" | "OVERRIDE" | "LIST" | "SocketedIn" | "PerStat" | "PercentStat" | "Condition" | "ActorCondition" | "Multiplier" | "ModFlag" | "SkillType" | "SkillId" | "Global" | "SkillName" | "MAX" | "MIN" | "CHANCE" | "StatThreshold" | "SlotNumber" | "SlotName" | "ItemCondition" | "DistanceRamp" | "MultiplierThreshold" | "ModFlagOr" | "KeywordFlagAnd" | "InSlot" | "DUMMY" | "GlobalEffect" | "MeleeProximity" | "IgnoreCond" | "SkillPart" | "Limit" | "DisablesItem" | "MonsterTag" | "Flag";
+  type Type = "INC" | "MORE" | "BASE" | "FLAG" | "OVERRIDE" | "LIST" | "SocketedIn" | "PerStat" | "PercentStat" | "Condition" | "ActorCondition" | "Multiplier" | "ModFlag" | "SkillType" | "SkillId" | "Global" | "SkillName" | "MAX" | "MIN" | "CHANCE" | "StatThreshold" | "SlotNumber" | "SlotName" | "ItemCondition" | "DistanceRamp" | "MultiplierThreshold" | "ModFlagOr" | "KeywordFlagAnd" | "InSlot" | "DUMMY" | "GlobalEffect" | "MeleeProximity" | "IgnoreCond" | "SkillPart" | "Limit" | "DisablesItem" | "MonsterTag" | "GemTag" | "BaseFlag" | "Flag";
   const Type: {
     readonly TypeIncrease: "INC";
     readonly TypeMore: "MORE";
@@ -2729,6 +2729,8 @@ export declare namespace mod {
     readonly TypeLimit: "Limit";
     readonly TypeDisablesItem: "DisablesItem";
     readonly TypeMonsterTag: "MonsterTag";
+    readonly TypeGemTag: "GemTag";
+    readonly TypeBaseFlag: "BaseFlag";
     readonly TypeDisablerFlag: "Flag";
   };
 }
@@ -2762,6 +2764,8 @@ export declare namespace moddb {
     IntelligenceGems: number;
     DexterityGems: number;
     StrengthGems: number;
+    BaseFlags?: Record<string, boolean>;
+    OverrideCond?: Record<string, boolean>;
     /** Releases the Go resources behind this wrapper. */
     release(): void;
     [Symbol.dispose](): void;
@@ -2787,9 +2791,17 @@ export declare namespace moddb {
     [Symbol.dispose](): void;
   }
   interface ModStore {
+    readonly Rules?: moddb.Rules;
     Multipliers?: Record<string, number>;
     Conditions?: Record<string, boolean>;
     Clone(): (moddb.ModStore | undefined);
+    /** Releases the Go resources behind this wrapper. */
+    release(): void;
+    [Symbol.dispose](): void;
+  }
+  interface Rules {
+    LimitNeg: boolean;
+    SumWholeSource: boolean;
     /** Releases the Go resources behind this wrapper. */
     release(): void;
     [Symbol.dispose](): void;
@@ -2798,8 +2810,13 @@ export declare namespace moddb {
     readonly ModStore?: moddb.ModStorePlain;
   }
   interface ModStorePlain {
+    readonly Rules?: moddb.RulesPlain;
     readonly Multipliers?: Record<string, number>;
     readonly Conditions?: Record<string, boolean>;
+  }
+  interface RulesPlain {
+    readonly LimitNeg: boolean;
+    readonly SumWholeSource: boolean;
   }
 }
 export declare namespace msgp {

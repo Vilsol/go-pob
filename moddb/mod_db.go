@@ -244,7 +244,7 @@ func (m *ModDB) SumInternal(context ModStoreFuncs, modType mod.Type, cfg *ListCf
 
 	for _, name := range names {
 		for _, mo := range m.modsNamed(name) {
-			if modMatches(mo, modType, cfg) {
+			if modMatches(mo, modType, cfg) || wholeSourceMatches(context, mo, modType, cfg) {
 
 				var value float64
 				if evaluated := context.evalMod(mo, cfg); evaluated != nil &&
@@ -264,6 +264,17 @@ func (m *ModDB) SumInternal(context ModStoreFuncs, modType mod.Type, cfg *ListCf
 	}
 
 	return result
+}
+
+//pob2:block:src/Classes/ModDB.lua:144
+func wholeSourceMatches(context ModStoreFuncs, mo mod.Mod, modType mod.Type, cfg *ListCfg) bool {
+	if cfg == nil || cfg.Source == nil || mo.GetSource() != *cfg.Source {
+		return false
+	}
+	if r := context.gameRules(); r == nil || !r.SumWholeSource {
+		return false
+	}
+	return modMatches(mo, modType, &ListCfg{Flags: cfg.Flags, KeywordFlags: cfg.KeywordFlags})
 }
 
 //pob:src/Classes/ModStore.lua:190-199
@@ -515,6 +526,38 @@ func (m *ModDB) Tabulate(modType mod.Type, cfg *ListCfg, modNames ...string) []M
 	results := make([]ModResult, 0)
 	m.TabulateInternal(m, &results, modType, cfg, *flags, *keywordFlags, *source, modNames...)
 	return results
+}
+
+//pob2:src/Classes/ModStore.lua:228-237
+func (m *ModDB) SumPositiveValues(modType mod.Type, cfg *ListCfg, modName string, _ ...string) float64 {
+	return sumPositiveValues(m.Tabulate(modType, cfg, modName))
+}
+
+//pob2:src/Classes/ModStore.lua:247-256
+func (m *ModDB) SumNegativeValues(modType mod.Type, cfg *ListCfg, modName string, _ ...string) float64 {
+	return sumNegativeValues(m.Tabulate(modType, cfg, modName))
+}
+
+//pob2:block:src/Classes/ModStore.lua:229-236
+func sumPositiveValues(modTable []ModResult) float64 {
+	total := float64(0)
+	for _, row := range modTable {
+		if row.Value > 0 {
+			total += row.Value
+		}
+	}
+	return total
+}
+
+//pob2:block:src/Classes/ModStore.lua:248-255
+func sumNegativeValues(modTable []ModResult) float64 {
+	total := float64(0)
+	for _, row := range modTable {
+		if row.Value < 0 {
+			total += row.Value
+		}
+	}
+	return total
 }
 
 //pob:src/Classes/ModStore.lua:248-257

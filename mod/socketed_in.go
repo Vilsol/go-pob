@@ -11,6 +11,7 @@ type SocketedInTag struct {
 	TagSocketsAll   bool
 	TagSocketsCount float64
 	TagNeg          bool
+	TagSlotType     string
 }
 
 func SocketedIn(slotName string) *SocketedInTag {
@@ -46,6 +47,12 @@ func (t *SocketedInTag) SocketsAll() *SocketedInTag {
 
 func (t *SocketedInTag) SocketsCount(count float64) *SocketedInTag {
 	t.TagSocketsCount = count
+	return t
+}
+
+//pob2:block:src/Classes/ModStore.lua:862-863
+func (t *SocketedInTag) SlotType(slotType string) *SocketedInTag {
+	t.TagSlotType = slotType
 	return t
 }
 

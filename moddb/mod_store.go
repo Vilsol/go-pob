@@ -39,6 +39,28 @@ type ListCfg struct {
 	IntelligenceGems   float64
 	DexterityGems      float64
 	StrengthGems       float64
+
+	BaseFlags    map[string]bool
+	GemData      any
+	OverrideCond map[string]bool
+}
+
+// Rules holds the per-game behaviour where both games' mod kernels read the same mod differently; nil is PoE1's.
+type Rules struct {
+	//pob2:block:src/Classes/ModStore.lua:990-995
+	BaseFlags func(cfg *ListCfg) map[string]bool
+	//pob2:block:src/Classes/ModStore.lua:741
+	LimitNeg bool
+	//pob2:block:src/Classes/ModDB.lua:144
+	SumWholeSource bool
+}
+
+type BaseFlagSource interface {
+	BaseFlags() map[string]bool
+}
+
+type GemTagSource interface {
+	GemTags() map[string]bool
 }
 
 var GemIsType func(gem *poe.SkillGem, keyword string) bool
@@ -66,6 +88,8 @@ type ModStoreFuncs interface {
 	evalMod(m mod.Mod, cfg *ListCfg) *mod.ModValueMulti
 
 	getStat(stat string, cfg *ListCfg) float64
+
+	gameRules() *Rules
 }
 
 func heapNames(names []string) []string {
@@ -243,6 +267,7 @@ type ModStore struct {
 	Parent      ModStoreFuncs
 	Child       ModStoreFuncs
 	Actor       Actor
+	Rules       *Rules
 	Multipliers map[string]float64
 	Conditions  map[string]bool
 }
@@ -275,6 +300,7 @@ func (s *ModStore) Clone() *ModStore {
 
 	out := NewModStore(parent)
 	out.Actor = s.Actor
+	out.Rules = s.Rules
 	maps.Copy(out.Multipliers, s.Multipliers)
 	maps.Copy(out.Conditions, s.Conditions)
 	return out
@@ -288,6 +314,18 @@ func (s *ModStore) GetActor() Actor {
 
 	if s.Parent != nil {
 		return s.Parent.GetActor()
+	}
+
+	return nil
+}
+
+func (s *ModStore) gameRules() *Rules {
+	if s.Rules != nil {
+		return s.Rules
+	}
+
+	if s.Parent != nil {
+		return s.Parent.gameRules()
 	}
 
 	return nil
@@ -489,6 +527,7 @@ func (s *ModStore) evalPerStatTag(value *mod.ModValueMulti, cfg *ListCfg, tag *m
 }
 
 //pob:block:src/Classes/ModStore.lua:631-632
+//pob2:block:src/Classes/ModStore.lua:739-741
 func (s *ModStore) evalLimitTag(value *mod.ModValueMulti, cfg *ListCfg, tag *mod.LimitTag) *mod.ModValueMulti {
 	limit := tag.TagLimit
 	if tag.LimitVar != "" {
@@ -497,9 +536,18 @@ func (s *ModStore) evalLimitTag(value *mod.ModValueMulti, cfg *ListCfg, tag *mod
 
 	if value.Type() == mod.ModValueMultiTypeFloat {
 		value = value.Clone()
-		value.ValueFloat = min(value.ValueFloat, limit)
+		if tag.Negative && s.limitNeg() {
+			value.ValueFloat = max(value.ValueFloat, -limit)
+		} else {
+			value.ValueFloat = min(value.ValueFloat, limit)
+		}
 	}
 	return value
+}
+
+func (s *ModStore) limitNeg() bool {
+	r := s.gameRules()
+	return r != nil && r.LimitNeg
 }
 
 //pob:block:src/Classes/ModStore.lua:625-663
@@ -606,7 +654,9 @@ func (s *ModStore) evalSkillNameTag(value *mod.ModValueMulti, cfg *ListCfg, tag 
 
 	match := false
 	for _, name := range tag.SkillNameList {
-		if strings.ToLower(name) == matchName {
+		nameLower := strings.ToLower(name)
+		//pob2:block:src/Classes/ModStore.lua:912
+		if (tag.TagPartialMatch && strings.Contains(matchName, nameLower)) || (!tag.TagPartialMatch && nameLower == matchName) {
 			match = true
 			break
 		}
@@ -830,11 +880,14 @@ func titleCaseSlot(slot string) string {
 //
 //pob:block:src/Classes/ModStore.lua:762-803
 func (s *ModStore) evalSocketedInTag(value *mod.ModValueMulti, cfg *ListCfg, tag *mod.SocketedInTag) *mod.ModValueMulti {
-	if cfg == nil || (tag.SlotName == "" && tag.TagKeyword == "" && tag.TagSocketColor == "") {
+	if cfg == nil || (tag.SlotName == "" && tag.TagKeyword == "" && tag.TagSocketColor == "" && tag.TagSlotType == "") {
 		return nil
 	}
 	var match []bool
-	if tag.SlotName != "" {
+	//pob2:block:src/Classes/ModStore.lua:862-866
+	if tag.TagSlotType != "" {
+		match = append(match, true)
+	} else if tag.SlotName != "" {
 		match = append(match, tag.SlotName == cfg.SlotName)
 	}
 	switch {
@@ -1063,6 +1116,10 @@ func (s *ModStore) evalTag(raw mod.Tag, value *mod.ModValueMulti, cfg *ListCfg) 
 		value = s.evalStatThresholdTag(value, cfg, tag)
 	case *mod.MonsterTagTag:
 		value = s.evalMonsterTagTag(value, tag)
+	case *mod.GemTagTag:
+		value = s.evalGemTagTag(value, cfg, tag)
+	case *mod.BaseFlagTag:
+		value = s.evalBaseFlagTag(value, cfg, tag)
 	}
 
 	return value
@@ -1091,6 +1148,54 @@ func (s *ModStore) evalMonsterTagTag(value *mod.ModValueMulti, tag *mod.MonsterT
 			break
 		}
 	}
+	if tag.Negative {
+		match = !match
+	}
+	if !match {
+		return nil
+	}
+	return value
+}
+
+//pob2:block:src/Classes/ModStore.lua:970-988
+func (s *ModStore) evalGemTagTag(value *mod.ModValueMulti, cfg *ListCfg, tag *mod.GemTagTag) *mod.ModValueMulti {
+	var gemTags map[string]bool
+	if cfg != nil {
+		if gem, ok := cfg.GemData.(GemTagSource); ok {
+			gemTags = gem.GemTags()
+		}
+	}
+	match := false
+	for _, gemTag := range tag.GemTagList {
+		if gemTags[strings.ToLower(gemTag)] {
+			match = true
+			break
+		}
+	}
+	if tag.Negative {
+		match = !match
+	}
+	if !match {
+		return nil
+	}
+	return value
+}
+
+//pob:block:src/Classes/ModStore.lua:881-889
+//pob2:block:src/Classes/ModStore.lua:989-1001
+func (s *ModStore) evalBaseFlagTag(value *mod.ModValueMulti, cfg *ListCfg, tag *mod.BaseFlagTag) *mod.ModValueMulti {
+	var baseFlags map[string]bool
+	if r := s.gameRules(); r != nil && r.BaseFlags != nil {
+		baseFlags = r.BaseFlags(cfg)
+	} else if cfg != nil {
+		if ge, ok := cfg.SkillGrantedEffect.(BaseFlagSource); ok {
+			baseFlags = ge.BaseFlags()
+		}
+		if baseFlags == nil {
+			baseFlags = cfg.BaseFlags
+		}
+	}
+	match := baseFlags[tag.BaseFlag]
 	if tag.Negative {
 		match = !match
 	}
@@ -1292,7 +1397,14 @@ func (s *ModStore) getStat(stat string, cfg *ListCfg) float64 {
 }
 
 //pob:src/Classes/ModStore.lua:293-295
+//pob2:src/Classes/ModStore.lua:409-415
 func (s *ModStore) GetCondition(variable string, cfg *ListCfg, noMod bool) (bool, bool) {
+	if cfg != nil && cfg.OverrideCond != nil {
+		if cond, ok := cfg.OverrideCond[variable]; ok {
+			return cond, cond
+		}
+	}
+
 	if cond, ok := s.Conditions[variable]; ok && cond {
 		return true, true
 	}
