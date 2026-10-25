@@ -118,6 +118,8 @@ func TestCorpusPoE2VsOracle(t *testing.T) {
 		matched, nan int
 		total        int
 		stats        []poe2StatResult
+		// every numeric output the oracle holds, a stat we never produce counting as 0
+		allMatched, allTotal, allNonzero, allNonzeroOK int
 	}
 	results := make([]result, len(recs))
 	tasks := make(chan int, len(recs))
@@ -126,10 +128,14 @@ func TestCorpusPoE2VsOracle(t *testing.T) {
 	}
 	close(tasks)
 	var wg sync.WaitGroup
-	for range min(poe2Workers(), len(recs)) {
+	workers := min(poe2Workers(), len(recs))
+	allPerStat := make([]map[string]*poe2Tally, workers)
+	for w := range workers {
+		allPerStat[w] = map[string]*poe2Tally{}
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
+			mine := allPerStat[w]
 			for i := range tasks {
 				res := &results[i]
 				raw, err := os.ReadFile(filepath.Join(corpusDir, recs[i].Build))
@@ -173,6 +179,33 @@ func TestCorpusPoE2VsOracle(t *testing.T) {
 						res.matched++
 					}
 					res.stats = append(res.stats, st)
+				}
+				for key, v := range recs[i].Output {
+					want, ok := v.(float64)
+					if !ok {
+						continue
+					}
+					got := env.Player.Output[key]
+					tl := mine[key]
+					if tl == nil {
+						tl = &poe2Tally{}
+						mine[key] = tl
+					}
+					tl.seen++
+					res.allTotal++
+					hit := !math.IsNaN(got) && !math.IsInf(got, 0) && poe2OracleClose(got, want, poe2OracleTolerance)
+					if hit {
+						tl.ok++
+						res.allMatched++
+					}
+					if want != 0 {
+						tl.nonzero++
+						res.allNonzero++
+						if hit {
+							tl.nonzeroOK++
+							res.allNonzeroOK++
+						}
+					}
 				}
 			}
 		}()
@@ -229,6 +262,48 @@ func TestCorpusPoE2VsOracle(t *testing.T) {
 			tl = &poe2Tally{}
 		}
 		fmt.Printf("  %-20s %8d %8d %8d %10d\n", stat, tl.seen, tl.ok, tl.nonzero, tl.nonzeroOK)
+	}
+
+	var allMatched, allTotal, allNonzero, allNonzeroOK int
+	for _, r := range results {
+		allMatched += r.allMatched
+		allTotal += r.allTotal
+		allNonzero += r.allNonzero
+		allNonzeroOK += r.allNonzeroOK
+	}
+	all := map[string]*poe2Tally{}
+	for _, m := range allPerStat {
+		for k, tl := range m {
+			a := all[k]
+			if a == nil {
+				a = &poe2Tally{}
+				all[k] = a
+			}
+			a.seen += tl.seen
+			a.ok += tl.ok
+			a.nonzero += tl.nonzero
+			a.nonzeroOK += tl.nonzeroOK
+		}
+	}
+	fmt.Printf("\n=== every numeric oracle output (report only; a stat we do not produce counts as 0) ===\n")
+	fmt.Printf("matched %d / %d  (%.4f%%)   nonzero matched %d / %d  (%.4f%%)   %d distinct stats\n",
+		allMatched, allTotal, 100*float64(allMatched)/float64(max(1, allTotal)),
+		allNonzeroOK, allNonzero, 100*float64(allNonzeroOK)/float64(max(1, allNonzero)), len(all))
+	keys := make([]string, 0, len(all))
+	for k := range all {
+		keys = append(keys, k)
+	}
+	sort.Slice(keys, func(a, b int) bool {
+		ma, mb := all[keys[a]].nonzero-all[keys[a]].nonzeroOK, all[keys[b]].nonzero-all[keys[b]].nonzeroOK
+		if ma != mb {
+			return ma > mb
+		}
+		return keys[a] < keys[b]
+	})
+	fmt.Printf("  most-missed nonzero stats:\n  %-34s %8s %8s %10s\n", "stat", "seen", "nonzero", "nonzeroOK")
+	for _, k := range keys[:min(40, len(keys))] {
+		a := all[k]
+		fmt.Printf("  %-34s %8d %8d %10d\n", k, a.seen, a.nonzero, a.nonzeroOK)
 	}
 
 	if dir := os.Getenv("WORKLIST"); dir != "" {
