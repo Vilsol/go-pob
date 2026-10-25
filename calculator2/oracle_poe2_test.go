@@ -36,7 +36,7 @@ func poe2OracleClose(got, want, tolerance float64) bool {
 	return math.Abs(got-want)/math.Abs(want) <= tolerance
 }
 
-const poe2MatchedFloor = 41962
+const poe2MatchedFloor = 160654
 
 const poe2NaNCeiling = 0
 
@@ -149,7 +149,7 @@ func TestCorpusPoE2VsOracle(t *testing.T) {
 							err = fmt.Errorf("panic: %v", r)
 						}
 					}()
-					env, err = BuildOutput(build, Options{Tree: tree})
+					env, err = BuildOutput(build, Options{Tree: tree, Items: NewItemsTab(build, tree, nil)})
 				}()
 				if err != nil {
 					res.err = err
