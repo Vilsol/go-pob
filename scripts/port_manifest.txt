@@ -497,3 +497,8 @@ wasm/exposition/import_passive_tree.go PORT       src/Classes/ImportTab.lua,src/
 wasm/exposition/tree_tattoo_nodes.go PORT       src/Classes/PassiveSpec.lua,src/Classes/PassiveTreeView.lua
 wasm/exposition/tree_compare_jewel.go PORT       src/Classes/PassiveTreeView.lua
 wasm/exposition/optimise_sockets.go GO-NATIVE  crystalline binding surface for the frontend
+calculator2/mod_parser.go           PORT       src/Modules/ModParser.lua,src/Modules/Data.lua
+calculator2/mod_parser_flags.go     PORT       src/Data/Global.lua
+calculator2/mod_parser_immune.go    PORT       src/Modules/ModParser.lua
+calculator2/mod_parser_index.go     GO-NATIVE  candidate-set prefilter for Go's regexp engine, which has no literal-prefix skip on anchored patterns; LuaJIT's pattern scan has no equivalent cost and PoB has no equivalent code
+calculator2/mod_parser_tools.go     PORT       src/Modules/ModParser.lua,src/Modules/ModTools.lua,src/Classes/ModList.lua,src/Modules/Data.lua
