@@ -759,4 +759,7 @@ func perform(env *Environment) {
 
 	//pob2:block:src/Modules/CalcPerform.lua:3456
 	defence(env, env.Player)
+
+	//pob2:block:src/Modules/CalcPerform.lua:3510-3512
+	buildDefenceEstimations(env, env.Player)
 }
