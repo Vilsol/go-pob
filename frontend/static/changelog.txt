@@ -1,10 +1,22 @@
-VERSION[0.5.0][2026/10/24]
+VERSION[0.5.0][2026/10/25]
 
 --- New ---
+* calculator2: PoE2 radius jewels apply their effects to the passives in their radius, and the parser reads every jewel radius row
+* calculator2: ring bonus effect, Mageblood, common buffs and weapon-type conditions apply in the PoE2 perform pass
+* frontend: go-pob's own Help replaces Path of Building's, its hotkeys are checked against the code, and shortcuts no longer fire twice
+* frontend: the version history shows go-pob's own releases first and Path of Building's below, and the update notice lists go-pob's changes
 * tools: a second PoB pin for PoE2, checked by task pob-pin GAME=poe2, and //pob2: citations that resolve against it
 * tools: task data-regen GAME=poe2 generates PoE2 item bases, rune slots, constants and gems from the pinned PoB-PoE2
 * tools: task oracle-poe2 builds a local PoE2 corpus and skills-on/skills-off oracle from the pinned PoB-PoE2
+* PoB-PoE2's defence calculations and a PoE2 accuracy gate over the local PoE2 builds
+* PoB-PoE2's item code in the PoE2 calc package, matching PoB-PoE2 on the local PoE2 builds' items
+* PoB-PoE2's mod parser in the PoE2 calc package, graded against PoB-PoE2's own parse of each line
 * PoE2 build XML reads and writes in its own package, and builds.DetectGame tells PoE1, PoE2 and older PoE2 saves apart
+* PoE2 items reach the PoE2 calc environment, merged per slot as PoB-PoE2 does
+* PoE2 tree allocation keeps the nodes From Nothing and Timeless jewels allocate, and Timeless jewels conquer passives as PoB-PoE2 does
+* the mod kernel evaluates PoE2's tags and takes per-game rules from its caller
+* the PoE2 0.5 passive tree and a build's allocation load in their own package
+* the PoE2 calc environment builds a PoE2 build's tree and config into its player and enemy, with PoB-PoE2's ModCache as the mod source
 
 --- Fixed ---
 * frontend: an undo step keeps the tree view where the user left it
@@ -13,6 +25,7 @@ VERSION[0.5.0][2026/10/24]
 * frontend: the Skills page's Socketed in tooltip shows the slot item's base art, not a fossil
 * frontend: tree art and fonts still load when browser storage is full, and clicking the open page's tab no longer steals focus from what you type
 * storage: on Windows, game-data cache reads and writes retry briefly while another process holds the file
+* PoE2 bases whose armour table is empty keep their armour data
 * task dropped-keys and task overapplied-census run their censuses again
 
 
