@@ -92,3 +92,99 @@ func TestPerformWeaponConditionsFixture(t *testing.T) {
 	sort.Strings(conds)
 	testza.AssertEqual(t, []string{"UsingMartialWeapon", "UsingMeleeWeapon", "UsingStaff", "UsingTwoHandedWeapon"}, conds)
 }
+
+func loadChargesCursesFixture(t *testing.T) *Environment {
+	t.Helper()
+	raw, err := os.ReadFile("testdata/charges_curses.xml")
+	testza.AssertNoError(t, err)
+	build, err := pob2.ParseBuild(raw)
+	testza.AssertNoError(t, err)
+	env, err := BuildOutput(build, Options{Tree: loadTestTree(t)})
+	testza.AssertNoError(t, err)
+	return env
+}
+
+func assertPoE2Outputs(t *testing.T, env *Environment, want map[string]float64) {
+	t.Helper()
+	for stat, w := range want {
+		if got, ok := env.Player.Output[stat]; !ok || math.Abs(got-w) > 1e-9 {
+			t.Errorf("output %s: PoB-PoE2 %v, ours %v (set %v)", stat, w, got, ok)
+		}
+	}
+}
+
+// As above for the tree-only warrior with custom maximum charge, charge duration, Blood Charge, curse and
+// mark limit, rarity and attribute requirement lines.
+func TestPerformChargesFixture(t *testing.T) {
+	env := loadChargesCursesFixture(t)
+	assertPoE2Outputs(t, env, map[string]float64{
+		"PowerChargesMax": 4, "PowerChargesDuration": 18, "FrenzyChargesMax": 5, "FrenzyChargesDuration": 18,
+		"EnduranceChargesMax": 5, "EnduranceChargesDuration": 21, "BloodChargesMax": 7, "BloodCharges": 7,
+		"InspirationCharges": 5, "InspirationChargesMax": 5, "PowerCharges": 0, "TotalCharges": 0,
+	})
+	testza.AssertEqual(t, 7.0, env.ModDB.Multipliers["BloodCharge"])
+}
+
+func TestPerformCurseLimitFixture(t *testing.T) {
+	env := loadChargesCursesFixture(t)
+	assertPoE2Outputs(t, env, map[string]float64{"EnemyCurseLimit": 4, "EnemyMarkLimit": 2})
+}
+
+// WarcryPower is left out: PoB-PoE2's 20 comes from the enemyIsBoss config option.
+func TestPerformStatOutputsFixture(t *testing.T) {
+	env := loadChargesCursesFixture(t)
+	assertPoE2Outputs(t, env, map[string]float64{
+		"EffectiveLootRarityMod": 1.3, "LootQuantityNormalEnemies": 0, "LootRarityMagicEnemies": 0,
+		"GlobalItemAttributeRequirements": 0.9, "GlobalGemAttributeRequirements": 0.9, "GlobalWeaponAttributeRequirements": 0.9,
+		"CharmLimit": 0, "CharmEffect": 20, "FlaskEffect": 10,
+		"FlaskChargeGen": 0.25, "LifeFlaskChargeGen": 0.45, "ManaFlaskChargeGen": 0.25, "UtilityFlaskChargeGen": 0.25,
+	})
+}
+
+// As above for the tree-only warrior with a Chill maximum override, stacking Shocks and a Shock maximum line.
+// ShockStackCount is left out: PoB-PoE2's 1 comes from the ShockStacks config option's placeholder.
+func TestPerformAilmentLimitsFixture(t *testing.T) {
+	raw, err := os.ReadFile("testdata/ailment_limits.xml")
+	testza.AssertNoError(t, err)
+	build, err := pob2.ParseBuild(raw)
+	testza.AssertNoError(t, err)
+	env, err := BuildOutput(build, Options{Tree: loadTestTree(t)})
+	testza.AssertNoError(t, err)
+	assertPoE2Outputs(t, env, map[string]float64{
+		"MaximumChill": 35, "MaximumShock": 110, "CurrentChill": 0, "CurrentShock": 0,
+	})
+}
+
+// As above for the tree-only warrior wearing items with attribute requirements.
+func TestPerformAttributeRequirementsFixture(t *testing.T) {
+	raw, err := os.ReadFile("testdata/warrior_items.xml")
+	testza.AssertNoError(t, err)
+	build, err := pob2.ParseBuild(raw)
+	testza.AssertNoError(t, err)
+	tree := loadTestTree(t)
+	env, err := BuildOutput(build, Options{Tree: tree, Items: NewItemsTab(build, tree, nil)})
+	testza.AssertNoError(t, err)
+	assertPoE2Outputs(t, env, map[string]float64{
+		"ReqStr": 104, "ReqStrString": 104, "ReqDex": 44, "ReqInt": 92,
+		"StrRequirementsOnBody Armour": 60, "StrRequirementsOnBoots": 101, "StrRequirementsOnWeapon 1": 104,
+		"DexRequirementsOnGloves": 44, "IntRequirementsOnGloves": 44, "IntRequirementsOnWeapon 2": 92,
+	})
+}
+
+// As above, for the base damage and local accuracy of the same warrior's weapon.
+func TestPerformWeaponBaseStatsFixture(t *testing.T) {
+	raw, err := os.ReadFile("testdata/warrior_items.xml")
+	testza.AssertNoError(t, err)
+	build, err := pob2.ParseBuild(raw)
+	testza.AssertNoError(t, err)
+	tree := loadTestTree(t)
+	env, err := BuildOutput(build, Options{Tree: tree, Items: NewItemsTab(build, tree, nil)})
+	testza.AssertNoError(t, err)
+	assertPoE2Outputs(t, env, map[string]float64{
+		"AccuracyOnWeapon 1": 150, "PhysicalMinOnWeapon 1": 157, "PhysicalMaxOnWeapon 1": 231,
+		"LightningMinOnWeapon 1": 5, "LightningMaxOnWeapon 1": 50,
+	})
+	if _, ok := env.Player.Output["FireMinOnWeapon 1"]; ok {
+		t.Error("FireMinOnWeapon 1 is set; PoB-PoE2 leaves it unset")
+	}
+}

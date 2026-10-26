@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PathOfBuilding2>
+	<Build ascendClassName="None" characterLevelAutoMode="false" className="Warrior" level="30" mainSocketGroup="1" targetVersion="0_1" viewMode="TREE">
+	</Build>
+	<Config activeConfigSet="1">
+		<ConfigSet id="1" title="Default">
+			<CustomModifierBlock enabled="true" title="Default">+1 to Maximum Power Charges
++2 to Maximum Frenzy Charges
+Your Maximum Endurance Charges is equal to your Maximum Frenzy Charges
+Your Curse Limit is equal to your Maximum Power Charges
+You can apply an additional Mark
++2 to Maximum Blood Charges
+25% increased Charge Duration
+20% increased Endurance Charge Duration
+30% increased Rarity of Items found
+Equipment and Skill Gems have 10% reduced Attribute Requirements
+Flasks gain 0.25 charges per second
+Life Flasks gain 1 charge every 5 seconds
+20% increased effect of Charms
+10% increased effect of Flasks</CustomModifierBlock>
+		</ConfigSet>
+	</Config>
+	<Items activeItemSet="1" useSecondWeaponSet="false">
+		<ItemSet id="1" title="Default" useSecondWeaponSet="false">
+		</ItemSet>
+	</Items>
+	<Skills activeSkillSet="1" defaultGemLevel="normalMaximum" defaultGemQuality="0">
+		<SkillSet id="1">
+		</SkillSet>
+	</Skills>
+	<Tree activeSpec="1">
+		<Spec ascendClassId="0" classId="6" masteryEffects="" nodes="47175,3936,38646,13397,46325,1913,23570,1207,33556,39581,4665,36709,41031,38323,55473,6839,61534,63393,54232,5710" secondaryAscendClassId="nil" treeVersion="0_5">
+			<Overrides>
+				<AttributeOverride dexNodes="1207" intNodes="41031" strNodes="13397,23570"/>
+			</Overrides>
+		</Spec>
+	</Tree>
+</PathOfBuilding2>

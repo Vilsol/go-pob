@@ -503,6 +503,10 @@ calculator2/calc_defence.go         PORT       src/Modules/CalcDefence.lua
 calculator2/calc_defence_ehp.go     PORT       src/Modules/CalcDefence.lua
 calculator2/calc_defence_ehp_config.go PORT    src/Classes/ConfigTab.lua,src/Modules/ConfigOptions.lua
 calculator2/calc_perform.go         PORT       src/Modules/CalcPerform.lua
+calculator2/calc_perform_ailments.go PORT       src/Modules/CalcPerform.lua
+calculator2/calc_perform_charges.go PORT       src/Modules/CalcPerform.lua
+calculator2/calc_perform_requirements.go PORT    src/Modules/CalcPerform.lua,src/Modules/CalcSetup.lua
+calculator2/calc_perform_weapon.go PORT        src/Modules/CalcPerform.lua
 calculator2/calc_setup.go           PORT       src/Modules/CalcSetup.lua,src/Classes/PassiveTree.lua,src/Classes/ConfigTab.lua,src/Modules/ConfigOptions.lua
 calculator2/calc_setup_items.go     PORT       src/Modules/CalcSetup.lua,src/Classes/ItemsTab.lua,src/Classes/ItemSlotControl.lua,src/Classes/TreeTab.lua,src/Classes/PassiveTree.lua,src/Classes/ModList.lua
 calculator2/calc_setup_radius.go    PORT       src/Modules/CalcSetup.lua

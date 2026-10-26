@@ -183,6 +183,7 @@ func doActorAttribsConditions(env *Environment, actor *Actor) {
 		if (weapon1 != nil && weapon1.Base != nil && weapon1.Base.Weapon != nil) || (weapon2 != nil && weapon2.Base != nil && weapon2.Base.Weapon != nil) {
 			condList["UsingMartialWeapon"] = true
 		}
+		addWeaponBaseStats(actor)
 	}
 	for _, slotName := range []string{"Helmet", "Body Armour", "Gloves", "Boots"} {
 		if _, ok := actor.ItemList[slotName]; ok {
@@ -697,7 +698,7 @@ func actionSpeedMod(actor *Actor) float64 {
 }
 
 // perform is calcs.perform as far as the defence slice's inputs: keystones, attributes and the
-// life/mana/spirit pools. Minions, flasks, buffs, charges and the rest of the pass are not ported.
+// life/mana/spirit pools, plus charges. Minions, flasks, buffs and the rest of the pass are not ported.
 //
 //pob2:src/Modules/CalcPerform.lua:1193-3320
 func perform(env *Environment) {
@@ -728,16 +729,60 @@ func perform(env *Environment) {
 		env.Player.WeaponData2Type = weapon2.Base.Type
 	}
 
+	modDB := env.ModDB
+	output := env.Player.Output
+
+	//pob2:block:src/Modules/CalcPerform.lua:1249-1256
+	if modDB.Flag(nil, "CryWolfMinimumPower") && modDB.Sum(mod.TypeBase, nil, "WarcryPower") < 10 {
+		modDB.AddMod(newMod("WarcryPower", mod.TypeOverride, 10, "Minimum Warcry Power from CryWolf"))
+	}
+	if modDB.Flag(nil, "WarcryInfinitePower") {
+		modDB.AddMod(newMod("WarcryPower", mod.TypeOverride, 999999, "Warcries have infinite power"))
+	}
+	output["WarcryPower"] = overrideOr(modDB, "WarcryPower", modDB.Sum(mod.TypeBase, nil, "WarcryPower"))
+	modDB.Multipliers["WarcryPower"] = output["WarcryPower"]
+
+	// Stat sorting category calcs
+	//pob2:block:src/Modules/CalcPerform.lua:1450
+	output["EffectiveLootRarityMod"] = calcLibMod(modDB, nil, "LootRarity")
+
+	// Special Rarity / Quantity Calc for Bisco's
+	//pob2:block:src/Modules/CalcPerform.lua:1458-1461
+	lootQuantityNormalEnemies := modDB.Sum(mod.TypeIncrease, nil, "LootQuantityNormalEnemies")
+	output["LootQuantityNormalEnemies"] = flagOr(lootQuantityNormalEnemies > 0, lootQuantityNormalEnemies+modDB.Sum(mod.TypeIncrease, nil, "LootQuantity"), 0)
+	lootRarityMagicEnemies := modDB.Sum(mod.TypeIncrease, nil, "LootRarityMagicEnemies")
+	output["LootRarityMagicEnemies"] = flagOr(lootRarityMagicEnemies > 0, lootRarityMagicEnemies+modDB.Sum(mod.TypeIncrease, nil, "LootRarity"), 0)
+
 	addSlotBonusEffectsPerform(env)
 	addMagebloodLegacies(env)
 
+	// flask breakdown; the oracle builds the breakdown, so these always run.
+	//pob2:block:src/Modules/CalcPerform.lua:1580
+	//pob2:block:src/Modules/CalcPerform.lua:1591-1602
+	{
+		effectInc := modDB.Sum(mod.TypeIncrease, &moddb.ListCfg{Actor: "player"}, "FlaskEffect")
+		chargesGenerated := modDB.Sum(mod.TypeBase, nil, "FlaskChargesGenerated")
+		utilityChargesGenerated := modDB.Sum(mod.TypeBase, nil, "UtilityFlaskChargesGenerated")
+		lifeChargesGenerated := modDB.Sum(mod.TypeBase, nil, "LifeFlaskChargesGenerated")
+		manaChargesGenerated := modDB.Sum(mod.TypeBase, nil, "ManaFlaskChargesGenerated")
+
+		output["FlaskEffect"] = effectInc
+		output["FlaskChargeGen"] = chargesGenerated
+		output["LifeFlaskChargeGen"] = chargesGenerated + lifeChargesGenerated
+		output["ManaFlaskChargeGen"] = chargesGenerated + manaChargesGenerated
+		output["UtilityFlaskChargeGen"] = chargesGenerated + utilityChargesGenerated
+	}
+
 	// No charm is equipped until items exist, so mergeCharms only counts the empty slots.
-	//pob2:block:src/Modules/CalcPerform.lua:1781
+	//pob2:block:src/Modules/CalcPerform.lua:1779-1787
+	charmEffectInc := modDB.Sum(mod.TypeIncrease, &moddb.ListCfg{Actor: "player"}, "CharmEffect")
 	charmLimit := env.ModDB.Sum(mod.TypeBase, nil, "CharmLimit")
 	if o := env.ModDB.Override(nil, "CharmLimit"); o != nil {
 		charmLimit = o.Float()
 	}
 	charmLimit = math.Min(charmLimit, 3)
+	output["CharmEffect"] = charmEffectInc
+	output["CharmLimit"] = charmLimit
 	//pob2:block:src/Modules/CalcPerform.lua:1858-1866
 	if env.ModeCombat {
 		//pob2:block:src/Modules/CalcPerform.lua:1849
@@ -748,13 +793,32 @@ func perform(env *Environment) {
 	//pob2:block:src/Modules/CalcPerform.lua:1869
 	doActorAttribsConditions(env, env.Player)
 
-	//pob2:block:src/Modules/CalcPerform.lua:3267
+	// Process attribute requirements
+	//pob2:block:src/Modules/CalcPerform.lua:1896
+	processAttributeRequirements(env, requirementsTableItems(env))
+
+	//pob2:block:src/Modules/CalcPerform.lua:2952
+	doActorCharges(env, env.Player)
+
+	// ExtraCurse and party curses need skill data, and the slot loop needs skills' curses, so only the limits run.
+	//pob2:block:src/Modules/CalcPerform.lua:3025-3026
+	if env.ModDB.Flag(nil, "CurseLimitIsMaximumPowerCharges") {
+		env.Player.Output["EnemyCurseLimit"] = env.Player.Output["PowerChargesMax"]
+	} else {
+		env.Player.Output["EnemyCurseLimit"] = env.ModDB.Sum(mod.TypeBase, nil, "EnemyCurseLimit")
+	}
+	env.Player.Output["EnemyMarkLimit"] = env.ModDB.Sum(mod.TypeBase, nil, "EnemyMarkLimit")
+
+	//pob2:block:src/Modules/CalcPerform.lua:3266-3267
+	doActorCharges(env, env.Player)
 	doActorMisc(env, env.Player)
 
 	//pob2:block:src/Modules/CalcPerform.lua:3320
 	doActorLifeManaSpirit(env.Player)
+	applyNonDamagingAilments(env)
 
-	//pob2:block:src/Modules/CalcPerform.lua:3383
+	//pob2:block:src/Modules/CalcPerform.lua:3382-3383
+	doActorCharges(env, env.Enemy)
 	doActorMisc(env, env.Enemy)
 
 	//pob2:block:src/Modules/CalcPerform.lua:3456
