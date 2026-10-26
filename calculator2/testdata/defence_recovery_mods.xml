@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PathOfBuilding2>
+	<Build ascendClassName="None" characterLevelAutoMode="false" className="Warrior" level="30" mainSocketGroup="1" targetVersion="0_1" viewMode="TREE">
+	</Build>
+	<Config activeConfigSet="1">
+		<ConfigSet id="1" title="Default">
+			<Input name="questAct 4Halls Of The DeadNgamahu&apos;s Test" string="+5 to Strength"/>
+			<Input boolean="false" name="questAct 1FreythornKing In The Mists"/>
+			<Input boolean="false" name="questAct 4Eye of HinekoraSilent Hall"/>
+			<Input name="enemyLevel" number="82"/>
+			<CustomModifierBlock enabled="true" title="Default">+5 to Dexterity
+10% increased maximum Life
++40% to Fire Resistance
++130% to Cold Resistance
++3% to maximum Cold Resistance
++17% to Chaos Resistance
++15% to all Elemental Resistances
++100 to Evasion Rating
+50% increased Evasion Rating
++80 to Armour
+25% increased Armour
++60 to maximum Energy Shield
+30% increased maximum Energy Shield
++12% to Block chance
+10% increased Block chance
++150 to Deflection Rating
+Gain Deflection Rating equal to 20% of Evasion Rating
+15% increased Movement Speed
+Reserves 25% of Life
+Regenerate 2% of maximum Life per second
+Regenerate 12 Life per second
+20% increased Mana Regeneration Rate
+10% increased Life Recovery rate
+15% increased Energy Shield Recovery rate
+30% increased Energy Shield Recharge Rate
+40% faster start of Energy Shield Recharge
+15% of Damage taken Recouped as Life
+8% of Damage taken Recouped as Mana
+10% increased Elemental Ailment Threshold
+Recover 25 Life when you Block
+35% reduced Ignite Duration on you
+20% reduced Freeze Duration on you
+10% increased Light Radius
+15% reduced effect of Curses on you
++30% chance to avoid being Shocked
+25% chance to Avoid Bleeding
+40% reduced Effect of Chill on you
+Increases and Reductions to Mana Regeneration Rate also apply to Energy Shield Recharge Rate</CustomModifierBlock>
+		</ConfigSet>
+	</Config>
+	<Items activeItemSet="1" useSecondWeaponSet="false">
+		<ItemSet id="1" title="Default" useSecondWeaponSet="false">
+		</ItemSet>
+	</Items>
+	<Skills activeSkillSet="1" defaultGemLevel="normalMaximum" defaultGemQuality="0">
+		<SkillSet id="1">
+		</SkillSet>
+	</Skills>
+	<Tree activeSpec="1">
+		<Spec ascendClassId="0" classId="6" masteryEffects="" nodes="47175,3936,38646,13397,46325,1913,23570,1207,33556,39581,4665,36709,41031,38323,55473,6839,61534,63393,54232,5710" secondaryAscendClassId="nil" treeVersion="0_5">
+			<Overrides>
+				<AttributeOverride dexNodes="1207" intNodes="41031" strNodes="13397,23570"/>
+			</Overrides>
+		</Spec>
+	</Tree>
+</PathOfBuilding2>

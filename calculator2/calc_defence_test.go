@@ -33,3 +33,38 @@ func TestDefenceCustomModsFixture(t *testing.T) {
 		}
 	}
 }
+
+// The expected values are PoB-PoE2's output for the same file, loaded headless: the custom-mods
+// warrior above plus recovery, recharge, recoup, avoidance and ailment-on-self lines, and mana regeneration rate applying to recharge rate.
+func TestDefenceRecoveryFixture(t *testing.T) {
+	raw, err := os.ReadFile("testdata/defence_recovery_mods.xml")
+	testza.AssertNoError(t, err)
+	build, err := pob2.ParseBuild(raw)
+	testza.AssertNoError(t, err)
+	env, err := BuildOutput(build, Options{Tree: loadTestTree(t)})
+	testza.AssertNoError(t, err)
+
+	for stat, want := range map[string]float64{
+		"AilmentThreshold": 301.4, "BleedAvoidChance": 25, "ShockAvoidChance": 30, "CurseEffectOnSelf": 85,
+		"DebuffExpirationModifier": 100, "EnergyShieldRecharge": 16.8, "EnergyShieldRechargeDelay": 2.8571428571429,
+		"EnergyShieldRecoveryRateMod": 1.15, "EnergyShieldRegenInc": 15, "ExposureEffectOnSelf": 100,
+		"LifeOnBlock": 25, "LifeRecoup": 16.5, "LifeRecoveryRateMod": 1.1, "LifeRegen": 27.6, "LifeRegenInc": 10,
+		"LifeRegenPercent": 5, "LifeRegenRecovery": 27.6, "LightRadiusMod": 1.1, "ManaRecoup": 8,
+		"ManaRecoveryRateMod": 1, "ManaRegen": 8.4, "ManaRegenInc": 20, "ManaRegenPercent": 4.8, "ManaRegenRecovery": 8.4,
+		"MaxEnergyShieldLeechInstance": 7.8, "MaxEnergyShieldLeechRate": 7.8, "MaxLifeLeechInstance": 54.7,
+		"MaxLifeLeechRate": 109.4, "MaxLifeLeechRatePercent": 20, "MaxManaLeechInstance": 17.4, "MaxManaLeechRate": 34.8,
+		"SelfBleedDuration": 100, "SelfBleedEffect": 100, "SelfBlindDuration": 100, "SelfChillDuration": 100,
+		"SelfChillEffect": 60, "SelfFreezeDuration": 80, "SelfIgniteDuration": 65, "SelfShockEffect": 100,
+		"SpellSuppressionEffect": 50, "WeaponSwapSpeedMod": 1, "WitherEffectOnSelf": 100, "anyRecoup": 24.5,
+		"SpellSuppressionChance": 0, "AttackDodgeChance": 0, "WardRegen": 0, "RageRegen": 0,
+	} {
+		got, ok := env.Player.Output[stat]
+		if !ok {
+			t.Errorf("%s: not written", stat)
+			continue
+		}
+		if math.Abs(got-want) > 1e-9*math.Max(1, math.Abs(want)) {
+			t.Errorf("%s: PoB-PoE2 %v, ours %v", stat, want, got)
+		}
+	}
+}

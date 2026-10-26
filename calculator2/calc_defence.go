@@ -2,6 +2,7 @@ package calculator2
 
 import (
 	"math"
+	"strings"
 
 	"github.com/Vilsol/go-pob/mod"
 	"github.com/Vilsol/go-pob/moddb"
@@ -172,12 +173,10 @@ type defenceResource struct {
 	totalBase       float64
 }
 
-// defence is calcs.defence as far as the defence slice: armour-item outputs, resistances, block,
-// the pools and their reservation, the primary defences with evade and deflect chance, damage
-// reduction caps and movement speed. Suppression, dodge, recovery, leech, regeneration, recoup and
-// the EHP section are not ported.
+// Boolean outputs (EnergyShieldRechargeAppliesTo*, specificTypeAvoidance, the *Immunity flags,
+// showDebuffExpirationModifier) are not carried by this float output table.
 //
-//pob2:src/Modules/CalcDefence.lua:790-1938
+//pob2:src/Modules/CalcDefence.lua:790-2051
 func defence(env *Environment, actor *Actor) {
 	modDB := actor.ModDB
 	output := actor.Output
@@ -394,6 +393,29 @@ func defence(env *Environment, actor *Actor) {
 
 	defenceBlock(env, actor)
 
+	//pob2:block:src/Modules/CalcDefence.lua:1107-1136
+	if modDB.Flag(nil, "ArmourAppliesToEnergyShieldRecharge") {
+		multiplier := 1.0
+		if v := modDB.Max(nil, "ImprovedArmourAppliesToEnergyShieldRecharge"); v != 0 {
+			multiplier = v / 100
+		}
+		for _, value := range modDB.Tabulate(mod.TypeIncrease, nil, "Armour", "ArmourAndEvasion", "Defences") {
+			m := value.Mod
+			modDB.AddMod(newMod("EnergyShieldRecharge", mod.TypeIncrease, math.Floor(m.Value().Float()*multiplier), m.GetSource(), getConvertedModTags(m, multiplier)...).Flag(m.Flags()).KeywordFlag(m.KeywordFlags()))
+		}
+	}
+	for _, conv := range []struct{ flag, from, to string }{
+		{"MovementSpeedAppliesToEnergyShieldRecharge", "MovementSpeed", "EnergyShieldRecharge"},
+		{"ManaRegenAppliesToEnergyShieldRecharge", "ManaRegen", "EnergyShieldRecharge"},
+		{"LifeRegenAppliesToManaRegen", "LifeRegen", "ManaRegen"},
+	} {
+		if modDB.Flag(nil, conv.flag) {
+			for _, value := range modDB.Tabulate(mod.TypeIncrease, &moddb.ListCfg{}, conv.from) {
+				modDB.AddMod(value.Mod.Clone().SetName(conv.to))
+			}
+		}
+	}
+
 	//pob2:block:src/Modules/CalcDefence.lua:1137-1199
 	for _, conv := range []struct{ flag, target, from string }{
 		{"EnergyShieldIncreasedByOvercappedColdRes", "EnergyShield", "ColdResistOverCap"},
@@ -415,11 +437,14 @@ func defence(env *Environment, actor *Actor) {
 	}
 
 	primaryDefences(env, actor)
+	spellSuppressionChance := defenceSuppressionDodge(env, actor)
 
 	//pob2:block:src/Modules/CalcDefence.lua:1646-1652
 	doActorLifeManaSpirit(actor)
 	doActorLifeManaSpiritReservation(actor)
 	doActorDarkness(actor)
+
+	defenceRecovery(actor)
 
 	//pob2:block:src/Modules/CalcDefence.lua:1909-1923
 	damageReductionCap := miscConstant("DamageReductionCap")
@@ -462,6 +487,8 @@ func defence(env *Environment, actor *Actor) {
 		output["MovementSpeedMod"] = math.Max(output["MovementSpeedMod"], 1)
 	}
 	output["EffectiveMovementSpeedMod"] = round(output["MovementSpeedMod"]*output["ActionSpeedMod"], 3)
+
+	defenceAvoidance(actor, spellSuppressionChance)
 }
 
 // The parent and party-member block chances read actor.parent and actor.partyMembers; a player has
@@ -848,4 +875,421 @@ func primaryDefences(env *Environment, actor *Actor) {
 		output["DeflectChance"] = (1 - notDeflect*notDeflect) * 100
 	}
 	output["DeflectEffect"] = math.Min(math.Max(miscConstant("DeflectEffect")+modDB.Sum(mod.TypeBase, nil, "DeflectEffect"), 0), 100)
+}
+
+//pob2:src/Modules/CalcTools.lua:238-253
+func getConvertedModTags(m mod.Mod, multiplier float64) []mod.Tag {
+	modifiers := make([]mod.Tag, len(m.Tags()))
+	for k, value := range m.Tags() {
+		switch x := value.(type) {
+		case *mod.MultiplierTag:
+			c := *x
+			if c.TagLimitTotal && c.TagLimit != nil {
+				limit := *c.TagLimit * multiplier
+				c.TagLimit = &limit
+			}
+			modifiers[k] = &c
+		case *mod.PerStatTag:
+			c := *x
+			if c.TagLimitTotal && c.TagLimit != nil {
+				limit := *c.TagLimit * multiplier
+				c.TagLimit = &limit
+			}
+			modifiers[k] = &c
+		default:
+			modifiers[k] = value
+		}
+	}
+	return modifiers
+}
+
+//pob2:block:src/Modules/Data.lua:409-412
+var (
+	dataAilmentTypeList             = []string{"Bleed", "Poison", "Ignite", "Chill", "Freeze", "Shock"}
+	dataElementalAilmentTypeList    = []string{"Ignite", "Chill", "Freeze", "Shock"}
+	dataNonElementalAilmentTypeList = []string{"Bleed", "Poison"}
+)
+
+// defenceSuppressionDodge returns the uncapped spell suppression sum, which the ailment-avoidance
+// block reads again.
+//
+//pob2:block:src/Modules/CalcDefence.lua:1581-1630
+func defenceSuppressionDodge(env *Environment, actor *Actor) float64 {
+	modDB := actor.ModDB
+	enemyDB := actor.Enemy.ModDB
+	output := actor.Output
+
+	spellSuppressionChance := modDB.Sum(mod.TypeBase, nil, "SpellSuppressionChance")
+	totalSpellSuppressionChance := spellSuppressionChance
+	if o := modDB.Override(nil, "SpellSuppressionChance"); o != nil {
+		totalSpellSuppressionChance = o.Float()
+	}
+
+	if modDB.Flag(nil, "ConvertSpellSuppressionToSpellDodge") {
+		modDB.AddMod(newMod("SpellDodgeChance", mod.TypeBase, spellSuppressionChance/2, "Acrobatics"))
+	}
+
+	output["SpellSuppressionChance"] = math.Min(totalSpellSuppressionChance, miscConstant("SuppressionChanceCap"))
+	output["SpellSuppressionEffect"] = math.Max(miscConstant("SuppressionEffect")+modDB.Sum(mod.TypeBase, nil, "SpellSuppressionEffect"), 0)
+
+	if enemyDB.Flag(nil, "CannotBeSuppressed") {
+		output["EffectiveSpellSuppressionChance"] = 0
+	} else {
+		output["EffectiveSpellSuppressionChance"] = output["SpellSuppressionChance"]
+	}
+	luck := 1.0
+	if env.ModeEffective {
+		if modDB.Flag(nil, "SpellSuppressionChanceIsLucky") {
+			luck *= 2
+		}
+		if modDB.Flag(nil, "SpellSuppressionChanceIsUnlucky") {
+			luck /= 2
+		}
+	}
+	if v, ok := env.ConfigInput["EHPUnluckyWorstOf"]; ok && v.IsNumber {
+		luck /= v.Number
+	}
+	for luck != 1 {
+		if luck > 1 {
+			luck /= 2
+			output["EffectiveSpellSuppressionChance"] = (1 - math.Pow(1-output["EffectiveSpellSuppressionChance"]/100, 2)) * 100
+		} else {
+			luck *= 2
+			output["EffectiveSpellSuppressionChance"] = output["EffectiveSpellSuppressionChance"] / 100 * output["EffectiveSpellSuppressionChance"]
+		}
+	}
+
+	output["SpellSuppressionChanceOverCap"] = math.Max(0, totalSpellSuppressionChance-miscConstant("SuppressionChanceCap"))
+
+	totalAttackDodgeChance := modDB.Sum(mod.TypeBase, nil, "AttackDodgeChance")
+	totalSpellDodgeChance := modDB.Sum(mod.TypeBase, nil, "SpellDodgeChance")
+	attackDodgeChanceMax := miscConstant("DodgeChanceCap")
+	spellDodgeChanceMax := modDB.Sum(mod.TypeBase, nil, "SpellDodgeChanceMax")
+	if o := modDB.Override(nil, "SpellDodgeChanceMax"); o != nil {
+		spellDodgeChanceMax = o.Float()
+	}
+	enemyReduceDodgeChance := enemyDB.Sum(mod.TypeBase, nil, "reduceEnemyDodge")
+
+	cannotBeDodged := enemyDB.Flag(nil, "CannotBeDodged")
+	output["AttackDodgeChance"] = math.Min(totalAttackDodgeChance, attackDodgeChanceMax)
+	output["EffectiveAttackDodgeChance"] = 0
+	if !cannotBeDodged {
+		output["EffectiveAttackDodgeChance"] = math.Min(math.Max(totalAttackDodgeChance-enemyReduceDodgeChance, 0), attackDodgeChanceMax)
+	}
+	output["SpellDodgeChance"] = math.Min(totalSpellDodgeChance, spellDodgeChanceMax)
+	output["EffectiveSpellDodgeChance"] = 0
+	if !cannotBeDodged {
+		output["EffectiveSpellDodgeChance"] = math.Min(math.Max(totalSpellDodgeChance-enemyReduceDodgeChance, 0), spellDodgeChanceMax)
+	}
+	if env.ModeEffective && modDB.Flag(nil, "DodgeChanceIsUnlucky") {
+		output["EffectiveAttackDodgeChance"] = output["EffectiveAttackDodgeChance"] / 100 * output["EffectiveAttackDodgeChance"]
+		output["EffectiveSpellDodgeChance"] = output["EffectiveSpellDodgeChance"] / 100 * output["EffectiveSpellDodgeChance"]
+	}
+	output["AttackDodgeChanceOverCap"] = math.Max(0, totalAttackDodgeChance-attackDodgeChanceMax)
+	output["SpellDodgeChanceOverCap"] = math.Max(0, totalSpellDodgeChance-spellDodgeChanceMax)
+	return spellSuppressionChance
+}
+
+// recoveryResources is the regeneration block's `resources`.
+var recoveryResources = []string{"Mana", "Life", "Energy Shield", "Rage", "Ward"}
+
+// The parent and party-member leech-rate branches read actor.parent and actor.partyMembers; a player
+// has neither, so those branches are not ported.
+//
+//pob2:block:src/Modules/CalcDefence.lua:1654-1906
+func defenceRecovery(actor *Actor) {
+	modDB := actor.ModDB
+	output := actor.Output
+
+	//pob2:block:src/Modules/CalcDefence.lua:1655-1666
+	if modDB.Conditions["AffectedByArcaneSurge"] || modDB.Flag(nil, "Condition:ArcaneSurge") {
+		modDB.Conditions["AffectedByArcaneSurge"] = true
+		effect := 1 + modDB.Sum(mod.TypeIncrease, nil, "ArcaneSurgeEffect", "BuffEffectOnSelf")/100
+		maxOr := func(name string, fallback float64) float64 {
+			if v := modDB.Max(nil, name); v != 0 {
+				return v
+			}
+			return fallback
+		}
+		if modDB.Flag(nil, "ArcaneSurgeLifeRegen") {
+			modDB.AddMod(newMod("LifeRegen", mod.TypeMore, maxOr("ArcaneSurgeManaRegen", 20)*effect, "Arcane Surge"))
+		} else {
+			modDB.AddMod(newMod("ManaRegen", mod.TypeMore, maxOr("ArcaneSurgeManaRegen", 20)*effect, "Arcane Surge"))
+		}
+		modDB.AddMod(newMod("Speed", mod.TypeIncrease, maxOr("ArcaneSurgeCastSpeed", 15)*effect, "Arcane Surge").Flag(modFlagCast))
+		if arcaneSurgeDamage := maxOr("ArcaneSurgeDamage", 0); arcaneSurgeDamage != 0 {
+			modDB.AddMod(newMod("Damage", mod.TypeMore, arcaneSurgeDamage*effect, "Arcane Surge").Flag(modFlagSpell))
+		}
+	}
+
+	//pob2:block:src/Modules/CalcDefence.lua:1669-1674
+	output["LifeRecoveryRateMod"] = 1
+	if !modDB.Flag(nil, "CannotRecoverLifeOutsideLeech") {
+		output["LifeRecoveryRateMod"] = calcLibMod(modDB, nil, "LifeRecoveryRate")
+	}
+	output["ManaRecoveryRateMod"] = calcLibMod(modDB, nil, "ManaRecoveryRate")
+	output["EnergyShieldRecoveryRateMod"] = calcLibMod(modDB, nil, "EnergyShieldRecoveryRate")
+
+	//pob2:block:src/Modules/CalcDefence.lua:1677-1702
+	output["MaxLifeLeechInstance"] = output["Life"] * calcLibVal(modDB, "MaxLifeLeechInstance", nil) / 100
+	output["MaxLifeLeechRatePercent"] = calcLibVal(modDB, "MaxLifeLeechRate", nil)
+	output["MaxLifeLeechRate"] = output["Life"] * output["MaxLifeLeechRatePercent"] / 100
+	output["MaxEnergyShieldLeechInstance"] = output["EnergyShield"] * calcLibVal(modDB, "MaxEnergyShieldLeechInstance", nil) / 100
+	output["MaxEnergyShieldLeechRate"] = output["EnergyShield"] * calcLibVal(modDB, "MaxEnergyShieldLeechRate", nil) / 100
+	output["MaxManaLeechInstance"] = output["Mana"] * calcLibVal(modDB, "MaxManaLeechInstance", nil) / 100
+	output["MaxManaLeechRate"] = output["Mana"] * calcLibVal(modDB, "MaxManaLeechRate", nil) / 100
+
+	//pob2:block:src/Modules/CalcDefence.lua:1712-1789
+	for i, resourceName := range recoveryResources {
+		resource := strings.ReplaceAll(resourceName, " ", "")
+		pool := output[resource]
+		baseRegen := 0.0
+		inc := modDB.Sum(mod.TypeIncrease, nil, resource+"Regen", resource+"RecoveryRate")
+		more := modDB.More(nil, resource+"Regen", resource+"RecoveryRate")
+		regenRate := 0.0
+		recoveryRateMod, ok := output[resource+"RecoveryRateMod"]
+		if !ok {
+			recoveryRateMod = 1
+		}
+		if modDB.Flag(nil, "No"+resource+"Regen") || modDB.Flag(nil, "CannotGain"+resource) {
+			output[resource+"Regen"] = 0
+		} else {
+			if inc != 0 {
+				for _, next := range recoveryResources[i+1:] {
+					nextResource := strings.ReplaceAll(next, " ", "")
+					if modDB.Flag(nil, resource+"RegenTo"+nextResource+"Regen") {
+						modDB.AddMod(newMod(nextResource+"Regen", mod.TypeIncrease, inc, mod.Source(resourceName+" instead applies to "+next)))
+						inc = 0
+					}
+				}
+			}
+			baseRegen = modDB.Sum(mod.TypeBase, nil, resource+"Regen") + pool*modDB.Sum(mod.TypeBase, nil, resource+"RegenPercent")/100
+			regen := baseRegen * (1 + inc/100) * more
+			if regen != 0 {
+				for _, next := range recoveryResources[i+1:] {
+					nextResource := strings.ReplaceAll(next, " ", "")
+					if modDB.Flag(nil, resource+"RegenerationRecovers"+nextResource) {
+						modDB.AddMod(newMod(nextResource+"Recovery", mod.TypeBase, regen, mod.Source(resourceName+" Regeneration Recovers "+next)))
+					}
+				}
+			}
+			regenRate = round(regen, 1)
+			output[resource+"Regen"] = regenRate
+		}
+		output[resource+"RegenInc"] = inc
+		baseDegen := modDB.Sum(mod.TypeBase, nil, resource+"Degen") + pool*modDB.Sum(mod.TypeBase, nil, resource+"DegenPercent")/100
+		degenRate := 0.0
+		if baseDegen > 0 {
+			degenRate = baseDegen * calcLibMod(modDB, nil, resource+"Degen")
+		}
+		output[resource+"Degen"] = degenRate
+		recoveryRate := modDB.Sum(mod.TypeBase, nil, resource+"Recovery") * recoveryRateMod
+		output[resource+"Recovery"] = recoveryRate
+		overflowRecovery := modDB.Sum(mod.TypeBase, nil, "Overflow"+resource+"Recovery")
+		regenPart := regenRate
+		if modDB.Flag(nil, "UnaffectedBy"+resource+"Regen") {
+			regenPart = 0
+		}
+		output[resource+"RegenRecovery"] = regenPart - degenRate + recoveryRate + overflowRecovery
+		if resource == "Life" && modDB.Flag(nil, "ZealotsOath") && output[resource+"RegenRecovery"] > 0 {
+			modDB.AddMod(newMod("OverflowEnergyShieldRecovery", mod.TypeBase, output["LifeRegenRecovery"]-recoveryRate, "Zealot's Oath"))
+			output[resource+"RegenRecovery"] = 0
+		}
+		if output[resource+"RegenRecovery"] > 0 {
+			modDB.AddMod(newFlagMod("Condition:CanGain"+resource, mod.Source(resourceName+"Regen")))
+		}
+		output[resource+"RegenPercent"] = 0
+		if pool > 0 {
+			output[resource+"RegenPercent"] = round(output[resource+"RegenRecovery"]/pool*100, 1)
+		}
+	}
+
+	//pob2:block:src/Modules/CalcDefence.lua:1792-1850
+	rechargeAppliesToLife := modDB.Flag(nil, "EnergyShieldRechargeAppliesToLife") && !modDB.Flag(nil, "CannotRecoverLifeOutsideLeech")
+	rechargeAppliesToEnergyShield := !(modDB.Flag(nil, "NoEnergyShieldRecharge") || modDB.Flag(nil, "CannotGainEnergyShield") || rechargeAppliesToLife)
+	if rechargeAppliesToLife || rechargeAppliesToEnergyShield {
+		inc := modDB.Sum(mod.TypeIncrease, nil, "EnergyShieldRecharge")
+		more := modDB.More(nil, "EnergyShieldRecharge")
+		if rechargeAppliesToLife {
+			recharge := output["Life"] * miscConstant("EnergyShieldRechargeBase") * (1 + inc/100) * more
+			output["LifeRecharge"] = round(recharge*output["LifeRecoveryRateMod"], 1)
+		} else {
+			recharge := output["EnergyShield"] * miscConstant("EnergyShieldRechargeBase") * (1 + inc/100) * more
+			output["EnergyShieldRecharge"] = round(recharge*output["EnergyShieldRecoveryRateMod"], 1)
+		}
+		rechargeBase := miscConstant("EnergyShieldRechargeDelay") + modDB.Sum(mod.TypeBase, nil, "EnergyShieldRechargeFaster")
+		if o := modDB.Override(nil, "EnergyShieldRechargeBase"); o != nil {
+			rechargeBase = o.Float()
+		}
+		output["EnergyShieldRechargeDelay"] = rechargeBase / (1 + modDB.Sum(mod.TypeIncrease, nil, "EnergyShieldRechargeFaster")/100)
+	} else {
+		output["EnergyShieldRecharge"] = 0
+	}
+
+	//pob2:block:src/Modules/CalcDefence.lua:1854-1905
+	output["anyRecoup"] = 0
+	recoupTypeList := []string{"Life", "Mana", "EnergyShield"}
+	for _, recoupType := range recoupTypeList {
+		recoup := modDB.Sum(mod.TypeBase, nil, recoupType+"Recoup")
+		calcRecoup(output, recoup, recoupType, "")
+		if modDB.Flag(nil, "Add"+recoupType+"RecoupToEnergyShieldRecoup") {
+			source := modDB.Tabulate(mod.TypeFlag, nil, "Add"+recoupType+"RecoupToEnergyShieldRecoup")[0].Mod.GetSource()
+			modDB.ReplaceMod(newMod("EnergyShieldRecoup", mod.TypeBase, recoup, source))
+		}
+	}
+	for _, recoupType := range recoupTypeList {
+		for _, damageType := range dmgTypeList {
+			recoup := modDB.Sum(mod.TypeBase, nil, damageType+recoupType+"Recoup")
+			calcRecoup(output, recoup, recoupType, damageType)
+			if modDB.Flag(nil, "Add"+recoupType+"RecoupToEnergyShieldRecoup") {
+				source := modDB.Tabulate(mod.TypeFlag, nil, "Add"+recoupType+"RecoupToEnergyShieldRecoup")[0].Mod.GetSource()
+				modDB.ReplaceMod(newMod(damageType+"EnergyShieldRecoup", mod.TypeBase, recoup, source))
+			}
+		}
+	}
+	for _, resource := range recoupTypeList {
+		if !modDB.Flag(nil, "No"+resource+"Regen") && !modDB.Flag(nil, "CannotGain"+resource) {
+			pseudoRecoup := modDB.Sum(mod.TypeBase, nil, "PhysicalDamageMitigated"+resource+"PseudoRecoup")
+			if pseudoRecoup > 0 {
+				durationKey := "PhysicalDamageMitigated" + resource + "PseudoRecoupDuration"
+				output[durationKey] = modDB.Sum(mod.TypeBase, nil, durationKey)
+				if output[durationKey] == 0 {
+					output[durationKey] = 4
+				}
+				inc := modDB.Sum(mod.TypeIncrease, nil, resource+"Regen")
+				more := modDB.More(nil, resource+"Regen")
+				output["PhysicalDamageMitigated"+resource+"PseudoRecoup"] = pseudoRecoup * (1 + inc/100) * more * output[resource+"RecoveryRateMod"]
+				output["anyRecoup"] += output["PhysicalDamageMitigated"+resource+"PseudoRecoup"]
+			}
+		}
+	}
+}
+
+//pob2:src/Modules/CalcDefence.lua:774-788
+func calcRecoup(output map[string]float64, recoup float64, recoupType, damageType string) {
+	output[damageType+recoupType+"Recoup"] = recoup * output[recoupType+"RecoveryRateMod"]
+	output["anyRecoup"] += output[damageType+recoupType+"Recoup"]
+}
+
+//pob2:block:src/Modules/CalcDefence.lua:1940-2050
+func defenceAvoidance(actor *Actor, spellSuppressionChance float64) {
+	modDB := actor.ModDB
+	enemyDB := actor.Enemy.ModDB
+	output := actor.Output
+
+	if enemyDB.Flag(nil, "Blind") {
+		output["BlindEffectMod"] = calcLibMod(enemyDB, nil, "BlindEffect", "BuffEffectOnSelf") * 100
+	}
+
+	output["WeaponSwapSpeed"] = modDB.Sum(mod.TypeBase, nil, "WeaponSwapSpeed")
+	output["WeaponSwapSpeedMod"] = calcLibMod(modDB, nil, "WeaponSwapSpeed")
+	output["WeaponSwapSpeed"] = output["WeaponSwapSpeed"] / output["WeaponSwapSpeedMod"]
+
+	//pob2:block:src/Modules/CalcDefence.lua:1949-1962
+	output["LifeOnBlock"] = 0
+	output["LifeOnSuppress"] = 0
+	if !modDB.Flag(nil, "CannotRecoverLifeOutsideLeech") {
+		output["LifeOnBlock"] = modDB.Sum(mod.TypeBase, nil, "LifeOnBlock")
+		output["LifeOnSuppress"] = modDB.Sum(mod.TypeBase, nil, "LifeOnSuppress")
+	}
+	output["ManaOnBlock"] = modDB.Sum(mod.TypeBase, nil, "ManaOnBlock")
+	output["WardOnBlock"] = modDB.Sum(mod.TypeBase, nil, "WardOnBlock")
+	output["EnergyShieldOnBlock"] = modDB.Sum(mod.TypeBase, nil, "EnergyShieldOnBlock")
+	output["EnergyShieldOnSpellBlock"] = modDB.Sum(mod.TypeBase, nil, "EnergyShieldOnSpellBlock")
+	output["EnergyShieldOnSuppress"] = modDB.Sum(mod.TypeBase, nil, "EnergyShieldOnSuppress")
+
+	//pob2:block:src/Modules/CalcDefence.lua:1965-1977
+	avoidChanceCap := miscConstant("AvoidChanceCap")
+	for _, damageType := range dmgTypeList {
+		output["Avoid"+damageType+"DamageChance"] = math.Min(modDB.Sum(mod.TypeBase, nil, "Avoid"+damageType+"DamageChance"), avoidChanceCap)
+	}
+	output["AvoidProjectilesChance"] = math.Min(modDB.Sum(mod.TypeBase, nil, "AvoidProjectilesChance"), avoidChanceCap)
+	output["AvoidAllDamageFromHitsChance"] = math.Min(modDB.Sum(mod.TypeBase, nil, "AvoidAllDamageFromHitsChance"), avoidChanceCap)
+	avoidOrImmune := func(immune bool, names ...string) float64 {
+		if immune {
+			return 100
+		}
+		return math.Min(modDB.Sum(mod.TypeBase, nil, names...), 100)
+	}
+	output["BlindAvoidChance"] = avoidOrImmune(modDB.Flag(nil, "BlindImmune"), "AvoidBlind")
+	output["ImpaleAvoidChance"] = avoidOrImmune(modDB.Flag(nil, "ImpaleImmune"), "AvoidImpale")
+
+	//pob2:block:src/Modules/CalcDefence.lua:1984-1996
+	if modDB.Flag(nil, "SpellSuppressionAppliesToAilmentAvoidance") {
+		spellSuppressionToAilmentPercent := modDB.Sum(mod.TypeBase, nil, "SpellSuppressionAppliesToAilmentAvoidancePercent") / 100
+		modDB.AddMod(newMod("AvoidElementalAilments", mod.TypeBase, math.Floor(spellSuppressionToAilmentPercent*spellSuppressionChance), "Ancestral Vision"))
+	}
+	if modDB.Flag(nil, "ShockAvoidAppliesToElementalAilments") {
+		if base := modDB.Sum(mod.TypeBase, nil, "AvoidShock"); base != 0 {
+			modDB.AddMod(newMod("AvoidShockAppliesToElementalAilments", mod.TypeBase, base, "Stormshroud"))
+		}
+	}
+
+	//pob2:block:src/Modules/CalcDefence.lua:1999-2017
+	output["AilmentThreshold"] = calcLibVal(modDB, "AilmentThreshold", nil)
+	for _, ailment := range dataNonElementalAilmentTypeList {
+		output[ailment+"AvoidChance"] = math.Floor(avoidOrImmune(modDB.Flag(nil, ailment+"Immune"), "Avoid"+ailment, "AvoidAilments"))
+	}
+	for _, ailment := range dataElementalAilmentTypeList {
+		shockAvoidAppliesToAll := modDB.Flag(nil, "ShockAvoidAppliesToElementalAilments") && ailment != "Shock"
+		if modDB.Flag(nil, ailment+"Immune", "ElementalAilmentImmune") {
+			output[ailment+"AvoidChance"] = 100
+			continue
+		}
+		avoid := modDB.Sum(mod.TypeBase, nil, "Avoid"+ailment, "AvoidAilments", "AvoidElementalAilments")
+		if shockAvoidAppliesToAll {
+			avoid += modDB.Sum(mod.TypeBase, nil, "AvoidShock")
+		}
+		output[ailment+"AvoidChance"] = math.Floor(math.Min(avoid, 100))
+	}
+	output["CurseAvoidChance"] = avoidOrImmune(modDB.Flag(nil, "CurseImmune"), "AvoidCurse")
+	output["SilenceAvoidChance"] = output["CurseAvoidChance"]
+	if modDB.Flag(nil, "SilenceImmune") {
+		output["SilenceAvoidChance"] = 100
+	}
+	output["CritExtraDamageReduction"] = math.Min(modDB.Sum(mod.TypeBase, nil, "ReduceCritExtraDamage"), 100)
+	output["LightRadiusMod"] = calcLibMod(modDB, nil, "LightRadius")
+	output["CurseEffectOnSelf"] = math.Max(modDB.More(nil, "CurseEffectOnSelf")*(100+modDB.Sum(mod.TypeIncrease, nil, "CurseEffectOnSelf")), 0)
+	output["ExposureEffectOnSelf"] = modDB.More(nil, "ExposureEffectOnSelf") * (100 + modDB.Sum(mod.TypeIncrease, nil, "ExposureEffectOnSelf"))
+	output["WitherEffectOnSelf"] = modDB.More(nil, "WitherEffectOnSelf") * (100 + modDB.Sum(mod.TypeIncrease, nil, "WitherEffectOnSelf"))
+
+	//pob2:block:src/Modules/CalcDefence.lua:2020-2050
+	output["DebuffExpirationRate"] = modDB.Sum(mod.TypeBase, nil, "SelfDebuffExpirationRate")
+	output["DebuffExpirationModifier"] = 10000 / (100 + output["DebuffExpirationRate"])
+	output["SelfBlindDuration"] = modDB.More(nil, "SelfBlindDuration") * (100 + modDB.Sum(mod.TypeIncrease, nil, "SelfBlindDuration")) * output["DebuffExpirationModifier"] / 100
+
+	if modDB.Flag(nil, "IgniteDurationAppliesToElementalAilments") {
+		inc := modDB.Sum(mod.TypeIncrease, nil, "SelfIgniteDuration")
+		more := modDB.More(nil, "SelfIgniteDuration")
+		if inc != 0 {
+			modDB.AddMod(newMod("SelfIgniteDurationToElementalAilments", mod.TypeIncrease, inc, "Firesong"))
+		}
+		if more != 1 {
+			modDB.AddMod(newMod("SelfIgniteDurationToElementalAilments", mod.TypeMore, more, "Firesong"))
+		}
+	}
+
+	for _, ailment := range dataNonElementalAilmentTypeList {
+		more := modDB.More(nil, "Self"+ailment+"Duration", "SelfAilmentDuration")
+		inc := (100 + modDB.Sum(mod.TypeIncrease, nil, "Self"+ailment+"Duration", "SelfAilmentDuration")) * 100
+		output["Self"+ailment+"Duration"] = inc * more / (100 + output["DebuffExpirationRate"] + modDB.Sum(mod.TypeBase, nil, "Self"+ailment+"DebuffExpirationRate"))
+	}
+	for _, ailment := range dataElementalAilmentTypeList {
+		igniteAppliesToAll := modDB.Flag(nil, "IgniteDurationAppliesToElementalAilments") && ailment != "Ignite"
+		more := modDB.More(nil, "Self"+ailment+"Duration", "SelfAilmentDuration", "SelfElementalAilmentDuration")
+		inc := 100 + modDB.Sum(mod.TypeIncrease, nil, "Self"+ailment+"Duration", "SelfAilmentDuration", "SelfElementalAilmentDuration")
+		if igniteAppliesToAll {
+			more *= modDB.More(nil, "SelfIgniteDuration")
+			inc += modDB.Sum(mod.TypeIncrease, nil, "SelfIgniteDuration")
+		}
+		inc *= 100
+		output["Self"+ailment+"Duration"] = more * inc / (100 + output["DebuffExpirationRate"] + modDB.Sum(mod.TypeBase, nil, "Self"+ailment+"DebuffExpirationRate"))
+	}
+	for _, ailment := range dataAilmentTypeList {
+		magnitude := calcLibMod(enemyDB, nil, "Enemy"+ailment+"Magnitude", "AilmentMagnitude")
+		if modDB.Flag(nil, "Condition:"+ailment+"edSelf") {
+			magnitude = calcLibMod(modDB, nil, "Enemy"+ailment+"Magnitude", "AilmentMagnitude")
+		}
+		output["Self"+ailment+"Effect"] = calcLibMod(modDB, nil, "Self"+ailment+"Effect") * magnitude * 100
+	}
 }
