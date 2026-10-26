@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"sort"
+	"strconv"
 	"strings"
 	"sync"
 
@@ -208,6 +209,12 @@ func (f *cacheFields) str(k string) string {
 
 func (f *cacheFields) num(k string) (float64, bool) {
 	f.used[k] = true
+	// Lua arithmetic coerces a numeric string, and PoB-PoE2's ModCache stores some tag numbers as strings.
+	if s, ok := f.t[k].(string); ok {
+		if n, err := strconv.ParseFloat(strings.TrimSpace(s), 64); err == nil {
+			return n, true
+		}
+	}
 	return cacheNumber(f.t[k])
 }
 

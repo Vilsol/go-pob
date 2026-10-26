@@ -61,3 +61,9 @@ func TestModCacheUnsupportedCeiling(t *testing.T) {
 		t.Errorf("only %d cached lines are unsupported now: lower the ceiling to %d", bad, bad)
 	}
 }
+
+func TestModCacheStringPercent(t *testing.T) {
+	mods, _ := ModCache("Attacks with this Weapon have Added Cold Damage equal to 7% to 11% of maximum Mana")
+	ps := mods[0].Tags()[0].(*mod.PercentStatTag)
+	testza.AssertEqual(t, float64(7), ps.Percent)
+}
