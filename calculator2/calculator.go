@@ -69,6 +69,9 @@ func BuildOutput(build *pob2.PathOfBuilding2, opts Options) (*Environment, error
 	if opts.Items != nil {
 		opts.Items.SetActiveSpec(spec)
 	}
+	if env.data, err = loadSkillData(); err != nil {
+		return nil, fmt.Errorf("skill data: %w", err)
+	}
 	env.ClassID = spec.CurClassID
 	if spec.Tree.Classes[env.ClassID] == nil {
 		return nil, fmt.Errorf("class %d is not in the tree", env.ClassID)
