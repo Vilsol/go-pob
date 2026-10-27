@@ -640,6 +640,8 @@ func initEnv(env *Environment) {
 
 	nodesModsList := buildModListForNodeList(env, env.AllocNodes, true)
 	canUseBonded := nodesModsList.Flag(nil, "CanUseBonded")
+	//pob2:block:src/Modules/CalcSetup.lua:1142
+	env.useAltGemQualityStats = nodesModsList.Flag(nil, "GemlingQuality")
 
 	//pob2:block:src/Modules/CalcSetup.lua:1145-1162
 	if counts.notable > 0 {

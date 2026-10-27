@@ -22,8 +22,7 @@ func flagOr(cond bool, a, b float64) float64 {
 	return b
 }
 
-// No party is ported, so env.partyMembers' PartyMemberMaximumEnduranceChargesEqualToYours reads unset, and
-// with no main skill Multiplier:ExtraConsumablePowerCharges is summed with a nil cfg.
+// No party is ported, so env.partyMembers' PartyMemberMaximumEnduranceChargesEqualToYours reads unset.
 //
 //pob2:src/Modules/CalcPerform.lua:862-1016
 func doActorCharges(env *Environment, actor *Actor) {
@@ -106,7 +105,11 @@ func doActorCharges(env *Environment, actor *Actor) {
 	removablePowerCharges := math.Max(output["PowerCharges"]-output["PowerChargesMin"], 0)
 	extraConsumablePowerCharges := 0.0
 	if removablePowerCharges > 0 {
-		extraConsumablePowerCharges = modDB.Sum(mod.TypeBase, nil, "Multiplier:ExtraConsumablePowerCharges")
+		var skillCfg *moddb.ListCfg
+		if actor.MainSkill != nil {
+			skillCfg = actor.MainSkill.SkillCfg
+		}
+		extraConsumablePowerCharges = modDB.Sum(mod.TypeBase, skillCfg, "Multiplier:ExtraConsumablePowerCharges")
 	}
 	output["RemovablePowerCharges"] = removablePowerCharges + extraConsumablePowerCharges
 	if modDB.Flag(nil, "Condition:UseFrenzyCharges") {

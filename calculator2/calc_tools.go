@@ -284,3 +284,91 @@ func getGemStatRequirement(level, multi float64, isSupport bool) float64 {
 	}
 	return req
 }
+
+// skillInstanceStats is the stats table buildSkillInstanceStats returns, with the order its stats were
+// first written in standing in for pairs() order.
+type skillInstanceStats struct {
+	values map[string]float64
+	order  []string
+}
+
+func (s *skillInstanceStats) add(stat string, value float64) {
+	if _, ok := s.values[stat]; !ok {
+		s.order = append(s.order, stat)
+	}
+	s.values[stat] += value
+}
+
+// buildSkillInstanceStats builds the table of stats for the given skill instance's stat set. No PoE2
+// stat set uses linear interpolation (2), the only reader of the actor level's levelRequirement default.
+//
+//pob2:src/Modules/CalcTools.lua:160-231
+func buildSkillInstanceStats(skillInstance *GemEffect, grantedEffect *poe2skills.GrantedEffect, statSet *poe2skills.StatSet, includeAltQualityStats bool) *skillInstanceStats {
+	stats := &skillInstanceStats{values: map[string]float64{}}
+	if skillInstance.Quality > 0 {
+		for _, stat := range grantedEffect.QualityStats {
+			whole, _ := math.Modf(stat.Value * skillInstance.Quality)
+			stats.add(stat.Stat, whole)
+		}
+		if includeAltQualityStats {
+			for _, stat := range grantedEffect.AltQualityStats {
+				whole, _ := math.Modf(stat.Value * skillInstance.Quality)
+				stats.add(stat.Stat, whole)
+			}
+		}
+	}
+	statSetLevel := statSet.Levels[skillInstance.Level]
+	if statSetLevel == nil {
+		statSetLevel = statSet.Levels[1]
+	}
+	if statSetLevel == nil {
+		statSetLevel = &poe2skills.StatSetLevel{}
+	}
+	var availableEffectiveness float64
+	var haveEffectiveness bool
+	for index, stat := range statSet.Stats {
+		// Static value used as default (assumes statInterpolation == 1)
+		statValue := 1.0
+		if index < len(statSetLevel.Values) {
+			statValue = statSetLevel.Values[index]
+		}
+		if statSetLevel.StatInterpolation != nil && index < len(statSetLevel.StatInterpolation) && statSetLevel.StatInterpolation[index] == 3 {
+			// Effectiveness interpolation
+			if !haveEffectiveness {
+				actorLevel := statSetLevel.ActorLevel
+				if statSetLevelCount(statSet) < 5 && skillInstance.HasActorLevel {
+					actorLevel = skillInstance.ActorLevel
+				}
+				baseEffectiveness, incrementalEffectiveness, damageIncrementalEffectiveness := 1.0, 0.0, 0.0
+				if statSet.HasBaseEffectiveness {
+					baseEffectiveness = statSet.BaseEffectiveness
+				}
+				if statSet.HasIncrementalEffectiveness {
+					incrementalEffectiveness = statSet.IncrementalEffectiveness
+				}
+				if statSet.HasDamageIncrementalEffect {
+					damageIncrementalEffectiveness = statSet.DamageIncrementalEffectiveness
+				}
+				availableEffectiveness = gameConstant("SkillDamageBaseEffectiveness") * baseEffectiveness *
+					(1 + incrementalEffectiveness*(actorLevel-1)) *
+					math.Pow(1+damageIncrementalEffectiveness, actorLevel-1)
+				haveEffectiveness = true
+			}
+			statValue = round(availableEffectiveness * statSetLevel.Values[index])
+		}
+		stats.add(stat, statValue)
+	}
+	for _, stat := range statSet.ConstantStats {
+		stats.add(stat.Stat, stat.Value)
+	}
+	return stats
+}
+
+// statSetLevelCount is #statSet.levels.
+func statSetLevelCount(statSet *poe2skills.StatSet) int {
+	n := 0
+	for statSet.Levels[n+1] != nil {
+		n++
+	}
+	return n
+}

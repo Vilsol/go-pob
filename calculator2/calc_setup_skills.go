@@ -239,7 +239,8 @@ func applyGemMods(effect *GemEffect, modList []any) {
 			continue
 		}
 		match := true
-		if value.KeywordList != nil {
+		// A cloned GemProperty carries an empty KeywordList where the parsed one had none.
+		if len(value.KeywordList) > 0 {
 			for _, keyword := range value.KeywordList {
 				if !gemIsType(effect, keyword, true) {
 					match = false
@@ -250,10 +251,18 @@ func applyGemMods(effect *GemEffect, modList []any) {
 			match = false
 		}
 		if match {
-			if effect.Values == nil {
-				effect.Values = map[string]float64{}
+			switch value.Key {
+			case "level":
+				effect.Level += int(value.Value)
+			case "quality":
+				effect.Quality += value.Value
+			default:
+				if effect.Values == nil {
+					effect.Values = map[string]float64{}
+				}
+				effect.Values[value.Key] += value.Value
 			}
-			effect.Values[value.Key] += value.Value
+			effect.GemPropertyInfo = append(effect.GemPropertyInfo, gemPropertyInfo{Value: value})
 		}
 	}
 }
@@ -979,8 +988,24 @@ func setupSkills(env *Environment) {
 		env.Player.ActiveSkillList = append(env.Player.ActiveSkillList, env.Player.MainSkill)
 	}
 
-	// TODO: calcs.buildActiveSkillModList per skill (CalcSetup.lua:2464-2477) and the weapon set
-	// contexts (2479-2509) belong to the active skill mod list.
+	setupWeaponData(env)
+
+	// some active skills, like those granted by support gems depend on the stats of other gems,
+	// which means we have to do them last.
+	// TODO: the weapon set contexts (CalcSetup.lua:2479-2509) are not ported.
+	//pob2:block:src/Modules/CalcSetup.lua:2464-2477
+	var deferredActiveSkills []*ActiveSkill
+	// Build skill modifier lists
+	for _, activeSkill := range env.Player.ActiveSkillList {
+		if activeSkill.ActiveEffect.GemData != nil && activeSkill.ActiveEffect.GemData.GrantedEffect.Support {
+			deferredActiveSkills = append(deferredActiveSkills, activeSkill)
+		} else {
+			buildActiveSkillModList(env, activeSkill)
+		}
+	}
+	for _, activeSkill := range deferredActiveSkills {
+		buildActiveSkillModList(env, activeSkill)
+	}
 
 	//pob2:block:src/Modules/CalcSetup.lua:2535-2538
 	env.VirtuousMoteSkillCount = virtuousMoteSkillCount

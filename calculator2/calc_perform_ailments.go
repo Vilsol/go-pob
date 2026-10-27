@@ -12,9 +12,7 @@ type nonDamagingAilmentEntry struct {
 	mods            func(num float64) []mod.Mod
 }
 
-// The only active skill with skills off is the default MeleeUnarmedPlayer, whose skill modLists read through to
-// the player modDB; with no skill ported, they are read as the modDB with no skillCfg, and HasBonechill stays
-// unset. The oracle builds the breakdown, so its stack mods always apply.
+// HasBonechill stays unset. The oracle builds the breakdown, so its stack mods always apply.
 //
 //pob2:block:src/Modules/CalcPerform.lua:3273-3316
 //pob2:block:src/Modules/CalcPerform.lua:3327-3380
@@ -60,6 +58,7 @@ func applyNonDamagingAilments(env *Environment) {
 		},
 	}
 
+	mainSkill := env.Player.MainSkill
 	for _, val := range ailments {
 		ailment := val.name
 		// modDB:Sum is 0 when nothing applies, and 0 is truthy in Lua, so this gate only checks the Already condition.
@@ -73,7 +72,8 @@ func applyNonDamagingAilments(env *Environment) {
 					enemyDB.AddMod(newFlagMod("Condition:"+val.condition, m.GetSource()))
 				}
 				if m.Name() == ailment+"Base" || m.Name() == ailment+"Minimum" {
-					effect = effect * calcLibMod(modDB, nil, "Enemy"+ailment+"Magnitude", "AilmentMagnitude") * calcLibMod(enemyDB, nil, "Self"+ailment+"Magnitude", "AilmentMagnitude")
+					// Both of PoB's branches here (the main skill's hit or the generic modifiers) read the skill's modifiers.
+					effect = effect * calcLibMod(mainSkill.SkillModList, mainSkill.SkillCfg, "Enemy"+ailment+"Magnitude", "AilmentMagnitude") * calcLibMod(enemyDB, nil, "Self"+ailment+"Magnitude", "AilmentMagnitude")
 					c := m.Clone().SetName(ailment + "Override")
 					c.SetValue(mod.NewModValueFloat(effect))
 					modDB.AddMod(c)
@@ -87,9 +87,11 @@ func applyNonDamagingAilments(env *Environment) {
 			if o := modDB.Override(nil, ailment+"Max"); o != nil {
 				maxAilment = o.Float()
 			} else {
-				skillMax := val.max + modDB.Sum(mod.TypeBase, nil, ailment+"Max")
-				if skillMax > maxAilment {
-					maxAilment = skillMax
+				for _, skill := range env.Player.ActiveSkillList {
+					skillMax := val.max + skill.BaseSkillModList.Sum(mod.TypeBase, nil, ailment+"Max")
+					if skillMax > maxAilment {
+						maxAilment = skillMax
+					}
 				}
 			}
 			output["Maximum"+ailment] = maxAilment

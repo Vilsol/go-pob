@@ -106,7 +106,7 @@ func skillOverlayMods() []string {
 // Every skill mod PoB-PoE2 writes in its skill files and SkillStatMap converts, a nil value included:
 // the stat's value is set when it is merged (CalcActiveSkill.lua mergeStatSet).
 func TestCacheModSkillMods(t *testing.T) {
-	const ceiling = 65
+	const ceiling = 11
 	mods := skillOverlayMods()
 	bad := 0
 	for _, s := range mods {

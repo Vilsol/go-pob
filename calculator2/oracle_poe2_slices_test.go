@@ -22,9 +22,9 @@ var offenceSliceStats = []string{
 	"HeavyStunBuildupAvg", "IgniteDPS", "AreaOfEffectMod", "ProjectileCount", "CastRate",
 }
 
-const poe2OffenceMatchedFloor = 19226
+const poe2OffenceMatchedFloor = 33082
 
-const poe2SkillsOnMatchedFloor = 170144
+const poe2SkillsOnMatchedFloor = 171579
 
 type poe2SliceGrade struct {
 	records, built, failed                         int

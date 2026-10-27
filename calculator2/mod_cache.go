@@ -313,10 +313,24 @@ func cacheTag(t map[string]any) (mod.Tag, error) {
 		if f.has("globalLimitKey") {
 			m.GlobalLimitKey(f.str("globalLimitKey"))
 		}
+		if b, ok := f.num("base"); ok {
+			m.Base(b)
+		}
+		if f.has("divVar") {
+			m.DivVar(f.str("divVar"))
+		}
+		if f.truthy("limitNegTotal") {
+			m.LimitNegTotal()
+		}
+		// calcs.mergeSkillInstanceMods reads scalar from the skill's mod table; ModStore does not.
+		f.used["scalar"] = true
 		tag = m
 	case "PercentStat":
 		p, _ := f.num("percent")
 		ps := mod.PercentStat(f.str("stat"), p)
+		if f.has("percentVar") {
+			ps.PercentVar = f.str("percentVar")
+		}
 		if f.truthy("floor") {
 			ps.Floor()
 		}
@@ -335,10 +349,15 @@ func cacheTag(t map[string]any) (mod.Tag, error) {
 		if th, ok := f.num("threshold"); ok {
 			mt.Threshold(th)
 		}
-		mt.Upper(f.truthy("upper"))
+		mt.Upper(f.truthy("upper")).Equals(f.truthy("equals"))
+		if f.has("thresholdVar") {
+			mt.ThresholdVar(f.str("thresholdVar"))
+		}
 		if f.has("actor") {
 			mt.Actor(f.str("actor"))
 		}
+		// calcs.mergeSkillInstanceMods reads scalar from the skill's mod table; ModStore does not.
+		f.used["scalar"] = true
 		tag = mt
 	case "SkillName":
 		tag = mod.SkillName(f.strs("skillName", "skillNameList")...).Transfigured(f.truthy("includeTransfigured")).
@@ -388,7 +407,15 @@ func cacheTag(t map[string]any) (mod.Tag, error) {
 		if f.has("effectName") {
 			g.Name(f.str("effectName"))
 		}
+		g.EffectCond(f.str("effectCond")).EffectEnemyCond(f.str("effectEnemyCond")).ModCond(f.str("modCond"))
+		g.EffectStackVar(f.str("effectStackVar")).EffectStackLimitVar(f.str("effectStackLimitVar"))
+		if l, ok := f.num("effectStackLimit"); ok {
+			g.EffectStackLimit(l)
+		}
+		g.ApplyNotPlayer(f.truthy("applyNotPlayer")).ApplyMinions(f.truthy("applyMinions")).AllowTotemBuff(f.truthy("allowTotemBuff"))
 		tag = g.Unscalable(f.truthy("unscalable"))
+	case "GemTag":
+		tag = mod.GemTag(f.strs("gemTag", "gemTagList")...).Neg(f.truthy("neg"))
 	case "SlotNumber":
 		n, _ := f.num("num")
 		tag = mod.SlotNumber(int(n))
@@ -515,6 +542,8 @@ func cacheListValue(name string, value any) (any, error) {
 		v, ok := f.num("value")
 		out = mod.WeaponData{Key: f.str("key"), Value: v, Unset: !ok}
 	case "ExtraMinionSkill":
+		// A skill's stat map leaves the stat's number in value; createMinionSkills reads only skillId.
+		f.used["value"] = true
 		out = mod.ExtraMinionSkill{SkillID: f.str("skillId")}
 	default:
 		return cacheTableValue(value)

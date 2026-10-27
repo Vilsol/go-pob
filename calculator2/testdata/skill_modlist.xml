@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PathOfBuilding2>
+	<Build ascendClassName="None" characterLevelAutoMode="false" className="Warrior" level="30" mainSocketGroup="1" targetVersion="0_1" viewMode="TREE">
+	</Build>
+	<Config activeConfigSet="1">
+		<ConfigSet id="1" title="Default">
+			<CustomModifierBlock enabled="true" title="Default">+2 to Level of all Melee Skills
++5% to Quality of all Skills</CustomModifierBlock>
+		</ConfigSet>
+	</Config>
+	<Items activeItemSet="1" useSecondWeaponSet="false">
+		<Item id="1">
+			Rarity: NORMAL
+Wrapped Quarterstaff
+Item Level: 10
+LevelReq: 1
+Implicits: 0
+		</Item>
+		<ItemSet id="1" title="Default" useSecondWeaponSet="false">
+			<Slot itemId="1" name="Weapon 1"/>
+		</ItemSet>
+	</Items>
+	<Skills activeSkillSet="1" defaultGemLevel="normalMaximum" defaultGemQuality="0">
+		<SkillSet id="1">
+			<Skill enabled="true" includeInFullDPS="nil" label="" mainActiveSkill="1" mainActiveSkillCalcs="1" set1="true" set2="true">
+				<Gem corruptLevel="1" corrupted="true" count="1" enableGlobal1="true" enableGlobal2="true" enabled="true" gemId="Metadata/Items/Gems/SkillGemFallingThunder" level="15" nameSpec="Falling Thunder" quality="10" skillId="FallingThunderPlayer" variantId="FallingThunder"/>
+				<Gem corruptLevel="nil" corrupted="nil" count="1" enableGlobal1="true" enableGlobal2="true" enabled="true" gemId="Metadata/Items/Gems/SupportGemCloseCombatTwo" level="1" nameSpec="Close Combat II" quality="0" skillId="SupportCloseCombatPlayerTwo" variantId="CloseCombatSupportTwo"/>
+				<Gem corruptLevel="nil" corrupted="nil" count="1" enableGlobal1="true" enableGlobal2="true" enabled="true" gemId="Metadata/Items/Gems/SupportGemPinpointCritical" level="1" nameSpec="Pinpoint Critical" quality="0" skillId="SupportPinpointCriticalPlayer" variantId="PinpointCritical"/>
+			</Skill>
+		</SkillSet>
+	</Skills>
+	<Tree activeSpec="1">
+		<Spec ascendClassId="0" classId="6" masteryEffects="" nodes="47175,3936,38646,13397,46325,1913,23570,1207,33556,39581,4665,36709,41031,38323,55473,6839,61534,63393,54232,5710" secondaryAscendClassId="nil" treeVersion="0_5">
+			<Overrides>
+				<AttributeOverride dexNodes="1207" intNodes="41031" strNodes="13397,23570"/>
+			</Overrides>
+		</Spec>
+	</Tree>
+</PathOfBuilding2>

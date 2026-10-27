@@ -145,7 +145,6 @@ func calcBuffRadius(actor *Actor, key string) {
 	}
 }
 
-// The skill-flag conditions need a main skill, so the mode_combat block runs from its shrine buffs on.
 // countsAsAll1H and addWeaponBaseStats are not ported.
 //
 //pob2:src/Modules/CalcPerform.lua:264-528
@@ -223,6 +222,82 @@ func doActorAttribsConditions(env *Environment, actor *Actor) {
 		}
 	}
 	if env.ModeCombat {
+		//pob2:block:src/Modules/CalcPerform.lua:371-448
+		if mainSkill := actor.MainSkill; mainSkill != nil {
+			skillFlags := mainSkill.ActiveEffect.StatSet.SkillFlags
+			if !truthy(mainSkill.SkillData["triggered"]) && !skillFlags["trap"] && !skillFlags["mine"] && !skillFlags["totem"] {
+				if skillFlags["attack"] {
+					condList["AttackedRecently"] = true
+				} else if skillFlags["spell"] {
+					condList["CastSpellRecently"] = true
+				}
+				if mainSkill.SkillTypes["Movement"] {
+					condList["UsedMovementSkillRecently"] = true
+				}
+				if skillFlags["minion"] && !skillFlags["duration"] {
+					condList["UsedMinionSkillRecently"] = true
+				}
+				if mainSkill.SkillTypes["Vaal"] {
+					condList["UsedVaalSkillRecently"] = true
+				}
+				if mainSkill.SkillTypes["Channel"] {
+					condList["Channelling"] = true
+				}
+			}
+
+			if mainSkill.SkillTypes["Bear"] {
+				condList["Shapeshifted"] = true
+				condList["BearForm"] = true
+				modDB.AddMod(newMod("ArmourAppliesToFireDamageTaken", mod.TypeBase, 30, "Bear Form"))
+				modDB.AddMod(newMod("ArmourAppliesToColdDamageTaken", mod.TypeBase, 30, "Bear Form"))
+				modDB.AddMod(newMod("ArmourAppliesToLightningDamageTaken", mod.TypeBase, 30, "Bear Form"))
+				modDB.AddMod(newMod("Armour", mod.TypeBase, 10, "Bear Form", mod.Multiplier("Level").Base(10)))
+			}
+			if mainSkill.SkillTypes["Wolf"] {
+				condList["Shapeshifted"] = true
+				condList["WolfForm"] = true
+				modDB.AddMod(newMod("MovementSpeed", mod.TypeIncrease, 30, "Wolf Form"))
+			}
+			if mainSkill.SkillTypes["Wyvern"] {
+				condList["Shapeshifted"] = true
+				condList["WyvernForm"] = true
+				modDB.AddMod(newMod("EnergyShieldRechargeFaster", mod.TypeIncrease, 50, "Wyvern Form"))
+				modDB.AddMod(newMod("StunThreshold", mod.TypeIncrease, 50, "Wyvern Form"))
+				modDB.AddMod(newMod("AilmentThreshold", mod.TypeIncrease, 50, "Wyvern Form"))
+			}
+			if skillFlags["hit"] && !skillFlags["trap"] && !skillFlags["mine"] && !skillFlags["totem"] {
+				condList["HitRecently"] = true
+				if skillFlags["spell"] {
+					condList["HitSpellRecently"] = true
+				}
+			}
+			if skillFlags["totem"] {
+				condList["HaveTotem"] = true
+				condList["SummonedTotemRecently"] = true
+				if skillFlags["hit"] {
+					condList["TotemsHitRecently"] = true
+					if skillFlags["spell"] {
+						condList["TotemsSpellHitRecently"] = true
+					}
+				}
+			}
+			if skillFlags["mine"] {
+				condList["DetonatedMinesRecently"] = true
+			}
+			if skillFlags["trap"] {
+				condList["TriggeredTrapsRecently"] = true
+			}
+			critAlwaysAltAilments := modDB.Flag(nil, "CritAlwaysAltAilments") && !modDB.Flag(env.Player.MainSkill.SkillCfg, "NeverCrit")
+			if modDB.Sum(mod.TypeBase, nil, "EnemyScorchChance") > 0 || critAlwaysAltAilments || modDB.Flag(nil, "IgniteCanScorch") {
+				condList["CanInflictScorch"] = true
+			}
+			if modDB.Sum(mod.TypeBase, nil, "EnemyBrittleChance") > 0 || critAlwaysAltAilments {
+				condList["CanInflictBrittle"] = true
+			}
+			if modDB.Sum(mod.TypeBase, nil, "EnemySapChance") > 0 || critAlwaysAltAilments {
+				condList["CanInflictSap"] = true
+			}
+		}
 		//pob2:block:src/Modules/CalcPerform.lua:449-470
 		shrineEffectMod := 1 + modDB.Sum(mod.TypeIncrease, nil, "BuffEffectOnSelf", "ShrineBuffEffect")/100
 		if modDB.Flag(nil, "LesserMassiveShrine") {
@@ -408,8 +483,7 @@ func applyEnemyModifiers(actor *Actor, clearCache bool) {
 	}
 }
 
-// Cruelty and Fanaticism read the main skill, so those two are absent; with no main skill, Elusive reads
-// SupportedByNightblade as unset.
+// Fanaticism reads srcInstance.selfCast, which nothing sets, so it is absent.
 //
 //pob2:src/Modules/CalcPerform.lua:584-857
 func doActorMisc(env *Environment, actor *Actor) {
@@ -419,6 +493,13 @@ func doActorMisc(env *Environment, actor *Actor) {
 	condList := modDB.Conditions
 
 	if env.ModeCombat {
+		//pob2:block:src/Modules/CalcPerform.lua:593-595
+		if mainSkill := env.Player.MainSkill; mainSkill != nil && mainSkill.BaseSkillModList != nil && mainSkill.BaseSkillModList.Flag(nil, "Cruelty") {
+			modDB.Multipliers["Cruelty"] = 40
+			if o := modDB.Override(nil, "Cruelty"); o != nil {
+				modDB.Multipliers["Cruelty"] = o.Float()
+			}
+		}
 		if modDB.Sum(mod.TypeBase, nil, "MinimumRage") > modDB.Multipliers["Rage"] {
 			modDB.Multipliers["Rage"] = modDB.Sum(mod.TypeBase, nil, "MinimumRage")
 		}
@@ -526,6 +607,9 @@ func doActorMisc(env *Environment, actor *Actor) {
 			skillSource := mod.Source("Skill")
 			maxSkillInc := modDB.Max(&moddb.ListCfg{Source: &skillSource}, "ElusiveEffect")
 			inc := modDB.Sum(mod.TypeIncrease, nil, "ElusiveEffect", "BuffEffectOnSelf")
+			if actor.MainSkill != nil && actor.MainSkill.SkillModList != nil && actor.MainSkill.SkillModList.Flag(nil, "SupportedByNightblade") {
+				inc += modDB.Sum(mod.TypeIncrease, nil, "NightbladeSupportedElusiveEffect")
+			}
 			inc += maxSkillInc
 			elusiveEffectMod := (1 + inc/100) * modDB.More(nil, "ElusiveEffect", "BuffEffectOnSelf") * 100
 			minThreshold := 0.0
@@ -736,27 +820,6 @@ func perform(env *Environment) {
 	env.Player.Output = map[string]float64{}
 	env.Enemy.Output = map[string]float64{}
 
-	// countsAsDualWielding and the Facebreaker fields are not ported.
-	//pob2:block:src/Modules/CalcSetup.lua:2120-2153
-	env.Player.WeaponData1Type = "None"
-	weapon1 := env.Player.ItemList["Weapon 1"]
-	if weapon1 != nil && weapon1.WeaponData[1] != nil {
-		env.Player.WeaponData1Type = weapon1.Base.Type
-	}
-	if weapon2 := env.Player.ItemList["Weapon 2"]; weapon2 == nil {
-		if weapon1 == nil {
-			for _, m := range env.ModDB.Mods["Keystone"] {
-				if v, _ := m.Value().ValueList.(string); v == "Hollow Palm Technique" {
-					env.Player.WeaponData2Type = "None"
-					env.ModDB.Conditions["HollowPalm"] = true
-					break
-				}
-			}
-		}
-	} else if weapon2.WeaponData[2] != nil {
-		env.Player.WeaponData2Type = weapon2.Base.Type
-	}
-
 	modDB := env.ModDB
 	output := env.Player.Output
 
@@ -853,9 +916,166 @@ func perform(env *Environment) {
 	doActorCharges(env, env.Enemy)
 	doActorMisc(env, env.Enemy)
 
+	applyAbyssalWasting(env)
+
 	//pob2:block:src/Modules/CalcPerform.lua:3456
 	defence(env, env.Player)
 
+	applyExposure(env)
+
 	//pob2:block:src/Modules/CalcPerform.lua:3510-3512
 	buildDefenceEstimations(env, env.Player)
+
+	calcMainSkillGemLevel(env)
+}
+
+// calcMainSkillGemLevel calculates the gem level and quality of the main skill. output.GemHasLevel is a
+// boolean, which the output map does not hold; the breakdown is not ported.
+//
+//pob2:block:src/Modules/CalcPerform.lua:3652-3703
+func calcMainSkillGemLevel(env *Environment) {
+	mainSkill := env.Player.MainSkill
+	if mainSkill == nil || mainSkill.SkillModList == nil {
+		return
+	}
+	output := env.Player.Output
+	skillModList, skillCfg := mainSkill.SkillModList, mainSkill.SkillCfg
+	if mainSkill.ActiveEffect != nil && mainSkill.ActiveEffect.SrcInstance != nil {
+		baseLevel := skillModList.Sum(mod.TypeBase, skillCfg, "GemLevel")
+		totalItemLevel := skillModList.Sum(mod.TypeBase, skillCfg, "GemGlobalLevel")
+		totalSupportLevel := skillModList.Sum(mod.TypeBase, skillCfg, "GemSupportLevel")
+		totalCorruptionLevel := skillModList.Sum(mod.TypeBase, skillCfg, "GemCorruptionLevel")
+
+		inheritsLevel, _ := mainSkill.SkillData["inheritsGemLevel"].(bool)
+		if inheritsLevel {
+			output["GemLevel"] = math.Max(baseLevel, 1)
+		} else {
+			output["GemLevel"] = math.Max(baseLevel+totalSupportLevel+totalItemLevel+totalCorruptionLevel, 1)
+		}
+	}
+	if mainSkill.ActiveEffect != nil && mainSkill.ActiveEffect.SrcInstance != nil {
+		baseQuality := skillModList.Sum(mod.TypeBase, skillCfg, "GemQuality")
+		totalGlobalQuality := skillModList.Sum(mod.TypeBase, skillCfg, "GemGlobalQuality")
+		totalSupportQuality := skillModList.Sum(mod.TypeBase, skillCfg, "GemSupportQuality")
+
+		output["GemQuality"] = baseQuality + totalSupportQuality + totalGlobalQuality
+	}
+}
+
+//pob2:block:src/Modules/CalcPerform.lua:3440-3454
+func applyAbyssalWasting(env *Environment) {
+	modDB, enemyDB := env.ModDB, env.Enemy.ModDB
+	var skillCfg *moddb.ListCfg
+	if env.Player.MainSkill != nil {
+		skillCfg = env.Player.MainSkill.SkillCfg
+	}
+	if !enemyDB.Flag(skillCfg, "AbyssalWasted") {
+		return
+	}
+	effect := 1 + modDB.Sum(mod.TypeIncrease, nil, "AbyssalWastingEffect")/100
+	for _, v := range modDB.List(nil, "AbyssalWastingAlsoGrants") {
+		t, ok := v.(LuaTable)
+		if !ok {
+			continue
+		}
+		m, ok := t["mod"].(mod.Mod)
+		if !ok {
+			continue
+		}
+		m = m.Clone()
+		if !truthy(t["unscalable"]) {
+			whole, _ := math.Modf(round(m.Value().Float()*effect, 2))
+			m.Value().SetFloat(whole)
+		}
+		if truthy(t["applyToEnemy"]) {
+			enemyDB.AddMod(m)
+		} else {
+			modDB.AddMod(m)
+		}
+	}
+}
+
+// modListHasMod is ModList:HasMod: a mod of the name and type whose flags the cfg's cover, here or in
+// the parent, tags unread.
+//
+//pob2:src/Classes/ModList.lua:392-405
+func modListHasMod(l *moddb.ModList, modType mod.Type, cfg *moddb.ListCfg, name string) bool {
+	var flags mod.MFlag
+	var keywordFlags mod.KeywordFlag
+	if cfg != nil && cfg.Flags != nil {
+		flags = *cfg.Flags
+	}
+	if cfg != nil && cfg.KeywordFlags != nil {
+		keywordFlags = *cfg.KeywordFlags
+	}
+	for _, m := range l.Mods() {
+		if m.Name() == name && m.Type() == modType && flags&m.Flags() == m.Flags() && mod.MatchKeywordFlags(keywordFlags, m.KeywordFlags()) {
+			return true
+		}
+	}
+	if parent, ok := l.Parent.(*moddb.ModDB); ok {
+		return parent.HasMod(modType, cfg, name)
+	}
+	return false
+}
+
+//pob2:block:src/Modules/CalcPerform.lua:3457-3476
+func getSkillExposureEffect(env *Environment, source mod.Source, element string) float64 {
+	effect := 0.0
+	skillSource := mod.Source("Skill")
+	for _, activeSkill := range env.Player.ActiveSkillList {
+		if activeSkill.SkillModList == nil {
+			continue
+		}
+		if source == "Config" {
+			// Config exposure is a generic 20% exposure, so use any active skill that can apply this exposure as the source for skill-specific exposure effect.
+			if modListHasMod(activeSkill.SkillModList, mod.TypeBase, activeSkill.SkillCfg, element+"ExposureChance") || modListHasMod(activeSkill.SkillModList, mod.TypeFlag, activeSkill.SkillCfg, "InflictExposure") {
+				effect = math.Max(effect, activeSkill.SkillModList.Sum(mod.TypeIncrease, &moddb.ListCfg{Source: &skillSource}, element+"ExposureEffect"))
+			}
+		} else {
+			// Direct skill exposure keeps the source from the active/support skill that created the exposure mod.
+			for _, skillEffect := range activeSkill.EffectList {
+				if mod.Source(skillEffect.GrantedEffect.ModSource) == source {
+					effect = math.Max(effect, activeSkill.SkillModList.Sum(mod.TypeIncrease, &moddb.ListCfg{Source: &skillSource}, element+"ExposureEffect"))
+					break
+				}
+			}
+		}
+	}
+	return effect
+}
+
+//pob2:block:src/Modules/CalcPerform.lua:3478-3509
+func applyExposure(env *Environment) {
+	modDB, enemyDB := env.ModDB, env.Enemy.ModDB
+	for _, element := range []string{"Fire", "Cold", "Lightning"} {
+		if !modDB.Flag(nil, "ElementalEquilibrium") || // if Elemental Equilibrium isn't active we just process Exposure normally
+			element == "Fire" && !enemyDB.Flag(nil, "Condition:HitByFireDamage") ||
+			element == "Cold" && !enemyDB.Flag(nil, "Condition:HitByColdDamage") ||
+			element == "Lightning" && !enemyDB.Flag(nil, "Condition:HitByLightningDamage") {
+			magnitude := 0.0
+			var source mod.Source
+			extraExposure := modDB.Sum(mod.TypeBase, nil, "ExtraExposure", "Extra"+element+"Exposure")
+			globalExposureEffect := modDB.Sum(mod.TypeIncrease, nil, element+"ExposureEffect")
+			exposureEffectOnSelf := enemyDB.More(nil, "ExposureEffectOnSelf")
+			for _, row := range enemyDB.Tabulate(mod.TypeBase, nil, element+"Exposure") {
+				skillExposureEffect := getSkillExposureEffect(env, row.Mod.GetSource(), element)
+				// Resolve each exposure source independently so skill-specific effect only scales the exposure from that skill.
+				value := math.Floor((row.Value + extraExposure) * ((globalExposureEffect+skillExposureEffect)/100 + 1) * exposureEffectOnSelf)
+				if value > magnitude {
+					magnitude = value
+					source = row.Mod.GetSource()
+				}
+			}
+			if magnitude > 0 {
+				if o := modDB.Override(nil, "ExposureMin"); o != nil {
+					magnitude = math.Max(magnitude, o.Float())
+				}
+				enemyDB.AddMod(newFlagMod("Condition:Has"+element+"Exposure", ""))
+				enemyDB.AddMod(newFlagMod("Condition:HasExposure", ""))
+				enemyDB.AddMod(newMod(element+"Resist", mod.TypeBase, -magnitude, source))
+				modDB.AddMod(newFlagMod("Condition:AppliedExposureRecently", ""))
+			}
+		}
+	}
 }

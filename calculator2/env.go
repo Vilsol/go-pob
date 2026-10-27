@@ -80,6 +80,11 @@ type Environment struct {
 	requirementsTable      []requirementSource
 
 	VirtuousMoteSkillCount map[string]float64
+	// AuxSkillList is env.auxSkillList: the active skills with buffs.
+	AuxSkillList          []*ActiveSkill
+	useAltGemQualityStats bool
+	// sourceGemPropertyInfo is env.sourceGemPropertyInfo.
+	sourceGemPropertyInfo map[*GemInstance][]supportedGemProperty
 	// weaponSetRestart is set where calcs.initEnv would restart for the main group's other weapon set.
 	weaponSetRestart bool
 }
@@ -186,6 +191,14 @@ type GemEffect struct {
 	Corrupted  bool
 	Superseded bool
 	Enabled    bool
+
+	// ActorLevel is activeEffect.actorLevel, set for a minion's skill.
+	ActorLevel    float64
+	HasActorLevel bool
+	// GrantedEffectLevel is activeEffect.grantedEffectLevel: levels[level] with the stat set's level row over it.
+	GrantedEffectLevel *grantedEffectLevel
+	// GemPropertyInfo is effect.gemPropertyInfo: the GemProperty mods applyGemMods applied.
+	GemPropertyInfo []gemPropertyInfo
 }
 
 // StatSetChoice is activeEffect.statSet: { index, statSet, skillFlags }.
@@ -213,6 +226,25 @@ type ActiveSkill struct {
 	SkillFlags map[string]bool
 
 	SlotName string
+
+	// The fields calcs.buildActiveSkillModList sets.
+	SkillModList      *moddb.ModList
+	BaseSkillModList  *moddb.ModList
+	SkillCfg          *moddb.ListCfg
+	Weapon1Cfg        *moddb.ListCfg
+	Weapon2Cfg        *moddb.ListCfg
+	TriggeredBy       *GemEffect
+	ExtraSkillModList []mod.Mod
+	BuffList          []*skillBuff
+	MinionList        []string
+	SkillPartName     string
+	DisableReason     string
+	Weapon1Flags      mod.MFlag
+	Weapon2Flags      mod.MFlag
+	SkillPart         int
+	SkillTotemID      int
+	ActiveMineCount   float64
+	ActiveStageCount  float64
 }
 
 // grantedSkill is one env.grantedSkills entry: a skill a tree node or an item grants.
@@ -249,6 +281,9 @@ type Actor struct {
 	// WeaponData1Type and WeaponData2Type are actor.weaponData1/2.type; "" is nil.
 	WeaponData1Type string
 	WeaponData2Type string
+	// WeaponData1AsThoughUsing and WeaponData2AsThoughUsing are actor.weaponData1/2.asThoughUsing.
+	WeaponData1AsThoughUsing map[string]bool
+	WeaponData2AsThoughUsing map[string]bool
 
 	appliedEnemyModifiers map[mod.Mod]bool
 }

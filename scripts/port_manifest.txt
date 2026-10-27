@@ -531,6 +531,7 @@ calculator2/calc_setup_radius.go    PORT       src/Modules/CalcSetup.lua
 calculator2/calc_setup_skills.go    PORT       src/Modules/CalcSetup.lua,src/Classes/SkillsTab.lua
 calculator2/calc_setup_skills_data.go PORT     src/Modules/Data.lua
 calculator2/calc_active_skill.go    PORT       src/Modules/CalcActiveSkill.lua
+calculator2/calc_active_skill_modlist.go PORT  src/Modules/CalcActiveSkill.lua,src/Modules/CalcSetup.lua
 calculator2/calc_tools.go           PORT       src/Modules/CalcTools.lua
 calculator2/calculator.go           PORT       src/Modules/Calcs.lua,src/Classes/PassiveSpec.lua,src/Classes/ConfigTab.lua,src/Classes/SkillsTab.lua
 calculator2/env.go                  PORT       src/Modules/CalcSetup.lua,src/Classes/ModStore.lua,src/Classes/SkillsTab.lua,src/Modules/CalcActiveSkill.lua
