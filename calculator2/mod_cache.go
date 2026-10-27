@@ -116,6 +116,9 @@ func cacheMod(r map[string]any) (mod.Mod, error) {
 	default:
 		if n, ok := cacheArithNumber(value); ok {
 			m = mod.NewFloat(name, mod.Type(typ), n)
+		} else if value == nil {
+			// A skill file's statMap leaves the value nil; mergeStatSet sets it from the stat.
+			m = mod.NewFloat(name, mod.Type(typ), 0)
 		} else {
 			v, err := cacheTableValue(value)
 			if err != nil {
@@ -477,9 +480,19 @@ func cacheListValue(name string, value any) (any, error) {
 	case "SkillData":
 		f.used["value"] = true
 		sd := mod.SkillData{Key: f.str("key")}
+		if f.has("merge") {
+			sd.Merge = f.str("merge")
+		}
 		switch v := t["value"].(type) {
 		case string:
 			sd.String = v
+		case nil:
+			// A skill file's statMap leaves the value nil; mergeStatSet sets it from the stat.
+		case bool:
+			// skill(key, true): the mod package keeps a SkillData truth as 1, as the PoE1 tables do.
+			if v {
+				sd.Value = 1
+			}
 		default:
 			n, ok := cacheNumber(v)
 			if !ok {

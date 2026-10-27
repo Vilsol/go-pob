@@ -26,7 +26,7 @@ const (
 	generatorPkg  = ModulePath + "/scripts/gamedatadump"
 )
 
-var DataPackages = []string{RawPkg, DataModule + "/poe", loaderPkg, DataModule + "/utils", DataModule + "/fields"}
+var DataPackages = []string{RawPkg, DataModule + "/poe", loaderPkg, DataModule + "/utils", DataModule + "/fields", DataModule + "/poe2"}
 
 var BuildConfigs = []BuildConfig{
 	{Name: "native", Patterns: []string{"./..."}},

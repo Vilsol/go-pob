@@ -145,6 +145,12 @@ data/poe2/skill_globals_generated.go  GENERATED  scripts/gopob/regendata_poe2_sk
 data/poe2/skill_overlay_generated.go  GENERATED  scripts/gopob/regendata_poe2_skills.go
 data/poe2/skill_stat_map_generated.go GENERATED  scripts/gopob/regendata_poe2_skills.go
 data/poe2/skills.go                 GO-NATIVE  Go struct declarations and binary searches over the generated PoE2 skill overlay, global stat map and Global.lua enums, standing in for PoB-PoE2's data.skills[id], data.skillStatMap[stat] and SkillTypeName[id] lookups; each cites the Lua it replaces
+data/poe2skills/export.go           PORT       src/Export/Scripts/skills.lua
+data/poe2skills/gems.go             PORT       src/Modules/Data.lua
+data/poe2skills/load.go             PORT       src/Modules/Data.lua
+data/poe2skills/predamage.go        PORT       src/Data/Skills/act_dex.lua,src/Data/Skills/act_int.lua,src/Data/Skills/act_str.lua,src/Data/Skills/minion.lua,src/Data/Skills/other.lua,src/Data/Skills/sup_int.lua
+data/poe2skills/skills.go           GO-NATIVE  Go struct declarations for data.skills entries and the loader joining go-pob-data's skill tables with the overlay; the Lua that fills them is ported in export.go and load.go
+data/poe2skills/text.go             PORT       src/Modules/Common.lua,src/Export/Scripts/skills.lua
 data/poe2/types.go                  GO-NATIVE  Go struct declarations for the rows PoB-PoE2's Data.lua builds (item bases, rune mods, gems); the values are generated
 
 data/raw/gems.go                    GENERATED  scripts/gopob/gemsemit.go
