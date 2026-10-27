@@ -6,8 +6,13 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
+	"sort"
+	"strconv"
 	"strings"
 	"testing"
+
+	"github.com/Vilsol/go-pob-data/loader"
 )
 
 func poe2PinFile(t *testing.T, rel string) string {
@@ -136,4 +141,98 @@ func TestPoE2LegionPassivesAreThePins(t *testing.T) {
 			t.Errorf("addition %d:\n got  %s\n want %s", i+1, got, exp)
 		}
 	}
+}
+
+// TestPoE2ItemBasesAreThePins: bases.lua over go-pob-data's 0.5 tables, .it files and stat descriptions, with
+// the pin's Export/Bases templates, writes the pin's src/Data/Bases/*.lua.
+func TestPoE2ItemBasesAreThePins(t *testing.T) {
+	poe2PinFile(t, "Data/Misc.lua")
+	files, x, err := poe2ItemBaseFiles(os.Getenv("POB2_DIR"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, name := range poe2BaseItemTypeNames {
+		rel := "Data/Bases/" + name + ".lua"
+		t.Run(name, func(t *testing.T) {
+			want := poe2PinFile(t, rel)
+			if name == "flask" {
+				// the charms' buff lines need UtilityFlaskBuffs and BuffDefinitions, which go-pob-data does not publish
+				if n := len(poe2CharmBuffRe.FindAllString(want, -1)); n != x.charmBuffs || n == 0 {
+					t.Fatalf("the pin's flask.lua has %d charm buff lines, the dumper skipped %d", n, x.charmBuffs)
+				}
+				want = poe2CharmBuffRe.ReplaceAllString(want, "")
+			}
+			firstLineDiff(t, rel, files[rel], want)
+		})
+	}
+}
+
+var poe2CharmBuffRe = regexp.MustCompile(`buff = \{ "[^\n]*" \}, `)
+
+var poe2TradeHashesRe = regexp.MustCompile(`tradeHashes = \{ ((?:\[\d+\] = \{ [^\n]*? \}, )*) \},`)
+var poe2TradeHashRe = regexp.MustCompile(`\[(\d+)\] = \{ [^\n]*? \}, `)
+
+// poe2SortTradeHashes puts each tradeHashes table's entries in key order: soulcores.lua writes them in
+// pairs() order.
+func poe2SortTradeHashes(text string) string {
+	return poe2TradeHashesRe.ReplaceAllStringFunc(text, func(m string) string {
+		inner := poe2TradeHashesRe.FindStringSubmatch(m)[1]
+		entries := poe2TradeHashRe.FindAllString(inner, -1)
+		sort.Slice(entries, func(i, j int) bool {
+			a, _ := strconv.ParseUint(poe2TradeHashRe.FindStringSubmatch(entries[i])[1], 10, 64)
+			b, _ := strconv.ParseUint(poe2TradeHashRe.FindStringSubmatch(entries[j])[1], 10, 64)
+			return a < b
+		})
+		return "tradeHashes = { " + strings.Join(entries, "") + " },"
+	})
+}
+
+// TestPoE2SoulCoreTradeHashes: murmurHash2 over a soul core stat's go-pob-data hash gives a trade hash
+// the pin's src/Data/ModRunes.lua carries.
+func TestPoE2SoulCoreTradeHashes(t *testing.T) {
+	src := poe2PinFile(t, "Data/ModRunes.lua")
+	pinHashes := map[string]bool{}
+	for _, m := range poe2TradeHashRe.FindAllStringSubmatch(src, -1) {
+		pinHashes[m[1]] = true
+	}
+	stats, err := poe2Table[poe2HashedStat]("Stats")
+	if err != nil {
+		t.Fatal(err)
+	}
+	rows, err := poe2Table[poe2SoulCoreStat]("SoulCoreStats")
+	if err != nil {
+		t.Fatal(err)
+	}
+	checked := 0
+	for _, r := range rows {
+		if len(r.Stats) != 1 || strings.Contains(stats[r.Stats[0]].ID, "minimum") || r.StatValue[0] == 0 {
+			continue
+		}
+		h := strconv.FormatUint(uint64(murmurHash2(intToBytes(stats[r.Stats[0]].Hash), 0x02312233)), 10)
+		if pinHashes[h] {
+			checked++
+		}
+	}
+	t.Logf("%d single-stat soul core rows hash to one of the pin's %d trade hashes", checked, len(pinHashes))
+	if checked < len(pinHashes)/2 {
+		t.Fatalf("%d single-stat soul core rows hash to one of the pin's %d trade hashes", checked, len(pinHashes))
+	}
+}
+
+// TestPoE2ModRunesIsThePins: soulcores.lua over go-pob-data's 0.5 tables writes the pin's src/Data/ModRunes.lua,
+// up to the order of each tradeHashes table.
+func TestPoE2ModRunesIsThePins(t *testing.T) {
+	want := poe2PinFile(t, "Data/ModRunes.lua")
+	for _, table := range []string{"SoulCoreTypes", "SoulCoreLimits", "SoulCoreStatCategories"} {
+		if ok, err := loader.HasTable(gameDataContext(), poe2Version, table); err != nil {
+			t.Fatal(err)
+		} else if !ok {
+			t.Skipf("go-pob-data %s does not publish %s", poe2Version, table)
+		}
+	}
+	got, err := poe2ModRunesLua(os.Getenv("POB2_DIR"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	firstLineDiff(t, "Data/ModRunes.lua", got, poe2SortTradeHashes(want))
 }

@@ -495,8 +495,10 @@ scripts/gamedatadump/exportdesc.go  PORT       src/Export/statdesc.lua,src/Modul
 scripts/gamedatadump/pantheons.go   PORT       src/Export/Scripts/pantheons.lua
 scripts/gamedatadump/cluster.go     PORT       src/Export/Scripts/cluster.lua
 scripts/gamedatadump/legion.go      PORT       src/Export/Scripts/legionPassives.lua
+scripts/gamedatadump/poe2bases.go   PORT       src/Export/Scripts/bases.lua,src/Export/Main.lua,src/Export/statdesc.lua,src/Modules/Common.lua
 scripts/gamedatadump/poe2legion.go  PORT       src/Export/Scripts/legionPassives.lua
 scripts/gamedatadump/poe2misc.go    PORT       src/Export/Scripts/miscdata.lua
+scripts/gamedatadump/poe2soulcores.go GO-NATIVE PoB-PoE2's Export/Scripts/soulcores.lua, which the PoE1 pin lacks; its //pob2: markers cite it
 scripts/gamedatadump/poe2statdesc.go PORT     src/Export/statdesc.lua,src/Modules/Common.lua
 scripts/gamedatadump/tattoo.go      PORT       src/Export/Scripts/tattooPassives.lua
 scripts/gamedatadump/modscalability.go PORT    src/Export/statdesc.lua,src/Export/Scripts/modScalability.lua

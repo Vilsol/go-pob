@@ -31,6 +31,8 @@ var dumpers = map[string]func() (any, error){
 	"skills-data":          dumpSkillsData,
 	"poe2-misc-data":       dumpPoE2MiscData,
 	"poe2-legion-passives": dumpPoE2LegionPassives,
+	"poe2-item-bases":      dumpPoE2ItemBases,
+	"poe2-mod-runes":       dumpPoE2ModRunes,
 }
 
 func main() {
