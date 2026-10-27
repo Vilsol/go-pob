@@ -184,6 +184,9 @@ func withList(named map[string]any, list []any) mixed {
 
 func flattenAny(out map[string]string, path string, v any) {
 	if m, ok := v.(mixed); ok {
+		if len(m.named) == 0 && len(m.list) == 0 {
+			out[path] = "{}"
+		}
 		for k, e := range m.named {
 			flattenAny(out, path+luaKey(k), e)
 		}
@@ -385,7 +388,7 @@ func goRows(ge *GrantedEffect) map[string]string {
 			}
 			st["baseMods"] = mods
 		}
-		if len(s.ConstantStats) > 0 {
+		if s.ConstantStats != nil {
 			cs := make([]any, len(s.ConstantStats))
 			for j, c := range s.ConstantStats {
 				cs[j] = []any{c.Stat, c.Value}
@@ -636,8 +639,7 @@ func readIDs(t *testing.T, skills *Skills, path string) map[string]bool {
 }
 
 // TestSkillsMatchPoBPoE2 grades every built effect against PoB-PoE2's loaded data.skills, path by path.
-// Every effect agrees but those PoB writes by hand with no export template, whose numbers the overlay
-// does not carry. POE2_SKILL_IDS names a file of effect, gem or game ids to report apart (the ids a
+// Every effect agrees, those PoB writes by hand with no export template included. POE2_SKILL_IDS names a file of effect, gem or game ids to report apart (the ids a
 // build corpus uses).
 func TestSkillsMatchPoBPoE2(t *testing.T) {
 	skills := testSkills(t)
@@ -678,7 +680,7 @@ func TestSkillsMatchPoBPoE2(t *testing.T) {
 			t.Error(b)
 		}
 	}
-	const noTemplateCeiling = 7
+	const noTemplateCeiling = 0
 	if noTemplate > noTemplateCeiling {
 		t.Errorf("%d hand-written effects disagree, ceiling %d", noTemplate, noTemplateCeiling)
 	}

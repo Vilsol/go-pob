@@ -11,7 +11,9 @@ func TestPoE2SkillsEmitOverlay(t *testing.T) {
 {"id":"A","hidden":true,"minionList":["X","Y"],"statSets":[{"id":"S1","baseFlags":[],"baseMods":[` + mod + `]},{"statMap":[
  {"stat":"a","items":[` + mod + `,{"group":[` + mod + `],"value":null,"mult":null,"div":2,"base":null}],"value":0,"mult":null,"div":null,"base":null,"skillFlag":"f"},
  {"stat":"b","items":[],"value":null,"mult":null,"div":null,"base":null,"skillFlag":null}]}]},
-{"id":"B","preDamageFunc":true,"noTemplate":true}]`))
+{"id":"B","preDamageFunc":true,"noTemplate":true,"name":"Bee","baseTypeName":"Bee","color":4,"skillTypes":["Area","Damage"],"castTime":0,
+ "cannotBeSupported":true,"hasQualityStats":true,"levels":[{"level":1,"extra":{"levelRequirement":1,"baseMultiplier":1}}],
+ "statSets":[{"label":"L","incrementalEffectiveness":0,"statDescriptionScope":"s","constantStats":[{"stat":"c","value":4}],"stats":[],"levels":[1],"baseFlags":[]}]}]`))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -19,7 +21,12 @@ func TestPoE2SkillsEmitOverlay(t *testing.T) {
 		`{ID: "A", Hidden: true, MinionList: []string{"X", "Y"}, StatSets: []StatSetOverlay{{ID: "S1", BaseFlags: []string{}, HasBaseFlags: true, BaseMods: []string{`,
 		`{Stat: "a", Value: 0, HasValue: true, SkillFlag: "f", Items: []StatMapItem{{Mod: `,
 		`Div: 2, HasDiv: true}}}, {Stat: "b"}}}}}`,
-		`{ID: "B", PreDamageFunc: true, NoTemplate: true},`,
+		`{ID: "B", PreDamageFunc: true, NoTemplate: true, Name: "Bee", BaseTypeName: "Bee", HasBaseTypeName: true, SkillTypes: []string{"Area", "Damage"}, ` +
+			`Levels: []LevelOverlay{{Level: 1, Extra: map[string]float64{"baseMultiplier": 1, "levelRequirement": 1}}}, Color: 4, CastTime: 0, HasCastTime: true, ` +
+			`CannotBeSupported: true, HasQualityStats: true, StatSets: []StatSetOverlay{{Label: "L", HasLabel: true, StatDescriptionScope: "s", HasStatDescriptionScope: true, ` +
+			`ConstantStats: []ConstantStatOverlay{{Stat: "c", Value: 4}}, HasConstantStats: true, Stats: []string{}, HasStats: true, Levels: []int{1}, ` +
+			`IncrementalEffectiveness: 0, HasIncrementalEffectiveness: true, BaseFlags: []string{}, HasBaseFlags: true}}},`,
+		`granted effects sorted by id; the 1 with`,
 	} {
 		if !strings.Contains(out, want) {
 			t.Errorf("missing %s in:\n%s", want, out)
@@ -30,6 +37,9 @@ func TestPoE2SkillsEmitOverlay(t *testing.T) {
 		{"unsorted", `[{"id":"B"},{"id":"A"}]`, "not sorted"},
 		{"duplicate", `[{"id":"A"},{"id":"A"}]`, "twice"},
 		{"empty", `[]`, "no granted effects"},
+		{"game fields on a templated effect", `[{"id":"A","name":"A"}]`, "has a template but carries game fields"},
+		{"no template without a name", `[{"id":"A","noTemplate":true}]`, "no template and no name"},
+		{"fractional colour", `[{"id":"A","noTemplate":true,"name":"A","color":1.5}]`, "not an integer"},
 		{"group of non-mods", `[{"id":"A","statSets":[{"statMap":[{"stat":"a","items":[{"group":[1]}]}]}]}]`, "not a mod"},
 		{"unsorted stat map", `[{"id":"A","statSets":[{"statMap":[{"stat":"b","items":[]},{"stat":"a","items":[]}]}]}]`, "not sorted by stat"},
 		{"unknown group field", `[{"id":"A","statSets":[{"statMap":[{"stat":"a","items":[{"group":[],"scalar":1}]}]}]}]`, "schema"},

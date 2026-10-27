@@ -680,10 +680,60 @@ func (e *exporter) set(so *poe2.StatSetOverlay) {
 	e.setIndex++
 }
 
-// noTemplate is an effect PoB writes straight into its skill files: nothing of it is read from the game.
+// noTemplate is an effect PoB writes straight into its skill files: nothing of it is read from the game,
+// and the overlay carries its game half.
 func (e *exporter) noTemplate(o *poe2.SkillOverlay) {
+	ge := e.ge
+	ge.Name = o.Name
+	ge.BaseTypeName, ge.HasBaseTypeName = o.BaseTypeName, o.HasBaseTypeName
+	ge.Description = o.Description
+	ge.Color = o.Color
+	ge.Hidden = o.Hidden
+	ge.CastTime, ge.HasCastTime = o.CastTime, o.HasCastTime
+	ge.CannotBeSupported = o.CannotBeSupported
+	if o.SkillTypes != nil {
+		ge.SkillTypes = make(map[string]bool, len(o.SkillTypes))
+		for _, t := range o.SkillTypes {
+			ge.SkillTypes[t] = true
+		}
+	}
+	if o.HasQualityStats {
+		ge.QualityStats = []QualityStat{}
+	}
+	if o.Levels != nil {
+		ge.Levels = make(map[int]*Level, len(o.Levels))
+		for _, l := range o.Levels {
+			extra := make(map[string]float64, len(l.Extra))
+			for k, v := range l.Extra {
+				extra[k] = v
+			}
+			ge.Levels[l.Level] = &Level{Level: l.Level, Extra: extra}
+		}
+	}
 	for i := range o.StatSets {
-		e.ge.StatSets = append(e.ge.StatSets, &StatSet{effect: e.ge, Overlay: &o.StatSets[i]})
+		so := &o.StatSets[i]
+		set := &StatSet{
+			effect: ge, Overlay: so,
+			Label: so.Label, HasLabel: so.HasLabel,
+			StatDescriptionScope: so.StatDescriptionScope, HasStatDescriptionScope: so.HasStatDescriptionScope,
+			Stats: so.Stats, HasStats: so.HasStats,
+			BaseEffectiveness: so.BaseEffectiveness, HasBaseEffectiveness: so.HasBaseEffectiveness,
+			IncrementalEffectiveness: so.IncrementalEffectiveness, HasIncrementalEffectiveness: so.HasIncrementalEffectiveness,
+			DamageIncrementalEffectiveness: so.DamageIncrementalEffectiveness, HasDamageIncrementalEffect: so.HasDamageIncrementalEffectiveness,
+		}
+		if so.HasConstantStats {
+			set.ConstantStats = make([]ConstantStat, len(so.ConstantStats))
+			for j, c := range so.ConstantStats {
+				set.ConstantStats[j] = ConstantStat{Stat: c.Stat, Value: c.Value}
+			}
+		}
+		if so.Levels != nil {
+			set.Levels = make(map[int]*StatSetLevel, len(so.Levels))
+			for _, n := range so.Levels {
+				set.Levels[n] = &StatSetLevel{Level: n}
+			}
+		}
+		ge.StatSets = append(ge.StatSets, set)
 	}
 }
 

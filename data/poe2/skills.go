@@ -8,7 +8,9 @@ import "sort"
 // effect no gem grants and by #noGem. AddSkillTypes is #addSkillTypes, already folded into PoB's skillTypes;
 // DisplayName is the name a #skill directive gives. PreDamageFunc says the entry carries a Lua function,
 // which the calc ports by hand. NoTemplate marks an effect PoB writes straight into its skill files, with
-// no export template: its stat sets carry no ID, and nothing of it comes from the game files.
+// no export template: its stat sets carry no ID, and nothing of it comes from the game files, so the game
+// half of its data.skills entry (Name through HasQualityStats, and each set's Label through Levels) is
+// written here instead; it is unset on every other effect.
 //
 //pob2:src/Modules/Data.lua:926-928
 type SkillOverlay struct {
@@ -28,18 +30,58 @@ type SkillOverlay struct {
 	AddSkillTypes      []string
 	DisplayName        string
 	StatSets           []StatSetOverlay
+	Name               string
+	BaseTypeName       string
+	Description        string
+	SkillTypes         []string
+	Levels             []LevelOverlay
+	Color              int
+	CastTime           float64
+	HasBaseTypeName    bool
+	HasCastTime        bool
+	CannotBeSupported  bool
+	HasQualityStats    bool
+}
+
+// LevelOverlay is a NoTemplate effect's levels[Level], its named numbers.
+type LevelOverlay struct {
+	Extra map[string]float64
+	Level int
+}
+
+// ConstantStatOverlay is one { stat, value } of a NoTemplate set's constantStats.
+type ConstantStatOverlay struct {
+	Stat  string
+	Value float64
 }
 
 // StatSetOverlay is the hand-written part of one statSets[i]: ID, the GrantedEffectStatSets id its #set
 // directive exported it from (the join key to the game rows), baseFlags (nil on a support's set, which
 // PoB leaves without one; HasBaseFlags tells that apart from an empty set), baseMods as ModCache-style
-// mod JSON, and the set's own statMap sorted by stat.
+// mod JSON, and the set's own statMap sorted by stat. A NoTemplate effect's set also carries its game
+// half; Levels are its level numbers, each an empty levels[n].
 type StatSetOverlay struct {
 	ID           string
 	BaseFlags    []string
 	HasBaseFlags bool
 	BaseMods     []string
 	StatMap      []StatMapEntry
+
+	Label                             string
+	StatDescriptionScope              string
+	ConstantStats                     []ConstantStatOverlay
+	Stats                             []string
+	Levels                            []int
+	BaseEffectiveness                 float64
+	IncrementalEffectiveness          float64
+	DamageIncrementalEffectiveness    float64
+	HasLabel                          bool
+	HasStatDescriptionScope           bool
+	HasConstantStats                  bool
+	HasStats                          bool
+	HasBaseEffectiveness              bool
+	HasIncrementalEffectiveness       bool
+	HasDamageIncrementalEffectiveness bool
 }
 
 // StatMapEntry is statMap[Stat]: its mods and groups in PoB's order, its value, mult, div and base, and

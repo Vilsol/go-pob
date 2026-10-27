@@ -30,7 +30,7 @@ var rdGeneratorsPoE2Skills = []rdGenerator{
 	rdGeneratorPoE2Skills("statmap", "data/poe2/skill_stat_map_generated.go",
 		"src/Data/SkillStatMap.lua, the global stat-to-mod map, as ModCache-style mod JSON"),
 	rdGeneratorPoE2Skills("overlay", "data/poe2/skill_overlay_generated.go",
-		"the hand-written half of src/Data/Skills/*.lua (directives, baseFlags, baseMods, statMap); the game numbers come from go-pob-data"),
+		"the hand-written half of src/Data/Skills/*.lua (directives, baseFlags, baseMods, statMap); the game numbers come from go-pob-data, except for an effect with no template, which PoB writes in full"),
 }
 
 const p2sUsage = "usage: poe2-skills-emit <dump.json> <out.go> <globals|statmap|overlay>"
@@ -257,6 +257,42 @@ type p2sStatSet struct {
 	BaseFlags []string          `json:"baseFlags"`
 	BaseMods  []json.RawMessage `json:"baseMods"`
 	StatMap   []p2sEntry        `json:"statMap"`
+	p2sNoTemplateSet
+}
+
+// p2sNoTemplateSet is the game half of a stat set PoB writes by hand.
+type p2sNoTemplateSet struct {
+	Label                          *string    `json:"label"`
+	BaseEffectiveness              *float64   `json:"baseEffectiveness"`
+	IncrementalEffectiveness       *float64   `json:"incrementalEffectiveness"`
+	DamageIncrementalEffectiveness *float64   `json:"damageIncrementalEffectiveness"`
+	StatDescriptionScope           *string    `json:"statDescriptionScope"`
+	ConstantStats                  []p2sConst `json:"constantStats"`
+	Stats                          []string   `json:"stats"`
+	Levels                         []int      `json:"levels"`
+}
+
+type p2sConst struct {
+	Stat  string  `json:"stat"`
+	Value float64 `json:"value"`
+}
+
+type p2sLevel struct {
+	Level int                `json:"level"`
+	Extra map[string]float64 `json:"extra"`
+}
+
+// p2sNoTemplate is the game half of a granted effect PoB writes by hand.
+type p2sNoTemplate struct {
+	Name              string     `json:"name"`
+	BaseTypeName      *string    `json:"baseTypeName"`
+	Description       string     `json:"description"`
+	Color             float64    `json:"color"`
+	SkillTypes        []string   `json:"skillTypes"`
+	CastTime          *float64   `json:"castTime"`
+	CannotBeSupported bool       `json:"cannotBeSupported"`
+	HasQualityStats   bool       `json:"hasQualityStats"`
+	Levels            []p2sLevel `json:"levels"`
 }
 
 type p2sSkill struct {
@@ -276,6 +312,7 @@ type p2sSkill struct {
 	AddSkillTypes      []string     `json:"addSkillTypes"`
 	DisplayName        string       `json:"displayName"`
 	StatSets           []p2sStatSet `json:"statSets"`
+	p2sNoTemplate
 }
 
 func p2sOverlay(body []byte) (string, error) {
@@ -289,9 +326,15 @@ func p2sOverlay(body []byte) (string, error) {
 	if !sort.SliceIsSorted(rows, func(i, j int) bool { return rows[i].ID < rows[j].ID }) {
 		return "", fmt.Errorf("the granted effects are not sorted by id; SkillOverlayByID binary-searches them")
 	}
+	noTemplate := 0
+	for _, r := range rows {
+		if r.NoTemplate {
+			noTemplate++
+		}
+	}
 	var b strings.Builder
 	p2sHeader(&b, "overlay", "src/Modules/Data.lua:926-928")
-	fmt.Fprintf(&b, "// SkillOverlays is the hand-written half of data.skills, %d granted effects sorted by id.\nvar SkillOverlays = []SkillOverlay{\n", len(rows))
+	fmt.Fprintf(&b, "// SkillOverlays is the hand-written half of data.skills, %d granted effects sorted by id; the %d with\n// NoTemplate are PoB-authored in full, game fields included, since no game row exists for them.\nvar SkillOverlays = []SkillOverlay{\n", len(rows), noTemplate)
 	for i, r := range rows {
 		if i > 0 && rows[i-1].ID == r.ID {
 			return "", fmt.Errorf("granted effect %s appears twice", r.ID)
@@ -312,12 +355,16 @@ func p2sOverlay(body []byte) (string, error) {
 		f.raw("MinionUses", p2eStrings(r.MinionUses))
 		f.raw("AddSkillTypes", p2eStrings(r.AddSkillTypes))
 		f.str("DisplayName", r.DisplayName)
+		if err := p2sNoTemplateGo(f, r); err != nil {
+			return "", err
+		}
 		if len(r.StatSets) > 0 {
 			sets := make([]string, len(r.StatSets))
 			for j, s := range r.StatSets {
 				where := fmt.Sprintf("%s.statSets[%d]", r.ID, j+1)
 				sf := &p2eFields{}
 				sf.str("ID", s.ID)
+				p2sNoTemplateSetGo(sf, s.p2sNoTemplateSet)
 				if s.BaseFlags != nil {
 					sf.raw("BaseFlags", p2eStrings(s.BaseFlags))
 					sf.flag("HasBaseFlags", true)
@@ -344,4 +391,91 @@ func p2sOverlay(body []byte) (string, error) {
 	}
 	b.WriteString("}\n")
 	return b.String(), nil
+}
+
+// p2sNoTemplateGo writes the game half of a NoTemplate effect; a templated effect carrying one refuses.
+func p2sNoTemplateGo(f *p2eFields, r p2sSkill) error {
+	n := r.p2sNoTemplate
+	if !r.NoTemplate {
+		if n.Name != "" || n.SkillTypes != nil || n.Levels != nil {
+			return fmt.Errorf("%s has a template but carries game fields", r.ID)
+		}
+		return nil
+	}
+	if n.Name == "" {
+		return fmt.Errorf("%s has no template and no name", r.ID)
+	}
+	if n.Color != float64(int(n.Color)) {
+		return fmt.Errorf("%s.color = %v is not an integer", r.ID, n.Color)
+	}
+	f.str("Name", n.Name)
+	if n.BaseTypeName != nil {
+		f.parts = append(f.parts, "BaseTypeName: "+strconv.Quote(*n.BaseTypeName), "HasBaseTypeName: true")
+	}
+	f.str("Description", n.Description)
+	f.raw("SkillTypes", p2eStrings(n.SkillTypes))
+	if n.Levels != nil {
+		levels := make([]string, len(n.Levels))
+		for i, l := range n.Levels {
+			keys := make([]string, 0, len(l.Extra))
+			for k := range l.Extra {
+				keys = append(keys, k)
+			}
+			sort.Strings(keys)
+			extra := make([]string, len(keys))
+			for j, k := range keys {
+				extra[j] = strconv.Quote(k) + ": " + p2eFloat(l.Extra[k])
+			}
+			levels[i] = fmt.Sprintf("{Level: %d, Extra: map[string]float64{%s}}", l.Level, strings.Join(extra, ", "))
+		}
+		f.raw("Levels", "[]LevelOverlay{"+strings.Join(levels, ", ")+"}")
+	}
+	if n.Color != 0 {
+		f.parts = append(f.parts, "Color: "+strconv.Itoa(int(n.Color)))
+	}
+	if n.CastTime != nil {
+		f.parts = append(f.parts, "CastTime: "+p2eFloat(*n.CastTime), "HasCastTime: true")
+	}
+	f.flag("CannotBeSupported", n.CannotBeSupported)
+	f.flag("HasQualityStats", n.HasQualityStats)
+	return nil
+}
+
+// p2sNoTemplateSetGo writes the game half of a stat set PoB writes by hand.
+func p2sNoTemplateSetGo(f *p2eFields, s p2sNoTemplateSet) {
+	if s.Label != nil {
+		f.parts = append(f.parts, "Label: "+strconv.Quote(*s.Label), "HasLabel: true")
+	}
+	if s.StatDescriptionScope != nil {
+		f.parts = append(f.parts, "StatDescriptionScope: "+strconv.Quote(*s.StatDescriptionScope), "HasStatDescriptionScope: true")
+	}
+	if s.ConstantStats != nil {
+		rows := make([]string, len(s.ConstantStats))
+		for i, c := range s.ConstantStats {
+			rows[i] = fmt.Sprintf("{Stat: %s, Value: %s}", strconv.Quote(c.Stat), p2eFloat(c.Value))
+		}
+		f.parts = append(f.parts, "ConstantStats: []ConstantStatOverlay{"+strings.Join(rows, ", ")+"}", "HasConstantStats: true")
+	}
+	if s.Stats != nil {
+		f.parts = append(f.parts, "Stats: "+p2eStrings(s.Stats), "HasStats: true")
+	}
+	if s.Levels != nil {
+		levels := make([]string, len(s.Levels))
+		for i, l := range s.Levels {
+			levels[i] = strconv.Itoa(l)
+		}
+		f.parts = append(f.parts, "Levels: []int{"+strings.Join(levels, ", ")+"}")
+	}
+	for _, kv := range []struct {
+		name string
+		v    *float64
+	}{
+		{"BaseEffectiveness", s.BaseEffectiveness},
+		{"IncrementalEffectiveness", s.IncrementalEffectiveness},
+		{"DamageIncrementalEffectiveness", s.DamageIncrementalEffectiveness},
+	} {
+		if kv.v != nil {
+			f.parts = append(f.parts, kv.name+": "+p2eFloat(*kv.v), "Has"+kv.name+": true")
+		}
+	}
 }

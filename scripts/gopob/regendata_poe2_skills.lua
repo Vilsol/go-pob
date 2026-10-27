@@ -270,6 +270,110 @@ local function flag(name, v, path)
 	return '"' .. name .. '":true'
 end
 
+-- A skill with no template has no game rows either, so its game fields are written too. Each list names
+-- what the emitter has a column for; anything else refuses.
+local noTemplateFields = {
+	name = true, baseTypeName = true, description = true, color = true, skillTypes = true, castTime = true,
+	cannotBeSupported = true, qualityStats = true, levels = true, statSets = true,
+}
+local noTemplateSetFields = {
+	label = true, baseEffectiveness = true, incrementalEffectiveness = true, damageIncrementalEffectiveness = true,
+	statDescriptionScope = true, constantStats = true, stats = true, levels = true,
+}
+
+local function skillTypeNames(types, path)
+	local out = {}
+	for id, v in pairs(types) do
+		assert(v == true, "REFUSING: a skillTypes value other than true at " .. path)
+		out[#out + 1] = assert(skillTypeName[id], "REFUSING: SkillType id " .. tostring(id) .. " has no name at " .. path)
+	end
+	table.sort(out)
+	return strList(out, path)
+end
+
+local function levelNumbers(levels, path)
+	local keys = sortedKeys(levels)
+	for _, n in ipairs(keys) do
+		assert(type(n) == "number" and n >= 1 and n % 1 == 0, "REFUSING: a level key that is not a level at " .. path)
+	end
+	return keys
+end
+
+local function noTemplateGame(ge, add, path)
+	for k in pairs(ge) do
+		assert(skillFields[k] or noTemplateFields[k], "REFUSING: hand-written field '" .. tostring(k) .. "' the emitter has no column for at " .. path)
+	end
+	add('"name":' .. encodeString(ge.name))
+	if ge.baseTypeName then
+		add('"baseTypeName":' .. encodeString(ge.baseTypeName))
+	end
+	if ge.description then
+		add('"description":' .. encodeString(ge.description))
+	end
+	if ge.color then
+		add('"color":' .. num(ge.color))
+	end
+	if ge.skillTypes then
+		add('"skillTypes":' .. skillTypeNames(ge.skillTypes, path .. ".skillTypes"))
+	end
+	if ge.castTime then
+		add('"castTime":' .. num(ge.castTime))
+	end
+	add(flag("cannotBeSupported", ge.cannotBeSupported, path))
+	if ge.qualityStats then
+		assert(next(ge.qualityStats) == nil, "REFUSING: hand-written qualityStats rows the emitter has no column for at " .. path)
+		add('"hasQualityStats":true')
+	end
+	if ge.levels then
+		local rows = {}
+		for _, n in ipairs(levelNumbers(ge.levels, path .. ".levels")) do
+			local extra = {}
+			for _, k in ipairs(sortedKeys(ge.levels[n])) do
+				local v = ge.levels[n][k]
+				assert(type(k) == "string" and type(v) == "number", "REFUSING: a level field that is not a named number at " .. path .. ".levels[" .. n .. "]")
+				extra[#extra + 1] = encodeString(k) .. ":" .. num(v)
+			end
+			rows[#rows + 1] = '{"level":' .. n .. ',"extra":{' .. table.concat(extra, ",") .. "}}"
+		end
+		add('"levels":[' .. table.concat(rows, ",") .. "]")
+	end
+end
+
+local function noTemplateSet(set, s, sp)
+	for k in pairs(set) do
+		assert(setFields[k] or noTemplateSetFields[k], "REFUSING: hand-written stat set field '" .. tostring(k) .. "' the emitter has no column for at " .. sp)
+	end
+	if set.label then
+		s[#s + 1] = '"label":' .. encodeString(set.label)
+	end
+	for _, k in ipairs({ "baseEffectiveness", "incrementalEffectiveness", "damageIncrementalEffectiveness" }) do
+		if set[k] then
+			s[#s + 1] = '"' .. k .. '":' .. num(set[k])
+		end
+	end
+	if set.statDescriptionScope then
+		s[#s + 1] = '"statDescriptionScope":' .. encodeString(set.statDescriptionScope)
+	end
+	if set.constantStats then
+		local rows = {}
+		for i, c in ipairs(set.constantStats) do
+			assert(type(c[1]) == "string" and type(c[2]) == "number", "REFUSING: a constantStats row that is not { stat, value } at " .. sp)
+			rows[i] = '{"stat":' .. encodeString(c[1]) .. ',"value":' .. num(c[2]) .. "}"
+		end
+		s[#s + 1] = '"constantStats":[' .. table.concat(rows, ",") .. "]"
+	end
+	if set.stats then
+		s[#s + 1] = '"stats":' .. strList(set.stats, sp .. ".stats")
+	end
+	if set.levels then
+		local ns = levelNumbers(set.levels, sp .. ".levels")
+		for _, n in ipairs(ns) do
+			assert(next(set.levels[n]) == nil, "REFUSING: a hand-written stat set level with values the emitter has no column for at " .. sp)
+		end
+		s[#s + 1] = '"levels":[' .. table.concat(ns, ",") .. "]"
+	end
+end
+
 local function dumpOverlay()
 	local skills = {}
 	for _, file in ipairs(skillFiles) do
@@ -324,6 +428,7 @@ local function dumpOverlay()
 		assert(not d or #d.sets == #(ge.statSets or {}), "REFUSING: " .. id .. "'s template has " .. (d and #d.sets or 0) .. " #set lines for " .. #(ge.statSets or {}) .. " stat sets")
 		if not d then
 			add('"noTemplate":true')
+			noTemplateGame(ge, add, path)
 		end
 		local sets = {}
 		for i, set in ipairs(ge.statSets or {}) do
@@ -334,6 +439,8 @@ local function dumpOverlay()
 			local s = {}
 			if d then
 				s[#s + 1] = '"id":' .. encodeString(d.sets[i])
+			else
+				noTemplateSet(set, s, sp)
 			end
 			if set.baseFlags then
 				s[#s + 1] = '"baseFlags":' .. trueSet(set.baseFlags, sp .. ".baseFlags")
