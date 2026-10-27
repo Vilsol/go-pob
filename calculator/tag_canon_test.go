@@ -207,6 +207,7 @@ func canonOurTag(t mod.Tag) canonTag {
 		setStrPtr("limitStat", tag.TagLimitStat)
 		setBool("limitNegTotal", tag.TagLimitNegTotal)
 		set("limitActor", tag.TagLimitActor)
+		setBool("invert", tag.TagInvert)
 	case *mod.MultiplierThresholdTag:
 		if len(tag.VariableList) > 0 {
 			set("vars", strings.Join(tag.VariableList, ","))
@@ -218,6 +219,7 @@ func canonOurTag(t mod.Tag) canonTag {
 		setBool("upper", tag.TagUpper)
 		setBool("equals", tag.TagEquals)
 		set("actor", tag.TagActor)
+		set("thresholdActor", tag.TagThresholdActor)
 	case *mod.PerStatTag:
 		set("stats", strings.Join(tag.StatList, ","))
 		setNum("div", tag.Divide)
@@ -228,8 +230,10 @@ func canonOurTag(t mod.Tag) canonTag {
 		set("actor", tag.TagActor)
 		setNum("globalLimit", tag.TagGlobalLimit)
 		set("globalLimitKey", tag.TagGlobalLimitKey)
+		set("divVar", tag.TagDivVariable)
 	case *mod.PercentStatTag:
 		set("stats", tag.Stat)
+		set("statList", strings.Join(tag.StatList, ","))
 		if tag.PercentVar != "" {
 			set("percentVar", tag.PercentVar)
 		} else {
@@ -239,6 +243,7 @@ func canonOurTag(t mod.Tag) canonTag {
 		setBool("floor", tag.TagFloor)
 	case *mod.StatThresholdTag:
 		set("stats", tag.Stat)
+		set("statList", strings.Join(tag.StatList, ","))
 		if tag.TagThresholdStat != "" {
 			set("thresholdStat", tag.TagThresholdStat)
 		} else {
