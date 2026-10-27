@@ -68,3 +68,25 @@ func TestDefenceRecoveryFixture(t *testing.T) {
 		}
 	}
 }
+
+// The expected values are PoB-PoE2's output for the same file, loaded headless: two enabled spirit
+// skills under reservation efficiency, a disabled one that reserves nothing, and a life reservation.
+func TestDefenceSkillReservationFixture(t *testing.T) {
+	raw, err := os.ReadFile("testdata/skill_reservation.xml")
+	testza.AssertNoError(t, err)
+	build, err := pob2.ParseBuild(raw)
+	testza.AssertNoError(t, err)
+	env, err := BuildOutput(build, Options{Tree: loadTestTree(t)})
+	testza.AssertNoError(t, err)
+
+	for stat, want := range map[string]float64{
+		"Spirit": 350, "SpiritReserved": 54, "SpiritReservedPercent": 15.428571428571, "SpiritUnreserved": 296,
+		"SpiritUnreservedPercent": 84.571428571429, "SpiritCancellableReservation": 100,
+		"Life": 825, "LifeReserved": 83, "LifeUnreserved": 742, "LifeCancellableReservation": 90,
+		"Mana": 298, "ManaReserved": 0, "ManaUnreserved": 298,
+	} {
+		if got := env.Player.Output[stat]; math.Abs(got-want) > 1e-9*math.Max(1, math.Abs(want)) {
+			t.Errorf("%s: PoB-PoE2 %v, ours %v", stat, want, got)
+		}
+	}
+}

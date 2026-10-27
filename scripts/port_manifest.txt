@@ -522,6 +522,7 @@ calculator2/calc_defence_ehp_config.go PORT    src/Classes/ConfigTab.lua,src/Mod
 calculator2/calc_perform.go         PORT       src/Modules/CalcPerform.lua
 calculator2/calc_perform_ailments.go PORT       src/Modules/CalcPerform.lua
 calculator2/calc_perform_charges.go PORT       src/Modules/CalcPerform.lua
+calculator2/calc_perform_buffs.go PORT         src/Modules/CalcPerform.lua,src/Modules/Data.lua,src/Classes/ModStore.lua
 calculator2/calc_perform_requirements.go PORT    src/Modules/CalcPerform.lua,src/Modules/CalcSetup.lua
 calculator2/calc_perform_weapon.go PORT        src/Modules/CalcPerform.lua
 calculator2/calc_offence.go PORT              src/Modules/CalcOffence.lua,src/Modules/CalcTools.lua,src/Modules/Common.lua

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PathOfBuilding2>
+	<Build ascendClassName="None" characterLevelAutoMode="false" className="Warrior" level="60" mainSocketGroup="1" targetVersion="0_1" viewMode="TREE">
+	</Build>
+	<Config activeConfigSet="1">
+		<ConfigSet id="1" title="Default">
+			<CustomModifierBlock enabled="true" title="Default">+400 to Spirit</CustomModifierBlock>
+		</ConfigSet>
+	</Config>
+	<Items activeItemSet="1" useSecondWeaponSet="false">
+		<ItemSet id="1" title="Default" useSecondWeaponSet="false">
+		</ItemSet>
+	</Items>
+	<Skills activeSkillSet="1" defaultGemLevel="normalMaximum" defaultGemQuality="0">
+		<SkillSet id="1">
+			<Skill enabled="true" includeInFullDPS="nil" label="" mainActiveSkill="1" mainActiveSkillCalcs="nil" set1="true" set2="true">
+				<Gem corruptLevel="0" corrupted="nil" count="1" enableGlobal1="true" enableGlobal2="true" enabled="true" gemId="Metadata/Items/Gems/SkillGemRipwireBallista" level="19" nameSpec="Artillery Ballista" quality="20" skillId="ArtilleryBallistaPlayer" variantId="ArtilleryBallista"/>
+			</Skill>
+			<Skill enabled="true" includeInFullDPS="nil" label="" mainActiveSkill="1" mainActiveSkillCalcs="nil" set1="true" set2="true">
+				<Gem corruptLevel="0" corrupted="nil" count="1" enableGlobal1="true" enableGlobal2="true" enabled="true" gemId="Metadata/Items/Gem/SkillGemExplosiveGrenade" level="10" nameSpec="Explosive Grenade" quality="0" skillId="ExplosiveGrenadePlayer" variantId="ExplosiveGrenade"/>
+			</Skill>
+			<Skill enabled="true" includeInFullDPS="nil" label="" mainActiveSkill="1" mainActiveSkillCalcs="nil" set1="true" set2="true">
+				<Gem corruptLevel="0" corrupted="nil" count="1" enableGlobal1="true" enableGlobal2="true" enabled="true" gemId="Metadata/Items/Gem/SkillGemFragmentationRounds" level="10" nameSpec="Fragmentation Rounds" quality="0" skillId="FragmentationRoundsAmmoPlayer" variantId="FragmentationRounds"/>
+			</Skill>
+		</SkillSet>
+	</Skills>
+	<Tree activeSpec="1">
+		<Spec ascendClassId="0" classId="6" masteryEffects="" nodes="" secondaryAscendClassId="nil" treeVersion="0_5">
+		</Spec>
+	</Tree>
+</PathOfBuilding2>

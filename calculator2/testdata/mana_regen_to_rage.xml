@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PathOfBuilding2>
+	<Build ascendClassName="None" characterLevelAutoMode="false" className="Warrior" level="60" mainSocketGroup="1" targetVersion="0_1" viewMode="TREE">
+	</Build>
+	<Config activeConfigSet="1">
+		<ConfigSet id="1" title="Default">
+			<CustomModifierBlock enabled="true" title="Default">+400 to Spirit
+30% increased Mana Regeneration Rate
+Increases and Reductions to Mana Regeneration Rate also apply to Rage Regeneration Rate</CustomModifierBlock>
+		</ConfigSet>
+	</Config>
+	<Items activeItemSet="1" useSecondWeaponSet="false">
+		<ItemSet id="1" title="Default" useSecondWeaponSet="false">
+		</ItemSet>
+	</Items>
+	<Skills activeSkillSet="1" defaultGemLevel="normalMaximum" defaultGemQuality="0">
+		<SkillSet id="1">
+			<Skill enabled="true" includeInFullDPS="nil" label="" mainActiveSkill="1" mainActiveSkillCalcs="nil" set1="true" set2="true">
+				<Gem corruptLevel="0" corrupted="nil" count="1" enableGlobal1="true" enableGlobal2="true" enabled="true" gemId="Metadata/Items/Gems/SkillGemPurityOfFire" level="18" nameSpec="Purity of Fire" quality="0" skillId="PurityOfFirePlayer" variantId="PurityOfFire"/>
+			</Skill>
+			<Skill enabled="true" includeInFullDPS="nil" label="" mainActiveSkill="1" mainActiveSkillCalcs="nil" set1="true" set2="true">
+				<Gem corruptLevel="0" corrupted="nil" count="1" enableGlobal1="true" enableGlobal2="true" enabled="true" gemId="Metadata/Items/Gem/SkillGemWindDancer" level="18" nameSpec="Wind Dancer" quality="20" skillId="WindDancerPlayer" variantId="WindDancer"/>
+			</Skill>
+			<Skill enabled="true" includeInFullDPS="nil" label="" mainActiveSkill="1" mainActiveSkillCalcs="nil" set1="true" set2="true">
+				<Gem corruptLevel="0" corrupted="nil" count="1" enableGlobal1="true" enableGlobal2="true" enabled="true" gemId="Metadata/Items/Gems/SkillGemEternalRage" level="18" nameSpec="Eternal Rage" quality="0" skillId="EternalRagePlayer" variantId="EternalRage"/>
+			</Skill>
+			<Skill enabled="true" includeInFullDPS="nil" label="" mainActiveSkill="1" mainActiveSkillCalcs="nil" set1="true" set2="true">
+				<Gem corruptLevel="0" corrupted="nil" count="1" enableGlobal1="true" enableGlobal2="true" enabled="true" gemId="Metadata/Items/Gem/SkillGemElementalWeakness" level="18" nameSpec="Elemental Weakness" quality="20" skillId="ElementalWeaknessPlayer" variantId="ElementalWeakness"/>
+			</Skill>
+			<Skill enabled="true" includeInFullDPS="nil" label="" mainActiveSkill="1" mainActiveSkillCalcs="nil" set1="true" set2="true">
+				<Gem corruptLevel="0" corrupted="nil" count="1" enableGlobal1="true" enableGlobal2="true" enabled="true" gemId="Metadata/Items/Gem/SkillGemManaRemnants" level="18" nameSpec="Mana Remnants" quality="20" skillId="ManaRemnantsPlayer" variantId="ManaRemnants"/>
+			</Skill>
+			<Skill enabled="false" includeInFullDPS="nil" label="" mainActiveSkill="1" mainActiveSkillCalcs="nil" set1="true" set2="true">
+				<Gem corruptLevel="0" corrupted="nil" count="1" enableGlobal1="true" enableGlobal2="true" enabled="true" gemId="Metadata/Items/Gems/SkillGemHeraldOfIce" level="18" nameSpec="Herald of Ice" quality="20" skillId="HeraldOfIcePlayer" variantId="HeraldOfIce"/>
+			</Skill>
+		</SkillSet>
+	</Skills>
+	<Tree activeSpec="1">
+		<Spec ascendClassId="0" classId="6" masteryEffects="" nodes="" secondaryAscendClassId="nil" treeVersion="0_5">
+		</Spec>
+	</Tree>
+</PathOfBuilding2>

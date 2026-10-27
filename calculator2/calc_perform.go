@@ -837,6 +837,8 @@ func perform(env *Environment) {
 	applyEnemyModifiers(env.Player, true)
 	applyEnemyModifiers(env.Enemy, true)
 
+	performActiveSkills(env)
+
 	// Stat sorting category calcs
 	//pob2:block:src/Modules/CalcPerform.lua:1450
 	output["EffectiveLootRarityMod"] = calcLibMod(modDB, nil, "LootRarity")
@@ -892,17 +894,15 @@ func perform(env *Environment) {
 	//pob2:block:src/Modules/CalcPerform.lua:1896
 	processAttributeRequirements(env, env.requirementsTable)
 
+	countHeraldsAndAuras(env)
+	performGroundAndConversions(env)
+	buffState := combineBuffs(env)
+
 	//pob2:block:src/Modules/CalcPerform.lua:2952
 	doActorCharges(env, env.Player)
 
-	// ExtraCurse and party curses need skill data, and the slot loop needs skills' curses, so only the limits run.
-	//pob2:block:src/Modules/CalcPerform.lua:3025-3026
-	if env.ModDB.Flag(nil, "CurseLimitIsMaximumPowerCharges") {
-		env.Player.Output["EnemyCurseLimit"] = env.Player.Output["PowerChargesMax"]
-	} else {
-		env.Player.Output["EnemyCurseLimit"] = env.ModDB.Sum(mod.TypeBase, nil, "EnemyCurseLimit")
-	}
-	env.Player.Output["EnemyMarkLimit"] = env.ModDB.Sum(mod.TypeBase, nil, "EnemyMarkLimit")
+	applyCursesAndBuffs(env, buffState)
+	applyExtraAuras(env)
 
 	//pob2:block:src/Modules/CalcPerform.lua:3266-3267
 	doActorCharges(env, env.Player)

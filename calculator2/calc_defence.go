@@ -2,6 +2,7 @@ package calculator2
 
 import (
 	"math"
+	"slices"
 	"strings"
 
 	"github.com/Vilsol/go-pob/mod"
@@ -103,8 +104,54 @@ func doActorDarkness(actor *Actor) {
 	output["UnreservedDarkness"] = output["Darkness"] - output["ReservedDarkness"]
 }
 
-// No active skill list is built yet, so the per-skill reservation loop reserves nothing.
+//pob2:src/Modules/Common.lua:734-741
+func floor(val float64, dec ...int) float64 {
+	if len(dec) > 0 {
+		mult := math.Pow(10, float64(dec[0]))
+		return math.Floor(val*mult+0.0001) / mult
+	}
+	return math.Floor(val)
+}
+
+// reservationPool is one pool entry of doActorLifeManaSpiritReservation's per-skill table.
+type reservationPool struct {
+	baseFlat, basePercent, more, inc, efficiency, efficiencyMore, reservedFlat, reservedPercent float64
+}
+
+// skillReservationValue is activeSkill.skillData[key] or activeSkill.activeEffect.grantedEffectLevel[key] or 0.
+func skillReservationValue(activeSkill *ActiveSkill, key string) float64 {
+	if v, ok := activeSkill.SkillData[key].(float64); ok {
+		return v
+	}
+	if level := activeSkill.ActiveEffect.GrantedEffectLevel; level != nil {
+		if v, ok := level.Extra[key]; ok {
+			return v
+		}
+	}
+	return 0
+}
+
+// PoE2's gem data has no vaalGem, so the vaal branch never runs.
 //
+//pob2:src/Modules/CalcDefence.lua:149-173
+func getActiveSkillCount(activeSkill *ActiveSkill) (float64, bool) {
+	switch {
+	case activeSkill.SocketGroup == nil:
+		return 1, true
+	case activeSkill.SocketGroup.HasGroupCount:
+		return activeSkill.SocketGroup.GroupCount, true
+	default:
+		for _, gemData := range activeSkill.SocketGroup.GemList {
+			if gemData.GemData != nil {
+				if (activeSkill.ActiveEffect.GrantedEffect == gemData.GemData.GrantedEffect && !gemData.GemData.GrantedEffect.Support) || slices.Contains(gemData.GemData.AdditionalGrantedEffects, activeSkill.ActiveEffect.GrantedEffect) {
+					return gemData.Count, true
+				}
+			}
+		}
+	}
+	return 1, true
+}
+
 //pob2:src/Modules/CalcDefence.lua:177-360
 func doActorLifeManaSpiritReservation(actor *Actor) {
 	modDB := actor.ModDB
@@ -117,6 +164,108 @@ func doActorLifeManaSpiritReservation(actor *Actor) {
 		"Life":   modDB.Sum(mod.TypeBase, nil, "ExtraLifeReserved"),
 		"Mana":   modDB.Sum(mod.TypeBase, nil, "ExtraManaReserved"),
 		"Spirit": modDB.Sum(mod.TypeBase, nil, "ExtraSpiritReserved"),
+	}
+	for _, activeSkill := range actor.ActiveSkillList {
+		activeInWeaponSet := activeSkill.Actor == actor || truthy(activeSkill.SkillData["reservesInAllWeaponSets"])
+		isTotemAndAncestralBond := activeSkill.SkillTypes["SummonsTotem"] && modDB.Flag(nil, "AncestralBond")
+		if activeInWeaponSet && ((activeSkill.SkillTypes["HasReservation"] || truthy(activeSkill.SkillData["SupportedByAutoexertion"])) && !activeSkill.SkillTypes["ReservationBecomesCost"] || isTotemAndAncestralBond) {
+			skillModList := activeSkill.SkillModList
+			skillCfg := activeSkill.SkillCfg
+			mult := floor(skillModList.More(skillCfg, "ReservationMultiplier"), 4)
+			pool := map[string]*reservationPool{"Mana": {}, "Life": {}, "Spirit": {}}
+			// TODO: the Companion: and Spectre: reservations (CalcDefence.lua:205-216) need activeSkill.minion.
+			pool["Mana"].baseFlat = skillReservationValue(activeSkill, "manaReservationFlat")
+			pool["Spirit"].baseFlat = skillReservationValue(activeSkill, "spiritReservationFlat")
+			pool["Spirit"].baseFlat = pool["Spirit"].baseFlat + skillModList.Sum(mod.TypeBase, skillCfg, "ExtraSpirit")
+			grantedEffectLevel := activeSkill.ActiveEffect.GrantedEffectLevel
+			if skillModList.Flag(skillCfg, "ManaCostGainAsReservation") && grantedEffectLevel != nil && grantedEffectLevel.Cost != nil {
+				pool["Spirit"].baseFlat = skillModList.Sum(mod.TypeBase, skillCfg, "ManaCostBase") + grantedEffectLevel.Cost["Mana"]
+			}
+			pool["Spirit"].basePercent = skillReservationValue(activeSkill, "spiritReservationPercent")
+			pool["Mana"].basePercent = skillReservationValue(activeSkill, "manaReservationPercent")
+			pool["Life"].baseFlat = skillReservationValue(activeSkill, "lifeReservationFlat")
+			if skillModList.Flag(skillCfg, "LifeCostGainAsReservation") && grantedEffectLevel != nil && grantedEffectLevel.Cost != nil {
+				pool["Life"].baseFlat = skillModList.Sum(mod.TypeBase, skillCfg, "LifeCostBase") + grantedEffectLevel.Cost["Life"]
+			}
+			pool["Life"].basePercent = skillReservationValue(activeSkill, "lifeReservationPercent")
+			if srcInstance := activeSkill.ActiveEffect.SrcInstance; activeSkill.SkillTypes["IsBlasphemy"] && srcInstance != nil && srcInstance.SupportEffect != nil && srcInstance.SupportEffect.IsSupporting != nil {
+				instances := float64(len(srcInstance.SupportEffect.IsSupporting))
+				for name, values := range pool {
+					v, _ := activeSkill.SkillData["blasphemyReservationFlat"+name].(float64)
+					values.baseFlat = values.baseFlat + v*instances
+				}
+			}
+			if skillModList.Flag(skillCfg, "BloodMagicReserved") {
+				pool["Life"].baseFlat = pool["Life"].baseFlat + pool["Mana"].baseFlat
+				pool["Mana"].baseFlat = 0
+				activeSkill.SkillData["LifeReservationFlatForced"] = activeSkill.SkillData["ManaReservationFlatForced"]
+				delete(activeSkill.SkillData, "ManaReservationFlatForced")
+				pool["Life"].basePercent = pool["Life"].basePercent + pool["Mana"].basePercent
+				pool["Mana"].basePercent = 0
+				activeSkill.SkillData["LifeReservationPercentForced"] = activeSkill.SkillData["ManaReservationPercentForced"]
+				delete(activeSkill.SkillData, "ManaReservationPercentForced")
+			}
+			spiritToLifeReservation := skillModList.Sum(mod.TypeBase, skillCfg, "LifeReservePercentPerSpirit")
+			if spiritToLifeReservation > 0 {
+				pool["Life"].basePercent = pool["Life"].basePercent + pool["Spirit"].baseFlat*spiritToLifeReservation
+				pool["Spirit"].baseFlat = 0
+				pool["Life"].basePercent = pool["Life"].basePercent + pool["Spirit"].basePercent*spiritToLifeReservation
+				pool["Spirit"].basePercent = 0
+			}
+			for _, name := range []string{"Mana", "Life", "Spirit"} {
+				values := pool[name]
+				values.more = skillModList.More(skillCfg, name+"Reserved", "Reserved")
+				values.inc = skillModList.Sum(mod.TypeIncrease, skillCfg, name+"Reserved", "Reserved")
+				values.efficiency = math.Max(skillModList.Sum(mod.TypeIncrease, skillCfg, name+"ReservationEfficiency", "ReservationEfficiency"), -100)
+				values.efficiencyMore = skillModList.More(skillCfg, name+"ReservationEfficiency", "ReservationEfficiency")
+				// TODO: actor[name.."Efficiency"] feeds ModStore:GetStat's Arcane Cloak case, which is not ported.
+				if forced, ok := activeSkill.SkillData[name+"ReservationFlatForced"].(float64); ok {
+					values.reservedFlat = forced
+				} else {
+					baseFlatVal := values.baseFlat * mult
+					values.reservedFlat = 0
+					if values.more > 0 && values.inc > -100 && baseFlatVal != 0 {
+						values.reservedFlat = math.Max(round(baseFlatVal*(100+values.inc)/100*values.more/(1+values.efficiency/100)/values.efficiencyMore, 0), 0)
+					}
+				}
+				if forced, ok := activeSkill.SkillData[name+"ReservationPercentForced"].(float64); ok {
+					values.reservedPercent = forced
+				} else {
+					basePercentVal := values.basePercent * mult
+					values.reservedPercent = 0
+					if values.more > 0 && values.inc > -100 && basePercentVal != 0 {
+						values.reservedPercent = math.Max(round(basePercentVal*(100+values.inc)/100*values.more/(1+values.efficiency/100)/values.efficiencyMore, 2), 0)
+					}
+				}
+				// activeMineCount and activeStageCount are nil in PoB until set; 0 stands for nil here.
+				if activeSkill.ActiveMineCount != 0 {
+					values.reservedFlat = values.reservedFlat * activeSkill.ActiveMineCount
+					values.reservedPercent = values.reservedPercent * activeSkill.ActiveMineCount
+				}
+				if activeSkill.SkillTypes["MultipleReservation"] || isTotemAndAncestralBond {
+					activeSkillCount, _ := getActiveSkillCount(activeSkill)
+					minionFreeSpiritCount := skillModList.Sum(mod.TypeBase, skillCfg, "MinionFreeSpiritCount")
+					values.reservedFlat = values.reservedFlat * math.Max(activeSkillCount-minionFreeSpiritCount, 0)
+				}
+				// Blood Sacrament increases reservation per stage channelled
+				if skillCfg.SkillName == "Blood Sacrament" && activeSkill.ActiveStageCount != 0 {
+					values.reservedFlat = values.reservedFlat * (activeSkill.ActiveStageCount + 1)
+					values.reservedPercent = values.reservedPercent * (activeSkill.ActiveStageCount + 1)
+				}
+				if values.reservedFlat != 0 {
+					activeSkill.SkillData[name+"ReservedBase"] = values.reservedFlat
+					reservedBase[name] = reservedBase[name] + values.reservedFlat
+				}
+				if values.reservedPercent != 0 {
+					activeSkill.SkillData[name+"ReservedPercent"] = values.reservedPercent
+					activeSkill.SkillData[name+"ReservedBase"] = values.reservedFlat + math.Ceil(output[name]*values.reservedPercent/100)
+					reservedPercent[name] = reservedPercent[name] + values.reservedPercent
+				}
+				if skillModList.Flag(skillCfg, "HasUncancellableReservation") {
+					uncancellable[name] = uncancellable[name] + values.reservedPercent
+				}
+			}
+		}
 	}
 
 	//pob2:block:src/Modules/CalcDefence.lua:338-359

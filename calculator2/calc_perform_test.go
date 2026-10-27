@@ -205,3 +205,68 @@ func TestApplyEnemyModifiers(t *testing.T) {
 	applyEnemyModifiers(player, true)
 	testza.AssertLen(t, enemy.ModDB.Mods["Condition:Blinded"], 2)
 }
+
+// The expected values are PoB-PoE2's output for the same file, loaded headless: an aura, a buff, a
+// curse and two persistent buffs, plus a disabled herald that must not count.
+func TestPerformSkillBuffsFixture(t *testing.T) {
+	raw, err := os.ReadFile("testdata/skill_buffs.xml")
+	testza.AssertNoError(t, err)
+	build, err := pob2.ParseBuild(raw)
+	testza.AssertNoError(t, err)
+	env, err := BuildOutput(build, Options{Tree: loadTestTree(t)})
+	testza.AssertNoError(t, err)
+
+	for stat, want := range map[string]float64{
+		"Evasion": 7, "FireResist": -11, "FireResistTotal": -11, "MaximumRage": 30, "InherentRageLoss": 10,
+		"ManaRegen": 11.9, "SpiritReserved": 160, "SpiritUnreserved": 340, "EnemyCurseLimit": 1,
+		"MovementSpeedMod": 1,
+	} {
+		if got := env.Player.Output[stat]; math.Abs(got-want) > 1e-9*math.Max(1, math.Abs(want)) {
+			t.Errorf("%s: PoB-PoE2 %v, ours %v", stat, want, got)
+		}
+	}
+	for name, want := range map[string]float64{"BuffOnSelf": 3, "CurseOnEnemy": 1, "AuraAffectingSelf": 1} {
+		if got := env.ModDB.Multipliers[name]; got != want {
+			t.Errorf("Multiplier:%s: PoB-PoE2 %v, ours %v", name, want, got)
+		}
+	}
+}
+
+// The expected values are PoB-PoE2's output for the same file, loaded headless: a ballista, a grenade
+// and a crossbow ammo skill, each counted once by type.
+func TestPerformActiveSkillTypesFixture(t *testing.T) {
+	raw, err := os.ReadFile("testdata/skill_perform.xml")
+	testza.AssertNoError(t, err)
+	build, err := pob2.ParseBuild(raw)
+	testza.AssertNoError(t, err)
+	env, err := BuildOutput(build, Options{Tree: loadTestTree(t)})
+	testza.AssertNoError(t, err)
+
+	for name, want := range map[string]float64{"GrenadeTypes": 1, "AmmoTypes": 1, "PersistentMinionTypes": 0} {
+		if got, ok := env.ModDB.Multipliers[name]; !ok || got != want {
+			t.Errorf("Multiplier:%s: PoB-PoE2 %v, ours %v (set %v)", name, want, got, ok)
+		}
+	}
+	for _, stat := range []string{"ActiveTotemLimit", "TotemsSummoned"} {
+		if got, ok := env.Player.Output[stat]; ok {
+			t.Errorf("%s: PoB-PoE2 leaves it unset, ours %v", stat, got)
+		}
+	}
+}
+
+// The expected values are PoB-PoE2's output for the same file, loaded headless: Eternal Rage with
+// increased mana regeneration that also applies to rage regeneration.
+func TestPerformManaRegenAppliesToRageFixture(t *testing.T) {
+	raw, err := os.ReadFile("testdata/mana_regen_to_rage.xml")
+	testza.AssertNoError(t, err)
+	build, err := pob2.ParseBuild(raw)
+	testza.AssertNoError(t, err)
+	env, err := BuildOutput(build, Options{Tree: loadTestTree(t)})
+	testza.AssertNoError(t, err)
+
+	for stat, want := range map[string]float64{"RageRegen": 5.9, "RageRegenRecovery": 5.9, "ManaRegen": 15.5, "MaximumRage": 30} {
+		if got := env.Player.Output[stat]; math.Abs(got-want) > 1e-9*math.Max(1, math.Abs(want)) {
+			t.Errorf("%s: PoB-PoE2 %v, ours %v", stat, want, got)
+		}
+	}
+}
