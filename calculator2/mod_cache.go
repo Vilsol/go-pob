@@ -114,7 +114,7 @@ func cacheMod(r map[string]any) (mod.Mod, error) {
 		}
 		m = mod.NewList(name, v)
 	default:
-		if n, ok := cacheNumber(value); ok {
+		if n, ok := cacheArithNumber(value); ok {
 			m = mod.NewFloat(name, mod.Type(typ), n)
 		} else {
 			v, err := cacheTableValue(value)
@@ -209,13 +209,18 @@ func (f *cacheFields) str(k string) string {
 
 func (f *cacheFields) num(k string) (float64, bool) {
 	f.used[k] = true
-	// Lua arithmetic coerces a numeric string, and PoB-PoE2's ModCache stores some tag numbers as strings.
-	if s, ok := f.t[k].(string); ok {
+	return cacheArithNumber(f.t[k])
+}
+
+// cacheArithNumber reads a number used in arithmetic: Lua coerces a numeric string there, and PoB-PoE2's
+// ModCache stores some tag numbers and mod values as strings.
+func cacheArithNumber(v any) (float64, bool) {
+	if s, ok := v.(string); ok {
 		if n, err := strconv.ParseFloat(strings.TrimSpace(s), 64); err == nil {
 			return n, true
 		}
 	}
-	return cacheNumber(f.t[k])
+	return cacheNumber(v)
 }
 
 // truthy is Lua truth: present and not false.

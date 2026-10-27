@@ -67,3 +67,15 @@ func TestModCacheStringPercent(t *testing.T) {
 	ps := mods[0].Tags()[0].(*mod.PercentStatTag)
 	testza.AssertEqual(t, float64(7), ps.Percent)
 }
+
+func TestModCacheStringValue(t *testing.T) {
+	mods, _ := ModCache("When taking damage from Hits, 20% of Life Loss is prevented, then 150% of Life Loss prevented this way is Lost over 4 seconds")
+	found := false
+	for _, m := range mods {
+		if m.Name() == "LifeLossLost" {
+			found = true
+			testza.AssertEqual(t, float64(150), m.Value().Float())
+		}
+	}
+	testza.AssertTrue(t, found)
+}
