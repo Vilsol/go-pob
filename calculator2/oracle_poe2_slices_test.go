@@ -24,7 +24,7 @@ var offenceSliceStats = []string{
 
 const poe2OffenceMatchedFloor = 33082
 
-const poe2SkillsOnMatchedFloor = 171579
+const poe2SkillsOnMatchedFloor = 171598
 
 type poe2SliceGrade struct {
 	records, built, failed                         int
