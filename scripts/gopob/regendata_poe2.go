@@ -51,14 +51,15 @@ var rdGeneratorsPoE2 = []rdGenerator{
 	},
 	{
 		name:     "poe2-gems",
-		source:   rdGameDataFromPoB,
+		source:   rdGameDataOverlay,
 		out:      "data/poe2/gems_generated.go",
 		lua:      "scripts/gopob/regendata_poe2.lua",
+		dump:     "poe2-gems",
 		luaArgs:  []string{"gems"},
 		emit:     "poe2-data-emit",
 		emitArgs: []string{"gems"},
 		needsPob: true,
-		note:     "data.gems after setupGem (src/Data/Gems.lua), with each granted effect's name and support flag",
+		note:     "data.gems after setupGem (src/Data/Gems.lua), with each granted effect's name and support flag. Game data FROM go-pob-data: `gamedatadump poe2-gems` runs the Gems.lua half of PoB-PoE2's Export/Scripts/skills.lua over 0.5's skill tables with the pin's Export/Skills templates, byte-identical to the pin's, and regendata_poe2.lua loads it in place of the pin's (GAMEDATA_DUMP); the granted effects' names and support flags stay the pin's Data/Skills",
 	},
 	{
 		name:     "poe2-legion",

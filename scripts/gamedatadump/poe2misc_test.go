@@ -236,3 +236,14 @@ func TestPoE2ModRunesIsThePins(t *testing.T) {
 	}
 	firstLineDiff(t, "Data/ModRunes.lua", got, poe2SortTradeHashes(want))
 }
+
+// TestPoE2GemsLuaIsThePinsGems: skills.lua's Gems.lua half over go-pob-data's 0.5 tables and the pin's
+// skill templates writes the pin's src/Data/Gems.lua.
+func TestPoE2GemsLuaIsThePinsGems(t *testing.T) {
+	want := poe2PinFile(t, "Data/Gems.lua")
+	got, err := poe2GemsLuaFrom(os.Getenv("POB2_DIR"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	firstLineDiff(t, "Data/Gems.lua", got, want)
+}
