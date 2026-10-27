@@ -1250,58 +1250,9 @@ func (h *offenceHit) offenceLeechRates() {
 	}
 }
 
-// offenceCombinedDPS is the combined DPS estimate without the ailment, impale and mirage terms,
-// which the ailment half adds in between.
-//
-//pob2:block:src/Modules/CalcOffence.lua:6264-6270
-//pob2:block:src/Modules/CalcOffence.lua:6412
-//pob2:block:src/Modules/CalcOffence.lua:6450-6470
-func (h *offenceHit) offenceCombinedDPS() {
-	output := h.actor.Output
-	skillFlags, skillData := h.skillFlags, h.activeSkill.SkillData
-	// Calculate combined DPS estimate, including DoTs
-	baseDPS := output["TotalDPS"]
-	if truthy(skillData["showAverage"]) {
-		baseDPS = output["AverageDamage"]
-	}
-	output["CombinedDPS"] = baseDPS
-	output["CombinedAvg"] = baseDPS
-	if skillFlags["dot"] {
-		output["WithDotDPS"] = baseDPS + output["TotalDot"]
-	}
-
-	bestCull := 1.0
-
-	or := func(a, b string) float64 {
-		if v, ok := output[a]; ok {
-			return v
-		}
-		return output[b]
-	}
-	totalDotDPS := output["TotalDot"] +
-		or("TotalPoisonDPS", "PoisonDPS") +
-		math.Max(output["CausticGroundDPS"], output["MirageCausticGroundDPS"]) +
-		or("TotalIgniteDPS", "IgniteDPS") +
-		math.Max(output["BurningGroundDPS"], output["MirageBurningGroundDPS"]) +
-		or("TotalBleedDPS", "BleedDPS") +
-		output["CorruptingBloodDPS"] +
-		output["DecayDPS"]
-
-	output["TotalDotDPS"] = math.Min(totalDotDPS, miscConstant("DotDpsCap"))
-	// output.showTotalDotDPS is a boolean, which the output map does not hold.
-	if !truthy(skillData["showAverage"]) {
-		output["CombinedDPS"] += output["TotalDotDPS"]
-	}
-
-	bestCull = math.Max(bestCull, output["CullMultiplier"])
-	output["CullingDPS"] = output["CombinedDPS"] * (bestCull - 1)
-	output["ReservationDPS"] = output["CombinedDPS"] * (output["ReservationDpsMultiplier"] - 1)
-	output["CombinedDPS"] = output["CombinedDPS"] * bestCull * output["ReservationDpsMultiplier"]
-}
-
-// offenceHitHalf runs CalcOffence's damage passes up to the ailments; the combined DPS runs last
-// until the ailment half sits between them.
-func offenceHitHalf(env *Environment, actor *Actor, activeSkill *ActiveSkill, skillFlags map[string]bool, ranges *weaponRanges, monsterLife float64) *offenceHitState {
+// offenceHitHalf runs CalcOffence's damage passes, then the ailments, damage over time and the
+// combined DPS. hasCosts is output[resource.."HasCost"] from the cost calculation.
+func offenceHitHalf(env *Environment, actor *Actor, activeSkill *ActiveSkill, skillFlags map[string]bool, ranges *weaponRanges, monsterLife float64, hasCosts map[string]bool) *offenceHitState {
 	state := &offenceHitState{isAttack: skillFlags["attack"], monsterLife: monsterLife}
 	h := &offenceHit{env: env, actor: actor, activeSkill: activeSkill, skillFlags: skillFlags, state: state, ranges: ranges, monsterLife: monsterLife, calculated: map[string]bool{}}
 	offenceConversionTables(state, activeSkill.SkillModList, activeSkill.SkillCfg)
@@ -1314,6 +1265,9 @@ func offenceHitHalf(env *Environment, actor *Actor, activeSkill *ActiveSkill, sk
 	}
 	h.offenceCombineDamage()
 	h.offenceLeechRates()
+	h.offenceAilments()
+	h.offenceDots()
+	h.offenceLinkCosts(hasCosts)
 	h.offenceCombinedDPS()
 	return state
 }

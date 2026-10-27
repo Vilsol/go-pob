@@ -612,7 +612,7 @@ func offence(env *Environment, actor *Actor, activeSkill *ActiveSkill) {
 
 	monsterLife := offencePreDamage(env, activeSkill, skillFlags, output)
 
-	offenceHitHalf(env, actor, activeSkill, skillFlags, ranges, monsterLife)
+	offenceHitHalf(env, actor, activeSkill, skillFlags, ranges, monsterLife, hasCosts)
 }
 
 // weaponRanges stands in for actor.weaponRange1/2, which offence sets for melee skills.

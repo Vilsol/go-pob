@@ -27,9 +27,13 @@ var offenceSliceStats = []string{
 	"CombinedAvg", "TotalMin", "TotalMax", "ScaledDamageEffect", "CullMultiplier", "ReservationDpsMultiplier",
 	"PhysicalStoredCombinedAvg", "LightningStoredCombinedAvg", "ColdStoredCombinedAvg", "FireStoredCombinedAvg",
 	"ChaosStoredCombinedAvg", "LifeLeechInstanceRate", "LifeLeechGainRate", "MovementSpeedWhileUsingSkill",
+	"TotalDotDPS", "TotalDot", "EnemyAilmentThreshold", "IgniteChance", "IgniteDuration", "IgniteDamage", "IgniteStackPotential",
+	"BleedChance", "BleedDPS", "PoisonChance", "PoisonDPS", "WithBleedDPS", "WithPoisonDPS", "WithIgniteDPS",
+	"ShockChance", "ShockDuration", "ShockEffectMod", "ChillEffectMod", "ChillDuration", "FreezeBuildupAvg", "PinBuildupAvg",
+	"EnemyStunDuration", "EnemyStunThresholdMod", "LifePerSecondCost",
 }
 
-const poe2OffenceMatchedFloor = 365153
+const poe2OffenceMatchedFloor = 536217
 
 const poe2SkillsOnMatchedFloor = 179972
 

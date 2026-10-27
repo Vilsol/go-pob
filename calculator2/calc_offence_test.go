@@ -66,3 +66,22 @@ func TestOffenceHitFixture(t *testing.T) {
 		"ScaledDamageEffect": 1, "allMult": 1, "CullMultiplier": 1, "TotalDotDPS": 0,
 	})
 }
+
+// offence_ailments.xml is the level 13, 20% quality Spark under "Gain 10% of Damage as Extra Physical
+// Damage", "Gain 10% of Damage as Extra Fire Damage", "25% chance to Poison on Hit" and "20% chance to
+// inflict Bleeding on Hit", against an enemy with no armour: ignite, bleed, poison, shock and heavy
+// stun buildup from one hit.
+func TestOffenceAilmentsFixture(t *testing.T) {
+	env := offenceFixtureEnv(t, "testdata/offence_ailments.xml")
+	assertPoE2Outputs(t, env, map[string]float64{
+		"EnemyAilmentThreshold": 71303, "chillMinimumThreshold": 713.03, "ChillChanceOnHit": 0,
+		"BleedChance": 20, "BleedChancePerHit": 20, "BleedDPS": 0.96376440034885, "BleedDamage": 4.8188220017442, "BleedDuration": 5, "BleedPhysicalMin": 1, "BleedPhysicalMax": 9, "BleedRollAverage": 58.823529411765, "BleedStackPotential": 1.4285714285714, "BleedStacksMax": 1, "BleedEffMult": 1, "BleedMagnitudeEffect": 1,
+		"PoisonChance": 25, "PoisonDPS": 0.77857142857143, "PoisonDamage": 1.5571428571429, "PoisonDuration": 2, "PoisonStackPotential": 0.71428571428571, "PoisonPhysicalMax": 9,
+		"IgniteChanceOnHit": 0.0014024655344095, "IgniteChanceOnCrit": 0.002804931068819, "IgniteChance": 0.0015286874325063, "IgniteDPS": 5.0889463677144e-05, "IgniteDamage": 0.00020355785470858, "IgniteDuration": 4, "IgniteEffMult": 0.5, "IgniteFireMin": 1, "IgniteFireMax": 9, "IgniteStackPotential": 8.7353567571791e-05,
+		"ShockChanceOnHit": 0.017180202796516, "ShockChanceOnCrit": 0.034360405593033, "ShockChance": 0.018726421048203, "ShockDuration": 8, "ShockEffectMod": 1, "ShockLightningMin": 5, "ShockLightningMax": 93,
+		"HeavyStunBuildupAvg": 0.00022901995220435, "HeavyStunFireMin": 1, "HeavyStunFireMax": 2.5, "HeavyStunLightningMin": 5, "HeavyStunLightningMax": 24.5, "HeavyStunPhysicalMin": 1.5, "HeavyStunPhysicalMax": 7.5, "FreezeBuildupAvg": 0, "PinBuildupAvg": 0, "ElectrocuteBuildupAvg": 0,
+		"EnemyStunDuration": 0.35, "EnemyStunThresholdMod": 1,
+		"TotalDot": 0, "TotalDotInstance": 0, "TotalDotDPS": 1.742386718384, "WithBleedDPS": 50.79233582892, "WithIgniteDPS": 49.828622318035, "WithPoisonDPS": 50.607142857143,
+		"TotalDPS": 49.828571428571, "CombinedDPS": 51.570958146955, "ManaPerSecondCost": 38.571428571429,
+	})
+}

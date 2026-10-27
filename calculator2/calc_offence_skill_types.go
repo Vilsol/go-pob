@@ -453,6 +453,11 @@ func offenceDurations(env *Environment, activeSkill *ActiveSkill, skillFlags map
 	}
 }
 
+// costOrder is costs.order; costUpfront marks its upfront resources.
+var costOrder = []string{"Mana", "Life", "ES", "Ward", "Soul", "Rage", "ManaPercent", "LifePercent", "WardPercent", "ManaPerMinute", "LifePerMinute", "WardPerMinute", "ManaPercentPerMinute", "LifePercentPerMinute", "ESPerMinute", "ESPercentPerMinute"}
+
+var costUpfront = map[string]bool{"Mana": true, "Life": true, "ES": true, "Ward": true, "Soul": true, "Rage": true, "ManaPercent": true, "LifePercent": true, "WardPercent": true}
+
 type skillCost struct {
 	typ, text                                              string
 	baseCost, baseCostRaw, totalCost, baseCostNoMult       float64
@@ -467,7 +472,7 @@ type skillCost struct {
 func offenceCosts(env *Environment, actor *Actor, activeSkill *ActiveSkill, output map[string]float64) map[string]bool {
 	skillModList := activeSkill.SkillModList
 	skillCfg := activeSkill.SkillCfg
-	order := []string{"Mana", "Life", "ES", "Ward", "Soul", "Rage", "ManaPercent", "LifePercent", "WardPercent", "ManaPerMinute", "LifePerMinute", "WardPerMinute", "ManaPercentPerMinute", "LifePercentPerMinute", "ESPerMinute", "ESPercentPerMinute"}
+	order := costOrder
 	costs := map[string]*skillCost{
 		"Mana":                 {typ: "Mana", upfront: true, text: "mana", hasRaw: true},
 		"Life":                 {typ: "Life", upfront: true, text: "life"},
