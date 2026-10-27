@@ -75,7 +75,26 @@ func BuildOutput(build *pob2.PathOfBuilding2, opts Options) (*Environment, error
 	}
 	initEnv(env)
 	perform(env)
+	buildOutputSpec(env)
 	return env, nil
+}
+
+// buildOutputSpec is the part of calcs.buildOutput that sums the passive points and the tree's increases.
+//
+//pob2:block:src/Modules/Calcs.lua:576-587
+func buildOutputSpec(env *Environment) {
+	output := env.Player.Output
+	output["ExtraPoints"] = env.ModDB.Sum(mod.TypeBase, nil, "ExtraPoints")
+	output["WeaponSetPassivePoints"] = env.ModDB.Sum(mod.TypeBase, nil, "WeaponSetPassivePoints")
+	output["PassivePointsToWeaponSetPoints"] = env.ModDB.Sum(mod.TypeBase, nil, "PassivePointsToWeaponSetPoints")
+
+	source := mod.Source("Tree")
+	specCfg := &moddb.ListCfg{Source: &source}
+	output["Spec:LifeInc"] = env.ModDB.Sum(mod.TypeIncrease, nil, "Life")
+	output["Spec:ManaInc"] = env.ModDB.Sum(mod.TypeIncrease, specCfg, "Mana")
+	output["Spec:ArmourInc"] = env.ModDB.Sum(mod.TypeIncrease, specCfg, "Armour", "ArmourAndEvasion")
+	output["Spec:EvasionInc"] = env.ModDB.Sum(mod.TypeIncrease, specCfg, "Evasion", "ArmourAndEvasion")
+	output["Spec:EnergyShieldInc"] = env.ModDB.Sum(mod.TypeIncrease, specCfg, "EnergyShield")
 }
 
 // loadSpec is TreeTab:Load for the active spec.
