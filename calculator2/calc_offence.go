@@ -262,8 +262,8 @@ func minionModifierMod(v any) mod.Mod {
 	return nil
 }
 
-// offence performs the offence calculations up to the damage passes; the damage conversion, hit
-// damage, ailment and DPS halves (CalcOffence.lua:2425-6471) are not ported. The CALCS-mode
+// offence performs the offence calculations up to the ailments; the ailment half
+// (CalcOffence.lua:4968-6471) is not ported. The CALCS-mode
 // statSetCalcs, the grantedEffect initialFunc/preSkillTypeFunc (no PoE2 skill has one) and the
 // breakdowns are not ported.
 //
@@ -610,7 +610,9 @@ func offence(env *Environment, actor *Actor, activeSkill *ActiveSkill) {
 		skillModList.AddMod(newMod("PhysicalMax", mod.TypeBase, math.Floor(output["ManaCost"]*multiplier), "Sacrificial Zeal").Flag(ModFlagSpell))
 	}
 
-	offencePreDamage(env, activeSkill, skillFlags, output)
+	monsterLife := offencePreDamage(env, activeSkill, skillFlags, output)
+
+	offenceHitHalf(env, actor, activeSkill, skillFlags, ranges, monsterLife)
 }
 
 // weaponRanges stands in for actor.weaponRange1/2, which offence sets for melee skills.

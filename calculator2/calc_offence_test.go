@@ -51,3 +51,18 @@ func TestOffenceSetupAreaFixture(t *testing.T) {
 		"Repeats": 1, "TotemDuration": 0, "TotemDurationMod": 1,
 	})
 }
+
+// The hit half of the same Spark: 50% enemy lightning resistance halves the stored hit.
+func TestOffenceHitFixture(t *testing.T) {
+	env := offenceFixtureEnv(t, "testdata/offence_setup.xml")
+	assertPoE2Outputs(t, env, map[string]float64{
+		"TotalDPS": 38.15, "CombinedDPS": 38.15, "AverageHit": 26.705, "AverageDamage": 26.705,
+		"Speed": 1.4285714285714, "CastRate": 1.4285714285714, "Time": 0.7,
+		"CritChance": 9, "PreEffectiveCritChance": 9, "CritMultiplier": 2, "CritEffect": 1.09,
+		"HitChance": 100, "AccuracyHitChance": 100, "Accuracy": 246, "DpsMultiplier": 1,
+		"LightningMinBase": 5, "LightningMaxBase": 93, "LightningSummedMinBase": 5, "LightningSummedMaxBase": 93,
+		"LightningHitAverage": 24.5, "LightningCritAverage": 49, "LightningStoredCombinedAvg": 53.41,
+		"LightningStoredHitMax": 93, "TotalMin": 2.5, "TotalMax": 46.5,
+		"ScaledDamageEffect": 1, "allMult": 1, "CullMultiplier": 1, "TotalDotDPS": 0,
+	})
+}

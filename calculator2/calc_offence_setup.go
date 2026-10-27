@@ -526,7 +526,7 @@ func (o preDamageOutput) Set(key string, v float64) {
 // A preDamageFunc's Lua error has no counterpart here; the skill's state stays as the error left it.
 //
 //pob2:block:src/Modules/CalcOffence.lua:2407-2423
-func offencePreDamage(env *Environment, activeSkill *ActiveSkill, skillFlags map[string]bool, output map[string]float64) {
+func offencePreDamage(env *Environment, activeSkill *ActiveSkill, skillFlags map[string]bool, output map[string]float64) float64 {
 	if fn := activeSkill.ActiveEffect.GrantedEffect.PreDamageFunc(); fn != nil {
 		_ = fn(preDamageSkill{activeSkill: activeSkill}, preDamageOutput(output))
 	}
@@ -559,6 +559,7 @@ func offencePreDamage(env *Environment, activeSkill *ActiveSkill, skillFlags map
 			skillData[damageType+"Max"] = base
 		}
 	}
+	return monsterLife
 }
 
 // monsterLifeTable is data.monsterLifeTable[level] or 100.
