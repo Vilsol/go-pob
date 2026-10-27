@@ -25,7 +25,7 @@ var offenceSliceStats = []string{
 	"ProjectileSpeedMod", "ActiveMinionLimit", "AverageBurstHits", "DurationSecondary", "IceCrystalLife",
 }
 
-const poe2OffenceMatchedFloor = 93677
+const poe2OffenceMatchedFloor = 95432
 
 const poe2SkillsOnMatchedFloor = 179808
 

@@ -817,6 +817,16 @@ func perform(env *Environment) {
 	env.KeystonesAdded = map[string]bool{}
 	mergeKeystones(env)
 
+	// Minion skills are not ported.
+	//pob2:block:src/Modules/CalcPerform.lua:1204-1205
+	for _, activeSkill := range env.Player.ActiveSkillList {
+		if activeSkill.BaseSkillModList == nil {
+			continue
+		}
+		activeSkill.SkillModList = newModList()
+		activeSkill.SkillModList.Parent = activeSkill.BaseSkillModList
+	}
+
 	env.Player.Output = map[string]float64{}
 	env.Enemy.Output = map[string]float64{}
 
