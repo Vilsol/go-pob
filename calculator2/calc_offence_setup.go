@@ -3,7 +3,6 @@ package calculator2
 import (
 	"math"
 
-	"github.com/Vilsol/go-pob/data"
 	"github.com/Vilsol/go-pob/data/poe2"
 	"github.com/Vilsol/go-pob/data/poe2skills"
 	"github.com/Vilsol/go-pob/mod"
@@ -33,12 +32,10 @@ func offenceStatConversions(env *Environment, actor *Actor, activeSkill *ActiveS
 	}
 	if skillModList.Flag(nil, "CompanionDamageAppliesToPlayer") {
 		// Companion Damage conversion from Inspiring Ally
+		// copyTable(skillCfg, true) is shallow: the tag lands in the skill's own skillTypes and stays there.
 		tempCfg := *skillCfg
-		tempCfg.SkillTypes = make(map[data.SkillType]bool, len(skillCfg.SkillTypes)+1)
-		for k, v := range skillCfg.SkillTypes {
-			tempCfg.SkillTypes[k] = v
-		}
 		tempCfg.SkillTypes["CreatesCompanion"] = true // Add companion skill tag to cfg so it doesn't fail
+		activeSkill.SkillTypes["CreatesCompanion"] = true
 		for _, value := range skillModList.Tabulate(mod.TypeList, &tempCfg, "MinionModifier") {
 			m := minionModifierMod(value.Mod.Value().List())
 			if modHasSkillType(value.Mod, "CreatesCompanion") && m != nil && m.Name() == "Damage" && m.Type() == mod.TypeIncrease {
