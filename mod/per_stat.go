@@ -13,6 +13,7 @@ type PerStatTag struct {
 	TagActor          string
 	TagGlobalLimit    float64
 	TagGlobalLimitKey string
+	TagDivVariable    string
 }
 
 func PerStat(divide float64, stats ...string) *PerStatTag {
@@ -29,6 +30,11 @@ func (t *PerStatTag) Type() Type {
 
 func (t *PerStatTag) Actor(actor string) *PerStatTag {
 	t.TagActor = actor
+	return t
+}
+
+func (t *PerStatTag) DivVar(divVar string) *PerStatTag {
+	t.TagDivVariable = divVar
 	return t
 }
 

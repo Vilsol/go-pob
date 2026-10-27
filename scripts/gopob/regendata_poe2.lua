@@ -142,7 +142,8 @@ function dumpers.constants()
 	local out = {}
 	for _, name in ipairs({ "misc", "gameConstants", "characterConstants", "monsterConstants", "playerMinionIntrinsicStats",
 		"monsterEvasionTable", "monsterAccuracyTable", "monsterLifeTable", "monsterAllyLifeTable", "monsterDamageTable",
-		"monsterAllyDamageTable", "monsterArmourTable", "monsterAilmentThresholdTable", "monsterPoiseThresholdTable" }) do
+		"monsterAllyDamageTable", "monsterArmourTable", "monsterAilmentThresholdTable", "monsterPoiseThresholdTable",
+		"hollowPalmAddedPhys" }) do
 		out[name] = assert(data[name], "REFUSING: data." .. name .. " is absent")
 	end
 	return out

@@ -20,8 +20,8 @@ import (
 // poe2SkillModListFloors are the skills-off builds whose main skill's baseSkillModList agrees with
 // PoB-PoE2's dump mod for mod (name, type, value, flags, keyword flags, tag types), per corpus.
 var poe2SkillModListFloors = map[string]int{
-	"skills-off": 8723,
-	"skills-on":  8719,
+	"skills-off": 9833,
+	"skills-on":  9833,
 }
 
 type poe2SkillModListDumpMod struct {

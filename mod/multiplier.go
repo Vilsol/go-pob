@@ -20,6 +20,7 @@ type MultiplierTag struct {
 	TagNoFloor       bool
 	TagLimitStat     *string
 	TagLimitNegTotal bool
+	TagInvert        bool
 }
 
 func Multiplier(vars ...string) *MultiplierTag {
@@ -98,6 +99,7 @@ func (m *MultiplierTag) Clone() Tag {
 		TagNoFloor:        m.TagNoFloor,
 		TagLimitStat:      m.TagLimitStat,
 		TagLimitNegTotal:  m.TagLimitNegTotal,
+		TagInvert:         m.TagInvert,
 	}
 }
 
@@ -113,6 +115,11 @@ func (m *MultiplierTag) NoFloor() *MultiplierTag {
 
 func (m *MultiplierTag) LimitStat(name string) *MultiplierTag {
 	m.TagLimitStat = &name
+	return m
+}
+
+func (m *MultiplierTag) Invert() *MultiplierTag {
+	m.TagInvert = true
 	return m
 }
 

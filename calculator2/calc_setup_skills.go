@@ -229,8 +229,6 @@ func gemPropertyKeyword(p mod.GemProperty) string {
 	return *p.Keyword
 }
 
-// No GemProperty here carries gemRequirements.
-//
 //pob2:src/Modules/CalcSetup.lua:550-575
 func applyGemMods(effect *GemEffect, modList []any) {
 	for _, v := range modList {
@@ -250,6 +248,9 @@ func applyGemMods(effect *GemEffect, modList []any) {
 		} else if !gemIsType(effect, gemPropertyKeyword(value), true) {
 			match = false
 		}
+		for req, val := range value.GemRequirements {
+			match = match && gemRequirement(effect.GemData, req) > val
+		}
 		if match {
 			switch value.Key {
 			case "level":
@@ -265,6 +266,22 @@ func applyGemMods(effect *GemEffect, modList []any) {
 			effect.GemPropertyInfo = append(effect.GemPropertyInfo, gemPropertyInfo{Value: value})
 		}
 	}
+}
+
+// gemRequirement is gemData[req] for the reqStr/reqDex/reqInt keys a GemProperty's gemRequirements names.
+func gemRequirement(gem *poe2skills.Gem, req string) float64 {
+	if gem == nil || gem.Data == nil {
+		return 0
+	}
+	switch req {
+	case "reqStr":
+		return gem.Data.ReqStr
+	case "reqDex":
+		return gem.Data.ReqDex
+	case "reqInt":
+		return gem.Data.ReqInt
+	}
+	return 0
 }
 
 // socketCfg.skillGem has no PoE2 field on ListCfg; the gem is passed as GemData.

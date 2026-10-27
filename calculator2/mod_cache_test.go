@@ -49,7 +49,7 @@ func TestModCacheReturnsCopies(t *testing.T) {
 // Each cached line converts unless its mods carry a tag field or payload the mod package cannot
 // express; the ceiling only goes down.
 func TestModCacheUnsupportedCeiling(t *testing.T) {
-	const ceiling = 11
+	const ceiling = 0
 	bad := 0
 	for _, r := range poe2.ModCacheRows {
 		if err := ModCacheUnsupported(r.Line); err != nil {
@@ -106,7 +106,7 @@ func skillOverlayMods() []string {
 // Every skill mod PoB-PoE2 writes in its skill files and SkillStatMap converts, a nil value included:
 // the stat's value is set when it is merged (CalcActiveSkill.lua mergeStatSet).
 func TestCacheModSkillMods(t *testing.T) {
-	const ceiling = 11
+	const ceiling = 1
 	mods := skillOverlayMods()
 	bad := 0
 	for _, s := range mods {

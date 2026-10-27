@@ -4103,33 +4103,44 @@ var specialModList = map[string]interface{}{
 	},
 	"has no attribute requirements": []mod.Mod{FLAG("NoAttributeRequirements")},
 	`([\+\-]\d+)% to quality of all skills`: func(num float64, captures []string) ([]mod.Mod, string) {
-		return []mod.Mod{MOD("GemProperty", "LIST", mod.GemProperty{Keyword: utils.Ptr("grants_active_skill"), Key: "quality", Value: num})}, ""
+		return []mod.Mod{MOD("GemProperty", "LIST", mod.GemProperty{Keyword: utils.Ptr("grants_active_skill"), Key: "quality", Value: num, KeyOfScaledMod: "value"})}, ""
 	},
 	`([\+\-]\d+)%? to (\w+) of all ?([\w\-' ]*) skills? ?w?i?t?h? ?a?n? ?(\w+) ?r?e?q?u?i?r?e?m?e?n?t?`: func(num float64, captures []string) ([]mod.Mod, string) {
 		property, typ, gemReq := captures[1], strings.ToLower(captures[2]), strings.ToLower(captures[3])
 		if typ == "" {
 			typ = "all"
 		}
-		// mod.GemProperty has no gemRequirements, so the reqStr/reqDex/reqInt filter (3537-3550) is not carried
-		_ = gemReq
+		var gemReqType string
+		switch gemReq {
+		case "intelligence":
+			gemReqType = "reqInt"
+		case "dexterity":
+			gemReqType = "reqDex"
+		case "strength":
+			gemReqType = "reqStr"
+		}
+		var gemRequirements map[string]float64
+		if gemReqType != "" {
+			gemRequirements = map[string]float64{gemReqType: 1}
+		}
 		ids := gemLookup().skillIDForName
 		if ids[typ] != "" || ids["load "+typ] != "" || ids[typ+" minion"] != "" {
-			return []mod.Mod{MOD("GemProperty", "LIST", mod.GemProperty{Keyword: utils.Ptr(typ), Key: "level", Value: num})}, ""
+			return []mod.Mod{MOD("GemProperty", "LIST", mod.GemProperty{Keyword: utils.Ptr(typ), Key: "level", Value: num, KeyOfScaledMod: "value", GemRequirements: gemRequirements})}, ""
 		}
 		wordList := gemPropertyWordRe.FindAllString(typ, -1)
 		if len(wordList) == 1 {
-			return []mod.Mod{MOD("GemProperty", "LIST", mod.GemProperty{Keyword: utils.Ptr(wordList[0]), Key: property, Value: num})}, ""
+			return []mod.Mod{MOD("GemProperty", "LIST", mod.GemProperty{Keyword: utils.Ptr(wordList[0]), Key: property, Value: num, KeyOfScaledMod: "value", GemRequirements: gemRequirements})}, ""
 		}
-		return []mod.Mod{MOD("GemProperty", "LIST", mod.GemProperty{KeywordList: wordList, Key: property, Value: num})}, ""
+		return []mod.Mod{MOD("GemProperty", "LIST", mod.GemProperty{KeywordList: wordList, Key: property, Value: num, KeyOfScaledMod: "value", GemRequirements: gemRequirements})}, ""
 	},
 	`grants level (\d+) snipe skill`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("ExtraSkill", "LIST", mod.ExtraSkill{SkillID: "Snipe", Level: int(num)}), MOD("ExtraSupport", "LIST", mod.ExtraSupport{SkillID: "ChannelledSnipeSupport", Level: int(num)}).Tag(mod.SocketedIn("{SlotName}"))}, ""
 	},
 	`gems socketed in red sockets have [\+\-](\d+) to level`: func(num float64, captures []string) ([]mod.Mod, string) {
-		return []mod.Mod{MOD("GemProperty", "LIST", mod.GemProperty{Keyword: utils.Ptr("all"), Key: "level", Value: num}).Tag(mod.SocketedIn("{SlotName}").SocketColor("R"))}, ""
+		return []mod.Mod{MOD("GemProperty", "LIST", mod.GemProperty{Keyword: utils.Ptr("all"), Key: "level", Value: num, KeyOfScaledMod: "value"}).Tag(mod.SocketedIn("{SlotName}").SocketColor("R"))}, ""
 	},
 	`gems socketed in green sockets have [\+\-](\d+)% to quality`: func(num float64, captures []string) ([]mod.Mod, string) {
-		return []mod.Mod{MOD("GemProperty", "LIST", mod.GemProperty{Keyword: utils.Ptr("all"), Key: "quality", Value: num}).Tag(mod.SocketedIn("{SlotName}").SocketColor("G"))}, ""
+		return []mod.Mod{MOD("GemProperty", "LIST", mod.GemProperty{Keyword: utils.Ptr("all"), Key: "quality", Value: num, KeyOfScaledMod: "value"}).Tag(mod.SocketedIn("{SlotName}").SocketColor("G"))}, ""
 	},
 	`\+(\d+)% to fire resistance when socketed with a red gem`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("SocketProperty", "LIST", LuaTable{"value": MOD("FireResist", "BASE", num)}).Tag(mod.SocketedIn("{SlotName}").Keyword("strength").Sockets(int(1)))}, ""

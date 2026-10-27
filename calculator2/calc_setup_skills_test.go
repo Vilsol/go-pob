@@ -5,6 +5,11 @@ import (
 	"strconv"
 	"strings"
 	"testing"
+
+	"github.com/Vilsol/go-pob/data/poe2"
+	"github.com/Vilsol/go-pob/data/poe2skills"
+	"github.com/Vilsol/go-pob/mod"
+	"github.com/Vilsol/go-pob/utils"
 )
 
 func readTSV(t *testing.T, path string, cols int) [][]string {
@@ -58,6 +63,21 @@ func TestDoesTypeExpressionMatch(t *testing.T) {
 		got := doesTypeExpressionMatch(strings.Fields(f[0]), set(f[1]), set(f[2]))
 		if strconv.FormatBool(got) != f[3] {
 			t.Errorf("doesTypeExpressionMatch(%q, %q, %q) = %v, PoB %s", f[0], f[1], f[2], got, f[3])
+		}
+	}
+}
+
+// CalcSetup.lua 564-568: a gemRequirements entry matches only a gem whose requirement exceeds it.
+func TestApplyGemModsGemRequirements(t *testing.T) {
+	prop := mod.GemProperty{Keyword: utils.Ptr("all"), Key: "level", Value: 2, KeyOfScaledMod: "value", GemRequirements: map[string]float64{"reqInt": 1}}
+	for _, c := range []struct {
+		reqInt float64
+		want   int
+	}{{100, 3}, {0, 1}, {1, 1}} {
+		effect := &GemEffect{Level: 1, GemData: &poe2skills.Gem{Data: &poe2.Gem{Name: "Probe", ReqInt: c.reqInt}}}
+		applyGemMods(effect, []any{prop})
+		if effect.Level != c.want {
+			t.Errorf("reqInt %v: level %d, want %d", c.reqInt, effect.Level, c.want)
 		}
 	}
 }

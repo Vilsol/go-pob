@@ -500,13 +500,17 @@ var p2eConstantTables = []struct{ key, goName string }{
 	{"monsterPoiseThresholdTable", "MonsterPoiseThresholdTable"},
 }
 
+var p2eConstantPairTables = []struct{ key, goName, doc string }{
+	{"hollowPalmAddedPhys", "HollowPalmAddedPhys", "{ min, max } added physical damage"},
+}
+
 func p2eConstants(body []byte) (string, error) {
 	var dump map[string]json.RawMessage
 	if err := json.Unmarshal(body, &dump); err != nil {
 		return "", fmt.Errorf("is not a JSON object: %w", err)
 	}
-	if len(dump) != len(p2eConstantMaps)+len(p2eConstantTables) {
-		return "", fmt.Errorf("holds %d tables, the emitter knows %d", len(dump), len(p2eConstantMaps)+len(p2eConstantTables))
+	if known := len(p2eConstantMaps) + len(p2eConstantTables) + len(p2eConstantPairTables); len(dump) != known {
+		return "", fmt.Errorf("holds %d tables, the emitter knows %d", len(dump), known)
 	}
 	var b strings.Builder
 	p2eHeader(&b, "constants", "src/Modules/Data.lua:112-118")
@@ -537,6 +541,20 @@ func p2eConstants(body []byte) (string, error) {
 			return "", fmt.Errorf("%s is not a non-empty array of numbers", t.key)
 		}
 		fmt.Fprintf(&b, "// %s is data.%s, indexed by level - 1.\nvar %s = %s\n\n", t.goName, t.key, t.goName, p2eFloats(vals))
+	}
+	for _, t := range p2eConstantPairTables {
+		var vals [][]float64
+		if err := json.Unmarshal(dump[t.key], &vals); err != nil || len(vals) == 0 {
+			return "", fmt.Errorf("%s is not a non-empty array of number pairs", t.key)
+		}
+		rows := make([]string, len(vals))
+		for i, v := range vals {
+			if len(v) != 2 {
+				return "", fmt.Errorf("%s[%d] holds %d numbers, not 2", t.key, i+1, len(v))
+			}
+			rows[i] = "{" + p2eFloat(v[0]) + ", " + p2eFloat(v[1]) + "}"
+		}
+		fmt.Fprintf(&b, "// %s is data.%s, %s indexed by level - 1.\nvar %s = [][2]float64{%s}\n\n", t.goName, t.key, t.doc, t.goName, strings.Join(rows, ", "))
 	}
 	return strings.TrimRight(b.String(), "\n") + "\n", nil
 }

@@ -289,6 +289,9 @@ func cacheTag(t map[string]any) (mod.Tag, error) {
 			p.Limit(l)
 		}
 		p.LimitTotal(f.truthy("limitTotal"))
+		if f.has("divVar") {
+			p.DivVar(f.str("divVar"))
+		}
 		tag = p
 	case "SkillType":
 		tag = mod.SkillType(f.strs("skillType", "skillTypeList")...).Neg(f.truthy("neg"))
@@ -322,12 +325,18 @@ func cacheTag(t map[string]any) (mod.Tag, error) {
 		if f.truthy("limitNegTotal") {
 			m.LimitNegTotal()
 		}
+		if f.truthy("invert") {
+			m.Invert()
+		}
 		// calcs.mergeSkillInstanceMods reads scalar from the skill's mod table; ModStore does not.
 		f.used["scalar"] = true
 		tag = m
 	case "PercentStat":
 		p, _ := f.num("percent")
 		ps := mod.PercentStat(f.str("stat"), p)
+		if f.has("statList") {
+			ps = mod.PercentStatList(p, f.strs("", "statList")...)
+		}
 		if f.has("percentVar") {
 			ps.PercentVar = f.str("percentVar")
 		}
@@ -343,6 +352,9 @@ func cacheTag(t map[string]any) (mod.Tag, error) {
 		} else {
 			st = mod.StatThresholdStat(stat, f.str("thresholdStat"))
 		}
+		if f.has("statList") {
+			st.Stats(f.strs("", "statList")...)
+		}
 		tag = st.Upper(f.truthy("upper"))
 	case "MultiplierThreshold":
 		mt := mod.MultiplierThreshold(f.str("var"))
@@ -355,6 +367,9 @@ func cacheTag(t map[string]any) (mod.Tag, error) {
 		}
 		if f.has("actor") {
 			mt.Actor(f.str("actor"))
+		}
+		if f.has("thresholdActor") {
+			mt.ThresholdActor(f.str("thresholdActor"))
 		}
 		// calcs.mergeSkillInstanceMods reads scalar from the skill's mod table; ModStore does not.
 		f.used["scalar"] = true
@@ -445,6 +460,17 @@ func cacheTag(t map[string]any) (mod.Tag, error) {
 		tag = mod.KeywordFlagAnd(mod.KeywordFlag(n))
 	case "Global":
 		tag = mod.Global()
+	case "ModFlagOr":
+		n, _ := f.num("modFlags")
+		tag = mod.ModFlagOr(mod.MFlag(n))
+	case "Limit":
+		var l *mod.LimitTag
+		if n, ok := f.num("limit"); ok {
+			l = mod.Limit(n)
+		} else {
+			l = mod.LimitVar(f.str("limitVar"))
+		}
+		tag = l.Neg(f.truthy("neg"))
 	default:
 		return nil, fmt.Errorf("a %q tag, which the mod package has no tag for", typ)
 	}
@@ -486,6 +512,22 @@ func cacheListValue(name string, value any) (any, error) {
 		if f.str("keyOfScaledMod") != "value" {
 			return nil, fmt.Errorf("GemProperty scales a key other than value")
 		}
+		g.KeyOfScaledMod = "value"
+		if f.has("gemRequirements") {
+			f.used["gemRequirements"] = true
+			reqs, ok := t["gemRequirements"].(map[string]any)
+			if !ok {
+				return nil, fmt.Errorf("GemProperty gemRequirements of an unexpected shape")
+			}
+			g.GemRequirements = make(map[string]float64, len(reqs))
+			for k, v := range reqs {
+				n, ok := cacheNumber(v)
+				if !ok {
+					return nil, fmt.Errorf("GemProperty gemRequirements.%s is not a number", k)
+				}
+				g.GemRequirements[k] = n
+			}
+		}
 		out = g
 	case "MinionModifier", "EnemyModifier", "ExtraSkillMod", "ExtraAuraEffect", "ExtraAura":
 		m, err := cacheNestedMod(f)
@@ -502,6 +544,8 @@ func cacheListValue(name string, value any) (any, error) {
 		case "ExtraAuraEffect":
 			out = mod.ExtraAuraEffect{Mod: m}
 		case "ExtraAura":
+			// A tag the parser wrote into the payload's array part; ModStore never reads it.
+			f.used["1"] = true
 			out = mod.ExtraAura{Mod: m, OnlyAllies: f.truthy("onlyAllies")}
 		}
 	case "SkillData":

@@ -445,6 +445,10 @@ func (s *ModStore) evalMultiplier(value *mod.ModValueMulti, cfg *ListCfg, tag *m
 			mult = min(mult, limit)
 		}
 	}
+	//pob2:block:src/Classes/ModStore.lua:543-545
+	if tag.TagInvert && mult != 0 {
+		mult = 1 / mult
+	}
 
 	if value.Type() == mod.ModValueMultiTypeFloat {
 		out := float64(value.Float()*mult) + tag.TagBase
@@ -472,6 +476,15 @@ func (s *ModStore) evalMultiplier(value *mod.ModValueMulti, cfg *ListCfg, tag *m
 //pob:block:src/Classes/ModStore.lua:353-377
 func (s *ModStore) evalMultiplierThresholdTag(value *mod.ModValueMulti, cfg *ListCfg, tag *mod.MultiplierThresholdTag) *mod.ModValueMulti {
 	var target multiplierSource = s
+	//pob2:block:src/Classes/ModStore.lua:577-584
+	var thresholdTarget multiplierSource
+	if tag.TagThresholdActor != "" {
+		db := s.relatedModDB(tag.TagThresholdActor)
+		if db == nil {
+			return nil
+		}
+		thresholdTarget = db
+	}
 	if tag.TagActor != "" {
 		db := s.relatedModDB(tag.TagActor)
 		if db == nil {
@@ -492,6 +505,8 @@ func (s *ModStore) evalMultiplierThresholdTag(value *mod.ModValueMulti, cfg *Lis
 	threshold := float64(0)
 	if tag.TagThreshold != nil {
 		threshold = *tag.TagThreshold
+	} else if thresholdTarget != nil {
+		threshold = thresholdTarget.GetMultiplier(*tag.ThresholdVariable, cfg, false)
 	} else {
 		threshold = target.GetMultiplier(*tag.ThresholdVariable, cfg, false)
 	}
@@ -519,7 +534,12 @@ func (s *ModStore) evalPerStatTag(value *mod.ModValueMulti, cfg *ListCfg, tag *m
 		base += target.getStat(stat, cfg)
 	}
 
-	mult := math.Floor(base/tagDiv(tag.Divide) + 0.0001)
+	div := tag.Divide
+	//pob2:block:src/Classes/ModStore.lua:622-624
+	if tag.TagDivVariable != "" {
+		div = s.GetMultiplier(tag.TagDivVariable, cfg, false)
+	}
+	mult := math.Floor(base/tagDiv(div) + 0.0001)
 	var limitTotal *float64
 	if tag.TagLimit != nil || tag.TagLimitVariable != nil {
 		limit := float64(0)
@@ -985,7 +1005,15 @@ func (s *ModStore) evalKeywordFlagAndTag(value *mod.ModValueMulti, cfg *ListCfg,
 
 //pob:block:src/Classes/ModStore.lua:462-475
 func (s *ModStore) evalStatThresholdTag(value *mod.ModValueMulti, cfg *ListCfg, tag *mod.StatThresholdTag) *mod.ModValueMulti {
-	stat := s.getStat(tag.Stat, cfg)
+	var stat float64
+	//pob2:block:src/Classes/ModStore.lua:706-713
+	if tag.StatList != nil {
+		for _, name := range tag.StatList {
+			stat += s.getStat(name, cfg)
+		}
+	} else {
+		stat = s.getStat(tag.Stat, cfg)
+	}
 	threshold := tag.Threshold
 	if tag.TagThresholdStat != "" {
 		threshold = s.getStat(tag.TagThresholdStat, cfg)
@@ -1008,7 +1036,15 @@ func (s *ModStore) evalPercentStatTag(value *mod.ModValueMulti, cfg *ListCfg, ta
 		}
 	}
 
-	base := target.getStat(tag.Stat, cfg)
+	var base float64
+	//pob2:block:src/Classes/ModStore.lua:663-670
+	if tag.StatList != nil {
+		for _, stat := range tag.StatList {
+			base += target.getStat(stat, cfg)
+		}
+	} else {
+		base = target.getStat(tag.Stat, cfg)
+	}
 	//	local percent = tag.percent or GetMultiplier(self, tag.percentVar, cfg)
 	//	local mult = base * (percent and percent / 100 or 1)
 	//pob:block:src/Classes/ModStore.lua:547-548

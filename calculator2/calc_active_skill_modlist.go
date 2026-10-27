@@ -571,9 +571,8 @@ func truthy(v any) bool {
 }
 
 // buildActiveSkillModList builds the list of modifiers for the given active skill. Multipart skills,
-// mine and stage counts, Hollow Palm's added damage, totem level and the minion it creates are not
-// ported: PoE2's skill data here carries no parts, the gem instance no saved counts, and data has no
-// hollowPalmAddedPhys or minionLevelTable.
+// mine and stage counts, totem level and the minion it creates are not ported: PoE2's skill data here
+// carries no parts, the gem instance no saved counts, and data has no minionLevelTable.
 //
 //pob2:src/Modules/CalcActiveSkill.lua:425-1133
 func buildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
@@ -1059,6 +1058,18 @@ func buildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 			skillModList.AddMod(newMod("Multiplier:"+stageName+"Stage", mod.TypeBase, math.Min(limit, activeSkill.ActiveStageCount), "Base"))
 			activeSkill.ActiveStageCount--
 			skillModList.AddMod(newMod("Multiplier:"+stageName+"StageAfterFirst", mod.TypeBase, math.Min(limit-1, activeSkill.ActiveStageCount), "Base"))
+		}
+	}
+
+	// Hollow Palm Technique added phys for skills that would use Quarterstaff
+	//pob2:block:src/Modules/CalcActiveSkill.lua:906-913
+	if activeSkill.Actor.ModDB.Conditions["HollowPalm"] && !(skillModList.Flag(nil, "UseFacebreakerItemDamage") && activeEffect.GrantedEffect.WeaponTypes != nil && activeEffect.GrantedEffect.WeaponTypes["One Hand Mace"]) && ((activeEffect.GrantedEffect.WeaponTypes != nil && activeEffect.GrantedEffect.WeaponTypes["Staff"]) || skillModList.Flag(activeSkill.SkillCfg, "UseHollowPalmDamage")) {
+		gemLevel := max(activeEffect.Level, 1)
+		if gemLevel <= len(poe2.HollowPalmAddedPhys) {
+			phys := poe2.HollowPalmAddedPhys[gemLevel-1]
+			// The Lua passes a nil keywordFlags before the Condition tag, so createMod keeps no tag.
+			skillModList.AddMod(newMod("PhysicalMin", mod.TypeBase, phys[0], "Hollow Palm Technique").Flag(ModFlagAttack))
+			skillModList.AddMod(newMod("PhysicalMax", mod.TypeBase, phys[1], "Hollow Palm Technique").Flag(ModFlagAttack))
 		}
 	}
 

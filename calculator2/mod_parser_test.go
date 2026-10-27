@@ -43,3 +43,51 @@ func TestParseModMatchesPoBRows(t *testing.T) {
 		t.Errorf("range text: got %d mods, remainder %q", len(mods), extra)
 	}
 }
+
+// Expected payloads are PoB-PoE2's src/Data/ModCache.lua rows; the scaled value is ScaleAddMod's
+// floor for a "level" key (ModStore.lua 99-100) at 200% increased rune effect.
+func TestParseModGemPropertyPayload(t *testing.T) {
+	cases := map[string]mod.GemProperty{
+		"+2 to Level of all Skills with an Intelligence requirement": {Key: "level", Value: 2, KeyOfScaledMod: "value", GemRequirements: map[string]float64{"reqInt": 1}},
+		"+2 to Level of all Skills with a Dexterity requirement":     {Key: "level", Value: 2, KeyOfScaledMod: "value", GemRequirements: map[string]float64{"reqDex": 1}},
+		"+3 to Level of all Spell Skills":                            {Key: "level", Value: 3, KeyOfScaledMod: "value"},
+	}
+	for key, w := range cases {
+		line := key
+		mods, _ := ParseMod(line)
+		if cached, _ := ModCache(line); len(cached) == 1 {
+			if g, ok := cached[0].Value().ValueList.(mod.GemProperty); !ok || len(g.GemRequirements) != len(w.GemRequirements) || g.KeyOfScaledMod != w.KeyOfScaledMod {
+				t.Errorf("%q: cached %+v, want %+v", line, cached[0].Value().ValueList, w)
+			}
+		} else {
+			t.Errorf("%q: the shipped cache gives %d mods, want 1", line, len(cached))
+		}
+		if len(mods) != 1 {
+			t.Fatalf("%q: %d mods, want 1", line, len(mods))
+		}
+		g, ok := mods[0].Value().ValueList.(mod.GemProperty)
+		if !ok {
+			t.Fatalf("%q: value %T, want mod.GemProperty", line, mods[0].Value().ValueList)
+		}
+		if g.Key != w.Key || g.Value != w.Value || g.KeyOfScaledMod != w.KeyOfScaledMod || len(g.GemRequirements) != len(w.GemRequirements) {
+			t.Errorf("%q: got %+v, want %+v", line, g, w)
+		}
+		for k, v := range w.GemRequirements {
+			if g.GemRequirements[k] != v {
+				t.Errorf("%q: gemRequirements[%s] = %v, want %v", line, k, g.GemRequirements[k], v)
+			}
+		}
+	}
+
+	for name, parse := range map[string]func(string) ([]mod.Mod, string){"parser": ParseMod, "cache": ModCache} {
+		mods, _ := parse("+3 to Level of all Spell Skills")
+		if len(mods) != 1 {
+			t.Fatalf("%s: %d mods, want 1", name, len(mods))
+		}
+		var scaled []mod.Mod
+		scaleAddMod(&scaled, mods[0], 2)
+		if g := scaled[0].Value().ValueList.(mod.GemProperty); g.Value != 6 {
+			t.Errorf("%s, scaled by 2: value %v, want 6", name, g.Value)
+		}
+	}
+}

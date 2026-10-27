@@ -9,6 +9,7 @@ type PercentStatTag struct {
 	PercentVar string
 	TagActor   string
 	TagFloor   bool
+	StatList   []string
 }
 
 func (t *PercentStatTag) Actor(actor string) *PercentStatTag {
@@ -26,6 +27,14 @@ func PercentStatVar(stat string, percentVar string) *PercentStatTag {
 		TagType:    TypePercentStat,
 		Stat:       stat,
 		PercentVar: percentVar,
+	}
+}
+
+func PercentStatList(percent float64, stats ...string) *PercentStatTag {
+	return &PercentStatTag{
+		TagType:  TypePercentStat,
+		StatList: stats,
+		Percent:  percent,
 	}
 }
 

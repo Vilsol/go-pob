@@ -48,6 +48,10 @@ type GemProperty struct {
 	Value       float64
 	KeywordList []string
 	Keyword     *string
+	// KeyOfScaledMod names the field ScaleAddMod scales; GemRequirements is the minimum attribute
+	// requirement a gem must exceed, keyed reqStr/reqDex/reqInt.
+	KeyOfScaledMod  string
+	GemRequirements map[string]float64
 }
 
 func (g GemProperty) ScaleValue(mult, base float64, limitTotal *float64) Cloneable {
@@ -72,10 +76,17 @@ func (g GemProperty) Clone(pointer bool) Cloneable {
 	copy(out, g.KeywordList)
 
 	obj := GemProperty{
-		Key:         g.Key,
-		Value:       g.Value,
-		KeywordList: out,
-		Keyword:     g.Keyword,
+		Key:            g.Key,
+		Value:          g.Value,
+		KeywordList:    out,
+		Keyword:        g.Keyword,
+		KeyOfScaledMod: g.KeyOfScaledMod,
+	}
+	if g.GemRequirements != nil {
+		obj.GemRequirements = make(map[string]float64, len(g.GemRequirements))
+		for k, v := range g.GemRequirements {
+			obj.GemRequirements[k] = v
+		}
 	}
 
 	if pointer {
