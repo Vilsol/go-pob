@@ -11,8 +11,8 @@ import (
 )
 
 // rdGeneratorsPoE2 is `regen-data --game poe2`'s table: PoB-PoE2's own loaded data tables, dumped by
-// scripts/gopob/regendata_poe2.lua after Data.lua has run. go-pob-data has no PoE2 data yet, so every
-// row is game data read from the PoE2 pin.
+// scripts/gopob/regendata_poe2.lua after Data.lua has run, over go-pob-data's 0.5 tables where a row
+// has a gamedatadump dump.
 var rdGeneratorsPoE2 = []rdGenerator{
 	{
 		name:     "poe2-bases",
@@ -38,14 +38,15 @@ var rdGeneratorsPoE2 = []rdGenerator{
 	},
 	{
 		name:     "poe2-constants",
-		source:   rdGameDataFromPoB,
+		source:   rdGameDataOverlay,
 		out:      "data/poe2/constants_generated.go",
 		lua:      "scripts/gopob/regendata_poe2.lua",
+		dump:     "poe2-misc-data",
 		luaArgs:  []string{"constants"},
 		emit:     "poe2-data-emit",
 		emitArgs: []string{"constants"},
 		needsPob: true,
-		note:     "data.misc (Data.lua's magic numbers, computed) and src/Data/Misc.lua's constant maps and monster level tables",
+		note:     "data.misc (Data.lua's magic numbers, computed) and src/Data/Misc.lua's constant maps and monster level tables. Game data FROM go-pob-data: `gamedatadump poe2-misc-data` writes src/Data/Misc.lua (PoB-PoE2's Export/Scripts/miscdata.lua over 0.5's json tables and .ot files), byte-identical to the pin's, and regendata_poe2.lua loads it in place of the pin's (GAMEDATA_DUMP); data.misc stays Data.lua's own literals computed over it",
 	},
 	{
 		name:     "poe2-gems",
@@ -60,14 +61,12 @@ var rdGeneratorsPoE2 = []rdGenerator{
 	},
 	{
 		name:     "poe2-legion",
-		source:   rdGameDataFromPoB,
+		source:   rdGameData,
 		out:      "data/poe2/legion_generated.go",
-		lua:      "scripts/gopob/regendata_poe2.lua",
-		luaArgs:  []string{"legion"},
+		dump:     "poe2-legion-passives",
 		emit:     "poe2-data-emit",
 		emitArgs: []string{"legion"},
-		needsPob: true,
-		note:     "the nodes of src/Data/TimelessJewelData/LegionPassives.lua, which PassiveTree loads as tree.legion: id, name, stat lines and type flags, in the file's order",
+		note:     "the nodes of src/Data/TimelessJewelData/LegionPassives.lua, which PassiveTree loads as tree.legion: id, name, stat lines and type flags, in the file's order. FROM go-pob-data: `gamedatadump poe2-legion-passives` ports PoB-PoE2's Export/Scripts/legionPassives.lua and Export/statdesc.lua over 0.5's AlternatePassiveSkills, Stats and passive_skill_stat_descriptions; every node and addition equals the pin's file (`task poe2-gamedata-check`)",
 	},
 	rdGeneratorPoE2ModCache,
 	rdGeneratorPoE2Quests,

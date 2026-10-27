@@ -43,7 +43,17 @@ func TestPoE2GeneratorsAreOwnedAndClassified(t *testing.T) {
 		if !strings.HasPrefix(g.out, "data/poe2/") {
 			t.Errorf("%s writes %s, outside the PoE2 data package", g.name, g.out)
 		}
-		if g.source != rdGameDataFromPoB && g.source != rdPoBAuthored {
+		switch g.source {
+		case rdGameDataFromPoB, rdPoBAuthored:
+		case rdGameData:
+			if g.lua != "" || g.dump == "" {
+				t.Errorf("%s is game data from go-pob-data but has lua %q, dump %q", g.name, g.lua, g.dump)
+			}
+		case rdGameDataOverlay:
+			if g.lua == "" || g.dump == "" {
+				t.Errorf("%s overlays go-pob-data on a lua dumper but has lua %q, dump %q", g.name, g.lua, g.dump)
+			}
+		default:
 			t.Errorf("%s is not classified as game data or a PoB-authored table read from the PoE2 pin", g.name)
 		}
 	}

@@ -3,6 +3,21 @@
 local outPath, which = arg[1], arg[2]
 assert(outPath and which, "usage: regendata_poe2.lua <out.json> <bases|runes|constants|gems|legion>")
 
+-- GAMEDATA_DUMP is `gamedatadump`'s {fileName = source} map: those data files load in place of the pin's.
+local overlayPath = os.getenv("GAMEDATA_DUMP")
+if overlayPath then
+	local f = assert(io.open(overlayPath, "r"), "REFUSING: cannot read " .. overlayPath)
+	local overlay = assert(require("dkjson").decode(f:read("*a")), "REFUSING: " .. overlayPath .. " is not JSON")
+	f:close()
+	local pinLoadfile = loadfile
+	function loadfile(fileName, ...)
+		if overlay[fileName] then
+			return loadstring(overlay[fileName], "@" .. fileName)
+		end
+		return pinLoadfile(fileName, ...)
+	end
+end
+
 dofile("HeadlessWrapper.lua")
 
 local function sortedKeys(t)
