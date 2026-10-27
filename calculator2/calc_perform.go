@@ -926,6 +926,10 @@ func perform(env *Environment) {
 	//pob2:block:src/Modules/CalcPerform.lua:3510-3512
 	buildDefenceEstimations(env, env.Player)
 
+	// TURNING OFF CALC TRIGGERS AND MIRAGES FOR TIME BEING
+	//pob2:block:src/Modules/CalcPerform.lua:3514-3518
+	offence(env, env.Player, env.Player.MainSkill)
+
 	calcMainSkillGemLevel(env)
 }
 

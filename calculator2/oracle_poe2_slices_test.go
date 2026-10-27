@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 	"sync"
 	"testing"
 
@@ -20,9 +21,11 @@ var offenceSliceStats = []string{
 	"HitChance", "AccuracyHitChance", "Accuracy", "CritChance", "CritMultiplier", "CritEffect",
 	"ManaCost", "ManaPerSecondCost", "GemLevel", "GemQuality", "Repeats", "DpsMultiplier",
 	"HeavyStunBuildupAvg", "IgniteDPS", "AreaOfEffectMod", "ProjectileCount", "CastRate",
+	"LifeCost", "Duration", "DurationMod", "ChainMax", "Cooldown", "ActiveTotemLimit", "AreaOfEffectRadius",
+	"ProjectileSpeedMod", "ActiveMinionLimit", "AverageBurstHits", "DurationSecondary", "IceCrystalLife",
 }
 
-const poe2OffenceMatchedFloor = 33082
+const poe2OffenceMatchedFloor = 93677
 
 const poe2SkillsOnMatchedFloor = 171598
 
@@ -269,6 +272,20 @@ func (g *poe2SliceGrade) check(t *testing.T, floor int) {
 			b := g.builds[i]
 			return b.built, b.matched, b.total, b.stats
 		})
+		keys := make([]string, 0, len(g.all))
+		for k := range g.all {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		var b strings.Builder
+		b.WriteString("stat\tseen\tok\tnonzero\tnonzeroOK\n")
+		for _, k := range keys {
+			a := g.all[k]
+			fmt.Fprintf(&b, "%s\t%d\t%d\t%d\t%d\n", k, a.seen, a.ok, a.nonzero, a.nonzeroOK)
+		}
+		if err := os.WriteFile(filepath.Join(dir, "all.tsv"), []byte(b.String()), 0o600); err != nil {
+			t.Fatal(err)
+		}
 	}
 	if g.matched < floor {
 		t.Errorf("matched %d PoE2 oracle stats, below floor %d — accuracy regressed by %d", g.matched, floor, floor-g.matched)
