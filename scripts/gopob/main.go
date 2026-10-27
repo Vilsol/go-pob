@@ -150,6 +150,8 @@ const usage = `gopob <subcommand> [flags]
                         data/poe2/*_generated.go from scripts/gopob/regendata_poe2.lua's dump
   poe2-modcache-emit <dump.json> <out.go> <modcache|quests>
                         data/poe2/{modcache,quests}_generated.go from scripts/gopob/regendata_poe2_modcache.lua's dump
+  poe2-skills-emit <dump.json> <out.go> <globals|statmap|overlay>
+                        data/poe2/skill_*_generated.go from scripts/gopob/regendata_poe2_skills.lua's dump
   core-constants-emit <dump.json> <out.go>
                         data/constants_generated.go — the VALUES PoB owns; constants.go keeps the
                         TYPES and the Go-native remainder
@@ -323,6 +325,8 @@ func main() {
 		os.Exit(poe2DataEmit(os.Args[2:]))
 	case "poe2-modcache-emit":
 		os.Exit(poe2ModCacheEmit(os.Args[2:]))
+	case "poe2-skills-emit":
+		os.Exit(poe2SkillsEmit(os.Args[2:]))
 	case "core-constants-emit":
 		os.Exit(coreConstantsEmit(os.Args[2:]))
 	case "minion-data-emit":

@@ -71,6 +71,9 @@ var rdGeneratorsPoE2 = []rdGenerator{
 	},
 	rdGeneratorPoE2ModCache,
 	rdGeneratorPoE2Quests,
+	rdGeneratorsPoE2Skills[0],
+	rdGeneratorsPoE2Skills[1],
+	rdGeneratorsPoE2Skills[2],
 }
 
 const p2eUsage = "usage: poe2-data-emit <dump.json> <out.go> <bases|runes|constants|gems|legion>"
