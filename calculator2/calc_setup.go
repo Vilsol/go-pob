@@ -158,8 +158,8 @@ const (
 	modFlagMelee  = mod.MFlag(0x0000000000000100)
 )
 
-//pob2:block:src/Data/Global.lua:40-68
-const keywordFlagBleed = mod.KeywordFlag(0x00000400)
+//pob2:block:src/Data/Global.lua:296
+const keywordFlagBleed = mod.KeywordFlag(0x00400000)
 
 var weaponSetConditionRE = regexp.MustCompile(`^WeaponSet`)
 
