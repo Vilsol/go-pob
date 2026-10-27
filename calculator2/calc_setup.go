@@ -404,11 +404,11 @@ func buildModListForNodeList(env *Environment, nodeList map[int]*tree2.SpecNode,
 }
 
 // buildConfigModList is ConfigTab:BuildModList for the options ported so far: the quest rewards
-// (ConfigOptions.lua's check and list options built from data.questRewards) and the custom modifier
-// blocks. Every other config option contributes nothing yet.
+// (ConfigOptions.lua's check and list options built from data.questRewards), the options in
+// configVarList and the custom modifier blocks.
 //
 //pob2:src/Classes/ConfigTab.lua:1169-1241
-func buildConfigModList(env *Environment, modList *moddb.ModList) {
+func buildConfigModList(env *Environment, modList, enemyModList *moddb.ModList) {
 	addParsed := func(source mod.Source, line string) {
 		mods, extra := env.modSource(line)
 		if mods != nil && extra == "" {
@@ -443,6 +443,7 @@ func buildConfigModList(env *Environment, modList *moddb.ModList) {
 			questLine(source, input.String)
 		}
 	}
+	applyConfigVars(env, modList, enemyModList)
 
 	for _, block := range customModifierBlocks(env.Build) {
 		if block.Enabled != nil && !*block.Enabled || block.Text == "" {
@@ -618,9 +619,10 @@ func initEnv(env *Environment) {
 	initModDB(env, enemyDB)
 	enemyDB.AddMod(newMod("Accuracy", mod.TypeBase, poe2.MonsterAccuracyTable[env.EnemyLevel-1], "Base"))
 	enemyDB.AddMod(newFlagMod("Condition:AgainstDamageOverTime", "Base", mod.ActorCondition("player", "Combat")).Flag(modFlagDot))
-	configModList := newModList()
-	buildConfigModList(env, configModList)
+	configModList, configEnemyModList := newModList(), newModList()
+	buildConfigModList(env, configModList, configEnemyModList)
 	modDB.AddList(configModList)
+	enemyDB.AddList(configEnemyModList)
 
 	counts := countAllocated(env.Spec)
 

@@ -508,6 +508,7 @@ calculator2/calc_perform_charges.go PORT       src/Modules/CalcPerform.lua
 calculator2/calc_perform_requirements.go PORT    src/Modules/CalcPerform.lua,src/Modules/CalcSetup.lua
 calculator2/calc_perform_weapon.go PORT        src/Modules/CalcPerform.lua
 calculator2/calc_setup.go           PORT       src/Modules/CalcSetup.lua,src/Classes/PassiveTree.lua,src/Classes/ConfigTab.lua,src/Modules/ConfigOptions.lua
+calculator2/calc_setup_config.go    PORT       src/Classes/ConfigTab.lua,src/Modules/ConfigOptions.lua
 calculator2/calc_setup_items.go     PORT       src/Modules/CalcSetup.lua,src/Classes/ItemsTab.lua,src/Classes/ItemSlotControl.lua,src/Classes/TreeTab.lua,src/Classes/PassiveTree.lua,src/Classes/ModList.lua
 calculator2/calc_setup_radius.go    PORT       src/Modules/CalcSetup.lua
 calculator2/calc_tools.go           PORT       src/Modules/CalcTools.lua

@@ -383,8 +383,33 @@ func addMagebloodLegacies(env *Environment) {
 	}
 }
 
-// Cruelty and Fanaticism read the main skill, and applyEnemyModifiers is not ported, so those three are absent;
-// with no main skill, Elusive reads SupportedByNightblade as unset.
+//pob2:src/Modules/CalcPerform.lua:565-579
+func applyEnemyModifiers(actor *Actor, clearCache bool) {
+	if clearCache || actor.appliedEnemyModifiers == nil {
+		actor.appliedEnemyModifiers = map[mod.Mod]bool{}
+	}
+	cache := actor.appliedEnemyModifiers
+	enemyDB := actor.Enemy.ModDB
+	for _, value := range actor.ModDB.Tabulate("", nil, "EnemyModifier") {
+		v := value.Mod.Value()
+		if v == nil || v.Type() != mod.ModValueMultiTypeList {
+			continue
+		}
+		payload, ok := v.List().(mod.EnemyModifier)
+		if !ok || payload.Mod == nil || cache[payload.Mod] {
+			continue
+		}
+		source := payload.Mod.GetSource()
+		if source == "" {
+			source = value.Mod.GetSource()
+		}
+		enemyDB.AddMod(mod.SetSource(payload.Mod.Clone(), source))
+		cache[payload.Mod] = true
+	}
+}
+
+// Cruelty and Fanaticism read the main skill, so those two are absent; with no main skill, Elusive reads
+// SupportedByNightblade as unset.
 //
 //pob2:src/Modules/CalcPerform.lua:584-857
 func doActorMisc(env *Environment, actor *Actor) {
@@ -666,6 +691,9 @@ func doActorMisc(env *Environment, actor *Actor) {
 		}
 	}
 
+	//pob2:block:src/Modules/CalcPerform.lua:844-845
+	applyEnemyModifiers(actor, false)
+
 	if actor != env.Player && !modDB.Flag(nil, "UnaffectedBySlows") {
 		slowEffect := modDB.SumNegativeValues(mod.TypeIncrease, nil, "ActionSpeed")
 		slowEffect += modDB.SumNegativeValues(mod.TypeIncrease, nil, "MovementSpeed")
@@ -741,6 +769,10 @@ func perform(env *Environment) {
 	}
 	output["WarcryPower"] = overrideOr(modDB, "WarcryPower", modDB.Sum(mod.TypeBase, nil, "WarcryPower"))
 	modDB.Multipliers["WarcryPower"] = output["WarcryPower"]
+
+	//pob2:block:src/Modules/CalcPerform.lua:1258-1262
+	applyEnemyModifiers(env.Player, true)
+	applyEnemyModifiers(env.Enemy, true)
 
 	// Stat sorting category calcs
 	//pob2:block:src/Modules/CalcPerform.lua:1450

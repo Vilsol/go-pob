@@ -10,6 +10,7 @@ import (
 	"github.com/MarvinJWendt/testza"
 
 	"github.com/Vilsol/go-pob/mod"
+	"github.com/Vilsol/go-pob/moddb"
 	"github.com/Vilsol/go-pob/pob2"
 )
 
@@ -130,19 +131,17 @@ func TestPerformCurseLimitFixture(t *testing.T) {
 	assertPoE2Outputs(t, env, map[string]float64{"EnemyCurseLimit": 4, "EnemyMarkLimit": 2})
 }
 
-// WarcryPower is left out: PoB-PoE2's 20 comes from the enemyIsBoss config option.
 func TestPerformStatOutputsFixture(t *testing.T) {
 	env := loadChargesCursesFixture(t)
 	assertPoE2Outputs(t, env, map[string]float64{
 		"EffectiveLootRarityMod": 1.3, "LootQuantityNormalEnemies": 0, "LootRarityMagicEnemies": 0,
 		"GlobalItemAttributeRequirements": 0.9, "GlobalGemAttributeRequirements": 0.9, "GlobalWeaponAttributeRequirements": 0.9,
-		"CharmLimit": 0, "CharmEffect": 20, "FlaskEffect": 10,
+		"CharmLimit": 0, "CharmEffect": 20, "FlaskEffect": 10, "WarcryPower": 20,
 		"FlaskChargeGen": 0.25, "LifeFlaskChargeGen": 0.45, "ManaFlaskChargeGen": 0.25, "UtilityFlaskChargeGen": 0.25,
 	})
 }
 
 // As above for the tree-only warrior with a Chill maximum override, stacking Shocks and a Shock maximum line.
-// ShockStackCount is left out: PoB-PoE2's 1 comes from the ShockStacks config option's placeholder.
 func TestPerformAilmentLimitsFixture(t *testing.T) {
 	raw, err := os.ReadFile("testdata/ailment_limits.xml")
 	testza.AssertNoError(t, err)
@@ -151,7 +150,7 @@ func TestPerformAilmentLimitsFixture(t *testing.T) {
 	env, err := BuildOutput(build, Options{Tree: loadTestTree(t)})
 	testza.AssertNoError(t, err)
 	assertPoE2Outputs(t, env, map[string]float64{
-		"MaximumChill": 35, "MaximumShock": 110, "CurrentChill": 0, "CurrentShock": 0,
+		"MaximumChill": 35, "MaximumShock": 110, "CurrentChill": 0, "CurrentShock": 0, "ShockStackCount": 1,
 	})
 }
 
@@ -187,4 +186,22 @@ func TestPerformWeaponBaseStatsFixture(t *testing.T) {
 	if _, ok := env.Player.Output["FireMinOnWeapon 1"]; ok {
 		t.Error("FireMinOnWeapon 1 is set; PoB-PoE2 leaves it unset")
 	}
+}
+
+// applyEnemyModifiers copies each EnemyModifier's mod into the enemy's modDB once per cache, with the
+// outer mod's source when the inner one has none.
+func TestApplyEnemyModifiers(t *testing.T) {
+	player := &Actor{ModDB: moddb.NewModDB()}
+	enemy := &Actor{ModDB: moddb.NewModDB()}
+	player.Enemy, enemy.Enemy = enemy, player
+	player.ModDB.AddMod(mod.NewList("EnemyModifier", mod.EnemyModifier{Mod: mod.NewFlag("Condition:Blinded", true)}).Source("Item:Ring"))
+
+	applyEnemyModifiers(player, true)
+	applyEnemyModifiers(player, false)
+	testza.AssertTrue(t, enemy.ModDB.Flag(nil, "Condition:Blinded"))
+	testza.AssertLen(t, enemy.ModDB.Mods["Condition:Blinded"], 1)
+	testza.AssertEqual(t, mod.Source("Item:Ring"), enemy.ModDB.Mods["Condition:Blinded"][0].GetSource())
+
+	applyEnemyModifiers(player, true)
+	testza.AssertLen(t, enemy.ModDB.Mods["Condition:Blinded"], 2)
 }
