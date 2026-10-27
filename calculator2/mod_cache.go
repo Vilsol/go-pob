@@ -585,6 +585,10 @@ func cacheListValue(name string, value any) (any, error) {
 	case "WeaponData":
 		v, ok := f.num("value")
 		out = mod.WeaponData{Key: f.str("key"), Value: v, Unset: !ok}
+	case "ExplodeMod":
+		v, _ := f.num("value")
+		amount, _ := f.num("amount")
+		out = ExplodeMod{Type: f.str("type"), Value: v, Amount: amount, KeyOfScaledMod: f.str("keyOfScaledMod")}
 	case "ExtraMinionSkill":
 		// A skill's stat map leaves the stat's number in value; createMinionSkills reads only skillId.
 		f.used["value"] = true

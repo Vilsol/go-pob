@@ -304,6 +304,11 @@ func buildModListForNode(env *Environment, node *tree2.SpecNode, incSmallPassive
 		}
 	}
 
+	//pob2:block:src/Modules/CalcSetup.lua:337-341
+	if modList.Flag(nil, "CanExplode") {
+		env.explodeSources = append(env.explodeSources, node)
+	}
+
 	out := newModList()
 	for _, m := range modList.Mods() {
 		m = m.Clone()
@@ -625,9 +630,19 @@ func initEnv(env *Environment) {
 
 	counts := countAllocated(env.Spec)
 
-	//pob2:block:src/Modules/CalcSetup.lua:1060-1074
-	env.MainSocketGroup = min(max(len(activeSkillSet(env)), 1), max(env.Build.Build.MainSocketGroup, 1))
-	env.WeaponSet = socketGroupWeaponSet(env)
+	//pob2:block:src/Modules/CalcSetup.lua:1060-1076
+	if env.override.MainSocketGroup != 0 {
+		// The other weapon set's context runs on the socket group list the main pass left.
+		env.MainSocketGroup = min(max(len(env.SocketGroupList), 1), env.override.MainSocketGroup)
+	} else {
+		env.MainSocketGroup = min(max(len(activeSkillSet(env)), 1), max(env.Build.Build.MainSocketGroup, 1))
+	}
+	if env.override.WeaponSet != 0 {
+		env.WeaponSet = env.override.WeaponSet
+	} else {
+		env.WeaponSet = socketGroupWeaponSet(env)
+	}
+	env.WeaponSetEnvs = nil
 
 	//pob2:block:src/Modules/CalcSetup.lua:1131-1139
 	env.AllocNodes = make(map[int]*tree2.SpecNode, len(env.Spec.AllocNodes))
@@ -694,6 +709,25 @@ func initEnv(env *Environment) {
 
 	setupSkills(env)
 	setupGemCounts(env)
+}
+
+// newWeaponSetEnv is the env calcs.initEnv(build, mode, override) starts from for another weapon set's
+// context: the same build, items, tree, data and socket group list.
+func newWeaponSetEnv(env *Environment, mode string, override calcOverride) *Environment {
+	return &Environment{
+		Build:           env.Build,
+		Mode:            mode,
+		ConfigInput:     env.ConfigInput,
+		modSource:       env.modSource,
+		items:           env.items,
+		nodeModLists:    map[int]*moddb.ModList{},
+		Spec:            env.Spec,
+		data:            env.data,
+		ClassID:         env.ClassID,
+		SocketGroupList: env.SocketGroupList,
+		fromItemEffects: env.fromItemEffects,
+		override:        override,
+	}
 }
 
 //pob2:src/Modules/Common.lua:530-540

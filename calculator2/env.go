@@ -87,6 +87,18 @@ type Environment struct {
 	sourceGemPropertyInfo map[*GemInstance][]supportedGemProperty
 	// weaponSetRestart is set where calcs.initEnv would restart for the main group's other weapon set.
 	weaponSetRestart bool
+
+	// override is calcs.initEnv's override.
+	override calcOverride
+	// WeaponSetEnvs is env.weaponSetEnvs: the other weapon set's context, keyed by its set.
+	WeaponSetEnvs map[int]*Environment
+}
+
+// calcOverride is CalcOverride's weaponSet, mainSocketGroup and skipWeaponSetContexts; 0 is nil.
+type calcOverride struct {
+	WeaponSet             int
+	MainSocketGroup       int
+	SkipWeaponSetContexts bool
 }
 
 // SocketGroup is one build.skillsTab.socketGroupList entry.
@@ -129,6 +141,8 @@ type GemInstance struct {
 	// StatSet and StatSetCalcs are the selected stat set index per granted effect id.
 	StatSet      map[string]int
 	StatSetCalcs map[string]int
+	// ExplodeSource is gemInstance.explodeSource: the *Item or *tree2.SpecNode an EnemyExplode gem is for.
+	ExplodeSource any
 
 	NameSpec  string
 	GemID     string
@@ -284,6 +298,12 @@ type Actor struct {
 	// WeaponData1AsThoughUsing and WeaponData2AsThoughUsing are actor.weaponData1/2.asThoughUsing.
 	WeaponData1AsThoughUsing map[string]bool
 	WeaponData2AsThoughUsing map[string]bool
+	// WeaponData1 and WeaponData2 are actor.weaponData1/2's numbers, as weaponData gives them.
+	WeaponData1 map[string]float64
+	WeaponData2 map[string]float64
+	// WeaponRange1 and WeaponRange2 are actor.weaponRange1/2.
+	WeaponRange1 float64
+	WeaponRange2 float64
 
 	appliedEnemyModifiers map[mod.Mod]bool
 }

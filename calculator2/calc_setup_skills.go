@@ -519,7 +519,7 @@ func nodeGrantedSkills(env *Environment, node *tree2.SpecNode) []*grantedSkill {
 
 // setupSkills is the skill half of calcs.initEnv: the granted skill groups, the supports, the active
 // skills and the main skill. Default Attack groups need data.characterMeleeSkills, so the saved ones
-// are kept as they are and no group is removed; the Explode group keeps its saved gems.
+// are kept as they are.
 //
 //pob2:block:src/Modules/CalcSetup.lua:1823-2462
 func setupSkills(env *Environment) {
@@ -558,10 +558,10 @@ func setupSkills(env *Environment) {
 			mainGroup = env.SocketGroupList[i-1]
 		}
 		mergedGroups := map[*SocketGroup]bool{}
-		// Stand-ins for the producers not ported: the saved Default Attack groups (data.characterMeleeSkills)
-		// and the saved Explode group (env.explodeSources) stay as if regenerated.
+		// Stand-in for the producer not ported: the saved Default Attack groups (data.characterMeleeSkills)
+		// stay as if regenerated.
 		for _, socketGroup := range env.SocketGroupList {
-			if socketGroup.Source == "Default Attack" || socketGroup.Source == "Explode" {
+			if socketGroup.Source == "Default Attack" {
 				markList[socketGroup] = true
 			}
 		}
@@ -703,6 +703,59 @@ func setupSkills(env *Environment) {
 				}
 			}
 		}
+		//pob2:block:src/Modules/CalcSetup.lua:1978-2024
+		if len(env.explodeSources) != 0 {
+			// Check if a matching group already exists
+			var group *SocketGroup
+			for _, socketGroup := range env.SocketGroupList {
+				if socketGroup.Source == "Explode" {
+					group = socketGroup
+					break
+				}
+			}
+			if group == nil {
+				// Create a new group for this skill
+				group = &SocketGroup{Label: "On Kill Monster Explosion", Enabled: true, Source: "Explode", NoSupports: true, MainActiveSkill: 1, MainActiveSkillCalcs: 1}
+				env.SocketGroupList = append(env.SocketGroupList, group)
+			}
+			// Hack to remove duplicates
+			// pairs() order over explodeBySource is first-seen order here.
+			explodeBySource := map[string]any{}
+			var explodeKeys []string
+			for _, explodeSource := range env.explodeSources {
+				key := explodeSourceKey(explodeSource)
+				if _, ok := explodeBySource[key]; !ok {
+					explodeKeys = append(explodeKeys, key)
+				}
+				explodeBySource[key] = explodeSource
+			}
+			// Update the group
+			gemsBySource := map[string]*GemInstance{}
+			for _, gem := range group.GemList {
+				if gem.ExplodeSource != nil {
+					gemsBySource[explodeSourceKey(gem.ExplodeSource)] = gem
+				}
+			}
+			group.GemList = nil
+			for _, key := range explodeKeys {
+				activeGemInstance := gemsBySource[key]
+				if activeGemInstance == nil {
+					activeGemInstance = &GemInstance{
+						SkillID:       "EnemyExplode",
+						Enabled:       true,
+						Level:         1,
+						Triggered:     true,
+						ExplodeSource: explodeBySource[key],
+						StatSet:       map[string]int{},
+						StatSetCalcs:  map[string]int{},
+					}
+				}
+				group.GemList = append(group.GemList, activeGemInstance)
+			}
+			markList[group] = true
+			processSocketGroup(env, group)
+		}
+
 		var thornsGroup *SocketGroup
 		for _, socketGroup := range env.SocketGroupList {
 			if socketGroup.Source == "Thorns" {
@@ -1006,10 +1059,12 @@ func setupSkills(env *Environment) {
 	}
 
 	setupWeaponData(env)
+	//pob2:block:src/Modules/CalcSetup.lua:2120-2153
+	env.Player.WeaponData1 = weaponData(env, env.Player, 1)
+	env.Player.WeaponData2 = weaponData(env, env.Player, 2)
 
 	// some active skills, like those granted by support gems depend on the stats of other gems,
 	// which means we have to do them last.
-	// TODO: the weapon set contexts (CalcSetup.lua:2479-2509) are not ported.
 	//pob2:block:src/Modules/CalcSetup.lua:2464-2477
 	var deferredActiveSkills []*ActiveSkill
 	// Build skill modifier lists
@@ -1024,11 +1079,79 @@ func setupSkills(env *Environment) {
 		buildActiveSkillModList(env, activeSkill)
 	}
 
+	// Rebuild auxiliary groups assigned exclusively to the other weapon set in
+	// that set's actor context. Their skill modifier lists retain that context
+	// when their buffs and debuffs are applied to the selected main skill.
+	//pob2:block:src/Modules/CalcSetup.lua:2479-2509
+	if !env.override.SkipWeaponSetContexts {
+		otherSet, otherSetMainGroup := 0, 0
+		for index, group := range env.SocketGroupList {
+			// Bare default attacks have no auxiliary effects; evaluate their set when selected.
+			if group.Enabled && group.UsingSkillSet != env.WeaponSet &&
+				(group.Source != "Default Attack" || len(group.GemList) > 1 || group.IncludeInFullDPS) {
+				otherSet = group.UsingSkillSet
+				otherSetMainGroup = index + 1
+				break
+			}
+		}
+		if otherSet != 0 {
+			contextOverride := env.override
+			contextOverride.WeaponSet = otherSet
+			contextOverride.MainSocketGroup = otherSetMainGroup
+			contextOverride.SkipWeaponSetContexts = true
+			contextMode := "CALCULATOR"
+			if env.Mode == "CALCS" {
+				contextMode = "CALCS"
+			}
+			weaponSetEnv := newWeaponSetEnv(env, contextMode, contextOverride)
+			initEnv(weaponSetEnv)
+			env.WeaponSetEnvs = map[int]*Environment{otherSet: weaponSetEnv}
+			replaceWeaponSetActiveSkills(env, weaponSetEnv, otherSet)
+			replaceWeaponSetActiveSkills(weaponSetEnv, env, env.WeaponSet)
+		}
+	}
+
 	//pob2:block:src/Modules/CalcSetup.lua:2535-2538
 	env.VirtuousMoteSkillCount = virtuousMoteSkillCount
 	modDB.Multipliers["StrengthMoteSkillCount"] = virtuousMoteSkillCount["Str"]
 	modDB.Multipliers["DexterityMoteSkillCount"] = virtuousMoteSkillCount["Dex"]
 	modDB.Multipliers["IntelligenceMoteSkillCount"] = virtuousMoteSkillCount["Int"]
+}
+
+// explodeSourceKey is explodeSource.modSource or explodeSource.id: an item's modSource, a node's id.
+func explodeSourceKey(explodeSource any) string {
+	switch src := explodeSource.(type) {
+	case *Item:
+		return src.modSourceName
+	case *tree2.SpecNode:
+		return strconv.Itoa(src.ID)
+	}
+	return ""
+}
+
+//pob2:src/Modules/CalcSetup.lua:745-772
+func replaceWeaponSetActiveSkills(targetEnv, sourceEnv *Environment, sourceSet int) {
+	replacements := map[*SocketGroup][]*ActiveSkill{}
+	for _, activeSkill := range sourceEnv.Player.ActiveSkillList {
+		group := activeSkill.SocketGroup
+		if group != nil && group.UsingSkillSet == sourceSet {
+			replacements[group] = append(replacements[group], activeSkill)
+		}
+	}
+	replaced := map[*SocketGroup]bool{}
+	var activeSkillList []*ActiveSkill
+	for _, activeSkill := range targetEnv.Player.ActiveSkillList {
+		group := activeSkill.SocketGroup
+		if replacements[group] != nil {
+			if !replaced[group] {
+				replaced[group] = true
+				activeSkillList = append(activeSkillList, replacements[group]...)
+			}
+		} else {
+			activeSkillList = append(activeSkillList, activeSkill)
+		}
+	}
+	targetEnv.Player.ActiveSkillList = activeSkillList
 }
 
 // setupGemCounts counts the socketed support gems by colour, adds their requirement, merges the

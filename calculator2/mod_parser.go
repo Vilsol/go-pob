@@ -2781,6 +2781,14 @@ func buildGemLookup() *gemLookups {
 func extraSkillIDForName(name string) string {
 	return gemLookup().skillIDForName[strings.ToLower(name)]
 }
+
+// flaskCurseSkillID is gemIdLookup[skill:gsub(" skill","")] or "Unknown".
+func flaskCurseSkillID(skill string) string {
+	if id := extraSkillIDForName(strings.ReplaceAll(skill, " skill", "")); id != "" {
+		return id
+	}
+	return "Unknown"
+}
 func extraSupportSlotName(slot string) string {
 	switch strings.ToLower(strings.TrimSpace(slot)) {
 	case "main hand", "main hand weapon":
@@ -2988,6 +2996,10 @@ var specialModList = map[string]interface{}{
 		return explodeFunc(num, captures[1], captures[2], mod.ActorCondition("enemy", "Cursed"))
 	},
 	`enemies you kill explode, dealing (\d+)% of their life as (.+) damage`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return explodeFunc(100, captures[0], captures[1])
+	},
+	//pob2:block:src/Modules/ModParser.lua:2316-2318
+	`causes enemies to explode on critical kill, for (\d+)% of their life as (.+) damage`: func(num float64, captures []string) ([]mod.Mod, string) { // Crumbling Maul implicit
 		return explodeFunc(100, captures[0], captures[1])
 	},
 	//pob2:block:src/Modules/ModParser.lua:2319-2341
@@ -5011,14 +5023,14 @@ var specialModList = map[string]interface{}{
 		return []mod.Mod{MOD("EnemyModifier", "LIST", mod.EnemyModifier{Mod: MOD("Accuracy", "INC", -num)}).Tag(mod.ActorCondition("enemy", "Marked"))}, ""
 	},
 	`you are cursed with level (\d+) (\D+)`: func(num float64, captures []string) ([]mod.Mod, string) {
-		return []mod.Mod{MOD("ExtraCurse", "LIST", mod.ExtraCurse{SkillName: captures[1], Level: int(num), ApplyToPlayer: true})}, ""
+		return []mod.Mod{MOD("ExtraCurse", "LIST", mod.ExtraCurse{SkillID: extraSkillIDForName(captures[1]), Level: int(num), ApplyToPlayer: true})}, ""
 	},
 	`you are cursed with (\D+)`: func(num float64, captures []string) ([]mod.Mod, string) {
-		return []mod.Mod{MOD("ExtraCurse", "LIST", mod.ExtraCurse{SkillName: captures[0], Level: 1, ApplyToPlayer: true})}, ""
+		return []mod.Mod{MOD("ExtraCurse", "LIST", mod.ExtraCurse{SkillID: extraSkillIDForName(captures[0]), Level: 1, ApplyToPlayer: true})}, ""
 	},
 	`you are cursed with (\D+), with (\d+)% increased effect`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
-			MOD("ExtraCurse", "LIST", mod.ExtraCurse{SkillName: captures[0], Level: 1, ApplyToPlayer: true}),
+			MOD("ExtraCurse", "LIST", mod.ExtraCurse{SkillID: extraSkillIDForName(captures[0]), Level: 1, ApplyToPlayer: true}),
 			MOD("CurseEffectOnSelf", "INC", utils.Float(captures[1])).Tag(mod.SkillName(utils.CapitalEach(captures[0]))),
 		}, ""
 	},
@@ -6220,7 +6232,7 @@ var specialModList = map[string]interface{}{
 	"zealot's oath during f?l?a?s?k? ?effect":          []mod.Mod{FLAG("ZealotsOath").Tag(mod.Condition("UsingFlask"))},
 	`grants level (\d+) (.+) curse aura during f?l?a?s?k? ?effect`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
-			MOD("ExtraCurse", "LIST", mod.ExtraCurse{SkillName: strings.ReplaceAll(captures[1], " skill", ""), Level: int(num)}).Tag(mod.Condition("UsingFlask")),
+			MOD("ExtraCurse", "LIST", mod.ExtraCurse{SkillID: flaskCurseSkillID(captures[1]), Level: int(num)}).Tag(mod.Condition("UsingFlask")),
 		}, ""
 	},
 	`shocks nearby enemies during f?l?a?s?k? ?effect, causing (\d+)% increased damage taken`: func(num float64, captures []string) ([]mod.Mod, string) {

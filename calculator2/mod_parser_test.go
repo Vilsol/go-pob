@@ -91,3 +91,39 @@ func TestParseModGemPropertyPayload(t *testing.T) {
 		}
 	}
 }
+
+// The 9% line is PoB-PoE2's modLib.parseMod; the 10% line its shipped ModCache.lua row.
+func TestParseModExplodeOnCriticalKill(t *testing.T) {
+	for line, want := range map[string]ExplodeMod{
+		"Causes Enemies to Explode on Critical kill, for 9% of their Life as Physical Damage":  {Type: "Physical", Value: 100, Amount: 9, KeyOfScaledMod: "value"},
+		"Causes Enemies to Explode on Critical kill, for 10% of their Life as Physical Damage": {Type: "Physical", Value: 100, Amount: 10, KeyOfScaledMod: "value"},
+	} {
+		mods, extra := WithParser(ParseMod)(line)
+		if len(mods) != 2 || strings.TrimSpace(extra) != "" {
+			t.Fatalf("%q: %d mods, remainder %q", line, len(mods), extra)
+		}
+		if got, ok := mods[0].Value().ValueList.(ExplodeMod); mods[0].Name() != "ExplodeMod" || !ok || got != want {
+			t.Errorf("%q: %s %+v, want ExplodeMod %+v", line, mods[0].Name(), mods[0].Value().ValueList, want)
+		}
+		if mods[1].Name() != "CanExplode" || mods[1].Type() != mod.TypeFlag {
+			t.Errorf("%q: second mod %s %s, want CanExplode FLAG", line, mods[1].Name(), mods[1].Type())
+		}
+	}
+}
+
+// ExtraCurse carries the curse's skill id; expected values are PoB-PoE2's modLib.parseMod.
+func TestParseModExtraCurseSkillID(t *testing.T) {
+	for line, want := range map[string]mod.ExtraCurse{
+		"You are Cursed with Level 10 Vulnerability":       {SkillID: "VulnerabilityPlayer", Level: 10, ApplyToPlayer: true},
+		"You are Cursed with Despair":                      {SkillID: "DespairPlayer", Level: 1, ApplyToPlayer: true},
+		"Grants Level 20 Despair Curse Aura during Effect": {SkillID: "DespairPlayer", Level: 20},
+	} {
+		mods, _ := WithParser(ParseMod)(line)
+		if len(mods) != 1 {
+			t.Fatalf("%q: %d mods", line, len(mods))
+		}
+		if got, ok := mods[0].Value().ValueList.(mod.ExtraCurse); !ok || got != want {
+			t.Errorf("%q: %+v, want %+v", line, mods[0].Value().ValueList, want)
+		}
+	}
+}
