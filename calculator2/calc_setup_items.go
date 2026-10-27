@@ -485,6 +485,24 @@ func mergeItems(env *Environment, nodesModsList *moddb.ModList, canUseBonded boo
 			continue
 		}
 		item := tab.Items[slot.SelItemID]
+		//pob2:block:src/Modules/CalcSetup.lua:1240-1253
+		if item != nil {
+			// Find skills granted by this item
+			for _, skill := range item.GrantedSkill {
+				grantedSkill := &grantedSkill{
+					SkillID: skill.SkillID, Level: skill.Level, NoSupports: skill.NoSupports, NoReservation: skill.NoReservation,
+					Source: skill.Source, Triggered: skill.Triggered, TriggerChance: skill.TriggerChance,
+					SourceItem: item, SlotName: slotName,
+				}
+				if skillData := env.loadData().effect(skill.SkillID); skillData != nil {
+					grantedSkill.NameSpec = skillData.Name
+				}
+				env.grantedSkillsItems = append(env.grantedSkillsItems, grantedSkill)
+			}
+			if flagValue(item.BaseModList, "CanExplode") {
+				env.explodeSources = append(env.explodeSources, item)
+			}
+		}
 		if slot.WeaponSet != 0 && slot.WeaponSet != env.WeaponSet {
 			continue
 		}
@@ -684,6 +702,19 @@ func mergeItems(env *Environment, nodesModsList *moddb.ModList, canUseBonded boo
 		}
 		// sourceSlotNum has no field on a Go mod; nothing in the defence slice reads it.
 		_ = addSourceSlotNum
+
+		//pob2:block:src/Modules/CalcSetup.lua:1495-1504
+		r := requirementSource{source: "Item", sourceItem: item, sourceSlot: slotName}
+		if p := item.Requirements.StrMod; p != nil {
+			r.Str = *p
+		}
+		if p := item.Requirements.DexMod; p != nil {
+			r.Dex = *p
+		}
+		if p := item.Requirements.IntMod; p != nil {
+			r.Int = *p
+		}
+		env.requirementsTableItems = append(env.requirementsTableItems, r)
 
 		//pob2:block:src/Modules/CalcSetup.lua:1505-1530
 		socketed := 0

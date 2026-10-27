@@ -827,7 +827,7 @@ func perform(env *Environment) {
 
 	// Process attribute requirements
 	//pob2:block:src/Modules/CalcPerform.lua:1896
-	processAttributeRequirements(env, requirementsTableItems(env))
+	processAttributeRequirements(env, env.requirementsTable)
 
 	//pob2:block:src/Modules/CalcPerform.lua:2952
 	doActorCharges(env, env.Player)

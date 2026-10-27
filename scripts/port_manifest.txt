@@ -528,9 +528,12 @@ calculator2/calc_setup.go           PORT       src/Modules/CalcSetup.lua,src/Cla
 calculator2/calc_setup_config.go    PORT       src/Classes/ConfigTab.lua,src/Modules/ConfigOptions.lua
 calculator2/calc_setup_items.go     PORT       src/Modules/CalcSetup.lua,src/Classes/ItemsTab.lua,src/Classes/ItemSlotControl.lua,src/Classes/TreeTab.lua,src/Classes/PassiveTree.lua,src/Classes/ModList.lua
 calculator2/calc_setup_radius.go    PORT       src/Modules/CalcSetup.lua
+calculator2/calc_setup_skills.go    PORT       src/Modules/CalcSetup.lua,src/Classes/SkillsTab.lua
+calculator2/calc_setup_skills_data.go PORT     src/Modules/Data.lua
+calculator2/calc_active_skill.go    PORT       src/Modules/CalcActiveSkill.lua
 calculator2/calc_tools.go           PORT       src/Modules/CalcTools.lua
 calculator2/calculator.go           PORT       src/Modules/Calcs.lua,src/Classes/PassiveSpec.lua,src/Classes/ConfigTab.lua,src/Classes/SkillsTab.lua
-calculator2/env.go                  PORT       src/Modules/CalcSetup.lua,src/Classes/ModStore.lua
+calculator2/env.go                  PORT       src/Modules/CalcSetup.lua,src/Classes/ModStore.lua,src/Classes/SkillsTab.lua,src/Modules/CalcActiveSkill.lua
 calculator2/mod_cache.go            PORT       src/Modules/ModParser.lua
 data/tattoo_passives.go              GO-NATIVE  TattooTarget type; the data is in tattoo_passives_generated.go
 wasm/exposition/tree_tattoo_edit.go PORT       src/Classes/TreeTab.lua,src/Classes/PassiveTreeView.lua,src/Classes/PassiveTree.lua

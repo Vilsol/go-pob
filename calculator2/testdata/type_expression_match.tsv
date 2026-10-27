@@ -1,0 +1,12 @@
+# checkTypes	skillTypes	minionTypes	match — calcLib.doesTypeExpressionMatch run under luajit from the pinned PoB-PoE2 CalcTools.lua
+Attack			false
+Attack	Spell		false
+Attack Spell OR	Spell		true
+Attack Spell AND	Attack Spell		true
+Attack Spell AND	Attack		false
+Attack NOT	Spell		true
+Attack NOT	Attack		false
+Attack Projectile	Projectile		true
+Minion	Attack	Minion	true
+Attack Melee AND Spell OR NOT	Spell		false
+Attack Spell			false

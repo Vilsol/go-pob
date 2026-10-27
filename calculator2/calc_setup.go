@@ -504,8 +504,7 @@ func countAllocated(spec *tree2.PassiveSpec) allocatedCounts {
 	return c
 }
 
-// initEnv is calcs.initEnv for a build's player and enemy databases, tree and config. Skills are not
-// set up (env.player.mainSkill stays nil).
+// initEnv is calcs.initEnv for a build's player and enemy databases, tree, config and skills.
 //
 //pob2:src/Modules/CalcSetup.lua:842-2604
 func initEnv(env *Environment) {
@@ -627,10 +626,7 @@ func initEnv(env *Environment) {
 	counts := countAllocated(env.Spec)
 
 	//pob2:block:src/Modules/CalcSetup.lua:1060-1074
-	env.MainSocketGroup = env.Build.Build.MainSocketGroup
-	if env.MainSocketGroup < 1 {
-		env.MainSocketGroup = 1
-	}
+	env.MainSocketGroup = min(max(len(activeSkillSet(env)), 1), max(env.Build.Build.MainSocketGroup, 1))
 	env.WeaponSet = socketGroupWeaponSet(env)
 
 	//pob2:block:src/Modules/CalcSetup.lua:1131-1139
@@ -694,17 +690,8 @@ func initEnv(env *Environment) {
 
 	addSlotBonusEffects(env, canUseBonded)
 
-	//pob2:block:src/Modules/CalcSetup.lua:2535-2538
-	env.ModDB.Multipliers["StrengthMoteSkillCount"] = 3
-	env.ModDB.Multipliers["DexterityMoteSkillCount"] = 3
-	env.ModDB.Multipliers["IntelligenceMoteSkillCount"] = 3
-
-	// No support gem is counted yet, so each colour's count is 0.
-	//pob2:block:src/Modules/CalcSetup.lua:2571-2601
-	env.ModDB.Multipliers["RedSupportGems"] += 0
-	env.ModDB.Multipliers["GreenSupportGems"] += 0
-	env.ModDB.Multipliers["BlueSupportGems"] += 0
-	env.ModDB.Conditions["MostNumerousRedSocketedSupports"] = true
+	setupSkills(env)
+	setupGemCounts(env)
 }
 
 //pob2:src/Modules/Common.lua:530-540

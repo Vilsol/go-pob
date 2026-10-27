@@ -4,6 +4,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/Vilsol/go-pob/data/poe2skills"
 	"github.com/Vilsol/go-pob/data/tree2"
 	"github.com/Vilsol/go-pob/mod"
 	"github.com/Vilsol/go-pob/moddb"
@@ -61,6 +62,172 @@ type Environment struct {
 	TalismanModList *moddb.ModList
 	TheIronMass     *moddb.ModList
 	WeaponModList1  *moddb.ModList
+
+	// data is env.data's skill half: data.skills and the gem lookups.
+	data *skillData
+	// SocketGroupList is build.skillsTab.socketGroupList as initEnv leaves it.
+	SocketGroupList []*SocketGroup
+
+	grantedSkillsNodes []*grantedSkill
+	grantedSkillsItems []*grantedSkill
+	explodeSources     []any
+	// fromItemEffects stands in for the fromItem flag CalcSetup writes onto a data.skills entry an
+	// ExtraSupport names.
+	fromItemEffects map[*poe2skills.GrantedEffect]bool
+
+	requirementsTableItems []requirementSource
+	requirementsTableGems  []requirementSource
+	requirementsTable      []requirementSource
+
+	VirtuousMoteSkillCount map[string]float64
+	// weaponSetRestart is set where calcs.initEnv would restart for the main group's other weapon set.
+	weaponSetRestart bool
+}
+
+// SocketGroup is one build.skillsTab.socketGroupList entry.
+//
+//pob2:block:src/Classes/SkillsTab.lua:293-306
+type SocketGroup struct {
+	SourceItem *Item
+	SourceNode *tree2.SpecNode
+	GemList    []*GemInstance
+	// DisplayGemList is the group's gems plus the supports cross-linked into it.
+	DisplayGemList []*GemInstance
+
+	Label  string
+	Source string
+	Slot   string
+
+	GroupCount           float64
+	MainActiveSkill      int
+	MainActiveSkillCalcs int
+	UsingSkillSet        int
+
+	Enabled          bool
+	IncludeInFullDPS bool
+	Set1             bool
+	Set2             bool
+	NoSupports       bool
+	HasGroupCount    bool
+}
+
+// GemInstance is one gemList entry of a socket group.
+//
+//pob2:block:src/Classes/SkillsTab.lua:308-386
+type GemInstance struct {
+	GemData       *poe2skills.Gem
+	GrantedEffect *poe2skills.GrantedEffect
+	// DisplayEffect and SupportEffect are the effects the main pass built from this gem.
+	DisplayEffect *GemEffect
+	SupportEffect *GemEffect
+
+	// StatSet and StatSetCalcs are the selected stat set index per granted effect id.
+	StatSet      map[string]int
+	StatSetCalcs map[string]int
+
+	NameSpec  string
+	GemID     string
+	SkillID   string
+	QualityID string
+
+	Level         int
+	Quality       float64
+	Count         float64
+	CorruptLevel  int
+	SourceLevel   int
+	TriggerChance float64
+
+	ReqLevel float64
+	ReqStr   float64
+	ReqDex   float64
+	ReqInt   float64
+
+	Enabled        bool
+	EnableGlobal1  bool
+	EnableGlobal2  bool
+	Corrupted      bool
+	FromItem       bool
+	FromTree       bool
+	NoSupports     bool
+	NoReservation  bool
+	Triggered      bool
+	HasSourceLevel bool
+}
+
+func (g *GemInstance) enableGlobal(index int) bool {
+	switch index {
+	case 1:
+		return g.EnableGlobal1
+	case 2:
+		return g.EnableGlobal2
+	}
+	return false
+}
+
+// GemEffect is an active or support effect: activeEffect, a supportList entry, or an effectList entry.
+type GemEffect struct {
+	GrantedEffect *poe2skills.GrantedEffect
+	GemData       *poe2skills.Gem
+	SrcInstance   *GemInstance
+	// StatSet is activeEffect.statSet (or statSetCalcs): the chosen index, the set and its skill flags.
+	StatSet *StatSetChoice
+	// Values holds the gem properties applyGemMods adds by key (effect[value.key]).
+	Values map[string]float64
+	// IsSupporting is the set of gem instances this support supports; nil when it tracks none.
+	IsSupporting map[*GemInstance]bool
+
+	QualityID string
+
+	Level            int
+	Quality          float64
+	CorruptLevel     int
+	ActiveSkillLevel int
+
+	Corrupted  bool
+	Superseded bool
+	Enabled    bool
+}
+
+// StatSetChoice is activeEffect.statSet: { index, statSet, skillFlags }.
+type StatSetChoice struct {
+	StatSet    *poe2skills.StatSet
+	SkillFlags map[string]bool
+	Index      int
+}
+
+// ActiveSkill is the table calcs.createActiveSkill returns.
+//
+//pob2:block:src/Modules/CalcActiveSkill.lua:146-154
+type ActiveSkill struct {
+	ActiveEffect *GemEffect
+	SupportList  []*GemEffect
+	EffectList   []*GemEffect
+	Actor        *Actor
+	SummonSkill  *ActiveSkill
+	SocketGroup  *SocketGroup
+	SkillData    map[string]any
+
+	SkillTypes       map[string]bool
+	MinionSkillTypes map[string]bool
+	// SkillFlags is activeEffect.statSet.skillFlags until buildActiveSkillModList sets its own.
+	SkillFlags map[string]bool
+
+	SlotName string
+}
+
+// grantedSkill is one env.grantedSkills entry: a skill a tree node or an item grants.
+type grantedSkill struct {
+	SourceItem    *Item
+	SourceNode    *tree2.SpecNode
+	SkillID       string
+	NameSpec      string
+	Source        string
+	SlotName      string
+	Level         int
+	TriggerChance float64
+	NoSupports    bool
+	NoReservation bool
+	Triggered     bool
 }
 
 // Actor is env.player / env.enemy.
@@ -72,6 +239,10 @@ type Actor struct {
 	Player *Actor
 	Enemy  *Actor
 	Parent *Actor
+
+	// ActiveSkillList is actor.activeSkillList; MainSkill is actor.mainSkill.
+	ActiveSkillList []*ActiveSkill
+	MainSkill       *ActiveSkill
 
 	// ItemList is actor.itemList: the equipped item per slot name.
 	ItemList map[string]*Item

@@ -2,12 +2,12 @@ package calculator2
 
 import (
 	"math"
-	"sort"
 )
 
 type requirementSource struct {
 	source        string
 	sourceItem    *Item
+	sourceGem     *GemInstance
 	sourceSlot    string
 	Str, Dex, Int float64
 }
@@ -20,34 +20,6 @@ func (r requirementSource) attr(name string) float64 {
 		return r.Dex
 	}
 	return r.Int
-}
-
-// requirementsTableItems is CalcSetup's env.requirementsTableItems, rebuilt from the equipped items; no gem is
-// counted yet, so the gem half of env.requirementsTable is empty.
-//
-//pob2:block:src/Modules/CalcSetup.lua:1495-1504
-func requirementsTableItems(env *Environment) []requirementSource {
-	slots := make([]string, 0, len(env.Player.ItemList))
-	for slot := range env.Player.ItemList {
-		slots = append(slots, slot)
-	}
-	sort.Strings(slots)
-	table := make([]requirementSource, 0, len(slots))
-	for _, slot := range slots {
-		item := env.Player.ItemList[slot]
-		r := requirementSource{source: "Item", sourceItem: item, sourceSlot: slot}
-		if p := item.Requirements.StrMod; p != nil {
-			r.Str = *p
-		}
-		if p := item.Requirements.DexMod; p != nil {
-			r.Dex = *p
-		}
-		if p := item.Requirements.IntMod; p != nil {
-			r.Int = *p
-		}
-		table = append(table, r)
-	}
-	return table
 }
 
 // Go outputs hold numbers, so Req<attr>String keeps the number where the breakdown colours an unmet one,
