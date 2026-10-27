@@ -196,3 +196,27 @@ func TestNodeExplodeSource(t *testing.T) {
 		t.Errorf("explode sources %v", env.explodeSources)
 	}
 }
+
+// Rows are SkillsTab:ApplySocketGroupWeaponSetValidity's three branches (SkillsTab.lua 1458-1470).
+func TestApplySocketGroupWeaponSetValidity(t *testing.T) {
+	cases := []struct {
+		set1, set2, valid1, valid2 bool
+		wantSet1, wantSet2         bool
+		wantChanged                bool
+	}{
+		{true, true, false, true, false, true, true},
+		{true, false, false, true, false, true, true},
+		{false, true, false, true, false, true, false},
+		{true, false, false, false, true, true, true},
+		{true, true, false, false, true, true, false},
+		{true, false, true, true, true, false, false},
+		{false, false, true, true, true, true, true},
+	}
+	for _, c := range cases {
+		g := &SocketGroup{Set1: c.set1, Set2: c.set2}
+		changed := applySocketGroupWeaponSetValidity(g, c.valid1, c.valid2)
+		if g.Set1 != c.wantSet1 || g.Set2 != c.wantSet2 || changed != c.wantChanged {
+			t.Errorf("sets %v/%v valid %v/%v: got %v/%v changed %v, want %v/%v changed %v", c.set1, c.set2, c.valid1, c.valid2, g.Set1, g.Set2, changed, c.wantSet1, c.wantSet2, c.wantChanged)
+		}
+	}
+}

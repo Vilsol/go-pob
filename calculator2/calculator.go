@@ -78,6 +78,14 @@ func BuildOutput(build *pob2.PathOfBuilding2, opts Options) (*Environment, error
 	}
 	initEnv(env)
 	perform(env)
+	// The rebuild keeps the socket group list, as build.skillsTab's persists across outputs. There is
+	// no global cache to wipe.
+	//pob2:block:src/Classes/CalcsTab.lua:505-510
+	if reconcileSocketGroupWeaponSets(env) {
+		env = newWeaponSetEnv(env, "MAIN", calcOverride{})
+		initEnv(env)
+		perform(env)
+	}
 	buildOutputSpec(env)
 	return env, nil
 }

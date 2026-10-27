@@ -92,6 +92,9 @@ type Environment struct {
 	override calcOverride
 	// WeaponSetEnvs is env.weaponSetEnvs: the other weapon set's context, keyed by its set.
 	WeaponSetEnvs map[int]*Environment
+	// WeaponSetValidationSkillList is env.weaponSetValidationSkillList: the active skill list before
+	// the other set's groups are swapped in.
+	WeaponSetValidationSkillList []*ActiveSkill
 }
 
 // calcOverride is CalcOverride's weaponSet, mainSocketGroup and skipWeaponSetContexts; 0 is nil.

@@ -107,6 +107,9 @@ func cacheMod(r map[string]any) (mod.Mod, error) {
 		// Flag() reads the value for truth, and every Lua value but false and nil is true.
 		b, isBool := value.(bool)
 		m = mod.NewFlag(name, !isBool || b)
+		if n, ok := cacheArithNumber(value); ok {
+			m.Value().SetFloat(n)
+		}
 	case typ == "LIST":
 		v, err := cacheListValue(name, value)
 		if err != nil {

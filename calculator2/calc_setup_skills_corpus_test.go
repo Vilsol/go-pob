@@ -17,8 +17,8 @@ import (
 // poe2MainSkillFloors are the builds whose main skill name, and whose ordered support names, agree with
 // PoB-PoE2's dump, per corpus.
 var poe2MainSkillFloors = map[string][2]int{
-	"skills-off": {9979, 10000},
-	"skills-on":  {9979, 10000},
+	"skills-off": {9980, 10000},
+	"skills-on":  {9980, 10000},
 }
 
 // poe2GemRequirementStats are the requirement outputs the gem requirements feed, with the skills-off

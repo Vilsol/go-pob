@@ -3988,6 +3988,16 @@ var specialModList = map[string]interface{}{
 	"gem quality grants socketed skills an additional effect":                       []mod.Mod{FLAG("GemlingQuality")},
 	"you can use two copies of the same support gem in different skills":            []mod.Mod{MOD("MaxSupportGemCopies", "OVERRIDE", 2)},
 	"you can use each type of support gem an additional time in different skills":   []mod.Mod{MOD("MaxSupportGemCopies", "OVERRIDE", 2)},
+	//pob2:block:src/Modules/ModParser.lua:3388-3396
+	`skills have (\d+)% increased critical hit chance per connected blue support gem`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{MOD("SkillCritChanceIncreasedPerBlueSupport", "FLAG", num)}, ""
+	},
+	`skills deal (\d+)% increased damage per connected red support gem`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{MOD("SkillDamageIncreasedPerRedSupport", "FLAG", num)}, ""
+	},
+	`skills have (\d+)% increased skill speed per connected green support gem`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{MOD("SkillSpeedIncreasedPerGreenSupport", "FLAG", num)}, ""
+	},
 	//pob2:block:src/Modules/ModParser.lua:3397-3647
 	"for each colour of socketed support gem that is most numerous, gain:": []mod.Mod{},
 	"red: hits against you have no critical damage bonus":                  []mod.Mod{MOD("ReduceCritExtraDamage", "BASE", 100).Tag(mod.Condition("MostNumerousRedSocketedSupports"))},
@@ -4368,6 +4378,15 @@ var specialModList = map[string]interface{}{
 			MOD("ExtraSkill", "LIST", mod.ExtraSkill{SkillID: extraSkillIDForName(captures[1]), Level: int(num), Triggered: true}),
 			MOD("ExtraSkill", "LIST", mod.ExtraSkill{SkillID: extraSkillIDForName(captures[2]), Level: int(num), Triggered: true}),
 			MOD("ExtraSkill", "LIST", mod.ExtraSkill{SkillID: extraSkillIDForName(captures[3]), Level: int(num), Triggered: true}),
+		}, ""
+	},
+	//pob2:block:src/Modules/ModParser.lua:3680-3685
+	`inflict corrupted blood for ([\d\.]+) seconds on block, dealing ([\d\.]+)% of your maximum life as physical damage per second`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{
+			MOD("ExtraSkill", "LIST", mod.ExtraSkill{SkillID: "BloodbarrierPlayer", Level: 1, NoSupports: true, SkillName: "Bloodbarrier"}),
+			MOD("ExtraSkillStat", "LIST", mod.ExtraSkillStat{Key: "unique_blood_barrier_applies_x_stacks_of_corrupted_blood_on_block", Value: float64(1)}).Tag(mod.SkillId("BloodbarrierPlayer")),
+			MOD("ExtraSkillStat", "LIST", mod.ExtraSkillStat{Key: "base_skill_effect_duration", Value: math.Floor(utils.Float(captures[0])*1000 + 0.001)}).Tag(mod.SkillId("BloodbarrierPlayer")),
+			MOD("ExtraSkillStat", "LIST", mod.ExtraSkillStat{Key: "base_physical_damage_%_of_maximum_life_to_deal_per_minute", Value: utils.Float(captures[1])}).Tag(mod.SkillId("BloodbarrierPlayer")),
 		}, ""
 	},
 	//pob2:block:src/Modules/ModParser.lua:3686-3760

@@ -127,3 +127,55 @@ func TestParseModExtraCurseSkillID(t *testing.T) {
 		}
 	}
 }
+
+// Expected mods are the shipped src/Data/ModCache.lua row for Bloodbarrier's block line.
+func TestParseModBloodbarrierCorruptedBlood(t *testing.T) {
+	line := "Inflict Corrupted Blood for 5 seconds on Block, dealing 50% of your maximum Life as Physical damage per second"
+	mods, extra := ParseMod(line)
+	if len(mods) != 4 || strings.TrimSpace(extra) != "" {
+		t.Fatalf("%d mods, remainder %q, want 4 and none", len(mods), extra)
+	}
+	skill, ok := mods[0].Value().ValueList.(mod.ExtraSkill)
+	if !ok || mods[0].Name() != "ExtraSkill" || skill.SkillID != "BloodbarrierPlayer" || skill.Level != 1 || !skill.NoSupports || skill.SkillName != "Bloodbarrier" {
+		t.Errorf("ExtraSkill: %s %+v", mods[0].Name(), mods[0].Value().ValueList)
+	}
+	want := []mod.ExtraSkillStat{
+		{Key: "unique_blood_barrier_applies_x_stacks_of_corrupted_blood_on_block", Value: float64(1)},
+		{Key: "base_skill_effect_duration", Value: float64(5000)},
+		{Key: "base_physical_damage_%_of_maximum_life_to_deal_per_minute", Value: float64(50)},
+	}
+	for i, w := range want {
+		m := mods[i+1]
+		got, ok := m.Value().ValueList.(mod.ExtraSkillStat)
+		if !ok || m.Name() != "ExtraSkillStat" || got != w || len(m.Tags()) != 1 {
+			t.Errorf("mod %d: %s %+v tags %d, want %+v with a SkillId tag", i+1, m.Name(), m.Value().ValueList, len(m.Tags()), w)
+		}
+	}
+}
+
+// Expected mods are the shipped src/Data/ModCache.lua rows for Integrated Efficiency: a FLAG whose
+// value is the per-gem number CalcOffence reads back.
+func TestParseModIntegratedEfficiencyFlags(t *testing.T) {
+	cases := map[string]struct {
+		name  string
+		value float64
+	}{
+		"Skills deal 20% increased Damage per Connected Red Support Gem":               {"SkillDamageIncreasedPerRedSupport", 20},
+		"Skills have 6% increased Skill Speed per Connected Green Support Gem":         {"SkillSpeedIncreasedPerGreenSupport", 6},
+		"Skills have 20% increased Critical Hit Chance per Connected Blue Support Gem": {"SkillCritChanceIncreasedPerBlueSupport", 20},
+	}
+	for line, w := range cases {
+		parsed, extra := ParseMod(line)
+		cached, _ := ModCache(line)
+		for label, mods := range map[string][]mod.Mod{"parsed": parsed, "cached": cached} {
+			if len(mods) != 1 {
+				t.Errorf("%s %q: %d mods (remainder %q), want 1", label, line, len(mods), extra)
+				continue
+			}
+			m := mods[0]
+			if m.Name() != w.name || m.Type() != mod.TypeFlag || !m.Value().Flag() || m.Value().Float() != w.value {
+				t.Errorf("%s %q: got %s %s flag %v value %v, want %s FLAG %v", label, line, m.Name(), m.Type(), m.Value().Flag(), m.Value().Float(), w.name, w.value)
+			}
+		}
+	}
+}

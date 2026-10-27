@@ -643,6 +643,7 @@ func initEnv(env *Environment) {
 		env.WeaponSet = socketGroupWeaponSet(env)
 	}
 	env.WeaponSetEnvs = nil
+	env.WeaponSetValidationSkillList = nil
 
 	//pob2:block:src/Modules/CalcSetup.lua:1131-1139
 	env.AllocNodes = make(map[int]*tree2.SpecNode, len(env.Spec.AllocNodes))

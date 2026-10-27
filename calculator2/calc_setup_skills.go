@@ -2,6 +2,7 @@ package calculator2
 
 import (
 	"math"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
@@ -1106,6 +1107,10 @@ func setupSkills(env *Environment) {
 			weaponSetEnv := newWeaponSetEnv(env, contextMode, contextOverride)
 			initEnv(weaponSetEnv)
 			env.WeaponSetEnvs = map[int]*Environment{otherSet: weaponSetEnv}
+			// Preserve the uncomposed lists for checkbox validation; the composed lists
+			// below intentionally replace groups with their assigned-set versions.
+			env.WeaponSetValidationSkillList = env.Player.ActiveSkillList
+			weaponSetEnv.WeaponSetValidationSkillList = weaponSetEnv.Player.ActiveSkillList
 			replaceWeaponSetActiveSkills(env, weaponSetEnv, otherSet)
 			replaceWeaponSetActiveSkills(weaponSetEnv, env, env.WeaponSet)
 		}
@@ -1213,4 +1218,163 @@ func setupGemCounts(env *Environment) {
 	case b >= r && b >= g:
 		modDB.Conditions["MostNumerousBlueSocketedSupports"] = true
 	}
+}
+
+// weaponSetValidity is SkillsTab's weaponSetValidityCache, weaponSetValidityInProgress and each
+// group's forcedBoth, for one output revision.
+type weaponSetValidity struct {
+	cache      map[*SocketGroup]map[int]bool
+	forcedBoth map[*SocketGroup]bool
+	mainEnv    *Environment
+	inProgress bool
+}
+
+//pob2:src/Classes/SkillsTab.lua:1393-1396
+func isSocketGroupWeaponSetLocked(env *Environment, socketGroup *SocketGroup) bool {
+	var sourceSlot *ItemSlot
+	if socketGroup != nil && (socketGroup.SourceItem != nil || socketGroup.Source == "Default Attack") && socketGroup.Slot != "" && env.items != nil {
+		sourceSlot = env.items.Slots[socketGroup.Slot]
+	}
+	return sourceSlot != nil && sourceSlot.WeaponSet != 0
+}
+
+//pob2:src/Classes/SkillsTab.lua:1416-1437
+func (v *weaponSetValidity) cacheWeaponSetContext(context *Environment) {
+	if context == nil {
+		return
+	}
+	groupSkillIndex := map[*SocketGroup]int{}
+	activeSkillList := context.WeaponSetValidationSkillList
+	if activeSkillList == nil {
+		activeSkillList = context.Player.ActiveSkillList
+	}
+	for _, activeSkill := range activeSkillList {
+		socketGroup := activeSkill.SocketGroup
+		if socketGroup != nil {
+			if truthy(activeSkill.SkillData["reservesInAllWeaponSets"]) {
+				v.forcedBoth[socketGroup] = true
+			}
+			groupSkillIndex[socketGroup]++
+			selectedIndex := socketGroup.MainActiveSkill
+			if context.Mode == "CALCS" {
+				selectedIndex = socketGroup.MainActiveSkillCalcs
+			}
+			if groupSkillIndex[socketGroup] == selectedIndex {
+				var flags map[string]bool
+				if activeSkill.ActiveEffect != nil && activeSkill.ActiveEffect.StatSet != nil {
+					flags = activeSkill.ActiveEffect.StatSet.SkillFlags
+				}
+				if v.cache[socketGroup] == nil {
+					v.cache[socketGroup] = map[int]bool{}
+				}
+				v.cache[socketGroup][context.WeaponSet] = !(flags != nil && flags["disable"])
+			}
+		}
+	}
+}
+
+// cacheSocketGroupWeaponSetValidity is SkillsTab:CacheSocketGroupWeaponSetValidity. Every env of one
+// build output shares its revision, so the cache is reset only when it is created.
+//
+//pob2:src/Classes/SkillsTab.lua:1439-1456
+func (v *weaponSetValidity) cacheSocketGroupWeaponSetValidity(env *Environment) {
+	if env == nil {
+		return
+	}
+	v.cacheWeaponSetContext(env)
+	for _, set := range []int{1, 2} {
+		if context := env.WeaponSetEnvs[set]; context != nil {
+			v.cacheWeaponSetContext(context)
+		}
+	}
+}
+
+//pob2:src/Classes/SkillsTab.lua:1458-1470
+func applySocketGroupWeaponSetValidity(socketGroup *SocketGroup, set1Valid, set2Valid bool) bool {
+	var set1, set2 bool
+	switch {
+	case set1Valid != set2Valid:
+		set1, set2 = set1Valid, set2Valid
+	case !set1Valid || !socketGroup.Set1 && !socketGroup.Set2:
+		set1, set2 = true, true
+	default:
+		return false
+	}
+	changed := socketGroup.Set1 != set1 || socketGroup.Set2 != set2
+	socketGroup.Set1, socketGroup.Set2 = set1, set2
+	return changed
+}
+
+// reconcileSocketGroupWeaponSets is SkillsTab:ReconcileSocketGroupWeaponSets with no group to validate,
+// as CalcsTab:BuildOutput calls it on a frame's rebuild.
+//
+//pob2:src/Classes/SkillsTab.lua:1472-1504
+func reconcileSocketGroupWeaponSets(env *Environment) bool {
+	v := &weaponSetValidity{cache: map[*SocketGroup]map[int]bool{}, forcedBoth: map[*SocketGroup]bool{}, mainEnv: env}
+	v.cacheSocketGroupWeaponSetValidity(env)
+	changed := false
+	for _, socketGroup := range env.SocketGroupList {
+		if socketGroup.Enabled && !isSocketGroupWeaponSetLocked(env, socketGroup) {
+			if v.forcedBoth[socketGroup] {
+				changed = !socketGroup.Set1 || !socketGroup.Set2 || changed
+				socketGroup.Set1, socketGroup.Set2 = true, true
+			} else {
+				validity := v.cache[socketGroup]
+				if valid, ok := validity[env.WeaponSet]; ok && !valid {
+					otherSet := 1
+					if env.WeaponSet == 1 {
+						otherSet = 2
+					}
+					v.isSocketGroupWeaponSetValid(socketGroup, otherSet)
+					validity = v.cache[socketGroup]
+				}
+				set1Valid, ok1 := validity[1]
+				set2Valid, ok2 := validity[2]
+				if ok1 && ok2 {
+					changed = applySocketGroupWeaponSetValidity(socketGroup, set1Valid, set2Valid) || changed
+				}
+			}
+		}
+	}
+	return changed
+}
+
+//pob2:src/Classes/SkillsTab.lua:1506-1535
+func (v *weaponSetValidity) isSocketGroupWeaponSetValid(socketGroup *SocketGroup, weaponSet int) bool {
+	if socketGroup == nil || v.inProgress {
+		return true
+	}
+	v.cacheSocketGroupWeaponSetValidity(v.mainEnv)
+	if v.cache[socketGroup] == nil {
+		v.cache[socketGroup] = map[int]bool{}
+	}
+	if valid, ok := v.cache[socketGroup][weaponSet]; ok {
+		return valid
+	}
+	groupIndex := slices.Index(v.mainEnv.SocketGroupList, socketGroup) + 1
+	if groupIndex == 0 {
+		return true
+	}
+	v.inProgress = true
+	valid := true
+	env := newWeaponSetEnv(v.mainEnv, "CALCULATOR", calcOverride{
+		WeaponSet:             weaponSet,
+		MainSocketGroup:       groupIndex,
+		SkipWeaponSetContexts: true,
+	})
+	ok := false
+	func() {
+		defer func() { _ = recover() }()
+		initEnv(env)
+		ok = true
+	}()
+	if ok && env.Player != nil && env.Player.MainSkill != nil {
+		v.cacheSocketGroupWeaponSetValidity(env)
+		if cached, ok := v.cache[socketGroup][weaponSet]; ok {
+			valid = cached
+		}
+	}
+	v.inProgress = false
+	v.cache[socketGroup][weaponSet] = valid
+	return valid
 }

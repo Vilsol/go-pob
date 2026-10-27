@@ -21,7 +21,13 @@ func MOD(modName string, modType mod.Type, modVal any) mod.Mod {
 	case mod.TypeList:
 		realMod = mod.NewList(modName, modVal)
 	case mod.TypeFlag:
-		realMod = mod.NewFlag(modName, modVal.(bool))
+		// A numeric FLAG is true and keeps its number, as a Lua flag mod's value does.
+		if num, ok := modVal.(float64); ok {
+			realMod = mod.NewFlag(modName, true)
+			realMod.Value().SetFloat(num)
+		} else {
+			realMod = mod.NewFlag(modName, modVal.(bool))
+		}
 	default:
 		switch modVal := modVal.(type) {
 		case int:
