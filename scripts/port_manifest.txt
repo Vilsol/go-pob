@@ -342,7 +342,7 @@ scripts/gopob/probedeterminism.go                GO-NATIVE  port of oracle/probe
 scripts/gopob/nicerun.go                         GO-NATIVE  port of scripts/nice.sh; the low-priority command prefix, porting no Lua
 scripts/gopob/regenfixtures.go                   GO-NATIVE  port of scripts/regen_fixtures.sh; the oracle fixture regenerator, porting no Lua
 scripts/gopob/sysdeps_unix.go                    GO-NATIVE  the unix half of the OS calls the tools share (access, kill -0, getpriority, exec), porting no Lua
-scripts/gopob/sysdeps_windows.go                 GO-NATIVE  the Windows half of the above, so the tool builds and runs there, porting no Lua
+scripts/gopob/sysdeps_other.go                   GO-NATIVE  the non-unix half of the above (Windows, js), so the tool builds and runs there, porting no Lua
 scripts/gopob/fmacensus.go                       GO-NATIVE  the fused multiply-add census over the calculation packages (arm64, amd64 v3), porting no Lua
 scripts/gopob/modaloracle.go                     GO-NATIVE  port of scripts/modal_oracle.sh; the modal-blob orchestrator, porting no Lua
 scripts/gopob/affectedtests.go                   GO-NATIVE  picks the go test packages a change can reach from git and go list; test tooling, porting no Lua

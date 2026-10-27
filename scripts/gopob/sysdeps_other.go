@@ -1,4 +1,4 @@
-//go:build windows
+//go:build !unix
 
 package main
 
@@ -8,7 +8,7 @@ import (
 	"os/exec"
 )
 
-var errNoGetpriority = errors.New("getpriority does not exist on windows")
+var errNoGetpriority = errors.New("getpriority does not exist on this platform")
 
 func executableByMe(path string) bool {
 	fi, err := os.Stat(path) //nolint:gosec // an operator-supplied binary path, as on unix
