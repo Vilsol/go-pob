@@ -17,8 +17,8 @@ import (
 func f32(v float64) string { return luaNumStr(float64(float32(v))) }
 
 //pob:block:src/Export/Scripts/miscdata.lua:56-72
-func otConstants(path string, blocks []string, out *strings.Builder) error {
-	b, err := loader.LoadFile(gameDataContext(), raw.LatestVersion, path, assetCache())
+func otConstants(version, path string, blocks []string, out *strings.Builder) error {
+	b, err := loader.LoadFile(gameDataContext(), version, path, assetCache())
 	if err != nil {
 		return fmt.Errorf("%s: %w", path, err)
 	}
@@ -90,14 +90,14 @@ func miscLua() (string, error) {
 
 	w("-- From Metadata/Characters/Character.ot\n")
 	w("data.characterConstants = {\n")
-	if err := otConstants("Metadata/Characters/Character.ot", []string{"Stats", "Pathfinding"}, &out); err != nil {
+	if err := otConstants(raw.LatestVersion, "Metadata/Characters/Character.ot", []string{"Stats", "Pathfinding"}, &out); err != nil {
 		return "", err
 	}
 	w("}\n")
 
 	w("-- From Metadata/Monsters/Monster.ot\n")
 	w("data.monsterConstants = {\n")
-	if err := otConstants("Metadata/Monsters/Monster.ot", []string{"Stats"}, &out); err != nil {
+	if err := otConstants(raw.LatestVersion, "Metadata/Monsters/Monster.ot", []string{"Stats"}, &out); err != nil {
 		return "", err
 	}
 	w("}\n")

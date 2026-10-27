@@ -15,20 +15,22 @@ import (
 )
 
 var dumpers = map[string]func() (any, error){
-	"stat-descriptions":   dumpStatDescriptions,
-	"pantheons":           dumpPantheons,
-	"cluster-jewels":      dumpClusterJewels,
-	"legion-passives":     dumpLegionPassives,
-	"tattoo-passives":     dumpTattooPassives,
-	"mod-scalability":     dumpModScalability,
-	"skill-weapon-types":  dumpSkillWeaponTypes,
-	"item-mod-stat-order": dumpItemModStatOrder,
-	"item-craft-mods":     dumpItemCraftMods,
-	"flavour-text":        dumpFlavourText,
-	"gems":                dumpGems,
-	"minion-data":         dumpMinionData,
-	"core-constants-data": dumpCoreConstantsData,
-	"skills-data":         dumpSkillsData,
+	"stat-descriptions":    dumpStatDescriptions,
+	"pantheons":            dumpPantheons,
+	"cluster-jewels":       dumpClusterJewels,
+	"legion-passives":      dumpLegionPassives,
+	"tattoo-passives":      dumpTattooPassives,
+	"mod-scalability":      dumpModScalability,
+	"skill-weapon-types":   dumpSkillWeaponTypes,
+	"item-mod-stat-order":  dumpItemModStatOrder,
+	"item-craft-mods":      dumpItemCraftMods,
+	"flavour-text":         dumpFlavourText,
+	"gems":                 dumpGems,
+	"minion-data":          dumpMinionData,
+	"core-constants-data":  dumpCoreConstantsData,
+	"skills-data":          dumpSkillsData,
+	"poe2-misc-data":       dumpPoE2MiscData,
+	"poe2-legion-passives": dumpPoE2LegionPassives,
 }
 
 func main() {

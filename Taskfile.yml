@@ -723,6 +723,13 @@ tasks:
     cmds:
       - '{{.NICE}} go run ./scripts/gopob fold-progress'
 
+  poe2-gamedata-check:
+    desc: "Assert scripts/gamedatadump's PoE2 dumpers, over go-pob-data's 0.5 tables, write what the pinned PoB-PoE2 ships"
+    vars:
+      POB2_DIR: '{{.POB2_DIR | default .POB2_DEFAULT}}'
+    cmds:
+      - 'env POB2_DIR={{.POB2_DIR}} {{.NICE}} go test -tags poe2gamedata ./scripts/gamedatadump/ -run "^TestPoE2" -count=1 -v'
+
   pob-pin:
     desc: "Assert the pinned PoB checkout is the exact tree the oracle was built from (RECORD=1 to re-record, GAME=poe2 for the PoE2 pin)"
     vars:
