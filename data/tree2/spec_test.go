@@ -34,7 +34,7 @@ func oracleRadiusRows(node *SpecNode) []NodeRadius {
 
 func loadSpec(t *testing.T, in SpecInput) *PassiveSpec {
 	t.Helper()
-	spec := NewPassiveSpec(pinTree(t))
+	spec := NewPassiveSpec(dataTree(t))
 	spec.AllocateFromNodeRadius = oracleRadiusRows
 	if err := spec.Load(in); err != nil {
 		t.Fatal(err)
@@ -88,14 +88,14 @@ func TestSpecWeaponSetNodesPathOnlyThroughTheirOwnSet(t *testing.T) {
 }
 
 func TestSpecLoadRefusesAMissingClass(t *testing.T) {
-	spec := NewPassiveSpec(pinTree(t))
+	spec := NewPassiveSpec(dataTree(t))
 	if err := spec.Load(SpecInput{Nodes: strp("1"), AscendClassID: strp("0")}); err == nil {
 		t.Fatal("a <Spec> with no class loaded")
 	}
 }
 
 func TestResolveGrantedPassiveNodes(t *testing.T) {
-	spec := NewPassiveSpec(pinTree(t))
+	spec := NewPassiveSpec(dataTree(t))
 	for name, want := range map[string]int{"  Saqawal's Guidance ": 42070, "giant's blood": 32349} {
 		got := spec.ResolveGrantedPassiveNodes(GrantedPassive{Name: name})
 		if len(got) != 1 || got[0].ID != want {

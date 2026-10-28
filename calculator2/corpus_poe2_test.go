@@ -3,34 +3,22 @@ package calculator2
 import (
 	"bufio"
 	"compress/gzip"
+	"context"
 	"encoding/json"
 	"fmt"
 	"math"
 	"os"
 	"path/filepath"
 	"sort"
-	"strings"
 	"sync"
 	"testing"
 
+	"github.com/Vilsol/go-pob/data/raw"
 	"github.com/Vilsol/go-pob/data/tree2"
 	"github.com/Vilsol/go-pob/mod"
 	"github.com/Vilsol/go-pob/pob2"
+	"github.com/Vilsol/go-pob/storage"
 )
-
-// pob2Dir resolves the pinned PoB-PoE2 checkout like the tooling: POB2_DIR, else a sibling of the main checkout.
-func pob2Dir() string {
-	if v := os.Getenv("POB2_DIR"); v != "" {
-		return v
-	}
-	wd, _ := os.Getwd()
-	repo := filepath.Dir(wd)
-	if common, err := os.ReadFile(filepath.Join(repo, ".git")); err == nil && strings.HasPrefix(string(common), "gitdir:") {
-		gitdir := strings.TrimSpace(strings.TrimPrefix(string(common), "gitdir:"))
-		repo = filepath.Dir(filepath.Dir(filepath.Dir(gitdir)))
-	}
-	return filepath.Join(filepath.Dir(repo), "PathOfBuilding-PoE2")
-}
 
 var (
 	testTreeOnce sync.Once
@@ -41,15 +29,10 @@ var (
 func loadTestTree(t *testing.T) *tree2.PassiveTree {
 	t.Helper()
 	testTreeOnce.Do(func() {
-		raw, err := os.ReadFile(filepath.Join(pob2Dir(), "src", "TreeData", "0_5", "tree.json"))
-		if err != nil {
-			errTestTree = err
-			return
-		}
-		testTree, errTestTree = tree2.Load("0_5", raw)
+		testTree, errTestTree = tree2.LoadData(context.Background(), "0_5", raw.AssetLoaderWrapper{Storage: storage.Get()})
 	})
 	if errTestTree != nil {
-		t.Skipf("PoB-PoE2 tree.json not loadable under %s (set POB2_DIR): %v", pob2Dir(), errTestTree)
+		t.Skipf("go-pob-data's PoE2 tree not loadable: %v", errTestTree)
 	}
 	return testTree
 }

@@ -198,7 +198,7 @@ func TestPoE2SpecAllocationVsOracle(t *testing.T) {
 	if p := os.Getenv("POE2_ALLOC_PROBE"); p != "" {
 		probe = readProbe(t, p)
 	}
-	tree := pinTree(t)
+	tree := dataTree(t)
 
 	offTreeIDs := map[int]int{}
 	optionOwner := map[int]int{}

@@ -283,7 +283,7 @@ func (t *PassiveTree) sortedNodeIDs() []int {
 	return ids
 }
 
-// Load builds a PassiveTree from PoB-PoE2's TreeData/<version>/tree.json. Art, connectors and
+// Load builds a PassiveTree from a tree.json in PoB-PoE2's TreeData/<version> layout. Art, connectors and
 // jewel radius lists are not built, and stat lines are not parsed.
 //
 //pob2:src/Classes/PassiveTree.lua:59-302
