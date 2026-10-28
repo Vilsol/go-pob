@@ -6,6 +6,7 @@ import (
 
 	"github.com/MarvinJWendt/testza"
 
+	"github.com/Vilsol/go-pob/data/tree2"
 	"github.com/Vilsol/go-pob/pob2"
 )
 
@@ -84,4 +85,19 @@ func TestOffenceAilmentsFixture(t *testing.T) {
 		"TotalDot": 0, "TotalDotInstance": 0, "TotalDotDPS": 1.742386718384, "WithBleedDPS": 50.79233582892, "WithIgniteDPS": 49.828622318035, "WithPoisonDPS": 50.607142857143,
 		"TotalDPS": 49.828571428571, "CombinedDPS": 51.570958146955, "ManaPerSecondCost": 38.571428571429,
 	})
+}
+
+//pob2:block:src/Data/Skills/other.lua:21152
+func TestPreDamageExplodeSource(t *testing.T) {
+	item := &Item{ID: 3, Name: "Foo"}
+	item.modSourceName = "Item:3:Foo"
+	itemSkill := preDamageSkill{&ActiveSkill{ActiveEffect: &GemEffect{SrcInstance: &GemInstance{ExplodeSource: item}}}}
+	modSource, ok, _ := itemSkill.ExplodeSource()
+	testza.AssertTrue(t, ok)
+	testza.AssertEqual(t, "Item:3:Foo", modSource)
+
+	nodeSkill := preDamageSkill{&ActiveSkill{ActiveEffect: &GemEffect{SrcInstance: &GemInstance{ExplodeSource: &tree2.SpecNode{Node: &tree2.Node{ID: 4271}}}}}}
+	_, ok, id := nodeSkill.ExplodeSource()
+	testza.AssertFalse(t, ok)
+	testza.AssertEqual(t, "4271", id)
 }

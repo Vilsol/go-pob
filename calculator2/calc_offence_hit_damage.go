@@ -80,7 +80,6 @@ type offenceHit struct {
 	activeSkill *ActiveSkill
 	skillFlags  map[string]bool
 	state       *offenceHitState
-	ranges      *weaponRanges
 	monsterLife float64
 	// calculated holds the booleans calcs.offence keeps on its output (the *Calculated marks).
 	calculated map[string]bool
@@ -88,7 +87,7 @@ type offenceHit struct {
 
 func (h *offenceHit) calcAreaOfEffect() {
 	as := h.activeSkill
-	calcAreaOfEffect(h.ranges, as.SkillModList, as.SkillCfg, as.SkillData, h.skillFlags, h.actor.Output)
+	calcAreaOfEffect(h.actor, as.SkillModList, as.SkillCfg, as.SkillData, h.skillFlags, h.actor.Output)
 }
 
 // Check if player is supposed to ignore a damage type, or if it's ignored on enemy side
@@ -1252,9 +1251,9 @@ func (h *offenceHit) offenceLeechRates() {
 
 // offenceHitHalf runs CalcOffence's damage passes, then the ailments, damage over time and the
 // combined DPS. hasCosts is output[resource.."HasCost"] from the cost calculation.
-func offenceHitHalf(env *Environment, actor *Actor, activeSkill *ActiveSkill, skillFlags map[string]bool, ranges *weaponRanges, monsterLife float64, hasCosts map[string]bool) *offenceHitState {
+func offenceHitHalf(env *Environment, actor *Actor, activeSkill *ActiveSkill, skillFlags map[string]bool, monsterLife float64, hasCosts map[string]bool) *offenceHitState {
 	state := &offenceHitState{isAttack: skillFlags["attack"], monsterLife: monsterLife}
-	h := &offenceHit{env: env, actor: actor, activeSkill: activeSkill, skillFlags: skillFlags, state: state, ranges: ranges, monsterLife: monsterLife, calculated: map[string]bool{}}
+	h := &offenceHit{env: env, actor: actor, activeSkill: activeSkill, skillFlags: skillFlags, state: state, monsterLife: monsterLife, calculated: map[string]bool{}}
 	offenceConversionTables(state, activeSkill.SkillModList, activeSkill.SkillCfg)
 	offencePasses(env, actor, activeSkill, skillFlags, state)
 	offenceHitSpeed(env, actor, activeSkill, skillFlags, state)

@@ -518,9 +518,28 @@ func nodeGrantedSkills(env *Environment, node *tree2.SpecNode) []*grantedSkill {
 	return out
 }
 
+var defaultAttackSlots = [][2]string{
+	{"Weapon 1", "Weapon 2"},
+	{"Weapon 1 Swap", "Weapon 2 Swap"},
+}
+
+//pob2:src/Modules/CalcSetup.lua:710-719
+func getCharacterMeleeSkillClass(item *Item) string {
+	if item != nil && item.Base != nil {
+		if slices.Contains(item.Base.Tags, "buckler") {
+			return "Buckler"
+		} else if item.Base.Weapon != nil {
+			if item.Base.SubType != "" {
+				return item.Base.SubType
+			}
+			return item.Base.Type
+		}
+	}
+	return "Unarmed"
+}
+
 // setupSkills is the skill half of calcs.initEnv: the granted skill groups, the supports, the active
-// skills and the main skill. Default Attack groups need data.characterMeleeSkills, so the saved ones
-// are kept as they are.
+// skills and the main skill.
 //
 //pob2:block:src/Modules/CalcSetup.lua:1823-2462
 func setupSkills(env *Environment) {
@@ -551,6 +570,30 @@ func setupSkills(env *Environment) {
 	virtuousMoteSkillCounted := map[*GemInstance]bool{}
 
 	if env.Mode == "MAIN" {
+		// Keep both sets available, independently of the Items tab's selected set.
+		//pob2:block:src/Modules/CalcSetup.lua:1845-1858
+		selItem := func(slotName string) *Item {
+			if env.items == nil || env.items.Slots[slotName] == nil {
+				return nil
+			}
+			return env.items.Items[env.items.Slots[slotName].SelItemID]
+		}
+		for _, slots := range defaultAttackSlots {
+			mainItem, offItem := selItem(slots[0]), selItem(slots[1])
+			skillsForMainHand := env.data.characterMeleeSkills[getCharacterMeleeSkillClass(mainItem)]
+			var defaultGems []*poe2skills.Gem
+			if skillsForMainHand != nil {
+				defaultGems = skillsForMainHand[getCharacterMeleeSkillClass(offItem)]
+			}
+			for _, gemData := range defaultGems {
+				if gemData != nil {
+					grantedSkills = append(grantedSkills, &grantedSkill{
+						SkillID: gemData.Data.GrantedEffectID, NameSpec: gemData.Data.Name, SlotName: slots[0], Source: "Default Attack",
+						Level: getGrantedSkillLevel(gemData, int(gemData.Data.NaturalMaxLevel), characterLevel, nil),
+					})
+				}
+			}
+		}
 		//pob2:block:src/Modules/CalcSetup.lua:1859-1976
 		markList := map[*SocketGroup]bool{}
 		build.Build.MainSocketGroup = env.MainSocketGroup
@@ -559,13 +602,6 @@ func setupSkills(env *Environment) {
 			mainGroup = env.SocketGroupList[i-1]
 		}
 		mergedGroups := map[*SocketGroup]bool{}
-		// Stand-in for the producer not ported: the saved Default Attack groups (data.characterMeleeSkills)
-		// stay as if regenerated.
-		for _, socketGroup := range env.SocketGroupList {
-			if socketGroup.Source == "Default Attack" {
-				markList[socketGroup] = true
-			}
-		}
 		legacySupportGroups := map[string][]*SocketGroup{}
 		for _, socketGroup := range env.SocketGroupList {
 			if socketGroup.Source == "" && socketGroup.Slot != "" {

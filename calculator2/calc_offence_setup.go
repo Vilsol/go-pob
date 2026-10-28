@@ -2,9 +2,11 @@ package calculator2
 
 import (
 	"math"
+	"strconv"
 
 	"github.com/Vilsol/go-pob/data/poe2"
 	"github.com/Vilsol/go-pob/data/poe2skills"
+	"github.com/Vilsol/go-pob/data/tree2"
 	"github.com/Vilsol/go-pob/mod"
 	"github.com/Vilsol/go-pob/moddb"
 )
@@ -502,9 +504,14 @@ func (s preDamageSkill) TabulateExplodeMods() []poe2skills.TabulatedExplodeMod {
 	return out
 }
 
-// ExplodeSource is srcInstance.explodeSource, which the gem instance does not carry yet: no source
-// matches, so the Explode skill's per-source percentages are not set.
+// ExplodeSource is srcInstance.explodeSource: an item's modSource, or a tree node's id.
 func (s preDamageSkill) ExplodeSource() (string, bool, string) {
+	switch src := s.activeSkill.ActiveEffect.SrcInstance.ExplodeSource.(type) {
+	case *Item:
+		return src.modSourceName, true, ""
+	case *tree2.SpecNode:
+		return "", false, strconv.Itoa(src.ID)
+	}
 	return "", false, ""
 }
 

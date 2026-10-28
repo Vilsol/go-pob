@@ -311,8 +311,6 @@ func offence(env *Environment, actor *Actor, activeSkill *ActiveSkill) {
 		return dataSkill.Name, true
 	}
 
-	ranges := &weaponRanges{}
-
 	// Update skill data
 	//pob2:block:src/Modules/CalcOffence.lua:728-744
 	skillCfg.SkillCond["SkillIsTriggered"] = truthy(skillData["triggered"])
@@ -590,7 +588,7 @@ func offence(env *Environment, actor *Actor, activeSkill *ActiveSkill) {
 		}
 	}
 
-	offenceSkillTypeStats(env, actor, activeSkill, skillFlags, output, ranges)
+	offenceSkillTypeStats(env, actor, activeSkill, skillFlags, output)
 	offenceDurations(env, activeSkill, skillFlags, output)
 	hasCosts := offenceCosts(env, actor, activeSkill, output)
 
@@ -612,26 +610,21 @@ func offence(env *Environment, actor *Actor, activeSkill *ActiveSkill) {
 
 	monsterLife := offencePreDamage(env, activeSkill, skillFlags, output)
 
-	offenceHitHalf(env, actor, activeSkill, skillFlags, ranges, monsterLife, hasCosts)
-}
-
-// weaponRanges stands in for actor.weaponRange1/2, which offence sets for melee skills.
-type weaponRanges struct {
-	weaponRange1, weaponRange2 float64
+	offenceHitHalf(env, actor, activeSkill, skillFlags, monsterLife, hasCosts)
 }
 
 //pob2:src/Modules/CalcOffence.lua:566-684
-func calcAreaOfEffect(ranges *weaponRanges, skillModList *moddb.ModList, skillCfg *moddb.ListCfg, skillData map[string]any, skillFlags map[string]bool, output map[string]float64) {
+func calcAreaOfEffect(actor *Actor, skillModList *moddb.ModList, skillCfg *moddb.ListCfg, skillData map[string]any, skillFlags map[string]bool, output map[string]float64) {
 	incArea, moreArea := calcLibMods(skillModList, skillCfg, "AreaOfEffect", "AreaOfEffectPrimary")
 	output["AreaOfEffectMod"] = calcAreaMod(incArea, moreArea)
 	radiusMod := calcLibMod(skillModList, skillCfg, "AreaOfEffectRadius")
 	if truthy(skillData["radiusIsWeaponRange"]) {
 		rng := 0.0
 		if skillFlags["weapon1Attack"] {
-			rng = math.Max(rng, ranges.weaponRange1)
+			rng = math.Max(rng, actor.WeaponRange1)
 		}
 		if skillFlags["weapon2Attack"] {
-			rng = math.Max(rng, ranges.weaponRange2)
+			rng = math.Max(rng, actor.WeaponRange2)
 		}
 		skillData["radius"] = rng + 2
 	}

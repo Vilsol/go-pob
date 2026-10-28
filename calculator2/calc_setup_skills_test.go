@@ -220,3 +220,33 @@ func TestApplySocketGroupWeaponSetValidity(t *testing.T) {
 		}
 	}
 }
+
+// warrior_items.xml wields a Bandit Mace beside a Sceptre (no weapon data, so "Unarmed") and swaps to
+// a Twisted Wand beside a Tower Shield. PoB-PoE2's CharacterMeleeSkills.lua maps One Hand Mace /
+// Unarmed to SkillGemPlayerDefault1HMace (Melee1HMacePlayer) and has no Wand row.
+//
+//pob2:block:src/Modules/CalcSetup.lua:1845-1858
+func TestDefaultAttackGroups(t *testing.T) {
+	raw, err := os.ReadFile("testdata/warrior_items.xml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	build, err := pob2.ParseBuild(raw)
+	if err != nil {
+		t.Fatal(err)
+	}
+	tree := loadTestTree(t)
+	env, err := BuildOutput(build, Options{Tree: tree, Items: NewItemsTab(build, tree, nil)})
+	if err != nil {
+		t.Fatal(err)
+	}
+	var got []string
+	for _, g := range env.SocketGroupList {
+		if g.Source == "Default Attack" {
+			got = append(got, g.Slot+":"+g.GemList[0].SkillID+":"+strconv.FormatBool(g.GemList[0].FromItem))
+		}
+	}
+	if strings.Join(got, ",") != "Weapon 1:Melee1HMacePlayer:true" {
+		t.Fatalf("Default Attack groups %v", got)
+	}
+}

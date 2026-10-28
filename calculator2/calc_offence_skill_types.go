@@ -12,7 +12,7 @@ import (
 // life data.monsterLifeTable; none is built, so those outputs are not written.
 //
 //pob2:block:src/Modules/CalcOffence.lua:1417-1992
-func offenceSkillTypeStats(env *Environment, actor *Actor, activeSkill *ActiveSkill, skillFlags map[string]bool, output map[string]float64, ranges *weaponRanges) {
+func offenceSkillTypeStats(env *Environment, actor *Actor, activeSkill *ActiveSkill, skillFlags map[string]bool, output map[string]float64) {
 	skillModList := activeSkill.SkillModList
 	skillCfg := activeSkill.SkillCfg
 	skillData := activeSkill.SkillData
@@ -111,18 +111,18 @@ func offenceSkillTypeStats(env *Environment, actor *Actor, activeSkill *ActiveSk
 			return 6 + sum("UnarmedRange") + 10*sum("UnarmedRangeMetre")
 		}
 		if skillFlags["weapon1Attack"] {
-			ranges.weaponRange1 = meleeRange(1)
+			actor.WeaponRange1 = meleeRange(1)
 		}
 		if skillFlags["weapon2Attack"] {
-			ranges.weaponRange2 = meleeRange(2)
+			actor.WeaponRange2 = meleeRange(2)
 		}
 		if activeSkill.SkillTypes["MeleeSingleTarget"] {
 			rng := 100.0
 			if skillFlags["weapon1Attack"] {
-				rng = math.Min(rng, ranges.weaponRange1)
+				rng = math.Min(rng, actor.WeaponRange1)
 			}
 			if skillFlags["weapon2Attack"] {
-				rng = math.Min(rng, ranges.weaponRange2)
+				rng = math.Min(rng, actor.WeaponRange2)
 			}
 			output["WeaponRange"] = rng + 2
 			output["WeaponRangeMetre"] = output["WeaponRange"] / 10
@@ -132,7 +132,7 @@ func offenceSkillTypeStats(env *Environment, actor *Actor, activeSkill *ActiveSk
 		}
 	}
 	if skillFlags["area"] || truthy(skillData["radius"]) || (skillFlags["mine"] && activeSkill.SkillTypes["Aura"]) {
-		calcAreaOfEffect(ranges, skillModList, skillCfg, skillData, skillFlags, output)
+		calcAreaOfEffect(actor, skillModList, skillCfg, skillData, skillFlags, output)
 	}
 	if activeSkill.SkillTypes["Aura"] {
 		names := []string{"AuraEffect"}
