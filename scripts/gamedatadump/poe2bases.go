@@ -139,6 +139,16 @@ type poe2Flask struct {
 	UtilityBuffs []int `json:"UtilityBuff"`
 }
 
+type poe2UtilityFlaskBuff struct {
+	BuffDefinition int   `json:"BuffDefinition"`
+	StatValues     []int `json:"StatValues"`
+}
+
+type poe2BuffDefinition struct {
+	GrantedFlags []int `json:"GrantedFlags"`
+	GrantedStats []int `json:"GrantedStats"`
+}
+
 type poe2ComponentCharges struct {
 	BaseItemType string `json:"BaseItemTypesKey"`
 	Max          int    `json:"MaxCharges"`
@@ -170,12 +180,11 @@ type poe2BasesExport struct {
 	armourTypes     []poe2ArmourType
 	shieldTypes     []poe2ShieldType
 	flasks          []poe2Flask
+	utilityBuffs    []poe2UtilityFlaskBuff
+	buffDefinitions []poe2BuffDefinition
 	componentCharge []poe2ComponentCharges
 	attributeReqs   []poe2AttributeRequirement
 	itFiles         map[string]*string
-	// charmBuffs counts the charms whose UtilityFlaskBuffs line was not written: go-pob-data publishes
-	// neither UtilityFlaskBuffs nor BuffDefinitions.
-	charmBuffs int
 }
 
 type poe2BaseState struct {
@@ -217,6 +226,8 @@ func poe2LoadTables(x *poe2BasesExport) error {
 	poe2TableInto(&x.armourTypes, "ArmourTypes", &err)
 	poe2TableInto(&x.shieldTypes, "ShieldTypes", &err)
 	poe2TableInto(&x.flasks, "Flasks", &err)
+	poe2TableInto(&x.utilityBuffs, "UtilityFlaskBuffs", &err)
+	poe2TableInto(&x.buffDefinitions, "BuffDefinitions", &err)
 	poe2TableInto(&x.componentCharge, "ComponentCharges", &err)
 	poe2TableInto(&x.attributeReqs, "AttributeRequirements", &err)
 	return err
@@ -669,8 +680,25 @@ func (x *poe2BasesExport) base(st *poe2BaseState, args string, out *strings.Buil
 			w("chargesUsed = ", luaNumStr(float64(compCharges.PerUse)), ", ")
 			w("chargesMax = ", luaNumStr(float64(compCharges.Max)), ", ")
 			if len(flask.UtilityBuffs) > 0 {
-				// bases.lua:344-355 describes UtilityFlaskBuffs' BuffDefinitions stats here
-				x.charmBuffs++
+				stats := map[string]*edRange{}
+				for _, b := range flask.UtilityBuffs {
+					buff := x.utilityBuffs[b]
+					def := x.buffDefinitions[buff.BuffDefinition]
+					for i, stat := range def.GrantedStats {
+						if i >= len(buff.StatValues) {
+							return fmt.Errorf("%s: utility flask buff %d has no value for stat %s", baseTypeID, b, x.stats[stat].ID)
+						}
+						stats[x.stats[stat].ID] = &edRange{min: float64(buff.StatValues[i]), max: float64(buff.StatValues[i])}
+					}
+					for _, stat := range def.GrantedFlags {
+						stats[x.stats[stat].ID] = &edRange{min: 1, max: 1}
+					}
+				}
+				lines, _, err := x.describer.describeStats(stats)
+				if err != nil {
+					return err
+				}
+				w("buff = { \"", strings.Join(lines, "\", \""), "\" }, ")
 			}
 			w("},\n")
 		}
@@ -816,20 +844,20 @@ func newPoE2BasesExport() (*poe2BasesExport, error) {
 // poe2ItemBaseFiles is bases.lua's Data/Bases/<type>.lua for every template, keyed by that path.
 //
 //pob2:block:src/Export/Scripts/bases.lua:520-522
-func poe2ItemBaseFiles(pobDir string) (map[string]string, *poe2BasesExport, error) {
+func poe2ItemBaseFiles(pobDir string) (map[string]string, error) {
 	x, err := newPoE2BasesExport()
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 	files := map[string]string{}
 	for _, name := range poe2BaseItemTypeNames {
 		text, err := x.processTemplateFile(pobDir, name)
 		if err != nil {
-			return nil, nil, err
+			return nil, err
 		}
 		files["Data/Bases/"+name+".lua"] = text
 	}
-	return files, x, nil
+	return files, nil
 }
 
 func dumpPoE2ItemBases() (any, error) {
@@ -837,14 +865,5 @@ func dumpPoE2ItemBases() (any, error) {
 	if pobDir == "" {
 		return nil, fmt.Errorf("POB_DIR is not set; the base templates are the pinned PoB-PoE2's Export/Bases")
 	}
-	files, x, err := poe2ItemBaseFiles(pobDir)
-	if err != nil {
-		return nil, err
-	}
-	if x.charmBuffs > 0 {
-		// the pin's flask.lua stays loaded until go-pob-data publishes UtilityFlaskBuffs and BuffDefinitions
-		fmt.Fprintf(os.Stderr, "poe2-item-bases: %d charms need UtilityFlaskBuffs and BuffDefinitions, which go-pob-data 0.5 does not publish; Data/Bases/flask.lua is left to the pin\n", x.charmBuffs)
-		delete(files, "Data/Bases/flask.lua")
-	}
-	return files, nil
+	return poe2ItemBaseFiles(pobDir)
 }

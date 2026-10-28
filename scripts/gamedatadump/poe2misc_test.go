@@ -11,8 +11,6 @@ import (
 	"strconv"
 	"strings"
 	"testing"
-
-	"github.com/Vilsol/go-pob-data/loader"
 )
 
 func poe2PinFile(t *testing.T, rel string) string {
@@ -147,7 +145,7 @@ func TestPoE2LegionPassivesAreThePins(t *testing.T) {
 // the pin's Export/Bases templates, writes the pin's src/Data/Bases/*.lua.
 func TestPoE2ItemBasesAreThePins(t *testing.T) {
 	poe2PinFile(t, "Data/Misc.lua")
-	files, x, err := poe2ItemBaseFiles(os.Getenv("POB2_DIR"))
+	files, err := poe2ItemBaseFiles(os.Getenv("POB2_DIR"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -155,19 +153,10 @@ func TestPoE2ItemBasesAreThePins(t *testing.T) {
 		rel := "Data/Bases/" + name + ".lua"
 		t.Run(name, func(t *testing.T) {
 			want := poe2PinFile(t, rel)
-			if name == "flask" {
-				// the charms' buff lines need UtilityFlaskBuffs and BuffDefinitions, which go-pob-data does not publish
-				if n := len(poe2CharmBuffRe.FindAllString(want, -1)); n != x.charmBuffs || n == 0 {
-					t.Fatalf("the pin's flask.lua has %d charm buff lines, the dumper skipped %d", n, x.charmBuffs)
-				}
-				want = poe2CharmBuffRe.ReplaceAllString(want, "")
-			}
 			firstLineDiff(t, rel, files[rel], want)
 		})
 	}
 }
-
-var poe2CharmBuffRe = regexp.MustCompile(`buff = \{ "[^\n]*" \}, `)
 
 var poe2TradeHashesRe = regexp.MustCompile(`tradeHashes = \{ ((?:\[\d+\] = \{ [^\n]*? \}, )*) \},`)
 var poe2TradeHashRe = regexp.MustCompile(`\[(\d+)\] = \{ [^\n]*? \}, `)
@@ -223,13 +212,6 @@ func TestPoE2SoulCoreTradeHashes(t *testing.T) {
 // up to the order of each tradeHashes table.
 func TestPoE2ModRunesIsThePins(t *testing.T) {
 	want := poe2PinFile(t, "Data/ModRunes.lua")
-	for _, table := range []string{"SoulCoreTypes", "SoulCoreLimits", "SoulCoreStatCategories"} {
-		if ok, err := loader.HasTable(gameDataContext(), poe2Version, table); err != nil {
-			t.Fatal(err)
-		} else if !ok {
-			t.Skipf("go-pob-data %s does not publish %s", poe2Version, table)
-		}
-	}
 	got, err := poe2ModRunesLua(os.Getenv("POB2_DIR"))
 	if err != nil {
 		t.Fatal(err)
