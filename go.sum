@@ -14,6 +14,8 @@ github.com/Vilsol/go-pob-data v0.5.9 h1:SrCAUb8RctAjWI1SZq+sIRrYDSDzp7+G1tm2zMhi
 github.com/Vilsol/go-pob-data v0.5.9/go.mod h1:gO6WGq+WW786byDH1B9SQHRFM7SXoB3uMhC0SG3vzAE=
 github.com/Vilsol/go-pob-data v0.5.10 h1:Fp3pWCPC6i3wh39FCP8NiXtUjkECiPALtCIw2wgPWB8=
 github.com/Vilsol/go-pob-data v0.5.10/go.mod h1:gO6WGq+WW786byDH1B9SQHRFM7SXoB3uMhC0SG3vzAE=
+github.com/Vilsol/go-pob-data v0.5.11 h1:RLSUtsvnVy48mVnQE9T9EQKLZnYWqqtZY5YHmnQ/xPI=
+github.com/Vilsol/go-pob-data v0.5.11/go.mod h1:gO6WGq+WW786byDH1B9SQHRFM7SXoB3uMhC0SG3vzAE=
 github.com/Vilsol/slox v0.0.1 h1:X5iskI+WLDxW5FNxYV9izEEWliFzRUNxcItHWetwnOk=
 github.com/Vilsol/slox v0.0.1/go.mod h1:1mhhQdJHAzUVobE9RE0k7vxaSn17C0b4WSMPjHCizJo=
 github.com/Vilsol/timeless-jewels v0.55.0 h1:BR0ljCV8alA6E24fkquF99q3ggT4BkowpGyGckmlCrs=

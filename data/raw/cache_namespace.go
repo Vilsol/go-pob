@@ -1,6 +1,6 @@
 package raw
 
-const DataModuleVersion = "v0.5.10"
+const DataModuleVersion = "v0.5.11"
 
 const DataModulePath = "github.com/Vilsol/go-pob-data"
 
