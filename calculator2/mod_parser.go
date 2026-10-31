@@ -7540,6 +7540,9 @@ func initializeSkillNameList() {
 		if gemData.Support || skillName == "" || deprecatedSkillNames[skillName] {
 			continue
 		}
+		if ov, ok := poe2.SkillOverlayByID(gemData.GrantedEffectID); ok && (ov.Hidden || ov.FromItem) {
+			continue
+		}
 		tags := make(map[string]bool, len(gemData.Tags))
 		for _, t := range gemData.Tags {
 			tags[t] = true
