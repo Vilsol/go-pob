@@ -257,10 +257,12 @@ type Item struct {
 	CraftedQuality *float64
 
 	WeaponData map[int]map[string]float64
-	ArmourData map[string]float64
-	FlaskData  map[string]float64
-	CharmData  map[string]float64
-	JewelData  map[string]any
+	// WeaponDataStr holds the weaponData entries whose Lua value is a string.
+	WeaponDataStr map[int]map[string]string
+	ArmourData    map[string]float64
+	FlaskData     map[string]float64
+	CharmData     map[string]float64
+	JewelData     map[string]any
 
 	BaseModList  []mod.Mod
 	ModList      []mod.Mod

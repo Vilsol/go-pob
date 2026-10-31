@@ -586,6 +586,11 @@ func cacheListValue(name string, value any) (any, error) {
 		v, _ := f.num("value")
 		out = mod.SupportedGemProperty{Keyword: f.str("keyword"), Key: f.str("key"), Value: int(v)}
 	case "WeaponData":
+		if s, isStr := f.t["value"].(string); isStr {
+			out = LuaTable{"key": f.str("key"), "value": s}
+			f.used["value"] = true
+			break
+		}
 		v, ok := f.num("value")
 		out = mod.WeaponData{Key: f.str("key"), Value: v, Unset: !ok}
 	case "ExplodeMod":
@@ -596,6 +601,31 @@ func cacheListValue(name string, value any) (any, error) {
 		// A skill's stat map leaves the stat's number in value; createMinionSkills reads only skillId.
 		f.used["value"] = true
 		out = mod.ExtraMinionSkill{SkillID: f.str("skillId")}
+	case "ExtraSkillStat":
+		v, _ := f.num("value")
+		out = mod.ExtraSkillStat{Key: f.str("key"), Value: v}
+	case "JewelData":
+		c, isTable := t["value"].(map[string]any)
+		if f.str("key") != "conqueredBy" || !isTable {
+			return cacheTableValue(value)
+		}
+		f.used["value"] = true
+		cf := newCacheFields(c, "conqueredBy")
+		id, _ := cf.num("id")
+		lj := mod.LegionJewel{ID: int(id)}
+		if conqueror, ok := c["conqueror"].(map[string]any); ok {
+			cf.used["conqueror"] = true
+			qf := newCacheFields(conqueror, "conqueror")
+			qid, _ := qf.num("id")
+			lj.Conqueror = mod.ConquerorType{ID: strconv.FormatFloat(qid, 'f', -1, 64), Type: qf.str("type")}
+			if err := qf.done(); err != nil {
+				return nil, err
+			}
+		}
+		if err := cf.done(); err != nil {
+			return nil, err
+		}
+		out = mod.JewelData{Key: "conqueredBy", Value: lj}
 	default:
 		return cacheTableValue(value)
 	}

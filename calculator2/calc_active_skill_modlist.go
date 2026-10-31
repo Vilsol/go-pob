@@ -400,12 +400,12 @@ func getSourceGemPropertyInfo(env *Environment, activeSkill *ActiveSkill) []supp
 	return info
 }
 
-// weaponDataView is the part of actor.weaponData1/2 getWeaponFlags reads. cannotUseGemTag is not read:
-// the parser keeps no value for it.
+// weaponDataView is the part of actor.weaponData1/2 getWeaponFlags reads.
 type weaponDataView struct {
-	asThoughUsing map[string]bool
-	typ           string
-	countsAsAll1H bool
+	asThoughUsing   map[string]bool
+	typ             string
+	countsAsAll1H   bool
+	cannotUseGemTag string
 }
 
 func actorWeaponData(actor *Actor, i int) weaponDataView {
@@ -416,6 +416,7 @@ func actorWeaponData(actor *Actor, i int) weaponDataView {
 	slot := "Weapon " + strconv.Itoa(i)
 	if item := actor.ItemList[slot]; item != nil && item.WeaponData[i] != nil {
 		_, w.countsAsAll1H = item.WeaponData[i]["countsAsAll1H"]
+		w.cannotUseGemTag = item.WeaponDataStr[i]["cannotUseGemTag"]
 	}
 	return w
 }
@@ -443,10 +444,13 @@ func checkAsThoughWeaponTypes(weaponData weaponDataView, weaponTypes []map[strin
 // flags, hasInfo where it returns info.
 //
 //pob2:src/Modules/CalcActiveSkill.lua:318-354
-func getWeaponFlags(weaponData weaponDataView, weaponTypes []map[string]bool) (mod.MFlag, bool, weaponType, bool) {
+func getWeaponFlags(weaponData weaponDataView, weaponTypes []map[string]bool, gemTags map[string]bool) (mod.MFlag, bool, weaponType, bool) {
 	info, hasInfo := weaponTypeInfo[weaponData.typ]
 	if !hasInfo {
 		return 0, false, info, false
+	}
+	if weaponData.cannotUseGemTag != "" && gemTags != nil && gemTags[weaponData.cannotUseGemTag] {
+		return 0, false, info, true
 	}
 	for _, types := range weaponTypes {
 		if !types[weaponData.typ] &&
@@ -578,6 +582,10 @@ func buildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 	skillTypes := activeSkill.SkillTypes
 	activeEffect := activeSkill.ActiveEffect
 	activeGrantedEffect := activeEffect.GrantedEffect
+	var activeGemTags map[string]bool
+	if activeEffect.GemData != nil {
+		activeGemTags = gemTags(activeEffect.GemData.Data)
+	}
 	activeStatSet := activeEffect.StatSet.StatSet
 	skillFlags := activeEffect.StatSet.SkillFlags
 	if skillFlags == nil {
@@ -653,7 +661,7 @@ func buildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 				weaponTypes = append(weaponTypes, skillEffect.GrantedEffect.WeaponTypes)
 			}
 		}
-		weapon1Flags, weapon1OK, weapon1Info, weapon1HasInfo := getWeaponFlags(actorWeaponData(activeSkill.Actor, 1), weaponTypes)
+		weapon1Flags, weapon1OK, weapon1Info, weapon1HasInfo := getWeaponFlags(actorWeaponData(activeSkill.Actor, 1), weaponTypes, activeGemTags)
 		if !weapon1OK && activeSkill.SummonSkill != nil {
 			// Minion skills seem to ignore weapon types
 			weapon1Info, weapon1HasInfo = weaponTypeInfo["None"], true
@@ -680,7 +688,7 @@ func buildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 			activeSkill.DisableReason = "Main Hand weapon is not usable with this skill"
 		}
 		if !skillTypes["MainHandOnly"] && !skillFlags["forceMainHand"] {
-			weapon2Flags, weapon2OK, _, weapon2HasInfo := getWeaponFlags(actorWeaponData(activeSkill.Actor, 2), weaponTypes)
+			weapon2Flags, weapon2OK, _, weapon2HasInfo := getWeaponFlags(actorWeaponData(activeSkill.Actor, 2), weaponTypes, activeGemTags)
 			if weapon2OK {
 				if skillTypes["DualWieldRequiresDifferentTypes"] && activeSkill.Actor.WeaponData1Type == activeSkill.Actor.WeaponData2Type {
 					// Skill requires a different compatible off hand weapon to main hand weapon
@@ -1225,8 +1233,8 @@ func upperFirst(s string) string {
 	return string(s[0]-'a'+'A') + s[1:]
 }
 
-// setupWeaponData gets the weapon data tables for the equipped weapons. countsAsDualWielding and the
-// Facebreaker damage fields are not ported.
+// setupWeaponData gets the weapon data tables for the equipped weapons. countsAsDualWielding is not
+// ported.
 //
 //pob2:block:src/Modules/CalcSetup.lua:2119-2153
 func setupWeaponData(env *Environment) {
@@ -1254,6 +1262,14 @@ func setupWeaponData(env *Environment) {
 				env.Player.WeaponData1AsThoughUsing = map[string]bool{}
 			}
 			env.Player.WeaponData1AsThoughUsing["One Hand Mace"] = true
+		}
+		if weapon1 == nil && env.ModDB.Flag(nil, "UseFacebreakerItemDamage") {
+			env.Player.WeaponData1FacebreakerItemDamage = true
+			env.Player.WeaponData1Facebreaker = map[string]float64{}
+			for _, damageType := range []string{"Physical", "Lightning", "Cold", "Fire", "Chaos"} {
+				env.Player.WeaponData1Facebreaker["Facebreaker"+damageType+"Min"] = env.ModDB.Sum(mod.TypeBase, nil, "Facebreaker"+damageType+"Min")
+				env.Player.WeaponData1Facebreaker["Facebreaker"+damageType+"Max"] = env.ModDB.Sum(mod.TypeBase, nil, "Facebreaker"+damageType+"Max")
+			}
 		}
 	} else if weapon2.WeaponData[2] != nil {
 		env.Player.WeaponData2Type = weapon2.Base.Type

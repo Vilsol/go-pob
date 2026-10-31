@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PathOfBuilding2>
+	<Build ascendClassName="None" characterLevelAutoMode="false" className="Warrior" level="60" mainSocketGroup="1" targetVersion="0_1" viewMode="TREE">
+	</Build>
+	<Config activeConfigSet="1">
+		<ConfigSet id="1" title="Default">
+			<CustomModifierBlock enabled="true" title="Default"></CustomModifierBlock>
+		</ConfigSet>
+	</Config>
+	<Items activeItemSet="1" useSecondWeaponSet="false">
+		<Item id="1">
+			Rarity: UNIQUE
+Bloodbarrier
+Iron Buckler
+Item Level: 75
+LevelReq: 1
+Implicits: 0
+Grants Skill: Parry
+15% increased Block chance
+Inflict Corrupted Blood for 5 seconds on Block, dealing 50% of
+your maximum Life as Physical damage per second
+		</Item>
+		<ItemSet id="1" title="Default" useSecondWeaponSet="false">
+			<Slot itemId="1" name="Weapon 2"/>
+		</ItemSet>
+	</Items>
+	<Skills activeSkillSet="1" defaultGemLevel="normalMaximum" defaultGemQuality="0">
+		<SkillSet id="1">
+			<Skill enabled="true" includeInFullDPS="nil" label="" mainActiveSkill="1" mainActiveSkillCalcs="nil" set1="true" set2="false" slot="Weapon 2" source="Item:1:Bloodbarrier, Iron Buckler">
+				<Gem corruptLevel="0" corrupted="false" count="1" enableGlobal1="true" enableGlobal2="true" enabled="true" level="1" nameSpec="Bloodbarrier" quality="0" skillId="BloodbarrierPlayer"/>
+			</Skill>
+		</SkillSet>
+	</Skills>
+	<Tree activeSpec="1">
+		<Spec ascendClassId="0" classId="6" masteryEffects="" nodes="" secondaryAscendClassId="nil" treeVersion="0_5">
+		</Spec>
+	</Tree>
+</PathOfBuilding2>

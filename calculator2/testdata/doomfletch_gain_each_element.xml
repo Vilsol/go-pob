@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PathOfBuilding2>
+	<Build ascendClassName="None" characterLevelAutoMode="false" className="Ranger" level="60" mainSocketGroup="1" targetVersion="0_1" viewMode="TREE">
+	</Build>
+	<Config activeConfigSet="1">
+		<ConfigSet id="1" title="Default">
+			<CustomModifierBlock enabled="true" title="Default"></CustomModifierBlock>
+		</ConfigSet>
+	</Config>
+	<Items activeItemSet="1" useSecondWeaponSet="false">
+		<Item id="1">
+			Rarity: UNIQUE
+Doomfletch
+Composite Bow
+Variant: Pre 0.4.0
+Variant: Current
+Selected Variant: 2
+Item Level: 81
+LevelReq: 1
+Implicits: 0
+Adds 6 to 11 Physical Damage
++10 to Dexterity
+{variant:1}Attacks with this Weapon gain 50% of Physical damage as Extra damage of each Element
+{variant:2}Attacks with this Weapon gain 115% of Physical damage as Extra damage of each Element
+		</Item>
+		<ItemSet id="1" title="Default" useSecondWeaponSet="false">
+			<Slot itemId="1" name="Weapon 1"/>
+		</ItemSet>
+	</Items>
+	<Skills activeSkillSet="1" defaultGemLevel="normalMaximum" defaultGemQuality="0">
+		<SkillSet id="1">
+			<Skill enabled="true" includeInFullDPS="nil" label="" mainActiveSkill="1" mainActiveSkillCalcs="nil" set1="true" set2="true">
+				<Gem corruptLevel="0" corrupted="false" count="1" enableGlobal1="true" enableGlobal2="true" enabled="true" gemId="Metadata/Items/Gem/SkillGemPlayerDefaultBow" level="10" nameSpec="Bow Shot" quality="0" skillId="MeleeBowPlayer" variantId="PlayerDefaultBow"/>
+			</Skill>
+		</SkillSet>
+	</Skills>
+	<Tree activeSpec="1">
+		<Spec ascendClassId="0" classId="2" masteryEffects="" nodes="" secondaryAscendClassId="nil" treeVersion="0_5">
+		</Spec>
+	</Tree>
+</PathOfBuilding2>

@@ -708,7 +708,9 @@ func initEnv(env *Environment) {
 
 	addSlotBonusEffects(env, canUseBonded)
 
-	setupSkills(env)
+	if setupSkills(env) {
+		return
+	}
 	setupGemCounts(env)
 }
 

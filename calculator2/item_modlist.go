@@ -496,6 +496,14 @@ func (i *Item) BuildModListForSlotNum(baseList []mod.Mod, slotNum int) []mod.Mod
 			if k, val, ok := keyValue(v); ok {
 				if f, ok := toFloat(val); ok {
 					weaponData[k] = f
+				} else if str, ok := val.(string); ok {
+					if i.WeaponDataStr == nil {
+						i.WeaponDataStr = map[int]map[string]string{}
+					}
+					if i.WeaponDataStr[slotNum] == nil {
+						i.WeaponDataStr[slotNum] = map[string]string{}
+					}
+					i.WeaponDataStr[slotNum][k] = str
 				}
 			}
 		}
@@ -728,6 +736,7 @@ func (i *Item) BuildModList() {
 	switch {
 	case i.Base.Weapon != nil:
 		i.WeaponData = map[int]map[string]float64{}
+		i.WeaponDataStr = nil
 	case i.Base.Armour != nil:
 		if i.ArmourData == nil {
 			i.ArmourData = map[string]float64{}

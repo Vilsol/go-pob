@@ -549,7 +549,7 @@ func getCharacterMeleeSkillClass(item *Item) string {
 // skills and the main skill.
 //
 //pob2:block:src/Modules/CalcSetup.lua:1823-2462
-func setupSkills(env *Environment) {
+func setupSkills(env *Environment) bool {
 	env.loadData()
 	if env.SocketGroupList == nil {
 		env.SocketGroupList = loadSocketGroups(env)
@@ -838,20 +838,26 @@ func setupSkills(env *Environment) {
 		// Generated groups can become the selected main group, most notably when an
 		// imported build contains only a skill granted by a swapped weapon. Restart
 		// before weapon data and modifiers are consumed if that changes the context.
-		// Nothing before this point reads the main group but the weapon set, so only a changed weapon
-		// set needs the restart, which is not ported.
 		//pob2:block:src/Modules/CalcSetup.lua:2105-2116
-		resolvedMainSocketGroup := min(max(len(env.SocketGroupList), 1), build.Build.MainSocketGroup)
-		var resolvedGroup *SocketGroup
-		if resolvedMainSocketGroup >= 1 && resolvedMainSocketGroup <= len(env.SocketGroupList) {
-			resolvedGroup = env.SocketGroupList[resolvedMainSocketGroup-1]
-		}
-		if resolvedMainSocketGroup != env.MainSocketGroup {
-			build.Build.MainSocketGroup = resolvedMainSocketGroup
-			env.MainSocketGroup = resolvedMainSocketGroup
-		}
-		if getSocketGroupWeaponSet(env, resolvedGroup) != env.WeaponSet {
-			env.weaponSetRestart = true
+		if env.override.WeaponSet == 0 {
+			resolvedMainSocketGroup := min(max(len(env.SocketGroupList), 1), build.Build.MainSocketGroup)
+			var resolvedGroup *SocketGroup
+			if resolvedMainSocketGroup >= 1 && resolvedMainSocketGroup <= len(env.SocketGroupList) {
+				resolvedGroup = env.SocketGroupList[resolvedMainSocketGroup-1]
+			}
+			resolvedWeaponSet := getSocketGroupWeaponSet(env, resolvedGroup)
+			if resolvedMainSocketGroup != env.MainSocketGroup || resolvedWeaponSet != env.WeaponSet {
+				build.Build.MainSocketGroup = resolvedMainSocketGroup
+				resolvedOverride := env.override
+				resolvedOverride.MainSocketGroup = resolvedMainSocketGroup
+				resolvedOverride.WeaponSet = resolvedWeaponSet
+				weaponSetChanged := resolvedWeaponSet != env.WeaponSet
+				restarted := newWeaponSetEnv(env, env.Mode, resolvedOverride)
+				initEnv(restarted)
+				*env = *restarted
+				env.weaponSetRestart = weaponSetChanged
+				return true
+			}
 		}
 	}
 
@@ -1164,6 +1170,7 @@ func setupSkills(env *Environment) {
 	modDB.Multipliers["StrengthMoteSkillCount"] = virtuousMoteSkillCount["Str"]
 	modDB.Multipliers["DexterityMoteSkillCount"] = virtuousMoteSkillCount["Dex"]
 	modDB.Multipliers["IntelligenceMoteSkillCount"] = virtuousMoteSkillCount["Int"]
+	return false
 }
 
 // explodeSourceKey is explodeSource.modSource or explodeSource.id: an item's modSource, a node's id.

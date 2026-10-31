@@ -4075,9 +4075,8 @@ var specialModList = map[string]interface{}{
 	`has (\d+) sockets?`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("SocketCount", "BASE", num)}, ""
 	},
-	"no physical damage": []mod.Mod{MOD("WeaponData", "LIST", mod.WeaponData{Key: "PhysicalMin"}), MOD("WeaponData", "LIST", mod.WeaponData{Key: "PhysicalMax"}), MOD("WeaponData", "LIST", mod.WeaponData{Key: "PhysicalDPS"})},
-	// PoB's value is the string "ammunition"; WeaponData holds numbers, so it reads as unset, as the shipped ModCache row does.
-	"cannot load or fire ammunition": []mod.Mod{MOD("WeaponData", "LIST", mod.WeaponData{Key: "cannotUseGemTag", Unset: true})},
+	"no physical damage":             []mod.Mod{MOD("WeaponData", "LIST", mod.WeaponData{Key: "PhysicalMin"}), MOD("WeaponData", "LIST", mod.WeaponData{Key: "PhysicalMax"}), MOD("WeaponData", "LIST", mod.WeaponData{Key: "PhysicalDPS"})},
+	"cannot load or fire ammunition": []mod.Mod{MOD("WeaponData", "LIST", LuaTable{"key": "cannotUseGemTag", "value": "ammunition"})},
 	`has (\d+)% increased elemental damage`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("LocalElementalDamage", "INC", num)}, ""
 	},
@@ -4464,8 +4463,9 @@ var specialModList = map[string]interface{}{
 	`gain (\d+)% of weapon physical damage as extra damage of each element`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("PhysicalDamageGainAsLightning", "BASE", num).Flag(ModFlagWeapon), MOD("PhysicalDamageGainAsCold", "BASE", num).Flag(ModFlagWeapon), MOD("PhysicalDamageGainAsFire", "BASE", num).Flag(ModFlagWeapon)}, ""
 	},
+	// PoB passes nil before the tags, so they land at [2] and later and ModStore's ipairs never reads them.
 	`attacks with this weapon gain (\d+)% of physical damage as extra damage of each element`: func(num float64, captures []string) ([]mod.Mod, string) {
-		return []mod.Mod{MOD("PhysicalDamageGainAsLightning", "BASE", num).Tag(mod.Condition("{Hand}Attack"), mod.SkillType("Attack")), MOD("PhysicalDamageGainAsCold", "BASE", num).Tag(mod.Condition("{Hand}Attack"), mod.SkillType("Attack")), MOD("PhysicalDamageGainAsFire", "BASE", num).Tag(mod.Condition("{Hand}Attack"), mod.SkillType("Attack"))}, ""
+		return []mod.Mod{MOD("PhysicalDamageGainAsLightning", "BASE", num), MOD("PhysicalDamageGainAsCold", "BASE", num), MOD("PhysicalDamageGainAsFire", "BASE", num)}, ""
 	},
 	`gain (\d+)% of physical damage as extra damage of each element per spirit charge`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("PhysicalDamageGainAsLightning", "BASE", num).Tag(mod.Multiplier("SpiritCharge")), MOD("PhysicalDamageGainAsCold", "BASE", num).Tag(mod.Multiplier("SpiritCharge")), MOD("PhysicalDamageGainAsFire", "BASE", num).Tag(mod.Multiplier("SpiritCharge"))}, ""
@@ -5674,16 +5674,17 @@ var specialModList = map[string]interface{}{
 	"spells [hf][ai][vr]e an additional projectile":          []mod.Mod{MOD("ProjectileCount", "BASE", 1).Flag(ModFlagSpell)},
 	"attacks fire an additional projectile":                  []mod.Mod{MOD("ProjectileCount", "BASE", 1).Flag(ModFlagAttack)},
 	"attacks have an additional projectile when in off hand": []mod.Mod{MOD("ProjectileCount", "BASE", 1).Flag(ModFlagAttack).Tag(mod.SlotNumber(int(2)))},
+	// PoB passes nil before the tags, so they land at [2] and later and ModStore's ipairs never reads them.
 	`caustic arrow and scourge arrow fire (\d+)% more projectiles`: func(num float64, captures []string) ([]mod.Mod, string) {
-		return []mod.Mod{MOD("ProjectileCount", "MORE", num).Tag(mod.SkillName("Caustic Arrow", "Scourge Arrow").Transfigured(true))}, ""
+		return []mod.Mod{MOD("ProjectileCount", "MORE", num)}, ""
 	},
 	`essence drain and soulrend fire (\d+) additional projectiles`: func(num float64, captures []string) ([]mod.Mod, string) {
-		return []mod.Mod{MOD("ProjectileCount", "BASE", num).Tag(mod.SkillName("Essence Drain", "Soulrend").Transfigured(true))}, ""
+		return []mod.Mod{MOD("ProjectileCount", "BASE", num)}, ""
 	},
 	`(\d+)% reduced essence drain and soulrend projectile speed`: func(num float64, captures []string) ([]mod.Mod, string) {
-		return []mod.Mod{MOD("ProjectileSpeed", "INC", -num).Tag(mod.SkillName("Essence Drain", "Soulrend").Transfigured(true))}, ""
+		return []mod.Mod{MOD("ProjectileSpeed", "INC", -num)}, ""
 	},
-	"tornado shot fires an additional secondary projectile": []mod.Mod{MOD("tornadoShotSecondaryProjectiles", "BASE", 1).Tag(mod.SkillName("Tornado Shot"))},
+	"tornado shot fires an additional secondary projectile": []mod.Mod{MOD("tornadoShotSecondaryProjectiles", "BASE", 1)},
 	"projectiles pierce an additional target":               []mod.Mod{MOD("PierceCount", "BASE", 1)},
 	"projectiles pierce enemies with fully broken armour":   []mod.Mod{MOD("PierceCount", "BASE", 1).Tag(mod.Condition("ArmourFullyBroken"))},
 	`projectiles pierce (\d+) targets?`: func(num float64, captures []string) ([]mod.Mod, string) {
@@ -6972,11 +6973,12 @@ var specialModList = map[string]interface{}{
 	`(\d+)% increased cost of arc and crackling lance`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("Cost", "INC", num).Tag(mod.SkillName("Arc", "Crackling Lance").Transfigured(true))}, ""
 	},
+	// PoB passes nil before the tags, so they land at [2] and later and ModStore's ipairs never reads them.
 	`hits overwhelm (\d+)% of physical damage reduction while you have sacrificial zeal`: func(num float64, captures []string) ([]mod.Mod, string) {
-		return []mod.Mod{MOD("EnemyPhysicalDamageReduction", "BASE", -num).Tag(mod.Condition("SacrificialZeal"))}, ""
+		return []mod.Mod{MOD("EnemyPhysicalDamageReduction", "BASE", -num)}, ""
 	},
 	`(\d+)% chance for hits to ignore enemy physical damage reduction while you have sacrificial zeal`: func(num float64, captures []string) ([]mod.Mod, string) {
-		return []mod.Mod{MOD("ChanceToIgnoreEnemyPhysicalDamageReduction", "BASE", num).Tag(mod.Condition("SacrificialZeal"))}, ""
+		return []mod.Mod{MOD("ChanceToIgnoreEnemyPhysicalDamageReduction", "BASE", num)}, ""
 	},
 	`minions attacks overwhelm (\d+)% physical damage reduction`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("MinionModifier", "LIST", mod.MinionModifier{Mod: MOD("EnemyPhysicalDamageReduction", "BASE", -num).Tag(mod.SkillType("Attack"))})}, ""

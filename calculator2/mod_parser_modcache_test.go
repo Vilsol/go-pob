@@ -1254,7 +1254,7 @@ var mpSkillTypeNumber = map[string]int{
 }
 
 // mpModCacheAgreeFloor is the number of ModCache lines ParseMod must agree with PoB-PoE2 on; it only goes up.
-const mpModCacheAgreeFloor = 9988
+const mpModCacheAgreeFloor = 9998
 
 func TestModCacheVsPoB(t *testing.T) {
 	rows, n, keys := mpcDiff(t)

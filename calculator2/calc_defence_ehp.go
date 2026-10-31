@@ -526,8 +526,7 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 		if v, ok := configInputNumber(env, "EHPUnluckyWorstOf"); ok {
 			worstOf = v
 		}
-		// output.specificTypeAvoidance is a boolean calcs.defence sets; it is read as its float here.
-		specificTypeAvoidance := output["specificTypeAvoidance"] != 0
+		specificTypeAvoidance := actor.SpecificTypeAvoidance
 		avoidProjectiles := output["AvoidProjectilesChance"]
 		if specificTypeAvoidance {
 			avoidProjectiles = 0
@@ -1223,7 +1222,7 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 				DamageIn.energyShieldWhenHit = 0
 				DamageIn.wardWhenHit = 0
 			}
-			specificTypeAvoidance := output["specificTypeAvoidance"] != 0
+			specificTypeAvoidance := actor.SpecificTypeAvoidance
 			for _, damageType := range dmgTypeList {
 				AvoidChance := 0.0
 				if specificTypeAvoidance {

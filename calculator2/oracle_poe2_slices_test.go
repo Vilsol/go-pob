@@ -33,9 +33,9 @@ var offenceSliceStats = []string{
 	"EnemyStunDuration", "EnemyStunThresholdMod", "LifePerSecondCost",
 }
 
-const poe2OffenceMatchedFloor = 540000
+const poe2OffenceMatchedFloor = 540242
 
-const poe2SkillsOnMatchedFloor = 179999
+const poe2SkillsOnMatchedFloor = 180000
 
 type poe2SliceGrade struct {
 	records, built, failed                         int

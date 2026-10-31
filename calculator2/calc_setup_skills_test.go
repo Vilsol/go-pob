@@ -7,6 +7,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/MarvinJWendt/testza"
+
 	"github.com/Vilsol/go-pob/data/poe2"
 	"github.com/Vilsol/go-pob/data/poe2skills"
 	"github.com/Vilsol/go-pob/data/tree2"
@@ -248,5 +250,37 @@ func TestDefaultAttackGroups(t *testing.T) {
 	}
 	if strings.Join(got, ",") != "Weapon 1:Melee1HMacePlayer:true" {
 		t.Fatalf("Default Attack groups %v", got)
+	}
+}
+
+// The expected values are PoB-PoE2's for the same file, loaded headless: with no weapon the Default
+// Attack group is removed, the main group index lands on a group assigned only to the other weapon set,
+// and initEnv restarts in that set's context, so the main skill is one of the active skills.
+func TestMainGroupWeaponSetRestartFixture(t *testing.T) {
+	raw, err := os.ReadFile("testdata/main_group_other_weapon_set.xml")
+	testza.AssertNoError(t, err)
+	tree := loadTestTree(t)
+	for _, withItems := range []bool{false, true} {
+		build, err := pob2.ParseBuild(raw)
+		testza.AssertNoError(t, err)
+		opts := Options{Tree: tree}
+		if withItems {
+			opts.Items = NewItemsTab(build, tree, nil)
+		}
+		env, err := BuildOutput(build, opts)
+		testza.AssertNoError(t, err)
+
+		names := make([]string, 0, len(env.Player.ActiveSkillList))
+		inList := false
+		for _, s := range env.Player.ActiveSkillList {
+			names = append(names, s.ActiveEffect.GrantedEffect.Name)
+			inList = inList || s == env.Player.MainSkill
+		}
+		testza.AssertEqual(t, []string{"Twister", "Skeletal Sniper Minion"}, names)
+		testza.AssertEqual(t, "Twister", env.Player.MainSkill.ActiveEffect.GrantedEffect.Name)
+		testza.AssertTrue(t, inList, "main skill is in the active skill list")
+		testza.AssertEqual(t, 1, env.MainSocketGroup)
+		testza.AssertEqual(t, 1, env.WeaponSet)
+		testza.AssertEqual(t, 2, len(env.SocketGroupList))
 	}
 }

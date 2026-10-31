@@ -58,3 +58,19 @@ func TestTimelessJewelConquersNodes(t *testing.T) {
 		})
 	}
 }
+
+// The expected values are PoB-PoE2's for the same file loaded headless: the seed line has its own
+// ModCache row, and Vorana's jewel still conquers Resolute Technique into Black Scythe Training.
+func TestTimelessJewelModCacheSeedConquersKeystone(t *testing.T) {
+	raw, err := os.ReadFile("testdata/timeless_kalguur_keystone.xml")
+	testza.AssertNoError(t, err)
+	build, err := pob2.ParseBuild(raw)
+	testza.AssertNoError(t, err)
+	tree := loadTestTree(t)
+	env, err := BuildOutput(build, Options{Tree: tree, Items: NewItemsTab(build, tree, nil)})
+	testza.AssertNoError(t, err)
+	testza.AssertEqual(t, "Black Scythe Training", env.Spec.Nodes[44017].Dn)
+	testza.AssertTrue(t, env.ModDB.Flag(nil, "NoStrBonusToLife"))
+	testza.AssertEqual(t, 7.0, env.ModDB.Sum("INC", nil, "EnergyShield"))
+	testza.AssertEqual(t, 794.0, env.Player.Output["Life"])
+}

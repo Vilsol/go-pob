@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/Vilsol/go-pob/mod"
+	"github.com/Vilsol/go-pob/moddb"
 )
 
 // Expected mods are rows of PoB-PoE2's shipped src/Data/ModCache.lua.
@@ -177,5 +178,28 @@ func TestParseModIntegratedEfficiencyFlags(t *testing.T) {
 				t.Errorf("%s %q: got %s %s flag %v value %v, want %s FLAG %v", label, line, m.Name(), m.Type(), m.Value().Flag(), m.Value().Float(), w.name, w.value)
 			}
 		}
+	}
+}
+
+// ModStore:ScaleAddMod scales a table value's mod: a quarter of Grip of Kulemak's "-10% to Fire
+// Resistance" grant is m_modf(round(-2.5, 2)), the -2 PoB-PoE2 records for a 25% Ring Bonus Effect.
+func TestScaleAddModScalesLuaTableMod(t *testing.T) {
+	mods, _ := ParseMod("Abyssal Wasting also applies -10% to Fire Resistance")
+	if len(mods) != 1 {
+		t.Fatalf("parsed %d mods", len(mods))
+	}
+	db := moddb.NewModDB()
+	db.Rules = kernelRules
+	db.ScaleAddMod(mods[0], 0.25, false)
+	got := db.List(nil, "AbyssalWastingAlsoGrants")
+	if len(got) != 1 {
+		t.Fatalf("listed %d values", len(got))
+	}
+	inner := got[0].(LuaTable)["mod"].(mod.Mod)
+	if v := inner.Value().Float(); v != -2 {
+		t.Errorf("scaled FireResist: PoB-PoE2 -2, ours %v", v)
+	}
+	if v := mods[0].Value().ValueList.(LuaTable)["mod"].(mod.Mod).Value().Float(); v != -10 {
+		t.Errorf("the parsed mod changed to %v", v)
 	}
 }

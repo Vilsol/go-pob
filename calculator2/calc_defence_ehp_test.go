@@ -2,7 +2,10 @@ package calculator2
 
 import (
 	"math"
+	"os"
 	"testing"
+
+	"github.com/MarvinJWendt/testza"
 
 	"github.com/Vilsol/go-pob/moddb"
 	"github.com/Vilsol/go-pob/pob2"
@@ -78,6 +81,24 @@ func TestEnemyConfigPlaceholders(t *testing.T) {
 		}
 		if pen, ok := p["enemyColdPen"]; ok != c.hasPen || pen != c.pen {
 			t.Errorf("%s: cold pen %v (set %v), PoB %v (set %v)", c.boss, pen, ok, c.pen, c.hasPen)
+		}
+	}
+}
+
+// The expected values are PoB-PoE2's for the same file, loaded headless: a chance to avoid a damage
+// type sets output.specificTypeAvoidance, so the EHP pass averages each type's avoidance.
+func TestEHPSpecificTypeAvoidanceFixture(t *testing.T) {
+	raw, err := os.ReadFile("testdata/avoid_damage_types.xml")
+	testza.AssertNoError(t, err)
+	build, err := pob2.ParseBuild(raw)
+	testza.AssertNoError(t, err)
+	tree := loadTestTree(t)
+	env, err := BuildOutput(build, Options{Tree: tree, Items: NewItemsTab(build, tree, nil)})
+	testza.AssertNoError(t, err)
+	testza.AssertTrue(t, env.Player.SpecificTypeAvoidance)
+	for stat, want := range map[string]float64{"ConfiguredDamageChance": 89.4, "TotalEHP": 668.63585774864, "NumberOfMitigatedDamagingHits": 0.15747429527759} {
+		if got := env.Player.Output[stat]; math.Abs(got-want) > 1e-6*math.Max(1, want) {
+			t.Errorf("%s: PoB-PoE2 %v, ours %v", stat, want, got)
 		}
 	}
 }

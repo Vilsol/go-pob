@@ -334,8 +334,8 @@ type defenceResource struct {
 	totalBase       float64
 }
 
-// Boolean outputs (EnergyShieldRechargeAppliesTo*, specificTypeAvoidance, the *Immunity flags,
-// showDebuffExpirationModifier) are not carried by this float output table.
+// Boolean outputs (EnergyShieldRechargeAppliesTo*, the *Immunity flags, showDebuffExpirationModifier)
+// are not carried by this float output table; specificTypeAvoidance is Actor.SpecificTypeAvoidance.
 //
 //pob2:src/Modules/CalcDefence.lua:790-2051
 func defence(env *Environment, actor *Actor) {
@@ -1361,8 +1361,12 @@ func defenceAvoidance(actor *Actor, spellSuppressionChance float64) {
 
 	//pob2:block:src/Modules/CalcDefence.lua:1965-1977
 	avoidChanceCap := miscConstant("AvoidChanceCap")
+	actor.SpecificTypeAvoidance = false
 	for _, damageType := range dmgTypeList {
 		output["Avoid"+damageType+"DamageChance"] = math.Min(modDB.Sum(mod.TypeBase, nil, "Avoid"+damageType+"DamageChance"), avoidChanceCap)
+		if output["Avoid"+damageType+"DamageChance"] > 0 {
+			actor.SpecificTypeAvoidance = true
+		}
 	}
 	output["AvoidProjectilesChance"] = math.Min(modDB.Sum(mod.TypeBase, nil, "AvoidProjectilesChance"), avoidChanceCap)
 	output["AvoidAllDamageFromHitsChance"] = math.Min(modDB.Sum(mod.TypeBase, nil, "AvoidAllDamageFromHitsChance"), avoidChanceCap)

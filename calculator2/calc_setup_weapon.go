@@ -19,7 +19,7 @@ var unarmedWeaponData = map[int]map[string]float64{
 // weaponData is actor.weaponData<i>'s numbers as CalcSetup sets them: the equipped weapon's
 // weaponData[i], else a copy of the class's unarmed data for the main hand, else an empty table.
 // Its type and asThoughUsing are Actor.WeaponData<i>Type and WeaponData<i>AsThoughUsing.
-// countsAsDualWielding and Facebreaker's item damage are not carried: the item data has no flag for them.
+// countsAsDualWielding is not carried: the item data has no flag for it.
 //
 //pob2:block:src/Modules/CalcSetup.lua:2120-2153
 func weaponData(env *Environment, actor *Actor, i int) map[string]float64 {
@@ -27,7 +27,11 @@ func weaponData(env *Environment, actor *Actor, i int) map[string]float64 {
 		if item := actor.ItemList["Weapon 1"]; item != nil && item.WeaponData[1] != nil {
 			return item.WeaponData[1]
 		}
-		return unarmedWeaponDataFor(env)
+		out := unarmedWeaponDataFor(env)
+		for k, v := range actor.WeaponData1Facebreaker {
+			out[k] = v
+		}
+		return out
 	}
 	item := actor.ItemList["Weapon 2"]
 	if item == nil {

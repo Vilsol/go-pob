@@ -87,7 +87,7 @@ type Environment struct {
 	useAltGemQualityStats bool
 	// sourceGemPropertyInfo is env.sourceGemPropertyInfo.
 	sourceGemPropertyInfo map[*GemInstance][]supportedGemProperty
-	// weaponSetRestart is set where calcs.initEnv would restart for the main group's other weapon set.
+	// weaponSetRestart is set where calcs.initEnv restarted for the main group's other weapon set.
 	weaponSetRestart bool
 
 	// override is calcs.initEnv's override.
@@ -291,6 +291,8 @@ type Actor struct {
 	ModDB  *moddb.ModDB
 	Level  int
 	Output map[string]float64
+	// SpecificTypeAvoidance is output.specificTypeAvoidance, a boolean the float output table does not hold.
+	SpecificTypeAvoidance bool
 
 	Player *Actor
 	Enemy  *Actor
@@ -308,6 +310,10 @@ type Actor struct {
 	// WeaponData1AsThoughUsing and WeaponData2AsThoughUsing are actor.weaponData1/2.asThoughUsing.
 	WeaponData1AsThoughUsing map[string]bool
 	WeaponData2AsThoughUsing map[string]bool
+	// WeaponData1FacebreakerItemDamage is actor.weaponData1.FacebreakerItemDamage, and
+	// WeaponData1Facebreaker its Facebreaker<type>Min/Max entries.
+	WeaponData1FacebreakerItemDamage bool
+	WeaponData1Facebreaker           map[string]float64
 	// WeaponData1 and WeaponData2 are actor.weaponData1/2's numbers, as weaponData gives them.
 	WeaponData1 map[string]float64
 	WeaponData2 map[string]float64

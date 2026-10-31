@@ -162,6 +162,19 @@ func (l LuaTable) Clone(pointer bool) mod.Cloneable {
 	return out
 }
 
+// ScaleNestedMod scales value.mod, as ModStore:ScaleAddMod does for a table value that carries one.
+//
+//pob2:block:src/Classes/ModStore.lua:93-97
+func (l LuaTable) ScaleNestedMod(scale func(mod.Mod, float64) float64) mod.Cloneable {
+	out := l.Clone(false).(LuaTable)
+	if m, ok := out["mod"].(mod.Mod); ok {
+		if v := m.Value(); v != nil && v.Type() == mod.ModValueMultiTypeFloat {
+			v.SetFloat(scale(m, v.Float()))
+		}
+	}
+	return out
+}
+
 // tonumber is Lua's tonumber for a capture: 0 where Lua gives nil, without the warning utils.Float logs.
 func tonumber(s string) float64 {
 	n, err := strconv.ParseFloat(strings.TrimSpace(s), 64)

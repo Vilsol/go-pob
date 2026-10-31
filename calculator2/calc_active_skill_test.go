@@ -77,3 +77,22 @@ func TestCompanionBuffNamedPerMinion(t *testing.T) {
 	testza.AssertEqual(t, 20.0, out["CompanionAllyDamageMitigation"])
 	testza.AssertTrue(t, math.Abs(out["TotalEHP"]-1443.6059447274) < 1e-6, out["TotalEHP"])
 }
+
+// The expected flags are PoB-PoE2's for the same files, loaded headless: Trarthan Cannon's "Cannot load
+// or fire Ammunition" disables Permafrost Bolts, which the same skill on a plain crossbow fires.
+func TestWeaponCannotUseGemTagFixture(t *testing.T) {
+	for file, disabled := range map[string]bool{"crossbow_cannot_load_ammunition.xml": true, "crossbow_plain.xml": false} {
+		raw, err := os.ReadFile("testdata/" + file)
+		testza.AssertNoError(t, err)
+		build, err := pob2.ParseBuild(raw)
+		testza.AssertNoError(t, err)
+		tree := loadTestTree(t)
+		env, err := BuildOutput(build, Options{Tree: tree, Items: NewItemsTab(build, tree, nil)})
+		testza.AssertNoError(t, err)
+		testza.AssertEqual(t, "Crossbow", env.Player.WeaponData1Type)
+		flags := env.Player.MainSkill.SkillFlags
+		if flags["disable"] != disabled || flags["weapon1Attack"] == disabled {
+			t.Errorf("%s: PoB-PoE2 disable=%v weapon1Attack=%v, ours disable=%v weapon1Attack=%v", file, disabled, !disabled, flags["disable"], flags["weapon1Attack"])
+		}
+	}
+}

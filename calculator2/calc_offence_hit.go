@@ -424,7 +424,12 @@ func offencePasses(env *Environment, actor *Actor, activeSkill *ActiveSkill, ski
 			if skillFlags["unarmed"] {
 				source = &passSource{weapon: unarmedWeaponDataFor(env), typ: "None"}
 			}
-			// Facebreaker's item damage is not on the weapon data (CalcOffence.lua:2531-2536).
+			if actor.WeaponData1FacebreakerItemDamage && !skillFlags["unarmed"] && activeSkill.ActiveEffect.GrantedEffect.WeaponTypes != nil && activeSkill.ActiveEffect.GrantedEffect.WeaponTypes["One Hand Mace"] {
+				for _, damageType := range dmgTypeList {
+					source.set(damageType+"Min", source.weapon["Facebreaker"+damageType+"Min"])
+					source.set(damageType+"Max", source.weapon["Facebreaker"+damageType+"Max"])
+				}
+			}
 			if critOverride != nil && source.typ != "" && source.typ != "None" {
 				source.set("CritChance", critOverride.Float())
 			}

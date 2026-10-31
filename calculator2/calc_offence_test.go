@@ -1,6 +1,7 @@
 package calculator2
 
 import (
+	"math"
 	"os"
 	"testing"
 
@@ -120,4 +121,55 @@ func TestOffenceActiveMinionLimit(t *testing.T) {
 	}
 	testza.AssertEqual(t, 18.0, env.Player.Output["ActiveUnearthBoneConstructLimit"])
 	testza.AssertEqual(t, 18.0, env.Player.Output["ActiveMinionLimit"])
+}
+
+// The expected values are PoB-PoE2's for the same file, loaded headless: with both hands empty,
+// Facebreaker's own damage replaces the unarmed damage of a One Hand Mace attack.
+func TestOffenceFacebreakerItemDamageFixture(t *testing.T) {
+	raw, err := os.ReadFile("testdata/facebreaker_unarmed_mace.xml")
+	testza.AssertNoError(t, err)
+	build, err := pob2.ParseBuild(raw)
+	testza.AssertNoError(t, err)
+	tree := loadTestTree(t)
+	env, err := BuildOutput(build, Options{Tree: tree, Items: NewItemsTab(build, tree, nil)})
+	testza.AssertNoError(t, err)
+	for stat, want := range map[string]float64{"TotalDPS": 7.03085625, "AverageDamage": 4.261125, "PhysicalStoredCombinedAvg": 25.825, "Speed": 1.65} {
+		if got := env.Player.Output[stat]; math.Abs(got-want) > 1e-6*math.Max(1, want) {
+			t.Errorf("%s: PoB-PoE2 %v, ours %v", stat, want, got)
+		}
+	}
+}
+
+// The expected values are PoB-PoE2's for the same file, loaded headless: Doomfletch's gain of each
+// element carries no tags PoB reads, so every element gains the bow's full physical damage.
+func TestOffenceDoomfletchGainEachElementFixture(t *testing.T) {
+	raw, err := os.ReadFile("testdata/doomfletch_gain_each_element.xml")
+	testza.AssertNoError(t, err)
+	build, err := pob2.ParseBuild(raw)
+	testza.AssertNoError(t, err)
+	tree := loadTestTree(t)
+	env, err := BuildOutput(build, Options{Tree: tree, Items: NewItemsTab(build, tree, nil)})
+	testza.AssertNoError(t, err)
+	for stat, want := range map[string]float64{"TotalDPS": 142.272252, "AverageDamage": 118.56021, "LightningStoredCombinedAvg": 93.33, "FireStoredCombinedAvg": 93.33, "PhysicalStoredCombinedAvg": 80.886} {
+		if got := env.Player.Output[stat]; math.Abs(got-want) > 1e-6*math.Max(1, want) {
+			t.Errorf("%s: PoB-PoE2 %v, ours %v", stat, want, got)
+		}
+	}
+}
+
+// The expected values are PoB-PoE2's for the same file, loaded headless: Bloodbarrier's two-line grant
+// is read from its ModCache row, whose skill stats set Corrupted Blood's damage and duration.
+func TestOffenceBloodbarrierCachedSkillStatsFixture(t *testing.T) {
+	raw, err := os.ReadFile("testdata/bloodbarrier_corrupted_blood.xml")
+	testza.AssertNoError(t, err)
+	build, err := pob2.ParseBuild(raw)
+	testza.AssertNoError(t, err)
+	tree := loadTestTree(t)
+	env, err := BuildOutput(build, Options{Tree: tree, Items: NewItemsTab(build, tree, nil)})
+	testza.AssertNoError(t, err)
+	for stat, want := range map[string]float64{"CorruptingBloodDPS": 413, "Duration": 5.016, "TotalDotDPS": 413, "CombinedDPS": 413} {
+		if got := env.Player.Output[stat]; math.Abs(got-want) > 1e-6*math.Max(1, want) {
+			t.Errorf("%s: PoB-PoE2 %v, ours %v", stat, want, got)
+		}
+	}
 }
