@@ -636,6 +636,7 @@ func initEnv(env *Environment) {
 		env.MainSocketGroup = min(max(len(env.SocketGroupList), 1), env.override.MainSocketGroup)
 	} else {
 		env.MainSocketGroup = min(max(len(activeSkillSet(env)), 1), max(env.Build.Build.MainSocketGroup, 1))
+		env.Build.Build.MainSocketGroup = env.MainSocketGroup
 	}
 	if env.override.WeaponSet != 0 {
 		env.WeaponSet = env.override.WeaponSet

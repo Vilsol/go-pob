@@ -45,6 +45,11 @@ type poe2OracleRecord struct {
 	Output map[string]any `json:"output"`
 	// MinionOutput is env.minion.output, present only when the main skill has a minion.
 	MinionOutput map[string]any `json:"minionOutput"`
+	// OutputMainHand and OutputOffHand are output.MainHand/OffHand, present only when the main skill attacks.
+	OutputMainHand map[string]any `json:"outputMainHand"`
+	OutputOffHand  map[string]any `json:"outputOffHand"`
+	// MinionOutputMainHand is env.minion.output.MainHand; minionOutputOffHand carries no numbers.
+	MinionOutputMainHand map[string]any `json:"minionOutputMainHand"`
 }
 
 func loadPoE2Oracle(path string) ([]poe2OracleRecord, error) {

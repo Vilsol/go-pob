@@ -844,6 +844,7 @@ func perform(env *Environment) {
 	newMinionModDBs(env)
 
 	env.Player.Output = map[string]float64{}
+	env.Player.OutputMainHand, env.Player.OutputOffHand = nil, nil
 	env.Enemy.Output = map[string]float64{}
 
 	modDB := env.ModDB
@@ -858,6 +859,7 @@ func perform(env *Environment) {
 	if env.Minion != nil {
 		// Initialise minion modifier database
 		env.Minion.Output = map[string]float64{}
+		env.Minion.OutputMainHand, env.Minion.OutputOffHand = nil, nil
 		initMinionModDB(env, env.Player.MainSkill)
 	}
 

@@ -414,6 +414,7 @@ func offencePasses(env *Environment, actor *Actor, activeSkill *ActiveSkill, ski
 	if state.isAttack {
 		state.mainHand = map[string]float64{}
 		state.offHand = map[string]float64{}
+		actor.OutputMainHand, actor.OutputOffHand = state.mainHand, state.offHand
 		// output.PreciseTechnique is a boolean, which the output map does not hold.
 		critOverride := skillModList.Override(skillCfg, "WeaponBaseCritChance")
 		critChance, hasCritChance := sdNum(skillData, "CritChance")

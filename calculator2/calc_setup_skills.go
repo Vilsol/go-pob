@@ -603,9 +603,8 @@ func setupSkills(env *Environment) bool {
 		}
 		//pob2:block:src/Modules/CalcSetup.lua:1859-1976
 		markList := map[*SocketGroup]bool{}
-		build.Build.MainSocketGroup = env.MainSocketGroup
 		var mainGroup *SocketGroup
-		if i := env.MainSocketGroup; i >= 1 && i <= len(env.SocketGroupList) {
+		if i := build.Build.MainSocketGroup; i >= 1 && i <= len(env.SocketGroupList) {
 			mainGroup = env.SocketGroupList[i-1]
 		}
 		mergedGroups := map[*SocketGroup]bool{}
@@ -840,7 +839,11 @@ func setupSkills(env *Environment) bool {
 		// before weapon data and modifiers are consumed if that changes the context.
 		//pob2:block:src/Modules/CalcSetup.lua:2105-2116
 		if env.override.WeaponSet == 0 {
-			resolvedMainSocketGroup := min(max(len(env.SocketGroupList), 1), build.Build.MainSocketGroup)
+			mainSocketGroup := build.Build.MainSocketGroup
+			if env.override.MainSocketGroup != 0 {
+				mainSocketGroup = env.override.MainSocketGroup
+			}
+			resolvedMainSocketGroup := min(max(len(env.SocketGroupList), 1), mainSocketGroup)
 			var resolvedGroup *SocketGroup
 			if resolvedMainSocketGroup >= 1 && resolvedMainSocketGroup <= len(env.SocketGroupList) {
 				resolvedGroup = env.SocketGroupList[resolvedMainSocketGroup-1]

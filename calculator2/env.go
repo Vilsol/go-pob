@@ -293,6 +293,9 @@ type Actor struct {
 	Output map[string]float64
 	// SpecificTypeAvoidance is output.specificTypeAvoidance, a boolean the float output table does not hold.
 	SpecificTypeAvoidance bool
+	// OutputMainHand and OutputOffHand are output.MainHand/OffHand, nil unless the main skill attacks.
+	OutputMainHand map[string]float64
+	OutputOffHand  map[string]float64
 
 	Player *Actor
 	Enemy  *Actor

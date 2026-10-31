@@ -871,6 +871,20 @@ func buildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 		activeSkill.Weapon2Cfg = &cfg
 	}
 
+	// The damage fixup stat applies x% less base Attack Damage and x% more base Attack Speed as confirmed by Openarl Jan 4th 2024
+	// Implemented in this manner as the stat exists on the minion not the skills
+	//pob2:block:src/Modules/CalcActiveSkill.lua:716-725
+	if summon := activeSkill.SummonSkill; summon != nil && summon.Minion != nil && activeSkill.Actor == &summon.Minion.Actor && summon.Minion.MinionData != nil {
+		minionData := summon.Minion.MinionData
+		if minionData.DamageFixup != 0 {
+			skillModList.AddMod(newMod("Damage", mod.TypeMore, -100*minionData.DamageFixup, "Damage Fixup").Flag(modFlagAttack))
+			skillModList.AddMod(newMod("Speed", mod.TypeMore, 100*minionData.DamageFixup, "Damage Fixup").Flag(modFlagAttack))
+		} else if minionData.Damage != 1 {
+			skillModList.AddMod(newMod("AddedDamage", mod.TypeMore, (minionData.Damage-1)*100, mod.Source(minionData.Name+" Damage Multiplier"),
+				mod.SkillName("Spectre", "Companion").PartialMatch(true).SummonSkill(true).Neg(true)).Flag(modFlagAttack))
+		}
+	}
+
 	//pob2:block:src/Modules/CalcActiveSkill.lua:726-743
 	if skillModList.Flag(activeSkill.SkillCfg, "DisableSkill") && !skillModList.Flag(activeSkill.SkillCfg, "EnableSkill") {
 		skillFlags["disable"] = true

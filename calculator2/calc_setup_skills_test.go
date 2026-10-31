@@ -284,3 +284,22 @@ func TestMainGroupWeaponSetRestartFixture(t *testing.T) {
 		testza.AssertEqual(t, 2, len(env.SocketGroupList))
 	}
 }
+
+// The expected values are PoB-PoE2's for the same file, loaded headless and run through
+// calcs.initEnv(build, "MAIN", { mainSocketGroup = 2 }): the restart check resolves the override's
+// group, not build.mainSocketGroup, so it does not restart back onto group 1.
+func TestMainGroupRestartReadsOverrideMainSocketGroup(t *testing.T) {
+	raw, err := os.ReadFile("testdata/main_group_other_weapon_set.xml")
+	testza.AssertNoError(t, err)
+	tree := loadTestTree(t)
+	build, err := pob2.ParseBuild(raw)
+	testza.AssertNoError(t, err)
+	base, err := BuildOutput(build, Options{Tree: tree, Items: NewItemsTab(build, tree, nil)})
+	testza.AssertNoError(t, err)
+	env := newWeaponSetEnv(base, "MAIN", calcOverride{MainSocketGroup: 2})
+	initEnv(env)
+	testza.AssertEqual(t, 2, env.MainSocketGroup)
+	testza.AssertEqual(t, 1, env.WeaponSet)
+	testza.AssertEqual(t, "Skeletal Sniper Minion", env.Player.MainSkill.ActiveEffect.GrantedEffect.Name)
+	testza.AssertEqual(t, 1, build.Build.MainSocketGroup)
+}

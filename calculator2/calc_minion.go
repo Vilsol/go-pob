@@ -327,6 +327,7 @@ func newMinionModDBs(env *Environment) {
 			minion.ModDB = moddb.NewModDB()
 			minion.ModDB.Actor = &minion.Actor
 			minion.Output = map[string]float64{}
+			minion.OutputMainHand, minion.OutputOffHand = nil, nil
 			createMinionSkills(env, activeSkill)
 			activeSkill.SkillPartName = minion.MainSkill.ActiveEffect.GrantedEffect.Name
 		}

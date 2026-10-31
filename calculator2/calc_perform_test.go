@@ -378,3 +378,26 @@ func TestPerformMinionActorFixture(t *testing.T) {
 		}
 	}
 }
+
+// The expected values are PoB-PoE2's for the same file, loaded headless: the Bone Construct's
+// minionData.damage scales the added fire damage its attack gets from the player (AddedDamage MORE),
+// not its own weapon damage.
+func TestPerformMinionDamageMultiplierFixture(t *testing.T) {
+	raw, err := os.ReadFile("testdata/unearth_added_fire.xml")
+	testza.AssertNoError(t, err)
+	build, err := pob2.ParseBuild(raw)
+	testza.AssertNoError(t, err)
+	env, err := BuildOutput(build, Options{Tree: loadTestTree(t)})
+	testza.AssertNoError(t, err)
+
+	testza.AssertNotNil(t, env.Minion)
+	for stat, want := range map[string]float64{"PhysicalMinBase": 82, "FireMinBase": 9, "FireMaxBase": 13.5,
+		"TotalMin": 119.3, "TotalMax": 222.6} {
+		if got := env.Minion.OutputMainHand[stat]; math.Abs(got-want) > 1e-6 {
+			t.Errorf("minion MainHand %s: PoB-PoE2 %v, ours %v", stat, want, got)
+		}
+	}
+	if got, want := env.Minion.Output["TotalDPS"], 169.337264150943; math.Abs(got-want) > 1e-6 {
+		t.Errorf("minion TotalDPS: PoB-PoE2 %v, ours %v", want, got)
+	}
+}
