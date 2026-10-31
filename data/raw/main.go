@@ -11,6 +11,7 @@ import (
 	"github.com/Vilsol/go-pob-data/poe"
 	"github.com/Vilsol/go-pob-data/utils"
 
+	"github.com/Vilsol/go-pob/data/assetcache"
 	"github.com/Vilsol/go-pob/storage"
 )
 
@@ -27,27 +28,8 @@ func gameDataVersion(getenv func(string) string) string {
 
 type UpdateFunc func(data string)
 
-type AssetLoaderWrapper struct {
-	storage.Storage
-	prefetched map[string][]byte
-}
-
-func (a AssetLoaderWrapper) Get(key string) ([]byte, error) {
-	if b, ok := a.prefetched[key]; ok {
-		return b, nil
-	}
-	return a.Storage.GetCache(CacheKey(key))
-}
-
-func (a AssetLoaderWrapper) Set(key string, value []byte) error {
-	return a.Storage.SetCache(CacheKey(key), value)
-}
-
-func (a AssetLoaderWrapper) Exists(key string) bool {
-	if _, ok := a.prefetched[key]; ok {
-		return true
-	}
-	return a.Storage.ExistsInCache(CacheKey(key))
+func CacheKey(url string) string {
+	return assetcache.CacheKey(url)
 }
 
 type table struct {
@@ -116,11 +98,11 @@ func DataContext(ctx context.Context) context.Context {
 
 func initializeAll(version string, updateFunc UpdateFunc) error {
 	ctx := DataContext(context.Background())
-	cache := AssetLoaderWrapper{Storage: storage.Get()}
+	cache := assetcache.AssetLoaderWrapper{Storage: storage.Get()}
 	if updateFunc != nil {
 		updateFunc("Downloading")
 	}
-	cache.prefetched = prefetch(ctx, cache, prefetchURLs(ctx, version))
+	cache.Prefetched = prefetch(ctx, cache, prefetchURLs(ctx, version))
 
 	for _, t := range tables {
 		if updateFunc != nil {
@@ -137,7 +119,7 @@ func initializeAll(version string, updateFunc UpdateFunc) error {
 		hook()
 	}
 
-	lazyCache.Store(&AssetLoaderWrapper{Storage: cache.Storage, prefetched: lazyPrefetched(ctx, cache.prefetched, version)})
+	lazyCache.Store(&assetcache.AssetLoaderWrapper{Storage: cache.Storage, Prefetched: lazyPrefetched(ctx, cache.Prefetched, version)})
 	return nil
 }
 

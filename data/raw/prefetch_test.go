@@ -11,11 +11,12 @@ import (
 	"sync"
 	"testing"
 
+	"github.com/Vilsol/go-pob/data/assetcache"
 	"github.com/Vilsol/go-pob/storage"
 )
 
 type recordingCache struct {
-	AssetLoaderWrapper
+	assetcache.AssetLoaderWrapper
 	mu   *sync.Mutex
 	seen map[string]bool
 }
@@ -30,7 +31,7 @@ func (r recordingCache) Exists(key string) bool {
 // TestPrefetchCoversInitializeAll holds prefetchURLs equal to the assets the loaders request.
 func TestPrefetchCoversInitializeAll(t *testing.T) {
 	if os.Getenv("PREFETCH_RECORD") == "1" {
-		rec := recordingCache{AssetLoaderWrapper: AssetLoaderWrapper{Storage: storage.Get()}, mu: &sync.Mutex{}, seen: map[string]bool{}}
+		rec := recordingCache{AssetLoaderWrapper: assetcache.AssetLoaderWrapper{Storage: storage.Get()}, mu: &sync.Mutex{}, seen: map[string]bool{}}
 		for _, tb := range slices.Concat(tables, deferredTables) {
 			if err := tb.Load(DataContext(context.Background()), LatestVersion, rec); err != nil {
 				t.Fatal(err)

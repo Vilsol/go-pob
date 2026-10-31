@@ -1,0 +1,7 @@
+package assetcache
+
+const DataModuleVersion = "v0.9.9"
+
+func CacheKey(url string) string {
+	return DataModuleVersion + "|" + url
+}

@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	"github.com/Vilsol/go-pob/calculator2"
-	"github.com/Vilsol/go-pob/data/raw"
+	"github.com/Vilsol/go-pob/data/assetcache"
 	"github.com/Vilsol/go-pob/data/tree2"
 	"github.com/Vilsol/go-pob/pob2"
 	"github.com/Vilsol/go-pob/storage"
@@ -26,7 +26,7 @@ func loadTree() (*tree2.PassiveTree, error) {
 	if tree != nil {
 		return tree, nil
 	}
-	t, err := tree2.LoadData(context.Background(), TreeVersion, raw.AssetLoaderWrapper{Storage: storage.Get()})
+	t, err := tree2.LoadData(context.Background(), TreeVersion, assetcache.AssetLoaderWrapper{Storage: storage.Get()})
 	if err != nil {
 		return nil, err
 	}

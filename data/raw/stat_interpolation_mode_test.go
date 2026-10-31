@@ -5,12 +5,13 @@ import (
 
 	"github.com/Vilsol/go-pob-data/poe"
 
+	"github.com/Vilsol/go-pob/data/assetcache"
 	"github.com/Vilsol/go-pob/storage"
 )
 
 // TestStatInterpolationModeSurvivesLevelBuild pins that a granted effect's levels keep the interpolation MODE the .dat gives them.
 func TestStatInterpolationModeSurvivesLevelBuild(t *testing.T) {
-	if err := poe.InitializeAll(DataContext(t.Context()), LatestVersion, AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
+	if err := poe.InitializeAll(DataContext(t.Context()), LatestVersion, assetcache.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
 		t.Fatal(err)
 	}
 

@@ -15,7 +15,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/Vilsol/go-pob/data/raw"
+	"github.com/Vilsol/go-pob/data/assetcache"
 	"github.com/Vilsol/go-pob/storage"
 )
 
@@ -44,7 +44,7 @@ var loadPinTree = sync.OnceValues(func() (*PassiveTree, error) {
 })
 
 var loadDataTree = sync.OnceValues(func() (*PassiveTree, error) {
-	return LoadData(context.Background(), "0_5", raw.AssetLoaderWrapper{Storage: storage.Get()})
+	return LoadData(context.Background(), "0_5", assetcache.AssetLoaderWrapper{Storage: storage.Get()})
 })
 
 // dataTree is the tree go-pob loads, from go-pob-data; pinTree is PoB-PoE2's own, kept as an oracle.

@@ -9,6 +9,7 @@ import (
 
 	"github.com/Vilsol/go-pob-data/poe"
 
+	"github.com/Vilsol/go-pob/data/assetcache"
 	"github.com/Vilsol/go-pob/storage"
 )
 
@@ -27,13 +28,13 @@ func init() {
 	}
 }
 
-var lazyCache atomic.Pointer[AssetLoaderWrapper]
+var lazyCache atomic.Pointer[assetcache.AssetLoaderWrapper]
 
-func lazyLoader() AssetLoaderWrapper {
+func lazyLoader() assetcache.AssetLoaderWrapper {
 	if c := lazyCache.Load(); c != nil {
 		return *c
 	}
-	return AssetLoaderWrapper{Storage: storage.Get()}
+	return assetcache.AssetLoaderWrapper{Storage: storage.Get()}
 }
 
 func lazyPrefetched(ctx context.Context, all map[string][]byte, version string) map[string][]byte {

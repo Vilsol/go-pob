@@ -8,7 +8,6 @@ import (
 	"sync"
 	"unsafe"
 
-	"github.com/Vilsol/go-pob/data"
 	"github.com/Vilsol/go-pob/data/poe2"
 	"github.com/Vilsol/go-pob/data/poe2skills"
 	"github.com/Vilsol/go-pob/mod"
@@ -77,10 +76,10 @@ type skillGrantedEffectCfg struct {
 
 func (g skillGrantedEffectCfg) ID() string { return g.ge.ID }
 
-func cfgSkillTypes(skillTypes map[string]bool) map[data.SkillType]bool {
-	out := make(map[data.SkillType]bool, len(skillTypes))
+func cfgSkillTypes(skillTypes map[string]bool) map[moddb.SkillType]bool {
+	out := make(map[moddb.SkillType]bool, len(skillTypes))
 	for k, v := range skillTypes {
-		out[data.SkillType(k)] = v
+		out[moddb.SkillType(k)] = v
 	}
 	return out
 }

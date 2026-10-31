@@ -7,9 +7,9 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/Vilsol/go-pob/data/assetcache"
 	"github.com/Vilsol/go-pob/data/poe2"
 	"github.com/Vilsol/go-pob/data/poe2minions"
-	"github.com/Vilsol/go-pob/data/raw"
 	"github.com/Vilsol/go-pob/mod"
 	"github.com/Vilsol/go-pob/moddb"
 	"github.com/Vilsol/go-pob/storage"
@@ -30,7 +30,7 @@ type Minion struct {
 
 // loadMinionData is data.minions, loaded once from go-pob-data and the templates.
 var loadMinionData = sync.OnceValues(func() (poe2minions.Minions, error) {
-	return poe2minions.Load(context.Background(), skillDataVersion, raw.AssetLoaderWrapper{Storage: storage.Get()})
+	return poe2minions.Load(context.Background(), skillDataVersion, assetcache.AssetLoaderWrapper{Storage: storage.Get()})
 })
 
 // minionData is data.minions; a failed load leaves it empty, so no minion is created.

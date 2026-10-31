@@ -5,6 +5,7 @@ import (
 
 	"github.com/Vilsol/go-pob-data/loader"
 
+	"github.com/Vilsol/go-pob/data/assetcache"
 	"github.com/Vilsol/go-pob/storage"
 )
 
@@ -55,7 +56,7 @@ func TestTimelessJewelSourcesLoad(t *testing.T) {
 	})
 
 	t.Run("StatDescriptions", func(t *testing.T) {
-		desc, err := loader.LoadTranslation(DataContext(t.Context()), LatestVersion, "en", "stat_descriptions", AssetLoaderWrapper{Storage: storage.Get()})
+		desc, err := loader.LoadTranslation(DataContext(t.Context()), LatestVersion, "en", "stat_descriptions", assetcache.AssetLoaderWrapper{Storage: storage.Get()})
 		if err != nil {
 			t.Fatal(err)
 		}

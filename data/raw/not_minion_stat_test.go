@@ -6,6 +6,7 @@ import (
 
 	"github.com/Vilsol/go-pob-data/poe"
 
+	"github.com/Vilsol/go-pob/data/assetcache"
 	"github.com/Vilsol/go-pob/mod"
 	"github.com/Vilsol/go-pob/storage"
 )
@@ -25,7 +26,7 @@ func carriesNotMinionTag(m *StatMap) bool {
 //
 //pob:block:src/Modules/Data.lua:81-91
 func TestNotMinionStatTagsSupportAndBuffStats(t *testing.T) {
-	if err := poe.InitializeAll(DataContext(t.Context()), LatestVersion, AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
+	if err := poe.InitializeAll(DataContext(t.Context()), LatestVersion, assetcache.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
 		t.Fatal(err)
 	}
 	lifetap := GetCalculatedGrantedEffect(poe.GrantedEffectByID("SupportLifetap"))

@@ -38,7 +38,7 @@ func TestDeferredTablesLoadOnFirstUse(t *testing.T) {
 			if !ok || os.Getenv(FullAssetsEnv) != "" {
 				variant = loader.TupleVariant(reflect.New(mustRowType(t, asset)).Interface())
 			}
-			if _, ok := lazyLoader().prefetched[loader.AssetURL(LatestVersion, asset, variant)]; !ok {
+			if _, ok := lazyLoader().Prefetched[loader.AssetURL(LatestVersion, asset, variant)]; !ok {
 				t.Fatalf("%s is not held in memory as %s; its first use would go to the network or IndexedDB", tb.Name, variant)
 			}
 		}

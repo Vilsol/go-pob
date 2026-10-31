@@ -11,6 +11,7 @@ import (
 
 	"github.com/Vilsol/go-pob/builds"
 	"github.com/Vilsol/go-pob/calculator"
+	"github.com/Vilsol/go-pob/data/assetcache"
 	"github.com/Vilsol/go-pob/data/raw"
 	"github.com/Vilsol/go-pob/mod"
 	"github.com/Vilsol/go-pob/moddb"
@@ -65,7 +66,7 @@ func TestFormatModFlags(t *testing.T) {
 
 // TestModDebugDump: Calcs.lua:37-70 on a real build: every section header, the main skill's effects, and the output table.
 func TestModDebugDump(t *testing.T) {
-	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, raw.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
+	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, assetcache.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
 		t.Fatal(err)
 	}
 	xml, err := os.ReadFile(filepath.Join("..", "..", "testdata", "corpus-"+raw.LatestVersion, "0008-necromancer-vaal-summon-skeletons.xml"))
@@ -93,7 +94,7 @@ func TestModDebugDump(t *testing.T) {
 
 // TestItemTooltipModDebug: ItemsTab.lua:5160-5166: with Dev mode on.
 func TestItemTooltipModDebug(t *testing.T) {
-	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, raw.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
+	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, assetcache.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
 		t.Fatal(err)
 	}
 	build := corpusBuild(t, "0280-elementalist-fireball.xml")

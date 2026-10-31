@@ -8,13 +8,14 @@ import (
 	"github.com/Vilsol/go-pob-data/poe"
 
 	"github.com/Vilsol/go-pob/builds"
+	"github.com/Vilsol/go-pob/data/assetcache"
 	"github.com/Vilsol/go-pob/data/raw"
 	"github.com/Vilsol/go-pob/storage"
 )
 
 // TestVaalTransfiguredSecondaryResolvesTheAlternate pins Data.lua:1098-1119's load-time synthesis.
 func TestVaalTransfiguredSecondaryResolvesTheAlternate(t *testing.T) {
-	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, raw.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
+	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, assetcache.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
 		t.Fatal(err)
 	}
 

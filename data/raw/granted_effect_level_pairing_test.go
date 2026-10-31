@@ -7,12 +7,13 @@ import (
 	"github.com/MarvinJWendt/testza"
 	"github.com/Vilsol/go-pob-data/poe"
 
+	"github.com/Vilsol/go-pob/data/assetcache"
 	"github.com/Vilsol/go-pob/storage"
 )
 
 // TestLevelStatRowPairingMatchesPoB pins the level row <-> stat-set row pairing against PoB's own exported skill data.
 func TestLevelStatRowPairingMatchesPoB(t *testing.T) {
-	if err := poe.InitializeAll(DataContext(t.Context()), LatestVersion, AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
+	if err := poe.InitializeAll(DataContext(t.Context()), LatestVersion, assetcache.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
 		t.Fatal(err)
 	}
 

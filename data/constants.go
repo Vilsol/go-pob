@@ -4,6 +4,7 @@ import (
 	"github.com/Vilsol/go-pob-data/poe"
 
 	"github.com/Vilsol/go-pob/mod"
+	"github.com/Vilsol/go-pob/moddb"
 )
 
 type DamageType string
@@ -119,7 +120,7 @@ type NonDamagingAilmentData struct {
 	Duration       *float64
 }
 
-type SkillType string
+type SkillType = moddb.SkillType
 
 const (
 	SkillTypeAttack                         = SkillType("Attack")

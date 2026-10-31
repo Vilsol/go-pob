@@ -10,6 +10,7 @@ import (
 
 	"github.com/Vilsol/go-pob/config"
 	"github.com/Vilsol/go-pob/data"
+	"github.com/Vilsol/go-pob/data/assetcache"
 	"github.com/Vilsol/go-pob/data/raw"
 	"github.com/Vilsol/go-pob/pob"
 	"github.com/Vilsol/go-pob/storage"
@@ -33,7 +34,7 @@ func main() {
 
 	config.InitLogging(false)
 	if err := poe.InitializeAll(raw.DataContext(context.Background()), raw.LatestVersion,
-		raw.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
+		assetcache.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
 		fmt.Fprintf(os.Stderr, "REFUSING: game data %s failed to load: %v\n", raw.LatestVersion, err)
 		os.Exit(3)
 	}

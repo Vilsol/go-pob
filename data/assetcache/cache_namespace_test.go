@@ -1,4 +1,4 @@
-package raw
+package assetcache
 
 import (
 	"os"
@@ -95,13 +95,13 @@ func TestEveryCacheCallSiteIsNamespaced(t *testing.T) {
 
 			testza.AssertTrue(t, strings.Contains(m[2], "CacheKey"),
 				path+" calls "+m[1]+"("+strings.TrimSpace(m[2])+") with a key that does not come "+
-					"from raw.CacheKey — a republished asset would be a stale HIT there. Every "+
+					"from assetcache.CacheKey — a republished asset would be a stale HIT there. Every "+
 					"cache reader and writer outside package storage must namespace, or none can.")
 		}
 	}
 
 	testza.AssertGreater(t, checked, 3,
-		"expected at least the four known call sites (3 in data/raw/main.go, 3 in "+
+		"expected at least the four known call sites (3 in data/assetcache/loader.go, 3 in "+
 			"data/tree_versions.go); finding fewer means the sweep is not reaching the source")
 }
 

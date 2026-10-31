@@ -5,6 +5,7 @@ import (
 
 	"github.com/Vilsol/go-pob-data/poe"
 
+	"github.com/Vilsol/go-pob/data/assetcache"
 	"github.com/Vilsol/go-pob/data/raw"
 	"github.com/Vilsol/go-pob/storage"
 )
@@ -20,7 +21,7 @@ Implicits: 0
 12% increased Attack Speed during Flask effect`
 
 func BenchmarkParseMagicItem(b *testing.B) {
-	if err := poe.InitializeAll(raw.DataContext(b.Context()), raw.LatestVersion, raw.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
+	if err := poe.InitializeAll(raw.DataContext(b.Context()), raw.LatestVersion, assetcache.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
 		b.Fatal(err)
 	}
 

@@ -5,6 +5,7 @@ import (
 
 	"github.com/Vilsol/go-pob-data/poe"
 
+	"github.com/Vilsol/go-pob/data/assetcache"
 	"github.com/Vilsol/go-pob/data/raw"
 	"github.com/Vilsol/go-pob/pob"
 	"github.com/Vilsol/go-pob/storage"
@@ -12,7 +13,7 @@ import (
 
 // TestGemInstanceNameIsPoBGemName pins CalcPerform.lua:571-572.
 func TestGemInstanceNameIsPoBGemName(t *testing.T) {
-	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, raw.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
+	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, assetcache.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
 		t.Fatal(err)
 	}
 
@@ -52,7 +53,7 @@ func TestGemInstanceNameIsPoBGemName(t *testing.T) {
 
 // TestCursePriorityReadsSocketIndex is the consumer half.
 func TestCursePriorityReadsSocketIndex(t *testing.T) {
-	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, raw.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
+	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, assetcache.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
 		t.Fatal(err)
 	}
 

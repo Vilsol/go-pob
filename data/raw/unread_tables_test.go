@@ -18,6 +18,8 @@ import (
 	"testing"
 
 	"github.com/Vilsol/go-pob-data/fields"
+
+	"github.com/Vilsol/go-pob/data/assetcache"
 )
 
 const moduleRoot = "../.."
@@ -26,9 +28,9 @@ var initHelperRe = regexp.MustCompile(`loader\.InitHelper\(ctx, version, "([A-Za
 
 func poeGlobals(t *testing.T) map[string]string {
 	t.Helper()
-	out, err := exec.CommandContext(t.Context(), "go", "list", "-m", "-f", "{{.Dir}}", DataModulePath).Output()
+	out, err := exec.CommandContext(t.Context(), "go", "list", "-m", "-f", "{{.Dir}}", assetcache.DataModulePath).Output() //nolint:gosec // a constant module path
 	if err != nil {
-		t.Fatalf("go list %s: %v", DataModulePath, err)
+		t.Fatalf("go list %s: %v", assetcache.DataModulePath, err)
 	}
 	dir := filepath.Join(strings.TrimSpace(string(out)), "poe")
 	entries, err := os.ReadDir(dir)
@@ -183,7 +185,7 @@ func TestUnreadTablesStayUnread(t *testing.T) {
 		scanned++
 		poeName := ""
 		for _, imp := range f.Imports {
-			if p, _ := strconv.Unquote(imp.Path.Value); p == DataModulePath+"/poe" {
+			if p, _ := strconv.Unquote(imp.Path.Value); p == assetcache.DataModulePath+"/poe" {
 				poeName = "poe"
 				if imp.Name != nil {
 					poeName = imp.Name.Name

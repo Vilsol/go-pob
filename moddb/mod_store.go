@@ -11,9 +11,10 @@ import (
 
 	"github.com/Vilsol/go-pob-data/poe"
 
-	"github.com/Vilsol/go-pob/data"
 	"github.com/Vilsol/go-pob/mod"
 )
+
+type SkillType string
 
 type ListCfg struct {
 	Actor        string
@@ -30,7 +31,7 @@ type ListCfg struct {
 	SkillGem           *poe.SkillGem
 	SkillGrantedEffect any
 	SkillPart          int
-	SkillTypes         map[data.SkillType]bool
+	SkillTypes         map[SkillType]bool
 	SkillDist          float64
 	SkillDistSet       bool
 	SocketColor        string
@@ -771,7 +772,7 @@ func (s *ModStore) evalSkillTypeTag(value *mod.ModValueMulti, cfg *ListCfg, tag 
 	match := false
 	if cfg != nil && cfg.SkillTypes != nil {
 		for _, skillType := range tag.SkillTypeList {
-			if cfg.SkillTypes[data.SkillType(skillType)] {
+			if cfg.SkillTypes[SkillType(skillType)] {
 				match = true
 				break
 			}

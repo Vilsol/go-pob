@@ -8,6 +8,7 @@ import (
 	"github.com/Vilsol/go-pob-data/poe"
 
 	"github.com/Vilsol/go-pob/builds"
+	"github.com/Vilsol/go-pob/data/assetcache"
 	"github.com/Vilsol/go-pob/data/raw"
 	"github.com/Vilsol/go-pob/pob"
 	"github.com/Vilsol/go-pob/storage"
@@ -28,7 +29,7 @@ func loadCorpusBuild(t *testing.T, name string) *pob.PathOfBuilding {
 
 // TestSocketGroupWritesReachTheBuild is a WRITE-PATH test, and this repository has none.
 func TestSocketGroupWritesReachTheBuild(t *testing.T) {
-	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, raw.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
+	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, assetcache.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
 		t.Fatal(err)
 	}
 
@@ -84,7 +85,7 @@ func TestSocketGroupWritesReachTheBuild(t *testing.T) {
 
 // TestMainActiveSkillStaysOneBased is the half that a "just take a pointer" fix would have broken, and it is the reason the two changes had to land together.
 func TestMainActiveSkillStaysOneBased(t *testing.T) {
-	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, raw.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
+	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, assetcache.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
 		t.Fatal(err)
 	}
 

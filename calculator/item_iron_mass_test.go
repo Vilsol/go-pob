@@ -5,13 +5,14 @@ import (
 
 	"github.com/Vilsol/go-pob-data/poe"
 
+	"github.com/Vilsol/go-pob/data/assetcache"
 	"github.com/Vilsol/go-pob/data/raw"
 	"github.com/Vilsol/go-pob/storage"
 )
 
 // TestTheIronMassArmFeedsItsSkeletons pins CalcSetup.lua:1051-1068, the one arm of the equipped-item merge chain that had no port.
 func TestTheIronMassArmFeedsItsSkeletons(t *testing.T) {
-	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, raw.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
+	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, assetcache.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
 		t.Fatal(err)
 	}
 

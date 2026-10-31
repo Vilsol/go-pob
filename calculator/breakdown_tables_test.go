@@ -9,6 +9,7 @@ import (
 
 	"github.com/Vilsol/go-pob-data/poe"
 
+	"github.com/Vilsol/go-pob/data/assetcache"
 	"github.com/Vilsol/go-pob/data/raw"
 	"github.com/Vilsol/go-pob/storage"
 )
@@ -20,7 +21,7 @@ var (
 
 // TestBreakdownTablesCarryPoBsColumns: CalcOffence.lua:99-131: a damage type that converts or gains into another names how much.
 func TestBreakdownTablesCarryPoBsColumns(t *testing.T) {
-	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, raw.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
+	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, assetcache.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
 		t.Fatal(err)
 	}
 	files, err := filepath.Glob(filepath.Join(corpusDirForLoadedData(t), "00[0-9][0-9]-*.xml"))

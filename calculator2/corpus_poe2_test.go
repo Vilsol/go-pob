@@ -13,7 +13,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/Vilsol/go-pob/data/raw"
+	"github.com/Vilsol/go-pob/data/assetcache"
 	"github.com/Vilsol/go-pob/data/tree2"
 	"github.com/Vilsol/go-pob/mod"
 	"github.com/Vilsol/go-pob/pob2"
@@ -29,7 +29,7 @@ var (
 func loadTestTree(t *testing.T) *tree2.PassiveTree {
 	t.Helper()
 	testTreeOnce.Do(func() {
-		testTree, errTestTree = tree2.LoadData(context.Background(), "0_5", raw.AssetLoaderWrapper{Storage: storage.Get()})
+		testTree, errTestTree = tree2.LoadData(context.Background(), "0_5", assetcache.AssetLoaderWrapper{Storage: storage.Get()})
 	})
 	if errTestTree != nil {
 		t.Skipf("go-pob-data's PoE2 tree not loadable: %v", errTestTree)

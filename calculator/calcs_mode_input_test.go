@@ -5,13 +5,14 @@ import (
 
 	"github.com/Vilsol/go-pob-data/poe"
 
+	"github.com/Vilsol/go-pob/data/assetcache"
 	"github.com/Vilsol/go-pob/data/raw"
 	"github.com/Vilsol/go-pob/storage"
 )
 
 // TestCalcsPassReadsTheCalcsTabInputs: CalcSetup.lua:462-485: the CALCS pass takes its buff mode from the Calcs tab's misc_buffMode.
 func TestCalcsPassReadsTheCalcsTabInputs(t *testing.T) {
-	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, raw.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
+	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, assetcache.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
 		t.Fatal(err)
 	}
 	build := loadCorpusBuild(t, "0280-elementalist-fireball.xml")

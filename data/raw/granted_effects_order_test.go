@@ -6,12 +6,13 @@ import (
 	"github.com/MarvinJWendt/testza"
 	"github.com/Vilsol/go-pob-data/poe"
 
+	"github.com/Vilsol/go-pob/data/assetcache"
 	"github.com/Vilsol/go-pob/storage"
 )
 
 // TestCalculatedStatOrderIsDeterministic pins the granted-effect stat index against the order its level rows arrive in.
 func TestCalculatedStatOrderIsDeterministic(t *testing.T) {
-	if err := poe.InitializeAll(DataContext(t.Context()), LatestVersion, AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
+	if err := poe.InitializeAll(DataContext(t.Context()), LatestVersion, assetcache.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
 		t.Fatal(err)
 	}
 

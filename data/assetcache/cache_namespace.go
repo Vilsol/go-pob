@@ -1,4 +1,4 @@
-package raw
+package assetcache
 
 const DataModuleVersion = "v0.5.11"
 

@@ -13,8 +13,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/Vilsol/go-pob/data/assetcache"
 	"github.com/Vilsol/go-pob/data/poe2"
-	"github.com/Vilsol/go-pob/data/raw"
 	"github.com/Vilsol/go-pob/storage"
 )
 
@@ -158,7 +158,7 @@ var minionPatchDrift = map[[2]string]bool{}
 // loaded data.minions, field by field.
 func TestMinionsMatchPoB(t *testing.T) {
 	want := minionsPoB(t)
-	minions, err := Load(context.Background(), "0.5", raw.AssetLoaderWrapper{Storage: storage.Get()})
+	minions, err := Load(context.Background(), "0.5", assetcache.AssetLoaderWrapper{Storage: storage.Get()})
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -643,132 +643,6 @@ func init() {
 		"TagResistance": "Resistance",
 		"TagSpeed":      "Speed",
 	})
-	crystallineNamespace("go-pob", "data").Set("SkillType", map[string]any{
-		"SkillTypeAttack":                         "Attack",
-		"SkillTypeSpell":                          "Spell",
-		"SkillTypeProjectile":                     "Projectile",
-		"SkillTypeDualWieldOnly":                  "DualWieldOnly",
-		"SkillTypeBuff":                           "Buff",
-		"SkillTypeRemoved6":                       "Removed6",
-		"SkillTypeMainHandOnly":                   "MainHandOnly",
-		"SkillTypeRemoved8":                       "Removed8",
-		"SkillTypeMinion":                         "Minion",
-		"SkillTypeDamage":                         "Damage",
-		"SkillTypeArea":                           "Area",
-		"SkillTypeDuration":                       "Duration",
-		"SkillTypeRequiresShield":                 "RequiresShield",
-		"SkillTypeProjectileSpeed":                "ProjectileSpeed",
-		"SkillTypeHasReservation":                 "HasReservation",
-		"SkillTypeReservationBecomesCost":         "ReservationBecomesCost",
-		"SkillTypeTrappable":                      "Trappable",
-		"SkillTypeTotemable":                      "Totemable",
-		"SkillTypeMineable":                       "Mineable",
-		"SkillTypeElementalStatus":                "ElementalStatus",
-		"SkillTypeMinionsCanExplode":              "MinionsCanExplode",
-		"SkillTypeRemoved22":                      "Removed22",
-		"SkillTypeChains":                         "Chains",
-		"SkillTypeMelee":                          "Melee",
-		"SkillTypeMeleeSingleTarget":              "MeleeSingleTarget",
-		"SkillTypeMulticastable":                  "Multicastable",
-		"SkillTypeTotemCastsAlone":                "TotemCastsAlone",
-		"SkillTypeMultistrikeable":                "Multistrikeable",
-		"SkillTypeCausesBurning":                  "CausesBurning",
-		"SkillTypeSummonsTotem":                   "SummonsTotem",
-		"SkillTypeTotemCastsWhenNotDetached":      "TotemCastsWhenNotDetached",
-		"SkillTypeFire":                           "Fire",
-		"SkillTypeCold":                           "Cold",
-		"SkillTypeLightning":                      "Lightning",
-		"SkillTypeTriggerable":                    "Triggerable",
-		"SkillTypeTrapped":                        "Trapped",
-		"SkillTypeMovement":                       "Movement",
-		"SkillTypeRemoved39":                      "Removed39",
-		"SkillTypeDamageOverTime":                 "DamageOverTime",
-		"SkillTypeRemoteMined":                    "RemoteMined",
-		"SkillTypeTriggered":                      "Triggered",
-		"SkillTypeVaal":                           "Vaal",
-		"SkillTypeAura":                           "Aura",
-		"SkillTypeRemoved45":                      "Removed45",
-		"SkillTypeCanTargetUnusableCorpse":        "CanTargetUnusableCorpse",
-		"SkillTypeRemoved47":                      "Removed47",
-		"SkillTypeRangedAttack":                   "RangedAttack",
-		"SkillTypeRemoved49":                      "Removed49",
-		"SkillTypeChaos":                          "Chaos",
-		"SkillTypeFixedSpeedProjectile":           "FixedSpeedProjectile",
-		"SkillTypeRemoved52":                      "Removed52",
-		"SkillTypeThresholdJewelArea":             "ThresholdJewelArea",
-		"SkillTypeThresholdJewelProjectile":       "ThresholdJewelProjectile",
-		"SkillTypeThresholdJewelDuration":         "ThresholdJewelDuration",
-		"SkillTypeThresholdJewelRangedAttack":     "ThresholdJewelRangedAttack",
-		"SkillTypeRemoved57":                      "Removed57",
-		"SkillTypeChannel":                        "Channel",
-		"SkillTypeDegenOnlySpellDamage":           "DegenOnlySpellDamage",
-		"SkillTypeRemoved60":                      "Removed60",
-		"SkillTypeInbuiltTrigger":                 "InbuiltTrigger",
-		"SkillTypeGolem":                          "Golem",
-		"SkillTypeHerald":                         "Herald",
-		"SkillTypeAuraAffectsEnemies":             "AuraAffectsEnemies",
-		"SkillTypeNoRuthless":                     "NoRuthless",
-		"SkillTypeThresholdJewelSpellDamage":      "ThresholdJewelSpellDamage",
-		"SkillTypeCascadable":                     "Cascadable",
-		"SkillTypeProjectilesFromUser":            "ProjectilesFromUser",
-		"SkillTypeMirageArcherCanUse":             "MirageArcherCanUse",
-		"SkillTypeProjectileSpiral":               "ProjectileSpiral",
-		"SkillTypeSingleMainProjectile":           "SingleMainProjectile",
-		"SkillTypeMinionsPersistWhenSkillRemoved": "MinionsPersistWhenSkillRemoved",
-		"SkillTypeProjectileNumber":               "ProjectileNumber",
-		"SkillTypeWarcry":                         "Warcry",
-		"SkillTypeInstant":                        "Instant",
-		"SkillTypeBrand":                          "Brand",
-		"SkillTypeDestroysCorpse":                 "DestroysCorpse",
-		"SkillTypeNonHitChill":                    "NonHitChill",
-		"SkillTypeChillingArea":                   "ChillingArea",
-		"SkillTypeAppliesCurse":                   "AppliesCurse",
-		"SkillTypeCanRapidFire":                   "CanRapidFire",
-		"SkillTypeAuraDuration":                   "AuraDuration",
-		"SkillTypeAreaSpell":                      "AreaSpell",
-		"SkillTypeOR":                             "OR",
-		"SkillTypeAND":                            "AND",
-		"SkillTypeNOT":                            "NOT",
-		"SkillTypePhysical":                       "Physical",
-		"SkillTypeAppliesMaim":                    "AppliesMaim",
-		"SkillTypeCreatesMinion":                  "CreatesMinion",
-		"SkillTypeGuard":                          "Guard",
-		"SkillTypeTravel":                         "Travel",
-		"SkillTypeBlink":                          "Blink",
-		"SkillTypeCanHaveBlessing":                "CanHaveBlessing",
-		"SkillTypeProjectilesNotFromUser":         "ProjectilesNotFromUser",
-		"SkillTypeAttackInPlaceIsDefault":         "AttackInPlaceIsDefault",
-		"SkillTypeNova":                           "Nova",
-		"SkillTypeInstantNoRepeatWhenHeld":        "InstantNoRepeatWhenHeld",
-		"SkillTypeInstantShiftAttackForLeftMouse": "InstantShiftAttackForLeftMouse",
-		"SkillTypeAuraNotOnCaster":                "AuraNotOnCaster",
-		"SkillTypeBanner":                         "Banner",
-		"SkillTypeRain":                           "Rain",
-		"SkillTypeCooldown":                       "Cooldown",
-		"SkillTypeThresholdJewelChaining":         "ThresholdJewelChaining",
-		"SkillTypeSlam":                           "Slam",
-		"SkillTypeStance":                         "Stance",
-		"SkillTypeNonRepeatable":                  "NonRepeatable",
-		"SkillTypeOtherThingUsesSkill":            "OtherThingUsesSkill",
-		"SkillTypeSteel":                          "Steel",
-		"SkillTypeHex":                            "Hex",
-		"SkillTypeMark":                           "Mark",
-		"SkillTypeAegis":                          "Aegis",
-		"SkillTypeOrb":                            "Orb",
-		"SkillTypeKillNoDamageModifiers":          "KillNoDamageModifiers",
-		"SkillTypeRandomElement":                  "RandomElement",
-		"SkillTypeLateConsumeCooldown":            "LateConsumeCooldown",
-		"SkillTypeArcane":                         "Arcane",
-		"SkillTypeFixedCastTime":                  "FixedCastTime",
-		"SkillTypeRequiresOffHandNotWeapon":       "RequiresOffHandNotWeapon",
-		"SkillTypeLink":                           "Link",
-		"SkillTypeBlessing":                       "Blessing",
-		"SkillTypeZeroReservation":                "ZeroReservation",
-		"SkillTypePact":                           "Pact",
-		"SkillTypeRetaliation":                    "Retaliation",
-		"SkillTypeNeverExertable":                 "NeverExertable",
-		"SkillTypeMinionsAreUndamagable":          "MinionsAreUndamagable",
-	})
 	crystallineNamespace("go-pob", "mod").Set("ModValueMultiType", map[string]any{
 		"ModValueMultiTypeFloat": "float",
 		"ModValueMultiTypeFlag":  "flag",
@@ -9096,7 +8970,7 @@ func crystallineMarshalCalculatorActiveSkill(v *calculator.ActiveSkill) any {
 					})(value)
 				case 3:
 					(func(value js.Value) {
-						converted, err := crystallineToMapOfDataSkillTypeToBool(value)
+						converted, err := crystallineToMapOfModdbSkillTypeToBool(value)
 						if err != nil {
 							crystallineFail(err.Error())
 
@@ -9235,7 +9109,7 @@ func crystallineMarshalCalculatorActiveSkill(v *calculator.ActiveSkill) any {
 					})(value)
 				case 22:
 					(func(value js.Value) {
-						converted, err := crystallineToMapOfDataSkillTypeToBool(value)
+						converted, err := crystallineToMapOfModdbSkillTypeToBool(value)
 						if err != nil {
 							crystallineFail(err.Error())
 
@@ -16501,7 +16375,7 @@ func crystallineMarshalCalculatorGrantedEffect(v *calculator.GrantedEffect) any 
 					})(value)
 				case 2:
 					(func(value js.Value) {
-						converted, err := crystallineToMapOfDataSkillTypeToBool(value)
+						converted, err := crystallineToMapOfModdbSkillTypeToBool(value)
 						if err != nil {
 							crystallineFail(err.Error())
 
@@ -34283,7 +34157,7 @@ func crystallineMarshalModdbListCfg(v *moddb.ListCfg) any {
 					})(value)
 				case 11:
 					(func(value js.Value) {
-						converted, err := crystallineToMapOfDataSkillTypeToBool(value)
+						converted, err := crystallineToMapOfModdbSkillTypeToBool(value)
 						if err != nil {
 							crystallineFail(err.Error())
 
@@ -61052,34 +60926,6 @@ func crystallineToMapOfDataDamageTypeToMapOfDataDamageTypeToFloat64(value js.Val
 	return out, nil
 }
 
-func crystallineToMapOfDataSkillTypeToBool(value js.Value) (map[data.SkillType]bool, error) {
-	if value.IsUndefined() || value.IsNull() {
-		return nil, nil
-	}
-
-	if value.Type() != js.TypeObject {
-		return nil, errors.New("expected an object")
-	}
-
-	keys := js.Global().Get("Object").Call("keys", value)
-	out := make(map[data.SkillType]bool, keys.Length())
-
-	for i := 0; i < keys.Length(); i++ {
-		key := keys.Index(i).String()
-
-		converted := data.SkillType(key)
-
-		item, err := crystallineToBool(value.Get(key))
-		if err != nil {
-			return nil, errors.New("[" + key + "]: " + err.Error())
-		}
-
-		out[converted] = item
-	}
-
-	return out, nil
-}
-
 func crystallineToMapOfInt64ToInt64(value js.Value) (map[int64]int64, error) {
 	if value.IsUndefined() || value.IsNull() {
 		return nil, nil
@@ -61296,6 +61142,34 @@ func crystallineToMapOfModTypeToInt(value js.Value) (map[mod.Type]int, error) {
 		converted := mod.Type(key)
 
 		item, err := crystallineToInt(value.Get(key))
+		if err != nil {
+			return nil, errors.New("[" + key + "]: " + err.Error())
+		}
+
+		out[converted] = item
+	}
+
+	return out, nil
+}
+
+func crystallineToMapOfModdbSkillTypeToBool(value js.Value) (map[data.SkillType]bool, error) {
+	if value.IsUndefined() || value.IsNull() {
+		return nil, nil
+	}
+
+	if value.Type() != js.TypeObject {
+		return nil, errors.New("expected an object")
+	}
+
+	keys := js.Global().Get("Object").Call("keys", value)
+	out := make(map[data.SkillType]bool, keys.Length())
+
+	for i := 0; i < keys.Length(); i++ {
+		key := keys.Index(i).String()
+
+		converted := data.SkillType(key)
+
+		item, err := crystallineToBool(value.Get(key))
 		if err != nil {
 			return nil, errors.New("[" + key + "]: " + err.Error())
 		}

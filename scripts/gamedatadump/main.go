@@ -10,7 +10,7 @@ import (
 	"github.com/Vilsol/go-pob-data/loader"
 
 	"github.com/Vilsol/go-pob/config"
-	"github.com/Vilsol/go-pob/data/raw"
+	"github.com/Vilsol/go-pob/data/assetcache"
 	"github.com/Vilsol/go-pob/storage"
 )
 
@@ -68,5 +68,5 @@ func gameDataContext() context.Context {
 }
 
 func assetCache() loader.AssetCache {
-	return raw.AssetLoaderWrapper{Storage: storage.Get()}
+	return assetcache.AssetLoaderWrapper{Storage: storage.Get()}
 }

@@ -11,6 +11,7 @@ import (
 
 	"github.com/Vilsol/go-pob-data/poe"
 
+	"github.com/Vilsol/go-pob/data/assetcache"
 	"github.com/Vilsol/go-pob/data/raw"
 	"github.com/Vilsol/go-pob/storage"
 )
@@ -91,7 +92,7 @@ var tooltipKnownDivergences = map[string]string{
 
 // TestAddItemTooltipAgainstPoB grades every tooltip line, colour codes included, against the pin.
 func TestAddItemTooltipAgainstPoB(t *testing.T) {
-	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, raw.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
+	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, assetcache.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
 		t.Fatal(err)
 	}
 	f, err := os.Open(filepath.Join("..", "testdata", "item-tooltip", "item_tooltip-3.29.json.gz"))

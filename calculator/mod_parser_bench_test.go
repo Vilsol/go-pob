@@ -5,6 +5,7 @@ import (
 
 	"github.com/Vilsol/go-pob-data/poe"
 
+	"github.com/Vilsol/go-pob/data/assetcache"
 	"github.com/Vilsol/go-pob/data/raw"
 	"github.com/Vilsol/go-pob/storage"
 )
@@ -23,7 +24,7 @@ var benchModLines = []string{
 func benchInitParser(tb testing.TB) {
 	tb.Helper()
 
-	if err := poe.InitializeAll(raw.DataContext(tb.Context()), raw.LatestVersion, raw.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
+	if err := poe.InitializeAll(raw.DataContext(tb.Context()), raw.LatestVersion, assetcache.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
 		tb.Fatal(err)
 	}
 }

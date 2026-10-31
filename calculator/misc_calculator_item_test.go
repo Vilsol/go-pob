@@ -5,6 +5,7 @@ import (
 
 	"github.com/Vilsol/go-pob-data/poe"
 
+	"github.com/Vilsol/go-pob/data/assetcache"
 	"github.com/Vilsol/go-pob/data/raw"
 	"github.com/Vilsol/go-pob/pob"
 	"github.com/Vilsol/go-pob/storage"
@@ -47,7 +48,7 @@ type itemWhatIfCase struct {
 func TestMiscCalculatorItemEqualsRecompute(t *testing.T) {
 	socketMatchesFollowOverride = true
 	t.Cleanup(func() { socketMatchesFollowOverride = false })
-	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, raw.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
+	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, assetcache.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
 		t.Fatal(err)
 	}
 
@@ -160,7 +161,7 @@ func TestMiscCalculatorItemEqualsRecompute(t *testing.T) {
 
 // TestMiscCalculatorToggleUnequippedFlask: A flask that is not equipped still toggles on (ItemsTab.lua:5003: toggleFlask = the hovered item).
 func TestMiscCalculatorToggleUnequippedFlask(t *testing.T) {
-	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, raw.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
+	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, assetcache.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
 		t.Fatal(err)
 	}
 	_, text := activeSetSlot(loadCorpusBuild(t, "4788-ladder-GeordiMcSnuff_1894.GeordiFlameOne.xml"), "Flask 5")
@@ -177,7 +178,7 @@ func TestMiscCalculatorToggleUnequippedFlask(t *testing.T) {
 
 // TestMiscCalculatorKeepsSocketMatches: by default a what-if grades gem colour matches against the items the build has now.
 func TestMiscCalculatorKeepsSocketMatches(t *testing.T) {
-	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, raw.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
+	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, assetcache.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
 		t.Fatal(err)
 	}
 	_, text := activeSetSlot(loadCorpusBuild(t, "0339-reliquarian-shield-crush-of-the-chieftain-2.xml"), "Body Armour")

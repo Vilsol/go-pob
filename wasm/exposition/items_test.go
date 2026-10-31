@@ -11,6 +11,7 @@ import (
 
 	"github.com/Vilsol/go-pob/builds"
 	"github.com/Vilsol/go-pob/calculator"
+	"github.com/Vilsol/go-pob/data/assetcache"
 	"github.com/Vilsol/go-pob/data/raw"
 	"github.com/Vilsol/go-pob/pob"
 	"github.com/Vilsol/go-pob/storage"
@@ -52,7 +53,7 @@ Item Level: 84
 `
 
 func TestParseItemPaste(t *testing.T) {
-	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, raw.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
+	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, assetcache.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
 		t.Fatal(err)
 	}
 	build := corpusBuild(t, "0280-elementalist-fireball.xml")
@@ -98,7 +99,7 @@ func TestParseItemPaste(t *testing.T) {
 
 // TestCompareThenEquip: Equip lands the pasted text so that a recompute reads the same item the compare used, and the compare leaves the build as it was.
 func TestCompareThenEquip(t *testing.T) {
-	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, raw.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
+	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, assetcache.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
 		t.Fatal(err)
 	}
 	build := corpusBuild(t, "0280-elementalist-fireball.xml")
@@ -140,7 +141,7 @@ func TestCompareThenEquip(t *testing.T) {
 
 // TestParseItemOfABuildItemMatchesAFreshParse: a build's item is read from the shared cache.
 func TestParseItemOfABuildItemMatchesAFreshParse(t *testing.T) {
-	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, raw.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
+	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, assetcache.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
 		t.Fatal(err)
 	}
 	build := corpusBuild(t, "0001-necromancer-unknown.xml")
@@ -172,7 +173,7 @@ func TestParseItemOfABuildItemMatchesAFreshParse(t *testing.T) {
 
 // TestSlotItemListsMatchesEachSlotsList: the lists read every item once for all slots, and must equal each slot's own list.
 func TestSlotItemListsMatchesEachSlotsList(t *testing.T) {
-	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, raw.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
+	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, assetcache.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
 		t.Fatal(err)
 	}
 	filled := 0

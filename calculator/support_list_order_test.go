@@ -5,13 +5,14 @@ import (
 
 	"github.com/Vilsol/go-pob-data/poe"
 
+	"github.com/Vilsol/go-pob/data/assetcache"
 	"github.com/Vilsol/go-pob/data/raw"
 	"github.com/Vilsol/go-pob/storage"
 )
 
 // TestCrossLinkedSupportsFollowOwnGems pins CalcSetup.lua:1688-1731: a group's own supports come first and the cross-linked slot's are appended after them.
 func TestCrossLinkedSupportsFollowOwnGems(t *testing.T) {
-	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, raw.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
+	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, assetcache.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
 		t.Fatal(err)
 	}
 	build := loadCorpusBuild(t, "7129-ladder-dwh_4650.BREACH_DELIRIUM.xml")

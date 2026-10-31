@@ -9,6 +9,7 @@ import (
 	"github.com/Vilsol/go-pob-data/poe"
 
 	"github.com/Vilsol/go-pob/data"
+	"github.com/Vilsol/go-pob/data/assetcache"
 	"github.com/Vilsol/go-pob/data/raw"
 	"github.com/Vilsol/go-pob/pob"
 	"github.com/Vilsol/go-pob/storage"
@@ -142,7 +143,7 @@ func changedOutputs(a, b map[string]float64) int {
 
 // TestMiscCalculatorEqualsRecompute: a node what-if (override addNodes/removeNodes) must equal the build recalculated after the tree page's own mutator.
 func TestMiscCalculatorEqualsRecompute(t *testing.T) {
-	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, raw.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
+	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, assetcache.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
 		t.Fatal(err)
 	}
 
@@ -200,7 +201,7 @@ func TestMiscCalculatorEqualsRecompute(t *testing.T) {
 
 // TestMiscCalculatorRemovesGrantedPassive: the tree tooltip's "granted by an item" case removes a passive the build never allocated (CalcSetup.lua:1291).
 func TestMiscCalculatorRemovesGrantedPassive(t *testing.T) {
-	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, raw.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
+	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, assetcache.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
 		t.Fatal(err)
 	}
 

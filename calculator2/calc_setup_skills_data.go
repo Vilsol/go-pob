@@ -9,9 +9,9 @@ import (
 	"github.com/Vilsol/go-pob-data/loader"
 	game "github.com/Vilsol/go-pob-data/poe2"
 
+	"github.com/Vilsol/go-pob/data/assetcache"
 	"github.com/Vilsol/go-pob/data/poe2"
 	"github.com/Vilsol/go-pob/data/poe2skills"
-	"github.com/Vilsol/go-pob/data/raw"
 	"github.com/Vilsol/go-pob/storage"
 )
 
@@ -29,7 +29,7 @@ type skillData struct {
 
 var loadSkillData = sync.OnceValues(func() (*skillData, error) {
 	ctx := context.Background()
-	cache := raw.AssetLoaderWrapper{Storage: storage.Get()}
+	cache := assetcache.AssetLoaderWrapper{Storage: storage.Get()}
 	tables, err := game.LoadSkillTables(ctx, skillDataVersion, cache)
 	if err != nil {
 		return nil, fmt.Errorf("skill tables: %w", err)

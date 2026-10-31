@@ -9,7 +9,6 @@ import (
 
 	"github.com/MarvinJWendt/testza"
 
-	"github.com/Vilsol/go-pob/data"
 	"github.com/Vilsol/go-pob/mod"
 )
 
@@ -42,7 +41,7 @@ func traceCoverageCases(t *testing.T) (map[string]map[string]mod.Mod, *ModDB, *L
 		SummonSkillName:    "Raise Spectre",
 		SkillPart:          2,
 		SlotName:           "Body Armour",
-		SkillTypes:         map[data.SkillType]bool{"Melee": true},
+		SkillTypes:         map[SkillType]bool{"Melee": true},
 		SkillGrantedEffect: fakeGrantedEffect("Cyclone"),
 	}
 

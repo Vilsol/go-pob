@@ -7,13 +7,14 @@ import (
 
 	"github.com/Vilsol/go-pob-data/poe"
 
+	"github.com/Vilsol/go-pob/data/assetcache"
 	"github.com/Vilsol/go-pob/data/raw"
 	"github.com/Vilsol/go-pob/storage"
 )
 
 // TestGetSkillGemsIsPopulatedAndClassified covers the gem list the frontend renders.
 func TestGetSkillGemsIsPopulatedAndClassified(t *testing.T) {
-	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, raw.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
+	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, assetcache.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
 		t.Fatal(err)
 	}
 	skillGemCache = nil
@@ -76,7 +77,7 @@ func TestGetSkillGemsIsPopulatedAndClassified(t *testing.T) {
 
 // TestVaalGemNonVaalHalfResolvesPerGem covers the Vaal arm of GetSkillGems, which the test above never reaches.
 func TestVaalGemNonVaalHalfResolvesPerGem(t *testing.T) {
-	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, raw.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
+	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, assetcache.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
 		t.Fatal(err)
 	}
 	skillGemCache = nil
@@ -129,7 +130,7 @@ func TestVaalGemNonVaalHalfResolvesPerGem(t *testing.T) {
 
 // TestSkillGemsCarryPoBNameTagsAndLevelRequirement: GemSelectControl.lua:154-253 searches gemData.name.
 func TestSkillGemsCarryPoBNameTagsAndLevelRequirement(t *testing.T) {
-	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, raw.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
+	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, assetcache.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
 		t.Fatal(err)
 	}
 	byID := map[string]SkillGem{}
@@ -151,7 +152,7 @@ func TestSkillGemsCarryPoBNameTagsAndLevelRequirement(t *testing.T) {
 
 // TestGemErrorIsFindSkillGemsMessage: SkillsTab.lua:1137-1181: a gem named only by nameSpec (a pre-1.4.20 build) carries FindSkillGem's message.
 func TestGemErrorIsFindSkillGemsMessage(t *testing.T) {
-	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, raw.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
+	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, assetcache.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
 		t.Fatal(err)
 	}
 	if got := GemError("", "", "Fireball"); got != "" {
@@ -170,7 +171,7 @@ func TestGemErrorIsFindSkillGemsMessage(t *testing.T) {
 
 // TestVaalGemsNameTheirGlobalEffects: SkillsTab.lua:1014-1050: a Vaal gem shows an "Enable <name>:" box per granted effect that is no support.
 func TestVaalGemsNameTheirGlobalEffects(t *testing.T) {
-	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, raw.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
+	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, assetcache.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
 		t.Fatal(err)
 	}
 	byID := map[string]SkillGem{}

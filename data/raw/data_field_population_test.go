@@ -12,16 +12,17 @@ import (
 
 	"github.com/Vilsol/go-pob-data/poe"
 
+	"github.com/Vilsol/go-pob/data/assetcache"
 	"github.com/Vilsol/go-pob/storage"
 )
 
 // TestDataFieldPopulationCensus answers one question for every field of every go-pob-data table the calculator reads: IS THIS FIELD EVER POPULATED ON ANY ROW?
 func TestDataFieldPopulationCensus(t *testing.T) {
-	if err := poe.InitializeAll(t.Context(), LatestVersion, AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
+	if err := poe.InitializeAll(t.Context(), LatestVersion, assetcache.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
 		t.Fatal(err)
 	}
 	t.Cleanup(func() {
-		if err := poe.InitializeAll(DataContext(context.Background()), LatestVersion, AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
+		if err := poe.InitializeAll(DataContext(context.Background()), LatestVersion, assetcache.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
 			t.Error(err)
 		}
 	})

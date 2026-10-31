@@ -5,13 +5,14 @@ import (
 
 	"github.com/Vilsol/go-pob-data/poe"
 
+	"github.com/Vilsol/go-pob/data/assetcache"
 	"github.com/Vilsol/go-pob/data/raw"
 	"github.com/Vilsol/go-pob/storage"
 )
 
 // TestSkillCfgNameKeepsSummonSkeletonsPlural pins CalcActiveSkill.lua:457 at the 3.29 pin: skillCfg.skillName strips a leading "Vaal " and nothing else.
 func TestSkillCfgNameKeepsSummonSkeletonsPlural(t *testing.T) {
-	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, raw.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
+	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, assetcache.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
 		t.Fatal(err)
 	}
 	for id, want := range map[string]string{

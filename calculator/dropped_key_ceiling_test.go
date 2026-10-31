@@ -8,6 +8,7 @@ import (
 
 	"github.com/Vilsol/go-pob-data/poe"
 
+	"github.com/Vilsol/go-pob/data/assetcache"
 	"github.com/Vilsol/go-pob/data/raw"
 	"github.com/Vilsol/go-pob/storage"
 	"github.com/Vilsol/go-pob/utils"
@@ -24,7 +25,7 @@ func TestDroppedKeyClassesAreRatcheted(t *testing.T) {
 	if os.Getenv("CORPUS") == "" {
 		t.Skip("set CORPUS=true — this walks the corpus")
 	}
-	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, raw.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
+	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, assetcache.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
 		t.Fatal(err)
 	}
 

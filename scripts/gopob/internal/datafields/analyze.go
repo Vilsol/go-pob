@@ -22,6 +22,7 @@ const (
 	loaderPkg     = DataModule + "/loader"
 	generatedFile = "raw_gen.go"
 	ourRawPkg     = ModulePath + "/data/raw"
+	cacheNsPkg    = ModulePath + "/data/assetcache"
 	selfPkg       = ModulePath + "/scripts/gopob/internal/datafields"
 	generatorPkg  = ModulePath + "/scripts/gamedatadump"
 )
@@ -223,14 +224,16 @@ func analyzeConfig(dir string, bc BuildConfig, res *Result, allow []allowEntry, 
 				res.DataModuleVersion = p.Module.Version
 			}
 		}
-		if p.PkgPath == ourRawPkg && p.Types != nil {
+		if p.PkgPath == cacheNsPkg && p.Types != nil {
 			res.CacheNamespace = constOf(p.Types, "DataModuleVersion")
+		}
+		if p.PkgPath == ourRawPkg && p.Types != nil {
 			res.DefaultVersion = constOf(p.Types, "DefaultVersion")
 		}
 	}
 	if res.DataModuleVersion == "" || res.CacheNamespace != res.DataModuleVersion || res.DefaultVersion == "" {
 		refusals = append(refusals, fmt.Sprintf("%s: go.mod requires %s %q but %s.DataModuleVersion is %q (default game version %q); the cache namespace would not match the assets",
-			bc.Name, DataModule, res.DataModuleVersion, ourRawPkg, res.CacheNamespace, res.DefaultVersion))
+			bc.Name, DataModule, res.DataModuleVersion, cacheNsPkg, res.CacheNamespace, res.DefaultVersion))
 	}
 	if len(res.Structs) == 0 {
 		return []string{bc.Name + ": the raw package declared no struct types"}, nil

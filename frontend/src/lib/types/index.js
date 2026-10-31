@@ -74,8 +74,7 @@ export const initializeCrystalline = () => {
   };
   data = {
     DamageType: globalThis['go']['go-pob']['data']['DamageType'],
-    ItemClassName: globalThis['go']['go-pob']['data']['ItemClassName'],
-    SkillType: globalThis['go']['go-pob']['data']['SkillType']
+    ItemClassName: globalThis['go']['go-pob']['data']['ItemClassName']
   };
   exposition = {
     AddDBItem: wrap('exposition.AddDBItem', globalThis['go']['go-pob']['exposition']['AddDBItem']),

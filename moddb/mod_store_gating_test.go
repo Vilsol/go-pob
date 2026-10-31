@@ -5,7 +5,6 @@ import (
 
 	"github.com/MarvinJWendt/testza"
 
-	"github.com/Vilsol/go-pob/data"
 	"github.com/Vilsol/go-pob/mod"
 	"github.com/Vilsol/go-pob/utils"
 )
@@ -28,14 +27,14 @@ func TestEvalModGatingTags(t *testing.T) {
 		{
 			name:       "SkillType",
 			tag:        mod.SkillType("Attack"),
-			matchCfg:   &ListCfg{SkillTypes: map[data.SkillType]bool{data.SkillTypeAttack: true}},
-			nomatchCfg: &ListCfg{SkillTypes: map[data.SkillType]bool{data.SkillTypeSpell: true}},
+			matchCfg:   &ListCfg{SkillTypes: map[SkillType]bool{SkillType("Attack"): true}},
+			nomatchCfg: &ListCfg{SkillTypes: map[SkillType]bool{SkillType("Spell"): true}},
 		},
 		{
 			name:       "SkillType-neg",
 			tag:        mod.SkillType("Attack").Neg(true),
-			matchCfg:   &ListCfg{SkillTypes: map[data.SkillType]bool{data.SkillTypeSpell: true}},
-			nomatchCfg: &ListCfg{SkillTypes: map[data.SkillType]bool{data.SkillTypeAttack: true}},
+			matchCfg:   &ListCfg{SkillTypes: map[SkillType]bool{SkillType("Spell"): true}},
+			nomatchCfg: &ListCfg{SkillTypes: map[SkillType]bool{SkillType("Attack"): true}},
 		},
 		{
 			name:       "SkillName",

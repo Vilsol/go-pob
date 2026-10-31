@@ -12,6 +12,8 @@ import (
 
 	"github.com/Vilsol/go-pob-data/fields"
 	"github.com/Vilsol/go-pob-data/loader"
+
+	"github.com/Vilsol/go-pob/data/assetcache"
 )
 
 const treeBase = "https://data.pob.gg/data/%s/tree/data.json.br"
@@ -39,7 +41,7 @@ func prefetchURLs(ctx context.Context, version string) []string {
 	return append(urls, TreeURL(version))
 }
 
-func prefetch(ctx context.Context, cache AssetLoaderWrapper, urls []string) map[string][]byte {
+func prefetch(ctx context.Context, cache assetcache.AssetLoaderWrapper, urls []string) map[string][]byte {
 	out := make(map[string][]byte, len(urls))
 	var mu sync.Mutex
 	var wg sync.WaitGroup
@@ -58,7 +60,7 @@ func prefetch(ctx context.Context, cache AssetLoaderWrapper, urls []string) map[
 	return out
 }
 
-func prefetchOne(ctx context.Context, cache AssetLoaderWrapper, url string) []byte {
+func prefetchOne(ctx context.Context, cache assetcache.AssetLoaderWrapper, url string) []byte {
 	if cache.Exists(url) {
 		if b, err := cache.Get(url); err == nil && len(b) > 0 {
 			return b

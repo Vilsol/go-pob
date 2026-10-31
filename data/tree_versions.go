@@ -17,6 +17,7 @@ import (
 	"github.com/dominikbraun/graph"
 
 	"github.com/Vilsol/go-pob/builds"
+	"github.com/Vilsol/go-pob/data/assetcache"
 	"github.com/Vilsol/go-pob/data/raw"
 	"github.com/Vilsol/go-pob/pob"
 	"github.com/Vilsol/go-pob/storage"
@@ -100,7 +101,7 @@ func (v *TreeVersionData) RawTree() []byte {
 
 	treeURL := raw.TreeURL(v.Display)
 
-	treeCacheKey := raw.CacheKey(treeURL)
+	treeCacheKey := assetcache.CacheKey(treeURL)
 
 	var compressedTree []byte
 	if storage.Get().ExistsInCache(treeCacheKey) {
