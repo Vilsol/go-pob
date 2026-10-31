@@ -541,6 +541,7 @@ calculator2/calc_offence_ailments.go PORT     src/Modules/CalcOffence.lua,src/Mo
 calculator2/calc_setup_weapon.go PORT         src/Modules/Data.lua,src/Modules/CalcSetup.lua
 calculator2/calc_setup.go           PORT       src/Modules/CalcSetup.lua,src/Classes/PassiveTree.lua,src/Classes/ConfigTab.lua,src/Modules/ConfigOptions.lua
 calculator2/calc_setup_config.go    PORT       src/Classes/ConfigTab.lua,src/Modules/ConfigOptions.lua
+calculator2/configs.go              PORT       src/Modules/ConfigOptions.lua
 calculator2/calc_setup_items.go     PORT       src/Modules/CalcSetup.lua,src/Classes/ItemsTab.lua,src/Classes/ItemSlotControl.lua,src/Classes/TreeTab.lua,src/Classes/PassiveTree.lua,src/Classes/ModList.lua
 calculator2/calc_setup_radius.go    PORT       src/Modules/CalcSetup.lua
 calculator2/calc_setup_skills.go    PORT       src/Modules/CalcSetup.lua,src/Classes/SkillsTab.lua
