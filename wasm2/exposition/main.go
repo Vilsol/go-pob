@@ -7,6 +7,7 @@ package exposition
 import (
 	"github.com/Vilsol/crystalline/bind"
 
+	"github.com/Vilsol/go-pob/calculator2"
 	"github.com/Vilsol/go-pob/config"
 	"github.com/Vilsol/go-pob/storage"
 )
@@ -17,6 +18,9 @@ import (
 func Exports(r bind.Registry) {
 	r.Type(Calculator{}, bind.AsPromise("Calculate"))
 	r.Type(Outputs{}, bind.Plain())
+	r.Type(calculator2.SocketGroupView{}, bind.Plain())
+	r.Type(calculator2.ConfigValue{}, bind.Plain())
+	r.Type(calculator2.ConfigRelevance{}, bind.Plain())
 	r.Type(storage.DirEntry{}, bind.Plain())
 
 	r.Func(ParseBuild)

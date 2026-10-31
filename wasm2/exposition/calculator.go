@@ -34,19 +34,29 @@ func loadTree() (*tree2.PassiveTree, error) {
 	return tree, nil
 }
 
-// Calculator holds one parsed PoE2 build.
+// Calculator holds one parsed PoE2 build and its last calculation.
 type Calculator struct {
 	build *pob2.PathOfBuilding2
+	env   *calculator2.Environment
+	used  *calculator2.UsedTables
 }
 
 // Outputs is the player's output table, the main skill's minion's when it has one, and the build's
-// class and level as the calculation resolved them.
+// class and level as the calculation resolved them, with what the sidebar and config page read.
 type Outputs struct {
 	Output          map[string]float64
 	Minion          map[string]float64
 	ClassName       string
 	AscendClassName string
 	Level           int
+	// SkillFlags is the main skill's activeEffect.statSet.skillFlags; MinionSkillFlags the minion's.
+	SkillFlags       map[string]bool
+	MinionSkillFlags map[string]bool
+	SocketGroups     []calculator2.SocketGroupView
+	// MainSocketGroup and MainActiveSkill are 1-based, as the calculation resolved them.
+	MainSocketGroup int
+	MainActiveSkill int
+	ConfigInputs    map[string]calculator2.ConfigValue
 }
 
 func ParseBuild(xml string) (*Calculator, error) {
@@ -65,6 +75,19 @@ func (c *Calculator) Serialize() (string, error) {
 	return string(out), nil
 }
 
+func statSetFlags(skill *calculator2.ActiveSkill) map[string]bool {
+	out := map[string]bool{}
+	if skill == nil || skill.ActiveEffect == nil || skill.ActiveEffect.StatSet == nil {
+		return out
+	}
+	for k, v := range skill.ActiveEffect.StatSet.SkillFlags {
+		if v {
+			out[k] = true
+		}
+	}
+	return out
+}
+
 func (c *Calculator) Calculate() (*Outputs, error) {
 	t, err := loadTree()
 	if err != nil {
@@ -74,14 +97,48 @@ func (c *Calculator) Calculate() (*Outputs, error) {
 	if err != nil {
 		return nil, err
 	}
+	c.env, c.used = env, calculator2.BuildOutputUsed(env)
 	res := &Outputs{
 		Output:          env.Player.Output,
 		ClassName:       env.Spec.CurClassName,
 		AscendClassName: env.Spec.CurAscendClassName,
 		Level:           env.Player.Level,
+		SkillFlags:      statSetFlags(env.Player.MainSkill),
+		SocketGroups:    calculator2.SocketGroupViews(env),
+		MainSocketGroup: env.MainSocketGroup,
+		ConfigInputs:    calculator2.ConfigInputs(c.build),
+	}
+	if i := env.MainSocketGroup; i >= 1 && i <= len(env.SocketGroupList) {
+		res.MainActiveSkill = env.SocketGroupList[i-1].MainActiveSkill
 	}
 	if main := env.Player.MainSkill; main != nil && main.Minion != nil {
 		res.Minion = main.Minion.Output
+		res.MinionSkillFlags = statSetFlags(main.Minion.MainSkill)
 	}
 	return res, nil
+}
+
+// SetConfigInput sets one config option of the active config set; isDefault drops it instead.
+func (c *Calculator) SetConfigInput(name string, value calculator2.ConfigValue, isDefault bool) {
+	calculator2.SetConfigInput(c.build, name, value, isDefault)
+}
+
+func (c *Calculator) SetMainSocketGroup(index int) {
+	calculator2.SetMainSocketGroup(c.build, index)
+}
+
+func (c *Calculator) SetMainActiveSkill(index int) {
+	calculator2.SetMainActiveSkill(c.build, index)
+}
+
+type notCalculatedError struct{}
+
+func (notCalculatedError) Error() string { return "the build has not been calculated" }
+
+// ConfigRelevance answers a config visibility query against the last calculation.
+func (c *Calculator) ConfigRelevance(query calculator2.ConfigRelevance) (calculator2.ConfigRelevance, error) {
+	if c.env == nil {
+		return calculator2.ConfigRelevance{}, notCalculatedError{}
+	}
+	return c.env.ConfigRelevance(c.used, query), nil
 }

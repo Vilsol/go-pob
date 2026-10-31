@@ -14,6 +14,7 @@ src/lib/types/index.js
 src/lib/types2/index.d.ts
 src/lib/types2/index.js
 src/lib/display/config_options_generated.ts
+src/lib/display/config_options_generated2.ts
 
 src/lib/design/fixtures/*.json
 

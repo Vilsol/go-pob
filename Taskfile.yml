@@ -289,7 +289,7 @@ tasks:
 
   component-tests:
     desc: "Mount the real Svelte pages against the real worker and assert in Go"
-    deps: [build-go]
+    deps: [build-go, build-go2]
     dir: ./frontend/
     cmds:
       - '{{.NICE}} npx vitest run harness/component _mount.test.ts'
@@ -464,6 +464,24 @@ tasks:
     cmds:
       - '{{.NICE}} mise x --cd {{.POB}}/src -- luajit {{.HERE}}/oracle/config_options.lua {{.HERE}}/frontend/src/lib/display/config_options_generated.ts'
       - '{{.NICE}} mise x --cd {{.POB}}/src -- luajit {{.HERE}}/oracle/custom_mod_lines.lua {{.HERE}}/testdata/oracle/custom_mod_lines_cases.txt {{.HERE}}/testdata/oracle/custom_mod_lines_expected.json'
+
+  config-ui-oracles-poe2:
+    desc: "Regenerate the PoE2 config page's option list and the sidebar fixture from the pinned PoB-PoE2 (CHECK=1 fails when the option list is stale instead)"
+    vars:
+      POB2:
+        sh: 'realpath "{{.POB2_DIR | default .POB2_DEFAULT}}"'
+      HERE:
+        sh: pwd
+      OUT: '{{.HERE}}/frontend/src/lib/display/config_options_generated2.ts'
+      GEN: '{{if eq .CHECK "1"}}{{.HERE}}/.task-config-options2.ts{{else}}{{.OUT}}{{end}}'
+    cmds:
+      - task: pob-pin
+        vars: {GAME: poe2}
+      - defer: rm -f {{.HERE}}/.task-config-options2.ts
+      - '{{.NICE}} mise x --cd {{.POB2}}/src -- luajit {{.HERE}}/oracle/config_options.lua {{.GEN}} "task config-ui-oracles-poe2"'
+      - '{{if eq .CHECK "1"}}diff -u {{.OUT}} {{.GEN}}{{end}}'
+      - '{{if ne .CHECK "1"}}{{.NICE}} mise x --cd {{.POB2}}/src -- luajit {{.HERE}}/oracle/poe2_sidebar.lua {{.HERE}}/wasm2/exposition/testdata/sorceress_spark.xml {{.HERE}}/testdata/oracle/poe2_sidebar_sorceress_spark.json{{end}}'
+      - '{{if ne .CHECK "1"}}{{.NICE}} mise x --cd {{.POB2}}/src -- luajit {{.HERE}}/oracle/poe2_sidebar.lua {{.HERE}}/wasm2/exposition/testdata/sorceress_three_spells.xml {{.HERE}}/testdata/oracle/poe2_sidebar_sorceress_three_spells.json{{end}}'
 
   rich-notes-pob:
     desc: "Rewrite the go-pob-written <RichNotes> build fixture and record what the pinned PoB reads from it"

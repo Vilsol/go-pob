@@ -22,13 +22,51 @@ export type Result<T> = (
   /** Returns the value, or the fallback if the call failed. */
   unwrapOr(fallback: T): T;
 };
+export declare namespace calculator2 {
+  interface ConfigRelevance {
+    readonly Conds?: Array<string>;
+    readonly MinionConds?: Array<string>;
+    readonly EnemyConds?: Array<string>;
+    readonly Mults?: Array<string>;
+    readonly EnemyMults?: Array<string>;
+    readonly Stats?: Array<string>;
+    readonly EnemyStats?: Array<string>;
+    readonly TagTypes?: Array<string>;
+    readonly Flags?: Array<string>;
+    readonly PlayerFlags?: Array<string>;
+    readonly MinionFlags?: Array<string>;
+    readonly Mods?: Array<string>;
+    readonly Skills?: Array<string>;
+    readonly TransfiguredSkills?: Array<string>;
+    readonly SkillTypes?: Array<string>;
+    readonly SkillFlags?: Array<string>;
+    readonly SkillData?: Array<string>;
+    readonly GemFamilies?: Array<string>;
+  }
+  interface ConfigValue {
+    readonly Number: number;
+    readonly String: string;
+    readonly Boolean: boolean;
+    readonly IsNumber: boolean;
+    readonly IsString: boolean;
+    readonly IsBoolean: boolean;
+  }
+  interface SocketGroupView {
+    readonly Label: string;
+    readonly Skills?: Array<string>;
+  }
+}
 export declare namespace config {
   function InitLogging(withTime: boolean): void;
 }
 export declare namespace exposition {
   interface Calculator {
     Calculate(): Promise<Result<(exposition.Outputs | undefined)>>;
+    ConfigRelevance(query: calculator2.ConfigRelevance): Result<calculator2.ConfigRelevance>;
     Serialize(): Result<string>;
+    SetConfigInput(name: string, value: calculator2.ConfigValue, isDefault: boolean): void;
+    SetMainActiveSkill(index: number): void;
+    SetMainSocketGroup(index: number): void;
     /** Releases the Go resources behind this wrapper. */
     release(): void;
     [Symbol.dispose](): void;
@@ -39,6 +77,12 @@ export declare namespace exposition {
     readonly ClassName: string;
     readonly AscendClassName: string;
     readonly Level: number;
+    readonly SkillFlags?: Record<string, boolean>;
+    readonly MinionSkillFlags?: Record<string, boolean>;
+    readonly SocketGroups?: Array<calculator2.SocketGroupView>;
+    readonly MainSocketGroup: number;
+    readonly MainActiveSkill: number;
+    readonly ConfigInputs?: Record<string, Readonly<calculator2.ConfigValue>>;
   }
   function ParseBuild(xml: string): Result<(exposition.Calculator | undefined)>;
   const TreeVersion: string;

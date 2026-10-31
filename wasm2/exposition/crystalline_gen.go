@@ -12,6 +12,7 @@ import (
 	"syscall/js"
 
 	bind "github.com/Vilsol/crystalline/bind"
+	calculator2 "github.com/Vilsol/go-pob/calculator2"
 	config "github.com/Vilsol/go-pob/config"
 	storage "github.com/Vilsol/go-pob/storage"
 )
@@ -1105,6 +1106,635 @@ func crystallineFnStorageInitializeStorage(this js.Value, args []js.Value) (resu
 	})
 }
 
+func crystallineMarshalCalculator2ConfigRelevance(v *calculator2.ConfigRelevance) any {
+	if v == nil {
+		return nil
+	}
+
+	out := crystallineObjects.New()
+
+	out.Set("Conds", crystallineJSON(func(b []byte, ok *bool) []byte {
+		if items0 := v.Conds; items0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '[')
+			for i0 := range items0 {
+				if i0 > 0 {
+					b = append(b, ',')
+				}
+
+				b = crystallineAppendString(b, string(items0[i0]))
+			}
+
+			b = append(b, ']')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			items := v.Conds
+			if items == nil {
+				return nil
+			}
+
+			out := make([]any, 0, len(items))
+			for i := range items {
+				out = append(out, string(items[i]))
+			}
+
+			return out
+		}()
+	}))
+	out.Set("MinionConds", crystallineJSON(func(b []byte, ok *bool) []byte {
+		if items0 := v.MinionConds; items0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '[')
+			for i0 := range items0 {
+				if i0 > 0 {
+					b = append(b, ',')
+				}
+
+				b = crystallineAppendString(b, string(items0[i0]))
+			}
+
+			b = append(b, ']')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			items := v.MinionConds
+			if items == nil {
+				return nil
+			}
+
+			out := make([]any, 0, len(items))
+			for i := range items {
+				out = append(out, string(items[i]))
+			}
+
+			return out
+		}()
+	}))
+	out.Set("EnemyConds", crystallineJSON(func(b []byte, ok *bool) []byte {
+		if items0 := v.EnemyConds; items0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '[')
+			for i0 := range items0 {
+				if i0 > 0 {
+					b = append(b, ',')
+				}
+
+				b = crystallineAppendString(b, string(items0[i0]))
+			}
+
+			b = append(b, ']')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			items := v.EnemyConds
+			if items == nil {
+				return nil
+			}
+
+			out := make([]any, 0, len(items))
+			for i := range items {
+				out = append(out, string(items[i]))
+			}
+
+			return out
+		}()
+	}))
+	out.Set("Mults", crystallineJSON(func(b []byte, ok *bool) []byte {
+		if items0 := v.Mults; items0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '[')
+			for i0 := range items0 {
+				if i0 > 0 {
+					b = append(b, ',')
+				}
+
+				b = crystallineAppendString(b, string(items0[i0]))
+			}
+
+			b = append(b, ']')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			items := v.Mults
+			if items == nil {
+				return nil
+			}
+
+			out := make([]any, 0, len(items))
+			for i := range items {
+				out = append(out, string(items[i]))
+			}
+
+			return out
+		}()
+	}))
+	out.Set("EnemyMults", crystallineJSON(func(b []byte, ok *bool) []byte {
+		if items0 := v.EnemyMults; items0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '[')
+			for i0 := range items0 {
+				if i0 > 0 {
+					b = append(b, ',')
+				}
+
+				b = crystallineAppendString(b, string(items0[i0]))
+			}
+
+			b = append(b, ']')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			items := v.EnemyMults
+			if items == nil {
+				return nil
+			}
+
+			out := make([]any, 0, len(items))
+			for i := range items {
+				out = append(out, string(items[i]))
+			}
+
+			return out
+		}()
+	}))
+	out.Set("Stats", crystallineJSON(func(b []byte, ok *bool) []byte {
+		if items0 := v.Stats; items0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '[')
+			for i0 := range items0 {
+				if i0 > 0 {
+					b = append(b, ',')
+				}
+
+				b = crystallineAppendString(b, string(items0[i0]))
+			}
+
+			b = append(b, ']')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			items := v.Stats
+			if items == nil {
+				return nil
+			}
+
+			out := make([]any, 0, len(items))
+			for i := range items {
+				out = append(out, string(items[i]))
+			}
+
+			return out
+		}()
+	}))
+	out.Set("EnemyStats", crystallineJSON(func(b []byte, ok *bool) []byte {
+		if items0 := v.EnemyStats; items0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '[')
+			for i0 := range items0 {
+				if i0 > 0 {
+					b = append(b, ',')
+				}
+
+				b = crystallineAppendString(b, string(items0[i0]))
+			}
+
+			b = append(b, ']')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			items := v.EnemyStats
+			if items == nil {
+				return nil
+			}
+
+			out := make([]any, 0, len(items))
+			for i := range items {
+				out = append(out, string(items[i]))
+			}
+
+			return out
+		}()
+	}))
+	out.Set("TagTypes", crystallineJSON(func(b []byte, ok *bool) []byte {
+		if items0 := v.TagTypes; items0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '[')
+			for i0 := range items0 {
+				if i0 > 0 {
+					b = append(b, ',')
+				}
+
+				b = crystallineAppendString(b, string(items0[i0]))
+			}
+
+			b = append(b, ']')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			items := v.TagTypes
+			if items == nil {
+				return nil
+			}
+
+			out := make([]any, 0, len(items))
+			for i := range items {
+				out = append(out, string(items[i]))
+			}
+
+			return out
+		}()
+	}))
+	out.Set("Flags", crystallineJSON(func(b []byte, ok *bool) []byte {
+		if items0 := v.Flags; items0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '[')
+			for i0 := range items0 {
+				if i0 > 0 {
+					b = append(b, ',')
+				}
+
+				b = crystallineAppendString(b, string(items0[i0]))
+			}
+
+			b = append(b, ']')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			items := v.Flags
+			if items == nil {
+				return nil
+			}
+
+			out := make([]any, 0, len(items))
+			for i := range items {
+				out = append(out, string(items[i]))
+			}
+
+			return out
+		}()
+	}))
+	out.Set("PlayerFlags", crystallineJSON(func(b []byte, ok *bool) []byte {
+		if items0 := v.PlayerFlags; items0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '[')
+			for i0 := range items0 {
+				if i0 > 0 {
+					b = append(b, ',')
+				}
+
+				b = crystallineAppendString(b, string(items0[i0]))
+			}
+
+			b = append(b, ']')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			items := v.PlayerFlags
+			if items == nil {
+				return nil
+			}
+
+			out := make([]any, 0, len(items))
+			for i := range items {
+				out = append(out, string(items[i]))
+			}
+
+			return out
+		}()
+	}))
+	out.Set("MinionFlags", crystallineJSON(func(b []byte, ok *bool) []byte {
+		if items0 := v.MinionFlags; items0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '[')
+			for i0 := range items0 {
+				if i0 > 0 {
+					b = append(b, ',')
+				}
+
+				b = crystallineAppendString(b, string(items0[i0]))
+			}
+
+			b = append(b, ']')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			items := v.MinionFlags
+			if items == nil {
+				return nil
+			}
+
+			out := make([]any, 0, len(items))
+			for i := range items {
+				out = append(out, string(items[i]))
+			}
+
+			return out
+		}()
+	}))
+	out.Set("Mods", crystallineJSON(func(b []byte, ok *bool) []byte {
+		if items0 := v.Mods; items0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '[')
+			for i0 := range items0 {
+				if i0 > 0 {
+					b = append(b, ',')
+				}
+
+				b = crystallineAppendString(b, string(items0[i0]))
+			}
+
+			b = append(b, ']')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			items := v.Mods
+			if items == nil {
+				return nil
+			}
+
+			out := make([]any, 0, len(items))
+			for i := range items {
+				out = append(out, string(items[i]))
+			}
+
+			return out
+		}()
+	}))
+	out.Set("Skills", crystallineJSON(func(b []byte, ok *bool) []byte {
+		if items0 := v.Skills; items0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '[')
+			for i0 := range items0 {
+				if i0 > 0 {
+					b = append(b, ',')
+				}
+
+				b = crystallineAppendString(b, string(items0[i0]))
+			}
+
+			b = append(b, ']')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			items := v.Skills
+			if items == nil {
+				return nil
+			}
+
+			out := make([]any, 0, len(items))
+			for i := range items {
+				out = append(out, string(items[i]))
+			}
+
+			return out
+		}()
+	}))
+	out.Set("TransfiguredSkills", crystallineJSON(func(b []byte, ok *bool) []byte {
+		if items0 := v.TransfiguredSkills; items0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '[')
+			for i0 := range items0 {
+				if i0 > 0 {
+					b = append(b, ',')
+				}
+
+				b = crystallineAppendString(b, string(items0[i0]))
+			}
+
+			b = append(b, ']')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			items := v.TransfiguredSkills
+			if items == nil {
+				return nil
+			}
+
+			out := make([]any, 0, len(items))
+			for i := range items {
+				out = append(out, string(items[i]))
+			}
+
+			return out
+		}()
+	}))
+	out.Set("SkillTypes", crystallineJSON(func(b []byte, ok *bool) []byte {
+		if items0 := v.SkillTypes; items0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '[')
+			for i0 := range items0 {
+				if i0 > 0 {
+					b = append(b, ',')
+				}
+
+				b = crystallineAppendString(b, string(items0[i0]))
+			}
+
+			b = append(b, ']')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			items := v.SkillTypes
+			if items == nil {
+				return nil
+			}
+
+			out := make([]any, 0, len(items))
+			for i := range items {
+				out = append(out, string(items[i]))
+			}
+
+			return out
+		}()
+	}))
+	out.Set("SkillFlags", crystallineJSON(func(b []byte, ok *bool) []byte {
+		if items0 := v.SkillFlags; items0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '[')
+			for i0 := range items0 {
+				if i0 > 0 {
+					b = append(b, ',')
+				}
+
+				b = crystallineAppendString(b, string(items0[i0]))
+			}
+
+			b = append(b, ']')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			items := v.SkillFlags
+			if items == nil {
+				return nil
+			}
+
+			out := make([]any, 0, len(items))
+			for i := range items {
+				out = append(out, string(items[i]))
+			}
+
+			return out
+		}()
+	}))
+	out.Set("SkillData", crystallineJSON(func(b []byte, ok *bool) []byte {
+		if items0 := v.SkillData; items0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '[')
+			for i0 := range items0 {
+				if i0 > 0 {
+					b = append(b, ',')
+				}
+
+				b = crystallineAppendString(b, string(items0[i0]))
+			}
+
+			b = append(b, ']')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			items := v.SkillData
+			if items == nil {
+				return nil
+			}
+
+			out := make([]any, 0, len(items))
+			for i := range items {
+				out = append(out, string(items[i]))
+			}
+
+			return out
+		}()
+	}))
+	out.Set("GemFamilies", crystallineJSON(func(b []byte, ok *bool) []byte {
+		if items0 := v.GemFamilies; items0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '[')
+			for i0 := range items0 {
+				if i0 > 0 {
+					b = append(b, ',')
+				}
+
+				b = crystallineAppendString(b, string(items0[i0]))
+			}
+
+			b = append(b, ']')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			items := v.GemFamilies
+			if items == nil {
+				return nil
+			}
+
+			out := make([]any, 0, len(items))
+			for i := range items {
+				out = append(out, string(items[i]))
+			}
+
+			return out
+		}()
+	}))
+
+	return out
+}
+
+func crystallineMarshalCalculator2ConfigValue(v *calculator2.ConfigValue) any {
+	if v == nil {
+		return nil
+	}
+
+	out := crystallineObjects.New()
+
+	out.Set("Number", float64(v.Number))
+	out.Set("String", string(v.String))
+	out.Set("Boolean", bool(v.Boolean))
+	out.Set("IsNumber", bool(v.IsNumber))
+	out.Set("IsString", bool(v.IsString))
+	out.Set("IsBoolean", bool(v.IsBoolean))
+
+	return out
+}
+
+func crystallineMarshalCalculator2SocketGroupView(v *calculator2.SocketGroupView) any {
+	if v == nil {
+		return nil
+	}
+
+	out := crystallineObjects.New()
+
+	out.Set("Label", string(v.Label))
+	out.Set("Skills", crystallineJSON(func(b []byte, ok *bool) []byte {
+		if items0 := v.Skills; items0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '[')
+			for i0 := range items0 {
+				if i0 > 0 {
+					b = append(b, ',')
+				}
+
+				b = crystallineAppendString(b, string(items0[i0]))
+			}
+
+			b = append(b, ']')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			items := v.Skills
+			if items == nil {
+				return nil
+			}
+
+			out := make([]any, 0, len(items))
+			for i := range items {
+				out = append(out, string(items[i]))
+			}
+
+			return out
+		}()
+	}))
+
+	return out
+}
+
 var crystallineMarshalExpositionCalculatorShape js.Value
 
 func crystallineMarshalExpositionCalculator(v *Calculator) any {
@@ -1125,7 +1755,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 				switch field {
 				}
 			},
-			[]string{"Calculate", "Serialize"},
+			[]string{"Calculate", "ConfigRelevance", "Serialize", "SetConfigInput", "SetMainActiveSkill", "SetMainSocketGroup"},
 			func(v *Calculator, method int, args []js.Value) any {
 				switch method {
 				case 0:
@@ -1148,6 +1778,28 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 						}))
 					})
 				case 1:
+					if len(args) != 1 {
+						return crystallineFail("ConfigRelevance: expected 1 arguments, got " + strconv.Itoa(len(args)))
+					}
+
+					a0, err := crystallineToCalculator2ConfigRelevance(args[0])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					r0, r1 := v.ConfigRelevance(a0)
+
+					if r1 != nil {
+						return crystallineErr(r1)
+					}
+
+					return crystallineOk(crystallineJSON(func(b []byte, ok *bool) []byte {
+						b = crystallineAppendCalculator2ConfigRelevance(b, &r0, ok)
+						return b
+					}, func() any {
+						return crystallineMarshalCalculator2ConfigRelevance(&r0)
+					}))
+				case 2:
 					if len(args) != 0 {
 						return crystallineFail("Serialize: expected 0 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -1159,6 +1811,55 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(string(r0))
+				case 3:
+					if len(args) != 3 {
+						return crystallineFail("SetConfigInput: expected 3 arguments, got " + strconv.Itoa(len(args)))
+					}
+
+					a0, err := crystallineToString(args[0])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					a1, err := crystallineToCalculator2ConfigValue(args[1])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					a2, err := crystallineToBool(args[2])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					v.SetConfigInput(a0, a1, a2)
+
+					return nil
+				case 4:
+					if len(args) != 1 {
+						return crystallineFail("SetMainActiveSkill: expected 1 arguments, got " + strconv.Itoa(len(args)))
+					}
+
+					a0, err := crystallineToInt(args[0])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					v.SetMainActiveSkill(a0)
+
+					return nil
+				case 5:
+					if len(args) != 1 {
+						return crystallineFail("SetMainSocketGroup: expected 1 arguments, got " + strconv.Itoa(len(args)))
+					}
+
+					a0, err := crystallineToInt(args[0])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					v.SetMainSocketGroup(a0)
+
+					return nil
 				}
 
 				return nil
@@ -1247,6 +1948,141 @@ func crystallineMarshalExpositionOutputs(v *Outputs) any {
 	out.Set("ClassName", string(v.ClassName))
 	out.Set("AscendClassName", string(v.AscendClassName))
 	out.Set("Level", float64(v.Level))
+	out.Set("SkillFlags", crystallineJSON(func(b []byte, ok *bool) []byte {
+		if entries0 := v.SkillFlags; entries0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '{')
+			first0 := true
+			for k0, v0 := range entries0 {
+				if !first0 {
+					b = append(b, ',')
+				}
+
+				first0 = false
+				b = crystallineAppendString(b, string(k0))
+				b = append(b, ':')
+				b = strconv.AppendBool(b, bool(v0))
+			}
+
+			b = append(b, '}')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			if v.SkillFlags == nil {
+				return nil
+			}
+
+			out := crystallineObjects.New()
+			for k, v := range v.SkillFlags {
+				out.Set(string(k), bool(v))
+			}
+
+			return out
+		}()
+	}))
+	out.Set("MinionSkillFlags", crystallineJSON(func(b []byte, ok *bool) []byte {
+		if entries0 := v.MinionSkillFlags; entries0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '{')
+			first0 := true
+			for k0, v0 := range entries0 {
+				if !first0 {
+					b = append(b, ',')
+				}
+
+				first0 = false
+				b = crystallineAppendString(b, string(k0))
+				b = append(b, ':')
+				b = strconv.AppendBool(b, bool(v0))
+			}
+
+			b = append(b, '}')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			if v.MinionSkillFlags == nil {
+				return nil
+			}
+
+			out := crystallineObjects.New()
+			for k, v := range v.MinionSkillFlags {
+				out.Set(string(k), bool(v))
+			}
+
+			return out
+		}()
+	}))
+	out.Set("SocketGroups", crystallineJSON(func(b []byte, ok *bool) []byte {
+		if items0 := v.SocketGroups; items0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '[')
+			for i0 := range items0 {
+				if i0 > 0 {
+					b = append(b, ',')
+				}
+
+				b = crystallineAppendCalculator2SocketGroupView(b, &items0[i0], ok)
+			}
+
+			b = append(b, ']')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			items := v.SocketGroups
+			if items == nil {
+				return nil
+			}
+
+			out := make([]any, 0, len(items))
+			for i := range items {
+				out = append(out, crystallineMarshalCalculator2SocketGroupView(&items[i]))
+			}
+
+			return out
+		}()
+	}))
+	out.Set("MainSocketGroup", float64(v.MainSocketGroup))
+	out.Set("MainActiveSkill", float64(v.MainActiveSkill))
+	out.Set("ConfigInputs", crystallineJSON(func(b []byte, ok *bool) []byte {
+		if entries0 := v.ConfigInputs; entries0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '{')
+			first0 := true
+			for k0, v0 := range entries0 {
+				if !first0 {
+					b = append(b, ',')
+				}
+
+				first0 = false
+				b = crystallineAppendString(b, string(k0))
+				b = append(b, ':')
+				b = crystallineAppendCalculator2ConfigValue(b, &v0, ok)
+			}
+
+			b = append(b, '}')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			if v.ConfigInputs == nil {
+				return nil
+			}
+
+			out := crystallineObjects.New()
+			for k, v := range v.ConfigInputs {
+				out.Set(string(k), crystallineMarshalCalculator2ConfigValue(&v))
+			}
+
+			return out
+		}()
+	}))
 
 	return out
 }
@@ -1267,6 +2103,332 @@ func crystallineMarshalStorageDirEntry(v *storage.DirEntry) any {
 	out.Set("MainSkill", string(v.MainSkill))
 
 	return out
+}
+
+func crystallineAppendCalculator2ConfigRelevance(b []byte, v *calculator2.ConfigRelevance, ok *bool) []byte {
+	if v == nil {
+		return append(b, "null"...)
+	}
+
+	b = append(b, "{\"Conds\":"...)
+	if items0 := v.Conds; items0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '[')
+		for i0 := range items0 {
+			if i0 > 0 {
+				b = append(b, ',')
+			}
+
+			b = crystallineAppendString(b, string(items0[i0]))
+		}
+
+		b = append(b, ']')
+	}
+	b = append(b, ",\"MinionConds\":"...)
+	if items0 := v.MinionConds; items0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '[')
+		for i0 := range items0 {
+			if i0 > 0 {
+				b = append(b, ',')
+			}
+
+			b = crystallineAppendString(b, string(items0[i0]))
+		}
+
+		b = append(b, ']')
+	}
+	b = append(b, ",\"EnemyConds\":"...)
+	if items0 := v.EnemyConds; items0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '[')
+		for i0 := range items0 {
+			if i0 > 0 {
+				b = append(b, ',')
+			}
+
+			b = crystallineAppendString(b, string(items0[i0]))
+		}
+
+		b = append(b, ']')
+	}
+	b = append(b, ",\"Mults\":"...)
+	if items0 := v.Mults; items0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '[')
+		for i0 := range items0 {
+			if i0 > 0 {
+				b = append(b, ',')
+			}
+
+			b = crystallineAppendString(b, string(items0[i0]))
+		}
+
+		b = append(b, ']')
+	}
+	b = append(b, ",\"EnemyMults\":"...)
+	if items0 := v.EnemyMults; items0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '[')
+		for i0 := range items0 {
+			if i0 > 0 {
+				b = append(b, ',')
+			}
+
+			b = crystallineAppendString(b, string(items0[i0]))
+		}
+
+		b = append(b, ']')
+	}
+	b = append(b, ",\"Stats\":"...)
+	if items0 := v.Stats; items0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '[')
+		for i0 := range items0 {
+			if i0 > 0 {
+				b = append(b, ',')
+			}
+
+			b = crystallineAppendString(b, string(items0[i0]))
+		}
+
+		b = append(b, ']')
+	}
+	b = append(b, ",\"EnemyStats\":"...)
+	if items0 := v.EnemyStats; items0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '[')
+		for i0 := range items0 {
+			if i0 > 0 {
+				b = append(b, ',')
+			}
+
+			b = crystallineAppendString(b, string(items0[i0]))
+		}
+
+		b = append(b, ']')
+	}
+	b = append(b, ",\"TagTypes\":"...)
+	if items0 := v.TagTypes; items0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '[')
+		for i0 := range items0 {
+			if i0 > 0 {
+				b = append(b, ',')
+			}
+
+			b = crystallineAppendString(b, string(items0[i0]))
+		}
+
+		b = append(b, ']')
+	}
+	b = append(b, ",\"Flags\":"...)
+	if items0 := v.Flags; items0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '[')
+		for i0 := range items0 {
+			if i0 > 0 {
+				b = append(b, ',')
+			}
+
+			b = crystallineAppendString(b, string(items0[i0]))
+		}
+
+		b = append(b, ']')
+	}
+	b = append(b, ",\"PlayerFlags\":"...)
+	if items0 := v.PlayerFlags; items0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '[')
+		for i0 := range items0 {
+			if i0 > 0 {
+				b = append(b, ',')
+			}
+
+			b = crystallineAppendString(b, string(items0[i0]))
+		}
+
+		b = append(b, ']')
+	}
+	b = append(b, ",\"MinionFlags\":"...)
+	if items0 := v.MinionFlags; items0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '[')
+		for i0 := range items0 {
+			if i0 > 0 {
+				b = append(b, ',')
+			}
+
+			b = crystallineAppendString(b, string(items0[i0]))
+		}
+
+		b = append(b, ']')
+	}
+	b = append(b, ",\"Mods\":"...)
+	if items0 := v.Mods; items0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '[')
+		for i0 := range items0 {
+			if i0 > 0 {
+				b = append(b, ',')
+			}
+
+			b = crystallineAppendString(b, string(items0[i0]))
+		}
+
+		b = append(b, ']')
+	}
+	b = append(b, ",\"Skills\":"...)
+	if items0 := v.Skills; items0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '[')
+		for i0 := range items0 {
+			if i0 > 0 {
+				b = append(b, ',')
+			}
+
+			b = crystallineAppendString(b, string(items0[i0]))
+		}
+
+		b = append(b, ']')
+	}
+	b = append(b, ",\"TransfiguredSkills\":"...)
+	if items0 := v.TransfiguredSkills; items0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '[')
+		for i0 := range items0 {
+			if i0 > 0 {
+				b = append(b, ',')
+			}
+
+			b = crystallineAppendString(b, string(items0[i0]))
+		}
+
+		b = append(b, ']')
+	}
+	b = append(b, ",\"SkillTypes\":"...)
+	if items0 := v.SkillTypes; items0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '[')
+		for i0 := range items0 {
+			if i0 > 0 {
+				b = append(b, ',')
+			}
+
+			b = crystallineAppendString(b, string(items0[i0]))
+		}
+
+		b = append(b, ']')
+	}
+	b = append(b, ",\"SkillFlags\":"...)
+	if items0 := v.SkillFlags; items0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '[')
+		for i0 := range items0 {
+			if i0 > 0 {
+				b = append(b, ',')
+			}
+
+			b = crystallineAppendString(b, string(items0[i0]))
+		}
+
+		b = append(b, ']')
+	}
+	b = append(b, ",\"SkillData\":"...)
+	if items0 := v.SkillData; items0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '[')
+		for i0 := range items0 {
+			if i0 > 0 {
+				b = append(b, ',')
+			}
+
+			b = crystallineAppendString(b, string(items0[i0]))
+		}
+
+		b = append(b, ']')
+	}
+	b = append(b, ",\"GemFamilies\":"...)
+	if items0 := v.GemFamilies; items0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '[')
+		for i0 := range items0 {
+			if i0 > 0 {
+				b = append(b, ',')
+			}
+
+			b = crystallineAppendString(b, string(items0[i0]))
+		}
+
+		b = append(b, ']')
+	}
+
+	return append(b, '}')
+}
+
+func crystallineAppendCalculator2ConfigValue(b []byte, v *calculator2.ConfigValue, ok *bool) []byte {
+	if v == nil {
+		return append(b, "null"...)
+	}
+
+	b = append(b, "{\"Number\":"...)
+	b = crystallineAppendNumber(b, float64(v.Number), ok)
+	b = append(b, ",\"String\":"...)
+	b = crystallineAppendString(b, string(v.String))
+	b = append(b, ",\"Boolean\":"...)
+	b = strconv.AppendBool(b, bool(v.Boolean))
+	b = append(b, ",\"IsNumber\":"...)
+	b = strconv.AppendBool(b, bool(v.IsNumber))
+	b = append(b, ",\"IsString\":"...)
+	b = strconv.AppendBool(b, bool(v.IsString))
+	b = append(b, ",\"IsBoolean\":"...)
+	b = strconv.AppendBool(b, bool(v.IsBoolean))
+
+	return append(b, '}')
+}
+
+func crystallineAppendCalculator2SocketGroupView(b []byte, v *calculator2.SocketGroupView, ok *bool) []byte {
+	if v == nil {
+		return append(b, "null"...)
+	}
+
+	b = append(b, "{\"Label\":"...)
+	b = crystallineAppendString(b, string(v.Label))
+	b = append(b, ",\"Skills\":"...)
+	if items0 := v.Skills; items0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '[')
+		for i0 := range items0 {
+			if i0 > 0 {
+				b = append(b, ',')
+			}
+
+			b = crystallineAppendString(b, string(items0[i0]))
+		}
+
+		b = append(b, ']')
+	}
+
+	return append(b, '}')
 }
 
 func crystallineAppendExpositionOutputs(b []byte, v *Outputs, ok *bool) []byte {
@@ -1318,6 +2480,82 @@ func crystallineAppendExpositionOutputs(b []byte, v *Outputs, ok *bool) []byte {
 	b = crystallineAppendString(b, string(v.AscendClassName))
 	b = append(b, ",\"Level\":"...)
 	b = crystallineAppendNumber(b, float64(v.Level), ok)
+	b = append(b, ",\"SkillFlags\":"...)
+	if entries0 := v.SkillFlags; entries0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '{')
+		first0 := true
+		for k0, v0 := range entries0 {
+			if !first0 {
+				b = append(b, ',')
+			}
+
+			first0 = false
+			b = crystallineAppendString(b, string(k0))
+			b = append(b, ':')
+			b = strconv.AppendBool(b, bool(v0))
+		}
+
+		b = append(b, '}')
+	}
+	b = append(b, ",\"MinionSkillFlags\":"...)
+	if entries0 := v.MinionSkillFlags; entries0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '{')
+		first0 := true
+		for k0, v0 := range entries0 {
+			if !first0 {
+				b = append(b, ',')
+			}
+
+			first0 = false
+			b = crystallineAppendString(b, string(k0))
+			b = append(b, ':')
+			b = strconv.AppendBool(b, bool(v0))
+		}
+
+		b = append(b, '}')
+	}
+	b = append(b, ",\"SocketGroups\":"...)
+	if items0 := v.SocketGroups; items0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '[')
+		for i0 := range items0 {
+			if i0 > 0 {
+				b = append(b, ',')
+			}
+
+			b = crystallineAppendCalculator2SocketGroupView(b, &items0[i0], ok)
+		}
+
+		b = append(b, ']')
+	}
+	b = append(b, ",\"MainSocketGroup\":"...)
+	b = crystallineAppendNumber(b, float64(v.MainSocketGroup), ok)
+	b = append(b, ",\"MainActiveSkill\":"...)
+	b = crystallineAppendNumber(b, float64(v.MainActiveSkill), ok)
+	b = append(b, ",\"ConfigInputs\":"...)
+	if entries0 := v.ConfigInputs; entries0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '{')
+		first0 := true
+		for k0, v0 := range entries0 {
+			if !first0 {
+				b = append(b, ',')
+			}
+
+			first0 = false
+			b = crystallineAppendString(b, string(k0))
+			b = append(b, ':')
+			b = crystallineAppendCalculator2ConfigValue(b, &v0, ok)
+		}
+
+		b = append(b, '}')
+	}
 
 	return append(b, '}')
 }
@@ -1349,6 +2587,300 @@ func crystallineToBytes(value js.Value) ([]byte, error) {
 	return out, nil
 }
 
+var crystallineKnownCalculator2ConfigRelevance = map[string]bool{"Conds": true, "MinionConds": true, "EnemyConds": true, "Mults": true, "EnemyMults": true, "Stats": true, "EnemyStats": true, "TagTypes": true, "Flags": true, "PlayerFlags": true, "MinionFlags": true, "Mods": true, "Skills": true, "TransfiguredSkills": true, "SkillTypes": true, "SkillFlags": true, "SkillData": true, "GemFamilies": true}
+
+func crystallineToCalculator2ConfigRelevance(value js.Value) (calculator2.ConfigRelevance, error) {
+	var out calculator2.ConfigRelevance
+
+	if value.IsUndefined() || value.IsNull() {
+		return out, errors.New("calculator2.ConfigRelevance: expected an object, got null")
+	}
+
+	if handle, ok := crystallineHandleOf(value); ok {
+		resolved, found := crystallineResolve(handle)
+		if !found {
+			return out, errors.New("calculator2.ConfigRelevance: the value behind this handle has been released")
+		}
+
+		typed, ok := resolved.(*calculator2.ConfigRelevance)
+		if !ok {
+			return out, errors.New("calculator2.ConfigRelevance: handle refers to a different type")
+		}
+
+		return *typed, nil
+	}
+
+	if value.Type() != js.TypeObject {
+		return out, errors.New("calculator2.ConfigRelevance: expected an object")
+	}
+
+	if err := crystallineUnknownProperty(value, "calculator2.ConfigRelevance", crystallineKnownCalculator2ConfigRelevance); err != nil {
+		return out, err
+	}
+
+	if property := value.Get("Conds"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToSliceOfString(property)
+		if err != nil {
+			return out, errors.New("calculator2.ConfigRelevance.Conds: " + err.Error())
+		}
+
+		out.Conds = converted
+	}
+
+	if property := value.Get("MinionConds"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToSliceOfString(property)
+		if err != nil {
+			return out, errors.New("calculator2.ConfigRelevance.MinionConds: " + err.Error())
+		}
+
+		out.MinionConds = converted
+	}
+
+	if property := value.Get("EnemyConds"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToSliceOfString(property)
+		if err != nil {
+			return out, errors.New("calculator2.ConfigRelevance.EnemyConds: " + err.Error())
+		}
+
+		out.EnemyConds = converted
+	}
+
+	if property := value.Get("Mults"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToSliceOfString(property)
+		if err != nil {
+			return out, errors.New("calculator2.ConfigRelevance.Mults: " + err.Error())
+		}
+
+		out.Mults = converted
+	}
+
+	if property := value.Get("EnemyMults"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToSliceOfString(property)
+		if err != nil {
+			return out, errors.New("calculator2.ConfigRelevance.EnemyMults: " + err.Error())
+		}
+
+		out.EnemyMults = converted
+	}
+
+	if property := value.Get("Stats"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToSliceOfString(property)
+		if err != nil {
+			return out, errors.New("calculator2.ConfigRelevance.Stats: " + err.Error())
+		}
+
+		out.Stats = converted
+	}
+
+	if property := value.Get("EnemyStats"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToSliceOfString(property)
+		if err != nil {
+			return out, errors.New("calculator2.ConfigRelevance.EnemyStats: " + err.Error())
+		}
+
+		out.EnemyStats = converted
+	}
+
+	if property := value.Get("TagTypes"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToSliceOfString(property)
+		if err != nil {
+			return out, errors.New("calculator2.ConfigRelevance.TagTypes: " + err.Error())
+		}
+
+		out.TagTypes = converted
+	}
+
+	if property := value.Get("Flags"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToSliceOfString(property)
+		if err != nil {
+			return out, errors.New("calculator2.ConfigRelevance.Flags: " + err.Error())
+		}
+
+		out.Flags = converted
+	}
+
+	if property := value.Get("PlayerFlags"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToSliceOfString(property)
+		if err != nil {
+			return out, errors.New("calculator2.ConfigRelevance.PlayerFlags: " + err.Error())
+		}
+
+		out.PlayerFlags = converted
+	}
+
+	if property := value.Get("MinionFlags"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToSliceOfString(property)
+		if err != nil {
+			return out, errors.New("calculator2.ConfigRelevance.MinionFlags: " + err.Error())
+		}
+
+		out.MinionFlags = converted
+	}
+
+	if property := value.Get("Mods"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToSliceOfString(property)
+		if err != nil {
+			return out, errors.New("calculator2.ConfigRelevance.Mods: " + err.Error())
+		}
+
+		out.Mods = converted
+	}
+
+	if property := value.Get("Skills"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToSliceOfString(property)
+		if err != nil {
+			return out, errors.New("calculator2.ConfigRelevance.Skills: " + err.Error())
+		}
+
+		out.Skills = converted
+	}
+
+	if property := value.Get("TransfiguredSkills"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToSliceOfString(property)
+		if err != nil {
+			return out, errors.New("calculator2.ConfigRelevance.TransfiguredSkills: " + err.Error())
+		}
+
+		out.TransfiguredSkills = converted
+	}
+
+	if property := value.Get("SkillTypes"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToSliceOfString(property)
+		if err != nil {
+			return out, errors.New("calculator2.ConfigRelevance.SkillTypes: " + err.Error())
+		}
+
+		out.SkillTypes = converted
+	}
+
+	if property := value.Get("SkillFlags"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToSliceOfString(property)
+		if err != nil {
+			return out, errors.New("calculator2.ConfigRelevance.SkillFlags: " + err.Error())
+		}
+
+		out.SkillFlags = converted
+	}
+
+	if property := value.Get("SkillData"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToSliceOfString(property)
+		if err != nil {
+			return out, errors.New("calculator2.ConfigRelevance.SkillData: " + err.Error())
+		}
+
+		out.SkillData = converted
+	}
+
+	if property := value.Get("GemFamilies"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToSliceOfString(property)
+		if err != nil {
+			return out, errors.New("calculator2.ConfigRelevance.GemFamilies: " + err.Error())
+		}
+
+		out.GemFamilies = converted
+	}
+
+	return out, nil
+}
+
+var crystallineKnownCalculator2ConfigValue = map[string]bool{"Number": true, "String": true, "Boolean": true, "IsNumber": true, "IsString": true, "IsBoolean": true}
+
+func crystallineToCalculator2ConfigValue(value js.Value) (calculator2.ConfigValue, error) {
+	var out calculator2.ConfigValue
+
+	if value.IsUndefined() || value.IsNull() {
+		return out, errors.New("calculator2.ConfigValue: expected an object, got null")
+	}
+
+	if handle, ok := crystallineHandleOf(value); ok {
+		resolved, found := crystallineResolve(handle)
+		if !found {
+			return out, errors.New("calculator2.ConfigValue: the value behind this handle has been released")
+		}
+
+		typed, ok := resolved.(*calculator2.ConfigValue)
+		if !ok {
+			return out, errors.New("calculator2.ConfigValue: handle refers to a different type")
+		}
+
+		return *typed, nil
+	}
+
+	if value.Type() != js.TypeObject {
+		return out, errors.New("calculator2.ConfigValue: expected an object")
+	}
+
+	if err := crystallineUnknownProperty(value, "calculator2.ConfigValue", crystallineKnownCalculator2ConfigValue); err != nil {
+		return out, err
+	}
+
+	if property := value.Get("Number"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToFloat64(property)
+		if err != nil {
+			return out, errors.New("calculator2.ConfigValue.Number: " + err.Error())
+		}
+
+		out.Number = converted
+	}
+
+	if property := value.Get("String"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToString(property)
+		if err != nil {
+			return out, errors.New("calculator2.ConfigValue.String: " + err.Error())
+		}
+
+		out.String = converted
+	}
+
+	if property := value.Get("Boolean"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToBool(property)
+		if err != nil {
+			return out, errors.New("calculator2.ConfigValue.Boolean: " + err.Error())
+		}
+
+		out.Boolean = converted
+	}
+
+	if property := value.Get("IsNumber"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToBool(property)
+		if err != nil {
+			return out, errors.New("calculator2.ConfigValue.IsNumber: " + err.Error())
+		}
+
+		out.IsNumber = converted
+	}
+
+	if property := value.Get("IsString"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToBool(property)
+		if err != nil {
+			return out, errors.New("calculator2.ConfigValue.IsString: " + err.Error())
+		}
+
+		out.IsString = converted
+	}
+
+	if property := value.Get("IsBoolean"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToBool(property)
+		if err != nil {
+			return out, errors.New("calculator2.ConfigValue.IsBoolean: " + err.Error())
+		}
+
+		out.IsBoolean = converted
+	}
+
+	return out, nil
+}
+
+func crystallineToFloat64(value js.Value) (float64, error) {
+	var zero float64
+
+	if value.Type() != js.TypeNumber {
+		return zero, errors.New("expected a number")
+	}
+
+	return float64(value.Float()), nil
+}
+
 func crystallineToInt(value js.Value) (int, error) {
 	var zero int
 
@@ -1372,6 +2904,29 @@ func crystallineToSliceOfStorageDirEntry(value js.Value) ([]storage.DirEntry, er
 
 	for i := 0; i < value.Length(); i++ {
 		item, err := crystallineToStorageDirEntry(value.Index(i))
+		if err != nil {
+			return nil, errors.New("[" + strconv.Itoa(i) + "]: " + err.Error())
+		}
+
+		out = append(out, item)
+	}
+
+	return out, nil
+}
+
+func crystallineToSliceOfString(value js.Value) ([]string, error) {
+	if value.IsUndefined() || value.IsNull() {
+		return nil, nil
+	}
+
+	if !js.Global().Get("Array").Call("isArray", value).Bool() {
+		return nil, errors.New("expected an array")
+	}
+
+	out := make([]string, 0, value.Length())
+
+	for i := 0; i < value.Length(); i++ {
+		item, err := crystallineToString(value.Index(i))
 		if err != nil {
 			return nil, errors.New("[" + strconv.Itoa(i) + "]: " + err.Error())
 		}
