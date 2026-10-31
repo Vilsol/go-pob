@@ -67,6 +67,7 @@ export declare namespace exposition {
     ConfigRelevance(query: calculator2.ConfigRelevance): Result<calculator2.ConfigRelevance>;
     HoverNode(id: number): exposition.TreeHover;
     Serialize(): Result<string>;
+    SerializeWithStats(player: Array<exposition.SavedStat> | undefined, fullDPS: Array<exposition.SavedFullDPS> | undefined, minion: Array<exposition.SavedStat> | undefined): Result<string>;
     SetConfigInput(name: string, value: calculator2.ConfigValue, isDefault: boolean): void;
     SetMainActiveSkill(index: number): void;
     SetMainSocketGroup(index: number): void;
@@ -87,6 +88,16 @@ export declare namespace exposition {
     readonly MainSocketGroup: number;
     readonly MainActiveSkill: number;
     readonly ConfigInputs?: Record<string, Readonly<calculator2.ConfigValue>>;
+  }
+  interface SavedFullDPS {
+    readonly Stat: string;
+    readonly Value: number;
+    readonly SkillPart: string;
+    readonly Source: string;
+  }
+  interface SavedStat {
+    readonly Stat: string;
+    readonly Value: number;
   }
   interface TreeHover {
     readonly Path?: Array<number>;
@@ -109,6 +120,7 @@ export declare namespace exposition {
   }
   function ParseBuild(xml: string): Result<(exposition.Calculator | undefined)>;
   function PassiveTreeJSON(): Promise<Result<string>>;
+  function TreeClasses(): Promise<Result<(Array<string> | undefined)>>;
   const TreeVersion: string;
 }
 export declare namespace storage {

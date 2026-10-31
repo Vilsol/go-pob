@@ -79,7 +79,10 @@ const VIEW = { className: 'Sorceress', ascendClassName: 'None', level: 40, outpu
 let poe2Xml = '';
 const open = vi.fn((xml: string) => Promise.resolve(xml ? VIEW : VIEW));
 const serializeXml = vi.fn(() => Promise.resolve(poe2Xml));
-const poe2Worker = vi.fn(() => Promise.resolve({ Open: open, Serialize: serializeXml }));
+// PoB-PoE2's TreeData/0_5/tree.json classes, as wasm2/exposition's TestTreeClassesAreTheTreesClasses asserts them
+const TREE_CLASSES = ['Witch', 'Ranger', 'Warrior', 'Sorceress', 'Huntress', 'Mercenary', 'Monk', 'Druid'];
+const treeClasses = vi.fn(() => Promise.resolve(TREE_CLASSES));
+const poe2Worker = vi.fn(() => Promise.resolve({ Open: open, Serialize: serializeXml, TreeClasses: treeClasses }));
 vi.mock('$lib/go/worker2', () => ({ poe2Worker }));
 
 const { bootWorker, loadCorpusBuild } = await import('../../../harness/component/go_runtime');
@@ -87,6 +90,8 @@ const { currentBuild, currentBuildPath, poe2Build, poe2Enabled } = await import(
 const { workerInstance } = await import('$lib/go/sync_worker');
 const types = await import('$lib/types');
 
+const { toasts } = await import('$lib/design/toast');
+const { POE2_DISABLED } = await import('$lib/go/game_route');
 const COMPARE_MIXED = 'A Path of Exile 2 build cannot be compared with a Path of Exile 1 build.';
 const NAME = 'PoE2 spark';
 let tick: MockInstance;
@@ -138,10 +143,70 @@ describe('a PoE2 build in the build list', () => {
     expect(tick).not.toHaveBeenCalledWith('OpenBuild');
   });
 
+  it("filters by the PoE2 tree's classes once a PoE2 build is listed, and asks the PoE2 worker only with the flag on", async () => {
+    poe2Enabled.set(false);
+    treeClasses.mockClear();
+    const List = (await import('./AppBuildList.svelte')).default;
+    const off = render(List);
+    await off.findByRole('link', { name: NAME });
+    const offChips = within(off.getByRole('group', { name: 'Filter by class' }));
+    expect(offChips.queryByRole('button', { name: 'Sorceress' })).toBeNull();
+    expect(treeClasses).not.toHaveBeenCalled();
+    off.unmount();
+
+    poe2Enabled.set(true);
+    const page = render(List);
+    await page.findByRole('link', { name: NAME });
+    const chips = within(page.getByRole('group', { name: 'Filter by class' }));
+    const names = () => chips.getAllByRole('button').map((b) => b.textContent?.trim());
+    await vi.waitFor(() =>
+      expect(names()).toEqual([
+        'All',
+        'Witch',
+        'Shadow',
+        'Marauder',
+        'Ranger',
+        'Duelist',
+        'Templar',
+        'Scion',
+        'Warrior',
+        'Sorceress',
+        'Huntress',
+        'Mercenary',
+        'Monk',
+        'Druid'
+      ])
+    );
+    expect(treeClasses).toHaveBeenCalledTimes(1);
+    await fireEvent.click(chips.getByRole('button', { name: 'Sorceress' }));
+    expect(page.getByRole('link', { name: NAME })).toBeTruthy();
+    await fireEvent.click(chips.getByRole('button', { name: 'Monk' }));
+    await vi.waitFor(() => expect(page.queryByRole('link', { name: NAME })).toBeNull());
+  });
+
   it('a PoE1 build in the list has no badge', async () => {
     await loadCorpusBuild('0008-necromancer-vaal-summon-skeletons.xml');
     await workerInstance.SaveBuildAs('/A PoE1 build');
     expect(await workerInstance.ListBuilds('')).toContainEqual(expect.objectContaining({ Name: 'A PoE1 build', Game: '' }));
+  });
+});
+
+describe('with the PoE2 flag off', () => {
+  it('opening a saved PoE2 build from the list says why it is refused and leaves the open PoE1 build as it was', async () => {
+    poe2Enabled.set(false);
+    await loadCorpusBuild('0008-necromancer-vaal-summon-skeletons.xml');
+    currentBuildPath.current = '/A PoE1 build';
+    const build = workerInstance.currentBuild;
+    open.mockClear();
+    toasts.set([]);
+    const List = (await import('./AppBuildList.svelte')).default;
+    const page = render(List);
+    await fireEvent.click(await page.findByRole('link', { name: NAME }));
+    await vi.waitFor(() => expect(get(toasts).map((t) => t.message)).toEqual([POE2_DISABLED]));
+    expect(currentBuildPath.current).toBe('/A PoE1 build');
+    expect(workerInstance.currentBuild).toBe(build);
+    expect(open).not.toHaveBeenCalled();
+    expect(get(poe2Build)).toBeUndefined();
   });
 });
 

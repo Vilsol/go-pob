@@ -187,3 +187,11 @@ export class TabStorage {
     }
   }
 }
+
+// localStorage is shared by every tab, and the browser tells the others of each change; store re-reads key with load
+export const followOtherTabs = <T>(key: string, store: { set: (v: T) => void }, load: () => T) => {
+  if (typeof window === 'undefined') return;
+  window.addEventListener('storage', (e) => {
+    if (e.key === key || e.key === null) store.set(load());
+  });
+};

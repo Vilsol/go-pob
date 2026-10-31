@@ -1,4 +1,5 @@
 import { writable } from 'svelte/store';
+import { followOtherTabs } from '$lib/storage/tabs';
 
 // Main.lua:1056-1079, Main.lua:483-500
 export type NumberFormat = {
@@ -11,7 +12,8 @@ export type NumberFormat = {
 /* Main.lua:100-110 */
 export const DEFAULT_NUMBER_FORMAT: NumberFormat = { showThousandsSeparators: true, thousandsSeparator: ',', decimalSeparator: '.', useCompactValues: false };
 
-const KEY = 'options:numberFormat';
+export const NUMBER_FORMAT_KEY = 'options:numberFormat';
+const KEY = NUMBER_FORMAT_KEY;
 
 const load = (): NumberFormat => {
   try {
@@ -33,5 +35,6 @@ numberFormat.subscribe((v) => {
     // empty
   }
 });
+followOtherTabs(KEY, numberFormat, load);
 
 export const currentNumberFormat = () => current;

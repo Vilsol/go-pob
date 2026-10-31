@@ -70,13 +70,16 @@ describe('opening a build from a link', () => {
     expect(fetchMock).toHaveBeenLastCalledWith('/api/build?site=PoeNinja2&id=Abc2');
     await openImportLink('https://poe.ninja/poe1/pob/Abc3');
     expect(fetchMock).toHaveBeenLastCalledWith('/api/build?site=PoeNinja&id=Abc3');
+    // poe.ninja answers /pob/<id> with a 301 to /poe1/pob/<id>, and one id names a different build in each game
+    await openImportLink('https://poe.ninja/pob/Abc4');
+    expect(fetchMock).toHaveBeenLastCalledWith('/api/build?site=PoeNinja&id=Abc4');
     await openImportLink('https://maxroll.gg/poe2/pob/m5ui4t0x');
     expect(fetchMock).toHaveBeenLastCalledWith('/api/build?site=Maxroll2&id=m5ui4t0x');
     await openImportLink('https://poe2db.tw/pob/abc');
     expect(fetchMock).toHaveBeenLastCalledWith('/api/build?site=PoE2DB&id=abc');
-    expect(fetchMock).toHaveBeenCalledTimes(5);
+    expect(fetchMock).toHaveBeenCalledTimes(6);
     await openImportLink('pob://poeninja2/Abc1');
-    expect(fetchMock).toHaveBeenCalledTimes(5);
+    expect(fetchMock).toHaveBeenCalledTimes(6);
     expect(worker.ImportCode).toHaveBeenLastCalledWith('pob://poeninja2/Abc1');
     expect(EXPORT_SITES.filter((s) => s.game)).toEqual([]);
   });
@@ -110,6 +113,25 @@ describe('opening a build from a link', () => {
     await openImportLink(page);
     expect(fetchMock).not.toHaveBeenCalled();
     expect(worker.ImportCode).toHaveBeenCalledWith(page);
+  });
+
+  it('with the PoE2 flag off refuses a PoE2 build from a code, a site link, a pob:// link or an opened file, and keeps the open build', async () => {
+    const { POE2_DISABLED } = await import('$lib/go/game_route');
+    const { poe2Enabled } = await import('$lib/global');
+    poe2Enabled.set(false);
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() => Promise.resolve(new Response('eNrt', { headers: { 'Content-Type': 'text/plain' } })))
+    );
+    worker.ImportCode.mockImplementation(() => Promise.resolve({ game: 'poe2', xml: '<PathOfBuilding2/>' } as never));
+    currentBuildPath.current = '/Open';
+    unsavedName.imported = false;
+    for (const text of ['eNrt', 'https://poe.ninja/poe2/pob/Abc1', 'pob://pobbin/abc', 'gopob-file:/home/a.xml'])
+      await expect(openImportLink(text), text).rejects.toThrow(POE2_DISABLED);
+    expect(worker.ImportCode).toHaveBeenCalledTimes(4);
+    expect(currentBuildPath.current).toBe('/Open');
+    expect(unsavedName.imported).toBe(false);
+    worker.ImportCode.mockImplementation((code: string) => Promise.resolve(void code));
   });
 
   it('names a comparison by the popup, else by the site it came from', () => {

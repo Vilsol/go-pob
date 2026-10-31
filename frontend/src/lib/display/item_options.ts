@@ -1,4 +1,5 @@
 import { writable } from 'svelte/store';
+import { followOtherTabs } from '$lib/storage/tabs';
 
 const KEY = 'options:slotOnlyTooltips';
 const load = () => {
@@ -18,15 +19,17 @@ slotOnlyTooltips.subscribe((v) => {
     // empty
   }
 });
+followOtherTabs(KEY, slotOnlyTooltips, load);
 
 const option = (key: string) => {
-  let on = true;
-  try {
-    on = globalThis.localStorage?.getItem(key) !== 'false';
-  } catch {
-    // empty
-  }
-  const s = writable<boolean>(on);
+  const read = () => {
+    try {
+      return globalThis.localStorage?.getItem(key) !== 'false';
+    } catch {
+      return true;
+    }
+  };
+  const s = writable<boolean>(read());
   s.subscribe((v) => {
     try {
       globalThis.localStorage?.setItem(key, String(v));
@@ -34,6 +37,7 @@ const option = (key: string) => {
       // empty
     }
   });
+  followOtherTabs(key, s, read);
   return s;
 };
 
@@ -49,14 +53,17 @@ export const showWarnings = option('options:showWarnings');
 export const showAllItemAffixes = option('options:showAllItemAffixes');
 
 const numberOption = (key: string, def: number, lo: number, hi: number) => {
-  let v = def;
-  try {
-    const raw = globalThis.localStorage?.getItem(key);
-    if (raw !== null && raw !== undefined && Number.isFinite(Number(raw))) v = Number(raw);
-  } catch {
-    // empty
-  }
-  const s = writable<number>(Math.min(Math.max(v, lo), hi));
+  const read = () => {
+    let v = def;
+    try {
+      const raw = globalThis.localStorage?.getItem(key);
+      if (raw !== null && raw !== undefined && Number.isFinite(Number(raw))) v = Number(raw);
+    } catch {
+      // empty
+    }
+    return Math.min(Math.max(v, lo), hi);
+  };
+  const s = writable<number>(read());
   s.subscribe((n) => {
     try {
       globalThis.localStorage?.setItem(key, String(n));
@@ -64,6 +71,7 @@ const numberOption = (key: string, def: number, lo: number, hi: number) => {
       // empty
     }
   });
+  followOtherTabs(key, s, read);
   return s;
 };
 

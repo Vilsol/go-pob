@@ -43,6 +43,24 @@ type treeJSON struct {
 	MaxY       float64         `json:"maxY"`
 }
 
+// TreeClasses is the tree's class names in class id order (PassiveTree.lua:104 keys them by integerId).
+func TreeClasses() ([]string, error) {
+	t, err := loadTree()
+	if err != nil {
+		return nil, err
+	}
+	ids := make([]int, 0, len(t.Classes))
+	for id := range t.Classes {
+		ids = append(ids, id)
+	}
+	slices.Sort(ids)
+	out := make([]string, len(ids))
+	for i, id := range ids {
+		out[i] = t.Classes[id].Name
+	}
+	return out, nil
+}
+
 // PassiveTreeJSON is the tree the view draws, as one JSON document: the nodes a spec holds (PassiveSpec:Init's
 // filter) with their positions, names, stat lines and connections, the group centres and the orbit radii.
 func PassiveTreeJSON() (string, error) {

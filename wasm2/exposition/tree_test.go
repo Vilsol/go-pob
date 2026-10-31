@@ -145,3 +145,15 @@ func TestPassiveTreeJSON(t *testing.T) {
 		t.Fatalf("node 44871 %+v", tj.Nodes[i])
 	}
 }
+
+// PoB-PoE2's TreeData/0_5/tree.json classes, by integerId
+func TestTreeClassesAreTheTreesClasses(t *testing.T) {
+	got, err := TreeClasses()
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := []string{"Witch", "Ranger", "Warrior", "Sorceress", "Huntress", "Mercenary", "Monk", "Druid"}
+	if !slices.Equal(got, want) {
+		t.Errorf("classes %v, want %v", got, want)
+	}
+}

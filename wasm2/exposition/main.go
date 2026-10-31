@@ -25,9 +25,12 @@ func Exports(r bind.Registry) {
 	r.Type(TreeState{}, bind.Plain())
 	r.Type(TreeNodeText{}, bind.Plain())
 	r.Type(TreeHover{}, bind.Plain())
+	r.Type(SavedStat{}, bind.Plain())
+	r.Type(SavedFullDPS{}, bind.Plain())
 
 	r.Func(ParseBuild)
 	r.Func(PassiveTreeJSON, bind.AsPromise())
+	r.Func(TreeClasses, bind.AsPromise())
 	r.Value("TreeVersion", TreeVersion)
 
 	r.Func(config.InitLogging)

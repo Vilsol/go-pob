@@ -10,6 +10,7 @@ import { DESKTOP } from '$lib/pwa/desktop';
 import type { Tree2 } from '../components/skill-tree/scene2';
 import { TabStorage, type StorageWrite } from '$lib/storage/tabs';
 import { remountStore } from './storage_config';
+import type { SavedStats2 } from '../shell/poe2_save';
 
 // only the data cache bucket; on the web it is its own IndexedDB database, since zenfs allocates inode ids per
 // instance and two instances writing the PoE1 worker's database overwrite each other's files
@@ -209,6 +210,11 @@ class PoB2Worker {
     return this.treeData;
   }
 
+  async TreeClasses(): Promise<string[]> {
+    await this.booted;
+    return [...((await exposition.TreeClasses()).unwrap() ?? [])];
+  }
+
   /* PassiveTreeView.lua:356-373 (PoB-PoE2) */
   TreeHover(id: number): { path: number[]; depends: number[] } {
     const h = this.calc?.HoverNode(id);
@@ -235,9 +241,11 @@ class PoB2Worker {
     return names.length;
   }
 
-  Serialize(): string {
+  /* Build.lua:1180-1244 (PoB-PoE2) */
+  Serialize(stats?: SavedStats2): string {
     if (!this.calc) throw new Error('no PoE2 build is open');
-    return this.calc.Serialize().unwrap();
+    if (!stats) return this.calc.Serialize().unwrap();
+    return this.calc.SerializeWithStats(stats.player, stats.fullDPS, stats.minion).unwrap();
   }
 }
 

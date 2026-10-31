@@ -20,6 +20,7 @@ import (
 func init() {
 	crystallineNamespace("go-pob2", "exposition").Set("ParseBuild", crystallineWrap(js.FuncOf(crystallineFnExpositionParseBuild)))
 	crystallineNamespace("go-pob2", "exposition").Set("PassiveTreeJSON", crystallineWrap(js.FuncOf(crystallineFnExpositionPassiveTreeJSON)))
+	crystallineNamespace("go-pob2", "exposition").Set("TreeClasses", crystallineWrap(js.FuncOf(crystallineFnExpositionTreeClasses)))
 	crystallineNamespace("go-pob2", "config").Set("InitLogging", crystallineWrap(js.FuncOf(crystallineFnConfigInitLogging)))
 	crystallineNamespace("go-pob2", "storage").Set("InitializeStorage", crystallineWrap(js.FuncOf(crystallineFnStorageInitializeStorage)))
 	crystallineNamespace("go-pob2", "storage").Set("DirEntryType", map[string]any{
@@ -1049,6 +1050,54 @@ func crystallineFnExpositionPassiveTreeJSON(this js.Value, args []js.Value) (res
 	})
 }
 
+func crystallineFnExpositionTreeClasses(this js.Value, args []js.Value) (result any) {
+	defer crystallineRecover(&result)
+
+	if len(args) != 0 {
+		return crystallineFail("TreeClasses: expected 0 arguments, got " + strconv.Itoa(len(args)))
+	}
+
+	return crystallinePromise(func() any {
+		r0, r1 := TreeClasses()
+
+		if r1 != nil {
+			return crystallineErr(r1)
+		}
+
+		return crystallineOk(crystallineJSON(func(b []byte, ok *bool) []byte {
+			if items0 := r0; items0 == nil {
+				b = append(b, "null"...)
+			} else {
+				b = append(b, '[')
+				for i0 := range items0 {
+					if i0 > 0 {
+						b = append(b, ',')
+					}
+
+					b = crystallineAppendString(b, string(items0[i0]))
+				}
+
+				b = append(b, ']')
+			}
+			return b
+		}, func() any {
+			return func() any {
+				items := r0
+				if items == nil {
+					return nil
+				}
+
+				out := make([]any, 0, len(items))
+				for i := range items {
+					out = append(out, string(items[i]))
+				}
+
+				return out
+			}()
+		}))
+	})
+}
+
 func crystallineFnConfigInitLogging(this js.Value, args []js.Value) (result any) {
 	defer crystallineRecover(&result)
 
@@ -1774,7 +1823,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 				switch field {
 				}
 			},
-			[]string{"AllocateAttributeNode", "Calculate", "ClickNode", "ConfigRelevance", "HoverNode", "Serialize", "SetConfigInput", "SetMainActiveSkill", "SetMainSocketGroup", "TreeState"},
+			[]string{"AllocateAttributeNode", "Calculate", "ClickNode", "ConfigRelevance", "HoverNode", "Serialize", "SerializeWithStats", "SetConfigInput", "SetMainActiveSkill", "SetMainSocketGroup", "TreeState"},
 			func(v *Calculator, method int, args []js.Value) any {
 				switch method {
 				case 0:
@@ -1904,6 +1953,33 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					return crystallineOk(string(r0))
 				case 6:
 					if len(args) != 3 {
+						return crystallineFail("SerializeWithStats: expected 3 arguments, got " + strconv.Itoa(len(args)))
+					}
+
+					a0, err := crystallineToSliceOfExpositionSavedStat(args[0])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					a1, err := crystallineToSliceOfExpositionSavedFullDPS(args[1])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					a2, err := crystallineToSliceOfExpositionSavedStat(args[2])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					r0, r1 := v.SerializeWithStats(a0, a1, a2)
+
+					if r1 != nil {
+						return crystallineErr(r1)
+					}
+
+					return crystallineOk(string(r0))
+				case 7:
+					if len(args) != 3 {
 						return crystallineFail("SetConfigInput: expected 3 arguments, got " + strconv.Itoa(len(args)))
 					}
 
@@ -1925,7 +2001,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					v.SetConfigInput(a0, a1, a2)
 
 					return nil
-				case 7:
+				case 8:
 					if len(args) != 1 {
 						return crystallineFail("SetMainActiveSkill: expected 1 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -1938,7 +2014,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					v.SetMainActiveSkill(a0)
 
 					return nil
-				case 8:
+				case 9:
 					if len(args) != 1 {
 						return crystallineFail("SetMainSocketGroup: expected 1 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -1951,7 +2027,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					v.SetMainSocketGroup(a0)
 
 					return nil
-				case 9:
+				case 10:
 					if len(args) != 0 {
 						return crystallineFail("TreeState: expected 0 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -2191,6 +2267,34 @@ func crystallineMarshalExpositionOutputs(v *Outputs) any {
 			return out
 		}()
 	}))
+
+	return out
+}
+
+func crystallineMarshalExpositionSavedFullDPS(v *SavedFullDPS) any {
+	if v == nil {
+		return nil
+	}
+
+	out := crystallineObjects.New()
+
+	out.Set("Stat", string(v.Stat))
+	out.Set("Value", float64(v.Value))
+	out.Set("SkillPart", string(v.SkillPart))
+	out.Set("Source", string(v.Source))
+
+	return out
+}
+
+func crystallineMarshalExpositionSavedStat(v *SavedStat) any {
+	if v == nil {
+		return nil
+	}
+
+	out := crystallineObjects.New()
+
+	out.Set("Stat", string(v.Stat))
+	out.Set("Value", float64(v.Value))
 
 	return out
 }
@@ -3265,6 +3369,128 @@ func crystallineToCalculator2ConfigValue(value js.Value) (calculator2.ConfigValu
 	return out, nil
 }
 
+var crystallineKnownExpositionSavedFullDPS = map[string]bool{"Stat": true, "Value": true, "SkillPart": true, "Source": true}
+
+func crystallineToExpositionSavedFullDPS(value js.Value) (SavedFullDPS, error) {
+	var out SavedFullDPS
+
+	if value.IsUndefined() || value.IsNull() {
+		return out, errors.New("exposition.SavedFullDPS: expected an object, got null")
+	}
+
+	if handle, ok := crystallineHandleOf(value); ok {
+		resolved, found := crystallineResolve(handle)
+		if !found {
+			return out, errors.New("exposition.SavedFullDPS: the value behind this handle has been released")
+		}
+
+		typed, ok := resolved.(*SavedFullDPS)
+		if !ok {
+			return out, errors.New("exposition.SavedFullDPS: handle refers to a different type")
+		}
+
+		return *typed, nil
+	}
+
+	if value.Type() != js.TypeObject {
+		return out, errors.New("exposition.SavedFullDPS: expected an object")
+	}
+
+	if err := crystallineUnknownProperty(value, "exposition.SavedFullDPS", crystallineKnownExpositionSavedFullDPS); err != nil {
+		return out, err
+	}
+
+	if property := value.Get("Stat"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToString(property)
+		if err != nil {
+			return out, errors.New("exposition.SavedFullDPS.Stat: " + err.Error())
+		}
+
+		out.Stat = converted
+	}
+
+	if property := value.Get("Value"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToFloat64(property)
+		if err != nil {
+			return out, errors.New("exposition.SavedFullDPS.Value: " + err.Error())
+		}
+
+		out.Value = converted
+	}
+
+	if property := value.Get("SkillPart"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToString(property)
+		if err != nil {
+			return out, errors.New("exposition.SavedFullDPS.SkillPart: " + err.Error())
+		}
+
+		out.SkillPart = converted
+	}
+
+	if property := value.Get("Source"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToString(property)
+		if err != nil {
+			return out, errors.New("exposition.SavedFullDPS.Source: " + err.Error())
+		}
+
+		out.Source = converted
+	}
+
+	return out, nil
+}
+
+var crystallineKnownExpositionSavedStat = map[string]bool{"Stat": true, "Value": true}
+
+func crystallineToExpositionSavedStat(value js.Value) (SavedStat, error) {
+	var out SavedStat
+
+	if value.IsUndefined() || value.IsNull() {
+		return out, errors.New("exposition.SavedStat: expected an object, got null")
+	}
+
+	if handle, ok := crystallineHandleOf(value); ok {
+		resolved, found := crystallineResolve(handle)
+		if !found {
+			return out, errors.New("exposition.SavedStat: the value behind this handle has been released")
+		}
+
+		typed, ok := resolved.(*SavedStat)
+		if !ok {
+			return out, errors.New("exposition.SavedStat: handle refers to a different type")
+		}
+
+		return *typed, nil
+	}
+
+	if value.Type() != js.TypeObject {
+		return out, errors.New("exposition.SavedStat: expected an object")
+	}
+
+	if err := crystallineUnknownProperty(value, "exposition.SavedStat", crystallineKnownExpositionSavedStat); err != nil {
+		return out, err
+	}
+
+	if property := value.Get("Stat"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToString(property)
+		if err != nil {
+			return out, errors.New("exposition.SavedStat.Stat: " + err.Error())
+		}
+
+		out.Stat = converted
+	}
+
+	if property := value.Get("Value"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToFloat64(property)
+		if err != nil {
+			return out, errors.New("exposition.SavedStat.Value: " + err.Error())
+		}
+
+		out.Value = converted
+	}
+
+	return out, nil
+}
+
 func crystallineToFloat64(value js.Value) (float64, error) {
 	var zero float64
 
@@ -3283,6 +3509,52 @@ func crystallineToInt(value js.Value) (int, error) {
 	}
 
 	return int(value.Float()), nil
+}
+
+func crystallineToSliceOfExpositionSavedFullDPS(value js.Value) ([]SavedFullDPS, error) {
+	if value.IsUndefined() || value.IsNull() {
+		return nil, nil
+	}
+
+	if !js.Global().Get("Array").Call("isArray", value).Bool() {
+		return nil, errors.New("expected an array")
+	}
+
+	out := make([]SavedFullDPS, 0, value.Length())
+
+	for i := 0; i < value.Length(); i++ {
+		item, err := crystallineToExpositionSavedFullDPS(value.Index(i))
+		if err != nil {
+			return nil, errors.New("[" + strconv.Itoa(i) + "]: " + err.Error())
+		}
+
+		out = append(out, item)
+	}
+
+	return out, nil
+}
+
+func crystallineToSliceOfExpositionSavedStat(value js.Value) ([]SavedStat, error) {
+	if value.IsUndefined() || value.IsNull() {
+		return nil, nil
+	}
+
+	if !js.Global().Get("Array").Call("isArray", value).Bool() {
+		return nil, errors.New("expected an array")
+	}
+
+	out := make([]SavedStat, 0, value.Length())
+
+	for i := 0; i < value.Length(); i++ {
+		item, err := crystallineToExpositionSavedStat(value.Index(i))
+		if err != nil {
+			return nil, errors.New("[" + strconv.Itoa(i) + "]: " + err.Error())
+		}
+
+		out = append(out, item)
+	}
+
+	return out, nil
 }
 
 func crystallineToSliceOfStorageDirEntry(value js.Value) ([]storage.DirEntry, error) {

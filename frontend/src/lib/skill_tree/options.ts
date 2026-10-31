@@ -1,19 +1,22 @@
 import { browser } from '$app/environment';
 import { writable, type Writable } from 'svelte/store';
+import { followOtherTabs } from '$lib/storage/tabs';
 
 // Main.lua:969-1013
 
 export const hexColour = (v: string) => (/^0x[0-9a-fA-F]{6}$/.test(v) ? `#${v.slice(2)}` : undefined);
 
 const persisted = <T>(key: string, fallback: T, read: (s: string) => T): Writable<T> => {
-  let start = fallback;
-  try {
-    const s = browser ? localStorage.getItem(key) : null;
-    if (s !== null) start = read(s);
-  } catch {
-    // empty
-  }
-  const store = writable(start);
+  const load = () => {
+    try {
+      const s = browser ? localStorage.getItem(key) : null;
+      if (s !== null) return read(s);
+    } catch {
+      // empty
+    }
+    return fallback;
+  };
+  const store = writable(load());
   store.subscribe((v) => {
     try {
       if (browser) localStorage.setItem(key, String(v));
@@ -21,6 +24,7 @@ const persisted = <T>(key: string, fallback: T, read: (s: string) => T): Writabl
       // empty
     }
   });
+  followOtherTabs(key, store, load);
   return store;
 };
 

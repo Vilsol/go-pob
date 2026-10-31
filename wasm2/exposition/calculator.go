@@ -75,6 +75,46 @@ func (c *Calculator) Serialize() (string, error) {
 	return string(out), nil
 }
 
+// SavedStat is one PlayerStat or MinionStat row; SavedFullDPS one FullDPSSkill row.
+type SavedStat struct {
+	Stat  string
+	Value float64
+}
+
+type SavedFullDPS struct {
+	Stat      string
+	Value     float64
+	SkillPart string
+	Source    string
+}
+
+// SerializeWithStats writes the build with the stat rows Save lists from the calculated output in place of the ones
+// it was loaded with.
+//
+//pob2:block:src/Modules/Build.lua:1196-1244
+func (c *Calculator) SerializeWithStats(player []SavedStat, fullDPS []SavedFullDPS, minion []SavedStat) (string, error) {
+	out := *c.build
+	// Save writes every row afresh, after Spectre and BeastCompanion and before Buffs
+	out.Build.Order = nil
+	out.Build.PlayerStats = make([]pob2.PlayerStat, len(player))
+	for i, s := range player {
+		out.Build.PlayerStats[i] = pob2.PlayerStat{Stat: s.Stat, Value: s.Value}
+	}
+	out.Build.FullDPSSkills = make([]pob2.FullDPSSkill, len(fullDPS))
+	for i, s := range fullDPS {
+		out.Build.FullDPSSkills[i] = pob2.FullDPSSkill{Stat: s.Stat, Value: s.Value, SkillPart: s.SkillPart, Source: s.Source}
+	}
+	out.Build.MinionStats = make([]pob2.PlayerStat, len(minion))
+	for i, s := range minion {
+		out.Build.MinionStats[i] = pob2.PlayerStat{Stat: s.Stat, Value: s.Value}
+	}
+	text, err := pob2.SerializeBuild(&out)
+	if err != nil {
+		return "", err
+	}
+	return string(text), nil
+}
+
 func statSetFlags(skill *calculator2.ActiveSkill) map[string]bool {
 	out := map[string]bool{}
 	if skill == nil || skill.ActiveEffect == nil || skill.ActiveEffect.StatSet == nil {

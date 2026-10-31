@@ -1,4 +1,5 @@
 import { writable } from 'svelte/store';
+import { followOtherTabs } from '$lib/storage/tabs';
 
 /* Launch.lua:9 */
 export const APP_NAME = 'go-pob';
@@ -21,6 +22,7 @@ showTitlebarName.subscribe((v) => {
     // empty
   }
 });
+followOtherTabs(KEY, showTitlebarName, load);
 
 /* Main.lua:1750-1756, PassiveSpec.lua:2302-2308 */
 export const windowTitle = (show: boolean, build?: { name: string; className: string; ascendClassName: string; secondaryAscendancy?: string }): string => {

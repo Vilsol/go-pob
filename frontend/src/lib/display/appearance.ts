@@ -1,18 +1,21 @@
 import { browser } from '$app/environment';
 import { writable, type Writable } from 'svelte/store';
+import { followOtherTabs } from '$lib/storage/tabs';
 
 export const THEMES = ['Dark', 'Light', 'High contrast', 'Follow system'] as const;
 export type Theme = (typeof THEMES)[number];
 
 const persisted = <T>(key: string, fallback: T, read: (s: string) => T | undefined): Writable<T> => {
-  let start = fallback;
-  try {
-    const s = browser ? localStorage.getItem(key) : null;
-    if (s !== null) start = read(s) ?? fallback;
-  } catch {
-    // empty
-  }
-  const store = writable(start);
+  const load = () => {
+    try {
+      const s = browser ? localStorage.getItem(key) : null;
+      if (s !== null) return read(s) ?? fallback;
+    } catch {
+      // empty
+    }
+    return fallback;
+  };
+  const store = writable(load());
   store.subscribe((v) => {
     try {
       if (browser) localStorage.setItem(key, String(v));
@@ -20,6 +23,7 @@ const persisted = <T>(key: string, fallback: T, read: (s: string) => T | undefin
       // empty
     }
   });
+  followOtherTabs(key, store, load);
   return store;
 };
 

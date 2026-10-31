@@ -13,7 +13,7 @@
   import { buildId, leaf } from '$lib/design/builds';
   import type { SavedBuild } from '$lib/design/fixtures/app';
   import { syncWrap } from '$lib/go/worker';
-  import { currentBuildPath, devMode } from '$lib/global.js';
+  import { currentBuildPath, devMode, poe2Enabled } from '$lib/global.js';
   import { logError } from '$lib/utils';
   import { addToast } from '$lib/design/toast';
   import { openForeign } from '$lib/go/game_route';
@@ -159,6 +159,7 @@
     const b = byId(id);
     if (!b) return;
     const path = pathOf(b.folder, b.name);
+    const kept = { path: currentBuildPath.current, name: { ...unsavedName } };
     opening.modFlag = false;
     currentBuildPath.current = path;
     unsavedName.imported = false;
@@ -167,13 +168,28 @@
     syncWrap
       .OpenBuild(path)
       .then((foreign) =>
+        // a refused build leaves the open one as it was
         openForeign(foreign, () => syncWrap.ClearBuild()).catch((err: Error) => {
-          currentBuildPath.current = undefined;
+          currentBuildPath.current = kept.path;
+          Object.assign(unsavedName, kept.name);
           addToast(err.message);
         })
       )
       .catch(logError);
   };
+
+  // a listed PoE2 build's class is one of the PoE2 tree's, which only the PoE2 worker loads
+  let poe2Classes = $state<string[]>([]);
+  let poe2ClassesAsked = false;
+  $effect(() => {
+    if (poe2ClassesAsked || !$poe2Enabled || !builds.some((b) => b.game === 'poe2')) return;
+    poe2ClassesAsked = true;
+    import('$lib/go/worker2')
+      .then(({ poe2Worker }) => poe2Worker())
+      .then((w) => w.TreeClasses())
+      .then((c) => (poe2Classes = c))
+      .catch(logError);
+  });
 
   // Main.lua:539-541, 747
   let sort = $state(loadBuildSort());
@@ -195,7 +211,7 @@
   bind:sort
   {builds}
   {folders}
-  classes={CLASSES}
+  classes={[...CLASSES, ...poe2Classes.filter((c) => !CLASSES.includes(c))]}
   {gameVersion}
   {folder}
   {open}
