@@ -60,6 +60,7 @@ func Exports(r bind.Registry) {
 	r.Func(builds.SerializeBuildWithStats)
 	r.Func(builds.EmptyBuild)
 	r.Func(builds.SavedBuildSummary)
+	r.Func(builds.DetectGame)
 
 	r.Func(calculator.NewCalculator)
 	r.Func(raw.InitializeAll, bind.AsPromise())

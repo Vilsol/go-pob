@@ -23,6 +23,13 @@ export type Result<T> = (
   unwrapOr(fallback: T): T;
 };
 export declare namespace builds {
+  type Game = 0 | 1 | 2 | 3;
+  const Game: {
+    readonly GameUnknown: 0;
+    readonly GamePoE1: 1;
+    readonly GamePoE2: 2;
+    readonly GamePoE2Legacy: 3;
+  };
   interface SavedBuild {
     ClassName: string;
     Level: number;
@@ -32,6 +39,7 @@ export declare namespace builds {
     release(): void;
     [Symbol.dispose](): void;
   }
+  function DetectGame(raw: Uint8Array | undefined): builds.Game;
   function EmptyBuild(): (pob.PathOfBuilding | undefined);
   function ParseBuild(rawXML: Uint8Array | undefined): Result<(pob.PathOfBuilding | undefined)>;
   function ParseBuildOver(live: pob.PathOfBuilding | undefined, liveXML: string, rawXML: string): Result<(pob.PathOfBuilding | undefined)>;

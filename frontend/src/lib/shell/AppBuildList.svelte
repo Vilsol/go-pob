@@ -14,6 +14,8 @@
   import { syncWrap } from '$lib/go/worker';
   import { currentBuildPath, devMode } from '$lib/global.js';
   import { logError } from '$lib/utils';
+  import { addToast } from '$lib/design/toast';
+  import { openForeign } from '$lib/go/game_route';
   import PromptDialog from './PromptDialog.svelte';
   import AppAbout from './AppAbout.svelte';
   import AppSettings from './AppSettings.svelte';
@@ -159,7 +161,15 @@
     unsavedName.imported = false;
     unsavedName.predefined = undefined;
     resetAccountSession();
-    syncWrap.OpenBuild(path).catch(logError);
+    syncWrap
+      .OpenBuild(path)
+      .then((foreign) =>
+        openForeign(foreign, () => syncWrap.ClearBuild()).catch((err: Error) => {
+          currentBuildPath.current = undefined;
+          addToast(err.message);
+        })
+      )
+      .catch(logError);
   };
 
   // Main.lua:539-541, 747

@@ -15,11 +15,22 @@ export const buildRevision = writable(0);
 // counts builds opened (new, loaded or imported over the open one); a page's per-build view state keys on it
 export const buildOpens = writable(0);
 
+export type Poe2View = {
+  className: string;
+  ascendClassName: string;
+  level: number;
+  output: Record<string, number>;
+};
+
+// the open PoE2 build; a PoE1 build opening clears it
+export const poe2Build = writable<Poe2View | undefined>();
+
 const currentBuildInner = writable<ProxiedRemote<pob.PathOfBuilding> | undefined>();
 
 const setCurrentBuild = (value: ProxiedRemote<pob.PathOfBuilding> | undefined) => {
   if (value !== get(currentBuildInner)) {
     buildRevision.update((n) => n + 1);
+    if (value) poe2Build.set(undefined);
   }
   currentBuildInner.set(value);
 };
@@ -93,6 +104,11 @@ zoomSensitivity.subscribe((v) => browser && localStorage.setItem('options:zoomSe
 
 export const devMode = writable(browser ? localStorage.getItem('options:devMode') === 'true' : false);
 devMode.subscribe((v) => browser && localStorage.setItem('options:devMode', v.toString()));
+
+// hidden: the Settings row shows only once the key exists, e.g. localStorage.setItem('options:poe2', 'true') from devtools
+export const poe2Unlocked = browser && localStorage.getItem('options:poe2') !== null;
+export const poe2Enabled = writable(browser ? localStorage.getItem('options:poe2') === 'true' : false);
+poe2Enabled.subscribe((v) => browser && (v || localStorage.getItem('options:poe2') !== null) && localStorage.setItem('options:poe2', v.toString()));
 
 // Main.lua:101, 957-961
 export const nodePowerTheme = writable<NodePowerTheme>(

@@ -11,7 +11,7 @@
   import { browser } from '$app/environment';
   import { syncWrap } from '$lib/go/worker';
   import { proxy, transfer } from 'comlink';
-  import { currentBuild, currentBuildPath, buildChannel, devMode, markBackendAsLoaded, outputs, backendLoaded } from '$lib/global.js';
+  import { currentBuild, currentBuildPath, buildChannel, devMode, markBackendAsLoaded, outputs, backendLoaded, poe2Build } from '$lib/global.js';
   import { setArtResolver } from '$lib/design/item_art';
   import { showTitlebarName, windowTitle } from '$lib/display/window_title';
   import { onTick } from '$lib/calc_state';
@@ -19,6 +19,7 @@
   import type { Snippet } from 'svelte';
   import { get } from 'svelte/store';
   import AppBuildList from '$lib/shell/AppBuildList.svelte';
+  import AppPoe2Build from '$lib/shell/AppPoe2Build.svelte';
   import { WASM_FALLBACK, WASM_FILE } from '$lib/go/wasm_file';
   import { checkForUpdate, startPwa } from '$lib/pwa';
   import PwaStatus from '$lib/pwa/PwaStatus.svelte';
@@ -209,6 +210,8 @@
     <span class="text-14 text-text-2">{loadingMessage}</span>
     {#if loadingStage !== ''}<span class="note">{loadingStage}</span>{/if}
   </div>
+{:else if $poe2Build}
+  <AppPoe2Build view={$poe2Build} />
 {:else}
   <AppBuildList />
 {/if}

@@ -43,6 +43,7 @@ import { configureStorage } from './storage_config';
 import { initializeStorage, storageFs } from './storage_init';
 import { PowerPool, type PowerPoolRun } from './power_pool';
 import { noteCall, whenIdle } from './idle';
+import type { ForeignBuild } from './game_route';
 
 const storageConfigurationPromise = configureStorage();
 
@@ -168,10 +169,19 @@ class PoBWorker {
     }
   }
 
-  async ImportCode(code: string) {
+  private foreignGame(xml: string): ForeignBuild | undefined {
+    const game = builds.DetectGame(new Uint8Array(new TextEncoder().encode(xml)));
+    if (game === builds.Game.GamePoE2) return { game: 'poe2', xml };
+    if (game === builds.Game.GamePoE2Legacy) return { game: 'poe2-legacy', xml };
+    return undefined;
+  }
+
+  async ImportCode(code: string): Promise<ForeignBuild | undefined> {
     if (this.dataReady) await this.dataReady;
     const start = performance.now();
     const xml = pob.DecodeDecompress(code).unwrap();
+    const foreign = this.foreignGame(xml);
+    if (foreign) return foreign;
     const build = builds.ParseBuildStr(xml).unwrap();
     logInfo('import', `imported a build code (${Math.round(xml.length / 1024)} KB of XML) in ${Math.round(performance.now() - start)} ms`);
     this.openBuild(build, 'ImportCode');
@@ -1225,7 +1235,7 @@ class PoBWorker {
     logInfo('save', `saved ${path} (${Math.round(build.length / 1024)} KB) in ${Math.round(performance.now() - start)} ms`);
   }
 
-  async OpenBuild(path: string) {
+  async OpenBuild(path: string): Promise<ForeignBuild | undefined> {
     if (this.dataReady) await this.dataReady;
     const start = performance.now();
     const result = await storage.GetBuild(path);
@@ -1235,6 +1245,8 @@ class PoBWorker {
       return;
     }
 
+    const foreign = this.foreignGame(result.value);
+    if (foreign) return foreign;
     const build = builds.ParseBuildStr(result.value).unwrap();
     logInfo('load', `loaded ${path} in ${Math.round(performance.now() - start)} ms`);
     this.openBuild(build, 'OpenBuild');

@@ -49,7 +49,9 @@ export const initializeCrystalline = () => {
   }
 
   builds = {
+    DetectGame: wrap('builds.DetectGame', globalThis['go']['go-pob']['builds']['DetectGame']),
     EmptyBuild: wrap('builds.EmptyBuild', globalThis['go']['go-pob']['builds']['EmptyBuild']),
+    Game: globalThis['go']['go-pob']['builds']['Game'],
     ParseBuild: wrap('builds.ParseBuild', globalThis['go']['go-pob']['builds']['ParseBuild']),
     ParseBuildOver: wrap('builds.ParseBuildOver', globalThis['go']['go-pob']['builds']['ParseBuildOver']),
     ParseBuildStr: wrap('builds.ParseBuildStr', globalThis['go']['go-pob']['builds']['ParseBuildStr']),

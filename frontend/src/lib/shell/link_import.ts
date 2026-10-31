@@ -5,6 +5,7 @@ import { opening, unsavedName } from './build_name.svelte';
 import { resetAccountSession } from './account_session.svelte';
 import { DESKTOP } from '$lib/pwa/desktop';
 import { addToast } from '$lib/design/toast';
+import { openForeign } from '$lib/go/game_route';
 
 // ImportTab.lua:684-699, BuildSiteTools.lua:88-113
 const DIRECT = new Set(['PoBCodes']);
@@ -120,7 +121,7 @@ export const openImportLink = async (text: string) => {
   const protocol = protocolDownload(text) ?? openedDownload(text);
   const code = protocol ? await download(protocol) : await linkCode(text);
   opening.modFlag = true;
-  await syncWrap?.ImportCode(code);
+  if (await openForeign(await syncWrap?.ImportCode(code), () => syncWrap?.ClearBuild())) return;
   currentBuildPath.current = '';
   unsavedName.imported = true;
   resetAccountSession();

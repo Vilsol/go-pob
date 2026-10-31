@@ -212,6 +212,17 @@ tasks:
     generates:
       - frontend/static/go-pob.wasm
 
+  dev-go2:
+    desc: "PoE2 Go WASM dev command (live updates); vite dev serves the result at /go-pob2.wasm"
+    watch: true
+    sources:
+      - '**/*.go'
+    cmds:
+      - task: build-go2
+      - task: generate2
+    generates:
+      - frontend/static/go-pob2.wasm
+
   test-go:
     desc: "Run all Go tests"
     cmds:
@@ -289,7 +300,7 @@ tasks:
     vars:
       SHARD_LIST: '{{if .SHARD}}--test-list e2e/.results/shard-tests.txt {{end}}'
     cmds:
-      - '{{if eq .REUSE "1"}}node e2e/serve.mjs port > /dev/null{{else}}{{.TASK_EXE}} -d {{.ROOT_DIR}} build-go{{end}}'
+      - '{{if eq .REUSE "1"}}node e2e/serve.mjs port > /dev/null{{else}}{{.TASK_EXE}} -d {{.ROOT_DIR}} build-go build-go2{{end}}'
       - '{{if ne .REUSE "1"}}{{.NICE}} gzip -kf9 static/go-pob.wasm{{end}}'
       - '{{if ne .REUSE "1"}}{{.NICE}} npx vite build --logLevel warn{{end}}'
       - '{{if .SHARD}}env E2E_SLOW={{.SLOW | default "0"}} node e2e/shard.mjs plan {{.SHARD}} e2e/.results/shard-tests.txt{{end}}'
@@ -321,7 +332,7 @@ tasks:
 
   e2e-serve:
     desc: "Build the wasm and the frontend, then keep one vite preview warm on a free port for `task e2e REUSE=1`; re-run after a code change (it rebuilds, the server stays)"
-    deps: [build-go]
+    deps: [build-go, build-go2]
     dir: ./frontend/
     cmds:
       - '{{.NICE}} gzip -kf9 static/go-pob.wasm'

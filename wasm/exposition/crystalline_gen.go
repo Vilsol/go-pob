@@ -116,6 +116,7 @@ func init() {
 	crystallineNamespace("go-pob", "builds").Set("SerializeBuildWithStats", crystallineWrap(js.FuncOf(crystallineFnBuildsSerializeBuildWithStats)))
 	crystallineNamespace("go-pob", "builds").Set("EmptyBuild", crystallineWrap(js.FuncOf(crystallineFnBuildsEmptyBuild)))
 	crystallineNamespace("go-pob", "builds").Set("SavedBuildSummary", crystallineWrap(js.FuncOf(crystallineFnBuildsSavedBuildSummary)))
+	crystallineNamespace("go-pob", "builds").Set("DetectGame", crystallineWrap(js.FuncOf(crystallineFnBuildsDetectGame)))
 	crystallineNamespace("go-pob", "calculator").Set("NewCalculator", crystallineWrap(js.FuncOf(crystallineFnCalculatorNewCalculator)))
 	crystallineNamespace("go-pob", "raw").Set("InitializeAll", crystallineWrap(js.FuncOf(crystallineFnRawInitializeAll)))
 	crystallineNamespace("go-pob", "raw").Set("LoadDeferred", crystallineWrap(js.FuncOf(crystallineFnRawLoadDeferred)))
@@ -703,6 +704,12 @@ func init() {
 		"ModLineComment":     "comment",
 		"ModLineParsed":      "parsed",
 		"ModLineUnsupported": "unsupported",
+	})
+	crystallineNamespace("go-pob", "builds").Set("Game", map[string]any{
+		"GameUnknown":    float64(0),
+		"GamePoE1":       float64(1),
+		"GamePoE2":       float64(2),
+		"GamePoE2Legacy": float64(3),
 	})
 
 	CompareItemsExports(crystallineRegistry{})
@@ -4399,6 +4406,23 @@ func crystallineFnBuildsSavedBuildSummary(this js.Value, args []js.Value) (resul
 	}
 
 	return crystallineOk(crystallineMarshalBuildsSavedBuild(&r0))
+}
+
+func crystallineFnBuildsDetectGame(this js.Value, args []js.Value) (result any) {
+	defer crystallineRecover(&result)
+
+	if len(args) != 1 {
+		return crystallineFail("DetectGame: expected 1 arguments, got " + strconv.Itoa(len(args)))
+	}
+
+	a0, err := crystallineToBytes(args[0])
+	if err != nil {
+		return crystallineFail(err.Error())
+	}
+
+	r0 := builds.DetectGame(a0)
+
+	return float64(r0)
 }
 
 func crystallineFnCalculatorNewCalculator(this js.Value, args []js.Value) (result any) {

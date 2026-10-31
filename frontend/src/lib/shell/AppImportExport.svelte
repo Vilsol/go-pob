@@ -12,6 +12,7 @@
   import { REALMS, UNAVAILABLE, loadExportSite, saveExportSite } from './import_export';
   import { identityOf } from './identity';
   import { downloadBuild, shareBuild } from './link_import';
+  import { openForeign } from '$lib/go/game_route';
   import { opening, unsavedName } from './build_name.svelte';
   import Dialog from '$lib/design/Dialog.svelte';
   import DialogActions from '$lib/design/DialogActions.svelte';
@@ -102,7 +103,8 @@
       opening.modFlag = true;
       return syncWrap
         ?.ImportCode(text)
-        .then(() => {
+        .then(async (foreign) => {
+          if (await openForeign(foreign, () => syncWrap?.ClearBuild())) return;
           resetAccountSession();
           if (how === 'new') {
             currentBuildPath.current = '';
