@@ -62,6 +62,8 @@ func TestSitesMatchShareTS(t *testing.T) {
 			post().Fields = val
 		case "codeOut":
 			post().CodeOut = val
+		case "game":
+			s.Game = val
 		default:
 			t.Fatalf("share.ts's SITES has a field %q the Go table lacks", key)
 		}

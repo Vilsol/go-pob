@@ -22,7 +22,7 @@ const BUILD_CAP = 1 << 20
 
 const day = 24 * 60 * 60
 
-var immutable = map[string]bool{"Maxroll": true, "PoBCodes": true, "POBBin": true, "PoeNinja": true}
+var immutable = map[string]bool{"Maxroll": true, "PoBCodes": true, "POBBin": true, "PoeNinja": true, "Maxroll2": true, "PoeNinja2": true}
 
 const IMMUTABLE_TTL = 7 * day
 

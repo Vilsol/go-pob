@@ -2101,6 +2101,7 @@ func crystallineMarshalStorageDirEntry(v *storage.DirEntry) any {
 	out.Set("Level", float64(v.Level))
 	out.Set("Ascendancy", string(v.Ascendancy))
 	out.Set("MainSkill", string(v.MainSkill))
+	out.Set("Game", string(v.Game))
 
 	return out
 }
@@ -2937,7 +2938,7 @@ func crystallineToSliceOfString(value js.Value) ([]string, error) {
 	return out, nil
 }
 
-var crystallineKnownStorageDirEntry = map[string]bool{"Name": true, "Type": true, "Class": true, "LastEdit": true, "Level": true, "Ascendancy": true, "MainSkill": true}
+var crystallineKnownStorageDirEntry = map[string]bool{"Name": true, "Type": true, "Class": true, "LastEdit": true, "Level": true, "Ascendancy": true, "MainSkill": true, "Game": true}
 
 func crystallineToStorageDirEntry(value js.Value) (storage.DirEntry, error) {
 	var out storage.DirEntry
@@ -3029,6 +3030,15 @@ func crystallineToStorageDirEntry(value js.Value) (storage.DirEntry, error) {
 		}
 
 		out.MainSkill = converted
+	}
+
+	if property := value.Get("Game"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToString(property)
+		if err != nil {
+			return out, errors.New("storage.DirEntry.Game: " + err.Error())
+		}
+
+		out.Game = converted
 	}
 
 	return out, nil

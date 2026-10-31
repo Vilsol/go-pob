@@ -12,6 +12,7 @@ export const toSaved = (e: storage.DirEntry, folder: string, version: string, no
   ascendancy: e.Ascendancy ?? '',
   level: e.Level,
   skill: e.MainSkill ?? '',
+  game: e.Game || undefined,
   edited: Math.max(0, Math.round((now - Date.parse(e.LastEdit)) / 60_000)) || 0,
   folder,
   dps: 0,

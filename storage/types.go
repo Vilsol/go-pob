@@ -19,6 +19,7 @@ type DirEntry struct {
 	Level      int
 	Ascendancy string
 	MainSkill  string
+	Game       string
 }
 
 type Storage interface {

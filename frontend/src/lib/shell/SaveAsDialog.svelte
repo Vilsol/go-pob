@@ -16,8 +16,8 @@
   import { saveAsName } from './build_name.svelte';
   import type { SavedBuild } from '$lib/design/fixtures/app';
 
-  type Props = { open?: boolean; onsaved?: () => void };
-  let { open = $bindable(false), onsaved }: Props = $props();
+  type Props = { open?: boolean; onsaved?: () => void; save?: (path: string) => Promise<unknown> };
+  let { open = $bindable(false), onsaved, save: saveTo = (path: string) => syncWrap.SaveBuildAs(path) }: Props = $props();
 
   let name = $state('Unnamed build');
   let folder = $state('');
@@ -44,8 +44,7 @@
   const write = () => {
     const target = pathOf(folder, name);
     failed = undefined;
-    syncWrap
-      .SaveBuildAs(target)
+    saveTo(target)
       .then(() => {
         currentBuildPath.current = target;
         open = false;

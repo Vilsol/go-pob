@@ -45,6 +45,8 @@ import { PowerPool, type PowerPoolRun } from './power_pool';
 import { noteCall, whenIdle } from './idle';
 import type { ForeignBuild } from './game_route';
 
+export const COMPARE_MIXED = 'A Path of Exile 2 build cannot be compared with a Path of Exile 1 build.';
+
 const storageConfigurationPromise = configureStorage();
 
 type WarningsEnv = { out: calculator.Environment; calc: calculator.Calculator };
@@ -1235,6 +1237,13 @@ class PoBWorker {
     logInfo('save', `saved ${path} (${Math.round(build.length / 1024)} KB) in ${Math.round(performance.now() - start)} ms`);
   }
 
+  // another game's build, serialized by its own worker
+  async SaveForeignBuild(path: string, xml: string) {
+    if (!this.foreignGame(xml)) throw new Error("not another game's build");
+    (await storage.SetBuild(path, xml)).unwrap();
+    logInfo('save', `saved ${path} (${Math.round(xml.length / 1024)} KB)`);
+  }
+
   async OpenBuild(path: string): Promise<ForeignBuild | undefined> {
     if (this.dataReady) await this.dataReady;
     const start = performance.now();
@@ -1789,15 +1798,22 @@ class PoBWorker {
   private compareMisc?: Promise<{ calc: exposition.MiscCalculator; base: exposition.StatOutputs } | undefined>;
   private comparePowerSeq = 0;
 
+  // a build of another game has nothing to compare against a PoE1 build
+  private refuseForeignCompare(xml: string) {
+    if (this.foreignGame(xml)) throw new Error(COMPARE_MIXED);
+  }
+
   async LoadCompareCode(code: string, name = 'Imported build'): Promise<CompareInfo> {
     if (this.dataReady) await this.dataReady;
     const xml = pob.DecodeDecompress(code).unwrap();
+    this.refuseForeignCompare(xml);
     return await this.loadCompare(builds.ParseBuildStr(xml).unwrap(), name);
   }
 
   async LoadCompareSaved(path: string): Promise<CompareInfo> {
     if (this.dataReady) await this.dataReady;
     const xml = (await storage.GetBuild(path)).unwrap();
+    this.refuseForeignCompare(xml);
     return await this.loadCompare(
       builds.ParseBuildStr(xml).unwrap(),
       path

@@ -16,6 +16,7 @@ type Site struct {
 	Download string
 	Link     string
 	Post     *Post
+	Game     string
 }
 
 var SITES = []Site{
@@ -71,6 +72,33 @@ var SITES = []Site{
 		Download: "poedb.tw/pob/$1/raw",
 		Link:     "https://poedb.tw/pob/",
 		Post:     &Post{URL: "https://poedb.tw/pob/api/gen", Fields: "", CodeOut: ""},
+	},
+	{
+		Label:    "Maxroll (PoE2)",
+		ID:       "Maxroll2",
+		Match:    `^https:\/\/maxroll\.gg\/poe2\/pob\/.*`,
+		Regex:    `maxroll\.gg\/poe2\/pob\/(.+)\s*$`,
+		Download: "maxroll.gg/poe2/api/pob/$1",
+		Link:     "https://maxroll.gg/poe2/pob/",
+		Game:     "poe2",
+	},
+	{
+		Label:    "poe.ninja (PoE2)",
+		ID:       "PoeNinja2",
+		Match:    `^https:\/\/poe2?\.ninja\/?p?o?e?2?\/pob\/.+`,
+		Regex:    `poe2?\.ninja\/?p?o?e?2?\/pob\/(.+)\s*$`,
+		Download: "poe.ninja/poe2/pob/raw/$1",
+		Link:     "https://poe.ninja/poe2/pob/",
+		Game:     "poe2",
+	},
+	{
+		Label:    "poe2db.tw",
+		ID:       "PoE2DB",
+		Match:    `^https:\/\/poe2db\.tw\/pob\/.+`,
+		Regex:    `poe2db\.tw\/pob\/(.+)\s*$`,
+		Download: "poe2db.tw/pob/$1/raw",
+		Link:     "https://poe2db.tw/pob/",
+		Game:     "poe2",
 	},
 }
 

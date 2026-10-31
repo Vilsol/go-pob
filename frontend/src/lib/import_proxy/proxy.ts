@@ -8,7 +8,7 @@ export const USER_AGENT = 'go-pob (+https://pob.gg)';
 export const BUILD_CAP = 1 << 20;
 
 const DAY = 24 * 60 * 60;
-const IMMUTABLE = new Set(['Maxroll', 'PoBCodes', 'POBBin', 'PoeNinja']);
+const IMMUTABLE = new Set(['Maxroll', 'PoBCodes', 'POBBin', 'PoeNinja', 'Maxroll2', 'PoeNinja2']);
 export const IMMUTABLE_TTL = 7 * DAY;
 export const EDITABLE_TTL = 5 * 60;
 

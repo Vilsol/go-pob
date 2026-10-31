@@ -10,10 +10,19 @@ const pinRows = readFileSync(resolve(__dirname, 'testdata/build_sites.tsv'), 'ut
   .map((l) => l.split('\t'));
 const dropped = new Set(DROPPED_SITES.map((s) => s.label));
 const rows = pinRows.filter((r) => !dropped.has(r[0]));
+// PoB-PoE2's rows, by the label go-pob gives a row that differs from PoE1's
+const POE2_LABELS: Record<string, string> = { Maxroll: 'Maxroll (PoE2)', 'poe.ninja': 'poe.ninja (PoE2)' };
+const PoE1_SHARED = new Set(['pobb.in', 'Pastebin.com', 'PastebinP.com']);
+const poe2Rows = readFileSync(resolve(__dirname, 'testdata/build_sites_poe2.tsv'), 'utf8')
+  .trim()
+  .split('\n')
+  .map((l) => l.split('\t'))
+  .filter((r) => !dropped.has(r[0]))
+  .map(([label, link, raw]) => [POE2_LABELS[label] ?? label, link, raw]);
 
 describe('downloadUrl', () => {
   it('covers every site PoB lists', () => {
-    expect(new Set(rows.map((r) => r[0]))).toEqual(new Set(SITES.map((s) => s.label)));
+    expect(new Set(rows.map((r) => r[0]))).toEqual(new Set(SITES.filter((s) => !s.game).map((s) => s.label)));
   });
 
   it.each(rows)('%s: %s → %s', (label, link, raw) => {
@@ -25,6 +34,15 @@ describe('downloadUrl', () => {
     const link = pinRows.find((r) => r[0] === 'Rentry.co')![1];
     expect(downloadUrl(link)).toBeUndefined();
     expect(urlVerdict(link)).toEqual({ valid: false, text: DROPPED_SITES[0].text });
+  });
+
+  it('covers every site PoB-PoE2 lists, its own rows marked as PoE2', () => {
+    const labels = new Set(poe2Rows.map((r) => r[0]));
+    expect(labels).toEqual(new Set(SITES.filter((s) => s.game === 'poe2' || PoE1_SHARED.has(s.label)).map((s) => s.label)));
+  });
+
+  it.each(poe2Rows)('PoB-PoE2 %s: %s → %s', (label, link, raw) => {
+    expect(downloadUrl(link)).toEqual({ site: label, url: raw });
   });
 
   it('is undefined for text that is no site link', () => {

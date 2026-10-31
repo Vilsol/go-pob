@@ -15,7 +15,8 @@ const entry = (name: string, dir: boolean, lastEdit: string, file?: Uint8Array):
     LastEdit: lastEdit,
     Level: summary?.Level || 0,
     Ascendancy: summary?.Ascendancy ?? '',
-    MainSkill: summary?.MainSkill ?? ''
+    MainSkill: summary?.MainSkill ?? '',
+    Game: summary?.Game ?? ''
   };
 };
 
@@ -125,7 +126,8 @@ export const initializeStorage = async (readOnly = false) => {
                 LastEdit: stats.mtime.toISOString(),
                 Level: summary?.Level || 0,
                 Ascendancy: summary?.Ascendancy ?? '',
-                MainSkill: summary?.MainSkill ?? ''
+                MainSkill: summary?.MainSkill ?? '',
+                Game: summary?.Game ?? ''
               };
             })
           );

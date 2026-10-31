@@ -21,6 +21,14 @@ live('import proxy, live', () => {
     expect(body.trim()).toMatch(/^[\w-]+=*$/);
   });
 
+  it('/api/build PoeNinja2 abc answers a PoB-PoE2 build code', async () => {
+    const { status, body } = await ask('/api/build?site=PoeNinja2&id=abc');
+    expect(status).toBe(200);
+    const bytes = Uint8Array.from(atob(body.trim().replace(/-/g, '+').replace(/_/g, '/')), (c) => c.charCodeAt(0));
+    const xml = await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate'))).text();
+    expect(xml).toContain('<PathOfBuilding2>');
+  });
+
   it("/api/poe reads Vilsol#3184's characters, profile name, items and passives", async () => {
     const account = encodeURIComponent('Vilsol#3184');
     const chars = await ask(`/api/poe/characters?realm=pc&account=${account}`);

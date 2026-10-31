@@ -96,6 +96,7 @@ export declare namespace storage {
     readonly Level: number;
     readonly Ascendancy: string;
     readonly MainSkill: string;
+    readonly Game: string;
   }
   type DirEntryType = "file" | "dir";
   const DirEntryType: {

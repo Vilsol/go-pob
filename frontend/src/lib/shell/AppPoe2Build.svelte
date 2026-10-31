@@ -4,7 +4,11 @@
   import Input from '$lib/design/Input.svelte';
   import PobText from '$lib/design/PobText.svelte';
   import Select from '$lib/design/Select.svelte';
-  import { poe2Build, type Poe2View } from '$lib/global.js';
+  import { currentBuildPath, poe2Build, type Poe2View } from '$lib/global.js';
+  import SaveAsDialog from './SaveAsDialog.svelte';
+  import { savePoe2Build } from './poe2_save';
+  import { saveErrorText } from './save_error';
+  import { logError } from '$lib/utils';
   import { NOTE_COLOR, type StatLine } from '$lib/display/stat_list';
   import { buildStatList2, displayStats2, minionDisplayStats2 } from '$lib/display/stats2';
   import {
@@ -41,6 +45,26 @@
     } finally {
       busy = false;
     }
+  };
+
+  // Build.lua:2773-2787 (PoB-PoE2)
+  let saveAs = $state(false);
+  let saved = $state(false);
+  const onsave = () => {
+    const path = currentBuildPath.current;
+    if (!path) {
+      saveAs = true;
+      return;
+    }
+    busy = true;
+    error = undefined;
+    savePoe2Build(path)
+      .then(() => (saved = true))
+      .catch((e: Error) => {
+        logError(e);
+        error = saveErrorText(path);
+      })
+      .finally(() => (busy = false));
   };
 
   const warnings = $derived.by(() => {
@@ -91,7 +115,10 @@
 <section class="page gap-3 p-4" aria-label="Path of Exile 2 build">
   <div class="flex items-center gap-3">
     <span class="text-18 font-semibold">Path of Exile 2 build (preview)</span>
+    <Button disabled={busy} onclick={onsave}>Save</Button>
+    <Button disabled={busy} onclick={() => (saveAs = true)}>Save as…</Button>
     <Button onclick={() => poe2Build.set(undefined)}>Close</Button>
+    {#if saved && !busy}<span class="note" role="status">Saved</span>{/if}
     {#if busy}<span class="note" role="status">Calculating…</span>{/if}
   </div>
   <p class="m-0 text-14">
@@ -186,4 +213,5 @@
       </div>
     {/if}
   </div>
+  <SaveAsDialog bind:open={saveAs} save={savePoe2Build} onsaved={() => (saved = true)} />
 </section>

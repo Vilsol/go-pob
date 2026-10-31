@@ -8,6 +8,7 @@ vi.mock('$lib/go/worker', () => ({ syncWrap: worker, syncWorker: undefined }));
 const { compareName, importLanding, importParam, openImportLink } = await import('./link_import');
 const { currentBuildPath } = await import('$lib/global');
 const { unsavedName } = await import('./build_name.svelte');
+const { EXPORT_SITES } = await import('$lib/design/share');
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -58,6 +59,26 @@ describe('opening a build from a link', () => {
     expect(fetchMock).toHaveBeenLastCalledWith('/api/build?site=Maxroll&id=m5ui4t0x');
     await openImportLink('https://pastebin.com/DsS6Qsxa');
     expect(fetchMock).toHaveBeenLastCalledWith('/api/build?site=pastebin&id=DsS6Qsxa');
+  });
+
+  it("reads PoB-PoE2's site links through /api/build, and leaves pob:// to PoE1's sites", async () => {
+    const fetchMock = vi.fn((url: string) => Promise.resolve(new Response(`code-of-${url}`)));
+    vi.stubGlobal('fetch', fetchMock);
+    await openImportLink('https://poe.ninja/poe2/pob/Abc1');
+    expect(fetchMock).toHaveBeenLastCalledWith('/api/build?site=PoeNinja2&id=Abc1');
+    await openImportLink('https://poe2.ninja/pob/Abc2');
+    expect(fetchMock).toHaveBeenLastCalledWith('/api/build?site=PoeNinja2&id=Abc2');
+    await openImportLink('https://poe.ninja/poe1/pob/Abc3');
+    expect(fetchMock).toHaveBeenLastCalledWith('/api/build?site=PoeNinja&id=Abc3');
+    await openImportLink('https://maxroll.gg/poe2/pob/m5ui4t0x');
+    expect(fetchMock).toHaveBeenLastCalledWith('/api/build?site=Maxroll2&id=m5ui4t0x');
+    await openImportLink('https://poe2db.tw/pob/abc');
+    expect(fetchMock).toHaveBeenLastCalledWith('/api/build?site=PoE2DB&id=abc');
+    expect(fetchMock).toHaveBeenCalledTimes(5);
+    await openImportLink('pob://poeninja2/Abc1');
+    expect(fetchMock).toHaveBeenCalledTimes(5);
+    expect(worker.ImportCode).toHaveBeenLastCalledWith('pob://poeninja2/Abc1');
+    expect(EXPORT_SITES.filter((s) => s.game)).toEqual([]);
   });
 
   it("says what the proxy said, and that a host without it can't read sites", async () => {

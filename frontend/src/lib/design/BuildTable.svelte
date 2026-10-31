@@ -12,6 +12,7 @@
   import { COLS, DEFAULT_COLS, buildId, childrenOf, countIn, leaf, nextSort, subpath, visibleRows, type ColKey, type Drag, type Sort } from './builds';
   import type { SavedBuild } from './fixtures/app';
   import Menu from './Menu.svelte';
+  import Badge from './Badge.svelte';
   import { dragSource, dropZone, type DropZone } from './reorder';
   import { tone as toneClass } from './tone';
 
@@ -312,7 +313,7 @@
                     e.preventDefault();
                     onopen(id);
                   }}>{b.name}</a
-                ></span>
+                >{#if b.game}<Badge class="ml-1.5 align-middle" variant="outline" title="A Path of Exile 2 build" data-game={b.game}>PoE2</Badge>{/if}</span>
             {:else}
               {@const old = !!c.stat && stale(b)}
               <span

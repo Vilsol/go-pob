@@ -385,6 +385,8 @@ type SavedBuild struct {
 	Level      int
 	Ascendancy string
 	MainSkill  string
+	// "poe2" for a PoB-PoE2 save, "poe2-legacy" for one PoB-PoE2 refuses
+	Game string
 }
 
 var nonSpaceRe = regexp.MustCompile(`\S`)
@@ -453,6 +455,12 @@ func SavedBuildSummary(rawXML string) (SavedBuild, error) {
 	}
 
 	out := SavedBuild{ClassName: b.Build.ClassName, Level: b.Build.Level}
+	switch DetectGame(raw) {
+	case GamePoE2:
+		out.Game = "poe2"
+	case GamePoE2Legacy:
+		out.Game = "poe2-legacy"
+	}
 	if b.Build.AscendClassName != "None" {
 		out.Ascendancy = b.Build.AscendClassName
 	}

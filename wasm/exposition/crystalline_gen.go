@@ -8560,7 +8560,7 @@ func crystallineMarshalBuildsSavedBuild(v *builds.SavedBuild) any {
 
 	if crystallineMarshalBuildsSavedBuildShape.IsUndefined() {
 		crystallineMarshalBuildsSavedBuildShape = crystallineShape("builds.SavedBuild",
-			[]string{"ClassName", "Level", "Ascendancy", "MainSkill"},
+			[]string{"ClassName", "Level", "Ascendancy", "MainSkill", "Game"},
 			func(v *builds.SavedBuild, entry *crystallineEntry, field int) any {
 				switch field {
 				case 0:
@@ -8571,6 +8571,8 @@ func crystallineMarshalBuildsSavedBuild(v *builds.SavedBuild) any {
 					return string(v.Ascendancy)
 				case 3:
 					return string(v.MainSkill)
+				case 4:
+					return string(v.Game)
 				}
 
 				return nil
@@ -8620,6 +8622,17 @@ func crystallineMarshalBuildsSavedBuild(v *builds.SavedBuild) any {
 						}
 
 						v.MainSkill = converted
+					})(value)
+				case 4:
+					(func(value js.Value) {
+						converted, err := crystallineToString(value)
+						if err != nil {
+							crystallineFail(err.Error())
+
+							return
+						}
+
+						v.Game = converted
 					})(value)
 				}
 			},
@@ -48479,6 +48492,7 @@ func crystallineMarshalStorageDirEntry(v *storage.DirEntry) any {
 	out.Set("Level", float64(v.Level))
 	out.Set("Ascendancy", string(v.Ascendancy))
 	out.Set("MainSkill", string(v.MainSkill))
+	out.Set("Game", string(v.Game))
 
 	return out
 }
@@ -52967,6 +52981,8 @@ func crystallineAppendStorageDirEntry(b []byte, v *storage.DirEntry, ok *bool) [
 	b = crystallineAppendString(b, string(v.Ascendancy))
 	b = append(b, ",\"MainSkill\":"...)
 	b = crystallineAppendString(b, string(v.MainSkill))
+	b = append(b, ",\"Game\":"...)
+	b = crystallineAppendString(b, string(v.Game))
 
 	return append(b, '}')
 }
@@ -69011,7 +69027,7 @@ func crystallineToSliceOfString(value js.Value) ([]string, error) {
 	return out, nil
 }
 
-var crystallineKnownStorageDirEntry = map[string]bool{"Name": true, "Type": true, "Class": true, "LastEdit": true, "Level": true, "Ascendancy": true, "MainSkill": true}
+var crystallineKnownStorageDirEntry = map[string]bool{"Name": true, "Type": true, "Class": true, "LastEdit": true, "Level": true, "Ascendancy": true, "MainSkill": true, "Game": true}
 
 func crystallineToStorageDirEntry(value js.Value) (storage.DirEntry, error) {
 	var out storage.DirEntry
@@ -69103,6 +69119,15 @@ func crystallineToStorageDirEntry(value js.Value) (storage.DirEntry, error) {
 		}
 
 		out.MainSkill = converted
+	}
+
+	if property := value.Get("Game"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToString(property)
+		if err != nil {
+			return out, errors.New("storage.DirEntry.Game: " + err.Error())
+		}
+
+		out.Game = converted
 	}
 
 	return out, nil

@@ -35,6 +35,7 @@ export declare namespace builds {
     Level: number;
     Ascendancy: string;
     MainSkill: string;
+    Game: string;
     /** Releases the Go resources behind this wrapper. */
     release(): void;
     [Symbol.dispose](): void;
@@ -4064,6 +4065,7 @@ export declare namespace storage {
     readonly Level: number;
     readonly Ascendancy: string;
     readonly MainSkill: string;
+    readonly Game: string;
   }
   type DirEntryType = "file" | "dir";
   const DirEntryType: {

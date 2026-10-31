@@ -104,7 +104,10 @@
       return syncWrap
         ?.ImportCode(text)
         .then(async (foreign) => {
-          if (await openForeign(foreign, () => syncWrap?.ClearBuild())) return;
+          if (await openForeign(foreign, () => syncWrap?.ClearBuild())) {
+            currentBuildPath.current = '';
+            return;
+          }
           resetAccountSession();
           if (how === 'new') {
             currentBuildPath.current = '';

@@ -26,6 +26,7 @@ const linkDownload = (text: string): Download | undefined => {
 /* BuildSiteTools.lua:91-98 */
 export const protocolDownload = (raw: string): Download | undefined => {
   for (const site of SITES) {
+    if (site.game) continue;
     const rest = new RegExp(`^pob:[/\\\\]*${site.id.toLowerCase()}[/\\\\]+(.+)`).exec(raw)?.[1];
     if (rest === undefined) continue;
     if (DIRECT.has(site.id)) return { site: site.label, url: `https://${site.download.replace('$1', rest)}` };
@@ -121,8 +122,9 @@ export const openImportLink = async (text: string) => {
   const protocol = protocolDownload(text) ?? openedDownload(text);
   const code = protocol ? await download(protocol) : await linkCode(text);
   opening.modFlag = true;
-  if (await openForeign(await syncWrap?.ImportCode(code), () => syncWrap?.ClearBuild())) return;
+  const foreign = await openForeign(await syncWrap?.ImportCode(code), () => syncWrap?.ClearBuild());
   currentBuildPath.current = '';
+  if (foreign) return;
   unsavedName.imported = true;
   resetAccountSession();
 };

@@ -8,6 +8,7 @@ export type Site = {
   download: string;
   link?: string;
   post?: { url: string; fields: string; codeOut: string };
+  game?: 'poe2';
 };
 
 export const SITES: Site[] = [
@@ -63,6 +64,34 @@ export const SITES: Site[] = [
     download: 'poedb.tw/pob/$1/raw',
     link: 'https://poedb.tw/pob/',
     post: { url: 'https://poedb.tw/pob/api/gen', fields: '', codeOut: '' }
+  },
+  // BuildSiteTools.lua:19-35 (PoB-PoE2); pobb.in and the pastebins are the same rows as PoE1's
+  {
+    label: 'Maxroll (PoE2)',
+    id: 'Maxroll2',
+    match: /^https:\/\/maxroll\.gg\/poe2\/pob\/.*/,
+    regex: /maxroll\.gg\/poe2\/pob\/(.+)\s*$/,
+    download: 'maxroll.gg/poe2/api/pob/$1',
+    link: 'https://maxroll.gg/poe2/pob/',
+    game: 'poe2'
+  },
+  {
+    label: 'poe.ninja (PoE2)',
+    id: 'PoeNinja2',
+    match: /^https:\/\/poe2?\.ninja\/?p?o?e?2?\/pob\/.+/,
+    regex: /poe2?\.ninja\/?p?o?e?2?\/pob\/(.+)\s*$/,
+    download: 'poe.ninja/poe2/pob/raw/$1',
+    link: 'https://poe.ninja/poe2/pob/',
+    game: 'poe2'
+  },
+  {
+    label: 'poe2db.tw',
+    id: 'PoE2DB',
+    match: /^https:\/\/poe2db\.tw\/pob\/.+/,
+    regex: /poe2db\.tw\/pob\/(.+)\s*$/,
+    download: 'poe2db.tw/pob/$1/raw',
+    link: 'https://poe2db.tw/pob/',
+    game: 'poe2'
   }
 ];
 /* ImportTab.lua:522-532 */

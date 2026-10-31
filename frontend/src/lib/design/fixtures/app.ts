@@ -11,6 +11,8 @@ export type SavedBuild = {
   life: number;
   es: number;
   version: string;
+  // which other game saved it; absent for a PoE1 build
+  game?: string;
 };
 
 export const buildList = {

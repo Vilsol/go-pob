@@ -148,6 +148,72 @@
       ]
     },
     {
+      "name": "build: PoB-PoE2's Maxroll downloadURL, cached for a week",
+      "upstream": { "body": "code" },
+      "steps": [
+        {
+          "path": "/api/build?site=Maxroll2&id=m5ui4t0x",
+          "status": 200,
+          "headers": {
+            "Cache-Control": "public, max-age=604800, s-maxage=604800"
+          }
+        }
+      ],
+      "fetch": [
+        {
+          "url": "https://maxroll.gg/poe2/api/pob/m5ui4t0x",
+          "headers": { "User-Agent": "go-pob (+https://pob.gg)" }
+        }
+      ]
+    },
+    {
+      "name": "build: PoB-PoE2's poe.ninja downloadURL, cached for a week",
+      "upstream": { "body": "code" },
+      "steps": [
+        {
+          "path": "/api/build?site=PoeNinja2&id=Abc1",
+          "status": 200,
+          "headers": {
+            "Cache-Control": "public, max-age=604800, s-maxage=604800"
+          }
+        }
+      ],
+      "fetch": [
+        {
+          "url": "https://poe.ninja/poe2/pob/raw/Abc1",
+          "headers": { "User-Agent": "go-pob (+https://pob.gg)" }
+        }
+      ]
+    },
+    {
+      "name": "build: PoB-PoE2's poe2db.tw downloadURL, cached for minutes",
+      "upstream": { "body": "code" },
+      "steps": [
+        {
+          "path": "/api/build?site=PoE2DB&id=abc",
+          "status": 200,
+          "headers": { "Cache-Control": "public, max-age=300, s-maxage=300" }
+        }
+      ],
+      "fetch": [
+        {
+          "url": "https://poe2db.tw/pob/abc/raw",
+          "headers": { "User-Agent": "go-pob (+https://pob.gg)" }
+        }
+      ]
+    },
+    {
+      "name": "build: PoB-PoE2's poe.ninja has no character path",
+      "steps": [
+        {
+          "path": "/api/build?site=PoeNinja2&id=overview%2Fcode&account=a&name=b&overview=c&type=d",
+          "status": 400,
+          "text": "malformed poe.ninja (PoE2) id"
+        }
+      ],
+      "fetch": []
+    },
+    {
       "name": "build: rebuilds poe.ninja's character link from its four fields, cached for minutes",
       "upstream": { "body": "code" },
       "steps": [
