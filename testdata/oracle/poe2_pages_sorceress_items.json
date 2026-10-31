@@ -1,0 +1,67 @@
+{
+  "groups":[{
+      "enabled":true,
+      "gems":[{
+          "color":"^x7070FF",
+          "count":1,
+          "enabled":true,
+          "level":10,
+          "name":"Spark",
+          "quality":5,
+          "support":false
+        },{
+          "color":"^x7070FF",
+          "count":1,
+          "enabled":false,
+          "level":1,
+          "name":"Rapid Casting I",
+          "quality":0,
+          "support":true
+        }],
+      "includeInFullDPS":true,
+      "label":"Spark",
+      "slot":"",
+      "source":""
+    },{
+      "enabled":false,
+      "gems":[{
+          "color":"^x7070FF",
+          "count":1,
+          "enabled":true,
+          "level":8,
+          "name":"Fireball",
+          "quality":0,
+          "support":false
+        }],
+      "includeInFullDPS":false,
+      "label":"Backup",
+      "slot":"",
+      "source":""
+    }],
+  "items":[{
+      "id":4,
+      "lines":[["^x8888FF+2 to Level of all Spell Skills","^x8888FF50% increased Spell Damage"]],
+      "name":["^xFFFF77Glyph Pillar","^xFFFF77Ashen Staff"],
+      "rarity":"RARE",
+      "slot":"Weapon 1 Swap"
+    },{
+      "id":1,
+      "lines":[["^xB8DAF1Bonded: +20 to maximum Life","^xB8DAF1Bonded: +20 to maximum Mana","^xB8DAF1+14% to Fire Resistance"],["^x8888FF+120 to Armour","^xA2916085% increased Armour","^x8888FF+90 to maximum Life","^xB8DAF1+35% to Fire Resistance"]],
+      "name":["^xFFFF77Storm Shell","^xFFFF77Vaal Cuirass"],
+      "rarity":"RARE",
+      "slot":"Body Armour"
+    },{
+      "id":5,
+      "lines":[["^xB8DAF1+5% to all Elemental Resistances"],["^x8888FF+40 to maximum Mana","^x8888FF+20% to Lightning Resistance"],["^xDD0022Corrupted"]],
+      "name":["^xFFFF77Gloom Loop","^xFFFF77Iron Ring"],
+      "rarity":"RARE",
+      "slot":"Ring 1"
+    },{
+      "id":6,
+      "lines":[["^x8888FF12% increased Spell Damage"]],
+      "name":["^x8888FFSapphire of Thought"],
+      "rarity":"MAGIC",
+      "slot":"Jewel 61419"
+    }],
+  "useSecondWeaponSet":true
+}

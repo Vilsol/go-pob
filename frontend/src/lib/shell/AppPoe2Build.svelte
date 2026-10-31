@@ -22,8 +22,11 @@
     type ConfigValue2,
     type Option2
   } from '$lib/display/configurations2';
-  import type { Poe2Calc, Worker2Type } from '$lib/go/sync_worker2';
+  import type { Poe2Calc, Poe2Items as Poe2ItemsData, Poe2SkillGroup, Worker2Type } from '$lib/go/sync_worker2';
   import SkillTree2 from '$lib/components/skill-tree/SkillTree2.svelte';
+  import Poe2Calcs from './Poe2Calcs.svelte';
+  import Poe2Items from './Poe2Items.svelte';
+  import Poe2Skills from './Poe2Skills.svelte';
   import type { Tree2 } from '$lib/components/skill-tree/scene2';
   import type { Remote } from 'comlink';
 
@@ -89,7 +92,7 @@
   });
   const invalid = (row: Option2) => rel !== undefined && isVariable2(row) && !isEligible2(row, inputs, rel) && isModified2(row, inputs);
 
-  let page = $state<'config' | 'tree'>('config');
+  let page = $state<'config' | 'tree' | 'skills' | 'items' | 'calcs'>('config');
   let treeData = $state<Tree2 | undefined>();
   const worker = async () => (await import('$lib/go/worker2')).poe2Worker();
   $effect(() => {
@@ -97,6 +100,24 @@
     void worker()
       .then((w) => w.TreeData())
       .then((d) => (treeData = d))
+      .catch((err: unknown) => (error = err instanceof Error ? err.message : String(err)));
+  });
+  // what the Calcs, Skills and Items pages read, fetched again for every calculation while one is open; the last
+  // shows meanwhile
+  type Fetched<T> = { for: unknown; data: T } | undefined;
+  let pageData = $state.raw<{ calcs?: Fetched<Record<string, number>>; skills?: Fetched<Poe2SkillGroup[]>; items?: Fetched<Poe2ItemsData> }>({});
+  const fetchers = {
+    calcs: (w: Remote<Worker2Type>): Promise<unknown> => w.CalcsMods(),
+    skills: (w: Remote<Worker2Type>): Promise<unknown> => w.SkillGroups(),
+    items: (w: Remote<Worker2Type>): Promise<unknown> => w.EquippedItems()
+  };
+  $effect(() => {
+    const at = view;
+    const p = page;
+    if ((p !== 'calcs' && p !== 'skills' && p !== 'items') || pageData[p]?.for === at) return;
+    void worker()
+      .then((w) => fetchers[p](w))
+      .then((data) => (pageData = { ...pageData, [p]: { for: at, data } }))
       .catch((err: unknown) => (error = err instanceof Error ? err.message : String(err)));
   });
   const treeClick = async (id: number, right: boolean, hotkey: number, confirmClassChange: boolean, allocMode: number) => {
@@ -202,9 +223,12 @@
       {/if}
     </aside>
 
-    <div class="flex min-w-0 flex-1 flex-col gap-3">
+    <div class="flex min-w-0 flex-1 basis-[320px] flex-col gap-3">
       <div class="flex items-center gap-2" role="tablist" aria-label="PoE2 build pages">
         <Button role="tab" aria-selected={page === 'tree'} onclick={() => (page = 'tree')}>Tree</Button>
+        <Button role="tab" aria-selected={page === 'skills'} onclick={() => (page = 'skills')}>Skills</Button>
+        <Button role="tab" aria-selected={page === 'items'} onclick={() => (page = 'items')}>Items</Button>
+        <Button role="tab" aria-selected={page === 'calcs'} onclick={() => (page = 'calcs')}>Calcs</Button>
         <Button role="tab" aria-selected={page === 'config'} onclick={() => (page = 'config')}>Configuration</Button>
         {#if page === 'tree' && calc.tree}
           <span class="text-14" aria-label="Passive points used">Points: {calc.tree.used}{calc.tree.ascUsed ? ` / Ascendancy: ${calc.tree.ascUsed}` : ''}</span>
@@ -226,6 +250,17 @@
             <span class="note" role="status">Loading the passive tree…</span>
           {/if}
         </div>
+      {:else if page === 'skills'}
+        <Poe2Skills groups={pageData.skills?.data} mainGroup={calc.mainSocketGroup ?? 1} {busy} onmain={(i: number) => setMain('group', i)} />
+      {:else if page === 'items'}
+        <Poe2Items items={pageData.items?.data} {busy} />
+      {:else if page === 'calcs'}
+        <Poe2Calcs
+          {calc}
+          {busy}
+          mods={pageData.calcs?.data}
+          onmaingroup={(i: number) => setMain('group', i)}
+          onmainskill={(i: number) => setMain('skill', i)} />
       {:else if rel}
         <div class="flex min-w-0 flex-1 flex-col gap-3 overflow-y-auto" aria-label="Configuration">
           <div class="flex items-center gap-3">

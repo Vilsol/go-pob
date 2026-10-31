@@ -11,6 +11,8 @@ import type { Tree2 } from '../components/skill-tree/scene2';
 import { TabStorage, type StorageWrite } from '$lib/storage/tabs';
 import { remountStore } from './storage_config';
 import type { SavedStats2 } from '../shell/poe2_save';
+import { calcSections2 } from '../calcs/calc_sections2';
+import { calcsModProps2 } from '../display/calcs2';
 
 // only the data cache bucket; on the web it is its own IndexedDB database, since zenfs allocates inode ids per
 // instance and two instances writing the PoE1 worker's database overwrite each other's files
@@ -92,6 +94,7 @@ export const ClickResult = { Nothing: 0, Changed: 1, ChooseAttribute: 2, Confirm
 export type Poe2Calc = Poe2View & {
   minion?: Record<string, number>;
   skillFlags: Record<string, boolean>;
+  skillData: Record<string, boolean>;
   minionSkillFlags?: Record<string, boolean>;
   socketGroups: Poe2SocketGroup[];
   mainSocketGroup: number;
@@ -102,6 +105,20 @@ export type Poe2Calc = Poe2View & {
 };
 
 export type Poe2Click = { result: number; calc?: Poe2Calc };
+
+/* SkillListControl.lua:78-96, SkillsTab.lua:1351-1361 (PoB-PoE2) */
+export type Poe2SkillGroup = {
+  label: string;
+  slot: string;
+  source: string;
+  enabled: boolean;
+  includeInFullDPS: boolean;
+  gems: { name: string; level: number; quality: number; count: number; enabled: boolean; support: boolean; color: string }[];
+};
+
+/* ItemsTab:AddItemTooltip's title and mod line groups (PoB-PoE2) */
+export type Poe2Item = { slot: string; id: number; rarity: string; name: string[]; lines: string[][] };
+export type Poe2Items = { useSecondWeaponSet: boolean; items: Poe2Item[] };
 
 const toValue = (v: calculator2.ConfigValue): ConfigValue2 | undefined => (v.IsNumber ? v.Number : v.IsBoolean ? v.Boolean : v.IsString ? v.String : undefined);
 
@@ -153,6 +170,7 @@ class PoB2Worker {
       output: { ...out.Output },
       minion: out.Minion ? { ...out.Minion } : undefined,
       skillFlags: { ...out.SkillFlags },
+      skillData: { ...out.SkillData },
       minionSkillFlags: out.MinionSkillFlags ? { ...out.MinionSkillFlags } : undefined,
       socketGroups: (out.SocketGroups ?? []).map((g) => ({ label: g.Label, skills: [...(g.Skills ?? [])] })),
       mainSocketGroup: out.MainSocketGroup,
@@ -245,6 +263,50 @@ class PoB2Worker {
     if (!this.calc) throw new Error('no PoE2 build is open');
     const changed = (redo ? this.calc.Redo() : this.calc.Undo()).unwrap();
     return changed ? this.view() : undefined;
+  }
+
+  private calcsQuery?: exposition.CalcsModQuery;
+
+  /* CalcFormat.lua:46-60 (PoB-PoE2): every Calcs page {p:mod:n} entry over the last calculation */
+  CalcsMods(): Record<string, number> {
+    if (!this.calc) throw new Error('no PoE2 build is open');
+    this.calcsQuery ??= { Entries: calcsModProps2(calcSections2) };
+    return { ...this.calc.CalcsMods(this.calcsQuery).unwrap() };
+  }
+
+  SkillGroups(): Poe2SkillGroup[] {
+    if (!this.calc) throw new Error('no PoE2 build is open');
+    return (this.calc.SkillGroups().unwrap() ?? []).map((g) => ({
+      label: g.Label,
+      slot: g.Slot,
+      source: g.Source,
+      enabled: g.Enabled,
+      includeInFullDPS: g.IncludeInFullDPS,
+      gems: (g.Gems ?? []).map((gem) => ({
+        name: gem.Name,
+        level: gem.Level,
+        quality: gem.Quality,
+        count: gem.Count,
+        enabled: gem.Enabled,
+        support: gem.Support,
+        color: gem.Color
+      }))
+    }));
+  }
+
+  EquippedItems(): Poe2Items {
+    if (!this.calc) throw new Error('no PoE2 build is open');
+    const v = this.calc.EquippedItems().unwrap();
+    return {
+      useSecondWeaponSet: !!v?.UseSecondWeaponSet,
+      items: (v?.Items ?? []).map((i) => ({
+        slot: i.Slot,
+        id: i.ID,
+        rarity: i.Rarity,
+        name: [...(i.Name ?? [])],
+        lines: (i.Lines ?? []).map((g) => [...(g ?? [])])
+      }))
+    };
   }
 
   async ClearDataCache(): Promise<number> {

@@ -483,6 +483,24 @@ tasks:
       - '{{if ne .CHECK "1"}}{{.NICE}} mise x --cd {{.POB2}}/src -- luajit {{.HERE}}/oracle/poe2_sidebar.lua {{.HERE}}/wasm2/exposition/testdata/sorceress_spark.xml {{.HERE}}/testdata/oracle/poe2_sidebar_sorceress_spark.json{{end}}'
       - '{{if ne .CHECK "1"}}{{.NICE}} mise x --cd {{.POB2}}/src -- luajit {{.HERE}}/oracle/poe2_sidebar.lua {{.HERE}}/wasm2/exposition/testdata/sorceress_three_spells.xml {{.HERE}}/testdata/oracle/poe2_sidebar_sorceress_three_spells.json{{end}}'
 
+  calc-sections-poe2:
+    desc: "Regenerate the PoE2 Calcs page's sections from the pinned PoB-PoE2's CalcSections.lua, and the Calcs, Skills and Items pages' fixtures (CHECK=1 fails when the sections are stale instead)"
+    vars:
+      POB2:
+        sh: 'realpath "{{.POB2_DIR | default .POB2_DEFAULT}}"'
+      HERE:
+        sh: pwd
+      OUT: '{{.HERE}}/frontend/src/lib/calcs/calc_sections2.ts'
+      GEN: '{{if eq .CHECK "1"}}{{.HERE}}/.task-calc-sections2.ts{{else}}{{.OUT}}{{end}}'
+    cmds:
+      - task: pob-pin
+        vars: {GAME: poe2}
+      - defer: rm -f {{.HERE}}/.task-calc-sections2.ts
+      - '{{.NICE}} mise x --cd {{.POB2}}/src -- luajit {{.HERE}}/oracle/calc_sections2.lua {{.GEN}}'
+      - '{{if eq .CHECK "1"}}diff -u {{.OUT}} {{.GEN}}{{end}}'
+      - '{{if ne .CHECK "1"}}{{.NICE}} mise x --cd {{.POB2}}/src -- luajit {{.HERE}}/oracle/poe2_calcs.lua {{.HERE}}/wasm2/exposition/testdata/sorceress_spark.xml {{.HERE}}/testdata/oracle/poe2_calcs_sorceress_spark.json{{end}}'
+      - '{{if ne .CHECK "1"}}{{.NICE}} mise x --cd {{.POB2}}/src -- luajit {{.HERE}}/oracle/poe2_pages.lua {{.HERE}}/wasm2/exposition/testdata/sorceress_items.xml {{.HERE}}/testdata/oracle/poe2_pages_sorceress_items.json{{end}}'
+
   rich-notes-pob:
     desc: "Rewrite the go-pob-written <RichNotes> build fixture and record what the pinned PoB reads from it"
     vars:

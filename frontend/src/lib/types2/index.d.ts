@@ -60,11 +60,24 @@ export declare namespace config {
   function InitLogging(withTime: boolean): void;
 }
 export declare namespace exposition {
+  interface CalcsModEntry {
+    readonly Cfg: string;
+    readonly ModSource: string;
+    readonly Enemy: boolean;
+    readonly ModName?: Array<string>;
+    readonly ModType: string;
+    readonly Actor: string;
+  }
+  interface CalcsModQuery {
+    readonly Entries?: Record<string, Readonly<exposition.CalcsModEntry>>;
+  }
   interface Calculator {
     AllocateAttributeNode(id: number, attributeIndex: number, allocMode: number): Result<void>;
+    CalcsMods(query: exposition.CalcsModQuery): Result<(Record<string, number> | undefined)>;
     Calculate(): Promise<Result<(exposition.Outputs | undefined)>>;
     ClickNode(id: number, right: boolean, hotkey: number, confirmClassChange: boolean, allocMode: number): Result<number>;
     ConfigRelevance(query: calculator2.ConfigRelevance): Result<calculator2.ConfigRelevance>;
+    EquippedItems(): Result<(exposition.ItemsView | undefined)>;
     HoverNode(id: number, allocMode: number): exposition.TreeHover;
     Redo(): Result<boolean>;
     Serialize(): Result<string>;
@@ -72,11 +85,23 @@ export declare namespace exposition {
     SetConfigInput(name: string, value: calculator2.ConfigValue, isDefault: boolean): void;
     SetMainActiveSkill(index: number): void;
     SetMainSocketGroup(index: number): void;
+    SkillGroups(): Result<(Array<exposition.SkillGroupView> | undefined)>;
     TreeState(): Result<(exposition.TreeState | undefined)>;
     Undo(): Result<boolean>;
     /** Releases the Go resources behind this wrapper. */
     release(): void;
     [Symbol.dispose](): void;
+  }
+  interface ItemView {
+    readonly Slot: string;
+    readonly ID: number;
+    readonly Name?: Array<string>;
+    readonly Rarity: string;
+    readonly Lines?: Array<Array<string> | undefined>;
+  }
+  interface ItemsView {
+    readonly UseSecondWeaponSet: boolean;
+    readonly Items?: Array<exposition.ItemView>;
   }
   interface Outputs {
     readonly Output?: Record<string, number>;
@@ -86,6 +111,7 @@ export declare namespace exposition {
     readonly Level: number;
     readonly SkillFlags?: Record<string, boolean>;
     readonly MinionSkillFlags?: Record<string, boolean>;
+    readonly SkillData?: Record<string, boolean>;
     readonly SocketGroups?: Array<calculator2.SocketGroupView>;
     readonly MainSocketGroup: number;
     readonly MainActiveSkill: number;
@@ -100,6 +126,25 @@ export declare namespace exposition {
   interface SavedStat {
     readonly Stat: string;
     readonly Value: number;
+  }
+  interface SkillGemView {
+    readonly Name: string;
+    readonly Level: number;
+    readonly Quality: number;
+    readonly Count: number;
+    readonly Enabled: boolean;
+    readonly Support: boolean;
+    readonly Color: string;
+  }
+  interface SkillGroupView {
+    readonly Label: string;
+    readonly Slot: string;
+    readonly Source: string;
+    readonly Enabled: boolean;
+    readonly IncludeInFullDPS: boolean;
+    readonly Set1: boolean;
+    readonly Set2: boolean;
+    readonly Gems?: Array<exposition.SkillGemView>;
   }
   interface TreeHover {
     readonly Path?: Array<number>;

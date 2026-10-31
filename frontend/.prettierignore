@@ -19,3 +19,4 @@ src/lib/display/config_options_generated2.ts
 src/lib/design/fixtures/*.json
 
 src/lib/design/testdata/*.json
+src/lib/calcs/calc_sections2.ts

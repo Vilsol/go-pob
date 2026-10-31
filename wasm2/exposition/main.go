@@ -27,6 +27,12 @@ func Exports(r bind.Registry) {
 	r.Type(TreeHover{}, bind.Plain())
 	r.Type(SavedStat{}, bind.Plain())
 	r.Type(SavedFullDPS{}, bind.Plain())
+	r.Type(CalcsModQuery{}, bind.Plain())
+	r.Type(CalcsModEntry{}, bind.Plain())
+	r.Type(SkillGroupView{}, bind.Plain())
+	r.Type(SkillGemView{}, bind.Plain())
+	r.Type(ItemsView{}, bind.Plain())
+	r.Type(ItemView{}, bind.Plain())
 
 	r.Func(ParseBuild)
 	r.Func(PassiveTreeJSON, bind.AsPromise())

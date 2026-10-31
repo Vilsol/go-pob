@@ -39,6 +39,7 @@ type Calculator struct {
 	build *pob2.PathOfBuilding2
 	env   *calculator2.Environment
 	used  *calculator2.UsedTables
+	items *calculator2.ItemsTab
 	// undo is the spec's undo handler, reset on the first calculation as PassiveSpec:Load resets it.
 	undo *tree2.UndoHandler
 }
@@ -54,7 +55,9 @@ type Outputs struct {
 	// SkillFlags is the main skill's activeEffect.statSet.skillFlags; MinionSkillFlags the minion's.
 	SkillFlags       map[string]bool
 	MinionSkillFlags map[string]bool
-	SocketGroups     []calculator2.SocketGroupView
+	// SkillData is the main skill's skillData keys Lua reads as truthy.
+	SkillData    map[string]bool
+	SocketGroups []calculator2.SocketGroupView
 	// MainSocketGroup and MainActiveSkill are 1-based, as the calculation resolved them.
 	MainSocketGroup int
 	MainActiveSkill int
@@ -130,16 +133,30 @@ func statSetFlags(skill *calculator2.ActiveSkill) map[string]bool {
 	return out
 }
 
+func truthySkillData(skill *calculator2.ActiveSkill) map[string]bool {
+	out := map[string]bool{}
+	if skill == nil {
+		return out
+	}
+	for k, v := range skill.SkillData {
+		if b, ok := v.(bool); v != nil && (!ok || b) {
+			out[k] = true
+		}
+	}
+	return out
+}
+
 func (c *Calculator) Calculate() (*Outputs, error) {
 	t, err := loadTree()
 	if err != nil {
 		return nil, err
 	}
-	env, err := calculator2.BuildOutput(c.build, calculator2.Options{Tree: t, Items: calculator2.NewItemsTab(c.build, t, nil)})
+	items := calculator2.NewItemsTab(c.build, t, nil)
+	env, err := calculator2.BuildOutput(c.build, calculator2.Options{Tree: t, Items: items})
 	if err != nil {
 		return nil, err
 	}
-	c.env, c.used = env, calculator2.BuildOutputUsed(env)
+	c.env, c.used, c.items = env, calculator2.BuildOutputUsed(env), items
 	if c.undo == nil {
 		c.undo = &tree2.UndoHandler{}
 		c.undo.ResetUndo(env.Spec)
@@ -150,6 +167,7 @@ func (c *Calculator) Calculate() (*Outputs, error) {
 		AscendClassName: env.Spec.CurAscendClassName,
 		Level:           env.Player.Level,
 		SkillFlags:      statSetFlags(env.Player.MainSkill),
+		SkillData:       truthySkillData(env.Player.MainSkill),
 		SocketGroups:    calculator2.SocketGroupViews(env),
 		MainSocketGroup: env.MainSocketGroup,
 		ConfigInputs:    calculator2.ConfigInputs(c.build),

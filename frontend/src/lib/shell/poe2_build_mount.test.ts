@@ -202,3 +202,86 @@ describe('the PoE2 tree undo and redo', () => {
     expect(issued).toEqual(['TreeUndo(false)', 'TreeUndo(true)']);
   }, 120_000);
 });
+
+// the values are PoB-PoE2's Calcs tab over its main calculation: oracle/poe2_calcs.lua on the pinned checkout
+describe('the PoE2 Calcs page', () => {
+  it("shows PoB-PoE2's Life section cells and recalculates with the build", async () => {
+    const { pobPlain } = await import('$lib/design/pob_text');
+    const oracle = JSON.parse(await readFile(resolve(ORACLE, 'poe2_calcs_sorceress_spark.json'), 'utf8')) as { cells: Record<string, string> };
+    poe2Build.set(await worker2Instance.Open(await fixture('sorceress_spark.xml')));
+    issued.length = 0;
+    const page = render(AppPoe2Build, { view: get(poe2Build)! });
+    await fireEvent.click(page.getByRole('tab', { name: 'Calcs' }));
+    const life = await vi.waitFor(() => within(page.getByRole('region', { name: 'Calculations' })).getByRole('region', { name: 'Life' }), { timeout: 60_000 });
+    const row = (label: string) => [...life.querySelectorAll<HTMLElement>('[data-key]')].find((r) => r.textContent?.trim().startsWith(label));
+    const cells = (r: HTMLElement | undefined) => [...(r?.querySelectorAll<HTMLElement>('.font-mono > span') ?? [])].map((c) => c.textContent?.trim());
+    const want = Object.entries(oracle.cells)
+      .filter(([k]) => k.startsWith('Life:0:'))
+      .sort(([a], [b]) => Number(a.split(':')[2]) - Number(b.split(':')[2]))
+      .map(([, v]) => pobPlain(v));
+    const shown = [...life.querySelectorAll<HTMLElement>('[data-key]')].flatMap((r) => cells(r));
+    expect(shown.length).toBeGreaterThan(5);
+    expect(shown).toEqual(want);
+    expect(cells(row('Base from Gear'))).toEqual(['90']);
+    expect(issued).toEqual(['CalcsMods()']);
+
+    // the mod cells follow a recalculation
+    const set = await worker2Instance.SetConfigOption('resistancePenalty', 0);
+    poe2Build.set(set);
+    await page.rerender({ view: get(poe2Build)! });
+    await vi.waitFor(() => expect(issued).toEqual(['CalcsMods()', 'CalcsMods()']));
+    const resists = within(page.getByRole('region', { name: 'Calculations' })).getByRole('region', { name: 'Resists' });
+    await vi.waitFor(() => expect(resists.textContent).toContain('45%'));
+    await worker2Instance.SetConfigOption('resistancePenalty', -60);
+  }, 120_000);
+});
+
+// the values are PoB-PoE2's Skills and Items tabs for the fixture: oracle/poe2_pages.lua on the pinned checkout
+describe('the PoE2 Skills and Items pages', () => {
+  type Pages = {
+    groups: { label: string; gems: { name: string; level: number; quality: number }[] }[];
+    items: { slot: string; name: string[]; lines: string[][] }[];
+  };
+  const pages = async () => JSON.parse(await readFile(resolve(ORACLE, 'poe2_pages_sorceress_items.json'), 'utf8')) as Pages;
+
+  it("lists PoB-PoE2's socket groups and gems, and setting the main group recalculates", async () => {
+    const oracle = await pages();
+    poe2Build.set(await worker2Instance.Open(await fixture('sorceress_items.xml')));
+    issued.length = 0;
+    const page = render(AppPoe2Build, { view: get(poe2Build)! });
+    await fireEvent.click(page.getByRole('tab', { name: 'Skills' }));
+    const list = await vi.waitFor(() => page.getByRole('listbox', { name: 'Socket groups' }));
+    expect(
+      within(list)
+        .getAllByRole('option')
+        .map((o) => o.textContent?.trim())
+    ).toEqual([`${oracle.groups[0].label} (Active) (FullDPS)`, `${oracle.groups[1].label} (Disabled)`]);
+    const gems = () =>
+      [...page.container.querySelectorAll<HTMLElement>('[data-gem]')].map((r) => [...r.querySelectorAll('td')].map((c) => c.textContent?.trim()));
+    expect(gems().map((g) => g.slice(0, 3))).toEqual(oracle.groups[0].gems.map((g) => [g.name, String(g.level), String(g.quality)]));
+
+    await fireEvent.click(within(list).getAllByRole('option')[1]);
+    expect(gems().map((g) => g[0])).toEqual(oracle.groups[1].gems.map((g) => g.name));
+    await fireEvent.click(page.getByRole('button', { name: 'Set as main skill' }));
+    await vi.waitFor(() => expect((get(poe2Build) as Poe2Calc | undefined)?.mainSocketGroup).toBe(2));
+    expect(issued).toEqual(['SkillGroups()', 'SetMainSocketGroup(2)']);
+    await page.rerender({ view: get(poe2Build)! });
+    await vi.waitFor(() => expect(issued).toEqual(['SkillGroups()', 'SetMainSocketGroup(2)', 'SkillGroups()']));
+    await vi.waitFor(() => expect(within(list).getAllByRole('option')[1].textContent?.trim()).toBe(`${oracle.groups[1].label} (Disabled) (Forced Active)`));
+  }, 120_000);
+
+  it("shows PoB-PoE2's equipped items on the weapon set in use, with their mod lines", async () => {
+    const { pobPlain } = await import('$lib/design/pob_text');
+    const oracle = await pages();
+    poe2Build.set(await worker2Instance.Open(await fixture('sorceress_items.xml')));
+    const page = render(AppPoe2Build, { view: get(poe2Build)! });
+    await fireEvent.click(page.getByRole('tab', { name: 'Items' }));
+    await vi.waitFor(() => page.getByRole('region', { name: 'Body Armour' }));
+    const cards = [...page.container.querySelectorAll<HTMLElement>('[data-slot]')];
+    expect(cards.map((c) => c.dataset.slot)).toEqual(oracle.items.map((i) => i.slot));
+    expect(cards.map((c) => [...c.querySelectorAll('[data-lines]')].map((g) => [...g.children].map((l) => l.textContent)))).toEqual(
+      oracle.items.map((i) => i.lines.map((g) => g.map(pobPlain)))
+    );
+    expect(page.getByLabelText('Weapon set').textContent).toBe('Weapon Set 2');
+  }, 120_000);
+});

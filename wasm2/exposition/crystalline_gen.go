@@ -1803,6 +1803,98 @@ func crystallineMarshalCalculator2SocketGroupView(v *calculator2.SocketGroupView
 	return out
 }
 
+func crystallineMarshalExpositionCalcsModEntry(v *CalcsModEntry) any {
+	if v == nil {
+		return nil
+	}
+
+	out := crystallineObjects.New()
+
+	out.Set("Cfg", string(v.Cfg))
+	out.Set("ModSource", string(v.ModSource))
+	out.Set("Enemy", bool(v.Enemy))
+	out.Set("ModName", crystallineJSON(func(b []byte, ok *bool) []byte {
+		if items0 := v.ModName; items0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '[')
+			for i0 := range items0 {
+				if i0 > 0 {
+					b = append(b, ',')
+				}
+
+				b = crystallineAppendString(b, string(items0[i0]))
+			}
+
+			b = append(b, ']')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			items := v.ModName
+			if items == nil {
+				return nil
+			}
+
+			out := make([]any, 0, len(items))
+			for i := range items {
+				out = append(out, string(items[i]))
+			}
+
+			return out
+		}()
+	}))
+	out.Set("ModType", string(v.ModType))
+	out.Set("Actor", string(v.Actor))
+
+	return out
+}
+
+func crystallineMarshalExpositionCalcsModQuery(v *CalcsModQuery) any {
+	if v == nil {
+		return nil
+	}
+
+	out := crystallineObjects.New()
+
+	out.Set("Entries", crystallineJSON(func(b []byte, ok *bool) []byte {
+		if entries0 := v.Entries; entries0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '{')
+			first0 := true
+			for k0, v0 := range entries0 {
+				if !first0 {
+					b = append(b, ',')
+				}
+
+				first0 = false
+				b = crystallineAppendString(b, string(k0))
+				b = append(b, ':')
+				b = crystallineAppendExpositionCalcsModEntry(b, &v0, ok)
+			}
+
+			b = append(b, '}')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			if v.Entries == nil {
+				return nil
+			}
+
+			out := crystallineObjects.New()
+			for k, v := range v.Entries {
+				out.Set(string(k), crystallineMarshalExpositionCalcsModEntry(&v))
+			}
+
+			return out
+		}()
+	}))
+
+	return out
+}
+
 var crystallineMarshalExpositionCalculatorShape js.Value
 
 func crystallineMarshalExpositionCalculator(v *Calculator) any {
@@ -1823,7 +1915,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 				switch field {
 				}
 			},
-			[]string{"AllocateAttributeNode", "Calculate", "ClickNode", "ConfigRelevance", "HoverNode", "Redo", "Serialize", "SerializeWithStats", "SetConfigInput", "SetMainActiveSkill", "SetMainSocketGroup", "TreeState", "Undo"},
+			[]string{"AllocateAttributeNode", "CalcsMods", "Calculate", "ClickNode", "ConfigRelevance", "EquippedItems", "HoverNode", "Redo", "Serialize", "SerializeWithStats", "SetConfigInput", "SetMainActiveSkill", "SetMainSocketGroup", "SkillGroups", "TreeState", "Undo"},
 			func(v *Calculator, method int, args []js.Value) any {
 				switch method {
 				case 0:
@@ -1854,6 +1946,56 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 
 					return crystallineOk(nil)
 				case 1:
+					if len(args) != 1 {
+						return crystallineFail("CalcsMods: expected 1 arguments, got " + strconv.Itoa(len(args)))
+					}
+
+					a0, err := crystallineToExpositionCalcsModQuery(args[0])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					r0, r1 := v.CalcsMods(a0)
+
+					if r1 != nil {
+						return crystallineErr(r1)
+					}
+
+					return crystallineOk(crystallineJSON(func(b []byte, ok *bool) []byte {
+						if entries0 := r0; entries0 == nil {
+							b = append(b, "null"...)
+						} else {
+							b = append(b, '{')
+							first0 := true
+							for k0, v0 := range entries0 {
+								if !first0 {
+									b = append(b, ',')
+								}
+
+								first0 = false
+								b = crystallineAppendString(b, string(k0))
+								b = append(b, ':')
+								b = crystallineAppendNumber(b, float64(v0), ok)
+							}
+
+							b = append(b, '}')
+						}
+						return b
+					}, func() any {
+						return func() any {
+							if r0 == nil {
+								return nil
+							}
+
+							out := crystallineObjects.New()
+							for k, v := range r0 {
+								out.Set(string(k), float64(v))
+							}
+
+							return out
+						}()
+					}))
+				case 2:
 					if len(args) != 0 {
 						return crystallineFail("Calculate: expected 0 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -1872,7 +2014,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 							return crystallineMarshalExpositionOutputs(r0)
 						}))
 					})
-				case 2:
+				case 3:
 					if len(args) != 5 {
 						return crystallineFail("ClickNode: expected 5 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -1909,7 +2051,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(float64(r0))
-				case 3:
+				case 4:
 					if len(args) != 1 {
 						return crystallineFail("ConfigRelevance: expected 1 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -1931,7 +2073,24 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}, func() any {
 						return crystallineMarshalCalculator2ConfigRelevance(&r0)
 					}))
-				case 4:
+				case 5:
+					if len(args) != 0 {
+						return crystallineFail("EquippedItems: expected 0 arguments, got " + strconv.Itoa(len(args)))
+					}
+
+					r0, r1 := v.EquippedItems()
+
+					if r1 != nil {
+						return crystallineErr(r1)
+					}
+
+					return crystallineOk(crystallineJSON(func(b []byte, ok *bool) []byte {
+						b = crystallineAppendExpositionItemsView(b, r0, ok)
+						return b
+					}, func() any {
+						return crystallineMarshalExpositionItemsView(r0)
+					}))
+				case 6:
 					if len(args) != 2 {
 						return crystallineFail("HoverNode: expected 2 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -1954,7 +2113,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}, func() any {
 						return crystallineMarshalExpositionTreeHover(&r0)
 					})
-				case 5:
+				case 7:
 					if len(args) != 0 {
 						return crystallineFail("Redo: expected 0 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -1966,7 +2125,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(bool(r0))
-				case 6:
+				case 8:
 					if len(args) != 0 {
 						return crystallineFail("Serialize: expected 0 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -1978,7 +2137,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(string(r0))
-				case 7:
+				case 9:
 					if len(args) != 3 {
 						return crystallineFail("SerializeWithStats: expected 3 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -2005,7 +2164,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(string(r0))
-				case 8:
+				case 10:
 					if len(args) != 3 {
 						return crystallineFail("SetConfigInput: expected 3 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -2028,7 +2187,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					v.SetConfigInput(a0, a1, a2)
 
 					return nil
-				case 9:
+				case 11:
 					if len(args) != 1 {
 						return crystallineFail("SetMainActiveSkill: expected 1 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -2041,7 +2200,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					v.SetMainActiveSkill(a0)
 
 					return nil
-				case 10:
+				case 12:
 					if len(args) != 1 {
 						return crystallineFail("SetMainSocketGroup: expected 1 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -2054,7 +2213,49 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					v.SetMainSocketGroup(a0)
 
 					return nil
-				case 11:
+				case 13:
+					if len(args) != 0 {
+						return crystallineFail("SkillGroups: expected 0 arguments, got " + strconv.Itoa(len(args)))
+					}
+
+					r0, r1 := v.SkillGroups()
+
+					if r1 != nil {
+						return crystallineErr(r1)
+					}
+
+					return crystallineOk(crystallineJSON(func(b []byte, ok *bool) []byte {
+						if items0 := r0; items0 == nil {
+							b = append(b, "null"...)
+						} else {
+							b = append(b, '[')
+							for i0 := range items0 {
+								if i0 > 0 {
+									b = append(b, ',')
+								}
+
+								b = crystallineAppendExpositionSkillGroupView(b, &items0[i0], ok)
+							}
+
+							b = append(b, ']')
+						}
+						return b
+					}, func() any {
+						return func() any {
+							items := r0
+							if items == nil {
+								return nil
+							}
+
+							out := make([]any, 0, len(items))
+							for i := range items {
+								out = append(out, crystallineMarshalExpositionSkillGroupView(&items[i]))
+							}
+
+							return out
+						}()
+					}))
+				case 14:
 					if len(args) != 0 {
 						return crystallineFail("TreeState: expected 0 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -2071,7 +2272,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}, func() any {
 						return crystallineMarshalExpositionTreeState(r0)
 					}))
-				case 12:
+				case 15:
 					if len(args) != 0 {
 						return crystallineFail("Undo: expected 0 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -2091,6 +2292,150 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 	}
 
 	return crystallineMarshalExpositionCalculatorShape.Invoke(crystallineRetain(v))
+}
+
+func crystallineMarshalExpositionItemView(v *ItemView) any {
+	if v == nil {
+		return nil
+	}
+
+	out := crystallineObjects.New()
+
+	out.Set("Slot", string(v.Slot))
+	out.Set("ID", float64(v.ID))
+	out.Set("Name", crystallineJSON(func(b []byte, ok *bool) []byte {
+		if items0 := v.Name; items0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '[')
+			for i0 := range items0 {
+				if i0 > 0 {
+					b = append(b, ',')
+				}
+
+				b = crystallineAppendString(b, string(items0[i0]))
+			}
+
+			b = append(b, ']')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			items := v.Name
+			if items == nil {
+				return nil
+			}
+
+			out := make([]any, 0, len(items))
+			for i := range items {
+				out = append(out, string(items[i]))
+			}
+
+			return out
+		}()
+	}))
+	out.Set("Rarity", string(v.Rarity))
+	out.Set("Lines", crystallineJSON(func(b []byte, ok *bool) []byte {
+		if items0 := v.Lines; items0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '[')
+			for i0 := range items0 {
+				if i0 > 0 {
+					b = append(b, ',')
+				}
+
+				if items2 := items0[i0]; items2 == nil {
+					b = append(b, "null"...)
+				} else {
+					b = append(b, '[')
+					for i2 := range items2 {
+						if i2 > 0 {
+							b = append(b, ',')
+						}
+
+						b = crystallineAppendString(b, string(items2[i2]))
+					}
+
+					b = append(b, ']')
+				}
+			}
+
+			b = append(b, ']')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			items := v.Lines
+			if items == nil {
+				return nil
+			}
+
+			out := make([]any, 0, len(items))
+			for i := range items {
+				out = append(out, func() any {
+					items := items[i]
+					if items == nil {
+						return nil
+					}
+
+					out := make([]any, 0, len(items))
+					for i := range items {
+						out = append(out, string(items[i]))
+					}
+
+					return out
+				}())
+			}
+
+			return out
+		}()
+	}))
+
+	return out
+}
+
+func crystallineMarshalExpositionItemsView(v *ItemsView) any {
+	if v == nil {
+		return nil
+	}
+
+	out := crystallineObjects.New()
+
+	out.Set("UseSecondWeaponSet", bool(v.UseSecondWeaponSet))
+	out.Set("Items", crystallineJSON(func(b []byte, ok *bool) []byte {
+		if items0 := v.Items; items0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '[')
+			for i0 := range items0 {
+				if i0 > 0 {
+					b = append(b, ',')
+				}
+
+				b = crystallineAppendExpositionItemView(b, &items0[i0], ok)
+			}
+
+			b = append(b, ']')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			items := v.Items
+			if items == nil {
+				return nil
+			}
+
+			out := make([]any, 0, len(items))
+			for i := range items {
+				out = append(out, crystallineMarshalExpositionItemView(&items[i]))
+			}
+
+			return out
+		}()
+	}))
+
+	return out
 }
 
 func crystallineMarshalExpositionOutputs(v *Outputs) any {
@@ -2239,6 +2584,40 @@ func crystallineMarshalExpositionOutputs(v *Outputs) any {
 			return out
 		}()
 	}))
+	out.Set("SkillData", crystallineJSON(func(b []byte, ok *bool) []byte {
+		if entries0 := v.SkillData; entries0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '{')
+			first0 := true
+			for k0, v0 := range entries0 {
+				if !first0 {
+					b = append(b, ',')
+				}
+
+				first0 = false
+				b = crystallineAppendString(b, string(k0))
+				b = append(b, ':')
+				b = strconv.AppendBool(b, bool(v0))
+			}
+
+			b = append(b, '}')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			if v.SkillData == nil {
+				return nil
+			}
+
+			out := crystallineObjects.New()
+			for k, v := range v.SkillData {
+				out.Set(string(k), bool(v))
+			}
+
+			return out
+		}()
+	}))
 	out.Set("SocketGroups", crystallineJSON(func(b []byte, ok *bool) []byte {
 		if items0 := v.SocketGroups; items0 == nil {
 			b = append(b, "null"...)
@@ -2334,6 +2713,73 @@ func crystallineMarshalExpositionSavedStat(v *SavedStat) any {
 
 	out.Set("Stat", string(v.Stat))
 	out.Set("Value", float64(v.Value))
+
+	return out
+}
+
+func crystallineMarshalExpositionSkillGemView(v *SkillGemView) any {
+	if v == nil {
+		return nil
+	}
+
+	out := crystallineObjects.New()
+
+	out.Set("Name", string(v.Name))
+	out.Set("Level", float64(v.Level))
+	out.Set("Quality", float64(v.Quality))
+	out.Set("Count", float64(v.Count))
+	out.Set("Enabled", bool(v.Enabled))
+	out.Set("Support", bool(v.Support))
+	out.Set("Color", string(v.Color))
+
+	return out
+}
+
+func crystallineMarshalExpositionSkillGroupView(v *SkillGroupView) any {
+	if v == nil {
+		return nil
+	}
+
+	out := crystallineObjects.New()
+
+	out.Set("Label", string(v.Label))
+	out.Set("Slot", string(v.Slot))
+	out.Set("Source", string(v.Source))
+	out.Set("Enabled", bool(v.Enabled))
+	out.Set("IncludeInFullDPS", bool(v.IncludeInFullDPS))
+	out.Set("Set1", bool(v.Set1))
+	out.Set("Set2", bool(v.Set2))
+	out.Set("Gems", crystallineJSON(func(b []byte, ok *bool) []byte {
+		if items0 := v.Gems; items0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '[')
+			for i0 := range items0 {
+				if i0 > 0 {
+					b = append(b, ',')
+				}
+
+				b = crystallineAppendExpositionSkillGemView(b, &items0[i0], ok)
+			}
+
+			b = append(b, ']')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			items := v.Gems
+			if items == nil {
+				return nil
+			}
+
+			out := make([]any, 0, len(items))
+			for i := range items {
+				out = append(out, crystallineMarshalExpositionSkillGemView(&items[i]))
+			}
+
+			return out
+		}()
+	}))
 
 	return out
 }
@@ -2850,6 +3296,124 @@ func crystallineAppendCalculator2SocketGroupView(b []byte, v *calculator2.Socket
 	return append(b, '}')
 }
 
+func crystallineAppendExpositionCalcsModEntry(b []byte, v *CalcsModEntry, ok *bool) []byte {
+	if v == nil {
+		return append(b, "null"...)
+	}
+
+	b = append(b, "{\"Cfg\":"...)
+	b = crystallineAppendString(b, string(v.Cfg))
+	b = append(b, ",\"ModSource\":"...)
+	b = crystallineAppendString(b, string(v.ModSource))
+	b = append(b, ",\"Enemy\":"...)
+	b = strconv.AppendBool(b, bool(v.Enemy))
+	b = append(b, ",\"ModName\":"...)
+	if items0 := v.ModName; items0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '[')
+		for i0 := range items0 {
+			if i0 > 0 {
+				b = append(b, ',')
+			}
+
+			b = crystallineAppendString(b, string(items0[i0]))
+		}
+
+		b = append(b, ']')
+	}
+	b = append(b, ",\"ModType\":"...)
+	b = crystallineAppendString(b, string(v.ModType))
+	b = append(b, ",\"Actor\":"...)
+	b = crystallineAppendString(b, string(v.Actor))
+
+	return append(b, '}')
+}
+
+func crystallineAppendExpositionItemView(b []byte, v *ItemView, ok *bool) []byte {
+	if v == nil {
+		return append(b, "null"...)
+	}
+
+	b = append(b, "{\"Slot\":"...)
+	b = crystallineAppendString(b, string(v.Slot))
+	b = append(b, ",\"ID\":"...)
+	b = crystallineAppendNumber(b, float64(v.ID), ok)
+	b = append(b, ",\"Name\":"...)
+	if items0 := v.Name; items0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '[')
+		for i0 := range items0 {
+			if i0 > 0 {
+				b = append(b, ',')
+			}
+
+			b = crystallineAppendString(b, string(items0[i0]))
+		}
+
+		b = append(b, ']')
+	}
+	b = append(b, ",\"Rarity\":"...)
+	b = crystallineAppendString(b, string(v.Rarity))
+	b = append(b, ",\"Lines\":"...)
+	if items0 := v.Lines; items0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '[')
+		for i0 := range items0 {
+			if i0 > 0 {
+				b = append(b, ',')
+			}
+
+			if items2 := items0[i0]; items2 == nil {
+				b = append(b, "null"...)
+			} else {
+				b = append(b, '[')
+				for i2 := range items2 {
+					if i2 > 0 {
+						b = append(b, ',')
+					}
+
+					b = crystallineAppendString(b, string(items2[i2]))
+				}
+
+				b = append(b, ']')
+			}
+		}
+
+		b = append(b, ']')
+	}
+
+	return append(b, '}')
+}
+
+func crystallineAppendExpositionItemsView(b []byte, v *ItemsView, ok *bool) []byte {
+	if v == nil {
+		return append(b, "null"...)
+	}
+
+	b = append(b, "{\"UseSecondWeaponSet\":"...)
+	b = strconv.AppendBool(b, bool(v.UseSecondWeaponSet))
+	b = append(b, ",\"Items\":"...)
+	if items0 := v.Items; items0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '[')
+		for i0 := range items0 {
+			if i0 > 0 {
+				b = append(b, ',')
+			}
+
+			b = crystallineAppendExpositionItemView(b, &items0[i0], ok)
+		}
+
+		b = append(b, ']')
+	}
+
+	return append(b, '}')
+}
+
 func crystallineAppendExpositionOutputs(b []byte, v *Outputs, ok *bool) []byte {
 	if v == nil {
 		return append(b, "null"...)
@@ -2937,6 +3501,25 @@ func crystallineAppendExpositionOutputs(b []byte, v *Outputs, ok *bool) []byte {
 
 		b = append(b, '}')
 	}
+	b = append(b, ",\"SkillData\":"...)
+	if entries0 := v.SkillData; entries0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '{')
+		first0 := true
+		for k0, v0 := range entries0 {
+			if !first0 {
+				b = append(b, ',')
+			}
+
+			first0 = false
+			b = crystallineAppendString(b, string(k0))
+			b = append(b, ':')
+			b = strconv.AppendBool(b, bool(v0))
+		}
+
+		b = append(b, '}')
+	}
 	b = append(b, ",\"SocketGroups\":"...)
 	if items0 := v.SocketGroups; items0 == nil {
 		b = append(b, "null"...)
@@ -2974,6 +3557,67 @@ func crystallineAppendExpositionOutputs(b []byte, v *Outputs, ok *bool) []byte {
 		}
 
 		b = append(b, '}')
+	}
+
+	return append(b, '}')
+}
+
+func crystallineAppendExpositionSkillGemView(b []byte, v *SkillGemView, ok *bool) []byte {
+	if v == nil {
+		return append(b, "null"...)
+	}
+
+	b = append(b, "{\"Name\":"...)
+	b = crystallineAppendString(b, string(v.Name))
+	b = append(b, ",\"Level\":"...)
+	b = crystallineAppendNumber(b, float64(v.Level), ok)
+	b = append(b, ",\"Quality\":"...)
+	b = crystallineAppendNumber(b, float64(v.Quality), ok)
+	b = append(b, ",\"Count\":"...)
+	b = crystallineAppendNumber(b, float64(v.Count), ok)
+	b = append(b, ",\"Enabled\":"...)
+	b = strconv.AppendBool(b, bool(v.Enabled))
+	b = append(b, ",\"Support\":"...)
+	b = strconv.AppendBool(b, bool(v.Support))
+	b = append(b, ",\"Color\":"...)
+	b = crystallineAppendString(b, string(v.Color))
+
+	return append(b, '}')
+}
+
+func crystallineAppendExpositionSkillGroupView(b []byte, v *SkillGroupView, ok *bool) []byte {
+	if v == nil {
+		return append(b, "null"...)
+	}
+
+	b = append(b, "{\"Label\":"...)
+	b = crystallineAppendString(b, string(v.Label))
+	b = append(b, ",\"Slot\":"...)
+	b = crystallineAppendString(b, string(v.Slot))
+	b = append(b, ",\"Source\":"...)
+	b = crystallineAppendString(b, string(v.Source))
+	b = append(b, ",\"Enabled\":"...)
+	b = strconv.AppendBool(b, bool(v.Enabled))
+	b = append(b, ",\"IncludeInFullDPS\":"...)
+	b = strconv.AppendBool(b, bool(v.IncludeInFullDPS))
+	b = append(b, ",\"Set1\":"...)
+	b = strconv.AppendBool(b, bool(v.Set1))
+	b = append(b, ",\"Set2\":"...)
+	b = strconv.AppendBool(b, bool(v.Set2))
+	b = append(b, ",\"Gems\":"...)
+	if items0 := v.Gems; items0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '[')
+		for i0 := range items0 {
+			if i0 > 0 {
+				b = append(b, ',')
+			}
+
+			b = crystallineAppendExpositionSkillGemView(b, &items0[i0], ok)
+		}
+
+		b = append(b, ']')
 	}
 
 	return append(b, '}')
@@ -3436,6 +4080,137 @@ func crystallineToCalculator2ConfigValue(value js.Value) (calculator2.ConfigValu
 	return out, nil
 }
 
+var crystallineKnownExpositionCalcsModEntry = map[string]bool{"Cfg": true, "ModSource": true, "Enemy": true, "ModName": true, "ModType": true, "Actor": true}
+
+func crystallineToExpositionCalcsModEntry(value js.Value) (CalcsModEntry, error) {
+	var out CalcsModEntry
+
+	if value.IsUndefined() || value.IsNull() {
+		return out, errors.New("exposition.CalcsModEntry: expected an object, got null")
+	}
+
+	if handle, ok := crystallineHandleOf(value); ok {
+		resolved, found := crystallineResolve(handle)
+		if !found {
+			return out, errors.New("exposition.CalcsModEntry: the value behind this handle has been released")
+		}
+
+		typed, ok := resolved.(*CalcsModEntry)
+		if !ok {
+			return out, errors.New("exposition.CalcsModEntry: handle refers to a different type")
+		}
+
+		return *typed, nil
+	}
+
+	if value.Type() != js.TypeObject {
+		return out, errors.New("exposition.CalcsModEntry: expected an object")
+	}
+
+	if err := crystallineUnknownProperty(value, "exposition.CalcsModEntry", crystallineKnownExpositionCalcsModEntry); err != nil {
+		return out, err
+	}
+
+	if property := value.Get("Cfg"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToString(property)
+		if err != nil {
+			return out, errors.New("exposition.CalcsModEntry.Cfg: " + err.Error())
+		}
+
+		out.Cfg = converted
+	}
+
+	if property := value.Get("ModSource"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToString(property)
+		if err != nil {
+			return out, errors.New("exposition.CalcsModEntry.ModSource: " + err.Error())
+		}
+
+		out.ModSource = converted
+	}
+
+	if property := value.Get("Enemy"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToBool(property)
+		if err != nil {
+			return out, errors.New("exposition.CalcsModEntry.Enemy: " + err.Error())
+		}
+
+		out.Enemy = converted
+	}
+
+	if property := value.Get("ModName"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToSliceOfString(property)
+		if err != nil {
+			return out, errors.New("exposition.CalcsModEntry.ModName: " + err.Error())
+		}
+
+		out.ModName = converted
+	}
+
+	if property := value.Get("ModType"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToString(property)
+		if err != nil {
+			return out, errors.New("exposition.CalcsModEntry.ModType: " + err.Error())
+		}
+
+		out.ModType = converted
+	}
+
+	if property := value.Get("Actor"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToString(property)
+		if err != nil {
+			return out, errors.New("exposition.CalcsModEntry.Actor: " + err.Error())
+		}
+
+		out.Actor = converted
+	}
+
+	return out, nil
+}
+
+var crystallineKnownExpositionCalcsModQuery = map[string]bool{"Entries": true}
+
+func crystallineToExpositionCalcsModQuery(value js.Value) (CalcsModQuery, error) {
+	var out CalcsModQuery
+
+	if value.IsUndefined() || value.IsNull() {
+		return out, errors.New("exposition.CalcsModQuery: expected an object, got null")
+	}
+
+	if handle, ok := crystallineHandleOf(value); ok {
+		resolved, found := crystallineResolve(handle)
+		if !found {
+			return out, errors.New("exposition.CalcsModQuery: the value behind this handle has been released")
+		}
+
+		typed, ok := resolved.(*CalcsModQuery)
+		if !ok {
+			return out, errors.New("exposition.CalcsModQuery: handle refers to a different type")
+		}
+
+		return *typed, nil
+	}
+
+	if value.Type() != js.TypeObject {
+		return out, errors.New("exposition.CalcsModQuery: expected an object")
+	}
+
+	if err := crystallineUnknownProperty(value, "exposition.CalcsModQuery", crystallineKnownExpositionCalcsModQuery); err != nil {
+		return out, err
+	}
+
+	if property := value.Get("Entries"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToMapOfStringToExpositionCalcsModEntry(property)
+		if err != nil {
+			return out, errors.New("exposition.CalcsModQuery.Entries: " + err.Error())
+		}
+
+		out.Entries = converted
+	}
+
+	return out, nil
+}
+
 var crystallineKnownExpositionSavedFullDPS = map[string]bool{"Stat": true, "Value": true, "SkillPart": true, "Source": true}
 
 func crystallineToExpositionSavedFullDPS(value js.Value) (SavedFullDPS, error) {
@@ -3576,6 +4351,34 @@ func crystallineToInt(value js.Value) (int, error) {
 	}
 
 	return int(value.Float()), nil
+}
+
+func crystallineToMapOfStringToExpositionCalcsModEntry(value js.Value) (map[string]CalcsModEntry, error) {
+	if value.IsUndefined() || value.IsNull() {
+		return nil, nil
+	}
+
+	if value.Type() != js.TypeObject {
+		return nil, errors.New("expected an object")
+	}
+
+	keys := js.Global().Get("Object").Call("keys", value)
+	out := make(map[string]CalcsModEntry, keys.Length())
+
+	for i := 0; i < keys.Length(); i++ {
+		key := keys.Index(i).String()
+
+		converted := string(key)
+
+		item, err := crystallineToExpositionCalcsModEntry(value.Get(key))
+		if err != nil {
+			return nil, errors.New("[" + key + "]: " + err.Error())
+		}
+
+		out[converted] = item
+	}
+
+	return out, nil
 }
 
 func crystallineToSliceOfExpositionSavedFullDPS(value js.Value) ([]SavedFullDPS, error) {
