@@ -16,6 +16,8 @@ export type Tree2Node = {
   isAttribute?: boolean;
   isAscendancyStart?: boolean;
   containJewelSocket?: boolean;
+  // a radius socket's socket.nodesInRadius (PassiveTree.lua:369-396), by radius index - 1
+  nodesInRadius?: number[][];
   classesStart?: string[];
   connections: Tree2Connection[] | null;
 };
@@ -28,6 +30,8 @@ export type Tree2 = {
   minY: number;
   maxX: number;
   maxY: number;
+  // data.jewelRadius with PassiveTreeJewelDistanceMultiplier applied to inner and outer; col is "#rrggbb"
+  jewelRadius?: { inner: number; outer: number; col: string }[];
 };
 
 export type Placed2 = { node: Tree2Node; r: number; rsq: number };
@@ -42,6 +46,13 @@ export type Scene2State = {
   hoverPath: Set<number>;
   hoverDep: Set<number>;
   ascendClassBaseName: string;
+  // the nodes the search matches, and the highlight's radius in tree units
+  search?: Set<number>;
+  searchR?: number;
+  // spec.allocMode: the weapon set a click allocates to, 0 for none
+  specAllocMode?: number;
+  // the jewelRadiusIndex of the jewel in each allocated socket that has one
+  jewelRadiusIndex?: Map<number, number>;
 };
 
 export type Scene2 = {
@@ -184,6 +195,9 @@ export const COLOURS = {
   notable: hex('#c9a046'),
   keystone: hex('#d2693c'),
   socket: hex('#5a86c8'),
+  search: hex('#ff0000'),
+  /* PassiveTreeView.lua:21, at alpha 0.7 */
+  jewelRadius: hex('#ffffff'),
   ascendancy: hex('#9a72b8'),
   classStart: hex('#c89c01')
 };
@@ -200,23 +214,58 @@ const fillOf = (n: Tree2Node): RGB => {
 
 const STROKE_WIDTH = { normal: 10, active: 18 };
 
-/* PassiveTreeView.lua:675-706, without the weapon-set allocation mode (spec.allocMode stays 0) */
+/* PassiveTreeView.lua:675-706 */
+const nodeIsHoverPathEndpoint = (s: Scene2State, id: number) => {
+  if (id === s.hovered || s.hoverPath.has(id)) return true;
+  if (s.alloc.has(id)) {
+    const mode = s.allocMode.get(id) ?? 0;
+    return mode === 0 || mode === (s.specAllocMode ?? 0);
+  }
+  return false;
+};
+const nodeWillChangeAllocMode = (s: Scene2State, id: number) =>
+  s.hovered !== undefined && s.hoverPath.has(id) && !s.alloc.has(s.hovered) && (s.specAllocMode ?? 0) === 0 && (s.allocMode.get(id) ?? 0) > 0;
+const nodeWillAllocateWithAllocMode = (s: Scene2State, n: Tree2Node) =>
+  s.hoverPath.has(n.id) &&
+  s.hovered !== undefined &&
+  !s.alloc.has(s.hovered) &&
+  !s.alloc.has(n.id) &&
+  (s.specAllocMode ?? 0) > 0 &&
+  !n.ascendancy &&
+  n.type !== 'Keystone' &&
+  n.type !== 'Socket' &&
+  !n.containJewelSocket;
 const connectorState = (s: Scene2State, a: number, b: number): 'Normal' | 'Intermediate' | 'Active' => {
-  const endpoint = (id: number) => id === s.hovered || s.hoverPath.has(id) || (s.alloc.has(id) && (s.allocMode.get(id) ?? 0) === 0);
   const m1 = s.allocMode.get(a) ?? 0;
   const m2 = s.allocMode.get(b) ?? 0;
   const a1 = s.alloc.has(a);
   const a2 = s.alloc.has(b);
+  const endpoints = nodeIsHoverPathEndpoint(s, a) && nodeIsHoverPathEndpoint(s, b);
+  if (endpoints && s.hoverPath.has(a) && s.hoverPath.has(b) && (nodeWillChangeAllocMode(s, a) || nodeWillChangeAllocMode(s, b))) return 'Intermediate';
   if (a1 && a2 && (m1 === 0 || m2 === 0 || m1 === m2)) return 'Active';
-  if (s.hoverPath.size && endpoint(a) && endpoint(b) && (!a1 || !a2 || (s.hoverPath.has(a) && s.hoverPath.has(b)))) return 'Intermediate';
+  if (s.hoverPath.size && endpoints && (!a1 || !a2 || (s.hoverPath.has(a) && s.hoverPath.has(b)))) return 'Intermediate';
   return 'Normal';
 };
 
 export const fillScene2 = (scene: Scene2, s: Scene2State) => {
   let o = 0;
+  const stroke = (v: number[]) => {
+    if (o + STROKE2_FLOATS > scene.strokes.length) {
+      const grown = new Float32Array(scene.strokes.length * 2 + STROKE2_FLOATS * 16);
+      grown.set(scene.strokes);
+      scene.strokes = grown;
+    }
+    scene.strokes.set(v, o);
+    o += STROKE2_FLOATS;
+  };
   for (const c of scene.connectors) {
     const state = connectorState(s, c.a, c.b);
     let colour = state === 'Active' ? COLOURS.active : state === 'Intermediate' ? COLOURS.intermediate : COLOURS.connector;
+    /* PassiveTreeView.lua:735-741 */
+    if (state === 'Intermediate' && !c.ascendancy) {
+      if (s.specAllocMode === 1) colour = COLOURS.weaponSet1;
+      else if (s.specAllocMode === 2) colour = COLOURS.weaponSet2;
+    }
     /* PassiveTreeView.lua:742-769 */
     if (state === 'Active' && !c.ascendancy) {
       const mode = s.allocMode.get(c.a) || s.allocMode.get(c.b) || 0;
@@ -225,21 +274,51 @@ export const fillScene2 = (scene: Scene2, s: Scene2State) => {
     }
     if (s.hoverDep.has(c.a) && s.hoverDep.has(c.b)) colour = COLOURS.depends;
     else if (c.ascendancy && c.ascendancy !== s.ascendClassBaseName) colour = state === 'Normal' ? COLOURS.otherAscendancy : colour;
-    scene.strokes.set([...c.geom, c.kind, state === 'Normal' ? STROKE_WIDTH.normal : STROKE_WIDTH.active, ...colour, 1], o);
-    o += STROKE2_FLOATS;
+    stroke([...c.geom, c.kind, state === 'Normal' ? STROKE_WIDTH.normal : STROKE_WIDTH.active, ...colour, 1]);
+  }
+  /* PassiveTreeView.lua:1181-1206, a ring stroke for the highlight image and without the edge snap */
+  const searchR = s.searchR ?? 140;
+  for (const id of s.search ?? []) {
+    const n = scene.byId.get(id);
+    if (n) stroke([n.x, n.y, searchR, 0, Math.PI * 2, 1, searchR * 0.12, ...COLOURS.search, 1]);
+  }
+  /* PassiveTreeView.lua:1311-1353, a plain ring for each image, without Thread of Hope's annuli, timeless art or the compare spec */
+  const radii = scene.tree.jewelRadius ?? [];
+  const hoveredNode = s.hovered === undefined ? undefined : scene.byId.get(s.hovered);
+  const radiusSocket = (n: Tree2Node | undefined) => !!n && n.type === 'Socket' && !!n.nodesInRadius;
+  if (radiusSocket(hoveredNode)) {
+    for (const r of radii) if (r.inner === 0) stroke([hoveredNode!.x, hoveredNode!.y, r.outer, 0, Math.PI * 2, 1, STROKE_WIDTH.normal, ...hex(r.col), 1]);
+  }
+  for (const [id, index] of s.jewelRadiusIndex ?? []) {
+    const n = scene.byId.get(id);
+    const r = radii[index - 1];
+    if (!r || !radiusSocket(n) || !s.alloc.has(id)) continue;
+    stroke([n!.x, n!.y, r.outer, 0, Math.PI * 2, 1, STROKE_WIDTH.active, ...COLOURS.jewelRadius, 0.7]);
+    if (r.inner) stroke([n!.x, n!.y, r.inner * 1.06, 0, Math.PI * 2, 1, STROKE_WIDTH.active, ...COLOURS.jewelRadius, 0.7]);
   }
   scene.counts.strokes = o / STROKE2_FLOATS;
+  /* PassiveTreeView.lua:1148-1157 */
+  const inRadiusColour = new Map<number, RGB>();
+  if (radiusSocket(hoveredNode)) {
+    radii.forEach((r, i) => {
+      if (r.inner !== 0) return;
+      for (const id of hoveredNode!.nodesInRadius![i] ?? []) if (!inRadiusColour.has(id)) inRadiusColour.set(id, hex(r.col));
+    });
+  }
 
   o = 0;
   for (const p of scene.nodes) {
     const n = p.node;
     const alloc = s.alloc.has(n.id);
-    const mode = s.allocMode.get(n.id) ?? 0;
     const shown = alloc || n.id === s.hovered;
     let ring = shown ? COLOURS.ringAlloc : s.hoverPath.has(n.id) ? COLOURS.ringPath : COLOURS.ringUnalloc;
-    if (alloc && mode === 1) ring = COLOURS.weaponSet1;
-    else if (alloc && mode === 2) ring = COLOURS.weaponSet2;
-    if (s.hovered !== undefined && n.id !== s.hovered && s.hoverDep.has(n.id)) ring = COLOURS.depends;
+    /* PassiveTreeView.lua:936-937, 1120-1121 */
+    const mode = nodeWillAllocateWithAllocMode(s, n) ? (s.specAllocMode ?? 0) : (s.allocMode.get(n.id) ?? 0);
+    if (mode > 0 && !nodeWillChangeAllocMode(s, n.id)) ring = mode === 1 ? COLOURS.weaponSet1 : COLOURS.weaponSet2;
+    if (s.hovered !== undefined && n.id !== s.hovered && n.type !== 'ClassStart' && n.type !== 'AscendClassStart') {
+      if (s.hoverDep.has(n.id)) ring = COLOURS.depends;
+      else ring = inRadiusColour.get(n.id) ?? ring;
+    }
     const base = fillOf(n);
     const k = shown ? 1 : s.hoverPath.has(n.id) ? 0.7 : 0.4;
     const alpha = n.ascendancy && n.ascendancy !== s.ascendClassBaseName && !alloc ? 0.55 : 1;

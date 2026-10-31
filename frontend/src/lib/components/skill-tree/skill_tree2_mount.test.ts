@@ -44,9 +44,9 @@ const at = (id: number) => {
 };
 
 const mount = (results: number[]) => {
-  const onclick = vi.fn((...call: [number, boolean, number, boolean]) => Promise.resolve(call.length ? results.shift() : undefined));
+  const onclick = vi.fn((...call: [number, boolean, number, boolean, number]) => Promise.resolve(call.length ? results.shift() : undefined));
   const onattribute = vi.fn();
-  const onhover = vi.fn((id: number) => Promise.resolve({ path: [id, 3], depends: [] as number[] }));
+  const onhover = vi.fn((...[id]: [number, number]) => Promise.resolve({ path: [id, 3], depends: [] as number[] }));
   const view = render(SkillTree2, {
     data: tree,
     spec: { alloc: [1, 2, 3], allocMode: {}, text: { 4: { name: 'Replaced Four', stats: ['20% increased Life'] } }, ascendClassBaseName: '' },
@@ -70,7 +70,7 @@ describe('the PoE2 tree view', () => {
     const { canvas, onhover } = mount([]);
     await vi.waitFor(() => expect(views.at(-1)?.width).toBe(W));
     await fireEvent.pointerMove(canvas, { clientX: at(4).x, clientY: at(4).y });
-    expect(onhover).toHaveBeenCalledWith(4);
+    expect(onhover).toHaveBeenCalledWith(4, 0);
     const tip = await screen.findByRole('tooltip', { name: 'Node tooltip' });
     expect(tip.textContent).toContain('Replaced Four');
     expect(tip.textContent).toContain('20% increased Life');
@@ -84,7 +84,7 @@ describe('the PoE2 tree view', () => {
     const { canvas, onclick, onattribute } = mount([2]);
     await vi.waitFor(() => expect(views.at(-1)?.width).toBe(W));
     await press(canvas, at(5));
-    expect(onclick.mock.calls).toEqual([[5, false, 0, false]]);
+    expect(onclick.mock.calls).toEqual([[5, false, 0, false, 0]]);
     const dialog = await screen.findByRole('dialog', { name: 'Choose Attribute' });
     await fireEvent.click(Array.from(dialog.querySelectorAll('button')).find((b) => b.textContent?.trim() === 'Dexterity')!);
     expect(onattribute.mock.calls).toEqual([[5, 2]]);
@@ -98,8 +98,8 @@ describe('the PoE2 tree view', () => {
     const dialog = await screen.findByRole('dialog', { name: 'Class Change' });
     await fireEvent.click(Array.from(dialog.querySelectorAll('button')).find((b) => b.textContent?.trim() === 'Continue')!);
     expect(onclick.mock.calls).toEqual([
-      [4, false, 0, false],
-      [4, false, 0, true]
+      [4, false, 0, false, 0],
+      [4, false, 0, true, 0]
     ]);
 
     const p = at(4);
@@ -109,5 +109,57 @@ describe('the PoE2 tree view', () => {
     await fireEvent.pointerUp(window, { clientX: p.x + 20, clientY: p.y, button: 0 });
     expect(onclick).toHaveBeenCalledTimes(2);
     expect(views.at(-1)?.zoomX).toBe(20);
+  });
+
+  it('highlights the nodes the search matches, reading the spec text (PassiveTreeView.lua:859-882)', async () => {
+    mount([]);
+    await vi.waitFor(() => expect(views.at(-1)?.width).toBe(W));
+    const field = screen.getByRole('searchbox', { name: 'Search passive nodes' });
+    await fireEvent.input(field, { target: { value: 'replaced' } });
+    await vi.waitFor(() => expect([...(states.at(-1)?.search ?? [])]).toEqual([4]));
+    await fireEvent.input(field, { target: { value: '"notable four"' } });
+    await vi.waitFor(() => expect([...(states.at(-1)?.search ?? [])]).toEqual([]));
+    await fireEvent.input(field, { target: { value: 'attribute' } });
+    await vi.waitFor(() => expect([...(states.at(-1)?.search ?? [])]).toEqual([5]));
+    expect(states.at(-1)?.searchR).toBeCloseTo(140 / 1.2 ** (3 * 0.2));
+  });
+
+  it('switches the weapon-set allocation mode with Alt and the wheel, and clicks and hovers in it (PassiveTreeView.lua:190-195)', async () => {
+    const { canvas, onclick, onhover } = mount([1]);
+    await vi.waitFor(() => expect(views.at(-1)?.width).toBe(W));
+    const zoom = views.at(-1)!.zoomLevel;
+    await fireEvent.pointerMove(canvas, { clientX: at(4).x, clientY: at(4).y });
+    await fireEvent.wheel(canvas, { deltaY: -100, altKey: true });
+    await vi.waitFor(() => expect(states.at(-1)?.specAllocMode).toBe(1));
+    expect(views.at(-1)!.zoomLevel).toBe(zoom);
+    expect(screen.getByRole('status', { name: 'Weapon set allocation mode' }).textContent).toContain('Allocating Weapon set 1 Mode');
+    expect(onhover.mock.calls.at(-1)).toEqual([4, 1]);
+    for (let i = 0; i < 3; i++) await fireEvent.wheel(canvas, { deltaY: -100, altKey: true });
+    await vi.waitFor(() => expect(states.at(-1)?.specAllocMode).toBe(2));
+    await press(canvas, at(4));
+    expect(onclick.mock.calls).toEqual([[4, false, 0, false, 2]]);
+    for (let i = 0; i < 3; i++) await fireEvent.wheel(canvas, { deltaY: 100, altKey: true });
+    await vi.waitFor(() => expect(states.at(-1)?.specAllocMode).toBe(0));
+    expect(screen.queryByRole('status', { name: 'Weapon set allocation mode' })).toBeNull();
+  });
+
+  it('undoes with Ctrl+Z and redoes with Ctrl+Y, not while typing in the search (TreeTab.lua:355-364)', async () => {
+    const onundo = vi.fn();
+    const onredo = vi.fn();
+    render(SkillTree2, {
+      data: tree,
+      spec: { alloc: [1], allocMode: {}, text: {}, ascendClassBaseName: '' },
+      onclick: vi.fn(),
+      onattribute: vi.fn(),
+      onhover: vi.fn(() => Promise.resolve({ path: [], depends: [] })),
+      onundo,
+      onredo
+    });
+    await fireEvent.keyDown(window, { key: 'z', ctrlKey: true });
+    await fireEvent.keyDown(window, { key: 'y', ctrlKey: true });
+    await fireEvent.keyDown(window, { key: 'z' });
+    await fireEvent.keyDown(screen.getByRole('searchbox', { name: 'Search passive nodes' }), { key: 'z', ctrlKey: true });
+    expect(onundo).toHaveBeenCalledTimes(1);
+    expect(onredo).toHaveBeenCalledTimes(1);
   });
 });

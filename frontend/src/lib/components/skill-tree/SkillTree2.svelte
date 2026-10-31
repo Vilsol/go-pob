@@ -1,27 +1,35 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import Button from '$lib/design/Button.svelte';
+  import SearchField from '$lib/design/SearchField.svelte';
+  import { isTypingTarget } from '$lib/design/keys';
   import { createTree2Renderer, type Tree2Renderer } from './gl_renderer2';
-  import { buildScene2, clampView, nodeAt2, screenToTree, treeToScreen, zoomAbout, type Tree2, type Tree2Node, type View2 } from './scene2';
+  import { buildScene2, clampView, nodeAt2, screenToTree, treeToScreen, zoomAbout, zoomOf, type Tree2, type Tree2Node, type View2 } from './scene2';
+  import { searchResults } from './tree2_search';
 
   type TreeState = {
     alloc: number[];
     allocMode: Record<number, number>;
     text: Record<number, { name: string; stats: string[] }>;
     ascendClassBaseName: string;
+    // the jewelRadiusIndex of each socketed jewel that has one
+    jewelRadiusIndex?: Record<number, number>;
   };
 
   interface Props {
     data: Tree2;
     spec: TreeState;
     busy?: boolean;
-    // the tree2.ClickResult of a click
-    onclick: (id: number, right: boolean, hotkey: number, confirmClassChange: boolean) => Promise<number | undefined>;
+    // the tree2.ClickResult of a click; allocMode is spec.allocMode, the weapon set the click allocates to
+    onclick: (id: number, right: boolean, hotkey: number, confirmClassChange: boolean, allocMode: number) => Promise<number | undefined>;
     onattribute: (id: number, attributeIndex: number) => void;
-    onhover: (id: number) => Promise<{ path: number[]; depends: number[] }>;
+    onhover: (id: number, allocMode: number) => Promise<{ path: number[]; depends: number[] }>;
+    // spec:Undo and spec:Redo
+    onundo?: () => void;
+    onredo?: () => void;
   }
 
-  let { data, spec, busy = false, onclick, onattribute, onhover }: Props = $props();
+  let { data, spec, busy = false, onclick, onattribute, onhover, onundo, onredo }: Props = $props();
 
   const scene = $derived(buildScene2(data));
   let canvas = $state<HTMLCanvasElement>();
@@ -35,11 +43,24 @@
   let mouse = $state({ x: 0, y: 0 });
   let attributeFor = $state<Tree2Node | undefined>();
   let classChangeFor = $state<Tree2Node | undefined>();
+  /* PassiveSpec.lua:52 */
+  let allocMode = $state(0);
 
   type Probe = { frame?: (f: unknown) => void; screenOf?: (id: number) => { x: number; y: number } | undefined; renderer?: string };
   const probe = () => (globalThis as { __tree2Probe?: Probe }).__tree2Probe;
 
   const alloc = $derived(new Set(spec.alloc));
+  let searchStr = $state('');
+  const SEARCH_TIP = 'Uses Lua pattern matching for complex searches.\nTo search for multiple terms: (increased.fire.damage|increased.area.of.effect|etc)';
+  /* PassiveTreeView.lua:859-882: the spec's nodes, with their switched or conquered text */
+  const search = $derived(
+    searchResults(
+      searchStr,
+      scene.nodes.map(({ node: n }) => ({ id: n.id, type: n.type, name: spec.text[n.id]?.name ?? n.name, stats: spec.text[n.id]?.stats ?? n.stats }))
+    )
+  );
+  /* PassiveTreeView.lua:1186 */
+  const searchR = $derived(140 / zoomOf(view) ** 0.2);
   $effect(() => {
     renderer?.setState({
       alloc,
@@ -47,7 +68,11 @@
       hovered: hovered?.id,
       hoverPath,
       hoverDep,
-      ascendClassBaseName: spec.ascendClassBaseName
+      ascendClassBaseName: spec.ascendClassBaseName,
+      search,
+      searchR,
+      specAllocMode: allocMode,
+      jewelRadiusIndex: new Map(Object.entries(spec.jewelRadiusIndex ?? {}).map(([k, v]) => [Number(k), v]))
     });
   });
   $effect(() => {
@@ -91,14 +116,14 @@
     return { x: e.clientX - r.left, y: e.clientY - r.top };
   };
 
-  const setHover = (node: Tree2Node | undefined) => {
-    if (node?.id === hovered?.id) return;
+  const setHover = (node: Tree2Node | undefined, refresh = false) => {
+    if (!refresh && node?.id === hovered?.id) return;
     hovered = node;
     hoverPath = new Set();
     hoverDep = new Set();
     if (!node) return;
     const seq = ++hoverSeq;
-    void onhover(node.id).then((h) => {
+    void onhover(node.id, allocMode).then((h) => {
       if (seq !== hoverSeq) return;
       hoverPath = new Set(h.path);
       hoverDep = new Set(h.depends);
@@ -126,11 +151,25 @@
   };
 
   const hotkeys = new Set<string>();
+  /* TreeTab.lua:355-364 */
+  const keydown = (e: KeyboardEvent) => {
+    hotkeys.add(e.key.toLowerCase());
+    if (!(e.ctrlKey || e.metaKey) || isTypingTarget(e.target) || busy) return;
+    const k = e.key.toLowerCase();
+    if (k === 'z' && onundo) {
+      e.preventDefault();
+      onundo();
+    } else if (k === 'y' && onredo) {
+      e.preventDefault();
+      onredo();
+    }
+  };
+
   /* PassiveTreeView.lua:378-391: "2"/S Strength, "3"/D Dexterity, "1"/I Intelligence */
   const hotkey = () => (hotkeys.has('2') || hotkeys.has('s') ? 1 : hotkeys.has('3') || hotkeys.has('d') ? 2 : hotkeys.has('1') || hotkeys.has('i') ? 3 : 0);
 
   const click = async (node: Tree2Node, right: boolean, confirm = false) => {
-    const res = await onclick(node.id, right, hotkey(), confirm);
+    const res = await onclick(node.id, right, hotkey(), confirm, allocMode);
     if (res === 2) attributeFor = node;
     else if (res === 3) classChangeFor = node;
     hovered = undefined;
@@ -150,9 +189,14 @@
     if (hovered && !busy) void click(hovered, true);
   };
 
-  /* PassiveTreeView.lua:1500-1514 */
+  /* PassiveTreeView.lua:190-195, 222-225, 1500-1514 */
   const wheel = (e: WheelEvent) => {
     e.preventDefault();
+    if (e.altKey) {
+      allocMode = Math.max(0, Math.min(2, allocMode + (e.deltaY < 0 ? 1 : -1)));
+      setHover(hovered, true);
+      return;
+    }
     const p = local(e);
     view = clampView(zoomAbout(view, e.deltaY < 0 ? 1 : -1, p.x, p.y));
   };
@@ -162,11 +206,7 @@
   const shownStats = $derived(hovered ? (spec.text[hovered.id]?.stats ?? hovered.stats ?? []) : []);
 </script>
 
-<svelte:window
-  onkeydown={(e: KeyboardEvent) => hotkeys.add(e.key.toLowerCase())}
-  onkeyup={(e: KeyboardEvent) => hotkeys.delete(e.key.toLowerCase())}
-  onblur={() => hotkeys.clear()}
-  onpointerup={pointerUp} />
+<svelte:window onkeydown={keydown} onkeyup={(e: KeyboardEvent) => hotkeys.delete(e.key.toLowerCase())} onblur={() => hotkeys.clear()} onpointerup={pointerUp} />
 
 <div class="relative h-full min-h-[320px] w-full overflow-hidden" bind:this={box}>
   <div role="img" aria-label="Passive skill tree" class="absolute inset-0">
@@ -182,6 +222,22 @@
       onwheel={wheel}
       oncontextmenu={contextMenu}></canvas>
   </div>
+
+  <!-- TreeTab.lua:183-188 (PoB-PoE2) -->
+  <div class="absolute top-2 left-2 z-sticky w-72 max-w-[calc(100%-1rem)]">
+    <SearchField label="Search passive nodes" placeholder="Search" title={SEARCH_TIP} bind:value={searchStr} />
+  </div>
+
+  {#if allocMode > 0}
+    <!-- PassiveTreeView.lua:2156-2176 -->
+    <div
+      role="status"
+      aria-label="Weapon set allocation mode"
+      class="pointer-events-none absolute inset-x-0 bottom-0 h-5 px-0.5 text-14 text-white"
+      style:background={allocMode === 1 ? 'rgb(221 0 34 / 0.4)' : 'rgb(51 255 119 / 0.4)'}>
+      Allocating Weapon set {allocMode} Mode
+    </div>
+  {/if}
 
   {#if hovered && !attributeFor && !classChangeFor}
     <div
