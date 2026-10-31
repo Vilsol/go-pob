@@ -326,7 +326,9 @@ jobs:
         run: go run ./scripts/testdatarelease fetch
 
       - name: Build wasm
-        run: go build -o frontend/static/go-pob.wasm ./wasm
+        run: |
+          go build -o frontend/static/go-pob.wasm ./wasm
+          go build -o frontend/static/go-pob2.wasm ./wasm2
         env:
           GOOS: js
           GOARCH: wasm
