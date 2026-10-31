@@ -10,10 +10,10 @@ export const DATA_HOST = 'https://data.pob.gg/';
 const cacheDir = () => process.env.GO_POB_CACHE_DIR || resolve(process.env.XDG_CACHE_HOME || resolve(homedir(), '.cache'), 'go-pob', 'bundle-cache');
 
 const dataModuleVersion = (() => {
-  const src = readFileSync(resolve(ROOT, '../data/raw/cache_namespace.go'), 'utf8');
+  const src = readFileSync(resolve(ROOT, '../data/assetcache/cache_namespace.go'), 'utf8');
   const m = src.match(/DataModuleVersion\s*=\s*"([^"]+)"/);
   if (!m) {
-    throw new Error('REFUSING: could not read DataModuleVersion from data/raw/cache_namespace.go');
+    throw new Error('REFUSING: could not read DataModuleVersion from data/assetcache/cache_namespace.go');
   }
   return m[1];
 })();
