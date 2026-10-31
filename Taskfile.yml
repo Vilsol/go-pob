@@ -687,6 +687,23 @@ tasks:
       - ln -sfn {{.OUT}}/corpus {{.HERE}}/testdata/corpus-poe2-0.5
       - ln -sfn {{.OUT}}/oracle {{.HERE}}/testdata/oracle-poe2-0.5
 
+  oracle-poe2-config:
+    desc: "Build the local-only config-randomised PoE2 corpus and its oracle from a seeded sample of the PoE2 corpus (N=, SEED=, P=, JOBS=; resumes, refuses a run with other parameters)"
+    vars:
+      POB2:
+        sh: 'realpath "{{.POB2_DIR | default .POB2_DEFAULT}}"'
+      HERE:
+        sh: pwd
+      MAIN:
+        sh: dirname "$(git rev-parse --path-format=absolute --git-common-dir)"
+      OUT: '{{.OUT | default "~/go-pob-corpus/poe2-0.5"}}'
+    cmds:
+      - task: pob-pin
+        vars: {GAME: poe2}
+      - 'env LUAJIT={{.MAIN}}/.luajit-det/bin/luajit N={{.N | default "2000"}} SEED={{.SEED | default "1"}} P={{.P | default "0.3"}} JOBS={{.JOBS | default "4"}} {{.GOPOB}} poe2-config-corpus {{.POB2}} {{.HERE}} {{.OUT}}/corpus {{.OUT}} poe2-0.5'
+      - ln -sfn {{.OUT}}/corpus-config {{.HERE}}/testdata/corpus-poe2-0.5-config
+      - ln -sfn {{.OUT}}/oracle-config {{.HERE}}/testdata/oracle-poe2-0.5-config
+
   oracle-bin:
     desc: "Rebuild the .orb side-car from the committed oracle blob (CHECK=1 reports staleness)"
     vars:

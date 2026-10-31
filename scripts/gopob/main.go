@@ -137,6 +137,9 @@ const usage = `gopob <subcommand> [flags]
   poe2-corpus <pob2-dir> <repo-root> <characters.zip> <out-root> <version>
                         converts every character JSON to PoB-PoE2 XML and dumps it skills-on and
                         skills-off, one process each under a memory cap, into an oracle
+  poe2-config-corpus <pob2-dir> <repo-root> <src-corpus-dir> <out-root> <version>
+                        copies a seeded sample of PoE2 corpus builds with random config inputs
+                        the build shows, and dumps them through PoB-PoE2 into a config oracle
   dump-parallel <pob-src-parent> <repo-root> <builds-dir> <out-base> <runs>
                         N independent full-corpus PoB dumps at once, each in its own netns.
                         REFUSES before creating anything if a target directory is non-empty
@@ -299,6 +302,8 @@ func main() {
 		os.Exit(dumpAlone(os.Args[2:]))
 	case "poe2-corpus":
 		os.Exit(poe2Corpus(os.Args[2:]))
+	case "poe2-config-corpus":
+		os.Exit(poe2ConfigCorpus(os.Args[2:]))
 	case "dump-shard":
 		os.Exit(dumpShard(os.Args[2:]))
 	case "corpus-dump-ref":
