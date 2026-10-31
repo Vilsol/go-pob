@@ -7,6 +7,7 @@ import { boot, config, exposition, storage, type calculator2 } from '../types2';
 import type { Poe2View } from '../global';
 import { defaultStateOf, relevanceQuery2, type ConfigValue2 } from '../display/configurations2';
 import { DESKTOP } from '$lib/pwa/desktop';
+import type { Tree2 } from '../components/skill-tree/scene2';
 
 // only the data cache bucket; on the web it is its own IndexedDB database, since zenfs allocates inode ids per
 // instance and two instances writing the PoE1 worker's database overwrite each other's files
@@ -50,6 +51,20 @@ const initializeStorage = async () => {
 
 export type Poe2SocketGroup = { label: string; skills: string[] };
 
+// the spec as the tree view draws it; text holds the nodes whose name or stats the spec replaced
+export type Poe2TreeState = {
+  alloc: number[];
+  allocMode: Record<number, number>;
+  text: Record<number, { name: string; stats: string[] }>;
+  className: string;
+  ascendClassBaseName: string;
+  used: number;
+  ascUsed: number;
+};
+
+/* tree2.ClickResult */
+export const ClickResult = { Nothing: 0, Changed: 1, ChooseAttribute: 2, ConfirmClassChange: 3 } as const;
+
 // everything the PoE2 sidebar and config page read, as plain data
 export type Poe2Calc = Poe2View & {
   minion?: Record<string, number>;
@@ -60,7 +75,10 @@ export type Poe2Calc = Poe2View & {
   mainActiveSkill: number;
   configInputs: Record<string, ConfigValue2>;
   relevance: calculator2.ConfigRelevance;
+  tree: Poe2TreeState;
 };
+
+export type Poe2Click = { result: number; calc?: Poe2Calc };
 
 const toValue = (v: calculator2.ConfigValue): ConfigValue2 | undefined => (v.IsNumber ? v.Number : v.IsBoolean ? v.Boolean : v.IsString ? v.String : undefined);
 
@@ -76,6 +94,7 @@ const fromValue = (v: ConfigValue2 | undefined): calculator2.ConfigValue => ({
 class PoB2Worker {
   private booted?: Promise<unknown>;
   private calc?: exposition.Calculator;
+  private treeData?: Promise<Tree2>;
 
   boot(wasm: ArrayBuffer) {
     this.booted ??= boot(wasm).then(async () => {
@@ -96,6 +115,11 @@ class PoB2Worker {
       if (value !== undefined) inputs[k] = value;
     }
     const rel = calc.ConfigRelevance(relevanceQuery2).unwrap();
+    const st = calc.TreeState().unwrap();
+    if (!st) throw new Error('the PoE2 build has no passive tree');
+    const allocMode: Record<number, number> = {};
+    const modes = st.AllocMode ?? [];
+    for (let i = 0; i + 1 < modes.length; i += 2) allocMode[modes[i]] = modes[i + 1];
     return {
       className: out.ClassName,
       ascendClassName: out.AscendClassName,
@@ -108,7 +132,16 @@ class PoB2Worker {
       mainSocketGroup: out.MainSocketGroup,
       mainActiveSkill: out.MainActiveSkill,
       configInputs: inputs,
-      relevance: Object.fromEntries(Object.entries(rel).map(([k, v]) => [k, [...((v as string[] | undefined) ?? [])]])) as calculator2.ConfigRelevance
+      relevance: Object.fromEntries(Object.entries(rel).map(([k, v]) => [k, [...((v as string[] | undefined) ?? [])]])) as calculator2.ConfigRelevance,
+      tree: {
+        alloc: [...(st.Alloc ?? [])],
+        allocMode,
+        text: Object.fromEntries((st.Text ?? []).map((t) => [t.ID, { name: t.Name, stats: [...(t.Stats ?? [])] }])),
+        className: st.ClassName,
+        ascendClassBaseName: st.AscendClassBaseName,
+        used: st.Used,
+        ascUsed: st.AscUsed
+      }
     };
   }
 
@@ -142,6 +175,36 @@ class PoB2Worker {
   /* Build.lua:376-381 (PoB-PoE2) */
   async SetMainActiveSkill(index: number): Promise<Poe2Calc> {
     this.calc?.SetMainActiveSkill(index);
+    return this.view();
+  }
+
+  TreeData(): Promise<Tree2> {
+    this.treeData ??= (async () => {
+      await this.booted;
+      return JSON.parse((await exposition.PassiveTreeJSON()).unwrap()) as Tree2;
+    })().catch((err: unknown) => {
+      this.treeData = undefined;
+      throw err;
+    });
+    return this.treeData;
+  }
+
+  /* PassiveTreeView.lua:356-373 (PoB-PoE2) */
+  TreeHover(id: number): { path: number[]; depends: number[] } {
+    const h = this.calc?.HoverNode(id);
+    return { path: [...(h?.Path ?? [])], depends: [...(h?.Depends ?? [])] };
+  }
+
+  /* PassiveTreeView.lua:425-594 (PoB-PoE2); hotkey is the attribute index a held S, D or I picks */
+  async TreeClick(id: number, right: boolean, hotkey: number, confirmClassChange: boolean): Promise<Poe2Click> {
+    if (!this.calc) throw new Error('no PoE2 build is open');
+    const result = this.calc.ClickNode(id, right, hotkey, confirmClassChange).unwrap();
+    return result === ClickResult.Changed ? { result, calc: await this.view() } : { result };
+  }
+
+  /* TreeTab.lua:851-876 (PoB-PoE2) */
+  async TreeAllocateAttribute(id: number, attributeIndex: number): Promise<Poe2Calc> {
+    this.calc?.AllocateAttributeNode(id, attributeIndex).unwrap();
     return this.view();
   }
 

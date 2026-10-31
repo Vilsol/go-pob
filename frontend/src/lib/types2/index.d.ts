@@ -61,12 +61,16 @@ export declare namespace config {
 }
 export declare namespace exposition {
   interface Calculator {
+    AllocateAttributeNode(id: number, attributeIndex: number): Result<void>;
     Calculate(): Promise<Result<(exposition.Outputs | undefined)>>;
+    ClickNode(id: number, right: boolean, hotkey: number, confirmClassChange: boolean): Result<number>;
     ConfigRelevance(query: calculator2.ConfigRelevance): Result<calculator2.ConfigRelevance>;
+    HoverNode(id: number): exposition.TreeHover;
     Serialize(): Result<string>;
     SetConfigInput(name: string, value: calculator2.ConfigValue, isDefault: boolean): void;
     SetMainActiveSkill(index: number): void;
     SetMainSocketGroup(index: number): void;
+    TreeState(): Result<(exposition.TreeState | undefined)>;
     /** Releases the Go resources behind this wrapper. */
     release(): void;
     [Symbol.dispose](): void;
@@ -84,7 +88,27 @@ export declare namespace exposition {
     readonly MainActiveSkill: number;
     readonly ConfigInputs?: Record<string, Readonly<calculator2.ConfigValue>>;
   }
+  interface TreeHover {
+    readonly Path?: Array<number>;
+    readonly Depends?: Array<number>;
+  }
+  interface TreeNodeText {
+    readonly ID: number;
+    readonly Name: string;
+    readonly Stats?: Array<string>;
+  }
+  interface TreeState {
+    readonly Alloc?: Array<number>;
+    readonly AllocMode?: Array<number>;
+    readonly Text?: Array<exposition.TreeNodeText>;
+    readonly ClassName: string;
+    readonly AscendClassBaseName: string;
+    readonly Used: number;
+    readonly AscUsed: number;
+    readonly AttributeIndex: number;
+  }
   function ParseBuild(xml: string): Result<(exposition.Calculator | undefined)>;
+  function PassiveTreeJSON(): Promise<Result<string>>;
   const TreeVersion: string;
 }
 export declare namespace storage {

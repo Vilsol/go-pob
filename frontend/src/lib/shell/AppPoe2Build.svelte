@@ -23,6 +23,8 @@
     type Option2
   } from '$lib/display/configurations2';
   import type { Poe2Calc, Worker2Type } from '$lib/go/sync_worker2';
+  import SkillTree2 from '$lib/components/skill-tree/SkillTree2.svelte';
+  import type { Tree2 } from '$lib/components/skill-tree/scene2';
   import type { Remote } from 'comlink';
 
   let { view }: { view: Poe2View } = $props();
@@ -86,6 +88,32 @@
     return configurations2.map((s) => ({ ...s, rows: s.rows.filter((row) => isShown2(row, inputs, r, showAll)) })).filter((s) => s.rows.some(isVariable2));
   });
   const invalid = (row: Option2) => rel !== undefined && isVariable2(row) && !isEligible2(row, inputs, rel) && isModified2(row, inputs);
+
+  let page = $state<'config' | 'tree'>('config');
+  let treeData = $state<Tree2 | undefined>();
+  const worker = async () => (await import('$lib/go/worker2')).poe2Worker();
+  $effect(() => {
+    if (page !== 'tree' || treeData) return;
+    void worker()
+      .then((w) => w.TreeData())
+      .then((d) => (treeData = d))
+      .catch((err: unknown) => (error = err instanceof Error ? err.message : String(err)));
+  });
+  const treeClick = async (id: number, right: boolean, hotkey: number, confirmClassChange: boolean) => {
+    busy = true;
+    error = undefined;
+    try {
+      const r = await (await worker()).TreeClick(id, right, hotkey, confirmClassChange);
+      if (r.calc) poe2Build.set(r.calc);
+      return r.result;
+    } catch (err) {
+      error = err instanceof Error ? err.message : String(err);
+    } finally {
+      busy = false;
+    }
+  };
+  const treeAttribute = (id: number, index: number) => edit((w) => w.TreeAllocateAttribute(id, index));
+  const treeHover = async (id: number) => (await worker()).TreeHover(id);
 
   const setMain = (which: 'group' | 'skill', index: number) => edit((w) => (which === 'group' ? w.SetMainSocketGroup(index) : w.SetMainActiveSkill(index)));
   const setOption = (name: string, value: ConfigValue2 | undefined) => edit((w) => w.SetConfigOption(name, value));
@@ -162,56 +190,73 @@
       {/if}
     </aside>
 
-    {#if rel}
-      <div class="flex min-w-0 flex-1 flex-col gap-3 overflow-y-auto" aria-label="Configuration">
-        <div class="flex items-center gap-3">
-          <span class="text-16 font-semibold">Configuration</span>
-          <!-- ConfigTab.lua:183-188 (PoB-PoE2) -->
-          <Button onclick={() => (showAll = !showAll)}>{showAll ? 'Hide Ineligible Configurations' : 'Show All Configurations'}</Button>
-        </div>
-        {#each sections as s (s.name)}
-          <fieldset class="m-0 flex flex-col gap-1.5 border border-line p-3" aria-label={s.name}>
-            <legend class="px-1 text-14 font-semibold">{s.name}</legend>
-            {#each s.rows as row, ri (row.var ?? `label-${ri}`)}
-              {#if !isVariable2(row)}
-                <span class="text-14 text-text-2"><PobText text={row.label} /></span>
-              {:else if row.type === 'check'}
-                <Checkbox
-                  checked={currentValue(row, inputs) === true}
-                  disabled={busy}
-                  data-config={row.var}
-                  title={row.tooltip}
-                  onchange={(e: Event) => setOption(row.var, (e.currentTarget as HTMLInputElement).checked)}>
-                  <span class:text-error={invalid(row)}><PobText text={row.label} /></span>
-                </Checkbox>
-              {:else}
-                <label class="grid grid-cols-[1fr_140px] items-center gap-2 text-14" title={row.tooltip}>
-                  <span class:text-error={invalid(row)}><PobText text={row.label} /></span>
-                  {#if row.type === 'list'}
-                    <Select
-                      size="sm"
-                      data-config={row.var}
-                      disabled={busy}
-                      value={listIndex(row)}
-                      options={(row.list ?? []).map((e, i) => ({ value: String(i), label: e.label }))}
-                      onchange={(e: Event) => setOption(row.var, listValue(row, valueOf(e)))} />
-                  {:else}
-                    <Input
-                      size="sm"
-                      inputmode="decimal"
-                      data-config={row.var}
-                      disabled={busy}
-                      value={(currentValue(row, inputs) as number | undefined) ?? ''}
-                      placeholder={row.defaultPlaceholderState === undefined ? undefined : String(row.defaultPlaceholderState)}
-                      onchange={(e: Event) => setOption(row.var, numberOf(valueOf(e)))} />
-                  {/if}
-                </label>
-              {/if}
-            {/each}
-          </fieldset>
-        {/each}
+    <div class="flex min-w-0 flex-1 flex-col gap-3">
+      <div class="flex items-center gap-2" role="tablist" aria-label="PoE2 build pages">
+        <Button role="tab" aria-selected={page === 'tree'} onclick={() => (page = 'tree')}>Tree</Button>
+        <Button role="tab" aria-selected={page === 'config'} onclick={() => (page = 'config')}>Configuration</Button>
+        {#if page === 'tree' && calc.tree}
+          <span class="text-14" aria-label="Passive points used">Points: {calc.tree.used}{calc.tree.ascUsed ? ` / Ascendancy: ${calc.tree.ascUsed}` : ''}</span>
+        {/if}
       </div>
-    {/if}
+      {#if page === 'tree'}
+        <div class="flex min-h-[480px] min-w-0 flex-1" aria-label="Tree">
+          {#if treeData && calc.tree}
+            <SkillTree2 data={treeData} spec={calc.tree} {busy} onclick={treeClick} onattribute={treeAttribute} onhover={treeHover} />
+          {:else}
+            <span class="note" role="status">Loading the passive tree…</span>
+          {/if}
+        </div>
+      {:else if rel}
+        <div class="flex min-w-0 flex-1 flex-col gap-3 overflow-y-auto" aria-label="Configuration">
+          <div class="flex items-center gap-3">
+            <span class="text-16 font-semibold">Configuration</span>
+            <!-- ConfigTab.lua:183-188 (PoB-PoE2) -->
+            <Button onclick={() => (showAll = !showAll)}>{showAll ? 'Hide Ineligible Configurations' : 'Show All Configurations'}</Button>
+          </div>
+          {#each sections as s (s.name)}
+            <fieldset class="m-0 flex flex-col gap-1.5 border border-line p-3" aria-label={s.name}>
+              <legend class="px-1 text-14 font-semibold">{s.name}</legend>
+              {#each s.rows as row, ri (row.var ?? `label-${ri}`)}
+                {#if !isVariable2(row)}
+                  <span class="text-14 text-text-2"><PobText text={row.label} /></span>
+                {:else if row.type === 'check'}
+                  <Checkbox
+                    checked={currentValue(row, inputs) === true}
+                    disabled={busy}
+                    data-config={row.var}
+                    title={row.tooltip}
+                    onchange={(e: Event) => setOption(row.var, (e.currentTarget as HTMLInputElement).checked)}>
+                    <span class:text-error={invalid(row)}><PobText text={row.label} /></span>
+                  </Checkbox>
+                {:else}
+                  <label class="grid grid-cols-[1fr_140px] items-center gap-2 text-14" title={row.tooltip}>
+                    <span class:text-error={invalid(row)}><PobText text={row.label} /></span>
+                    {#if row.type === 'list'}
+                      <Select
+                        size="sm"
+                        data-config={row.var}
+                        disabled={busy}
+                        value={listIndex(row)}
+                        options={(row.list ?? []).map((e, i) => ({ value: String(i), label: e.label }))}
+                        onchange={(e: Event) => setOption(row.var, listValue(row, valueOf(e)))} />
+                    {:else}
+                      <Input
+                        size="sm"
+                        inputmode="decimal"
+                        data-config={row.var}
+                        disabled={busy}
+                        value={(currentValue(row, inputs) as number | undefined) ?? ''}
+                        placeholder={row.defaultPlaceholderState === undefined ? undefined : String(row.defaultPlaceholderState)}
+                        onchange={(e: Event) => setOption(row.var, numberOf(valueOf(e)))} />
+                    {/if}
+                  </label>
+                {/if}
+              {/each}
+            </fieldset>
+          {/each}
+        </div>
+      {/if}
+    </div>
   </div>
   <SaveAsDialog bind:open={saveAs} save={savePoe2Build} onsaved={() => (saved = true)} />
 </section>

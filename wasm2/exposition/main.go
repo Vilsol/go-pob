@@ -22,8 +22,12 @@ func Exports(r bind.Registry) {
 	r.Type(calculator2.ConfigValue{}, bind.Plain())
 	r.Type(calculator2.ConfigRelevance{}, bind.Plain())
 	r.Type(storage.DirEntry{}, bind.Plain())
+	r.Type(TreeState{}, bind.Plain())
+	r.Type(TreeNodeText{}, bind.Plain())
+	r.Type(TreeHover{}, bind.Plain())
 
 	r.Func(ParseBuild)
+	r.Func(PassiveTreeJSON, bind.AsPromise())
 	r.Value("TreeVersion", TreeVersion)
 
 	r.Func(config.InitLogging)

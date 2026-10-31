@@ -186,6 +186,7 @@ data/raw/spectre_data.go            GENERATED  scripts/gopob/miniondataemit.go
 data/tree2/data.go                  GO-NATIVE  fetches go-pob-data's PoE2 passive tree through the asset cache; PoB reads its own TreeData/<version>/tree.json from disk, so there is no counterpart to cite
 data/tree2/spec.go                  PORT       src/Classes/PassiveSpec.lua
 data/tree2/tree.go                  PORT       src/Classes/PassiveTree.lua
+data/tree2/tree_view.go             PORT       src/Classes/PassiveTreeView.lua,src/Classes/TreeTab.lua
 
 mod/actor_condition.go              GO-NATIVE  tag struct + builder; evaluated in moddb/mod_store.go
 mod/base_flag.go                    GO-NATIVE  tag struct + builder; evaluated in moddb/mod_store.go
@@ -321,6 +322,7 @@ wasm/main.go                        GO-NATIVE  WASM entry point
 wasm2/exposition/calculator.go      GO-NATIVE  crystalline binding surface for the PoE2 frontend
 wasm2/exposition/crystalline_gen.go GENERATED  [unverifiable: emitted by `go tool crystalline`, pinned in go.mod, not a script in this repo]
 wasm2/exposition/main.go            GO-NATIVE  crystalline binding surface for the PoE2 frontend
+wasm2/exposition/tree.go            GO-NATIVE  crystalline binding surface for the PoE2 frontend's passive tree
 wasm2/main.go                       GO-NATIVE  PoE2 WASM entry point
 
 scripts/gopob/coreconstantsemit.go               GO-NATIVE  port of oracle/core_constants_emit.py; regenerates data/constants_generated.go, porting no Lua

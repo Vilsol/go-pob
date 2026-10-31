@@ -24,6 +24,13 @@ type SpecNode struct {
 	// IsFreeAllocate shadows the tree node's flag, which SetGrantedPassiveNodes overwrites per spec.
 	IsFreeAllocate bool
 	ConqueredBy    *ConqueredBy
+
+	// Path is nil where PoB's node.path is nil; HasPath tells an empty root path from none.
+	Path                 []*SpecNode
+	HasPath              bool
+	PathDist             int
+	PathRoot             *SpecNode
+	DistanceToClassStart int
 }
 
 // Item is the part of build.itemsTab.items[id] the spec reads.
@@ -109,6 +116,8 @@ type PassiveSpec struct {
 	IgnoredNodes       map[int]*SpecNode
 
 	AllocMode int
+	// AttributeIndex is spec.attributeIndex; 0 stands for nil, which AllocNode reads as 1.
+	AttributeIndex int
 
 	// AllocateFromNodeRadius stands in for node.modList:List(nil, "AllocateFromNodeRadius") on an
 	// allocated ascendancy node; the mod parse is the calc's. Nil means no node carries the mod.
@@ -294,6 +303,85 @@ func (s *PassiveSpec) Load(in SpecInput) error {
 	return nil
 }
 
+// SpecSave is the <Spec> PassiveSpec:Save writes, less the URL and the notes; the XML encoding belongs to
+// the build-file package.
+type SpecSave struct {
+	TreeVersion          string
+	ClassID              int
+	AscendClassID        int
+	ClassInternalID      int
+	AscendancyInternalID string
+	Nodes                string
+	MasteryEffects       string
+	// WeaponSets maps N to the nodes of a <WeaponSetN>; Sockets is the <Sockets> children in order.
+	WeaponSets map[int]string
+	Sockets    []SocketInput
+	StrNodes   string
+	DexNodes   string
+	IntNodes   string
+}
+
+func joinInts(ids []int) string {
+	parts := make([]string, len(ids))
+	for i, id := range ids {
+		parts[i] = strconv.Itoa(id)
+	}
+	return strings.Join(parts, ",")
+}
+
+//pob2:src/Classes/PassiveSpec.lua:252-366
+func (s *PassiveSpec) Save() SpecSave {
+	var allocNodeIDList []int
+	weaponSets := map[int][]int{}
+	for _, nodeID := range sortedKeys(s.AllocNodes) {
+		node := s.AllocNodes[nodeID]
+		if !(node.IsGrantedPassive && node.IsFreeAllocate) {
+			allocNodeIDList = append(allocNodeIDList, nodeID)
+		}
+		if n, ok := s.Nodes[nodeID]; ok && n.AllocMode != 0 {
+			weaponSets[n.AllocMode] = append(weaponSets[n.AllocMode], nodeID)
+		}
+	}
+	masterySelections := make([]string, 0, len(s.MasterySelections))
+	for _, mastery := range sortedKeys(s.MasterySelections) {
+		masterySelections = append(masterySelections, fmt.Sprintf("{%d,%d}", mastery, s.MasterySelections[mastery]))
+	}
+	out := SpecSave{
+		TreeVersion:          s.TreeVersion,
+		ClassID:              s.CurClassID,
+		AscendClassID:        s.CurAscendClassID,
+		ClassInternalID:      s.Tree.Classes[s.CurClassID].IntegerID,
+		AscendancyInternalID: s.ascendClassOrNone(s.CurAscendClassID).InternalID,
+		Nodes:                joinInts(allocNodeIDList),
+		MasteryEffects:       strings.Join(masterySelections, ","),
+		WeaponSets:           map[int]string{},
+	}
+	for set, ids := range weaponSets {
+		out.WeaponSets[set] = joinInts(ids)
+	}
+	for _, nodeID := range sortedKeys(s.Jewels) {
+		if itemID := s.Jewels[nodeID]; itemID > 0 {
+			out.Sockets = append(out.Sockets, SocketInput{NodeID: strconv.Itoa(nodeID), ItemID: strconv.Itoa(itemID)})
+		}
+	}
+	var strList, dexList, intList []int
+	for _, nodeID := range sortedKeys(s.HashOverrides) {
+		node := s.HashOverrides[nodeID]
+		if node.IsAttribute {
+			switch node.Dn {
+			case "Strength":
+				strList = append(strList, nodeID)
+			case "Dexterity":
+				dexList = append(dexList, nodeID)
+			case "Intelligence":
+				intList = append(intList, nodeID)
+			}
+		}
+	}
+	out.StrNodes, out.DexNodes, out.IntNodes = joinInts(strList), joinInts(dexList), joinInts(intList)
+	return out
+}
+
 // luaToNumber is tonumber(x) with a stand-in for its nil; secondaryAscendClassId="nil" parses to nil.
 func luaToNumber(s string, ifNil int) int {
 	v, err := strconv.Atoi(s)
@@ -428,9 +516,8 @@ func (s *PassiveSpec) ResetNodes() {
 }
 
 // BuildAllDependsAndPaths ports node replacement (switchable options by class or ascendancy, then
-// attribute overrides), the dependency walk and orphan pruning, and the mastery/ignored deallocation.
-// Everything a socketed jewel drives (intuitive-leap-like radius, From Nothing, conquest,
-// alternate class starts) needs item jewel data and radius lists and is not ported, nor are paths.
+// attribute overrides), the dependency walk and orphan pruning, the mastery/ignored deallocation and
+// the node paths. The intuitive-leap dependency resolution (potentialDeps, intuitiveLeaps) is not ported.
 //
 //pob2:src/Classes/PassiveSpec.lua:1475-2078
 func (s *PassiveSpec) BuildAllDependsAndPaths() {
@@ -667,6 +754,37 @@ func (s *PassiveSpec) BuildAllDependsAndPaths() {
 			}
 		}
 	}
+
+	//pob2:block:src/Classes/PassiveSpec.lua:2052-2077
+	for _, id := range ids {
+		node := s.Nodes[id]
+		node.PathDist = 1000
+		if node.Alloc && len(node.IntuitiveLeapLikesAffecting) == 0 {
+			node.PathDist = 0
+		}
+		node.Path, node.HasPath = nil, false
+		node.PathRoot = nil
+		if node.IsJewelSocket {
+			node.DistanceToClassStart = 0
+		}
+	}
+	var rootList []*SpecNode
+	for _, id := range sortedKeys(s.AllocNodes) {
+		if node := s.AllocNodes[id]; len(node.IntuitiveLeapLikesAffecting) == 0 || node.ConnectedToStart {
+			rootList = append(rootList, node)
+		}
+	}
+	s.BuildNodePathsToRootNodes(rootList)
+	for _, node := range rootList {
+		if node.IsJewelSocket {
+			s.SetNodeDistanceToClassStart(node)
+		}
+	}
+	alternateClassStartNodesArray := make([]*SpecNode, 0, len(alternateClassStartNodes))
+	for _, id := range sortedKeys(alternateClassStartNodes) {
+		alternateClassStartNodesArray = append(alternateClassStartNodesArray, alternateClassStartNodes[id])
+	}
+	s.BuildNodePathsToRootNodes(alternateClassStartNodesArray)
 }
 
 func containsString(list []string, v string) bool {
@@ -699,6 +817,157 @@ func containsNode(list []*SpecNode, n *SpecNode) bool {
 func (s *PassiveSpec) CanPathThroughAllocMode(allocMode int, node *SpecNode) bool {
 	nodeMode := node.AllocMode
 	return nodeMode == 0 || allocMode > 0 && nodeMode == allocMode
+}
+
+// unlocked is the unlockConstraint check GetAllocationPath and BuildNodePathsToRootNodes repeat.
+func (s *PassiveSpec) unlocked(node *SpecNode) bool {
+	for _, nodeID := range node.UnlockConstraint.Nodes {
+		if n, ok := s.Nodes[nodeID]; !ok || !n.Alloc {
+			return false
+		}
+	}
+	return true
+}
+
+// GetAllocationPath returns the path and its root; ok is false where the Lua returns nil.
+//
+//pob2:src/Classes/PassiveSpec.lua:903-959
+func (s *PassiveSpec) GetAllocationPath(target *SpecNode, allocMode int, allocatedOnly bool, skipRoot *SpecNode) ([]*SpecNode, *SpecNode, bool) {
+	visited := map[*SpecNode]bool{}
+	prev := map[*SpecNode]*SpecNode{}
+	var queue []*SpecNode
+	rootMode := allocMode
+	if allocatedOnly {
+		rootMode = 0
+	}
+	for _, id := range sortedKeys(s.AllocNodes) {
+		node := s.AllocNodes[id]
+		if node != skipRoot && s.CanPathThroughAllocMode(rootMode, node) {
+			visited[node] = true
+			queue = append(queue, node)
+		}
+	}
+	for o := 0; o < len(queue); o++ {
+		node := queue[o]
+		if node == target {
+			var path []*SpecNode
+			current := target
+			for current != nil && prev[current] != nil {
+				path = append(path, current)
+				current = prev[current]
+			}
+			return path, current, true
+		}
+		if node.UnlockConstraint != nil && !s.unlocked(node) {
+			continue
+		}
+		for _, other := range node.Linked {
+			canPath := other.UnlockConstraint == nil || s.unlocked(other)
+			otherMode := other.AllocMode
+			canVisit := allocatedOnly && other.Alloc && s.CanPathThroughAllocMode(allocMode, other) && (otherMode > 0 || other.Type != "ClassStart" && other.Type != "AscendClassStart") ||
+				!allocatedOnly && (!other.Alloc || s.CanPathThroughAllocMode(allocMode, other))
+			if canPath && canVisit && !visited[other] && node.Type != "Mastery" && other.Type != "ClassStart" && other.Type != "AscendClassStart" &&
+				(node.AscendancyName == other.AscendancyName || (prev[node] == nil && other.AscendancyName == "")) {
+				visited[other] = true
+				prev[other] = node
+				queue = append(queue, other)
+			}
+		}
+	}
+	return nil, nil, false
+}
+
+//pob2:src/Classes/PassiveSpec.lua:961-986
+func (s *PassiveSpec) GetEffectiveAllocationPath(node *SpecNode, altPath []*SpecNode) ([]*SpecNode, bool) {
+	path, ok := node.Path, node.HasPath
+	if altPath != nil {
+		path, ok = altPath, true
+	}
+	if altPath != nil || len(node.IntuitiveLeapLikesAffecting) > 0 {
+		return path, ok
+	}
+	pathRoot := node.PathRoot
+	pathRootMode := 0
+	if pathRoot != nil {
+		pathRootMode = pathRoot.AllocMode
+	}
+	if pathRootMode == 0 {
+		return path, ok
+	}
+	if s.AllocMode == 0 && pathRoot.Alloc {
+		path = append([]*SpecNode(nil), path...)
+		rootPath, _, found := s.GetAllocationPath(pathRoot, pathRootMode, true, pathRoot)
+		if !found {
+			rootPath = []*SpecNode{pathRoot}
+		}
+		for _, pathNode := range rootPath {
+			if !containsNode(path, pathNode) {
+				path = append(path, pathNode)
+			}
+		}
+		return path, true
+	} else if s.AllocMode > 0 && pathRootMode != s.AllocMode {
+		path, _, ok = s.GetAllocationPath(node, s.AllocMode, false, nil)
+	}
+	return path, ok
+}
+
+// AllocNode returns an error where the Lua's multiple-choice assert fails.
+//
+//pob2:src/Classes/PassiveSpec.lua:988-1035
+func (s *PassiveSpec) AllocNode(node *SpecNode, altPath []*SpecNode) error {
+	if !node.HasPath {
+		return nil
+	}
+	path, ok := s.GetEffectiveAllocationPath(node, altPath)
+	if !ok {
+		return nil
+	}
+	allocModeOf := func(n *SpecNode) int {
+		if node.AscendancyName != "" || n.Type == "Keystone" || n.Type == "Socket" || n.ContainJewelSocket {
+			return 0
+		}
+		return s.AllocMode
+	}
+	if len(node.IntuitiveLeapLikesAffecting) > 0 {
+		node.Alloc = true
+		node.AllocMode = allocModeOf(node)
+		s.AllocNodes[node.ID] = node
+	} else {
+		attributeIndex := s.AttributeIndex
+		if attributeIndex == 0 {
+			attributeIndex = 1
+		}
+		for _, pathNode := range path {
+			pathNode.Alloc = true
+			pathNode.AllocMode = allocModeOf(pathNode)
+			if pathNode.IsAttribute {
+				s.SwitchAttributeNode(pathNode.ID, attributeIndex)
+			}
+			s.AllocNodes[pathNode.ID] = pathNode
+		}
+	}
+
+	if node.IsMultipleChoiceOption {
+		var parent *SpecNode
+		for _, possibleParent := range node.Linked {
+			if possibleParent.IsMultipleChoice && possibleParent.Alloc && possibleParent != node {
+				parent = possibleParent
+				break
+			}
+		}
+		if parent == nil {
+			return fmt.Errorf("tree2: multiple choice option %d has no allocated parent", node.ID)
+		}
+		for _, optNode := range parent.Linked {
+			if optNode.IsMultipleChoiceOption && optNode.Alloc && optNode != node {
+				s.DeallocSingleNode(optNode)
+			}
+		}
+	}
+
+	s.BuildAllDependsAndPaths()
+	return nil
 }
 
 //pob2:src/Classes/PassiveSpec.lua:1094-1125
@@ -735,6 +1004,92 @@ func (s *PassiveSpec) DeallocSingleNode(node *SpecNode) {
 	delete(s.AllocNodes, node.ID)
 	if node.Type == "Mastery" {
 		delete(s.MasterySelections, node.ID)
+	}
+}
+
+//pob2:src/Classes/PassiveSpec.lua:1047-1060
+func (s *PassiveSpec) DeallocNode(node *SpecNode) {
+	for _, depNode := range node.Depends {
+		if depNode.IsAttribute {
+			delete(s.HashOverrides, depNode.ID)
+		}
+		s.DeallocSingleNode(depNode)
+	}
+	s.BuildAllDependsAndPaths()
+}
+
+//pob2:src/Classes/PassiveSpec.lua:1311-1350
+func (s *PassiveSpec) SetNodeDistanceToClassStart(root *SpecNode) {
+	root.DistanceToClassStart = 0
+	if !root.Alloc || !root.ConnectedToStart {
+		return
+	}
+	targetNodeID := s.CurClass.StartNodeID
+	nodeDistanceToRoot := map[int]int{root.ID: 0}
+	queue := []*SpecNode{root}
+	for o := 0; o < len(queue); o++ {
+		node := queue[o]
+		curDist := nodeDistanceToRoot[node.ID] + 1
+		for _, other := range node.Linked {
+			if other.ID == targetNodeID {
+				root.DistanceToClassStart = curDist - 1
+				return
+			}
+			if _, seen := nodeDistanceToRoot[other.ID]; other.Alloc && node.Type != "Mastery" && other.Type != "ClassStart" && other.Type != "AscendClassStart" && !seen {
+				nodeDistanceToRoot[other.ID] = curDist
+				queue = append(queue, other)
+			}
+		}
+	}
+}
+
+// BuildNodePathsToRootNodes keeps the Lua's deque in a map, since a push to the front can run below index 1.
+//
+//pob2:src/Classes/PassiveSpec.lua:1402-1473
+func (s *PassiveSpec) BuildNodePathsToRootNodes(roots []*SpecNode) {
+	q := make(map[int]*SpecNode, len(roots))
+	for i, node := range roots {
+		node.PathDist = 0
+		node.Path, node.HasPath = []*SpecNode{}, true
+		node.PathRoot = node
+		q[i+1] = node
+	}
+	qStart, qLen := 1, len(roots)
+	for qStart <= qLen {
+		node := q[qStart]
+		qStart++
+		if node.UnlockConstraint != nil && !s.unlocked(node) {
+			continue
+		}
+		nodeDist := node.PathDist
+		nodePath := node.Path
+		for _, other := range node.Linked {
+			weight := 1
+			if other.Alloc {
+				weight = 0
+			}
+			distViaNode := nodeDist + weight
+			otherDist := other.PathDist
+			preferNormalRoot := distViaNode == otherDist && node.PathRoot.AllocMode == 0 && other.PathRoot != nil && other.PathRoot.AllocMode != 0
+			canPath := other.UnlockConstraint == nil || s.unlocked(other)
+			if (distViaNode < otherDist || preferNormalRoot) &&
+				node.Type != "Mastery" && other.Type != "ClassStart" && other.Type != "AscendClassStart" && (!other.Alloc || s.CanPathThroughAllocMode(node.AllocMode, other)) &&
+				(node.AscendancyName == other.AscendancyName || (nodeDist == 0 && other.AscendancyName == "")) && canPath {
+				if weight == 0 {
+					qStart--
+					q[qStart] = other
+				} else {
+					qLen++
+					q[qLen] = other
+				}
+				other.PathDist = distViaNode
+				path := make([]*SpecNode, 0, len(nodePath)+1)
+				path = append(path, other)
+				path = append(path, nodePath...)
+				other.Path, other.HasPath = path, true
+				other.PathRoot = node.PathRoot
+			}
+		}
 	}
 }
 

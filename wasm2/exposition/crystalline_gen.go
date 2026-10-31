@@ -19,6 +19,7 @@ import (
 
 func init() {
 	crystallineNamespace("go-pob2", "exposition").Set("ParseBuild", crystallineWrap(js.FuncOf(crystallineFnExpositionParseBuild)))
+	crystallineNamespace("go-pob2", "exposition").Set("PassiveTreeJSON", crystallineWrap(js.FuncOf(crystallineFnExpositionPassiveTreeJSON)))
 	crystallineNamespace("go-pob2", "config").Set("InitLogging", crystallineWrap(js.FuncOf(crystallineFnConfigInitLogging)))
 	crystallineNamespace("go-pob2", "storage").Set("InitializeStorage", crystallineWrap(js.FuncOf(crystallineFnStorageInitializeStorage)))
 	crystallineNamespace("go-pob2", "storage").Set("DirEntryType", map[string]any{
@@ -1030,6 +1031,24 @@ func crystallineFnExpositionParseBuild(this js.Value, args []js.Value) (result a
 	return crystallineOk(crystallineMarshalExpositionCalculator(r0))
 }
 
+func crystallineFnExpositionPassiveTreeJSON(this js.Value, args []js.Value) (result any) {
+	defer crystallineRecover(&result)
+
+	if len(args) != 0 {
+		return crystallineFail("PassiveTreeJSON: expected 0 arguments, got " + strconv.Itoa(len(args)))
+	}
+
+	return crystallinePromise(func() any {
+		r0, r1 := PassiveTreeJSON()
+
+		if r1 != nil {
+			return crystallineErr(r1)
+		}
+
+		return crystallineOk(string(r0))
+	})
+}
+
 func crystallineFnConfigInitLogging(this js.Value, args []js.Value) (result any) {
 	defer crystallineRecover(&result)
 
@@ -1755,10 +1774,32 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 				switch field {
 				}
 			},
-			[]string{"Calculate", "ConfigRelevance", "Serialize", "SetConfigInput", "SetMainActiveSkill", "SetMainSocketGroup"},
+			[]string{"AllocateAttributeNode", "Calculate", "ClickNode", "ConfigRelevance", "HoverNode", "Serialize", "SetConfigInput", "SetMainActiveSkill", "SetMainSocketGroup", "TreeState"},
 			func(v *Calculator, method int, args []js.Value) any {
 				switch method {
 				case 0:
+					if len(args) != 2 {
+						return crystallineFail("AllocateAttributeNode: expected 2 arguments, got " + strconv.Itoa(len(args)))
+					}
+
+					a0, err := crystallineToInt(args[0])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					a1, err := crystallineToInt(args[1])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					r0 := v.AllocateAttributeNode(a0, a1)
+
+					if r0 != nil {
+						return crystallineErr(r0)
+					}
+
+					return crystallineOk(nil)
+				case 1:
 					if len(args) != 0 {
 						return crystallineFail("Calculate: expected 0 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -1777,7 +1818,39 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 							return crystallineMarshalExpositionOutputs(r0)
 						}))
 					})
-				case 1:
+				case 2:
+					if len(args) != 4 {
+						return crystallineFail("ClickNode: expected 4 arguments, got " + strconv.Itoa(len(args)))
+					}
+
+					a0, err := crystallineToInt(args[0])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					a1, err := crystallineToBool(args[1])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					a2, err := crystallineToInt(args[2])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					a3, err := crystallineToBool(args[3])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					r0, r1 := v.ClickNode(a0, a1, a2, a3)
+
+					if r1 != nil {
+						return crystallineErr(r1)
+					}
+
+					return crystallineOk(float64(r0))
+				case 3:
 					if len(args) != 1 {
 						return crystallineFail("ConfigRelevance: expected 1 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -1799,7 +1872,25 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}, func() any {
 						return crystallineMarshalCalculator2ConfigRelevance(&r0)
 					}))
-				case 2:
+				case 4:
+					if len(args) != 1 {
+						return crystallineFail("HoverNode: expected 1 arguments, got " + strconv.Itoa(len(args)))
+					}
+
+					a0, err := crystallineToInt(args[0])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					r0 := v.HoverNode(a0)
+
+					return crystallineJSON(func(b []byte, ok *bool) []byte {
+						b = crystallineAppendExpositionTreeHover(b, &r0, ok)
+						return b
+					}, func() any {
+						return crystallineMarshalExpositionTreeHover(&r0)
+					})
+				case 5:
 					if len(args) != 0 {
 						return crystallineFail("Serialize: expected 0 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -1811,7 +1902,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(string(r0))
-				case 3:
+				case 6:
 					if len(args) != 3 {
 						return crystallineFail("SetConfigInput: expected 3 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -1834,7 +1925,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					v.SetConfigInput(a0, a1, a2)
 
 					return nil
-				case 4:
+				case 7:
 					if len(args) != 1 {
 						return crystallineFail("SetMainActiveSkill: expected 1 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -1847,7 +1938,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					v.SetMainActiveSkill(a0)
 
 					return nil
-				case 5:
+				case 8:
 					if len(args) != 1 {
 						return crystallineFail("SetMainSocketGroup: expected 1 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -1860,6 +1951,23 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					v.SetMainSocketGroup(a0)
 
 					return nil
+				case 9:
+					if len(args) != 0 {
+						return crystallineFail("TreeState: expected 0 arguments, got " + strconv.Itoa(len(args)))
+					}
+
+					r0, r1 := v.TreeState()
+
+					if r1 != nil {
+						return crystallineErr(r1)
+					}
+
+					return crystallineOk(crystallineJSON(func(b []byte, ok *bool) []byte {
+						b = crystallineAppendExpositionTreeState(b, r0, ok)
+						return b
+					}, func() any {
+						return crystallineMarshalExpositionTreeState(r0)
+					}))
 				}
 
 				return nil
@@ -2083,6 +2191,160 @@ func crystallineMarshalExpositionOutputs(v *Outputs) any {
 			return out
 		}()
 	}))
+
+	return out
+}
+
+func crystallineMarshalExpositionTreeHover(v *TreeHover) any {
+	if v == nil {
+		return nil
+	}
+
+	out := crystallineObjects.New()
+
+	out.Set("Path", func() any {
+		items := v.Path
+		if items == nil {
+			return nil
+		}
+
+		out := make([]any, 0, len(items))
+		for i := range items {
+			out = append(out, float64(items[i]))
+		}
+
+		return out
+	}())
+	out.Set("Depends", func() any {
+		items := v.Depends
+		if items == nil {
+			return nil
+		}
+
+		out := make([]any, 0, len(items))
+		for i := range items {
+			out = append(out, float64(items[i]))
+		}
+
+		return out
+	}())
+
+	return out
+}
+
+func crystallineMarshalExpositionTreeNodeText(v *TreeNodeText) any {
+	if v == nil {
+		return nil
+	}
+
+	out := crystallineObjects.New()
+
+	out.Set("ID", float64(v.ID))
+	out.Set("Name", string(v.Name))
+	out.Set("Stats", crystallineJSON(func(b []byte, ok *bool) []byte {
+		if items0 := v.Stats; items0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '[')
+			for i0 := range items0 {
+				if i0 > 0 {
+					b = append(b, ',')
+				}
+
+				b = crystallineAppendString(b, string(items0[i0]))
+			}
+
+			b = append(b, ']')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			items := v.Stats
+			if items == nil {
+				return nil
+			}
+
+			out := make([]any, 0, len(items))
+			for i := range items {
+				out = append(out, string(items[i]))
+			}
+
+			return out
+		}()
+	}))
+
+	return out
+}
+
+func crystallineMarshalExpositionTreeState(v *TreeState) any {
+	if v == nil {
+		return nil
+	}
+
+	out := crystallineObjects.New()
+
+	out.Set("Alloc", func() any {
+		items := v.Alloc
+		if items == nil {
+			return nil
+		}
+
+		out := make([]any, 0, len(items))
+		for i := range items {
+			out = append(out, float64(items[i]))
+		}
+
+		return out
+	}())
+	out.Set("AllocMode", func() any {
+		items := v.AllocMode
+		if items == nil {
+			return nil
+		}
+
+		out := make([]any, 0, len(items))
+		for i := range items {
+			out = append(out, float64(items[i]))
+		}
+
+		return out
+	}())
+	out.Set("Text", crystallineJSON(func(b []byte, ok *bool) []byte {
+		if items0 := v.Text; items0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '[')
+			for i0 := range items0 {
+				if i0 > 0 {
+					b = append(b, ',')
+				}
+
+				b = crystallineAppendExpositionTreeNodeText(b, &items0[i0], ok)
+			}
+
+			b = append(b, ']')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			items := v.Text
+			if items == nil {
+				return nil
+			}
+
+			out := make([]any, 0, len(items))
+			for i := range items {
+				out = append(out, crystallineMarshalExpositionTreeNodeText(&items[i]))
+			}
+
+			return out
+		}()
+	}))
+	out.Set("ClassName", string(v.ClassName))
+	out.Set("AscendClassBaseName", string(v.AscendClassBaseName))
+	out.Set("Used", float64(v.Used))
+	out.Set("AscUsed", float64(v.AscUsed))
+	out.Set("AttributeIndex", float64(v.AttributeIndex))
 
 	return out
 }
@@ -2557,6 +2819,137 @@ func crystallineAppendExpositionOutputs(b []byte, v *Outputs, ok *bool) []byte {
 
 		b = append(b, '}')
 	}
+
+	return append(b, '}')
+}
+
+func crystallineAppendExpositionTreeHover(b []byte, v *TreeHover, ok *bool) []byte {
+	if v == nil {
+		return append(b, "null"...)
+	}
+
+	b = append(b, "{\"Path\":"...)
+	if items0 := v.Path; items0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '[')
+		for i0 := range items0 {
+			if i0 > 0 {
+				b = append(b, ',')
+			}
+
+			b = crystallineAppendNumber(b, float64(items0[i0]), ok)
+		}
+
+		b = append(b, ']')
+	}
+	b = append(b, ",\"Depends\":"...)
+	if items0 := v.Depends; items0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '[')
+		for i0 := range items0 {
+			if i0 > 0 {
+				b = append(b, ',')
+			}
+
+			b = crystallineAppendNumber(b, float64(items0[i0]), ok)
+		}
+
+		b = append(b, ']')
+	}
+
+	return append(b, '}')
+}
+
+func crystallineAppendExpositionTreeNodeText(b []byte, v *TreeNodeText, ok *bool) []byte {
+	if v == nil {
+		return append(b, "null"...)
+	}
+
+	b = append(b, "{\"ID\":"...)
+	b = crystallineAppendNumber(b, float64(v.ID), ok)
+	b = append(b, ",\"Name\":"...)
+	b = crystallineAppendString(b, string(v.Name))
+	b = append(b, ",\"Stats\":"...)
+	if items0 := v.Stats; items0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '[')
+		for i0 := range items0 {
+			if i0 > 0 {
+				b = append(b, ',')
+			}
+
+			b = crystallineAppendString(b, string(items0[i0]))
+		}
+
+		b = append(b, ']')
+	}
+
+	return append(b, '}')
+}
+
+func crystallineAppendExpositionTreeState(b []byte, v *TreeState, ok *bool) []byte {
+	if v == nil {
+		return append(b, "null"...)
+	}
+
+	b = append(b, "{\"Alloc\":"...)
+	if items0 := v.Alloc; items0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '[')
+		for i0 := range items0 {
+			if i0 > 0 {
+				b = append(b, ',')
+			}
+
+			b = crystallineAppendNumber(b, float64(items0[i0]), ok)
+		}
+
+		b = append(b, ']')
+	}
+	b = append(b, ",\"AllocMode\":"...)
+	if items0 := v.AllocMode; items0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '[')
+		for i0 := range items0 {
+			if i0 > 0 {
+				b = append(b, ',')
+			}
+
+			b = crystallineAppendNumber(b, float64(items0[i0]), ok)
+		}
+
+		b = append(b, ']')
+	}
+	b = append(b, ",\"Text\":"...)
+	if items0 := v.Text; items0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '[')
+		for i0 := range items0 {
+			if i0 > 0 {
+				b = append(b, ',')
+			}
+
+			b = crystallineAppendExpositionTreeNodeText(b, &items0[i0], ok)
+		}
+
+		b = append(b, ']')
+	}
+	b = append(b, ",\"ClassName\":"...)
+	b = crystallineAppendString(b, string(v.ClassName))
+	b = append(b, ",\"AscendClassBaseName\":"...)
+	b = crystallineAppendString(b, string(v.AscendClassBaseName))
+	b = append(b, ",\"Used\":"...)
+	b = crystallineAppendNumber(b, float64(v.Used), ok)
+	b = append(b, ",\"AscUsed\":"...)
+	b = crystallineAppendNumber(b, float64(v.AscUsed), ok)
+	b = append(b, ",\"AttributeIndex\":"...)
+	b = crystallineAppendNumber(b, float64(v.AttributeIndex), ok)
 
 	return append(b, '}')
 }
