@@ -23,7 +23,7 @@ var poe2MainSkillFloors = map[string][2]int{
 
 // poe2GemRequirementStats are the requirement outputs the gem requirements feed, with the skills-off
 // builds whose nonzero value agrees with PoB-PoE2's oracle.
-var poe2GemRequirementFloors = map[string]int{"ReqStr": 6546, "ReqDex": 6959, "ReqInt": 8753}
+var poe2GemRequirementFloors = map[string]int{"ReqStr": 6546, "ReqDex": 6961, "ReqInt": 8755}
 
 type poe2SkillDump struct {
 	Meta struct {

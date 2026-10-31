@@ -69,7 +69,8 @@ func processAttributeRequirements(env *Environment, requirementsTable []requirem
 				}
 				// Jarngreipr // if it's a melee weapon or melee skill gem and your Strength is greater than or equal to the Dex/Int requirement
 				strengthSatisfiesMelee := strengthSatisfiesMeleeFlag &&
-					reqSource.source == "Item" && reqSource.sourceItem.Base.Weapon != nil && weaponTypeInfo[reqSource.sourceItem.Base.Type].melee
+					(reqSource.source == "Item" && reqSource.sourceItem.Base.Weapon != nil && weaponTypeInfo[reqSource.sourceItem.Base.Type].melee ||
+						reqSource.source == "Gem" && reqSource.sourceGem != nil && reqSource.sourceGem.GemData != nil && gemTags(reqSource.sourceGem.GemData.Data)["melee"])
 				satisfyingAttributeValue := outVal
 				if gemAttributeRequirementsSatisfiedByHighestAttribute && reqSource.source == "Gem" {
 					satisfyingAttributeValue = highestAttributeValue
