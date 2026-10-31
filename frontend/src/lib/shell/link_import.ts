@@ -1,6 +1,6 @@
 import { syncWrap } from '$lib/go/worker';
 import { backendLoaded, currentBuildPath } from '$lib/global.js';
-import { downloadUrl, importLink, SITES, type Site } from '$lib/design/share';
+import { downloadUrl, importFailure, importLink, SITES, type Site } from '$lib/design/share';
 import { opening, unsavedName } from './build_name.svelte';
 import { resetAccountSession } from './account_session.svelte';
 import { DESKTOP } from '$lib/pwa/desktop';
@@ -121,8 +121,15 @@ export const linkCode = async (text: string) => (downloadUrl(text) ? downloadBui
 export const openImportLink = async (text: string) => {
   const protocol = protocolDownload(text) ?? openedDownload(text);
   const code = protocol ? await download(protocol) : await linkCode(text);
+  const kept = opening.modFlag;
   opening.modFlag = true;
-  const foreign = await openForeign(await syncWrap?.ImportCode(code), () => syncWrap?.ClearBuild());
+  const foreign = await Promise.resolve(syncWrap?.ImportCode(code))
+    .then((f) => openForeign(f, () => syncWrap?.ClearBuild()))
+    .catch((err: unknown) => {
+      // a refused build leaves the open one as it was
+      opening.modFlag = kept;
+      throw new Error(importFailure(err));
+    });
   currentBuildPath.current = '';
   if (foreign) return;
   unsavedName.imported = true;

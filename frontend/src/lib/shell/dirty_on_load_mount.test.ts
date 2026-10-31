@@ -2,8 +2,10 @@
 // Build.lua:89-100
 
 import { expect, it, beforeAll, afterEach, vi } from 'vitest';
-import { render, cleanup, waitFor, fireEvent } from '@testing-library/svelte';
+import { render, cleanup, waitFor, fireEvent, within } from '@testing-library/svelte';
 import { get } from 'svelte/store';
+import { deflateSync } from 'node:zlib';
+import { Blob as NodeBlob } from 'node:buffer';
 
 afterEach(cleanup);
 
@@ -34,14 +36,24 @@ globalThis.matchMedia = ((q: string) => ({
 
 const worker = vi.hoisted(() => {
   let n = 0;
-  const open = async () => (await import('$lib/global')).currentBuild.set({ n: ++n } as never);
+  const open = async () => (await import('$lib/global')).currentBuild.set({ n: ++n, ExportParty: () => Promise.resolve(false) } as never);
   return {
-    ImportCode: vi.fn((code: string) => open().then(() => void code)),
-    OpenBuild: vi.fn((path: string) => open().then(() => void path)),
+    ImportCode: vi.fn((code: string) => (code === POE2_CODE ? Promise.resolve({ game: 'poe2', xml: '' }) : open().then(() => void code))),
+    OpenBuild: vi.fn((path: string) => (path === '/Foreign' ? Promise.resolve({ game: 'poe2', xml: '' }) : open().then(() => void path))),
     NewBuild: vi.fn(() => open()),
     ListBuilds: vi.fn((dir: string) =>
       Promise.resolve(
-        dir === '' ? [{ Name: 'Saved', Type: 'file', Class: 'Witch', LastEdit: new Date().toISOString(), Level: 90, Ascendancy: '', MainSkill: '' }] : []
+        dir === ''
+          ? ['Saved', 'Foreign'].map((Name) => ({
+              Name,
+              Type: 'file',
+              Class: 'Witch',
+              LastEdit: new Date().toISOString(),
+              Level: 90,
+              Ascendancy: '',
+              MainSkill: ''
+            }))
+          : []
       )
     ),
     GetUndoHistoryWhenRecorded: vi.fn(() => Promise.resolve({ steps: [], undone: 0, max: 50 })),
@@ -58,9 +70,13 @@ vi.mock('$app/navigation', () => ({ goto, pushState: vi.fn() }));
 vi.mock('$app/state', () => ({ page: { state: {}, url: new URL('http://localhost/') } }));
 
 vi.stubEnv('VITE_DESKTOP', '1');
+vi.stubGlobal('Blob', NodeBlob);
+// any code the worker answers with a PoE2 build; the Import page checks it inflates
+const POE2_CODE = deflateSync('<PathOfBuilding2/>').toString('base64');
 const { openImportLink } = await import('./link_import');
 const AppTopBar = (await import('./AppTopBar.svelte')).default;
 const AppBuildList = (await import('./AppBuildList.svelte')).default;
+const AppImportExport = (await import('./AppImportExport.svelte')).default;
 const { currentBuild, currentBuildPath, markBackendAsLoaded } = await import('$lib/global');
 get(markBackendAsLoaded)();
 const { opening } = await import('./build_name.svelte');
@@ -139,4 +155,43 @@ it('a new build opens saved (BuildList.lua:39-41)', async () => {
   list.unmount();
   const view = bar();
   await view.findByRole('button', { name: SAVED });
+});
+
+it('a refused import leaves a saved build saved', async () => {
+  const list = await fromList();
+  await fireEvent.dblClick(list.container.querySelector('[data-build="Saved"]')!);
+  await waitFor(() => expect(get(currentBuild)).toBeTruthy());
+  list.unmount();
+  await expect(openImportLink(POE2_CODE)).rejects.toThrow('Path of Exile 2');
+  const view = bar();
+  await view.findByRole('button', { name: SAVED });
+});
+
+it('a refused import on the Import page leaves a saved build saved', async () => {
+  const list = await fromList();
+  await fireEvent.dblClick(list.container.querySelector('[data-build="Saved"]')!);
+  await waitFor(() => expect(get(currentBuild)).toBeTruthy());
+  list.unmount();
+  const page = render(AppImportExport);
+  const box = within(page.getByRole('region', { name: 'Build import' }));
+  await fireEvent.input(box.getByRole('textbox', { name: /^To import a build/ }), { target: { value: POE2_CODE } });
+  await fireEvent.click(box.getByRole('radio', { name: /Import as a new build/ }));
+  const go = box.getByRole<HTMLButtonElement>('button', { name: 'Import' });
+  await waitFor(() => expect(go.disabled).toBe(false));
+  await fireEvent.click(go);
+  await waitFor(() => expect(box.getByRole('alert').textContent).toContain('Path of Exile 2'));
+  page.unmount();
+  const view = bar();
+  await view.findByRole('button', { name: SAVED });
+});
+
+it('a build refused from the list leaves an imported build unsaved', async () => {
+  await openImportLink('gopob-file:T');
+  const list = await fromList();
+  await fireEvent.dblClick(list.container.querySelector('[data-build="Foreign"]')!);
+  await waitFor(() => expect(worker.OpenBuild).toHaveBeenCalledWith('/Foreign'));
+  await waitFor(() => expect(currentBuildPath.current).toBe(''));
+  list.unmount();
+  const view = bar();
+  await view.findByRole('button', { name: UNSAVED });
 });

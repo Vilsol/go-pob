@@ -107,7 +107,7 @@ export const DROPPED_SITES: { label: string; match: RegExp; text: string }[] = [
 
 export type ImportMode = 'new' | 'replace' | 'compare';
 
-export type Verdict = { valid: boolean; text: string; site?: string; json?: boolean };
+export type Verdict = { valid: boolean; text: string; site?: string; json?: boolean; game?: 'poe2' };
 
 /* ImportTab.lua:590-594 */
 export const importLink = (raw: string): string => {
@@ -134,10 +134,24 @@ export const downloadUrl = (raw: string): { site: string; url: string } | undefi
 };
 
 /* ImportTab.lua:609-628 */
+export const NOT_A_CODE = 'this is not a Path of Building build code: it could not be decoded';
+export const unreadableBuild = (why: string) => `the build code holds no readable build (${why})`;
+
+// the worker's decode and parse errors, in the words the import messages use
+export const importFailure = (err: unknown) => {
+  const text = err instanceof Error ? err.message : String(err);
+  if (text.startsWith('failed to create a zlib reader:')) return NOT_A_CODE;
+  const xml = /^failed to parse build as xml: ([\s\S]*)$/.exec(text)?.[1];
+  return xml === undefined ? text : unreadableBuild(xml);
+};
+
+export const POE2_CHARACTER_DISABLED = 'This is a Path of Exile 2 character. Path of Exile 2 builds are not supported yet.';
+export const POE2_CHARACTER = 'This is a Path of Exile 2 character, and Path of Exile 2 characters cannot be imported yet. Import its build code instead.';
+
 export const jsonVerdict = (raw: string): Verdict | undefined => {
   const t = importLink(raw);
   if (!/^\{[\s\S]*\}$/.test(t)) return undefined;
-  let data: { character?: { equipment?: unknown; passives?: unknown } } | null;
+  let data: { character?: { equipment?: unknown; passives?: { specialisations?: unknown } } } | null;
   try {
     data = JSON.parse(t) as typeof data;
   } catch {
@@ -146,6 +160,8 @@ export const jsonVerdict = (raw: string): Verdict | undefined => {
   const character = data?.character;
   if (!character) return { valid: false, text: 'Invalid JSON format (character missing)' };
   if (!character.equipment || !character.passives) return { valid: false, text: 'Invalid JSON format (equipment or passives missing)' };
+  // ImportTab.lua:946-953 (PoB-PoE2)
+  if (character.passives.specialisations) return { valid: true, text: 'JSON is valid', json: true, game: 'poe2' };
   return { valid: true, text: 'JSON is valid', json: true };
 };
 

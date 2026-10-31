@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { tick, untrack } from 'svelte';
+  import { onMount, tick, untrack } from 'svelte';
+  import { proxy } from 'comlink';
   import { get } from 'svelte/store';
   import { loadSkillTree, skillTree } from '$lib/skill_tree';
   import type { Tree } from '$lib/skill_tree/types';
@@ -896,6 +897,10 @@
   $effect(() => {
     void $currentBuild;
     void untrack(() => readShared());
+  });
+  onMount(() => {
+    void syncWrap?.OnSettingsChanged(proxy(() => void readShared())).catch(logError);
+    return () => void syncWrap?.OnSettingsChanged(undefined).catch(logError);
   });
 
   const editedText = (ed: Editing) => {

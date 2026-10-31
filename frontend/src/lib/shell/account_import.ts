@@ -61,7 +61,7 @@ export const downloadCharacter = async (
   return { ok: true, body };
 };
 
-const HISTORY_KEY = 'import:accounts';
+export const HISTORY_KEY = 'import:accounts';
 const LAST_ACCOUNT_KEY = 'import:lastAccount';
 const LAST_REALM_KEY = 'import:lastRealm';
 

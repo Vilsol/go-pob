@@ -199,6 +199,16 @@ describe('with the PoE2 flag off', () => {
     const build = workerInstance.currentBuild;
     open.mockClear();
     toasts.set([]);
+    const { accountSession } = await import('./account_session.svelte');
+    const character = { name: 'Char', realm: 'pc', league: 'Standard', class: 'Witch', level: 90 };
+    Object.assign(accountSession, {
+      stage: 'SELECTCHAR',
+      status: 'Character list successfully retrieved.',
+      accountName: 'acc',
+      characters: [character],
+      selected: character
+    });
+    const session = JSON.stringify(accountSession);
     const List = (await import('./AppBuildList.svelte')).default;
     const page = render(List);
     await fireEvent.click(await page.findByRole('link', { name: NAME }));
@@ -207,6 +217,7 @@ describe('with the PoE2 flag off', () => {
     expect(workerInstance.currentBuild).toBe(build);
     expect(open).not.toHaveBeenCalled();
     expect(get(poe2Build)).toBeUndefined();
+    expect(JSON.stringify(accountSession)).toBe(session);
   });
 });
 

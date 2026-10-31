@@ -3,12 +3,12 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
   import { base } from '$app/paths';
-  import { buildRevision, currentBuild, currentBuildPath, outputs, UITick } from '$lib/global.js';
+  import { buildRevision, currentBuild, currentBuildPath, outputs, poe2Enabled, UITick } from '$lib/global.js';
   import { syncWrap } from '$lib/go/worker';
   import { logError } from '$lib/utils';
   import { addToast } from '$lib/design/toast';
   import ImportExportPage from '$lib/design/ImportExportPage.svelte';
-  import { EXPORT_SITES, downloadUrl, jsonVerdict, type ImportMode } from '$lib/design/share';
+  import { EXPORT_SITES, POE2_CHARACTER, POE2_CHARACTER_DISABLED, downloadUrl, importFailure, jsonVerdict, type ImportMode } from '$lib/design/share';
   import { REALMS, UNAVAILABLE, loadExportSite, saveExportSite } from './import_export';
   import { identityOf } from './identity';
   import { downloadBuild, shareBuild } from './link_import';
@@ -100,21 +100,30 @@
     }
     // ImportTab.lua:663-666
     const run = () => {
+      const kept = opening.modFlag;
       opening.modFlag = true;
       return syncWrap
         ?.ImportCode(text)
-        .then(async (foreign) => {
-          if (await openForeign(foreign, () => syncWrap?.ClearBuild())) {
-            currentBuildPath.current = '';
-            return;
+        .then((foreign) => openForeign(foreign, () => syncWrap?.ClearBuild()))
+        .then(
+          (opened) => {
+            if (opened) {
+              currentBuildPath.current = '';
+              return;
+            }
+            resetAccountSession();
+            if (how === 'new') {
+              currentBuildPath.current = '';
+              unsavedName.imported = true;
+            }
+            return goto(`${base}/tree`);
+          },
+          (err: unknown) => {
+            // a refused build leaves the open one as it was
+            opening.modFlag = kept;
+            throw err;
           }
-          resetAccountSession();
-          if (how === 'new') {
-            currentBuildPath.current = '';
-            unsavedName.imported = true;
-          }
-          return goto(`${base}/tree`);
-        })
+        )
         .catch(failed);
     };
     if (how === 'replace') {
@@ -131,11 +140,13 @@
   const onimport = (text: string, how: ImportMode) => {
     importError = null;
     const failed = (err: unknown) => {
-      importError = err instanceof Error ? err.message : String(err);
+      importError = importFailure(err);
     };
     imported = null;
     // ImportTab.lua:701-705
-    if (jsonVerdict(text)?.valid) {
+    const json = jsonVerdict(text);
+    if (json?.game === 'poe2') return void (importError = $poe2Enabled ? POE2_CHARACTER : POE2_CHARACTER_DISABLED);
+    if (json?.valid) {
       void (async () => {
         const items = await syncWrap?.ImportItemsAndSkills(text);
         if (!items?.ok) return void (importError = items?.text ?? null);

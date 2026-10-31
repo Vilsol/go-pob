@@ -96,3 +96,32 @@ test("a build saved in one tab shows in another tab's build list without a reloa
   appA.assertNoErrors();
   appB.assertNoErrors();
 });
+
+test("a set shared in one tab shows in another tab's shared item sets without a reload", async ({ context }) => {
+  const a = await context.newPage();
+  const b = await context.newPage();
+  const appA = await App.open(a, 'shared sets: sharing');
+  const appB = await App.open(b, 'shared sets: other');
+  const manage = async (app: App) => {
+    await app.goTo('Items');
+    await app.page.getByRole('button', { name: 'Manage…' }).click();
+    return app.page.getByRole('dialog', { name: 'Manage item sets' }).getByRole('region', { name: 'Shared item sets' });
+  };
+  const regionA = await manage(appA);
+  const regionB = await manage(appB);
+  const sharedB = regionB.getByRole('listbox', { name: 'Shared sets' }).getByRole('option');
+  await expect(sharedB).toHaveCount(0);
+
+  await regionA.getByRole('button', { name: 'Share set' }).click();
+  await expect(regionA.getByRole('listbox', { name: 'Shared sets' }).getByRole('option')).toHaveCount(1);
+  await expect(sharedB, "the other tab's list shows the shared set").toHaveCount(1);
+
+  await sharedB.first().click();
+  await regionB.getByRole('button', { name: 'Remove' }).click();
+  await regionB.getByRole('group', { name: 'Confirm shared delete' }).getByRole('button', { name: 'Delete' }).click();
+  await expect(sharedB).toHaveCount(0);
+  await expect(regionA.getByRole('listbox', { name: 'Shared sets' }).getByRole('option'), "the sharing tab's list drops the removed set").toHaveCount(0);
+
+  appA.assertNoErrors();
+  appB.assertNoErrors();
+});

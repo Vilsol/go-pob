@@ -159,19 +159,19 @@
     const b = byId(id);
     if (!b) return;
     const path = pathOf(b.folder, b.name);
-    const kept = { path: currentBuildPath.current, name: { ...unsavedName } };
+    const kept = { path: currentBuildPath.current, name: { ...unsavedName }, modFlag: opening.modFlag };
     opening.modFlag = false;
     currentBuildPath.current = path;
     unsavedName.imported = false;
     unsavedName.predefined = undefined;
-    resetAccountSession();
     syncWrap
       .OpenBuild(path)
       .then((foreign) =>
-        // a refused build leaves the open one as it was
-        openForeign(foreign, () => syncWrap.ClearBuild()).catch((err: Error) => {
+        openForeign(foreign, () => syncWrap.ClearBuild()).then(resetAccountSession, (err: Error) => {
+          // a refused build leaves the open one as it was
           currentBuildPath.current = kept.path;
           Object.assign(unsavedName, kept.name);
+          opening.modFlag = kept.modFlag;
           addToast(err.message);
         })
       )

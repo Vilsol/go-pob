@@ -44,7 +44,8 @@ vi.mock('$lib/go/worker', async () => {
 });
 
 const { bootWorker, loadCorpusBuild } = await import('../../../harness/component/go_runtime');
-const { currentBuild, outputs } = await import('$lib/global');
+const { currentBuild, outputs, poe2Enabled } = await import('$lib/global');
+const { NOT_A_CODE, POE2_CHARACTER, POE2_CHARACTER_DISABLED, unreadableBuild } = await import('$lib/design/share');
 const { workerInstance } = await import('$lib/go/sync_worker');
 const types = await import('$lib/types');
 
@@ -252,6 +253,19 @@ describe('import/+page.svelte', () => {
       expect(serialize(workerInstance.currentBuild)).toBe(before);
     });
 
+    it('says a downloaded page that is not a build code is not one, and leaves the build alone', async () => {
+      vi.stubGlobal(
+        'fetch',
+        vi.fn(() => Promise.resolve(new Response('<html>not found</html>', { status: 200, headers: { 'Content-Type': 'text/plain' } })))
+      );
+      const before = serialize(workerInstance.currentBuild);
+      const box = await typeLink();
+      await fireEvent.click(box.getByRole('button', { name: 'Import' }));
+      await confirmImport();
+      await vi.waitFor(() => expect(box.getByRole('alert').textContent).toBe(`Import failed: ${NOT_A_CODE}`));
+      expect(serialize(workerInstance.currentBuild)).toBe(before);
+    });
+
     it("reports the site's error status the proxy passed through, and leaves the build alone", async () => {
       vi.stubGlobal(
         'fetch',
@@ -293,6 +307,44 @@ describe('import/+page.svelte', () => {
     tree.mockRestore();
   });
 
+  // ImportTab.lua:946-953 (PoB-PoE2): a PoE2 character's passives carry its weapon-set specialisations
+  it.each([false, true])('a PoE2 character JSON is refused with the flag %s, and the build left alone', async (on) => {
+    const json = JSON.stringify({
+      character: { name: 'Two', class: 'Sorceress', level: 1, equipment: [], jewels: [], passives: { hashes: [], specialisations: { set1: [], set2: [] } } }
+    });
+    poe2Enabled.set(on);
+    const call = vi.spyOn(workerInstance, 'ImportItemsAndSkills');
+    const tree = vi.spyOn(workerInstance, 'ImportPassiveTreeAndJewels');
+    const before = serialize(workerInstance.currentBuild);
+    const { box } = await mount();
+    await fireEvent.input(box.getByRole('textbox', { name: /To import a build/ }), { target: { value: json } });
+    await fireEvent.click(box.getByRole('button', { name: 'Import' }));
+    await vi.waitFor(() => expect(box.getByRole('alert').textContent).toBe(`Import failed: ${on ? POE2_CHARACTER : POE2_CHARACTER_DISABLED}`));
+    expect(call).not.toHaveBeenCalled();
+    expect(tree).not.toHaveBeenCalled();
+    expect(serialize(workerInstance.currentBuild)).toBe(before);
+    poe2Enabled.set(false);
+    call.mockRestore();
+    tree.mockRestore();
+  });
+
+  // Build.lua:2222-2231
+  it.each([
+    ['hello', 'EOF'],
+    ['<PathOfBuilding', 'XML syntax error on line 1: unexpected EOF']
+  ])('a code that inflates to something other than a build (%s) says its XML is unreadable', async (xml, why) => {
+    vi.stubGlobal('Blob', NodeBlob);
+    const before = serialize(workerInstance.currentBuild);
+    const { box } = await mount();
+    await fireEvent.input(box.getByRole('textbox', { name: /To import a build/ }), { target: { value: types.pob.CompressEncode(xml).unwrap() } });
+    await fireEvent.click(box.getByRole('radio', { name: /Import as a new build/ }));
+    const go = box.getByRole<HTMLButtonElement>('button', { name: 'Import' });
+    await vi.waitFor(() => expect(go.disabled).toBe(false));
+    await fireEvent.click(go);
+    await vi.waitFor(() => expect(box.getByRole('alert').textContent).toBe(`Import failed: ${unreadableBuild(why)}`));
+    expect(serialize(workerInstance.currentBuild)).toBe(before);
+  });
+
   // ImportTab.lua:321-472, 813-1020
   describe('the account import', () => {
     const list = [
@@ -318,6 +370,17 @@ describe('import/+page.svelte', () => {
       const { accountSession, resetAccountSession } = await import('$lib/shell/account_session.svelte');
       resetAccountSession();
       accountSession.lastLeague = undefined;
+    });
+
+    it('an account another tab adds to the history shows in this one', async () => {
+      const chars = await section();
+      const others = ['Other#1111', ...JSON.parse(localStorage.getItem('import:accounts') ?? '[]')];
+      localStorage.setItem('import:accounts', JSON.stringify(others));
+      window.dispatchEvent(new StorageEvent('storage', { key: 'import:accounts' }));
+      const pick = await vi.waitFor(() => chars.getByRole<HTMLSelectElement>('combobox', { name: 'Account history' }));
+      expect([...pick.options].map((o) => o.textContent)).toContain('Other#1111');
+      localStorage.setItem('import:accounts', JSON.stringify(others.slice(1)));
+      window.dispatchEvent(new StorageEvent('storage', { key: 'import:accounts' }));
     });
 
     it('needs the discriminator, says the private-profile message, and writes nothing', async () => {

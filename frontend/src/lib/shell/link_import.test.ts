@@ -8,7 +8,7 @@ vi.mock('$lib/go/worker', () => ({ syncWrap: worker, syncWorker: undefined }));
 const { compareName, importLanding, importParam, openImportLink } = await import('./link_import');
 const { currentBuildPath } = await import('$lib/global');
 const { unsavedName } = await import('./build_name.svelte');
-const { EXPORT_SITES } = await import('$lib/design/share');
+const { EXPORT_SITES, NOT_A_CODE } = await import('$lib/design/share');
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -139,4 +139,10 @@ describe('opening a build from a link', () => {
     expect(compareName('eNrtfQ', '')).toBe('Imported build');
     expect(compareName('https://pobb.in/abc', 'Mine')).toBe('Mine');
   });
+});
+
+it('a link whose download is not a build code says so', async () => {
+  worker.ImportCode.mockImplementation(() => Promise.reject(new Error('failed to create a zlib reader: illegal base64 data at input byte 0')));
+  await expect(openImportLink('not-a-code')).rejects.toThrow(NOT_A_CODE);
+  worker.ImportCode.mockImplementation((code: string) => Promise.resolve(void code));
 });

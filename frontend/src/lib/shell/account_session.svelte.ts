@@ -3,7 +3,8 @@ import { outputs } from '$lib/global.js';
 import { syncWrap } from '$lib/go/worker';
 import { logError } from '$lib/utils';
 import { NEGATIVE, POSITIVE, type AccountCharacter, type ImportStage } from '$lib/design/account';
-import { downloadCharacter, fetchCharacterList, lastAccount, lastRealm, loadHistory, saveAccount } from './account_import';
+import { downloadCharacter, fetchCharacterList, HISTORY_KEY, lastAccount, lastRealm, loadHistory, saveAccount } from './account_import';
+import { followOtherTabs } from '$lib/storage/tabs';
 import { predefinedName, unsavedName } from './build_name.svelte';
 
 // ImportTab.lua:321-472, 813-1020
@@ -20,6 +21,16 @@ export const accountSession = $state({
   selected: undefined as AccountCharacter | undefined,
   ignoreWeaponSwap: false
 });
+
+followOtherTabs(
+  HISTORY_KEY,
+  {
+    set: (h: string[]) => {
+      accountSession.history = h;
+    }
+  },
+  loadHistory
+);
 
 export const resetAccountSession = () => {
   Object.assign(accountSession, { status: 'Idle', stage: 'GETACCOUNTNAME', characters: [], selected: undefined, accountName: '' });
