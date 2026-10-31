@@ -173,7 +173,19 @@ func doActorLifeManaSpiritReservation(actor *Actor) {
 			skillCfg := activeSkill.SkillCfg
 			mult := floor(skillModList.More(skillCfg, "ReservationMultiplier"), 4)
 			pool := map[string]*reservationPool{"Mana": {}, "Life": {}, "Spirit": {}}
-			// TODO: the Companion: and Spectre: reservations (CalcDefence.lua:205-216) need activeSkill.minion.
+			// PoB also writes the minion's name into the shared grantedEffect.name for the breakdown; data.skills
+			// is shared across builds here, so only the gem instance's nameSpec takes it.
+			//pob2:block:src/Modules/CalcDefence.lua:205-216
+			if srcInstance := activeSkill.ActiveEffect.SrcInstance; srcInstance != nil && srcInstance.DisplayEffect != nil && activeSkill.Minion != nil {
+				if strings.HasPrefix(skillCfg.SkillName, "Companion:") {
+					activeSkill.SkillData["spiritReservationPercent"] = activeSkill.Minion.MinionData.CompanionReservation
+					srcInstance.NameSpec = "Companion: " + activeSkill.Minion.MinionData.Name // for socket group
+				}
+				if strings.HasPrefix(skillCfg.SkillName, "Spectre:") {
+					activeSkill.SkillData["spiritReservationFlat"] = float64(activeSkill.Minion.MinionData.SpectreReservation)
+					srcInstance.NameSpec = "Spectre: " + activeSkill.Minion.MinionData.Name // for socket group
+				}
+			}
 			pool["Mana"].baseFlat = skillReservationValue(activeSkill, "manaReservationFlat")
 			pool["Spirit"].baseFlat = skillReservationValue(activeSkill, "spiritReservationFlat")
 			pool["Spirit"].baseFlat = pool["Spirit"].baseFlat + skillModList.Sum(mod.TypeBase, skillCfg, "ExtraSpirit")

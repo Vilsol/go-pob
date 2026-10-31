@@ -76,6 +76,7 @@ var rdGeneratorsPoE2 = []rdGenerator{
 	rdGeneratorsPoE2Skills[0],
 	rdGeneratorsPoE2Skills[1],
 	rdGeneratorsPoE2Skills[2],
+	rdGeneratorsPoE2Skills[3],
 }
 
 const p2eUsage = "usage: poe2-data-emit <dump.json> <out.go> <bases|runes|constants|gems|legion>"
@@ -499,6 +500,7 @@ var p2eConstantTables = []struct{ key, goName string }{
 	{"monsterArmourTable", "MonsterArmourTable"},
 	{"monsterAilmentThresholdTable", "MonsterAilmentThresholdTable"},
 	{"monsterPoiseThresholdTable", "MonsterPoiseThresholdTable"},
+	{"minionLevelTable", "MinionLevelTable"},
 }
 
 var p2eConstantPairTables = []struct{ key, goName, doc string }{

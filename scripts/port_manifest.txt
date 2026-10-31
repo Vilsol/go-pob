@@ -144,6 +144,9 @@ data/poe2/runes_generated.go        GENERATED  scripts/gopob/regendata_poe2.go
 data/poe2/skill_globals_generated.go  GENERATED  scripts/gopob/regendata_poe2_skills.go
 data/poe2/skill_overlay_generated.go  GENERATED  scripts/gopob/regendata_poe2_skills.go
 data/poe2/skill_stat_map_generated.go GENERATED  scripts/gopob/regendata_poe2_skills.go
+data/poe2minions/minions.go         PORT       src/Modules/Data.lua,src/Export/Scripts/minions.lua
+data/poe2/minion_templates.go       GO-NATIVE  the Go struct one generated minion template row fills; the directives that fill it are ported in scripts/gopob/regendata_poe2_skills.lua
+data/poe2/minion_templates_generated.go GENERATED  scripts/gopob/regendata_poe2_skills.go
 data/poe2/skills.go                 GO-NATIVE  Go struct declarations and binary searches over the generated PoE2 skill overlay, global stat map and Global.lua enums, standing in for PoB-PoE2's data.skills[id], data.skillStatMap[stat] and SkillTypeName[id] lookups; each cites the Lua it replaces
 data/poe2skills/export.go           PORT       src/Export/Scripts/skills.lua
 data/poe2skills/gems.go             PORT       src/Modules/Data.lua
@@ -527,6 +530,7 @@ calculator2/calc_perform_charges.go PORT       src/Modules/CalcPerform.lua
 calculator2/calc_perform_buffs.go PORT         src/Modules/CalcPerform.lua,src/Modules/Data.lua,src/Classes/ModStore.lua
 calculator2/calc_perform_requirements.go PORT    src/Modules/CalcPerform.lua,src/Modules/CalcSetup.lua
 calculator2/calc_perform_weapon.go PORT        src/Modules/CalcPerform.lua
+calculator2/calc_minion.go          PORT       src/Modules/CalcActiveSkill.lua,src/Modules/CalcPerform.lua,src/Modules/Build.lua
 calculator2/calc_offence.go PORT              src/Modules/CalcOffence.lua,src/Modules/CalcTools.lua,src/Modules/Common.lua
 calculator2/calc_offence_data.go PORT         src/Modules/Data.lua
 calculator2/calc_offence_setup.go PORT        src/Modules/CalcOffence.lua

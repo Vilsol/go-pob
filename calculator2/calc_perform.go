@@ -826,6 +826,7 @@ func perform(env *Environment) {
 		activeSkill.SkillModList = newModList()
 		activeSkill.SkillModList.Parent = activeSkill.BaseSkillModList
 	}
+	newMinionModDBs(env)
 
 	env.Player.Output = map[string]float64{}
 	env.Enemy.Output = map[string]float64{}
@@ -847,11 +848,16 @@ func perform(env *Environment) {
 	applyEnemyModifiers(env.Player, true)
 	applyEnemyModifiers(env.Enemy, true)
 
-	performActiveSkills(env)
+	minionCount := performActiveSkills(env)
 
 	// Stat sorting category calcs
 	//pob2:block:src/Modules/CalcPerform.lua:1450
 	output["EffectiveLootRarityMod"] = calcLibMod(modDB, nil, "LootRarity")
+
+	//pob2:block:src/Modules/CalcPerform.lua:1453-1455
+	if minionCount == 1 {
+		modDB.Conditions["OnlyMinion"] = true
+	}
 
 	// Special Rarity / Quantity Calc for Bisco's
 	//pob2:block:src/Modules/CalcPerform.lua:1458-1461
@@ -925,6 +931,8 @@ func perform(env *Environment) {
 	//pob2:block:src/Modules/CalcPerform.lua:3382-3383
 	doActorCharges(env, env.Enemy)
 	doActorMisc(env, env.Enemy)
+
+	minionLifePools(env, buffState.buffs)
 
 	applyAbyssalWasting(env)
 

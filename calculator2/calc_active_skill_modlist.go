@@ -571,8 +571,8 @@ func truthy(v any) bool {
 }
 
 // buildActiveSkillModList builds the list of modifiers for the given active skill. Multipart skills,
-// mine and stage counts, totem level and the minion it creates are not ported: PoE2's skill data here
-// carries no parts, the gem instance no saved counts, and data has no minionLevelTable.
+// mine and stage counts and totem level are not ported: PoE2's skill data here carries no parts and the
+// gem instance no saved counts.
 //
 //pob2:src/Modules/CalcActiveSkill.lua:425-1133
 func buildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
@@ -1091,16 +1091,7 @@ func buildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 	}
 
 	// Create minion
-	//pob2:block:src/Modules/CalcActiveSkill.lua:923-943
-	var minionList []string
-	overlay := activeGrantedEffect.Overlay
-	switch {
-	case len(overlay.MinionList) > 0 && strings.HasPrefix(activeGrantedEffect.Name, "Spectre"):
-	case len(overlay.MinionList) > 0 && strings.HasPrefix(activeGrantedEffect.Name, "Companion"):
-	case len(overlay.MinionList) > 0:
-		minionList = append(minionList, overlay.MinionList...)
-	}
-	activeSkill.MinionList = minionList
+	createMinion(env, activeSkill)
 
 	// Separate global effect modifiers (mods that can affect defensive stats or other skills)
 	//pob2:block:src/Modules/CalcActiveSkill.lua:1053-1132

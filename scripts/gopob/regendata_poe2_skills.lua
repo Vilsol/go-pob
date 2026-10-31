@@ -3,14 +3,16 @@
 --   statmap  src/Data/SkillStatMap.lua, the global stat-to-mod map
 --   overlay  the hand-written half of src/Data/Skills/*.lua (from src/Export/Skills/*.txt): per granted
 --            effect its directive fields, and per stat set its baseFlags, baseMods and statMap
--- usage: regendata_poe2_skills.lua <out.json> <globals|statmap|overlay>
+--   minions  the directives of src/Export/Minions/{Minions,Spectres}.txt: per #emit its file, key,
+--            variety, #limit, #flags, #mod lines and extra skills
+-- usage: regendata_poe2_skills.lua <out.json> <globals|statmap|overlay|minions>
 -- The skill files are loaded again with Data.lua's own mod constructors but without processMod, so a
 -- mod carries no source and no notMinionStat tag; the calc applies both when it loads. A mod is
 -- {name, type, value, flags, keywordFlags, tags} as the ModCache dump writes it (value and type null
 -- when nil); a tag's numeric skillType is written as its SkillType name.
 local outPath, which = arg[1], arg[2]
-assert(outPath and (which == "globals" or which == "statmap" or which == "overlay"),
-	"usage: regendata_poe2_skills.lua <out.json> <globals|statmap|overlay>")
+assert(outPath and (which == "globals" or which == "statmap" or which == "overlay" or which == "minions"),
+	"usage: regendata_poe2_skills.lua <out.json> <globals|statmap|overlay|minions>")
 
 dofile("HeadlessWrapper.lua")
 
@@ -466,6 +468,81 @@ local function dumpOverlay()
 	return "[\n" .. table.concat(rows, ",\n") .. "\n]\n"
 end
 
+-- Export/Scripts/minions.lua's directives, kept to their template half: the state each #emit reads.
+local function dumpMinions()
+	local rows = {}
+	for _, file in ipairs({ "Spectres", "Minions" }) do
+		local state = {}
+		local function monster(args)
+			state.varietyId = nil
+			state.name = nil
+			state.limit = nil
+			state.extraFlags = state.extraFlags or {}
+			state.extraModList = {}
+			state.extraSkillList = {}
+			for a in args:gmatch("%S+") do
+				if state.varietyId == nil then
+					state.varietyId = a
+				elseif state.name == nil then
+					if a == "#" then
+						state.name = state.varietyId
+					else
+						state.name = a
+					end
+				else
+					table.insert(state.extraSkillList, a)
+				end
+			end
+			state.varietyId = state.varietyId or args
+			state.name = state.name or args
+		end
+		for line in io.lines("Export/Minions/" .. file .. ".txt") do
+			local spec, args = line:match("#(%a+) ?(.*)")
+			if spec == "monster" or spec == "spectre" then
+				monster(args)
+			elseif spec == "limit" then
+				state.limit = args
+			elseif spec == "flags" then
+				for f in args:gmatch("%S+") do
+					table.insert(state.extraFlags, f)
+				end
+			elseif spec == "mod" then
+				table.insert(state.extraModList, args)
+			elseif spec == "skill" then
+				table.insert(state.extraSkillList, args)
+			elseif spec == "emit" then
+				local path = file .. "." .. state.name
+				local mods = {}
+				for i, decl in ipairs(state.extraModList) do
+					local fn = assert(loadstring("return " .. decl), "REFUSING: an unreadable #mod at " .. path)
+					setfenv(fn, { mod = makeSkillMod, flag = makeFlagMod })
+					mods[i] = encodeMod(fn(), path .. ".mod" .. i)
+				end
+				local flags, skills = {}, {}
+				for i, f in ipairs(state.extraFlags) do
+					flags[i] = encodeString(f)
+				end
+				for i, sk in ipairs(state.extraSkillList) do
+					skills[i] = encodeString(sk)
+				end
+				rows[#rows + 1] = "{" .. table.concat({
+					'"file":' .. encodeString(file),
+					'"key":' .. encodeString(state.name),
+					'"variety":' .. encodeString(state.varietyId),
+					'"limit":' .. (state.limit and encodeString(state.limit) or "null"),
+					'"flags":[' .. table.concat(flags, ",") .. "]",
+					'"mods":[' .. table.concat(mods, ",") .. "]",
+					'"skills":[' .. table.concat(skills, ",") .. "]",
+				}, ",") .. "}"
+				state.extraFlags = {}
+			elseif spec then
+				error("REFUSING: an unknown directive #" .. spec .. " in " .. file)
+			end
+		end
+	end
+	return "[\n" .. table.concat(rows, ",\n") .. "\n]\n"
+end
+
 local function main()
 	local body
 	if which == "globals" then
@@ -473,6 +550,8 @@ local function main()
 			',\n"keywordFlag":' .. encodeEnum(KeywordFlag, "KeywordFlag") .. "}\n"
 	elseif which == "statmap" then
 		body = encodeStatMap(LoadModule("Data/SkillStatMap")(makeSkillMod, makeFlagMod, makeSkillDataMod), "skillStatMap") .. "\n"
+	elseif which == "minions" then
+		body = dumpMinions()
 	else
 		body = dumpOverlay()
 	end

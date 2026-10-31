@@ -4,6 +4,7 @@ import (
 	"math"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/Vilsol/go-pob/mod"
@@ -726,12 +727,13 @@ func asPerformModList(m mod.Mod) *moddb.ModList {
 //pob2:block:src/Modules/Data.lua:415
 const nonDamagingAilmentChillDefault = 30
 
-// performActiveSkills is perform's banner and per-active-skill pass. Minion limits and Umbral Well need
-// activeSkill.minion, and output.HasBonechill is a boolean the output map does not hold.
+// performActiveSkills is perform's banner and per-active-skill pass; it returns how many minion limits
+// it counted. output.HasBonechill is a boolean the output map does not hold, and Umbral Well's
+// infoMessage is not kept.
 //
 //pob2:block:src/Modules/CalcPerform.lua:1242-1247
 //pob2:block:src/Modules/CalcPerform.lua:1278-1447
-func performActiveSkills(env *Environment) {
+func performActiveSkills(env *Environment) int {
 	modDB := env.ModDB
 	enemyDB := env.Enemy.ModDB
 	output := env.Player.Output
@@ -745,7 +747,7 @@ func performActiveSkills(env *Environment) {
 	}
 
 	minionTypeCount, ammoTypeCount, grenadeTypeCount := 0.0, 0.0, 0.0
-	minionType, ammoType, grenadeType := map[string]bool{}, map[string]bool{}, map[string]bool{}
+	minionCount, minionType, ammoType, grenadeType := map[string]bool{}, map[string]bool{}, map[string]bool{}, map[string]bool{}
 	maxPurpleFlameChaosGain := 0.0
 	for _, activeSkill := range env.Player.ActiveSkillList {
 		skillFlags := statSetSkillFlags(activeSkill)
@@ -806,7 +808,59 @@ func performActiveSkills(env *Environment) {
 			modDB.AddMod(newMod("ChillOverride", mod.TypeBase, effect, mod.Source(grantedEffect.Name)))
 			enemyDB.AddMod(newFlagMod("Condition:Chilled", mod.Source(grantedEffect.Name)))
 		}
-		// TODO: minion limits, SummonedMinion and Umbral Well (CalcPerform.lua:1347-1392) need activeSkill.minion.
+		//pob2:block:src/Modules/CalcPerform.lua:1347-1392
+		if minion := activeSkill.Minion; minion != nil && minion.MinionData != nil && minion.MinionData.Limit != "" {
+			limitName := minion.MinionData.Limit
+			limit := skillModList.Sum(mod.TypeBase, nil, limitName)
+			output[limitName] = math.Max(limit, output[limitName])
+			if o := modDB.Override(nil, limitName); o != nil {
+				limit = math.Floor(o.Float())
+			} else {
+				limit = math.Floor(calcLibVal(skillModList, limitName, nil) * skillModList.More(activeSkill.SkillCfg, "ActiveMinionLimit"))
+			}
+			output[limitName] = math.Max(limit, output[limitName])
+			if !minionCount[limitName] {
+				env.Player.ModDB.AddMod(newMod("Multiplier:SummonedMinion", mod.TypeBase, output[limitName], "Config", mod.Condition("Combat")))
+				env.Player.ModDB.AddMod(newMod("Multiplier:MinionPresenceCount", mod.TypeBase, output[limitName], "Config", mod.Condition("Combat")))
+				minionCount[limitName] = true
+			}
+			if modDB.Flag(nil, "UmbralWell") && activeSkill.ActiveEffect.GemData != nil { //todo get buffs from file
+				variantID := activeSkill.ActiveEffect.GemData.Data.VariantID
+				buffValue := skillModList.Sum(mod.TypeBase, env.Player.MainSkill.SkillCfg, "UmbralWellBuffValue")
+				if buffValue > 0 {
+					if minion.ModDB != nil {
+						minion.ModDB.AddMod(mod.NewFloat("DealNoDamage", mod.TypeFlag, 1).Source("Umbral Well"))
+					}
+					count, _ := getActiveSkillCount(activeSkill)
+					minionName := activeSkill.ActiveEffect.GemData.Data.Name
+					source := mod.Source("Umbral Well - " + strconv.FormatFloat(buffValue, 'f', -1, 64) + "% per " + minionName)
+					buff := mod.GlobalEffect("Buff")
+					value := buffValue * count
+					switch variantID {
+					// The Lua passes a nil keywordFlags before the tag on the two flagged mods, so createMod keeps no tag.
+					case "SkeletalWarrior":
+						modDB.AddMod(newMod("Damage", mod.TypeIncrease, value, source).Flag(modFlagAttack))
+					case "SkeletalSniper":
+						modDB.AddMod(newMod("ProjectileSpeed", mod.TypeIncrease, value, source, buff))
+					case "SkeletalCleric":
+						modDB.AddMod(newMod("EnergyShieldRecharge", mod.TypeIncrease, value, source, buff))
+					case "SkeletalArsonist":
+						modDB.AddMod(newMod("AreaOfEffect", mod.TypeIncrease, value, source, buff))
+					case "SkeletalStormMage":
+						modDB.AddMod(newMod("Damage", mod.TypeIncrease, value, source).Flag(modFlagSpell))
+					case "SkeletalFrostMage":
+						modDB.AddMod(newMod("EnergyShield", mod.TypeIncrease, value, source, buff))
+					case "SkeletalBrute":
+						modDB.AddMod(newMod("EnemyHeavyStunBuildup", mod.TypeIncrease, value, source, buff))
+					case "SkeletalReaver":
+						modDB.AddMod(newMod("Speed", mod.TypeIncrease, value, source, buff))
+						modDB.AddMod(newMod("WarcrySpeed", mod.TypeIncrease, value, source, buff))
+						modDB.AddMod(newMod("TotemPlacementSpeed", mod.TypeIncrease, value, source, buff))
+						modDB.AddMod(newMod("ReloadSpeed", mod.TypeIncrease, value, source, buff))
+					}
+				}
+			}
+		}
 		if activeSkill.SkillTypes["Minion"] && activeSkill.SkillTypes["Persistent"] && !minionType[grantedEffect.ID] {
 			minionTypeCount = minionTypeCount + 1
 			minionType[grantedEffect.ID] = true
@@ -860,6 +914,7 @@ func performActiveSkills(env *Environment) {
 	if purpleFlameCount > 0 && maxPurpleFlameChaosGain > 0 {
 		modDB.AddMod(newMod("DamageGainAsChaos", mod.TypeBase, maxPurpleFlameChaosGain*purpleFlameCount, "Into the Breach", mod.GlobalEffect("Buff").Name("Into the Breach")))
 	}
+	return len(minionCount)
 }
 
 func skillSourceCfg() *moddb.ListCfg {

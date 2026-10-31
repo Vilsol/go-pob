@@ -151,6 +151,9 @@ type GemInstance struct {
 	GemID     string
 	SkillID   string
 	QualityID string
+	// SkillMinion and SkillMinionCalcs are the minion the gem summons, by data.minions key; "" is nil.
+	SkillMinion      string
+	SkillMinionCalcs string
 
 	Level         int
 	Quality       float64
@@ -254,14 +257,16 @@ type ActiveSkill struct {
 	ExtraSkillModList []mod.Mod
 	BuffList          []*skillBuff
 	MinionList        []string
-	SkillPartName     string
-	DisableReason     string
-	Weapon1Flags      mod.MFlag
-	Weapon2Flags      mod.MFlag
-	SkillPart         int
-	SkillTotemID      int
-	ActiveMineCount   float64
-	ActiveStageCount  float64
+	// Minion is activeSkill.minion: the minion the skill creates, nil when it creates none.
+	Minion           *Minion
+	SkillPartName    string
+	DisableReason    string
+	Weapon1Flags     mod.MFlag
+	Weapon2Flags     mod.MFlag
+	SkillPart        int
+	SkillTotemID     int
+	ActiveMineCount  float64
+	ActiveStageCount float64
 }
 
 // grantedSkill is one env.grantedSkills entry: a skill a tree node or an item grants.
