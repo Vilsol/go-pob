@@ -1,6 +1,7 @@
 package poe2skills
 
 import (
+	"slices"
 	"strings"
 
 	"github.com/Vilsol/go-pob/data/poe2"
@@ -43,8 +44,11 @@ func (s *Skills) setupGem(gem *poe2.Gem) *Gem {
 		} else if gem.Name == "Barbs III" {
 			additionalGrantedEffectID += "Three"
 		}
-		g.GrantedEffectList = append(g.GrantedEffectList, s.byID[additionalGrantedEffectID])
-		g.AdditionalGrantedEffects = append(g.AdditionalGrantedEffects, s.byID[additionalGrantedEffectID])
+		// go-pob-data already lists the effect PoB-PoE2's Gems.lua leaves out; append it only once.
+		if !slices.Contains(gem.AdditionalGrantedEffectIDs, additionalGrantedEffectID) {
+			g.GrantedEffectList = append(g.GrantedEffectList, s.byID[additionalGrantedEffectID])
+			g.AdditionalGrantedEffects = append(g.AdditionalGrantedEffects, s.byID[additionalGrantedEffectID])
+		}
 	}
 	if gem.GrantedEffectDisplayOrder != nil {
 		list := g.GrantedEffectList
