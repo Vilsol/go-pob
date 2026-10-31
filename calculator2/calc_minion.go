@@ -15,8 +15,8 @@ import (
 	"github.com/Vilsol/go-pob/storage"
 )
 
-// Minion is activeSkill.minion: the actor a minion skill creates. Its own skills (createMinionSkills)
-// and items are not ported.
+// Minion is activeSkill.minion: the actor a minion skill creates; Actor.ActiveSkillList and
+// Actor.MainSkill hold its skills. Its items are not ported.
 type Minion struct {
 	Actor
 	MinionData *poe2minions.Minion
@@ -290,15 +290,17 @@ func addMinionModifiers(modList moddb.ModStoreFuncs, skillCfg *moddb.ListCfg, mi
 }
 
 // newMinionModDBs is perform's minion half of building the skill mod lists: each minion gets a fresh
-// modifier database. calcs.createMinionSkills is not ported.
+// modifier database and its skills.
 //
-//pob2:block:src/Modules/CalcPerform.lua:1206-1208
+//pob2:block:src/Modules/CalcPerform.lua:1206-1211
 func newMinionModDBs(env *Environment) {
 	for _, activeSkill := range env.Player.ActiveSkillList {
 		if minion := activeSkill.Minion; minion != nil {
 			minion.ModDB = moddb.NewModDB()
 			minion.ModDB.Actor = &minion.Actor
 			minion.Output = map[string]float64{}
+			createMinionSkills(env, activeSkill)
+			activeSkill.SkillPartName = minion.MainSkill.ActiveEffect.GrantedEffect.Name
 		}
 	}
 }

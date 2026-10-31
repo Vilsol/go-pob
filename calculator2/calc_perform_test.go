@@ -282,3 +282,53 @@ func TestHasExposureSourceActiveSkill(t *testing.T) {
 	testza.AssertTrue(t, hasExposureSource(modDB, env, "Fire"))
 	testza.AssertFalse(t, hasExposureSource(modDB, env, "Cold"))
 }
+
+// A support's InflictExposure sits in baseSkillModList, the parent of perform's skillModList;
+// ModList:HasMod reads the parent, so config exposure takes the skill's exposure effect:
+// floor(20 * (1 + 20/100) * 0.5) = 12 (CalcPerform.lua:3492).
+func TestApplyExposureConfigReadsBaseSkillModList(t *testing.T) {
+	env := &Environment{ModDB: moddb.NewModDB(), Player: &Actor{}, Enemy: &Actor{ModDB: moddb.NewModDB()}}
+	base := newModList()
+	base.AddMod(newFlagMod("InflictExposure", "Skill:SupportFireExposurePlayer", mod.ActorCondition("enemy", "Ignited")))
+	base.AddMod(newMod("FireExposureEffect", mod.TypeIncrease, 20, "Skill:SupportPotentExposurePlayer"))
+	skillModList := newModList()
+	skillModList.Parent = base
+	flags := mod.MFlag(0)
+	env.Player.ActiveSkillList = []*ActiveSkill{{BaseSkillModList: base, SkillModList: skillModList, SkillCfg: &moddb.ListCfg{Flags: &flags}}}
+	env.Enemy.ModDB.AddMod(newMod("FireExposure", mod.TypeBase, 20, "Config"))
+	env.Enemy.ModDB.AddMod(newMod("ExposureEffectOnSelf", mod.TypeMore, -50, "Unique"))
+
+	applyExposure(env)
+	testza.AssertEqual(t, -12.0, env.Enemy.ModDB.Sum(mod.TypeBase, nil, "FireResist"))
+}
+
+// "targets affected by abyssal wasting you inflict are blinded" on an Abyssal Wasted enemy: the enemy
+// gets both the bare condition flag and Condition:Blinded (CalcPerform.lua:1264-1276); a line without
+// applyToEnemy lands on the player.
+func TestApplyAbyssalWastingConditions(t *testing.T) {
+	env := &Environment{ModDB: moddb.NewModDB(), Player: &Actor{}, Enemy: &Actor{ModDB: moddb.NewModDB()}}
+	env.Enemy.ModDB.AddMod(newFlagMod("AbyssalWasted", "Item:Ring"))
+	env.ModDB.AddMod(mod.NewList("AbyssalWastingImpliesCondition", LuaTable{"condition": "Blinded", "applyToEnemy": true}).Source("Item:Ring"))
+	env.ModDB.AddMod(mod.NewList("AbyssalWastingImpliesCondition", LuaTable{"condition": "Condition:CanWither"}).Source("Item:Ring"))
+
+	applyAbyssalWastingConditions(env)
+	testza.AssertTrue(t, env.Enemy.ModDB.Flag(nil, "Condition:Blinded"))
+	testza.AssertTrue(t, env.Enemy.ModDB.Flag(nil, "Blinded"))
+	testza.AssertTrue(t, env.ModDB.Flag(nil, "Condition:CanWither"))
+	testza.AssertFalse(t, env.Enemy.ModDB.Flag(nil, "Condition:CanWither"))
+}
+
+// The expected values are PoB-PoE2's enemy modDB for the same file, loaded headless: Pounce's wolf
+// skills carry the group's Blind II, so the enemy holds three BlindEffect debuffs, one from Pounce and
+// two from the wolf's skills.
+func TestPerformMinionSkillDebuffsFixture(t *testing.T) {
+	raw, err := os.ReadFile("testdata/minion_skill_debuffs.xml")
+	testza.AssertNoError(t, err)
+	build, err := pob2.ParseBuild(raw)
+	testza.AssertNoError(t, err)
+	env, err := BuildOutput(build, Options{Tree: loadTestTree(t)})
+	testza.AssertNoError(t, err)
+
+	testza.AssertLen(t, env.Enemy.ModDB.Mods["BlindEffect"], 3)
+	testza.AssertEqual(t, 60.0, env.Enemy.ModDB.Sum(mod.TypeIncrease, nil, "BlindEffect"))
+}

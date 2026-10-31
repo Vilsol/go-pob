@@ -3,6 +3,7 @@ package calculator2
 import (
 	"math"
 	"regexp"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
@@ -15,7 +16,7 @@ import (
 type buffState struct {
 	buffs, guards, debuffs map[string]*moddb.ModList
 	notBuff                map[string]bool
-	curses                 []*performCurse
+	curses, minionCurses   []*performCurse
 }
 
 // performCurse is one curses entry: a curse or mark the player or an ally applies.
@@ -437,9 +438,175 @@ func combineBuffs(env *Environment) *buffState {
 				}
 			}
 		}
-		// TODO: minion skills' buffs (CalcPerform.lua:2611-2822) need activeSkill.minion.
+		//pob2:block:src/Modules/CalcPerform.lua:2611-2822
+		if activeSkill.Minion != nil && activeSkill.Minion.ActiveSkillList != nil {
+			combineMinionSkillBuffs(env, st, activeSkill)
+		}
 	}
 	return st
+}
+
+// combineMinionSkillBuffs adds the buffs, auras, curses and debuffs of a minion's skills. env.minion,
+// the party tab's exports and allies' buffs are not ported, so the branches that read them are absent:
+// only the player's buffs, the totem copy, minionCurses and the enemy's debuffs are built.
+//
+//pob2:block:src/Modules/CalcPerform.lua:2611-2822
+func combineMinionSkillBuffs(env *Environment, st *buffState, activeSkill *ActiveSkill) {
+	modDB := env.ModDB
+	enemyDB := env.Enemy.ModDB
+	buffs, debuffs := st.buffs, st.debuffs
+	castingMinion := activeSkill.Minion
+	for _, activeMinionSkill := range castingMinion.ActiveSkillList {
+		skillModList := activeMinionSkill.SkillModList
+		skillCfg := activeMinionSkill.SkillCfg
+		enable := truthy(activeMinionSkill.SkillData["enable"])
+		for _, buff := range activeMinionSkill.BuffList {
+			buffNameCompressed := strings.ReplaceAll(buff.Name, " ", "")
+			switch buff.Type {
+			case "Buff":
+				if env.ModeBuffs && enable {
+					var buffCfg *moddb.ListCfg
+					var modStore moddb.ModStoreFuncs = castingMinion.ModDB
+					if buff.ActiveSkillBuff {
+						buffCfg = skillCfg
+						modStore = skillModList
+					}
+					if buff.ApplyAllies {
+						modDB.Conditions["AffectedBy"+buffNameCompressed] = true
+						srcList := newModList()
+						inc := modStore.Sum(mod.TypeIncrease, buffCfg, "BuffEffect", "BuffEffectOnPlayer") + modDB.Sum(mod.TypeIncrease, nil, "BuffEffectOnSelf")
+						more := modStore.More(buffCfg, "BuffEffect", "BuffEffectOnPlayer") * modDB.More(nil, "BuffEffectOnSelf") * calcLibMod(skillModList, buffCfg, "Magnitude")
+						scaleAddList(srcList, buff.ModList, (1+inc/100)*more, false)
+						mergeBuff(srcList.Mods(), buffs, buff.Name)
+						mergeBuff(buff.ModList, buffs, buff.Name)
+						if truthy(activeMinionSkill.SkillData["thisIsNotABuff"]) {
+							st.notBuff[buff.Name] = true
+						}
+					}
+					// The minion's own buff (CalcPerform.lua:2640-2657) needs env.minion.
+				}
+			case "Aura":
+				if env.ModeBuffs && enable {
+					// Check for extra modifiers to apply to aura skills
+					extraAuraModList := extraEffectModList(castingMinion.ModDB, skillCfg, "ExtraAuraEffect")
+					minionDB := castingMinion.ModDB
+					if !(minionDB.Flag(nil, "SelfAurasCannotAffectAllies") || minionDB.Flag(nil, "SelfAurasOnlyAffectYou") || minionDB.Flag(nil, "SelfAuraSkillsCannotAffectAllies")) {
+						if !modDB.Flag(nil, "AlliesAurasCannotAffectSelf") && !modDB.Conditions["AffectedBy"+buffNameCompressed] {
+							inc := skillModList.Sum(mod.TypeIncrease, skillCfg, "AuraEffect", "BuffEffect", "BuffEffectOnPlayer", "AuraBuffEffect") + modDB.Sum(mod.TypeIncrease, skillCfg, "BuffEffectOnSelf", "AuraEffectOnSelf")
+							more := skillModList.More(skillCfg, "AuraEffect", "BuffEffect", "AuraBuffEffect") * modDB.More(skillCfg, "BuffEffectOnSelf", "AuraEffectOnSelf") * calcLibMod(skillModList, skillCfg, "Magnitude")
+							mult := (1 + inc/100) * more
+							modDB.Conditions["AffectedByAura"] = true
+							if strings.HasPrefix(buff.Name, "Vaal") {
+								modDB.Conditions["AffectedBy"+strings.ReplaceAll(buff.Name[min(5, len(buff.Name)):], " ", "")] = true
+							}
+							modDB.Conditions["AffectedBy"+buffNameCompressed] = true
+							srcList := newModList()
+							scaleAddList(srcList, buff.ModList, mult, false)
+							scaleAddList(srcList, extraAuraModList, mult, false)
+							setSpectreSource(srcList, buff.Name, activeSkill, castingMinion)
+							mergeBuff(srcList.Mods(), buffs, buff.Name)
+						}
+						// The env.minion half (CalcPerform.lua:2695-2709) and buffExports are not ported.
+						if statSetSkillFlags(env.Player.MainSkill)["totem"] && !env.Player.MainSkill.SkillModList.ModStore.Conditions["AffectedBy"+buffNameCompressed] {
+							mainSkillModList := env.Player.MainSkill.SkillModList
+							moddb.SetCondition(mainSkillModList.ModStore, "AffectedBy"+buffNameCompressed, true)
+							moddb.SetCondition(mainSkillModList.ModStore, "AffectedByAura", true)
+							srcList := newModList()
+							inc := skillModList.Sum(mod.TypeIncrease, skillCfg, "AuraEffect", "BuffEffect", "AuraBuffEffect")
+							more := skillModList.More(skillCfg, "AuraEffect", "BuffEffect", "AuraBuffEffect") * calcLibMod(skillModList, skillCfg, "Magnitude")
+							scale := (1 + inc/100) * more
+							scale = math.Max(scale, 0)
+							for _, modList := range [][]mod.Mod{extraAuraModList, buff.ModList} {
+								for _, m := range modList {
+									if m.Name() == "EnergyShield" || m.Name() == "Armour" || m.Name() == "Evasion" || totemResistNameRE.MatchString(m.Name()) {
+										totemMod := m.Clone().SetName("Totem" + m.Name())
+										if scale != 1 {
+											scaleTotemModValue(totemMod, scale)
+										}
+										srcList.AddMod(totemMod)
+									}
+								}
+							}
+							setSpectreSource(srcList, "", activeSkill, castingMinion)
+							mergeBuff(srcList.Mods(), buffs, "Totem "+buff.Name)
+						}
+					}
+				}
+			case "Curse":
+				if env.ModeEffective && enable && (!enemyDB.Flag(nil, "Hexproof") || activeMinionSkill.SkillTypes["Mark"]) {
+					curse := &performCurse{
+						name:     buff.Name,
+						priority: determineCursePriority(buff.Name, activeMinionSkill),
+					}
+					inc := skillModList.Sum(mod.TypeIncrease, skillCfg, "CurseEffect") + enemyDB.Sum(mod.TypeIncrease, nil, "CurseEffectOnSelf")
+					more := skillModList.More(skillCfg, "CurseEffect") * enemyDB.More(nil, "CurseEffectOnSelf") * calcLibMod(skillModList, skillCfg, "Magnitude")
+					curse.modList = newModList()
+					scaleAddList(curse.modList, buff.ModList, (1+inc/100)*more, false)
+					st.minionCurses = append(st.minionCurses, curse)
+				}
+			case "Debuff", "AuraDebuff":
+				var stackCount float64
+				if buff.StackVar != "" {
+					stackCount = skillModList.Sum(mod.TypeBase, skillCfg, "Multiplier:"+buff.StackVar)
+					if buff.HasStackLimit {
+						stackCount = math.Min(stackCount, buff.StackLimit)
+					} else if buff.StackLimitVar != "" {
+						stackCount = math.Min(stackCount, skillModList.Sum(mod.TypeBase, skillCfg, "Multiplier:"+buff.StackLimitVar))
+					}
+				} else {
+					stackCount = 1
+					if v, ok := activeMinionSkill.SkillData["stackCount"].(float64); ok {
+						stackCount = v
+					}
+				}
+				if env.ModeEffective && stackCount > 0 {
+					srcList := newModList()
+					mult := 1.0
+					if buff.Type == "AuraDebuff" {
+						mult = 0
+						if !skillModList.Flag(nil, "SelfAurasOnlyAffectYou") {
+							inc := skillModList.Sum(mod.TypeIncrease, skillCfg, "AuraEffect", "BuffEffect", "DebuffEffect")
+							more := skillModList.More(skillCfg, "AuraEffect", "BuffEffect", "DebuffEffect") * calcLibMod(skillModList, skillCfg, "Magnitude")
+							mult = (1 + inc/100) * more
+							if enemyDB.Conditions["AffectedBy"+buffNameCompressed] {
+								mult = 0
+							}
+						}
+					}
+					enemyDB.Conditions["AffectedBy"+buffNameCompressed] = true
+					if buff.Type == "Debuff" {
+						inc := skillModList.Sum(mod.TypeIncrease, skillCfg, "DebuffEffect")
+						more := skillModList.More(skillCfg, "DebuffEffect")
+						mult = (1 + inc/100) * more
+					}
+					scaleAddList(srcList, buff.ModList, mult*stackCount, false)
+					if v, ok := activeMinionSkill.SkillData["stackCount"]; ok || buff.StackVar != "" {
+						// PoB writes skillData.stackCount, nil when only stackVar set it.
+						n, _ := v.(float64)
+						srcList.AddMod(newMod("Multiplier:"+buff.Name+"Stack", mod.TypeBase, n, mod.Source(buff.Name)))
+					}
+					mergeBuff(srcList.Mods(), debuffs, buff.Name)
+				}
+			}
+		}
+	}
+}
+
+// setSpectreSource renames the sources of a spectre's buff mods.
+//
+//pob2:src/Modules/CalcPerform.lua:1169-1181
+func setSpectreSource(modList *moddb.ModList, sourceSkill string, activeSkill *ActiveSkill, castingMinion *Minion) {
+	if activeSkill.SkillFlags["spectre"] {
+		source := "Spectre:"
+		if sourceSkill != "" {
+			source = source + sourceSkill + " - " + castingMinion.MinionData.Name
+		} else {
+			source = source + castingMinion.MinionData.Name
+		}
+		for _, m := range modList.Mods() {
+			m.Source(mod.Source(source))
+		}
+	}
 }
 
 var totemResistNameRE = regexp.MustCompile(`Resist?M?a?x?$`)
@@ -466,8 +633,8 @@ func scaleTotemModValue(totemMod mod.Mod, scale float64) {
 }
 
 // applyCursesAndBuffs checks for extra curses, fills the curse and mark slots, picks the guard and adds
-// every buff, debuff and curse to its actor. Minion curses, allies' curses and the minion's buffs are
-// absent: neither env.minion nor env.partyMembers is ported.
+// every buff, debuff and curse to its actor. Allies' curses and the minion's buffs are absent: neither
+// env.minion nor env.partyMembers is ported.
 //
 //pob2:block:src/Modules/CalcPerform.lua:2957-3181
 func applyCursesAndBuffs(env *Environment, st *buffState) {
@@ -489,7 +656,7 @@ func applyCursesAndBuffs(env *Environment, st *buffState) {
 
 	// Temp different mark and curse slots to handle limits and priorities of both
 	var curseSlotList, markSlotList []*performCurse
-	for _, curse := range curses {
+	for _, curse := range slices.Concat(curses, st.minionCurses) {
 		// Calculate curses that ignore hex limit after
 		if curse.ignoreCurseLimit || curse.socketedCursesHexLimit {
 			continue
@@ -538,7 +705,7 @@ func applyCursesAndBuffs(env *Environment, st *buffState) {
 	// Merge curse and mark slots as we now process curse ignoring hex limit
 	curseSlots := append(append([]*performCurse{}, curseSlotList...), markSlotList...)
 
-	for _, curse := range curses {
+	for _, curse := range slices.Concat(curses, st.minionCurses) {
 		if curse.ignoreCurseLimit {
 			skipAddingCurse := false
 			for i := range curseSlots {

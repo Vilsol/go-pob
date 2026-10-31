@@ -833,7 +833,6 @@ func perform(env *Environment) {
 	env.KeystonesAdded = map[string]bool{}
 	mergeKeystones(env)
 
-	// Minion skills are not ported.
 	//pob2:block:src/Modules/CalcPerform.lua:1204-1205
 	for _, activeSkill := range env.Player.ActiveSkillList {
 		if activeSkill.BaseSkillModList == nil {
@@ -863,6 +862,8 @@ func perform(env *Environment) {
 	//pob2:block:src/Modules/CalcPerform.lua:1258-1262
 	applyEnemyModifiers(env.Player, true)
 	applyEnemyModifiers(env.Enemy, true)
+
+	applyAbyssalWastingConditions(env)
 
 	minionCount := performActiveSkills(env)
 
@@ -1000,6 +1001,33 @@ func calcMainSkillGemLevel(env *Environment) {
 	}
 }
 
+//pob2:block:src/Modules/CalcPerform.lua:1264-1276
+func applyAbyssalWastingConditions(env *Environment) {
+	modDB, enemyDB := env.ModDB, env.Enemy.ModDB
+	var skillCfg *moddb.ListCfg
+	if env.Player.MainSkill != nil {
+		skillCfg = env.Player.MainSkill.SkillCfg
+	}
+	if !enemyDB.Flag(skillCfg, "AbyssalWasted") {
+		return
+	}
+	for _, v := range modDB.List(nil, "AbyssalWastingImpliesCondition") {
+		t, ok := v.(LuaTable)
+		if !ok {
+			continue
+		}
+		condition, _ := t["condition"].(string)
+		conditionName := "Condition:" + condition
+		if truthy(t["applyToEnemy"]) {
+			enemyDB.AddMod(newFlagMod(condition, ""))
+			enemyDB.AddMod(newFlagMod(conditionName, ""))
+		} else {
+			modDB.AddMod(newFlagMod(condition, ""))
+			modDB.AddMod(newFlagMod(conditionName, ""))
+		}
+	}
+}
+
 //pob2:block:src/Modules/CalcPerform.lua:3440-3454
 func applyAbyssalWasting(env *Environment) {
 	modDB, enemyDB := env.ModDB, env.Enemy.ModDB
@@ -1051,7 +1079,10 @@ func modListHasMod(l *moddb.ModList, modType mod.Type, cfg *moddb.ListCfg, name 
 			return true
 		}
 	}
-	if parent, ok := l.Parent.(*moddb.ModDB); ok {
+	switch parent := l.Parent.(type) {
+	case *moddb.ModList:
+		return modListHasMod(parent, modType, cfg, name)
+	case *moddb.ModDB:
 		return parent.HasMod(modType, cfg, name)
 	}
 	return false

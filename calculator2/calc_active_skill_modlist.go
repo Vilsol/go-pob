@@ -979,7 +979,12 @@ func buildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 
 	// Add active gem modifiers
 	//pob2:block:src/Modules/CalcActiveSkill.lua:813-828
+	// activeSkill.actor.minionData: the actor is the summoning skill's minion.
 	activeEffect.HasActorLevel = false
+	if summon := activeSkill.SummonSkill; summon != nil && summon.Minion != nil && &summon.Minion.Actor == activeSkill.Actor {
+		activeEffect.ActorLevel = float64(activeSkill.Actor.Level)
+		activeEffect.HasActorLevel = true
+	}
 	var extraStats []mod.ExtraSkillStat
 	for _, v := range skillModList.List(activeSkill.SkillCfg, "ExtraSkillStat") {
 		switch x := v.(type) {

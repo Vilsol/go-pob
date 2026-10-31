@@ -2,6 +2,8 @@ package calculator2
 
 import (
 	"maps"
+
+	"github.com/Vilsol/go-pob/mod"
 )
 
 // createActiveSkill creates an active skill using the given active gem and list of support gems.
@@ -107,4 +109,61 @@ func createActiveSkill(activeEffect *GemEffect, supportList []*GemEffect, env *E
 	}
 
 	return activeSkill
+}
+
+// createMinionSkills initialises the active skill's minion skills. No saved build carries
+// skillMinionSkillStatSetIndexLookup or skillMinionSkill here, so every minion skill takes stat set 1
+// and the first skill is the minion's main skill.
+//
+//pob2:src/Modules/CalcActiveSkill.lua:1136-1205
+func createMinionSkills(env *Environment, activeSkill *ActiveSkill) {
+	minion := activeSkill.Minion
+	minionData := minion.MinionData
+	data := env.loadData()
+
+	minion.ActiveSkillList = []*ActiveSkill{}
+	var skillIDList []string
+	for _, skillID := range minionData.SkillList {
+		if data.effect(skillID) != nil {
+			skillIDList = append(skillIDList, skillID)
+		}
+	}
+	for _, value := range activeSkill.SkillModList.List(activeSkill.SkillCfg, "ExtraMinionSkill") {
+		switch skill := value.(type) {
+		case mod.ExtraMinionSkill:
+			skillIDList = append(skillIDList, skill.SkillID)
+		case *mod.ExtraMinionSkill:
+			skillIDList = append(skillIDList, skill.SkillID)
+		}
+	}
+	if len(skillIDList) == 0 {
+		// Not ideal, but let's avoid horrible crashes if a spectre has no skills for some reason
+		skillIDList = append(skillIDList, "MeleeAtAnimationSpeed")
+	}
+	for _, skillID := range skillIDList {
+		activeEffect := &GemEffect{
+			GrantedEffect: data.effect(skillID),
+			Level:         1,
+			Quality:       0,
+			StatSet:       &StatSetChoice{Index: 1},
+		}
+		if levelCount(activeEffect.GrantedEffect) > 1 {
+			for level := 1; level <= levelCount(activeEffect.GrantedEffect); level++ {
+				if req, _ := levelRequirement(activeEffect.GrantedEffect, level); req > float64(minion.Level) {
+					break
+				}
+				activeEffect.Level = level
+			}
+		}
+		minionSkill := createActiveSkill(activeEffect, activeSkill.SupportList, env, &minion.Actor, nil, activeSkill)
+		buildActiveSkillModList(env, minionSkill)
+		skillFlags := minionSkill.ActiveEffect.StatSet.SkillFlags
+		skillFlags["minion"] = true
+		skillFlags["minionSkill"] = true
+		skillFlags["haveMinion"] = true
+		minionDamageEffectiveness, _ := skillDataNumber(activeSkill.SkillData["minionDamageEffectiveness"])
+		minionSkill.SkillData["damageEffectiveness"] = 1 + minionDamageEffectiveness/100
+		minion.ActiveSkillList = append(minion.ActiveSkillList, minionSkill)
+	}
+	minion.MainSkill = minion.ActiveSkillList[0]
 }
