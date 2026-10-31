@@ -317,6 +317,10 @@ wasm/exposition/tree_versions.go    GO-NATIVE  crystalline binding surface for t
 wasm/exposition/whatif.go           GO-NATIVE  crystalline binding surface for the frontend
 wasm/exposition/mod_debug.go        PORT       src/Modules/Calcs.lua,src/Classes/ModDB.lua,src/Classes/ModList.lua,src/Modules/ModTools.lua,src/Modules/Common.lua,src/Data/Global.lua
 wasm/main.go                        GO-NATIVE  WASM entry point
+wasm2/exposition/calculator.go      GO-NATIVE  crystalline binding surface for the PoE2 frontend
+wasm2/exposition/crystalline_gen.go GENERATED  [unverifiable: emitted by `go tool crystalline`, pinned in go.mod, not a script in this repo]
+wasm2/exposition/main.go            GO-NATIVE  crystalline binding surface for the PoE2 frontend
+wasm2/main.go                       GO-NATIVE  PoE2 WASM entry point
 
 scripts/gopob/coreconstantsemit.go               GO-NATIVE  port of oracle/core_constants_emit.py; regenerates data/constants_generated.go, porting no Lua
 scripts/gopob/coreconstantsemit_tables.go        GO-NATIVE  the name->constant tables EXTRACTED from oracle/core_constants_emit.py, porting no Lua

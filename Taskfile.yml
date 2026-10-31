@@ -21,6 +21,13 @@ tasks:
     generates:
       - frontend/static/go-pob.wasm
 
+  build-go2:
+    desc: "Build the PoE2 Go WASM binary (not shipped yet)"
+    cmds:
+      - '{{.NICE}} env GOOS=js GOARCH=wasm go build -v -o frontend/static/go-pob2.wasm ./wasm2'
+    generates:
+      - frontend/static/go-pob2.wasm
+
   build-frontend:
     desc: "Build JS frontend"
     dir: ./frontend/
@@ -32,6 +39,11 @@ tasks:
     desc: "Generate the crystalline bindings, JS module and TS typings"
     cmds:
       - '{{.NICE}} go generate ./wasm/exposition'
+
+  generate2:
+    desc: "Generate the PoE2 crystalline bindings, JS module and TS typings"
+    cmds:
+      - '{{.NICE}} env GOFLAGS="-trimpath -tags=bindings2" go generate ./wasm2/exposition'
 
   generate:
     desc: "Run all generate commands"

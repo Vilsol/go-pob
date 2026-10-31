@@ -7,6 +7,7 @@ export GOARCH=wasm
 
 selection=(
   "./wasm/exposition *"
+  "./wasm2/exposition *"
   "./calculator TestWhatIfsLetTheGCMarkWorkerRun"
   "./calculator TestTornadoShotSecondaryProjectilesReachTheOracle CORPUS=true"
   "./calculator TestElusiveRampMatchesOracle CORPUS=true"
