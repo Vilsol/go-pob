@@ -116,6 +116,7 @@ func (d desktopStorage) List(dir string) ([]DirEntry, error) {
 		class := ""
 		level := 0
 		lastEdit := ""
+		var summary builds.SavedBuild
 		if e.Type().IsRegular() {
 			class = "file"
 			level = 0
@@ -134,23 +135,25 @@ func (d desktopStorage) List(dir string) ([]DirEntry, error) {
 				return nil, fmt.Errorf("failed to read file: %w", err)
 			}
 
+			// as the browser listing does: a file the summary cannot read lists without one
 			if len(file) > 0 {
-				parsedBuild, err := builds.ParseBuildStr(string(file))
-				if err != nil {
-					return nil, fmt.Errorf("failed to parse build: %w", err)
+				if s, err := builds.SavedBuildSummary(string(file)); err == nil {
+					summary = s
+					class = s.ClassName
+					level = s.Level
 				}
-
-				class = string(parsedBuild.Build.ClassName)
-				level = parsedBuild.Build.Level
 			}
 		}
 
 		out = append(out, DirEntry{
-			Name:     e.Name(),
-			Type:     typ,
-			Class:    class,
-			LastEdit: lastEdit,
-			Level:    level,
+			Name:       e.Name(),
+			Type:       typ,
+			Class:      class,
+			LastEdit:   lastEdit,
+			Level:      level,
+			Ascendancy: summary.Ascendancy,
+			MainSkill:  summary.MainSkill,
+			Game:       summary.Game,
 		})
 	}
 
