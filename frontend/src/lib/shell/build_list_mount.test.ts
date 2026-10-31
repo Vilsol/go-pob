@@ -40,6 +40,7 @@ const seed = () => {
 };
 const parent = (p: string) => p.slice(0, p.lastIndexOf('/'));
 const calls: [string, ...unknown[]][] = [];
+const buildsChanged: { current?: () => Promise<void> } = {};
 const fake = {
   ListBuilds: vi.fn((dir: string) => {
     calls.push(['ListBuilds', dir]);
@@ -105,6 +106,10 @@ const fake = {
   SetShowFlavourText: vi.fn(() => Promise.resolve()),
   SetDefaultItemAffixQuality: vi.fn(() => Promise.resolve()),
   SetItemModDebug: vi.fn(() => Promise.resolve()),
+  OnBuildsChanged: vi.fn((cb?: () => Promise<void>) => {
+    buildsChanged.current = cb;
+    return Promise.resolve();
+  }),
   GameDataVersion: vi.fn(() => Promise.resolve('3.28')),
   GetTreeVersion: vi.fn(() => Promise.resolve('3_29')),
   BuildInfo: vi.fn(() =>
@@ -167,6 +172,15 @@ describe('AppBuildList', () => {
     expect(within(top).getByText('Occultist')).toBeTruthy();
     expect(within(top).getByText('Bane, Contagion')).toBeTruthy();
     expect(view.getByText('game data 3.28')).toBeTruthy();
+  });
+
+  it("another tab's save lists the builds again, and an unmounted list stops listening", async () => {
+    const { view, grid } = await mount();
+    files.set('/From another tab', { Class: 'Ranger', Level: 12 });
+    await buildsChanged.current!();
+    await waitFor(() => expect(rowOf(grid, 'From another tab')).toBeTruthy());
+    view.unmount();
+    expect(fake.OnBuildsChanged).toHaveBeenLastCalledWith(undefined);
   });
 
   it('New build makes an unnamed build (NewBuild, no path)', async () => {

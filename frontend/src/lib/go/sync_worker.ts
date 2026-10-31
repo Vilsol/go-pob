@@ -40,14 +40,23 @@ import type { MainSkillField } from '$lib/shell/main_skill';
 import { modRowsEqual } from '$lib/display/compare_mods';
 import type { ItemDBFilterInput, ItemDBLists, ItemDBRowPlain } from '$lib/design/item_db';
 import { configureStorage } from './storage_config';
-import { initializeStorage, storageFs } from './storage_init';
+import { initializeStorage, startTabStorage, storageFs, storageWrite } from './storage_init';
+import { DESKTOP } from '$lib/pwa/desktop';
 import { PowerPool, type PowerPoolRun } from './power_pool';
 import { noteCall, whenIdle } from './idle';
 import type { ForeignBuild } from './game_route';
 
 export const COMPARE_MIXED = 'A Path of Exile 2 build cannot be compared with a Path of Exile 1 build.';
 
-const storageConfigurationPromise = configureStorage();
+let buildsChanged: (() => Promise<void> | void) | undefined;
+
+const storageConfigurationPromise = (
+  DESKTOP
+    ? Promise.resolve()
+    : startTabStorage((bucket) => {
+        if (bucket === 'builds') void Promise.resolve(buildsChanged?.()).catch(() => {});
+      })
+).then(configureStorage);
 
 type WarningsEnv = { out: calculator.Environment; calc: calculator.Calculator };
 
@@ -1161,6 +1170,11 @@ class PoBWorker {
   clearCalcTabElements() {
     this.calcDetail = false;
     exposition.SetCalcTabElements({ Elements: {} });
+  }
+
+  // another tab saved, moved or deleted a build
+  OnBuildsChanged(callback?: () => Promise<void> | void) {
+    buildsChanged = callback;
   }
 
   async ListBuilds(dir: string) {
@@ -4093,7 +4107,8 @@ class PoBWorker {
 
   async ClearDataCache(): Promise<number> {
     const names = await storageFs.readdir('/cache');
-    for (const n of names) await storageFs.rm(`/cache/${n}`, { recursive: true, force: true });
+    if (!DESKTOP) await storageWrite({ kind: 'clear', bucket: 'cache' });
+    else for (const n of names) await storageFs.rm(`/cache/${n}`, { recursive: true, force: true });
     return names.length;
   }
 

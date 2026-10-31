@@ -8,10 +8,15 @@ import type { Poe2View } from '../global';
 import { defaultStateOf, relevanceQuery2, type ConfigValue2 } from '../display/configurations2';
 import { DESKTOP } from '$lib/pwa/desktop';
 import type { Tree2 } from '../components/skill-tree/scene2';
+import { TabStorage, type StorageWrite } from '$lib/storage/tabs';
+import { remountStore } from './storage_config';
 
 // only the data cache bucket; on the web it is its own IndexedDB database, since zenfs allocates inode ids per
 // instance and two instances writing the PoE1 worker's database overwrite each other's files
 const disk = (bucket: string, key: string) => `/desktop/fs/${bucket}/${encodeURIComponent(key)}`;
+
+// every tab's PoE2 worker shares the database, so one of them writes it, as the PoE1 workers do theirs
+let tabs: TabStorage | undefined;
 
 const cacheGet = async (bucket: string, key: string) => {
   if (DESKTOP) {
@@ -29,7 +34,7 @@ const cacheSet = async (bucket: string, key: string, value: Uint8Array | undefin
     if (!res.ok) throw new Error(`write ${bucket}/${key}: ${res.status}`);
     return;
   }
-  await fs.promises.writeFile(`/${bucket}/${key}`, value);
+  await tabs!.write({ kind: 'set', bucket, key, value });
 };
 
 const cacheExists = async (bucket: string, key: string) => {
@@ -37,8 +42,23 @@ const cacheExists = async (bucket: string, key: string) => {
   return fs.promises.exists(`/${bucket}/${key}`);
 };
 
+const cacheWrite = async (w: StorageWrite) => {
+  if (w.kind === 'set') await fs.promises.writeFile(`/${w.bucket}/${w.key}`, w.value);
+  else if (w.kind === 'clear')
+    for (const n of await fs.promises.readdir(`/${w.bucket}`)) await fs.promises.rm(`/${w.bucket}/${n}`, { recursive: true, force: true });
+};
+
 const initializeStorage = async () => {
-  if (!DESKTOP) await configure({ mounts: { '/cache': await IndexedDB.create({ storeName: 'cache2' }) } });
+  if (!DESKTOP) {
+    tabs = new TabStorage('go-pob-storage-poe2', {
+      buckets: ['cache'],
+      apply: cacheWrite,
+      remount: () => remountStore('/cache', 'cache2'),
+      lazy: { cache: 1000 }
+    });
+    await tabs.start();
+    await configure({ mounts: { '/cache': await IndexedDB.create({ storeName: 'cache2' }) } });
+  }
   await storage.InitializeStorage(
     () => [],
     cacheGet,
@@ -211,7 +231,7 @@ class PoB2Worker {
   async ClearDataCache(): Promise<number> {
     await this.booted;
     const names = await fs.promises.readdir('/cache');
-    for (const n of names) await fs.promises.rm(`/cache/${n}`, { recursive: true, force: true });
+    await tabs!.write({ kind: 'clear', bucket: 'cache' });
     return names.length;
   }
 

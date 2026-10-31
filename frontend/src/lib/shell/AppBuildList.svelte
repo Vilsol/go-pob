@@ -3,6 +3,7 @@
   import { opening, unsavedName } from './build_name.svelte';
   import { resetAccountSession } from './account_session.svelte';
   import { onMount } from 'svelte';
+  import { proxy } from 'comlink';
   import { goto, pushState } from '$app/navigation';
   import { base } from '$app/paths';
   import { page } from '$app/state';
@@ -56,6 +57,8 @@
         return reload();
       })
       .catch(logError);
+    void syncWrap.OnBuildsChanged(proxy(reload)).catch(logError);
+    return () => void syncWrap.OnBuildsChanged(undefined).catch(logError);
   });
 
   const ancestors = (f: string) => f.split('/').map((_, i, a) => a.slice(0, i + 1).join('/'));

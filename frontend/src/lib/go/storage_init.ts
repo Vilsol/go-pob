@@ -1,6 +1,8 @@
 import { fs } from '@zenfs/core';
 import { builds, storage } from '../types';
 import { DESKTOP } from '$lib/pwa/desktop';
+import { TabStorage, type StorageWrite } from '$lib/storage/tabs';
+import { remountStore } from './storage_config';
 
 const entry = (name: string, dir: boolean, lastEdit: string, file?: Uint8Array): storage.DirEntry => {
   let summary: builds.SavedBuild | undefined;
@@ -89,8 +91,45 @@ const diskStorage = [
   }
 ] as const;
 
-// a second zenfs instance on the same database allocates inode ids the first already uses, so a worker that is not
-// the main one only reads
+// mkdir and delete only log a failure, as they always have; a failed set rejects
+const zenfsWrite = async (w: StorageWrite) => {
+  const path = w.kind === 'clear' ? `/${w.bucket}` : `/${w.bucket}/${w.key}`;
+  const logged = (res: () => void) => (err?: unknown) => {
+    if (err) console.error(err);
+    res();
+  };
+  switch (w.kind) {
+    case 'set':
+      console.log('Writing to storage', path);
+      return new Promise<void>((res, rej) => fs.writeFile(path, w.value, (err) => (err ? rej(err) : res())));
+    case 'mkdir':
+      return new Promise<void>((res) => fs.mkdir(path, 0o777, logged(res)));
+    case 'delete':
+      return new Promise<void>((res) => fs.unlink(path, logged(res)));
+    case 'clear':
+      for (const n of await fs.promises.readdir(path)) await fs.promises.rm(`${path}/${n}`, { recursive: true, force: true });
+      return;
+  }
+};
+
+let tabs: TabStorage | undefined;
+
+// the main worker of every tab; resolves with whether this tab writes the databases, before they are mounted
+export const startTabStorage = (changed: (bucket: string) => void) => {
+  tabs = new TabStorage('go-pob-storage', {
+    buckets: ['cache', 'builds', 'settings'],
+    apply: zenfsWrite,
+    remount: (bucket) => remountStore(`/${bucket}`, bucket),
+    changed,
+    lazy: { cache: 1000 }
+  });
+  return tabs.start();
+};
+
+export const storageWrite = (w: StorageWrite) => (tabs ? tabs.write(w) : zenfsWrite(w));
+
+// a second zenfs instance on the same database allocates inode ids the first already uses: a power worker only reads,
+// and a tab that is not the writer forwards its writes to the one that is
 export const initializeStorage = async (readOnly = false) => {
   if (DESKTOP) {
     await storage.InitializeStorage(...diskStorage);
@@ -152,16 +191,7 @@ export const initializeStorage = async (readOnly = false) => {
       if (!value || !key || readOnly) {
         return;
       }
-
-      return new Promise((res, rej) => {
-        console.log('Writing to storage', `/${bucket}/${key}`);
-        fs.writeFile(`/${bucket}/${key}`, value, (err) => {
-          if (err) {
-            return rej(err);
-          }
-          res();
-        });
-      });
+      await storageWrite({ kind: 'set', bucket, key, value });
     },
     async (bucket: string, key: string) =>
       new Promise((res) => {
@@ -176,29 +206,11 @@ export const initializeStorage = async (readOnly = false) => {
           return res(true);
         });
       }),
-    async (bucket: string, dir: string) =>
-      new Promise((res) => {
-        if (readOnly) return res();
-        fs.mkdir(`/${bucket}/${dir}`, 0o777, (err) => {
-          if (err) {
-            console.error(err);
-            return res();
-          }
-
-          return res();
-        });
-      }),
-    async (bucket: string, path: string) =>
-      new Promise((res) => {
-        if (readOnly) return res();
-        fs.unlink(`/${bucket}/${path}`, (err) => {
-          if (err) {
-            console.error(err);
-            return res();
-          }
-
-          return res();
-        });
-      })
+    async (bucket: string, dir: string) => {
+      if (!readOnly) await storageWrite({ kind: 'mkdir', bucket, key: dir });
+    },
+    async (bucket: string, path: string) => {
+      if (!readOnly) await storageWrite({ kind: 'delete', bucket, key: path });
+    }
   );
 };
