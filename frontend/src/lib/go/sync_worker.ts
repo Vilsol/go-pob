@@ -48,14 +48,14 @@ import type { ForeignBuild } from './game_route';
 
 export const COMPARE_MIXED = 'A Path of Exile 2 build cannot be compared with a Path of Exile 1 build.';
 
-let buildsChanged: (() => Promise<void> | void) | undefined;
+const buildsChanged = new Map<string, () => Promise<void> | void>();
 let settingsChanged: (() => Promise<void> | void) | undefined;
 
 const storageConfigurationPromise = (
   DESKTOP
     ? Promise.resolve()
     : startTabStorage((bucket) => {
-        if (bucket === 'builds') void Promise.resolve(buildsChanged?.()).catch(() => {});
+        if (bucket === 'builds') for (const cb of buildsChanged.values()) void Promise.resolve(cb()).catch(() => {});
         if (bucket === 'settings') void Promise.resolve(settingsChanged?.()).catch(() => {});
       })
 ).then(configureStorage);
@@ -1174,9 +1174,10 @@ class PoBWorker {
     exposition.SetCalcTabElements({ Elements: {} });
   }
 
-  // another tab saved, moved or deleted a build
-  OnBuildsChanged(callback?: () => Promise<void> | void) {
-    buildsChanged = callback;
+  // another tab saved, moved or deleted a build; one listener per key, undefined removes it
+  OnBuildsChanged(key: string, callback?: () => Promise<void> | void) {
+    if (callback) buildsChanged.set(key, callback);
+    else buildsChanged.delete(key);
   }
 
   // another tab changed the shared item sets or shared items

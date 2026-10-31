@@ -136,12 +136,16 @@ export const downloadUrl = (raw: string): { site: string; url: string } | undefi
 /* ImportTab.lua:609-628 */
 export const NOT_A_CODE = 'this is not a Path of Building build code: it could not be decoded';
 export const unreadableBuild = (why: string) => `the build code holds no readable build (${why})`;
+// Build.lua:2231-2233
+export const ROOT_MISSING = "'PathOfBuilding' root element missing";
 
 // the worker's decode and parse errors, in the words the import messages use
 export const importFailure = (err: unknown) => {
   const text = err instanceof Error ? err.message : String(err);
-  if (text.startsWith('failed to create a zlib reader:')) return NOT_A_CODE;
-  const xml = /^failed to parse build as xml: ([\s\S]*)$/.exec(text)?.[1];
+  if (text.startsWith('failed to create a zlib reader:') || text.startsWith('failed to read from zlib reader:')) return NOT_A_CODE;
+  // PartyTab.lua:196-198 words it "Error loading"
+  const xml = /^(?:failed to parse build as xml|error loading the build code): ([\s\S]*)$/.exec(text)?.[1];
+  if (text === ROOT_MISSING) return unreadableBuild(text);
   return xml === undefined ? text : unreadableBuild(xml);
 };
 

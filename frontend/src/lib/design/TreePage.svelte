@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { followOtherTabs } from '$lib/storage/tabs';
   import Input from './Input.svelte';
   import Checkbox from './Checkbox.svelte';
   import Select from './Select.svelte';
@@ -540,6 +541,7 @@
       // empty
     }
   };
+  $effect(() => followOtherTabs(DETAILS_KEY, { set: setDetailsWidth }, storedWidth));
 
   const M = $derived(mastery !== null ? byId.get(mastery) : undefined);
   const closeMastery = () => {

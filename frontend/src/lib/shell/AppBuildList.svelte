@@ -21,7 +21,8 @@
   import AppAbout from './AppAbout.svelte';
   import AppSettings from './AppSettings.svelte';
   import { CLASSES, LIVE_COLUMNS, loadTree, pathOf } from './build_list';
-  import { loadBuildSort, saveBuildSort } from '$lib/display/build_sort';
+  import { BUILD_SORT_KEY, loadBuildSort, saveBuildSort } from '$lib/display/build_sort';
+  import { followOtherTabs } from '$lib/storage/tabs';
   import { defaultCharLevel, defaultGemQuality } from '$lib/display/item_options';
   import { get } from 'svelte/store';
   import { applyUpdate, checkForUpdate, updateAvailable, updateCheckRunning } from '$lib/pwa';
@@ -57,8 +58,8 @@
         return reload();
       })
       .catch(logError);
-    void syncWrap.OnBuildsChanged(proxy(reload)).catch(logError);
-    return () => void syncWrap.OnBuildsChanged(undefined).catch(logError);
+    void syncWrap.OnBuildsChanged('build-list', proxy(reload)).catch(logError);
+    return () => void syncWrap.OnBuildsChanged('build-list', undefined).catch(logError);
   });
 
   const ancestors = (f: string) => f.split('/').map((_, i, a) => a.slice(0, i + 1).join('/'));
@@ -194,6 +195,7 @@
   // Main.lua:539-541, 747
   let sort = $state(loadBuildSort());
   $effect(() => saveBuildSort($state.snapshot(sort)));
+  $effect(() => followOtherTabs(BUILD_SORT_KEY, { set: (s: typeof sort) => (sort = s) }, loadBuildSort));
 
   const newBuild = () => {
     opening.modFlag = false;

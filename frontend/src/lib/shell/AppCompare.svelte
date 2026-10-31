@@ -17,11 +17,13 @@
   import { untrack } from 'svelte';
   import { get } from 'svelte/store';
   import { buildOpens, buildRevision, currentBuild, currentBuildPath, outputs } from '$lib/global.js';
+  import { proxy } from 'comlink';
   import { syncWrap } from '$lib/go/worker';
   import type { CalcsHeaderField, CalcsHeaderSide } from '$lib/design/compare';
   import { writeMainSkill } from './main_skill';
   import { logError } from '$lib/utils';
   import { compareName, linkCode } from './link_import';
+  import { importFailure } from '$lib/design/share';
   import type { CompareInfo } from './compare_types';
   import { GetSkillGems } from '$lib/cache';
   import ComparePage from '$lib/design/ComparePage.svelte';
@@ -32,7 +34,8 @@
   import BuildPicker from '$lib/design/BuildPicker.svelte';
   import AppCompareSets from './AppCompareSets.svelte';
   import type { SavedBuild } from '$lib/design/fixtures/app';
-  import { loadBuildSort, saveBuildSort } from '$lib/display/build_sort';
+  import { BUILD_SORT_KEY, loadBuildSort, saveBuildSort } from '$lib/display/build_sort';
+  import { followOtherTabs } from '$lib/storage/tabs';
   import { tradeDefences, type TradeDefence, type TradeItem } from '$lib/design/trade';
   import type { CompareFixture, PowerRow } from '$lib/design/fixtures';
   import type { Tree } from '$lib/skill_tree/types';
@@ -102,12 +105,24 @@
       return empty && w ? await loadTree((dir) => w.ListBuilds(dir), '') : { builds: [], folders: [] };
     }
   );
+  $effect(() => {
+    if (!(info.seq === 0 || adding) || !syncWrap) return;
+    const w = syncWrap;
+    void w
+      .OnBuildsChanged(
+        'compare-picker',
+        proxy(() => void saved.refetch())
+      )
+      .catch(logError);
+    return () => void w.OnBuildsChanged('compare-picker', undefined).catch(logError);
+  });
   let code = $state('');
   let codeName = $state('');
   let picking = $state(false);
   // CompareTab.lua:1588-1593
   let pickSort = $state(loadBuildSort());
   $effect(() => saveBuildSort(pickSort));
+  $effect(() => followOtherTabs(BUILD_SORT_KEY, { set: (s: typeof pickSort) => (pickSort = s) }, loadBuildSort));
   const load = (run: () => Promise<CompareInfo> | undefined) => {
     loadError = null;
     loading = true;
@@ -116,7 +131,7 @@
         info = i;
         adding = false;
       })
-      .catch((e: unknown) => (loadError = e instanceof Error ? e.message : String(e)))
+      .catch((e: unknown) => (loadError = importFailure(e)))
       .finally(() => (loading = false));
   };
   const remove = () => {

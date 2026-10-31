@@ -106,7 +106,7 @@ const fake = {
   SetShowFlavourText: vi.fn(() => Promise.resolve()),
   SetDefaultItemAffixQuality: vi.fn(() => Promise.resolve()),
   SetItemModDebug: vi.fn(() => Promise.resolve()),
-  OnBuildsChanged: vi.fn((cb?: () => Promise<void>) => {
+  OnBuildsChanged: vi.fn((_key: string, cb?: () => Promise<void>) => {
     buildsChanged.current = cb;
     return Promise.resolve();
   }),
@@ -180,7 +180,7 @@ describe('AppBuildList', () => {
     await buildsChanged.current!();
     await waitFor(() => expect(rowOf(grid, 'From another tab')).toBeTruthy());
     view.unmount();
-    expect(fake.OnBuildsChanged).toHaveBeenLastCalledWith(undefined);
+    expect(fake.OnBuildsChanged).toHaveBeenLastCalledWith('build-list', undefined);
   });
 
   it('New build makes an unnamed build (NewBuild, no path)', async () => {

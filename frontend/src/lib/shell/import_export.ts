@@ -7,7 +7,7 @@ export const UNAVAILABLE = {
 };
 export const REALMS = ['PC', 'Xbox', 'PS4', 'Garena', 'Tencent'];
 
-const SITE_KEY = 'options:lastExportWebsite';
+export const SITE_KEY = 'options:lastExportWebsite';
 /* ImportTab.lua:535, 538 */
 export const loadExportSite = () => {
   try {

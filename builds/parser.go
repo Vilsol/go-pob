@@ -79,12 +79,29 @@ func ParseBuild(rawXML []byte) (*pob.PathOfBuilding, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse build as xml: %w", err)
 	}
+	//pob:block:src/Modules/Build.lua:2231-2233
+	if rootElement(clean) != "PathOfBuilding" {
+		return nil, fmt.Errorf("'PathOfBuilding' root element missing")
+	}
 
 	finishSkills(&build)
 	build.Notes = strings.Trim(build.Notes, pob.NotesEdgeSpace)
 	resolveActiveConfigSet(&build)
 
 	return finishPassiveNodes(&build)
+}
+
+func rootElement(raw []byte) string {
+	d := xml.NewDecoder(bytes.NewReader(raw))
+	for {
+		tok, err := d.Token()
+		if err != nil {
+			return ""
+		}
+		if start, ok := tok.(xml.StartElement); ok {
+			return start.Name.Local
+		}
+	}
 }
 
 // GemGrantedEffectID answers a gem id's grantedEffectId; set by data/raw, which builds cannot import.

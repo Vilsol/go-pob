@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { followOtherTabs } from '$lib/storage/tabs';
   import EmptyState from './EmptyState.svelte';
   import PobText from './PobText.svelte';
   import Button from './Button.svelte';
@@ -103,6 +104,7 @@
       // empty
     }
   };
+  $effect(() => followOtherTabs(WIDTH_KEY, { set: setWidth }, storedWidth));
 </script>
 
 <!-- eslint-disable-next-line svelte/no-unused-svelte-ignore -->

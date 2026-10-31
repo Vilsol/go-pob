@@ -125,3 +125,72 @@ test("a set shared in one tab shows in another tab's shared item sets without a 
   appA.assertNoErrors();
   appB.assertNoErrors();
 });
+
+test("a build saved in one tab shows in another tab's Compare picker and Save As folders without a reload", async ({ context }) => {
+  const a = await context.newPage();
+  const b = await context.newPage();
+  const appA = await App.open(a, 'live pickers: open');
+  const appB = await App.open(b, 'live pickers: saving');
+
+  await appA.goTo('Compare');
+  await a.getByRole('button', { name: 'Choose a saved build…' }).click();
+  const picked = a.getByRole('dialog', { name: 'Compare with a saved build' }).getByRole('option').filter({ hasText: 'e2e-live-compare' });
+  await expect(a.getByRole('dialog', { name: 'Compare with a saved build' })).toBeVisible();
+  await expect(picked).toHaveCount(0);
+  await setLevel(appB, 27);
+  await save(b, 'e2e-live-compare');
+  await expect(picked, "the Compare picker lists the other tab's save").toHaveCount(1);
+  await a.getByRole('dialog', { name: 'Compare with a saved build' }).getByRole('button', { name: 'Cancel' }).click();
+
+  await a.getByRole('button', { name: /^Save \(/ }).click();
+  const folders = a.getByRole('dialog', { name: 'Save build as' }).getByRole('combobox', { name: 'Folder' });
+  await expect(folders).toBeVisible();
+  await expect(folders.getByRole('option', { name: /e2e-live-folder/ })).toHaveCount(0);
+  await b.getByRole('button', { name: 'Save As' }).click();
+  const dialogB = b.getByRole('dialog', { name: 'Save build as' });
+  await dialogB.getByRole('button', { name: 'New folder' }).click();
+  const prompt = b.getByRole('dialog', { name: 'New folder' });
+  await prompt.getByRole('textbox', { name: 'Folder name' }).fill('e2e-live-folder');
+  await prompt.getByRole('button', { name: 'Create' }).click();
+  await expect(folders.getByRole('option', { name: /e2e-live-folder/ }), "the Save As folders show the other tab's new folder").toHaveCount(1);
+
+  appA.assertNoErrors();
+  appB.assertNoErrors();
+});
+
+test('the build sort, the share site and the panel widths another tab stores reach this tab without a reload', async ({ context }) => {
+  const a = await context.newPage();
+  const b = await context.newPage();
+  const appA = await App.open(a, 'layout: storing tab');
+  const appB = await App.open(b, 'layout: other tab');
+  const store = (key: string, value: string) => a.evaluate(([k, v]) => localStorage.setItem(k, v), [key, value]);
+
+  await appB.goTo('Notes');
+  const sidebar = b.getByRole('separator', { name: 'Resize the sidebar' });
+  await expect(sidebar).toHaveAttribute('aria-valuenow', '320');
+  await store('go-pob:sidebar-width', '400');
+  await expect(sidebar, "the sidebar takes the other tab's width").toHaveAttribute('aria-valuenow', '400');
+
+  await appB.goTo('Tree');
+  await b.getByPlaceholder('Search nodes and stats').fill('life');
+  const details = b.getByRole('separator', { name: 'Resize tree details' });
+  await expect(details).toHaveAttribute('aria-valuenow', '360');
+  await store('go-pob:tree-details-width', '500');
+  await expect(details, "the tree details take the other tab's width").toHaveAttribute('aria-valuenow', '500');
+
+  await appB.goTo('Import / Export');
+  const site = b.getByRole('region', { name: 'Build sharing' }).getByRole('combobox');
+  const sites = await site.locator('option').allTextContents();
+  expect(sites.length, 'more than one share site to choose from').toBeGreaterThan(1);
+  await expect(site).toHaveValue(sites[0]);
+  await store('options:lastExportWebsite', sites.at(-1)!);
+  await expect(site, "the share site follows the other tab's last share").toHaveValue(sites.at(-1)!);
+
+  await toList(b);
+  const level = b.getByRole('grid', { name: 'Builds' }).getByRole('columnheader', { name: /^LEVEL/ });
+  await store('options:buildSortMode', JSON.stringify({ key: 'level', dir: 'asc' }));
+  await expect(level, "the build list takes the other tab's sort").toHaveAttribute('aria-sort', 'ascending');
+
+  appA.assertNoErrors();
+  appB.assertNoErrors();
+});

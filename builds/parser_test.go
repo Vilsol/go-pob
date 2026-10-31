@@ -129,3 +129,12 @@ func TestParseBuildTreeViewStatDifferences(t *testing.T) {
 		}
 	}
 }
+
+// Build.lua:2231-2233
+func TestParseBuildRefusesAnotherRoot(t *testing.T) {
+	_, err := ParseBuildStr(`<Party><Build level="1"/><Tree activeSpec="1"><Spec treeVersion="3_18"/></Tree></Party>`)
+	testza.AssertEqual(t, "'PathOfBuilding' root element missing", err.Error())
+
+	_, err = ParseBuildStr(`<?xml version="1.0"?><!-- saved --><PathOfBuilding><Build level="1"/><Tree activeSpec="1"><Spec treeVersion="3_18"/></Tree></PathOfBuilding>`)
+	testza.AssertNoError(t, err)
+}

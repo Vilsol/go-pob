@@ -189,9 +189,12 @@ export class TabStorage {
 }
 
 // localStorage is shared by every tab, and the browser tells the others of each change; store re-reads key with load
+// returns the unsubscribe, for a component that follows a key while mounted
 export const followOtherTabs = <T>(key: string, store: { set: (v: T) => void }, load: () => T) => {
-  if (typeof window === 'undefined') return;
-  window.addEventListener('storage', (e) => {
+  if (typeof window === 'undefined') return () => {};
+  const on = (e: StorageEvent) => {
     if (e.key === key || e.key === null) store.set(load());
-  });
+  };
+  window.addEventListener('storage', on);
+  return () => window.removeEventListener('storage', on);
 };

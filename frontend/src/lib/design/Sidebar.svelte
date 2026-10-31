@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { followOtherTabs } from '$lib/storage/tabs';
   import Input from './Input.svelte';
   import Disclosure from './Disclosure.svelte';
   import Notice from './Notice.svelte';
@@ -192,6 +193,7 @@
       // empty
     }
   };
+  $effect(() => followOtherTabs(WIDTH_KEY, { set: setWidth }, storedWidth));
 </script>
 
 {#if collapsed && !fill}

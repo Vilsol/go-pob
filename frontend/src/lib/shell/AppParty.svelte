@@ -7,6 +7,7 @@
   import PartyPage from '$lib/design/PartyPage.svelte';
   import { PARTY_CATEGORIES, type PartyCategory, type PartyEntry } from '$lib/design/party';
   import { linkCode } from './link_import';
+  import { importFailure } from '$lib/design/share';
 
   const GO_NAME: Record<PartyCategory, string> = {
     PartyMemberStats: 'PartyMemberStats',
@@ -116,7 +117,7 @@
       drafts = {};
       refetch();
     } catch (err) {
-      importError = err instanceof Error ? err.message : String(err);
+      importError = importFailure(err);
     }
   };
   const onclear = (destination: string) => {

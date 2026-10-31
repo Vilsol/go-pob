@@ -9,7 +9,8 @@
   import { addToast } from '$lib/design/toast';
   import ImportExportPage from '$lib/design/ImportExportPage.svelte';
   import { EXPORT_SITES, POE2_CHARACTER, POE2_CHARACTER_DISABLED, downloadUrl, importFailure, jsonVerdict, type ImportMode } from '$lib/design/share';
-  import { REALMS, UNAVAILABLE, loadExportSite, saveExportSite } from './import_export';
+  import { REALMS, SITE_KEY, UNAVAILABLE, loadExportSite, saveExportSite } from './import_export';
+  import { followOtherTabs } from '$lib/storage/tabs';
   import { identityOf } from './identity';
   import { downloadBuild, shareBuild } from './link_import';
   import { openForeign } from '$lib/go/game_route';
@@ -54,6 +55,7 @@
 
   // ImportTab.lua:534-554
   let site = $state((EXPORT_SITES.find((x) => x.label === loadExportSite()) ?? EXPORT_SITES[0]).label);
+  $effect(() => followOtherTabs(SITE_KEY, { set: (v?: string) => (site = EXPORT_SITES.find((x) => x.label === v)?.label ?? site) }, loadExportSite));
   let shareLink = $state<string | null>(null);
   let sharing = $state(false);
   let shareError = $state<string | null>(null);

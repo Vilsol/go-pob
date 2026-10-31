@@ -7,6 +7,7 @@
   import Button from '$lib/design/Button.svelte';
   import DialogActions from '$lib/design/DialogActions.svelte';
   import PromptDialog from './PromptDialog.svelte';
+  import { proxy } from 'comlink';
   import { syncWrap } from '$lib/go/worker';
   import { currentBuildPath } from '$lib/global.js';
   import { logError } from '$lib/utils';
@@ -39,6 +40,8 @@
     if (!open) return;
     name = saveAsName(currentBuildPath.current);
     void load();
+    void syncWrap.OnBuildsChanged('save-as', proxy(load)).catch(logError);
+    return () => void syncWrap.OnBuildsChanged('save-as', undefined).catch(logError);
   });
 
   const write = () => {
