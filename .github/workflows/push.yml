@@ -103,6 +103,12 @@ jobs:
           GOOS: js
           GOARCH: wasm
 
+      - name: Build PoE2 wasm
+        run: go build -ldflags="-s -w" -v -o build2.wasm ./wasm2
+        env:
+          GOOS: js
+          GOARCH: wasm
+
   build-frontend:
     name: Build Frontend
     runs-on: ubuntu-latest

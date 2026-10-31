@@ -62,6 +62,10 @@ run = "task build-frontend"
 description = "Watch *.go and rebuild the wasm + typings"
 run = "task dev-go"
 
+[tasks.dev-go2]
+description = "Watch *.go and rebuild the PoE2 wasm + typings"
+run = "task dev-go2"
+
 [tasks.dev-frontend]
 description = "Vite dev server"
 run = "task dev-frontend"

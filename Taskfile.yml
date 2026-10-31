@@ -22,7 +22,7 @@ tasks:
       - frontend/static/go-pob.wasm
 
   build-go2:
-    desc: "Build the PoE2 Go WASM binary (not shipped yet)"
+    desc: "Build the PoE2 Go WASM binary"
     cmds:
       - '{{.NICE}} env GOOS=js GOARCH=wasm go build -v -o frontend/static/go-pob2.wasm ./wasm2'
     generates:
@@ -70,11 +70,11 @@ tasks:
       - '{{.NICE}} ./desktop/scripts/build.sh desktop/bin/go-pob production {{.TAGS}}'
 
   desktop-dist:
-    desc: "The frontend as every desktop build embeds it (VITE_DESKTOP=1, go-pob.wasm.gz only) into desktop/dist"
+    desc: "The frontend as every desktop build embeds it (VITE_DESKTOP=1, go-pob.wasm.gz and go-pob2.wasm.gz only) into desktop/dist"
     cmds:
       - '{{.NICE}} ./desktop/scripts/wasm.sh'
       - 'cd frontend && {{.NICE}} env VITE_DESKTOP=1 npx vite build --logLevel warn'
-      - rsync -a --delete --exclude .gitkeep --exclude go-pob.wasm --exclude go-pob.wasm.br --exclude service-worker.js --exclude _headers frontend/build/ desktop/dist/
+      - rsync -a --delete --exclude .gitkeep --exclude go-pob.wasm --exclude go-pob.wasm.br --exclude go-pob2.wasm --exclude go-pob2.wasm.br --exclude service-worker.js --exclude _headers frontend/build/ desktop/dist/
 
   dev-desktop:
     desc: "Run the desktop host (devtools on) over vite dev with VITE_DESKTOP=1; reload with Ctrl+R (PORT=5180, TAGS=)"
@@ -301,7 +301,7 @@ tasks:
       SHARD_LIST: '{{if .SHARD}}--test-list e2e/.results/shard-tests.txt {{end}}'
     cmds:
       - '{{if eq .REUSE "1"}}node e2e/serve.mjs port > /dev/null{{else}}{{.TASK_EXE}} -d {{.ROOT_DIR}} build-go build-go2{{end}}'
-      - '{{if ne .REUSE "1"}}{{.NICE}} gzip -kf9 static/go-pob.wasm{{end}}'
+      - '{{if ne .REUSE "1"}}{{.NICE}} gzip -kf9 static/go-pob.wasm static/go-pob2.wasm{{end}}'
       - '{{if ne .REUSE "1"}}{{.NICE}} npx vite build --logLevel warn{{end}}'
       - '{{if .SHARD}}env E2E_SLOW={{.SLOW | default "0"}} node e2e/shard.mjs plan {{.SHARD}} e2e/.results/shard-tests.txt{{end}}'
       - '{{.NICE}} env E2E_BASELINE={{.E2E_BASELINE | default "0"}} E2E_SLOW={{.SLOW | default "0"}} {{if eq .REUSE "1"}}E2E_REUSE=1 E2E_PORT=$(node e2e/serve.mjs port){{end}} npx playwright test -c e2e/playwright.config.ts {{if .GREP}}--grep {{shellQuote .GREP}} {{end}}{{.SHARD_LIST}}{{.SPECS}} {{.CLI_ARGS}}'
@@ -335,7 +335,7 @@ tasks:
     deps: [build-go, build-go2]
     dir: ./frontend/
     cmds:
-      - '{{.NICE}} gzip -kf9 static/go-pob.wasm'
+      - '{{.NICE}} gzip -kf9 static/go-pob.wasm static/go-pob2.wasm'
       - '{{.NICE}} npx vite build --logLevel warn'
       - node e2e/serve.mjs start
 

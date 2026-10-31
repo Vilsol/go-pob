@@ -90,20 +90,22 @@ jobs:
       - name: Build wasm
         run: |
           go build -trimpath -tags=timetzdata -v -o frontend/static/go-pob.wasm ./wasm
+          go build -trimpath -tags=timetzdata -v -o frontend/static/go-pob2.wasm ./wasm2
         env:
           GOOS: js
           GOARCH: wasm
 
       - name: Compress wasm
         run: |
-          gzip -k9 frontend/static/go-pob.wasm
-          node frontend/scripts/compress-wasm.mjs
-          rm frontend/static/go-pob.wasm frontend/static/go-pob.wasm.br.sha256
+          gzip -k9 frontend/static/go-pob.wasm frontend/static/go-pob2.wasm
+          node frontend/scripts/compress-wasm.mjs go-pob.wasm go-pob2.wasm
+          rm frontend/static/go-pob.wasm frontend/static/go-pob.wasm.br.sha256 frontend/static/go-pob2.wasm frontend/static/go-pob2.wasm.br.sha256
 
       - name: Build frontend
         working-directory: frontend
         env:
           VITE_WASM_FILE: go-pob.wasm.br
+          VITE_WASM2_FILE: go-pob2.wasm.br
           VITE_VERSION: ${{ needs.version.outputs.version }}
         run: |
           pnpm run build --mode production

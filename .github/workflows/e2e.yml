@@ -69,6 +69,10 @@ jobs:
       - name: Populate the bundle cache
         run: go run ./frontend/e2e/populate_cache.go
 
+      # the PoE2 data the e2e PoE2 fixture build loads, by the Go test that calculates the same fixture
+      - name: Populate the bundle cache with PoE2 data
+        run: go test -count=1 -run '^TestFixtureBuildMatchesPoB$' ./wasm2/exposition/
+
       # restored and saved in two steps so a run whose tests fail still keeps the download
       - name: Restore Playwright's Chromium
         id: chromium
@@ -95,7 +99,9 @@ jobs:
         working-directory: frontend
 
       - name: Build wasm
-        run: go build -o frontend/static/go-pob.wasm ./wasm && gzip -kf9 frontend/static/go-pob.wasm
+        run: |
+          go build -o frontend/static/go-pob.wasm ./wasm && gzip -kf9 frontend/static/go-pob.wasm
+          go build -o frontend/static/go-pob2.wasm ./wasm2 && gzip -kf9 frontend/static/go-pob2.wasm
         env:
           GOOS: js
           GOARCH: wasm

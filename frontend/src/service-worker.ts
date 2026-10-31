@@ -2,7 +2,7 @@
 /// <reference lib="webworker" />
 
 import { base, build, files, version } from '$service-worker';
-import { WASM_FALLBACK, WASM_FILE } from '$lib/go/wasm_file';
+import { WASM2_FALLBACK, WASM2_FILE, WASM_FALLBACK, WASM_FILE } from '$lib/go/wasm_file';
 import { ART_CACHE, isCdnAsset } from '$lib/pwa/hosts';
 
 const sw = self as unknown as ServiceWorkerGlobalScope;
@@ -16,7 +16,8 @@ const WASM = `${base}${WASM_FILE}`;
 const PRECACHE = [SHELL, WASM, ...build, ...files];
 const PRECACHED = new Set(PRECACHE);
 const FALLBACK = `${base}${WASM_FALLBACK}`;
-const RUNTIME = new Set([FALLBACK]);
+// the PoE2 wasm and worker are cached the first time a PoE2 build asks for them, never at install
+const RUNTIME = new Set([FALLBACK, `${base}${WASM2_FILE}`, `${base}${WASM2_FALLBACK}`]);
 
 const usableWasm = async (res: Response | undefined) => {
   const reader = res?.body?.getReader();
@@ -46,6 +47,7 @@ const cacheWorkerChunks = async (cache: Cache) => {
   const found = new Set<string>();
   const queue: string[] = [];
   const add = (file: string) => {
+    if (file.startsWith('sync_worker2-')) return;
     const url = `${IMMUTABLE}workers/${file}`;
     if (!found.has(url)) {
       found.add(url);

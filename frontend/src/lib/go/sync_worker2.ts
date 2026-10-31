@@ -1,14 +1,60 @@
 import { expose } from 'comlink';
+import { configure, fs } from '@zenfs/core';
+import { IndexedDB } from '@zenfs/dom';
 import '$lib/console_hook';
 import '../../wasm_exec.js';
-import { boot, config, exposition } from '../types2';
+import { boot, config, exposition, storage } from '../types2';
 import type { Poe2View } from '../global';
+import { DESKTOP } from '$lib/pwa/desktop';
+
+// only the data cache bucket; on the web it is its own IndexedDB database, since zenfs allocates inode ids per
+// instance and two instances writing the PoE1 worker's database overwrite each other's files
+const disk = (bucket: string, key: string) => `/desktop/fs/${bucket}/${encodeURIComponent(key)}`;
+
+const cacheGet = async (bucket: string, key: string) => {
+  if (DESKTOP) {
+    const res = await fetch(disk(bucket, key));
+    if (!res.ok) throw new Error(`read ${bucket}/${key}: ${res.status}`);
+    return new Uint8Array(await res.arrayBuffer());
+  }
+  return new Uint8Array(await fs.promises.readFile(`/${bucket}/${key}`));
+};
+
+const cacheSet = async (bucket: string, key: string, value: Uint8Array | undefined) => {
+  if (!value || !key) return;
+  if (DESKTOP) {
+    const res = await fetch(disk(bucket, key), { method: 'PUT', body: value });
+    if (!res.ok) throw new Error(`write ${bucket}/${key}: ${res.status}`);
+    return;
+  }
+  await fs.promises.writeFile(`/${bucket}/${key}`, value);
+};
+
+const cacheExists = async (bucket: string, key: string) => {
+  if (DESKTOP) return (await fetch(disk(bucket, key), { method: 'HEAD' })).ok;
+  return fs.promises.exists(`/${bucket}/${key}`);
+};
+
+const initializeStorage = async () => {
+  if (!DESKTOP) await configure({ mounts: { '/cache': await IndexedDB.create({ storeName: 'cache2' }) } });
+  await storage.InitializeStorage(
+    () => [],
+    cacheGet,
+    cacheSet,
+    cacheExists,
+    () => {},
+    () => {}
+  );
+};
 
 class PoB2Worker {
   private booted?: Promise<unknown>;
 
   boot(wasm: ArrayBuffer) {
-    this.booted ??= boot(wasm).then(() => config.InitLogging(false));
+    this.booted ??= boot(wasm).then(async () => {
+      config.InitLogging(false);
+      await initializeStorage();
+    });
     return this.booted;
   }
 

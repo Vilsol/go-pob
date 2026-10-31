@@ -94,9 +94,10 @@ test('offline after one online visit: reload, open a saved build, edit it', { ta
     const answer = (await kept.jsonValue()) as { count: number; missing: string[] };
     console.log(`tree sheets kept for offline: ${answer.count}, missing ${answer.missing.length}`);
     expect(answer.missing, 'tree sheets the service worker could not keep').toEqual([]);
-    const workers = readdirSync(resolve(import.meta.dirname, '../.svelte-kit/output/client/_app/immutable/workers')).map(
-      (f) => `${BASE}/_app/immutable/workers/${f}`
-    );
+    // the PoE2 worker is cached the first time a PoE2 build asks for it (poe2-routing.spec.ts)
+    const workers = readdirSync(resolve(import.meta.dirname, '../.svelte-kit/output/client/_app/immutable/workers'))
+      .filter((f) => !f.startsWith('sync_worker2-'))
+      .map((f) => `${BASE}/_app/immutable/workers/${f}`);
     expect(
       workers.some((u) => u.includes('power_worker')),
       'the build has no power worker chunk'

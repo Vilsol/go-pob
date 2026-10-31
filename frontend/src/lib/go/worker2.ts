@@ -3,14 +3,23 @@ import * as Comlink from 'comlink';
 import { assets } from '$app/paths';
 import type { Worker2Type } from './sync_worker2';
 import { forwardWorkerLog } from '$lib/app_log';
-import { WASM2_FILE } from './wasm_file';
+import { WASM2_FALLBACK, WASM2_FILE } from './wasm_file';
 
 let worker2: Promise<Comlink.Remote<Worker2Type>> | undefined;
 
-const wasm2Bytes = async () => {
-  const res = await fetch(assets + WASM2_FILE);
-  if (!res.ok) throw new Error(`Failed to load the PoE2 wasm runtime: ${res.status} ${WASM2_FILE}`);
-  return res.arrayBuffer();
+// the same byte check +layout.svelte does for the PoE1 wasm: a .br the host did not decode falls back to the .gz
+const wasm2Bytes = async (path: string): Promise<ArrayBuffer> => {
+  const res = await fetch(assets + path);
+  if (!res.ok) throw new Error(`Failed to load the PoE2 wasm runtime: ${res.status} ${path}`);
+  const data = await res.arrayBuffer();
+  const head = new Uint8Array(data, 0, Math.min(4, data.byteLength));
+  if (head[0] === 0x00 && head[1] === 0x61 && head[2] === 0x73 && head[3] === 0x6d) return data;
+  if (head[0] === 0x1f && head[1] === 0x8b) return new Response(new Response(data).body!.pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
+  if (path !== WASM2_FALLBACK) {
+    console.warn(`${path} arrived still encoded; falling back to ${WASM2_FALLBACK}`);
+    return wasm2Bytes(WASM2_FALLBACK);
+  }
+  throw new Error('Failed to load the PoE2 wasm runtime: not a wasm module');
 };
 
 // created on the first PoE2 build, never at page load
@@ -20,7 +29,7 @@ export const poe2Worker = () =>
     const w = new SyncWorker2({ name: 'calc2' });
     forwardWorkerLog(w);
     const wrap = Comlink.wrap<Worker2Type>(w);
-    const data = await wasm2Bytes();
+    const data = await wasm2Bytes(WASM2_FILE);
     await wrap.boot(Comlink.transfer(data, [data]));
     return wrap;
   })().catch((err: unknown) => {

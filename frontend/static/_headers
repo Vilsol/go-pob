@@ -6,6 +6,10 @@
   Content-Type: application/wasm
   Content-Encoding: br
   Cache-Control: public, max-age=0, must-revalidate, no-transform
+/go-pob2.wasm.br
+  Content-Type: application/wasm
+  Content-Encoding: br
+  Cache-Control: public, max-age=0, must-revalidate, no-transform
 
 # The service worker script decides which deployment a returning visitor runs, and the manifest is how the app
 # installs: neither may be answered from a stale cache (lib/pwa also registers with updateViaCache: 'none').
