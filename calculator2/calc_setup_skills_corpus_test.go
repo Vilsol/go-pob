@@ -17,8 +17,8 @@ import (
 // poe2MainSkillFloors are the builds whose main skill name, and whose ordered support names, agree with
 // PoB-PoE2's dump, per corpus.
 var poe2MainSkillFloors = map[string][2]int{
-	"skills-off": {9980, 10000},
-	"skills-on":  {9980, 10000},
+	"skills-off": {10000, 10000},
+	"skills-on":  {10000, 10000},
 }
 
 // poe2GemRequirementStats are the requirement outputs the gem requirements feed, with the skills-off
@@ -29,6 +29,9 @@ type poe2SkillDump struct {
 	Meta struct {
 		MainSkill *string `json:"mainSkill"`
 	} `json:"meta"`
+	MinionMeta struct {
+		Name string `json:"name"`
+	} `json:"minionMeta"`
 	Supports []string `json:"supports"`
 }
 
@@ -144,6 +147,13 @@ func TestCorpusPoE2MainSkillVsDumps(t *testing.T) {
 							// buildActiveSkillModList puts the minion's name into a "{0}" effect name.
 							if before, after, ok := strings.Cut(strings.TrimSpace(ge.Name), "{0}"); ok {
 								res.template = strings.HasPrefix(res.wantMain, before) && strings.HasSuffix(res.wantMain, after)
+								// CalcDefence.lua:207,213 write "Spectre: "/"Companion: " plus the minion's name into the shared
+								// grantedEffect.name the dump reads, so with two such gems it names whichever reserved last; the
+								// port keeps data.skills read-only. Compare the main skill's own minion with the dump's instead.
+								if (before == "Spectre: " || before == "Companion: ") && m.Minion != nil && m.Minion.MinionData != nil && d.MinionMeta.Name != "" {
+									res.gotMain = before + m.Minion.MinionData.Name
+									res.wantMain = before + d.MinionMeta.Name
+								}
 							}
 							for _, s := range m.SupportList {
 								res.gotSupp = append(res.gotSupp, s.GrantedEffect.Name)

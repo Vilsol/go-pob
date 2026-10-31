@@ -44,6 +44,8 @@ type poe2SliceGrade struct {
 	perStat                                        map[string]*poe2Tally
 	allMatched, allTotal, allNonzero, allNonzeroOK int
 	all                                            map[string]*poe2Tally
+	minionBuilds, minionNoActor                    int
+	minion                                         map[string]*poe2Tally
 	recs                                           []poe2OracleRecord
 	builds                                         []poe2SliceBuild
 }
@@ -81,6 +83,8 @@ func gradePoE2Slice(t *testing.T, corpusDir, oraclePath string, slice []string) 
 		err                                            error
 		nan                                            int
 		allMatched, allTotal, allNonzero, allNonzeroOK int
+		minion                                         map[string]*poe2Tally
+		minionNoActor                                  bool
 	}
 	results := make([]result, len(recs))
 	tasks := make(chan int, len(recs))
@@ -168,13 +172,58 @@ func gradePoE2Slice(t *testing.T, corpusDir, oraclePath string, slice []string) 
 						}
 					}
 				}
+				if recs[i].MinionOutput != nil {
+					var ours map[string]float64
+					if env.Minion != nil {
+						ours = env.Minion.Output
+					} else {
+						res.minionNoActor = true
+					}
+					res.minion = map[string]*poe2Tally{}
+					for key, v := range recs[i].MinionOutput {
+						want, ok := v.(float64)
+						if !ok {
+							continue
+						}
+						got := ours[key]
+						tl := &poe2Tally{seen: 1}
+						hit := !math.IsNaN(got) && !math.IsInf(got, 0) && poe2OracleClose(got, want, poe2OracleTolerance)
+						if hit {
+							tl.ok = 1
+						}
+						if want != 0 {
+							tl.nonzero = 1
+							if hit {
+								tl.nonzeroOK = 1
+							}
+						}
+						res.minion[key] = tl
+					}
+				}
 			}
 		}()
 	}
 	wg.Wait()
 
-	g := &poe2SliceGrade{records: len(recs), perStat: map[string]*poe2Tally{}, all: map[string]*poe2Tally{}, recs: recs}
+	g := &poe2SliceGrade{records: len(recs), perStat: map[string]*poe2Tally{}, all: map[string]*poe2Tally{}, minion: map[string]*poe2Tally{}, recs: recs}
 	for i, r := range results {
+		if r.minion != nil {
+			g.minionBuilds++
+			if r.minionNoActor {
+				g.minionNoActor++
+			}
+			for k, tl := range r.minion {
+				a := g.minion[k]
+				if a == nil {
+					a = &poe2Tally{}
+					g.minion[k] = a
+				}
+				a.seen += tl.seen
+				a.ok += tl.ok
+				a.nonzero += tl.nonzero
+				a.nonzeroOK += tl.nonzeroOK
+			}
+		}
 		g.builds = append(g.builds, r.poe2SliceBuild)
 		if !r.built {
 			g.failed++
@@ -272,6 +321,35 @@ func (g *poe2SliceGrade) printAll(title string) {
 	}
 }
 
+// printMinion grades the oracle's minionOutput against env.minion.output (report only).
+func (g *poe2SliceGrade) printMinion(title string) {
+	var seen, ok, nonzero, nonzeroOK int
+	keys := make([]string, 0, len(g.minion))
+	for k, a := range g.minion {
+		keys = append(keys, k)
+		seen += a.seen
+		ok += a.ok
+		nonzero += a.nonzero
+		nonzeroOK += a.nonzeroOK
+	}
+	fmt.Printf("\n=== %s ===\n", title)
+	fmt.Printf("%d builds carry a minion output (%d with no minion on our side)\n", g.minionBuilds, g.minionNoActor)
+	fmt.Printf("matched %d / %d  (%.4f%%)   nonzero matched %d / %d  (%.4f%%)   %d distinct stats\n",
+		ok, seen, 100*float64(ok)/float64(max(1, seen)), nonzeroOK, nonzero, 100*float64(nonzeroOK)/float64(max(1, nonzero)), len(g.minion))
+	sort.Slice(keys, func(a, b int) bool {
+		ma, mb := g.minion[keys[a]].nonzero-g.minion[keys[a]].nonzeroOK, g.minion[keys[b]].nonzero-g.minion[keys[b]].nonzeroOK
+		if ma != mb {
+			return ma > mb
+		}
+		return keys[a] < keys[b]
+	})
+	fmt.Printf("  most-missed nonzero stats:\n  %-34s %8s %8s %10s\n", "stat", "seen", "nonzero", "nonzeroOK")
+	for _, k := range keys[:min(25, len(keys))] {
+		a := g.minion[k]
+		fmt.Printf("  %-34s %8d %8d %10d\n", k, a.seen, a.nonzero, a.nonzeroOK)
+	}
+}
+
 // check asserts the slice's floor and NaN ceiling and that no build dropped out of the denominator.
 func (g *poe2SliceGrade) check(t *testing.T, floor int) {
 	t.Helper()
@@ -293,6 +371,22 @@ func (g *poe2SliceGrade) check(t *testing.T, floor int) {
 		}
 		if err := os.WriteFile(filepath.Join(dir, "all.tsv"), []byte(b.String()), 0o600); err != nil {
 			t.Fatal(err)
+		}
+		if len(g.minion) > 0 {
+			keys = keys[:0]
+			for k := range g.minion {
+				keys = append(keys, k)
+			}
+			sort.Strings(keys)
+			b.Reset()
+			b.WriteString("stat\tseen\tok\tnonzero\tnonzeroOK\n")
+			for _, k := range keys {
+				a := g.minion[k]
+				fmt.Fprintf(&b, "%s\t%d\t%d\t%d\t%d\n", k, a.seen, a.ok, a.nonzero, a.nonzeroOK)
+			}
+			if err := os.WriteFile(filepath.Join(dir, "minion.tsv"), []byte(b.String()), 0o600); err != nil {
+				t.Fatal(err)
+			}
 		}
 	}
 	if g.matched < floor {
@@ -324,5 +418,6 @@ func TestCorpusPoE2SkillsOnVsOracle(t *testing.T) {
 		filepath.Join("..", "testdata", "oracle-poe2-0.5", "output-poe2-0.5.jsonl.gz"), defenceSliceStats)
 	g.printSlice("CORPUS PoE2 0.5 vs ORACLE PoE2 0.5 (skills on, defence slice)", defenceSliceStats)
 	g.printAll("skills on: every numeric oracle output (report only; a stat we do not produce counts as 0)")
+	g.printMinion("skills on: every numeric minion oracle output (report only; minion offence is not ported)")
 	g.check(t, poe2SkillsOnMatchedFloor)
 }

@@ -43,6 +43,8 @@ const poe2NaNCeiling = 0
 type poe2OracleRecord struct {
 	Build  string         `json:"build"`
 	Output map[string]any `json:"output"`
+	// MinionOutput is env.minion.output, present only when the main skill has a minion.
+	MinionOutput map[string]any `json:"minionOutput"`
 }
 
 func loadPoE2Oracle(path string) ([]poe2OracleRecord, error) {

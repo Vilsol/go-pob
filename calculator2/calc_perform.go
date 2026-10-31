@@ -992,11 +992,12 @@ func perform(env *Environment) {
 	//pob2:block:src/Modules/CalcPerform.lua:3514-3518
 	offence(env, env.Player, env.Player.MainSkill)
 
-	// The minion's triggers and offence (3525-3526) are not ported; no player or enemy output reads them.
-	//pob2:block:src/Modules/CalcPerform.lua:3520-3524
+	// calcs.triggers is off for the player too (3515), so the minion's (3525) is not ported.
+	//pob2:block:src/Modules/CalcPerform.lua:3520-3527
 	if env.Minion != nil {
 		defence(env, &env.Minion.Actor)
 		buildDefenceEstimations(env, &env.Minion.Actor)
+		offence(env, &env.Minion.Actor, env.Minion.MainSkill)
 	}
 
 	calcMainSkillGemLevel(env)

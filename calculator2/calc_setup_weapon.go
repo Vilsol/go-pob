@@ -23,6 +23,12 @@ var unarmedWeaponData = map[int]map[string]float64{
 //
 //pob2:block:src/Modules/CalcSetup.lua:2120-2153
 func weaponData(env *Environment, actor *Actor, i int) map[string]float64 {
+	if actor.weaponDataSet {
+		if i == 1 {
+			return actor.WeaponData1
+		}
+		return actor.WeaponData2
+	}
 	if i == 1 {
 		if item := actor.ItemList["Weapon 1"]; item != nil && item.WeaponData[1] != nil {
 			return item.WeaponData[1]

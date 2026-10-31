@@ -1157,7 +1157,7 @@ func performActiveSkills(env *Environment) int {
 				buffValue := skillModList.Sum(mod.TypeBase, env.Player.MainSkill.SkillCfg, "UmbralWellBuffValue")
 				if buffValue > 0 {
 					if minion.ModDB != nil {
-						minion.ModDB.AddMod(mod.NewFloat("DealNoDamage", mod.TypeFlag, 1).Source("Umbral Well"))
+						minion.ModDB.AddMod(mod.NewFlag("DealNoDamage", true).Source("Umbral Well"))
 					}
 					count, _ := getActiveSkillCount(activeSkill)
 					minionName := activeSkill.ActiveEffect.GemData.Data.Name

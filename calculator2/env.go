@@ -317,6 +317,8 @@ type Actor struct {
 	// WeaponData1 and WeaponData2 are actor.weaponData1/2's numbers, as weaponData gives them.
 	WeaponData1 map[string]float64
 	WeaponData2 map[string]float64
+	// weaponDataSet marks a minion, whose weaponData1/2 createMinion sets directly.
+	weaponDataSet bool
 	// WeaponRange1 and WeaponRange2 are actor.weaponRange1/2.
 	WeaponRange1 float64
 	WeaponRange2 float64

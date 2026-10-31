@@ -93,7 +93,7 @@ func skillDataNumber(v any) (float64, bool) {
 }
 
 // createMinion is buildActiveSkillModList's minion: the list a skill picks its minion from and the
-// minion actor. The item set a minion may use (minionHasItemSet) and its weapon damage are not ported.
+// minion actor. The item set a minion may use (minionHasItemSet) is not ported.
 //
 //pob2:block:src/Modules/CalcActiveSkill.lua:923-1051
 func createMinion(env *Environment, activeSkill *ActiveSkill) {
@@ -174,13 +174,41 @@ func createMinion(env *Environment, activeSkill *ActiveSkill) {
 		}
 	}
 	minion.LifeTable = poe2.MonsterAllyLifeTable
+	attackTime := data.AttackTime
+	damageTable := poe2.MonsterAllyDamageTable
 	if monsterDamage {
-		damageTable := poe2.MonsterDamageTable
+		damageTable = poe2.MonsterDamageTable
 		minion.HiddenDamageFixup = round(poe2.MonsterAllyDamageTable[minion.Level-1]/damageTable[minion.Level-1]*miscConstant("SpectreBeastDamageFixup"), 2) - 1
 	}
-	minion.WeaponData1Type = data.WeaponType1
-	if minion.WeaponData1Type == "" {
-		minion.WeaponData1Type = "None"
+	damage := math.Floor(damageTable[minion.Level-1]) * data.Damage
+	if !data.BaseDamageIgnoresAttackSpeed { // minions with this flag do not factor attack time into their base damage
+		damage = damage * attackTime
+	}
+	//pob2:block:src/Modules/CalcActiveSkill.lua:1006-1042
+	minion.weaponDataSet = true
+	switch {
+	case truthy(skillData["minionUseBowAndQuiver"]) && env.Player.WeaponData1Type == "Bow",
+		env.TheIronMass != nil && minionType == "RaisedSkeleton":
+		minion.WeaponData1, minion.WeaponData1Type = env.Player.WeaponData1, env.Player.WeaponData1Type
+	default:
+		minion.WeaponData1Type = data.WeaponType1
+		if minion.WeaponData1Type == "" {
+			minion.WeaponData1Type = "None"
+		}
+		minion.WeaponData1 = map[string]float64{
+			"AttackRate":  1 / attackTime,
+			"CritChance":  data.CritChance,
+			"PhysicalMin": math.Floor(damage * (1 - data.DamageSpread)),
+			"PhysicalMax": math.Floor(damage * (1 + data.DamageSpread)),
+			"range":       float64(data.AttackRange),
+		}
+	}
+	minion.WeaponData2, minion.WeaponData2Type = map[string]float64{}, ""
+	if minion.Uses["Weapon 1"] {
+		minion.WeaponData1, minion.WeaponData1Type = env.Player.WeaponData1, env.Player.WeaponData1Type
+	}
+	if minion.Uses["Weapon 2"] {
+		minion.WeaponData2, minion.WeaponData2Type = env.Player.WeaponData2, env.Player.WeaponData2Type
 	}
 }
 
@@ -212,7 +240,7 @@ func initMinionModDB(env *Environment, activeSkill *ActiveSkill) {
 		minion.ModDB.AddMod(newMod("Accuracy", mod.TypeBase, calcLibVal(modDB, "Accuracy", nil)+calcLibVal(modDB, "Dex", nil)*dexAcc, "Player"))
 	} else {
 		// Minions no longer need Accuracy as of patch 0.3.0
-		minion.ModDB.AddMod(mod.NewFloat("CannotBeEvaded", mod.TypeFlag, 1).Source("Minion Attacks always hit"))
+		minion.ModDB.AddMod(mod.NewFlag("CannotBeEvaded", true).Source("Minion Attacks always hit"))
 	}
 	minion.ModDB.AddMod(newMod("CritMultiplier", mod.TypeBase, poe2.MonsterConstants["base_critical_hit_damage_bonus"]+poe2.PlayerMinionIntrinsicStats["base_critical_hit_damage_bonus"], "Base"))
 	if skillFlags["summonBeast"] {
