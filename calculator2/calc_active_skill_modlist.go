@@ -1123,6 +1123,15 @@ func buildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 		if effectName == "" {
 			effectName = activeGrantedEffect.Name
 		}
+		if activeSkill.Minion != nil && activeSkill.Minion.MinionData != nil {
+			if strings.Contains(effectName, "{0}") {
+				effectName = strings.ReplaceAll(effectName, "{0}", activeSkill.Minion.MinionData.Name)
+			} else if activeGrantedEffect.Overlay.MinionList != nil && strings.HasPrefix(effectName, "Companion") {
+				effectName = "Companion: " + activeSkill.Minion.MinionData.Name
+			} else if activeGrantedEffect.Overlay.MinionList != nil && strings.HasPrefix(effectName, "Spectre") {
+				effectName = "Spectre: " + activeSkill.Minion.MinionData.Name
+			}
+		}
 		var buff *skillBuff
 		for _, skillBuff := range activeSkill.BuffList {
 			if skillBuff.Type == effectType && skillBuff.Name == effectName {

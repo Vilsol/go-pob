@@ -1,6 +1,7 @@
 package calculator2
 
 import (
+	"math"
 	"os"
 	"sort"
 	"testing"
@@ -51,4 +52,28 @@ func TestBuildActiveSkillModListFixture(t *testing.T) {
 	testza.AssertEqual(t, -40.0, mainSkill.SkillData["attackSpeedMultiplier"])
 	testza.AssertEqual(t, 18.0, env.Player.Output["GemLevel"])
 	testza.AssertEqual(t, 15.0, env.Player.Output["GemQuality"])
+}
+
+// PoB-PoE2 names each companion's buff after its own minion (CalcActiveSkill.lua:1061-1069), so two
+// companions under Loyalty each send 10% of damage taken to the companions. The expected values are
+// PoB-PoE2's for the same file, loaded headless.
+func TestCompanionBuffNamedPerMinion(t *testing.T) {
+	raw, err := os.ReadFile("testdata/loyalty_companions.xml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	build, err := pob2.ParseBuild(raw)
+	if err != nil {
+		t.Fatal(err)
+	}
+	tree := loadTestTree(t)
+	env, err := BuildOutput(build, Options{Tree: tree, Items: NewItemsTab(build, tree, nil)})
+	if err != nil {
+		t.Fatal(err)
+	}
+	out := env.Player.Output
+	testza.AssertEqual(t, 249.0, out["SpiritReserved"])
+	testza.AssertEqual(t, 2048.0, out["TotalCompanionLife"])
+	testza.AssertEqual(t, 20.0, out["CompanionAllyDamageMitigation"])
+	testza.AssertTrue(t, math.Abs(out["TotalEHP"]-1443.6059447274) < 1e-6, out["TotalEHP"])
 }

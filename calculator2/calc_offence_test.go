@@ -101,3 +101,23 @@ func TestPreDamageExplodeSource(t *testing.T) {
 	testza.AssertFalse(t, ok)
 	testza.AssertEqual(t, "4271", id)
 }
+
+// CalcOffence.lua:1419-1421: a minion skill's limit is the main skill's ActiveMinionLimit. The expected
+// value is PoB-PoE2's for the same file, loaded headless: a level 18 Unearth.
+func TestOffenceActiveMinionLimit(t *testing.T) {
+	raw, err := os.ReadFile("testdata/unearth_minion_limit.xml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	build, err := pob2.ParseBuild(raw)
+	if err != nil {
+		t.Fatal(err)
+	}
+	tree := loadTestTree(t)
+	env, err := BuildOutput(build, Options{Tree: tree, Items: NewItemsTab(build, tree, nil)})
+	if err != nil {
+		t.Fatal(err)
+	}
+	testza.AssertEqual(t, 18.0, env.Player.Output["ActiveUnearthBoneConstructLimit"])
+	testza.AssertEqual(t, 18.0, env.Player.Output["ActiveMinionLimit"])
+}

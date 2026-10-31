@@ -7,9 +7,9 @@ import (
 	"github.com/Vilsol/go-pob/mod"
 )
 
-// offenceSkillTypeStats calculates skill type stats. A minion skill's limit needs
-// activeSkill.minion.minionData, totem life data.monsterAllyLifeTable and data.totemLifeMult, and corpse
-// life data.monsterLifeTable; none is built, so those outputs are not written.
+// offenceSkillTypeStats calculates skill type stats. Totem life needs data.monsterAllyLifeTable and
+// data.totemLifeMult, and corpse life data.monsterLifeTable; none is built, so those outputs are not
+// written.
 //
 //pob2:block:src/Modules/CalcOffence.lua:1417-1992
 func offenceSkillTypeStats(env *Environment, actor *Actor, activeSkill *ActiveSkill, skillFlags map[string]bool, output map[string]float64) {
@@ -24,6 +24,13 @@ func offenceSkillTypeStats(env *Environment, actor *Actor, activeSkill *ActiveSk
 	tick := miscConstant("ServerTickRate")
 
 	if skillFlags["minion"] {
+		if minion := activeSkill.Minion; minion != nil && minion.MinionData != nil && minion.MinionData.Limit != "" {
+			if o := env.ModDB.Override(nil, minion.MinionData.Limit); o != nil {
+				output["ActiveMinionLimit"] = math.Floor(o.Float())
+			} else {
+				output["ActiveMinionLimit"] = math.Floor(calcLibVal(skillModList, minion.MinionData.Limit, skillCfg) + calcLibVal(skillModList, "ActiveMinionLimit", skillCfg))
+			}
+		}
 		output["SummonedMinionsPerCast"] = math.Floor(calcLibVal(skillModList, "MinionPerCastCount", skillCfg))
 		if output["SummonedMinionsPerCast"] == 0 {
 			output["SummonedMinionsPerCast"] = 1

@@ -270,3 +270,15 @@ func TestPerformManaRegenAppliesToRageFixture(t *testing.T) {
 		}
 	}
 }
+
+// CalcPerform.lua:193-197: a skill's own exposure chance makes the player able to apply that exposure,
+// even when the player's modDB carries none.
+func TestHasExposureSourceActiveSkill(t *testing.T) {
+	modDB := moddb.NewModDB()
+	skillModList := newModList()
+	skillModList.Parent = modDB
+	skillModList.AddMod(newMod("FireExposureChance", mod.TypeBase, 25, "Skill:Test"))
+	env := &Environment{Player: &Actor{ModDB: modDB, ActiveSkillList: []*ActiveSkill{{SkillModList: skillModList, BaseSkillModList: skillModList, SkillCfg: &moddb.ListCfg{}}}}}
+	testza.AssertTrue(t, hasExposureSource(modDB, env, "Fire"))
+	testza.AssertFalse(t, hasExposureSource(modDB, env, "Cold"))
+}

@@ -33,7 +33,7 @@ var offenceSliceStats = []string{
 	"EnemyStunDuration", "EnemyStunThresholdMod", "LifePerSecondCost",
 }
 
-const poe2OffenceMatchedFloor = 539497
+const poe2OffenceMatchedFloor = 539570
 
 const poe2SkillsOnMatchedFloor = 179990
 

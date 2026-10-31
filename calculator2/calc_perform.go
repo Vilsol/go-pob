@@ -113,10 +113,26 @@ func calculateAttributes(modDB *moddb.ModDB, output map[string]float64, condList
 	}
 }
 
+//pob2:src/Modules/CalcPerform.lua:182-187
+func hasActiveSkillExposureSource(activeSkill *ActiveSkill, modName string) bool {
+	return activeSkill.SkillModList != nil && activeSkill.SkillCfg != nil &&
+		(modListHasMod(activeSkill.SkillModList, mod.TypeBase, activeSkill.SkillCfg, modName) || modListHasMod(activeSkill.SkillModList, mod.TypeFlag, activeSkill.SkillCfg, "InflictExposure")) ||
+		activeSkill.BaseSkillModList != nil &&
+			(modListHasMod(activeSkill.BaseSkillModList, mod.TypeBase, nil, modName) || modListHasMod(activeSkill.BaseSkillModList, mod.TypeFlag, nil, "InflictExposure"))
+}
+
 //pob2:src/Modules/CalcPerform.lua:188-199
-func hasExposureSource(modDB *moddb.ModDB, element string) bool {
+func hasExposureSource(modDB *moddb.ModDB, env *Environment, element string) bool {
 	modName := element + "ExposureChance"
-	return modDB.Sum(mod.TypeBase, nil, modName) > 0 || modDB.HasMod(mod.TypeFlag, nil, "InflictExposure")
+	if modDB.Sum(mod.TypeBase, nil, modName) > 0 || modDB.HasMod(mod.TypeFlag, nil, "InflictExposure") {
+		return true
+	}
+	for _, activeSkill := range env.Player.ActiveSkillList {
+		if hasActiveSkillExposureSource(activeSkill, modName) {
+			return true
+		}
+	}
+	return false
 }
 
 //pob2:src/Modules/CalcPerform.lua:203-232
@@ -323,7 +339,7 @@ func doActorAttribsConditions(env *Environment, actor *Actor) {
 	}
 	if env.ModeEffective {
 		for _, element := range []string{"Fire", "Cold", "Lightning"} {
-			if hasExposureSource(modDB, element) {
+			if hasExposureSource(modDB, env, element) {
 				condList["CanApply"+element+"Exposure"] = true
 				modDB.AddMod(newFlagMod("Condition:CanApply"+element+"Exposure", "Exposure"))
 			}
