@@ -14,9 +14,9 @@ import (
 	"github.com/Vilsol/go-pob/pob2"
 )
 
-const poe2ConfigMatchedFloor = 35978
+const poe2ConfigMatchedFloor = 35989
 
-const poe2ConfigNonzeroFloor = 757195
+const poe2ConfigNonzeroFloor = 772236
 
 type poe2ConfigMiss struct {
 	stat     string

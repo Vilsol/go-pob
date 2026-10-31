@@ -1,7 +1,7 @@
 -- Dumps one of PoB-PoE2's loaded data tables as JSON for `gopob poe2-data-emit`.
--- usage: regendata_poe2.lua <out.json> <bases|runes|constants|gems|legion>
+-- usage: regendata_poe2.lua <out.json> <bases|runes|constants|gems|legion|bosses|boss-skills>
 local outPath, which = arg[1], arg[2]
-assert(outPath and which, "usage: regendata_poe2.lua <out.json> <bases|runes|constants|gems|legion>")
+assert(outPath and which, "usage: regendata_poe2.lua <out.json> <bases|runes|constants|gems|legion|bosses|boss-skills>")
 
 -- GAMEDATA_DUMP is `gamedatadump`'s {fileName = source} map: those data files load in place of the pin's.
 local overlayPath = os.getenv("GAMEDATA_DUMP")
@@ -168,6 +168,26 @@ function dumpers.legion()
 	local rows = {}
 	for i, node in ipairs(legion.nodes) do
 		rows[i] = { id = node.id, dn = node.dn, sd = node.sd, ks = node.ks, ["not"] = node["not"], m = node.m }
+	end
+	return rows
+end
+
+function dumpers.bosses()
+	local rows = {}
+	for _, name in ipairs(sortedKeys(data.bosses)) do
+		local row = copy(data.bosses[name])
+		row.name = name
+		rows[#rows + 1] = row
+	end
+	return { bosses = rows, bossStats = assert(data.bossStats, "REFUSING: data.bossStats is absent") }
+end
+
+dumpers["boss-skills"] = function()
+	local rows = {}
+	for _, name in ipairs(sortedKeys(data.bossSkills)) do
+		local row = copy(data.bossSkills[name])
+		row.name = name
+		rows[#rows + 1] = row
 	end
 	return rows
 end

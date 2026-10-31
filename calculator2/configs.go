@@ -1,7 +1,9 @@
 package calculator2
 
 import (
+	"maps"
 	"math"
+	"slices"
 
 	"github.com/Vilsol/go-pob/data/poe2"
 	"github.com/Vilsol/go-pob/mod"
@@ -2306,15 +2308,15 @@ var configVarList = []configVar{
 	{name: "enemyArmour", varType: "countAllowZero", apply: func(c *configApply, val ConfigValue) {
 		c.enemyModList.AddMod(newMod("Armour", mod.TypeBase, val.Number, "Config"))
 	}},
+	//pob2:block:src/Modules/ConfigOptions.lua:2189-2268
+	{name: "presetBossSkills", varType: "list", defaultState: configString("None"), apply: applyPresetBossSkills},
 	//pob2:block:src/Modules/ConfigOptions.lua:2280-2282
 	{name: "enemyMultiplierPvpDamage", varType: "count", apply: func(c *configApply, val ConfigValue) {
 		c.enemyModList.AddMod(newMod("MultiplierPvpDamage", mod.TypeBase, val.Number, "Config"))
 	}},
 }
 
-// applyEnemyIsBoss sets the placeholders the enemy options after it read. The Pinnacle and Uber armour
-// and evasion placeholders scale by data.bossStats, which the data module does not carry, so the saved
-// placeholders stand in for them.
+// applyEnemyIsBoss sets the placeholders the enemy options after it read.
 //
 //pob2:block:src/Modules/ConfigOptions.lua:1982-2139
 func applyEnemyIsBoss(c *configApply, val ConfigValue) {
@@ -2378,5 +2380,49 @@ func applyEnemyIsBoss(c *configApply, val ConfigValue) {
 		unique("Xesht", "PoiseThreshold", mod.TypeMore, 838)
 		bossPower()
 		setResists(50, true)
+		defaultLevel := max(configEnemyLevel(c.env), 82)
+		mean := "Pinnacle"
+		if val.String == "Uber" {
+			mean = "Uber"
+		}
+		c.placeholder["enemyArmour"] = round(poe2.MonsterArmourTable[defaultLevel-1] * (poe2.BossStats[mean+"ArmourMean"] / 100))
+		c.placeholder["enemyEvasion"] = round(poe2.MonsterEvasionTable[defaultLevel-1] * (poe2.BossStats[mean+"EvasionMean"] / 100))
+	}
+}
+
+// applyPresetBossSkills is presetBossSkills' mods and its enemyDamageType input write; the placeholders it
+// sets are only read by the defence estimations (presetBossSkillPlaceholders). The None branch only
+// resets a control a non-None preset disabled, which a single load never does.
+//
+//pob2:block:src/Modules/ConfigOptions.lua:2189-2268
+func applyPresetBossSkills(c *configApply, val ConfigValue) {
+	if val.String == "None" {
+		return
+	}
+	bossData, name, isUber, ok := presetBossSkill(c.env)
+	if !ok {
+		return
+	}
+	if bossData.DamageType != "" {
+		c.env.ConfigInput["enemyDamageType"] = ConfigValue{String: bossData.DamageType, IsString: true}
+	}
+
+	c.modList.AddMod(newFlagMod("BossSkillActive", "Config"))
+
+	if name == "Atziri Flameblast" && isUber {
+		c.enemyModList.AddMod(newMod("Damage", mod.TypeIncrease, 60, "Alluring Abyss Map Mod"))
+	}
+	if bossData.AdditionalStats != nil {
+		additionalStats := bossData.AdditionalStats.Base
+		if isUber && bossData.AdditionalStats.Uber != nil {
+			additionalStats = bossData.AdditionalStats.Uber
+		}
+		for _, k := range slices.Sorted(maps.Keys(additionalStats)) {
+			if v := additionalStats[k]; v.IsFlag {
+				c.enemyModList.AddMod(newFlagMod(k, "BossSkillAdditionalData"))
+			} else {
+				c.enemyModList.AddMod(newMod(k, mod.TypeBase, v.Value, "BossSkillAdditionalData"))
+			}
+		}
 	}
 }

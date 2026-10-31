@@ -77,9 +77,11 @@ var rdGeneratorsPoE2 = []rdGenerator{
 	rdGeneratorsPoE2Skills[1],
 	rdGeneratorsPoE2Skills[2],
 	rdGeneratorsPoE2Skills[3],
+	rdGeneratorsPoE2Bosses[0],
+	rdGeneratorsPoE2Bosses[1],
 }
 
-const p2eUsage = "usage: poe2-data-emit <dump.json> <out.go> <bases|runes|constants|gems|legion>"
+const p2eUsage = "usage: poe2-data-emit <dump.json> <out.go> <bases|runes|constants|gems|legion|bosses|boss-skills>"
 
 func poe2DataEmit(args []string) int {
 	if len(args) != 3 {
@@ -101,6 +103,10 @@ func poe2DataEmit(args []string) int {
 		out, err = p2eGems(body)
 	case "legion":
 		out, err = p2eLegion(body)
+	case "bosses":
+		out, err = p2eBosses(body)
+	case "boss-skills":
+		out, err = p2eBossSkills(body)
 	default:
 		return oeUsage(p2eUsage)
 	}
