@@ -911,6 +911,9 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 		} else {
 			stunDuration := 1 + modDB.Sum(mod.TypeIncrease, nil, "StunDuration")/100
 			baseStunDuration := miscConstant("StunBaseDuration")
+			if actor.Actor == env.minionActor() {
+				baseStunDuration = overrideOr(modDB, "StunDuration", miscConstant("MinionBaseStunDuration"))
+			}
 			stunRecovery := 1 + modDB.Sum(mod.TypeIncrease, nil, "StunRecovery")/100
 			stunAndBlockRecovery := 1 + modDB.Sum(mod.TypeIncrease, nil, "StunRecovery", "BlockRecovery")/100
 			output["StunDuration"] = math.Ceil(baseStunDuration*stunDuration/stunRecovery*miscConstant("ServerTickRate")) / miscConstant("ServerTickRate")

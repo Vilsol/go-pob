@@ -305,8 +305,26 @@ func newMinionModDBs(env *Environment) {
 	}
 }
 
-// calcMinionLifePool is the total life of the player's minions the include function selects. env.minion
-// is not built, so every minion takes the branch that initialises it here.
+// minionActor is env.minion's actor, nil when there is no env.minion.
+func (env *Environment) minionActor() *Actor {
+	if env.Minion == nil {
+		return nil
+	}
+	return &env.Minion.Actor
+}
+
+// addMinionKeystones adds the tree keystones the minion's Keystone mods name.
+func addMinionKeystones(env *Environment, minion *Minion) {
+	for _, modObj := range minion.ModDB.Tabulate(mod.TypeList, nil, "Keystone") {
+		name, _ := modObj.Mod.Value().ValueList.(string)
+		if node := env.Spec.Tree.KeystoneMap[name]; node != nil {
+			minion.ModDB.AddList(processStats(env.modSource, node.ID, node.Type, node.Dn, node.Sd))
+		}
+	}
+}
+
+// calcMinionLifePool is the total life of the player's minions the include function selects; env.minion
+// keeps the database perform built for it.
 //
 //pob2:src/Modules/CalcPerform.lua:3391-3420
 func calcMinionLifePool(env *Environment, buffs map[string]*moddb.ModList, includeSkill func(*ActiveSkill, map[string]bool) bool) float64 {
@@ -317,18 +335,15 @@ func calcMinionLifePool(env *Environment, buffs map[string]*moddb.ModList, inclu
 		minion := activeSkill.Minion
 		if minion != nil && minion.ModDB != nil && !seenMinions[minion] && !skillFlags["disable"] && includeSkill(activeSkill, skillFlags) {
 			seenMinions[minion] = true
-			initMinionModDB(env, activeSkill)
-			addMinionModifiers(activeSkill.SkillModList, activeSkill.SkillCfg, minion)
-			for _, modObj := range minion.ModDB.Tabulate(mod.TypeList, nil, "Keystone") {
-				name, _ := modObj.Mod.Value().ValueList.(string)
-				if node := env.Spec.Tree.KeystoneMap[name]; node != nil {
-					minion.ModDB.AddList(processStats(env.modSource, node.ID, node.Type, node.Dn, node.Sd))
+			if minion != env.Minion {
+				initMinionModDB(env, activeSkill)
+				addMinionModifiers(activeSkill.SkillModList, activeSkill.SkillCfg, minion)
+				addMinionKeystones(env, minion)
+				for _, name := range sortedBuffNames(buffs) {
+					addMinionModifiers(buffs[name], activeSkill.SkillCfg, minion)
 				}
+				doActorAttribsConditions(env, &minion.Actor)
 			}
-			for _, name := range sortedBuffNames(buffs) {
-				addMinionModifiers(buffs[name], activeSkill.SkillCfg, minion)
-			}
-			doActorAttribsConditions(env, &minion.Actor)
 			doActorLifeManaSpirit(&minion.Actor)
 			totalLife = totalLife + minion.Output["Life"]
 		}

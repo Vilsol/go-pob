@@ -12,7 +12,7 @@ import (
 )
 
 // offenceStatConversions applies the "X applies to Y" stat conversions. The Law of the Wilds claw
-// conversions to minions (CalcOffence.lua:1031-1048) need env.minion, which is not built.
+// conversions to minions (CalcOffence.lua:1031-1048) are absent: no PoE2 mod sets their flags.
 //
 //pob2:block:src/Modules/CalcOffence.lua:874-1106
 func offenceStatConversions(env *Environment, actor *Actor, activeSkill *ActiveSkill, skillFlags map[string]bool, skillCfg *moddb.ListCfg) {

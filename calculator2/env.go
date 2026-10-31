@@ -28,6 +28,8 @@ type Environment struct {
 	EnemyLevel int
 	Player     *Actor
 	Enemy      *Actor
+	// Minion is env.minion: the main skill's minion, nil when it has none.
+	Minion *Minion
 
 	// ConfigInput is build.configTab.input for the active config set.
 	ConfigInput map[string]ConfigValue

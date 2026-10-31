@@ -355,3 +355,25 @@ func TestPerformWarcryBuffsFixture(t *testing.T) {
 		}
 	}
 }
+
+// The expected values are PoB-PoE2's for the same file, loaded headless: Unearth's Bone Construct is
+// env.minion, so the enemy's Fully Broken Armour comes from the player's and the minion's misc pass, and
+// the minion gets its own defence pass.
+func TestPerformMinionActorFixture(t *testing.T) {
+	raw, err := os.ReadFile("testdata/unearth_armour_broken.xml")
+	testza.AssertNoError(t, err)
+	build, err := pob2.ParseBuild(raw)
+	testza.AssertNoError(t, err)
+	env, err := BuildOutput(build, Options{Tree: loadTestTree(t)})
+	testza.AssertNoError(t, err)
+
+	testza.AssertNotNil(t, env.Minion)
+	testza.AssertEqual(t, "UnearthBoneConstruct", env.Minion.Type)
+	hit := ModFlagHit
+	testza.AssertEqual(t, 40.0, env.Enemy.ModDB.Sum(mod.TypeIncrease, &moddb.ListCfg{Flags: &hit}, "PhysicalDamageTaken"))
+	for stat, want := range map[string]float64{"Life": 731, "Armour": 317, "Evasion": 306, "StunDuration": 2.937} {
+		if got := env.Minion.Output[stat]; math.Abs(got-want) > 1e-3 {
+			t.Errorf("minion %s: PoB-PoE2 %v, ours %v", stat, want, got)
+		}
+	}
+}

@@ -547,7 +547,7 @@ func defence(env *Environment, actor *Actor) {
 	}
 
 	//pob2:block:src/Modules/CalcDefence.lua:999-1002
-	if actor == env.Player {
+	if actor == env.minionActor() || actor == env.Player {
 		doActorLifeManaSpirit(actor)
 		doActorLifeManaSpiritReservation(actor)
 	}

@@ -794,7 +794,7 @@ func doActorMisc(env *Environment, actor *Actor) {
 	//pob2:block:src/Modules/CalcPerform.lua:844-845
 	applyEnemyModifiers(actor, false)
 
-	if actor != env.Player && !modDB.Flag(nil, "UnaffectedBySlows") {
+	if actor != env.Player && actor != env.minionActor() && !modDB.Flag(nil, "UnaffectedBySlows") {
 		slowEffect := modDB.SumNegativeValues(mod.TypeIncrease, nil, "ActionSpeed")
 		slowEffect += modDB.SumNegativeValues(mod.TypeIncrease, nil, "MovementSpeed")
 		slowEffect += modDB.SumNegativeValues(mod.TypeIncrease, nil, "TemporalChainsActionSpeed")
@@ -826,7 +826,7 @@ func actionSpeedMod(actor *Actor) float64 {
 }
 
 // perform is calcs.perform as far as the defence slice's inputs: keystones, attributes and the
-// life/mana/spirit pools, plus charges. Minions, flasks, buffs and the rest of the pass are not ported.
+// life/mana/spirit pools, plus charges. Flasks, buffs and the rest of the pass are not ported.
 //
 //pob2:src/Modules/CalcPerform.lua:1193-3320
 func perform(env *Environment) {
@@ -849,6 +849,18 @@ func perform(env *Environment) {
 	modDB := env.ModDB
 	output := env.Player.Output
 
+	//pob2:block:src/Modules/CalcPerform.lua:1223-1229
+	env.Minion = nil
+	// A main skill missing from the active skill list has no minion database; PoB-PoE2's never is.
+	if env.Player.MainSkill != nil && env.Player.MainSkill.Minion != nil && env.Player.MainSkill.Minion.ModDB != nil {
+		env.Minion = env.Player.MainSkill.Minion
+	}
+	if env.Minion != nil {
+		// Initialise minion modifier database
+		env.Minion.Output = map[string]float64{}
+		initMinionModDB(env, env.Player.MainSkill)
+	}
+
 	//pob2:block:src/Modules/CalcPerform.lua:1249-1256
 	if modDB.Flag(nil, "CryWolfMinimumPower") && modDB.Sum(mod.TypeBase, nil, "WarcryPower") < 10 {
 		modDB.AddMod(newMod("WarcryPower", mod.TypeOverride, 10, "Minimum Warcry Power from CryWolf"))
@@ -861,6 +873,9 @@ func perform(env *Environment) {
 
 	//pob2:block:src/Modules/CalcPerform.lua:1258-1262
 	applyEnemyModifiers(env.Player, true)
+	if env.Minion != nil {
+		applyEnemyModifiers(&env.Minion.Actor, true)
+	}
 	applyEnemyModifiers(env.Enemy, true)
 
 	applyAbyssalWastingConditions(env)
@@ -922,6 +937,14 @@ func perform(env *Environment) {
 
 	//pob2:block:src/Modules/CalcPerform.lua:1869
 	doActorAttribsConditions(env, env.Player)
+	// No PoE2 minion is hostile, so its EnemyModifier branch (1871-1878) never runs.
+	//pob2:block:src/Modules/CalcPerform.lua:1870-1888
+	if env.Minion != nil {
+		mainSkill := env.Player.MainSkill
+		addMinionModifiers(mainSkill.SkillModList, mainSkill.SkillCfg, env.Minion)
+		addMinionKeystones(env, env.Minion)
+		doActorAttribsConditions(env, &env.Minion.Actor)
+	}
 
 	// Process attribute requirements
 	//pob2:block:src/Modules/CalcPerform.lua:1896
@@ -937,9 +960,13 @@ func perform(env *Environment) {
 	applyCursesAndBuffs(env, buffState)
 	applyExtraAuras(env)
 
-	//pob2:block:src/Modules/CalcPerform.lua:3266-3267
+	//pob2:block:src/Modules/CalcPerform.lua:3266-3271
 	doActorCharges(env, env.Player)
 	doActorMisc(env, env.Player)
+	if env.Minion != nil {
+		doActorCharges(env, &env.Minion.Actor)
+		doActorMisc(env, &env.Minion.Actor)
+	}
 
 	//pob2:block:src/Modules/CalcPerform.lua:3320
 	doActorLifeManaSpirit(env.Player)
@@ -964,6 +991,13 @@ func perform(env *Environment) {
 	// TURNING OFF CALC TRIGGERS AND MIRAGES FOR TIME BEING
 	//pob2:block:src/Modules/CalcPerform.lua:3514-3518
 	offence(env, env.Player, env.Player.MainSkill)
+
+	// The minion's triggers and offence (3525-3526) are not ported; no player or enemy output reads them.
+	//pob2:block:src/Modules/CalcPerform.lua:3520-3524
+	if env.Minion != nil {
+		defence(env, &env.Minion.Actor)
+		buildDefenceEstimations(env, &env.Minion.Actor)
+	}
 
 	calcMainSkillGemLevel(env)
 }
