@@ -12,7 +12,6 @@ import (
 	"github.com/Vilsol/go-pob-data/poe"
 
 	"github.com/Vilsol/go-pob/data"
-	raw "github.com/Vilsol/go-pob/data/raw"
 	"github.com/Vilsol/go-pob/mod"
 )
 
@@ -82,7 +81,10 @@ func (r *Rules) gameIDFromGemName(name string) string {
 	if r != nil && r.GameIDFromGemName != nil {
 		return r.GameIDFromGemName(name)
 	}
-	return gameIDFromGemName(name)
+	if GameIDFromGemName != nil {
+		return GameIDFromGemName(name)
+	}
+	return ""
 }
 
 type BaseFlagSource interface {
@@ -94,6 +96,9 @@ type GemTagSource interface {
 }
 
 var GemIsType func(gem *poe.SkillGem, keyword string) bool
+
+// PoE1's gem table, set by its calculator; Rules.GameIDFromGemName replaces it.
+var GameIDFromGemName func(name string) string
 
 type ModStoreFuncs interface {
 	List(cfg *ListCfg, names ...string) []interface{}
@@ -1491,46 +1496,4 @@ func (s *ModStore) GetCondition(variable string, cfg *ListCfg, noMod bool) (bool
 	}
 
 	return false, false
-}
-
-var (
-	gemGameIDByBaseNameOnce sync.Once
-	gemGameIDByBaseName     map[string]string
-)
-
-//pob:src/Modules/CalcTools.lua:279-292
-func gameIDFromGemName(name string) string {
-	if name == "" {
-		return ""
-	}
-	gemGameIDByBaseNameOnce.Do(func() {
-		gemGameIDByBaseName = make(map[string]string, len(raw.Gems)+len(raw.GemVariants))
-		add := func(gemName, gameID string) {
-			key := strings.ToLower(gemName)
-			if prev, ok := gemGameIDByBaseName[key]; !ok || gameID < prev {
-				gemGameIDByBaseName[key] = gameID
-			}
-		}
-		resolve := func(row raw.PoBGem, gameID string) string {
-			if row.Tags["vaal"] && row.SecondaryGrantedEffectID != "" {
-				if base := raw.GemGameIDForGrantedEffectID[row.SecondaryGrantedEffectID]; base != "" {
-					return base
-				}
-			}
-			return gameID
-		}
-		for _, gameID := range slices.Sorted(maps.Keys(raw.Gems)) {
-			row := raw.Gems[gameID]
-			if row.Name != "" {
-				add(row.Name, resolve(row, gameID))
-			}
-		}
-		for _, effectID := range slices.Sorted(maps.Keys(raw.GemVariants)) {
-			row := raw.GemVariants[effectID]
-			if gameID := raw.GemGameIDForGrantedEffectID[effectID]; row.Name != "" && gameID != "" {
-				add(row.Name, resolve(row, gameID))
-			}
-		}
-	})
-	return gemGameIDByBaseName[strings.ToLower(name)]
 }

@@ -2,9 +2,12 @@ package calculator
 
 import (
 	"log/slog"
+	"maps"
 	"math"
+	"slices"
 	"sort"
 	"strings"
+	"sync"
 
 	"github.com/Vilsol/go-pob-data/poe"
 
@@ -32,6 +35,49 @@ func CalcVal(modStore moddb.ModStoreFuncs, name string, cfg *moddb.ListCfg) floa
 
 func init() {
 	moddb.GemIsType = CalcGemIsType
+	moddb.GameIDFromGemName = skillNameGameID
+}
+
+var (
+	gemGameIDByBaseNameOnce sync.Once
+	gemGameIDByBaseName     map[string]string
+)
+
+//pob:src/Modules/CalcTools.lua:279-292
+func skillNameGameID(name string) string {
+	if name == "" {
+		return ""
+	}
+	gemGameIDByBaseNameOnce.Do(func() {
+		gemGameIDByBaseName = make(map[string]string, len(raw2.Gems)+len(raw2.GemVariants))
+		add := func(gemName, gameID string) {
+			key := strings.ToLower(gemName)
+			if prev, ok := gemGameIDByBaseName[key]; !ok || gameID < prev {
+				gemGameIDByBaseName[key] = gameID
+			}
+		}
+		resolve := func(row raw2.PoBGem, gameID string) string {
+			if row.Tags["vaal"] && row.SecondaryGrantedEffectID != "" {
+				if base := raw2.GemGameIDForGrantedEffectID[row.SecondaryGrantedEffectID]; base != "" {
+					return base
+				}
+			}
+			return gameID
+		}
+		for _, gameID := range slices.Sorted(maps.Keys(raw2.Gems)) {
+			row := raw2.Gems[gameID]
+			if row.Name != "" {
+				add(row.Name, resolve(row, gameID))
+			}
+		}
+		for _, effectID := range slices.Sorted(maps.Keys(raw2.GemVariants)) {
+			row := raw2.GemVariants[effectID]
+			if gameID := raw2.GemGameIDForGrantedEffectID[effectID]; row.Name != "" && gameID != "" {
+				add(row.Name, resolve(row, gameID))
+			}
+		}
+	})
+	return gemGameIDByBaseName[strings.ToLower(name)]
 }
 
 func gemIsSupport(gem *poe.SkillGem) bool {
