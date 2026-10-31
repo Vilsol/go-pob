@@ -688,7 +688,11 @@ func mpCanonOurTag(t mod.Tag) mpCanonTag {
 		set("actor", tag.TagActor)
 		setBool("floor", tag.TagFloor)
 	case *mod.StatThresholdTag:
-		set("stats", tag.Stat)
+		if tag.StatList != nil {
+			set("stats", strings.Join(tag.StatList, ","))
+		} else {
+			set("stats", tag.Stat)
+		}
 		if tag.TagThresholdStat != "" {
 			set("thresholdStat", tag.TagThresholdStat)
 		} else {
@@ -1250,7 +1254,7 @@ var mpSkillTypeNumber = map[string]int{
 }
 
 // mpModCacheAgreeFloor is the number of ModCache lines ParseMod must agree with PoB-PoE2 on; it only goes up.
-const mpModCacheAgreeFloor = 9951
+const mpModCacheAgreeFloor = 9988
 
 func TestModCacheVsPoB(t *testing.T) {
 	rows, n, keys := mpcDiff(t)

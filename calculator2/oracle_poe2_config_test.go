@@ -16,7 +16,7 @@ import (
 
 const poe2ConfigMatchedFloor = 35989
 
-const poe2ConfigNonzeroFloor = 773246
+const poe2ConfigNonzeroFloor = 773357
 
 type poe2ConfigMiss struct {
 	stat     string

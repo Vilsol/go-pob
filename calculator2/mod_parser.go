@@ -1269,6 +1269,7 @@ var preFlagList = map[string]modNameListType{
 	"^attacks used by ballistas [hd][ae][va][el] ":                   {flags: ModFlagAttack, keywordFlags: KeywordFlagTotem, tag: mod.Condition("BallistaSkill")},
 	"^attack skills [hd][ae][va][el] ":                               {keywordFlags: KeywordFlagAttack},
 	"^spells [hgdf][aei][ivar][nel] a? ?":                            {flags: ModFlagSpell},
+	"^spells which cost life gain ":                                  {keywordFlags: KeywordFlagSpell, tag: mod.StatThreshold("", 1).Stats("LifeCost", "LifePerSecondCost")},
 	"^spell skills [hd][ae][va][el] ":                                {tag: mod.SkillType("Spell")},
 	"^spell hits [ghd][ae][iva][eln] ":                               {flags: ModFlagHit, keywordFlags: KeywordFlagSpell},
 	"^offering skills [hd][ae][va][el] ":                             {tag: mod.SkillType("Offering")},
@@ -2135,6 +2136,9 @@ var modTagList = map[string]modNameListType{
 	"while affected by a normal abyss jewel":                   {tag: mod.MultiplierThreshold("NormalAbyssJewels").Threshold(1)},
 	"while an enemy with an open weakness is in your presence": {tag: mod.Condition("OpenWeaknessEnemyPresence")},
 	"against enemies with an open weakness":                    {tag: mod.Condition("EnemyHasOpenWeakness")},
+	//pob2:block:src/Modules/ModParser.lua:1707-1708
+	"with skills that cost life": {tag: mod.StatThreshold("", 1).Stats("LifeCost", "LifePerSecondCost")},
+	"with spells that cost life": {keywordFlags: KeywordFlagSpell, tag: mod.StatThreshold("", 1).Stats("LifeCost", "LifePerSecondCost")},
 	//pob2:block:src/Modules/ModParser.lua:1710-2174
 	`if you have at least (\d+) (\w+) support gems socketed`: {
 		fn: func(caps []string) modNameListType {
@@ -5183,6 +5187,15 @@ var specialModList = map[string]interface{}{
 		return []mod.Mod{MOD("ColdExposureChance", "BASE", num)}, ""
 	},
 	"inflict abyssal wasting on hit": []mod.Mod{MOD("EnemyModifier", "LIST", mod.EnemyModifier{Mod: FLAG("AbyssalWasted").Flag(ModFlagHit).Tag(mod.Condition("Effective"))})},
+	//pob2:block:src/Modules/ModParser.lua:4528-4536
+	`abyssal wasting also applies \-(\d+)% to (\w+) resistance`: func(num float64, captures []string) ([]mod.Mod, string) {
+		resType, ok := dmgTypes[captures[1]]
+		if !ok {
+			return nil, ""
+		}
+		modName := resType + "Resist"
+		return []mod.Mod{MOD("AbyssalWastingAlsoGrants", "LIST", LuaTable{"mod": MOD(modName, "BASE", -num), "applyToEnemy": true})}, ""
+	},
 	//pob2:block:src/Modules/ModParser.lua:4537-4541
 	"abyssal wasting you inflict also prevents targets from dealing critical hits":            []mod.Mod{MOD("AbyssalWastingImpliesCondition", "LIST", LuaTable{"condition": "Condition:NeverCrit", "applyToEnemy": true}), MOD("AbyssalWastingImpliesCondition", "LIST", LuaTable{"condition": "NeverCrit", "applyToEnemy": true})},
 	`(\d+)% chance to inflict withered with hits against targets affected by abyssal wasting`: []mod.Mod{MOD("AbyssalWastingImpliesCondition", "LIST", LuaTable{"condition": "Condition:CanWither"})},
@@ -6826,6 +6839,16 @@ var specialModList = map[string]interface{}{
 	`can attack as though using a quarterstaff while both of your hand slots are empty unarmed attacks that would use an equipped quarterstaff's damage have: base unarmed physical damage replaced with damage based on their skill level (\d+)% more attack speed per (\d+) item evasion on equipped armour items \+(\d+\.?\d*)% to critical hit chance per (\d+) item energy shield on equipped armour items`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("Speed", "MORE", num).Flag(ModFlagAttack).Tag(mod.Condition("HollowPalm"), mod.PerStat(utils.Float(captures[1]), "EvasionOnAllArmourItems")), MOD("CritChance", "BASE", utils.Float(captures[2])).Flag(ModFlagAttack).Tag(mod.Condition("HollowPalm"), mod.PerStat(utils.Float(captures[3]), "EnergyShieldOnAllArmourItems"))}, ""
 	},
+	//pob2:block:src/Modules/ModParser.lua:6041-6049
+	`has (\d+) to (\d+) (\w+) damage, \+(\d+) to \+(\d+) per boss's face broken`: func(num float64, captures []string) ([]mod.Mod, string) {
+		dmg := firstToUpper(captures[2])
+		return []mod.Mod{
+			MOD("Facebreaker"+dmg+"Min", "BASE", num),
+			MOD("Facebreaker"+dmg+"Max", "BASE", utils.Float(captures[1])),
+			MOD("Facebreaker"+dmg+"Min", "BASE", utils.Float(captures[3])).Tag(mod.Multiplier("BossFaceBroken")),
+			MOD("Facebreaker"+dmg+"Max", "BASE", utils.Float(captures[4])).Tag(mod.Multiplier("BossFaceBroken")),
+		}, ""
+	},
 	//pob2:block:src/Modules/ModParser.lua:6050-6157
 	"can attack as though using a one handed mace while both of your hand slots are empty":     []mod.Mod{FLAG("CanAttackAsOneHandMaceUnarmed")},
 	"unarmed attacks that would use an equipped one hand mace's damage use this item's damage": []mod.Mod{FLAG("UseFacebreakerItemDamage")},
@@ -6960,6 +6983,19 @@ var specialModList = map[string]interface{}{
 	},
 	`skills have \+(\d+) to limit`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("AdditionalCooldownUses", "BASE", num)}, ""
+	},
+	//pob2:block:src/Modules/ModParser.lua:6158-6168
+	`(\w+) skills have \+(\d+) to limit`: func(num float64, captures []string) ([]mod.Mod, string) {
+		skillTypeMap := map[string]string{
+			"storm":   "Storm",
+			"fissure": "CreatesFissure",
+			"orb":     "Orb",
+		}
+		skillType, ok := skillTypeMap[captures[0]]
+		if !ok {
+			return nil, ""
+		}
+		return []mod.Mod{MOD("AdditionalCooldownUses", "BASE", utils.Float(captures[1])).Tag(mod.SkillType(skillType))}, ""
 	},
 	//pob2:block:src/Modules/ModParser.lua:6171-6324
 	`\+([\d\.]+) seconds to flameblast and incinerate cooldown`: func(num float64, captures []string) ([]mod.Mod, string) {

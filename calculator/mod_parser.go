@@ -5867,6 +5867,11 @@ var specialModList = map[string]interface{}{
 		MOD("ShockBase", "BASE", data.NonDamagingAilments[data.AilmentShock].Default).Tag(mod.Condition("Focused")),
 		MOD("EnemyModifier", "LIST", mod.EnemyModifier{Mod: mod.NewFlag("Condition:Shocked", true)}).Tag(mod.Condition("Focused")),
 	},
+	//pob:src/Modules/ModParser.lua:3778-3781
+	`shock yourself for (\d+) seconds when you focus`: []mod.Mod{
+		MOD("ShockBase", "BASE", data.NonDamagingAilments[data.AilmentShock].Default).Tag(mod.Condition("Focused")),
+		FLAG("Condition:Shocked").Tag(mod.Condition("Focused")),
+	},
 	`drops shocked ground while moving, lasting (\d+) seconds`:  []mod.Mod{MOD("ShockBase", "BASE", data.NonDamagingAilments[data.AilmentShock].Default).Tag(mod.ActorCondition("enemy", "OnShockedGround"))},
 	`drops scorched ground while moving, lasting (\d+) seconds`: []mod.Mod{MOD("ScorchBase", "BASE", data.NonDamagingAilments[data.AilmentScorch].Default).Tag(mod.ActorCondition("enemy", "OnScorchedGround"))},
 	`drops brittle ground while moving, lasting (\d+) seconds`:  []mod.Mod{MOD("BrittleBase", "BASE", data.NonDamagingAilments[data.AilmentBrittle].Default).Tag(mod.ActorCondition("enemy", "OnBrittleGround"))},
