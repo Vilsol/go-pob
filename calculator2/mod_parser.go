@@ -5187,6 +5187,19 @@ var specialModList = map[string]interface{}{
 		return []mod.Mod{MOD("ColdExposureChance", "BASE", num)}, ""
 	},
 	"inflict abyssal wasting on hit": []mod.Mod{MOD("EnemyModifier", "LIST", mod.EnemyModifier{Mod: FLAG("AbyssalWasted").Flag(ModFlagHit).Tag(mod.Condition("Effective"))})},
+	//pob2:block:src/Modules/ModParser.lua:4515-4527
+	`targets affected by abyssal wasting you inflict are (\w+)`: func(num float64, captures []string) ([]mod.Mod, string) {
+		conditions := map[string]string{
+			"debilitated": "Debilitated",
+			"hindered":    "Hindered",
+			"blinded":     "Blinded",
+		}
+		condType, ok := conditions[captures[0]]
+		if !ok {
+			return nil, ""
+		}
+		return []mod.Mod{MOD("AbyssalWastingImpliesCondition", "LIST", LuaTable{"condition": condType, "applyToEnemy": true})}, ""
+	},
 	//pob2:block:src/Modules/ModParser.lua:4528-4536
 	`abyssal wasting also applies \-(\d+)% to (\w+) resistance`: func(num float64, captures []string) ([]mod.Mod, string) {
 		resType, ok := dmgTypes[captures[1]]
@@ -5199,6 +5212,11 @@ var specialModList = map[string]interface{}{
 	//pob2:block:src/Modules/ModParser.lua:4537-4541
 	"abyssal wasting you inflict also prevents targets from dealing critical hits":            []mod.Mod{MOD("AbyssalWastingImpliesCondition", "LIST", LuaTable{"condition": "Condition:NeverCrit", "applyToEnemy": true}), MOD("AbyssalWastingImpliesCondition", "LIST", LuaTable{"condition": "NeverCrit", "applyToEnemy": true})},
 	`(\d+)% chance to inflict withered with hits against targets affected by abyssal wasting`: []mod.Mod{MOD("AbyssalWastingImpliesCondition", "LIST", LuaTable{"condition": "Condition:CanWither"})},
+	//pob2:block:src/Modules/ModParser.lua:4542-4545
+	`(\d+)% of ([lm][ia][fn][ea]) leeched from targets affected by abyssal wasting is instant`: func(num float64, captures []string) ([]mod.Mod, string) {
+		modName := "Instant" + firstToUpper(captures[1]) + "Leech"
+		return []mod.Mod{MOD("AbyssalWastingAlsoGrants", "LIST", LuaTable{"mod": MOD(modName, "BASE", num), "unscalable": true})}, ""
+	},
 	//pob2:block:src/Modules/ModParser.lua:4546-4595
 	`(\d+)% increased accuracy rating against enemies affected by abyssal wasting`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("AbyssalWastingAlsoGrants", "LIST", LuaTable{"mod": MOD("Accuracy", "INC", num), "unscalable": true})}, ""
