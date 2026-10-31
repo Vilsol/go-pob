@@ -369,8 +369,8 @@ func offenceConversionTables(state *offenceHitState, skillModList *moddb.ModList
 		}
 
 		// Apply all conversions simultaneously
-		// Lua's pairs order decides which write lands last when a skill-converted type is also
-		// damageType's own row; dmgTypeList order applies damageType's own row in its slot.
+		// The Lua's single pairs() loop lets a later base write overwrite an earlier row's added
+		// conversion, so its result depends on table order; every base is written before any addition.
 		for _, fromType := range dmgTypeList {
 			data, ok := tempConversions[fromType]
 			if !ok {
@@ -380,6 +380,12 @@ func offenceConversionTables(state *offenceHitState, skillModList *moddb.ModList
 				entry.mult = data.mult
 			} else {
 				entry.to[fromType] = data.base
+			}
+		}
+		for _, fromType := range dmgTypeList {
+			data, ok := tempConversions[fromType]
+			if !ok {
+				continue
 			}
 			for _, toType := range dmgTypeList {
 				if amount, ok := data.conv[toType]; ok {
