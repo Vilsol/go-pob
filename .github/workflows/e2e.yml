@@ -63,7 +63,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/go-pob/bundle-cache
-          key: bundle-cache-${{ hashFiles('data/raw/cache_namespace.go', 'go.sum', 'data/tree_versions.go') }}
+          key: bundle-cache-${{ hashFiles('data/assetcache/cache_namespace.go', 'go.sum', 'data/tree_versions.go') }}
 
       # every table, deferred table and tree version the wasm can ask for, from Go's own lists
       - name: Populate the bundle cache
