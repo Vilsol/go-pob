@@ -58,7 +58,14 @@ test('with the PoE2 flag on, clicking a tree node allocates it and recalculates 
   let at = await screenOf(page, 44871);
   await page.mouse.move(at.x, at.y);
   for (let i = 0; i < 14; i++) await page.mouse.wheel(0, -100);
-  await expect.poll(async () => (await page.evaluate(() => (globalThis as unknown as { __tree2Probe: { frames: { view: { zoomLevel: number } }[] } }).__tree2Probe.frames.at(-1)?.view.zoomLevel))).toBe(17);
+  await expect
+    .poll(
+      async () =>
+        await page.evaluate(
+          () => (globalThis as unknown as { __tree2Probe: { frames: { view: { zoomLevel: number } }[] } }).__tree2Probe.frames.at(-1)?.view.zoomLevel
+        )
+    )
+    .toBe(17);
   at = await screenOf(page, 44871);
   await page.mouse.move(at.x + 1, at.y + 1);
   await page.mouse.move(at.x, at.y);
