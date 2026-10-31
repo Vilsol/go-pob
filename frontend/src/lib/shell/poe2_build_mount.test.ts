@@ -6,6 +6,7 @@ import { readFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { get } from 'svelte/store';
+import type { Poe2Calc } from '$lib/go/sync_worker2';
 
 afterEach(cleanup);
 
@@ -63,6 +64,10 @@ vi.mock('@zenfs/core', () => {
 });
 // the PoE1 worker is not part of a PoE2 build's page
 vi.mock('$lib/go/worker', () => ({ syncWrap: undefined, syncWorker: undefined }));
+// jsdom has no WebGL; the tree page only needs a renderer to hand its state to
+vi.mock('$lib/components/skill-tree/gl_renderer2', () => ({
+  createTree2Renderer: () => ({ kind: 'canvas', setView: () => {}, setState: () => {}, destroy: () => {} })
+}));
 
 const { poe2Build } = await import('$lib/global');
 const AppPoe2Build = (await import('./AppPoe2Build.svelte')).default;
@@ -156,5 +161,44 @@ describe('the PoE2 config and main skill writes', () => {
     await fireEvent.change(group);
     await vi.waitFor(() => expect(get(poe2Build)?.output.TotalDPS).toBeCloseTo(25.020454545455, 9));
     expect(issued).toEqual(['SetMainActiveSkill(2)', 'SetMainSocketGroup(2)']);
+  }, 120_000);
+});
+
+// the values are PoB-PoE2's: AllocNode on node 44871 under spec.allocMode 1, then Undo and Redo, with
+// PassiveSpec:Save and the calculated Energy Shield after each
+describe('the PoE2 tree undo and redo', () => {
+  beforeAll(() => {
+    globalThis.ResizeObserver ??= class {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    };
+  });
+
+  it('Ctrl+Z and Ctrl+Y on the tree page restore the allocation and recalculate', async () => {
+    poe2Build.set(await worker2Instance.Open(await fixture('sorceress_spark.xml')));
+    // the keys reach the page through the tree view; the whole PoE2 tree is slow to mount under jsdom
+    const { tinyTree } = await import('$lib/components/skill-tree/tree2_fixture');
+    const treeData = vi.spyOn(worker2Instance, 'TreeData').mockResolvedValue(tinyTree());
+    const page = render(AppPoe2Build, { view: get(poe2Build)! });
+    await fireEvent.click(page.getByRole('tab', { name: 'Tree' }));
+    await vi.waitFor(() => page.getByRole('img', { name: 'Passive skill tree' }), { timeout: 60_000 });
+    treeData.mockRestore();
+    poe2Build.set((await worker2Instance.TreeClick(44871, false, 0, false, 1)).calc);
+    expect(get(poe2Build)?.output.EnergyShield).toBe(10);
+    expect((get(poe2Build) as Poe2Calc | undefined)?.tree.allocMode).toEqual({ 44871: 1 });
+    await page.rerender({ view: get(poe2Build)! });
+    issued.length = 0;
+
+    await fireEvent.keyDown(window, { key: 'z', ctrlKey: true });
+    await vi.waitFor(() => expect(get(poe2Build)?.output.EnergyShield).toBe(0));
+    expect((get(poe2Build) as Poe2Calc | undefined)?.tree.alloc).toEqual([54447]);
+    expect(worker2Instance.Serialize()).toMatch(/nodes="54447"/);
+    await page.rerender({ view: get(poe2Build)! });
+
+    await fireEvent.keyDown(window, { key: 'y', ctrlKey: true });
+    await vi.waitFor(() => expect(get(poe2Build)?.output.EnergyShield).toBe(10));
+    expect(worker2Instance.Serialize()).toMatch(/<WeaponSet1 nodes="44871"\/>/);
+    expect(issued).toEqual(['TreeUndo(false)', 'TreeUndo(true)']);
   }, 120_000);
 });

@@ -61,17 +61,19 @@ export declare namespace config {
 }
 export declare namespace exposition {
   interface Calculator {
-    AllocateAttributeNode(id: number, attributeIndex: number): Result<void>;
+    AllocateAttributeNode(id: number, attributeIndex: number, allocMode: number): Result<void>;
     Calculate(): Promise<Result<(exposition.Outputs | undefined)>>;
-    ClickNode(id: number, right: boolean, hotkey: number, confirmClassChange: boolean): Result<number>;
+    ClickNode(id: number, right: boolean, hotkey: number, confirmClassChange: boolean, allocMode: number): Result<number>;
     ConfigRelevance(query: calculator2.ConfigRelevance): Result<calculator2.ConfigRelevance>;
-    HoverNode(id: number): exposition.TreeHover;
+    HoverNode(id: number, allocMode: number): exposition.TreeHover;
+    Redo(): Result<boolean>;
     Serialize(): Result<string>;
     SerializeWithStats(player: Array<exposition.SavedStat> | undefined, fullDPS: Array<exposition.SavedFullDPS> | undefined, minion: Array<exposition.SavedStat> | undefined): Result<string>;
     SetConfigInput(name: string, value: calculator2.ConfigValue, isDefault: boolean): void;
     SetMainActiveSkill(index: number): void;
     SetMainSocketGroup(index: number): void;
     TreeState(): Result<(exposition.TreeState | undefined)>;
+    Undo(): Result<boolean>;
     /** Releases the Go resources behind this wrapper. */
     release(): void;
     [Symbol.dispose](): void;
@@ -117,6 +119,7 @@ export declare namespace exposition {
     readonly Used: number;
     readonly AscUsed: number;
     readonly AttributeIndex: number;
+    readonly JewelRadiusIndex?: Array<number>;
   }
   function ParseBuild(xml: string): Result<(exposition.Calculator | undefined)>;
   function PassiveTreeJSON(): Promise<Result<string>>;

@@ -187,6 +187,7 @@ data/tree2/data.go                  GO-NATIVE  fetches go-pob-data's PoE2 passiv
 data/tree2/spec.go                  PORT       src/Classes/PassiveSpec.lua
 data/tree2/tree.go                  PORT       src/Classes/PassiveTree.lua
 data/tree2/tree_view.go             PORT       src/Classes/PassiveTreeView.lua,src/Classes/TreeTab.lua
+data/tree2/undo_handler.go          PORT       src/Classes/UndoHandler.lua
 
 mod/actor_condition.go              GO-NATIVE  tag struct + builder; evaluated in moddb/mod_store.go
 mod/base_flag.go                    GO-NATIVE  tag struct + builder; evaluated in moddb/mod_store.go

@@ -99,11 +99,11 @@
       .then((d) => (treeData = d))
       .catch((err: unknown) => (error = err instanceof Error ? err.message : String(err)));
   });
-  const treeClick = async (id: number, right: boolean, hotkey: number, confirmClassChange: boolean) => {
+  const treeClick = async (id: number, right: boolean, hotkey: number, confirmClassChange: boolean, allocMode: number) => {
     busy = true;
     error = undefined;
     try {
-      const r = await (await worker()).TreeClick(id, right, hotkey, confirmClassChange);
+      const r = await (await worker()).TreeClick(id, right, hotkey, confirmClassChange, allocMode);
       if (r.calc) poe2Build.set(r.calc);
       return r.result;
     } catch (err) {
@@ -112,8 +112,20 @@
       busy = false;
     }
   };
-  const treeAttribute = (id: number, index: number) => edit((w) => w.TreeAllocateAttribute(id, index));
-  const treeHover = async (id: number) => (await worker()).TreeHover(id);
+  const treeAttribute = (id: number, index: number, allocMode: number) => edit((w) => w.TreeAllocateAttribute(id, index, allocMode));
+  const treeHover = async (id: number, allocMode: number) => (await worker()).TreeHover(id, allocMode);
+  const treeUndo = async (redo: boolean) => {
+    busy = true;
+    error = undefined;
+    try {
+      const next = await (await worker()).TreeUndo(redo);
+      if (next) poe2Build.set(next);
+    } catch (err) {
+      error = err instanceof Error ? err.message : String(err);
+    } finally {
+      busy = false;
+    }
+  };
 
   const setMain = (which: 'group' | 'skill', index: number) => edit((w) => (which === 'group' ? w.SetMainSocketGroup(index) : w.SetMainActiveSkill(index)));
   const setOption = (name: string, value: ConfigValue2 | undefined) => edit((w) => w.SetConfigOption(name, value));
@@ -201,7 +213,15 @@
       {#if page === 'tree'}
         <div class="flex min-h-[480px] min-w-0 flex-1" aria-label="Tree">
           {#if treeData && calc.tree}
-            <SkillTree2 data={treeData} spec={calc.tree} {busy} onclick={treeClick} onattribute={treeAttribute} onhover={treeHover} />
+            <SkillTree2
+              data={treeData}
+              spec={calc.tree}
+              {busy}
+              onclick={treeClick}
+              onattribute={treeAttribute}
+              onhover={treeHover}
+              onundo={() => treeUndo(false)}
+              onredo={() => treeUndo(true)} />
           {:else}
             <span class="note" role="status">Loading the passive tree…</span>
           {/if}

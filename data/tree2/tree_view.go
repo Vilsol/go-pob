@@ -157,9 +157,9 @@ func (s *PassiveSpec) AllocateAttributeNode(node *SpecNode, attributeIndex int) 
 // RightClickNode is a right click on a node, less the note popup and the jump to a socket's item slot.
 //
 //pob2:block:src/Classes/PassiveTreeView.lua:553-594
-func (s *PassiveSpec) RightClickNode(node *SpecNode, hotkey int) error {
+func (s *PassiveSpec) RightClickNode(node *SpecNode, hotkey int) (ClickResult, error) {
 	if node.Alloc && (node.Type == "Socket" || node.ContainJewelSocket) {
-		return nil
+		return ClickNothing, nil
 	}
 	if hotkey >= 1 && hotkey <= 3 {
 		s.processAttributeHotkeys(node, hotkey, node.IsAttribute)
@@ -178,5 +178,5 @@ func (s *PassiveSpec) RightClickNode(node *SpecNode, hotkey int) error {
 		}
 		s.SwitchAttributeNode(node.ID, attributeIndex)
 	}
-	return s.AllocNode(node, nil)
+	return ClickChanged, s.AllocNode(node, nil)
 }

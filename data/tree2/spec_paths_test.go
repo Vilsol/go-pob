@@ -133,8 +133,8 @@ func saveDiff(t *testing.T, got SpecSave, want pathsSpec) string {
 }
 
 type pathsTally struct {
-	builds, skipped, loadBad, dist, distBad, ops, opsBad, ties int
-	first                                                      []string
+	builds, loadBad, dist, distBad, ops, opsBad, ties int
+	first                                             []string
 }
 
 func (p *pathsTally) bad(msg string) {
@@ -143,16 +143,11 @@ func (p *pathsTally) bad(msg string) {
 	}
 }
 
-// diffPaths replays the recorded allocations on our spec. A build whose nodes PoB had intuitive-leap
-// sources affecting is skipped: the intuitive-leap dependency resolution is not ported.
+// diffPaths replays the recorded allocations on our spec.
 func diffPaths(t *testing.T, tree *PassiveTree, rows []pathsRow, load specSource) pathsTally {
 	t.Helper()
 	var tally pathsTally
 	for _, row := range rows {
-		if row.Leap > 0 {
-			tally.skipped++
-			continue
-		}
 		tally.builds++
 		spec := load(t, tree, row)
 		if d := saveDiff(t, spec.Save(), row.Start); d != "" {
@@ -253,8 +248,8 @@ func readPathsRows(t *testing.T, path string) []pathsRow {
 
 func reportPaths(t *testing.T, tally pathsTally) {
 	t.Helper()
-	t.Logf("builds %d (skipped %d, loaded differently from PoB %d), node paths %d / %d agree, alloc/dealloc %d / %d agree (%d of them an equal-length route)",
-		tally.builds, tally.skipped, tally.loadBad, tally.dist-tally.distBad, tally.dist, tally.ops-tally.opsBad, tally.ops, tally.ties)
+	t.Logf("builds %d (loaded differently from PoB %d), node paths %d / %d agree, alloc/dealloc %d / %d agree (%d of them an equal-length route)",
+		tally.builds, tally.loadBad, tally.dist-tally.distBad, tally.dist, tally.ops-tally.opsBad, tally.ops, tally.ties)
 	for _, m := range tally.first {
 		t.Log(m)
 	}
@@ -270,7 +265,17 @@ func reportPaths(t *testing.T, tally pathsTally) {
 // (oracle/poe2_tree_paths.lua under the deterministic LuaJIT).
 func TestAllocNodePathsVsPoB(t *testing.T) {
 	tree := dataTree(t)
-	reportPaths(t, diffPaths(t, tree, readPathsRows(t, filepath.Join("testdata", "tree_paths.json")), specFromSave))
+	reportPaths(t, diffPaths(t, tree, readPathsRows(t, filepath.Join("testdata", "tree_paths.json")), fixtureSpec))
+}
+
+// fixtureSpec loads a build whose nodes PoB had intuitive-leap sources affecting from the build file, since
+// the jewels that hold those nodes are not in the saved spec.
+func fixtureSpec(t *testing.T, tree *PassiveTree, row pathsRow) *PassiveSpec {
+	t.Helper()
+	if row.Leap > 0 {
+		return specFromBuild(filepath.Join("..", "..", "calculator2", "testdata"))(t, tree, row)
+	}
+	return specFromSave(t, tree, row)
 }
 
 // TestAllocNodePathsVsPoBCorpus reads POE2_TREE_PATHS, oracle/poe2_tree_paths.lua's output over corpus
@@ -326,5 +331,34 @@ func TestAllocNodePathsRejectsAWrongRoute(t *testing.T) {
 	row.Dealloc = nil
 	if tally := diffPaths(t, tree, []pathsRow{row}, specFromSave); tally.opsBad != 1 || tally.ties != 0 {
 		t.Fatalf("a stray node in PoB's route was accepted: %+v", tally)
+	}
+}
+
+// from_nothing_leap_attribute.xml is from_nothing.xml with attribute node 2864, which only the jewel in socket
+// 26725 holds, allocated as Strength. PoB-PoE2's DeallocNode(22928), the socket's only link to the start,
+// lists 2864 in node.depends through the intuitive-leap resolution and so drops its override too.
+func TestDeallocNodeTakesIntuitiveLeapDependents(t *testing.T) {
+	tree := dataTree(t)
+	spec := specFromBuild("testdata")(t, tree, pathsRow{Build: "from_nothing_leap_attribute.xml"})
+	if d := saveDiff(t, spec.Save(), pathsSpec{
+		Nodes:   "1207,1913,2864,3936,4665,5710,6839,13397,16725,22928,23570,26725,27373,33556,36709,38323,38646,39274,39581,41031,46325,47175,54232,54811,55473,57703,61534,62455,63393,63579",
+		ClassID: "6", AscendClassID: "0", StrNodes: "2864,13397,16725,22928,23570,27373,54811,57703", DexNodes: "1207", IntNodes: "41031",
+	}); d != "" {
+		t.Fatalf("loaded: %s", d)
+	}
+	depends := make([]int, 0, len(spec.Nodes[22928].Depends))
+	for _, n := range spec.Nodes[22928].Depends {
+		depends = append(depends, n.ID)
+	}
+	sort.Ints(depends)
+	if got := joinInts(depends); got != "2864,16725,22928,26725,27373,39274,54811,57703,62455,63579" {
+		t.Fatalf("depends %s", got)
+	}
+	spec.DeallocNode(spec.Nodes[22928])
+	if d := saveDiff(t, spec.Save(), pathsSpec{
+		Nodes:   "1207,1913,3936,4665,5710,6839,13397,23570,33556,36709,38323,38646,39581,41031,46325,47175,54232,55473,61534,63393",
+		ClassID: "6", AscendClassID: "0", StrNodes: "13397,23570", DexNodes: "1207", IntNodes: "41031",
+	}); d != "" {
+		t.Fatalf("after DeallocNode(22928): %s", d)
 	}
 }

@@ -200,6 +200,7 @@ type treeJSON struct {
 
 type JewelRadius struct {
 	Inner, Outer               float64
+	Col                        string
 	Label                      string
 	InnerSquared, OuterSquared float64
 }
@@ -209,24 +210,24 @@ type JewelRadius struct {
 //pob2:block:src/Modules/Data.lua:668-684
 var jewelRadii = map[string][]JewelRadius{
 	"0_1": {
-		{Inner: 0, Outer: 1000, Label: "Small"},
-		{Inner: 0, Outer: 1150, Label: "Medium"},
-		{Inner: 0, Outer: 1300, Label: "Large"},
-		{Inner: 0, Outer: 1500, Label: "Very Large"},
+		{Inner: 0, Outer: 1000, Col: "^xBB6600", Label: "Small"},
+		{Inner: 0, Outer: 1150, Col: "^x66FFCC", Label: "Medium"},
+		{Inner: 0, Outer: 1300, Col: "^x2222CC", Label: "Large"},
+		{Inner: 0, Outer: 1500, Col: "^xC100FF", Label: "Very Large"},
 
-		{Inner: 650, Outer: 950, Label: "Variable"},
-		{Inner: 800, Outer: 1100, Label: "Variable"},
-		{Inner: 950, Outer: 1250, Label: "Variable"},
-		{Inner: 1100, Outer: 1400, Label: "Variable"},
-		{Inner: 1250, Outer: 1550, Label: "Variable"},
-		{Inner: 1400, Outer: 1700, Label: "Variable"},
-		{Inner: 1650, Outer: 1950, Label: "Variable"},
-		{Inner: 1800, Outer: 2100, Label: "Variable"},
+		{Inner: 650, Outer: 950, Col: "^xD35400", Label: "Variable"},
+		{Inner: 800, Outer: 1100, Col: "^x66FFCC", Label: "Variable"},
+		{Inner: 950, Outer: 1250, Col: "^x2222CC", Label: "Variable"},
+		{Inner: 1100, Outer: 1400, Col: "^xC100FF", Label: "Variable"},
+		{Inner: 1250, Outer: 1550, Col: "^x0B9300", Label: "Variable"},
+		{Inner: 1400, Outer: 1700, Col: "^xFFCC00", Label: "Variable"},
+		{Inner: 1650, Outer: 1950, Col: "^xFF6600", Label: "Variable"},
+		{Inner: 1800, Outer: 2100, Col: "^x0099FF", Label: "Variable"},
 	},
 }
 
 //pob2:block:src/Data/Misc.lua:37
-const passiveTreeJewelDistanceMultiplier = 1.2
+const PassiveTreeJewelDistanceMultiplier = 1.2
 
 func parseTreeVersion(v string) (int, int, bool) {
 	major, minor, ok := strings.Cut(v, "_")
@@ -263,10 +264,10 @@ func setJewelRadii(treeVersion string) ([]JewelRadius, float64) {
 	radii := make([]JewelRadius, len(src))
 	maxJewelRadius := 0.0
 	for i, radiusInfo := range src {
-		radiusInfo.OuterSquared = float64(radiusInfo.Outer*radiusInfo.Outer*passiveTreeJewelDistanceMultiplier) * passiveTreeJewelDistanceMultiplier
-		radiusInfo.InnerSquared = float64(radiusInfo.Inner*radiusInfo.Inner*passiveTreeJewelDistanceMultiplier) * passiveTreeJewelDistanceMultiplier
+		radiusInfo.OuterSquared = float64(radiusInfo.Outer*radiusInfo.Outer*PassiveTreeJewelDistanceMultiplier) * PassiveTreeJewelDistanceMultiplier
+		radiusInfo.InnerSquared = float64(radiusInfo.Inner*radiusInfo.Inner*PassiveTreeJewelDistanceMultiplier) * PassiveTreeJewelDistanceMultiplier
 		if radiusInfo.Outer > maxJewelRadius {
-			maxJewelRadius = radiusInfo.Outer * passiveTreeJewelDistanceMultiplier
+			maxJewelRadius = radiusInfo.Outer * PassiveTreeJewelDistanceMultiplier
 		}
 		radii[i] = radiusInfo
 	}

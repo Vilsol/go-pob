@@ -87,7 +87,7 @@ describe('the PoE2 tree view', () => {
     expect(onclick.mock.calls).toEqual([[5, false, 0, false, 0]]);
     const dialog = await screen.findByRole('dialog', { name: 'Choose Attribute' });
     await fireEvent.click(Array.from(dialog.querySelectorAll('button')).find((b) => b.textContent?.trim() === 'Dexterity')!);
-    expect(onattribute.mock.calls).toEqual([[5, 2]]);
+    expect(onattribute.mock.calls).toEqual([[5, 2, 0]]);
     expect(screen.queryByRole('dialog', { name: 'Choose Attribute' })).toBeNull();
   });
 
@@ -141,6 +141,27 @@ describe('the PoE2 tree view', () => {
     for (let i = 0; i < 3; i++) await fireEvent.wheel(canvas, { deltaY: 100, altKey: true });
     await vi.waitFor(() => expect(states.at(-1)?.specAllocMode).toBe(0));
     expect(screen.queryByRole('status', { name: 'Weapon set allocation mode' })).toBeNull();
+  });
+
+  it('zooms by 3 with Shift and the wheel, also when the browser turns it into a horizontal scroll (PassiveTreeView.lua:222-225)', async () => {
+    const { canvas } = mount([]);
+    await vi.waitFor(() => expect(views.at(-1)?.width).toBe(W));
+    const zoom = views.at(-1)!.zoomLevel;
+    await fireEvent.wheel(canvas, { deltaY: -100 });
+    await vi.waitFor(() => expect(views.at(-1)!.zoomLevel).toBe(zoom + 1));
+    await fireEvent.wheel(canvas, { deltaY: -100, shiftKey: true });
+    await vi.waitFor(() => expect(views.at(-1)!.zoomLevel).toBe(zoom + 4));
+    await fireEvent.wheel(canvas, { deltaX: 100, shiftKey: true });
+    await vi.waitFor(() => expect(views.at(-1)!.zoomLevel).toBe(zoom + 1));
+  });
+
+  it('does not take S, D or I typed into the search as an attribute hotkey (PassiveTreeView.lua:378-391)', async () => {
+    const { canvas, onclick } = mount([1]);
+    await vi.waitFor(() => expect(views.at(-1)?.width).toBe(W));
+    const field = screen.getByRole('searchbox', { name: 'Search passive nodes' });
+    await fireEvent.keyDown(field, { key: 's' });
+    await press(canvas, at(5));
+    expect(onclick.mock.calls).toEqual([[5, false, 0, false, 0]]);
   });
 
   it('undoes with Ctrl+Z and redoes with Ctrl+Y, not while typing in the search (TreeTab.lua:355-364)', async () => {

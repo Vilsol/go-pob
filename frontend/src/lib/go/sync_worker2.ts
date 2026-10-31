@@ -81,6 +81,8 @@ export type Poe2TreeState = {
   ascendClassBaseName: string;
   used: number;
   ascUsed: number;
+  // the jewelRadiusIndex of the jewel in each socket whose jewel has a radius
+  jewelRadiusIndex: Record<number, number>;
 };
 
 /* tree2.ClickResult */
@@ -141,6 +143,9 @@ class PoB2Worker {
     const allocMode: Record<number, number> = {};
     const modes = st.AllocMode ?? [];
     for (let i = 0; i + 1 < modes.length; i += 2) allocMode[modes[i]] = modes[i + 1];
+    const jewelRadiusIndex: Record<number, number> = {};
+    const radii = st.JewelRadiusIndex ?? [];
+    for (let i = 0; i + 1 < radii.length; i += 2) jewelRadiusIndex[radii[i]] = radii[i + 1];
     return {
       className: out.ClassName,
       ascendClassName: out.AscendClassName,
@@ -161,7 +166,8 @@ class PoB2Worker {
         className: st.ClassName,
         ascendClassBaseName: st.AscendClassBaseName,
         used: st.Used,
-        ascUsed: st.AscUsed
+        ascUsed: st.AscUsed,
+        jewelRadiusIndex
       }
     };
   }
@@ -215,23 +221,30 @@ class PoB2Worker {
     return [...((await exposition.TreeClasses()).unwrap() ?? [])];
   }
 
-  /* PassiveTreeView.lua:356-373 (PoB-PoE2) */
-  TreeHover(id: number): { path: number[]; depends: number[] } {
-    const h = this.calc?.HoverNode(id);
+  /* PassiveTreeView.lua:356-373 (PoB-PoE2); allocMode is spec.allocMode, the weapon set Alt+wheel picked */
+  TreeHover(id: number, allocMode: number): { path: number[]; depends: number[] } {
+    const h = this.calc?.HoverNode(id, allocMode);
     return { path: [...(h?.Path ?? [])], depends: [...(h?.Depends ?? [])] };
   }
 
   /* PassiveTreeView.lua:425-594 (PoB-PoE2); hotkey is the attribute index a held S, D or I picks */
-  async TreeClick(id: number, right: boolean, hotkey: number, confirmClassChange: boolean): Promise<Poe2Click> {
+  async TreeClick(id: number, right: boolean, hotkey: number, confirmClassChange: boolean, allocMode: number): Promise<Poe2Click> {
     if (!this.calc) throw new Error('no PoE2 build is open');
-    const result = this.calc.ClickNode(id, right, hotkey, confirmClassChange).unwrap();
+    const result = this.calc.ClickNode(id, right, hotkey, confirmClassChange, allocMode).unwrap();
     return result === ClickResult.Changed ? { result, calc: await this.view() } : { result };
   }
 
   /* TreeTab.lua:851-876 (PoB-PoE2) */
-  async TreeAllocateAttribute(id: number, attributeIndex: number): Promise<Poe2Calc> {
-    this.calc?.AllocateAttributeNode(id, attributeIndex).unwrap();
+  async TreeAllocateAttribute(id: number, attributeIndex: number, allocMode: number): Promise<Poe2Calc> {
+    this.calc?.AllocateAttributeNode(id, attributeIndex, allocMode).unwrap();
     return this.view();
+  }
+
+  /* TreeTab.lua:355-364 (PoB-PoE2): Ctrl+Z / Ctrl+Y; no calc when there was nothing to undo or redo */
+  async TreeUndo(redo: boolean): Promise<Poe2Calc | undefined> {
+    if (!this.calc) throw new Error('no PoE2 build is open');
+    const changed = (redo ? this.calc.Redo() : this.calc.Undo()).unwrap();
+    return changed ? this.view() : undefined;
   }
 
   async ClearDataCache(): Promise<number> {

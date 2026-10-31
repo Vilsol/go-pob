@@ -517,7 +517,7 @@ func (s *PassiveSpec) ResetNodes() {
 
 // BuildAllDependsAndPaths ports node replacement (switchable options by class or ascendancy, then
 // attribute overrides), the dependency walk and orphan pruning, the mastery/ignored deallocation and
-// the node paths. The intuitive-leap dependency resolution (potentialDeps, intuitiveLeaps) is not ported.
+// the intuitive-leap dependency resolution and the node paths.
 //
 //pob2:src/Classes/PassiveSpec.lua:1475-2078
 func (s *PassiveSpec) BuildAllDependsAndPaths() {
@@ -653,6 +653,8 @@ func (s *PassiveSpec) BuildAllDependsAndPaths() {
 
 	// pairs(self.allocNodes) while pruning: a node pruned before its turn is skipped.
 	//pob2:block:src/Classes/PassiveSpec.lua:1840-2009
+	potentialDeps := map[int][]*SpecNode{}
+	intuitiveLeaps := map[int][]*SpecNode{}
 	for _, id := range sortedKeys(s.AllocNodes) {
 		node, ok := s.AllocNodes[id]
 		if !ok {
@@ -706,10 +708,15 @@ func (s *PassiveSpec) BuildAllDependsAndPaths() {
 						if !otherPath {
 							node.Depends = append(node.Depends, n)
 						}
-					} else if len(n.IntuitiveLeapLikesAffecting) == 0 {
-						// potentialDeps, the intuitiveLeaps bookkeeping and their 2015-2050 resolution only
-						// grow depends lists that DeallocNode walks; they never change what is allocated here.
-						node.Depends = append(node.Depends, n)
+					} else {
+						if len(n.IntuitiveLeapLikesAffecting) > 0 {
+							potentialDeps[n.ID] = append(potentialDeps[n.ID], node)
+						} else {
+							node.Depends = append(node.Depends, n)
+						}
+						// The intuitiveLeapLikeNodes loop (1907-1935) walks n.nodesInRadius, the tree's own nodes, whose
+						// alloc is always nil, so it never inserts.
+						intuitiveLeaps[node.ID] = append(intuitiveLeaps[node.ID], s.NodesInIntuitiveLeapLikeRadius(n)...)
 					}
 					n.Visited = false
 				}
@@ -734,6 +741,7 @@ func (s *PassiveSpec) BuildAllDependsAndPaths() {
 					if (jd.IntuitiveLeapLike && item.JewelRadiusIndex != 0 && inRadius(s.Nodes[nodeID].Node, item.JewelRadiusIndex, depNode.ID)) ||
 						(jd.FromNothingKeystones != nil && s.NodeInKeystoneRadius(jd.FromNothingKeystones, depNode.ID, item.JewelRadiusIndex)) {
 						prune = false
+						intuitiveLeaps[nodeID] = append(intuitiveLeaps[nodeID], depNode)
 						break
 					}
 				}
@@ -743,14 +751,56 @@ func (s *PassiveSpec) BuildAllDependsAndPaths() {
 					}
 					// Any keystone with the node in radius holds it, allocated or not.
 					for _, keyName := range keystoneNames {
-						if inRadius(s.Tree.KeystoneMap[keyName], intuitiveLeapMap.RadiusIndex, depNode.ID) {
+						if keyNode := s.Tree.KeystoneMap[keyName]; inRadius(keyNode, intuitiveLeapMap.RadiusIndex, depNode.ID) {
 							prune = false
+							intuitiveLeaps[keyNode.ID] = append(intuitiveLeaps[keyNode.ID], depNode)
 						}
 					}
 				}
 				if prune {
 					s.DeallocSingleNode(depNode)
 				}
+			}
+		}
+	}
+
+	//pob2:block:src/Classes/PassiveSpec.lua:2015-2050
+	for _, id := range sortedKeys(potentialDeps) {
+		potentialNode := s.Nodes[id]
+		seen := map[int]bool{}
+		for _, node := range potentialDeps[id] {
+			allDep := true
+			for _, intuitiveLeapLikeProvider := range potentialNode.IntuitiveLeapLikesAffecting {
+				if !containsNode(node.Depends, intuitiveLeapLikeProvider) {
+					allDep = false
+				}
+			}
+			if allDep && !seen[node.ID] {
+				node.Depends = append(node.Depends, potentialNode)
+				seen[node.ID] = true
+			}
+		}
+	}
+	for _, id := range sortedKeys(intuitiveLeaps) {
+		node, ok := s.Nodes[id]
+		if !ok {
+			continue
+		}
+		seen := map[int]bool{}
+		for _, dep := range intuitiveLeaps[id] {
+			if dep.ConnectedToStart {
+				continue
+			}
+			allDep := true
+			for _, intuitiveDep := range dep.IntuitiveLeapLikesAffecting {
+				if !containsNode(node.Depends, intuitiveDep) {
+					allDep = false
+					break
+				}
+			}
+			if allDep && !seen[dep.ID] {
+				node.Depends = append(node.Depends, dep)
+				seen[dep.ID] = true
 			}
 		}
 	}
@@ -785,6 +835,41 @@ func (s *PassiveSpec) BuildAllDependsAndPaths() {
 		alternateClassStartNodesArray = append(alternateClassStartNodesArray, alternateClassStartNodes[id])
 	}
 	s.BuildNodePathsToRootNodes(alternateClassStartNodesArray)
+}
+
+//pob2:src/Classes/PassiveSpec.lua:1369-1400
+func (s *PassiveSpec) NodesInIntuitiveLeapLikeRadius(node *SpecNode) []*SpecNode {
+	var result []*SpecNode
+	itemID := s.Jewels[node.ID]
+	if itemID <= 0 {
+		return result
+	}
+	item := s.GetJewel(itemID)
+	if item == nil {
+		return result
+	}
+	radiusIndex := item.JewelRadiusIndex
+	allocated := func(radius *Node) {
+		if radius.NodesInRadius == nil || radiusIndex < 1 || radiusIndex > len(radius.NodesInRadius) {
+			return
+		}
+		for _, affectedNodeID := range sortedKeys(radius.NodesInRadius[radiusIndex-1]) {
+			if n, ok := s.Nodes[affectedNodeID]; ok && n.Alloc {
+				result = append(result, n)
+			}
+		}
+	}
+	if item.JewelData.IntuitiveLeapLike {
+		allocated(s.Nodes[node.ID].Node)
+	}
+	if item.JewelData.FromNothingKeystone != "" {
+		for _, keyName := range sortedStringKeys(item.JewelData.FromNothingKeystones) {
+			if keyNode, ok := s.Tree.KeystoneMap[keyName]; ok {
+				allocated(keyNode)
+			}
+		}
+	}
+	return result
 }
 
 func containsString(list []string, v string) bool {
@@ -1164,6 +1249,57 @@ func (s *PassiveSpec) SwitchAttributeNode(nodeID, attributeIndex int) {
 		s.ReplaceNode(newNode, option.Dn, option.Sd)
 	}
 	s.HashOverrides[nodeID] = newNode
+}
+
+// UndoState is what CreateUndoState records; WeaponSets maps a node id to its allocMode. The node notes
+// are not ported.
+type UndoState struct {
+	ClassInternalID        int
+	AscendancyInternalID   string
+	ClassID                int
+	AscendClassID          int
+	SecondaryAscendClassID int
+	HashList               []int
+	WeaponSets             map[int]int
+	HashOverrides          map[int]*SpecNode
+	MasteryEffects         map[int]int
+	TreeVersion            string
+}
+
+//pob2:src/Classes/PassiveSpec.lua:2597-2630
+func (s *PassiveSpec) CreateUndoState() *UndoState {
+	state := &UndoState{
+		ClassInternalID: s.Tree.Classes[s.CurClassID].IntegerID,
+		ClassID:         s.CurClassID,
+		AscendClassID:   s.CurAscendClassID,
+		HashList:        sortedKeys(s.AllocNodes),
+		WeaponSets:      map[int]int{},
+		HashOverrides:   make(map[int]*SpecNode, len(s.HashOverrides)),
+		MasteryEffects:  make(map[int]int, len(s.MasterySelections)),
+		TreeVersion:     s.TreeVersion,
+	}
+	for _, nodeID := range state.HashList {
+		if n, ok := s.Nodes[nodeID]; ok && n.AllocMode != 0 {
+			state.WeaponSets[nodeID] = n.AllocMode
+		}
+	}
+	for mastery, effect := range s.MasterySelections {
+		state.MasteryEffects[mastery] = effect
+	}
+	if s.CurAscendClassID >= 0 && s.CurAscendClassID < len(s.CurClass.Classes) {
+		state.AscendancyInternalID = s.CurClass.Classes[s.CurAscendClassID].InternalID
+	}
+	for id, n := range s.HashOverrides {
+		state.HashOverrides[id] = n
+	}
+	return state
+}
+
+// RestoreUndoState takes no tree version: go-pob converts no spec between versions.
+//
+//pob2:src/Classes/PassiveSpec.lua:2632-2646
+func (s *PassiveSpec) RestoreUndoState(state *UndoState) {
+	s.ImportFromNodeList(state.ClassID, state.AscendClassID, state.SecondaryAscendClassID, state.HashList, state.WeaponSets, state.HashOverrides, state.MasteryEffects)
 }
 
 // CountAllocNodes returns used, ascUsed, secondaryAscUsed, sockets, weaponSet1Used, weaponSet2Used.

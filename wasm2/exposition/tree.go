@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"slices"
+	"strings"
 
 	"github.com/Vilsol/go-pob/data/tree2"
 	"github.com/Vilsol/go-pob/pob2"
@@ -25,6 +26,14 @@ type treeNodeJSON struct {
 	ContainJewel      bool               `json:"containJewelSocket,omitempty"`
 	ClassesStart      []string           `json:"classesStart,omitempty"`
 	Connections       []tree2.Connection `json:"connections"`
+	// NodesInRadius is a radius socket's node ids in each jewel radius, by radius index - 1.
+	NodesInRadius [][]int `json:"nodesInRadius,omitempty"`
+}
+
+type jewelRadiusJSON struct {
+	Inner float64 `json:"inner"`
+	Outer float64 `json:"outer"`
+	Col   string  `json:"col"`
 }
 
 type treeGroupJSON struct {
@@ -41,6 +50,9 @@ type treeJSON struct {
 	MinY       float64         `json:"minY"`
 	MaxX       float64         `json:"maxX"`
 	MaxY       float64         `json:"maxY"`
+	// JewelRadius is data.jewelRadius with PassiveTreeJewelDistanceMultiplier applied, as
+	// PassiveTreeView.lua:1321-1323 draws it; Col is "#rrggbb".
+	JewelRadius []jewelRadiusJSON `json:"jewelRadius"`
 }
 
 // TreeClasses is the tree's class names in class id order (PassiveTree.lua:104 keys them by integerId).
@@ -70,6 +82,12 @@ func PassiveTreeJSON() (string, error) {
 	}
 	spec := tree2.NewPassiveSpec(t)
 	out := treeJSON{OrbitRadii: t.OrbitRadii, MinX: t.MinX, MinY: t.MinY, MaxX: t.MaxX, MaxY: t.MaxY}
+	for _, r := range t.JewelRadius {
+		out.JewelRadius = append(out.JewelRadius, jewelRadiusJSON{
+			Inner: r.Inner * tree2.PassiveTreeJewelDistanceMultiplier, Outer: r.Outer * tree2.PassiveTreeJewelDistanceMultiplier,
+			Col: "#" + strings.ToLower(strings.TrimPrefix(r.Col, "^x")),
+		})
+	}
 	ids := make([]int, 0, len(spec.Nodes))
 	for id := range spec.Nodes {
 		ids = append(ids, id)
@@ -78,11 +96,22 @@ func PassiveTreeJSON() (string, error) {
 	groups := map[int]bool{}
 	for _, id := range ids {
 		n := spec.Nodes[id].Node
-		out.Nodes = append(out.Nodes, treeNodeJSON{
+		node := treeNodeJSON{
 			ID: n.ID, X: n.X, Y: n.Y, Angle: n.Angle, Group: n.GroupID, Orbit: n.Orbit, Type: n.Type, Name: n.Dn, Stats: n.Sd,
 			Ascendancy: n.AscendancyName, IsAttribute: n.IsAttribute, IsAscendancyStart: n.IsAscendancyStart, ContainJewel: n.ContainJewelSocket,
 			ClassesStart: n.ClassesStart, Connections: n.Connections,
-		})
+		}
+		if n.Type == "Socket" && n.NodesInRadius != nil {
+			node.NodesInRadius = make([][]int, len(n.NodesInRadius))
+			for i, in := range n.NodesInRadius {
+				node.NodesInRadius[i] = make([]int, 0, len(in))
+				for nodeID := range in {
+					node.NodesInRadius[i] = append(node.NodesInRadius[i], nodeID)
+				}
+				slices.Sort(node.NodesInRadius[i])
+			}
+		}
+		out.Nodes = append(out.Nodes, node)
 		if !groups[n.GroupID] {
 			groups[n.GroupID] = true
 			out.Groups = append(out.Groups, treeGroupJSON{ID: n.GroupID, X: n.Group.X, Y: n.Group.Y})
@@ -112,6 +141,8 @@ type TreeState struct {
 	Used                int
 	AscUsed             int
 	AttributeIndex      int
+	// JewelRadiusIndex lists the sockets whose jewel has a radius, as socket id, jewelRadiusIndex pairs.
+	JewelRadiusIndex []int
 }
 
 func (c *Calculator) spec() (*tree2.PassiveSpec, error) {
@@ -148,6 +179,20 @@ func (c *Calculator) TreeState() (*TreeState, error) {
 			st.Text = append(st.Text, TreeNodeText{ID: id, Name: n.Dn, Stats: n.Sd})
 		}
 	}
+	//pob2:block:src/Classes/PassiveTreeView.lua:1315
+	//pob2:block:src/Classes/PassiveTreeView.lua:1341
+	if spec.Items != nil {
+		sockets := make([]int, 0, len(spec.Jewels))
+		for id := range spec.Jewels {
+			sockets = append(sockets, id)
+		}
+		slices.Sort(sockets)
+		for _, id := range sockets {
+			if item := spec.Items(spec.Jewels[id]); item != nil && item.JewelRadiusIndex != 0 {
+				st.JewelRadiusIndex = append(st.JewelRadiusIndex, id, item.JewelRadiusIndex)
+			}
+		}
+	}
 	return st, nil
 }
 
@@ -166,14 +211,15 @@ func nodeIDs(list []*tree2.SpecNode) []int {
 	return out
 }
 
-// HoverNode takes no trace path.
+// HoverNode takes no trace path; allocMode is spec.allocMode, the weapon set Alt+wheel picked.
 //
 //pob2:block:src/Classes/PassiveTreeView.lua:356-373
-func (c *Calculator) HoverNode(id int) TreeHover {
+func (c *Calculator) HoverNode(id int, allocMode int) TreeHover {
 	spec, err := c.spec()
 	if err != nil {
 		return TreeHover{}
 	}
+	spec.AllocMode = allocMode
 	node, ok := spec.Nodes[id]
 	if !ok || !node.HasPath {
 		return TreeHover{}
@@ -195,8 +241,13 @@ type unknownNodeError int
 func (e unknownNodeError) Error() string { return fmt.Sprintf("node %d is not on the tree", int(e)) }
 
 // ClickNode clicks a node (right for a right click; hotkey is the attribute index a held key picks, 0 for
-// none) and saves the spec into the build when the click changed it. It returns the tree2.ClickResult.
-func (c *Calculator) ClickNode(id int, right bool, hotkey int, confirmClassChange bool) (int, error) {
+// none; allocMode is spec.allocMode) and, when the click changed the spec, adds an undo state and saves the
+// spec into the build. It returns the tree2.ClickResult.
+//
+//pob2:block:src/Classes/PassiveTreeView.lua:443
+//pob2:block:src/Classes/PassiveTreeView.lua:547
+//pob2:block:src/Classes/PassiveTreeView.lua:591
+func (c *Calculator) ClickNode(id int, right bool, hotkey int, confirmClassChange bool, allocMode int) (int, error) {
 	spec, err := c.spec()
 	if err != nil {
 		return 0, err
@@ -205,21 +256,25 @@ func (c *Calculator) ClickNode(id int, right bool, hotkey int, confirmClassChang
 	if !ok {
 		return 0, unknownNodeError(id)
 	}
-	result := tree2.ClickChanged
+	spec.AllocMode = allocMode
+	var result tree2.ClickResult
 	if right {
-		err = spec.RightClickNode(node, hotkey)
+		result, err = spec.RightClickNode(node, hotkey)
 	} else {
 		result, err = spec.LeftClickNode(node, hotkey, confirmClassChange)
 	}
 	if result == tree2.ClickChanged {
+		c.undo.AddUndoState(spec, false)
 		c.saveSpec(spec)
 	}
 	return int(result), err
 }
 
 // AllocateAttributeNode allocates an attribute node as the chosen attribute (1 Strength, 2 Dexterity,
-// 3 Intelligence).
-func (c *Calculator) AllocateAttributeNode(id int, attributeIndex int) error {
+// 3 Intelligence), on the weapon set allocMode names.
+//
+//pob2:block:src/Classes/TreeTab.lua:857-862
+func (c *Calculator) AllocateAttributeNode(id int, attributeIndex int, allocMode int) error {
 	spec, err := c.spec()
 	if err != nil {
 		return err
@@ -228,9 +283,41 @@ func (c *Calculator) AllocateAttributeNode(id int, attributeIndex int) error {
 	if !ok {
 		return unknownNodeError(id)
 	}
+	spec.AllocMode = allocMode
 	err = spec.AllocateAttributeNode(node, attributeIndex)
+	c.undo.AddUndoState(spec, false)
 	c.saveSpec(spec)
 	return err
+}
+
+// Undo is spec:Undo on Ctrl+Z; it reports whether a state was restored, and saves the spec when one was.
+//
+//pob2:block:src/Classes/TreeTab.lua:357-360
+func (c *Calculator) Undo() (bool, error) {
+	spec, err := c.spec()
+	if err != nil {
+		return false, err
+	}
+	if !c.undo.Undo(spec) {
+		return false, nil
+	}
+	c.saveSpec(spec)
+	return true, nil
+}
+
+// Redo is spec:Redo on Ctrl+Y.
+//
+//pob2:block:src/Classes/TreeTab.lua:361-364
+func (c *Calculator) Redo() (bool, error) {
+	spec, err := c.spec()
+	if err != nil {
+		return false, err
+	}
+	if !c.undo.Redo(spec) {
+		return false, nil
+	}
+	c.saveSpec(spec)
+	return true, nil
 }
 
 // saveSpec writes the spec back into the active <Spec>, as TreeTab:Save would on the next save.

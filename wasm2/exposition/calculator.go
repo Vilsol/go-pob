@@ -39,6 +39,8 @@ type Calculator struct {
 	build *pob2.PathOfBuilding2
 	env   *calculator2.Environment
 	used  *calculator2.UsedTables
+	// undo is the spec's undo handler, reset on the first calculation as PassiveSpec:Load resets it.
+	undo *tree2.UndoHandler
 }
 
 // Outputs is the player's output table, the main skill's minion's when it has one, and the build's
@@ -138,6 +140,10 @@ func (c *Calculator) Calculate() (*Outputs, error) {
 		return nil, err
 	}
 	c.env, c.used = env, calculator2.BuildOutputUsed(env)
+	if c.undo == nil {
+		c.undo = &tree2.UndoHandler{}
+		c.undo.ResetUndo(env.Spec)
+	}
 	res := &Outputs{
 		Output:          env.Player.Output,
 		ClassName:       env.Spec.CurClassName,

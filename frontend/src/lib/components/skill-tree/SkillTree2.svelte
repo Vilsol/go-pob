@@ -22,7 +22,7 @@
     busy?: boolean;
     // the tree2.ClickResult of a click; allocMode is spec.allocMode, the weapon set the click allocates to
     onclick: (id: number, right: boolean, hotkey: number, confirmClassChange: boolean, allocMode: number) => Promise<number | undefined>;
-    onattribute: (id: number, attributeIndex: number) => void;
+    onattribute: (id: number, attributeIndex: number, allocMode: number) => void;
     onhover: (id: number, allocMode: number) => Promise<{ path: number[]; depends: number[] }>;
     // spec:Undo and spec:Redo
     onundo?: () => void;
@@ -79,7 +79,16 @@
     renderer?.setView(view);
   });
 
-  const afterDraw = (ms: number) => probe()?.frame?.({ view: { ...view }, ms, hovered: hovered?.id, alloc: spec.alloc.length, renderer: renderer?.kind });
+  // overlays counts the strokes drawn over the connectors: search highlights and jewel radius rings
+  const afterDraw = (ms: number) =>
+    probe()?.frame?.({
+      view: { ...view },
+      ms,
+      hovered: hovered?.id,
+      alloc: spec.alloc.length,
+      renderer: renderer?.kind,
+      overlays: scene.counts.strokes - scene.connectors.length
+    });
 
   const resize = () => {
     if (!box) return;
@@ -153,8 +162,9 @@
   const hotkeys = new Set<string>();
   /* TreeTab.lua:355-364 */
   const keydown = (e: KeyboardEvent) => {
+    if (isTypingTarget(e.target)) return;
     hotkeys.add(e.key.toLowerCase());
-    if (!(e.ctrlKey || e.metaKey) || isTypingTarget(e.target) || busy) return;
+    if (!(e.ctrlKey || e.metaKey) || busy) return;
     const k = e.key.toLowerCase();
     if (k === 'z' && onundo) {
       e.preventDefault();
@@ -192,13 +202,15 @@
   /* PassiveTreeView.lua:190-195, 222-225, 1500-1514 */
   const wheel = (e: WheelEvent) => {
     e.preventDefault();
+    // a browser can turn a Shift+wheel into a horizontal scroll
+    const delta = e.deltaY || e.deltaX;
     if (e.altKey) {
-      allocMode = Math.max(0, Math.min(2, allocMode + (e.deltaY < 0 ? 1 : -1)));
+      allocMode = Math.max(0, Math.min(2, allocMode + (delta < 0 ? 1 : -1)));
       setHover(hovered, true);
       return;
     }
     const p = local(e);
-    view = clampView(zoomAbout(view, e.deltaY < 0 ? 1 : -1, p.x, p.y));
+    view = clampView(zoomAbout(view, (delta < 0 ? 1 : -1) * (e.shiftKey ? 3 : 1), p.x, p.y));
   };
 
   const ATTRIBUTES = ['Strength', 'Dexterity', 'Intelligence'];
@@ -270,7 +282,7 @@
             onclick={() => {
               const n = attributeFor!;
               attributeFor = undefined;
-              onattribute(n.id, i + 1);
+              onattribute(n.id, i + 1, allocMode);
             }}>{a}</Button>
         {/each}
         <Button onclick={() => (attributeFor = undefined)}>Cancel</Button>
