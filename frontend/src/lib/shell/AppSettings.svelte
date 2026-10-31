@@ -38,6 +38,7 @@
   } from '$lib/display/item_options';
   import { notSupportedNote } from '$lib/design/pob_text';
   import { syncWrap } from '$lib/go/worker';
+  import { clearPoe2DataCache } from '$lib/go/worker2';
   import { POWER_WORKER_CHOICES, powerWorkers } from '$lib/go/power_workers';
   import { logError } from '$lib/utils';
   import { colorHighlight, colorNegative, colorPositive, edgeSearchHighlight, hexColour } from '$lib/skill_tree/options';
@@ -406,7 +407,7 @@
   const action = async (id: string) => {
     if (id === 'checkData') await checkForUpdate();
     else if (id === 'clearCache') {
-      const n = (await syncWrap?.ClearDataCache()) ?? 0;
+      const n = ((await syncWrap?.ClearDataCache()) ?? 0) + (await clearPoe2DataCache());
       const art = DESKTOP ? await fetch('/desktop/art/', { method: 'DELETE' }).then((r) => (r.ok ? r.text() : '0')) : await clearArtCache().catch(() => 0);
       addToast(
         `Cached data cleared\n${n} game data files removed; they download again on the next start.${Number(art) ? `\n${art} item images removed.` : ''}`

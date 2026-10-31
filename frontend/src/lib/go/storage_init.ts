@@ -88,7 +88,9 @@ const diskStorage = [
   }
 ] as const;
 
-export const initializeStorage = async () => {
+// a second zenfs instance on the same database allocates inode ids the first already uses, so a worker that is not
+// the main one only reads
+export const initializeStorage = async (readOnly = false) => {
   if (DESKTOP) {
     await storage.InitializeStorage(...diskStorage);
     return;
@@ -145,7 +147,7 @@ export const initializeStorage = async () => {
         });
       }),
     async (bucket: string, key: string, value: Uint8Array | undefined) => {
-      if (!value || !key) {
+      if (!value || !key || readOnly) {
         return;
       }
 
@@ -174,6 +176,7 @@ export const initializeStorage = async () => {
       }),
     async (bucket: string, dir: string) =>
       new Promise((res) => {
+        if (readOnly) return res();
         fs.mkdir(`/${bucket}/${dir}`, 0o777, (err) => {
           if (err) {
             console.error(err);
@@ -185,6 +188,7 @@ export const initializeStorage = async () => {
       }),
     async (bucket: string, path: string) =>
       new Promise((res) => {
+        if (readOnly) return res();
         fs.unlink(`/${bucket}/${path}`, (err) => {
           if (err) {
             console.error(err);

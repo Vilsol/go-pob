@@ -4,6 +4,7 @@ import { assets } from '$app/paths';
 import type { Worker2Type } from './sync_worker2';
 import { forwardWorkerLog } from '$lib/app_log';
 import { WASM2_FALLBACK, WASM2_FILE } from './wasm_file';
+import { DESKTOP } from '$lib/pwa/desktop';
 
 let worker2: Promise<Comlink.Remote<Worker2Type>> | undefined;
 
@@ -36,3 +37,19 @@ export const poe2Worker = () =>
     worker2 = undefined;
     throw err;
   }));
+
+// the desktop PoE2 cache is the PoE1 cache folder, already emptied; on the web a running PoE2 worker clears through its
+// own zenfs, the only writer of its database, and with none running the database is deleted whole (a delete another
+// tab blocks finishes once that tab closes)
+export const clearPoe2DataCache = async (): Promise<number> => {
+  if (DESKTOP) return 0;
+  if (worker2) {
+    const n = await worker2.then((w) => w.ClearDataCache()).catch(() => undefined);
+    if (n !== undefined) return n;
+  }
+  await new Promise<void>((done) => {
+    const req = indexedDB.deleteDatabase('cache2');
+    req.onsuccess = req.onerror = req.onblocked = () => done();
+  });
+  return 0;
+};

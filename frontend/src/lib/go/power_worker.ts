@@ -32,7 +32,7 @@ const boot = async (module: WebAssembly.Module) => {
   initializeCrystalline();
   config.InitLogging(false);
   await configureStorage();
-  await initializeStorage();
+  await initializeStorage(true);
   const result = await raw.InitializeAll(raw.GameDataVersion(), () => Promise.resolve());
   if (!result.ok) throw new Error(String(result.error));
   return performance.now() - start;

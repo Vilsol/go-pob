@@ -70,6 +70,13 @@ class PoB2Worker {
       calc.release();
     }
   }
+
+  async ClearDataCache(): Promise<number> {
+    await this.booted;
+    const names = await fs.promises.readdir('/cache');
+    for (const n of names) await fs.promises.rm(`/cache/${n}`, { recursive: true, force: true });
+    return names.length;
+  }
 }
 
 export const worker2Instance = new PoB2Worker();

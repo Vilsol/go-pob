@@ -58,6 +58,8 @@ const fake = {
 vi.mock('$lib/go/worker', () => ({ syncWrap: fake, syncWorker: undefined }));
 const pwa = vi.hoisted(() => ({ checkForUpdate: vi.fn(() => Promise.resolve()), clearArtCache: vi.fn(() => Promise.resolve(3)) }));
 vi.mock('$lib/pwa', () => pwa);
+const worker2 = vi.hoisted(() => ({ clearPoe2DataCache: vi.fn(() => Promise.resolve(2)) }));
+vi.mock('$lib/go/worker2', () => worker2);
 
 const { fontScaling, zoomSensitivity, markBackendAsLoaded } = await import('$lib/global');
 const { theme, showAnimations, showStatBars } = await import('$lib/display/appearance');
@@ -234,6 +236,8 @@ describe('AppSettings', () => {
     expect(fake.ClearDataCache).toHaveBeenCalledTimes(1);
     expect(pwa.clearArtCache).toHaveBeenCalledTimes(1);
     await waitFor(() => expect(get(toasts).at(-1)?.message).toMatch(/\n3 item images removed\.$/));
+    expect(worker2.clearPoe2DataCache).toHaveBeenCalledTimes(1);
+    expect(get(toasts).at(-1)?.message, 'the PoE1 and PoE2 game data files are both counted').toMatch(/\n5 game data files removed;/);
 
     await fireEvent.click(s.getByRole('button', { name: 'Export all builds' }));
     await waitFor(() => expect(saved.length).toBe(1));
