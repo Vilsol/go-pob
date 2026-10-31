@@ -199,7 +199,7 @@ func countHeraldsAndAuras(env *Environment) {
 
 // combineBuffs gathers the player's skill buffs, guards, debuffs and curses and applies them. env.minion,
 // the party tab's exports and allies' buffs (env.partyMembers) are not ported, so their branches are
-// absent; warcries need calcSkillDuration and calcSkillCooldown from CalcOffence.
+// absent.
 //
 //pob2:block:src/Modules/CalcPerform.lua:2034-2050
 //pob2:block:src/Modules/CalcPerform.lua:2136-2610
@@ -211,6 +211,7 @@ func combineBuffs(env *Environment) *buffState {
 	// TODO: Spectre ally, minion and player modifiers (CalcPerform.lua:2049-2097) need data.minions.
 
 	appliedCombustion := false
+	warcryList := map[string]bool{}
 	for _, activeSkill := range env.Player.ActiveSkillList {
 		skillFlags := statSetSkillFlags(activeSkill)
 		skillModList := activeSkill.SkillModList
@@ -263,7 +264,62 @@ func combineBuffs(env *Environment) *buffState {
 					}
 				}
 			case "Warcry":
-				// TODO: warcry buffs (CalcPerform.lua:2197-2287) need calcSkillDuration and calcSkillCooldown from CalcOffence.
+				//pob2:block:src/Modules/CalcPerform.lua:2197-2247
+				if env.ModeBuffs {
+					modStore := skillModList
+					warcryPower := overrideOr(modDB, "WarcryPower", math.Max(modDB.Sum(mod.TypeBase, nil, "WarcryPower")*(1+modDB.Sum(mod.TypeIncrease, nil, "WarcryPower")/100), modDB.Sum(mod.TypeBase, nil, "MinimumWarcryPower")))
+					powerCap := skillModList.Sum(mod.TypeBase, nil, "WarcryPowerCap")
+					powerPer := skillModList.Sum(mod.TypeBase, nil, "WarcryPowerPer")
+					baseEmpowers := math.Floor(math.Min(warcryPower, powerCap) / powerPer)
+					warcryName := strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(buff.Name, " Cry", ""), "'s", ""), " ", "")
+					baseEmpowers = modStore.Sum(mod.TypeBase, env.Player.MainSkill.SkillCfg, warcryName+"EmpoweredAttacks") + baseEmpowers
+					if baseEmpowers > 0 {
+						extraEmpowers := modStore.Sum(mod.TypeBase, nil, "ExtraEmpoweredAttacks")
+						empowerMultiplier := modStore.More(nil, "ExtraEmpoweredAttacks")
+						totalEmpowers := (baseEmpowers + extraEmpowers) * empowerMultiplier
+						env.Player.ModDB.AddMod(newMod("Num"+warcryName+"Empowers", mod.TypeBase, totalEmpowers, ""))
+						if !warcryList[buff.Name] {
+							env.Player.ModDB.AddMod(newMod("Multiplier:EmpoweringWarcryCount", mod.TypeBase, 1, mod.Source(buff.Name)))
+							warcryList[buff.Name] = true
+						}
+					}
+					if !activeSkill.SkillModList.Flag(nil, "CannotShareWarcryBuffs") {
+						// Lua stores warcryPowerBonus on the mod's first tag; only this block reads it here.
+						warcryPowerBonus := make([]float64, len(buff.ModList))
+						for i, warcryBuff := range buff.ModList {
+							warcryPowerBonus[i] = 1
+							if tags := warcryBuff.Tags(); len(tags) > 0 {
+								if t, ok := tags[0].(*mod.GlobalEffectTag); ok && len(t.GlobalEffectList) > 0 && t.GlobalEffectList[0] == "Warcry" && t.DivSet {
+									power := warcryPower
+									if t.LimitSet {
+										power = math.Min(warcryPower, t.LimitTag)
+									}
+									warcryPowerBonus[i] = math.Floor(power / t.DivTag)
+								}
+							}
+						}
+						fullDuration := calcSkillDuration(modStore, skillCfg, activeSkill.SkillData, env, enemyDB)
+						actualCooldown, _, _, _, _ := calcSkillCooldown(modStore, skillCfg, activeSkill.SkillData)
+						uptime := math.Min(fullDuration/actualCooldown, 1)
+						if modDB.Flag(nil, "Condition:WarcryMaxHit") {
+							uptime = 1
+						}
+						if !modDB.Flag(nil, "CannotGainWarcryBuffs") {
+							if !buff.ApplyNotPlayer {
+								modDB.Conditions["AffectedBy"+warcryName] = true
+								srcList := newModList()
+								inc := modStore.Sum(mod.TypeIncrease, skillCfg, "BuffEffect", "BuffEffectOnSelf", "BuffEffectOnPlayer")
+								more := modStore.More(skillCfg, "BuffEffect", "BuffEffectOnSelf") * calcLibMod(modStore, skillCfg, "Magnitude")
+								for i, warcryBuff := range buff.ModList {
+									mult := (1 + inc/100) * more * warcryPowerBonus[i] * uptime
+									scaleAddList(srcList, []mod.Mod{warcryBuff}, mult, false)
+								}
+								mergeBuff(srcList.Mods(), buffs, buff.Name)
+							}
+						}
+						// TODO: env.minion and party export (CalcPerform.lua:2248-2285) are not ported.
+					}
+				}
 			case "Aura":
 				if env.ModeBuffs {
 					// Check for extra modifiers to apply to aura skills

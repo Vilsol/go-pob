@@ -332,3 +332,26 @@ func TestPerformMinionSkillDebuffsFixture(t *testing.T) {
 	testza.AssertLen(t, env.Enemy.ModDB.Mods["BlindEffect"], 3)
 	testza.AssertEqual(t, 60.0, env.Enemy.ModDB.Sum(mod.TypeIncrease, nil, "BlindEffect"))
 }
+
+// The expected values are PoB-PoE2's output and modDB for the same file, loaded headless: Mace Strike
+// with Infernal Cry and Fortifying Cry at 20 warcry power. Only Infernal Cry empowers attacks.
+func TestPerformWarcryBuffsFixture(t *testing.T) {
+	env := offenceFixtureEnv(t, "testdata/warcry_buffs.xml")
+	testza.AssertEqual(t, "Mace Strike", env.Player.MainSkill.ActiveEffect.GrantedEffect.Name)
+	assertPoE2Outputs(t, env, map[string]float64{
+		"InfernalEmpoweredCount": 2, "InfernalCryCooldown": 8.019, "InfernalCryCastTime": 0.8, "InfernalCryDuration": 8,
+		"InfernalCryUptimeRatio": 15.640212550489, "GlobalWarcryUptimeRatio": 15.640212550489,
+		"ExertedAttackUptimeRatio": 15.640212550489, "ExertedAttackHitEffect": 0.15640212550489,
+		"ExertedAttackAvgDmg": 1, "WarcryPower": 20, "Speed": 1.45,
+	})
+	for name, want := range map[string]float64{"NumInfernalEmpowers": 2, "Multiplier:EmpoweringWarcryCount": 1, "InfernalExtraFireDamage": 41} {
+		if got := env.ModDB.Sum(mod.TypeBase, nil, name); math.Abs(got-want) > 1e-9 {
+			t.Errorf("%s: PoB-PoE2 %v, ours %v", name, want, got)
+		}
+	}
+	for _, cond := range []string{"AffectedByInfernal", "AffectedByFortifying"} {
+		if !env.ModDB.Conditions[cond] {
+			t.Errorf("condition %s: PoB-PoE2 true, ours false", cond)
+		}
+	}
+}
