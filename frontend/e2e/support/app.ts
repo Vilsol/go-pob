@@ -52,6 +52,8 @@ export class App {
       await page.context().route(`${DATA_HOST}**`, async (route) => {
         const now = App.current.get(page)!;
         const url = route.request().url();
+        // tree art has its own route; a second tab registers this one again, and must not refuse the art in between
+        if (isTreeAsset(url)) return route.fallback();
         let asset;
         try {
           asset = cachedAsset(url);
