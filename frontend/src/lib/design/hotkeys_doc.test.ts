@@ -102,6 +102,7 @@ const INVENTORY: Row[] = [
   { file: `${D}TreePage.svelte`, keys: ['Tab'], why: 'closes the node menu as focus leaves it' },
   { file: `${D}TreePage.svelte`, keys: ['ArrowLeft', 'ArrowRight'], why: A11Y },
   { file: 'frontend/src/lib/components/skill-tree/SkillTree.svelte', keys: ['Shift'], help: [`${TREE}: Hold Shift`] },
+  { file: 'frontend/src/lib/components/skill-tree/SkillTree2.svelte', keys: ['z', 'y'], help: [`${ALL}: Ctrl+Z`, `${ALL}: Ctrl+Y or Ctrl+Shift+Z`] },
   { file: `${D}TreeView.svelte`, keys: ['ContextMenu', 'F10'], help: [`${FIELDS}: Shift+F10 or the Menu key`] },
 
   { file: `${D}ItemsPage.svelte`, keys: ['e'], help: ['Items: E'] },

@@ -245,7 +245,7 @@
     <div
       role="status"
       aria-label="Weapon set allocation mode"
-      class="pointer-events-none absolute inset-x-0 bottom-0 h-5 px-0.5 text-14 text-white"
+      class="pointer-events-none absolute inset-x-0 bottom-0 h-5 px-0.5 text-14 text-text"
       style:background={allocMode === 1 ? 'rgb(221 0 34 / 0.4)' : 'rgb(51 255 119 / 0.4)'}>
       Allocating Weapon set {allocMode} Mode
     </div>
