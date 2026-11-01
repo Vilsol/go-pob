@@ -17,7 +17,7 @@ import (
 
 // TestOutputFlagsVsPoBPoE2Corpus runs the first FLAG_BUILDS (default 30) PoE2 corpus builds through
 // PoB-PoE2 and Go and compares the boolean outputs: a flag is set when PoB's output holds true. Keys
-// Go never writes on any of the builds are reported, not failed.
+// Go never writes on any of the builds are reported, not failed. The string outputs must be equal.
 func TestOutputFlagsVsPoBPoE2Corpus(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("SKIP: reads the local PoE2 corpus; set CORPUS=true")
@@ -46,13 +46,14 @@ func TestOutputFlagsVsPoBPoE2Corpus(t *testing.T) {
 	if len(xmls) == 0 {
 		t.Skipf("SKIP: no XMLs in %s", dir)
 	}
-	pob := runOutputFlagsOracle(t, xmls)
+	pob, pobStrings := runOutputFlagsOracle(t, xmls)
 	if len(pob) != len(xmls) {
 		t.Fatalf("the oracle printed %d builds of %d", len(pob), len(xmls))
 	}
 
 	type tally struct{ pobTrue, written, ok, miss, extra int }
 	perKey := map[string]*tally{}
+	stringsSeen := 0
 	tree := loadTestTree(t)
 	for _, x := range xmls {
 		name := filepath.Base(x)
@@ -67,6 +68,17 @@ func TestOutputFlagsVsPoBPoE2Corpus(t *testing.T) {
 		env, err := BuildOutput(build, Options{Tree: tree, Items: NewItemsTab(build, tree, nil)})
 		if err != nil {
 			t.Fatalf("%s: %v", name, err)
+		}
+		for key, want := range pobStrings[name] {
+			stringsSeen++
+			if got, ok := env.Player.OutputStrings[key]; !ok || got != want {
+				t.Errorf("%s: %s is %q in PoB, ours %q (written %v)", name, key, want, got, ok)
+			}
+		}
+		for key, got := range env.Player.OutputStrings {
+			if _, ok := pobStrings[name][key]; !ok {
+				t.Errorf("%s: %s is %q in ours, not a string in PoB", name, key, got)
+			}
 		}
 		for key := range keysOf(pob[name], env.Player.OutputFlags) {
 			want := pob[name][key]
@@ -110,6 +122,7 @@ func TestOutputFlagsVsPoBPoE2Corpus(t *testing.T) {
 		}
 	}
 	t.Logf("%d flags written and graded over %d builds; not written (PoB true count): %s", len(written), len(xmls), strings.Join(unwritten, ", "))
+	t.Logf("%d string outputs graded", stringsSeen)
 	if len(written) == 0 {
 		t.Fatal("no flag was graded: Actor.OutputFlags is never written")
 	}
@@ -126,8 +139,8 @@ func keysOf(a, b map[string]bool) map[string]bool {
 	return out
 }
 
-// runOutputFlagsOracle returns, per build file name, the boolean outputs PoB-PoE2 sets true.
-func runOutputFlagsOracle(t *testing.T, xmls []string) map[string]map[string]bool {
+// runOutputFlagsOracle returns, per build file name, the boolean outputs PoB-PoE2 sets true and its string outputs.
+func runOutputFlagsOracle(t *testing.T, xmls []string) (map[string]map[string]bool, map[string]map[string]string) {
 	t.Helper()
 	pob, luajit := pobPoE2Probe(t)
 	probe, err := filepath.Abs(filepath.Join("testdata", "output_flags_oracle.lua"))
@@ -150,6 +163,7 @@ func runOutputFlagsOracle(t *testing.T, xmls []string) map[string]map[string]boo
 		t.Fatal(err)
 	}
 	rows := map[string]map[string]bool{}
+	stringRows := map[string]map[string]string{}
 	sc := bufio.NewScanner(bytes.NewReader(b))
 	sc.Buffer(make([]byte, 1<<20), 1<<20)
 	for sc.Scan() {
@@ -163,6 +177,12 @@ func runOutputFlagsOracle(t *testing.T, xmls []string) map[string]map[string]boo
 		if f[2] == "boolean" && f[3] == "true" {
 			rows[f[0]][f[1]] = true
 		}
+		if f[2] == "string" {
+			if stringRows[f[0]] == nil {
+				stringRows[f[0]] = map[string]string{}
+			}
+			stringRows[f[0]][f[1]] = f[3]
+		}
 	}
-	return rows
+	return rows, stringRows
 }

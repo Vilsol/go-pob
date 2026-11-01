@@ -1955,6 +1955,40 @@ func crystallineMarshalExpositionCalcsOutputs(v *CalcsOutputs) any {
 			return out
 		}()
 	}))
+	out.Set("Strings", crystallineJSON(func(b []byte, ok *bool) []byte {
+		if entries0 := v.Strings; entries0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '{')
+			first0 := true
+			for k0, v0 := range entries0 {
+				if !first0 {
+					b = append(b, ',')
+				}
+
+				first0 = false
+				b = crystallineAppendString(b, string(k0))
+				b = append(b, ':')
+				b = crystallineAppendString(b, string(v0))
+			}
+
+			b = append(b, '}')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			if v.Strings == nil {
+				return nil
+			}
+
+			out := crystallineObjects.New()
+			for k, v := range v.Strings {
+				out.Set(string(k), string(v))
+			}
+
+			return out
+		}()
+	}))
 	out.Set("MainHand", crystallineJSON(func(b []byte, ok *bool) []byte {
 		if entries0 := v.MainHand; entries0 == nil {
 			b = append(b, "null"...)
@@ -3499,6 +3533,25 @@ func crystallineAppendExpositionCalcsOutputs(b []byte, v *CalcsOutputs, ok *bool
 			b = crystallineAppendString(b, string(k0))
 			b = append(b, ':')
 			b = strconv.AppendBool(b, bool(v0))
+		}
+
+		b = append(b, '}')
+	}
+	b = append(b, ",\"Strings\":"...)
+	if entries0 := v.Strings; entries0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '{')
+		first0 := true
+		for k0, v0 := range entries0 {
+			if !first0 {
+				b = append(b, ',')
+			}
+
+			first0 = false
+			b = crystallineAppendString(b, string(k0))
+			b = append(b, ':')
+			b = crystallineAppendString(b, string(v0))
 		}
 
 		b = append(b, '}')

@@ -73,6 +73,7 @@ export declare namespace exposition {
   }
   interface CalcsOutputs {
     readonly Flags?: Record<string, boolean>;
+    readonly Strings?: Record<string, string>;
     readonly MainHand?: Record<string, number>;
     readonly OffHand?: Record<string, number>;
   }

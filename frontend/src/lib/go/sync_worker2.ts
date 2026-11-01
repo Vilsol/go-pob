@@ -116,10 +116,11 @@ export type Poe2SkillGroup = {
   gems: { name: string; level: number; quality: number; count: number; enabled: boolean; support: boolean; color: string }[];
 };
 
-// the Calcs page's {p:mod:n} values by cell entry id, the true outputs, and output.MainHand / output.OffHand
+// the Calcs page's {p:mod:n} values by cell entry id, the true and string outputs, and output.MainHand / output.OffHand
 export type Poe2CalcsPage = {
   mods: Record<string, number>;
   flags: Record<string, boolean>;
+  strings: Record<string, string>;
   mainHand?: Record<string, number>;
   offHand?: Record<string, number>;
 };
@@ -287,6 +288,7 @@ class PoB2Worker {
     return {
       mods,
       flags: { ...out?.Flags },
+      strings: { ...out?.Strings },
       mainHand: out?.MainHand ? { ...out.MainHand } : undefined,
       offHand: out?.OffHand ? { ...out.OffHand } : undefined
     };

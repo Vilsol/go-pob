@@ -37,7 +37,9 @@ func offenceSkillTypeStats(env *Environment, actor *Actor, activeSkill *ActiveSk
 		}
 	}
 	if skillFlags["chaining"] {
-		if !(skillModList.Flag(skillCfg, "CannotChain") || skillModList.Flag(skillCfg, "NoAdditionalChains")) {
+		if skillModList.Flag(skillCfg, "CannotChain") || skillModList.Flag(skillCfg, "NoAdditionalChains") {
+			actor.setOutputString("ChainMaxString", "Cannot chain")
+		} else {
 			names := []string{"ChainCountMax"}
 			if !skillFlags["projectile"] {
 				names = append(names, "BeamChainCountMax")
@@ -67,7 +69,13 @@ func offenceSkillTypeStats(env *Environment, actor *Actor, activeSkill *ActiveSk
 		if skillModList.Flag(skillCfg, "AdditionalProjectilesAddBouncesInstead") {
 			output["BounceCount"] = (projectileBase() + sum("BounceCount") - 1) * skillModList.More(skillCfg, "ProjectileCount")
 		}
-		if !(skillModList.Flag(skillCfg, "CannotSplit") || activeSkill.SkillTypes["ProjectileNumber"]) {
+		if skillModList.Flag(skillCfg, "CannotSplit") || activeSkill.SkillTypes["ProjectileNumber"] {
+			if env.buildBreakdown() {
+				if splitCount := sum("SplitCount") + enemyDB.Sum(mod.TypeBase, skillCfg, "SelfSplitCount"); splitCount > 0 {
+					actor.setOutputString("SplitCountString", "Cannot split")
+				}
+			}
+		} else {
 			output["SplitCount"] = sum("SplitCount") + enemyDB.Sum(mod.TypeBase, skillCfg, "SelfSplitCount")
 			if skillModList.Flag(skillCfg, "AdditionalProjectilesAddSplitsInstead") {
 				output["SplitCount"] += (projectileBase() - 1) * skillModList.More(skillCfg, "ProjectileCount")
@@ -77,8 +85,9 @@ func offenceSkillTypeStats(env *Environment, actor *Actor, activeSkill *ActiveSk
 			}
 			output["SplitCountString"] = output["SplitCount"]
 		}
-		// ForkCountString is a string ("Cannot fork", "0") except where it is ForkCountMax.
-		if !skillModList.Flag(skillCfg, "CannotFork") && skillModList.Flag(skillCfg, "ForkOnce") {
+		if skillModList.Flag(skillCfg, "CannotFork") {
+			actor.setOutputString("ForkCountString", "Cannot fork")
+		} else if skillModList.Flag(skillCfg, "ForkOnce") {
 			skillFlags["forking"] = true
 			if skillModList.Flag(skillCfg, "ForkTwice") {
 				output["ForkCountMax"] = math.Min(sum("ForkCountMax"), 2)
@@ -88,12 +97,16 @@ func offenceSkillTypeStats(env *Environment, actor *Actor, activeSkill *ActiveSk
 			output["ForkedCount"] = math.Min(output["ForkCountMax"], sum("ForkedCount"))
 			output["ForkCountString"] = output["ForkCountMax"]
 			output["ForkRemaining"] = math.Max(0, output["ForkCountMax"]-output["ForkedCount"])
+		} else {
+			actor.setOutputString("ForkCountString", "0")
 		}
 		if skillModList.Flag(skillCfg, "CannotPierce") {
 			output["PierceCount"] = 0
+			actor.setOutputString("PierceCountString", "Cannot pierce")
 		} else {
 			if skillModList.Flag(skillCfg, "PierceAllTargets") || enemyDB.Flag(nil, "AlwaysPierceSelf") {
 				output["PierceCount"] = 100
+				actor.setOutputString("PierceCountString", "All targets")
 			} else {
 				output["PierceCount"] = sum("PierceCount") + sum("PierceChance")/100
 				output["PierceCountString"] = output["PierceCount"]

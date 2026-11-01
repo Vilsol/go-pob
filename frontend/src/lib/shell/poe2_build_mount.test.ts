@@ -294,11 +294,6 @@ describe('the PoE2 tree undo and redo', () => {
   }, 120_000);
 });
 
-const knownCellDiffs: Record<string, string[]> = {
-  sorceress_spark: ['Attributes:0:6:0 PoB "^xDD002260" ours "60"', 'Attributes:0:8:0 PoB "^xDD002265" ours "65"'],
-  warrior_dual_mace: ['Attributes:0:6:0 PoB "^xDD002265" ours "65"']
-};
-
 // the values are PoB-PoE2's Calcs tab over its main calculation: oracle/poe2_calcs.lua on the pinned checkout
 describe('the PoE2 Calcs page', () => {
   it.each(['sorceress_spark', 'warrior_dual_mace'])(
@@ -316,7 +311,7 @@ describe('the PoE2 Calcs page', () => {
       };
       const calc = await worker2Instance.Open(await fixture(`${name}.xml`));
       const page = worker2Instance.CalcsPage();
-      const output: Record<string, unknown> = { ...calc.output, ...page.flags };
+      const output: Record<string, unknown> = { ...calc.output, ...page.flags, ...page.strings };
       if (page.mainHand) output.MainHand = page.mainHand;
       if (page.offHand) output.OffHand = page.offHand;
       const actor = { output: output as never, skillFlags: calc.skillFlags, skillData: calc.skillData, mods: page.mods };
@@ -344,9 +339,7 @@ describe('the PoE2 Calcs page', () => {
           .map((k) => `${k} PoB ${JSON.stringify(a[k])} ours ${JSON.stringify(b[k])}`);
       expect(Object.keys(oracle.cells).length).toBeGreaterThan(250);
       expect(enabled).toEqual(oracle.enabled);
-      // known divergence: calculator2 writes Req<attr>String as the number where CalcPerform.lua:1988 (PoB-PoE2) prefixes
-      // an unmet requirement with colorCodes.NEGATIVE
-      expect(diff(oracle.cells, cells)).toEqual(knownCellDiffs[name]);
+      expect(diff(oracle.cells, cells)).toEqual([]);
       expect(diff(oracle.extras, extras)).toEqual([]);
     },
     120_000

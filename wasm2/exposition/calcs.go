@@ -82,10 +82,12 @@ func (c *Calculator) CalcsMods(query CalcsModQuery) (map[string]float64, error) 
 	return out, nil
 }
 
-// CalcsOutputs is what the Calcs page reads from the last calculation's player beside Output: its true outputs and
-// its output.MainHand and output.OffHand tables, nil when the main skill does not attack with that hand.
+// CalcsOutputs is what the Calcs page reads from the last calculation's player beside Output: its true outputs, its
+// string outputs and its output.MainHand and output.OffHand tables, nil when the main skill does not attack with that
+// hand.
 type CalcsOutputs struct {
 	Flags    map[string]bool
+	Strings  map[string]string
 	MainHand map[string]float64
 	OffHand  map[string]float64
 }
@@ -101,5 +103,9 @@ func (c *Calculator) CalcsOutputs() (*CalcsOutputs, error) {
 			flags[k] = true
 		}
 	}
-	return &CalcsOutputs{Flags: flags, MainHand: p.OutputMainHand, OffHand: p.OutputOffHand}, nil
+	strs := make(map[string]string, len(p.OutputStrings))
+	for k, v := range p.OutputStrings {
+		strs[k] = v
+	}
+	return &CalcsOutputs{Flags: flags, Strings: strs, MainHand: p.OutputMainHand, OffHand: p.OutputOffHand}, nil
 }

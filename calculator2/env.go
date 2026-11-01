@@ -306,6 +306,8 @@ type Actor struct {
 	SpecificTypeAvoidance bool
 	// OutputFlags is output's boolean entries, which Output does not hold.
 	OutputFlags map[string]bool
+	// OutputStrings is output's string entries; a key in it is absent from Output.
+	OutputStrings map[string]string
 	// OutputMainHand and OutputOffHand are output.MainHand/OffHand, nil unless the main skill attacks.
 	OutputMainHand map[string]float64
 	OutputOffHand  map[string]float64
@@ -342,11 +344,26 @@ type Actor struct {
 	appliedEnemyModifiers map[mod.Mod]bool
 }
 
+// buildBreakdown is env.buildBreakdown.
+//
+//pob2:block:src/Modules/CalcSetup.lua:865
+func (env *Environment) buildBreakdown() bool {
+	return env.Mode == "MAIN" || env.Mode == "CALCS"
+}
+
 func (a *Actor) setOutputFlag(key string, v bool) {
 	if a.OutputFlags == nil {
 		a.OutputFlags = map[string]bool{}
 	}
 	a.OutputFlags[key] = v
+}
+
+func (a *Actor) setOutputString(key string, v string) {
+	if a.OutputStrings == nil {
+		a.OutputStrings = map[string]string{}
+	}
+	delete(a.Output, key)
+	a.OutputStrings[key] = v
 }
 
 func (a *Actor) GetOutput(key string) (float64, bool) {

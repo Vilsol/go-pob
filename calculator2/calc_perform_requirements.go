@@ -1,6 +1,7 @@
 package calculator2
 
 import (
+	"fmt"
 	"math"
 )
 
@@ -22,8 +23,17 @@ func (r requirementSource) attr(name string) float64 {
 	return r.Int
 }
 
-// Go outputs hold numbers, so Req<attr>String keeps the number where the breakdown colours an unmet one,
-// and Req<attr>Item is not kept.
+// colorNegative is colorCodes.NEGATIVE.
+//
+//pob2:src/Data/Global.lua:30
+const colorNegative = "^xDD0022"
+
+// luaToString is a number as Lua's tostring and .. print it.
+func luaToString(v float64) string {
+	return fmt.Sprintf("%.14g", v)
+}
+
+// Req<attr>Item is not kept.
 //
 //pob2:block:src/Modules/CalcPerform.lua:1896-1992
 func processAttributeRequirements(env *Environment, requirementsTable []requirementSource) {
@@ -89,9 +99,14 @@ func processAttributeRequirements(env *Environment, requirementsTable []requirem
 		}
 		output["Req"+attr+"String"] = 0
 		checkedAttributeStr := "Req" + attr
+		checkedAttributeValue := output[attr]
 		if outVal > output[checkedAttributeStr] {
 			output[checkedAttributeStr+"String"] = outVal
 			output[checkedAttributeStr] = outVal
+			// out.source is the requirement's table, so Lua's out.source == "Gem" never holds
+			if env.buildBreakdown() && outVal > checkedAttributeValue {
+				env.Player.setOutputString(checkedAttributeStr+"String", colorNegative+luaToString(outVal))
+			}
 		}
 	}
 }

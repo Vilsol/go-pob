@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"reflect"
 	"sort"
 	"strings"
 	"testing"
@@ -97,7 +98,7 @@ func TestCalcsModsMatchPoB(t *testing.T) {
 	}
 }
 
-// PoB-PoE2's true outputs and its MainHand and OffHand tables, as the Calcs page reads them.
+// PoB-PoE2's true and string outputs and its MainHand and OffHand tables, as the Calcs page reads them.
 func TestCalcsOutputsMatchPoB(t *testing.T) {
 	for _, name := range calcsFixtures {
 		t.Run(name, func(t *testing.T) {
@@ -125,6 +126,16 @@ func TestCalcsOutputsMatchPoB(t *testing.T) {
 			sort.Strings(gotFlags)
 			if strings.Join(gotFlags, " ") != strings.Join(wantFlags, " ") {
 				t.Errorf("true outputs:\n PoB-PoE2 %v\n ours     %v", wantFlags, gotFlags)
+			}
+			wantStrings := map[string]string{}
+			for k, raw := range oracle.Output {
+				var s string
+				if json.Unmarshal(raw, &s) == nil {
+					wantStrings[k] = s
+				}
+			}
+			if len(wantStrings) == 0 || !reflect.DeepEqual(got.Strings, wantStrings) {
+				t.Errorf("string outputs:\n PoB-PoE2 %v\n ours     %v", wantStrings, got.Strings)
 			}
 			for _, hand := range []struct {
 				ns   string
