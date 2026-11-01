@@ -1,6 +1,7 @@
 package calculator2
 
 import (
+	"bytes"
 	"math"
 	"os"
 	"sort"
@@ -426,6 +427,37 @@ func TestPerformTotemLifeFixtures(t *testing.T) {
 		}
 		if got := env.Player.Output["TotemLife"]; got != tc.life {
 			t.Errorf("%s TotemLife: PoB-PoE2 %v, ours %v", tc.file, tc.life, got)
+		}
+	}
+}
+
+// The expected values are PoB-PoE2's for the same file, loaded headless, and for the same file with
+// skillMinionItemSet="1": Manifest Weapon's minion takes Weapon 1 from the item set the gem names, its
+// weapon damage and its mods, not the player's.
+func TestPerformMinionItemSetFixture(t *testing.T) {
+	raw, err := os.ReadFile("testdata/manifest_weapon_item_set.xml")
+	testza.AssertNoError(t, err)
+	for _, tc := range []struct {
+		itemSet                   string
+		fireResist, totalMin, dps float64
+	}{
+		{`skillMinionItemSet="2"`, 25, 15.75, 30.282525},
+		{`skillMinionItemSet="1"`, 0, 13, 23.6824875},
+	} {
+		build, err := pob2.ParseBuild(bytes.Replace(raw, []byte(`skillMinionItemSet="2"`), []byte(tc.itemSet), 1))
+		testza.AssertNoError(t, err)
+		tree := loadTestTree(t)
+		env, err := BuildOutput(build, Options{Tree: tree, Items: NewItemsTab(build, tree, nil)})
+		testza.AssertNoError(t, err)
+
+		testza.AssertNotNil(t, env.Minion)
+		for stat, want := range map[string]float64{"FireResist": tc.fireResist, "TotalDPS": tc.dps} {
+			if got := env.Minion.Output[stat]; math.Abs(got-want) > 1e-6 {
+				t.Errorf("%s minion %s: PoB-PoE2 %v, ours %v", tc.itemSet, stat, want, got)
+			}
+		}
+		if got := env.Minion.OutputMainHand["TotalMin"]; math.Abs(got-tc.totalMin) > 1e-6 {
+			t.Errorf("%s minion MainHand TotalMin: PoB-PoE2 %v, ours %v", tc.itemSet, tc.totalMin, got)
 		}
 	}
 }

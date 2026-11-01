@@ -14,13 +14,15 @@ import (
 )
 
 // Minion is activeSkill.minion: the actor a minion skill creates; Actor.ActiveSkillList and
-// Actor.MainSkill hold its skills. Its items are not ported.
+// Actor.MainSkill hold its skills.
 type Minion struct {
 	Actor
 	MinionData *poe2minions.Minion
 	Uses       map[string]bool
-	LifeTable  []float64
-	Type       string
+	// ItemSet is minion.itemSet: the item set a minionHasItemSet skill's minion takes its items from.
+	ItemSet   *ItemSet
+	LifeTable []float64
+	Type      string
 
 	HiddenDamageFixup float64
 	Hostile           bool
@@ -91,7 +93,7 @@ func skillDataNumber(v any) (float64, bool) {
 }
 
 // createMinion is buildActiveSkillModList's minion: the list a skill picks its minion from and the
-// minion actor. The item set a minion may use (minionHasItemSet) is not ported.
+// minion actor.
 //
 //pob2:block:src/Modules/CalcActiveSkill.lua:923-1051
 func createMinion(env *Environment, activeSkill *ActiveSkill) {
@@ -116,6 +118,8 @@ func createMinion(env *Environment, activeSkill *ActiveSkill) {
 		if srcInstance != nil && !(activeEffect.GemData != nil && len(activeEffect.GemData.AdditionalGrantedEffects) >= 1) {
 			srcInstance.SkillMinionCalcs = ""
 			srcInstance.SkillMinion = ""
+			srcInstance.SkillMinionItemSetCalcs = 0
+			srcInstance.SkillMinionItemSet = 0
 		}
 		return
 	}
@@ -182,6 +186,25 @@ func createMinion(env *Environment, activeSkill *ActiveSkill) {
 	if !data.BaseDamageIgnoresAttackSpeed { // minions with this flag do not factor attack time into their base damage
 		damage = damage * attackTime
 	}
+	//pob2:block:src/Modules/CalcActiveSkill.lua:990-1005
+	if overlay.MinionHasItemSet {
+		if tab := env.items; tab != nil && srcInstance != nil {
+			if env.Mode == "CALCS" && activeSkill == env.Player.MainSkill {
+				if tab.ItemSets[srcInstance.SkillMinionItemSetCalcs] == nil {
+					srcInstance.SkillMinionItemSetCalcs = tab.ItemSetOrderList[0]
+				}
+				minion.ItemSet = tab.ItemSets[srcInstance.SkillMinionItemSetCalcs]
+			} else {
+				if tab.ItemSets[srcInstance.SkillMinionItemSet] == nil {
+					srcInstance.SkillMinionItemSet = tab.ItemSetOrderList[0]
+				}
+				minion.ItemSet = tab.ItemSets[srcInstance.SkillMinionItemSet]
+			}
+		}
+	} else if srcInstance != nil && !(activeEffect.GemData != nil && len(activeEffect.GemData.AdditionalGrantedEffects) >= 1) {
+		srcInstance.SkillMinionItemSetCalcs = 0
+		srcInstance.SkillMinionItemSet = 0
+	}
 	//pob2:block:src/Modules/CalcActiveSkill.lua:1006-1042
 	minion.weaponDataSet = true
 	switch {
@@ -203,16 +226,36 @@ func createMinion(env *Environment, activeSkill *ActiveSkill) {
 	}
 	minion.WeaponData2, minion.WeaponData2Type = map[string]float64{}, ""
 	if minion.Uses["Weapon 1"] {
-		minion.WeaponData1, minion.WeaponData1Type = env.Player.WeaponData1, env.Player.WeaponData1Type
+		if minion.ItemSet != nil {
+			slotName := "Weapon 1"
+			if minion.ItemSet.UseSecondWeaponSet {
+				slotName = "Weapon 1 Swap"
+			}
+			if item := env.items.Items[minion.ItemSet.SelItemID(slotName)]; item != nil && item.WeaponData != nil {
+				minion.WeaponData1, minion.WeaponData1Type = item.WeaponData[1], item.Base.Type
+			}
+		} else {
+			minion.WeaponData1, minion.WeaponData1Type = env.Player.WeaponData1, env.Player.WeaponData1Type
+		}
 	}
 	if minion.Uses["Weapon 2"] {
-		minion.WeaponData2, minion.WeaponData2Type = env.Player.WeaponData2, env.Player.WeaponData2Type
+		if minion.ItemSet != nil {
+			slotName := "Weapon 2"
+			if minion.ItemSet.UseSecondWeaponSet {
+				slotName = "Weapon 2 Swap"
+			}
+			if item := env.items.Items[minion.ItemSet.SelItemID(slotName)]; item != nil && item.WeaponData != nil {
+				minion.WeaponData2, minion.WeaponData2Type = item.WeaponData[2], item.Base.Type
+			}
+		} else {
+			minion.WeaponData2, minion.WeaponData2Type = env.Player.WeaponData2, env.Player.WeaponData2Type
+		}
 	}
 }
 
 // initMinionModDB initialises a minion's modifier database with its base stats (life, defences,
-// resists), monster type mods and player-granted mods, for the given owning skill. The minion's items
-// (minionUseBowAndQuiver, minion.itemSet, minion.uses) are not ported.
+// resists), monster type mods and player-granted mods, for the given owning skill. The bow and quiver a
+// minion may use (minionUseBowAndQuiver) are not ported.
 //
 //pob2:src/Modules/CalcPerform.lua:1049-1156
 func initMinionModDB(env *Environment, activeSkill *ActiveSkill) {
@@ -268,6 +311,33 @@ func initMinionModDB(env *Environment, activeSkill *ActiveSkill) {
 	}
 	if env.TheIronMass != nil && minion.Type == "RaisedSkeleton" {
 		minion.ModDB.AddList(env.TheIronMass)
+	}
+	//pob2:block:src/Modules/CalcPerform.lua:1122-1140
+	if (minion.ItemSet != nil || minion.Uses != nil) && env.items != nil {
+		for _, slot := range env.items.OrderedSlots {
+			slotName := slot.SlotName
+			if minion.Uses[slotName] {
+				var item *Item
+				if minion.ItemSet != nil {
+					if slot.WeaponSet == 1 && minion.ItemSet.UseSecondWeaponSet {
+						slotName += " Swap"
+					}
+					item = env.items.Items[minion.ItemSet.SelItemID(slotName)]
+				} else {
+					item = env.Player.ItemList[slotName]
+				}
+				if item != nil {
+					minion.ItemList[slotName] = item
+					list := item.ModList
+					if list == nil && slot.SlotNum >= 1 && slot.SlotNum <= len(item.SlotModList) {
+						list = item.SlotModList[slot.SlotNum-1]
+					}
+					for _, m := range list {
+						minion.ModDB.AddMod(m)
+					}
+				}
+			}
+		}
 	}
 	if modDB.Flag(nil, "StrengthAddedToMinions") {
 		minion.ModDB.AddMod(newMod("Str", mod.TypeBase, round(calcLibVal(modDB, "Str", nil)), "Player"))
