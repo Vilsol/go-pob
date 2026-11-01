@@ -1,12 +1,14 @@
-import { derived, get, writable } from 'svelte/store';
+import { derived, get, readable, writable } from 'svelte/store';
 import type { Remote } from 'comlink';
 import { poe2Build, poe2Edited, poe2Session, type Poe2View } from '$lib/global';
 import type { BuildWarning, Sidebar, SidebarSection } from '$lib/display/sidebar';
 import { buildStatList2, displayStats2, minionDisplayStats2 } from '$lib/display/stats2';
 import { savePoe2Build } from '$lib/shell/poe2_save';
 import type { calculator } from '$lib/types';
-import type { BuildEngine, MainGroupView } from './engine';
-import type { Poe2Calc, Poe2SocketGroup, Worker2Type } from './sync_worker2';
+import type { calculator2 } from '$lib/types2';
+import type { MainSkillField } from '$lib/shell/main_skill';
+import type { BuildEngine, CalcsTabView, MainGroupView } from './engine';
+import type { Poe2Calc, Poe2CalcsPage, Poe2SocketGroup, Worker2Type } from './sync_worker2';
 
 // the PoE2 worker hands back a Poe2Calc; a view without its fields shows what it has
 type Calc = Partial<Poe2Calc> & Poe2View;
@@ -34,6 +36,17 @@ export const poe2Run = async <T>(op: (w: Remote<Worker2Type>) => Promise<T>, vie
     poe2Busy.set(false);
   }
 };
+
+const fail = (err: unknown) => poe2Error.set(err instanceof Error ? err.message : String(err));
+
+// Build.lua:376-381 (PoB-PoE2)
+const setMainSkill2 = (field: MainSkillField, value: number | undefined) => {
+  if (field === 'MainActiveSkill' && value !== undefined) void poe2Run((w) => w.SetMainActiveSkill(value));
+};
+
+// the config page reads the options again after every calculation
+let calcCount = 0;
+const revision2 = derived(poe2Build, (v) => (v ? ++calcCount : 0));
 
 // Build.lua:2375-2481 (PoB-PoE2): the minion's list over the player's, each stat warning once
 const sidebar2 = (calc: Calc): Sidebar => {
@@ -106,6 +119,44 @@ class Poe2MainGroup implements MainGroupView {
   }
 }
 
+// CalcsTab.lua (PoB-PoE2) over the main calculation: calculator2 runs no CALCS pass, so the tab's skill number and
+// buff mode are the sidebar's. Its mod values are fetched again for every calculation while the page is open, and
+// the last shows meanwhile
+const calcsTab2 = readable<CalcsTabView | undefined>(undefined, (set) => {
+  const code = Promise.all([import('$lib/display/calcs2'), import('$lib/calcs/calc_sections2')]);
+  let calc: Calc | undefined;
+  let page: Poe2CalcsPage | undefined;
+  // a view kept from the last time the page was open belongs to that build
+  set(undefined);
+  const show = async () => {
+    const at = calc;
+    if (!at || !page) return;
+    const [{ calcsView2 }, { calcSections2 }] = await code;
+    if (at !== calc) return;
+    const output: Record<string, unknown> = { ...at.output, ...page.flags };
+    if (page.mainHand) output.MainHand = page.mainHand;
+    if (page.offHand) output.OffHand = page.offHand;
+    const group = mainGroupOf(at);
+    set({
+      sections: calcsView2(calcSections2, { output: output as never, skillFlags: at.skillFlags ?? {}, skillData: at.skillData ?? {}, mods: page.mods }),
+      controls:
+        group && group.skills.length > 0 ? ({ Skills: group.skills, MainActiveSkill: at.mainActiveSkill || 1 } as calculator.MainSkillControls) : undefined
+    });
+  };
+  return poe2Build.subscribe((v) => {
+    calc = v as Calc | undefined;
+    if (!calc) return set(undefined);
+    void show();
+    void poe2Worker()
+      .then((w) => w.CalcsPage())
+      .then((p) => {
+        page = p;
+        return show();
+      })
+      .catch(fail);
+  });
+});
+
 export const poe2Engine: BuildEngine = {
   game: 'poe2',
   build: poe2Session,
@@ -113,10 +164,7 @@ export const poe2Engine: BuildEngine = {
   sidebar: derived(poe2Build, (v) => (v ? sidebar2(v as Calc) : undefined)),
   mainSkill: derived(poe2Build, (v) => controls2(v as Calc | undefined)),
   mainGroup: () => new Poe2MainGroup(),
-  // Build.lua:376-381 (PoB-PoE2)
-  setMainSkill: (field, value) => {
-    if (field === 'MainActiveSkill' && value !== undefined) void poe2Run((w) => w.SetMainActiveSkill(value));
-  },
+  setMainSkill: setMainSkill2,
   classInfo: () => {
     const v = get(poe2Build);
     return Promise.resolve(v && { className: v.className, ascendClassName: v.ascendClassName });
@@ -127,5 +175,24 @@ export const poe2Engine: BuildEngine = {
     poe2Build.set(undefined);
     poe2Error.set(undefined);
     return Promise.resolve();
+  },
+  busy: poe2Busy,
+  error: poe2Error,
+  // ConfigTab.lua (PoB-PoE2): no config sets, custom modifiers or comparisons yet
+  config: {
+    table: () => import('$lib/design/config_table2').then((m) => m.poe2ConfigTable),
+    revision: revision2,
+    inputs: () => {
+      const v = get(poe2Build) as Calc | undefined;
+      return v && Promise.resolve({ ...v.configInputs });
+    },
+    placeholders: () => (get(poe2Build) ? Promise.resolve({}) : undefined),
+    relevance: derived(poe2Build, (v) => (v as Calc | undefined)?.relevance ?? ({} as calculator2.ConfigRelevance)),
+    output: derived(poe2Build, (v) => v?.output),
+    set: (key, value) => poe2Run((w) => w.SetConfigOption(key, value))
+  },
+  calcs: {
+    tab: calcsTab2,
+    setMainSkill: setMainSkill2
   }
 };

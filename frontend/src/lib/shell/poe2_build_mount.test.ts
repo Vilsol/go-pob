@@ -71,6 +71,8 @@ vi.mock('$lib/components/skill-tree/gl_renderer2', () => ({
 
 const { poe2Build } = await import('$lib/global');
 const Poe2Page = (await import('./Poe2Page.svelte')).default;
+const AppConfig = (await import('./AppConfig.svelte')).default;
+const AppCalcs = (await import('./AppCalcs.svelte')).default;
 const AppSidebar = (await import('./AppSidebar.svelte')).default;
 const { poe2Engine } = await import('$lib/go/engine_poe2.svelte');
 
@@ -85,6 +87,19 @@ const statOf = (container: HTMLElement, name: string) => {
 };
 
 const fixture = (name: string) => readFile(resolve(FIXTURES, name), 'utf8');
+
+// the Config page's options in their sections; the Most used group repeats some of them
+const shownOptions = (container: HTMLElement) =>
+  [...container.querySelectorAll<HTMLElement>('[data-var]')].filter((e) => !e.closest('[aria-label="Most used"]')).map((e) => e.dataset.var!);
+const optionRow = (container: HTMLElement, name: string) =>
+  [...container.querySelectorAll<HTMLElement>(`[data-var="${name}"]`)].find((e) => !e.closest('[aria-label="Most used"]'));
+const openConfig = async (name: string) => {
+  poe2Build.set(await worker2Instance.Open(await fixture(`${name}.xml`)));
+  issued.length = 0;
+  const page = render(AppConfig);
+  await vi.waitFor(() => expect(shownOptions(page.container).length).toBeGreaterThan(0));
+  return page;
+};
 
 beforeAll(async () => {
   if (!existsSync(WASM2)) throw new Error(`REFUSING: the PoE2 wasm module is missing — run \`mise run build-go2\`\n  missing: ${WASM2}`);
@@ -128,28 +143,95 @@ describe('the PoE2 config and main skill writes', () => {
     "shows the config options PoB-PoE2's config tab shows for %s",
     async (name) => {
       const oracle = JSON.parse(await readFile(resolve(ORACLE, `poe2_sidebar_${name}.json`), 'utf8')) as { configShown: string[] };
-      poe2Build.set(await worker2Instance.Open(await fixture(`${name}.xml`)));
-      const page = render(Poe2Page, { route: 'configuration' });
-      const shown = [...page.container.querySelectorAll<HTMLElement>('[data-config]')].map((e) => e.dataset.config!).sort();
-      expect(shown).toEqual(oracle.configShown);
+      const page = await openConfig(name);
+      expect(shownOptions(page.container).sort()).toEqual(oracle.configShown);
+      // PoE1's config sets, custom modifiers and reset have no PoE2 counterpart yet
+      expect(page.queryByRole('region', { name: 'Custom modifiers' })).toBeNull();
+      expect(page.queryByRole('button', { name: 'Reset to defaults' })).toBeNull();
+      expect(page.queryByText('Config set')).toBeNull();
+      expect(issued).toEqual([]);
     },
     120_000
   );
 
   it('editing a config option on the page recalculates the sidebar', async () => {
-    poe2Build.set(await worker2Instance.Open(await fixture('sorceress_spark.xml')));
-    issued.length = 0;
-    const page = render(Poe2Page, { route: 'configuration' });
+    const page = await openConfig('sorceress_spark');
     const side = render(AppSidebar);
     const stat = (name: string) => statOf(side.container, name);
     expect(stat('FireResist')).toBe('-15%');
-    const pick = page.container.querySelector<HTMLSelectElement>('[data-config="resistancePenalty"]')!;
-    pick.value = '0';
-    await fireEvent.change(pick);
+    const pick = within(optionRow(page.container, 'resistancePenalty')!).getByRole('combobox');
+    expect(pick.textContent).toBe('Endgame (-60%)');
+    await fireEvent.click(pick);
+    await fireEvent.click(within(page.getByRole('listbox')).getByRole('option', { name: 'Act 1 (0%)' }));
     await vi.waitFor(() => expect(get(poe2Build)?.output.FireResist).toBe(45));
     expect(issued).toEqual(['SetConfigOption("resistancePenalty",0)']);
     await vi.waitFor(() => expect(stat('FireResist')).toBe('45%'));
     expect(stat('LightningResist')).toBe('10%');
+    await vi.waitFor(() => expect(pick.textContent).toBe('Act 1 (0%)'));
+    await worker2Instance.SetConfigOption('resistancePenalty', -60);
+  }, 120_000);
+
+  // ConfigTab.lua:207-219 (PoB-PoE2): Show All brings back build-gated options, never parent-gated or legacy ones
+  it('showing every option adds the build-gated ones only', async () => {
+    const { configurations2, isVariable2 } = await import('$lib/display/configurations2');
+    const page = await openConfig('sorceress_spark');
+    const before = shownOptions(page.container);
+    await fireEvent.click(page.getByRole('checkbox', { name: /Show options that don.t affect this build/ }));
+    const after = shownOptions(page.container);
+    const rows = configurations2.flatMap((s) => s.rows).filter(isVariable2);
+    const gated = rows.filter((r) => r.ifOption !== undefined || r.legacy).map((r) => r.var);
+    expect(after.length).toBeGreaterThan(before.length);
+    expect(before.every((v) => after.includes(v))).toBe(true);
+    expect(after.filter((v) => !before.includes(v) && gated.includes(v))).toEqual([]);
+    expect(new Set(after.filter((v) => !before.includes(v)))).toEqual(
+      new Set(rows.filter((r) => !before.includes(r.var) && !gated.includes(r.var)).map((r) => r.var))
+    );
+    expect(issued).toEqual([]);
+  }, 120_000);
+
+  // ConfigTab.lua:735-770 (PoB-PoE2): a set option whose condition the build lacks stays, marked invalid
+  it('an option set while the build cannot use it shows as invalid', async () => {
+    const { configurations2, isVariable2 } = await import('$lib/display/configurations2');
+    const oracle = JSON.parse(await readFile(resolve(ORACLE, 'poe2_sidebar_sorceress_spark.json'), 'utf8')) as { configShown: string[] };
+    const unused = configurations2
+      .flatMap((s) => s.rows)
+      .filter(isVariable2)
+      .find((r) => r.type === 'check' && !r.hideIfInvalid && r.ifCond !== undefined && !oracle.configShown.includes(r.var))!;
+    await worker2Instance.Open(await fixture('sorceress_spark.xml'));
+    poe2Build.set(await worker2Instance.SetConfigOption(unused.var, true));
+    const page = render(AppConfig);
+    const row = await vi.waitFor(() => {
+      const found = optionRow(page.container, unused.var);
+      if (!found) throw new Error(`${unused.var} is not shown`);
+      return found;
+    });
+    expect(row.className).toContain('text-worse');
+    expect(within(row).getByRole<HTMLInputElement>('checkbox').checked).toBe(true);
+  }, 120_000);
+
+  it('a check and a number option write through the PoE2 worker', async () => {
+    const { options2 } = await import('$lib/display/configurations2');
+    const page = await openConfig('sorceress_spark');
+    const shown = shownOptions(page.container);
+    const check = shown.find((v) => options2[v]?.type === 'check')!;
+    const count = shown.find((v) => options2[v]?.type === 'count' && options2[v].defaultState === undefined)!;
+
+    await fireEvent.click(within(optionRow(page.container, check)!).getByRole('checkbox'));
+    await vi.waitFor(() => expect((get(poe2Build) as Poe2Calc | undefined)?.configInputs[check]).toBe(true));
+
+    const box = within(optionRow(page.container, count)!).getByRole<HTMLInputElement>('spinbutton');
+    await fireEvent.input(box, { target: { value: '5' } });
+    await fireEvent.blur(box);
+    await vi.waitFor(() => expect((get(poe2Build) as Poe2Calc | undefined)?.configInputs[count]).toBe(5));
+    await vi.waitFor(() => expect(box.value).toBe('5'));
+    await fireEvent.input(box, { target: { value: '' } });
+    await fireEvent.blur(box);
+    await vi.waitFor(() => expect((get(poe2Build) as Poe2Calc | undefined)?.configInputs).not.toHaveProperty(count));
+    expect(issued).toEqual([
+      `SetConfigOption(${JSON.stringify(check)},true)`,
+      `SetConfigOption(${JSON.stringify(count)},5)`,
+      `SetConfigOption(${JSON.stringify(count)},)`
+    ]);
   }, 120_000);
 
   it('switching the main skill recalculates the sidebar', async () => {
@@ -273,7 +355,7 @@ describe('the PoE2 Calcs page', () => {
   it("shows PoB-PoE2's per-hand ailment rows for a dual wielding attack", async () => {
     poe2Build.set(await worker2Instance.Open(await fixture('warrior_dual_mace.xml')));
     issued.length = 0;
-    const page = render(Poe2Page, { route: 'calcs' });
+    const page = render(AppCalcs);
     const bleed = await vi.waitFor(() => within(page.getByRole('region', { name: 'Calculations' })).getByRole('region', { name: 'Bleed' }), {
       timeout: 60_000
     });
@@ -284,12 +366,36 @@ describe('the PoE2 Calcs page', () => {
     expect(issued).toEqual(['CalcsPage()']);
   }, 120_000);
 
+  // CalcsTab.lua (PoB-PoE2) has no calculation of its own: its socket group and active skill are the sidebar's
+  it("picks the main group and active skill the sidebar's way, without PoE1's calculation mode", async () => {
+    poe2Build.set(await worker2Instance.Open(await fixture('sorceress_three_spells.xml')));
+    issued.length = 0;
+    const page = render(AppCalcs);
+    await vi.waitFor(() => within(page.getByRole('region', { name: 'Calculations' })).getByRole('region', { name: 'Life' }), { timeout: 60_000 });
+    const group = within(page.container).getByRole<HTMLSelectElement>('combobox', { name: 'Socket Group' });
+    const skill = within(page.container).getByRole<HTMLSelectElement>('combobox', { name: 'Active Skill' });
+    expect([...group.options].map((o) => o.text)).toEqual(['Spark, Fireball', 'Arc']);
+    expect([...skill.options].map((o) => o.text)).toEqual(['Spark', 'Fireball']);
+    expect(page.queryByRole('combobox', { name: 'Calculation Mode' })).toBeNull();
+    expect(page.queryByRole('button', { name: 'Mod Debug' })).toBeNull();
+
+    skill.value = '2';
+    await fireEvent.change(skill);
+    await vi.waitFor(() => expect(get(poe2Build)?.output.TotalDPS).toBe(32.76875));
+    group.value = '1';
+    await fireEvent.change(group);
+    await vi.waitFor(() => expect((get(poe2Build) as Poe2Calc | undefined)?.mainSocketGroup).toBe(2));
+    await vi.waitFor(() => expect(group.value).toBe('1'));
+    expect(issued.filter((c) => c !== 'CalcsPage()')).toEqual(['SetMainActiveSkill(2)', 'SetMainSocketGroup(2)']);
+    await vi.waitFor(() => expect(issued.filter((c) => c === 'CalcsPage()')).toHaveLength(3));
+  }, 120_000);
+
   it("shows PoB-PoE2's Life section cells and recalculates with the build", async () => {
     const { pobPlain } = await import('$lib/design/pob_text');
     const oracle = JSON.parse(await readFile(resolve(ORACLE, 'poe2_calcs_sorceress_spark.json'), 'utf8')) as { cells: Record<string, string> };
     poe2Build.set(await worker2Instance.Open(await fixture('sorceress_spark.xml')));
     issued.length = 0;
-    const page = render(Poe2Page, { route: 'calcs' });
+    const page = render(AppCalcs);
     const life = await vi.waitFor(() => within(page.getByRole('region', { name: 'Calculations' })).getByRole('region', { name: 'Life' }), { timeout: 60_000 });
     const row = (label: string) => [...life.querySelectorAll<HTMLElement>('[data-key]')].find((r) => r.textContent?.trim().startsWith(label));
     const cells = (r: HTMLElement | undefined) => [...(r?.querySelectorAll<HTMLElement>('.font-mono > span') ?? [])].map((c) => c.textContent?.trim());

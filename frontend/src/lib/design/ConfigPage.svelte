@@ -15,10 +15,8 @@
   import PobText from './PobText.svelte';
   import ConfigCustom from './ConfigCustom.svelte';
   import { pobPlain } from './pob_text';
-  import { configView, listIndex, INVALID, type ConfigFilter, type CustomOps, type Inputs, type OptionView } from './config';
-  import { optionTooltip } from '$lib/display/configurations';
+  import { configView, listIndex, poe1ConfigTable, INVALID, type ConfigFilter, type ConfigTable, type CustomOps, type Inputs, type OptionView } from './config';
   import type { ConfigValue } from '$lib/display/configurations';
-  import type { calculator } from '$lib/types';
   import type { CustomGroup } from './fixtures';
   import ImpactBlocks from './ImpactBlocks.svelte';
   import SetManager from './SetManager.svelte';
@@ -27,18 +25,21 @@
   import type { StatCompareSection } from '$lib/skill_tree/stat_compare';
 
   type Props = {
+    // the game's options table; PoE1's when absent
+    table?: ConfigTable;
     inputs: Inputs;
     placeholders: Record<string, number | string>;
-    relevance: calculator.ConfigRelevance;
+    relevance: unknown;
     sets: string[];
     activeSet: number;
     custom: CustomGroup[];
     customSelected: number;
-    customOps: CustomOps;
+    // absent: the build keeps no custom modifiers, and the panel is hidden
+    customOps?: CustomOps;
     filter: ConfigFilter;
     onset: (key: string, value: ConfigValue) => void;
     onunset?: (key: string) => void;
-    onreset: () => void;
+    onreset?: () => void;
     onconfigset?: (i: number) => void;
     /* ConfigOptions.lua:61-72 */
     output?: Record<string, number>;
@@ -48,6 +49,7 @@
     revision?: unknown;
   };
   let {
+    table = poe1ConfigTable,
     inputs,
     placeholders,
     relevance,
@@ -68,7 +70,7 @@
   }: Props = $props();
   let managing = $state(false);
 
-  const view = $derived(configView(inputs, placeholders, relevance, filter));
+  const view = $derived(configView(table, inputs, placeholders, relevance, filter));
   // ConfigTab.lua:988-989
   let searchBox = $state<HTMLInputElement>();
   const onwindowkey = (e: KeyboardEvent) => {
@@ -84,7 +86,7 @@
     [o.modified && '• modified from default', !o.relevant && 'does not affect this build', o.invalid && INVALID].filter(Boolean) as string[];
   // ConfigTab.lua:334-349
   const tipValue = (o: OptionView) => (o.v.type === 'list' && tip?.var === o.v.var && tip.entry !== undefined ? o.v.list[tip.entry]?.value : o.value);
-  const tooltipOf = (o: OptionView) => optionTooltip(o.v, tipValue(o) as ConfigValue, output);
+  const tooltipOf = (o: OptionView) => table.tooltip(o.v, tipValue(o) as ConfigValue, output);
   const canCompare = (o: OptionView) =>
     !!whatif && !o.invalid && (o.v.type === 'check' || (o.v.type === 'list' && tip?.var === o.v.var && tip.entry !== undefined && tipValue(o) !== o.value));
   const hasTip = (o: OptionView) => !!tooltipOf(o) || tipLines(o).length > 0 || canCompare(o);
@@ -193,18 +195,20 @@
   <label class="check-label gap-2 text-13"><Checkbox bind:checked={filter.showAll} /> Show options that don’t affect this build</label>
   <div class="grow max-phone:hidden"></div>
   <span class="note" aria-live="polite">{view.summary}</span>
-  <label class="field field-inline"
-    >Config set
-    <SetSelect
-      class="h-8.5 bg-surface-1"
-      disabled={(sets.length < 2 && !onconfigsets) || !onconfigset}
-      {sets}
-      value={activeSet}
-      manage="Manage config sets…"
-      onmanage={onconfigsets && (() => (managing = true))}
-      onchange={(i: number) => onconfigset?.(i)} />
-  </label>
-  <Button size="md" variant="ghost" class="px-2.5" onclick={onreset}>Reset to defaults</Button>
+  {#if onconfigset}
+    <label class="field field-inline"
+      >Config set
+      <SetSelect
+        class="h-8.5 bg-surface-1"
+        disabled={sets.length < 2 && !onconfigsets}
+        {sets}
+        value={activeSet}
+        manage="Manage config sets…"
+        onmanage={onconfigsets && (() => (managing = true))}
+        onchange={(i: number) => onconfigset?.(i)} />
+    </label>
+  {/if}
+  {#if onreset}<Button size="md" variant="ghost" class="px-2.5" onclick={onreset}>Reset to defaults</Button>{/if}
 </div>
 <div class="scroll flex grow flex-col gap-2.5">
   <OptionGroup title="Most used" count="the same options as in their sections below · edit either" class="mb-0 shrink-0">
@@ -221,7 +225,7 @@
           ontoggle={() => (collapsed[s.name] = !collapsed[s.name])}
           count={`${s.total} options${s.modified ? ` · ${s.modified} modified` : ''}`}
           more={!filter.showAll && s.hidden ? `+ ${s.hidden} more (hidden: only shown when the build uses them)` : undefined}>
-          {#each s.rows as r, i (r.kind === 'option' ? r.v.var : `h${i}`)}
+          {#each s.rows as r, i (r.kind === 'option' ? r.v : `h${i}`)}
             {#if r.kind === 'heading'}
               <h4 class="border-b border-surface-2 px-2.5 pt-1.5 pb-1 text-11 font-semibold text-text-2"><PobText text={r.label} /></h4>
             {:else}
@@ -232,7 +236,7 @@
       {/if}
     {/each}
   </div>
-  <ConfigCustom groups={custom} selected={customSelected} ops={customOps} {revision} />
+  {#if customOps}<ConfigCustom groups={custom} selected={customSelected} ops={customOps} {revision} />{/if}
 </div>
 
 {#if tip && tipOption}

@@ -5,10 +5,14 @@ import {
   isRelevant,
   isShowAllExcluded,
   isVariable,
+  optionTooltip,
   relevanceSets,
   reverseConfigOptions,
   type AllVarTypes,
-  type ConfigValue
+  type ConfigLabel,
+  type ConfigSection,
+  type ConfigValue,
+  type RelevanceSets
 } from '$lib/display/configurations';
 import type { calculator } from '$lib/types';
 import type { StatCompareSection } from '$lib/skill_tree/stat_compare';
@@ -29,6 +33,33 @@ export const MOST_USED = [
   'conditionFullLife'
 ];
 
+// a game's options table and the ConfigTab rules that show it; rel is what relevanceSets makes of the calculation's
+// relevance report
+export type ConfigTable<Rel = unknown, Report = unknown> = {
+  sections: ConfigSection[];
+  options: Record<string, AllVarTypes>;
+  relevanceSets(report: Report): Rel;
+  isRelevant(row: AllVarTypes | ConfigLabel, inputs: Inputs, rel: Rel): boolean;
+  isModified(v: AllVarTypes, inputs: Inputs, placeholders: Record<string, number | string>): boolean;
+  isShowAllExcluded(row: AllVarTypes | ConfigLabel): boolean;
+  // the value the control shows, and whether it is the build's own
+  value(v: AllVarTypes, inputs: Inputs): ConfigValue | undefined;
+  isSet(v: AllVarTypes, inputs: Inputs): boolean;
+  tooltip(v: AllVarTypes, value: ConfigValue | undefined, output?: Record<string, number>): string | undefined;
+};
+
+export const poe1ConfigTable: ConfigTable<RelevanceSets, calculator.ConfigRelevance> = {
+  sections: configurations,
+  options: reverseConfigOptions,
+  relevanceSets: (r) => relevanceSets(r)!,
+  isRelevant,
+  isModified,
+  isShowAllExcluded,
+  value: (v, inputs) => inputs[v.var] ?? defaultValue(v),
+  isSet: (v, inputs) => inputs[v.var] !== undefined,
+  tooltip: optionTooltip
+};
+
 export const INVALID = 'This config option is conditional with missing source and is invalid.';
 
 export type OptionView = {
@@ -48,18 +79,24 @@ export type SectionView = { name: string; total: number; modified: number; hidde
 
 export type ConfigFilter = { q: string; showAll: boolean; modOnly: boolean };
 
-export function configView(inputs: Inputs, placeholders: Record<string, number | string>, relevance: calculator.ConfigRelevance, f: ConfigFilter) {
-  const rel = relevanceSets(relevance)!;
+export function configView<Rel, Report>(
+  t: ConfigTable<Rel, Report>,
+  inputs: Inputs,
+  placeholders: Record<string, number | string>,
+  relevance: Report,
+  f: ConfigFilter
+) {
+  const rel = t.relevanceSets(relevance);
   const needle = f.q.trim().toLowerCase();
   const option = (v: AllVarTypes): OptionView => {
-    const modified = isModified(v, inputs, placeholders);
-    const relevant = isRelevant(v, inputs, rel);
+    const modified = t.isModified(v, inputs, placeholders);
+    const relevant = t.isRelevant(v, inputs, rel);
     const ph = placeholders[v.var] ?? v.defaultPlaceholderState;
     return {
       kind: 'option',
       v,
-      value: inputs[v.var] ?? defaultValue(v),
-      set: inputs[v.var] !== undefined,
+      value: t.value(v, inputs),
+      set: t.isSet(v, inputs),
       placeholder: ph === undefined ? undefined : String(ph),
       relevant,
       modified,
@@ -70,7 +107,7 @@ export function configView(inputs: Inputs, placeholders: Record<string, number |
   let modifiedAll = 0;
   let total = 0;
   const sections: SectionView[] = [];
-  for (const s of configurations) {
+  for (const s of t.sections) {
     if (!s.variables.length) continue;
     const rows: (OptionView | HeadingView)[] = [];
     let modified = 0;
@@ -78,14 +115,14 @@ export function configView(inputs: Inputs, placeholders: Record<string, number |
     let heading: HeadingView | undefined;
     for (const row of s.rows) {
       if (!isVariable(row)) {
-        heading = isRelevant(row, inputs, rel) || f.showAll ? { kind: 'heading', label: row.label } : undefined;
+        heading = t.isRelevant(row, inputs, rel) || f.showAll ? { kind: 'heading', label: row.label } : undefined;
         continue;
       }
       total++;
       const o = option(row);
       if (o.modified) modified++;
       // ConfigTab.lua:320-332
-      const shownRaw = o.relevant || (f.showAll && !isShowAllExcluded(row));
+      const shownRaw = o.relevant || (f.showAll && !t.isShowAllExcluded(row));
       o.invalid = o.modified && !shownRaw;
       const visible = shownRaw || (o.invalid && !row.hideIfInvalid);
       if (!visible) hidden++;
@@ -98,7 +135,7 @@ export function configView(inputs: Inputs, placeholders: Record<string, number |
     shown += rows.filter((r) => r.kind === 'option').length;
     sections.push({ name: s.name, total: s.variables.length, modified, hidden, rows });
   }
-  const most = MOST_USED.map((k) => reverseConfigOptions[k])
+  const most = MOST_USED.map((k) => t.options[k])
     .filter(Boolean)
     .map(option);
   return { sections, most, summary: `${shown} shown · ${modifiedAll} modified · ${total} in total` };

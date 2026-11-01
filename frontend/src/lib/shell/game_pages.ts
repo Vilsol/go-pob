@@ -12,8 +12,8 @@ export const GAME_PAGES: Record<string, GamePage> = {
   tree: { label: 'Tree', poe1: 'route', poe2: poe2Page },
   skills: { label: 'Skills', poe1: 'route', poe2: poe2Page },
   items: { label: 'Items', poe1: 'route', poe2: poe2Page },
-  calcs: { label: 'Calcs', poe1: 'route', poe2: poe2Page },
-  configuration: { label: 'Config', poe1: 'route', poe2: poe2Page },
+  calcs: { label: 'Calcs', poe1: 'route', poe2: 'route' },
+  configuration: { label: 'Config', poe1: 'route', poe2: 'route' },
   // the PoE2 calculator keeps no notes, party, compare or import/export state yet
   notes: { label: 'Notes', poe1: 'route' },
   party: { label: 'Party', poe1: 'route' },

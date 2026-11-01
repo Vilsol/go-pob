@@ -1,63 +1,67 @@
 <script lang="ts">
   import EmptyState from '$lib/design/EmptyState.svelte';
   import { resource } from 'runed';
-  import { buildRevision, currentBuild, outputs } from '$lib/global.js';
-  import { syncWrap } from '$lib/go/worker';
+  import { currentEngine } from '$lib/go/engine';
   import { logError } from '$lib/utils';
   import type { ConfigValue } from '$lib/display/configurations';
   import { cellsToText, modSummary, textToCells, type TextCells } from '$lib/display/custom_mods';
-  import type { calculator, exposition, pob } from '$lib/types';
+  import type { exposition, pob } from '$lib/types';
   import ConfigPage from '$lib/design/ConfigPage.svelte';
   import Dialog from '$lib/design/Dialog.svelte';
   import DialogActions from '$lib/design/DialogActions.svelte';
-  import type { ConfigFilter, CustomOps, Inputs } from '$lib/design/config';
+  import type { ConfigFilter, ConfigTable, CustomOps } from '$lib/design/config';
   import type { CustomGroup } from '$lib/design/fixtures';
   import type { SetListOp } from '$lib/design/set_list';
 
   // ConfigTab.lua:15-86
 
+  const engine = currentEngine().config;
+  const { revision, relevance, output } = engine;
+  const calculated = currentEngine().calculated;
+  const custom_ = engine.custom;
+  const failed = currentEngine().error;
+
+  // kept out of the resource's state, which would proxy the whole table
+  let table = $state.raw<ConfigTable>();
   const config = resource(
-    () => [$buildRevision, $currentBuild === undefined] as const,
+    () => [$revision] as const,
     async () => {
-      const b = $currentBuild;
-      if (!b || !syncWrap) return undefined;
-      const [inputs, placeholders, cfg] = await Promise.all([syncWrap.GetAllConfigOptions(), syncWrap.GetConfigPlaceholders(), syncWrap.GetConfigSets()]);
+      const read = engine.inputs();
+      if (!read) return undefined;
+      const [inputs, placeholders, cfg, t] = await Promise.all([read, engine.placeholders(), engine.sets?.read(), engine.table()]);
+      if (!inputs) return undefined;
+      table = t;
       // ConfigSetListControl.lua:73
-      const sets = cfg.sets.map((s) => s.title || 'Default');
-      return { inputs: inputs as Inputs, placeholders, sets, setIds: cfg.sets.map((s) => s.id), activeSet: cfg.active };
+      const sets = cfg?.sets.map((s) => s.title || 'Default') ?? [];
+      return { inputs, placeholders: placeholders ?? {}, sets, setIds: cfg?.sets.map((s) => s.id) ?? [], activeSet: cfg?.active ?? 1 };
     }
   );
   const inputs = $derived(config.current?.inputs ?? {});
-
-  const relevance = $derived($outputs?.ConfigRelevance ?? ({} as calculator.ConfigRelevance));
 
   let filter = $state<ConfigFilter>({ q: '', showAll: false, modOnly: false });
 
   // ConfigOptions.lua:1457-1589, 2246-2286
   const refreshPlaceholders = async () => {
-    const placeholders = await syncWrap?.GetConfigPlaceholders();
+    const placeholders = await engine.placeholders();
     if (placeholders && config.current) config.mutate({ ...config.current, placeholders });
   };
   const onset = (key: string, value: ConfigValue) => {
     if (inputs[key] === value) return;
     if (config.current) config.mutate({ ...config.current, inputs: { ...inputs, [key]: value } });
-    syncWrap?.SetConfigOption(key, value).then(refreshPlaceholders).catch(logError);
+    engine.set(key, value)?.then(refreshPlaceholders).catch(logError);
   };
   const onunset = (key: string) => {
     if (!config.current || inputs[key] === undefined) return;
     const rest = { ...inputs };
     delete rest[key];
     config.mutate({ ...config.current, inputs: rest });
-    syncWrap
-      ?.SetConfigOption(key, null as unknown as number)
-      .then(refreshPlaceholders)
-      .catch(logError);
+    engine.set(key, undefined)?.then(refreshPlaceholders).catch(logError);
   };
 
   let confirming = $state(false);
   const reset = async () => {
     confirming = false;
-    await syncWrap?.ResetConfigOptions();
+    await engine.reset?.();
     await config.refetch();
   };
 
@@ -72,18 +76,20 @@
   let selected = $state(0);
 
   const parseAll = async (targets: Cell[]) => {
-    if (!syncWrap || targets.length === 0) return;
-    const verdicts = await syncWrap.ParseModLines(targets.map((c) => c.text));
+    if (!custom_ || targets.length === 0) return;
+    const verdicts = await custom_.parse(targets.map((c) => c.text));
+    if (!verdicts) return;
     targets.forEach((c, i) => {
       c.line = verdicts[i];
     });
   };
 
   const customBlocks = resource(
-    () => [$buildRevision, $currentBuild === undefined] as const,
+    () => [$revision] as const,
     async () => {
-      if (!$currentBuild || !syncWrap) return;
-      groups = (await syncWrap.GetCustomModifierBlocks()).map(toGroup);
+      const read = custom_?.read();
+      if (!read) return;
+      groups = (await read).map(toGroup);
       selected = Math.min(selected, Math.max(0, groups.length - 1));
       await parseAll(groups.flatMap((g) => g.cells));
     }
@@ -92,19 +98,20 @@
   // ConfigTab.lua:152-155
   const onconfigset = async (i: number) => {
     const id = config.current?.setIds[i];
-    if (id === undefined || !syncWrap) return;
-    await syncWrap.SetActiveConfigSet(id);
+    if (id === undefined || !engine.sets) return;
+    await engine.sets.select(id);
     await Promise.all([config.refetch(), customBlocks.refetch()]);
   };
 
   // ConfigSetListControl.lua:13-110
   const onconfigsets = async (op: SetListOp) => {
     const ids = config.current?.setIds;
-    if (!ids || !syncWrap) return;
-    if (op.op === 'new') await syncWrap.EditConfigSets(op);
-    else if (op.op === 'move') await syncWrap.EditConfigSets(op);
-    else if (op.op === 'delete') await syncWrap.EditConfigSets({ op: 'delete', id: ids[op.index] });
-    else await syncWrap.EditConfigSets({ op: op.op, id: ids[op.index], title: op.title });
+    const sets = engine.sets;
+    if (!ids || !sets) return;
+    if (op.op === 'new') await sets.edit(op);
+    else if (op.op === 'move') await sets.edit(op);
+    else if (op.op === 'delete') await sets.edit({ op: 'delete', id: ids[op.index] });
+    else await sets.edit({ op: op.op, id: ids[op.index], title: op.title });
     await Promise.all([config.refetch(), customBlocks.refetch()]);
   };
 
@@ -114,7 +121,7 @@
       Enabled: g.enabled ? 'true' : 'false',
       Text: cellsToText({ ...g.shape, cells: g.cells.map((c) => c.text) })
     }));
-    syncWrap?.SetCustomModifierBlocks(blocks).catch(logError);
+    custom_?.write(blocks)?.catch(logError);
   };
 
   const K = { parsed: 'ok', unsupported: 'bad', comment: 'comment' } as const;
@@ -131,7 +138,7 @@
   );
 
   const ops: CustomOps = {
-    togglewhatif: async (g) => syncWrap?.CustomModGroupCompare(g),
+    togglewhatif: async (g) => custom_?.compare(g),
     onselect: (g) => (selected = g),
     ontoggle: (g, on) => {
       groups[g].enabled = on;
@@ -156,7 +163,7 @@
     oncell: (g, c, text) => {
       const cell = groups[g].cells[c];
       cell.draft = text;
-      void syncWrap?.ParseModLines([text]).then(([verdict]) => {
+      void custom_?.parse([text])?.then(([verdict]) => {
         if ((cell.draft ?? cell.text) === text) cell.line = verdict;
       });
     },
@@ -186,14 +193,14 @@
     },
     // ConfigTab.lua:1524-1536
     modbrowser: {
-      list: async (search) => (await syncWrap?.ModBrowserList(search)) ?? [],
-      sources: async (line) => (await syncWrap?.ModBrowserSources(line)) ?? [],
+      list: async (search) => (await custom_?.browser.list(search)) ?? [],
+      sources: async (line) => (await custom_?.browser.sources(line)) ?? [],
       onadd: (g, line) => {
         const cells = groups[g].cells;
         const last = cells[cells.length - 1];
         const cell = last && last.text === '' && last.draft === undefined ? last : cells[cells.push({ text: '' }) - 1];
         cell.text = line;
-        void syncWrap?.ParseModLines([line]).then(([verdict]) => {
+        void custom_?.parse([line])?.then(([verdict]) => {
           if (cell.text === line) cell.line = verdict;
         });
         write();
@@ -202,25 +209,27 @@
   };
 </script>
 
-{#if config.current}
+{#if $failed}<p class="m-0 text-14" role="alert">{$failed}</p>{/if}
+{#if config.current && table}
   <ConfigPage
+    {table}
     {inputs}
     placeholders={config.current.placeholders}
-    {relevance}
+    relevance={$relevance}
     sets={config.current.sets.length ? config.current.sets : ['Default']}
     activeSet={config.current.activeSet}
     {custom}
     customSelected={selected}
-    customOps={ops}
+    customOps={custom_ && ops}
     bind:filter
     {onset}
     {onunset}
-    onconfigset={(i: number) => void onconfigset(i).catch(logError)}
-    onconfigsets={(op: SetListOp) => void onconfigsets(op).catch(logError)}
-    whatif={async (key: string, value: ConfigValue) => syncWrap?.ConfigCompare(key, value)}
-    output={$outputs?.Output}
-    revision={$outputs}
-    onreset={() => (confirming = true)} />
+    onconfigset={engine.sets && ((i: number) => void onconfigset(i).catch(logError))}
+    onconfigsets={engine.sets && ((op: SetListOp) => void onconfigsets(op).catch(logError))}
+    whatif={engine.compare && (async (key: string, value: ConfigValue) => engine.compare?.(key, value))}
+    output={$output}
+    revision={$calculated}
+    onreset={engine.reset && (() => (confirming = true))} />
 {:else}
   <EmptyState busy text="Loading the configuration…" />
 {/if}

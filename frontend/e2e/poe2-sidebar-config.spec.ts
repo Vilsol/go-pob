@@ -33,13 +33,17 @@ test('with the PoE2 flag on, editing a config option recalculates the PoE2 sideb
   await expect(poe2Stat(page, 'TotalDPS')).toHaveText('24.9');
 
   await poe2Nav(page, 'Config').click();
-  const penalty = page.locator('[data-config="resistancePenalty"]');
-  await expect(penalty).toHaveValue('6');
-  await penalty.selectOption({ label: 'Act 1 (0%)' });
+  const penalty = page.locator('[data-var="resistancePenalty"]').getByRole('combobox');
+  const choose = async (label: string) => {
+    await penalty.click();
+    await page.getByRole('listbox').getByRole('option', { name: label, exact: true }).click();
+  };
+  await expect(penalty).toHaveText('Endgame (-60%)');
+  await choose('Act 1 (0%)');
   await expect(poe2Stat(page, 'FireResist')).toHaveText('45%');
   await expect(poe2Stat(page, 'LightningResist')).toHaveText('10%');
 
-  await penalty.selectOption({ label: 'Endgame (-60%)' });
+  await choose('Endgame (-60%)');
   await expect(poe2Stat(page, 'FireResist')).toHaveText('-15%');
   expect(errors).toEqual([]);
 });
