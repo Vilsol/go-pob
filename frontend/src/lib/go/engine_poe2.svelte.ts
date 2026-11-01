@@ -133,7 +133,7 @@ const calcsTab2 = readable<CalcsTabView | undefined>(undefined, (set) => {
     if (!at || !page) return;
     const [{ calcsView2 }, { calcSections2 }] = await code;
     if (at !== calc) return;
-    const output: Record<string, unknown> = { ...at.output, ...page.flags };
+    const output: Record<string, unknown> = { ...at.output, ...page.flags, ...page.strings };
     if (page.mainHand) output.MainHand = page.mainHand;
     if (page.offHand) output.OffHand = page.offHand;
     const group = mainGroupOf(at);
