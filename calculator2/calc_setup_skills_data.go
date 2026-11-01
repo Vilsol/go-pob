@@ -3,12 +3,12 @@ package calculator2
 import (
 	"context"
 	"fmt"
-	"reflect"
 	"sort"
 	"sync"
 
 	"github.com/Vilsol/go-pob-data/loader"
 	game "github.com/Vilsol/go-pob-data/poe2"
+	"github.com/tinylib/msgp/msgp"
 
 	"github.com/Vilsol/go-pob/data/assetcache"
 	"github.com/Vilsol/go-pob/data/poe2"
@@ -28,37 +28,44 @@ type skillData struct {
 	characterMeleeSkills map[string]map[string][]*poe2skills.Gem
 }
 
-// prunedTables are the largest tables the game data reads, by the go-pob-data row types that decode them.
-var prunedTables = map[string][]reflect.Type{
-	loader.JSONTableURL(skillDataVersion, game.ModsTable):                          {reflect.TypeFor[game.Mod]()},
-	loader.JSONTableURL(skillDataVersion, game.StatsTable):                         {reflect.TypeFor[game.Stat]()},
-	loader.JSONTableURL(skillDataVersion, game.GrantedEffectStatSetsPerLevelTable): {reflect.TypeFor[game.GrantedEffectStatSetPerLevel]()},
-	loader.JSONTableURL(skillDataVersion, game.GrantedEffectsTable):                {reflect.TypeFor[game.GrantedEffect]()},
-	loader.JSONTableURL(skillDataVersion, game.GrantedEffectsPerLevelTable):        {reflect.TypeFor[game.GrantedEffectPerLevel]()},
-	loader.JSONTableURL(skillDataVersion, game.MonsterVarietiesTable):              {reflect.TypeFor[game.MonsterVariety]()},
-	loader.JSONTableURL(skillDataVersion, game.GrantedEffectStatSetsTable):         {reflect.TypeFor[game.GrantedEffectStatSet]()},
-	loader.JSONTableURL(skillDataVersion, game.BaseItemTypesTable):                 {reflect.TypeFor[game.BaseItemType]()},
-	loader.JSONTableURL(skillDataVersion, game.ActiveSkillsTable):                  {reflect.TypeFor[game.ActiveSkill]()},
-	loader.JSONTableURL(skillDataVersion, game.FlavourTextTable):                   {reflect.TypeFor[game.FlavourText]()},
-}
-
 // gameDataCache is the asset cache the game data loads through.
 func gameDataCache() loader.AssetCache {
-	return assetcache.Columns{AssetCache: assetcache.AssetLoaderWrapper{Storage: storage.Get()}, Rows: prunedTables}
+	return assetcache.AssetLoaderWrapper{Storage: storage.Get()}
+}
+
+// gameDataContext reads the .min assets of the tables go-pob-data's field list names.
+func gameDataContext() context.Context {
+	return loader.WithVariants(context.Background(), game.MinVariant)
+}
+
+// loadRows is loader.LoadRaw's rows as values.
+func loadRows[T any, PT interface {
+	*T
+	msgp.Decodable
+}](ctx context.Context, name string, cache loader.AssetCache) ([]T, error) {
+	rows, err := loader.LoadRaw[PT](ctx, skillDataVersion, name, nil, cache)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", name, err)
+	}
+	out := make([]T, len(rows))
+	for i, row := range rows {
+		out[i] = *row
+	}
+	return out, nil
 }
 
 var loadSkillData = sync.OnceValues(func() (*skillData, error) {
-	ctx := context.Background()
+	ctx := gameDataContext()
 	cache := gameDataCache()
 	tables, err := game.LoadSkillTables(ctx, skillDataVersion, cache)
 	if err != nil {
 		return nil, fmt.Errorf("skill tables: %w", err)
 	}
-	flavourText, err := loader.LoadJSONTable[game.FlavourText](ctx, skillDataVersion, game.FlavourTextTable, cache)
+	flavourText, err := loadRows[game.FlavourText](ctx, game.FlavourTextTable, cache)
 	if err != nil {
 		return nil, fmt.Errorf("flavour text: %w", err)
 	}
-	melee, err := loader.LoadJSONTable[game.CharacterMeleeSkill](ctx, skillDataVersion, game.CharacterMeleeSkillsTable, cache)
+	melee, err := loadRows[game.CharacterMeleeSkill](ctx, game.CharacterMeleeSkillsTable, cache)
 	if err != nil {
 		return nil, fmt.Errorf("character melee skills: %w", err)
 	}

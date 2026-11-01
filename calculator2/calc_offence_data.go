@@ -1,10 +1,8 @@
 package calculator2
 
 import (
-	"context"
 	"sync"
 
-	"github.com/Vilsol/go-pob-data/loader"
 	game "github.com/Vilsol/go-pob-data/poe2"
 )
 
@@ -12,7 +10,7 @@ import (
 //
 //pob2:block:src/Modules/Data.lua:721-729
 var costDivisors = sync.OnceValues(func() (map[string]float64, error) {
-	rows, err := loader.LoadJSONTable[game.CostType](context.Background(), skillDataVersion, game.CostTypesTable, gameDataCache())
+	rows, err := loadRows[game.CostType](gameDataContext(), game.CostTypesTable, gameDataCache())
 	if err != nil {
 		return nil, err
 	}

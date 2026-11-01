@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/Vilsol/go-pob-data/fields"
+	"github.com/Vilsol/go-pob-data/poe2"
 )
 
 const (
@@ -17,10 +18,14 @@ const (
 	KeepAll  = "*"
 )
 
-func Published(version string) (*List, error) {
-	pub, ok := fields.For(version)
+func Published(game Game, version string) (*List, error) {
+	lookup := fields.For
+	if game.RowPkg == Poe2Pkg {
+		lookup = poe2.FieldList
+	}
+	pub, ok := lookup(version)
 	if !ok {
-		return nil, fmt.Errorf("go-pob-data publishes no field list for %s", version)
+		return nil, fmt.Errorf("go-pob-data publishes no %s field list for %s", game.Name, version)
 	}
 	l := &List{Format: pub.Format, DataModule: pub.DataModule, Version: pub.Version, Assets: map[string]AssetList{}}
 	for path, a := range pub.Assets {

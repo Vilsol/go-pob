@@ -1,6 +1,6 @@
 package assetcache
 
-const DataModuleVersion = "v0.5.11"
+const DataModuleVersion = "v0.5.12"
 
 const DataModulePath = "github.com/Vilsol/go-pob-data"
 

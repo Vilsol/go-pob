@@ -157,9 +157,13 @@ func Load(ctx context.Context, version string, cache loader.AssetCache) (*Skills
 	if err != nil {
 		return nil, fmt.Errorf("skill tables: %w", err)
 	}
-	flavourText, err := loader.LoadJSONTable[game.FlavourText](ctx, version, game.FlavourTextTable, cache)
+	rows, err := loader.LoadRaw[*game.FlavourText](ctx, version, game.FlavourTextTable, nil, cache)
 	if err != nil {
 		return nil, fmt.Errorf("flavour text: %w", err)
+	}
+	flavourText := make([]game.FlavourText, len(rows))
+	for i, row := range rows {
+		flavourText[i] = *row
 	}
 	return Build(tables, flavourText), nil
 }

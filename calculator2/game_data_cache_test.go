@@ -2,100 +2,69 @@ package calculator2
 
 import (
 	"context"
-	"fmt"
 	"reflect"
-	"strings"
 	"testing"
 
-	"github.com/Vilsol/go-pob-data/loader"
 	game "github.com/Vilsol/go-pob-data/poe2"
 
-	"github.com/Vilsol/go-pob/data/assetcache"
-	"github.com/Vilsol/go-pob/storage"
+	"github.com/Vilsol/go-pob/data/poe2minions"
+	"github.com/Vilsol/go-pob/data/poe2skills"
 )
 
-// freshPruned reads the originals from the asset cache and keeps the pruned copies in memory, so every table is
-// pruned by the code under test.
-type freshPruned struct {
-	loader.AssetCache
-	pruned map[string][]byte
-}
+// The .min assets zero only what the game data never reads, so it builds the same from them as from the full assets.
+func TestMinTablesBuildAsTheFullTables(t *testing.T) {
+	full, minCtx := context.Background(), gameDataContext()
+	cache := gameDataCache()
 
-func isPrunedKey(key string) bool { return strings.Contains(key, "#columns-") }
+	for _, table := range []string{game.GrantedEffectsTable, game.MonsterVarietiesTable, game.FlavourTextTable} {
+		if _, ok := game.MinVariant(skillDataVersion, "raw/"+table); !ok {
+			t.Fatalf("no .min of %s", table)
+		}
+	}
 
-func (f freshPruned) Get(key string) ([]byte, error) {
-	if isPrunedKey(key) {
-		return f.pruned[key], nil
+	build := func(ctx context.Context) (*poe2skills.Skills, map[string]map[string][]string, []game.CostType) {
+		t.Helper()
+		tables, err := game.LoadSkillTables(ctx, skillDataVersion, cache)
+		if err != nil {
+			t.Fatal(err)
+		}
+		flavourText, err := loadRows[game.FlavourText](ctx, game.FlavourTextTable, cache)
+		if err != nil {
+			t.Fatal(err)
+		}
+		melee, err := loadRows[game.CharacterMeleeSkill](ctx, game.CharacterMeleeSkillsTable, cache)
+		if err != nil {
+			t.Fatal(err)
+		}
+		costs, err := loadRows[game.CostType](ctx, game.CostTypesTable, cache)
+		if err != nil {
+			t.Fatal(err)
+		}
+		return poe2skills.Build(tables, flavourText), tables.CharacterMeleeSkills(melee), costs
 	}
-	b, err := f.AssetCache.Get(key)
-	if err != nil {
-		return nil, fmt.Errorf("%s: %w", key, err)
-	}
-	return b, nil
-}
-
-func (f freshPruned) Set(key string, value []byte) error {
-	if isPrunedKey(key) {
-		f.pruned[key] = value
-		return nil
-	}
-	if err := f.AssetCache.Set(key, value); err != nil {
-		return fmt.Errorf("%s: %w", key, err)
-	}
-	return nil
-}
-
-func (f freshPruned) Exists(key string) bool {
-	if isPrunedKey(key) {
-		_, ok := f.pruned[key]
-		return ok
-	}
-	return f.AssetCache.Exists(key)
-}
-
-func TestPrunedTablesDecodeAsTheOriginals(t *testing.T) {
-	ctx := context.Background()
-	original := assetcache.AssetLoaderWrapper{Storage: storage.Get()}
-	fresh := freshPruned{AssetCache: original, pruned: map[string][]byte{}}
-	pruned := assetcache.Columns{AssetCache: fresh, Rows: prunedTables}
-
-	wantSkills, err := game.LoadSkillTables(ctx, skillDataVersion, original)
-	if err != nil {
-		t.Fatal(err)
-	}
-	gotSkills, err := game.LoadSkillTables(ctx, skillDataVersion, pruned)
-	if err != nil {
-		t.Fatal(err)
-	}
+	wantSkills, wantMelee, wantCosts := build(full)
+	gotSkills, gotMelee, gotCosts := build(minCtx)
 	if !reflect.DeepEqual(gotSkills, wantSkills) {
-		t.Error("the skill tables decode differently from their pruned copies")
+		t.Error("the skills build differently from the .min tables")
+	}
+	if !reflect.DeepEqual(gotMelee, wantMelee) {
+		t.Error("characterMeleeSkills builds differently from the .min tables")
+	}
+	for i := range wantCosts {
+		if gotCosts[i].ID != wantCosts[i].ID || gotCosts[i].Divisor != wantCosts[i].Divisor {
+			t.Errorf("cost type %d reads differently from the .min table", i)
+		}
 	}
 
-	wantMinions, err := game.LoadMinionTables(ctx, skillDataVersion, original)
+	wantMinions, err := poe2minions.Load(full, skillDataVersion, cache)
 	if err != nil {
 		t.Fatal(err)
 	}
-	gotMinions, err := game.LoadMinionTables(ctx, skillDataVersion, pruned)
+	gotMinions, err := poe2minions.Load(minCtx, skillDataVersion, cache)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !reflect.DeepEqual(gotMinions, wantMinions) {
-		t.Error("the minion tables decode differently from their pruned copies")
-	}
-
-	wantFlavour, err := loader.LoadJSONTable[game.FlavourText](ctx, skillDataVersion, game.FlavourTextTable, original)
-	if err != nil {
-		t.Fatal(err)
-	}
-	gotFlavour, err := loader.LoadJSONTable[game.FlavourText](ctx, skillDataVersion, game.FlavourTextTable, pruned)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !reflect.DeepEqual(gotFlavour, wantFlavour) {
-		t.Error("the flavour text decodes differently from its pruned copy")
-	}
-
-	if len(fresh.pruned) != len(prunedTables) {
-		t.Errorf("%d of the %d pruned tables were read pruned", len(fresh.pruned), len(prunedTables))
+	if len(wantMinions) == 0 || !reflect.DeepEqual(gotMinions, wantMinions) {
+		t.Errorf("the minions build differently from the .min tables (%d entries)", len(wantMinions))
 	}
 }

@@ -1,7 +1,6 @@
 package calculator2
 
 import (
-	"context"
 	"math"
 	"slices"
 	"strings"
@@ -30,7 +29,7 @@ type Minion struct {
 
 // loadMinionData is data.minions, loaded once from go-pob-data and the templates.
 var loadMinionData = sync.OnceValues(func() (poe2minions.Minions, error) {
-	return poe2minions.Load(context.Background(), skillDataVersion, gameDataCache())
+	return poe2minions.Load(gameDataContext(), skillDataVersion, gameDataCache())
 })
 
 // minionData is data.minions; a failed load leaves it empty, so no minion is created.

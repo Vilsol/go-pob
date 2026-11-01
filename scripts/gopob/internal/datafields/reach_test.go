@@ -67,7 +67,7 @@ func TestOnlyReachableDataReadsCount(t *testing.T) {
 		{"reflect_test", nil},
 	} {
 		t.Run("variant="+tc.variant, func(t *testing.T) {
-			res, err := analyze(reachFixture(t, tc.variant), nil)
+			res, err := analyze(reachFixture(t, tc.variant), PoE1, nil)
 			if err != nil {
 				t.Fatal(err)
 			}

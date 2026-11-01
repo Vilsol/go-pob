@@ -7,6 +7,7 @@ import (
 	"go/types"
 	"os"
 	"path/filepath"
+	"slices"
 	"sort"
 	"strings"
 
@@ -16,22 +17,65 @@ import (
 )
 
 const (
-	ModulePath    = "github.com/Vilsol/go-pob"
-	DataModule    = "github.com/Vilsol/go-pob-data"
-	RawPkg        = DataModule + "/raw"
-	loaderPkg     = DataModule + "/loader"
-	generatedFile = "raw_gen.go"
-	ourRawPkg     = ModulePath + "/data/raw"
-	cacheNsPkg    = ModulePath + "/data/assetcache"
-	selfPkg       = ModulePath + "/scripts/gopob/internal/datafields"
-	generatorPkg  = ModulePath + "/scripts/gamedatadump"
+	ModulePath   = "github.com/Vilsol/go-pob"
+	DataModule   = "github.com/Vilsol/go-pob-data"
+	RawPkg       = DataModule + "/raw"
+	Poe2Pkg      = DataModule + "/poe2"
+	loaderPkg    = DataModule + "/loader"
+	ourRawPkg    = ModulePath + "/data/raw"
+	cacheNsPkg   = ModulePath + "/data/assetcache"
+	selfPkg      = ModulePath + "/scripts/gopob/internal/datafields"
+	generatorPkg = ModulePath + "/scripts/gamedatadump"
 )
 
-var DataPackages = []string{RawPkg, DataModule + "/poe", loaderPkg, DataModule + "/utils", DataModule + "/fields", DataModule + "/poe2"}
+var DataPackages = []string{RawPkg, DataModule + "/poe", loaderPkg, DataModule + "/utils", DataModule + "/fields", Poe2Pkg}
 
-var BuildConfigs = []BuildConfig{
-	{Name: "native", Patterns: []string{"./..."}},
-	{Name: "js/wasm", Env: []string{"GOOS=js", "GOARCH=wasm"}, Closure: "./wasm/..."},
+// Game is one game's row package, the go-pob const naming its data version, and the builds that read it.
+type Game struct {
+	Name          string
+	RowPkg        string
+	GeneratedFile string
+	VersionPkg    string
+	VersionConst  string
+	Translations  bool
+	Configs       []BuildConfig
+}
+
+var PoE1 = Game{
+	Name:          "poe1",
+	RowPkg:        RawPkg,
+	GeneratedFile: "raw_gen.go",
+	VersionPkg:    ourRawPkg,
+	VersionConst:  "DefaultVersion",
+	Translations:  true,
+	Configs: []BuildConfig{
+		{Name: "native", Patterns: []string{"./..."}},
+		{Name: "js/wasm", Env: []string{"GOOS=js", "GOARCH=wasm"}, Closure: "./wasm/..."},
+	},
+}
+
+var PoE2 = Game{
+	Name:          "poe2",
+	RowPkg:        Poe2Pkg,
+	GeneratedFile: "poe2_gen.go",
+	VersionPkg:    ModulePath + "/calculator2",
+	VersionConst:  "skillDataVersion",
+	Configs: []BuildConfig{
+		{Name: "native", Patterns: []string{"./..."}},
+		{Name: "js/wasm", Env: []string{"GOOS=js", "GOARCH=wasm"}, Closure: "./wasm2/..."},
+	},
+}
+
+var Games = []Game{PoE1, PoE2}
+
+// GameNamed is the Game called name.
+func GameNamed(name string) (Game, bool) {
+	for _, g := range Games {
+		if g.Name == name {
+			return g, true
+		}
+	}
+	return Game{}, false
 }
 
 type BuildConfig struct {
@@ -94,6 +138,11 @@ type allowEntry struct {
 	fn     string
 	callee string
 	why    string
+	games  []string
+}
+
+func (e allowEntry) appliesTo(game string) bool {
+	return e.games == nil || slices.Contains(e.games, game)
 }
 
 var allowlist = []allowEntry{
@@ -111,24 +160,27 @@ var allowlist = []allowEntry{
 		fn:     loaderPkg + ".RawURL",
 		callee: loaderPkg + ".TupleVariant",
 		why:    "TupleVariant hands the zero row only to LayoutHash, which reads its TYPE",
+		games:  []string{"poe1"},
 	},
 	{
 		fn:     loaderPkg + ".TranslationURL",
 		callee: loaderPkg + ".TupleVariant",
 		why:    "TupleVariant hands the zero row only to LayoutHash, which reads its TYPE",
+		games:  []string{"poe1"},
 	},
 	{
 		fn:     loaderPkg + ".LoadTranslation",
 		callee: loaderPkg + ".VariantURL",
 		why:    "VariantURL hands the zero row only to LayoutHash, which reads its TYPE to name the asset",
+		games:  []string{"poe1"},
 	},
 }
 
-func Analyze(dir string) (*Result, error) {
-	return analyze(dir, allowlist)
+func Analyze(dir string, game Game) (*Result, error) {
+	return analyze(dir, game, allowlist)
 }
 
-func analyze(dir string, allow []allowEntry) (*Result, error) {
+func analyze(dir string, game Game, allow []allowEntry) (*Result, error) {
 	res := &Result{
 		Structs: map[string]*StructInfo{},
 		Reads:   map[FieldKey][]Site{},
@@ -139,8 +191,8 @@ func analyze(dir string, allow []allowEntry) (*Result, error) {
 	var refusals []string
 	allowHits := map[int]bool{}
 
-	for _, bc := range BuildConfigs {
-		r, err := analyzeConfig(dir, bc, res, allow, allowHits)
+	for _, bc := range game.Configs {
+		r, err := analyzeConfig(dir, game, bc, res, allow, allowHits)
 		if err != nil {
 			return nil, err
 		}
@@ -148,7 +200,7 @@ func analyze(dir string, allow []allowEntry) (*Result, error) {
 	}
 
 	for i, a := range allow {
-		if !allowHits[i] {
+		if a.appliesTo(game.Name) && !allowHits[i] {
 			refusals = append(refusals, fmt.Sprintf("allowlist entry %s -> %s matched no site; delete it", a.fn, a.callee))
 		}
 	}
@@ -168,7 +220,7 @@ func analyze(dir string, allow []allowEntry) (*Result, error) {
 	return res, nil
 }
 
-func analyzeConfig(dir string, bc BuildConfig, res *Result, allow []allowEntry, allowHits map[int]bool) ([]string, error) {
+func analyzeConfig(dir string, game Game, bc BuildConfig, res *Result, allow []allowEntry, allowHits map[int]bool) ([]string, error) {
 	env := append(envWithout("GOOS", "GOARCH"), bc.Env...)
 	patterns := bc.Patterns
 	if bc.Closure != "" {
@@ -218,8 +270,8 @@ func analyzeConfig(dir string, bc BuildConfig, res *Result, allow []allowEntry, 
 	}
 
 	for _, p := range pkgs {
-		if p.PkgPath == RawPkg && p.Types != nil {
-			collectStructs(p.Types, res)
+		if p.PkgPath == game.RowPkg && p.Types != nil {
+			collectStructs(p.Types, game.RowPkg, res)
 			if p.Module != nil {
 				res.DataModuleVersion = p.Module.Version
 			}
@@ -227,8 +279,8 @@ func analyzeConfig(dir string, bc BuildConfig, res *Result, allow []allowEntry, 
 		if p.PkgPath == cacheNsPkg && p.Types != nil {
 			res.CacheNamespace = constOf(p.Types, "DataModuleVersion")
 		}
-		if p.PkgPath == ourRawPkg && p.Types != nil {
-			res.DefaultVersion = constOf(p.Types, "DefaultVersion")
+		if p.PkgPath == game.VersionPkg && p.Types != nil {
+			res.DefaultVersion = constOf(p.Types, game.VersionConst)
 		}
 	}
 	if res.DataModuleVersion == "" || res.CacheNamespace != res.DataModuleVersion || res.DefaultVersion == "" {
@@ -242,8 +294,9 @@ func analyzeConfig(dir string, bc BuildConfig, res *Result, allow []allowEntry, 
 	prog, _ := ssautil.Packages(pkgs, ssa.InstantiateGenerics)
 	prog.Build()
 
-	a := &analyzer{prog: prog, fset: prog.Fset, res: res, cfg: bc.Name, allow: allow, allowHits: allowHits, root: absDir(dir)}
+	a := &analyzer{prog: prog, fset: prog.Fset, res: res, cfg: bc.Name, game: game, allow: allow, allowHits: allowHits, root: absDir(dir), wrappers: map[*ssa.Function]wrapper{}}
 	all := ssautil.AllFunctions(prog)
+	a.findWrappers(all)
 	reach := reachable(prog, all, func(fn *ssa.Function) bool {
 		path := strings.TrimSuffix(pkgPathOf(fn), "_test")
 		return fn.Blocks != nil && inModule(path) && a.owned(fn)
@@ -268,6 +321,8 @@ type analyzer struct {
 	fset      *token.FileSet
 	res       *Result
 	cfg       string
+	game      Game
+	wrappers  map[*ssa.Function]wrapper
 	refusals  []string
 	allow     []allowEntry
 	allowHits map[int]bool
@@ -282,7 +337,7 @@ func (a *analyzer) owned(fn *ssa.Function) bool {
 	}
 	path = strings.TrimSuffix(path, "_test")
 	if isDataPackage(path) {
-		return filepath.Base(file) != generatedFile && !strings.HasSuffix(file, "_test.go")
+		return filepath.Base(file) != a.game.GeneratedFile && !strings.HasSuffix(file, "_test.go")
 	}
 	return inModule(path) && path != selfPkg && path != generatorPkg
 }
@@ -357,7 +412,7 @@ func writeOnly(fa *ssa.FieldAddr) bool {
 
 func (a *analyzer) field(t types.Type, idx int, pos token.Pos, fn *ssa.Function) {
 	named := namedOf(deref(t))
-	if named == nil || named.Obj().Pkg() == nil || named.Obj().Pkg().Path() != RawPkg {
+	if named == nil || named.Obj().Pkg() == nil || named.Obj().Pkg().Path() != a.game.RowPkg {
 		return
 	}
 	st, ok := named.Underlying().(*types.Struct)
@@ -369,7 +424,7 @@ func (a *analyzer) field(t types.Type, idx int, pos token.Pos, fn *ssa.Function)
 }
 
 func (a *analyzer) makeInterface(mi *ssa.MakeInterface, fn *ssa.Function) {
-	raws := rawTypesIn(mi.X.Type(), true)
+	raws := rawTypesIn(mi.X.Type(), a.game.RowPkg, true)
 	if len(raws) == 0 {
 		return
 	}
@@ -430,7 +485,7 @@ func (a *analyzer) call(call ssa.CallInstruction, fn *ssa.Function) {
 		origin = callee.Origin()
 	}
 
-	if pkgPathOf(origin) == RawPkg && filepath.Base(a.fset.Position(origin.Pos()).Filename) == generatedFile {
+	if pkgPathOf(origin) == a.game.RowPkg && filepath.Base(a.fset.Position(origin.Pos()).Filename) == a.game.GeneratedFile {
 		switch origin.Name() {
 		case "DecodeMsg", "UnmarshalMsg":
 		default:
@@ -444,7 +499,7 @@ func (a *analyzer) call(call ssa.CallInstruction, fn *ssa.Function) {
 
 	if callee.Blocks == nil && len(callee.TypeArgs()) > 0 {
 		for _, ta := range callee.TypeArgs() {
-			if len(rawTypesIn(ta, true)) == 0 {
+			if len(rawTypesIn(ta, a.game.RowPkg, true)) == 0 {
 				continue
 			}
 			if safe, compares := safeGeneric(origin); safe {
@@ -457,12 +512,90 @@ func (a *analyzer) call(call ssa.CallInstruction, fn *ssa.Function) {
 		}
 	}
 
+	if w, ok := a.wrappers[callee]; ok {
+		a.wrapperAsset(common, w, fn)
+		return
+	}
 	switch origin.String() {
 	case loaderPkg + ".InitHelper", loaderPkg + ".LoadRaw":
 		a.asset(common, callee, fn, "raw/", 2, -1)
 	case loaderPkg + ".LoadTranslation":
-		a.asset(common, callee, fn, "stat_translations/", 3, 2)
+		if a.game.Translations {
+			a.asset(common, callee, fn, "stat_translations/", 3, 2)
+		}
 	}
+}
+
+// wrapper is a function that hands its name parameter to a row load of rowType, so its callers name the asset.
+type wrapper struct {
+	param   int
+	rowType string
+}
+
+func isRowLoad(callee *ssa.Function) bool {
+	origin := callee
+	if callee.Origin() != nil {
+		origin = callee.Origin()
+	}
+	switch origin.String() {
+	case loaderPkg + ".InitHelper", loaderPkg + ".LoadRaw":
+		return true
+	}
+	return false
+}
+
+// findWrappers records every instance that passes a parameter as the asset name of a row load of this game's rows,
+// directly or through another wrapper.
+func (a *analyzer) findWrappers(all map[*ssa.Function]bool) {
+	for changed := true; changed; {
+		changed = false
+		for fn := range all {
+			if fn.Blocks == nil || !a.owned(fn) || pkgPathOf(fn) == loaderPkg {
+				continue
+			}
+			if _, ok := a.wrappers[fn]; ok {
+				continue
+			}
+			for _, b := range fn.Blocks {
+				for _, instr := range b.Instrs {
+					call, ok := instr.(ssa.CallInstruction)
+					if !ok || call.Common().StaticCallee() == nil {
+						continue
+					}
+					callee := call.Common().StaticCallee()
+					nameArg, rowType := -1, ""
+					if w, ok := a.wrappers[callee]; ok {
+						nameArg, rowType = w.param, w.rowType
+					} else if isRowLoad(callee) && len(callee.TypeArgs()) == 1 {
+						nameArg, rowType = 2, rowTypeOf(callee.TypeArgs()[0], a.game.RowPkg)
+					}
+					if nameArg < 0 || rowType == "" || nameArg >= len(call.Common().Args) {
+						continue
+					}
+					p, ok := call.Common().Args[nameArg].(*ssa.Parameter)
+					if !ok {
+						continue
+					}
+					if i := slices.Index(fn.Params, p); i >= 0 {
+						a.wrappers[fn] = wrapper{param: i, rowType: rowType}
+						changed = true
+					}
+				}
+			}
+		}
+	}
+}
+
+func (a *analyzer) wrapperAsset(common *ssa.CallCommon, w wrapper, fn *ssa.Function) {
+	name, ok := constString(common.Args, w.param)
+	if !ok {
+		if _, inner := a.wrappers[fn]; inner {
+			return
+		}
+		a.refuse(common.Pos(), fn, "asset name is not a constant in a call to "+common.StaticCallee().String())
+		return
+	}
+	a.record("raw/"+name, w.rowType, common, fn)
 }
 
 func safeGeneric(fn *ssa.Function) (bool, bool) {
@@ -485,8 +618,14 @@ func (a *analyzer) asset(common *ssa.CallCommon, callee *ssa.Function, fn *ssa.F
 	if pkgPathOf(fn) == loaderPkg {
 		return
 	}
+	if langArg < 0 && len(callee.TypeArgs()) == 1 && (otherGameRow(callee.TypeArgs()[0], a.game.RowPkg) || hasTypeParam(callee.TypeArgs()[0])) {
+		return
+	}
 	name, ok := constString(common.Args, nameArg)
 	if !ok {
+		if _, inner := a.wrappers[fn]; inner {
+			return
+		}
 		a.refuse(common.Pos(), fn, "asset name is not a constant in a call to "+callee.String())
 		return
 	}
@@ -505,12 +644,16 @@ func (a *analyzer) asset(common *ssa.CallCommon, callee *ssa.Function, fn *ssa.F
 			a.refuse(common.Pos(), fn, "unexpected type arguments to "+callee.String())
 			return
 		}
-		rowType = rowTypeOf(targs[0])
+		rowType = rowTypeOf(targs[0], a.game.RowPkg)
 		if rowType == "" {
 			a.refuse(common.Pos(), fn, fmt.Sprintf("cannot map %s to a raw row type", targs[0]))
 			return
 		}
 	}
+	a.record(path, rowType, common, fn)
+}
+
+func (a *analyzer) record(path, rowType string, common *ssa.CallCommon, fn *ssa.Function) {
 	s := a.site(common.Pos(), fn)
 	if prev, ok := a.res.Assets[path]; ok && prev.RowType != rowType {
 		a.refuse(common.Pos(), fn, fmt.Sprintf("asset %s loaded as both %s and %s", path, prev.RowType, rowType))
@@ -521,12 +664,27 @@ func (a *analyzer) asset(common *ssa.CallCommon, callee *ssa.Function, fn *ssa.F
 	}
 }
 
-func rowTypeOf(t types.Type) string {
+// otherGameRow reports a row of another game's row package, which this game's list does not cover.
+func otherGameRow(t types.Type, rowPkg string) bool {
+	for _, g := range Games {
+		if g.RowPkg != rowPkg && rowTypeOf(t, g.RowPkg) != "" {
+			return true
+		}
+	}
+	return false
+}
+
+func hasTypeParam(t types.Type) bool {
+	_, ok := types.Unalias(deref(t)).(*types.TypeParam)
+	return ok
+}
+
+func rowTypeOf(t types.Type, rowPkg string) string {
 	named := namedOf(deref(t))
-	if named == nil {
+	if named == nil || named.Obj().Pkg() == nil {
 		return ""
 	}
-	if named.Obj().Pkg().Path() == RawPkg {
+	if named.Obj().Pkg().Path() == rowPkg {
 		return named.Obj().Name()
 	}
 	st, ok := named.Underlying().(*types.Struct)
@@ -539,7 +697,7 @@ func rowTypeOf(t types.Type) string {
 		if !f.Embedded() {
 			continue
 		}
-		if n := namedOf(deref(f.Type())); n != nil && n.Obj().Pkg().Path() == RawPkg {
+		if n := namedOf(deref(f.Type())); n != nil && n.Obj().Pkg() != nil && n.Obj().Pkg().Path() == rowPkg {
 			if found != "" {
 				return ""
 			}
@@ -561,13 +719,13 @@ func constString(args []ssa.Value, i int) (string, bool) {
 }
 
 func (a *analyzer) wholeOf(t types.Type, why string, pos token.Pos, fn *ssa.Function) {
-	for _, r := range rawTypesIn(t, true) {
+	for _, r := range rawTypesIn(t, a.game.RowPkg, true) {
 		a.addWhole(r, why, pos, fn)
 	}
 }
 
 func (a *analyzer) wholeInline(t types.Type, why string, pos token.Pos, fn *ssa.Function) {
-	for _, r := range rawTypesIn(t, false) {
+	for _, r := range rawTypesIn(t, a.game.RowPkg, false) {
 		a.addWhole(r, why, pos, fn)
 	}
 }
@@ -586,7 +744,7 @@ func (a *analyzer) refuse(pos token.Pos, fn *ssa.Function, msg string) {
 	a.refusals = append(a.refusals, fmt.Sprintf("%s: %s: %s", a.cfg, a.site(pos, fn).Pos, msg))
 }
 
-func rawTypesIn(t types.Type, throughPointers bool) []string {
+func rawTypesIn(t types.Type, rowPkg string, throughPointers bool) []string {
 	seen := map[types.Type]bool{}
 	out := map[string]bool{}
 	var walk func(types.Type)
@@ -596,7 +754,7 @@ func rawTypesIn(t types.Type, throughPointers bool) []string {
 			return
 		}
 		seen[t] = true
-		if n, ok := t.(*types.Named); ok && n.Obj().Pkg() != nil && n.Obj().Pkg().Path() == RawPkg {
+		if n, ok := t.(*types.Named); ok && n.Obj().Pkg() != nil && n.Obj().Pkg().Path() == rowPkg {
 			if _, ok := n.Underlying().(*types.Struct); ok {
 				out[n.Obj().Name()] = true
 			}
@@ -636,7 +794,7 @@ func rawTypesIn(t types.Type, throughPointers bool) []string {
 	return names
 }
 
-func collectStructs(pkg *types.Package, res *Result) {
+func collectStructs(pkg *types.Package, rowPkg string, res *Result) {
 	scope := pkg.Scope()
 	for _, name := range scope.Names() {
 		tn, ok := scope.Lookup(name).(*types.TypeName)
@@ -650,7 +808,7 @@ func collectStructs(pkg *types.Package, res *Result) {
 		info := &StructInfo{Name: name}
 		for i := 0; i < st.NumFields(); i++ {
 			f := st.Field(i)
-			info.Fields = append(info.Fields, FieldInfo{Name: f.Name(), Nested: nestedStruct(f.Type())})
+			info.Fields = append(info.Fields, FieldInfo{Name: f.Name(), Nested: nestedStruct(f.Type(), rowPkg)})
 		}
 		res.Structs[name] = info
 	}
@@ -688,10 +846,10 @@ func envWithout(keys ...string) []string {
 	return out
 }
 
-func nestedStruct(t types.Type) string {
+func nestedStruct(t types.Type, rowPkg string) string {
 	for {
 		t = types.Unalias(t)
-		if n, ok := t.(*types.Named); ok && n.Obj().Pkg() != nil && n.Obj().Pkg().Path() == RawPkg {
+		if n, ok := t.(*types.Named); ok && n.Obj().Pkg() != nil && n.Obj().Pkg().Path() == rowPkg {
 			if _, ok := n.Underlying().(*types.Struct); ok {
 				return n.Obj().Name()
 			}

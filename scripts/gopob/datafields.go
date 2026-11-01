@@ -19,10 +19,10 @@ import (
 
 const dataFieldsRefusal = 5
 
-const dataFieldsUsage = `gopob data-fields --list FILE | --check [--list FILE]
+const dataFieldsUsage = `gopob data-fields [--game poe1|poe2] --list FILE | --check [--list FILE]
       analyse which go-pob-data row fields go-pob reads and write the list to FILE (it goes upstream
-      as go-pob-data's fields/<version>.json), or with --check exit 1 naming every read field the
-      list lacks (default: the list go-pob-data publishes)
+      as go-pob-data's fields/<version>.json, or poe2/fields/<version>.json for --game poe2), or with
+      --check exit 1 naming every read field the list lacks (default: the list go-pob-data publishes)
   gopob data-fields project --list FILE --from DIR --to DIR
       write FILE's projection of the cached full tuple assets (go-pob-data's fields.Project) into an
       EMPTY cache dir (GO_POB_CACHE_DIR layout), under the full assets' own URLs
@@ -42,7 +42,14 @@ func dataFields(args []string) int {
 	fs := flag.NewFlagSet("data-fields", flag.ContinueOnError)
 	check := fs.Bool("check", false, "compare against the committed list instead of writing it")
 	listPath := fs.String("list", "", "list file to write, or to --check (default for --check: go-pob-data's published list)")
+	gameName := fs.String("game", "poe1", "poe1 or poe2: whose rows to analyse")
 	if err := fs.Parse(args); err != nil || fs.NArg() != 0 || (!*check && *listPath == "") {
+		fmt.Fprint(os.Stderr, dataFieldsUsage)
+		return 64
+	}
+	game, ok := datafields.GameNamed(*gameName)
+	if !ok {
+		fmt.Fprintf(os.Stderr, "unknown --game %q\n", *gameName)
 		fmt.Fprint(os.Stderr, dataFieldsUsage)
 		return 64
 	}
@@ -51,7 +58,7 @@ func dataFields(args []string) int {
 		fmt.Fprintln(os.Stderr, err)
 		return root.RefusalCode
 	}
-	res, err := datafields.Analyze(repo)
+	res, err := datafields.Analyze(repo, game)
 	var refusal *datafields.RefusalError
 	if errors.As(err, &refusal) {
 		fmt.Fprintln(os.Stderr, err)
@@ -63,8 +70,8 @@ func dataFields(args []string) int {
 	}
 	fresh := datafields.Build(res, datafields.DataModule+"@"+res.DataModuleVersion, res.DefaultVersion)
 	if *check {
-		committed, err := datafields.Published(res.DefaultVersion)
-		source := "go-pob-data's published list for " + res.DefaultVersion
+		committed, err := datafields.Published(game, res.DefaultVersion)
+		source := "go-pob-data's published " + game.Name + " list for " + res.DefaultVersion
 		if *listPath != "" {
 			committed, err = datafields.Load(*listPath)
 			source = *listPath
