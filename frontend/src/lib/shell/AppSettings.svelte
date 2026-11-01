@@ -1,7 +1,7 @@
 <script lang="ts">
   import SettingsDialog from '$lib/design/SettingsDialog.svelte';
   import type { Setting, SettingsSection } from '$lib/design/fixtures/app';
-  import { backendLoaded, devMode, fontScaling, nodePowerTheme, outputs, poe2Enabled, poe2Unlocked, zoomSensitivity } from '$lib/global.js';
+  import { backendLoaded, devMode, engineBoot, fontScaling, nodePowerTheme, outputs, poe2Enabled, poe2Unlocked, zoomSensitivity } from '$lib/global.js';
   import {
     ITEMS_LAYOUTS,
     THEMES,
@@ -98,7 +98,23 @@
         { id: 'titleBuild', label: 'Show build name in window title', kind: 'check', value: true, hint: 'The tab title becomes “<build> (<class>) - go-pob”' },
         { id: 'devMode', label: 'Dev mode', kind: 'check', value: false, hint: 'Passive tooltips show the node id' },
         ...(poe2Unlocked
-          ? [{ id: 'poe2', label: 'Path of Exile 2 builds', kind: 'check', value: false, hint: 'Preview: a PoE2 build opens in its own calculator' } as Setting]
+          ? [
+              {
+                id: 'poe2',
+                label: 'Path of Exile 2 builds',
+                kind: 'check',
+                value: false,
+                hint: 'Preview: a PoE2 build opens in its own calculator'
+              } as Setting,
+              {
+                id: 'engineBoot',
+                label: 'Which game engine to load first',
+                kind: 'select',
+                value: 'Last used',
+                opts: ['Last used', 'Both'],
+                hint: 'At startup: the engine of the game of the build last used, or both games’ engines'
+              } as Setting
+            ]
           : []),
         // Main.lua:1085-1096
         {
@@ -324,6 +340,7 @@
     cache: cacheSize,
     devMode: $devMode,
     poe2: $poe2Enabled,
+    engineBoot: $engineBoot === 'both' ? 'Both' : 'Last used',
     titleBuild: $showTitlebarName,
     zoomSensitivity: $zoomSensitivity,
     nodePowerTheme: $nodePowerTheme,
@@ -382,6 +399,7 @@
     else if (id === 'craftCardLayout') craftCardLayout.set(v === 'Tabs' ? 'tabs' : 'stepped');
     else if (id === 'devMode') devMode.set(!!v);
     else if (id === 'poe2') poe2Enabled.set(!!v);
+    else if (id === 'engineBoot') engineBoot.set(v === 'Both' ? 'both' : 'last');
     else if (id === 'titleBuild') showTitlebarName.set(!!v);
     else if (id === 'zoomSensitivity') zoomSensitivity.set(Number(v));
     else if (id === 'powerWorkers') powerWorkers.set(POWER_WORKER_CHOICES.find((n) => workerLabel(n) === String(v)) ?? 1);

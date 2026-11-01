@@ -11,8 +11,9 @@
   import { browser } from '$app/environment';
   import { syncWrap } from '$lib/go/worker';
   import { proxy, transfer } from 'comlink';
-  import { currentBuildPath, buildChannel, devMode, markBackendAsLoaded, backendLoaded } from '$lib/global.js';
-  import { engines, game } from '$lib/go/engine';
+  import { currentBuildPath, buildChannel, devMode, markBackendAsLoaded, backendLoaded, engineBoot, poe2Enabled } from '$lib/global.js';
+  import { engines, game, lastGame } from '$lib/go/engine';
+  import { poe2Worker } from '$lib/go/engine_poe2.svelte';
   import { setArtResolver } from '$lib/design/item_art';
   import { showTitlebarName, windowTitle } from '$lib/display/window_title';
   import { onTick } from '$lib/calc_state';
@@ -152,6 +153,10 @@
 
   if (browser) {
     startPwa().catch(logError);
+    // the last build was PoE2: its engine boots and preloads its game data now, so the next PoE2 build opens at once;
+    // with both engines asked for, the PoE2 one waits for the PoE1 game data, so a PoE1 build opens as soon as before
+    if (get(poe2Enabled) && lastGame() === 'poe2') poe2Worker().catch(logError);
+    else if (get(poe2Enabled) && get(engineBoot) === 'both') backendLoaded.then(() => poe2Worker()).catch(logError);
     // a PoE2 build opens without the PoE1 engine; any other waits for its game data in openImportLink
     linkImport();
     if (!syncWrap || syncWrap === null) {

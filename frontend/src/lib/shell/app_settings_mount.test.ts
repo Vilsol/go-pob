@@ -179,6 +179,13 @@ describe('AppSettings', () => {
     expect(get(phoneTables)).toBe('cards');
   });
 
+  it('with PoE2 locked there is no choice of game engine to load first', async () => {
+    const s = open();
+    await fireEvent.click(s.getByRole('tab', { name: /^General/ }));
+    expect(s.getByRole('combobox', { name: 'Wide lists on a phone' })).toBeTruthy();
+    expect(s.queryByRole('combobox', { name: 'Which game engine to load first' })).toBeNull();
+  });
+
   it('Crafting card layout (Stepped sections / Tabs) is kept for the paste panel’s crafting card', async () => {
     const { craftCardLayout } = await import('$lib/display/appearance');
     const s = open();

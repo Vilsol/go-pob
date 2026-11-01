@@ -134,6 +134,13 @@ export const poe2Enabled = writable(loadPoe2Enabled());
 poe2Enabled.subscribe((v) => browser && (v || localStorage.getItem('options:poe2') !== null) && localStorage.setItem('options:poe2', v.toString()));
 followOtherTabs('options:poe2', poe2Enabled, loadPoe2Enabled);
 
+// which engines boot at startup while PoE2 is unlocked: the last-used build's game, or both
+export type EngineBoot = 'last' | 'both';
+const loadEngineBoot = (): EngineBoot => (browser && localStorage.getItem('options:engineBoot') === 'both' ? 'both' : 'last');
+export const engineBoot = writable<EngineBoot>(loadEngineBoot());
+engineBoot.subscribe((v) => browser && localStorage.setItem('options:engineBoot', v));
+followOtherTabs('options:engineBoot', engineBoot, loadEngineBoot);
+
 // Main.lua:101, 957-961
 const loadNodePowerTheme = () =>
   (browser && (NODE_POWER_THEMES as string[]).includes(localStorage.getItem('options:nodePowerTheme') ?? '')

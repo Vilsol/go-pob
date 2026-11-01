@@ -1,4 +1,5 @@
 import { derived, get, type Readable } from 'svelte/store';
+import { browser } from '$app/environment';
 import { currentBuild, poe2Build } from '$lib/global';
 import type { Sidebar } from '$lib/display/sidebar';
 import type { StatLine } from '$lib/display/stat_list';
@@ -150,6 +151,14 @@ export const engines: Record<Game, BuildEngine> = { poe1: poe1Engine, poe2: poe2
 
 // the game of the open build; undefined while none is open
 export const game: Readable<Game | undefined> = derived([currentBuild, poe2Build], ([b, v]) => (b ? 'poe1' : v ? 'poe2' : undefined));
+
+// the game of the build last opened, imported or made, in any tab; the next startup boots its engine first
+export const LAST_GAME_KEY = 'lastGame';
+export const lastGame = (): Game | undefined => {
+  const g = browser ? localStorage.getItem(LAST_GAME_KEY) : null;
+  return g === 'poe1' || g === 'poe2' ? g : undefined;
+};
+if (browser) game.subscribe((g) => g && localStorage.setItem(LAST_GAME_KEY, g));
 
 // the frame is keyed on the game, so a component reads its engine once, while it initialises; with no build open
 // the PoE1 engine answers, as the frame did before there were two
