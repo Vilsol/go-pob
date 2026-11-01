@@ -18,7 +18,7 @@ import (
 
 // TestTagCensus is the fourth and last modDB census, and the only one that can see TAGS.
 func TestTagCensus(t *testing.T) {
-	requireOperatorRun(t, "report-only census; `task census WHICH=tag`")
+	requireOperatorRun(t, "report-only census; `mise run census --which tag`")
 	if os.Getenv("CORPUS") != "true" {
 		t.SkipNow()
 	}

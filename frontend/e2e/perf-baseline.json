@@ -1,5 +1,5 @@
 {
-  "note": "Measured by `task e2e` (Chromium, one worker, production build via vite preview, game data served from the local Go bundle cache). Not a gate.",
+  "note": "Measured by `mise run e2e` (Chromium, one worker, production build via vite preview, game data served from the local Go bundle cache). Not a gate.",
   "coldStart": {
     "navToWasmBootedMs": {
       "n": 32,

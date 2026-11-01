@@ -274,45 +274,6 @@ url_api = "https://api.github.com/repos/pnpm/pnpm/releases/assets/237146820"
 url = "https://github.com/pnpm/pnpm/releases/download/v10.6.3/pnpm-win-x64.exe"
 url_api = "https://api.github.com/repos/pnpm/pnpm/releases/assets/237146817"
 
-[[tools.task]]
-version = "3.41.0"
-backend = "aqua:go-task/task"
-
-[tools.task."platforms.linux-arm64"]
-checksum = "sha256:dbe5b4aa21bdc7f00b232ebec5b2ffc8f6d1fc5bfb342597730c8aaca1217296"
-url = "https://github.com/go-task/task/releases/download/v3.41.0/task_linux_arm64.tar.gz"
-url_api = "https://api.github.com/repos/go-task/task/releases/assets/221404407"
-
-[tools.task."platforms.linux-arm64-musl"]
-checksum = "sha256:dbe5b4aa21bdc7f00b232ebec5b2ffc8f6d1fc5bfb342597730c8aaca1217296"
-url = "https://github.com/go-task/task/releases/download/v3.41.0/task_linux_arm64.tar.gz"
-url_api = "https://api.github.com/repos/go-task/task/releases/assets/221404407"
-
-[tools.task."platforms.linux-x64"]
-checksum = "sha256:0a2595f7fa3c15a62f8d0c244121a4977018b3bfdec7c1542ac2a8cf079978b8"
-url = "https://github.com/go-task/task/releases/download/v3.41.0/task_linux_amd64.tar.gz"
-url_api = "https://api.github.com/repos/go-task/task/releases/assets/221404423"
-
-[tools.task."platforms.linux-x64-musl"]
-checksum = "sha256:0a2595f7fa3c15a62f8d0c244121a4977018b3bfdec7c1542ac2a8cf079978b8"
-url = "https://github.com/go-task/task/releases/download/v3.41.0/task_linux_amd64.tar.gz"
-url_api = "https://api.github.com/repos/go-task/task/releases/assets/221404423"
-
-[tools.task."platforms.macos-arm64"]
-checksum = "sha256:78083ab7b4c99455448d3dd0dcce2be857789ae80c176350804305021aa7f582"
-url = "https://github.com/go-task/task/releases/download/v3.41.0/task_darwin_arm64.tar.gz"
-url_api = "https://api.github.com/repos/go-task/task/releases/assets/221404416"
-
-[tools.task."platforms.macos-x64"]
-checksum = "sha256:a328b3cd98dbbae5844dd336c6ea8a52a7704d626089b6bbd92c163325a93885"
-url = "https://github.com/go-task/task/releases/download/v3.41.0/task_darwin_amd64.tar.gz"
-url_api = "https://api.github.com/repos/go-task/task/releases/assets/221404419"
-
-[tools.task."platforms.windows-x64"]
-checksum = "sha256:0847915b3b51dbd296a510873fb9b62050ddddb818f6346840f3e1b4ce37d448"
-url = "https://github.com/go-task/task/releases/download/v3.41.0/task_windows_amd64.zip"
-url_api = "https://api.github.com/repos/go-task/task/releases/assets/221404414"
-
 [[tools.watchexec]]
 version = "2.8.0"
 backend = "aqua:watchexec/watchexec"

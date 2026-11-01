@@ -17,7 +17,7 @@ package data
 // influenceTags), the mods of each data.itemMods table the popups list, and the crafting bench, essence, veiled,
 // Necropolis, beastcraft and crucible mods.
 //
-// Regenerate with ` + "`task data-regen -- --only item-craft-data`" + `.
+// Regenerate with ` + "`mise run data-regen -- --only item-craft-data`" + `.
 
 `
 

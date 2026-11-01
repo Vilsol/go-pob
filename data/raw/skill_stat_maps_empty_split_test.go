@@ -54,7 +54,7 @@ func TestSkillStatMapsEmptySplitDescribesTheFile(t *testing.T) {
 	if got := declared + lost; got != actual {
 		t.Errorf("the header's empty-entry split does not describe the file: it claims %d "+
 			"declared-empty + %d emptied-by-omission = %d, and the table below holds %d entries "+
-			"with an empty Mods list. Regenerate with `task data-regen -- --only skill-stat-maps`.",
+			"with an empty Mods list. Regenerate with `mise run data-regen -- --only skill-stat-maps`.",
 			declared, lost, got, actual)
 	}
 }

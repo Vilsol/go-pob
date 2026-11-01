@@ -1,5 +1,5 @@
 {
-  "_note": "The identity of the Path of Building working tree that testdata/oracle-3.18/ was generated from. Verified by task pob-pin. content_sha256 is the ASSERTION and covers the working-tree bytes of every git-tracked file under `scope`. `sha` and `describe` are ADVISORY: the two fork commits are local and unpushed, so a fresh clone replaying them as patches has identical content under different commit objects, and asserting the SHA would fail the recovery procedure this pin exists to enable.",
+  "_note": "The identity of the Path of Building working tree that testdata/oracle-3.18/ was generated from. Verified by mise run pob-pin. content_sha256 is the ASSERTION and covers the working-tree bytes of every git-tracked file under `scope`. `sha` and `describe` are ADVISORY: the two fork commits are local and unpushed, so a fresh clone replaying them as patches has identical content under different commit objects, and asserting the SHA would fail the recovery procedure this pin exists to enable.",
   "content_sha256": "935b1871ed28d927045825dd90eae164863a4f62cced418b389ab5b6f74ce3c1",
   "describe": "upstream-v2.67.2-80-gfcf91003c",
   "dirty_when_recorded": false,

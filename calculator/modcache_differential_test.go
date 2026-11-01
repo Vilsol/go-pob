@@ -688,7 +688,7 @@ func mcdRank(t *testing.T, rows []mcdRow, keys map[string]bool) {
 
 	wl := os.Getenv("MCD_WL")
 	if wl == "" {
-		t.Fatal("MCD_RANK needs MCD_WL=<worklist dir> (from WORKLIST=<dir> task gate)")
+		t.Fatal("MCD_RANK needs MCD_WL=<worklist dir> (from WORKLIST=<dir> mise run gate)")
 	}
 	wrong := map[string]int{}
 	bf, err := os.Open(filepath.Join(wl, "builds.tsv"))
@@ -923,7 +923,7 @@ func mcdTakeCensus(t *testing.T) mcdCensus {
 	return c
 }
 
-// TestModCacheCensus writes the four support lists to MCD_CENSUS_OUT (task mod-census).
+// TestModCacheCensus writes the four support lists to MCD_CENSUS_OUT (mise run mod-census).
 func TestModCacheCensus(t *testing.T) {
 	c := mcdTakeCensus(t)
 	t.Logf("ModCache keys %d: both %d · pob-only %d · go-only %d · neither %d (range text %d, real %d)",

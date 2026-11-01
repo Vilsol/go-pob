@@ -31,7 +31,7 @@ export default function globalTeardown() {
   const cold = of(all, 'cold-start');
   const actions = of(all, 'action');
   const out = {
-    note: 'Measured by `task e2e` (Chromium, one worker, production build via vite preview, game data served from the local Go bundle cache). Not a gate.',
+    note: 'Measured by `mise run e2e` (Chromium, one worker, production build via vite preview, game data served from the local Go bundle cache). Not a gate.',
     coldStart: {
       navToWasmBootedMs: dist(cold.map((c) => c.navToBootMs)),
       navToDataLoadedMs: dist(cold.map((c) => c.navToDataMs)),

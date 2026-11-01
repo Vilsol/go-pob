@@ -1,1 +1,1 @@
-FATAL: no deterministic luajit at ./luajit-absent — run `task luajit-det`
+FATAL: no deterministic luajit at ./luajit-absent — run `mise run luajit-det`

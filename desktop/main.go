@@ -260,7 +260,7 @@ func pageHandler() (http.Handler, error) {
 	}
 	built, err := fs.ReadFile(assets, "index.html")
 	if err != nil {
-		return nil, fmt.Errorf("desktop/dist has no index.html (build it with `task build-desktop`): %w", err)
+		return nil, fmt.Errorf("desktop/dist has no index.html (build it with `mise run build-desktop`): %w", err)
 	}
 	index, err := host.DesktopIndex(built)
 	if err != nil {

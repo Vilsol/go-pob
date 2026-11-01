@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+#MISE description="Build testdata/oracle-<version> from a dump set of the same version (--in <dumps dir>)"
+#USAGE flag "--in <in>" env="IN"
+set -euo pipefail
+v="${POE_VERSION:-$(sed -n 's/^const DefaultVersion = "\(.*\)"$/\1/p' data/raw/main.go)}"
+[ -n "$v" ] || { echo "REFUSING: no DefaultVersion in data/raw/main.go and no POE_VERSION — the blob path would be a guess" >&2; exit 1; }
+in=${usage_in:-$HOME/go-pob-corpus/dumps-$v}
+mkdir -p "testdata/oracle-$v"
+go run ./scripts/gopob extract-output-oracle "$in" "/tmp/oracle-$v.jsonl"
+gzip -9 -n -c "/tmp/oracle-$v.jsonl" > "testdata/oracle-$v/output-$v.jsonl.gz"
+rm -f "/tmp/oracle-$v.jsonl"
+POE_VERSION=$v mise run oracle-bin
+ls -la "testdata/oracle-$v/"

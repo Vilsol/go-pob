@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+#MISE description="Prove every acceptance check and transport classifier can return BOTH answers"
+set -euo pipefail
+v="${POE_VERSION:-$(sed -n 's/^const DefaultVersion = "\(.*\)"$/\1/p' data/raw/main.go)}"
+[ -n "$v" ] || { echo "REFUSING: no DefaultVersion in data/raw/main.go and no POE_VERSION — the corpus path would be a guess" >&2; exit 1; }
+go run ./scripts/gopob nice go run ./scripts/corpus selftest -corpus "testdata/corpus-$v" -corpus-tree "${v//./_}"

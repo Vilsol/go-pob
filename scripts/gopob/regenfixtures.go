@@ -207,7 +207,7 @@ func regenFixtures(argv []string) int {
 	out := pyPathJoin(here, "testdata", "oracle")
 
 	if !executableByMe(luajit) {
-		return rfFatal("no deterministic luajit at %s — run `task luajit-det`", luajit)
+		return rfFatal("no deterministic luajit at %s — run `mise run luajit-det`", luajit)
 	}
 	if fi, err := os.Stat(pyPathJoin(pob, "src")); err != nil || !fi.IsDir() { //nolint:gosec // an operator-supplied checkout path, as in the original
 		return rfFatal("no %s/src", pob)

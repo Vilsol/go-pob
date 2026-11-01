@@ -4,4 +4,4 @@
       16 │ 	_ = 3
       17 │ }
 
-  ⚠️ cited src/Modules/NoSuchFile.lua does not exist under pob — the pin may be wrong (run `task pob-pin`).
+  ⚠️ cited src/Modules/NoSuchFile.lua does not exist under pob — the pin may be wrong (run `mise run pob-pin`).

@@ -140,7 +140,7 @@ func dmTables() []dmSpec {
 			sources: []string{dmSkillGlob}, extract: dmExtractSkillStatMaps, mode: "subset",
 			scope: "per skill: the stat key set, value/mult/div/base, and the mod NAME sequence. " +
 				"The emitter drops unrepresentable mods and tallies them in the file header, " +
-				"which task omissions gates",
+				"which mise run omissions gates",
 			subseq: []string{"mods"},
 		},
 		{

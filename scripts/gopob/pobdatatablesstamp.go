@@ -147,7 +147,7 @@ func pobDataTablesStamp(args []string) int {
 		fmt.Fprintf(os.Stderr, "  recorded content_sha256 %s (%s files)\n",
 			oeStr(rec["content_sha256"]), pdtPercentD(rec["file_count"]))
 		fmt.Fprint(os.Stderr,
-			"  Run `task pob-pin` for the per-file breakdown. Re-dump from the pinned checkout,\n"+
+			"  Run `mise run pob-pin` for the per-file breakdown. Re-dump from the pinned checkout,\n"+
 				"  or re-record the pin deliberately — but do not stamp this one.\n")
 		return pdtPinMismatch
 	}

@@ -45,7 +45,7 @@ func TestTreeStatTextFixupsAreExhaustive(t *testing.T) {
 		}
 	}
 	if len(treeStatTextFixups) != len(pinnedTreeStatText) {
-		t.Errorf("table holds %d entries, pinnedTreeStatText %d — re-run `task tree-tables` before changing this", len(treeStatTextFixups), len(pinnedTreeStatText))
+		t.Errorf("table holds %d entries, pinnedTreeStatText %d — re-run `mise run tree-tables` before changing this", len(treeStatTextFixups), len(pinnedTreeStatText))
 	}
 }
 

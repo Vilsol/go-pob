@@ -59,7 +59,7 @@ type emptySkillRow struct {
 
 // TestEmptySkillDataCensus enumerates, over PoB's WHOLE hand-written skill table, every granted effect go-pob builds EMPTY where PoB declares content.
 func TestEmptySkillDataCensus(t *testing.T) {
-	requireOperatorRun(t, "report-only census; `task empty-skill-data`")
+	requireOperatorRun(t, "report-only census; `mise run empty-skill-data`")
 	table, err := loadPoBSkillTable()
 	if err != nil {
 		t.Fatalf("cannot load PoB's skill table: %v", err)
@@ -330,7 +330,7 @@ func reportEmptySkillCensus(table *pobSkillTable, rows []emptySkillRow, sized bo
 
 	fmt.Printf("\nHOW TO READ A ROW. STATS and TYPES are ours/PoB's. Take the top of\n" +
 		"EMPTY-STATS and EMPTY-TYPES with a nonzero BUILDS column and walk one with\n" +
-		"`task diag-skill BUILD=<b> SKILL=<id>` — that shows the same gap in its build's\n" +
+		"`mise run empty-skill-data --skill <id>` — that shows the same gap in its build's\n" +
 		"context, with the rung it breaks at.\n")
 }
 

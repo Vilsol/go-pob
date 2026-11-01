@@ -204,7 +204,7 @@ func tiRecord(path string, logs []string) int {
 		return entries[i].name < entries[j].name
 	})
 	var b strings.Builder
-	fmt.Fprintf(&b, "# Operator-suite tests at or above %gs each, which `task test-operator-fast` skips.\n", tiSlowSeconds)
+	fmt.Fprintf(&b, "# Operator-suite tests at or above %gs each, which `mise run test-operator-fast` skips.\n", tiSlowSeconds)
 	b.WriteString("# Rewrite with `gopob test-tiers record <go test -json log>...` from a full\n")
 	b.WriteString("# `OPERATOR=true CORPUS=true go test -json ./...`; seconds are that run's, host load included.\n")
 	for _, e := range entries {

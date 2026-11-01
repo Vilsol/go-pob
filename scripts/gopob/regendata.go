@@ -165,7 +165,7 @@ func (r *rdRun) luajitCmd() []string {
 	}
 	fmt.Fprintln(os.Stderr,
 		"  ⚠️ .luajit-det is absent -- falling back to stock luajit. pairs() order varies per\n"+
-			"     process, so --check may report spurious changes. Build it with `task luajit-det`.")
+			"     process, so --check may report spurious changes. Build it with `mise run luajit-det`.")
 	return []string{"mise", "x", "--", "luajit"}
 }
 
@@ -614,7 +614,7 @@ func (r *rdRun) main() error {
 	if r.check && changed > 0 {
 		fmt.Println()
 		fmt.Println("STALE: the committed artifacts differ from what the pinned PoB produces.")
-		fmt.Println("Run `task data-regen`, review the diff, and commit it.")
+		fmt.Println("Run `mise run data-regen`, review the diff, and commit it.")
 		r.exitCode = 1
 	}
 	return nil

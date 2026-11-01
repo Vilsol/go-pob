@@ -49,7 +49,7 @@ mise run task -- gate     # every corpus build against the oracle (needs the fet
 ```
 
 Regenerating the data tables or the oracle needs a Path of Building checkout at the commit recorded in
-`scripts/pob_pin.json` (`task pob-pin` verifies it), at `~/PathOfBuilding` or wherever `POB_DIR` points.
+`scripts/pob_pin.json` (`mise run pob-pin` verifies it), at `~/PathOfBuilding` or wherever `POB_DIR` points.
 
 ## Credits
 

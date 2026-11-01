@@ -1,6 +1,6 @@
 local selfPath = arg[0]
 local outPath = arg[1]
-local taskLine = arg[2] or "task config-ui-oracles"
+local taskLine = arg[2] or "mise run config-ui-oracles"
 assert(outPath, "usage: config_options.lua <out.ts> [task line]")
 
 local stable = dofile((selfPath:match("^(.*)[/\\]") or ".") .. "/json_stable.lua")

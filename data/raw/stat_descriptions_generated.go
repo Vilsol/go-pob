@@ -11,7 +11,7 @@ import (
 // the stats some granted effect can carry and numbered as PoB's export numbers them (Export/Scripts/statdesc.lua),
 // read by the gem tooltip (GemTooltip.lua) through calculator's stat describer.
 //
-// Regenerate with `task data-regen -- --only stat-descriptions` after a go-pob-data bump.
+// Regenerate with `mise run data-regen -- --only stat-descriptions` after a go-pob-data bump.
 
 // StatDescriptionLimit is one limit of a description variant: Lo / Hi nil for "#"; Not for {"!", n}.
 type StatDescriptionLimit struct {

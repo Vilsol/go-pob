@@ -2,7 +2,7 @@
 
 `pkgs/by-name/go/go-pob/package.nix` is `../package.nix` as `render.sh` prints it: the same derivation, its source
 fetched from `github:Vilsol/go-pob` at a tag. The flake does not use it; `nix flake check` fails when it drifts
-from `../package.nix` (`task nixpkgs-template` regenerates it).
+from `../package.nix` (`mise run nixpkgs-template` regenerates it).
 
 ## Opening the nixpkgs PR
 

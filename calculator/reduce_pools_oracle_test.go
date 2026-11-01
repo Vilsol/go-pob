@@ -14,7 +14,7 @@ import (
 func TestReducePoolsByDamageMatchesOracle(t *testing.T) {
 	dumpDir := os.Getenv("REDUCE_POOLS_DUMP")
 	if dumpDir == "" {
-		t.Skip("set REDUCE_POOLS_DUMP=<dir> (task reduce-pools BUILDS=<list> OUT=<dir> NICE=nice)")
+		t.Skip("set REDUCE_POOLS_DUMP=<dir> (mise run reduce-pools --builds <list> --out <dir>)")
 	}
 	requireGameData(t, "3.29")
 
@@ -24,7 +24,7 @@ func TestReducePoolsByDamageMatchesOracle(t *testing.T) {
 	}
 	if len(files) == 0 {
 		t.Fatalf("REFUSING: %s holds no .json dumps. Generate them with\n"+
-			"  task reduce-pools BUILDS=<list file> OUT=%s NICE=nice", dumpDir, dumpDir)
+			"  mise run reduce-pools --builds <list file> --out %s", dumpDir, dumpDir)
 	}
 
 	type oraclePools struct {

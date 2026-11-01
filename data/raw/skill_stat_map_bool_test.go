@@ -35,7 +35,7 @@ func TestSkillStatMapBooleansAreNotZero(t *testing.T) {
 					t.Errorf("%s -> skillData %q emitted Value=%v, want 1.\n"+
 						"PoB declares it `true`; utils.Set turns anything but 1 into false, so this "+
 						"row is silently disabled. Fix oracle/skill_stat_map_emit.py and run "+
-						"`task data-regen` — do not hand-edit the generated file.",
+						"`mise run data-regen` — do not hand-edit the generated file.",
 						statKey, dataKey, sd.Value)
 				}
 			}

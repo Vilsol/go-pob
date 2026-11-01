@@ -35,6 +35,6 @@ export const cachedAsset = (url: string): CachedAsset => {
 
   throw new Error(
     `REFUSING: ${url} is not in the Go bundle cache (${cacheDir()}). Populate it by running any ` +
-      'Go test that loads game data (e.g. `task gate`), then re-run.'
+      'Go test that loads game data (e.g. `mise run gate`), then re-run.'
   );
 };

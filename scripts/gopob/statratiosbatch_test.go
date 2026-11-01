@@ -73,7 +73,7 @@ var equivStats = []string{"CombinedDPS", "TotalDPS"}
 func TestStatRatiosBatchEqualsSingleRuns(t *testing.T) {
 	t.Parallel()
 	if os.Getenv("OPERATOR") != "true" || os.Getenv("CORPUS") != "true" {
-		t.Skip("set OPERATOR=true CORPUS=true (task test-operator-slow) — this compares K+1 real corpus passes")
+		t.Skip("set OPERATOR=true CORPUS=true (mise run test-operator-slow) — this compares K+1 real corpus passes")
 	}
 	repo := repoRoot(t)
 	ctx := t.Context()

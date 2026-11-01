@@ -65,7 +65,7 @@ func TestTattooReplacesNodeStats(t *testing.T) {
 	row, ok := data.TattooNodes[tattooDN]
 	if !ok {
 		t.Fatalf("REFUSING: %q is absent from data.TattooNodes — regenerate with "+
-			"`task data-regen -- --only tattoo-passives`", tattooDN)
+			"`mise run data-regen -- --only tattoo-passives`", tattooDN)
 	}
 	if len(row.Stats) == 0 {
 		t.Fatalf("REFUSING: %q carries no stat lines, so replacing with it is indistinguishable "+

@@ -7,11 +7,12 @@ TestDoubleQuoted
 TestFencedUse
 TestIndentedUse
 TestLooseUse
+TestMiseScriptUse
+TestMiseTomlUse
 TestQuotedFenceUse
 TestShellUse
 TestSingleQuoted
 TestSubtestPath
-TestTaskfileUse
 TestTrailingComment
 TestUnclosedIsAUse
 TestWorkflowUse

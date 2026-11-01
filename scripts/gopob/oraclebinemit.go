@@ -46,7 +46,7 @@ func oracleBinEmit(args []string) int {
 			return 1
 		}
 		if digest != want {
-			fmt.Fprintf(os.Stderr, "STALE: %s was built from %x, %s is %x — run `task oracle-bin`\n",
+			fmt.Fprintf(os.Stderr, "STALE: %s was built from %x, %s is %x — run `mise run oracle-bin`\n",
 				binPath, digest[:8], jsonlPath, want[:8])
 			return 1
 		}

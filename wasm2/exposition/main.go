@@ -1,7 +1,7 @@
 //go:build js || bindings2
 
 // The manifest is hidden from the PoE1 generator, which loads every package of the module natively;
-// `task generate2` runs crystalline with the bindings2 tag.
+// `mise run generate2` runs crystalline with the bindings2 tag.
 package exposition
 
 import (

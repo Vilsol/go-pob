@@ -24,7 +24,7 @@ func TestOracleBinMatchesJSONL(t *testing.T) {
 	binPath := oraclebin.BinPath(blob)
 	blobBytes, err := os.ReadFile(binPath)
 	if err != nil {
-		t.Fatalf("REFUSING: no side-car at %s: %v — run `task oracle-bin`", binPath, err)
+		t.Fatalf("REFUSING: no side-car at %s: %v — run `mise run oracle-bin`", binPath, err)
 	}
 	binRecs, digest, err := oraclebin.Decode(blobBytes)
 	if err != nil {
@@ -35,7 +35,7 @@ func TestOracleBinMatchesJSONL(t *testing.T) {
 		t.Fatal(err)
 	}
 	if digest != want {
-		t.Fatalf("STALE: %s was built from %x but %s is %x — run `task oracle-bin`",
+		t.Fatalf("STALE: %s was built from %x but %s is %x — run `mise run oracle-bin`",
 			binPath, digest[:8], blob, want[:8])
 	}
 

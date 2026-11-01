@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-// TestWorklistTotalsCarriesTheGradedTotalAndActorSplit pins the file that fixes the 1.755x pp inflation in `task residual-map`.
+// TestWorklistTotalsCarriesTheGradedTotalAndActorSplit pins the file that fixes the 1.755x pp inflation in `mise run residual-map`.
 func TestWorklistTotalsCarriesTheGradedTotalAndActorSplit(t *testing.T) {
 	perStat := map[string]*statTally{
 		"Life":              {seen: 10, ok: 10},

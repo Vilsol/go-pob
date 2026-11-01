@@ -2,7 +2,7 @@
 set -euo pipefail
 out=$(realpath -m "$1")
 cd "$(dirname "$0")/../.."
-[[ -f dist/index.html ]] || { echo "package: desktop/dist has no index.html (run task build-desktop)" >&2; exit 1; }
+[[ -f dist/index.html ]] || { echo "package: desktop/dist has no index.html (mise run build-desktop)" >&2; exit 1; }
 version=${VERSION:-0.0.0}
 tools=${TOOLS:-$out/.tools}
 stage=$(mktemp -d)

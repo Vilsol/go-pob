@@ -4,7 +4,7 @@ mkdir -p "$1"
 out=$(cd "$1" && pwd)
 cd "$(dirname "$0")/../.."
 [[ $(uname) == Darwin ]] || { echo "package: the macOS app builds on macOS only" >&2; exit 1; }
-[[ -f dist/index.html ]] || { echo "package: desktop/dist has no index.html (run task build-desktop)" >&2; exit 1; }
+[[ -f dist/index.html ]] || { echo "package: desktop/dist has no index.html (mise run build-desktop)" >&2; exit 1; }
 version=${VERSION:-0.0.0}
 numeric=${version%%[-+]*}
 [[ $numeric =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "package: VERSION $version is not semver" >&2; exit 1; }

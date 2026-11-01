@@ -173,7 +173,7 @@ func requireDetLuajit(args []string) int {
 	if err == nil && !st.IsDir() && st.Mode().Perm()&0o111 != 0 {
 		return 0
 	}
-	fmt.Fprintf(os.Stderr, "%s: %s is missing or not executable — build it with `task luajit-det`.\n"+
+	fmt.Fprintf(os.Stderr, "%s: %s is missing or not executable — build it with `mise run luajit-det`.\n"+
 		"  A stock LuaJIT varies pairs() order per PROCESS, so the output is not reproducible and a\n"+
 		"  ranking taken from it can move on its own. Refusing rather than producing one.\n", who, bin)
 	return 1

@@ -1,5 +1,5 @@
 local outPath = arg[1]
-local taskLine = arg[2] or "task calc-sections-poe2"
+local taskLine = arg[2] or "mise run calc-sections-poe2"
 assert(outPath, "usage: calc_sections2.lua <out.ts> [task line]")
 
 dofile("HeadlessWrapper.lua")

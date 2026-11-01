@@ -18,11 +18,11 @@ import (
 
 const pdUsage = `Show OUR Go and the PINNED PoB's Lua for the same thing, side by side.
 
-    task port-diff NAME=Condition:CanGainRage   # EVERY site on BOTH sides — the port-gap hunt
-    task port-diff SYMBOL=enemyChaosDamage      # a name that appears in both trees
-    task port-diff FUNC=CalcEnemyDamage         # a Go func, resolved through its //pob: citation
-    task port-diff LUA=src/Modules/ConfigOptions.lua:1500-1520   # just show me that Lua
-    task port-diff GREP='output%.Rage'          # FIND it in the Lua when you do not know the range`
+    mise run port-diff --name Condition:CanGainRage   # EVERY site on BOTH sides — the port-gap hunt
+    mise run port-diff --symbol enemyChaosDamage      # a name that appears in both trees
+    mise run port-diff --func CalcEnemyDamage         # a Go func, resolved through its //pob: citation
+    mise run port-diff --lua src/Modules/ConfigOptions.lua:1500-1520   # just show me that Lua
+    mise run port-diff --grep 'output%.Rage'          # FIND it in the Lua when you do not know the range`
 
 var (
 	pdMarker = regexp.MustCompile(`//pob(2)?:(block:)?(.+?)\s*$`)
@@ -192,7 +192,7 @@ func pdByFunc(e *pdEnv, name string) error {
 			lua := filepath.Join(pob, rel)
 			if _, err := os.Stat(lua); err != nil {
 				fmt.Printf("\n  ⚠️ cited %s does not exist under %s — the pin may be wrong "+
-					"(run `task pob-pin`).\n", rel, pob)
+					"(run `mise run pob-pin`).\n", rel, pob)
 				continue
 			}
 			if err := pdShow(e, lua, c[1].(int), c[2].(int), "PoB (cited)"); err != nil {
@@ -215,7 +215,7 @@ func pdByLua(e *pdEnv, spec string) error {
 	}
 	path := filepath.Join(e.pob, rm[1])
 	if _, err := os.Stat(path); err != nil { //nolint:gosec // an operator-supplied checkout path
-		return pdRefuse("%s does not exist — set POB_DIR, and check `task pob-pin`.", path)
+		return pdRefuse("%s does not exist — set POB_DIR, and check `mise run pob-pin`.", path)
 	}
 	return pdShow(e, path, s, en, "PoB")
 }
@@ -322,7 +322,7 @@ func pdVerifyRange(e *pdEnv, path string, start int, name string) string {
 	if !(1 <= start && start <= len(lines)) || !strings.Contains(lines[start-1], name) {
 		return fmt.Sprintf("  ⚠️ STALE INDEX: %s:%d does not contain %s. The range came\n"+
 			"     from CodeGraph and the CONTENT from disk, so what you see below is real but\n"+
-			"     MISPLACED — do not cite it. `task pob-pin` reindexes the pinned checkout\n"+
+			"     MISPLACED — do not cite it. `mise run pob-pin` reindexes the pinned checkout\n"+
 			"     automatically; this repo's index is watched by a daemon.",
 			pdRel(e, path), start, pyRepr(name))
 	}
@@ -340,7 +340,7 @@ func pdBySymbol(e *pdEnv, sym string) error {
 	}
 	luaFiles := pdLuaFiles(e)
 	if len(luaFiles) == 0 {
-		return pdRefuse("no Lua under %s/src — set POB_DIR, and check `task pob-pin`.", e.pob)
+		return pdRefuse("no Lua under %s/src — set POB_DIR, and check `mise run pob-pin`.", e.pob)
 	}
 	theirs, err := pdGrepTree(luaFiles, sym)
 	if err != nil {
@@ -410,7 +410,7 @@ func pdBySymbol(e *pdEnv, sym string) error {
 func pdByGrep(e *pdEnv, pat string) error {
 	luaFiles := pdLuaFiles(e)
 	if len(luaFiles) == 0 {
-		return pdRefuse("no Lua under %s/src — set POB_DIR, and check `task pob-pin`.", e.pob)
+		return pdRefuse("no Lua under %s/src — set POB_DIR, and check `mise run pob-pin`.", e.pob)
 	}
 	rx, err := regexp.Compile(pat)
 	if err != nil {
@@ -463,7 +463,7 @@ func pdByName(e *pdEnv, name string) error {
 	}
 	luaFiles := pdLuaFiles(e)
 	if len(luaFiles) == 0 {
-		return pdRefuse("no Lua under %s/src — set POB_DIR, and check `task pob-pin`.", e.pob)
+		return pdRefuse("no Lua under %s/src — set POB_DIR, and check `mise run pob-pin`.", e.pob)
 	}
 	theirs, err := pdGrepTree(luaFiles, name)
 	if err != nil {

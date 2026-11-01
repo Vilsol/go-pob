@@ -13,11 +13,11 @@ coverage  skipped (COVERAGE=1 to include, ~4 min)
   TestTagCensus                          PASS          -  PLAYER TAGS-DIFFER 4; ENEMY TAGS-DIFFER 0
   TestConfigCensus                       PASS          -  DIFFER+ABSENT+EXTRA: 12 3 4
   TestCorpusIsDeterministic              PASS          -  IDENTICAL across 2 processes
-  task citations                         PASS          -  PORT   349 / 455 top-level funcs cited (76.7%)
-  task omissions                         PASS          -  OMISSION REASONS: 42 checked, 0 unmarked
-  task task-test-refs                    PASS          -  (no headline matched — read out/taskrefs.txt)
-  task test-cache-key                    PASS          -  (no headline matched — read out/cachekey.txt)
-  task fma-census                        PASS          -  (no headline matched — read out/fma.txt)
+  mise run citations                     PASS          -  PORT   349 / 455 top-level funcs cited (76.7%)
+  mise run omissions                     PASS          -  OMISSION REASONS: 42 checked, 0 unmarked
+  mise run task-test-refs                PASS          -  (no headline matched — read out/taskrefs.txt)
+  mise run test-cache-key                PASS          -  (no headline matched — read out/cachekey.txt)
+  mise run fma-census                    PASS          -  (no headline matched — read out/fma.txt)
 
 --- FAILURES ---
   FAIL     unit: --- FAIL: TestZulu |  calc_offence_test.go:12: expected 3 got 4 | --- FAIL: TestAlpha  ->  out/unit.txt

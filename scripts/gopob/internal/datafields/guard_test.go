@@ -20,7 +20,7 @@ func committedList(version string) (*List, error) {
 // TestReadFieldsAreInTheCommittedList fails, naming asset and key path, when go-pob reads a go-pob-data field the published list would drop from the .min assets.
 func TestReadFieldsAreInTheCommittedList(t *testing.T) {
 	if os.Getenv("OPERATOR") != "true" {
-		t.Skip("set OPERATOR=true (task data-fields-guard, run by data-regen and CI's lint job) — a whole-module analysis")
+		t.Skip("set OPERATOR=true (mise run data-fields-guard, run by data-regen and CI's lint job) — a whole-module analysis")
 	}
 	res, err := Analyze(repoRoot)
 	if err != nil {
@@ -29,7 +29,7 @@ func TestReadFieldsAreInTheCommittedList(t *testing.T) {
 	fresh := Build(res, DataModule+"@"+res.DataModuleVersion, res.DefaultVersion)
 	committed, err := committedList(res.DefaultVersion)
 	if err != nil {
-		t.Fatalf("%v; run `task data-fields -- --list <go-pob-data>/fields/%s.json` and send it upstream", err, res.DefaultVersion)
+		t.Fatalf("%v; run `mise run data-fields -- --list <go-pob-data>/fields/%s.json` and send it upstream", err, res.DefaultVersion)
 	}
 	if committed.Format != Format && committed.Format != FormatV1 || fields.Format != Format {
 		t.Errorf("list format %q, go-pob-data reads %q, this tool writes %q", committed.Format, fields.Format, Format)

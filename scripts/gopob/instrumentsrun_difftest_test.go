@@ -106,8 +106,9 @@ esac
 exit 0
 `
 
-const insTaskStub = `#!/bin/sh
-echo "task $*" >> .stub-log
+const insMiseStub = `#!/bin/sh
+echo "mise $*" >> .stub-log
+[ "$1" = run ] && shift
 case "$1" in
 citations)
 	# ⚠️ THE REAL SHAPE, COPIED FROM A REAL RUN. This stub used to print a TOTAL line, which is
@@ -161,7 +162,7 @@ func insSandbox(t *testing.T, repo string) (func() (string, error), string) {
 		t.Fatal(err)
 	}
 	for name, body := range map[string]string{
-		"git": insGitStub, "go": insGoStub, "task": insTaskStub,
+		"git": insGitStub, "go": insGoStub, "mise": insMiseStub,
 	} {
 		if err := os.WriteFile(filepath.Join(binDir, name), []byte(body), 0o700); err != nil { //nolint:gosec
 			t.Fatal(err)

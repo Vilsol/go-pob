@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { buildStatList2, displayStats2 } from './stats2';
 
-// PoB-PoE2's own sidebar for the wasm2 fixture build (oracle/poe2_sidebar.lua, `task config-ui-oracles-poe2`)
+// PoB-PoE2's own sidebar for the wasm2 fixture build (oracle/poe2_sidebar.lua, `mise run config-ui-oracles-poe2`)
 type Oracle = { output: Record<string, number | true>; skillFlags: Record<string, true>; groups: [string, string][][]; warnings: string[] };
 const oracle = JSON.parse(
   readFileSync(fileURLToPath(new URL('../../../../testdata/oracle/poe2_sidebar_sorceress_spark.json', import.meta.url)), 'utf8')

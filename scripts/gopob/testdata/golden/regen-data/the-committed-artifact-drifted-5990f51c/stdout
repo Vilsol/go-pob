@@ -11,4 +11,4 @@ STILL HAND-WRITTEN (each needs an emitter; a pin bump rots them silently):
      data/still_by_hand.go                    <- src/Data/SomeTable.lua
 
 STALE: the committed artifacts differ from what the pinned PoB produces.
-Run `task data-regen`, review the diff, and commit it.
+Run `mise run data-regen`, review the diff, and commit it.

@@ -17,7 +17,7 @@ import (
 
 // TestModDBCensus compares the *inputs* of the calculation.
 func TestModDBCensus(t *testing.T) {
-	requireOperatorRun(t, "report-only census; `task census WHICH=modb`")
+	requireOperatorRun(t, "report-only census; `mise run census --which modb`")
 	if os.Getenv("CORPUS") != "true" {
 		t.SkipNow()
 	}

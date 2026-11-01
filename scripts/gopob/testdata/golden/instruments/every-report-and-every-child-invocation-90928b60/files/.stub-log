@@ -6,8 +6,8 @@ go test ./calculator/ -run TestModOrderCensus -v -timeout 30m | OPERATOR=true CO
 go test ./calculator/ -run TestTagCensus -v -timeout 30m | OPERATOR=true CORPUS=true
 go test ./calculator/ -run TestConfigCensus -v -timeout 30m | OPERATOR=true CORPUS=true
 go test ./calculator/ -count=1 -run TestCorpusIsDeterministic -v -timeout 30m | OPERATOR=true CORPUS=true
-task citations
-task omissions
-task task-test-refs
-task test-cache-key
-task fma-census
+mise run citations
+mise run omissions
+mise run task-test-refs
+mise run test-cache-key
+mise run fma-census

@@ -50,7 +50,7 @@ func TestItemQualityIsASeparateMultiplier(t *testing.T) {
 	raw, err = os.ReadFile(itemDataExpected)
 	testza.AssertNoError(t, err)
 	testza.AssertNoError(t, json.Unmarshal(raw, &expected))
-	testza.AssertEqual(t, len(cases), len(expected), "cases/expected out of sync; regenerate with `task oracle`")
+	testza.AssertEqual(t, len(cases), len(expected), "cases/expected out of sync; regenerate with `mise run oracle`")
 
 	byName := map[string]int{}
 	for i, c := range cases {

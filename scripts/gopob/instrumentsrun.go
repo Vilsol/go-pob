@@ -634,14 +634,14 @@ func instrumentsMain(argv []string) int { //nolint:gocyclo // a linear chain, as
 		[]string{"env", "OPERATOR=true", "CORPUS=true", goBin, "test", "./calculator/", "-count=1",
 			"-run", "TestCorpusIsDeterministic", "-v", "-timeout", "30m"})
 
-	ir.runInstrument("citations", "task citations", false, []string{"task", "citations"})
-	ir.runInstrument("omissions", "task omissions", false, []string{"task", "omissions"})
-	ir.runInstrument("taskrefs", "task task-test-refs", false, []string{"task", "task-test-refs"})
-	ir.runInstrument("cachekey", "task test-cache-key", false, []string{"task", "test-cache-key"})
-	ir.runInstrument("fma", "task fma-census", false, []string{"task", "fma-census"})
+	ir.runInstrument("citations", "mise run citations", false, []string{"mise", "run", "citations"})
+	ir.runInstrument("omissions", "mise run omissions", false, []string{"mise", "run", "omissions"})
+	ir.runInstrument("taskrefs", "mise run task-test-refs", false, []string{"mise", "run", "task-test-refs"})
+	ir.runInstrument("cachekey", "mise run test-cache-key", false, []string{"mise", "run", "test-cache-key"})
+	ir.runInstrument("fma", "mise run fma-census", false, []string{"mise", "run", "fma-census"})
 
 	if ir.coverage != "" {
-		ir.runInstrument("coverage", "task coverage-census (opt-in)", false, []string{"task", "coverage-census"})
+		ir.runInstrument("coverage", "mise run coverage-census (opt-in)", false, []string{"mise", "run", "coverage-census"})
 	}
 
 	ir.checkInvariants()

@@ -257,9 +257,9 @@ func configHandlerSets() (map[string]bool, map[string]bool) {
 	return handlers, order
 }
 
-// TestConfigOptionCensus is `task config-census`: one row per pin option.
+// TestConfigOptionCensus is `mise run config-census`: one row per pin option.
 func TestConfigOptionCensus(t *testing.T) {
-	requireOperatorRun(t, "report-only census; `task config-census`")
+	requireOperatorRun(t, "report-only census; `mise run config-census`")
 	in := requireTaskInput(t, "config-census", "CONFIG_OPTIONS", "CONFIG_CENSUS_OUT")
 	optsPath, out := in[0], in[1]
 	opts, err := loadConfigPinOptions(optsPath)

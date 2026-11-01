@@ -24,7 +24,7 @@ func TestPinsReadsEveryToolFromMiseToml(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, want := range []string{"go", "golangci-lint", "task", "luajit"} {
+	for _, want := range []string{"go", "golangci-lint", "zig", "luajit"} {
 		if pins[want] == "" {
 			t.Fatalf("mise.toml [tools] parsed without %q; got %v", want, pins)
 		}
@@ -155,7 +155,7 @@ func TestDeterministicLuaJITRefusesWhenItIsNotBuilt(t *testing.T) {
 	if err == nil {
 		t.Fatal("returned a path for a deterministic luajit that does not exist")
 	}
-	if !strings.Contains(err.Error(), "task luajit-det") {
+	if !strings.Contains(err.Error(), "mise run luajit-det") {
 		t.Fatalf("the refusal does not name the remedy: %v", err)
 	}
 }

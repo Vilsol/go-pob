@@ -96,7 +96,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     const serial = new Set(tests.map((t) => t.file).filter((f) => /mode:\s*'serial'/.test(readFileSync(join(FRONTEND, 'e2e', f), 'utf8'))));
     const { shards, unknown } = plan(units(tests, serial), readDurations(), n);
     shards.forEach((s, j) => console.error(`shard ${j + 1}/${n}: ${s.tests} tests, ~${Math.round(s.seconds / 60)} min of test time`));
-    if (unknown.length) console.error(`${unknown.length} tests have no recorded duration and count as the median (task e2e-durations records them)`);
+    if (unknown.length) console.error(`${unknown.length} tests have no recorded duration and count as the median (mise run e2e-durations records them)`);
     mkdirSync(dirname(resolve(file)), { recursive: true });
     writeFileSync(file, shards[i - 1].lines.join('\n') + '\n');
   } else if (cmd === 'record') {

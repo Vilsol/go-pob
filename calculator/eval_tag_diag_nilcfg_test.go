@@ -7,7 +7,7 @@ import (
 	"github.com/Vilsol/go-pob/moddb"
 )
 
-// TestDiagReportModNilCfgDoesNotPanic: `task diag STEP=tags ACTOR=enemy CFG=nil` panicked in diagReportMod's EXCL-CFG explanation.
+// TestDiagReportModNilCfgDoesNotPanic: `mise run diag --step tags --actor enemy --cfg nil` panicked in diagReportMod's EXCL-CFG explanation.
 func TestDiagReportModNilCfgDoesNotPanic(t *testing.T) {
 	store := moddb.NewModDB()
 	flagged := mod.NewFloat("PhysicalDamage", mod.TypeIncrease, 10).Flag(mod.MFlagAttack)

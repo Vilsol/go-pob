@@ -31,7 +31,7 @@ func TestPins3_20Outputs(t *testing.T) {
 
 	oracle, err := oracleForLoadedData()
 	if err != nil {
-		t.Fatalf("REFUSING: %v\nBuild it with `task oracle-corpus` after a dump.", err)
+		t.Fatalf("REFUSING: %v\nBuild it with `mise run oracle-corpus` after a dump.", err)
 	}
 
 	corpusDir, names := corpusNamesForLoadedData(t)

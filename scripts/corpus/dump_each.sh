@@ -4,7 +4,7 @@ set -euo pipefail
 [ $# -ge 5 ] || { echo "usage: dump_each.sh <pob-dir> <repo-root> <builds-dir> <list-file> <out-dir> [jobs]" >&2; exit 2; }
 pob=$(realpath "$1"); repo=$(realpath "$2"); builds=$(realpath "$3"); list=$4; out=$5; jobs=${6:-4}
 luajit=${LUAJIT:-$repo/.luajit-det/bin/luajit}
-[ -x "$luajit" ] || { echo "no deterministic luajit at $luajit (task luajit-det)" >&2; exit 2; }
+[ -x "$luajit" ] || { echo "no deterministic luajit at $luajit (mise run luajit-det)" >&2; exit 2; }
 [ -d "$pob/src" ] || { echo "no $pob/src" >&2; exit 2; }
 [ -s "$list" ] || { echo "the build list $list is empty or missing" >&2; exit 2; }
 if [ -d "$out" ] && [ -n "$(ls -A "$out")" ]; then

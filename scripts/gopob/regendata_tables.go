@@ -23,7 +23,7 @@ var rdGenerators = []rdGenerator{
 		out:    "data/cluster_jewels.go",
 		emit:   "oracle/cluster_jewels_emit.py",
 		dump:   "cluster-jewels",
-		note:   "FROM go-pob-data since 2026-10-10 (Export/Scripts/cluster.lua ported in scripts/gamedatadump): byte-identical to the PoB-derived file but for the header. oracle/cluster_jewels.lua stays for `task pob-cluster-jewels` (Taskfile.yml), which still reads PoB.",
+		note:   "FROM go-pob-data since 2026-10-10 (Export/Scripts/cluster.lua ported in scripts/gamedatadump): byte-identical to the PoB-derived file but for the header. oracle/cluster_jewels.lua stays for `mise run pob-cluster-jewels` (mise.toml), which still reads PoB.",
 	},
 	{
 		name:     "core-constants",

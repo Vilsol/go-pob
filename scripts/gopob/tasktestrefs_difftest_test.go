@@ -69,13 +69,20 @@ func ttFixtureShell() string {
 	}, "\n")
 }
 
-func ttFixtureTaskfile() string {
+func ttFixtureMiseToml() string {
 	return strings.Join([]string{
-		"version: '3'",
-		"tasks:",
-		"  gate:",
-		"    cmds:",
-		"      - go test ./calculator/ -run TestTaskfileUse",
+		"[tasks.gate]",
+		"# -run TestMiseCommentMention is a comment",
+		"run = 'go test ./calculator/ -run TestMiseTomlUse'",
+		"",
+	}, "\n")
+}
+
+func ttFixtureMiseScript() string {
+	return strings.Join([]string{
+		"#!/usr/bin/env bash",
+		"#MISE description=\"a -run TestMiseHeaderMention header is prose\"",
+		"go test ./calculator/ -run TestMiseScriptUse",
 		"",
 	}, "\n")
 }
@@ -96,7 +103,7 @@ func ttFixtureTests() string {
 		"TestFencedUse", "TestIndentedUse", "TestLooseUse", "TestQuotedFenceUse",
 		"TestSingleQuoted", "TestDoubleQuoted", "TestAnchored", "TestAlternationA",
 		"TestAlternationB", "TestSubtestPath", "TestShellUse", "TestTrailingComment",
-		"TestTaskfileUse", "TestWorkflowUse", "TestUnclosedIsAUse",
+		"TestMiseTomlUse", "TestMiseScriptUse", "TestWorkflowUse", "TestUnclosedIsAUse",
 		"TestCorpus3_29VsOracle", "TestCorpus3_29",
 	}
 	var b strings.Builder
@@ -112,7 +119,7 @@ func ttFixtureNames() string {
 		"TestAlternationA", "TestAlternationB", "TestAnchored", "TestCorpus3_29",
 		"TestCorpus3_29VsOracle", "TestDoubleQuoted", "TestFencedUse", "TestIndentedUse",
 		"TestLooseUse", "TestQuotedFenceUse", "TestShellUse", "TestSingleQuoted",
-		"TestSubtestPath", "TestTaskfileUse", "TestTrailingComment", "TestUnclosedIsAUse",
+		"TestMiseScriptUse", "TestMiseTomlUse", "TestSubtestPath", "TestTrailingComment", "TestUnclosedIsAUse",
 		"TestWorkflowUse",
 	}
 	return strings.Join(names, "\n") + "\n"
@@ -131,7 +138,8 @@ func ttSandbox(t *testing.T, repo string) func() (string, error) {
 			"scripts/task_test_refs.names":      ttFixtureNames(),
 			"DRIVER.md":                         ttFixtureMarkdown(),
 			"scripts/driver.sh":                 ttFixtureShell(),
-			"Taskfile.yml":                      ttFixtureTaskfile(),
+			"mise.toml":                         ttFixtureMiseToml(),
+			"mise-tasks/probe":                  ttFixtureMiseScript(),
 			".github/workflow.yml":              ttFixtureWorkflow(),
 			"calculator/fixture_test.go":        ttFixtureTests(),
 			"frontend/skipme_test.go":           "package frontend\n\nfunc TestSkippedTree(t *testing.T) {}\n",
@@ -347,14 +355,16 @@ func TestTaskTestRefsFixtureReachesTheCode(t *testing.T) {
 	}
 	body := string(out)
 	for _, want := range []string{
-		"historical mentions (not failures): 6",
+		"historical mentions (not failures): 8",
 		"DRIVER.md: TestInlineMention` named in prose",
 		"DRIVER.md: TestDoubledMention`` named in prose",
 		"DRIVER.md: TestBacktrackedMention` named in prose",
 		"DRIVER.md: TestLongGoneFromTheTree`. named in prose",
 		"scripts/driver.sh: TestCommentMention named in prose",
 		"scripts/driver.sh: TestAfterHashMention named in prose",
-		"task test refs OK: 17 -run use(s) across 4 discovered driver(s), 17 test functions",
+		"mise.toml: TestMiseCommentMention named in prose",
+		"mise-tasks/probe: TestMiseHeaderMention named in prose",
+		"task test refs OK: 18 -run use(s) across 5 discovered driver(s), 18 test functions",
 	} {
 		if !strings.Contains(body, want) {
 			t.Fatalf("the fixture never reached the code it claims to cover: %q missing\n%s", want, body)

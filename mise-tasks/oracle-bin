@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+#MISE description="Rebuild the .orb side-car from the committed oracle blob (--check reports staleness)"
+#USAGE flag "--check" env="CHECK"
+set -euo pipefail
+v="${POE_VERSION:-$(sed -n 's/^const DefaultVersion = "\(.*\)"$/\1/p' data/raw/main.go)}"
+[ -n "$v" ] || { echo "REFUSING: no DefaultVersion in data/raw/main.go and no POE_VERSION — the side-car path would be a guess" >&2; exit 1; }
+check=()
+[ "${usage_check:-}" = true ] && check=(--check)
+go run ./scripts/gopob oracle-bin "${check[@]}" "testdata/oracle-$v/output-$v.jsonl.gz"

@@ -54,7 +54,7 @@ func TestPoBPathGuardSeesAHomeBuiltPath(t *testing.T) {
 	}
 }
 
-// TestPoBPathsComeFromTheResolver: a PoB checkout path built in a tool but outside pobpath.go drifts from the Taskfile's rule.
+// TestPoBPathsComeFromTheResolver: a PoB checkout path built in a tool but outside pobpath.go drifts from mise.toml's rule.
 func TestPoBPathsComeFromTheResolver(t *testing.T) {
 	t.Parallel()
 	repo := repoRoot(t)
@@ -100,7 +100,7 @@ func TestPoBPathsComeFromTheResolver(t *testing.T) {
 	}
 	sort.Strings(bad)
 	if len(bad) > 0 {
-		t.Fatalf("PoB checkout path built outside pobPinDir/pob2PinDir (use those, which mirror the Taskfile's POB_DEFAULT):\n%s",
+		t.Fatalf("PoB checkout path built outside pobPinDir/pob2PinDir (use those, which mirror mise.toml's POB_DEFAULT):\n%s",
 			strings.Join(bad, "\n"))
 	}
 }

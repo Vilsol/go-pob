@@ -87,7 +87,7 @@ const statOf = (container: HTMLElement, name: string) => {
 const fixture = (name: string) => readFile(resolve(FIXTURES, name), 'utf8');
 
 beforeAll(async () => {
-  if (!existsSync(WASM2)) throw new Error(`REFUSING: the PoE2 wasm module is missing — run \`task build-go2\`\n  missing: ${WASM2}`);
+  if (!existsSync(WASM2)) throw new Error(`REFUSING: the PoE2 wasm module is missing — run \`mise run build-go2\`\n  missing: ${WASM2}`);
   // Go's fetch passes jsdom's AbortSignal, which node's fetch refuses, and reads a streamed body as
   // node's Uint8Array, which is not jsdom's; a whole-body response avoids both
   const nodeFetch = globalThis.fetch;

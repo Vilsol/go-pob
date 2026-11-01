@@ -20,7 +20,7 @@ func TestFRungConversionSplit(t *testing.T) {
 	requireOperatorRun(t, "report-only census")
 	dumpDir := os.Getenv("CALCS_DUMP")
 	if dumpDir == "" {
-		t.Skip("set CALCS_DUMP=<dir> (task calcs-chain)")
+		t.Skip("set CALCS_DUMP=<dir> (mise run calcs-chain)")
 	}
 	requireGameData(t, "3.29")
 

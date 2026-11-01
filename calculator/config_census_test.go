@@ -24,7 +24,7 @@ func knownConfigOption(name string) bool {
 }
 
 func TestConfigCensus(t *testing.T) {
-	requireOperatorRun(t, "report-only census; `task census WHICH=config`")
+	requireOperatorRun(t, "report-only census; `mise run census --which config`")
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}

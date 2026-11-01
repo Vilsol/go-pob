@@ -31,7 +31,7 @@ func dumpModValueKey(raw json.RawMessage) string {
 	return string(raw)
 }
 
-// TestSourceSetCensus lifts `task diag STEP=sources` from ONE build to the WHOLE corpus.
+// TestSourceSetCensus lifts `mise run diag --step sources` from ONE build to the WHOLE corpus.
 func TestSourceSetCensus(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")

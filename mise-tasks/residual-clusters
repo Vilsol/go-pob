@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+#MISE description="Collapse the residual into INDEPENDENT CAUSES and rank by yield per fix — --matrix <file> [--wl <worklist dir>]"
+#USAGE flag "--matrix <matrix>" env="MATRIX"
+#USAGE flag "--wl <wl>" env="WL"
+set -euo pipefail
+wl=${usage_wl:-}
+GRADED=""
+if [ -n "$wl" ] && [ -r "$wl/totals.tsv" ]; then
+  GRADED=$(awk -F'\t' '$1=="ALL"{print $2}' "$wl/totals.tsv")
+fi
+if [ -z "$GRADED" ]; then
+  echo "⚠️  no --wl given, so every PERCENTAGE below is against a RETIRED corpus denominator." >&2
+  echo "    Pairs are still correct. Re-run as: mise run residual-clusters --matrix <f> --wl <worklist dir>" >&2
+fi
+env MATRIX="${usage_matrix:-}" ${GRADED:+GRADED=$GRADED} go run ./scripts/gopob residual-clusters

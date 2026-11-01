@@ -20,7 +20,7 @@ import (
 // master, item, veiled and beast craft mod line the parser reads, value ranges at their mid roll, one per template, in
 // PoB's sort order, each with the sources it came from.
 //
-// Regenerate with ` + "`task data-regen -- --only custom-mod-browser`" + ` after a PoB pin bump.
+// Regenerate with ` + "`mise run data-regen -- --only custom-mod-browser`" + ` after a PoB pin bump.
 
 var (
 	modBrowserOnce    sync.Once

@@ -36,7 +36,7 @@ func loadItemModListOracle(t *testing.T) ([]itemParseCase, []expectedModList) {
 	raw, err = os.ReadFile(itemModListExpected)
 	testza.AssertNoError(t, err)
 	testza.AssertNoError(t, json.Unmarshal(raw, &expected))
-	testza.AssertEqual(t, len(cases), len(expected), "cases/expected out of sync; regenerate with `task oracle`")
+	testza.AssertEqual(t, len(cases), len(expected), "cases/expected out of sync; regenerate with `mise run oracle`")
 
 	return cases, expected
 }

@@ -115,7 +115,7 @@ const start = async () => {
 const port = async () => {
   const { state, why } = await readState();
   if (!state) {
-    console.error(`REFUSING: REUSE=1 needs a warm server: ${why}. Run \`task e2e-serve\` first.`);
+    console.error(`REFUSING: REUSE=1 needs a warm server: ${why}. Run \`mise run e2e-serve\` first.`);
     return REFUSED;
   }
   console.log(state.port);

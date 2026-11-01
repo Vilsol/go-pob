@@ -190,7 +190,7 @@ func TestParseItemAgainstPoB(t *testing.T) {
 	testza.AssertNoError(t, err)
 	testza.AssertNoError(t, json.Unmarshal(raw, &expected))
 
-	testza.AssertEqual(t, len(cases), len(expected), "cases and expected results are out of sync; regenerate with `task oracle`")
+	testza.AssertEqual(t, len(cases), len(expected), "cases and expected results are out of sync; regenerate with `mise run oracle`")
 
 	for i, c := range cases {
 		want := expected[i]

@@ -18,7 +18,7 @@ import (
 // Flavour text of PoB's src/Data/FlavourText.lua (the uniques, by name) and of src/Data/Bases/*.lua (an item
 // base's flavourText), read by the item tooltip (ItemsTab.lua:4684-4747).
 //
-// Regenerate with ` + "`task data-regen -- --only flavour-text`" + ` after a PoB pin bump.
+// Regenerate with ` + "`mise run data-regen -- --only flavour-text`" + ` after a PoB pin bump.
 
 // FlavourEntry is one row of data.flavourText: its id and its lines.
 type FlavourEntry struct {

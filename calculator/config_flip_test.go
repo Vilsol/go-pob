@@ -502,9 +502,9 @@ type flipRow struct {
 	pobBase, pobVariant oraclebin.Record
 }
 
-// TestConfigFlip is `task config-flip`.
+// TestConfigFlip is `mise run config-flip`.
 func TestConfigFlip(t *testing.T) {
-	requireOperatorRun(t, "runs headless PoB; `task config-flip`")
+	requireOperatorRun(t, "runs headless PoB; `mise run config-flip`")
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
@@ -1168,9 +1168,9 @@ func configShownGo(o configPinOption, truthy func(string) bool, rel map[string]m
 		check("ifSkillFlag", in("SkillFlags")) && check("ifSkillData", in("SkillData"))
 }
 
-// TestConfigVisibility is `task config-visibility`: on every pool build of a config-flip run.
+// TestConfigVisibility is `mise run config-visibility`: on every pool build of a config-flip run.
 func TestConfigVisibility(t *testing.T) {
-	requireOperatorRun(t, "reads a config-flip run; `task config-visibility`")
+	requireOperatorRun(t, "reads a config-flip run; `mise run config-visibility`")
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}

@@ -44,7 +44,7 @@ const patchFetch = () => {
 
 const boot = async (): Promise<Mod> => {
   if (!existsSync(WASM)) {
-    throw new Error(`REFUSING: ${WASM} is missing — run \`mise run build-go\` (task e2e does)`);
+    throw new Error(`REFUSING: ${WASM} is missing — run \`mise run build-go\` (mise run e2e does)`);
   }
 
   const goroot = execFileSync('go', ['env', 'GOROOT'], { encoding: 'utf8' }).trim();

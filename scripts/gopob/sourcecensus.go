@@ -195,7 +195,7 @@ func scOurDump(path string) ([]string, map[string]map[string]float64, map[string
 		}
 	}
 	if len(vals) == 0 {
-		scDie("%s contains no build records. Re-run `task corpus-dump OUT=...`.", path)
+		scDie("%s contains no build records. Re-run `mise run corpus-dump --out ...`.", path)
 	}
 	return order, vals, meta
 }
@@ -481,7 +481,7 @@ func sourceCensus(argv []string) int {
 			scDie("%s does not appear in the blob's `output` table on ANY of %d graded builds, "+
 				"and this census reads `output` ONLY.\n%sCensusing it here would classify every "+
 				"build as `extra`, which is a confident wrong answer rather than an empty one. "+
-				"Use the per-actor instruments (`task corpus-vs-oracle`, `task diag`) for "+
+				"Use the per-actor instruments (`mise run corpus-vs-oracle`, `mise run diag`) for "+
 				"non-player tables.", pyRepr(stat), len(covered), extra)
 		}
 

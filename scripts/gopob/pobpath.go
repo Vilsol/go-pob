@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-// pobPinDir mirrors the Taskfile's POB_DEFAULT: POB_DIR, else the PathOfBuilding checkout beside the repository.
+// pobPinDir mirrors mise.toml's POB_DEFAULT: POB_DIR, else the PathOfBuilding checkout beside the repository.
 func pobPinDir() string { return pobPinResolve("POB_DIR", "PathOfBuilding") }
 
 // pob2PinDir mirrors POB2_DEFAULT for the PoE2 pin.

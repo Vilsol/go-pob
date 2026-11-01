@@ -17,7 +17,7 @@ func poe2PinFile(t *testing.T, rel string) string {
 	t.Helper()
 	dir := os.Getenv("POB2_DIR")
 	if dir == "" {
-		t.Skip("POB2_DIR is not set; run `task poe2-gamedata-check`, which points it at the pinned PoB-PoE2")
+		t.Skip("POB2_DIR is not set; run `mise run poe2-gamedata-check`, which points it at the pinned PoB-PoE2")
 	}
 	b, err := os.ReadFile(filepath.Join(dir, "src", rel)) //nolint:gosec // the pinned checkout's own file
 	if err != nil {

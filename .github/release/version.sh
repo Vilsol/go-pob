@@ -2,7 +2,7 @@
 set -euo pipefail
 next=$1
 if ! awk -v head="VERSION[$next][" 'index($0, head) == 1 { found = 1 } END { exit !found }' frontend/static/changelog.txt; then
-	echo "::error::frontend/static/changelog.txt has no VERSION[$next] entry: run task changelog and commit it before releasing" >&2
+	echo "::error::frontend/static/changelog.txt has no VERSION[$next] entry: run 'mise run changelog' and commit it before releasing" >&2
 	exit 1
 fi
 if [[ -n ${NEXT_VERSION_FILE:-} ]]; then

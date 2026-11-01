@@ -1,5 +1,5 @@
 // Package poe2 holds Path of Building (PoE2)'s game data tables, generated from the pinned PoB-PoE2
-// checkout by `task data-regen GAME=poe2`. The PoE1 engine never imports it.
+// checkout by `mise run data-regen --game poe2`. The PoE1 engine never imports it.
 package poe2
 
 // ItemBase is one data.itemBases entry. A numeric field PoB leaves nil reads 0 here; the emitter

@@ -36,7 +36,7 @@ func LuaJITBinary(ctx context.Context, root string, which LuaJIT) (Binary, error
 		path = filepath.Join(root, DeterministicPath)
 		if st, e := os.Stat(path); e != nil || st.IsDir() {
 			return Binary{}, fmt.Errorf(
-				"REFUSING: no deterministic luajit at %s — run `task luajit-det`. Stock LuaJIT's "+
+				"REFUSING: no deterministic luajit at %s — run `mise run luajit-det`. Stock LuaJIT's "+
 					"pairs() order varies per process, so anything dumped with it is a mosaic",
 				DeterministicPath)
 		}

@@ -1,4 +1,4 @@
-// Picks the e2e specs a change can reach, for `task e2e-affected`. A spec is affected when a changed file is in the
+// Picks the e2e specs a change can reach, for `mise run e2e-affected`. A spec is affected when a changed file is in the
 // import closure of the spec itself, of the support files it uses, or of a route it visits. A change in the closure
 // of the app shell (the root layout, which every test renders) or of the e2e harness affects every spec; a change
 // nothing maps to selects only the @smoke tests and is listed as unmapped.

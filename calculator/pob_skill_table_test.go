@@ -38,7 +38,7 @@ var loadPoBSkillTable = sync.OnceValues(func() (*pobSkillTable, error) {
 func readPoBSkillTable(path string) (*pobSkillTable, error) {
 	f, err := os.Open(path)
 	if err != nil {
-		return nil, fmt.Errorf("cannot open %s: %w\nRegenerate it with `task pob-skill-table` "+
+		return nil, fmt.Errorf("cannot open %s: %w\nRegenerate it with `mise run pob-skill-table` "+
 			"(runs oracle/skill_table.lua against the pinned PoB)", path, err)
 	}
 	defer func() { _ = f.Close() }()

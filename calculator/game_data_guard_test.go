@@ -103,7 +103,14 @@ func TestNoRetiredVersionGrading(t *testing.T) {
 		}
 	}
 
-	shellFiles := []string{"Taskfile.yml"}
+	shellFiles := []string{"mise.toml"}
+	if entries, err := os.ReadDir(filepath.Join(repo, "mise-tasks")); err == nil {
+		for _, e := range entries {
+			if !e.IsDir() {
+				shellFiles = append(shellFiles, filepath.Join("mise-tasks", e.Name()))
+			}
+		}
+	}
 	if entries, err := os.ReadDir(filepath.Join(repo, "scripts")); err == nil {
 		for _, e := range entries {
 			if !e.IsDir() && strings.HasSuffix(e.Name(), ".sh") {

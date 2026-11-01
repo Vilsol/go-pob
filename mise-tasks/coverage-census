@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+#MISE description="Which compiled branches never run over the 2027-build corpus (--overlay also runs the whole suite, --list prints every block)"
+#USAGE flag "--json <json>" env="JSON"
+#USAGE flag "--list" env="LIST"
+#USAGE flag "--overlay" env="OVERLAY"
+set -euo pipefail
+nice=(go run ./scripts/gopob nice)
+d=$(mktemp -d)
+pkgs=./calculator/...,./mod/...,./moddb/...,./data,./builds/...,./pob/...,./utils/...
+overlay=() list=() json=()
+[ "${usage_overlay:-}" = true ] && overlay=(--overlay "$d/all.out")
+[ "${usage_list:-}" = true ] && list=(--list)
+[ -n "${usage_json:-}" ] && json=(--json "$usage_json")
+CORPUS=true "${nice[@]}" go test -count=1 -timeout 60m ./calculator/ -run 'TestCorpus3_29$' -covermode=atomic -coverpkg=$pkgs -coverprofile="$d/corpus.out" || true
+"${nice[@]}" go tool cover -func="$d/corpus.out" > "$d/corpus.func"
+if [ ${#overlay[@]} -gt 0 ]; then
+  "${nice[@]}" env CORPUS=true BIG=true go test -count=1 -timeout 60m ./... -covermode=atomic -coverpkg=$pkgs -coverprofile="$d/all.out" || true
+fi
+go run ./scripts/gopob coverage-census --profile "$d/corpus.out" --funcs "$d/corpus.func" --root . "${overlay[@]}" "${list[@]}" "${json[@]}"

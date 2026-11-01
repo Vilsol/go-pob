@@ -17,7 +17,7 @@ package data
 // from it (Main.lua:155-192), which the Go parser is graded against; and the Foulborn map with the lines of the mods
 // it names (Data.lua:1373-1375).
 //
-// Regenerate with ` + "`task data-regen -- --only item-db`" + ` after a PoB pin bump.
+// Regenerate with ` + "`mise run data-regen -- --only item-db`" + ` after a PoB pin bump.
 
 `
 

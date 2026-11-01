@@ -21,7 +21,7 @@ var knownArtifactStats = map[string]bool{
 
 // TestBuildRanking ranks GRADED builds by how many oracle pairs they get wrong, and reports how concentrated the remaining error is.
 func TestBuildRanking(t *testing.T) {
-	requireOperatorRun(t, "report-only worklist; `task build-ranking`")
+	requireOperatorRun(t, "report-only worklist; `mise run build-ranking`")
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}

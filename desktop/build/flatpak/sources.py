@@ -120,7 +120,7 @@ def main():
             path.write_text(text)
             print(f'sources: {name}: {len(data)} files')
     if stale:
-        raise SystemExit(f'sources: stale {", ".join(stale)}: run `task flatpak-sources`')
+        raise SystemExit(f'sources: stale {", ".join(stale)}: run `mise run flatpak-sources`')
 
 if __name__ == '__main__':
     main()

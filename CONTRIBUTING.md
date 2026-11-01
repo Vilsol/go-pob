@@ -64,7 +64,8 @@ You only need to install `mise` which is a package manager: https://mise.jdx.dev
 Once you install `mise` you can run `mise install` to install all packages.
 
 Every dev command is a mise task; `mise tasks` lists them. Running them through mise gives everyone,
-CI included, the same pinned toolchain.
+CI included, the same pinned toolchain. A task's arguments are flags (`mise run diag --build <b> --step sources`), `mise run
+<task> --help` lists them, and anything after `--` passes through to the tool the task runs.
 
 After you have downloaded everything, you might need to run `mise x -- corepack enable` to be able to use `pnpm`
 
@@ -193,7 +194,7 @@ If you are using regex, make sure that you precompile it instead of creating a n
 
 Releases are made by `.github/workflows/release.yml` on every push to `main`. [semantic-release](https://semantic-release.gitbook.io)
 (`.releaserc.json`, pinned in `.github/release/`) picks the version from the conventional commit subjects since the last
-`v*` tag. Before merging `dev` into `main`, run `task changelog` on `dev` and commit the result: it writes the next
+`v*` tag. Before merging `dev` into `main`, run `mise run changelog` on `dev` and commit the result: it writes the next
 version into `frontend/static/changelog.txt` (the in-app version history and update notice), and the release refuses
 to publish without it. In order:
 

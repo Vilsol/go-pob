@@ -35,7 +35,7 @@ func TestApplyRangeScalabilityAgainstPoB(t *testing.T) {
 
 	testza.AssertEqual(t, len(cases), len(expected.Results),
 		"the case and expectation fixtures have different lengths — re-record with "+
-			"`task oracle-mod-scalability`")
+			"`mise run oracle-mod-scalability`")
 	testza.AssertTrue(t, len(cases) > 100,
 		"only %d cases; the fixture has been truncated and this test grades almost nothing",
 		len(cases))
@@ -61,7 +61,7 @@ func readJSONFixture(t *testing.T, path string, into any) {
 	t.Helper()
 	body, err := os.ReadFile(path)
 	if err != nil {
-		t.Fatalf("%s is unreadable: %v\n  Re-record it with `task oracle-mod-scalability`.", path, err)
+		t.Fatalf("%s is unreadable: %v\n  Re-record it with `mise run oracle-mod-scalability`.", path, err)
 	}
 	if err := json.Unmarshal(body, into); err != nil {
 		t.Fatalf("%s is not the JSON this test expects: %v", path, err)

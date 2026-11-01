@@ -15,7 +15,7 @@ const refuse = (msg) => {
 };
 
 for (const [path, what] of [
-  [WASM, 'the wasm module — run `mise run build-go` (or use `task write-path`)'],
+  [WASM, 'the wasm module — run `mise run build-go` (or use `mise run write-path`)'],
   [TYPES, 'the generated bindings — run `mise run generate`'],
   [CORPUS, 'the 3.29 corpus — it is git-LFS, run `git lfs pull`']
 ]) {

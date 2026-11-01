@@ -1,4 +1,4 @@
-# Operator-suite tests at or above 10s each, which `task test-operator-fast` skips.
+# Operator-suite tests at or above 10s each, which `mise run test-operator-fast` skips.
 # Rewrite with `gopob test-tiers record <go test -json log>...` from a full
 # `OPERATOR=true CORPUS=true go test -json ./...`; seconds are that run's, host load included.
 builds TestEveryCorpusBuildCarriesAnInRangeActiveSpec 16.1

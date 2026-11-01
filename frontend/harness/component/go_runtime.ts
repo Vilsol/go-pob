@@ -74,7 +74,7 @@ const assertNotStale = async (mod: Record<string, unknown>) => {
         `${total} registered function(s) that crystalline_gen.go declares:\n    ` +
         `${missing.slice(0, 8).join(', ')}${missing.length > 8 ? ', …' : ''}\n` +
         `  The module is gitignored, so a checkout leaves whatever you last built. Run ` +
-        `\`mise run build-go\`, or use \`task component-tests\`, which depends on it.`,
+        `\`mise run build-go\`, or use \`mise run component-tests\`, which depends on it.`,
       WASM
     );
   }

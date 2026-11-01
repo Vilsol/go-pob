@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+#MISE description="Time the power report on the benchmark builds, one core, CPU time beside wall — --stats 'FullDPS' --builds '0280-elementalist-fireball' narrow it; --dir <checkout> times another tree; --args passes -test.cpuprofile etc."
+#USAGE flag "--args <args>" env="ARGS"
+#USAGE flag "--builds <builds>" env="BUILDS"
+#USAGE flag "--dir <dir>" env="DIR" default="."
+#USAGE flag "--stats <stats>" env="STATS"
+set -euo pipefail
+dir=$(realpath "$usage_dir")
+bin=/tmp/gopob-power-bench-$$.test
+trap 'rm -f "$bin"' EXIT
+go -C "$dir/calculator" test -c -o "$bin"
+flock /tmp/gopob-perf.lock go run ./scripts/gopob nice env DIR="$dir" BIN="$bin" ARGS="${usage_args:-}" \
+  POWER_BENCH_STATS="${usage_stats:-}" POWER_BENCH_BUILDS="${usage_builds:-}" sh -c \
+  'cat /proc/loadavg; cd "$DIR/calculator" && time -f "cpu %U user %S sys %e wall" "$BIN" -test.run "^$" -test.bench PowerReportBuilds -test.benchtime 1x -test.benchmem -test.cpu 1 -test.timeout 60m $ARGS; s=$?; cat /proc/loadavg; exit $s'

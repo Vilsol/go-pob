@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+#MISE description="power-bench under wasm (node), one test binary, CPU time beside wall — --stats, --builds, --dir as power-bench"
+#USAGE flag "--builds <builds>" env="BUILDS"
+#USAGE flag "--dir <dir>" env="DIR" default="."
+#USAGE flag "--stats <stats>" env="STATS"
+set -euo pipefail
+dir=$(realpath "$usage_dir")
+bin=/tmp/gopob-power-bench-$$.wasm
+trap 'rm -f "$bin"' EXIT
+GOOS=js GOARCH=wasm go -C "$dir/calculator" test -c -o "$bin"
+flock /tmp/gopob-perf.lock go run ./scripts/gopob nice env DIR="$dir" BIN="$bin" \
+  STATS="${usage_stats:-}" BUILDS="${usage_builds:-}" sh -c \
+  'cat /proc/loadavg; cd "$DIR/calculator" && env --ignore-environment POWER_BENCH_STATS="$STATS" POWER_BENCH_BUILDS="$BUILDS" \
+    "$(command -v time)" -f "cpu %U user %S sys %e wall" "$(command -v node)" "$(go env GOROOT)/lib/wasm/wasm_exec_node.js" \
+    "$BIN" -test.run "^$" -test.bench PowerReportBuilds -test.benchtime 1x -test.benchmem -test.timeout 60m; s=$?; cat /proc/loadavg; exit $s'

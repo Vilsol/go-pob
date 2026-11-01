@@ -78,7 +78,7 @@ func dataFields(args []string) int {
 			fmt.Println("MISSING", m)
 		}
 		if len(missing) > 0 {
-			fmt.Printf("FAIL: %d key paths go-pob reads are absent from %s; write a new list with `task data-fields -- --list FILE` and send it upstream\n", len(missing), source)
+			fmt.Printf("FAIL: %d key paths go-pob reads are absent from %s; write a new list with `mise run data-fields -- --list FILE` and send it upstream\n", len(missing), source)
 			return 1
 		}
 		fmt.Printf("OK: %s covers every field go-pob reads (%d assets)\n", source, len(fresh.Assets))

@@ -11,9 +11,9 @@ import (
 // TestLintGoCacheIsPerWorktree: a shared golangci-lint cache replays findings from other worktrees.
 func TestLintGoCacheIsPerWorktree(t *testing.T) {
 	t.Parallel()
-	task, err := exec.LookPath("task")
+	mise, err := exec.LookPath("mise")
 	if err != nil {
-		t.Skip("no task binary")
+		t.Skip("no mise binary")
 	}
 	repo := repoRoot(t)
 	bin := t.TempDir()
@@ -21,11 +21,11 @@ func TestLintGoCacheIsPerWorktree(t *testing.T) {
 	if err := os.WriteFile(filepath.Join(bin, "golangci-lint"), []byte(fake), 0o700); err != nil { //nolint:gosec // an executable stub
 		t.Fatal(err)
 	}
-	cmd := exec.CommandContext(t.Context(), task, "lint-go")
+	cmd := exec.CommandContext(t.Context(), mise, "run", "lint-go")
 	cmd.Dir = repo
 	cmd.Env = append(os.Environ(), "PATH="+bin+string(os.PathListSeparator)+os.Getenv("PATH"), "GOLANGCI_LINT_CACHE=/shared")
 	if out, err := cmd.CombinedOutput(); err != nil {
-		t.Fatalf("task lint-go: %v\n%s", err, out)
+		t.Fatalf("mise run lint-go: %v\n%s", err, out)
 	}
 	got, err := os.ReadFile(filepath.Join(bin, "cache"))
 	if err != nil {

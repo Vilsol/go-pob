@@ -200,7 +200,7 @@ func parseHeader(b []byte) (*blob, error) {
 		return nil, fmt.Errorf("oraclebin: bad magic %q — is Git LFS checked out?", b[:len(magic)])
 	}
 	if b[len(magic)] != version {
-		return nil, fmt.Errorf("oraclebin: version %d, want %d — regenerate with `task oracle-bin`",
+		return nil, fmt.Errorf("oraclebin: version %d, want %d — regenerate with `mise run oracle-bin`",
 			b[len(magic)], version)
 	}
 	bl := &blob{}
@@ -481,7 +481,7 @@ func loadSideCar(binPath, jsonlPath string) (map[string]Record, bool) {
 	}
 	if digest != want {
 		fmt.Fprintf(os.Stderr,
-			"oraclebin: %s is STALE (built from %x, blob is %x) — falling back to %s; run `task oracle-bin`\n",
+			"oraclebin: %s is STALE (built from %x, blob is %x) — falling back to %s; run `mise run oracle-bin`\n",
 			binPath, digest[:6], want[:6], jsonlPath)
 		return nil, false
 	}
@@ -531,7 +531,7 @@ func LoadSubset(jsonlPath string, want []string) (map[string]Record, error) {
 				return recs, nil
 			}
 			fmt.Fprintf(os.Stderr,
-				"oraclebin: %s is STALE — falling back to %s; run `task oracle-bin`\n",
+				"oraclebin: %s is STALE — falling back to %s; run `mise run oracle-bin`\n",
 				binPath, jsonlPath)
 		}
 	}

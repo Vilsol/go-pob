@@ -1,4 +1,4 @@
-# The Linux packaging host for machines without the WebKit2GTK 4.1 / GTK 3 development packages (`task package-desktop`
+# The Linux packaging host for machines without the WebKit2GTK 4.1 / GTK 3 development packages (`mise run package-desktop`
 # runs package.sh in it); CI runs package.sh on an ubuntu-24.04 runner with the same packages instead.
 FROM ubuntu:24.04
 RUN apt-get update \

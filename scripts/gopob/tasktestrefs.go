@@ -41,7 +41,7 @@ var (
 	ttFenceRE     = regexp.MustCompile(`^` + ttSpaceClass + `*(?:` + "```" + `|~~~)`)
 )
 
-var ttScriptish = map[string]bool{".sh": true, ".py": true, ".yml": true, ".yaml": true, ".go": true}
+var ttScriptish = map[string]bool{".sh": true, ".py": true, ".yml": true, ".yaml": true, ".toml": true, ".go": true}
 
 func ttRefuse(msg string) {
 	fmt.Fprintf(os.Stderr, "REFUSING: %s\n", msg)
@@ -74,9 +74,10 @@ var ttRoots = []struct {
 	{"scripts", []string{"*.sh", "*.py"}},
 	{"scripts/gopob", []string{"*.go"}},
 	{".github", []string{"*.sh", "*.yml", "*.yaml"}},
+	{"mise-tasks", []string{"*"}},
 }
 
-var ttExtra = []string{"Taskfile.yml"}
+var ttExtra = []string{"mise.toml"}
 
 func ttDrivers(root string) []string {
 	var out []string
@@ -279,6 +280,9 @@ func ttSplitLines(text string) []string {
 func ttMentionSpans(rel, text string) [][2]int {
 	var spans [][2]int
 	suffix := strings.ToLower(filepath.Ext(rel))
+	if suffix == "" && strings.HasPrefix(filepath.ToSlash(rel), "mise-tasks/") {
+		suffix = ".sh"
+	}
 	pos := 0
 	if ttScriptish[suffix] {
 		cre := ttCommentRE

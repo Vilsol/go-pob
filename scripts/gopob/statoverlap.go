@@ -99,7 +99,7 @@ func statOverlap(args []string) int {
 		}
 		if len(ids) == 0 {
 			fmt.Fprintf(os.Stderr, "REFUSING: extracted 0 failing builds for '%s'. Either the name is wrong or it has no\n", s)
-			fmt.Fprintf(os.Stderr, "          CLASS=wrong population — check with 'task corpus-vs-oracle STAT=%s CLASS=wrong'.\n", s)
+			fmt.Fprintf(os.Stderr, "          CLASS=wrong population — check with 'mise run corpus-vs-oracle --stat %s --class wrong'.\n", s)
 			if missingSection[s] && len(missingSection) < len(need) {
 				fmt.Fprintf(os.Stderr, "          (the batched run printed sections for the other stats but none for '%s')\n", s)
 			}

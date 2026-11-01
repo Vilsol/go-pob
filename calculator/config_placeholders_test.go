@@ -13,9 +13,9 @@ import (
 	"github.com/Vilsol/go-pob/builds/parsecache"
 )
 
-// TestConfigPlaceholdersAgainstPoB is `task config-placeholders`.
+// TestConfigPlaceholdersAgainstPoB is `mise run config-placeholders`.
 func TestConfigPlaceholdersAgainstPoB(t *testing.T) {
-	requireOperatorRun(t, "reads oracle/config_placeholders.lua output; `task config-placeholders`")
+	requireOperatorRun(t, "reads oracle/config_placeholders.lua output; `mise run config-placeholders`")
 	path := requireTaskInput(t, "config-placeholders", "CONFIG_PLACEHOLDERS")[0]
 	raw, err := os.ReadFile(path)
 	if err != nil {

@@ -3,8 +3,8 @@ name: e2e
 permissions: read-all
 
 # Every Playwright test, @slow included, split over four shards by the durations in frontend/e2e/durations.json
-# (`task e2e-durations` records them from a run). To re-run one shard, use "Re-run failed jobs" on the run, or
-# locally: `task e2e SLOW=1 SHARD=2/4` (the same split, given the same tests and durations).
+# (`mise run e2e-durations` records them from a run). To re-run one shard, use "Re-run failed jobs" on the run, or
+# locally: `mise run e2e --slow --shard 2/4` (the same split, given the same tests and durations).
 
 on:
   push:

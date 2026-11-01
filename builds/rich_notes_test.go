@@ -267,7 +267,7 @@ const (
 	hostileDoc     = `{"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"</RichNotes><Notes>x</Notes> ]]> &amp; ^1 \t"}]}]}`
 )
 
-// TestRichNotesPoBLoadFixtureIsCurrent: The XML the pinned PoB is fed by oracle/rich_notes_pob_load.lua (task rich-notes-pob).
+// TestRichNotesPoBLoadFixtureIsCurrent: The XML the pinned PoB is fed by oracle/rich_notes_pob_load.lua (mise run rich-notes-pob).
 func TestRichNotesPoBLoadFixtureIsCurrent(t *testing.T) {
 	src, err := os.ReadFile(filepath.Join(corpusDirForLoadedData(t), pobLoadSource))
 	if err != nil {
@@ -298,7 +298,7 @@ func TestRichNotesPoBLoadFixtureIsCurrent(t *testing.T) {
 		t.Fatal(err)
 	}
 	if !bytes.Equal(committed, raw) {
-		t.Fatalf("%s is stale against the Go writer: rerun with RICH_NOTES_WRITE_FIXTURE=1, then task rich-notes-pob", pobLoadFixture)
+		t.Fatalf("%s is stale against the Go writer: rerun with RICH_NOTES_WRITE_FIXTURE=1, then mise run rich-notes-pob", pobLoadFixture)
 	}
 }
 

@@ -26,7 +26,7 @@ func TestStatRatios(t *testing.T) {
 	stat := os.Getenv("STAT")
 	if stat != "" && os.Getenv("CORPUS") != "true" {
 		t.Fatalf("STAT=%s was set but CORPUS is not \"true\", so this would have skipped SILENTLY "+
-			"and exited 0. Run `task stat-ratios STAT=%s`, or set CORPUS=true and pass -v.", stat, stat)
+			"and exited 0. Run `mise run stat-ratios --stat %s`, or set CORPUS=true and pass -v.", stat, stat)
 	}
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")

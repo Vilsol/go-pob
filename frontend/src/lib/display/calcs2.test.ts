@@ -6,7 +6,7 @@ import type { CalcSectionColumn2, CalcSectionRow2 } from '$lib/calcs/calc_sectio
 import { calcsModProps2, calcsView2, checkFlag2, formatCalcStr2, type CalcsActor2 } from './calcs2';
 import { cellId, elementsOf } from './calcs';
 
-// PoB-PoE2's Calcs tab over the wasm2 fixture build's main calculation (oracle/poe2_calcs.lua, `task calc-sections-poe2`)
+// PoB-PoE2's Calcs tab over the wasm2 fixture build's main calculation (oracle/poe2_calcs.lua, `mise run calc-sections-poe2`)
 type Oracle = CalcsActor2 & {
   entries: Record<string, unknown>;
   cells: Record<string, string>;

@@ -28,8 +28,8 @@ jobs:
       - name: FMA census
         run: go run ./scripts/gopob fma-census
 
-      - name: Taskfile shape
-        run: go test ./scripts/gopob/ -run 'TestTaskfile|TestNoTaskfileCommandRunsADeletedOriginal' -v
+      - name: mise task shape
+        run: go test ./scripts/gopob/ -run 'TestMiseTasks|TestNoMiseTaskRunsADeletedOriginal' -v
 
       - name: Data fields guard
         run: OPERATOR=true go test ./scripts/gopob/internal/datafields/ -run '^TestReadFieldsAreInTheCommittedList$' -v

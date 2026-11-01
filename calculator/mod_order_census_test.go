@@ -19,7 +19,7 @@ import (
 //
 //	CONTENT — the multisets differ. Counted, reported as a total, then set aside. Not the finding.
 func TestModOrderCensus(t *testing.T) {
-	requireOperatorRun(t, "report-only census; `task census WHICH=order`")
+	requireOperatorRun(t, "report-only census; `mise run census --which order`")
 	if os.Getenv("CORPUS") != "true" {
 		t.SkipNow()
 	}

@@ -101,7 +101,7 @@ func diagLoadDump(dir, name string) (*diagDump, bool) {
 
 // TestDiagNameRank ranks builds by how many more mods of NAME we emit than PoB, excluding builds whose PoB dump is broken.
 func TestDiagNameRank(t *testing.T) {
-	requireOperatorRun(t, "report-only ranking; `task diag`")
+	requireOperatorRun(t, "report-only ranking; `mise run diag`")
 	if os.Getenv("CORPUS") != "true" {
 		t.SkipNow()
 	}

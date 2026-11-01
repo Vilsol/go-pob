@@ -224,7 +224,7 @@ func TestPoBDataTableDrift(t *testing.T) {
 		}
 	} else {
 		report("itemModStatOrder", "ABSENT FROM THE DUMP — the dumper declares it, so the "+
-			"reference predates it; regenerate with `task pob-data-tables`")
+			"reference predates it; regenerate with `mise run pob-data-tables`")
 	}
 
 	if tbl, ok := grade("misc"); ok {
@@ -239,7 +239,7 @@ func TestPoBDataTableDrift(t *testing.T) {
 		diffLevelScalars(t, "mapLevelLifeMult", ours, tbl, report)
 	} else {
 		report("mapLevelLifeMult", "ABSENT FROM THE DUMP — the dumper declares it, so the "+
-			"reference predates it; regenerate with `task pob-data-tables`")
+			"reference predates it; regenerate with `mise run pob-data-tables`")
 	}
 
 	if tbl, ok := grade("weaponTypeInfo"); ok {
@@ -496,7 +496,7 @@ func compareMisc(t *testing.T, tbl pobTable, report func(string, string)) {
 
 	if len(tbl.Exact) == 0 {
 		t.Fatalf("REFUSING: the misc table carries no %q field. Regenerate the dump with "+
-			"`task pob-data-tables` — Values is written at 14 significant digits and cannot "+
+			"`mise run pob-data-tables` — Values is written at 14 significant digits and cannot "+
 			"answer an exact comparison.", "exact")
 	}
 
@@ -552,7 +552,7 @@ func diffLevelScalars(t *testing.T, name string, ours map[string]float64, tbl po
 
 	if len(tbl.Exact) == 0 {
 		t.Fatalf("REFUSING: the %s table carries no %q field. Regenerate the dump with "+
-			"`task pob-data-tables` — Values is written at 14 significant digits and cannot "+
+			"`mise run pob-data-tables` — Values is written at 14 significant digits and cannot "+
 			"answer an exact comparison.", name, "exact")
 	}
 	for key, raw := range tbl.Exact {
@@ -798,7 +798,7 @@ func resolvePoBTableReference(dir string, want pobPinRecord) (*pobTableDump, str
 		return nil, "", fmt.Errorf("REFUSING: no reference in %s was dumped from the pinned PoB.\n"+
 			"    %s pins %s (content_sha256 %s).\n"+
 			"    Found: %v\n"+
-			"    Regenerate with `task pob-data-tables`.\n"+
+			"    Regenerate with `mise run pob-data-tables`.\n"+
 			"    ⚠️ DO NOT relax this to pick the closest or the newest file. Grading against the\n"+
 			"    PREVIOUS pin's tables reports \"no drift\" on exactly the version bump this gate\n"+
 			"    exists to catch, which is the worst failure available to this instrument.",

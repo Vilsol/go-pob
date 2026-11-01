@@ -65,7 +65,7 @@ func readPagesOracle(t *testing.T, name string) pagesOracle {
 	return oracle
 }
 
-// The groups are PoB-PoE2's skills tab for the fixture (oracle/poe2_pages.lua, `task calc-sections-poe2`).
+// The groups are PoB-PoE2's skills tab for the fixture (oracle/poe2_pages.lua, `mise run calc-sections-poe2`).
 func TestSkillGroupsMatchPoB(t *testing.T) {
 	oracle := readPagesOracle(t, "poe2_pages_sorceress_items.json")
 	got, err := calculatedFixture(t, "sorceress_items.xml").SkillGroups()

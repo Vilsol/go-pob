@@ -257,7 +257,7 @@ func cgReport(corpus, pattern string, nFiles int, scans []cgFile, i int) {
 		fmt.Print("  ⚠️  0 matches means 0 in the INPUT XML — item text, gem names and config only.\n" +
 			"      Mods from the PASSIVE TREE, from gem/skill data, or COMPOSED at parse time\n" +
 			"      (ModParser's tails accumulate flags onto a base pattern) are INVISIBLE here.\n" +
-			"      For those, size the population with `task corpus-predicate`, which walks the\n" +
+			"      For those, size the population with `mise run corpus-predicate`, which walks the\n" +
 			"      built environment, and do NOT report this 0 as 'nothing carries this'.\n")
 	}
 	if naive != len(hits) {

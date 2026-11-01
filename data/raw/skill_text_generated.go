@@ -11,7 +11,7 @@ import (
 // (src/Data/Gems.lua), read by the gem tooltip (GemTooltip.lua); and data.goldRespecPrices (src/Data/Misc.lua), read by
 // the tree select's tooltip.
 //
-// Regenerate with `task data-regen -- --only skill-text` after a PoB pin bump.
+// Regenerate with `mise run data-regen -- --only skill-text` after a PoB pin bump.
 
 // SkillQualityStat is one row of a granted effect's qualityStats: the stat and its value per point of quality.
 type SkillQualityStat struct {

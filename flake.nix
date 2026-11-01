@@ -70,7 +70,7 @@
           # and dbus-run-session
           packages = with pkgs; [
             nodejs_26
-            go-task
+            mise
             golangci-lint
             luajit
             zig_0_13

@@ -1,1 +1,1 @@
-REFUSING: ours.txt.gz contains no build records. Re-run `task corpus-dump OUT=...`.
+REFUSING: ours.txt.gz contains no build records. Re-run `mise run corpus-dump --out ...`.

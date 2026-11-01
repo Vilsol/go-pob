@@ -27,11 +27,12 @@ TestExtraCensus
 TestICountPowerReport
 TestItemModDropCensus
 TestItemModDropVsPoB
+TestMiseTasks
 TestModCacheCensus
 TestModCacheDifferential
 TestModDBCensus
 TestModOrderCensus
-TestNoTaskfileCommandRunsADeletedOriginal
+TestNoMiseTaskRunsADeletedOriginal
 TestOracle329TightTolerance
 TestOverAppliedCensus
 TestPoBDataTableDrift
@@ -46,7 +47,6 @@ TestRichNotesLoadInPinnedPoB
 TestRichNotesPoBLoadFixtureIsCurrent
 TestStatRatios
 TestTagCensus
-TestTaskfile
 TestTattooOverrideCensus
 TestTreeStatDropCensus
 TestWritePathRoundTrip
