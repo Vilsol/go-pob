@@ -212,8 +212,78 @@ describe('the PoE2 tree undo and redo', () => {
   }, 120_000);
 });
 
+const knownCellDiffs: Record<string, string[]> = {
+  sorceress_spark: ['Attributes:0:6:0 PoB "^xDD002260" ours "60"', 'Attributes:0:8:0 PoB "^xDD002265" ours "65"'],
+  warrior_dual_mace: ['Attributes:0:6:0 PoB "^xDD002265" ours "65"']
+};
+
 // the values are PoB-PoE2's Calcs tab over its main calculation: oracle/poe2_calcs.lua on the pinned checkout
 describe('the PoE2 Calcs page', () => {
+  it.each(['sorceress_spark', 'warrior_dual_mace'])(
+    "shows PoB-PoE2's cells over the calculation: %s",
+    async (name) => {
+      const { calcSections2 } = await import('$lib/calcs/calc_sections2');
+      const { checkFlag2, formatCalcStr2 } = await import('$lib/display/calcs2');
+      const { cellId, elementsOf } = await import('$lib/display/calcs');
+      type CalcSectionRow2 = import('$lib/calcs/calc_section_types2').CalcSectionRow2;
+      type CalcSectionColumn2 = import('$lib/calcs/calc_section_types2').CalcSectionColumn2;
+      const oracle = JSON.parse(await readFile(resolve(ORACLE, `poe2_calcs_${name}.json`), 'utf8')) as {
+        cells: Record<string, string>;
+        extras: Record<string, string>;
+        enabled: Record<string, boolean>;
+      };
+      const calc = await worker2Instance.Open(await fixture(`${name}.xml`));
+      const page = worker2Instance.CalcsPage();
+      const output: Record<string, unknown> = { ...calc.output, ...page.flags };
+      if (page.mainHand) output.MainHand = page.mainHand;
+      if (page.offHand) output.OffHand = page.offHand;
+      const actor = { output: output as never, skillFlags: calc.skillFlags, skillData: calc.skillData, mods: page.mods };
+      const cells: Record<string, string> = {};
+      const extras: Record<string, string> = {};
+      const enabled: Record<string, boolean> = {};
+      for (const [, id, , , subs] of calcSections2) {
+        const on = checkFlag2({ flag: subs[0].data.flag, notFlag: subs[0].data.notFlag }, actor);
+        let any = false;
+        subs.forEach((sub, j) => {
+          elementsOf<CalcSectionRow2>(sub.data).forEach((row, k) => {
+            if (!on || !checkFlag2(row, actor)) return;
+            any = true;
+            elementsOf<CalcSectionColumn2>(row).forEach((col, l) => {
+              if (col.format !== undefined && checkFlag2(col, actor)) cells[cellId(id, j, k, l)] = formatCalcStr2(col.format, actor, col, cellId(id, j, k, l));
+            });
+          });
+          if (on && sub.data.extra) extras[`${id}:${j}`] = formatCalcStr2(sub.data.extra, actor);
+        });
+        enabled[id] = on && any;
+      }
+      const diff = (a: Record<string, string>, b: Record<string, string>) =>
+        [...new Set([...Object.keys(a), ...Object.keys(b)])]
+          .filter((k) => a[k] !== b[k])
+          .map((k) => `${k} PoB ${JSON.stringify(a[k])} ours ${JSON.stringify(b[k])}`);
+      expect(Object.keys(oracle.cells).length).toBeGreaterThan(250);
+      expect(enabled).toEqual(oracle.enabled);
+      // known divergence: calculator2 writes Req<attr>String as the number where CalcPerform.lua:1988 (PoB-PoE2) prefixes
+      // an unmet requirement with colorCodes.NEGATIVE
+      expect(diff(oracle.cells, cells)).toEqual(knownCellDiffs[name]);
+      expect(diff(oracle.extras, extras)).toEqual([]);
+    },
+    120_000
+  );
+
+  it("shows PoB-PoE2's per-hand ailment rows for a dual wielding attack", async () => {
+    poe2Build.set(await worker2Instance.Open(await fixture('warrior_dual_mace.xml')));
+    issued.length = 0;
+    const page = render(Poe2Page, { route: 'calcs' });
+    const bleed = await vi.waitFor(() => within(page.getByRole('region', { name: 'Calculations' })).getByRole('region', { name: 'Bleed' }), {
+      timeout: 60_000
+    });
+    const row = (label: string) => [...bleed.querySelectorAll<HTMLElement>('[data-key]')].find((r) => r.textContent?.trim().startsWith(label));
+    // Bleed:0:6:0 and Bleed:0:7:0
+    await vi.waitFor(() => expect(row('MH Source Physical')?.textContent).toContain('7 to 12'));
+    expect(row('OH Source Physical')?.textContent).toContain('8 to 13');
+    expect(issued).toEqual(['CalcsPage()']);
+  }, 120_000);
+
   it("shows PoB-PoE2's Life section cells and recalculates with the build", async () => {
     const { pobPlain } = await import('$lib/design/pob_text');
     const oracle = JSON.parse(await readFile(resolve(ORACLE, 'poe2_calcs_sorceress_spark.json'), 'utf8')) as { cells: Record<string, string> };
@@ -231,12 +301,12 @@ describe('the PoE2 Calcs page', () => {
     expect(shown.length).toBeGreaterThan(5);
     expect(shown).toEqual(want);
     expect(cells(row('Base from Gear'))).toEqual(['90']);
-    expect(issued).toEqual(['CalcsMods()']);
+    expect(issued).toEqual(['CalcsPage()']);
 
     // the mod cells follow a recalculation
     const set = await worker2Instance.SetConfigOption('resistancePenalty', 0);
     poe2Build.set(set);
-    await vi.waitFor(() => expect(issued).toEqual(['CalcsMods()', 'CalcsMods()']));
+    await vi.waitFor(() => expect(issued).toEqual(['CalcsPage()', 'CalcsPage()']));
     const resists = within(page.getByRole('region', { name: 'Calculations' })).getByRole('region', { name: 'Resists' });
     await vi.waitFor(() => expect(resists.textContent).toContain('45%'));
     await worker2Instance.SetConfigOption('resistancePenalty', -60);

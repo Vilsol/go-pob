@@ -116,6 +116,14 @@ export type Poe2SkillGroup = {
   gems: { name: string; level: number; quality: number; count: number; enabled: boolean; support: boolean; color: string }[];
 };
 
+// the Calcs page's {p:mod:n} values by cell entry id, the true outputs, and output.MainHand / output.OffHand
+export type Poe2CalcsPage = {
+  mods: Record<string, number>;
+  flags: Record<string, boolean>;
+  mainHand?: Record<string, number>;
+  offHand?: Record<string, number>;
+};
+
 /* ItemsTab:AddItemTooltip's title and mod line groups (PoB-PoE2) */
 export type Poe2Item = { slot: string; id: number; rarity: string; name: string[]; lines: string[][] };
 export type Poe2Items = { useSecondWeaponSet: boolean; items: Poe2Item[] };
@@ -269,11 +277,19 @@ class PoB2Worker {
 
   private calcsQuery?: exposition.CalcsModQuery;
 
-  /* CalcFormat.lua:46-60 (PoB-PoE2): every Calcs page {p:mod:n} entry over the last calculation */
-  CalcsMods(): Record<string, number> {
+  /* CalcFormat.lua:46-60 (PoB-PoE2): every Calcs page {p:mod:n} entry over the last calculation, and the outputs the
+     Calcs page reads beside the sidebar's */
+  CalcsPage(): Poe2CalcsPage {
     if (!this.calc) throw new Error('no PoE2 build is open');
     this.calcsQuery ??= { Entries: calcsModProps2(calcSections2) };
-    return { ...this.calc.CalcsMods(this.calcsQuery).unwrap() };
+    const mods = { ...this.calc.CalcsMods(this.calcsQuery).unwrap() };
+    const out = this.calc.CalcsOutputs().unwrap();
+    return {
+      mods,
+      flags: { ...out?.Flags },
+      mainHand: out?.MainHand ? { ...out.MainHand } : undefined,
+      offHand: out?.OffHand ? { ...out.OffHand } : undefined
+    };
   }
 
   SkillGroups(): Poe2SkillGroup[] {

@@ -16,7 +16,7 @@
     type ConfigValue2,
     type Option2
   } from '$lib/display/configurations2';
-  import type { Poe2Calc, Poe2Items as Poe2ItemsData, Poe2SkillGroup, Worker2Type } from '$lib/go/sync_worker2';
+  import type { Poe2Calc, Poe2CalcsPage, Poe2Items as Poe2ItemsData, Poe2SkillGroup, Worker2Type } from '$lib/go/sync_worker2';
   import { poe2Busy, poe2Error, poe2Run, poe2Worker } from '$lib/go/engine_poe2.svelte';
   import SkillTree2 from '$lib/components/skill-tree/SkillTree2.svelte';
   import Poe2Calcs from './Poe2Calcs.svelte';
@@ -66,9 +66,9 @@
   // what the Calcs, Skills and Items pages read, fetched again for every calculation while one is open; the last
   // shows meanwhile
   type Fetched<T> = { for: unknown; data: T } | undefined;
-  let pageData = $state.raw<{ calcs?: Fetched<Record<string, number>>; skills?: Fetched<Poe2SkillGroup[]>; items?: Fetched<Poe2ItemsData> }>({});
+  let pageData = $state.raw<{ calcs?: Fetched<Poe2CalcsPage>; skills?: Fetched<Poe2SkillGroup[]>; items?: Fetched<Poe2ItemsData> }>({});
   const fetchers = {
-    calcs: (w: Remote<Worker2Type>): Promise<unknown> => w.CalcsMods(),
+    calcs: (w: Remote<Worker2Type>): Promise<unknown> => w.CalcsPage(),
     skills: (w: Remote<Worker2Type>): Promise<unknown> => w.SkillGroups(),
     items: (w: Remote<Worker2Type>): Promise<unknown> => w.EquippedItems()
   };
@@ -129,7 +129,7 @@
     <Poe2Calcs
       calc={view}
       {busy}
-      mods={pageData.calcs?.data}
+      page={pageData.calcs?.data}
       onmaingroup={(i: number) => setMain('group', i)}
       onmainskill={(i: number) => setMain('skill', i)} />
   {:else if route === 'configuration' && rel}

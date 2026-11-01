@@ -1,21 +1,21 @@
 <script lang="ts">
   import CalcsPage from '$lib/design/CalcsPage.svelte';
   import { calcSections2 } from '$lib/calcs/calc_sections2';
-  import { calcsView2 } from '$lib/display/calcs2';
-  import type { Poe2Calc } from '$lib/go/sync_worker2';
+  import { calcsView2, type CalcsActor2 } from '$lib/display/calcs2';
+  import type { Poe2Calc, Poe2CalcsPage } from '$lib/go/sync_worker2';
   import type { calculator } from '$lib/types';
 
   // CalcsTab.lua (PoB-PoE2) over the main calculation: calculator2 runs no CALCS pass, so the tab's own skill
   // number and buff mode are the sidebar's
   let {
     calc,
-    mods,
+    page,
     busy = false,
     onmaingroup,
     onmainskill
   }: {
     calc: Partial<Poe2Calc>;
-    mods: Record<string, number> | undefined;
+    page: Poe2CalcsPage | undefined;
     busy?: boolean;
     onmaingroup: (index: number) => void;
     onmainskill: (index: number) => void;
@@ -23,9 +23,13 @@
 
   const groups = $derived(calc.socketGroups ?? []);
   const mainGroup = $derived(groups[(calc.mainSocketGroup ?? 1) - 1]);
-  const view = $derived(
-    mods ? calcsView2(calcSections2, { output: calc.output ?? {}, skillFlags: calc.skillFlags ?? {}, skillData: calc.skillData ?? {}, mods }) : undefined
-  );
+  const view = $derived.by(() => {
+    if (!page) return undefined;
+    const output: CalcsActor2['output'] = { ...calc.output, ...page.flags };
+    if (page.mainHand) output.MainHand = page.mainHand;
+    if (page.offHand) output.OffHand = page.offHand;
+    return calcsView2(calcSections2, { output, skillFlags: calc.skillFlags ?? {}, skillData: calc.skillData ?? {}, mods: page.mods });
+  });
   const controls = $derived(
     mainGroup && mainGroup.skills.length > 0
       ? ({ Skills: mainGroup.skills, MainActiveSkill: calc.mainActiveSkill || 1 } as calculator.MainSkillControls)

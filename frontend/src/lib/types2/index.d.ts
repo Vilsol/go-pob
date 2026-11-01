@@ -71,9 +71,15 @@ export declare namespace exposition {
   interface CalcsModQuery {
     readonly Entries?: Record<string, Readonly<exposition.CalcsModEntry>>;
   }
+  interface CalcsOutputs {
+    readonly Flags?: Record<string, boolean>;
+    readonly MainHand?: Record<string, number>;
+    readonly OffHand?: Record<string, number>;
+  }
   interface Calculator {
     AllocateAttributeNode(id: number, attributeIndex: number, allocMode: number): Result<void>;
     CalcsMods(query: exposition.CalcsModQuery): Result<(Record<string, number> | undefined)>;
+    CalcsOutputs(): Result<(exposition.CalcsOutputs | undefined)>;
     Calculate(): Promise<Result<(exposition.Outputs | undefined)>>;
     ClickNode(id: number, right: boolean, hotkey: number, confirmClassChange: boolean, allocMode: number): Result<number>;
     ConfigRelevance(query: calculator2.ConfigRelevance): Result<calculator2.ConfigRelevance>;

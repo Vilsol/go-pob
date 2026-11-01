@@ -1,5 +1,6 @@
 -- usage (from PoB-PoE2's src/): luajit poe2_calcs.lua <build.xml> <out.json>
--- Records the Calcs tab PoB-PoE2 draws for a build over its main calculation: the actor's number, true and string outputs,
+-- Records the Calcs tab PoB-PoE2 draws for a build over its main calculation: the actor's number, true and string outputs
+-- (and its MainHand and OffHand tables'),
 -- skill flags and truthy skill data, every {p:mod:n} entry with its combined value, each
 -- section's enabled flag, and the text of every shown cell and subsection extra. Keys are the 0-based
 -- section:subsection:row:column[:entry] ids the frontend uses.
@@ -32,14 +33,20 @@ local function exact(v)
 	end })
 end
 
-local output = {}
-for k, v in pairs(actor.output) do
-	if type(v) == "number" then
-		output[k] = exact(v)
-	elseif v == true or type(v) == "string" then
-		output[k] = v
+local function plain(t, ns)
+	local out = {}
+	for k, v in pairs(t) do
+		if type(v) == "number" then
+			out[k] = exact(v)
+		elseif v == true or type(v) == "string" then
+			out[k] = v
+		elseif ns and type(v) == "table" and (k == "MainHand" or k == "OffHand") then
+			out[k] = plain(v)
+		end
 	end
+	return out
 end
+local output = plain(actor.output, true)
 local activeEffect = actor.mainSkill.activeEffect
 local flags = {}
 for k, v in pairs((activeEffect.statSetCalcs or activeEffect.statSet).skillFlags or {}) do

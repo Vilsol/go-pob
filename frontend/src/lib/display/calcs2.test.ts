@@ -6,17 +6,15 @@ import type { CalcSectionColumn2, CalcSectionRow2 } from '$lib/calcs/calc_sectio
 import { calcsModProps2, calcsView2, checkFlag2, formatCalcStr2, type CalcsActor2 } from './calcs2';
 import { cellId, elementsOf } from './calcs';
 
-// PoB-PoE2's Calcs tab over the wasm2 fixture build's main calculation (oracle/poe2_calcs.lua, `mise run calc-sections-poe2`)
+// PoB-PoE2's Calcs tab over the wasm2 fixture builds' main calculation (oracle/poe2_calcs.lua, `mise run calc-sections-poe2`)
 type Oracle = CalcsActor2 & {
   entries: Record<string, unknown>;
   cells: Record<string, string>;
   extras: Record<string, string>;
   enabled: Record<string, boolean>;
 };
-const oracle = JSON.parse(
-  readFileSync(fileURLToPath(new URL('../../../../testdata/oracle/poe2_calcs_sorceress_spark.json', import.meta.url)), 'utf8')
-) as Oracle;
-const actor: CalcsActor2 = { output: oracle.output, skillFlags: oracle.skillFlags, skillData: oracle.skillData, mods: oracle.mods };
+const load = (name: string) =>
+  JSON.parse(readFileSync(fileURLToPath(new URL(`../../../../testdata/oracle/poe2_calcs_${name}.json`, import.meta.url)), 'utf8')) as Oracle;
 
 const byId = (a: string, b: string) => {
   const pa = a.split(':');
@@ -26,7 +24,10 @@ const byId = (a: string, b: string) => {
   return 0;
 };
 
-describe('the PoE2 Calcs page', () => {
+describe.each(['sorceress_spark', 'warrior_dual_mace'])('the PoE2 Calcs page: %s', (name) => {
+  const oracle = load(name);
+  const actor: CalcsActor2 = { output: oracle.output, skillFlags: oracle.skillFlags, skillData: oracle.skillData, mods: oracle.mods };
+
   it("reads PoB-PoE2's mod entries", () => {
     expect(Object.keys(calcsModProps2(calcSections2)).sort()).toEqual(Object.keys(oracle.entries).sort());
   });

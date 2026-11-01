@@ -22,8 +22,7 @@ type CalcsModQuery struct {
 	Entries map[string]CalcsModEntry
 }
 
-// mainSkillCfg is actor.mainSkill[cfg.."Cfg"]; calculator2 keeps skillCfg and the weapon cfgs only, so dotCfg,
-// decayCfg and the dot<type>Cfg read as nil.
+// mainSkillCfg is actor.mainSkill[cfg.."Cfg"]; calculator2 keeps the dot<type>Cfg by damage type.
 func mainSkillCfg(skill *calculator2.ActiveSkill, name string) *moddb.ListCfg {
 	switch name {
 	case "skill":
@@ -32,8 +31,14 @@ func mainSkillCfg(skill *calculator2.ActiveSkill, name string) *moddb.ListCfg {
 		return skill.Weapon1Cfg
 	case "weapon2":
 		return skill.Weapon2Cfg
+	case "dot":
+		return skill.DotCfg
+	case "decay":
+		return skill.DecayCfg
+	case "dotPhysical", "dotLightning", "dotCold", "dotFire", "dotChaos":
+		return skill.DotTypeCfg[name[len("dot"):]]
 	}
-	return nil
+	return skill.AilmentCfg[name+"Cfg"]
 }
 
 // CalcsMods is each entry's combined value over the last calculation's player, as formatCalcStr reads it.
@@ -75,4 +80,26 @@ func (c *Calculator) CalcsMods(query CalcsModQuery) (map[string]float64, error) 
 		}
 	}
 	return out, nil
+}
+
+// CalcsOutputs is what the Calcs page reads from the last calculation's player beside Output: its true outputs and
+// its output.MainHand and output.OffHand tables, nil when the main skill does not attack with that hand.
+type CalcsOutputs struct {
+	Flags    map[string]bool
+	MainHand map[string]float64
+	OffHand  map[string]float64
+}
+
+func (c *Calculator) CalcsOutputs() (*CalcsOutputs, error) {
+	if c.env == nil {
+		return nil, notCalculatedError{}
+	}
+	p := c.env.Player
+	flags := make(map[string]bool, len(p.OutputFlags))
+	for k, v := range p.OutputFlags {
+		if v {
+			flags[k] = true
+		}
+	}
+	return &CalcsOutputs{Flags: flags, MainHand: p.OutputMainHand, OffHand: p.OutputOffHand}, nil
 }

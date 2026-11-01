@@ -6,9 +6,11 @@ import { cellId, elementsOf, type CalcBlock, type CalcCell, type CalcRow, type C
 import { formatNumSep } from './format_stat';
 import { luaToString } from './saved_stats';
 
+export type CalcsOutputValue2 = number | boolean | string;
+
 export type CalcsActor2 = {
-  // calculator2's output table holds numbers only; PoB-PoE2's also holds true and string outputs
-  output: Record<string, number | boolean | string>;
+  // output with its true outputs, and the MainHand and OffHand tables when the main skill attacks with that hand
+  output: Record<string, CalcsOutputValue2 | Record<string, CalcsOutputValue2>>;
   skillFlags: Record<string, boolean>;
   // the main skill's skillData keys Lua reads as truthy
   skillData: Record<string, boolean>;
@@ -20,7 +22,18 @@ export type CalcsModProps2 = { Cfg: string; ModSource: string; Enemy: boolean; M
 
 const namespaced = /^([a-zA-Z]+)\.([a-zA-Z]+)$/;
 
-/* CalcsTab.lua:433-478 (PoB-PoE2); a namespaced output (output.MainHand) reads as nil, as calculator2 keeps none */
+/* CalcFormat.lua:17-23 (PoB-PoE2): output[c], or output[ns][var] for an ns.var name */
+const outputOf = (actor: CalcsActor2, c: string): CalcsOutputValue2 | undefined => {
+  const m = namespaced.exec(c);
+  if (!m) {
+    const v = actor.output[c];
+    return typeof v === 'object' ? undefined : v;
+  }
+  const table = actor.output[m[1]];
+  return typeof table === 'object' ? table[m[2]] : undefined;
+};
+
+/* CalcsTab.lua:433-478 (PoB-PoE2) */
 export const checkFlag2 = (obj: FlagGated2, actor: CalcsActor2): boolean => {
   const skillFlags = actor.skillFlags;
   const skillData = actor.skillData;
@@ -32,8 +45,7 @@ export const checkFlag2 = (obj: FlagGated2, actor: CalcsActor2): boolean => {
   if (obj.notSkillData && skillData[obj.notSkillData]) return false;
   if (obj.notFlagList) for (const flag of obj.notFlagList) if (skillFlags[flag]) return false;
   if (obj.haveOutput) {
-    if (namespaced.test(obj.haveOutput)) return false;
-    const v = actor.output[obj.haveOutput];
+    const v = outputOf(actor, obj.haveOutput);
     if (v === undefined || v === false || v === 0) return false;
   }
   return true;
@@ -47,7 +59,6 @@ const round = (val: number, dec: number) => Math.floor(val * 10 ** dec + 0.5) / 
 /* CalcFormat.lua:12-14 (PoB-PoE2) */
 const formatCalcVal = (val: number, p: number) => formatNumSep(luaToString(round(val, p)));
 
-const outputOf = (actor: CalcsActor2, c: string) => (namespaced.test(c) ? undefined : actor.output[c]);
 const numberOf = (v: number | boolean | string | undefined) => (typeof v === 'number' ? v : 0);
 
 /* CalcFormat.lua:16-80 (PoB-PoE2); id is the cell's cellId, the key its entries' mod values are under */

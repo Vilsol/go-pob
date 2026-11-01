@@ -40,13 +40,13 @@
     }],
   "items":[{
       "id":4,
-      "lines":[["^x8888FF+2 to Level of all Spell Skills","^x8888FF50% increased Spell Damage"]],
+      "lines":[["^x8888FF+2 to Level of all Spell Skills","^x8888FF45% increased Spell Damage"]],
       "name":["^xFFFF77Glyph Pillar","^xFFFF77Ashen Staff"],
       "rarity":"RARE",
       "slot":"Weapon 1 Swap"
     },{
       "id":1,
-      "lines":[["^xB8DAF1Bonded: +20 to maximum Life","^xB8DAF1Bonded: +20 to maximum Mana","^xB8DAF1+14% to Fire Resistance"],["^x8888FF+120 to Armour","^xA2916085% increased Armour","^x8888FF+90 to maximum Life","^xB8DAF1+35% to Fire Resistance"]],
+      "lines":[["^xB8DAF1Bonded: +20 to maximum Life","^xB8DAF1Bonded: +20 to maximum Mana","^xB8DAF1+14% to Fire Resistance"],["^xA2916085% increased Armour","^x8888FF+120 to Armour","^x8888FF+90 to maximum Life","^x8888FF+18% to Cold Resistance","^xB8DAF1+35% to Fire Resistance"]],
       "name":["^xFFFF77Storm Shell","^xFFFF77Vaal Cuirass"],
       "rarity":"RARE",
       "slot":"Body Armour"
@@ -58,7 +58,7 @@
       "slot":"Ring 1"
     },{
       "id":6,
-      "lines":[["^x8888FF12% increased Spell Damage"]],
+      "lines":[["^x8888FF12% increased Spell Damage","^x8888FF7% increased Cast Speed"]],
       "name":["^x8888FFSapphire of Thought"],
       "rarity":"MAGIC",
       "slot":"Jewel 61419"

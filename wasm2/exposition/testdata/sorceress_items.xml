@@ -18,6 +18,7 @@ Implicits: 0
 +120 to Armour
 {fractured}85% increased Armour
 +90 to maximum Life
+{range:0.8}+(10-20)% to Cold Resistance
 {crafted}+35% to Fire Resistance
 		</Item>
 		<Item id="2">
@@ -43,7 +44,7 @@ Item Level: 60
 LevelReq: 40
 Implicits: 0
 +2 to Level of all Spell Skills
-50% increased Spell Damage
+{range:0.25}(40-60)% increased Spell Damage
 +0% to Cold Resistance
 		</Item>
 		<Item id="5">
@@ -65,6 +66,7 @@ Item Level: 70
 LevelReq: 1
 Implicits: 0
 12% increased Spell Damage
+(5-9)% increased Cast Speed
 		</Item>
 		<ItemSet id="1" title="Default" useSecondWeaponSet="true">
 			<Slot itemId="1" name="Body Armour"/>

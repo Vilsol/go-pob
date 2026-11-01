@@ -32,13 +32,16 @@ const open = async (page: Page, fixture = FIXTURE) => {
   return { view: page, errors };
 };
 
-// PoB-PoE2's Calcs tab for the fixture: testdata/oracle/poe2_calcs_sorceress_spark.json (Life:0:0:0, Life:0:2:0)
+// PoB-PoE2's Calcs tab for the fixture: testdata/oracle/poe2_calcs_sorceress_spark.json (Life:0:0:0, Life:0:2:0;
+// EnergyShield:0:8:0, a row a true output gates)
 test('the PoE2 Calcs page shows PoB-PoE2 values', async ({ page }) => {
   const { view, errors } = await open(page);
   await poe2Nav(page, 'Calcs').click();
   const life = view.getByRole('region', { name: 'Calculations' }).getByRole('region', { name: 'Life', exact: true });
   await expect(life.locator('[data-key]').filter({ hasText: 'Base from Gear' })).toContainText('90');
   await expect(life.locator('[data-key]').filter({ hasText: 'Total Base' })).toContainText('650');
+  const es = view.getByRole('region', { name: 'Calculations' }).getByRole('region', { name: 'Energy Shield', exact: true });
+  await expect(es.locator('[data-key]').filter({ hasText: 'Recharge Delay' })).toContainText('4s');
   expect(errors).toEqual([]);
 });
 
@@ -61,6 +64,8 @@ test('the PoE2 Skills and Items pages show PoB-PoE2 groups and items, and the ma
   await expect(view.getByLabel('Weapon set')).toHaveText('Weapon Set 2');
   await expect(view.locator('[data-slot]')).toHaveCount(4);
   await expect(view.locator('[data-slot="Weapon 1 Swap"]')).toContainText('Glyph Pillar');
+  // a {range:0.25}(40-60)% line, as the tooltip shows it
+  await expect(view.locator('[data-slot="Weapon 1 Swap"]')).toContainText('45% increased Spell Damage');
   await expect(view.locator('[data-slot="Weapon 1"]')).toHaveCount(0);
   await expect(view.locator('[data-slot="Body Armour"]')).toContainText('Bonded: +20 to maximum Life');
   await expect(view.locator('[data-slot="Ring 1"]')).toContainText('Corrupted');

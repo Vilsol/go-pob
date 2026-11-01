@@ -157,12 +157,11 @@ func isZeroValueLine(line string) bool {
 		strings.Contains(line, " 0-0 ") || strings.Contains(line, " 0 to 0 ")
 }
 
-// formatModLine is itemLib.formatModLine outside dbMode; calculator2 does not export applyRange, so a line
-// keeps the text it was loaded with.
+// formatModLine is itemLib.formatModLine outside dbMode.
 //
 //pob2:src/Modules/ItemTools.lua:438-458
-func formatModLine(modLine *calculator2.ModLine) (string, bool) {
-	line := modLine.Line
+func formatModLine(item *calculator2.Item, modLine *calculator2.ModLine) (string, bool) {
+	line := item.RangedLine(modLine)
 	if isZeroValueLine(line) {
 		return "", false
 	}
@@ -223,7 +222,7 @@ func itemTooltip(item *calculator2.Item) ItemView {
 			if variantCount == 0 {
 				continue
 			}
-			if formatted, ok := formatModLine(modLine); ok {
+			if formatted, ok := formatModLine(item, modLine); ok {
 				for range variantCount {
 					lines = append(lines, formatted)
 				}

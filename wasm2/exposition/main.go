@@ -29,6 +29,7 @@ func Exports(r bind.Registry) {
 	r.Type(SavedFullDPS{}, bind.Plain())
 	r.Type(CalcsModQuery{}, bind.Plain())
 	r.Type(CalcsModEntry{}, bind.Plain())
+	r.Type(CalcsOutputs{}, bind.Plain())
 	r.Type(SkillGroupView{}, bind.Plain())
 	r.Type(SkillGemView{}, bind.Plain())
 	r.Type(ItemsView{}, bind.Plain())
