@@ -29,6 +29,7 @@ func doActorLifeManaSpirit(actor *Actor) {
 	}
 
 	chaosInoculation := modDB.Flag(nil, "ChaosInoculation")
+	actor.setOutputFlag("ChaosInoculation", chaosInoculation)
 
 	for _, res := range []string{"Life", "Mana", "Spirit"} {
 		base := modDB.Sum(mod.TypeBase, nil, res)
@@ -37,8 +38,9 @@ func doActorLifeManaSpirit(actor *Actor) {
 		inc := modDB.Sum(mod.TypeIncrease, nil, res)
 		more := modDB.More(nil, res)
 		conv := math.Min(modDB.Sum(mod.TypeBase, nil, res+"ConvertToEnergyShield", res+"ConvertToArmour", res+"ConvertToEvasion"), 100)
-		// output[res.."HasOverride"] is a boolean, which this float output table does not carry.
-		if override := modDB.Override(nil, res); override != nil {
+		override := modDB.Override(nil, res)
+		actor.setOutputFlag(res+"HasOverride", override != nil)
+		if override != nil {
 			output[res] = override.Float()
 			continue
 		}
@@ -334,8 +336,7 @@ type defenceResource struct {
 	totalBase       float64
 }
 
-// Boolean outputs (EnergyShieldRechargeAppliesTo*, the *Immunity flags, showDebuffExpirationModifier)
-// are not carried by this float output table; specificTypeAvoidance is Actor.SpecificTypeAvoidance.
+// The boolean outputs are Actor.OutputFlags.
 //
 //pob2:src/Modules/CalcDefence.lua:790-2051
 func defence(env *Environment, actor *Actor) {
@@ -763,6 +764,7 @@ func defenceBlock(env *Environment, actor *Actor) {
 	output["EffectiveAverageBlockChance"] = (output["EffectiveBlockChance"] + output["EffectiveProjectileBlockChance"] + output["EffectiveSpellBlockChance"] + output["EffectiveSpellProjectileBlockChance"]) / 4
 	output["BlockEffect"] = 100 - modDB.Sum(mod.TypeBase, nil, "BlockEffect")
 	if output["BlockEffect"] != 0 {
+		actor.setOutputFlag("ShowBlockEffect", true)
 		output["DamageTakenOnBlock"] = 100 - output["BlockEffect"]
 	}
 }
@@ -1017,8 +1019,11 @@ func primaryDefences(env *Environment, actor *Actor) {
 		output["ProjectileEvadeChance"] = evade(output["ProjectileEvasion"], "EvadeChance", "ProjectileEvadeChance")
 		output["SpellEvadeChance"] = evade(output["SpellEvasion"], "EvadeChance", "SpellEvadeChance")
 		output["SpellProjectileEvadeChance"] = evade(output["SpellProjectileEvasion"], "EvadeChance", "ProjectileEvadeChance", "SpellProjectileEvadeChance")
-		if !(output["MeleeEvadeChance"] != output["ProjectileEvadeChance"] && output["MeleeEvadeChance"] != output["SpellEvadeChance"] && output["MeleeEvadeChance"] != output["SpellProjectileEvadeChance"]) {
+		if output["MeleeEvadeChance"] != output["ProjectileEvadeChance"] && output["MeleeEvadeChance"] != output["SpellEvadeChance"] && output["MeleeEvadeChance"] != output["SpellProjectileEvadeChance"] {
+			actor.setOutputFlag("splitEvade", true)
+		} else {
 			output["EvadeChance"] = output["MeleeEvadeChance"]
+			actor.setOutputFlag("noSplitEvade", true)
 		}
 		output["EvadeChance"] = math.Min(output["EvadeChance"], evadeMax)
 		if modDB.Flag(nil, "UnluckyEvade") {
@@ -1268,6 +1273,8 @@ func defenceRecovery(actor *Actor) {
 	//pob2:block:src/Modules/CalcDefence.lua:1792-1850
 	rechargeAppliesToLife := modDB.Flag(nil, "EnergyShieldRechargeAppliesToLife") && !modDB.Flag(nil, "CannotRecoverLifeOutsideLeech")
 	rechargeAppliesToEnergyShield := !(modDB.Flag(nil, "NoEnergyShieldRecharge") || modDB.Flag(nil, "CannotGainEnergyShield") || rechargeAppliesToLife)
+	actor.setOutputFlag("EnergyShieldRechargeAppliesToLife", rechargeAppliesToLife)
+	actor.setOutputFlag("EnergyShieldRechargeAppliesToEnergyShield", rechargeAppliesToEnergyShield)
 	if rechargeAppliesToLife || rechargeAppliesToEnergyShield {
 		inc := modDB.Sum(mod.TypeIncrease, nil, "EnergyShieldRecharge")
 		more := modDB.More(nil, "EnergyShieldRecharge")
@@ -1368,6 +1375,7 @@ func defenceAvoidance(actor *Actor, spellSuppressionChance float64) {
 			actor.SpecificTypeAvoidance = true
 		}
 	}
+	actor.setOutputFlag("specificTypeAvoidance", actor.SpecificTypeAvoidance)
 	output["AvoidProjectilesChance"] = math.Min(modDB.Sum(mod.TypeBase, nil, "AvoidProjectilesChance"), avoidChanceCap)
 	output["AvoidAllDamageFromHitsChance"] = math.Min(modDB.Sum(mod.TypeBase, nil, "AvoidAllDamageFromHitsChance"), avoidChanceCap)
 	avoidOrImmune := func(immune bool, names ...string) float64 {
@@ -1378,6 +1386,12 @@ func defenceAvoidance(actor *Actor, spellSuppressionChance float64) {
 	}
 	output["BlindAvoidChance"] = avoidOrImmune(modDB.Flag(nil, "BlindImmune"), "AvoidBlind")
 	output["ImpaleAvoidChance"] = avoidOrImmune(modDB.Flag(nil, "ImpaleImmune"), "AvoidImpale")
+	// Status effect / ailment immunities
+	//pob2:block:src/Modules/CalcDefence.lua:1979-1982
+	actor.setOutputFlag("CorruptedBloodImmunity", modDB.Flag(nil, "CorruptedBloodImmune"))
+	actor.setOutputFlag("MaimImmunity", modDB.Flag(nil, "MaimImmune"))
+	actor.setOutputFlag("HinderImmunity", modDB.Flag(nil, "HinderImmune"))
+	actor.setOutputFlag("KnockbackImmunity", modDB.Flag(nil, "KnockbackImmune"))
 
 	//pob2:block:src/Modules/CalcDefence.lua:1984-1996
 	if modDB.Flag(nil, "SpellSuppressionAppliesToAilmentAvoidance") {
@@ -1421,6 +1435,7 @@ func defenceAvoidance(actor *Actor, spellSuppressionChance float64) {
 	//pob2:block:src/Modules/CalcDefence.lua:2020-2050
 	output["DebuffExpirationRate"] = modDB.Sum(mod.TypeBase, nil, "SelfDebuffExpirationRate")
 	output["DebuffExpirationModifier"] = 10000 / (100 + output["DebuffExpirationRate"])
+	actor.setOutputFlag("showDebuffExpirationModifier", output["DebuffExpirationModifier"] != 100)
 	output["SelfBlindDuration"] = modDB.More(nil, "SelfBlindDuration") * (100 + modDB.Sum(mod.TypeIncrease, nil, "SelfBlindDuration")) * output["DebuffExpirationModifier"] / 100
 
 	if modDB.Flag(nil, "IgniteDurationAppliesToElementalAilments") {

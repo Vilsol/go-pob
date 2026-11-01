@@ -814,6 +814,11 @@ func buildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 		if base.grantedEffect != nil && base.gemData != nil {
 			activeSkill.SkillData["totemBase"] = base
 		}
+		if base.skillLevel >= 1 && base.skillLevel <= len(poe2.MinionLevelTable) {
+			activeSkill.SkillData["totemLevel"] = poe2.MinionLevelTable[base.skillLevel-1]
+		} else {
+			activeSkill.SkillData["totemLevel"] = 1.0
+		}
 
 		// Get skill totem ID for totem skills
 		// This is used to calculate totem life

@@ -146,6 +146,11 @@ function dumpers.constants()
 		"minionLevelTable", "hollowPalmAddedPhys" }) do
 		out[name] = assert(data[name], "REFUSING: data." .. name .. " is absent")
 	end
+	-- keyed by skillTotemId, a sparse integer key the encoder refuses
+	out.totemLifeMult = {}
+	for id, mult in pairs(assert(data.totemLifeMult, "REFUSING: data.totemLifeMult is absent")) do
+		out.totemLifeMult[tostring(id)] = mult
+	end
 	return out
 end
 

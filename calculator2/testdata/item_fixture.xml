@@ -51,6 +51,12 @@ Implicits: 0
 +20 to maximum Energy Shield
 40% increased Evasion and Energy Shield
 +(60-80) to maximum Life
+Adds (3-5) to (8-12) Physical Damage to Attacks
+(10-15)% increased Rarity of Items found
++(20-31) to Dexterity
+			<ModRange id="5" range="0.25"/>
+			<ModRange id="6" range="0.8"/>
+			<ModRange id="7" range="0.33"/>
 		</Item>
 		<Item id="4">
 			Rarity: RARE

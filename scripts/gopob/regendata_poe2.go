@@ -518,7 +518,7 @@ func p2eConstants(body []byte) (string, error) {
 	if err := json.Unmarshal(body, &dump); err != nil {
 		return "", fmt.Errorf("is not a JSON object: %w", err)
 	}
-	if known := len(p2eConstantMaps) + len(p2eConstantTables) + len(p2eConstantPairTables); len(dump) != known {
+	if known := len(p2eConstantMaps) + len(p2eConstantTables) + len(p2eConstantPairTables) + 1; len(dump) != known {
 		return "", fmt.Errorf("holds %d tables, the emitter knows %d", len(dump), known)
 	}
 	var b strings.Builder
@@ -565,6 +565,24 @@ func p2eConstants(body []byte) (string, error) {
 		}
 		fmt.Fprintf(&b, "// %s is data.%s, %s indexed by level - 1.\nvar %s = [][2]float64{%s}\n\n", t.goName, t.key, t.doc, t.goName, strings.Join(rows, ", "))
 	}
+	var totemMult map[string]float64
+	if err := json.Unmarshal(dump["totemLifeMult"], &totemMult); err != nil || len(totemMult) == 0 {
+		return "", fmt.Errorf("totemLifeMult is not a non-empty JSON object of numbers")
+	}
+	ids := make([]int, 0, len(totemMult))
+	for k := range totemMult {
+		id, err := strconv.Atoi(k)
+		if err != nil {
+			return "", fmt.Errorf("totemLifeMult key %q is not a skill totem id", k)
+		}
+		ids = append(ids, id)
+	}
+	sort.Ints(ids)
+	b.WriteString("// TotemLifeMult is data.totemLifeMult (src/Data/Misc.lua), the life multiplier keyed by skillTotemId.\nvar TotemLifeMult = map[int]float64{\n")
+	for _, id := range ids {
+		fmt.Fprintf(&b, "\t%d: %s,\n", id, p2eFloat(totemMult[strconv.Itoa(id)]))
+	}
+	b.WriteString("}\n")
 	return strings.TrimRight(b.String(), "\n") + "\n", nil
 }
 

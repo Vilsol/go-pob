@@ -537,3 +537,26 @@ func applyRange(line string, rangeVal float64, ranges []float64, valueScalar, ba
 
 //pob2:src/Modules/Data.lua:480-480
 const defaultHighPrecision = 1
+
+// RangedLine is the text itemLib.formatModLine shows for modLine outside dbMode: the line with its
+// range and value scalar applied.
+//
+//pob2:block:src/Modules/ItemTools.lua:439-440
+func (i *Item) RangedLine(modLine *ModLine) string {
+	valueScalar := modLine.ValueScalar
+	if modLine.DisplayValueScalar != nil {
+		v := 1.0
+		if modLine.ValueScalar != nil {
+			v = *modLine.ValueScalar
+		}
+		valueScalar = floatp(v * *modLine.DisplayValueScalar)
+	}
+	if modLine.Range == nil && modLine.DisplayValueScalar == nil {
+		return modLine.Line
+	}
+	rangeVal := defaultItemAffixQuality
+	if modLine.Range != nil {
+		rangeVal = *modLine.Range
+	}
+	return applyRange(modLine.Line, rangeVal, nil, valueScalar, modLine.CorruptedRange, i.modSource)
+}

@@ -4,12 +4,12 @@ import (
 	"math"
 	"strings"
 
+	"github.com/Vilsol/go-pob/data/poe2"
 	"github.com/Vilsol/go-pob/mod"
 )
 
-// offenceSkillTypeStats calculates skill type stats. Totem life needs data.monsterAllyLifeTable and
-// data.totemLifeMult, and corpse life data.monsterLifeTable; none is built, so those outputs are not
-// written.
+// offenceSkillTypeStats calculates skill type stats. Corpse life needs data.monsterVarietyLifeMult and
+// data.mapLevelLifeMult, which are not built, so those outputs are not written.
 //
 //pob2:block:src/Modules/CalcOffence.lua:1417-1992
 func offenceSkillTypeStats(env *Environment, actor *Actor, activeSkill *ActiveSkill, skillFlags map[string]bool, output map[string]float64) {
@@ -355,6 +355,12 @@ func offenceSkillTypeStats(env *Environment, actor *Actor, activeSkill *ActiveSk
 			output["TotemsSummoned"] = o.Float()
 		}
 		output["TotemLifeMod"] = calcLibMod(skillModList, skillCfg, "TotemLife")
+		// Lua indexes nil and raises for a totem level or totem id outside the tables; Go writes nothing.
+		if totemLevel, _ := sdNum(skillData, "totemLevel"); totemLevel >= 1 && int(totemLevel) <= len(poe2.MonsterAllyLifeTable) {
+			if mult, ok := poe2.TotemLifeMult[activeSkill.SkillTotemID]; ok {
+				output["TotemLife"] = round(math.Floor(poe2.MonsterAllyLifeTable[int(totemLevel)-1]*mult) * output["TotemLifeMod"])
+			}
+		}
 		output["TotemEnergyShield"] = sum("TotemEnergyShield")
 		output["TotemBlockChance"] = sum("TotemBlockChance")
 		output["TotemArmour"] = sum("TotemArmour")
@@ -473,7 +479,7 @@ type skillCost struct {
 }
 
 // offenceCosts calculates costs (may be slightly off due to rounding differences). It returns
-// output[resource.."HasCost"], which the output map does not hold.
+// output[resource.."HasCost"], which is also in Actor.OutputFlags.
 //
 //pob2:block:src/Modules/CalcOffence.lua:2193-2395
 func offenceCosts(env *Environment, actor *Actor, activeSkill *ActiveSkill, output map[string]float64) map[string]bool {
@@ -618,6 +624,7 @@ func offenceCosts(env *Environment, actor *Actor, activeSkill *ActiveSkill, outp
 		}
 		hasCost := val.baseCost > 0 || val.totalCost > 0 || val.baseCostNoMult > 0 || val.finalBaseCost > 0
 		hasCosts[resource] = hasCost
+		actor.setOutputFlag(resource+"HasCost", hasCost)
 		costName := resource + "Cost"
 		costNameRaw := costName + "Raw"
 		costEfficiency := calcLibMod(skillModList, skillCfg, val.typ+"CostEfficiency", "CostEfficiency")

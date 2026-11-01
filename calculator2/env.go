@@ -156,6 +156,9 @@ type GemInstance struct {
 	// SkillMinion and SkillMinionCalcs are the minion the gem summons, by data.minions key; "" is nil.
 	SkillMinion      string
 	SkillMinionCalcs string
+	// SkillMinionItemSet and SkillMinionItemSetCalcs are the item set id the gem's minion uses; 0 is nil.
+	SkillMinionItemSet      int
+	SkillMinionItemSetCalcs int
 
 	Level         int
 	Quality       float64
@@ -249,6 +252,14 @@ type ActiveSkill struct {
 
 	SlotName string
 
+	// AilmentCfg (activeSkill[ailment:lower().."Cfg"] and its "OH" off-hand twin, by that key), DecayCfg,
+	// DotCfg and DotTypeCfg (activeSkill["dot"..damageType.."Cfg"], by damage type) are the cfgs
+	// calcs.offence keeps for damage over time.
+	AilmentCfg map[string]*moddb.ListCfg
+	DecayCfg   *moddb.ListCfg
+	DotCfg     *moddb.ListCfg
+	DotTypeCfg map[string]*moddb.ListCfg
+
 	// The fields calcs.buildActiveSkillModList sets.
 	SkillModList      *moddb.ModList
 	BaseSkillModList  *moddb.ModList
@@ -293,6 +304,8 @@ type Actor struct {
 	Output map[string]float64
 	// SpecificTypeAvoidance is output.specificTypeAvoidance, a boolean the float output table does not hold.
 	SpecificTypeAvoidance bool
+	// OutputFlags is output's boolean entries, which Output does not hold.
+	OutputFlags map[string]bool
 	// OutputMainHand and OutputOffHand are output.MainHand/OffHand, nil unless the main skill attacks.
 	OutputMainHand map[string]float64
 	OutputOffHand  map[string]float64
@@ -327,6 +340,13 @@ type Actor struct {
 	WeaponRange2 float64
 
 	appliedEnemyModifiers map[mod.Mod]bool
+}
+
+func (a *Actor) setOutputFlag(key string, v bool) {
+	if a.OutputFlags == nil {
+		a.OutputFlags = map[string]bool{}
+	}
+	a.OutputFlags[key] = v
 }
 
 func (a *Actor) GetOutput(key string) (float64, bool) {

@@ -23,6 +23,7 @@ func getLeechInstances(amount, total, hitRate float64) (float64, float64) {
 //
 //pob2:block:src/Modules/CalcOffence.lua:3351-3383
 func (h *offenceHit) calcAncestralBoost(skillName string, moreDmg float64, uptimeOverride float64, hasUptimeOverride bool) {
+	h.actor.setOutputFlag("CreateWarcryOffensiveCalcSection", true) // labels for the CalcSection
 	globalOutput := h.actor.Output
 	skillNameVar := strings.ReplaceAll(skillName, " ", "") // Fist Of War -> FistOfWar
 
@@ -49,6 +50,7 @@ func (h *offenceHit) calcAncestralBoost(skillName string, moreDmg float64, uptim
 //
 //pob2:block:src/Modules/CalcOffence.lua:3386-3429
 func (h *offenceHit) calcCombinedAncestralBoost(skillName string, moreDmg float64, uptimeOverride float64, additionalSkillName string) {
+	h.actor.setOutputFlag("CreateWarcryOffensiveCalcSection", true) // labels for the CalcSection
 	globalOutput := h.actor.Output
 	skillNameVar := strings.ReplaceAll(skillName, " ", "") // Fist Of War -> FistOfWar
 
@@ -157,7 +159,9 @@ func (h *offenceHit) offenceWarcryExerts(cfg *moddb.ListCfg) {
 			globalOutput["AncestralUpTimeRatio"] = warcryTimes(value, "AncestralCry", "AncestralExertsCount", "NumAncestralExerts")
 			globalOutput["GlobalWarcryUptimeRatio"] += globalOutput["AncestralUpTimeRatio"]
 			h.calculated["AncestralCryCalculated"] = true
+			h.actor.setOutputFlag("AncestralCryCalculated", true)
 		case name == "Infernal Cry" && st["Melee"] && !calculated("InfernalCryCalculated"):
+			h.actor.setOutputFlag("CreateWarcryOffensiveCalcSection", true)
 			globalOutput["InfernalCryUptimeRatio"] = warcryTimes(value, "InfernalCry", "InfernalEmpoweredCount", "NumInfernalEmpowers")
 			globalOutput["GlobalWarcryUptimeRatio"] += globalOutput["InfernalCryUptimeRatio"]
 			infernalGainAsFire := modDB.Sum(mod.TypeBase, nil, "InfernalExtraFireDamage")
@@ -169,7 +173,9 @@ func (h *offenceHit) offenceWarcryExerts(cfg *moddb.ListCfg) {
 				skillModList.AddMod(newMod("DamageGainAsFire", mod.TypeBase, infernalGainAsFire*infernalUptime/100, "Uptime Scaled Infernal Cry").Flag(ModFlagMelee))
 			}
 			h.calculated["InfernalCryCalculated"] = true
+			h.actor.setOutputFlag("InfernalCryCalculated", true)
 		case name == "Intimidating Cry" && st["Melee"] && !calculated("IntimidatingCryCalculated"):
+			h.actor.setOutputFlag("CreateWarcryOffensiveCalcSection", true)
 			globalOutput["IntimidatingUpTimeRatio"] = warcryTimes(value, "IntimidatingCry", "IntimidatingExertsCount", "NumIntimidatingExerts")
 			globalOutput["GlobalWarcryUptimeRatio"] += globalOutput["IntimidatingUpTimeRatio"]
 			selfDouble := 0.0
@@ -183,7 +189,9 @@ func (h *offenceHit) offenceWarcryExerts(cfg *moddb.ListCfg) {
 			globalOutput["TheoreticalOffensiveWarcryEffect"] *= globalOutput["IntimidatingHitEffect"]
 			globalOutput["TheoreticalMaxOffensiveWarcryEffect"] *= globalOutput["IntimidatingMaxHitEffect"]
 			h.calculated["IntimidatingCryCalculated"] = true
+			h.actor.setOutputFlag("IntimidatingCryCalculated", true)
 		case name == "Rallying Cry" && st["Melee"] && !calculated("RallyingCryCalculated"):
+			h.actor.setOutputFlag("CreateWarcryOffensiveCalcSection", true)
 			globalOutput["RallyingUpTimeRatio"] = warcryTimes(value, "RallyingCry", "RallyingExertsCount", "NumRallyingExerts")
 			globalOutput["GlobalWarcryUptimeRatio"] += globalOutput["RallyingUpTimeRatio"]
 			globalOutput["RallyingAvgDmg"] = math.Min(env.ModDB.Sum(mod.TypeBase, cfg, "Multiplier:NearbyAlly"), 5) * (env.ModDB.Sum(mod.TypeBase, nil, "RallyingExertMoreDamagePerAlly") / 100)
@@ -194,7 +202,9 @@ func (h *offenceHit) offenceWarcryExerts(cfg *moddb.ListCfg) {
 			globalOutput["TheoreticalOffensiveWarcryEffect"] *= globalOutput["RallyingHitEffect"]
 			globalOutput["TheoreticalMaxOffensiveWarcryEffect"] *= globalOutput["RallyingMaxHitEffect"]
 			h.calculated["RallyingCryCalculated"] = true
+			h.actor.setOutputFlag("RallyingCryCalculated", true)
 		case name == "Seismic Cry" && st["Slam"] && !calculated("SeismicCryCalculated"):
+			h.actor.setOutputFlag("CreateWarcryOffensiveCalcSection", true)
 			globalOutput["SeismicUpTimeRatio"] = warcryTimes(value, "SeismicCry", "SeismicExertsCount", "NumSeismicExerts")
 			globalOutput["GlobalWarcryUptimeRatio"] += globalOutput["SeismicUpTimeRatio"]
 			// account for AoE increase
@@ -205,6 +215,7 @@ func (h *offenceHit) offenceWarcryExerts(cfg *moddb.ListCfg) {
 			}
 			h.calcAreaOfEffect()
 			h.calculated["SeismicCryCalculated"] = true
+			h.actor.setOutputFlag("SeismicCryCalculated", true)
 		case name == "Battlemage's Cry" && !calculated("BattleMageCryCalculated"):
 			if st["Melee"] {
 				globalOutput["BattlemageUpTimeRatio"] = warcryTimes(value, "BattleMageCry", "BattleCryExertsCount", "NumBattlemageExerts")
@@ -213,6 +224,7 @@ func (h *offenceHit) offenceWarcryExerts(cfg *moddb.ListCfg) {
 				warcryTimes(value, "BattleMageCry", "", "")
 			}
 			h.calculated["BattleMageCryCalculated"] = true
+			h.actor.setOutputFlag("BattleMageCryCalculated", true)
 		}
 	}
 
@@ -319,6 +331,7 @@ func (h *offenceHit) offenceAncestralBoosts(pass *offencePass) {
 		globalOutput["ExertedAttackHitEffect"] = globalOutput["ExertedAttackAvgDmg"] * globalOutput["ExertedAttackUptimeRatio"] / 100
 		globalOutput["ExertedAttackMaxHitEffect"] = globalOutput["ExertedAttackAvgDmg"]
 		h.calculated["ExertedAttackUptimeRatioCalculated"] = true
+		h.actor.setOutputFlag("ExertedAttackUptimeRatioCalculated", true)
 	}
 
 	maxBoostedUptimeRatio := skillModList.Flag(cfg, "MaxBoostedUptimeRatio")
@@ -346,6 +359,7 @@ func (h *offenceHit) offenceAncestralBoosts(pass *offencePass) {
 		globalOutput["BoostedAttackHitEffect"] = globalOutput["BoostedAttackAvgDmg"] * globalOutput["BoostedAttackUptimeRatio"] / 100
 		globalOutput["BoostedAttackMaxHitEffect"] = globalOutput["BoostedAttackAvgDmg"]
 		h.calculated["BoostedAttackUptimeRatioCalculated"] = true
+		h.actor.setOutputFlag("BoostedAttackUptimeRatioCalculated", true)
 	}
 }
 
@@ -934,7 +948,7 @@ func (h *offenceHit) offenceDamagePass(pass *offencePass, quantityMultiplier flo
 		repeatPenalty = calcLibMod(skillModList, skillCfg, "SealRepeatPenalty")
 	}
 	globalOutput["AverageBurstDamage"] = output["AverageDamage"] + output["AverageDamage"]*(globalOutput["AverageBurstHits"]-1)*repeatPenalty
-	// globalOutput.ShowBurst is a boolean, which the output map does not hold.
+	h.actor.setOutputFlag("ShowBurst", globalOutput["AverageBurstHits"] > 1)
 	output["TotalDPS"] = output["AverageDamage"] * hitSpeed * output["DpsMultiplier"] * quantityMultiplier
 
 	h.offencePvp(pass, totalHitMin, totalHitMax, hitSpeed)

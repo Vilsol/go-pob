@@ -98,6 +98,11 @@ end
 
 local lineFlags = { "crafted", "custom", "disabled", "enchant", "fractured", "implicit", "desecrated", "mutated", "rune",
 	"unscalable", "prefix", "suffix", "bonded", "socketedRuneEffectAlreadyApplied" }
+-- the text formatModLine shows, colour codes stripped; nil for a hidden zero-value line
+local function rangedLine(ml)
+	local shown = itemLib.formatModLine(ml, false, true)
+	return shown and (shown:gsub("%^x%x%x%x%x%x%x", ""):gsub("%^%d", ""))
+end
 local function encodeModLines(lines)
 	local parts = {}
 	for i, ml in ipairs(lines) do
@@ -109,7 +114,8 @@ local function encodeModLines(lines)
 		end
 		parts[i] = '{"line":' .. encode(ml.line) .. ',"extra":' .. encode(ml.extra) .. ',"range":' .. encode(ml.range)
 			.. ',"valueScalar":' .. encode(ml.valueScalar) .. ',"flags":' .. encode(flags)
-			.. ',"augmentType":' .. encode(ml.augmentType) .. ',"modList":' .. encodeModList(ml.modList) .. '}'
+			.. ',"augmentType":' .. encode(ml.augmentType) .. ',"ranged":' .. encode(rangedLine(ml))
+			.. ',"modList":' .. encodeModList(ml.modList) .. '}'
 	end
 	return "[" .. table.concat(parts, ",") .. "]"
 end

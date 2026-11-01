@@ -74,7 +74,8 @@ func TestPoE2DataEmitRefuses(t *testing.T) {
 		{"gem id gap", "gems", `[{"id":"g","additionalGrantedEffectId2":"x"}]`, "gap"},
 		{"rune unsorted slot", "runes", `[{"rune":"R","slot":"b"},{"rune":"R","slot":"a"}]`, "not sorted"},
 		{"constants string", "constants", `{"misc":{"a":"x"}}`, "holds 1 tables"},
-		{"constants pair shape", "constants", `{"misc":{"a":1},"gameConstants":{"a":1},"characterConstants":{"a":1},"monsterConstants":{"a":1},"playerMinionIntrinsicStats":{"a":1},"monsterEvasionTable":[1],"monsterAccuracyTable":[1],"monsterLifeTable":[1],"monsterAllyLifeTable":[1],"monsterDamageTable":[1],"monsterAllyDamageTable":[1],"monsterArmourTable":[1],"monsterAilmentThresholdTable":[1],"monsterPoiseThresholdTable":[1],"minionLevelTable":[1],"hollowPalmAddedPhys":[[1,2,3]]}`, "not 2"},
+		{"constants pair shape", "constants", `{"misc":{"a":1},"gameConstants":{"a":1},"characterConstants":{"a":1},"monsterConstants":{"a":1},"playerMinionIntrinsicStats":{"a":1},"monsterEvasionTable":[1],"monsterAccuracyTable":[1],"monsterLifeTable":[1],"monsterAllyLifeTable":[1],"monsterDamageTable":[1],"monsterAllyDamageTable":[1],"monsterArmourTable":[1],"monsterAilmentThresholdTable":[1],"monsterPoiseThresholdTable":[1],"minionLevelTable":[1],"hollowPalmAddedPhys":[[1,2,3]],"totemLifeMult":{"1":1}}`, "not 2"},
+		{"constants totem key", "constants", `{"misc":{"a":1},"gameConstants":{"a":1},"characterConstants":{"a":1},"monsterConstants":{"a":1},"playerMinionIntrinsicStats":{"a":1},"monsterEvasionTable":[1],"monsterAccuracyTable":[1],"monsterLifeTable":[1],"monsterAllyLifeTable":[1],"monsterDamageTable":[1],"monsterAllyDamageTable":[1],"monsterArmourTable":[1],"monsterAilmentThresholdTable":[1],"monsterPoiseThresholdTable":[1],"minionLevelTable":[1],"hollowPalmAddedPhys":[[1,2]],"totemLifeMult":{"x":1}}`, "not a skill totem id"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			var err error

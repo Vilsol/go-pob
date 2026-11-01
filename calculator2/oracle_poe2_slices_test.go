@@ -38,10 +38,11 @@ const poe2OffenceMatchedFloor = 540242
 const poe2SkillsOnMatchedFloor = 180000
 
 // poe2MinionNonzeroFloor and poe2HandNonzeroFloor are the skills-on nonzero matched floors of the
-// minion and per-hand lines.
+// minion and per-hand lines, and poe2SkillsOffMinionNonzeroFloor the skills-off minion line's.
 const (
-	poe2MinionNonzeroFloor = 101403
-	poe2HandNonzeroFloor   = 551623
+	poe2MinionNonzeroFloor          = 101403
+	poe2HandNonzeroFloor            = 551623
+	poe2SkillsOffMinionNonzeroFloor = 101496
 )
 
 func checkPoE2NonzeroFloor(t *testing.T, line string, got, floor int) {
@@ -489,7 +490,9 @@ func TestCorpusPoE2OffenceVsOracle(t *testing.T) {
 	g := gradePoE2Slice(t, filepath.Join("..", "testdata", "corpus-poe2-0.5-skillsoff"),
 		filepath.Join("..", "testdata", "oracle-poe2-0.5", "output-poe2-0.5-skillsoff.jsonl.gz"), offenceSliceStats)
 	g.printSlice("CORPUS PoE2 0.5 vs ORACLE PoE2 0.5 (skills off, offence slice)", offenceSliceStats)
+	minionOK := g.printMinion("skills off: every numeric minion oracle output")
 	g.check(t, poe2OffenceMatchedFloor)
+	checkPoE2NonzeroFloor(t, "skills-off minion", minionOK, poe2SkillsOffMinionNonzeroFloor)
 }
 
 // TestCorpusPoE2SkillsOnVsOracle grades the defence slice and every numeric output of every skills-on

@@ -405,6 +405,7 @@ type oracleModLine struct {
 	ValueScalar *float64         `json:"valueScalar"`
 	Flags       any              `json:"flags"`
 	AugmentType *string          `json:"augmentType"`
+	Ranged      *string          `json:"ranged"`
 	ModList     []map[string]any `json:"modList"`
 }
 
@@ -583,6 +584,9 @@ func compareOracleItem(row *oracleItem, item *Item, src *oracleModSource) map[st
 			if strings.Join(of, ",") != strings.Join(pf, ",") {
 				note("modline-flags", "%s[%d] %q flags %v, PoB %v", l.name, n, ours.Line, of, pf)
 			}
+			if pob.Ranged != nil && item.RangedLine(ours) != *pob.Ranged {
+				note("modline-ranged", "%s[%d] %q ranged %q, PoB %q", l.name, n, ours.Line, item.RangedLine(ours), *pob.Ranged)
+			}
 			if ours.AugmentType != strOr(pob.AugmentType) {
 				note("modline-augment", "%s[%d] %q augment %q, PoB %q", l.name, n, ours.Line, ours.AugmentType, strOr(pob.AugmentType))
 			}
@@ -659,6 +663,11 @@ func knownItemCause(row *oracleItem, item *Item, src *oracleModSource, bad map[s
 		// The first request PoB did not make decides; a miss then also tries the next line.
 		if logged[normaliseModLine(src.unlogged[0])] {
 			return "data: no ModScalability table, so a number keeps its text form"
+		}
+	}
+	if _, ok := bad["modline-ranged"]; ok && len(bad) == 1 {
+		if _, has := modScalabilityFor("#"); !has {
+			return "data: no ModScalability table, so a scaled line is formatted by applyRange's fallback"
 		}
 	}
 	if _, ok := bad["modline-augment"]; ok && len(bad) == 1 {

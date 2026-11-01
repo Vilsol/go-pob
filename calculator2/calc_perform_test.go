@@ -401,3 +401,31 @@ func TestPerformMinionDamageMultiplierFixture(t *testing.T) {
 		t.Errorf("minion TotalDPS: PoB-PoE2 %v, ours %v", want, got)
 	}
 }
+
+// The expected values are PoB-PoE2's for the same files, loaded headless: Dark Effigy (skillTotemId 24,
+// life multiplier 1) at gem level 17 is a level 34 totem; Ancestral Warrior Totem (skillTotemId 15,
+// multiplier 1.2) at gem level 11 is a level 22 totem.
+func TestPerformTotemLifeFixtures(t *testing.T) {
+	for _, tc := range []struct {
+		file             string
+		totemLevel, life float64
+	}{
+		{"testdata/totem_life_effigy.xml", 34, 2384},
+		{"testdata/totem_life_ancestral_warrior.xml", 22, 1087},
+	} {
+		raw, err := os.ReadFile(tc.file)
+		testza.AssertNoError(t, err)
+		build, err := pob2.ParseBuild(raw)
+		testza.AssertNoError(t, err)
+		tree := loadTestTree(t)
+		env, err := BuildOutput(build, Options{Tree: tree, Items: NewItemsTab(build, tree, nil)})
+		testza.AssertNoError(t, err)
+
+		if got, _ := sdNum(env.Player.MainSkill.SkillData, "totemLevel"); got != tc.totemLevel {
+			t.Errorf("%s totemLevel: PoB-PoE2 %v, ours %v", tc.file, tc.totemLevel, got)
+		}
+		if got := env.Player.Output["TotemLife"]; got != tc.life {
+			t.Errorf("%s TotemLife: PoB-PoE2 %v, ours %v", tc.file, tc.life, got)
+		}
+	}
+}

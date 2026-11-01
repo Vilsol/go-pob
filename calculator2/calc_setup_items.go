@@ -51,6 +51,21 @@ type itemSetSlot struct {
 	active    bool
 }
 
+// ItemSet is an entry of itemsTab.itemSets: the selected item per slot name and the set's
+// useSecondWeaponSet.
+type ItemSet struct {
+	Slots              map[string]*itemSetSlot
+	UseSecondWeaponSet bool
+}
+
+// SelItemID is itemSet[slotName].selItemId; a slot the set does not hold is 0.
+func (s *ItemSet) SelItemID(slotName string) int {
+	if ss := s.Slots[slotName]; ss != nil {
+		return ss.selItemID
+	}
+	return 0
+}
+
 // ItemsTab is build.itemsTab after ItemsTab:Load: the items, the slots in orderedSlots order, and the
 // active item set's selections.
 type ItemsTab struct {
@@ -61,6 +76,9 @@ type ItemsTab struct {
 	Sockets       map[int]*ItemSlot
 
 	UseSecondWeaponSet bool
+	// ItemSets and ItemSetOrderList are itemsTab.itemSets and itemsTab.itemSetOrderList.
+	ItemSets         map[int]*ItemSet
+	ItemSetOrderList []int
 	// RuneSlots is each character rune slot's selected rune; a slot holding "None" is absent.
 	RuneSlots map[string]*poe2.RuneMod
 
@@ -185,6 +203,11 @@ func (tab *ItemsTab) load(build *pob2.PathOfBuilding2, modSource ModSource) {
 		useSecond[1] = !items.UseSecondWeaponSet.IsNil && items.UseSecondWeaponSet.V
 		itemSetOrderList = append(itemSetOrderList, 1)
 	}
+	tab.ItemSets = make(map[int]*ItemSet, len(itemSets))
+	for id, set := range itemSets {
+		tab.ItemSets[id] = &ItemSet{Slots: set, UseSecondWeaponSet: useSecond[id]}
+	}
+	tab.ItemSetOrderList = itemSetOrderList
 	activeID := items.ActiveItemSet
 	if activeID == 0 {
 		activeID = 1

@@ -280,6 +280,14 @@ func (h *offenceHit) offenceAilments() {
 			}
 			dotCfg.SkillCond["CriticalStrike"] = true
 			dotCfg.SkillDist, dotCfg.SkillDistSet = skillCfg.SkillDist, skillCfg.SkillDistSet
+			cfgKey := strings.ToLower(ailment) + "Cfg"
+			if pass.label == "Off Hand" {
+				cfgKey = "OH" + cfgKey
+			}
+			if activeSkill.AilmentCfg == nil {
+				activeSkill.AilmentCfg = map[string]*moddb.ListCfg{}
+			}
+			activeSkill.AilmentCfg[cfgKey] = dotCfg
 			checkWeapon1HFlags(dotCfg)
 
 			globalOutput[ailment+"ChancePerHit"] = output[ailment+"ChanceOnHit"]*(1-output["CritChance"]/100) + output[ailment+"ChanceOnCrit"]*output["CritChance"]/100
@@ -412,7 +420,7 @@ func (h *offenceHit) offenceAilments() {
 					if groundMult > 0 {
 						groundDPSUncapped := baseVal * effectMod * rateMod * effMult * groundMult / 100
 						globalOutput["BurningGroundDPS"] = math.Min(groundDPSUncapped, miscConstant("DotDpsCap"))
-						// globalOutput.BurningGroundFromIgnite is a boolean, which the output map does not hold.
+						h.actor.setOutputFlag("BurningGroundFromIgnite", true)
 					}
 				case "Poison":
 					groundMult := math.Max(skillModList.Max(nil, "PoisonDpsAsCausticGround"), enemyDB.Max(nil, "PoisonDpsAsCausticGround"))
@@ -740,6 +748,7 @@ func (h *offenceHit) offenceDots() {
 		// Calculate DPS for Decay effect
 		skillFlags["decay"] = true
 		dotCfg := newSkillCfg(skillCfg, ModFlagDot, (skillCfg.KeywordFlags.Get()&^KeywordFlagHit)|KeywordFlagChaosDot)
+		activeSkill.DecayCfg = dotCfg
 		effMult := 1.0
 		if env.ModeEffective {
 			resist := calcResistForType(env, enemyDB, "Chaos", dotCfg)
@@ -808,6 +817,7 @@ func (h *offenceHit) offenceDots() {
 		dotTakenCfg.Flags = &flags
 	}
 
+	activeSkill.DotCfg = dotCfg
 	output["TotalDotInstance"] = 0
 
 	// runSkillFunc("preDotFunc"): no PoE2 skill defines one.
@@ -817,6 +827,10 @@ func (h *offenceHit) offenceDots() {
 		dotTypeCfg := copyCfgShallow(dotCfg)
 		kw := dotTypeCfg.KeywordFlags.Get() | ailmentKeywordFlags[damageType+"Dot"]
 		dotTypeCfg.KeywordFlags = &kw
+		if activeSkill.DotTypeCfg == nil {
+			activeSkill.DotTypeCfg = map[string]*moddb.ListCfg{}
+		}
+		activeSkill.DotTypeCfg[damageType] = dotTypeCfg
 		baseVal := 0.0
 		if canDeal[damageType] {
 			baseVal, _ = sdNum(skillData, damageType+"Dot")
@@ -976,6 +990,7 @@ func (h *offenceHit) offenceLinkCosts(hasCosts map[string]bool) {
 			}
 
 			hasCosts[usedResource+"PerSecond"] = true
+			actor.setOutputFlag(usedResource+"PerSecondHasCost", true)
 			output[usedResource+"PerSecondCost"] += output[resource+"Cost"] * useSpeed
 		}
 	}
@@ -1072,7 +1087,9 @@ func (h *offenceHit) offenceCombinedDPS() {
 		output["DecayDPS"]
 
 	output["TotalDotDPS"] = math.Min(totalDotDPS, miscConstant("DotDpsCap"))
-	// output.showTotalDotDPS is a boolean, which the output map does not hold.
+	if output["TotalDotDPS"] != totalDotDPS {
+		h.actor.setOutputFlag("showTotalDotDPS", true)
+	}
 	if !showAverage {
 		output["CombinedDPS"] += output["TotalDotDPS"]
 	}

@@ -389,3 +389,20 @@ var MinionLevelTable = []float64{2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26,
 
 // HollowPalmAddedPhys is data.hollowPalmAddedPhys, { min, max } added physical damage indexed by level - 1.
 var HollowPalmAddedPhys = [][2]float64{{11, 17}, {18, 27}, {27, 41}, {37, 55}, {47, 70}, {57, 86}, {67, 100}, {78, 117}, {88, 132}, {99, 148}, {109, 164}, {114, 171}, {118, 177}, {128, 192}, {138, 207}, {146, 219}, {155, 233}, {164, 245}, {172, 258}, {180, 270}, {187, 281}, {194, 291}, {200, 300}, {207, 310}, {213, 320}, {219, 329}, {226, 339}, {232, 348}, {239, 358}, {245, 367}, {251, 377}, {258, 387}, {264, 396}, {270, 405}, {276, 415}, {283, 424}, {289, 434}, {295, 443}, {302, 452}, {308, 462}}
+
+// TotemLifeMult is data.totemLifeMult (src/Data/Misc.lua), the life multiplier keyed by skillTotemId.
+var TotemLifeMult = map[int]float64{
+	1:  1,
+	2:  1,
+	3:  1,
+	5:  1,
+	12: 1,
+	15: 1.2,
+	18: 1,
+	19: 1,
+	22: 1,
+	23: 1,
+	24: 1,
+	25: 1,
+	26: 1,
+}

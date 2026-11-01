@@ -59,6 +59,10 @@ for i, v in ipairs(data.monsterLifeTable) do
 	n = n + 1
 	out("const", "monsterLifeTable", tostring(i), v)
 end
+for id, v in pairs(data.totemLifeMult) do
+	n = n + 1
+	out("const", "totemLifeMult", tostring(id), v)
+end
 out("count", "const", "rows", n)
 
 n = 0

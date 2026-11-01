@@ -70,6 +70,10 @@ func spotGoSide() (map[spotKey]string, map[string]int) {
 		consts++
 		num("const", "monsterLifeTable", strconv.Itoa(i+1), v)
 	}
+	for id, v := range TotemLifeMult {
+		consts++
+		num("const", "totemLifeMult", strconv.Itoa(id), v)
+	}
 	for _, g := range Gems {
 		str("gem", g.ID, "name", g.Name)
 		str("gem", g.ID, "grantedEffectId", g.GrantedEffectID)

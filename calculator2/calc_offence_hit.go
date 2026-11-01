@@ -643,7 +643,9 @@ func offenceHitSpeed(env *Environment, actor *Actor, activeSkill *ActiveSkill, s
 		}
 
 		output["HitChance"] = output["AccuracyHitChance"] * (1 - output["enemyBlockChance"]/100)
-		// globalOutput.enemyHasSpellBlock is a boolean, which the output map does not hold.
+		if output["enemyBlockChance"] > 0 && !isAttack {
+			actor.setOutputFlag("enemyHasSpellBlock", true)
+		}
 
 		// Check Precise Technique Keystone condition per pass as MH/OH might have different values
 		condName := strings.ReplaceAll(pass.label, " ", "") + "AccRatingHigherThanMaxLife"

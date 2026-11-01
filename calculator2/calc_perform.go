@@ -844,8 +844,10 @@ func perform(env *Environment) {
 	newMinionModDBs(env)
 
 	env.Player.Output = map[string]float64{}
+	env.Player.OutputFlags = nil
 	env.Player.OutputMainHand, env.Player.OutputOffHand = nil, nil
 	env.Enemy.Output = map[string]float64{}
+	env.Enemy.OutputFlags = nil
 
 	modDB := env.ModDB
 	output := env.Player.Output
@@ -859,6 +861,7 @@ func perform(env *Environment) {
 	if env.Minion != nil {
 		// Initialise minion modifier database
 		env.Minion.Output = map[string]float64{}
+		env.Minion.OutputFlags = nil
 		env.Minion.OutputMainHand, env.Minion.OutputOffHand = nil, nil
 		initMinionModDB(env, env.Player.MainSkill)
 	}
@@ -1005,8 +1008,8 @@ func perform(env *Environment) {
 	calcMainSkillGemLevel(env)
 }
 
-// calcMainSkillGemLevel calculates the gem level and quality of the main skill. output.GemHasLevel is a
-// boolean, which the output map does not hold; the breakdown is not ported.
+// calcMainSkillGemLevel calculates the gem level and quality of the main skill. The breakdown is not
+// ported.
 //
 //pob2:block:src/Modules/CalcPerform.lua:3652-3703
 func calcMainSkillGemLevel(env *Environment) {
@@ -1023,6 +1026,7 @@ func calcMainSkillGemLevel(env *Environment) {
 		totalCorruptionLevel := skillModList.Sum(mod.TypeBase, skillCfg, "GemCorruptionLevel")
 
 		inheritsLevel, _ := mainSkill.SkillData["inheritsGemLevel"].(bool)
+		env.Player.setOutputFlag("GemHasLevel", true)
 		if inheritsLevel {
 			output["GemLevel"] = math.Max(baseLevel, 1)
 		} else {

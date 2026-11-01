@@ -86,6 +86,29 @@ func TestOffenceAilmentsFixture(t *testing.T) {
 		"TotalDot": 0, "TotalDotInstance": 0, "TotalDotDPS": 1.742386718384, "WithBleedDPS": 50.79233582892, "WithIgniteDPS": 49.828622318035, "WithPoisonDPS": 50.607142857143,
 		"TotalDPS": 49.828571428571, "CombinedDPS": 51.570958146955, "ManaPerSecondCost": 38.571428571429,
 	})
+
+	// PoB-PoE2's activeSkill.dotCfg, dot<Type>Cfg and <ailment>Cfg flags and keywordFlags.
+	skill := env.Player.MainSkill
+	for name, want := range map[string][2]uint64{
+		"dot": {24, 131200}, "Physical": {24, 16908416}, "Fire": {24, 134348928}, "Cold": {24, 67240064},
+		"Lightning": {24, 33685632}, "Chaos": {24, 268566656},
+		"igniteCfg": {2056, 143261824}, "bleedCfg": {2056, 21627008}, "poisonCfg": {2056, 271188096},
+	} {
+		cfg := skill.DotTypeCfg[name]
+		switch name {
+		case "dot":
+			cfg = skill.DotCfg
+		case "igniteCfg", "bleedCfg", "poisonCfg":
+			cfg = skill.AilmentCfg[name]
+		}
+		if cfg == nil {
+			t.Errorf("%s cfg: PoB-PoE2 %v, ours nil", name, want)
+			continue
+		}
+		if got := [2]uint64{uint64(cfg.Flags.Get()), uint64(cfg.KeywordFlags.Get())}; got != want { //nolint:gosec // flag bits are non-negative
+			t.Errorf("%s cfg flags/keywordFlags: PoB-PoE2 %v, ours %v", name, want, got)
+		}
+	}
 }
 
 //pob2:block:src/Data/Skills/other.lua:21152

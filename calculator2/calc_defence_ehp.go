@@ -496,9 +496,8 @@ func numberOfHitsToDie(output map[string]float64, actor *ehpActor, DamageIn *ehp
 	return math.Max(numHits, 0)
 }
 
-// buildDefenceEstimations writes no breakdowns. Its boolean outputs (AnyTakenReflect, CappingLife,
-// AnyBypass, the Any*/Only* section flags, showNetRecoup) have no place in the float output table and
-// are kept as locals where the function reads them back.
+// buildDefenceEstimations writes no breakdowns. Its boolean outputs are Actor.OutputFlags, kept as
+// locals too where the function reads them back.
 //
 //pob2:src/Modules/CalcDefence.lua:2222-4389
 func buildDefenceEstimations(env *Environment, a *Actor) {
@@ -695,6 +694,7 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 
 	//pob2:block:src/Modules/CalcDefence.lua:2467-2526
 	anyTakenReflect := false
+	a.setOutputFlag("AnyTakenReflect", anyTakenReflect)
 	for _, damageType := range dmgTypeList {
 		baseTakenInc := modDB.Sum(mod.TypeIncrease, nil, "DamageTaken", damageType+"DamageTaken")
 		baseTakenMore := modDB.More(nil, "DamageTaken", damageType+"DamageTaken")
@@ -942,6 +942,9 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 			lowLifePercentage = miscConstant("LowPoolThreshold")
 		}
 		output["LifeRecoverable"] = math.Min(output["Life"]*lowLifePercentage/100, output["LifeUnreserved"])
+		if output["LifeRecoverable"] < output["LifeUnreserved"] {
+			a.setOutputFlag("CappingLife", true)
+		}
 	}
 	if modDB.Flag(nil, "DamageInsteadReservesLife") {
 		output["LifeRecoverable"] = (output["LifeCancellableReservation"] / 100) * output["Life"]
@@ -965,22 +968,34 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 	}
 
 	//pob2:block:src/Modules/CalcDefence.lua:2927-2941
+	a.setOutputFlag("AnyBypass", false)
 	output["MinimumBypass"] = 100
 	for _, damageType := range dmgTypeList {
 		if modDB.Flag(nil, "UnblockedDamageDoesBypassES") {
 			output[damageType+"EnergyShieldBypass"] = 100
-		} else if o := modDB.Override(nil, damageType+"EnergyShieldBypass"); o != nil {
-			output[damageType+"EnergyShieldBypass"] = o.Float()
+			a.setOutputFlag("AnyBypass", true)
 		} else {
-			output[damageType+"EnergyShieldBypass"] = modDB.Sum(mod.TypeBase, nil, damageType+"EnergyShieldBypass")
+			if o := modDB.Override(nil, damageType+"EnergyShieldBypass"); o != nil {
+				output[damageType+"EnergyShieldBypass"] = o.Float()
+			} else {
+				output[damageType+"EnergyShieldBypass"] = modDB.Sum(mod.TypeBase, nil, damageType+"EnergyShieldBypass")
+			}
+			if output[damageType+"EnergyShieldBypass"] != 0 {
+				a.setOutputFlag("AnyBypass", true)
+			}
 		}
 		output[damageType+"EnergyShieldBypass"] = math.Max(math.Min(output[damageType+"EnergyShieldBypass"], 100), 0)
 		output["MinimumBypass"] = math.Min(output["MinimumBypass"], output[damageType+"EnergyShieldBypass"])
 	}
 
-	//pob2:block:src/Modules/CalcDefence.lua:2945-3038
+	//pob2:block:src/Modules/CalcDefence.lua:2943-3038
+	a.setOutputFlag("ehpSectionAnySpecificTypes", false)
+	// Mind over Matter
+	a.setOutputFlag("OnlySharedMindOverMatter", false)
+	a.setOutputFlag("AnySpecificMindOverMatter", false)
 	output["sharedMindOverMatter"] = math.Min(modDB.Sum(mod.TypeBase, nil, "DamageTakenFromManaBeforeLife"), 100)
 	if output["sharedMindOverMatter"] > 0 {
+		a.setOutputFlag("OnlySharedMindOverMatter", true)
 		sourcePool := math.Max(output["ManaUnreserved"], 0)
 		sourceHitPool := sourcePool
 		esBypass := output["MinimumBypass"] / 100
@@ -1011,6 +1026,9 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 		output[damageType+"MindOverMatter"] = math.Min(modDB.Sum(mod.TypeBase, nil, damageType+"DamageTakenFromManaBeforeLife"), 100-output["sharedMindOverMatter"])
 		if output[damageType+"MindOverMatter"] > 0 || (output[damageType+"EnergyShieldBypass"] > output["MinimumBypass"] && output["sharedMindOverMatter"] > 0) {
 			MindOverMatter := output[damageType+"MindOverMatter"] + output["sharedMindOverMatter"]
+			a.setOutputFlag("ehpSectionAnySpecificTypes", true)
+			a.setOutputFlag("AnySpecificMindOverMatter", true)
+			a.setOutputFlag("OnlySharedMindOverMatter", false)
 			sourcePool := math.Max(output["ManaUnreserved"], 0)
 			sourceHitPool := sourcePool
 			if modDB.Flag(nil, "EnergyShieldProtectsMana") && output[damageType+"EnergyShieldBypass"] < 100 {
@@ -1039,23 +1057,38 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 	}
 
 	//pob2:block:src/Modules/CalcDefence.lua:3041-3075
+	a.setOutputFlag("AnyGuard", false)
 	output["sharedGuardAbsorbRate"] = math.Min(modDB.Sum(mod.TypeBase, nil, "GuardAbsorbRate"), 100)
 	if output["sharedGuardAbsorbRate"] > 0 {
+		a.setOutputFlag("OnlySharedGuard", true)
 		output["sharedGuardAbsorb"] = calcLibVal(modDB, "GuardAbsorbLimit", nil)
 	}
 	for _, damageType := range dmgTypeList {
 		output[damageType+"GuardAbsorbRate"] = math.Min(modDB.Sum(mod.TypeBase, nil, damageType+"GuardAbsorbRate"), 100)
 		if output[damageType+"GuardAbsorbRate"] > 0 {
+			a.setOutputFlag("ehpSectionAnySpecificTypes", true)
+			a.setOutputFlag("AnyGuard", true)
+			a.setOutputFlag("OnlySharedGuard", false)
 			output[damageType+"GuardAbsorb"] = calcLibVal(modDB, damageType+"GuardAbsorbLimit", nil)
 		}
 	}
 
 	//pob2:block:src/Modules/CalcDefence.lua:3078-3100
+	a.setOutputFlag("AnyAegis", false)
 	output["sharedAegis"] = modDB.Max(nil, "AegisValue")
 	output["sharedElementalAegis"] = modDB.Max(nil, "ElementalAegisValue")
+	if output["sharedAegis"] > 0 {
+		a.setOutputFlag("AnyAegis", true)
+	}
+	if output["sharedElementalAegis"] > 0 {
+		a.setOutputFlag("ehpSectionAnySpecificTypes", true)
+		a.setOutputFlag("AnyAegis", true)
+	}
 	for _, damageType := range dmgTypeList {
 		aegisValue := modDB.Max(nil, damageType+"AegisValue")
 		if aegisValue > 0 {
+			a.setOutputFlag("ehpSectionAnySpecificTypes", true)
+			a.setOutputFlag("AnyAegis", true)
 			output[damageType+"Aegis"] = aegisValue
 		} else {
 			output[damageType+"Aegis"] = 0
@@ -1342,6 +1375,9 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 	if output["LifeRecoupRecoveryAvg"] > 0 || output["preventedLifeLossTotal"] > 0 {
 		output["netLifeRecoupAndLossLostOverTimeMax"] = output["LifeRecoupRecoveryMax"] - output["LifeLossLostMax"]
 		output["netLifeRecoupAndLossLostOverTimeAvg"] = output["LifeRecoupRecoveryAvg"] - output["LifeLossLostAvg"]
+		if output["LifeRecoupRecoveryAvg"] > 0 && output["preventedLifeLossTotal"] > 0 {
+			a.setOutputFlag("showNetRecoup", true)
+		}
 	}
 
 	//pob2:block:src/Modules/CalcDefence.lua:3588-3633

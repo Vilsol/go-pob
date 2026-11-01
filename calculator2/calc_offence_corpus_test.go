@@ -15,7 +15,7 @@ import (
 )
 
 // poe2SkillDataMatchedFloor is the main skill skillData entries that agree with the skills-off dumps.
-const poe2SkillDataMatchedFloor = 32560
+const poe2SkillDataMatchedFloor = 32561
 
 type poe2SkillDataDump struct {
 	Meta struct {
