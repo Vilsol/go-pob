@@ -20,8 +20,7 @@ test('a pobb.in link is downloaded through /api/build and imported as a new buil
     return route.fulfill({ status: 200, contentType: 'text/plain; charset=utf-8', body: code });
   });
   const app = await App.open(page, '0005-occultist-vaal-double-strike');
-  await app.goTo('Import / Export');
-  const region = page.getByRole('region', { name: 'Build import' });
+  const region = (await app.openImport()).getByRole('region', { name: 'Build import' });
   await region.getByRole('textbox', { name: /^To import a build/ }).fill('https://pobb.in/h-M3H3It2fDw');
   await expect(region.getByRole('textbox', { name: /^To import a build/ })).toHaveAccessibleDescription('URL is valid (pobb.in)');
   await region.getByRole('radio', { name: /Import as a new build/ }).check();
@@ -63,8 +62,8 @@ test("the account import lists the account's characters and imports one's items,
   const build = await go.loadXml(xml);
   const app = await App.open(page, file);
   await app.importCode(await go.encode(xml), async () => expectedLines(await go.outputs(build)));
-  await app.goTo('Import / Export');
-  const chars = page.getByRole('region', { name: 'Character import' });
+  const dialog = await app.openImport();
+  const chars = dialog.getByRole('region', { name: 'Character import' });
   await chars.getByRole('textbox', { name: /Account name/ }).fill('sample#1234');
   await chars.getByRole('button', { name: 'Start' }).click();
   await expect(chars.getByRole('status')).toHaveText('Character import status: Character list successfully retrieved.');
@@ -112,13 +111,13 @@ test("Re-import Current on the Compare page re-imports the selected character as
   const build = await go.loadXml(xml);
   const app = await App.open(page, file);
   await app.importCode(await go.encode(xml), async () => expectedLines(await go.outputs(build)));
-  await app.goTo('Import / Export');
-  const chars = page.getByRole('region', { name: 'Character import' });
+  const dialog = await app.openImport();
+  const chars = dialog.getByRole('region', { name: 'Character import' });
   await chars.getByRole('textbox', { name: /Account name/ }).fill('sample#1234');
   await chars.getByRole('button', { name: 'Start' }).click();
   await expect(chars.getByRole('status')).toHaveText('Character import status: Character list successfully retrieved.');
 
-  const region = page.getByRole('region', { name: 'Build import' });
+  const region = dialog.getByRole('region', { name: 'Build import' });
   const box = region.getByRole('textbox', { name: /^To import a build/ });
   await box.fill(await go.encode(buildXml('0075-elementalist-winter-orb')));
   await region.getByRole('radio', { name: /Import as a comparison/ }).click();
@@ -166,8 +165,7 @@ test('Share uploads the build code through /api/share, shows the link and copies
     return route.fulfill({ status: 200, contentType: 'text/plain; charset=utf-8', body: 'https://pobb.in/Ab-12' });
   });
   const app = await App.open(page, '0280-elementalist-fireball');
-  await app.goTo('Import / Export');
-  const sharing = page.getByRole('region', { name: 'Build sharing' });
+  const sharing = (await app.openImport('Export')).getByRole('region', { name: 'Build sharing' });
   await expect(sharing.getByRole('textbox', { name: 'Build code' })).not.toHaveValue('');
   const code = await sharing.getByRole('textbox', { name: 'Build code' }).inputValue();
   await sharing.getByRole('combobox', { name: 'Share via' }).selectOption('pobb.in');

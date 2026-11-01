@@ -326,6 +326,12 @@
     <Button
       href={importHref}
       class="max-wide:size-8 max-wide:p-0"
+      aria-haspopup={onimport ? 'dialog' : undefined}
+      onclick={(e: MouseEvent) => {
+        if (!onimport || e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+        e.preventDefault();
+        onimport();
+      }}
       aria-current={current === importHref ? 'page' : undefined}
       aria-label="Import / Export"
       title="Import / Export"

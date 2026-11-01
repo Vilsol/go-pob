@@ -22,7 +22,7 @@ const SCROLLERS: Scroller[] = [
 
 const BUILDS = ['0280-elementalist-fireball', '0008-necromancer-vaal-summon-skeletons', '0339-reliquarian-shield-crush-of-the-chieftain-2'];
 const COMPARE = '0280-elementalist-fireball';
-const ROUTES = ['Tree', 'Skills', 'Items', 'Calcs', 'Config', 'Party', 'Notes', 'Import / Export'];
+const ROUTES = ['Tree', 'Skills', 'Items', 'Calcs', 'Config', 'Party', 'Notes'];
 const COMPARE_VIEWS = ['Summary', 'Power report', 'Tree', 'Items', 'Skills', 'Calcs', 'Config'];
 
 const FIXME: Record<string, { owner: string; finding: string; builds?: string[] }> = {
@@ -104,9 +104,16 @@ const measure = async (page: Page, file: string) => {
     await rest(page);
     found[link] = await layoutFindings(page, '.page', SCROLLERS);
   }
+  // Import / Export is a dialog over the page; each tab is measured as it is drawn
+  found['Import / Export'] = [];
+  for (const tab of ['Export', 'Import'] as const) {
+    await app.openImport(tab);
+    await rest(page);
+    found['Import / Export'].push(...(await layoutFindings(page, 'dialog[open]', SCROLLERS)));
+    if (tab === 'Export') await page.keyboard.press('Escape');
+  }
 
-  await app.goTo('Import / Export');
-  const region = page.getByRole('region', { name: 'Build import' });
+  const region = page.getByRole('dialog', { name: 'Import / Export' }).getByRole('region', { name: 'Build import' });
   const box = region.getByRole('textbox', { name: /^To import a build/ });
   await box.fill(await go.encode(buildXml(COMPARE)));
   await expect(box).toHaveAccessibleDescription('Code is valid');
@@ -144,7 +151,7 @@ for (const file of BUILDS) {
         await page.close();
       }
     });
-    for (const route of [...ROUTES, ...COMPARE_VIEWS.map((v) => `Compare › ${v}`)]) {
+    for (const route of [...ROUTES, 'Import / Export', ...COMPARE_VIEWS.map((v) => `Compare › ${v}`)]) {
       const known = FIXME[route];
       if (known && (!known.builds || known.builds.includes(file))) {
         test.fixme(`${route} (${known.owner}: ${known.finding})`, () => {});

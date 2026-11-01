@@ -31,6 +31,8 @@
   import Dialog from '$lib/design/Dialog.svelte';
   import DialogActions from '$lib/design/DialogActions.svelte';
   import { phoneMedia, phonePage } from '$lib/design/mobile/mobile';
+  import AppImportModal from '$lib/shell/AppImportModal.svelte';
+  import { openImport } from '$lib/shell/import_modal.svelte';
 
   let {
     children
@@ -51,9 +53,15 @@
     calcs: 'Calcs',
     configuration: 'Config',
     notes: 'Notes',
-    party: 'Party',
-    import: 'Import / Export'
+    party: 'Party'
   };
+
+  // Import / Export is a dialog over the page; its old address opens it over the Tree, or over the build list
+  $effect(() => {
+    if (route !== 'import') return;
+    openImport();
+    void goto(`${base}/tree${page.url.search}`, { replaceState: true });
+  });
 
   // Main.lua:1750-1756, PassiveSpec.lua:2302-2308
   let titleBuild = $state<{ name: string; className: string; ascendClassName: string }>();
@@ -238,6 +246,8 @@
       currentBuildPath.current = undefined;
     }} />
 {/if}
+
+{#if !wasmLoading}<AppImportModal />{/if}
 
 {#if dataLoading}
   <Notice float class="fixed right-2 bottom-2">Loading game data{loadingStage ? `: ${loadingStage}` : '...'}</Notice>

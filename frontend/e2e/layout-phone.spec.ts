@@ -22,15 +22,17 @@ const SCROLLERS: Scroller[] = [
   { selector: '[data-tree-bar]', axis: 'x', why: 'the tree’s bottom bar (search, filter, reset) scrolls sideways on a phone' }
 ];
 
-const PAGES: { name: string; open: (page: Page) => Promise<void> }[] = [
+// root: what is measured, when it is not the frame (Import / Export is a dialog over the page)
+const PAGES: { name: string; open: (page: Page) => Promise<void>; root?: string }[] = [
   ...['Tree', 'Skills', 'Items', 'Calcs', 'Config'].map((t) => ({ name: t, open: (page: Page) => bar(page).getByRole('link', { name: t }).click() })),
   ...['Notes', 'Party', 'Compare', 'Import/Export'].map((t) => ({
     name: t,
-    open: async (page: Page) => (await openMore(page)).getByRole('link', { name: t }).click()
+    open: async (page: Page) => (await openMore(page)).getByRole('link', { name: t }).click(),
+    root: t === 'Import/Export' ? 'dialog[open]' : undefined
   }))
 ];
 
-const settle = async (page: Page) => {
+const settle = async (page: Page, measured = ROOT) => {
   let last = '';
   for (let i = 0; i < 240; i++) {
     await page.waitForTimeout(250);
@@ -43,7 +45,7 @@ const settle = async (page: Page) => {
         geo += r.left + 2 * r.top + 3 * r.width + 5 * r.height;
       }
       return `${el.textContent}|${Math.round(geo)}`;
-    }, ROOT);
+    }, measured);
     if (now && now === last) return;
     last = now;
   }
@@ -51,14 +53,14 @@ const settle = async (page: Page) => {
 };
 // a mobile browser widens its layout viewport to fit content that is too wide, so window.innerWidth follows the
 // defect; the page must stay at the device width the context was given
-const phoneFindings = async (page: Page): Promise<Finding[]> => {
+const phoneFindings = async (page: Page, root = ROOT): Promise<Finding[]> => {
   const [inner, scroll] = await page.evaluate(() => [window.innerWidth, (document.scrollingElement ?? document.documentElement).scrollWidth]);
   const width = PHONE.viewport.width;
   const own: Finding[] =
     inner > width || scroll > width
       ? [{ check: 'page-scroll', where: 'document', detail: `layout viewport ${inner}, scrollWidth ${scroll} > device ${width}` }]
       : [];
-  return [...own, ...(await layoutFindings(page, ROOT, SCROLLERS))];
+  return [...own, ...(await layoutFindings(page, root, SCROLLERS))];
 };
 const report = (fs: Finding[]) => fs.map((f) => `${f.check}: ${f.where} — ${f.detail}`).join('\n');
 
@@ -77,9 +79,10 @@ test.describe('390×769 layout', () => {
       for (const p of PAGES) {
         await p.open(page);
         await expect(page.getByRole('dialog', { name: 'More' })).toBeHidden();
-        await settle(page);
+        await settle(page, p.root);
         await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
-        found[p.name] = await phoneFindings(page);
+        found[p.name] = await phoneFindings(page, p.root);
+        if (p.root) await page.keyboard.press('Escape');
       }
       app.assertNoErrors();
       mkdirSync(new URL('./.results/', import.meta.url), { recursive: true });

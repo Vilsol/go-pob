@@ -51,6 +51,23 @@
 </Story>
 
 <Story
+  name="Phone · game toggle"
+  asChild
+  play={async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await fits(canvasElement);
+    const games = within(canvasElement).getByRole('group', { name: 'Show builds of' });
+    await expect(games).toBeVisible();
+    const bar = within(canvasElement).getByRole('banner').getBoundingClientRect();
+    for (const b of [...games.querySelectorAll('button'), ...within(canvasElement).getByRole('banner').querySelectorAll('.btn')]) {
+      const r = b.getBoundingClientRect();
+      await expect(r.right).toBeLessThanOrEqual(bar.right + 0.5);
+      await expect(r.bottom).toBeLessThanOrEqual(bar.bottom + 0.5);
+    }
+  }}>
+  <LiveBuildList game="all" />
+</Story>
+
+<Story
   name="Table"
   asChild
   play={async ({ canvasElement }: { canvasElement: HTMLElement }) => {

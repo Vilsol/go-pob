@@ -4,7 +4,7 @@
   import SettingsDialog from '../SettingsDialog.svelte';
   import AboutDialog from '../AboutDialog.svelte';
   import { buildList, settingsSections, settingsSample, type Setting } from '../fixtures/app';
-  import { buildId, type ColKey } from '../builds';
+  import { buildId, type ColKey, type GameFilter } from '../builds';
   import { aboutInfo } from '../fixtures';
 
   type Props = {
@@ -15,8 +15,9 @@
     app?: boolean;
     phoneLayout?: 'cards' | 'table';
     onnewfolder?: () => void;
+    game?: GameFilter;
   };
-  let { folder: start = '', about = false, settings = false, step = 120, app = false, phoneLayout, onnewfolder }: Props = $props();
+  let { folder: start = '', about = false, settings = false, step = 120, app = false, phoneLayout, onnewfolder, game = $bindable() }: Props = $props();
   let actions = $state<string[]>([]);
   const log = (a: string) => () => actions.push(a);
   const appProps = $derived(
@@ -81,6 +82,7 @@
 </script>
 
 <BuildListPage
+  bind:game
   {phoneLayout}
   builds={s.builds}
   folders={buildList.folders}

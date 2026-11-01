@@ -4,13 +4,12 @@
   import { resetAccountSession } from './account_session.svelte';
   import { onMount } from 'svelte';
   import { proxy } from 'comlink';
-  import { goto, pushState } from '$app/navigation';
-  import { base } from '$app/paths';
+  import { pushState } from '$app/navigation';
   import { page } from '$app/state';
   import BuildListPage from '$lib/design/BuildListPage.svelte';
   import Dialog from '$lib/design/Dialog.svelte';
   import DialogActions from '$lib/design/DialogActions.svelte';
-  import { buildId, leaf } from '$lib/design/builds';
+  import { buildId, leaf, type GameFilter } from '$lib/design/builds';
   import type { SavedBuild } from '$lib/design/fixtures/app';
   import { syncWrap } from '$lib/go/worker';
   import { currentBuildPath, devMode, poe2Enabled } from '$lib/global.js';
@@ -18,13 +17,12 @@
   import { addToast } from '$lib/design/toast';
   import { openForeign } from '$lib/go/game_route';
   import PromptDialog from './PromptDialog.svelte';
+  import { openImport } from './import_modal.svelte';
   import AppAbout from './AppAbout.svelte';
   import AppSettings from './AppSettings.svelte';
-  import { CLASSES, LIVE_COLUMNS, loadTree, pathOf } from './build_list';
+  import { BUILD_GAME_KEY, LIVE_COLUMNS, gameClasses, loadBuildGame, loadTree, newBuild, pathOf, saveBuildGame } from './build_list';
   import { BUILD_SORT_KEY, loadBuildSort, saveBuildSort } from '$lib/display/build_sort';
   import { followOtherTabs } from '$lib/storage/tabs';
-  import { defaultCharLevel, defaultGemQuality } from '$lib/display/item_options';
-  import { get } from 'svelte/store';
   import { applyUpdate, checkForUpdate, updateAvailable, updateCheckRunning } from '$lib/pwa';
 
   let builds = $state<SavedBuild[]>([]);
@@ -196,15 +194,10 @@
   let sort = $state(loadBuildSort());
   $effect(() => saveBuildSort($state.snapshot(sort)));
   $effect(() => followOtherTabs(BUILD_SORT_KEY, { set: (s: typeof sort) => (sort = s) }, loadBuildSort));
-
-  const newBuild = () => {
-    opening.modFlag = false;
-    void syncWrap.NewBuild({ level: get(defaultCharLevel), gemQuality: get(defaultGemQuality) });
-    unsavedName.imported = false;
-    unsavedName.predefined = undefined;
-    resetAccountSession();
-    currentBuildPath.current = '';
-  };
+  // the toggle would reveal PoE2, so it shows only while PoE2 is unlocked
+  let game = $state(loadBuildGame());
+  $effect(() => saveBuildGame(game));
+  $effect(() => followOtherTabs(BUILD_GAME_KEY, { set: (g: typeof game) => (game = g) }, loadBuildGame));
 </script>
 
 <BuildListPage
@@ -213,7 +206,8 @@
   bind:sort
   {builds}
   {folders}
-  classes={[...CLASSES, ...poe2Classes.filter((c) => !CLASSES.includes(c))]}
+  bind:game={() => ($poe2Enabled ? game : undefined), (g?: GameFilter) => g && (game = g)}
+  classes={gameClasses($poe2Enabled ? game : 'all', poe2Classes)}
   {gameVersion}
   {folder}
   {open}
@@ -259,10 +253,8 @@
       confirm: 'Create',
       run: (name) => void syncWrap.NewFolder(pathOf(folder, name)).then(reload).catch(logError)
     })}
-  onnew={newBuild}
-  onimport={() => {
-    void goto(`${base}/import`).then(newBuild);
-  }}
+  onnew={() => void newBuild().catch(logError)}
+  onimport={() => openImport()}
   onabout={() => (about = true)}
   onsettings={() => (settings = true)}>
   {#snippet dialogs()}

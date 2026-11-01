@@ -17,8 +17,7 @@ test("a pasted character JSON imports its items, skills and passive tree into th
   const app = await App.open(page, file);
   await app.importCode(await go.encode(xml), async () => expectedLines(await go.outputs(build)));
 
-  await app.goTo('Import / Export');
-  const region = page.getByRole('region', { name: 'Build import' });
+  const region = (await app.openImport()).getByRole('region', { name: 'Build import' });
   const box = region.getByRole('textbox', { name: /^To import a build/ });
   await box.fill(json);
   await expect(box).toHaveAccessibleDescription('JSON is valid');
@@ -33,6 +32,8 @@ test("a pasted character JSON imports its items, skills and passive tree into th
     }
   );
   await expect(region.getByRole('status')).toHaveText('Items and skills successfully imported. Passive tree and jewels successfully imported.');
+  // a character import stays in the dialog, which shows its result
+  await page.keyboard.press('Escape');
   // ImportTab.lua:1396-1402, 1424-1460
   await expect(page.getByRole('combobox', { name: 'Main skill' }).locator('option').first()).toHaveText('Kinetic Blast');
   await app.goTo('Items');

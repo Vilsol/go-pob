@@ -84,8 +84,7 @@ test.describe('phone shell at 390×769', () => {
     const morePages: [string, string, string][] = [
       ['Notes', 'notes', 'Notes'],
       ['Party', 'party', 'Party'],
-      ['Compare', 'compare', 'Compare'],
-      ['Import/Export', 'import', 'Import / Export']
+      ['Compare', 'compare', 'Compare']
     ];
     for (const [link, route, main] of morePages) {
       await (await openMore(page)).getByRole('link', { name: link }).click();
@@ -94,10 +93,17 @@ test.describe('phone shell at 390×769', () => {
       await expect(page.getByRole('main', { name: main })).toBeVisible();
       await expect(bar(page).getByRole('button', { name: 'More' }), 'More is the current tab').toHaveClass(/text-accent/);
     }
+    await (await openMore(page)).getByRole('link', { name: 'Import/Export' }).click();
+    const importExport = page.getByRole('dialog', { name: 'Import / Export' });
+    await expect(importExport).toBeVisible();
+    await expect(page.getByRole('dialog', { name: 'More' })).toBeHidden();
+    expect(routeOf(page), 'Import / Export is a dialog over the page, not a route').toBe('compare');
+    await importExport.getByRole('button', { name: 'Close' }).click();
+    await expect(importExport).toBeHidden();
     await (await openMore(page)).getByRole('link', { name: 'Timeless' }).click();
     const timeless = page.getByRole('dialog', { name: 'Find a Timeless Jewel' });
     await expect(timeless).toBeVisible();
-    expect(routeOf(page), 'Timeless is a dialog over the page, not a route').toBe('import');
+    expect(routeOf(page), 'Timeless is a dialog over the page, not a route').toBe('compare');
     await timeless.getByRole('button', { name: 'Close' }).click();
     await expect(timeless).toBeHidden();
 
@@ -214,7 +220,9 @@ test.describe('phone shell at 390×769', () => {
     await waitLastFrame(page, '(f) => f.className !== undefined', 60_000);
     await page.waitForTimeout(1500);
     await (await openMore(page)).getByRole('link', { name: 'Import/Export' }).click();
-    const box = page.getByRole('region', { name: 'Build sharing' }).getByRole('textbox', { name: 'Build code' });
+    const dialog = page.getByRole('dialog', { name: 'Import / Export' });
+    await dialog.getByRole('tab', { name: 'Export' }).click();
+    const box = dialog.getByRole('region', { name: 'Build sharing' }).getByRole('textbox', { name: 'Build code' });
     let code = '';
     await expect.poll(async () => (code = await box.inputValue())).not.toBe('');
     const zoom = (xml: string) =>

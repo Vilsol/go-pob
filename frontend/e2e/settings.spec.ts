@@ -32,7 +32,7 @@ test('number options rewrite the sidebar and are kept; the window title names th
   await expect(row).toContainText(compact.replace('.', ','));
 
   // Main.lua:1750-1756
-  await expect(page).toHaveTitle('Unnamed build (Elementalist) - go-pob');
+  await expect(page).toHaveTitle('Imported build (Elementalist) - go-pob');
   await sheet.getByRole('tab', { name: /^General/ }).click();
   await sheet.getByRole('checkbox', { name: 'Show build name in window title' }).uncheck();
   await expect(page).toHaveTitle('go-pob');

@@ -23,8 +23,7 @@ test('B’s socket group select recalculates B as the model does', async ({ page
   const aXml = buildXml(A);
   const a = await go.loadXml(aXml);
   await app.importCode(await go.encode(aXml), async () => expectedLines(await go.outputs(a)));
-  await app.goTo('Import / Export');
-  const region = page.getByRole('region', { name: 'Build import' });
+  const region = (await app.openImport()).getByRole('region', { name: 'Build import' });
   const box = region.getByRole('textbox', { name: /^To import a build/ });
   await box.fill(await go.encode(buildXml(B)));
   await expect(box).toHaveAccessibleDescription('Code is valid');

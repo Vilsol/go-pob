@@ -1,8 +1,9 @@
 <script lang="ts">
   import { resource } from 'runed';
   import { goto } from '$app/navigation';
-  import { page } from '$app/state';
   import { base } from '$app/paths';
+  import { get } from 'svelte/store';
+  import { game } from '$lib/go/engine';
   import { buildRevision, currentBuild, currentBuildPath, outputs, poe2Enabled, UITick } from '$lib/global.js';
   import { syncWrap } from '$lib/go/worker';
   import { logError } from '$lib/utils';
@@ -12,20 +13,26 @@
   import { REALMS, SITE_KEY, UNAVAILABLE, loadExportSite, saveExportSite } from './import_export';
   import { followOtherTabs } from '$lib/storage/tabs';
   import { identityOf } from './identity';
-  import { downloadBuild, shareBuild } from './link_import';
+  import { beforeReplace, downloadBuild, shareBuild } from './link_import';
   import { openForeign } from '$lib/go/game_route';
   import { opening, unsavedName } from './build_name.svelte';
   import Dialog from '$lib/design/Dialog.svelte';
   import DialogActions from '$lib/design/DialogActions.svelte';
-  import PobText from '$lib/design/PobText.svelte';
   import CharacterImport from '$lib/design/CharacterImport.svelte';
   import { REALM_LIST, type AccountCharacter } from '$lib/design/account';
   import { removeAccount } from './account_import';
   import { accountSession, importItems, importTree, resetAccountSession, startAccount } from './account_session.svelte';
+  import { newBuild } from './build_list';
+  import { compareLoaded, type ImportTab } from './import_modal.svelte';
+
+  // tab: the side the import dialog shows; focus: the code field takes focus (Build.lua:1160-1162); ondone: an
+  // import that opened a build or the Compare page
+  type Props = { tab?: ImportTab; focus?: boolean; ondone?: () => void };
+  let { tab = 'import', focus = false, ondone }: Props = $props();
 
   const exported = resource(
-    () => [identityOf($outputs), $buildRevision] as const,
-    async () => (syncWrap ? await syncWrap.ExportCode() : '')
+    () => [identityOf($outputs), $buildRevision, tab] as const,
+    async () => (syncWrap && tab === 'export' ? await syncWrap.ExportCode() : '')
   );
   const code = $derived(exported.loading ? '' : (exported.current ?? ''));
 
@@ -44,10 +51,17 @@
       .catch(logError);
   };
 
-  let confirmImport = $state<() => void>();
-  let confirmOpen = $state(false);
   let importText = $state('');
-  let mode = $state<ImportMode>('replace');
+  let mode = $state<ImportMode>('new');
+  // an import never replaces the open build: it opens as a new one, or beside it on Compare
+  const modes = $derived<ImportMode[]>($game === 'poe1' ? ['new', 'compare'] : ['new']);
+  $effect(() => {
+    if (!modes.includes(mode)) mode = 'new';
+  });
+  // a character import goes into the open build; with none open it starts a new one, as Import build did
+  const ensureBuild = async () => {
+    if (!get(game)) await newBuild();
+  };
   let copied = $state(false);
   let importError = $state<string | null>(null);
   let imported = $state<string | null>(null);
@@ -96,7 +110,11 @@
     if (how === 'compare') {
       syncWrap
         ?.LoadCompareCode(text)
-        .then(() => goto(`${base}/compare`))
+        .then(() => {
+          compareLoaded.seq++;
+          ondone?.();
+          return goto(`${base}/compare`);
+        })
         .catch(failed);
       return;
     }
@@ -109,15 +127,14 @@
         .then((foreign) => openForeign(foreign, () => syncWrap?.ClearBuild()))
         .then(
           (opened) => {
+            ondone?.();
             if (opened) {
               currentBuildPath.current = '';
               return;
             }
             resetAccountSession();
-            if (how === 'new') {
-              currentBuildPath.current = '';
-              unsavedName.imported = true;
-            }
+            currentBuildPath.current = '';
+            unsavedName.imported = true;
             return goto(`${base}/tree`);
           },
           (err: unknown) => {
@@ -128,16 +145,10 @@
         )
         .catch(failed);
     };
-    if (how === 'replace') {
-      // ImportTab.lua:648-653
-      confirmImport = run;
-      return;
-    }
-    void run();
+    // Build.lua:1421-1448: the open build's unsaved changes are asked about first, as leaving it does
+    if (beforeReplace.ask) beforeReplace.ask(() => void run());
+    else void run();
   };
-  $effect(() => {
-    if (confirmImport) confirmOpen = true;
-  });
 
   const onimport = (text: string, how: ImportMode) => {
     importError = null;
@@ -150,6 +161,7 @@
     if (json?.game === 'poe2') return void (importError = $poe2Enabled ? POE2_CHARACTER : POE2_CHARACTER_DISABLED);
     if (json?.valid) {
       void (async () => {
+        await ensureBuild();
         const items = await syncWrap?.ImportItemsAndSkills(text);
         if (!items?.ok) return void (importError = items?.text ?? null);
         const tree = await syncWrap?.ImportPassiveTreeAndJewels(text);
@@ -203,30 +215,6 @@
     {/snippet}
   </Dialog>{/if}
 
-{#if confirmImport}<Dialog
-    phone="centred"
-    bind:open={confirmOpen}
-    title="Build Import"
-    onclose={() => {
-      confirmImport = undefined;
-    }}>
-    <p class="m-0 text-13"><PobText text="^xFF9922Warning:^7 Importing to the current build will erase ALL existing data for this build." /></p>
-    {#snippet actions()}
-      <DialogActions
-        confirm="Import"
-        oncancel={() => {
-          confirmOpen = false;
-          confirmImport = undefined;
-        }}
-        onconfirm={() => {
-          const run = confirmImport;
-          confirmOpen = false;
-          confirmImport = undefined;
-          run?.();
-        }} />
-    {/snippet}
-  </Dialog>{/if}
-
 <ImportExportPage
   {code}
   {copied}
@@ -242,11 +230,13 @@
   unavailable={UNAVAILABLE}
   bind:importText
   bind:mode
+  {modes}
+  show={tab}
   bind:exportParty
   {onexportparty}
   {oncopy}
   {onimport}
-  focusCode={!!page.state.focusImport}>
+  focusCode={focus}>
   {#snippet characterImport()}
     <CharacterImport
       realms={REALM_LIST}
@@ -261,8 +251,16 @@
       onremoveaccount={(a: string) => (s.history = removeAccount(s.history, a))}
       selected={s.selected?.name}
       onselect={(c?: AccountCharacter) => (s.selected = c)}
-      onimporttree={(c: AccountCharacter, deleteJewels: boolean) => importTree(c, deleteJewels, (run) => (confirmTree = run))}
-      onimportitems={importItems}
+      onimporttree={(c: AccountCharacter, deleteJewels: boolean) => {
+        void ensureBuild()
+          .then(() => importTree(c, deleteJewels, (run) => (confirmTree = run)))
+          .catch(logError);
+      }}
+      onimportitems={(c: AccountCharacter, o: Parameters<typeof importItems>[1]) => {
+        void ensureBuild()
+          .then(() => importItems(c, o))
+          .catch(logError);
+      }}
       onclose={() => {
         s.stage = 'GETACCOUNTNAME';
         s.status = 'Idle';

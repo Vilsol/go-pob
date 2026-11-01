@@ -26,7 +26,7 @@ if (!HTMLDialogElement.prototype.showModal) {
 }
 
 type Entry = { Name: string; Type: 'file' | 'dir'; Class: string; LastEdit: string; Level: number; Ascendancy: string; MainSkill: string };
-type Saved = { Class: string; Level: number; Ascendancy?: string; MainSkill?: string };
+type Saved = { Class: string; Level: number; Ascendancy?: string; MainSkill?: string; Game?: string };
 const files = new Map<string, Saved>();
 const dirs = new Set<string>();
 const seed = () => {
@@ -57,7 +57,8 @@ const fake = {
           LastEdit: new Date(Date.now() - 3 * 3600_000).toISOString(),
           Level: v.Level,
           Ascendancy: v.Ascendancy ?? '',
-          MainSkill: v.MainSkill ?? ''
+          MainSkill: v.MainSkill ?? '',
+          ...(v.Game ? { Game: v.Game } : {})
         });
     return Promise.resolve(out);
   }),
@@ -126,8 +127,9 @@ vi.mock('$lib/go/worker', () => ({ syncWrap: fake, syncWorker: undefined }));
 const nav = vi.hoisted(() => ({ pushState: vi.fn(), goto: vi.fn(() => Promise.resolve()) }));
 vi.mock('$app/navigation', () => nav);
 vi.mock('$app/state', () => ({ page: { state: {}, url: new URL('http://localhost/') } }));
+vi.mock('$lib/go/worker2', () => ({ poe2Worker: () => Promise.resolve({ TreeClasses: () => Promise.resolve(['All', 'Monk', 'Sorceress']) }) }));
 
-const { currentBuildPath, devMode, nodePowerTheme, zoomSensitivity } = await import('$lib/global');
+const { currentBuildPath, devMode, nodePowerTheme, poe2Enabled, zoomSensitivity } = await import('$lib/global');
 const { defaultCharLevel, defaultGemQuality, showFlavourText, showWarnings } = await import('$lib/display/item_options');
 const { unsavedName } = await import('./build_name.svelte');
 
@@ -217,13 +219,25 @@ describe('AppBuildList', () => {
     defaultGemQuality.set(0);
   });
 
-  it('Import build goes to Import / Export, then makes a new build', async () => {
+  it('Import build opens the import dialog over the list, with nothing to export and no build made yet', async () => {
     const { view } = await mount();
+    render((await import('./AppImportModal.svelte')).default);
     nav.goto.mockClear();
-    await fireEvent.click(view.getByRole('button', { name: 'Import build' }));
-    await waitFor(() => expect(calls).toEqual([['NewBuild']]));
-    expect(nav.goto).toHaveBeenCalledWith('/import');
-    expect(nav.goto.mock.invocationCallOrder[0]).toBeLessThan(fake.NewBuild.mock.invocationCallOrder.at(-1)!);
+    const button = view.getByRole('button', { name: 'Import build' });
+    button.focus();
+    await fireEvent.click(button);
+    const dlg = await screen.findByRole('dialog', { name: 'Import build' });
+    expect((dlg as HTMLDialogElement).open).toBe(true);
+    expect(within(dlg).queryByRole('tab', { name: 'Export' }), 'no build is open to export').toBeNull();
+    expect(within(dlg).queryByRole('region', { name: 'Build sharing' })).toBeNull();
+    const modes = within(within(dlg).getByRole('radiogroup', { name: 'Import as' })).getAllByRole('radio');
+    expect(modes.map((m) => m.parentElement!.textContent)).toEqual([expect.stringMatching(/^Import as a new build/)]);
+    expect(view.getByRole('grid', { name: 'Builds' }), 'the list stays under the dialog').toBeTruthy();
+    expect(calls).toEqual([]);
+    expect(nav.goto).not.toHaveBeenCalled();
+    await fireEvent.keyDown(dlg, { key: 'Escape' });
+    expect((dlg as HTMLDialogElement).open).toBe(false);
+    expect(document.activeElement, 'focus returns to Import build').toBe(button);
   });
 
   it('double-click, Enter and the name open a build by its storage path (OpenBuild) and name the open build', async () => {
@@ -542,5 +556,72 @@ describe('AppBuildList keys', () => {
     await copyAs('Archive');
     await fireEvent.click(within(screen.getByRole('dialog', { name: 'Merge into “Archive”?' })).getByRole('button', { name: 'Merge' }));
     await waitFor(() => expect(calls.filter((c) => c[0] === 'CopyFolder')).toEqual([['CopyFolder', '/Leagues', '/Archive']]));
+  });
+});
+
+describe('AppBuildList game toggle', () => {
+  const KEY = 'options:buildListGame';
+  const mountBoth = async () => {
+    seed();
+    files.set('/Second game', { Class: 'Monk', Level: 40, Game: 'poe2' });
+    const view = render((await import('./AppBuildList.svelte')).default);
+    const grid = view.getByRole('grid', { name: 'Builds' });
+    await waitFor(() => expect(grid.querySelectorAll('[data-build]').length).toBeGreaterThan(0));
+    return { view, grid };
+  };
+  const names = (grid: HTMLElement) => [...grid.querySelectorAll<HTMLElement>('[data-build]')].map((r) => r.dataset.build).sort();
+  type View = { container: HTMLElement };
+  const chips = (view: View) =>
+    within(within(view.container).getByRole('group', { name: 'Filter by class' }))
+      .getAllByRole('button')
+      .map((b) => b.textContent);
+  const pressed = (view: View, group: string) =>
+    within(within(view.container).getByRole('group', { name: group }))
+      .getAllByRole('button')
+      .find((b) => b.getAttribute('aria-pressed') === 'true')?.textContent;
+  afterEach(() => {
+    poe2Enabled.set(false);
+    localStorage.removeItem(KEY);
+    localStorage.removeItem('options:poe2');
+  });
+
+  it('is not shown while PoE2 is locked, and every build is listed', async () => {
+    poe2Enabled.set(false);
+    localStorage.setItem(KEY, 'poe2');
+    const { view, grid } = await mountBoth();
+    expect(view.queryByRole('group', { name: 'Show builds of' })).toBeNull();
+    await waitFor(() => expect(names(grid)).toEqual(['Second game', 'Spark', 'Spark', 'Top build']));
+    expect(chips(view)).toEqual(['All', 'Witch', 'Shadow', 'Marauder', 'Ranger', 'Duelist', 'Templar', 'Scion']);
+  });
+
+  it("filters the list by game, the class chips follow the game, and the choice is kept and follows another tab's", async () => {
+    poe2Enabled.set(true);
+    const { view, grid } = await mountBoth();
+    expect(pressed(view, 'Show builds of')).toBe('All');
+    await waitFor(() => expect(names(grid)).toEqual(['Second game', 'Spark', 'Spark', 'Top build']));
+    await waitFor(() => expect(chips(view)).toContain('Monk'));
+    await fireEvent.click(within(view.getByRole('group', { name: 'Filter by class' })).getByRole('button', { name: 'Templar' }));
+    await waitFor(() => expect(names(grid)).toEqual(['Spark', 'Spark']));
+
+    await fireEvent.click(within(view.getByRole('group', { name: 'Show builds of' })).getByRole('button', { name: 'PoE2' }));
+    const g2 = () => view.getByRole('grid', { name: 'Builds' });
+    await waitFor(() => expect(names(g2())).toEqual(['Second game']));
+    expect(chips(view)).toEqual(['All', 'Monk', 'Sorceress']);
+    expect(pressed(view, 'Filter by class'), 'a PoE1 class is not kept for the PoE2 list').toBe('All');
+    expect(localStorage.getItem(KEY)).toBe('poe2');
+
+    await fireEvent.click(within(view.getByRole('group', { name: 'Show builds of' })).getByRole('button', { name: 'PoE1' }));
+    await waitFor(() => expect(names(g2())).toEqual(['Spark', 'Spark', 'Top build']));
+    expect(chips(view)).toEqual(['All', 'Witch', 'Shadow', 'Marauder', 'Ranger', 'Duelist', 'Templar', 'Scion']);
+
+    cleanup();
+    const again = await mountBoth();
+    expect(pressed(again.view, 'Show builds of'), 'kept for the next visit').toBe('PoE1');
+    await waitFor(() => expect(names(again.grid)).toEqual(['Spark', 'Spark', 'Top build']));
+
+    localStorage.setItem(KEY, 'poe2');
+    window.dispatchEvent(new StorageEvent('storage', { key: KEY }));
+    await waitFor(() => expect(pressed(again.view, 'Show builds of')).toBe('PoE2'));
+    await waitFor(() => expect(names(again.view.getByRole('grid', { name: 'Builds' }))).toEqual(['Second game']));
   });
 });

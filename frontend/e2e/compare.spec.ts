@@ -26,8 +26,7 @@ const openCompare = async (page: Page) => {
 };
 
 const importComparison = async (app: App) => {
-  await app.goTo('Import / Export');
-  const region = app.page.getByRole('region', { name: 'Build import' });
+  const region = (await app.openImport()).getByRole('region', { name: 'Build import' });
   const box = region.getByRole('textbox', { name: /^To import a build/ });
   await box.fill(await go.encode(buildXml(B)));
   await expect(box).toHaveAccessibleDescription('Code is valid');
@@ -73,20 +72,7 @@ test('importing a comparison leaves A untouched, and the summary shows each buil
 
   const nextXml = buildXml(B);
   const next = await go.loadXml(nextXml);
-  await app.goTo('Import / Export');
-  const region = page.getByRole('region', { name: 'Build import' });
-  const box = region.getByRole('textbox', { name: /^To import a build/ });
-  await box.fill(await go.encode(nextXml));
-  await expect(box).toHaveAccessibleDescription('Code is valid');
-  await region.getByRole('radio', { name: /Import to this build/ }).check();
-  await app.act(
-    'import',
-    async () => {
-      await region.getByRole('button', { name: 'Import', exact: true }).click();
-      await page.getByRole('dialog', { name: 'Build Import' }).getByRole('button', { name: 'Import', exact: true }).click();
-    },
-    async () => expectedLines(await go.outputs(next))
-  );
+  await app.importCode(await go.encode(nextXml), async () => expectedLines(await go.outputs(next)));
   await app.goTo('Compare');
   await expect(page.getByRole('region', { name: 'Choose a build to compare' })).toBeVisible();
   await expect(page.getByRole('region', { name: 'Stat comparison' })).toHaveCount(0);
@@ -447,8 +433,7 @@ test('the Compare view stays on its tab while the build is open, and a New build
   await expect(prompt.or(page.getByRole('button', { name: 'New build', exact: true }))).toBeVisible();
   if (await prompt.isVisible()) await prompt.getByRole('button', { name: "Don't Save" }).click();
   await page.getByRole('button', { name: 'New build', exact: true }).click();
-  await app.goTo('Import / Export');
-  const region = page.getByRole('region', { name: 'Build import' });
+  const region = (await app.openImport()).getByRole('region', { name: 'Build import' });
   await region.getByRole('textbox', { name: /^To import a build/ }).fill(await go.encode(buildXml(B)));
   await region.getByRole('radio', { name: /Import as a comparison/ }).click();
   await region.getByRole('button', { name: 'Import', exact: true }).click();

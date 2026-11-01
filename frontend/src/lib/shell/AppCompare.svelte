@@ -67,6 +67,7 @@
   import { calcElements } from '$lib/display/calcs';
   import { compareCalcsView, modEntries, modKey } from '$lib/display/compare_calcs';
   import type { calculator } from '$lib/types';
+  import { compareLoaded } from './import_modal.svelte';
 
   let ui = $state(kept.opens === get(buildOpens) ? kept : fresh(get(buildOpens)));
   $effect(() => {
@@ -95,6 +96,7 @@
       .catch(logError);
   $effect(() => {
     void $currentBuild;
+    void compareLoaded.seq;
     void refreshInfo();
   });
 

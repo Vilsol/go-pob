@@ -46,8 +46,9 @@ export const openPhoneBuild = async (page: Page, file = BUILD) => {
   const app = await App.open(page, file, { phone: true });
   const more = await openMore(page);
   await more.getByRole('link', { name: 'Import/Export' }).click();
-  await page.waitForURL((u) => u.pathname.endsWith('/import'));
-  const region = page.getByRole('region', { name: 'Build import' });
+  const dialog = page.getByRole('dialog', { name: 'Import / Export' });
+  await expect(dialog).toBeVisible();
+  const region = dialog.getByRole('region', { name: 'Build import' });
   const box = region.getByRole('textbox', { name: /^To import a build/ });
   await box.fill(await go.encode(xml));
   await expect(box).toHaveAccessibleDescription('Code is valid');
@@ -55,7 +56,7 @@ export const openPhoneBuild = async (page: Page, file = BUILD) => {
     'import',
     async () => {
       await region.getByRole('button', { name: 'Import', exact: true }).click();
-      await page.getByRole('dialog', { name: 'Build Import' }).getByRole('button', { name: 'Import', exact: true }).click();
+      await expect(dialog).toBeHidden();
     },
     async () => expectedLines(await go.outputs(build))
   );

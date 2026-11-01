@@ -7,6 +7,14 @@ export const childrenOf = (folders: string[], f: string) =>
 export const countIn = (builds: SavedBuild[], f: string) => builds.filter((b) => under(b.folder, f)).length;
 export const leaf = (f: string) => f.split('/').pop() ?? f;
 
+export type GameFilter = 'all' | 'poe1' | 'poe2';
+export const GAME_FILTERS: { id: GameFilter; label: string }[] = [
+  { id: 'all', label: 'All' },
+  { id: 'poe1', label: 'PoE1' },
+  { id: 'poe2', label: 'PoE2' }
+];
+export const byGame = (builds: SavedBuild[], game: GameFilter) => (game === 'all' ? builds : builds.filter((b) => (b.game ?? 'poe1') === game));
+
 export const fmtShort = (v: number) => (v >= 1e6 ? (v / 1e6).toFixed(2) + 'M' : v >= 1e3 ? (v / 1e3).toFixed(1) + 'K' : String(v));
 export const fmtInt = (v: number) => Math.round(v).toLocaleString('en-US');
 export const fmtAgo = (m: number) =>

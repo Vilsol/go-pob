@@ -49,7 +49,7 @@ beforeAll(async () => {
 }, 120_000);
 
 const importAsNew = async (xml: string) => {
-  const Page = (await import('../../routes/import/+page.svelte')).default;
+  const Page = (await import('$lib/shell/AppImportExport.svelte')).default;
   const view = render(Page);
   const box = within(view.getByRole('region', { name: 'Build import' }));
   const field = box.getByRole('textbox', { name: /^To import a build/ });
@@ -61,7 +61,7 @@ const importAsNew = async (xml: string) => {
   return box;
 };
 
-describe('a PoE2 build code on the Import page', () => {
+describe('a PoE2 build code in the import dialog', () => {
   it('with the flag off is refused, the PoE1 build stays, and no second worker is made', async () => {
     poe2Enabled.set(false);
     const before = serialize(workerInstance.currentBuild);

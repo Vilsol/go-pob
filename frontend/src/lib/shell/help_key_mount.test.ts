@@ -88,10 +88,14 @@ describe('F1 opens the help at the current page', () => {
     ['compare', 'Compare tab']
   ];
   it.each(PAGES)('/%s opens "%s"', async (route, title) => {
-    page.url = new URL(`http://localhost/${route}`);
+    // Import / Export is a dialog over the page its address opens on
+    const { importDialog } = await import('./import_modal.svelte');
+    importDialog.open = route === 'import';
+    page.url = new URL(`http://localhost/${route === 'import' ? 'tree' : route}`);
     render(AppTopBar);
     await fireEvent.keyDown(document.body, { key: 'F1' });
     expect(await current()).toMatch(new RegExp(`^\\d+\\. ${title}$`));
+    importDialog.open = false;
   });
 });
 

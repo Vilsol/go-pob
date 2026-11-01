@@ -1,6 +1,1 @@
-<script lang="ts">
-  import GamePage from '$lib/shell/GamePage.svelte';
-  import AppImportExport from '$lib/shell/AppImportExport.svelte';
-</script>
-
-<GamePage route="import"><AppImportExport /></GamePage>
+<!-- the layout opens the Import / Export dialog for this address and moves on to the Tree -->

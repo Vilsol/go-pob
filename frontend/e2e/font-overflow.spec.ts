@@ -68,7 +68,7 @@ test('font scaling: no page lets more boxes overflow than its baseline (0339)', 
     Items: () => expect(page.getByRole('region', { name: 'Equipped items' })).toBeVisible(),
     Calcs: () => expect(page.getByRole('region', { name: 'Calculations' })).toBeVisible()
   };
-  for (const link of ['Tree', 'Skills', 'Items', 'Calcs', 'Config', 'Party', 'Notes', 'Import / Export']) {
+  for (const link of ['Tree', 'Skills', 'Items', 'Calcs', 'Config', 'Party', 'Notes']) {
     const t0 = await app.now();
     await app.goTo(link);
     // the page fills from the worker, which may still be on its idle job (the item DBs) when the tab opens
@@ -90,8 +90,10 @@ test('font scaling: no page lets more boxes overflow than its baseline (0339)', 
   await page.keyboard.press('Escape');
   await expect(sheet).toBeHidden();
 
-  await app.goTo('Import / Export');
-  const region = page.getByRole('region', { name: 'Build import' });
+  // Import / Export is a dialog over the page
+  await app.openImport();
+  await census('Import / Export', 'dialog[open]');
+  const region = page.getByRole('dialog', { name: 'Import / Export' }).getByRole('region', { name: 'Build import' });
   const box = region.getByRole('textbox', { name: /^To import a build/ });
   await box.fill(await go.encode(buildXml(COMPARE)));
   await expect(box).toHaveAccessibleDescription('Code is valid');

@@ -3,6 +3,7 @@
   import { buildName, opening, unsavedName } from './build_name.svelte';
   import { resetAccountSession } from './account_session.svelte';
   import { beforeReplace } from './link_import';
+  import { importDialog, openImport } from './import_modal.svelte';
   import { goto } from '$app/navigation';
   import { base } from '$app/paths';
   import { page } from '$app/state';
@@ -112,7 +113,7 @@
       openWiki(wiki);
       return;
     }
-    const segment = page.url.pathname.slice(base.length).split('/').filter(Boolean)[0] ?? '';
+    const segment = importDialog.open ? 'import' : (page.url.pathname.slice(base.length).split('/').filter(Boolean)[0] ?? '');
     helpSection = `${VIEW_MODES[segment] ?? segment} tab`;
     aboutTab = 'help';
     about = true;
@@ -284,6 +285,7 @@
     actions={phoneActions}
     onnavigate={(href: string) => {
       if (href === '#timeless') timelessOpen = true;
+      else if (href === `${base}/import`) openImport();
       else void goto(href);
     }}
     onback={leave}
@@ -335,7 +337,7 @@
       leave();
     }}
     {onsave}
-    onimport={() => void goto(`${base}/import`, { state: { focusImport: true } })}
+    onimport={() => openImport()}
     onsaveas={currentBuildPath.current ? () => (saveAs = true) : undefined}
     onsettings={() => (settings = true)}
     onabout={() => {

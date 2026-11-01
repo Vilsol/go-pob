@@ -57,6 +57,25 @@
   <LiveBuildList folder="League starters" />
 </Story>
 
+<Story
+  name="Game toggle · min"
+  asChild
+  globals={vp('min')}
+  play={async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await shows(canvasElement);
+    const { c, grid } = page(canvasElement);
+    const games = within(c.getByRole('group', { name: 'Show builds of' }));
+    await expect(games.getByRole('button', { name: 'All' })).toHaveAttribute('aria-pressed', 'true');
+    const all = names(grid).length;
+    await userEvent.click(games.getByRole('button', { name: 'PoE2' }));
+    await waitFor(() => expect(names(c.getByRole('grid', { name: 'Builds' }))).toEqual([]));
+    await userEvent.click(games.getByRole('button', { name: 'PoE1' }));
+    await waitFor(() => expect(names(c.getByRole('grid', { name: 'Builds' })).length).toBe(all));
+    await expectSingleLine([...canvasElement.querySelectorAll<HTMLElement>('header .btn, header .seg-btn')]);
+  }}>
+  <LiveBuildList game="all" />
+</Story>
+
 <Story name="Minimum" asChild globals={vp('min')} play={async ({ canvasElement }: { canvasElement: HTMLElement }) => shows(canvasElement)}>
   <LiveBuildList folder="Bossers" />
 </Story>

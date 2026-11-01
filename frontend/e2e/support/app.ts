@@ -345,23 +345,35 @@ export class App {
     await this.goTo('Tree');
   }
 
+  // the top bar's Import / Export opens a dialog over the page
+  async openImport(tab: 'Import' | 'Export' = 'Import') {
+    await this.page.getByRole('link', { name: 'Import / Export' }).click();
+    const dialog = this.page.getByRole('dialog', { name: 'Import / Export' });
+    await expect(dialog).toBeVisible();
+    if (tab === 'Export') await dialog.getByRole('tab', { name: 'Export' }).click();
+    return dialog;
+  }
+
   async importCode(code: string, want: () => Promise<StatLine[]>) {
-    await this.goTo('Import / Export');
-    const region = this.page.getByRole('region', { name: 'Build import' });
+    const dialog = await this.openImport();
+    const region = dialog.getByRole('region', { name: 'Build import' });
     const box = region.getByRole('textbox', { name: /^To import a build/ });
     const t0 = await this.now();
     await box.fill(code);
     await this.followWorker(t0, () => expect(box).toHaveAccessibleDescription('Code is valid'));
-    await expect(region.getByRole('radio', { name: /Import to this build/ })).toBeChecked();
-    // ImportTab.lua:648-653
+    await expect(region.getByRole('radio', { name: /Import as a new build/ })).toBeChecked();
     await this.act(
       'import',
       async () => {
         await region.getByRole('button', { name: 'Import', exact: true }).click();
-        await this.page.getByRole('dialog', { name: 'Build Import' }).getByRole('button', { name: 'Import', exact: true }).click();
+        // Build.lua:1421-1448: an open build with unsaved changes is asked about first, as leaving it is
+        const prompt = this.page.getByRole('dialog', { name: 'Save Changes' });
+        await expect.poll(async () => (await prompt.isVisible()) || !(await dialog.isVisible()), { timeout: ACTION_TIMEOUT }).toBe(true);
+        if (await prompt.isVisible()) await prompt.getByRole('button', { name: "Don't Save" }).click();
       },
       want
     );
+    await expect(dialog).toBeHidden();
     // ImportTab.lua:663-666: the import opens the tree; a test navigating before it lands is sent back there
     await this.page.waitForURL((u) => u.pathname.endsWith('/tree'));
   }
@@ -386,11 +398,12 @@ export class App {
   }
 
   async exportCode(): Promise<string> {
-    await this.goTo('Notes');
-    await this.goTo('Import / Export');
-    const box = this.page.getByRole('region', { name: 'Build sharing' }).getByRole('textbox', { name: 'Build code' });
+    const dialog = await this.openImport('Export');
+    const box = dialog.getByRole('region', { name: 'Build sharing' }).getByRole('textbox', { name: 'Build code' });
     let code = '';
     await expect.poll(async () => (code = await box.inputValue())).not.toBe('');
+    await this.page.keyboard.press('Escape');
+    await expect(dialog).toBeHidden();
     return code;
   }
 

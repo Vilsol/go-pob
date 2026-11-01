@@ -6,7 +6,10 @@ import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { Blob as NodeBlob } from 'node:buffer';
 
-afterEach(cleanup);
+afterEach(async () => {
+  cleanup();
+  (await import('./import_modal.svelte')).importDialog.open = false;
+});
 
 const pageErrors: string[] = [];
 beforeAll(() => {
@@ -30,13 +33,6 @@ if (!HTMLDialogElement.prototype.showModal) {
     this.dispatchEvent(new Event('close'));
   };
 }
-
-/* ImportTab.lua:648-653 */
-const confirmImport = async () => {
-  const dialog = await vi.waitFor(() => within(document.body).getByRole('dialog', { name: 'Build Import' }));
-  expect(dialog.textContent).toContain('will erase ALL existing data for this build');
-  await fireEvent.click(within(dialog).getByRole('button', { name: 'Import' }));
-};
 
 vi.mock('$lib/go/worker', async () => {
   const { remoteWorker } = await import('../../../harness/component/go_runtime');
@@ -64,12 +60,20 @@ const topBar = async () => {
   return render((await import('$lib/shell/AppTopBar.svelte')).default);
 };
 
+const open = async (tab: 'import' | 'export') => {
+  (await import('./import_modal.svelte')).openImport(tab);
+  const view = render((await import('./AppImportModal.svelte')).default);
+  return { view, dialog: view.getByRole('dialog', { name: 'Import / Export' }) };
+};
 const mount = async () => {
-  const Page = (await import('./+page.svelte')).default;
-  const view = render(Page);
-  const code = view.getByRole('textbox', { name: 'Build code' }) as HTMLTextAreaElement;
+  const { view, dialog } = await open('import');
+  return { view, dialog, box: within(within(dialog).getByRole('region', { name: 'Build import' })) };
+};
+const mountExport = async () => {
+  const { view, dialog } = await open('export');
+  const code = within(dialog).getByRole<HTMLTextAreaElement>('textbox', { name: 'Build code' });
   await vi.waitFor(() => expect(code.value).not.toBe(''));
-  return { view, code, box: within(view.getByRole('region', { name: 'Build import' })) };
+  return { view, dialog, code };
 };
 
 beforeAll(async () => {
@@ -85,18 +89,18 @@ beforeAll(async () => {
   Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true });
 }, 120_000);
 
-describe('import/+page.svelte', () => {
+describe('the Import / Export dialog', () => {
   it('mounting alone writes nothing and does not Tick', async () => {
     const before = serialize(workerInstance.currentBuild);
     tick.mockClear();
-    await mount();
+    await mountExport();
     await new Promise((r) => setTimeout(r, 50));
     expect(serialize(workerInstance.currentBuild)).toBe(before);
     expect(tick).not.toHaveBeenCalled();
   }, 20_000);
 
   it("shows Go's code for the build it holds, and re-reads it after a recalculation", async () => {
-    const { code } = await mount();
+    const { code } = await mountExport();
     expect(code.value).toBe(workerInstance.ExportCode());
     expect(types.pob.DecodeDecompress(code.value).unwrap()).toBe(serialize(workerInstance.currentBuild));
     const notes = workerInstance.currentBuild!.Notes;
@@ -109,7 +113,7 @@ describe('import/+page.svelte', () => {
   });
 
   it('Export support (ImportTab.lua:506-509) shows what Go holds, writes the change and Ticks', async () => {
-    const { view } = await mount();
+    const { view } = await mountExport();
     const box = view.getByRole('checkbox', { name: /^Export support/ }) as HTMLInputElement;
     expect(box.disabled).toBe(false);
     expect(box.checked).toBe(false);
@@ -122,7 +126,7 @@ describe('import/+page.svelte', () => {
   });
 
   it('Copy code puts that code on the clipboard', async () => {
-    const { view, code } = await mount();
+    const { view, code } = await mountExport();
     writeText.mockClear();
     await fireEvent.click(view.getByRole('button', { name: 'Copy code' }));
     expect(writeText).toHaveBeenCalledWith(code.value);
@@ -130,8 +134,11 @@ describe('import/+page.svelte', () => {
     await vi.waitFor(() => expect(sharing.getByRole('status').textContent).toContain('Copied'));
   });
 
-  it('an imported code replaces the build Go holds, then Ticks', async () => {
-    const { box } = await mount();
+  // ImportTab.lua:663-666: an import never replaces the open build; it opens as a new one
+  it('an imported code opens as a new build without the current save path, closes the dialog, then Ticks', async () => {
+    const { currentBuildPath } = await import('$lib/global');
+    currentBuildPath.current = 'Builds/kept.xml';
+    const { box, dialog } = await mount();
     const field = box.getByRole('textbox', { name: /^To import a build/ });
     const go = box.getByRole<HTMLButtonElement>('button', { name: 'Import' });
     expect(go.disabled).toBe(true);
@@ -140,54 +147,85 @@ describe('import/+page.svelte', () => {
       expect(field.getAttribute('aria-describedby') && document.getElementById(field.getAttribute('aria-describedby')!)!.textContent).toBe('Code is valid')
     );
     expect(go.disabled).toBe(false);
-    expect(box.getByRole<HTMLInputElement>('radio', { name: /Import to this build/ }).checked).toBe(true);
+    expect(box.getByRole<HTMLInputElement>('radio', { name: /Import as a new build/ }).checked).toBe(true);
+    expect(box.queryByRole('radio', { name: /Import to this build/ }), 'no mode replaces the open build').toBeNull();
     expect(serialize(workerInstance.currentBuild), 'typing alone must not write').not.toBe(other.xml);
     tick.mockClear();
     goto.mockClear();
     const bar = await topBar();
     await fireEvent.click(go);
-    expect(serialize(workerInstance.currentBuild), 'nothing before the confirm').not.toBe(other.xml);
-    await confirmImport();
     await vi.waitFor(() => expect(serialize(workerInstance.currentBuild)).toBe(other.xml));
-    await bar.findByRole('button', { name: 'Save (unsaved changes)' });
-    expect(tick).toHaveBeenCalledWith('ImportCode');
-    await vi.waitFor(() => expect(goto).toHaveBeenCalledWith(expect.stringMatching(/\/tree$/)));
-  });
-
-  it('Cancel in the confirm imports nothing; Enter in the field imports a valid code (ImportTab.lua:671-675)', async () => {
-    const { box } = await mount();
-    const before = serialize(workerInstance.currentBuild);
-    const field = box.getByRole('textbox', { name: /^To import a build/ });
-    await fireEvent.input(field, { target: { value: other.code } });
-    await vi.waitFor(() => expect(box.getByRole<HTMLButtonElement>('button', { name: 'Import' }).disabled).toBe(false));
-    await fireEvent.keyDown(field, { key: 'Enter' });
-    const dialog = await vi.waitFor(() => within(document.body).getByRole('dialog', { name: 'Build Import' }));
-    await fireEvent.click(within(dialog).getByRole('button', { name: 'Cancel' }));
-    await new Promise((r) => setTimeout(r, 200));
-    expect(serialize(workerInstance.currentBuild)).toBe(before);
-  });
-
-  // ImportTab.lua:663-666
-  it('Import to a new build opens the code without the current save path, then Ticks', async () => {
-    const { currentBuildPath } = await import('$lib/global');
-    currentBuildPath.current = 'Builds/kept.xml';
-    const { box } = await mount();
-    const field = box.getByRole('textbox', { name: /^To import a build/ });
-    await fireEvent.input(field, { target: { value: other.code } });
-    const asNew = box.getByRole<HTMLInputElement>('radio', { name: /Import as a new build/ });
-    expect(asNew.disabled, 'the new-build mode is live').toBe(false);
-    await fireEvent.click(asNew);
-    const go = box.getByRole<HTMLButtonElement>('button', { name: 'Import' });
-    await vi.waitFor(() => expect(go.disabled).toBe(false));
-    tick.mockClear();
-    const bar = await topBar();
-    await fireEvent.click(go);
-    await vi.waitFor(() => expect(serialize(workerInstance.currentBuild)).toBe(other.xml));
+    expect(within(document.body).queryByRole('dialog', { name: 'Build Import' }), 'no overwrite confirm').toBeNull();
     expect(tick).toHaveBeenCalledWith('ImportCode');
     await bar.findByRole('button', { name: 'Save (unsaved changes)' });
     await vi.waitFor(() => expect(currentBuildPath.current, 'the new build still saves over the old one').toBe(''));
     const { unsavedName } = await import('$lib/shell/build_name.svelte');
     expect(unsavedName.imported, 'named "Imported build" (ImportTab.lua:665)').toBe(true);
+    await vi.waitFor(() => expect(goto).toHaveBeenCalledWith(expect.stringMatching(/\/tree$/)));
+    expect((dialog as HTMLDialogElement).open, 'the dialog closes once the build opens').toBe(false);
+  });
+
+  it('Enter in the field imports a valid code (ImportTab.lua:671-675)', async () => {
+    await loadCorpusBuild(BUILD);
+    const { box } = await mount();
+    await topBar();
+    const field = box.getByRole('textbox', { name: /^To import a build/ });
+    await fireEvent.input(field, { target: { value: other.code } });
+    await vi.waitFor(() => expect(box.getByRole<HTMLButtonElement>('button', { name: 'Import' }).disabled).toBe(false));
+    await fireEvent.keyDown(field, { key: 'Enter' });
+    await vi.waitFor(() => expect(serialize(workerInstance.currentBuild)).toBe(other.xml));
+  });
+
+  // Build.lua:1421-1448: the same unsaved-changes prompt leaving the build asks
+  it("over a build with unsaved changes it asks first: Cancel imports nothing, Don't Save imports and leaves the saved file alone", async () => {
+    await loadCorpusBuild(BUILD);
+    const before = serialize(workerInstance.currentBuild);
+    const { currentBuildPath } = await import('$lib/global');
+    const { opening } = await import('$lib/shell/build_name.svelte');
+    currentBuildPath.current = 'Builds/kept.xml';
+    opening.modFlag = true;
+    const bar = render((await import('$lib/shell/AppTopBar.svelte')).default);
+    await bar.findByRole('button', { name: 'Save (unsaved changes)' });
+    const save = vi.spyOn(workerInstance, 'SaveBuildAs');
+    const { box } = await mount();
+    const field = box.getByRole('textbox', { name: /^To import a build/ });
+    await fireEvent.input(field, { target: { value: other.code } });
+    const go = box.getByRole<HTMLButtonElement>('button', { name: 'Import' });
+    await vi.waitFor(() => expect(go.disabled).toBe(false));
+
+    await fireEvent.click(go);
+    let prompt = await vi.waitFor(() => within(document.body).getByRole('dialog', { name: 'Save Changes' }));
+    await fireEvent.click(within(prompt).getByRole('button', { name: 'Cancel' }));
+    await new Promise((r) => setTimeout(r, 200));
+    expect(serialize(workerInstance.currentBuild), 'Cancel keeps the open build').toBe(before);
+    expect(currentBuildPath.current).toBe('Builds/kept.xml');
+    await bar.findByRole('button', { name: 'Save (unsaved changes)' });
+
+    await fireEvent.click(go);
+    prompt = await vi.waitFor(() => within(document.body).getByRole('dialog', { name: 'Save Changes' }));
+    await fireEvent.click(within(prompt).getByRole('button', { name: "Don't Save" }));
+    await vi.waitFor(() => expect(serialize(workerInstance.currentBuild)).toBe(other.xml));
+    await vi.waitFor(() => expect(currentBuildPath.current, 'the import does not take over the saved build').toBe(''));
+    expect(save, 'the old build is not written').not.toHaveBeenCalled();
+    save.mockRestore();
+  });
+
+  it('a saved build with no unsaved changes is not asked about, and keeps its file', async () => {
+    await loadCorpusBuild(BUILD);
+    const { currentBuildPath } = await import('$lib/global');
+    currentBuildPath.current = 'Builds/kept.xml';
+    await topBar();
+    const save = vi.spyOn(workerInstance, 'SaveBuildAs');
+    const { box } = await mount();
+    await fireEvent.input(box.getByRole('textbox', { name: /^To import a build/ }), { target: { value: other.code } });
+    const go = box.getByRole<HTMLButtonElement>('button', { name: 'Import' });
+    await vi.waitFor(() => expect(go.disabled).toBe(false));
+    await fireEvent.click(go);
+    await vi.waitFor(() => expect(serialize(workerInstance.currentBuild)).toBe(other.xml));
+    expect(within(document.body).queryByRole('dialog', { name: 'Save Changes' })?.hasAttribute('open') ?? false).toBe(false);
+    await vi.waitFor(() => expect(currentBuildPath.current).toBe(''));
+    expect(save).not.toHaveBeenCalled();
+    save.mockRestore();
   });
 
   it('a code that inflates but is no build says so, and leaves the build alone', async () => {
@@ -198,7 +236,6 @@ describe('import/+page.svelte', () => {
     const go = box.getByRole<HTMLButtonElement>('button', { name: 'Import' });
     await vi.waitFor(() => expect(go.disabled).toBe(false));
     await fireEvent.click(go);
-    await confirmImport();
     await vi.waitFor(() => expect(box.getByRole('alert').textContent).toMatch(/^Import failed: ./));
     expect(serialize(workerInstance.currentBuild)).toBe(before);
   });
@@ -235,10 +272,8 @@ describe('import/+page.svelte', () => {
       const busy = box.getByRole<HTMLButtonElement>('button', { name: 'Retrieving paste..' });
       expect(busy.disabled).toBe(true);
       answer(new Response(`${other.code}\n`, { status: 200 }));
-      await confirmImport();
       await vi.waitFor(() => expect(serialize(workerInstance.currentBuild)).toBe(other.xml));
       expect(tick).toHaveBeenCalledWith('ImportCode');
-      await vi.waitFor(() => expect(box.getByRole('button', { name: 'Import' })).toBeTruthy());
     });
 
     it('says the site could not be read (CORS or offline), and leaves the build alone', async () => {
@@ -261,7 +296,6 @@ describe('import/+page.svelte', () => {
       const before = serialize(workerInstance.currentBuild);
       const box = await typeLink();
       await fireEvent.click(box.getByRole('button', { name: 'Import' }));
-      await confirmImport();
       await vi.waitFor(() => expect(box.getByRole('alert').textContent).toBe(`Import failed: ${NOT_A_CODE}`));
       expect(serialize(workerInstance.currentBuild)).toBe(before);
     });
@@ -374,7 +408,7 @@ describe('import/+page.svelte', () => {
 
     it('an account another tab adds to the history shows in this one', async () => {
       const chars = await section();
-      const others = ['Other#1111', ...JSON.parse(localStorage.getItem('import:accounts') ?? '[]')];
+      const others = ['Other#1111', ...(JSON.parse(localStorage.getItem('import:accounts') ?? '[]') as string[])];
       localStorage.setItem('import:accounts', JSON.stringify(others));
       window.dispatchEvent(new StorageEvent('storage', { key: 'import:accounts' }));
       const pick = await vi.waitFor(() => chars.getByRole<HTMLSelectElement>('combobox', { name: 'Account history' }));
@@ -467,5 +501,58 @@ describe('import/+page.svelte', () => {
       expect(items).toHaveBeenCalledTimes(1);
       items.mockRestore();
     });
+  });
+});
+
+describe('opening the Import / Export dialog', () => {
+  const modal = async () => render((await import('./AppImportModal.svelte')).default);
+  const dialogOf = () => within(document.body).getByRole<HTMLDialogElement>('dialog', { name: 'Import / Export' });
+
+  it("the top bar's Import / Export opens it over the page on Import, with the code field focused; Esc closes it and returns focus", async () => {
+    await loadCorpusBuild(BUILD);
+    const bar = await topBar();
+    await modal();
+    goto.mockClear();
+    const link = bar.getByRole('link', { name: 'Import / Export' });
+    link.focus();
+    await fireEvent.click(link);
+    const dlg = await vi.waitFor(() => dialogOf());
+    expect(dlg.open).toBe(true);
+    expect(goto, 'no page change').not.toHaveBeenCalled();
+    expect(within(dlg).getByRole('tab', { name: 'Import' }).getAttribute('aria-selected')).toBe('true');
+    expect(within(dlg).queryByRole('region', { name: 'Build sharing' })).toBeNull();
+    await vi.waitFor(() => expect(document.activeElement).toBe(within(dlg).getByRole('textbox', { name: /^To import a build/ })));
+    await fireEvent.keyDown(dlg, { key: 'Escape' });
+    expect(dlg.open).toBe(false);
+    expect(document.activeElement).toBe(link);
+  });
+
+  it('Ctrl+I opens it, and its Export tab shows the code and the share controls', async () => {
+    await loadCorpusBuild(BUILD);
+    await topBar();
+    await modal();
+    await fireEvent.keyDown(window, { key: 'i', ctrlKey: true });
+    const dlg = await vi.waitFor(() => dialogOf());
+    expect(dlg.open).toBe(true);
+    await fireEvent.click(within(dlg).getByRole('tab', { name: 'Export' }));
+    const sharing = within(within(dlg).getByRole('region', { name: 'Build sharing' }));
+    await vi.waitFor(() => expect(sharing.getByRole<HTMLTextAreaElement>('textbox', { name: 'Build code' }).value).toBe(workerInstance.ExportCode()));
+    expect(sharing.getByRole('button', { name: 'Share' })).toBeTruthy();
+    expect(within(dlg).queryByRole('region', { name: 'Build import' })).toBeNull();
+    expect(within(dlg).getByRole('checkbox', { name: /^Export support/ })).toBeTruthy();
+  });
+
+  it("the phone frame's Import/Export opens it instead of a page", async () => {
+    await loadCorpusBuild(BUILD);
+    const { opening } = await import('$lib/shell/build_name.svelte');
+    opening.modFlag = false;
+    const bar = render((await import('$lib/shell/AppTopBar.svelte')).default, { props: { phone: true } });
+    await modal();
+    goto.mockClear();
+    await fireEvent.click(bar.getByRole('button', { name: 'More' }));
+    const more = within(await vi.waitFor(() => within(document.body).getByRole('navigation', { name: 'More pages' })));
+    await fireEvent.click(more.getByRole('link', { name: 'Import/Export' }));
+    expect((await vi.waitFor(() => dialogOf())).open).toBe(true);
+    expect(goto).not.toHaveBeenCalled();
   });
 });

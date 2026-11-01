@@ -93,7 +93,8 @@ test('leaving a build with unsaved changes asks Save / Don’t Save / Cancel (02
   await app.importCode(await go.encode(xml), want);
 
   await page.keyboard.press('Control+i');
-  await expect(page).toHaveURL(/\/import$/);
+  await expect(page.getByRole('dialog', { name: 'Import / Export' })).toBeVisible();
+  await page.keyboard.press('Escape');
   await app.goTo('Tree');
 
   const back = page.getByRole('link', { name: 'Back to builds' });

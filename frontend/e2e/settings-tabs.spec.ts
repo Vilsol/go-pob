@@ -25,7 +25,7 @@ test('a setting changed in one tab reaches another open tab without a reload (02
   await appB.importCode(code, async () => expectedLines(out));
   const rowB = appB.statsRegion().getByRole('button').filter({ hasText: 'Average Hit' }).first();
   await expect(rowB).toContainText(',');
-  await expect(b).toHaveTitle('Unnamed build (Elementalist) - go-pob');
+  await expect(b).toHaveTitle('Imported build (Elementalist) - go-pob');
 
   await a.getByRole('button', { name: 'Settings' }).click();
   const sheet = a.getByRole('dialog', { name: 'Settings' });

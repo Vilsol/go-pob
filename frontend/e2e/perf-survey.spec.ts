@@ -144,9 +144,11 @@ test(`perf survey on ${BUILD}`, async ({ page }) => {
   await app.memory('after-import');
 
   for (const round of [1, 2]) {
-    for (const link of ['Tree', 'Skills', 'Items', 'Calcs', 'Config', 'Notes', 'Import / Export']) {
+    for (const link of ['Tree', 'Skills', 'Items', 'Calcs', 'Config', 'Notes']) {
       await measure(app, cdp, `nav ${link} #${round}`, () => app.goTo(link));
     }
+    await measure(app, cdp, `nav Import / Export #${round}`, () => app.openImport());
+    await app.page.keyboard.press('Escape');
   }
 
   await app.goTo('Tree');

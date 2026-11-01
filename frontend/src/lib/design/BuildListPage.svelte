@@ -3,7 +3,8 @@
   import type { Snippet } from 'svelte';
   import BuildTable from './BuildTable.svelte';
   import FolderTree from './FolderTree.svelte';
-  import { buildId, leaf, type ColKey, type Drag, type Sort } from './builds';
+  import Segmented from './Segmented.svelte';
+  import { GAME_FILTERS, buildId, byGame, leaf, type ColKey, type Drag, type GameFilter, type Sort } from './builds';
   import Icon from './Icon.svelte';
   import Sheet from './mobile/Sheet.svelte';
   import { phoneMedia } from './mobile/mobile';
@@ -26,6 +27,8 @@
     importHref?: string;
     newHref?: string;
     columns?: ColKey[];
+    /** the All / PoE1 / PoE2 toggle, shown only when given */
+    game?: GameFilter;
     onfolder: (path: string) => void;
     ontoggle: (path: string) => void;
     onmove: (id: string, dest: string) => void;
@@ -60,6 +63,7 @@
     importHref = '#import',
     newHref = '#new',
     columns,
+    game = $bindable(),
     onfolder,
     ontoggle,
     onmove,
@@ -88,6 +92,7 @@
   };
   // the tree's own New folder button lives in the folders sheet on a phone; this one sits beside the sheet's button
   const phone = phoneMedia();
+  const listed = $derived(game ? byGame(builds, game) : builds);
 </script>
 
 <div class="page max-phone:h-dvh">
@@ -95,6 +100,7 @@
     <span class="text-18 font-semibold">go-pob</span>
     <span class="note max-phone:hidden">game data {gameVersion}</span>
     <div class="grow"></div>
+    {#if game}<Segmented label="Show builds of" options={GAME_FILTERS} value={game} onchange={(id: string) => (game = id as GameFilter)} />{/if}
     {#if onimport}<Button size="md" onclick={onimport}>Import build</Button>{:else}<Button href={importHref} size="md">Import build</Button>{/if}
     {#if onnew}<Button size="md" variant="primary" class="px-4" onclick={onnew}>New build</Button>{:else}<Button
         href={newHref}
@@ -122,7 +128,7 @@
     {#snippet tree()}
       <FolderTree
         {folders}
-        {builds}
+        builds={listed}
         {folder}
         {open}
         {drag}
@@ -144,32 +150,32 @@
       ><div class="flex [&>nav]:w-full [&>nav]:border-r-0">
         {#if foldersOpen}{@render tree()}{/if}
       </div></Sheet>
-    <BuildTable
-      bind:sort
-      {phoneLayout}
-      {builds}
-      {folders}
-      {folder}
-      {classes}
-      {gameVersion}
-      {fresh}
-      {recalc}
-      {drag}
-      {columns}
-      bind:q
-      bind:colMenuOpen
-      {onfolder}
-      ondrag={(d) => {
-        drag = d;
-        if (d) note = '';
-      }}
-      onmove={move}
-      {onopen}
-      {oncopy}
-      {onrename}
-      {ondelete}
-      {onpaste}
-      {onrecalc} />
+    {#key game}<BuildTable
+        bind:sort
+        {phoneLayout}
+        builds={listed}
+        {folders}
+        {folder}
+        {classes}
+        {gameVersion}
+        {fresh}
+        {recalc}
+        {drag}
+        {columns}
+        bind:q
+        bind:colMenuOpen
+        {onfolder}
+        ondrag={(d) => {
+          drag = d;
+          if (d) note = '';
+        }}
+        onmove={move}
+        {onopen}
+        {oncopy}
+        {onrename}
+        {ondelete}
+        {onpaste}
+        {onrecalc} />{/key}
   </div>
   {@render dialogs?.()}
 </div>

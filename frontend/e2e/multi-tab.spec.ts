@@ -178,18 +178,25 @@ test('the build sort, the share site and the panel widths another tab stores rea
   await store('go-pob:tree-details-width', '500');
   await expect(details, "the tree details take the other tab's width").toHaveAttribute('aria-valuenow', '500');
 
-  await appB.goTo('Import / Export');
-  const site = b.getByRole('region', { name: 'Build sharing' }).getByRole('combobox');
+  const site = (await appB.openImport('Export')).getByRole('region', { name: 'Build sharing' }).getByRole('combobox');
   const sites = await site.locator('option').allTextContents();
   expect(sites.length, 'more than one share site to choose from').toBeGreaterThan(1);
   await expect(site).toHaveValue(sites[0]);
   await store('options:lastExportWebsite', sites.at(-1)!);
   await expect(site, "the share site follows the other tab's last share").toHaveValue(sites.at(-1)!);
+  await b.keyboard.press('Escape');
 
   await toList(b);
   const level = b.getByRole('grid', { name: 'Builds' }).getByRole('columnheader', { name: /^LEVEL/ });
   await store('options:buildSortMode', JSON.stringify({ key: 'level', dir: 'asc' }));
   await expect(level, "the build list takes the other tab's sort").toHaveAttribute('aria-sort', 'ascending');
+
+  const games = b.getByRole('group', { name: 'Show builds of' });
+  await expect(games, 'no game toggle while PoE2 is locked').toHaveCount(0);
+  await store('options:poe2', 'true');
+  await expect(games.getByRole('button', { name: 'All' })).toHaveAttribute('aria-pressed', 'true');
+  await store('options:buildListGame', 'poe1');
+  await expect(games.getByRole('button', { name: 'PoE1' }), "the build list takes the other tab's game").toHaveAttribute('aria-pressed', 'true');
 
   appA.assertNoErrors();
   appB.assertNoErrors();
