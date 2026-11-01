@@ -162,6 +162,7 @@ data/raw/gems.go                    GENERATED  scripts/gopob/gemsemit.go
 data/raw/granted_effects.go         PORT       src/Modules/Data.lua
 data/raw/has_global_effect.go       GENERATED  scripts/gopob/oracleemitters.go
 data/raw/skill_gem_lookup.go         GO-NATIVE  reverse index from a gem's GAME id to its poe.SkillGem, rebuilt because go-pob-data never populates SkillGem.GrantedEffect; PoB reads its own Gems.lua table and has no lookup to port
+data/assetcache/columns.go          GO-NATIVE  caches go-pob-data json tables pruned to the columns their row types decode, so the wasm build decodes less; PoB reads its data tables as Lua and has no decode step
 data/assetcache/loader.go           GO-NATIVE  the go-pob-data asset loader over the storage interface, keyed by the cache namespace; PoB ships its data in-tree and has nothing to load
 data/raw/main.go                    GO-NATIVE  go-pob-data asset loading over the storage interface; PoB ships its data in-tree and has nothing to load
 data/raw/prefetch.go                GO-NATIVE  concurrent read-ahead of the go-pob-data assets InitializeAll then walks one at a time; PoB ships its data in-tree and has nothing to load
@@ -578,3 +579,4 @@ calculator2/mod_parser_flags.go     PORT       src/Data/Global.lua
 calculator2/mod_parser_immune.go    PORT       src/Modules/ModParser.lua
 calculator2/mod_parser_index.go     GO-NATIVE  candidate-set prefilter for Go's regexp engine, which has no literal-prefix skip on anchored patterns; LuaJIT's pattern scan has no equivalent cost and PoB has no equivalent code
 calculator2/mod_parser_tools.go     PORT       src/Modules/ModParser.lua,src/Modules/ModTools.lua,src/Classes/ModList.lua,src/Modules/Data.lua
+calculator2/preload.go              GO-NATIVE  runs the lazy game-data loads ahead of the first calculation, so the PoE2 worker can start them at boot; PoB loads its data at startup

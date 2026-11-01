@@ -168,6 +168,7 @@ export declare namespace exposition {
   }
   function ParseBuild(xml: string): Result<(exposition.Calculator | undefined)>;
   function PassiveTreeJSON(): Promise<Result<string>>;
+  function Preload(): Promise<Result<void>>;
   function TreeClasses(): Promise<Result<(Array<string> | undefined)>>;
   const TreeVersion: string;
 }

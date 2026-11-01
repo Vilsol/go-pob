@@ -6,16 +6,13 @@ import (
 
 	"github.com/Vilsol/go-pob-data/loader"
 	game "github.com/Vilsol/go-pob-data/poe2"
-
-	"github.com/Vilsol/go-pob/data/assetcache"
-	"github.com/Vilsol/go-pob/storage"
 )
 
 // costDivisors is data.costs[resource].Divisor, from the game's CostTypes table.
 //
 //pob2:block:src/Modules/Data.lua:721-729
 var costDivisors = sync.OnceValues(func() (map[string]float64, error) {
-	rows, err := loader.LoadJSONTable[game.CostType](context.Background(), skillDataVersion, game.CostTypesTable, assetcache.AssetLoaderWrapper{Storage: storage.Get()})
+	rows, err := loader.LoadJSONTable[game.CostType](context.Background(), skillDataVersion, game.CostTypesTable, gameDataCache())
 	if err != nil {
 		return nil, err
 	}

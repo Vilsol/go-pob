@@ -19,6 +19,7 @@ import (
 
 func init() {
 	crystallineNamespace("go-pob2", "exposition").Set("ParseBuild", crystallineWrap(js.FuncOf(crystallineFnExpositionParseBuild)))
+	crystallineNamespace("go-pob2", "exposition").Set("Preload", crystallineWrap(js.FuncOf(crystallineFnExpositionPreload)))
 	crystallineNamespace("go-pob2", "exposition").Set("PassiveTreeJSON", crystallineWrap(js.FuncOf(crystallineFnExpositionPassiveTreeJSON)))
 	crystallineNamespace("go-pob2", "exposition").Set("TreeClasses", crystallineWrap(js.FuncOf(crystallineFnExpositionTreeClasses)))
 	crystallineNamespace("go-pob2", "config").Set("InitLogging", crystallineWrap(js.FuncOf(crystallineFnConfigInitLogging)))
@@ -1030,6 +1031,24 @@ func crystallineFnExpositionParseBuild(this js.Value, args []js.Value) (result a
 	}
 
 	return crystallineOk(crystallineMarshalExpositionCalculator(r0))
+}
+
+func crystallineFnExpositionPreload(this js.Value, args []js.Value) (result any) {
+	defer crystallineRecover(&result)
+
+	if len(args) != 0 {
+		return crystallineFail("Preload: expected 0 arguments, got " + strconv.Itoa(len(args)))
+	}
+
+	return crystallinePromise(func() any {
+		r0 := Preload()
+
+		if r0 != nil {
+			return crystallineErr(r0)
+		}
+
+		return crystallineOk(nil)
+	})
 }
 
 func crystallineFnExpositionPassiveTreeJSON(this js.Value, args []js.Value) (result any) {

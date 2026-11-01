@@ -35,6 +35,7 @@ func Exports(r bind.Registry) {
 	r.Type(ItemView{}, bind.Plain())
 
 	r.Func(ParseBuild)
+	r.Func(Preload, bind.AsPromise())
 	r.Func(PassiveTreeJSON, bind.AsPromise())
 	r.Func(TreeClasses, bind.AsPromise())
 	r.Value("TreeVersion", TreeVersion)

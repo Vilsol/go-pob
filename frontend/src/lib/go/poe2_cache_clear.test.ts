@@ -12,7 +12,7 @@ vi.mock('../types2', () => ({
   boot: () => Promise.resolve(),
   config: { InitLogging: () => {} },
   storage: { InitializeStorage: () => {} },
-  exposition: {}
+  exposition: { Preload: () => Promise.resolve() }
 }));
 
 const { fs } = await import('@zenfs/core');

@@ -34,6 +34,14 @@ func loadTree() (*tree2.PassiveTree, error) {
 	return tree, nil
 }
 
+// Preload loads the passive tree and the game data ahead of the first calculation.
+func Preload() error {
+	if _, err := loadTree(); err != nil {
+		return err
+	}
+	return calculator2.Preload()
+}
+
 // Calculator holds one parsed PoE2 build and its last calculation.
 type Calculator struct {
 	build *pob2.PathOfBuilding2

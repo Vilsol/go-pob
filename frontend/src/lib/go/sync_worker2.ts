@@ -140,6 +140,8 @@ class PoB2Worker {
     this.booted ??= boot(wasm).then(async () => {
       config.InitLogging(false);
       await initializeStorage();
+      // not awaited, so Open is not held behind it; a load error reaches Open through Calculate, which runs the same loads
+      void exposition.Preload();
     });
     return this.booted;
   }

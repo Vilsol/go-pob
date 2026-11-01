@@ -175,3 +175,11 @@ func TestMainSkillSelectionRecalculates(t *testing.T) {
 		t.Errorf("main socket group %d, skill flags %v; want 2 and a spell", out.MainSocketGroup, out.SkillFlags)
 	}
 }
+
+func TestPreloadThenCalculateMatchesPoB(t *testing.T) {
+	if err := Preload(); err != nil {
+		t.Fatal(err)
+	}
+	out := calculateFile(t, filepath.Join("testdata", "sorceress_spark.xml"))
+	assertClose(t, "sorceress_spark.xml", "Life", out.Output["Life"], 683)
+}
