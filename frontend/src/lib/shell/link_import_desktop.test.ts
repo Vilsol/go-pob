@@ -9,6 +9,8 @@ vi.mock('$app/navigation', () => ({ goto }));
 
 vi.stubEnv('VITE_DESKTOP', '1');
 (window as Window & { pobDesktopPending?: string[] }).pobDesktopPending = ['gopob-file:EARLY'];
+// a build handed over at load is fetched at once, and opened once the game data is in
+vi.stubGlobal('fetch', (url: string) => Promise.resolve(new Response(`code-of-${url}`, { headers: { 'Content-Type': 'text/plain; charset=utf-8' } })));
 const { openImportLink } = await import('./link_import');
 const { markBackendAsLoaded } = await import('$lib/global.js');
 const { toasts, clearToasts } = await import('$lib/design/toast');

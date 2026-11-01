@@ -33,6 +33,20 @@ const stallProbe = () => {
   (globalThis as unknown as { __stall: typeof probe }).__stall = probe;
 };
 
+// a warm PoE2 import makes its worker as soon as the page has decoded the code, before the PoE1 engine's game data
+// is in: about 0.2 s on this suite's machines, under a second under load, where waiting for that data took 2.4 s on a
+// quiet machine
+const MAX_POE2_WORKER_MS = 1_500;
+
+const poe2WorkerProbe = () => {
+  const log = console.log;
+  console.log = (...args: unknown[]) => {
+    const g = globalThis as unknown as { __poe2Worker?: number };
+    if (args[0] === 'Creating PoE2 sync worker') g.__poe2Worker ??= performance.now();
+    log(...args);
+  };
+};
+
 const maxStall = (page: Page) => page.evaluate(() => (globalThis as unknown as { __stall: Stall }).__stall.max);
 const sumStall = (page: Page) => page.evaluate(() => (globalThis as unknown as { __stall: Stall }).__stall.sum);
 const resetStall = (page: Page) => page.evaluate(() => (globalThis as unknown as { __stall: Stall }).__stall.reset());
@@ -48,40 +62,55 @@ const open = async (context: BrowserContext) => {
   return { page, errors, ms: Date.now() - started };
 };
 
-test('a warm PoE2 import and opening its passive tree do not stall the main thread', { tag: '@slow' }, async ({ context }) => {
-  await context.addInitScript(() => localStorage.setItem('options:poe2', 'true'));
-  await context.addInitScript(stallProbe);
-  await context.route(`${DATA_HOST}**`, async (route) => {
-    const asset = cachedAsset(route.request().url());
-    return route.fulfill({
-      status: asset.status,
-      body: asset.status === 200 ? asset.body : undefined,
-      headers: { 'access-control-allow-origin': '*', 'content-type': 'application/octet-stream' }
+test(
+  'a warm PoE2 import makes its worker at once, and neither it nor opening its passive tree stalls the main thread',
+  { tag: '@slow' },
+  async ({ context }) => {
+    await context.addInitScript(() => localStorage.setItem('options:poe2', 'true'));
+    await context.addInitScript(stallProbe);
+    await context.addInitScript(poe2WorkerProbe);
+    await context.route(`${DATA_HOST}**`, async (route) => {
+      const asset = cachedAsset(route.request().url());
+      return route.fulfill({
+        status: asset.status,
+        body: asset.status === 200 ? asset.body : undefined,
+        headers: { 'access-control-allow-origin': '*', 'content-type': 'application/octet-stream' }
+      });
     });
-  });
 
-  const cold = await open(context);
-  const coldStall = await maxStall(cold.page);
-  // the cache2 database's writes settle before the warm tab reads it
-  await cold.page.waitForTimeout(3_000);
-  await cold.page.close();
-  expect(cold.errors).toEqual([]);
+    const cold = await open(context);
+    const coldStall = await maxStall(cold.page);
+    // the cache2 database's writes settle before the warm tab reads it
+    await cold.page.waitForTimeout(3_000);
+    await cold.page.close();
+    expect(cold.errors).toEqual([]);
 
-  const warm = await open(context);
-  const warmStall = await maxStall(warm.page);
-  await resetStall(warm.page);
-  const clicked = Date.now();
-  await poe2Nav(warm.page, 'Tree').click();
-  await expect(warm.page.getByRole('img', { name: 'Passive skill tree' })).toBeVisible({ timeout: 60_000 });
-  await warm.page.waitForTimeout(1_000);
-  const treeMs = Date.now() - clicked;
-  const treeStall = await maxStall(warm.page);
-  const treeBlocked = await sumStall(warm.page);
-  console.log(
-    `PoE2 import: cold ${cold.ms} ms (max stall ${coldStall.toFixed(0)} ms), warm ${warm.ms} ms (max stall ${warmStall.toFixed(0)} ms); ` +
-      `Tree page ${treeMs} ms (max stall ${treeStall.toFixed(0)} ms, ${treeBlocked.toFixed(0)} ms late in all)`
-  );
-  expect(warmStall).toBeLessThan(MAX_STALL_MS);
-  expect(treeStall).toBeLessThan(MAX_STALL_MS);
-  expect(warm.errors).toEqual([]);
-});
+    const warm = await open(context);
+    const warmStall = await maxStall(warm.page);
+    // the PoE1 engine still boots beside it, and its game data finishes after
+    await warm.page.waitForFunction(() => performance.getEntriesByName('pob:data-loaded').length > 0, undefined, { timeout: 180_000 });
+    const { created, dataLoaded } = await warm.page.evaluate(() => ({
+      created: (globalThis as unknown as { __poe2Worker?: number }).__poe2Worker,
+      dataLoaded: performance.getEntriesByName('pob:data-loaded')[0].startTime
+    }));
+    await resetStall(warm.page);
+    const clicked = Date.now();
+    await poe2Nav(warm.page, 'Tree').click();
+    await expect(warm.page.getByRole('img', { name: 'Passive skill tree' })).toBeVisible({ timeout: 60_000 });
+    await warm.page.waitForTimeout(1_000);
+    const treeMs = Date.now() - clicked;
+    const treeStall = await maxStall(warm.page);
+    const treeBlocked = await sumStall(warm.page);
+    console.log(
+      `PoE2 import: cold ${cold.ms} ms (max stall ${coldStall.toFixed(0)} ms), warm ${warm.ms} ms (max stall ${warmStall.toFixed(0)} ms, ` +
+        `PoE2 worker at ${created?.toFixed(0)} ms, PoE1 data at ${dataLoaded.toFixed(0)} ms); ` +
+        `Tree page ${treeMs} ms (max stall ${treeStall.toFixed(0)} ms, ${treeBlocked.toFixed(0)} ms late in all)`
+    );
+    expect(created, 'no PoE2 worker was made').toBeDefined();
+    expect(created!).toBeLessThan(MAX_POE2_WORKER_MS);
+    expect(created!).toBeLessThan(dataLoaded);
+    expect(warmStall).toBeLessThan(MAX_STALL_MS);
+    expect(treeStall).toBeLessThan(MAX_STALL_MS);
+    expect(warm.errors).toEqual([]);
+  }
+);

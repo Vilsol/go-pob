@@ -152,6 +152,8 @@
 
   if (browser) {
     startPwa().catch(logError);
+    // a PoE2 build opens without the PoE1 engine; any other waits for its game data in openImportLink
+    linkImport();
     if (!syncWrap || syncWrap === null) {
       loadingMessage = 'Failed to initialize worker';
     } else {
@@ -197,7 +199,6 @@
                   performance.mark('pob:data-loaded');
 
                   get(markBackendAsLoaded)();
-                  linkImport();
                 })
                 .catch(logError);
             })

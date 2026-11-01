@@ -5,7 +5,7 @@ import { opening, unsavedName } from './build_name.svelte';
 import { resetAccountSession } from './account_session.svelte';
 import { DESKTOP } from '$lib/pwa/desktop';
 import { addToast } from '$lib/design/toast';
-import { openForeign } from '$lib/go/game_route';
+import { openForeign, openPoe2Code } from '$lib/go/game_route';
 
 // ImportTab.lua:684-699, BuildSiteTools.lua:88-113
 const DIRECT = new Set(['PoBCodes']);
@@ -123,8 +123,13 @@ export const openImportLink = async (text: string) => {
   const code = protocol ? await download(protocol) : await linkCode(text);
   const kept = opening.modFlag;
   opening.modFlag = true;
-  const foreign = await Promise.resolve(syncWrap?.ImportCode(code))
-    .then((f) => openForeign(f, () => syncWrap?.ClearBuild()))
+  const clear = () => syncWrap?.ClearBuild();
+  const foreign = await openPoe2Code(code, clear)
+    .then(async (opened) => {
+      if (opened) return true;
+      await backendLoaded;
+      return openForeign(await syncWrap?.ImportCode(code), clear);
+    })
     .catch((err: unknown) => {
       // a refused build leaves the open one as it was
       opening.modFlag = kept;
@@ -140,7 +145,8 @@ export const openImportLink = async (text: string) => {
 export const beforeReplace: { ask?: (open: () => void) => void; reloading?: boolean } = {};
 
 if (DESKTOP && typeof window !== 'undefined') {
-  let handedOver: Promise<unknown> = backendLoaded;
+  // a PoE1 build waits for the game data in openImportLink, a PoE2 one for nothing
+  let handedOver: Promise<unknown> = Promise.resolve();
   const handOver = (text: string) => {
     const open = () =>
       openImportLink(text)

@@ -14,13 +14,34 @@ const wasm2Bytes = async (path: string): Promise<ArrayBuffer> => {
   if (!res.ok) throw new Error(`Failed to load the PoE2 wasm runtime: ${res.status} ${path}`);
   const data = await res.arrayBuffer();
   const head = new Uint8Array(data, 0, Math.min(4, data.byteLength));
-  if (head[0] === 0x00 && head[1] === 0x61 && head[2] === 0x73 && head[3] === 0x6d) return data;
-  if (head[0] === 0x1f && head[1] === 0x8b) return new Response(new Response(data).body!.pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
+  if (head[0] === 0x00 && head[1] === 0x61 && head[2] === 0x73 && head[3] === 0x6d) {
+    cacheOnceControlled(path);
+    return data;
+  }
+  if (head[0] === 0x1f && head[1] === 0x8b) {
+    cacheOnceControlled(path);
+    return new Response(new Response(data).body!.pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
+  }
   if (path !== WASM2_FALLBACK) {
     console.warn(`${path} arrived still encoded; falling back to ${WASM2_FALLBACK}`);
     return wasm2Bytes(WASM2_FALLBACK);
   }
   throw new Error('Failed to load the PoE2 wasm runtime: not a wasm module');
+};
+
+// a page the service worker does not control yet (its first visit) fetches past it; fetched again once it does, so
+// the service worker caches it
+const cacheOnceControlled = (path: string) => {
+  const sw = typeof navigator === 'undefined' ? undefined : navigator.serviceWorker;
+  if (!sw || sw.controller) return;
+  sw.addEventListener(
+    'controllerchange',
+    () =>
+      void fetch(assets + path)
+        .then((r) => r.body?.cancel())
+        .catch(() => {}),
+    { once: true }
+  );
 };
 
 // created on the first PoE2 build, never at page load

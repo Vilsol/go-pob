@@ -102,6 +102,25 @@ describe('a PoE2 build code in the import dialog', () => {
     expect(stats.getByText('683')).toBeTruthy();
   });
 
+  it('is read in the main thread, and a PoE1 worker still loading does not hold it up', async () => {
+    poe2Enabled.set(true);
+    poe2Build.set(undefined);
+    workerInstance.ClearBuild();
+    expect(get(currentBuild)).toBeUndefined();
+    const importCode = vi.spyOn(workerInstance, 'ImportCode');
+    const clear = vi.spyOn(workerInstance, 'ClearBuild').mockImplementation(() => new Promise<never>(() => {}) as never);
+    try {
+      await importAsNew(poe2Xml);
+      await vi.waitFor(() => expect(get(poe2Build)).toEqual(VIEW));
+      expect(open).toHaveBeenLastCalledWith(poe2Xml);
+      expect(clear).toHaveBeenCalled();
+      expect(importCode).not.toHaveBeenCalled();
+    } finally {
+      importCode.mockRestore();
+      clear.mockRestore();
+    }
+  });
+
   it('a PoE1 build opening afterwards clears the PoE2 view', async () => {
     poe2Build.set(VIEW);
     await loadCorpusBuild('0008-necromancer-vaal-summon-skeletons.xml');

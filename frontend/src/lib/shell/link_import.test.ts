@@ -6,7 +6,10 @@ const worker = vi.hoisted(() => ({ ImportCode: vi.fn((code: string) => Promise.r
 vi.mock('$lib/go/worker', () => ({ syncWrap: worker, syncWorker: undefined }));
 
 const { compareName, importLanding, importParam, openImportLink } = await import('./link_import');
-const { currentBuildPath } = await import('$lib/global');
+const { currentBuildPath, markBackendAsLoaded } = await import('$lib/global');
+const { get } = await import('svelte/store');
+// a PoE1 build waits for the game data
+get(markBackendAsLoaded)();
 const { unsavedName } = await import('./build_name.svelte');
 const { EXPORT_SITES, NOT_A_CODE } = await import('$lib/design/share');
 

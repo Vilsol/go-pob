@@ -1,5 +1,7 @@
 import { get } from 'svelte/store';
-import { poe2Build, poe2Enabled } from '$lib/global';
+import { currentBuild, poe2Build, poe2Enabled } from '$lib/global';
+import { logError } from '$lib/utils';
+import { poe2Xml } from './game_detect';
 
 // a build the PoE1 worker declined to open because it belongs to another game
 export type ForeignBuild = { game: 'poe2' | 'poe2-legacy'; xml: string };
@@ -15,7 +17,17 @@ export const openForeign = async (foreign: ForeignBuild | undefined, clearPoE1: 
   if (!get(poe2Enabled)) throw new Error(POE2_DISABLED);
   const { poe2Worker } = await import('./worker2');
   const view = await (await poe2Worker()).Open(foreign.xml);
-  await clearPoE1();
+  // with no PoE1 build open the clear is not waited for: the PoE1 worker may still be loading its game data
+  const cleared = Promise.resolve(clearPoE1());
+  if (get(currentBuild)) await cleared;
+  else cleared.catch(logError);
   poe2Build.set(view);
   return true;
+};
+
+// a code that is a PoE2 build opens in the PoE2 worker without the PoE1 one; false for any other code, which goes the
+// way it always has
+export const openPoe2Code = async (code: string, clearPoE1: () => unknown) => {
+  const xml = await poe2Xml(code);
+  return xml !== undefined && openForeign({ game: 'poe2', xml }, clearPoE1);
 };

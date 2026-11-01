@@ -14,7 +14,7 @@
   import { followOtherTabs } from '$lib/storage/tabs';
   import { identityOf } from './identity';
   import { beforeReplace, downloadBuild, shareBuild } from './link_import';
-  import { openForeign } from '$lib/go/game_route';
+  import { openForeign, openPoe2Code } from '$lib/go/game_route';
   import { opening, unsavedName } from './build_name.svelte';
   import Dialog from '$lib/design/Dialog.svelte';
   import DialogActions from '$lib/design/DialogActions.svelte';
@@ -122,9 +122,9 @@
     const run = () => {
       const kept = opening.modFlag;
       opening.modFlag = true;
-      return syncWrap
-        ?.ImportCode(text)
-        .then((foreign) => openForeign(foreign, () => syncWrap?.ClearBuild()))
+      const clear = () => syncWrap?.ClearBuild();
+      return openPoe2Code(text, clear)
+        .then((opened) => opened || syncWrap?.ImportCode(text).then((foreign) => openForeign(foreign, clear)))
         .then(
           (opened) => {
             ondone?.();
