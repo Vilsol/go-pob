@@ -185,8 +185,7 @@ func pruneTable(gz []byte, cols map[string]column) ([]byte, error) {
 		return nil, err
 	}
 	var out bytes.Buffer
-	// stored, not deflated: deflating here made the wasm build's GC find bad pointers
-	w, _ := gzip.NewWriterLevel(&out, gzip.NoCompression)
+	w, _ := gzip.NewWriterLevel(&out, gzip.BestSpeed)
 	if _, err := w.Write(pruned); err != nil {
 		return nil, fmt.Errorf("compressing: %w", err)
 	}
