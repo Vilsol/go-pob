@@ -9,6 +9,7 @@ luajit = "2.1.1744318430"
 node = "26"
 pnpm = "10.6.3"
 "npm:wrangler" = "4.143.1"
+watchexec = "2.8.0"
 
 [tasks.test-race]
 description = "Run the concurrent-evaluation tests under the race detector, as CI does (cgo via zig cc)"
@@ -58,13 +59,29 @@ run = "task e2e SLOW=1 --"
 description = "Build the SvelteKit frontend"
 run = "task build-frontend"
 
+# the packages the two wasm builds compile (GOOS=js GOARCH=wasm go list -deps ./wasm ./wasm2)
+[task_templates.wasm-sources]
+sources = ["builds/**/*.go", "calculator/**/*.go", "calculator2/**/*.go", "config/**/*.go", "data/**/*.go", "mod/**/*.go", "moddb/**/*.go", "pob/**/*.go", "pob2/**/*.go", "storage/**/*.go", "utils/**/*.go", "wasm/**/*.go", "wasm2/**/*.go"]
+
 [tasks.dev-go]
-description = "Watch *.go and rebuild the wasm + typings"
-run = "task dev-go"
+description = "Watch the wasm's Go packages and rebuild the wasm + typings (filesystem events, no polling)"
+run = "mise watch -i '**/crystalline_gen.go' wasm-rebuild"
+
+[tasks.wasm-rebuild]
+extends = "wasm-sources"
+hide = true
+outputs = ["frontend/static/go-pob.wasm"]
+run = ["task build-go", "task generate-typings"]
 
 [tasks.dev-go2]
-description = "Watch *.go and rebuild the PoE2 wasm + typings"
-run = "task dev-go2"
+description = "Watch the wasm's Go packages and rebuild the PoE2 wasm + typings (filesystem events, no polling)"
+run = "mise watch -i '**/crystalline_gen.go' wasm2-rebuild"
+
+[tasks.wasm2-rebuild]
+extends = "wasm-sources"
+hide = true
+outputs = ["frontend/static/go-pob2.wasm"]
+run = ["task build-go2", "task generate2"]
 
 [tasks.dev-frontend]
 description = "Vite dev server"
