@@ -4,6 +4,10 @@ permissions: read-all
 
 on: [push, pull_request]
 
+# as mise.toml sets it: Node 26 otherwise gives the tests its own, file-less localStorage in place of the DOM one
+env:
+  NODE_OPTIONS: --no-experimental-webstorage
+
 jobs:
   lint-backend:
     name: Lint Backend

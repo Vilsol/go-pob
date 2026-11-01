@@ -15,6 +15,10 @@ concurrency:
   group: e2e-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
+# as mise.toml sets it: Node 26 otherwise gives the tests its own, file-less localStorage in place of the DOM one
+env:
+  NODE_OPTIONS: --no-experimental-webstorage
+
 jobs:
   e2e:
     name: E2E (shard ${{ matrix.shard }}/4)
