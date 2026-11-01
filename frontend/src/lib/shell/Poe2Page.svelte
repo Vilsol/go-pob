@@ -55,7 +55,7 @@
     return String(Math.max(i, 0));
   };
 
-  let treeData = $state<Tree2 | undefined>();
+  let treeData = $state.raw<Tree2 | undefined>();
   $effect(() => {
     if (route !== 'tree' || treeData) return;
     void poe2Worker()
