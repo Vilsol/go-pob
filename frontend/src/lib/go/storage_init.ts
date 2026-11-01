@@ -114,8 +114,8 @@ const zenfsWrite = async (w: StorageWrite) => {
 
 let tabs: TabStorage | undefined;
 
-// the main worker of every tab; resolves with whether this tab writes the databases, before they are mounted
-export const startTabStorage = (changed: (bucket: string) => void) => {
+// the main worker of every tab; resolves with whether this tab writes the databases, once mount has mounted them
+export const startTabStorage = (changed: (bucket: string) => void, mount: () => Promise<void>) => {
   tabs = new TabStorage('go-pob-storage', {
     buckets: ['cache', 'builds', 'settings'],
     apply: zenfsWrite,
@@ -123,7 +123,7 @@ export const startTabStorage = (changed: (bucket: string) => void) => {
     changed,
     lazy: { cache: 1000 }
   });
-  return tabs.start();
+  return tabs.start(mount);
 };
 
 export const storageWrite = (w: StorageWrite) => (tabs ? tabs.write(w) : zenfsWrite(w));

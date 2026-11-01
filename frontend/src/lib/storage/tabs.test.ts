@@ -4,7 +4,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 vi.unmock('@zenfs/core');
 vi.unmock('@zenfs/dom');
 
-const { fs } = await import('@zenfs/core');
+const { fs, mount } = await import('@zenfs/core');
+const { IndexedDB } = await import('@zenfs/dom');
 const { remountStore } = await import('$lib/go/storage_config');
 const { TabStorage } = await import('./tabs');
 
@@ -154,5 +155,46 @@ describe('one writer across tabs', () => {
     await write;
     expect(b.t.isWriter).toBe(true);
     expect(await b.read('mine')).toBe('from b');
+  });
+
+  it('a tab whose writer closes while it is still mounting takes over once mounted, and its mount still lands', async () => {
+    const { lock } = tabs('mid-mount');
+    const store = 'mid-mount';
+    const point = `/${n}-late`;
+    await remountStore(`/${n}-seed`, store);
+    let release!: () => void;
+    void navigator.locks.request(lock, () => new Promise<void>((r) => (release = r)));
+    await vi.waitFor(() => expect(release).toBeDefined());
+
+    const events: string[] = [];
+    let mounted!: () => void;
+    const slow = new Promise<void>((r) => (mounted = r));
+    const t = new TabStorage(lock, {
+      buckets: [store],
+      apply: (w) => (w.kind === 'set' ? fs.promises.writeFile(`${point}/${w.key}`, w.value) : Promise.resolve()),
+      remount: async () => {
+        events.push('remount');
+        await remountStore(point, store);
+      }
+    });
+    open.push(t);
+    // as zenfs configure mounts: a point already in use rejects
+    const mountOnce = async () => {
+      const fresh = await IndexedDB.create({ storeName: store });
+      await slow;
+      events.push('mount');
+      mount(point, fresh);
+    };
+    const started = t.start(mountOnce);
+
+    release();
+    await new Promise((r) => setTimeout(r, 50));
+    expect(events, 'no remount before the first mount').toEqual([]);
+    mounted();
+    expect(await started).toBe(false);
+    await vi.waitFor(() => expect(t.isWriter).toBe(true));
+    expect(events).toEqual(['mount', 'remount']);
+    await t.write({ kind: 'set', bucket: store, key: 'after', value: text('written') });
+    expect(await fs.promises.readFile(`${point}/after`, 'utf8')).toBe('written');
   });
 });

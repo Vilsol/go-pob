@@ -1,5 +1,6 @@
 <script lang="ts">
   import Notice from '$lib/design/Notice.svelte';
+  import Button from '$lib/design/Button.svelte';
   import '$lib/design/styles/spec.css';
   import '$lib/display/appearance';
   import PageFrame from '$lib/design/PageFrame.svelte';
@@ -120,6 +121,10 @@
 
   let loadingMessage = $state('Initializing...');
   let loadingStage = $state('');
+  // a boot takes a few seconds even on a loaded machine; one still running after this is stuck, and a reload starts it
+  // over with fresh workers
+  const BOOT_STUCK_MS = 30_000;
+  let bootStuck = $state(false);
 
   async function wasmBytes(path: string): Promise<ArrayBuffer> {
     const res = await fetch(assets + path);
@@ -184,10 +189,16 @@
               console.log('wasm runtime size:', data.byteLength);
 
               loadingMessage = 'Booting...';
+              const stuck = setTimeout(() => {
+                loadingMessage = 'Booting is taking much longer than it should.';
+                bootStuck = true;
+              }, BOOT_STUCK_MS);
 
               syncWrap
                 ?.boot(transfer(data, [data]), proxy(onTick), proxy(buildChannel))
                 .then(async () => {
+                  clearTimeout(stuck);
+                  bootStuck = false;
                   console.log('worker booted');
                   performance.mark('pob:wasm-booted');
 
@@ -205,7 +216,13 @@
 
                   get(markBackendAsLoaded)();
                 })
-                .catch(logError);
+                .catch((e: Error) => {
+                  logError(e);
+                  if (!wasmLoading) return;
+                  clearTimeout(stuck);
+                  loadingMessage = `Booting failed: ${e.message}`;
+                  bootStuck = true;
+                });
             })
             .catch(logError);
         })
@@ -233,6 +250,7 @@
     <span class="text-18 font-semibold">go-pob</span>
     <span class="text-14 text-text-2">{loadingMessage}</span>
     {#if loadingStage !== ''}<span class="note">{loadingStage}</span>{/if}
+    {#if bootStuck}<Button onclick={() => location.reload()}>Retry</Button>{/if}
   </div>
 {:else}
   <AppBuildList />

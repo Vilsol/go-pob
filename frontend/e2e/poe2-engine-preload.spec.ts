@@ -12,9 +12,9 @@ test.use({ serviceWorkers: 'block' });
 const FIXTURE = resolve(import.meta.dirname, '../../wasm2/exposition/testdata/sorceress_spark.xml');
 const code = () => deflateSync(readFileSync(FIXTURE)).toString('base64').replaceAll('+', '-').replaceAll('/', '_');
 
-// from Import to the PoE2 page, warm, once startup settled: about 0.3 s with the PoE2 engine booted at startup and
-// 2.4 s when the import has to boot it, on this suite's machines under load
-const MAX_IMPORT_MS = 1_200;
+// from Import to the PoE2 page, warm, once the preloaded game data is in: at most 1.6 s with the PoE2 engine booted at
+// startup and at least 4.2 s when the import has to boot it, on a machine at load 25-55
+const MAX_IMPORT_MS = 3_000;
 
 const workerProbe = () => {
   const log = console.log;
@@ -78,9 +78,10 @@ test('with a PoE2 build used last, the PoE2 engine boots at startup and a PoE2 i
   expect(coldErrors).toEqual([]);
 
   const warm = await context.newPage();
+  const preloaded = warm.waitForEvent('console', { predicate: (m) => m.text().includes('PoE2 game data preloaded'), timeout: 180_000 });
   const errors = await start(context, warm, 'poe2');
   expect(await poe2Worker(warm), 'no PoE2 worker at startup').toBeDefined();
-  await warm.waitForTimeout(2_000);
+  await preloaded;
   const ms = await importPoe2(warm);
   console.log(`PoE2 import with the PoE2 engine booted at startup: ${ms} ms`);
   expect(ms).toBeLessThan(MAX_IMPORT_MS);
@@ -91,7 +92,7 @@ test('with a PoE1 build used last, the PoE2 engine waits for a PoE2 build', asyn
   const errors = await start(context, page, 'poe1');
   await page.waitForTimeout(1_000);
   expect(await poe2Worker(page), 'a PoE2 worker before any PoE2 build').toBeUndefined();
-  await importPoe2(page);
+  console.log(`PoE2 import that boots the PoE2 engine: ${await importPoe2(page)} ms`);
   expect(await poe2Worker(page)).toBeDefined();
   expect(await page.evaluate(() => localStorage.getItem('lastGame'))).toBe('poe2');
   expect(errors).toEqual([]);

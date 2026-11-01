@@ -59,8 +59,7 @@ const initializeStorage = async () => {
       remount: () => remountStore('/cache', 'cache2'),
       lazy: { cache: 1000 }
     });
-    await tabs.start();
-    await configure({ mounts: { '/cache': await IndexedDB.create({ storeName: 'cache2' }) } });
+    await tabs.start(async () => configure({ mounts: { '/cache': await IndexedDB.create({ storeName: 'cache2' }) } }));
   }
   await storage.InitializeStorage(
     () => [],
@@ -152,7 +151,7 @@ class PoB2Worker {
       config.InitLogging(false);
       await initializeStorage();
       // not awaited, so Open is not held behind it; a load error reaches Open through Calculate, which runs the same loads
-      void exposition.Preload();
+      void exposition.Preload().then(() => console.log('PoE2 game data preloaded'));
     });
     return this.booted;
   }

@@ -60,16 +60,18 @@ export class TabStorage {
     return this.o.locks ?? (globalThis.navigator as Navigator | undefined)?.locks;
   }
 
-  // resolves with whether this tab writes; a tab that does not keeps waiting for the lock and takes over when it frees
-  start(): Promise<boolean> {
+  // resolves with whether this tab writes, once mount has mounted the databases; a tab that does not keeps waiting for
+  // the lock and takes over when it frees, never before its own mount, which a remount would otherwise race
+  start(mount: () => Promise<void> = () => Promise.resolve()): Promise<boolean> {
     const locks = this.locks;
     if (!locks) {
       // no Web Locks outside a secure context: nothing can coordinate, so this tab writes as a single tab does
       this.writer = true;
-      return Promise.resolve(true);
+      return mount().then(() => true);
     }
     const hold = () => new Promise<void>((r) => (this.release = r));
-    return new Promise((started) => {
+    const mounted = Promise.withResolvers<void>();
+    const writes = new Promise<boolean>((started) => {
       void locks.request(this.name, { ifAvailable: true }, (lock) => {
         if (lock) {
           this.writer = true;
@@ -77,10 +79,12 @@ export class TabStorage {
           return hold();
         }
         started(false);
-        locks.request(this.name, { signal: this.closing.signal }, () => this.promote().then(hold)).catch(() => {});
+        locks.request(this.name, { signal: this.closing.signal }, () => mounted.promise.then(() => this.promote()).then(hold)).catch(() => {});
         return undefined;
       });
     });
+    writes.then(mount).then(mounted.resolve, mounted.reject);
+    return mounted.promise.then(() => writes);
   }
 
   // another tab is open: long work here holds that tab's writes, when this tab writes, or this tab's view of them

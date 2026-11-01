@@ -51,14 +51,12 @@ export const COMPARE_MIXED = 'A Path of Exile 2 build cannot be compared with a 
 const buildsChanged = new Map<string, () => Promise<void> | void>();
 let settingsChanged: (() => Promise<void> | void) | undefined;
 
-const storageConfigurationPromise = (
-  DESKTOP
-    ? Promise.resolve()
-    : startTabStorage((bucket) => {
-        if (bucket === 'builds') for (const cb of buildsChanged.values()) void Promise.resolve(cb()).catch(() => {});
-        if (bucket === 'settings') void Promise.resolve(settingsChanged?.()).catch(() => {});
-      })
-).then(configureStorage);
+const storageConfigurationPromise = DESKTOP
+  ? configureStorage()
+  : startTabStorage((bucket) => {
+      if (bucket === 'builds') for (const cb of buildsChanged.values()) void Promise.resolve(cb()).catch(() => {});
+      if (bucket === 'settings') void Promise.resolve(settingsChanged?.()).catch(() => {});
+    }, configureStorage);
 
 type WarningsEnv = { out: calculator.Environment; calc: calculator.Calculator };
 
@@ -138,28 +136,30 @@ class PoBWorker {
     this.booted = true;
     this.currentBuildStore = currentBuildStore;
 
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const go = new Go();
       performance.mark('pob:instantiate-start');
-      void WebAssembly.instantiate(wasm, go.importObject).then(async (result) => {
-        this.wasmModule = result.module;
-        performance.mark('pob:instantiated');
-        void go.run(result.instance);
-        performance.mark('pob:go-main');
-        (globalThis as { __pobWasmMemory?: unknown }).__pobWasmMemory = result.instance.exports.mem;
+      WebAssembly.instantiate(wasm, go.importObject)
+        .then(async (result) => {
+          this.wasmModule = result.module;
+          performance.mark('pob:instantiated');
+          void go.run(result.instance);
+          performance.mark('pob:go-main');
+          (globalThis as { __pobWasmMemory?: unknown }).__pobWasmMemory = result.instance.exports.mem;
 
-        initializeCrystalline();
-        (globalThis as { __pobLiveHeapMB?: unknown }).__pobLiveHeapMB = () => exposition.LiveHeapMB();
+          initializeCrystalline();
+          (globalThis as { __pobLiveHeapMB?: unknown }).__pobLiveHeapMB = () => exposition.LiveHeapMB();
 
-        config.InitLogging(false);
+          config.InitLogging(false);
 
-        await storageConfigurationPromise;
+          await storageConfigurationPromise;
 
-        await initializeStorage();
+          await initializeStorage();
 
-        performance.mark('pob:storage-ready');
-        resolve(undefined);
-      });
+          performance.mark('pob:storage-ready');
+          resolve(undefined);
+        })
+        .catch(reject);
     });
   }
 
