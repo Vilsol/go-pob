@@ -1,45 +1,48 @@
 <script module lang="ts">
-  let importDismissedFor: number | undefined;
+  let importDismissedFor: string | undefined;
 </script>
 
 <script lang="ts">
   import { onDestroy } from 'svelte';
   import { resource } from 'runed';
-  import { buildRevision, currentBuild } from '$lib/global.js';
+  import { currentEngine } from '$lib/go/engine';
   import { logError } from '$lib/utils';
   import { loadNotes } from '$lib/notes/load';
   import { countCodes, docToPlain, type DocNode } from '$lib/notes/pob_text';
   import NotesPage from '$lib/design/NotesPage.svelte';
 
-  type Build = NonNullable<typeof $currentBuild>;
-  const write = (build: Build, doc: DocNode) => {
-    build.SetRichNotes(docToPlain(doc), JSON.stringify(doc)).catch(logError);
+  // NotesTab.lua: the open build's notes, whichever game it is
+  const engine = currentEngine().notes;
+  const revision = engine.revision;
+
+  type Write = (plain: string, doc: string) => unknown;
+  const write = (to: Write, doc: DocNode) => {
+    void Promise.resolve(to(docToPlain(doc), JSON.stringify(doc))).catch(logError);
   };
 
-  let pending: { build: Build; doc: DocNode } | undefined;
+  let pending: { to: Write; doc: DocNode } | undefined;
   let timer: ReturnType<typeof setTimeout> | undefined;
   const flush = () => {
     clearTimeout(timer);
     timer = undefined;
     const p = pending;
     pending = undefined;
-    if (p) write(p.build, p.doc);
+    if (p) write(p.to, p.doc);
   };
 
   const notes = resource(
-    () => [$buildRevision, $currentBuild === undefined] as const,
-    async () => {
+    () => $revision,
+    async (key) => {
       flush();
-      const build = $currentBuild;
-      if (!build) return undefined;
-      const [status, plain, doc] = await Promise.all([build.RichNotesStatus(), build.Notes, build.RichNotesDoc()]);
-      const converted = status === 'none' ? countCodes(plain ?? '') : 0;
-      return { build, key: $buildRevision, converted, ...loadNotes(status, plain ?? '', doc) };
+      const read = await engine.read();
+      if (!read) return undefined;
+      const converted = read.status === 'none' ? countCodes(read.plain) : 0;
+      return { to: read.write, key, converted, ...loadNotes(read.status, read.plain, read.doc) };
     }
   );
 
-  let restored = $state<{ key: number; doc: DocNode } | undefined>();
-  let dismissed = $state<number | undefined>();
+  let restored = $state<{ key: string; doc: DocNode } | undefined>();
+  let dismissed = $state<string | undefined>();
   let importDismissed = $state(importDismissedFor);
 
   const loaded = $derived(notes.current);
@@ -49,7 +52,7 @@
 
   const onchange = (doc: DocNode) => {
     if (!loaded) return;
-    pending = { build: loaded.build, doc };
+    pending = { to: loaded.to, doc };
     clearTimeout(timer);
     timer = setTimeout(flush, 400);
   };
@@ -59,7 +62,7 @@
     if (!loaded?.rich) return;
     restored = { key: loaded.key, doc: loaded.rich };
     pending = undefined;
-    write(loaded.build, loaded.rich);
+    write(loaded.to, loaded.rich);
   };
 
   const copy = (text: string) => {

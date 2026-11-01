@@ -104,3 +104,25 @@ test.describe('390px wide', () => {
     expect(errors).toEqual([]);
   });
 });
+
+// NotesTab.lua:75-88 (PoB-PoE2): the Notes page edits the build's <Notes>, which Save writes and a reopen reads back
+test('the PoE2 Notes page edits the notes the build saves with', async ({ page }) => {
+  const { view, errors } = await open(page);
+  await poe2Nav(page, 'Notes').click();
+  const box = view.getByRole('textbox', { name: 'Notes' });
+  await expect(box).toBeVisible();
+  await box.click();
+  await page.keyboard.type('Spark plan');
+  await expect(page.getByRole('button', { name: 'Save (unsaved changes)' })).toBeVisible();
+
+  await page.getByRole('button', { name: /^Save \(/ }).click();
+  const dialog = page.getByRole('dialog', { name: 'Save build as' });
+  await dialog.getByRole('textbox', { name: 'Build name' }).fill('Spark notes');
+  await dialog.getByRole('button', { name: 'Save', exact: true }).click();
+  await expect(dialog).toBeHidden();
+  await page.getByRole('link', { name: 'Back to builds' }).click();
+  await page.getByRole('link', { name: 'Spark notes', exact: true }).click();
+  // the build reopens on the page it was left on
+  await expect(view.getByRole('textbox', { name: 'Notes' })).toContainText('Spark plan', { timeout: 60_000 });
+  expect(errors).toEqual([]);
+});

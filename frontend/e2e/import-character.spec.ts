@@ -9,7 +9,7 @@ import { buildXml } from './support/builds';
 import * as go from './support/go_model';
 import { expectedLines } from './support/stats';
 
-test("a pasted character JSON imports its items, skills and passive tree into this build as Go does (PoB's sample character)", async ({ page }) => {
+test("a pasted character JSON opens as a new build with its items, skills and passive tree as Go imports them (PoB's sample character)", async ({ page }) => {
   const file = '0280-elementalist-fireball';
   const json = readFileSync(resolve(import.meta.dirname, '../../testdata/import/sample_character.json'), 'utf8');
   const xml = buildXml(file);
@@ -17,18 +17,24 @@ test("a pasted character JSON imports its items, skills and passive tree into th
   const app = await App.open(page, file);
   await app.importCode(await go.encode(xml), async () => expectedLines(await go.outputs(build)));
 
+  // an import never writes into the open build
+  const made = await go.emptyBuild();
   const region = (await app.openImport()).getByRole('region', { name: 'Build import' });
   const box = region.getByRole('textbox', { name: /^To import a build/ });
   await box.fill(json);
   await expect(box).toHaveAccessibleDescription('JSON is valid');
   await app.act(
     'import a character JSON',
-    () => region.getByRole('button', { name: 'Import', exact: true }).click(),
+    async () => {
+      await region.getByRole('button', { name: 'Import', exact: true }).click();
+      // Build.lua:1421-1448: the imported build's unsaved changes are asked about first
+      await page.getByRole('dialog', { name: 'Save Changes' }).getByRole('button', { name: "Don't Save" }).click();
+    },
     async () => {
       const m = await go.model();
-      expect((await m.exposition.ImportItemsAndSkills(build, json, true, true, false)).unwrap()).toBe('Items and skills successfully imported.');
-      expect((await m.exposition.ImportPassiveTreeAndJewels(build, json, true)).unwrap()).toBe('Passive tree and jewels successfully imported.');
-      return expectedLines(await go.outputs(build));
+      expect((await m.exposition.ImportItemsAndSkills(made, json, true, true, false)).unwrap()).toBe('Items and skills successfully imported.');
+      expect((await m.exposition.ImportPassiveTreeAndJewels(made, json, true)).unwrap()).toBe('Passive tree and jewels successfully imported.');
+      return expectedLines(await go.outputs(made));
     }
   );
   await expect(region.getByRole('status')).toHaveText('Items and skills successfully imported. Passive tree and jewels successfully imported.');

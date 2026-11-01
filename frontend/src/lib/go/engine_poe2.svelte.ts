@@ -3,7 +3,8 @@ import type { Remote } from 'comlink';
 import { poe2Build, poe2Edited, poe2Session, type Poe2View } from '$lib/global';
 import type { BuildWarning, Sidebar, SidebarSection } from '$lib/display/sidebar';
 import { buildStatList2, displayStats2, minionDisplayStats2 } from '$lib/display/stats2';
-import { savePoe2Build } from '$lib/shell/poe2_save';
+import { savePoe2Build, savedStats2 } from '$lib/shell/poe2_save';
+import { EXPORT_SITES2 } from '$lib/design/share';
 import type { calculator } from '$lib/types';
 import type { calculator2 } from '$lib/types2';
 import type { MainSkillField } from '$lib/shell/main_skill';
@@ -157,6 +158,35 @@ const calcsTab2 = readable<CalcsTabView | undefined>(undefined, (set) => {
   });
 });
 
+// a number per opened PoE2 build
+let opened = 0;
+let openedBuild: object | undefined;
+const notesRevision2 = derived(poe2Session, (s) => {
+  if (s !== openedBuild) {
+    openedBuild = s;
+    if (s) opened++;
+  }
+  return s ? `poe2:${opened}` : 'poe2:none';
+});
+
+// NotesTab.lua:75-88 (PoB-PoE2): a write marks the build edited, as the tab's modFlag does, and is dropped once
+// another build has opened
+const readNotes2 = () => {
+  const session = get(poe2Session);
+  if (!session) return undefined;
+  return poe2Worker()
+    .then((w) => w.Notes())
+    .then((n) => ({
+      ...n,
+      write: async (plain: string, doc: string) => {
+        if (get(poe2Session) !== session) return;
+        await (await poe2Worker()).SetNotes(plain, doc);
+        const view = get(poe2Build);
+        if (view && get(poe2Session) === session) poe2Edited(view);
+      }
+    }));
+};
+
 export const poe2Engine: BuildEngine = {
   game: 'poe2',
   build: poe2Session,
@@ -171,6 +201,15 @@ export const poe2Engine: BuildEngine = {
   },
   // Build.lua:2773-2787 (PoB-PoE2)
   save: (path) => savePoe2Build(path),
+  notes: { revision: notesRevision2, read: readNotes2 },
+  // ImportTab.lua:135-137, 154-164 (PoB-PoE2)
+  share: {
+    code: () => {
+      const v = get(poe2Build) as Calc | undefined;
+      return v?.skillFlags ? poe2Worker().then((w) => w.ExportCode(savedStats2(v as Poe2Calc))) : undefined;
+    },
+    sites: EXPORT_SITES2
+  },
   clear: () => {
     poe2Build.set(undefined);
     poe2Error.set(undefined);

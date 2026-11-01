@@ -129,6 +129,8 @@ export type Poe2CalcsPage = {
 export type Poe2Item = { slot: string; id: number; rarity: string; name: string[]; lines: string[][] };
 export type Poe2Items = { useSecondWeaponSet: boolean; items: Poe2Item[] };
 
+export type Poe2Notes = { status: string; plain: string; doc: string };
+
 const toValue = (v: calculator2.ConfigValue): ConfigValue2 | undefined => (v.IsNumber ? v.Number : v.IsBoolean ? v.Boolean : v.IsString ? v.String : undefined);
 
 const fromValue = (v: ConfigValue2 | undefined): calculator2.ConfigValue => ({
@@ -341,6 +343,24 @@ class PoB2Worker {
     if (!this.calc) throw new Error('no PoE2 build is open');
     if (!stats) return this.calc.Serialize().unwrap();
     return this.calc.SerializeWithStats(stats.player, stats.fullDPS, stats.minion).unwrap();
+  }
+
+  /* NotesTab.lua:75-82 (PoB-PoE2), with the Notes page's rich document */
+  Notes(): Poe2Notes {
+    if (!this.calc) throw new Error('no PoE2 build is open');
+    return { status: this.calc.RichNotesStatus(), plain: this.calc.Notes(), doc: this.calc.RichNotesDoc() };
+  }
+
+  /* NotesTab.lua:84-88 (PoB-PoE2) */
+  SetNotes(plain: string, doc: string) {
+    if (!this.calc) throw new Error('no PoE2 build is open');
+    this.calc.SetRichNotes(plain, doc);
+  }
+
+  /* ImportTab.lua:135-137 (PoB-PoE2) */
+  ExportCode(stats: SavedStats2): string {
+    if (!this.calc) throw new Error('no PoE2 build is open');
+    return this.calc.ExportCode(stats.player, stats.fullDPS, stats.minion).unwrap();
   }
 }
 

@@ -324,7 +324,9 @@ wasm/main.go                        GO-NATIVE  WASM entry point
 wasm2/exposition/calcs.go           GO-NATIVE  crystalline binding surface for the PoE2 Calcs page's mod cells (CalcFormat.lua's per-entry Combine)
 wasm2/exposition/calculator.go      GO-NATIVE  crystalline binding surface for the PoE2 frontend
 wasm2/exposition/crystalline_gen.go GENERATED  [unverifiable: emitted by `go tool crystalline`, pinned in go.mod, not a script in this repo]
+wasm2/exposition/export.go          GO-NATIVE  crystalline binding surface for the PoE2 build code export (ImportTab.lua's Deflate and base64)
 wasm2/exposition/main.go            GO-NATIVE  crystalline binding surface for the PoE2 frontend
+wasm2/exposition/notes.go           GO-NATIVE  crystalline binding surface for the PoE2 Notes page (NotesTab.lua's text, and the rich document kept beside it)
 wasm2/exposition/pages.go           GO-NATIVE  crystalline binding surface for the PoE2 Skills and Items pages (SkillListControl and AddItemTooltip's title and mod lines)
 wasm2/exposition/tree.go            GO-NATIVE  crystalline binding surface for the PoE2 frontend's passive tree
 wasm2/main.go                       GO-NATIVE  PoE2 WASM entry point

@@ -14,11 +14,12 @@ export const GAME_PAGES: Record<string, GamePage> = {
   items: { label: 'Items', poe1: 'route', poe2: poe2Page },
   calcs: { label: 'Calcs', poe1: 'route', poe2: 'route' },
   configuration: { label: 'Config', poe1: 'route', poe2: 'route' },
-  // the PoE2 calculator keeps no notes, party, compare or import/export state yet
-  notes: { label: 'Notes', poe1: 'route' },
+  notes: { label: 'Notes', poe1: 'route', poe2: 'route' },
+  // the PoE2 calculator keeps no party or compare state yet
   party: { label: 'Party', poe1: 'route' },
   compare: { label: 'Compare', poe1: 'route' },
-  import: { label: 'Import / Export', poe1: 'route' }
+  // a dialog, not a page: the top bar leaves it out, and the phone frame's More links its address, which opens it
+  import: { label: 'Import / Export', poe1: 'route', poe2: 'route' }
 };
 
 export const hasPage = (game: Game, route: string) => !!GAME_PAGES[route]?.[game];

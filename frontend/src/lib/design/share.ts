@@ -73,6 +73,7 @@ export const SITES: Site[] = [
     regex: /maxroll\.gg\/poe2\/pob\/(.+)\s*$/,
     download: 'maxroll.gg/poe2/api/pob/$1',
     link: 'https://maxroll.gg/poe2/pob/',
+    post: { url: 'https://maxroll.gg/poe2/api/pob', fields: 'pobCode=', codeOut: 'https://maxroll.gg/poe2/pob/' },
     game: 'poe2'
   },
   {
@@ -82,6 +83,7 @@ export const SITES: Site[] = [
     regex: /poe2?\.ninja\/?p?o?e?2?\/pob\/(.+)\s*$/,
     download: 'poe.ninja/poe2/pob/raw/$1',
     link: 'https://poe.ninja/poe2/pob/',
+    post: { url: 'https://poe.ninja/poe2/pob/api/upload', fields: 'code=', codeOut: '' },
     game: 'poe2'
   },
   {
@@ -91,11 +93,14 @@ export const SITES: Site[] = [
     regex: /poe2db\.tw\/pob\/(.+)\s*$/,
     download: 'poe2db.tw/pob/$1/raw',
     link: 'https://poe2db.tw/pob/',
+    post: { url: 'https://poe2db.tw/pob/api/gen', fields: '', codeOut: '' },
     game: 'poe2'
   }
 ];
 /* ImportTab.lua:522-532 */
-export const EXPORT_SITES = SITES.filter((s) => s.post);
+export const EXPORT_SITES = SITES.filter((s) => s.post && !s.game);
+/* ImportTab.lua:154-164 (PoB-PoE2): its own list's order, BuildSiteTools.lua:19-35 */
+export const EXPORT_SITES2 = ['Maxroll2', 'POBBin', 'PoeNinja2', 'PoE2DB'].map((id) => SITES.find((s) => s.id === id)!);
 
 export const DROPPED_SITES: { label: string; match: RegExp; text: string }[] = [
   {

@@ -94,15 +94,29 @@ describe('a PoE2 build in the app frame', () => {
       ['Skills', '/skills'],
       ['Items', '/items'],
       ['Calcs', '/calcs'],
-      ['Config', '/configuration']
+      ['Config', '/configuration'],
+      ['Notes', '/notes']
     ]);
+  });
+
+  // the Notes page and the Import / Export dialog serve a PoE2 build; Party, Compare and Timeless do not yet
+  it("the phone frame's More lists the pages PoE2 has", async () => {
+    poe2Build.set(calc());
+    const bar = render(AppTopBar, { props: { phone: true } });
+    await fireEvent.click(bar.getByRole('button', { name: 'More' }));
+    const more = await waitFor(() => within(document.body).getByRole('navigation', { name: 'More pages' }));
+    expect(
+      within(more)
+        .getAllByRole('link')
+        .map((l) => l.textContent?.trim())
+    ).toEqual(['Notes', 'Import/Export']);
   });
 
   it('a route PoE2 has no page for says so', async () => {
     poe2Build.set(calc());
-    const Notes = (await import('../../routes/notes/+page.svelte')).default;
-    const page = render(Notes);
-    expect(page.getByRole('status').textContent).toBe('The Notes page is not available for Path of Exile 2 builds yet.');
+    const Party = (await import('../../routes/party/+page.svelte')).default;
+    const page = render(Party);
+    expect(page.getByRole('status').textContent).toBe('The Party page is not available for Path of Exile 2 builds yet.');
   });
 
   it('opens saved, an edit leaves it unsaved, and leaving without saving closes it', async () => {

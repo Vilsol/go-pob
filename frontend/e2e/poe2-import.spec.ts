@@ -3,7 +3,7 @@
 import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { deflateSync } from 'node:zlib';
+import { deflateSync, inflateSync } from 'node:zlib';
 
 import { DATA_HOST, cachedAsset } from './support/data_cache';
 import { routeTreeAssets } from './support/tree_assets';
@@ -58,5 +58,60 @@ test('a poe.ninja PoE2 link imports through /api/build, saves to the build list 
   await link.click();
   await expect(poe2Stat(page, 'Life')).toHaveText(POB2.Life, { timeout: 60_000 });
   await expect(view).toContainText('Level 40 Sorceress');
+  expect(errors).toEqual([]);
+});
+
+// ImportTab.lua:135-137, 263 (PoB-PoE2): the Export tab's code is the build as Save writes it, and imports as that build
+test("a PoE2 build's exported code imports back as a new build with the same XML", async ({ page }) => {
+  const errors: string[] = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await page.addInitScript(() => localStorage.setItem('options:poe2', 'true'));
+  await page.context().route(`${DATA_HOST}**`, async (route) => {
+    const asset = cachedAsset(route.request().url());
+    return route.fulfill({
+      status: asset.status,
+      body: asset.status === 200 ? asset.body : undefined,
+      headers: { 'access-control-allow-origin': '*', 'content-type': 'application/octet-stream' }
+    });
+  });
+  await routeTreeAssets(page);
+  await page.route('**/api/build?*', (route) => route.fulfill({ status: 200, contentType: 'text/plain; charset=utf-8', body: code() }));
+  await page.goto(`/?import=${encodeURIComponent('https://poe.ninja/poe2/pob/Abc1')}`);
+  await expect(poe2Stat(page, 'Life')).toHaveText(POB2.Life, { timeout: 180_000 });
+
+  const exportCode = async () => {
+    await page.getByRole('link', { name: 'Import / Export' }).click();
+    const dialog = page.getByRole('dialog', { name: 'Import / Export' });
+    await dialog.getByRole('tab', { name: 'Export' }).click();
+    const box = dialog.getByRole('region', { name: 'Build sharing' }).getByRole('textbox', { name: 'Build code' });
+    let out = '';
+    await expect.poll(async () => (out = await box.inputValue())).not.toBe('');
+    return { dialog, out };
+  };
+  const decode = (c: string) => inflateSync(Buffer.from(c.replaceAll('-', '+').replaceAll('_', '/'), 'base64')).toString('utf8');
+
+  const first = await exportCode();
+  const xml = decode(first.out);
+  expect(xml).toMatch(/^<\?xml[^>]*\?>\s*<PathOfBuilding2>/);
+  expect(xml).toContain(`<PlayerStat stat="Life" value="${POB2.Life}"/>`);
+  await expect(first.dialog.getByRole('combobox', { name: 'Share via' }).locator('option')).toHaveText([
+    'Maxroll (PoE2)',
+    'pobb.in',
+    'poe.ninja (PoE2)',
+    'poe2db.tw'
+  ]);
+
+  await first.dialog.getByRole('tab', { name: 'Import' }).click();
+  const region = first.dialog.getByRole('region', { name: 'Build import' });
+  await region.getByRole('textbox', { name: /^To import a build/ }).fill(first.out);
+  await expect(region.getByRole('textbox', { name: /^To import a build/ })).toHaveAccessibleDescription('Code is valid');
+  await region.getByRole('button', { name: 'Import', exact: true }).click();
+  const prompt = page.getByRole('dialog', { name: 'Save Changes' });
+  await expect.poll(async () => (await prompt.isVisible()) || !(await first.dialog.isVisible())).toBe(true);
+  if (await prompt.isVisible()) await prompt.getByRole('button', { name: "Don't Save" }).click();
+  await expect(first.dialog).toBeHidden();
+  await expect(poe2Stat(page, 'Life')).toHaveText(POB2.Life, { timeout: 60_000 });
+
+  expect(decode((await exportCode()).out)).toBe(xml);
   expect(errors).toEqual([]);
 });

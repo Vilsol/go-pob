@@ -85,6 +85,14 @@ export const loadXml = async (xml: string): Promise<Build> => {
   return build;
 };
 
+// Build.lua:1-48 as the build list's New build makes it, with the default character level and gem quality
+export const emptyBuild = async (): Promise<Build> => {
+  const build = (await model()).builds.EmptyBuild();
+  if (!build) throw new Error('EmptyBuild returned nothing');
+  build.ApplyNewBuildDefaults(1, 0);
+  return build;
+};
+
 export const encode = async (xml: string): Promise<string> => (await model()).pob.CompressEncode(xml).unwrap();
 
 export const decode = async (code: string): Promise<string> => (await model()).pob.DecodeDecompress(code).unwrap();

@@ -6,8 +6,8 @@
   import { importDialog, returnFocus, type ImportTab } from './import_modal.svelte';
   import { panelId, tabId } from '$lib/design/tab_ids';
 
-  // the PoE2 calculator keeps no export state yet, and with no build open there is nothing to export
-  const canExport = $derived($game === 'poe1');
+  // with no build open there is nothing to export
+  const canExport = $derived($game !== undefined);
   const tabs = $derived([{ id: 'import', label: 'Import' }, ...(canExport ? [{ id: 'export', label: 'Export' }] : [])]);
   const tab = $derived<ImportTab>(canExport ? importDialog.tab : 'import');
   const uid = $props.id();

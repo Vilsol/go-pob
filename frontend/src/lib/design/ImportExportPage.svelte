@@ -11,7 +11,7 @@
   import Checkbox from './Checkbox.svelte';
   import ChoiceCard from './ChoiceCard.svelte';
   import type { Character } from './fixtures/app';
-  import { EXPORT_SITES, codeVerdict, jsonVerdict, urlVerdict, type ImportMode, type Verdict } from './share';
+  import { EXPORT_SITES, codeVerdict, jsonVerdict, urlVerdict, type ImportMode, type Site, type Verdict } from './share';
   import { tone as toneClass, type Tone } from './tone';
 
   type CharOpts = { deleteJewels: boolean; deleteSkills: boolean; deleteEquipment: boolean; ignoreSwap: boolean };
@@ -20,6 +20,8 @@
     code: string;
     link?: string | null;
     site?: string;
+    /** the sites the build's game shares to */
+    sites?: Site[];
     exportParty?: boolean;
     importText?: string;
     mode?: ImportMode;
@@ -57,7 +59,8 @@
   let {
     code,
     link = null,
-    site = $bindable(EXPORT_SITES[0].label),
+    sites = EXPORT_SITES,
+    site = $bindable(sites[0].label),
     exportParty = $bindable(false),
     importText = $bindable(''),
     mode = $bindable('new'),
@@ -132,7 +135,7 @@
       {#if copied}<InlineMessage kind="success" tag="span" class="whitespace-nowrap">✓ Copied</InlineMessage>{/if}
       <FloatingLabel label="Share via"
         ><Select size="md" bind:value={site} disabled={!!unavailable.share} title={unavailable.share}>
-          {#each EXPORT_SITES as s (s.label)}<option value={s.label}>{s.label}</option>{/each}
+          {#each sites as s (s.label)}<option value={s.label}>{s.label}</option>{/each}
         </Select></FloatingLabel>
       <Button size="md" variant="primary" disabled={!code || sharing || !!unavailable.share} title={unavailable.share} onclick={() => onshare?.(site)}
         >{sharing ? 'Creating link...' : 'Share'}</Button>

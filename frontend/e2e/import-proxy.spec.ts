@@ -53,7 +53,7 @@ const serveSample = async (page: import('@playwright/test').Page) => {
   return { sample, entry, passives, items, asked };
 };
 
-test("the account import lists the account's characters and imports one's items, skills and passive tree as Go does (PoB's sample character)", async ({
+test("the account import lists the account's characters and opens one's items, skills and passive tree as a new build as Go imports them (PoB's sample character)", async ({
   page
 }) => {
   const { sample, entry, passives, items, asked } = await serveSample(page);
@@ -70,29 +70,32 @@ test("the account import lists the account's characters and imports one's items,
   await expect(chars.getByRole('combobox', { name: 'Character' }).locator('option')).toHaveText([`${sample.name} — ${sample.class} lvl ${sample.level}`]);
 
   const m = await go.model();
+  // an import never writes into the open build: the first opens a new one, which the character's other half follows
+  const made = await go.emptyBuild();
   await app.act(
     'import the items and skills',
-    () => chars.getByRole('button', { name: 'Items and Skills' }).click(),
     async () => {
-      expect((await m.exposition.ImportAccountItems(build, JSON.stringify(entry), items, true, true, false)).unwrap()).toBe(
+      await chars.getByRole('button', { name: 'Items and Skills' }).click();
+      await page.getByRole('dialog', { name: 'Save Changes' }).getByRole('button', { name: "Don't Save" }).click();
+    },
+    async () => {
+      expect((await m.exposition.ImportAccountItems(made, JSON.stringify(entry), items, true, true, false)).unwrap()).toBe(
         'Items and skills successfully imported.'
       );
-      return expectedLines(await go.outputs(build));
+      return expectedLines(await go.outputs(made));
     }
   );
-  await chars.getByRole('button', { name: 'Passive Tree and Jewels' }).click();
-  const confirm = page.getByRole('dialog', { name: 'Character Import' });
-  await expect(confirm).toContainText('Importing the passive tree will overwrite your current tree.');
   await app.act(
     'import the passive tree and jewels',
-    () => confirm.getByRole('button', { name: 'Import' }).click(),
+    () => chars.getByRole('button', { name: 'Passive Tree and Jewels' }).click(),
     async () => {
-      expect((await m.exposition.ImportAccountPassiveTree(build, JSON.stringify(entry), passives, true)).unwrap()).toBe(
+      expect((await m.exposition.ImportAccountPassiveTree(made, JSON.stringify(entry), passives, true)).unwrap()).toBe(
         'Passive tree and jewels successfully imported.'
       );
-      return expectedLines(await go.outputs(build));
+      return expectedLines(await go.outputs(made));
     }
   );
+  await expect(page.getByRole('dialog', { name: 'Character Import' }), 'the new build has no tree to overwrite').toBeHidden();
   await expect(chars.getByRole('status')).toHaveText('Character import status: Passive tree and jewels successfully imported.');
   expect(asked).toEqual([
     '/api/poe/characters?realm=pc&account=sample%231234',

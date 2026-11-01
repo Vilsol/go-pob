@@ -80,6 +80,7 @@ var SITES = []Site{
 		Regex:    `maxroll\.gg\/poe2\/pob\/(.+)\s*$`,
 		Download: "maxroll.gg/poe2/api/pob/$1",
 		Link:     "https://maxroll.gg/poe2/pob/",
+		Post:     &Post{URL: "https://maxroll.gg/poe2/api/pob", Fields: "pobCode=", CodeOut: "https://maxroll.gg/poe2/pob/"},
 		Game:     "poe2",
 	},
 	{
@@ -89,6 +90,7 @@ var SITES = []Site{
 		Regex:    `poe2?\.ninja\/?p?o?e?2?\/pob\/(.+)\s*$`,
 		Download: "poe.ninja/poe2/pob/raw/$1",
 		Link:     "https://poe.ninja/poe2/pob/",
+		Post:     &Post{URL: "https://poe.ninja/poe2/pob/api/upload", Fields: "code=", CodeOut: ""},
 		Game:     "poe2",
 	},
 	{
@@ -98,6 +100,7 @@ var SITES = []Site{
 		Regex:    `poe2db\.tw\/pob\/(.+)\s*$`,
 		Download: "poe2db.tw/pob/$1/raw",
 		Link:     "https://poe2db.tw/pob/",
+		Post:     &Post{URL: "https://poe2db.tw/pob/api/gen", Fields: "", CodeOut: ""},
 		Game:     "poe2",
 	},
 }

@@ -1,16 +1,22 @@
+<script module lang="ts">
+  // the build a character import from this dialog opened; the character's other half goes into it
+  let madeBuild: object | undefined;
+</script>
+
 <script lang="ts">
   import { resource } from 'runed';
   import { goto } from '$app/navigation';
   import { base } from '$app/paths';
   import { get } from 'svelte/store';
-  import { game } from '$lib/go/engine';
-  import { buildRevision, currentBuild, currentBuildPath, outputs, poe2Enabled, UITick } from '$lib/global.js';
+  import { untrack } from 'svelte';
+  import { engines, game } from '$lib/go/engine';
+  import { buildRevision, currentBuild, currentBuildPath, outputs, poe2Build, poe2Enabled, UITick } from '$lib/global.js';
   import { syncWrap } from '$lib/go/worker';
   import { logError } from '$lib/utils';
   import { addToast } from '$lib/design/toast';
   import ImportExportPage from '$lib/design/ImportExportPage.svelte';
-  import { EXPORT_SITES, POE2_CHARACTER, POE2_CHARACTER_DISABLED, downloadUrl, importFailure, jsonVerdict, type ImportMode } from '$lib/design/share';
-  import { REALMS, SITE_KEY, UNAVAILABLE, loadExportSite, saveExportSite } from './import_export';
+  import { POE2_CHARACTER, POE2_CHARACTER_DISABLED, downloadUrl, importFailure, jsonVerdict, type ImportMode } from '$lib/design/share';
+  import { POE2_NO_PARTY, REALMS, SITE_KEY, UNAVAILABLE, loadExportSite, saveExportSite } from './import_export';
   import { followOtherTabs } from '$lib/storage/tabs';
   import { identityOf } from './identity';
   import { beforeReplace, downloadBuild, shareBuild } from './link_import';
@@ -30,9 +36,11 @@
   type Props = { tab?: ImportTab; focus?: boolean; ondone?: () => void };
   let { tab = 'import', focus = false, ondone }: Props = $props();
 
+  // ImportTab.lua:132-203 for the open build's game
+  const share = $derived(engines[$game ?? 'poe1'].share);
   const exported = resource(
-    () => [identityOf($outputs), $buildRevision, tab] as const,
-    async () => (syncWrap && tab === 'export' ? await syncWrap.ExportCode() : '')
+    () => [identityOf($outputs), $buildRevision, $poe2Build, share, tab] as const,
+    async ([, , , s, t]) => (t === 'export' ? ((await s.code()) ?? '') : '')
   );
   const code = $derived(exported.loading ? '' : (exported.current ?? ''));
 
@@ -58,18 +66,36 @@
   $effect(() => {
     if (!modes.includes(mode)) mode = 'new';
   });
-  // a character import goes into the open build; with none open it starts a new one, as Import build did
-  const ensureBuild = async () => {
-    if (!get(game)) await newBuild();
-  };
+  // a character import never writes into a build it did not open: it opens a new one first, asked about as a code
+  // import is (Build.lua:1421-1448); the account session survives, so the character's other half can follow
+  const intoNewBuild = (run: () => Promise<unknown>) =>
+    new Promise<void>((done, fail) => {
+      const go = () => {
+        const kept = { ...accountSession };
+        Promise.resolve(newBuild())
+          .then(() => {
+            Object.assign(accountSession, kept);
+            madeBuild = get(currentBuild);
+            return run();
+          })
+          .then(() => done(), fail);
+      };
+      if (madeBuild && get(currentBuild) === madeBuild) run().then(() => done(), fail);
+      else if (get(game) && beforeReplace.ask) beforeReplace.ask(go);
+      else go();
+    });
   let copied = $state(false);
   let importError = $state<string | null>(null);
   let imported = $state<string | null>(null);
   let fetching = $state(false);
 
   // ImportTab.lua:534-554
-  let site = $state((EXPORT_SITES.find((x) => x.label === loadExportSite()) ?? EXPORT_SITES[0]).label);
-  $effect(() => followOtherTabs(SITE_KEY, { set: (v?: string) => (site = EXPORT_SITES.find((x) => x.label === v)?.label ?? site) }, loadExportSite));
+  const siteOf = (label: string | undefined) => share.sites.find((x) => x.label === label)?.label;
+  let site = $state(untrack(() => siteOf(loadExportSite()) ?? share.sites[0].label));
+  $effect(() => {
+    if (!siteOf(site)) site = share.sites[0].label;
+  });
+  $effect(() => followOtherTabs(SITE_KEY, { set: (v?: string) => (site = siteOf(v) ?? site) }, loadExportSite));
   let shareLink = $state<string | null>(null);
   let sharing = $state(false);
   let shareError = $state<string | null>(null);
@@ -160,14 +186,13 @@
     const json = jsonVerdict(text);
     if (json?.game === 'poe2') return void (importError = $poe2Enabled ? POE2_CHARACTER : POE2_CHARACTER_DISABLED);
     if (json?.valid) {
-      void (async () => {
-        await ensureBuild();
+      intoNewBuild(async () => {
         const items = await syncWrap?.ImportItemsAndSkills(text);
         if (!items?.ok) return void (importError = items?.text ?? null);
         const tree = await syncWrap?.ImportPassiveTreeAndJewels(text);
         if (!tree?.ok) return void (importError = tree?.text ?? null);
         imported = `${items.text} ${tree.text}`;
-      })().catch(failed);
+      }).catch(failed);
       return;
     }
     const link = downloadUrl(text);
@@ -227,7 +252,8 @@
   bind:site
   {onshare}
   realms={REALMS}
-  unavailable={UNAVAILABLE}
+  unavailable={$game === 'poe2' ? { ...UNAVAILABLE, exportParty: POE2_NO_PARTY } : UNAVAILABLE}
+  sites={share.sites}
   bind:importText
   bind:mode
   {modes}
@@ -252,14 +278,10 @@
       selected={s.selected?.name}
       onselect={(c?: AccountCharacter) => (s.selected = c)}
       onimporttree={(c: AccountCharacter, deleteJewels: boolean) => {
-        void ensureBuild()
-          .then(() => importTree(c, deleteJewels, (run) => (confirmTree = run)))
-          .catch(logError);
+        void intoNewBuild(() => Promise.resolve(importTree(c, deleteJewels, (run) => (confirmTree = run)))).catch(logError);
       }}
       onimportitems={(c: AccountCharacter, o: Parameters<typeof importItems>[1]) => {
-        void ensureBuild()
-          .then(() => importItems(c, o))
-          .catch(logError);
+        void intoNewBuild(() => Promise.resolve(importItems(c, o))).catch(logError);
       }}
       onclose={() => {
         s.stage = 'GETACCOUNTNAME';

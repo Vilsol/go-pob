@@ -314,11 +314,15 @@ describe('the Import / Export dialog', () => {
   });
 
   // ImportTab.lua:609-628, 701-705
-  it('a character JSON is imported through the worker with no confirm, and its message shown', async () => {
+  // an import never writes into the open build: a character opens as a new build
+  it('a character JSON opens as a new build, imported through the worker with no confirm, and its message shown', async () => {
+    await loadCorpusBuild(BUILD);
     const json = await readFile(resolve(process.cwd(), '../testdata/import/sample_character.json'), 'utf8');
     const call = vi.spyOn(workerInstance, 'ImportItemsAndSkills').mockResolvedValue({ ok: true, text: 'Items and skills successfully imported.' });
     const tree = vi.spyOn(workerInstance, 'ImportPassiveTreeAndJewels').mockResolvedValue({ ok: true, text: 'Passive tree and jewels successfully imported.' });
-    const before = serialize(workerInstance.currentBuild);
+    const opened = workerInstance.currentBuild;
+    const before = serialize(opened);
+    const newBuild = vi.spyOn(workerInstance, 'NewBuild');
     goto.mockClear();
     const { box } = await mount();
     const field = box.getByRole('textbox', { name: /To import a build/ });
@@ -335,8 +339,50 @@ describe('the Import / Export dialog', () => {
     expect(tree).toHaveBeenCalledTimes(1);
     expect(tree.mock.calls[0][0]).toBe(call.mock.calls[0][0]);
     expect(call.mock.invocationCallOrder[0]).toBeLessThan(tree.mock.invocationCallOrder[0]);
-    expect(serialize(workerInstance.currentBuild)).toBe(before);
+    expect(newBuild).toHaveBeenCalledTimes(1);
+    expect(newBuild.mock.invocationCallOrder[0]).toBeLessThan(call.mock.invocationCallOrder[0]);
+    expect(workerInstance.currentBuild, 'the character went into the open build').not.toBe(opened);
+    expect(serialize(opened)).toBe(before);
     expect(goto).not.toHaveBeenCalled();
+    call.mockRestore();
+    tree.mockRestore();
+    newBuild.mockRestore();
+  });
+
+  // Build.lua:1421-1448: the open build's unsaved changes are asked about first, as for a code
+  it("a character JSON over a build with unsaved changes asks first: Cancel imports nothing, Don't Save opens the new build", async () => {
+    await loadCorpusBuild(BUILD);
+    const json = await readFile(resolve(process.cwd(), '../testdata/import/sample_character.json'), 'utf8');
+    const call = vi.spyOn(workerInstance, 'ImportItemsAndSkills').mockResolvedValue({ ok: true, text: 'Items and skills successfully imported.' });
+    const tree = vi.spyOn(workerInstance, 'ImportPassiveTreeAndJewels').mockResolvedValue({ ok: true, text: 'Passive tree and jewels successfully imported.' });
+    const { currentBuildPath } = await import('$lib/global');
+    const { opening } = await import('$lib/shell/build_name.svelte');
+    currentBuildPath.current = 'Builds/kept.xml';
+    opening.modFlag = true;
+    const bar = render((await import('$lib/shell/AppTopBar.svelte')).default);
+    await bar.findByRole('button', { name: 'Save (unsaved changes)' });
+    const opened = workerInstance.currentBuild;
+    const save = vi.spyOn(workerInstance, 'SaveBuildAs');
+    const { box } = await mount();
+    await fireEvent.input(box.getByRole('textbox', { name: /To import a build/ }), { target: { value: json } });
+
+    await fireEvent.click(box.getByRole('button', { name: 'Import' }));
+    let prompt = await vi.waitFor(() => within(document.body).getByRole('dialog', { name: 'Save Changes' }));
+    await fireEvent.click(within(prompt).getByRole('button', { name: 'Cancel' }));
+    await new Promise((r) => setTimeout(r, 200));
+    expect(call).not.toHaveBeenCalled();
+    expect(workerInstance.currentBuild, 'Cancel keeps the open build').toBe(opened);
+    expect(currentBuildPath.current).toBe('Builds/kept.xml');
+
+    await fireEvent.click(box.getByRole('button', { name: 'Import' }));
+    prompt = await vi.waitFor(() => within(document.body).getByRole('dialog', { name: 'Save Changes' }));
+    await fireEvent.click(within(prompt).getByRole('button', { name: "Don't Save" }));
+    await vi.waitFor(() => expect(tree).toHaveBeenCalledTimes(1));
+    expect(call).toHaveBeenCalledTimes(1);
+    expect(workerInstance.currentBuild).not.toBe(opened);
+    expect(currentBuildPath.current, 'the import does not take over the saved build').toBe('');
+    expect(save, 'the old build is not written').not.toHaveBeenCalled();
+    save.mockRestore();
     call.mockRestore();
     tree.mockRestore();
   });
@@ -431,14 +477,18 @@ describe('the Import / Export dialog', () => {
       expect(serialize(workerInstance.currentBuild)).toBe(before);
     });
 
-    it("lists the account's characters by league, remembers the account, and imports the tree after the overwrite confirm", async () => {
+    it("lists the account's characters by league, remembers the account, and imports the tree into a new build, then the items into that one", async () => {
       const f = serveApi({
         characters: () => Response.json(list),
         profile: () => Response.json({ accountName: 'Vilsol-3184' }),
-        passives: () => new Response('{"hashes":[1,2]}')
+        passives: () => new Response('{"hashes":[1,2]}'),
+        items: () => new Response('{"items":[]}')
       });
       const tree = vi.spyOn(workerInstance, 'ImportAccountPassiveTree').mockResolvedValue({ ok: true, text: 'Passive tree and jewels successfully imported.' });
-      outputs.set({ PointsUsed: [12, 0, 0, 0] } as never);
+      const items = vi.spyOn(workerInstance, 'ImportAccountItems').mockResolvedValue({ ok: true, text: 'Items and skills successfully imported.' });
+      await loadCorpusBuild(BUILD);
+      const opened = workerInstance.currentBuild;
+      const before = serialize(opened);
       const chars = await section();
       await start(chars, 'vilsol#3184');
       await vi.waitFor(() => expect(chars.getByRole('status').textContent).toBe('Character import status: Character list successfully retrieved.'));
@@ -449,17 +499,21 @@ describe('the Import / Export dialog', () => {
       expect([...pick.options].map((o) => o.textContent)).toEqual(['Ann — Deadeye lvl 95 in Mercenaries', 'Zed — Necromancer lvl 90 in Standard']);
       await fireEvent.change(pick, { target: { value: 'Zed' } });
       await fireEvent.click(chars.getByRole('button', { name: 'Passive Tree and Jewels' }));
-      const dialog = await vi.waitFor(() => within(document.body).getByRole('dialog', { name: 'Character Import' }));
-      expect(tree).not.toHaveBeenCalled();
-      await fireEvent.click(within(dialog).getByRole('button', { name: 'Import' }));
       await vi.waitFor(() => expect(chars.getByRole('status').textContent).toBe('Character import status: Passive tree and jewels successfully imported.'));
+      expect(within(document.body).queryByRole('dialog', { name: 'Character Import' }), 'a new build has no tree to overwrite').toBeNull();
       expect(f.mock.calls.at(-1)?.[0]).toBe('/api/poe/passives?realm=pc&account=Vilsol%233184&character=Zed');
       expect(tree).toHaveBeenCalledWith(JSON.stringify(list[0]), '{"hashes":[1,2]}', true);
+      const made = workerInstance.currentBuild;
+      expect(made, 'the tree went into the open build').not.toBe(opened);
+      expect(serialize(opened)).toBe(before);
+      await fireEvent.click(chars.getByRole('button', { name: 'Items and Skills' }));
+      await vi.waitFor(() => expect(items).toHaveBeenCalledTimes(1));
+      expect(workerInstance.currentBuild, "the character's items go into the build its tree opened").toBe(made);
       // ImportTab.lua:441, 1925-1931
       const { unsavedName } = await import('$lib/shell/build_name.svelte');
       expect(unsavedName.predefined).toBe('Vilsol - Zed');
       tree.mockRestore();
-      outputs.set(undefined);
+      items.mockRestore();
     });
 
     it('returning to the page selects the character chosen in a league other than the default one', async () => {

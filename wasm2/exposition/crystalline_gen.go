@@ -2081,7 +2081,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 				switch field {
 				}
 			},
-			[]string{"AllocateAttributeNode", "CalcsMods", "CalcsOutputs", "Calculate", "ClickNode", "ConfigRelevance", "EquippedItems", "HoverNode", "Redo", "Serialize", "SerializeWithStats", "SetConfigInput", "SetMainActiveSkill", "SetMainSocketGroup", "SkillGroups", "TreeState", "Undo"},
+			[]string{"AllocateAttributeNode", "CalcsMods", "CalcsOutputs", "Calculate", "ClickNode", "ConfigRelevance", "EquippedItems", "ExportCode", "HoverNode", "Notes", "Redo", "RichNotesDoc", "RichNotesStatus", "Serialize", "SerializeWithStats", "SetConfigInput", "SetMainActiveSkill", "SetMainSocketGroup", "SetRichNotes", "SkillGroups", "TreeState", "Undo"},
 			func(v *Calculator, method int, args []js.Value) any {
 				switch method {
 				case 0:
@@ -2274,6 +2274,33 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 						return crystallineMarshalExpositionItemsView(r0)
 					}))
 				case 7:
+					if len(args) != 3 {
+						return crystallineFail("ExportCode: expected 3 arguments, got " + strconv.Itoa(len(args)))
+					}
+
+					a0, err := crystallineToSliceOfExpositionSavedStat(args[0])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					a1, err := crystallineToSliceOfExpositionSavedFullDPS(args[1])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					a2, err := crystallineToSliceOfExpositionSavedStat(args[2])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					r0, r1 := v.ExportCode(a0, a1, a2)
+
+					if r1 != nil {
+						return crystallineErr(r1)
+					}
+
+					return crystallineOk(string(r0))
+				case 8:
 					if len(args) != 2 {
 						return crystallineFail("HoverNode: expected 2 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -2296,7 +2323,15 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}, func() any {
 						return crystallineMarshalExpositionTreeHover(&r0)
 					})
-				case 8:
+				case 9:
+					if len(args) != 0 {
+						return crystallineFail("Notes: expected 0 arguments, got " + strconv.Itoa(len(args)))
+					}
+
+					r0 := v.Notes()
+
+					return string(r0)
+				case 10:
 					if len(args) != 0 {
 						return crystallineFail("Redo: expected 0 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -2308,7 +2343,23 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(bool(r0))
-				case 9:
+				case 11:
+					if len(args) != 0 {
+						return crystallineFail("RichNotesDoc: expected 0 arguments, got " + strconv.Itoa(len(args)))
+					}
+
+					r0 := v.RichNotesDoc()
+
+					return string(r0)
+				case 12:
+					if len(args) != 0 {
+						return crystallineFail("RichNotesStatus: expected 0 arguments, got " + strconv.Itoa(len(args)))
+					}
+
+					r0 := v.RichNotesStatus()
+
+					return string(r0)
+				case 13:
 					if len(args) != 0 {
 						return crystallineFail("Serialize: expected 0 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -2320,7 +2371,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(string(r0))
-				case 10:
+				case 14:
 					if len(args) != 3 {
 						return crystallineFail("SerializeWithStats: expected 3 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -2347,7 +2398,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(string(r0))
-				case 11:
+				case 15:
 					if len(args) != 3 {
 						return crystallineFail("SetConfigInput: expected 3 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -2370,7 +2421,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					v.SetConfigInput(a0, a1, a2)
 
 					return nil
-				case 12:
+				case 16:
 					if len(args) != 1 {
 						return crystallineFail("SetMainActiveSkill: expected 1 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -2383,7 +2434,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					v.SetMainActiveSkill(a0)
 
 					return nil
-				case 13:
+				case 17:
 					if len(args) != 1 {
 						return crystallineFail("SetMainSocketGroup: expected 1 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -2396,7 +2447,25 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					v.SetMainSocketGroup(a0)
 
 					return nil
-				case 14:
+				case 18:
+					if len(args) != 2 {
+						return crystallineFail("SetRichNotes: expected 2 arguments, got " + strconv.Itoa(len(args)))
+					}
+
+					a0, err := crystallineToString(args[0])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					a1, err := crystallineToString(args[1])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					v.SetRichNotes(a0, a1)
+
+					return nil
+				case 19:
 					if len(args) != 0 {
 						return crystallineFail("SkillGroups: expected 0 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -2438,7 +2507,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 							return out
 						}()
 					}))
-				case 15:
+				case 20:
 					if len(args) != 0 {
 						return crystallineFail("TreeState: expected 0 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -2455,7 +2524,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}, func() any {
 						return crystallineMarshalExpositionTreeState(r0)
 					}))
-				case 16:
+				case 21:
 					if len(args) != 0 {
 						return crystallineFail("Undo: expected 0 arguments, got " + strconv.Itoa(len(args)))
 					}

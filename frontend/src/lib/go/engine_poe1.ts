@@ -14,6 +14,7 @@ import type { calculator } from '$lib/types';
 import type { BuildEngine, CalcsTabView } from './engine';
 import { syncWrap } from './worker';
 import { logError } from '$lib/utils';
+import { EXPORT_SITES } from '$lib/design/share';
 
 // the pages re-read their saved state when another build or loadout opens
 const revision = derived([buildRevision, currentBuild], ([r, b]) => [r, b === undefined]);
@@ -35,6 +36,22 @@ export const poe1Engine: BuildEngine = {
   classInfo: () => syncWrap?.GetBuildInfo().then((i) => (i ? { className: i.className, ascendClassName: i.ascendClassName } : undefined)),
   save: (path) => syncWrap.SaveBuildAs(path),
   clear: () => Promise.resolve(syncWrap?.ClearBuild()),
+  notes: {
+    revision: derived([buildRevision, currentBuild], ([r, b]) => `poe1:${r}:${b === undefined}`),
+    read: () => {
+      const b = get(currentBuild);
+      return (
+        b &&
+        Promise.all([b.RichNotesStatus(), b.Notes, b.RichNotesDoc()]).then(([status, plain, doc]) => ({
+          status,
+          plain: plain ?? '',
+          doc,
+          write: (p: string, d: string) => b.SetRichNotes(p, d)
+        }))
+      );
+    }
+  },
+  share: { code: () => syncWrap?.ExportCode(), sites: EXPORT_SITES },
   // CalcBreakdownControl.lua:75-83
   breakdownSteps: async (line: StatLine) => {
     if (!line.bd || !syncWrap) return undefined;

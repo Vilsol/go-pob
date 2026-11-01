@@ -85,13 +85,18 @@ export declare namespace exposition {
     ClickNode(id: number, right: boolean, hotkey: number, confirmClassChange: boolean, allocMode: number): Result<number>;
     ConfigRelevance(query: calculator2.ConfigRelevance): Result<calculator2.ConfigRelevance>;
     EquippedItems(): Result<(exposition.ItemsView | undefined)>;
+    ExportCode(player: Array<exposition.SavedStat> | undefined, fullDPS: Array<exposition.SavedFullDPS> | undefined, minion: Array<exposition.SavedStat> | undefined): Result<string>;
     HoverNode(id: number, allocMode: number): exposition.TreeHover;
+    Notes(): string;
     Redo(): Result<boolean>;
+    RichNotesDoc(): string;
+    RichNotesStatus(): string;
     Serialize(): Result<string>;
     SerializeWithStats(player: Array<exposition.SavedStat> | undefined, fullDPS: Array<exposition.SavedFullDPS> | undefined, minion: Array<exposition.SavedStat> | undefined): Result<string>;
     SetConfigInput(name: string, value: calculator2.ConfigValue, isDefault: boolean): void;
     SetMainActiveSkill(index: number): void;
     SetMainSocketGroup(index: number): void;
+    SetRichNotes(plain: string, doc: string): void;
     SkillGroups(): Result<(Array<exposition.SkillGroupView> | undefined)>;
     TreeState(): Result<(exposition.TreeState | undefined)>;
     Undo(): Result<boolean>;

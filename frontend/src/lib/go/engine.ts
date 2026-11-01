@@ -11,6 +11,7 @@ import type { ConfigValue } from '$lib/display/configurations';
 import type { ConfigTable, Inputs } from '$lib/design/config';
 import type { ItemTip } from '$lib/design/fixtures';
 import type { StatCompareSection } from '$lib/skill_tree/stat_compare';
+import type { Site } from '$lib/design/share';
 import type { UndoView } from './undo';
 import { poe1Engine } from './engine_poe1';
 import { poe2Engine } from './engine_poe2.svelte';
@@ -112,6 +113,14 @@ export type BuildEngine = {
   classInfo(): Promise<{ className: string; ascendClassName: string } | undefined> | undefined;
   save(path: string): Promise<unknown>;
   clear(): Promise<unknown>;
+  // NotesTab.lua:75-88: the notes text and the rich document the Notes page keeps beside it; revision changes when
+  // another build opens, and a read's write goes to the build it was read from
+  notes: {
+    revision: Readable<string>;
+    read(): Async<{ status: string; plain: string; doc: string; write: (plain: string, doc: string) => Async<unknown> }>;
+  };
+  // ImportTab.lua:132-203: the build's code and the sites it can be shared to
+  share: { code(): Async<string>; sites: Site[] };
   // Build.lua:1764-1908
   breakdownSteps?: (line: StatLine) => Promise<SidebarSection[] | undefined>;
   // Build.lua:1453-1482
