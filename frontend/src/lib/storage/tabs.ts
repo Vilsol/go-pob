@@ -56,9 +56,13 @@ export class TabStorage {
     return this.writer;
   }
 
+  private get locks() {
+    return this.o.locks ?? (globalThis.navigator as Navigator | undefined)?.locks;
+  }
+
   // resolves with whether this tab writes; a tab that does not keeps waiting for the lock and takes over when it frees
   start(): Promise<boolean> {
-    const locks = this.o.locks ?? (globalThis.navigator as Navigator | undefined)?.locks;
+    const locks = this.locks;
     if (!locks) {
       // no Web Locks outside a secure context: nothing can coordinate, so this tab writes as a single tab does
       this.writer = true;
@@ -77,6 +81,14 @@ export class TabStorage {
         return undefined;
       });
     });
+  }
+
+  // another tab is open: long work here holds that tab's writes, when this tab writes, or this tab's view of them
+  async othersOpen(): Promise<boolean> {
+    if (!this.locks) return false;
+    if (!this.writer) return true;
+    const { pending = [] } = await this.locks.query();
+    return pending.some((l) => l.name === this.name);
   }
 
   close() {

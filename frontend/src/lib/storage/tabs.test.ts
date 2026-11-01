@@ -129,6 +129,18 @@ describe('one writer across tabs', () => {
     expect(await c.read('waiting')).toBe('from c');
   });
 
+  it('a tab knows while another tab is open, so it can put off work that would hold that tab’s writes or its own view of them', async () => {
+    const { tab } = tabs('waiting-tabs');
+    const a = await tab('a');
+    const b = await tab('b');
+    await a.t.start();
+    expect(await a.t.othersOpen(), 'a tab alone').toBe(false);
+
+    await b.t.start();
+    expect(await a.t.othersOpen()).toBe(true);
+    expect(await b.t.othersOpen(), 'a tab that does not write reads what the writer changes').toBe(true);
+  });
+
   it('a tab that was waiting applies its own pending write when it becomes the writer', async () => {
     const { lock, tab } = tabs('own-pending');
     let release!: () => void;

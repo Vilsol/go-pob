@@ -128,6 +128,8 @@ export const startTabStorage = (changed: (bucket: string) => void) => {
 
 export const storageWrite = (w: StorageWrite) => (tabs ? tabs.write(w) : zenfsWrite(w));
 
+export const otherTabsOpen = () => tabs?.othersOpen() ?? Promise.resolve(false);
+
 // a second zenfs instance on the same database allocates inode ids the first already uses: a power worker only reads,
 // and a tab that is not the writer forwards its writes to the one that is
 export const initializeStorage = async (readOnly = false) => {

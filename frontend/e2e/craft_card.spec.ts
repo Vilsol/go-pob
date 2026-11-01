@@ -124,10 +124,15 @@ test('each affix unit holds Go’s lines for its dropdown, and every roll slider
   const [rolled] = await m.exposition.AffixEditText(text, 1, controls[1].Sel, 0.95);
   await expect(box).toHaveValue(rolled);
   const preview = (await m.exposition.AffixRollTooltip(text, 1, 0.95)) ?? [];
-  const now = await described('Roll of affix 2');
-  const shared = await described('Roll of affix 1');
-  expect(now.filter((l) => !shared.includes(l)).every((l) => preview.includes(l))).toBe(true);
-  expect(now.filter((l) => !shared.includes(l)).length).toBeGreaterThan(0);
+  // the item text settles before the lines Go describes for it
+  await expect
+    .poll(async () => {
+      const now = await described('Roll of affix 2');
+      const shared = await described('Roll of affix 1');
+      const own = now.filter((l) => !shared.includes(l));
+      return own.length > 0 && own.every((l) => preview.includes(l));
+    })
+    .toBe(true);
 
   const card = page.getByRole('region', { name: 'Item controls' });
   await box.fill(RANGED);

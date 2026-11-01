@@ -40,7 +40,7 @@ import type { MainSkillField } from '$lib/shell/main_skill';
 import { modRowsEqual } from '$lib/display/compare_mods';
 import type { ItemDBFilterInput, ItemDBLists, ItemDBRowPlain } from '$lib/design/item_db';
 import { configureStorage } from './storage_config';
-import { initializeStorage, startTabStorage, storageFs, storageWrite } from './storage_init';
+import { initializeStorage, otherTabsOpen, startTabStorage, storageFs, storageWrite } from './storage_init';
 import { DESKTOP } from '$lib/pwa/desktop';
 import { PowerPool, type PowerPoolRun } from './power_pool';
 import { noteCall, whenIdle } from './idle';
@@ -3664,11 +3664,13 @@ class PoBWorker {
   private static readonly WARM_IDLE_MS = 10_000;
 
   private warmItemDB() {
-    whenIdle(PoBWorker.WARM_IDLE_MS, () =>
-      Promise.all(['UNIQUE', 'RARE'].map((kind) => exposition.ItemDBLists(kind)))
+    whenIdle(PoBWorker.WARM_IDLE_MS, async () => {
+      // the parse holds this worker for seconds, and with it every save another tab forwards here and every change it reports
+      if (await otherTabsOpen()) return this.warmItemDB();
+      return Promise.all(['UNIQUE', 'RARE'].map((kind) => exposition.ItemDBLists(kind)))
         .then(() => performance.mark('pob:item-db-warmed'))
-        .catch((e: unknown) => console.error(e))
-    );
+        .catch((e: unknown) => console.error(e));
+    });
   }
 
   GetPartyMembers(): PartyMemberView[] {
