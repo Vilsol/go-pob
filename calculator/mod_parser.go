@@ -10744,7 +10744,9 @@ func parseMod(line string, order int) ([]mod.Mod, string) {
 			if len(captures) == 0 {
 				return specialFunc(0, captures)
 			}
-			return specialFunc(utils.Float(captures[0]), captures)
+			// tonumber: a capture that is not a number is nil in Lua, silently; 0 here
+			num, _ := strconv.ParseFloat(captures[0], 64)
+			return specialFunc(num, captures)
 		}
 		return mod.CloneSlice((*specialMod).([]mod.Mod)), ""
 	}
