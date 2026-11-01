@@ -5,6 +5,7 @@ import { deflateSync } from 'node:zlib';
 
 import { DATA_HOST, cachedAsset } from './support/data_cache';
 import { routeTreeAssets } from './support/tree_assets';
+import { poe2Page, poe2Stat } from './support/poe2';
 
 test.use({ serviceWorkers: 'block' });
 
@@ -52,26 +53,25 @@ test('with the PoE2 flag off a PoE2 build is refused and the second worker never
 
 test('with the PoE2 flag on a PoE2 build opens in the second worker with PoB-PoE2 values', async ({ page }) => {
   const { errors, requests } = await start(page, true);
-  const view = page.getByRole('region', { name: 'Path of Exile 2 build' });
+  const view = poe2Page(page);
   await expect(view).toBeVisible({ timeout: 180_000 });
   await expect(view).toContainText('Level 40 Sorceress');
-  await expect(view.locator('[data-stat="Life"]')).toHaveText(POB2.Life);
-  await expect(view.locator('[data-stat="Mana"]')).toHaveText(POB2.Mana);
+  await expect(poe2Stat(page, 'Life')).toHaveText(POB2.Life);
+  await expect(poe2Stat(page, 'Mana')).toHaveText(POB2.Mana);
   expect(requests.filter((u) => /go-pob2\.wasm/.test(u))).toHaveLength(1);
   expect(errors).toEqual([]);
 });
 
 test('a second session opens a PoE2 build from the storage cache, with no game data fetched', async ({ page }) => {
-  const view = page.getByRole('region', { name: 'Path of Exile 2 build' });
   const first = await start(page, true);
-  await expect(view.locator('[data-stat="Life"]')).toHaveText(POB2.Life, { timeout: 180_000 });
+  await expect(poe2Stat(page, 'Life')).toHaveText(POB2.Life, { timeout: 180_000 });
   const poe2Data = (urls: string[]) => urls.filter((u) => u.startsWith(DATA_HOST) && POE2_DATA.test(u));
   expect(poe2Data(first.requests), 'the first session fetched no PoE2 data, so the second proves nothing').not.toEqual([]);
 
   first.requests.length = 0;
   await page.goto(`/?import=${encodeURIComponent(code())}`);
-  await expect(view.locator('[data-stat="Life"]')).toHaveText(POB2.Life, { timeout: 180_000 });
-  await expect(view.locator('[data-stat="Mana"]')).toHaveText(POB2.Mana);
+  await expect(poe2Stat(page, 'Life')).toHaveText(POB2.Life, { timeout: 180_000 });
+  await expect(poe2Stat(page, 'Mana')).toHaveText(POB2.Mana);
   expect(
     first.requests.filter((u) => /go-pob2\.wasm/.test(u)),
     'the second session did not boot the PoE2 worker'
@@ -108,8 +108,7 @@ test.describe('with the service worker on', () => {
 
   test('with the PoE2 flag on the PoE2 wasm is cached the first time a PoE2 build asks for it', async ({ page }) => {
     const { errors } = await start(page, true);
-    const view = page.getByRole('region', { name: 'Path of Exile 2 build' });
-    await expect(view.locator('[data-stat="Life"]')).toHaveText(POB2.Life, { timeout: 180_000 });
+    await expect(poe2Stat(page, 'Life')).toHaveText(POB2.Life, { timeout: 180_000 });
     await expect.poll(async () => (await cachedUrls(page)).filter((u) => /\/go-pob2\.wasm/.test(u)), { timeout: 60_000 }).not.toEqual([]);
     expect(errors).toEqual([]);
   });

@@ -114,16 +114,18 @@
 </Sheet>
 
 <Sheet bind:open={moreOpen} title="More">
-  <nav aria-label="More pages" class="grid grid-cols-2 gap-2 p-3">
-    {#each more as t (t.href)}
-      <Button
-        href={t.href}
-        variant={t.href === current ? 'primary' : 'default'}
-        class="h-12 justify-center text-14 no-underline"
-        aria-current={t.href === current ? 'page' : undefined}
-        onclick={go(t.href)}>{t.label}</Button>
-    {/each}
-  </nav>
+  {#if more.length}
+    <nav aria-label="More pages" class="grid grid-cols-2 gap-2 p-3">
+      {#each more as t (t.href)}
+        <Button
+          href={t.href}
+          variant={t.href === current ? 'primary' : 'default'}
+          class="h-12 justify-center text-14 no-underline"
+          aria-current={t.href === current ? 'page' : undefined}
+          onclick={go(t.href)}>{t.label}</Button>
+      {/each}
+    </nav>
+  {/if}
   {#if actions.length}
     <h4 class="caps px-4 pt-2 pb-1">Build</h4>
     <div role="menu" aria-label="Build actions" tabindex="-1" class="flex flex-col pb-3" onkeydown={actionKey}>

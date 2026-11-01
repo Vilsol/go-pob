@@ -70,7 +70,19 @@ vi.mock('$lib/components/skill-tree/gl_renderer2', () => ({
 }));
 
 const { poe2Build } = await import('$lib/global');
-const AppPoe2Build = (await import('./AppPoe2Build.svelte')).default;
+const Poe2Page = (await import('./Poe2Page.svelte')).default;
+const AppSidebar = (await import('./AppSidebar.svelte')).default;
+const { poe2Engine } = await import('$lib/go/engine_poe2.svelte');
+
+// the frame sidebar's value for a stat, found by the label PoE2's stat list gives it
+const statOf = (container: HTMLElement, name: string) => {
+  const line = get(poe2Engine.sidebar)
+    ?.sections.flatMap((s) => s.groups.flat())
+    .find((l) => l.stat === name);
+  if (!line) return undefined;
+  const row = [...container.querySelectorAll<HTMLElement>('.stat-row')].find((r) => r.querySelector('.stat-label')?.textContent?.trim() === line.label);
+  return row?.querySelector('.stat-value')?.textContent?.trim();
+};
 
 const fixture = (name: string) => readFile(resolve(FIXTURES, name), 'utf8');
 
@@ -117,7 +129,7 @@ describe('the PoE2 config and main skill writes', () => {
     async (name) => {
       const oracle = JSON.parse(await readFile(resolve(ORACLE, `poe2_sidebar_${name}.json`), 'utf8')) as { configShown: string[] };
       poe2Build.set(await worker2Instance.Open(await fixture(`${name}.xml`)));
-      const page = render(AppPoe2Build, { view: get(poe2Build)! });
+      const page = render(Poe2Page, { route: 'configuration' });
       const shown = [...page.container.querySelectorAll<HTMLElement>('[data-config]')].map((e) => e.dataset.config!).sort();
       expect(shown).toEqual(oracle.configShown);
     },
@@ -127,37 +139,37 @@ describe('the PoE2 config and main skill writes', () => {
   it('editing a config option on the page recalculates the sidebar', async () => {
     poe2Build.set(await worker2Instance.Open(await fixture('sorceress_spark.xml')));
     issued.length = 0;
-    const page = render(AppPoe2Build, { view: get(poe2Build)! });
-    const stat = (name: string) => page.container.querySelector<HTMLElement>(`[data-stat="${name}"]`)?.textContent?.trim();
+    const page = render(Poe2Page, { route: 'configuration' });
+    const side = render(AppSidebar);
+    const stat = (name: string) => statOf(side.container, name);
     expect(stat('FireResist')).toBe('-15%');
     const pick = page.container.querySelector<HTMLSelectElement>('[data-config="resistancePenalty"]')!;
     pick.value = '0';
     await fireEvent.change(pick);
     await vi.waitFor(() => expect(get(poe2Build)?.output.FireResist).toBe(45));
     expect(issued).toEqual(['SetConfigOption("resistancePenalty",0)']);
-    await page.rerender({ view: get(poe2Build)! });
-    expect(stat('FireResist')).toBe('45%');
+    await vi.waitFor(() => expect(stat('FireResist')).toBe('45%'));
     expect(stat('LightningResist')).toBe('10%');
   }, 120_000);
 
   it('switching the main skill recalculates the sidebar', async () => {
     poe2Build.set(await worker2Instance.Open(await fixture('sorceress_three_spells.xml')));
     issued.length = 0;
-    const page = render(AppPoe2Build, { view: get(poe2Build)! });
-    const box = within(page.getByRole('complementary', { name: 'Stats' }));
-    const stat = (name: string) => page.container.querySelector<HTMLElement>(`[data-stat="${name}"]`)?.textContent?.trim();
+    const page = render(AppSidebar);
+    const box = within(page.getByRole('complementary', { name: 'Main skill and stats' }));
+    const stat = (name: string) => statOf(page.container, name);
     expect(stat('TotalDPS')).toBe('24.9');
-    const skill = box.getByRole<HTMLSelectElement>('combobox', { name: 'Main active skill' });
+    const skill = box.getByRole<HTMLSelectElement>('combobox', { name: 'Active skill' });
     expect([...skill.options].map((o) => o.text)).toEqual(['Spark', 'Fireball']);
     skill.value = '2';
     await fireEvent.change(skill);
     await vi.waitFor(() => expect(get(poe2Build)?.output.TotalDPS).toBe(32.76875));
-    await page.rerender({ view: get(poe2Build)! });
-    expect(stat('TotalDPS')).toBe('32.8');
+    await vi.waitFor(() => expect(stat('TotalDPS')).toBe('32.8'));
 
-    const group = box.getByRole<HTMLSelectElement>('combobox', { name: 'Main socket group' });
+    const group = box.getByRole<HTMLSelectElement>('combobox', { name: 'Main skill' });
     expect([...group.options].map((o) => o.text)).toEqual(['Spark, Fireball', 'Arc']);
-    group.value = '2';
+    // the frame's picker counts groups from 0
+    group.value = '1';
     await fireEvent.change(group);
     await vi.waitFor(() => expect(get(poe2Build)?.output.TotalDPS).toBeCloseTo(25.020454545455, 9));
     expect(issued).toEqual(['SetMainActiveSkill(2)', 'SetMainSocketGroup(2)']);
@@ -180,21 +192,18 @@ describe('the PoE2 tree undo and redo', () => {
     // the keys reach the page through the tree view; the whole PoE2 tree is slow to mount under jsdom
     const { tinyTree } = await import('$lib/components/skill-tree/tree2_fixture');
     const treeData = vi.spyOn(worker2Instance, 'TreeData').mockResolvedValue(tinyTree());
-    const page = render(AppPoe2Build, { view: get(poe2Build)! });
-    await fireEvent.click(page.getByRole('tab', { name: 'Tree' }));
+    const page = render(Poe2Page, { route: 'tree' });
     await vi.waitFor(() => page.getByRole('img', { name: 'Passive skill tree' }), { timeout: 60_000 });
     treeData.mockRestore();
     poe2Build.set((await worker2Instance.TreeClick(44871, false, 0, false, 1)).calc);
     expect(get(poe2Build)?.output.EnergyShield).toBe(10);
     expect((get(poe2Build) as Poe2Calc | undefined)?.tree.allocMode).toEqual({ 44871: 1 });
-    await page.rerender({ view: get(poe2Build)! });
     issued.length = 0;
 
     await fireEvent.keyDown(window, { key: 'z', ctrlKey: true });
     await vi.waitFor(() => expect(get(poe2Build)?.output.EnergyShield).toBe(0));
     expect((get(poe2Build) as Poe2Calc | undefined)?.tree.alloc).toEqual([54447]);
     expect(worker2Instance.Serialize()).toMatch(/nodes="54447"/);
-    await page.rerender({ view: get(poe2Build)! });
 
     await fireEvent.keyDown(window, { key: 'y', ctrlKey: true });
     await vi.waitFor(() => expect(get(poe2Build)?.output.EnergyShield).toBe(10));
@@ -210,8 +219,7 @@ describe('the PoE2 Calcs page', () => {
     const oracle = JSON.parse(await readFile(resolve(ORACLE, 'poe2_calcs_sorceress_spark.json'), 'utf8')) as { cells: Record<string, string> };
     poe2Build.set(await worker2Instance.Open(await fixture('sorceress_spark.xml')));
     issued.length = 0;
-    const page = render(AppPoe2Build, { view: get(poe2Build)! });
-    await fireEvent.click(page.getByRole('tab', { name: 'Calcs' }));
+    const page = render(Poe2Page, { route: 'calcs' });
     const life = await vi.waitFor(() => within(page.getByRole('region', { name: 'Calculations' })).getByRole('region', { name: 'Life' }), { timeout: 60_000 });
     const row = (label: string) => [...life.querySelectorAll<HTMLElement>('[data-key]')].find((r) => r.textContent?.trim().startsWith(label));
     const cells = (r: HTMLElement | undefined) => [...(r?.querySelectorAll<HTMLElement>('.font-mono > span') ?? [])].map((c) => c.textContent?.trim());
@@ -228,7 +236,6 @@ describe('the PoE2 Calcs page', () => {
     // the mod cells follow a recalculation
     const set = await worker2Instance.SetConfigOption('resistancePenalty', 0);
     poe2Build.set(set);
-    await page.rerender({ view: get(poe2Build)! });
     await vi.waitFor(() => expect(issued).toEqual(['CalcsMods()', 'CalcsMods()']));
     const resists = within(page.getByRole('region', { name: 'Calculations' })).getByRole('region', { name: 'Resists' });
     await vi.waitFor(() => expect(resists.textContent).toContain('45%'));
@@ -248,8 +255,7 @@ describe('the PoE2 Skills and Items pages', () => {
     const oracle = await pages();
     poe2Build.set(await worker2Instance.Open(await fixture('sorceress_items.xml')));
     issued.length = 0;
-    const page = render(AppPoe2Build, { view: get(poe2Build)! });
-    await fireEvent.click(page.getByRole('tab', { name: 'Skills' }));
+    const page = render(Poe2Page, { route: 'skills' });
     const list = await vi.waitFor(() => page.getByRole('listbox', { name: 'Socket groups' }));
     expect(
       within(list)
@@ -264,8 +270,7 @@ describe('the PoE2 Skills and Items pages', () => {
     expect(gems().map((g) => g[0])).toEqual(oracle.groups[1].gems.map((g) => g.name));
     await fireEvent.click(page.getByRole('button', { name: 'Set as main skill' }));
     await vi.waitFor(() => expect((get(poe2Build) as Poe2Calc | undefined)?.mainSocketGroup).toBe(2));
-    expect(issued).toEqual(['SkillGroups()', 'SetMainSocketGroup(2)']);
-    await page.rerender({ view: get(poe2Build)! });
+    // the page refetches as soon as the recalculated build is shown
     await vi.waitFor(() => expect(issued).toEqual(['SkillGroups()', 'SetMainSocketGroup(2)', 'SkillGroups()']));
     await vi.waitFor(() => expect(within(list).getAllByRole('option')[1].textContent?.trim()).toBe(`${oracle.groups[1].label} (Disabled) (Forced Active)`));
   }, 120_000);
@@ -274,8 +279,7 @@ describe('the PoE2 Skills and Items pages', () => {
     const { pobPlain } = await import('$lib/design/pob_text');
     const oracle = await pages();
     poe2Build.set(await worker2Instance.Open(await fixture('sorceress_items.xml')));
-    const page = render(AppPoe2Build, { view: get(poe2Build)! });
-    await fireEvent.click(page.getByRole('tab', { name: 'Items' }));
+    const page = render(Poe2Page, { route: 'items' });
     await vi.waitFor(() => page.getByRole('region', { name: 'Body Armour' }));
     const cards = [...page.container.querySelectorAll<HTMLElement>('[data-slot]')];
     expect(cards.map((c) => c.dataset.slot)).toEqual(oracle.items.map((i) => i.slot));

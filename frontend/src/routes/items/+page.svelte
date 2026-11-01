@@ -1,5 +1,6 @@
 <script lang="ts">
+  import GamePage from '$lib/shell/GamePage.svelte';
   import AppItems from '$lib/shell/AppItems.svelte';
 </script>
 
-<AppItems />
+<GamePage route="items"><AppItems /></GamePage>

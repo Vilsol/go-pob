@@ -11,15 +11,15 @@
   import { browser } from '$app/environment';
   import { syncWrap } from '$lib/go/worker';
   import { proxy, transfer } from 'comlink';
-  import { currentBuild, currentBuildPath, buildChannel, devMode, markBackendAsLoaded, outputs, backendLoaded, poe2Build } from '$lib/global.js';
+  import { currentBuildPath, buildChannel, devMode, markBackendAsLoaded, backendLoaded } from '$lib/global.js';
+  import { engines, game } from '$lib/go/engine';
   import { setArtResolver } from '$lib/design/item_art';
   import { showTitlebarName, windowTitle } from '$lib/display/window_title';
   import { onTick } from '$lib/calc_state';
   import { logError } from '$lib/utils';
   import type { Snippet } from 'svelte';
-  import { get } from 'svelte/store';
+  import { derived as derivedStore, get } from 'svelte/store';
   import AppBuildList from '$lib/shell/AppBuildList.svelte';
-  import AppPoe2Build from '$lib/shell/AppPoe2Build.svelte';
   import { WASM_FALLBACK, WASM_FILE } from '$lib/go/wasm_file';
   import { checkForUpdate, startPwa } from '$lib/pwa';
   import PwaStatus from '$lib/pwa/PwaStatus.svelte';
@@ -58,32 +58,38 @@
   // Main.lua:1750-1756, PassiveSpec.lua:2302-2308
   let titleBuild = $state<{ name: string; className: string; ascendClassName: string }>();
   $effect(() => {
-    void $outputs;
-    if (!$currentBuild) {
+    const e = $game && engines[$game];
+    if (!e) {
       titleBuild = undefined;
       return;
     }
     const name = buildName(currentBuildPath.current);
-    syncWrap
-      ?.GetBuildInfo()
-      .then((i) => (titleBuild = i ? { name, className: i.className, ascendClassName: i.ascendClassName } : undefined))
-      .catch(logError);
+    return derivedStore([e.build, e.calculated], (both) => both).subscribe(() => {
+      Promise.resolve(e.classInfo())
+        .then((i) => (titleBuild = i ? { name, className: i.className, ascendClassName: i.ascendClassName } : undefined))
+        .catch(logError);
+    });
   });
   const title = $derived(windowTitle($showTitlebarName, titleBuild));
   // Build.lua:99-106
   let conversion = $state<string>();
   let conversionOpen = $state(false);
   let conversionChecked: unknown;
+  const conversionOf = $derived($game && engines[$game]?.conversion);
   $effect(() => {
-    const build = $currentBuild;
-    if (!build || build === conversionChecked) return;
-    conversionChecked = build;
-    Promise.resolve(syncWrap?.GetVersionConversion())
-      .then((v) => {
-        conversion = v;
-        conversionOpen = !!v;
-      })
-      .catch(logError);
+    const e = $game && engines[$game];
+    const conv = e && e.conversion;
+    if (!conv) return;
+    return e.build.subscribe((build) => {
+      if (!build || build === conversionChecked) return;
+      conversionChecked = build;
+      Promise.resolve(conv.check())
+        .then((v) => {
+          conversion = v;
+          conversionOpen = !!v;
+        })
+        .catch(logError);
+    });
   });
 
   // Main.lua:56-85
@@ -196,22 +202,24 @@
 
 <svelte:head><title>{title}</title></svelte:head>
 
-{#if $currentBuild && !wasmLoading && phone.current}
-  <AppTopBar phone label={phonePage(route)?.label ?? LABELS[route]} mainClass={phonePage(route)?.main}>{@render children?.()}</AppTopBar>
-{:else if $currentBuild && !wasmLoading}
-  <PageFrame label={LABELS[route]} mainClass={MAIN_CLASS[route]}>
-    {#snippet topbar()}<AppTopBar />{/snippet}
-    {#snippet sidebar()}<AppSidebar />{/snippet}
-    {@render children?.()}
-  </PageFrame>
+{#if $game && !wasmLoading}
+  {#key $game}
+    {#if phone.current}
+      <AppTopBar phone label={phonePage(route)?.label ?? LABELS[route]} mainClass={phonePage(route)?.main}>{@render children?.()}</AppTopBar>
+    {:else}
+      <PageFrame label={LABELS[route]} mainClass={MAIN_CLASS[route]}>
+        {#snippet topbar()}<AppTopBar />{/snippet}
+        {#snippet sidebar()}<AppSidebar />{/snippet}
+        {@render children?.()}
+      </PageFrame>
+    {/if}
+  {/key}
 {:else if wasmLoading}
   <div class="page items-center justify-center gap-2" role="status">
     <span class="text-18 font-semibold">go-pob</span>
     <span class="text-14 text-text-2">{loadingMessage}</span>
     {#if loadingStage !== ''}<span class="note">{loadingStage}</span>{/if}
   </div>
-{:else if $poe2Build}
-  <AppPoe2Build view={$poe2Build} />
 {:else}
   <AppBuildList />
 {/if}
@@ -222,11 +230,11 @@
     version={conversion}
     onconvert={() => {
       conversion = undefined;
-      void Promise.resolve(syncWrap?.ConvertBuildVersion()).catch(logError);
+      void Promise.resolve(conversionOf?.convert()).catch(logError);
     }}
     oncancel={() => {
       conversion = undefined;
-      void Promise.resolve(syncWrap?.ClearBuild()).catch(logError);
+      void Promise.resolve($game && engines[$game]?.clear()).catch(logError);
       currentBuildPath.current = undefined;
     }} />
 {/if}

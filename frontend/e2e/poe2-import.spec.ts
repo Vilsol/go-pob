@@ -7,6 +7,7 @@ import { deflateSync } from 'node:zlib';
 
 import { DATA_HOST, cachedAsset } from './support/data_cache';
 import { routeTreeAssets } from './support/tree_assets';
+import { poe2Page, poe2Stat } from './support/poe2';
 
 test.use({ serviceWorkers: 'block' });
 
@@ -36,16 +37,16 @@ test('a poe.ninja PoE2 link imports through /api/build, saves to the build list 
   });
 
   await page.goto(`/?import=${encodeURIComponent('https://poe.ninja/poe2/pob/Abc1')}`);
-  const view = page.getByRole('region', { name: 'Path of Exile 2 build' });
-  await expect(view.locator('[data-stat="Life"]')).toHaveText(POB2.Life, { timeout: 180_000 });
+  const view = poe2Page(page);
+  await expect(poe2Stat(page, 'Life')).toHaveText(POB2.Life, { timeout: 180_000 });
   expect(asked).toEqual(['?site=PoeNinja2&id=Abc1']);
 
-  await view.getByRole('button', { name: 'Save', exact: true }).click();
+  await page.getByRole('button', { name: /^Save \(/ }).click();
   const dialog = page.getByRole('dialog', { name: 'Save build as' });
   await dialog.getByRole('textbox', { name: 'Build name' }).fill('Spark sorc');
   await dialog.getByRole('button', { name: 'Save', exact: true }).click();
   await expect(dialog).toBeHidden();
-  await view.getByRole('button', { name: 'Close' }).click();
+  await page.getByRole('link', { name: 'Back to builds' }).click();
 
   const link = page.getByRole('link', { name: 'Spark sorc', exact: true });
   const row = page.getByRole('row').filter({ has: link });
@@ -55,7 +56,7 @@ test('a poe.ninja PoE2 link imports through /api/build, saves to the build list 
   await expect(row.locator('[data-col="cls"]')).toHaveText('Sorceress');
 
   await link.click();
-  await expect(view.locator('[data-stat="Life"]')).toHaveText(POB2.Life, { timeout: 60_000 });
+  await expect(poe2Stat(page, 'Life')).toHaveText(POB2.Life, { timeout: 60_000 });
   await expect(view).toContainText('Level 40 Sorceress');
   expect(errors).toEqual([]);
 });

@@ -5,6 +5,7 @@ import { deflateSync } from 'node:zlib';
 
 import { DATA_HOST, cachedAsset } from './support/data_cache';
 import { routeTreeAssets } from './support/tree_assets';
+import { poe2Nav, poe2Page, poe2Stat } from './support/poe2';
 
 test.use({ serviceWorkers: 'block' });
 
@@ -50,13 +51,12 @@ test('with the PoE2 flag on, clicking a tree node allocates it and recalculates 
   const errors: string[] = [];
   await openPoe2(page, errors);
 
-  const view = page.getByRole('region', { name: 'Path of Exile 2 build' });
+  const view = poe2Page(page);
   await expect(view).toBeVisible({ timeout: 180_000 });
-  const stats = view.getByRole('complementary', { name: 'Stats' });
-  await expect(stats.locator('[data-stat="TotalEHP"]')).toHaveText('542');
-  await expect(stats.locator('[data-stat="EnergyShield"]')).toHaveCount(0);
+  await expect(poe2Stat(page, 'TotalEHP')).toHaveText('542');
+  await expect(poe2Stat(page, 'EnergyShield')).toHaveCount(0);
 
-  await view.getByRole('tab', { name: 'Tree' }).click();
+  await poe2Nav(page, 'Tree').click();
   const canvas = view.getByRole('img', { name: 'Passive skill tree' });
   await expect(canvas).toBeVisible({ timeout: 60_000 });
   await expect.poll(async () => (await lastFrame(page))?.alloc).toBe(1);
@@ -76,22 +76,22 @@ test('with the PoE2 flag on, clicking a tree node allocates it and recalculates 
   at = await screenOf(page, 44871);
   await page.mouse.move(at.x + 1, at.y + 1);
   await page.mouse.move(at.x, at.y);
-  const tip = view.getByRole('tooltip', { name: 'Node tooltip' });
+  const tip = page.getByRole('tooltip', { name: 'Node tooltip' });
   await expect(tip).toContainText('Energy Shield');
   await expect(tip).toContainText('+10 to maximum Energy Shield');
   await expect.poll(async () => (await lastFrame(page))?.hovered).toBe(44871);
 
   await page.mouse.down();
   await page.mouse.up();
-  await expect(stats.locator('[data-stat="EnergyShield"]')).toHaveText('10');
-  await expect(stats.locator('[data-stat="TotalEHP"]')).toHaveText('546');
+  await expect(poe2Stat(page, 'EnergyShield')).toHaveText('10');
+  await expect(poe2Stat(page, 'TotalEHP')).toHaveText('546');
   await expect(view.getByLabel('Passive points used')).toHaveText('Points: 1');
 
   // a second click deallocates it
   await page.mouse.down();
   await page.mouse.up();
-  await expect(stats.locator('[data-stat="TotalEHP"]')).toHaveText('542');
-  await expect(stats.locator('[data-stat="EnergyShield"]')).toHaveCount(0);
+  await expect(poe2Stat(page, 'TotalEHP')).toHaveText('542');
+  await expect(poe2Stat(page, 'EnergyShield')).toHaveCount(0);
   await expect(view.getByLabel('Passive points used')).toHaveText('Points: 0');
   expect(errors).toEqual([]);
 });
@@ -101,9 +101,9 @@ test('with the PoE2 flag on, clicking a tree node allocates it and recalculates 
 test('a socketed radius jewel draws its radius ring on the PoE2 tree', async ({ page }) => {
   const errors: string[] = [];
   await openPoe2(page, errors, resolve(import.meta.dirname, '../../calculator2/testdata/radius_jewel.xml'));
-  const view = page.getByRole('region', { name: 'Path of Exile 2 build' });
+  const view = poe2Page(page);
   await expect(view).toBeVisible({ timeout: 180_000 });
-  await view.getByRole('tab', { name: 'Tree' }).click();
+  await poe2Nav(page, 'Tree').click();
   await expect(view.getByRole('img', { name: 'Passive skill tree' })).toBeVisible({ timeout: 60_000 });
   await expect.poll(async () => (await lastFrame(page))?.overlays).toBe(1);
   const at = await screenOf(page, 26725);

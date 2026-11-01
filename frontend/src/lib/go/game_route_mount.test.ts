@@ -94,10 +94,12 @@ describe('a PoE2 build code on the Import page', () => {
     expect(get(currentBuild)).toBeUndefined();
     expect(tick).not.toHaveBeenCalledWith('ImportCode');
 
-    const Poe2 = (await import('$lib/shell/AppPoe2Build.svelte')).default;
-    const view = within(render(Poe2, { view: get(poe2Build)! }).getByRole('region', { name: 'Path of Exile 2 build' }));
-    expect(view.getByText('Level 40 Sorceress')).toBeTruthy();
-    expect(view.getByText('683')).toBeTruthy();
+    // the frame shows it: the tree route's PoE2 body and the sidebar's PoE2 stats
+    const Tree = (await import('../../routes/tree/+page.svelte')).default;
+    expect(await within(render(Tree).container).findByText('Level 40 Sorceress')).toBeTruthy();
+    const Sidebar = (await import('$lib/shell/AppSidebar.svelte')).default;
+    const stats = within(render(Sidebar).getByRole('region', { name: 'Build stats' }));
+    expect(stats.getByText('683')).toBeTruthy();
   });
 
   it('a PoE1 build opening afterwards clears the PoE2 view', async () => {

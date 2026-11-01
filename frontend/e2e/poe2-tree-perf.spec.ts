@@ -5,6 +5,7 @@ import { deflateSync } from 'node:zlib';
 
 import { DATA_HOST, cachedAsset } from './support/data_cache';
 import { routeTreeAssets } from './support/tree_assets';
+import { poe2Nav, poe2Page } from './support/poe2';
 
 test.use({ serviceWorkers: 'block' });
 
@@ -37,12 +38,12 @@ for (const renderer of ['webgl', 'canvas']) {
       });
     });
     await routeTreeAssets(page);
-    await page.goto(`/?import=${encodeURIComponent(code())}`);
-    const view = page.getByRole('region', { name: 'Path of Exile 2 build' });
-    await expect(view).toBeVisible({ timeout: 180_000 });
+    // the import lands on the page it was opened at, so the tree mounts on the click
+    await page.goto(`/calcs?import=${encodeURIComponent(code())}`);
+    await expect(poe2Page(page)).toBeVisible({ timeout: 180_000 });
 
     const clicked = await page.evaluate(() => performance.now());
-    await view.getByRole('tab', { name: 'Tree' }).click();
+    await poe2Nav(page, 'Tree').click();
     await expect.poll(async () => (await frames(page)).length, { timeout: 60_000 }).toBeGreaterThan(0);
     const first = (await frames(page))[0];
 

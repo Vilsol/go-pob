@@ -6,10 +6,9 @@
   import { goto } from '$app/navigation';
   import { base } from '$app/paths';
   import { page } from '$app/state';
-  import { currentBuild, currentBuildPath, devMode } from '$lib/global.js';
+  import { currentBuildPath, devMode } from '$lib/global.js';
   import { showWarnings } from '$lib/display/item_options';
-  import { sidebar } from '$lib/build_warnings';
-  import { syncWrap } from '$lib/go/worker';
+  import { currentEngine, runtime } from '$lib/go/engine';
   import { logError } from '$lib/utils';
   import TopBar from '$lib/design/TopBar.svelte';
   import { onMount, tick } from 'svelte';
@@ -26,7 +25,8 @@
   import MobileFrame from '$lib/design/mobile/MobileFrame.svelte';
   import StatsStrip from '$lib/design/mobile/StatsStrip.svelte';
   import BuildSheets, { type BuildSheet } from '$lib/design/mobile/BuildSheets.svelte';
-  import { moreTabs, primaryTabs, routeTabs } from '$lib/design/mobile/mobile';
+  import { PHONE_PAGES, moreTabs, primaryTabs, routeTabs, type MobileTab } from '$lib/design/mobile/mobile';
+  import { GAME_PAGES, hasPage } from './game_pages';
   import AppSidebar from './AppSidebar.svelte';
   import TimelessDialog from './TimelessDialog.svelte';
   import { statPins } from './stat_pins.svelte';
@@ -37,31 +37,33 @@
   type Props = { phone?: boolean; label?: string; mainClass?: string; children?: Snippet };
   let { phone = false, label = '', mainClass = '', children }: Props = $props();
 
-  const tabs = [
-    ['Tree', 'tree'],
-    ['Skills', 'skills'],
-    ['Items', 'items'],
-    ['Calcs', 'calcs'],
-    ['Config', 'configuration'],
-    ['Notes', 'notes'],
-    ['Party', 'party'],
-    ['Compare', 'compare']
-  ].map(([text, path], i) => ({ label: text, href: `${base}/${path}`, key: String(i + 1) }));
+  const engine = currentEngine();
+  const build = engine.build;
+  const sidebar = engine.sidebar;
+
+  // the open build's game has a page on each of these
+  const tabs = Object.entries(GAME_PAGES)
+    .filter(([path]) => path !== 'import' && hasPage(engine.game, path))
+    .map(([path, p], i) => ({ label: p.label, href: `${base}/${path}`, key: String(i + 1) }));
+  const phoneTab = (t: MobileTab) => {
+    const route = PHONE_PAGES[t.label]?.route;
+    return route ? hasPage(engine.game, route) : engine.game === 'poe1';
+  };
 
   const name = $derived(buildName(currentBuildPath.current));
 
   let dirty = $state(false);
   let shown: unknown;
   $effect(() => {
-    const build = $currentBuild;
-    if (!build) {
+    const b = $build;
+    if (!b) {
       shown = undefined;
       dirty = false;
       return;
     }
-    if (build === shown) dirty = true;
+    if (b === shown) dirty = true;
     else {
-      shown = build;
+      shown = b;
       dirty = opening.modFlag;
     }
   });
@@ -77,12 +79,12 @@
       .catch(logError);
   };
   $effect(() => {
-    void $currentBuild;
-    showUndo(syncWrap?.GetUndoHistoryWhenRecorded());
+    void $build;
+    showUndo(engine.undo?.history());
   });
   let now = $state(Date.now());
   onMount(() => {
-    const ticks = new MutationObserver(() => showUndo(syncWrap?.GetUndoHistoryWhenRecorded()));
+    const ticks = new MutationObserver(() => showUndo(engine.undo?.history()));
     ticks.observe(document.documentElement, { attributes: true, attributeFilter: ['data-calc-seq'] });
     const clock = setInterval(() => (now = Date.now()), 30_000);
     return () => {
@@ -118,14 +120,14 @@
   // Main.lua:230-241
   let version = $state<string>();
   onMount(() => {
-    Promise.resolve(syncWrap?.BuildInfo())
+    Promise.resolve(runtime.buildInfo())
       .then((bi) => (version = bi?.Main?.Version || '(devel)'))
       .catch(logError);
   });
 
   const logs = $derived($appLog.map((l) => ({ time: logTime(l.at), level: l.level, src: l.src, msg: l.msg })));
   const copyLogs = async () => {
-    const [bi, gameData] = await Promise.all([syncWrap?.BuildInfo(), syncWrap?.GameDataVersion()]).catch(() => [undefined, undefined]);
+    const [bi, gameData] = await Promise.all([runtime.buildInfo(), runtime.gameDataVersion()]).catch(() => [undefined, undefined]);
     const vcs = Object.values(bi?.Settings ?? {}) as { Key: string; Value: string }[];
     const setting = (k: string) => vcs.find((s) => s?.Key === k)?.Value;
     const revision = setting('vcs.revision');
@@ -150,15 +152,15 @@
   let loadoutList = $state.raw<{ loadouts: string[]; selected: number }>({ loadouts: [], selected: -1 });
   let loadoutShown = $state<string>(HEADER);
   const readLoadouts = () =>
-    syncWrap
-      ?.GetLoadouts()
-      .then((l) => {
+    engine.loadouts
+      ?.list()
+      ?.then((l) => {
         loadoutList = l ?? { loadouts: [], selected: -1 };
         loadoutShown = loadoutList.selected >= 0 ? loadoutList.loadouts[loadoutList.selected] : HEADER;
       })
       .catch(logError);
   $effect(() => {
-    void $currentBuild;
+    void $build;
     void readLoadouts();
   });
   const loadoutOptions = $derived([HEADER, ...loadoutList.loadouts, NEW, SYNC, HELP]);
@@ -175,10 +177,7 @@
       helpSection = 'Loadouts';
       about = true;
     } else if (choice !== HEADER && choice !== SYNC) {
-      void syncWrap
-        ?.SelectLoadout(choice)
-        .then(() => currentBuild.set($currentBuild))
-        .catch(logError);
+      void engine.loadouts?.select(choice)?.catch(logError);
       return;
     }
     void tick().then(readLoadouts);
@@ -186,10 +185,7 @@
   const saveLoadout = () => {
     if (!/\S/.test(loadoutName)) return;
     naming = false;
-    void syncWrap
-      ?.NewLoadout(loadoutName)
-      .then(() => currentBuild.set($currentBuild))
-      .catch(logError);
+    void engine.loadouts?.create(loadoutName)?.catch(logError);
   };
 
   // Build.lua:1352-1379
@@ -201,7 +197,7 @@
   const closeBuild = () => {
     void tick().then(() =>
       setTimeout(() => {
-        void syncWrap.ClearBuild();
+        void engine.clear();
         unsavedName.imported = false;
         unsavedName.predefined = undefined;
         resetAccountSession();
@@ -226,8 +222,8 @@
       return;
     }
     saving = true;
-    syncWrap
-      .SaveBuildAs(path)
+    engine
+      .save(path)
       .then(saved)
       .catch((e: Error) => {
         logError(e);
@@ -252,8 +248,8 @@
   let phoneSheet = $state<BuildSheet>();
   let timelessOpen = $state(false);
   const phoneActions = $derived([
-    { key: 'history', label: 'Undo history', note: `${undo.steps.length - undo.undone} steps` },
-    { key: 'loadout', label: 'Loadout', note: loadoutShown === HEADER ? 'None' : loadoutShown },
+    ...(engine.undo ? [{ key: 'history', label: 'Undo history', note: `${undo.steps.length - undo.undone} steps` }] : []),
+    ...(engine.loadouts ? [{ key: 'loadout', label: 'Loadout', note: loadoutShown === HEADER ? 'None' : loadoutShown }] : []),
     ...(currentBuildPath.current ? [{ key: 'saveas', label: 'Save as…' }] : []),
     { key: 'issues', label: 'Build issues', note: String($showWarnings ? ($sidebar?.warnings.length ?? 0) : 0) },
     { key: 'settings', label: 'Settings' },
@@ -280,8 +276,8 @@
     current={page.url.pathname}
     {label}
     {mainClass}
-    tabs={routeTabs(primaryTabs, base)}
-    more={routeTabs(moreTabs, base)}
+    tabs={routeTabs(primaryTabs.filter(phoneTab), base)}
+    more={routeTabs(moreTabs.filter(phoneTab), base)}
     {dirty}
     canUndo={undo.undone < undo.steps.length}
     canRedo={undo.undone > 0}
@@ -291,8 +287,8 @@
       else void goto(href);
     }}
     onback={leave}
-    onundo={() => showUndo(syncWrap?.Undo())}
-    onredo={() => showUndo(syncWrap?.Redo())}
+    onundo={() => showUndo(engine.undo?.undo())}
+    onredo={() => showUndo(engine.undo?.redo())}
     {onsave}
     onaction={phoneAction}>
     {#snippet strip(open: () => void)}
@@ -308,9 +304,9 @@
     loadouts={loadoutOptions.filter((o) => o !== HEADER)}
     loadout={loadoutShown}
     issues={$showWarnings ? ($sidebar?.warnings ?? []) : []}
-    onhistory={(i: number) => showUndo(syncWrap?.UndoTo(i))}
+    onhistory={(i: number) => showUndo(engine.undo?.undoTo(i))}
     onloadout={chooseLoadout} />
-  <TimelessDialog bind:open={timelessOpen} />
+  {#if engine.game === 'poe1'}<TimelessDialog bind:open={timelessOpen} />{/if}
 {:else}
   <TopBar
     {name}
@@ -321,9 +317,9 @@
     {history}
     undone={undo.undone}
     historyMax={undo.max}
-    onundo={() => showUndo(syncWrap?.Undo())}
-    onredo={() => showUndo(syncWrap?.Redo())}
-    onhistory={(i: number) => showUndo(syncWrap?.UndoTo(i))}
+    onundo={() => showUndo(engine.undo?.undo())}
+    onredo={() => showUndo(engine.undo?.redo())}
+    onhistory={(i: number) => showUndo(engine.undo?.undoTo(i))}
     loadouts={loadoutOptions}
     loadout={loadoutShown}
     onloadout={chooseLoadout}
@@ -349,7 +345,7 @@
     {version}
     devMode={$devMode} />
 {/if}
-<SaveAsDialog bind:open={saveAs} onsaved={saved} />
+<SaveAsDialog bind:open={saveAs} onsaved={saved} save={(path: string) => engine.save(path)} />
 <Dialog phone="centred" bind:open={savePrompt} title="Save Changes" size="sm">
   <div class="flex flex-col gap-3 text-13">
     <p class="m-0">This build has unsaved changes.<br />Do you want to save them now?</p>

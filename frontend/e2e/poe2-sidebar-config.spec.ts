@@ -5,6 +5,7 @@ import { deflateSync } from 'node:zlib';
 
 import { DATA_HOST, cachedAsset } from './support/data_cache';
 import { routeTreeAssets } from './support/tree_assets';
+import { poe2Nav, poe2Page, poe2Stat } from './support/poe2';
 
 test.use({ serviceWorkers: 'block' });
 
@@ -27,19 +28,18 @@ test('with the PoE2 flag on, editing a config option recalculates the PoE2 sideb
   await routeTreeAssets(page);
   await page.goto(`/?import=${encodeURIComponent(code())}`);
 
-  const view = page.getByRole('region', { name: 'Path of Exile 2 build' });
-  await expect(view).toBeVisible({ timeout: 180_000 });
-  const stats = view.getByRole('complementary', { name: 'Stats' });
-  await expect(stats.locator('[data-stat="FireResist"]')).toHaveText('-15%');
-  await expect(stats.locator('[data-stat="TotalDPS"]')).toHaveText('24.9');
+  await expect(poe2Page(page)).toBeVisible({ timeout: 180_000 });
+  await expect(poe2Stat(page, 'FireResist')).toHaveText('-15%');
+  await expect(poe2Stat(page, 'TotalDPS')).toHaveText('24.9');
 
-  const penalty = view.locator('[data-config="resistancePenalty"]');
+  await poe2Nav(page, 'Config').click();
+  const penalty = page.locator('[data-config="resistancePenalty"]');
   await expect(penalty).toHaveValue('6');
   await penalty.selectOption({ label: 'Act 1 (0%)' });
-  await expect(stats.locator('[data-stat="FireResist"]')).toHaveText('45%');
-  await expect(stats.locator('[data-stat="LightningResist"]')).toHaveText('10%');
+  await expect(poe2Stat(page, 'FireResist')).toHaveText('45%');
+  await expect(poe2Stat(page, 'LightningResist')).toHaveText('10%');
 
   await penalty.selectOption({ label: 'Endgame (-60%)' });
-  await expect(stats.locator('[data-stat="FireResist"]')).toHaveText('-15%');
+  await expect(poe2Stat(page, 'FireResist')).toHaveText('-15%');
   expect(errors).toEqual([]);
 });

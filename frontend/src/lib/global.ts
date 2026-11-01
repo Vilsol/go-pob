@@ -1,4 +1,4 @@
-import { get, writable, type Writable } from 'svelte/store';
+import { derived, get, writable, type Writable } from 'svelte/store';
 import type { Outputs } from './custom_types';
 import type { pob } from './types';
 import { syncWrap } from './go/worker';
@@ -26,8 +26,22 @@ export type Poe2View = {
   output: Record<string, number>;
 };
 
-// the open PoE2 build; a PoE1 build opening clears it
-export const poe2Build = writable<Poe2View | undefined>();
+const poe2Inner = writable<Poe2View | undefined>();
+let poe2Opened: object | undefined;
+
+// the open PoE2 build; a PoE1 build opening clears it. Setting it opens (or closes) a build; poe2Edited replaces the
+// open build's view after an edit
+export const poe2Build: Writable<Poe2View | undefined> = {
+  subscribe: poe2Inner.subscribe,
+  set: (value) => {
+    poe2Opened = value ? {} : undefined;
+    poe2Inner.set(value);
+  },
+  update: (fn) => poe2Build.set(fn(get(poe2Inner)))
+};
+export const poe2Edited = (value: Poe2View) => poe2Inner.set(value);
+// the same object for every view of one opened PoE2 build, as currentBuild is for a PoE1 build
+export const poe2Session = derived(poe2Inner, (v) => (v ? poe2Opened : undefined));
 
 const currentBuildInner = writable<ProxiedRemote<pob.PathOfBuilding> | undefined>();
 

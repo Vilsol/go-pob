@@ -69,6 +69,7 @@ vi.mock('@zenfs/core', () => {
 });
 
 vi.mock('$app/navigation', () => ({ goto: vi.fn(() => Promise.resolve()), pushState: vi.fn() }));
+vi.mock('$app/state', () => ({ page: { state: {}, url: new URL('http://localhost/tree') } }));
 
 vi.mock('$lib/go/worker', async () => {
   const { remoteWorker } = await import('../../../harness/component/go_runtime');
@@ -110,11 +111,15 @@ const entry = async () => ((await workerInstance.ListBuilds('')) as storage.DirE
 describe('a PoE2 build in the build list', () => {
   it('is saved as the PoE2 worker serializes it, and lists with its class, level, main skill and a PoE2 badge', async () => {
     currentBuildPath.current = '/Some PoE1 build';
+    // a PoE2 build opens over a closed PoE1 one, as game_route's openForeign does
+    workerInstance.ClearBuild();
+    expect(get(currentBuild)).toBeUndefined();
     poe2Build.set(VIEW);
     currentBuildPath.current = '';
-    const Poe2 = (await import('./AppPoe2Build.svelte')).default;
-    const view = within(render(Poe2, { view: VIEW }).getByRole('region', { name: 'Path of Exile 2 build' }));
-    await fireEvent.click(view.getByRole('button', { name: 'Save' }));
+    // the frame's top bar saves the open PoE2 build
+    const TopBar = (await import('./AppTopBar.svelte')).default;
+    const view = within(render(TopBar).container);
+    await fireEvent.click(view.getByRole('button', { name: /^Save \(/ }));
     const dialog = within(await screen.findByRole('dialog', { name: 'Save build as' }));
     await fireEvent.input(dialog.getByRole('textbox', { name: 'Build name' }), { target: { value: NAME } });
     await fireEvent.click(dialog.getByRole('button', { name: 'Save' }));
@@ -122,7 +127,7 @@ describe('a PoE2 build in the build list', () => {
     expect(serializeXml).toHaveBeenCalledTimes(1);
     expect(await entry()).toMatchObject({ Class: 'Sorceress', Level: 40, Ascendancy: '', MainSkill: 'Spark', Game: 'poe2' });
 
-    await fireEvent.click(view.getByRole('button', { name: 'Save' }));
+    await fireEvent.click(view.getByRole('button', { name: /^Save \(/ }));
     await vi.waitFor(() => expect(serializeXml).toHaveBeenCalledTimes(2));
     expect(screen.queryByRole('dialog', { name: 'Save build as' })).toBeNull();
   });
