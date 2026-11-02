@@ -47,3 +47,28 @@ func GemByID(id string) (*Gem, bool) {
 	}
 	return nil, false
 }
+
+// ItemModsOf is data.itemMods[category], sorted by id; nil when PoB has no such table.
+//
+//pob2:block:src/Classes/Item.lua:1101-1103
+func ItemModsOf(category string) []ItemMod {
+	lo := sort.Search(len(ItemMods), func(i int) bool { return ItemMods[i].Category >= category })
+	hi := lo
+	for hi < len(ItemMods) && ItemMods[hi].Category == category {
+		hi++
+	}
+	if lo == hi {
+		return nil
+	}
+	return ItemMods[lo:hi:hi]
+}
+
+// ItemModByID is data.itemMods[category][id].
+func ItemModByID(category, id string) (*ItemMod, bool) {
+	mods := ItemModsOf(category)
+	i := sort.Search(len(mods), func(i int) bool { return mods[i].ID >= id })
+	if i < len(mods) && mods[i].ID == id {
+		return &mods[i], true
+	}
+	return nil, false
+}

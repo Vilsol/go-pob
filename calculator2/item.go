@@ -281,12 +281,17 @@ type Item struct {
 	SocketedJewelEffectModifier       float64
 	CanSocketJewelBase                map[string]bool
 
-	modSourceName    string
-	activeBondedSet  bool
-	activeBonded     string
-	modSource        ItemModSource
-	rawLines         []string
-	affixesAvailable bool
+	modSourceName   string
+	activeBondedSet bool
+	activeBonded    string
+	modSource       ItemModSource
+	rawLines        []string
+	// affixes is self.affixes: the data.itemMods table the base crafts from
+	affixes          []poe2.ItemMod
+	pendingAffixList []pendingAffix
+	// PrefixLimit and SuffixLimit are self.prefixes.limit and self.suffixes.limit
+	PrefixLimit, SuffixLimit *int
+	AffixLimit               int
 }
 
 func intp(v int) *int           { return &v }
@@ -872,6 +877,7 @@ func (i *Item) ParseRaw(raw, rarity string, highQuality bool) {
 		i.normaliseVariantSelections()
 	}
 	i.Prefixes, i.Suffixes = nil, nil
+	i.PrefixLimit, i.SuffixLimit = nil, nil
 	i.Requirements = ItemRequirements{}
 	i.baseLines = map[string]baseLine{}
 	var importedLevelReq *float64
@@ -923,9 +929,11 @@ func (i *Item) ParseRaw(raw, rarity string, highQuality bool) {
 			if m := advCopyModRe.FindStringSubmatch(fullModName); m != nil {
 				modName = m[1]
 			}
-			// self.affixes (data.itemMods) is not carried by data/poe2, so no affix is matched.
-			if modName != "" && i.affixesAvailable {
-				linePrefix = "{custom}"
+			if modName != "" && i.affixes != nil {
+				if !i.findPendingAffixes(modName) {
+					// Could be a veiled, temple, or other custom mod, so just keep it around
+					linePrefix = "{custom}"
+				}
 			} else if advCopyEnhRe.MatchString(fullModName) {
 				linePostfix = " (enchant)"
 			}
@@ -986,6 +994,7 @@ func (i *Item) ParseRaw(raw, rarity string, highQuality bool) {
 		}
 		i.Requirements.Level = floatp(math.Max(math.Max(*i.Requirements.Level, *i.Requirements.NaturalLevel), i.Requirements.RuneLevel))
 	}
+	i.applyAffixLimit()
 	//pob2:block:src/Classes/Item.lua:1793-1810
 	if !i.UsesVersionedOrGroupedVariants() && i.VariantList != nil {
 		n := len(i.VariantList)
@@ -1395,6 +1404,7 @@ func (i *Item) parseLine(lp *int, line, mode, itemClass string, implicitLines, s
 			}
 			i.Type = base.Type
 			i.Base = base
+			i.affixes = itemAffixesFor(base)
 			i.CharmLimit = nil
 			if base.HasCharmLimit {
 				i.CharmLimit = floatp(base.CharmLimit)
@@ -1438,52 +1448,10 @@ func (i *Item) parseLine(lp *int, line, mode, itemClass string, implicitLines, s
 		catalystScalar = getCatalystScalar(i.Catalyst, ml, i.CatalystQuality)
 	}
 	line = fixedValueRe.ReplaceAllString(line, "$1")
-
-	//pob2:block:src/Classes/Item.lua:1199-1237
-	bestPrecisionDelta, bestPrecisionRange := -1.0, -1.0
-	var firstRollRange *float64
-	hasIndependentRolls := false
-	line = stripEnumRanges(line)
-	advancedCopyLine := line
-	for _, g := range advRollRe.FindAllStringSubmatch(advancedCopyLine, -1) {
-		value, rng := g[1], g[2]
-		mm := advRollSplitRe.FindStringSubmatch(rng)
-		lo, _ := luaToNumber(mm[1])
-		hi, _ := luaToNumber(mm[2])
-		v, _ := luaToNumber(value)
-		delta := hi - lo
-		rollRange := 0.5
-		if delta > 0 {
-			rollRange = round((v-lo)/delta, 6)
-		}
-		if firstRollRange != nil && *firstRollRange != rollRange {
-			hasIndependentRolls = true
-		}
-		if firstRollRange == nil {
-			firstRollRange = floatp(rollRange)
-		}
-		if delta > bestPrecisionDelta {
-			bestPrecisionRange = rollRange
-			bestPrecisionDelta = delta
-		}
-		re, ok := luaPattern(luaPatternQuoteNumber(value) + "%(" + strings.ReplaceAll(rng, "-", "%-") + "%)")
-		if !ok {
-			continue
-		}
-		if bestPrecisionRange > 1 || bestPrecisionRange < 0 {
-			line = re.ReplaceAllLiteralString(line, value)
-		} else {
-			sign := ""
-			if v < 0 {
-				sign = "+"
-			}
-			line = re.ReplaceAllLiteralString(line, sign+"("+mm[1]+"-"+mm[2]+")")
-		}
-	}
-	if hasIndependentRolls {
-		line = advRollStripRe.ReplaceAllString(advancedCopyLine, "$1")
-	} else if bestPrecisionRange <= 1 && bestPrecisionRange >= 0 {
-		ml.Range = floatp(bestPrecisionRange)
+	if len(i.pendingAffixList) > 0 {
+		line = i.takePendingAffix(line, ml)
+	} else {
+		line = i.parseLineRolls(line, ml)
 	}
 
 	rangedLine := applyRange(line, 1, nil, &catalystScalar, ml.CorruptedRange, i.modSource)
@@ -1510,7 +1478,10 @@ func (i *Item) parseLine(lp *int, line, mode, itemClass string, implicitLines, s
 	switch {
 	case lineLower == "implicit modifiers cannot be changed":
 		i.ImplicitsCannotBeChanged = true
-	case prefixAllowedRe.MatchString(lineLower), suffixAllowedRe.MatchString(lineLower):
+	case prefixAllowedRe.MatchString(lineLower):
+		i.PrefixLimit = affixLimitFromLine(i.PrefixLimit, lineLower, prefixPlusRe, prefixMinusRe)
+	case suffixAllowedRe.MatchString(lineLower):
+		i.SuffixLimit = affixLimitFromLine(i.SuffixLimit, lineLower, suffixPlusRe, suffixMinusRe)
 	case lineLower == "this item can be anointed by cassia" || lineLower == "raven-touched":
 		i.CanBeAnointed = true
 	case lineLower == "can have 1 additional instilled modifier" || lineLower == "can have an additional instilled modifier":
@@ -1929,4 +1900,54 @@ func (i *Item) GetPrimarySlot() string {
 		return "Arm 1"
 	}
 	return i.Type
+}
+
+//pob2:block:src/Classes/Item.lua:1199-1237
+func (i *Item) parseLineRolls(line string, ml *ModLine) string {
+	bestPrecisionDelta, bestPrecisionRange := -1.0, -1.0
+	var firstRollRange *float64
+	hasIndependentRolls := false
+	line = stripEnumRanges(line)
+	advancedCopyLine := line
+	for _, g := range advRollRe.FindAllStringSubmatch(advancedCopyLine, -1) {
+		value, rng := g[1], g[2]
+		mm := advRollSplitRe.FindStringSubmatch(rng)
+		lo, _ := luaToNumber(mm[1])
+		hi, _ := luaToNumber(mm[2])
+		v, _ := luaToNumber(value)
+		delta := hi - lo
+		rollRange := 0.5
+		if delta > 0 {
+			rollRange = round((v-lo)/delta, 6)
+		}
+		if firstRollRange != nil && *firstRollRange != rollRange {
+			hasIndependentRolls = true
+		}
+		if firstRollRange == nil {
+			firstRollRange = floatp(rollRange)
+		}
+		if delta > bestPrecisionDelta {
+			bestPrecisionRange = rollRange
+			bestPrecisionDelta = delta
+		}
+		re, ok := luaPattern(luaPatternQuoteNumber(value) + "%(" + strings.ReplaceAll(rng, "-", "%-") + "%)")
+		if !ok {
+			continue
+		}
+		if bestPrecisionRange > 1 || bestPrecisionRange < 0 {
+			line = re.ReplaceAllLiteralString(line, value)
+		} else {
+			sign := ""
+			if v < 0 {
+				sign = "+"
+			}
+			line = re.ReplaceAllLiteralString(line, sign+"("+mm[1]+"-"+mm[2]+")")
+		}
+	}
+	if hasIndependentRolls {
+		line = advRollStripRe.ReplaceAllString(advancedCopyLine, "$1")
+	} else if bestPrecisionRange <= 1 && bestPrecisionRange >= 0 {
+		ml.Range = floatp(bestPrecisionRange)
+	}
+	return line
 }

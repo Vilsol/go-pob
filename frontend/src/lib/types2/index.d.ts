@@ -87,6 +87,18 @@ export declare namespace config {
   function InitLogging(withTime: boolean): void;
 }
 export declare namespace exposition {
+  interface AffixControlView {
+    readonly Type: string;
+    readonly List?: Array<exposition.AffixEntryView>;
+    readonly SelIndex: number;
+    readonly SliderShown: boolean;
+    readonly SliderVal: number;
+  }
+  interface AffixEntryView {
+    readonly Label: string;
+    readonly ModList?: Array<string>;
+    readonly HaveRange: boolean;
+  }
   interface CalcsBreakdown {
     readonly Lines?: Array<string>;
     readonly Radius: number;
@@ -141,7 +153,10 @@ export declare namespace exposition {
     DeleteItem(id: number): Result<void>;
     DeleteItemSet(id: number): Result<void>;
     DeleteSocketGroup(index: number): Result<void>;
+    DisplayItemAffixRoll(control: number, val: number): Result<(Array<string> | undefined)>;
+    DisplayItemAffixes(): Result<(Array<exposition.AffixControlView> | undefined)>;
     DisplayItemCompare(): Result<(exposition.ItemCompareView | undefined)>;
+    DisplayItemRanges(): Result<[(Array<exposition.RangeLineView> | undefined), number]>;
     EditDisplayItemText(text: string, rarity: string): Result<void>;
     EditItem(id: number): Result<void>;
     EquippedItems(): Result<(exposition.ItemsView | undefined)>;
@@ -163,11 +178,15 @@ export declare namespace exposition {
     RenameItemSet(id: number, title: string): Result<void>;
     RichNotesDoc(): string;
     RichNotesStatus(): string;
+    SelectDisplayItemAffix(control: number, entry: number, slider: number): Result<void>;
     Serialize(): Result<string>;
     SerializeWithStats(player: Array<exposition.SavedStat> | undefined, fullDPS: Array<exposition.SavedFullDPS> | undefined, minion: Array<exposition.SavedStat> | undefined): Result<string>;
     SetActiveItemSet(id: number): Result<void>;
     SetCharacterRune(slot: string, runeName: string): Result<void>;
     SetConfigInput(name: string, value: calculator2.ConfigValue, isDefault: boolean): void;
+    SetDisplayItemAffixRange(control: number, val: number): Result<void>;
+    SetDisplayItemQuality(quality: number): Result<void>;
+    SetDisplayItemRangeLine(line: number, val: number): Result<void>;
     SetDisplayItemRune(socket: number, runeName: string): Result<void>;
     SetDisplayItemSocketCount(count: number): Result<void>;
     SetGem(group: number, gem: number, gemID: string): Result<void>;
@@ -292,6 +311,10 @@ export declare namespace exposition {
     readonly MainSocketGroup: number;
     readonly MainActiveSkill: number;
     readonly ConfigInputs?: Record<string, Readonly<calculator2.ConfigValue>>;
+  }
+  interface RangeLineView {
+    readonly Label: string;
+    readonly Range: number;
   }
   interface RuneChoiceView {
     readonly Name: string;

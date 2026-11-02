@@ -1,0 +1,30 @@
+Item Class: Rings
+Rarity: Rare
+Doom Loop
+Ruby Ring
+--------
+Requirements:
+Level: 16
+--------
+Item Level: 80
+--------
+{ Implicit Modifier — Elemental, Fire, Resistance }
++25(20-30)% to Fire Resistance (implicit)
+--------
+{ Prefix Modifier "Sanguine" (Tier: 10) — Life }
++35(30-39) to maximum Life
+{ Suffix Modifier "of the Drake" (Tier: 6) — Elemental, Fire, Resistance }
++18(16-20)% to Fire Resistance
+{ Suffix Modifier "of the Brute" (Tier: 8) — Attribute }
++7(5-8) to Strength
+=====
+Item Class: Rings
+Rarity: Magic
+Healthy Ruby Ring of the Whelpling
+--------
+Item Level: 80
+--------
+{ Prefix Modifier "Healthy" (Tier: 9) — Life }
++20(20-29) to maximum Life
+{ Suffix Modifier "of the Whelpling" (Tier: 8) — Elemental, Fire, Resistance }
++10(6-10)% to Fire Resistance

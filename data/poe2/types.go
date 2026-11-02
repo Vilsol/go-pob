@@ -118,3 +118,25 @@ type LegionNode struct {
 	Not bool
 	M   bool
 }
+
+// ItemMod is one mod of a data.itemMods affix table (src/Data/Mod*.lua).
+//
+//pob2:src/Modules/Data.lua:692-702
+type ItemMod struct {
+	Category            string
+	ID                  string
+	Type                string
+	Affix               string
+	Lines               []string
+	StatOrder           []float64
+	Level               float64
+	Group               string
+	WeightKey           []string
+	WeightVal           []float64
+	WeightMultiplierKey []string
+	WeightMultiplierVal []float64
+	Tags                []string
+	ModTags             []string
+	Unscalable          bool
+	NodeType            float64
+}

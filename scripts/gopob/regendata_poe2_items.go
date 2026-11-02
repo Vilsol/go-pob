@@ -31,6 +31,18 @@ var rdGeneratorsPoE2Items = []rdGenerator{
 		needsPob: true,
 		note:     "the Items page's unique and rare databases as Main.lua reads them (src/Modules/Main.lua:155-192): data.uniques by key (src/Data/Uniques, with Special/Generated's uniques as Data.lua builds them) and data.rares (src/Data/Rares.lua), raw. PoB-authored item texts; Generated's are built from the pin's data.itemMods.Exclusive and data.keystones",
 	},
+	{
+		name:     "poe2-item-mods",
+		source:   rdGameDataOverlay,
+		out:      "data/poe2/item_mods_generated.go",
+		lua:      "scripts/gopob/regendata_poe2.lua",
+		dump:     "poe2-mods",
+		luaArgs:  []string{"item-mods"},
+		emit:     "poe2-data-emit",
+		emitArgs: []string{"item-mods"},
+		needsPob: true,
+		note:     "data.itemMods' affix tables (Item, Flask, Charm, Jewel, IncursionLimb, Corruption, Desecrated) after Data.lua's load (src/Modules/Data.lua:692-717); tradeHashes dropped. Game data FROM go-pob-data: `gamedatadump poe2-mods` runs PoB-PoE2's Export/Scripts/mods.lua over 0.5's Mods, Stats, ModType, ModFamily and Tags tables and stat descriptions, every row equal to the pin's src/Data/Mod*.lua up to the order of each tradeHashes table (`mise run poe2-gamedata-check`), and regendata_poe2.lua loads them in place of the pin's (GAMEDATA_DUMP)",
+	},
 }
 
 type p2eRuneforgingJSON struct {
@@ -103,6 +115,80 @@ func p2eItemDB(body []byte) (string, error) {
 	fmt.Fprintf(&b, "// RareDB is data.rares, %d raw rare templates.\nvar RareDB = []string{\n", len(dump.Rares))
 	for _, raw := range dump.Rares {
 		b.WriteString("\t" + strconv.Quote(raw) + ",\n")
+	}
+	b.WriteString("}\n")
+	return b.String(), nil
+}
+
+type p2eItemModJSON struct {
+	Category            string    `json:"category"`
+	ID                  string    `json:"id"`
+	Type                string    `json:"type"`
+	Affix               string    `json:"affix"`
+	Lines               []string  `json:"lines"`
+	StatOrder           []float64 `json:"statOrder"`
+	Level               float64   `json:"level"`
+	Group               string    `json:"group"`
+	WeightKey           []string  `json:"weightKey"`
+	WeightVal           []float64 `json:"weightVal"`
+	WeightMultiplierKey []string  `json:"weightMultiplierKey"`
+	WeightMultiplierVal []float64 `json:"weightMultiplierVal"`
+	Tags                []string  `json:"tags"`
+	ModTags             []string  `json:"modTags"`
+	Unscalable          bool      `json:"unscalable"`
+	NodeType            *float64  `json:"nodeType"`
+}
+
+func p2eItemMods(body []byte) (string, error) {
+	var rows []p2eItemModJSON
+	if err := p2eDecode(body, &rows); err != nil {
+		return "", err
+	}
+	if len(rows) < 1000 {
+		return "", fmt.Errorf("holds %d item mods; data.itemMods did not load", len(rows))
+	}
+	if !sort.SliceIsSorted(rows, func(i, j int) bool {
+		return rows[i].Category < rows[j].Category || rows[i].Category == rows[j].Category && rows[i].ID < rows[j].ID
+	}) {
+		return "", fmt.Errorf("the item mods are not sorted by category and id; ItemModsOf binary-searches them")
+	}
+	var b strings.Builder
+	p2eHeader(&b, "item-mods", "src/Modules/Data.lua:692-717")
+	fmt.Fprintf(&b, "// ItemMods is data.itemMods' affix tables flattened to one row per mod, %d rows sorted by category and id.\nvar ItemMods = []ItemMod{\n", len(rows))
+	for _, r := range rows {
+		if len(r.Lines) == 0 || len(r.Lines) != len(r.StatOrder) {
+			return "", fmt.Errorf("%s/%s has %d lines and %d stat orders", r.Category, r.ID, len(r.Lines), len(r.StatOrder))
+		}
+		nodeType, err := p2ePresent(r.ID, "nodeType", r.NodeType)
+		if err != nil {
+			return "", err
+		}
+		f := &p2eFields{}
+		f.str("Category", r.Category)
+		f.str("ID", r.ID)
+		f.str("Type", r.Type)
+		f.str("Affix", r.Affix)
+		f.raw("Lines", p2eStrings(r.Lines))
+		f.raw("StatOrder", p2eFloats(r.StatOrder))
+		f.num("Level", r.Level)
+		f.str("Group", r.Group)
+		if r.WeightKey != nil {
+			f.raw("WeightKey", p2eStrings(r.WeightKey))
+			f.raw("WeightVal", p2eFloats(r.WeightVal))
+		}
+		if r.WeightMultiplierKey != nil {
+			f.raw("WeightMultiplierKey", p2eStrings(r.WeightMultiplierKey))
+			f.raw("WeightMultiplierVal", p2eFloats(r.WeightMultiplierVal))
+		}
+		if r.Tags != nil {
+			f.raw("Tags", p2eStrings(r.Tags))
+		}
+		if r.ModTags != nil {
+			f.raw("ModTags", p2eStrings(r.ModTags))
+		}
+		f.flag("Unscalable", r.Unscalable)
+		f.num("NodeType", nodeType)
+		b.WriteString("\t" + f.String() + ",\n")
 	}
 	b.WriteString("}\n")
 	return b.String(), nil

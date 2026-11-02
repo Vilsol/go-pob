@@ -52,6 +52,9 @@ func Exports(r bind.Registry) {
 	r.Type(CompareOutputs{}, bind.Plain())
 	r.Type(ItemCompareBlock{}, bind.Plain())
 	r.Type(ItemCompareView{}, bind.Plain())
+	r.Type(AffixControlView{}, bind.Plain())
+	r.Type(AffixEntryView{}, bind.Plain())
+	r.Type(RangeLineView{}, bind.Plain())
 
 	r.Func(ParseBuild)
 	r.Func(Preload, bind.AsPromise())

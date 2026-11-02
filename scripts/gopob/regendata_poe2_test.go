@@ -72,6 +72,7 @@ func TestPoE2DataEmitRefuses(t *testing.T) {
 		{"legion unknown field", "legion", `[{"id":"a","dn":"A","sa":1}]`, "sa"},
 		{"legion no id", "legion", `[{"dn":"A"}]`, "no id"},
 		{"gem id gap", "gems", `[{"id":"g","additionalGrantedEffectId2":"x"}]`, "gap"},
+		{"item mods too few", "item-mods", `[{"category":"Item","id":"A","lines":["x"],"statOrder":[1]}]`, "did not load"},
 		{"rune unsorted slot", "runes", `[{"rune":"R","slot":"b"},{"rune":"R","slot":"a"}]`, "not sorted"},
 		{"constants string", "constants", `{"misc":{"a":"x"}}`, "holds 1 tables"},
 		{"constants pair shape", "constants", `{"misc":{"a":1},"gameConstants":{"a":1},"characterConstants":{"a":1},"monsterConstants":{"a":1},"playerMinionIntrinsicStats":{"a":1},"monsterEvasionTable":[1],"monsterAccuracyTable":[1],"monsterLifeTable":[1],"monsterAllyLifeTable":[1],"monsterDamageTable":[1],"monsterAllyDamageTable":[1],"monsterArmourTable":[1],"monsterAilmentThresholdTable":[1],"monsterPoiseThresholdTable":[1],"minionLevelTable":[1],"hollowPalmAddedPhys":[[1,2,3]],"totemLifeMult":{"1":1}}`, "not 2"},
@@ -90,6 +91,8 @@ func TestPoE2DataEmitRefuses(t *testing.T) {
 				_, err = p2eConstants([]byte(tc.body))
 			case "legion":
 				_, err = p2eLegion([]byte(tc.body))
+			case "item-mods":
+				_, err = p2eItemMods([]byte(tc.body))
 			}
 			if err == nil || !strings.Contains(err.Error(), tc.want) {
 				t.Fatalf("got %v, want an error containing %q", err, tc.want)

@@ -1,7 +1,7 @@
 -- Dumps one of PoB-PoE2's loaded data tables as JSON for `gopob poe2-data-emit`.
--- usage: regendata_poe2.lua <out.json> <bases|runes|constants|gems|legion|bosses|boss-skills|runeforging|item-db>
+-- usage: regendata_poe2.lua <out.json> <bases|runes|constants|gems|legion|bosses|boss-skills|runeforging|item-db|item-mods>
 local outPath, which = arg[1], arg[2]
-assert(outPath and which, "usage: regendata_poe2.lua <out.json> <bases|runes|constants|gems|legion|bosses|boss-skills|runeforging|item-db>")
+assert(outPath and which, "usage: regendata_poe2.lua <out.json> <bases|runes|constants|gems|legion|bosses|boss-skills|runeforging|item-db|item-mods>")
 
 -- GAMEDATA_DUMP is `gamedatadump`'s {fileName = source} map: those data files load in place of the pin's.
 local overlayPath = os.getenv("GAMEDATA_DUMP")
@@ -234,6 +234,30 @@ dumpers["item-db"] = function()
 		rares[i] = raw
 	end
 	return { uniques = uniques, rares = rares }
+end
+
+-- data.itemMods' affix tables after Data.lua's load, one row per mod sorted by category and id; tradeHashes dropped
+dumpers["item-mods"] = function()
+	local fields = { type = true, affix = true, statOrder = true, level = true, group = true, weightKey = true,
+		weightVal = true, weightMultiplierKey = true, weightMultiplierVal = true, tags = true, modTags = true,
+		unscalable = true, nodeType = true, tradeHashes = true }
+	local rows = {}
+	for _, category in ipairs({ "Charm", "Corruption", "Desecrated", "Flask", "IncursionLimb", "Item", "Jewel" }) do
+		local mods = assert(data.itemMods[category], "REFUSING: data.itemMods." .. category .. " is absent")
+		for _, id in ipairs(sortedKeys(mods)) do
+			local mod = mods[id]
+			for k in pairs(mod) do
+				assert(type(k) == "number" or fields[k], "REFUSING: " .. id .. " carries an unknown key " .. tostring(k))
+			end
+			local row = copy(mod, { tradeHashes = true })
+			for i = 1, #mod do
+				row[i] = nil
+			end
+			row.category, row.id, row.lines = category, id, { unpack(mod) }
+			rows[#rows + 1] = row
+		end
+	end
+	return rows
 end
 
 local dump = assert(dumpers[which], "REFUSING: no table named " .. which)

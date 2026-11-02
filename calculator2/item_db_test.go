@@ -261,6 +261,9 @@ func TestItemDBOraclesAreCurrent(t *testing.T) {
 		args        []string
 	}{
 		{"item_craft_oracle.lua", "item_craft_pob.jsonl", nil},
+		{"item_rare_db_oracle.lua", "item_rare_db_pob.jsonl.gz", nil},
+		{"item_range_oracle.lua", "item_range_pob.jsonl", []string{abs("item_affix_pastes.txt")}},
+		{"item_affix_oracle.lua", "item_affix_pob.jsonl.gz", []string{abs("item_affix_pastes.txt")}},
 		{"item_db_oracle.lua", "item_db_pob.jsonl.gz", nil},
 		{"item_compare_oracle.lua", "item_compare_pob.jsonl.gz", []string{abs("items_edit.xml"), abs("items_edit_pastes.txt")}},
 	} {

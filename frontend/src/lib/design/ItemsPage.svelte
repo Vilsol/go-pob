@@ -18,6 +18,8 @@
   import ImpactBlocks from './ImpactBlocks.svelte';
   import Dialog from './Dialog.svelte';
   import DisplayItemControls from './DisplayItemControls.svelte';
+  import AffixControls from './AffixControls.svelte';
+  import ItemRanges, { type ItemRangesEdit, type ItemRangesInfo } from './ItemRanges.svelte';
   import CraftItemDialog from './CraftItemDialog.svelte';
   import ItemSetTip from './ItemSetTip.svelte';
   import RuneSockets, { type RuneSocketsEdit, type RuneSocketsInfo } from './RuneSockets.svelte';
@@ -41,7 +43,7 @@
   } from './items';
   import type { ItemSet, ItemSummary, ItemTip, ItemsFixture, StatDiff } from './fixtures';
   import type { BrowseKind, BrowseRow, PoolItem, AffixRow } from './fixtures/items';
-  import type { CraftApi } from './crafting';
+  import type { AffixControls as AffixControlsInfo, CraftApi } from './crafting';
   import type { ComponentProps, Snippet } from 'svelte';
 
   // ItemSlotControl.lua:82-93
@@ -65,6 +67,12 @@
     /* Item.lua:2073-2083, ItemsTab.lua:605-625, 776-854 (PoB-PoE2): the editor's item's sockets and their runes */
     runes?: RuneSocketsInfo;
     onrunes?: (edit: RuneSocketsEdit) => void;
+    /* ItemsTab.lua:2232-2518 (PoB-PoE2): the editor's affix drop-downs, for a game whose editor has no DisplayInfo */
+    displayAffixes?: AffixControlsInfo;
+    affixCraft?: CraftApi;
+    /* ItemsTab.lua:678-694, 1128-1182 (PoB-PoE2): the editor's quality and modifier range lines */
+    ranges?: ItemRangesInfo;
+    onranges?: (edit: ItemRangesEdit) => void;
     phoneLayout?: 'cards' | 'table';
     sets: ItemSet[];
     setId: string;
@@ -157,6 +165,10 @@
     board,
     runes,
     onrunes,
+    displayAffixes,
+    affixCraft,
+    ranges,
+    onranges,
     phoneLayout,
     sets,
     setId,
@@ -591,6 +603,8 @@
               <DisplayItemControls info={display} onedit={ondisplayedit} craft={displayCraft} bind:customRequest head={itemHead} result={itemResult} />
             {:else}
               {@render itemHead()}
+              {#if displayAffixes && affixCraft}<AffixControls affixes={displayAffixes} craft={affixCraft} />{/if}
+              {#if ranges && onranges}<ItemRanges info={ranges} onedit={onranges} />{/if}
               {#if runes && onrunes}<RuneSockets info={runes} onedit={onrunes} />{/if}
               <div class="flex flex-col gap-2.5 border-t border-line pt-2.5">{@render itemResult()}</div>
             {/if}

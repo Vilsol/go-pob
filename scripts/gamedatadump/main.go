@@ -33,6 +33,7 @@ var dumpers = map[string]func() (any, error){
 	"poe2-legion-passives": dumpPoE2LegionPassives,
 	"poe2-item-bases":      dumpPoE2ItemBases,
 	"poe2-mod-runes":       dumpPoE2ModRunes,
+	"poe2-mods":            dumpPoE2Mods,
 	"poe2-gems":            dumpPoE2Gems,
 }
 

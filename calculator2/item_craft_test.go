@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
-	"regexp"
 	"testing"
 )
 
@@ -40,9 +39,6 @@ func readItemCraftRows(t *testing.T) []itemCraftRow {
 	return rows
 }
 
-// The affix placeholders come from data.itemMods, which data/poe2 does not carry yet.
-var affixPlaceholderRe = regexp.MustCompile(`\n(Prefix|Suffix): None`)
-
 func TestCraftItemMatchesPoB(t *testing.T) {
 	rows := readItemCraftRows(t)
 	var types []string
@@ -73,7 +69,7 @@ func TestCraftItemMatchesPoB(t *testing.T) {
 			t.Errorf("%s: not crafted", r.Base)
 			continue
 		}
-		if want := affixPlaceholderRe.ReplaceAllString(r.Raw, ""); item.BuildRaw() != want {
+		if want := r.Raw; item.BuildRaw() != want {
 			t.Errorf("%s:\n got %q\nwant %q", r.Base, item.BuildRaw(), want)
 		}
 	}

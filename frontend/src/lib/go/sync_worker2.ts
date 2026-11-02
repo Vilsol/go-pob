@@ -231,6 +231,15 @@ export type Poe2CompareTarget =
   | { kind: 'craft'; rarity: number; title: string; base: string };
 export type Poe2CompareBlock = { header: string; slot?: string; sections: StatCompareSection[]; calcMs: number };
 
+/* ItemsTab.lua:2232-2246, 2368-2518 (PoB-PoE2): the editor's affix drop-downs; list[0] is "None", sel is 0-based */
+export type Poe2AffixControl = {
+  type: string;
+  list: { label: string; modList: string[]; haveRange: boolean }[];
+  sel: number;
+  sliderShown: boolean;
+  sliderVal: number;
+};
+
 const item2 = (i: exposition.ItemView) => ({
   id: i.ID,
   rarity: i.Rarity,
@@ -783,6 +792,49 @@ class PoB2Worker {
   ExportCode(stats: SavedStats2): string {
     if (!this.calc) throw new Error('no PoE2 build is open');
     return this.calc.ExportCode(stats.player, stats.fullDPS, stats.minion).unwrap();
+  }
+
+  /* ItemsTab.lua:2232-2246 (PoB-PoE2): the editor's affix drop-downs, prefixes first */
+  DisplayItemAffixes(): Poe2AffixControl[] {
+    if (!this.calc) throw new Error('no PoE2 build is open');
+    return (this.calc.DisplayItemAffixes().unwrap() ?? []).map((c) => ({
+      type: c.Type,
+      list: (c.List ?? []).map((e) => ({ label: e.Label, modList: [...(e.ModList ?? [])], haveRange: e.HaveRange })),
+      sel: c.SelIndex - 1,
+      sliderShown: c.SliderShown,
+      sliderVal: c.SliderVal
+    }));
+  }
+
+  /* ItemsTab.lua:932-947, 1067-1075 (PoB-PoE2): affix drop-down #control (0-based) picks entry sel at the slider's
+     value, or its slider moves to slider when sel is already picked */
+  EditDisplayItemAffix(control: number, sel: number, slider: number) {
+    const c = this.calc;
+    if (!c) throw new Error('no PoE2 build is open');
+    const cur = c.DisplayItemAffixes().unwrap()?.[control];
+    if (cur && sel > 0 && sel === cur.SelIndex - 1 && cur.SliderShown) c.SetDisplayItemAffixRange(control + 1, slider).unwrap();
+    else c.SelectDisplayItemAffix(control + 1, sel + 1, slider).unwrap();
+  }
+
+  /* ItemsTab.lua:678-694, 2564-2577 (PoB-PoE2): the editor's modifier range lines and its quality, when it shows one */
+  DisplayItemRanges(): { lines: { label: string; range: number }[]; quality?: number } {
+    if (!this.calc) throw new Error('no PoE2 build is open');
+    const [lines, quality] = this.calc.DisplayItemRanges().unwrap();
+    return { lines: (lines ?? []).map((l) => ({ label: l.Label, range: l.Range })), quality: quality < 0 ? undefined : quality };
+  }
+
+  /* ItemsTab.lua:687-691, 1147-1166 (PoB-PoE2): range line #line (1-based) moves to value, or the quality is set */
+  EditDisplayItemRange(e: { op: 'range'; line: number; value: number } | { op: 'quality'; value: number }) {
+    const c = this.calc;
+    if (!c) throw new Error('no PoE2 build is open');
+    if (e.op === 'range') c.SetDisplayItemRangeLine(e.line, e.value).unwrap();
+    else c.SetDisplayItemQuality(e.value).unwrap();
+  }
+
+  /* ItemsTab.lua:1079-1104 (PoB-PoE2): affix drop-down #control's (0-based) roll slider tooltip */
+  DisplayItemAffixRoll(control: number, slider: number): string[] {
+    if (!this.calc) throw new Error('no PoE2 build is open');
+    return [...(this.calc.DisplayItemAffixRoll(control + 1, slider).unwrap() ?? [])];
   }
 }
 

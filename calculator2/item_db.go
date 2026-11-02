@@ -9,8 +9,7 @@ import (
 	"github.com/Vilsol/go-pob/data/poe2"
 )
 
-// The Items page's unique database (Main.lua's uniqueDB) and its list control (ItemDBControl). The rare database
-// needs data.itemMods to craft its templates, which data/poe2 does not carry yet.
+// The Items page's unique and rare databases (Main.lua's uniqueDB and rareDB) and their list control (ItemDBControl).
 
 func addRuneforgingBaseMappings(item *Item, bases []runeforgingBase) {
 	//pob2:block:src/Modules/ItemTools.lua:14-42
@@ -152,12 +151,49 @@ func loadUniqueDB() map[string]*Item {
 
 var uniqueDB = sync.OnceValue(loadUniqueDB)
 
-// ItemDB is the database's items by name; the rare database is empty until data/poe2 carries data.itemMods.
+// loadRareDB is Main.lua's rareDB, by item name: each crafted template is crafted from its affixes.
+//
+//pob2:block:src/Modules/Main.lua:171-189
+func loadRareDB() map[string]*Item {
+	list := map[string]*Item{}
+	modSource := ItemModSource(WithParser(ParseMod))
+	for _, raw := range poe2.RareDB {
+		newItem := &Item{modSource: modSource, ID: -1}
+		newItem.ParseRaw(sanitiseText(raw), "RARE", true)
+		if newItem.Base == nil {
+			continue
+		}
+		if newItem.Crafted {
+			if newItem.Base.Implicit != "" && len(newItem.ImplicitModLines) == 0 {
+				// Automatically add implicit
+				implicitIndex := 0
+				for _, line := range strings.Split(newItem.Base.Implicit, "\n") {
+					if line == "" {
+						continue
+					}
+					ml := &ModLine{Line: line, ModTags: []string{}}
+					if implicitIndex < len(newItem.Base.ImplicitModTypes) {
+						ml.ModTags = newItem.Base.ImplicitModTypes[implicitIndex]
+					}
+					newItem.ImplicitModLines = append(newItem.ImplicitModLines, ml)
+					implicitIndex++
+				}
+			}
+			newItem.Craft()
+		}
+		list[newItem.Name] = newItem
+	}
+	return list
+}
+
+var rareDB = sync.OnceValue(loadRareDB)
+
+// ItemDB is the database's items by name.
 func ItemDB(kind ItemDBKind) map[string]*Item {
 	if kind == ItemDBUnique {
 		return uniqueDB()
 	}
-	return map[string]*Item{}
+	return rareDB()
 }
 
 // ItemDBSlots is the Slot dropdown; ItemDBRequirements and ItemDBObtainable the unique database's dropdowns.

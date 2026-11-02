@@ -9,16 +9,17 @@
   import { BOARD_SLOTS_POE2, itemTip, type CraftChoice, type ImpactBlock, type ItemSetOp, type TipProps, type WhatIf } from '$lib/design/items';
   import { BOARD_PANES_POE2 } from '$lib/design/mobile/mobile';
   import type { RuneSocketsEdit } from '$lib/design/RuneSockets.svelte';
+  import type { ItemRangesEdit, ItemRangesInfo } from '$lib/design/ItemRanges.svelte';
   import type { ItemSet, ItemSummary, ItemTip, ModLine } from '$lib/design/fixtures';
   import { itemsLayout, phoneTables } from '$lib/display/appearance';
   import { poe2Build } from '$lib/global';
   import { poe2Busy, poe2Error, poe2Run, poe2Worker } from '$lib/go/engine_poe2.svelte';
-  import type { Poe2CompareBlock, Poe2CompareTarget, Poe2DisplayEdit, Poe2ItemsEdit, Poe2ItemsPage } from '$lib/go/sync_worker2';
+  import type { Poe2AffixControl, Poe2CompareBlock, Poe2CompareTarget, Poe2DisplayEdit, Poe2ItemsEdit, Poe2ItemsPage } from '$lib/go/sync_worker2';
+  import type { AffixControls, CraftApi } from '$lib/design/crafting';
   import { slotOnlyTooltips } from '$lib/display/item_options';
 
   // ItemsTab.lua, ItemSlotControl.lua, ItemSetListControl.lua (PoB-PoE2): the Items page over the open PoE2 build.
-  // Affix crafting, the rare database, shared items, the equip impact, item variants, influences, quality and drag and
-  // drop are not here yet
+  // The rare database, shared items, item variants, influences, quality and drag and drop are not here yet
 
   type Item = Poe2ItemsPage['items'][number];
   type Editing = { item: ItemSummary; slot?: string; isNew?: boolean; key?: string };
@@ -30,11 +31,20 @@
   const plain = (t: string) => t.replace(/\^x[0-9A-Fa-f]{6}|\^\d/g, '');
 
   let page = $state.raw<Poe2ItemsPage>();
+  let affixControls = $state.raw<Poe2AffixControl[]>([]);
+  let ranges = $state.raw<ItemRangesInfo>();
   let whatIf = $state<WhatIf>();
   const read = () =>
     poe2Worker()
-      .then((w) => w.ItemsPage())
-      .then((p) => (page = p))
+      .then(async (w) => {
+        const p = w.ItemsPage();
+        const shown = !!(await p).display;
+        const a = shown ? await w.DisplayItemAffixes() : [];
+        const r = shown ? await w.DisplayItemRanges() : undefined;
+        affixControls = a;
+        ranges = r;
+        page = await p;
+      })
       .catch(fail);
   // read again after every calculation
   $effect(() => {
@@ -193,6 +203,54 @@
     if (page?.display) openText(`Rarity: ${page.display.rarity}\n${page.display.text}`);
   };
 
+  // ItemsTab.lua:932-947, 1067-1104, 2232-2518 (PoB-PoE2): the editor's affix drop-downs and roll sliders
+  const displayAffixes = $derived<AffixControls | undefined>(
+    affixControls.length
+      ? {
+          sorting: false,
+          controls: affixControls.map((c) => ({
+            type: c.type,
+            sel: c.sel,
+            sliderShown: c.sliderShown,
+            sliderVal: c.sliderVal,
+            series: c.list.map((e) => ({ label: e.label, tiers: e.modList.length, haveRange: e.haveRange, tooltip: [], mid: [] }))
+          }))
+        }
+      : undefined
+  );
+  const affixCraft: CraftApi = {
+    enchantChoices: async () => undefined,
+    notables: async () => [],
+    sortStats: async () => [],
+    preview: async () => undefined,
+    enchantSort: async () => [],
+    anointPowers: async () => [],
+    anointCompare: async () => undefined,
+    affixEdit: async (slot, series, slider) => {
+      try {
+        await (await poe2Worker()).EditDisplayItemAffix(slot, series, slider);
+      } catch (err) {
+        fail(err);
+      } finally {
+        await read();
+      }
+      if (page?.display) openText(`Rarity: ${page.display.rarity}\n${page.display.text}`);
+      return undefined;
+    },
+    affixRollTooltip: async (slot, slider) => (await poe2Worker()).DisplayItemAffixRoll(slot, slider)
+  };
+
+  const onranges = async (e: ItemRangesEdit) => {
+    try {
+      await (await poe2Worker()).EditDisplayItemRange(e);
+    } catch (err) {
+      fail(err);
+    } finally {
+      await read();
+    }
+    if (page?.display) openText(`Rarity: ${page.display.rarity}\n${page.display.text}`);
+  };
+
   // ItemListControl.lua:337-375 (PoB-PoE2)
   const ondelete = async (id: number, confirmed: boolean) => {
     const at = usedIn(id);
@@ -256,7 +314,7 @@
   };
 
   // ItemsTab.lua:379-414, ItemDBControl.lua (PoB-PoE2): the unique database; the rare one needs the affix data
-  const DB_KINDS: ItemDBKind[] = ['UNIQUE'];
+  const DB_KINDS: ItemDBKind[] = ['UNIQUE', 'RARE'];
   let dbKind = $state<ItemDBKind>('UNIQUE');
   let dbFilter = $state<ItemDBFilterInput>(defaultItemDBFilter());
   let dbSort = $state('');
@@ -266,12 +324,17 @@
   let dbHover = $state<string | null>(null);
   let dbTip = $state<{ name: string; tip: TipProps }>();
   let dbNote = $state('');
+  let dbListsKind: ItemDBKind | undefined;
   $effect(() => {
-    if (pageView !== 'browse' || dbLists) return;
+    const kind = dbKind;
+    if (pageView !== 'browse' || dbListsKind === kind) return;
     void untrack(() =>
       poe2Worker()
-        .then((w) => w.ItemDBLists('UNIQUE'))
-        .then((l) => (dbLists = l))
+        .then((w) => w.ItemDBLists(kind))
+        .then((l) => {
+          dbLists = l;
+          dbListsKind = kind;
+        })
         .catch(fail)
     );
   });
@@ -279,13 +342,14 @@
   // ItemDBControl.lua:300-325 (PoB-PoE2): the list builds again on a filter change and after every calculation
   $effect(() => {
     const filter = $state.snapshot(dbFilter);
+    const kind = dbKind;
     void $poe2Build;
     if (pageView !== 'browse') return;
     const mine = ++dbSeq;
     dbBusy = true;
     void untrack(() =>
       poe2Worker()
-        .then((w) => w.ItemDBRows(dbKind, filter))
+        .then((w) => w.ItemDBRows(kind, filter))
         .then((rows) => {
           if (mine !== dbSeq) return;
           dbRows = rows;
@@ -408,6 +472,10 @@
       onpasteitem={(t: string) => (text = t)}
       runes={display && { canHaveSockets: display.canHaveSockets, sockets: display.runes, choices: display.runeChoices }}
       onrunes={(e: RuneSocketsEdit) => void onrunes(e)}
+      {displayAffixes}
+      {affixCraft}
+      {ranges}
+      onranges={(e: ItemRangesEdit) => void onranges(e)}
       onset={(id: string) => void edit({ op: 'set', id: Number(id) })}
       {onsets}
       onswap={(second: boolean) => void edit({ op: 'swap', second })}
