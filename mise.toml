@@ -389,8 +389,12 @@ flag "--specs <specs>" env="SPECS"
 arg "[args]..." var=#true double_dash="required" help="passed on to playwright"
 '''
 run = [
-  '{% if usage.reuse %}node e2e/serve.mjs port > /dev/null{% else %}mise run e2e-bundle{% endif %}',
   '{% if usage.shard %}env E2E_SLOW={% if usage.slow %}1{% else %}0{% endif %} node e2e/shard.mjs plan {{usage.shard}} e2e/.results/shard-tests.txt{% endif %}',
+  '''
+eval "set -- $usage_args"
+{% if usage.reuse %}node e2e/serve.mjs port > /dev/null{% else %}env E2E_SLOW={% if usage.slow %}1{% else %}0{% endif %} node e2e/bundle.mjs for \
+{% if usage.grep %}--grep "$usage_grep" {% endif %}{% if usage.shard %}--test-list e2e/.results/shard-tests.txt {% endif %}{{usage.specs}} "$@"{% endif %}
+''',
   '''
 eval "set -- $usage_args"
 {{vars.NICE}} env E2E_BASELINE={% if usage.e2e_baseline %}1{% else %}0{% endif %} E2E_SLOW={% if usage.slow %}1{% else %}0{% endif %} \
@@ -427,31 +431,44 @@ arg "[args]..." var=#true double_dash="required" help="passed on to playwright"
 run = '''eval "set -- $usage_args"; grep=$(node frontend/e2e/affected.mjs grep '{{usage.base}}'); mise run e2e --grep "$grep" {% if usage.slow %}--slow{% endif %} {% if usage.reuse %}--reuse{% endif %} -- "$@"'''
 
 [tasks.e2e-bundle]
-description = "The wasm builds (standard Go and TinyGo) and the production bundle the e2e tests serve, each rebuilt only when a source of it is newer"
+description = "The wasm builds and the production bundle the e2e tests serve, each rebuilt only when a source of it is newer; the TinyGo wasm only with --tinygo (mise run e2e builds it for a selected test that loads it)"
 dir = "frontend"
-depends = ["build-go", "build-go2", "build-go-tiny", "build-go2-tiny"]
+usage = '''
+flag "--tinygo" env="TINYGO" help="build the TinyGo wasm too (minutes after a Go change)"
+'''
+run = 'node e2e/bundle.mjs {% if usage.tinygo %}with{% else %}without{% endif %}'
+
+[tasks.e2e-bundle-build]
+description = "The standard Go wasm builds and the production bundle, for e2e/bundle.mjs; it carries a TinyGo wasm only when one is built"
+dir = "frontend"
+hide = true
+depends = ["build-go", "build-go2"]
 sources = ["src/**/*", "static/**/*", "package.json", "pnpm-lock.yaml", "svelte.config.js", "vite.config.js", "tsconfig.json"]
 outputs = ["build/.e2e-bundle"]
 run = [
-  '{{vars.NICE}} gzip -kf9 static/go-pob.wasm static/go-pob2.wasm static/go-pob-tiny.wasm static/go-pob2-tiny.wasm',
+  '{{vars.NICE}} gzip -kf9 static/go-pob.wasm static/go-pob2.wasm',
   '{{vars.NICE}} npx vite build --logLevel warn',
   'touch build/.e2e-bundle',
 ]
 
 [tasks.e2e-coverage]
-description = "Record which frontend files each e2e spec runs into frontend/e2e/coverage-map.json, which e2e-affected selects by: a coverage build, then every spec (or the [specs]) once on its own preview server; a full run, so the operator's or CI's (.github/workflows/e2e-coverage.yml)"
+description = "Record which frontend files each e2e spec runs into frontend/e2e/coverage-map.json, which e2e-affected selects by: a coverage build, then every spec (or the specs after --) once on its own preview server; a full run, so the operator's or CI's (.github/workflows/e2e-coverage.yml)"
 dir = "frontend"
 depends = ["build-go", "build-go2"]
 usage = '''
 flag "--servers <servers>" env="SERVERS" default="2"
 flag "--workers <workers>" env="WORKERS" default="2"
-arg "[specs]..." var=#true help="spec files, default every spec"
+arg "[specs]..." var=#true double_dash="required" help="spec files, default every spec"
 '''
 run = [
+  'eval "set -- $usage_specs"; node e2e/coverage.mjs specs "$@"',
   '{{vars.NICE}} gzip -kf9 static/go-pob.wasm static/go-pob2.wasm',
   'rm -rf e2e/.coverage',
   '{{vars.NICE}} npx vite build -c e2e/vite.coverage.config.js --logLevel warn',
-  '{{vars.NICE}} env E2E_SLOW=1 node e2e/coverage.mjs record --servers {{usage.servers}} --workers {{usage.workers}} {{usage.specs}}',
+  '''
+eval "set -- $usage_specs"
+{{vars.NICE}} env E2E_SLOW=1 node e2e/coverage.mjs record --servers {{usage.servers}} --workers {{usage.workers}} "$@"
+''',
   'node e2e/coverage.mjs merge',
 ]
 
@@ -466,8 +483,10 @@ run = '''rm -f e2e/coverage-map.json && gh run download {% if usage.run %}{{usag
 [tasks.e2e-serve]
 description = "Build the wasm and the frontend (when their sources changed), then keep one vite preview warm on a free port for `mise run e2e --reuse`; re-run after a code change (it rebuilds, the server stays)"
 dir = "frontend"
-depends = ["e2e-bundle"]
-run = 'node e2e/serve.mjs start'
+usage = '''
+flag "--tinygo" env="TINYGO" help="serve the TinyGo wasm too (minutes after a Go change)"
+'''
+run = ['node e2e/bundle.mjs {% if usage.tinygo %}with{% else %}without{% endif %}', 'node e2e/serve.mjs start']
 
 
 [tasks.e2e-serve-stop]
@@ -487,7 +506,10 @@ run = [
 
 [tasks.e2e-baseline]
 description = "Run mise run e2e and rewrite the committed frontend/e2e/perf-baseline.json (a deliberate, reviewed change)"
-run = 'mise run e2e --e2e-baseline --slow'
+usage = '''
+arg "[args]..." var=#true double_dash="required" help="passed on to playwright"
+'''
+run = 'eval "set -- $usage_args"; mise run e2e --e2e-baseline --slow -- "$@"'
 
 [tasks.load-waterfall]
 description = "Page-load waterfall, cold and warm, per network profile (--profiles local,broadband,mobile --runs n --app-host gh|cf); rows in frontend/e2e/.results/load-waterfall.jsonl"

@@ -5,6 +5,7 @@
 //
 //   node e2e/coverage.mjs record [--servers K] [--workers W] [--part i/n] [spec ...]  → e2e/.coverage/part-<i>.json
 //   node e2e/coverage.mjs merge [part.json ...]                                     → e2e/coverage-map.json
+//   node e2e/coverage.mjs specs [spec ...]: refuses a flag or a missing spec before the coverage build starts
 import { execFileSync, spawn } from 'node:child_process';
 import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { createServer } from 'node:net';
@@ -260,11 +261,21 @@ const merge = (argv) => {
   return 0;
 };
 
+const specs = (argv) => {
+  for (const a of argv) {
+    if (a.startsWith('-')) throw new Error(`REFUSING: ${a} is a flag, not a spec; mise run e2e-coverage takes --servers and --workers`);
+    if (!existsSync(join(FRONTEND, a.replace(/^frontend\//, '')))) throw new Error(`REFUSING: no spec file ${a}`);
+  }
+  return 0;
+};
+
 if (import.meta.url === `file://${process.argv[1]}`) {
   const [cmd, ...args] = process.argv.slice(2);
-  const cmds = { record, merge };
+  const cmds = { record, merge, specs };
   if (!cmds[cmd]) {
-    console.error('REFUSING: usage: node e2e/coverage.mjs record [--servers K] [--workers W] [--part i/n] [spec ...] | merge [part.json ...]');
+    console.error(
+      'REFUSING: usage: node e2e/coverage.mjs record [--servers K] [--workers W] [--part i/n] [spec ...] | merge [part.json ...] | specs [spec ...]'
+    );
     process.exit(64);
   }
   try {

@@ -11,12 +11,12 @@ import { poe2Stat } from './support/poe2';
 import { expectedLines } from './support/stats';
 import { routeTreeAssets } from './support/tree_assets';
 
-// the TinyGo builds the bundle serves (mise run e2e-bundle makes them); CI's shards build standard Go only and skip
-// these, its TinyGo job sets E2E_TINYGO=1 so a missing build fails instead
+// the TinyGo builds the bundle serves (mise run e2e builds them when it runs this spec); CI's shards build standard Go
+// only and skip these, its TinyGo job sets E2E_TINYGO=1 so a missing build fails instead
 const BUILT = ['go-pob-tiny.wasm.gz', 'go-pob2-tiny.wasm.gz'].every((f) => existsSync(resolve(import.meta.dirname, '../build', f)));
 const needsTinyGo = () => {
-  if (process.env.E2E_TINYGO === '1') expect(BUILT, 'the bundle has no TinyGo wasm: mise run e2e-bundle').toBe(true);
-  else test.skip(!BUILT, 'the bundle has no TinyGo wasm (mise run e2e-bundle builds it)');
+  if (process.env.E2E_TINYGO === '1') expect(BUILT, 'the bundle has no TinyGo wasm: mise run e2e-bundle --tinygo').toBe(true);
+  else test.skip(!BUILT, 'the bundle has no TinyGo wasm (mise run e2e-bundle --tinygo builds it)');
 };
 
 const POE2_FIXTURE = resolve(import.meta.dirname, '../../wasm2/exposition/testdata/sorceress_spark.xml');

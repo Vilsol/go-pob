@@ -3,8 +3,9 @@ name: e2e
 permissions: read-all
 
 # Every Playwright test, @slow included, split over four shards by the durations in frontend/e2e/durations.json
-# (`mise run e2e-durations` records them from a run). To re-run one shard, use "Re-run failed jobs" on the run, or
-# locally: `mise run e2e --slow --shard 2/4` (the same split, given the same tests and durations).
+# (`mise run e2e-durations` records them from a run). The shards build standard Go only and skip the TinyGo engine
+# spec; one more job builds the TinyGo wasm and runs that spec alone. To re-run one shard, use "Re-run failed jobs" on
+# the run, or locally: `mise run e2e --slow --shard 2/4` (the same split, given the same tests and durations).
 
 on:
   push:
@@ -21,13 +22,13 @@ env:
 
 jobs:
   e2e:
-    name: E2E (shard ${{ matrix.shard }}/4)
+    name: E2E (${{ matrix.shard == 'tinygo' && 'TinyGo' || format('shard {0}/4', matrix.shard) }})
     runs-on: ubuntu-latest
     timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2, 3, 4]
+        shard: [1, 2, 3, 4, tinygo]
     steps:
       - name: Check out code
         uses: actions/checkout@v4
@@ -111,9 +112,11 @@ jobs:
           GOARCH: wasm
 
       - name: Set up TinyGo
+        if: matrix.shard == 'tinygo'
         run: ./.github/tinygo_install.sh
 
       - name: Build TinyGo wasm
+        if: matrix.shard == 'tinygo'
         run: |
           ./.github/tinygo_build.sh wasm frontend/static/go-pob-tiny.wasm && gzip -kf9 frontend/static/go-pob-tiny.wasm
           ./.github/tinygo_build.sh wasm2 frontend/static/go-pob2-tiny.wasm && gzip -kf9 frontend/static/go-pob2-tiny.wasm
@@ -137,13 +140,16 @@ jobs:
         run: echo "count=$(find frontend/e2e/.results/tree-assets -type f 2>/dev/null | wc -l)" >> "$GITHUB_OUTPUT"
 
       - name: Pick this shard's tests
+        if: matrix.shard != 'tinygo'
         run: node e2e/shard.mjs plan ${{ matrix.shard }}/4 e2e/.results/shard-tests.txt
         working-directory: frontend
         env:
           E2E_SLOW: '1'
 
       - name: E2E
-        run: pnpm exec playwright test -c e2e/playwright.config.ts --test-list e2e/.results/shard-tests.txt --reporter=list,github
+        run: >-
+          pnpm exec playwright test -c e2e/playwright.config.ts --reporter=list,github
+          ${{ matrix.shard == 'tinygo' && 'e2e/tinygo-engine.spec.ts' || '--test-list e2e/.results/shard-tests.txt' }}
         working-directory: frontend
         env:
           E2E_SLOW: '1'
@@ -151,8 +157,8 @@ jobs:
           E2E_WORKERS: '2'
           # a fresh context per test: on CI's slower runners a reused page fails in ways no local run reproduces
           E2E_SHARED: '0'
-          # the TinyGo specs fail rather than skip when the bundle has no TinyGo wasm
-          E2E_TINYGO: '1'
+          # the TinyGo job's spec fails rather than skips when the bundle has no TinyGo wasm
+          E2E_TINYGO: ${{ matrix.shard == 'tinygo' && '1' || '0' }}
 
       - name: Count fetched assets
         id: assets-after

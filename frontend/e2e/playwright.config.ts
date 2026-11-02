@@ -29,6 +29,10 @@ const PORT = Number(
 );
 const WORKERS = Number(process.env.E2E_WORKERS || 5);
 if (!Number.isInteger(WORKERS) || WORKERS < 1) throw new Error(`E2E_WORKERS must be a positive integer, got ${JSON.stringify(process.env.E2E_WORKERS)}`);
+// V8 recompiles the hot wasm functions with TurboFan in the background, three quarters of a spec's CPU since most tests
+// boot cold; Liftoff alone boots sooner and runs a long calculation slower. Perf runs measure the engine users run, and
+// E2E_TURBOFAN=1 asks for it too; E2E_JS_FLAGS=<V8 flags> replaces the choice.
+const TURBOFAN = process.env.E2E_PERF === '1' || process.env.E2E_BASELINE === '1' || process.env.E2E_TURBOFAN === '1';
 const server = process.env.E2E_SERVER === 'dev' ? `vite dev --port ${PORT} --strictPort` : `vite preview --port ${PORT} --strictPort`;
 
 export default defineConfig({
@@ -50,7 +54,11 @@ export default defineConfig({
     browserName: 'chromium',
     launchOptions: {
       executablePath: chromium,
-      args: ['--enable-precise-memory-info', ...(process.env.E2E_GPU === '1' ? ['--enable-gpu', '--use-angle=vulkan', '--enable-features=Vulkan'] : [])]
+      args: [
+        '--enable-precise-memory-info',
+        ...(process.env.E2E_JS_FLAGS ? [`--js-flags=${process.env.E2E_JS_FLAGS}`] : TURBOFAN ? [] : ['--js-flags=--liftoff-only']),
+        ...(process.env.E2E_GPU === '1' ? ['--enable-gpu', '--use-angle=vulkan', '--enable-features=Vulkan'] : [])
+      ]
     },
     viewport: { width: 1600, height: 1000 },
     trace: 'off',

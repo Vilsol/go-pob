@@ -135,7 +135,7 @@ const stop = async () => {
 
 const cmds = { start, port, stop };
 const cmd = cmds[process.argv[2]];
-if (!cmd) {
+if (!cmd || process.argv.length > 3) {
   console.error(`REFUSING: usage: node e2e/serve.mjs ${Object.keys(cmds).join('|')}`);
   process.exit(64);
 }
