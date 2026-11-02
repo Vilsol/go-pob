@@ -22,7 +22,9 @@
   import type { Snippet } from 'svelte';
   import { derived as derivedStore, get } from 'svelte/store';
   import AppBuildList from '$lib/shell/AppBuildList.svelte';
-  import { WASM_FALLBACK, WASM_FILE } from '$lib/go/wasm_file';
+  import { WASM_FALLBACK, WASM_FILE, engineFile } from '$lib/go/wasm_file';
+  import { fallBackToGo, runningEngine, takeFallbackNotice } from '$lib/go/engine_choice';
+  import { addToast } from '$lib/design/toast';
   import { checkForUpdate, startPwa } from '$lib/pwa';
   import PwaStatus from '$lib/pwa/PwaStatus.svelte';
   import Toasts from '$lib/design/Toasts.svelte';
@@ -141,9 +143,10 @@
       loadingMessage = 'Decompressing wasm runtime...';
       return new Response(new Response(data).body!.pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
     }
-    if (path !== WASM_FALLBACK) {
-      console.warn(`${path} arrived still encoded; falling back to ${WASM_FALLBACK}`);
-      return wasmBytes(WASM_FALLBACK);
+    const fallback = engineFile(WASM_FALLBACK, runningEngine);
+    if (path !== fallback) {
+      console.warn(`${path} arrived still encoded; falling back to ${fallback}`);
+      return wasmBytes(fallback);
     }
     loadingMessage = 'Failed to load wasm runtime';
     throw new Error('Failed to load wasm runtime: not a wasm module');
@@ -158,6 +161,8 @@
 
   if (browser) {
     startPwa().catch(logError);
+    const fellBack = takeFallbackNotice();
+    if (fellBack) addToast(`Switched back to the Go engine\nThe TinyGo engine stopped: ${fellBack}.`);
     // the last build was PoE2: its engine boots and preloads its game data now, so the next PoE2 build opens at once;
     // with both engines asked for, the PoE2 one waits for the PoE1 game data, so a PoE1 build opens as soon as before
     if (get(poe2Enabled) && lastGame() === 'poe2') poe2Worker().catch(logError);
@@ -183,19 +188,20 @@
             return;
           }
 
-          wasmBytes(WASM_FILE)
+          wasmBytes(engineFile(WASM_FILE, runningEngine))
             .then((data) => {
               performance.mark('pob:wasm-decoded');
               console.log('wasm runtime size:', data.byteLength);
 
               loadingMessage = 'Booting...';
               const stuck = setTimeout(() => {
+                if (fallBackToGo(`it took over ${BOOT_STUCK_MS / 1000} s to boot`)) return;
                 loadingMessage = 'Booting is taking much longer than it should.';
                 bootStuck = true;
               }, BOOT_STUCK_MS);
 
               syncWrap
-                ?.boot(transfer(data, [data]), proxy(onTick), proxy(buildChannel))
+                ?.boot(transfer(data, [data]), proxy(onTick), proxy(buildChannel), runningEngine)
                 .then(async () => {
                   clearTimeout(stuck);
                   bootStuck = false;
@@ -220,11 +226,15 @@
                   logError(e);
                   if (!wasmLoading) return;
                   clearTimeout(stuck);
+                  if (fallBackToGo(`it did not boot (${e.message})`)) return;
                   loadingMessage = `Booting failed: ${e.message}`;
                   bootStuck = true;
                 });
             })
-            .catch(logError);
+            .catch((e: Error) => {
+              logError(e);
+              fallBackToGo(`its wasm did not load (${e.message})`);
+            });
         })
         .catch(logError);
     }

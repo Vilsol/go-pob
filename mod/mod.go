@@ -20,7 +20,7 @@ type Mod interface {
 	SetReplaced(replaced bool)
 }
 
-type MFlag int
+type MFlag int64
 
 func (f *MFlag) Get() MFlag {
 	if f != nil {

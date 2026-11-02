@@ -64,7 +64,7 @@ const (
 	SourceSkill         = Source("Skill")
 )
 
-type KeywordFlag int
+type KeywordFlag int64
 
 func (f *KeywordFlag) Get() KeywordFlag {
 	if f != nil {

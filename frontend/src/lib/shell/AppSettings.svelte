@@ -40,6 +40,7 @@
   import { syncWrap } from '$lib/go/worker';
   import { clearPoe2DataCache } from '$lib/go/worker2';
   import { POWER_WORKER_CHOICES, powerWorkers } from '$lib/go/power_workers';
+  import { runningEngine, wasmEngine } from '$lib/go/engine_choice';
   import { logError } from '$lib/utils';
   import { colorHighlight, colorNegative, colorPositive, edgeSearchHighlight, hexColour } from '$lib/skill_tree/options';
   import { get } from 'svelte/store';
@@ -49,6 +50,7 @@
   let { open = $bindable(false) }: Props = $props();
 
   const workerLabel = (n: number) => (n > 1 ? String(n) : 'Off');
+  const ENGINE_LABELS = { go: 'Go', tinygo: 'TinyGo (experimental)' } as const;
 
   const sections: SettingsSection[] = [
     {
@@ -97,6 +99,14 @@
         },
         { id: 'titleBuild', label: 'Show build name in window title', kind: 'check', value: true, hint: 'The tab title becomes “<build> (<class>) - go-pob”' },
         { id: 'devMode', label: 'Dev mode', kind: 'check', value: false, hint: 'Passive tooltips show the node id' },
+        {
+          id: 'engine',
+          label: 'Engine',
+          kind: 'select',
+          value: ENGINE_LABELS.go,
+          opts: [ENGINE_LABELS.go, ENGINE_LABELS.tinygo],
+          hint: 'The calculator built with TinyGo: a smaller download and less memory, the same numbers. Both games; the app reloads to switch'
+        },
         ...(poe2Unlocked
           ? [
               {
@@ -339,6 +349,7 @@
     dataVersion,
     cache: cacheSize,
     devMode: $devMode,
+    engine: ENGINE_LABELS[$wasmEngine],
     poe2: $poe2Enabled,
     engineBoot: $engineBoot === 'both' ? 'Both' : 'Last used',
     titleBuild: $showTitlebarName,
@@ -385,6 +396,13 @@
   $effect(() => {
     if (open) saved = untrack(() => ({ ...values }));
   });
+  // the engine switches on the reload that closing the dialog with a new choice starts; Cancel puts the old one back
+  let engineChanged = false;
+  $effect(() => {
+    if (open || !engineChanged) return;
+    engineChanged = false;
+    if (untrack(() => $wasmEngine) !== runningEngine) location.reload();
+  });
   const set = (id: string, v: Setting['value']) => {
     if (id === 'fontScaling') fontScaling.set(Math.min(Math.max(Number(v) || 12, 6), 18));
     else if (id === 'theme' && (THEMES as readonly string[]).includes(String(v))) theme.set(String(v) as Theme);
@@ -398,7 +416,10 @@
     else if (id === 'phoneTables') phoneTables.set(v === 'Table' ? 'table' : 'cards');
     else if (id === 'craftCardLayout') craftCardLayout.set(v === 'Tabs' ? 'tabs' : 'stepped');
     else if (id === 'devMode') devMode.set(!!v);
-    else if (id === 'poe2') poe2Enabled.set(!!v);
+    else if (id === 'engine') {
+      wasmEngine.set(v === ENGINE_LABELS.tinygo ? 'tinygo' : 'go');
+      engineChanged = true;
+    } else if (id === 'poe2') poe2Enabled.set(!!v);
     else if (id === 'engineBoot') engineBoot.set(v === 'Both' ? 'both' : 'last');
     else if (id === 'titleBuild') showTitlebarName.set(!!v);
     else if (id === 'zoomSensitivity') zoomSensitivity.set(Number(v));

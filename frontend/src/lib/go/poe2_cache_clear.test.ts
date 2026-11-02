@@ -6,7 +6,7 @@ vi.unmock('@zenfs/dom');
 
 const remote = vi.hoisted(() => ({ boot: vi.fn(() => Promise.resolve()), ClearDataCache: vi.fn(() => Promise.resolve(4)) }));
 vi.mock('comlink', () => ({ wrap: () => remote, transfer: (d: unknown) => d, expose: () => {} }));
-vi.mock('./sync_worker2?worker', () => ({ default: class {} }));
+vi.mock('./sync_worker2?worker', () => ({ default: class extends EventTarget {} }));
 vi.mock('$lib/app_log', async (orig) => ({ ...(await orig<object>()), forwardWorkerLog: () => {} }));
 vi.mock('../types2', () => ({
   boot: () => Promise.resolve(),

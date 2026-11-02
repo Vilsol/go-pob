@@ -33,7 +33,7 @@ var modFlagNames = map[string]mod.MFlag{
 }
 
 //pob:src/Modules/ModTools.lua:136-149
-func formatFlags[F ~int](flags F, src map[string]F) string {
+func formatFlags[F ~int | ~int64](flags F, src map[string]F) string {
 	var flagNames []string
 	for name, val := range src {
 		if flags&val == val {

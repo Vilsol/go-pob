@@ -15,6 +15,14 @@ static/go-pob2.wasm
 static/go-pob2.wasm.gz
 static/go-pob2.wasm.br
 static/go-pob2.wasm.br.sha256
+static/go-pob-tiny.wasm
+static/go-pob-tiny.wasm.gz
+static/go-pob-tiny.wasm.br
+static/go-pob-tiny.wasm.br.sha256
+static/go-pob2-tiny.wasm
+static/go-pob2-tiny.wasm.gz
+static/go-pob2-tiny.wasm.br
+static/go-pob2-tiny.wasm.br.sha256
 e2e/.results
 storybook-static
 *storybook.log

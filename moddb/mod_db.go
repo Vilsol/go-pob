@@ -524,11 +524,11 @@ func (m *ModDB) Tabulate(modType mod.Type, cfg *ListCfg, modNames ...string) []M
 	}
 
 	if flags == nil {
-		flags = (*mod.MFlag)(utils.Ptr(0))
+		flags = utils.Ptr(mod.MFlag(0))
 	}
 
 	if keywordFlags == nil {
-		keywordFlags = (*mod.KeywordFlag)(utils.Ptr(0))
+		keywordFlags = utils.Ptr(mod.KeywordFlag(0))
 	}
 
 	if source == nil {

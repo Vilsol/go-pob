@@ -9,6 +9,7 @@ node = "26"
 pnpm = "10.6.3"
 "npm:wrangler" = "4.143.1"
 watchexec = "2.8.0"
+tinygo = "0.44.0"
 
 [env]
 MISE_NODE_COREPACK = true
@@ -83,6 +84,32 @@ extends = "wasm-sources"
 outputs = ["frontend/static/go-pob2.wasm"]
 run = '{{vars.NICE}} env GOOS=js GOARCH=wasm go build -v -o frontend/static/go-pob2.wasm ./wasm2'
 
+# TinyGo's wasm32 build of each, the engine Settings can switch to
+[tasks.build-go-tiny]
+description = "Build the TinyGo PoE1 WASM binary into frontend/static/go-pob-tiny.wasm (minutes; skipped when no wasm source is newer than it)"
+extends = "wasm-sources"
+outputs = ["frontend/static/go-pob-tiny.wasm"]
+run = '{{vars.NICE}} ./.github/tinygo_build.sh wasm frontend/static/go-pob-tiny.wasm'
+
+[tasks.build-go2-tiny]
+description = "Build the TinyGo PoE2 WASM binary into frontend/static/go-pob2-tiny.wasm (minutes; skipped when no wasm source is newer than it)"
+extends = "wasm-sources"
+outputs = ["frontend/static/go-pob2-tiny.wasm"]
+run = '{{vars.NICE}} ./.github/tinygo_build.sh wasm2 frontend/static/go-pob2-tiny.wasm'
+
+[tasks.engine-diff]
+description = "The TinyGo and the standard Go wasm over the same builds, every output compared bit for bit (--game poe1|poe2, --sample N spreads N over the list, --jobs N); exits 1 on a difference"
+depends = ["build-go", "build-go2", "build-go-tiny", "build-go2-tiny"]
+usage = '''
+flag "--game <game>" env="GAME" default="poe1" {
+  choices "poe1" "poe2"
+}
+flag "--sample <sample>" env="SAMPLE" default="0"
+flag "--jobs <jobs>" env="JOBS" default="2"
+arg "<inputs>..." var=#true help="build XMLs, or folders of them (testdata/corpus-3.29, testdata/corpus-poe2-0.5)"
+'''
+run = 'eval "set -- $usage_inputs"; {{vars.NICE}} node frontend/harness/engine_diff.mjs {{usage.game}} --sample {{usage.sample}} --jobs {{usage.jobs}} "$@"'
+
 [tasks.build-frontend]
 description = "Build JS frontend"
 dir = "frontend"
@@ -127,11 +154,11 @@ flag "--tags <tags>" env="TAGS"
 run = '{{vars.NICE}} ./desktop/scripts/build.sh desktop/bin/go-pob production {{usage.tags}}'
 
 [tasks.desktop-dist]
-description = "The frontend as every desktop build embeds it (VITE_DESKTOP=1, go-pob.wasm.gz and go-pob2.wasm.gz only) into desktop/dist"
+description = "The frontend as every desktop build embeds it (VITE_DESKTOP=1, the .wasm.gz of each standard and TinyGo build only) into desktop/dist"
 run = [
   '{{vars.NICE}} ./desktop/scripts/wasm.sh',
   'cd frontend && {{vars.NICE}} env VITE_DESKTOP=1 npx vite build --logLevel warn',
-  'rsync -a --delete --exclude .gitkeep --exclude go-pob.wasm --exclude go-pob.wasm.br --exclude go-pob2.wasm --exclude go-pob2.wasm.br --exclude service-worker.js --exclude _headers frontend/build/ desktop/dist/',
+  'rsync -a --delete --exclude .gitkeep --exclude "go-pob*.wasm" --exclude "go-pob*.wasm.br" --exclude service-worker.js --exclude _headers frontend/build/ desktop/dist/',
 ]
 
 [tasks.dev-desktop]
@@ -400,13 +427,13 @@ arg "[args]..." var=#true double_dash="required" help="passed on to playwright"
 run = '''eval "set -- $usage_args"; grep=$(node frontend/e2e/affected.mjs grep '{{usage.base}}'); mise run e2e --grep "$grep" {% if usage.slow %}--slow{% endif %} {% if usage.reuse %}--reuse{% endif %} -- "$@"'''
 
 [tasks.e2e-bundle]
-description = "The wasm builds and the production bundle the e2e tests serve, each rebuilt only when a source of it is newer"
+description = "The wasm builds (standard Go and TinyGo) and the production bundle the e2e tests serve, each rebuilt only when a source of it is newer"
 dir = "frontend"
-depends = ["build-go", "build-go2"]
+depends = ["build-go", "build-go2", "build-go-tiny", "build-go2-tiny"]
 sources = ["src/**/*", "static/**/*", "package.json", "pnpm-lock.yaml", "svelte.config.js", "vite.config.js", "tsconfig.json"]
 outputs = ["build/.e2e-bundle"]
 run = [
-  '{{vars.NICE}} gzip -kf9 static/go-pob.wasm static/go-pob2.wasm',
+  '{{vars.NICE}} gzip -kf9 static/go-pob.wasm static/go-pob2.wasm static/go-pob-tiny.wasm static/go-pob2-tiny.wasm',
   '{{vars.NICE}} npx vite build --logLevel warn',
   'touch build/.e2e-bundle',
 ]

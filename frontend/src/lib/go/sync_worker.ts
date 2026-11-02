@@ -1,6 +1,7 @@
 import { expose, proxy } from 'comlink';
 import '$lib/console_hook';
-import '../../wasm_exec.js';
+import { useEngine, watchTraps } from './wasm_engine';
+import type { WasmEngine } from './wasm_file';
 import { initializeCrystalline, storage, raw, config, pob, builds, calculator, exposition } from '../types';
 import type { Outputs, TickCallback, TickMeta, TickWarnings } from '../custom_types';
 import type { BuildChannel } from '../global.js';
@@ -131,21 +132,24 @@ class PoBWorker {
     else this.currentBuildStore.set(published);
   }
 
-  boot(wasm: ArrayBuffer, callback: TickCallback, currentBuildStore: BuildChannel) {
+  boot(wasm: ArrayBuffer, callback: TickCallback, currentBuildStore: BuildChannel, engine: WasmEngine = 'go') {
     this.callback = callback;
     this.booted = true;
     this.currentBuildStore = currentBuildStore;
 
     return new Promise((resolve, reject) => {
-      const go = new Go();
-      performance.mark('pob:instantiate-start');
-      WebAssembly.instantiate(wasm, go.importObject)
-        .then(async (result) => {
+      useEngine(engine)
+        .then(() => {
+          const go = new Go();
+          performance.mark('pob:instantiate-start');
+          return WebAssembly.instantiate(wasm, go.importObject).then((result) => ({ go, result }));
+        })
+        .then(async ({ go, result }) => {
           this.wasmModule = result.module;
           performance.mark('pob:instantiated');
-          void go.run(result.instance);
+          void go.run(engine === 'tinygo' ? watchTraps(result.instance) : result.instance);
           performance.mark('pob:go-main');
-          (globalThis as { __pobWasmMemory?: unknown }).__pobWasmMemory = result.instance.exports.mem;
+          (globalThis as { __pobWasmMemory?: unknown }).__pobWasmMemory = result.instance.exports.mem ?? result.instance.exports.memory;
 
           initializeCrystalline();
           (globalThis as { __pobLiveHeapMB?: unknown }).__pobLiveHeapMB = () => exposition.LiveHeapMB();

@@ -18,7 +18,7 @@ const config = {
     },
     serviceWorker: {
       register: false,
-      files: (file) => !/(^|\/)(go-pob2?\.wasm.*|_headers|\.DS_Store)$/.test(file)
+      files: (file) => !/(^|\/)(go-pob2?(-tiny)?\.wasm.*|_headers|\.DS_Store)$/.test(file)
     }
   },
 

@@ -61557,7 +61557,7 @@ func crystallineToMapOfStringToString(value js.Value) (map[string]string, error)
 }
 
 func crystallineToModKeywordFlag(value js.Value) (mod.KeywordFlag, error) {
-	converted, err := crystallineToInt(value)
+	converted, err := crystallineToInt64(value)
 	if err != nil {
 		var zero mod.KeywordFlag
 
@@ -61568,7 +61568,7 @@ func crystallineToModKeywordFlag(value js.Value) (mod.KeywordFlag, error) {
 }
 
 func crystallineToModMFlag(value js.Value) (mod.MFlag, error) {
-	converted, err := crystallineToInt(value)
+	converted, err := crystallineToInt64(value)
 	if err != nil {
 		var zero mod.MFlag
 

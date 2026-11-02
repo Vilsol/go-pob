@@ -2,8 +2,9 @@ import { expose } from 'comlink';
 import { configure, fs } from '@zenfs/core';
 import { IndexedDB } from '@zenfs/dom';
 import '$lib/console_hook';
-import '../../wasm_exec.js';
-import { boot, config, exposition, storage, type calculator2 } from '../types2';
+import { useEngine, watchTraps } from './wasm_engine';
+import type { WasmEngine } from './wasm_file';
+import { boot, config, exposition, initializeCrystalline, storage, type calculator2 } from '../types2';
 import type { Poe2View } from '../global';
 import { defaultStateOf, relevanceQuery2, type ConfigValue2 } from '../display/configurations2';
 import { DESKTOP } from '$lib/pwa/desktop';
@@ -255,8 +256,14 @@ class PoB2Worker {
   private calc?: exposition.Calculator;
   private treeData?: Promise<Tree2>;
 
-  boot(wasm: ArrayBuffer) {
-    this.booted ??= boot(wasm).then(async () => {
+  boot(wasm: ArrayBuffer, engine: WasmEngine = 'go') {
+    this.booted ??= useEngine(engine).then(async () => {
+      if (engine === 'tinygo') {
+        const go = new Go();
+        const { instance } = await WebAssembly.instantiate(wasm, go.importObject);
+        void go.run(watchTraps(instance));
+        initializeCrystalline();
+      } else await boot(wasm);
       config.InitLogging(false);
       await initializeStorage();
       // not awaited, so Open is not held behind it; a load error reaches Open through Calculate, which runs the same loads

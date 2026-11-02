@@ -289,6 +289,56 @@ jobs:
         env:
           CORPUS: "true"
 
+  tinygo:
+    name: TinyGo engine
+    runs-on: ubuntu-latest
+    needs:
+      - build-backend
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Setup nodejs
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+
+      - name: Set up TinyGo
+        run: ./.github/tinygo_install.sh
+
+      - name: Cache test data
+        uses: actions/cache@v4
+        with:
+          path: |
+            testdata/corpus-[0-9]*
+            testdata/oracle-[0-9]*
+            testdata/.installed-release
+          key: testdata-${{ hashFiles('scripts/testdata.json') }}
+
+      - name: Fetch test data
+        run: go run ./scripts/testdatarelease fetch
+
+      - name: Build wasm
+        run: |
+          GOOS=js GOARCH=wasm go build -o frontend/static/go-pob.wasm ./wasm
+          GOOS=js GOARCH=wasm go build -o frontend/static/go-pob2.wasm ./wasm2
+          ./.github/tinygo_build.sh wasm frontend/static/go-pob-tiny.wasm
+          ./.github/tinygo_build.sh wasm2 frontend/static/go-pob2-tiny.wasm
+
+      # both engines over the same builds; every output must be bit-identical
+      - name: PoE1 corpus sample, TinyGo vs Go
+        run: node frontend/harness/engine_diff.mjs poe1 --sample 200 --jobs 2 testdata/corpus-3.29
+
+      - name: PoE2 fixture builds, TinyGo vs Go
+        run: node frontend/harness/engine_diff.mjs poe2 wasm2/exposition/testdata
+
   test-frontend:
     name: Test Frontend
     runs-on: ubuntu-latest

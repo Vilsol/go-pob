@@ -287,6 +287,10 @@ storage/robust_other.go             GO-NATIVE  cache file reads and renames, as 
 storage/robust_windows.go           GO-NATIVE  cache file reads and renames retried past Windows' transient sharing errors
 storage/wasm.go                     GO-NATIVE  ZenFS/IndexedDB-backed asset cache; PoB has no equivalent layer
 
+utils/jsfetch/fetch.go              GO-NATIVE  an http.RoundTripper over the browser fetch for TinyGo builds, whose net/http has none; PoB fetches through its own Lua HTTP
+utils/jsfetch/jsfetch.go            GO-NATIVE  the package clause standard Go builds see, so the blank import compiles without TinyGo
+utils/libm/doc.go                   GO-NATIVE  the package clause standard Go builds see, so the blank import compiles without TinyGo
+utils/libm/libm.go                  GO-NATIVE  Go's own exp and log in place of the C library's for TinyGo builds, so math.Exp, Log and Pow match standard Go bit for bit; PoB computes in LuaJIT
 utils/data.go                       GO-NATIVE  Ternary/Or/Ptr and friends -- Go stand-ins for Lua's `a or b`, `a and b or c` and implicit nil
 utils/logging.go                    GO-NATIVE  slog helpers
 utils/map.go                        GO-NATIVE  map access helpers that give Go the nil-tolerant field reads Lua gets for free

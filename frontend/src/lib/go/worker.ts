@@ -4,6 +4,7 @@ import * as Comlink from 'comlink';
 import type { WorkerType } from './sync_worker';
 import type { ProxiedRemote } from '$lib/type_utils';
 import { captureUncaught, forwardWorkerLog } from '$lib/app_log';
+import { watchEngineCrash } from './engine_choice';
 
 type WorkerData = { syncWorker: Worker; syncWrap: ProxiedRemote<WorkerType> };
 
@@ -19,6 +20,7 @@ function getWorker(): WorkerData {
   console.log('Creating sync worker');
   const theWorker = new SyncWorker({ name: 'calc' });
   forwardWorkerLog(theWorker);
+  watchEngineCrash(theWorker);
   captureUncaught(window, 'page');
   const obj = Comlink.wrap<WorkerType>(theWorker) as ProxiedRemote<WorkerType>;
   const result = { syncWorker: theWorker, syncWrap: obj };

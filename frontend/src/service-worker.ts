@@ -2,7 +2,7 @@
 /// <reference lib="webworker" />
 
 import { base, build, files, version } from '$service-worker';
-import { WASM2_FALLBACK, WASM2_FILE, WASM_FALLBACK, WASM_FILE } from '$lib/go/wasm_file';
+import { WASM2_FALLBACK, WASM2_FILE, WASM_FALLBACK, WASM_FILE, engineFile } from '$lib/go/wasm_file';
 import { ART_CACHE, isCdnAsset } from '$lib/pwa/hosts';
 
 const sw = self as unknown as ServiceWorkerGlobalScope;
@@ -16,8 +16,18 @@ const WASM = `${base}${WASM_FILE}`;
 const PRECACHE = [SHELL, WASM, ...build, ...files];
 const PRECACHED = new Set(PRECACHE);
 const FALLBACK = `${base}${WASM_FALLBACK}`;
-// the PoE2 wasm and worker are cached the first time a PoE2 build asks for them, never at install
-const RUNTIME = new Set([FALLBACK, `${base}${WASM2_FILE}`, `${base}${WASM2_FALLBACK}`]);
+// the PoE2 wasm and worker, and every TinyGo build, are cached the first time the page asks for them, never at install
+const RUNTIME = new Set(
+  [
+    WASM_FALLBACK,
+    WASM2_FILE,
+    WASM2_FALLBACK,
+    engineFile(WASM_FILE, 'tinygo'),
+    engineFile(WASM_FALLBACK, 'tinygo'),
+    engineFile(WASM2_FILE, 'tinygo'),
+    engineFile(WASM2_FALLBACK, 'tinygo')
+  ].map((f) => `${base}${f}`)
+);
 
 const usableWasm = async (res: Response | undefined) => {
   const reader = res?.body?.getReader();

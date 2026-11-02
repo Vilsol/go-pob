@@ -1,5 +1,6 @@
 import '$lib/console_hook';
-import '../../wasm_exec.js';
+import { useEngine, watchTraps } from './wasm_engine';
+import type { WasmEngine } from './wasm_file';
 import { initializeCrystalline, config, raw, builds, exposition } from '../types';
 import { releaseWrapper } from '../type_utils';
 import { configureStorage } from './storage_config';
@@ -23,12 +24,13 @@ const ROWS_MS = 500;
 let seq = 0;
 let memory: WebAssembly.Memory | undefined;
 
-const boot = async (module: WebAssembly.Module) => {
+const boot = async (module: WebAssembly.Module, engine: WasmEngine) => {
   const start = performance.now();
+  await useEngine(engine);
   const go = new Go();
   const instance = await WebAssembly.instantiate(module, go.importObject);
-  void go.run(instance);
-  memory = instance.exports.mem as WebAssembly.Memory;
+  void go.run(engine === 'tinygo' ? watchTraps(instance) : instance);
+  memory = (instance.exports.mem ?? instance.exports.memory) as WebAssembly.Memory;
   initializeCrystalline();
   config.InitLogging(false);
   await configureStorage();
@@ -69,7 +71,7 @@ let booted: Promise<number> | undefined;
 onmessage = (e: MessageEvent<PowerPoolRequest>) => {
   const m = e.data;
   if (m.type === 'boot') {
-    booted = boot(m.module);
+    booted = boot(m.module, m.engine);
     booted.then((ms) => post({ type: 'ready', ms })).catch((err) => post({ type: 'error', seq: 0, message: String(err) }));
   } else if (m.type === 'run') {
     seq = m.seq;

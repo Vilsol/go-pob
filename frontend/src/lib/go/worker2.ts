@@ -3,7 +3,8 @@ import * as Comlink from 'comlink';
 import { assets } from '$app/paths';
 import type { Worker2Type } from './sync_worker2';
 import { forwardWorkerLog } from '$lib/app_log';
-import { WASM2_FALLBACK, WASM2_FILE } from './wasm_file';
+import { WASM2_FALLBACK, WASM2_FILE, engineFile } from './wasm_file';
+import { fallBackToGo, runningEngine, watchEngineCrash } from './engine_choice';
 import { DESKTOP } from '$lib/pwa/desktop';
 
 let worker2: Promise<Comlink.Remote<Worker2Type>> | undefined;
@@ -22,9 +23,10 @@ const wasm2Bytes = async (path: string): Promise<ArrayBuffer> => {
     cacheOnceControlled(path);
     return new Response(new Response(data).body!.pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
   }
-  if (path !== WASM2_FALLBACK) {
-    console.warn(`${path} arrived still encoded; falling back to ${WASM2_FALLBACK}`);
-    return wasm2Bytes(WASM2_FALLBACK);
+  const fallback = engineFile(WASM2_FALLBACK, runningEngine);
+  if (path !== fallback) {
+    console.warn(`${path} arrived still encoded; falling back to ${fallback}`);
+    return wasm2Bytes(fallback);
   }
   throw new Error('Failed to load the PoE2 wasm runtime: not a wasm module');
 };
@@ -50,12 +52,14 @@ export const poe2Worker = () =>
     console.log('Creating PoE2 sync worker');
     const w = new SyncWorker2({ name: 'calc2' });
     forwardWorkerLog(w);
+    watchEngineCrash(w);
     const wrap = Comlink.wrap<Worker2Type>(w);
-    const data = await wasm2Bytes(WASM2_FILE);
-    await wrap.boot(Comlink.transfer(data, [data]));
+    const data = await wasm2Bytes(engineFile(WASM2_FILE, runningEngine));
+    await wrap.boot(Comlink.transfer(data, [data]), runningEngine);
     return wrap;
   })().catch((err: unknown) => {
     worker2 = undefined;
+    fallBackToGo(`the PoE2 engine did not boot (${err instanceof Error ? err.message : String(err)})`);
     throw err;
   }));
 

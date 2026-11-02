@@ -95,11 +95,20 @@ jobs:
           GOOS: js
           GOARCH: wasm
 
+      - name: Set up TinyGo
+        run: ./.github/tinygo_install.sh
+
+      - name: Build TinyGo wasm
+        run: |
+          ./.github/tinygo_build.sh wasm frontend/static/go-pob-tiny.wasm -tags=timetzdata
+          ./.github/tinygo_build.sh wasm2 frontend/static/go-pob2-tiny.wasm -tags=timetzdata
+
       - name: Compress wasm
         run: |
-          gzip -k9 frontend/static/go-pob.wasm frontend/static/go-pob2.wasm
-          node frontend/scripts/compress-wasm.mjs go-pob.wasm go-pob2.wasm
+          gzip -k9 frontend/static/go-pob.wasm frontend/static/go-pob2.wasm frontend/static/go-pob-tiny.wasm frontend/static/go-pob2-tiny.wasm
+          node frontend/scripts/compress-wasm.mjs go-pob.wasm go-pob2.wasm go-pob-tiny.wasm go-pob2-tiny.wasm
           rm frontend/static/go-pob.wasm frontend/static/go-pob.wasm.br.sha256 frontend/static/go-pob2.wasm frontend/static/go-pob2.wasm.br.sha256
+          rm frontend/static/go-pob-tiny.wasm frontend/static/go-pob-tiny.wasm.br.sha256 frontend/static/go-pob2-tiny.wasm frontend/static/go-pob2-tiny.wasm.br.sha256
 
       - name: Build frontend
         working-directory: frontend

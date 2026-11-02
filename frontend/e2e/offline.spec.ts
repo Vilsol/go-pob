@@ -94,9 +94,10 @@ test('offline after one online visit: reload, open a saved build, edit it', { ta
     const answer = (await kept.jsonValue()) as { count: number; missing: string[] };
     console.log(`tree sheets kept for offline: ${answer.count}, missing ${answer.missing.length}`);
     expect(answer.missing, 'tree sheets the service worker could not keep').toEqual([]);
-    // the PoE2 worker is cached the first time a PoE2 build asks for it (poe2-routing.spec.ts)
+    // the PoE2 worker is cached the first time a PoE2 build asks for it (poe2-routing.spec.ts), and the TinyGo shim in
+    // assets/ the first time TinyGo is chosen
     const workers = readdirSync(resolve(import.meta.dirname, '../.svelte-kit/output/client/_app/immutable/workers'))
-      .filter((f) => !f.startsWith('sync_worker2-'))
+      .filter((f) => !f.startsWith('sync_worker2-') && f !== 'assets')
       .map((f) => `${BASE}/_app/immutable/workers/${f}`);
     expect(
       workers.some((u) => u.includes('power_worker')),

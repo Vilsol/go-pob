@@ -77,14 +77,21 @@ jobs:
       - name: Install dependencies
         run: cd frontend && pnpm i
 
+      - name: Set up TinyGo
+        run: ./.github/tinygo_install.sh
+
       - name: Build frontend
         run: |
           GOOS=js GOARCH=wasm go build -trimpath -tags=timetzdata -o frontend/static/go-pob.wasm ./wasm
           gzip -kf9 frontend/static/go-pob.wasm
           GOOS=js GOARCH=wasm go build -trimpath -tags=timetzdata -o "$RUNNER_TEMP/go-pob2.wasm" ./wasm2
           gzip -nc9 "$RUNNER_TEMP/go-pob2.wasm" >frontend/static/go-pob2.wasm.gz
+          ./.github/tinygo_build.sh wasm "$RUNNER_TEMP/go-pob-tiny.wasm" -tags=timetzdata
+          gzip -nc9 "$RUNNER_TEMP/go-pob-tiny.wasm" >frontend/static/go-pob-tiny.wasm.gz
+          ./.github/tinygo_build.sh wasm2 "$RUNNER_TEMP/go-pob2-tiny.wasm" -tags=timetzdata
+          gzip -nc9 "$RUNNER_TEMP/go-pob2-tiny.wasm" >frontend/static/go-pob2-tiny.wasm.gz
           (cd frontend && VITE_DESKTOP=1 VITE_VERSION=$VERSION pnpm exec vite build --logLevel warn)
-          rsync -a --delete --exclude .gitkeep --exclude go-pob.wasm --exclude go-pob.wasm.br --exclude go-pob2.wasm --exclude go-pob2.wasm.br --exclude service-worker.js --exclude _headers frontend/build/ desktop/dist/
+          rsync -a --delete --exclude .gitkeep --exclude 'go-pob*.wasm' --exclude 'go-pob*.wasm.br' --exclude service-worker.js --exclude _headers frontend/build/ desktop/dist/
 
       - uses: actions/upload-artifact@v4
         with:

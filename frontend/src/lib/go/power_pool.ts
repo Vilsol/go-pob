@@ -1,9 +1,11 @@
 import type { calculator } from '../types';
 import PowerWorker from './power_worker?worker';
 import { emitLog, isLogMessage, log } from '$lib/app_log';
+import { activeEngine } from './wasm_engine';
+import type { WasmEngine } from './wasm_file';
 
 export type PowerPoolRequest =
-  | { type: 'boot'; module: WebAssembly.Module }
+  | { type: 'boot'; module: WebAssembly.Module; engine: WasmEngine }
   | { type: 'run'; seq: number; xml: string; stat: string; maxDepth: number; index: number; count: number }
   | { type: 'cancel' };
 
@@ -106,7 +108,7 @@ export class PowerPool {
       e.preventDefault();
       fail(new Error(`power worker failed: ${e.message}`));
     };
-    worker.postMessage({ type: 'boot', module } satisfies PowerPoolRequest);
+    worker.postMessage({ type: 'boot', module, engine: activeEngine() } satisfies PowerPoolRequest);
     return slot;
   }
 

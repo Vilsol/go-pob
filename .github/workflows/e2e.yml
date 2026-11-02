@@ -110,6 +110,14 @@ jobs:
           GOOS: js
           GOARCH: wasm
 
+      - name: Set up TinyGo
+        run: ./.github/tinygo_install.sh
+
+      - name: Build TinyGo wasm
+        run: |
+          ./.github/tinygo_build.sh wasm frontend/static/go-pob-tiny.wasm && gzip -kf9 frontend/static/go-pob-tiny.wasm
+          ./.github/tinygo_build.sh wasm2 frontend/static/go-pob2-tiny.wasm && gzip -kf9 frontend/static/go-pob2-tiny.wasm
+
       - name: Build frontend
         run: pnpm exec vite build --logLevel warn
         working-directory: frontend
@@ -143,6 +151,8 @@ jobs:
           E2E_WORKERS: '2'
           # a fresh context per test: on CI's slower runners a reused page fails in ways no local run reproduces
           E2E_SHARED: '0'
+          # the TinyGo specs fail rather than skip when the bundle has no TinyGo wasm
+          E2E_TINYGO: '1'
 
       - name: Count fetched assets
         id: assets-after
