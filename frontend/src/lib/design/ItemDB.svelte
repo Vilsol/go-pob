@@ -29,6 +29,8 @@
     onopen: (name: string) => void;
     oncopy: (name: string) => void;
     oncraft?: (base: string) => void;
+    /* the databases the game has; both when absent */
+    kinds?: ItemDBKind[];
   };
   let {
     kind = $bindable(),
@@ -43,7 +45,8 @@
     onadd,
     onopen,
     oncopy,
-    oncraft
+    oncraft,
+    kinds = ['UNIQUE', 'RARE']
   }: Props = $props();
 
   const uid = $props.id();
@@ -68,7 +71,7 @@
     tabs={[
       { id: 'UNIQUE', label: 'Uniques' },
       { id: 'RARE', label: 'Templates' }
-    ]}
+    ].filter((t) => kinds.includes(t.id as ItemDBKind))}
     selected={kind}
     onchange={(id) => {
       kind = id as ItemDBKind;

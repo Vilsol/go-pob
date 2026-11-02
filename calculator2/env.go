@@ -101,11 +101,16 @@ type Environment struct {
 	WeaponSetValidationSkillList []*ActiveSkill
 }
 
-// calcOverride is CalcOverride's weaponSet, mainSocketGroup and skipWeaponSetContexts; 0 is nil.
+// calcOverride is CalcOverride's weaponSet, mainSocketGroup and skipWeaponSetContexts; 0 is nil. With RepSlotName
+// set, RepItem (nil empties it) stands in that slot's item; ToggleFlask and ToggleCharm flip one item's activation.
 type calcOverride struct {
 	WeaponSet             int
 	MainSocketGroup       int
 	SkipWeaponSetContexts bool
+	RepSlotName           string
+	RepItem               *Item
+	ToggleFlask           *Item
+	ToggleCharm           *Item
 }
 
 // SocketGroup is one build.skillsTab.socketGroupList entry.

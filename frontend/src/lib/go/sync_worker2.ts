@@ -13,6 +13,9 @@ import { remountStore } from './storage_config';
 import type { SavedStats2 } from '../shell/poe2_save';
 import { calcSections2 } from '../calcs/calc_sections2';
 import { calcsModProps2 } from '../display/calcs2';
+import type { ItemDBFilterInput, ItemDBKind, ItemDBLists, ItemDBRowPlain } from '../design/item_db';
+import { addStatCompares2 } from '../display/stat_compare2';
+import type { StatCompareSection } from '../skill_tree/stat_compare';
 
 // only the data cache bucket; on the web it is its own IndexedDB database, since zenfs allocates inode ids per
 // instance and two instances writing the PoE1 worker's database overwrite each other's files
@@ -208,6 +211,20 @@ export type Poe2DisplayEdit =
   | { op: 'rune'; socket: number; rune: string }
   | { op: 'sockets'; count: number }
   | { op: 'close' };
+
+/* ItemDBControl.lua (PoB-PoE2): the item database list, as the shared Browse items page shows it */
+export type Poe2ItemDBKind = ItemDBKind;
+export type Poe2ItemDBLists = ItemDBLists;
+export type Poe2ItemDBFilter = ItemDBFilterInput;
+export type Poe2ItemDBRow = ItemDBRowPlain;
+
+/* ItemsTab.lua:4382-4538 (PoB-PoE2): the item a tooltip's stat differences are for */
+export type Poe2CompareTarget =
+  | { kind: 'display' }
+  | { kind: 'item'; id: number }
+  | { kind: 'db'; db: Poe2ItemDBKind; name: string }
+  | { kind: 'craft'; rarity: number; title: string; base: string };
+export type Poe2CompareBlock = { header: string; slot?: string; sections: StatCompareSection[]; calcMs: number };
 
 const item2 = (i: exposition.ItemView) => ({
   id: i.ID,
@@ -614,6 +631,114 @@ class PoB2Worker {
   ItemText(id: number): string {
     if (!this.calc) throw new Error('no PoE2 build is open');
     return this.calc.ItemText(id).unwrap();
+  }
+
+  /* ItemsTab.lua:2838-2846 (PoB-PoE2): the Craft Item popup's types and their bases */
+  async CraftBases(): Promise<{ type: string; bases: string[] }[]> {
+    return ((await exposition.CraftBases()) ?? []).map((g) => ({ type: g.Type, bases: [...(g.Bases ?? [])] }));
+  }
+
+  /* ItemsTab.lua:2847-2852 (PoB-PoE2): the item Create would make; rarity is 1-based */
+  async CraftItemPreview(rarity: number, title: string, base: string): Promise<Poe2Item> {
+    return item2((await exposition.CraftItemPreview(rarity, title, base)).unwrap());
+  }
+
+  /* ItemsTab.lua:2853-2863 (PoB-PoE2): Create opens the item in the editor */
+  CraftDisplayItem(rarity: number, title: string, base: string) {
+    if (!this.calc) throw new Error('no PoE2 build is open');
+    this.calc.CraftDisplayItem(rarity, title, base).unwrap();
+  }
+
+  /* ItemDBControl.lua:25-92 (PoB-PoE2): the item database list's dropdowns */
+  async ItemDBLists(kind: Poe2ItemDBKind): Promise<Poe2ItemDBLists> {
+    const l = await exposition.ItemDBLists(kind);
+    const list = (v: readonly string[] | undefined) => [...(v ?? [])];
+    return {
+      slots: list(l.Slots),
+      types: list(l.Types),
+      leagues: list(l.Leagues),
+      requirements: list(l.Requirements),
+      obtainable: list(l.Obtainable),
+      searchModes: list(l.SearchModes),
+      sortStats: []
+    };
+  }
+
+  /* ItemDBControl.lua:94-298 (PoB-PoE2): the rows the filters keep, by name */
+  ItemDBRows(kind: Poe2ItemDBKind, f: Poe2ItemDBFilter): Poe2ItemDBRow[] {
+    if (!this.calc) throw new Error('no PoE2 build is open');
+    const rows = this.calc
+      .ItemDBRows(kind, {
+        Slot: f.slot,
+        Type: f.type,
+        League: f.league,
+        Requirement: f.requirement,
+        Obtainable: f.obtainable,
+        Search: f.search,
+        SearchMode: f.searchMode
+      })
+      .unwrap();
+    return (rows ?? []).map((r) => ({
+      name: r.Name,
+      title: r.Title,
+      base: r.BaseName,
+      rarity: r.Rarity,
+      type: r.Type,
+      slot: r.PrimarySlot,
+      level: r.Level,
+      league: r.League,
+      source: r.Source,
+      power: 0
+    }));
+  }
+
+  /* ItemDBControl.lua:333-341 (PoB-PoE2) */
+  async ItemDBTooltip(kind: Poe2ItemDBKind, name: string): Promise<Poe2Item> {
+    return item2((await exposition.ItemDBTooltip(kind, name)).unwrap());
+  }
+
+  /* ItemDBControl.lua:384-386 (PoB-PoE2) */
+  async ItemDBRaw(kind: Poe2ItemDBKind, name: string): Promise<string> {
+    return (await exposition.ItemDBRaw(kind, name)).unwrap();
+  }
+
+  /* ItemDBControl.lua:374-381 (PoB-PoE2): a double click opens the item in the editor */
+  OpenDBItem(kind: Poe2ItemDBKind, name: string) {
+    if (!this.calc) throw new Error('no PoE2 build is open');
+    this.calc.OpenDBItem(kind, name).unwrap();
+  }
+
+  /* ItemDBControl.lua:348-373 (PoB-PoE2): Ctrl+click adds the item and equips it, then the recalculation */
+  async AddDBItem(kind: Poe2ItemDBKind, name: string, equip: boolean, second: boolean): Promise<Poe2Calc> {
+    if (!this.calc) throw new Error('no PoE2 build is open');
+    this.calc.AddDBItem(kind, name, equip, second).unwrap();
+    return this.view();
+  }
+
+  /* ItemsTab.lua:4382-4538, Build.lua:2585-2640 (PoB-PoE2): an item tooltip's stat differences, one block per slot it
+     fits (or its flask or charm toggle), measured against the calculator's base pass */
+  ItemCompare(t: Poe2CompareTarget): Poe2CompareBlock[] {
+    const c = this.calc;
+    if (!c) throw new Error('no PoE2 build is open');
+    const start = performance.now();
+    const v =
+      t.kind === 'display'
+        ? c.DisplayItemCompare().unwrap()
+        : t.kind === 'item'
+          ? c.BuildItemCompare(t.id).unwrap()
+          : t.kind === 'db'
+            ? c.DBItemCompare(t.db, t.name).unwrap()
+            : c.CraftItemCompare(t.rarity, t.title, t.base).unwrap();
+    if (!v) return [];
+    const calcMs = performance.now() - start;
+    const outputs = (o: exposition.CompareOutputs) => ({ output: { ...(o.Output ?? {}) }, minion: o.Minion ? { ...o.Minion } : undefined });
+    const base = outputs(v.Base);
+    return (v.Blocks ?? []).map((b) => ({
+      header: b.Header,
+      slot: b.Slot || undefined,
+      sections: addStatCompares2({ ...(v.SkillFlags ?? {}) }, { ...(v.MinionSkillFlags ?? {}) }, v.Minion, base, outputs(b.Compare)),
+      calcMs
+    }));
   }
 
   async ClearDataCache(): Promise<number> {

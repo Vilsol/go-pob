@@ -56,6 +56,15 @@ func TestPoE2MiscLuaIsThePinsMisc(t *testing.T) {
 	firstLineDiff(t, "Data/Misc.lua", got, want)
 }
 
+func TestPoE2VerisiumCraftsAreThePins(t *testing.T) {
+	want := poe2PinFile(t, "Data/VerisiumCrafts.lua")
+	got, err := poe2VerisiumCraftsLua()
+	if err != nil {
+		t.Fatal(err)
+	}
+	firstLineDiff(t, "Data/VerisiumCrafts.lua", got, want)
+}
+
 func luaStrings(t *testing.T, v any) []string {
 	t.Helper()
 	tbl, ok := v.(*luaTable)

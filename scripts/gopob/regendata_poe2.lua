@@ -1,7 +1,7 @@
 -- Dumps one of PoB-PoE2's loaded data tables as JSON for `gopob poe2-data-emit`.
--- usage: regendata_poe2.lua <out.json> <bases|runes|constants|gems|legion|bosses|boss-skills>
+-- usage: regendata_poe2.lua <out.json> <bases|runes|constants|gems|legion|bosses|boss-skills|runeforging|item-db>
 local outPath, which = arg[1], arg[2]
-assert(outPath and which, "usage: regendata_poe2.lua <out.json> <bases|runes|constants|gems|legion|bosses|boss-skills>")
+assert(outPath and which, "usage: regendata_poe2.lua <out.json> <bases|runes|constants|gems|legion|bosses|boss-skills|runeforging|item-db>")
 
 -- GAMEDATA_DUMP is `gamedatadump`'s {fileName = source} map: those data files load in place of the pin's.
 local overlayPath = os.getenv("GAMEDATA_DUMP")
@@ -15,6 +15,13 @@ if overlayPath then
 			return loadstring(overlay[fileName], "@" .. fileName)
 		end
 		return pinLoadfile(fileName, ...)
+	end
+	-- Data.lua requires some of its data modules ("Data.VerisiumCrafts")
+	for fileName, source in pairs(overlay) do
+		local module = fileName:match("^(.+)%.lua$"):gsub("/", ".")
+		package.preload[module] = function()
+			return assert(loadstring(source, "@" .. fileName))()
+		end
 	end
 end
 
@@ -195,6 +202,38 @@ dumpers["boss-skills"] = function()
 		rows[#rows + 1] = row
 	end
 	return rows
+end
+
+function dumpers.runeforging()
+	local rows = {}
+	for _, name in ipairs(sortedKeys(data.runeforgingCrafts)) do
+		local crafts = {}
+		for i, craft in ipairs(data.runeforgingCrafts[name]) do
+			crafts[i] = { baseTypeId = craft.baseTypeId, name = craft.name }
+		end
+		rows[#rows + 1] = { base = name, crafts = crafts }
+	end
+	return rows
+end
+
+-- PoB-PoE2's own item databases as Main.lua reads them: every raw unique by its data.uniques key, the generated ones
+-- included, and every raw rare template
+dumpers["item-db"] = function()
+	local uniques = {}
+	for _, kind in ipairs(sortedKeys(data.uniques)) do
+		local raws = {}
+		for i, raw in ipairs(data.uniques[kind]) do
+			assert(type(raw) == "string", "REFUSING: data.uniques." .. kind .. "[" .. i .. "] is not a string")
+			raws[i] = raw
+		end
+		uniques[#uniques + 1] = { kind = kind, raws = raws }
+	end
+	local rares = {}
+	for i, raw in ipairs(data.rares) do
+		assert(type(raw) == "string", "REFUSING: data.rares[" .. i .. "] is not a string")
+		rares[i] = raw
+	end
+	return { uniques = uniques, rares = rares }
 end
 
 local dump = assert(dumpers[which], "REFUSING: no table named " .. which)

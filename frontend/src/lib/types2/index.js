@@ -44,7 +44,12 @@ export const initializeCrystalline = () => {
     InitLogging: wrap('config.InitLogging', globalThis['go']['go-pob2']['config']['InitLogging'])
   };
   exposition = {
+    CraftBases: wrap('exposition.CraftBases', globalThis['go']['go-pob2']['exposition']['CraftBases']),
+    CraftItemPreview: wrap('exposition.CraftItemPreview', globalThis['go']['go-pob2']['exposition']['CraftItemPreview']),
     GemList: wrap('exposition.GemList', globalThis['go']['go-pob2']['exposition']['GemList']),
+    ItemDBLists: wrap('exposition.ItemDBLists', globalThis['go']['go-pob2']['exposition']['ItemDBLists']),
+    ItemDBRaw: wrap('exposition.ItemDBRaw', globalThis['go']['go-pob2']['exposition']['ItemDBRaw']),
+    ItemDBTooltip: wrap('exposition.ItemDBTooltip', globalThis['go']['go-pob2']['exposition']['ItemDBTooltip']),
     ParseBuild: wrap('exposition.ParseBuild', globalThis['go']['go-pob2']['exposition']['ParseBuild']),
     PassiveTreeJSON: wrap('exposition.PassiveTreeJSON', globalThis['go']['go-pob2']['exposition']['PassiveTreeJSON']),
     Preload: wrap('exposition.Preload', globalThis['go']['go-pob2']['exposition']['Preload']),

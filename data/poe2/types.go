@@ -7,14 +7,16 @@ package poe2
 //
 //pob2:src/Modules/Data.lua:1108-1113
 type ItemBase struct {
-	Name                           string
-	Type                           string
-	SubType                        string
-	Hidden                         bool
-	SocketLimit                    float64
-	Quality                        float64
-	Spirit                         float64
-	CharmLimit                     float64
+	Name        string
+	Type        string
+	SubType     string
+	Hidden      bool
+	SocketLimit float64
+	Quality     float64
+	Spirit      float64
+	CharmLimit  float64
+	// HasCharmLimit is a present charmLimit, which belts carry as 0.
+	HasCharmLimit                  bool
 	GrantedSkillsHaveNoReservation bool
 	Implicit                       string
 	ImplicitModTypes               [][]string

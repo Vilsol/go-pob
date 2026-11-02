@@ -69,6 +69,15 @@ export declare namespace calculator2 {
     readonly SortGemsByDPS: boolean;
     readonly SortGemsByDPSField: string;
   }
+  interface ItemDBFilter {
+    readonly Slot: number;
+    readonly Type: number;
+    readonly League: number;
+    readonly Requirement: number;
+    readonly Obtainable: number;
+    readonly Search: string;
+    readonly SearchMode: number;
+  }
   interface SocketGroupView {
     readonly Label: string;
     readonly Skills?: Array<string>;
@@ -96,8 +105,10 @@ export declare namespace exposition {
     readonly OffHand?: Record<string, number>;
   }
   interface Calculator {
+    AddDBItem(kind: string, name: string, equip: boolean, second: boolean): Result<number>;
     AddDisplayItem(slot: string): Result<number>;
     AllocateAttributeNode(id: number, attributeIndex: number, allocMode: number): Result<void>;
+    BuildItemCompare(id: number): Result<(exposition.ItemCompareView | undefined)>;
     CalcsMods(query: exposition.CalcsModQuery): Result<(Record<string, number> | undefined)>;
     CalcsOutputs(): Result<(exposition.CalcsOutputs | undefined)>;
     Calculate(): Promise<Result<(exposition.Outputs | undefined)>>;
@@ -105,16 +116,21 @@ export declare namespace exposition {
     CloseDisplayItem(): Result<void>;
     ConfigRelevance(query: calculator2.ConfigRelevance): Result<calculator2.ConfigRelevance>;
     CopyItemSet(id: number, title: string): Result<void>;
+    CraftDisplayItem(rarity: number, title: string, base: string): Result<void>;
+    CraftItemCompare(rarity: number, title: string, base: string): Result<(exposition.ItemCompareView | undefined)>;
+    DBItemCompare(kind: string, name: string): Result<(exposition.ItemCompareView | undefined)>;
     DeleteAllSocketGroups(): Result<void>;
     DeleteItem(id: number): Result<void>;
     DeleteItemSet(id: number): Result<void>;
     DeleteSocketGroup(index: number): Result<void>;
+    DisplayItemCompare(): Result<(exposition.ItemCompareView | undefined)>;
     EditDisplayItemText(text: string, rarity: string): Result<void>;
     EditItem(id: number): Result<void>;
     EquippedItems(): Result<(exposition.ItemsView | undefined)>;
     ExportCode(player: Array<exposition.SavedStat> | undefined, fullDPS: Array<exposition.SavedFullDPS> | undefined, minion: Array<exposition.SavedStat> | undefined): Result<string>;
     GemOptions(): calculator2.GemOptions;
     HoverNode(id: number, allocMode: number): exposition.TreeHover;
+    ItemDBRows(kind: string, f: calculator2.ItemDBFilter): Result<(Array<exposition.ItemDBRow> | undefined)>;
     ItemText(id: number): Result<string>;
     ItemsPage(): Result<(exposition.ItemsPageView | undefined)>;
     MoveItemSet(from: number, to: number): Result<void>;
@@ -122,6 +138,7 @@ export declare namespace exposition {
     NewItemSet(title: string): Result<void>;
     NewSocketGroup(): Result<number>;
     Notes(): string;
+    OpenDBItem(kind: string, name: string): Result<void>;
     PasteItem(raw: string): Result<void>;
     Redo(): Result<boolean>;
     RemoveGem(group: number, gem: number): Result<void>;
@@ -160,6 +177,14 @@ export declare namespace exposition {
     release(): void;
     [Symbol.dispose](): void;
   }
+  interface CompareOutputs {
+    readonly Output?: Record<string, number>;
+    readonly Minion?: Record<string, number>;
+  }
+  interface CraftBaseGroup {
+    readonly Type: string;
+    readonly Bases?: Array<string>;
+  }
   interface DisplayItemView {
     readonly ID: number;
     readonly Item: exposition.ItemView;
@@ -170,6 +195,37 @@ export declare namespace exposition {
     readonly SocketCount: number;
     readonly Runes?: Array<string>;
     readonly RuneChoices?: Array<exposition.RuneChoiceView>;
+  }
+  interface ItemCompareBlock {
+    readonly Header: string;
+    readonly Slot: string;
+    readonly Compare: exposition.CompareOutputs;
+  }
+  interface ItemCompareView {
+    readonly Base: exposition.CompareOutputs;
+    readonly SkillFlags?: Record<string, boolean>;
+    readonly MinionSkillFlags?: Record<string, boolean>;
+    readonly Minion: boolean;
+    readonly Blocks?: Array<exposition.ItemCompareBlock>;
+  }
+  interface ItemDBInfo {
+    readonly Slots?: Array<string>;
+    readonly Types?: Array<string>;
+    readonly Leagues?: Array<string>;
+    readonly Requirements?: Array<string>;
+    readonly Obtainable?: Array<string>;
+    readonly SearchModes?: Array<string>;
+  }
+  interface ItemDBRow {
+    readonly Name: string;
+    readonly Title: string;
+    readonly BaseName: string;
+    readonly Rarity: string;
+    readonly Type: string;
+    readonly PrimarySlot: string;
+    readonly Level: number;
+    readonly League: string;
+    readonly Source: string;
   }
   interface ItemSetView {
     readonly ID: number;
@@ -286,7 +342,12 @@ export declare namespace exposition {
     readonly AttributeIndex: number;
     readonly JewelRadiusIndex?: Array<number>;
   }
+  function CraftBases(): Promise<(Array<exposition.CraftBaseGroup> | undefined)>;
+  function CraftItemPreview(rarity: number, title: string, base: string): Promise<Result<exposition.ItemView>>;
   function GemList(): Promise<Result<(Array<calculator2.GemListEntry> | undefined)>>;
+  function ItemDBLists(kind: string): Promise<exposition.ItemDBInfo>;
+  function ItemDBRaw(kind: string, name: string): Promise<Result<string>>;
+  function ItemDBTooltip(kind: string, name: string): Promise<Result<exposition.ItemView>>;
   function ParseBuild(xml: string): Result<(exposition.Calculator | undefined)>;
   function PassiveTreeJSON(): Promise<Result<string>>;
   function Preload(): Promise<Result<void>>;

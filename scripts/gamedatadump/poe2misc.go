@@ -93,7 +93,11 @@ func dumpPoE2MiscData() (any, error) {
 	if err != nil {
 		return nil, err
 	}
-	return map[string]string{"Data/Misc.lua": text}, nil
+	crafts, err := poe2VerisiumCraftsLua()
+	if err != nil {
+		return nil, err
+	}
+	return map[string]string{"Data/Misc.lua": text, "Data/VerisiumCrafts.lua": crafts}, nil
 }
 
 //pob2:block:src/Export/Scripts/miscdata.lua:3-173

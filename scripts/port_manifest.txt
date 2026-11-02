@@ -136,6 +136,8 @@ data/types_tree.go                  GO-NATIVE  Go struct declarations for go-pob
 data/poe2/bases_generated.go        GENERATED  scripts/gopob/regendata_poe2.go
 data/poe2/boss_skills_generated.go  GENERATED  scripts/gopob/regendata_poe2_bosses.go
 data/poe2/bosses_generated.go       GENERATED  scripts/gopob/regendata_poe2_bosses.go
+data/poe2/item_db.go                GO-NATIVE  types for the generated PoE2 item databases and a binary search standing in for PoB-PoE2's data.runeforgingCrafts[name]; cites the Lua lookup it replaces
+data/poe2/item_db_generated.go      GENERATED  scripts/gopob/regendata_poe2_items.go
 data/poe2/constants_generated.go    GENERATED  scripts/gopob/regendata_poe2.go
 data/poe2/gems_generated.go         GENERATED  scripts/gopob/regendata_poe2.go
 data/poe2/legion_generated.go       GENERATED  scripts/gopob/regendata_poe2.go
@@ -144,6 +146,7 @@ data/poe2/modcache.go               GO-NATIVE  Go struct declarations and a bina
 data/poe2/modcache_generated.go     GENERATED  scripts/gopob/regendata_poe2_modcache.go
 data/poe2/quests_generated.go       GENERATED  scripts/gopob/regendata_poe2_modcache.go
 data/poe2/runes_generated.go        GENERATED  scripts/gopob/regendata_poe2.go
+data/poe2/runeforging_generated.go GENERATED  scripts/gopob/regendata_poe2_items.go
 data/poe2/skill_globals_generated.go  GENERATED  scripts/gopob/regendata_poe2_skills.go
 data/poe2/skill_overlay_generated.go  GENERATED  scripts/gopob/regendata_poe2_skills.go
 data/poe2/skill_stat_map_generated.go GENERATED  scripts/gopob/regendata_poe2_skills.go
@@ -325,6 +328,10 @@ wasm2/exposition/calcs.go           GO-NATIVE  crystalline binding surface for t
 wasm2/exposition/calculator.go      GO-NATIVE  crystalline binding surface for the PoE2 frontend
 wasm2/exposition/crystalline_gen.go GENERATED  [unverifiable: emitted by `go tool crystalline`, pinned in go.mod, not a script in this repo]
 wasm2/exposition/export.go          GO-NATIVE  crystalline binding surface for the PoE2 build code export (ImportTab.lua's Deflate and base64)
+wasm2/exposition/items.go           GO-NATIVE  crystalline binding surface for the PoE2 Items page's edits (ItemsTab.lua's controls over the last calculation)
+wasm2/exposition/items_craft.go     GO-NATIVE  crystalline binding surface for the PoE2 Craft Item popup (ItemsTab.lua's CraftItem)
+wasm2/exposition/item_db.go         GO-NATIVE  crystalline binding surface for the PoE2 unique database list (ItemDBControl.lua's filters, tooltip, copy and Ctrl+click)
+wasm2/exposition/item_compare.go    GO-NATIVE  crystalline binding surface for the PoE2 item tooltips' stat differences (ItemsTab.lua's AddItemTooltip over the misc calculator)
 wasm2/exposition/main.go            GO-NATIVE  crystalline binding surface for the PoE2 frontend
 wasm2/exposition/notes.go           GO-NATIVE  crystalline binding surface for the PoE2 Notes page (NotesTab.lua's text, and the rich document kept beside it)
 wasm2/exposition/pages.go           GO-NATIVE  crystalline binding surface for the PoE2 Skills and Items pages (SkillListControl and AddItemTooltip's title and mod lines)
@@ -353,6 +360,7 @@ scripts/gopob/luastage.go                      GO-NATIVE  the fixed-length run d
 scripts/gopob/regendata.go                     GO-NATIVE  port of scripts/regen_data.py; regenerates every generated data table from the pinned PoB and gates their staleness, porting no Lua
 scripts/gopob/regendata_poe2.go                GO-NATIVE  regen-data --game poe2's generator table and the poe2-data-emit emitter for data/poe2/; reads PoB-PoE2's loaded tables through regendata_poe2.lua, porting no Lua
 scripts/gopob/regendata_poe2_bosses.go GO-NATIVE  regen-data --game poe2's Bosses and BossSkills generators and their poe2-data-emit tables; reads PoB-PoE2's data.bosses, data.bossStats and data.bossSkills through regendata_poe2.lua, porting no Lua
+scripts/gopob/regendata_poe2_items.go GO-NATIVE  regen-data --game poe2's runeforging and item database generators and their poe2-data-emit tables; reads PoB-PoE2's data.runeforgingCrafts, data.uniques and data.rares through regendata_poe2.lua, porting no Lua
 scripts/gopob/regendata_poe2_skills.go GO-NATIVE  regen-data --game poe2's skill overlay, global stat map and Global.lua enum generators and the poe2-skills-emit emitter; reads PoB-PoE2's skill files, SkillStatMap.lua and Global.lua through regendata_poe2_skills.lua, porting no Lua
 scripts/gopob/regendata_poe2_modcache.go GO-NATIVE  regen-data --game poe2's ModCache and QuestRewards generators and the poe2-modcache-emit emitter; reads PoB-PoE2's Data/ModCache.lua and data.questRewards through regendata_poe2_modcache.lua, porting no Lua
 scripts/gopob/regendata_tables.go              GO-NATIVE  the GENERATORS table EXTRACTED from scripts/regen_data.py, porting no Lua
@@ -522,6 +530,7 @@ scripts/gamedatadump/poe2bases.go   PORT       src/Export/Scripts/bases.lua,src/
 scripts/gamedatadump/poe2gems.go    PORT       src/Export/Scripts/skills.lua,src/Export/Main.lua
 scripts/gamedatadump/poe2legion.go  PORT       src/Export/Scripts/legionPassives.lua
 scripts/gamedatadump/poe2misc.go    PORT       src/Export/Scripts/miscdata.lua
+scripts/gamedatadump/poe2verisium.go PORT      src/Export/Scripts/miscdata.lua,src/Modules/Utils.lua
 scripts/gamedatadump/poe2soulcores.go GO-NATIVE PoB-PoE2's Export/Scripts/soulcores.lua, which the PoE1 pin lacks; its //pob2: markers cite it
 scripts/gamedatadump/poe2statdesc.go PORT     src/Export/statdesc.lua,src/Modules/Common.lua
 scripts/gamedatadump/tattoo.go      PORT       src/Export/Scripts/tattooPassives.lua
@@ -565,6 +574,9 @@ calculator2/calc_setup_radius.go    PORT       src/Modules/CalcSetup.lua
 calculator2/calc_setup_skills.go    PORT       src/Modules/CalcSetup.lua,src/Classes/SkillsTab.lua
 calculator2/skills_edit.go          PORT       src/Classes/SkillsTab.lua,src/Classes/SkillListControl.lua,src/Classes/GemSelectControl.lua
 calculator2/items_edit.go           PORT       src/Classes/ItemsTab.lua,src/Classes/ItemSlotControl.lua,src/Classes/ItemListControl.lua,src/Classes/ListControl.lua
+calculator2/item_craft.go           PORT       src/Modules/Data.lua,src/Classes/ItemsTab.lua
+calculator2/item_db.go              PORT       src/Modules/ItemTools.lua,src/Modules/Main.lua,src/Classes/ItemDBControl.lua,src/Modules/Common.lua
+calculator2/item_compare.go         PORT       src/Modules/Calcs.lua,src/Classes/ItemsTab.lua
 calculator2/calc_setup_skills_data.go PORT     src/Modules/Data.lua
 calculator2/calc_active_skill.go    PORT       src/Modules/CalcActiveSkill.lua
 calculator2/calc_active_skill_modlist.go PORT  src/Modules/CalcActiveSkill.lua,src/Modules/CalcSetup.lua

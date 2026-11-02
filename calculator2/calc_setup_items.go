@@ -514,9 +514,8 @@ func multAdd(db *moddb.ModDB, name string, delta float64) {
 	db.Multipliers[name] += delta
 }
 
-// mergeItems is initEnv's item build and merge, with the jewel sockets items grant. Left out: override paths (repSlotName, toggleFlask),
-// weaponFlagState (read only by those overrides and by ValidateWeaponSlots, which a first calc skips),
-// granted skills and explode sources, the requirements
+// mergeItems is initEnv's item build and merge, with the jewel sockets items grant. Left out: the override.spec and
+// extraJewelFuncs paths, ValidateWeaponSlots (which a first calc skips), granted skills and explode sources, the requirements
 // table, the Energy Blade swap, and item warnings.
 //
 //pob2:block:src/Modules/CalcSetup.lua:1164-1754
@@ -566,6 +565,11 @@ func mergeItems(env *Environment, nodesModsList *moddb.ModList, canUseBonded boo
 	}
 	items := map[string]*Item{}
 	jewelLimits := map[string]float64{}
+	//pob2:block:src/Modules/CalcSetup.lua:1164-1168
+	giantsBlood := nodesModsList.Flag(nil, "GiantsBlood") || modDB.Flag(nil, "GiantsBlood")
+	instrumentsOfPower := nodesModsList.Flag(nil, "InstrumentsOfPower") || modDB.Flag(nil, "InstrumentsOfPower")
+	lordOfTheWilds := nodesModsList.Flag(nil, "LordOfTheWilds") || modDB.Flag(nil, "LordOfTheWilds")
+	override := env.override
 
 	//pob2:block:src/Modules/CalcSetup.lua:1214-1348
 	for _, slot := range tab.OrderedSlots {
@@ -574,6 +578,22 @@ func mergeItems(env *Environment, nodesModsList *moddb.ModList, canUseBonded boo
 			continue
 		}
 		item := tab.Items[slot.SelItemID]
+		if override.RepSlotName != "" && slotName == override.RepSlotName {
+			item = override.RepItem
+		}
+		//pob2:block:src/Modules/CalcSetup.lua:1228-1239
+		if rep := override.RepItem; rep != nil && override.RepSlotName != "" {
+			info, ok := weaponTypeInfo[rep.Base.Type]
+			if !(ok && info.oneHand) && strings.HasPrefix(override.RepSlotName, "Weapon 1") && strings.HasPrefix(slotName, "Weapon 2") {
+				allowLordOfTheWilds := lordOfTheWilds && rep.Base.Type == "Talisman" && item != nil && item.Base.Type == "Sceptre" && item.Rarity != "UNIQUE" && item.Rarity != "RELIC"
+				allowInstrumentsOfPower := instrumentsOfPower && rep.Base.Type == "Staff" && item != nil && item.Base.Type == "Focus"
+				allowGiantsBlood := giantsBlood && item != nil && item.Type != "Quiver" && (rep.Base.Type == "Two Hand Sword" || rep.Base.Type == "Two Hand Axe" || rep.Base.Type == "Two Hand Mace")
+				allowQuiver := rep.Base.Type == "Bow" && item != nil && item.Base.Type == "Quiver"
+				if !(allowLordOfTheWilds || allowInstrumentsOfPower || allowGiantsBlood || allowQuiver) {
+					continue
+				}
+			}
+		}
 		//pob2:block:src/Modules/CalcSetup.lua:1240-1253
 		if item != nil {
 			// Find skills granted by this item
@@ -930,6 +950,21 @@ func mergeItems(env *Environment, nodesModsList *moddb.ModList, canUseBonded boo
 				multAdd(env.ItemModDB, "NonCorruptedItem", 1)
 			}
 			multAdd(env.ItemModDB, handedTypeRE.ReplaceAllString(strings.ReplaceAll(item.Type, " ", ""), "")+"Item", 1)
+		}
+	}
+	//pob2:block:src/Modules/CalcSetup.lua:1718-1731
+	if f := override.ToggleFlask; f != nil {
+		if env.Flasks[f] {
+			delete(env.Flasks, f)
+		} else {
+			env.Flasks[f] = true
+		}
+	}
+	if c := override.ToggleCharm; c != nil {
+		if env.Charms[c] {
+			delete(env.Charms, c)
+		} else {
+			env.Charms[c] = true
 		}
 	}
 }

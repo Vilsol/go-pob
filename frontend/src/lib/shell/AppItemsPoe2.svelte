@@ -1,21 +1,24 @@
 <script lang="ts">
   import { untrack } from 'svelte';
   import ItemsPage from '$lib/design/ItemsPage.svelte';
+  import ItemDB from '$lib/design/ItemDB.svelte';
+  import { defaultItemDBFilter, type ItemDBFilterInput, type ItemDBKind, type ItemDBLists, type ItemDBRowPlain } from '$lib/design/item_db';
   import FloatingLabel from '$lib/design/FloatingLabel.svelte';
   import Select from '$lib/design/Select.svelte';
   import EmptyState from '$lib/design/EmptyState.svelte';
-  import { BOARD_SLOTS_POE2, type ImpactBlock, type ItemSetOp } from '$lib/design/items';
+  import { BOARD_SLOTS_POE2, itemTip, type CraftChoice, type ImpactBlock, type ItemSetOp, type TipProps, type WhatIf } from '$lib/design/items';
   import { BOARD_PANES_POE2 } from '$lib/design/mobile/mobile';
   import type { RuneSocketsEdit } from '$lib/design/RuneSockets.svelte';
   import type { ItemSet, ItemSummary, ItemTip, ModLine } from '$lib/design/fixtures';
   import { itemsLayout, phoneTables } from '$lib/display/appearance';
   import { poe2Build } from '$lib/global';
   import { poe2Busy, poe2Error, poe2Run, poe2Worker } from '$lib/go/engine_poe2.svelte';
-  import type { Poe2DisplayEdit, Poe2ItemsEdit, Poe2ItemsPage } from '$lib/go/sync_worker2';
+  import type { Poe2CompareBlock, Poe2CompareTarget, Poe2DisplayEdit, Poe2ItemsEdit, Poe2ItemsPage } from '$lib/go/sync_worker2';
+  import { slotOnlyTooltips } from '$lib/display/item_options';
 
   // ItemsTab.lua, ItemSlotControl.lua, ItemSetListControl.lua (PoB-PoE2): the Items page over the open PoE2 build.
-  // Crafting, the unique and rare databases, shared items, the equip impact, item variants, influences, quality and
-  // drag and drop are not here yet
+  // Affix crafting, the rare database, shared items, the equip impact, item variants, influences, quality and drag and
+  // drop are not here yet
 
   type Item = Poe2ItemsPage['items'][number];
   type Editing = { item: ItemSummary; slot?: string; isNew?: boolean; key?: string };
@@ -27,6 +30,7 @@
   const plain = (t: string) => t.replace(/\^x[0-9A-Fa-f]{6}|\^\d/g, '');
 
   let page = $state.raw<Poe2ItemsPage>();
+  let whatIf = $state<WhatIf>();
   const read = () =>
     poe2Worker()
       .then((w) => w.ItemsPage())
@@ -108,7 +112,35 @@
   const display = $derived(page?.display);
   const pasteItem = $derived(display && summary(display.item, display.fits));
   const label = (slot: string) => page?.slots.find((s) => s.name === slot)?.label ?? slot;
-  const blocks = $derived((display?.fits ?? []).map((slot): ImpactBlock => ({ header: label(slot), slot, sections: [], unmeasured: true })));
+  // ItemsTab.lua:4425-4538 (PoB-PoE2): the editor's item's stat differences, one block per slot it fits
+  let blocks = $state<ImpactBlock[]>([]);
+  let blocksPending = $state(false);
+  let compareSeq = 0;
+  const stamp = (b: Poe2CompareBlock[]): ImpactBlock[] => {
+    const readyAt = performance.now();
+    return b.map((x) => ({ ...x, readyAt }));
+  };
+  $effect(() => {
+    const d = display;
+    void $poe2Build;
+    const mine = ++compareSeq;
+    if (!d) {
+      blocks = [];
+      return;
+    }
+    blocksPending = true;
+    void untrack(() =>
+      poe2Worker()
+        .then((w) => w.ItemCompare({ kind: 'display' }))
+        .then((b) => {
+          if (mine === compareSeq) blocks = stamp(b);
+        })
+        .catch(fail)
+        .finally(() => {
+          if (mine === compareSeq) blocksPending = false;
+        })
+    );
+  });
   let seq = 0;
   $effect(() => {
     const t = text;
@@ -185,9 +217,158 @@
     }
   };
 
+  // ItemsTab.lua:2762-2868 (PoB-PoE2): the Craft Item popup; its rarity choice is 0-based here, 1-based in Lua
+  let craftBases = $state<{ type: string; bases: string[] }[]>([]);
+  let craftPreview = $state<TipProps>();
+  $effect(() => {
+    void untrack(() =>
+      poe2Worker()
+        .then((w) => w.CraftBases())
+        .then((g) => (craftBases = g))
+        .catch(fail)
+    );
+  });
+  let craftSeq = 0;
+  const oncraftpreview = async (c: CraftChoice) => {
+    const mine = ++craftSeq;
+    try {
+      const w = await poe2Worker();
+      const it = await w.CraftItemPreview(c.rarity + 1, c.title, c.base);
+      if (mine !== craftSeq) return;
+      const tip = { ...itemTip(summary(it, []), undefined, 'candidate'), impactTitle: '', impactSub: undefined, impact: [] };
+      craftPreview = { ...tip, whatIf: { key: 'craft', pending: true, blocks: [] } };
+      const b = await w.ItemCompare({ kind: 'craft', rarity: c.rarity + 1, title: c.title, base: c.base });
+      if (mine === craftSeq) craftPreview = { ...tip, whatIf: { key: 'craft', pending: false, blocks: stamp(b) } };
+    } catch {
+      if (mine === craftSeq) craftPreview = undefined;
+    }
+  };
+  const oncraftcreate = async (c: CraftChoice, slot?: string) => {
+    try {
+      (await poe2Worker()).CraftDisplayItem(c.rarity + 1, c.title, c.base);
+    } catch (err) {
+      fail(err);
+      return;
+    }
+    await read();
+    if (slot) await edit({ op: 'add', slot });
+    else if (page?.display) openText(`Rarity: ${page.display.rarity}\n${page.display.text}`);
+  };
+
+  // ItemsTab.lua:379-414, ItemDBControl.lua (PoB-PoE2): the unique database; the rare one needs the affix data
+  const DB_KINDS: ItemDBKind[] = ['UNIQUE'];
+  let dbKind = $state<ItemDBKind>('UNIQUE');
+  let dbFilter = $state<ItemDBFilterInput>(defaultItemDBFilter());
+  let dbSort = $state('');
+  let dbLists = $state<ItemDBLists>();
+  let dbRows = $state<ItemDBRowPlain[]>([]);
+  let dbBusy = $state(false);
+  let dbHover = $state<string | null>(null);
+  let dbTip = $state<{ name: string; tip: TipProps }>();
+  let dbNote = $state('');
+  $effect(() => {
+    if (pageView !== 'browse' || dbLists) return;
+    void untrack(() =>
+      poe2Worker()
+        .then((w) => w.ItemDBLists('UNIQUE'))
+        .then((l) => (dbLists = l))
+        .catch(fail)
+    );
+  });
+  let dbSeq = 0;
+  // ItemDBControl.lua:300-325 (PoB-PoE2): the list builds again on a filter change and after every calculation
+  $effect(() => {
+    const filter = $state.snapshot(dbFilter);
+    void $poe2Build;
+    if (pageView !== 'browse') return;
+    const mine = ++dbSeq;
+    dbBusy = true;
+    void untrack(() =>
+      poe2Worker()
+        .then((w) => w.ItemDBRows(dbKind, filter))
+        .then((rows) => {
+          if (mine !== dbSeq) return;
+          dbRows = rows;
+          dbBusy = false;
+        })
+        .catch(fail)
+    );
+  });
+  $effect(() => {
+    const name = dbHover;
+    if (name === null) return;
+    void untrack(() =>
+      poe2Worker()
+        .then((w) => w.ItemDBTooltip(dbKind, name))
+        .then((it) => {
+          if (dbHover === name)
+            dbTip = { name, tip: { ...itemTip(summary(it, []), undefined, 'candidate'), impactTitle: '', impactSub: undefined, impact: [] } };
+        })
+        .catch(fail)
+    );
+  });
+  const dbTipProps = $derived(
+    dbTip && dbTip.name === dbHover ? { ...dbTip.tip, whatIf: whatIf?.key === `db:${dbKind}:${dbTip.name}` ? whatIf : undefined } : undefined
+  );
+  const dbAdd = async (name: string, equip: boolean, second: boolean) => {
+    if (!(await poe2Run((w) => w.AddDBItem(dbKind, name, equip, second)))) return;
+    dbNote = equip ? `Added ${name} and equipped it in its slot` : `Added ${name} to the build's items`;
+  };
+  const dbOpen = async (name: string) => {
+    try {
+      (await poe2Worker()).OpenDBItem(dbKind, name);
+    } catch (err) {
+      fail(err);
+      return;
+    }
+    await read();
+    if (page?.display) openText(`Rarity: ${page.display.rarity}\n${page.display.text}`);
+    dbHover = null;
+    pageView = 'equipped';
+  };
+  const dbCopy = (name: string) =>
+    void poe2Worker()
+      .then((w) => w.ItemDBRaw(dbKind, name))
+      .then((t) => navigator.clipboard?.writeText(t.replace(/\r?\n/g, '\r\n')))
+      .catch(fail);
+  let craftFrom = $state<string>();
+
   let layout = $state($itemsLayout);
   let editing = $state<Editing | null>(null);
   let hover = $state<string | null>(null);
+
+  // ItemsTab.lua:4425-4538, ItemDBControl.lua:333-341 (PoB-PoE2): the hovered item's stat differences; an equipped
+  // slot, and an item in a slot's list with "slot only tooltips", show only that slot's block
+  const target = $derived(editing?.key ?? hover ?? (dbHover === null ? null : `db:${dbKind}:${dbHover}`));
+  const whatIfOf = (key: string): { t: Poe2CompareTarget; slot?: string } | undefined => {
+    const inSlot = page?.slots.find((s) => s.name === key && s.itemId);
+    if (inSlot) return { t: { kind: 'item', id: inSlot.itemId }, slot: inSlot.name };
+    const m = /^(\d+)@(.+)$/.exec(key);
+    if (m) return { t: { kind: 'item', id: Number(m[1]) }, slot: $slotOnlyTooltips ? m[2] : undefined };
+    const db = /^db:(UNIQUE|RARE):(.+)$/.exec(key);
+    if (db) return { t: { kind: 'db', db: db[1] as ItemDBKind, name: db[2] } };
+    return /^\d+$/.test(key) && items[key] ? { t: { kind: 'item', id: Number(key) } } : undefined;
+  };
+  let whatIfSeq = 0;
+  $effect(() => {
+    const key = target;
+    void $poe2Build;
+    const mine = ++whatIfSeq;
+    const job = key ? untrack(() => whatIfOf(key)) : undefined;
+    if (!key || !job) {
+      whatIf = undefined;
+      return;
+    }
+    whatIf = { key, pending: true, blocks: [] };
+    void untrack(() =>
+      poe2Worker()
+        .then((w) => w.ItemCompare(job.t))
+        .then((b) => {
+          if (mine === whatIfSeq) whatIf = { key, pending: false, blocks: stamp(job.slot ? b.filter((x) => !x.slot || x.slot === job.slot) : b) };
+        })
+        .catch(fail)
+    );
+  });
   let pageView = $state<'equipped' | 'stash' | 'shared' | 'browse'>('equipped');
 </script>
 
@@ -209,11 +390,20 @@
       affixes={AFFIXES}
       bind:view={pageView}
       bind:hover
+      {whatIf}
       bind:editing
       craft={false}
       {slotItems}
       readonly={READONLY}
-      paste={{ item: pasteItem, name: pasteItem?.name, error, pending: $poe2Busy, blocks, message, editing: display?.id ? pasteItem?.name : undefined }}
+      paste={{
+        item: pasteItem,
+        name: pasteItem?.name,
+        error,
+        pending: $poe2Busy || blocksPending,
+        blocks,
+        message,
+        editing: display?.id ? pasteItem?.name : undefined
+      }}
       bind:pasteText={text}
       onpasteitem={(t: string) => (text = t)}
       runes={display && { canHaveSockets: display.canHaveSockets, sockets: display.runes, choices: display.runeChoices }}
@@ -231,12 +421,35 @@
         if (id) void openItem(id);
       }}
       {oncancelpaste}
+      {craftBases}
+      {craftPreview}
+      bind:craftFrom
+      oncraftpreview={(c: CraftChoice) => void oncraftpreview(c)}
+      oncraftcreate={(c: CraftChoice, slot?: string) => void oncraftcreate(c, slot)}
       {ondelete}
       oncopy={(id: number) =>
         void poe2Worker()
           .then((w) => w.ItemText(id))
           .then((t) => navigator.clipboard?.writeText(t.replace(/\r?\n/g, '\r\n')))
-          .catch(fail)} />
+          .catch(fail)}>
+      {#snippet itemDB()}
+        <ItemDB
+          bind:kind={dbKind}
+          kinds={DB_KINDS}
+          lists={dbLists}
+          bind:filter={dbFilter}
+          bind:sort={dbSort}
+          rows={dbRows}
+          busy={dbBusy}
+          bind:hover={dbHover}
+          tip={dbTipProps}
+          note={dbNote}
+          onadd={(name: string, equip: boolean, second: boolean) => void dbAdd(name, equip, second)}
+          onopen={(name: string) => void dbOpen(name)}
+          oncopy={dbCopy}
+          oncraft={(base: string) => (craftFrom = base)} />
+      {/snippet}
+    </ItemsPage>
     {#if page.runeSlots.length}
       <!-- ItemsTab.lua:267-310 (PoB-PoE2): the character's rune slots, shown with Martial Artist's SocketRunesOnCharacter -->
       <section aria-label="Character runes" class="panel flex flex-wrap gap-2.5 p-3.5">

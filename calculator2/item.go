@@ -1396,7 +1396,7 @@ func (i *Item) parseLine(lp *int, line, mode, itemClass string, implicitLines, s
 			i.Type = base.Type
 			i.Base = base
 			i.CharmLimit = nil
-			if base.CharmLimit != 0 {
+			if base.HasCharmLimit {
 				i.CharmLimit = floatp(base.CharmLimit)
 			}
 			i.SpiritValue = nil

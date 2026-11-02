@@ -79,9 +79,11 @@ var rdGeneratorsPoE2 = []rdGenerator{
 	rdGeneratorsPoE2Skills[3],
 	rdGeneratorsPoE2Bosses[0],
 	rdGeneratorsPoE2Bosses[1],
+	rdGeneratorsPoE2Items[0],
+	rdGeneratorsPoE2Items[1],
 }
 
-const p2eUsage = "usage: poe2-data-emit <dump.json> <out.go> <bases|runes|constants|gems|legion|bosses|boss-skills>"
+const p2eUsage = "usage: poe2-data-emit <dump.json> <out.go> <bases|runes|constants|gems|legion|bosses|boss-skills|runeforging|item-db>"
 
 func poe2DataEmit(args []string) int {
 	if len(args) != 3 {
@@ -107,6 +109,10 @@ func poe2DataEmit(args []string) int {
 		out, err = p2eBosses(body)
 	case "boss-skills":
 		out, err = p2eBossSkills(body)
+	case "runeforging":
+		out, err = p2eRuneforging(body)
+	case "item-db":
+		out, err = p2eItemDB(body)
 	default:
 		return oeUsage(p2eUsage)
 	}
@@ -230,7 +236,7 @@ type p2eBaseJSON struct {
 	SocketLimit                    float64    `json:"socketLimit"`
 	Quality                        *float64   `json:"quality"`
 	Spirit                         float64    `json:"spirit"`
-	CharmLimit                     float64    `json:"charmLimit"`
+	CharmLimit                     *float64   `json:"charmLimit"`
 	GrantedSkillsHaveNoReservation bool       `json:"grantedSkillsHaveNoReservation"`
 	Implicit                       *string    `json:"implicit"`
 	ImplicitModTypes               [][]string `json:"implicitModTypes"`
@@ -298,7 +304,10 @@ func p2eBaseRow(r p2eBaseJSON) (string, error) {
 	}
 	f.num("Quality", q)
 	f.num("Spirit", r.Spirit)
-	f.num("CharmLimit", r.CharmLimit)
+	if r.CharmLimit != nil {
+		f.num("CharmLimit", *r.CharmLimit)
+		f.flag("HasCharmLimit", true)
+	}
 	f.flag("GrantedSkillsHaveNoReservation", r.GrantedSkillsHaveNoReservation)
 	imp, err := p2eNonEmpty(r.Name, "implicit", r.Implicit)
 	if err != nil {
