@@ -1,7 +1,10 @@
-// Picks the e2e specs a change can reach, for `mise run e2e-affected`. A spec is affected when a changed file is in the
-// import closure of the spec itself, of the support files it uses, or of a route it visits. A change in the closure
-// of the app shell (the root layout, which every test renders) or of the e2e harness affects every spec; a change
-// nothing maps to selects only the @smoke tests and is listed as unmapped.
+// Picks the e2e specs a change can reach, for `mise run e2e-affected`. A spec is affected when it ran a function of the
+// changed file in the recorded coverage map (coverage-map.json, `mise run e2e-coverage`), or, for a spec or file the
+// map does not know, when the file is in the import closure of the spec itself, of the support files it uses, of a
+// route it visits, or of the app shell (the root layout, which every test renders). A Go file reaches the specs that
+// boot the wasm whose packages include it. A change to the e2e harness or the build reaches every spec. A selection
+// over E2E_AFFECTED_MAX specs is refused loudly and narrowed to the change's own specs, since the operator runs the
+// whole suite at integration; a change nothing maps to selects only the @smoke tests and is listed as unmapped.
 import { execFileSync } from 'node:child_process';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
@@ -24,20 +27,34 @@ export const LINK_ROUTES = {
   Compare: 'compare'
 };
 
-// changes that reach every spec: the harness, the wasm and its generated bindings, the build and the shell
+// changes that reach every spec: the harness and the build
 const EVERYTHING = [
   /^frontend\/e2e\/(support|fixtures)\//,
-  /^frontend\/e2e\/[^/]+\.(ts|mjs|json|go)$/,
-  /^frontend\/(package\.json|pnpm-lock\.yaml|vite\.config\.ts|svelte\.config\.js|tsconfig\.json)$/,
+  /^frontend\/e2e\/[^/]+\.(ts|json|go)$/,
+  /^frontend\/e2e\/(playwright\.config\.ts|serve\.mjs|shard\.mjs|vite\.coverage\.config\.js)$/,
+  /^frontend\/(package\.json|pnpm-lock\.yaml|vite\.config\.(ts|js)|svelte\.config\.js|tsconfig\.json)$/,
   /^frontend\/static\//,
-  /^frontend\/src\/(app\.html|app\.d\.ts|hooks\.server\.ts|service-worker\.ts|wasm_exec\.js)$/,
-  /^frontend\/src\/lib\/types\//,
-  /^wasm\//,
-  /^go\.(mod|sum)$/
+  /^frontend\/src\/(app\.html|app\.d\.ts|hooks\.server\.ts|service-worker\.ts|wasm_exec\.js)$/
 ];
 const SPEC = /^frontend\/e2e\/[^/]+\.spec\.ts$/;
 // not part of what a browser test runs
-const INERT = [/\.test\.ts$/, /\.stories\.svelte$/, /\.md$/, /^frontend\/harness\//, /^frontend\/\.storybook\//, /^\.github\//, /^docs\//];
+const INERT = [
+  /\.test\.(ts|mjs)$/,
+  /_test\.go$/,
+  /\.stories\.svelte$/,
+  /\.md$/,
+  /^frontend\/e2e\/(affected|coverage)\.mjs$/,
+  /^frontend\/e2e\/coverage-map\.json$/,
+  /^frontend\/e2e\/durations\.json$/,
+  /^frontend\/harness\//,
+  /^frontend\/\.storybook\//,
+  /^\.github\//,
+  /^docs\//
+];
+// each wasm build's generated bindings: a spec that ran one ran that wasm's Go
+export const WASM_BOOT = { wasm: 'frontend/src/lib/types/index.js', wasm2: 'frontend/src/lib/types2/index.js' };
+export const MAX = Number(process.env.E2E_AFFECTED_MAX || 12);
+const MAP = join(E2E, 'coverage-map.json');
 
 const walk = (dir, out = []) => {
   for (const name of readdirSync(dir)) {
@@ -135,35 +152,79 @@ export const model = () => {
     }
     specs[`e2e/${name}`] = { own, routes: [...visited].sort() };
   }
-  return { shell, routes, specs };
+  return { shell, routes, specs, coverage: loadCoverage() };
 };
 
-export const select = (changed, m = model()) => {
+// spec → the repo paths it ran, from coverage-map.json; a spec that goes offline posts nothing reliable, so it is mapped
+// by imports
+export const loadCoverage = (file = MAP) => {
+  if (!existsSync(file)) return undefined;
+  const raw = JSON.parse(readFileSync(file, 'utf8'));
+  const specs = {};
+  for (const [s, idx] of Object.entries(raw.specs)) {
+    const path = join(FRONTEND, s);
+    if (!existsSync(path) || readFileSync(path, 'utf8').includes('setOffline(')) continue;
+    specs[s] = new Set(idx.map((i) => raw.files[i]));
+  }
+  return { commit: raw.commit, files: new Set(raw.files), specs };
+};
+
+// Go package directory (repo-relative) → the wasm builds that compile it
+const goPackages = () => {
+  const out = new Map();
+  for (const w of Object.keys(WASM_BOOT)) {
+    const dirs = execFileSync('go', ['list', '-deps', '-f', '{{if not .Standard}}{{.Dir}}{{end}}', `./${w}`], {
+      cwd: REPO,
+      encoding: 'utf8',
+      env: { ...process.env, GOOS: 'js', GOARCH: 'wasm' }
+    });
+    for (const d of dirs.split('\n').filter(Boolean)) out.set(relative(REPO, d), [...(out.get(relative(REPO, d)) ?? []), w]);
+  }
+  return out;
+};
+
+// the specs a frontend file reaches: by coverage for the specs the map recorded, by imports for the rest
+const reaching = (f, m, all) => {
+  const abs = resolve(REPO, f);
+  const cov = m.coverage;
+  const known = cov?.files.has(f);
+  const inShell = m.shell.has(abs);
+  return all.filter((s) => {
+    if (known && cov.specs[s]) return cov.specs[s].has(f);
+    return inShell || m.specs[s].own.has(abs) || m.specs[s].routes.some((r) => m.routes[r].has(abs));
+  });
+};
+
+export const select = (changed, m = model(), { max = MAX, go = goPackages } = {}) => {
   const all = Object.keys(m.specs).sort();
+  const own = new Set();
   const picked = new Set();
   const everything = [];
   const unmapped = [];
+  let pkgs;
   for (const f of changed) {
     if (INERT.some((r) => r.test(f))) continue;
     if (SPEC.test(f)) {
       const key = f.replace(/^frontend\//, '');
-      if (m.specs[key]) picked.add(key);
+      if (m.specs[key]) own.add(key);
       continue;
     }
     if (EVERYTHING.some((r) => r.test(f))) {
       everything.push(f);
       continue;
     }
-    const abs = resolve(REPO, f);
-    if (m.shell.has(abs)) {
-      everything.push(f);
-      continue;
-    }
-    const hit = all.filter((s) => m.specs[s].own.has(abs) || m.specs[s].routes.some((r) => m.routes[r].has(abs)));
+    let hit;
+    if (/\.go$|^go\.(mod|sum)$/.test(f)) {
+      pkgs ??= go();
+      const builds = /^go\.(mod|sum)$/.test(f) ? Object.keys(WASM_BOOT) : (pkgs.get(dirname(f)) ?? []);
+      hit = [...new Set(builds.flatMap((w) => reaching(WASM_BOOT[w], m, all)))];
+    } else hit = reaching(f, m, all);
     if (hit.length === 0) unmapped.push(f);
     for (const s of hit) picked.add(s);
   }
-  return { specs: everything.length ? all : [...picked].sort(), everything, unmapped };
+  const reached = everything.length ? all : [...new Set([...own, ...picked])].sort();
+  const capped = reached.length > max ? { reached: reached.length, max } : undefined;
+  return { specs: capped ? [...own].sort() : reached, everything, unmapped, capped };
 };
 
 const changedSince = (base) => {
@@ -184,16 +245,27 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     process.exit(64);
   }
   const changed = args[0] === '--' ? args.slice(1) : changedSince(args[0] ?? 'dev');
-  const r = select(changed);
+  const m = model();
+  const r = { ...select(changed, m), coverage: m.coverage };
   const out = cmd === 'grep' ? process.stderr : process.stdout;
   out.write(`e2e-affected: ${changed.length} changed files\n`);
+  const cov = r.coverage;
+  out.write(
+    cov
+      ? `  coverage map recorded at ${cov.commit.slice(0, 8)} over ${Object.keys(cov.specs).length} specs\n`
+      : '  no coverage map (mise run e2e-coverage): every spec is mapped by imports\n'
+  );
   if (r.everything.length) out.write(`  every spec, because of: ${r.everything.join(', ')}\n`);
-  else out.write(`  specs: ${r.specs.join(' ') || '(none)'}\n`);
+  if (r.capped)
+    out.write(
+      `  CAPPED: the change reaches ${r.capped.reached} specs, over E2E_AFFECTED_MAX=${r.capped.max}; running only the change's own specs (the full suite runs at integration)\n`
+    );
+  out.write(`  specs: ${r.specs.join(' ') || '(none)'}\n`);
   if (r.unmapped.length) out.write(`  UNMAPPED (only @smoke covers them): ${r.unmapped.join(', ')}\n`);
   out.write('  plus every @smoke test\n');
   if (cmd === 'grep') {
     const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     // Playwright matches --grep against "<file> <title> <tags>"
-    process.stdout.write(r.everything.length ? '.' : [...r.specs.map((s) => `(?:^|[ /])${esc(s.replace(/^e2e\//, ''))} `), '@smoke'].join('|'));
+    process.stdout.write([...r.specs.map((s) => `(?:^|[ /])${esc(s.replace(/^e2e\//, ''))} `), '@smoke'].join('|'));
   }
 }

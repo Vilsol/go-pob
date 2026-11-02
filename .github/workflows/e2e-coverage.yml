@@ -1,0 +1,134 @@
+name: e2e-coverage
+
+permissions: read-all
+
+# Records which frontend files each e2e spec runs (frontend/e2e/coverage.mjs) over a coverage build, four shards of
+# specs each on its own preview server, and merges them into the coverage-map.json artifact that
+# `mise run e2e-affected` selects by. `mise run e2e-coverage-pull` copies the latest one into frontend/e2e/.
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 3 * * 1"
+
+env:
+  NODE_OPTIONS: --no-experimental-webstorage
+
+jobs:
+  record:
+    name: Record (part ${{ matrix.part }}/4)
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        part: [1, 2, 3, 4]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+
+      - run: corepack enable
+
+      - run: pnpm i
+        working-directory: frontend
+
+      - name: Cache test data
+        uses: actions/cache@v4
+        with:
+          path: |
+            testdata/corpus-[0-9]*
+            testdata/oracle-[0-9]*
+            testdata/.installed-release
+          key: testdata-${{ hashFiles('scripts/testdata.json') }}
+
+      - run: go run ./scripts/testdatarelease fetch
+
+      - name: Cache the Go bundle cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/go-pob/bundle-cache
+          key: bundle-cache-${{ hashFiles('data/assetcache/cache_namespace.go', 'go.sum', 'data/tree_versions.go') }}
+
+      - run: go run ./frontend/e2e/populate_cache.go
+
+      - run: go test -count=1 -run '^TestFixtureBuildMatchesPoB$' ./wasm2/exposition/
+
+      - name: Restore Playwright's Chromium
+        id: chromium
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('frontend/pnpm-lock.yaml') }}
+
+      - if: steps.chromium.outputs.cache-hit != 'true'
+        run: pnpm exec playwright install --with-deps chromium
+        working-directory: frontend
+
+      - if: steps.chromium.outputs.cache-hit == 'true'
+        run: pnpm exec playwright install-deps chromium
+        working-directory: frontend
+
+      - name: Build wasm
+        run: |
+          go build -o frontend/static/go-pob.wasm ./wasm && gzip -kf9 frontend/static/go-pob.wasm
+          go build -o frontend/static/go-pob2.wasm ./wasm2 && gzip -kf9 frontend/static/go-pob2.wasm
+        env:
+          GOOS: js
+          GOARCH: wasm
+
+      - name: Coverage build
+        run: pnpm exec vite build -c e2e/vite.coverage.config.js --logLevel warn
+        working-directory: frontend
+
+      - name: Record
+        run: node e2e/coverage.mjs record --part ${{ matrix.part }}/4 --servers 1 --workers 2
+        working-directory: frontend
+        env:
+          E2E_SLOW: "1"
+          E2E_CHROMIUM: bundled
+          E2E_SHARED: "0"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: e2e-coverage-part-${{ matrix.part }}
+          path: frontend/e2e/.coverage/part-${{ matrix.part }}.json
+          retention-days: 30
+
+  merge:
+    needs: record
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+
+      - run: corepack enable
+
+      - run: pnpm i
+        working-directory: frontend
+
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: e2e-coverage-part-*
+          path: frontend/e2e/.coverage
+          merge-multiple: true
+
+      - run: node e2e/coverage.mjs merge
+        working-directory: frontend
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: e2e-coverage-map
+          path: frontend/e2e/coverage-map.json
+          retention-days: 90

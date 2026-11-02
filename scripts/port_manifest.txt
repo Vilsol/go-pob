@@ -424,6 +424,7 @@ scripts/gopob/oracleemitters3.go                 GO-NATIVE  pantheons + cluster-
 scripts/gopob/oracleemitters4.go                 GO-NATIVE  legion + boss-skills emitter ports; they EMIT data tables, porting no Lua
 scripts/gopob/oracleemitters5.go                 GO-NATIVE  skill-flags emitter port; EMITS three data tables, porting no Lua
 scripts/gopob/gemsemit.go                        GO-NATIVE  port of oracle/gems_emit.py; EMITS a data table, porting no Lua
+scripts/gopob/gatepoe2.go                        GO-NATIVE  caches the PoE2 corpus tests' summary lines by committed tree; test tooling with no PoB counterpart
 scripts/gopob/treetablesemit.go                  GO-NATIVE  port of oracle/tree_tables_emit.py; EMITS two calculator tables, porting no Lua
 scripts/gopob/modcommon.go                       GO-NATIVE  port of oracle/mod_common.py; PoB's mod vocabulary for the emitters, porting no Lua
 scripts/gopob/pycounter.go                       GO-NATIVE  collections.Counter's most_common ordering; emulates CPython, ports no Lua

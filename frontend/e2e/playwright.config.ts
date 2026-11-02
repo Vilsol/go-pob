@@ -1,5 +1,6 @@
 import { defineConfig } from '@playwright/test';
 import { execFileSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { resolve } from 'node:path';
 
 const chromium = (() => {
@@ -13,7 +14,19 @@ const chromium = (() => {
   }
 })();
 
-const PORT = Number(process.env.E2E_PORT || 4391);
+// one port per checkout, so two worktrees' runs do not take each other's server; every Playwright process derives the same
+const PORT = Number(
+  process.env.E2E_PORT ||
+    20000 +
+      (parseInt(
+        createHash('sha256')
+          .update(import.meta.dirname)
+          .digest('hex')
+          .slice(0, 8),
+        16
+      ) %
+        20000)
+);
 const WORKERS = Number(process.env.E2E_WORKERS || 5);
 if (!Number.isInteger(WORKERS) || WORKERS < 1) throw new Error(`E2E_WORKERS must be a positive integer, got ${JSON.stringify(process.env.E2E_WORKERS)}`);
 const server = process.env.E2E_SERVER === 'dev' ? `vite dev --port ${PORT} --strictPort` : `vite preview --port ${PORT} --strictPort`;

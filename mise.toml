@@ -49,7 +49,7 @@ run = 'eval "set -- $usage_args"; mise run e2e --slow -- "$@"'
 
 # the packages the two wasm builds compile (GOOS=js GOARCH=wasm go list -deps ./wasm ./wasm2)
 [task_templates.wasm-sources]
-sources = ["builds/**/*.go", "calculator/**/*.go", "calculator2/**/*.go", "config/**/*.go", "data/**/*.go", "mod/**/*.go", "moddb/**/*.go", "pob/**/*.go", "pob2/**/*.go", "storage/**/*.go", "utils/**/*.go", "wasm/**/*.go", "wasm2/**/*.go"]
+sources = ["go.mod", "go.sum", "builds/**/*.go", "calculator/**/*.go", "calculator2/**/*.go", "config/**/*.go", "data/**/*.go", "mod/**/*.go", "moddb/**/*.go", "pob/**/*.go", "pob2/**/*.go", "storage/**/*.go", "utils/**/*.go", "wasm/**/*.go", "wasm2/**/*.go"]
 
 [tasks.dev-go]
 description = "Watch the wasm's Go packages and rebuild the wasm + typings (filesystem events, no polling)"
@@ -72,12 +72,14 @@ outputs = ["frontend/static/go-pob2.wasm"]
 run = [{ task = "build-go2" }, { task = "generate2" }]
 
 [tasks.build-go]
-description = "Build Go WASM binary and place it in the frontend"
+description = "Build Go WASM binary and place it in the frontend (skipped when no wasm source is newer than it)"
+extends = "wasm-sources"
 outputs = ["frontend/static/go-pob.wasm"]
 run = '{{vars.NICE}} env GOOS=js GOARCH=wasm go build -v -o frontend/static/go-pob.wasm ./wasm'
 
 [tasks.build-go2]
-description = "Build the PoE2 Go WASM binary"
+description = "Build the PoE2 Go WASM binary (skipped when no wasm source is newer than it)"
+extends = "wasm-sources"
 outputs = ["frontend/static/go-pob2.wasm"]
 run = '{{vars.NICE}} env GOOS=js GOARCH=wasm go build -v -o frontend/static/go-pob2.wasm ./wasm2'
 
@@ -309,6 +311,14 @@ run = '{{vars.GOPOB}} test-tiers slow'
 description = "Tier 2: the AUTHORITATIVE accuracy gate alone (~16s, GREEN at base). The number, without the sweeps."
 run = 'CORPUS=true {{vars.NICE}} go test ./calculator/ -run TestCorpus3_29VsOracle -count=1 -v -timeout 60m'
 
+[tasks.gate-poe2]
+description = "The PoE2 corpus tests' summary lines (every TestCorpusPoE2* by default, --run <pattern> for one), cached by the committed tree and the local corpus; a dirty tree is measured fresh and never stored, --force re-runs"
+usage = '''
+flag "--run <run>" env="RUN" default="TestCorpusPoE2"
+flag "--force" env="FORCE"
+'''
+run = '{{vars.GOPOB}} gate-poe2 --run "{{usage.run}}" {% if usage.force %}--force{% endif %}'
+
 [tasks.gate-tight]
 description = "The gate's pairs graded at relative 1e-9 (sub-tolerance drift the gate passes); asserts a miss ceiling. WORKLIST=<dir> writes stats.tsv / builds.tsv."
 run = 'CORPUS=true {{vars.NICE}} go test ./calculator/ -run "^TestOracle329TightTolerance$" -count=1 -v -timeout 60m'
@@ -352,9 +362,7 @@ flag "--specs <specs>" env="SPECS"
 arg "[args]..." var=#true double_dash="required" help="passed on to playwright"
 '''
 run = [
-  '{% if usage.reuse %}node e2e/serve.mjs port > /dev/null{% else %}mise run build-go && mise run build-go2{% endif %}',
-  '{% if not usage.reuse %}{{vars.NICE}} gzip -kf9 static/go-pob.wasm static/go-pob2.wasm{% endif %}',
-  '{% if not usage.reuse %}{{vars.NICE}} npx vite build --logLevel warn{% endif %}',
+  '{% if usage.reuse %}node e2e/serve.mjs port > /dev/null{% else %}mise run e2e-bundle{% endif %}',
   '{% if usage.shard %}env E2E_SLOW={% if usage.slow %}1{% else %}0{% endif %} node e2e/shard.mjs plan {{usage.shard}} e2e/.results/shard-tests.txt{% endif %}',
   '''
 eval "set -- $usage_args"
@@ -391,15 +399,49 @@ arg "[args]..." var=#true double_dash="required" help="passed on to playwright"
 '''
 run = '''eval "set -- $usage_args"; grep=$(node frontend/e2e/affected.mjs grep '{{usage.base}}'); mise run e2e --grep "$grep" {% if usage.slow %}--slow{% endif %} {% if usage.reuse %}--reuse{% endif %} -- "$@"'''
 
-[tasks.e2e-serve]
-description = "Build the wasm and the frontend, then keep one vite preview warm on a free port for `mise run e2e --reuse`; re-run after a code change (it rebuilds, the server stays)"
+[tasks.e2e-bundle]
+description = "The wasm builds and the production bundle the e2e tests serve, each rebuilt only when a source of it is newer"
 dir = "frontend"
 depends = ["build-go", "build-go2"]
+sources = ["src/**/*", "static/**/*", "package.json", "pnpm-lock.yaml", "svelte.config.js", "vite.config.js", "tsconfig.json"]
+outputs = ["build/.e2e-bundle"]
 run = [
   '{{vars.NICE}} gzip -kf9 static/go-pob.wasm static/go-pob2.wasm',
   '{{vars.NICE}} npx vite build --logLevel warn',
-  'node e2e/serve.mjs start',
+  'touch build/.e2e-bundle',
 ]
+
+[tasks.e2e-coverage]
+description = "Record which frontend files each e2e spec runs into frontend/e2e/coverage-map.json, which e2e-affected selects by: a coverage build, then every spec (or the [specs]) once on its own preview server; a full run, so the operator's or CI's (.github/workflows/e2e-coverage.yml)"
+dir = "frontend"
+depends = ["build-go", "build-go2"]
+usage = '''
+flag "--servers <servers>" env="SERVERS" default="2"
+flag "--workers <workers>" env="WORKERS" default="2"
+arg "[specs]..." var=#true help="spec files, default every spec"
+'''
+run = [
+  '{{vars.NICE}} gzip -kf9 static/go-pob.wasm static/go-pob2.wasm',
+  'rm -rf e2e/.coverage',
+  '{{vars.NICE}} npx vite build -c e2e/vite.coverage.config.js --logLevel warn',
+  '{{vars.NICE}} env E2E_SLOW=1 node e2e/coverage.mjs record --servers {{usage.servers}} --workers {{usage.workers}} {{usage.specs}}',
+  'node e2e/coverage.mjs merge',
+]
+
+[tasks.e2e-coverage-pull]
+description = "Copy the coverage map the latest finished e2e-coverage CI run recorded (--run <id> for another) into frontend/e2e/coverage-map.json"
+dir = "frontend"
+usage = '''
+flag "--run <run>" env="RUN"
+'''
+run = '''gh run download {% if usage.run %}{{usage.run}}{% else %}"$(gh run list --workflow e2e-coverage --status success --limit 1 --json databaseId -q '.[0].databaseId')"{% endif %} -n e2e-coverage-map -D e2e'''
+
+[tasks.e2e-serve]
+description = "Build the wasm and the frontend (when their sources changed), then keep one vite preview warm on a free port for `mise run e2e --reuse`; re-run after a code change (it rebuilds, the server stays)"
+dir = "frontend"
+depends = ["e2e-bundle"]
+run = 'node e2e/serve.mjs start'
+
 
 [tasks.e2e-serve-stop]
 description = "Stop this worktree's warm e2e server"

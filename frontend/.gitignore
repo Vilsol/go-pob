@@ -18,3 +18,4 @@ static/go-pob2.wasm.br.sha256
 e2e/.results
 storybook-static
 *storybook.log
+e2e/.coverage
