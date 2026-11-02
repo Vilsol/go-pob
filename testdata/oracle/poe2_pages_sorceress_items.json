@@ -3,40 +3,61 @@
       "enabled":true,
       "gems":[{
           "color":"^x7070FF",
+          "corruptIndex":1,
+          "corruptShown":true,
           "count":1,
+          "countShown":true,
           "enabled":true,
+          "generated":false,
+          "id":"Metadata/Items/Gems/SkillGemSpark",
           "level":10,
           "name":"Spark",
           "quality":5,
           "support":false
         },{
           "color":"^x7070FF",
+          "corruptIndex":1,
+          "corruptShown":false,
           "count":1,
+          "countShown":false,
           "enabled":false,
+          "generated":false,
+          "id":"Metadata/Items/Gems/SkillGemRapidCastingSupport",
           "level":1,
           "name":"Rapid Casting I",
           "quality":0,
           "support":true
         }],
+      "groupCount":1,
       "includeInFullDPS":true,
       "label":"Spark",
       "slot":"",
-      "source":""
+      "source":"",
+      "userLabel":"",
+      "weaponSetLocked":false
     },{
       "enabled":false,
       "gems":[{
           "color":"^x7070FF",
+          "corruptIndex":1,
+          "corruptShown":true,
           "count":1,
+          "countShown":true,
           "enabled":true,
+          "generated":false,
+          "id":"Metadata/Items/Gems/SkillGemFireball",
           "level":8,
           "name":"Fireball",
           "quality":0,
           "support":false
         }],
+      "groupCount":1,
       "includeInFullDPS":false,
       "label":"Backup",
       "slot":"",
-      "source":""
+      "source":"",
+      "userLabel":"Backup",
+      "weaponSetLocked":false
     }],
   "items":[{
       "id":4,

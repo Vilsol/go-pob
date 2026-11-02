@@ -50,6 +50,8 @@ type Calculator struct {
 	items *calculator2.ItemsTab
 	// undo is the spec's undo handler, reset on the first calculation as PassiveSpec:Load resets it.
 	undo *tree2.UndoHandler
+	// skillsEdited is set once the Skills tab has edited the build.
+	skillsEdited bool
 }
 
 // Outputs is the player's output table, the main skill's minion's when it has one, and the build's
@@ -81,6 +83,7 @@ func ParseBuild(xml string) (*Calculator, error) {
 }
 
 func (c *Calculator) Serialize() (string, error) {
+	c.syncSkills()
 	out, err := pob2.SerializeBuild(c.build)
 	if err != nil {
 		return "", err
@@ -106,6 +109,7 @@ type SavedFullDPS struct {
 //
 //pob2:block:src/Modules/Build.lua:1196-1244
 func (c *Calculator) SerializeWithStats(player []SavedStat, fullDPS []SavedFullDPS, minion []SavedStat) (string, error) {
+	c.syncSkills()
 	out := *c.build
 	// Save writes every row afresh, after Spectre and BeastCompanion and before Buffs
 	out.Build.Order = nil

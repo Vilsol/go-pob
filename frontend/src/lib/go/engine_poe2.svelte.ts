@@ -230,6 +230,8 @@ export const poe2Engine: BuildEngine = {
     output: derived(poe2Build, (v) => v?.output),
     set: (key, value) => poe2Run((w) => w.SetConfigOption(key, value))
   },
+  // SkillsTab.lua (PoB-PoE2)
+  skills: () => import('./engine_poe2_skills.svelte').then((m) => m.poe2SkillsPage),
   calcs: {
     tab: calcsTab2,
     setMainSkill: setMainSkill2

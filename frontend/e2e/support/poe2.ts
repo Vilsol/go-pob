@@ -2,8 +2,9 @@ import type { Locator, Page } from '@playwright/test';
 
 import { displayStats2 } from '../../src/lib/display/stats2';
 
-// a PoE2 build's page body in the app frame; the Calcs and Config pages are the ones PoE1 builds show
-export const poe2Page = (page: Page) => page.locator('[data-poe2-page], [aria-label="Calculations"], input[aria-label="Filter options"]');
+// a PoE2 build's page body in the app frame; the Skills, Calcs and Config pages are the ones PoE1 builds show
+export const poe2Page = (page: Page) =>
+  page.locator('[data-poe2-page], [aria-label="Calculations"], input[aria-label="Filter options"], section[aria-label="Socket groups"]');
 
 // the frame sidebar's value for a PoE2 stat, found by the label(s) PoE2's stat list gives it
 export const poe2Stat = (page: Page, stat: string): Locator => {

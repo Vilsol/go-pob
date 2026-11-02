@@ -2,7 +2,7 @@ import { expect, describe, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
-const raw = readFileSync(fileURLToPath(new URL('./shell/AppSkills.svelte', import.meta.url)), 'utf8');
+const raw = readFileSync(fileURLToPath(new URL('./go/engine_poe1_skills.svelte.ts', import.meta.url)), 'utf8');
 
 const code = raw
   .replace(/<!--[\s\S]*?-->/g, '')
@@ -39,9 +39,9 @@ describe('the load path never writes', () => {
   });
 
   it('never awaits the live Skills wrapper itself, only its scalars and the plain gem slice', () => {
-    expect(code).not.toMatch(/await\s+(\$currentBuild|build)\??\.Skills\s*[;)]/);
+    expect(code).not.toMatch(/await\s+(cur\.current|build)\??\.Skills\s*[;)]/);
     expect(code).not.toMatch(/await\s+skills\s*[;)]/);
-    expect(code).not.toMatch(/\$currentBuild\??\.Skills\??\.then/);
+    expect(code).not.toMatch(/cur\.current\??\.Skills\??\.then/);
   });
 });
 

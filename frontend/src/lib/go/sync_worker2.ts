@@ -105,15 +105,52 @@ export type Poe2Calc = Poe2View & {
 
 export type Poe2Click = { result: number; calc?: Poe2Calc };
 
-/* SkillListControl.lua:78-96, SkillsTab.lua:1351-1361 (PoB-PoE2) */
+/* SkillListControl.lua:78-96, SkillsTab.lua:1351-1361 (PoB-PoE2); label is the display label, userLabel the group's own */
 export type Poe2SkillGroup = {
   label: string;
+  userLabel: string;
+  groupCount: number;
   slot: string;
   source: string;
   enabled: boolean;
   includeInFullDPS: boolean;
-  gems: { name: string; level: number; quality: number; count: number; enabled: boolean; support: boolean; color: string }[];
+  set1: boolean;
+  set2: boolean;
+  weaponSetLocked: boolean;
+  gems: {
+    id: string;
+    name: string;
+    level: number;
+    quality: number;
+    count: number;
+    enabled: boolean;
+    support: boolean;
+    color: string;
+    // SkillsTab.lua:764-766, 1086-1100, 1134-1149 (PoB-PoE2)
+    generated: boolean;
+    countShown: boolean;
+    corruptShown: boolean;
+    corruptIndex: number;
+  }[];
 };
+
+/* SkillsTab.lua (PoB-PoE2): one edit of the socket group list; groups and gems count from 1 */
+export type Poe2SkillsEdit =
+  | { op: 'newGroup' }
+  | { op: 'deleteGroup'; group: number }
+  | { op: 'deleteAll' }
+  | { op: 'moveGroup'; from: number; to: number }
+  | { op: 'label'; group: number; label: string }
+  | { op: 'enabled' | 'fullDPS'; group: number; state: boolean }
+  | { op: 'groupCount'; group: number; count: number }
+  | { op: 'weaponSet'; group: number; set: 1 | 2; state: boolean }
+  | { op: 'gem'; group: number; gem: number; id: string }
+  | { op: 'removeGem'; group: number; gem: number }
+  | { op: 'level' | 'quality' | 'count' | 'corrupt'; group: number; gem: number; value: number }
+  | { op: 'gemEnabled'; group: number; gem: number; state: boolean };
+
+/* GemSelectControl.lua:104-133 (PoB-PoE2): what the gem list's filters and search read */
+export type Poe2Gem = { id: string; name: string; tags: string[]; support: boolean; isLineage: boolean; legacy: boolean; levelReq: number; color: number };
 
 // the Calcs page's {p:mod:n} values by cell entry id, the true and string outputs, and output.MainHand / output.OffHand
 export type Poe2CalcsPage = {
@@ -299,20 +336,120 @@ class PoB2Worker {
     if (!this.calc) throw new Error('no PoE2 build is open');
     return (this.calc.SkillGroups().unwrap() ?? []).map((g) => ({
       label: g.Label,
+      userLabel: g.UserLabel,
+      groupCount: g.GroupCount,
       slot: g.Slot,
       source: g.Source,
       enabled: g.Enabled,
       includeInFullDPS: g.IncludeInFullDPS,
+      set1: g.Set1,
+      set2: g.Set2,
+      weaponSetLocked: g.WeaponSetLocked,
       gems: (g.Gems ?? []).map((gem) => ({
+        id: gem.ID,
         name: gem.Name,
         level: gem.Level,
         quality: gem.Quality,
         count: gem.Count,
         enabled: gem.Enabled,
         support: gem.Support,
-        color: gem.Color
+        color: gem.Color,
+        generated: gem.Generated,
+        countShown: gem.CountShown,
+        corruptShown: gem.CorruptShown,
+        corruptIndex: gem.CorruptIndex
       }))
     }));
+  }
+
+  /* SkillsTab.lua, SkillListControl.lua (PoB-PoE2): an edit of the socket group list, then the recalculation */
+  async EditSkills(e: Poe2SkillsEdit): Promise<Poe2Calc> {
+    const c = this.calc;
+    if (!c) throw new Error('no PoE2 build is open');
+    switch (e.op) {
+      case 'newGroup':
+        c.NewSocketGroup().unwrap();
+        break;
+      case 'deleteGroup':
+        c.DeleteSocketGroup(e.group).unwrap();
+        break;
+      case 'deleteAll':
+        c.DeleteAllSocketGroups().unwrap();
+        break;
+      case 'moveGroup':
+        c.MoveSocketGroup(e.from, e.to).unwrap();
+        break;
+      case 'label':
+        c.SetSocketGroupLabel(e.group, e.label).unwrap();
+        break;
+      case 'enabled':
+        c.SetSocketGroupEnabled(e.group, e.state).unwrap();
+        break;
+      case 'fullDPS':
+        c.SetSocketGroupIncludeInFullDPS(e.group, e.state).unwrap();
+        break;
+      case 'groupCount':
+        c.SetSocketGroupCount(e.group, e.count).unwrap();
+        break;
+      case 'weaponSet':
+        c.SetSocketGroupWeaponSet(e.group, e.set, e.state).unwrap();
+        break;
+      case 'gem':
+        c.SetGem(e.group, e.gem, e.id).unwrap();
+        break;
+      case 'removeGem':
+        c.RemoveGem(e.group, e.gem).unwrap();
+        break;
+      case 'level':
+        c.SetGemLevel(e.group, e.gem, e.value).unwrap();
+        break;
+      case 'quality':
+        c.SetGemQuality(e.group, e.gem, e.value).unwrap();
+        break;
+      case 'count':
+        c.SetGemCount(e.group, e.gem, e.value).unwrap();
+        break;
+      case 'corrupt':
+        c.SetGemCorruption(e.group, e.gem, e.value).unwrap();
+        break;
+      case 'gemEnabled':
+        c.SetGemEnabled(e.group, e.gem, e.state).unwrap();
+        break;
+    }
+    return this.view();
+  }
+
+  private gemList?: Promise<Poe2Gem[]>;
+
+  GemList(): Promise<Poe2Gem[]> {
+    this.gemList ??= (async () => {
+      await this.booted;
+      return ((await exposition.GemList()).unwrap() ?? []).map((g) => ({
+        id: g.ID,
+        name: g.Name,
+        tags: [...(g.Tags ?? [])],
+        support: g.Support,
+        isLineage: g.IsLineage,
+        legacy: g.Legacy,
+        levelReq: g.LevelRequirement,
+        color: g.Color
+      }));
+    })().catch((err: unknown) => {
+      this.gemList = undefined;
+      throw err;
+    });
+    return this.gemList;
+  }
+
+  /* SkillsTab.lua:405-427 (PoB-PoE2) */
+  GemOptions(): calculator2.GemOptions {
+    if (!this.calc) throw new Error('no PoE2 build is open');
+    return { ...this.calc.GemOptions() };
+  }
+
+  /* SkillsTab.lua:114-140 (PoB-PoE2) */
+  SetGemOptions(options: calculator2.GemOptions) {
+    this.calc?.SetGemOptions(options);
   }
 
   EquippedItems(): Poe2Items {

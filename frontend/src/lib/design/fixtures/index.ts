@@ -85,6 +85,9 @@ export type SocketGroupFixture = {
   count: number;
   sockets: string;
   gems: SkillGemFixture[];
+  /* SkillsTab.lua:157-171 (PoB-PoE2): the weapon sets the group is used in */
+  set1?: boolean;
+  set2?: boolean;
 };
 
 export type SkillsFixture = { activeSet: number; sets: { title: string; groups: SocketGroupFixture[] }[] };

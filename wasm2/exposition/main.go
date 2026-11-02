@@ -34,11 +34,14 @@ func Exports(r bind.Registry) {
 	r.Type(SkillGemView{}, bind.Plain())
 	r.Type(ItemsView{}, bind.Plain())
 	r.Type(ItemView{}, bind.Plain())
+	r.Type(calculator2.GemOptions{}, bind.Plain())
+	r.Type(calculator2.GemListEntry{}, bind.Plain())
 
 	r.Func(ParseBuild)
 	r.Func(Preload, bind.AsPromise())
 	r.Func(PassiveTreeJSON, bind.AsPromise())
 	r.Func(TreeClasses, bind.AsPromise())
+	r.Func(GemList, bind.AsPromise())
 	r.Value("TreeVersion", TreeVersion)
 
 	r.Func(config.InitLogging)

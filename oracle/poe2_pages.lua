@@ -17,11 +17,21 @@ loadBuildFromXML(xml)
 runCallback("OnFrame")
 
 local groups = {}
-for _, group in ipairs(build.skillsTab.socketGroupList) do
+local tab = build.skillsTab
+for _, group in ipairs(tab.socketGroupList) do
+	-- the gem slot controls read the displayed group
+	tab:SetDisplayGroup(group)
+	tab:UpdateGemSlots()
 	local gems = {}
-	for _, gem in ipairs(group.gemList) do
+	for i, gem in ipairs(group.gemList) do
 		local grantedEffect = gem.grantedEffect or (gem.gemData and gem.gemData.grantedEffect)
+		local slot = tab.gemSlots[i]
 		gems[#gems + 1] = {
+			id = gem.gemData and gem.gemData.id or "",
+			generated = not slot.nameSpec.enabled(),
+			countShown = slot.count.shown() and true or false,
+			corruptShown = slot.corruptLevel.shown() and true or false,
+			corruptIndex = tab:GetCorruptIndex(gem),
 			name = gem.gemData and gem.gemData.name or (grantedEffect and grantedEffect.name) or gem.nameSpec,
 			level = gem.level,
 			quality = gem.quality,
@@ -33,6 +43,9 @@ for _, group in ipairs(build.skillsTab.socketGroupList) do
 	end
 	groups[#groups + 1] = {
 		label = group.displayLabel,
+		userLabel = group.label or "",
+		weaponSetLocked = tab:IsSocketGroupWeaponSetLocked(group) and true or false,
+		groupCount = group.groupCount or 1,
 		slot = group.slot or "",
 		source = group.source or "",
 		enabled = group.enabled and true or false,

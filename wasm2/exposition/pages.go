@@ -5,10 +5,13 @@ import (
 	"strings"
 
 	"github.com/Vilsol/go-pob/calculator2"
+	"github.com/Vilsol/go-pob/data/poe2skills"
 )
 
 // SkillGemView is one gem of a socket group as the skills tab lists it.
 type SkillGemView struct {
+	// ID is the gem's data id, "" for a skill no gem grants.
+	ID      string
 	Name    string
 	Level   int
 	Quality float64
@@ -17,18 +20,30 @@ type SkillGemView struct {
 	Support bool
 	// Color is the gem's colour code (colorCodes.STRENGTH, DEXTERITY, INTELLIGENCE or NORMAL).
 	Color string
+	// Generated is a gem the group's source grants: not editable or removable.
+	Generated bool
+	// CountShown and CorruptShown are whether the gem slot shows its Count box and Corrupt dropdown.
+	CountShown   bool
+	CorruptShown bool
+	// CorruptIndex is the Corrupt dropdown's entry, 1-based.
+	CorruptIndex int
 }
 
 // SkillGroupView is one socket group of the skills tab: its display label, where it comes from, and its gems.
 type SkillGroupView struct {
+	// Label is the display label; UserLabel the group's own.
 	Label            string
+	UserLabel        string
+	GroupCount       float64
 	Slot             string
 	Source           string
 	Enabled          bool
 	IncludeInFullDPS bool
 	Set1             bool
 	Set2             bool
-	Gems             []SkillGemView
+	// WeaponSetLocked is a group whose source item's weapon set decides its sets.
+	WeaponSetLocked bool
+	Gems            []SkillGemView
 }
 
 // Global.lua:7-78 (PoB-PoE2)
@@ -76,6 +91,29 @@ func gemColor(gem *calculator2.GemInstance) string {
 	return colorNormal
 }
 
+// gemSlotShown is whether one of the gem's effects is an active skill the sidebar lists, as the Count box and the
+// Corrupt dropdown ask.
+//
+//pob2:block:src/Classes/SkillsTab.lua:1090-1099
+func gemSlotShown(gem *calculator2.GemInstance) bool {
+	var list []*poe2skills.GrantedEffect
+	if gem.GemData != nil {
+		list = gem.GemData.GrantedEffectList
+	} else {
+		list = []*poe2skills.GrantedEffect{gem.GrantedEffect}
+	}
+	for i, grantedEffect := range list {
+		if grantedEffect == nil {
+			continue
+		}
+		hide := grantedEffect.Overlay != nil && grantedEffect.Overlay.HideFromSideBar
+		if !grantedEffect.Support && !hide && (!grantedEffect.HasGlobalEffect || i < 2 && (i == 0 && gem.EnableGlobal1 || i == 1 && gem.EnableGlobal2)) {
+			return true
+		}
+	}
+	return false
+}
+
 // SkillGroups is the active skill set's socket groups as the last calculation loaded them.
 //
 //pob2:block:src/Classes/SkillListControl.lua:78-96
@@ -87,6 +125,8 @@ func (c *Calculator) SkillGroups() ([]SkillGroupView, error) {
 	out := make([]SkillGroupView, len(c.env.SocketGroupList))
 	for i, group := range c.env.SocketGroupList {
 		view := SkillGroupView{
+			UserLabel:        group.Label,
+			GroupCount:       group.GroupCount,
 			Slot:             group.Slot,
 			Source:           group.Source,
 			Enabled:          group.Enabled,
@@ -98,7 +138,15 @@ func (c *Calculator) SkillGroups() ([]SkillGroupView, error) {
 		if i < len(labels) {
 			view.Label = labels[i].Label
 		}
-		for _, gem := range group.GemList {
+		//pob2:block:src/Classes/SkillsTab.lua:1393-1396
+		if (group.SourceItem != nil || group.Source == "Default Attack") && group.Slot != "" && c.items != nil {
+			slot := c.items.Slots[group.Slot]
+			view.WeaponSetLocked = slot != nil && slot.WeaponSet != 0
+		}
+		if !group.HasGroupCount {
+			view.GroupCount = 1
+		}
+		for gemIndex, gem := range group.GemList {
 			grantedEffect := gem.GrantedEffect
 			if grantedEffect == nil && gem.GemData != nil {
 				grantedEffect = gem.GemData.GrantedEffect
@@ -109,14 +157,25 @@ func (c *Calculator) SkillGroups() ([]SkillGroupView, error) {
 			} else if grantedEffect != nil {
 				name = grantedEffect.Name
 			}
+			generated := gemIndex == 0 && (group.Source != "" || group.SourceItem != nil || group.SourceNode != nil)
+			shown := !generated && gemSlotShown(gem)
+			id := ""
+			if gem.GemData != nil {
+				id = gem.GemData.Data.ID
+			}
 			view.Gems = append(view.Gems, SkillGemView{
-				Name:    name,
-				Level:   gem.Level,
-				Quality: gem.Quality,
-				Count:   gem.Count,
-				Enabled: gem.Enabled,
-				Support: grantedEffect != nil && grantedEffect.Support,
-				Color:   gemColor(gem),
+				ID:           id,
+				Generated:    generated,
+				CountShown:   shown,
+				CorruptShown: gemSlotShown(gem) && !gem.FromItem && !gem.FromTree && (grantedEffect == nil || grantedEffect.Overlay == nil || !grantedEffect.Overlay.FromItem && !grantedEffect.Overlay.FromTree),
+				CorruptIndex: calculator2.CorruptIndex(gem),
+				Name:         name,
+				Level:        gem.Level,
+				Quality:      gem.Quality,
+				Count:        gem.Count,
+				Enabled:      gem.Enabled,
+				Support:      grantedEffect != nil && grantedEffect.Support,
+				Color:        gemColor(gem),
 			})
 		}
 		out[i] = view

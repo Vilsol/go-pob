@@ -17,6 +17,8 @@ import (
 type Environment struct {
 	Build *pob2.PathOfBuilding2
 	Mode  string
+	// socketGroupsSynced is set once the Skills tab's edits have written SocketGroupList into Build.
+	socketGroupsSynced bool
 
 	Spec    *tree2.PassiveSpec
 	ClassID int
@@ -131,6 +133,10 @@ type SocketGroup struct {
 	Set2             bool
 	NoSupports       bool
 	HasGroupCount    bool
+
+	// savedIndex is the group's 1-based place among the active skill set's saved groups; 0 for a group the
+	// calculation generated.
+	savedIndex int
 }
 
 // GemInstance is one gemList entry of a socket group.

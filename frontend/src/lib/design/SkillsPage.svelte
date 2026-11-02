@@ -41,7 +41,7 @@
     onremovegem: (i: number, gem: number) => void;
     onnewgroup: () => void;
     onreordergroups?: (from: number, to: number) => void;
-    onreordergems: (from: number, to: number) => void;
+    onreordergems?: (from: number, to: number) => void;
     setLocked?: string;
     groupsLocked?: string;
     onmain?: (i: number) => void;
@@ -54,7 +54,26 @@
     onpastegroup?: (text: string) => void;
     options?: GemOptions;
     onoption?: (patch: Partial<GemOptions>) => void;
+    // SkillsTab.lua's option lists, for a game whose lists differ; sort and alt show the DPS sort and quality variant controls
+    optionLists?: {
+      levels: { value: string; label: string; description: string }[];
+      supports: { value: string; label: string }[];
+      sort: boolean;
+      alt: boolean;
+    };
     editor?: {
+      /* SkillsTab.lua:157-201 (PoB-PoE2) */
+      weaponSets?: (group: number) => { set1: boolean; set2: boolean; locked: boolean } | undefined;
+      slotSelect?: boolean;
+      sockets?: boolean;
+      /* SkillsTab.lua:764-766 (PoB-PoE2) */
+      gemLocked?: (group: number, gem: number) => boolean;
+      /* SkillsTab.lua:1086-1100 (PoB-PoE2) */
+      countShown?: (group: number, gem: number) => boolean;
+      /* SkillListControl.lua:42-44 (PoB-PoE2) */
+      deletable?: (group: number) => boolean;
+      /* GemSelectControl.lua:196-214: the search's tag aliases, where a game's differ */
+      searchTerms?: Record<string, string>;
       /* SkillsTab.lua:345-356 */
       groupCount?: boolean | ((group: number) => boolean);
       /* SkillsTab.lua:242-288 */
@@ -118,6 +137,7 @@
     onpastegroup,
     options,
     onoption,
+    optionLists,
     editor,
     grouptip,
     groupicon,
@@ -166,7 +186,8 @@
     { value: 'NORMAL', label: 'Non-Exceptional' },
     { value: 'EXCEPTIONAL', label: 'Exceptional' }
   ];
-  const levelDescription = $derived(LEVELS.find((l) => l.value === options?.defaultLevel)?.description);
+  const lists = $derived(optionLists ?? { levels: LEVELS, supports: SUPPORTS, sort: true, alt: true });
+  const levelDescription = $derived(lists.levels.find((l) => l.value === options?.defaultLevel)?.description);
   const reorderable = $derived(!!onreordergroups);
 
   let managing = $state(false);
@@ -268,29 +289,34 @@
   {#if onmain || ondeletegroup || ondeleteall}
     <div class="flex gap-1.5">
       {#if onmain}<Button size="xs" class="grow text-11" disabled={selected === mainGroup || !group} onclick={() => onmain(selected)}>Set as main</Button>{/if}
-      {#if ondeletegroup}<Button size="xs" class="grow text-11" disabled={groups.length <= 1 || !group} onclick={() => ondeletegroup(selected)}
-          >Delete group</Button
+      {#if ondeletegroup}<Button
+          size="xs"
+          class="grow text-11"
+          disabled={!group || (editor?.deletable ? !editor.deletable(selected) : groups.length <= 1)}
+          onclick={() => ondeletegroup(selected)}>Delete group</Button
         >{/if}
-      {#if ondeleteall}<Button size="xs" class="grow text-11" disabled={groups.length <= 1} onclick={ondeleteall}>Delete all</Button>{/if}
+      {#if ondeleteall}<Button size="xs" class="grow text-11" disabled={editor?.deletable ? groups.length === 0 : groups.length <= 1} onclick={ondeleteall}
+          >Delete all</Button
+        >{/if}
     </div>
   {/if}
   <section aria-label="Gem options" class="panel mt-1 flex flex-col gap-1.75 p-2.5 text-12">
     <SectionHeading level={3}>GEM OPTIONS</SectionHeading>
-    <div class="flex items-center justify-between gap-1.5">
-      <Checkbox compact bind:checked={sortOn} onchange={(e: Event & { currentTarget: HTMLInputElement }) => onsort?.(e.currentTarget.checked, sortStat)}
-        >Sort gems by DPS</Checkbox>
-      <Select
-        size="xs"
-        class="w-30"
-        aria-label="Sort by"
-        options={SORTS}
-        bind:value={sortStat}
-        onchange={(e: Event & { currentTarget: HTMLSelectElement }) => onsort?.(sortOn, e.currentTarget.value)} />
-    </div>
+    {#if lists.sort}<div class="flex items-center justify-between gap-1.5">
+        <Checkbox compact bind:checked={sortOn} onchange={(e: Event & { currentTarget: HTMLInputElement }) => onsort?.(e.currentTarget.checked, sortStat)}
+          >Sort gems by DPS</Checkbox>
+        <Select
+          size="xs"
+          class="w-30"
+          aria-label="Sort by"
+          options={SORTS}
+          bind:value={sortStat}
+          onchange={(e: Event & { currentTarget: HTMLSelectElement }) => onsort?.(sortOn, e.currentTarget.value)} />
+      </div>{/if}
     <FloatingLabel label="Default gem level"
       ><Select
         size="xs"
-        options={LEVELS}
+        options={lists.levels}
         value={options?.defaultLevel}
         title={levelDescription}
         onchange={(e: Event & { currentTarget: HTMLSelectElement }) => onoption?.({ defaultLevel: e.currentTarget.value })} /></FloatingLabel>
@@ -306,14 +332,15 @@
     <FloatingLabel label="Show support gems"
       ><Select
         size="xs"
-        options={SUPPORTS}
+        options={lists.supports}
         value={options?.showSupport}
         onchange={(e: Event & { currentTarget: HTMLSelectElement }) => onoption?.({ showSupport: e.currentTarget.value })} /></FloatingLabel>
     {#if options}
-      <Checkbox
-        compact
-        checked={options.showAlt}
-        onchange={(e: Event & { currentTarget: HTMLInputElement }) => onoption?.({ showAlt: e.currentTarget.checked })}>Show gem quality variants</Checkbox>
+      {#if lists.alt}<Checkbox
+          compact
+          checked={options.showAlt}
+          onchange={(e: Event & { currentTarget: HTMLInputElement }) => onoption?.({ showAlt: e.currentTarget.checked })}>Show gem quality variants</Checkbox
+        >{/if}
       <Checkbox
         compact
         checked={options.showLegacy}
@@ -369,6 +396,12 @@
       sortCache={editor?.sortCache}
       onpicker={editor?.onpicker && ((open: boolean) => editor.onpicker!(selected, open))}
       slottip={editor?.slottip}
+      weaponSets={editor?.weaponSets?.(selected)}
+      slotSelect={editor?.slotSelect}
+      sockets={editor?.sockets}
+      gemLocked={editor?.gemLocked && ((g: number) => editor.gemLocked!(selected, g))}
+      countShown={editor?.countShown && ((g: number) => editor.countShown!(selected, g))}
+      searchTerms={editor?.searchTerms}
       {revision} />
   {/key}
 {/if}

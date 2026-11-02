@@ -37,7 +37,7 @@
     ongem: (gem: number, patch: Partial<SkillGemFixture>) => void;
     onadd: (gem: SkillGemFixture) => void;
     onremove: (gem: number) => void;
-    onreorder: (from: number, to: number) => void;
+    onreorder?: (from: number, to: number) => void;
     groupCount?: boolean;
     ongemcount?: (gem: number, count: number) => void;
     maxLevel?: (gem: number) => number;
@@ -69,6 +69,15 @@
     /* SkillsTab.lua:294-343 */
     imbued?: { value: string; options: string[]; enabled: boolean };
     onimbued?: (name: string) => void;
+    /* SkillsTab.lua:157-201 (PoB-PoE2): the weapon sets the group is used in */
+    weaponSets?: { set1: boolean; set2: boolean; locked: boolean };
+    slotSelect?: boolean;
+    sockets?: boolean;
+    /* SkillsTab.lua:764-766 (PoB-PoE2): a gem the group's source grants */
+    gemLocked?: (gem: number) => boolean;
+    /* SkillsTab.lua:1086-1100 (PoB-PoE2) */
+    countShown?: (gem: number) => boolean;
+    searchTerms?: Record<string, string>;
     revision?: unknown;
   };
   let {
@@ -103,6 +112,12 @@
     supporting = [],
     imbued,
     onimbued,
+    weaponSets,
+    slotSelect = true,
+    sockets = true,
+    gemLocked,
+    countShown,
+    searchTerms,
     revision
   }: Props = $props();
   // GemSelectControl.lua:620-627
@@ -132,7 +147,7 @@
   };
   let gemBox = $state<HTMLElement>();
   const dragState = $state(reorderState());
-  const drag = new Reorder(dragState, { box: () => gemBox, name: (i) => group.gems[i]?.name ?? '', onmove: (f, t) => onreorder(f, t) });
+  const drag = new Reorder(dragState, { box: () => gemBox, name: (i) => group.gems[i]?.name ?? '', onmove: (f, t) => onreorder?.(f, t) });
   const line = $derived(socketLine(group.sockets));
   // a gem takes the next socket that is not abyssal
   const gemSockets = $derived(line.colours.flatMap((c, i) => (c === 'A' ? [] : [i])));
@@ -162,7 +177,7 @@
       .filter((g) => !only || g.tags.includes(only));
     const sc = sortCache;
     const key = sc ? (g: { name: string }) => sc.dps[g.name] : (g: { name: string }) => deltas[g.name];
-    const hits = searchGems(gems, q, sortOn ? key : undefined, sc ? (g) => !!sc.canSupport[g.name] : undefined);
+    const hits = searchGems(gems, q, sortOn ? key : undefined, sc ? (g) => !!sc.canSupport[g.name] : undefined, searchTerms);
     return hits.map((g) => ({ ...g, socketed: group.gems.some((m) => m.name === g.name) }));
   });
   const add = (i: number) => {
@@ -319,15 +334,16 @@
   <div class="flex flex-wrap items-end gap-2">
     <Field label="Label" class="w-42.5 gap-0.5 text-11">
       <Input size="sm" value={group.label} onchange={(e: Event & { currentTarget: HTMLInputElement }) => onchange({ label: e.currentTarget.value })} /></Field>
-    <FloatingLabel label="Socketed in"
-      ><Dropdown
-        class="h-7.5 min-w-32"
-        options={slotOptions}
-        disabled={!!slotLocked}
-        title={slotLocked ?? SLOT_TIP}
-        value={group.slot || 'None'}
-        onhover={hoverSlot}
-        onchange={(v: string) => onchange({ slot: v === 'None' ? '' : v })} /></FloatingLabel>
+    {#if slotSelect}<FloatingLabel label="Socketed in"
+        ><Dropdown
+          class="h-7.5 min-w-32"
+          options={slotOptions}
+          disabled={!!slotLocked}
+          title={slotLocked ?? SLOT_TIP}
+          value={group.slot || 'None'}
+          onhover={hoverSlot}
+          onchange={(v: string) => onchange({ slot: v === 'None' ? '' : v })} /></FloatingLabel
+      >{/if}
     {#if slotHover?.tip}
       <FloatingItemTip
         anchor={slotHover.anchor}
@@ -350,6 +366,18 @@
       class="h-7.5"
       checked={group.inFull}
       onchange={(e: Event & { currentTarget: HTMLInputElement }) => onchange({ inFull: e.currentTarget.checked })}>Include in Full DPS</Checkbox>
+    {#if weaponSets}
+      {#each [1, 2] as const as set (set)}
+        <Checkbox
+          compact
+          class="h-7.5"
+          checked={set === 1 ? weaponSets.set1 : weaponSets.set2}
+          disabled={weaponSets.locked}
+          title={weaponSets.locked ? "Skills granted by items in weapon slots can only be used in that item's weapon set." : undefined}
+          onchange={(e: Event & { currentTarget: HTMLInputElement }) =>
+            onchange(set === 1 ? { set1: e.currentTarget.checked } : { set2: e.currentTarget.checked })}>Set {set}</Checkbox>
+      {/each}
+    {/if}
     {#if groupCount}
       <label class="check-label h-7.5 text-text-2"
         >Count <NumberInput size="xs" class="w-14" value={group.count} min={1} max={20} onchange={(count) => onchange({ count })} /></label>
@@ -370,18 +398,18 @@
         >x</Button>
     </div>
   {/if}
-  <div class="flex items-center gap-2.5 text-12 text-text-2">
-    <!-- SkillsTab.lua:228-237 -->
-    {#if group.sockets}<span>Item sockets: <span class="font-mono"><PobText text={socketDescription(group.sockets)} /></span></span>{/if}
-    <Button
-      size="xs"
-      class="text-11"
-      disabled={(!onoptimise && !!socketsLocked) || optimiseEnabled === false}
-      title={onoptimise
-        ? "Rebuild the item's sockets to match the groups assigned to it."
-        : (socketsLocked ?? "Rebuild the item's sockets to match the socket groups assigned to it")}
-      onclick={onoptimise}>Match item sockets to gems</Button>
-  </div>
+  {#if sockets}<div class="flex items-center gap-2.5 text-12 text-text-2">
+      <!-- SkillsTab.lua:228-237 -->
+      {#if group.sockets}<span>Item sockets: <span class="font-mono"><PobText text={socketDescription(group.sockets)} /></span></span>{/if}
+      <Button
+        size="xs"
+        class="text-11"
+        disabled={(!onoptimise && !!socketsLocked) || optimiseEnabled === false}
+        title={onoptimise
+          ? "Rebuild the item's sockets to match the groups assigned to it."
+          : (socketsLocked ?? "Rebuild the item's sockets to match the socket groups assigned to it")}
+        onclick={onoptimise}>Match item sockets to gems</Button>
+    </div>{/if}
   {#if sourceNote}<p class="m-0 text-12 whitespace-pre-line text-text-2"><PobText text={sourceNote} /></p>{/if}
   <div role="group" aria-label="Gems" class="relative flex flex-col text-13" bind:this={gemBox}>
     <div
@@ -393,8 +421,9 @@
         class="col-span-2"></span>
     </div>
     {#each group.gems as gem, i (i)}
+      {@const locked = !!gemLocked?.(i)}
       <div
-        {...drag.row(i)}
+        {...onreorder ? drag.row(i) : {}}
         class={['relative', supports(i) && 'bg-code-link/25']}
         data-supporting={supports(i) || undefined}
         bind:this={rowEls[i]}
@@ -410,13 +439,13 @@
           support={gem.support}
           linked={linkAt(i)}
           onlinkchange={(linked: boolean) => onchange({ sockets: setLink(group.sockets, at(i - 1), linked) })}
-          enabled={gem.enabled}
+          enabled={locked ? undefined : gem.enabled}
           onenabled={(enabled) => ongem(i, { enabled })}
-          onlevel={(level) => ongem(i, { level })}
+          onlevel={locked ? undefined : (level) => ongem(i, { level })}
           onquality={(quality) => ongem(i, { quality })}
-          onremove={gemsLocked ? undefined : () => onremove(i)}
+          onremove={gemsLocked || locked ? undefined : () => onremove(i)}
           count={gem.count}
-          oncount={ongemcount && ((count: number) => ongemcount(i, count))}
+          oncount={ongemcount && countShown?.(i) !== false ? (count: number) => ongemcount(i, count) : undefined}
           maxLevel={maxLevel?.(i)}
           error={gem.error}
           globals={gem.globals}
@@ -424,15 +453,15 @@
           onenabledhover={enabledwhatif && ((on: boolean) => (hoverEnabled = on ? i : hoverEnabled === i ? undefined : hoverEnabled))}
           onglobal={(index, on) => ongem(i, { globals: (gem.globals ?? []).map((g, k) => (k === index ? { ...g, on } : g)) })}
           linkLocked={LINKS_EDITABLE ? socketsLocked : 'every gem in a group supports the others'}>
-          {#snippet grip()}<span aria-hidden="true" class="flex text-text-3"><Icon name="grip" /></span>{/snippet}
+          {#snippet grip()}{#if onreorder}<span aria-hidden="true" class="flex text-text-3"><Icon name="grip" /></span>{/if}{/snippet}
         </GemRow>
       </div>
     {:else}
       <EmptyState inset="row" text="No gems in this group yet; add one below." />
     {/each}
     <div class="flex gap-3.5 px-1 pt-1.5 text-11 text-text-2">
-      <span>Ring = the item socket’s colour; the filled circle is the gem in it.</span>
-      <span class="ml-auto">{summary}</span>
+      {#if sockets}<span>Ring = the item socket’s colour; the filled circle is the gem in it.</span>{/if}
+      {#if sockets}<span class="ml-auto">{summary}</span>{/if}
     </div>
     <div data-reorder-live aria-live="assertive" class="sr-only">{dragState.message}</div>
     <span id={drag.hint} class="sr-only">{drag.hintText}</span>

@@ -73,6 +73,7 @@ const { poe2Build } = await import('$lib/global');
 const Poe2Page = (await import('./Poe2Page.svelte')).default;
 const AppConfig = (await import('./AppConfig.svelte')).default;
 const AppCalcs = (await import('./AppCalcs.svelte')).default;
+const AppSkills = (await import('./AppSkills.svelte')).default;
 const AppSidebar = (await import('./AppSidebar.svelte')).default;
 const { poe2Engine } = await import('$lib/go/engine_poe2.svelte');
 
@@ -420,28 +421,103 @@ describe('the PoE2 Skills and Items pages', () => {
   };
   const pages = async () => JSON.parse(await readFile(resolve(ORACLE, 'poe2_pages_sorceress_items.json'), 'utf8')) as Pages;
 
-  it("lists PoB-PoE2's socket groups and gems, and setting the main group recalculates", async () => {
+  const groupButtons = (container: HTMLElement) =>
+    [...within(within(container).getByRole('region', { name: 'Socket groups' })).getAllByRole('button')].filter((b) => b.hasAttribute('aria-current'));
+  const levels = (container: HTMLElement) =>
+    within(within(container).getByRole('region', { name: 'Selected group' }))
+      .queryAllByRole<HTMLInputElement>('spinbutton', { name: / level$/ })
+      .map((el) => Number(el.value));
+
+  it("lists PoB-PoE2's socket groups and gems on the Skills page, and setting the main group recalculates", async () => {
     const oracle = await pages();
     poe2Build.set(await worker2Instance.Open(await fixture('sorceress_items.xml')));
     issued.length = 0;
-    const page = render(Poe2Page, { route: 'skills' });
-    const list = await vi.waitFor(() => page.getByRole('listbox', { name: 'Socket groups' }));
-    expect(
-      within(list)
-        .getAllByRole('option')
-        .map((o) => o.textContent?.trim())
-    ).toEqual([`${oracle.groups[0].label} (Active) (FullDPS)`, `${oracle.groups[1].label} (Disabled)`]);
-    const gems = () =>
-      [...page.container.querySelectorAll<HTMLElement>('[data-gem]')].map((r) => [...r.querySelectorAll('td')].map((c) => c.textContent?.trim()));
-    expect(gems().map((g) => g.slice(0, 3))).toEqual(oracle.groups[0].gems.map((g) => [g.name, String(g.level), String(g.quality)]));
+    const page = render(AppSkills);
+    await vi.waitFor(() => expect(groupButtons(page.container).length).toBe(oracle.groups.length));
+    const shown = groupButtons(page.container).map((b) => b.textContent ?? '');
+    expect(shown.map((t, i) => t.includes(oracle.groups[i].label))).toEqual(oracle.groups.map(() => true));
+    expect(levels(page.container)).toEqual(oracle.groups[0].gems.map((g) => g.level));
 
-    await fireEvent.click(within(list).getAllByRole('option')[1]);
-    expect(gems().map((g) => g[0])).toEqual(oracle.groups[1].gems.map((g) => g.name));
-    await fireEvent.click(page.getByRole('button', { name: 'Set as main skill' }));
+    await fireEvent.click(groupButtons(page.container)[1]);
+    expect(levels(page.container)).toEqual(oracle.groups[1].gems.map((g) => g.level));
+    await fireEvent.click(page.getByRole('button', { name: 'Set as main' }));
     await vi.waitFor(() => expect((get(poe2Build) as Poe2Calc | undefined)?.mainSocketGroup).toBe(2));
     // the page refetches as soon as the recalculated build is shown
-    await vi.waitFor(() => expect(issued).toEqual(['SkillGroups()', 'SetMainSocketGroup(2)', 'SkillGroups()']));
-    await vi.waitFor(() => expect(within(list).getAllByRole('option')[1].textContent?.trim()).toBe(`${oracle.groups[1].label} (Disabled) (Forced Active)`));
+    await vi.waitFor(() =>
+      expect(issued.filter((c) => c.startsWith('SkillGroups') || c.startsWith('SetMain'))).toEqual(['SkillGroups()', 'SetMainSocketGroup(2)', 'SkillGroups()'])
+    );
+    await vi.waitFor(() => expect(groupButtons(page.container)[1].textContent).toContain('MAIN'));
+  }, 120_000);
+
+  // calculator2/testdata/skills_edit_pob.jsonl: PoB-PoE2's sidebar values after the same edits through its Skills tab
+  it("edits groups and gems as PoB-PoE2's Skills tab does, and the sidebar values are PoB-PoE2's", async () => {
+    const rows = (await readFile(resolve(process.cwd(), '../calculator2/testdata/skills_edit_pob.jsonl'), 'utf8'))
+      .trim()
+      .split('\n')
+      .map((l) => JSON.parse(l) as { step: string; output: Record<string, number> });
+    const after = (step: string) => rows.find((r) => r.step === step)!.output;
+    poe2Build.set(await worker2Instance.Open(await readFile(resolve(process.cwd(), '../calculator2/testdata/skills_edit.xml'), 'utf8')));
+    issued.length = 0;
+    const page = render(AppSkills);
+    await vi.waitFor(() => expect(groupButtons(page.container).length).toBe(1));
+    const output = () => (get(poe2Build) as Poe2Calc | undefined)?.output ?? {};
+    const settle = async (step: string) =>
+      vi.waitFor(() => {
+        const want = after(step);
+        for (const k of ['TotalDPS', 'ManaCost', 'AverageDamage']) expect([step, k, output()[k]]).toEqual([step, k, want[k]]);
+      });
+
+    await fireEvent.click(page.getByRole('button', { name: '+ New group' }));
+    await vi.waitFor(() => expect(groupButtons(page.container).length).toBe(2));
+    await vi.waitFor(() => expect(groupButtons(page.container)[1].getAttribute('aria-current')).toBe('true'));
+    await fireEvent.click(page.getByRole('button', { name: 'Set as main' }));
+    await settle('main group 2');
+
+    const add = async (name: string, step: string) => {
+      const box = page.getByRole('combobox', { name: 'Add a gem' });
+      await fireEvent.focus(box);
+      await fireEvent.input(box, { target: { value: name } });
+      await fireEvent.keyDown(box, { key: 'Enter' });
+      await settle(step);
+    };
+    await add('Fireball', 'add Fireball');
+    await add('Elemental Focus', 'add Elemental Focus');
+    await vi.waitFor(() => expect(levels(page.container)).toEqual([20, 1]));
+
+    const spin = (name: string) => page.getByRole('spinbutton', { name }) as HTMLInputElement;
+    await fireEvent.input(spin('Fireball level'), { target: { value: '15' } });
+    await fireEvent.keyDown(spin('Fireball level'), { key: 'Enter' });
+    await settle('Fireball level 15');
+    await fireEvent.click(page.getAllByRole('checkbox', { name: 'Elemental Focus enabled' })[0]);
+    await settle('disable Elemental Focus');
+    await fireEvent.click(page.getAllByRole('checkbox', { name: 'Elemental Focus enabled' })[0]);
+    await settle('enable Elemental Focus');
+
+    const edits = issued.filter((c) => c.startsWith('EditSkills'));
+    expect(edits.map((c) => (JSON.parse(c.slice('EditSkills('.length, -1)) as { op: string }).op)).toEqual([
+      'newGroup',
+      'gem',
+      'gem',
+      'level',
+      'gemEnabled',
+      'gemEnabled'
+    ]);
+  }, 180_000);
+
+  // testdata/oracle/poe2_gem_search.json: PoB-PoE2's gem picker list for each search and support filter, sorted by name
+  it("searches PoE2's gems as PoB-PoE2's gem picker does", async () => {
+    const { populateGems2, searchGems, TERM_ALIASES2 } = await import('$lib/design/gem_search');
+    type Case = { showSupport: string; showLegacy: boolean; results: { query: string; names?: string[] }[] };
+    const cases = JSON.parse(await readFile(resolve(ORACLE, 'poe2_gem_search.json'), 'utf8')) as Case[];
+    const gems = (await worker2Instance.GemList()).map((g) => ({ ...g, searchName: g.name }));
+    expect(cases.length).toBe(6);
+    for (const c of cases) {
+      const listed = populateGems2(gems, { showSupport: c.showSupport, matchLevel: false, characterLevel: 1, showLegacy: c.showLegacy });
+      for (const r of c.results) {
+        const got = searchGems(listed, r.query, undefined, undefined, TERM_ALIASES2).map((g) => g.name);
+        expect([c.showSupport, c.showLegacy, r.query, got]).toEqual([c.showSupport, c.showLegacy, r.query, r.names ?? []]);
+      }
+    }
   }, 120_000);
 
   it("shows PoB-PoE2's equipped items on the weapon set in use, with their mod lines", async () => {

@@ -105,6 +105,8 @@ export const poe1Engine: BuildEngine = {
     },
     compare: (key, value) => syncWrap?.ConfigCompare(key, value)
   },
+  // SkillsTab.lua
+  skills: () => import('./engine_poe1_skills.svelte').then((m) => m.poe1SkillsPage),
   calcs: {
     // CalcsTab.lua:452-455, CalcsTab.lua:40-119
     tab: derived(outputs, (o): CalcsTabView | undefined => {

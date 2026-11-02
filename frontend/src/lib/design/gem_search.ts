@@ -31,6 +31,16 @@ export function populateGems<G extends SearchGem>(gems: G[], o: PopulateOptions)
   });
 }
 
+// GemSelectControl.lua:104-133 (PoB-PoE2): PopulateGemList, then FilterSupport
+export type PopulateOptions2 = PopulateOptions;
+export function populateGems2<G extends SearchGem & { isLineage: boolean }>(gems: G[], o: PopulateOptions2): G[] {
+  return gems.filter((g) => {
+    if (o.matchLevel && o.characterLevel < g.levelReq) return false;
+    if (g.legacy && !o.showLegacy) return false;
+    return !g.support || o.showSupport === 'ALL' || (o.showSupport === 'NORMAL' && !g.isLineage) || (o.showSupport === 'LINEAGE' && g.isLineage);
+  });
+}
+
 const CLASSES: Record<string, string> = {
   a: 'A-Za-z',
   l: 'a-z',
@@ -121,10 +131,18 @@ export function luaPattern(p: string): RegExp | null {
 
 const TAG_ALIASES: Record<string, string> = { active: 'grants_active_skill', int: 'intelligence', str: 'strength', dex: 'dexterity', aoe: 'area' };
 const TERM_ALIASES: Record<string, string> = { active: 'grants_active_skill', int: 'intelligence', str: 'strength', dex: 'dexterity' };
+// GemSelectControl.lua:199-209 (PoB-PoE2)
+export const TERM_ALIASES2: Record<string, string> = { ...TERM_ALIASES, aoe: 'area' };
 
 const splitColon = (s: string) => [...(s.startsWith(':') ? [''] : []), ...s.split(':').filter((f) => f !== '')];
 
-export function searchGems<G extends SearchGem>(gems: G[], buf: string, dps?: (g: G) => number | undefined, canSupport?: (g: G) => boolean): G[] {
+export function searchGems<G extends SearchGem>(
+  gems: G[],
+  buf: string,
+  dps?: (g: G) => number | undefined,
+  canSupport?: (g: G) => boolean,
+  termAliases: Record<string, string> = TERM_ALIASES
+): G[] {
   // GemSelectControl.lua:364-384
   const sort = (list: G[]) =>
     list.sort((a, b) => {
@@ -163,7 +181,7 @@ export function searchGems<G extends SearchGem>(gems: G[], buf: string, dps?: (g
           added.add(g);
         }
       } else {
-        searchTerm = TERM_ALIASES[searchTerm] ?? searchTerm;
+        searchTerm = termAliases[searchTerm] ?? searchTerm;
         if (!added.has(g) && g.tags.includes(searchTerm.toLowerCase())) {
           matchList.push(g);
           added.add(g);

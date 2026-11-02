@@ -1,10 +1,9 @@
 <script lang="ts">
   import { poe2Build, type Poe2View } from '$lib/global.js';
-  import type { Poe2Calc, Poe2Items as Poe2ItemsData, Poe2SkillGroup, Worker2Type } from '$lib/go/sync_worker2';
+  import type { Poe2Calc, Poe2Items as Poe2ItemsData, Worker2Type } from '$lib/go/sync_worker2';
   import { poe2Busy, poe2Error, poe2Run, poe2Worker } from '$lib/go/engine_poe2.svelte';
   import SkillTree2 from '$lib/components/skill-tree/SkillTree2.svelte';
   import Poe2Items from './Poe2Items.svelte';
-  import Poe2Skills from './Poe2Skills.svelte';
   import type { Tree2 } from '$lib/components/skill-tree/scene2';
   import type { Remote } from 'comlink';
 
@@ -16,8 +15,6 @@
   const busy = $derived($poe2Busy);
   const fail = (err: unknown) => poe2Error.set(err instanceof Error ? err.message : String(err));
 
-  const setMainGroup = (index: number) => poe2Run((w) => w.SetMainSocketGroup(index));
-
   let treeData = $state.raw<Tree2 | undefined>();
   $effect(() => {
     if (route !== 'tree' || treeData) return;
@@ -26,21 +23,19 @@
       .then((d) => (treeData = d))
       .catch(fail);
   });
-  // what the Skills and Items pages read, fetched again for every calculation while one is open; the last
-  // shows meanwhile
+  // what the Items page reads, fetched again for every calculation while it is open; the last shows meanwhile
   type Fetched<T> = { for: unknown; data: T } | undefined;
-  let pageData = $state.raw<{ skills?: Fetched<Poe2SkillGroup[]>; items?: Fetched<Poe2ItemsData> }>({});
+  let pageData = $state.raw<{ items?: Fetched<Poe2ItemsData> }>({});
   const fetchers = {
-    skills: (w: Remote<Worker2Type>): Promise<unknown> => w.SkillGroups(),
     items: (w: Remote<Worker2Type>): Promise<unknown> => w.EquippedItems()
   };
   $effect(() => {
     const at = view;
     const p = route;
-    if (!at || (p !== 'skills' && p !== 'items') || pageData[p]?.for === at) return;
+    if (!at || p !== 'items' || pageData[p]?.for === at) return;
     void poe2Worker()
       .then((w) => fetchers[p](w))
-      .then((data) => (pageData = { ...pageData, [p]: { for: at, data } }))
+      .then((data) => (pageData = { ...pageData, [p]: { for: at, data: data as Poe2ItemsData } }))
       .catch(fail);
   });
   // PassiveTreeView.lua:425-594, TreeTab.lua:355-364, 851-876 (PoB-PoE2)
@@ -83,8 +78,6 @@
         {/if}
       </div>
     </div>
-  {:else if route === 'skills'}
-    <Poe2Skills groups={pageData.skills?.data} mainGroup={view.mainSocketGroup ?? 1} {busy} onmain={setMainGroup} />
   {:else if route === 'items'}
     <Poe2Items items={pageData.items?.data} {busy} />
   {/if}

@@ -51,6 +51,24 @@ export declare namespace calculator2 {
     readonly IsString: boolean;
     readonly IsBoolean: boolean;
   }
+  interface GemListEntry {
+    readonly ID: string;
+    readonly Name: string;
+    readonly Tags?: Array<string>;
+    readonly Support: boolean;
+    readonly IsLineage: boolean;
+    readonly Legacy: boolean;
+    readonly LevelRequirement: number;
+    readonly Color: number;
+  }
+  interface GemOptions {
+    readonly DefaultGemLevel: string;
+    readonly DefaultGemQuality: number;
+    readonly ShowSupportGemTypes: string;
+    readonly ShowLegacyGems: boolean;
+    readonly SortGemsByDPS: boolean;
+    readonly SortGemsByDPSField: string;
+  }
   interface SocketGroupView {
     readonly Label: string;
     readonly Skills?: Array<string>;
@@ -84,19 +102,37 @@ export declare namespace exposition {
     Calculate(): Promise<Result<(exposition.Outputs | undefined)>>;
     ClickNode(id: number, right: boolean, hotkey: number, confirmClassChange: boolean, allocMode: number): Result<number>;
     ConfigRelevance(query: calculator2.ConfigRelevance): Result<calculator2.ConfigRelevance>;
+    DeleteAllSocketGroups(): Result<void>;
+    DeleteSocketGroup(index: number): Result<void>;
     EquippedItems(): Result<(exposition.ItemsView | undefined)>;
     ExportCode(player: Array<exposition.SavedStat> | undefined, fullDPS: Array<exposition.SavedFullDPS> | undefined, minion: Array<exposition.SavedStat> | undefined): Result<string>;
+    GemOptions(): calculator2.GemOptions;
     HoverNode(id: number, allocMode: number): exposition.TreeHover;
+    MoveSocketGroup(from: number, to: number): Result<void>;
+    NewSocketGroup(): Result<number>;
     Notes(): string;
     Redo(): Result<boolean>;
+    RemoveGem(group: number, gem: number): Result<void>;
     RichNotesDoc(): string;
     RichNotesStatus(): string;
     Serialize(): Result<string>;
     SerializeWithStats(player: Array<exposition.SavedStat> | undefined, fullDPS: Array<exposition.SavedFullDPS> | undefined, minion: Array<exposition.SavedStat> | undefined): Result<string>;
     SetConfigInput(name: string, value: calculator2.ConfigValue, isDefault: boolean): void;
+    SetGem(group: number, gem: number, gemID: string): Result<void>;
+    SetGemCorruption(group: number, gem: number, option: number): Result<void>;
+    SetGemCount(group: number, gem: number, count: number): Result<void>;
+    SetGemEnabled(group: number, gem: number, state: boolean): Result<void>;
+    SetGemLevel(group: number, gem: number, level: number): Result<void>;
+    SetGemOptions(options: calculator2.GemOptions): void;
+    SetGemQuality(group: number, gem: number, quality: number): Result<void>;
     SetMainActiveSkill(index: number): void;
     SetMainSocketGroup(index: number): void;
     SetRichNotes(plain: string, doc: string): void;
+    SetSocketGroupCount(index: number, count: number): Result<void>;
+    SetSocketGroupEnabled(index: number, state: boolean): Result<void>;
+    SetSocketGroupIncludeInFullDPS(index: number, state: boolean): Result<void>;
+    SetSocketGroupLabel(index: number, label: string): Result<void>;
+    SetSocketGroupWeaponSet(index: number, set: number, state: boolean): Result<void>;
     SkillGroups(): Result<(Array<exposition.SkillGroupView> | undefined)>;
     TreeState(): Result<(exposition.TreeState | undefined)>;
     Undo(): Result<boolean>;
@@ -140,6 +176,7 @@ export declare namespace exposition {
     readonly Value: number;
   }
   interface SkillGemView {
+    readonly ID: string;
     readonly Name: string;
     readonly Level: number;
     readonly Quality: number;
@@ -147,15 +184,22 @@ export declare namespace exposition {
     readonly Enabled: boolean;
     readonly Support: boolean;
     readonly Color: string;
+    readonly Generated: boolean;
+    readonly CountShown: boolean;
+    readonly CorruptShown: boolean;
+    readonly CorruptIndex: number;
   }
   interface SkillGroupView {
     readonly Label: string;
+    readonly UserLabel: string;
+    readonly GroupCount: number;
     readonly Slot: string;
     readonly Source: string;
     readonly Enabled: boolean;
     readonly IncludeInFullDPS: boolean;
     readonly Set1: boolean;
     readonly Set2: boolean;
+    readonly WeaponSetLocked: boolean;
     readonly Gems?: Array<exposition.SkillGemView>;
   }
   interface TreeHover {
@@ -178,6 +222,7 @@ export declare namespace exposition {
     readonly AttributeIndex: number;
     readonly JewelRadiusIndex?: Array<number>;
   }
+  function GemList(): Promise<Result<(Array<calculator2.GemListEntry> | undefined)>>;
   function ParseBuild(xml: string): Result<(exposition.Calculator | undefined)>;
   function PassiveTreeJSON(): Promise<Result<string>>;
   function Preload(): Promise<Result<void>>;

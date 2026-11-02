@@ -11,19 +11,27 @@ import (
 
 type pagesOracle struct {
 	Groups []struct {
-		Label            string `json:"label"`
-		Slot             string `json:"slot"`
-		Source           string `json:"source"`
-		Enabled          bool   `json:"enabled"`
-		IncludeInFullDPS bool   `json:"includeInFullDPS"`
+		Label            string  `json:"label"`
+		UserLabel        string  `json:"userLabel"`
+		WeaponSetLocked  bool    `json:"weaponSetLocked"`
+		GroupCount       float64 `json:"groupCount"`
+		Slot             string  `json:"slot"`
+		Source           string  `json:"source"`
+		Enabled          bool    `json:"enabled"`
+		IncludeInFullDPS bool    `json:"includeInFullDPS"`
 		Gems             []struct {
-			Name    string  `json:"name"`
-			Level   int     `json:"level"`
-			Quality float64 `json:"quality"`
-			Count   float64 `json:"count"`
-			Enabled bool    `json:"enabled"`
-			Support bool    `json:"support"`
-			Color   string  `json:"color"`
+			ID           string  `json:"id"`
+			Generated    bool    `json:"generated"`
+			CountShown   bool    `json:"countShown"`
+			CorruptShown bool    `json:"corruptShown"`
+			CorruptIndex int     `json:"corruptIndex"`
+			Name         string  `json:"name"`
+			Level        int     `json:"level"`
+			Quality      float64 `json:"quality"`
+			Count        float64 `json:"count"`
+			Enabled      bool    `json:"enabled"`
+			Support      bool    `json:"support"`
+			Color        string  `json:"color"`
 		} `json:"gems"`
 	} `json:"groups"`
 	UseSecondWeaponSet bool `json:"useSecondWeaponSet"`
@@ -74,9 +82,9 @@ func TestSkillGroupsMatchPoB(t *testing.T) {
 	}
 	want := make([]SkillGroupView, len(oracle.Groups))
 	for i, g := range oracle.Groups {
-		want[i] = SkillGroupView{Label: g.Label, Slot: g.Slot, Source: g.Source, Enabled: g.Enabled, IncludeInFullDPS: g.IncludeInFullDPS, Set1: true, Set2: true}
+		want[i] = SkillGroupView{Label: g.Label, UserLabel: g.UserLabel, WeaponSetLocked: g.WeaponSetLocked, GroupCount: g.GroupCount, Slot: g.Slot, Source: g.Source, Enabled: g.Enabled, IncludeInFullDPS: g.IncludeInFullDPS, Set1: true, Set2: true}
 		for _, gem := range g.Gems {
-			want[i].Gems = append(want[i].Gems, SkillGemView{Name: gem.Name, Level: gem.Level, Quality: gem.Quality, Count: gem.Count, Enabled: gem.Enabled, Support: gem.Support, Color: gem.Color})
+			want[i].Gems = append(want[i].Gems, SkillGemView{ID: gem.ID, Generated: gem.Generated, CountShown: gem.CountShown, CorruptShown: gem.CorruptShown, CorruptIndex: gem.CorruptIndex, Name: gem.Name, Level: gem.Level, Quality: gem.Quality, Count: gem.Count, Enabled: gem.Enabled, Support: gem.Support, Color: gem.Color})
 		}
 	}
 	if len(want) < 2 {

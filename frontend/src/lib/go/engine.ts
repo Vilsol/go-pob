@@ -14,6 +14,8 @@ import type { ItemTip } from '$lib/design/fixtures';
 import type { StatCompareSection } from '$lib/skill_tree/stat_compare';
 import type { Site } from '$lib/design/share';
 import type { UndoView } from './undo';
+import type { ComponentProps } from 'svelte';
+import type SkillsPage from '$lib/design/SkillsPage.svelte';
 import { poe1Engine } from './engine_poe1';
 import { poe2Engine } from './engine_poe2.svelte';
 
@@ -63,6 +65,10 @@ export type ConfigEngine = {
   // ConfigTab.lua:721-766
   compare?(key: string, value: ConfigValue): Async<StatCompareSection[] | undefined>;
 };
+
+// SkillsTab.lua, SkillListControl.lua: what the Skills page shows and edits, made while the page initialises, as it
+// follows the build for as long as the page lives; a part a game has none of is absent, and the page hides it
+export type SkillsPageModel = ComponentProps<typeof SkillsPage> & { ready: boolean };
 
 // CalcsTab.lua:40-119 over the latest calculation
 export type CalcsTabView = {
@@ -145,6 +151,8 @@ export type BuildEngine = {
   error?: Readable<string | undefined>;
   config: ConfigEngine;
   calcs: CalcsEngine;
+  // the Skills page's model maker, loaded with the page
+  skills(): Promise<() => SkillsPageModel>;
 };
 
 export const engines: Record<Game, BuildEngine> = { poe1: poe1Engine, poe2: poe2Engine };

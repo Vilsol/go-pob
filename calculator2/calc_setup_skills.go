@@ -44,7 +44,7 @@ func loadSocketGroups(env *Environment) []*SocketGroup {
 	list := make([]*SocketGroup, 0, len(saved))
 	for i := range saved {
 		node := &saved[i]
-		group := &SocketGroup{}
+		group := &SocketGroup{savedIndex: i + 1}
 		group.Enabled = (node.Active != nil && *node.Active) || node.Enabled
 		group.IncludeInFullDPS = !node.IncludeInFullDPS.IsNil && node.IncludeInFullDPS.V
 		if node.GroupCount != nil {
