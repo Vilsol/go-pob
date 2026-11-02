@@ -434,7 +434,7 @@ dir = "frontend"
 usage = '''
 flag "--run <run>" env="RUN"
 '''
-run = '''gh run download {% if usage.run %}{{usage.run}}{% else %}"$(gh run list --workflow e2e-coverage --status success --limit 1 --json databaseId -q '.[0].databaseId')"{% endif %} -n e2e-coverage-map -D e2e'''
+run = '''rm -f e2e/coverage-map.json && gh run download {% if usage.run %}{{usage.run}}{% else %}"$(gh run list --workflow e2e-coverage --status success --limit 1 --json databaseId -q '.[0].databaseId')"{% endif %} -n e2e-coverage-map -D e2e'''
 
 [tasks.e2e-serve]
 description = "Build the wasm and the frontend (when their sources changed), then keep one vite preview warm on a free port for `mise run e2e --reuse`; re-run after a code change (it rebuilds, the server stays)"
