@@ -1,0 +1,53 @@
+Item Class: Helmets
+Rarity: Rare
+Grim Visage
+Soldier Greathelm
+--------
+Quality: +10% (augmented)
+Armour: 150 (augmented)
+--------
+Requires: Level 12, 19 Str
+--------
+Sockets: S S 
+--------
+Item Level: 50
+--------
++40 to maximum Life
++20% to Cold Resistance
+=====
+Rarity: RARE
+Doom Song
+Withered Wand
+Item Level: 60
+Quality: 20
+Sockets: S
+Rune: None
+Implicits: 1
+Grants Skill: Level 10 Chaos Bolt
+Gain 10% of Damage as Extra Lightning Damage
++50 to maximum Mana
+=====
+Rarity: RARE
+Gloom Bite
+Bone Wand
+Item Level: 60
+Implicits: 1
+Grants Skill: Level 10 Bone Blast
++1 to Level of all Spell Skills
+80% increased Spell Damage
+=====
+Rarity: NORMAL
+Lesser Life Flask
+=====
+Rarity: RARE
+Doom Song
+Withered Wand
+Item Level: 60
+Quality: 20
+Sockets: S
+Rune: None
+Implicits: 1
+Grants Skill: Level 10 Chaos Bolt
+Gain 15% of Damage as Extra Lightning Damage
++50 to maximum Mana
++20 to Intelligence

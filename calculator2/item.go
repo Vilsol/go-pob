@@ -222,11 +222,13 @@ type Item struct {
 	JewelRadiusLabel string
 	JewelRadiusIndex int
 
-	CheckSection     bool
-	Sockets          []ItemSocket
-	Runes            []string
-	ItemSocketCount  int
-	JewelSocketCount int
+	CheckSection bool
+	// Prefixes and Suffixes are a crafted item's affixes.
+	Prefixes, Suffixes []ItemAffix
+	Sockets            []ItemSocket
+	Runes              []string
+	ItemSocketCount    int
+	JewelSocketCount   int
 
 	ClassRequirementModLines []*ModLine
 	BuffModLines             []*ModLine
@@ -869,6 +871,7 @@ func (i *Item) ParseRaw(raw, rarity string, highQuality bool) {
 	if i.UsesVersionedOrGroupedVariants() {
 		i.normaliseVariantSelections()
 	}
+	i.Prefixes, i.Suffixes = nil, nil
 	i.Requirements = ItemRequirements{}
 	i.baseLines = map[string]baseLine{}
 	var importedLevelReq *float64
@@ -1184,7 +1187,34 @@ func (i *Item) parseLine(lp *int, line, mode, itemClass string, implicitLines, s
 		case specName == "Implicit":
 			i.Implicit = true
 		case specName == "Prefix" || specName == "Suffix":
-			// The crafting affix lists are not kept: they feed only the crafting UI.
+			//pob2:block:src/Classes/Item.lua:910-931
+			affixes := &i.Prefixes
+			if specName == "Suffix" {
+				affixes = &i.Suffixes
+			}
+			fractured := strings.HasPrefix(specVal, "{fractured}")
+			specVal = strings.TrimPrefix(specVal, "{fractured}")
+			affix := ItemAffix{ModID: specVal, Fractured: fractured}
+			if m := affixRangeRe.FindStringSubmatch(specVal); m != nil {
+				affix.ModID = m[2]
+				if strings.Contains(m[1], ",") {
+					affix.Ranges = []float64{}
+					for _, v := range strings.Split(m[1], ",") {
+						if v == "" {
+							continue
+						}
+						if n, ok := luaToNumber(v); ok {
+							affix.Ranges = append(affix.Ranges, n)
+						}
+					}
+				} else if n, ok := luaToNumber(m[1]); ok {
+					affix.Range = &n
+				}
+			}
+			if affix.Range == nil && affix.Ranges == nil && affix.ModID != "None" {
+				affix.Range = floatp(defaultItemAffixQuality)
+			}
+			*affixes = append(*affixes, affix)
 		case specName == "Implicits":
 			if v := specToNumber(specVal); v != nil {
 				*implicitLines = int(*v)

@@ -1,11 +1,9 @@
 <script lang="ts">
   import { poe2Build, type Poe2View } from '$lib/global.js';
-  import type { Poe2Calc, Poe2Items as Poe2ItemsData, Worker2Type } from '$lib/go/sync_worker2';
+  import type { Poe2Calc } from '$lib/go/sync_worker2';
   import { poe2Busy, poe2Error, poe2Run, poe2Worker } from '$lib/go/engine_poe2.svelte';
   import SkillTree2 from '$lib/components/skill-tree/SkillTree2.svelte';
-  import Poe2Items from './Poe2Items.svelte';
   import type { Tree2 } from '$lib/components/skill-tree/scene2';
-  import type { Remote } from 'comlink';
 
   // the PoE2 bodies of the frame's page routes
   let { route }: { route: string } = $props();
@@ -21,21 +19,6 @@
     void poe2Worker()
       .then((w) => w.TreeData())
       .then((d) => (treeData = d))
-      .catch(fail);
-  });
-  // what the Items page reads, fetched again for every calculation while it is open; the last shows meanwhile
-  type Fetched<T> = { for: unknown; data: T } | undefined;
-  let pageData = $state.raw<{ items?: Fetched<Poe2ItemsData> }>({});
-  const fetchers = {
-    items: (w: Remote<Worker2Type>): Promise<unknown> => w.EquippedItems()
-  };
-  $effect(() => {
-    const at = view;
-    const p = route;
-    if (!at || p !== 'items' || pageData[p]?.for === at) return;
-    void poe2Worker()
-      .then((w) => fetchers[p](w))
-      .then((data) => (pageData = { ...pageData, [p]: { for: at, data: data as Poe2ItemsData } }))
       .catch(fail);
   });
   // PassiveTreeView.lua:425-594, TreeTab.lua:355-364, 851-876 (PoB-PoE2)
@@ -78,7 +61,5 @@
         {/if}
       </div>
     </div>
-  {:else if route === 'items'}
-    <Poe2Items items={pageData.items?.data} {busy} />
   {/if}
 {/if}

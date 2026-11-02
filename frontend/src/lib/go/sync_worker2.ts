@@ -162,8 +162,59 @@ export type Poe2CalcsPage = {
 };
 
 /* ItemsTab:AddItemTooltip's title and mod line groups (PoB-PoE2) */
-export type Poe2Item = { slot: string; id: number; rarity: string; name: string[]; lines: string[][] };
-export type Poe2Items = { useSecondWeaponSet: boolean; items: Poe2Item[] };
+export type Poe2Item = { id: number; rarity: string; name: string[]; lines: string[][] };
+
+/* ItemsTab.lua, ItemSlotControl.lua (PoB-PoE2): the items tab's sets, its shown slots, the build's items, the
+   character rune slots and the item open in the editor */
+export type Poe2ItemsPage = {
+  activeSet: number;
+  sets: { id: number; title: string }[];
+  useSecondWeaponSet: boolean;
+  slots: { name: string; label: string; parent: string; nodeId: number; itemId: number; choices: number[]; activatable: boolean; active: boolean }[];
+  items: Poe2Item[];
+  runeSlots: { name: string; label: string; rune: string; choices: string[] }[];
+  display?: {
+    id: number;
+    item: Poe2Item;
+    text: string;
+    rarity: string;
+    fits: string[];
+    canHaveSockets: boolean;
+    socketCount: number;
+    runes: string[];
+    runeChoices: { name: string; lines: string[] }[];
+  };
+};
+
+/* ItemsTab.lua, ItemSlotControl.lua, ItemSetService.lua (PoB-PoE2): one edit of the build's items */
+export type Poe2ItemsEdit =
+  | { op: 'add'; slot?: string }
+  | { op: 'delete'; id: number }
+  | { op: 'equip'; slot: string; id: number }
+  | { op: 'active'; slot: string; state: boolean }
+  | { op: 'swap'; second: boolean }
+  | { op: 'characterRune'; slot: string; rune: string }
+  | { op: 'set'; id: number }
+  | { op: 'newSet'; title: string }
+  | { op: 'copySet' | 'renameSet'; id: number; title: string }
+  | { op: 'deleteSet'; id: number }
+  | { op: 'moveSet'; from: number; to: number };
+
+/* ItemsTab.lua (PoB-PoE2): one edit of the item open in the editor */
+export type Poe2DisplayEdit =
+  | { op: 'paste'; text: string }
+  | { op: 'edit'; id: number }
+  | { op: 'text'; text: string; rarity: string }
+  | { op: 'rune'; socket: number; rune: string }
+  | { op: 'sockets'; count: number }
+  | { op: 'close' };
+
+const item2 = (i: exposition.ItemView) => ({
+  id: i.ID,
+  rarity: i.Rarity,
+  name: [...(i.Name ?? [])],
+  lines: (i.Lines ?? []).map((g) => [...(g ?? [])])
+});
 
 export type Poe2Notes = { status: string; plain: string; doc: string };
 
@@ -452,19 +503,117 @@ class PoB2Worker {
     this.calc?.SetGemOptions(options);
   }
 
-  EquippedItems(): Poe2Items {
+  ItemsPage(): Poe2ItemsPage {
     if (!this.calc) throw new Error('no PoE2 build is open');
-    const v = this.calc.EquippedItems().unwrap();
+    const v = this.calc.ItemsPage().unwrap();
+    if (!v) throw new Error('the PoE2 build has not calculated');
+    const d = v.Display;
     return {
-      useSecondWeaponSet: !!v?.UseSecondWeaponSet,
-      items: (v?.Items ?? []).map((i) => ({
-        slot: i.Slot,
-        id: i.ID,
-        rarity: i.Rarity,
-        name: [...(i.Name ?? [])],
-        lines: (i.Lines ?? []).map((g) => [...(g ?? [])])
-      }))
+      activeSet: v.ActiveItemSet,
+      sets: (v.Sets ?? []).map((s) => ({ id: s.ID, title: s.Title })),
+      useSecondWeaponSet: v.UseSecondWeaponSet,
+      slots: (v.Slots ?? []).map((s) => ({
+        name: s.Name,
+        label: s.Label,
+        parent: s.Parent,
+        nodeId: s.NodeID,
+        itemId: s.ItemID,
+        choices: [...(s.Choices ?? [])],
+        activatable: s.Activatable,
+        active: s.Active
+      })),
+      items: (v.Items ?? []).map(item2),
+      runeSlots: (v.RuneSlots ?? []).map((r) => ({ name: r.Name, label: r.Label, rune: r.Rune, choices: [...(r.Choices ?? [])] })),
+      display: d && {
+        id: d.ID,
+        item: item2(d.Item),
+        text: d.Text,
+        rarity: d.Rarity,
+        fits: [...(d.Fits ?? [])],
+        canHaveSockets: d.CanHaveSockets,
+        socketCount: d.SocketCount,
+        runes: [...(d.Runes ?? [])],
+        runeChoices: (d.RuneChoices ?? []).map((r) => ({ name: r.Name, lines: [...(r.Lines ?? [])] }))
+      }
     };
+  }
+
+  /* ItemsTab.lua, ItemSlotControl.lua, ItemSetService.lua (PoB-PoE2): an edit of the build's items, then the
+     recalculation */
+  async EditItems(e: Poe2ItemsEdit): Promise<Poe2Calc> {
+    const c = this.calc;
+    if (!c) throw new Error('no PoE2 build is open');
+    switch (e.op) {
+      case 'add':
+        c.AddDisplayItem(e.slot ?? '').unwrap();
+        break;
+      case 'delete':
+        c.DeleteItem(e.id).unwrap();
+        break;
+      case 'equip':
+        c.SetSlotItem(e.slot, e.id).unwrap();
+        break;
+      case 'active':
+        c.SetSlotActive(e.slot, e.state).unwrap();
+        break;
+      case 'swap':
+        c.SetUseSecondWeaponSet(e.second).unwrap();
+        break;
+      case 'characterRune':
+        c.SetCharacterRune(e.slot, e.rune).unwrap();
+        break;
+      case 'set':
+        c.SetActiveItemSet(e.id).unwrap();
+        break;
+      case 'newSet':
+        c.NewItemSet(e.title).unwrap();
+        break;
+      case 'copySet':
+        c.CopyItemSet(e.id, e.title).unwrap();
+        break;
+      case 'renameSet':
+        c.RenameItemSet(e.id, e.title).unwrap();
+        break;
+      case 'deleteSet':
+        c.DeleteItemSet(e.id).unwrap();
+        break;
+      case 'moveSet':
+        c.MoveItemSet(e.from, e.to).unwrap();
+        break;
+    }
+    return this.view();
+  }
+
+  /* ItemsTab.lua (PoB-PoE2): an edit of the editor's item; the build is unchanged, so there is no recalculation */
+  EditDisplayItem(e: Poe2DisplayEdit) {
+    const c = this.calc;
+    if (!c) throw new Error('no PoE2 build is open');
+    switch (e.op) {
+      case 'paste':
+        c.PasteItem(e.text).unwrap();
+        break;
+      case 'edit':
+        c.EditItem(e.id).unwrap();
+        break;
+      case 'text':
+        c.EditDisplayItemText(e.text, e.rarity).unwrap();
+        break;
+      case 'rune':
+        c.SetDisplayItemRune(e.socket, e.rune).unwrap();
+        break;
+      case 'sockets':
+        c.SetDisplayItemSocketCount(e.count).unwrap();
+        break;
+      case 'close':
+        c.CloseDisplayItem().unwrap();
+        break;
+    }
+  }
+
+  /* ItemListControl.lua:332-335 (PoB-PoE2) */
+  ItemText(id: number): string {
+    if (!this.calc) throw new Error('no PoE2 build is open');
+    return this.calc.ItemText(id).unwrap();
   }
 
   async ClearDataCache(): Promise<number> {

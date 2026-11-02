@@ -10,6 +10,15 @@ import type { Poe2Calc } from '$lib/go/sync_worker2';
 
 afterEach(cleanup);
 
+if (!HTMLDialogElement.prototype.showModal) {
+  HTMLDialogElement.prototype.showModal = function () {
+    this.open = true;
+  };
+  HTMLDialogElement.prototype.close = function () {
+    this.open = false;
+  };
+}
+
 const pageErrors: string[] = [];
 beforeAll(() => {
   window.addEventListener('error', (e) => pageErrors.push(e.error ? String(e.error) : e.message));
@@ -74,6 +83,7 @@ const Poe2Page = (await import('./Poe2Page.svelte')).default;
 const AppConfig = (await import('./AppConfig.svelte')).default;
 const AppCalcs = (await import('./AppCalcs.svelte')).default;
 const AppSkills = (await import('./AppSkills.svelte')).default;
+const AppItemsPoe2 = (await import('./AppItemsPoe2.svelte')).default;
 const AppSidebar = (await import('./AppSidebar.svelte')).default;
 const { poe2Engine } = await import('$lib/go/engine_poe2.svelte');
 
@@ -524,13 +534,72 @@ describe('the PoE2 Skills and Items pages', () => {
     const { pobPlain } = await import('$lib/design/pob_text');
     const oracle = await pages();
     poe2Build.set(await worker2Instance.Open(await fixture('sorceress_items.xml')));
-    const page = render(Poe2Page, { route: 'items' });
-    await vi.waitFor(() => page.getByRole('region', { name: 'Body Armour' }));
-    const cards = [...page.container.querySelectorAll<HTMLElement>('[data-slot]')];
-    expect(cards.map((c) => c.dataset.slot)).toEqual(oracle.items.map((i) => i.slot));
-    expect(cards.map((c) => [...c.querySelectorAll('[data-lines]')].map((g) => [...g.children].map((l) => l.textContent)))).toEqual(
-      oracle.items.map((i) => i.lines.map((g) => g.map(pobPlain)))
-    );
-    expect(page.getByLabelText('Weapon set').textContent).toBe('Weapon Set 2');
+    const page = render(AppItemsPoe2);
+    const slot = (name: string) => page.getByRole('button', { name: new RegExp(`^${name}: `) });
+    await vi.waitFor(() => slot('Body Armour'));
+    for (const i of oracle.items.filter((x) => !x.slot.startsWith('Jewel'))) {
+      const shown = slot(i.slot.replace(/ Swap$/, ''));
+      expect(shown.getAttribute('aria-label')).toBe(`${i.slot.replace(/ Swap$/, '')}: ${pobPlain(i.name[0])}`);
+      await fireEvent.mouseEnter(shown);
+      const tip = await vi.waitFor(() => page.getByRole('tooltip'));
+      for (const line of i.lines.flat()) expect(tip.textContent).toContain(pobPlain(line));
+      await fireEvent.mouseLeave(shown);
+    }
+    expect(
+      within(page.getByRole('group', { name: 'Weapon set' }))
+        .getByRole('button', { name: 'II' })
+        .getAttribute('aria-pressed')
+    ).toBe('true');
   }, 120_000);
+
+  // calculator2/testdata/items_edit_pob.jsonl: PoB-PoE2's sidebar values after the same edits through its Items tab
+  it("pastes, equips and edits items as PoB-PoE2's Items tab does, and the sidebar values are PoB-PoE2's", async () => {
+    const data = resolve(process.cwd(), '../calculator2/testdata');
+    const rows = (await readFile(resolve(data, 'items_edit_pob.jsonl'), 'utf8'))
+      .trim()
+      .split('\n')
+      .map((l) => JSON.parse(l) as { step: string; output: Record<string, number> });
+    const pastes = (await readFile(resolve(data, 'items_edit_pastes.txt'), 'utf8')).replace(/\n$/, '').split('\n=====\n');
+    poe2Build.set(await worker2Instance.Open(await readFile(resolve(data, 'items_edit.xml'), 'utf8')));
+    issued.length = 0;
+    const page = render(AppItemsPoe2);
+    const output = () => (get(poe2Build) as Poe2Calc | undefined)?.output ?? {};
+    const settle = (step: string) =>
+      vi.waitFor(() => {
+        const want = rows.find((r) => r.step === step)!.output;
+        for (const k of ['Life', 'Mana', 'Armour', 'FireResist', 'ColdResist', 'TotalDPS']) expect([step, k, output()[k]]).toEqual([step, k, want[k]]);
+      });
+    const paste = async (text: string, step: string) => {
+      const box = await vi.waitFor(() => page.getByRole('textbox', { name: 'Item text' }));
+      await fireEvent.input(box, { target: { value: text } });
+      await fireEvent.click(await vi.waitFor(() => page.getByRole('button', { name: 'Save to build' })));
+      await settle(step);
+    };
+    await paste(pastes[0], 'paste helmet');
+    await paste(pastes[1], 'paste wand');
+    await vi.waitFor(() => page.getByRole('button', { name: 'Weapon 1: Doom Song' }));
+
+    const weaponSet = (n: string) => within(page.getByRole('group', { name: 'Weapon set' })).getByRole('button', { name: n });
+    await fireEvent.click(weaponSet('II'));
+    await settle('weapon set II');
+    await fireEvent.click(weaponSet('I'));
+    await settle('weapon set I');
+
+    // ItemListControl.lua:321-328, ItemsTab.lua:613-624, 792-800: the body armour opened in the editor takes two runes
+    await fireEvent.click(page.getByRole('button', { name: 'Body Armour: Storm Shell' }));
+    await fireEvent.click(await vi.waitFor(() => within(page.getByRole('dialog')).getByRole('button', { name: 'Edit as text' })));
+    const sockets = await vi.waitFor(() => page.getByRole('spinbutton', { name: 'Sockets' }) as HTMLInputElement);
+    await fireEvent.input(sockets, { target: { value: '2' } });
+    await fireEvent.keyDown(sockets, { key: 'Enter' });
+    const rune = (n: number) => vi.waitFor(() => page.getByRole('combobox', { name: `Rune #${n}` }) as HTMLSelectElement);
+    await fireEvent.change(await rune(1), { target: { value: 'Desert Rune' } });
+    await vi.waitFor(async () => expect((await rune(1)).value).toBe('Desert Rune'));
+    await fireEvent.change(await rune(2), { target: { value: 'Glacial Rune' } });
+    await vi.waitFor(async () => expect((await rune(2)).value).toBe('Glacial Rune'));
+    await fireEvent.click(page.getByRole('button', { name: 'Save' }));
+    await settle('body armour runes');
+
+    const edits = issued.filter((c) => c.startsWith('EditItems'));
+    expect(edits.map((c) => (JSON.parse(c.slice('EditItems('.length, -1)) as { op: string }).op)).toEqual(['add', 'add', 'swap', 'swap', 'add']);
+  }, 180_000);
 });

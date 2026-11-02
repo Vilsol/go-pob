@@ -65,15 +65,19 @@ test('the PoE2 Skills and Items pages show PoB-PoE2 groups and items, and the ma
   await expect(page.getByRole('complementary', { name: 'Main skill and stats' }).getByRole('combobox', { name: 'Main skill' })).toHaveValue('1');
 
   await poe2Nav(page, 'Items').click();
-  await expect(view.getByLabel('Weapon set')).toHaveText('Weapon Set 2');
-  await expect(view.locator('[data-slot]')).toHaveCount(4);
-  await expect(view.locator('[data-slot="Weapon 1 Swap"]')).toContainText('Glyph Pillar');
+  // the Items page PoE1 builds show, on weapon set II
+  await expect(view.getByRole('group', { name: 'Weapon set' }).getByRole('button', { name: 'II' })).toHaveAttribute('aria-pressed', 'true');
+  const weapon = view.getByRole('button', { name: 'Weapon 1: Glyph Pillar' });
+  await expect(weapon).toBeVisible();
   // a {range:0.25}(40-60)% line, as the tooltip shows it
-  await expect(view.locator('[data-slot="Weapon 1 Swap"]')).toContainText('45% increased Spell Damage');
-  await expect(view.locator('[data-slot="Weapon 1"]')).toHaveCount(0);
-  await expect(view.locator('[data-slot="Body Armour"]')).toContainText('Bonded: +20 to maximum Life');
-  await expect(view.locator('[data-slot="Ring 1"]')).toContainText('Corrupted');
-  await expect(view.locator('[data-slot="Jewel 61419"]')).toContainText('12% increased Spell Damage');
+  await weapon.hover();
+  await expect(page.getByRole('tooltip')).toContainText('45% increased Spell Damage');
+  const body = view.getByRole('button', { name: 'Body Armour: Storm Shell' });
+  await body.hover();
+  await expect(page.getByRole('tooltip')).toContainText('Bonded: +20 to maximum Life');
+  const ring = view.getByRole('button', { name: 'Ring 1: Gloom Loop' });
+  await ring.hover();
+  await expect(page.getByRole('tooltip')).toContainText('Corrupted');
   expect(errors).toEqual([]);
 });
 
@@ -147,6 +151,87 @@ test('the PoE2 Skills page adds a group with a skill and a support, edits them, 
   expect(errors).toEqual([]);
 });
 
+// calculator2/testdata/items_edit_pob.jsonl: PoB-PoE2's main output after each of the same edits through its Items tab,
+// for the same build
+const ITEMS_DIR = resolve(import.meta.dirname, '../../calculator2/testdata');
+const ITEMS_EDIT = readFileSync(resolve(ITEMS_DIR, 'items_edit_pob.jsonl'), 'utf8')
+  .trim()
+  .split('\n')
+  .map((l) => JSON.parse(l) as { step: string; output: Record<string, number> });
+const PASTES = readFileSync(resolve(ITEMS_DIR, 'items_edit_pastes.txt'), 'utf8').replace(/\n$/, '').split('\n=====\n');
+const itemsStat = (step: string, stat: string) => String(ITEMS_EDIT.find((r) => r.step === step)!.output[stat]);
+
+test('the PoE2 Items page pastes and equips items, swaps weapon sets, sockets runes and switches item sets, and the build saves and reopens with them', async ({
+  page
+}) => {
+  const { view, errors } = await open(page, resolve(ITEMS_DIR, 'items_edit.xml'));
+  await poe2Nav(page, 'Items').click();
+  const expectStats = async (step: string) => {
+    await expect(poe2Stat(page, 'Life')).toHaveText(itemsStat(step, 'Life'));
+    await expect(poe2Stat(page, 'Mana')).toHaveText(itemsStat(step, 'Mana'));
+  };
+  await expectStats('load');
+  for (const [text, step] of [
+    [PASTES[0], 'paste helmet'],
+    [PASTES[1], 'paste wand']
+  ]) {
+    await view.getByRole('textbox', { name: 'Item text' }).fill(text);
+    await view.getByRole('button', { name: 'Save to build' }).click();
+    await expectStats(step);
+  }
+  await expect(view.getByRole('button', { name: 'Helmet: Grim Visage' })).toBeVisible();
+  await expect(view.getByRole('button', { name: 'Weapon 1: Doom Song' })).toBeVisible();
+
+  const weaponSet = view.getByRole('group', { name: 'Weapon set' });
+  await weaponSet.getByRole('button', { name: 'II' }).click();
+  await expectStats('weapon set II');
+  await expect(view.getByRole('button', { name: 'Weapon 1: Empty' })).toBeVisible();
+  await weaponSet.getByRole('button', { name: 'I', exact: true }).click();
+  await expectStats('weapon set I');
+
+  // ItemListControl.lua:321-328, ItemsTab.lua:613-624, 792-800 (PoB-PoE2): two runes in the body armour
+  await view.getByRole('button', { name: 'Body Armour: Storm Shell' }).click();
+  await page.getByRole('dialog').getByRole('button', { name: 'Edit as text' }).click();
+  const sockets = view.getByRole('spinbutton', { name: 'Sockets' });
+  await sockets.fill('2');
+  await sockets.press('Enter');
+  await view.getByRole('combobox', { name: 'Rune #1' }).selectOption('Desert Rune');
+  await expect(view.getByRole('combobox', { name: 'Rune #1' })).toHaveValue('Desert Rune');
+  await view.getByRole('combobox', { name: 'Rune #2' }).selectOption('Glacial Rune');
+  await expect(view.getByRole('combobox', { name: 'Rune #2' })).toHaveValue('Glacial Rune');
+  await view.getByRole('button', { name: 'Save', exact: true }).click();
+  await expectStats('body armour runes');
+  await view.getByRole('button', { name: 'Body Armour: Storm Shell' }).hover();
+  await expect(page.getByRole('tooltip')).toContainText('+14% to Cold Resistance');
+
+  // ItemSetService.lua:17-23 (PoB-PoE2): a new set is empty and active; the first set brings the items back
+  await view.getByRole('button', { name: 'Manage…' }).first().click();
+  const manage = page.getByRole('dialog', { name: 'Manage item sets' });
+  await manage.getByRole('button', { name: 'New' }).click();
+  await manage.getByRole('textbox', { name: 'Name for this item set' }).fill('Second');
+  await manage.getByRole('button', { name: 'Save' }).click();
+  await expectStats('new item set');
+  await page.keyboard.press('Escape');
+  await expect(manage).toBeHidden();
+  await view.getByRole('combobox', { name: 'Item set' }).selectOption({ label: 'Default' });
+  await expectStats('body armour runes');
+
+  await page.getByRole('button', { name: /^Save \(/ }).click();
+  const dialog = page.getByRole('dialog', { name: 'Save build as' });
+  await dialog.getByRole('textbox', { name: 'Build name' }).fill('Items journey');
+  await dialog.getByRole('button', { name: 'Save', exact: true }).click();
+  await expect(dialog).toBeHidden();
+  await page.getByRole('link', { name: 'Back to builds' }).click();
+  await page.getByRole('link', { name: 'Items journey', exact: true }).click();
+  // the build reopens on the page it was left on, with the edits
+  await expect(view.getByRole('button', { name: 'Helmet: Grim Visage' })).toBeVisible({ timeout: 60_000 });
+  await expectStats('body armour runes');
+  await view.getByRole('button', { name: 'Body Armour: Storm Shell' }).hover();
+  await expect(page.getByRole('tooltip')).toContainText('+14% to Cold Resistance');
+  await expect(view.getByRole('combobox', { name: 'Item set' }).locator('option')).toHaveText(['Default', 'Default', 'Second']);
+  expect(errors).toEqual([]);
+});
+
 test.describe('390px wide', () => {
   test.use(PHONE);
   test('the PoE2 Skills, Items and Calcs pages fit a phone', async ({ page }) => {
@@ -159,12 +244,20 @@ test.describe('390px wide', () => {
       await bar(page).getByRole('link', { name: tab, exact: true }).click();
       await expect(pane).toBeVisible();
       // the pane sits inside the phone, takes its width below the stats, and its content does not run past it (a Calcs
-      // damage table scrolls inside itself)
-      const fit = await pane.evaluate((el) => ({
-        right: Math.round(el.getBoundingClientRect().right),
-        width: el.clientWidth,
-        overflow: el.scrollWidth - el.clientWidth
-      }));
+      // damage table scrolls inside itself; a tab strip wider than the phone scrolls sideways, as layout-phone.spec allows)
+      const fit = await pane.evaluate((el) => {
+        const scrolls = (e: Element) => {
+          for (let p = e.parentElement; p && p !== el; p = p.parentElement) if (getComputedStyle(p).overflowX !== 'visible') return true;
+          return false;
+        };
+        const right = el.getBoundingClientRect().right;
+        const kids = [...el.querySelectorAll('*')].filter((e) => !e.closest('[role=tablist]') && !scrolls(e) && e.getBoundingClientRect().width > 0);
+        return {
+          right: Math.round(right),
+          width: el.clientWidth,
+          overflow: Math.max(0, ...kids.map((e) => e.getBoundingClientRect().right - right))
+        };
+      });
       const [inner, scroll] = await page.evaluate(() => [window.innerWidth, (document.scrollingElement ?? document.documentElement).scrollWidth]);
       expect([tab, inner, scroll, fit.right <= PHONE.viewport.width, fit.width >= 300, fit.overflow <= 1]).toEqual([
         tab,

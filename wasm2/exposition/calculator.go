@@ -164,6 +164,9 @@ func (c *Calculator) Calculate() (*Outputs, error) {
 		return nil, err
 	}
 	items := calculator2.NewItemsTab(c.build, t, nil)
+	if c.items != nil {
+		items.DisplayItem = c.items.DisplayItem
+	}
 	env, err := calculator2.BuildOutput(c.build, calculator2.Options{Tree: t, Items: items})
 	if err != nil {
 		return nil, err

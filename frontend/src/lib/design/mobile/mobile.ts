@@ -70,3 +70,9 @@ export const BOARD_PANES = [
   { id: 'jewellery', label: 'Jewellery', slots: ['Amulet', 'Ring 1', 'Ring 2', 'Flask 1', 'Flask 2', 'Flask 3', 'Flask 4', 'Flask 5'] },
   { id: 'jewels', label: 'Jewels', slots: [] as string[] }
 ] as const;
+export const BOARD_PANES_POE2 = [
+  BOARD_PANES[0],
+  BOARD_PANES[1],
+  { id: 'jewellery', label: 'Jewellery', slots: ['Amulet', 'Ring 1', 'Ring 2', 'Flask 1', 'Charm 1', 'Charm 2', 'Charm 3', 'Flask 2'] },
+  BOARD_PANES[3]
+] as const;

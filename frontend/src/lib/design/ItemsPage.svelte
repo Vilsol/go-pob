@@ -20,6 +20,7 @@
   import DisplayItemControls from './DisplayItemControls.svelte';
   import CraftItemDialog from './CraftItemDialog.svelte';
   import ItemSetTip from './ItemSetTip.svelte';
+  import RuneSockets, { type RuneSocketsEdit, type RuneSocketsInfo } from './RuneSockets.svelte';
   import { draggedItem, type ItemDrag } from './item_drag';
   import { dropZone, type DropZone } from './reorder';
   import { tone as toneClass } from './tone';
@@ -41,7 +42,7 @@
   import type { ItemSet, ItemSummary, ItemTip, ItemsFixture, StatDiff } from './fixtures';
   import type { BrowseKind, BrowseRow, PoolItem, AffixRow } from './fixtures/items';
   import type { CraftApi } from './crafting';
-  import type { Snippet } from 'svelte';
+  import type { ComponentProps, Snippet } from 'svelte';
 
   // ItemSlotControl.lua:82-93
   // ItemsTab.lua:335-340
@@ -59,6 +60,11 @@
   };
   type Props = {
     data: Omit<ItemsFixture, 'paste'> & { paste?: ItemsFixture['paste'] };
+    /* the board's slots and their phone panes; PoE1's when absent */
+    board?: ComponentProps<typeof ItemsBoard>['board'];
+    /* Item.lua:2073-2083, ItemsTab.lua:605-625, 776-854 (PoB-PoE2): the editor's item's sockets and their runes */
+    runes?: RuneSocketsInfo;
+    onrunes?: (edit: RuneSocketsEdit) => void;
     phoneLayout?: 'cards' | 'table';
     sets: ItemSet[];
     setId: string;
@@ -148,6 +154,9 @@
   };
   let {
     data,
+    board,
+    runes,
+    onrunes,
     phoneLayout,
     sets,
     setId,
@@ -279,10 +288,10 @@
   );
   const order = $derived([
     ...new Set([
-      ...BOARD_SLOTS.map((b) => b.slot),
+      ...(board?.slots ?? BOARD_SLOTS).map((b) => b.slot),
       ...extraSlots,
       ...abyssal,
-      ...(set?.slots ?? []).map((x) => x.slot).filter((s) => !BOARD_SLOTS.some((b) => b.slot === s))
+      ...(set?.slots ?? []).map((x) => x.slot).filter((s) => !(board?.slots ?? BOARD_SLOTS).some((b) => b.slot === s))
     ])
   ]);
   const options = $derived(Object.entries(data.items).map(([id, it]) => ({ id: Number(id), label: it.name, tone: it.rarity, it })));
@@ -459,6 +468,7 @@
       {#if layout === 'board'}
         <ItemsBoard
           {slots}
+          {board}
           {flasks}
           {calcFlasks}
           {fitting}
@@ -581,6 +591,7 @@
               <DisplayItemControls info={display} onedit={ondisplayedit} craft={displayCraft} bind:customRequest head={itemHead} result={itemResult} />
             {:else}
               {@render itemHead()}
+              {#if runes && onrunes}<RuneSockets info={runes} onedit={onrunes} />{/if}
               <div class="flex flex-col gap-2.5 border-t border-line pt-2.5">{@render itemResult()}</div>
             {/if}
           {:else if live.message}

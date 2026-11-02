@@ -34,6 +34,12 @@ func Exports(r bind.Registry) {
 	r.Type(SkillGemView{}, bind.Plain())
 	r.Type(ItemsView{}, bind.Plain())
 	r.Type(ItemView{}, bind.Plain())
+	r.Type(ItemsPageView{}, bind.Plain())
+	r.Type(ItemSlotView{}, bind.Plain())
+	r.Type(ItemSetView{}, bind.Plain())
+	r.Type(RuneSlotView{}, bind.Plain())
+	r.Type(RuneChoiceView{}, bind.Plain())
+	r.Type(DisplayItemView{}, bind.Plain())
 	r.Type(calculator2.GemOptions{}, bind.Plain())
 	r.Type(calculator2.GemListEntry{}, bind.Plain())
 

@@ -49,13 +49,22 @@ type ItemSlot struct {
 type itemSetSlot struct {
 	selItemID int
 	active    bool
+	pbURL     string
+	note      *string
 }
 
 // ItemSet is an entry of itemsTab.itemSets: the selected item per slot name and the set's
 // useSecondWeaponSet.
 type ItemSet struct {
+	ID                 int
+	Title              string
 	Slots              map[string]*itemSetSlot
 	UseSecondWeaponSet bool
+	// useSecondWeaponSetNil is a set made in the tab whose weapon set was never chosen: Lua's nil, saved as "nil".
+	useSecondWeaponSetNil bool
+	// RuneNames is each character rune slot's runeName; SocketPbURLs is itemSet[nodeId].pbURL.
+	RuneNames    map[string]string
+	SocketPbURLs map[int]string
 }
 
 // SelItemID is itemSet[slotName].selItemId; a slot the set does not hold is 0.
@@ -82,8 +91,16 @@ type ItemsTab struct {
 	// RuneSlots is each character rune slot's selected rune; a slot holding "None" is absent.
 	RuneSlots map[string]*poe2.RuneMod
 
-	tree *tree2.PassiveTree
-	spec *tree2.PassiveSpec
+	ActiveItemSetID     int
+	ShowStatDifferences bool
+	// DisplayItem is the item open in the item editor, which a calculation carries over.
+	DisplayItem *Item
+
+	tree               *tree2.PassiveTree
+	spec               *tree2.PassiveSpec
+	build              *pob2.PathOfBuilding2
+	modSource          ItemModSource
+	tradeSearchWeights *pob2.TradeSearchWeights
 }
 
 func slotNumOf(slotName string) int {
@@ -150,6 +167,7 @@ func NewItemsTab(build *pob2.PathOfBuilding2, tree *tree2.PassiveTree, modSource
 			addSlot(slot)
 		}
 	}
+	tab.build, tab.modSource = build, ItemModSource(modSource)
 	tab.load(build, modSource)
 	return tab
 }
@@ -181,16 +199,43 @@ func (tab *ItemsTab) load(build *pob2.PathOfBuilding2, modSource ModSource) {
 	}
 	itemSets := map[int]map[string]*itemSetSlot{}
 	useSecond := map[int]bool{}
+	titles := map[int]string{}
+	runeNames := map[int]map[string]string{}
+	socketPbURLs := map[int]map[int]string{}
 	var itemSetOrderList []int
 	for _, set := range items.ItemSets {
 		itemSet := tab.createItemSet()
 		itemSets[set.ID] = itemSet
+		titles[set.ID] = "Default"
+		if set.Title != nil {
+			titles[set.ID] = *set.Title
+		}
+		runeNames[set.ID] = newRuneNames()
+		socketPbURLs[set.ID] = map[int]string{}
 		useSecond[set.ID] = !set.UseSecondWeaponSet.IsNil && set.UseSecondWeaponSet.V
 		for _, s := range set.Slots {
 			if ss, ok := itemSet[s.Name]; ok {
 				ss.selItemID = s.ItemID
 				ss.active = s.Active != nil && *s.Active
+				ss.pbURL = ""
+				if s.ItemPbURL != nil {
+					ss.pbURL = *s.ItemPbURL
+				}
+				ss.note = s.Note
 			}
+		}
+		//pob2:block:src/Classes/ItemsTab.lua:1305-1315
+		for _, rs := range set.RuneSlots {
+			if _, ok := runeNames[set.ID][rs.SlotName]; ok {
+				runeNames[set.ID][rs.SlotName] = rs.RuneName
+			}
+		}
+		for _, su := range set.SocketIDURLs {
+			url := ""
+			if su.ItemPbURL != nil {
+				url = *su.ItemPbURL
+			}
+			socketPbURLs[set.ID][su.NodeID] = url
 		}
 		itemSetOrderList = append(itemSetOrderList, set.ID)
 	}
@@ -200,13 +245,25 @@ func (tab *ItemsTab) load(build *pob2.PathOfBuilding2, modSource ModSource) {
 		for name, ss := range itemSets[1] {
 			ss.selItemID, ss.active = tab.Slots[name].SelItemID, tab.Slots[name].Active
 		}
+		titles[1] = "Default"
+		runeNames[1] = newRuneNames()
+		socketPbURLs[1] = map[int]string{}
 		useSecond[1] = !items.UseSecondWeaponSet.IsNil && items.UseSecondWeaponSet.V
 		itemSetOrderList = append(itemSetOrderList, 1)
 	}
 	tab.ItemSets = make(map[int]*ItemSet, len(itemSets))
 	for id, set := range itemSets {
-		tab.ItemSets[id] = &ItemSet{Slots: set, UseSecondWeaponSet: useSecond[id]}
+		tab.ItemSets[id] = &ItemSet{ID: id, Title: titles[id], Slots: set, UseSecondWeaponSet: useSecond[id], RuneNames: runeNames[id], SocketPbURLs: socketPbURLs[id]}
 	}
+	// A set saved with useSecondWeaponSet "nil" loads as false in Lua; it stays nil here, as the tab is loaded again
+	// after every edit, where PoB-PoE2 keeps the set it made.
+	for _, set := range items.ItemSets {
+		if set.UseSecondWeaponSet.IsNil {
+			tab.ItemSets[set.ID].useSecondWeaponSetNil = true
+		}
+	}
+	tab.tradeSearchWeights = items.TradeSearchWeights
+	tab.ShowStatDifferences = items.ShowStatDifferences == nil || *items.ShowStatDifferences
 	tab.ItemSetOrderList = itemSetOrderList
 	activeID := items.ActiveItemSet
 	if activeID == 0 {
@@ -218,6 +275,7 @@ func (tab *ItemsTab) load(build *pob2.PathOfBuilding2, modSource ModSource) {
 		activeID = itemSetOrderList[0]
 	}
 	cur := itemSets[activeID]
+	tab.ActiveItemSetID = activeID
 	tab.UseSecondWeaponSet = useSecond[activeID]
 	for name, slot := range tab.Slots {
 		if slot.NodeID == 0 {
@@ -225,22 +283,28 @@ func (tab *ItemsTab) load(build *pob2.PathOfBuilding2, modSource ModSource) {
 			slot.Active = cur[name].active
 		}
 	}
+	tab.updateRuneSlots()
+	tab.populateSlots()
+}
+
+func newRuneNames() map[string]string {
+	names := map[string]string{}
+	for _, slot := range characterRuneSlotList {
+		names[slot[0]] = "None"
+	}
+	return names
+}
+
+// updateRuneSlots is each rune slot's SelByValue of the active set's runeName.
+//
+//pob2:block:src/Classes/ItemsTab.lua:1684-1692
+func (tab *ItemsTab) updateRuneSlots() {
 	tab.RuneSlots = map[string]*poe2.RuneMod{}
-	for _, set := range items.ItemSets {
-		if set.ID != activeID {
-			continue
-		}
-		for _, rs := range set.RuneSlots {
-			for _, slot := range characterRuneSlotList {
-				if slot[0] == rs.SlotName {
-					if r := characterRune(rs.RuneName, slot[1]); r != nil {
-						tab.RuneSlots[rs.SlotName] = r
-					}
-				}
-			}
+	for _, slot := range characterRuneSlotList {
+		if r := characterRune(tab.ItemSets[tab.ActiveItemSetID].RuneNames[slot[0]], slot[1]); r != nil {
+			tab.RuneSlots[slot[0]] = r
 		}
 	}
-	tab.populateSlots()
 }
 
 // characterRune is runeSlot:SelByValue(runeName, "name") over the slot's list: the runes that fit
@@ -294,6 +358,8 @@ func (tab *ItemsTab) populateSlots() {
 			if slot.NodeID != 0 && tab.spec != nil {
 				//pob2:block:src/Classes/ItemSlotControl.lua:104-106
 				tab.spec.Jewels[slot.NodeID] = 0
+			} else if set := tab.ItemSets[tab.ActiveItemSetID]; slot.NodeID == 0 && set != nil {
+				set.Slots[slot.SlotName].selItemID = 0
 			}
 		}
 	}

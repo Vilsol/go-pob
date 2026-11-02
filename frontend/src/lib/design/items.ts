@@ -60,6 +60,14 @@ export const BOARD_SLOTS: { slot: string; x: number; y: number; w: number; h: nu
   ...[210, 302, 395, 487, 580].map((x, i) => ({ slot: `Flask ${i + 1}`, x, y: 588, w: 78, h: 120 }))
 ];
 
+/* ItemsTab.lua:32 (PoB-PoE2): the life and mana flasks either side of the three charms */
+export const BOARD_SLOTS_POE2: typeof BOARD_SLOTS = [
+  ...BOARD_SLOTS.filter((b) => !b.slot.startsWith('Flask')),
+  { slot: 'Flask 1', x: 210, y: 588, w: 78, h: 120 },
+  ...[302, 395, 487].map((x, i) => ({ slot: `Charm ${i + 1}`, x, y: 588, w: 78, h: 120 })),
+  { slot: 'Flask 2', x: 580, y: 588, w: 78, h: 120 }
+];
+
 /* one inventory cell for every item on the board, as in game: the largest cell at which a 2×4 weapon, a 2×3 body
    armour and a 2×2 helmet each fit their slot (inside the slot's 12px padding) */
 export const BOARD_CELL = Math.min(
@@ -75,7 +83,16 @@ export const BOARD_CELL = Math.min(
   })
 );
 
-export type ImpactBlock = { header: string; slot?: string; lines?: string[]; sections: StatCompareSection[]; readyAt?: number; calcMs?: number };
+/* unmeasured: a slot the item fits whose stat changes are not calculated */
+export type ImpactBlock = {
+  header: string;
+  slot?: string;
+  lines?: string[];
+  sections: StatCompareSection[];
+  readyAt?: number;
+  calcMs?: number;
+  unmeasured?: boolean;
+};
 export type WhatIf = { key: string; pending: boolean; blocks: ImpactBlock[]; tip?: string };
 
 export type ItemSetOp =

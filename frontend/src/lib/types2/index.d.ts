@@ -96,28 +96,45 @@ export declare namespace exposition {
     readonly OffHand?: Record<string, number>;
   }
   interface Calculator {
+    AddDisplayItem(slot: string): Result<number>;
     AllocateAttributeNode(id: number, attributeIndex: number, allocMode: number): Result<void>;
     CalcsMods(query: exposition.CalcsModQuery): Result<(Record<string, number> | undefined)>;
     CalcsOutputs(): Result<(exposition.CalcsOutputs | undefined)>;
     Calculate(): Promise<Result<(exposition.Outputs | undefined)>>;
     ClickNode(id: number, right: boolean, hotkey: number, confirmClassChange: boolean, allocMode: number): Result<number>;
+    CloseDisplayItem(): Result<void>;
     ConfigRelevance(query: calculator2.ConfigRelevance): Result<calculator2.ConfigRelevance>;
+    CopyItemSet(id: number, title: string): Result<void>;
     DeleteAllSocketGroups(): Result<void>;
+    DeleteItem(id: number): Result<void>;
+    DeleteItemSet(id: number): Result<void>;
     DeleteSocketGroup(index: number): Result<void>;
+    EditDisplayItemText(text: string, rarity: string): Result<void>;
+    EditItem(id: number): Result<void>;
     EquippedItems(): Result<(exposition.ItemsView | undefined)>;
     ExportCode(player: Array<exposition.SavedStat> | undefined, fullDPS: Array<exposition.SavedFullDPS> | undefined, minion: Array<exposition.SavedStat> | undefined): Result<string>;
     GemOptions(): calculator2.GemOptions;
     HoverNode(id: number, allocMode: number): exposition.TreeHover;
+    ItemText(id: number): Result<string>;
+    ItemsPage(): Result<(exposition.ItemsPageView | undefined)>;
+    MoveItemSet(from: number, to: number): Result<void>;
     MoveSocketGroup(from: number, to: number): Result<void>;
+    NewItemSet(title: string): Result<void>;
     NewSocketGroup(): Result<number>;
     Notes(): string;
+    PasteItem(raw: string): Result<void>;
     Redo(): Result<boolean>;
     RemoveGem(group: number, gem: number): Result<void>;
+    RenameItemSet(id: number, title: string): Result<void>;
     RichNotesDoc(): string;
     RichNotesStatus(): string;
     Serialize(): Result<string>;
     SerializeWithStats(player: Array<exposition.SavedStat> | undefined, fullDPS: Array<exposition.SavedFullDPS> | undefined, minion: Array<exposition.SavedStat> | undefined): Result<string>;
+    SetActiveItemSet(id: number): Result<void>;
+    SetCharacterRune(slot: string, runeName: string): Result<void>;
     SetConfigInput(name: string, value: calculator2.ConfigValue, isDefault: boolean): void;
+    SetDisplayItemRune(socket: number, runeName: string): Result<void>;
+    SetDisplayItemSocketCount(count: number): Result<void>;
     SetGem(group: number, gem: number, gemID: string): Result<void>;
     SetGemCorruption(group: number, gem: number, option: number): Result<void>;
     SetGemCount(group: number, gem: number, count: number): Result<void>;
@@ -128,11 +145,14 @@ export declare namespace exposition {
     SetMainActiveSkill(index: number): void;
     SetMainSocketGroup(index: number): void;
     SetRichNotes(plain: string, doc: string): void;
+    SetSlotActive(slot: string, state: boolean): Result<void>;
+    SetSlotItem(slot: string, id: number): Result<void>;
     SetSocketGroupCount(index: number, count: number): Result<void>;
     SetSocketGroupEnabled(index: number, state: boolean): Result<void>;
     SetSocketGroupIncludeInFullDPS(index: number, state: boolean): Result<void>;
     SetSocketGroupLabel(index: number, label: string): Result<void>;
     SetSocketGroupWeaponSet(index: number, set: number, state: boolean): Result<void>;
+    SetUseSecondWeaponSet(second: boolean): Result<void>;
     SkillGroups(): Result<(Array<exposition.SkillGroupView> | undefined)>;
     TreeState(): Result<(exposition.TreeState | undefined)>;
     Undo(): Result<boolean>;
@@ -140,12 +160,46 @@ export declare namespace exposition {
     release(): void;
     [Symbol.dispose](): void;
   }
+  interface DisplayItemView {
+    readonly ID: number;
+    readonly Item: exposition.ItemView;
+    readonly Text: string;
+    readonly Rarity: string;
+    readonly Fits?: Array<string>;
+    readonly CanHaveSockets: boolean;
+    readonly SocketCount: number;
+    readonly Runes?: Array<string>;
+    readonly RuneChoices?: Array<exposition.RuneChoiceView>;
+  }
+  interface ItemSetView {
+    readonly ID: number;
+    readonly Title: string;
+  }
+  interface ItemSlotView {
+    readonly Name: string;
+    readonly Label: string;
+    readonly Parent: string;
+    readonly NodeID: number;
+    readonly ItemID: number;
+    readonly Choices?: Array<number>;
+    readonly Activatable: boolean;
+    readonly Active: boolean;
+  }
   interface ItemView {
     readonly Slot: string;
     readonly ID: number;
     readonly Name?: Array<string>;
     readonly Rarity: string;
     readonly Lines?: Array<Array<string> | undefined>;
+  }
+  interface ItemsPageView {
+    readonly ActiveItemSet: number;
+    readonly Sets?: Array<exposition.ItemSetView>;
+    readonly UseSecondWeaponSet: boolean;
+    readonly Slots?: Array<exposition.ItemSlotView>;
+    readonly Items?: Array<exposition.ItemView>;
+    readonly RuneSlots?: Array<exposition.RuneSlotView>;
+    readonly Display?: exposition.DisplayItemView;
   }
   interface ItemsView {
     readonly UseSecondWeaponSet: boolean;
@@ -164,6 +218,16 @@ export declare namespace exposition {
     readonly MainSocketGroup: number;
     readonly MainActiveSkill: number;
     readonly ConfigInputs?: Record<string, Readonly<calculator2.ConfigValue>>;
+  }
+  interface RuneChoiceView {
+    readonly Name: string;
+    readonly Lines?: Array<string>;
+  }
+  interface RuneSlotView {
+    readonly Name: string;
+    readonly Label: string;
+    readonly Rune: string;
+    readonly Choices?: Array<string>;
   }
   interface SavedFullDPS {
     readonly Stat: string;

@@ -28,6 +28,6 @@
         {/each}
       </div>
     {/each}
-    {#if !b.sections.length}<span class="note font-sans">No stat changes.</span>{/if}
+    {#if !b.sections.length && !b.unmeasured}<span class="note font-sans">No stat changes.</span>{/if}
   </div>
 {/each}

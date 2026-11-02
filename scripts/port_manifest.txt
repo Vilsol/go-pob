@@ -41,6 +41,7 @@ calculator2/item.go                 PORT       src/Classes/Item.lua,src/Classes/
 calculator2/item_luapattern.go      GO-NATIVE  compiles the Lua patterns Item.lua builds at runtime from item and data text into Go regexps; Lua's pattern engine itself is C, not Lua
 calculator2/item_modlist.go         PORT       src/Classes/Item.lua,src/Classes/ModStore.lua,src/Modules/ModTools.lua
 calculator2/item_runes.go           PORT       src/Classes/Item.lua
+calculator2/item_raw.go             PORT       src/Classes/Item.lua
 calculator2/item_tools.go           PORT       src/Modules/ItemTools.lua,src/Modules/Common.lua,src/Modules/Data.lua
 calculator/active_skill_set.go      PORT       src/Classes/SkillsTab.lua
 calculator/breakdown.go             PORT       src/Modules/CalcBreakdown.lua
@@ -563,6 +564,7 @@ calculator2/calc_setup_items.go     PORT       src/Modules/CalcSetup.lua,src/Cla
 calculator2/calc_setup_radius.go    PORT       src/Modules/CalcSetup.lua
 calculator2/calc_setup_skills.go    PORT       src/Modules/CalcSetup.lua,src/Classes/SkillsTab.lua
 calculator2/skills_edit.go          PORT       src/Classes/SkillsTab.lua,src/Classes/SkillListControl.lua,src/Classes/GemSelectControl.lua
+calculator2/items_edit.go           PORT       src/Classes/ItemsTab.lua,src/Classes/ItemSlotControl.lua,src/Classes/ItemListControl.lua,src/Classes/ListControl.lua
 calculator2/calc_setup_skills_data.go PORT     src/Modules/Data.lua
 calculator2/calc_active_skill.go    PORT       src/Modules/CalcActiveSkill.lua
 calculator2/calc_active_skill_modlist.go PORT  src/Modules/CalcActiveSkill.lua,src/Modules/CalcSetup.lua

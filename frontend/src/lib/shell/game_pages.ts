@@ -11,7 +11,7 @@ const poe2Page = () => import('./Poe2Page.svelte');
 export const GAME_PAGES: Record<string, GamePage> = {
   tree: { label: 'Tree', poe1: 'route', poe2: poe2Page },
   skills: { label: 'Skills', poe1: 'route', poe2: 'route' },
-  items: { label: 'Items', poe1: 'route', poe2: poe2Page },
+  items: { label: 'Items', poe1: 'route', poe2: 'route' },
   calcs: { label: 'Calcs', poe1: 'route', poe2: 'route' },
   configuration: { label: 'Config', poe1: 'route', poe2: 'route' },
   notes: { label: 'Notes', poe1: 'route', poe2: 'route' },

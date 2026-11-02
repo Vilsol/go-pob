@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { untrack } from 'svelte';
   import Checkbox from './Checkbox.svelte';
   import EmptyState from './EmptyState.svelte';
   import FloatingLabel from './FloatingLabel.svelte';
@@ -22,8 +23,11 @@
 
   type Equipped = { id: number; item: ItemSummary; impact?: StatDiff };
   type Option = { id: number; label: string; tone: Tone };
+  type Board = { slots: typeof BOARD_SLOTS; panes: readonly { id: string; label: string; slots: readonly string[] }[] };
   type Props = {
     slots: Record<string, Equipped | undefined>;
+    /* the board's slots and their phone panes; PoE1's when absent */
+    board?: Board;
     flasks: Record<string, boolean>;
     calcFlasks: Record<string, boolean>;
     fitting: (slot: string) => Option[];
@@ -60,6 +64,7 @@
   };
   let {
     slots,
+    board = { slots: BOARD_SLOTS, panes: BOARD_PANES },
     flasks,
     calcFlasks,
     fitting,
@@ -151,14 +156,14 @@
   // phones: the board's slots in sideways panes at the board's own scale, with a section strip above
   const phone = phoneMedia();
   const paneUid = `${uid}-panes`;
-  let pane = $state<string>(BOARD_PANES[0].id);
+  let pane = $state<string>(untrack(() => board.panes[0].id));
   let strip = $state<HTMLElement>();
   const showPane = (id: string) => {
     pane = id;
-    const i = BOARD_PANES.findIndex((x) => x.id === id);
+    const i = board.panes.findIndex((x) => x.id === id);
     strip?.scrollTo({ left: i * strip.clientWidth, behavior: 'smooth' });
   };
-  const bySlot = new Map(BOARD_SLOTS.map((b) => [b.slot, b]));
+  const bySlot = $derived(new Map(board.slots.map((b) => [b.slot, b])));
 
   // ItemSlotControl.lua:48-56: an entry under the pointer or the arrow keys shows its tooltip beside the open list
   let jewelPick = $state<{ id: number; slot: string; el: HTMLElement } | null>(null);
@@ -180,10 +185,10 @@
   ];
 </script>
 
-{#snippet board(b: (typeof BOARD_SLOTS)[number], placed: boolean)}
+{#snippet boardSlot(b: (typeof BOARD_SLOTS)[number], placed: boolean)}
   {@const k = key(b.slot)}
   {@const e = slots[k]}
-  {@const flask = b.slot.startsWith('Flask')}
+  {@const flask = /^(Flask|Charm) /.test(b.slot)}
   <div
     role="group"
     aria-label="{b.slot} slot"
@@ -348,7 +353,7 @@
 
 <div class="flex shrink-0 flex-col gap-3 max-phone:w-full max-phone:min-w-0">
   {#if phone.current}
-    <Tabs id={paneUid} variant="segmented" fill label="Board sections" tabs={[...BOARD_PANES]} selected={pane} onchange={showPane} />
+    <Tabs id={paneUid} variant="segmented" fill label="Board sections" tabs={[...board.panes]} selected={pane} onchange={showPane} />
     <div
       bind:this={strip}
       role="tabpanel"
@@ -356,21 +361,21 @@
       aria-labelledby={tabId(paneUid, pane)}
       class="flex snap-x snap-mandatory overflow-x-auto overflow-y-hidden rounded-md border border-line bg-well [scrollbar-width:none]"
       onscroll={() => {
-        if (strip) pane = BOARD_PANES[Math.round(strip.scrollLeft / strip.clientWidth)]?.id ?? pane;
+        if (strip) pane = board.panes[Math.round(strip.scrollLeft / strip.clientWidth)]?.id ?? pane;
       }}>
-      {#each BOARD_PANES as p (p.id)}
+      {#each board.panes as p (p.id)}
         <div role="group" aria-label={p.label} class="box-border flex w-full shrink-0 snap-start flex-wrap content-start items-start gap-2 p-2.5">
           {#if p.id === 'jewels'}
             <div class="w-full">{@render treeJewels('grid-cols-2')}</div>
           {:else}
-            {#each p.slots as slot (slot)}{@render board(bySlot.get(slot)!, false)}{/each}
+            {#each p.slots as slot (slot)}{@render boardSlot(bySlot.get(slot)!, false)}{/each}
           {/if}
         </div>
       {/each}
     </div>
   {:else}
     <section aria-label="Equipped items" class="relative h-185.5 w-217 rounded-md border border-line bg-well">
-      {#each BOARD_SLOTS as b (b.slot)}{@render board(b, true)}{/each}
+      {#each board.slots as b (b.slot)}{@render boardSlot(b, true)}{/each}
     </section>
   {/if}
   {#snippet smallSlot(slot: string, label: string)}
