@@ -29,6 +29,7 @@ test('a setting changed in one tab reaches another open tab without a reload (02
 
   await a.getByRole('button', { name: 'Settings' }).click();
   const sheet = a.getByRole('dialog', { name: 'Settings' });
+  await sheet.getByRole('tab', { name: /^Appearance/ }).click();
   await sheet.getByRole('combobox', { name: 'Theme' }).selectOption('Light');
   await sheet.getByRole('checkbox', { name: 'Show build name in window title' }).uncheck();
   await sheet.getByRole('tab', { name: /^Numbers/ }).click();
@@ -41,6 +42,7 @@ test('a setting changed in one tab reaches another open tab without a reload (02
 
   await b.getByRole('button', { name: 'Settings' }).click();
   const sheetB = b.getByRole('dialog', { name: 'Settings' });
+  await sheetB.getByRole('tab', { name: /^Appearance/ }).click();
   await expect(sheetB.getByRole('combobox', { name: 'Theme' })).toHaveValue('Light');
   await expect(sheetB.getByRole('checkbox', { name: 'Show build name in window title' })).not.toBeChecked();
   appA.assertNoErrors();

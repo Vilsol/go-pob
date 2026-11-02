@@ -33,6 +33,8 @@
       grouptip={model.grouptip}
       groupicon={model.groupicon}
       onpastegroup={model.onpastegroup}
+      onundo={model.onundo}
+      onredo={model.onredo}
       onselect={model.onselect}
       ongroup={model.ongroup}
       ongem={model.ongem}

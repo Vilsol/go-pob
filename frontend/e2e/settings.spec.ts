@@ -33,7 +33,7 @@ test('number options rewrite the sidebar and are kept; the window title names th
 
   // Main.lua:1750-1756
   await expect(page).toHaveTitle('Imported build (Elementalist) - go-pob');
-  await sheet.getByRole('tab', { name: /^General/ }).click();
+  await sheet.getByRole('tab', { name: /^Appearance/ }).click();
   await sheet.getByRole('checkbox', { name: 'Show build name in window title' }).uncheck();
   await expect(page).toHaveTitle('go-pob');
   await sheet.getByRole('checkbox', { name: 'Show build name in window title' }).check();
@@ -65,6 +65,7 @@ test('appearance options are kept; Export all builds saves a .zip; Clear cached 
   const html = page.locator('html');
   await page.getByRole('button', { name: 'Settings' }).click();
   const sheet = page.getByRole('dialog', { name: 'Settings' });
+  await sheet.getByRole('tab', { name: /^Appearance/ }).click();
   await sheet.getByRole('combobox', { name: 'Theme' }).selectOption('Light');
   await sheet.getByRole('slider', { name: 'Font scaling' }).fill('15');
   await sheet.getByRole('checkbox', { name: 'Show animations' }).uncheck();
@@ -128,6 +129,7 @@ test('Show stat bars hides the sidebar and Calcs bars and is kept (0280)', async
 
   await page.getByRole('button', { name: 'Settings' }).click();
   const sheet = page.getByRole('dialog', { name: 'Settings' });
+  await sheet.getByRole('tab', { name: /^Appearance/ }).click();
   await sheet.getByRole('checkbox', { name: 'Show stat bars' }).uncheck();
   await sheet.getByRole('button', { name: 'Save' }).click();
   await expect(sidebarBars).toHaveCount(0);
@@ -143,6 +145,7 @@ test('Show stat bars hides the sidebar and Calcs bars and is kept (0280)', async
   await expect(page.locator('[data-gauge]')).toHaveCount(0);
 
   await page.getByRole('button', { name: 'Settings' }).click();
+  await sheet.getByRole('tab', { name: /^Appearance/ }).click();
   await expect(sheet.getByRole('checkbox', { name: 'Show stat bars' })).not.toBeChecked();
   await sheet.getByRole('checkbox', { name: 'Show stat bars' }).check();
   await sheet.getByRole('button', { name: 'Save' }).click();
@@ -165,6 +168,7 @@ test('socket letters and socket style draw on the Skills page’s sockets and ar
 
   await page.getByRole('button', { name: 'Settings' }).click();
   const sheet = page.getByRole('dialog', { name: 'Settings' });
+  await sheet.getByRole('tab', { name: /^Appearance/ }).click();
   await sheet.getByRole('checkbox', { name: 'Show socket colour letters' }).check();
   await sheet.getByRole('combobox', { name: 'Socket style' }).selectOption('Ornate');
   await sheet.getByRole('button', { name: 'Save' }).click();
@@ -177,6 +181,7 @@ test('socket letters and socket style draw on the Skills page’s sockets and ar
 
   await page.reload();
   await page.getByRole('button', { name: 'Settings' }).click();
+  await sheet.getByRole('tab', { name: /^Appearance/ }).click();
   await expect(sheet.getByRole('checkbox', { name: 'Show socket colour letters' })).toBeChecked();
   await expect(sheet.getByRole('combobox', { name: 'Socket style' })).toHaveValue('Ornate');
   app.assertNoErrors();

@@ -27,6 +27,8 @@ type SkillGemView struct {
 	CorruptShown bool
 	// CorruptIndex is the Corrupt dropdown's entry, 1-based.
 	CorruptIndex int
+	// Error is the gem slot's error message.
+	Error string
 }
 
 // SkillGroupView is one socket group of the skills tab: its display label, where it comes from, and its gems.
@@ -43,7 +45,14 @@ type SkillGroupView struct {
 	Set2             bool
 	// WeaponSetLocked is a group whose source item's weapon set decides its sets.
 	WeaponSetLocked bool
-	Gems            []SkillGemView
+	// Set1Valid and Set2Valid are whether the group can be used in each weapon set; Set1Enabled and Set2Enabled
+	// whether its box can be changed; ForcedBoth a group that must be in both.
+	Set1Valid   bool
+	Set2Valid   bool
+	Set1Enabled bool
+	Set2Enabled bool
+	ForcedBoth  bool
+	Gems        []SkillGemView
 }
 
 // Global.lua:7-78 (PoB-PoE2)
@@ -146,6 +155,8 @@ func (c *Calculator) SkillGroups() ([]SkillGroupView, error) {
 		if !group.HasGroupCount {
 			view.GroupCount = 1
 		}
+		valid, enabled, forcedBoth := calculator2.SocketGroupWeaponSets(c.env, i+1)
+		view.Set1Valid, view.Set2Valid, view.Set1Enabled, view.Set2Enabled, view.ForcedBoth = valid[0], valid[1], enabled[0], enabled[1], forcedBoth
 		for gemIndex, gem := range group.GemList {
 			grantedEffect := gem.GrantedEffect
 			if grantedEffect == nil && gem.GemData != nil {
@@ -169,6 +180,7 @@ func (c *Calculator) SkillGroups() ([]SkillGroupView, error) {
 				CountShown:   shown,
 				CorruptShown: gemSlotShown(gem) && !gem.FromItem && !gem.FromTree && (grantedEffect == nil || grantedEffect.Overlay == nil || !grantedEffect.Overlay.FromItem && !grantedEffect.Overlay.FromTree),
 				CorruptIndex: calculator2.CorruptIndex(gem),
+				Error:        calculator2.GemErrMsg(gem),
 				Name:         name,
 				Level:        gem.Level,
 				Quality:      gem.Quality,

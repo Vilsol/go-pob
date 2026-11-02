@@ -1,0 +1,6 @@
+[{"group":1,"sets":[{"valid":true,"enabled":true},{"valid":true,"enabled":true}],"forcedBoth":false},
+{"group":2,"sets":[{"valid":false,"enabled":false},{"valid":false,"enabled":false}],"forcedBoth":false},
+{"group":3,"sets":[{"valid":true,"enabled":false},{"valid":true,"enabled":false}],"forcedBoth":true},
+{"group":4,"sets":[{"valid":true,"enabled":true},{"valid":true,"enabled":true}],"forcedBoth":false},
+{"group":5,"sets":[{"valid":true,"enabled":true},{"valid":true,"enabled":true}],"forcedBoth":false},
+{"group":6,"sets":[{"valid":false,"enabled":false},{"valid":false,"enabled":false}],"forcedBoth":false}]

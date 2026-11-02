@@ -514,6 +514,230 @@ describe('the PoE2 Skills and Items pages', () => {
     ]);
   }, 180_000);
 
+  // calculator2/testdata/skills_sets_pob.jsonl: PoB-PoE2's sidebar values after the same skill set edits
+  it("adds, copies and switches skill sets as PoB-PoE2's skill set manager does", async () => {
+    const rows = (await readFile(resolve(process.cwd(), '../calculator2/testdata/skills_sets_pob.jsonl'), 'utf8'))
+      .trim()
+      .split('\n')
+      .map((l) => JSON.parse(l) as { step: string; groups: string[]; output: Record<string, number> });
+    const at = (step: string) => rows.find((r) => r.step === step)!;
+    poe2Build.set(await worker2Instance.Open(await readFile(resolve(process.cwd(), '../calculator2/testdata/skills_edit.xml'), 'utf8')));
+    issued.length = 0;
+    const page = render(AppSkills);
+    const select = await vi.waitFor(() => page.getByRole('combobox', { name: 'Skill set' }) as HTMLSelectElement);
+    await vi.waitFor(() => expect(groupButtons(page.container).length).toBe(1));
+    const settle = async (step: string) =>
+      vi.waitFor(() => {
+        const out = (get(poe2Build) as Poe2Calc | undefined)?.output ?? {};
+        expect([step, out.TotalDPS, groupButtons(page.container).length]).toEqual([step, at(step).output.TotalDPS, at(step).groups.length]);
+      });
+    const manage = async (button: string, title: string) => {
+      await fireEvent.change(select, { target: { value: '-1' } });
+      const dialog = await vi.waitFor(() => page.getByRole('dialog', { name: 'Manage skill sets' }));
+      await fireEvent.click(within(dialog).getByRole('button', { name: button }));
+      const name = within(dialog).getByRole<HTMLInputElement>('textbox', { name: 'Name for this skill set' });
+      await fireEvent.input(name, { target: { value: title } });
+      await fireEvent.click(within(dialog).getByRole('button', { name: 'Save' }));
+      await fireEvent.click(within(dialog).getByRole('button', { name: 'Done' }));
+    };
+
+    await manage('New', 'Second');
+    await settle('new set Second');
+    await vi.waitFor(() => expect([...select.options].map((o) => o.text).slice(0, 2)).toEqual(['Default', 'Second']));
+    expect(select.value).toBe('1');
+    await fireEvent.change(select, { target: { value: '0' } });
+    await settle('load');
+    await manage('Copy', 'Copy');
+    await settle('copy set 1');
+    await vi.waitFor(() => expect(select.value).toBe('2'));
+    expect(issued.filter((c) => c.startsWith('EditSkills')).map((c) => (JSON.parse(c.slice('EditSkills('.length, -1)) as { op: string }).op)).toEqual([
+      'newSet',
+      'activeSet',
+      'copySet'
+    ]);
+  }, 180_000);
+
+  // calculator2/testdata/gem_sort_pob.json: PoB-PoE2's gem list sort for the group's new gem slot, by Combined DPS
+  it("sorts the gem list by the DPS each gem gives, as PoB-PoE2's gem list does", async () => {
+    const oracle = JSON.parse(await readFile(resolve(process.cwd(), '../calculator2/testdata/gem_sort_pob.json'), 'utf8')) as {
+      base: number;
+      gems: { id: string; canSupport: boolean; dps: number }[];
+    };
+    const names = new Map((await worker2Instance.GemList()).map((g) => [g.id, g.name]));
+    // GemSelectControl.lua:353-373 (PoB-PoE2)
+    const top = oracle.gems
+      .filter((g) => g.canSupport)
+      .map((g) => ({ name: names.get(g.id)!, dps: g.dps }))
+      .sort((a, b) => (a.dps !== b.dps ? b.dps - a.dps : a.name < b.name ? -1 : 1))
+      .slice(0, 8);
+    poe2Build.set(await worker2Instance.Open(await readFile(resolve(process.cwd(), '../calculator2/testdata/skills_edit.xml'), 'utf8')));
+    const page = render(AppSkills);
+    await vi.waitFor(() => expect(groupButtons(page.container).length).toBe(1));
+    const editor = within(page.getByRole('region', { name: 'Selected group' }));
+    await fireEvent.focus(editor.getByRole('combobox', { name: 'Add a gem' }));
+    await vi.waitFor(
+      () => {
+        expect(editor.queryByLabelText('Sort progress')).toBeNull();
+        const shown = within(editor.getByRole('listbox', { name: 'Gem results' }))
+          .getAllByRole('option')
+          .slice(0, top.length)
+          .map((o) => o.textContent ?? '');
+        expect(shown.map((t, i) => t.trim().startsWith(top[i].name))).toEqual(top.map(() => true));
+        const delta = Math.round(((top[0].dps - oracle.base) / oracle.base) * 1000) / 10;
+        expect(shown[0]).toContain(`+${delta}%`);
+      },
+      { timeout: 60_000 }
+    );
+  }, 180_000);
+
+  // calculator2/testdata/skills_paste_pob.jsonl: the text PoB-PoE2 copies for the oracle's Fire group
+  it("Ctrl+C copies a group as PoB-PoE2's text, and pasting it adds the group", async () => {
+    const rows = (await readFile(resolve(process.cwd(), '../calculator2/testdata/skills_paste_pob.jsonl'), 'utf8'))
+      .trim()
+      .split('\n')
+      .map((l) => JSON.parse(l) as { step: string; text?: string; groups?: string[] });
+    const want = rows.find((r) => r.step === 'copied')!.text!;
+    const pasted = rows.find((r) => r.step === 'paste the Fire group')!.groups!;
+    poe2Build.set(await worker2Instance.Open(await readFile(resolve(process.cwd(), '../calculator2/testdata/skills_paste.xml'), 'utf8')));
+    const page = render(AppSkills);
+    await vi.waitFor(() => expect(groupButtons(page.container).length).toBe(2));
+    let copied = '';
+    const clip = { writeText: vi.fn((t: string) => Promise.resolve(void (copied = t))) };
+    Object.defineProperty(navigator, 'clipboard', { value: clip, configurable: true });
+    await fireEvent.keyDown(groupButtons(page.container)[1], { key: 'c', ctrlKey: true });
+    await vi.waitFor(() => expect(copied).toBe(want));
+
+    const paste = new Event('paste') as ClipboardEvent;
+    Object.defineProperty(paste, 'clipboardData', { value: { getData: () => copied } });
+    window.dispatchEvent(paste);
+    await vi.waitFor(() => expect(groupButtons(page.container).map((b) => pasted.some((l) => b.textContent?.includes(l)))).toEqual(pasted.map(() => true)));
+    await vi.waitFor(() => expect(groupButtons(page.container)[2].getAttribute('aria-current')).toBe('true'));
+  }, 120_000);
+
+  // calculator2/testdata/skills_edit_generated_pob.jsonl: PoB-PoE2's sidebar values after the same edits
+  it("the Corrupt dropdown corrupts a gem as PoB-PoE2's does", async () => {
+    const rows = (await readFile(resolve(process.cwd(), '../calculator2/testdata/skills_edit_generated_pob.jsonl'), 'utf8'))
+      .trim()
+      .split('\n')
+      .map((l) => JSON.parse(l) as { step: string; output: Record<string, number> });
+    const after = (step: string) => rows.find((r) => r.step === step)!.output;
+    poe2Build.set(await worker2Instance.Open(await readFile(resolve(process.cwd(), '../calculator2/testdata/skills_edit_generated.xml'), 'utf8')));
+    const page = render(AppSkills);
+    await vi.waitFor(() => expect(groupButtons(page.container).length).toBe(2));
+    const settle = async (step: string) =>
+      vi.waitFor(() => {
+        const out = (get(poe2Build) as Poe2Calc | undefined)?.output ?? {};
+        for (const k of ['TotalDPS', 'AverageDamage', 'ManaCost']) expect([step, k, out[k]]).toEqual([step, k, after(step)[k]]);
+      });
+    await fireEvent.click(page.getByRole('button', { name: '+ New group' }));
+    await vi.waitFor(() => expect(groupButtons(page.container).length).toBe(3));
+    const box = page.getByRole('combobox', { name: 'Add a gem' });
+    await fireEvent.focus(box);
+    await fireEvent.input(box, { target: { value: 'Rolling Slam' } });
+    await fireEvent.keyDown(box, { key: 'Enter' });
+    await settle('add Rolling Slam');
+    await fireEvent.click(page.getByRole('button', { name: 'Set as main' }));
+    await settle('main group new');
+    const corrupt = await vi.waitFor(() => page.getByRole('combobox', { name: 'Rolling Slam corruption' }) as HTMLSelectElement);
+    expect([...corrupt.options].map((o) => o.text)).toEqual(['Not Corrupted', '+1 to Gem Level', 'Corrupted', '-1 to Gem Level']);
+    expect(corrupt.value).toBe('1');
+    await fireEvent.change(corrupt, { target: { value: '2' } });
+    await settle('Rolling Slam +1 level corruption');
+    await vi.waitFor(() => expect((page.getByRole('combobox', { name: 'Rolling Slam corruption' }) as HTMLSelectElement).value).toBe('2'));
+  }, 120_000);
+
+  // SkillListControl.lua:45-54, 139-173 (PoB-PoE2)
+  it('deleting a group with gems, or every group, asks first; an empty group goes at once', async () => {
+    poe2Build.set(await worker2Instance.Open(await readFile(resolve(process.cwd(), '../calculator2/testdata/skills_paste.xml'), 'utf8')));
+    issued.length = 0;
+    const page = render(AppSkills);
+    await vi.waitFor(() => expect(groupButtons(page.container).length).toBe(2));
+    const deletes = () => issued.filter((c) => c.startsWith('EditSkills')).map((c) => (JSON.parse(c.slice('EditSkills('.length, -1)) as { op: string }).op);
+
+    await fireEvent.click(groupButtons(page.container)[1]);
+    await fireEvent.click(page.getByRole('button', { name: 'Delete group' }));
+    expect(page.getByRole('group', { name: 'Confirm delete' }).textContent).toContain("Are you sure you want to delete 'Fire'?");
+    await fireEvent.click(page.getByRole('button', { name: 'Cancel' }));
+    expect(page.queryByRole('group', { name: 'Confirm delete' })).toBeNull();
+    expect(deletes()).toEqual([]);
+    await fireEvent.click(page.getByRole('button', { name: 'Delete group' }));
+    await fireEvent.click(within(page.getByRole('group', { name: 'Confirm delete' })).getByRole('button', { name: 'Delete' }));
+    await vi.waitFor(() => expect(groupButtons(page.container).length).toBe(1));
+
+    await fireEvent.click(page.getByRole('button', { name: '+ New group' }));
+    await vi.waitFor(() => expect(groupButtons(page.container).length).toBe(2));
+    await fireEvent.click(page.getByRole('button', { name: 'Delete group' }));
+    await vi.waitFor(() => expect(groupButtons(page.container).length).toBe(1));
+    expect(page.queryByRole('group', { name: 'Confirm delete' })).toBeNull();
+
+    await fireEvent.click(page.getByRole('button', { name: 'Delete all' }));
+    expect(page.getByRole('group', { name: 'Confirm delete' }).textContent).toContain('Are you sure you want to delete all socket groups in this build?');
+    await fireEvent.click(within(page.getByRole('group', { name: 'Confirm delete' })).getByRole('button', { name: 'Delete' }));
+    await vi.waitFor(() => expect(groupButtons(page.container).length).toBe(0));
+    expect(deletes()).toEqual(['deleteGroup', 'newGroup', 'deleteGroup', 'deleteAll']);
+  }, 120_000);
+
+  // calculator2/testdata/skills_paste_pob.jsonl: the error message PoB-PoE2 gives a gem name it cannot find
+  it("a gem whose name finds no gem shows PoB-PoE2's error message", async () => {
+    await worker2Instance.Open(await readFile(resolve(process.cwd(), '../calculator2/testdata/skills_edit.xml'), 'utf8'));
+    poe2Build.set(await worker2Instance.EditSkills({ op: 'paste', text: 'Label: Typed\r\nSpark 5/0  1\r\nNot A Gem 1/0  1\r\n' }));
+    const page = render(AppSkills);
+    await vi.waitFor(() => expect(groupButtons(page.container).length).toBe(2));
+    await fireEvent.click(groupButtons(page.container)[1]);
+    await vi.waitFor(() =>
+      expect([...page.container.querySelectorAll('[data-gem-error]')].map((e) => e.textContent?.trim())).toEqual(["Unrecognised gem name 'Not A Gem'"])
+    );
+  }, 120_000);
+
+  // calculator2/testdata/weapon_sets_crossbow_plain_pob.json: PoB-PoE2's Set 1 and Set 2 boxes for the build's groups
+  it("the weapon set boxes are marked and locked where PoB-PoE2's are", async () => {
+    const oracle = JSON.parse(await readFile(resolve(process.cwd(), '../calculator2/testdata/weapon_sets_crossbow_plain_pob.json'), 'utf8')) as {
+      sets: { valid: boolean; enabled: boolean }[];
+    }[];
+    poe2Build.set(await worker2Instance.Open(await readFile(resolve(process.cwd(), '../calculator2/testdata/crossbow_plain.xml'), 'utf8')));
+    const page = render(AppSkills);
+    await vi.waitFor(() => expect(groupButtons(page.container).length).toBe(oracle.length));
+    for (const [i, want] of oracle.entries()) {
+      await fireEvent.click(groupButtons(page.container)[i]);
+      await vi.waitFor(() => {
+        const boxes = [1, 2].map((n) => page.getByRole('checkbox', { name: `Set ${n}` }) as HTMLInputElement);
+        expect(boxes.map((b) => [!b.closest('label')?.querySelector('.tone-error'), !b.disabled])).toEqual(want.sets.map((s) => [s.valid, s.enabled]));
+      });
+    }
+    const tip = () => page.getByRole('checkbox', { name: 'Set 2' }).closest('[title]')?.getAttribute('title');
+    expect(tip()).toBe('Default attack skills can only be used in the weapon set that grants them.');
+    await fireEvent.click(groupButtons(page.container)[0]);
+    await vi.waitFor(() => expect(tip()).toBe('This skill cannot be used with the weapons equipped in Set 2.'));
+  }, 120_000);
+
+  // calculator2/testdata/skills_undo_pob.jsonl: PoB-PoE2's groups after the same edits, undos and redos
+  it("Ctrl+Z and Ctrl+Y on the Skills page undo and redo edits as PoB-PoE2's Skills tab does", async () => {
+    const rows = (await readFile(resolve(process.cwd(), '../calculator2/testdata/skills_undo_pob.jsonl'), 'utf8'))
+      .trim()
+      .split('\n')
+      .map((l) => JSON.parse(l) as { step: string; groups: string[] });
+    const at = (step: string) => rows.find((r) => r.step === step)!.groups;
+    poe2Build.set(await worker2Instance.Open(await readFile(resolve(process.cwd(), '../calculator2/testdata/skills_edit.xml'), 'utf8')));
+    issued.length = 0;
+    const page = render(AppSkills);
+    const shown = () => groupButtons(page.container).map((b) => b.textContent ?? '');
+    const settle = (step: string) =>
+      vi.waitFor(() => expect([step, shown().length, shown().every((t, i) => t.includes(at(step)[i]))]).toEqual([step, at(step).length, true]));
+    await settle('load');
+    await fireEvent.click(page.getByRole('button', { name: '+ New group' }));
+    await settle('new group');
+    const box = page.getByRole('combobox', { name: 'Add a gem' });
+    await fireEvent.focus(box);
+    await fireEvent.input(box, { target: { value: 'Fireball' } });
+    await fireEvent.keyDown(box, { key: 'Enter' });
+    await settle('add Fireball');
+    await fireEvent.keyDown(window, { key: 'z', ctrlKey: true });
+    await settle('undo Fireball');
+    await fireEvent.keyDown(window, { key: 'y', ctrlKey: true });
+    await settle('redo Fireball');
+    expect(issued.filter((c) => c.startsWith('SkillsUndo'))).toEqual(['SkillsUndo(false)', 'SkillsUndo(true)']);
+  }, 120_000);
+
   // testdata/oracle/poe2_gem_search.json: PoB-PoE2's gem picker list for each search and support filter, sorted by name
   it("searches PoE2's gems as PoB-PoE2's gem picker does", async () => {
     const { populateGems2, searchGems, TERM_ALIASES2 } = await import('$lib/design/gem_search');

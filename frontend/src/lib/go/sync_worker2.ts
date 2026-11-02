@@ -123,6 +123,10 @@ export type Poe2SkillGroup = {
   set1: boolean;
   set2: boolean;
   weaponSetLocked: boolean;
+  // SkillsTab.lua:172-201 (PoB-PoE2): per weapon set, whether the group can be used there and whether its box can change
+  weaponSetValid: [boolean, boolean];
+  weaponSetEnabled: [boolean, boolean];
+  forcedBoth: boolean;
   gems: {
     id: string;
     name: string;
@@ -137,6 +141,8 @@ export type Poe2SkillGroup = {
     countShown: boolean;
     corruptShown: boolean;
     corruptIndex: number;
+    // SkillsTab.lua:1157-1162 (PoB-PoE2)
+    error: string;
   }[];
 };
 
@@ -153,7 +159,14 @@ export type Poe2SkillsEdit =
   | { op: 'gem'; group: number; gem: number; id: string }
   | { op: 'removeGem'; group: number; gem: number }
   | { op: 'level' | 'quality' | 'count' | 'corrupt'; group: number; gem: number; value: number }
-  | { op: 'gemEnabled'; group: number; gem: number; state: boolean };
+  | { op: 'gemEnabled'; group: number; gem: number; state: boolean }
+  | { op: 'activeSet' | 'deleteSet'; set: number }
+  | { op: 'newSet'; title: string }
+  | { op: 'copySet' | 'renameSet'; set: number; title: string }
+  | { op: 'paste'; text: string };
+
+/* SkillsTab.lua:85-96, SkillSetListControl.lua:103-108 (PoB-PoE2): the skill sets in order and the active one's id */
+export type Poe2SkillSets = { sets: { id: number; title: string }[]; active: number };
 
 /* GemSelectControl.lua:104-133 (PoB-PoE2): what the gem list's filters and search read */
 export type Poe2Gem = { id: string; name: string; tags: string[]; support: boolean; isLineage: boolean; legacy: boolean; levelReq: number; color: number };
@@ -402,6 +415,12 @@ class PoB2Worker {
     return changed ? this.view() : undefined;
   }
 
+  /* SkillsTab.lua:594-599 (PoB-PoE2): Ctrl+Z / Ctrl+Y on the Skills tab; no calc when there was nothing to undo or redo */
+  async SkillsUndo(redo: boolean): Promise<Poe2Calc | undefined> {
+    if (!this.calc) throw new Error('no PoE2 build is open');
+    return this.calc.SkillsUndo(redo).unwrap() ? this.view() : undefined;
+  }
+
   private calcsQuery?: exposition.CalcsModQuery;
 
   /* CalcFormat.lua:46-60 (PoB-PoE2): every Calcs page {p:mod:n} entry over the last calculation, and the outputs the
@@ -434,6 +453,9 @@ class PoB2Worker {
       set1: g.Set1,
       set2: g.Set2,
       weaponSetLocked: g.WeaponSetLocked,
+      weaponSetValid: [g.Set1Valid, g.Set2Valid],
+      weaponSetEnabled: [g.Set1Enabled, g.Set2Enabled],
+      forcedBoth: g.ForcedBoth,
       gems: (g.Gems ?? []).map((gem) => ({
         id: gem.ID,
         name: gem.Name,
@@ -446,9 +468,36 @@ class PoB2Worker {
         generated: gem.Generated,
         countShown: gem.CountShown,
         corruptShown: gem.CorruptShown,
-        corruptIndex: gem.CorruptIndex
+        corruptIndex: gem.CorruptIndex,
+        error: gem.Error
       }))
     }));
+  }
+
+  SkillSets(): Poe2SkillSets {
+    if (!this.calc) throw new Error('no PoE2 build is open');
+    const v = this.calc.SkillSets();
+    return { sets: (v.Sets ?? []).map((s) => ({ id: s.ID, title: s.Title })), active: v.Active };
+  }
+
+  /* SkillsTab.lua:639-657 (PoB-PoE2): the text Ctrl+C copies for a group; "" for a group a source creates */
+  CopySocketGroup(group: number): string {
+    if (!this.calc) throw new Error('no PoE2 build is open');
+    return this.calc.CopySocketGroup(group).unwrap() ?? '';
+  }
+
+  /* GemSelectControl.lua:278-348 (PoB-PoE2): per gem, whether it supports the group and whether the sort calculates it */
+  GemSortCache(group: number, gemIds: string[]): { canSupport: boolean[]; pending: boolean[] } {
+    if (!this.calc) throw new Error('no PoE2 build is open');
+    const v = this.calc.GemSortCache(group, gemIds).unwrap();
+    return { canSupport: [...(v?.CanSupport ?? [])], pending: [...(v?.Pending ?? [])] };
+  }
+
+  /* GemSelectControl.lua:61-102, 323-331, 405-409 (PoB-PoE2): each gem's DPS in the group's new gem slot */
+  async GemSortDPS(group: number, gemIds: string[], field: string): Promise<{ base: number; dps: number[] }> {
+    if (!this.calc) throw new Error('no PoE2 build is open');
+    const v = (await this.calc.GemSortDPS(group, gemIds, field)).unwrap();
+    return { base: v?.Base ?? 0, dps: [...(v?.DPS ?? [])] };
   }
 
   /* SkillsTab.lua, SkillListControl.lua (PoB-PoE2): an edit of the socket group list, then the recalculation */
@@ -504,7 +553,27 @@ class PoB2Worker {
       case 'gemEnabled':
         c.SetGemEnabled(e.group, e.gem, e.state).unwrap();
         break;
+      case 'activeSet':
+        c.SetActiveSkillSet(e.set).unwrap();
+        break;
+      case 'newSet':
+        c.NewSkillSet(e.title).unwrap();
+        break;
+      case 'copySet':
+        c.CopySkillSet(e.set, e.title).unwrap();
+        break;
+      case 'renameSet':
+        c.RenameSkillSet(e.set, e.title).unwrap();
+        break;
+      case 'deleteSet':
+        c.DeleteSkillSet(e.set).unwrap();
+        break;
+      case 'paste':
+        // SkillsTab.lua:753-760 (PoB-PoE2): a paste with no gem adds nothing
+        if (!c.PasteSocketGroup(e.text).unwrap()) return this.view();
+        break;
     }
+    c.AddSkillsUndoState();
     return this.view();
   }
 

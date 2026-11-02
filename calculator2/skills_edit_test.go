@@ -5,10 +5,14 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"math"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
+	"slices"
 	"testing"
 
 	"github.com/Vilsol/go-pob/pob2"
@@ -20,6 +24,11 @@ type skillsEditStep struct {
 	Step            string             `json:"step"`
 	MainSocketGroup int                `json:"mainSocketGroup"`
 	Groups          []string           `json:"groups"`
+	ActiveSkillSet  int                `json:"activeSkillSet"`
+	Sets            []string           `json:"sets"`
+	Group           int                `json:"group"`
+	Text            string             `json:"text"`
+	Errors          []string           `json:"errors"`
 	Output          map[string]float64 `json:"output"`
 	XML             string             `json:"xml"`
 }
@@ -85,6 +94,133 @@ var skillsGeneratedSteps = map[string]skillsEdit{
 	},
 }
 
+// ambiguousName is FindSkillGem's ambiguous name message.
+var ambiguousName = regexp.MustCompile(`^(Ambiguous gem name '.*': matches )'(.*)', '(.*)'$`)
+
+// sameErrMsg compares error messages; the two matches an ambiguous name reports are the first two in PoB-PoE2's
+// pairs() order, so only the name is compared.
+func sameErrMsg(got, want string) bool {
+	g, w := ambiguousName.FindStringSubmatch(got), ambiguousName.FindStringSubmatch(want)
+	if g == nil || w == nil {
+		return got == want
+	}
+	return g[1] == w[1]
+}
+
+// copiedText is the oracle's last "copied" row, which the next paste pastes.
+var copiedText string
+
+// skillsPasteSteps are the oracle's "paste" scenario.
+var skillsPasteSteps = map[string]skillsEdit{
+	"Fire group": func(b *pob2.PathOfBuilding2, env *Environment) error {
+		g := NewSocketGroup(b, env)
+		return errors.Join(
+			SetGem(b, env, g, 1, fireballID),
+			SetGem(b, env, g, 2, elementalFocusID),
+			SetGemLevel(b, env, g, 1, 15),
+			SetGemQuality(b, env, g, 1, 20),
+			SetGemCorruption(b, env, g, 1, 2),
+			SetGemEnabled(b, env, g, 2, false),
+			SetGemCount(b, env, g, 1, 3),
+			SetSocketGroupLabel(b, env, g, "Fire"),
+			SetSocketGroupWeaponSet(b, env, g, 2, false),
+		)
+	},
+	"paste the Fire group": func(b *pob2.PathOfBuilding2, env *Environment) error {
+		_, err := PasteSocketGroup(b, env, copiedText)
+		return err
+	},
+	"paste a typed group": func(b *pob2.PathOfBuilding2, env *Environment) error {
+		_, err := PasteSocketGroup(b, env, "Label: Typed\r\nWeapon Set: Set 2\r\nskillId:SparkPlayer Spark 5/10  2 C -1\r\n"+
+			"Elemental Focus 1/0 DISABLED 1\r\nFrstbmb 3/0  1\r\nFrbl 2/0  1\r\nSpa 4/0  1\r\nfire 20/0  1\r\nNot A Gem 1/0  1\r\n")
+		return err
+	},
+	"paste no gems": func(b *pob2.PathOfBuilding2, env *Environment) error {
+		if index, err := PasteSocketGroup(b, env, "nothing to paste"); err != nil || index != 0 {
+			return fmt.Errorf("pasted a group with no gems at %d: %w", index, err)
+		}
+		return nil
+	},
+}
+
+// skillsUndoSteps are the oracle's "undo" scenario: every edit adds an undo state, as the Skills tab's controls do.
+func skillsUndoSteps() map[string]skillsEdit {
+	var h *SkillsUndo
+	edit := func(f skillsEdit) skillsEdit {
+		return func(b *pob2.PathOfBuilding2, env *Environment) error {
+			if h == nil {
+				h = &SkillsUndo{}
+				h.ResetUndo(b)
+			}
+			if err := f(b, env); err != nil {
+				return err
+			}
+			h.AddUndoState(b, false)
+			return nil
+		}
+	}
+	undo := func(redo bool, times int) skillsEdit {
+		return func(b *pob2.PathOfBuilding2, _ *Environment) error {
+			for range times {
+				if redo {
+					h.Redo(b)
+				} else {
+					h.Undo(b)
+				}
+			}
+			return nil
+		}
+	}
+	newGroup := edit(func(b *pob2.PathOfBuilding2, env *Environment) error { NewSocketGroup(b, env); return nil })
+	return map[string]skillsEdit{
+		"new group":             newGroup,
+		"add Fireball":          edit(func(b *pob2.PathOfBuilding2, env *Environment) error { return SetGem(b, env, 2, 1, fireballID) }),
+		"label Fire":            edit(func(b *pob2.PathOfBuilding2, env *Environment) error { return SetSocketGroupLabel(b, env, 2, "Fire") }),
+		"undo the label":        undo(false, 1),
+		"undo Fireball":         undo(false, 1),
+		"redo Fireball":         undo(true, 1),
+		"new set Second":        edit(func(b *pob2.PathOfBuilding2, env *Environment) error { NewSkillSet(b, env, "Second"); return nil }),
+		"undo the new set":      undo(false, 1),
+		"undo Fireball again":   undo(false, 1),
+		"new group clears redo": newGroup,
+		"redo nothing": func(b *pob2.PathOfBuilding2, _ *Environment) error {
+			if h.Redo(b) {
+				return errors.New("a new edit left a redo")
+			}
+			return nil
+		},
+		"undo past the loaded state": undo(false, 3),
+	}
+}
+
+// setAt is the id of the skill set at a place in the Manage list.
+func setAt(b *pob2.PathOfBuilding2, i int) int { return b.Skills.SkillSets[i-1].ID }
+
+// skillSetsSteps are the oracle's "sets" scenario.
+var skillSetsSteps = map[string]skillsEdit{
+	"new set Second": func(b *pob2.PathOfBuilding2, env *Environment) error { NewSkillSet(b, env, "Second"); return nil },
+	"add Fireball to Second": func(b *pob2.PathOfBuilding2, env *Environment) error {
+		return SetGem(b, env, NewSocketGroup(b, env), 1, fireballID)
+	},
+	"copy set 1": func(b *pob2.PathOfBuilding2, env *Environment) error {
+		_, err := CopySkillSet(b, env, setAt(b, 1), "Copy")
+		return err
+	},
+	"rename set 2 Fire": func(b *pob2.PathOfBuilding2, _ *Environment) error { return RenameSkillSet(b, setAt(b, 2), "Fire") },
+	"switch to set 2": func(b *pob2.PathOfBuilding2, env *Environment) error {
+		SetActiveSkillSet(b, env, setAt(b, 2))
+		return nil
+	},
+	"delete active set 2": func(b *pob2.PathOfBuilding2, env *Environment) error { return DeleteSkillSet(b, env, setAt(b, 2)) },
+	"delete active set 1": func(b *pob2.PathOfBuilding2, env *Environment) error { return DeleteSkillSet(b, env, setAt(b, 1)) },
+	"new set Third":       func(b *pob2.PathOfBuilding2, env *Environment) error { NewSkillSet(b, env, "Third"); return nil },
+	"new set Fourth":      func(b *pob2.PathOfBuilding2, env *Environment) error { NewSkillSet(b, env, "Fourth"); return nil },
+	"switch to set 1": func(b *pob2.PathOfBuilding2, env *Environment) error {
+		SetActiveSkillSet(b, env, setAt(b, 1))
+		return nil
+	},
+}
+
 func readSkillsEditOracle(t *testing.T, path string) []skillsEditStep {
 	t.Helper()
 	raw, err := os.ReadFile(path) //nolint:gosec // test fixture
@@ -110,10 +246,14 @@ func skillSetsXML(t *testing.T, b *pob2.PathOfBuilding2) string {
 	t.Helper()
 	out := &pob2.PathOfBuilding2{}
 	out.Build.MainSocketGroup = b.Build.MainSocketGroup
+	out.Skills.ActiveSkillSet = b.Skills.ActiveSkillSet
 	for _, set := range b.Skills.SkillSets {
 		set.Unparsed = pob2.Unparsed{}
+		set.Skills = slices.Clone(set.Skills)
 		for i := range set.Skills {
 			set.Skills[i].Unparsed = pob2.Unparsed{}
+			set.Skills[i].Gems = slices.Clone(set.Skills[i].Gems)
+			asLoaded(&set.Skills[i])
 			for j := range set.Skills[i].Gems {
 				set.Skills[i].Gems[j].Unparsed = pob2.Unparsed{}
 			}
@@ -127,17 +267,54 @@ func skillSetsXML(t *testing.T, b *pob2.PathOfBuilding2) string {
 	return string(text)
 }
 
+// asLoaded fills in the defaults LoadSkill gives a group saved with "nil", which PoB-PoE2 then saves; a loaded
+// group keeps what its file says here (SkillsTab.lua:294-364).
+func asLoaded(s *pob2.Skill) {
+	if s.IncludeInFullDPS.IsNil {
+		s.IncludeInFullDPS = pob2.Nil[bool]{}
+	}
+	if s.MainActiveSkillCalcs.IsNil {
+		s.MainActiveSkillCalcs = pob2.Nil[int]{V: 1}
+	}
+	for j := range s.Gems {
+		g := &s.Gems[j]
+		if g.Corrupted.IsNil {
+			g.Corrupted = pob2.Nil[bool]{}
+		}
+		if g.StatSetIndex == nil {
+			g.StatSetIndex = &pob2.Nil[int]{IsNil: true}
+		}
+		if g.StatSetIndexCalcs == nil {
+			g.StatSetIndexCalcs = &pob2.Nil[int]{IsNil: true}
+		}
+	}
+}
+
 // Every edit recalculates; the sidebar's numbers, the socket group labels, the main group and the saved skill
 // sets are PoB-PoE2's for the same edits through its Skills tab controls.
 func TestSkillsEditMatchesPoB(t *testing.T) {
-	t.Run("edits", func(t *testing.T) { runSkillsEdits(t, "skills_edit", skillsEditSteps) })
-	t.Run("generated", func(t *testing.T) { runSkillsEdits(t, "skills_edit_generated", skillsGeneratedSteps) })
+	for _, scenario := range skillsEditScenarios {
+		t.Run(scenario.oracle, func(t *testing.T) { runSkillsEdits(t, scenario.fixture, scenario.oracle, scenario.steps) })
+	}
 }
 
-func runSkillsEdits(t *testing.T, name string, steps map[string]skillsEdit) {
+// skillsEditScenarios are the oracle's scenarios: its argument, the build it loads and the rows it writes.
+var skillsEditScenarios = []struct {
+	name, fixture, oracle string
+	steps                 map[string]skillsEdit
+}{
+	{"edits", "skills_edit", "skills_edit", skillsEditSteps},
+	{"generated", "skills_edit_generated", "skills_edit_generated", skillsGeneratedSteps},
+	{"sets", "skills_edit", "skills_sets", skillSetsSteps},
+	{"sets", "skills_sets_legacy", "skills_sets_legacy", skillSetsSteps},
+	{"paste", "skills_edit", "skills_paste", skillsPasteSteps},
+	{"undo", "skills_edit", "skills_undo", skillsUndoSteps()},
+}
+
+func runSkillsEdits(t *testing.T, fixture, oracle string, steps map[string]skillsEdit) {
 	t.Helper()
-	rows := readSkillsEditOracle(t, filepath.Join("testdata", name+"_pob.jsonl"))
-	raw, err := os.ReadFile(filepath.Join("testdata", name+".xml"))
+	rows := readSkillsEditOracle(t, filepath.Join("testdata", oracle+"_pob.jsonl"))
+	raw, err := os.ReadFile(filepath.Join("testdata", fixture+".xml"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -159,6 +336,25 @@ func runSkillsEdits(t *testing.T, name string, steps map[string]skillsEdit) {
 			}
 			continue
 		}
+		if row.Step == "errors" {
+			gems := env.SocketGroupList[row.Group-1].GemList
+			if len(gems) != len(row.Errors) {
+				t.Fatalf("group %d has %d gems, PoB-PoE2 %d", row.Group, len(gems), len(row.Errors))
+			}
+			for i, gem := range gems {
+				if got := GemErrMsg(gem); !sameErrMsg(got, row.Errors[i]) {
+					t.Errorf("gem %d error %q, PoB-PoE2 %q", i+1, got, row.Errors[i])
+				}
+			}
+			continue
+		}
+		if row.Step == "copied" {
+			copiedText = row.Text
+			if got, err := CopySocketGroup(env, row.Group); err != nil || got != row.Text {
+				t.Errorf("group %d copies %q (%v), PoB-PoE2 %q", row.Group, got, err, row.Text)
+			}
+			continue
+		}
 		if row.Step != "load" {
 			edit := steps[row.Step]
 			if edit == nil {
@@ -174,6 +370,16 @@ func runSkillsEdits(t *testing.T, name string, steps map[string]skillsEdit) {
 		}
 		if env.MainSocketGroup != row.MainSocketGroup {
 			t.Errorf("%s: main socket group %d, PoB-PoE2 %d", row.Step, env.MainSocketGroup, row.MainSocketGroup)
+		}
+		if row.Sets != nil {
+			views, active := SkillSetList(build)
+			sets := make([]string, 0, len(views))
+			for _, set := range views {
+				sets = append(sets, fmt.Sprintf("%d:%s", set.ID, set.Title))
+			}
+			if active != row.ActiveSkillSet || !slices.Equal(sets, row.Sets) {
+				t.Errorf("%s: skill sets %q, active %d; PoB-PoE2 %q, active %d", row.Step, sets, active, row.Sets, row.ActiveSkillSet)
+			}
 		}
 		views := SocketGroupViews(env)
 		labels := make([]string, len(views))
@@ -209,7 +415,7 @@ func TestSkillsEditOracleIsCurrent(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, scenario := range []struct{ name, fixture string }{{"edits", "skills_edit"}, {"generated", "skills_edit_generated"}} {
+	for _, scenario := range skillsEditScenarios {
 		fixture, err := filepath.Abs(filepath.Join("testdata", scenario.fixture+".xml"))
 		if err != nil {
 			t.Fatal(err)
@@ -229,12 +435,12 @@ func TestSkillsEditOracleIsCurrent(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		want, err := os.ReadFile(filepath.Join("testdata", scenario.fixture+"_pob.jsonl"))
+		want, err := os.ReadFile(filepath.Join("testdata", scenario.oracle+"_pob.jsonl"))
 		if err != nil {
 			t.Fatal(err)
 		}
 		if !bytes.Equal(got, want) {
-			t.Errorf("testdata/%s_pob.jsonl is stale; PoB-PoE2 now writes:\n%s", scenario.fixture, got)
+			t.Errorf("testdata/%s_pob.jsonl is stale; PoB-PoE2 now writes:\n%s", scenario.oracle, got)
 		}
 	}
 }

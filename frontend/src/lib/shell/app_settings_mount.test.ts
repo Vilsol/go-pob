@@ -74,8 +74,32 @@ const open = () => {
 const root = document.documentElement;
 
 describe('AppSettings', () => {
+  it('General keeps behaviour settings; how the app looks is under Appearance', async () => {
+    const s = open();
+    const tabs = s.getAllByRole('tab').map((t) => t.textContent?.replace(/\d+$/, '').trim());
+    expect(tabs.slice(0, 2)).toEqual(['General', 'Appearance']);
+    const ids = () => [...s.getByRole('tabpanel').querySelectorAll('[data-setting]')].map((e) => e.getAttribute('data-setting'));
+    expect(ids()).toEqual(['engine', 'poe2', 'engineBoot', 'defLevel', 'gemQuality', 'affixQuality', 'showWarnings', 'devMode']);
+    await fireEvent.click(s.getByRole('tab', { name: /^Appearance/ }));
+    expect(ids()).toEqual([
+      'theme',
+      'fontScaling',
+      'animations',
+      'statBars',
+      'socketLetters',
+      'socketStyle',
+      'colorPositive',
+      'colorNegative',
+      'phoneTables',
+      'titleBuild'
+    ]);
+    await fireEvent.click(s.getByRole('tab', { name: /^Passive tree/ }));
+    expect(ids()).toEqual(['zoomSensitivity', 'nodePowerTheme', 'colorHighlight', 'edgeSearchHighlight']);
+  });
+
   it('Font scaling sizes the root font on release and is kept; Reset puts back 12 pt', async () => {
     const s = open();
+    await fireEvent.click(s.getByRole('tab', { name: /^Appearance/ }));
     const slider = s.getByRole('slider', { name: 'Font scaling' });
     const shown = () => slider.closest('[data-setting]')!.textContent;
     expect(root.style.fontSize).toBe('16px');
@@ -99,6 +123,7 @@ describe('AppSettings', () => {
 
   it('Theme switches the token set on <html>; Follow system tracks prefers-color-scheme', async () => {
     const s = open();
+    await fireEvent.click(s.getByRole('tab', { name: /^Appearance/ }));
     const pick = s.getByRole('combobox', { name: 'Theme' });
     expect(root.dataset.theme).toBe('dark');
     await fireEvent.change(pick, { target: { value: 'Light' } });
@@ -119,6 +144,7 @@ describe('AppSettings', () => {
 
   it('Show animations off marks <html> data-motion="off"', async () => {
     const s = open();
+    await fireEvent.click(s.getByRole('tab', { name: /^Appearance/ }));
     const box = s.getByRole('checkbox', { name: 'Show animations' });
     expect((box as HTMLInputElement).checked).toBe(true);
     expect(root.dataset.motion).toBeUndefined();
@@ -132,6 +158,7 @@ describe('AppSettings', () => {
 
   it('Show stat bars is on by default, and off is kept; Reset turns it back on', async () => {
     const s = open();
+    await fireEvent.click(s.getByRole('tab', { name: /^Appearance/ }));
     const box = s.getByRole('checkbox', { name: 'Show stat bars' });
     expect((box as HTMLInputElement).checked).toBe(true);
     await fireEvent.click(box);
@@ -169,7 +196,7 @@ describe('AppSettings', () => {
   it('Wide lists on a phone (Cards / Table) is kept for the build list and the Items list', async () => {
     const { phoneTables } = await import('$lib/display/appearance');
     const s = open();
-    await fireEvent.click(s.getByRole('tab', { name: /^General/ }));
+    await fireEvent.click(s.getByRole('tab', { name: /^Appearance/ }));
     const pick = s.getByRole<HTMLSelectElement>('combobox', { name: 'Wide lists on a phone' });
     expect(pick.value).toBe('Cards');
     await fireEvent.change(pick, { target: { value: 'Table' } });

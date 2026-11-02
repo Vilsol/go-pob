@@ -16,7 +16,7 @@ import (
 
 //crystalline:exports
 func Exports(r bind.Registry) {
-	r.Type(Calculator{}, bind.AsPromise("Calculate"))
+	r.Type(Calculator{}, bind.AsPromise("Calculate", "GemSortDPS"))
 	r.Type(Outputs{}, bind.Plain())
 	r.Type(calculator2.SocketGroupView{}, bind.Plain())
 	r.Type(calculator2.ConfigValue{}, bind.Plain())
@@ -32,6 +32,10 @@ func Exports(r bind.Registry) {
 	r.Type(CalcsOutputs{}, bind.Plain())
 	r.Type(SkillGroupView{}, bind.Plain())
 	r.Type(SkillGemView{}, bind.Plain())
+	r.Type(SkillSetsView{}, bind.Plain())
+	r.Type(GemSortCacheView{}, bind.Plain())
+	r.Type(GemSortDPSView{}, bind.Plain())
+	r.Type(calculator2.SkillSetView{}, bind.Plain())
 	r.Type(ItemsView{}, bind.Plain())
 	r.Type(ItemView{}, bind.Plain())
 	r.Type(ItemsPageView{}, bind.Plain())

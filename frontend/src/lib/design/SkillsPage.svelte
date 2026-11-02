@@ -11,6 +11,7 @@
   import Checkbox from './Checkbox.svelte';
   import Button from './Button.svelte';
   import SetManager from './SetManager.svelte';
+  import InlineConfirm from './InlineConfirm.svelte';
   import SetSelect from './SetSelect.svelte';
   import type { SetListOp } from './set_list';
   import SkillGroupEditor from './SkillGroupEditor.svelte';
@@ -18,7 +19,7 @@
   import { Reorder, reorderState } from './reorder';
   import { socketLine } from './items';
   import type { GemAttr, ItemTip, SkillGemFixture, SocketGroupFixture } from './fixtures';
-  import type { GemOptions, SkillSetOp } from './skills';
+  import type { GemOptions, SkillSetOp, WeaponSetBoxes } from './skills';
   import type { StatCompareSection } from '$lib/skill_tree/stat_compare';
 
   type Props = {
@@ -50,6 +51,9 @@
     onsort?: (on: boolean, stat: string) => void;
     /* SkillListControl.lua:148-152 */
     oncopygroup?: (i: number) => void;
+    // SkillsTab.lua:594-599 (PoB-PoE2): Ctrl+Z and Ctrl+Y on the page, for a game whose Skills tab keeps its own undo
+    onundo?: () => void;
+    onredo?: () => void;
     /* SkillsTab.lua:628-629 */
     onpastegroup?: (text: string) => void;
     options?: GemOptions;
@@ -60,16 +64,22 @@
       supports: { value: string; label: string }[];
       sort: boolean;
       alt: boolean;
+      // the Sort by list, where the game's differs
+      sorts?: string[];
     };
     editor?: {
       /* SkillsTab.lua:157-201 (PoB-PoE2) */
-      weaponSets?: (group: number) => { set1: boolean; set2: boolean; locked: boolean } | undefined;
+      weaponSets?: (group: number) => WeaponSetBoxes | undefined;
       slotSelect?: boolean;
       sockets?: boolean;
       /* SkillsTab.lua:764-766 (PoB-PoE2) */
       gemLocked?: (group: number, gem: number) => boolean;
       /* SkillsTab.lua:1086-1100 (PoB-PoE2) */
       countShown?: (group: number, gem: number) => boolean;
+      // SkillListControl.lua:45-54, 139-173 (PoB-PoE2): the question a delete asks first; undefined deletes at once
+      confirmDelete?: (group: number | 'all') => string | undefined;
+      // SkillsTab.lua:1116-1153 (PoB-PoE2): a gem's Corrupt dropdown, where shown
+      corrupt?: (group: number, gem: number) => { options: string[]; value: number; onchange: (option: number) => void } | undefined;
       /* SkillListControl.lua:42-44 (PoB-PoE2) */
       deletable?: (group: number) => boolean;
       /* GemSelectControl.lua:196-214: the search's tag aliases, where a game's differ */
@@ -135,6 +145,8 @@
     onsort,
     oncopygroup,
     onpastegroup,
+    onundo,
+    onredo,
     options,
     onoption,
     optionLists,
@@ -191,6 +203,12 @@
   const reorderable = $derived(!!onreordergroups);
 
   let managing = $state(false);
+  let confirming = $state<{ group: number | 'all'; message: string }>();
+  const askDelete = (target: number | 'all', run: () => void) => {
+    const message = editor?.confirmDelete?.(target);
+    if (message) confirming = { group: target, message };
+    else run();
+  };
   const groups = $derived(sets[set]?.groups ?? []);
   const group = $derived(groups[selected]);
   const offset = $derived(
@@ -212,6 +230,17 @@
 </script>
 
 <svelte:window
+  onkeydown={(e: KeyboardEvent) => {
+    if (!onundo || e.defaultPrevented || !(e.ctrlKey || e.metaKey) || e.altKey || isTypingTarget(e.target)) return;
+    const k = e.key.toLowerCase();
+    if (k === 'z' && !e.shiftKey) {
+      e.preventDefault();
+      onundo();
+    } else if (k === 'y' || (k === 'z' && e.shiftKey)) {
+      e.preventDefault();
+      onredo?.();
+    }
+  }}
   onpaste={(e: ClipboardEvent) => {
     if (!onpastegroup || isTypingTarget(e.target)) return;
     const text = e.clipboardData?.getData('text/plain');
@@ -293,12 +322,24 @@
           size="xs"
           class="grow text-11"
           disabled={!group || (editor?.deletable ? !editor.deletable(selected) : groups.length <= 1)}
-          onclick={() => ondeletegroup(selected)}>Delete group</Button
+          onclick={() => askDelete(selected, () => ondeletegroup(selected))}>Delete group</Button
         >{/if}
-      {#if ondeleteall}<Button size="xs" class="grow text-11" disabled={editor?.deletable ? groups.length === 0 : groups.length <= 1} onclick={ondeleteall}
-          >Delete all</Button
+      {#if ondeleteall}<Button
+          size="xs"
+          class="grow text-11"
+          disabled={editor?.deletable ? groups.length === 0 : groups.length <= 1}
+          onclick={() => askDelete('all', ondeleteall)}>Delete all</Button
         >{/if}
     </div>
+    {#if confirming}<InlineConfirm
+        message={confirming.message}
+        onconfirm={() => {
+          const target = confirming?.group;
+          confirming = undefined;
+          if (target === 'all') ondeleteall?.();
+          else if (target !== undefined) ondeletegroup?.(target);
+        }}
+        oncancel={() => (confirming = undefined)} />{/if}
   {/if}
   <section aria-label="Gem options" class="panel mt-1 flex flex-col gap-1.75 p-2.5 text-12">
     <SectionHeading level={3}>GEM OPTIONS</SectionHeading>
@@ -309,7 +350,7 @@
           size="xs"
           class="w-30"
           aria-label="Sort by"
-          options={SORTS}
+          options={lists.sorts ?? SORTS}
           bind:value={sortStat}
           onchange={(e: Event & { currentTarget: HTMLSelectElement }) => onsort?.(sortOn, e.currentTarget.value)} />
       </div>{/if}
@@ -401,6 +442,7 @@
       sockets={editor?.sockets}
       gemLocked={editor?.gemLocked && ((g: number) => editor.gemLocked!(selected, g))}
       countShown={editor?.countShown && ((g: number) => editor.countShown!(selected, g))}
+      corrupt={editor?.corrupt && ((g: number) => editor.corrupt!(selected, g))}
       searchTerms={editor?.searchTerms}
       {revision} />
   {/key}

@@ -78,6 +78,10 @@ export declare namespace calculator2 {
     readonly Search: string;
     readonly SearchMode: number;
   }
+  interface SkillSetView {
+    readonly ID: number;
+    readonly Title: string;
+  }
   interface SocketGroupView {
     readonly Label: string;
     readonly Skills?: Array<string>;
@@ -136,6 +140,7 @@ export declare namespace exposition {
   interface Calculator {
     AddDBItem(kind: string, name: string, equip: boolean, second: boolean): Result<number>;
     AddDisplayItem(slot: string): Result<number>;
+    AddSkillsUndoState(): void;
     AllocateAttributeNode(id: number, attributeIndex: number, allocMode: number): Result<void>;
     BuildItemCompare(id: number): Result<(exposition.ItemCompareView | undefined)>;
     CalcsBreakdowns(): Result<(Record<string, Readonly<exposition.CalcsBreakdown>> | undefined)>;
@@ -146,12 +151,15 @@ export declare namespace exposition {
     CloseDisplayItem(): Result<void>;
     ConfigRelevance(query: calculator2.ConfigRelevance): Result<calculator2.ConfigRelevance>;
     CopyItemSet(id: number, title: string): Result<void>;
+    CopySkillSet(id: number, title: string): Result<number>;
+    CopySocketGroup(index: number): Result<string>;
     CraftDisplayItem(rarity: number, title: string, base: string): Result<void>;
     CraftItemCompare(rarity: number, title: string, base: string): Result<(exposition.ItemCompareView | undefined)>;
     DBItemCompare(kind: string, name: string): Result<(exposition.ItemCompareView | undefined)>;
     DeleteAllSocketGroups(): Result<void>;
     DeleteItem(id: number): Result<void>;
     DeleteItemSet(id: number): Result<void>;
+    DeleteSkillSet(id: number): Result<void>;
     DeleteSocketGroup(index: number): Result<void>;
     DisplayItemAffixRoll(control: number, val: number): Result<(Array<string> | undefined)>;
     DisplayItemAffixes(): Result<(Array<exposition.AffixControlView> | undefined)>;
@@ -162,6 +170,8 @@ export declare namespace exposition {
     EquippedItems(): Result<(exposition.ItemsView | undefined)>;
     ExportCode(player: Array<exposition.SavedStat> | undefined, fullDPS: Array<exposition.SavedFullDPS> | undefined, minion: Array<exposition.SavedStat> | undefined): Result<string>;
     GemOptions(): calculator2.GemOptions;
+    GemSortCache(group: number, gemIDs: Array<string> | undefined): Result<(exposition.GemSortCacheView | undefined)>;
+    GemSortDPS(group: number, gemIDs: Array<string> | undefined, field: string): Promise<Result<(exposition.GemSortDPSView | undefined)>>;
     HoverNode(id: number, allocMode: number): exposition.TreeHover;
     ItemDBRows(kind: string, f: calculator2.ItemDBFilter): Result<(Array<exposition.ItemDBRow> | undefined)>;
     ItemText(id: number): Result<string>;
@@ -169,19 +179,23 @@ export declare namespace exposition {
     MoveItemSet(from: number, to: number): Result<void>;
     MoveSocketGroup(from: number, to: number): Result<void>;
     NewItemSet(title: string): Result<void>;
+    NewSkillSet(title: string): Result<number>;
     NewSocketGroup(): Result<number>;
     Notes(): string;
     OpenDBItem(kind: string, name: string): Result<void>;
     PasteItem(raw: string): Result<void>;
+    PasteSocketGroup(text: string): Result<number>;
     Redo(): Result<boolean>;
     RemoveGem(group: number, gem: number): Result<void>;
     RenameItemSet(id: number, title: string): Result<void>;
+    RenameSkillSet(id: number, title: string): Result<void>;
     RichNotesDoc(): string;
     RichNotesStatus(): string;
     SelectDisplayItemAffix(control: number, entry: number, slider: number): Result<void>;
     Serialize(): Result<string>;
     SerializeWithStats(player: Array<exposition.SavedStat> | undefined, fullDPS: Array<exposition.SavedFullDPS> | undefined, minion: Array<exposition.SavedStat> | undefined): Result<string>;
     SetActiveItemSet(id: number): Result<void>;
+    SetActiveSkillSet(id: number): Result<void>;
     SetCharacterRune(slot: string, runeName: string): Result<void>;
     SetConfigInput(name: string, value: calculator2.ConfigValue, isDefault: boolean): void;
     SetDisplayItemAffixRange(control: number, val: number): Result<void>;
@@ -208,6 +222,8 @@ export declare namespace exposition {
     SetSocketGroupWeaponSet(index: number, set: number, state: boolean): Result<void>;
     SetUseSecondWeaponSet(second: boolean): Result<void>;
     SkillGroups(): Result<(Array<exposition.SkillGroupView> | undefined)>;
+    SkillSets(): exposition.SkillSetsView;
+    SkillsUndo(redo: boolean): Result<boolean>;
     TreeState(): Result<(exposition.TreeState | undefined)>;
     Undo(): Result<boolean>;
     /** Releases the Go resources behind this wrapper. */
@@ -232,6 +248,14 @@ export declare namespace exposition {
     readonly SocketCount: number;
     readonly Runes?: Array<string>;
     readonly RuneChoices?: Array<exposition.RuneChoiceView>;
+  }
+  interface GemSortCacheView {
+    readonly CanSupport?: Array<boolean>;
+    readonly Pending?: Array<boolean>;
+  }
+  interface GemSortDPSView {
+    readonly Base: number;
+    readonly DPS?: Array<number>;
   }
   interface ItemCompareBlock {
     readonly Header: string;
@@ -349,6 +373,7 @@ export declare namespace exposition {
     readonly CountShown: boolean;
     readonly CorruptShown: boolean;
     readonly CorruptIndex: number;
+    readonly Error: string;
   }
   interface SkillGroupView {
     readonly Label: string;
@@ -361,7 +386,16 @@ export declare namespace exposition {
     readonly Set1: boolean;
     readonly Set2: boolean;
     readonly WeaponSetLocked: boolean;
+    readonly Set1Valid: boolean;
+    readonly Set2Valid: boolean;
+    readonly Set1Enabled: boolean;
+    readonly Set2Enabled: boolean;
+    readonly ForcedBoth: boolean;
     readonly Gems?: Array<exposition.SkillGemView>;
+  }
+  interface SkillSetsView {
+    readonly Sets?: Array<calculator2.SkillSetView>;
+    readonly Active: number;
   }
   interface TreeHover {
     readonly Path?: Array<number>;

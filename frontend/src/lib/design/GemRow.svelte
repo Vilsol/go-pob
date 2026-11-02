@@ -7,6 +7,7 @@
   import NumberInput from './NumberInput.svelte';
   import { tone as toneClass, type Tone } from './tone';
   import PobText from './PobText.svelte';
+  import Select from './Select.svelte';
   import { gemWikiName } from './wiki';
 
   // SkillsTab.lua:1007-1012, SkillsTab.lua:1014-1050
@@ -32,6 +33,8 @@
     linkLocked?: string;
     error?: string;
     globals?: { label: string; on: boolean }[];
+    // SkillsTab.lua:1116-1153 (PoB-PoE2): the Corrupt dropdown; value is the 1-based option
+    corrupt?: { options: string[]; value: number; onchange: (option: number) => void };
     onglobal?: (index: number, on: boolean) => void;
     grip?: Snippet;
     /* SkillsTab.lua:861-920 */
@@ -63,6 +66,7 @@
     linkLocked,
     error,
     globals,
+    corrupt,
     onglobal,
     grip,
     onqualityhover,
@@ -154,5 +158,14 @@
       {/each}
     </span>
   {/if}
+  {#if corrupt}<span class="col-span-full flex items-center gap-1.5 pl-8 text-12"
+      >Corrupt:<Select
+        size="xs"
+        class="w-36"
+        aria-label="{name} corruption"
+        options={corrupt.options.map((label, i) => ({ value: String(i + 1), label }))}
+        value={String(corrupt.value)}
+        onchange={(e: Event & { currentTarget: HTMLSelectElement }) => corrupt.onchange(Number(e.currentTarget.value))} /></span
+    >{/if}
   {#if error}<span class="col-span-full pl-8 text-12" data-gem-error><PobText text={`^1${error}`} /></span>{/if}
 </div>

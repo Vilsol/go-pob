@@ -15,6 +15,7 @@
   import Button from './Button.svelte';
   import Select from './Select.svelte';
   import { tone as toneClass } from './tone';
+  import { weaponSetTip, type WeaponSetBoxes } from './skills';
   import { besideAnchor, setLink, socketDescription, socketLine } from './items';
   import PobText from './PobText.svelte';
   import type { GemAttr, ItemTip, SkillGemFixture, SocketGroupFixture } from './fixtures';
@@ -70,13 +71,15 @@
     imbued?: { value: string; options: string[]; enabled: boolean };
     onimbued?: (name: string) => void;
     /* SkillsTab.lua:157-201 (PoB-PoE2): the weapon sets the group is used in */
-    weaponSets?: { set1: boolean; set2: boolean; locked: boolean };
+    weaponSets?: WeaponSetBoxes;
     slotSelect?: boolean;
     sockets?: boolean;
     /* SkillsTab.lua:764-766 (PoB-PoE2): a gem the group's source grants */
     gemLocked?: (gem: number) => boolean;
     /* SkillsTab.lua:1086-1100 (PoB-PoE2) */
     countShown?: (gem: number) => boolean;
+    // SkillsTab.lua:1116-1153 (PoB-PoE2)
+    corrupt?: (gem: number) => { options: string[]; value: number; onchange: (option: number) => void } | undefined;
     searchTerms?: Record<string, string>;
     revision?: unknown;
   };
@@ -117,6 +120,7 @@
     sockets = true,
     gemLocked,
     countShown,
+    corrupt,
     searchTerms,
     revision
   }: Props = $props();
@@ -372,10 +376,11 @@
           compact
           class="h-7.5"
           checked={set === 1 ? weaponSets.set1 : weaponSets.set2}
-          disabled={weaponSets.locked}
-          title={weaponSets.locked ? "Skills granted by items in weapon slots can only be used in that item's weapon set." : undefined}
+          disabled={weaponSets.enabled ? !weaponSets.enabled[set - 1] : weaponSets.locked}
+          title={weaponSetTip(weaponSets, set)}
           onchange={(e: Event & { currentTarget: HTMLInputElement }) =>
-            onchange(set === 1 ? { set1: e.currentTarget.checked } : { set2: e.currentTarget.checked })}>Set {set}</Checkbox>
+            onchange(set === 1 ? { set1: e.currentTarget.checked } : { set2: e.currentTarget.checked })}
+          ><span class={weaponSets.valid?.[set - 1] === false ? toneClass('error') : undefined}>Set {set}</span></Checkbox>
       {/each}
     {/if}
     {#if groupCount}
@@ -447,6 +452,7 @@
           count={gem.count}
           oncount={ongemcount && countShown?.(i) !== false ? (count: number) => ongemcount(i, count) : undefined}
           maxLevel={maxLevel?.(i)}
+          corrupt={corrupt?.(i)}
           error={gem.error}
           globals={gem.globals}
           onqualityhover={(qualitywhatif || gemtip) && ((on: boolean) => (hoverQuality = on ? i : hoverQuality === i ? undefined : hoverQuality))}

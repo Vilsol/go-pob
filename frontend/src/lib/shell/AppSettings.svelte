@@ -58,48 +58,6 @@
       label: 'General',
       rows: [
         {
-          id: 'fontScaling',
-          label: 'Font scaling',
-          kind: 'range',
-          value: 12,
-          hint: 'Base text size for the whole app',
-          min: 6,
-          max: 18,
-          step: 0.5,
-          unit: 'pt',
-          onRelease: true
-        },
-        {
-          id: 'theme',
-          label: 'Theme',
-          kind: 'select',
-          value: 'Dark',
-          hint: 'Light and high-contrast variants; the passive tree keeps its own colours',
-          opts: [...THEMES]
-        },
-        // Main.lua:1027-1029
-        { id: 'animations', label: 'Show animations', kind: 'check', value: true, hint: 'Off also honours the system “reduce motion” setting' },
-        { id: 'statBars', label: 'Show stat bars', kind: 'check', value: true, hint: 'The value bars behind the sidebar and Calcs stats' },
-        { id: 'socketLetters', label: 'Show socket colour letters', kind: 'check', value: false, hint: 'R, G, B or W in the middle of every gem socket' },
-        {
-          id: 'socketStyle',
-          label: 'Socket style',
-          kind: 'select',
-          value: 'None',
-          opts: [...SOCKET_STYLES],
-          hint: 'Ornate gives each socket colour its own shape, so colour reads without hue'
-        },
-        {
-          id: 'phoneTables',
-          label: 'Wide lists on a phone',
-          kind: 'select',
-          value: 'Cards',
-          opts: ['Cards', 'Table'],
-          hint: 'The build list and the Items list on a narrow screen: one card per row, or a table that scrolls sideways under its name column'
-        },
-        { id: 'titleBuild', label: 'Show build name in window title', kind: 'check', value: true, hint: 'The tab title becomes “<build> (<class>) - go-pob”' },
-        { id: 'devMode', label: 'Dev mode', kind: 'check', value: false, hint: 'Passive tooltips show the node id' },
-        {
           id: 'engine',
           label: 'Engine',
           kind: 'select',
@@ -150,7 +108,58 @@
           unit: ''
         },
         // Main.lua:1109-1113
-        { id: 'showWarnings', label: 'Show build warnings', kind: 'check', value: true, hint: 'The warnings in the sidebar and the top bar' }
+        { id: 'showWarnings', label: 'Show build warnings', kind: 'check', value: true, hint: 'The warnings in the sidebar and the top bar' },
+        { id: 'devMode', label: 'Dev mode', kind: 'check', value: false, hint: 'Passive tooltips show the node id' }
+      ]
+    },
+    {
+      id: 'appearance',
+      label: 'Appearance',
+      rows: [
+        {
+          id: 'theme',
+          label: 'Theme',
+          kind: 'select',
+          value: 'Dark',
+          hint: 'Light and high-contrast variants; the passive tree keeps its own colours',
+          opts: [...THEMES]
+        },
+        {
+          id: 'fontScaling',
+          label: 'Font scaling',
+          kind: 'range',
+          value: 12,
+          hint: 'Base text size for the whole app',
+          min: 6,
+          max: 18,
+          step: 0.5,
+          unit: 'pt',
+          onRelease: true
+        },
+        // Main.lua:1027-1029
+        { id: 'animations', label: 'Show animations', kind: 'check', value: true, hint: 'Off also honours the system “reduce motion” setting' },
+        { id: 'statBars', label: 'Show stat bars', kind: 'check', value: true, hint: 'The value bars behind the sidebar and Calcs stats' },
+        { id: 'socketLetters', label: 'Show socket colour letters', kind: 'check', value: false, hint: 'R, G, B or W in the middle of every gem socket' },
+        {
+          id: 'socketStyle',
+          label: 'Socket style',
+          kind: 'select',
+          value: 'None',
+          opts: [...SOCKET_STYLES],
+          hint: 'Ornate gives each socket colour its own shape, so colour reads without hue'
+        },
+        // Main.lua:1006-1027
+        { id: 'colorPositive', label: 'Hex colour for positive values', kind: 'color', value: '#6cb4ff', hint: 'Stat differences and breakdowns' },
+        { id: 'colorNegative', label: 'Hex colour for negative values', kind: 'color', value: '#ff9b52', hint: 'Stat differences and breakdowns' },
+        {
+          id: 'phoneTables',
+          label: 'Wide lists on a phone',
+          kind: 'select',
+          value: 'Cards',
+          opts: ['Cards', 'Table'],
+          hint: 'The build list and the Items list on a narrow screen: one card per row, or a table that scrolls sideways under its name column'
+        },
+        { id: 'titleBuild', label: 'Show build name in window title', kind: 'check', value: true, hint: 'The tab title becomes “<build> (<class>) - go-pob”' }
       ]
     },
     {
@@ -188,9 +197,7 @@
           opts: NODE_POWER_THEMES,
           hint: 'The heat map of Show Node Power'
         },
-        // Main.lua:969-1013
-        { id: 'colorPositive', label: 'Hex colour for positive values', kind: 'color', value: '#6cb4ff', hint: 'Stat differences and breakdowns' },
-        { id: 'colorNegative', label: 'Hex colour for negative values', kind: 'color', value: '#ff9b52', hint: 'Stat differences and breakdowns' },
+        // Main.lua:1031-1040
         { id: 'colorHighlight', label: 'Hex colour for highlight nodes', kind: 'color', value: '#ff0000', hint: 'The passive tree search' },
         { id: 'edgeSearchHighlight', label: 'Show search circles at viewport edge', kind: 'check', value: true }
       ]

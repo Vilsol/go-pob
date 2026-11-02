@@ -115,6 +115,7 @@ const INVENTORY: Row[] = [
   { file: `${D}ItemSockets.svelte`, keys: ['Escape', 'Enter', ' '], why: A11Y },
 
   { file: `${D}SkillsPage.svelte`, keys: ['c'], help: ['Skills: Ctrl+C'] },
+  { file: `${D}SkillsPage.svelte`, keys: ['z', 'y'], help: [`${ALL}: Ctrl+Z`, `${ALL}: Ctrl+Y or Ctrl+Shift+Z`] },
   { file: `${D}SkillsPage.svelte`, evidence: /onpaste=/, help: ['Skills: Ctrl+V'] },
   { file: `${D}reorder.ts`, keys: [' ', 'ArrowUp', 'ArrowDown', 'Escape'], help: ['Skills: Space', 'Skills: Alt+Up / Alt+Down'] },
   { file: `${D}reorder.ts`, keys: ['Enter'], help: [`${FIELDS}: Enter`] },

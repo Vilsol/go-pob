@@ -243,6 +243,7 @@ test.describe('phone shell at 390×769', () => {
     await expect(list).toHaveAttribute('data-phone', 'cards');
     await (await openMore(page)).getByRole('menuitem', { name: 'Settings' }).click();
     const sheet = page.getByRole('dialog', { name: 'Settings' });
+    await sheet.getByRole('tab', { name: /^Appearance/ }).click();
     await sheet.getByRole('combobox', { name: 'Wide lists on a phone' }).selectOption('Table');
     await sheet.getByRole('button', { name: 'Save' }).click();
     await expect(sheet).toBeHidden();

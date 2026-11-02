@@ -1,12 +1,12 @@
 import { onMount } from 'svelte';
 import { fromStore } from 'svelte/store';
 import { poe2Build } from '$lib/global';
-import type { GemOptions } from '$lib/design/skills';
+import type { GemOptions, SkillSetOp } from '$lib/design/skills';
 import type { GemAttr, SkillGemFixture, SocketGroupFixture } from '$lib/design/fixtures';
 import { populateGems2, TERM_ALIASES2 } from '$lib/design/gem_search';
 import type { SkillsPageModel } from './engine';
 import { poe2Error, poe2Run, poe2Worker } from './engine_poe2.svelte';
-import type { Poe2Gem, Poe2SkillGroup, Poe2SkillsEdit } from './sync_worker2';
+import type { Poe2Gem, Poe2SkillGroup, Poe2SkillSets, Poe2SkillsEdit } from './sync_worker2';
 
 // SkillsTab.lua:13-42 (PoB-PoE2)
 const LEVELS2 = [
@@ -29,21 +29,40 @@ const SUPPORTS2 = [
   { value: 'NORMAL', label: 'Non-Lineage' }
 ];
 
+// SkillsTab.lua:44-49 (PoB-PoE2)
+const CORRUPT2 = ['Not Corrupted', '+1 to Gem Level', 'Corrupted', '-1 to Gem Level'];
+
 // Global.lua (PoB-PoE2): colorCodes.STRENGTH, DEXTERITY, INTELLIGENCE
 const ATTR_BY_CODE: Record<string, GemAttr> = { '^xE05030': 'str', '^x70FF70': 'dex', '^x7070FF': 'int' };
 const ATTR_BY_COLOR: Record<number, GemAttr> = { 1: 'str', 2: 'dex', 3: 'int' };
+
+// SkillsTab.lua:51-61 (PoB-PoE2), less Full DPS, which the PoE2 calculator does not calculate yet
+const SORT_FIELDS2: Record<string, string> = {
+  'Combined DPS': 'CombinedDPS',
+  'Hit DPS': 'TotalDPS',
+  'Average Hit': 'AverageDamage',
+  'DoT DPS': 'TotalDot',
+  'Bleed DPS': 'BleedDPS',
+  'Ignite DPS': 'IgniteDPS',
+  'Poison DPS': 'TotalPoisonDPS',
+  'Effective Hit Pool': 'TotalEHP'
+};
+const sortLabel2 = (field: string) => Object.entries(SORT_FIELDS2).find(([, v]) => v === field)?.[0] ?? 'Combined DPS';
 
 const fail = (err: unknown) => poe2Error.set(err instanceof Error ? err.message : String(err));
 
 // SkillsTab.lua, SkillListControl.lua, GemSelectControl.lua (PoB-PoE2): the Skills page over the open PoE2 build. PoE2
 // sockets no gems in items, so the page has no slot, socket or link controls; a group picks the weapon sets it is used
-// in instead. Skill sets, gem sorting by DPS, copy and paste, and the what-if tooltips are not here yet
+// in instead. The what-if tooltips are not here yet
 export const poe2SkillsPage = (): SkillsPageModel => {
   const build = fromStore(poe2Build);
   let groups = $state.raw<Poe2SkillGroup[]>();
+  let skillSets = $state.raw<Poe2SkillSets>();
   let options = $state<GemOptions>();
   let gems = $state.raw<Poe2Gem[]>([]);
   let selected = $state(0);
+  let sortOn = $state(true);
+  let sortStat = $state('Combined DPS');
 
   // what the page shows, fetched again for every calculation; the last shows meanwhile
   $effect(() => {
@@ -51,9 +70,12 @@ export const poe2SkillsPage = (): SkillsPageModel => {
     if (!at) return;
     void poe2Worker()
       .then(async (w) => {
-        const [g, o] = await Promise.all([w.SkillGroups(), w.GemOptions()]);
+        const [g, o, s] = await Promise.all([w.SkillGroups(), w.GemOptions(), w.SkillSets()]);
         if (build.current !== at) return;
         groups = g;
+        skillSets = s;
+        sortOn = o.SortGemsByDPS;
+        sortStat = sortLabel2(o.SortGemsByDPSField);
         options = {
           defaultLevel: o.DefaultGemLevel,
           defaultQuality: o.DefaultGemQuality,
@@ -74,31 +96,54 @@ export const poe2SkillsPage = (): SkillsPageModel => {
 
   const edit = (e: Poe2SkillsEdit) => poe2Run((w) => w.EditSkills(e));
 
-  const sets = $derived([
-    {
-      title: 'Default',
-      groups: (groups ?? []).map((g): SocketGroupFixture & { display: string } => ({
-        label: g.userLabel,
-        display: g.label,
-        slot: '',
-        enabled: g.enabled,
-        inFull: g.includeInFullDPS,
-        count: g.groupCount,
-        sockets: '',
-        set1: g.set1,
-        set2: g.set2,
-        gems: g.gems.map((m) => ({
-          name: m.name,
-          level: m.level,
-          quality: m.quality,
-          enabled: m.enabled,
-          support: m.support,
-          attr: ATTR_BY_CODE[m.color] ?? 'white',
-          count: m.count
-        }))
+  const activeSet = $derived(Math.max(0, skillSets?.sets.findIndex((s) => s.id === skillSets?.active) ?? 0));
+  const activeGroups = $derived(
+    (groups ?? []).map((g): SocketGroupFixture & { display: string } => ({
+      label: g.userLabel,
+      display: g.label,
+      slot: '',
+      enabled: g.enabled,
+      inFull: g.includeInFullDPS,
+      count: g.groupCount,
+      sockets: '',
+      set1: g.set1,
+      set2: g.set2,
+      gems: g.gems.map((m) => ({
+        name: m.name,
+        level: m.level,
+        quality: m.quality,
+        enabled: m.enabled,
+        support: m.support,
+        attr: ATTR_BY_CODE[m.color] ?? 'white',
+        count: m.count,
+        error: m.error || undefined
       }))
+    }))
+  );
+  const sets = $derived((skillSets?.sets ?? [{ id: 1, title: 'Default' }]).map((s, i) => ({ title: s.title, groups: i === activeSet ? activeGroups : [] })));
+
+  // SkillsTab.lua:85-88 (PoB-PoE2)
+  const onset = (i: number) => {
+    const id = skillSets?.sets[i]?.id;
+    if (id === undefined || id === skillSets?.active) return;
+    selected = 0;
+    void edit({ op: 'activeSet', set: id });
+  };
+  // SkillSetListControl.lua:48-132, SkillsSetService.lua:17-46 (PoB-PoE2)
+  const onsets = (op: SkillSetOp) => {
+    if (op.op === 'new') {
+      selected = 0;
+      void edit({ op: 'newSet', title: op.title });
+      return;
     }
-  ]);
+    const id = skillSets?.sets[op.index]?.id;
+    if (id === undefined) return;
+    if (op.op === 'rename') void edit({ op: 'renameSet', set: id, title: op.title });
+    else {
+      selected = 0;
+      void edit(op.op === 'copy' ? { op: 'copySet', set: id, title: op.title } : { op: 'deleteSet', set: id });
+    }
+  };
 
   // GemSelectControl.lua:104-133 (PoB-PoE2)
   const catalogue = $derived(
@@ -124,6 +169,92 @@ export const poe2SkillsPage = (): SkillsPageModel => {
   );
   const gemByName = $derived(new Map(gems.map((g) => [g.name, g])));
 
+  // GemSelectControl.lua:238-432 (PoB-PoE2): the list's sort cache, made when it drops down and dropped with every
+  // calculation; the DPS pass runs in chunks so the list shows its progress
+  let sortCache = $state.raw<{ canSupport: Record<string, boolean>; dps: Record<string, number>; progress?: number }>();
+  let gemDeltas = $state.raw<Record<string, number>>({});
+  let pickerRun = 0;
+  let building = false;
+  const dropSortCache = () => {
+    pickerRun++;
+    building = false;
+    sortCache = undefined;
+    gemDeltas = {};
+  };
+  $effect(() => {
+    void build.current;
+    dropSortCache();
+  });
+  const saveGemOptions = (patch: { SortGemsByDPS?: boolean; SortGemsByDPSField?: string }) =>
+    void poe2Worker()
+      .then(async (w) => w.SetGemOptions({ ...(await w.GemOptions()), ...patch }))
+      .catch(fail);
+  // SkillsTab.lua:111-121 (PoB-PoE2)
+  const onsort = (on: boolean, stat: string) => {
+    if (on !== sortOn) {
+      saveGemOptions({ SortGemsByDPS: on });
+      dropSortCache();
+    }
+    sortOn = on;
+    const field = SORT_FIELDS2[stat];
+    if (field && stat !== sortStat) {
+      saveGemOptions({ SortGemsByDPSField: field });
+      dropSortCache();
+    }
+    sortStat = stat;
+  };
+  const onpicker = (i: number, open: boolean) => {
+    if (!open) {
+      if (building) dropSortCache();
+      return;
+    }
+    if (sortCache || building) return;
+    const run = ++pickerRun;
+    building = true;
+    const list = catalogue.flatMap((g) => {
+      const def = gemByName.get(g.name);
+      return def ? [{ name: g.name, id: def.id }] : [];
+    });
+    const field = SORT_FIELDS2[sortStat] ?? 'CombinedDPS';
+    const by = sortOn;
+    const stale = () => run !== pickerRun;
+    void poe2Worker()
+      .then(async (w) => {
+        const sc = await w.GemSortCache(
+          i + 1,
+          list.map((x) => x.id)
+        );
+        if (stale()) return;
+        const canSupport: Record<string, boolean> = {};
+        list.forEach((x, j) => (canSupport[x.name] = sc.canSupport[j]));
+        const dps: Record<string, number> = {};
+        const pending = list.filter((_, j) => sc.pending[j]);
+        sortCache = { canSupport, dps, progress: by && pending.length ? 0 : undefined };
+        if (!by || !pending.length) return;
+        const deltas: Record<string, number> = {};
+        for (let k = 0; k < pending.length; k += 8) {
+          const chunk = pending.slice(k, k + 8);
+          const r = await w.GemSortDPS(
+            i + 1,
+            chunk.map((x) => x.id),
+            field
+          );
+          if (stale()) return;
+          if (k === 0) for (const x of list) dps[x.name] = r.base;
+          chunk.forEach((x, j) => {
+            dps[x.name] = r.dps[j];
+            if (r.base) deltas[x.name] = Math.round(((r.dps[j] - r.base) / r.base) * 1000) / 10;
+          });
+          sortCache = { canSupport, dps: { ...dps }, progress: Math.floor(((k + chunk.length) / pending.length) * 100) };
+          gemDeltas = { ...deltas };
+        }
+      })
+      .catch(fail)
+      .finally(() => {
+        if (!stale()) building = false;
+      });
+  };
+
   // SkillsTab.lua:151-233 (PoB-PoE2)
   const ongroup = (i: number, patch: Partial<SocketGroupFixture>) => {
     const g = groups?.[i];
@@ -148,12 +279,16 @@ export const poe2SkillsPage = (): SkillsPageModel => {
 
   return {
     get ready() {
-      return !!groups && !!options;
+      return !!groups && !!options && !!skillSets;
     },
     get sets() {
       return sets;
     },
-    set: 0,
+    get set() {
+      return activeSet;
+    },
+    onset,
+    onsets,
     get selected() {
       return selected;
     },
@@ -164,11 +299,23 @@ export const poe2SkillsPage = (): SkillsPageModel => {
     get catalogue() {
       return catalogue;
     },
-    deltas: {},
+    get deltas() {
+      return gemDeltas;
+    },
     slots: [],
-    sortOn: false,
-    sortStat: 'Combined DPS',
-    setLocked: 'PoE2 skill sets are not switched here yet',
+    get sortOn() {
+      return sortOn;
+    },
+    set sortOn(v: boolean) {
+      sortOn = v;
+    },
+    get sortStat() {
+      return sortStat;
+    },
+    set sortStat(v: string) {
+      sortStat = v;
+    },
+    onsort,
     // SkillListControl.lua:108-127 (PoB-PoE2)
     onreordergroups: (from: number, to: number) => {
       if (from === to) return;
@@ -194,6 +341,24 @@ export const poe2SkillsPage = (): SkillsPageModel => {
         if (v) selected = n;
       });
     },
+    // SkillListControl.lua:133-137, SkillsTab.lua:639-657 (PoB-PoE2)
+    oncopygroup: (i: number) => {
+      if (groups?.[i]?.source) return;
+      void poe2Worker()
+        .then((w) => w.CopySocketGroup(i + 1))
+        .then((text) => (text ? navigator.clipboard?.writeText(text) : undefined))
+        .catch(fail);
+    },
+    // SkillsTab.lua:674-762 (PoB-PoE2): a group with a gem goes after the last
+    onpastegroup: (text: string) => {
+      const n = groups?.length ?? 0;
+      void edit({ op: 'paste', text }).then((v) => {
+        if (v && v.socketGroups.length > n) selected = n;
+      });
+    },
+    // SkillsTab.lua:594-599 (PoB-PoE2)
+    onundo: () => void poe2Run((w) => w.SkillsUndo(false)),
+    onredo: () => void poe2Run((w) => w.SkillsUndo(true)),
     // SkillListControl.lua:194-198 (PoB-PoE2)
     onmain: (i: number) => void poe2Run((w) => w.SetMainSocketGroup(i + 1)),
     // SkillListControl.lua:139-173 (PoB-PoE2)
@@ -227,7 +392,7 @@ export const poe2SkillsPage = (): SkillsPageModel => {
         })
         .catch(fail);
     },
-    optionLists: { levels: LEVELS2, supports: SUPPORTS2, sort: false, alt: false },
+    optionLists: { levels: LEVELS2, supports: SUPPORTS2, sort: true, alt: false, sorts: Object.keys(SORT_FIELDS2) },
     editor: {
       slotSelect: false,
       sockets: false,
@@ -235,15 +400,47 @@ export const poe2SkillsPage = (): SkillsPageModel => {
       deletable: (i: number) => !!groups?.[i] && !groups[i].source,
       gemLocked: (i: number, gem: number) => !!groups?.[i]?.gems[gem]?.generated,
       countShown: (i: number, gem: number) => !!groups?.[i]?.gems[gem]?.countShown,
+      // SkillListControl.lua:45-54, 139-173 (PoB-PoE2)
+      confirmDelete: (i: number | 'all') =>
+        i === 'all'
+          ? 'Are you sure you want to delete all socket groups in this build?'
+          : groups?.[i]?.gems.length
+            ? `Are you sure you want to delete '${groups[i].label}'?`
+            : undefined,
+      corrupt: (i: number, gem: number) => {
+        const m = groups?.[i]?.gems[gem];
+        if (!m?.corruptShown) return undefined;
+        return {
+          options: CORRUPT2,
+          value: m.corruptIndex,
+          onchange: (option: number) => {
+            if (option !== m.corruptIndex) void edit({ op: 'corrupt', group: i + 1, gem: gem + 1, value: option });
+          }
+        };
+      },
       ongemcount: (i: number, gem: number, count: number) => {
         const m = groups?.[i]?.gems[gem];
         if (m && m.count !== count) void edit({ op: 'count', group: i + 1, gem: gem + 1, value: count });
       },
       weaponSets: (i: number) => {
         const g = groups?.[i];
-        return g && { set1: g.set1, set2: g.set2, locked: g.weaponSetLocked };
+        return (
+          g && {
+            set1: g.set1,
+            set2: g.set2,
+            locked: g.weaponSetLocked,
+            valid: g.weaponSetValid,
+            enabled: g.weaponSetEnabled,
+            forcedBoth: g.forcedBoth,
+            defaultAttack: g.source === 'Default Attack'
+          }
+        );
       },
-      searchTerms: TERM_ALIASES2
+      searchTerms: TERM_ALIASES2,
+      get sortCache() {
+        return sortCache;
+      },
+      onpicker
     },
     get revision() {
       return build.current;

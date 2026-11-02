@@ -2084,6 +2084,19 @@ func crystallineMarshalCalculator2ItemDBFilter(v *calculator2.ItemDBFilter) any 
 	return out
 }
 
+func crystallineMarshalCalculator2SkillSetView(v *calculator2.SkillSetView) any {
+	if v == nil {
+		return nil
+	}
+
+	out := crystallineObjects.New()
+
+	out.Set("ID", float64(v.ID))
+	out.Set("Title", string(v.Title))
+
+	return out
+}
+
 func crystallineMarshalCalculator2SocketGroupView(v *calculator2.SocketGroupView) any {
 	if v == nil {
 		return nil
@@ -2673,7 +2686,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 				switch field {
 				}
 			},
-			[]string{"AddDBItem", "AddDisplayItem", "AllocateAttributeNode", "BuildItemCompare", "CalcsBreakdowns", "CalcsMods", "CalcsOutputs", "Calculate", "ClickNode", "CloseDisplayItem", "ConfigRelevance", "CopyItemSet", "CraftDisplayItem", "CraftItemCompare", "DBItemCompare", "DeleteAllSocketGroups", "DeleteItem", "DeleteItemSet", "DeleteSocketGroup", "DisplayItemAffixRoll", "DisplayItemAffixes", "DisplayItemCompare", "DisplayItemRanges", "EditDisplayItemText", "EditItem", "EquippedItems", "ExportCode", "GemOptions", "HoverNode", "ItemDBRows", "ItemText", "ItemsPage", "MoveItemSet", "MoveSocketGroup", "NewItemSet", "NewSocketGroup", "Notes", "OpenDBItem", "PasteItem", "Redo", "RemoveGem", "RenameItemSet", "RichNotesDoc", "RichNotesStatus", "SelectDisplayItemAffix", "Serialize", "SerializeWithStats", "SetActiveItemSet", "SetCharacterRune", "SetConfigInput", "SetDisplayItemAffixRange", "SetDisplayItemQuality", "SetDisplayItemRangeLine", "SetDisplayItemRune", "SetDisplayItemSocketCount", "SetGem", "SetGemCorruption", "SetGemCount", "SetGemEnabled", "SetGemLevel", "SetGemOptions", "SetGemQuality", "SetMainActiveSkill", "SetMainSocketGroup", "SetRichNotes", "SetSlotActive", "SetSlotItem", "SetSocketGroupCount", "SetSocketGroupEnabled", "SetSocketGroupIncludeInFullDPS", "SetSocketGroupLabel", "SetSocketGroupWeaponSet", "SetUseSecondWeaponSet", "SkillGroups", "TreeState", "Undo"},
+			[]string{"AddDBItem", "AddDisplayItem", "AddSkillsUndoState", "AllocateAttributeNode", "BuildItemCompare", "CalcsBreakdowns", "CalcsMods", "CalcsOutputs", "Calculate", "ClickNode", "CloseDisplayItem", "ConfigRelevance", "CopyItemSet", "CopySkillSet", "CopySocketGroup", "CraftDisplayItem", "CraftItemCompare", "DBItemCompare", "DeleteAllSocketGroups", "DeleteItem", "DeleteItemSet", "DeleteSkillSet", "DeleteSocketGroup", "DisplayItemAffixRoll", "DisplayItemAffixes", "DisplayItemCompare", "DisplayItemRanges", "EditDisplayItemText", "EditItem", "EquippedItems", "ExportCode", "GemOptions", "GemSortCache", "GemSortDPS", "HoverNode", "ItemDBRows", "ItemText", "ItemsPage", "MoveItemSet", "MoveSocketGroup", "NewItemSet", "NewSkillSet", "NewSocketGroup", "Notes", "OpenDBItem", "PasteItem", "PasteSocketGroup", "Redo", "RemoveGem", "RenameItemSet", "RenameSkillSet", "RichNotesDoc", "RichNotesStatus", "SelectDisplayItemAffix", "Serialize", "SerializeWithStats", "SetActiveItemSet", "SetActiveSkillSet", "SetCharacterRune", "SetConfigInput", "SetDisplayItemAffixRange", "SetDisplayItemQuality", "SetDisplayItemRangeLine", "SetDisplayItemRune", "SetDisplayItemSocketCount", "SetGem", "SetGemCorruption", "SetGemCount", "SetGemEnabled", "SetGemLevel", "SetGemOptions", "SetGemQuality", "SetMainActiveSkill", "SetMainSocketGroup", "SetRichNotes", "SetSlotActive", "SetSlotItem", "SetSocketGroupCount", "SetSocketGroupEnabled", "SetSocketGroupIncludeInFullDPS", "SetSocketGroupLabel", "SetSocketGroupWeaponSet", "SetUseSecondWeaponSet", "SkillGroups", "SkillSets", "SkillsUndo", "TreeState", "Undo"},
 			func(v *Calculator, method int, args []js.Value) any {
 				switch method {
 				case 0:
@@ -2726,6 +2739,14 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 
 					return crystallineOk(float64(r0))
 				case 2:
+					if len(args) != 0 {
+						return crystallineFail("AddSkillsUndoState: expected 0 arguments, got " + strconv.Itoa(len(args)))
+					}
+
+					v.AddSkillsUndoState()
+
+					return nil
+				case 3:
 					if len(args) != 3 {
 						return crystallineFail("AllocateAttributeNode: expected 3 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -2752,7 +2773,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(nil)
-				case 3:
+				case 4:
 					if len(args) != 1 {
 						return crystallineFail("BuildItemCompare: expected 1 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -2774,7 +2795,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}, func() any {
 						return crystallineMarshalExpositionItemCompareView(r0)
 					}))
-				case 4:
+				case 5:
 					if len(args) != 0 {
 						return crystallineFail("CalcsBreakdowns: expected 0 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -2819,7 +2840,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 							return out
 						}()
 					}))
-				case 5:
+				case 6:
 					if len(args) != 1 {
 						return crystallineFail("CalcsMods: expected 1 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -2869,7 +2890,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 							return out
 						}()
 					}))
-				case 6:
+				case 7:
 					if len(args) != 0 {
 						return crystallineFail("CalcsOutputs: expected 0 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -2886,7 +2907,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}, func() any {
 						return crystallineMarshalExpositionCalcsOutputs(r0)
 					}))
-				case 7:
+				case 8:
 					if len(args) != 0 {
 						return crystallineFail("Calculate: expected 0 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -2905,7 +2926,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 							return crystallineMarshalExpositionOutputs(r0)
 						}))
 					})
-				case 8:
+				case 9:
 					if len(args) != 5 {
 						return crystallineFail("ClickNode: expected 5 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -2942,7 +2963,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(float64(r0))
-				case 9:
+				case 10:
 					if len(args) != 0 {
 						return crystallineFail("CloseDisplayItem: expected 0 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -2954,7 +2975,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(nil)
-				case 10:
+				case 11:
 					if len(args) != 1 {
 						return crystallineFail("ConfigRelevance: expected 1 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -2976,7 +2997,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}, func() any {
 						return crystallineMarshalCalculator2ConfigRelevance(&r0)
 					}))
-				case 11:
+				case 12:
 					if len(args) != 2 {
 						return crystallineFail("CopyItemSet: expected 2 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -2998,7 +3019,46 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(nil)
-				case 12:
+				case 13:
+					if len(args) != 2 {
+						return crystallineFail("CopySkillSet: expected 2 arguments, got " + strconv.Itoa(len(args)))
+					}
+
+					a0, err := crystallineToInt(args[0])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					a1, err := crystallineToString(args[1])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					r0, r1 := v.CopySkillSet(a0, a1)
+
+					if r1 != nil {
+						return crystallineErr(r1)
+					}
+
+					return crystallineOk(float64(r0))
+				case 14:
+					if len(args) != 1 {
+						return crystallineFail("CopySocketGroup: expected 1 arguments, got " + strconv.Itoa(len(args)))
+					}
+
+					a0, err := crystallineToInt(args[0])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					r0, r1 := v.CopySocketGroup(a0)
+
+					if r1 != nil {
+						return crystallineErr(r1)
+					}
+
+					return crystallineOk(string(r0))
+				case 15:
 					if len(args) != 3 {
 						return crystallineFail("CraftDisplayItem: expected 3 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -3025,7 +3085,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(nil)
-				case 13:
+				case 16:
 					if len(args) != 3 {
 						return crystallineFail("CraftItemCompare: expected 3 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -3057,7 +3117,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}, func() any {
 						return crystallineMarshalExpositionItemCompareView(r0)
 					}))
-				case 14:
+				case 17:
 					if len(args) != 2 {
 						return crystallineFail("DBItemCompare: expected 2 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -3084,7 +3144,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}, func() any {
 						return crystallineMarshalExpositionItemCompareView(r0)
 					}))
-				case 15:
+				case 18:
 					if len(args) != 0 {
 						return crystallineFail("DeleteAllSocketGroups: expected 0 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -3096,7 +3156,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(nil)
-				case 16:
+				case 19:
 					if len(args) != 1 {
 						return crystallineFail("DeleteItem: expected 1 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -3113,7 +3173,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(nil)
-				case 17:
+				case 20:
 					if len(args) != 1 {
 						return crystallineFail("DeleteItemSet: expected 1 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -3130,7 +3190,24 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(nil)
-				case 18:
+				case 21:
+					if len(args) != 1 {
+						return crystallineFail("DeleteSkillSet: expected 1 arguments, got " + strconv.Itoa(len(args)))
+					}
+
+					a0, err := crystallineToInt(args[0])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					r0 := v.DeleteSkillSet(a0)
+
+					if r0 != nil {
+						return crystallineErr(r0)
+					}
+
+					return crystallineOk(nil)
+				case 22:
 					if len(args) != 1 {
 						return crystallineFail("DeleteSocketGroup: expected 1 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -3147,7 +3224,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(nil)
-				case 19:
+				case 23:
 					if len(args) != 2 {
 						return crystallineFail("DisplayItemAffixRoll: expected 2 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -3199,7 +3276,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 							return out
 						}()
 					}))
-				case 20:
+				case 24:
 					if len(args) != 0 {
 						return crystallineFail("DisplayItemAffixes: expected 0 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -3241,7 +3318,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 							return out
 						}()
 					}))
-				case 21:
+				case 25:
 					if len(args) != 0 {
 						return crystallineFail("DisplayItemCompare: expected 0 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -3258,7 +3335,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}, func() any {
 						return crystallineMarshalExpositionItemCompareView(r0)
 					}))
-				case 22:
+				case 26:
 					if len(args) != 0 {
 						return crystallineFail("DisplayItemRanges: expected 0 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -3300,7 +3377,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 							return out
 						}()
 					}), float64(r1)})
-				case 23:
+				case 27:
 					if len(args) != 2 {
 						return crystallineFail("EditDisplayItemText: expected 2 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -3322,7 +3399,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(nil)
-				case 24:
+				case 28:
 					if len(args) != 1 {
 						return crystallineFail("EditItem: expected 1 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -3339,7 +3416,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(nil)
-				case 25:
+				case 29:
 					if len(args) != 0 {
 						return crystallineFail("EquippedItems: expected 0 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -3356,7 +3433,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}, func() any {
 						return crystallineMarshalExpositionItemsView(r0)
 					}))
-				case 26:
+				case 30:
 					if len(args) != 3 {
 						return crystallineFail("ExportCode: expected 3 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -3383,7 +3460,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(string(r0))
-				case 27:
+				case 31:
 					if len(args) != 0 {
 						return crystallineFail("GemOptions: expected 0 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -3396,7 +3473,68 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}, func() any {
 						return crystallineMarshalCalculator2GemOptions(&r0)
 					})
-				case 28:
+				case 32:
+					if len(args) != 2 {
+						return crystallineFail("GemSortCache: expected 2 arguments, got " + strconv.Itoa(len(args)))
+					}
+
+					a0, err := crystallineToInt(args[0])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					a1, err := crystallineToSliceOfString(args[1])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					r0, r1 := v.GemSortCache(a0, a1)
+
+					if r1 != nil {
+						return crystallineErr(r1)
+					}
+
+					return crystallineOk(crystallineJSON(func(b []byte, ok *bool) []byte {
+						b = crystallineAppendExpositionGemSortCacheView(b, r0, ok)
+						return b
+					}, func() any {
+						return crystallineMarshalExpositionGemSortCacheView(r0)
+					}))
+				case 33:
+					if len(args) != 3 {
+						return crystallineFail("GemSortDPS: expected 3 arguments, got " + strconv.Itoa(len(args)))
+					}
+
+					return crystallinePromise(func() any {
+						a0, err := crystallineToInt(args[0])
+						if err != nil {
+							return crystallineFail(err.Error())
+						}
+
+						a1, err := crystallineToSliceOfString(args[1])
+						if err != nil {
+							return crystallineFail(err.Error())
+						}
+
+						a2, err := crystallineToString(args[2])
+						if err != nil {
+							return crystallineFail(err.Error())
+						}
+
+						r0, r1 := v.GemSortDPS(a0, a1, a2)
+
+						if r1 != nil {
+							return crystallineErr(r1)
+						}
+
+						return crystallineOk(crystallineJSON(func(b []byte, ok *bool) []byte {
+							b = crystallineAppendExpositionGemSortDPSView(b, r0, ok)
+							return b
+						}, func() any {
+							return crystallineMarshalExpositionGemSortDPSView(r0)
+						}))
+					})
+				case 34:
 					if len(args) != 2 {
 						return crystallineFail("HoverNode: expected 2 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -3419,7 +3557,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}, func() any {
 						return crystallineMarshalExpositionTreeHover(&r0)
 					})
-				case 29:
+				case 35:
 					if len(args) != 2 {
 						return crystallineFail("ItemDBRows: expected 2 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -3471,7 +3609,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 							return out
 						}()
 					}))
-				case 30:
+				case 36:
 					if len(args) != 1 {
 						return crystallineFail("ItemText: expected 1 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -3488,7 +3626,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(string(r0))
-				case 31:
+				case 37:
 					if len(args) != 0 {
 						return crystallineFail("ItemsPage: expected 0 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -3505,7 +3643,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}, func() any {
 						return crystallineMarshalExpositionItemsPageView(r0)
 					}))
-				case 32:
+				case 38:
 					if len(args) != 2 {
 						return crystallineFail("MoveItemSet: expected 2 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -3527,7 +3665,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(nil)
-				case 33:
+				case 39:
 					if len(args) != 2 {
 						return crystallineFail("MoveSocketGroup: expected 2 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -3549,7 +3687,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(nil)
-				case 34:
+				case 40:
 					if len(args) != 1 {
 						return crystallineFail("NewItemSet: expected 1 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -3566,7 +3704,24 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(nil)
-				case 35:
+				case 41:
+					if len(args) != 1 {
+						return crystallineFail("NewSkillSet: expected 1 arguments, got " + strconv.Itoa(len(args)))
+					}
+
+					a0, err := crystallineToString(args[0])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					r0, r1 := v.NewSkillSet(a0)
+
+					if r1 != nil {
+						return crystallineErr(r1)
+					}
+
+					return crystallineOk(float64(r0))
+				case 42:
 					if len(args) != 0 {
 						return crystallineFail("NewSocketGroup: expected 0 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -3578,7 +3733,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(float64(r0))
-				case 36:
+				case 43:
 					if len(args) != 0 {
 						return crystallineFail("Notes: expected 0 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -3586,7 +3741,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					r0 := v.Notes()
 
 					return string(r0)
-				case 37:
+				case 44:
 					if len(args) != 2 {
 						return crystallineFail("OpenDBItem: expected 2 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -3608,7 +3763,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(nil)
-				case 38:
+				case 45:
 					if len(args) != 1 {
 						return crystallineFail("PasteItem: expected 1 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -3625,7 +3780,24 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(nil)
-				case 39:
+				case 46:
+					if len(args) != 1 {
+						return crystallineFail("PasteSocketGroup: expected 1 arguments, got " + strconv.Itoa(len(args)))
+					}
+
+					a0, err := crystallineToString(args[0])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					r0, r1 := v.PasteSocketGroup(a0)
+
+					if r1 != nil {
+						return crystallineErr(r1)
+					}
+
+					return crystallineOk(float64(r0))
+				case 47:
 					if len(args) != 0 {
 						return crystallineFail("Redo: expected 0 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -3637,7 +3809,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(bool(r0))
-				case 40:
+				case 48:
 					if len(args) != 2 {
 						return crystallineFail("RemoveGem: expected 2 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -3659,7 +3831,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(nil)
-				case 41:
+				case 49:
 					if len(args) != 2 {
 						return crystallineFail("RenameItemSet: expected 2 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -3681,7 +3853,29 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(nil)
-				case 42:
+				case 50:
+					if len(args) != 2 {
+						return crystallineFail("RenameSkillSet: expected 2 arguments, got " + strconv.Itoa(len(args)))
+					}
+
+					a0, err := crystallineToInt(args[0])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					a1, err := crystallineToString(args[1])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					r0 := v.RenameSkillSet(a0, a1)
+
+					if r0 != nil {
+						return crystallineErr(r0)
+					}
+
+					return crystallineOk(nil)
+				case 51:
 					if len(args) != 0 {
 						return crystallineFail("RichNotesDoc: expected 0 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -3689,7 +3883,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					r0 := v.RichNotesDoc()
 
 					return string(r0)
-				case 43:
+				case 52:
 					if len(args) != 0 {
 						return crystallineFail("RichNotesStatus: expected 0 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -3697,7 +3891,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					r0 := v.RichNotesStatus()
 
 					return string(r0)
-				case 44:
+				case 53:
 					if len(args) != 3 {
 						return crystallineFail("SelectDisplayItemAffix: expected 3 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -3724,7 +3918,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(nil)
-				case 45:
+				case 54:
 					if len(args) != 0 {
 						return crystallineFail("Serialize: expected 0 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -3736,7 +3930,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(string(r0))
-				case 46:
+				case 55:
 					if len(args) != 3 {
 						return crystallineFail("SerializeWithStats: expected 3 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -3763,7 +3957,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(string(r0))
-				case 47:
+				case 56:
 					if len(args) != 1 {
 						return crystallineFail("SetActiveItemSet: expected 1 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -3780,7 +3974,24 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(nil)
-				case 48:
+				case 57:
+					if len(args) != 1 {
+						return crystallineFail("SetActiveSkillSet: expected 1 arguments, got " + strconv.Itoa(len(args)))
+					}
+
+					a0, err := crystallineToInt(args[0])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					r0 := v.SetActiveSkillSet(a0)
+
+					if r0 != nil {
+						return crystallineErr(r0)
+					}
+
+					return crystallineOk(nil)
+				case 58:
 					if len(args) != 2 {
 						return crystallineFail("SetCharacterRune: expected 2 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -3802,7 +4013,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(nil)
-				case 49:
+				case 59:
 					if len(args) != 3 {
 						return crystallineFail("SetConfigInput: expected 3 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -3825,7 +4036,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					v.SetConfigInput(a0, a1, a2)
 
 					return nil
-				case 50:
+				case 60:
 					if len(args) != 2 {
 						return crystallineFail("SetDisplayItemAffixRange: expected 2 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -3847,7 +4058,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(nil)
-				case 51:
+				case 61:
 					if len(args) != 1 {
 						return crystallineFail("SetDisplayItemQuality: expected 1 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -3864,7 +4075,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(nil)
-				case 52:
+				case 62:
 					if len(args) != 2 {
 						return crystallineFail("SetDisplayItemRangeLine: expected 2 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -3886,7 +4097,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(nil)
-				case 53:
+				case 63:
 					if len(args) != 2 {
 						return crystallineFail("SetDisplayItemRune: expected 2 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -3908,7 +4119,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(nil)
-				case 54:
+				case 64:
 					if len(args) != 1 {
 						return crystallineFail("SetDisplayItemSocketCount: expected 1 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -3925,7 +4136,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(nil)
-				case 55:
+				case 65:
 					if len(args) != 3 {
 						return crystallineFail("SetGem: expected 3 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -3952,7 +4163,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(nil)
-				case 56:
+				case 66:
 					if len(args) != 3 {
 						return crystallineFail("SetGemCorruption: expected 3 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -3979,7 +4190,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(nil)
-				case 57:
+				case 67:
 					if len(args) != 3 {
 						return crystallineFail("SetGemCount: expected 3 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -4006,7 +4217,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(nil)
-				case 58:
+				case 68:
 					if len(args) != 3 {
 						return crystallineFail("SetGemEnabled: expected 3 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -4033,7 +4244,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(nil)
-				case 59:
+				case 69:
 					if len(args) != 3 {
 						return crystallineFail("SetGemLevel: expected 3 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -4060,7 +4271,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(nil)
-				case 60:
+				case 70:
 					if len(args) != 1 {
 						return crystallineFail("SetGemOptions: expected 1 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -4073,7 +4284,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					v.SetGemOptions(a0)
 
 					return nil
-				case 61:
+				case 71:
 					if len(args) != 3 {
 						return crystallineFail("SetGemQuality: expected 3 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -4100,7 +4311,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(nil)
-				case 62:
+				case 72:
 					if len(args) != 1 {
 						return crystallineFail("SetMainActiveSkill: expected 1 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -4113,7 +4324,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					v.SetMainActiveSkill(a0)
 
 					return nil
-				case 63:
+				case 73:
 					if len(args) != 1 {
 						return crystallineFail("SetMainSocketGroup: expected 1 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -4126,7 +4337,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					v.SetMainSocketGroup(a0)
 
 					return nil
-				case 64:
+				case 74:
 					if len(args) != 2 {
 						return crystallineFail("SetRichNotes: expected 2 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -4144,7 +4355,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					v.SetRichNotes(a0, a1)
 
 					return nil
-				case 65:
+				case 75:
 					if len(args) != 2 {
 						return crystallineFail("SetSlotActive: expected 2 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -4166,7 +4377,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(nil)
-				case 66:
+				case 76:
 					if len(args) != 2 {
 						return crystallineFail("SetSlotItem: expected 2 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -4188,7 +4399,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(nil)
-				case 67:
+				case 77:
 					if len(args) != 2 {
 						return crystallineFail("SetSocketGroupCount: expected 2 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -4210,7 +4421,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(nil)
-				case 68:
+				case 78:
 					if len(args) != 2 {
 						return crystallineFail("SetSocketGroupEnabled: expected 2 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -4232,7 +4443,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(nil)
-				case 69:
+				case 79:
 					if len(args) != 2 {
 						return crystallineFail("SetSocketGroupIncludeInFullDPS: expected 2 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -4254,7 +4465,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(nil)
-				case 70:
+				case 80:
 					if len(args) != 2 {
 						return crystallineFail("SetSocketGroupLabel: expected 2 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -4276,7 +4487,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(nil)
-				case 71:
+				case 81:
 					if len(args) != 3 {
 						return crystallineFail("SetSocketGroupWeaponSet: expected 3 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -4303,7 +4514,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(nil)
-				case 72:
+				case 82:
 					if len(args) != 1 {
 						return crystallineFail("SetUseSecondWeaponSet: expected 1 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -4320,7 +4531,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}
 
 					return crystallineOk(nil)
-				case 73:
+				case 83:
 					if len(args) != 0 {
 						return crystallineFail("SkillGroups: expected 0 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -4362,7 +4573,37 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 							return out
 						}()
 					}))
-				case 74:
+				case 84:
+					if len(args) != 0 {
+						return crystallineFail("SkillSets: expected 0 arguments, got " + strconv.Itoa(len(args)))
+					}
+
+					r0 := v.SkillSets()
+
+					return crystallineJSON(func(b []byte, ok *bool) []byte {
+						b = crystallineAppendExpositionSkillSetsView(b, &r0, ok)
+						return b
+					}, func() any {
+						return crystallineMarshalExpositionSkillSetsView(&r0)
+					})
+				case 85:
+					if len(args) != 1 {
+						return crystallineFail("SkillsUndo: expected 1 arguments, got " + strconv.Itoa(len(args)))
+					}
+
+					a0, err := crystallineToBool(args[0])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					r0, r1 := v.SkillsUndo(a0)
+
+					if r1 != nil {
+						return crystallineErr(r1)
+					}
+
+					return crystallineOk(bool(r0))
+				case 86:
 					if len(args) != 0 {
 						return crystallineFail("TreeState: expected 0 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -4379,7 +4620,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}, func() any {
 						return crystallineMarshalExpositionTreeState(r0)
 					}))
-				case 75:
+				case 87:
 					if len(args) != 0 {
 						return crystallineFail("Undo: expected 0 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -4634,6 +4875,68 @@ func crystallineMarshalExpositionDisplayItemView(v *DisplayItemView) any {
 			return out
 		}()
 	}))
+
+	return out
+}
+
+func crystallineMarshalExpositionGemSortCacheView(v *GemSortCacheView) any {
+	if v == nil {
+		return nil
+	}
+
+	out := crystallineObjects.New()
+
+	out.Set("CanSupport", func() any {
+		items := v.CanSupport
+		if items == nil {
+			return nil
+		}
+
+		out := make([]any, 0, len(items))
+		for i := range items {
+			out = append(out, bool(items[i]))
+		}
+
+		return out
+	}())
+	out.Set("Pending", func() any {
+		items := v.Pending
+		if items == nil {
+			return nil
+		}
+
+		out := make([]any, 0, len(items))
+		for i := range items {
+			out = append(out, bool(items[i]))
+		}
+
+		return out
+	}())
+
+	return out
+}
+
+func crystallineMarshalExpositionGemSortDPSView(v *GemSortDPSView) any {
+	if v == nil {
+		return nil
+	}
+
+	out := crystallineObjects.New()
+
+	out.Set("Base", float64(v.Base))
+	out.Set("DPS", func() any {
+		items := v.DPS
+		if items == nil {
+			return nil
+		}
+
+		out := make([]any, 0, len(items))
+		for i := range items {
+			out = append(out, float64(items[i]))
+		}
+
+		return out
+	}())
 
 	return out
 }
@@ -5721,6 +6024,7 @@ func crystallineMarshalExpositionSkillGemView(v *SkillGemView) any {
 	out.Set("CountShown", bool(v.CountShown))
 	out.Set("CorruptShown", bool(v.CorruptShown))
 	out.Set("CorruptIndex", float64(v.CorruptIndex))
+	out.Set("Error", string(v.Error))
 
 	return out
 }
@@ -5742,6 +6046,11 @@ func crystallineMarshalExpositionSkillGroupView(v *SkillGroupView) any {
 	out.Set("Set1", bool(v.Set1))
 	out.Set("Set2", bool(v.Set2))
 	out.Set("WeaponSetLocked", bool(v.WeaponSetLocked))
+	out.Set("Set1Valid", bool(v.Set1Valid))
+	out.Set("Set2Valid", bool(v.Set2Valid))
+	out.Set("Set1Enabled", bool(v.Set1Enabled))
+	out.Set("Set2Enabled", bool(v.Set2Enabled))
+	out.Set("ForcedBoth", bool(v.ForcedBoth))
 	out.Set("Gems", crystallineJSON(func(b []byte, ok *bool) []byte {
 		if items0 := v.Gems; items0 == nil {
 			b = append(b, "null"...)
@@ -5773,6 +6082,49 @@ func crystallineMarshalExpositionSkillGroupView(v *SkillGroupView) any {
 			return out
 		}()
 	}))
+
+	return out
+}
+
+func crystallineMarshalExpositionSkillSetsView(v *SkillSetsView) any {
+	if v == nil {
+		return nil
+	}
+
+	out := crystallineObjects.New()
+
+	out.Set("Sets", crystallineJSON(func(b []byte, ok *bool) []byte {
+		if items0 := v.Sets; items0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '[')
+			for i0 := range items0 {
+				if i0 > 0 {
+					b = append(b, ',')
+				}
+
+				b = crystallineAppendCalculator2SkillSetView(b, &items0[i0], ok)
+			}
+
+			b = append(b, ']')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			items := v.Sets
+			if items == nil {
+				return nil
+			}
+
+			out := make([]any, 0, len(items))
+			for i := range items {
+				out = append(out, crystallineMarshalCalculator2SkillSetView(&items[i]))
+			}
+
+			return out
+		}()
+	}))
+	out.Set("Active", float64(v.Active))
 
 	return out
 }
@@ -6322,6 +6674,19 @@ func crystallineAppendCalculator2GemOptions(b []byte, v *calculator2.GemOptions,
 	return append(b, '}')
 }
 
+func crystallineAppendCalculator2SkillSetView(b []byte, v *calculator2.SkillSetView, ok *bool) []byte {
+	if v == nil {
+		return append(b, "null"...)
+	}
+
+	b = append(b, "{\"ID\":"...)
+	b = crystallineAppendNumber(b, float64(v.ID), ok)
+	b = append(b, ",\"Title\":"...)
+	b = crystallineAppendString(b, string(v.Title))
+
+	return append(b, '}')
+}
+
 func crystallineAppendCalculator2SocketGroupView(b []byte, v *calculator2.SocketGroupView, ok *bool) []byte {
 	if v == nil {
 		return append(b, "null"...)
@@ -6776,6 +7141,71 @@ func crystallineAppendExpositionDisplayItemView(b []byte, v *DisplayItemView, ok
 			}
 
 			b = crystallineAppendExpositionRuneChoiceView(b, &items0[i0], ok)
+		}
+
+		b = append(b, ']')
+	}
+
+	return append(b, '}')
+}
+
+func crystallineAppendExpositionGemSortCacheView(b []byte, v *GemSortCacheView, ok *bool) []byte {
+	if v == nil {
+		return append(b, "null"...)
+	}
+
+	b = append(b, "{\"CanSupport\":"...)
+	if items0 := v.CanSupport; items0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '[')
+		for i0 := range items0 {
+			if i0 > 0 {
+				b = append(b, ',')
+			}
+
+			b = strconv.AppendBool(b, bool(items0[i0]))
+		}
+
+		b = append(b, ']')
+	}
+	b = append(b, ",\"Pending\":"...)
+	if items0 := v.Pending; items0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '[')
+		for i0 := range items0 {
+			if i0 > 0 {
+				b = append(b, ',')
+			}
+
+			b = strconv.AppendBool(b, bool(items0[i0]))
+		}
+
+		b = append(b, ']')
+	}
+
+	return append(b, '}')
+}
+
+func crystallineAppendExpositionGemSortDPSView(b []byte, v *GemSortDPSView, ok *bool) []byte {
+	if v == nil {
+		return append(b, "null"...)
+	}
+
+	b = append(b, "{\"Base\":"...)
+	b = crystallineAppendNumber(b, float64(v.Base), ok)
+	b = append(b, ",\"DPS\":"...)
+	if items0 := v.DPS; items0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '[')
+		for i0 := range items0 {
+			if i0 > 0 {
+				b = append(b, ',')
+			}
+
+			b = crystallineAppendNumber(b, float64(items0[i0]), ok)
 		}
 
 		b = append(b, ']')
@@ -7447,6 +7877,8 @@ func crystallineAppendExpositionSkillGemView(b []byte, v *SkillGemView, ok *bool
 	b = strconv.AppendBool(b, bool(v.CorruptShown))
 	b = append(b, ",\"CorruptIndex\":"...)
 	b = crystallineAppendNumber(b, float64(v.CorruptIndex), ok)
+	b = append(b, ",\"Error\":"...)
+	b = crystallineAppendString(b, string(v.Error))
 
 	return append(b, '}')
 }
@@ -7476,6 +7908,16 @@ func crystallineAppendExpositionSkillGroupView(b []byte, v *SkillGroupView, ok *
 	b = strconv.AppendBool(b, bool(v.Set2))
 	b = append(b, ",\"WeaponSetLocked\":"...)
 	b = strconv.AppendBool(b, bool(v.WeaponSetLocked))
+	b = append(b, ",\"Set1Valid\":"...)
+	b = strconv.AppendBool(b, bool(v.Set1Valid))
+	b = append(b, ",\"Set2Valid\":"...)
+	b = strconv.AppendBool(b, bool(v.Set2Valid))
+	b = append(b, ",\"Set1Enabled\":"...)
+	b = strconv.AppendBool(b, bool(v.Set1Enabled))
+	b = append(b, ",\"Set2Enabled\":"...)
+	b = strconv.AppendBool(b, bool(v.Set2Enabled))
+	b = append(b, ",\"ForcedBoth\":"...)
+	b = strconv.AppendBool(b, bool(v.ForcedBoth))
 	b = append(b, ",\"Gems\":"...)
 	if items0 := v.Gems; items0 == nil {
 		b = append(b, "null"...)
@@ -7491,6 +7933,32 @@ func crystallineAppendExpositionSkillGroupView(b []byte, v *SkillGroupView, ok *
 
 		b = append(b, ']')
 	}
+
+	return append(b, '}')
+}
+
+func crystallineAppendExpositionSkillSetsView(b []byte, v *SkillSetsView, ok *bool) []byte {
+	if v == nil {
+		return append(b, "null"...)
+	}
+
+	b = append(b, "{\"Sets\":"...)
+	if items0 := v.Sets; items0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '[')
+		for i0 := range items0 {
+			if i0 > 0 {
+				b = append(b, ',')
+			}
+
+			b = crystallineAppendCalculator2SkillSetView(b, &items0[i0], ok)
+		}
+
+		b = append(b, ']')
+	}
+	b = append(b, ",\"Active\":"...)
+	b = crystallineAppendNumber(b, float64(v.Active), ok)
 
 	return append(b, '}')
 }
