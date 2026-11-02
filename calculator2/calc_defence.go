@@ -10,9 +10,13 @@ import (
 )
 
 //pob2:src/Modules/CalcDefence.lua:74-129
-func doActorLifeManaSpirit(actor *Actor) {
+func doActorLifeManaSpirit(actor *Actor, skipBreakdown bool) {
 	modDB := actor.ModDB
 	output := actor.Output
+	var breakdown *Breakdown
+	if !skipBreakdown {
+		breakdown = actor.Breakdown
+	}
 	condList := modDB.Conditions
 
 	lowLifePerc := modDB.Sum(mod.TypeBase, nil, "LowLifePercentage")
@@ -42,9 +46,41 @@ func doActorLifeManaSpirit(actor *Actor) {
 		actor.setOutputFlag(res+"HasOverride", override != nil)
 		if override != nil {
 			output[res] = override.Float()
-			continue
+		} else {
+			output[res] = math.Max(round((base*(1-conv/100)+extra)*(1+inc/100)*more+total), 1)
 		}
-		output[res] = math.Max(round((base*(1-conv/100)+extra)*(1+inc/100)*more+total), 1)
+		if breakdown != nil {
+			if inc != 0 || more != 1 || conv != 0 || extra != 0 || total != 0 {
+				e := breakdown.Entries[res]
+				line := sFormat("%g ^8(base)", base)
+				if len(e.Lines) == 0 {
+					e.Lines = append(e.Lines, line)
+				} else {
+					e.Lines[0] = line
+				}
+				if conv != 0 {
+					breakdown.insert(res, sFormat("x %.2f ^8(converted from)", 1-conv/100))
+				}
+				if extra != 0 {
+					breakdown.insert(res, sFormat("+ %g ^8(converted to)", extra))
+				}
+				if conv != 0 || extra != 0 {
+					breakdown.insert(res, sFormat("= %g", round(base*(1-conv/100)+extra)))
+				}
+				if inc != 0 {
+					breakdown.insert(res, sFormat("x %.2f ^8(increased/reduced)", 1+inc/100))
+				}
+				if more != 1 {
+					breakdown.insert(res, sFormat("x %.2f ^8(more/less)", more))
+				}
+				if total != 0 {
+					breakdown.insert(res, sFormat("+ %g ^8(total)", total))
+				}
+				if inc != 0 || more != 1 || total != 0 {
+					breakdown.insert(res, sFormat("= %g", output[res]))
+				}
+			}
+		}
 	}
 	if chaosInoculation {
 		output["Life"] = 1
@@ -545,11 +581,22 @@ func defence(env *Environment, actor *Actor) {
 		output["Totem"+elem+"ResistTotal"] = totemTotal
 		output["Totem"+elem+"ResistOverCap"] = math.Max(0, totemTotal-totemMax)
 		output["MissingTotem"+elem+"Resist"] = math.Max(0, totemMax-totemFinal)
+		//pob2:block:src/Modules/CalcDefence.lua:976-987
+		if breakdown := actor.Breakdown; breakdown != nil {
+			breakdown.set(elem+"Resist", "Min: "+luaToString(resistFloor)+"%", "Max: "+luaToString(maxRes)+"%", "Total: "+luaToString(total)+"%")
+			breakdown.set("Totem"+elem+"Resist", "Min: "+luaToString(resistFloor)+"%", "Max: "+luaToString(totemMax)+"%", "Total: "+luaToString(totemTotal)+"%")
+		}
 	}
 
+	//pob2:block:src/Modules/CalcDefence.lua:990-998
+	if breakdown := actor.Breakdown; breakdown != nil {
+		for _, k := range []string{"Ward", "EnergyShield", "Armour", "Evasion", "Life", "Mana", "Spirit"} {
+			breakdown.setEntry(k, &BreakdownEntry{Slots: []BreakdownSlot{}})
+		}
+	}
 	//pob2:block:src/Modules/CalcDefence.lua:999-1002
 	if actor == env.minionActor() || actor == env.Player {
-		doActorLifeManaSpirit(actor)
+		doActorLifeManaSpirit(actor, true)
 		doActorLifeManaSpiritReservation(actor)
 	}
 
@@ -602,7 +649,7 @@ func defence(env *Environment, actor *Actor) {
 	spellSuppressionChance := defenceSuppressionDodge(env, actor)
 
 	//pob2:block:src/Modules/CalcDefence.lua:1646-1652
-	doActorLifeManaSpirit(actor)
+	doActorLifeManaSpirit(actor, false)
 	doActorLifeManaSpiritReservation(actor)
 	doActorDarkness(actor)
 
@@ -649,6 +696,14 @@ func defence(env *Environment, actor *Actor) {
 		output["MovementSpeedMod"] = math.Max(output["MovementSpeedMod"], 1)
 	}
 	output["EffectiveMovementSpeedMod"] = round(output["MovementSpeedMod"]*output["ActionSpeedMod"], 3)
+	//pob2:block:src/Modules/CalcDefence.lua:1931-1938
+	if breakdown := actor.Breakdown; breakdown != nil {
+		lines, _ := breakdown.multiChain(nil, multiChainSpec{
+			Links: []chainLink{link("%.3f ^8(movement speed modifier)", output["MovementSpeedMod"]), link("%.2f ^8(action speed modifier)", output["ActionSpeedMod"])},
+			Total: sFormat("= %.3f ^8(effective movement speed modifier)", output["EffectiveMovementSpeedMod"]),
+		})
+		breakdown.set("EffectiveMovementSpeedMod", lines...)
+	}
 
 	defenceAvoidance(actor, spellSuppressionChance)
 }
@@ -723,6 +778,18 @@ func defenceBlock(env *Environment, actor *Actor) {
 		spellProjectileBlockChance := math.Min(output["SpellBlockChance"]+modDB.Sum(mod.TypeBase, nil, "ProjectileSpellBlockChance")*calcLibMod(modDB, nil, "SpellBlockChance"), output["SpellBlockChanceMax"])
 		output["SpellProjectileBlockChance"] = math.Max(math.Max(spellProjectileBlockChance, output["ProjectileBlockChance"]), 0)
 	}
+	//pob2:block:src/Modules/CalcDefence.lua:1061-1071
+	if breakdown := actor.Breakdown; breakdown != nil {
+		breakdown.set("BlockChance",
+			"Base: "+luaToString(baseBlockChance)+"%",
+			"Max: "+luaToString(output["BlockChanceMax"])+"%",
+			"Total: "+luaToString(output["BlockChance"]+output["BlockChanceOverCap"])+"%",
+		)
+		breakdown.set("SpellBlockChance",
+			"Max: "+luaToString(output["SpellBlockChanceMax"])+"%",
+			"Total: "+luaToString(output["SpellBlockChance"]+output["SpellBlockChanceOverCap"])+"%",
+		)
+	}
 	if modDB.Flag(nil, "CannotBlockAttacks") || enemyDB.Flag(nil, "CannotBeBlocked") {
 		output["BlockChance"] = 0
 		output["ProjectileBlockChance"] = 0
@@ -777,7 +844,8 @@ func primaryDefences(env *Environment, actor *Actor) {
 	enemyDB := actor.Enemy.ModDB
 	output := actor.Output
 
-	doActorLifeManaSpirit(actor)
+	breakdown := actor.Breakdown
+	doActorLifeManaSpirit(actor, true)
 	var gearWard, gearEnergyShield, gearArmour, gearEvasion float64
 	//pob2:block:src/Modules/CalcDefence.lua:1213-1305
 	for _, slot := range armourSlots {
@@ -785,20 +853,39 @@ func primaryDefences(env *Environment, actor *Actor) {
 		if item == nil || item.ArmourData == nil {
 			continue
 		}
+		slotCfg := &moddb.ListCfg{SlotName: slot}
 		wardBase := itemArmourDataValue(item, "Ward", actor.Level)
 		if wardBase > 0 {
 			if slot == "Body Armour" && modDB.Flag(nil, "DoubleBodyArmourDefence") {
 				wardBase *= 2
 			}
 			gearWard += wardBase
+			if breakdown != nil {
+				if modDB.Flag(nil, "EnergyShieldToWard") {
+					inc := modDB.Sum(mod.TypeIncrease, slotCfg, "Ward", "Defences", "EnergyShield")
+					more := modDB.More(slotCfg, "Ward", "Defences")
+					breakdown.Entries["Ward"].Slots = append(breakdown.Entries["Ward"].Slots, rawSlot(wardBase, inc, more, slot, item))
+				} else {
+					breakdown.slot(slot, "", slotCfg, wardBase, nil, "Ward", "Defences")
+				}
+			}
 		}
 		energyShieldBase := itemArmourDataValue(item, "EnergyShield", actor.Level)
 		if energyShieldBase > 0 {
 			if slot == "Body Armour" && modDB.Flag(nil, "DoubleBodyArmourDefence") {
 				energyShieldBase *= 2
 			}
-			if modDB.Flag(nil, "EnergyShieldToWard") || !modDB.Flag(nil, "ConvertArmourESToLife") {
+			if modDB.Flag(nil, "EnergyShieldToWard") {
 				gearEnergyShield += energyShieldBase
+				if breakdown != nil {
+					more := modDB.More(slotCfg, "EnergyShield", "Defences")
+					breakdown.Entries["EnergyShield"].Slots = append(breakdown.Entries["EnergyShield"].Slots, rawSlot(energyShieldBase, 0, more, slot, item))
+				}
+			} else if !modDB.Flag(nil, "ConvertArmourESToLife") {
+				gearEnergyShield += energyShieldBase
+				if breakdown != nil {
+					breakdown.slot(slot, "", slotCfg, energyShieldBase, nil, "EnergyShield", "Defences", slot+"ESAndArmour")
+				}
 			}
 		}
 		armourBase := itemArmourDataValue(item, "Armour", actor.Level)
@@ -815,6 +902,9 @@ func primaryDefences(env *Environment, actor *Actor) {
 				}
 			}
 			gearArmour += armourBase
+			if breakdown != nil {
+				breakdown.slot(slot, "", slotCfg, armourBase, nil, "Armour", "ArmourAndEvasion", "Defences", slot+"ESAndArmour")
+			}
 		}
 		evasionBase := itemArmourDataValue(item, "Evasion", actor.Level)
 		if evasionBase > 0 {
@@ -830,6 +920,35 @@ func primaryDefences(env *Environment, actor *Actor) {
 				}
 			}
 			gearEvasion += evasionBase
+			if breakdown != nil {
+				breakdown.slot(slot, "", slotCfg, evasionBase, nil, "Evasion", "ArmourAndEvasion", "Defences")
+			}
+		}
+	}
+	//pob2:block:src/Modules/CalcDefence.lua:1306-1354
+	if breakdown != nil {
+		if wardBase := modDB.Sum(mod.TypeBase, nil, "Ward"); wardBase > 0 {
+			if modDB.Flag(nil, "EnergyShieldToWard") {
+				inc := modDB.Sum(mod.TypeIncrease, nil, "Ward", "Defences", "EnergyShield")
+				more := modDB.More(nil, "Ward", "Defences")
+				breakdown.Entries["Ward"].Slots = append(breakdown.Entries["Ward"].Slots, rawSlot(wardBase, inc, more, "Global", actor.ItemList["Global"]))
+			} else {
+				breakdown.slot("Global", "", nil, wardBase, nil, "Ward", "Defences")
+			}
+		}
+		if energyShieldBase := modDB.Sum(mod.TypeBase, nil, "EnergyShield"); energyShieldBase > 0 {
+			inc := 0.0
+			if !modDB.Flag(nil, "EnergyShieldToWard") {
+				inc = modDB.Sum(mod.TypeIncrease, nil, "Defences", "EnergyShield")
+			}
+			more := modDB.More(nil, "EnergyShield", "Defences")
+			breakdown.Entries["EnergyShield"].Slots = append(breakdown.Entries["EnergyShield"].Slots, rawSlot(energyShieldBase, inc, more, "Global", actor.ItemList["Global"]))
+		}
+		if armourBase := modDB.Sum(mod.TypeBase, nil, "Armour", "ArmourAndEvasion"); armourBase > 0 {
+			breakdown.slot("Global", "", nil, armourBase, nil, "Armour", "ArmourAndEvasion", "Defences")
+		}
+		if evasionBase := modDB.Sum(mod.TypeBase, nil, "Evasion", "ArmourAndEvasion"); evasionBase > 0 {
+			breakdown.slot("Global", "", nil, evasionBase, nil, "Evasion", "ArmourAndEvasion", "Defences")
 		}
 	}
 
@@ -899,14 +1018,25 @@ func primaryDefences(env *Environment, actor *Actor) {
 						} else {
 							target.globalBase += targetBase
 						}
+						if breakdown != nil {
+							breakdown.slot(slot, source.name+" to "+target.name+" conversion", &moddb.ListCfg{SlotName: slot}, targetBase, nil, target.mods...)
+						}
 						source.basePerSlot[slot] = source.basePerSlot[slot] * (100 - source.totalConversion) / 100
 					}
 				}
-				target.globalBase += globalBase * rate / 100
+				targetBase := globalBase * rate / 100
+				target.globalBase += targetBase
 				target.totalBase += totalBase * rate / 100
+				if breakdown != nil {
+					breakdown.slot("Global", source.name+" to "+target.name+" conversion", nil, targetBase, nil, target.mods...)
+				}
 			} else {
-				target.globalBase += round(globalBase * rate / 100)
+				targetBase := round(globalBase * rate / 100)
+				target.globalBase += targetBase
 				target.totalBase += round(totalBase * rate / 100)
+				if breakdown != nil {
+					breakdown.slot("Conversion", source.name+" to "+target.name, nil, targetBase, nil, target.mods...)
+				}
 			}
 		}
 		if source.defence {
@@ -1031,6 +1161,20 @@ func primaryDefences(env *Environment, actor *Actor) {
 				output[k] = output[k] * output[k] / 100
 			}
 		}
+		//pob2:block:src/Modules/CalcDefence.lua:1532-1562
+		if breakdown != nil {
+			level := enemyLevelLine(env)
+			accuracy := sFormat("Average enemy accuracy: %d", enemyAccuracy)
+			breakdown.set("EvadeChance", level, accuracy, sFormat("Approximate evade chance: %d%%", output["EvadeChance"]))
+			for _, e := range []struct{ key, evasion, label string }{
+				{"MeleeEvadeChance", "MeleeEvasion", "melee"},
+				{"ProjectileEvadeChance", "ProjectileEvasion", "projectile"},
+				{"SpellEvadeChance", "SpellEvasion", "spell"},
+				{"SpellProjectileEvadeChance", "SpellProjectileEvasion", "spell projectile"},
+			} {
+				breakdown.set(e.key, level, accuracy, sFormat("Effective Evasion: %d", output[e.evasion]), sFormat("Approximate %s evade chance: %d%%", e.label, output[e.key]))
+			}
+		}
 	}
 
 	//pob2:block:src/Modules/CalcDefence.lua:1565-1571
@@ -1041,6 +1185,18 @@ func primaryDefences(env *Environment, actor *Actor) {
 		output["DeflectChance"] = (1 - notDeflect*notDeflect) * 100
 	}
 	output["DeflectEffect"] = math.Min(math.Max(miscConstant("DeflectEffect")+modDB.Sum(mod.TypeBase, nil, "DeflectEffect"), 0), 100)
+	//pob2:block:src/Modules/CalcDefence.lua:1572-1578
+	if breakdown != nil {
+		breakdown.set("DeflectChance", enemyLevelLine(env), sFormat("Average enemy accuracy: %d", enemyAccuracy), sFormat("Approximate deflect chance: %d%%", output["DeflectChance"]))
+	}
+}
+
+func enemyLevelLine(env *Environment) string {
+	from := "can be overridden in"
+	if _, ok := env.ConfigInput["enemyLevel"]; ok {
+		from = "overridden from"
+	}
+	return sFormat("Enemy level: %d ^8(%s the Configuration tab)", float64(env.EnemyLevel), from)
 }
 
 //pob2:src/Modules/CalcTools.lua:238-253
@@ -1153,6 +1309,19 @@ func defenceSuppressionDodge(env *Environment, actor *Actor) float64 {
 	}
 	output["AttackDodgeChanceOverCap"] = math.Max(0, totalAttackDodgeChance-attackDodgeChanceMax)
 	output["SpellDodgeChanceOverCap"] = math.Max(0, totalSpellDodgeChance-spellDodgeChanceMax)
+	//pob2:block:src/Modules/CalcDefence.lua:1632-1643
+	if breakdown := actor.Breakdown; breakdown != nil {
+		breakdown.set("AttackDodgeChance",
+			"Base: "+luaToString(totalAttackDodgeChance)+"%",
+			"Max: "+luaToString(attackDodgeChanceMax)+"%",
+			"Total: "+luaToString(output["AttackDodgeChance"]+output["AttackDodgeChanceOverCap"])+"%",
+		)
+		breakdown.set("SpellDodgeChance",
+			"Base: "+luaToString(totalSpellDodgeChance)+"%",
+			"Max: "+luaToString(spellDodgeChanceMax)+"%",
+			"Total: "+luaToString(output["SpellDodgeChance"]+output["SpellDodgeChanceOverCap"])+"%",
+		)
+	}
 	return spellSuppressionChance
 }
 
@@ -1204,6 +1373,24 @@ func defenceRecovery(actor *Actor) {
 	output["MaxEnergyShieldLeechRate"] = output["EnergyShield"] * calcLibVal(modDB, "MaxEnergyShieldLeechRate", nil) / 100
 	output["MaxManaLeechInstance"] = output["Mana"] * calcLibVal(modDB, "MaxManaLeechInstance", nil) / 100
 	output["MaxManaLeechRate"] = output["Mana"] * calcLibVal(modDB, "MaxManaLeechRate", nil) / 100
+	//pob2:block:src/Modules/CalcDefence.lua:1685-1709
+	if breakdown := actor.Breakdown; breakdown != nil {
+		breakdown.set("MaxLifeLeechRate",
+			sFormat("%d ^8(maximum life)", output["Life"]),
+			sFormat("x %d%% ^8(percentage of life to maximum leech rate)", output["MaxLifeLeechRatePercent"]),
+			sFormat("= %.1f", output["MaxLifeLeechRate"]),
+		)
+		breakdown.set("MaxEnergyShieldLeechRate",
+			sFormat("%d ^8(maximum energy shield)", output["EnergyShield"]),
+			sFormat("x %d%% ^8(percentage of energy shield to maximum leech rate)", calcLibVal(modDB, "MaxEnergyShieldLeechRate", nil)),
+			sFormat("= %.1f", output["MaxEnergyShieldLeechRate"]),
+		)
+		breakdown.set("MaxManaLeechRate",
+			sFormat("%d ^8(maximum mana)", output["Mana"]),
+			sFormat("x %d%% ^8(percentage of mana to maximum leech rate)", calcLibVal(modDB, "MaxManaLeechRate", nil)),
+			sFormat("= %.1f", output["MaxManaLeechRate"]),
+		)
+	}
 
 	//pob2:block:src/Modules/CalcDefence.lua:1712-1789
 	for i, resourceName := range recoveryResources {
@@ -1268,6 +1455,33 @@ func defenceRecovery(actor *Actor) {
 		if pool > 0 {
 			output[resource+"RegenPercent"] = round(output[resource+"RegenRecovery"]/pool*100, 1)
 		}
+		//pob2:block:src/Modules/CalcDefence.lua:1761-1788
+		if breakdown := actor.Breakdown; breakdown != nil {
+			key := resource + "RegenRecovery"
+			base := link("%.1f ^8(base)", baseRegen)
+			lines, _ := breakdown.multiChain(nil, multiChainSpec{
+				Label: resourceName + " Regeneration:",
+				Base:  &base,
+				Links: []chainLink{link("%.2f ^8(increased/reduced)", 1+inc/100), link("%.2f ^8(more/less)", more)},
+				Total: sFormat("= %.1f ^8per second", regenRate),
+			})
+			if modDB.Flag(nil, "UnaffectedBy"+resource+"Regen") {
+				lines = append(lines, "Unaffected by "+resourceName+" Regen")
+			}
+			if degenRate != 0 {
+				lines = append(lines, sFormat("- %.1f ^8(degen)", degenRate), sFormat("= %.1f ^8per second", regenPart-degenRate))
+			}
+			if recoveryRate != 0 {
+				lines = append(lines, sFormat("+ %.1f ^8(recovery)", recoveryRate), sFormat("= %.1f ^8per second", output[key]-overflowRecovery))
+			}
+			if overflowRecovery != 0 {
+				lines = append(lines, sFormat("+ %.1f ^8(overflow recovery)", overflowRecovery), sFormat("= %.1f ^8per second", output[key]))
+			}
+			if resource == "Life" && modDB.Flag(nil, "ZealotsOath") {
+				lines = append(lines, "Excess recovery applied to Energy Shield")
+			}
+			breakdown.set(key, lines...)
+		}
 	}
 
 	//pob2:block:src/Modules/CalcDefence.lua:1792-1850
@@ -1278,18 +1492,45 @@ func defenceRecovery(actor *Actor) {
 	if rechargeAppliesToLife || rechargeAppliesToEnergyShield {
 		inc := modDB.Sum(mod.TypeIncrease, nil, "EnergyShieldRecharge")
 		more := modDB.More(nil, "EnergyShieldRecharge")
+		pool, key := "EnergyShield", "EnergyShieldRecharge"
 		if rechargeAppliesToLife {
-			recharge := output["Life"] * miscConstant("EnergyShieldRechargeBase") * (1 + inc/100) * more
-			output["LifeRecharge"] = round(recharge*output["LifeRecoveryRateMod"], 1)
-		} else {
-			recharge := output["EnergyShield"] * miscConstant("EnergyShieldRechargeBase") * (1 + inc/100) * more
-			output["EnergyShieldRecharge"] = round(recharge*output["EnergyShieldRecoveryRateMod"], 1)
+			pool, key = "Life", "LifeRecharge"
+		}
+		rechargeRate := miscConstant("EnergyShieldRechargeBase")
+		recharge := output[pool] * rechargeRate * (1 + inc/100) * more
+		output[key] = round(recharge*output[pool+"RecoveryRateMod"], 1)
+		//pob2:block:src/Modules/CalcDefence.lua:1801-1816,src/Modules/CalcDefence.lua:1820-1835
+		if breakdown := actor.Breakdown; breakdown != nil {
+			base := link("%.1f ^8(%.1f%% per second)", output[pool]*rechargeRate)
+			base.Args = []any{rechargeRate * 100}
+			lines, _ := breakdown.multiChain(nil, multiChainSpec{
+				Label: "Recharge rate:",
+				Base:  &base,
+				Links: []chainLink{link("%.2f ^8(increased/reduced)", 1+inc/100), link("%.2f ^8(more/less)", more)},
+				Total: sFormat("= %.1f ^8per second", recharge),
+			})
+			effBase := link("%.1f", recharge)
+			lines, _ = breakdown.multiChain(lines, multiChainSpec{
+				Label: "Effective Recharge rate:",
+				Base:  &effBase,
+				Links: []chainLink{link("%.2f ^8(recovery rate modifier)", output[pool+"RecoveryRateMod"])},
+				Total: sFormat("= %.1f ^8per second", output[key]),
+			})
+			breakdown.set(key, lines...)
 		}
 		rechargeBase := miscConstant("EnergyShieldRechargeDelay") + modDB.Sum(mod.TypeBase, nil, "EnergyShieldRechargeFaster")
 		if o := modDB.Override(nil, "EnergyShieldRechargeBase"); o != nil {
 			rechargeBase = o.Float()
 		}
 		output["EnergyShieldRechargeDelay"] = rechargeBase / (1 + modDB.Sum(mod.TypeIncrease, nil, "EnergyShieldRechargeFaster")/100)
+		//pob2:block:src/Modules/CalcDefence.lua:1839-1847
+		if breakdown := actor.Breakdown; breakdown != nil && output["EnergyShieldRechargeDelay"] != rechargeBase {
+			breakdown.set("EnergyShieldRechargeDelay",
+				sFormat("%.2fs ^8(base)", rechargeBase),
+				sFormat("/ %.2f ^8(faster start)", 1+modDB.Sum(mod.TypeIncrease, nil, "EnergyShieldRechargeFaster")/100),
+				sFormat("= %.2fs", output["EnergyShieldRechargeDelay"]),
+			)
+		}
 	} else {
 		output["EnergyShieldRecharge"] = 0
 	}
@@ -1299,7 +1540,7 @@ func defenceRecovery(actor *Actor) {
 	recoupTypeList := []string{"Life", "Mana", "EnergyShield"}
 	for _, recoupType := range recoupTypeList {
 		recoup := modDB.Sum(mod.TypeBase, nil, recoupType+"Recoup")
-		calcRecoup(output, recoup, recoupType, "")
+		calcRecoup(actor, recoup, recoupType, "")
 		if modDB.Flag(nil, "Add"+recoupType+"RecoupToEnergyShieldRecoup") {
 			source := modDB.Tabulate(mod.TypeFlag, nil, "Add"+recoupType+"RecoupToEnergyShieldRecoup")[0].Mod.GetSource()
 			modDB.ReplaceMod(newMod("EnergyShieldRecoup", mod.TypeBase, recoup, source))
@@ -1308,7 +1549,7 @@ func defenceRecovery(actor *Actor) {
 	for _, recoupType := range recoupTypeList {
 		for _, damageType := range dmgTypeList {
 			recoup := modDB.Sum(mod.TypeBase, nil, damageType+recoupType+"Recoup")
-			calcRecoup(output, recoup, recoupType, damageType)
+			calcRecoup(actor, recoup, recoupType, damageType)
 			if modDB.Flag(nil, "Add"+recoupType+"RecoupToEnergyShieldRecoup") {
 				source := modDB.Tabulate(mod.TypeFlag, nil, "Add"+recoupType+"RecoupToEnergyShieldRecoup")[0].Mod.GetSource()
 				modDB.ReplaceMod(newMod(damageType+"EnergyShieldRecoup", mod.TypeBase, recoup, source))
@@ -1326,17 +1567,50 @@ func defenceRecovery(actor *Actor) {
 				}
 				inc := modDB.Sum(mod.TypeIncrease, nil, resource+"Regen")
 				more := modDB.More(nil, resource+"Regen")
-				output["PhysicalDamageMitigated"+resource+"PseudoRecoup"] = pseudoRecoup * (1 + inc/100) * more * output[resource+"RecoveryRateMod"]
-				output["anyRecoup"] += output["PhysicalDamageMitigated"+resource+"PseudoRecoup"]
+				key := "PhysicalDamageMitigated" + resource + "PseudoRecoup"
+				output[key] = pseudoRecoup * (1 + inc/100) * more * output[resource+"RecoveryRateMod"]
+				output["anyRecoup"] += output[key]
+				//pob2:block:src/Modules/CalcDefence.lua:1890-1902
+				if breakdown := actor.Breakdown; breakdown != nil {
+					var lines []string
+					if output[resource+"RecoveryRateMod"] != 1 || inc != 0 || more != 1 {
+						lines = append(lines, sFormat("%d%% ^8(base)", pseudoRecoup))
+						if inc != 0 || more != 1 {
+							lines = append(lines, sFormat("* %.2f ^8(regeneration rate modifier)", (1+inc/100)*more))
+						}
+						if output[resource+"RecoveryRateMod"] != 1 {
+							lines = append(lines, sFormat("* %.2f ^8(recovery rate modifier)", output[resource+"RecoveryRateMod"]))
+						}
+					}
+					lines = append(lines, sFormat("= %.1f%% over %d seconds", output[key], output[durationKey]))
+					breakdown.set(key, lines...)
+				}
 			}
 		}
 	}
 }
 
 //pob2:src/Modules/CalcDefence.lua:774-788
-func calcRecoup(output map[string]float64, recoup float64, recoupType, damageType string) {
-	output[damageType+recoupType+"Recoup"] = recoup * output[recoupType+"RecoveryRateMod"]
-	output["anyRecoup"] += output[damageType+recoupType+"Recoup"]
+func calcRecoup(actor *Actor, recoup float64, recoupType, damageType string) {
+	output := actor.Output
+	key := damageType + recoupType + "Recoup"
+	output[key] = recoup * output[recoupType+"RecoveryRateMod"]
+	output["anyRecoup"] += output[key]
+	if breakdown := actor.Breakdown; breakdown != nil {
+		seconds := 8.0
+		if actor.ModDB.Flag(nil, "4Second"+recoupType+"Recoup") || actor.ModDB.Flag(nil, "4SecondRecoup") {
+			seconds = 4
+		}
+		if output[recoupType+"RecoveryRateMod"] != 1 {
+			breakdown.set(key,
+				sFormat("%d%% ^8(base)", recoup),
+				sFormat("* %.2f ^8(recovery rate modifier)", output[recoupType+"RecoveryRateMod"]),
+				sFormat("= %.1f%% over %d seconds", output[key], seconds),
+			)
+		} else {
+			breakdown.set(key, sFormat("%d%% over %d seconds", output[key], seconds))
+		}
+	}
 }
 
 //pob2:block:src/Modules/CalcDefence.lua:1940-2050

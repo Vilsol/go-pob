@@ -2,6 +2,7 @@ package calculator2
 
 import (
 	"math"
+	"strings"
 
 	"github.com/Vilsol/go-pob/mod"
 	"github.com/Vilsol/go-pob/moddb"
@@ -111,6 +112,9 @@ type ehpPools struct {
 	lifeBelowHalfLossLostOverTime float64
 	overkillDamage                float64
 	hitPoolRemaining              float64
+	// resourcesLostToTypeDamage is what each damage type took from each resource; a missing key is the Lua's nil.
+	// Only a fresh pool table records it, for a breakdown.
+	resourcesLostToTypeDamage map[string]map[string]float64
 }
 
 // alliesTakenBeforeYou is kept in the order the Lua inserts the keys; Lua walks the table with pairs().
@@ -135,7 +139,7 @@ func alliesTakenBeforeYou(output map[string]float64) []*ehpAlly {
 }
 
 // reducePoolsByDamage takes a nil poolTbl for Lua's nil poolTable. resourcesLostToTypeDamage only feeds
-// breakdowns and is not kept.
+// breakdowns, and is kept only when poolTbl is nil and the actor builds one.
 //
 //pob2:src/Modules/CalcDefence.lua:473-699
 func reducePoolsByDamage(poolTbl *ehpPools, damageTable map[string]float64, actor *ehpActor) *ehpPools {
@@ -173,6 +177,24 @@ func reducePoolsByDamage(poolTbl *ehpPools, damageTable map[string]float64, acto
 	wardApplies := modDB.Sum(mod.TypeBase, nil, "WardBypass") == 0
 	lifeLossBelowHalfPrevented := modDB.Sum(mod.TypeBase, nil, "LifeLossBelowHalfPrevented")
 	overkillDamage := 0.0
+	var lost map[string]map[string]float64
+	if poolTbl == nil && actor.Breakdown != nil {
+		lost = map[string]map[string]float64{}
+		for _, damageType := range dmgTypeList {
+			lost[damageType] = map[string]float64{}
+		}
+	}
+	// lose is `resourcesLostToTypeDamage[damageType][key] = v >= 1 and v or nil`
+	lose := func(damageType, key string, v float64) {
+		if lost == nil {
+			return
+		}
+		if v >= 1 {
+			lost[damageType][key] = v
+		} else {
+			delete(lost[damageType], key)
+		}
+	}
 	MoMPoolRemaining := posInf
 	esPoolRemaining := posInf
 
@@ -187,6 +209,7 @@ func reducePoolsByDamage(poolTbl *ehpPools, damageTable map[string]float64, acto
 				tempDamage := math.Min(damageRemainder*ally.percent, ally.remaining)
 				ally.remaining -= tempDamage
 				damageRemainder -= tempDamage
+				lose(damageType, ally.name, tempDamage)
 			}
 		}
 		damageTakenThatCanBeRecouped[damageType] += damageRemainder
@@ -194,26 +217,31 @@ func reducePoolsByDamage(poolTbl *ehpPools, damageTable map[string]float64, acto
 			tempDamage := math.Min(damageRemainder, aegis[damageType])
 			aegis[damageType] -= tempDamage
 			damageRemainder -= tempDamage
+			lose(damageType, "aegis", tempDamage)
 		}
 		if isElemental[damageType] && aegis["sharedElemental"] > 0 {
 			tempDamage := math.Min(damageRemainder, aegis["sharedElemental"])
 			aegis["sharedElemental"] -= tempDamage
 			damageRemainder -= tempDamage
+			lose(damageType, "sharedElementalAegis", tempDamage)
 		}
 		if aegis["shared"] > 0 {
 			tempDamage := math.Min(damageRemainder, aegis["shared"])
 			aegis["shared"] -= tempDamage
 			damageRemainder -= tempDamage
+			lose(damageType, "sharedAegis", tempDamage)
 		}
 		if guard[damageType] > 0 {
 			tempDamage := math.Min(damageRemainder*output[damageType+"GuardAbsorbRate"]/100, guard[damageType])
 			guard[damageType] -= tempDamage
 			damageRemainder -= tempDamage
+			lose(damageType, "guard", tempDamage)
 		}
 		if guard["shared"] > 0 {
 			tempDamage := math.Min(damageRemainder*output["sharedGuardAbsorbRate"]/100, guard["shared"])
 			guard["shared"] -= tempDamage
 			damageRemainder -= tempDamage
+			lose(damageType, "sharedGuard", tempDamage)
 		}
 		if damageRemainder > 0 {
 			damageRemaindersBeforeES[damageType] = damageRemainder
@@ -242,6 +270,14 @@ func reducePoolsByDamage(poolTbl *ehpPools, damageTable map[string]float64, acto
 			energyShield -= tempDamage * (1 - esBypass) * esDamageTypeMultiplier
 			esPoolRemaining = math.Min(esPoolRemaining, energyShield)
 			damageRemainder -= tempDamage
+			if lost != nil {
+				delete(lost[damageType], "energyShield")
+				delete(lost[damageType], "eternalLifePrevented")
+				if tempDamage >= 1 {
+					lost[damageType]["energyShield"] = tempDamage * (1 - esBypass) * esDamageTypeMultiplier
+					lost[damageType]["eternalLifePrevented"] = tempDamage * esBypass
+				}
+			}
 		} else if energyShield > 0 && esBypass < 1 {
 			MoMEBPool := energyShield
 			if esBypass > 0 {
@@ -251,6 +287,12 @@ func reducePoolsByDamage(poolTbl *ehpPools, damageTable map[string]float64, acto
 			esPoolRemaining = math.Min(esPoolRemaining, MoMEBPool-tempDamage*esDamageTypeMultiplier)
 			energyShield -= tempDamage * esDamageTypeMultiplier
 			damageRemainder -= tempDamage
+			if lost != nil {
+				delete(lost[damageType], "energyShield")
+				if tempDamage >= 1 {
+					lost[damageType]["energyShield"] = tempDamage * esDamageTypeMultiplier
+				}
+			}
 		}
 		if MoMEffect > 0 && mana > 0 {
 			MoMDamage := damageRemainder * MoMEffect
@@ -258,6 +300,7 @@ func reducePoolsByDamage(poolTbl *ehpPools, damageTable map[string]float64, acto
 			MoMPoolRemaining = math.Min(MoMPoolRemaining, MoMPool-tempDamage)
 			mana -= tempDamage
 			damageRemainder -= tempDamage
+			lose(damageType, "mana", tempDamage)
 		} else {
 			MoMPoolRemaining = 0
 		}
@@ -279,6 +322,10 @@ func reducePoolsByDamage(poolTbl *ehpPools, damageTable map[string]float64, acto
 				damageRemainder -= damageToSplit
 				lifeLossLostOverTime += preventedLoss
 				life -= lostLife
+				lifeLossPrevented := preventedLoss
+				if lost != nil {
+					lost[damageType]["life"] = lostLife
+				}
 				if life <= halfLife {
 					unspecificallyLowLifePreventedDamage := damageRemainder * preventPercent
 					lifeLossLostOverTime += unspecificallyLowLifePreventedDamage
@@ -286,29 +333,40 @@ func reducePoolsByDamage(poolTbl *ehpPools, damageTable map[string]float64, acto
 					specificallyLowLifePreventedDamage := damageRemainder * preventBelowHalfPercent
 					lifeBelowHalfLossLostOverTime += specificallyLowLifePreventedDamage
 					damageRemainder -= specificallyLowLifePreventedDamage
+					lifeLossPrevented += unspecificallyLowLifePreventedDamage + specificallyLowLifePreventedDamage
 				}
+				lose(damageType, "lifeLossPrevented", lifeLossPrevented)
 			} else {
 				tempDamage := damageRemainder * output["preventedLifeLoss"] / 100
 				lifeLossLostOverTime += tempDamage
 				damageRemainder -= tempDamage
+				lose(damageType, "lifeLossPrevented", tempDamage)
 			}
 		}
 		if life > 0 {
 			tempDamage := math.Min(damageRemainder, life-1)
 			life -= tempDamage
 			damageRemainder -= tempDamage
+			if lost != nil {
+				lost[damageType]["life"] += math.Max(tempDamage, 0)
+			}
 			if ward > 0 && wardApplies {
 				tempDamage := math.Min(damageRemainder, ward)
 				ward -= tempDamage
 				damageRemainder -= tempDamage
+				lose(damageType, "runicWard", tempDamage)
 			}
 			if damageRemainder > 0 {
 				tempDamage := math.Min(damageRemainder, life)
 				life -= tempDamage
 				damageRemainder -= tempDamage
+				if lost != nil {
+					lost[damageType]["life"] += math.Max(tempDamage, 0)
+				}
 			}
 		}
 		overkillDamage += damageRemainder
+		lose(damageType, "overkill", damageRemainder)
 	}
 	hitPoolRemaining := calcLifeHitPoolWithLossPrevention(life, output["Life"], output["preventedLifeLoss"], lifeLossBelowHalfPrevented)
 	if !math.IsInf(MoMPoolRemaining, 1) {
@@ -334,6 +392,7 @@ func reducePoolsByDamage(poolTbl *ehpPools, damageTable map[string]float64, acto
 		lifeBelowHalfLossLostOverTime: lifeBelowHalfLossLostOverTime,
 		overkillDamage:                overkillDamage,
 		hitPoolRemaining:              math.Floor(hitPoolRemaining),
+		resourcesLostToTypeDamage:     lost,
 	}
 }
 
@@ -502,6 +561,7 @@ func numberOfHitsToDie(output map[string]float64, actor *ehpActor, DamageIn *ehp
 //pob2:src/Modules/CalcDefence.lua:2222-4389
 func buildDefenceEstimations(env *Environment, a *Actor) {
 	actor := &ehpActor{Actor: a}
+	breakdown := a.Breakdown
 	modDB := actor.ModDB
 	enemyDB := actor.Enemy.ModDB
 	output := actor.Output
@@ -560,6 +620,14 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 			output[damageType+"EnemyDamage"] = 0
 		}
 	} else {
+		//pob2:block:src/Modules/CalcDefence.lua:2268-2282
+		if breakdown != nil {
+			breakdown.setEntry("totalEnemyDamage", &BreakdownEntry{
+				Label:   "Total damage from the enemy",
+				RowList: []map[string]string{},
+				ColList: []BreakdownCol{{"Type", "type"}, {"Value", "value"}, {"Mult", "mult"}, {"Crit", "crit"}, {"Conversion", "convMult"}, {"Final", "final"}, {"From", "from"}},
+			})
+		}
 		enemyCritChance := 0.0
 		switch {
 		case enemyDB.Flag(nil, "NeverCrit"):
@@ -585,7 +653,9 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 			enemyDamage, hasDamage := configInputNumber(env, "enemy"+damageType+"Damage")
 			enemyPen, hasPen := configInputNumber(env, "enemy"+damageType+"Pen")
 			enemyOverwhelm, hasOverwhelm := configInputNumber(env, "enemy"+damageType+"Overwhelm")
+			sourceStr := "Config"
 			if !hasDamage {
+				sourceStr = "Default"
 				enemyDamage = placeholder["enemy"+damageType+"Damage"]
 			}
 			if !hasPen {
@@ -640,6 +710,7 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 			output[damageType+"EnemyOverwhelm"] = enemyOverwhelm
 			output["totalEnemyDamageIn"] += enemyDamage
 			output[damageType+"EnemyDamage"] = enemyDamage * (1 - conversionTotal/100) * enemyDamageMult * output["EnemyCritEffect"]
+			conversionExtra := -enemyDamage*enemyDamageMult*output["EnemyCritEffect"] + output[damageType+"EnemyDamage"]
 			for _, damageTypeFrom := range dmgTypeList {
 				enemyDamage, ok := enemyDamageConversion[damageType][damageTypeFrom]
 				if !ok {
@@ -651,8 +722,45 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 				names = append(names, elementalName(damageTypeFrom, "ElementalDamage")...)
 				enemyDamageMult := calcLibMod(enemyDB, nil, names...)
 				output[damageType+"EnemyDamage"] += enemyDamage * enemyDamageMult * output["EnemyCritEffect"]
+				conversionExtra += enemyDamage * enemyDamageMult * output["EnemyCritEffect"]
 			}
 			output["totalEnemyDamage"] += output[damageType+"EnemyDamage"]
+			//pob2:block:src/Modules/CalcDefence.lua:2365-2384
+			if breakdown != nil {
+				lines := []string{
+					sFormat("from %s: %d", sourceStr, enemyDamage),
+					sFormat("* %.2f (modifiers to enemy damage)", enemyDamageMult),
+					sFormat("* %.3f (enemy crit effect)", output["EnemyCritEffect"]),
+				}
+				sign, abs := "-", -conversionExtra
+				if conversionExtra > 0 {
+					sign = "+"
+				}
+				if conversionExtra >= 0 {
+					abs = conversionExtra
+				}
+				if conversionExtra != 0 {
+					lines = append(lines, sFormat("%s %d (enemy damage conversion)", sign, abs))
+				}
+				lines = append(lines, sFormat("= %d", output[damageType+"EnemyDamage"]))
+				breakdown.set(damageType+"EnemyDamage", lines...)
+				convSign := ""
+				if conversionExtra > 0 {
+					convSign = "+"
+				} else if conversionExtra < 0 {
+					convSign = "-"
+				}
+				e := breakdown.Entries["totalEnemyDamage"]
+				e.RowList = append(e.RowList, map[string]string{
+					"type":     damageType,
+					"value":    sFormat("%d", enemyDamage),
+					"mult":     sFormat("%.2f", enemyDamageMult),
+					"crit":     sFormat("%.2f", output["EnemyCritEffect"]),
+					"convMult": sFormat("%s%d", convSign, abs),
+					"final":    sFormat("%d", output[damageType+"EnemyDamage"]),
+					"from":     sourceStr,
+				})
+			}
 		}
 	}
 
@@ -678,18 +786,39 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 		actor.damageShiftTable[damageType] = shiftTable
 
 		output[damageType+"TakenDamage"] = output[damageType+"EnemyDamage"] * actor.damageShiftTable[damageType][damageType] / 100
+		//pob2:block:src/Modules/CalcDefence.lua:2413-2426
+		if breakdown != nil {
+			breakdown.setEntry(damageType+"TakenDamage", &BreakdownEntry{
+				Label:   "Taken",
+				RowList: []map[string]string{{"type": damageType, "value": sFormat("%d", output[damageType+"TakenDamage"])}},
+				ColList: []BreakdownCol{{"Type", "type"}, {"Value", "value"}},
+			})
+		}
 	}
 	for _, damageType := range dmgTypeList {
 		for _, damageConvertedType := range dmgTypeList {
 			if damageType != damageConvertedType {
 				damage := output[damageType+"EnemyDamage"] * actor.damageShiftTable[damageType][damageConvertedType] / 100
 				output[damageConvertedType+"TakenDamage"] += damage
+				if breakdown != nil && damage > 0 {
+					e := breakdown.Entries[damageConvertedType+"TakenDamage"]
+					e.RowList = append(e.RowList, map[string]string{"type": damageType, "value": sFormat("%d", damage)})
+				}
 			}
 		}
 	}
 	output["totalTakenDamage"] = 0
+	//pob2:block:src/Modules/CalcDefence.lua:2445-2463
+	var totalTaken *BreakdownEntry
+	if breakdown != nil {
+		totalTaken = &BreakdownEntry{Label: "Total damage taken from the enemy after taken as", RowList: []map[string]string{}, ColList: []BreakdownCol{{"Type", "type"}, {"Value", "value"}}}
+		breakdown.setEntry("totalTakenDamage", totalTaken)
+	}
 	for _, damageType := range dmgTypeList {
 		output["totalTakenDamage"] += output[damageType+"TakenDamage"]
+		if totalTaken != nil {
+			totalTaken.RowList = append(totalTaken.RowList, map[string]string{"type": damageType, "value": sFormat("%d", output[damageType+"TakenDamage"])})
+		}
 	}
 
 	//pob2:block:src/Modules/CalcDefence.lua:2467-2526
@@ -743,11 +872,29 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 				reduction = output["Base"+damageType+"DamageReduction"]
 			}
 			output[damageType+"TakenDotMult"] = math.Max((1-resist/100)*(1-reduction/100)*(1+takenInc/100)*takenMore, 0)
+			//pob2:block:src/Modules/CalcDefence.lua:2514-2524
+			if breakdown != nil {
+				reductionLink := link("%.2f ^8(%s damage reduction)", 1-reduction/100)
+				reductionLink.Args = []any{strings.ToLower(damageType)}
+				lines, _ := breakdown.multiChain(nil, multiChainSpec{
+					Label: "DoT Multiplier:",
+					Links: []chainLink{link("%.2f ^8(resistance)", 1-resist/100), reductionLink, link("%.2f ^8(increased/reduced damage taken)", 1+takenInc/100), link("%.2f ^8(more/less damage taken)", takenMore)},
+					Total: sFormat("= %.2f", output[damageType+"TakenDotMult"]),
+				})
+				breakdown.set(damageType+"TakenDotMult", lines...)
+			}
 		}
 	}
 
 	//pob2:block:src/Modules/CalcDefence.lua:2529-2742
 	output["totalTakenHit"] = 0
+	if breakdown != nil {
+		breakdown.setEntry("totalTakenHit", &BreakdownEntry{
+			Label:   "Total damage taken after mitigation",
+			RowList: []map[string]string{},
+			ColList: []BreakdownCol{{"Type", "type"}, {"Incoming", "incoming"}, {"Mult", "mult"}, {"Value", "value"}},
+		})
+	}
 	impaleFlags := mod.MFlag(0)
 	if damageCategoryConfig == "Melee" || damageCategoryConfig == "Projectile" || damageCategoryConfig == "Average" {
 		impaleFlags = mod.MFlagAttack
@@ -790,6 +937,13 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 			percentOfArmourApplies += modDB.Sum(mod.TypeBase, nil, "ArmourAppliesToElementalDamageTaken")
 		}
 		effectiveAppliedArmour := (output["Armour"] * percentOfArmourApplies / 100) * (1 + output["ArmourDefense"])
+		effectiveArmourFromArmour := effectiveAppliedArmour
+		// effectiveArmourFromOther, in an order of its own: PoB-PoE2 walks it with pairs
+		type armourFromOther struct {
+			label          string
+			percent, value float64
+		}
+		var fromOther []armourFromOther
 		percentOfEvasionApplies := 0.0
 		if !modDB.Flag(nil, "EvasionDoesNotApplyTo"+damageType+"DamageTaken") {
 			percentOfEvasionApplies = modDB.Sum(mod.TypeBase, nil, "EvasionAppliesTo"+damageType+"DamageTaken")
@@ -799,10 +953,13 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 			percentOfEnergyShieldApplies = modDB.Sum(mod.TypeBase, nil, "EnergyShieldAppliesTo"+damageType+"DamageTaken")
 		}
 		if percentOfEvasionApplies > 0 {
-			effectiveAppliedArmour += math.Max(output["Evasion"]*percentOfEvasionApplies/100, 0)
+			fromOther = append(fromOther, armourFromOther{"Evasion", percentOfEvasionApplies, math.Max(output["Evasion"]*percentOfEvasionApplies/100, 0)})
 		}
 		if percentOfEnergyShieldApplies > 0 {
-			effectiveAppliedArmour += math.Max(output["EnergyShield"]*percentOfEnergyShieldApplies/100, 0)
+			fromOther = append(fromOther, armourFromOther{"Energy Shield", percentOfEnergyShieldApplies, math.Max(output["EnergyShield"]*percentOfEnergyShieldApplies/100, 0)})
+		}
+		for _, o := range fromOther {
+			effectiveAppliedArmour += o.value
 		}
 
 		resMult := 1 - resist/100
@@ -832,6 +989,42 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 		if impaleDamage > 0 {
 			impaleDamage = impaleDamage * resMult * (1 - math.Max(math.Min(output[damageType+"DamageReductionMax"], math.Min(output[damageType+"DamageReductionMax"], impaleArmourReduct+reduction)-enemyOverwhelm), 0)/100)
 			impaleDamage = impaleDamage * enemyImpaleChance / 100 * 5 * output[damageType+"TakenReflect"]
+		}
+		physicalArmour := 0.0
+		if damageType == "Physical" {
+			physicalArmour = 100
+		}
+		//pob2:block:src/Modules/CalcDefence.lua:2607-2640
+		if breakdown != nil {
+			var lines []string
+			if armourReduct != 0 {
+				if percentOfArmourApplies != physicalArmour && percentOfArmourApplies > 0 {
+					lines = append(lines, sFormat("%d%% percent of Armour applies", percentOfArmourApplies), sFormat("Armour contributing to reduction: %d", effectiveArmourFromArmour))
+				}
+				if effectiveArmourFromArmour == effectiveAppliedArmour {
+					lines = append(lines, sFormat("Reduction from Armour: %d%%", armourReduct))
+				} else {
+					for _, o := range fromOther {
+						lines = append(lines, sFormat("%d%% percent of %s applies", o.percent, o.label), sFormat("%s contributing to reduction: %d", o.label, o.value))
+					}
+					lines = append(lines, sFormat("Combined Defence used for reduction: %d", effectiveAppliedArmour), sFormat("Reduction from combined Defence: %d%%", armourReduct))
+				}
+				if resMult != 1 {
+					lines = append(lines, sFormat("Enemy Hit Damage After Resistance: %d ^8(total incoming damage)", damage*resMult))
+				} else {
+					lines = append(lines, sFormat("Enemy Hit Damage: %d ^8(total incoming damage)", damage))
+				}
+			}
+			if reduction != 0 {
+				lines = append(lines, sFormat("Base %s Damage Reduction: %d%%", damageType, reduction))
+			}
+			if enemyOverwhelm != 0 {
+				lines = append(lines, sFormat("Enemy Overwhelm %s Damage: %d%%", damageType, enemyOverwhelm))
+			}
+			if countTrue(armourReduct != 0, reduction != 0, enemyOverwhelm != 0) >= 2 {
+				lines = append(lines, sFormat("Total %s Damage Reduction: %d%%", damageType, 100-reductMult*100))
+			}
+			breakdown.set(damageType+"DamageReduction", lines...)
 		}
 		takenMult := output[damageType+"TakenHitMult"]
 		spellSuppressMult := 1.0
@@ -871,23 +1064,105 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 		if anyTakenReflect {
 			output[damageType+"TakenReflectMult"] = finalReflect
 		}
+		//pob2:block:src/Modules/CalcDefence.lua:2667-2741
+		if breakdown != nil {
+			var lines []string
+			if reduction != 0 {
+				lines = append(lines, sFormat("Base %s Damage Taken: %.2f", damageType, 1-reduction/100))
+			}
+			if armourReduct != 0 {
+				if percentOfArmourApplies != physicalArmour && percentOfArmourApplies > 0 {
+					lines = append(lines, sFormat("%d%% percent of Armour applies", percentOfArmourApplies))
+				}
+				if effectiveArmourFromArmour == effectiveAppliedArmour {
+					lines = append(lines, sFormat("Reduction from Armour: %.2f", 1-armourReduct/100))
+				} else {
+					if effectiveArmourFromArmour > 0 {
+						lines = append(lines, sFormat("Armour contributing to reduction: %d", effectiveArmourFromArmour))
+					}
+					for _, o := range fromOther {
+						lines = append(lines, sFormat("%d%% percent of %s applies", o.percent, o.label), sFormat("%s contributing to reduction: %d", o.label, o.value))
+					}
+					lines = append(lines, sFormat("Combined Defence used for reduction: %d", effectiveAppliedArmour), sFormat("Reduction from combined Defence: %.2f", 1-armourReduct/100))
+				}
+			}
+			if enemyOverwhelm != 0 {
+				lines = append(lines, sFormat("+ Enemy Overwhelm %s Damage: %.2f", damageType, enemyOverwhelm/100))
+			}
+			if reduction != 0 || armourReduct != 0 || enemyOverwhelm != 0 {
+				lines = append(lines, sFormat("= %.2f", reductMult))
+			}
+			if resist != 0 {
+				lines = append(lines, sFormat("Resistance: %.2f", 1-resist/100))
+			}
+			if enemyPen != 0 {
+				lines = append(lines, sFormat("+ Enemy Pen: %.2f", enemyPen/100))
+			}
+			switch {
+			case resist <= 0 && enemyPen != 0:
+				lines = append(lines, sFormat("= %.2f ^8(Negative resistance unaffected by penetration)", resMult))
+			case resist-enemyPen < 0:
+				lines = append(lines, sFormat("= %.2f ^8(Penetration cannot bring resistances below 0)", resMult))
+			case resist != 0:
+				lines = append(lines, sFormat("= %.2f", resMult))
+			}
+			if resMult != 1 && reductMult != 1 {
+				lines = append(lines, sFormat("%.2f x %.2f = %.3f", resMult, reductMult, baseMult))
+			}
+			if takenFlat != 0 {
+				lines = append(lines, sFormat("+ Flat: %d", takenFlat))
+			}
+			if takenMult != 1 {
+				lines = append(lines, sFormat("x Taken: %.3f", takenMult))
+			}
+			if spellSuppressMult != 1 {
+				lines = append(lines, sFormat("x Spell Suppression: %.3f", spellSuppressMult))
+			}
+			if deflectMulti != 1 {
+				lines = append(lines, sFormat("x Deflection: %.3f", deflectMulti))
+			}
+			if impaleDamage != 0 {
+				lines = append(lines, sFormat("+ Impale: %.1f", impaleDamage))
+			}
+			if takenFlat != 0 || afterReductionMulti != 1 || impaleDamage != 0 {
+				lines = append(lines, sFormat("= %.3f", output[damageType+"TakenHitMult"]))
+			}
+			breakdown.set(damageType+"TakenHitMult", lines...)
+			if anyTakenReflect {
+				reflect := []string{sFormat("Resistance: %.3f", 1-resist/100)}
+				if enemyPen > 0 {
+					reflect = append(reflect, sFormat("Enemy Pen: %.2f", enemyPen))
+				}
+				reflect = append(reflect, sFormat("Taken: %.3f", takenMultReflect), sFormat("= %.3f", finalReflect))
+				breakdown.set(damageType+"TakenReflectMult", reflect...)
+			}
+		}
 	}
 
 	//pob2:block:src/Modules/CalcDefence.lua:2745-2860
 	{
 		stunThresholdBase := 0.0
+		stunThresholdSource := ""
 		switch {
 		case modDB.Flag(nil, "StunThresholdBasedOnEnergyShieldInsteadOfLife"):
-			stunThresholdBase = output["EnergyShield"] * modDB.Sum(mod.TypeBase, nil, "StunThresholdEnergyShieldPercent") / 100
+			stunThresholdMult := modDB.Sum(mod.TypeBase, nil, "StunThresholdEnergyShieldPercent")
+			stunThresholdBase = output["EnergyShield"] * stunThresholdMult / 100
+			stunThresholdSource = luaToString(stunThresholdMult) + "% of Energy Shield"
 		case modDB.Flag(nil, "StunThresholdBasedOnManaInsteadOfLife"):
-			stunThresholdBase = output["Mana"] * modDB.Sum(mod.TypeBase, nil, "StunThresholdManaPercent") / 100
+			stunThresholdMult := modDB.Sum(mod.TypeBase, nil, "StunThresholdManaPercent")
+			stunThresholdBase = output["Mana"] * stunThresholdMult / 100
+			stunThresholdSource = luaToString(stunThresholdMult) + "% of Mana"
 		case modDB.Flag(nil, "ChaosInoculation"):
 			stunThresholdBase = modDB.Sum(mod.TypeBase, nil, "Life")
+			stunThresholdSource = "Life before Chaos Inoculation"
 		default:
 			stunThresholdBase = output["Life"]
+			stunThresholdSource = "Life"
 		}
 		if modDB.Flag(nil, "AddESToStunThreshold") {
-			stunThresholdBase += output["EnergyShield"] * modDB.Sum(mod.TypeBase, nil, "ESToStunThresholdPercent") / 100
+			esMult := modDB.Sum(mod.TypeBase, nil, "ESToStunThresholdPercent")
+			stunThresholdBase += output["EnergyShield"] * esMult / 100
+			stunThresholdSource += " and " + luaToString(esMult) + "% of Energy Shield"
 		}
 		StunThresholdInc := 1 + modDB.Sum(mod.TypeIncrease, nil, "StunThreshold")/100
 		// PoB passes "INC" as the cfg here; a string cfg carries none of the fields a tag reads.
@@ -903,10 +1178,38 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 			notAvoidChance *= 0.5
 		}
 		output["StunAvoidChance"] = 100 - notAvoidChance
+		//pob2:block:src/Modules/CalcDefence.lua:2779-2800
+		if breakdown != nil {
+			lines := []string{sFormat("%d ^8(base from %s)", stunThresholdBase, stunThresholdSource)}
+			for _, source := range []string{"Tree", "Item", "Skill"} {
+				src := mod.Source(source)
+				if sourceVal := modDB.Sum(mod.TypeBase, &moddb.ListCfg{Source: &src}, "StunThreshold"); sourceVal > 0 {
+					lines = append(lines, sFormat("+ %d ^8(base from %s)", sourceVal, source))
+				}
+			}
+			if StunThresholdInc != 1 {
+				lines = append(lines, sFormat("* %.2f ^8(increased threshold)", StunThresholdInc))
+			}
+			if StunThresholdMore != 1 {
+				lines = append(lines, sFormat("* %.2f ^8(more threshold)", StunThresholdMore))
+			}
+			if StunThresholdInc != 1 || StunThresholdMore != 1 {
+				lines = append(lines, sFormat("= %d", output["StunThreshold"]))
+			}
+			breakdown.set("StunThreshold", lines...)
+			breakdown.set("StunAvoidChance",
+				colorCustom+"NOTE: Having any energy shield when the hit occurs grants 50% chance to avoid stun.",
+				colorCustom+"POB only applies this modifier when ES > Total incoming damage.",
+			)
+		}
 
 		if output["StunAvoidChance"] >= 100 {
 			output["StunDuration"] = 0
 			output["BlockDuration"] = 0
+			if breakdown != nil {
+				breakdown.set("StunDuration", "Cannot be Stunned")
+				breakdown.set("BlockDuration", "Cannot be Stunned")
+			}
 		} else {
 			stunDuration := 1 + modDB.Sum(mod.TypeIncrease, nil, "StunDuration")/100
 			baseStunDuration := miscConstant("StunBaseDuration")
@@ -917,6 +1220,23 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 			stunAndBlockRecovery := 1 + modDB.Sum(mod.TypeIncrease, nil, "StunRecovery", "BlockRecovery")/100
 			output["StunDuration"] = math.Ceil(baseStunDuration*stunDuration/stunRecovery*miscConstant("ServerTickRate")) / miscConstant("ServerTickRate")
 			output["BlockDuration"] = math.Ceil(baseStunDuration*stunDuration/stunAndBlockRecovery*miscConstant("ServerTickRate")) / miscConstant("ServerTickRate")
+			//pob2:block:src/Modules/CalcDefence.lua:2815-2833
+			if breakdown != nil {
+				stun := []string{sFormat("%.2fs ^8(base)", baseStunDuration)}
+				block := []string{sFormat("%.2fs ^8(base)", baseStunDuration)}
+				if stunDuration != 1 {
+					stun = append(stun, sFormat("* %.2f ^8(increased duration)", stunDuration))
+					block = append(block, sFormat("* %.2f ^8(increased duration)", stunDuration))
+				}
+				if stunRecovery != 1 {
+					stun = append(stun, sFormat("/ %.2f ^8(increased/reduced recovery)", stunRecovery))
+				}
+				if stunAndBlockRecovery != 1 {
+					block = append(block, sFormat("/ %.2f ^8(increased/reduced block recovery)", stunAndBlockRecovery))
+				}
+				breakdown.set("StunDuration", append(stun, "rounded up to nearest server tick", sFormat("= %.2fs", output["StunDuration"]))...)
+				breakdown.set("BlockDuration", append(block, "rounded up to nearest server tick", sFormat("= %.2fs", output["BlockDuration"]))...)
+			}
 		}
 		output["InterruptStunAvoidChance"] = math.Min(modDB.Sum(mod.TypeBase, nil, "AvoidInterruptStun"), 100)
 		effectiveEnemyDamage := output["totalTakenHit"] + output["PhysicalTakenHit"]*0.25
@@ -930,6 +1250,23 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 			output["SelfStunChance"] = baseStunChance * notAvoidChance / 100
 		} else {
 			output["SelfStunChance"] = 0
+		}
+		//pob2:block:src/Modules/CalcDefence.lua:2844-2859
+		if breakdown != nil {
+			lines := []string{
+				sFormat("%d%% ^8(stun multiplier)", miscConstant("StunBaseMult")),
+				sFormat("* %.1f ^8(effective enemy stun damage)", effectiveEnemyDamage),
+				sFormat("/ %d ^8(stun threshold)", output["StunThreshold"]),
+			}
+			if baseStunChance < miscConstant("MinStunChanceNeeded") {
+				lines = append(lines, sFormat("= %.2f%%", baseStunChance), sFormat("Stun Chance has to be more than %d%% to stun.", miscConstant("MinStunChanceNeeded")))
+			} else {
+				if notAvoidChance != 100 {
+					lines = append(lines, sFormat("* %.2f ^8(1 - chance to avoid stun)", notAvoidChance/100))
+				}
+				lines = append(lines, sFormat("= %.2f%%", output["SelfStunChance"]))
+			}
+			breakdown.set("SelfStunChance", lines...)
 		}
 	}
 
@@ -1181,6 +1518,28 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 		}
 		poolBeforeWard := output[damageType+"TotalPool"]
 		output[damageType+"TotalPool"] = poolBeforeWard + ward
+		//pob2:block:src/Modules/CalcDefence.lua:3218-3235
+		if breakdown != nil {
+			lines := []string{sFormat("Life: %d", output["LifeRecoverable"])}
+			if output[damageType+"ManaEffectiveLife"] != output["LifeRecoverable"] {
+				lines = append(lines, sFormat("Mana through MoM: %d", output[damageType+"ManaEffectiveLife"]-output["LifeRecoverable"]))
+			}
+			if modDB.Flag(nil, "EternalLife") {
+				// the Lua's `and "..." and not flag or ""` yields true, which %s prints
+				note := ""
+				if damageType == "Chaos" && !modDB.Flag(nil, "ChaosNotDoubleESDamage") {
+					note = "true"
+				}
+				lines = append(lines, sFormat("Energy Shield: %d%s", output["EnergyShieldRecoveryCap"]/chaosESMultiplier, note),
+					sFormat("Life change prevented by Eternal Life: %d", poolBeforeWard-output[damageType+"ManaEffectiveLife"]-output["EnergyShieldRecoveryCap"]/chaosESMultiplier))
+			} else if esBypass < 1 {
+				lines = append(lines, sFormat("Non-bypassed Energy Shield: %d", poolBeforeWard-output[damageType+"ManaEffectiveLife"]))
+			}
+			if ward > 0 {
+				lines = append(lines, sFormat("Runic Ward: %d", ward))
+			}
+			breakdown.set(damageType+"TotalPool", append(lines, sFormat("Total Pool: %d", output[damageType+"TotalPool"]))...)
+		}
 	}
 
 	if damageCategoryConfig != "DamageOverTime" {
@@ -1293,19 +1652,103 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 			} else {
 				output["NumberOfMitigatedDamagingHits"] = output["NumberOfDamagingHits"]
 			}
+			//pob2:block:src/Modules/CalcDefence.lua:3343-3360
+			if breakdown != nil {
+				lines := []string{sFormat("%.2f ^8(chance for block to fail)", 1-BlockChance)}
+				if a.OutputFlags["ShowBlockEffect"] {
+					lines = append(lines, sFormat("x %.2f ^8(block effect)", output["BlockEffect"]/100))
+				}
+				if suppressionEffect != 1 {
+					lines = append(lines, sFormat("x %.3f ^8(suppression effect)", suppressionEffect))
+				}
+				if effectiveDeflectMulti != 1 {
+					lines = append(lines, sFormat("x %.3f ^8(deflect effect)", effectiveDeflectMulti))
+				}
+				if averageAvoidChance > 0 {
+					lines = append(lines, sFormat("x %.2f ^8(chance for avoidance to fail)", 1-averageAvoidChance/100))
+				}
+				lines = append(lines, sFormat("= %.1f%% ^8(of damage taken from a%s hit)", output["ConfiguredDamageChance"], hitArticle(damageCategoryConfig)+damageCategoryConfig))
+				breakdown.set("ConfiguredDamageChance", lines...)
+			}
 		}
 
 		//pob2:block:src/Modules/CalcDefence.lua:3365
 		output["TotalNumberOfHits"] = output["NumberOfMitigatedDamagingHits"] / (1 - output["ConfiguredNotHitChance"]/100)
+		//pob2:block:src/Modules/CalcDefence.lua:3366-3412
+		if breakdown != nil {
+			var lines []string
+			specificTypeAvoidance := actor.SpecificTypeAvoidance
+			switch damageCategoryConfig {
+			case "Melee", "Projectile":
+				if output[damageCategoryConfig+"EvadeChance"] > 0 {
+					lines = append(lines, sFormat("%.2f ^8(chance for evasion to fail)", 1-output[damageCategoryConfig+"EvadeChance"]/100))
+				}
+				if output["AttackDodgeChance"] > 0 {
+					lines = append(lines, sFormat("x %.2f ^8(chance for dodge to fail)", 1-output["AttackDodgeChance"]/100))
+				}
+				if damageCategoryConfig == "Projectile" && !specificTypeAvoidance && output["AvoidProjectilesChance"] > 0 {
+					lines = append(lines, sFormat("x %.2f ^8(chance for avoidance to fail)", 1-output["AvoidProjectilesChance"]/100))
+				}
+			case "Spell", "SpellProjectile":
+				if output[damageCategoryConfig+"EvadeChance"] > 0 {
+					lines = append(lines, sFormat("%.2f ^8(chance for evasion to fail)", 1-output[damageCategoryConfig+"EvadeChance"]/100))
+				}
+				if output["SpellDodgeChance"] > 0 {
+					lines = append(lines, sFormat("%.2f ^8(chance for dodge to fail)", 1-output["SpellDodgeChance"]/100))
+				}
+				if damageCategoryConfig == "SpellProjectile" && !specificTypeAvoidance && output["AvoidProjectilesChance"] > 0 {
+					lines = append(lines, sFormat("x %.2f ^8(chance for avoidance to fail)", 1-output["AvoidProjectilesChance"]/100))
+				}
+			case "Average":
+				if output["MeleeEvadeChance"] > 0 || output["ProjectileEvadeChance"] > 0 || output["SpellNotHitChance"] > 0 || output["SpellProjectileNotHitChance"] > 0 {
+					lines = append(lines, sFormat("%.2f ^8(chance for evasion to fail)", 1-(output["MeleeEvadeChance"]+output["ProjectileEvadeChance"]+output["SpellNotHitChance"]+output["SpellProjectileNotHitChance"])/4/100))
+				}
+				if output["AttackDodgeChance"] > 0 || output["SpellDodgeChance"] > 0 {
+					lines = append(lines, sFormat("x%.2f ^8(chance for dodge to fail)", 1-(output["AttackDodgeChance"]+output["SpellDodgeChance"])/2/100))
+				}
+				if !specificTypeAvoidance && output["AvoidProjectilesChance"] > 0 {
+					lines = append(lines, sFormat("x %.2f ^8(chance for avoidance to fail)", 1-output["AvoidProjectilesChance"]/2/100))
+				}
+			}
+			if output["AvoidAllDamageFromHitsChance"] > 0 {
+				lines = append(lines, sFormat("x %.2f ^8(chance for damage avoidance to fail)", 1-output["AvoidAllDamageFromHitsChance"]/100))
+			}
+			if worstOf, ok := configInputNumber(env, "EHPUnluckyWorstOf"); ok && worstOf > 1 {
+				lines = append(lines, sFormat("unlucky worst of %d", worstOf))
+			}
+			lines = append(lines, sFormat("= %d%% ^8(chance to be hit by a%s hit)", 100-output["ConfiguredNotHitChance"], hitArticle(damageCategoryConfig)+damageCategoryConfig))
+			breakdown.set("ConfiguredNotHitChance", lines...)
+			breakdown.set("TotalNumberOfHits",
+				sFormat("%.2f ^8(Number of mitigated hits)", output["NumberOfMitigatedDamagingHits"]),
+				sFormat("/ %.2f ^8(Chance to even be hit)", 1-output["ConfiguredNotHitChance"]/100),
+				sFormat("= %.2f ^8(total average number of hits you can take)", output["TotalNumberOfHits"]),
+			)
+		}
 
 		//pob2:block:src/Modules/CalcDefence.lua:3416
 		output["TotalEHP"] = output["TotalNumberOfHits"] * output["totalEnemyDamageIn"]
+		//pob2:block:src/Modules/CalcDefence.lua:3417-3423
+		if breakdown != nil {
+			breakdown.set("TotalEHP",
+				sFormat("%.2f ^8(total average number of hits you can take)", output["TotalNumberOfHits"]),
+				sFormat("x %d ^8(total incoming damage)", output["totalEnemyDamageIn"]),
+				sFormat("= %d ^8(total damage you can take)", output["TotalEHP"]),
+			)
+		}
 
 		//pob2:block:src/Modules/CalcDefence.lua:3427-3430
 		output["enemySkillTime"] = configNumberOr(env, placeholder, "enemySpeed", 700) / (1 + enemyDB.Sum(mod.TypeIncrease, nil, "Speed")/100)
 		enemyActionSpeed := actionSpeedMod(actor.Enemy)
 		output["enemySkillTime"] = output["enemySkillTime"] / 1000 / enemyActionSpeed
 		output["EHPSurvivalTime"] = output["TotalNumberOfHits"] * output["enemySkillTime"]
+		//pob2:block:src/Modules/CalcDefence.lua:3431-3437
+		if breakdown != nil {
+			breakdown.set("EHPSurvivalTime",
+				sFormat("%.2f ^8(total average number of hits you can take)", output["TotalNumberOfHits"]),
+				sFormat("x %.2f ^8enemy attack/cast time", output["enemySkillTime"]),
+				sFormat("= %.2f seconds ^8(total time it would take to die)", output["EHPSurvivalTime"]),
+			)
+		}
 	}
 
 	//pob2:block:src/Modules/CalcDefence.lua:3442-3528
@@ -1558,6 +2001,54 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 			}
 
 			output[damageType+"MaximumHitTaken"] = finalMaxHit
+			//pob2:block:src/Modules/CalcDefence.lua:3801-3845
+			if breakdown != nil {
+				key := damageType + "MaximumHitTaken"
+				e := &BreakdownEntry{
+					Label:   "Maximum hit damage breakdown",
+					RowList: []map[string]string{},
+					ColList: []BreakdownCol{{"Type", "type"}, {"Pool", "pool"}, {"Incoming", "incoming"}, {"Multi", "multi"}, {"Taken", "taken"}},
+				}
+				breakdown.setEntry(key, e)
+				fullTaken, takenDamages := takenHitFromDamage(finalMaxHit*enemyDamageMult, damageType, actor)
+				if math.IsNaN(fullTaken) {
+					fullTaken = 0
+				}
+				// takenDamages in dmgTypeList order: PoB-PoE2 walks it with pairs
+				for _, takenType := range dmgTypeList {
+					takenAmt, ok := takenDamages[takenType]
+					if !ok {
+						continue
+					}
+					conversion := actor.damageShiftTable[damageType][takenType]
+					incoming := finalMaxHit * enemyDamageMult * conversion / 100
+					if math.IsNaN(takenAmt) {
+						takenAmt = 0
+					}
+					takenDamages[takenType] = takenAmt
+					e.RowList = append(e.RowList, map[string]string{
+						"type":     sFormat("%d%% as %s", conversion, takenType),
+						"pool":     sFormat("%d", output[takenType+"TotalHitPool"]),
+						"incoming": sFormat("%.0f", incoming),
+						"multi":    sFormat("x%.3f", takenAmt/incoming),
+						"taken":    sFormat("%.0f", takenAmt),
+					})
+				}
+				fullMulti := fullTaken / finalMaxHit / enemyDamageMult
+				lines := []string{"^8Maximum hit is calculated in reverse -", "^8from health pools, via damage reductions, to the max hit:", sFormat("%d ^8(used pool)", fullTaken)}
+				if round(fullMulti, 2) != 1 {
+					lines = append(lines, sFormat("/ %.2f ^8(modifiers to damage taken)", fullMulti))
+				}
+				if enemyDamageMult != 1 {
+					lines = append(lines, sFormat("/ %.2f ^8(modifiers to enemy damage)", enemyDamageMult))
+				}
+				approximate := ""
+				if useConversionSmoothing {
+					approximate = " (approximate)"
+				}
+				lines = append(lines, sFormat("= %.0f ^8maximum survivable enemy damage%s", finalMaxHit, approximate), "^8Such a hit would drain the following resources:")
+				e.Lines = incomingDamageBreakdown(lines, reducePoolsByDamage(nil, takenDamages, actor), output)
+			}
 		}
 
 		minimum := posInf
@@ -1576,6 +2067,13 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 	//pob2:block:src/Modules/CalcDefence.lua:3863-3872
 	for _, damageType := range dmgTypeList {
 		output[damageType+"DotEHP"] = output[damageType+"TotalPool"] / output[damageType+"TakenDotMult"]
+		if breakdown != nil {
+			breakdown.set(damageType+"DotEHP",
+				sFormat("Total Pool: %d", output[damageType+"TotalPool"]),
+				sFormat("Dot Damage Taken modifier: %.2f", output[damageType+"TakenDotMult"]),
+				sFormat("Total Effective Dot Pool: %d", output[damageType+"DotEHP"]),
+			)
+		}
 	}
 
 	//pob2:block:src/Modules/CalcDefence.lua:3875-4283
@@ -1732,4 +2230,180 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 			}
 		}
 	}
+
+	if breakdown != nil {
+		incomingHitBreakdown(breakdown, actor)
+	}
+}
+
+//pob2:block:src/Modules/CalcDefence.lua:4286-4387
+func incomingHitBreakdown(breakdown *Breakdown, actor *ehpActor) {
+	output := actor.Output
+	takenHit := map[string]float64{}
+	total := breakdown.Entries["totalTakenHit"]
+	for _, damageType := range dmgTypeList {
+		if output[damageType+"TakenHit"] > 0 {
+			takenHit[damageType] = output[damageType+"TakenHit"]
+		}
+		total.RowList = append(total.RowList, map[string]string{
+			"type":     damageType,
+			"incoming": sFormat("%.1f incoming damage", output[damageType+"TakenDamage"]),
+			"mult":     sFormat("x %.3f damage mult", output[damageType+"TakenHitMult"]),
+			"value":    sFormat("%d", math.Ceil(output[damageType+"TakenHit"])),
+		})
+	}
+	poolsRemaining := reducePoolsByDamage(nil, takenHit, actor)
+	total.Lines = incomingDamageBreakdown(append(total.Lines, "Such a hit would drain the following resources:"), poolsRemaining, output)
+
+	for _, damageType := range dmgTypeList {
+		lost := poolsRemaining.resourcesLostToTypeDamage[damageType]
+		sum := 0.0
+		lines := []string{
+			sFormat("Final %s Damage taken:", damageType),
+			sFormat("%.1f incoming damage", output[damageType+"TakenDamage"]),
+			sFormat("x %.3f damage mult", output[damageType+"TakenHitMult"]),
+			sFormat("= %.1f", output[damageType+"TakenHit"]),
+			"This part of the hit drains the following resources:",
+		}
+		add := func(key, format string, args ...any) {
+			if v, ok := lost[key]; ok {
+				sum += v
+				lines = append(lines, sFormat(format, append([]any{v}, args...)...))
+			}
+		}
+		add("frostShield", "\t%d "+colorGem+"Frost Shield Life")
+		add("spectres", "\t%d "+colorGem+"Total Spectre Life")
+		add("totems", "\t%d "+colorGem+"Total Totem Life")
+		add("vaalRejuvenationTotems", "\t%d "+colorGem+"Total Vaal Rejuvenation Totem Life")
+		add("radianceSentinel", "\t%d "+colorGem+"Total Sentinel of Radiance Life")
+		add("soulLink", "\t%d "+colorGem+"Total Allied Energy shield")
+		add("aegis", "\t%d "+colorGem+"%s Aegis charge", damageType)
+		add("sharedElementalAegis", "\t%d "+colorGem+"Elemental Aegis charge")
+		add("sharedAegis", "\t%d "+colorGem+"Shared Aegis charge")
+		add("guard", "\n\t%d "+colorScourge+"%s Guard charge", damageType)
+		add("sharedGuard", "\t%d "+colorScourge+"Shared Guard charge")
+		// the Lua's `and "..." and not flag or ""` yields true, which %s prints
+		chaosNote := ""
+		if damageType == "Chaos" && !actor.ModDB.Flag(nil, "ChaosNotDoubleESDamage") {
+			chaosNote = "true"
+		}
+		add("energyShield", "\t%d "+colorES+"Energy Shield%s", chaosNote)
+		if v, ok := lost["eternalLifePrevented"]; ok {
+			lines = append(lines, sFormat("\t%d "+colorPositive+"Life change prevented by Eternal Life", v))
+		}
+		add("mana", "\t%d "+colorMana+"Mana")
+		if lost["lifeLossPrevented"] > 0 {
+			add("lifeLossPrevented", "\t%d "+colorLife+"Life ^7Loss Prevented")
+		}
+		if lost["life"] > 0 {
+			add("life", "\t%d "+colorLife+"Life")
+		}
+		add("runicWard", "\t%d "+colorWard+"Runic Ward")
+		add("overkill", "\t%d "+colorNegative+"Overkill damage")
+		breakdown.set(damageType+"TakenHit", append(lines, sFormat("\t^8(%d total)", sum))...)
+	}
+}
+
+func countTrue(bs ...bool) int {
+	n := 0
+	for _, b := range bs {
+		if b {
+			n++
+		}
+	}
+	return n
+}
+
+// colorCustom is colorCodes.CUSTOM.
+//
+//pob2:src/Data/Global.lua:19
+const colorCustom = "^x5CF0BB"
+
+// hitArticle is the Lua's `(cfg == "Average" and "n " or (cfg == "Untyped" and "n " or " "))`.
+func hitArticle(damageCategoryConfig string) string {
+	if damageCategoryConfig == "Average" || damageCategoryConfig == "Untyped" {
+		return "n "
+	}
+	return " "
+}
+
+//pob2:block:src/Data/Global.lua:10-82
+const (
+	colorGem      = "^x74CABF"
+	colorPositive = "^x33FF77"
+	colorScourge  = "^xFF6E25"
+	colorLife     = "^xE05030"
+	colorMana     = "^x7070FF"
+	colorES       = "^x88FFFF"
+	colorWard     = "^xFFFF77"
+)
+
+func (p *ehpPools) ally(name string) *ehpAlly {
+	for _, a := range p.alliesTakenBeforeYou {
+		if a.name == name {
+			return a
+		}
+	}
+	return &ehpAlly{name: name}
+}
+
+// incomingDamageBreakdown appends the resources a hit drained.
+//
+//pob2:src/Modules/CalcDefence.lua:706-772
+func incomingDamageBreakdown(lines []string, pools *ehpPools, output map[string]float64) []string {
+	for _, a := range []struct{ key, ally, label string }{
+		{"FrostShieldLife", "frostShield", "Frost Shield Life"},
+		{"TotalSpectreLife", "spectres", "Total Spectre Life"},
+		{"TotalTotemLife", "totems", "Total Totem Life"},
+		{"TotalVaalRejuvenationTotemLife", "vaalRejuvenationTotems", "Total Vaal Rejuvenation Totem Life"},
+		{"TotalRadianceSentinelLife", "radianceSentinel", "Total Sentinel of Radiance Life"},
+		{"TotalCompanionLife", "companion", "Total Companion Life"},
+		{"AlliedEnergyShield", "soulLink", "Total Allied Energy shield"},
+	} {
+		if output[a.key] > 0 {
+			remaining := pools.ally(a.ally).remaining
+			lines = append(lines, sFormat("\t%d "+colorGem+a.label+" ^7(%d remaining)", output[a.key]-remaining, remaining))
+		}
+	}
+	for _, damageType := range dmgTypeList {
+		if v, ok := pools.resourcesLostToTypeDamage[damageType]["aegis"]; ok {
+			lines = append(lines, sFormat("\t%d "+colorGem+"%s Aegis charge ^7(%d remaining)", v, damageType, pools.aegis[damageType]))
+		}
+	}
+	if v, ok := output["sharedElementalAegis"]; ok && v != pools.aegis["sharedElemental"] {
+		lines = append(lines, sFormat("\t%d "+colorGem+"Elemental Aegis charge ^7(%d remaining)", v-pools.aegis["sharedElemental"], pools.aegis["sharedElemental"]))
+	}
+	if output["sharedAegis"] > 0 {
+		lines = append(lines, sFormat("\t%d "+colorGem+"Shared Aegis charge ^7(%d remaining)", output["sharedAegis"]-pools.aegis["shared"], pools.aegis["shared"]))
+	}
+	eternalLifePrevented := 0.0
+	for _, damageType := range dmgTypeList {
+		eternalLifePrevented += pools.resourcesLostToTypeDamage[damageType]["eternalLifePrevented"]
+		if v, ok := pools.resourcesLostToTypeDamage[damageType]["guard"]; ok {
+			lines = append(lines, sFormat("\n\t%d "+colorScourge+"%s Guard charge ^7(%d remaining)", v, damageType, pools.guard[damageType]))
+		}
+	}
+	if output["sharedGuardAbsorb"] > 0 {
+		lines = append(lines, sFormat("\t%d "+colorScourge+"Shared Guard charge ^7(%d remaining)", output["sharedGuardAbsorb"]-pools.guard["shared"], pools.guard["shared"]))
+	}
+	if output["EnergyShieldRecoveryCap"] != pools.energyShield && output["EnergyShieldRecoveryCap"] > 0 {
+		lines = append(lines, sFormat("\t%d "+colorES+"Energy Shield ^7(%d remaining)", output["EnergyShieldRecoveryCap"]-pools.energyShield, pools.energyShield))
+	}
+	if eternalLifePrevented > 0 {
+		lines = append(lines, sFormat("\t%d "+colorPositive+"Life change prevented by Eternal Life", eternalLifePrevented))
+	}
+	if output["ManaUnreserved"] != pools.mana && output["ManaUnreserved"] > 0 {
+		lines = append(lines, sFormat("\t%d "+colorMana+"Mana ^7(%d remaining)", output["ManaUnreserved"]-pools.mana, pools.mana))
+	}
+	if pools.lifeLossLostOverTime+pools.lifeBelowHalfLossLostOverTime > 0 {
+		lines = append(lines, sFormat("\t%d "+colorLife+"Life ^7Loss Prevented", pools.lifeLossLostOverTime+pools.lifeBelowHalfLossLostOverTime))
+	}
+	lines = append(lines, sFormat("\t%d "+colorLife+"Life ^7(%d remaining)", output["LifeRecoverable"]-pools.life, pools.life))
+	if output["Ward"] > 0 {
+		lines = append(lines, sFormat("\t%d "+colorWard+"Runic Ward ^7(%d remaining)", output["Ward"]-pools.ward, pools.ward))
+	}
+	if pools.overkillDamage >= 1 {
+		lines = append(lines, sFormat("\t%d "+colorNegative+"Overkill damage", pools.overkillDamage))
+	}
+	return lines
 }

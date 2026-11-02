@@ -12,7 +12,9 @@ import { TabStorage, type StorageWrite } from '$lib/storage/tabs';
 import { remountStore } from './storage_config';
 import type { SavedStats2 } from '../shell/poe2_save';
 import { calcSections2 } from '../calcs/calc_sections2';
-import { calcsModProps2 } from '../display/calcs2';
+import { calcsBreakdowns2, calcsModProps2 } from '../display/calcs2';
+import type { CalcBreakdown } from '../display/calcs';
+
 import type { ItemDBFilterInput, ItemDBKind, ItemDBLists, ItemDBRowPlain } from '../design/item_db';
 import { addStatCompares2 } from '../display/stat_compare2';
 import type { StatCompareSection } from '../skill_tree/stat_compare';
@@ -162,6 +164,8 @@ export type Poe2CalcsPage = {
   strings: Record<string, string>;
   mainHand?: Record<string, number>;
   offHand?: Record<string, number>;
+  /* CalcBreakdownControl.lua:147-297 (PoB-PoE2) */
+  breakdowns: Record<string, CalcBreakdown>;
 };
 
 /* ItemsTab:AddItemTooltip's title and mod line groups (PoB-PoE2) */
@@ -396,7 +400,8 @@ class PoB2Worker {
       flags: { ...out?.Flags },
       strings: { ...out?.Strings },
       mainHand: out?.MainHand ? { ...out.MainHand } : undefined,
-      offHand: out?.OffHand ? { ...out.OffHand } : undefined
+      offHand: out?.OffHand ? { ...out.OffHand } : undefined,
+      breakdowns: calcsBreakdowns2(this.calc.CalcsBreakdowns().unwrap() ?? {})
     };
   }
 

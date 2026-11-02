@@ -139,7 +139,13 @@ const calcsTab2 = readable<CalcsTabView | undefined>(undefined, (set) => {
     if (page.offHand) output.OffHand = page.offHand;
     const group = mainGroupOf(at);
     set({
-      sections: calcsView2(calcSections2, { output: output as never, skillFlags: at.skillFlags ?? {}, skillData: at.skillData ?? {}, mods: page.mods }),
+      sections: calcsView2(calcSections2, {
+        output: output as never,
+        skillFlags: at.skillFlags ?? {},
+        skillData: at.skillData ?? {},
+        mods: page.mods,
+        breakdowns: page.breakdowns
+      }),
       controls:
         group && group.skills.length > 0 ? ({ Skills: group.skills, MainActiveSkill: at.mainActiveSkill || 1 } as calculator.MainSkillControls) : undefined
     });

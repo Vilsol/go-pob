@@ -322,6 +322,8 @@ type Actor struct {
 	// OutputMainHand and OutputOffHand are output.MainHand/OffHand, nil unless the main skill attacks.
 	OutputMainHand map[string]float64
 	OutputOffHand  map[string]float64
+	// Breakdown is actor.breakdown, nil unless env.buildBreakdown.
+	Breakdown *Breakdown
 
 	Player *Actor
 	Enemy  *Actor

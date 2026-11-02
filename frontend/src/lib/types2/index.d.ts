@@ -87,6 +87,23 @@ export declare namespace config {
   function InitLogging(withTime: boolean): void;
 }
 export declare namespace exposition {
+  interface CalcsBreakdown {
+    readonly Lines?: Array<string>;
+    readonly Radius: number;
+    readonly Tables?: Array<exposition.CalcsBreakdownTable>;
+    readonly Gear: boolean;
+    readonly GearTable: exposition.CalcsBreakdownTable;
+  }
+  interface CalcsBreakdownCol {
+    readonly Label: string;
+    readonly Key: string;
+  }
+  interface CalcsBreakdownTable {
+    readonly Label: string;
+    readonly Footer: string;
+    readonly Columns?: Array<exposition.CalcsBreakdownCol>;
+    readonly Rows?: Array<Record<string, string> | undefined>;
+  }
   interface CalcsModEntry {
     readonly Cfg: string;
     readonly ModSource: string;
@@ -109,6 +126,7 @@ export declare namespace exposition {
     AddDisplayItem(slot: string): Result<number>;
     AllocateAttributeNode(id: number, attributeIndex: number, allocMode: number): Result<void>;
     BuildItemCompare(id: number): Result<(exposition.ItemCompareView | undefined)>;
+    CalcsBreakdowns(): Result<(Record<string, Readonly<exposition.CalcsBreakdown>> | undefined)>;
     CalcsMods(query: exposition.CalcsModQuery): Result<(Record<string, number> | undefined)>;
     CalcsOutputs(): Result<(exposition.CalcsOutputs | undefined)>;
     Calculate(): Promise<Result<(exposition.Outputs | undefined)>>;

@@ -1,0 +1,1032 @@
+{
+  "Accuracy":[{
+      "lines":["276 ^8(base)","= 276"],
+      "type":"TEXT"
+    }],
+  "Armour":[{
+      "columns":[{
+          "key":"base",
+          "label":"Base"
+        },{
+          "key":"inc",
+          "label":"Inc/red"
+        },{
+          "key":"more",
+          "label":"More/less"
+        },{
+          "key":"total",
+          "label":"Total"
+        },{
+          "key":"source",
+          "label":"Source"
+        },{
+          "key":"sourceLabel",
+          "label":"Name"
+        }],
+      "rows":[{
+          "base":"928",
+          "source":"Body Armour",
+          "sourceLabel":"^xFFFF77Storm Shell, Vaal Cuirass",
+          "total":"928.00"
+        }],
+      "type":"TABLE"
+    }],
+  "Armour#gearOnly":[{
+      "columns":[{
+          "key":"base",
+          "label":"Value"
+        },{
+          "key":"source",
+          "label":"Source"
+        },{
+          "key":"sourceLabel",
+          "label":"Name"
+        }],
+      "rows":[{
+          "base":"928",
+          "source":"Body Armour",
+          "sourceLabel":"^xFFFF77Storm Shell, Vaal Cuirass"
+        }],
+      "type":"TABLE"
+    }],
+  "AttackDodgeChance":[{
+      "lines":["Base: 0%","Max: 75%","Total: 0%"],
+      "type":"TEXT"
+    }],
+  "AverageBurstDamage":[{
+      "lines":["17.4 ^8(average hit)","x 1.00 ^8(number of hits)","= 17.4 ^8(total burst damage)"],
+      "type":"TEXT"
+    }],
+  "AverageHit":[{
+      "lines":["16.0 x (1 - 0.0900) ^8(damage from non-crits)","+ 32.0 x 0.0900 ^8(damage from crits)","= 17.4"],
+      "type":"TEXT"
+    }],
+  "BlockChance":[{
+      "lines":["Base: 0%","Max: 50%","Total: 0%"],
+      "type":"TEXT"
+    }],
+  "BlockDuration":[{
+      "lines":["0.50s ^8(base)","rounded up to nearest server tick","= 0.53s"],
+      "type":"TEXT"
+    }],
+  "BoostedAttackUptimeRatio":[{
+      "lines":["Maximum of:","= 0%"],
+      "type":"TEXT"
+    }],
+  "Chaos":[{
+      "lines":["Base damage:","= 0.0 to 0.0","Hit damage:","0 to 0 ^8(total damage)","= 0 to 0"],
+      "type":"TEXT"
+    }],
+  "ChaosDotEHP":[{
+      "lines":["Total Pool: 683","Dot Damage Taken modifier: 1.00","Total Effective Dot Pool: 683"],
+      "type":"TEXT"
+    }],
+  "ChaosEnemyDamage":[{
+      "lines":["from Default: 386","* 1.00 (modifiers to enemy damage)","* 1.015 (enemy crit effect)","= 391"],
+      "type":"TEXT"
+    }],
+  "ChaosEnergyShieldRecoup":[{
+      "lines":["0% over 8 seconds"],
+      "type":"TEXT"
+    }],
+  "ChaosLifeRecoup":[{
+      "lines":["0% over 8 seconds"],
+      "type":"TEXT"
+    }],
+  "ChaosManaRecoup":[{
+      "lines":["0% over 8 seconds"],
+      "type":"TEXT"
+    }],
+  "ChaosMaximumHitTaken":[{
+      "lines":["^8Maximum hit is calculated in reverse -","^8from health pools, via damage reductions, to the max hit:","683 ^8(used pool)","= 683 ^8maximum survivable enemy damage","^8Such a hit would drain the following resources:","\t683 ^xE05030Life ^7(0 remaining)"],
+      "type":"TEXT"
+    },{
+      "columns":[{
+          "key":"type",
+          "label":"Type"
+        },{
+          "key":"pool",
+          "label":"Pool"
+        },{
+          "key":"incoming",
+          "label":"Incoming"
+        },{
+          "key":"multi",
+          "label":"Multi"
+        },{
+          "key":"taken",
+          "label":"Taken"
+        }],
+      "label":"Maximum hit damage breakdown",
+      "rows":[{
+          "incoming":"683",
+          "multi":"x1.000",
+          "pool":"683",
+          "taken":"683",
+          "type":"100% as Chaos"
+        }],
+      "type":"TABLE"
+    }],
+  "ChaosResist":[{
+      "lines":["Min: -200%","Max: 75%","Total: 0%"],
+      "type":"TEXT"
+    }],
+  "ChaosTakenDamage":[{
+      "columns":[{
+          "key":"type",
+          "label":"Type"
+        },{
+          "key":"value",
+          "label":"Value"
+        }],
+      "label":"Taken",
+      "rows":[{
+          "type":"Chaos",
+          "value":"391"
+        }],
+      "type":"TABLE"
+    }],
+  "ChaosTakenDotMult":[{
+      "lines":["DoT Multiplier:","= 1.00"],
+      "type":"TEXT"
+    }],
+  "ChaosTakenHit":[{
+      "lines":["Final Chaos Damage taken:","391.8 incoming damage","x 1.000 damage mult","= 391.8","This part of the hit drains the following resources:","\t391 ^xE05030Life","\t^8(391 total)"],
+      "type":"TEXT"
+    }],
+  "ChaosTotalPool":[{
+      "lines":["Life: 683","Non-bypassed Energy Shield: 0","Total Pool: 683"],
+      "type":"TEXT"
+    }],
+  "Cold":[{
+      "lines":["Base damage:","= 0.0 to 0.0","Hit damage:","0 to 0 ^8(total damage)","= 0 to 0"],
+      "type":"TEXT"
+    }],
+  "ColdDotEHP":[{
+      "lines":["Total Pool: 683","Dot Damage Taken modifier: 1.50","Total Effective Dot Pool: 455"],
+      "type":"TEXT"
+    }],
+  "ColdEnemyDamage":[{
+      "lines":["from Default: 965","* 1.00 (modifiers to enemy damage)","* 1.015 (enemy crit effect)","= 979"],
+      "type":"TEXT"
+    }],
+  "ColdEnergyShieldRecoup":[{
+      "lines":["0% over 8 seconds"],
+      "type":"TEXT"
+    }],
+  "ColdLifeRecoup":[{
+      "lines":["0% over 8 seconds"],
+      "type":"TEXT"
+    }],
+  "ColdManaRecoup":[{
+      "lines":["0% over 8 seconds"],
+      "type":"TEXT"
+    }],
+  "ColdMaximumHitTaken":[{
+      "lines":["^8Maximum hit is calculated in reverse -","^8from health pools, via damage reductions, to the max hit:","683 ^8(used pool)","/ 1.50 ^8(modifiers to damage taken)","= 455 ^8maximum survivable enemy damage","^8Such a hit would drain the following resources:","\t683 ^xE05030Life ^7(0 remaining)"],
+      "type":"TEXT"
+    },{
+      "columns":[{
+          "key":"type",
+          "label":"Type"
+        },{
+          "key":"pool",
+          "label":"Pool"
+        },{
+          "key":"incoming",
+          "label":"Incoming"
+        },{
+          "key":"multi",
+          "label":"Multi"
+        },{
+          "key":"taken",
+          "label":"Taken"
+        }],
+      "label":"Maximum hit damage breakdown",
+      "rows":[{
+          "incoming":"455",
+          "multi":"x1.501",
+          "pool":"683",
+          "taken":"683",
+          "type":"100% as Cold"
+        }],
+      "type":"TABLE"
+    }],
+  "ColdResist":[{
+      "lines":["Min: -200%","Max: 75%","Total: -50%"],
+      "type":"TEXT"
+    }],
+  "ColdTakenDamage":[{
+      "columns":[{
+          "key":"type",
+          "label":"Type"
+        },{
+          "key":"value",
+          "label":"Value"
+        }],
+      "label":"Taken",
+      "rows":[{
+          "type":"Cold",
+          "value":"979"
+        }],
+      "type":"TABLE"
+    }],
+  "ColdTakenDotMult":[{
+      "lines":["DoT Multiplier:","x 1.50 ^8(resistance)","= 1.50"],
+      "type":"TEXT"
+    }],
+  "ColdTakenHit":[{
+      "lines":["Final Cold Damage taken:","979.5 incoming damage","x 1.500 damage mult","= 1469.2","This part of the hit drains the following resources:","\t1469 ^xDD0022Overkill damage","\t^8(1469 total)"],
+      "type":"TEXT"
+    }],
+  "ColdTakenHitMult":[{
+      "lines":["Resistance: 1.50","+ Enemy Pen: 0.03","= 1.50 ^8(Negative resistance unaffected by penetration)"],
+      "type":"TEXT"
+    }],
+  "ColdTotalPool":[{
+      "lines":["Life: 683","Non-bypassed Energy Shield: 0","Total Pool: 683"],
+      "type":"TEXT"
+    }],
+  "ConfiguredDamageChance":[{
+      "lines":["1.00 ^8(chance for block to fail)","x 1.00 ^8(block effect)","= 100.0% ^8(of damage taken from an Average hit)"],
+      "type":"TEXT"
+    }],
+  "ConfiguredNotHitChance":[{
+      "lines":["= 100% ^8(chance to be hit by an Average hit)"],
+      "type":"TEXT"
+    }],
+  "CritEffect":[{
+      "lines":["(1 - 0.0900) ^8(portion of damage from non-crits)","+ [ (0.0900 x 2) ^8(portion of damage from crits)","= 1.090"],
+      "type":"TEXT"
+    }],
+  "DeflectChance":[{
+      "lines":["Enemy level: 82 ^8(can be overridden in the Configuration tab)","Average enemy accuracy: 2114","Approximate deflect chance: 0%"],
+      "type":"TEXT"
+    }],
+  "Duration":[{
+      "lines":["2.00s ^8(base)","rounded up to nearest server tick","= 2.013s"],
+      "type":"TEXT"
+    }],
+  "EHPSurvivalTime":[{
+      "lines":["0.13 ^8(total average number of hits you can take)","x 0.70 ^8enemy attack/cast time","= 0.09 seconds ^8(total time it would take to die)"],
+      "type":"TEXT"
+    }],
+  "EffectiveMovementSpeedMod":[{
+      "lines":["x 0.950 ^8(movement speed modifier)","= 0.950 ^8(effective movement speed modifier)"],
+      "type":"TEXT"
+    }],
+  "ElectrocuteBuildup":[{
+      "lines":["Enemy level: 82 ^8(can be overridden in the Configuration tab)","Enemy poise: 13333013","","Regular Hit Electrocute buildup","Min: 0.0%","Max: 0.0%","Avg: 0.0%","","Crit Electrocute buildup","Crit Min: 0.0%","Crit Max: 0.0%","Crit Avg: 0.0%","","Average Electrocute buildup","= 0.0%"],
+      "type":"TEXT"
+    }],
+  "EnergyShieldRecharge":[{
+      "lines":["Recharge rate:","0.0 ^8(12.5% per second)","= 0.0 ^8per second","Effective Recharge rate:","0.0","= 0.0 ^8per second"],
+      "type":"TEXT"
+    }],
+  "EnergyShieldRecoup":[{
+      "lines":["0% over 8 seconds"],
+      "type":"TEXT"
+    }],
+  "EnergyShieldRegenRecovery":[{
+      "lines":["Energy Shield Regeneration:","0.0 ^8(base)","= 0.0 ^8per second"],
+      "type":"TEXT"
+    }],
+  "EvadeChance":[{
+      "lines":["Enemy level: 82 ^8(can be overridden in the Configuration tab)","Average enemy accuracy: 2114","Approximate evade chance: 0%"],
+      "type":"TEXT"
+    }],
+  "Evasion":[{
+      "columns":[{
+          "key":"base",
+          "label":"Base"
+        },{
+          "key":"inc",
+          "label":"Inc/red"
+        },{
+          "key":"more",
+          "label":"More/less"
+        },{
+          "key":"total",
+          "label":"Total"
+        },{
+          "key":"source",
+          "label":"Source"
+        },{
+          "key":"sourceLabel",
+          "label":"Name"
+        }],
+      "rows":[{
+          "base":"7",
+          "source":"Global",
+          "total":"7.00"
+        }],
+      "type":"TABLE"
+    }],
+  "Evasion#gearOnly":[{
+      "columns":[{
+          "key":"base",
+          "label":"Value"
+        },{
+          "key":"source",
+          "label":"Source"
+        },{
+          "key":"sourceLabel",
+          "label":"Name"
+        }],
+      "rows":[],
+      "type":"TABLE"
+    }],
+  "ExertedAttackUptimeRatio":[{
+      "lines":["Maximum of:","= 0%"],
+      "type":"TEXT"
+    }],
+  "Fire":[{
+      "lines":["Base damage:","= 0.0 to 0.0","Hit damage:","0 to 0 ^8(total damage)","= 0 to 0"],
+      "type":"TEXT"
+    }],
+  "FireDotEHP":[{
+      "lines":["Total Pool: 683","Dot Damage Taken modifier: 1.15","Total Effective Dot Pool: 593"],
+      "type":"TEXT"
+    }],
+  "FireEnemyDamage":[{
+      "lines":["from Default: 965","* 1.00 (modifiers to enemy damage)","* 1.015 (enemy crit effect)","= 979"],
+      "type":"TEXT"
+    }],
+  "FireEnergyShieldRecoup":[{
+      "lines":["0% over 8 seconds"],
+      "type":"TEXT"
+    }],
+  "FireLifeRecoup":[{
+      "lines":["0% over 8 seconds"],
+      "type":"TEXT"
+    }],
+  "FireManaRecoup":[{
+      "lines":["0% over 8 seconds"],
+      "type":"TEXT"
+    }],
+  "FireMaximumHitTaken":[{
+      "lines":["^8Maximum hit is calculated in reverse -","^8from health pools, via damage reductions, to the max hit:","683 ^8(used pool)","/ 1.15 ^8(modifiers to damage taken)","= 594 ^8maximum survivable enemy damage","^8Such a hit would drain the following resources:","\t683 ^xE05030Life ^7(0 remaining)"],
+      "type":"TEXT"
+    },{
+      "columns":[{
+          "key":"type",
+          "label":"Type"
+        },{
+          "key":"pool",
+          "label":"Pool"
+        },{
+          "key":"incoming",
+          "label":"Incoming"
+        },{
+          "key":"multi",
+          "label":"Multi"
+        },{
+          "key":"taken",
+          "label":"Taken"
+        }],
+      "label":"Maximum hit damage breakdown",
+      "rows":[{
+          "incoming":"594",
+          "multi":"x1.150",
+          "pool":"683",
+          "taken":"683",
+          "type":"100% as Fire"
+        }],
+      "type":"TABLE"
+    }],
+  "FireResist":[{
+      "lines":["Min: -200%","Max: 75%","Total: -15%"],
+      "type":"TEXT"
+    }],
+  "FireTakenDamage":[{
+      "columns":[{
+          "key":"type",
+          "label":"Type"
+        },{
+          "key":"value",
+          "label":"Value"
+        }],
+      "label":"Taken",
+      "rows":[{
+          "type":"Fire",
+          "value":"979"
+        }],
+      "type":"TABLE"
+    }],
+  "FireTakenDotMult":[{
+      "lines":["DoT Multiplier:","x 1.15 ^8(resistance)","= 1.15"],
+      "type":"TEXT"
+    }],
+  "FireTakenHit":[{
+      "lines":["Final Fire Damage taken:","979.5 incoming damage","x 1.150 damage mult","= 1126.4","This part of the hit drains the following resources:","\t291 ^xE05030Life","\t835 ^xDD0022Overkill damage","\t^8(1126 total)"],
+      "type":"TEXT"
+    }],
+  "FireTakenHitMult":[{
+      "lines":["Resistance: 1.15","+ Enemy Pen: 0.03","= 1.15 ^8(Negative resistance unaffected by penetration)"],
+      "type":"TEXT"
+    }],
+  "FireTotalPool":[{
+      "lines":["Life: 683","Non-bypassed Energy Shield: 0","Total Pool: 683"],
+      "type":"TEXT"
+    }],
+  "FreezeBuildup":[{
+      "lines":["Enemy level: 82 ^8(can be overridden in the Configuration tab)","Enemy poise: 13333013","","Regular Hit Freeze buildup","Min: 0.0%","Max: 0.0%","Avg: 0.0%","","Crit Freeze buildup","Crit Min: 0.0%","Crit Max: 0.0%","Crit Avg: 0.0%","","Average Freeze buildup","= 0.0%"],
+      "type":"TEXT"
+    }],
+  "FrostShieldLife":[{
+      "lines":["Total life protected:","0 ^8(frost shield limit)","/ 0.00 ^8(portion taken from frost shield)","x 1.00 ^8(portion taken from life and energy shield)","= -9223372036854775808"],
+      "type":"TEXT"
+    }],
+  "GemLevel":[{
+      "lines":["10 ^8(level from gem)","= 10"],
+      "type":"TEXT"
+    }],
+  "GemQuality":[{
+      "lines":["0 ^8(quality from gem)","= 0"],
+      "type":"TEXT"
+    }],
+  "HeavyStunBuildup":[{
+      "lines":["Enemy level: 82 ^8(can be overridden in the Configuration tab)","Enemy poise: 13333013","","Regular Hit HeavyStun buildup","Min: 0.0%","Max: 0.0%","Avg: 0.0%","","Crit HeavyStun buildup","Crit Min: 0.0%","Crit Max: 0.0%","Crit Avg: 0.0%","","Average HeavyStun buildup","= 0.0%"],
+      "type":"TEXT"
+    }],
+  "Life":[{
+      "lines":["650 ^8(base)","x 1.05 ^8(increased/reduced)","= 683"],
+      "type":"TEXT"
+    }],
+  "LifeRecoup":[{
+      "lines":["0% over 8 seconds"],
+      "type":"TEXT"
+    }],
+  "LifeRegenRecovery":[{
+      "lines":["Life Regeneration:","0.0 ^8(base)","= 0.0 ^8per second"],
+      "type":"TEXT"
+    }],
+  "Lightning":[{
+      "lines":["Base damage:","3 to 61 ^8(damage from skill)","= 3.0 to 61.0","Hit damage:","3 to 61 ^8(total damage)","x 0.500 ^8(effective DPS modifier)","= 1 to 30","Portion of total damage: 100%"],
+      "type":"TEXT"
+    },{
+      "columns":[{
+          "key":"source",
+          "label":"From"
+        },{
+          "key":"base",
+          "label":"Base"
+        },{
+          "key":"inc",
+          "label":"Inc/red"
+        },{
+          "key":"more",
+          "label":"More/less"
+        },{
+          "key":"convSrc",
+          "label":"Converted Damage"
+        },{
+          "key":"total",
+          "label":"Total"
+        },{
+          "key":"convDst",
+          "label":"Conversion"
+        }],
+      "rows":[{
+          "base":"3 to 61",
+          "source":"Lightning",
+          "total":"3 to 61"
+        }],
+      "type":"TABLE"
+    }],
+  "LightningDotEHP":[{
+      "lines":["Total Pool: 683","Dot Damage Taken modifier: 1.50","Total Effective Dot Pool: 455"],
+      "type":"TEXT"
+    }],
+  "LightningEffMult":[{
+      "lines":["Enemy resistance: 50%","Effective DPS modifier:","x 0.50 ^8(resistance)","= 0.500"],
+      "type":"TEXT"
+    }],
+  "LightningEnemyDamage":[{
+      "lines":["from Default: 965","* 1.00 (modifiers to enemy damage)","* 1.015 (enemy crit effect)","= 979"],
+      "type":"TEXT"
+    }],
+  "LightningEnergyShieldRecoup":[{
+      "lines":["0% over 8 seconds"],
+      "type":"TEXT"
+    }],
+  "LightningLifeRecoup":[{
+      "lines":["0% over 8 seconds"],
+      "type":"TEXT"
+    }],
+  "LightningManaRecoup":[{
+      "lines":["0% over 8 seconds"],
+      "type":"TEXT"
+    }],
+  "LightningMaximumHitTaken":[{
+      "lines":["^8Maximum hit is calculated in reverse -","^8from health pools, via damage reductions, to the max hit:","683 ^8(used pool)","/ 1.50 ^8(modifiers to damage taken)","= 455 ^8maximum survivable enemy damage","^8Such a hit would drain the following resources:","\t683 ^xE05030Life ^7(0 remaining)"],
+      "type":"TEXT"
+    },{
+      "columns":[{
+          "key":"type",
+          "label":"Type"
+        },{
+          "key":"pool",
+          "label":"Pool"
+        },{
+          "key":"incoming",
+          "label":"Incoming"
+        },{
+          "key":"multi",
+          "label":"Multi"
+        },{
+          "key":"taken",
+          "label":"Taken"
+        }],
+      "label":"Maximum hit damage breakdown",
+      "rows":[{
+          "incoming":"455",
+          "multi":"x1.501",
+          "pool":"683",
+          "taken":"683",
+          "type":"100% as Lightning"
+        }],
+      "type":"TABLE"
+    }],
+  "LightningResist":[{
+      "lines":["Min: -200%","Max: 75%","Total: -50%"],
+      "type":"TEXT"
+    }],
+  "LightningTakenDamage":[{
+      "columns":[{
+          "key":"type",
+          "label":"Type"
+        },{
+          "key":"value",
+          "label":"Value"
+        }],
+      "label":"Taken",
+      "rows":[{
+          "type":"Lightning",
+          "value":"979"
+        }],
+      "type":"TABLE"
+    }],
+  "LightningTakenDotMult":[{
+      "lines":["DoT Multiplier:","x 1.50 ^8(resistance)","= 1.50"],
+      "type":"TEXT"
+    }],
+  "LightningTakenHit":[{
+      "lines":["Final Lightning Damage taken:","979.5 incoming damage","x 1.500 damage mult","= 1469.2","This part of the hit drains the following resources:","\t1469 ^xDD0022Overkill damage","\t^8(1469 total)"],
+      "type":"TEXT"
+    }],
+  "LightningTakenHitMult":[{
+      "lines":["Resistance: 1.50","+ Enemy Pen: 0.03","= 1.50 ^8(Negative resistance unaffected by penetration)"],
+      "type":"TEXT"
+    }],
+  "LightningTotalPool":[{
+      "lines":["Life: 683","Non-bypassed Energy Shield: 0","Total Pool: 683"],
+      "type":"TEXT"
+    }],
+  "Mana":[{
+      "lines":["220 ^8(base)","x 1.05 ^8(increased/reduced)","= 231"],
+      "type":"TEXT"
+    }],
+  "ManaCost":[{
+      "lines":["19.00 ^8(base mana cost)","= 19"],
+      "type":"TEXT"
+    }],
+  "ManaPerSecondCost":[{
+      "lines":["19.00 ^8(base mana cost)","x 1.43 ^8(cast speed)","= 27.14 per second"],
+      "type":"TEXT"
+    }],
+  "ManaRecoup":[{
+      "lines":["0% over 8 seconds"],
+      "type":"TEXT"
+    }],
+  "ManaRegenRecovery":[{
+      "lines":["Mana Regeneration:","9.2 ^8(base)","= 9.2 ^8per second"],
+      "type":"TEXT"
+    }],
+  "MaxEnergyShieldLeechRate":[{
+      "lines":["0 ^8(maximum energy shield)","x 10% ^8(percentage of energy shield to maximum leech rate)","= 0.0"],
+      "type":"TEXT"
+    }],
+  "MaxLifeLeechRate":[{
+      "lines":["683 ^8(maximum life)","x 20% ^8(percentage of life to maximum leech rate)","= 136.6"],
+      "type":"TEXT"
+    }],
+  "MaxManaLeechRate":[{
+      "lines":["231 ^8(maximum mana)","x 20% ^8(percentage of mana to maximum leech rate)","= 46.2"],
+      "type":"TEXT"
+    }],
+  "MeleeEvadeChance":[{
+      "lines":["Enemy level: 82 ^8(can be overridden in the Configuration tab)","Average enemy accuracy: 2114","Effective Evasion: 7","Approximate melee evade chance: 0%"],
+      "type":"TEXT"
+    }],
+  "MovementSpeedWhileUsingSkill":[{
+      "lines":["Minimum Movement Speed while using this skill","^8(This is the lowest movement speed you will reach while using this skill,","^8subject to acceleration and deceleration)","","70% ^8(movement speed penalty from using skill)","x 1.00) ^8(increased/reduced penalty)","x 1.00) ^8(more/less penalty)","= 70.0% ^8(movement speed penalty)","","100% - 70.0% ^8(100 - movement speed penalty)","= 30.0% ^8(movement speed while casting)"],
+      "type":"TEXT"
+    }],
+  "Physical":[{
+      "lines":["Base damage:","= 0.0 to 0.0","Hit damage:","0 to 0 ^8(total damage)","= 0 to 0"],
+      "type":"TEXT"
+    }],
+  "PhysicalDamageReduction":[{
+      "lines":["Reduction from Armour: 9%","Enemy Hit Damage: 979 ^8(total incoming damage)"],
+      "type":"TEXT"
+    }],
+  "PhysicalDotEHP":[{
+      "lines":["Total Pool: 683","Dot Damage Taken modifier: 1.00","Total Effective Dot Pool: 683"],
+      "type":"TEXT"
+    }],
+  "PhysicalEnemyDamage":[{
+      "lines":["from Default: 965","* 1.00 (modifiers to enemy damage)","* 1.015 (enemy crit effect)","= 979"],
+      "type":"TEXT"
+    }],
+  "PhysicalEnergyShieldRecoup":[{
+      "lines":["0% over 8 seconds"],
+      "type":"TEXT"
+    }],
+  "PhysicalLifeRecoup":[{
+      "lines":["0% over 8 seconds"],
+      "type":"TEXT"
+    }],
+  "PhysicalManaRecoup":[{
+      "lines":["0% over 8 seconds"],
+      "type":"TEXT"
+    }],
+  "PhysicalMaximumHitTaken":[{
+      "lines":["^8Maximum hit is calculated in reverse -","^8from health pools, via damage reductions, to the max hit:","682 ^8(used pool)","/ 0.89 ^8(modifiers to damage taken)","= 765 ^8maximum survivable enemy damage","^8Such a hit would drain the following resources:","\t682 ^xE05030Life ^7(1 remaining)"],
+      "type":"TEXT"
+    },{
+      "columns":[{
+          "key":"type",
+          "label":"Type"
+        },{
+          "key":"pool",
+          "label":"Pool"
+        },{
+          "key":"incoming",
+          "label":"Incoming"
+        },{
+          "key":"multi",
+          "label":"Multi"
+        },{
+          "key":"taken",
+          "label":"Taken"
+        }],
+      "label":"Maximum hit damage breakdown",
+      "rows":[{
+          "incoming":"765",
+          "multi":"x0.892",
+          "pool":"683",
+          "taken":"682",
+          "type":"100% as Physical"
+        }],
+      "type":"TABLE"
+    }],
+  "PhysicalTakenDamage":[{
+      "columns":[{
+          "key":"type",
+          "label":"Type"
+        },{
+          "key":"value",
+          "label":"Value"
+        }],
+      "label":"Taken",
+      "rows":[{
+          "type":"Physical",
+          "value":"979"
+        }],
+      "type":"TABLE"
+    }],
+  "PhysicalTakenDotMult":[{
+      "lines":["DoT Multiplier:","= 1.00"],
+      "type":"TEXT"
+    }],
+  "PhysicalTakenHit":[{
+      "lines":["Final Physical Damage taken:","979.5 incoming damage","x 0.910 damage mult","= 891.3","This part of the hit drains the following resources:","\t891 ^xDD0022Overkill damage","\t^8(891 total)"],
+      "type":"TEXT"
+    }],
+  "PhysicalTakenHitMult":[{
+      "lines":["Reduction from Armour: 0.91","= 0.91"],
+      "type":"TEXT"
+    }],
+  "PhysicalTotalPool":[{
+      "lines":["Life: 683","Non-bypassed Energy Shield: 0","Total Pool: 683"],
+      "type":"TEXT"
+    }],
+  "PinBuildup":[{
+      "lines":["Enemy level: 82 ^8(can be overridden in the Configuration tab)","Enemy poise: 13333013","","Regular Hit Pin buildup","Min: 0.0%","Max: 0.0%","Avg: 0.0%","","Crit Pin buildup","Crit Min: 0.0%","Crit Max: 0.0%","Crit Avg: 0.0%","","Average Pin buildup","= 0.0%"],
+      "type":"TEXT"
+    }],
+  "PresenceRadius":[{
+      "radius":40,
+      "type":"RADIUS"
+    }],
+  "ProjectileEvadeChance":[{
+      "lines":["Enemy level: 82 ^8(can be overridden in the Configuration tab)","Average enemy accuracy: 2114","Effective Evasion: 7","Approximate projectile evade chance: 0%"],
+      "type":"TEXT"
+    }],
+  "RageRegenRecovery":[{
+      "lines":["Rage Regeneration:","0.0 ^8(base)","= 0.0 ^8per second"],
+      "type":"TEXT"
+    }],
+  "ReqInt":[{
+      "columns":[{
+          "key":"req",
+          "label":"Int"
+        },{
+          "key":"source",
+          "label":"Source"
+        },{
+          "key":"sourceName",
+          "label":"Source Name"
+        }],
+      "rows":[{
+          "req":"^xDD002265",
+          "source":"Gem",
+          "sourceName":"^x7070FFSpark ^710/0"
+        }],
+      "type":"TABLE"
+    }],
+  "ReqStr":[{
+      "columns":[{
+          "key":"req",
+          "label":"Str"
+        },{
+          "key":"source",
+          "label":"Source"
+        },{
+          "key":"sourceName",
+          "label":"Source Name"
+        }],
+      "rows":[{
+          "req":"^xDD002260",
+          "source":"Item",
+          "sourceName":"^xFFFF77Storm Shell, Vaal Cuirass"
+        }],
+      "type":"TABLE"
+    }],
+  "SelfStunChance":[{
+      "lines":["200% ^8(stun multiplier)","* 5570.8 ^8(effective enemy stun damage)","/ 683 ^8(stun threshold)","= 100.00%"],
+      "type":"TEXT"
+    }],
+  "ShockChance":[{
+      "lines":["Chance on Non-crit: 0%","Chance on Crit: 0%","Combined chance:","0 x (1 - 0.0900) ^8(chance from non-crits)","+ 0 x 0.0900 ^8(chance from crits)","= 0.01"],
+      "type":"TEXT"
+    }],
+  "ShockDPS":[{
+      "lines":["Damage from Non-crits:","16.0 ^8(source damage from non-crits)","x 0.835 ^8(portion of instances created by non-crits)","= 13.4","Damage from Crits:","32.0 ^8(source damage from crits)","x 0.165 ^8(portion of instances created by crits)","= 5.3","Total base DPS per Shock:","13.4 + 5.3","= 18.6"],
+      "type":"TEXT"
+    },{
+      "columns":[{
+          "key":"thresh",
+          "label":"Ailment Threshold"
+        },{
+          "key":"effect",
+          "label":"Shock Effect"
+        }],
+      "label":"Resulting ailment effect",
+      "rows":[{
+          "effect":"1%",
+          "thresh":"71303 ^8(Pinnacle)"
+        },{
+          "effect":"10%",
+          "thresh":"1042"
+        },{
+          "effect":"20% ^8(minimum)",
+          "thresh":"184"
+        },{
+          "effect":"20% ^8(minimum)",
+          "thresh":"184"
+        },{
+          "effect":"40%",
+          "thresh":"32"
+        },{
+          "effect":"100% ^8(maximum)",
+          "thresh":"3"
+        }],
+      "type":"TABLE"
+    }],
+  "ShockEffectMod":[{
+      "lines":["Ailment mode: Average Damage ^8(can be changed in the Configuration tab)"],
+      "type":"TEXT"
+    }],
+  "Speed":[{
+      "lines":["1.43 ^8(base)","= 1.43 ^8casts per second"],
+      "type":"TEXT"
+    }],
+  "SpellBlockChance":[{
+      "lines":["Max: 50%","Total: 0%"],
+      "type":"TEXT"
+    }],
+  "SpellDodgeChance":[{
+      "lines":["Base: 0%","Max: 75%","Total: 0%"],
+      "type":"TEXT"
+    }],
+  "SpellEvadeChance":[{
+      "lines":["Enemy level: 82 ^8(can be overridden in the Configuration tab)","Average enemy accuracy: 2114","Effective Evasion: 7","Approximate spell evade chance: 0%"],
+      "type":"TEXT"
+    }],
+  "SpellProjectileEvadeChance":[{
+      "lines":["Enemy level: 82 ^8(can be overridden in the Configuration tab)","Average enemy accuracy: 2114","Effective Evasion: 7","Approximate spell projectile evade chance: 0%"],
+      "type":"TEXT"
+    }],
+  "StunAvoidChance":[{
+      "lines":["^x5CF0BBNOTE: Having any energy shield when the hit occurs grants 50% chance to avoid stun.","^x5CF0BBPOB only applies this modifier when ES > Total incoming damage."],
+      "type":"TEXT"
+    }],
+  "StunDuration":[{
+      "lines":["0.50s ^8(base)","rounded up to nearest server tick","= 0.53s"],
+      "type":"TEXT"
+    }],
+  "StunThreshold":[{
+      "lines":["683 ^8(base from Life)"],
+      "type":"TEXT"
+    }],
+  "SurroundedRadius":[{
+      "radius":30,
+      "type":"RADIUS"
+    }],
+  "Time":[{
+      "lines":["0.70 ^8(base)","= 0.70 ^8seconds per attack"],
+      "type":"TEXT"
+    }],
+  "TotalDPS":[{
+      "lines":["17.4 ^8(average hit)","x 1.43 ^8(cast rate)","= 24.9"],
+      "type":"TEXT"
+    }],
+  "TotalEHP":[{
+      "lines":["0.13 ^8(total average number of hits you can take)","x 4246 ^8(total incoming damage)","= 542 ^8(total damage you can take)"],
+      "type":"TEXT"
+    }],
+  "TotalNumberOfHits":[{
+      "lines":["0.13 ^8(Number of mitigated hits)","/ 1.00 ^8(Chance to even be hit)","= 0.13 ^8(total average number of hits you can take)"],
+      "type":"TEXT"
+    }],
+  "TotemChaosResist":[{
+      "lines":["Min: -200%","Max: 75%","Total: 20%"],
+      "type":"TEXT"
+    }],
+  "TotemColdResist":[{
+      "lines":["Min: -200%","Max: 75%","Total: 40%"],
+      "type":"TEXT"
+    }],
+  "TotemDuration":[{
+      "lines":["0.00s ^8(base)","rounded up to nearest server tick","= 0.000s"],
+      "type":"TEXT"
+    }],
+  "TotemFireResist":[{
+      "lines":["Min: -200%","Max: 75%","Total: 40%"],
+      "type":"TEXT"
+    }],
+  "TotemLightningResist":[{
+      "lines":["Min: -200%","Max: 75%","Total: 40%"],
+      "type":"TEXT"
+    }],
+  "WardRegenRecovery":[{
+      "lines":["Ward Regeneration:","0.0 ^8(base)","= 0.0 ^8per second"],
+      "type":"TEXT"
+    }],
+  "preventedLifeLossTotal":[{
+      "lines":["Total life protected:","1.00 ^8(portion taken from life)"],
+      "type":"TEXT"
+    }],
+  "totalEnemyDamage":[{
+      "columns":[{
+          "key":"type",
+          "label":"Type"
+        },{
+          "key":"value",
+          "label":"Value"
+        },{
+          "key":"mult",
+          "label":"Mult"
+        },{
+          "key":"crit",
+          "label":"Crit"
+        },{
+          "key":"convMult",
+          "label":"Conversion"
+        },{
+          "key":"final",
+          "label":"Final"
+        },{
+          "key":"from",
+          "label":"From"
+        }],
+      "label":"Total damage from the enemy",
+      "rows":[{
+          "convMult":"0",
+          "crit":"1.01",
+          "final":"979",
+          "from":"Default",
+          "mult":"1.00",
+          "type":"Physical",
+          "value":"965"
+        },{
+          "convMult":"0",
+          "crit":"1.01",
+          "final":"979",
+          "from":"Default",
+          "mult":"1.00",
+          "type":"Lightning",
+          "value":"965"
+        },{
+          "convMult":"0",
+          "crit":"1.01",
+          "final":"979",
+          "from":"Default",
+          "mult":"1.00",
+          "type":"Cold",
+          "value":"965"
+        },{
+          "convMult":"0",
+          "crit":"1.01",
+          "final":"979",
+          "from":"Default",
+          "mult":"1.00",
+          "type":"Fire",
+          "value":"965"
+        },{
+          "convMult":"0",
+          "crit":"1.01",
+          "final":"391",
+          "from":"Default",
+          "mult":"1.00",
+          "type":"Chaos",
+          "value":"386"
+        }],
+      "type":"TABLE"
+    }],
+  "totalTakenDamage":[{
+      "columns":[{
+          "key":"type",
+          "label":"Type"
+        },{
+          "key":"value",
+          "label":"Value"
+        }],
+      "label":"Total damage taken from the enemy after taken as",
+      "rows":[{
+          "type":"Physical",
+          "value":"979"
+        },{
+          "type":"Lightning",
+          "value":"979"
+        },{
+          "type":"Cold",
+          "value":"979"
+        },{
+          "type":"Fire",
+          "value":"979"
+        },{
+          "type":"Chaos",
+          "value":"391"
+        }],
+      "type":"TABLE"
+    }],
+  "totalTakenHit":[{
+      "lines":["Such a hit would drain the following resources:","\t683 ^xE05030Life ^7(0 remaining)","\t4664 ^xDD0022Overkill damage"],
+      "type":"TEXT"
+    },{
+      "columns":[{
+          "key":"type",
+          "label":"Type"
+        },{
+          "key":"incoming",
+          "label":"Incoming"
+        },{
+          "key":"mult",
+          "label":"Mult"
+        },{
+          "key":"value",
+          "label":"Value"
+        }],
+      "label":"Total damage taken after mitigation",
+      "rows":[{
+          "incoming":"979.5 incoming damage",
+          "mult":"x 0.910 damage mult",
+          "type":"Physical",
+          "value":"892"
+        },{
+          "incoming":"979.5 incoming damage",
+          "mult":"x 1.500 damage mult",
+          "type":"Lightning",
+          "value":"1470"
+        },{
+          "incoming":"979.5 incoming damage",
+          "mult":"x 1.500 damage mult",
+          "type":"Cold",
+          "value":"1470"
+        },{
+          "incoming":"979.5 incoming damage",
+          "mult":"x 1.150 damage mult",
+          "type":"Fire",
+          "value":"1127"
+        },{
+          "incoming":"391.8 incoming damage",
+          "mult":"x 1.000 damage mult",
+          "type":"Chaos",
+          "value":"392"
+        }],
+      "type":"TABLE"
+    }]
+}

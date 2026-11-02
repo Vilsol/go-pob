@@ -906,6 +906,14 @@ func perform(env *Environment) {
 	lootRarityMagicEnemies := modDB.Sum(mod.TypeIncrease, nil, "LootRarityMagicEnemies")
 	output["LootRarityMagicEnemies"] = flagOr(lootRarityMagicEnemies > 0, lootRarityMagicEnemies+modDB.Sum(mod.TypeIncrease, nil, "LootRarity"), 0)
 
+	//pob2:block:src/Modules/CalcPerform.lua:1463-1471
+	if env.buildBreakdown() {
+		env.Player.Breakdown = newBreakdown(modDB, output, env.Player)
+		if env.Minion != nil {
+			env.Minion.Breakdown = newBreakdown(env.Minion.ModDB, env.Minion.Output, &env.Minion.Actor)
+		}
+	}
+
 	addSlotBonusEffectsPerform(env)
 	addMagebloodLegacies(env)
 
@@ -977,7 +985,7 @@ func perform(env *Environment) {
 	}
 
 	//pob2:block:src/Modules/CalcPerform.lua:3320
-	doActorLifeManaSpirit(env.Player)
+	doActorLifeManaSpirit(env.Player, true)
 	applyNonDamagingAilments(env)
 
 	//pob2:block:src/Modules/CalcPerform.lua:3382-3383

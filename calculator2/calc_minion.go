@@ -440,7 +440,7 @@ func calcMinionLifePool(env *Environment, buffs map[string]*moddb.ModList, inclu
 				}
 				doActorAttribsConditions(env, &minion.Actor)
 			}
-			doActorLifeManaSpirit(&minion.Actor)
+			doActorLifeManaSpirit(&minion.Actor, true)
 			totalLife = totalLife + minion.Output["Life"]
 		}
 	}

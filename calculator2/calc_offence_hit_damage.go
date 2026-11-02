@@ -950,6 +950,48 @@ func (h *offenceHit) offenceDamagePass(pass *offencePass, quantityMultiplier flo
 	globalOutput["AverageBurstDamage"] = output["AverageDamage"] + output["AverageDamage"]*(globalOutput["AverageBurstHits"]-1)*repeatPenalty
 	h.actor.setOutputFlag("ShowBurst", globalOutput["AverageBurstHits"] > 1)
 	output["TotalDPS"] = output["AverageDamage"] * hitSpeed * output["DpsMultiplier"] * quantityMultiplier
+	//pob2:block:src/Modules/CalcOffence.lua:4577-4598
+	if breakdown := pass.breakdown; breakdown != nil {
+		if output["CritEffect"] != 1 {
+			var lines []string
+			if skillModList.Flag(skillCfg, "LuckyHits") {
+				lines = append(lines, sFormat("(1/3) x %d + (2/3) x %d = %.1f ^8(average from non-crits)", totalHitMin, totalHitMax, totalHitAvg))
+			}
+			if skillModList.Flag(skillCfg, "CritLucky") || skillModList.Flag(skillCfg, "LuckyHits") {
+				lines = append(lines, sFormat("(1/3) x %d + (2/3) x %d = %.1f ^8(average from crits)", totalCritMin, totalCritMax, totalCritAvg), "")
+			}
+			breakdown.set("AverageHit", append(lines,
+				sFormat("%.1f x (1 - %.4f) ^8(damage from non-crits)", totalHitAvg, output["CritChance"]/100),
+				sFormat("+ %.1f x %.4f ^8(damage from crits)", totalCritAvg, output["CritChance"]/100),
+				sFormat("= %.1f", output["AverageHit"]),
+			)...)
+		}
+		if output["HitChance"] < 100 {
+			breakdown.set("AverageDamage", sFormat("%s:", pass.label), sFormat("%.1f ^8(average hit)", output["AverageHit"]), sFormat("x %.2f ^8(chance to hit)", output["HitChance"]/100), sFormat("= %.1f", output["AverageDamage"]))
+		}
+	}
+	//pob2:block:src/Modules/CalcOffence.lua:4599-4618
+	if globalBreakdown := h.actor.Breakdown; globalBreakdown != nil && globalOutput["AverageBurstDamage"] > 0 {
+		lines := []string{sFormat("%.1f ^8(average hit)", output["AverageHit"])}
+		if output["HitChance"] < 100 {
+			lines = append(lines, sFormat("x %.2f ^8(chance to hit)", output["HitChance"]/100))
+		}
+		if repeatPenalty < 1 {
+			lines = append(lines,
+				sFormat("x %.2f ^8(number of repeats)", globalOutput["AverageBurstHits"]-1),
+				sFormat("x %.2f ^8(repeat penalty)", repeatPenalty),
+				sFormat("= %.1f ^8(repeat damage total)", globalOutput["AverageBurstDamage"]-output["AverageDamage"]),
+				"",
+				sFormat("+ %.1f ^8(first hit)", output["AverageHit"]),
+			)
+			if output["HitChance"] < 100 {
+				lines = append(lines, sFormat("x %.2f ^8(chance to hit)", output["HitChance"]/100))
+			}
+		} else {
+			lines = append(lines, sFormat("x %.2f ^8(number of hits)", globalOutput["AverageBurstHits"]))
+		}
+		globalBreakdown.set("AverageBurstDamage", append(lines, sFormat("= %.1f ^8(total burst damage)", globalOutput["AverageBurstDamage"]))...)
+	}
 
 	h.offencePvp(pass, totalHitMin, totalHitMax, hitSpeed)
 }
@@ -1201,6 +1243,45 @@ func (h *offenceHit) offenceCombineDamage() {
 		skillFlags["showAverage"] = false
 		skillFlags["notAverage"] = true
 	}
+	//pob2:block:src/Modules/CalcOffence.lua:4826-4837
+	if breakdown := h.actor.Breakdown; breakdown != nil && skillFlags["bothWeaponAttack"] {
+		mh, oh := state.mainHand["AverageDamage"], state.offHand["AverageDamage"]
+		line := sFormat("(%.1f + %.1f) / 2 ^8(skill alternates weapons)", mh, oh)
+		if truthy(skillData["combinesHitsWhenDualWielding"]) {
+			line = sFormat("%.1f + %.1f ^8(skill hits with both weapons at once)", mh, oh)
+		} else if truthy(skillData["doubleHitsWhenDualWielding"]) {
+			line = sFormat("(%.1f + %.1f) / 2 ^8(skill hits once with each weapon)", mh, oh)
+		}
+		breakdown.set("AverageDamage", "Both weapons:", line, sFormat("= %.1f", output["AverageDamage"]))
+	}
+}
+
+//pob2:block:src/Modules/CalcOffence.lua:4858-4881
+func (h *offenceHit) totalDPSBreakdown() {
+	output := h.actor.Output
+	breakdown := h.actor.Breakdown
+	rate := func(label string) string {
+		if v, ok := output["HitSpeed"]; ok {
+			return sFormat("x %.2f ^8(hit rate)", v)
+		}
+		return sFormat("x %.2f ^8("+label+")", output["Speed"])
+	}
+	var lines []string
+	switch {
+	case h.state.isAttack:
+		lines = []string{sFormat("%.1f ^8(average damage)", output["AverageDamage"]), rate("attack rate")}
+	case truthy(h.activeSkill.SkillData["triggered"]):
+		lines = []string{sFormat("%.1f ^8(average damage)", output["AverageDamage"]), rate("trigger rate")}
+	default:
+		lines = []string{sFormat("%.1f ^8(average hit)", output["AverageDamage"]), rate("cast rate")}
+	}
+	if output["DpsMultiplier"] != 1 {
+		lines = append(lines, sFormat("x %g ^8(DPS multiplier for this skill)", output["DpsMultiplier"]))
+	}
+	if h.state.quantityMultiplier > 1 {
+		lines = append(lines, sFormat("x %g ^8(quantity multiplier for this skill)", h.state.quantityMultiplier))
+	}
+	breakdown.set("TotalDPS", append(lines, sFormat("= %.1f", output["TotalDPS"]))...)
 }
 
 // offenceLeechRates calculates leech rates.
@@ -1277,6 +1358,9 @@ func offenceHitHalf(env *Environment, actor *Actor, activeSkill *ActiveSkill, sk
 		h.offenceDamagePass(pass, state.quantityMultiplier)
 	}
 	h.offenceCombineDamage()
+	if h.actor.Breakdown != nil {
+		h.totalDPSBreakdown()
+	}
 	h.offenceLeechRates()
 	h.offenceAilments()
 	h.offenceDots()

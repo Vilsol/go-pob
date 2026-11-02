@@ -1,8 +1,9 @@
 // The PoE2 Calcs page: PoB-PoE2's CalcsTab:CheckFlag, CalcFormat.lua's formatCalcStr and the CalcSectionControl
-// layout, over calc_sections2.ts. No breakdowns: calculator2 builds none.
+// layout, over calc_sections2.ts, with the breakdowns calculator2 builds.
 
 import type { CalcSection2, CalcSectionColumn2, CalcSectionEntry2, CalcSectionRow2, FlagGated2 } from '$lib/calcs/calc_section_types2';
-import { cellId, elementsOf, type CalcBlock, type CalcCell, type CalcRow, type CalcSectionView, type CalcsView } from './calcs';
+import { cellId, elementsOf, type CalcBlock, type CalcBreakdown, type CalcCell, type CalcRow, type CalcSectionView, type CalcsView } from './calcs';
+import type { exposition } from '$lib/types2';
 import { formatNumSep } from './format_stat';
 import { luaToString } from './saved_stats';
 
@@ -16,6 +17,37 @@ export type CalcsActor2 = {
   skillData: Record<string, boolean>;
   // the {p:mod:n} values, by cellId:<entry index>
   mods: Record<string, number>;
+  // the actor's breakdowns, by the name a cell entry gives
+  breakdowns?: Record<string, CalcBreakdown>;
+};
+
+const GEAR_ONLY = '#gearOnly';
+
+/* CalcBreakdownControl.lua:147-297 (PoB-PoE2): the worker's breakdowns as the breakdown panel shows them; one with
+   slots also as a gearOnly cell shows it, under <name>#gearOnly */
+export const calcsBreakdowns2 = (bds: Record<string, Readonly<exposition.CalcsBreakdown>>): Record<string, CalcBreakdown> => {
+  const out: Record<string, CalcBreakdown> = {};
+  for (const [k, b] of Object.entries(bds)) {
+    const shown = (gearOnly: boolean) => {
+      const bd: CalcBreakdown = { lines: [...(b.Lines ?? [])] };
+      if (b.Radius) bd.radius = b.Radius;
+      // the first table without a label is the panel's sources table; the reservations table is named for it
+      (b.Tables ?? []).forEach((table, i) => {
+        const t = gearOnly && table.Columns?.[0]?.Label === 'Base' && table.Columns[0].Key === 'base' ? b.GearTable : table;
+        const columns = (t.Columns ?? []).map((c) => ({ label: c.Label, key: c.Key }));
+        const rows = (t.Rows ?? []).map((r) => Object.fromEntries(columns.map((c) => [c.key, r?.[c.key] ?? ''])));
+        const label = t.Label || (columns[0]?.key === 'skillName' ? 'Reservations' : '');
+        if (!label && !bd.columns) {
+          bd.columns = columns;
+          bd.rows = rows;
+        } else (bd.tables ??= []).push({ label: label || `Table ${i + 1}`, columns, rows });
+      });
+      return bd;
+    };
+    out[k] = shown(false);
+    if (b.Gear) out[k + GEAR_ONLY] = shown(true);
+  }
+  return out;
 };
 
 export type CalcsModProps2 = { Cfg: string; ModSource: string; Enemy: boolean; ModName: string[]; ModType: string; Actor: string };
@@ -115,9 +147,9 @@ const modLabel = (e: CalcSectionEntry2) => {
 };
 
 /* CalcSectionControl.lua:113-160, 500-600 (PoB-PoE2) */
-export const calcsView2 = (sections: CalcSection2[], actor: CalcsActor2): CalcsView => ({
-  breakdowns: {},
-  sections: sections.map(([width, id, col, color, subs]): CalcSectionView => {
+export const calcsView2 = (sections: CalcSection2[], actor: CalcsActor2): CalcsView => {
+  const breakdowns: Record<string, CalcBreakdown> = {};
+  const view = sections.map(([width, id, col, color, subs]): CalcSectionView => {
     const first = subs[0];
     const head = { id, title: first?.label ?? id, wide: width === 3, col, color };
     // CalcSectionControl.lua:28-29, 115: the section's flag and notFlag are its first subsection's
@@ -131,6 +163,13 @@ export const calcsView2 = (sections: CalcSection2[], actor: CalcsActor2): CalcsV
         const cells = rowsOf<CalcSectionColumn2>(row).map((c, l): CalcCell => {
           if (c.format === undefined || !checkFlag2(c, actor)) return { text: '' };
           const cell: CalcCell = { text: formatCalcStr2(c.format, actor, c, cellId(id, j, k, l)) };
+          // CalcBreakdownControl.lua:75-83, 244-257: the first breakdown entry a cell names
+          const entry = rowsOf<CalcSectionEntry2>(c).find((e) => e.breakdown);
+          const bd = entry && (entry.gearOnly && actor.breakdowns?.[entry.breakdown + GEAR_ONLY] ? entry.breakdown + GEAR_ONLY : entry.breakdown);
+          if (bd && actor.breakdowns?.[bd]) {
+            breakdowns[bd] = actor.breakdowns[bd];
+            cell.bd = bd;
+          }
           const mods = rowsOf<CalcSectionEntry2>(c).filter((e) => e.modName && e.modType);
           if (mods.length) cell.mods = mods.map(modLabel);
           return cell;
@@ -142,5 +181,6 @@ export const calcsView2 = (sections: CalcSection2[], actor: CalcsActor2): CalcsV
     if (!enabled) return { ...head, applicable: false };
     // CalcSectionControl.lua:506-525: every subsection draws its label and extra, rows or none
     return { ...head, applicable: true, blocks };
-  })
-});
+  });
+  return { sections: view, breakdowns };
+};

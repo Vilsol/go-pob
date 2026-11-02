@@ -3,6 +3,8 @@ package calculator2
 import (
 	"maps"
 	"math"
+	"slices"
+	"strconv"
 	"strings"
 
 	"github.com/Vilsol/go-pob/mod"
@@ -47,10 +49,11 @@ func (s *passSource) set(key string, v float64) {
 }
 
 type offencePass struct {
-	label  string
-	source *passSource
-	cfg    *moddb.ListCfg
-	output map[string]float64
+	label     string
+	source    *passSource
+	cfg       *moddb.ListCfg
+	output    map[string]float64
+	breakdown *Breakdown
 }
 
 // offenceHitState is what the hit half leaves for the ailment half: the passes, the main/off hand
@@ -418,7 +421,12 @@ func offencePasses(env *Environment, actor *Actor, activeSkill *ActiveSkill, ski
 		// output.PreciseTechnique is a boolean, which the output map does not hold.
 		critOverride := skillModList.Override(skillCfg, "WeaponBaseCritChance")
 		critChance, hasCritChance := sdNum(skillData, "CritChance")
+		breakdown := actor.Breakdown
 		if skillFlags["weapon1Attack"] {
+			//pob2:block:src/Modules/CalcOffence.lua:2522-2524
+			if breakdown != nil {
+				breakdown.MainHand = newBreakdown(skillModList, state.mainHand, nil)
+			}
 			activeSkill.Weapon1Cfg.SkillStats = state.mainHand
 			source := &passSource{weapon: maps.Clone(weaponData(env, actor, 1)), typ: actor.WeaponData1Type}
 			// Unarmed override for Concoction skills
@@ -443,8 +451,15 @@ func offencePasses(env *Environment, actor *Actor, activeSkill *ActiveSkill, ski
 				cfg:    activeSkill.Weapon1Cfg,
 				output: state.mainHand,
 			})
+			if breakdown != nil {
+				state.passList[len(state.passList)-1].breakdown = breakdown.MainHand
+			}
 		}
 		if skillFlags["weapon2Attack"] {
+			//pob2:block:src/Modules/CalcOffence.lua:2552-2554
+			if breakdown != nil {
+				breakdown.OffHand = newBreakdown(skillModList, state.offHand, nil)
+			}
 			activeSkill.Weapon2Cfg.SkillStats = state.offHand
 			source := &passSource{weapon: maps.Clone(weaponData(env, actor, 2)), typ: actor.WeaponData2Type}
 			// Unarmed override for Concoction skills
@@ -474,13 +489,17 @@ func offencePasses(env *Environment, actor *Actor, activeSkill *ActiveSkill, ski
 				cfg:    activeSkill.Weapon2Cfg,
 				output: state.offHand,
 			})
+			if breakdown != nil {
+				state.passList[len(state.passList)-1].breakdown = breakdown.OffHand
+			}
 		}
 	} else {
 		state.passList = append(state.passList, &offencePass{
-			label:  "Skill",
-			source: &passSource{skillData: skillData},
-			cfg:    skillCfg,
-			output: output,
+			label:     "Skill",
+			source:    &passSource{skillData: skillData},
+			cfg:       skillCfg,
+			output:    output,
+			breakdown: actor.Breakdown,
 		})
 	}
 }
@@ -597,9 +616,31 @@ func offenceHitSpeed(env *Environment, actor *Actor, activeSkill *ActiveSkill, s
 
 		output["Accuracy"] = math.Max(0, math.Floor(base*(1+inc/100)*more))
 		accuracyVsEnemy := math.Max(0, math.Floor(baseVsEnemy*(1+incVsEnemy/100)*moreVsEnemy))
+		accuracyVsEnemyBase := accuracyVsEnemy
 		noAccuracyDistancePenalty := modDB.Flag(cfg, "NoAccuracyDistancePenalty") // saving this in local variable as it gets used again later
 		if !noAccuracyDistancePenalty {
 			accuracyVsEnemy = math.Floor(accuracyVsEnemy * accuracyPenalty)
+		}
+		breakdown := pass.breakdown
+		//pob2:block:src/Modules/CalcOffence.lua:2732-2751
+		if breakdown != nil {
+			baseLink := link("%g ^8(base)", base)
+			lines, _ := breakdown.multiChain(nil, multiChainSpec{
+				Base:  &baseLink,
+				Links: []chainLink{link("%.2f ^8(increased/reduced)", 1+inc/100), link("%.2f ^8(more/less)", more)},
+				Total: sFormat("= %g", output["Accuracy"]),
+			})
+			if output["Accuracy"] != accuracyVsEnemy {
+				lines = append(lines, "")
+				vsBase := link("%g ^8(base)", baseVsEnemy)
+				lines, _ = breakdown.multiChain(lines, multiChainSpec{
+					Label: "Effective Accuracy vs Enemy",
+					Base:  &vsBase,
+					Links: []chainLink{link("%.2f ^8(distance penalty)", accuracyPenalty), link("%.2f ^8(increased/reduced)", 1+incVsEnemy/100), link("%.2f ^8(more/less)", moreVsEnemy)},
+					Total: sFormat("= %g", accuracyVsEnemy),
+				})
+			}
+			breakdown.set("Accuracy", lines...)
 		}
 		if skillModList.Flag(nil, "Condition:OffHandAccuracyIsMainHandAccuracy") && pass.label == "Main Hand" {
 			storedMainHandAccuracy = output["Accuracy"]
@@ -608,6 +649,9 @@ func offenceHitSpeed(env *Environment, actor *Actor, activeSkill *ActiveSkill, s
 		} else if skillModList.Flag(nil, "Condition:OffHandAccuracyIsMainHandAccuracy") && pass.label == "Off Hand" && hasStoredMainHandAccuracy {
 			output["Accuracy"] = storedMainHandAccuracy
 			accuracyVsEnemy = storedMainHandAccuracyVsEnemy
+			if breakdown != nil {
+				breakdown.set("Accuracy", "Using Main Hand Accuracy due to Mastery: "+luaToString(output["Accuracy"]))
+			}
 		}
 		if !isAttack {
 			output["AccuracyHitChance"] = 100
@@ -635,6 +679,9 @@ func offenceHitSpeed(env *Environment, actor *Actor, activeSkill *ActiveSkill, s
 			if exceedsHitChance && output["AccuracyHitChanceUncapped"]-100 > 0 {
 				skillModList.NewMod("Multiplier:ExcessHitChance", mod.TypeBase, round(output["AccuracyHitChanceUncapped"]-100, 2), "HitChanceCanExceed100", mod.Condition(handCondition))
 			}
+			if breakdown != nil {
+				accuracyHitChanceBreakdown(env, breakdown, output, enemyEvasion, enemyDistance, modValue, accuracyVsEnemy, accuracyVsEnemyBase, hitChanceMod, noAccuracyDistancePenalty, cannotBeEvaded, exceedsHitChance)
+			}
 		}
 		//enemy block chance
 		output["enemyBlockChance"] = math.Max(math.Min(enemyDB.Sum(mod.TypeBase, cfg, "BlockChance"), 100)-skillModList.Sum(mod.TypeBase, cfg, "reduceEnemyBlock"), 0)
@@ -645,6 +692,17 @@ func offenceHitSpeed(env *Environment, actor *Actor, activeSkill *ActiveSkill, s
 		output["HitChance"] = output["AccuracyHitChance"] * (1 - output["enemyBlockChance"]/100)
 		if output["enemyBlockChance"] > 0 && !isAttack {
 			actor.setOutputFlag("enemyHasSpellBlock", true)
+		}
+		//pob2:block:src/Modules/CalcOffence.lua:2828-2841
+		if breakdown != nil && output["enemyBlockChance"] > 0 {
+			var lines []string
+			if output["AccuracyHitChance"] < 100 {
+				lines = append(lines, "Accuracy Hit Chance: "+luaToString(output["AccuracyHitChance"])+"%")
+			}
+			breakdown.set("HitChance", append(lines,
+				"Enemy Block Chance: "+luaToString(output["enemyBlockChance"])+"%",
+				"Approximate hit chance: "+luaToString(output["HitChance"])+"%",
+			)...)
 		}
 
 		// Check Precise Technique Keystone condition per pass as MH/OH might have different values
@@ -842,6 +900,72 @@ func offenceHitSpeed(env *Environment, actor *Actor, activeSkill *ActiveSkill, s
 			} else {
 				output["Time"] = 1 / output["Speed"]
 			}
+			//pob2:block:src/Modules/CalcOffence.lua:3054-3122
+			if breakdown != nil {
+				actionSpeed := 1.0
+				if v, ok := output["TotemActionSpeed"]; ok && skillFlags["totem"] {
+					actionSpeed = v
+				} else if v, ok := globalOutput["ActionSpeedMod"]; ok && skillFlags["selfCast"] {
+					actionSpeed = v
+				}
+				speedLinks := []chainLink{link("%.2f ^8(increased/reduced)", 1+inc/100), link("%.2f ^8(more/less)", more), link("%.2f ^8(action speed modifier)", actionSpeed)}
+				speedBase := link("%.2f ^8(base)", 1/baseTime)
+				lines, _ := breakdown.multiChain(nil, multiChainSpec{Base: &speedBase, Links: speedLinks, Total: sFormat("= %.2f ^8casts per second", output["CastRate"])})
+				sourceReload, hasSourceReload := source.get("ReloadTime")
+				if _, ok := output["ReloadTime"]; ok && hasSourceReload {
+					globalBreakdown := actor.Breakdown
+					firing, _ := breakdown.multiChain(nil, multiChainSpec{Base: &speedBase, Links: speedLinks, Total: sFormat("= %.2f ^8bolts per second", output["FiringRate"])})
+					globalBreakdown.set("FiringRate", firing...)
+					globalBreakdown.set("TotalFiringTime",
+						sFormat("  1.00s / %.2f ^8(firing rate)", output["FiringRate"]),
+						sFormat("= %.2fs ^8(time per bolt)", 1/output["FiringRate"]),
+						"\n",
+						sFormat("  %.2fs ^8(time per bolt)", 1/output["FiringRate"]),
+						sFormat("x %.2f ^8(eff. bolt count)", output["EffectiveBoltCount"]),
+						sFormat("= %.2fs ^8(total firing time)", output["TotalFiringTime"]),
+					)
+					incReloadSpeed := skillModList.Sum(mod.TypeIncrease, skillCfg, "ReloadSpeed")
+					moreReloadSpeed := skillModList.More(skillCfg, "ReloadSpeed")
+					globalBreakdown.set("ReloadTime",
+						sFormat("  1.00s / %.2f ^8(base reload time)", sourceReload),
+						sFormat("= %.2f ^8(base reload rate)", 1/sourceReload),
+						"\n",
+						"^8Note: modifiers to attack speed also affect reload speed",
+						sFormat("x %.2f ^8(increased/reduced)", 1+(incReloadSpeed/100)+(inc/100)),
+						sFormat("x %.2f ^8(more/less)", 1*moreReloadSpeed*more),
+						sFormat("= %.2f ^8(reload rate)", output["ReloadRate"]),
+						"\n",
+						sFormat("   1.00s / %.2f ^8(reload rate)", output["ReloadRate"]),
+						sFormat("= %.2fs ^8(reload time)", output["ReloadTime"]),
+					)
+					lines = []string{
+						sFormat("  %.2fs ^8(total firing time)", output["TotalFiringTime"]),
+						sFormat("+ %.2fs ^8(eff. reload time)", output["EffectiveReloadTime"]),
+						sFormat("= %.2fs ^8(total attack time)", output["TotalFiringTime"]+output["EffectiveReloadTime"]),
+						"\n",
+						sFormat("  %.2fs ^8(total attack time)", output["TotalFiringTime"]+output["EffectiveReloadTime"]),
+						sFormat("/ %.2f ^8(eff. bolt count)", output["EffectiveBoltCount"]),
+						sFormat("= %.2fs ^8(eff. attack time)", 1/output["Speed"]),
+						"\n",
+						sFormat(" 1 / %.2fs ^8(eff. attack time)", 1/output["Speed"]),
+						sFormat("= %.2f ^8(eff. attack rate)", output["Speed"]),
+					}
+				}
+				if cooldown, ok := output["Cooldown"]; ok && 1/cooldown < output["CastRate"] && !skillModList.Flag(skillCfg, "CooldownDoesNotLimitSkillSpeed") {
+					lines = append(lines, "\n", sFormat("1 / %.2f ^8(skill cooldown)", cooldown))
+					if output["Repeats"] > 1 {
+						lines = append(lines, sFormat("x %d ^8(repeat count)", output["Repeats"]))
+					}
+					lines = append(lines, sFormat("= %.2f ^8(casts per second)", output["Repeats"]/cooldown), "\n", sFormat("= %.2f ^8(lower of cast rates)", output["Speed"]))
+				}
+				breakdown.set("Speed", lines...)
+			}
+			//pob2:block:src/Modules/CalcOffence.lua:3123-3130
+			if attackTimeMod := calcLibMod(skillModList, skillCfg, "SkillAttackTime"); breakdown != nil && attackTimeMod > 0 {
+				timeBase := link("%.2f ^8(base)", 1/(output["Speed"]*attackTimeMod))
+				lines, _ := breakdown.multiChain(nil, multiChainSpec{Base: &timeBase, Links: []chainLink{link("%.2f ^8(total modifier)", attackTimeMod)}, Total: sFormat("= %.2f ^8seconds per attack", output["Time"])})
+				breakdown.set("Time", lines...)
+			}
 		}
 		hitTimeOverride, hasHitTimeOverride := sdNum(skillData, "hitTimeOverride")
 		maxHitRatePerEnemy, hasMaxHitRate := sdNum(skillData, "maxHitRatePerEnemy")
@@ -927,9 +1051,25 @@ func offenceCombineSpeed(env *Environment, actor *Actor, activeSkill *ActiveSkil
 	if output["Time"] > 1 {
 		modDB.AddMod(newFlagMod("Condition:OneSecondAttackTime", ""))
 	}
+	breakdown := actor.Breakdown
 	if skillModList.Flag(nil, "UseOffhandAttackSpeed") {
 		output["Speed"] = state.offHand["Speed"]
 		output["Time"] = state.offHand["Time"]
+		//pob2:block:src/Modules/CalcOffence.lua:3194-3199
+		if breakdown != nil {
+			breakdown.set("Speed", "Use Offhand Weapon Attack Speed:", sFormat("= %.2f", output["Speed"]))
+		}
+	} else if skillFlags["bothWeaponAttack"] && breakdown != nil {
+		//pob2:block:src/Modules/CalcOffence.lua:3201-3222
+		mh, oh := state.mainHand["Speed"], state.offHand["Speed"]
+		switch {
+		case truthy(skillData["combinesHitsWhenDualWielding"]):
+			breakdown.set("Speed", "Combined hit from both weapons:", sFormat("1 / (1 / %.2f + 1 / %.2f)", mh, oh), sFormat("= %.2f", output["Speed"]))
+		case truthy(skillData["doubleHitsWhenDualWielding"]):
+			breakdown.set("Speed", "Simultaneous hits from each weapon:", sFormat("2 / (1 / %.2f + 1 / %.2f)", mh, oh), sFormat("%.2f ^8(hits twice per attack)", output["Speed"]), sFormat("= %.2f", output["Speed"]))
+		default:
+			breakdown.set("Speed", "Alternating both weapons:", sFormat("2 / (1 / %.2f + 1 / %.2f)", mh, oh), sFormat("= %.2f", output["Speed"]))
+		}
 	}
 	if channelTimeMultiplier, ok := sdNum(skillData, "channelTimeMultiplier"); ok {
 		minTime, _ := sdNum(skillData, "minChannelTime")
@@ -939,6 +1079,32 @@ func offenceCombineSpeed(env *Environment, actor *Actor, activeSkill *ActiveSkil
 		}
 		output["ChannelTime"] = math.Max(channelTimeMultiplier/channelTime, minTime)
 		output["ChannelSpeed"] = output["Speed"]
+	}
+	//pob2:block:src/Modules/CalcOffence.lua:3233-3246
+	if breakdown != nil {
+		if skillFlags["bothWeaponAttack"] {
+			breakdown.set("HitChance", "Both weapons:",
+				sFormat("%.2f%% ^8(main hand)", state.mainHand["HitChance"]),
+				sFormat("%.2f%% ^8(off hand)", state.offHand["HitChance"]),
+				sFormat("= %.2f%% ^8(average)", output["HitChance"]),
+			)
+		} else {
+			hand := breakdown.OffHand
+			if skillFlags["weapon1Attack"] {
+				hand = breakdown.MainHand
+			}
+			if hand == nil {
+				hand = newBreakdown(skillModList, nil, nil)
+			}
+			if e := hand.Entries["HitChance"]; e != nil {
+				breakdown.setEntry("HitChance", e)
+			} else {
+				breakdown.setEntry("HitChance", hand.Entries["AccuracyHitChance"])
+			}
+			if breakdown.Entries["Speed"] == nil {
+				breakdown.setEntry("Speed", hand.Entries["Speed"])
+			}
+		}
 	}
 	hitTimeOverride, hasHitTimeOverride := sdNum(skillData, "hitTimeOverride")
 	timeOverride, hasTimeOverride := sdNum(skillData, "timeOverride")
@@ -994,4 +1160,80 @@ func offenceMovementPenalty(actor *Actor, activeSkill *ActiveSkill) float64 {
 		output["MovementSpeedWhileUsingSkillPercent"] = (1 - total) * 100
 	}
 	return quantityMultiplier
+}
+
+// accuracyHitChanceBreakdown is the attack pass's breakdown.AccuracyHitChance: the hit chance at 2, 5 and 9 metres
+// and at the configured distance.
+//
+//pob2:block:src/Modules/CalcOffence.lua:2719-2723,src/Modules/CalcOffence.lua:2778-2816
+func accuracyHitChanceBreakdown(env *Environment, breakdown *Breakdown, output map[string]float64, enemyEvasion, enemyDistance, modValue, accuracyVsEnemy, accuracyVsEnemyBase, hitChanceMod float64, noAccuracyDistancePenalty, cannotBeEvaded, exceedsHitChance bool) {
+	falloffStart, falloffEnd := miscConstant("AccuracyFalloffStart"), miscConstant("AccuracyFalloffEnd")
+	distances := []float64{2, 5, 9}
+	accuracyPenalty := func(distance float64) float64 {
+		return 1 - ((distance*10-falloffStart)/(falloffEnd-falloffStart))*modValue/100
+	}
+	from := " ^8(can be overridden in the Configuration tab)"
+	if _, ok := env.ConfigInput["enemyLevel"]; ok {
+		from = " ^8(overridden from the Configuration tab"
+	}
+	lines := []string{
+		"Enemy level: " + strconv.Itoa(env.EnemyLevel) + from,
+		"Enemy evasion: " + luaToString(enemyEvasion),
+		"",
+		"Approximate hit chance at:",
+	}
+	hitChances := []float64{enemyDistance}
+	for _, distance := range distances {
+		last := hitChances[len(hitChances)-1]
+		if distance < last {
+			hitChances = slices.Insert(hitChances, len(hitChances)-1, distance)
+		} else if distance > last {
+			hitChances = append(hitChances, distance)
+		}
+	}
+	distBuffer := []string{"     ", "   ", "  ", ""}
+	chanceBuffer := []string{"    ", "  ", ""}
+	buffer := func(buffers []string, s string) string {
+		if n := len(s); n >= 1 && n <= len(buffers) {
+			return buffers[n-1]
+		}
+		return ""
+	}
+	for _, distance := range hitChances {
+		adjustedAccuracy := accuracyVsEnemy
+		if distance != enemyDistance {
+			penalty := 1.0
+			if !noAccuracyDistancePenalty {
+				penalty = accuracyPenalty(distance)
+			}
+			adjustedAccuracy = math.Floor(accuracyVsEnemyBase * penalty)
+		}
+		capped := 0.0
+		switch {
+		case distance == enemyDistance:
+			capped = output["AccuracyHitChance"]
+		case cannotBeEvaded:
+			capped = 100
+		default:
+			capped = hitChance(enemyEvasion, adjustedAccuracy, false) * hitChanceMod
+		}
+		excessText := ""
+		if exceedsHitChance {
+			uncapped := math.Max(hitChance(enemyEvasion, adjustedAccuracy, true)*hitChanceMod, capped)
+			if uncapped > 100 {
+				excess := luaToString(uncapped - capped)
+				excessText = " ^8(+" + buffer(chanceBuffer, excess+"x") + excess + "%)"
+			}
+		}
+		config := ""
+		if distance == enemyDistance {
+			config = " ^8(current config)"
+		}
+		dist, chance := luaToString(distance), luaToString(capped)
+		lines = append(lines, buffer(distBuffer, dist)+dist+"m: "+buffer(chanceBuffer, chance)+chance+"%"+excessText+config)
+	}
+	if exceedsHitChance {
+		lines = append(lines, "", "^8Note: Your hit chance can exceed 100%.\nExcess values are shown as (+x%)", "")
+	}
+	breakdown.set("AccuracyHitChance", lines...)
 }

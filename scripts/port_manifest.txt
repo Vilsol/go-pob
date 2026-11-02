@@ -324,6 +324,7 @@ wasm/exposition/tree_versions.go    GO-NATIVE  crystalline binding surface for t
 wasm/exposition/whatif.go           GO-NATIVE  crystalline binding surface for the frontend
 wasm/exposition/mod_debug.go        PORT       src/Modules/Calcs.lua,src/Classes/ModDB.lua,src/Classes/ModList.lua,src/Modules/ModTools.lua,src/Modules/Common.lua,src/Data/Global.lua
 wasm/main.go                        GO-NATIVE  WASM entry point
+wasm2/exposition/breakdowns.go      GO-NATIVE  crystalline binding surface for the Calcs page's breakdown panel; flattens calculator2's breakdown views for JS
 wasm2/exposition/calcs.go           GO-NATIVE  crystalline binding surface for the PoE2 Calcs page's mod cells (CalcFormat.lua's per-entry Combine)
 wasm2/exposition/calculator.go      GO-NATIVE  crystalline binding surface for the PoE2 frontend
 wasm2/exposition/crystalline_gen.go GENERATED  [unverifiable: emitted by `go tool crystalline`, pinned in go.mod, not a script in this repo]
@@ -548,6 +549,8 @@ scripts/gamedatadump/bases.go       PORT       src/Export/Scripts/bases.lua
 scripts/gamedatadump/flavour.go     PORT       src/Export/Scripts/flavourText.lua
 wasm/exposition/ui_exports.go           GO-NATIVE  crystalline binding surface for the frontend
 calculator/party_export.go         PORT       src/Modules/CalcPerform.lua,src/Classes/PartyTab.lua,src/Modules/ModTools.lua
+calculator2/breakdown.go            PORT       src/Modules/CalcBreakdown.lua
+calculator2/breakdown_view.go       PORT       src/Classes/CalcBreakdownControl.lua
 calculator2/calc_defence.go         PORT       src/Modules/CalcDefence.lua
 calculator2/calc_defence_ehp.go     PORT       src/Modules/CalcDefence.lua
 calculator2/calc_defence_ehp_config.go PORT    src/Classes/ConfigTab.lua,src/Modules/ConfigOptions.lua

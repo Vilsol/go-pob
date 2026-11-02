@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+#MISE description="Record the breakdown panels the pinned PoB-PoE2 shows over the wasm2 fixture builds' main calculation"
+#USAGE flag "--pob2-dir <dir>" env="POB2_DIR" help="the PoB-PoE2 checkout (default: beside the repository)"
+set -euo pipefail
+root="$(git rev-parse --show-toplevel)"
+pob2="${POB2_DIR:-$(realpath "$(git rev-parse --path-format=absolute --git-common-dir)/../../PathOfBuilding-PoE2")}"
+mise run pob-pin --game poe2
+go run "$root/scripts/gopob" nice mise x --cd "$pob2/src" -- luajit "$root/oracle/poe2_breakdowns.lua" \
+  "$root/wasm2/exposition/testdata/sorceress_spark.xml" "$root/testdata/oracle/poe2_breakdowns_sorceress_spark.json" >/dev/null
+go run "$root/scripts/gopob" nice mise x --cd "$pob2/src" -- luajit "$root/oracle/poe2_breakdowns.lua" \
+  "$root/wasm2/exposition/testdata/warrior_dual_mace.xml" "$root/testdata/oracle/poe2_breakdowns_warrior_dual_mace.json" >/dev/null
