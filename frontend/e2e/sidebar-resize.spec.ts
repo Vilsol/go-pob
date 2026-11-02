@@ -19,11 +19,13 @@ const rows = (page: Page) =>
       const r = row.getBoundingClientRect();
       const text = document.createRange();
       text.selectNodeContents(labelEl);
+      const digits = document.createRange();
+      digits.selectNodeContents(valueEl);
       return {
         text: row.textContent?.trim() ?? '',
         oneLine: Math.abs(label.top - value.top) < 4 && value.left > label.left,
         labelCut: text.getBoundingClientRect().right > value.left + 1,
-        valueCut: valueEl.scrollWidth > valueEl.clientWidth,
+        valueCut: digits.getBoundingClientRect().width > valueEl.clientWidth + 0.5,
         inside: label.left >= r.left - 1 && value.right <= r.right + 1 && label.right <= r.right + 1
       };
     })

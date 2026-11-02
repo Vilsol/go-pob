@@ -124,7 +124,7 @@ test.describe(() => {
     const pick = async (engine: string) => {
       await page.getByRole('button', { name: 'Settings', exact: true }).click();
       const sheet = page.getByRole('dialog', { name: 'Settings' });
-      await sheet.getByRole('combobox', { name: 'Engine' }).selectOption(engine);
+      await sheet.getByRole('combobox', { name: 'Engine', exact: true }).selectOption(engine);
       const reloaded = page.waitForEvent('load');
       await sheet.getByRole('button', { name: 'Save' }).click();
       await reloaded;
@@ -142,7 +142,7 @@ test.describe(() => {
     // Cancel keeps the engine and does not reload
     await page.getByRole('button', { name: 'Settings', exact: true }).click();
     const sheet = page.getByRole('dialog', { name: 'Settings' });
-    await sheet.getByRole('combobox', { name: 'Engine' }).selectOption('TinyGo (experimental)');
+    await sheet.getByRole('combobox', { name: 'Engine', exact: true }).selectOption('TinyGo (experimental)');
     const before = wasm.length;
     await sheet.getByRole('button', { name: 'Cancel' }).click();
     await page.waitForTimeout(1_000);
