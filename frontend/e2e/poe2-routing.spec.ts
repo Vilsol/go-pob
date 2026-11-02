@@ -27,7 +27,7 @@ const start = async (page: Page, poe2: boolean) => {
   const requests: string[] = [];
   page.on('pageerror', (e) => errors.push(e.message));
   page.on('request', (r) => requests.push(r.url()));
-  if (poe2) await page.addInitScript(() => localStorage.setItem('options:poe2', 'true'));
+  await page.addInitScript((on) => localStorage.setItem('options:poe2', String(on)), poe2);
   await page.context().route(`${DATA_HOST}**`, async (route) => {
     const asset = cachedAsset(route.request().url());
     return route.fulfill({

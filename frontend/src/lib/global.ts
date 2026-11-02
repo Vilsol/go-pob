@@ -127,11 +127,11 @@ export const devMode = writable(loadDevMode());
 devMode.subscribe((v) => browser && localStorage.setItem('options:devMode', v.toString()));
 followOtherTabs('options:devMode', devMode, loadDevMode);
 
-// hidden: the Settings row shows only once the key exists, e.g. localStorage.setItem('options:poe2', 'true') from devtools
-export const poe2Unlocked = browser && localStorage.getItem('options:poe2') !== null;
-const loadPoe2Enabled = () => (browser ? localStorage.getItem('options:poe2') === 'true' : false);
+// on unless turned off in Settings (options:poe2 = 'false')
+export const poe2Unlocked = browser;
+const loadPoe2Enabled = () => (browser ? localStorage.getItem('options:poe2') !== 'false' : false);
 export const poe2Enabled = writable(loadPoe2Enabled());
-poe2Enabled.subscribe((v) => browser && (v || localStorage.getItem('options:poe2') !== null) && localStorage.setItem('options:poe2', v.toString()));
+poe2Enabled.subscribe((v) => browser && localStorage.setItem('options:poe2', v.toString()));
 followOtherTabs('options:poe2', poe2Enabled, loadPoe2Enabled);
 
 // which engines boot at startup while PoE2 is unlocked: the last-used build's game, or both

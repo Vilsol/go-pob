@@ -9,6 +9,9 @@ import { Blob as NodeBlob } from 'node:buffer';
 
 afterEach(cleanup);
 
+// the refusals below are PoE2 turned off in Settings; it is on by default
+localStorage.setItem('options:poe2', 'false');
+
 const pageErrors: string[] = [];
 beforeAll(() => {
   window.addEventListener('error', (e) => pageErrors.push(e.error ? String(e.error) : e.message));

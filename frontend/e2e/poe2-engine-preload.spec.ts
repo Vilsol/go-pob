@@ -29,7 +29,7 @@ const prepared = new WeakSet<BrowserContext>();
 
 const prepare = async (context: BrowserContext, lastGame: string, poe2: boolean, both: boolean) => {
   prepared.add(context);
-  if (poe2) await context.addInitScript(() => localStorage.setItem('options:poe2', 'true'));
+  await context.addInitScript((on) => localStorage.setItem('options:poe2', String(on)), poe2);
   if (both) await context.addInitScript(() => localStorage.setItem('options:engineBoot', 'both'));
   await context.addInitScript((g) => localStorage.setItem('lastGame', g), lastGame);
   await context.addInitScript(workerProbe);
@@ -104,7 +104,7 @@ test('with both engines asked for, the PoE2 engine boots at startup after a PoE1
   expect(errors).toEqual([]);
 });
 
-test('with PoE2 locked, neither a PoE2 build used last nor both engines asked for boots a PoE2 engine', async ({ context, page }) => {
+test('with PoE2 turned off, neither a PoE2 build used last nor both engines asked for boots a PoE2 engine', async ({ context, page }) => {
   const errors = await start(context, page, 'poe2', false, true);
   await page.waitForTimeout(1_000);
   expect(await poe2Worker(page)).toBeUndefined();

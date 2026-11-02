@@ -192,7 +192,8 @@ test('the build sort, the share site and the panel widths another tab stores rea
   await expect(level, "the build list takes the other tab's sort").toHaveAttribute('aria-sort', 'ascending');
 
   const games = b.getByRole('group', { name: 'Show builds of' });
-  await expect(games, 'no game toggle while PoE2 is locked').toHaveCount(0);
+  await store('options:poe2', 'false');
+  await expect(games, 'no game toggle while PoE2 is turned off').toHaveCount(0);
   await store('options:poe2', 'true');
   await expect(games.getByRole('button', { name: 'All' })).toHaveAttribute('aria-pressed', 'true');
   await store('options:buildListGame', 'poe1');

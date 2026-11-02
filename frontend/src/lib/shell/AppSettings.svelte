@@ -103,7 +103,7 @@
                 id: 'poe2',
                 label: 'Path of Exile 2 builds',
                 kind: 'check',
-                value: false,
+                value: true,
                 hint: 'Preview: a PoE2 build opens in its own calculator'
               } as Setting,
               {
