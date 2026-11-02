@@ -23,7 +23,7 @@ buildGoModule (finalAttrs: {
   # desktop/ is its own module with a `replace` to the repository root, which also holds the wasm
   modRoot = "desktop";
   proxyVendor = true;
-  vendorHash = "sha256-FkBqKqH6CUEldfSlTo5Ly+2q70bybXBrupzshkS1oJM=";
+  vendorHash = "sha256-2Ad8ukqMGoZCmklbZ0OSNQh8vNIhn4L2APl8664VlG8=";
 
   overrideModAttrs = {
     dontPnpmConfigure = true;

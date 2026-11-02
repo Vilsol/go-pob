@@ -50,31 +50,19 @@ func Load(ctx context.Context, version string, cache loader.AssetCache) (Minions
 	if err != nil {
 		return nil, fmt.Errorf("minion tables: %w", err)
 	}
-	manifest, err := loader.LoadManifest(ctx, version)
+	files, err := loader.LoadFileBundle(ctx, version, ".ot", cache)
 	if err != nil {
-		return nil, fmt.Errorf("manifest: %w", err)
+		return nil, fmt.Errorf(".ot files: %w", err)
 	}
-	var readErr error
 	readOT := func(path string) (string, bool) {
-		if !manifest.HasFile(path) {
-			return "", false
-		}
-		b, err := loader.LoadFile(ctx, version, path, cache)
-		if err != nil {
-			readErr = err
-			return "", false
-		}
-		return string(b), true
+		b, ok := files[path]
+		return string(b), ok
 	}
 	out, err := Build(func(variety string) (*game.Minion, error) {
 		if tables.VarietyByID(variety) == nil {
 			return nil, fmt.Errorf("%s: %w", variety, ErrNoVariety)
 		}
-		m, err := tables.Minion(variety, readOT)
-		if err == nil && readErr != nil {
-			err = readErr
-		}
-		return m, err
+		return tables.Minion(variety, readOT)
 	})
 	if err != nil {
 		return nil, err
