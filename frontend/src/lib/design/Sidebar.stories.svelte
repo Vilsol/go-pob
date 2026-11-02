@@ -180,7 +180,9 @@
       const row = value.parentElement!.getBoundingClientRect();
       const name = `${label.textContent} | ${value.textContent}`;
       await expect(Math.abs(l.top - v.top), `${name}: the value stays on the label's line`).toBeLessThanOrEqual(2);
-      await expect(value.scrollWidth, `${name}: the value is cut`).toBeLessThanOrEqual(value.clientWidth);
+      const text = document.createRange();
+      text.selectNodeContents(value);
+      await expect(text.getBoundingClientRect().width, `${name}: the value is cut`).toBeLessThanOrEqual(value.clientWidth + 0.5);
       await expect(v.right, `${name}: the value runs past its row`).toBeLessThanOrEqual(row.right + 0.5);
       await expect(l.left, `${name}: the label starts before the value`).toBeLessThan(v.left);
     }
@@ -201,7 +203,10 @@
       await expect(backdrop, `${name}: the backdrop fades in and out`).toMatch(/^linear-gradient\(to right, rgba\(0, 0, 0, 0\).*rgba\(0, 0, 0, 0\)\)$/);
       const alphas = [...backdrop.matchAll(/\/ ([\d.]+)\)|rgba\([^)]*, ([\d.]+)\)/g)].map((m) => Number(m[1] ?? m[2]));
       await expect(alphas.length, `${name}: the backdrop's colours carry their opacity`).toBe(4);
-      await expect(Math.max(...alphas), `${name}: the backdrop is at most half opaque`).toBeLessThanOrEqual(0.5);
+      await expect(Math.max(...alphas), `${name}: the backdrop is 80% opaque`).toBeCloseTo(0.8, 2);
+      const before = getComputedStyle(value, '::before');
+      await expect(parseFloat(before.right), `${name}: the backdrop's fade starts past the value's last digit`).toBeLessThanOrEqual(-12);
+      await expect(parseFloat(before.left), `${name}: the backdrop's fade ends before the value's first digit`).toBeLessThanOrEqual(-12);
     }
   }}>
   <div class="h-[1028px]"><LiveSidebar fx={fireballBuild} /></div>
