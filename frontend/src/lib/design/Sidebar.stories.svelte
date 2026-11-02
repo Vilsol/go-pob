@@ -184,9 +184,25 @@
       await expect(v.right, `${name}: the value runs past its row`).toBeLessThanOrEqual(row.right + 0.5);
       await expect(l.left, `${name}: the label starts before the value`).toBeLessThan(v.left);
     }
-    const cut = rows.filter(([label]) => label.scrollWidth > label.clientWidth);
+    const textRight = (el: HTMLElement) => {
+      const r = document.createRange();
+      r.selectNodeContents(el);
+      return r.getBoundingClientRect().right;
+    };
+    const cut = rows.filter(([label, value]) => textRight(label) > value.getBoundingClientRect().left + 1);
     await expect(cut.length, 'at 240px some labels run under their value').toBeGreaterThan(0);
-    for (const [, value] of cut) await expect(getComputedStyle(value, '::before').backgroundImage).toContain('gradient');
+    for (const [label, value] of cut) {
+      const name = `${label.textContent} | ${value.textContent}`;
+      await expect(label.getBoundingClientRect().right, `${name}: the label runs on to the end of the value`).toBeGreaterThanOrEqual(
+        value.getBoundingClientRect().right - 0.5
+      );
+      await expect(getComputedStyle(label).maskImage, `${name}: the label fades out to the right`).toMatch(/^linear-gradient.*rgba\(0, 0, 0, 0\)\)$/);
+      const backdrop = getComputedStyle(value, '::before').backgroundImage;
+      await expect(backdrop, `${name}: the backdrop fades in and out`).toMatch(/^linear-gradient\(to right, rgba\(0, 0, 0, 0\).*rgba\(0, 0, 0, 0\)\)$/);
+      const alphas = [...backdrop.matchAll(/\/ ([\d.]+)\)|rgba\([^)]*, ([\d.]+)\)/g)].map((m) => Number(m[1] ?? m[2]));
+      await expect(alphas.length, `${name}: the backdrop's colours carry their opacity`).toBe(4);
+      await expect(Math.max(...alphas), `${name}: the backdrop is at most half opaque`).toBeLessThanOrEqual(0.5);
+    }
   }}>
   <div class="h-[1028px]"><LiveSidebar fx={fireballBuild} /></div>
 </Story>

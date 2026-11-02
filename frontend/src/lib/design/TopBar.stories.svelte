@@ -6,6 +6,15 @@
   import { spectreBuild, fireballBuild, novaBuild } from './fixtures';
   import { expectTopBarFits, expectPanelBelow, expectFloatingLabel, expectIconButton, expectSelectsFloating } from './stories/layout_checks';
 
+  // every step name and its page/time column shows in full
+  const expectHistoryFits = async (menu: HTMLElement) => {
+    for (const item of within(menu).getAllByRole('menuitem'))
+      for (const el of item.querySelectorAll<HTMLElement>('span:not(.sr-only)'))
+        await expect(el.scrollWidth, el.textContent ?? '').toBeLessThanOrEqual(el.clientWidth);
+    const r = menu.getBoundingClientRect();
+    await expect(r.right).toBeLessThanOrEqual(window.innerWidth);
+  };
+
   const loadoutLabel = async (root: HTMLElement) => {
     const c = within(root);
     const label = c.getByText('Loadout');
@@ -128,6 +137,7 @@
     await expect(tip).toHaveTextContent('Life');
     await expect(tip).toHaveTextContent('+212 (+4.1%)');
     await expect(within(menu).getByText('Allocated Heart and Soul (+2 path nodes)')).toBeVisible();
+    await expectHistoryFits(menu);
 
     // the keyboard reaches each entry, shows its change and jumps there
     entries[3].focus();
@@ -138,6 +148,17 @@
     await userEvent.keyboard('{ArrowUp}{Enter}');
     await waitFor(() => expect(c.queryByRole('menu')).toBeNull());
     await expect(c.getByRole('button', { name: 'Undo: Switched item set → Endgame (Ctrl+Z)' })).toBeEnabled();
+  }}><LiveTopBar fx={spectreBuild} historyOpen /></Story>
+
+<Story
+  name="History open · phone width"
+  asChild
+  globals={{ viewport: { value: 'phone', isRotated: false } }}
+  play={async ({ canvasElement }) => {
+    await expect(window.innerWidth).toBeLessThanOrEqual(390);
+    const r = within(canvasElement).getByRole('menu', { name: 'Undo history' }).getBoundingClientRect();
+    await expect(r.left).toBeGreaterThanOrEqual(0);
+    await expect(r.right).toBeLessThanOrEqual(window.innerWidth);
   }}><LiveTopBar fx={spectreBuild} historyOpen /></Story>
 
 <Story

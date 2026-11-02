@@ -383,36 +383,6 @@ describe('section collapse', () => {
   }, 60_000);
 });
 
-// CalcSectionControl.lua:56-61, 223-356
-describe('section pop-out', () => {
-  it('pops a section out of the columns, raises and closes it', async () => {
-    const { outputs } = await import('$lib/global');
-    const { screen, fireEvent } = await import('@testing-library/svelte');
-    const tick = vi.spyOn(workerInstance, 'Tick').mockResolvedValue(undefined);
-    outputs.set({ Output: {}, SkillFlags: {}, CalcsTab: { Output: {}, OutputTable: {}, SkillFlags: {}, Breakdown: {}, Calcs: {} } });
-    render(Page);
-    const pops = await vi.waitFor(() => {
-      const b = screen.getAllByRole('button', { name: /^Pop out / });
-      expect(b.length).toBeGreaterThan(1);
-      return b;
-    });
-    const title = pops[0].getAttribute('aria-label')!.replace(/^Pop out /, '');
-    const second = pops[1].getAttribute('aria-label')!.replace(/^Pop out /, '');
-    await fireEvent.click(pops[0]);
-    const pane = await screen.findByRole('dialog', { name: `${title} (popped out)` });
-    expect(screen.queryByRole('region', { name: title }), 'the section stayed in its column').toBeNull();
-    await fireEvent.click(screen.getByRole('button', { name: `Pop out ${second}` }));
-    const panes = () => screen.getAllByRole('dialog').map((d) => d.getAttribute('aria-label'));
-    expect(panes()).toEqual([`${title} (popped out)`, `${second} (popped out)`]);
-    await fireEvent.pointerDown(pane);
-    expect(panes()).toEqual([`${second} (popped out)`, `${title} (popped out)`]);
-    await fireEvent.click(screen.getByRole('button', { name: `Close ${title}` }));
-    await vi.waitFor(() => expect(screen.getByRole('region', { name: title })).toBeTruthy());
-    expect(panes()).toEqual([`${second} (popped out)`]);
-    tick.mockRestore();
-  }, 60_000);
-});
-
 // Calcs.lua:37-70
 describe('the mod debug dump', () => {
   it('is hidden outside Dev mode and, in it, shows the worker dump on request', async () => {

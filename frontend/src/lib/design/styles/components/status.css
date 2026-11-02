@@ -15,7 +15,7 @@
   .stat-value {
     @apply relative font-mono whitespace-nowrap text-(--tone,var(--color-text));
   }
-  /* a value too wide for its row covers the end of the label, which fades out under it */
+  /* a value too wide for its row covers the end of the label, which runs on under it behind a half-opaque backdrop */
   .stat-fit {
     --row-bg: var(--color-surface-1);
   }
@@ -26,6 +26,15 @@
     --row-bg: var(--color-hover);
   }
   .stat-fade {
-    @apply relative z-raised shrink-0 bg-(--row-bg) before:pointer-events-none before:absolute before:inset-y-0 before:right-full before:w-3 before:bg-linear-to-r before:from-transparent before:to-(--row-bg) before:content-[''];
+    @apply relative z-raised shrink-0 before:pointer-events-none before:absolute before:inset-y-0 before:right-0 before:-left-3 before:content-[''];
+    &::before {
+      z-index: -1;
+      background: linear-gradient(to right, transparent, var(--fade-bg) 0.75rem, var(--fade-bg) calc(100% - 0.75rem), transparent);
+    }
+    --fade-bg: color-mix(in oklab, var(--row-bg) 50%, transparent);
+  }
+  .stat-under {
+    @apply col-span-2 col-start-1 row-start-1 w-0 min-w-full overflow-hidden whitespace-nowrap;
+    mask-image: linear-gradient(to right, #000 calc(100% - 0.75rem), transparent);
   }
 }

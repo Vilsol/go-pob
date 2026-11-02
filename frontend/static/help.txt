@@ -57,7 +57,7 @@ Item sets and the board/list layout are at the top. "Buy similar" builds a trade
 ---[Calcs tab]
 
 Choose the skill to calculate (socket group, active skill, skill part, minion) at the top.
-Hover a stat to preview its breakdown; click it to pin the breakdown. A breakdown section can be popped out.
+Hover a stat to preview its breakdown; click it to pin the breakdown.
 "Mod Debug" lists the modifiers behind the calculation; "Manage Spectres..." edits the spectre library.
 
 ---[Config tab]

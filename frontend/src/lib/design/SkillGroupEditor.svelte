@@ -512,7 +512,7 @@
           bind:this={listEl}
           use:dropFrom={boxEl}
           onscroll={(e) => (scrollTop = e.currentTarget.scrollTop)}
-          class="fixed z-dock overflow-y-auto overscroll-contain rounded-md border border-line-strong bg-surface-2 shadow-pop">
+          class="fixed z-dock overflow-y-auto overscroll-contain [overflow-anchor:none] rounded-md border border-line-strong bg-surface-2 shadow-pop">
           <div bind:this={headEl} class="sticky top-0 z-raised border-b border-line bg-surface-2 px-2.5 py-1.5 text-11 text-text-2">
             {results.length} gems{sortOn ? ` · sorted by ${sortStat}` : ''}{#if sortCache?.progress !== undefined && sortCache.progress < 100}<span
                 class="float-right"

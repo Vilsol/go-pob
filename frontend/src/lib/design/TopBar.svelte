@@ -231,7 +231,7 @@
       label="Undo history"
       items={historyItems}
       bind:open={historyOpen}
-      class="top-10 right-auto left-0 w-90"
+      class="top-10 right-auto left-0 w-max min-w-90 max-w-[calc(100vw-1rem)]"
       itemClass="h-auto min-h-7.5 justify-between gap-3 py-1">
       {#snippet trigger(attrs)}
         <div class="flex shrink-0 gap-1">

@@ -48,7 +48,8 @@ describe('AppAbout version history', () => {
     const dlg = within(view.getByRole('dialog', { name: 'About go-pob' }));
     const heading = (v: { version: string; date: string }) => `Version ${v.version} (${v.date})`;
     const [mine, theirs] = [parseChangelog(own), parseChangelog(pob)];
-    const versions = () => dlg.getAllByRole('heading', { name: /^Version / }).map((h) => h.textContent);
+    // a role query that throws before the history renders makes that render several times slower in jsdom
+    const versions = () => dlg.queryAllByRole('heading', { name: /^Version / }).map((h) => h.textContent);
     await vi.waitFor(() => expect(versions().length).toBe(mine.length + theirs.length));
     const headings = versions();
     expect(headings[0]).toBe(heading(mine[0]));

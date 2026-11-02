@@ -17,10 +17,12 @@ const rows = (page: Page) =>
       const [labelEl, valueEl] = [row.querySelector('.stat-label')!, row.querySelector('.stat-value')!];
       const [label, value] = [labelEl, valueEl].map((e) => e.getBoundingClientRect());
       const r = row.getBoundingClientRect();
+      const text = document.createRange();
+      text.selectNodeContents(labelEl);
       return {
         text: row.textContent?.trim() ?? '',
-        oneLine: Math.abs(label.top - value.top) < 4 && value.left >= label.right - 1,
-        labelCut: labelEl.scrollWidth > labelEl.clientWidth,
+        oneLine: Math.abs(label.top - value.top) < 4 && value.left > label.left,
+        labelCut: text.getBoundingClientRect().right > value.left + 1,
         valueCut: valueEl.scrollWidth > valueEl.clientWidth,
         inside: label.left >= r.left - 1 && value.right <= r.right + 1 && label.right <= r.right + 1
       };

@@ -5,7 +5,6 @@
   import Dock from './mobile/Dock.svelte';
   import Tooltip from './Tooltip.svelte';
   import SearchField from './SearchField.svelte';
-  import Icon from './Icon.svelte';
   import FloatingLabel from './FloatingLabel.svelte';
   import Select from './Select.svelte';
   import StatGauge from './StatGauge.svelte';
@@ -124,33 +123,7 @@
   const wideTop = $derived(shown.filter((s) => s.wide && s.id !== 'DamageTaken'));
   const wideBottom = $derived(shown.filter((s) => s.wide && s.id === 'DamageTaken'));
 
-  // CalcSectionControl.lua:56-61, 223-356
-  let overlays = $state<{ id: string; x: number; y: number }[]>([]);
-  const cols = $derived([1, 2, 3].map((c) => shown.filter((s) => !s.wide && s.col === c && !overlays.some((o) => o.id === s.id))));
-  const overlaid = $derived(overlays.map((o) => ({ o, s: shown.find((x) => x.id === o.id) })).filter((e) => e.s));
-  const popOut = (id: string, el: HTMLElement | null) => {
-    const r = el?.getBoundingClientRect();
-    overlays = [...overlays, { id, x: r?.left ?? 40, y: r?.top ?? 40 }];
-  };
-  const raise = (id: string) => {
-    if (overlays.at(-1)?.id !== id) overlays = [...overlays.filter((o) => o.id !== id), ...overlays.filter((o) => o.id === id)];
-  };
-  const drag = (id: string) => (e: PointerEvent) => {
-    if ((e.target as HTMLElement).closest('button')) return;
-    const o = overlays.find((x) => x.id === id);
-    if (!o) return;
-    const [dx, dy] = [e.clientX - o.x, e.clientY - o.y];
-    const move = (m: PointerEvent) => {
-      o.x = m.clientX - dx;
-      o.y = m.clientY - dy;
-    };
-    const up = () => {
-      window.removeEventListener('pointermove', move);
-      window.removeEventListener('pointerup', up);
-    };
-    window.addEventListener('pointermove', move);
-    window.addEventListener('pointerup', up);
-  };
+  const cols = $derived([1, 2, 3].map((c) => shown.filter((s) => !s.wide && s.col === c)));
 
   const rows = $derived(
     new Map(
@@ -515,12 +488,6 @@
                 <!-- eslint-disable-next-line svelte/no-useless-mustaches -- Svelte trims a plain space at a block edge -->
                 {s.title}{#if !s.applicable}{' '}<span class="font-normal text-text-3 normal-case">not applicable</span>{/if}
               </Disclosure>
-              {#if s.applicable}<button
-                  class={['border-0 bg-transparent px-1.5 text-11 text-text-3 hover:text-text', TOUCH_TARGET]}
-                  aria-label="Pop out {pobPlain(s.title)}"
-                  title="Pop out"
-                  onclick={(e) => popOut(s.id, e.currentTarget.closest('section'))}>^</button
-                >{/if}
             </h2>
             {#if open}{@render sectionBody(s)}{/if}
           </section>
@@ -529,37 +496,6 @@
     </div>
     {#each wideBottom as s (s.id)}{@render wide(s)}{/each}
   </div>
-  {#each overlaid as { o, s } (o.id)}
-    {#if s}
-      {@const open = !closed[s.id]}
-      <div
-        role="dialog"
-        aria-label="{pobPlain(s.title)} (popped out)"
-        class={[
-          'fixed z-dock flex max-h-[80vh] w-90 flex-col rounded border border-[color-mix(in_oklab,var(--tone)_45%,var(--color-line))] bg-surface-1 shadow-pop',
-          toneClass(sectionTone(s))
-        ]}
-        style:left="{o.x}px"
-        style:top="{o.y}px"
-        onpointerdown={() => raise(o.id)}>
-        <h2 class="m-0 flex cursor-move items-center" onpointerdown={drag(o.id)}>
-          <Disclosure
-            class={[
-              'toned box-border flex min-w-0 grow items-center gap-1.25 border-0 bg-transparent px-2 py-0.75 text-left eyebrow font-sans',
-              toneClass(sectionTone(s))
-            ]}
-            {open}
-            ontoggle={(isOpen) => collapse(s.id, !isOpen)}>{s.title}</Disclosure>
-          <button
-            class="border-0 bg-transparent px-1.5 text-13 text-text-3 hover:text-text"
-            aria-label="Close {pobPlain(s.title)}"
-            title="Close"
-            onclick={() => (overlays = overlays.filter((x) => x.id !== o.id))}><Icon name="close" size={12} /></button>
-        </h2>
-        {#if open}<div class="scroll min-h-0">{@render sectionBody(s)}</div>{/if}
-      </div>
-    {/if}
-  {/each}
   <Dock active={!!pinned} bind:folded={docked} title={title ?? 'Breakdown'} controls="calcs-breakdown">
     <CalcsBreakdown
       id="calcs-breakdown"
