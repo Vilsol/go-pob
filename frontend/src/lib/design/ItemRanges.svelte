@@ -35,8 +35,8 @@
           step="0.001"
           aria-label="Roll of range line {i + 1}"
           value={l.range}
-          onchange={(e) => onedit({ op: 'range', line: i + 1, value: Number(e.currentTarget.value) })} /><output
-          class="w-10 shrink-0 text-right font-mono">{percent(l.range)}</output
+          onchange={(e) => onedit({ op: 'range', line: i + 1, value: Number(e.currentTarget.value) })} /><output class="w-10 shrink-0 text-right font-mono"
+          >{percent(l.range)}</output
         ><span class="min-w-0 grow"><PobText text={l.label} /></span></label>
     {/each}
   </section>

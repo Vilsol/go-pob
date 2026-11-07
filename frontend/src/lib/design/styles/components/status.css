@@ -26,10 +26,12 @@
     --row-bg: var(--color-hover);
   }
   .stat-fade {
-    @apply relative z-raised shrink-0 before:pointer-events-none before:absolute before:inset-y-0 before:-right-3 before:-left-3 before:content-[''];
+    @apply relative z-raised shrink-0 before:pointer-events-none before:absolute before:inset-y-0 before:right-0 before:-left-3 before:content-[''];
     &::before {
       z-index: -1;
-      background: linear-gradient(to right, transparent, var(--fade-bg) 0.75rem, var(--fade-bg) calc(100% - 0.75rem), transparent);
+      background: linear-gradient(to right, transparent, var(--fade-bg) 0.75rem);
+      /* the fade past the value's last digit is a shadow, which does not overflow the row as a wider box would */
+      box-shadow: 0.375rem 0 0.375rem var(--fade-bg);
     }
     --fade-bg: color-mix(in oklab, var(--row-bg) 80%, transparent);
   }

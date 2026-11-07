@@ -199,14 +199,16 @@
         value.getBoundingClientRect().right - 0.5
       );
       await expect(getComputedStyle(label).maskImage, `${name}: the label fades out to the right`).toMatch(/^linear-gradient.*rgba\(0, 0, 0, 0\)\)$/);
-      const backdrop = getComputedStyle(value, '::before').backgroundImage;
-      await expect(backdrop, `${name}: the backdrop fades in and out`).toMatch(/^linear-gradient\(to right, rgba\(0, 0, 0, 0\).*rgba\(0, 0, 0, 0\)\)$/);
-      const alphas = [...backdrop.matchAll(/\/ ([\d.]+)\)|rgba\([^)]*, ([\d.]+)\)/g)].map((m) => Number(m[1] ?? m[2]));
-      await expect(alphas.length, `${name}: the backdrop's colours carry their opacity`).toBe(4);
-      await expect(Math.max(...alphas), `${name}: the backdrop is 80% opaque`).toBeCloseTo(0.8, 2);
       const before = getComputedStyle(value, '::before');
-      await expect(parseFloat(before.right), `${name}: the backdrop's fade starts past the value's last digit`).toBeLessThanOrEqual(-12);
+      await expect(before.backgroundImage, `${name}: the backdrop fades in over the label`).toMatch(/^linear-gradient\(to right, rgba\(0, 0, 0, 0\)/);
+      const alphas = [...before.backgroundImage.matchAll(/\/ ([\d.]+)\)|rgba\([^)]*, ([\d.]+)\)/g)].map((m) => Number(m[1] ?? m[2]));
+      await expect(alphas.length, `${name}: the backdrop's colours carry their opacity`).toBe(2);
+      await expect(Math.max(...alphas), `${name}: the backdrop is 80% opaque`).toBeCloseTo(0.8, 2);
       await expect(parseFloat(before.left), `${name}: the backdrop's fade ends before the value's first digit`).toBeLessThanOrEqual(-12);
+      const shadow = before.boxShadow.match(/^(?:color-mix\(.*\)|oklab\([^)]*\)|rgba?\([^)]*\)) ([\d.]+)px 0px ([\d.]+)px(?: 0px)?$/);
+      await expect(shadow, `${name}: the backdrop fades out past the value's last digit (${before.boxShadow})`).not.toBeNull();
+      await expect(Number(shadow![1]) > 0 && Number(shadow![2]) > 0, `${name}: the fade-out shadow sits right of the value and is blurred`).toBe(true);
+      await expect(value.scrollWidth, `${name}: the backdrop does not make the value overflow`).toBeLessThanOrEqual(value.clientWidth);
     }
   }}>
   <div class="h-[1028px]"><LiveSidebar fx={fireballBuild} /></div>

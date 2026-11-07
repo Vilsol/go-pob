@@ -710,7 +710,7 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 			output[damageType+"EnemyOverwhelm"] = enemyOverwhelm
 			output["totalEnemyDamageIn"] += enemyDamage
 			output[damageType+"EnemyDamage"] = enemyDamage * (1 - conversionTotal/100) * enemyDamageMult * output["EnemyCritEffect"]
-			conversionExtra := -enemyDamage*enemyDamageMult*output["EnemyCritEffect"] + output[damageType+"EnemyDamage"]
+			conversionExtra := -float64(enemyDamage*enemyDamageMult*output["EnemyCritEffect"]) + output[damageType+"EnemyDamage"]
 			for _, damageTypeFrom := range dmgTypeList {
 				enemyDamage, ok := enemyDamageConversion[damageType][damageTypeFrom]
 				if !ok {
@@ -722,7 +722,7 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 				names = append(names, elementalName(damageTypeFrom, "ElementalDamage")...)
 				enemyDamageMult := calcLibMod(enemyDB, nil, names...)
 				output[damageType+"EnemyDamage"] += enemyDamage * enemyDamageMult * output["EnemyCritEffect"]
-				conversionExtra += enemyDamage * enemyDamageMult * output["EnemyCritEffect"]
+				conversionExtra += float64(enemyDamage * enemyDamageMult * output["EnemyCritEffect"])
 			}
 			output["totalEnemyDamage"] += output[damageType+"EnemyDamage"]
 			//pob2:block:src/Modules/CalcDefence.lua:2365-2384

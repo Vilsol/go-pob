@@ -34,18 +34,23 @@
   let affixControls = $state.raw<Poe2AffixControl[]>([]);
   let ranges = $state.raw<ItemRangesInfo>();
   let whatIf = $state<WhatIf>();
-  const read = () =>
-    poe2Worker()
+  // a read that makes fewer worker calls can finish before an older one; only the newest may land
+  let readSeq = 0;
+  const read = () => {
+    const mine = ++readSeq;
+    return poe2Worker()
       .then(async (w) => {
         const p = w.ItemsPage();
         const shown = !!(await p).display;
         const a = shown ? await w.DisplayItemAffixes() : [];
         const r = shown ? await w.DisplayItemRanges() : undefined;
+        if (mine !== readSeq) return;
         affixControls = a;
         ranges = r;
         page = await p;
       })
       .catch(fail);
+  };
   // read again after every calculation
   $effect(() => {
     void $poe2Build;
