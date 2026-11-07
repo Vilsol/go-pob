@@ -151,7 +151,8 @@ describe('a PoE2 build in the app frame', () => {
   it('the tree body shows the level, class and points, and an edit error reaches the page', async () => {
     poe2Build.set(calc());
     const page = render(Poe2Page, { route: 'tree' });
-    expect(page.getByText('Level 40 Sorceress')).toBeTruthy();
+    expect(page.getByText('Sorceress')).toBeTruthy();
+    expect((page.getByRole('spinbutton', { name: 'Character level' }) as HTMLInputElement).value).toBe('40');
     expect(page.getByLabelText('Passive points used').textContent).toBe('Points: 12 / Ascendancy: 2');
     w2.SetMainActiveSkill.mockRejectedValueOnce(new Error('no PoE2 build is open'));
     poe2Engine.setMainSkill('MainActiveSkill', 2);

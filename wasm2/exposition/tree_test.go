@@ -302,3 +302,41 @@ func TestJewelRadiusData(t *testing.T) {
 		t.Fatal("a keystone carries nodesInRadius")
 	}
 }
+
+// TreeTab.lua:149-156: Reset leaves the class and ascendancy starts (PassiveSpec.lua:884-892), drops attribute
+// choices, and is an undo state of its own.
+func TestResetTree(t *testing.T) {
+	calc, _ := openFixture(t, "sorceress_spark.xml")
+	click(t, calc, 56216, 0)
+	if err := calc.AllocateAttributeNode(56216, 3, 0); err != nil {
+		t.Fatal(err)
+	}
+	click(t, calc, 64789, 0)
+	if _, err := calc.Calculate(); err != nil {
+		t.Fatal(err)
+	}
+	if err := calc.ResetTree(); err != nil {
+		t.Fatal(err)
+	}
+	out, err := calc.Calculate()
+	if err != nil {
+		t.Fatal(err)
+	}
+	st, _ := calc.TreeState()
+	if !slices.Equal(st.Alloc, []int{40721, 54447}) || st.Used != 0 || st.AscUsed != 0 || out.Output["EnergyShield"] != 0 {
+		t.Fatalf("after reset: alloc %v used %d asc %d ES %v", st.Alloc, st.Used, st.AscUsed, out.Output["EnergyShield"])
+	}
+	if i := slices.IndexFunc(st.Text, func(n TreeNodeText) bool { return n.ID == 56216 }); i >= 0 {
+		t.Fatalf("node 56216 kept its attribute: %+v", st.Text[i])
+	}
+	xml, _ := calc.Serialize()
+	if !strings.Contains(xml, `nodes="40721,54447"`) || strings.Contains(xml, `intNodes="56216"`) {
+		t.Fatalf("the saved spec still carries the allocation:\n%s", xml)
+	}
+	if ok, err := calc.Undo(); err != nil || !ok {
+		t.Fatalf("undo %v %v", ok, err)
+	}
+	if !strings.Contains(savedSpec(calc), "64789") {
+		t.Fatalf("undo did not restore the tree: %s", savedSpec(calc))
+	}
+}

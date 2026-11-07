@@ -43,7 +43,8 @@ const poe2Worker = vi.fn(() =>
         const v = Reflect.get(target, prop, receiver) as unknown;
         if (typeof v !== 'function') return v;
         return (...args: unknown[]) => {
-          issued.push(`${String(prop)}(${args.map((a) => JSON.stringify(a)).join(',')})`);
+          // a line's verdict is a read, which the Config page asks for whenever it shows lines
+          if (prop !== 'ParseModLines') issued.push(`${String(prop)}(${args.map((a) => JSON.stringify(a)).join(',')})`);
           const r = (v as (...a: unknown[]) => unknown).apply(target, args);
           const ms = delays[String(prop)];
           return ms ? new Promise((done) => setTimeout(() => done(r), ms)) : r;
@@ -160,14 +161,74 @@ describe('the PoE2 config and main skill writes', () => {
       const oracle = JSON.parse(await readFile(resolve(ORACLE, `poe2_sidebar_${name}.json`), 'utf8')) as { configShown: string[] };
       const page = await openConfig(name);
       expect(shownOptions(page.container).sort()).toEqual(oracle.configShown);
-      // PoE1's config sets, custom modifiers and reset have no PoE2 counterpart yet
-      expect(page.queryByRole('region', { name: 'Custom modifiers' })).toBeNull();
+      // PoE1's reset has no PoE2 counterpart yet
       expect(page.queryByRole('button', { name: 'Reset to defaults' })).toBeNull();
-      expect(page.queryByText('Config set')).toBeNull();
       expect(issued).toEqual([]);
     },
     120_000
   );
+
+  // ConfigTab.lua:167-178, ConfigSetService.lua:17-46 (PoB-PoE2): a new set starts at the defaults and is made
+  // active; each set keeps its own options
+  it('config sets keep their own options, and switching recalculates', async () => {
+    const page = await openConfig('sorceress_spark');
+    const setSelect = () => page.getByRole('combobox', { name: 'Config set' }) as HTMLSelectElement;
+    expect([...setSelect().options].map((o) => o.textContent)).toContain('Default');
+    await worker2Instance.SetConfigOption('resistancePenalty', 0);
+    poe2Build.set(await worker2Instance.SetConfigOption('resistancePenalty', 0));
+    issued.length = 0;
+
+    await fireEvent.change(setSelect(), { target: { value: '-1' } });
+    await fireEvent.click(page.getByRole('button', { name: 'New' }));
+    await fireEvent.input(page.getByRole('textbox', { name: 'Name for this config set' }), { target: { value: 'Boss' } });
+    await fireEvent.click(page.getByRole('button', { name: 'Save' }));
+    await vi.waitFor(() =>
+      expect(worker2Instance.ConfigSets()).toEqual({
+        sets: [
+          { id: 1, title: 'Default' },
+          { id: 2, title: 'Boss' }
+        ],
+        active: 2
+      })
+    );
+    expect(issued).toEqual(['EditConfigSet({"op":"new","title":"Boss"})']);
+    await vi.waitFor(() => expect(get(poe2Build)?.output.FireResist).toBe(-15));
+    expect(worker2Instance.Serialize()).toMatch(
+      /<Config activeConfigSet="2">\s*<ConfigSet id="1" title="Default">(?:(?!<\/ConfigSet>)[\s\S])*<Input name="resistancePenalty" number="0"\/>\s*<\/ConfigSet>\s*<ConfigSet id="2" title="Boss">(?:(?!<\/ConfigSet>)[\s\S])*<\/ConfigSet>\s*<\/Config>/
+    );
+
+    issued.length = 0;
+    await vi.waitFor(() => expect([...setSelect().options].map((o) => o.textContent)).toContain('Boss'));
+    await fireEvent.change(setSelect(), { target: { value: '0' } });
+    await vi.waitFor(() => expect(get(poe2Build)?.output.FireResist).toBe(45));
+    expect(issued).toEqual(['SelectConfigSet(1)']);
+    expect(worker2Instance.ConfigSets().active).toBe(1);
+    await worker2Instance.EditConfigSet({ op: 'delete', id: 2 });
+    await worker2Instance.SetConfigOption('resistancePenalty', -60);
+  }, 120_000);
+
+  // ConfigTab.lua:24-98, 1200-1223 (PoB-PoE2); Life 683 with the fixture's custom block on and 651 with it off is
+  // oracle/poe2_sidebar.lua on the fixture and on a copy with the block disabled
+  it("custom modifier groups parse their lines, and turning one off recalculates as PoB-PoE2's does", async () => {
+    const page = await openConfig('sorceress_spark');
+    const custom = await page.findByRole('region', { name: 'Custom modifiers' });
+    expect(get(poe2Build)?.output.Life).toBe(683);
+    await vi.waitFor(() => expect(within(custom).getByText('1 applied')).toBeTruthy());
+    expect(within(custom).queryByRole('button', { name: 'Mod browser' })).toBeNull();
+    issued.length = 0;
+
+    await fireEvent.click(within(custom).getByRole('checkbox', { name: 'Enable Default' }));
+    await vi.waitFor(() => expect(get(poe2Build)?.output.Life).toBe(651));
+    expect(issued).toEqual(['SetCustomModifierBlocks([{"Title":"Default","Enabled":"false","Text":"+30 to maximum Life"}])']);
+    expect(worker2Instance.Serialize()).toMatch(/<CustomModifierBlock enabled="false" title="Default">\s*\+30 to maximum Life\s*<\/CustomModifierBlock>/);
+    expect(worker2Instance.ParseModLines(['+30 to maximum Life', '# note', '', 'not a modifier']).map((l) => l.Status)).toEqual([
+      'parsed',
+      'comment',
+      'blank',
+      'unsupported'
+    ]);
+    poe2Build.set(await worker2Instance.SetCustomModifierBlocks([{ Title: 'Default', Enabled: 'true', Text: '+30 to maximum Life' }]));
+  }, 120_000);
 
   it('editing a config option on the page recalculates the sidebar', async () => {
     const page = await openConfig('sorceress_spark');
@@ -306,6 +367,70 @@ describe('the PoE2 tree undo and redo', () => {
     await vi.waitFor(() => expect(get(poe2Build)?.output.EnergyShield).toBe(10));
     expect(worker2Instance.Serialize()).toMatch(/<WeaponSet1 nodes="44871"\/>/);
     expect(issued).toEqual(['TreeUndo(false)', 'TreeUndo(true)']);
+  }, 120_000);
+});
+
+// the levels and warnings are PoB-PoE2's Build.lua acts table and EstimatePlayerProgress run under luajit on the
+// fixture's point counts
+describe('the PoE2 character level', () => {
+  beforeAll(() => {
+    globalThis.ResizeObserver ??= class {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    };
+  });
+
+  it('the level box and the Auto button set the level the build saves with, and Auto follows the points used', async () => {
+    poe2Build.set(await worker2Instance.Open(await fixture('sorceress_spark.xml')));
+    const { tinyTree } = await import('$lib/components/skill-tree/tree2_fixture');
+    const treeData = vi.spyOn(worker2Instance, 'TreeData').mockResolvedValue(tinyTree());
+    const page = render(Poe2Page, { route: 'tree' });
+    await vi.waitFor(() => page.getByRole('img', { name: 'Passive skill tree' }), { timeout: 60_000 });
+    treeData.mockRestore();
+    const points = page.getByRole('status', { name: 'Points used' });
+    expect(points.textContent?.replace(/\s+/g, ' ').trim()).toBe('Points 0 / 123 · Weapon set 1 0 / 24 · Weapon set 2 0 / 24 · Ascendancy 0 / 8');
+    expect(points.getAttribute('title')).toBe('Required Level: 1\nEstimated Progress:\nAct: Act 1\nExtra Skillpoints: 0');
+    const level = page.getByRole('spinbutton', { name: 'Character level' }) as HTMLInputElement;
+    expect(level.value).toBe('40');
+    issued.length = 0;
+
+    await fireEvent.input(level, { target: { value: '55' } });
+    await fireEvent.blur(level);
+    await vi.waitFor(() => expect(get(poe2Build)?.level).toBe(55));
+    expect(worker2Instance.Serialize()).toMatch(/characterLevelAutoMode="false"[^>]* level="55"/);
+
+    await fireEvent.click(page.getByRole('button', { name: 'Manual' }));
+    await vi.waitFor(() => expect(get(poe2Build)?.level).toBe(1));
+    expect(page.getByRole('button', { name: 'Auto' }).getAttribute('aria-pressed')).toBe('true');
+    expect(worker2Instance.Serialize()).toMatch(/characterLevelAutoMode="true"[^>]* level="1"/);
+    expect(issued).toEqual(['SetLevel(55)', 'SetLevelAutoMode(true)']);
+
+    poe2Build.set((await worker2Instance.TreeClick(44871, false, 0, false, 1)).calc);
+    expect(get(poe2Build)?.level).toBe(2);
+    expect(get(poe2Engine.sidebar)?.warnings).toContainEqual({ kind: 'points', text: 'You have 1 Weapon set 2 passives available' });
+    await worker2Instance.TreeUndo(false);
+  }, 120_000);
+
+  // TreeTab.lua:145-161 (PoB-PoE2)
+  it('Reset Tree asks first, then deallocates every node but the class start', async () => {
+    poe2Build.set(await worker2Instance.Open(await fixture('sorceress_spark.xml')));
+    const { tinyTree } = await import('$lib/components/skill-tree/tree2_fixture');
+    const treeData = vi.spyOn(worker2Instance, 'TreeData').mockResolvedValue(tinyTree());
+    const page = render(Poe2Page, { route: 'tree' });
+    await vi.waitFor(() => page.getByRole('img', { name: 'Passive skill tree' }), { timeout: 60_000 });
+    treeData.mockRestore();
+    poe2Build.set((await worker2Instance.TreeClick(44871, false, 0, false, 0)).calc);
+    expect((get(poe2Build) as Poe2Calc | undefined)?.tree.alloc).toEqual([44871, 54447]);
+    issued.length = 0;
+
+    await fireEvent.click(page.getByRole('button', { name: 'Reset Tree' }));
+    const dialog = page.getByRole('dialog', { name: 'Reset Tree' });
+    expect(dialog.textContent).toContain('Warning: resetting your passive tree cannot be undone.');
+    await fireEvent.click(within(dialog).getByRole('button', { name: 'Reset' }));
+    await vi.waitFor(() => expect((get(poe2Build) as Poe2Calc | undefined)?.tree.alloc).toEqual([54447]));
+    expect(issued).toEqual(['TreeReset()']);
+    expect(worker2Instance.Serialize()).toMatch(/nodes="54447"/);
   }, 120_000);
 });
 

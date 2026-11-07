@@ -5,7 +5,7 @@ import type { BuildWarning, Sidebar, SidebarSection } from '$lib/display/sidebar
 import { buildStatList2, displayStats2, minionDisplayStats2 } from '$lib/display/stats2';
 import { savePoe2Build, savedStats2 } from '$lib/shell/poe2_save';
 import { EXPORT_SITES2 } from '$lib/design/share';
-import type { calculator } from '$lib/types';
+import type { calculator, exposition } from '$lib/types';
 import type { calculator2 } from '$lib/types2';
 import type { MainSkillField } from '$lib/shell/main_skill';
 import type { BuildEngine, CalcsTabView, MainGroupView } from './engine';
@@ -61,6 +61,8 @@ const sidebar2 = (calc: Calc): Sidebar => {
     groups: buildStatList2({ Output: calc.output, SkillFlags: calc.skillFlags }, displayStats2, lines)
   });
   const warnings: BuildWarning[] = [...new Set(lines)].map((text) => ({ kind: 'stat', text }));
+  // Build.lua:1053-1083 (PoB-PoE2)
+  for (const text of calc.tree?.progress?.warnings ?? []) if (!warnings.some((w) => w.text === text)) warnings.push({ kind: 'points', text });
   return { sections, warnings };
 };
 
@@ -223,7 +225,7 @@ export const poe2Engine: BuildEngine = {
   },
   busy: poe2Busy,
   error: poe2Error,
-  // ConfigTab.lua (PoB-PoE2): no config sets, custom modifiers or comparisons yet
+  // ConfigTab.lua (PoB-PoE2): no option comparisons, custom modifier comparisons or mod browser yet
   config: {
     table: () => import('$lib/design/config_table2').then((m) => m.poe2ConfigTable),
     revision: revision2,
@@ -234,7 +236,28 @@ export const poe2Engine: BuildEngine = {
     placeholders: () => (get(poe2Build) ? Promise.resolve({}) : undefined),
     relevance: derived(poe2Build, (v) => (v as Calc | undefined)?.relevance ?? ({} as calculator2.ConfigRelevance)),
     output: derived(poe2Build, (v) => v?.output),
-    set: (key, value) => poe2Run((w) => w.SetConfigOption(key, value))
+    set: (key, value) => poe2Run((w) => w.SetConfigOption(key, value)),
+    // ConfigTab.lua:152-178, ConfigSetListControl.lua:13-129 (PoB-PoE2)
+    sets: {
+      read: () => {
+        const v = get(poe2Build) as Calc | undefined;
+        return v?.configSets && Promise.resolve(v.configSets);
+      },
+      select: (id) => poe2Run((w) => w.SelectConfigSet(id)),
+      edit: (op) => poe2Run((w) => w.EditConfigSet(op))
+    },
+    // ConfigTab.lua:24-98, 1200-1223 (PoB-PoE2)
+    custom: {
+      read: () => {
+        const v = get(poe2Build) as Calc | undefined;
+        return v?.customBlocks && Promise.resolve(v.customBlocks);
+      },
+      write: (blocks) => poe2Run((w) => w.SetCustomModifierBlocks(blocks)),
+      parse: (lines) =>
+        poe2Worker()
+          .then((w) => w.ParseModLines(lines))
+          .then((l) => l as exposition.ModLine[])
+    }
   },
   // SkillsTab.lua (PoB-PoE2)
   skills: () => import('./engine_poe2_skills.svelte').then((m) => m.poe2SkillsPage),

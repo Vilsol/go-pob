@@ -19,6 +19,7 @@ import type { CalcBreakdown } from '../display/calcs';
 import type { ItemDBFilterInput, ItemDBKind, ItemDBLists, ItemDBRowPlain } from '../design/item_db';
 import { addStatCompares2 } from '../display/stat_compare2';
 import type { StatCompareSection } from '../skill_tree/stat_compare';
+import type { ConfigSetEdit } from './engine';
 
 // only the data cache bucket; on the web it is its own IndexedDB database, since zenfs allocates inode ids per
 // instance and two instances writing the PoE1 worker's database overwrite each other's files
@@ -90,6 +91,23 @@ export type Poe2TreeState = {
   ascUsed: number;
   // the jewelRadiusIndex of the jewel in each socket whose jewel has a radius
   jewelRadiusIndex: Record<number, number>;
+  // Build.lua:202-216, 1025-1103 (PoB-PoE2)
+  levelAuto?: boolean;
+  progress?: Poe2Progress;
+};
+
+export type Poe2Progress = {
+  level: number;
+  act: string;
+  extra: number;
+  normalPassives: number;
+  usedMax: number;
+  weaponSet1Used: number;
+  weaponSet2Used: number;
+  weaponSetMax: number;
+  ascUsed: number;
+  ascMax: number;
+  warnings: string[];
 };
 
 /* tree2.ClickResult */
@@ -107,6 +125,10 @@ export type Poe2Calc = Poe2View & {
   configInputs: Record<string, ConfigValue2>;
   relevance: calculator2.ConfigRelevance;
   tree: Poe2TreeState;
+  // ConfigSetListControl.lua:93-99 (PoB-PoE2)
+  configSets?: { sets: { id: number; title: string }[]; active: number };
+  // ConfigTab.lua:24-98 (PoB-PoE2)
+  customBlocks?: { Title: string; Enabled: string; Text: string }[];
 };
 
 export type Poe2Click = { result: number; calc?: Poe2Calc };
@@ -326,6 +348,8 @@ class PoB2Worker {
       mainSocketGroup: out.MainSocketGroup,
       mainActiveSkill: out.MainActiveSkill,
       configInputs: inputs,
+      configSets: this.ConfigSets(),
+      customBlocks: this.CustomModifierBlocks(),
       relevance: Object.fromEntries(Object.entries(rel).map(([k, v]) => [k, [...((v as string[] | undefined) ?? [])]])) as calculator2.ConfigRelevance,
       tree: {
         alloc: [...(st.Alloc ?? [])],
@@ -335,7 +359,21 @@ class PoB2Worker {
         ascendClassBaseName: st.AscendClassBaseName,
         used: st.Used,
         ascUsed: st.AscUsed,
-        jewelRadiusIndex
+        jewelRadiusIndex,
+        levelAuto: st.LevelAutoMode,
+        progress: {
+          level: st.Progress.Level,
+          act: st.Progress.Act,
+          extra: st.Progress.Extra,
+          normalPassives: st.Progress.NormalPassives,
+          usedMax: st.Progress.UsedMax,
+          weaponSet1Used: st.Progress.WeaponSet1Used,
+          weaponSet2Used: st.Progress.WeaponSet2Used,
+          weaponSetMax: st.Progress.WeaponSetMax,
+          ascUsed: st.Progress.AscUsed,
+          ascMax: st.Progress.AscMax,
+          warnings: [...(st.Progress.Warnings ?? [])]
+        }
       }
     };
   }
@@ -361,6 +399,50 @@ class PoB2Worker {
     return this.view();
   }
 
+  /* ConfigTab.lua:152-178, ConfigSetListControl.lua:93-99 (PoB-PoE2) */
+  ConfigSets(): { sets: { id: number; title: string }[]; active: number } {
+    const v = this.calc?.ConfigSets();
+    return { sets: (v?.Sets ?? []).map((s) => ({ id: s.ID, title: s.Title })), active: v?.Active ?? 1 };
+  }
+
+  /* ConfigTab.lua:24-98, 1200-1223 (PoB-PoE2): the active config set's custom modifier blocks */
+  CustomModifierBlocks(): { Title: string; Enabled: string; Text: string }[] {
+    return (this.calc?.CustomModifierBlocks() ?? []).map((b) => ({ Title: b.Title, Enabled: String(b.Enabled), Text: b.Text }));
+  }
+
+  async SetCustomModifierBlocks(blocks: { Title?: string; Enabled?: string; Text: string }[]): Promise<Poe2Calc> {
+    this.calc?.SetCustomModifierBlocks(blocks.map((b) => ({ Title: b.Title ?? 'Default', Enabled: b.Enabled !== 'false', Text: b.Text })));
+    return this.view();
+  }
+
+  ParseModLines(
+    lines: string[]
+  ): { Status: exposition.ModLineStatus; Extra: string; Mods?: { Name: string; Type: string; Value: string; Tags?: string[] }[] }[] {
+    return (exposition.ParseModLines(lines) ?? []).map((l) => ({
+      Status: l.Status,
+      Extra: l.Extra,
+      Mods: l.Mods?.map((m) => ({ Name: m.Name, Type: m.Type, Value: m.Value, Tags: m.Tags && [...m.Tags] }))
+    }));
+  }
+
+  /* ConfigTab.lua:167-170 (PoB-PoE2) */
+  async SelectConfigSet(id: number): Promise<Poe2Calc> {
+    this.calc?.SetActiveConfigSet(id);
+    return this.view();
+  }
+
+  /* ConfigSetService.lua:17-46, ListControl.lua:441-449 (PoB-PoE2) */
+  async EditConfigSet(e: ConfigSetEdit): Promise<Poe2Calc> {
+    const calc = this.calc;
+    if (!calc) throw new Error('no PoE2 build is open');
+    if (e.op === 'new') calc.NewConfigSet(e.title);
+    else if (e.op === 'delete') calc.DeleteConfigSet(e.id);
+    else if (e.op === 'move') calc.MoveConfigSet(e.from, e.to);
+    else if (e.op === 'copy') calc.CopyConfigSet(e.id, e.title);
+    else calc.RenameConfigSet(e.id, e.title);
+    return this.view();
+  }
+
   /* Build.lua:364-368 (PoB-PoE2) */
   async SetMainSocketGroup(index: number): Promise<Poe2Calc> {
     this.calc?.SetMainSocketGroup(index);
@@ -370,6 +452,18 @@ class PoB2Worker {
   /* Build.lua:376-381 (PoB-PoE2) */
   async SetMainActiveSkill(index: number): Promise<Poe2Calc> {
     this.calc?.SetMainActiveSkill(index);
+    return this.view();
+  }
+
+  /* Build.lua:209-216 (PoB-PoE2): the level box, which turns the automatic level off */
+  async SetLevel(level: number): Promise<Poe2Calc> {
+    this.calc?.SetLevel(level);
+    return this.view();
+  }
+
+  /* Build.lua:202-208 (PoB-PoE2) */
+  async SetLevelAutoMode(auto: boolean): Promise<Poe2Calc> {
+    this.calc?.SetCharacterLevelAutoMode(auto);
     return this.view();
   }
 
@@ -405,6 +499,12 @@ class PoB2Worker {
   /* TreeTab.lua:851-876 (PoB-PoE2) */
   async TreeAllocateAttribute(id: number, attributeIndex: number, allocMode: number): Promise<Poe2Calc> {
     this.calc?.AllocateAttributeNode(id, attributeIndex, allocMode).unwrap();
+    return this.view();
+  }
+
+  /* TreeTab.lua:145-161 (PoB-PoE2) */
+  async TreeReset(): Promise<Poe2Calc> {
+    this.calc?.ResetTree().unwrap();
     return this.view();
   }
 

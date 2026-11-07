@@ -332,6 +332,7 @@ wasm/exposition/mod_debug.go        PORT       src/Modules/Calcs.lua,src/Classes
 wasm/main.go                        GO-NATIVE  WASM entry point
 wasm2/exposition/breakdowns.go      GO-NATIVE  crystalline binding surface for the Calcs page's breakdown panel; flattens calculator2's breakdown views for JS
 wasm2/exposition/calcs.go           GO-NATIVE  crystalline binding surface for the PoE2 Calcs page's mod cells (CalcFormat.lua's per-entry Combine)
+wasm2/exposition/config.go          GO-NATIVE  crystalline binding surface for the PoE2 Config page's custom modifier blocks and their lines' verdicts (ConfigTab.lua's BuildModList)
 wasm2/exposition/calculator.go      GO-NATIVE  crystalline binding surface for the PoE2 frontend
 wasm2/exposition/crystalline_gen.go GENERATED  [unverifiable: emitted by `go tool crystalline`, pinned in go.mod, not a script in this repo]
 wasm2/exposition/export.go          GO-NATIVE  crystalline binding surface for the PoE2 build code export (ImportTab.lua's Deflate and base64)
@@ -589,6 +590,8 @@ calculator2/item_craft.go           PORT       src/Modules/Data.lua,src/Classes/
 calculator2/items_affix_edit.go     PORT       src/Classes/ItemsTab.lua,src/Classes/SliderControl.lua
 calculator2/item_db.go              PORT       src/Modules/ItemTools.lua,src/Modules/Main.lua,src/Classes/ItemDBControl.lua,src/Modules/Common.lua
 calculator2/item_compare.go         PORT       src/Modules/Calcs.lua,src/Classes/ItemsTab.lua
+calculator2/config_sets.go          PORT       src/Classes/ConfigTab.lua,src/Classes/ConfigSetListControl.lua,src/Classes/ListControl.lua
+calculator2/player_progress.go      PORT       src/Modules/Build.lua
 calculator2/calc_setup_skills_data.go PORT     src/Modules/Data.lua
 calculator2/calc_active_skill.go    PORT       src/Modules/CalcActiveSkill.lua
 calculator2/calc_active_skill_modlist.go PORT  src/Modules/CalcActiveSkill.lua,src/Modules/CalcSetup.lua

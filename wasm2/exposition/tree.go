@@ -6,6 +6,7 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/Vilsol/go-pob/calculator2"
 	"github.com/Vilsol/go-pob/data/tree2"
 	"github.com/Vilsol/go-pob/pob2"
 )
@@ -143,6 +144,8 @@ type TreeState struct {
 	AttributeIndex      int
 	// JewelRadiusIndex lists the sockets whose jewel has a radius, as socket id, jewelRadiusIndex pairs.
 	JewelRadiusIndex []int
+	LevelAutoMode    bool
+	Progress         calculator2.PlayerProgress
 }
 
 func (c *Calculator) spec() (*tree2.PassiveSpec, error) {
@@ -161,6 +164,7 @@ func (c *Calculator) TreeState() (*TreeState, error) {
 	st := &TreeState{
 		ClassName: spec.CurClassName, AscendClassBaseName: spec.CurAscendClassBaseName,
 		Used: used, AscUsed: ascUsed, AttributeIndex: spec.AttributeIndex,
+		LevelAutoMode: c.build.Build.CharacterLevelAutoMode, Progress: calculator2.EstimatePlayerProgress(spec, c.env.Player.Output),
 	}
 	ids := make([]int, 0, len(spec.Nodes))
 	for id := range spec.Nodes {
@@ -318,6 +322,23 @@ func (c *Calculator) Redo() (bool, error) {
 	}
 	c.saveSpec(spec)
 	return true, nil
+}
+
+// ResetTree is the Reset Tree popup's Reset: attribute nodes go back to "Attribute" and every node but the class
+// starts is deallocated.
+//
+//pob2:block:src/Classes/TreeTab.lua:149-156
+func (c *Calculator) ResetTree() error {
+	spec, err := c.spec()
+	if err != nil {
+		return err
+	}
+	clear(spec.HashOverrides)
+	spec.ResetNodes()
+	spec.BuildAllDependsAndPaths()
+	c.undo.AddUndoState(spec, false)
+	c.saveSpec(spec)
+	return nil
 }
 
 // saveSpec writes the spec back into the active <Spec>, as TreeTab:Save would on the next save.

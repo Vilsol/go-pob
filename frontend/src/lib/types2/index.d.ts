@@ -43,6 +43,10 @@ export declare namespace calculator2 {
     readonly SkillData?: Array<string>;
     readonly GemFamilies?: Array<string>;
   }
+  interface ConfigSetView {
+    readonly ID: number;
+    readonly Title: string;
+  }
   interface ConfigValue {
     readonly Number: number;
     readonly String: string;
@@ -77,6 +81,19 @@ export declare namespace calculator2 {
     readonly Obtainable: number;
     readonly Search: string;
     readonly SearchMode: number;
+  }
+  interface PlayerProgress {
+    readonly Level: number;
+    readonly Act: string;
+    readonly Extra: number;
+    readonly NormalPassives: number;
+    readonly UsedMax: number;
+    readonly WeaponSet1Used: number;
+    readonly WeaponSet2Used: number;
+    readonly WeaponSetMax: number;
+    readonly AscUsed: number;
+    readonly AscMax: number;
+    readonly Warnings?: Array<string>;
   }
   interface SkillSetView {
     readonly ID: number;
@@ -150,13 +167,17 @@ export declare namespace exposition {
     ClickNode(id: number, right: boolean, hotkey: number, confirmClassChange: boolean, allocMode: number): Result<number>;
     CloseDisplayItem(): Result<void>;
     ConfigRelevance(query: calculator2.ConfigRelevance): Result<calculator2.ConfigRelevance>;
+    ConfigSets(): exposition.ConfigSetsView;
+    CopyConfigSet(id: number, title: string): number;
     CopyItemSet(id: number, title: string): Result<void>;
     CopySkillSet(id: number, title: string): Result<number>;
     CopySocketGroup(index: number): Result<string>;
     CraftDisplayItem(rarity: number, title: string, base: string): Result<void>;
     CraftItemCompare(rarity: number, title: string, base: string): Promise<Result<(exposition.ItemCompareView | undefined)>>;
+    CustomModifierBlocks(): (Array<exposition.CustomBlock> | undefined);
     DBItemCompare(kind: string, name: string): Promise<Result<(exposition.ItemCompareView | undefined)>>;
     DeleteAllSocketGroups(): Result<void>;
+    DeleteConfigSet(id: number): void;
     DeleteItem(id: number): Result<void>;
     DeleteItemSet(id: number): Result<void>;
     DeleteSkillSet(id: number): Result<void>;
@@ -176,8 +197,10 @@ export declare namespace exposition {
     ItemDBRows(kind: string, f: calculator2.ItemDBFilter): Result<(Array<exposition.ItemDBRow> | undefined)>;
     ItemText(id: number): Result<string>;
     ItemsPage(): Result<(exposition.ItemsPageView | undefined)>;
+    MoveConfigSet(from: number, to: number): void;
     MoveItemSet(from: number, to: number): Result<void>;
     MoveSocketGroup(from: number, to: number): Result<void>;
+    NewConfigSet(title: string): number;
     NewItemSet(title: string): Result<void>;
     NewSkillSet(title: string): Result<number>;
     NewSocketGroup(): Result<number>;
@@ -187,17 +210,22 @@ export declare namespace exposition {
     PasteSocketGroup(text: string): Result<number>;
     Redo(): Result<boolean>;
     RemoveGem(group: number, gem: number): Result<void>;
+    RenameConfigSet(id: number, title: string): void;
     RenameItemSet(id: number, title: string): Result<void>;
     RenameSkillSet(id: number, title: string): Result<void>;
+    ResetTree(): Result<void>;
     RichNotesDoc(): string;
     RichNotesStatus(): string;
     SelectDisplayItemAffix(control: number, entry: number, slider: number): Result<void>;
     Serialize(): Result<string>;
     SerializeWithStats(player: Array<exposition.SavedStat> | undefined, fullDPS: Array<exposition.SavedFullDPS> | undefined, minion: Array<exposition.SavedStat> | undefined): Result<string>;
+    SetActiveConfigSet(id: number): void;
     SetActiveItemSet(id: number): Result<void>;
     SetActiveSkillSet(id: number): Result<void>;
+    SetCharacterLevelAutoMode(auto: boolean): void;
     SetCharacterRune(slot: string, runeName: string): Result<void>;
     SetConfigInput(name: string, value: calculator2.ConfigValue, isDefault: boolean): void;
+    SetCustomModifierBlocks(blocks: Array<exposition.CustomBlock> | undefined): void;
     SetDisplayItemAffixRange(control: number, val: number): Result<void>;
     SetDisplayItemQuality(quality: number): Result<void>;
     SetDisplayItemRangeLine(line: number, val: number): Result<void>;
@@ -210,6 +238,7 @@ export declare namespace exposition {
     SetGemLevel(group: number, gem: number, level: number): Result<void>;
     SetGemOptions(options: calculator2.GemOptions): void;
     SetGemQuality(group: number, gem: number, quality: number): Result<void>;
+    SetLevel(level: number): void;
     SetMainActiveSkill(index: number): void;
     SetMainSocketGroup(index: number): void;
     SetRichNotes(plain: string, doc: string): void;
@@ -234,9 +263,18 @@ export declare namespace exposition {
     readonly Output?: Record<string, number>;
     readonly Minion?: Record<string, number>;
   }
+  interface ConfigSetsView {
+    readonly Sets?: Array<calculator2.ConfigSetView>;
+    readonly Active: number;
+  }
   interface CraftBaseGroup {
     readonly Type: string;
     readonly Bases?: Array<string>;
+  }
+  interface CustomBlock {
+    readonly Title: string;
+    readonly Enabled: boolean;
+    readonly Text: string;
   }
   interface DisplayItemView {
     readonly ID: number;
@@ -322,6 +360,18 @@ export declare namespace exposition {
     readonly UseSecondWeaponSet: boolean;
     readonly Items?: Array<exposition.ItemView>;
   }
+  interface ModLine {
+    readonly Status: exposition.ModLineStatus;
+    readonly Extra: string;
+    readonly Mods?: Array<exposition.ParsedMod>;
+  }
+  type ModLineStatus = "blank" | "comment" | "parsed" | "unsupported";
+  const ModLineStatus: {
+    readonly ModLineBlank: "blank";
+    readonly ModLineComment: "comment";
+    readonly ModLineParsed: "parsed";
+    readonly ModLineUnsupported: "unsupported";
+  };
   interface Outputs {
     readonly Output?: Record<string, number>;
     readonly Minion?: Record<string, number>;
@@ -335,6 +385,12 @@ export declare namespace exposition {
     readonly MainSocketGroup: number;
     readonly MainActiveSkill: number;
     readonly ConfigInputs?: Record<string, Readonly<calculator2.ConfigValue>>;
+  }
+  interface ParsedMod {
+    readonly Name: string;
+    readonly Type: string;
+    readonly Value: string;
+    readonly Tags?: Array<string>;
   }
   interface RangeLineView {
     readonly Label: string;
@@ -416,6 +472,8 @@ export declare namespace exposition {
     readonly AscUsed: number;
     readonly AttributeIndex: number;
     readonly JewelRadiusIndex?: Array<number>;
+    readonly LevelAutoMode: boolean;
+    readonly Progress: calculator2.PlayerProgress;
   }
   function CraftBases(): Promise<(Array<exposition.CraftBaseGroup> | undefined)>;
   function CraftItemPreview(rarity: number, title: string, base: string): Promise<Result<exposition.ItemView>>;
@@ -424,6 +482,7 @@ export declare namespace exposition {
   function ItemDBRaw(kind: string, name: string): Promise<Result<string>>;
   function ItemDBTooltip(kind: string, name: string): Promise<Result<exposition.ItemView>>;
   function ParseBuild(xml: string): Result<(exposition.Calculator | undefined)>;
+  function ParseModLines(lines: Array<string> | undefined): (Array<exposition.ModLine> | undefined);
   function PassiveTreeJSON(): Promise<Result<string>>;
   function Preload(): Promise<Result<void>>;
   function TreeClasses(): Promise<Result<(Array<string> | undefined)>>;

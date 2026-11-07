@@ -96,7 +96,9 @@ describe('a PoE2 build code in the import dialog', () => {
 
     // the frame shows it: the tree route's PoE2 body and the sidebar's PoE2 stats
     const Tree = (await import('../../routes/tree/+page.svelte')).default;
-    expect(await within(render(Tree).container).findByText('Level 40 Sorceress')).toBeTruthy();
+    const tree = within(render(Tree).container);
+    expect(await tree.findByText('Sorceress')).toBeTruthy();
+    expect((tree.getByRole('spinbutton', { name: 'Character level' }) as HTMLInputElement).value).toBe('40');
     const Sidebar = (await import('$lib/shell/AppSidebar.svelte')).default;
     const stats = within(render(Sidebar).getByRole('region', { name: 'Build stats' }));
     expect(stats.getByText('683')).toBeTruthy();

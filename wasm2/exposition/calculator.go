@@ -172,6 +172,18 @@ func (c *Calculator) Calculate() (*Outputs, error) {
 		return nil, err
 	}
 	c.env, c.used, c.items = env, calculator2.BuildOutputUsed(env), items
+	// Go must differ: PoB sets the level after the pass and shows that pass's stats; this calculates again at it
+	//pob2:block:src/Modules/Build.lua:1038-1042
+	if c.build.Build.CharacterLevelAutoMode {
+		if level := calculator2.EstimatePlayerProgress(env.Spec, env.Player.Output).Level; level != c.build.Build.Level {
+			c.build.Build.Level = level
+			env, err = calculator2.BuildOutput(c.build, calculator2.Options{Tree: t, Items: items})
+			if err != nil {
+				return nil, err
+			}
+			c.env, c.used = env, calculator2.BuildOutputUsed(env)
+		}
+	}
 	if c.undo == nil {
 		c.undo = &tree2.UndoHandler{}
 		c.undo.ResetUndo(env.Spec)
@@ -200,6 +212,54 @@ func (c *Calculator) Calculate() (*Outputs, error) {
 // SetConfigInput sets one config option of the active config set; isDefault drops it instead.
 func (c *Calculator) SetConfigInput(name string, value calculator2.ConfigValue, isDefault bool) {
 	calculator2.SetConfigInput(c.build, name, value, isDefault)
+}
+
+// SetLevel is the level box: it clamps to 1-100 and turns the automatic level off.
+//
+//pob2:block:src/Modules/Build.lua:209-216
+func (c *Calculator) SetLevel(level int) {
+	c.build.Build.Level = min(max(level, 1), 100)
+	c.build.Build.CharacterLevelAutoMode = false
+}
+
+//pob2:block:src/Modules/Build.lua:202-208
+func (c *Calculator) SetCharacterLevelAutoMode(auto bool) {
+	c.build.Build.CharacterLevelAutoMode = auto
+}
+
+// ConfigSetsView is the config set list in its order and the active set's id.
+type ConfigSetsView struct {
+	Sets   []calculator2.ConfigSetView
+	Active int
+}
+
+func (c *Calculator) ConfigSets() ConfigSetsView {
+	sets, active := calculator2.ConfigSetList(c.build)
+	return ConfigSetsView{Sets: sets, Active: active}
+}
+
+func (c *Calculator) SetActiveConfigSet(id int) {
+	calculator2.SetActiveConfigSet(c.build, id)
+}
+
+func (c *Calculator) NewConfigSet(title string) int {
+	return calculator2.NewConfigSet(c.build, title)
+}
+
+func (c *Calculator) CopyConfigSet(id int, title string) int {
+	return calculator2.CopyConfigSet(c.build, id, title)
+}
+
+func (c *Calculator) RenameConfigSet(id int, title string) {
+	calculator2.RenameConfigSet(c.build, id, title)
+}
+
+func (c *Calculator) DeleteConfigSet(id int) {
+	calculator2.DeleteConfigSet(c.build, id)
+}
+
+func (c *Calculator) MoveConfigSet(from, to int) {
+	calculator2.MoveConfigSet(c.build, from, to)
 }
 
 func (c *Calculator) SetMainSocketGroup(index int) {

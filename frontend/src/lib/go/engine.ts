@@ -59,8 +59,8 @@ export type ConfigEngine = {
     read(): Async<pob.CustomModifierBlock[]>;
     write(blocks: pob.CustomModifierBlock[]): Async<unknown>;
     parse(lines: string[]): Async<exposition.ModLine[]>;
-    compare(group: number): Async<StatCompareSection[] | undefined>;
-    browser: { list(search: string): Async<string[]>; sources(line: string): Async<string[]> };
+    compare?(group: number): Async<StatCompareSection[] | undefined>;
+    browser?: { list(search: string): Async<string[]>; sources(line: string): Async<string[]> };
   };
   // ConfigTab.lua:721-766
   compare?(key: string, value: ConfigValue): Async<StatCompareSection[] | undefined>;

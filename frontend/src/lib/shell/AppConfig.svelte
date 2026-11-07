@@ -138,7 +138,7 @@
   );
 
   const ops: CustomOps = {
-    togglewhatif: async (g) => custom_?.compare(g),
+    togglewhatif: custom_?.compare && (async (g) => custom_?.compare?.(g)),
     onselect: (g) => (selected = g),
     ontoggle: (g, on) => {
       groups[g].enabled = on;
@@ -192,9 +192,9 @@
       groups[g].cells.push({ text: '' });
     },
     // ConfigTab.lua:1524-1536
-    modbrowser: {
-      list: async (search) => (await custom_?.browser.list(search)) ?? [],
-      sources: async (line) => (await custom_?.browser.sources(line)) ?? [],
+    modbrowser: custom_?.browser && {
+      list: async (search) => (await custom_?.browser?.list(search)) ?? [],
+      sources: async (line) => (await custom_?.browser?.sources(line)) ?? [],
       onadd: (g, line) => {
         const cells = groups[g].cells;
         const last = cells[cells.length - 1];

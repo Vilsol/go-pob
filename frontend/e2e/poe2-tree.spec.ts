@@ -85,14 +85,14 @@ test('with the PoE2 flag on, clicking a tree node allocates it and recalculates 
   await page.mouse.up();
   await expect(poe2Stat(page, 'EnergyShield')).toHaveText('10');
   await expect(poe2Stat(page, 'TotalEHP')).toHaveText('546');
-  await expect(view.getByLabel('Passive points used')).toHaveText('Points: 1');
+  await expect(view.getByRole('status', { name: 'Points used' })).toContainText('Points 1 / 123');
 
   // a second click deallocates it
   await page.mouse.down();
   await page.mouse.up();
   await expect(poe2Stat(page, 'TotalEHP')).toHaveText('542');
   await expect(poe2Stat(page, 'EnergyShield')).toHaveCount(0);
-  await expect(view.getByLabel('Passive points used')).toHaveText('Points: 0');
+  await expect(view.getByRole('status', { name: 'Points used' })).toContainText('Points 0 / 123');
   expect(errors).toEqual([]);
 });
 
