@@ -2345,6 +2345,37 @@ func crystallineMarshalExpositionAffixEntryView(v *AffixEntryView) any {
 		}()
 	}))
 	out.Set("HaveRange", bool(v.HaveRange))
+	out.Set("Tooltip", crystallineJSON(func(b []byte, ok *bool) []byte {
+		if items0 := v.Tooltip; items0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '[')
+			for i0 := range items0 {
+				if i0 > 0 {
+					b = append(b, ',')
+				}
+
+				b = crystallineAppendString(b, string(items0[i0]))
+			}
+
+			b = append(b, ']')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			items := v.Tooltip
+			if items == nil {
+				return nil
+			}
+
+			out := make([]any, 0, len(items))
+			for i := range items {
+				out = append(out, string(items[i]))
+			}
+
+			return out
+		}()
+	}))
 
 	return out
 }
@@ -7301,6 +7332,21 @@ func crystallineAppendExpositionAffixEntryView(b []byte, v *AffixEntryView, ok *
 	}
 	b = append(b, ",\"HaveRange\":"...)
 	b = strconv.AppendBool(b, bool(v.HaveRange))
+	b = append(b, ",\"Tooltip\":"...)
+	if items0 := v.Tooltip; items0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '[')
+		for i0 := range items0 {
+			if i0 > 0 {
+				b = append(b, ',')
+			}
+
+			b = crystallineAppendString(b, string(items0[i0]))
+		}
+
+		b = append(b, ']')
+	}
 
 	return append(b, '}')
 }

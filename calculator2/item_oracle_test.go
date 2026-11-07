@@ -655,21 +655,6 @@ func compareOracleItem(row *oracleItem, item *Item, src *oracleModSource) map[st
 // knownItemCause names the cause of an item's disagreement when it is one already diagnosed outside
 // the item code, or "" when it is not.
 func knownItemCause(row *oracleItem, item *Item, src *oracleModSource, bad map[string]string) string {
-	if len(src.unlogged) > 0 {
-		logged := map[string]bool{}
-		for line := range row.ParseLog {
-			logged[normaliseModLine(line)] = true
-		}
-		// The first request PoB did not make decides; a miss then also tries the next line.
-		if logged[normaliseModLine(src.unlogged[0])] {
-			return "data: no ModScalability table, so a number keeps its text form"
-		}
-	}
-	if _, ok := bad["modline-ranged"]; ok && len(bad) == 1 {
-		if _, has := modScalabilityFor("#"); !has {
-			return "data: no ModScalability table, so a scaled line is formatted by applyRange's fallback"
-		}
-	}
 	if _, ok := bad["modline-augment"]; ok && len(bad) == 1 {
 		return "order: equal rune rolls of two augment types, picked in pairs() order"
 	}

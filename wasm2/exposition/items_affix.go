@@ -2,11 +2,13 @@ package exposition
 
 import "github.com/Vilsol/go-pob/calculator2"
 
-// AffixEntryView is one entry of an affix drop-down: a mod, or a series of its tiers (ModList, lowest first).
+// AffixEntryView is one entry of an affix drop-down: a mod, or a series of its tiers (ModList, lowest first), and
+// its hover tooltip.
 type AffixEntryView struct {
 	Label     string
 	ModList   []string
 	HaveRange bool
+	Tooltip   []string
 }
 
 // AffixControlView is one of the editor's affix drop-downs; List[0] is "None" and SelIndex is 1-based.
@@ -38,7 +40,11 @@ func (c *Calculator) DisplayItemAffixes() ([]AffixControlView, error) {
 			if modList == nil {
 				modList = []string{}
 			}
-			v.List = append(v.List, AffixEntryView{Label: e.Label, ModList: modList, HaveRange: e.HaveRange})
+			tooltip := tab.DisplayItem.AffixEntryTooltip(e)
+			if tooltip == nil {
+				tooltip = []string{}
+			}
+			v.List = append(v.List, AffixEntryView{Label: e.Label, ModList: modList, HaveRange: e.HaveRange, Tooltip: tooltip})
 		}
 		out = append(out, v)
 	}

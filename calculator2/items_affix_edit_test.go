@@ -33,6 +33,7 @@ type itemAffixRow struct {
 			ModList   []string `json:"modList"`
 			ModID     string   `json:"modId"`
 			HaveRange bool     `json:"haveRange"`
+			Tooltip   []string `json:"tooltip"`
 		} `json:"list"`
 	} `json:"controls"`
 }
@@ -61,8 +62,8 @@ func readItemAffixRows(t *testing.T) []itemAffixRow {
 	return rows
 }
 
-func affixEntryText(label string, modList []string, modID string, haveRange bool) string {
-	return fmt.Sprintf("%q %v %q %v", label, modList, modID, haveRange)
+func affixEntryText(label string, modList []string, modID string, haveRange bool, tooltip []string) string {
+	return fmt.Sprintf("%q %v %q %v tooltip %q", label, modList, modID, haveRange, tooltip)
 }
 
 // affixControlText lists a control's entries in its own order. PoB-PoE2 sorts them with an unstable sort over
@@ -95,7 +96,7 @@ func affixControlsText(tab *ItemsTab, ordered bool) string {
 	for i, c := range tab.AffixControls() {
 		var entries []string
 		for _, e := range c.List[1:] {
-			entries = append(entries, affixEntryText(e.Label, e.ModList, e.ModID, e.HaveRange))
+			entries = append(entries, affixEntryText(e.Label, e.ModList, e.ModID, e.HaveRange, tab.DisplayItem.AffixEntryTooltip(e)))
 		}
 		b.WriteString(affixControlText(i+1, c.OutputTable, c.OutputIndex, c.SelIndex, c.SliderShown, c.SliderVal, c.DivCount, entries, ordered))
 	}
@@ -107,7 +108,7 @@ func (r *itemAffixRow) controlsText(ordered bool) string {
 	for i, c := range r.Controls {
 		var entries []string
 		for _, e := range c.List[1:] {
-			entries = append(entries, affixEntryText(e.Label, e.ModList, e.ModID, e.HaveRange))
+			entries = append(entries, affixEntryText(e.Label, e.ModList, e.ModID, e.HaveRange, e.Tooltip))
 		}
 		b.WriteString(affixControlText(i+1, c.OutputTable, c.OutputIndex, c.SelIndex, c.SliderShown, c.SliderVal, c.DivCount, entries, ordered))
 	}

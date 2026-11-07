@@ -190,33 +190,10 @@ func TestBuildRawVsPoBPoE2Corpus(t *testing.T) {
 	t.Logf("BuildRaw: %d / %d items identical", graded-len(bad), graded)
 	unexplained := 0
 	for _, b := range bad {
-		// a socketed rune line scaled by its item: the data has no ModScalability row for it, as the item grade knows
-		if knownRuneScalability(b) {
-			t.Logf("known cause: %s", strings.SplitN(b, "\n", 2)[0])
-			continue
-		}
 		if unexplained++; unexplained <= 10 {
 			t.Error(b)
 		}
 	}
-}
-
-// knownRuneScalability is a diff whose only differing lines are scaled rune lines.
-func knownRuneScalability(diff string) bool {
-	parts := strings.SplitN(diff, "\nPoB-PoE2:\n", 2)
-	if len(parts) != 2 {
-		return false
-	}
-	got, want := strings.Split(parts[0], "\n")[1:], strings.Split(parts[1], "\n")
-	if len(got) != len(want) {
-		return false
-	}
-	for i := range got {
-		if got[i] != want[i] && !strings.HasPrefix(want[i], "{enchant}{rune}") {
-			return false
-		}
-	}
-	return true
 }
 
 // TestItemsSaveVsPoBPoE2Corpus saves the items of the first ITEM_BUILDS (default 300) PoE2 corpus builds as an edit

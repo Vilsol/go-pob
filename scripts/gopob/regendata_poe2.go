@@ -82,9 +82,11 @@ var rdGeneratorsPoE2 = []rdGenerator{
 	rdGeneratorsPoE2Items[0],
 	rdGeneratorsPoE2Items[1],
 	rdGeneratorsPoE2Items[2],
+	rdGeneratorsPoE2Items[3],
+	rdGeneratorsPoE2Items[4],
 }
 
-const p2eUsage = "usage: poe2-data-emit <dump.json> <out.go> <bases|runes|constants|gems|legion|bosses|boss-skills|runeforging|item-db|item-mods>"
+const p2eUsage = "usage: poe2-data-emit <dump.json> <out.go> <bases|runes|constants|gems|legion|bosses|boss-skills|runeforging|item-db|item-mods|item-mods-exclusive|mod-scalability>"
 
 func poe2DataEmit(args []string) int {
 	if len(args) != 3 {
@@ -116,6 +118,10 @@ func poe2DataEmit(args []string) int {
 		out, err = p2eItemDB(body)
 	case "item-mods":
 		out, err = p2eItemMods(body)
+	case "item-mods-exclusive":
+		out, err = p2eItemModsExclusive(body)
+	case "mod-scalability":
+		out, err = p2eModScalability(body)
 	default:
 		return oeUsage(p2eUsage)
 	}

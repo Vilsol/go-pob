@@ -21,9 +21,8 @@ type itemRareDBRow struct {
 	Types       []string `json:"types"`
 }
 
-// rareDBMatchedFloor is the rare items equal to PoB-PoE2's. The rest roll a value applyRange rounds through
-// data.modScalability, which data/poe2 does not carry: "+2.4% to Critical Hit Chance" comes out "+2.41%".
-const rareDBMatchedFloor = 75
+// rareDBMatchedFloor is the rare items equal to PoB-PoE2's.
+const rareDBMatchedFloor = 118
 
 // TestRareDBMatchesPoB: the rare templates craft to PoB-PoE2's items, and the list's types are PoB-PoE2's.
 func TestRareDBMatchesPoB(t *testing.T) {

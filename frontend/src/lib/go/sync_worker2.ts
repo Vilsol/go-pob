@@ -269,7 +269,7 @@ export type Poe2CompareBlock = { header: string; slot?: string; sections: StatCo
 /* ItemsTab.lua:2232-2246, 2368-2518 (PoB-PoE2): the editor's affix drop-downs; list[0] is "None", sel is 0-based */
 export type Poe2AffixControl = {
   type: string;
-  list: { label: string; modList: string[]; haveRange: boolean }[];
+  list: { label: string; modList: string[]; haveRange: boolean; tooltip: string[] }[];
   sel: number;
   sliderShown: boolean;
   sliderVal: number;
@@ -970,7 +970,7 @@ class PoB2Worker {
     if (!this.calc) throw new Error('no PoE2 build is open');
     return (this.calc.DisplayItemAffixes().unwrap() ?? []).map((c) => ({
       type: c.Type,
-      list: (c.List ?? []).map((e) => ({ label: e.Label, modList: [...(e.ModList ?? [])], haveRange: e.HaveRange })),
+      list: (c.List ?? []).map((e) => ({ label: e.Label, modList: [...(e.ModList ?? [])], haveRange: e.HaveRange, tooltip: [...(e.Tooltip ?? [])] })),
       sel: c.SelIndex - 1,
       sliderShown: c.SliderShown,
       sliderVal: c.SliderVal

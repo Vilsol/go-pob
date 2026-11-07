@@ -20,7 +20,7 @@ const COMPARE = gunzipSync(readFileSync(resolve(ITEMS_DIR, 'item_compare_pob.jso
   .split('\n')
   .map((l) => JSON.parse(l) as CompareRow);
 // calculator2/testdata/item_affix_pob.jsonl.gz: PoB-PoE2's affix drop-downs, step by step over crafted items
-type AffixRow = { case: string; step: string; raw: string; controls: { list: { label: string }[] }[] };
+type AffixRow = { case: string; step: string; raw: string; controls: { list: { label: string; tooltip?: string[] }[] }[] };
 const AFFIX = gunzipSync(readFileSync(resolve(ITEMS_DIR, 'item_affix_pob.jsonl.gz')))
   .toString('utf8')
   .trim()
@@ -133,10 +133,16 @@ test("the PoE2 item editor picks a crafted item's affix and its roll as PoB-PoE2
   const slid = AFFIX.find((r) => r.case === '3 Ruby Ring' && r.step === 'slide 1 0.7')!;
   const affix = page.getByRole('combobox', { name: 'Affix 1' });
   await affix.click();
-  await page
+  const option = page
     .locator(`[id="${await affix.getAttribute('aria-controls')}"]`)
-    .getByRole('option', { name: plain(crafted.controls[0].list[1].label), exact: true })
-    .click();
+    .getByRole('option', { name: plain(crafted.controls[0].list[1].label), exact: true });
+  // ItemsTab.lua:951-995 (PoB-PoE2): hovering the entry shows its tiers, lines, levels and tags
+  await option.hover();
+  const tip = page.getByRole('tooltip', { name: 'Affix tooltip' });
+  const tipLines = crafted.controls[0].list[1].tooltip!;
+  expect(tipLines.length).toBeGreaterThan(2);
+  for (const line of tipLines) await expect(tip).toContainText(plain(line));
+  await option.click();
   const roll = page.getByRole('slider', { name: 'Roll of affix 1' });
   await expect(roll).toBeVisible();
   await roll.fill('0.7');

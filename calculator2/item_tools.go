@@ -5,6 +5,8 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/Vilsol/go-pob/data/poe2"
 )
 
 var (
@@ -257,14 +259,10 @@ func isZeroValueLine(line string) bool {
 }
 
 // ModScalability is one data.modScalability entry.
-type ModScalability struct {
-	IsScalable bool
-	Formats    []string
-}
+type ModScalability = poe2.ModScalabilityEntry
 
-// modScalabilityFor is data.modScalability[key]. data/poe2 carries no ModScalability table yet, so
-// every line takes applyRange's fallback branch.
-var modScalabilityFor = func(string) ([]ModScalability, bool) { return nil, false }
+// modScalabilityFor is data.modScalability[key].
+var modScalabilityFor = poe2.ModScalability
 
 //pob2:src/Modules/ItemTools.lua:174-184
 func replaceNthInstance(input, replacement string, n int) string {

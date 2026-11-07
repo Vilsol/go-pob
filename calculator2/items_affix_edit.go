@@ -15,6 +15,7 @@ var (
 	affixHaveRangeRe   = regexp.MustCompile(`\(-?[\d.]+--?[\d.]+\)`)
 	affixSeriesNumRe   = regexp.MustCompile(`-?\d+\.?\d*`)
 	affixMinMaxRe      = regexp.MustCompile(`\((\d[\d.]*)-(\d[\d.]*)\)`)
+	affixTierNumRe     = regexp.MustCompile(`\d[\d.]*`)
 	timeLostRadiusText = " Passive Skills in Radius also grant"
 )
 
@@ -342,6 +343,73 @@ func (tab *ItemsTab) AffixRollTooltip(control int, val float64) ([]string, error
 		out = append(out, "Level: "+luaNum(mod.Level))
 	}
 	return out, nil
+}
+
+// AffixEntryTooltip is an affix drop-down entry's hover tooltip: the mod, or the span of its tiers; nil for "None".
+// No PoE2 affix adds a cluster notable, so the Lua's notable block after it never runs.
+//
+//pob2:block:src/Classes/ItemsTab.lua:951-995
+func (item *Item) AffixEntryTooltip(e AffixListEntry) []string {
+	modList := e.ModList
+	if len(modList) == 0 {
+		return nil
+	}
+	var out []string
+	if e.ModID != "" || len(modList) == 1 {
+		id := e.ModID
+		if id == "" {
+			id = modList[0]
+		}
+		mod := item.affix(id)
+		if mod == nil {
+			return nil
+		}
+		out = append(out, "^7Affix: "+mod.Affix)
+		for _, line := range mod.Lines {
+			out = append(out, "^7"+line)
+		}
+		if mod.Level > 1 {
+			out = append(out, "Level: "+luaNum(mod.Level))
+		}
+		if len(mod.ModTags) > 0 {
+			out = append(out, "Tags: "+strings.Join(mod.ModTags, ", "))
+		}
+		return out
+	}
+	out = append(out, "^7"+strconv.Itoa(len(modList))+" Tiers")
+	minMod, maxMod := item.affix(modList[0]), item.affix(modList[len(modList)-1])
+	if minMod == nil || maxMod == nil {
+		return out
+	}
+	for l, line := range minMod.Lines {
+		if l >= len(maxMod.Lines) {
+			break
+		}
+		minLine := affixMinMaxRe.ReplaceAllString(line, "$1")
+		maxLine := affixMinMaxRe.ReplaceAllString(maxMod.Lines[l], "$2")
+		if maxLine == maxMod.Lines[l] {
+			out = append(out, maxLine)
+			continue
+		}
+		maxNums := affixTierNumRe.FindAllString(maxLine, -1)
+		n := 0
+		out = append(out, affixTierNumRe.ReplaceAllStringFunc(minLine, func(lo string) string {
+			if n >= len(maxNums) {
+				return lo
+			}
+			hi := maxNums[n]
+			n++
+			if lo == hi {
+				return lo
+			}
+			return "(" + lo + "-" + hi + ")"
+		}))
+	}
+	out = append(out, "Level: "+luaNum(minMod.Level)+" to "+luaNum(maxMod.Level))
+	if len(maxMod.ModTags) > 0 {
+		out = append(out, "Tags: "+strings.Join(maxMod.ModTags, ", "))
+	}
+	return out
 }
 
 // RangeLine is one of the editor's modifier range lines and its roll.

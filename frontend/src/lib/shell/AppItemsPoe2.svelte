@@ -218,7 +218,7 @@
             sel: c.sel,
             sliderShown: c.sliderShown,
             sliderVal: c.sliderVal,
-            series: c.list.map((e) => ({ label: e.label, tiers: e.modList.length, haveRange: e.haveRange, tooltip: [], mid: [] }))
+            series: c.list.map((e) => ({ label: e.label, tiers: e.modList.length, haveRange: e.haveRange, tooltip: e.tooltip, mid: [] }))
           }))
         }
       : undefined

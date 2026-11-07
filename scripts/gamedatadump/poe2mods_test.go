@@ -82,3 +82,40 @@ func TestPoE2ModsAreThePins(t *testing.T) {
 		})
 	}
 }
+
+// poe2ScalabilityTextDrift maps a pin row to ours where go-pob-data's 0.5 stat descriptions carry a later
+// wording than the pin's export; neither has a placeholder, so no item line can reach them.
+var poe2ScalabilityTextDrift = map[string]string{
+	"\t[\"Defeating the Arbiter grants completion of a section of the Fortress\"] = {  },": "\t[\"Defeating the Arbiter of Divinity as the Map Owner twice will complete all uncompleted Map Nodes in the Fortress\"] = {  },",
+}
+
+// TestPoE2ModScalabilityIsThePins: modScalability.lua over go-pob-data's 0.5 Stats table and stat descriptions
+// writes the pin's src/Data/ModScalability.lua, row for row, up to poe2ScalabilityTextDrift.
+func TestPoE2ModScalabilityIsThePins(t *testing.T) {
+	want := poe2PinFile(t, "Data/ModScalability.lua")
+	got, err := poe2ModScalabilityLua()
+	if err != nil {
+		t.Fatal(err)
+	}
+	wantRows, gotRows := strings.Split(want, "\n"), strings.Split(got, "\n")
+	gotSet := map[string]bool{}
+	for _, row := range gotRows {
+		gotSet[row] = true
+	}
+	same, drift := 0, 0
+	for _, row := range wantRows {
+		ours, drifted := poe2ScalabilityTextDrift[row]
+		switch {
+		case gotSet[row]:
+			same++
+		case drifted && gotSet[ours]:
+			drift++
+		default:
+			t.Errorf("the pin's row is missing: %.400q", row)
+		}
+	}
+	t.Logf("Data/ModScalability.lua: %d / %d rows identical, %d in poe2ScalabilityTextDrift, %d rows written", same, len(wantRows), drift, len(gotRows))
+	if len(gotRows) != len(wantRows) || drift != len(poe2ScalabilityTextDrift) {
+		t.Errorf("%d rows written and %d drifted rows; the pin has %d rows and %d are listed", len(gotRows), drift, len(wantRows), len(poe2ScalabilityTextDrift))
+	}
+}

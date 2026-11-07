@@ -43,6 +43,30 @@ var rdGeneratorsPoE2Items = []rdGenerator{
 		needsPob: true,
 		note:     "data.itemMods' affix tables (Item, Flask, Charm, Jewel, IncursionLimb, Corruption, Desecrated) after Data.lua's load (src/Modules/Data.lua:692-717); tradeHashes dropped. Game data FROM go-pob-data: `gamedatadump poe2-mods` runs PoB-PoE2's Export/Scripts/mods.lua over 0.5's Mods, Stats, ModType, ModFamily and Tags tables and stat descriptions, every row equal to the pin's src/Data/Mod*.lua up to the order of each tradeHashes table (`mise run poe2-gamedata-check`), and regendata_poe2.lua loads them in place of the pin's (GAMEDATA_DUMP)",
 	},
+	{
+		name:     "poe2-mod-scalability",
+		source:   rdGameDataOverlay,
+		out:      "data/poe2/mod_scalability_generated.go",
+		lua:      "scripts/gopob/regendata_poe2.lua",
+		dump:     "poe2-mod-scalability",
+		luaArgs:  []string{"mod-scalability"},
+		emit:     "poe2-data-emit",
+		emitArgs: []string{"mod-scalability"},
+		needsPob: true,
+		note:     "data.modScalability (src/Data/ModScalability.lua, src/Modules/Data.lua:481), the table itemLib.applyRange reads first. Game data FROM go-pob-data: `gamedatadump poe2-mod-scalability` runs PoB-PoE2's Export/Scripts/modScalability.lua over 0.5's Stats table and stat descriptions, every row equal to the pin's up to one later wording go-pob-data carries (`mise run poe2-gamedata-check`), and regendata_poe2.lua loads it in place of the pin's (GAMEDATA_DUMP)",
+	},
+	{
+		name:     "poe2-item-mods-exclusive",
+		source:   rdGameDataOverlay,
+		out:      "data/poe2/item_mods_exclusive_generated.go",
+		lua:      "scripts/gopob/regendata_poe2.lua",
+		dump:     "poe2-mods",
+		luaArgs:  []string{"item-mods-exclusive"},
+		emit:     "poe2-data-emit",
+		emitArgs: []string{"item-mods-exclusive"},
+		needsPob: true,
+		note:     "data.itemMods.Exclusive's lines and stat orders (src/Modules/Data.lua:700), which Item.lua orders an advanced-copy unique's lines by. Game data FROM go-pob-data: `gamedatadump poe2-mods` writes src/Data/ModItemExclusive.lua, every row equal to the pin's up to the order of each tradeHashes table (`mise run poe2-gamedata-check`), and regendata_poe2.lua loads it in place of the pin's (GAMEDATA_DUMP)",
+	},
 }
 
 type p2eRuneforgingJSON struct {
@@ -188,6 +212,90 @@ func p2eItemMods(body []byte) (string, error) {
 		}
 		f.flag("Unscalable", r.Unscalable)
 		f.num("NodeType", nodeType)
+		b.WriteString("\t" + f.String() + ",\n")
+	}
+	b.WriteString("}\n")
+	return b.String(), nil
+}
+
+type p2eModScalabilityJSON struct {
+	Line    string `json:"line"`
+	Entries []struct {
+		IsScalable bool     `json:"isScalable"`
+		Formats    []string `json:"formats"`
+	} `json:"entries"`
+}
+
+// p2eModScalabilitySeparators are the bytes the row encoding splits on; no key or format may hold one.
+const p2eModScalabilitySeparators = "\x1c\x1d\x1f"
+
+func p2eModScalability(body []byte) (string, error) {
+	var rows []p2eModScalabilityJSON
+	if err := p2eDecode(body, &rows); err != nil {
+		return "", err
+	}
+	if len(rows) < 1000 {
+		return "", fmt.Errorf("holds %d modScalability rows; data.modScalability did not load", len(rows))
+	}
+	var b strings.Builder
+	p2eHeader(&b, "mod-scalability", "src/Modules/Data.lua:481-481")
+	fmt.Fprintf(&b, "// modScalabilityRows is data.modScalability, %d rows sorted by key: the key, U+001F, then its entries\n", len(rows))
+	b.WriteString("// separated by U+001D. An entry is '1' when isScalable ('0' otherwise), then each format behind a U+001C.\n")
+	b.WriteString("var modScalabilityRows = [...]string{\n")
+	for i, r := range rows {
+		if i > 0 && rows[i-1].Line >= r.Line {
+			return "", fmt.Errorf("the modScalability rows are not sorted by key at %q", r.Line)
+		}
+		if strings.ContainsAny(r.Line, p2eModScalabilitySeparators) {
+			return "", fmt.Errorf("modScalability key %q holds a separator byte of the row encoding", r.Line)
+		}
+		parts := make([]string, len(r.Entries))
+		for j, e := range r.Entries {
+			parts[j] = "0"
+			if e.IsScalable {
+				parts[j] = "1"
+			}
+			for _, f := range e.Formats {
+				if f == "" || strings.ContainsAny(f, p2eModScalabilitySeparators) {
+					return "", fmt.Errorf("modScalability[%q][%d] has a format %q the row encoding cannot hold", r.Line, j+1, f)
+				}
+				parts[j] += "\x1c" + f
+			}
+		}
+		b.WriteString("\t" + strconv.Quote(r.Line+"\x1f"+strings.Join(parts, "\x1d")) + ",\n")
+	}
+	b.WriteString("}\n")
+	return b.String(), nil
+}
+
+type p2eExclusiveModJSON struct {
+	ID        string    `json:"id"`
+	Lines     []string  `json:"lines"`
+	StatOrder []float64 `json:"statOrder"`
+}
+
+func p2eItemModsExclusive(body []byte) (string, error) {
+	var rows []p2eExclusiveModJSON
+	if err := p2eDecode(body, &rows); err != nil {
+		return "", err
+	}
+	if len(rows) < 1000 {
+		return "", fmt.Errorf("holds %d exclusive mods; data.itemMods.Exclusive did not load", len(rows))
+	}
+	var b strings.Builder
+	p2eHeader(&b, "item-mods-exclusive", "src/Modules/Data.lua:700-700")
+	fmt.Fprintf(&b, "// ExclusiveMods is data.itemMods.Exclusive's lines and stat orders, %d rows sorted by id.\nvar ExclusiveMods = []ExclusiveMod{\n", len(rows))
+	for i, r := range rows {
+		if i > 0 && rows[i-1].ID >= r.ID {
+			return "", fmt.Errorf("the exclusive mods are not sorted by id at %s", r.ID)
+		}
+		if len(r.Lines) != len(r.StatOrder) {
+			return "", fmt.Errorf("%s has %d lines and %d stat orders", r.ID, len(r.Lines), len(r.StatOrder))
+		}
+		f := &p2eFields{}
+		f.str("ID", r.ID)
+		f.raw("Lines", p2eStrings(r.Lines))
+		f.raw("StatOrder", p2eFloats(r.StatOrder))
 		b.WriteString("\t" + f.String() + ",\n")
 	}
 	b.WriteString("}\n")

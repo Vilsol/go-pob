@@ -1,6 +1,6 @@
 -- Crafts items through the Items tab's Craft Item popup, then picks affixes with its affix drop-downs and roll sliders,
 -- one step at a time. Prints one JSON row per step: the item as BuildRaw writes it and every shown affix control (its
--- label, list, selection and slider). Then rows per pasted item (pastes.txt, separated by =====): the item as
+-- label, list with each entry's hover tooltip, selection and slider). Then rows per pasted item (pastes.txt, separated by =====): the item as
 -- BuildRaw writes it after the paste, and after Craft.
 -- usage: item_affix_oracle.lua <out.jsonl> <pastes.txt>
 local outPath, pastesPath = arg[1], arg[2]
@@ -30,6 +30,21 @@ local build = __mainObject__.main.modes.BUILD
 local tab = build.itemsTab
 local out = assert(io.open(outPath, "w"))
 
+-- the lines drop.tooltipFunc adds when the list's entry j is hovered, up to its stat comparison (AddModComparisonTooltip)
+local function entryTooltip(drop, j, entry)
+	local lines = {}
+	local tooltip = {
+		Clear = function() end,
+		CheckForUpdate = function() return true end,
+		AddLine = function(_, _, text) lines[#lines + 1] = text end,
+		AddSeparator = function() lines[#lines + 1] = "" end,
+	}
+	tab.AddModComparisonTooltip = function() end
+	drop.tooltipFunc(tooltip, "HOVER", j, entry)
+	tab.AddModComparisonTooltip = nil
+	return lines
+end
+
 local function controlsJSON()
 	local item = tab.displayItem
 	local parts = {}
@@ -42,7 +57,8 @@ local function controlsJSON()
 			else
 				list[j] = '{"label":' .. encodeString(entry.label) .. ',"modList":' .. encodeStrings(entry.modList) ..
 					(entry.modId and (',"modId":' .. encodeString(entry.modId)) or "") ..
-					',"haveRange":' .. tostring(entry.haveRange and true or false) .. '}'
+					',"haveRange":' .. tostring(entry.haveRange and true or false) ..
+					',"tooltip":' .. encodeStrings(entryTooltip(drop, j, entry)) .. '}'
 			end
 		end
 		parts[i] = '{"outputTable":' .. encodeString(drop.outputTable) .. ',"outputIndex":' .. drop.outputIndex ..

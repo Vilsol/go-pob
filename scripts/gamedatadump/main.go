@@ -35,6 +35,7 @@ var dumpers = map[string]func() (any, error){
 	"poe2-mod-runes":       dumpPoE2ModRunes,
 	"poe2-mods":            dumpPoE2Mods,
 	"poe2-gems":            dumpPoE2Gems,
+	"poe2-mod-scalability": dumpPoE2ModScalability,
 }
 
 func main() {

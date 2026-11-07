@@ -1,7 +1,7 @@
 -- Dumps one of PoB-PoE2's loaded data tables as JSON for `gopob poe2-data-emit`.
--- usage: regendata_poe2.lua <out.json> <bases|runes|constants|gems|legion|bosses|boss-skills|runeforging|item-db|item-mods>
+-- usage: regendata_poe2.lua <out.json> <bases|runes|constants|gems|legion|bosses|boss-skills|runeforging|item-db|item-mods|item-mods-exclusive|mod-scalability>
 local outPath, which = arg[1], arg[2]
-assert(outPath and which, "usage: regendata_poe2.lua <out.json> <bases|runes|constants|gems|legion|bosses|boss-skills|runeforging|item-db|item-mods>")
+assert(outPath and which, "usage: regendata_poe2.lua <out.json> <bases|runes|constants|gems|legion|bosses|boss-skills|runeforging|item-db|item-mods|item-mods-exclusive|mod-scalability>")
 
 -- GAMEDATA_DUMP is `gamedatadump`'s {fileName = source} map: those data files load in place of the pin's.
 local overlayPath = os.getenv("GAMEDATA_DUMP")
@@ -256,6 +256,33 @@ dumpers["item-mods"] = function()
 			row.category, row.id, row.lines = category, id, { unpack(mod) }
 			rows[#rows + 1] = row
 		end
+	end
+	return rows
+end
+
+-- data.itemMods.Exclusive's lines and stat orders, the only fields Item.lua's advanced-copy unique ordering reads
+dumpers["item-mods-exclusive"] = function()
+	local rows = {}
+	for _, id in ipairs(sortedKeys(data.itemMods.Exclusive)) do
+		local mod = data.itemMods.Exclusive[id]
+		assert(#mod == #mod.statOrder, "REFUSING: " .. id .. " has " .. #mod .. " lines and " .. #mod.statOrder .. " stat orders")
+		rows[#rows + 1] = { id = id, lines = { unpack(mod) }, statOrder = mod.statOrder }
+	end
+	return rows
+end
+
+-- data.modScalability as Data.lua loads it: one row per key sorted by key, its entries in order
+dumpers["mod-scalability"] = function()
+	local rows = {}
+	for _, line in ipairs(sortedKeys(data.modScalability)) do
+		local entries = {}
+		for i, entry in ipairs(data.modScalability[line]) do
+			for k in pairs(entry) do
+				assert(k == "isScalable" or k == "formats", "REFUSING: " .. line .. " carries an unknown key " .. tostring(k))
+			end
+			entries[i] = { isScalable = entry.isScalable == true, formats = entry.formats }
+		end
+		rows[#rows + 1] = { line = line, entries = entries }
 	end
 	return rows
 end

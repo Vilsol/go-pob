@@ -140,3 +140,12 @@ type ItemMod struct {
 	Unscalable          bool
 	NodeType            float64
 }
+
+// ExclusiveMod is one data.itemMods.Exclusive entry's lines and stat orders.
+//
+//pob2:block:src/Classes/Item.lua:1631-1638
+type ExclusiveMod struct {
+	ID        string
+	Lines     []string
+	StatOrder []float64
+}

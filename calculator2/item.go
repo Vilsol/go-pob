@@ -6,6 +6,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/Vilsol/go-pob/data/poe2"
 	"github.com/Vilsol/go-pob/mod"
@@ -962,6 +963,9 @@ func (i *Item) ParseRaw(raw, rarity string, highQuality bool) {
 	if i.Base != nil {
 		i.parseRunes(mode)
 	}
+	if i.AdvancedCopy && (i.Rarity == "UNIQUE" || i.Rarity == "RELIC") && !i.UsesVersionedOrGroupedVariants() {
+		i.orderUniqueModLines()
+	}
 	if i.AdvancedCopy && len(i.ExplicitModLines) > 1 {
 		sortCraftedModLines(i.ExplicitModLines)
 	}
@@ -1672,6 +1676,46 @@ func normaliseModLine(line string) string {
 	line = normaliseNumRe.ReplaceAllString(line, "#")
 	line = normaliseRangeRe.ReplaceAllString(line, "#")
 	return strings.ReplaceAll(strings.ToLower(line), "\n", " ")
+}
+
+type uniqueModStatOrders struct {
+	exact, normalised map[string]float64
+}
+
+// uniqueModStatOrder is the lowest stat order data.itemMods.Exclusive gives each line, exactly and normalised.
+var uniqueModStatOrder = sync.OnceValue(func() uniqueModStatOrders {
+	u := uniqueModStatOrders{exact: map[string]float64{}, normalised: map[string]float64{}}
+	for _, mod := range poe2.ExclusiveMods {
+		for index, line := range mod.Lines {
+			exactLine := strings.ReplaceAll(strings.ToLower(line), "\n", " ")
+			statLine := normaliseModLine(line)
+			if o, ok := u.exact[exactLine]; !ok || mod.StatOrder[index] < o {
+				u.exact[exactLine] = mod.StatOrder[index]
+			}
+			if o, ok := u.normalised[statLine]; !ok || mod.StatOrder[index] < o {
+				u.normalised[statLine] = mod.StatOrder[index]
+			}
+		}
+	}
+	return u
+})
+
+// orderUniqueModLines gives an advanced-copy unique's explicit lines the stat order of the unique mod that carries
+// them, or none.
+//
+//pob2:block:src/Classes/Item.lua:1628-1645
+func (i *Item) orderUniqueModLines() {
+	u := uniqueModStatOrder()
+	for _, modLine := range i.ExplicitModLines {
+		exactLine := strings.ReplaceAll(strings.ToLower(modLine.Line), "\n", " ")
+		if o, ok := u.exact[exactLine]; ok {
+			modLine.Order = &o
+		} else if o, ok := u.normalised[normaliseModLine(modLine.Line)]; ok {
+			modLine.Order = &o
+		} else {
+			modLine.Order = nil
+		}
+	}
 }
 
 //pob2:src/Classes/Item.lua:73-88

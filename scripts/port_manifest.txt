@@ -149,6 +149,9 @@ data/poe2/quests_generated.go       GENERATED  scripts/gopob/regendata_poe2_modc
 data/poe2/runes_generated.go        GENERATED  scripts/gopob/regendata_poe2.go
 data/poe2/runeforging_generated.go GENERATED  scripts/gopob/regendata_poe2_items.go
 data/poe2/item_mods_generated.go   GENERATED  scripts/gopob/regendata_poe2_items.go
+data/poe2/item_mods_exclusive_generated.go GENERATED  scripts/gopob/regendata_poe2_items.go
+data/poe2/mod_scalability.go         GO-NATIVE  the ModScalabilityEntry declaration and a lazy decode of the generated row strings standing in for PoB-PoE2's data.modScalability[key] lookup; each cites the Lua it replaces
+data/poe2/mod_scalability_generated.go GENERATED  scripts/gopob/regendata_poe2_items.go
 data/poe2/skill_globals_generated.go  GENERATED  scripts/gopob/regendata_poe2_skills.go
 data/poe2/skill_overlay_generated.go  GENERATED  scripts/gopob/regendata_poe2_skills.go
 data/poe2/skill_stat_map_generated.go GENERATED  scripts/gopob/regendata_poe2_skills.go
@@ -542,6 +545,7 @@ scripts/gamedatadump/poe2misc.go    PORT       src/Export/Scripts/miscdata.lua
 scripts/gamedatadump/poe2verisium.go PORT      src/Export/Scripts/miscdata.lua,src/Modules/Utils.lua
 scripts/gamedatadump/poe2soulcores.go GO-NATIVE PoB-PoE2's Export/Scripts/soulcores.lua, which the PoE1 pin lacks; its //pob2: markers cite it
 scripts/gamedatadump/poe2mods.go GO-NATIVE PoB-PoE2's Export/Scripts/mods.lua, whose PoE2 domains and filters the PoE1 pin lacks; its //pob2: markers cite it
+scripts/gamedatadump/poe2modscalability.go GO-NATIVE PoB-PoE2's Export/Scripts/modScalability.lua and its describeScalability, which the PoE1 pin's differs from (no DNT filter); its //pob2: markers cite it
 scripts/gamedatadump/poe2statdesc.go PORT     src/Export/statdesc.lua,src/Modules/Common.lua
 scripts/gamedatadump/tattoo.go      PORT       src/Export/Scripts/tattooPassives.lua
 scripts/gamedatadump/modscalability.go PORT    src/Export/statdesc.lua,src/Export/Scripts/modScalability.lua

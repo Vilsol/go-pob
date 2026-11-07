@@ -119,6 +119,7 @@ export declare namespace exposition {
     readonly Label: string;
     readonly ModList?: Array<string>;
     readonly HaveRange: boolean;
+    readonly Tooltip?: Array<string>;
   }
   interface CalcsBreakdown {
     readonly Lines?: Array<string>;
