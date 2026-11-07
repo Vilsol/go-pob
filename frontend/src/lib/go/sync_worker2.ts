@@ -807,18 +807,20 @@ class PoB2Worker {
 
   /* ItemsTab.lua:4382-4538, Build.lua:2585-2640 (PoB-PoE2): an item tooltip's stat differences, one block per slot it
      fits (or its flask or charm toggle), measured against the calculator's base pass */
-  ItemCompare(t: Poe2CompareTarget): Poe2CompareBlock[] {
+  // async: a compare can be the first calculation to need a minion table, which loads over fetch
+  async ItemCompare(t: Poe2CompareTarget): Promise<Poe2CompareBlock[]> {
     const c = this.calc;
     if (!c) throw new Error('no PoE2 build is open');
     const start = performance.now();
-    const v =
-      t.kind === 'display'
-        ? c.DisplayItemCompare().unwrap()
+    const v = (
+      await (t.kind === 'display'
+        ? c.DisplayItemCompare()
         : t.kind === 'item'
-          ? c.BuildItemCompare(t.id).unwrap()
+          ? c.BuildItemCompare(t.id)
           : t.kind === 'db'
-            ? c.DBItemCompare(t.db, t.name).unwrap()
-            : c.CraftItemCompare(t.rarity, t.title, t.base).unwrap();
+            ? c.DBItemCompare(t.db, t.name)
+            : c.CraftItemCompare(t.rarity, t.title, t.base))
+    ).unwrap();
     if (!v) return [];
     const calcMs = performance.now() - start;
     const outputs = (o: exposition.CompareOutputs) => ({ output: { ...(o.Output ?? {}) }, minion: o.Minion ? { ...o.Minion } : undefined });

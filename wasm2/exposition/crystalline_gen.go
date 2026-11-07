@@ -2778,23 +2778,25 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 						return crystallineFail("BuildItemCompare: expected 1 arguments, got " + strconv.Itoa(len(args)))
 					}
 
-					a0, err := crystallineToInt(args[0])
-					if err != nil {
-						return crystallineFail(err.Error())
-					}
+					return crystallinePromise(func() any {
+						a0, err := crystallineToInt(args[0])
+						if err != nil {
+							return crystallineFail(err.Error())
+						}
 
-					r0, r1 := v.BuildItemCompare(a0)
+						r0, r1 := v.BuildItemCompare(a0)
 
-					if r1 != nil {
-						return crystallineErr(r1)
-					}
+						if r1 != nil {
+							return crystallineErr(r1)
+						}
 
-					return crystallineOk(crystallineJSON(func(b []byte, ok *bool) []byte {
-						b = crystallineAppendExpositionItemCompareView(b, r0, ok)
-						return b
-					}, func() any {
-						return crystallineMarshalExpositionItemCompareView(r0)
-					}))
+						return crystallineOk(crystallineJSON(func(b []byte, ok *bool) []byte {
+							b = crystallineAppendExpositionItemCompareView(b, r0, ok)
+							return b
+						}, func() any {
+							return crystallineMarshalExpositionItemCompareView(r0)
+						}))
+					})
 				case 5:
 					if len(args) != 0 {
 						return crystallineFail("CalcsBreakdowns: expected 0 arguments, got " + strconv.Itoa(len(args)))
@@ -3090,60 +3092,64 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 						return crystallineFail("CraftItemCompare: expected 3 arguments, got " + strconv.Itoa(len(args)))
 					}
 
-					a0, err := crystallineToInt(args[0])
-					if err != nil {
-						return crystallineFail(err.Error())
-					}
+					return crystallinePromise(func() any {
+						a0, err := crystallineToInt(args[0])
+						if err != nil {
+							return crystallineFail(err.Error())
+						}
 
-					a1, err := crystallineToString(args[1])
-					if err != nil {
-						return crystallineFail(err.Error())
-					}
+						a1, err := crystallineToString(args[1])
+						if err != nil {
+							return crystallineFail(err.Error())
+						}
 
-					a2, err := crystallineToString(args[2])
-					if err != nil {
-						return crystallineFail(err.Error())
-					}
+						a2, err := crystallineToString(args[2])
+						if err != nil {
+							return crystallineFail(err.Error())
+						}
 
-					r0, r1 := v.CraftItemCompare(a0, a1, a2)
+						r0, r1 := v.CraftItemCompare(a0, a1, a2)
 
-					if r1 != nil {
-						return crystallineErr(r1)
-					}
+						if r1 != nil {
+							return crystallineErr(r1)
+						}
 
-					return crystallineOk(crystallineJSON(func(b []byte, ok *bool) []byte {
-						b = crystallineAppendExpositionItemCompareView(b, r0, ok)
-						return b
-					}, func() any {
-						return crystallineMarshalExpositionItemCompareView(r0)
-					}))
+						return crystallineOk(crystallineJSON(func(b []byte, ok *bool) []byte {
+							b = crystallineAppendExpositionItemCompareView(b, r0, ok)
+							return b
+						}, func() any {
+							return crystallineMarshalExpositionItemCompareView(r0)
+						}))
+					})
 				case 17:
 					if len(args) != 2 {
 						return crystallineFail("DBItemCompare: expected 2 arguments, got " + strconv.Itoa(len(args)))
 					}
 
-					a0, err := crystallineToString(args[0])
-					if err != nil {
-						return crystallineFail(err.Error())
-					}
+					return crystallinePromise(func() any {
+						a0, err := crystallineToString(args[0])
+						if err != nil {
+							return crystallineFail(err.Error())
+						}
 
-					a1, err := crystallineToString(args[1])
-					if err != nil {
-						return crystallineFail(err.Error())
-					}
+						a1, err := crystallineToString(args[1])
+						if err != nil {
+							return crystallineFail(err.Error())
+						}
 
-					r0, r1 := v.DBItemCompare(a0, a1)
+						r0, r1 := v.DBItemCompare(a0, a1)
 
-					if r1 != nil {
-						return crystallineErr(r1)
-					}
+						if r1 != nil {
+							return crystallineErr(r1)
+						}
 
-					return crystallineOk(crystallineJSON(func(b []byte, ok *bool) []byte {
-						b = crystallineAppendExpositionItemCompareView(b, r0, ok)
-						return b
-					}, func() any {
-						return crystallineMarshalExpositionItemCompareView(r0)
-					}))
+						return crystallineOk(crystallineJSON(func(b []byte, ok *bool) []byte {
+							b = crystallineAppendExpositionItemCompareView(b, r0, ok)
+							return b
+						}, func() any {
+							return crystallineMarshalExpositionItemCompareView(r0)
+						}))
+					})
 				case 18:
 					if len(args) != 0 {
 						return crystallineFail("DeleteAllSocketGroups: expected 0 arguments, got " + strconv.Itoa(len(args)))
@@ -3323,18 +3329,20 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 						return crystallineFail("DisplayItemCompare: expected 0 arguments, got " + strconv.Itoa(len(args)))
 					}
 
-					r0, r1 := v.DisplayItemCompare()
+					return crystallinePromise(func() any {
+						r0, r1 := v.DisplayItemCompare()
 
-					if r1 != nil {
-						return crystallineErr(r1)
-					}
+						if r1 != nil {
+							return crystallineErr(r1)
+						}
 
-					return crystallineOk(crystallineJSON(func(b []byte, ok *bool) []byte {
-						b = crystallineAppendExpositionItemCompareView(b, r0, ok)
-						return b
-					}, func() any {
-						return crystallineMarshalExpositionItemCompareView(r0)
-					}))
+						return crystallineOk(crystallineJSON(func(b []byte, ok *bool) []byte {
+							b = crystallineAppendExpositionItemCompareView(b, r0, ok)
+							return b
+						}, func() any {
+							return crystallineMarshalExpositionItemCompareView(r0)
+						}))
+					})
 				case 26:
 					if len(args) != 0 {
 						return crystallineFail("DisplayItemRanges: expected 0 arguments, got " + strconv.Itoa(len(args)))

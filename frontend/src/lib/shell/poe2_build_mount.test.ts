@@ -34,6 +34,8 @@ const ORACLE = resolve(process.cwd(), '../testdata/oracle');
 
 const { worker2Instance } = await import('$lib/go/sync_worker2');
 const issued: string[] = [];
+// a worker call named here answers that many ms late, as a busy worker would
+const delays: Record<string, number> = {};
 const poe2Worker = vi.fn(() =>
   Promise.resolve(
     new Proxy(worker2Instance, {
@@ -42,7 +44,9 @@ const poe2Worker = vi.fn(() =>
         if (typeof v !== 'function') return v;
         return (...args: unknown[]) => {
           issued.push(`${String(prop)}(${args.map((a) => JSON.stringify(a)).join(',')})`);
-          return (v as (...a: unknown[]) => unknown).apply(target, args);
+          const r = (v as (...a: unknown[]) => unknown).apply(target, args);
+          const ms = delays[String(prop)];
+          return ms ? new Promise((done) => setTimeout(() => done(r), ms)) : r;
         };
       }
     })
@@ -774,6 +778,30 @@ describe('the PoE2 Skills and Items pages', () => {
         .getByRole('button', { name: 'II' })
         .getAttribute('aria-pressed')
     ).toBe('true');
+  }, 120_000);
+
+  it('shows the items of the newest read when an older read, waiting on the open editor, answers last', async () => {
+    poe2Build.set(await worker2Instance.Open(await fixture('sorceress_items.xml')));
+    const page = render(AppItemsPoe2);
+    await vi.waitFor(() => page.getByRole('button', { name: /^Body Armour: / }));
+    const id = worker2Instance.ItemsPage().slots.find((s) => s.name === 'Body Armour')!.itemId;
+    worker2Instance.EditDisplayItem({ op: 'edit', id });
+    delays.DisplayItemAffixes = 300;
+    try {
+      poe2Build.set({ ...get(poe2Build)! });
+      await vi.waitFor(() => expect(issued.at(-1)).toBe('DisplayItemAffixes()'));
+      worker2Instance.EditDisplayItem({ op: 'close' });
+      poe2Build.set(await worker2Instance.EditItems({ op: 'delete', id }));
+      await new Promise((done) => setTimeout(done, 800));
+      expect(
+        page
+          .getAllByRole('button')
+          .map((b) => b.getAttribute('aria-label') ?? b.textContent)
+          .filter((n) => /Body Armour/.test(n ?? ''))
+      ).toEqual(['Body Armour: Empty']);
+    } finally {
+      delete delays.DisplayItemAffixes;
+    }
   }, 120_000);
 
   // calculator2/testdata/items_edit_pob.jsonl: PoB-PoE2's sidebar values after the same edits through its Items tab

@@ -142,7 +142,7 @@ export declare namespace exposition {
     AddDisplayItem(slot: string): Result<number>;
     AddSkillsUndoState(): void;
     AllocateAttributeNode(id: number, attributeIndex: number, allocMode: number): Result<void>;
-    BuildItemCompare(id: number): Result<(exposition.ItemCompareView | undefined)>;
+    BuildItemCompare(id: number): Promise<Result<(exposition.ItemCompareView | undefined)>>;
     CalcsBreakdowns(): Result<(Record<string, Readonly<exposition.CalcsBreakdown>> | undefined)>;
     CalcsMods(query: exposition.CalcsModQuery): Result<(Record<string, number> | undefined)>;
     CalcsOutputs(): Result<(exposition.CalcsOutputs | undefined)>;
@@ -154,8 +154,8 @@ export declare namespace exposition {
     CopySkillSet(id: number, title: string): Result<number>;
     CopySocketGroup(index: number): Result<string>;
     CraftDisplayItem(rarity: number, title: string, base: string): Result<void>;
-    CraftItemCompare(rarity: number, title: string, base: string): Result<(exposition.ItemCompareView | undefined)>;
-    DBItemCompare(kind: string, name: string): Result<(exposition.ItemCompareView | undefined)>;
+    CraftItemCompare(rarity: number, title: string, base: string): Promise<Result<(exposition.ItemCompareView | undefined)>>;
+    DBItemCompare(kind: string, name: string): Promise<Result<(exposition.ItemCompareView | undefined)>>;
     DeleteAllSocketGroups(): Result<void>;
     DeleteItem(id: number): Result<void>;
     DeleteItemSet(id: number): Result<void>;
@@ -163,7 +163,7 @@ export declare namespace exposition {
     DeleteSocketGroup(index: number): Result<void>;
     DisplayItemAffixRoll(control: number, val: number): Result<(Array<string> | undefined)>;
     DisplayItemAffixes(): Result<(Array<exposition.AffixControlView> | undefined)>;
-    DisplayItemCompare(): Result<(exposition.ItemCompareView | undefined)>;
+    DisplayItemCompare(): Promise<Result<(exposition.ItemCompareView | undefined)>>;
     DisplayItemRanges(): Result<[(Array<exposition.RangeLineView> | undefined), number]>;
     EditDisplayItemText(text: string, rarity: string): Result<void>;
     EditItem(id: number): Result<void>;
