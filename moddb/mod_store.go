@@ -43,6 +43,9 @@ type ListCfg struct {
 	BaseFlags    map[string]bool
 	GemData      any
 	OverrideCond map[string]bool
+
+	// IgnoreSourceInCheckConditions is cfg.ignoreSourceInCheckConditions: a ModDB's Flag ignores Source.
+	IgnoreSourceInCheckConditions bool
 }
 
 // Rules holds the per-game behaviour where both games' mod kernels read the same mod differently; nil is PoE1's.

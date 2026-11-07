@@ -183,6 +183,8 @@ type BreakdownEntry struct {
 	Source    bool
 	Radius    float64
 	HasRadius bool
+	// BreakdownSource is breakdownSource: the breakdown whose Calcs cell the sidebar shows for this one.
+	BreakdownSource string
 }
 
 // Breakdown is the table CalcBreakdown.lua returns: the generators over one actor, and the entries the calc
@@ -224,6 +226,22 @@ func (b *Breakdown) setEntry(key string, e *BreakdownEntry) {
 func (b *Breakdown) insert(key string, lines ...string) {
 	e := b.Entries[key]
 	e.Lines = append(e.Lines, lines...)
+}
+
+// mod is breakdown.mod: the increased and more multipliers of names, nil where either is neutral.
+//
+//pob2:src/Modules/CalcBreakdown.lua:72-82
+func (b *Breakdown) mod(modList moddb.ModStoreFuncs, cfg *moddb.ListCfg, names ...string) *BreakdownEntry {
+	inc := modList.Sum(mod.TypeIncrease, cfg, names...)
+	more := modList.More(cfg, names...)
+	if inc != 0 && more != 1 {
+		return &BreakdownEntry{Lines: []string{
+			sFormat("%.2f ^8(increased/reduced)", 1+inc/100),
+			sFormat("x %.2f ^8(more/less)", more),
+			sFormat("= %.2f", (1+inc/100)*more),
+		}}
+	}
+	return nil
 }
 
 // chainLink is one { format, value, args... } multiChain entry; a nil Value is the Lua's nil.

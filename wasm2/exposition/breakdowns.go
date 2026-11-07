@@ -57,3 +57,37 @@ func calcsBreakdownTableOf(t calculator2.BreakdownTable) CalcsBreakdownTable {
 	}
 	return CalcsBreakdownTable{Label: t.Label, Footer: t.Footer, Columns: cols, Rows: t.Rows}
 }
+
+// CalcsModSection is the mod table a Calcs cell entry shows over the last calculation's player.
+func (c *Calculator) CalcsModSection(sd calculator2.ModSectionData) ([]calculator2.ModSectionRow, error) {
+	if c.env == nil {
+		return nil, notCalculatedError{}
+	}
+	return c.env.ModSection(sd), nil
+}
+
+// SidebarBreakdownRef is the breakdown a sidebar stat's line names, and the breakdown whose Calcs cell it shows:
+// Source, or Key where it has none.
+type SidebarBreakdownRef struct {
+	Key    string
+	Source string
+}
+
+// SidebarBreakdownKey is the breakdown a sidebar stat's line names over the last calculation's player, Key "" for
+// none; hasBreakdown is a stat that gives its own breakdown key, and modNames one that gives mod names.
+func (c *Calculator) SidebarBreakdownKey(stat, childStat, breakdown string, hasBreakdown, modNames bool) (SidebarBreakdownRef, error) {
+	if c.env == nil {
+		return SidebarBreakdownRef{}, notCalculatedError{}
+	}
+	bd := c.env.Player.Breakdown
+	key, ok := bd.StatKey(stat, childStat, breakdown, hasBreakdown, modNames)
+	if !ok {
+		return SidebarBreakdownRef{}, nil
+	}
+	ref := SidebarBreakdownRef{Key: key, Source: key}
+	//pob2:block:src/Modules/Build.lua:2279-2281
+	if e := bd.Entries[key]; e != nil && e.BreakdownSource != "" {
+		ref.Source = e.BreakdownSource
+	}
+	return ref, nil
+}

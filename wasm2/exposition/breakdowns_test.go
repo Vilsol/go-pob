@@ -22,7 +22,8 @@ type breakdownSectionOracle struct {
 // breakdownsPorted are breakdowns both fixtures' main calculations hold, which must be present.
 var breakdownsPorted = []string{
 	"Life", "Mana", "Evasion", "FireResist", "ColdResist", "LightningResist", "ChaosResist",
-	"TotemFireResist", "BlockChance", "SpellBlockChance",
+	"TotemFireResist", "BlockChance", "SpellBlockChance", "GemLevel", "GemQuality", "ReqStr", "FrostShieldLife",
+	"preventedLifeLossTotal", "TotemDuration", "FreezeBuildup", "PinBuildup", "ExertedAttackUptimeRatio", "BoostedAttackUptimeRatio",
 }
 
 // Every breakdown we show is the one PoB-PoE2's CalcBreakdownControl builds over its main calculation

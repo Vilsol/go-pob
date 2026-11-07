@@ -289,9 +289,16 @@ func (m *ModDB) Flag(cfg *ListCfg, names ...string) bool {
 
 //pob:src/Classes/ModDB.lua:206-227
 func (m *ModDB) FlagInternal(context ModStoreFuncs, cfg *ListCfg, names ...string) bool {
+	matchCfg := cfg
+	//pob2:block:src/Classes/ModDB.lua:302-303
+	if cfg != nil && cfg.IgnoreSourceInCheckConditions && cfg.Source != nil {
+		c := *cfg
+		c.Source = nil
+		matchCfg = &c
+	}
 	for _, name := range names {
 		for _, mo := range m.modsNamed(name) {
-			if modMatches(mo, mod.TypeFlag, cfg) {
+			if modMatches(mo, mod.TypeFlag, matchCfg) {
 
 				value := context.evalMod(mo, cfg)
 				if value != nil && value.Type() == mod.ModValueMultiTypeFlag && value.Flag() {

@@ -320,6 +320,23 @@ func (h *offenceHit) offenceAncestralBoosts(pass *offencePass) {
 			globalOutput["ExertedAttackUptimeRatio"] = math.Max(globalOutput["ExertedAttackUptimeRatio"], globalOutput[cryTimeRatio])
 		}
 	}
+	globalBreakdown := h.actor.Breakdown
+	//pob2:block:src/Modules/CalcOffence.lua:3740-3749
+	if globalBreakdown != nil {
+		lines := []string{sFormat("Maximum of:")}
+		for _, cryTimeRatio := range combinedList {
+			if v, ok := globalOutput[cryTimeRatio]; ok {
+				name := uptimeRatioName(cryTimeRatio)
+				if maxEmpoweredUptimeRatio {
+					v, name = 100, "Override"
+				} else if name == "" {
+					name = "Override"
+				}
+				lines = append(lines, sFormat("%d%% ^8(%s Uptime)", v, name))
+			}
+		}
+		globalBreakdown.set("ExertedAttackUptimeRatio", append(lines, sFormat("= %d%%", globalOutput["ExertedAttackUptimeRatio"]))...)
+	}
 	if globalOutput["ExertedAttackUptimeRatio"] > 0 && !h.calculated["ExertedAttackUptimeRatioCalculated"] {
 		incExertedAttacks := skillModList.Sum(mod.TypeIncrease, cfg, "EmpoweredIncrease")
 		if activeSkill.SkillModList.Flag(nil, "Condition:WarcryMaxHit") {
@@ -330,6 +347,13 @@ func (h *offenceHit) offenceAncestralBoosts(pass *offencePass) {
 		globalOutput["ExertedAttackAvgDmg"] = calcLibMod(skillModList, skillCfg, "EmpoweredIncrease")
 		globalOutput["ExertedAttackHitEffect"] = globalOutput["ExertedAttackAvgDmg"] * globalOutput["ExertedAttackUptimeRatio"] / 100
 		globalOutput["ExertedAttackMaxHitEffect"] = globalOutput["ExertedAttackAvgDmg"]
+		if globalBreakdown != nil {
+			globalBreakdown.set("ExertedAttackHitEffect",
+				sFormat("(%.2f ^8(average exerted damage)", globalOutput["ExertedAttackAvgDmg"]),
+				sFormat("x %.2f) ^8(uptime %%)", globalOutput["ExertedAttackUptimeRatio"]/100),
+				sFormat("= %.2f", globalOutput["ExertedAttackHitEffect"]),
+			)
+		}
 		h.calculated["ExertedAttackUptimeRatioCalculated"] = true
 		h.actor.setOutputFlag("ExertedAttackUptimeRatioCalculated", true)
 	}
@@ -342,6 +366,20 @@ func (h *offenceHit) offenceAncestralBoosts(pass *offencePass) {
 		} else {
 			globalOutput["BoostedAttackUptimeRatio"] = math.Max(globalOutput["BoostedAttackUptimeRatio"], globalOutput[boostUptimeRatio])
 		}
+	}
+	//pob2:block:src/Modules/CalcOffence.lua:3775-3784
+	if globalBreakdown != nil {
+		lines := []string{sFormat("Maximum of:")}
+		for _, boostUptimeRatio := range ancestralBoostList {
+			if v, ok := globalOutput[boostUptimeRatio]; ok {
+				name := uptimeRatioName(boostUptimeRatio)
+				if maxBoostedUptimeRatio {
+					v, name = 100, "Override"
+				}
+				lines = append(lines, sFormat("%d%% ^8(%s Uptime)", v, name))
+			}
+		}
+		globalBreakdown.set("BoostedAttackUptimeRatio", append(lines, sFormat("= %d%%", globalOutput["BoostedAttackUptimeRatio"]))...)
 	}
 	if globalOutput["BoostedAttackUptimeRatio"] > 0 && !h.calculated["BoostedAttackUptimeRatioCalculated"] {
 		incBoostedAttacks := skillModList.Sum(mod.TypeIncrease, cfg, "AncestralBoostDamage")
@@ -361,6 +399,14 @@ func (h *offenceHit) offenceAncestralBoosts(pass *offencePass) {
 		h.calculated["BoostedAttackUptimeRatioCalculated"] = true
 		h.actor.setOutputFlag("BoostedAttackUptimeRatioCalculated", true)
 	}
+}
+
+// uptimeRatioName is ratio:match("(.+)Up.*"), "" where it does not match.
+func uptimeRatioName(ratio string) string {
+	if i := strings.LastIndex(ratio, "Up"); i > 0 {
+		return ratio[:i]
+	}
+	return ""
 }
 
 // offenceCrit calculates crit chance, crit multiplier, and their combined effect. The breakdowns
@@ -401,6 +447,13 @@ func (h *offenceHit) offenceCrit(pass *offencePass) {
 			case "AVERAGE":
 				output["PreEffectiveCritChance"] = 100 / output["Repeats"]
 				output["CritChance"] = 100 / output["Repeats"]
+				if pass.breakdown != nil {
+					pass.breakdown.set("CritChance",
+						sFormat("100%%"),
+						sFormat("/ %d ^8(number of repeats)", output["Repeats"]),
+						sFormat("= %.2f%% average critical strike chance", output["CritChance"]),
+					)
+				}
 			default:
 				output["PreEffectiveCritChance"] = 100
 				output["CritChance"] = 100
@@ -461,23 +514,28 @@ func (h *offenceHit) offenceCrit(pass *offencePass) {
 			if o := skillModList.Override(nil, "CritChanceCap"); o != nil {
 				critCap = o.Float()
 			}
+			preCapCritChance := output["CritChance"]
 			output["CritChance"] = math.Min(output["CritChance"], critCap)
 			if (baseCrit + base) > 0 {
 				output["CritChance"] = math.Max(output["CritChance"], 0)
 			}
 			output["PreEffectiveCritChance"] = output["CritChance"]
+			preHitCheckCritChance := output["CritChance"]
 			if env.ModeEffective {
 				// Hits that make an accuracy check make a second accuracy check if they roll a crit. If that fails, the crit is nullified and it just stays a normal hit
 				// https://www.pathofexile.com/forum/view-thread/11707/filter-account-type/staff/page/10#p748465
 				output["CritChance"] = output["CritChance"] * output["AccuracyHitChance"] / 100
 			}
+			preLuckyCritChance := output["CritChance"]
 			if env.ModeEffective && skillModList.Flag(cfg, "CritChanceLucky") {
 				output["CritChance"] = (1 - math.Pow(1-output["CritChance"]/100, 2)) * 100
 			}
 			output["PreBifurcateCritChance"] = output["CritChance"]
+			preBifurcateCritChance := output["CritChance"]
 			if env.ModeEffective && skillModList.Flag(cfg, "BifurcateCrit") {
 				output["CritChance"] = (1 - math.Pow(1-output["CritChance"]/100, 2)) * 100
 			}
+			preInevitableCritChance := output["CritChance"]
 			if env.ModeEffective && skillModList.Flag(cfg, "InevitableCriticalHits") && output["CritChance"] > 0 {
 				inevitableCrits = true
 				// Lucky crits use their effective crit chance without an extra roll-down penalty.
@@ -502,6 +560,49 @@ func (h *offenceHit) offenceCrit(pass *offencePass) {
 
 				// For the sake of any logic that depends on it, every hit is considered a crit
 				output["CritChance"] = 100
+			}
+			//pob2:block:src/Modules/CalcOffence.lua:3935-3976
+			if breakdown := pass.breakdown; breakdown != nil && output["CritChance"] != baseCrit {
+				baseCritFromMainHandStr := ""
+				if baseCritFromMainHand {
+					baseCritFromMainHandStr = " from main weapon"
+				} else if baseCritFromParentMainHand {
+					baseCritFromMainHandStr = " from parent main weapon"
+				}
+				var lines []string
+				if base != 0 {
+					lines = append(lines, sFormat("(%g + %g) ^8(base%s)", baseCrit, base, baseCritFromMainHandStr))
+				} else {
+					lines = append(lines, sFormat("%g ^8(base%s)", baseCrit+base, baseCritFromMainHandStr))
+				}
+				if inc != 0 {
+					lines = append(lines, sFormat("x %.2f", 1+inc/100)+" ^8(increased/reduced)")
+				}
+				if more != 1 {
+					lines = append(lines, sFormat("x %.2f", more)+" ^8(more/less)")
+				}
+				lines = append(lines, sFormat("= %.2f%% ^8(crit chance)", output["PreEffectiveCritChance"]))
+				if preCapCritChance > 100 {
+					overCap := preCapCritChance - 100
+					lines = append(lines, sFormat("Crit is overcapped by %.2f%% (%d%% increased Critical Hit Chance)", overCap, overCap/more/(baseCrit+base)*100))
+				}
+				breakdown.set("PreEffectiveCritChance", append([]string(nil), lines...)...)
+				if env.ModeEffective && output["AccuracyHitChance"] < 100 {
+					lines = append(lines, "", "Crit confirmation roll:", sFormat("%.2f%%", preHitCheckCritChance),
+						sFormat("x %.2f ^8(chance to hit)", output["AccuracyHitChance"]/100), sFormat("= %.2f%%", preLuckyCritChance))
+				}
+				if env.ModeEffective && skillModList.Flag(cfg, "CritChanceLucky") {
+					lines = append(lines, "Crit Chance is Lucky:", sFormat("1 - (1 - %.4f) x (1 - %.4f)", preLuckyCritChance/100, preLuckyCritChance/100),
+						sFormat("= %.2f%%", preBifurcateCritChance))
+				}
+				if env.ModeEffective && skillModList.Flag(cfg, "BifurcateCrit") {
+					lines = append(lines, "Critical Strike Bifurcates:", sFormat("1 - (1 - %.4f) x (1 - %.4f)", preBifurcateCritChance/100, preBifurcateCritChance/100),
+						sFormat("= %.2f%%", preInevitableCritChance))
+				}
+				if inevitableCrits {
+					lines = append(lines, "Inevitable Critical Hits:", "= 100% ^8(override)")
+				}
+				breakdown.set("CritChance", lines...)
 			}
 		}
 	}
@@ -1203,7 +1304,7 @@ func (h *offenceHit) offencePvp(pass *offencePass, totalHitMin, totalHitMax, hit
 	}
 }
 
-// offenceCombineDamage combines crit stats, average damage and DPS. The breakdowns are not ported.
+// offenceCombineDamage combines crit stats, average damage and DPS.
 //
 //pob2:block:src/Modules/CalcOffence.lua:4721-4850
 func (h *offenceHit) offenceCombineDamage() {
@@ -1242,6 +1343,42 @@ func (h *offenceHit) offenceCombineDamage() {
 		skillData["showAverage"] = false
 		skillFlags["showAverage"] = false
 		skillFlags["notAverage"] = true
+	}
+	//pob2:block:src/Modules/CalcOffence.lua:4796-4825
+	if breakdown := h.actor.Breakdown; breakdown != nil {
+		if skillFlags["bothWeaponAttack"] {
+			for _, critStat := range []string{"PreEffectiveCritChance", "CritChance"} {
+				combinedBreakdown := []string{"Both weapons:"}
+				for _, pass := range state.passList {
+					combinedBreakdown = append(combinedBreakdown, pass.label+":")
+					if e := pass.breakdown.Entries[critStat]; e != nil {
+						combinedBreakdown = append(combinedBreakdown, e.Lines...)
+					} else {
+						combinedBreakdown = append(combinedBreakdown, sFormat("%.2f%%", pass.output[critStat]))
+					}
+				}
+				combinedBreakdown = append(combinedBreakdown, sFormat("= %.2f%% ^8(average)", output[critStat]))
+				breakdown.set(critStat, combinedBreakdown...)
+			}
+		} else {
+			handBreakdown := breakdown.OffHand
+			if skillFlags["weapon1Attack"] {
+				handBreakdown = breakdown.MainHand
+			}
+			if handBreakdown != nil {
+				breakdown.setEntry("PreEffectiveCritChance", handBreakdown.Entries["PreEffectiveCritChance"])
+				breakdown.setEntry("CritChance", handBreakdown.Entries["CritChance"])
+			}
+		}
+		breakdownSource := "OffHand.CritChance"
+		if skillFlags["weapon1Attack"] {
+			breakdownSource = "MainHand.CritChance"
+		}
+		for _, critStat := range []string{"PreEffectiveCritChance", "CritChance"} {
+			if e := breakdown.Entries[critStat]; e != nil {
+				e.BreakdownSource = breakdownSource
+			}
+		}
 	}
 	//pob2:block:src/Modules/CalcOffence.lua:4826-4837
 	if breakdown := h.actor.Breakdown; breakdown != nil && skillFlags["bothWeaponAttack"] {

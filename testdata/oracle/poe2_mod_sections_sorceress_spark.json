@@ -1,0 +1,3191 @@
+{
+  "3SecondRecoup,3SecondEnergyShieldRecoup||||false|":{
+    "multi":true
+  },
+  "3SecondRecoup,3SecondLifeRecoup||||false|":{
+    "multi":true
+  },
+  "3SecondRecoup||||false|":{
+    "multi":false
+  },
+  "Accuracy,HitChance||||true|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Accuracy",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Base:","+2114 base Accuracy"],
+        "value":"+2114 base"
+      }]
+  },
+  "Accuracy||weapon1||false|":{
+    "multi":false,
+    "rows":[{
+        "flags":"",
+        "name":"",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"+6 + 6 per Level",
+        "totals":["Total from Base:","+234 base"],
+        "value":"+234 base"
+      },{
+        "flags":"",
+        "name":"",
+        "source":"Dexterity",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Dexterity:","+42 base"],
+        "value":"+42 base"
+      }]
+  },
+  "Accuracy||weapon2||false|":{
+    "multi":false,
+    "rows":[{
+        "flags":"",
+        "name":"",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"+6 + 6 per Level",
+        "totals":["Total from Base:","+234 base"],
+        "value":"+234 base"
+      },{
+        "flags":"",
+        "name":"",
+        "source":"Dexterity",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Dexterity:","+42 base"],
+        "value":"+42 base"
+      }]
+  },
+  "Accuracy||||true|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Accuracy",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Base:","+2114 base Accuracy"],
+        "value":"+2114 base"
+      }]
+  },
+  "ActiveBrandLimit||skill||false|":{
+    "multi":false,
+    "rows":[{
+        "flags":"",
+        "name":"",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Base:","+3 base"],
+        "value":"+3 base"
+      }]
+  },
+  "ActiveMineLimit||skill||false|":{
+    "multi":false,
+    "rows":[{
+        "flags":"",
+        "name":"",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Base:","+15 base"],
+        "value":"+15 base"
+      }]
+  },
+  "ActiveMinionLimit||skill||false|":{
+    "multi":true
+  },
+  "ActiveTotemLimit,ActiveBallistaLimit||skill||false|":{
+    "multi":true
+  },
+  "ActiveTrapLimit||skill||false|":{
+    "multi":false,
+    "rows":[{
+        "flags":"",
+        "name":"",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Base:","+15 base"],
+        "value":"+15 base"
+      }]
+  },
+  "AdditionalCooldownUses||skill||false|":{
+    "multi":false
+  },
+  "AdditionalStrikeTarget||skill||false|":{
+    "multi":false
+  },
+  "AilmentChance||skill||false|":{
+    "multi":false
+  },
+  "AilmentMagnitude||bleed||false|":{
+    "multi":false
+  },
+  "AilmentMagnitude||ignite||false|":{
+    "multi":false
+  },
+  "AilmentMagnitude||poison||false|":{
+    "multi":false
+  },
+  "AilmentThreshold||||false|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Ailment Threshold",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"+50% of Life",
+        "totals":["Total from Base:","+342 base Ailment Threshold"],
+        "value":"+342 base"
+      }]
+  },
+  "AlliedEnergyShield,TakenFromParentESBeforeYou||||false|":{
+    "multi":true
+  },
+  "AncestralBoostDamage||skill||false|":{
+    "multi":false
+  },
+  "AncestralBoostMoreDamage||skill||false|":{
+    "multi":false
+  },
+  "AncestralCallDamageMultiplier||skill||false|":{
+    "multi":false
+  },
+  "AncestralEmpowermentDamageMultiplier,FistOfWarDamageMultiplier||skill||false|":{
+    "multi":true
+  },
+  "AncestralEmpowermentDamageMultiplier||skill||false|":{
+    "multi":false
+  },
+  "AreaOfEffectSecondary||skill||false|":{
+    "multi":false
+  },
+  "AreaOfEffectTertiary||skill||false|":{
+    "multi":false
+  },
+  "AreaOfEffect||skill||false|":{
+    "multi":false
+  },
+  "Armour,ArmourAndEvasion,ArmourTotal|BASE|||false|":{
+    "multi":true
+  },
+  "Armour,ArmourAndEvasion,Defences|INC|||false|":{
+    "multi":true
+  },
+  "Armour,ArmourAndEvasion,Defences|MORE|||false|":{
+    "multi":true
+  },
+  "Armour,ArmourAndEvasion|INC||Tree|false|":{
+    "multi":true
+  },
+  "ArmourBreakPerHit|BASE|||false|":{
+    "multi":false
+  },
+  "ArmourDefense||||false|":{
+    "multi":false
+  },
+  "ArmourGainAsDeflection|BASE|||false|":{
+    "multi":false
+  },
+  "AttackDodgeChance||||false|":{
+    "multi":false
+  },
+  "AuraEffect,SkillAuraEffectOnSelf,Magnitude||skill||false|":{
+    "multi":true
+  },
+  "AvoidAllDamageFromHitsChance||||false|":{
+    "multi":false
+  },
+  "AvoidBleed,AvoidAilments,BleedImmune||||false|":{
+    "multi":true
+  },
+  "AvoidBlind,BlindImmune||||false|":{
+    "multi":true
+  },
+  "AvoidBrittle,AvoidElementalAilments,AvoidAilments,AvoidShockAppliesToElementalAilments,BrittleImmune,ElementalAilmentImmune||||false|":{
+    "multi":true
+  },
+  "AvoidChaosDamageChance||||false|":{
+    "multi":false
+  },
+  "AvoidChill,AvoidElementalAilments,AvoidAilments,AvoidShockAppliesToElementalAilments,ChillImmune,ElementalAilmentImmune||||false|":{
+    "multi":true
+  },
+  "AvoidColdDamageChance||||false|":{
+    "multi":false
+  },
+  "AvoidCurse,CurseImmune||||false|":{
+    "multi":true
+  },
+  "AvoidFireDamageChance||||false|":{
+    "multi":false
+  },
+  "AvoidFreeze,AvoidElementalAilments,AvoidAilments,AvoidShockAppliesToElementalAilments,FreezeImmune,ElementalAilmentImmune||||false|":{
+    "multi":true
+  },
+  "AvoidIgnite,AvoidElementalAilments,AvoidAilments,AvoidShockAppliesToElementalAilments,IgniteImmune,ElementalAilmentImmune||||false|":{
+    "multi":true
+  },
+  "AvoidImpale,ImpaleImmune||||false|":{
+    "multi":true
+  },
+  "AvoidInterruptStun||||false|":{
+    "multi":false
+  },
+  "AvoidLightningDamageChance||||false|":{
+    "multi":false
+  },
+  "AvoidPhysicalDamageChance||||false|":{
+    "multi":false
+  },
+  "AvoidPoison,AvoidAilments,PoisonImmune||||false|":{
+    "multi":true
+  },
+  "AvoidProjectilesChance||||false|":{
+    "multi":false
+  },
+  "AvoidSap,AvoidElementalAilments,AvoidAilments,AvoidShockAppliesToElementalAilments,SapImmune,ElementalAilmentImmune||||false|":{
+    "multi":true
+  },
+  "AvoidScorch,AvoidElementalAilments,AvoidAilments,AvoidShockAppliesToElementalAilments,ScorchImmune,ElementalAilmentImmune||||false|":{
+    "multi":true
+  },
+  "AvoidShock,AvoidElementalAilments,AvoidAilments,ShockImmune,ElementalAilmentImmune||||false|":{
+    "multi":true
+  },
+  "AvoidStun||||false|":{
+    "multi":false
+  },
+  "BifurcateCrit||weapon1||false|":{
+    "multi":false
+  },
+  "BifurcateCrit||weapon2||false|":{
+    "multi":false
+  },
+  "BleedChance||weapon1||false|":{
+    "multi":false
+  },
+  "BleedChance||weapon2||false|":{
+    "multi":false
+  },
+  "BleedStacksMax||||false|":{
+    "multi":false,
+    "rows":[{
+        "flags":"",
+        "name":"",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Base:","+1 base"],
+        "value":"+1 base"
+      }]
+  },
+  "BlindChance|BASE|skill||false|":{
+    "multi":false
+  },
+  "BlindEffect,BuffEffectOnSelf||||false|":{
+    "multi":true
+  },
+  "BlockChance,ReplaceShieldBlock,BlockChanceMax||||false|":{
+    "multi":true
+  },
+  "BlockChance||||true|":{
+    "multi":true
+  },
+  "BlockEffect||||false|":{
+    "multi":true
+  },
+  "BounceCount,ProjectileCount,SurpassingProjectileChance,TwoAdditionalProjectilesChance||skill||false|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Projectile Count",
+        "source":"Skill",
+        "sourceName":"Spark",
+        "tags":"",
+        "totals":["Total from Skill:","+5 base Projectile Count"],
+        "value":"+5 base"
+      },{
+        "flags":"",
+        "name":"Projectile Count",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Base:","+1 base Projectile Count"],
+        "value":"+1 base"
+      }]
+  },
+  "BrandAttachmentRange||skill||false|":{
+    "multi":false
+  },
+  "BrittleMax||||false|":{
+    "multi":false
+  },
+  "BrittleOverride|BASE|||false|":{
+    "multi":false
+  },
+  "BrittleVal|BASE|||true|":{
+    "multi":false
+  },
+  "BuffExpireFaster||||true|":{
+    "multi":false
+  },
+  "CannotBeEvaded,CannotBeDodged,reduceEnemyDodge||||true|":{
+    "multi":true
+  },
+  "CannotBeSuppressed,CannotBeBlocked,reduceEnemyBlock||||true|":{
+    "multi":true
+  },
+  "CannotChain,ChainCountMax,ChainChance,NoAdditionalChains||skill||false|":{
+    "multi":true
+  },
+  "CannotEvade,EvadeChance,MeleeEvadeChance,ProjectileEvadeChance,SpellEvadeChance,SpellProjectileEvadeChance||||false|":{
+    "multi":true
+  },
+  "CannotEvade,EvadeChance,MeleeEvadeChance||||false|":{
+    "multi":true
+  },
+  "CannotEvade,EvadeChance,ProjectileEvadeChance,SpellProjectileEvadeChance||||false|":{
+    "multi":true
+  },
+  "CannotEvade,EvadeChance,ProjectileEvadeChance||||false|":{
+    "multi":true
+  },
+  "CannotEvade,EvadeChance,SpellEvadeChance||||false|":{
+    "multi":true
+  },
+  "CannotFork,ForkCountMax||skill||false|":{
+    "multi":true
+  },
+  "CannotPierce,PierceCount,PierceChance,PierceAllTargets||skill||false|":{
+    "multi":true
+  },
+  "CannotSplit,SplitCount,AdditionalProjectilesAddSplitsInstead,AdditionalChainsAddSplitsInstead||skill||false|":{
+    "multi":true
+  },
+  "ChanceToNotConsumeAmmo||skill||false|":{
+    "multi":true
+  },
+  "ChaosAegisValue||||false|":{
+    "multi":true
+  },
+  "ChaosDamageReduction,ArmourAppliesToChaosDamageTaken,SelfIgnoreChaosResistance,DamageReductionMax||||false|":{
+    "multi":true
+  },
+  "ChaosDamageTakenAsPhysical,ChaosDamageFromHitsTakenAsPhysical,ChaosDamageTakenAsLightning,ChaosDamageFromHitsTakenAsLightning,ChaosDamageTakenAsCold,ChaosDamageFromHitsTakenAsCold,ChaosDamageTakenAsFire,ChaosDamageFromHitsTakenAsFire||||false|":{
+    "multi":true
+  },
+  "ChaosDamageTakenAsPhysical,ChaosDamageTakenAsLightning,ChaosDamageTakenAsCold,ChaosDamageTakenAsFire||||false|":{
+    "multi":true
+  },
+  "ChaosDamage|INC|dotChaos||false|":{
+    "multi":false
+  },
+  "ChaosDamage|INC|skill||false|":{
+    "multi":false
+  },
+  "ChaosDamage|INC|weapon1||false|":{
+    "multi":false
+  },
+  "ChaosDamage|INC|weapon2||false|":{
+    "multi":false
+  },
+  "ChaosDamage|MORE|dotChaos||false|":{
+    "multi":false
+  },
+  "ChaosDamage|MORE|skill||false|":{
+    "multi":false
+  },
+  "ChaosDamage|MORE|weapon1||false|":{
+    "multi":false
+  },
+  "ChaosDamage|MORE|weapon2||false|":{
+    "multi":false
+  },
+  "ChaosDegen||||false|":{
+    "multi":false
+  },
+  "ChaosDotMultiplier|BASE|dotChaos||false|":{
+    "multi":false
+  },
+  "ChaosEnergyShieldBypass,ChaosNotBypassEnergyShield,BlockedDamageDoesntBypassES,UnblockedDamageDoesBypassES||||false|":{
+    "multi":true
+  },
+  "ChaosEnergyShieldRecoup||||false|":{
+    "multi":false
+  },
+  "ChaosGuardAbsorbRate,ChaosGuardAbsorbLimit||||false|":{
+    "multi":true
+  },
+  "ChaosLifeRecoup||||false|":{
+    "multi":false
+  },
+  "ChaosMax|BASE|skill||false|":{
+    "multi":false
+  },
+  "ChaosMin|BASE|skill||false|":{
+    "multi":false
+  },
+  "ChaosPenetration,IgnoreChaosResistance||skill||false|":{
+    "multi":true
+  },
+  "ChaosPenetration||weapon1||false|":{
+    "multi":false
+  },
+  "ChaosPenetration||weapon2||false|":{
+    "multi":false
+  },
+  "ChaosResist,DamageTaken,DamageTakenOverTime,ChaosDamageTaken,ChaosDamageTakenOverTime||||true|":{
+    "multi":true
+  },
+  "ChaosResistMax,ChaosResist||||false|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Chaos Resist Max",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Base:","+75 base Chaos Resist Max"],
+        "value":"+75 base"
+      }]
+  },
+  "CharmChargesGained|INC|||false|":{
+    "multi":false
+  },
+  "CharmChargesGenerated|BASE|||false|":{
+    "multi":false
+  },
+  "CharmChargesUsed|INC|||false|":{
+    "multi":false
+  },
+  "CharmDuration|INC|||false|":{
+    "multi":false
+  },
+  "CharmEffect|INC|||false|player":{
+    "multi":false
+  },
+  "CharmLimit|BASE|||false|":{
+    "multi":false
+  },
+  "ChillMax||||false|":{
+    "multi":false
+  },
+  "ChillOverride|BASE|||false|":{
+    "multi":false
+  },
+  "ChillVal|BASE|||true|":{
+    "multi":false
+  },
+  "ColdAegisValue,ElementalAegisValue||||false|":{
+    "multi":true
+  },
+  "ColdDamage,ElementalDamage|INC|dotCold||false|":{
+    "multi":true
+  },
+  "ColdDamage,ElementalDamage|INC|skill||false|":{
+    "multi":true
+  },
+  "ColdDamage,ElementalDamage|INC|weapon1||false|":{
+    "multi":true
+  },
+  "ColdDamage,ElementalDamage|INC|weapon2||false|":{
+    "multi":true
+  },
+  "ColdDamage,ElementalDamage|MORE|dotCold||false|":{
+    "multi":true
+  },
+  "ColdDamage,ElementalDamage|MORE|skill||false|":{
+    "multi":true
+  },
+  "ColdDamage,ElementalDamage|MORE|weapon1||false|":{
+    "multi":true
+  },
+  "ColdDamage,ElementalDamage|MORE|weapon2||false|":{
+    "multi":true
+  },
+  "ColdDamageReduction,ElementalDamageReduction,ArmourAppliesToColdDamageTaken,SelfIgnoreColdResistance,DamageReductionMax||||false|":{
+    "multi":true
+  },
+  "ColdDamageTakenAsPhysical,ColdDamageFromHitsTakenAsPhysical,ColdDamageTakenAsLightning,ColdDamageFromHitsTakenAsLightning,ColdDamageTakenAsFire,ColdDamageFromHitsTakenAsFire,ElementalDamageTakenAsPhysical,ElementalDamageFromHitsTakenAsPhysical,ElementalDamageTakenAsChaos,ElementalDamageFromHitsTakenAsChaos,ColdDamageTakenAsChaos,ColdDamageFromHitsTakenAsChaos||||false|":{
+    "multi":true
+  },
+  "ColdDamageTakenAsPhysical,ColdDamageTakenAsLightning,ColdDamageTakenAsFire,ElementalDamageTakenAsPhysical,ElementalDamageTakenAsChaos,ColdDamageTakenAsChaos||||false|":{
+    "multi":true
+  },
+  "ColdDegen||||false|":{
+    "multi":false
+  },
+  "ColdDotMultiplier|BASE|dotCold||false|":{
+    "multi":false
+  },
+  "ColdEnergyShieldBypass,BlockedDamageDoesntBypassES,UnblockedDamageDoesBypassES||||false|":{
+    "multi":true
+  },
+  "ColdEnergyShieldRecoup||||false|":{
+    "multi":false
+  },
+  "ColdGuardAbsorbRate,ColdGuardAbsorbLimit||||false|":{
+    "multi":true
+  },
+  "ColdLifeRecoup||||false|":{
+    "multi":false
+  },
+  "ColdMax|BASE|skill||false|":{
+    "multi":false
+  },
+  "ColdMin|BASE|skill||false|":{
+    "multi":false
+  },
+  "ColdPenetration,ElementalPenetration,IgnoreColdResistance,IgnoreNonNegativeEleRes,IgnoreElementalResistances||skill||false|":{
+    "multi":true
+  },
+  "ColdPenetration,ElementalPenetration||weapon1||false|":{
+    "multi":true
+  },
+  "ColdPenetration,ElementalPenetration||weapon2||false|":{
+    "multi":true
+  },
+  "ColdResistMax,ElementalResistMax,ColdResist,ElementalResist||||false|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Cold Resist Max",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Base:","+75 base Cold Resist Max","-60 base Cold Resist"],
+        "value":"+75 base"
+      },{
+        "flags":"",
+        "name":"Cold Resist",
+        "source":"Quest",
+        "sourceName":"Act 1: Clearfell",
+        "tags":"",
+        "totals":["Total from Quest:","+10 base Cold Resist"],
+        "value":"+10 base"
+      },{
+        "flags":"",
+        "name":"Cold Resist",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Base:","+75 base Cold Resist Max","-60 base Cold Resist"],
+        "value":"-60 base"
+      }]
+  },
+  "CooldownRecovery,CooldownRecoveryFromTemporalis,CooldownChanceNotConsume||skill||false|":{
+    "multi":true
+  },
+  "CooldownRecovery,CooldownRecoveryFromTemporalis||skill||false|":{
+    "multi":true
+  },
+  "CooldownRecovery|INC|skill||false|":{
+    "multi":false
+  },
+  "CooldownRecovery|OVERRIDE|skill||false|":{
+    "multi":false
+  },
+  "CorpseLevel||skill||false|":{
+    "multi":false
+  },
+  "CorpseLife||skill||false|":{
+    "multi":false
+  },
+  "CorruptedBloodImmune||||false|":{
+    "multi":false
+  },
+  "CritChance,SpellSkillsCannotDealCriticalStrikesExceptOnFinalRepeat,SpellSkillsAlwaysDealCriticalStrikesOnFinalRepeat,InevitableCriticalHits||skill||false|":{
+    "multi":true
+  },
+  "CritChance,WeaponBaseCritChance,AttackCritIsEqualToParentMainHand,InevitableCriticalHits||weapon2||false|":{
+    "multi":true
+  },
+  "CritChance,WeaponBaseCritChance,MainHandCritIsEqualToParent,MainHandCritIsEqualToPartyMember,AttackCritIsEqualToParentMainHand,InevitableCriticalHits||weapon1||false|":{
+    "multi":true
+  },
+  "CritChance|INC|skill||false|":{
+    "multi":false
+  },
+  "CritChance|INC|weapon1||false|":{
+    "multi":false
+  },
+  "CritChance|INC|weapon2||false|":{
+    "multi":false
+  },
+  "CritMultiplier||skill||false|":{
+    "multi":false,
+    "rows":[{
+        "flags":"",
+        "name":"",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Base:","+100 base"],
+        "value":"+100 base"
+      }]
+  },
+  "CritMultiplier||weapon1||false|":{
+    "multi":false,
+    "rows":[{
+        "flags":"",
+        "name":"",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Base:","+100 base"],
+        "value":"+100 base"
+      }]
+  },
+  "CritMultiplier||weapon2||false|":{
+    "multi":false,
+    "rows":[{
+        "flags":"",
+        "name":"",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Base:","+100 base"],
+        "value":"+100 base"
+      }]
+  },
+  "CrossbowBoltCount||skill||false|":{
+    "multi":true
+  },
+  "CullPercent,CriticalCullPercent||||false|":{
+    "multi":true
+  },
+  "CurseActivation||skill||false|":{
+    "multi":true
+  },
+  "CurseDelay||skill||false|":{
+    "multi":true
+  },
+  "CurseEffectOnSelf||||false|":{
+    "multi":false
+  },
+  "CurseEffect||skill||false|":{
+    "multi":false
+  },
+  "CurseLimitIsMaximumPowerCharges,EnemyCurseLimit||||false|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Enemy Curse Limit",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Base:","+1 base Enemy Curse Limit"],
+        "value":"+1 base"
+      }]
+  },
+  "DPS||skill||false|":{
+    "multi":false
+  },
+  "DPS||||false|":{
+    "multi":false
+  },
+  "Damage,ChaosDamage,CritChance,CritMultiplier||||true|":{
+    "multi":true
+  },
+  "Damage,ChaosDamage|INC|decay||false|":{
+    "multi":true
+  },
+  "Damage,ChaosDamage|MORE|decay||false|":{
+    "multi":true
+  },
+  "Damage,ColdDamage,ElementalDamage,CritChance,CritMultiplier||||true|":{
+    "multi":true
+  },
+  "Damage,CritChance,CritMultiplier||||true|":{
+    "multi":true
+  },
+  "Damage,FireDamage,ElementalDamage,CritChance,CritMultiplier||||true|":{
+    "multi":true
+  },
+  "Damage,LightningDamage,ElementalDamage,CritChance,CritMultiplier||||true|":{
+    "multi":true
+  },
+  "Damage,PhysicalDamage,CritChance,CritMultiplier||||true|":{
+    "multi":true
+  },
+  "DamageEnergyShieldLeech,PhysicalDamageEnergyShieldLeech,LightningDamageEnergyShieldLeech,ColdDamageEnergyShieldLeech,FireDamageEnergyShieldLeech,ChaosDamageEnergyShieldLeech,ElementalDamageEnergyShieldLeech|BASE|skill||false|":{
+    "multi":true
+  },
+  "DamageEnergyShieldLeech,PhysicalDamageEnergyShieldLeech,LightningDamageEnergyShieldLeech,ColdDamageEnergyShieldLeech,FireDamageEnergyShieldLeech,ChaosDamageEnergyShieldLeech,ElementalDamageEnergyShieldLeech|BASE|weapon1||false|":{
+    "multi":true
+  },
+  "DamageEnergyShieldLeech,PhysicalDamageEnergyShieldLeech,LightningDamageEnergyShieldLeech,ColdDamageEnergyShieldLeech,FireDamageEnergyShieldLeech,ChaosDamageEnergyShieldLeech,ElementalDamageEnergyShieldLeech|BASE|weapon2||false|":{
+    "multi":true
+  },
+  "DamageEnergyShieldLeechToPlayer|BASE|skill||false|":{
+    "multi":true
+  },
+  "DamageLeech,DamageLifeLeech,PhysicalDamageLifeLeech,LightningDamageLifeLeech,ColdDamageLifeLeech,FireDamageLifeLeech,ChaosDamageLifeLeech,ElementalDamageLifeLeech|BASE|skill||false|":{
+    "multi":true
+  },
+  "DamageLeech,DamageLifeLeech,PhysicalDamageLifeLeech,LightningDamageLifeLeech,ColdDamageLifeLeech,FireDamageLifeLeech,ChaosDamageLifeLeech,ElementalDamageLifeLeech|BASE|weapon1||false|":{
+    "multi":true
+  },
+  "DamageLeech,DamageLifeLeech,PhysicalDamageLifeLeech,LightningDamageLifeLeech,ColdDamageLifeLeech,FireDamageLifeLeech,ChaosDamageLifeLeech,ElementalDamageLifeLeech|BASE|weapon2||false|":{
+    "multi":true
+  },
+  "DamageLeech,DamageManaLeech,PhysicalDamageManaLeech,LightningDamageManaLeech,ColdDamageManaLeech,FireDamageManaLeech,ChaosDamageManaLeech,ElementalDamageManaLeech|BASE|skill||false|":{
+    "multi":true
+  },
+  "DamageLeech,DamageManaLeech,PhysicalDamageManaLeech,LightningDamageManaLeech,ColdDamageManaLeech,FireDamageManaLeech,ChaosDamageManaLeech,ElementalDamageManaLeech|BASE|weapon1||false|":{
+    "multi":true
+  },
+  "DamageLeech,DamageManaLeech,PhysicalDamageManaLeech,LightningDamageManaLeech,ColdDamageManaLeech,FireDamageManaLeech,ChaosDamageManaLeech,ElementalDamageManaLeech|BASE|weapon2||false|":{
+    "multi":true
+  },
+  "DamageLifeLeechToPlayer|BASE|skill||false|":{
+    "multi":true
+  },
+  "DamageTaken,ChaosDamageTaken,ChaosResist,CurseEffectOnSelf||skill||true|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Curse Effect On Self",
+        "source":"Unique",
+        "sourceName":"",
+        "tags":"Condition: Effective",
+        "totals":["Total from Unique:","50% less Curse Effect On Self"],
+        "value":"50% less"
+      }]
+  },
+  "DamageTaken,ChaosDamageTaken,ChaosResist,CurseEffectOnSelf||weapon1||true|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Curse Effect On Self",
+        "source":"Unique",
+        "sourceName":"",
+        "tags":"Condition: Effective",
+        "totals":["Total from Unique:","50% less Curse Effect On Self"],
+        "value":"50% less"
+      }]
+  },
+  "DamageTaken,ChaosDamageTaken,ChaosResist,CurseEffectOnSelf||weapon2||true|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Curse Effect On Self",
+        "source":"Unique",
+        "sourceName":"",
+        "tags":"Condition: Effective",
+        "totals":["Total from Unique:","50% less Curse Effect On Self"],
+        "value":"50% less"
+      }]
+  },
+  "DamageTaken,ColdDamageTaken,ElementalDamageTaken,ColdResist,ElementalResist,CurseEffectOnSelf||skill||true|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Cold Resist",
+        "source":"EnemyConfig",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from EnemyConfig:","+50 base Cold Resist"],
+        "value":"+50 base"
+      },{
+        "flags":"",
+        "name":"Curse Effect On Self",
+        "source":"Unique",
+        "sourceName":"",
+        "tags":"Condition: Effective",
+        "totals":["Total from Unique:","50% less Curse Effect On Self"],
+        "value":"50% less"
+      }]
+  },
+  "DamageTaken,ColdDamageTaken,ElementalDamageTaken,ColdResist,ElementalResist,CurseEffectOnSelf||weapon1||true|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Cold Resist",
+        "source":"EnemyConfig",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from EnemyConfig:","+50 base Cold Resist"],
+        "value":"+50 base"
+      },{
+        "flags":"",
+        "name":"Curse Effect On Self",
+        "source":"Unique",
+        "sourceName":"",
+        "tags":"Condition: Effective",
+        "totals":["Total from Unique:","50% less Curse Effect On Self"],
+        "value":"50% less"
+      }]
+  },
+  "DamageTaken,ColdDamageTaken,ElementalDamageTaken,ColdResist,ElementalResist,CurseEffectOnSelf||weapon2||true|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Cold Resist",
+        "source":"EnemyConfig",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from EnemyConfig:","+50 base Cold Resist"],
+        "value":"+50 base"
+      },{
+        "flags":"",
+        "name":"Curse Effect On Self",
+        "source":"Unique",
+        "sourceName":"",
+        "tags":"Condition: Effective",
+        "totals":["Total from Unique:","50% less Curse Effect On Self"],
+        "value":"50% less"
+      }]
+  },
+  "DamageTaken,DamageTakenOverTime,ChaosDamageTaken,ChaosDamageTakenOverTime,ChaosResist||||true|":{
+    "multi":true
+  },
+  "DamageTaken,DamageTakenOverTime,ChaosDamageTaken,ChaosDamageTakenOverTime,SelfIgnoreChaosResistance||||false|":{
+    "multi":true
+  },
+  "DamageTaken,DamageTakenOverTime,ColdDamageTaken,ColdDamageTakenOverTime,ElementalDamageTaken,ColdResist,ElementalResist||||true|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Cold Resist",
+        "source":"EnemyConfig",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from EnemyConfig:","+50 base Cold Resist"],
+        "value":"+50 base"
+      }]
+  },
+  "DamageTaken,DamageTakenOverTime,ColdDamageTaken,ColdDamageTakenOverTime,ElementalDamageTaken,ElementalDamageTakenOverTime,SelfIgnoreColdResistance||||false|":{
+    "multi":true
+  },
+  "DamageTaken,DamageTakenOverTime,FireDamageTaken,FireDamageTakenOverTime,ElementalDamageTaken,ElementalDamageTakenOverTime,SelfIgnoreFireResistance||||false|":{
+    "multi":true
+  },
+  "DamageTaken,DamageTakenOverTime,FireDamageTaken,FireDamageTakenOverTime,ElementalDamageTaken,FireResist,ElementalResist||||true|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Fire Resist",
+        "source":"EnemyConfig",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from EnemyConfig:","+50 base Fire Resist"],
+        "value":"+50 base"
+      }]
+  },
+  "DamageTaken,DamageTakenOverTime,LightningDamageTaken,LightningDamageTakenOverTime,ElementalDamageTaken,ElementalDamageTakenOverTime,SelfIgnoreLightningResistance||||false|":{
+    "multi":true
+  },
+  "DamageTaken,DamageTakenOverTime,LightningDamageTaken,LightningDamageTakenOverTime,ElementalDamageTaken,LightningResist,ElementalResist||||true|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Lightning Resist",
+        "source":"EnemyConfig",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from EnemyConfig:","+50 base Lightning Resist"],
+        "value":"+50 base"
+      }]
+  },
+  "DamageTaken,DamageTakenOverTime,PhysicalDamageTaken,PhysicalDamageTakenOverTime,PhysicalDamageReduction||bleed||true|":{
+    "multi":true
+  },
+  "DamageTaken,DamageTakenOverTime,PhysicalDamageTaken,PhysicalDamageTakenOverTime,PhysicalDamageReduction||||true|":{
+    "multi":true
+  },
+  "DamageTaken,DamageTakenOverTime,PhysicalDamageTaken,PhysicalDamageTakenOverTime||||false|":{
+    "multi":true
+  },
+  "DamageTaken,DamageTakenWhenHit,AttackDamageTaken,SpellDamageTaken,ChaosDamageTaken,ChaosDamageTakenWhenHit,ChaosDamageTakenAsPhysical,ChaosDamageTakenAsFire,ChaosDamageTakenAsCold,ChaosDamageTakenAsLightning,SelfIgnoreChaosResistance||||false|":{
+    "multi":true
+  },
+  "DamageTaken,DamageTakenWhenHit,AttackDamageTaken,SpellDamageTaken,ColdDamageTaken,ColdDamageTakenWhenHit,ElementalDamageTaken,ElementalDamageTakenWhenHit,ColdDamageTakenAsPhysical,ColdDamageTakenAsFire,ColdDamageTakenAsLightning,ColdDamageTakenAsChaos,ElementalDamageTakenAsPhysical,ElementalDamageTakenAsChaos,SelfIgnoreColdResistance||||false|":{
+    "multi":true
+  },
+  "DamageTaken,DamageTakenWhenHit,AttackDamageTaken,SpellDamageTaken,FireDamageTaken,FireDamageTakenWhenHit,ElementalDamageTaken,ElementalDamageTakenWhenHit,FireDamageTakenAsPhysical,FireDamageTakenAsCold,FireDamageTakenAsLightning,FireDamageTakenAsChaos,ElementalDamageTakenAsPhysical,ElementalDamageTakenAsChaos,SelfIgnoreFireResistance||||false|":{
+    "multi":true
+  },
+  "DamageTaken,DamageTakenWhenHit,AttackDamageTaken,SpellDamageTaken,LightningDamageTaken,LightningDamageTakenWhenHit,ElementalDamageTaken,ElementalDamageTakenWhenHit,LightningDamageTakenAsPhysical,LightningDamageTakenAsFire,LightningDamageTakenAsCold,LightningDamageTakenAsChaos,ElementalDamageTakenAsPhysical,ElementalDamageTakenAsChaos,SelfIgnoreLightningResistance||||false|":{
+    "multi":true
+  },
+  "DamageTaken,DamageTakenWhenHit,AttackDamageTaken,SpellDamageTaken,PhysicalDamageTaken,PhysicalDamageTakenWhenHit,PhysicalDamageTakenAsFire,PhysicalDamageTakenAsCold,PhysicalDamageTakenAsLightning,PhysicalDamageTakenAsChaos||||false|":{
+    "multi":true
+  },
+  "DamageTaken,DamageTakenWhenHit,ChaosDamageTaken,ChaosDamageTakenWhenHit,ChaosDamageTakenAsPhysical,ChaosDamageTakenAsFire,ChaosDamageTakenAsCold,ChaosDamageTakenAsLightning||||false|":{
+    "multi":true
+  },
+  "DamageTaken,DamageTakenWhenHit,ColdDamageTaken,ColdDamageTakenWhenHit,ColdReflectedDamageTaken,ElementalDamageTaken,ElementalDamageTakenWhenHit,ElementalReflectedDamageTaken,ColdDamageTakenAsPhysical,ColdDamageTakenAsFire,ColdDamageTakenAsLightning,ColdDamageTakenAsChaos,ElementalDamageTakenAsPhysical,ElementalDamageTakenAsChaos||||false|":{
+    "multi":true
+  },
+  "DamageTaken,DamageTakenWhenHit,FireDamageTaken,FireDamageTakenWhenHit,FireReflectedDamageTaken,ElementalDamageTaken,ElementalDamageTakenWhenHit,ElementalReflectedDamageTaken,ElementalDamageTakenOverTime,FireDamageTakenAsPhysical,FireDamageTakenAsCold,FireDamageTakenAsLightning,FireDamageTakenAsChaos,ElementalDamageTakenAsPhysical,ElementalDamageTakenAsChaos||||false|":{
+    "multi":true
+  },
+  "DamageTaken,DamageTakenWhenHit,LightningDamageTaken,LightningDamageTakenWhenHit,LightningReflectedDamageTaken,ElementalDamageTaken,ElementalDamageTakenWhenHit,ElementalReflectedDamageTaken,LightningDamageTakenAsPhysical,LightningDamageTakenAsFire,LightningDamageTakenAsCold,LightningDamageTakenAsChaos,ElementalDamageTakenAsPhysical,ElementalDamageTakenAsChaos||||false|":{
+    "multi":true
+  },
+  "DamageTaken,DamageTakenWhenHit,PhysicalDamageTaken,PhysicalDamageTakenWhenHit,PhysicalReflectedDamageTaken,PhysicalDamageTakenAsFire,PhysicalDamageTakenAsCold,PhysicalDamageTakenAsLightning,PhysicalDamageTakenAsChaos||||false|":{
+    "multi":true
+  },
+  "DamageTaken,FireDamageTaken,ElementalDamageTaken,FireResist,ElementalResist,CurseEffectOnSelf||skill||true|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Fire Resist",
+        "source":"EnemyConfig",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from EnemyConfig:","+50 base Fire Resist"],
+        "value":"+50 base"
+      },{
+        "flags":"",
+        "name":"Curse Effect On Self",
+        "source":"Unique",
+        "sourceName":"",
+        "tags":"Condition: Effective",
+        "totals":["Total from Unique:","50% less Curse Effect On Self"],
+        "value":"50% less"
+      }]
+  },
+  "DamageTaken,FireDamageTaken,ElementalDamageTaken,FireResist,ElementalResist,CurseEffectOnSelf||weapon1||true|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Fire Resist",
+        "source":"EnemyConfig",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from EnemyConfig:","+50 base Fire Resist"],
+        "value":"+50 base"
+      },{
+        "flags":"",
+        "name":"Curse Effect On Self",
+        "source":"Unique",
+        "sourceName":"",
+        "tags":"Condition: Effective",
+        "totals":["Total from Unique:","50% less Curse Effect On Self"],
+        "value":"50% less"
+      }]
+  },
+  "DamageTaken,FireDamageTaken,ElementalDamageTaken,FireResist,ElementalResist,CurseEffectOnSelf||weapon2||true|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Fire Resist",
+        "source":"EnemyConfig",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from EnemyConfig:","+50 base Fire Resist"],
+        "value":"+50 base"
+      },{
+        "flags":"",
+        "name":"Curse Effect On Self",
+        "source":"Unique",
+        "sourceName":"",
+        "tags":"Condition: Effective",
+        "totals":["Total from Unique:","50% less Curse Effect On Self"],
+        "value":"50% less"
+      }]
+  },
+  "DamageTaken,LightningDamageTaken,ElementalDamageTaken,LightningResist,ElementalResist,CurseEffectOnSelf||skill||true|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Lightning Resist",
+        "source":"EnemyConfig",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from EnemyConfig:","+50 base Lightning Resist"],
+        "value":"+50 base"
+      },{
+        "flags":"",
+        "name":"Curse Effect On Self",
+        "source":"Unique",
+        "sourceName":"",
+        "tags":"Condition: Effective",
+        "totals":["Total from Unique:","50% less Curse Effect On Self"],
+        "value":"50% less"
+      }]
+  },
+  "DamageTaken,LightningDamageTaken,ElementalDamageTaken,LightningResist,ElementalResist,CurseEffectOnSelf||weapon1||true|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Lightning Resist",
+        "source":"EnemyConfig",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from EnemyConfig:","+50 base Lightning Resist"],
+        "value":"+50 base"
+      },{
+        "flags":"",
+        "name":"Curse Effect On Self",
+        "source":"Unique",
+        "sourceName":"",
+        "tags":"Condition: Effective",
+        "totals":["Total from Unique:","50% less Curse Effect On Self"],
+        "value":"50% less"
+      }]
+  },
+  "DamageTaken,LightningDamageTaken,ElementalDamageTaken,LightningResist,ElementalResist,CurseEffectOnSelf||weapon2||true|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Lightning Resist",
+        "source":"EnemyConfig",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from EnemyConfig:","+50 base Lightning Resist"],
+        "value":"+50 base"
+      },{
+        "flags":"",
+        "name":"Curse Effect On Self",
+        "source":"Unique",
+        "sourceName":"",
+        "tags":"Condition: Effective",
+        "totals":["Total from Unique:","50% less Curse Effect On Self"],
+        "value":"50% less"
+      }]
+  },
+  "DamageTaken,PhysicalDamageTaken,CurseEffectOnSelf,Armour,IgnoreArmour||skill||true|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Armour",
+        "source":"Config",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Config:","+8063 base Armour"],
+        "value":"+8063 base"
+      },{
+        "flags":"",
+        "name":"Curse Effect On Self",
+        "source":"Unique",
+        "sourceName":"",
+        "tags":"Condition: Effective",
+        "totals":["Total from Unique:","50% less Curse Effect On Self"],
+        "value":"50% less"
+      }]
+  },
+  "DamageTaken,PhysicalDamageTaken,CurseEffectOnSelf,Armour,IgnoreArmour||weapon1||true|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Armour",
+        "source":"Config",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Config:","+8063 base Armour"],
+        "value":"+8063 base"
+      },{
+        "flags":"",
+        "name":"Curse Effect On Self",
+        "source":"Unique",
+        "sourceName":"",
+        "tags":"Condition: Effective",
+        "totals":["Total from Unique:","50% less Curse Effect On Self"],
+        "value":"50% less"
+      }]
+  },
+  "DamageTaken,PhysicalDamageTaken,CurseEffectOnSelf,Armour,IgnoreArmour||weapon2||true|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Armour",
+        "source":"Config",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Config:","+8063 base Armour"],
+        "value":"+8063 base"
+      },{
+        "flags":"",
+        "name":"Curse Effect On Self",
+        "source":"Unique",
+        "sourceName":"",
+        "tags":"Condition: Effective",
+        "totals":["Total from Unique:","50% less Curse Effect On Self"],
+        "value":"50% less"
+      }]
+  },
+  "DamageTakenByShock||skill||true|":{
+    "multi":false
+  },
+  "DamageTakenFromManaBeforeLife,ChaosDamageTakenFromManaBeforeLife||||false|":{
+    "multi":true
+  },
+  "DamageTakenFromManaBeforeLife,LightningDamageTakenFromManaBeforeLife||||false|":{
+    "multi":true
+  },
+  "DamageTakenFromManaBeforeLife||||false|":{
+    "multi":false
+  },
+  "Damage|INC|dot||false|":{
+    "multi":false
+  },
+  "Damage|INC|skill||false|":{
+    "multi":false
+  },
+  "Damage|INC|weapon1||false|":{
+    "multi":false
+  },
+  "Damage|INC|weapon2||false|":{
+    "multi":false
+  },
+  "Damage|MORE|dot||false|":{
+    "multi":false
+  },
+  "Damage|MORE|skill||false|":{
+    "multi":false
+  },
+  "Damage|MORE|weapon1||false|":{
+    "multi":false
+  },
+  "Damage|MORE|weapon2||false|":{
+    "multi":false
+  },
+  "DazeChance|BASE|skill||false|":{
+    "multi":false
+  },
+  "DebuffEffect||skill||false|":{
+    "multi":false
+  },
+  "DeflectChance||||false|":{
+    "multi":true
+  },
+  "DeflectEffect||||false|":{
+    "multi":false
+  },
+  "DeflectionRating||||false|":{
+    "multi":false
+  },
+  "DetonationTime||skill||false|":{
+    "multi":true
+  },
+  "Dex||||false|":{
+    "multi":false,
+    "rows":[{
+        "flags":"",
+        "name":"",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Base:","+7 base"],
+        "value":"+7 base"
+      }]
+  },
+  "DotMultiplier|BASE|dot||false|":{
+    "multi":false
+  },
+  "Duration,PrimaryDuration,SecondaryDuration,TertiaryDuration,DamagingAilmentDuration||skill||false|":{
+    "multi":true
+  },
+  "Duration,PrimaryDuration,TotemDuration||skill||false|":{
+    "multi":true
+  },
+  "ESCost,Cost,ESCostNoMult||skill||false|":{
+    "multi":true
+  },
+  "EffectOfBonusesFromQuiver|INC|skill||false|":{
+    "multi":false
+  },
+  "ElementalEnergyShieldRecoup||||false|":{
+    "multi":false
+  },
+  "ElementalResistByScorch||skill||true|":{
+    "multi":false
+  },
+  "ElusiveEffect,BuffEffectOnSelf,NightbladeSupportedElusiveEffect||||false|":{
+    "multi":true
+  },
+  "EmpoweredIncrease||skill||false|":{
+    "multi":false
+  },
+  "EnduranceChargesDuration,ChargeDuration||||false|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Charge Duration",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Base:","+15 base Charge Duration"],
+        "value":"+15 base"
+      }]
+  },
+  "EnduranceChargesMax,PartyMemberMaximumEnduranceChargesEqualToYours||||false|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Endurance Charges Max",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Base:","+3 base Endurance Charges Max"],
+        "value":"+3 base"
+      }]
+  },
+  "EnduranceChargesMin,HaveMaximumEnduranceCharges||||false|":{
+    "multi":true
+  },
+  "EnemyAilmentThreshold||||false|":{
+    "multi":false
+  },
+  "EnemyBleedDuration,EnemyAilmentDuration,DamagingAilmentDuration,BleedFaster||bleed||false|":{
+    "multi":true
+  },
+  "EnemyBrittleChance||skill||false|":{
+    "multi":false
+  },
+  "EnemyBrittleDuration,EnemyAilmentDuration,EnemyElementalAilmentDuration||skill||false|":{
+    "multi":true
+  },
+  "EnemyBrittleEffect,BrittleAsThoughDealing||skill||false|":{
+    "multi":true
+  },
+  "EnemyChillDuration,EnemyAilmentDuration,EnemyElementalAilmentDuration||skill||false|":{
+    "multi":true
+  },
+  "EnemyChillMagnitude,AilmentMagnitude,ChillAsThoughDealing||skill||false|":{
+    "multi":true
+  },
+  "EnemyElectrocuteBuildup,EnemyImmobilisationBuildup||skill||false|":{
+    "multi":true
+  },
+  "EnemyFreezeBuildup,EnemyImmobilisationBuildup||skill||false|":{
+    "multi":true
+  },
+  "EnemyFreezeChance||skill||false|":{
+    "multi":false
+  },
+  "EnemyFreezeDuration,EnemyAilmentDuration,EnemyElementalAilmentDuration,FreezeAsThoughDealing||skill||false|":{
+    "multi":true
+  },
+  "EnemyHeavyStunBuildup,EnemyImmobilisationBuildup,PhysicalHeavyStunBuildup||skill||false|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Physical Heavy Stun Buildup",
+        "source":"Physical Damage",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Physical Damage:","50% more Physical Heavy Stun Buildup"],
+        "value":"50% more"
+      }]
+  },
+  "EnemyIgniteChance||skill||false|":{
+    "multi":false
+  },
+  "EnemyIgniteDuration,EnemyAilmentDuration,EnemyElementalAilmentDuration,DamagingAilmentDuration,IgniteFaster,IgniteSlower||skill||false|":{
+    "multi":true
+  },
+  "EnemyKnockbackChance||skill||false|":{
+    "multi":false
+  },
+  "EnemyKnockbackChance||weapon1||false|":{
+    "multi":false
+  },
+  "EnemyKnockbackChance||weapon2||false|":{
+    "multi":false
+  },
+  "EnemyKnockbackDistance||skill||false|":{
+    "multi":false
+  },
+  "EnemyKnockbackDistance||weapon1||false|":{
+    "multi":false
+  },
+  "EnemyKnockbackDistance||weapon2||false|":{
+    "multi":false
+  },
+  "EnemyMarkLimit||||false|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Enemy Mark Limit",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Base:","+1 base Enemy Mark Limit"],
+        "value":"+1 base"
+      }]
+  },
+  "EnemyPinBuildup,EnemyImmobilisationBuildup||skill||false|":{
+    "multi":true
+  },
+  "EnemyPoisonDuration,EnemyAilmentDuration,DamagingAilmentDuration,PoisonFaster,Duration||poison||false|":{
+    "multi":true
+  },
+  "EnemyPoisonDuration,EnemyAilmentDuration,DamagingAilmentDuration,PoisonFaster||poison||false|":{
+    "multi":true
+  },
+  "EnemySapChance||skill||false|":{
+    "multi":false
+  },
+  "EnemySapDuration,EnemyAilmentDuration,EnemyElementalAilmentDuration||skill||false|":{
+    "multi":true
+  },
+  "EnemySapEffect,SapAsThoughDealing||skill||false|":{
+    "multi":true
+  },
+  "EnemyScorchChance||skill||false|":{
+    "multi":false
+  },
+  "EnemyScorchDuration,EnemyAilmentDuration,EnemyElementalAilmentDuration||skill||false|":{
+    "multi":true
+  },
+  "EnemyScorchEffect,ScorchAsThoughDealing||skill||false|":{
+    "multi":true
+  },
+  "EnemyShockChance||skill||false|":{
+    "multi":false
+  },
+  "EnemyShockDuration,EnemyAilmentDuration,EnemyElementalAilmentDuration||skill||false|":{
+    "multi":true
+  },
+  "EnemyShockMagnitude,AilmentMagnitude,ShockAsThoughDealing||skill||false|":{
+    "multi":true
+  },
+  "EnemyShockMagnitude,AilmentMagnitude,ShockAsThoughDealing||weapon1||false|":{
+    "multi":true
+  },
+  "EnemyShockMagnitude,AilmentMagnitude,ShockAsThoughDealing||weapon2||false|":{
+    "multi":true
+  },
+  "EnemyStunDuration,EnemyStunDurationOnCrit,DoubleEnemyStunDurationChance||skill||false|":{
+    "multi":true
+  },
+  "EnemyStunDuration,EnemyStunDurationOnCrit,DoubleEnemyStunDurationChance||weapon1||false|":{
+    "multi":true
+  },
+  "EnemyStunDuration,EnemyStunDurationOnCrit,DoubleEnemyStunDurationChance||weapon2||false|":{
+    "multi":true
+  },
+  "EnemyStunThreshold||skill||false|":{
+    "multi":false
+  },
+  "EnemyStunThreshold||weapon1||false|":{
+    "multi":false
+  },
+  "EnemyStunThreshold||weapon2||false|":{
+    "multi":false
+  },
+  "EnergyShield,Defences|INC|||false|":{
+    "multi":true
+  },
+  "EnergyShield,Defences|MORE|||false|":{
+    "multi":true
+  },
+  "EnergyShield,EnergyShieldTotal|BASE|||false|":{
+    "multi":true
+  },
+  "EnergyShieldLeechBasedOnPhysicalDamage,EnergyShieldLeechBasedOnColdDamage,EnergyShieldLeechBasedOnFireDamage,EnergyShieldLeechBasedOnLightningDamage,EnergyShieldLeechBasedOnElementalDamage,EnergyShieldLeechBasedOnChaosDamage,Condition:NoEnergyShieldLeechFromPhysicalDamage,Condition:NoEnergyShieldLeechFromColdDamage,Condition:NoEnergyShieldLeechFromFireDamage,Condition:NoEnergyShieldLeechFromLightningDamage,Condition:NoEnergyShieldLeechFromElementalDamage,Condition:NoEnergyShieldLeechFromChaosDamage||skill||false|":{
+    "multi":true
+  },
+  "EnergyShieldOnBlock||||false|":{
+    "multi":false
+  },
+  "EnergyShieldOnHit|BASE|skill||false|":{
+    "multi":false
+  },
+  "EnergyShieldOnHit|BASE|weapon1||false|":{
+    "multi":false
+  },
+  "EnergyShieldOnHit|BASE|weapon2||false|":{
+    "multi":false
+  },
+  "EnergyShieldOnKill||||false|":{
+    "multi":false
+  },
+  "EnergyShieldOnSpellBlock||||false|":{
+    "multi":false
+  },
+  "EnergyShieldRecharge,EnergyShieldRecoveryRate,NoEnergyShieldRecharge,CannotGainEnergyShield||||false|":{
+    "multi":true
+  },
+  "EnergyShieldRecharge,LifeRecoveryRate,EnergyShieldRechargeAppliesToLife||||false|":{
+    "multi":true
+  },
+  "EnergyShieldRechargeFaster||||false|":{
+    "multi":false
+  },
+  "EnergyShieldRecoup,ElementalEnergyShieldRecoup,PhysicalEnergyShieldRecoup,LightningEnergyShieldRecoup,ColdEnergyShieldRecoup,FireEnergyShieldRecoup,ChaosEnergyShieldRecoup,PhysicalDamageMitigatedEnergyShieldPseudoRecoup||||false|":{
+    "multi":true
+  },
+  "EnergyShieldRecoup||||false|":{
+    "multi":false
+  },
+  "EnergyShieldRecoveryRate||||false|":{
+    "multi":false
+  },
+  "EnergyShieldRegen,EnergyShieldRecoveryRate|INC|||false|":{
+    "multi":true
+  },
+  "EnergyShieldRegen,EnergyShieldRecoveryRate|MORE|||false|":{
+    "multi":true
+  },
+  "EnergyShieldRegen,EnergyShieldRegenPercent,EnergyShieldDegen,EnergyShieldDegenPercent,EnergyShieldRecovery|BASE|||false|":{
+    "multi":true
+  },
+  "EnergyShieldRegen|INC|||false|":{
+    "multi":true
+  },
+  "EnergyShieldRegen|INC|||true|":{
+    "multi":false
+  },
+  "EnergyShieldRegen|MORE|||false|":{
+    "multi":true
+  },
+  "EnergyShield|INC||Tree|false|":{
+    "multi":false
+  },
+  "Evasion,ArmourAndEvasion,Defences|INC|||false|":{
+    "multi":true
+  },
+  "Evasion,ArmourAndEvasion,Defences|MORE|||false|":{
+    "multi":true
+  },
+  "Evasion,ArmourAndEvasion,EvasionTotal|BASE|||false|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Evasion",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Base:","+7 base Evasion"],
+        "value":"7"
+      }]
+  },
+  "Evasion,ArmourAndEvasion|INC||Tree|false|":{
+    "multi":true
+  },
+  "Evasion,CannotEvade||||true|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Evasion",
+        "source":"Config",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Config:","+1175 base Evasion"],
+        "value":"+1175 base"
+      }]
+  },
+  "EvasionGainAsDeflection|BASE|||false|":{
+    "multi":false
+  },
+  "ExertAttackIncrease||skill||false|":{
+    "multi":false
+  },
+  "ExertIncrease||skill||false|":{
+    "multi":false
+  },
+  "ExposureEffectOnSelf||||false|":{
+    "multi":false
+  },
+  "ExtraLifeReserved||||false|":{
+    "multi":false
+  },
+  "ExtraTrauma,RepeatCount,Duration,PrimaryDuration,SecondaryDuration,DamagingAilmentDuration||skill||false|":{
+    "multi":true
+  },
+  "FireAegisValue,ElementalAegisValue||||false|":{
+    "multi":true
+  },
+  "FireDamage,ElementalDamage|INC|dotFire||false|":{
+    "multi":true
+  },
+  "FireDamage,ElementalDamage|INC|skill||false|":{
+    "multi":true
+  },
+  "FireDamage,ElementalDamage|INC|weapon1||false|":{
+    "multi":true
+  },
+  "FireDamage,ElementalDamage|INC|weapon2||false|":{
+    "multi":true
+  },
+  "FireDamage,ElementalDamage|MORE|dotFire||false|":{
+    "multi":true
+  },
+  "FireDamage,ElementalDamage|MORE|skill||false|":{
+    "multi":true
+  },
+  "FireDamage,ElementalDamage|MORE|weapon1||false|":{
+    "multi":true
+  },
+  "FireDamage,ElementalDamage|MORE|weapon2||false|":{
+    "multi":true
+  },
+  "FireDamageReduction,ElementalDamageReduction,ArmourAppliesToFireDamageTaken,SelfIgnoreFireResistance,DamageReductionMax||||false|":{
+    "multi":true
+  },
+  "FireDamageTakenAsPhysical,FireDamageFromHitsTakenAsPhysical,FireDamageTakenAsLightning,FireDamageFromHitsTakenAsLightning,FireDamageTakenAsCold,FireDamageFromHitsTakenAsCold,ElementalDamageTakenAsPhysical,ElementalDamageFromHitsTakenAsPhysical,ElementalDamageTakenAsChaos,ElementalDamageFromHitsTakenAsChaos,FireDamageTakenAsChaos,FireDamageFromHitsTakenAsChaos||||false|":{
+    "multi":true
+  },
+  "FireDamageTakenAsPhysical,FireDamageTakenAsLightning,FireDamageTakenAsCold,ElementalDamageTakenAsPhysical,ElementalDamageTakenAsChaos,FireDamageTakenAsChaos||||false|":{
+    "multi":true
+  },
+  "FireDegen||||false|":{
+    "multi":false
+  },
+  "FireDotMultiplier|BASE|dotFire||false|":{
+    "multi":false
+  },
+  "FireEnergyShieldBypass,BlockedDamageDoesntBypassES,UnblockedDamageDoesBypassES||||false|":{
+    "multi":true
+  },
+  "FireEnergyShieldRecoup||||false|":{
+    "multi":false
+  },
+  "FireGuardAbsorbRate,FireGuardAbsorbLimit||||false|":{
+    "multi":true
+  },
+  "FireLifeRecoup||||false|":{
+    "multi":false
+  },
+  "FireMax|BASE|skill||false|":{
+    "multi":false
+  },
+  "FireMin|BASE|skill||false|":{
+    "multi":false
+  },
+  "FirePenetration,ElementalPenetration,IgnoreFireResistance,IgnoreNonNegativeEleRes,IgnoreElementalResistances||skill||false|":{
+    "multi":true
+  },
+  "FirePenetration,ElementalPenetration||weapon1||false|":{
+    "multi":true
+  },
+  "FirePenetration,ElementalPenetration||weapon2||false|":{
+    "multi":true
+  },
+  "FireResist,ElementalResist,DamageTaken,DamageTakenOverTime,FireDamageTaken,FireDamageTakenOverTime,ElementalDamageTaken||bleed||true|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Fire Resist",
+        "source":"EnemyConfig",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from EnemyConfig:","+50 base Fire Resist"],
+        "value":"+50 base"
+      }]
+  },
+  "FireResist,ElementalResist,DamageTaken,DamageTakenOverTime,FireDamageTaken,FireDamageTakenOverTime,ElementalDamageTaken||||true|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Fire Resist",
+        "source":"EnemyConfig",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from EnemyConfig:","+50 base Fire Resist"],
+        "value":"+50 base"
+      }]
+  },
+  "FireResistMax,ElementalResistMax,FireResist,ElementalResist||||false|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Fire Resist Max",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Base:","+75 base Fire Resist Max","-60 base Fire Resist"],
+        "value":"+75 base"
+      },{
+        "flags":"",
+        "name":"Fire Resist",
+        "source":"Item",
+        "sourceName":"^xFFFF77Storm Shell, Vaal Cuirass",
+        "tags":"",
+        "totals":["Total from Item:","+35 base Fire Resist"],
+        "value":"+35 base"
+      },{
+        "flags":"",
+        "name":"Fire Resist",
+        "source":"Quest",
+        "sourceName":"Act 3: Jiquani's Machinarium",
+        "tags":"",
+        "totals":["Total from Quest:","+10 base Fire Resist"],
+        "value":"+10 base"
+      },{
+        "flags":"",
+        "name":"Fire Resist",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Base:","+75 base Fire Resist Max","-60 base Fire Resist"],
+        "value":"-60 base"
+      }]
+  },
+  "FistOfWarDamageMultiplier||skill||false|":{
+    "multi":false
+  },
+  "FlaskChanceNotConsumeCharges|BASE|||false|":{
+    "multi":false
+  },
+  "FlaskChargeOnCritChance|BASE|||false|":{
+    "multi":false
+  },
+  "FlaskChargesGained,LifeFlaskChargesGained|INC|||false|":{
+    "multi":true
+  },
+  "FlaskChargesGained,ManaFlaskChargesGained|INC|||false|":{
+    "multi":true
+  },
+  "FlaskChargesGained|INC|||false|":{
+    "multi":false
+  },
+  "FlaskChargesGenerated|BASE|||false|":{
+    "multi":false
+  },
+  "FlaskChargesUsed,LifeFlaskChargesUsed|INC|||false|":{
+    "multi":true
+  },
+  "FlaskChargesUsed,ManaFlaskChargesUsed|INC|||false|":{
+    "multi":true
+  },
+  "FlaskChargesUsed|INC|||false|":{
+    "multi":false
+  },
+  "FlaskDuration|INC|||false|":{
+    "multi":false
+  },
+  "FlaskEffect|INC|||false|player":{
+    "multi":false
+  },
+  "FlaskLifeRecoveryRate|INC|||false|":{
+    "multi":false
+  },
+  "FlaskLifeRecovery|INC|||false|":{
+    "multi":false
+  },
+  "FlaskLifeRecovery|MORE|||false|":{
+    "multi":false
+  },
+  "FlaskManaRecoveryRate|INC|||false|":{
+    "multi":false
+  },
+  "FlaskManaRecovery|INC|||false|":{
+    "multi":false
+  },
+  "FlaskManaRecovery|MORE|||false|":{
+    "multi":false
+  },
+  "FlaskRecoveryRate|INC|||false|":{
+    "multi":false
+  },
+  "FocusCooldownRecovery|INC|skill||false|":{
+    "multi":false
+  },
+  "FrenzyChargesDuration,ChargeDuration||||false|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Charge Duration",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Base:","+15 base Charge Duration"],
+        "value":"+15 base"
+      }]
+  },
+  "FrenzyChargesMax||||false|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Frenzy Charges Max",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Base:","+3 base Frenzy Charges Max"],
+        "value":"+3 base"
+      }]
+  },
+  "FrenzyChargesMin,HaveMaximumFrenzyCharges||||false|":{
+    "multi":true
+  },
+  "FrostGlobeHealth,FrostGlobeDamageMitigation||||false|":{
+    "multi":true
+  },
+  "GemCorruptionLevel||skill||false|":{
+    "multi":true
+  },
+  "GemGlobalLevel||skill||false|":{
+    "multi":true
+  },
+  "GemGlobalQuality||skill||false|":{
+    "multi":true
+  },
+  "GemLevel||skill||false|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Gem Level",
+        "source":"Max Level",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Max Level:","+10 base Gem Level"],
+        "value":"+10 base"
+      }]
+  },
+  "GemQuality||skill||false|":{
+    "multi":true
+  },
+  "GemSupportLevel||skill||false|":{
+    "multi":true
+  },
+  "GemSupportQuality||skill||false|":{
+    "multi":true
+  },
+  "GlobalGemAttributeRequirements,GlobalAttributeRequirements||||false|":{
+    "multi":true
+  },
+  "GlobalItemAttributeRequirements,GlobalAttributeRequirements||||false|":{
+    "multi":true
+  },
+  "GlobalWeaponAttributeRequirements,GlobalItemAttributeRequirements,GlobalAttributeRequirements||||false|":{
+    "multi":true
+  },
+  "GuardAbsorbRate,GuardAbsorbLimit||||false|":{
+    "multi":true
+  },
+  "HazardRearmChance|BASE|skill||false|":{
+    "multi":false
+  },
+  "HinderImmune||||false|":{
+    "multi":false
+  },
+  "HitChance,CannotBeEvaded,IgnoreBlindHitChance||||false|":{
+    "multi":true
+  },
+  "IceCrystalLife||skill||false|":{
+    "multi":true
+  },
+  "IgniteStacks||||false|":{
+    "multi":false
+  },
+  "ImpaleChanceOnCrit|BASE|skill||false|":{
+    "multi":false
+  },
+  "ImpaleChance|BASE|skill||false|":{
+    "multi":false
+  },
+  "ImpaleChance|BASE|weapon1||false|":{
+    "multi":false
+  },
+  "ImpaleChance|BASE|weapon2||false|":{
+    "multi":false
+  },
+  "ImpaleEffect||skill||false|":{
+    "multi":false
+  },
+  "ImpaleEffect||weapon1||false|":{
+    "multi":false
+  },
+  "ImpaleEffect||weapon2||false|":{
+    "multi":false
+  },
+  "ImpaleStacksMax,ImpaleAdditionalDurationChance||||false|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Impale Stacks Max",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Base:","+5 base Impale Stacks Max"],
+        "value":"+5 base"
+      }]
+  },
+  "InherentRageLossDelay||||false|":{
+    "multi":false
+  },
+  "InherentRageLossIsPrevented||||false|":{
+    "multi":true
+  },
+  "InherentRageLoss||||false|":{
+    "multi":false
+  },
+  "Int||||false|":{
+    "multi":false,
+    "rows":[{
+        "flags":"",
+        "name":"",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Base:","+15 base"],
+        "value":"+15 base"
+      }]
+  },
+  "KnockbackImmune||||false|":{
+    "multi":false
+  },
+  "LifeCost,Cost,LifeCostNoMult||skill||false|":{
+    "multi":true
+  },
+  "LifeFlaskChargesGenerated|BASE|||false|":{
+    "multi":false
+  },
+  "LifeLeechBasedOnPhysicalDamage,LifeLeechBasedOnColdDamage,LifeLeechBasedOnFireDamage,LifeLeechBasedOnLightningDamage,LifeLeechBasedOnElementalDamage,LifeLeechBasedOnChaosDamage,Condition:NoLifeLeechFromPhysicalDamage,Condition:NoLifeLeechFromColdDamage,Condition:NoLifeLeechFromFireDamage,Condition:NoLifeLeechFromLightningDamage,Condition:NoLifeLeechFromElementalDamage,Condition:NoLifeLeechFromChaosDamage||skill||false|":{
+    "multi":true
+  },
+  "LifeLossPrevented,LifeLossBelowHalfPrevented,LifeLossLost,LifeLossBelowHalfLost||||false|":{
+    "multi":true
+  },
+  "LifeLossPrevented,LifeLossBelowHalfPrevented||||false|":{
+    "multi":true
+  },
+  "LifeOnBlock||||false|":{
+    "multi":false
+  },
+  "LifeOnHit|BASE|skill||false|":{
+    "multi":false
+  },
+  "LifeOnHit|BASE|weapon1||false|":{
+    "multi":false
+  },
+  "LifeOnHit|BASE|weapon2||false|":{
+    "multi":false
+  },
+  "LifeOnKill||||false|":{
+    "multi":false
+  },
+  "LifeRecoup,PhysicalLifeRecoup,LightningLifeRecoup,ColdLifeRecoup,FireLifeRecoup,ChaosLifeRecoup,PhysicalDamageMitigatedLifePseudoRecoup||||false|":{
+    "multi":true
+  },
+  "LifeRecoup||||false|":{
+    "multi":false
+  },
+  "LifeRecoveryRate||||false|":{
+    "multi":false
+  },
+  "LifeRegen,LifeRecoveryRate|INC|||false|":{
+    "multi":true
+  },
+  "LifeRegen,LifeRecoveryRate|MORE|||false|":{
+    "multi":true
+  },
+  "LifeRegen,LifeRegenPercent,LifeDegen,LifeDegenPercent,LifeRecovery|BASE|||false|":{
+    "multi":true
+  },
+  "LifeRegen|INC|||false|":{
+    "multi":true
+  },
+  "LifeRegen|INC|||true|":{
+    "multi":false
+  },
+  "LifeRegen|MORE|||false|":{
+    "multi":true
+  },
+  "LifeReserved,Reserved,ReservationMultiplier,LifeReservationEfficiency,ReservationEfficiency||skill||false|":{
+    "multi":true
+  },
+  "Life|BASE||Item|false|":{
+    "multi":false,
+    "rows":[{
+        "flags":"",
+        "name":"",
+        "source":"Item",
+        "sourceName":"^xFFFF77Storm Shell, Vaal Cuirass",
+        "tags":"",
+        "value":"90"
+      }]
+  },
+  "Life|BASE|||false|":{
+    "multi":false,
+    "rows":[{
+        "flags":"",
+        "name":"",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"+16 + 12 per Level",
+        "totals":["Total from Base:","+496 base"],
+        "value":"496"
+      },{
+        "flags":"",
+        "name":"",
+        "source":"Item",
+        "sourceName":"^xFFFF77Storm Shell, Vaal Cuirass",
+        "tags":"",
+        "totals":["Total from Item:","+90 base"],
+        "value":"90"
+      },{
+        "flags":"",
+        "name":"",
+        "source":"Custom",
+        "sourceName":"Default",
+        "tags":"",
+        "totals":["Total from Custom:","+30 base"],
+        "value":"30"
+      },{
+        "flags":"",
+        "name":"",
+        "source":"Quest",
+        "sourceName":"Act 1: Ogham Manor",
+        "tags":"",
+        "totals":["Total from Quest:","+20 base"],
+        "value":"20"
+      },{
+        "flags":"",
+        "name":"",
+        "source":"Strength",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Strength:","+14 base"],
+        "value":"14"
+      }]
+  },
+  "Life|INC||Tree|false|":{
+    "multi":false
+  },
+  "Life|INC|||false|":{
+    "multi":false,
+    "rows":[{
+        "flags":"",
+        "name":"",
+        "source":"Quest",
+        "sourceName":"Interlude 2: Khari Crossing",
+        "tags":"",
+        "totals":["Total from Quest:","5% increased"],
+        "value":"5"
+      }]
+  },
+  "Life|MORE|||false|":{
+    "multi":false
+  },
+  "LightRadius||||false|":{
+    "multi":false
+  },
+  "LightningAegisValue,ElementalAegisValue||||false|":{
+    "multi":true
+  },
+  "LightningDamage,ElementalDamage|INC|dotLightning||false|":{
+    "multi":true
+  },
+  "LightningDamage,ElementalDamage|INC|skill||false|":{
+    "multi":true
+  },
+  "LightningDamage,ElementalDamage|INC|weapon1||false|":{
+    "multi":true
+  },
+  "LightningDamage,ElementalDamage|INC|weapon2||false|":{
+    "multi":true
+  },
+  "LightningDamage,ElementalDamage|MORE|dotLightning||false|":{
+    "multi":true
+  },
+  "LightningDamage,ElementalDamage|MORE|skill||false|":{
+    "multi":true
+  },
+  "LightningDamage,ElementalDamage|MORE|weapon1||false|":{
+    "multi":true
+  },
+  "LightningDamage,ElementalDamage|MORE|weapon2||false|":{
+    "multi":true
+  },
+  "LightningDamageReduction,ElementalDamageReduction,ArmourAppliesToLightningDamageTaken,SelfIgnoreLightningResistance,DamageReductionMax||||false|":{
+    "multi":true
+  },
+  "LightningDamageTakenAsPhysical,ColdDamageTakenAsPhysical,FireDamageTakenAsPhysical,ElementalDamageTakenAsPhysical,ChaosDamageTakenAsPhysical||||false|":{
+    "multi":true
+  },
+  "LightningDamageTakenAsPhysical,LightningDamageFromHitsTakenAsPhysical,ColdDamageTakenAsPhysical,ColdDamageFromHitsTakenAsPhysical,FireDamageTakenAsPhysical,FireDamageFromHitsTakenAsPhysical,ElementalDamageTakenAsPhysical,ElementalDamageFromHitsTakenAsPhysical,ChaosDamageTakenAsPhysical,ChaosDamageFromHitsTakenAsPhysical||||false|":{
+    "multi":true
+  },
+  "LightningDamageTakenAsPhysical,LightningDamageFromHitsTakenAsPhysical,LightningDamageTakenAsCold,LightningDamageFromHitsTakenAsCold,LightningDamageTakenAsFire,LightningDamageFromHitsTakenAsFire,ElementalDamageTakenAsPhysical,ElementalDamageFromHitsTakenAsPhysical,ElementalDamageTakenAsChaos,ElementalDamageFromHitsTakenAsChaos,LightningDamageTakenAsChaos,LightningDamageFromHitsTakenAsChaos||||false|":{
+    "multi":true
+  },
+  "LightningDamageTakenAsPhysical,LightningDamageTakenAsCold,LightningDamageTakenAsFire,ElementalDamageTakenAsPhysical,ElementalDamageTakenAsChaos,LightningDamageTakenAsChaos||||false|":{
+    "multi":true
+  },
+  "LightningDegen||||false|":{
+    "multi":false
+  },
+  "LightningDotMultiplier|BASE|dotLightning||false|":{
+    "multi":false
+  },
+  "LightningEnergyShieldBypass,BlockedDamageDoesntBypassES,UnblockedDamageDoesBypassES||||false|":{
+    "multi":true
+  },
+  "LightningEnergyShieldRecoup||||false|":{
+    "multi":false
+  },
+  "LightningGuardAbsorbRate,LightningGuardAbsorbLimit||||false|":{
+    "multi":true
+  },
+  "LightningLifeRecoup||||false|":{
+    "multi":false
+  },
+  "LightningMax|BASE|skill||false|":{
+    "multi":false
+  },
+  "LightningMin|BASE|skill||false|":{
+    "multi":false
+  },
+  "LightningPenetration,ElementalPenetration,IgnoreLightningResistance,IgnoreNonNegativeEleRes,IgnoreElementalResistances||skill||false|":{
+    "multi":true
+  },
+  "LightningPenetration,ElementalPenetration||weapon1||false|":{
+    "multi":true
+  },
+  "LightningPenetration,ElementalPenetration||weapon2||false|":{
+    "multi":true
+  },
+  "LightningResistMax,ElementalResistMax,LightningResist,ElementalResist||||false|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Lightning Resist Max",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Base:","+75 base Lightning Resist Max","-60 base Lightning Resist"],
+        "value":"+75 base"
+      },{
+        "flags":"",
+        "name":"Lightning Resist",
+        "source":"Quest",
+        "sourceName":"Act 2: Spires of Deshar",
+        "tags":"",
+        "totals":["Total from Quest:","+10 base Lightning Resist"],
+        "value":"+10 base"
+      },{
+        "flags":"",
+        "name":"Lightning Resist",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Base:","+75 base Lightning Resist Max","-60 base Lightning Resist"],
+        "value":"-60 base"
+      }]
+  },
+  "LinkEffect,BuffEffect||skill||false|":{
+    "multi":true
+  },
+  "LootQuantityNormalEnemies,LootQuantity||||false|":{
+    "multi":true
+  },
+  "LootQuantity|INC|skill||false|":{
+    "multi":false
+  },
+  "LootRarityMagicEnemies,LootRarity||||false|":{
+    "multi":true
+  },
+  "LootRarity|INC|skill||false|":{
+    "multi":false
+  },
+  "MagicUtilityFlaskEffect|INC|||false|player":{
+    "multi":false
+  },
+  "MaimImmune||||false|":{
+    "multi":false
+  },
+  "ManaCost,Cost,ManaCostNoMult||skill||false|":{
+    "multi":true
+  },
+  "ManaFlaskChargesGenerated|BASE|||false|":{
+    "multi":false
+  },
+  "ManaLeechBasedOnPhysicalDamage,ManaLeechBasedOnColdDamage,ManaLeechBasedOnFireDamage,ManaLeechBasedOnLightningDamage,ManaLeechBasedOnElementalDamage,ManaLeechBasedOnChaosDamage,Condition:NoManaLeechFromPhysicalDamage,Condition:NoManaLeechFromColdDamage,Condition:NoManaLeechFromFireDamage,Condition:NoManaLeechFromLightningDamage,Condition:NoManaLeechFromElementalDamage,Condition:NoManaLeechFromChaosDamage||skill||false|":{
+    "multi":true
+  },
+  "ManaOnBlock||||false|":{
+    "multi":false
+  },
+  "ManaOnHit|BASE|skill||false|":{
+    "multi":false
+  },
+  "ManaOnHit|BASE|weapon1||false|":{
+    "multi":false
+  },
+  "ManaOnHit|BASE|weapon2||false|":{
+    "multi":false
+  },
+  "ManaOnKill||||false|":{
+    "multi":false
+  },
+  "ManaRecoup||||false|":{
+    "multi":false
+  },
+  "ManaRecoveryRate||||false|":{
+    "multi":false
+  },
+  "ManaRegen,ManaRecoveryRate|INC|||false|":{
+    "multi":true
+  },
+  "ManaRegen,ManaRecoveryRate|MORE|||false|":{
+    "multi":true
+  },
+  "ManaRegen,ManaRegenPercent,ManaDegen,ManaDegenPercent,ManaRecovery|BASE|||false|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Mana Regen",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"+0.04 per 1 Mana, Condition: Not No Inherent Mana Regen",
+        "totals":["Total from Base:","+9.24 base Mana Regen"],
+        "value":"9.24"
+      }]
+  },
+  "ManaRegen|INC|||true|":{
+    "multi":false
+  },
+  "ManaReserved,Reserved,ReservationMultiplier,ManaReservationEfficiency,ReservationEfficiency||skill||false|":{
+    "multi":true
+  },
+  "Mana|BASE||Item|false|":{
+    "multi":false
+  },
+  "Mana|BASE|||false|":{
+    "multi":false,
+    "rows":[{
+        "flags":"",
+        "name":"",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"+30 + 4 per Level",
+        "totals":["Total from Base:","+190 base"],
+        "value":"190"
+      },{
+        "flags":"",
+        "name":"",
+        "source":"Intelligence",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Intelligence:","+30 base"],
+        "value":"30"
+      }]
+  },
+  "Mana|INC||Tree|false|":{
+    "multi":false
+  },
+  "Mana|INC|||false|":{
+    "multi":false,
+    "rows":[{
+        "flags":"",
+        "name":"",
+        "source":"Quest",
+        "sourceName":"Act 4: Eye of Hinekora",
+        "tags":"",
+        "totals":["Total from Quest:","5% increased"],
+        "value":"5"
+      }]
+  },
+  "MarkEffect||skill||false|":{
+    "multi":false
+  },
+  "MaxEnergyShieldLeechRate||||false|":{
+    "multi":false,
+    "rows":[{
+        "flags":"",
+        "name":"",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Base:","+10 base"],
+        "value":"+10 base"
+      }]
+  },
+  "MaxLifeLeechRate||||false|":{
+    "multi":false,
+    "rows":[{
+        "flags":"",
+        "name":"",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Base:","+20 base"],
+        "value":"+20 base"
+      }]
+  },
+  "MaxManaLeechRate||||false|":{
+    "multi":false,
+    "rows":[{
+        "flags":"",
+        "name":"",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Base:","+20 base"],
+        "value":"+20 base"
+      }]
+  },
+  "MaximumRage||||false|":{
+    "multi":false,
+    "rows":[{
+        "flags":"",
+        "name":"",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Base:","+30 base"],
+        "value":"+30 base"
+      }]
+  },
+  "MineDetonationAreaOfEffect||skill||false|":{
+    "multi":false
+  },
+  "MineLayingSpeed||skill||false|":{
+    "multi":false
+  },
+  "MineThrowCount||skill||false|":{
+    "multi":false,
+    "rows":[{
+        "flags":"",
+        "name":"",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Base:","+1 base"],
+        "value":"+1 base"
+      }]
+  },
+  "MinionRevivalSpeed||||false|":{
+    "multi":true
+  },
+  "MovementSpeed,MovementSpeedEqualHighestLinkedPlayers||||false|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Movement Speed",
+        "source":"Item",
+        "sourceName":"^xFFFF77Storm Shell, Vaal Cuirass",
+        "tags":"Condition: Not Ignore Movement Penalties",
+        "totals":["Total from Item:","-0.05 base Movement Speed"],
+        "value":"-0.05 base"
+      }]
+  },
+  "MultiplierPvpDamage||||true|":{
+    "multi":false
+  },
+  "MultiplierPvpTvalueOverride||||false|":{
+    "multi":false
+  },
+  "NoAdditionalProjectiles,ProjectileCount,SurpassingProjectileChance,TwoAdditionalProjectilesChance||skill||false|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Projectile Count",
+        "source":"Skill",
+        "sourceName":"Spark",
+        "tags":"",
+        "totals":["Total from Skill:","+5 base Projectile Count"],
+        "value":"+5 base"
+      },{
+        "flags":"",
+        "name":"Projectile Count",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Base:","+1 base Projectile Count"],
+        "value":"+1 base"
+      }]
+  },
+  "ParryDebuffDuration||skill||false|":{
+    "multi":false
+  },
+  "ParryDebuffMagnitude||skill||false|":{
+    "multi":false
+  },
+  "ParryRangeNonProj||skill||false|":{
+    "multi":false
+  },
+  "ParryRangeProj||skill||false|":{
+    "multi":false
+  },
+  "PerfectTiming||skill||false|":{
+    "multi":false
+  },
+  "PhysicalAegisValue||||false|":{
+    "multi":true
+  },
+  "PhysicalDamageGainAsChaos,PhysicalDamageSkillConvertToChaos,PhysicalDamageConvertToChaos||||true|":{
+    "multi":true
+  },
+  "PhysicalDamageGainAsCold,PhysicalDamageSkillConvertToCold,PhysicalDamageConvertToCold||||true|":{
+    "multi":true
+  },
+  "PhysicalDamageGainAsFire,PhysicalDamageSkillConvertToFire,PhysicalDamageConvertToFire||||true|":{
+    "multi":true
+  },
+  "PhysicalDamageGainAsLightning,PhysicalDamageSkillConvertToLightning,PhysicalDamageConvertToLightning,PhysicalDamageGainAsCold,PhysicalDamageSkillConvertToCold,PhysicalDamageConvertToCold,PhysicalDamageGainAsFire,PhysicalDamageSkillConvertToFire,PhysicalDamageConvertToFire,PhysicalDamageGainAsChaos,PhysicalDamageSkillConvertToChaos,PhysicalDamageConvertToChaos||||true|":{
+    "multi":true
+  },
+  "PhysicalDamageGainAsLightning,PhysicalDamageSkillConvertToLightning,PhysicalDamageConvertToLightning||||true|":{
+    "multi":true
+  },
+  "PhysicalDamageMitigatedEnergyShieldPseudoRecoup||||false|":{
+    "multi":false
+  },
+  "PhysicalDamageMitigatedLifePseudoRecoup||||false|":{
+    "multi":false
+  },
+  "PhysicalDamageReduction,PhysicalDamageReductionWhenHit,ArmourDoesNotApplyToPhysicalDamageTaken,DamageReductionMax,PhysicalDamageReductionMax||||false|":{
+    "multi":true
+  },
+  "PhysicalDamageTakenAsChaos,LightningDamageTakenAsChaos,ColdDamageTakenAsChaos,FireDamageTakenAsChaos,ElementalDamageTakenAsChaos||||false|":{
+    "multi":true
+  },
+  "PhysicalDamageTakenAsChaos,PhysicalDamageFromHitsTakenAsChaos,LightningDamageTakenAsChaos,LightningDamageFromHitsTakenAsChaos,ColdDamageTakenAsChaos,ColdDamageFromHitsTakenAsChaos,FireDamageTakenAsChaos,FireDamageFromHitsTakenAsChaos,ElementalDamageTakenAsChaos,ElementalDamageFromHitsTakenAsChaos||||false|":{
+    "multi":true
+  },
+  "PhysicalDamageTakenAsCold,LightningDamageTakenAsCold,FireDamageTakenAsCold,ChaosDamageTakenAsCold||||false|":{
+    "multi":true
+  },
+  "PhysicalDamageTakenAsCold,PhysicalDamageFromHitsTakenAsCold,LightningDamageTakenAsCold,LightningDamageFromHitsTakenAsCold,FireDamageTakenAsCold,FireDamageFromHitsTakenAsCold,ChaosDamageTakenAsCold,ChaosDamageFromHitsTakenAsCold||||false|":{
+    "multi":true
+  },
+  "PhysicalDamageTakenAsFire,LightningDamageTakenAsFire,ColdDamageTakenAsFire,FireDamageTakenAsCold,ChaosDamageTakenAsFire||||false|":{
+    "multi":true
+  },
+  "PhysicalDamageTakenAsFire,PhysicalDamageFromHitsTakenAsFire,LightningDamageTakenAsFire,LightningDamageFromHitsTakenAsFire,ColdDamageTakenAsFire,ColdDamageFromHitsTakenAsFire,ChaosDamageTakenAsFire,ChaosDamageFromHitsTakenAsFire||||false|":{
+    "multi":true
+  },
+  "PhysicalDamageTakenAsLightning,ColdDamageTakenAsLightning,FireDamageTakenAsLightning,ChaosDamageTakenAsLightning||||false|":{
+    "multi":true
+  },
+  "PhysicalDamageTakenAsLightning,PhysicalDamageFromHitsTakenAsLightning,ColdDamageTakenAsLightning,ColdDamageFromHitsTakenAsLightning,FireDamageTakenAsLightning,FireDamageFromHitsTakenAsLightning,ChaosDamageTakenAsLightning,ChaosDamageFromHitsTakenAsLightning||||false|":{
+    "multi":true
+  },
+  "PhysicalDamageTakenAsLightning,PhysicalDamageFromHitsTakenAsLightning,PhysicalDamageTakenAsCold,PhysicalDamageFromHitsTakenAsCold,PhysicalDamageTakenAsFire,PhysicalDamageFromHitsTakenAsFire,PhysicalDamageTakenAsChaos,PhysicalDamageFromHitsTakenAsChaos||||false|":{
+    "multi":true
+  },
+  "PhysicalDamageTakenAsLightning,PhysicalDamageTakenAsCold,PhysicalDamageTakenAsFire,PhysicalDamageTakenAsChaos||||false|":{
+    "multi":true
+  },
+  "PhysicalDamage|INC|dotPhysical||false|":{
+    "multi":false
+  },
+  "PhysicalDamage|INC|skill||false|":{
+    "multi":false
+  },
+  "PhysicalDamage|INC|weapon1||false|":{
+    "multi":false
+  },
+  "PhysicalDamage|INC|weapon2||false|":{
+    "multi":false
+  },
+  "PhysicalDamage|MORE|dotPhysical||false|":{
+    "multi":false
+  },
+  "PhysicalDamage|MORE|skill||false|":{
+    "multi":false
+  },
+  "PhysicalDamage|MORE|weapon1||false|":{
+    "multi":false
+  },
+  "PhysicalDamage|MORE|weapon2||false|":{
+    "multi":false
+  },
+  "PhysicalDegen,FireDegen,ColdDegen,LightningDegen,ChaosDegen|BASE|||false|":{
+    "multi":true
+  },
+  "PhysicalDegen||||false|":{
+    "multi":false
+  },
+  "PhysicalDotMultiplier|BASE|dotPhysical||false|":{
+    "multi":false
+  },
+  "PhysicalEnergyShieldBypass,BlockedDamageDoesntBypassES,UnblockedDamageDoesBypassES||||false|":{
+    "multi":true
+  },
+  "PhysicalEnergyShieldRecoup||||false|":{
+    "multi":false
+  },
+  "PhysicalGuardAbsorbRate,PhysicalGuardAbsorbLimit||||false|":{
+    "multi":true
+  },
+  "PhysicalLifeRecoup||||false|":{
+    "multi":false
+  },
+  "PhysicalMax|BASE|skill||false|":{
+    "multi":false
+  },
+  "PhysicalMin|BASE|skill||false|":{
+    "multi":false
+  },
+  "PoiseThreshold,EnemyElectrocuteThreshold,ElectrocuteBuildup,ImmobilisationBuildup,EnemyAilmentThreshold||||true|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Poise Threshold",
+        "source":"Xesht",
+        "sourceName":"",
+        "tags":"Condition: Effective",
+        "totals":["Total from Xesht:","838% more Poise Threshold"],
+        "value":"838% more"
+      },{
+        "flags":"",
+        "name":"Poise Threshold",
+        "source":"Unique",
+        "sourceName":"",
+        "tags":"Condition: Effective",
+        "totals":["Total from Unique:","500% more Poise Threshold"],
+        "value":"500% more"
+      }]
+  },
+  "PoiseThreshold,EnemyFreezeThreshold,FreezeBuildup,ImmobilisationBuildup,EnemyAilmentThreshold||||true|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Poise Threshold",
+        "source":"Xesht",
+        "sourceName":"",
+        "tags":"Condition: Effective",
+        "totals":["Total from Xesht:","838% more Poise Threshold"],
+        "value":"838% more"
+      },{
+        "flags":"",
+        "name":"Poise Threshold",
+        "source":"Unique",
+        "sourceName":"",
+        "tags":"Condition: Effective",
+        "totals":["Total from Unique:","500% more Poise Threshold"],
+        "value":"500% more"
+      }]
+  },
+  "PoiseThreshold,EnemyHeavyStunThreshold,EnemyStunThreshold,HeavyStunBuildup,ImmobilisationBuildup,StunBuildup||||true|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Poise Threshold",
+        "source":"Xesht",
+        "sourceName":"",
+        "tags":"Condition: Effective",
+        "totals":["Total from Xesht:","838% more Poise Threshold"],
+        "value":"838% more"
+      },{
+        "flags":"",
+        "name":"Poise Threshold",
+        "source":"Unique",
+        "sourceName":"",
+        "tags":"Condition: Effective",
+        "totals":["Total from Unique:","500% more Poise Threshold"],
+        "value":"500% more"
+      }]
+  },
+  "PoiseThreshold,EnemyPinThreshold,PinBuildup,ImmobilisationBuildup||||true|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Poise Threshold",
+        "source":"Xesht",
+        "sourceName":"",
+        "tags":"Condition: Effective",
+        "totals":["Total from Xesht:","838% more Poise Threshold"],
+        "value":"838% more"
+      },{
+        "flags":"",
+        "name":"Poise Threshold",
+        "source":"Unique",
+        "sourceName":"",
+        "tags":"Condition: Effective",
+        "totals":["Total from Unique:","500% more Poise Threshold"],
+        "value":"500% more"
+      }]
+  },
+  "PoisonChance|BASE|skill||false|":{
+    "multi":false
+  },
+  "PoisonChance||weapon1||false|":{
+    "multi":false
+  },
+  "PoisonChance||weapon2||false|":{
+    "multi":false
+  },
+  "PoisonStacks||weapon1||false|":{
+    "multi":false
+  },
+  "PoisonStacks||weapon2||false|":{
+    "multi":false
+  },
+  "PoisonStacks||||false|":{
+    "multi":false
+  },
+  "PowerChargesDuration,ChargeDuration||||false|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Charge Duration",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Base:","+15 base Charge Duration"],
+        "value":"+15 base"
+      }]
+  },
+  "PowerChargesMax||||false|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Power Charges Max",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Base:","+3 base Power Charges Max"],
+        "value":"+3 base"
+      }]
+  },
+  "PowerChargesMin,HaveMaximumPowerCharges||||false|":{
+    "multi":true
+  },
+  "PresenceArea||skill||false|":{
+    "multi":false
+  },
+  "PresenceRadius||skill||false|":{
+    "multi":false,
+    "rows":[{
+        "flags":"",
+        "name":"",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Base:","+40 base"],
+        "value":"+40 base"
+      }]
+  },
+  "ProjectileSpeed||skill||false|":{
+    "multi":false
+  },
+  "PvpDamageMultiplier||skill||false|":{
+    "multi":false
+  },
+  "QuantityMultiplier||skill||false|":{
+    "multi":true
+  },
+  "RageCost,Cost,RageNoMult||skill||false|":{
+    "multi":true
+  },
+  "RageEffect||||false|":{
+    "multi":false
+  },
+  "RageRecoveryRate||||false|":{
+    "multi":false
+  },
+  "RageRegen,RageRegenPercent,RageDegen,RageDegenPercent,RageRecovery|BASE|||false|":{
+    "multi":true
+  },
+  "RageRegen|INC|||false|":{
+    "multi":true
+  },
+  "RageRegen|MORE|||false|":{
+    "multi":true
+  },
+  "ReduceCritExtraDamage||||false|":{
+    "multi":false
+  },
+  "ReloadSpeed|INC|skill||false|":{
+    "multi":false
+  },
+  "ReloadSpeed|MORE|skill||false|":{
+    "multi":false
+  },
+  "RemnantEffect||skill||false|":{
+    "multi":false
+  },
+  "RepeatCount||skill||false|":{
+    "multi":true
+  },
+  "SapMax||||false|":{
+    "multi":false
+  },
+  "SapOverride|BASE|||false|":{
+    "multi":false
+  },
+  "SapVal|BASE|||true|":{
+    "multi":false
+  },
+  "ScorchMax||||false|":{
+    "multi":false
+  },
+  "ScorchOverride|BASE|||false|":{
+    "multi":false
+  },
+  "ScorchVal|BASE|||true|":{
+    "multi":false
+  },
+  "SealGainFrequency||skill||false|":{
+    "multi":false
+  },
+  "SelfBleedChance|BASE|||true|":{
+    "multi":false
+  },
+  "SelfBleedDuration,SelfAilmentDuration,SelfBleedFaster,BleedExpireRate||||true|":{
+    "multi":true
+  },
+  "SelfBleedDuration,SelfDebuffExpirationRate,SelfBleedDebuffExpirationRate,SelfAilmentDuration||||false|":{
+    "multi":true
+  },
+  "SelfBleedEffect||||false|":{
+    "multi":false
+  },
+  "SelfBlindDuration||||false|":{
+    "multi":false
+  },
+  "SelfBrittleChance||||true|":{
+    "multi":false
+  },
+  "SelfBrittleDuration,SelfAilmentDuration,SelfElementalAilmentDuration,BuffExpireFaster||||true|":{
+    "multi":true
+  },
+  "SelfBrittleDuration,SelfDebuffExpirationRate,SelfBrittleDebuffExpirationRate,SelfAilmentDuration,SelfElementalAilmentDuration,SelfIgniteDurationToElementalAilments||||false|":{
+    "multi":true
+  },
+  "SelfBrittleEffect||||false|":{
+    "multi":false
+  },
+  "SelfBrittleEffect||||true|":{
+    "multi":false
+  },
+  "SelfChaosMax|BASE|skill||true|":{
+    "multi":false
+  },
+  "SelfChaosMin|BASE|skill||true|":{
+    "multi":false
+  },
+  "SelfChillDuration,SelfAilmentDuration,SelfElementalAilmentDuration,BuffExpireFaster||||true|":{
+    "multi":true
+  },
+  "SelfChillDuration,SelfDebuffExpirationRate,SelfChillDebuffExpirationRate,SelfAilmentDuration,SelfElementalAilmentDuration,SelfIgniteDurationToElementalAilments||||false|":{
+    "multi":true
+  },
+  "SelfChillEffect||||false|":{
+    "multi":false
+  },
+  "SelfChillEffect||||true|":{
+    "multi":false
+  },
+  "SelfColdMax|BASE|skill||true|":{
+    "multi":false
+  },
+  "SelfColdMin|BASE|skill||true|":{
+    "multi":false
+  },
+  "SelfCritChance|INC|||true|":{
+    "multi":false
+  },
+  "SelfCritChance||||true|":{
+    "multi":false
+  },
+  "SelfCritMultiplier||||true|":{
+    "multi":false
+  },
+  "SelfDamageEnergyShieldLeech|BASE|||true|":{
+    "multi":true
+  },
+  "SelfDamageLifeLeech|BASE|||true|":{
+    "multi":true
+  },
+  "SelfDamageManaLeech|BASE|skill||true|":{
+    "multi":true
+  },
+  "SelfDamageManaLeech|BASE|||true|":{
+    "multi":true
+  },
+  "SelfDebuffExpirationRate||||false|":{
+    "multi":false
+  },
+  "SelfEnergyShieldOnHit|BASE|skill||true|":{
+    "multi":true
+  },
+  "SelfEnergyShieldOnHit|BASE|||true|":{
+    "multi":true
+  },
+  "SelfFireMax|BASE|skill||true|":{
+    "multi":false
+  },
+  "SelfFireMin|BASE|skill||true|":{
+    "multi":false
+  },
+  "SelfFreezeChance||||true|":{
+    "multi":false
+  },
+  "SelfFreezeDuration,SelfAilmentDuration,SelfElementalAilmentDuration,BuffExpireFaster,HoarfrostFreezeDuration||||true|":{
+    "multi":true
+  },
+  "SelfFreezeDuration,SelfDebuffExpirationRate,SelfFreezeDebuffExpirationRate,SelfAilmentDuration,SelfElementalAilmentDuration,SelfIgniteDurationToElementalAilments||||false|":{
+    "multi":true
+  },
+  "SelfFreezeEffect||||false|":{
+    "multi":false
+  },
+  "SelfIgniteChance||||true|":{
+    "multi":false
+  },
+  "SelfIgniteDuration,SelfAilmentDuration,SelfElementalAilmentDuration,SelfIgniteFaster||||true|":{
+    "multi":true
+  },
+  "SelfIgniteDuration,SelfDebuffExpirationRate,SelfIgniteDebuffExpirationRate,SelfAilmentDuration,SelfElementalAilmentDuration||||false|":{
+    "multi":true
+  },
+  "SelfIgniteEffect||||false|":{
+    "multi":false
+  },
+  "SelfKnockbackChance||||true|":{
+    "multi":false
+  },
+  "SelfLifeOnHit|BASE|skill||true|":{
+    "multi":true
+  },
+  "SelfLightningMax|BASE|skill||true|":{
+    "multi":false
+  },
+  "SelfLightningMin|BASE|skill||true|":{
+    "multi":false
+  },
+  "SelfManaOnHit|BASE|skill||true|":{
+    "multi":true
+  },
+  "SelfPhysicalMax|BASE|skill||true|":{
+    "multi":false
+  },
+  "SelfPhysicalMin|BASE|skill||true|":{
+    "multi":false
+  },
+  "SelfPoisonDuration,SelfAilmentDuration,SelfPoisonFaster||||true|":{
+    "multi":true
+  },
+  "SelfPoisonDuration,SelfDebuffExpirationRate,SelfPoisonDebuffExpirationRate,SelfAilmentDuration||||false|":{
+    "multi":true
+  },
+  "SelfPoisonEffect||||false|":{
+    "multi":false
+  },
+  "SelfSapChance||||true|":{
+    "multi":false
+  },
+  "SelfSapDuration,SelfAilmentDuration,SelfElementalAilmentDuration,BuffExpireFaster||||true|":{
+    "multi":true
+  },
+  "SelfSapDuration,SelfDebuffExpirationRate,SelfSapDebuffExpirationRate,SelfAilmentDuration,SelfElementalAilmentDuration,SelfIgniteDurationToElementalAilments||||false|":{
+    "multi":true
+  },
+  "SelfSapEffect||||false|":{
+    "multi":false
+  },
+  "SelfSapEffect||||true|":{
+    "multi":false
+  },
+  "SelfScorchChance||||true|":{
+    "multi":false
+  },
+  "SelfScorchDuration,SelfAilmentDuration,SelfElementalAilmentDuration,BuffExpireFaster||||true|":{
+    "multi":true
+  },
+  "SelfScorchDuration,SelfDebuffExpirationRate,SelfScorchDebuffExpirationRate,SelfAilmentDuration,SelfElementalAilmentDuration,SelfIgniteDurationToElementalAilments||||false|":{
+    "multi":true
+  },
+  "SelfScorchEffect||||false|":{
+    "multi":false
+  },
+  "SelfScorchEffect||||true|":{
+    "multi":false
+  },
+  "SelfShockChance||||true|":{
+    "multi":false
+  },
+  "SelfShockDuration,SelfAilmentDuration,SelfElementalAilmentDuration,BuffExpireFaster||||true|":{
+    "multi":true
+  },
+  "SelfShockDuration,SelfDebuffExpirationRate,SelfShockDebuffExpirationRate,SelfAilmentDuration,SelfElementalAilmentDuration,SelfIgniteDurationToElementalAilments||||false|":{
+    "multi":true
+  },
+  "SelfShockEffect||||false|":{
+    "multi":false
+  },
+  "SelfShockMagnitude||||true|":{
+    "multi":false
+  },
+  "SelfSplitCount||skill||true|":{
+    "multi":true
+  },
+  "ShockMax||||false|":{
+    "multi":false
+  },
+  "ShockOverride|BASE|||false|":{
+    "multi":false
+  },
+  "ShockVal|BASE|||true|":{
+    "multi":false
+  },
+  "SilenceImmune,AvoidCurse,CurseImmune||||false|":{
+    "multi":true
+  },
+  "SkillChaosDamageConvertToPhysical,SkillDamageGainAsPhysical,SkillChaosDamageGainAsPhysical,ChaosDamageConvertToPhysical,DamageGainAsPhysical,ChaosDamageGainAsPhysical,DamageGainIsOnlyPhysical,SkillChaosDamageConvertToLightning,SkillDamageGainAsLightning,SkillChaosDamageGainAsLightning,ChaosDamageConvertToLightning,DamageGainAsLightning,ChaosDamageGainAsLightning,DamageGainIsOnlyLightning,ElementalDamageConvertToLightning,ElementalDamageGainAsLightning,SkillChaosDamageConvertToCold,SkillDamageGainAsCold,SkillChaosDamageGainAsCold,ChaosDamageConvertToCold,DamageGainAsCold,ChaosDamageGainAsCold,DamageGainIsOnlyCold,ElementalDamageConvertToCold,ElementalDamageGainAsCold,SkillChaosDamageConvertToFire,SkillDamageGainAsFire,SkillChaosDamageGainAsFire,ChaosDamageConvertToFire,DamageGainAsFire,ChaosDamageGainAsFire,DamageGainIsOnlyFire,ElementalDamageConvertToFire,ElementalDamageGainAsFire,SkillChaosDamageConvertToChaos,SkillDamageGainAsChaos,SkillChaosDamageGainAsChaos,ChaosDamageConvertToChaos,DamageGainAsChaos,ChaosDamageGainAsChaos,DamageGainIsOnlyChaos||skill||false|":{
+    "multi":true
+  },
+  "SkillChaosDamageConvertToPhysical,SkillDamageGainAsPhysical,SkillChaosDamageGainAsPhysical,ChaosDamageConvertToPhysical,DamageGainAsPhysical,ChaosDamageGainAsPhysical,DamageGainIsOnlyPhysical,SkillChaosDamageConvertToLightning,SkillDamageGainAsLightning,SkillChaosDamageGainAsLightning,ChaosDamageConvertToLightning,DamageGainAsLightning,ChaosDamageGainAsLightning,DamageGainIsOnlyLightning,ElementalDamageConvertToLightning,ElementalDamageGainAsLightning,SkillChaosDamageConvertToCold,SkillDamageGainAsCold,SkillChaosDamageGainAsCold,ChaosDamageConvertToCold,DamageGainAsCold,ChaosDamageGainAsCold,DamageGainIsOnlyCold,ElementalDamageConvertToCold,ElementalDamageGainAsCold,SkillChaosDamageConvertToFire,SkillDamageGainAsFire,SkillChaosDamageGainAsFire,ChaosDamageConvertToFire,DamageGainAsFire,ChaosDamageGainAsFire,DamageGainIsOnlyFire,ElementalDamageConvertToFire,ElementalDamageGainAsFire,SkillChaosDamageConvertToChaos,SkillDamageGainAsChaos,SkillChaosDamageGainAsChaos,ChaosDamageConvertToChaos,DamageGainAsChaos,ChaosDamageGainAsChaos,DamageGainIsOnlyChaos||weapon1||false|":{
+    "multi":true
+  },
+  "SkillChaosDamageConvertToPhysical,SkillDamageGainAsPhysical,SkillChaosDamageGainAsPhysical,ChaosDamageConvertToPhysical,DamageGainAsPhysical,ChaosDamageGainAsPhysical,DamageGainIsOnlyPhysical,SkillChaosDamageConvertToLightning,SkillDamageGainAsLightning,SkillChaosDamageGainAsLightning,ChaosDamageConvertToLightning,DamageGainAsLightning,ChaosDamageGainAsLightning,DamageGainIsOnlyLightning,ElementalDamageConvertToLightning,ElementalDamageGainAsLightning,SkillChaosDamageConvertToCold,SkillDamageGainAsCold,SkillChaosDamageGainAsCold,ChaosDamageConvertToCold,DamageGainAsCold,ChaosDamageGainAsCold,DamageGainIsOnlyCold,ElementalDamageConvertToCold,ElementalDamageGainAsCold,SkillChaosDamageConvertToFire,SkillDamageGainAsFire,SkillChaosDamageGainAsFire,ChaosDamageConvertToFire,DamageGainAsFire,ChaosDamageGainAsFire,DamageGainIsOnlyFire,ElementalDamageConvertToFire,ElementalDamageGainAsFire,SkillChaosDamageConvertToChaos,SkillDamageGainAsChaos,SkillChaosDamageGainAsChaos,ChaosDamageConvertToChaos,DamageGainAsChaos,ChaosDamageGainAsChaos,DamageGainIsOnlyChaos||weapon2||false|":{
+    "multi":true
+  },
+  "SkillColdDamageConvertToPhysical,SkillDamageGainAsPhysical,SkillColdDamageGainAsPhysical,ColdDamageConvertToPhysical,DamageGainAsPhysical,ColdDamageGainAsPhysical,DamageGainIsOnlyPhysical,SkillColdDamageConvertToLightning,SkillDamageGainAsLightning,SkillColdDamageGainAsLightning,ColdDamageConvertToLightning,DamageGainAsLightning,ColdDamageGainAsLightning,DamageGainIsOnlyLightning,ElementalDamageConvertToLightning,ElementalDamageGainAsLightning,SkillColdDamageConvertToCold,SkillDamageGainAsCold,SkillColdDamageGainAsCold,ColdDamageConvertToCold,DamageGainAsCold,ColdDamageGainAsCold,DamageGainIsOnlyCold,ElementalDamageConvertToCold,ElementalDamageGainAsCold,SkillColdDamageConvertToFire,SkillDamageGainAsFire,SkillColdDamageGainAsFire,ColdDamageConvertToFire,DamageGainAsFire,ColdDamageGainAsFire,DamageGainIsOnlyFire,ElementalDamageConvertToFire,ElementalDamageGainAsFire,SkillColdDamageConvertToChaos,SkillDamageGainAsChaos,SkillColdDamageGainAsChaos,ColdDamageConvertToChaos,DamageGainAsChaos,ColdDamageGainAsChaos,DamageGainIsOnlyChaos||skill||false|":{
+    "multi":true
+  },
+  "SkillColdDamageConvertToPhysical,SkillDamageGainAsPhysical,SkillColdDamageGainAsPhysical,ColdDamageConvertToPhysical,DamageGainAsPhysical,ColdDamageGainAsPhysical,DamageGainIsOnlyPhysical,SkillColdDamageConvertToLightning,SkillDamageGainAsLightning,SkillColdDamageGainAsLightning,ColdDamageConvertToLightning,DamageGainAsLightning,ColdDamageGainAsLightning,DamageGainIsOnlyLightning,ElementalDamageConvertToLightning,ElementalDamageGainAsLightning,SkillColdDamageConvertToCold,SkillDamageGainAsCold,SkillColdDamageGainAsCold,ColdDamageConvertToCold,DamageGainAsCold,ColdDamageGainAsCold,DamageGainIsOnlyCold,ElementalDamageConvertToCold,ElementalDamageGainAsCold,SkillColdDamageConvertToFire,SkillDamageGainAsFire,SkillColdDamageGainAsFire,ColdDamageConvertToFire,DamageGainAsFire,ColdDamageGainAsFire,DamageGainIsOnlyFire,ElementalDamageConvertToFire,ElementalDamageGainAsFire,SkillColdDamageConvertToChaos,SkillDamageGainAsChaos,SkillColdDamageGainAsChaos,ColdDamageConvertToChaos,DamageGainAsChaos,ColdDamageGainAsChaos,DamageGainIsOnlyChaos||weapon1||false|":{
+    "multi":true
+  },
+  "SkillColdDamageConvertToPhysical,SkillDamageGainAsPhysical,SkillColdDamageGainAsPhysical,ColdDamageConvertToPhysical,DamageGainAsPhysical,ColdDamageGainAsPhysical,DamageGainIsOnlyPhysical,SkillColdDamageConvertToLightning,SkillDamageGainAsLightning,SkillColdDamageGainAsLightning,ColdDamageConvertToLightning,DamageGainAsLightning,ColdDamageGainAsLightning,DamageGainIsOnlyLightning,ElementalDamageConvertToLightning,ElementalDamageGainAsLightning,SkillColdDamageConvertToCold,SkillDamageGainAsCold,SkillColdDamageGainAsCold,ColdDamageConvertToCold,DamageGainAsCold,ColdDamageGainAsCold,DamageGainIsOnlyCold,ElementalDamageConvertToCold,ElementalDamageGainAsCold,SkillColdDamageConvertToFire,SkillDamageGainAsFire,SkillColdDamageGainAsFire,ColdDamageConvertToFire,DamageGainAsFire,ColdDamageGainAsFire,DamageGainIsOnlyFire,ElementalDamageConvertToFire,ElementalDamageGainAsFire,SkillColdDamageConvertToChaos,SkillDamageGainAsChaos,SkillColdDamageGainAsChaos,ColdDamageConvertToChaos,DamageGainAsChaos,ColdDamageGainAsChaos,DamageGainIsOnlyChaos||weapon2||false|":{
+    "multi":true
+  },
+  "SkillFireDamageConvertToPhysical,SkillDamageGainAsPhysical,SkillFireDamageGainAsPhysical,FireDamageConvertToPhysical,DamageGainAsPhysical,FireDamageGainAsPhysical,DamageGainIsOnlyPhysical,SkillFireDamageConvertToLightning,SkillDamageGainAsLightning,SkillFireDamageGainAsLightning,FireDamageConvertToLightning,DamageGainAsLightning,FireDamageGainAsLightning,DamageGainIsOnlyLightning,ElementalDamageConvertToLightning,ElementalDamageGainAsLightning,SkillFireDamageConvertToCold,SkillDamageGainAsCold,SkillFireDamageGainAsCold,FireDamageConvertToCold,DamageGainAsCold,FireDamageGainAsCold,DamageGainIsOnlyCold,ElementalDamageConvertToCold,ElementalDamageGainAsCold,SkillFireDamageConvertToFire,SkillDamageGainAsFire,SkillFireDamageGainAsFire,FireDamageConvertToFire,DamageGainAsFire,FireDamageGainAsFire,DamageGainIsOnlyFire,ElementalDamageConvertToFire,ElementalDamageGainAsFire,SkillFireDamageConvertToChaos,SkillDamageGainAsChaos,SkillFireDamageGainAsChaos,FireDamageConvertToChaos,DamageGainAsChaos,FireDamageGainAsChaos,DamageGainIsOnlyChaos||skill||false|":{
+    "multi":true
+  },
+  "SkillFireDamageConvertToPhysical,SkillDamageGainAsPhysical,SkillFireDamageGainAsPhysical,FireDamageConvertToPhysical,DamageGainAsPhysical,FireDamageGainAsPhysical,DamageGainIsOnlyPhysical,SkillFireDamageConvertToLightning,SkillDamageGainAsLightning,SkillFireDamageGainAsLightning,FireDamageConvertToLightning,DamageGainAsLightning,FireDamageGainAsLightning,DamageGainIsOnlyLightning,ElementalDamageConvertToLightning,ElementalDamageGainAsLightning,SkillFireDamageConvertToCold,SkillDamageGainAsCold,SkillFireDamageGainAsCold,FireDamageConvertToCold,DamageGainAsCold,FireDamageGainAsCold,DamageGainIsOnlyCold,ElementalDamageConvertToCold,ElementalDamageGainAsCold,SkillFireDamageConvertToFire,SkillDamageGainAsFire,SkillFireDamageGainAsFire,FireDamageConvertToFire,DamageGainAsFire,FireDamageGainAsFire,DamageGainIsOnlyFire,ElementalDamageConvertToFire,ElementalDamageGainAsFire,SkillFireDamageConvertToChaos,SkillDamageGainAsChaos,SkillFireDamageGainAsChaos,FireDamageConvertToChaos,DamageGainAsChaos,FireDamageGainAsChaos,DamageGainIsOnlyChaos||weapon1||false|":{
+    "multi":true
+  },
+  "SkillFireDamageConvertToPhysical,SkillDamageGainAsPhysical,SkillFireDamageGainAsPhysical,FireDamageConvertToPhysical,DamageGainAsPhysical,FireDamageGainAsPhysical,DamageGainIsOnlyPhysical,SkillFireDamageConvertToLightning,SkillDamageGainAsLightning,SkillFireDamageGainAsLightning,FireDamageConvertToLightning,DamageGainAsLightning,FireDamageGainAsLightning,DamageGainIsOnlyLightning,ElementalDamageConvertToLightning,ElementalDamageGainAsLightning,SkillFireDamageConvertToCold,SkillDamageGainAsCold,SkillFireDamageGainAsCold,FireDamageConvertToCold,DamageGainAsCold,FireDamageGainAsCold,DamageGainIsOnlyCold,ElementalDamageConvertToCold,ElementalDamageGainAsCold,SkillFireDamageConvertToFire,SkillDamageGainAsFire,SkillFireDamageGainAsFire,FireDamageConvertToFire,DamageGainAsFire,FireDamageGainAsFire,DamageGainIsOnlyFire,ElementalDamageConvertToFire,ElementalDamageGainAsFire,SkillFireDamageConvertToChaos,SkillDamageGainAsChaos,SkillFireDamageGainAsChaos,FireDamageConvertToChaos,DamageGainAsChaos,FireDamageGainAsChaos,DamageGainIsOnlyChaos||weapon2||false|":{
+    "multi":true
+  },
+  "SkillLightningDamageConvertToPhysical,SkillDamageGainAsPhysical,SkillLightningDamageGainAsPhysical,LightningDamageConvertToPhysical,DamageGainAsPhysical,LightningDamageGainAsPhysical,DamageGainIsOnlyPhysical,SkillLightningDamageConvertToLightning,SkillDamageGainAsLightning,SkillLightningDamageGainAsLightning,LightningDamageConvertToLightning,DamageGainAsLightning,LightningDamageGainAsLightning,DamageGainIsOnlyLightning,ElementalDamageConvertToLightning,ElementalDamageGainAsLightning,SkillLightningDamageConvertToCold,SkillDamageGainAsCold,SkillLightningDamageGainAsCold,LightningDamageConvertToCold,DamageGainAsCold,LightningDamageGainAsCold,DamageGainIsOnlyCold,ElementalDamageConvertToCold,ElementalDamageGainAsCold,SkillLightningDamageConvertToFire,SkillDamageGainAsFire,SkillLightningDamageGainAsFire,LightningDamageConvertToFire,DamageGainAsFire,LightningDamageGainAsFire,DamageGainIsOnlyFire,ElementalDamageConvertToFire,ElementalDamageGainAsFire,SkillLightningDamageConvertToChaos,SkillDamageGainAsChaos,SkillLightningDamageGainAsChaos,LightningDamageConvertToChaos,DamageGainAsChaos,LightningDamageGainAsChaos,DamageGainIsOnlyChaos||skill||false|":{
+    "multi":true
+  },
+  "SkillLightningDamageConvertToPhysical,SkillDamageGainAsPhysical,SkillLightningDamageGainAsPhysical,LightningDamageConvertToPhysical,DamageGainAsPhysical,LightningDamageGainAsPhysical,DamageGainIsOnlyPhysical,SkillLightningDamageConvertToLightning,SkillDamageGainAsLightning,SkillLightningDamageGainAsLightning,LightningDamageConvertToLightning,DamageGainAsLightning,LightningDamageGainAsLightning,DamageGainIsOnlyLightning,ElementalDamageConvertToLightning,ElementalDamageGainAsLightning,SkillLightningDamageConvertToCold,SkillDamageGainAsCold,SkillLightningDamageGainAsCold,LightningDamageConvertToCold,DamageGainAsCold,LightningDamageGainAsCold,DamageGainIsOnlyCold,ElementalDamageConvertToCold,ElementalDamageGainAsCold,SkillLightningDamageConvertToFire,SkillDamageGainAsFire,SkillLightningDamageGainAsFire,LightningDamageConvertToFire,DamageGainAsFire,LightningDamageGainAsFire,DamageGainIsOnlyFire,ElementalDamageConvertToFire,ElementalDamageGainAsFire,SkillLightningDamageConvertToChaos,SkillDamageGainAsChaos,SkillLightningDamageGainAsChaos,LightningDamageConvertToChaos,DamageGainAsChaos,LightningDamageGainAsChaos,DamageGainIsOnlyChaos||weapon1||false|":{
+    "multi":true
+  },
+  "SkillLightningDamageConvertToPhysical,SkillDamageGainAsPhysical,SkillLightningDamageGainAsPhysical,LightningDamageConvertToPhysical,DamageGainAsPhysical,LightningDamageGainAsPhysical,DamageGainIsOnlyPhysical,SkillLightningDamageConvertToLightning,SkillDamageGainAsLightning,SkillLightningDamageGainAsLightning,LightningDamageConvertToLightning,DamageGainAsLightning,LightningDamageGainAsLightning,DamageGainIsOnlyLightning,ElementalDamageConvertToLightning,ElementalDamageGainAsLightning,SkillLightningDamageConvertToCold,SkillDamageGainAsCold,SkillLightningDamageGainAsCold,LightningDamageConvertToCold,DamageGainAsCold,LightningDamageGainAsCold,DamageGainIsOnlyCold,ElementalDamageConvertToCold,ElementalDamageGainAsCold,SkillLightningDamageConvertToFire,SkillDamageGainAsFire,SkillLightningDamageGainAsFire,LightningDamageConvertToFire,DamageGainAsFire,LightningDamageGainAsFire,DamageGainIsOnlyFire,ElementalDamageConvertToFire,ElementalDamageGainAsFire,SkillLightningDamageConvertToChaos,SkillDamageGainAsChaos,SkillLightningDamageGainAsChaos,LightningDamageConvertToChaos,DamageGainAsChaos,LightningDamageGainAsChaos,DamageGainIsOnlyChaos||weapon2||false|":{
+    "multi":true
+  },
+  "SkillMovementSpeed,MovementSpeedPenalty||skill||false|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Skill Movement Speed",
+        "source":"Skill",
+        "sourceName":"Spark",
+        "tags":"",
+        "totals":["Total from Skill:","70% less Skill Movement Speed"],
+        "value":"70% less"
+      }]
+  },
+  "SkillPhysicalDamageConvertToPhysical,SkillDamageGainAsPhysical,SkillPhysicalDamageGainAsPhysical,PhysicalDamageConvertToPhysical,DamageGainAsPhysical,PhysicalDamageGainAsPhysical,DamageGainIsOnlyPhysical,SkillPhysicalDamageConvertToLightning,SkillDamageGainAsLightning,SkillPhysicalDamageGainAsLightning,PhysicalDamageConvertToLightning,DamageGainAsLightning,PhysicalDamageGainAsLightning,DamageGainIsOnlyLightning,ElementalDamageConvertToLightning,ElementalDamageGainAsLightning,SkillPhysicalDamageConvertToCold,SkillDamageGainAsCold,SkillPhysicalDamageGainAsCold,PhysicalDamageConvertToCold,DamageGainAsCold,PhysicalDamageGainAsCold,DamageGainIsOnlyCold,ElementalDamageConvertToCold,ElementalDamageGainAsCold,SkillPhysicalDamageConvertToFire,SkillDamageGainAsFire,SkillPhysicalDamageGainAsFire,PhysicalDamageConvertToFire,DamageGainAsFire,PhysicalDamageGainAsFire,DamageGainIsOnlyFire,ElementalDamageConvertToFire,ElementalDamageGainAsFire,SkillPhysicalDamageConvertToChaos,SkillDamageGainAsChaos,SkillPhysicalDamageGainAsChaos,PhysicalDamageConvertToChaos,DamageGainAsChaos,PhysicalDamageGainAsChaos,DamageGainIsOnlyChaos||skill||false|":{
+    "multi":true
+  },
+  "SkillPhysicalDamageConvertToPhysical,SkillDamageGainAsPhysical,SkillPhysicalDamageGainAsPhysical,PhysicalDamageConvertToPhysical,DamageGainAsPhysical,PhysicalDamageGainAsPhysical,DamageGainIsOnlyPhysical,SkillPhysicalDamageConvertToLightning,SkillDamageGainAsLightning,SkillPhysicalDamageGainAsLightning,PhysicalDamageConvertToLightning,DamageGainAsLightning,PhysicalDamageGainAsLightning,DamageGainIsOnlyLightning,ElementalDamageConvertToLightning,ElementalDamageGainAsLightning,SkillPhysicalDamageConvertToCold,SkillDamageGainAsCold,SkillPhysicalDamageGainAsCold,PhysicalDamageConvertToCold,DamageGainAsCold,PhysicalDamageGainAsCold,DamageGainIsOnlyCold,ElementalDamageConvertToCold,ElementalDamageGainAsCold,SkillPhysicalDamageConvertToFire,SkillDamageGainAsFire,SkillPhysicalDamageGainAsFire,PhysicalDamageConvertToFire,DamageGainAsFire,PhysicalDamageGainAsFire,DamageGainIsOnlyFire,ElementalDamageConvertToFire,ElementalDamageGainAsFire,SkillPhysicalDamageConvertToChaos,SkillDamageGainAsChaos,SkillPhysicalDamageGainAsChaos,PhysicalDamageConvertToChaos,DamageGainAsChaos,PhysicalDamageGainAsChaos,DamageGainIsOnlyChaos||weapon1||false|":{
+    "multi":true
+  },
+  "SkillPhysicalDamageConvertToPhysical,SkillDamageGainAsPhysical,SkillPhysicalDamageGainAsPhysical,PhysicalDamageConvertToPhysical,DamageGainAsPhysical,PhysicalDamageGainAsPhysical,DamageGainIsOnlyPhysical,SkillPhysicalDamageConvertToLightning,SkillDamageGainAsLightning,SkillPhysicalDamageGainAsLightning,PhysicalDamageConvertToLightning,DamageGainAsLightning,PhysicalDamageGainAsLightning,DamageGainIsOnlyLightning,ElementalDamageConvertToLightning,ElementalDamageGainAsLightning,SkillPhysicalDamageConvertToCold,SkillDamageGainAsCold,SkillPhysicalDamageGainAsCold,PhysicalDamageConvertToCold,DamageGainAsCold,PhysicalDamageGainAsCold,DamageGainIsOnlyCold,ElementalDamageConvertToCold,ElementalDamageGainAsCold,SkillPhysicalDamageConvertToFire,SkillDamageGainAsFire,SkillPhysicalDamageGainAsFire,PhysicalDamageConvertToFire,DamageGainAsFire,PhysicalDamageGainAsFire,DamageGainIsOnlyFire,ElementalDamageConvertToFire,ElementalDamageGainAsFire,SkillPhysicalDamageConvertToChaos,SkillDamageGainAsChaos,SkillPhysicalDamageGainAsChaos,PhysicalDamageConvertToChaos,DamageGainAsChaos,PhysicalDamageGainAsChaos,DamageGainIsOnlyChaos||weapon2||false|":{
+    "multi":true
+  },
+  "SmallExplosions||skill||false|":{
+    "multi":false
+  },
+  "SoulCost||skill||false|":{
+    "multi":true
+  },
+  "Speed|INC|skill||false|":{
+    "multi":false
+  },
+  "Speed|INC|weapon1||false|":{
+    "multi":false
+  },
+  "Speed|INC|weapon2||false|":{
+    "multi":false
+  },
+  "Speed|MORE|skill||false|":{
+    "multi":false
+  },
+  "Speed|MORE|weapon1||false|":{
+    "multi":false
+  },
+  "Speed|MORE|weapon2||false|":{
+    "multi":false
+  },
+  "SpellDodgeChanceMax,SpellDodgeChance||||false|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Spell Dodge Chance Max",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Base:","+75 base Spell Dodge Chance Max"],
+        "value":"+75 base"
+      }]
+  },
+  "SpiritCost,Cost,SpiritCostNoMult||skill||false|":{
+    "multi":true
+  },
+  "SpiritReserved,Reserved,ReservationMultiplier,SpiritReservationEfficiency,ReservationEfficiency,ExtraSpirit||skill||false|":{
+    "multi":true
+  },
+  "Spirit|BASE||Item|false|":{
+    "multi":false
+  },
+  "Spirit|BASE|||false|":{
+    "multi":false,
+    "rows":[{
+        "flags":"",
+        "name":"",
+        "source":"Quest",
+        "sourceName":"Interlude 3: Kriar Village",
+        "tags":"",
+        "totals":["Total from Quest:","+100 base"],
+        "value":"40"
+      },{
+        "flags":"",
+        "name":"",
+        "source":"Quest",
+        "sourceName":"Act 3: Azak Bog",
+        "tags":"",
+        "totals":["Total from Quest:","+100 base"],
+        "value":"30"
+      },{
+        "flags":"",
+        "name":"",
+        "source":"Quest",
+        "sourceName":"Act 1: Freythorn",
+        "tags":"",
+        "totals":["Total from Quest:","+100 base"],
+        "value":"30"
+      }]
+  },
+  "Spirit|INC||Tree|false|":{
+    "multi":false
+  },
+  "Spirit|INC|||false|":{
+    "multi":false
+  },
+  "Spirit|OVERRIDE|||false|":{
+    "multi":false
+  },
+  "Str||||false|":{
+    "multi":false,
+    "rows":[{
+        "flags":"",
+        "name":"",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Base:","+7 base"],
+        "value":"+7 base"
+      }]
+  },
+  "StunDuration,StunRecovery,BlockRecovery||||false|":{
+    "multi":true
+  },
+  "StunDuration,StunRecovery||||false|":{
+    "multi":true
+  },
+  "StunRecovery,SelfDoubleStunDurationChance||||true|":{
+    "multi":true
+  },
+  "StunThreshold,StunThresholdManaPercent,StunThresholdEnergyShieldPercent||||false|":{
+    "multi":true
+  },
+  "SurroundedArea||skill||false|":{
+    "multi":false
+  },
+  "SurroundedRadius||skill||false|":{
+    "multi":false,
+    "rows":[{
+        "flags":"",
+        "name":"",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Base:","+30 base"],
+        "value":"+30 base"
+      }]
+  },
+  "TemporalChainsActionSpeed,ActionSpeed,Speed,MinimumActionSpeed||||true|":{
+    "multi":true
+  },
+  "TerrainChainChance,NoAdditionalChains||skill||false|":{
+    "multi":true
+  },
+  "TotalCompanionLife,TakenFromCompanionBeforeYou,TakenFromCompanionBeforeYouFromDeflected||||false|":{
+    "multi":true
+  },
+  "TotalSpectreLife,TakenFromSpectresBeforeYou||||false|":{
+    "multi":true
+  },
+  "TotalTotemLife,TakenFromTotemsBeforeYou||||false|":{
+    "multi":true
+  },
+  "TotalVaalRejuvenationTotemLife,takenFromVaalRejuvenationTotemsBeforeYou,TakenFromTotemsBeforeYou||||false|":{
+    "multi":true
+  },
+  "TotemArmour||skill||false|":{
+    "multi":false
+  },
+  "TotemBlockChance||skill||false|":{
+    "multi":false
+  },
+  "TotemChaosResistMax,TotemChaosResist||||false|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Totem Chaos Resist Max",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Base:","+75 base Totem Chaos Resist Max","+20 base Totem Chaos Resist"],
+        "value":"+75 base"
+      },{
+        "flags":"",
+        "name":"Totem Chaos Resist",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Base:","+75 base Totem Chaos Resist Max","+20 base Totem Chaos Resist"],
+        "value":"+20 base"
+      }]
+  },
+  "TotemColdResistMax,TotemElementalResistMax,TotemColdResist,TotemElementalResist||||false|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Totem Cold Resist Max",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Base:","+75 base Totem Cold Resist Max","+40 base Totem Cold Resist"],
+        "value":"+75 base"
+      },{
+        "flags":"",
+        "name":"Totem Cold Resist",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Base:","+75 base Totem Cold Resist Max","+40 base Totem Cold Resist"],
+        "value":"+40 base"
+      }]
+  },
+  "TotemEnergyShield||skill||false|":{
+    "multi":false
+  },
+  "TotemFireResistMax,TotemElementalResistMax,TotemFireResist,TotemElementalResist||||false|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Totem Fire Resist Max",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Base:","+75 base Totem Fire Resist Max","+40 base Totem Fire Resist"],
+        "value":"+75 base"
+      },{
+        "flags":"",
+        "name":"Totem Fire Resist",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Base:","+75 base Totem Fire Resist Max","+40 base Totem Fire Resist"],
+        "value":"+40 base"
+      }]
+  },
+  "TotemLife||skill||false|":{
+    "multi":false
+  },
+  "TotemLightningResistMax,TotemElementalResistMax,TotemLightningResist,TotemElementalResist||||false|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Totem Lightning Resist Max",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Base:","+75 base Totem Lightning Resist Max","+40 base Totem Lightning Resist"],
+        "value":"+75 base"
+      },{
+        "flags":"",
+        "name":"Totem Lightning Resist",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Base:","+75 base Totem Lightning Resist Max","+40 base Totem Lightning Resist"],
+        "value":"+40 base"
+      }]
+  },
+  "TotemPlacementSpeed||skill||false|":{
+    "multi":false
+  },
+  "TrapThrowCount||skill||false|":{
+    "multi":false,
+    "rows":[{
+        "flags":"",
+        "name":"",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Base:","+1 base"],
+        "value":"+1 base"
+      }]
+  },
+  "TrapThrowingSpeed,SeismicPulseFrequency||skill||false|":{
+    "multi":true
+  },
+  "TrapThrowingSpeed||skill||false|":{
+    "multi":false
+  },
+  "TrapTriggerAreaOfEffect||skill||false|":{
+    "multi":false
+  },
+  "TwoAdditionalProjectilesChance,NoAdditionalProjectiles||skill||false|":{
+    "multi":true
+  },
+  "UtilityFlaskChargesGenerated|BASE|||false|":{
+    "multi":false
+  },
+  "WarcryEffect,BuffEffect||skill||false|":{
+    "multi":true
+  },
+  "Ward,Defences|INC|||false|":{
+    "multi":true
+  },
+  "Ward,Defences|MORE|||false|":{
+    "multi":true
+  },
+  "WardCost,Cost,WardCostNoMult||skill||false|":{
+    "multi":true
+  },
+  "WardOnBlock||||false|":{
+    "multi":false
+  },
+  "WardRegen,WardRecoveryRate|INC|||false|":{
+    "multi":true
+  },
+  "WardRegen,WardRecoveryRate|MORE|||false|":{
+    "multi":true
+  },
+  "WardRegen,WardRegenPercent,WardDegen,WardDegenPercent,WardRecovery|BASE|||false|":{
+    "multi":true,
+    "rows":[{
+        "flags":"",
+        "name":"Ward Regen Percent",
+        "source":"Base",
+        "sourceName":"",
+        "tags":"",
+        "totals":["Total from Base:","+5 base Ward Regen Percent"],
+        "value":"5"
+      }]
+  },
+  "Ward|BASE|||false|":{
+    "multi":false
+  },
+  "Ward|INC||Tree|false|":{
+    "multi":false
+  },
+  "WeaponSwapSpeed||||false|":{
+    "multi":true
+  },
+  "WitherEffectOnSelf||||false|":{
+    "multi":false
+  },
+  "reduceEnemyBlock||skill||false|":{
+    "multi":true
+  },
+  "sharedAegisValue||||false|":{
+    "multi":true
+  }
+}

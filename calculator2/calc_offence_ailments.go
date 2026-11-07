@@ -2,6 +2,7 @@ package calculator2
 
 import (
 	"math"
+	"strconv"
 	"strings"
 
 	"github.com/Vilsol/go-pob/data/poe2"
@@ -211,34 +212,42 @@ func (h *offenceHit) offenceAilments() {
 
 		// Calculates damage to be used in poise related ailment calculations; only the averages are
 		// returned, as the min / max sums feed the breakdown alone.
-		calcMinMaxPoiseSourceDamage := func(ailment string, defaultDamageTypes map[string]bool) float64 {
+		calcMinMaxPoiseSourceDamage := func(ailment string, defaultDamageTypes map[string]bool) (float64, float64, float64, float64, float64, float64, float64) {
+			var hitMin, hitMax, hitAvg, critMin, critMax, critAvg, poseDamageAvg float64
 			canCrit := !skillModList.Flag(cfg, "AilmentsAreNeverFromCrit")
-			hitAvg, critAvg := 0.0, 0.0
 			critChance := output["CritChance"]
 			for _, damageType := range dmgTypeList {
 				if canDoAilment(ailment, damageType, defaultDamageTypes) {
 					override, hasOverride := overrideFloat(skillModList.Override(cfg, ailment+damageType+"HitDamage"))
 					more := skillModList.More(cfg, damageType+ailment+"Buildup")
-					ailmentHitMin, ailmentAverage := override, override
+					ailmentHitMin, ailmentHitMax, ailmentAverage := override, override, override
 					if !hasOverride {
-						ailmentHitMin, ailmentAverage = output[damageType+"StoredHitMin"], output[damageType+"HitAverage"]
+						ailmentHitMin, ailmentHitMax, ailmentAverage = output[damageType+"StoredHitMin"], output[damageType+"StoredHitMax"], output[damageType+"HitAverage"]
 					}
+					effMulti := outputDefault(output, damageType+"EffMult", 1)
+					hitMin += ailmentHitMin * more * effMulti
+					hitMax += ailmentHitMax * more * effMulti
 					hitAvg += ailmentAverage * more
 					output[ailment+damageType+"Min"] = ailmentHitMin * more
 					output[ailment+damageType+"Max"] = ailmentAverage * more
 					if canCrit {
 						override, hasOverride = overrideFloat(skillModList.Override(cfg, ailment+damageType+"CritDamage"))
+						critMinOf, critMaxOf, critAvgOf := override, override, override
 						if !hasOverride {
-							override = output[damageType+"CritAverage"]
+							critMinOf, critMaxOf, critAvgOf = output[damageType+"StoredCritMin"], output[damageType+"StoredCritMax"], output[damageType+"CritAverage"]
 						}
-						critAvg += override * more
+						critMin += critMinOf * more * effMulti
+						critMax += critMaxOf * more * effMulti
+						critAvg += critAvgOf * more
 					}
 				}
 			}
 			if canCrit {
-				return hitAvg*(1-critChance/100) + critAvg*critChance/100
+				poseDamageAvg = hitAvg*(1-critChance/100) + critAvg*critChance/100
+			} else {
+				poseDamageAvg = hitAvg
 			}
-			return hitAvg
+			return hitMin, hitMax, hitAvg, critMin, critMax, critAvg, poseDamageAvg
 		}
 
 		// Calculate the inflict chance and base damage of a secondary effect (bleed/poison/ignite/shock/freeze)
@@ -499,7 +508,7 @@ func (h *offenceHit) offenceAilments() {
 				thresholdNames = append(thresholdNames, "EnemyAilmentThreshold")
 			}
 			enemyPoiseThreshold := math.Floor(monsterTable(poe2.MonsterPoiseThresholdTable, env.EnemyLevel) * calcLibMod(enemyDB, nil, thresholdNames...))
-			poiseAvg := calcMinMaxPoiseSourceDamage(ailment, buildupScalesFrom[ailment])
+			hitMin, hitMax, hitAvg, critMin, critMax, critAvg, poiseAvg := calcMinMaxPoiseSourceDamage(ailment, buildupScalesFrom[ailment])
 			// TODO: average for now, can do more complicated calculation later
 			incNames := []string{"EnemyImmobilisationBuildup"}
 			if !skillModList.Flag(cfg, "PinBuildupInsteadOf"+ailment+"Buildup") {
@@ -512,12 +521,43 @@ func (h *offenceHit) offenceAilments() {
 			}
 			more := skillModList.More(cfg, "Enemy"+ailment+"Buildup", "EnemyImmobilisationBuildup") * calcLibMod(enemyDB, nil, buildupNames...)
 			poiseBuildup := gameConstant(ailment+"DamageScale") / enemyPoiseThreshold * (1 + inc/100) * more * 100
+			minHit := hitMin * poiseBuildup
+			maxHit := hitMax * poiseBuildup
+			hitPoiseBuildup := hitAvg * poiseBuildup
+			minCrit := critMin * poiseBuildup
+			maxCrit := critMax * poiseBuildup
+			critPoiseBuildup := critAvg * poiseBuildup
 			totalAvgPoiseBuildup := poiseAvg * poiseBuildup
 
 			if skillFlags["hit"] && !skillModList.Flag(cfg, "Cannot"+ailment) {
 				globalOutput[ailment+"BuildupAvg"] = totalAvgPoiseBuildup
 			} else {
 				globalOutput[ailment+"BuildupAvg"] = 0
+			}
+
+			//pob2:block:src/Modules/CalcOffence.lua:5590-5609
+			if pass.breakdown != nil {
+				overridden := " ^8(can be overridden in the Configuration tab)"
+				if _, ok := env.ConfigInput["enemyLevel"]; ok {
+					overridden = " ^8(overridden from the Configuration tab"
+				}
+				actor.Breakdown.set(ailment+"Buildup",
+					"Enemy level: "+strconv.Itoa(env.EnemyLevel)+overridden,
+					"Enemy poise: "+luaToString(enemyPoiseThreshold),
+					"",
+					sFormat("Regular Hit "+ailment+" buildup"),
+					sFormat("Min: %.1f%%", minHit),
+					sFormat("Max: %.1f%%", maxHit),
+					sFormat("Avg: %.1f%%", hitPoiseBuildup),
+					sFormat(""),
+					sFormat("Crit "+ailment+" buildup"),
+					sFormat("Crit Min: %.1f%%", minCrit),
+					sFormat("Crit Max: %.1f%%", maxCrit),
+					sFormat("Crit Avg: %.1f%%", critPoiseBuildup),
+					sFormat(""),
+					sFormat("Average "+ailment+" buildup"),
+					sFormat("= %.1f%%", totalAvgPoiseBuildup),
+				)
 			}
 		}
 

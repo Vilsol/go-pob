@@ -2648,6 +2648,7 @@ export declare namespace moddb {
     StrengthGems: number;
     BaseFlags?: Record<string, boolean>;
     OverrideCond?: Record<string, boolean>;
+    IgnoreSourceInCheckConditions: boolean;
     /** Releases the Go resources behind this wrapper. */
     release(): void;
     [Symbol.dispose](): void;

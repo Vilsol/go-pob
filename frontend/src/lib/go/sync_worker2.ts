@@ -13,7 +13,10 @@ import { TabStorage, type StorageWrite } from '$lib/storage/tabs';
 import { remountStore } from './storage_config';
 import type { SavedStats2 } from '../shell/poe2_save';
 import { calcSections2 } from '../calcs/calc_sections2';
-import { calcsBreakdowns2, calcsModProps2 } from '../display/calcs2';
+import { calcsBreakdowns2, calcsModProps2, modSectionData2 } from '../display/calcs2';
+import type { SidebarCell, SidebarSection as BreakdownSection, SidebarStatRef } from '../display/sidebar_breakdown';
+import type { CalcSectionEntry2 } from '../calcs/calc_section_types2';
+import type { calculator } from '$lib/types';
 import type { CalcBreakdown } from '../display/calcs';
 
 import type { ItemDBFilterInput, ItemDBKind, ItemDBLists, ItemDBRowPlain } from '../design/item_db';
@@ -538,6 +541,34 @@ class PoB2Worker {
       offHand: out?.OffHand ? { ...out.OffHand } : undefined,
       breakdowns: calcsBreakdowns2(this.calc.CalcsBreakdowns().unwrap() ?? {})
     };
+  }
+
+  /* CalcBreakdownControl.lua:300-548 (PoB-PoE2): a cell entry's mod table over the last calculation */
+  CalcsModSection(sd: calculator2.ModSectionData): calculator2.ModSectionRow[] {
+    if (!this.calc) throw new Error('no PoE2 build is open');
+    return [...(this.calc.CalcsModSection(sd).unwrap() ?? [])];
+  }
+
+  /* Build.lua:2334-2370 (PoB-PoE2): the breakdown a sidebar stat's line names, undefined for none */
+  SidebarBreakdownKey(ref: SidebarStatRef): { key: string; source: string } | undefined {
+    if (!this.calc) throw new Error('no PoE2 build is open');
+    const got = this.calc.SidebarBreakdownKey(ref.stat, ref.childStat ?? '', ref.breakdown ?? '', ref.breakdown !== undefined, !!ref.modNames).unwrap();
+    return got?.Key ? { key: got.Key, source: got.Source } : undefined;
+  }
+
+  /* CalcBreakdownControl.lua:60-93 (PoB-PoE2): the sections a sidebar breakdown's cells show */
+  SidebarBreakdownSections(cells: SidebarCell[]): BreakdownSection[] {
+    if (!this.calc) throw new Error('no PoE2 build is open');
+    const bds = calcsBreakdowns2(this.calc.CalcsBreakdowns().unwrap() ?? {});
+    return cells.flatMap((cell): BreakdownSection[] => {
+      if (cell.breakdown !== undefined) {
+        const bd = (cell.gearOnly && bds[`${cell.breakdown}#gearOnly`]) || bds[cell.breakdown];
+        return bd ? [{ label: cell.label, bd }] : [];
+      }
+      if (!cell.modName) return [];
+      const rows = this.calc!.CalcsModSection(modSectionData2(cell as CalcSectionEntry2)).unwrap();
+      return rows?.length ? [{ label: cell.label, mods: [...rows] as unknown as calculator.ModSectionRow[] }] : [];
+    });
   }
 
   SkillGroups(): Poe2SkillGroup[] {

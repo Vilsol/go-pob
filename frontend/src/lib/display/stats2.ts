@@ -958,7 +958,14 @@ export const buildStatList2 = (input: StatListInput2, statList: Stat2[], warning
         value: formatted.value,
         valueColor: formatted.color,
         note: note || undefined,
-        stat: statData.stat
+        stat: statData.stat,
+        // Build.lua:2440-2463 (PoB-PoE2)
+        bd: {
+          stat: statData.stat,
+          ...(statData.breakdown !== undefined && { breakdown: statData.breakdown }),
+          ...(statData.modNames && { modNames: statData.modNames }),
+          ...(statData.ignoredSections && { ignoredSections: statData.ignoredSections })
+        }
       });
     }
     if (statData.warnFunc && (!statData.condFunc || shown)) {

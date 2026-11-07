@@ -423,8 +423,9 @@ func addMinionKeystones(env *Environment, minion *Minion) {
 // keeps the database perform built for it.
 //
 //pob2:src/Modules/CalcPerform.lua:3391-3420
-func calcMinionLifePool(env *Environment, buffs map[string]*moddb.ModList, includeSkill func(*ActiveSkill, map[string]bool) bool) float64 {
+func calcMinionLifePool(env *Environment, buffs map[string]*moddb.ModList, includeSkill func(*ActiveSkill, map[string]bool) bool) (float64, []minionLife) {
 	totalLife := 0.0
+	var lifeList []minionLife
 	seenMinions := map[*Minion]bool{}
 	for _, activeSkill := range env.Player.ActiveSkillList {
 		skillFlags := statSetSkillFlags(activeSkill)
@@ -442,9 +443,22 @@ func calcMinionLifePool(env *Environment, buffs map[string]*moddb.ModList, inclu
 			}
 			doActorLifeManaSpirit(&minion.Actor, true)
 			totalLife = totalLife + minion.Output["Life"]
+			name := ""
+			if minion.MinionData != nil {
+				name = minion.MinionData.Name
+			} else if activeSkill.ActiveEffect != nil && activeSkill.ActiveEffect.GrantedEffect != nil {
+				name = activeSkill.ActiveEffect.GrantedEffect.Name
+			}
+			lifeList = append(lifeList, minionLife{Name: name, Life: minion.Output["Life"]})
 		}
 	}
-	return totalLife
+	return totalLife, lifeList
+}
+
+// minionLife is one lifeList entry calcMinionLifePool returns.
+type minionLife struct {
+	Name string
+	Life float64
 }
 
 func sortedBuffNames(buffs map[string]*moddb.ModList) []string {
@@ -464,16 +478,18 @@ func minionLifePools(env *Environment, buffs map[string]*moddb.ModList) {
 	modDB := env.ModDB
 	// Total life of spectres, for "% of Damage from Hits is taken from your Spectres' Life before you"
 	if modDB.HasMod(mod.TypeBase, nil, "TakenFromSpectresBeforeYou") && modDB.Override(nil, "TotalSpectreLife") == nil {
-		totalSpectreLife := calcMinionLifePool(env, buffs, func(activeSkill *ActiveSkill, skillFlags map[string]bool) bool {
+		totalSpectreLife, spectreLifeList := calcMinionLifePool(env, buffs, func(activeSkill *ActiveSkill, skillFlags map[string]bool) bool {
 			return skillFlags["spectre"] && !activeSkill.SkillTypes["MinionsAreUndamagable"]
 		})
 		modDB.AddMod(newMod("TotalSpectreLife", mod.TypeBase, totalSpectreLife, "Spectres"))
+		env.Player.SpectreLifeList = spectreLifeList
 	}
 	// Total life of damageable companions, for "% of Damage from Hits is taken from your Companion's Life before you"
 	if modDB.HasMod(mod.TypeBase, nil, "TakenFromCompanionBeforeYou", "TakenFromCompanionBeforeYouFromDeflected") && modDB.Override(nil, "TotalCompanionLife") == nil {
-		totalCompanionLife := calcMinionLifePool(env, buffs, func(activeSkill *ActiveSkill, _ map[string]bool) bool {
+		totalCompanionLife, companionLifeList := calcMinionLifePool(env, buffs, func(activeSkill *ActiveSkill, _ map[string]bool) bool {
 			return activeSkill.SkillTypes["Companion"] && !activeSkill.SkillTypes["MinionsAreUndamagable"]
 		})
 		modDB.AddMod(newMod("TotalCompanionLife", mod.TypeBase, totalCompanionLife, "Companions"))
+		env.Player.CompanionLifeList = companionLifeList
 	}
 }

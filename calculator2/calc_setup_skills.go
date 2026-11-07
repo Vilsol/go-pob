@@ -228,11 +228,36 @@ func getSocketGroupWeaponSet(env *Environment, socketGroup *SocketGroup) int {
 }
 
 //pob2:src/Modules/CalcSetup.lua:543-548
-func getGemModList(env *Environment, groupCfg *moddb.ListCfg, socketColor string, socketNum int) []any {
+func getGemModList(env *Environment, groupCfg *moddb.ListCfg, socketColor string, socketNum int) []gemPropertyMod {
 	gemCfg := *groupCfg
 	gemCfg.SocketColor = socketColor
 	gemCfg.SocketNum = socketNum
-	return env.ModDB.List(&gemCfg, "GemProperty")
+	return tabulateGemProperties(env, &gemCfg)
+}
+
+// gemPropertyMod is a modDB:Tabulate("LIST", cfg, "GemProperty") row: the evaluated value, and its mod's source
+// and first tag.
+type gemPropertyMod struct {
+	Value  any
+	Source mod.Source
+	Tag    mod.Tag
+}
+
+// tabulateGemProperties pairs List's evaluated values with Tabulate's mods, which both walk in one order.
+func tabulateGemProperties(env *Environment, cfg *moddb.ListCfg) []gemPropertyMod {
+	values := env.ModDB.List(cfg, "GemProperty")
+	rows := env.ModDB.Tabulate(mod.TypeList, cfg, "GemProperty")
+	out := make([]gemPropertyMod, len(values))
+	for i, v := range values {
+		out[i].Value = v
+		if i < len(rows) && len(rows) == len(values) {
+			out[i].Source = rows[i].Mod.GetSource()
+			if tags := rows[i].Mod.Tags(); len(tags) > 0 {
+				out[i].Tag = tags[0]
+			}
+		}
+	}
+	return out
 }
 
 // gemPropertyKeyword is GemProperty's keyword, "" when it has none.
@@ -244,9 +269,9 @@ func gemPropertyKeyword(p mod.GemProperty) string {
 }
 
 //pob2:src/Modules/CalcSetup.lua:550-575
-func applyGemMods(effect *GemEffect, modList []any) {
-	for _, v := range modList {
-		value, ok := v.(mod.GemProperty)
+func applyGemMods(effect *GemEffect, modList []gemPropertyMod) {
+	for _, row := range modList {
+		value, ok := row.Value.(mod.GemProperty)
 		if !ok {
 			continue
 		}
@@ -277,7 +302,7 @@ func applyGemMods(effect *GemEffect, modList []any) {
 				}
 				effect.Values[value.Key] += value.Value
 			}
-			effect.GemPropertyInfo = append(effect.GemPropertyInfo, gemPropertyInfo{Value: value})
+			effect.GemPropertyInfo = append(effect.GemPropertyInfo, gemPropertyInfo{Value: value, Source: row.Source, Tag: row.Tag})
 		}
 	}
 }
@@ -356,7 +381,7 @@ func addBestSupport(supportEffect *GemEffect, appliedSupportList *[]*GemEffect, 
 // groupCfg is one groupCfgList entry: the cfg the group's gem lookups read, and its property list.
 type groupCfg struct {
 	cfg              *moddb.ListCfg
-	propertyModList  []any
+	propertyModList  []gemPropertyMod
 	slotName         string
 	intelligenceGems float64
 	dexterityGems    float64
@@ -394,7 +419,7 @@ func countSocketedGem(env *Environment, gemInstance *GemInstance, gc *groupCfg, 
 }
 
 // gemModsFor is the property list a gem at gemIndex reads.
-func gemModsFor(env *Environment, gc *groupCfg, gemIndex int) []any {
+func gemModsFor(env *Environment, gc *groupCfg, gemIndex int) []gemPropertyMod {
 	if socketedIn(env, gc.slotName, gemIndex) {
 		return getGemModList(env, gc.cfg, "", gemIndex)
 	}
@@ -880,7 +905,7 @@ func setupSkills(env *Environment) bool {
 		}
 		slotName := strings.ReplaceAll(group.Slot, " Swap", "")
 		gc := &groupCfg{cfg: &moddb.ListCfg{SlotName: slotName}, slotName: slotName}
-		gc.propertyModList = env.ModDB.List(&moddb.ListCfg{SlotName: slotName}, "GemProperty")
+		gc.propertyModList = tabulateGemProperties(env, &moddb.ListCfg{SlotName: slotName})
 		groupCfgList[group] = gc
 		return gc
 	}

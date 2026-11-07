@@ -1302,6 +1302,48 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 			output["preventedLifeLossTotal"] = output["preventedLifeLoss"] + output["preventedLifeLossBelowHalf"]
 		}
 		output["LifeHitPool"] = calcLifeHitPoolWithLossPrevention(recoverable, output["Life"], preventedLifeLoss, initialLifeLossBelowHalfPrevented)
+
+		//pob2:block:src/Modules/CalcDefence.lua:2885-2923
+		if breakdown != nil {
+			portionLife := 1.0
+			if !conditionLowLife {
+				portionLife = math.Min(output["Life"]*0.5/recoverable, 1)
+			}
+			const key = "preventedLifeLossTotal"
+			breakdown.set(key, sFormat("Total life protected:"))
+			if output["preventedLifeLoss"] != 0 {
+				breakdown.insert(key, sFormat("%.2f ^8(portion taken over 4 seconds instead)", output["preventedLifeLoss"]/100))
+			}
+			plus := ""
+			if output["preventedLifeLoss"] != 0 {
+				plus = "+ "
+			}
+			if output["preventedLifeLossBelowHalf"] != 0 {
+				if portionLife != 1 {
+					if output["preventedLifeLoss"] != 0 {
+						breakdown.insert(key, sFormat(""))
+					}
+					breakdown.insert(key, sFormat("%s%.2f ^8(initial portion taken by petrified blood)", plus, initialLifeLossBelowHalfPrevented/100))
+					if output["preventedLifeLoss"] != 0 {
+						breakdown.insert(key, sFormat("* %.2f ^8(portion not already taken over time)", 1-output["preventedLifeLoss"]/100))
+					}
+					breakdown.insert(key, sFormat("* %.2f ^8(portion of life on low life)", portionLife))
+					breakdown.insert(key, sFormat("= %.2f ^8(final portion taken by petrified blood)", output["preventedLifeLossBelowHalf"]*portionLife/100))
+					breakdown.insert(key, sFormat(""))
+				} else {
+					portion := "portion"
+					if output["preventedLifeLoss"] != 0 {
+						portion = "initial portion"
+					}
+					breakdown.insert(key, sFormat("%s%.2f ^8(%s taken by petrified blood)", plus, initialLifeLossBelowHalfPrevented/100, portion))
+					if output["preventedLifeLoss"] != 0 {
+						breakdown.insert(key, sFormat("* %.2f ^8(portion not already taken over time)", 1-output["preventedLifeLoss"]/100))
+						breakdown.insert(key, sFormat("= %.2f ^8(final portion taken by petrified blood)", output["preventedLifeLossBelowHalf"]/100))
+					}
+				}
+			}
+			breakdown.insert(key, sFormat("%.2f ^8(portion taken from life)", 1-output["preventedLifeLossTotal"]/100))
+		}
 	}
 
 	//pob2:block:src/Modules/CalcDefence.lua:2927-2941
@@ -1440,12 +1482,34 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 		output["FrostShieldLife"] = modDB.Sum(mod.TypeBase, nil, "FrostGlobeHealth")
 		output["FrostShieldDamageMitigation"] = modDB.Sum(mod.TypeBase, nil, "FrostGlobeDamageMitigation")
 
+		lifeProtected := output["FrostShieldLife"] / (output["FrostShieldDamageMitigation"] / 100) * (1 - output["FrostShieldDamageMitigation"]/100)
+		if breakdown != nil {
+			breakdown.set("FrostShieldLife",
+				sFormat("Total life protected:"),
+				sFormat("%d ^8(frost shield limit)", output["FrostShieldLife"]),
+				sFormat("/ %.2f ^8(portion taken from frost shield)", output["FrostShieldDamageMitigation"]/100),
+				sFormat("x %.2f ^8(portion taken from life and energy shield)", 1-output["FrostShieldDamageMitigation"]/100),
+				sFormat("= %d", lifeProtected),
+			)
+		}
+
 		output["SpectreAllyDamageMitigation"] = modDB.Sum(mod.TypeBase, nil, "TakenFromSpectresBeforeYou")
 		if output["SpectreAllyDamageMitigation"] != 0 {
-			if o := modDB.Override(nil, "TotalSpectreLife"); o != nil {
+			o := modDB.Override(nil, "TotalSpectreLife")
+			if o != nil {
 				output["TotalSpectreLife"] = o.Float()
 			} else {
 				output["TotalSpectreLife"] = modDB.Sum(mod.TypeBase, nil, "TotalSpectreLife")
+			}
+			if breakdown != nil {
+				breakdown.set("TotalSpectreLife")
+				if o != nil {
+					breakdown.insert("TotalSpectreLife", sFormat("%d ^8(from config)", output["TotalSpectreLife"]))
+				} else {
+					for _, spectre := range a.SpectreLifeList {
+						breakdown.insert("TotalSpectreLife", sFormat("%d ^8(%s)", spectre.Life, spectre.Name))
+					}
+				}
 			}
 		}
 
@@ -1468,10 +1532,28 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 		companionMitigationFromDeflected := modDB.Sum(mod.TypeBase, nil, "TakenFromCompanionBeforeYouFromDeflected")
 		output["CompanionAllyDamageMitigation"] = companionMitigation + companionMitigationFromDeflected*output["DeflectChance"]/100
 		if output["CompanionAllyDamageMitigation"] != 0 {
-			if o := modDB.Override(nil, "TotalCompanionLife"); o != nil {
+			o := modDB.Override(nil, "TotalCompanionLife")
+			if o != nil {
 				output["TotalCompanionLife"] = o.Float()
 			} else {
 				output["TotalCompanionLife"] = modDB.Sum(mod.TypeBase, nil, "TotalCompanionLife")
+			}
+			if breakdown != nil {
+				breakdown.set("TotalCompanionLife")
+				if o != nil {
+					breakdown.insert("TotalCompanionLife", sFormat("%d ^8(from config)", output["TotalCompanionLife"]))
+				} else {
+					for _, companion := range a.CompanionLifeList {
+						breakdown.insert("TotalCompanionLife", sFormat("%d ^8(%s)", companion.Life, companion.Name))
+					}
+				}
+				if companionMitigationFromDeflected != 0 {
+					breakdown.set("CompanionAllyDamageMitigation",
+						sFormat("%d%% ^8(taken from hits)", companionMitigation),
+						sFormat("+ %d%% x %.2f ^8(taken from deflected hits, scaled by deflect chance)", companionMitigationFromDeflected, output["DeflectChance"]/100),
+						sFormat("= %.1f%%", output["CompanionAllyDamageMitigation"]),
+					)
+				}
 			}
 		}
 

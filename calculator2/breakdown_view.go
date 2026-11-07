@@ -1,6 +1,10 @@
 package calculator2
 
-import "sort"
+import (
+	"sort"
+	"strconv"
+	"strings"
+)
 
 // BreakdownTable is one TABLE section CalcBreakdownControl draws; a row's missing key is an empty cell.
 type BreakdownTable struct {
@@ -62,7 +66,29 @@ func (b *Breakdown) View(name string) (BreakdownView, bool) {
 		v.Radius, v.HasRadius = e.Radius, true
 	}
 	if len(e.RowList) > 0 {
-		v.Tables = append(v.Tables, BreakdownTable{Label: e.Label, Footer: e.Footer, Columns: e.ColList, Rows: e.RowList})
+		rows := e.RowList
+		//pob2:block:src/Classes/CalcBreakdownControl.lua:181-191
+		if e.Source {
+			rows = append([]map[string]string(nil), rows...)
+			colKey := e.ColList[0].Key
+			luaSort(rows, func(a, b map[string]string) bool {
+				if a["reqNum"] != "" {
+					return luaNumberOf(a["reqNum"]) > luaNumberOf(b["reqNum"])
+				}
+				return a[colKey] > b[colKey]
+			})
+			// reqNum is the sort's, not a column's
+			for i, r := range rows {
+				shown := make(map[string]string, len(e.ColList))
+				for _, c := range e.ColList {
+					if v, ok := r[c.Key]; ok {
+						shown[c.Key] = v
+					}
+				}
+				rows[i] = shown
+			}
+		}
+		v.Tables = append(v.Tables, BreakdownTable{Label: e.Label, Footer: e.Footer, Columns: e.ColList, Rows: rows})
 	}
 	if len(e.Reservations) > 0 {
 		rows := make([]map[string]string, 0, len(e.Reservations))
@@ -127,4 +153,57 @@ func (b *Breakdown) Views() map[string]BreakdownView {
 		}
 	}
 	return out
+}
+
+// hand is breakdown.MainHand or breakdown.OffHand by name, nil for any other.
+func (b *Breakdown) hand(name string) *Breakdown {
+	switch name {
+	case "MainHand":
+		return b.MainHand
+	case "OffHand":
+		return b.OffHand
+	}
+	return nil
+}
+
+// StatKey is the breakdown key a sidebar stat's line names, false for none: the stat's breakdown, or
+// override where the stat gives one, and for a stat with no modNames only one with something to show.
+//
+//pob2:src/Modules/Build.lua:2334-2370
+func (b *Breakdown) StatKey(stat, childStat, override string, hasOverride, modNames bool) (string, bool) {
+	if b == nil {
+		return "", false
+	}
+	var key string
+	switch {
+	case hasOverride:
+		key = override
+	case childStat != "":
+		if parent := b.hand(stat); parent != nil && parent.Entries[childStat] != nil {
+			key = stat + "." + childStat
+		}
+	case b.Entries[stat] != nil || b.hand(stat) != nil:
+		key = stat
+	}
+	if key == "" {
+		return "", false
+	}
+	if modNames {
+		return key, true
+	}
+	var e *BreakdownEntry
+	if namespace, name, ok := strings.Cut(key, "."); ok && b.hand(namespace) != nil && b.hand(namespace).Entries[name] != nil {
+		e = b.hand(namespace).Entries[name]
+	} else {
+		e = b.Entries[key]
+	}
+	if e != nil && (len(e.Lines) > 0 || e.HasRadius || len(e.RowList) > 0 || len(e.Reservations) > 0 || len(e.Slots) > 0) {
+		return key, true
+	}
+	return "", false
+}
+
+func luaNumberOf(s string) float64 {
+	f, _ := strconv.ParseFloat(s, 64)
+	return f
 }

@@ -54,7 +54,12 @@ const sidebar2 = (calc: Calc): Sidebar => {
   const lines: string[] = [];
   const sections: SidebarSection[] = [];
   if (calc.minion)
-    sections.push({ header: 'Minion', groups: buildStatList2({ Output: calc.minion, SkillFlags: calc.minionSkillFlags }, minionDisplayStats2, lines) });
+    sections.push({
+      header: 'Minion',
+      groups: buildStatList2({ Output: calc.minion, SkillFlags: calc.minionSkillFlags }, minionDisplayStats2, lines).map((g) =>
+        g.map((l) => ({ ...l, minion: true }))
+      )
+    });
   sections.push({
     header: calc.minion ? 'Player' : undefined,
     info: calc.skillFlags?.disable ? ['^7Skill disabled:'] : undefined,
@@ -259,10 +264,25 @@ export const poe2Engine: BuildEngine = {
           .then((l) => l as exposition.ModLine[])
     }
   },
+  // Build.lua:1479-1511, 2226-2331 (PoB-PoE2): the main calculation's breakdown and mod tables a sidebar line names
+  breakdownSteps: async (line) => {
+    const calc = get(poe2Build) as Calc | undefined;
+    if (!line.bd || line.minion || !calc) return undefined;
+    const w = await poe2Worker();
+    const ref = await w.SidebarBreakdownKey(line.bd);
+    if (!ref) return undefined;
+    const [{ checkFlag2, sidebarBreakdown2 }, { calcSections2 }] = await Promise.all([import('$lib/display/calcs2'), import('$lib/calcs/calc_sections2')]);
+    const actor = { output: calc.output as never, skillFlags: calc.skillFlags ?? {}, skillData: calc.skillData ?? {}, mods: {} };
+    const cells = sidebarBreakdown2(calcSections2, ref.key, ref.source, line.bd.modNames, line.bd.ignoredSections).filter((c) => checkFlag2(c as never, actor));
+    return w.SidebarBreakdownSections(cells);
+  },
   // SkillsTab.lua (PoB-PoE2)
   skills: () => import('./engine_poe2_skills.svelte').then((m) => m.poe2SkillsPage),
   calcs: {
     tab: calcsTab2,
-    setMainSkill: setMainSkill2
+    setMainSkill: setMainSkill2,
+    // CalcBreakdownControl.lua:300-548 (PoB-PoE2)
+    modrows: (sd) =>
+      get(poe2Build) ? poe2Worker().then((w) => w.CalcsModSection(sd as calculator2.ModSectionData) as unknown as calculator.ModSectionRow[]) : undefined
   }
 };

@@ -82,6 +82,26 @@ export declare namespace calculator2 {
     readonly Search: string;
     readonly SearchMode: number;
   }
+  interface ModSectionData {
+    readonly ModName?: Array<string>;
+    readonly Multi: boolean;
+    readonly ModType: string;
+    readonly Cfg: string;
+    readonly ModSource: string;
+    readonly Enemy: boolean;
+    readonly Actor: string;
+  }
+  interface ModSectionRow {
+    readonly Value: string;
+    readonly Name: string;
+    readonly Flags: string;
+    readonly Tags: string;
+    readonly Source: string;
+    readonly SourceName: string;
+    readonly Totals?: Array<string>;
+    readonly ItemID: number;
+    readonly NodeID: number;
+  }
   interface PlayerProgress {
     readonly Level: number;
     readonly Act: string;
@@ -162,6 +182,7 @@ export declare namespace exposition {
     AllocateAttributeNode(id: number, attributeIndex: number, allocMode: number): Result<void>;
     BuildItemCompare(id: number): Promise<Result<(exposition.ItemCompareView | undefined)>>;
     CalcsBreakdowns(): Result<(Record<string, Readonly<exposition.CalcsBreakdown>> | undefined)>;
+    CalcsModSection(sd: calculator2.ModSectionData): Result<(Array<calculator2.ModSectionRow> | undefined)>;
     CalcsMods(query: exposition.CalcsModQuery): Result<(Record<string, number> | undefined)>;
     CalcsOutputs(): Result<(exposition.CalcsOutputs | undefined)>;
     Calculate(): Promise<Result<(exposition.Outputs | undefined)>>;
@@ -251,6 +272,7 @@ export declare namespace exposition {
     SetSocketGroupLabel(index: number, label: string): Result<void>;
     SetSocketGroupWeaponSet(index: number, set: number, state: boolean): Result<void>;
     SetUseSecondWeaponSet(second: boolean): Result<void>;
+    SidebarBreakdownKey(stat: string, childStat: string, breakdown: string, hasBreakdown: boolean, modNames: boolean): Result<exposition.SidebarBreakdownRef>;
     SkillGroups(): Result<(Array<exposition.SkillGroupView> | undefined)>;
     SkillSets(): exposition.SkillSetsView;
     SkillsUndo(redo: boolean): Result<boolean>;
@@ -416,6 +438,10 @@ export declare namespace exposition {
   interface SavedStat {
     readonly Stat: string;
     readonly Value: number;
+  }
+  interface SidebarBreakdownRef {
+    readonly Key: string;
+    readonly Source: string;
   }
   interface SkillGemView {
     readonly ID: string;

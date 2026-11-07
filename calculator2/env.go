@@ -324,6 +324,9 @@ type Actor struct {
 	OutputOffHand  map[string]float64
 	// Breakdown is actor.breakdown, nil unless env.buildBreakdown.
 	Breakdown *Breakdown
+	// SpectreLifeList and CompanionLifeList are actor.spectreLifeList and actor.companionLifeList.
+	SpectreLifeList   []minionLife
+	CompanionLifeList []minionLife
 
 	Player *Actor
 	Enemy  *Actor

@@ -81,7 +81,7 @@ func TestApplyGemModsGemRequirements(t *testing.T) {
 		want   int
 	}{{100, 3}, {0, 1}, {1, 1}} {
 		effect := &GemEffect{Level: 1, GemData: &poe2skills.Gem{Data: &poe2.Gem{Name: "Probe", ReqInt: c.reqInt}}}
-		applyGemMods(effect, []any{prop})
+		applyGemMods(effect, []gemPropertyMod{{Value: prop}})
 		if effect.Level != c.want {
 			t.Errorf("reqInt %v: level %d, want %d", c.reqInt, effect.Level, c.want)
 		}

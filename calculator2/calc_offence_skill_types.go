@@ -390,7 +390,7 @@ func offenceSkillTypeStats(env *Environment, actor *Actor, activeSkill *ActiveSk
 }
 
 //pob2:block:src/Modules/CalcOffence.lua:1994-2191
-func offenceDurations(env *Environment, activeSkill *ActiveSkill, skillFlags map[string]bool, output map[string]float64) {
+func offenceDurations(env *Environment, activeSkill *ActiveSkill, skillFlags map[string]bool, output map[string]float64, breakdown *Breakdown) {
 	skillModList := activeSkill.SkillModList
 	skillCfg := activeSkill.SkillCfg
 	skillData := activeSkill.SkillData
@@ -453,6 +453,15 @@ func offenceDurations(env *Environment, activeSkill *ActiveSkill, skillFlags map
 	output["TotemDurationMod"] = math.Max(output["TotemDurationMod"], 0)
 	totemDurationBase := skillModList.Sum(mod.TypeBase, skillCfg, "TotemDuration")
 	output["TotemDuration"] = math.Ceil(totemDurationBase*output["TotemDurationMod"]*tick) / tick
+	//pob2:block:src/Modules/CalcOffence.lua:2132-2142
+	if breakdown != nil {
+		breakdown.setEntry("TotemDurationMod", breakdown.mod(skillModList, skillCfg, "TotemDuration"))
+		breakdown.set("TotemDuration", sFormat("%.2fs ^8(base)", totemDurationBase))
+		if output["TotemDurationMod"] != 1 {
+			breakdown.insert("TotemDuration", sFormat("x %.4f ^8(duration modifier)", output["TotemDurationMod"]))
+		}
+		breakdown.insert("TotemDuration", sFormat("rounded up to nearest server tick"), sFormat("= %.3fs", output["TotemDuration"]))
+	}
 
 	// Skill uptime
 	if !activeSkill.SkillTypes["Vaal"] { // exclude vaal skills as we currently don't support soul generation or gain prevention.

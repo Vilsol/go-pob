@@ -589,7 +589,7 @@ func offence(env *Environment, actor *Actor, activeSkill *ActiveSkill) {
 	}
 
 	offenceSkillTypeStats(env, actor, activeSkill, skillFlags, output)
-	offenceDurations(env, activeSkill, skillFlags, output)
+	offenceDurations(env, activeSkill, skillFlags, output, actor.Breakdown)
 	hasCosts := offenceCosts(env, actor, activeSkill, output)
 
 	// Eldritch Battery adds maximum Energy Shield to the Mana available for payable-cost damage.

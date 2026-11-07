@@ -2,10 +2,22 @@
 // layout, over calc_sections2.ts, with the breakdowns calculator2 builds.
 
 import type { CalcSection2, CalcSectionColumn2, CalcSectionEntry2, CalcSectionRow2, FlagGated2 } from '$lib/calcs/calc_section_types2';
-import { cellId, elementsOf, type CalcBlock, type CalcBreakdown, type CalcCell, type CalcRow, type CalcSectionView, type CalcsView } from './calcs';
+import {
+  cellId,
+  elementsOf,
+  type CalcBlock,
+  type CalcBreakdown,
+  type CalcCell,
+  type CalcModSection,
+  type CalcRow,
+  type CalcSectionView,
+  type CalcsView
+} from './calcs';
 import type { exposition } from '$lib/types2';
 import { formatNumSep } from './format_stat';
 import { luaToString } from './saved_stats';
+import { breakdownIndex, type SidebarCell } from './sidebar_breakdown';
+import type { CalcSection } from '$lib/calcs/calc_sections';
 
 export type CalcsOutputValue2 = number | boolean | string;
 
@@ -141,6 +153,17 @@ export const calcsModProps2 = (sections: CalcSection2[]): Record<string, CalcsMo
   return out;
 };
 
+/* CalcBreakdownControl.lua:300-325 (PoB-PoE2): what AddModSection reads of an entry */
+export const modSectionData2 = (e: CalcSectionEntry2): CalcModSection['sd'] => ({
+  ModName: [e.modName ?? []].flat(),
+  Multi: typeof e.modName !== 'string',
+  ModType: e.modType ?? '',
+  Cfg: e.cfg ?? '',
+  ModSource: e.modSource ?? '',
+  Enemy: !!e.enemy,
+  Actor: e.actor ?? ''
+});
+
 const modLabel = (e: CalcSectionEntry2) => {
   const all = [e.modName ?? []].flat();
   return `${all.slice(0, 3).join(', ')}${all.length > 3 ? ` +${all.length - 3}` : ''} ${e.modType}${e.enemy ? ' (enemy)' : ''}`;
@@ -172,6 +195,9 @@ export const calcsView2 = (sections: CalcSection2[], actor: CalcsActor2): CalcsV
           }
           const mods = rowsOf<CalcSectionEntry2>(c).filter((e) => e.modName && e.modType);
           if (mods.length) cell.mods = mods.map(modLabel);
+          // CalcBreakdownControl.lua:75-83: each mod name entry whose flags hold is a mod table
+          const modEntries = rowsOf<CalcSectionEntry2>(c).filter((e) => e.modName && !e.breakdown && checkFlag2(e, actor));
+          if (modEntries.length) cell.sections = modEntries.map((e) => ({ label: e.label, sd: modSectionData2(e) }));
           return cell;
         });
         rows.push({ label: row.label ?? '', cells });
@@ -183,4 +209,28 @@ export const calcsView2 = (sections: CalcSection2[], actor: CalcsActor2): CalcsV
     return { ...head, applicable: true, blocks };
   });
   return { sections: view, breakdowns };
+};
+
+/* Build.lua:2278-2331 (PoB-PoE2): the cells a sidebar line shows for breakdown key, whose Calcs cell is source's */
+export const sidebarBreakdown2 = (sections: CalcSection2[], key: string, source: string, modNames?: string[], ignoredSections?: string[]): SidebarCell[] => {
+  const entry = breakdownIndex(sections as unknown as CalcSection[]).get(source);
+  if (!entry) {
+    const output: SidebarCell[] = [{ breakdown: key }];
+    if (modNames) output.push({ modName: modNames });
+    return output;
+  }
+  const displayData: SidebarCell[] = elementsOf<SidebarCell>(entry.colData as never).map((cell) => ({
+    ...cell,
+    ...(cell.breakdown === source && { breakdown: key })
+  }));
+  for (const modKey of modNames ?? []) displayData.push(...(entry.modSectionsByName[modKey] ?? []));
+  const visitedSections = new Set<string>();
+  for (let i = displayData.length - 1; i >= 0; i--) {
+    const label = displayData[i].label;
+    if (label) {
+      if (visitedSections.has(label) || ignoredSections?.includes(label)) displayData.splice(i, 1);
+      visitedSections.add(label);
+    }
+  }
+  return displayData.length ? displayData : [{ breakdown: key }];
 };

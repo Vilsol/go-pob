@@ -33,7 +33,7 @@ func luaToString(v float64) string {
 	return fmt.Sprintf("%.14g", v)
 }
 
-// Req<attr>Item is not kept.
+// Req<attr>Item is not kept, and a breakdown row has no source name tooltip.
 //
 //pob2:block:src/Modules/CalcPerform.lua:1896-1992
 func processAttributeRequirements(env *Environment, requirementsTable []requirementSource) {
@@ -59,7 +59,16 @@ func processAttributeRequirements(env *Environment, requirementsTable []requirem
 	}
 	ignoreAttrReq := modDB.Flag(nil, "IgnoreAttributeRequirements")
 	strengthSatisfiesMeleeFlag := modDB.Flag(nil, "StrengthSatisfiesMeleeWeaponsAndSkills")
+	breakdown := env.Player.Breakdown
 	for _, attr := range attrTable {
+		breakdownAttr := attr
+		if breakdown != nil {
+			breakdown.setEntry("Req"+attr, &BreakdownEntry{
+				Source:  true,
+				RowList: []map[string]string{},
+				ColList: []BreakdownCol{{attr, "req"}, {"Source", "source"}, {"Source Name", "sourceName"}},
+			})
+		}
 		outVal := 0.0
 		for _, reqSource := range requirementsTable {
 			if reqSource.attr(attr) > 0 {
@@ -92,6 +101,33 @@ func processAttributeRequirements(env *Environment, requirementsTable []requirem
 				if req > threshold {
 					outVal = req
 				}
+				if breakdown != nil {
+					breakdownAttributeValue := output[breakdownAttr]
+					if gemAttributeRequirementsSatisfiedByHighestAttribute && reqSource.source == "Gem" {
+						breakdownAttributeValue = highestAttributeValue
+					}
+					reqThreshold := breakdownAttributeValue
+					if strengthSatisfiesMelee && breakdownAttr != "Str" {
+						reqThreshold = math.Max(breakdownAttributeValue, output["Str"])
+					}
+					row := map[string]string{"req": luaToString(req), "reqNum": luaToString(req), "source": reqSource.source}
+					if req > reqThreshold {
+						row["req"] = colorNegative + luaToString(req)
+					}
+					switch reqSource.source {
+					case "Item":
+						item := reqSource.sourceItem
+						row["sourceName"] = rarityColors[item.Rarity] + item.Name
+					case "Gem":
+						gem := reqSource.sourceGem
+						row["sourceName"] = sFormat("%s%s ^7%d/%d", gemColor(gem), gem.NameSpec, gem.Level, gem.Quality)
+					case "Support Gems":
+						attrName := map[string]string{"Str": "Strength", "Dex": "Dexterity", "Int": "Intelligence"}[attr]
+						row["sourceName"] = luaToString(reqSource.attr(attr)/5) + " " + attributeColors[attrName] + attrName + " Support Gems"
+					}
+					e := breakdown.Entries["Req"+breakdownAttr]
+					e.RowList = append(e.RowList, row)
+				}
 			}
 		}
 		if ignoreAttrReq {
@@ -109,4 +145,31 @@ func processAttributeRequirements(env *Environment, requirementsTable []requirem
 			}
 		}
 	}
+}
+
+// attributeColors is colorCodes[string.upper(attrName)].
+//
+//pob2:block:src/Data/Global.lua:76-78
+var attributeColors = map[string]string{"Strength": "^xE05030", "Dexterity": "^x70FF70", "Intelligence": "^x7070FF"}
+
+// gemColor is gemInstance.color: its granted effect's attribute colour, "^8" without one.
+//
+//pob2:block:src/Classes/SkillsTab.lua:1351-1361
+func gemColor(gem *GemInstance) string {
+	grantedEffect := gem.GrantedEffect
+	if grantedEffect == nil && gem.GemData != nil {
+		grantedEffect = gem.GemData.GrantedEffect
+	}
+	if grantedEffect == nil {
+		return "^8"
+	}
+	switch grantedEffect.Color {
+	case 1:
+		return attributeColors["Strength"]
+	case 2:
+		return attributeColors["Dexterity"]
+	case 3:
+		return attributeColors["Intelligence"]
+	}
+	return "^xC8C8C8"
 }

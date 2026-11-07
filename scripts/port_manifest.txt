@@ -564,6 +564,8 @@ wasm/exposition/ui_exports.go           GO-NATIVE  crystalline binding surface f
 calculator/party_export.go         PORT       src/Modules/CalcPerform.lua,src/Classes/PartyTab.lua,src/Modules/ModTools.lua
 calculator2/breakdown.go            PORT       src/Modules/CalcBreakdown.lua
 calculator2/breakdown_view.go       PORT       src/Classes/CalcBreakdownControl.lua
+calculator2/breakdown_mods.go       PORT       src/Classes/CalcBreakdownControl.lua
+calculator2/lua_sort.go             GO-NATIVE  LuaJIT's table.sort (Lua 5.1's quicksort), so rows a comparator ties come out in the order PoB-PoE2's do; a runtime routine, not PoB code
 calculator2/calc_defence.go         PORT       src/Modules/CalcDefence.lua
 calculator2/calc_defence_ehp.go     PORT       src/Modules/CalcDefence.lua
 calculator2/calc_defence_ehp_config.go PORT    src/Classes/ConfigTab.lua,src/Modules/ConfigOptions.lua

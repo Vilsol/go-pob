@@ -33835,7 +33835,7 @@ func crystallineMarshalModdbListCfg(v *moddb.ListCfg) any {
 
 	if crystallineMarshalModdbListCfgShape.IsUndefined() {
 		crystallineMarshalModdbListCfgShape = crystallineShape("moddb.ListCfg",
-			[]string{"Actor", "Flags", "KeywordFlags", "Source", "SkillStats", "SkillCond", "SlotName", "SkillName", "SummonSkillName", "SkillGem", "SkillPart", "SkillTypes", "SkillDist", "SkillDistSet", "SocketColor", "SocketNum", "IntelligenceGems", "DexterityGems", "StrengthGems", "BaseFlags", "OverrideCond"},
+			[]string{"Actor", "Flags", "KeywordFlags", "Source", "SkillStats", "SkillCond", "SlotName", "SkillName", "SummonSkillName", "SkillGem", "SkillPart", "SkillTypes", "SkillDist", "SkillDistSet", "SocketColor", "SocketNum", "IntelligenceGems", "DexterityGems", "StrengthGems", "BaseFlags", "OverrideCond", "IgnoreSourceInCheckConditions"},
 			func(v *moddb.ListCfg, entry *crystallineEntry, field int) any {
 				switch field {
 				case 0:
@@ -34065,6 +34065,8 @@ func crystallineMarshalModdbListCfg(v *moddb.ListCfg) any {
 							return out
 						}()
 					})
+				case 21:
+					return bool(v.IgnoreSourceInCheckConditions)
 				}
 
 				return nil
@@ -34301,6 +34303,17 @@ func crystallineMarshalModdbListCfg(v *moddb.ListCfg) any {
 						}
 
 						v.OverrideCond = converted
+					})(value)
+				case 21:
+					(func(value js.Value) {
+						converted, err := crystallineToBool(value)
+						if err != nil {
+							crystallineFail(err.Error())
+
+							return
+						}
+
+						v.IgnoreSourceInCheckConditions = converted
 					})(value)
 				}
 			},

@@ -1019,8 +1019,7 @@ func perform(env *Environment) {
 	calcMainSkillGemLevel(env)
 }
 
-// calcMainSkillGemLevel calculates the gem level and quality of the main skill. The breakdown is not
-// ported.
+// calcMainSkillGemLevel calculates the gem level and quality of the main skill.
 //
 //pob2:block:src/Modules/CalcPerform.lua:3652-3703
 func calcMainSkillGemLevel(env *Environment) {
@@ -1043,6 +1042,24 @@ func calcMainSkillGemLevel(env *Environment) {
 		} else {
 			output["GemLevel"] = math.Max(baseLevel+totalSupportLevel+totalItemLevel+totalCorruptionLevel, 1)
 		}
+
+		if bd := env.Player.Breakdown; bd != nil {
+			bd.set("GemLevel", sFormat("%d ^8(level from gem)", baseLevel))
+			if !inheritsLevel {
+				if totalSupportLevel > 0 {
+					bd.insert("GemLevel", sFormat("+ %d ^8(level from support)", totalSupportLevel))
+				}
+				if totalItemLevel > 0 {
+					bd.insert("GemLevel", sFormat("+ %d ^8(level from items)", totalItemLevel))
+				}
+				if totalCorruptionLevel > 0 {
+					bd.insert("GemLevel", sFormat("+ %d ^8(level from corruption)", totalCorruptionLevel))
+				} else if totalCorruptionLevel < 0 {
+					bd.insert("GemLevel", sFormat("%d ^8(level from corruption)", totalCorruptionLevel))
+				}
+			}
+			bd.insert("GemLevel", sFormat("= %d", output["GemLevel"]))
+		}
 	}
 	if mainSkill.ActiveEffect != nil && mainSkill.ActiveEffect.SrcInstance != nil {
 		baseQuality := skillModList.Sum(mod.TypeBase, skillCfg, "GemQuality")
@@ -1050,6 +1067,16 @@ func calcMainSkillGemLevel(env *Environment) {
 		totalSupportQuality := skillModList.Sum(mod.TypeBase, skillCfg, "GemSupportQuality")
 
 		output["GemQuality"] = baseQuality + totalSupportQuality + totalGlobalQuality
+		if bd := env.Player.Breakdown; bd != nil {
+			bd.set("GemQuality", sFormat("%d ^8(quality from gem)", baseQuality))
+			if totalSupportQuality > 0 {
+				bd.insert("GemQuality", sFormat("+ %d ^8(quality from supports)", totalSupportQuality))
+			}
+			if totalGlobalQuality > 0 {
+				bd.insert("GemQuality", sFormat("+ %d ^8(quality from global modifiers)", totalGlobalQuality))
+			}
+			bd.insert("GemQuality", sFormat("= %d", output["GemQuality"]))
+		}
 	}
 }
 

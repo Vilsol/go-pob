@@ -57,7 +57,13 @@ const breakdowns = Object.fromEntries(
 );
 
 const numbers = Object.fromEntries(Object.entries(calcs.output).filter((e): e is [string, number] => typeof e[1] === 'number'));
-const w2 = vi.hoisted(() => ({ CalcsPage: vi.fn(), TreeData: vi.fn(() => new Promise(() => {})) }));
+const w2 = vi.hoisted(() => ({
+  CalcsPage: vi.fn(),
+  CalcsModSection: vi.fn(),
+  SidebarBreakdownKey: vi.fn(),
+  SidebarBreakdownSections: vi.fn(),
+  TreeData: vi.fn(() => new Promise(() => {}))
+}));
 vi.mock('$lib/go/worker2', () => ({ poe2Worker: () => Promise.resolve(w2) }));
 
 const { poe2Build } = await import('$lib/global');
@@ -73,6 +79,17 @@ const rowOf = (bd: string) => {
     for (const [j, b] of (s.blocks ?? []).entries()) for (const [k, r] of b.rows.entries()) if (r.cells.some((c) => c.bd === bd)) return rowKey(s.id, j, k);
   throw new Error(`no cell shows breakdown ${bd}`);
 };
+// the row labelled label whose cell names a mod table
+const modRowOf = (label: string) => {
+  const view = calcsView2(calcSections2, { ...calcs, breakdowns: calcsBreakdowns2(breakdowns as never) });
+  for (const s of view.sections)
+    for (const [j, b] of (s.blocks ?? []).entries())
+      for (const [k, r] of b.rows.entries()) if (r.label === label && r.cells.some((c) => c.sections?.length)) return rowKey(s.id, j, k);
+  throw new Error(`no ${label} row with a mod table`);
+};
+// PoB-PoE2's AddModSection tables over the fixture (oracle/poe2_mod_sections.lua)
+type ModRows = { rows?: { value: string; name: string; flags: string; tags: string; source: string; sourceName: string; totals?: string[] }[] };
+const modSections = oracle('poe2_mod_sections_sorceress_spark') as unknown as Record<string, ModRows>;
 const AppCalcs = (await import('./AppCalcs.svelte')).default;
 
 describe('a PoE2 Calcs cell with a breakdown', () => {
@@ -128,4 +145,95 @@ describe('a PoE2 Calcs cell with a breakdown', () => {
     ).toEqual(evasion.columns!.map((c) => c.label));
     expect(within(table).getAllByRole('row')).toHaveLength(evasion.rows!.length + 1);
   }, 30_000);
+
+  it("shows PoB-PoE2's mod table for a cell's mod name entry", async () => {
+    w2.CalcsPage.mockResolvedValue({
+      mods: calcs.mods,
+      flags: Object.fromEntries(Object.entries(calcs.output).filter((e) => e[1] === true)),
+      strings: Object.fromEntries(Object.entries(calcs.output).filter((e) => typeof e[1] === 'string')),
+      breakdowns: calcsBreakdowns2(breakdowns as never)
+    });
+    const want = modSections['Life|BASE|||false|'].rows!;
+    expect(want.length, 'PoB-PoE2 lists the fixture Life BASE mods').toBeGreaterThan(1);
+    w2.CalcsModSection.mockImplementation((sd: { ModName: string[]; ModType: string; ModSource: string }) =>
+      Promise.resolve(
+        (modSections[`${sd.ModName.join(',')}|${sd.ModType}||${sd.ModSource}|false|`]?.rows ?? []).map((r) => ({
+          Value: r.value,
+          Name: r.name,
+          Flags: r.flags,
+          Tags: r.tags,
+          Source: r.source,
+          SourceName: r.sourceName,
+          Totals: r.totals
+        }))
+      )
+    );
+    poe2Build.set({
+      className: 'Sorceress',
+      ascendClassName: 'None',
+      level: 1,
+      output: numbers,
+      skillFlags: calcs.skillFlags,
+      skillData: calcs.skillData,
+      socketGroups: [],
+      mainSocketGroup: 1,
+      mainActiveSkill: 1
+    } as never);
+    const { container } = render(AppCalcs);
+
+    // CalcSections.lua:1602 (PoB-PoE2): Life's Total Base row is { modName = "Life", modType = "BASE" }
+    const key = modRowOf('Total Base');
+    const row = await vi.waitFor(
+      () => {
+        const r = container.querySelector<HTMLElement>(`[data-key="${key}"]`);
+        if (!r) throw new Error('no Total Base row');
+        return r;
+      },
+      { timeout: 10_000 }
+    );
+    await fireEvent.mouseEnter(row);
+    const table = await vi.waitFor(() => within(screen.getByRole('complementary', { name: 'Breakdown' })).getByRole('table', { name: 'Modifiers' }));
+    expect(w2.CalcsModSection).toHaveBeenCalledWith({ ModName: ['Life'], Multi: false, ModType: 'BASE', Cfg: '', ModSource: '', Enemy: false, Actor: '' });
+    const rows = within(table).getAllByRole('row').slice(1);
+    expect(rows.map((r) => within(r).getAllByRole('cell')[0].textContent)).toEqual(want.map((r) => r.value));
+  }, 30_000);
+
+  it("hands a sidebar line's breakdown the cells PoB-PoE2's GetSidebarBreakdown shows", async () => {
+    // oracle/poe2_sidebar_breakdowns.lua: the Life line's key and the cells it shows
+    type Cell = { breakdown?: string; modName?: string[]; modType?: string; label?: string };
+    const lines = oracle('poe2_sidebar_breakdowns_sorceress_spark') as unknown as { stat: string; key: string; cells: Cell[] }[];
+    const life = lines.find((l) => l.stat === 'Life')!;
+    expect(life.cells.length, 'PoB-PoE2 shows more than the Life breakdown').toBeGreaterThan(1);
+    poe2Build.set({
+      className: 'Sorceress',
+      ascendClassName: 'None',
+      level: 1,
+      output: numbers,
+      skillFlags: calcs.skillFlags,
+      skillData: calcs.skillData,
+      socketGroups: [],
+      mainSocketGroup: 1,
+      mainActiveSkill: 1
+    } as never);
+    const { poe2Engine } = await import('$lib/go/engine_poe2.svelte');
+    const { get } = await import('svelte/store');
+    const line = get(poe2Engine.sidebar)!
+      .sections.flatMap((s) => s.groups.flat())
+      .find((l) => l.stat === 'Life')!;
+    expect(line.bd).toEqual({ stat: 'Life', modNames: ['Life'], ignoredSections: ['Base from Gear', 'Inc. from Tree'] });
+    w2.SidebarBreakdownKey.mockResolvedValue({ key: life.key, source: life.key });
+    const shown = [{ label: 'x', mods: [] }];
+    w2.SidebarBreakdownSections.mockResolvedValue(shown);
+    expect(await poe2Engine.breakdownSteps!(line)).toBe(shown);
+    expect(w2.SidebarBreakdownKey).toHaveBeenCalledWith(line.bd);
+    const cells = (w2.SidebarBreakdownSections.mock.calls[0][0] as (Cell & { modName?: string | string[] })[]).map((c) => {
+      const cell: Cell = {};
+      if (c.breakdown !== undefined) cell.breakdown = c.breakdown;
+      if (c.modName !== undefined) cell.modName = [c.modName].flat();
+      if (c.modType !== undefined) cell.modType = c.modType;
+      if (c.label !== undefined) cell.label = c.label;
+      return cell;
+    });
+    expect(cells).toEqual(life.cells);
+  });
 });
