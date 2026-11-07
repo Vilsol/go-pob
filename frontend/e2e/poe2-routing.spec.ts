@@ -55,7 +55,8 @@ test('with the PoE2 flag on a PoE2 build opens in the second worker with PoB-PoE
   const { errors, requests } = await start(page, true);
   const view = poe2Page(page);
   await expect(view).toBeVisible({ timeout: 180_000 });
-  await expect(view).toContainText('Level 40 Sorceress');
+  await expect(view).toContainText('Sorceress');
+  await expect(view.getByRole('spinbutton', { name: 'Character level' })).toHaveValue('40');
   await expect(poe2Stat(page, 'Life')).toHaveText(POB2.Life);
   await expect(poe2Stat(page, 'Mana')).toHaveText(POB2.Mana);
   expect(requests.filter((u) => /go-pob2\.wasm/.test(u))).toHaveLength(1);

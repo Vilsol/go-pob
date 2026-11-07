@@ -57,7 +57,8 @@ test('a poe.ninja PoE2 link imports through /api/build, saves to the build list 
 
   await link.click();
   await expect(poe2Stat(page, 'Life')).toHaveText(POB2.Life, { timeout: 60_000 });
-  await expect(view).toContainText('Level 40 Sorceress');
+  await expect(view).toContainText('Sorceress');
+  await expect(view.getByRole('spinbutton', { name: 'Character level' })).toHaveValue('40');
   expect(errors).toEqual([]);
 });
 
