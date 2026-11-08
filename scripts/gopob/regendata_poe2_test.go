@@ -1,8 +1,11 @@
 package main
 
 import (
+	"bytes"
 	"strings"
 	"testing"
+
+	"github.com/Vilsol/go-pob-data/poe2/pobdata"
 )
 
 func TestRegenDataGameFlag(t *testing.T) {
@@ -84,7 +87,7 @@ func TestPoE2DataEmitRefuses(t *testing.T) {
 			var err error
 			switch tc.table {
 			case "bases":
-				_, err = p2eBases([]byte(tc.body))
+				_, _, err = p2eBases([]byte(tc.body))
 			case "gems":
 				_, err = p2eGems([]byte(tc.body))
 			case "runes":
@@ -94,11 +97,11 @@ func TestPoE2DataEmitRefuses(t *testing.T) {
 			case "legion":
 				_, err = p2eLegion([]byte(tc.body))
 			case "item-mods":
-				_, err = p2eItemMods([]byte(tc.body))
+				_, _, err = p2eItemMods([]byte(tc.body))
 			case "mod-scalability":
-				_, err = p2eModScalability([]byte(tc.body))
+				_, _, err = p2eModScalability([]byte(tc.body))
 			case "item-mods-exclusive":
-				_, err = p2eItemModsExclusive([]byte(tc.body))
+				_, _, err = p2eItemModsExclusive([]byte(tc.body))
 			}
 			if err == nil || !strings.Contains(err.Error(), tc.want) {
 				t.Fatalf("got %v, want an error containing %q", err, tc.want)
@@ -109,13 +112,22 @@ func TestPoE2DataEmitRefuses(t *testing.T) {
 
 // TestPoE2DataEmitBoundary is the companion: a present non-zero and an absent field both emit.
 func TestPoE2DataEmitBoundary(t *testing.T) {
-	out, err := p2eBases([]byte(`[{"name":"A","type":"Ring","quality":20,"armour":{"Evasion":30}},{"name":"B","type":"Ring"}]`))
+	_, asset, err := p2eBases([]byte(`[{"name":"A","type":"Ring","quality":20,"armour":{"Evasion":30}},{"name":"B","type":"Ring"}]`))
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, want := range []string{`{Name: "A", Type: "Ring", Quality: 20, Armour: &BaseArmour{Evasion: 30}},`, `{Name: "B", Type: "Ring"},`} {
-		if !strings.Contains(out, want) {
-			t.Errorf("missing %s in:\n%s", want, out)
-		}
+	want := []pobdata.ItemBase{
+		{Name: "A", Type: "Ring", Quality: 20, Armour: &pobdata.BaseArmour{Evasion: 30}},
+		{Name: "B", Type: "Ring"},
+	}
+	encoded, err := pobdata.Encode(want)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Equal(asset.encoded, encoded) {
+		t.Errorf("the asset does not hold %+v", want)
+	}
+	if asset.path != pobdata.AssetPath(pobdata.ItemBasesTable, encoded) {
+		t.Errorf("the asset is at %s, not named by its contents", asset.path)
 	}
 }

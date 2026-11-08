@@ -1358,8 +1358,9 @@ func (i *Item) parseLine(lp *int, line, mode, itemClass string, implicitLines, s
 			baseName = i.Name
 		} else {
 			bestLen, bestS, bestE, best := -1, 0, 0, ""
-			for idx := range poe2.ItemBases {
-				name := poe2.ItemBases[idx].Name
+			bases := poe2.ItemBases()
+			for idx := range bases {
+				name := bases[idx].Name
 				if s := strings.Index(i.Name, name); s >= 0 && name != "" {
 					e := s + len(name) - 1
 					if e-s > bestLen {
@@ -1685,7 +1686,7 @@ type uniqueModStatOrders struct {
 // uniqueModStatOrder is the lowest stat order data.itemMods.Exclusive gives each line, exactly and normalised.
 var uniqueModStatOrder = sync.OnceValue(func() uniqueModStatOrders {
 	u := uniqueModStatOrders{exact: map[string]float64{}, normalised: map[string]float64{}}
-	for _, mod := range poe2.ExclusiveMods {
+	for _, mod := range poe2.ExclusiveMods() {
 		for index, line := range mod.Lines {
 			exactLine := strings.ReplaceAll(strings.ToLower(line), "\n", " ")
 			statLine := normaliseModLine(line)

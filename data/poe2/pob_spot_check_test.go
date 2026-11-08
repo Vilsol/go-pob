@@ -24,7 +24,7 @@ func spotGoSide() (map[spotKey]string, map[string]int) {
 			m[spotKey{kind, key, field}] = v
 		}
 	}
-	for _, b := range ItemBases {
+	for _, b := range ItemBases() {
 		str("base", b.Name, "type", b.Type)
 		str("base", b.Name, "subType", b.SubType)
 		str("base", b.Name, "implicit", b.Implicit)
@@ -93,7 +93,7 @@ func spotGoSide() (map[spotKey]string, map[string]int) {
 		m[spotKey{"legion", key, "not"}] = strconv.FormatBool(l.Not)
 		m[spotKey{"legion", key, "m"}] = strconv.FormatBool(l.M)
 	}
-	return m, map[string]int{"base": len(ItemBases), "rune": len(RuneMods), "const": consts, "gem": len(Gems), "legion": len(LegionNodes)}
+	return m, map[string]int{"base": len(ItemBases()), "rune": len(RuneMods), "const": consts, "gem": len(Gems), "legion": len(LegionNodes)}
 }
 
 // spotDiff compares PoB's rows against ours. A Lua nil prints no row and our absent field reads 0,

@@ -2,9 +2,14 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
+
+	"github.com/Vilsol/go-pob-data/poe2/pobdata"
+	"github.com/tinylib/msgp/msgp"
 )
 
 var rdGeneratorsPoE2Items = []rdGenerator{
@@ -41,7 +46,7 @@ var rdGeneratorsPoE2Items = []rdGenerator{
 		emit:     "poe2-data-emit",
 		emitArgs: []string{"item-mods"},
 		needsPob: true,
-		note:     "data.itemMods' affix tables (Item, Flask, Charm, Jewel, IncursionLimb, Corruption, Desecrated) after Data.lua's load (src/Modules/Data.lua:692-717); tradeHashes dropped. Game data FROM go-pob-data: `gamedatadump poe2-mods` runs PoB-PoE2's Export/Scripts/mods.lua over 0.5's Mods, Stats, ModType, ModFamily and Tags tables and stat descriptions, every row equal to the pin's src/Data/Mod*.lua up to the order of each tradeHashes table (`mise run poe2-gamedata-check`), and regendata_poe2.lua loads them in place of the pin's (GAMEDATA_DUMP)",
+		note:     "data.itemMods' affix tables (Item, Flask, Charm, Jewel, IncursionLimb, Corruption, Desecrated) after Data.lua's load (src/Modules/Data.lua:692-717); tradeHashes dropped. Game data FROM go-pob-data: `gamedatadump poe2-mods` runs PoB-PoE2's Export/Scripts/mods.lua over 0.5's Mods, Stats, ModType, ModFamily and Tags tables and stat descriptions, every row equal to the pin's src/Data/Mod*.lua up to the order of each tradeHashes table (`mise run poe2-gamedata-check`), and regendata_poe2.lua loads them in place of the pin's (GAMEDATA_DUMP). Published as go-pob-data's 0.5 pob/ItemMods asset, which the generated file names; GO_POB_DATA_DIR=<go-pob-data checkout> writes it there",
 	},
 	{
 		name:     "poe2-mod-scalability",
@@ -53,7 +58,7 @@ var rdGeneratorsPoE2Items = []rdGenerator{
 		emit:     "poe2-data-emit",
 		emitArgs: []string{"mod-scalability"},
 		needsPob: true,
-		note:     "data.modScalability (src/Data/ModScalability.lua, src/Modules/Data.lua:481), the table itemLib.applyRange reads first. Game data FROM go-pob-data: `gamedatadump poe2-mod-scalability` runs PoB-PoE2's Export/Scripts/modScalability.lua over 0.5's Stats table and stat descriptions, every row equal to the pin's up to one later wording go-pob-data carries (`mise run poe2-gamedata-check`), and regendata_poe2.lua loads it in place of the pin's (GAMEDATA_DUMP)",
+		note:     "data.modScalability (src/Data/ModScalability.lua, src/Modules/Data.lua:481), the table itemLib.applyRange reads first. Game data FROM go-pob-data: `gamedatadump poe2-mod-scalability` runs PoB-PoE2's Export/Scripts/modScalability.lua over 0.5's Stats table and stat descriptions, every row equal to the pin's up to one later wording go-pob-data carries (`mise run poe2-gamedata-check`), and regendata_poe2.lua loads it in place of the pin's (GAMEDATA_DUMP). Published as go-pob-data's 0.5 pob/ModScalability asset, which the generated file names; GO_POB_DATA_DIR=<go-pob-data checkout> writes it there",
 	},
 	{
 		name:     "poe2-item-mods-exclusive",
@@ -65,7 +70,7 @@ var rdGeneratorsPoE2Items = []rdGenerator{
 		emit:     "poe2-data-emit",
 		emitArgs: []string{"item-mods-exclusive"},
 		needsPob: true,
-		note:     "data.itemMods.Exclusive's lines and stat orders (src/Modules/Data.lua:700), which Item.lua orders an advanced-copy unique's lines by. Game data FROM go-pob-data: `gamedatadump poe2-mods` writes src/Data/ModItemExclusive.lua, every row equal to the pin's up to the order of each tradeHashes table (`mise run poe2-gamedata-check`), and regendata_poe2.lua loads it in place of the pin's (GAMEDATA_DUMP)",
+		note:     "data.itemMods.Exclusive's lines and stat orders (src/Modules/Data.lua:700), which Item.lua orders an advanced-copy unique's lines by. Game data FROM go-pob-data: `gamedatadump poe2-mods` writes src/Data/ModItemExclusive.lua, every row equal to the pin's up to the order of each tradeHashes table (`mise run poe2-gamedata-check`), and regendata_poe2.lua loads it in place of the pin's (GAMEDATA_DUMP). Published as go-pob-data's 0.5 pob/ExclusiveMods asset, which the generated file names; GO_POB_DATA_DIR=<go-pob-data checkout> writes it there",
 	},
 }
 
@@ -163,59 +168,40 @@ type p2eItemModJSON struct {
 	NodeType            *float64  `json:"nodeType"`
 }
 
-func p2eItemMods(body []byte) (string, error) {
+func p2eItemMods(body []byte) (string, *p2eAsset, error) {
 	var rows []p2eItemModJSON
 	if err := p2eDecode(body, &rows); err != nil {
-		return "", err
+		return "", nil, err
 	}
 	if len(rows) < 1000 {
-		return "", fmt.Errorf("holds %d item mods; data.itemMods did not load", len(rows))
+		return "", nil, fmt.Errorf("holds %d item mods; data.itemMods did not load", len(rows))
 	}
 	if !sort.SliceIsSorted(rows, func(i, j int) bool {
 		return rows[i].Category < rows[j].Category || rows[i].Category == rows[j].Category && rows[i].ID < rows[j].ID
 	}) {
-		return "", fmt.Errorf("the item mods are not sorted by category and id; ItemModsOf binary-searches them")
+		return "", nil, fmt.Errorf("the item mods are not sorted by category and id; ItemModsOf binary-searches them")
 	}
-	var b strings.Builder
-	p2eHeader(&b, "item-mods", "src/Modules/Data.lua:692-717")
-	fmt.Fprintf(&b, "// ItemMods is data.itemMods' affix tables flattened to one row per mod, %d rows sorted by category and id.\nvar ItemMods = []ItemMod{\n", len(rows))
-	for _, r := range rows {
+	mods := make([]pobdata.ItemMod, len(rows))
+	for i, r := range rows {
 		if len(r.Lines) == 0 || len(r.Lines) != len(r.StatOrder) {
-			return "", fmt.Errorf("%s/%s has %d lines and %d stat orders", r.Category, r.ID, len(r.Lines), len(r.StatOrder))
+			return "", nil, fmt.Errorf("%s/%s has %d lines and %d stat orders", r.Category, r.ID, len(r.Lines), len(r.StatOrder))
 		}
 		nodeType, err := p2ePresent(r.ID, "nodeType", r.NodeType)
 		if err != nil {
-			return "", err
+			return "", nil, err
 		}
-		f := &p2eFields{}
-		f.str("Category", r.Category)
-		f.str("ID", r.ID)
-		f.str("Type", r.Type)
-		f.str("Affix", r.Affix)
-		f.raw("Lines", p2eStrings(r.Lines))
-		f.raw("StatOrder", p2eFloats(r.StatOrder))
-		f.num("Level", r.Level)
-		f.str("Group", r.Group)
+		mods[i] = pobdata.ItemMod{Category: r.Category, ID: r.ID, Type: r.Type, Affix: r.Affix, Lines: r.Lines,
+			StatOrder: r.StatOrder, Level: r.Level, Group: r.Group, Tags: r.Tags, ModTags: r.ModTags,
+			Unscalable: r.Unscalable, NodeType: nodeType}
 		if r.WeightKey != nil {
-			f.raw("WeightKey", p2eStrings(r.WeightKey))
-			f.raw("WeightVal", p2eFloats(r.WeightVal))
+			mods[i].WeightKey, mods[i].WeightVal = r.WeightKey, r.WeightVal
 		}
 		if r.WeightMultiplierKey != nil {
-			f.raw("WeightMultiplierKey", p2eStrings(r.WeightMultiplierKey))
-			f.raw("WeightMultiplierVal", p2eFloats(r.WeightMultiplierVal))
+			mods[i].WeightMultiplierKey, mods[i].WeightMultiplierVal = r.WeightMultiplierKey, r.WeightMultiplierVal
 		}
-		if r.Tags != nil {
-			f.raw("Tags", p2eStrings(r.Tags))
-		}
-		if r.ModTags != nil {
-			f.raw("ModTags", p2eStrings(r.ModTags))
-		}
-		f.flag("Unscalable", r.Unscalable)
-		f.num("NodeType", nodeType)
-		b.WriteString("\t" + f.String() + ",\n")
 	}
-	b.WriteString("}\n")
-	return b.String(), nil
+	return p2eAssetSource("item-mods", "src/Modules/Data.lua:692-717", pobdata.ItemModsTable, "itemModsAsset",
+		fmt.Sprintf("data.itemMods' affix tables flattened to one row per mod, %d rows sorted by category and id", len(rows)), mods)
 }
 
 type p2eModScalabilityJSON struct {
@@ -226,46 +212,32 @@ type p2eModScalabilityJSON struct {
 	} `json:"entries"`
 }
 
-// p2eModScalabilitySeparators are the bytes the row encoding splits on; no key or format may hold one.
-const p2eModScalabilitySeparators = "\x1c\x1d\x1f"
-
-func p2eModScalability(body []byte) (string, error) {
+func p2eModScalability(body []byte) (string, *p2eAsset, error) {
 	var rows []p2eModScalabilityJSON
 	if err := p2eDecode(body, &rows); err != nil {
-		return "", err
+		return "", nil, err
 	}
 	if len(rows) < 1000 {
-		return "", fmt.Errorf("holds %d modScalability rows; data.modScalability did not load", len(rows))
+		return "", nil, fmt.Errorf("holds %d modScalability rows; data.modScalability did not load", len(rows))
 	}
-	var b strings.Builder
-	p2eHeader(&b, "mod-scalability", "src/Modules/Data.lua:481-481")
-	fmt.Fprintf(&b, "// modScalabilityRows is data.modScalability, %d rows sorted by key: the key, U+001F, then its entries\n", len(rows))
-	b.WriteString("// separated by U+001D. An entry is '1' when isScalable ('0' otherwise), then each format behind a U+001C.\n")
-	b.WriteString("var modScalabilityRows = [...]string{\n")
+	out := make([]pobdata.ModScalability, len(rows))
 	for i, r := range rows {
 		if i > 0 && rows[i-1].Line >= r.Line {
-			return "", fmt.Errorf("the modScalability rows are not sorted by key at %q", r.Line)
+			return "", nil, fmt.Errorf("the modScalability rows are not sorted by key at %q", r.Line)
 		}
-		if strings.ContainsAny(r.Line, p2eModScalabilitySeparators) {
-			return "", fmt.Errorf("modScalability key %q holds a separator byte of the row encoding", r.Line)
+		out[i].Line = r.Line
+		if len(r.Entries) > 0 {
+			out[i].Entries = make([]pobdata.ModScalabilityEntry, len(r.Entries))
 		}
-		parts := make([]string, len(r.Entries))
 		for j, e := range r.Entries {
-			parts[j] = "0"
-			if e.IsScalable {
-				parts[j] = "1"
-			}
-			for _, f := range e.Formats {
-				if f == "" || strings.ContainsAny(f, p2eModScalabilitySeparators) {
-					return "", fmt.Errorf("modScalability[%q][%d] has a format %q the row encoding cannot hold", r.Line, j+1, f)
-				}
-				parts[j] += "\x1c" + f
+			out[i].Entries[j].IsScalable = e.IsScalable
+			if len(e.Formats) > 0 {
+				out[i].Entries[j].Formats = e.Formats
 			}
 		}
-		b.WriteString("\t" + strconv.Quote(r.Line+"\x1f"+strings.Join(parts, "\x1d")) + ",\n")
 	}
-	b.WriteString("}\n")
-	return b.String(), nil
+	return p2eAssetSource("mod-scalability", "src/Modules/Data.lua:481-481", pobdata.ModScalabilityTable, "modScalabilityAsset",
+		fmt.Sprintf("data.modScalability, %d rows sorted by key", len(rows)), out)
 }
 
 type p2eExclusiveModJSON struct {
@@ -274,30 +246,70 @@ type p2eExclusiveModJSON struct {
 	StatOrder []float64 `json:"statOrder"`
 }
 
-func p2eItemModsExclusive(body []byte) (string, error) {
+func p2eItemModsExclusive(body []byte) (string, *p2eAsset, error) {
 	var rows []p2eExclusiveModJSON
 	if err := p2eDecode(body, &rows); err != nil {
-		return "", err
+		return "", nil, err
 	}
 	if len(rows) < 1000 {
-		return "", fmt.Errorf("holds %d exclusive mods; data.itemMods.Exclusive did not load", len(rows))
+		return "", nil, fmt.Errorf("holds %d exclusive mods; data.itemMods.Exclusive did not load", len(rows))
 	}
-	var b strings.Builder
-	p2eHeader(&b, "item-mods-exclusive", "src/Modules/Data.lua:700-700")
-	fmt.Fprintf(&b, "// ExclusiveMods is data.itemMods.Exclusive's lines and stat orders, %d rows sorted by id.\nvar ExclusiveMods = []ExclusiveMod{\n", len(rows))
+	mods := make([]pobdata.ExclusiveMod, len(rows))
 	for i, r := range rows {
 		if i > 0 && rows[i-1].ID >= r.ID {
-			return "", fmt.Errorf("the exclusive mods are not sorted by id at %s", r.ID)
+			return "", nil, fmt.Errorf("the exclusive mods are not sorted by id at %s", r.ID)
 		}
 		if len(r.Lines) != len(r.StatOrder) {
-			return "", fmt.Errorf("%s has %d lines and %d stat orders", r.ID, len(r.Lines), len(r.StatOrder))
+			return "", nil, fmt.Errorf("%s has %d lines and %d stat orders", r.ID, len(r.Lines), len(r.StatOrder))
 		}
-		f := &p2eFields{}
-		f.str("ID", r.ID)
-		f.raw("Lines", p2eStrings(r.Lines))
-		f.raw("StatOrder", p2eFloats(r.StatOrder))
-		b.WriteString("\t" + f.String() + ",\n")
+		mods[i] = pobdata.ExclusiveMod{ID: r.ID, Lines: r.Lines, StatOrder: r.StatOrder}
 	}
-	b.WriteString("}\n")
-	return b.String(), nil
+	return p2eAssetSource("item-mods-exclusive", "src/Modules/Data.lua:700-700", pobdata.ExclusiveModsTable, "exclusiveModsAsset",
+		fmt.Sprintf("data.itemMods.Exclusive's lines and stat orders, %d rows sorted by id", len(rows)), mods)
+}
+
+// p2eAssetVersion is the go-pob-data version the PoE2 tables published as go-pob-data assets belong to.
+const p2eAssetVersion = "0.5"
+
+// p2eAsset is a table go-pob-data publishes under pob/, named by its contents: its bytes are written into
+// the go-pob-data checkout at $GO_POB_DATA_DIR when that is set, and the generated Go names it.
+type p2eAsset struct {
+	path    string
+	encoded []byte
+}
+
+func (a *p2eAsset) write() error {
+	dir := os.Getenv("GO_POB_DATA_DIR")
+	if dir == "" {
+		return nil
+	}
+	compressed, err := pobdata.Compress(a.encoded)
+	if err != nil {
+		return fmt.Errorf("could not compress %s: %w", a.path, err)
+	}
+	out := filepath.Join(dir, "data", p2eAssetVersion, filepath.FromSlash(a.path))
+	if err := os.MkdirAll(filepath.Dir(out), 0o750); err != nil { //nolint:gosec // the caller's go-pob-data checkout
+		return fmt.Errorf("could not create %s: %s", filepath.Dir(out), errnoText(err))
+	}
+	if err := os.WriteFile(out, compressed, 0o644); err != nil { //nolint:gosec // a published asset
+		return fmt.Errorf("could not write %s: %s", out, errnoText(err))
+	}
+	return nil
+}
+
+func p2eAssetSource[T any, PT interface {
+	*T
+	msgp.Encodable
+}](table, cite, assetTable, goName, doc string, rows []T) (string, *p2eAsset, error) {
+	encoded, err := pobdata.Encode[T, PT](rows)
+	if err != nil {
+		return "", nil, err
+	}
+	asset := &p2eAsset{path: pobdata.AssetPath(assetTable, encoded), encoded: encoded}
+	var b strings.Builder
+	p2eHeader(&b, table, cite)
+	fmt.Fprintf(&b, "// %s is go-pob-data's %s %s asset: %s.\n", goName, p2eAssetVersion, assetTable, doc)
+	b.WriteString("// Regenerating with GO_POB_DATA_DIR set to a go-pob-data checkout writes the asset into it.\n")
+	fmt.Fprintf(&b, "const %s = %s\n", goName, strconv.Quote(asset.path))
+	return b.String(), asset, nil
 }

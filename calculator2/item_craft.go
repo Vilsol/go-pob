@@ -20,8 +20,9 @@ var itemBaseListsOnce = sync.OnceValues(buildItemBaseLists)
 //pob2:src/Modules/Data.lua:1115-1146
 func buildItemBaseLists() (map[string][]ItemBaseListEntry, []string) {
 	lists := map[string][]ItemBaseListEntry{}
-	for k := range poe2.ItemBases {
-		base := &poe2.ItemBases[k]
+	bases := poe2.ItemBases()
+	for k := range bases {
+		base := &bases[k]
 		if !base.Hidden {
 			typ := base.Type
 			if base.SubType != "" {

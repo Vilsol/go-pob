@@ -8,6 +8,8 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+
+	"github.com/Vilsol/go-pob-data/poe2/pobdata"
 )
 
 // rdGeneratorsPoE2 is `regen-data --game poe2`'s table: PoB-PoE2's own loaded data tables, dumped by
@@ -24,7 +26,7 @@ var rdGeneratorsPoE2 = []rdGenerator{
 		emit:     "poe2-data-emit",
 		emitArgs: []string{"bases"},
 		needsPob: true,
-		note:     "data.itemBases after Data.lua's load (src/Data/Bases/*.lua). Game data FROM go-pob-data: `gamedatadump poe2-item-bases` runs PoB-PoE2's Export/Scripts/bases.lua over 0.5's json tables, .it files and stat descriptions with the pin's Export/Bases templates, and regendata_poe2.lua loads its Data/Bases files in place of the pin's (GAMEDATA_DUMP)",
+		note:     "data.itemBases after Data.lua's load (src/Data/Bases/*.lua). Game data FROM go-pob-data: `gamedatadump poe2-item-bases` runs PoB-PoE2's Export/Scripts/bases.lua over 0.5's json tables, .it files and stat descriptions with the pin's Export/Bases templates, and regendata_poe2.lua loads its Data/Bases files in place of the pin's (GAMEDATA_DUMP). Published as go-pob-data's 0.5 pob/ItemBases asset, which the generated file names; GO_POB_DATA_DIR=<go-pob-data checkout> writes it there",
 	},
 	{
 		name:     "poe2-runes",
@@ -97,9 +99,10 @@ func poe2DataEmit(args []string) int {
 		return oeRefuse(fmt.Sprintf("%s is not readable: %s", args[0], errnoText(err)))
 	}
 	var out string
+	var asset *p2eAsset
 	switch args[2] {
 	case "bases":
-		out, err = p2eBases(body)
+		out, asset, err = p2eBases(body)
 	case "runes":
 		out, err = p2eRunes(body)
 	case "constants":
@@ -117,16 +120,21 @@ func poe2DataEmit(args []string) int {
 	case "item-db":
 		out, err = p2eItemDB(body)
 	case "item-mods":
-		out, err = p2eItemMods(body)
+		out, asset, err = p2eItemMods(body)
 	case "item-mods-exclusive":
-		out, err = p2eItemModsExclusive(body)
+		out, asset, err = p2eItemModsExclusive(body)
 	case "mod-scalability":
-		out, err = p2eModScalability(body)
+		out, asset, err = p2eModScalability(body)
 	default:
 		return oeUsage(p2eUsage)
 	}
 	if err != nil {
 		return oeRefuse(fmt.Sprintf("%s: %s", args[0], err))
+	}
+	if asset != nil {
+		if err := asset.write(); err != nil {
+			return oeRefuse(err.Error())
+		}
 	}
 	return oeWriteGo(args[1], out)
 }
@@ -296,142 +304,83 @@ type p2eBaseJSON struct {
 	} `json:"charm"`
 }
 
-func p2eBaseRow(r p2eBaseJSON) (string, error) {
-	f := &p2eFields{}
-	f.str("Name", r.Name)
-	f.str("Type", r.Type)
-	sub, err := p2eNonEmpty(r.Name, "subType", r.SubType)
-	if err != nil {
-		return "", err
+func p2eBaseRow(r p2eBaseJSON) (pobdata.ItemBase, error) {
+	row := pobdata.ItemBase{Name: r.Name, Type: r.Type, Hidden: r.Hidden, SocketLimit: r.SocketLimit, Spirit: r.Spirit,
+		GrantedSkillsHaveNoReservation: r.GrantedSkillsHaveNoReservation, ImplicitModTypes: r.ImplicitModTypes,
+		Tags: r.Tags, VariantList: r.VariantList}
+	var err error
+	if row.SubType, err = p2eNonEmpty(r.Name, "subType", r.SubType); err != nil {
+		return row, err
 	}
-	f.str("SubType", sub)
-	f.flag("Hidden", r.Hidden)
-	f.num("SocketLimit", r.SocketLimit)
-	q, err := p2ePresent(r.Name, "quality", r.Quality)
-	if err != nil {
-		return "", err
+	if row.Quality, err = p2ePresent(r.Name, "quality", r.Quality); err != nil {
+		return row, err
 	}
-	f.num("Quality", q)
-	f.num("Spirit", r.Spirit)
 	if r.CharmLimit != nil {
-		f.num("CharmLimit", *r.CharmLimit)
-		f.flag("HasCharmLimit", true)
+		row.CharmLimit, row.HasCharmLimit = *r.CharmLimit, true
 	}
-	f.flag("GrantedSkillsHaveNoReservation", r.GrantedSkillsHaveNoReservation)
-	imp, err := p2eNonEmpty(r.Name, "implicit", r.Implicit)
-	if err != nil {
-		return "", err
+	if row.Implicit, err = p2eNonEmpty(r.Name, "implicit", r.Implicit); err != nil {
+		return row, err
 	}
-	f.str("Implicit", imp)
-	if r.ImplicitModTypes != nil {
-		groups := make([]string, len(r.ImplicitModTypes))
-		for i, g := range r.ImplicitModTypes {
-			groups[i] = p2eStrings(g)
-		}
-		f.raw("ImplicitModTypes", "[][]string{"+strings.Join(groups, ", ")+"}")
-	}
-	f.raw("Tags", p2eStrings(r.Tags))
-	f.raw("VariantList", p2eStrings(r.VariantList))
 	if r.Req != nil {
-		lvl, err := p2ePresent(r.Name, "req.level", r.Req.Level)
-		if err != nil {
-			return "", err
+		if row.Req.Level, err = p2ePresent(r.Name, "req.level", r.Req.Level); err != nil {
+			return row, err
 		}
-		req := &p2eFields{}
-		req.num("Level", lvl)
-		req.num("Str", r.Req.Str)
-		req.num("Dex", r.Req.Dex)
-		req.num("Int", r.Req.Int)
-		if len(req.parts) > 0 {
-			f.raw("Req", "BaseReq"+req.String())
-		}
+		row.Req.Str, row.Req.Dex, row.Req.Int = r.Req.Str, r.Req.Dex, r.Req.Int
 	}
 	if a := r.Armour; a != nil {
-		mp, err := p2ePresent(r.Name, "armour.MovementPenalty", a.MovementPenalty)
-		if err != nil {
-			return "", err
+		row.Armour = &pobdata.BaseArmour{Armour: a.Armour, Evasion: a.Evasion, EnergyShield: a.EnergyShield, Ward: a.Ward}
+		if row.Armour.MovementPenalty, err = p2ePresent(r.Name, "armour.MovementPenalty", a.MovementPenalty); err != nil {
+			return row, err
 		}
-		bc, err := p2ePresent(r.Name, "armour.BlockChance", a.BlockChance)
-		if err != nil {
-			return "", err
+		if row.Armour.BlockChance, err = p2ePresent(r.Name, "armour.BlockChance", a.BlockChance); err != nil {
+			return row, err
 		}
-		af := &p2eFields{}
-		af.num("Armour", a.Armour)
-		af.num("Evasion", a.Evasion)
-		af.num("EnergyShield", a.EnergyShield)
-		af.num("Ward", a.Ward)
-		af.num("MovementPenalty", mp)
-		af.num("BlockChance", bc)
-		f.raw("Armour", "&BaseArmour"+af.String())
 	}
 	if w := r.Weapon; w != nil {
-		rt, err := p2ePresent(r.Name, "weapon.ReloadTimeBase", w.ReloadTimeBase)
-		if err != nil {
-			return "", err
+		row.Weapon = &pobdata.BaseWeapon{PhysicalMin: w.PhysicalMin, PhysicalMax: w.PhysicalMax, FireMin: w.FireMin,
+			FireMax: w.FireMax, ColdMin: w.ColdMin, ColdMax: w.ColdMax, LightningMin: w.LightningMin,
+			LightningMax: w.LightningMax, ChaosMin: w.ChaosMin, ChaosMax: w.ChaosMax, CritChanceBase: w.CritChanceBase,
+			AttackRateBase: w.AttackRateBase, Range: w.Range}
+		if row.Weapon.ReloadTimeBase, err = p2ePresent(r.Name, "weapon.ReloadTimeBase", w.ReloadTimeBase); err != nil {
+			return row, err
 		}
-		wf := &p2eFields{}
-		for _, kv := range []struct {
-			k string
-			v float64
-		}{{"PhysicalMin", w.PhysicalMin}, {"PhysicalMax", w.PhysicalMax}, {"FireMin", w.FireMin}, {"FireMax", w.FireMax},
-			{"ColdMin", w.ColdMin}, {"ColdMax", w.ColdMax}, {"LightningMin", w.LightningMin}, {"LightningMax", w.LightningMax},
-			{"ChaosMin", w.ChaosMin}, {"ChaosMax", w.ChaosMax}, {"CritChanceBase", w.CritChanceBase},
-			{"AttackRateBase", w.AttackRateBase}, {"Range", w.Range}, {"ReloadTimeBase", rt}} {
-			wf.num(kv.k, kv.v)
-		}
-		f.raw("Weapon", "&BaseWeapon"+wf.String())
 	}
 	if fl := r.Flask; fl != nil {
-		life, err := p2ePresent(r.Name, "flask.life", fl.Life)
-		if err != nil {
-			return "", err
+		row.Flask = &pobdata.BaseFlask{Duration: fl.Duration, ChargesMax: fl.ChargesMax, ChargesUsed: fl.ChargesUsed}
+		if row.Flask.Life, err = p2ePresent(r.Name, "flask.life", fl.Life); err != nil {
+			return row, err
 		}
-		mana, err := p2ePresent(r.Name, "flask.mana", fl.Mana)
-		if err != nil {
-			return "", err
+		if row.Flask.Mana, err = p2ePresent(r.Name, "flask.mana", fl.Mana); err != nil {
+			return row, err
 		}
-		ff := &p2eFields{}
-		ff.num("Life", life)
-		ff.num("Mana", mana)
-		ff.num("Duration", fl.Duration)
-		ff.num("ChargesMax", fl.ChargesMax)
-		ff.num("ChargesUsed", fl.ChargesUsed)
-		f.raw("Flask", "&BaseFlask"+ff.String())
 	}
 	if c := r.Charm; c != nil {
-		cf := &p2eFields{}
-		cf.num("Duration", c.Duration)
-		cf.num("ChargesMax", c.ChargesMax)
-		cf.num("ChargesUsed", c.ChargesUsed)
-		cf.raw("Buff", p2eStrings(c.Buff))
-		f.raw("Charm", "&BaseCharm"+cf.String())
+		row.Charm = &pobdata.BaseCharm{Duration: c.Duration, ChargesMax: c.ChargesMax, ChargesUsed: c.ChargesUsed, Buff: c.Buff}
 	}
-	return f.String(), nil
+	return row, nil
 }
 
-func p2eBases(body []byte) (string, error) {
+func p2eBases(body []byte) (string, *p2eAsset, error) {
 	var rows []p2eBaseJSON
 	if err := p2eDecode(body, &rows); err != nil {
-		return "", err
+		return "", nil, err
 	}
 	if len(rows) == 0 {
-		return "", fmt.Errorf("holds no item bases")
+		return "", nil, fmt.Errorf("holds no item bases")
 	}
 	if !sort.SliceIsSorted(rows, func(i, j int) bool { return rows[i].Name < rows[j].Name }) {
-		return "", fmt.Errorf("the bases are not sorted by name; BaseByName binary-searches them")
+		return "", nil, fmt.Errorf("the bases are not sorted by name; BaseByName binary-searches them")
 	}
-	var b strings.Builder
-	p2eHeader(&b, "bases", "src/Modules/Data.lua:1108-1113")
-	fmt.Fprintf(&b, "// ItemBases is data.itemBases, %d bases sorted by name.\nvar ItemBases = []ItemBase{\n", len(rows))
-	for _, r := range rows {
+	bases := make([]pobdata.ItemBase, len(rows))
+	for i, r := range rows {
 		row, err := p2eBaseRow(r)
 		if err != nil {
-			return "", err
+			return "", nil, err
 		}
-		b.WriteString("\t" + row + ",\n")
+		bases[i] = row
 	}
-	b.WriteString("}\n")
-	return b.String(), nil
+	return p2eAssetSource("bases", "src/Modules/Data.lua:1108-1113", pobdata.ItemBasesTable, "itemBasesAsset",
+		fmt.Sprintf("data.itemBases, %d bases sorted by name", len(rows)), bases)
 }
 
 type p2eRuneJSON struct {

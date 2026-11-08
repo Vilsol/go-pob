@@ -2,61 +2,22 @@
 // checkout by `mise run data-regen --game poe2`. The PoE1 engine never imports it.
 package poe2
 
-// ItemBase is one data.itemBases entry. A numeric field PoB leaves nil reads 0 here; the emitter
-// refuses a present 0 on every field PoB tests for presence, so 0 always means absent on those.
+import "github.com/Vilsol/go-pob-data/poe2/pobdata"
+
+// ItemBase is one data.itemBases entry, published by go-pob-data. A numeric field PoB leaves nil reads 0
+// here; the emitter refuses a present 0 on every field PoB tests for presence, so 0 always means absent on
+// those.
 //
 //pob2:src/Modules/Data.lua:1108-1113
-type ItemBase struct {
-	Name        string
-	Type        string
-	SubType     string
-	Hidden      bool
-	SocketLimit float64
-	Quality     float64
-	Spirit      float64
-	CharmLimit  float64
-	// HasCharmLimit is a present charmLimit, which belts carry as 0.
-	HasCharmLimit                  bool
-	GrantedSkillsHaveNoReservation bool
-	Implicit                       string
-	ImplicitModTypes               [][]string
-	Tags                           []string
-	VariantList                    []string
-	Req                            BaseReq
-	Armour                         *BaseArmour
-	Weapon                         *BaseWeapon
-	Flask                          *BaseFlask
-	Charm                          *BaseCharm
-}
+type ItemBase = pobdata.ItemBase
 
-type BaseReq struct {
-	Level, Str, Dex, Int float64
-}
-
-type BaseArmour struct {
-	Armour, Evasion, EnergyShield, Ward, MovementPenalty, BlockChance float64
-}
-
-type BaseWeapon struct {
-	PhysicalMin, PhysicalMax   float64
-	FireMin, FireMax           float64
-	ColdMin, ColdMax           float64
-	LightningMin, LightningMax float64
-	ChaosMin, ChaosMax         float64
-	CritChanceBase             float64
-	AttackRateBase             float64
-	Range                      float64
-	ReloadTimeBase             float64
-}
-
-type BaseFlask struct {
-	Life, Mana, Duration, ChargesMax, ChargesUsed float64
-}
-
-type BaseCharm struct {
-	Duration, ChargesMax, ChargesUsed float64
-	Buff                              []string
-}
+type (
+	BaseReq    = pobdata.BaseReq
+	BaseArmour = pobdata.BaseArmour
+	BaseWeapon = pobdata.BaseWeapon
+	BaseFlask  = pobdata.BaseFlask
+	BaseCharm  = pobdata.BaseCharm
+)
 
 // RuneMod is one slot entry of a data.itemMods.Runes rune or soul core; its tradeHashes are not
 // carried.
@@ -119,33 +80,12 @@ type LegionNode struct {
 	M   bool
 }
 
-// ItemMod is one mod of a data.itemMods affix table (src/Data/Mod*.lua).
+// ItemMod is one mod of a data.itemMods affix table (src/Data/Mod*.lua), published by go-pob-data.
 //
 //pob2:src/Modules/Data.lua:692-702
-type ItemMod struct {
-	Category            string
-	ID                  string
-	Type                string
-	Affix               string
-	Lines               []string
-	StatOrder           []float64
-	Level               float64
-	Group               string
-	WeightKey           []string
-	WeightVal           []float64
-	WeightMultiplierKey []string
-	WeightMultiplierVal []float64
-	Tags                []string
-	ModTags             []string
-	Unscalable          bool
-	NodeType            float64
-}
+type ItemMod = pobdata.ItemMod
 
-// ExclusiveMod is one data.itemMods.Exclusive entry's lines and stat orders.
+// ExclusiveMod is one data.itemMods.Exclusive entry's lines and stat orders, published by go-pob-data.
 //
 //pob2:block:src/Classes/Item.lua:1631-1638
-type ExclusiveMod struct {
-	ID        string
-	Lines     []string
-	StatOrder []float64
-}
+type ExclusiveMod = pobdata.ExclusiveMod

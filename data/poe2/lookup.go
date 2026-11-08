@@ -6,9 +6,10 @@ import "sort"
 //
 //pob2:block:src/Classes/Item.lua:855-855
 func BaseByName(name string) (*ItemBase, bool) {
-	i := sort.Search(len(ItemBases), func(i int) bool { return ItemBases[i].Name >= name })
-	if i < len(ItemBases) && ItemBases[i].Name == name {
-		return &ItemBases[i], true
+	bases := ItemBases()
+	i := sort.Search(len(bases), func(i int) bool { return bases[i].Name >= name })
+	if i < len(bases) && bases[i].Name == name {
+		return &bases[i], true
 	}
 	return nil, false
 }
@@ -52,15 +53,16 @@ func GemByID(id string) (*Gem, bool) {
 //
 //pob2:block:src/Classes/Item.lua:1101-1103
 func ItemModsOf(category string) []ItemMod {
-	lo := sort.Search(len(ItemMods), func(i int) bool { return ItemMods[i].Category >= category })
+	mods := itemTables().mods
+	lo := sort.Search(len(mods), func(i int) bool { return mods[i].Category >= category })
 	hi := lo
-	for hi < len(ItemMods) && ItemMods[hi].Category == category {
+	for hi < len(mods) && mods[hi].Category == category {
 		hi++
 	}
 	if lo == hi {
 		return nil
 	}
-	return ItemMods[lo:hi:hi]
+	return mods[lo:hi:hi]
 }
 
 // ItemModByID is data.itemMods[category][id].
