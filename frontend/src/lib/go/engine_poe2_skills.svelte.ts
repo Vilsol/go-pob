@@ -38,6 +38,7 @@ const ATTR_BY_COLOR: Record<number, GemAttr> = { 1: 'str', 2: 'dex', 3: 'int' };
 
 // SkillsTab.lua:51-61 (PoB-PoE2), less Full DPS, which the PoE2 calculator does not calculate yet
 const SORT_FIELDS2: Record<string, string> = {
+  'Full DPS': 'FullDPS',
   'Combined DPS': 'CombinedDPS',
   'Hit DPS': 'TotalDPS',
   'Average Hit': 'AverageDamage',
