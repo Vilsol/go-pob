@@ -87,16 +87,22 @@
   const COLOURS = ['R', 'G', 'B', 'W'];
   const ALT = ['Variant', 'Alt variant', 'Alt variant 2', 'Alt variant 3', 'Alt variant 4', 'Alt variant 5'];
 
+  // the sockets last written, until the item info shows them: a second edit before the info arrives builds on the first
+  let written = $state<{ text: string; from: string }>();
   const sockets = $derived.by(() => {
+    const text = written && written.from === info.sockets ? written.text : info.sockets;
     const out: { colour: string; linked: boolean }[] = [];
-    for (const ch of info.sockets) {
+    for (const ch of text) {
       if (ch === '-') out[out.length - 1].linked = true;
       else if (ch !== ' ') out.push({ colour: ch, linked: false });
     }
     return out;
   });
-  const writeSockets = (list: { colour: string; linked: boolean }[]) =>
-    onedit({ kind: 'sockets', text: list.map((s, i) => s.colour + (i < list.length - 1 ? (s.linked ? '-' : ' ') : '')).join('') });
+  const writeSockets = (list: { colour: string; linked: boolean }[]) => {
+    const text = list.map((s, i) => s.colour + (i < list.length - 1 ? (s.linked ? '-' : ' ') : '')).join('');
+    written = { text, from: info.sockets };
+    onedit({ kind: 'sockets', text });
+  };
   const setInfluence = (slot: 0 | 1, name: string) => {
     const pair = [info.influence[0] ?? '', info.influence[1] ?? ''];
     pair[slot] = name;
