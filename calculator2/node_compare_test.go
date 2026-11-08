@@ -213,8 +213,8 @@ func TestNodeComparesMatchPoB(t *testing.T) {
 		t.Fatal("nothing graded")
 	}
 	// the base-pass stats left out, a ceiling
-	if left > 10 {
-		t.Errorf("%d base-pass stats differ, more than the 10 known", left)
+	if left > 4 {
+		t.Errorf("%d base-pass stats differ, more than the 4 known", left)
 	}
 }
 

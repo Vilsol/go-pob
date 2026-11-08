@@ -891,6 +891,22 @@ run = [
   'ln -sfn {{usage.out}}/oracle-config {{config_root}}/testdata/oracle-poe2-0.5-config',
 ]
 
+[tasks.oracle-poe2-flasks]
+description = "Build the local-only PoE2 flask corpus (every equipped flask and charm slot active) and its oracle from a seeded sample of the PoE2 corpus (--n, --seed, --jobs; resumes, refuses a run with other parameters)"
+usage = '''
+flag "--jobs <jobs>" env="JOBS" default="4"
+flag "--n <n>" env="N" default="1000"
+flag "--out <out>" env="OUT" default="~/go-pob-corpus/poe2-0.5"
+flag "--pob2-dir <dir>" env="POB2_DIR" default="{{vars.POB2_DEFAULT}}"
+flag "--seed <seed>" env="SEED" default="1"
+'''
+run = [
+  { task = "pob-pin --game poe2" },
+  'env LUAJIT={{vars.MAIN}}/.luajit-det/bin/luajit N={{usage.n}} SEED={{usage.seed}} JOBS={{usage.jobs}} {{vars.GOPOB}} poe2-flask-corpus {{usage.pob2_dir}} {{config_root}} {{usage.out}}/corpus {{usage.out}} poe2-0.5',
+  'ln -sfn {{usage.out}}/corpus-flasks {{config_root}}/testdata/corpus-poe2-0.5-flasks',
+  'ln -sfn {{usage.out}}/oracle-flasks {{config_root}}/testdata/oracle-poe2-0.5-flasks',
+]
+
 [tasks.luajit-det]
 description = "Build the DETERMINISTIC LuaJIT (pairs() order identical in every process) into .luajit-det/"
 run = '{{vars.GOPOB}} build-luajit-det'

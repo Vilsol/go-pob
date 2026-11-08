@@ -826,7 +826,7 @@ func actionSpeedMod(actor *Actor) float64 {
 }
 
 // perform is calcs.perform as far as the defence slice's inputs: keystones, attributes and the
-// life/mana/spirit pools, plus charges. Flasks, buffs and the rest of the pass are not ported.
+// life/mana/spirit pools, plus charges. Buffs and the rest of the pass are not ported.
 //
 //pob2:src/Modules/CalcPerform.lua:1193-3320
 func perform(env *Environment) {
@@ -917,37 +917,37 @@ func perform(env *Environment) {
 	addSlotBonusEffectsPerform(env)
 	addMagebloodLegacies(env)
 
+	flasks := newFlaskState(env)
+
 	// flask breakdown; the oracle builds the breakdown, so these always run.
-	//pob2:block:src/Modules/CalcPerform.lua:1580
 	//pob2:block:src/Modules/CalcPerform.lua:1591-1602
 	{
-		effectInc := modDB.Sum(mod.TypeIncrease, &moddb.ListCfg{Actor: "player"}, "FlaskEffect")
 		chargesGenerated := modDB.Sum(mod.TypeBase, nil, "FlaskChargesGenerated")
 		utilityChargesGenerated := modDB.Sum(mod.TypeBase, nil, "UtilityFlaskChargesGenerated")
 		lifeChargesGenerated := modDB.Sum(mod.TypeBase, nil, "LifeFlaskChargesGenerated")
 		manaChargesGenerated := modDB.Sum(mod.TypeBase, nil, "ManaFlaskChargesGenerated")
 
-		output["FlaskEffect"] = effectInc
+		output["FlaskEffect"] = flasks.effectInc
 		output["FlaskChargeGen"] = chargesGenerated
 		output["LifeFlaskChargeGen"] = chargesGenerated + lifeChargesGenerated
 		output["ManaFlaskChargeGen"] = chargesGenerated + manaChargesGenerated
 		output["UtilityFlaskChargeGen"] = chargesGenerated + utilityChargesGenerated
 	}
 
-	// No charm is equipped until items exist, so mergeCharms only counts the empty slots.
-	//pob2:block:src/Modules/CalcPerform.lua:1779-1787
-	charmEffectInc := modDB.Sum(mod.TypeIncrease, &moddb.ListCfg{Actor: "player"}, "CharmEffect")
-	charmLimit := env.ModDB.Sum(mod.TypeBase, nil, "CharmLimit")
-	if o := env.ModDB.Override(nil, "CharmLimit"); o != nil {
-		charmLimit = o.Float()
-	}
-	charmLimit = math.Min(charmLimit, 3)
-	output["CharmEffect"] = charmEffectInc
-	output["CharmLimit"] = charmLimit
+	charms := newCharmState(env)
+	// charm breakdown
+	//pob2:block:src/Modules/CalcPerform.lua:1784-1787
+	output["CharmEffect"] = charms.effectInc
+	output["CharmLimit"] = charms.charmLimit
+
 	//pob2:block:src/Modules/CalcPerform.lua:1858-1866
 	if env.ModeCombat {
-		//pob2:block:src/Modules/CalcPerform.lua:1849
-		env.Player.Output["EmptyCharms"] = charmLimit
+		// This needs to be done in 2 steps to account for effects affecting life recovery from flasks
+		// For example Sorrow of the Divine and buffs (like flask recovery watchers eye)
+		flasks.mergeFlasks(env.Flasks, false, true)
+		charms.mergeCharms(env.Charms)
+
+		// Merge keystones again to catch any that were added by flasks
 		mergeKeystones(env)
 	}
 
@@ -969,6 +969,13 @@ func perform(env *Environment) {
 	countHeraldsAndAuras(env)
 	performGroundAndConversions(env)
 	buffState := combineBuffs(env)
+
+	//pob2:block:src/Modules/CalcPerform.lua:2945-2949
+	if env.ModeCombat {
+		// This needs to be done in 2 steps to account for effects affecting life recovery from flasks
+		// For example Sorrow of the Divine and buffs (like flask recovery watchers eye)
+		flasks.mergeFlasks(env.Flasks, true, flasks.nonUniqueFlasksApplyToMinion)
+	}
 
 	//pob2:block:src/Modules/CalcPerform.lua:2952
 	doActorCharges(env, env.Player)

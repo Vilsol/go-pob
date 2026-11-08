@@ -369,6 +369,7 @@ scripts/gopob/dumpparallel.go                    GO-NATIVE  port of scripts/dump
 scripts/gopob/dumpalone.go                       GO-NATIVE  one build per PoB process, diffed against a committed dump; names the oracle floor, porting no Lua
 scripts/gopob/poe2corpus.go                      GO-NATIVE  the PoE2 corpus runner: one PoB-PoE2 process per character for the import and each dump, porting no Lua
 scripts/gopob/poe2configcorpus.go                GO-NATIVE  the PoE2 config corpus generator: seeded config inputs on a corpus sample, dumped through PoB-PoE2, porting no Lua
+scripts/gopob/poe2flaskcorpus.go                 GO-NATIVE  the PoE2 flask corpus generator: every equipped flask and charm slot active on a corpus sample, dumped through PoB-PoE2, porting no Lua
 scripts/gopob/dumpshard.go                       GO-NATIVE  port of scripts/dump_shard.sh; the sharded corpus dumper, porting no Lua
 scripts/gopob/corpusdumpref.go                   GO-NATIVE  port of scripts/corpus_dump_ref.sh; dumps a ref via a throwaway worktree, porting no Lua
 scripts/gopob/testcachekey.go                    GO-NATIVE  port of scripts/test_cache_key.sh; the POE_VERSION cache-key gate, porting no Lua
@@ -578,6 +579,7 @@ calculator2/calc_defence_ehp_config.go PORT    src/Classes/ConfigTab.lua,src/Mod
 calculator2/calc_perform.go         PORT       src/Modules/CalcPerform.lua
 calculator2/calc_perform_ailments.go PORT       src/Modules/CalcPerform.lua
 calculator2/calc_perform_charges.go PORT       src/Modules/CalcPerform.lua
+calculator2/calc_perform_flasks.go PORT        src/Modules/CalcPerform.lua
 calculator2/calc_perform_buffs.go PORT         src/Modules/CalcPerform.lua,src/Modules/Data.lua,src/Classes/ModStore.lua
 calculator2/calc_perform_requirements.go PORT    src/Modules/CalcPerform.lua,src/Modules/CalcSetup.lua
 calculator2/calc_perform_weapon.go PORT        src/Modules/CalcPerform.lua

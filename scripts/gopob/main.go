@@ -142,6 +142,9 @@ const usage = `gopob <subcommand> [flags]
   poe2-config-corpus <pob2-dir> <repo-root> <src-corpus-dir> <out-root> <version>
                         copies a seeded sample of PoE2 corpus builds with random config inputs
                         the build shows, and dumps them through PoB-PoE2 into a config oracle
+  poe2-flask-corpus <pob2-dir> <repo-root> <src-corpus-dir> <out-root> <version>
+                        copies a seeded sample of PoE2 corpus builds with every equipped flask and
+                        charm slot active, and dumps them through PoB-PoE2 into a flask oracle
   dump-parallel <pob-src-parent> <repo-root> <builds-dir> <out-base> <runs>
                         N independent full-corpus PoB dumps at once, each in its own netns.
                         REFUSES before creating anything if a target directory is non-empty
@@ -308,6 +311,8 @@ func main() {
 		os.Exit(poe2Corpus(os.Args[2:]))
 	case "poe2-config-corpus":
 		os.Exit(poe2ConfigCorpus(os.Args[2:]))
+	case "poe2-flask-corpus":
+		os.Exit(poe2FlaskCorpus(os.Args[2:]))
 	case "dump-shard":
 		os.Exit(dumpShard(os.Args[2:]))
 	case "corpus-dump-ref":
