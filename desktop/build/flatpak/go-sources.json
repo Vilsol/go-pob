@@ -15,17 +15,17 @@
   },
   {
     "type": "file",
-    "url": "https://proxy.golang.org/github.com/!vilsol/go-pob-data/@v/v0.5.14.mod",
+    "url": "https://proxy.golang.org/github.com/!vilsol/go-pob-data/@v/v0.5.15.mod",
     "sha256": "bb9a70fe0448d6f05fe16d25a48a240301223a8d92eadadd68f99774b0db1d54",
     "dest": "goproxy/github.com/!vilsol/go-pob-data/@v",
-    "dest-filename": "v0.5.14.mod"
+    "dest-filename": "v0.5.15.mod"
   },
   {
     "type": "file",
-    "url": "https://proxy.golang.org/github.com/!vilsol/go-pob-data/@v/v0.5.14.zip",
-    "sha256": "f9168c3ac1c2fa432da71fbac453ff2ac80489bf4c76fa22311019eafdc2295c",
+    "url": "https://proxy.golang.org/github.com/!vilsol/go-pob-data/@v/v0.5.15.zip",
+    "sha256": "e3804ae3c2f54bd46357db925d07ae8b29da2f9e3742927cd1f40a99e22fc666",
     "dest": "goproxy/github.com/!vilsol/go-pob-data/@v",
-    "dest-filename": "v0.5.14.zip"
+    "dest-filename": "v0.5.15.zip"
   },
   {
     "type": "file",
