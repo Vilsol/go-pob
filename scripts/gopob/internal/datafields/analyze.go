@@ -28,7 +28,7 @@ const (
 	generatorPkg = ModulePath + "/scripts/gamedatadump"
 )
 
-var DataPackages = []string{RawPkg, DataModule + "/poe", loaderPkg, DataModule + "/utils", DataModule + "/fields", Poe2Pkg}
+var DataPackages = []string{RawPkg, DataModule + "/poe", loaderPkg, DataModule + "/utils", DataModule + "/fields", Poe2Pkg, Poe2Pkg + "/pobdata"}
 
 // Game is one game's row package, the go-pob const naming its data version, and the builds that read it.
 type Game struct {
@@ -147,7 +147,7 @@ func (e allowEntry) appliesTo(game string) bool {
 
 var allowlist = []allowEntry{
 	{
-		fn:     loaderPkg + ".LoadRaw",
+		fn:     loaderPkg + ".decodeRows",
 		callee: "reflect.ValueOf",
 		why:    "reflect.ValueOf(out[0]).Type().Elem() only reads the element TYPE to allocate rows",
 	},
