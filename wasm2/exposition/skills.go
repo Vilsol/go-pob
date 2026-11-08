@@ -141,6 +141,17 @@ func (c *Calculator) SetGem(group, gem int, gemID string) error {
 	return calculator2.SetGem(c.build, c.env, group, gem, gemID)
 }
 
+// AddGem sets a gem in the slot past the group's last gem, counted when the edit runs, not when it was asked for.
+//
+//pob2:block:src/Classes/SkillsTab.lua:815-875
+func (c *Calculator) AddGem(group int, gemID string) error {
+	gem := 1
+	if c.env != nil && group >= 1 && group <= len(c.env.SocketGroupList) {
+		gem = len(c.env.SocketGroupList[group-1].GemList) + 1
+	}
+	return c.SetGem(group, gem, gemID)
+}
+
 func (c *Calculator) RemoveGem(group, gem int) error {
 	if err := c.edited(); err != nil {
 		return err

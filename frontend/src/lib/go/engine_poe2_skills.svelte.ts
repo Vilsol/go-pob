@@ -330,7 +330,7 @@ export const poe2SkillsPage = (): SkillsPageModel => {
       const g = groups?.[i];
       const def = gemByName.get(picked.name);
       if (!g || !def) return;
-      void edit({ op: 'gem', group: i + 1, gem: g.gems.length + 1, id: def.id });
+      void edit({ op: 'addGem', group: i + 1, id: def.id });
     },
     // SkillsTab.lua:773-792 (PoB-PoE2)
     onremovegem: (i: number, gem: number) => void edit({ op: 'removeGem', group: i + 1, gem: gem + 1 }),

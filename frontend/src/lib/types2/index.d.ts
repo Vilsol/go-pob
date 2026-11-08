@@ -187,6 +187,7 @@ export declare namespace exposition {
   interface Calculator {
     AddDBItem(kind: string, name: string, equip: boolean, second: boolean): Result<number>;
     AddDisplayItem(slot: string): Result<number>;
+    AddGem(group: number, gemID: string): Result<void>;
     AddSkillsUndoState(): void;
     AllocateAttributeNode(id: number, attributeIndex: number, allocMode: number): Result<void>;
     BuildItemCompare(id: number): Promise<Result<(exposition.ItemCompareView | undefined)>>;

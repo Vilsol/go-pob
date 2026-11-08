@@ -691,8 +691,8 @@ describe('the PoE2 Skills and Items pages', () => {
     const edits = issued.filter((c) => c.startsWith('EditSkills'));
     expect(edits.map((c) => (JSON.parse(c.slice('EditSkills('.length, -1)) as { op: string }).op)).toEqual([
       'newGroup',
-      'gem',
-      'gem',
+      'addGem',
+      'addGem',
       'level',
       'gemEnabled',
       'gemEnabled'

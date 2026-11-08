@@ -1,6 +1,7 @@
 package exposition
 
 import (
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"slices"
@@ -271,5 +272,55 @@ func TestSkillsUndoThroughTheCalculator(t *testing.T) {
 	}
 	if ok, _ := calc.SkillsUndo(true); ok {
 		t.Error("a second redo restored something")
+	}
+}
+
+// AddGem goes after the group's last gem as the edit finds it, whatever slot the page last showed; the values are
+// PoB-PoE2's after the same edits (calculator2/testdata/skills_edit_pob.jsonl).
+func TestAddGemGoesAfterTheLastGem(t *testing.T) {
+	jsonl, err := os.ReadFile(filepath.Join("..", "..", "calculator2", "testdata", "skills_edit_pob.jsonl"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	pob := map[string]float64{}
+	for _, line := range strings.Split(strings.TrimSpace(string(jsonl)), "\n") {
+		var row struct {
+			Step   string
+			Output map[string]float64
+		}
+		if err := json.Unmarshal([]byte(line), &row); err != nil {
+			t.Fatal(err)
+		}
+		pob[row.Step] = row.Output["TotalDPS"]
+	}
+	xml, err := os.ReadFile(filepath.Join("..", "..", "calculator2", "testdata", "skills_edit.xml"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	calc, err := ParseBuild(string(xml))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := calc.Calculate(); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := calc.NewSocketGroup(); err != nil {
+		t.Fatal(err)
+	}
+	calc.SetMainSocketGroup(2)
+	for _, step := range []struct{ id, step string }{
+		{"Metadata/Items/Gems/SkillGemFireball", "add Fireball"},
+		{"Metadata/Items/Gems/SkillGemElementalFocusSupport", "add Elemental Focus"},
+	} {
+		if err := calc.AddGem(2, step.id); err != nil {
+			t.Fatal(err)
+		}
+		out, err := calc.Calculate()
+		if err != nil {
+			t.Fatal(err)
+		}
+		if got, want := out.Output["TotalDPS"], pob[step.step]; got != want {
+			t.Errorf("%s: TotalDPS %v, PoB-PoE2 %v", step.step, got, want)
+		}
 	}
 }

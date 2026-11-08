@@ -195,6 +195,7 @@ export type Poe2SkillsEdit =
   | { op: 'groupCount'; group: number; count: number }
   | { op: 'weaponSet'; group: number; set: 1 | 2; state: boolean }
   | { op: 'gem'; group: number; gem: number; id: string }
+  | { op: 'addGem'; group: number; id: string }
   | { op: 'removeGem'; group: number; gem: number }
   | { op: 'level' | 'quality' | 'count' | 'corrupt'; group: number; gem: number; value: number }
   | { op: 'gemEnabled'; group: number; gem: number; state: boolean }
@@ -778,6 +779,9 @@ class PoB2Worker {
       case 'gem':
         c.SetGem(e.group, e.gem, e.id).unwrap();
         break;
+      case 'addGem':
+        c.AddGem(e.group, e.id).unwrap();
+        break;
       case 'removeGem':
         c.RemoveGem(e.group, e.gem).unwrap();
         break;
@@ -1238,6 +1242,28 @@ class PoB2Worker {
 
 export const worker2Instance = new PoB2Worker();
 
-expose(worker2Instance);
+type Serial<T> = { [K in keyof T]: T[K] extends (...args: infer A) => infer R ? (...args: A) => Promise<Awaited<R>> : T[K] };
+
+// each call starts once the one before it settles: a Go call answered by a promise can wait on a fetch part way
+// through, and a call run meanwhile would read or edit the build it has half changed, or wait on the same table load
+// and stop the Go runtime
+const serial = <T extends object>(target: T): Serial<T> => {
+  let last: Promise<unknown> = Promise.resolve();
+  return new Proxy(target, {
+    get: (t, prop) => {
+      const v = Reflect.get(t, prop) as unknown;
+      if (typeof v !== 'function') return v;
+      return (...args: unknown[]) => {
+        const run = last.then(() => (v as (...a: unknown[]) => unknown).apply(t, args));
+        last = run.catch(() => undefined);
+        return run;
+      };
+    }
+  }) as unknown as Serial<T>;
+};
+
+export const worker2 = serial(worker2Instance);
+
+expose(worker2);
 
 export type Worker2Type = PoB2Worker;
